@@ -25,7 +25,7 @@
 #include <signal.h>
 // in a4gl_libaubit4gl.h    #include <netdb.h>
 
-
+int A4GL_last_error (void);
 #if (defined(WIN32) && ! defined(__CYGWIN__))
 	#define USE_WINSOCK
 #endif
@@ -67,7 +67,7 @@ main() {
 #endif
 
 
-int A4GL_has_monitor() {
+int A4GL_has_monitor(void) {
 	return connected;
 }
 
@@ -205,7 +205,7 @@ A4GL_get_connection (int socket_type, u_short port, int *listener)
   struct sockaddr_in address;
   int listening_socket;
   int connected_socket = -1;
-  int new_process;
+  //int new_process;
   int reuse_addr = 1;
 
   memset ((char *) &address, 0, sizeof (address));
@@ -462,7 +462,7 @@ A4GL_sock_gets (int sockfd, char *str, size_t count)
 	    {
 	      /* The other side may have closed unexpectedly */
 		connected=0;
-		return;
+		return 0 ;
 	    }
 
 	  if (bytes_read)

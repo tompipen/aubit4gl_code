@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.15 2004-12-02 09:33:20 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.16 2004-12-17 13:19:00 mikeaubury Exp $
 */
 
 /**
@@ -69,6 +69,7 @@ extern "C"
 /* #include "a4gl_API_packer.h" */
 #include "a4gl_API_rpc.h"
 #include "a4gl_API_sql.h"
+#include "a4gl_API_sqlparse.h"
 #include "a4gl_API_ui.h"
 
 int A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...);

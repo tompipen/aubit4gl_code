@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.85 2004-11-25 15:38:59 mikeaubury Exp $
+# $Id: resource.c,v 1.86 2004-12-17 13:19:09 mikeaubury Exp $
 #
 */
 
@@ -937,7 +937,6 @@ struct str_resource *
 A4GL_build_user_resources (void)
 {
 char buff[1024];
-int a;
 FILE *resourcefile = 0;
 
 

@@ -1,12 +1,17 @@
 #include <stdio.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include "a4gl_libaubit4gl.h"
+#include "a4gl_API_ui_lib.h"
 
-#define WINCODE 'w'
-#define FORMCODE 'f'
-#define IDCODE 'i'
+//#define WINCODE 'w'
+//#define FORMCODE 'f'
+//#define IDCODE 'i'
 
-
+void do_setup_list(GtkWidget *treeview,int n);
 GtkWidget *actionfield;
 GtkWidget *beforefield;
 int onfield;
@@ -15,22 +20,37 @@ void A4GL_func (GtkWidget * w, char *mode);
 char currwin[256];
 static int top_level_window(GtkWidget *lv_form) ;
 void A4GL_decode_gui_winname (char *name);
+void attach_signals(char *name,guint type,GtkWidget *widget) ;
+void A4GL_select_row_handler (GtkWidget * w, gint row, gint column, GdkEventButton * event, gpointer user_data);
+void A4GL_add_signal_clicked (GtkWidget * widget, void *funcptr);
+void A4GL_add_signal_activate (GtkWidget * widget, void *funcptr);
+void A4GL_add_signal_grab_focus (GtkWidget * widget, void *funcptr);
+void A4GL_add_signal_changed (GtkWidget * widget, void *funcptr);
+void A4GL_add_signal_select_row (GtkWidget * widget, void *funcptr);
+void A4GL_add_signal_row_activated (GtkWidget * widget, void *funcptr);
+void A4GL_clicked_handler (GtkWidget * w, gpointer user_data);
+void A4GL_activate_handler (GtkWidget * w, gpointer user_data);
+void A4GL_row_activated_handler (GtkTreeView * w, GtkTreePath *path, GtkTreeViewColumn *col, gpointer user_data);
+int A4GL_add_gui_id_name(char *s);
+void A4GL_changed_handler (GtkWidget * w, gpointer user_data);
+void A4GL_grab_focus_handler (GtkWidget * w, gpointer user_data);
+void A4GL_ui_init (int argc, char *argv[]);
 
 
-char *UILIB_A4GL_get_currwin_name () {
+char *UILIB_A4GL_get_currwin_name (void) {
 	return currwin;
 }
 
 
 
 
-long UILIB_A4GL_open_gui_form_internal(long *form_variable,char* name_orig,int absolute,int nat,char* like,int disable,void* vhandler_e,void* vhandler_c) {
+int UILIB_A4GL_open_gui_form_internal(long *form_variable,char* name_orig,int absolute,int nat,char* like,int disable,void* vhandler_e,void* vhandler_c) {
     GladeXML *xml;
     GList *widgets;
     GList *node;
     GtkWidget *tlw=0;
-  void (*handler_c) ();
-  void (*handler_e) ();
+  void (*handler_c) (void *a,void *b);
+  void (*handler_e) (void *a,void *b);
   char name[256];
   char formname[256];
       handler_c=vhandler_c;
@@ -54,7 +74,7 @@ printf("---> Name=%s\n",name);
     /* connect the signals in the interface */
     if (!xml) {
 		A4GL_exitwith("Unable to open glade file\n");
-		return;
+		return 0;
     }
 
     strcpy(currwin,formname);
@@ -63,8 +83,7 @@ printf("---> Name=%s\n",name);
     node = widgets;
     while (node) {
                 const gchar *name;
-                GtkWidget *widget, *p;
-                gboolean cont_flag = FALSE;
+                GtkWidget *widget;
                 widget = node->data;
                 name = glade_get_widget_name (widget);
                 if (GTK_WIDGET_TOPLEVEL(widget)) {
@@ -73,7 +92,7 @@ printf("---> Name=%s\n",name);
                         //gtk_widget_hide(widget);
                 } else {
 			gtk_object_set_data(GTK_OBJECT(widget),"Attribute",(void *)name);
-                printf("   %s (%s - %d)\n",name,GTK_OBJECT_TYPE_NAME(widget),GTK_OBJECT_TYPE(widget));
+                //printf("   %s (%s - %d)\n",name,GTK_OBJECT_TYPE_NAME(widget),GTK_OBJECT_TYPE(widget));
                 }
                 node = g_list_next (node);
     }
@@ -91,8 +110,7 @@ printf("---> Name=%s\n",name);
     node = widgets;
     while (node) {
                 const gchar *name;
-                GtkWidget *widget, *p;
-                gboolean cont_flag = FALSE;
+                GtkWidget *widget;
                 widget = node->data;
                 name = glade_get_widget_name (widget);
                 if (GTK_WIDGET_TOPLEVEL(widget)) {
@@ -101,17 +119,17 @@ printf("---> Name=%s\n",name);
 			if (GTK_IS_TREE_VIEW(widget)) { do_setup_list(widget,1); }
 			gtk_object_set_data(GTK_OBJECT(widget),"HANDLER",handler_c);
 			gtk_object_set_data(GTK_OBJECT(tlw),name,(void *)widget);
-			attach_signals(GTK_OBJECT_TYPE_NAME(widget),GTK_OBJECT_TYPE(widget),widget);
+			attach_signals((char *)GTK_OBJECT_TYPE_NAME(widget),GTK_OBJECT_TYPE(widget),widget);
 
                 }
                 node = g_list_next (node);
     }
 
-   *form_variable=tlw;
+   *form_variable=(long )tlw;
 
 
 
-    printf("setting form variable to %p\n",*form_variable);
+    printf("setting form variable to %p\n",tlw);
     A4GL_add_pointer(formname,WINCODE,tlw);
     A4GL_add_pointer(formname,FORMCODE,widgets);
 
@@ -145,24 +163,24 @@ void
  *
  * @todo Describe function
  */
-void
-A4GL_ui_init (int argc, char *argv[])
+void A4GL_ui_init (int argc, char *argv[])
 {
    gtk_init(&argc, &argv);
    glade_init();
 printf("INIT\n");
 }
 
-void UILIB_A4GL_gotolinemode() {
+void UILIB_A4GL_gotolinemode(void) {
 	//
 return ;
 }
 
 
-UILIB_A4GL_hide_window() {
+void UILIB_A4GL_hide_window(char *s) { 
+	printf("hide Not implemented yet\n");
 }
 
-UILIB_A4GL_gui_run_til_no_more() {
+void UILIB_A4GL_gui_run_til_no_more() {
       while (gtk_events_pending ())
         gtk_main_iteration ();
 }
@@ -208,8 +226,9 @@ w=wv;
 }
 
 
-UILIB_A4GL_current_window(char *name) {
+int UILIB_A4GL_current_window(char *name) {
 	strcpy(currwin,name);
+	return 1;
 }
 
 
@@ -217,8 +236,7 @@ UILIB_A4GL_current_window(char *name) {
 
 
 
-void
-A4GL_clicked_handler (GtkWidget * w, gpointer user_data)
+void A4GL_clicked_handler (GtkWidget * w, gpointer user_data)
 {
   GtkWidget *nw;
   /* void (*ptr) (); */
@@ -279,8 +297,7 @@ void A4GL_activate_handler (GtkWidget * w, gpointer user_data)
  * @param w A pointer to the widget.
  * @param user_data
  */
-void
-A4GL_changed_handler (GtkWidget * w, gpointer user_data)
+void A4GL_changed_handler (GtkWidget * w, gpointer user_data)
 {
   GtkWidget *nw;
   /* void (*ptr) (); */
@@ -313,8 +330,7 @@ A4GL_changed_handler (GtkWidget * w, gpointer user_data)
  *
  * @todo Describe function
  */
-void
-A4GL_row_activated_handler (GtkTreeView * w, GtkTreePath *path, GtkTreeViewColumn *col, gpointer user_data)
+void A4GL_row_activated_handler (GtkTreeView * w, GtkTreePath *path, GtkTreeViewColumn *col, gpointer user_data)
 {
   GtkWidget *nw;
   /* void (*ptr) (); */
@@ -334,7 +350,7 @@ A4GL_row_activated_handler (GtkTreeView * w, GtkTreePath *path, GtkTreeViewColum
     }
   else
     {
-      nw = w;                   /* No - keep the signal for this widget */
+      nw = (GtkWidget *)w;                   /* No - keep the signal for this widget */
     }
 
   //set_widget_data (nw);
@@ -402,8 +418,7 @@ A4GL_select_row_handler (GtkWidget * w, gint row, gint column, GdkEventButton * 
  *
  * @todo Describe function
  */
-void
-A4GL_grab_focus_handler (GtkWidget * w, gpointer user_data)
+void A4GL_grab_focus_handler (GtkWidget * w, gpointer user_data)
 {
   GtkWidget *nw;
   /* void (*ptr) (); */
@@ -533,7 +548,7 @@ void A4GL_func (GtkWidget * w, char *mode)
       A4GL_debug ("setting A4GL_action field=%p", w);
       actionfield = w;
 
-      beforefield = 1;
+      beforefield = (void *)1;
       return;
     }
 
@@ -567,8 +582,9 @@ void A4GL_func (GtkWidget * w, char *mode)
                 }
               else
                 {
-                  gtk_accelerator_parse (key, &keypressed,
-                                         (GdkModifierType *) & m);
+		void *xxx;
+			xxx=&m;
+                  gtk_accelerator_parse (key, &keypressed, xxx);
                   if (m & 4 && tolower (keypressed) >= 'a'
                       && tolower (keypressed) <= 'z')
                     keypressed = tolower (keypressed) - 'a' + 1;
@@ -597,8 +613,8 @@ void A4GL_func (GtkWidget * w, char *mode)
 
 
 int UILIB_A4GL_fgl_fieldnametoid(char* f,char* s,int n) {
-static int no=0;
-int k;
+//static int no=0;
+//int k;
 return A4GL_add_gui_id_name(s);
 }
 
@@ -611,12 +627,12 @@ void
 
 
 
-attach_signals(char *name,guint type,GtkWidget *widget) {
-guint n_ids;
-guint *signals;
-int a;
+void attach_signals(char *name,guint type,GtkWidget *widget) {
+//guint n_ids;
+//guint *signals;
+//int a;
 int indent;
-char buff[255];
+//char buff[255];
 	printf("Attach signals for : %s - %p\n",name,widget);
 	if (strcmp(name,"GtkButton")==0) {
 			A4GL_add_signal_clicked (widget, 0);
@@ -699,7 +715,7 @@ for (a=0;a<g_list_length(list);a++) {
 return lv_ok;
 }
 
-static int has_top_level_window() {
+static int has_top_level_window(void ) {
 GList *list;
 int a;
 int lv_ok;
@@ -717,4 +733,14 @@ int UILIB_aclfgl_a4gl_run_gui(int n) {
     	a4gl_usleep (100);
         A4GL_gui_run_til_no_more ();
   }
+  return 0;
 }
+
+
+
+
+
+
+
+
+

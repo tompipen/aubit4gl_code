@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.116 2004-12-12 08:52:26 mikeaubury Exp $
+# $Id: esql.ec,v 1.117 2004-12-17 13:19:04 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.116 2004-12-12 08:52:26 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.117 2004-12-17 13:19:04 mikeaubury Exp $";
 #endif
 
 
@@ -917,6 +917,7 @@ prepareSqlStatement (struct BINDING *ibind, int ni, struct BINDING *obind,
 
   statementName = sid->statementName;
   statementText = sid->select;
+  A4GL_debug("Prepare : %s from %s",statementName,statementText);
   EXEC SQL PREPARE:statementName FROM:statementText;
 
   copy_sqlca_Stuff(1);
@@ -1375,6 +1376,7 @@ int type;
 	return 1;
       *(short *) bind[idx].ptr = smint_var;
       break;
+    case DTYPE_SERIAL:
     case DTYPE_INT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:int_var =
 	DATA;
@@ -1960,7 +1962,7 @@ if (n) {
  *  - -1 : The pointer to the statement is null.
  */
 int
-A4GLSQL_execute_implicit_select (void *vsid)
+A4GLSQL_execute_implicit_select (void *vsid,int singleton)
 {
 struct s_sid *sid;
   EXEC SQL begin declare section;
@@ -2026,8 +2028,7 @@ sid=vsid;
   A4GLSQL_set_status (sqlca.sqlcode, 1);
 
   sprintf(buff,"%p",sid);
-  if (!A4GL_has_pointer (buff, PRECODE_R)) { // Its one we made up...
-	//printf("FREE %s\n",statementName);
+  if (singleton) {
   	EXEC SQL FREE :statementName;
   }
   return 0;
@@ -2065,7 +2066,7 @@ return 0;
  *  - 1 : An error as ocurred.
  */
 int
-A4GLSQL_execute_implicit_sql (void *vsid)
+A4GLSQL_execute_implicit_sql (void *vsid,int singleton)
 {
 struct s_sid *sid;
 char buff[255];
@@ -2153,10 +2154,13 @@ A4GL_debug ("all ok : COPYA: %c%c%c%c%c%c%c%c\n", a4gl_sqlca.sqlawarn[0], a4gl_s
 
   statementName = sid->statementName;
   sprintf(buff,"%p",sid);
-  if (!A4GL_has_pointer (buff, PRECODE_R)) { // Its one we made up...
+
+  if (singleton) {
 	//printf("FREE %s\n",statementName);
+	A4GL_debug("Free : %s",statementName);
   	EXEC SQL FREE :statementName;
   }
+
   return 0;
 
 

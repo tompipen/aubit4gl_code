@@ -5,7 +5,7 @@
 #include "a4gl_API_ui_lib.h"
 #include "hl_proto.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.19 2004-08-31 20:46:56 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.20 2004-12-17 13:19:08 mikeaubury Exp $";
 
 //void *UILIB_A4GL_get_curr_form (int n);
 
@@ -75,6 +75,9 @@ UILIB_A4GL_clr_form (int to_default)
   A4GLSQL_set_status (0, 0);
 
   formdets = UILIB_A4GL_get_curr_form (1);
+
+  if (formdets==0) return;
+
 
   /* Go through each field */
   for (a = 0; a < formdets->fileform->attributes.attributes_len; a++)

@@ -22,6 +22,7 @@ char *kw_cb=")";
 int insql=0;
 static char *make_sql_string_and_free(char *,...);
 char last_tmp_name[256];
+//char *a4gl_upshift(char *a);
 
 
 int yylineno;
@@ -36,6 +37,7 @@ int doing_declare=0;
 static char *convstrsql(char *s) ;
 char current_upd_table[256];
 #define a4gl_yyerror asql_yyerror
+/*
 char *A4GLSQLCV_check_colname(char *tabname,char *colname) ;
 char *A4GLSQLCV_check_expr(char *s ) ;
 char *A4GLSQLCV_datetime_value(char *s) ;
@@ -46,16 +48,16 @@ char *A4GLSQLCV_make_tablename(char *t,char *c);
 char *A4GLSQLCV_interval_value(char *s) ;
 char *A4GLSQLCV_make_dtime_extend(char *dval,char *from,char *to,int extend) ;
 char *A4GLSQLCV_make_ival_extend(char *ival,char *from,char *from_len,char *to,int extend) ;
-char *A4GLSQLCV_make_substr(char *colname,int nints,int i1,int i2) ;
-char *A4GLSQLCV_make_substr_s(char *colname,int n, char *l,char *r) ;
+//char *A4GLSQLCV_make_substr(char *colname,int nints,int i1,int i2) ;
+//char *A4GLSQLCV_make_substr_s(char *colname,int n, char *l,char *r) ;
 char *A4GLSQLCV_matches_string(char *str,char *esc);
 char *A4GLSQLCV_rencol(char *tabname,char *colname,char *ncolname) ;
 char *A4GLSQLCV_rentab(char *tabname,char *ntabname) ;
 char *A4GLSQLCV_get_sqlconst(char *s);
 char *A4GLSQLCV_sqlfunc(char *s,char *p);
-
-
 int A4GLSQLCV_check_requirement(char *s) ;
+*/
+
 static void push_gen (int a, char *s);
 static void copy_gen (int a, int b);
 static void pop_all_gen (int a, char *s);
@@ -140,7 +142,7 @@ struct sql_stmt *stmts=0;
 */
 
 int db_used=0;
-char *acl_getenv(char *s);
+//char *acl_getenv(char *s);
 
 %}
 %name-prefix="asql_yy"

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.78 2004-12-02 09:33:20 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.79 2004-12-17 13:19:00 mikeaubury Exp $
 */
 
 /**
@@ -322,7 +322,7 @@ int a_isprint(int a);
   /* int     aclfgl_errorlog       (int n); */
   int A4GL_errorlog (char *s, int l, int n);
   int A4GL_startlog (char *s, int l, int n);
-  char *A4GLSQLCV_convert_sql(char *dialect,char *sql);
+  //char *A4GLSQLCV_convert_sql(char *dialect,char *sql);
 
   int aclfgl_showhelp (int helpnumber);
   int aclfgl_fgl_getenv (int nargs);

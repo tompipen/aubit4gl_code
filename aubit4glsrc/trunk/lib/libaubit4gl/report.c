@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.54 2004-11-25 15:36:46 mikeaubury Exp $
+# $Id: report.c,v 1.55 2004-12-17 13:19:03 mikeaubury Exp $
 #
 */
 
@@ -45,6 +45,9 @@
   */
 
 #include "a4gl_libaubit4gl_int.h"
+#include "a4gl_API_sql.h"
+struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
+int A4GL_call_4gl_dll (char *filename, char *function, int args);
 
 #define ENTRY_START 1
 #define ENTRY_BLOCK 2
@@ -55,6 +58,13 @@
 
 
 static int email_report(char *fname,char *otype) ;
+static void free_header(struct rep_structure *rep) ;
+
+
+
+void print_header_entries(struct rep_structure *rep) ;
+
+
 int rs_with_page_length=-1;
 int rs_with_left_margin=-1;
 int rs_with_right_margin=-1;
@@ -98,7 +108,7 @@ void A4GL_aclfgli_skip_lines (struct rep_structure *rep);
 void A4GL_fputmanyc (struct rep_structure *rep, int c, int cnt);
 void A4GL_set_column (struct rep_structure *rep);
 void A4GL_free_duplicate_binding (struct BINDING *b, int n);
-struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
+//struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
 void A4GL_skip_top_of_page (struct rep_structure *rep, int n);
 int A4GL_push_report_section (struct rep_structure *rep, char *mod,
 			      char *repname, int lineno, char where,
@@ -124,6 +134,7 @@ static char *A4GL_report_char_pop (void);
 char *A4GL_decode_datatype (int dtype, int dim);
 extern sqlca_struct a4gl_sqlca;
 void A4GL_finished_report (void);
+static void add_header_entry(struct rep_structure *rep,struct s_save_header *hdr,char *buff,int entry) ;
 
 
 int lvl = 0;
@@ -853,8 +864,7 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
 void
 A4GL_make_report_table (struct BINDING *b, int n)
 {
-  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_sql
-				(A4GL_mk_temp_tab (b, n)));
+  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_sql (A4GL_mk_temp_tab (b, n)),1);
 }
 
 
@@ -881,7 +891,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
   A4GL_debug ("Attempting to execute %s\n", buff);
   x = (void *) A4GLSQL_prepare_select ( b,n,0,0,buff);
   A4GL_debug ("x=%p\n", x);
-  A4GLSQL_execute_implicit_sql (x);
+  A4GLSQL_execute_implicit_sql (x,1);
   A4GL_debug ("a4glsqlca.sqlcode=%d", a4gl_sqlca.sqlcode);
 }
 
@@ -1496,12 +1506,13 @@ int A4GL_set_report_dim_int(char *type,int value) {
 		if (rs_with_bottom_margin!=-1) return rs_with_bottom_margin;
 		return value;
 	}
-
+return 0;
 }
 
 
 char *A4GL_find_report_dim_string(char *type,int value) {
 // not implemented yet...
+return "";
 }
 
 
@@ -1526,6 +1537,7 @@ if (email==0) {
 
    //A4GL_push_char("mike.aubury@aubit.com"); // Normally username...
    A4GL_call_4gl_dll("fgl_smtp","send_report",3);
+return 1;
 }
 
 

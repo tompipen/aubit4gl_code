@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.43 2004-12-12 08:52:26 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.44 2004-12-17 13:19:02 mikeaubury Exp $
 #
 */
 
@@ -317,7 +317,7 @@ A4GL_bnamexxx (char *str, char *str1, char *str2)
 void
 A4GL_pad_string (char *ptr, int size)
 {
-  int a;
+  //int a;
   int p;
   int s;
   s=strlen(ptr);
@@ -800,7 +800,7 @@ return 0;
 
 
 
-A4GL_strmaxcpy(char *dest,char *src,int max) {
+void A4GL_strmaxcpy(char *dest,char *src,int max) {
 	strncpy(dest,src,max);
 	dest[max]=0;
 }
@@ -810,7 +810,7 @@ A4GL_strmaxcpy(char *dest,char *src,int max) {
 #undef strcpy
 #endif
 char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
-	int a;
+	//int a;
   	int lsrc;
 	A4GL_assertion(src==0,"No source for strcpy..");
 

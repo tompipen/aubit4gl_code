@@ -50,11 +50,12 @@ make_sql_string_and_free (char *first, ...)
   int l;
   char *next;
   int n;
-
+/*
   extern char *kw_space;
   extern char *kw_comma;
   extern char *kw_ob;
   extern char *kw_cb;
+*/
 
   n = 0;
   va_start (ap, first);
@@ -278,8 +279,9 @@ rm_quotes (char *s)
 }
 
 
-static mark_sql_start() {
+static void mark_sql_start() {
 	this_sql_start=sql_string_cnt+1;
+
 }
 
 static char *get_bad_sql() {

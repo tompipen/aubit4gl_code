@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.37 2004-11-16 14:44:00 mikeaubury Exp $
+# $Id: helper.c,v 1.38 2004-12-17 13:19:02 mikeaubury Exp $
 #
 */
 
@@ -109,20 +109,23 @@ LIBPRIVATE char *a_get_info_statement[] = {
 };
 
 LIBPRIVATE char *a_get_info_form[] = {
-  "Database",
+  "Database", // 0
   "Delimiters",
   "ScreenRecordCount",
   "ScreenRecordName%",
   "FieldCount",
-  "FieldName%",
+  "FieldName%", //5 
   "AttributesCount",
   "CurrentField",
   "Width",
   "Height",
-  "Field%",
+  "Field%", // 10
   "ScreenName%",
   "TableName%",
   "AliasName%",
+  "FieldType%", 
+  "FieldSize%", //15
+  "FieldBytes%",
   0
 };
 
@@ -179,7 +182,7 @@ struct s_windows
 
 int A4GL_setenv(char *name, char *value, int overwrite);
 
-static long *ptr;
+//static long *ptr;
 
 /*
 =====================================================================
@@ -292,22 +295,32 @@ int_get_info_form (char *ptr, char *info)
 
   switch (a)
     {
-    case 1:
+    case 1: // DBNAME
       A4GL_push_char (p->fileform->dbname);
       break;
-    case 2:
+    case 2: // DELIMITERS
       A4GL_push_char (p->fileform->delim);
       break;
-    case 3:
+
+    case 3: // SCREENRECORDCOUNT
       A4GL_push_int (p->fileform->records.records_len);
       break;
-    case 4:
-      params = 0;
-      break;			/* not implemented yet! */
-    case 5:
+
+    case 4: // SCREENRECORDNAME
+    case 12:
+	if (used_value<p->fileform->snames.snames_len) 
+      		A4GL_push_char (p->fileform->snames.snames_val[used_value].name);
+	else
+      		A4GL_push_char ("");
+
+	break;
+   
+
+    case 5: // FIELDCOUNT
       A4GL_push_int (p->fileform->fields.fields_len);
       break;
-    case 6:
+
+    case 6: // FIELDNAME
 	if (used_value<p->fileform->attributes.attributes_len) {
       sprintf (buff, "%s.%s",
 	       p->fileform->attributes.attributes_val[used_value].tabname,
@@ -317,39 +330,62 @@ int_get_info_form (char *ptr, char *info)
       		A4GL_push_char ("");
 	}
       break;
-    case 7:
+
+    case 15: // FIELDTYPE
+	if (used_value<p->fileform->attributes.attributes_len) {
+		A4GL_push_int(p->fileform->attributes.attributes_val[used_value].datatype);
+	} else {
+      		A4GL_push_int(0);
+	}
+      break;
+
+    case 16: // FIELDTYPE
+	if (used_value<p->fileform->attributes.attributes_len) {
+		A4GL_push_int(p->fileform->attributes.attributes_val[used_value].dtype_size);
+	} else {
+      		A4GL_push_int(0);
+	}
+      break;
+
+    case 17: // FIELDTYPE
+	if (used_value<p->fileform->attributes.attributes_len) {
+		A4GL_push_int(2048);
+	} else {
+      		A4GL_push_int(0);
+	}
+      break;
+
+
+
+
+    case 7: // ATTRIBUTECOUNT
       A4GL_push_int (p->fileform->attributes.attributes_len);
       break;
     /** @todo Understand if the push of a pointer as if it was 
 	   *  pointer is correct and if not correct it
 		 *  I think that this is not called.
 	   */
-    case 8:
+
+    case 8: // CUREENTFIELD
       A4GL_push_int ((int) p->currentfield);
       break;
-    case 9:
+
+    case 9: // WIDTH
       A4GL_push_int (p->fileform->maxcol);
       break;
-    case 10:
+
+    case 10: // HEIGHT
       A4GL_push_int (p->fileform->maxline);
       break;
 
-    case 11:
+    case 11: // Field
       A4GL_push_int (p->fileform->metrics.
 		metrics_val[p->fileform->fields.fields_val[used_value].metric.
 			    metric_val[0]].field);
 
       break;
 
-    case 12:
-	if (used_value<p->fileform->snames.snames_len) 
-      		A4GL_push_char (p->fileform->snames.snames_val[used_value].name);
-	else
-      		A4GL_push_char ("");
-
-	break;
-   
-    case 13:
+    case 13: // Table name
 	if (used_value<p->fileform->tables.tables_len) 
       		if (p->fileform->tables.tables_val[used_value].tabname) {
       			A4GL_push_char (p->fileform->tables.tables_val[used_value].tabname);
@@ -360,7 +396,7 @@ int_get_info_form (char *ptr, char *info)
       		A4GL_push_char ("");
 	break;
 
-    case 14:
+    case 14: // Alias name
 	if (used_value<p->fileform->tables.tables_len) 
 		if (p->fileform->tables.tables_val[used_value].alias) {
       			A4GL_push_char (p->fileform->tables.tables_val[used_value].alias);
@@ -372,6 +408,8 @@ int_get_info_form (char *ptr, char *info)
 
 
 	break;
+
+
 
     case 0:
       A4GL_exitwith ("Invalid Form info request");
@@ -1032,7 +1070,8 @@ char *ptr;
 }
 
 
-aclfgl_aclfgl_setenv(int n)  {
+
+int aclfgl_aclfgl_setenv(int n)  {
 char *a;
 char *b;
 b=A4GL_char_pop();

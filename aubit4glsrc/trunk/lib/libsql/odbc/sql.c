@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.98 2004-12-12 08:52:27 mikeaubury Exp $
+# $Id: sql.c,v 1.99 2004-12-17 13:19:05 mikeaubury Exp $
 #
 */
 
@@ -71,6 +71,10 @@
 	#define FALSE 0
 #endif
 */
+
+int A4GLSQL_initsqllib (void);
+int A4GLSQL_get_datatype (char *db, char *tab, char *col);
+int A4GL_dttoc (void *a, void *b, int size);
 
 
 void * A4GLSQL_prepare_sql_internal (char *s);
@@ -496,14 +500,15 @@ A4GL_newSQLSetParam (SQLHSTMT hstmt, UWORD ipar, SWORD fCType,
   return rc;
 }
 
+
+#ifdef USE_COUNT_QUERIES
 /**
  * Count the number of ? parameter placeholders in a query string.
  *
  * @param s A string with the query.
  * @return The number of ? found in the query.
  */
-static int
-count_queries (char *s)
+static int count_queries (char *s)
 {
   char *ptr;
   int cnt = 0;
@@ -547,6 +552,7 @@ count_queries (char *s)
   A4GL_debug ("count_queries() found %d ?'s in string %s", cnt, s);
   return cnt;
 }
+#endif
 
 /**
  * Process the binding of the variables to the statement.
@@ -999,7 +1005,7 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *cursname)
  * @param sid The statement informnation handle.
  */
 int
-A4GLSQL_execute_implicit_sql (void *vsid)
+A4GLSQL_execute_implicit_sql (void *vsid,int singleton)
 {
 struct s_sid *sid;
   
@@ -1053,7 +1059,7 @@ sid=vsid;
  * @param sid The statement information.
  */
 int
-A4GLSQL_execute_implicit_select (void *vsid)
+A4GLSQL_execute_implicit_select (void *vsid,int singleton)
 {
   int a;
 struct s_sid *sid;
@@ -1102,7 +1108,7 @@ A4GLSQL_open_cursor (char *s,int ni,void *ibind)
 {
   struct s_cid *cid;
   char *curs;
-  unsigned long rowcount;
+  SQLINTEGER rowcount;
   int save_ni=-1;
   struct s_sid *sid;
   struct BINDING *save_ibind=0;
@@ -1281,7 +1287,7 @@ A4GLSQL_open_cursor (char *s,int ni,void *ibind)
       	return a;
     }
   A4GLSQL_set_status (0, 1);
-  rc = SQLRowCount ((SQLHSTMT )cid->statement->hstmt, (SQLINTEGER *) & rowcount);
+  rc = SQLRowCount (cid->statement->hstmt,  &rowcount);
 
   /* chk_rc (rc, cid->statement->hstmt, "SQLRowCount"); */
   a4gl_sqlca.sqlerrd[1] = rowcount;
@@ -2157,7 +2163,7 @@ ODBC_exec_stmt (SQLHSTMT hstmt)
 {
   int rc;
 	int fake_tr=0;
-  long rowcount;
+  SQLINTEGER rowcount;
 #ifdef DEBUG
   A4GL_debug ("In ODBC_exec_stmt %p",hstmt);
 #endif
@@ -2432,7 +2438,7 @@ A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
   if (bind->dtype == DTYPE_DTIME)
     {
 	ACLDTIME *p; //@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
-	int arr[10];
+	//int arr[10];
 	void *ptr;
 	//int d,m,y;
 	A4GL_debug("Binding Datetime original pointer=%p",bind->ptr);
@@ -2706,8 +2712,7 @@ IGNOREEXITWITH
  *   - -1 : An error ocurred.
  *   - Otherwise : The datatype code.
  */
-  int
-A4GLSQL_get_datatype (char *db, char *tab, char *col)
+int A4GLSQL_get_datatype (char *db, char *tab, char *col)
 {
   HSTMT hstmt;
   char sql1[256];
@@ -3840,8 +3845,8 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 	{
 		
 	char buff[256];
-	char buff2[256];
-	int s;int e;
+	//char buff2[256];
+	//int s;int e;
 	  	dt1 = use_binding[bind_counter].ptr;
 #ifdef DTIME_AS_CHAR
 	strcpy(buff,dt1->dtime);
@@ -4066,8 +4071,8 @@ A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,int nbind, v
   char colname[64];
   SWORD colnamelen;
   SWORD coltype[5000];
-  int colcnt;
-  unsigned long ind;
+  SQLUSMALLINT colcnt;
+  SQLINTEGER ind;
   UDWORD collen;
   SWORD scale;
   SWORD nullable;
@@ -4130,8 +4135,8 @@ A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,int nbind, v
 	{
 
 	  rc =
-	    SQLGetData (hstmt, (short) colcnt, SQL_CHAR, databuf,
-			sizeof (databuf), (SQLINTEGER *) & ind);
+	    SQLGetData (hstmt,  colcnt, SQL_CHAR, databuf,
+			sizeof (databuf),  &ind);
 	  /*
 	     warning: passing arg 6 of `SQLGetData' from incompatible pointer type
 	     unsigned long ind;
@@ -4411,8 +4416,7 @@ A4GLSQL_flush_cursor (char *cursor)
  * Used to initialise SQL library, ater loading it with dlopen,
  * called from fglwrap.c
  */
-int
-A4GLSQL_initsqllib (void)
+int A4GLSQL_initsqllib (void)
 {
   A4GLSQL_make_connection (0, 0, 0);
   return 1;

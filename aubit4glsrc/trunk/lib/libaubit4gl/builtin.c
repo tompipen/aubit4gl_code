@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.71 2004-12-07 21:57:39 whaslbeck Exp $
+# $Id: builtin.c,v 1.72 2004-12-17 13:19:01 mikeaubury Exp $
 #
 */
 
@@ -44,7 +44,7 @@
 */
 
 #include "a4gl_libaubit4gl_int.h"
-
+void A4GL_generateError (char *str, char *fileName, int lineno);
 /*
 =====================================================================
                     Variables definitions

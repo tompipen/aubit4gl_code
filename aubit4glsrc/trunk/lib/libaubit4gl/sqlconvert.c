@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.38 2004-12-12 08:52:26 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.39 2004-12-17 13:19:03 mikeaubury Exp $
 #
 */
 
@@ -677,6 +677,11 @@ int b;
 if (A4GL_isyes(acl_getenv(s))) {
 	return 1;
 }
+if (A4GL_isno(acl_getenv(s))) {
+	return 0;
+}
+
+
 a=A4GL_cv_str_to_func (s, strlen(s));
 A4GL_debug("Checking for a type %d\n",a);
 
@@ -2057,8 +2062,8 @@ string can be USER or TODAY - return the equivilent...
 */
 char *A4GLSQLCV_get_sqlconst(char *s) {
 int b;
-char *c;
-static char buff[200];
+//char *c;
+//static char buff[200];
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE_SQLCONST) {
 		if (strcasecmp(s,conversion_rules[b].data.from)==0) {

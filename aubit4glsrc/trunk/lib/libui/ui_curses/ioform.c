@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.108 2004-12-16 08:26:47 mikeaubury Exp $
+# $Id: ioform.c,v 1.109 2004-12-17 13:19:06 mikeaubury Exp $
 #*/
 static char *module_id =
-  "$Id: ioform.c,v 1.108 2004-12-16 08:26:47 mikeaubury Exp $";
+  "$Id: ioform.c,v 1.109 2004-12-17 13:19:06 mikeaubury Exp $";
 /**
  * @file
  *
@@ -3608,6 +3608,8 @@ UILIB_A4GL_clr_form (int to_default)
   A4GLSQL_set_status (0, 0);
 
   formdets = UILIB_A4GL_get_curr_form (1);
+  if (formdets==0) return; /* No form to clear ? */
+
 
   /* Go through each field */
   for (a = 0; a < formdets->fileform->attributes.attributes_len; a++)

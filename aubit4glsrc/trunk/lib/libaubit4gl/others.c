@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.43 2004-11-10 23:46:36 pjfalbe Exp $
+# $Id: others.c,v 1.44 2004-12-17 13:19:03 mikeaubury Exp $
 #
 */
 
@@ -727,10 +727,10 @@ int aclfgl_aclfgl_read_pipe(int nargs)
         pclose(pp);                          /* close the pipe        */
     }
 
-    data[bytes] = NULL;                      /* terminate string      */
+    data[bytes] = 0;                      /* terminate string      */
 
     free(cmd);
-    retquote(data);                          /* return command output */
+    A4GL_push_char(data);                          /* return command output */
     return(1);                               /* returning 1 parameter */
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: err.c,v 1.11 2004-09-21 20:26:21 mikeaubury Exp $
+# $Id: err.c,v 1.12 2004-12-17 13:19:02 mikeaubury Exp $
 #
 */
 
@@ -123,8 +123,9 @@ printf("%d \n",a);
 
 }
 
+void Never_called_but_I_wanted_a_dummy_function(void);
 
-void Never_called_but_I_wanted_a_dummy_function() {
+void Never_called_but_I_wanted_a_dummy_function(void) {
 A4GL_exitwith("Unknown error");
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.109 2004-12-09 07:26:47 mikeaubury Exp $
+# $Id: stack.c,v 1.110 2004-12-17 13:19:03 mikeaubury Exp $
 #
 */
 
@@ -52,7 +52,7 @@
 #include <ctype.h>
 #include "a4gl_libaubit4gl_int.h"
 
-
+struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
 int A4GL_conversion_ok(int);
 /*
 =====================================================================

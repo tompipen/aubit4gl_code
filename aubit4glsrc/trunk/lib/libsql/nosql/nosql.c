@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.32 2004-11-10 13:40:18 mikeaubury Exp $
+# $Id: nosql.c,v 1.33 2004-12-17 13:19:04 mikeaubury Exp $
 #*/
 
 /**
@@ -209,7 +209,7 @@ A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *ibind)
  * @todo Describe function
  */
 int
-A4GLSQL_execute_implicit_sql (void *sid)
+A4GLSQL_execute_implicit_sql (void *sid,int singleton)
 {
   A4GL_local_exitwith ("Could not execute_implicit_sql - noODBC build");
   return 0;
@@ -276,7 +276,7 @@ A4GLSQL_execute_sql_from_ptr_internal (char *pname, int ni, char *ibind)
  * @todo Describe function
  */
 int
-A4GLSQL_execute_implicit_select (void *sid)
+A4GLSQL_execute_implicit_select (void *sid,int singleton)
 {
   A4GL_local_exitwith ("Could not execute_implicit_select - noODBC build");
   return 0;

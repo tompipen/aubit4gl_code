@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.11 2004-10-25 12:20:35 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.12 2004-12-17 13:19:03 mikeaubury Exp $
 #
 */
 
@@ -32,6 +32,7 @@
 
 void *A4GL_pop_binding (int *n);
 void A4GL_process_stack_op_other (int d);
+struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
 
 
 
@@ -53,7 +54,7 @@ A4GL_debug("A4GL_process_stack_op_other");
       while (a >= 1)
 	{
 	  A4GL_debug ("Getting base value from stack.. a=%d", a);
-	  A4GL_get_top_of_stack (a + 1, &d1, &s1, (void **) &ptr1);
+	  A4GL_get_top_of_stack (a + 1, &d1, &s1, (void *) &ptr1);
 	  A4GL_debug ("Got %p 0x%x %d\n", ptr1, d1, s1);
 	  //A4GL_debug (" *ptr1=%d", *(int *) ptr1);
 	  A4GL_push_param ((void *) ptr1, (d1 & DTYPE_MASK) + ENCODE_SIZE (s1));
@@ -90,7 +91,7 @@ A4GL_debug("A4GL_process_stack_op_other");
       sprintf (cname, "chkin_%d", cntsql_0++);
 	memset(tmpvar,0,255);
       s = A4GL_char_pop ();
-      A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
+      A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
       A4GLSQL_set_sqlca_sqlcode (0);
       {
 	int n;

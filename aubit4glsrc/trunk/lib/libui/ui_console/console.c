@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.17 2004-12-02 09:33:23 mikeaubury Exp $
+# $Id: console.c,v 1.18 2004-12-17 13:19:06 mikeaubury Exp $
 #*/
 
 /**
@@ -570,6 +570,9 @@ int
  UILIB_A4GL_get_curr_width (void)
 {
   return 132;
+}
+
+void UILIB_A4GL_zrefresh(void) {
 }
 
 /* ========================== EOF =============================== */

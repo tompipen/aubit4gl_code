@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.35 2004-11-25 15:36:46 mikeaubury Exp $
+# $Id: debug.c,v 1.36 2004-12-17 13:19:02 mikeaubury Exp $
 #
 */
 
@@ -42,6 +42,7 @@
 
 
 #include "a4gl_libaubit4gl_int.h"
+#include <ctype.h>
 extern sqlca_struct a4gl_sqlca;
 #ifdef strcpy
 #undef strcpy

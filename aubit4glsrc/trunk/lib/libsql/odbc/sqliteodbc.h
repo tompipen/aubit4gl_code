@@ -45,7 +45,7 @@ MODIFICATIONS.
  * @file sqliteodbc.h
  * Header file for SQLite ODBC driver.
  *
- * $Id: sqliteodbc.h,v 1.5 2003-08-26 05:27:04 afalout Exp $
+ * $Id: sqliteodbc.h,v 1.6 2004-12-17 13:19:05 mikeaubury Exp $
  *
  * Copyright (c) 2001-2003 Christian Werner <chw@ch-werner.de>
  *
@@ -268,7 +268,7 @@ typedef struct stmt {
     int nrows;			/**< Number of result rows */
     int rowp;			/**< Current result row */
     char **rows;		/**< 2-dim array, result set */
-    void (*rowfree)();		/**< Free function for rows */ //sqliteodbc.h:254: warning: function declaration isn't a prototype
+    void (*rowfree)(char **rowp);		/**< Free function for rows */ //sqliteodbc.h:254: warning: function declaration isn't a prototype
 //    void (*rowfree)(void);		/**< Free function for rows */ NO GO!!!
     char sqlstate[6];		/**< SQL state for SQLError() */
     SQLCHAR logmsg[1024];	/**< Message for SQLError() */

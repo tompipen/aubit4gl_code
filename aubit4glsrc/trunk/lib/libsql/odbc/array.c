@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.10 2004-12-12 08:52:27 mikeaubury Exp $
+# $Id: array.c,v 1.11 2004-12-17 13:19:05 mikeaubury Exp $
 #
 */
 
@@ -73,6 +73,8 @@ don't bother to fill it :-)
 
  *
  */
+
+int A4GL_fill_array_columns_mk2 (int mx, char *arr1, int szarr1, char *arr2, int szarr2, int mode, char *info);
 
 
 /*
@@ -441,36 +443,19 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 
 
 
-int
-A4GL_fill_array_columns_mk2 (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
-
-		    int mode, char *info)
+int A4GL_fill_array_columns_mk2 (int mx, char *arr1, int szarr1, char *arr2, int szarr2, int mode, char *info)
 {
   SQLHSTMT hstmt;
-  char tq[256];
-  char to[256];
-  char tn[256];
-  char cn[256];
-  int dt;
-  char dtname[256];
-  long prec;
-  long len;
-  long scale;
-  long radix;
-  long nullable;
-  char remarks[256];
-  int colsize;
-  char szcolsize[20];
-  int a, b;
   int rc;
-  int cnt;
   SQLHSTMT ret;
   char buff[256];
+  SQLSMALLINT scale;
+  SQLSMALLINT nullable;
 int allow_no_rows=1;
-int ncols;
+SQLSMALLINT ncols;
   char colname[64];
   SWORD colnamelen;
-  SWORD coltype[5000];
+  SQLSMALLINT coltype;
   int colcnt;
   UDWORD collen;
 
@@ -499,10 +484,10 @@ if (allow_no_rows) {
   SQLPrepare ((SQLHSTMT)hstmt, buff, SQL_NTS);
   rc = SQLExecute(hstmt);
   chk_rc (rc, hstmt, "unload_data");
-  if (rc<0) return;
+  if (rc<0) return 0;
   rc = SQLNumResultCols (hstmt, &ncols);
   chk_rc (rc, hstmt, "unload_data");
-  if (rc<0) return;
+  if (rc<0) return 0;
 
 
   for (colcnt = 1; colcnt <= ncols; colcnt++)
@@ -510,13 +495,24 @@ if (allow_no_rows) {
 
       rc = SQLDescribeCol (hstmt, colcnt, colname, (SWORD) sizeof (colname), &colnamelen, &coltype, &collen, &scale, &nullable);
       chk_rc (rc, hstmt, "SQLDescribeCol");
+
       if (arr1 != 0) strncpy (&arr1[(colcnt-1) * (szarr1 + 1)], colname, szarr1);
+
+
       if (arr2 != 0)
         {
           switch (mode)
             {
+	
             case 0:
-              strncpy (&arr2[(colcnt-1) * (szarr2 + 1)], collen, szarr2);
+		{ char buff[256];
+		#ifdef SQLITE
+		sprintf(buff,"%d",collen);
+		#else
+		sprintf(buff,"%ld",collen);
+		#endif
+              strncpy (&arr2[(colcnt-1) * (szarr2 + 1)], buff, szarr2);
+		}
               break;
 
             case 1:

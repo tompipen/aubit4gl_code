@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.24 2004-12-07 15:28:01 mikeaubury Exp $
+# $Id: sql.c,v 1.25 2004-12-17 13:19:03 mikeaubury Exp $
 #
 */
 
@@ -86,8 +86,6 @@ struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni,
     struct BINDING *obind, int no, char *s);
 struct s_sid * A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind);
 void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void  *ibind);
-void *A4GLSQL_find_prepare (char *pname);
-int A4GLSQL_add_prepare (char *pname, void *vsid);
 /*
 =====================================================================
                     Functions definitions
@@ -130,7 +128,7 @@ if (A4GL_isyes(acl_getenv("A4GL_LOGSQLERR")) && (strlen(m)||strlen(p))) {
 		flog=fopen("/tmp/flog.err","a");
 	}
 	if (flog) {
-		fprintf(flog,"%d - %s - %s\n",a4gl_sqlca.sqlcode,m,p);
+		fprintf(flog,"%ld - %s - %s\n",a4gl_sqlca.sqlcode,m,p);
 	}
 }
         A4GL_debug("A4GLSQL_set_sqlerrm('%s','%s')", m, p);
@@ -650,7 +648,7 @@ A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
   if (sid!=0) {
   	sid->ibind = ibind;
   	sid->ni = ni;
-  	return A4GLSQL_execute_implicit_sql (sid);
+  	return A4GLSQL_execute_implicit_sql (sid,0);
   } else {
 	A4GL_exitwith("Invalid prepared statement");
 	return 0;

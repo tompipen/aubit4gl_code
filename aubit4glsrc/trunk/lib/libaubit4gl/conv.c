@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.95 2004-11-30 17:38:00 mikeaubury Exp $
+# $Id: conv.c,v 1.96 2004-12-17 13:19:02 mikeaubury Exp $
 #
 */
 
@@ -52,6 +52,7 @@
 
 int A4GL_conversion_ok(int);
 static int decimal_char=0;
+
 /*
 =====================================================================
                     Constants definitions
@@ -74,7 +75,6 @@ static int decimal_char=0;
 #define A4GL_dectomdec 	A4GL_dectodec
 
 #define OK (void *)1
-
 
 
 #ifdef MOVED

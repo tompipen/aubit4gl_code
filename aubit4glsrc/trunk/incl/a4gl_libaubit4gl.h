@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.149 2004-12-09 07:26:46 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.150 2004-12-17 13:19:01 mikeaubury Exp $
 #
 */
 
@@ -1332,6 +1332,8 @@ void A4GL_display_at (int n, int a);
   void acl_free_full (void *ptr, char *f, long line);
   void a4gl_using (char *str, int s, char *fmt, double num);
   int A4GL_digittoc (int *a, char *z, char *fmt, int dtype, int size);
+  void A4GL_strmaxcpy(char *dest,char *src,int max);
+  void A4GL_logsql(int lineno,char *module, char *s);
 
 
   /* ========================== attributes.c ============================= */
@@ -1431,9 +1433,12 @@ void A4GL_display_at (int n, int a);
   /* ============================ fglwrap.c ============================== */
   int A4GL_fgl_error (int a, char *s, int err, int stat);
   int A4GL_isyes (char *s);
+  int A4GL_isno (char *s);
   char *get_serno (void);
   void A4GL_set_abort (int a);
   void A4GL_check_and_show_id (char *program, char *arg1);
+char *A4GL_get_running_program(void);
+int A4GL_sock_write_int (char *buf, size_t count);
 
   /* ========================= errfile.c================================== */
   FILE *A4GL_mja_fopen (char *name, char *mode);
@@ -1955,6 +1960,46 @@ int a4gl_tolower(int n);
 
 
 
+int aclfgl_fgl_dialog_setcurrline(int n);
+int aclfgl_fgl_dialog_getfieldname(int n);
+int aclfgl_fgl_dialog_getbuffer(int n);
+int aclfgl_fgl_dialog_setbuffer(int n);
+int aclfgl_fgl_buffertouched(int n);
+int aclfgl_aclfgl_get_user(int n);
+int aclfgl_aclfgl_read_pipe(int nargs);
+void A4GL_pause_execution(void);
+void A4GL_start_monitor (void);
+void A4GL_monitor_close (void);
+int A4GL_has_monitor(void);
+int a4gl_isalpha(int a);
+void A4GL_assertion_failed(char *s);
+int A4GL_was_last_empty(void);
+void A4GL_clr_last_was_empty(void);
+void A4GL_push_date_expr(void);
+void A4GL_push_time_expr(void);
+void A4GL_make_field_slist_from_ap( struct s_field_name_list *list, va_list *ap);
+int aclfgl_aclfgl_setenv(int n);
+int a4gl_isupper(int n);
+int a4gl_islower(int n);
+
+int A4GL_monitor_puts_int (char *str);
+void
+A4GL_convert_report (struct rep_structure *rep, char *ofile,
+                     char *otype, char *layout, int to_pipe);
+char *A4GL_find_report_dim_string(char *type,int value);
+void A4GL_free_report(struct rep_structure *rep);
+char *A4GL_get_tmp_rep(char *mod,char *f);
+void a4gl_upshift(char *s);
+void A4GL_copy_sqlca_sqlawarn_8chars( char c0, char c1, char c2, char c3, char c4, char c5, char c6, char c7);
+void A4GL_copy_sqlca_sqlawarn_string8( char *c);
+int
+A4GL_call_4gl_dll_bound (char *filename, char *function, int ni,struct BINDING *ibind,int no,struct BINDING *obind);
+int A4GLSQL_execute_sql (char *pname, int ni, void *vibind);
+int A4GLSQL_add_prepare (char *pname, void *vsid);
+
+
+
+
   /* API prototypes */
 #include "a4gl_API_form.h"	/* generated from .spec */
 #include "a4gl_API_menu.h"	/* generated from .spec */
@@ -1968,6 +2013,7 @@ int a4gl_tolower(int n);
 #include "a4gl_exdata.h"	/* created manually */
 #include "a4gl_API_exreport.h"	/* created manually */
 #include "a4gl_API_sql.h"	/* created manually */
+#include "a4gl_API_sqlparse.h"	/* created manually */
 #include "a4gl_API_rpc.h"	/* created manually */
 
 

@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.43 2004-12-17 05:23:49 afalout Exp $ 
+ $Id: lowlevel_tui.c,v 1.44 2004-12-17 13:19:08 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -83,7 +83,7 @@ Looks like it was removed in Curses 5.3???!
 #endif
 
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.43 2004-12-17 05:23:49 afalout Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.44 2004-12-17 13:19:08 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -110,10 +110,14 @@ static void A4GL_clear_prompt (struct s_prompt *prmt);
 
 
 void A4GL_LL_beep(void) {
-  if (A4GL_isyes(acl_getenv("FLASHFORBEEP"))) {flash();}
+	#ifndef XCURSES
+  if (A4GL_isyes(acl_getenv("FLASHFORBEEP"))) {
+		flash();
+	}
   else {
 	if (!A4GL_isyes(acl_getenv("DISABLEBEEP"))) beep();
   }
+	#endif
 }
 
 
@@ -1633,7 +1637,9 @@ A4GL_LL_getch_swin (void *window_ptr)
 
   while (1)
     {
+#ifndef XCURSES
       halfdelay (1);
+#endif
       //a = wgetch (window_ptr);
 	abort_pressed=0;
       a = getch ();
@@ -2098,6 +2104,7 @@ A4GL_LL_screen_mode ()
 void
 A4GL_LL_initialize_display ()
 {
+		char *argv[1];
 #ifdef DEBUG	
 	A4GL_debug ("LL_initialize_display *************************");
 #endif	
@@ -2152,7 +2159,8 @@ A4GL_LL_initialize_display ()
 		*/		
 		//Xinitscr is defined in PDcurses initscr.c
 		//returns WINDOW*  stdscr=NULL;  - the default screen window  
-		stdscr=Xinitscr( 0, NULL );  //(argc, argv);
+		argv[0]=A4GL_get_running_program();
+		stdscr=Xinitscr( 1, argv );  //(argc, argv);
 		#ifdef DEBUG	
 			A4GL_debug ("returned from Xinitscr()");
 		#endif	

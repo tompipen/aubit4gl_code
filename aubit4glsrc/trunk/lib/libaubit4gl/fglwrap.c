@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.76 2004-12-12 08:52:26 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.77 2004-12-17 13:19:02 mikeaubury Exp $
 #
 */
 
@@ -458,6 +458,36 @@ A4GL_isyes (char *s)
   //debug("isyes = false");
   return 0;
 }
+
+
+
+/**
+ * Checks if the string have some sort of no (n,N,0,)false.
+ *
+ * @param s The string to be checked
+ * @return - 1 : Is no
+ *         - 0 : Otherwise
+ */
+int
+A4GL_isno (char *s)
+{
+  if (s == 0)
+    {
+      return 0;
+    }
+  //debug("isyes called with %s\n",s);
+  if (s[0] == 0)
+    {
+      return 0;
+    }
+  if (s[0] == 'n' || s[0] == 'N' || s[0] == '0'
+      || A4GL_aubit_strcasecmp (s, "false") == 0)
+    {
+      return 1;
+    }
+  return 0;
+}
+
 
 /**
  * Create an error in a string.
@@ -1300,7 +1330,7 @@ A4GL_debug("SQL on line %d in %s:%s\n",lineno,module,s);
 
 }
 
-char *A4GL_get_running_program() {
+char *A4GL_get_running_program(void) {
 	return running_program; // Argv[0]
 }
 /* ================================= EOF ============================= */

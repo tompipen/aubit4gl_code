@@ -33,8 +33,8 @@ A4GLSQL_close_session_internal char* sessname -> int
 
 
 
-A4GLSQL_execute_implicit_select void* sid -> int
-A4GLSQL_execute_implicit_sql    void* sid -> int
+A4GLSQL_execute_implicit_select void* sid int singleton -> int
+A4GLSQL_execute_implicit_sql    void* sid int singleton -> int
 
 
 

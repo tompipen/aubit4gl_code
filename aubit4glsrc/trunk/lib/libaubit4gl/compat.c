@@ -8,6 +8,14 @@
  */
 #include "a4gl_libaubit4gl_int.h"
 
+
+void popdate (long *x);
+void retdate (long x);
+void popdec_aubit (fgldecimal *x) ;
+fgldecimal * A4GL_str_to_dec (char *str, fgldecimal *dec) ;
+
+
+
 /* Prototypes for functions in here should be added to a4gl_incl_infx.h      */
 /* Any C programs using these functions should also include a4gl_incl_infx.h */
 #include "a4gl_incl_infx.h"
@@ -130,10 +138,10 @@ int size;
 #define NUM_DIG(x)               ((x[0])&127 )
 #define NUM_DEC(x)               ((x[1]))
 #define NUM_BYTES(x)     (NUM_DIG(x)+OFFSET_DEC(x))
-ptr=x;
+ptr=(char *)x;
 	size=(NUM_DIG(ptr)<<8);
 	size+=NUM_DEC(ptr);
-	A4GL_push_dec(x,0,size);
+	A4GL_push_dec((void *)x,0,size);
 }
 
 
@@ -183,8 +191,7 @@ retlong (long x)
   A4GL_push_long (x);
 }
 
-void
-retdate (long x)
+void retdate (long x)
 {
 	A4GL_debug("retdate  %d\n",x);
   A4GL_push_date (x);
@@ -206,7 +213,7 @@ void popdec_aubit (fgldecimal *x) {
 	char *ptr;
 	char *eptr;
 	ptr=A4GL_char_pop();
-	eptr =A4GL_str_to_dec (ptr, x);
+	eptr=(char *)A4GL_str_to_dec (ptr, x);
 	free(ptr);
 }
 

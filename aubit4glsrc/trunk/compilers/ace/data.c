@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.20 2004-01-29 08:35:41 mikeaubury Exp $
+# $Id: data.c,v 1.21 2004-12-17 13:18:59 mikeaubury Exp $
 #*/
 
 /**
@@ -695,7 +695,7 @@ execute_selects (void)
 
       /* printf("Executing... %s",nstatement); */
 
-      if (A4GLSQL_execute_implicit_select (psql) != 0)
+      if (A4GLSQL_execute_implicit_select (psql,1) != 0)
 	{
 	  printf ("Some error executing SQL (Error %d)\n",
 		  A4GLSQL_get_status ());

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: maths.c,v 1.13 2004-04-21 18:53:28 mikeaubury Exp $
+# $Id: maths.c,v 1.14 2004-12-17 13:19:03 mikeaubury Exp $
 #
 */
 
@@ -43,6 +43,7 @@
 */
 
 #include "a4gl_libaubit4gl_int.h"
+void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
 
 /*
 =====================================================================
@@ -146,8 +147,7 @@ A4GL_init_arr_math (void)
  *
  * @todo Describe function
  */
-void
-A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops))
+void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops))
 {
   struct s_math *ptr_orig;
   struct s_math *ptr_new;
