@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.76 2002-07-21 09:56:29 afalout Exp $
+# $Id: Makefile.in,v 1.77 2002-07-28 08:58:12 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -478,9 +478,9 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 	@echo Aubit 4gl compiler source tree is now clean
 
 clean.config: clean.configure
-clean.configure: clean.makefiles clean.settings
-	${RM} config.log config.status incl/config.h docs/doxy/Doxyfile \
-            etc/aubit-rpm.spec
+clean.configure: clean.makefiles clean.settings clean.splint
+	${RM} config.log config.status incl/config.h incl/a4gl_incl_config.h \
+	docs/doxy/Doxyfile etc/aubit-rpm.spec
 #incl/a4gl-rules.mki
 
 clean.settings:
@@ -500,6 +500,15 @@ clean.makefiles:
     tools/html/Makefile tools/ide/Makefile \
     tools/jabber/Makefile tools/odbctest/Makefile \
     tools/test/Makefile tools/test/gui/Makefile \
+	common/dataio/Makefile compilers/ace/Makefile compilers/xgen/Makefile \
+	lib/libform/form_xdr/Makefile lib/libform/noform/Makefile \
+	lib/libmenu/menu_nomenu/Makefile lib/libmenu/menu_xdr/Makefile \
+	lib/libmsg/msg_native/Makefile lib/libpacker/packed/Makefile \
+	lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile \
+	lib/libpacker/xml/Makefile lib/librpc/no_rpc/Makefile \
+	lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile \
+	lib/resource/Makefile tools/loadmap/Makefile lib/libaubit4gl/Makefile \
+	lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile \
 	lib/libui/ui_gtk/Makefile Makefile
 
 
@@ -508,10 +517,17 @@ clean.root:
 #we must not clean *.tmp because of unixbuildnames.tmp:
 	$(RM) *.bak *.BAK libincl .*.bak core cyrpc.flg debug.out \
 	*.err ${PLATFORMSTRING}*.txt make.log commit.log rpmbuild.log \
-	aubit4gl.lsm aubitdownload-template.htm rpmbuild.log
+	aubit4gl.lsm aubitdownload-template.htm rpmbuild.log \
+    tmpdlpage1.html
+
+clean.splint:
+	${RM} lclint.log compilers/fcompile/lclint.log compilers/helpcompile/lclint.log \
+	compilers/menus/lclint.log lib/libaubit4gl/lclint.log
+
 
 #FIXME: move this to appropriate makefile :
 	${RM} compilers/fcompile/fshow.glb compilers/fcompile/fshow.h
+	${RM} tools/ide/debug.out tools/adbaccess/debug.out
 
 clean.rpc:
 	${RM} compilers/fcompile/form_x_xdr.c compilers/menus/menu_x_xdr.c \
@@ -543,7 +559,7 @@ clean.swig:
 	@if [ -f lib/swig/?akefile ]; then \
 		$(MAKE) ${MKNAME} -C lib/swig clean; \
     fi
-	(cd lib/swig; ${RM} lib_wrap.c *.old *.bak aubit4gl_pl.pm)
+	(cd lib/swig; ${RM} lib_wrap.c *.old *.bak aubit4gl_pl.pm domake)
 
 clean.project:
 	(cd tools/project; ${RM} *.bak)
