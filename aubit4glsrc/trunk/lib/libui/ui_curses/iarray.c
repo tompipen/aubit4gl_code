@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.53 2003-09-29 15:01:17 mikeaubury Exp $
+# $Id: iarray.c,v 1.54 2003-10-22 10:43:59 mikeaubury Exp $
 #*/
 
 /**
@@ -847,6 +847,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 				 arr->currentfield, 0, 0);
       A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_DELETE,
 				 arr->currentfield, 0, 0);
+
       break;
 
     case 10:
@@ -1447,8 +1448,7 @@ void *memdup(void *ptr,int size) {
  *  Set up a record for a desired movement...
  */
 void
-A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
-		  int attrib)
+A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
 {
   struct s_movement *ptr;
   void *last_field = 0;
@@ -1640,9 +1640,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 
 
 
-      A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_ROW, next_field,
-				 A4GL_memdup (ptr,
-					      sizeof (struct s_movement)), 0);
+      A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_ROW, next_field, A4GL_memdup (ptr, sizeof (struct s_movement)), 0);
 
       A4GL_debug ("Add aftr controls ?  - %p", last_field);
 
@@ -1656,8 +1654,8 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, last_field, 0, 0);
 	  A4GL_debug ("Adding AFTER FIELD..");
 
-	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, last_field,
-				     0, 0);
+	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, last_field, 0, 0);
+
 	}
     }
   else
@@ -1780,8 +1778,46 @@ process_control_stack (struct s_inp_arr *arr)
 
   if (arr->fcntrl[a].op == FORMCONTROL_AFTER_DELETE)
     {
-      new_state = 0;
-      rval = -13;
+	if (arr->fcntrl[a].state==99) {
+      		new_state = 50;
+      		rval = -13;
+	}
+
+	if (arr->fcntrl[a].state==50) {
+    		A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, arr->currentfield, 0, 0);
+		new_state=25;
+		rval=-99;
+	}
+
+	if (arr->fcntrl[a].state==25) {
+		struct s_movement ptr;
+  		void *next_field;
+		
+  		//br_ptr = malloc (sizeof (struct s_movement));
+  		//br_ptr->scr_line = scr_line;
+  		//br_ptr->arr_line = arr_line;
+      		//A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_ROW, next_field, A4GL_memdup (br_ptr, sizeof (struct s_movement)), 0);
+		//free(br_ptr);
+
+  		next_field = arr->field_list[arr->scr_line - 1][arr->curr_attrib];
+  		ptr.scr_line = arr->scr_line;
+  		ptr.arr_line = arr->arr_line;
+  		ptr.attrib_no = arr->curr_attrib;
+
+      		A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_FIELD, next_field, A4GL_memdup (&ptr, sizeof (struct s_movement)), 0);
+      		A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_ROW, next_field, A4GL_memdup (&ptr, sizeof (struct s_movement)), 0);
+
+
+
+		new_state=10;
+		rval=-99;
+	}
+	if (arr->fcntrl[a].state==10) {
+		new_state=0;
+	}
+
+
+
     }
 
 
@@ -2051,8 +2087,7 @@ process_control_stack (struct s_inp_arr *arr)
 		  if (current_field (curses_form) != arr->currentfield)
 		    {
 		      set_current_field (curses_form, arr->currentfield);
-		      A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
-					arr->curr_attrib + 1);
+		      A4GL_newMovement (arr, arr->scr_line, arr->arr_line, arr->curr_attrib + 1);
 		    }
 
 		}
