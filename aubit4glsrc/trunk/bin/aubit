@@ -276,7 +276,7 @@ fi
 
 
 #set DBPATH for use by some Aubit programs that need form and/or help files, 
-like asql, configurator, etc...
+#like asql, configurator, etc...
 
 #because of the problem in dealing with multiple separators in resource.c we need to test
 #if this variables are currently empty or not before concernating
