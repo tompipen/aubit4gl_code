@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.8 2003-11-27 21:26:45 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.9 2003-12-04 09:21:32 mikeaubury Exp $
 #
 */
 
@@ -799,7 +799,8 @@ A4GL_debug("Into col_alias %s",sql);
 		  if (isalnum (*a))
 		    {
 		      b = A4GL_cv_nth_token (p, (i - 1), &l);
-		      if (isoperator (*b) || (strncasecmp (b, "as", l) == 0))
+			A4GL_debug("b=%s\n",b);
+		      if (isoperator (*b) || (strncasecmp (b, "as", l) == 0)||b[0]=='['||b[0]==']')
 			{
 			  b = NULL;
 			}

@@ -153,6 +153,7 @@ aclfgl_aclfgl_dump_screen int n -> int
 /* A4GL_set_fields_inp_arr void* sio -> int */
 /* int A4GL_get_curr_width ()*/
 A4GL_get_curr_width -> int
+A4GL_get_curr_height -> int
 /* int A4GL_iscurrborder ()*/
 A4GL_iscurrborder -> int
 /* void A4GL_init_color(int n,int r,int g,int b) */
