@@ -11,6 +11,7 @@ menu_def :
         menu_handler_elements END_MENUHANDLER
                 {
                         pop_blockcommand("MENUH");
+			print_gtk_menuhandler_end();
                 }
 ;
 
