@@ -1,0 +1,815 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Manual T&eacute;cnico</title>
+                           
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+</head>
+  <body>
+       
+<div align="Center"><big><big><b><font face="Helvetica, Arial, sans-serif">
+    fgldocumenter - Manual t&eacute;cnico</font></b></big></big><br>
+    </div>
+       
+<h1>Introdu&ccedil;&atilde;o</h1>
+    Este manual apresenta a ferramenta <i>fgldocumenter</i> sob o ponto de
+ vista  da sua implementa&ccedil;&atilde;o, apresentando por isso:<br>
+       
+<blockquote>            
+  <ul>
+        <li>Arquitectura</li>
+        <li>Estrutura funcional<br>
+        </li>
+        <li>Estrutura modular</li>
+        <li>Depend&ecirc;ncias<br>
+        </li>
+               
+  </ul>
+      </blockquote>
+               
+  <h1>Arquitectura</h1>
+   O diagrama que se segue descreve a arquitectura usada pelo documentador.<br>
+     <br>
+       
+  <div align="Center"><img src="../images/fgldoc_architectural_model.jpg" alt="Arq" width="400" height="409">
+    <br>
+    </div>
+    <br>
+   Em termos conceptuais pode-se dividir nas seguintes componentes:<br>
+           
+  <blockquote>               
+    <ul>
+         <li>Reposit&oacute;rio<br>
+       </li>
+       <li>Documentador</li>
+                       
+      <ul>
+           <li>Parser/Extractor de documenta&ccedil;&atilde;o dos sources 
+4gl</li>
+           <li>Exportador para sources 4gl<br>
+           </li>
+           <li>Importador CSV</li>
+           <li>Exportador CSV</li>
+           <li>Gerador de HTML<br>
+           </li>
+                       
+      </ul>
+         <li>Navegador<br>
+         </li>
+                 
+    </ul>
+       </blockquote>
+                 
+    <h2>Reposit&oacute;rio&nbsp;</h2>
+ O reposit&oacute;rio &eacute; o local onde a informa&ccedil;&atilde;o sobre 
+os programas est&aacute; armazenada.<br>
+     <br>
+ A ferramenta interage com esta informa&ccedil;&atilde;o importando para
+ele de v&aacute;rias formas e com origem em v&aacute;rias fontes. Fornece
+tambem a exporta&ccedil;&atilde;o, para v&aacute;rios formatos. &Eacute;
+possivel um acesso on-line atrav&eacute;s de interface pr&oacute;prio (em
+ambiente Web) ou por SQL.<br>
+     
+    <h2>Documentador</h2>
+   O documentador &eacute; composto por v&aacute;rios m&oacute;dulos programados 
+ com linguagens e ferammentas distintas.<br>
+       <br>
+   Tentou-se, ao m&aacute;ximo tentar garantir a autonomia de cada um, no 
+entanto  este objectivo n&atilde;o est&aacute; ainda completamente atingido.<br>
+       <br>
+   Existe um programa em perl que serve de interface com o utilizador para
+ a execu&ccedil;&atilde;o das diferentes ac&ccedil;&otilde;es permitidas.<br>
+       <br>
+   Permite a sua execu&ccedil;&atilde;o em ambientes gr&aacute;ficos ou por 
+ linha de comando sem qualquer interac&ccedil;&atilde;o com o utilizador (para
+ al&eacute;m de gerar mensagens).<br>
+       <br>
+   Implementou-se, tambem um conjunto de m&eacute;todos utilit&aacute;rios
+ que disponibilizam servi&ccedil;os a cada uma das componentes, como por
+exemplo  gest&atilde;o de erros e escrita em ficheiros de log. Esta &eacute;
+talvez  a raz&atilde;o das depend&ecirc;ncias dado que ainda n&atilde;o se
+atingiu  um nivel de depend&ecirc;ncia nulo.<br>
+                 
+    <h3>Parser / Extractor de documenta&ccedil;&atilde;o de sources 4gl</h3>
+   Recebendo o nome de um fonte de 4gl como par&acirc;metro, efectua a sua
+ an&aacute;lise sint&aacute;tica, carregando a informa&ccedil;&atilde;o em
+ mem&oacute;ria e posteriormente guardando-a depois (se escolhida a op&ccedil;&atilde;o
+ correspondente) num reposit&oacute;rio relacional (dentro de uma base de
+dados).<br>
+       <br>
+   Quando instalado corresponde a um execut&aacute;vel.<br>
+       <br>
+   Foi construido com as seguintes ferramentas:<br>
+                 
+    <blockquote>                     
+      <ul>
+           <li>Bison / Yacc</li>
+           <li>Flex / Lex</li>
+           <li>C</li>
+           <li>ESQL/C<br>
+           </li>
+                       
+      </ul>
+         </blockquote>
+         <br>
+ Pode ser executado com as seguintes op&ccedil;&otilde;es:<br>
+       
+      <blockquote>         
+        <ul>
+           <li>Usage: p4gl [-h] [-d] [-i] [-v] [-w level] -f ficheiro.4gl</li>
+           <li>&nbsp;&nbsp; -h : Display this help message</li>
+           <li>&nbsp;&nbsp; -d : Debug mode</li>
+           <li>&nbsp;&nbsp; -i : Insert in the repository</li>
+           <li>&nbsp;&nbsp; -v : Verbose mode</li>
+           <li>&nbsp;&nbsp; -w : Warning level (1..10)</li>
+           <li>&nbsp;&nbsp; -c : Generate documentation</li>
+           <li>&nbsp;&nbsp; -s : Use standard comments for documentation</li>
+           <li>&nbsp;&nbsp; -p package : Nome do package</li>
+         
+        </ul>
+         </blockquote>
+                         
+        <h3>Acesso ao reposit&oacute;rio</h3>
+ O acesso ao reposit&oacute;rio (para leitura e escrita) est&aacute; construido 
+em ESQL/C, como tal apenas pode aceder a reposit&oacute;rios em bases de dados
+Informix.<br>
+         <br>
+ Penso que a configura&ccedil;&atilde;o da base de dados onde o reposit&oacute;rio 
+estar&aacute; instalado ser&aacute; efectuada usando a vari&aacute;vel de 
+ambiente DATABASE, mas isto tem de ser devidamente confirmado.<br>
+                                       
+        <h3>Exportador para sources 4gl</h3>
+   Desenvolvido em perl sob a forma de classe/objecto, l&ecirc; a informa&ccedil;&atilde;o 
+ do reposit&oacute;rio, para um ou mais m&oacute;dulos pretendidos, gera os
+ coment&aacute;rios em formato fgldoc e insere-os dentro dos fontes de 4gl.<br>
+                             
+        <h3>Importador CSV</h3>
+ Construido sob a forma de Classe / Objecto de perl trata de abrir o ficheiro 
+para o qual foi configurado e carregar a informa&ccedil;&atilde;o que nele 
+vem registada para uma tabela exactamente com o mesmo formato. Posteriormente 
+e se pretendido efectua a normaliza&ccedil;&atilde;o daquela informa&ccedil;&atilde;o 
+para as tabelas normalizadas do reposit&oacute;rio. <br>
+         <br>
+ De notar que a informa&ccedil;&atilde;o carregada directamente no formato 
+do ficheiro para pouco serve.<br>
+         
+        <h3>                   </h3>
+         
+        <h3>Exportador CSV</h3>
+ Efectua uma leitura da informa&ccedil;&atilde;o das tabelas em formato relacional 
+devidamente normalizado, desnormaliza-a para a tabela p4gl_excel e efectua 
+um unload dessa informa&ccedil;&atilde;o com um caracter separador.<br>
+         
+        <h3>                   </h3>
+         
+        <h3>Gerador HTML</h3>
+ Para que se possa usar esta informa&ccedil;&atilde;o em ambientes desconnectados, 
+&eacute; possivel gerar uma r&eacute;plica da informa&ccedil;&atilde;o disponivel 
+no reposit&oacute;rio para um direct&oacute;rio a definir, em formato html.<br>
+         <br>
+ Esta informa&ccedil;&atilde;o se alterada n&atilde;o pode depois ser carregada 
+novamente e perde-se &nbsp;o acesso por SQL.<br>
+         <br>
+ Esta abordagem &eacute;, no entanto a mais tradicional e usada por sistemas 
+de documenta&ccedil;&atilde;o similares como por exemplo o Doxygen ou javadoc.<br>
+                             
+        <h2>Navegador</h2>
+ Construido em JSP(s) permite o accesso on-line &agrave; informa&ccedil;&atilde;o 
+disponivel sobre os programas residente no reposit&oacute;rio.<br>
+         <br>
+ Efectua o acesso atrav&eacute;s de JDBC.<br>
+         <br>
+ Para alem dos JSP(s) que s&atilde;o compilados din&acirc;micamente pelo
+respectivo container contem algumas classes que dever&atilde;o ser devidamente
+compiladas e instaladas no local correcto do servidor.<br>
+                             
+        <h1>Modelo de dados do reposit&oacute;rio</h1>
+   O reposit&oacute;rio do documentador tem uma estrutura relacional pura,
+ com integridade referencial.<br>
+           <br>
+   Constitui o n&uacute;cleo central de armazenamento da ferramenta, sem
+a  qual nada consegue funcionar convenientemente.<br>
+           <br>
+   Est&aacute;, para j&aacute; implementado e testado sobre um SGBD Informix.<br>
+           <br>
+   Dada a normaliza&ccedil;&atilde;o da estrutura (e o facto de n&atilde;o
+ usar serials nem rowid(s)), n&atilde;o dever&aacute; ser demasiado complicado 
+ a convers&atilde;o por forma a trabalhar noutros SGBD(s), nomeadamente o
+Postgresql.<br>
+         
+        <h2>p4gl_package<br>
+         </h2>
+ Identifica um package que tipicamente corresponde a uma directoria.<br>
+         <br>
+         
+        <table cellpadding="2" cellspacing="2" border="1" width="100%">
+           <tbody>
+             <tr>
+               <td valign="Top">               
+              <div align="Center"><b>Coluna</b><br>
+               </div>
+               </td>
+               <td valign="Top">               
+              <div align="Center"><b>Descri&ccedil;&atilde;o</b><br>
+               </div>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">id_package		 </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">comments<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+           
+          </tbody>         
+        </table>
+         
+        <h2>p4gl_program<br>
+         </h2>
+ Programa execut&aacute;vel para ser compilado.<br>
+ N&atilde;o suporta programas com o mesmo nome.<br>
+ Obtido com um count distinct a source4gl.<br>
+         <br>
+         
+        <table cellpadding="2" cellspacing="2" border="1" width="100%">
+           <tbody>
+             <tr>
+               <td valign="Top">               
+              <div align="Center"><b>Coluna</b><br>
+               </div>
+               </td>
+               <td valign="Top">               
+              <div align="Center"><b>Descri&ccedil;&atilde;o</b><br>
+               </div>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">program_name</td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">comments</td>
+             </tr>
+           
+          </tbody>         
+        </table>
+         
+        <pre>
+</pre>
+         
+        <h2>p4gl_module<br>
+         </h2>
+ Identifica um m&oacute;dulo 4gl (ficheiro 4gl compil&aacute;vel).<br>
+         <br>
+         
+        <table cellpadding="2" cellspacing="2" border="1" width="100%">
+           <tbody>
+             <tr>
+               <td valign="Top">               
+              <div align="Center"><b>Coluna</b><br>
+               </div>
+               </td>
+               <td valign="Top">               
+              <div align="Center"><b>Descri&ccedil;&atilde;o</b><br>
+               </div>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">id_package		 </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">module_name</td>
+             </tr>
+             <tr>
+               <td valign="Top">comments<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+           
+          </tbody>         
+        </table>
+         
+        <pre>
+</pre>
+         
+        <h2>p4gl_module_prog<br>
+         </h2>
+ Defini&ccedil;&atilde;o de depend&ecirc;ncias de sources (4gl) para a constru&ccedil;&atilde;o 
+de um programa.<br>
+         <br>
+         
+        <table cellpadding="2" cellspacing="2" border="1" width="100%">
+           <tbody>
+             <tr>
+               <td valign="Top">               
+              <div align="Center"><b>Coluna</b><br>
+               </div>
+               </td>
+               <td valign="Top">               
+              <div align="Center"><b>Descri&ccedil;&atilde;o</b><br>
+               </div>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">program_name<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">id_package		 </td>
+             </tr>
+             <tr>
+               <td valign="Top">module_name<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+           
+          </tbody>         
+        </table>
+         
+        <pre>
+</pre>
+         
+        <h2>p4gl_function<br>
+         </h2>
+ Identifica uma fun&ccedil;&atilde;o 4gl.<br>
+         <br>
+         
+        <table cellpadding="2" cellspacing="2" border="1" width="100%">
+           <tbody>
+             <tr>
+               <td valign="Top">               
+              <div align="Center"><b>Coluna</b><br>
+               </div>
+               </td>
+               <td valign="Top">               
+              <div align="Center"><b>Descri&ccedil;&atilde;o</b><br>
+               </div>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">id_package		 </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">module_name</td>
+             </tr>
+             <tr>
+               <td valign="Top">function_name<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">function_type<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">comments<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+           
+          </tbody>         
+        </table>
+         
+        <pre>
+</pre>
+         
+        <h2>p4gl_process<br>
+         </h2>
+ Identifica um processo analisado e desenhado que o software implementa.<br>
+         <br>
+         
+        <table cellpadding="2" cellspacing="2" border="1" width="100%">
+           <tbody>
+             <tr>
+               <td valign="Top">               
+              <div align="Center"><b>Coluna</b><br>
+               </div>
+               </td>
+               <td valign="Top">               
+              <div align="Center"><b>Descri&ccedil;&atilde;o</b><br>
+               </div>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">id_package		 </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">den_process<br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">comments<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+           
+          </tbody>         
+        </table>
+         
+        <pre>
+</pre>
+         
+        <h2>p4gl_process<br>
+         </h2>
+ Associa fun&ccedil;&otilde;es a processos.<br>
+         <br>
+         
+        <table cellpadding="2" cellspacing="2" border="1" width="100%">
+           <tbody>
+             <tr>
+               <td valign="Top">               
+              <div align="Center"><b>Coluna</b><br>
+               </div>
+               </td>
+               <td valign="Top">               
+              <div align="Center"><b>Descri&ccedil;&atilde;o</b><br>
+               </div>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">id_package		 </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">module_name</td>
+             </tr>
+             <tr>
+               <td valign="Top">function_name<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">id_process<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+           
+          </tbody>         
+        </table>
+         
+        <pre>
+</pre>
+         
+        <h2>p4gl_fun_parameter<br>
+         </h2>
+         
+        <pre>Associa parametros a funções
+</pre>
+         
+        <table cellpadding="2" cellspacing="2" border="1" width="100%">
+           <tbody>
+             <tr>
+               <td valign="Top">               
+              <div align="Center"><b>Coluna</b><br>
+               </div>
+               </td>
+               <td valign="Top">               
+              <div align="Center"><b>Descri&ccedil;&atilde;o</b><br>
+               </div>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">id_package		 </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">module_name</td>
+             </tr>
+             <tr>
+               <td valign="Top">function_name<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">item_num<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">var_name<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">data_type<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">comments<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+           
+          </tbody>         
+        </table>
+         
+        <pre>
+</pre>
+         
+        <h2>p4gl_fun_return<br>
+         </h2>
+ Valores de retorno de uma fun&ccedil;&atilde;o.<br>
+         <br>
+         
+        <table cellpadding="2" cellspacing="2" border="1" width="100%">
+           <tbody>
+             <tr>
+               <td valign="Top">               
+              <div align="Center"><b>Coluna</b><br>
+               </div>
+               </td>
+               <td valign="Top">               
+              <div align="Center"><b>Descri&ccedil;&atilde;o</b><br>
+               </div>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">id_package		 </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">module_name<br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">function_name<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">item_num<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">var_name<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">data_type<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">comments<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+           
+          </tbody>         
+        </table>
+         
+        <pre>
+</pre>
+         
+        <h2>p4gl_fun_todo<br>
+         </h2>
+ Tarefas a executar de uma fun&ccedil;&atilde;o.<br>
+         <br>
+         
+        <table cellpadding="2" cellspacing="2" border="1" width="100%">
+           <tbody>
+             <tr>
+               <td valign="Top">               
+              <div align="Center"><b>Coluna</b><br>
+               </div>
+               </td>
+               <td valign="Top">               
+              <div align="Center"><b>Descri&ccedil;&atilde;o</b><br>
+               </div>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">id_package		 </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">module_name</td>
+             </tr>
+             <tr>
+               <td valign="Top">function_name<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">item_num<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">comments<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+           
+          </tbody>         
+        </table>
+         
+        <pre>
+</pre>
+         
+        <h2>p4gl_table_usage<br>
+         </h2>
+ Utiliza&ccedil;&otilde;es de tabelas.<br>
+         <br>
+         
+        <table cellpadding="2" cellspacing="2" border="1" width="100%">
+           <tbody>
+             <tr>
+               <td valign="Top">               
+              <div align="Center"><b>Coluna</b><br>
+               </div>
+               </td>
+               <td valign="Top">               
+              <div align="Center"><b>Descri&ccedil;&atilde;o</b><br>
+               </div>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">id_package		 </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">module_name</td>
+             </tr>
+             <tr>
+               <td valign="Top">function_name<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">table_name<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">operation<br>
+               </td>
+               <td valign="Top">               
+              <pre>'I' ,'U' ,'D' ,'S' </pre>
+               </td>
+             </tr>
+           
+          </tbody>         
+        </table>
+         
+        <pre>
+</pre>
+         
+        <h2>p4gl_excel<br>
+         </h2>
+ Dados desnormalizados carregados directamente de uma folha de c&aacute;lculo.<br>
+         <br>
+         
+        <table cellpadding="2" cellspacing="2" border="1" width="100%">
+           <tbody>
+             <tr>
+               <td valign="Top">               
+              <div align="Center"><b>Coluna</b><br>
+               </div>
+               </td>
+               <td valign="Top">               
+              <div align="Center"><b>Descri&ccedil;&atilde;o</b><br>
+               </div>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">module_name</td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">id_process</td>
+             </tr>
+             <tr>
+               <td valign="Top">function_name<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">parameters<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">returns<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">called<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+             <tr>
+               <td valign="Top">comments<br>
+               </td>
+               <td valign="Top"><br>
+               </td>
+             </tr>
+           
+          </tbody>         
+        </table>
+         <br>
+         <br>
+                                 
+        <h1>Depend&ecirc;ncias</h1>
+   Para ser compilado e(ou) executado correctamente, o documentador tem de
+ cumprir um certo n&uacute;mero de requisitos, que de seguida se descrevem.<br>
+                                 
+        <h2>Run-time<br>
+      </h2>
+                                 
+        <blockquote>                                      
+          <ul>
+          <li>Perl &gt;= 5.6</li>
+          <li>Perl DBI&nbsp;</li>
+          <li>Perl DBD::Informix</li>
+          <li>Perl::Tk</li>
+               <li>Perl::Data</li>
+               <li>Perl::Getopt<br>
+               </li>
+          <li>Informix CLI</li>
+          <li>JSP</li>
+          <li>Jakarta Tomcat</li>
+          <li>JRE</li>
+               <li>Informix JDBC<br>
+          </li>
+                                         
+          </ul>
+        </blockquote>
+                                         
+          <h2>Compila&ccedil;&atilde;o</h2>
+                                         
+          <blockquote>                                              
+            <ul>
+            <li>Informix ESQL/C</li>
+            <li>Bison</li>
+            <li>Lex</li>
+            <li>Gcc</li>
+            <li>J2SE SDK</li>
+                 <li>Make<br>
+            </li>
+                                                 
+            </ul>
+          </blockquote>
+             
+            <h1>Ficheiro com dados de configura&ccedil;&atilde;o</h1>
+ O ficheiro de configura&ccedil;&atilde;o tem o formato de um export de dados 
+de perl usando o m&oacute;dulo Data::Dumper.<br>
+             <br>
+ Pode ser modificado manualmente, no entanto ter&aacute; de se ter cuidado 
+para garantir que cada linha consegue ser correctamente avaliada pela instru&ccedil;&atilde;o 
+            <i>eval</i> do <i>perl</i>.<br>
+                                                 
+            </body>
+            </html>

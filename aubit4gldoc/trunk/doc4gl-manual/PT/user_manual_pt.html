@@ -1,0 +1,973 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Documentador de 4GL</title>
+                                                       
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+</head>
+  <body>
+               
+<div align="Center"><big><b><font face="Helvetica, Arial, sans-serif">Documentador
+    de programas 4gl</font></b></big><br>
+               
+<div align="Left">        
+<h2>Introdu&ccedil;&atilde;o</h2>
+        Durante o ciclo de vida de um projecto, a documenta&ccedil;&atilde;o
+  directamente   associada &agrave; estrutura e funcionalidade do c&oacute;digo
+  fica r&aacute;pidamente unsynchroni.<br>
+      <br>
+        Esta facto ocorre devido &agrave; forma onde esta &eacute; normalmente
+   armazenada.  <br>
+      <br>
+        &Eacute; usual o respons&aacute;vel pelo desenho construir um documento 
+   onde chega por vezes ao detalhe de definir as fun&ccedil;&otilde;es, seus 
+   valores de retorno e parametros.<br>
+      <br>
+        &Eacute; tambem comum usar ferramentas CASE como o Power Designer 
+embebendo    dentro das descri&ccedil;&otilde;es dos processos a documenta&ccedil;&atilde;o
+    do programa a ser construido.<br>
+        <br>
+        Na fase inicial de desenvolvimento do projecto se o gestor f&ocirc;r
+  cuidadoso,   &eacute; prov&aacute;vel que a documenta&ccedil;&atilde;o
+reflicta   o c&oacute;digo   programado.<br>
+        <br>
+        Quando se muda para uma fase do processo mais avan&ccedil;ada, normalmente
+    imediatamente a primeira entrada em explora&ccedil;&atilde;o inicia-se
+ o  caos. O programador tem de decidir e o chefe n&atilde;o tem tempo para
+ controlar   tudo. Assim altera-se o c&oacute;digo fonte, mas como o programador
+ por defini&ccedil;&atilde;o  n&atilde;o gosta de alterar documentos esta
+fica imediatamente desactualizada.<br>
+        <br>
+        Quanto mais tempo passa mais desactualizada ela fica. At&eacute;
+que   n&atilde;o   serve para nada.<br>
+        <br>
+        Seria f&aacute;cil culpar os programadores, no entanto a documenta&ccedil;&atilde;o
+    normalmente est&aacute; escondida debaixo de algum servidor, num direct&oacute;rio
+    obscuro dentro de um documento (normalmente em formato .doc) normalmente
+   com dezenas de p&aacute;ginas. A mudan&ccedil;a de contexto &eacute; tal
+  que de facto n&atilde;o me parece f&aacute;cil de lhe exigir semelhante
+esfor&ccedil;o.<br>
+        <br>
+        As abordagens iniciadas com alguns trabalhos, como por exemplo <i>
+ literate    programming</i> s&atilde;o neste mercado cada vez mais utilizadas.<br>
+        <br>
+        O Java &eacute; paradigm&aacute;tico: A documenta&ccedil;&atilde;o
+ de  refer&ecirc;ncia  de todas as API(s) &eacute; obtida por processos autom&aacute;ticos 
+  sobre  informa&ccedil;&atilde;o contida nos sources.<br>
+        <br>
+        Desta forma, f&aacute;cilmente se defende a exist&ecirc;ncia de claras
+   melhorias,  como por exemplo:<br>
+               
+<blockquote>                        
+  <ul>
+            <li>Ferramenta &uacute;nica para programa&ccedil;&atilde;o e
+documenta&ccedil;&atilde;o     de refer&ecirc;ncia (editor de texto usado
+na programa&ccedil;&atilde;o).</li>
+            <li>F&aacute;cil visualiza&ccedil;&atilde;o de erros de documenta&ccedil;&atilde;o</li>
+            <li>Maior produtividade</li>
+            <li>Mais comunica&ccedil;&atilde;o dentro da equipa de programa&ccedil;&atilde;o
+    (dado que todas as fun&ccedil;&otilde;es estar&atilde;o documentadas,
+estando    esta f&aacute;cilmente disponivel).<br>
+            </li>
+                               
+  </ul>
+          </blockquote>
+          <br>
+        Este projecto d&aacute; ao 4gl aquilo que j&aacute; existe no java
+ (com   o javadoc) ou no C/C++ (com projectos como o doxygen), ou seja:<br>
+                               
+  <blockquote>                                        
+    <ul>
+              <li>A possibilidade de a documenta&ccedil;&atilde;o de refer&ecirc;ncia
+    estar incluida nos programas fonte</li>
+              <li>Gera&ccedil;&atilde;o de documentos de refer&ecirc;ncia 
+em  formato   f&aacute;cilmente legivel e acessivel</li>
+              <li>Possibilidade de pesquisa</li>
+              <li>Documentos de refer&ecirc;ncia com organiza&ccedil;&otilde;es 
+   diversas</li>
+                                               
+    </ul>
+       Como &eacute; &oacute;bvio, no entanto os programadores e chefes de
+ projecto   t&ecirc;m de criar uma disciplina que permita que durante as
+altera&ccedil;&otilde;es    aos programas, os documentos tambem o sejam.
+Inclusivamente deve-se definir        <a href="../fgldocGuidelines.html">alguns
+padr&otilde;es </a>relativos  aos  coment&aacute;rios a inserir.<br>
+                   </blockquote>
+                                               
+    <h1><small>Para o impaciente</small></h1>
+      Para n&atilde;o obrigar &agrave; leitura completa do manual apresentam-se
+   aqui algumas sequ&ecirc;ncias tipicas para instala&ccedil;&atilde;o e
+execu&ccedil;&atilde;o  da ferramenta.<br>
+       <br>
+                 
+    <h2>Compila&ccedil;&atilde;o</h2>
+  As componentes que necessitam de compila&ccedil;&atilde;o s&atilde;o: parser
+ (p4gl) e classes adicionais do navegador.<br>
+      <br>
+  Para compilar executar <i>make</i> no direct&oacute;rio base da aplica&ccedil;&atilde;o.<br>
+                 
+    <h2>Instala&ccedil;&atilde;o</h2>
+  Executar <i>make install</i>.<br>
+                 
+    <h2>Execu&ccedil;&atilde;o</h2>
+   Apresenta-se apenas exemplos tipicos de execu&ccedil;&atilde;o com User
+ Interface n&atilde;o gr&aacute;fico.<br>
+                 
+    <h3>Importar informa&ccedil;&atilde;o de sources</h3>
+                 
+    <blockquote>$ fgldoc --ui=CUI --action=ImportFgl --import_directory=/tmp 
+ --load_recursive <br>
+         </blockquote>
+                       
+      <h3>Importar informa&ccedil;&atilde;o de CSV(s)</h3>
+                       
+      <blockquote>$ fgldoc --ui=CUI --action=importCSV --sheet_file=/tmp/comments.csv 
+ --load_recursive --normalize<br>
+           </blockquote>
+                             
+        <h3>Exportar para sources 4gl</h3>
+                             
+        <blockquote>$ fgldoc --ui=CUI --action=export2Fgl --sheet_file=&lt;fileName&gt;
+ --export_directory=&lt;directoryName&gt;<br>
+             </blockquote>
+                                   
+          <h3>Exportar para CSV</h3>
+                       
+          <blockquote>$ fgldoc --ui=CUI --action=export2Csv --export_directory=&lt;directoryName&gt;
+  --export_source=&lt;fglSourceName.4gl&gt;<br>
+              </blockquote>
+                                       
+            <h3>Exportar para Html</h3>
+                           
+            <blockquote>$ fgldoc --ui=CUI --action=export2Html --export_html_directory=&lt;directory_name&gt;
+               <br>
+                </blockquote>
+                                                             
+              <h2></h2>
+                                                                        
+              <h1>Componentes</h1>
+                                                                        
+              <h2>fgldoc - Interface para execu&ccedil;&atilde;o de ac&ccedil;&otilde;es
+ de documenta&ccedil;&atilde;o</h2>
+                                                                  
+              <p>Componente que serve de envolovente &agrave; execu&ccedil;&atilde;o
+ da(s) ac&ccedil;&otilde;es permitidas pelo documentador de 4gl. A maioria 
+das ac&ccedil;&otilde;es de documenta&ccedil;&atilde;o s&atilde;o executadas 
+por interm&eacute;dio deste programa.</p>
+                               
+              <p>Est&aacute; construido em perl e aceita as seguintes op&ccedil;&otilde;es
+   de execu&ccedil;&atilde;o:<br>
+          </p>
+                                                             
+              <blockquote>                                               
+                    
+                <ul>
+              <li>--help : Define as op&ccedil;&otilde;es permitidas</li>
+              <li>--ui={GUI | CUI} : User interface com o qual ser&aacute;
+ executada   a aplica&ccedil;&atilde;o que poder&aacute; ser:</li>
+                                                                        
+            
+                  <ul>
+                <li>GUI : Graphical User Interface (Modo Perl / Tk)</li>
+                <li>CUI : Command line User Interface. N&atilde;o tem interac&ccedil;&atilde;o
+   com utilizador. Obriga a ac&ccedil;&otilde;es minimas de execu&ccedil;&atilde;o.<br>
+                </li>
+                                                                        
+            
+                  </ul>
+              <li>--action=&lt;ActionName&gt; : Ac&ccedil;&atilde;o a executar,
+   que poder&atilde;o ser:</li>
+                                                                        
+            
+                  <ul>
+                <li>importCSV : Importa os coment&aacute;rios de um ficheiro
+  com  um separador fixo</li>
+                <li>importFgl : Importa os coment&aacute;rios dos source
+4gl</li>
+                <li>export2Fgl : Exporta os coment&aacute;rios para os sources
+   4gl. Obriga os par&acirc;metros <i>--exportDirectory</i> e <i>--exportSource</i>
+      .</li>
+                <li>export2Csv : Exporta os coment&aacute;rios para um ficheiro
+   com separador fixo</li>
+                <li>export2Html : Exporta os coment&aacute;rios para um conjunto
+   de ficheiros em html devidamente interligados</li>
+                                                                        
+            
+                  </ul>
+              <li>--export_directory=&lt;dirName&gt; : No caso de exporta&ccedil;&atilde;o
+   dos coment&aacute;rios para os sources de 4gl deve conter o nome do direct&oacute;rio
+   onde este(s) se encontram.</li>
+              <li>--exportSource=&lt;fglname&gt; : No caso de exporta&ccedil;&atilde;o
+   dos coment&aacute;rios para os sources de 4gl ir&aacute; conter o nome
+do   programa fonte.</li>
+                    <li>--quiet : Retira toda e qualquer mensagem enviada 
+para o standard output.</li>
+                    <li>--insertEmptyComment : Se afectada indica que deve
+ ser inserido um coment&aacute;rio vazio numa fun&ccedil;&atilde;o que n&atilde;o
+ o tenha definido no reposit&oacute;rio. Usado na op&ccedil;&atilde;o de
+exporta&ccedil;&atilde;o  para sources 4gl.</li>
+                    <li>--sheet_file=&lt;CSVfileName&gt; : Indica o nome
+do  ficheiro com separador CSV a usar no caso da importa&ccedil;&atilde;o
+e exporta&ccedil;&atilde;o  para ficheiros com caracter separador.</li>
+                    <li>--normalize : Indica que a informa&ccedil;&atilde;o
+ carregada do ficheiro com separador CSV deve ser normalizada e n&atilde;o
+ apenas mantida na tabela com estrutura exactamente igual ao ficheiro.</li>
+                    <li>--clean_repository : Se afectado indica que o reposit&oacute;rio
+ deve ser limpo antes de carregada a informa&ccedil;&atilde;o.</li>
+                    <li>--send_line_to_log</li>
+                    <li>--package_name=s : Indica o nome do package a inserir
+ durante o carregamente dos sources 4gl</li>
+                    <li>--load_recursive : No caso do carregamento de informa&ccedil;&atilde;o
+ de 4gl(s) indica que deve ser carregados os ficheiros do direct&oacute;rio
+ definido e de todos os sub-direct&oacute;rios correspondentes</li>
+                    <li>--import_directory=s : Define o direct&oacute;rtio
+ onde est&atilde;o os 4gl(s) de onde se pretende carregar a informa&ccedil;&atilde;o.</li>
+                    <li>--export_html_directory=&lt;htmlDirectoryName&gt; 
+: Indica qual o direct&oacute;rio para onde a informa&ccedil;&atilde;o em 
+formato html ser&aacute; exportada / gerada</li>
+                    <li>--ignore_exist_dir : Se afectado indica que o programa
+ deve ignorar se o direct&oacute;rio j&aacute; existe. Utilizado pela exporta&ccedil;&atilde;o
+ para html<br>
+              </li>
+                                                                        
+                </ul>
+            </blockquote>
+                                                                        
+                <h1>       </h1>
+                                                                 
+                <h2><small><small>Interface CUI&nbsp;</small></small></h2>
+                                                                        
+       
+                <p>CUI &eacute; uma sigla que significa Command line User
+ Interface.</p>
+                                                                        
+                <p>Tem como objectivo possibilitar a execu&ccedil;&atilde;o
+                 <i> batch</i>    das opera&ccedil;&otilde;es permitidas.<br>
+            </p>
+                                                                        
+                <p>&Eacute; acedido quando o programa executado com &nbsp;op&ccedil;&atilde;o
+   --ui=CUI.</p>
+                                                                        
+                <p>Uma vez que ap&oacute;s a sua execu&ccedil;&atilde;o n&atilde;o
+  dever&aacute; existir qualquer interac&ccedil;&atilde;o com os utilizadores
+  , todas as op&ccedil;&otilde;es necess&aacute;rias devem ser fornecidas
+por  linha de comando ou estar disponiveis no ficheiro de parametros (normalmente
+  .fgldocrc).<br>
+            </p>
+                                                                        
+                <h1><small>Interface GUI&nbsp;</small>&nbsp;</h1>
+      Est&aacute; construido usando o package Tk do perl. Como tal este tem 
+ de  estar instalado na m&aacute;quina onde se est&aacute; a executar.<br>
+            <br>
+      Um erro comum &eacute; a tentativa de execu&ccedil;&atilde;o em modo
+ GUI   numa janela de telnet sem DISPLAY de X associado, o que &oacute;bviamente
+   n&atilde;o &eacute; possivel uma vez que n&atilde;o existe ambiente gr&aacute;fico
+   a ele associado.<br>
+            <br>
+      Nos pontos que se seguem define-se quais as op&ccedil;&otilde;es interactivas
+   permitidas.<br>
+                                                                        
+                <h3>Ficheiro -&gt; Open</h3>
+      Abre e l&ecirc; o ficheiro que contem a configura&ccedil;&atilde;o
+e  op&ccedil;&otilde;es   de execu&ccedil;&atilde;o das tarefas.<br>
+            <br>
+      Por omiss&atilde;o, &eacute; carregada a informa&ccedil;&atilde;o contida&nbsp;
+   no ficheiro ~/.fgldocrc.<br>
+                                                                        
+                <h3>Ficheiro -&gt; Save</h3>
+      Grava as op&ccedil;&otilde;es de execu&ccedil;&atilde;o correntes no
+ ficheiro   de parametros (normalmente ~/.fgldocrc).<br>
+                                                                        
+                <h3>Ficheiro -&gt; Sair</h3>
+      Sai do programa. Antes de terminar a execu&ccedil;&atilde;o grava as
+ op&ccedil;&otilde;es   no ficheiro de par&acirc;metros.<br>
+                                                                        
+                <h3>Importar -&gt; CSV</h3>
+      Importa coment&aacute;rios de um ficheiro CSV (Character Separated) 
+para   o reposit&oacute;rio em modelo relacional (base de dados).<br>
+            <br>
+      A importa&ccedil;&atilde;o &eacute; efectuada em duas fases:<br>
+                                                                        
+                <blockquote>                                             
+                                  
+                  <ul>
+                <li>Load do ficheiro para uma tabela exactamente com a mesma
+  estrutura.</li>
+                <li>Normaliza&ccedil;&atilde;o da informa&ccedil;&atilde;o
+ para   a 3&ordf; forma normal, para o modelo relacional definido.<br>
+                </li>
+                                                                        
+            
+                  </ul>
+              </blockquote>
+              <br>
+      Permite parametrizar:<br>
+                                                                        
+            
+                  <blockquote>                                          
+                                                 
+                    <ul>
+                  <li>Ficheiro a importar:&nbsp; Nome completo do ficheiro
+ a  carregar  dando acesso a um <i>File Chooser</i> para a escolha. Por default
+  a sua extens&atilde;o  ser&aacute; .txt.</li>
+                  <li>Limpeza do reposit&oacute;rio : N&atilde;o utilizado</li>
+                  <li>Normaliza&ccedil;&atilde;o : Quando desactivado a 2&ordf;
+   fase n&atilde;o &eacute; executada.</li>
+                  <li>Enviar linha para log : Quando activado, cada linha 
+carregada   &eacute; enviada para o log.</li>
+                                                                        
+                        
+                    </ul>
+                </blockquote>
+                                                                        
+                        
+                    <p>Se o utilizador carregar no bot&atilde;o &lt;Cancel&gt; 
+ ou fechar  a janela, a opera&ccedil;&atilde;o n&atilde;o &eacute; executada 
+ voltando  ao menu principal.</p>
+                                                                        
+            
+                    <p><br>
+     O ficheiro deve ser com separador &lt;TAB&gt; entre colunas e &lt;Enter&gt; 
+  entre linhas.</p>
+                                                                        
+            
+                    <p>Deve conter 7 colunas cuja informa&ccedil;&atilde;o
+ deve ser  (por ordem):<br>
+               </p>
+                                                                        
+            
+                    <blockquote>                                        
+                                                  
+                      <ul>
+                   <li>moduleName : Nome do m&oacute;dulo 4gl</li>
+                   <li>idProcess : C&oacute;digo do processo</li>
+                   <li>functionName : Nome da fun&ccedil;&atilde;o</li>
+                   <li>parametro : Par&acirc;metro</li>
+                   <li>retorno : Descri&ccedil;&atilde;o do retorno</li>
+                   <li>call &nbsp;:</li>
+                   <li>comments : Coment&aacute;riodescritivo da fun&ccedil;&atilde;o<br>
+                     <br>
+                   </li>
+                                                                         
+                     
+                      </ul>
+                 </blockquote>
+                                                                        
+                                  
+                      <h3>Importar -&gt; Sources 4gl</h3>
+      Importa a informa&ccedil;&atilde;o e coment&aacute;rios disponiveis 
+nos   source 4gl.<br>
+                <br>
+      A informa&ccedil;&atilde;o que se parametriza na janela &eacute;:<br>
+                                                                        
+                                  
+                      <blockquote>                                      
+                                                                        
+ 
+                        <ul>
+                    <li>Nome do package : Nome de package a que os m&oacute;dulos
+   4gl ficar&atilde;o associados. Para j&aacute; n&atilde;o &eacute; muito
+ usado.</li>
+                    <li>Localiza&ccedil;&atilde;o do direct&oacute;rio :
+Nome   completo do direct&oacute;rio abaixo do qual est&atilde;o os sources
+4gl  de que se pretende efcetuar o parsing.</li>
+                    <li>Lista de m&oacute;dulos : Lista completa dos m&oacute;dulos
+   de 4gl de que se pretende efcetuar o parsing</li>
+                    <li>Load comments : Indica se se pretende ou n&atilde;o 
+ carregar  no reposit&oacute;rio os coment&aacute;rios fgldoc.</li>
+                    <li>Parse Only : Serve apenas para testar se o parsing
+ &eacute;   ou n&atilde;o efectuado com sucesso n&atilde;o carregando qualquer
+ informa&ccedil;&atilde;o   na base de dados.</li>
+                    <li>Reposit&oacute;rio : Informa&ccedil;&atilde;o necess&aacute;ria
+   para estabelecer a conex&atilde;o com a base de dados.</li>
+                    <li>Carregamento de utiliza&ccedil;&atilde;o de tabelas:
+  Se  activado qualquer informa&ccedil;&atilde;o sobre utiliza&ccedil;&atilde;o
+   de tabelas &eacute; carregada no reposit&oacute;rio.</li>
+                    <li>Carregar parametros : Se activado indica que o parser 
+  deve carregar os par&acirc;metros das fun&ccedil;&otilde;es no reposit&oacute;rio.</li>
+                    <li>Carregar Strings : Se activado as strings ser&atilde;o
+   carregadas no reposit&oacute;rio. Ainda n&atilde;o est&aacute; em funcionamento.</li>
+                    <li>Carregar vari&aacute;veis locais : Se activado indica 
+  que as vari&aacute;veis locais ser&atilde;o carregadas &nbsp;no reposit&oacute;rio.</li>
+                    <li>Recursivo : Se activado ser&atilde;o adicionados
+&agrave;    lista todos os ficheiros com extens&atilde;o .4gl existentes
+abaixo do direct&oacute;rio   definido e(ou) nos sub-direct&oacute;rios.<br>
+                    </li>
+                                                                        
+                                              
+                        </ul>
+                  </blockquote>
+                                                                        
+                                              
+                        <p>Se o utilizador carregar no bot&atilde;o &lt;Cancel&gt; 
+ ou fechar a janela, a opera&ccedil;&atilde;o n&atilde;o &eacute; executada 
+ voltando ao menu principal.</p>
+                                                                        
+                                              
+                        <p></p>
+                                                                        
+                                              
+                        <h3>Exportar -&gt; CSV</h3>
+      Exporta a informa&ccedil;&atilde;o disponivel no reposit&oacute;rio 
+relacional   para um ficheiro de texto com separador fixo.<br>
+                  <br>
+      Para o conseguir desnormaliza a informa&ccedil;&atilde;o para uma &uacute;nica
+   tabela (p4gl_excel) antes de gravar o ficheiro.<br>
+                  <br>
+      O interface nesta vers&atilde;o disponivel apresenta apenas um file 
+chooser   para que o utilizador escolha o ficheiro e localiza&ccedil;&atilde;o 
+que  deseja gerar.<br>
+                                                                        
+                                              
+                        <p>Se o utilizador carregar no bot&atilde;o &lt;Cancel&gt; 
+ ou fechar a janela, a opera&ccedil;&atilde;o n&atilde;o &eacute; executada 
+ voltando ao menu principal.<br>
+                  </p>
+                                                                        
+                                              
+                        <h3>Exportar -&gt; Sources 4gl</h3>
+      Insere os coment&aacute;rios (disponiveis no reposit&oacute;rio) no(s)
+  source(s)  4gl.<br>
+                  <br>
+      O coment&aacute;rio do m&oacute;dulo &eacute; inserido no inicio.<br>
+                  <br>
+      O coment&aacute;rio de cada fun&ccedil;&atilde;o inserido imediatamente 
+  antes da sua implementa&ccedil;&atilde;o.<br>
+                  <br>
+      Permite configurar as seguintes op&ccedil;&otilde;es:<br>
+                                                                        
+                                              
+                        <blockquote>                                    
+                                                                        
+                
+                          <ul>
+                      <li>Direct&oacute;rio : Localiza&ccedil;&atilde;o (nome 
+  do direct&oacute;rio completo) onde se encontra o m&oacute;dulo 4gl onde 
+ se deseja inserir os coment&aacute;rios</li>
+                      <li>M&oacute;dulo de 4gl &nbsp;: Apresenta sob a forma
+  de  lista os sources 4gl do direct&oacute;rio escolhido. S&oacute; permite
+  escolher  um ficheiro, nesta vers&atilde;o.</li>
+                      <li>Substitui&ccedil;&atilde;o de fgldocs : Se activado 
+  substitui eventuais fgldoc que existam no ficheiro, caso contr&aacute;rio 
+  deixa-os e cria um novo.<br>
+                      </li>
+                                                                        
+                                                          
+                          </ul>
+                    </blockquote>
+                                                                        
+                                                          
+                          <p>Se o utilizador carregar no bot&atilde;o &lt;Cancel&gt;
+   ou fechar a janela, a opera&ccedil;&atilde;o n&atilde;o &eacute; executada
+   voltando ao menu principal.<br>
+                    </p>
+                                                                        
+                                                          
+                          <h3>Exportar -&gt; HTML</h3>
+      Embora exista um interface em JSP para navegar na documenta&ccedil;&atilde;o
+   de 4gl directamente, por vezes &eacute; importante poder aceder &agrave;
+  informa&ccedil;&atilde;o directamente numa &agrave;rvore de html puro (para
+  n&atilde;o ficar dependente de uma infraestrutura complexa com SGBD e servidor
+  de JSP tomcat).<br>
+                    <br>
+      Esta op&ccedil;&atilde;o permite, por isso gerar uma estrutura de documentos
+   html devidamente interligados e que permitem navegar na documenta&ccedil;&atilde;o
+   exportada.<br>
+                    <br>
+      Desta forma &eacute; possivel, por exemplo disponibilizar a informa&ccedil;&atilde;o
+   para um CD-Rom ou arquiv&aacute;-la num .tgz para envio sendo f&aacute;cil
+   ao destinat&aacute;rio desarquiv&aacute;-la e navegar.<br>
+                    <br>
+      Exporta apenas o reposit&oacute;rio na totalidade.<br>
+                    <br>
+                          <p>Se o utilizador carregar no bot&atilde;o &lt;Cancel&gt;
+   ou fechar a janela, a opera&ccedil;&atilde;o n&atilde;o &eacute; executada
+   voltando ao menu principal.<br>
+                    </p>
+                                                                        
+                                                                      
+                          <h3>Op&ccedil;&otilde;es -&gt; Mostrar log</h3>
+  Define se a janela de log deve ou n&atilde;o estar disponivel durante a 
+execu&ccedil;&atilde;o do programa.<br>
+                                                                        
+                                                          
+                          <h3>Op&ccedil;&otilde;es -&gt; Configure</h3>
+  Permite configurar as op&ccedil;&otilde;es de execu&ccedil;&atilde;o das
+ diversas ac&ccedil;&otilde;es, nomeadamente:<br>
+                                                       
+                          <blockquote>                                  
+                       
+                            <ul>
+                                <li>4gl doc repository : Informa&ccedil;&atilde;o
+ necess&aacute;ria para estabelecimento da conex&atilde;o &agrave; base de
+ dados</li>
+                                <li>syspgm repository : N&atilde;o usado, 
+de momento</li>
+                                <li>CSV import file : Nome do ficheiro usado
+ por default para carregar o reposit&oacute;rio com base no reposit&oacute;rio
+ CSV</li>
+                                <li>XML file : N&atilde;o usado, de momento
+ .</li>
+                                <li>CSV Export file : Nome do ficheiro onde
+ a ac&ccedil;&atilde;o de exporta&ccedil;&atilde;o ir&aacute; gravar a informa&ccedil;&atilde;o,
+ por default.</li>
+                                <li>XML export file : N&atilde;o usado, de
+ momento<br>
+                                </li>
+                                                           
+                            </ul>
+                              </blockquote>
+                                                                        
+                                                              
+                            <h1><small>Navegador</small></h1>
+      Construido em JSP, permite, a partir de um browser de html aceder &agrave;
+   informa&ccedil;&atilde;o disponivel no reposit&oacute;rio.<br>
+                    <br>
+      Divide-se gen&eacute;ricamente em tr&ecirc;s janelas (frames):<br>
+                                                                        
+                                                              
+                            <blockquote>                                
+                                                                        
+                                    
+                              <ul>
+                        <li>Processos de neg&oacute;cio&nbsp;</li>
+                        <li>M&oacute;dulos / sources de 4gl (constrangidos
+ ou  n&atilde;o por um processo)</li>
+                        <li>Coment&aacute;rios (constrangidos ou pelo m&oacute;dulo
+   ou processo).</li>
+                                                                        
+                                                                        
+ 
+                              </ul>
+                                </blockquote>
+  A frame de processos de neg&oacute;cio apresenta a lista de processos registados
+ numa tabela e &agrave; qual est&atilde;o associdas fun&ccedil;&otilde;es
+de 4gl. Cada um destes processos &eacute; um link que actualiza a janela
+que contem a lista de m&oacute;dulos. Existe a op&ccedil;&atilde;o de seleccionar
+ todos os processos.<br>
+                                <br>
+  Com base no processo seleccionado (ou todos se assim escolhido) &eacute;
+ apresentada uma lista de m&oacute;dulos que conteem fun&ccedil;&otilde;es
+ que foram associadas a um processo (com a tag @process). Cada m&oacute;dulo
+ &eacute; um link que actualiza a frame de documenta&ccedil;&atilde;o de
+um  m&oacute;dulo. Contem uma op&ccedil;&atilde;o para mostrar todas as fun&ccedil;&otilde;es,
+ de acordo com o processo pr&eacute;viamente seleccionmado.<br>
+                                <br>
+  Os coment&aacute;rios de um m&oacute;dulo (ou de todos consoante o escolhido)
+ apresenta uma lista resumida das fun&ccedil;&otilde;es de um m&oacute;dulo,
+ seguido depois pela informa&ccedil;&atilde;o detalhada existente no reposit&oacute;rio,
+ nomeadamente: <br>
+                                                               
+                              <blockquote>                               
+                                  
+                                <ul>
+                                    <li>Nome</li>
+                                    <li>Coment&aacute;rio textual.</li>
+                                    <li>Parametros: Lista e descri&ccedil;&atilde;o.</li>
+                                    <li>Retorno(s) : Descri&ccedil;&atilde;o
+ de cada um deles.<br>
+                                    </li>
+                                                                   
+                                </ul>
+                                  </blockquote>
+                                                                        
+                                                                        
+                                               
+                                <h1><small>Ficheiro com dados de configura&ccedil;&atilde;o</small></h1>
+      Este regista as ac&ccedil;&otilde;es que se pretende executar e respectivas
+   op&ccedil;&otilde;es ou informa&ccedil;&atilde;o necess&aacute;ria.<br>
+                      <br>
+      Este ficheiro pode ser construido manualmente ou ser gravado atrav&eacute;s
+   de op&ccedil;&otilde;es disponiveis no fgldoc quando este &eacute; executado
+   (tanto em ambiente GUI como CUI).<br>
+                      <br>
+      Por omiss&atilde;o, o seu nome &eacute; <i>.fgldocrc</i> e ser&aacute;
+  guardado  no direct&oacute;rio inicial do utilizador. <br>
+                      <br>
+      Nesta vers&atilde;o corresponde a um ficheiro que contem as afecta&ccedil;&otilde;es
+   de vari&aacute;veis (uma esp&eacute;cie de serializa&ccedil;&atilde;o
+de   um objecto).<br>
+                      <br>
+                                  <br>
+      Os dados afectados s&atilde;o:<br>
+                                                                        
+               
+                                <blockquote>                             
+                                        
+                                  <ul>
+                                      <li>csvImportFile : Nome do ficheiro
+ CSV de onde os dados ser&atilde;o importtados.</li>
+                                      <li>xmlImportFile : N&atilde;o utilizado.</li>
+                                      <li>UI : Tipo de user interface utilizado.</li>
+                                      <li>action : Ac&ccedil;&atilde;o aexecutar.</li>
+                                      <li>importInformixDir : Informixdir 
+do reposit&oacute;rio residente em SGBD Informix.</li>
+                                      <li>importInformixServer : Informixserver
+ dso reposit&oacute;rio.</li>
+                                      <li>importHost : Host onde o reposit&oacute;rio
+ reside.</li>
+                                      <li>importDatabase : Database onde
+o  reposit&oacute;rio reside.</li>
+                                      <li>importUser : Utilizador para acesso
+ &aacute; base de dados.</li>
+                                      <li>exportInformixDir : ???</li>
+                                      <li>exportInformixServer : ???</li>
+                                      <li>exportHost : ???</li>
+                                      <li>exportDatabase : ???</li>
+                                      <li>exportUser : ???</li>
+                                      <li>csvExportFile : Nome do ficheiro
+ CSV para onde a informa&ccedil;&atilde;o ser&aacute; exportada.</li>
+                                      <li>xmlExportFile : N&atilde;o usado</li>
+                                      <li>clearRepositoryOnImportCSV : Indica
+ se o reposit&oacute;rio deve ser limpo quando se importar de CSV.</li>
+                                      <li>normalize : Indica que ao importar
+ de CSV a tabela p4gl_excel deve ser normalizada para as tabelas respectivas.</li>
+                                      <li>clearRepositoryOnImportXML : N&atilde;o
+ utilizado.</li>
+                                      <li>loadComments : ???</li>
+                                      <li>parseOnly : Indica que durante
+a  ac&ccedil;&atilde;o de importa&ccedil;&atilde;o de sources 4gl deve ser
+efectuada  apenas um parse do ficheiro. Usado sobretudo para validar eventuais
+erros  de sintaxe e (ou) utiliza&ccedil;&atilde;o de palavras reservadas
+como identificadores.</li>
+                                      <li>loadTableUsage : Indica que se
+pretende  efectuar o carregamento de utiuliza&ccedil;&atilde;o de tabelas
+(em SQL embebido  n&atilde;o din&acirc;mico). </li>
+                                      <li>loadParameters : Indica que se
+pretende  carregar os parametros durante a ac&ccedil;&atilde;o de carregamento
+dos sources 4gl. </li>
+                                      <li>loadStrings : N&atilde;o utilizado.
+                                     </li>
+                                      <li>loadLocalVariables : N&atilde;o 
+utilizado.                                     </li>
+                                      <li>sourceDir : Define o direct&oacute;rio
+ onde os ficheiros de 4gl ir&atilde;o estar localizados. </li>
+                                      <li>replaceFgldoc : Indica que na ac&ccedil;&atilde;o
+ de exporta&ccedil;&atilde;o dos coment&aacute;rios para 4gl, estes devem
+ser substituidos. </li>
+                                      <li>fglSource : Indica qual o m&oacute;dulo
+ de 4gl para onde os coment&aacute;rios devem ser exportados, na ac&ccedil;&atilde;o
+ de exporta&ccedil;&atilde;o para 4gl. </li>
+                                      <li>logShowed : N&atilde;o utilizado.
+                                     </li>
+                                      <li>importFglLocation : Indica o direct&oacute;rio
+ onde os 4gl(s) a importar dever&atilde;o estar localizados. </li>
+                                      <li>loadFilesRecursive &nbsp;: Indica
+ que o load de informa&ccedil;&atilde;o de 4gl deve ser efectuada recursivamente.</li>
+                                                                       
+                                  </ul>
+                                    </blockquote>
+                                    <br>
+      Apresenta-se, de seguida um exemplo de preenchimento autom&aacute;tico
+  do  ficheiro de configura&ccedil;&atilde;o.<br>
+                                                                        
+                                                                        
+         
+                                  <blockquote>                          
+                                                                        
+                                                              
+                                    <table cellpadding="2" cellspacing="2" border="1" width="100%">
+                          <tbody>
+                            <tr>
+                              <td valign="Top">                         
+                                                                        
+                                                                        
+                          
+                                          <pre>$csvImportFile = '/usr/home/sergio/MOB.txt';
+$xmlImportFile = '4gl_mapping.xml';
+$UI = 'GUI';
+$action = 'export2Fgl';
+$importInformixDir = '/usr/informix';
+$importInformixServer = 'unstable';
+$importHost = 'debian';
+$importDatabase = 'p4gl_repository';
+$importUser = 'sergio';
+$exportInformixDir = undef;
+$exportInformixServer = undef;
+$exportHost = 'debian';
+$exportDatabase = 'p4gl_repository';
+$exportUser = 'sergio';
+$csvExportFile = '4gl_mapping.txt';
+$xmlExportFile = '4gl_mapping.xml';
+$clearRepositoryOnImportCSV = undef;
+$normalize = '1';
+$clearRepositoryOnImportXML = 'false';
+$loadComments = undef;
+$parseOnly = 0;
+$loadTableUsage = undef;
+$loadParameters = 1;
+$loadStrings = 0;
+$loadLocalVariables = 0;
+$sourceDir = '/usr/home/sergio/tmp/src/AMARELA/4gl';
+$replaceFgldoc = 0;
+$fglSource = 'BdAmrCliente.4gl';
+$logShowed = '1';
+$importFglLocation = '/usr/home/sergio/AMARELA/src/4gl';
+$loadFilesRecursive = '1';
+</pre>
+                              </td>
+                            </tr>
+                                                                        
+                                                                        
+                                 
+                                      </tbody>                          
+                                                                        
+                                                              
+                                    </table>
+                        <br>
+                        </blockquote>
+                                                                        
+                                                    
+                                    <h2>Parser / Loader</h2>
+  Corresponde a um programa execut&aacute;vel que trata de efectuar um parsing
+ (com an&aacute;lise l&eacute;xica e sint&aacute;tica) do programa fonte
+em  4gl e respectivos coment&aacute;rios especiais.<br>
+                                      <br>
+  O nome do execut&aacute;vel &eacute; p4gl.<br>
+                                      <br>
+  Permite as seguintes op&ccedil;&otilde;es de execu&ccedil;&atilde;o:<br>
+                                                                        
+  
+                                    <blockquote>                         
+                                                    
+                                      <ul>
+                                          <li>&nbsp; -h : Mostra a mensagem
+ de help</li>
+                                          <li>&nbsp;&nbsp; -d : Indica que
+ se pretende ligar o debug mode que efectua um dump da informa&ccedil;&atilde;o
+ carregada</li>
+                                          <li>&nbsp;&nbsp; -i : Indica que
+ o programa deve inserir no reposit&oacute;rio&nbsp;</li>
+                                          <li>&nbsp;&nbsp; -v : Indica se 
+o modo verbose deve ou n&atilde;o ser ligado</li>
+                                          <li>&nbsp;&nbsp; -w : Warning level
+ (1..10)</li>
+                                          <li>&nbsp;&nbsp; -c : Gera a informa&ccedil;&atilde;o
+ html para este m&oacute;dulo especifico</li>
+                                          <li>&nbsp;&nbsp; -s : Indica que
+ se pretende carregar a informa&ccedil;&atilde;o contida em coment&aacute;rios
+ normais (n&atilde;o come&ccedil;ados com {**).</li>
+                                          <li>&nbsp;&nbsp; -p package : Package
+  name used to load the information<br>
+                                          </li>
+                                                                        
+      
+                                      </ul>
+                                        </blockquote>
+  Este execut&aacute;vel &eacute;, sob o ponto de vista da utiliza&ccedil;&atilde;o
+ da documenta&ccedil;&atilde;o, a parte mais importante. Quando um projecto
+ estiver correctamente organizado e estruturado, a documenta&ccedil;&atilde;o
+ ser&aacute; realizada pelos programadores em cada programa fonte e carregada
+ para o reposit&oacute;rio usando esta ferramenta.<br>
+                                        <br>
+  O parser est&aacute; implementado, tal como grande parte dos 4gl(s) existentes
+ (exceptuando o da Informix e 4js) no que se refere &agrave;s palavras reservadas.<br>
+                                        <br>
+  Desta forma, deve ser carregada informa&ccedil;&atilde;o sem usar palavras
+ pertencendes a statements de 4gl como nome de identificadores (ex: n&atilde;o
+ usar display como nome de vari&aacute;vel).<br>
+                                        <br>
+  Se tal ocorrer e mesmo assim se pretender efectuar o carregamento da informa&ccedil;&atilde;o
+ destes programas pode-se usar mais um coment&aacute;rio especial que, ao
+ser inserido faz com que o parser ignore o c&oacute;digo entre ele inserido.
+O coment&aacute;rio especial &eacute; {IGNORE} e ignora o c&oacute;digo at&eacute;
+ encontrar de novo um coment&aacute;rio igual.<br>
+                                        <br>
+  Quando se tentar carregar informa&ccedil;&atilde;o com estas palavras reservadas
+ sem que esteja no meio dos coment&aacute;rios IGNORE, o parser alertar&aacute;
+ a exist&ecirc;ncia de um erro de sintaxe.<br>
+                                                                        
+      
+                                      <h2>Reposit&oacute;rio</h2>
+  O reposit&oacute;rio reside numa base de dados devidamente normalizada
+e  que tem de ser suportado por um SGBD informix.<br>
+                                        <br>
+  &Eacute; provavel que numa pr&oacute;xima vers&atilde;o possa funcionar 
+com outro qualquer SGBD.<br>
+                                        <br>
+  No manual de documenta&ccedil;&atilde;o t&eacute;cnica apresenta-se a informa&ccedil;&atilde;o
+ mais detalhada e estruturada sobre o modelo de dados, no entanto de seguida
+ apresenta-se um breve resumo das tabelas existentes e o significado do seu
+ conteudo.<br>
+                                        <br>
+                                                                        
+      
+                                      <table cellpadding="2" cellspacing="2" border="1" width="100%">
+                                          <tbody>
+                                            <tr>
+                                              <td valign="Top">         
+                                                                        
+       
+                                            <div align="Center"><b>Tabela</b><br>
+                                              </div>
+                                              </td>
+                                              <td valign="Top">         
+                                                                        
+       
+                                            <div align="Center"><b>Descri&ccedil;&atilde;o</b><br>
+                                              </div>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top">p4gl_excel<br>
+                                              </td>
+                                              <td valign="Top">Imagem do
+ficheiro  CSV (registos com caracter separador) usado por carregamento de
+folha de c&aacute;lculo.<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top">p4gl_module<br>
+                                              </td>
+                                              <td valign="Top">Source 4gl 
+no qual existe c&oacute;digo programado.<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top">p4gl_package<br>
+                                              </td>
+                                              <td valign="Top">Package. Abstra&ccedil;&atilde;o
+ que ir&aacute; permitir a unicidade de m&oacute;dulos e uma eventual classifica&ccedil;&atilde;o
+ do mesmo. Poder&aacute; corresponder a uma aplica&ccedil;&atilde;o ou direct&oacute;rio.<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top">p4gl_process<br>
+                                              </td>
+                                              <td valign="Top">Processos. 
+Abstra&ccedil;&atilde;o que define o(s) processo(s) se neg&oacute;cio implementados 
+pelo software.<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top">p4gl_function<br>
+                                              </td>
+                                              <td valign="Top">Fun&ccedil;&otilde;es
+ que est&atilde;o implementadas em m&oacute;dulos.<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top">p4gl_fun_parameter<br>
+                                              </td>
+                                              <td valign="Top">Parametros 
+de execu&ccedil;&atilde;o de cada fun&ccedil;&atilde;o declarada num m&oacute;dulo<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top">p4gl_fun_process<br>
+                                              </td>
+                                              <td valign="Top">Processos
+de  neg&oacute;cio que uma fun&ccedil;&atilde;o implementa<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top">p4gl_fun_return<br>
+                                              </td>
+                                              <td valign="Top">Valores de 
+retorno devidamente identificados com coment&aacute;rios que uma fun&ccedil;&atilde;o
+ devolve<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top">p4gl_fun_todo<br>
+                                              </td>
+                                              <td valign="Top">Lista de ac&ccedil;&otilde;es
+ por realizar de uma fun&ccedil;&atilde;o<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top">p4gl_module_prog<br>
+                                              </td>
+                                              <td valign="Top">M&oacute;dulos
+ de 4gl que comp&otilde;e o programa<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top">p4gl_program<br>
+                                              </td>
+                                              <td valign="Top">Programa execut&aacute;vel<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top">p4gl_table_usage<br>
+                                              </td>
+                                              <td valign="Top">Utiliza&ccedil;&atilde;o
+ de tabelas em m&oacute;dulos e fun&ccedil;&otilde;es (para 4gl embebido
+n&atilde;o  din&acirc;mico)<br>
+                                              </td>
+                                            </tr>
+                                                                        
+          
+                                        </tbody>                         
+                                                    
+                                      </table>
+                                        <br>
+                                                                        
+      
+                                      <h1>Ciclo de refactoring de documenta&ccedil;&atilde;o&nbsp;</h1>
+    A utiliza&ccedil;&atilde;o da ferramenta permitiu-nos ganhar alguma experi&ecirc;ncia
+  neste tipo de processos.<br>
+                        <br>
+    Assim, dadas as caracteristicas da ferramenta concluimos que esta nos 
+permite  f&aacute;cilmente efectuar a documenta&ccedil;&atilde;o de um projecto 
+em  4gl de uma forma iterativa e evolutiva.<br>
+                        <br>
+    Tal acontece pois &eacute; possivel efectuar importa&ccedil;&otilde;es
+ e  exporta&ccedil;&otilde;es em v&aacute;rios sentidos permitindo a sua
+modifica&ccedil;&atilde;o   nos v&aacute;rios suportes em que ela vai sendo
+armazenada (CSV, SGBD, 4gl)   podendo sempre ser convertida para outro formato
+(com excep&ccedil;&atilde;o   do html gerado que &eacute; unidireccional).<br>
+                        <br>
+                        Assim, em nossa opini&atilde;o, para documentar um
+ projecto  deve-se seguir os seguintes passos:<br>
+                                                                        
+                                                        
+                                      <blockquote>                      
+                                                                        
+                                      
+                                        <ul>
+                            <li>Carregar informa&ccedil;&atilde;o sobre os
+ m&oacute;dulos  para o reposit&oacute;rio atrav&eacute;s de parsing : Nesta
+ fase ficar&aacute;  guardado no reposit&oacute;rio todas as fun&ccedil;&otilde;es
+ dos m&oacute;dulos  analisados com os respectivos parametros.</li>
+                            <li>Gerar ficheiro CSV com esta informa&ccedil;&atilde;o.</li>
+                            <li>Editar informa&ccedil;&atilde;o no Excel.</li>
+                            <li>Completar a informa&ccedil;&atilde;o no reposit&oacute;rio
+  com base no ficheiro CSV editado no Excel.</li>
+                            <li>Exportar a informa&ccedil;&atilde;o para
+os  sources 4gl.</li>
+                            <li>Alterar os coment&aacute;rios nos fontes
+4gl</li>
+                            <li>Efectuar o carregamento para navega&ccedil;&atilde;o
+  na informa&ccedil;&atilde;o.<br>
+                            </li>
+                                                                        
+                                                                
+                                        </ul>
+                          </blockquote>
+                                                                        
+          
+                                        <h1>Documenta&ccedil;&atilde;o de
+ aplica&ccedil;&atilde;o nova</h1>
+  Se uma aplica&ccedil;&atilde;o f&ocirc;r construida de novo, a equipa deve
+ estar devidamente formada por forma a que a documenta&ccedil;&atilde;o seja
+ inserida durante a fase de programa&ccedil;&atilde;o.<br>
+                                          <br>
+  Assim, evitam-se refactorings desnecess&aacute;rios e aumenta-se bastante
+ a facilidade de manuten&ccedil;&atilde;o.<br>
+                                          <br>
+  Se usada a lista de tarefas por realizar, pode ser uma importante ajuda 
+no fluxo / processo de programa&ccedil;&atilde;o, dado que o programador ir&aacute;
+registando nos sources que est&aacute; a escrever (sem necessidade de mudar
+de ambiente) quais as tarefas que est&aacute; a deixar para depois implementar
+(pois durante o desenvolvimento a nossa mente vai-se lembrando de pormenores
+que n&atilde;o se pode implementar na altura pois est&aacute;-se a implementar
+outra funcionalidade).<br>
+                                                                        
+                                              </div>
+                        </div>
+                                                                        
+                                                                        
+                                             
+                                        </body>
+                                        </html>

@@ -1,0 +1,969 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head http-equiv="content-type" content="text/html; charset=UTF-8" href="http://www.despodata.pt/FglDocumenter/user_manual.html" language="JavaScript">
+           
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Language" content="en-us">
+   <!-- BabelFish added base tag --><script language="JavaScript">
+<!--
+ var babelOrigUrl="http://www.despodata.pt/FglDocumenter/user_manual.html";  if  ((null == parent) || (null == parent.BabelFishAdd) || ('TF' != parent.BabelFishAdd.babelTF)) { var i = new Image(); i.src = 'http://babel.altavista.com/aftu' }
+//--></script>
+  <meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+  <meta name="ProgId" content="FrontPage.Editor.Document">
+  <title>4gl programs documenter</title>
+                                                                     
+</head>
+  <body>
+                   
+<div align="Center"><big><b><font face="Helvetica, Arial, sans-serif">4gl 
+ programs documenter</font></b></big><br>
+                   
+<div align="Left">          
+<h2> Introduction </h2>
+           During the life cycle of a project, the documentation that associates  
+ to the implementation (in 4gl code) to functionality it becomes rapidly unsynchronized.<br> 
+        <br>
+           This fact occurs due to form and place where this normally is 
+stored.    <br>
+        <br>
+   The designer usualy to construct a document where it arrives for times  
+at  the detail to define the functions, its return values and parameters.  
+<br>
+        <br>
+           Is common to use CASE tools as the Power Designer putting inside  
+ of the processes definition the documentation descriptions of the program  
+ to be built. <br> 
+          <br>
+           In the initial phase of project development (if the manager have  
+ some carefull), it is probable that the documentation reflects the programmed  
+ code. <br>
+          <br>
+           When dumb for a phase of the process most advanced, normally immediately  
+ after the first usable version, the chaos starts.  The programmer has to  
+decide and the tracker does not have time to control everything.  Thus the  
+source code gets modified, but as the programmer for definition does not like 
+to modify documents this is immediately unsynchronized. <br> 
+          <br>
+           The more time passes more unsynchronized it is.  Until it does  
+not  serve for nothing. <br> 
+          <br>
+           It would be easy to blame the programmers, however the documentation  
+ normally is hidden underneath of some server, in a obscure directory inside  
+ a document (normally in .doc format ) normally with sets of ten of pages.  
+  The context change is such that of fact me does not seem easy of it to demand 
+ similar effort. <br> 
+          <br>
+           The aproaches initiated with some work, as for example <i> literate  
+ programming </i>  are in this market each time more used. <br> 
+          <br>
+           The Java is paradigmathic:  The reference documentation of all  
+API(s)  is gotten by automatic processes with information contained in sources.  
+<br>
+          <br>
+           With this form, we easily note the existence of clear improvements,  
+ as for example: <br> 
+                   
+<blockquote>                              
+  <ul>
+              <li>Unique  tool used for programming and reference documentating  
+ (text editor, usually vi or emacs). </li> 
+              <li> Easy visualization of documentation errors. </li>
+              <li> Increased productivity. </li>
+              <li> More communication inside of programming teams (given
+that  all the functions will be registered, being this easily available).
+      <br>
+              </li>
+                                       
+  </ul>
+            </blockquote>
+            <br>
+           This tool gives 4gl what already it exists in java it (with javadoc)  
+ or in the C/C++ (with projects as doxygen), or either:  <br> 
+                                       
+  <blockquote>                                                  
+    <ul>
+                <li> The possibility of the reference documentation to be 
+incluided  in the source 4gl modules. </li>
+                <li>Generation of reference documentation in readable format.</li>
+                <li> Possibility of search. </li>
+                <li> Reference documents with diverse organizations. </li>
+                                                           
+    </ul>
+   Obviously, however the programmers and project managers have to create  
+some  discipline to allow that during the modifications to the programs, the 
+documents  are modified to.  Inclusively he must yourself define <a href="http://world.altavista.com/sites/nzen/pos/babelfish/urltrurl?lp=pt_en&url=http%3A%2F%2Fwww.despodata.pt%2FFglDocumenter%2FfgldocGuidelines.html"> 
+    some  </a>patterns to the commentaries to insert. <br> 
+                     </blockquote>
+                                                           
+    <h1><small> For the impacient </small></h1>
+         Not to compel to the full reading of the manual some tipical sequences  
+ for installation and execution of the tool are presented here. <br> 
+         <br>
+                             
+    <h2> Compilation </h2>
+     The components that need compilation are:  the parser (p4gl) and aditional  
+ classes of the manager.<br> 
+        <br>
+     To compile just execute <i> make </i>  in the base directorythe tool. 
+     <br>
+                             
+    <h2> Installation </h2>
+     Execute <i> make install </i>. <br> 
+                             
+    <h2> Execution </h2>
+      One presents only tipical examples of execution with non graphical 
+User  Interface, called Command line User Interface (CUI).<br> 
+                             
+    <h3> To import information of sources </h3>
+                             
+    <blockquote> $ fgldoc -- ui=CUI -- action=ImportFgl -- import_directory=/tmp 
+ -- load_recursive <br>
+           </blockquote>
+                                       
+      <h3> To import information of CSV(s) </h3>
+                                       
+      <blockquote> $ fgldoc -- ui=CUI -- action=importCSV -- sheet_file=/tmp/comments.csv 
+ -- load_recursive -- it normalizes <br>
+             </blockquote>
+                                                 
+        <h3> To export to 4gl sources </h3>
+                                                 
+        <blockquote> $ fgldoc -- ui=CUI -- action=export2Fgl -- sheet_file 
+ = &lt; fileName &gt; -- export_directory = &lt; directoryName &gt;<br>
+               </blockquote>
+                                                           
+          <h3> To export to CSV </h3>
+                                               
+          <blockquote> $ fgldoc -- ui=CUI -- action=export2Csv -- export_directory 
+ = &lt; directoryName &gt; -- export_source = &lt; fglSourceName.4gl &gt;<br>
+                </blockquote>
+                                                                   
+            <h3> To export to HTML </h3>
+                                                       
+            <blockquote> $ fgldoc -- ui=CUI -- action=export2Html -- export_html_directory 
+ = &lt; directory_name &gt; <br>
+                  </blockquote>
+                                                                        
+                    
+              <h2></h2>
+                                                                        
+                               
+              <h1> Components </h1>
+                                                                        
+                               
+              <h2> fgldoc - Interface for execution of documentation shares
+                </h2>
+                                                                        
+                         
+              <p> Component that serves for the execution of the actions provided 
+by  4gl documenter.  The majority of the documentation shares is  executed 
+by intermediary of this program. </p> 
+                                                               
+              <p> It is build in Perl and the accpets the following execution 
+ options: <br>
+            </p>
+                                                                        
+                    
+              <blockquote>                                               
+                                                      
+                <ul>
+                <li> -- help:  It defines the allowed options </li>
+                <li> -- ui={GUI | CUI }:  User interface with which the application 
+ will be executed that could be: </li>
+                                                                        
+                                                    
+                  <ul>
+                  <li> GUI:  Graphical User Interface (Mode Perl / Tk) </li>
+                  <li> CUI:  Command line User Interface.  It does not have
+ interaction with user.  With this interface all options should be suplied
+ in command line.<br>
+                  </li>
+                                                                        
+                                                    
+                  </ul>
+                <li> -- action = &lt; ActionName &gt;: Action to execute, 
+that  they could be: </li>
+                                                                        
+                                                    
+                  <ul>
+                  <li> importCSV:  It imports the commentaries of file with 
+ a separating fixture generated by a spreadsheet for example. </li>
+                  <li> importFgl: Imports the commentaries of 4gl source
+file.                       </li>
+                  <li> export2Fgl:  4gl. Exports the commentaries to 4gl
+sources.  The folowing parameters are needed <i> -- exportDirectory </i>
+ and <i> --  exportSource </i>     . </li>
+                  <li> export2Csv:  It exports the commentaries to a file 
+with  separating character. </li>
+                  <li> export2Html:  It exports the commentaries to a set 
+of  html file duly linked </li>
+                                                                        
+                                                    
+                  </ul>
+                <li> -- export_directory = &lt; dirName &gt;:  In the case
+ of exportation of the commentaries for sources of 4gl it must contain the
+ name of the directory where to generate the files. </li>
+                <li> -- exportSource = &lt; fglname &gt;:  In the case of 
+exportation  of the commentaries for sources of 4gl it will go to contain 
+the name of the program source. </li>
+                      <li> -- quiet:  It removes all and any message sent 
+for  standard output. </li>
+                      <li> -- insertEmptyComment:  If assigned it indicates 
+ that it must be inserted an empty commentary in a function that has not defined
+ it in the repository.  Used in the option of exportation for sources 4gl.
+  </li>
+                      <li> -- sheet_file = &lt; SCVfilecName &gt;:  It indicates
+  the name of the file with CSV separator to use in the case of the importation 
+ and exportation for files with caracter separating. </li>
+                      <li> -- it normalizes:  It indicates that the loaded
+ information  of the CSV file must be normalized and not only kept in the
+table with equal structure of the file. </li>
+                      <li> -- clean_repository:  If assigned it indicates 
+that  the repository must be clean before loaded the information. </li>
+                      <li> -- send_line_to_log </li>
+                      <li> -- package_name=s:  It indicates the name of package 
+ to insert during of 4gl sources parsing. </li>
+                      <li> -- load_recursive:  In the case of the shipment
+ of  information of 4gl(s) it indicates that it must be loaded the files
+of  the directory and all the corresponding sub-directories. </li>
+                      <li> -- import_directory=s:  It defines the directory 
+ where they are 4gl(s) of where if it intends to load the information. </li>
+                      <li> -- export_html_directory = &lt; htmlDirectoryName
+  &gt;:  The directory indicates which to where the information in format
+HTML will be exported / generated </li>
+                      <li> -- to ignore_exist_dir:  If assigned it indicates 
+ that the program must ignore if the directory already exists.  Used for the
+ exportation for HTML <br>
+                </li>
+                                                                        
+                                   
+                </ul>
+              </blockquote>
+                                                                        
+                                   
+                <h1>       </h1>
+                                                                        
+                            
+                <h2><small><small> Cui  user interface</small></small></h2> 
+                                                                        
+                                           
+                <p> CUI is an acronym that means Command line User Interface.
+                  </p>
+                                                                        
+                                   
+                <p> The goal is to make possible the <i>batch </i>execution<i>
+    </i>of the allowed operations. <br>
+              </p>
+                                                                        
+                                   
+                <p>Acceded when the program executed  with option --ui=CUI. 
+                  </p>
+                                                                        
+                                   
+                <p> A time that after its execution will not have to exist 
+ any interaction with the users, all the necessary options must be supplied
+  by command string or to be available in the parameters file (normally .fgldocrc).
+                  <br>
+              </p>
+                                                                        
+                                   
+                <h1><small> GUI Interface</small></h1>
+         It is build using Tk package of the Perl.  As such this has to be 
+ installed in the machine where if it is to execute. <br> 
+              <br>
+         A common error is the attempt of execution in mode GUI in a window  
+ of telnet without DISPLAY of associated X, what obviously a time is not possible 
+ that does not exist surrounding graphical environment associated.       
+          <br>
+              <br>
+         In the points that if follow one defines which the allowed interactive  
+ options. <br>
+                                                                        
+                                   
+                <h3> File -&gt; Open </h3>
+         It opens and it reads the file that have inside all the execution 
+ options for the tasks.<br> 
+              <br>
+         For default, the information loaded is contained in the file ~/.fgldocrc. 
+                  <br>
+                                                                        
+                                   
+                <h3> File -&gt; Save </h3>
+         It records the current options of execution in the parameter file 
+ (normally ~/.fgldocrc). <br> 
+                                                                        
+                                   
+                <h3> File -&gt; Exit</h3>
+   Exit the program.  Before finishing the execution it records the options  
+ in the parameters file. <br> 
+                                                                        
+                                   
+                <h3>Import -&gt; Csv </h3>
+         It imports commentaries of a filing-cabinet CSV (Character Separated)  
+ for the repository in relationary model (database). <br> 
+              <br>
+         The importation is made in two phases: <br> 
+                                                                        
+                                   
+                <blockquote>                                             
+                                                                        
+                  <ul>
+                  <li> Load of the file for one database table with the same 
+ structure. </li>
+                  <li> Normalization of the information for the defined relational 
+ model. <br>
+                  </li>
+                                                                        
+                                                    
+                  </ul>
+                </blockquote>
+                <br>
+         It allows to define: <br> 
+                                                                        
+                                                    
+                  <blockquote>                                          
+                                                                        
+                  
+                    <ul>
+                    <li> File  to load:    Full name of the file to load 
+giving  access to <i> a File Chooser </i>  for the choice.  For default its 
+extension  will be txt. </li> 
+                    <li> Cleanness of the repository:  Not used </li>
+                    <li> Normalization:  When unactivated 2ª phase is not  
+executed.                        </li>
+                    <li> To send string for log:  When activated, each loaded
+  string is sent for log. </li>
+                                                                        
+                                                                    
+                    </ul>
+                  </blockquote>
+                                                                        
+                                                                    
+                    <p> If the user to load in the Cancel &lt; button &gt; 
+ or to close the window, the operation is not executed coming back to the
+ main menu. </p>
+                                                                        
+                                                        
+                    <p><br>
+        The file must have as separator the &lt; TAB &gt; character between 
+ columns and &lt; Enter &gt; between strings.  </p>
+                                                                        
+                                                        
+                    <p> It must contain 7 columns whose information must be
+(for order): <br>
+                 </p>
+                                                                        
+                                                        
+                    <blockquote>                                        
+                                                                        
+                       
+                      <ul>
+                     <li> moduleName:  Name of the 4gl module. </li>
+                     <li> idProcess: Process code just like in p4gl_process 
+ table </li>
+                     <li> functionName:  Name of the function </li>
+                     <li> parametro:  Parameter </li>
+                     <li>return:  Description of the return values. </li>
+                     <li> call  : </li> 
+                     <li> comments: Text comment to the function <br>
+                       <br>
+                     </li>
+                                                                        
+                                                                      
+                      </ul>
+                   </blockquote>
+                                                                        
+                                                                        
+         
+                      <h3>Import -&gt; 4gl Sources </h3>
+         It imports the available information and commentaries in 4gl source. 
+                        <br>
+                  <br>
+         The information to configurate in the window is: <br> 
+                                                                        
+                                                                        
+         
+                      <blockquote>                                      
+                                                                        
+                                                   
+                        <ul>
+                      <li> Name of package:  Name of package the one that 
+the  4gl modules will be associated.  For now is used just for diferentiate 
+modules.                           </li>
+                      <li> Location of the directory:  Full name of the directory
+  below of which 4gl sources to parse are available. </li>
+                      <li> Stack of modules:  Full stack of the 4gl modules 
+ of that it is intended to parse. </li>
+                      <li> Load comments:  It indicates if it intends or
+not  to load in the repository the fgldoc commentaries. </li>
+                      <li> Parse Only:  It only serves to test if parsing 
+or  is done successfully not loading any information in the database.    
+                       </li>
+                      <li> Repository:  Information necessary to establish
+ the  connection with the database. </li>
+                      <li> Shipment of table use:  If activated any information 
+ on table usage is loaded in the repository. </li>
+                      <li> Load parameters:  If activated it indicates that 
+ parser it must load the parameters of the functions in the repository. </li>
+                      <li> Load Strings:  If activated strings they will
+be  loaded in the repository.  Still it is not in functioning. </li>
+                      <li> Load local variables:  If activated it indicates  
+ that the local variables will be loaded   in the repository. </li> 
+                      <li> Recursive:  If activated the existing files with
+ 4gl extension will be added to the stack all 4gl in directories below the
+ chosen. <br>
+                      </li>
+                                                                        
+                                                                        
+                         
+                        </ul>
+                    </blockquote>
+                                                                        
+                                                                        
+                         
+                        <p>  If the user press  the &lt;Cancel&gt;  button 
+ or close the window, the operation is not executed and return to the main 
+ menu. </p>
+                                                   
+                        <h3> Export -&gt; Csv </h3>
+  Exports all the information available in the repository to a text file 
+with  character separator.<br> 
+                          <br>
+  To obtain it takes of the data model normalization and isnert in the table 
+ (p4gl_excel) before writing to the file. <br> 
+                          <br>
+          The interface available in this version presents only one file 
+to  choose so that the user  choose the file and location where it desires 
+to  generate. <br> 
+                                                   
+                        <p></p>
+                                                   
+                        <p></p>
+                                                   
+                        <p>  If the user press  the &lt;Cancel&gt;  button 
+ or close the window, the operation is not executed and return to the main 
+ menu. </p>
+                                                   
+                        <h3>Export -&gt; 4gl Sources </h3>
+  Inserts the information available in the repository in the 4gl sources 
+as  fgldoc comments.<br> 
+                          <br>
+  The module comment is inserted at the begining of the file.<br> 
+                          <br>
+  The comments for each function is inserted just before its implementation.<br> 
+                          <br>
+          It allows to configure the following options: <br> 
+                                                   
+                        <blockquote>                                    
+                 
+                          <ul>
+                              <li>Directory :  The place (directory name) 
+where the 4gl source to insert the comments is located. </li>
+                              <li>4gl module  : Presetents all the 4gl(s)  
+that are in the chosen directory so the user can chose the one where to insert 
+ the comments. </li> 
+                              <li>fgldoc comment replacemenet :  If activated 
+ it substitutes eventual fgldoc that exist in the file, otherwise  leaves 
+them and creates a new one. <br> 
+                              </li>
+                                                       
+                          </ul>
+                            </blockquote>
+                                                       
+                          <p>  If the user press  the &lt;Cancel&gt;  button 
+ or close the window, the operation is not executed and return to the main 
+ menu. </p>
+                                                       
+                          <h3>Export -&gt; HTML </h3>
+          Although an interface in JSP exists to sail on-line in the information 
+ stored at the repository,  some times to be able to access that information 
+ directly to a pure HTMLtree (for not being dependent of a complex infrastructure 
+ with DBMS and  JSP container). <br> 
+                            <br>
+          This option allows it, therefore to generate a document structure 
+ HTML duly linked and that they allow to navigate in exported documentation.  
+                           <br>
+                            <br>
+  This way we can write the information to  CD Rom or write it  in one tgz 
+ that could be sended by e-mail.<br> 
+                            <br>
+  Exports the repository in the totality. <br> 
+                                                       
+                          <p>  If the user press  the &lt;Cancel&gt;  button 
+ or close the window, the operation is not executed and return to the main 
+ menu. </p>
+                                                       
+                          <h3> Options -&gt; Show Log </h3>
+      It defines if the window of log must or not being available during 
+the  program execution.<br> 
+                                                       
+                          <h3> Options - &gt; Configure </h3>
+      Allows to configure the execution options of diverse actions, nominated:  
+                           <br>
+                                                       
+                          <blockquote>                                  
+                       
+                            <ul>
+                                <li> 4gl doc repository:  Information needed
+ for establishment the database connection. </li>
+                                <li> syspgm repository:  Not used, for now 
+                              </li>
+                                <li> CSV import file:  Name of the used character
+ separated file for default to load repository. </li>
+                                <li> XML file: Not used, for now. </li>
+                                <li> CSV Export file:  Name of the file where
+ the export actionis going to record the information. </li>
+                                <li> XML export file: Not used form the moment. 
+                                 <br>
+                                </li>
+                                                           
+                            </ul>
+                              </blockquote>
+                                                           
+                            <h1><small> Navigator </small></h1>
+  Build in JSP, allows, from and html browser to accede to the available 
+information  at the repository.<br> 
+                              <br>
+  Its divided in tree windows (frames): <br> 
+                                                           
+                            <blockquote>                                
+                             
+                              <ul>
+                                  <li>Business processes  </li> 
+                                  <li> Modules / 4gl sources (filtered or  
+not for a process) </li> 
+                                  <li>Comments (filtered or not for the some
+ module or process). </li>
+                                                               
+                              </ul>
+                                </blockquote>
+      The business processes frame presents the stack of processes that exists 
+ in a table and to which are associated 4gl functions. Each one of these 
+processes  is one link that fills the window that will count to the stack 
+of modules.  There is an option to select all the processes. <br> 
+                                <br>
+      On the basis of the selected process (or all if thus chosen) is presented 
+ a list of 4gl modules that contains functions that they had been associates 
+ to a process (with tag @process).  Each  module is one link that fills the 
+ frame of comments of a module.  ã will count to one op ç to show to all 
+fun  ç õ es, in accordance with the process pr viamente is seleccionmado. 
+                              <br>
+                                <br>
+  The coments of a module (or all consonant the chosen one) presents a summarized 
+ stack  of the functions of that module, followed later for  more detailed 
+ information existing in the repsoitory, nominated: <br> 
+                                                               
+                              <blockquote>                               
+                                  
+                                <ul>
+                                    <li> Name </li>
+                                    <li>Textual comment. </li>
+                                    <li> Parameters:  Stack and description 
+                                   </li>
+                                    <li> Return values:  Description of each
+ one of them. <br>
+                                    </li>
+                                                                   
+                                </ul>
+                                  </blockquote>
+                                                                   
+                                <h1><small>File with configuration data </small></h1>
+ Its used to store the wanted execution action and the options and data needed.<br> 
+                                 <br>
+          This file can be manually builded or to be recorded using the availiable  
+options when fgldoc  is executed (in GUI or CUI user interface). <br> 
+                                  <br>
+          By default, its name is <i> fgldocrc </i>  and is kept in the use  
+home directory. <br> 
+                                  <br>
+          In this version the file contains perl variables assignment  (some  
+kind of object serialization).                                  <br> 
+                                  <br>
+                                  <br>
+ The data assigned (and therefore used inside the tool) are:<br> 
+                                                                   
+                                <blockquote>                             
+                                        
+                                  <ul>
+                                      <li> csvImportFile:  Name of CSV file 
+where the data to be imported. </li>
+                                      <li> xmlImportFile:  Not used     
+                                </li>
+                                      <li> UI:  Type of user interface. 
+                                    </li>
+                                      <li> action: Action to execute. </li>
+                                      <li> to importInformixDir:  Informixdir
+ of the repository inside Informix RDBMS. </li>
+                                      <li> to importInformixServer:  Informixserver 
+of the repository. </li>
+                                      <li> importHost:  Host where the repository 
+is available. </li>
+                                      <li> importDatabase:  Database where 
+the repository is implemented. </li>
+                                      <li> to importUser:  User name for
+access to the database. </li>
+                                      <li> to exportInformixDir: </li>
+                                      <li> to exportInformixServer: </li>
+                                      <li> exportHost: </li>
+                                      <li> exportDatabase: </li>
+                                      <li> to exportUser: </li>
+                                      <li> csvExportFile:  Name of CSV file   
+where the information it will be exported. </li> 
+                                      <li> xmlExportFile:  Not used     
+                                </li>
+                                      <li> clearRepositoryOnImportCSV:  It 
+ indicates if the  repository should be clean when to import from  CSV file.  
+                                    </li>
+                                      <li>normalize:  It indicates that when 
+loading from CSV the table p4gl_excel should be normalized for respective
+ tables. </li>
+                                      <li> clearRepositoryOnImportXML:  Not 
+used </li>
+                                      <li> loadComments: </li>
+                                      <li> parseOnly:  It indicates that 
+during  the action  of 4gl source import just execute  one parse of the file. 
+ Used  to validate eventual syntax errors(s) and (or) usage of reserved words 
+as identifiers. </li> 
+                                      <li> loadTableUsage:  It indicates
+that  it is intended to load the tables usage (in non dynamic SQL). </li>
+                                      <li> loadParameters:  It indicates
+that  it is intended to load the parameters during 4gl sources import. </li>
+                                      <li> loadStrings:  Not used. </li>
+                                      <li> loadLocalVariables:  Not used. 
+                                    </li>
+                                      <li>sourceDir: The place (directory) 
+where the 4gl sources are located (to 4gl import). </li>
+                                      <li> replaceFgldoc:  It indicates that 
+during the action of 4gl export the comments should be overwrited.       
+                              </li>
+                                      <li> fglSource: The name of  4gl source  
+where the comments should be exported. </li> 
+                                      <li> logShowed:  Not used. </li>
+                                      <li> importFglLocation: The location 
+of 4gl sources to be imported. </li>
+                                      <li> loadFilesRecursive  : In 4gl source  
+import indicates if we want to descent ths sub-directories and load each 4gl 
+file. </li>
+                                                                       
+                                  </ul>
+                                    </blockquote>
+                                    <br>
+ Next we present an example of automatic filling of configuration file:<br> 
+                                                                       
+                                  <blockquote>                           
+                                              
+                                    <table cellpadding="2" cellspacing="2" border="1" width="100%">
+                                        <tbody>
+                                          <tr>
+                                            <td valign="Top">           
+                                                                        
+ 
+                                          <pre>$csvImportFile = '/usr/home/sergio/MOB.txt';
+$xmlImportFile = '4gl_mapping.xml';
+$UI = 'GUI';
+$action = 'export2Fgl';
+$importInformixDir = '/usr/informix';
+$importInformixServer = 'unstable';
+$importHost = 'debian';
+$importDatabase = 'p4gl_repository';
+$importUser = 'sergio';
+$exportInformixDir = undef;
+$exportInformixServer = undef;
+$exportHost = 'debian';
+$exportDatabase = 'p4gl_repository';
+$exportUser = 'sergio';
+$csvExportFile = '4gl_mapping.txt';
+$xmlExportFile = '4gl_mapping.xml';
+$clearRepositoryOnImportCSV = undef;
+$normalize = '1';
+$clearRepositoryOnImportXML = 'false';
+$loadComments = undef;
+$parseOnly = 0;
+$loadTableUsage = undef;
+$loadParameters = 1;
+$loadStrings = 0;
+$loadLocalVariables = 0;
+$sourceDir = '/usr/home/sergio/tmp/src/AMARELA/4gl';
+$replaceFgldoc = 0;
+$fglSource = 'BdAmrCliente.4gl';
+$logShowed = '1';
+$importFglLocation = '/usr/home/sergio/AMARELA/src/4gl';
+$loadFilesRecursive = '1';= ' 1 ';
+</pre>
+                                            </td>
+                                          </tr>
+                                                                        
+      
+                                      </tbody>                           
+                                              
+                                    </table>
+                                      <br>
+                                      </blockquote>
+                                                                        
+  
+                                    <h2> Parser / Loader </h2>
+ Its is the executable program that does the file parsing (with lexical and  
+syntathic analisys) of the 4gl source program and all the special coments  
+embedded. <br>
+                                      <br>
+      The name of the executable file is p4gl. <br> 
+                                      <br>
+      Allows the following execution options:<br> 
+                                                                        
+  
+                                    <blockquote>                         
+                                                    
+                                      <ul>
+                                          <li>  - h:  It shows the message
+ of help </li>
+                                          <li>   - d:  It indicates that
+one  intends to bind debug mode that efectua one dump of informs ç ã the
+loaded  one </li>
+                                          <li>   - i:  It indicates that
+the  program must insert in reposit ó river  </li>
+                                          <li>   - v:  It indicates if the
+ mode verbose must or n ã the on being </li>
+                                          <li>   - w:  Warning level (1,,10) 
+                                         </li>
+                                          <li>   - c:  ã generates informs
+ ç to it the HTML for this m ó dulo specifies </li>
+                                          <li>   - s:  It indicates that
+it  is intended to load informs ç to it ã contained in coment á normal rivers
+ (n ã eats it ç ados with {**). </li>
+                                          <li>   - p package:  Package name
+ used you load the information <br>
+                                          </li>
+                                                                        
+      
+                                      </ul>
+                                        </blockquote>
+      This executable is, under the point of view fgldocumenter tool, the 
+most important part.  When a project  will be well organized  and structured, 
+the functional documentation wil being made by the  programmers in each source 
+program and loaded to the repository using this  tool. <br> 
+                                        <br>
+The parser is implemented with the reserved word limitation such as great 
+part of 4gl(s) compilers existing (except  of Informix and 4js).<br> 
+                                      <br>
+This way, the sources  loaded informs should not contain reserved words as 
+name of identifiers (example: you cant using <i>display</i> as variable name). 
+                                      <br>
+                                        <br>
+      If such to occur and you even intend to load the information of these 
+programs, it can be used one special  comment   that, when inserted makes 
+that  that parser ignores the 4gl code inserted between it. This  special 
+comment is  {IGNORE } and ignores the code until it finds a new  equal comment. 
+                                      <br>
+                                        <br>
+      When if to try to load the information  with these reserved words without 
+without special  IGNORE comment, the parser alert to the existence of a  syntax 
+error.. <br>
+                                                                        
+      
+                                      <h2>Repository </h2>
+      The repository is nuild in a database duly normalized and it is being 
+supported by an informix RDBMS. <br> 
+                                        <br>
+We are working to have in a new version thea ability of working with other 
+RDBMS such as postgresql or MySql. <br> 
+                                        <br>
+In the technical manual we present more detailed information about the data 
+model however followed we present a brief summary of existing tables and 
+the meaning of  its contents. <br> 
+                                        <br>
+                                                                        
+      
+                                      <table cellpadding="2" cellspacing="2" border="1" width="100%">
+                                          <tbody>
+                                            <tr>
+                                              <td valign="Top">         
+                                                                        
+       
+                                            <div align="Center"><b> Table 
+                                             </b><br>
+                                              </div>
+                                              </td>
+                                              <td valign="Top">         
+                                                                        
+       
+                                            <div align="Center"><b> Descri
+ ç ã </b><br>
+                                              </div>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top"> p4gl_excel 
+                                            <br>
+                                              </td>
+                                              <td valign="Top"> Picture of
+the CSV file (caracter separated records) used for loading with information
+comming from a spreadsheet.<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top"> p4gl_module 
+                                             <br>
+                                              </td>
+                                              <td valign="Top">Name of the
+4gl Source  inside which exists 4gl code.<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top"> p4gl_package 
+                                             <br>
+                                              </td>
+                                              <td valign="Top"> Package.
+ Abstraction with the goal of having one entity that provide the unicity
+of a source name. In the most of the cases it corresponds to the directory
+(normally not fully qualified) where the sources reside. <br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top"> p4gl_process 
+                                             <br>
+                                              </td>
+                                              <td valign="Top"> Processes.
+  Abstaction that define the business processes implemented by the code.
+It colud be organized in a hierarquy<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top"> p4gl_function 
+                                             <br>
+                                              </td>
+                                              <td valign="Top"> Functions
+implemented in the modules.<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top"> p4gl_fun_parameter 
+                                             <br>
+                                              </td>
+                                              <td valign="Top">Function parameters<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top"> p4gl_fun_process 
+                                             <br>
+                                              </td>
+                                              <td valign="Top">Business processes
+implementes by a function<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top"> p4gl_fun_return 
+                                             <br>
+                                              </td>
+                                              <td valign="Top">Return values
+of a function<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top"> p4gl_fun_todo 
+                                             <br>
+                                              </td>
+                                              <td valign="Top"> Stack of
+actions to be done by a function<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top"> p4gl_module_prog 
+                                             <br>
+                                              </td>
+                                              <td valign="Top">4gl source
+modules that are linked in a program<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top"> they p4gl_program 
+                                             <br>
+                                              </td>
+                                              <td valign="Top">4gl executable
+program<br>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top"> p4gl_table_usage 
+                                             <br>
+                                              </td>
+                                              <td valign="Top">Database table
+usage in functions<br>
+                                              </td>
+                                            </tr>
+                                                                        
+          
+                                        </tbody>                         
+                                                    
+                                      </table>
+                                        <br>
+                                                                        
+      
+                                      <h1>Documentation refactoring cycle</h1>
+The goal of development of this tool was the need of knowing "something" 
+about 4gl projects to make some refactoring in that code.<br> 
+                                      <br>
+So, we gain some experience with this kind of processes-<br> 
+                                        <br>
+        Thus, given the caracteristicas of the tool we can say that this 
+ allows us to document a 4gl projecto in an iterative and evolutive form. 
+                                      <br>
+                                        <br>
+        Such happens beacause its possible to do imports and exports in both 
+ways with severall information formats allowing to modify it in this formats 
+and loaded again  (CSV, RDBMS, 4gl) being able to be converted for another 
+format (with the exception of the generated HTML that is unidireccional).  
+                                      <br>
+                                        <br>
+                            Thus, we think that to document a 4gl project 
+we could follow the steps: <br> 
+                                                                        
+      
+                                      <blockquote>                       
+                                                          
+                                        <ul>
+                                            <li>Load a first version of 4gl
+information with origin in 4gl modules using the import from 4gl sources
+to the repository: After this action all the modules, functions and parameters
+should be kept in the repository. </li>
+                                            <li> Generate a CSV file with
+this information loaded. </li>
+                                            <li>Edit the information in Excel
+or other spreadsheet. </li>
+                                            <li>Complete the repository information
+with the one edited in the spreadsheet.                                 
+          </li>
+                                            <li> Export the information to
+4gl source modules. </li>
+                                            <li>Modify the coments in the
+4gl. </li>
+                                            <li>Load the information from
+4gl sources when needed.<br>
+                                            </li>
+                                                                        
+          
+                                        </ul>
+                                          </blockquote>
+                                                                        
+          
+                                        <h1>New project documentation </h1>
+If we are starting with a new 4gl project, the team should be duly formed 
+to insert the fgldoc comments during the program work.<br> 
+                                        <br>
+      Thus, is prevented unnecessary refactorings and the easiness of maintenance 
+is maginified.<br> 
+                                          <br>
+      If used the stack of todo tasks for carrying through, can be an important 
+ aid in the stream / program process, given that the programmer can  register 
+in the sources that he is  writing (without necessity change to other environment)  
+which the tasks that is leaving for later implementing (therefore during the 
+development our mind are gone remembering details that we can not implement 
+at that time because we are implementing another functionality).   <br> 
+                                                                        
+                                                </div>
+                          </div>
+                                                                        
+                                                                        
+                                                                        
+                                                        
+                                        </body>
+                                        </html>
