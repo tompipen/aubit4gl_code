@@ -21,7 +21,7 @@ include ${ROOT}/FgldocDefs.mk
 #include /usr/desenvolv/include/4glbuilt.mk
 O=xxx
 
-VPATH 			=./4glsrc:./forms
+VPATH 			=./4glsrc:./4glsrc/functions_4gl:./forms:
 export VPATH
 
 LIBSDIR=/usr/desenvolv/lib/
@@ -41,10 +41,12 @@ MODULOS=/modulos
 
 FORMS = par_bde.frm ged_mod.frm ged_mtab.frm
 
-#4GLCOMP=d4gl-pcode
+
+#FIXME: get thsi from Autoconf
+4GLCOMP=d4gl-pcode
 #4GLCOMP=aubit
 #4GLCOMP=querix
-4GLCOMP=i4gl-pcode
+#4GLCOMP=i4gl-pcode
 
 #  ============================================================================
 #  Compila todos .4go(s)
@@ -52,6 +54,11 @@ FORMS = par_bde.frm ged_mod.frm ged_mtab.frm
 #all: $(ALL)
 all:
 	export DEFAULT=${4GLCOMP}; amake
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             DBdoc 4GL browser successfully compiled.               |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
 
 #  ============================================================================
@@ -131,10 +138,12 @@ make.modulos:
 #  ============================================================================
 clean:
 	${RM} *.4go *.4gi *.4bk *.o a.out core *.err *.frm *.o *.bak *.ao *.aox \
-    *.4gx
+    *.4gx  *.qo *.qox *.c *.h *.glb
 	export DEFAULT=${4GLCOMP}; amake clean
 	cd 4glsrc; ${RM} *.4go *.4gi *.4bk *.o a.out core *.err *.frm *.o *.bak \
-	*.ao *.aox *.4gx *.c *.h *.glb
+	*.ao *.aox *.4gx *.c *.h *.glb *.qo *.qox *.c *.h *.glb
+	cd 4glsrc/functions_4gl; ${RM} *.4go *.4gi *.4bk *.o a.out core *.err *.frm *.o *.bak \
+	*.ao *.aox *.4gx *.c *.h *.glb *.qo *.qox *.c *.h *.glb
 	cd forms; ${RM} *.err *.frm *.bak
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
@@ -143,5 +152,5 @@ clean:
 	@echo ""
 
 
-Makefile: Makefile.in
+makefile: Makefile.in
 	cd ${ROOT}; config.status --file=dbdoc/navigator/4gl/Makefile; cd -

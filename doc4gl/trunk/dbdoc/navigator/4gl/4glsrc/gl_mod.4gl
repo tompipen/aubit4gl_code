@@ -77,7 +77,7 @@ DEFINE
 									 # ficheiro de log ja aberto (c/startlog)
   d_nm_log       CHAR(64),  # Pathname do ficheiro de log
 									 # utilizado neste programa.
-   
+
 	 # Estrutura de controlo de entradas de dados para template tipo ent. 
 	 pr_scr_ctl array[3] of record
 		linha           smallint,

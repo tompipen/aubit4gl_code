@@ -24,7 +24,7 @@
 
 #DATABASE despodata
 
-GLOBALS "4glsrc/d_libglob.4gl"
+GLOBALS "4glsrc/functions_4gl/d_libglob.4gl"
 
 define
 	imprime_header   smallint,    # Flag de impressao ou nao do cabecalho

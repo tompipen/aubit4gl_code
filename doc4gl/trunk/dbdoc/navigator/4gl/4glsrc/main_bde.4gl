@@ -1,12 +1,12 @@
 
-#  ============================================================================ 
+#  ============================================================================
 #
 #  Copyright 1992 DESPODATA - Lisboa, PORTUGAL
-#                                                        
+#
 #  Divisao de desenvolvimento e producao de software.
-#                                                        
+#
 #  Autor:  sergio Alexandre Ferreira
-#                                                        
+#
 #
 #	This Module contains Proprietary and Confidential
 #	Information of Despodata - Consultores internacionais Lda.
@@ -15,7 +15,7 @@
 #
 #  ============================================================================
 
-GLOBALS "4glsrc/d_libglob.4gl"
+GLOBALS "4glsrc/functions_4gl/d_libglob.4gl"
 
 MAIN
    DEFINE

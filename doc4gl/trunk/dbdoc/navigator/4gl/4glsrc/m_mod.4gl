@@ -12,7 +12,7 @@
 #
 #
 #  ============================================================================
-GLOBALS "4glsrc/d_libglob.4gl"
+GLOBALS "4glsrc/functions_4gl/d_libglob.4gl"
 
 define
    pr_chaves record
