@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.65 2003-11-14 17:27:26 mikeaubury Exp $
+# $Id: curslib.c,v 1.66 2003-11-16 15:26:53 mikeaubury Exp $
 #*/
 
 /**
@@ -4164,9 +4164,11 @@ if (A4GL_isyes(acl_getenv("HIDE_MENU"))) {
  for (y=0;y<=1;y++) {
  	for (x=0;x<menu->w;x++) {
 		a=mvwinch(m,y,x);
-		if (a&A_BOLD) a-=A_BOLD;
-		if (a&A_NORMAL) a-=A_NORMAL;
-		a|=A_DIM;
+		if (A4GL_isyes(acl_getenv("DIM_INACTIVE_MENU"))) {
+			if (a&A_BOLD) a-=A_BOLD;
+			if (a&A_NORMAL) a-=A_NORMAL;
+			a|=A_DIM;
+		}
 		A4GL_debug("%d - %d,%d %04x %c",x,x+px,y+py,a,a&0xff);
 		mvwaddch(p,y+py,x+px,a);
 	}
