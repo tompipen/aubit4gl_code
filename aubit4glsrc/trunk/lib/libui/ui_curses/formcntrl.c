@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.25 2003-08-07 21:39:22 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.26 2003-08-14 16:12:29 mikeaubury Exp $
 #*/
 
 /**
@@ -516,7 +516,7 @@ process_control_stack (struct s_screenio *sio)
       		new_state = 0;
 		if (sio->mode != MODE_CONSTRUCT) {
 			int field_no;
-			char buff[1024];
+			char buff[10024];
 			field_no=sio->curr_attrib;
 			strcpy(buff,field_buffer (sio->currentfield, 0));
 			A4GL_trim(buff);

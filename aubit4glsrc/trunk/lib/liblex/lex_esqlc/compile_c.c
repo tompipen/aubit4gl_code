@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.80 2003-07-30 07:23:20 mikeaubury Exp $
+# $Id: compile_c.c,v 1.81 2003-08-14 16:12:29 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -619,7 +619,7 @@ print_report_ctrl (void)
   if (rep_type == REP_TYPE_NORMAL)
     {
       printc
-	("if (acl_ctrl==REPORT_LASTDATA) {if (_useddata) %s(0,REPORT_LASTROW);_started=0;if (rep.output) fclose(rep.output);return;}\n",
+	("if (acl_ctrl==REPORT_LASTDATA) {if (_useddata) %s(0,REPORT_LASTROW);_started=0;if (rep.output) {fclose(rep.output);rep.output=0;}return;}\n",
 	 get_curr_rep_name ());
     }
   else
@@ -633,7 +633,7 @@ print_report_ctrl (void)
   if (rep_type == REP_TYPE_NORMAL)
     {
       printc
-	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;if (rep.output) fclose(rep.output);return;}\n",
+	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;if (rep.output) {fclose(rep.output);rep.output=0;}return;}\n",
 	 get_curr_rep_name ());
     }
   else

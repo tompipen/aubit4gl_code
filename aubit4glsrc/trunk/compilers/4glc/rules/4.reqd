@@ -14,8 +14,7 @@
 %left LESS_THAN_EQ 
 %left NOT_EQUAL
 %left MINUS PLUS
-%left DIVIDE 
-%left MULTIPLY 
+%left DIVIDE MULTIPLY
 %left MOD
 %right COMMAND
 %token NUMBER_VALUE

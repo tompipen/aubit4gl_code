@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.41 2003-07-25 22:04:54 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.42 2003-08-14 16:12:29 mikeaubury Exp $
 #
 */
 
@@ -2146,12 +2146,12 @@ print_foreach_next (char *cursorname, char *using, char *into)
  * @return
  */
 void
-print_foreach_end (void)
+print_foreach_end (char *cname)
 {
   printc ("}");
   printcomment ("# end of foreach while loop \n");
-
   printc ("}\n");
+  print_close('C',cname);
   printc("}");
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.54 2003-08-08 20:48:18 mikeaubury Exp $
+# $Id: curslib.c,v 1.55 2003-08-14 16:12:29 mikeaubury Exp $
 #*/
 
 /**
@@ -59,14 +59,14 @@
 #define MAXFORM 8
 #define A4GL_MAXWIDTH 80
 #define MAXFIELDS 256
-#define mja_strcmp(a,b) mja_strncmp(a,b,0)
+#define mja_strcmp(a,b) A4GL_mja_strncmp(a,b,0)
 
 #ifndef strnicmp		/* typically in /usr/include/string.h */
-	#define strnicmp(a,b,c) mja_strncmp(a,b,c)
+	#define strnicmp(a,b,c) A4GL_mja_strncmp(a,b,c)
 #endif
 
 #ifndef stricmp			/* typically in /usr/include/string.h */
-	#define stricmp(a,b) mja_strncmp(a,b,0)
+	#define stricmp(a,b) A4GL_mja_strncmp(a,b,0)
 #endif
 
 #define MAXENTS 1000
@@ -104,7 +104,7 @@ int inwin;
 int curr_opt, max_opt;
 /*int currattr = 0; */
 char dirstr[100];
-int mja_strncmp(char *a,char *b,int c);
+int A4GL_mja_strncmp(char *a,char *b,int c);
 
 int help_no, g_help_no;
 
@@ -4049,6 +4049,16 @@ int a;
                 return a;
   }
   return A4GL_curses_to_aubit(wgetch(w));
+}
+
+int A4GL_open_gui_form_internal(char* name_orig,int absolute,int nat,char* like,int disable,void* handler_e) {
+	// Not available in curses
+	A4GL_exitwith("Cant open gui form in curses mode..");
+}
+
+
+int A4GLUI_initlib() {
+	return 1;
 }
 
 /* ============================== EOF ============================== */

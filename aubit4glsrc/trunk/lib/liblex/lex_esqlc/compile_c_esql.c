@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.47 2003-08-06 07:35:36 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.48 2003-08-14 16:12:29 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -535,7 +535,7 @@ print_open_cursor (char *cname, char *using)
 
       for (a = n - 1; a >= 0; a--)
 	{
-	  printc ("_using_%d=A4GL_char_pop();\n", a);
+	  printc ("_using_%d=A4GL_char_pop();A4GL_trim(_using_%d);\n", a,a);
 	}
 
       printc("internal_recopy_%s_i_Dir();",A4GL_strip_quotes(cname));
@@ -1222,12 +1222,12 @@ print_sql_block_cmd (char *s)
  * this statement (that is a C block close with }).
  */
 void
-print_foreach_end (void)
+print_foreach_end (char *cname)
 {
   printc ("}");
   printc ("}");
   printcomment ("/* end of foreach while loop */\n");
-
+  print_close('C', cname);
   printc ("}\n");
 }
 

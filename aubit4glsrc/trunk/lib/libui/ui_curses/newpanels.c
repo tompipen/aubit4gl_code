@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.67 2003-08-08 20:48:18 mikeaubury Exp $
+# $Id: newpanels.c,v 1.68 2003-08-14 16:12:29 mikeaubury Exp $
 #*/
 
 /**
@@ -1830,6 +1830,12 @@ A4GL_chkwin (void)
 	A4GL_debug(" API_ui Was linemode..");
 	clearok(curscr,1);
       	A4GL_init_curses_stuff ();
+
+	if (A4GL_isyes(acl_getenv("INIT_COL_REFRESH"))) {
+		if (has_colors()) A4GL_init_colour_pairs ();
+	}
+
+
 	clearok(curscr,1);
       	A4GL_set_scrmode ('S');
 	A4GL_zrefresh();
@@ -2342,7 +2348,7 @@ A4GL_subwin_setcolor (WINDOW * win, int typ)
 int
 A4GL_mja_vwprintw (WINDOW * win, char *fmt, va_list * args)
 {
-  char buff[1024];
+  char buff[10024];
 
   vsprintf (buff, fmt, *args);
 	

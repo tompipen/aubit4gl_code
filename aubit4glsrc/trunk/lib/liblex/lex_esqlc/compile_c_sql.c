@@ -558,12 +558,12 @@ print_sql_block_cmd (char *s)
  * this statement (that is a C block close with }).
  */
 void
-print_foreach_end (void)
+print_foreach_end (char *cname)
 {
   printc ("}");
   printcomment ("/* end of foreach while loop */\n");
-
   printc("}");
+  print_close('C',cname);
   printc ("}\n");
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.68 2003-08-06 20:27:47 mikeaubury Exp $
+# $Id: stack.c,v 1.69 2003-08-14 16:12:29 mikeaubury Exp $
 #
 */
 
@@ -1201,8 +1201,42 @@ A4GL_debug("51 Have data");
       break;
 
     case OP_USING:
-      if (A4GL_chknull (2, n1, n2,dn1,dn2))
-	return;
+      //if (A4GL_chknull (2, n1, n2,dn1,dn2))
+	//return;
+
+        A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
+        A4GL_get_top_of_stack (2, &d2, &s2, (void **) &ptr2);
+
+	A4GL_debug("OP_USING %d %d %d %d s1=%d s2=%d",n1,n2,dn1,dn2,s1,s2);
+
+	if (n1) {
+		int a;
+		char *ptr;
+		A4GL_drop_param();
+		A4GL_drop_param();
+		A4GL_debug("PUSHED NULL %d",dn1>>16);
+		ptr=malloc(s1+1);
+		memset(ptr,' ',s1);
+		ptr[s1]=0;
+		A4GL_push_char(ptr);
+		free(ptr);
+
+		return;
+	}
+
+	if (n2) {
+		char *ptr;
+		int a;
+		ptr=A4GL_char_pop();
+		A4GL_drop_param();
+		A4GL_trim(ptr);
+		for (a=0;a<strlen(ptr);a++) {
+			ptr[a]=' ';
+		}
+		A4GL_push_char(ptr);
+		free(ptr);
+		return;
+	}
       A4GL_func_using ();
       break;
 

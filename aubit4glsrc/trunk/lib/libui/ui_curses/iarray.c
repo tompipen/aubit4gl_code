@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.38 2003-08-07 21:39:22 mikeaubury Exp $
+# $Id: iarray.c,v 1.39 2003-08-14 16:12:29 mikeaubury Exp $
 #*/
 
 /**
@@ -419,8 +419,16 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
 
   if (A4GL_copy_field_data (form))
     {
-      A4GL_push_char (field_buffer (form->currentfield, 0));
+      char *ptr;
+      ptr=strdup(field_buffer (form->currentfield, 0));
+      A4GL_trim(ptr);
+      if(strlen(ptr)) {
+          A4GL_push_char (ptr);
+      } else {
+	  A4GL_push_null(b[x].dtype,b[x].size);
+      }
       A4GL_debug ("Pushed field buffer");
+      
       A4GL_pop_var2 ((char *) b[x].ptr + (y * elem), b[x].dtype, b[x].size);
       A4GL_debug ("Popped field buffer into variable");
       return 1;
@@ -916,6 +924,12 @@ A4GL_inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
       inpa->curr_attrib = 0;
       //debug("MJAMJA setting current field = %p",inpa->field_list[inpa->scr_line - 1][inpa->curr_attrib]);
       A4GL_newMovement (inpa, 0, 0, 0);
+
+      inpa->last_scr_line = -1;
+      inpa->last_arr_line = -1;
+
+      A4GL_idraw_arr_all (inpa);
+      A4GL_mja_refresh();
       inpa->last_scr_line = 1;
       inpa->last_arr_line = 1;
       A4GL_debug ("inp_arr - returning -99  BEFORE INPUT....");
@@ -1874,7 +1888,7 @@ process_control_stack (struct s_inp_arr *arr)
       if (ffc_rval != -4)
 	{
 	  //int field_no;
-	  char buff[1024];
+	  char buff[10024];
 	  char *cptr;
 	  //field_no=arr->curr_attrib;
 	  new_state = 0;

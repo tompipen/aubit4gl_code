@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.49 2003-08-09 09:27:14 afalout Exp $
+# $Id: resource.c,v 1.50 2003-08-14 16:12:29 mikeaubury Exp $
 #
 */
 
@@ -147,7 +147,7 @@ struct str_resource builtin_resource[] = {
   {"ERROR_MSG", "Press Any Key"},
   {"PAUSE_MSG", "Press Any Key"},
   {"FIELD_ERROR_MSG", " Error in field "},
-  {"FIELD_INCL_MSG", " This value is not available "},
+  {"FIELD_INCL_MSG", " This value is not among the valid possibilties "},
   {"FIELD_REQD_MSG", " This field required an entered value "},
   {"FIELD_CONSTR_EXPR", " Error in expression "},
   {"ARR_DIR_MSG"," There are no more rows in the direction you are going "},

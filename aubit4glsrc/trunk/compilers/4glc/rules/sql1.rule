@@ -710,16 +710,16 @@ op_not: {strcpy($<str>$,"");}
 
 comparison_predicate_ss:
 	value_expression_ss op_not IS_NULL {
-		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2," IS NULL",0);
+		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," IS NULL",0);
 	}
 	| value_expression_ss op_not IS_NOT_NULL {
-		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2," IS NOT NULL",0);
+		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," IS NOT NULL",0);
 	}
 	| value_expression_ss comp_op value_expression_ss {
 		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,0);
 	}
 	| value_expression_ss op_not BETWEEN value_expression_ss KW_AND value_expression_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2," BETWEEN ",$<sql_string>4," AND ",$<sql_string>6,0);
+		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," BETWEEN ",$<sql_string>4," AND ",$<sql_string>6,0);
 	}
 	| value_expression_ss LIKE pattern_ss op_escape {
 		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,$<str>4,0);
@@ -728,7 +728,7 @@ comparison_predicate_ss:
 		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,$<str>4,0);
 	}
 	| value_expression_ss op_not MATCHES pattern_ss op_escape {
-		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2," MATCHES ",$<sql_string>4,$<str>5,0);
+		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," MATCHES ",$<sql_string>4,$<str>5,0);
 	}
 	;
 

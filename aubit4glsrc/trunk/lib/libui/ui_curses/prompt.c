@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.23 2003-08-04 09:51:16 mikeaubury Exp $
+# $Id: prompt.c,v 1.24 2003-08-14 16:12:29 mikeaubury Exp $
 #*/
 
 /**
@@ -314,7 +314,7 @@ A4GL_prompt_loop (void *vprompt)
 #endif
   if (prompt->mode == 1)
     {
-      char buff[1024];
+      char buff[10024];
 #ifdef DEBUG
       {
  A4GL_debug ("Mode=1 - prepare to quit field=%p", prompt->field);

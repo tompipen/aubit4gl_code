@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: screen.c,v 1.11 2003-07-22 19:32:55 mikeaubury Exp $
+# $Id: screen.c,v 1.12 2003-08-14 16:12:29 mikeaubury Exp $
 #*/
 
 /**
@@ -135,9 +135,19 @@ A4GL_chk_iskey (char *keys)
 {
   char *k;
   char s[256];
+
+
+// Has our key already been handled somewhere ?
+//
+if (A4GL_has_processed_onkey()) return 0; 
+
+
+// Nope - carry on then....
+
   strcpy (s, keys);
   strcat (s, "|");
   A4GL_debug ("Chk keys %s\n", s);
+
 
   if (strcmp (keys, "->ANY") == 0)
     return 1;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.62 2003-08-07 21:39:22 mikeaubury Exp $
+# $Id: ioform.c,v 1.63 2003-08-14 16:12:29 mikeaubury Exp $
 #*/
 
 /**
@@ -801,6 +801,8 @@ A4GL_read_fields (void *formdetsv)
 void
 A4GL_start_form (struct s_form_dets *s)
 {
+  A4GL_debug("Start form - %p %p",s,s->form);
+
   A4GL_int_form_driver (s->form, REQ_FIRST_PAGE);
   A4GL_int_form_driver (s->form, REQ_FIRST_FIELD);
   pos_form_cursor (s->form);
@@ -822,8 +824,8 @@ A4GL_start_form (struct s_form_dets *s)
 int
 A4GL_form_field_chk (struct s_screenio *sio, int m)
 {
-  char buff[80] = "";
-  char buff2[80] = "";
+  char buff[8000] = "";
+  char buff2[8000] = "";
   FORM *mform;
   int x, y;
   int flg = 0;
@@ -930,7 +932,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 
 		if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
 		  {
-		    char buff[1024];
+		    char buff[8024];
 		    strcpy (buff,
 			    field_buffer (sio->currform->currentfield, 0));
 		    A4GL_trim (buff);
@@ -1210,7 +1212,7 @@ A4GL_set_fields (void *vsio)
   int a;
   int nv;
   int flg;
-  char buff[2048];
+  char buff[8048];
   struct s_form_dets *formdets;
   struct struct_scr_field *field;
   struct struct_scr_field *prop;
@@ -2260,8 +2262,8 @@ A4GL_set_arr_fields (int n, int attr, ...)
 int
 A4GL_form_field_constr (struct s_screenio *sio, int m)
 {
-  char buff[80];
-  char buff2[80];
+  char buff[8000];
+  char buff2[8000];
   FORM *mform;
   int x, y;
   int flg = 0;
@@ -2383,7 +2385,7 @@ A4GL_mja_set_field_buffer_contrl (FIELD * field, int nbuff, int ch)
 void
 A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
 {
-  char buff2[1024];
+  char buff2[8024];
   int a;
   int b;
   int errno;
@@ -2794,7 +2796,7 @@ void
 A4GL_debug_print_field_opts (FIELD * a)
 {
   long z;
-  char str[2048] = "";
+  char str[8048] = "";
   z = field_opts (a);
   if (z & O_VISIBLE)
     strcat (str, " O_VISIBLE");
@@ -2945,8 +2947,8 @@ A4GL_page_for_pfield (struct s_screenio *s)
 int
 A4GL_copy_field_data (struct s_form_dets *form)
 {
-  char buff[80] = "";
-  char buff2[80] = "";
+  char buff[8000] = "";
+  char buff2[8000] = "";
   FORM *mform;
   int x, y;
   struct struct_scr_field *fprop;
@@ -3049,8 +3051,8 @@ A4GL_int_form_driver (FORM * form, int a)
 {
   int field_pos;
   FIELD *f;
-  char buff[1024];
-  char buff2[1024];
+  char buff[10024];
+  char buff2[10024];
   int fd_ok;
 
   A4GL_debug ("int_form_driver called with %p - %d", form, a);
@@ -3571,8 +3573,8 @@ A4GL_clr_fields_ap (int to_defaults, va_list * ap)
 int
 A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 {
-  char buff[80] = "";
-  char buff2[80] = "";
+  char buff[8000] = "";
+  char buff2[8000] = "";
   FORM *mform;
   int x, y;
   //int flg = 0;
@@ -3684,7 +3686,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 
                 if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
                   {
-                    char buff[1024];
+                    char buff[8024];
                     strcpy (buff,
                             field_buffer (sio->currform->currentfield, 0));
                     A4GL_trim (buff);

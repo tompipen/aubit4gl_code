@@ -230,7 +230,7 @@ print_foreach_start -> void
 print_foreach_next char* cursorname,char* using, char* into -> void
 
 /* void print_foreach_end () */
-print_foreach_end -> void
+print_foreach_end char* cname -> void
 
 /* void print_pushchar (char *s) */
 print_pushchar char* s -> void

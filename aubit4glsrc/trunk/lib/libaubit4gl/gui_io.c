@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui_io.c,v 1.13 2003-07-04 09:43:39 mikeaubury Exp $
+# $Id: gui_io.c,v 1.14 2003-08-14 16:12:29 mikeaubury Exp $
 #
 */
 
@@ -361,7 +361,7 @@ A4GL_gui_dispform (char *s, int line)
 void
 A4GL_gui_setbuff (void *a, char *n)
 {
-  char buff[1024];
+  char buff[10024];
   sprintf (buff, "%lx %s", (long unsigned int) a, n);
   gui_send ("SETBUFF", buff);
 }

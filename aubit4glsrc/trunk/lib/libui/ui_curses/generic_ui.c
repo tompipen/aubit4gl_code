@@ -37,7 +37,7 @@ A4GL_string_width (char *s)
 {
   char buff[10];
   int a;
-  static char buff2[1024];
+  static char buff2[10024];
 
   a = A4GL_get_curr_width () - 2;
   A4GL_debug("String width=%d",a);

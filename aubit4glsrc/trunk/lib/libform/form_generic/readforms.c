@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.15 2003-08-01 14:34:29 mikeaubury Exp $
+# $Id: readforms.c,v 1.16 2003-08-14 16:12:29 mikeaubury Exp $
 #*/
 
 /**
@@ -142,7 +142,7 @@ real_read_form (char *fname, char *formname)
 {
   int a;
   struct s_form_dets *formdets;
-  char buff[80];
+  char buff[512];
 
   A4GL_trim (fname);
   A4GL_trim (formname);
@@ -333,7 +333,7 @@ real_dump_srec (struct s_form_dets *fd)
 int
 A4GL_check_field_for_include (char *s, char *inc, int dtype)
 {
-  static char buff[1024];
+  static char buff[10024];
   char *ptr;
   A4GL_debug ("check_field_for_include (%s,'%s',%d)", s, inc, dtype);
 /* no include specified - must be OK */

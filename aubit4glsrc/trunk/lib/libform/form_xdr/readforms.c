@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.31 2003-08-01 14:34:29 mikeaubury Exp $
+# $Id: readforms.c,v 1.32 2003-08-14 16:12:29 mikeaubury Exp $
 #*/
 
 /**
@@ -182,7 +182,7 @@ real_read_form (char *fname, char *formname)
   FILE *ofile = 0;
   int a;
   struct s_form_dets *formdets;
-  char buff[80];
+  char buff[512];
   char *ptr = 0;
   XDR xdrp;
   A4GL_trim (fname);
@@ -443,7 +443,7 @@ A4GL_get_srec (char *name)
 int
 A4GL_check_field_for_include (char *s, char *inc, int dtype)
 {
-  static char buff[1024];
+  static char buff[10024];
   char *ptr;
   A4GL_debug ("check_field_for_include (%s,'%s',%d)", s, inc, dtype);
 /* no include specified - must be OK */
@@ -455,6 +455,7 @@ A4GL_check_field_for_include (char *s, char *inc, int dtype)
 
   A4GL_debug ("Checking include : %s",inc);
   dtype = dtype & DTYPE_MASK;
+  
   strcpy (buff, inc);
   ptr = strtok (buff, INC_EACH);
 
@@ -582,7 +583,7 @@ include_range_check (char *ss, char *ptr, int dtype)
 char *
 A4GL_strip_quotes (char *s)
 {
-  static char buff[1024];
+  static char buff[10000];
   if (s[0] == '"' || s[0] == '\'')
     {
       strcpy (buff, &s[1]);
@@ -736,7 +737,7 @@ char *A4GL_get_str_attribute (struct struct_scr_field *f, int str);
 char *
 A4GL_replace_sql_var (char *s)
 {
-  static char buff[1024];
+  static char buff[10024];
   char *ptr;
   if (s[0] != '\n')
     {
