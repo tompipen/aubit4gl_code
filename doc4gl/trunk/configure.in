@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.13 2003-05-06 09:11:42 afalout Exp $
+dnl # $Id: configure.in,v 1.14 2003-05-09 08:41:44 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -338,6 +338,10 @@ AC_SUBST(DOC4GL_CONNECTIONTYPE)
 AC_SUBST(TOMCAT_USER)
 AC_SUBST(TOMCAT_PASSWORD)
 
+AC_SUBST(JSP_APP_NAME)
+AC_SUBST(PERL_APP_NAME)
+
+
 ## ==================================================================
 ##                             Defaults
 ## ==================================================================
@@ -351,6 +355,13 @@ if test "$doc4gl_SOURCE" = "1" ; then
 	doc4gl_BUILD=1
 
 fi
+
+
+#name we will use for the browser application URL, war file, etc.,
+JSP_APP_NAME=fgldocumenter
+
+#Name of the directory to install Perl manager application:
+PERL_APP_NAME=$JSP_APP_NAME
 
 FULLNAME="Doc4GL documenter"
 SHORTNAME="doc4gl"
@@ -1586,7 +1597,9 @@ if test "$doc4gl_SOURCE" = "1" ; then
 	AC_CONFIG_FILES([Makefile
 				parser/Makefile
                 browser/Makefile
+                browser/build.properties
 				etc/fgldocrc
+                docs/Doxyfile
 				FgldocDefs.mk])
 
 else

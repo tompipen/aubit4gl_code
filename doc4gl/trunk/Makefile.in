@@ -4,7 +4,7 @@
 #
 #  Developed by Sergio Ferreira, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.11 2003-04-20 23:03:37 afalout Exp $
+#  $Id: Makefile.in,v 1.12 2003-05-09 08:41:44 afalout Exp $
 #
 #  ==========================================================================
 
@@ -169,6 +169,59 @@ clean.config: clean.makefile
 #Make files created by configure script:
 clean.makefile:
 	${RM} parser/Makefile browser/Makefile manager/Makefile manager/Makefile.old
+
+
+#BUG: fgldoc does not exit with error code on this error, so we cannot detect
+#if command failed or not in make files:
+#
+#[root@aptiva erp]# make doc4gl.drop.repository
+#/usr/local/bin/fgldoc --action=dropRepository --ui=CUI --package_name=MaxERP --database=maxdevdoc --send_line_to_log
+#Starting with no GUI
+#ACTION dropRepository
+#DBD::Informix::db do failed: SQL: -425: Database is currently opened by another user.
+#ISAM: -107: ISAM error:  record is locked. at /usr/local/lib/perl5/site_perl/5.8.0/FglDocumenter/P4glRepository.pm line 556.
+#[root@aptiva erp]#
+#NOTE: same for createRepository
+
+## ==================================================================
+##            DoxyGen doccumentation creation
+## ==================================================================
+
+doxy: docs/doxy/html/index.html
+docs/doxy/html/index.html:
+ifneq "@DOXYGEN@" "no"
+	${MAKE} doxy.make
+ifneq "@WWW_DOCUMENT_ROOT@" ""
+	${MAKE} doxy.install.www
+endif
+ifneq "@CGI_DIR@" ""
+	${MAKE} doxy.install.search
+endif
+	@echo DoxyGen source code documentation generated.
+	@echo To use it, open file 'docs/doxy/html/index.html' in your web browser
+else
+	@echo "Sorry DOXYGEN not detected"
+endif
+
+doxy.make:
+	rm -rf docs/doxy/html
+	@DOXYGEN@ docs/Doxyfile
+	@echo DoxyGen doccumentation created and placed in docs/doxy/html
+
+doxy.install.www:
+	rm -rf @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html
+	${MKPATH} @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}
+	cp -r docs/doxy/html @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html
+	cd @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html; doxytag -s search.idx
+	@echo DoxyGen doccumentation installed in web server path :
+	@echo @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html
+	@echo Point your web browser to http://@WWW_HOST_NAME@/${DOXY_WWWPATH}/html/index.html
+
+doxy.install.search:
+	${CP} docs/doxy/html/doxysearch.cgi @CGI_DIR@
+#run docs/doxy/html/installdox to replace any dummy links:
+	@docs/doxy/html/installdox
+
 
 # =========================================================================
 #                           Install Perl modules

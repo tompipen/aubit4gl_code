@@ -1,4 +1,8 @@
 <!--
+
+     $Id: build.xml,v 1.4 2003-05-09 08:42:12 afalout Exp $
+
+
      Build script for Fgldocumenter browser web applications and web services,
      including enhanced support for deploying directly to a Tomcat 4
      based server.
@@ -18,17 +22,13 @@
                              subdirectory of your web applicaiton.
                              This will change to "src" when package clase
                              changes from pt.moredata.fgldocumenter to
-                             org.aubit4gl.fgldocumenter
+                             org.aubit4gl.doc4gl
 
         web                  Static HTML, JSP, and other content (such as
                              image files), including the WEB-INF subdirectory
                              and its configuration file contents.
 
-     $Id: build.xml,v 1.3 2003-01-14 07:28:58 afalout Exp $
--->
-
-
-<!-- A "project" describes a set of targets that may be requested
+ 	A "project" describes a set of targets that may be requested
      when Ant is executed.  The "default" attribute defines the
      target which is executed if no specific target is requested,
      and the "basedir" attribute defines the current working directory
@@ -176,7 +176,7 @@
 <!--
 
   These properties control option settings on the Javac compiler when it
-  is invoked using the <javac> task.
+  is invoked using the "javac" task.
 
   compile.debug        Should compilation include the debug option?
 
@@ -213,6 +213,9 @@
 
 <!-- Dummy external dependency -->
 <!--
+  
+  We should probably specify here JDBC driver?
+
   <property name="foo.jar"
            value="/path/to/foo.jar"/>
 -->

@@ -3,7 +3,7 @@
 #
 #  It was developed by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: FgldocDefs.mk.in,v 1.11 2003-05-06 09:11:41 afalout Exp $
+#  $Id: FgldocDefs.mk.in,v 1.12 2003-05-09 08:41:44 afalout Exp $
 #
 #  ==========================================================================
 
@@ -21,7 +21,10 @@ JAVAC           =@JAVAC@
 WGET            =@WGET@
 RPM             =@RPM@
 INSTALL			=cp
+CP              =cp
 RM				=rm -f
+MAKE            =make
+MKPATH          =mkdir -p
 
 #  ==========================================================================
 #  additional flag to commands:
@@ -52,11 +55,11 @@ DOC4GLSRCDIR    =@doc4gldir@
 #  ==========================================================================
 BINDIR			=@prefix@/bin
 
-#name we will use for the browser application URL, war file, etc., 
-JSP_APP_NAME	=fgldocumenter
+#name we will use for the browser application URL, war file, etc.,
+JSP_APP_NAME	=@JSP_APP_NAME@
 
 #Name of the directory to install Perl manager application:
-PERL_APP_NAME	=${JSP_APP_NAME}
+PERL_APP_NAME	=@PERL_APP_NAME@
 
 
 #  ==========================================================================
@@ -112,6 +115,8 @@ JAVA_SHARED		=/usr/share/java
 #location for installing third party Java components and Tomcat:
 BASE=/usr/local/src
 
+
+DOXY_WWWPATH    =doc4gl
 
 #  ==========================================================================
 #  Perl manager files list, for deinstall:

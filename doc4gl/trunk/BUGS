@@ -1,15 +1,6 @@
+                 BUGS TO BE FIXED
+				 ----------------
 
-                                     BUGS TO BE FIXED
-																		 ----------------
-
-
-==========================================================
-BUG 1:
-
-Impossible to interrupt execution of fgldoc with CTRL-C
--------------------------------------------------------
-
-CTRL+C does nothing - fgldoc continues execution
 
 
 ==========================================================
@@ -163,8 +154,8 @@ By default fgldoc should work on the current directory recursively.
 
 
 
-                                      FIXED BUGS
-																			----------
+                                    FIXED BUGS
+									----------
 
 ==========================================================
 
@@ -327,4 +318,160 @@ The duplicated CSV=>db should be db=>CSV
 TEST:Unit perl module is not checked in configure
 
 ===========================================================================
+
+
+
+
+
+
+    p4gl: P21.4gl, Line 97: parse error
+    p4gl: P21b.4gl, Line 49: parse error
+    p4gl: P24.4gl, Line 530: parse error
+    p4gl: P34k.4gl, Line 509: parse error
+    p4gl: P64.4gl, Line 433: parse error
+    p4gl: P64a.4gl, Line 49: parse error
+    p4gl: P6A.4gl, Line 479: parse error
+    p4gl: P71.4gl, Line 697: parse error
+    p4gl: P71f.4gl, Line 739: parse error
+    p4gl: P72.4gl, Line 265: parse error
+    p4gl: P73.4gl, Line 336: parse error
+    p4gl: PA8.4gl, Line 102: parse error
+    p4gl: PAB.4gl, Line 108: parse error
+    p4gl: PB1.4gl, Line 98: parse error
+    p4gl: PB6.4gl, Line 96: parse error
+    p4gl: PC4.4gl, Line 100: parse error
+    p4gl: PCA.4gl, Line 95: parse error
+    p4gl: PCD.4gl, Line 95: parse error
+    p4gl: PR1.4gl, Line 138: parse error
+    p4gl: PR2.4gl, Line 106: parse error
+    p4gl: PRE.4gl, Line 157: parse error
+    p4gl: PSL_J.4gl, Line 1007: parse error
+    p4gl: PSU_J.4gl, Line 131: parse error
+    p4gl: PSV.4gl, Line 68: parse error
+    p4gl: PSW.4gl, Line 126: parse error
+    p4gl: PX3_J.4gl, Line 145: parse error
+    p4gl: A21f.4gl, Line 104: parse error
+    p4gl: A23_J.4gl, Line 1877: parse error
+    p4gl: A2S.4gl, Line 196: parse error
+    p4gl: A2Sa.4gl, Line 241: parse error
+    p4gl: A2Sb.4gl, Line 237: parse error
+    p4gl: A2Sc.4gl, Line 237: parse error
+    p4gl: A2Sd.4gl, Line 236: parse error
+    p4gl: A2Se.4gl, Line 234: parse error
+    p4gl: A2Sf.4gl, Line 237: parse error
+    p4gl: A2Sg.4gl, Line 236: parse error
+    p4gl: AA9.4gl, Line 128: parse error
+    p4gl: AAB.4gl, Line 98: parse error
+    p4gl: AAB_B.4gl, Line 124: parse error
+    p4gl: AAC.4gl, Line 109: parse error
+    p4gl: AAE.4gl, Line 94: parse error
+    p4gl: AAK.4gl, Line 326: parse error
+    p4gl: AC1.4gl, Line 89: parse error
+    p4gl: AC2.4gl, Line 92: parse error
+    p4gl: AC3.4gl, Line 90: parse error
+    p4gl: AC4.4gl, Line 91: parse error
+    p4gl: AC5.4gl, Line 97: parse error
+    p4gl: AC8.4gl, Line 91: parse error
+    p4gl: ACA.4gl, Line 90: parse error
+    p4gl: ADU.4gl, Line 104: parse error
+    p4gl: AE6.4gl, Line 497: parse error
+    p4gl: AE7.4gl, Line 499: parse error
+    p4gl: AE8.4gl, Line 515: parse error
+    p4gl: AE9.4gl, Line 444: parse error
+    p4gl: AED.4gl, Line 108: parse error
+    p4gl: AEE.4gl, Line 105: parse error
+    p4gl: AS5.4gl, Line 289: parse error
+    p4gl: ASI_J.4gl, Line 132: parse error
+    p4gl: ASLa.4gl, Line 91: parse error
+    p4gl: ASS_J.4gl, Line 174: parse error
+    p4gl: ASV.4gl, Line 69: parse error
+    p4gl: ASV_J.4gl, Line 170: parse error
+    p4gl: ASW.4gl, Line 117: parse error
+    p4gl: AZS.4gl, Line 70: parse error
+    p4gl: contact.4gl, Line 95: parse error
+    p4gl: contact_address.4gl, Line 95: parse error
+    p4gl: contact_bank.4gl, Line 95: parse error
+    p4gl: contact_cc.4gl, Line 96: parse error
+    p4gl: contact_comment.4gl, Line 96: parse error
+    p4gl: contact_glob.4gl, Line 56: parse error
+    p4gl: contact_lib.4gl, Line 95: parse error
+    p4gl: contact_mailing.4gl, Line 95: parse error
+    p4gl: contact_phone.4gl, Line 96: parse error
+    p4gl: contact_relation.4gl, Line 97: parse error
+    p4gl: contact_role.4gl, Line 95: parse error
+    p4gl: maintain.4gl, Line 98: parse error
+    p4gl: cacdwind.4gl, Line 141: parse error
+    p4gl: glob_DATABASE.4gl, Line 38: parse error
+    p4gl: glob_GLOBALS.4gl, Line 67: parse error
+    p4gl: invbox.4gl, Line 447: parse error
+[LOG] : Error executing p4gl :
+    p4gl: offerfunc.4gl, addTableUsage() : Table usage by function exceded
+
+
+[LOG] : Error executing p4gl :
+    p4gl: offerfunc2.4gl, addTableUsage() : Table usage by function exceded
+
+    p4gl: orddfunc.4gl, Line 254: parse error
+    p4gl: secufunc.4gl, Line 2379: parse error
+    p4gl: serrwind.4gl, Line 74: parse error
+    p4gl: vopawind.4gl, Line 137: parse error
+    p4gl: G21.4gl, Line 160: parse error
+    p4gl: G21a.4gl, Line 119: parse error
+    p4gl: G22.4gl, Line 160: parse error
+    p4gl: G27.4gl, Line 109: parse error
+    p4gl: G27a.4gl, Line 152: parse error
+    p4gl: G28.4gl, Line 83: parse error
+    p4gl: G29.4gl, Line 162: parse error
+    p4gl: G33.4gl, Line 243: parse error
+    p4gl: GA8.4gl, Line 250: parse error
+    p4gl: GB1.4gl, Line 256: parse error
+    p4gl: GB8.4gl, Line 604: parse error
+    p4gl: GC1.4gl, Line 165: parse error
+    p4gl: GC1a.4gl, Line 161: parse error
+    p4gl: GC2.4gl, Line 165: parse error
+    p4gl: GC3.4gl, Line 580: parse error
+    p4gl: GC5.4gl, Line 822: parse error
+    p4gl: GCEb.4gl, Line 395: parse error
+    p4gl: GCEd.4gl, Line 812: parse error
+    p4gl: GCEe.4gl, Line 735: parse error
+    p4gl: GCP.4gl, Line 319: parse error
+    p4gl: GRH.4gl, Line 343: parse error
+    p4gl: GRI.4gl, Line 227: parse error
+    p4gl: GRJ.4gl, Line 216: parse error
+    p4gl: GS1.4gl, Line 881: parse error
+    p4gl: GW1c.4gl, Line 108: parse error
+    p4gl: GW1d.4gl, Line 461: parse error
+    p4gl: GW3.4gl, Line 291: parse error
+    p4gl: GW3a.4gl, Line 333: parse error
+    p4gl: GW3b.4gl, Line 333: parse error
+    p4gl: GW3c.4gl, Line 332: parse error
+    p4gl: GW3d.4gl, Line 333: parse error
+    p4gl: GW3e.4gl, Line 333: parse error
+    p4gl: GW3f.4gl, Line 333: parse error
+    p4gl: GW3g.4gl, Line 329: parse error
+    p4gl: GW4a.4gl, Line 325: parse error
+    p4gl: GZD.4gl, Line 614: parse error
+    p4gl: URSb.4gl, Line 149: parse error
+
+
+/usr/local/bin/fgldoc --action=export2Html --ignore_exist_dir --process_file=etc/doc4gl_process.unl --export_html_directory=docs/doc4gl --ui=CUI --package_name=MaxERP --database=maxdevdoc --send_line_to_log
+Starting with no GUI
+ACTION export2Html
+[LOG] : Conexão à base de dados estabelecida
+[ACTION] New action started (Load process file)
+DBD::Informix::db do failed: SQL: -242: Could not open database table (root.p4gl_fun_process).
+ISAM: -106: ISAM error:  non-exclusive access. at /usr/local/lib/perl5/site_perl/5.8.0/FglDocumenter/LoadProcess.pm line 249.
+DBD::Informix::db do failed: SQL: -242: Could not open database table (root.p4gl_process).
+ISAM: -106: ISAM error:  non-exclusive access. at /usr/local/lib/perl5/site_perl/5.8.0/FglDocumenter/LoadProcess.pm line 254.
+DBD::Informix::db do failed: SQL: -692: Key value for constraint (root.u105_24) is still being referenced. at /usr/local/lib/perl5/site_perl/5.8.0/FglDocumenter/LoadProcess.pm line 342, <PROCESS_UNL_FILE> line 7.
+
+
+
+[LOG] : Processes deleted:
+[LOG] : Function Processes deleted: 0E0
+[LOG] : LINE ERP, ERP, The open source ERP, , A description of the ERP
+
+DBD::Informix::st execute failed: SQL: -268: Unique constraint (root.u105_24) violated.
+ISAM: -100: ISAM error:  duplicate value for a record with unique key. at /usr/local/lib/perl5/site_perl/5.8.0/FglDocumenter/LoadProcess.pm line 232, <PROCESS_UNL_FILE> line 7.
+
 
