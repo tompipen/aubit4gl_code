@@ -3498,7 +3498,7 @@ yyreturn:
 }
 
 
-#line 1018 "screen.yacc"
+#line 98 "screen.yacc"
 
 
 

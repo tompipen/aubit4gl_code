@@ -1392,6 +1392,10 @@ value_expression_complex_ss :
 	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("(",$<sql_string>2,")",0);}
 	| EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET
 {$<sql_string>$=make_sql_string("EXTEND(",$<sql_string>3,")",0);}
+	| datetime_value_qualified { $<sql_string>$=make_sql_string($<str>1,0);}
+	| interval_value_qualified {$<sql_string>$=make_sql_string($<str>1,0);}
+
+
 ;
 
 value_expr_list_ss : 
@@ -1516,6 +1520,38 @@ extend_qual_ss:
         CURRENT COMMA s_curr TO e_curr {$<sql_string>$=make_sql_string($<str>1,$<str>2,$<str>3," ",$<str>4," ",$<str>5,0);}
         | var_ident_ibind_ss COMMA s_curr TO e_curr {$<sql_string>$=make_sql_string($<sql_string>1,$<str>2,$<str>3," ",$<str>4," ",$<str>5,0);}
         | CURRENT s_curr TO e_curr {$<sql_string>$=make_sql_string($<str>1,$<str>2," ",$<str>3," ",$<str>4,0);}
+	| value_expression_ss COMMA s_curr TO e_curr
 ;
 
+datetime_value_qualified :
+	datetime_value {strcpy($<str>$,$<str>1);}
+	| datetime_value s_curr TO e_curr {sprintf($<str>$,"%s %s TO %s",$<str>1,$<str>2,$<str>4);}
+;
+
+datetime_value:
+	DATETIME OPEN_BRACKET CHAR_VALUE CLOSE_BRACKET  {sprintf($<str>$,"DATETIME (\\\"%s\\\")",A4GL_strip_quotes($<str>3));}
+	| DATETIME OPEN_BRACKET INT_VALUE CLOSE_BRACKET  {sprintf($<str>$,"DATETIME(%s)",$<str>3);}
+	| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE CLOSE_BRACKET  {sprintf($<str>$,"DATETIME(%s-%s)",$<str>3,$<str>5);}
+	| DATETIME OPEN_BRACKET INT_VALUE COLON INT_VALUE CLOSE_BRACKET  {sprintf($<str>$,"DATETIME(%s:%s)",$<str>3,$<str>5);}
+	| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"DATETIME(%s-%s-%s)",$<str>3,$<str>5,$<str>7);}
+	| DATETIME OPEN_BRACKET INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET{sprintf($<str>$,"DATETIME(%s:%s:%s)",$<str>3,$<str>5,$<str>7);}
+	| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET{sprintf($<str>$,
+		"DATETIME(%s-%s-%s %s:%s:%s)",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10,$<str>12);}
+	| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE CLOSE_BRACKET{sprintf($<str>$,"DATETIME(%s-%s-%s %s:%s)",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10);}
+;
+
+interval_value_qualified :
+	interval_value {strcpy($<str>$,$<str>1);}
+	| interval_value s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET TO e_curr {sprintf($<str>$,"%s %s(%s) TO %s",$<str>1,$<str>2,$<str>4,$<str>7);}
+	| interval_value s_curr TO e_curr {sprintf($<str>$,"%s %s TO %s",$<str>1,$<str>2,$<str>4);}
+;
+
+interval_value:
+	INTERVAL OPEN_BRACKET CHAR_VALUE CLOSE_BRACKET  {sprintf($<str>$,"INTERVAL(\\\"%s\\\")",A4GL_strip_quotes($<str>3));}
+	| INTERVAL OPEN_BRACKET INT_VALUE CLOSE_BRACKET  {sprintf($<str>$,"INTERVAL(%s)",$<str>3);}
+	| INTERVAL OPEN_BRACKET INT_VALUE MINUS INT_VALUE CLOSE_BRACKET  {sprintf($<str>$,"INTERVAL(%s-%s)",$<str>3,$<str>5);}
+	| INTERVAL OPEN_BRACKET INT_VALUE COLON INT_VALUE CLOSE_BRACKET  {sprintf($<str>$,"INTERVAL(%s:%s)",$<str>3,$<str>5);}
+	| INTERVAL OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"INTERVAL(%s-%s-%s)",$<str>3,$<str>5,$<str>7);}
+	| INTERVAL OPEN_BRACKET INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"INTERVAL(%s:%s:%s)",$<str>3,$<str>5,$<str>7);}
+;
 /* ========================= sql1.rule ================================ */

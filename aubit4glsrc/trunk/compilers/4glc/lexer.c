@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.85 2004-03-04 16:27:21 mikeaubury Exp $
+# $Id: lexer.c,v 1.86 2004-03-12 14:52:35 mikeaubury Exp $
 #*/
 
 /**
@@ -1346,6 +1346,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
     {
       A4GL_debug (">>>>>%04d %d (%4d) %s code=%d fpos=%d chk4var=%d",
 	     yylineno, ccnt, a, buff, xccode, fpos, chk4var);
+      //printf (">>>>>%04d %d (%4d) %s code=%d fpos=%d chk4var=%d\n", yylineno, ccnt, a, buff, xccode, fpos, chk4var);
     }
   word_cnt = 0;
 

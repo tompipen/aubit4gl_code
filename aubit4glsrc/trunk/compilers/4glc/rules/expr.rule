@@ -53,7 +53,7 @@ strcpy($<str>$,$<str>2);}
 ;
 
 
-fgl_expr_ret : fgl_expr | KW_NULL {$<ptr>$=A4GL_new_expr("A4GL_push_null(2,0)");}
+fgl_expr_ret : fgl_expr | KW_NULL {$<ptr>$=A4GL_new_expr("A4GL_push_null(2,0);");}
 ;
 
 fgl_expr_ret_list 	: fgl_expr_ret
@@ -571,6 +571,21 @@ DATE OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
 	$<ptr>$=A4GL_new_expr(buff);
 	inc_counter();
 }
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s\",%s);",$<str>3,$<str>5,$<str>7);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s-%s\",%s);",$<str>3,$<str>5,$<str>7,$<str>9);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+
+
 | FGL_ISDYNARR_ALLOCATED OPEN_BRACKET variable CLOSE_BRACKET {
 	char buff[256];
 	sprintf(buff,"A4GL_isdynarr_allocated(&%s);",$<str>3);

@@ -233,6 +233,9 @@ upd_value_expression_complex_ss :
         | DATE OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("DATE(",$<sql_string>3,")",0);}
         | OPEN_BRACKET upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("(",$<sql_string>2,")",0);}
         | EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("EXTEND(",$<sql_string>3,")",0);}
+        | datetime_value_qualified { $<sql_string>$=make_sql_string($<str>1,0);}
+        | interval_value_qualified {$<sql_string>$=make_sql_string($<str>1,0);}
+
 ;
 
 
