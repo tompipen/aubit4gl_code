@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.12 2003-01-02 10:53:00 psterry Exp $
+# $Id: builtin_d.c,v 1.13 2003-01-09 09:13:45 psterry Exp $
 #
 */
 
@@ -116,8 +116,6 @@ struct s_funcs builtin_funcs[]= {
                     Functions prototypes
 =====================================================================
 */
-
-extern char *	using_date			(int us,char *fmt);
 
 void            func_mod           	(void);
 void            func_pow           	(void);

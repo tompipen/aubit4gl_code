@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.19 2003-01-08 19:15:18 mikeaubury Exp $
+# $Id: conv.c,v 1.20 2003-01-09 09:13:45 psterry Exp $
 #
 */
 
@@ -1159,12 +1159,27 @@ stof (void *aa, void *zz, int sz_ignore)
 {
   char *a;
   double *z;
+  char *p;
+  char buff[32];
+  int n;
+
   debug("stof aa = %s, zz = %f", aa, (double *) zz );
   a = (char *) aa;
-  debug("stof(a) %s", a );
+
   z = (double *) zz;
+
+  /* watch out for any "," separators in the number - remove them first */
+  if (strchr(a,',')) {
+    a = buff;
+    for (n=0, p = (char *) aa; *p > '\0' && n < 32; p++,n++ ) {
+         if (*p != ',') *a++ = *p; 
+    }
+    *a = '\0';
+    a = buff;
+  }
+
   sscanf (a, "%lf", z);
-  debug("float  %lf", *z );
+  debug("stof: string %s -> float %lf", a, *z );
   return 1;
 }
 
@@ -1482,15 +1497,12 @@ int stod( char *str, int *date, int sz_ignore )
   int    n;
 
   // set date format from (A4GL_)DBDATE, or use Informix default "mdy4".
-  // for efficiency do this once, the first time stod() is called.
+  // we only need to do this once, the first time stod() is called.
   // note - for this conversion we need only the three letters DMY
   // in their correct sequence, which we put into variables d/m/y_pos
   if ( dbdate[0] == '\0' ) {
      char dmy[4] = "";
-     strncpy( dbdate, acl_getenv("DBDATE"), 10);
-     if ( dbdate[0] == '\0' ) {
-        strcpy(dbdate, "MDY4/");
-     }
+     strncpy( dbdate, get_dbdate(), 10);
      for ( p = dbdate; (*p > '\0') && (strlen(dmy) < 3); p++ ) {
        if ( isalpha(*p) ) {
 	       *p = toupper(*p);
@@ -1507,7 +1519,7 @@ int stod( char *str, int *date, int sz_ignore )
      {
         // we have an invalid dbdate format - die ...
         set_errm (dbdate);
-        exitwith("Invalid DBDATE format: %s");
+        exitwith("conv.c - Invalid DBDATE format: %s");
 	return 0;
      }
   } // end of dbdate initialization
@@ -1603,87 +1615,50 @@ dtovc (void *aa, void *zz, int sz_ignore)
   return dtos (a, z, 6);
 }
 
+
 /**
- * Convert a date to  string.
+ * Convert a date to  string, using the current DBDATE format setting.
  *
  * @param aa The date value value.
  * @param zz A pointer where to return the value.
  * @param size The size of the string buffer where to put the converted value.
  * @return
- *   - 0 : There was a convertion error
- *   - 1 : Convertion made.
+ *   - 0 : There was a conversion error
+ *   - 1 : Conversion made.
  */
 int
 dtos (void *aa, void *zz, int size)
 {
   int *a;
   char *z;
-  int d, m, y;
+  char *p;
+
   z = (char *) zz;
   a = (int *) aa;
-  d = 0;
-  m = 0;
-  y = 0;
+
 #ifdef DEBUG
-	{ debug ("dtos"); }
-#endif
-#ifdef DEBUG
-	{ debug ("Size=%d\n", size); }
+    /* {DEBUG} */ { debug ("dtos date=%d", *a); }
 #endif
 
-  if (size < 6)
+  /* without a format string, using_date() will refer to DBDATE */
+  p = using_date( *a, "");
+
+  if (size < strlen(p))
   {
     #ifdef DEBUG
-    /* {DEBUG} */ { debug ("Size too small"); }
+    /* {DEBUG} */ { debug ("Size too small, %d", size); }
     #endif
     memset (z, '*', size);
     z[size] = 0;
     return 0;
   }
-
-  if (get_date (*a, &d, &m, &y))	/* Need DBDATE Fix.... */
-  {
-    if (strncasecmp (acl_getenv ("DBDATE"), "DMY", 3) == 0)
-    {
+  strncpy(z, p, size);
+  pad_string (z, size);
   
-      if (size >= 10)
-      {
-        sprintf (z, "%02d/%02d/%04d", d, m, y);
-      }
-      if (size < 10 && size >= 8)
-      {
-        sprintf (z, "%02d/%02d/%02d", d, m, y % 100);
-      }
-      if (size < 8 && size >= 6)
-      {
-        sprintf (z, "%02d%02d%02d", d, m, y % 100);
-      }
-    
-    }
-    else
-    {
-      if (size >= 10)
-      {
-        sprintf (z, "%02d/%02d/%04d", m, d, y);
-      }
-      if (size < 10 && size >= 8)
-      {
-        sprintf (z, "%02d/%02d/%02d", m, d, y % 100);
-      }
-      if (size < 8 && size >= 6)
-      {
-        sprintf (z, "%02d%02d%02d", m, d, y % 100);
-      }
-    }
-    pad_string (z, size);
-  
-    #ifdef DEBUG
-    /* {DEBUG} */ { debug ("Date = %s\n", z); }
-    #endif
-    return 1;
-  }
-  else
-    return 0;
+#ifdef DEBUG
+  /* {DEBUG} */ { debug ("Date = %s\n", z); }
+#endif
+  return 1;
 }
 
 /**

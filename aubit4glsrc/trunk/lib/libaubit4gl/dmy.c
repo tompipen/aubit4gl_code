@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.7 2002-06-25 03:22:30 afalout Exp $
+# $Id: dmy.c,v 1.8 2003-01-09 09:13:45 psterry Exp $
 #
 */
 
@@ -136,8 +136,6 @@ char *g_mnamesfull[]={
 */
 
 char *		dategsub		(char *s,char *r,char *p);
-char *		using_date		(int dn,char *us);
-
 
 /*
 =====================================================================
@@ -147,11 +145,11 @@ char *		using_date		(int dn,char *us);
 
 
 /**
- *  Format a date in the internal format to a string formated acording to the
- *  using string.
+ *  Format a date in the internal (long int) format to a string 
+ *  formated acording to the using string.
  *
  *  @param dn The numeric date.
- *  @param us The using string.
+ *  @param us The using string (null means use DBDATE)
  *  @return The formated date.
  */
 char *
@@ -174,7 +172,15 @@ using_date(int dn,char *us)
   char rep_strs[20][20];
   int a;
   int flg=0;
-  strcpy(buff,us);
+
+  /* if no format is given, use DBDATE */
+  if ( (us == 0) || (*us == '\0') ) {
+        strcpy( buff, dbdate_to_using("") );
+  }
+  else {
+        strcpy( buff, us );
+  }
+  
   get_date(dn,&d,&m,&y);
   dno=day_in_week(d,m,y);
   /*
@@ -202,7 +208,7 @@ using_date(int dn,char *us)
     strcpy(buff2,dategsub(buff,using_strs[a],rusing_strs[a]));
     strcpy(buff,buff2);
   }
-  debug("buff now : %s",buff);
+
   /* now replace these with what the user wants - this gets around d
   being replaced in wed etc */
 
@@ -213,14 +219,11 @@ using_date(int dn,char *us)
       strcpy(buff,buff2);
     }
   }
-  debug("Buff now %s\n",buff);
+
   if (flg==0) return 0;
 
   return buff;
-
 }
-
-
 
 /**
  *
@@ -244,6 +247,150 @@ dategsub(char *s,char *r,char *p)
 	strcat(buff,buff2);
 	return buff;
 }
+
+/*
+ * Converts a DBDATE environment variable style date format string
+ * (eg. "DMY4/") into the format expected by 'using' (eg. "dd/mm/yyyy")
+ *
+ * @param	char *dbdate	DBDATE environment string
+ * @return	pointer to buffer holding 'using' format string
+ */
+char *
+dbdate_to_using( char *dbdate )
+{
+  static char buff[20];
+  char dmy[5] = " mdY";
+  int  d=0;
+  int  m=0;
+  int  y=0;
+  char sep;
+  char *p;
+  char *b;
+  int i;
+
+  /* if no dbdate format given, use the current environment variable */
+  if ( (dbdate == 0) || (*dbdate == '\0') ) {
+        strncpy( buff, get_dbdate(), 10 );
+  }
+  else {
+        strncpy( buff, dbdate, 10 );
+  }
+
+  /* scan dbdate format string and extract day/month/year positions,
+   * the year length (2/4 digit), and the separator character
+   */
+  sep = '/';
+  b = dmy;
+  for ( p=buff; *p > 0; p++ )
+  {
+    switch ( *p ) {
+       case 'd':
+       case 'D':
+         if (d==0) { *(++b) = 'd'; d=1; }
+         break;
+       case 'm':
+       case 'M':
+         if (m==0) { *(++b) = 'm'; m=1; }
+         break;
+       case 'y':
+       case 'Y':
+         if (y==0) { *(++b) = 'Y'; y=1; }
+         break;
+       case '2':
+         if (*b=='Y') *b = 'y';
+         break;
+       case '/':
+       case '-':
+       case '.':
+       case ',':
+         sep = *p;
+         break;
+    }
+  }
+  *(++b)='\0';
+
+  /* now write 'using' style format string into buff */
+  b = buff;
+  for ( p=dmy,i=0; *p > 0; p++,i++ )
+  {
+    switch ( *p ) {
+       case 'Y':
+         *b++ = 'y';
+         *b++ = 'y';
+	 *p = 'y';
+       case 'd':
+       case 'm':
+       case 'y':
+         *b++ = *p;
+         *b++ = *p;
+         break;
+    }
+    if (i > 0 && i < 3) *b++ = sep;
+  }
+  *b = '\0';
+
+ return buff;
+}
+
+/*
+ * Returns the current date format string, from (A4GL_)DBDATE (eg. "DMY2-").
+ * If this is not set, then it returns the Informix default "MDY4/"
+ * It also causes a runtime error if a badly formatted DBDATE is set.
+ *
+ * @param	void
+ * @return	pointer to string holding dbdate format
+ *
+ */
+char *
+get_dbdate( void )
+{
+  static char dbdate[10] = "";    // holds current DBDATE value
+  char  *p;
+  int  d=0;
+  int  m=0;
+  int  y=0;
+
+  /* keep the result in a static buffer, so we only have to
+   * work out the format the first time this is called */
+
+  if ( dbdate[0] > '\0' ) return dbdate;
+
+  /* try set the date format from (A4GL_)DBDATE */
+  strncpy( dbdate, acl_getenv("DBDATE"), 10);
+
+  /* if still no date format, use Informix default "mdy4/" */
+  if ( dbdate[0] == '\0' ) {
+       strcpy(dbdate, "MDY4/");
+       return dbdate;
+  }
+
+  /* check the date format is valid - must have one each of D,M,Y */
+  for ( p = dbdate; (*p > '\0'); p++ ) {
+    switch (*p) {
+      case 'd' :
+      case 'D' :  d++; break;
+      case 'm' :
+      case 'M' :  m++; break;
+      case 'y' :
+      case 'Y' :  y++; break;
+    }
+  }
+
+  if ( d==1 && m==1 && y==1 )
+  {
+    /* looks good ... */
+      return dbdate;
+  }
+
+  /* we have an invalid dbdate format - die ... */
+  set_errm(dbdate);
+  exitwith("dmy.c - Invalid DBDATE format: %s");
+  exit(1);
+  return 0;
+}
+
+
+
 
 #ifdef REMOVEME
 
