@@ -1,4 +1,7 @@
 echo "In ecpg_wrap : $@"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib
+export LD_RUN_PATH=$LD_RUN_PATH:$AUBITDIR/lib
+
 if [ "$POSTGRESDIR" = "" ]
 then
 	export POSTGRESDIR=/usr/local/pgsql
@@ -28,13 +31,14 @@ do
 		continue
 	fi
 
-	if [ `$dirname $a ` != "" ]
+	d=`dirname $a`
+	if [ "$d" != "" ]
 	then
-	c=`dirname $a`/`basename "$a" `
-	b=`dirname $a`/`basename "$c" ".$ECPG_EXT"`
+		c=$d/`basename "$a" `
+		b=$d/`basename "$c" ".$ECPG_EXT"`
 	else
-	c=`basename "$a" `
-	b=`basename "$c" ".$ECPG_EXT"`
+		c=`basename "$a" `
+		b=`basename "$c" ".$ECPG_EXT"`
 	fi
 
 	if [ $b.$ECPG_EXT = $a ]

@@ -8,7 +8,7 @@
 start_cmd : START_REPORT rep_name TO_PRINTER
 {
 addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-print_start_report("P","\"lp\"",$<str>2);
+print_start_report("P","acl_getenv(\"DBPRINT\")",$<str>2);
 }
 	    | START_REPORT rep_name TO rout
 {

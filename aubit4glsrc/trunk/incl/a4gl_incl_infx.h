@@ -30,6 +30,7 @@ extern "C"
   void retdec(void *x) ;
   void popdtime(void *x) ;
   void retdtime(void *x) ;
+  //int rdayofweek(int n);
 
 
 #ifdef __cplusplus

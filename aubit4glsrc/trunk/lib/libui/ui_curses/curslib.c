@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.40 2003-06-19 18:22:01 mikeaubury Exp $
+# $Id: curslib.c,v 1.41 2003-06-25 07:48:41 mikeaubury Exp $
 #*/
 
 /**
@@ -290,6 +290,7 @@ A4GL_error_nobox (char *str,int attr)
   //A4GL_push_char (str);
   A4GL_subwin_gotoxy (w, 1, 1);
   if (attr==0) attr=A_REVERSE; //+A4GL_colour_code (COLOR_RED);
+  else attr=A4GL_decode_aubit_attr (attr, 'w');
   wattrset (w, attr);
   A4GL_subwin_print (w, str);
   //wrefresh(w);
@@ -334,11 +335,14 @@ A4GL_clr_error_nobox (void)
 {
   int a;
   A4GL_chkwin();
+  A4GL_debug("MJA clr_error_nobox");
   if (curr_error_window) {
+	A4GL_debug("MJA Clear error");
 	del_panel(curr_error_panel);
 	delwin(curr_error_window);
 	curr_error_window=0;
 	curr_error_panel=0;
+	A4GL_zrefresh();
 	return;
   }
 
@@ -588,19 +592,44 @@ aclfgl_fgl_drawbox (int n)
   int xx, yy;
 //void *ptr=0;
   void *win;
-int chars_normal[]={ACS_HLINE,ACS_VLINE,ACS_ULCORNER,ACS_URCORNER,ACS_LLCORNER,ACS_LRCORNER};
 int chars_simple[]={'-','|','+','+','+','+'};
+int chars_normal[6];
 int *chars;
+
+int infx_to_curses[8];
+
 A4GL_chkwin();
+chars_normal[0]=ACS_HLINE;
+chars_normal[1]=ACS_VLINE;
+chars_normal[2]=ACS_ULCORNER;
+chars_normal[3]=ACS_URCORNER;
+chars_normal[4]=ACS_LLCORNER;
+chars_normal[5]=ACS_LRCORNER;
+
+infx_to_curses[0]=AUBIT_COLOR_WHITE;
+infx_to_curses[1]=AUBIT_COLOR_YELLOW;
+infx_to_curses[2]=AUBIT_COLOR_MAGENTA;
+infx_to_curses[3]=AUBIT_COLOR_RED;
+infx_to_curses[4]=AUBIT_COLOR_CYAN;
+infx_to_curses[5]=AUBIT_COLOR_GREEN;
+infx_to_curses[6]=AUBIT_COLOR_BLUE;
+infx_to_curses[7]=AUBIT_COLOR_BLACK;
+
+
 
  if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
  	chars=chars_simple;
  } else {
 	chars=chars_normal;
  }
-  c = 0;
 
   if (n == 5) c = A4GL_pop_int ();
+  else {
+		c=0;
+  }
+
+  c=infx_to_curses[c%8];
+
 
   x = A4GL_pop_int ();
   y = A4GL_pop_int ();
@@ -612,7 +641,7 @@ A4GL_chkwin();
   win = A4GL_find_pointer ("screen", WINCODE);
   win = A4GL_window_on_top ();
 
-#define PMOVE(x,y,c) 	mvwaddch(win,(y-1),(x-1),c)
+#define PMOVE(x,y,ch) 	mvwaddch(win,(y-1),(x-1),ch+A4GL_decode_colour_attr_aubit(c))
 
 
   for (xx = x + 1; xx < x + w - 1; xx++)
@@ -3209,6 +3238,7 @@ void
 A4GL_set_bkg (WINDOW * win, int attr)
 {
 if (attr!=0xff) {
+  A4GL_debug("MJAMJA set_bkg : %x\n",attr);
   wbkgd (win, 		A4GL_decode_aubit_attr (attr, 'w'));
   wbkgdset (win, 	A4GL_decode_aubit_attr (attr, 'w'));
 } else {

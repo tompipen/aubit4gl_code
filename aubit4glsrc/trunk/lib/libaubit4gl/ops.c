@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.18 2003-06-17 22:55:07 mikeaubury Exp $
+# $Id: ops.c,v 1.19 2003-06-25 07:48:40 mikeaubury Exp $
 #
 */
 
@@ -66,7 +66,7 @@ void A4GL_add_default_operations (void);
 void A4GL_dt_in_ops (int op);
 void A4GL_in_dt_ops (int op);
 void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
-void A4GL_ltrim(char *s) ;
+//void A4GL_ltrim(char *s) ;
 void A4GL_dt_dt_ops (int op);
 //int A4GL_ctodt (void *a, void *b, int size);
 //int A4GL_ctoint (void *a, void *b, int size);
@@ -108,6 +108,10 @@ static char *make_using(char *ptr) ;
 
 #define NUM_DIG(x)               ((x[0])&127 )
 #define NUM_DEC(x)               ((x[1]))
+
+
+
+
 /*
 =====================================================================
                     Functions definitions
@@ -437,6 +441,14 @@ A4GL_int_int_ops (int op)
 
   b = A4GL_pop_long ();
   a = A4GL_pop_long ();
+
+  if ( A4GL_isnull(DTYPE_INT,(void *)&a)|| A4GL_isnull(DTYPE_INT,(void *)&b)) {
+		A4GL_debug("int_int - one is null");
+		A4GL_push_null(DTYPE_INT,0);
+		return;
+  } else {
+	A4GL_debug("OK - neither is null");
+  }
 
 #ifdef DEBUG
   A4GL_debug ("int_int_ops : %d %d %d", a, b, op);
@@ -864,34 +876,48 @@ A4GL_display_int (void *ptr, int size, int size_c,
 
   if (display_type == DISPLAY_TYPE_DISPLAY)
     {
-      sprintf (buff, "%11ld", a);
+      if (A4GL_isnull(DTYPE_INT,ptr)) {
+		strcpy(buff,"           ");
+	} else {
+      		sprintf (buff, "%11ld", a);
+	}
     }
 
   if (display_type == DISPLAY_TYPE_DISPLAY_AT)
     {
-      sprintf (buff, "%ld", a);
+      if (A4GL_isnull(DTYPE_INT,ptr)) {
+		strcpy(buff,"");
+	} else {
+      		sprintf (buff, "%ld", a);
+	}
     }
 
   if (display_type == DISPLAY_TYPE_DISPLAY_TO)
     {
 		char using_buff[256];
-		memset(using_buff,'-',255);
-		using_buff[size_c]=0;
-		using_buff[size_c-1]='&';
+		if (A4GL_has_str_attribute (field_details, FA_S_FORMAT)) {
+			strcpy(using_buff,(A4GL_get_str_attribute(field_details,FA_S_FORMAT)));
+		} else {
+			memset(using_buff,'-',255);
+			using_buff[size_c]=0;
+			using_buff[size_c-1]='&';
+		}
 
 		A4GL_push_long(a);
 		A4GL_push_char(using_buff);
 		A4GL_pushop (OP_USING);
       		A4GL_pop_char (buff, size_c);
 		A4GL_debug("display_int Got '%s'",buff);
+		return buff;
     }
+
+  A4GL_debug("Returning '%s'",buff);
 
   return buff;
 }
 
 char *
-A4GL_display_smint (void *ptr, int size, int size_c,
-	       struct struct_scr_field *field_details, int display_type)
+A4GL_display_smint (void *ptr, int size, int size_c, struct struct_scr_field *field_details, int display_type)
 {
   short a;
   static char buff[256];
@@ -901,25 +927,38 @@ A4GL_display_smint (void *ptr, int size, int size_c,
 
   if (display_type == DISPLAY_TYPE_DISPLAY)
     {
-      sprintf (buff, "%6d", a);
+      if (A4GL_isnull(DTYPE_SMINT,ptr)) {
+		strcpy(buff,"      ");
+	} else {
+      		sprintf (buff, "%6d", a);
+	}
     }
 
   if (display_type == DISPLAY_TYPE_DISPLAY_AT)
     {
-      sprintf (buff, "%d", a);
+      if (A4GL_isnull(DTYPE_SMINT,ptr)) {
+		strcpy(buff,"");
+	} else {
+      		sprintf (buff, "%d", a);
+	}
     }
 
   if (display_type == DISPLAY_TYPE_DISPLAY_TO)
     {
                 char using_buff[256];
-                memset(using_buff,'-',255);
-                using_buff[size_c]=0;
-                using_buff[size_c-1]='&';
+                if (A4GL_has_str_attribute (field_details, FA_S_FORMAT)) {
+                        strcpy(using_buff,(A4GL_get_str_attribute(field_details,FA_S_FORMAT)));
+                } else {
+                	memset(using_buff,'-',255);
+                	using_buff[size_c]=0;
+                	using_buff[size_c-1]='&';
+		}
 		A4GL_push_int(a);
 		A4GL_push_char(using_buff);
                 A4GL_pushop (OP_USING);
                 A4GL_pop_char (buff, size_c);
 		A4GL_debug("display_smint Got '%s'",buff);
+		return buff;
     }
 
   return buff;
@@ -959,8 +998,21 @@ A4GL_display_float (void *ptr, int size, int size_c,
 
   if (display_type == DISPLAY_TYPE_DISPLAY_TO)
     {
-      A4GL_push_double (a);
-      A4GL_pop_char (buff, size_c);
+	char using_buff[256];
+        if (A4GL_has_str_attribute (field_details, FA_S_FORMAT)) {
+                    strcpy(using_buff,(A4GL_get_str_attribute(field_details,FA_S_FORMAT)));
+        } else {
+               	memset(using_buff,'-',255);
+               	using_buff[size_c]=0;
+               	using_buff[size_c-4]='&';
+               	using_buff[size_c-3]='.';
+               	using_buff[size_c-2]='&';
+               	using_buff[size_c-1]='&';
+	}
+        A4GL_push_double (a);
+        A4GL_push_char(using_buff);
+        A4GL_pushop (OP_USING);
+	return buff;
     }
   return buff;
 
@@ -999,8 +1051,21 @@ A4GL_display_smfloat (void *ptr, int size, int size_c,
 
   if (display_type == DISPLAY_TYPE_DISPLAY_TO)
     {
-      A4GL_push_float (a);
-      A4GL_pop_char (buff, size_c);
+        char using_buff[256];
+        if (A4GL_has_str_attribute (field_details, FA_S_FORMAT)) {
+                    strcpy(using_buff,(A4GL_get_str_attribute(field_details,FA_S_FORMAT)));
+        } else {
+                memset(using_buff,'-',255);
+                using_buff[size_c]=0;
+                using_buff[size_c-4]='&';
+                using_buff[size_c-3]='.';
+                using_buff[size_c-2]='&';
+                using_buff[size_c-1]='&';
+        }
+        A4GL_push_float (a);
+        A4GL_push_char(using_buff);
+        A4GL_pushop (OP_USING);
+        A4GL_pop_char (buff, size_c);
     }
 
   return buff;
@@ -1026,18 +1091,20 @@ A4GL_display_decimal (void *ptr, int size, int size_c,
 		 struct struct_scr_field *field_details, int display_type)
 {
 static char s[256];
+static char buff[256];
 
+A4GL_debug("Display_decimal");
   //if (size_c==-1) { return 0; }
 
   if (display_type == DISPLAY_TYPE_DISPLAY) {
-        A4GL_push_dec(ptr,1,size);
+        A4GL_push_dec(ptr,0,size);
 
 
         if (size_c==-1) {
                 char *ptr2;
                 int n,l;
-                char buff[256];
-                char buff2[256];
+                //char buff[256];
+                //char buff2[256];
                 ptr2=ptr;
                 n=NUM_DIG(ptr2);
                 l=NUM_DEC(ptr2);
@@ -1055,7 +1122,7 @@ static char s[256];
 
 
   if (display_type== DISPLAY_TYPE_DISPLAY_AT) {
-	A4GL_push_dec(ptr,1,size);
+	A4GL_push_dec(ptr,0,size);
 	if (size_c==-1) {
 		char *ptr;
 		ptr=A4GL_char_pop();
@@ -1070,6 +1137,31 @@ static char s[256];
 	return s;
   }
 
+  if (display_type == DISPLAY_TYPE_DISPLAY_TO)
+    {
+        char using_buff[256];
+	if (A4GL_isnull(DTYPE_DECIMAL,ptr)) {
+		strcpy(buff,"");
+		return buff;
+	}
+
+        if (A4GL_has_str_attribute (field_details, FA_S_FORMAT)) {
+                    strcpy(using_buff,(A4GL_get_str_attribute(field_details,FA_S_FORMAT)));
+        } else {
+                memset(using_buff,'-',255);
+                using_buff[size_c]=0;
+                using_buff[size_c-4]='&';
+                using_buff[size_c-3]='.';
+                using_buff[size_c-2]='&';
+                using_buff[size_c-1]='&';
+        }
+        A4GL_push_dec (ptr,0,size);
+        A4GL_push_char(using_buff);
+        A4GL_pushop (OP_USING);
+        A4GL_pop_char (buff, size_c);
+		return buff;
+    }
+
   return 0;
 }
 
@@ -1078,7 +1170,9 @@ A4GL_display_money (void *ptr, int size, int size_c,
 	       struct struct_scr_field *field_details, int display_type)
 {
 static char s[256];
+static char buff[256];
 
+A4GL_debug("Display_money");
   //if (size_c==-1) { return 0; }
 
 
@@ -1089,8 +1183,8 @@ static char s[256];
         if (size_c==-1) {
                 char *ptr2;
                 int n,l;
-                char buff[256];
-                char buff2[256];
+                //char buff[256];
+                //char buff2[256];
                 ptr2=ptr;
                 n=NUM_DIG(ptr2);
                 l=NUM_DEC(ptr2);
@@ -1117,10 +1211,33 @@ static char s[256];
                 A4GL_pop_char(s,size_c);
         }
 
-        A4GL_ltrim(s);
 	A4GL_trim(s);
+        A4GL_ltrim(s);
         return s;
   }
+  if (display_type == DISPLAY_TYPE_DISPLAY_TO)
+    {
+        char using_buff[256];
+	if (A4GL_isnull(DTYPE_DECIMAL,ptr)) {
+		strcpy(buff,"");
+		return buff;
+	}
+        if (A4GL_has_str_attribute (field_details, FA_S_FORMAT)) {
+                    strcpy(using_buff,(A4GL_get_str_attribute(field_details,FA_S_FORMAT)));
+        } else {
+                memset(using_buff,'-',255);
+                using_buff[size_c]=0;
+                using_buff[size_c-4]='&';
+                using_buff[size_c-3]='.';
+                using_buff[size_c-2]='&';
+                using_buff[size_c-1]='&';
+        }
+        A4GL_push_dec (ptr,0,size);
+        A4GL_push_char(using_buff);
+        A4GL_pushop (OP_USING);
+        A4GL_pop_char (buff, size_c);
+		return buff;
+    }
 
   return 0;
 
@@ -1243,11 +1360,15 @@ free(buff);
 static char *make_using(char *ptr) {
 static char buff[256];
 char buff2[256];
+int dig;
+int dec;
 strcpy(buff,"-------------------------------------------------------------------------------------------------------------------");
-buff[NUM_DIG(ptr)*2-NUM_DEC(ptr)]=0;
+dig=NUM_DIG(ptr)*2;
+dec=NUM_DEC(ptr);
+buff[dig-dec]=0;
 strcat(buff,"&.");
 memset(buff2,'&',255);
-buff2[(int)NUM_DEC(ptr)]=0;
+buff2[dec]=0;
 strcat(buff,buff2);
 return buff;
 }

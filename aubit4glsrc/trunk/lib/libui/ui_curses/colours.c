@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.7 2003-06-22 13:02:19 mikeaubury Exp $
+# $Id: colours.c,v 1.8 2003-06-25 07:48:41 mikeaubury Exp $
 #*/
 
 /**
@@ -126,7 +126,7 @@ A4GL_decode_colour_attr_aubit (int a)
   if (strcmp (colour, "GREEN") == 0)
     return A4GL_colour_code (COLOR_GREEN);
   if (strcmp (colour, "YELLOW") == 0)
-    return A4GL_colour_code (COLOR_YELLOW);
+    return A4GL_colour_code (COLOR_YELLOW); 
   if (strcmp (colour, "BLUE") == 0)
     return A4GL_colour_code (COLOR_BLUE);
   if (strcmp (colour, "MAGENTA") == 0)
@@ -164,6 +164,9 @@ A4GL_decode_aubit_attr (int a, char s)
   int ca;			/* Curses attribute */
 
   A4GL_get_strings_from_attr (a, colour, attr);
+
+  A4GL_debug("A=%d colour=%s attr=%s MJAMJAMJA",a,colour,attr);
+
   ca = A_NORMAL;
   if (s == 'w')
     {
@@ -182,6 +185,7 @@ A4GL_decode_aubit_attr (int a, char s)
 	ca += A_DIM;
 
     }
+
   if (s == 'f')
     {
       ca = A4GL_decode_colour_attr_aubit (a);
@@ -204,7 +208,7 @@ A4GL_decode_aubit_attr (int a, char s)
       ca = A4GL_decode_colour_attr_aubit (a);
     }
 
-
+A4GL_debug("Returning ca = %d %x",ca,ca);
   return ca;
 }
 

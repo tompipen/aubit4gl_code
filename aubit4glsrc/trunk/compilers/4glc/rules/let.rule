@@ -27,6 +27,7 @@ int to_vars;
 	else
 	{
 	    print_bind_pop1('o');
+		start_bind('o',0);
 	}
 
 }

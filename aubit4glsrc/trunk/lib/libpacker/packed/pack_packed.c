@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.10 2003-06-18 19:21:07 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.11 2003-06-25 07:48:41 mikeaubury Exp $
 #*/
 
 /**
@@ -77,6 +77,7 @@
 #define ntohs(x) (x)
 #endif
 #endif
+#include <ctype.h>
 
 /*
 =====================================================================
@@ -544,7 +545,7 @@ input_string (char *name, char **val, int ptr, int isarr)
 int
 input_double (char *name, double *val, int ptr, int isarr)
 {
-  return fread (&val, 1, sizeof (val), infile);
+  return fread ((char *)val, 1, sizeof (*val), infile);
 }
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.59 2003-06-17 22:55:07 mikeaubury Exp $
+# $Id: stack.c,v 1.60 2003-06-25 07:48:40 mikeaubury Exp $
 #
 */
 
@@ -459,7 +459,8 @@ A4GL_debug_print_stack();
     }				/* if last entry is not a character string make it one */
   else
     {
-      params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
+	if (params[params_cnt - 1].ptr)
+      		params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
     }
 
   a = params[params_cnt - 1].size;
@@ -477,8 +478,15 @@ int
 A4GL_pop_param (void *p, int d, int size)
 {
   int b;
+  int d1,s1;
+  void *ptr1;
   char *ptr;
+
+
+  A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
+
   params_cnt--;
+
   if (params_cnt < 0)
     {
       A4GL_debug ("Stack got corrupted");
@@ -486,10 +494,23 @@ A4GL_pop_param (void *p, int d, int size)
       exit (0);
     }
 
-  b = A4GL_conv (params[params_cnt].dtype & DTYPE_MASK,
-	    params[params_cnt].ptr, d & DTYPE_MASK, p, size);
 
-
+  if (ptr1==0) {
+		A4GL_setnull(d,p,size);
+		return 1;
+  } else {
+  	if (A4GL_isnull(d1,ptr1)) {
+		//char *ptr=0;if (d1!=0) *ptr=0;
+		A4GL_setnull(d,p,size);
+		//printf("Setnull %d %p %d %p %d",d1,s1,d,p,size);
+		b=1;
+  	} else {
+	
+  		b = A4GL_conv (params[params_cnt].dtype & DTYPE_MASK,
+	    		params[params_cnt].ptr, d & DTYPE_MASK, p, size);
+	
+  	}
+  }
   if (params[params_cnt].dtype & DTYPE_MALLOCED)
     {
       if ((params[params_cnt].dtype & DTYPE_MASK) != 0)
@@ -588,6 +609,8 @@ A4GL_push_param (void *p, int d)
   int ptr2 = 0;
   int dtype_1 = -1;
   int dtype_2 = -1;
+  int dn1;
+  int dn2;
 
 
   size = DECODE_SIZE (d);
@@ -664,17 +687,20 @@ A4GL_push_param (void *p, int d)
 
   n1 = 0;
   A4GL_debug ("params_cnt=%d\n", params_cnt);
+
+  dn1=0;
+  dn2=0;
+
   if (params_cnt > 0)
     {
       dtype_1 = params[params_cnt - 1].dtype;
       if (A4GL_isnull (params[params_cnt - 1].dtype, params[params_cnt - 1].ptr))
 	{
 
+	dn1=params[params_cnt - 1].dtype;
 
 	  /* I don't remember what this is for - so I'm getting shot for now */
-	  zzz = (params[params_cnt - 1].dtype & DTYPE_MASK) +
-	    (strlen (params[params_cnt - 1].ptr)) +
-	    (params[params_cnt - 1].size);
+	  //zzz = (params[params_cnt - 1].dtype & DTYPE_MASK) + (strlen (params[params_cnt - 1].ptr)) + (params[params_cnt - 1].size);
 
 	  zzz = 1;
 
@@ -700,7 +726,8 @@ A4GL_push_param (void *p, int d)
       dtype_2 = params[params_cnt - 2].dtype;
       if (A4GL_isnull (params[params_cnt - 2].dtype, params[params_cnt - 2].ptr))
 	{
-	  zzz = ((params[params_cnt - 2].dtype & DTYPE_MASK) + (strlen (params[params_cnt - 2].ptr)));	/* + params[params_cnt - 2].size; */
+	  dn2=params[params_cnt - 2].dtype;
+	  //zzz = ((params[params_cnt - 2].dtype & DTYPE_MASK) + (strlen (params[params_cnt - 2].ptr)));	/* + params[params_cnt - 2].size; */
 	  zzz = 1;
 
 	  if (zzz == 0)
@@ -766,9 +793,9 @@ A4GL_push_param (void *p, int d)
       if (function)
 	{
 	  /* We've got something to play with */
-	  A4GL_debug ("Calling specified function for %d %d, %d",
-		 dtype_1 & DTYPE_MASK, dtype_2 & DTYPE_MASK, d);
+	  A4GL_debug ("Calling specified function for %d %d, %d", dtype_1 & DTYPE_MASK, dtype_2 & DTYPE_MASK, d);
 	  function (d);
+	  A4GL_debug ("Called function returning");
 	  return;
 	}
 
@@ -959,11 +986,13 @@ A4GL_push_param (void *p, int d)
 
       A4GL_debug ("OP_NUMERIC...");
 
-      if (A4GL_chknull (2, n1, n2))
-	return;
+      if (A4GL_chknull (2, n1, n2,dn1,dn2)) return;
+
       /* void A4GL_get_top_of_stack (int a, int *d, int *s, void **ptr); */
       A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
       A4GL_get_top_of_stack (2, &d2, &s2, (void **) &ptr2);
+
+
       if (d1 != DTYPE_INTERVAL || d1 != DTYPE_DTIME || d2 != DTYPE_INTERVAL
 	  || d2 != DTYPE_DTIME)
 	{
@@ -981,7 +1010,8 @@ A4GL_push_param (void *p, int d)
       int r;
 
     case OP_MATCHES:
-      if (A4GL_chknull (2, n1, n2))
+
+      if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
       c2 = A4GL_char_pop ();
       c1 = A4GL_char_pop ();
@@ -996,7 +1026,7 @@ A4GL_push_param (void *p, int d)
       break;
 
     case OP_LIKE:
-      if (A4GL_chknull (2, n1, n2))
+      if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
       c2 = A4GL_char_pop ();
       c1 = A4GL_char_pop ();
@@ -1007,7 +1037,7 @@ A4GL_push_param (void *p, int d)
 
 
     case OP_EQUAL:
-      if (A4GL_chknull_boolean (2, n1, n2))
+      if (A4GL_chknull_boolean (2, n1, n2,dn1,dn2))
 	{
 	  return;
 	}
@@ -1022,7 +1052,7 @@ A4GL_push_param (void *p, int d)
 
     case OP_NOT_EQUAL:
       A4GL_debug ("Checking OP NOT EQUAL");
-      if (A4GL_chknull_boolean (2, n1, n2))
+      if (A4GL_chknull_boolean (2, n1, n2,dn1,dn2))
 	return;
 
       A4GL_debug ("OP_NOT_EQUAL");
@@ -1037,7 +1067,7 @@ A4GL_push_param (void *p, int d)
       break;
 
     case OP_OR:
-      if (A4GL_chknull (2, n1, n2))
+      if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
       A4GL_debug ("OP_OR");
       i1 = A4GL_pop_int ();
@@ -1051,7 +1081,7 @@ A4GL_push_param (void *p, int d)
 
 
     case OP_AND:
-      if (A4GL_chknull (2, n1, n2))
+      if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
       A4GL_debug ("OP_AND");
       i1 = A4GL_pop_int ();
@@ -1061,7 +1091,7 @@ A4GL_push_param (void *p, int d)
       break;
 
     case OP_NOT:
-      if (A4GL_chknull (1, n1, n2))
+      if (A4GL_chknull (1, n1, n2,dn1,dn2))
 	return;
       A4GL_debug ("OP_NOT");
       i1 = A4GL_pop_int ();
@@ -1072,7 +1102,7 @@ A4GL_push_param (void *p, int d)
       break;
 
     case OP_LESS_THAN:
-      if (A4GL_chknull_boolean (2, n1, n2))
+      if (A4GL_chknull_boolean (2, n1, n2,dn1,dn2))
 	return;
       if (A4GL_opboolean () == -1)
  A4GL_push_int (1);
@@ -1081,7 +1111,7 @@ A4GL_push_param (void *p, int d)
       break;
 
     case OP_GREATER_THAN:
-      if (A4GL_chknull_boolean (2, n1, n2))
+      if (A4GL_chknull_boolean (2, n1, n2,dn1,dn2))
 	return;
       if (A4GL_opboolean () == 1)
  A4GL_push_int (1);
@@ -1090,7 +1120,7 @@ A4GL_push_param (void *p, int d)
       break;
 
     case OP_GREATER_THAN_EQ:
-      if (A4GL_chknull_boolean (2, n1, n2))
+      if (A4GL_chknull_boolean (2, n1, n2,dn1,dn2))
 	return;
       if (A4GL_opboolean () == -1)
  A4GL_push_int (0);
@@ -1099,7 +1129,7 @@ A4GL_push_param (void *p, int d)
       break;
 
     case OP_LESS_THAN_EQ:
-      if (A4GL_chknull_boolean (2, n1, n2))
+      if (A4GL_chknull_boolean (2, n1, n2,dn1,dn2))
 	return;
       if (A4GL_opboolean () == 1)
  A4GL_push_int (0);
@@ -1137,55 +1167,58 @@ A4GL_push_param (void *p, int d)
 	  return;
 	}
 
-      if (A4GL_chknull (2, n1, n2))
+      if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
       A4GL_func_concat ();
       break;
 
     case OP_USING:
-      if (A4GL_chknull (2, n1, n2))
+      if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
       A4GL_func_using ();
       break;
 
     case OP_CLIP:
       A4GL_debug ("OP_CLIP");
-      if (n1)
-	{
-	  A4GL_debug ("Parameter is null..");
-	  A4GL_drop_param ();
-	  A4GL_push_null ();		/*  FIXME FIXME */
-	  break;
-	}
-      A4GL_func_clip ();
+      		A4GL_func_clip ();
+
+
+        //if (n1)
+	//{
+	  //A4GL_debug ("Parameter is null..");
+	  //A4GL_drop_param ();
+	  //A4GL_push_null (DTYPE_CHAR);		/*  FIXME FIXME */
+	  //break;
+	//} else {
+	//}
       break;
 
     case OP_ADD:
-      if (A4GL_chknull (2, n1, n2))
+      if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
       A4GL_push_double (doublea + doubleb);
       break;
 
     case OP_SUB:
-      if (A4GL_chknull (2, n1, n2))
+      if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
       A4GL_push_double (doubleb - doublea);
       break;
 
     case OP_MULT:
-      if (A4GL_chknull (2, n1, n2))
+      if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
       A4GL_push_double (doublea * doubleb);
       break;
 
     case OP_POWER:
-      if (A4GL_chknull (2, n1, n2))
+      if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
       A4GL_push_double (pow (doublea, doubleb));
       break;
 
     case OP_MOD:
-      if (A4GL_chknull (2, n1, n2))
+      if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
       A4GL_debug ("OP MOD : %f %f\n", doubleb, doublea);
       {
@@ -1197,7 +1230,7 @@ A4GL_push_param (void *p, int d)
       }
       break;
     case OP_DIV:
-      if (A4GL_chknull (2, n1, n2))
+      if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
       A4GL_push_double (doubleb / doublea);
       break;
@@ -2088,7 +2121,9 @@ A4GL_isnull (int type, char *buff)
 {
   int a;
   type = type & DTYPE_MASK;
-  //debug ("ISNULL - %d %p\n", type, buff);
+  A4GL_debug ("ISNULL - %d %p\n", type, buff);
+
+  if (buff==0) return 1;
 
   if (A4GL_has_datatype_function_i (type, "ISNULL"))
     {
@@ -2217,13 +2252,15 @@ A4GL_init_blob (struct fgl_int_loc *p)
  * @return
  */
 void
-A4GL_push_null (void)
+A4GL_push_null (int dtype,int size)
 {
-  static int a = 0;
+  //static int a = 0;
   A4GL_debug ("** Pushing null");
-  if (a == 0)
-    A4GL_setnull (2, (char *) &a, 0);
-  A4GL_push_long (a);
+
+  A4GL_push_param (0, dtype+ENCODE_SIZE(size));
+
+  //if (a == 0) A4GL_setnull (2, (char *) &a, 0);
+  //A4GL_push_long (a);
 }
 
 
@@ -2233,7 +2270,7 @@ A4GL_push_null (void)
  * @return
  */
 int
-A4GL_chknull (int n, int n1, int n2)
+A4GL_chknull (int n, int n1, int n2,int d1,int d2)
 {
   A4GL_debug ("CHecking first %d of %d %d", n, n1, n2);
 
@@ -2252,7 +2289,7 @@ A4GL_chknull (int n, int n1, int n2)
       A4GL_drop_param ();
       A4GL_drop_param ();
       A4GL_debug ("Dropped 2");
-      A4GL_push_null ();
+      A4GL_push_null (d1&DTYPE_MASK,DECODE_SIZE(d1)); /* FIXME - need to check what this should be based on d1 and d2 */
       A4GL_debug ("Pushed null");
       return 1;
     }
@@ -2327,7 +2364,7 @@ A4GL_get_top_of_stack (int a, int *d, int *s, void **ptr)
  * @return
  */
 int
-A4GL_chknull_boolean (int n, int n1, int n2)
+A4GL_chknull_boolean (int n, int n1, int n2,int d1,int d2)
 {
   if (n == 2 && (n1 || n2))
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.40 2003-06-22 13:02:19 mikeaubury Exp $
+# $Id: ioform.c,v 1.41 2003-06-25 07:48:41 mikeaubury Exp $
 #*/
 
 /**
@@ -106,6 +106,7 @@ WINDOW *A4GL_create_window (char *name, int x, int y, int w, int h,
 void A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour);
 int
 A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, FIELD * f);
+void A4GL_display_field_contents(FIELD *field,int d1,int s1,char *ptr1) ;
 
 void A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap);
 int display_fields (FORM * mform, int n, ...);
@@ -1115,48 +1116,42 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 	      (struct struct_scr_field
 	       *) (field_userptr (form->currentfield));
 	    A4GL_debug ("fprop=%p", fprop);
+
+
+
 	    if (fprop != 0)
 	      {
-		A4GL_debug ("check Datatype ");
-		if (((fprop->datatype != (DTYPE_CHAR & DTYPE_MASK)))
-		&& (1||field_status (form->currentfield)))
-		{
-		  A4GL_debug ("modify size dtype");
-		  A4GL_debug ("modfy size for metric %d", A4GL_get_metric_for (form, form->currentfield));
 
-		  A4GL_modify_size (&buff[4],
-				    form->fileform->metrics.
-				    metrics_val[A4GL_get_metric_for
+		int d1,s1;
+		char *ptr1;
+
+		if ((fprop->datatype&DTYPE_MASK)==DTYPE_CHAR) return 0;
+
+
+
+		  A4GL_modify_size (&buff[4], form->fileform->metrics.  metrics_val[A4GL_get_metric_for
 						(form,
 						 form->currentfield)].w);
-		  A4GL_debug ("modfy size done -> '%s'", &buff[4]);
 
 		  strcpy (&buff[4], field_buffer (form->currentfield, 0));
-		  A4GL_debug ("copy 1");
+
 		  strcpy (buff2, &buff[4]);
-		  A4GL_debug ("copy 2");
-		  A4GL_debug ("trim buff");
 		  A4GL_trim (buff2);
 		  getsyx (y, x);
-
-		  A4GL_debug ("CHange y=%d, x=%d", y, x);
-		  A4GL_debug ("stack manip buff2='%s'", buff2);
 		  A4GL_trim (buff2);
+		  if (strlen(buff2)==0) return 0;
+		  A4GL_push_param (buff2, DTYPE_CHAR);
 
-		  if (strlen (buff2) != 0)
-		    {
-		      A4GL_push_param (buff2, DTYPE_CHAR);
+	      	  if (A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield))) {
+				return 0;
+		  } 
+		 A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
+		 A4GL_mja_set_field_buffer (form->currentfield, 0, " ");
+		 set_current_field (mform, form->currentfield);
+		 return -4;
 
-		      if (A4GL_pop_param
-			  (buff, fprop->datatype,
-			   A4GL_get_field_width (form->currentfield)))
+	/*
 			{
-#ifdef DEBUG
-			  {
-			    A4GL_debug ("Pushing param %p %d", buff,
-					fprop->datatype);
-			  }
-#endif
 			  A4GL_push_param (buff, fprop->datatype);
 			  if (A4GL_has_str_attribute (fprop, FA_S_FORMAT))
 			    {
@@ -1174,17 +1169,13 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 			{
 			  //push_char(acl_getenv("FIELD_ERROR_MSG"),0);
 			  //display_error(1,0);
-			  A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"),
-					    0);
-			  A4GL_debug ("Couldnt read datatype...");
-			  A4GL_mja_set_field_buffer (form->currentfield, 0,
-						     " ");
+			  A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
+			  A4GL_mja_set_field_buffer (form->currentfield, 0, " ");
 			  set_current_field (mform, form->currentfield);
-			  A4GL_debug ("RETURNING -1 MJAMJAMJA");
 			  return -4;
 			}
 		    }
-		}
+	*/
 	      }
 	  }
     }
@@ -2185,23 +2176,18 @@ A4GL_dump_fields (FIELD * fields[])
 void
 A4GL_set_field_pop_attr (FIELD * field, int attr,int cmd_type)
 {
-  char *ff;
   struct struct_scr_field *f;
   struct s_form_dets *fff;
   int a;
-  int field_width;
+  //int field_width;
   long oopt;
   int d1;
   int s1;
   void* ptr1;
-  int has_format=0;
-  int ignore_formatting=0;
 
 
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
-  field_width=A4GL_get_field_width (field);
 
-  ff = A4GL_new_string (A4GL_get_field_width (field));
 
   f = (struct struct_scr_field *) (field_userptr (field));
 
@@ -2212,6 +2198,47 @@ A4GL_set_field_pop_attr (FIELD * field, int attr,int cmd_type)
 
   A4GL_debug ("f->do_reverse=%d attr=%x", a, attr);
 
+
+
+
+
+  A4GL_display_field_contents(field,d1,s1,ptr1);
+
+  A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
+  oopt = field_opts (field);
+  A4GL_set_field_attr (field);
+
+  attr=A4GL_determine_attribute(cmd_type, attr, f);
+
+  if (attr != 0)
+    A4GL_set_field_attr_with_attr (field, attr,cmd_type);
+
+
+  A4GL_debug ("set field attr");
+  fff = A4GL_get_curr_form ();
+  A4GL_debug ("set field");
+  A4GL_debug ("set field buffer setting do_reverse=%d",a);
+
+  f->do_reverse = a;
+  A4GL_debug ("done ");
+  set_field_opts (field, oopt);
+
+
+}
+
+
+void A4GL_display_field_contents(FIELD *field,int d1,int s1,char *ptr1) {
+int field_width;
+int has_format;
+  int ignore_formatting=0;
+struct struct_scr_field *f;
+char *ff;
+
+A4GL_debug("In display_field_contents");
+  f = (struct struct_scr_field *) (field_userptr (field));
+  ff = A4GL_new_string (A4GL_get_field_width (field));
+
+  field_width=A4GL_get_field_width (field);
   has_format=A4GL_has_str_attribute (f, FA_S_FORMAT);
 
 // 'Format' is valid for a lot of datatypes -
@@ -2267,26 +2294,11 @@ A4GL_set_field_pop_attr (FIELD * field, int attr,int cmd_type)
     }
 
   A4GL_pop_char (ff, A4GL_get_field_width (field));
-  A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
-  oopt = field_opts (field);
-  A4GL_set_field_attr (field);
-
-  attr=A4GL_determine_attribute(cmd_type, attr, f);
-
-  if (attr != 0)
-    A4GL_set_field_attr_with_attr (field, attr,cmd_type);
-
-
-  A4GL_debug ("set field attr");
-  fff = A4GL_get_curr_form ();
-  A4GL_debug ("set field");
   A4GL_mja_set_field_buffer (field, 0, ff);
-  A4GL_debug ("set field buffer setting do_reverse=%d",a);
-
-  f->do_reverse = a;
-  A4GL_debug ("done ");
-  set_field_opts (field, oopt);
   free(ff);
+
+
+
 }
 
 

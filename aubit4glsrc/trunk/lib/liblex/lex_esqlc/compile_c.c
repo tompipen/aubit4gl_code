@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.54 2003-06-20 16:13:17 mikeaubury Exp $
+# $Id: compile_c.c,v 1.55 2003-06-25 07:48:40 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -3998,7 +3998,7 @@ print_fgllib_start (char *db)
 void
 print_main_end (void)
 {
-  printc ("A4GL_fgl_end();\n}\n");
+  printc ("A4GL_fgl_end_4gl_0();\n}\n");
 }
 
 /**

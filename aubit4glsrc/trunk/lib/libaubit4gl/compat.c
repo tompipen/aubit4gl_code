@@ -152,8 +152,8 @@ retstring (char *s)
   A4GL_push_char (s);
 }
 
-
-rdayofweek(int n) {
+/*
+int rdayofweek(int n) {
   int day, mn, yr;
   long d2;
   A4GL_get_date (n, &day, &mn, &yr);
@@ -161,6 +161,7 @@ rdayofweek(int n) {
   return d2;
 
 }
+*/
 /*
 popbool(x)   
 popshort(x) 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.66 2003-06-18 19:20:38 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.67 2003-06-25 07:48:40 mikeaubury Exp $
 #
 */
 
@@ -1252,12 +1252,12 @@ enum cmd_types {
   char *A4GL_lrtrim (char *z);
   void A4GL_get_top_of_stack (int a, int *d, int *s, void **ptr);
   void A4GL_drop_param (void);
-  void A4GL_push_null (void);
+  void A4GL_push_null (int dtype,int size);
   void A4GL_init_blob (struct fgl_int_loc *p);
   int A4GL_read_param (void *p, int d, int size, int c);
   int A4GL_conv_to_interval (int a);
-  int A4GL_chknull_boolean (int n, int n1, int n2);
-  int A4GL_chknull (int n, int n1, int n2);
+  int A4GL_chknull_boolean (int n, int n1, int n2,int d1,int d2);
+  int A4GL_chknull (int n, int n1, int n2,int d1,int d2);
   void A4GL_push_bind (struct BINDING *b, int n, int no, int elemsize);
   void A4GL_push_bind_reverse (struct BINDING *b, int n, int no, int elemsize);
 
@@ -1643,6 +1643,10 @@ int A4GL_has_errorlog (void);
 int A4GL_add_datatype_function_i (int a, char *funcname, void *func);
 void A4GL_close_errorlog_file (void);
 void A4GL_set_last_outfile (char *s);
+void A4GL_ltrim(char *s) ;
+void A4GL_fgl_die(int n);
+char *A4GL_init_dec (char *s, int len, int d);
+void A4GL_fgl_end_4gl_0 (void);
 
 /* 
    used by display routines to convert a datatype 

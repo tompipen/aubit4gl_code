@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.8 2003-06-22 13:02:19 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.9 2003-06-25 07:48:41 mikeaubury Exp $
 #*/
 
 /**
@@ -444,15 +444,19 @@ process_control_stack (struct s_screenio *sio)
       		new_state = 0;
 		strcpy(buff,field_buffer (sio->currentfield, 0));
 		A4GL_trim(buff);
+		A4GL_push_char(buff);
 		if (strlen(buff)) {
 			A4GL_debug("Field is not null");
 	        	A4GL_push_char (buff);
 		} else {
 			A4GL_debug("Field is null");
-		 	A4GL_push_null();
+		 	A4GL_push_null(DTYPE_CHAR,0);
 		}
 
+
           	A4GL_pop_var2 (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
+	
+		A4GL_display_field_contents(sio->currentfield,sio->vars[field_no].dtype,sio->vars[field_no].size,sio->vars[field_no].ptr) ; // MJA 2306
 
       		A4GL_push_long ((long) sio->currentfield);
       		A4GL_push_char (sio->fcntrl[a].field_name);

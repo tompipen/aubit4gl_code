@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.16 2003-06-18 09:38:23 mikeaubury Exp $
+# $Id: keys.c,v 1.17 2003-06-25 07:48:40 mikeaubury Exp $
 #
 */
 
@@ -348,6 +348,8 @@ A4GL_get_option_value (char type)
       return std_dbscr.sqlintr ;
       break;
     }
+A4GL_exitwith("Unknown option value");
+return 0;
 }
 
 

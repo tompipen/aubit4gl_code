@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.42 2003-06-22 13:02:19 mikeaubury Exp $
+# $Id: resource.c,v 1.43 2003-06-25 07:48:41 mikeaubury Exp $
 #
 */
 
@@ -54,6 +54,7 @@
 #define WGETENV_OK
 #define _NO_FORM_X_H_
 #include "a4gl_libaubit4gl_int.h"
+#include <ctype.h>
 
 
 /*

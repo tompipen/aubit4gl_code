@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.50 2003-06-22 13:02:19 mikeaubury Exp $
+# $Id: newpanels.c,v 1.51 2003-06-25 07:48:41 mikeaubury Exp $
 #*/
 
 /**
@@ -153,8 +153,8 @@ int A4GL_invert_color (int a);
 
 WINDOW *A4GL_window_on_top (void);
 WINDOW *A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x,
-			      int y);
-WINDOW *A4GL_display_form (struct s_form_dets *f);
+			      int y,int attr);
+WINDOW *A4GL_display_form (struct s_form_dets *f,int attr);
 WINDOW *A4GL_create_window (char *name, int x, int y, int w, int h, int iswindow,
 		       int form_line, int error_line, int prompt_line,
 		       int menu_line, int border, int comment_line,
@@ -871,7 +871,7 @@ erase_form (FORM * f)
  * @todo Describe function
  */
 WINDOW *
-A4GL_display_form (struct s_form_dets *f)
+A4GL_display_form (struct s_form_dets *f,int attrib)
 {
   int rows, cols;
   char buff[80];
@@ -925,11 +925,15 @@ A4GL_display_form (struct s_form_dets *f)
   /* fix - not sure whats going on here bit form_details.border is set to 1 for the screen! */
 
 
-  if (informix_behaviour)
-    {
-      rows = windows[currwinno].h - fl;
-      cols = windows[currwinno].w;
-    }
+
+// I can't seem to replicate this!
+  //if (informix_behaviour)
+    //{
+	//if (currwin!= A4GL_find_pointer ("screen", WINCODE)) {
+      		//rows = windows[currwinno].h - fl;
+      		//cols = windows[currwinno].w;
+	//}
+    //}
 
   f->form_details.border = windows[currwinno].winattr.border;
 
@@ -976,7 +980,10 @@ A4GL_display_form (struct s_form_dets *f)
       return 0;
     }
 
+
+
   wclear (drwin);
+
   a = set_form_win (f->form, w);
 
   if (a == E_POSTED)
@@ -1023,6 +1030,18 @@ A4GL_display_form (struct s_form_dets *f)
   A4GL_debug ("start the form");
   A4GL_start_form (f);
 
+  if ((attrib & 0xff) == 0 || (attrib & 0xff) == 0xff)
+    {
+      attrib = attrib + ' ';
+      A4GL_debug ("Set pad char to space");
+    }
+  A4GL_debug ("Setting attribute for form to 0x%x \n", attrib);
+
+
+  A4GL_set_bkg (drwin, attrib);
+
+
+
   A4GL_mja_wrefresh (w);
   A4GL_clr_form(0);
   A4GL_zrefresh();
@@ -1036,7 +1055,7 @@ A4GL_display_form (struct s_form_dets *f)
  * @todo Describe function
  */
 WINDOW *
-A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y)
+A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y,int attr)
 {
   WINDOW *w;
   int nlines;
@@ -1084,7 +1103,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y)
 		     f->form_details.message_line, f->form_details.colour);
 
   A4GL_gui_dispform (name, A4GL_getform_line ());
-  if (A4GL_display_form (f))
+  if (A4GL_display_form (f,attr))
     return w;
   else
     return 0;
@@ -1870,7 +1889,7 @@ A4GL_cr_window_form (char *name,
   form->form_details.colour = attrib;
   A4GL_add_pointer (name, S_FORMDETSCODE, form);
 
-  win = A4GL_display_form_new_win (name, form, x, y);
+  win = A4GL_display_form_new_win (name, form, x, y,attrib);
   if (win)
     {
       A4GL_add_pointer (name, WINCODE, win);
@@ -1957,7 +1976,7 @@ A4GL_disp_form (char *name, int attr)
   char buff[80];
   A4GL_chkwin();
   A4GL_debug ("attr=%d\n", attr);
-  attr = A4GL_decode_aubit_attr (attr, 'w');
+  //attr = A4GL_decode_aubit_attr (attr, 'w');
 
   A4GL_debug ("attr=%x\n", attr);
 
@@ -1969,7 +1988,7 @@ A4GL_disp_form (char *name, int attr)
       A4GL_exitwith ("The form has not been opened");
       return 0;
     }
-  w = A4GL_display_form (f);
+  w = A4GL_display_form (f,attr);
   if (w == 0)
     {
 #ifdef DEBUG

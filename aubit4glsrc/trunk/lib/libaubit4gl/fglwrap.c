@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.45 2003-06-20 06:17:51 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.46 2003-06-25 07:48:40 mikeaubury Exp $
 #
 */
 
@@ -113,7 +113,7 @@ char *A4GL_clob (char *s, char *p);
  */
 
 void
-A4GL_fgl_end_4gl_0 ()
+A4GL_fgl_end_4gl_0 (void)
 {
 
 A4GL_fgl_end();

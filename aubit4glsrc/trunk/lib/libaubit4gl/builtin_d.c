@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.28 2003-06-18 09:38:23 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.29 2003-06-25 07:48:40 mikeaubury Exp $
 #
 */
 
@@ -239,8 +239,9 @@ A4GL_push_dec (char *p, int ismoney,int size)
 
   if (NUM_DIG(p)!=l&&NUM_DEC(p)!=d) {
   	A4GL_init_dec(p,l,d);
-	A4GL_push_null();return;
+	A4GL_push_null(DTYPE_DECIMAL,size);
 	A4GL_setnull(DTYPE_DECIMAL,p,size);
+	return;
   }
 
   if (NUM_DIG(p)!=l&&NUM_DEC(p)!=d) {
@@ -794,8 +795,8 @@ A4GL_push_variable (void *ptr, int dtype)
 {
 
   if (A4GL_isnull(dtype&DTYPE_MASK,ptr)) {
-		A4GL_debug("Variable was null dtype=%d %x",dtype&DTYPE_MASK,dtype);
-		A4GL_push_null();
+		A4GL_debug("Variable was null dtype=%d %x ptr=%p",dtype&DTYPE_MASK,dtype,ptr);
+		A4GL_push_null(dtype&DTYPE_MASK,DECODE_SIZE(dtype));
 		return;
   }
 

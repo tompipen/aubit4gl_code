@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_mempacked.c,v 1.3 2003-05-15 07:10:42 mikeaubury Exp $
+# $Id: pack_mempacked.c,v 1.4 2003-06-25 07:48:41 mikeaubury Exp $
 #*/
 
 /**
@@ -59,6 +59,8 @@
  (On some platforms these may be the same, on others they won't be)
 -----------------------------------------------------------------------------
 */
+
+#include <ctype.h>
 
 #ifdef PORTABLE
 #include <netinet/in.h>
@@ -155,7 +157,7 @@ input_short (char *name, short *val, int ptr, int isarr)
 {
   int a;
   A4GL_debug ("Input short %s", name);
-  a = A4GL_memfile_fread (val, 1, sizeof (short), infile);
+  a = A4GL_memfile_fread ((char *)val, 1, sizeof (short), (void *)infile);
   *val = ntohs (*val);
   return a;
 
@@ -189,7 +191,8 @@ input_long (char *name, long *val, int ptr, int isarr)
   /* long n; */
   int a;
   A4GL_debug ("Reading long %s", name);
-  a = A4GL_memfile_fread (val, 1, sizeof (long), infile);
+  a = A4GL_memfile_fread ((char *)val, 1, sizeof (long), (void *)infile);
+  A4GL_debug("Got a as %d val=%d (%x)\n",a,*val,*val);
   *val = ntohl (*val);
   A4GL_debug ("->Got long %s  as %x\n", name, *val);
   return a;
@@ -222,7 +225,7 @@ input_string (char *name, char **val, int ptr, int isarr)
   A4GL_debug ("Got length as %d", l);
   *val = malloc (l + 1);	/* Extra 1 for the \0 */
   memset (*val, 0, l + 1);
-  a = A4GL_memfile_fread (*val, 1, l, infile);
+  a = A4GL_memfile_fread ((char *)*val, 1, l, (void *)infile);
   if (a == 0 && l == 0)
     return 1;
   return a;
@@ -235,7 +238,7 @@ input_string (char *name, char **val, int ptr, int isarr)
 int
 input_double (char *name, double *val, int ptr, int isarr)
 {
-  return A4GL_memfile_fread (&val, 1, sizeof (val), infile);
+  return A4GL_memfile_fread ((char *)val, 1, sizeof (*val), (void *)infile);
 }
 
 /**
@@ -276,7 +279,7 @@ int
 input_ptr_ok ()
 {
   char n;
-  A4GL_memfile_fread (&n, 1, sizeof (n), infile);
+  A4GL_memfile_fread (&n, 1, sizeof (n),(void *) infile);
   if (n)
     return 1;
   else
@@ -324,7 +327,7 @@ input_enum (char *name, int *d)
 int
 A4GL_open_packer (char *basename, char dir)
 {
-  char buff[256];
+  //char buff[256];
   char *ptr = 0;
   A4GL_debug ("MEMPACKER : basename=%s\n", basename);
   ptr = strchr (basename, '.');
@@ -342,8 +345,8 @@ A4GL_open_packer (char *basename, char dir)
 
   if (toupper (dir) == 'I')
     {
-      int n;
-      infile = A4GL_memfile_fopen_buffer (ptr, -1);
+      //int n;
+      infile = (void *)A4GL_memfile_fopen_buffer (ptr, -1);
 
       if (infile)
 	{

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.45 2003-06-17 22:55:07 mikeaubury Exp $
+# $Id: conv.c,v 1.46 2003-06-25 07:48:40 mikeaubury Exp $
 #
 */
 
@@ -123,7 +123,7 @@ char *A4GL_dec_to_str (char *s, int size);
 char *A4GL_add_dec (char *a, char *b);
 char *A4GL_minus_dec (char *a, char *b);
 char *A4GL_str_to_dec (char *s, char *w);
-char *A4GL_init_dec (char *s, int len, int d);
+//char *A4GL_init_dec (char *s, int len, int d);
 char *A4GL_mult_dec (char *s, char *v);
 char *A4GL_divide_dec (char *s, char *w);
 int A4GL_dec_roundoff (char *s, int n);
@@ -1098,8 +1098,10 @@ A4GL_mdectos (void *z, void *w, int size)
 {
   char *buff;
   char buff2[200];
+
   buff = A4GL_dec_to_str (z, size);
-  A4GL_debug ("dec_to_str -> '%s'\n", buff);
+
+  A4GL_debug ("mdec_to_str -> '%s'\n", buff);
 
   strcpy(buff2,buff);
   A4GL_ltrim(buff2);
@@ -2566,8 +2568,9 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
    * This is a temporary measure - such bugs will be located & fixed.
    */
 
-  if ((dtype2&DTYPE_MASK) == DTYPE_DECIMAL && (size < 256))
+  if ( ((dtype2&DTYPE_MASK) == DTYPE_DECIMAL || (dtype2&DTYPE_MASK) == DTYPE_MONEY ) && (size < 256))
     {
+      //char*ptr=0;*ptr=0;
       // we don't know how many decimals are required, 4 should be ok
       size += 4;
       if (size > 32)
@@ -3155,7 +3158,7 @@ A4GL_dec_to_str (char *s, int size)
   int c, x, k;
  int a;
   static char buff[DBL_DIG1];
-int h,t;
+//int h,t;
   int dot_printed = -1;
   int blank = 0;
   char buff2[200];
