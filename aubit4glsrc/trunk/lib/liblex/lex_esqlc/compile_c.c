@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.117 2003-12-17 11:38:01 mikeaubury Exp $
+# $Id: compile_c.c,v 1.118 2003-12-17 16:02:54 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1508,7 +1508,7 @@ print_param (char i)
   if (i == 'r')
     {
       printc ("static char *rbindvarname[%d]={\n", ONE_NOT_ZERO(fbindcnt));
-	if (fbindcnt==0) {printc("{0,0,0}");}
+	if (fbindcnt==0) {printc("0");}
 
 
       for (b = 0; b < fbindcnt; b++)
@@ -3364,8 +3364,7 @@ print_format_every_row (void)
 
   printc ("{int _rr;for (_rr=0;_rr<%d;_rr++) {", fbindcnt);
   printc ("A4GL_push_char(rbindvarname[_rr]);\n");
-  printc
-    ("A4GL_%srep_print(&rep,1,1,0); A4GL_push_long(19); A4GL_set_column(&rep);A4GL_%srep_print(&rep,1,1,0); \n",ispdf());
+  printc ("A4GL_%srep_print(&rep,1,1,0); A4GL_push_long(19); A4GL_set_column(&rep);A4GL_%srep_print(&rep,1,1,0); \n",ispdf(),ispdf());
   printc ("A4GL_push_variable(rbind[_rr].ptr,rbind[_rr].dtype);");
   printc ("A4GL_%srep_print(&rep,1,1,0); A4GL_%srep_print(&rep,0,0,0);\n",ispdf(),ispdf());
   printc ("}");
