@@ -420,9 +420,6 @@ if (strlen(outfile)) {
 
 fprintf(out,"database %s\n",mv_db);
 
-if (strlen(outfile)) {
-        fclose(out);
-}
 
 
 for (a=0;a<tabcnt;a++) {
@@ -473,6 +470,7 @@ for (a=0;a<attribs_cnt;a++) {
         fprintf(out,"%s\n",attribs[a]);
 }
 fprintf(out,"end\n");
+if (strlen(outfile)) { fclose(out); }
 return 0;
 }
 

@@ -10,7 +10,7 @@ char sqlstate [9+1];
 } a4gl_sqlca;
 
 
-FILE *out;
+FILE *file_out=0;
 char outfile[256];
 char tabname[256][256];
 int tabcnt=0;
@@ -173,13 +173,13 @@ if (tabcnt==0) {
 
 
 if (strlen(outfile)) {
-	out=fopen(outfile,"w");
-	if (out==0) {
+	file_out=fopen(outfile,"w");
+	if (file_out==0) {
 		printf("Unable to open output file (%s)\n",outfile);
 		exit(2);
 	}
 } else {
-	out=stdout;
+	file_out=stdout;
 }
 
 A4GL_fgl_start(argc,argv);
@@ -190,11 +190,8 @@ if (a4gl_sqlca.sqlcode!=0) {
 	exit(1);
 }
 
-fprintf(out,"database %s\n",dbname);
+fprintf(file_out,"database %s\n",dbname);
 
-if (strlen(outfile)) {
-	fclose(out);
-}
 
 
 for (a=0;a<tabcnt;a++) {
@@ -210,41 +207,42 @@ for (a=0;a<tabcnt;a++) {
 		printf("Can't find table %s in database\n",tabname[a]);
 		exit(0);
 	}
-	fprintf(out,"screen\n");
-	fprintf(out,"{\n");
+	fprintf(file_out,"screen\n");
+	fprintf(file_out,"{\n");
 
 	while (1) {
 		rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
 		A4GL_trim(ccol);
 		if (rval==0) break;
-		fprintf(out,"%-19.19s",ccol);
-		fprintf(out,"[");
+		fprintf(file_out,"%-19.19s",ccol);
+		fprintf(file_out,"[");
 		id=get_id(idtype,isize);
-		fprintf(out,"%s",id);
-		fprintf(out,spaces(idtype,isize,id));
-		fprintf(out,"]\n");
+		fprintf(file_out,"%s",id);
+		fprintf(file_out,spaces(idtype,isize,id));
+		fprintf(file_out,"]\n");
 		sprintf(buff,"%s = %s.%s;",id,tabname[a],ccol);
 		attribs_cnt++;
 		attribs=realloc(attribs,sizeof(char *)*attribs_cnt);
 		attribs[attribs_cnt-1]=strdup(buff);
 	}
 
-	fprintf(out,"}\n");
+	fprintf(file_out,"}\n");
 
 }
 
 
-fprintf(out,"end\n");
-fprintf(out,"tables\n");
+fprintf(file_out,"end\n");
+fprintf(file_out,"tables\n");
 
 for (a=0;a<tabcnt;a++) {
-	fprintf(out,"%s\n",tabname[a]);
+	fprintf(file_out,"%s\n",tabname[a]);
 }
-fprintf(out,"attributes\n");
+fprintf(file_out,"attributes\n");
 for (a=0;a<attribs_cnt;a++) {
-	fprintf(out,"%s\n",attribs[a]);
+	fprintf(file_out,"%s\n",attribs[a]);
 }
-fprintf(out,"end\n");
+fprintf(file_out,"end\n");
+if (strlen(outfile)) { fclose(file_out); }
 return 0;
 }
 
