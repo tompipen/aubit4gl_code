@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.5 2004-11-30 17:36:38 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.6 2004-12-01 11:07:13 mikeaubury Exp $
 }
 
 {**
@@ -333,7 +333,6 @@ char *ptr;
 	buff[19999]=0;
 
 	if (no==1) {
-	printf("Single\n");
 		A4GL_push_char(buff);
 		A4GL_pop_char(obind[0].ptr,obind[0].size); // Its all into one variable - put the whole line there
 	} else {
@@ -352,13 +351,11 @@ char *ptr;
 			if (ptr==0) {
 				A4GL_push_char(optr);
 				A4GL_pop_param(obind[a].ptr,obind[a].dtype,obind[a].size);
-	printf("pop1 %s\n",optr);
 				break;
 			} else {
 				*ptr=0;
 				A4GL_push_char(optr);
 				A4GL_pop_param(obind[a].ptr,obind[a].dtype,obind[a].size);
-	printf("pop2 %s\n",optr);
 				ptr++;
 			}
 		}
@@ -379,11 +376,11 @@ FILE *f;
 char buff[20000];
 struct BINDING *ibind;
 struct BINDING *obind;
-ibind=i;
-obind=o;
 char delim_c;
 char *ptr;
 int a;
+ibind=i;
+obind=o;
 
 	if (ni==0) { A4GL_push_int(0); return 1;}
 	if ((ibind[0].dtype&0xffff)!=0) {A4GL_push_int(0); return 1;}
@@ -417,32 +414,58 @@ int a;
 }
 #else
 int aclfgl_write (int n) {
-	char *ptr=0;
+char *ptr=0;
 char *handle;
 FILE *f;
-	char *ptr2;
-	while (n>1) {
-		n--;
+int nn;
+char *ptr2;
+char **px=0;
+int l=0;
+char delim_c;
+int a;
+char ds[2];
+nn=n;
+
+px=malloc(sizeof(char *)*n);
+while (nn) {
+		nn--;
 		ptr2=A4GL_char_pop();
-		if (ptr) {
-			char *ptrn;
-			ptrn=malloc(strlen(ptr)+strlen(ptr2)+2);
-			sprintf(ptrn,"%s%c%s",ptr2,ptr);
+		l+=strlen(ptr2)+2;
+		px[nn]=ptr2;
+}
+
+ptr=malloc(l);
+handle=px[0];
+A4GL_trim(handle);
+
+
+if (A4GL_has_pointer(handle,CHANNEL_DELIM)) {
+	delim_c=(char )A4GL_find_pointer(handle,CHANNEL_DELIM);
+} else {
+	delim_c=' ';
+}
+
+ds[1]=0;
+ds[0]=delim_c;
+
+strcpy(ptr,"");
+for (a=1;a<n;a++) {
+	if (a>2) strcat(ptr,ds);
+	strcat(ptr,px[a]);
+}
+
+	f=(FILE *)A4GL_find_pointer(handle,CHANNEL_OUT);
+	if (f==0) { 
+			for (a=0;a<n;a++) free(px[a]);
+			free(px);
 			free(ptr);
-			ptr=ptrn;
-		} else {
-			ptr=strdup(ptr2);
-		}
-		free(ptr2);
+			printf("No out channel\n"); A4GL_push_int(0); return 1;
 	}
 
-	handle=A4GL_char_pop();
-	A4GL_trim(handle);
-	f=(FILE *)A4GL_find_pointer(handle,CHANNEL_OUT);
-	if (f==0) { printf("No out channel\n"); A4GL_push_int(0); return 1;}
 	fprintf(f,"%s\n",ptr);
 	free(ptr);
-		
+	for (a=0;a<n;a++) free(px[a]);
+	free(px);
 	A4GL_push_int(1);
 	return 1;
 }
