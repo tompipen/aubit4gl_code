@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.276 2004-12-31 03:19:37 afalout Exp $
+dnl # $Id: configure.in,v 1.277 2005-01-04 03:34:53 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -3159,10 +3159,29 @@ AC_ARG_WITH(iksemel,
 		# FIXME: Replace `main' with a function in `-liksemel':
 		AC_CHECK_LIB([iksemel], [main])
 
-		if test $ac_cv_lib_iksemel_main = yes; then
+		if test "$ac_cv_lib_iksemel_main" = "yes"; then
 			if test "$AUBIT_SOURCE" = "1" ; then
 				AC_CHECK_HEADERS([ iksemel.h ])
 				if test "$ac_cv_header_iksemel_h" = "yes"  ; then
+					if test "$PKG_CONFIG" != "no"; then
+						export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH"
+						if $PKG_CONFIG --exists iksemel ; then
+							HAVE_IKSEMEL_TYPE=1
+							IKSEMEL_VERSION=`$PKG_CONFIG --modversion iksemel`
+						fi
+					fi
+					if test "$IKSEMEL_VERSION" = ""; then
+						AC_PATH_PROG(IKSPERF, iksperf, no)
+						if test "$IKSPERF" != "no"; then
+							IKSEMEL_VERSION=`iksperf --version | awk '{print $3}'`
+							if test "$IKSEMEL_VERSION" != ""; then
+								HAVE_IKSEMEL_TYPE=1
+							fi
+						fi
+					fi
+				fi
+					
+				if test "$HAVE_IKSEMEL_TYPE" = "1"; then
 					JABBERBUILD=yes
 					AC_DEFINE(HAVE_IKSEMEL,1,[ ])
 					IKSEMEL_L_FLAGS="$TEST_IKSEMEL_L_FLAGS"
@@ -3179,7 +3198,6 @@ AC_ARG_WITH(iksemel,
 								JABBER#$x/bin/libiksemel-3.dll"
 						fi
 					fi
-					
 				else
 					JABBERBUILD=no
 				fi
@@ -3671,7 +3689,7 @@ AC_ARG_WITH(pcre,
 		if test "$ac_cv_lib_pcre_main" = "yes"; then
 			if test "$ac_cv_header_pcre_h" != "yes"; then
 				#On Windows binary distro of pcre, there are no header files
-				#This alos takes care of cases when we find libpcre cuplied
+				#This also takes care of cases when we find libpcre suplied
 				#with Apache, but there is no header file
 				PCRE_INC_PATH="$aubitdir/tools/cygwin"
 			fi
@@ -4421,7 +4439,7 @@ AC_ARG_WITH(esqlc,
 
 
 if test "$LIBS" != ""; then 
-	echo "WARNING: (1) LIBS continas $LIBS"
+	echo "WARNING: (1) LIBS contains $LIBS"
 fi	
 
 
@@ -4760,7 +4778,7 @@ AC_ARG_WITH(pgsqleng,
 ])
 
 if test "$LIBS" != ""; then 
-	echo "WARNING: (2) LIBS continas $LIBS"
+	echo "WARNING: (2) LIBS contains $LIBS"
 fi	
 
 ## ==================================================================
@@ -6067,7 +6085,7 @@ fi
 
 fi
 if test "$LIBS" != ""; then 
-	echo "WARNING: (3) LIBS continas $LIBS"
+	echo "WARNING: (3) LIBS contains $LIBS"
 fi	
 
 ## ==================================================================
@@ -7220,7 +7238,7 @@ PHP_CONFIGURE_PART(Checking for standard libraries:)
             #FIXME: not not check this in a particular library, check for dlopen() 
 			#function as such in standard libraries first.
 
-
+			old_LIBS="$LIBS"
 			AC_CHECK_LIB([dl], [main])
 
 			if test "$ac_cv_lib_dl_main" != "yes"; then
@@ -7236,19 +7254,22 @@ PHP_CONFIGURE_PART(Checking for standard libraries:)
 				fi
 				LDFLAGS="$old_LDFLAGS"
 		    fi
+			LIBS="$old_LIBS"
+			
 		    ;;
 		esac
 
 
 # FIXME: Replace `main' with a function in `-lc':
+old_LIBS="$LIBS"
 AC_CHECK_LIB([c], [main])
-
 
 #unit test sw for C code, used in tools/test/db
 AC_CHECK_LIB([check], [suite_create])
 if test "$ac_cv_lib_check_suite_create" = "yes" ; then
 	HAS_CHECK=1
 fi
+LIBS="$old_LIBS"
 
 ## ==================================================================
 ##                       Checks for header files
@@ -7429,7 +7450,7 @@ fi
 ##                   Checks for Cygwin specifics
 ## ==================================================================
 if test "$LIBS" != ""; then 
-	echo "WARNING: (4) LIBS continas $LIBS"
+	echo "WARNING: (4) LIBS contains $LIBS"
 fi	
 
 case "$host" in
@@ -7687,31 +7708,36 @@ else
         A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
 	fi
 
-	############# SQLite via ODBC ####################
-	#This will never happen, since SQLIte native connector will allways "win"
-	if test "$SQLITE_LIB" = "1" -a "$SQLITE_ODBC" = "1"; then
-		A4GL_LEXTYPE=C
-		A4GL_SQLTYPE=sqliteodbc
-        A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
-    fi
-
-	############# SQLite native connector ####################
-	#It is not really native - it does not call SQLite API directly,
-	#but instead it uses SQLite ODBC driver code to create plug-in
-	#linked with Aubit ODBC code and SQLIte ODBC code - therefore it looks 
-	#like a native driver but interanlly it used ODBC API
-	if test "$SQLITE_LIB" = "1" ; then
-		A4GL_LEXTYPE=C
-		#FIXME: how do we know if we have 'S'tatic one?
-		if test "$SQLITE_VER" = "3"; then
-			A4GL_SQLTYPE=sqlite3S
-			A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE sqlite3"
-		else
-			A4GL_SQLTYPE=sqliteS
-			A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE sqlite"
+	if test "$A4GL_SQLTYPE" = "nosql"; then 
+	#as a last resort, use SQLIte (if we have it) if we still dont 
+	#have default SQL plug-in at this point 
+	
+		
+		############# SQLite via ODBC ####################
+		#This will never happen, since SQLIte native connector will allways "win"
+		if test "$SQLITE_LIB" = "1" -a "$SQLITE_ODBC" = "1"; then
+			A4GL_LEXTYPE=C
+			A4GL_SQLTYPE=sqliteodbc
+			A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
 		fi
-    fi
-
+	
+		############# SQLite native connector ####################
+		#It is not really native - it does not call SQLite API directly,
+		#but instead it uses SQLite ODBC driver code to create plug-in
+		#linked with Aubit ODBC code and SQLIte ODBC code - therefore it looks 
+		#like a native driver but interanlly it used ODBC API
+		if test "$SQLITE_LIB" = "1" ; then
+			A4GL_LEXTYPE=C
+			#FIXME: how do we know if we have 'S'tatic one?
+			if test "$SQLITE_VER" = "3"; then
+				A4GL_SQLTYPE=sqlite3S
+				A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE sqlite3"
+			else
+				A4GL_SQLTYPE=sqliteS
+				A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE sqlite"
+			fi
+		fi
+	fi
 fi
 
 AC_MSG_RESULT($A4GL_SQLTYPE)
@@ -8538,7 +8564,7 @@ PHP_CONFIGURE_PART(Creating files:)
 AC_OUTPUT
 
 if test "$LIBS" != ""; then 
-	echo "WARNING: (5) LIBS continas $LIBS"
+	echo "WARNING: (5) LIBS contains $LIBS"
 fi	
 
 if test "$AUBIT_SOURCE" = "1" ; then
@@ -8846,7 +8872,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.276 2004-12-31 03:19:37 afalout Exp $
+| $Id: configure.in,v 1.277 2005-01-04 03:34:53 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

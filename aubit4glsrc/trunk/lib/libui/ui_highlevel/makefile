@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.39 2004-12-31 03:20:39 afalout Exp $
+# $Id: makefile,v 1.40 2005-01-04 03:35:32 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -355,19 +355,18 @@ clean: clean.capi
 ##                     CORBA/ORBit settings
 ## ==================================================================
 
-ORBIT_VER		=1
 IDLMAGIC		=${LIBROOT}/bin/idlmagic
-ifeq "${ORBIT_VER}" "2"
-	PREFIX ?= /usr
-	ORBIT_IDL=$(PREFIX)/bin/orbit-idl-2
-	CAPI_CFLAGS=$(shell pkg-config ORBit-2.0 ORBit-CosNaming-2.0 --cflags)
-	CAPI_LDFLAGS=$(shell pkg-config ORBit-2.0 ORBit-CosNaming-2.0 --libs)
+ifeq "${HAS_ORBIT_TYPE}" "2"
+	#CAPI_CFLAGS=$(shell pkg-config ORBit-2.0 ORBit-CosNaming-2.0 --cflags)
+	#CAPI_LDFLAGS=$(shell pkg-config ORBit-2.0 ORBit-CosNaming-2.0 --libs)
 else
-	ORBIT_IDL=orbit-idl
 	#there is apparently no diff between client and server targets:
-	CAPI_CFLAGS=$(shell orbit-config --cflags client)
-	CAPI_LDFLAGS=$(shell orbit-config --libs client)
+	#CAPI_CFLAGS=$(shell orbit-config --cflags client)
+	#CAPI_LDFLAGS=$(shell orbit-config --libs client)
 endif
+#ORBIT_NAME		=ORBit-2.0
+#ORBIT_VERSION	=2.6.3
+#ORBIT_CONFIG		=
 
 ifneq "${TARGET_OS}" "hpux"
 	ifneq "${TARGET_OS}" "cygwin"
@@ -381,34 +380,14 @@ else
 			LINK_LIBS_SERVER           =-lcl -lm -lnsl
 endif
 
-
-CFLAGS	:=${CAPI_CFLAGS} ${CFLAGS} -D__CAPI__
+#this would actually applies to WHOLE makefile not just from this point down
+#and it caused UI_HL_GTK to fail when using GTK2 on armada
+#CFLAGS	:=${CAPI_CFLAGS} ${CFLAGS}
+#-D__CAPI__
 
 #Names of all Aubit interfaces to create CORBA APIs and cleants/servers for:
 API_NAMES		=sqlparse
 API_NAMES_UP	=${shell  echo "${API_NAMES}" | tr a-z A-Z   }
-#Files created by ORBIT_IDL from .idl:
-#File				Usage for Client	Usage for Server
-#CAPI_*.h			readonly			readonly
-#CAPI_*-common.c	readonly			readonly
-#CAPI_*-stubs.c		readonly			-
-#CAPI_*-skels.c		-					readonly
-#CAPI_*-skelimpl.c	-					template for user code
-#
-#		app							libaubit4gl										plug-in
-#--------------------------------------------------------------------------------------------------------------------
-#call A4GLSQLCV_convert_sql()---->	A4GLSQLCV_convert_sql() in API_sqlparse.c ---->	A4GLSQLCV_convert_sql in util.c
-#																					calls
-#																					A4GLSQLCV_convert_sql_internal() in same file
-#									
-#									
-
-#		app							libaubit4gl										CORBA API plug-in CLIENT					CORBA API plug-in SERVER		plug_in
-#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#call A4GLSQLCV_convert_sql()---->	A4GLSQLCV_convert_sql() in API_sqlparse.c ---->	A4GLSQLCV_convert_sql in CORBA-client.c	--->CORBA_A4GLSQLCV_convert_sql()	A4GLSQLCV_convert_sql in util.c
-#																																calls 							calls
-#																																A4GLSQLCV_convert_sql()			A4GLSQLCV_convert_sql_internal() in same file
-#																																in API_sqlparse.c 										
 
 CLIENTS			=$(foreach api_name,${API_NAMES},lib${api_name}_CLIENT${SO_EXT})
 SERVERS			=$(foreach api_name,${API_NAMES},${api_name}-server${EXE_EXT})
@@ -451,6 +430,7 @@ capi.servers: ${SERVERS}
 
 ######################################
 #Create Aubit CORBA plug-in for % API
+lib%_CLIENT${SO_EXT}: CFLAGS:=${CAPI_CFLAGS} ${CFLAGS} -D__CAPI__ 
 lib%_CLIENT${SO_EXT}: CAPI_%-common.o CAPI_%-stubs.o CAPI_%-client.o \
 	CLIENT_corba_server_util.o
 	${LD} ${SO_LDFLAGS} ${CAPI_LDFLAGS} -o $@ $^
@@ -460,6 +440,7 @@ lib%_CLIENT${SO_EXT}: CAPI_%-common.o CAPI_%-stubs.o CAPI_%-client.o \
 
 #######################################
 #Create Aubit plug-in CORBA server for % API
+%-server${EXE_EXT}: CFLAGS:=${CAPI_CFLAGS} ${CFLAGS} -D__CAPI__
 %-server${EXE_EXT}: CAPI_%-common.o CAPI_%-skels.o CAPI_%-skelimpl.o \
 	CAPI_%-server.o ${DLOPEN_SUPPORT} ${LIBROOT}/libaubit4gl/API_%.o \
 	SERVER_corba_server_util.o 
@@ -474,9 +455,9 @@ lib%_CLIENT${SO_EXT}: CAPI_%-common.o CAPI_%-stubs.o CAPI_%-client.o \
 ####################################
 #Compile a separate object specifically for use in CORBA server (with -D__CAPI__)
 SERVER_corba_server_util.o: ${LIBROOT}/libaubit4gl/corba_server_util.c
-	${CC} ${CFLAGS} -c $^ -o $@ -D__CSERVER__
+	${CC} ${CFLAGS} -c $^ -o $@ -D__CSERVER__ -D__CAPI__ 
 CLIENT_corba_server_util.o: ${LIBROOT}/libaubit4gl/corba_server_util.c
-	${CC} ${CFLAGS} -c $^ -o $@ -D__CCLIENT__
+	${CC} ${CFLAGS} -c $^ -o $@ -D__CCLIENT__ -D__CAPI__
 #CAPI_corba_server_util.o: ${LIBROOT}/libaubit4gl/corba_server_util.c
 #	${CC} ${CFLAGS} -c $^ -o $@ -D__CAPI__
 
@@ -500,12 +481,24 @@ CAPI_%-server.c: ${LIBROOT}/libaubit4gl/API_%.spec ${IDLMAGIC}
 	
 #######################################
 #Create skelimpl C code from .idl specification
-CAPI_%-skelimpl.c: CAPI_%.idl
+CAPI_%-skelimpl.c: CAPI_%.idl ${IDLMAGIC}
 #CAPI_%.h CAPI_%-common.c CAPI_%-stubs.c CAPI_%-skels.c CAPI_%-skelimpl.c: CAPI_%.idl
 	${RM} CAPI_$*-skelimpl.c
-	$(ORBIT_IDL) --skeleton-impl $^
+	$(ORBIT_IDL) --skeleton-impl $<
+#Check if ORBIT_IDL worked OK, since it does not return error code on exit:
 	@if test -f CAPI_$*-skelimpl.c; then echo "$(ORBIT_IDL) OK"; else echo "$(ORBIT_IDL) ERROR"; exit 1; fi
+#Add additional functions to -skelimpl:
+	${SH} ${IDLMAGIC} ${LIBROOT}/libaubit4gl/API_$*.spec -add-to-skelimpl >> $@
+#re-read just generated -skelimpl.c and insert function calls to our actuall functions:
+	mv $@ $@-tmp
+	${SH} ${IDLMAGIC} ${LIBROOT}/libaubit4gl/API_$*.spec -add-func-calls $@-tmp > $@
+	${RM} $@-tmp
+	@echo "OK: $@ created."
+	
+#eee:
+#	${SH} ${IDLMAGIC} ${LIBROOT}/libaubit4gl/API_sqlparse.spec -add-func-calls
 
+	
 #######################################
 #Create all needed (except skelimpl) CORBA C code from .idl specification
 CAPI_%.h CAPI_%-common.c CAPI_%-stubs.c CAPI_%-skels.c: CAPI_%.idl
@@ -527,7 +520,7 @@ CAPI_%.idl: ${LIBROOT}/libaubit4gl/API_%.spec ${IDLMAGIC}
 clean.capi:
 	${RM} CAPI_*-common.c CAPI_*.h CAPI_*.idl CAPI_*-skels.c CAPI_*-stubs.c \
 		CAPI_*-skelimpl.c *~ *.ior *.ref *.o \
-		CAPI_*-client.c CAPI_*-server.c
+		CAPI_*-client.c CAPI_*-server.c *.c-tmp *-server${EXE_EXT}
 		
 #######################################
 #Clean all CAPI intermedate files and targets
@@ -536,6 +529,16 @@ clean.capi.distclean: clean.capi
 	${RM} ${CLIENTS} ${SERVERS}
 
 
+show.capi:
+	@echo "HAS_ORBIT_TYPE	=${HAS_ORBIT_TYPE}"
+	@echo "ORBIT_IDL		=${ORBIT_IDL}"
+	@echo "ORBIT_NAME		=${ORBIT_NAME}"
+	@echo "ORBIT_VERSION	=${ORBIT_VERSION}"
+	@echo "CAPI_LDFLAGS		=${CAPI_LDFLAGS}"
+	@echo "CAPI_CFLAGS		=${CAPI_CFLAGS}"
+	@echo "ORBIT_CONFIG		=${ORBIT_CONFIG}"
+
+	
 #################################### EOF ###################################
 
 
