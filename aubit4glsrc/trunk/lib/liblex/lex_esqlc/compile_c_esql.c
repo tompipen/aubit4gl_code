@@ -1,4 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
+void                        printc                          (char* fmt,... );
+static void print_copy_status(void) ;
+void print_conversions (char i);
 
 /**
  * Print the C implementation of the execution of the SQL statement allready
