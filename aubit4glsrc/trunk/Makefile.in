@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.61 2002-04-24 08:12:15 afalout Exp $
+# $Id: Makefile.in,v 1.62 2002-04-25 06:32:34 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -154,7 +154,7 @@ TOTESTGUI	=$(TESTDIR)/gui/*.4gl $(TESTDIR)/gui/*.per $(TESTDIR)/gui/${MKFILNAME}
 TOETC		=$(SOURCE)/etc/odbc.ini.example
 TOHOME		=$(SOURCE)/a4glrc.example
 TOROOT		=$(SOURCE)/README.txt
-TOINCL		=$(SOURCE)/incl/4glhdr.h $(SOURCE)/incl/4gldef.h $(SOURCE)/incl/acl4glgui.h \
+TOINCL		=$(SOURCE)/incl/a4gl_incl_4glhdr.h $(SOURCE)/incl/a4gl_incl_4gldef.h $(SOURCE)/incl/a4gl_incl_acl4glgui.h \
 				$(SOURCE)/incl/*.mk $(SOURCE)/incl/*.mki $(SOURCE)/incl/Makefile-common
 TOIDE       =$(IDEDIR)/*.4gl $(IDEDIR)/*.c $(IDEDIR)/*.sh $(IDEDIR)/*.msg $(IDEDIR)/*.per $(IDEDIR)/${MKFILNAME}
 

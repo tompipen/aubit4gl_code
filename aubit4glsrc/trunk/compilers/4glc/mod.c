@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.54 2002-04-24 07:45:51 afalout Exp $
+# $Id: mod.c,v 1.55 2002-04-25 06:32:45 afalout Exp $
 #
 */
 
@@ -61,7 +61,7 @@ extern int in_define;
 #include "a4gl_tunable.h"
 #include "a4gl_debug.h"
 #include "a4gl_errors.h"
-#include "compiledefs.h"
+#include "a4gl_4glc_compiledefs.h"
 #include "a4gl_aubit_lib.h"
 
 char pklist[2048] = "";

@@ -6,7 +6,7 @@
  * or to be externally seen
  * @todo Doxygen comments to add to functions
  */
-#include "rpc_stack.h"
+#include "a4gl_xdr_rpc_stack.h"
 
 #ifdef __CYGWIN__
 	#define GETENV_OK

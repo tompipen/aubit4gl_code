@@ -3,14 +3,14 @@
 
 #include "a4gl_formxw.h"
 
-#include "fcompile.h"
+#include "a4gl_fcomp_fcompile.h"
 #include "a4gl_compiler.h"
 #include <stdio.h>
 #include <string.h>
 //#include <curses.h>
 #include "a4gl_dbform.h"
 #include "a4gl_debug.h"
-#include "where.h"
+#include "a4gl_fcomp_where.h"
 extern struct struct_scr_field *fld;
 int graphics_mode=0;
 extern int ignorekw;

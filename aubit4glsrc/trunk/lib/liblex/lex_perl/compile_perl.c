@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.2 2002-04-24 07:46:00 afalout Exp $
+# $Id: compile_perl.c,v 1.3 2002-04-25 06:32:46 afalout Exp $
 #
 */
 
@@ -66,7 +66,7 @@ compile_perl.c:2726: warning: `print_menu' was previously implicitly declared to
 
 
 //#ifdef IS_THIS_RIGHT_OR_WE_NEED_print_protos_perl.h
-	#include "../lex_c/print_protos_c.h"
+	#include "../lex_c/a4gl_lex_print_protos_c.h"
 //#endif
 
 FILE *outfile = 0;

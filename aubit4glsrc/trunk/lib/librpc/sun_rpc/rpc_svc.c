@@ -7,7 +7,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-#include "rpc_stack.h"
+#include "a4gl_xdr_rpc_stack.h"
 #include "a4gl_pointers.h"
 
 #ifdef __CYGWIN__

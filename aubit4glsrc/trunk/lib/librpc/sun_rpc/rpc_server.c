@@ -11,7 +11,7 @@
  */
 
 #include "a4gl_pointers.h"
-#include "./rpc_stack.h"
+#include "a4gl_xdr_rpc_stack.h"
 #include "a4gl_debug.h"
 
 double pop_double();

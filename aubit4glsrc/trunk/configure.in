@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.60 2002-04-23 07:00:48 afalout Exp $
+# $Id: configure.in,v 1.61 2002-04-25 06:32:37 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -135,7 +135,7 @@ AC_CONFIG_SRCDIR([bin/4glpc])
 
 if test "$AUBIT_SOURCE" = "1" ; then
 	#Location of global header to receive "#define xxxxx y" replacements:
-	AC_CONFIG_HEADER([incl/config.h])
+	AC_CONFIG_HEADER([incl/a4gl_incl_config.h])
 fi
 
 AC_CANONICAL_SYSTEM
@@ -1596,7 +1596,7 @@ AC_ARG_WITH(pdf,
 #AC_CHECK_FUNCS([svc_run])
 AC_CHECK_FUNCS([svctcp_create])
 
-		#We will get #define HAVE___rpc_thread_svc_fdset in config.h, but no variables
+		#We will get #define HAVE___rpc_thread_svc_fdset in a4gl_incl_config.h, but no variables
 		#are defined when testing functions.
 
 #if test `eval echo '${'$as_ac_var'}'` != yes ; then

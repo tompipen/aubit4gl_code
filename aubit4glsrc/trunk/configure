@@ -1151,7 +1151,7 @@ fi
 
 if test "$AUBIT_SOURCE" = "1" ; then
 	#Location of global header to receive "#define xxxxx y" replacements:
-	ac_config_headers="$ac_config_headers incl/config.h"
+	ac_config_headers="$ac_config_headers incl/a4gl_incl_config.h"
 
 fi
 
@@ -6535,7 +6535,7 @@ EOF
 fi
 done
 
-		#We will get #define HAVE___rpc_thread_svc_fdset in config.h, but no variables
+		#We will get #define HAVE___rpc_thread_svc_fdset in a4gl_incl_config.h, but no variables
 		#are defined when testing functions.
 
 #if test `eval echo '${'$as_ac_var'}'` != yes ; then
@@ -12791,7 +12791,7 @@ do
   "tools/test/Makefile" ) CONFIG_FILES="$CONFIG_FILES tools/test/Makefile" ;;
   "docs/doxy/Doxyfile" ) CONFIG_FILES="$CONFIG_FILES docs/doxy/Doxyfile" ;;
   "etc/aubitrc-bin" ) CONFIG_FILES="$CONFIG_FILES etc/aubitrc-bin" ;;
-  "incl/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS incl/config.h" ;;
+  "incl/a4gl_incl_config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS incl/a4gl_incl_config.h" ;;
   *) { { echo "$as_me:12795: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;

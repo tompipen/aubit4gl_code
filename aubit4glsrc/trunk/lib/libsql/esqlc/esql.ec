@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.11 2002-04-24 07:46:00 afalout Exp $
+# $Id: esql.ec,v 1.12 2002-04-25 06:32:46 afalout Exp $
 #
 */
 
@@ -58,13 +58,13 @@
  */
 
 #ifndef lint
-static const char rcs[] = "@(#)$Id: esql.ec,v 1.11 2002-04-24 07:46:00 afalout Exp $";
+static const char rcs[] = "@(#)$Id: esql.ec,v 1.12 2002-04-25 06:32:46 afalout Exp $";
 #endif
 
 #define DEFINE_SQLCA
 
 #include <stdio.h>
-#include "4gldef.h"
+#include "a4gl_incl_4gldef.h"
 #include "a4gl_database.h"
 
 #ifndef WIN32

@@ -24,7 +24,7 @@ int in_define=0;
 //#include "a4gl_screen.h"
 #include "a4gl_constats.h"
 #include "a4gl_prompt.h"
-#include "../print_protos.h"
+#include "../a4gl_4glc_print_protos.h"
 extern int lineno;
 extern int read_glob_var;
 extern int modlevel;

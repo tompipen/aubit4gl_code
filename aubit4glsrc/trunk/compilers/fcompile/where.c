@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: where.c,v 1.4 2002-04-24 07:45:59 afalout Exp $
+# $Id: where.c,v 1.5 2002-04-25 06:32:45 afalout Exp $
 #
 */
 
@@ -37,14 +37,14 @@
 //#include "form_x.h"
 #include "a4gl_formxw.h"
 
-#include "fcompile.h"
+#include "a4gl_fcomp_fcompile.h"
 #include "a4gl_compiler.h"
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include "a4gl_dbform.h"
 #include "a4gl_debug.h"
-#include "where.h"
+#include "a4gl_fcomp_where.h"
 /**************************************************************************/
 /* Create simple types                                                    */
 /**************************************************************************/

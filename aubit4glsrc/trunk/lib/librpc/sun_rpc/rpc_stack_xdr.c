@@ -14,7 +14,7 @@
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 
-#include "rpc_stack.h"
+#include "a4gl_xdr_rpc_stack.h"
 #define main server_run
 unsigned int serviceport=0x2000000;
 

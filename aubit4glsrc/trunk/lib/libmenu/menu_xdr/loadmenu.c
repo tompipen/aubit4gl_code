@@ -15,7 +15,7 @@
 //extern GtkWidget *tooltips;
 GtkWidget *tooltips = 0;
 #define DECLARE_DIMENSIONS
-#include "dims.h"
+#include "a4gl_gtk_dims.h"
 
 //extern GtkWindow *get_curr_win_gtk (void);
 
@@ -29,10 +29,9 @@ GtkWidget *tooltips = 0;
 	#define GETENV_OK
 #endif
 #include "a4gl_debug.h"
-#include "dims.h"
-#include "4glhdr.h"
+#include "a4gl_incl_4glhdr.h"
 
-#include "cr_funcs.h"
+#include "a4gl_gtk_cr_funcs.h"
 #define ACL4GLGTK
 
 #ifdef __CYGWIN__

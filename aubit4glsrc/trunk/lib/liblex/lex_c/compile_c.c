@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.2 2002-04-24 07:46:00 afalout Exp $
+# $Id: compile_c.c,v 1.3 2002-04-25 06:32:46 afalout Exp $
 #
 */
 
@@ -49,7 +49,7 @@
 #include "a4gl_errors.h"
 #include "a4gl_constats.h"
 #include "a4gl_prompt.h"
-#include "print_protos_c.h"
+#include "a4gl_lex_print_protos_c.h"
 
 //included here because of dll separation. Make sure this is OK
 //defines things like struct s_report_stack that are used here
@@ -187,7 +187,7 @@ static void open_outfile(void)
     }
 
   fprintf (outfile, "#define fgldate long\n");
-  fprintf (outfile, "#include \"4glhdr.h\"\n");
+  fprintf (outfile, "#include \"a4gl_incl_4glhdr.h\"\n");
   if (strchr(h,'/')!=0) 
   	fprintf (outfile, "#include \"%s\"\n", strrchr(h,'/')+1);
   else
@@ -201,7 +201,7 @@ static void open_outfile(void)
   hfile = mja_fopen (h, "w");
   
   if (strncmp(acl_getenv ("GTKGUI"),"Y",1)==0)  {
-    fprintf (hfile, "#include <acl4glgui.h>\n");
+    fprintf (hfile, "#include <a4gl_incl_acl4glgui.h>\n");
   }
 }
 

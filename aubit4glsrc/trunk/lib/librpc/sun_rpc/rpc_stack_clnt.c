@@ -10,7 +10,7 @@
  */
 
 #include <memory.h> /* for memset */
-#include "rpc_stack.h"
+#include "a4gl_xdr_rpc_stack.h"
 #define main server_run
 extern unsigned long serviceport;
 
