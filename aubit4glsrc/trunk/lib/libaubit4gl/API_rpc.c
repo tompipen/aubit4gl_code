@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_rpc.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: API_rpc.c,v 1.3 2002-05-06 07:21:16 afalout Exp $
 #
 */
 
@@ -51,7 +51,7 @@ int A4GLRPC_initlib (void)
         debug("libptr=%p\n",libptr);
 
         if (libptr==0) {
-                exitwith("Unable to open RPC library...");
+                exitwith("Unable to open RPC library.");
                 return 0;
         }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: calldll.c,v 1.3 2002-05-06 07:21:16 afalout Exp $
 #
 */
 
@@ -179,8 +179,8 @@ void *dl_openlibrary (char *type, char *name)
 void *find_func (void *dllhandle, char *func)
 {
   int (*func_ptr) ();
-  debug("Finding pointer to DLL function %s\n",func);
-  
+  debug("find_func: Finding pointer to DLL function %s\n",func);
+
  sprintf (tempbuff, "%s",func);
 
   if (dllhandle == 0)
@@ -198,6 +198,8 @@ void *find_func (void *dllhandle, char *func)
     	return badfunc;
   }
 
+  debug("calldll.c: before return func=%s\n",func);
+
   return func_ptr;
 }
 
@@ -212,7 +214,7 @@ void *find_func (void *dllhandle, char *func)
 void *find_func_double (void *dllhandle, char *func)
 {
   double (*func_ptr) ();
-  debug("Finding pointer to DLL function %s which returns a double\n",func);
+  debug("find_func_double: Finding pointer to DLL function %s which returns a double\n",func);
   
  sprintf (tempbuff, "%s",func);
 
@@ -238,7 +240,7 @@ void *find_func_double (void *dllhandle, char *func)
 void *find_func_allow_missing (void *dllhandle, char *func)
 {
   int (*func_ptr) ();
-  debug("Finding pointer to DLL function %s\n",func);
+  debug("find_func_allow_missing: Finding pointer to DLL function %s\n",func);
   
  sprintf (tempbuff, "%s",func);
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: debug.c,v 1.3 2002-05-06 07:21:16 afalout Exp $
 #
 */
 
@@ -92,9 +92,13 @@ debug_full (char *fmt,...)
       fprintf (debugfile, "%s\n", buff);
 
         //fixme: AUBITGUI can also be gui, not only gtk
-        if (strcmp(acl_getenv("AUBITGUI"),"GTK")==0) {
+        //Why are we printing this to stderr in any case, it is allready
+        //written to debug.out ?
+        /*
+		if (strcmp(acl_getenv("AUBITGUI"),"GTK")==0) {
                 fprintf(stderr,"%s\n",buff);
         }
+        */
       if (buff[strlen (buff) - 1] != ':')
         fprintf (debugfile, "\n");
       fflush (debugfile);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.57 2002-04-29 03:30:01 afalout Exp $
+# $Id: mod.c,v 1.58 2002-05-06 07:21:15 afalout Exp $
 #
 */
 
@@ -1908,12 +1908,13 @@ void push_gen (int a, char *s)
 /**
  * Not used
  */
+/*
 static char *pop_gen (int a)
 {
   gen_stack_cnt[a]--;
   gen_stack[a][gen_stack_cnt[a]];
 }
-
+*/
 void pop_all_gen (int a, char *s)
 {
   int z;
@@ -1929,6 +1930,7 @@ void pop_all_gen (int a, char *s)
 /**
  * Not used
  */
+/*
 static yyerrorf (char *fmt, ...)
 {
   char buff[256];
@@ -1937,6 +1939,7 @@ static yyerrorf (char *fmt, ...)
   vsprintf (buff, fmt, args);
   yyerror (buff);
 }
+*/
 
 /**
  * Checks if a column is part of primary key

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_exreport.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: API_exreport.c,v 1.3 2002-05-06 07:21:15 afalout Exp $
 #
 */
 
@@ -73,7 +73,7 @@ int A4GLREPORT_initlib (void) {
         debug("A4GL_PDFTYPE=%s\n",acl_getenv("A4GL_PDFTYPE"));
 
         if (libptr==0) {
-                exitwith("Unable to open EXREPORT library...");
+                exitwith("Unable to open EXREPORT library.");
                 return 0;
         }
 
@@ -145,7 +145,7 @@ void pdf_add_spaces()
 }
 
 /*
-** Fairly sure these are internal functions...
+** Fairly sure these are internal functions
 
 void pdf_new_page(void *p) {
   if (libptr==0) A4GLREPORT_initlib();
@@ -178,7 +178,7 @@ void pdf_rep_close(void *p) {
 
 double pdf_size(double f, char c,void *p) {
 double d;
-	debug("Trying to find pdf_size... libptr=%p",libptr);
+	debug("Trying to find pdf_size - libptr=%p",libptr);
   	if (libptr==0) A4GLREPORT_initlib();
   	func_d=find_func_double(libptr,"pdf_size");
 

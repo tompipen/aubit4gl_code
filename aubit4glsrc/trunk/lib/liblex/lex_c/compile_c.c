@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.5 2002-04-29 03:30:01 afalout Exp $
+# $Id: compile_c.c,v 1.6 2002-05-06 07:21:16 afalout Exp $
 #
 */
 
@@ -39,8 +39,8 @@
  * the 4gl being compiled.
  */
 
-#include <stdio.h>
-#include <string.h>
+//#include <stdio.h>
+//#include <string.h>
 #include "a4gl_dbform.h"
 #include "a4gl_report.h"
 #include "a4gl_oform.h"
@@ -50,6 +50,7 @@
 #include "a4gl_constats.h"
 #include "a4gl_prompt.h"
 #include "a4gl_lex_print_protos_c.h"
+
 
 //included here because of dll separation. Make sure this is OK
 //defines things like struct s_report_stack that are used here
@@ -210,10 +211,10 @@ static void open_outfile(void)
 /**
  * Print the instructions to be generated to the target C file.
  *
- * If the INCLINES environment variable is set then the source target C
- * file is generated with #line (to debugging purposes).
+ * If the INCLINES environment/config variable is set then the source target C
+ * file is generated with #line (for debugging purposes).
  *
- * If the output file is not opened call the open function.
+ * If the output file is not opened, call the open function.
  *
  * @param fmt the format to be passed to vsprintf
  * @param ... The variadic parameters to be passed to vsprintf
@@ -221,21 +222,28 @@ static void open_outfile(void)
 void printc(char *fmt, ...)
 {
   va_list args;
-  char buff[40960];
+  char buff[40960]="ERROR-empty init";
   char *ptr;
   int a;
+  char buff2[40960];
 
   if (outfile == 0)
   {
     open_outfile ();
+	if (outfile == 0)
+		return;
   }
 
-  if (outfile == 0)
-    return;
-  va_start (args, fmt);
+	va_start (args, fmt);
+	vsprintf (buff, fmt, args);
+
+debug("buff in lib=%s\n",buff);
+strcpy(buff2,fmt);
+debug("fmt in lib=%s\n",buff2);
+
+
   if (isyes(acl_getenv ("INCLINES")))
   {
-    vsprintf (buff, fmt, args);
     for (a = 0; a < strlen (buff); a++)
 	  {
 	    if (buff[a] == '\n')
@@ -258,22 +266,26 @@ void printc(char *fmt, ...)
 
 	      fflush (outfile);
 	    }
-	}
-    }
+	  }
+  }
   else
-    {
+  {
+	  ptr = strtok (buff, "\n");
 
-      vsprintf (buff, fmt, args);
-      ptr = strtok (buff, "\n");
+//strcpy(buff2,ptr);
+//debug("ptr=%s\n",buff2);
+//strcpy(buff2,fmt);
+//debug("fmt=%s\n",buff2);
+//strcpy(buff2,args);
+//debug("args=%s\n",buff2);
 
-      while (ptr)
-	{
-	  print_space ();
-	  fprintf (outfile, "%s\n", ptr);
-	  ptr = strtok (0, "\n");
-	}
-
-    }
+	  while (ptr)
+		{
+		  print_space ();
+		  fprintf (outfile, "%s\n", ptr);
+		  ptr = strtok (0, "\n");
+		}
+  }
 }
 
 /**
@@ -329,8 +341,8 @@ printcomment (char *fmt,...)
  * Empty function for linking purposes when compiling without generation of
  * comments in the output C module
  */
-void 
-printcomment ()
+void
+printcomment (char *fmt,...)
 {
 // Do nothing...
 }
@@ -2103,7 +2115,7 @@ print_gui_do_form (char *name, char *list, int mode)
  *
  * Called by the parser after found IF <expression> THEN.
  *
- * The execution of expression is made before the C if itself and use the 
+ * The execution of expression is made before the C if itself and use the
  * stack mechanism to get the boolean result of the expression evaluation.
  *
  */
@@ -4056,6 +4068,7 @@ print_end_record (char *vname, int arrsize)
  * @param value The value of the literal
  */
 char *
+//char
 get_push_literal (char type, char *value)
 {
   static char buff[80];
@@ -4073,6 +4086,9 @@ get_push_literal (char type, char *value)
     {
       sprintf (buff, "push_char(%s);\n", value);
     }
+  
+  //FIXME: and if it's not D, L or S?
+
   return buff;
 }
 

@@ -1,4 +1,4 @@
-   /* $Id: mcompile.c,v 1.6 2002-04-28 04:43:57 afalout Exp $
+   /* $Id: mcompile.c,v 1.7 2002-05-06 07:21:15 afalout Exp $
    /* */
 
 #include "a4gl_compiler.h"
@@ -97,18 +97,16 @@ bname (char *str, char *str1, char *str2)
 
 main (argc, argv)
      int argc;
-
      char *argv[];
 
-	 {  
-
+	 {
   char a[128];
-
   char b[128];
-
   char c[128];
-
   FILE *fopn;
+
+	//load settings from config file(s):
+	build_user_resources();
 
   if (argc > 1)
     {

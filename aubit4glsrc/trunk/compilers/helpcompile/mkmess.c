@@ -28,6 +28,11 @@ char tmpnum[6];
  */
 main(int argc,char *argv[])
 {
+  
+	//load settings from config file(s):
+	build_user_resources();
+
+
   if (argc!=2)
   {
     printf("Usage: mkmess help-file (no .msg extension)\n");

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.62 2002-04-28 04:43:53 afalout Exp $
+# $Id: configure.in,v 1.63 2002-05-06 07:21:15 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -266,6 +266,7 @@ AC_SUBST(CURSES_LIB_NAME)
 #debug
 AC_SUBST(DEBUG_BISON)
 AC_SUBST(YYDEBUG)
+AC_SUBST(INCLINES)
 
 ## ==================================================================
 ##                             Defaults
@@ -342,7 +343,9 @@ esac
 #--disable-xxx are not assigned "yes" by default
 #--with-xxx are assigned "yes" if no value was assigned on command line
 
-
+## ==================================================================
+##                              Debugging
+## ==================================================================
 
 if test "$enable_debug" = "no" ; then
     # FIXME: strip executables
@@ -368,6 +371,16 @@ if test "$enable_yacc_debug" = "yes" ; then
 	echo "Yacc Debugging enabled"
 else
 	echo "Yacc Debugging disabled"
+fi
+
+#in libLEX_xxx printc():
+# * If the INCLINES variable is set then the source target C
+# * file is generated with #line (for debugging purposes).
+if test "$enable_printc_debug" = "yes" ; then
+	INCLINES=yes
+	echo "printc() Debugging enabled"
+else
+	echo "printc() Debugging disabled"
 fi
 
 

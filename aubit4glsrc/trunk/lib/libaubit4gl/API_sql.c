@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: API_sql.c,v 1.3 2002-05-06 07:21:16 afalout Exp $
 #
 */
 
@@ -37,7 +37,7 @@
  *
  * This is the begining of the SQL driver manager.
  *
- * @todo Does this file belong in lib/ directory, or...?
+ * @todo Does this file belong in lib/ directory, or?
  *
  */
 
@@ -75,7 +75,7 @@ int A4GLSQL_initlib (void)
 	libptr=(void *)dl_openlibrary("SQL",acl_getenv("A4GL_SQLTYPE"));
 	debug("libptr=%p\n",libptr);
 	if (libptr==0) {
-		exitwith("Unable to open SQL library...");
+		exitwith("Unable to open SQL library.");
 		return 0;
 	}
 	func=find_func_allow_missing(libptr,"A4GLSQL_initlib");

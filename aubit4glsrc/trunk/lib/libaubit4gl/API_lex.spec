@@ -35,7 +35,8 @@ VARIABLE A4GL_LEXTYPE
 //void print_free_cursor (char *s)
 
 
-
+*4glc.c readglobals():  printc ("/***********************************************************/\n");
+*lexer.c chk_word():      printc ("/* End of code */");
 //void printc(char *fmt, ...)
 printc char* fmt ... -> void
 

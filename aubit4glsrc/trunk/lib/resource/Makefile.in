@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.1 2002-04-19 03:45:18 afalout Exp $
+# $Id: Makefile.in,v 1.2 2002-05-06 07:21:16 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -35,23 +35,23 @@ override NOINCL=0
 ##                              Source files
 ## ==================================================================
 
-CMODS_CONFIG	=aubit-config.c
-CMODS_RESOURCE	=resource.c
-
-CMODS 				=${CMODSNOSQL} ${CMODS_DLSQL}
+CMODS           =aubit-config.c resource.c
+OBJS      		=${CMODS:.c=.o}
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-#CFLAGS				+= -I../compilers/fcompile -Ilibincl ${CFLAGS}
+#CFLAGS			+= -I../compilers/fcompile -Ilibincl ${CFLAGS}
+EXE_CFLAGS      +=-I../libincl
+CFLAGS          =${EXE_CFLAGS}
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-aubit-config: ${CMODS_CONFIG} ${CMODS_RESOURCE}
-	${CC} ${CFLAGS} -I../libincl -o $@ $^
+aubit-config: ${OBJS}
+	${CC} ${EXE_CFLAGS} -I../libincl -o $@ $^
 	${CP} $@ ../../bin
 
 

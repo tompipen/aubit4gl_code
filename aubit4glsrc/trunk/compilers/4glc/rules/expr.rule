@@ -158,7 +158,7 @@ NOT fgl_expr_c {
 initial_expr: 
 int_sign real_number 
 {
-        debug("init expr %s %s",$<str>1,$<str>2);
+	debug("init expr %s %s",$<str>1,$<str>2);
 	sprintf($<str>$,"%s%d",$<str>1,$<str>2);
 	sprintf($<str>$,get_push_literal('D',$<str>$));
         //sprintf($<str>$,"push_double((double)%s%s)",$<str>1,$<str>2);
@@ -167,7 +167,7 @@ int_sign real_number
 }
 | int_sign INT_VALUE 
 {
-        debug("init expr int %s %d",$<str>1,atoi($<str>2));
+	debug("init expr int %s %d",$<str>1,atoi($<str>2));
 	sprintf($<str>$,"%s%d",$<str>1,$<str>2);
 	sprintf($<str>$,get_push_literal('L',$<str>$));
 	$<ptr>$=new_expr($<str>$);
@@ -184,6 +184,23 @@ ASCII INT_VALUE { sprintf($<str>$,"push_ascii(%d);",atoi($<str>2));inc_counter()
 }
 |
 CHAR_VALUE  {
+//*
+	//Remove this crap :
+    char* dummybuff;
+	debug("expr.rule: Type is S - string");
+
+	debug("expr.rule: calling xxtest_char:");
+	xxtest_char("X");
+
+
+	debug("Testing single call:");
+	//print_protos_c.h: char *get_push_literal(char type,char *value);
+	dummybuff = get_push_literal('S',$<str>1);
+	debug("OK Testing single call, now for real:");
+//*/
+
+
+
 	sprintf($<str>$,get_push_literal('S',$<str>1));
 	//sprintf($<str>$,"push_char(%s);",$<str>1);
 	$<ptr>$=new_expr($<str>$);

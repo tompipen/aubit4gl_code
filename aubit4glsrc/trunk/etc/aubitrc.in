@@ -102,6 +102,13 @@ A4GL_MSGTYPE=@A4GL_MSGTYPE@
 #DEBUG=ALL
 
 ############
+#Adds originating line number of each created target language statemtn
+#coresponding to 4gl source code, to created target language source code,
+#which is usefull for debugging. Like:
+#	#line 2 "../tools/test/test_build.4gl"
+#INCLINES=yes
+
+############
 #FIXME: is not odbc.ini supposed to have default login name and password?
 #Defines username and password for accessing database server via ODBC:
 #needed for DATABASE and DEFINE LIKE statements at compile time, and

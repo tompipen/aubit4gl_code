@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.3 2002-04-25 06:32:46 afalout Exp $
+# $Id: compile_perl.c,v 1.4 2002-05-06 07:21:16 afalout Exp $
 #
 */
 
@@ -223,7 +223,7 @@ printcomment (char *fmt,...)
 }
 #else
 void
-printcomment ()
+printcomment (char *fmt,...)
 {
 // Do nothing...
 }

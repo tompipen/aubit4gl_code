@@ -1,5 +1,5 @@
 # +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0   lib/libgui makefile		 |
+# | Aubit 4gl Language Compiler Version $.0   lib/libgui makefile        |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
 # +----------------------------------------------------------------------+
@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.30 2002-04-29 03:30:01 afalout Exp $
+# $Id: Makefile.in,v 1.31 2002-05-06 07:21:15 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -111,35 +111,38 @@ exportlib4glcomp: ${4GLCAOBJ} ${4GLCOBJ_C}
 #	dlltool --export-all --output-def $@ $^
 #	dlltool --export-all --output-exp libexportlib4glcomp.dll.a $^
 	${CC} -shared -Wl,--output-def=exportlib4glcomp.def -Wl,--out-implib=exportlib4glcomp.dll.a $^ -Wl,--export-all-symbols ${AUBIT_LIB} -L../../lib
-#	gcc -shared  -Wl,--output-def=libA4GLLEX_C.def -Wl,--out-implib=libA4GLLEX_C.dll.a $^ -Wl,--export-all-symbols
+#	${CC} -shared  -Wl,--output-def=libA4GLLEX_C.def -Wl,--out-implib=libA4GLLEX_C.dll.a $^ -Wl,--export-all-symbols
 
 ## ==================================================================
 ##                            Sub Targets
 ## ==================================================================
 
 rules.t :
-	make -C rules $(MKNAME)
+	${MAKE} -C rules $(MKNAME)
 
 rules/generated/y.tab.o: ${Y_TAB_C}
 	$(CC) ${CFLAGS} -c -o $@ ${Y_TAB_C} @YYDEBUG@ -I../../lib/liblex/lex_c -I.
 
 ${Y_TAB_C}:
 #	make -C rules generated/y.tab.c $(MKNAME)
-	make -C rules
+	${MAKE} -C rules
 
 ../fcompile/form_x.h:
-	make -C ../fcompile rpc
+	${MAKE} -C ../fcompile rpc
 
 ## ==================================================================
 ##                            Dependencies
 ## ==================================================================
 
-rules/generated/kw.c: rules.t
-rules/generated/single_words.rule: rules.t
-rules/generated/y.tab.c: rules.t
-rules/generated/states.c: rules.t
-mod.o: mod.c ${Y_TAB_C}
-rules/generated/y.tab.o: ../fcompile/form_x.h
+rules/generated/kw.c: 				rules.t
+rules/generated/single_words.rule: 	rules.t
+rules/generated/y.tab.c: 			rules.t
+rules/generated/states.c: 			rules.t
+mod.o: 								mod.c ${Y_TAB_C}
+rules/generated/y.tab.o: 			../fcompile/form_x.h
+lexer.o: 							rules/generated/kw.h
+lexer.o: 							rules/generated/y.tab.h
+
 
 ## ==================================================================
 ##                            Clean Targets

@@ -24,27 +24,39 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.1 2002-04-19 03:45:18 afalout Exp $
+# $Id: aubit-config.c,v 1.2 2002-05-06 07:21:16 afalout Exp $
 #
 */
-#include <stdarg.h>
-#include <stdio.h>
 
 /**
  * @file
  *
  * aubit-config.c gets compiled up with
  * resource.c to form the "aubit-config" program
- * 
+ *
  * $ aubit-config DBDATE
  * dmy4/
- * 
+ *
  * This should be the first thing made and can then be used for the makefiles
  * where required..
  */
 
+#include <stdarg.h>
+#include <stdio.h>
+
+/*
+extern int strcmp (const char *, const char *);
+extern int strlen(char);
+extern void exit(int);
+*/
+
+extern void build_user_resources(void);
+extern void exitwith(void);
+extern void dump_all_resource_vars(void);
+extern char *acl_getenv (char *s);
+
 main(int argc,char *argv[]) {
-	
+
 	//load settings from config file(s):
 	build_user_resources();
 
@@ -66,6 +78,7 @@ main(int argc,char *argv[]) {
  *
  *  @param p The string to be trimmed.
  */
+void
 trim_nl(char *p) {
         int a;
         for (a=strlen(p)-1;a>=0;a--) {
@@ -75,8 +88,10 @@ trim_nl(char *p) {
 }
 
 /**
- * Simplified version of same function from libaubit4gl
+ * Simplified version of same function from libaubit4gl, to avoid linking
+ * with libaubit4gl
  */
+void
 debug_full (char *fmt,...)
 {
   va_list args;
@@ -90,11 +105,10 @@ debug_full (char *fmt,...)
 
   */
 
-
   if (strcmp ("ALL", acl_getenv ("DEBUG_CFG")) == 0 )
     {
-      va_start (args, fmt);
-      vsprintf (buff, fmt, args);
+	  va_start (args, fmt);
+	  vsprintf (buff, fmt, args);
       printf("%s\n",buff);
     }
 }
@@ -102,13 +116,15 @@ debug_full (char *fmt,...)
 /**
  * Dummy function
  */
-exitwith() {
+void
+exitwith(void) {
 }
 
 /**
  * Dummy function
  */
-set_line() {
+void
+set_line(void) {
 }
 
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.34 2002-04-29 03:30:01 afalout Exp $
+# $Id: Makefile-common.in,v 1.35 2002-05-06 07:21:15 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -181,12 +181,16 @@ CP 					=cp
 RM 					=rm -f
 RMDIR				=rm -rf
 SH 					=/bin/sh
+#CC 					=c++
 CC 					=@CC@
 #LINK.c				=${CC}
-LN_S 				=ln -s
+LN_S 				=ln --symbolic --force
+LN_H                =ln --force
 AR 					=ar rc
 #YACC 				=bison -y
 YACC                =@YACC@ @DEBUG_BISON@
+LEX					=flex -i
+NICE                =nice -20
 INSTALL_USR			=nobody
 INSTALL_GRP 		=nobody
 INSTALL_CMD 		=install
@@ -202,6 +206,7 @@ AUTOCONF_CFLAGS     =@CFLAGS@
 #fixme: set -DDEBUG and -g from configure:
 #FIXME: -DAUTOBANG added to CFLAGS applies ONLY to lib/libtui/curslib.c
 #FIXME: this should not use -D, but acl_getenv(A4GL_AUTOBANG) instead
+#FIXME: add -Wall
 CFLAGS				+=${AUTOCONF_CFLAGS} -DAUTOBANG -DDEBUG -I/usr/local/include -I$(AUBITDIR)/incl
 #we are overriding LD_LIBRARY_PATH that might existed in environment:
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
@@ -211,9 +216,14 @@ LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 MAKINGAUBIT			=1
 
 
+#There are sutuations in which it's OK for some targets to fail to build.
+#Under normal circumstances, we would leave FAIL_OK empty
+FAIL_OK             =-
+
 #  -fPIC  If supported for the target machine, emit position-
 #         independent code,  suitable  for  dynamic  linking,
 #         even if branches need large displacements.
+#FIXME: is it OK to have -fPIC when creating executables, not libraries?
 PIC					=@PIC@
 #-rdynamic is needed when calling functions that are defineds in
 #executable, from shared libraries that are dlopen at run-time,
@@ -265,19 +275,21 @@ ifdef COMSPEC
     EXEEXT		=.exe
 	EXE			=${EXEEXT}
 	SO_EXT      =.dll
-	CPEXE		=cp
     SH			=bash
-    LN			=cp
-    SO_LDFLAGS	=${RDYNAMIC} ${PIC}
+	SO_LDFLAGS	=${RDYNAMIC} ${PIC}
 	SO_GCCFLAGS =-Xlinker ${RDYNAMIC}
 	DLL_EXPORTLIB_EXT=.dll.a
 	#dll on Windows are loaded by standard Windows loader, that don't
 	#understand CygWin symbolic links:
-	LN_S_LIB    =cp
 	SOEXP_EXT   =${SO_EXT}.a
 	#if USE_RPCGEN is disabled, static files from /tools/cygwin will be used
     #this is no longer nececery on CygWin (with appropriate Sun RPC port for CygWin)
 	#USE_RPCGEN  =0
+
+	LN			=cp
+	LN_S_LIB    =cp
+	CPEXE		=cp
+
 else
     #FIXME: add -g from configure
 	#FIXME: verify that we need -fPIC in CFLAGS
@@ -288,10 +300,11 @@ else
 	EXE_CFLAGS  =${RDYNAMIC}
 	EXEEXT		=
 	SO_EXT      =.so
-	CPEXE		=ln -f
     SH			=sh
-    LN			=ln -f
-	LN_S_LIB    =${LN_S}
+
+	LN			=${LN_H}
+	LN_S_LIB    =${LN_H}
+	CPEXE		=${LN_H}
 endif
 
 ####################### from aubitbuild-multi.mk ####################

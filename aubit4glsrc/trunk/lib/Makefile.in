@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.53 2002-04-28 04:43:58 afalout Exp $
+# $Id: Makefile.in,v 1.54 2002-05-06 07:21:15 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -164,7 +164,7 @@ aubit-config:
 	${MAKE} -C resource
 
 loadmap:
-	${MAKE} -C ../tools/loadmap
+	${FAIL_OK}${MAKE} -C ../tools/loadmap
 
 libaubit4gl.so :
 	${MAKE} -C libaubit4gl $@
