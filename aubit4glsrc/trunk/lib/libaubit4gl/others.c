@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.32 2003-08-01 01:03:26 mikeaubury Exp $
+# $Id: others.c,v 1.33 2003-10-08 17:09:51 mikeaubury Exp $
 #
 */
 
@@ -570,7 +570,7 @@ A4GL_get_srec (char *name)
     }
 
   A4GL_debug ("fileform=%p name=%p(%s)", form->fileform, name, name);
-
+  A4GL_debug("Database =%s",form->fileform->dbname);
   a = A4GL_find_srec (form->fileform, name);
   A4GL_debug ("Got %d", a);
   if (a == -1)

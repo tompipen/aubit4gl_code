@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: disp_arr.c,v 1.9 2003-07-18 16:17:32 mikeaubury Exp $
+# $Id: disp_arr.c,v 1.10 2003-10-08 17:09:51 mikeaubury Exp $
 #*/
 
 /**
@@ -341,7 +341,7 @@ disp_loop (struct s_disp_arr *arr)
 	  if (k == 0)
 	    {
 	      A4GL_debug ("** Returning k=0");
-	      return 0;
+	      return -1000;
 	    }
 
 	  if (a < 0)

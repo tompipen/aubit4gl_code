@@ -21,6 +21,12 @@ OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
   }
   sprintf($<str>$,"%s",fgl_add_scope($<str>1,0));
 }
+| function_call_expr {
+	struct expr_str *ptr;
+	char buff2[1024];
+	char buff[1024];
+	sprintf($<str>$,print_arr_expr_fcall($<ptr>1));
+}
 ;
 
 arr_next_math:

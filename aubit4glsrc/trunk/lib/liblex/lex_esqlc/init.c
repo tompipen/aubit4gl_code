@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: init.c,v 1.6 2003-09-01 15:58:19 mikeaubury Exp $
+# $Id: init.c,v 1.7 2003-10-08 17:09:51 mikeaubury Exp $
 */
 
 #include "a4gl_lib_lex_esqlc_int.h"
@@ -33,11 +33,12 @@ void printc (char *fmt, ...);
 
 void print_function_variable_init (void);
 void print_nullify (char n);
+int A4GL_doing_pcode (void);
 
 void
 print_module_variable_init (void)
 {
-if (!doing_pcode()) {
+if (!A4GL_doing_pcode()) {
   printc ("static int _done_init_module_variables=1;\n");
   printc ("A4GL_INTERNAL_FUNCTION static void init_module_variables() {");
   printc ("if (_done_init_module_variables==0) return;");
@@ -50,7 +51,7 @@ if (!doing_pcode()) {
 void
 print_function_variable_init (void)
 {
-if (!doing_pcode()) {
+if (!A4GL_doing_pcode()) {
   printc ("init_module_variables();");
   print_nullify ('F');
 }

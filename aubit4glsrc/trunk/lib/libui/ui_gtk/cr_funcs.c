@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: cr_funcs.c,v 1.9 2003-09-30 10:31:15 mikeaubury Exp $
+# $Id: cr_funcs.c,v 1.10 2003-10-08 17:09:51 mikeaubury Exp $
 #*/
 
 /**
@@ -70,6 +70,9 @@ GtkWidget *A4GL_make_pixmap_from_mem (char *img);
 =====================================================================
 */
 
+int lastWidth=0;
+int lastHeight=0;
+
 /**
  * Size a GTK widget.
  *
@@ -86,6 +89,8 @@ A4GL_size_widget (GtkWidget * w, int width)
 {
   int x, y;
 
+
+
   /* If we have a specified width - use it */
   x = (int) A4GL_find_param ("*WIDTH");
   if (x)
@@ -96,11 +101,14 @@ A4GL_size_widget (GtkWidget * w, int width)
   /* DO we have a specified height ? */
   y = (int) A4GL_find_param ("*HEIGHT");
   if (y)
-    y = y * YHEIGHT;
+    y = y * YHEIGHT-(YHEIGHT/2);
   else
     y = 1 * YHEIGHT;		/* Use 1 character height */
 
   gtk_widget_set_usize (GTK_WIDGET (w), x, y);
+
+  lastWidth=x;
+  lastHeight=y;
 }
 
 
@@ -111,6 +119,7 @@ A4GL_size_widget (GtkWidget * w, int width)
  * @return The pixmap widget.
  */
 //GtkWidget *
+
 void *
 A4GL_make_pixmap_gw (char *filename)
 {
@@ -123,13 +132,64 @@ A4GL_make_pixmap_gw (char *filename)
   if (p == 0)
     {
       printf ("Bad pixmap...");
-      A4GL_exitwith ("Error creating pixmap");
+      //A4GL_exitwith ("Error creating pixmap");
       return 0;
     }
 
   pixmap = gtk_pixmap_new (p, 0);
   A4GL_debug ("New pixmap : %p\n", pixmap);
   return pixmap;
+}
+
+
+void *
+A4GL_make_pixbuf_gw (char *filename)
+{
+  //GdkPixbuf *p;
+  //GtkWidget *pixbuf;
+  //GtkWidget *window,*hbox, *resized,*widget;
+    GtkWidget *widget, *window, *hbox;
+    GdkPixbuf *pixbuf, *resized;
+
+  //window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    //g_signal_connect(G_OBJECT(window), "destroy",
+                     //G_CALLBACK(gtk_main_quit), NULL);
+    //gtk_window_set_title(GTK_WINDOW(window), "GtkPixbuf - scaling - bilinear");
+    //gtk_window_set_default_size(GTK_WINDOW(window), 300, 300);
+
+    //hbox = gtk_hbox_new(FALSE, 10);
+  printf ("Making pixmap from file:%s\n", filename);
+  A4GL_trim(filename);
+
+  pixbuf = gdk_pixbuf_new_from_file (filename,NULL);
+
+  widget = gtk_image_new();
+  A4GL_size_widget(widget,get_widget_next_size());
+  resized = gdk_pixbuf_scale_simple(pixbuf, lastWidth-20, lastHeight-20, GDK_INTERP_BILINEAR);
+  
+
+
+
+  if (pixbuf==0||resized==0) {
+		printf("Make pixmap failed...");
+  }
+
+  gtk_image_set_from_pixbuf(widget,resized);
+  gdk_pixbuf_unref(resized);
+
+
+  gtk_widget_show(widget);
+  printf("pixmap=%p\n",pixbuf);
+  //gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, FALSE, 2);
+
+    g_object_unref(pixbuf);
+
+
+
+
+ //gtk_widget_show(hbox);
+ gtk_widget_show(widget);
+return widget;
 }
 
 /**
@@ -172,8 +232,32 @@ A4GL_cr_picture (void)
   A4GL_add_signal_grab_focus (pixmap, 0);
   A4GL_add_signal_clicked (pixmap, 0);
   return pixmap;
-
 }
+
+GtkWidget *
+A4GL_cr_pixbuf (void)
+{
+  GtkWidget *pixmap;
+  char *filename;
+  filename = A4GL_find_param ("FILENAME");
+
+  A4GL_debug ("Making picture filename=%s PIXBUF\n", filename);
+  pixmap = A4GL_make_pixbuf_gw (filename);
+  //A4GL_add_signal_grab_focus (pixmap, 0);
+  //A4GL_add_signal_clicked (pixmap, 0);
+
+	gtk_widget_show(pixmap);
+
+  printf("Made : %p\n",pixmap);
+  A4GL_add_signal_clicked ((GtkWidget *) pixmap, 0);
+  A4GL_add_signal_grab_focus ((GtkWidget *) pixmap, 0);
+
+
+      
+  return pixmap;
+}
+
+
 
 /**
  * Create a button widget.

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display.c,v 1.10 2003-09-30 10:31:15 mikeaubury Exp $
+# $Id: display.c,v 1.11 2003-10-08 17:09:51 mikeaubury Exp $
 #*/
 
 /**
@@ -284,6 +284,7 @@ A4GL_dump_mem (char *ptr)
 {
   int a;
   A4GL_debug ("Mem A4GL_dump for %p\n", ptr);
+	return;
   for (a = 0; a < 32; a++)
     {
       A4GL_debug ("%d : %x", a, ptr[a]);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.63 2003-09-15 13:07:24 mikeaubury Exp $
+# $Id: conv.c,v 1.64 2003-10-08 17:09:51 mikeaubury Exp $
 #
 */
 
@@ -879,7 +879,7 @@ A4GL_ltodec (void *a, void *z, int size)
   sprintf (buff, "%ld", *(long *) a);
   A4GL_debug ("Buff=%s\n", buff);
   eptr = A4GL_str_to_dec (buff, z);
-  A4GL_debug ("eptr=%p\n", eptr);
+  //A4GL_debug ("eptr=%p\n", eptr);
 
   if (eptr)
     return 1;

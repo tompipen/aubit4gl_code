@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: frm.c,v 1.6 2003-08-06 07:35:36 mikeaubury Exp $
+# $Id: frm.c,v 1.7 2003-10-08 17:09:51 mikeaubury Exp $
 #*/
 
 /**
@@ -252,5 +252,8 @@ A4GL_read_fields (void *formdetsv) {
 	// Does nothing in GTK - but we need a function to be here anyway...
 	return 1;
 }
+
+
+
 
 /* =============================== EOF ============================== */

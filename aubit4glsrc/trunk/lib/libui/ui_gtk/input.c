@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.17 2003-09-30 14:41:07 mikeaubury Exp $
+# $Id: input.c,v 1.18 2003-10-08 17:09:52 mikeaubury Exp $
 #*/
 
 /**
@@ -177,7 +177,7 @@ A4GL_form_loop (void *vs,int init)
   else
     /* a = gui_form_field_constr (s, 0); */
     a = gui_form_field_constr ();
-  printf ("a=%d\n", a);
+  printf ("a=%d (%x)\n", a,a);
 
 
   if (init==1) {
@@ -226,7 +226,7 @@ A4GL_form_loop (void *vs,int init)
 	  else
 	    /* a = gui_form_field_constr (s, -1); */
 	    a = gui_form_field_constr ();
-	  return 0;
+	  return -1;
 	}
 
       if (a < 0)
@@ -276,11 +276,11 @@ A4GL_form_loop (void *vs,int init)
       A4GL_debug ("Pushed");
       A4GL_clear_something ();
       A4GL_debug ("Clearing");
-      return -1;
+      return -98;
     }
 
 
-  return 0;
+  return -1;
 
 }
 
@@ -347,8 +347,7 @@ A4GL_gen_field_list_gtk (GtkWidget *** field_list, GtkWindow *cwin,int a,
 	break;
 
       f = (int) va_arg (*ap, int *);
-
-      f--;
+	if (f>0) f--;
 
       A4GL_debug (" got screen record subscript number as %d ", f);
 
@@ -365,14 +364,13 @@ A4GL_gen_field_list_gtk (GtkWidget *** field_list, GtkWindow *cwin,int a,
 
       /* get screen record/table name */
 
-      A4GL_debug ("calling A4GL_bname with : %s %s %s\n", s, tabname, colname);
       A4GL_bname (s, tabname, colname);
-      A4GL_debug ("called A4GL_bname with : %s '%s' '%s'\n", s, tabname, colname);
-      A4GL_debug ("Calling find_srec");
-
-      A4GL_debug_last_field_created ("gfl 2");
       srec_no = A4GL_find_srec (formdets, tabname);
-      A4GL_debug ("srec_no=%d", srec_no);
+	if (strlen(tabname) && strlen(colname)&& srec_no==-1) {
+          A4GL_exitwith ("Table/Screen record does not exist in form");
+          return -1;
+	} 
+
       if (srec_no != -1)
 	{
 	  for (z = 0;
@@ -436,6 +434,12 @@ A4GL_gen_field_list_gtk (GtkWidget *** field_list, GtkWindow *cwin,int a,
 		  fno = formdets->attributes.attributes_val[attr_no].field_no;
 		  A4GL_debug ("Matched to field no %d f=%d", fno, f);
 
+                  if (formdets->fields.fields_val[fno].metric.
+                      metric_len <= f || f < 0)
+                    {
+                      A4GL_exitwith ("Field subscript out of bounds");
+                      return -1;
+                    }
 		  metric_no =
 		    formdets->fields.fields_val[fno].metric.metric_val[f];
 
@@ -488,15 +492,9 @@ A4GL_gen_field_list_gtk (GtkWidget *** field_list, GtkWindow *cwin,int a,
 
   /* allocate a bit more than we need.... */
   *field_list = calloc (cnt + 1, sizeof (GtkWidget *));
-  A4GL_debug ("H2 %p", field_list);
+
   memcpy (*field_list, flist, sizeof (GtkWidget *) * (cnt + 1));
-  A4GL_debug ("H3 *%p", *field_list);
-  /*
-     A4GL_debug ("Returning list\n");
-     for (f=0;f<=cnt;f++) {
-     A4GL_debug("Field_list[%d]=%p",f,field_list[f]);
-     }
-   */
+
   return cnt - 1;
 }
 

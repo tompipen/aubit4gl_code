@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: handler.c,v 1.6 2003-06-06 09:52:38 mikeaubury Exp $
+# $Id: handler.c,v 1.7 2003-10-08 17:09:52 mikeaubury Exp $
 #*/
 
 /**
@@ -195,9 +195,8 @@ int
 A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
 {
 
-  A4GL_debug ("Key Pressed! %x %x (%s)\n", event->keyval, event->state,
-	 gdk_keyval_name (event->keyval));
-  fflush (stdout);
+  A4GL_debug ("Key Pressed! %x %x (%s) widget=%p user_data=%p\n", event->keyval, event->state,
+	 gdk_keyval_name (event->keyval),widget,user_data);
 
   if (event->state & 4)
     {				/*  Control key held down... */
@@ -213,7 +212,7 @@ A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
 
   lastkey = keypressed;
   A4GL_set_last_key (lastkey);
-  A4GL_debug ("setting A4GL_action field=%p", widget);
+  A4GL_debug ("setting A4GL_action field=%p key=%x", widget,lastkey);
   actionfield = widget;
   return 0;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.20 2003-09-30 10:31:15 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.21 2003-10-08 17:09:52 mikeaubury Exp $
 #*/
 
 /**
@@ -374,8 +374,7 @@ create_window_gtk (char *name, int x, int y, int w, int h,
 			  GTK_SIGNAL_FUNC (A4GL_destroy_event), win);
     }
 
-  gtk_signal_connect (GTK_OBJECT (win), "key-press-event",
-		      GTK_SIGNAL_FUNC (A4GL_keypress), win);
+  gtk_signal_connect (GTK_OBJECT (win), "key-press-event", GTK_SIGNAL_FUNC (A4GL_keypress), win);
 
   A4GL_debug ("Currwindow=%p MJA MJAMJA\n", win);
 
@@ -985,6 +984,9 @@ A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
     {
       x--;
       y--;
+	A4GL_make_and_display_labels(x,y,s,a,clr_line);
+
+/*
       cwin = (GtkFixed *) A4GL_get_curr_win_gtk ();
       sprintf (buff, "LABEL_%d_%d", x, y);
       lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff);
@@ -1023,10 +1025,61 @@ A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 #endif
 	    }
 	}
+*/
     }
   A4GL_gui_run_til_no_more ();
+}
 
 
+A4GL_make_and_display_labels(int x,int y,char *s,int attr,int clr_line) {
+int a;
+  GtkFixed *cwin;
+  GtkLabel *lab;
+  char buff[256];
+  cwin = (GtkFixed *) A4GL_get_curr_win_gtk ();
+  for (a=0;a<strlen(s);a++) {
+		A4GL_make_and_display_label(x+a,y,s[a],attr);
+  }
+
+  if (!clr_line) return;
+
+
+  for (a=0;a<256;a++) {
+      sprintf (buff, "LABEL_%d_%d", x+strlen(s)+a, y);
+      lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff);
+      if (lab) {
+	      gtk_widget_destroy (GTK_WIDGET (lab));
+              gtk_object_set_data (GTK_OBJECT (cwin), buff, 0);
+      }
+  }
+}
+
+
+
+A4GL_make_and_display_label(int x,int y,char c,int attr) {
+  GtkFixed *cwin;
+  GtkLabel *lab;
+  char buff[256];
+  char cbuff[2];
+  cbuff[0]=c;
+  cbuff[1]=0;
+
+      cwin = (GtkFixed *) A4GL_get_curr_win_gtk ();
+      sprintf (buff, "LABEL_%d_%d", x, y);
+      lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff);
+      if (!lab) {
+		lab = (GtkLabel *) gtk_label_new (cbuff);
+	        gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH, y * YHEIGHT);
+		gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
+                gtk_widget_show (GTK_WIDGET (lab));
+#if GTK_CHECK_VERSION(2,0,0)
+ A4GL_ChangeWidgetFont(lab,"FIXED");
+#endif
+      } else {
+      		gtk_label_set_text (lab, cbuff);
+      }
+      A4GL_gui_set_field_fore ((GtkWidget *) lab, A4GL_decode_colour_attr_aubit (attr));
+	
 }
 
 
@@ -1472,4 +1525,13 @@ gtk_4gl.c:1296: structure has no member named `klass'
 */
 
 
+}
+
+
+
+
+void A4GL_error_nobox(char *s,int attr) {
+	A4GL_debug("@todo - Add error_nobox");
+	printf(" --> *******************    %s    **********************\n",s);
+	
 }

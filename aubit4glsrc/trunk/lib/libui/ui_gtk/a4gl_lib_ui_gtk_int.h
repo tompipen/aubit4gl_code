@@ -66,6 +66,7 @@ GtkWidget *A4GL_cr_button (void);
 GtkWidget *A4GL_cr_check (void);
 GtkWidget *A4GL_cr_label (void);
 GtkWidget *A4GL_cr_picture (void);
+GtkWidget *A4GL_cr_pixbuf (void);
 GtkWidget *A4GL_cr_combo (void);
 GtkWidget *A4GL_cr_radio (void);
 GtkWidget *A4GL_cr_list (void);
@@ -85,7 +86,7 @@ void A4GL_destroy_event (GtkWidget * widget, gpointer data);
 extern int gui_xwidth;
 extern int gui_yheight;
 #else
-int gui_xwidth = 8;
+int gui_xwidth = 10;
 int gui_yheight = 25;
 #endif
 
@@ -188,9 +189,26 @@ void A4GL_split_config (char *str);
 GtkWidget *A4GL_get_which_field (void);
 int A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data);
 void A4GL_func (GtkWidget * w, char *mode);
-
+char *field_buffer(GtkWidget *w,int n);
 
 void *A4GL_find_param (char *name);
+
+
+struct a4gl_frm {
+        GtkWidget **widgets;
+        GtkFixed *form_fixed;
+};
+
+#define REQ_DEL_PREV   0
+#define REQ_CLR_EOF    1
+#define REQ_INS_MODE   2
+#define REQ_OVL_MODE   3
+#define REQ_NEXT_CHAR  4
+#define REQ_VALIDATION 5
+#define REQ_PREV_CHAR  6
+#define O_ACTIVE 1
+#define O_EDIT 2
+
 
 #endif
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.15 2003-09-22 20:57:20 mikeaubury Exp $
+# $Id: prompt.c,v 1.16 2003-10-08 17:09:52 mikeaubury Exp $
 #*/
 
 /**
@@ -202,6 +202,8 @@ A4GL_debug("Prompt mode=%d",c);
   if (a4gl_status != 0)
     return (prompt->mode = 2);
 
+  gtk_widget_grab_focus (GTK_WIDGET (prompt->field));
+
   A4GLSQL_set_status (0, 0);
 
   return 1;
@@ -224,7 +226,8 @@ A4GL_prompt_loop (void *vprompt,int timeout)
   p = prompt->win;
 
 
-  gtk_widget_grab_focus (GTK_WIDGET (prompt->field));
+
+
   if (prompt->mode == 1)
     {
       int style;

@@ -69,7 +69,7 @@ pushlong (long a)
 void
 popvchar (char *x, int y)
 {
-  A4GL_pop_char (x, y);
+  A4GL_pop_char (x, y-1);
 }
 
 void

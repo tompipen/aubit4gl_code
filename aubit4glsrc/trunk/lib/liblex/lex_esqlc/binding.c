@@ -21,10 +21,11 @@ char buff_out[100000];
 void print_conversions (char i);
 void make_sql_bind (char *sql, char *type);
 void print_sql_type (int a, char ioro);
-void print_sql_type_infx (int a, char ioro);
 void printc (char *fmt, ...);
 void printh (char *fmt, ...);
 int esql_type (void);
+static void print_sql_type_infx (int a, char ioro);
+char * A4GL_dtype_sz (int d, int s);
 
 static char *dt_qual(int a) {
 	switch(a) {

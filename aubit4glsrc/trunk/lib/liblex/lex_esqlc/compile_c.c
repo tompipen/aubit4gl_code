@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.105 2003-09-30 10:32:09 mikeaubury Exp $
+# $Id: compile_c.c,v 1.106 2003-10-08 17:09:51 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -72,6 +72,7 @@
 =====================================================================
 */
 
+int isin_command (char *cmd_type);
 /*
 void add_function_to_header (char *identifier, int parms);
 char *get_namespace (char *s);
@@ -97,7 +98,7 @@ int doing_cs (void);
 int last_orderby_type = -1;
 void print_report_table (char *repname, char type, int c);
 extern int get_rep_no_orderby (void);
-int doing_pcode (void);
+int A4GL_doing_pcode (void);
 static int gen_ord (char *s);
 /*
 =====================================================================
@@ -1108,7 +1109,7 @@ A4GL_prchkerr (int l, char *f)
  * 3 = goto 
  */
 
-  if (doing_pcode () && 0)
+  if (A4GL_doing_pcode () && 0)
     {
       char buff[2000];
       char tbuff[2000];
@@ -1241,6 +1242,22 @@ print_expr (void *ptr)
 #endif
   real_print_expr (ptr);
 }
+
+char * print_arr_expr_fcall(void *optr) {
+struct expr_str *ptr;
+static int arr_print=0;
+static char buff[256];
+ptr=optr;
+printh("int _arr_fcall_%d;",arr_print);
+printc("// START FCALL\n");
+real_print_expr(ptr);
+printc("_arr_fcall_%d=A4GL_pop_int();",arr_print);
+printc("// END FCALL\n");
+sprintf(buff,"_arr_fcall_%d",arr_print);
+arr_print++;
+return buff;
+}
+
 static void
 real_print_expr (struct expr_str *ptr)
 {
@@ -2083,7 +2100,7 @@ print_construct_2 (char *driver)
   printc ("if (_fld_dr==0) {\n");
   printc ("   _fld_dr= -95;continue;\n}\n");
   add_continue_blockcommand ("CONSTRUCT");
-  if (!doing_pcode ())
+  if (!A4GL_doing_pcode ())
     {
       printc ("A4GL_debug(\"form_loop=%%d\",_fld_dr);");
     }
@@ -2140,7 +2157,7 @@ print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,
       printc
 	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),(void *)GET(\"s_screenio\",_inp_io,\"currform\"),");
       print_field_bind_constr ();
-      printc (" /* */,0));\n");
+      printc (" ,0));\n");
     }
   else
     {
@@ -2820,7 +2837,7 @@ print_init_var (char *name, char *prefix, int alvl)
 	}
     }
 
-  if (dont_print==0) printc ("A4GL_setnull(%d,&%s,%d); /*y*/", d & 0xffff, prefix2, size);
+  if (dont_print==0) printc ("A4GL_setnull(%d,&%s,%d); ", d & 0xffff, prefix2, size);
 
   if (printing_arr && !dont_print)
     {
@@ -2884,7 +2901,6 @@ A4GL_generate_or (char *out, char *in1, char *in2)
   sprintf (out, "%s||%s", in1, in2);
 }
 
-int isin_command (char *cmd_type);
 
 /**
  * Generate the C code implementation of the NEXT FIELD command for INPUT 4gl
@@ -4165,7 +4181,7 @@ printInitFunctionStack (void)
 {
   if (!isGenStackInfo ())
     return;
-  if (!doing_pcode ())
+  if (!A4GL_doing_pcode ())
     printc ("A4GLSTK_initFunctionCallStack();");
 }
 
@@ -4299,7 +4315,7 @@ print_main_1 (void)
       printc ("int nargs=0;");
       return;
     }
-  if (doing_pcode ())
+  if (A4GL_doing_pcode ())
     {
       printc ("\n\nA4GL_MAIN int main(int nargs) {\n");
       printc ("char *_paramnames[1]={\"\"};");
@@ -4323,7 +4339,7 @@ print_fgllib_start (char *db)
 {
   extern int is_schema;
   printc ("A4GLSTK_setCurrentLine(0,0);", yylineno);
-  if (!doing_pcode ())
+  if (!A4GL_doing_pcode ())
     {
       if (doing_cs ())
 	{
@@ -4583,7 +4599,7 @@ print_define (char *varstring, int isstatic_extern)
     {
       strcat (buff, "extern ");
     }
-  printc ("%s%s /*x*/;\n", buff, varstring);
+  printc ("%s%s ;\n", buff, varstring);
 }
 
 /**
@@ -4980,7 +4996,7 @@ char *
 A4GL_expr_for_call (char *ident, char *params, int line, char *file)
 {
   static char buff[2048];
-  if (doing_pcode ())
+  if (A4GL_doing_pcode ())
     {
       sprintf (buff, "ECALL(\"%s%s\",%d,%s);", get_namespace (ident), ident,
 	       line, params);
@@ -5004,7 +5020,7 @@ print_foreach_close (char *cname)
 
 
 int
-doing_pcode (void)
+A4GL_doing_pcode (void)
 {
   if (strcmp (acl_getenv ("LEXTYPE"), "PCODE") == 0)
     return 1;
@@ -5158,7 +5174,7 @@ print_execute_immediate (char *stmt)
   char buff[256];
   if (A4GL_isyes (acl_getenv ("FAKE_IMMEDIATE")) || !doing_esql ())
     {
-      sprintf (buff, "\"p_%d_%x\"", cnt++, time (0));
+      sprintf (buff, "\"p_%d_%lx\"", cnt++, time (0));
       print_prepare (buff, stmt);
       print_execute (buff, 0);
     }

@@ -81,6 +81,8 @@ A4GL_prchkerr int l,char* f -> void
 /* void print_expr (struct expr_str *ptr) */
 print_expr void* ptr -> void
 
+print_arr_expr_fcall void* ptr -> char*
+
 /* void print_bind_pop1 (char i) */
 print_bind_pop1 char i -> void
 
