@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.21 2004-07-03 11:57:29 mikeaubury Exp $
+# $Id: load.c,v 1.22 2004-10-31 13:40:21 mikeaubury Exp $
 #
 */
 
@@ -217,7 +217,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   int nfields;
   int lineno = 0;
   char *insertstr;
-  char filename[256];
+  char filename[1024];
   FILE *p;
   struct BINDING *ibind = 0;
   char buff[255];
@@ -225,7 +225,9 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   delim = delims[0];
 
   A4GL_debug ("In load_data");
-  strcpy (filename, fname);
+  strncpy (filename, fname,sizeof(filename));
+  filename[1023]=0; // Just to make sure...
+
   A4GL_trim (filename);
   p = A4GL_mja_fopen (filename, "r");
 
@@ -288,6 +290,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
       A4GL_debug ("Read line '%s'", loadbuff);
       nfields = find_delims (delim);
       A4GL_debug ("nfields=%d number of columns=%d", nfields, cnt);
+	if (nfields==0 && delim==0) nfields=1; // No delimiter - whole line...
 
       if (nfields != cnt)
 	{
