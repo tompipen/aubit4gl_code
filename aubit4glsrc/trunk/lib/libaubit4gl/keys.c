@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.17 2003-06-25 07:48:40 mikeaubury Exp $
+# $Id: keys.c,v 1.18 2003-06-27 09:26:24 mikeaubury Exp $
 #
 */
 
@@ -193,8 +193,8 @@ A4GL_key_val2 (char *str)
 
   if (A4GL_mja_strncmp ("CONTROL", str, 7) == 0)
     {
-      A4GL_debug ("control key '%s' - returning '%c'\n", str, str[10]);
-      return toupper (str[10]) - 'A' + 1;
+      A4GL_debug ("control key '%s' - returning '%c'\n", str, str[8]);
+      return toupper (str[8]) - 'A' + 1;
     }
 
   if (str[0] == '^')

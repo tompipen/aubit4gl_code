@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.56 2003-06-25 21:46:39 mikeaubury Exp $
+# $Id: compile_c.c,v 1.57 2003-06-27 09:26:24 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -3795,7 +3795,7 @@ print_menu_block (int n)
 void
 print_menu_block_end (int n)
 {
-  printc ("cmd_no_%d=-2;goto MENU_START_%d;", n, n);
+  printc ("cmd_no_%d=-4;goto MENU_START_%d;", n, n);
 }
 
 /**

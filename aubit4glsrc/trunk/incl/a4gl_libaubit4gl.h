@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.67 2003-06-25 07:48:40 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.68 2003-06-27 09:26:24 mikeaubury Exp $
 #
 */
 
@@ -236,19 +236,25 @@ extern "C"
 #define matches(s1,s2) mja_match(s1,s2,'M');
 
   /* ========================= from a4gl_keys.h ================== */
-#define A4GLKEY_ENTER 	0xff01
-#define A4GLKEY_DOWN 	0xff02
+#define A4GLKEY_ENTER 		0xff01
+#define A4GLKEY_DOWN 		0xff02
 #define A4GLKEY_UP 		0xff03
-#define A4GLKEY_LEFT 	0xff04
-#define A4GLKEY_RIGHT 	0xff05
-#define A4GLKEY_PGUP 	0xff06
-#define A4GLKEY_PGDN 	0xff07
-#define A4GLKEY_INS 	0xff08
-#define A4GLKEY_DEL 	0xff09
-#define A4GLKEY_HOME 	0xff0a
-#define A4GLKEY_END 	0xff0b
-#define A4GLKEY_CANCEL 	0xfffe
-#define A4GLKEY_F(x) 	(0xff10+x)
+#define A4GLKEY_LEFT 		0xff04
+#define A4GLKEY_RIGHT 		0xff05
+#define A4GLKEY_PGUP 		0xff06
+#define A4GLKEY_PGDN 		0xff07
+#define A4GLKEY_INS 		0xff08
+#define A4GLKEY_DEL 		0xff09
+#define A4GLKEY_HOME 		0xff0a
+#define A4GLKEY_END 		0xff0b
+
+#define A4GLKEY_DC 		0xff0c
+#define A4GLKEY_DL 		0xff0d
+#define A4GLKEY_BACKSPACE 	0xff0e
+
+#define A4GLKEY_CANCEL 		0xfffe
+
+#define A4GLKEY_F(x) 		(0xff10+x)
 
   /* ========================= from a4gl_tunable.h ================ */
 
@@ -1532,6 +1538,7 @@ enum cmd_types {
     void *f;
     void *field;
     int h;
+	int insmode;
   };
 
   void *A4GL_get_curr_form (void);	/* in API_ui.c libtui/newpanels.c libgui/input.c */

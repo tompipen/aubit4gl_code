@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.13 2003-06-22 13:02:19 mikeaubury Exp $
+# $Id: prompt.c,v 1.14 2003-06-27 09:26:24 mikeaubury Exp $
 #*/
 
 /**
@@ -99,6 +99,7 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   promptstr = A4GL_char_pop ();
   prompt->mode = 0;
   prompt->h = h;
+  prompt->insmode=0;
   prompt->charmode = c;
   prompt->promptstr = promptstr;
   prompt->lastkey = 0;
@@ -158,7 +159,7 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   a = post_form (f);
   A4GL_debug ("Posted form=%d", a);
   A4GL_int_form_driver (f, REQ_FIRST_FIELD);
-  A4GL_int_form_driver (f, REQ_INS_MODE);
+  A4GL_int_form_driver (f, REQ_OVL_MODE);
   wrefresh (p);
   A4GL_debug ("Initialized form");
 /* zrefresh(); */
@@ -184,7 +185,7 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
 
   f = current_field (mform);
 
-  A4GL_set_last_key (A4GL_curses_to_aubit (a));
+  A4GL_set_last_key (a);
 
   A4GL_debug ("In proc_key_prompt.... for %d", a);
   switch (a)
@@ -202,9 +203,9 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
 
     case 127:
     case 8:
-    case KEY_DC:
-    case KEY_DL:
-    case KEY_BACKSPACE:
+    case A4GLKEY_DC:
+    case A4GLKEY_DL:
+    case A4GLKEY_BACKSPACE:
       A4GL_debug ("Req del prev");
       if (A4GL_get_curr_field_col (mform))
 	{
@@ -218,26 +219,35 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
       return 0;
 
     case '\t':
-    case KEY_ENTER:
+    case A4GLKEY_ENTER:
     case 13:
     case 10:
-    case KEY_DOWN:
+    case A4GLKEY_DOWN:
 #ifdef DEBUG
       A4GL_debug ("Next field in a prompt - they must mean enter");
 #endif
       return 10;
 
-    case KEY_LEFT:
+    case A4GLKEY_LEFT:
       A4GL_int_form_driver (mform, REQ_PREV_CHAR);
       return 0;
 
-    case KEY_RIGHT:
+    case A4GLKEY_RIGHT:
       A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
       return 0;
 
     case 4:
       A4GL_int_form_driver (mform, REQ_CLR_FIELD);
       return 0;
+
+    case 1:                     // Control - A
+      prompt->insmode = prompt->insmode ? 0 : 1;
+      if (prompt->insmode)
+        A4GL_int_form_driver (mform,REQ_INS_MODE);
+      else
+        A4GL_int_form_driver (mform,REQ_OVL_MODE);
+	return 0;
+
     }
 
   /* A4GL_mja_refresh (); */
@@ -262,6 +272,7 @@ A4GL_prompt_loop (void *vprompt)
   int a;
   WINDOW *p;
   FORM *mform;
+  int kpress;
   struct s_prompt *prompt;
   prompt = vprompt;
 
@@ -298,7 +309,9 @@ A4GL_prompt_loop (void *vprompt)
     return 0;
 
   pos_form_cursor (mform);
+
   a=A4GL_real_getch_swin (p);
+
   A4GL_clr_error_nobox();
 
 
@@ -324,7 +337,8 @@ A4GL_prompt_loop (void *vprompt)
     return a;
 
   A4GL_debug ("Requested..");
-  if (prompt->lastkey == 10 || prompt->lastkey == 13)
+  //if (prompt->lastkey == 10 || prompt->lastkey == 13)
+  if (a == 10 || a == 13)
     {
       A4GL_int_form_driver (mform, REQ_VALIDATION);
       wrefresh (p);
@@ -387,6 +401,10 @@ A4GL_curses_to_aubit (int a)
     return A4GLKEY_END;
   if (a == KEY_CANCEL)
     return A4GLKEY_CANCEL;
+
+  if (a == KEY_DC) return A4GLKEY_DC;
+  if (a == KEY_DL) return A4GLKEY_DL;
+  if (a == KEY_BACKSPACE) return A4GLKEY_BACKSPACE;
 
   return a;
 }

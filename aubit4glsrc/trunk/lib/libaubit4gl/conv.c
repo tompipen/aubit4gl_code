@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.47 2003-06-25 11:36:58 mikeaubury Exp $
+# $Id: conv.c,v 1.48 2003-06-27 09:26:24 mikeaubury Exp $
 #
 */
 
@@ -2970,8 +2970,8 @@ A4GL_str_to_dec (char *s, char *w)
 	{
 
 	  dp++;
-	  if (dp > 1)
-	    return 0;
+	  if (dp > 1) return 0;
+	  continue;
 	}
 
       if (s[cnt] == '+' || s[cnt] == ',' || s[cnt] == ')')
@@ -2989,8 +2989,24 @@ A4GL_str_to_dec (char *s, char *w)
 
 	  else
 	    hd[hdcnt++] = s[cnt];
+	 continue;
 
 	}
+
+	if (s[cnt]==' ') {
+		if (tlcnt==0&&hdcnt==0) continue; // leading space..
+
+		if (tlcnt||hdcnt) {	// Trailing space ?
+			int a;
+			for (a=cnt+1;a<strlen(s);a++) {
+				if (s[a]!=' ') return 0; // Nope - there is something after it
+			}
+		}
+	}
+
+	// If we've got to here - I've got a character I'm not expecting...
+	A4GL_debug("Can a decimal have a '%c' in it ?",s[cnt]);
+	return 0;
     }
 
 

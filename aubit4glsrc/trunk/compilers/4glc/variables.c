@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.24 2003-06-25 21:46:31 mikeaubury Exp $
+# $Id: variables.c,v 1.25 2003-06-27 09:26:13 mikeaubury Exp $
 #
 */
 
@@ -1947,6 +1947,10 @@ split_record_list (char *s, char *prefix, struct record_list *list)
       *ptr = 0;
       ptr++;
       strcpy (record2, ptr);
+	if (record2[0]>='A'&&record2[0]<='Z'&&record2[1]=='_') {
+      		strcpy (record2, &ptr[2]);
+	}
+		
       dot[0] = strrchr (record1, '.');
       dot[1] = strrchr (record2, '.');
       if (dot[0] == 0 || dot[1] == 0)

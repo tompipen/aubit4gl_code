@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.52 2003-06-26 18:38:48 mikeaubury Exp $
+# $Id: newpanels.c,v 1.53 2003-06-27 09:26:24 mikeaubury Exp $
 #*/
 
 /**
@@ -1394,7 +1394,7 @@ A4GL_getch_swin (WINDOW * window_ptr)
     }
   cbreak ();
   a=A4GL_curses_to_aubit (a); // Convert it to an aubit key...
-  A4GL_debug ("Got char from keyboard : %d %d", a,KEY_F(2));
+  A4GL_debug ("Got char from keyboard : %d F2=%d LEFT=%d", a,KEY_F(2),KEY_LEFT);
   return a;
 }
 
@@ -1415,6 +1415,7 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
   A4GL_debug ("Reading from keyboard on window %p", window_ptr);
   A4GL_set_abort (0);
   a=A4GL_readkey();
+
   if (a!=0) {
                 A4GL_debug("Read %d from keyfile",a);
                 return a;
@@ -1423,8 +1424,18 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
   while (1)
     {
       halfdelay (1);
-      if (window_ptr) a = wgetch (window_ptr);
-      else a = getch ();
+      if (window_ptr) {
+  		keypad (window_ptr, TRUE);
+		a = wgetch (window_ptr);
+		A4GL_debug("WGETCH");
+	}
+
+      else {
+		A4GL_debug("GETCH");
+		a = getch ();
+	}
+
+	A4GL_debug("getch returns %d",a);
 
       if (a == KEY_MOUSE)
         {
@@ -1446,7 +1457,9 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
 
     }
   cbreak ();
-  A4GL_debug ("Got char from keyboard : %d", a);
+  A4GL_debug ("Got char from keyboard : %d LEFT=%d", a,KEY_LEFT);
+  a=A4GL_curses_to_aubit (a);
+  A4GL_debug (" = %d", a);
   return a;
 }
 

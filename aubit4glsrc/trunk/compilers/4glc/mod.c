@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.131 2003-06-25 21:46:31 mikeaubury Exp $
+# $Id: mod.c,v 1.132 2003-06-27 09:26:13 mikeaubury Exp $
 #
 */
 
@@ -1870,8 +1870,11 @@ strcpy(var,var_i);
       dtype = scan_variable (var_i);
 
 
-	if (i=='f') strcpy(var,fgl_add_scope(var_i,'L'));
-	else        strcpy(var,fgl_add_scope(var_i,0));
+	switch (i) {
+	case 'f': strcpy(var,fgl_add_scope(var_i,'L'));break; // Function parameters
+	case 'O': strcpy(var,fgl_add_scope(var_i,'L'));break; // Report order by
+	default: strcpy(var,fgl_add_scope(var_i,0));
+	}
 
     }
 
@@ -3942,6 +3945,7 @@ if (n==0) {
                 c='S';
   } else {
         c=find_variable_scope(buffer2);
+ if (c==0) { c='S'; }
   }
 } else {
 	c=n;

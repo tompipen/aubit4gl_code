@@ -932,14 +932,18 @@ if (ptr) {
 ;
 
 cur_part: {
-char *ptr;
-ptr=acl_getenv("SQL_CURRENT_FUNCTION");
-if (ptr!=0) { if (strlen(ptr)==0) ptr=0; }
-if (ptr) {
+//char *ptr;
+
+//ptr=acl_getenv("SQL_CURRENT_FUNCTION");
+
+//if (ptr!=0) { if (strlen(ptr)==0) ptr=0; }
+
+//if (ptr) {
 	sprintf($<str>$,"'%s','%s'","YEAR","SECOND");
-} else {
+//} else {
 	strcpy($<str>$," YEAR TO SECOND ");
-}
+//}
+	strcpy($<str>$,"");
 }
 | s_curr TO e_curr
 {

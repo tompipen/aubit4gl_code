@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.9 2003-06-25 07:48:41 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.10 2003-06-27 09:26:24 mikeaubury Exp $
 #*/
 
 /**
@@ -686,7 +686,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
   A4GL_debug ("Got key %d", a);
 
   m_lastkey = a;
-  A4GL_set_last_key (A4GL_curses_to_aubit (a));
+  A4GL_set_last_key (a);
 
   if (a == acckey)
     {
@@ -714,24 +714,24 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 
     case 127:
     case 8:
-    case KEY_DC:
-    case KEY_DL:
-    case KEY_BACKSPACE:
+    case A4GLKEY_DC:
+    case A4GLKEY_DL:
+    case A4GLKEY_BACKSPACE:
 	A4GL_int_form_driver (mform, REQ_DEL_PREV);break;
 
     case 24:
 	A4GL_int_form_driver (mform, REQ_DEL_CHAR);break;
 
-    case KEY_UP:
+    case A4GLKEY_UP:
 	A4GL_debug("MJA Try to move to previous field : %d\n",s->curr_attrib-1);
 	A4GL_newMovement(s,s->curr_attrib-1);
 	break;
 
     case '\t':
-    case KEY_ENTER:
+    case A4GLKEY_ENTER:
     case 13:
     case 10:
-    case KEY_DOWN:
+    case A4GLKEY_DOWN:
           if (std_dbscr.input_wrapmode == 0 && A4GL_curr_metric_is_used_last_s_screenio (s, f))
             {
       		A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
@@ -741,10 +741,10 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	A4GL_newMovement(s,s->curr_attrib+1);
 
 
-    case KEY_LEFT:
+    case A4GLKEY_LEFT:
 	A4GL_int_form_driver (mform, REQ_PREV_CHAR);break;
 
-    case KEY_RIGHT:
+    case A4GLKEY_RIGHT:
 	A4GL_int_form_driver (mform, REQ_NEXT_CHAR);break;
 
     case 4:                     // Control - D

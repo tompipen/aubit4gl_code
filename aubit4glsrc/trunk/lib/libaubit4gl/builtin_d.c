@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.29 2003-06-25 07:48:40 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.30 2003-06-27 09:26:24 mikeaubury Exp $
 #
 */
 
@@ -229,6 +229,13 @@ A4GL_push_dec (char *p, int ismoney,int size)
   int d;
   int plen ;
   A4GL_debug("push_dec with size=%x\n",size);
+
+  if (p==0) {
+	if (ismoney) A4GL_push_param(0,DTYPE_MONEY+DTYPE_MALLOCED+ENCODE_SIZE(size));
+	else A4GL_push_param(0,DTYPE_DECIMAL+DTYPE_MALLOCED+ENCODE_SIZE(size));
+	return;
+	
+  }
   l=size>>8;
   d=size&255;
 
@@ -237,6 +244,7 @@ A4GL_push_dec (char *p, int ismoney,int size)
 #define NUM_BYTES(x)     (NUM_DIG(x)+OFFSET_DEC(x))
 
 
+  if (p) {
   if (NUM_DIG(p)!=l&&NUM_DEC(p)!=d) {
   	A4GL_init_dec(p,l,d);
 	A4GL_push_null(DTYPE_DECIMAL,size);
@@ -246,6 +254,7 @@ A4GL_push_dec (char *p, int ismoney,int size)
 
   if (NUM_DIG(p)!=l&&NUM_DEC(p)!=d) {
 	A4GL_debug("Failed to set to null");
+  }
   }
 
   plen= (p[0] & 127) + 2;

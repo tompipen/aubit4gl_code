@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.41 2003-06-25 07:48:41 mikeaubury Exp $
+# $Id: ioform.c,v 1.42 2003-06-27 09:26:24 mikeaubury Exp $
 #*/
 
 /**
@@ -552,9 +552,7 @@ A4GL_set_field_attr_with_attr (FIELD * field, int attr,int cmd_type)
     r = 1;
   else
     r = 0;
-  A4GL_debug
-    ("MJA Calling A4GL_set_field_colour_attr - do_reverse=%d attr=%d", r,
-     attr);
+  A4GL_debug ("MJA Calling A4GL_set_field_colour_attr - do_reverse=%d attr=%d", r, attr);
   A4GL_set_field_colour_attr (field, r, attr);
 }
 
@@ -563,9 +561,19 @@ A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
 {
   struct struct_scr_field *f;
   f = (struct struct_scr_field *) (field_userptr (field));
+  A4GL_debug("set_field_colour_attr - do_reverse=%d colour=%d - %d\n",do_reverse,colour,A4GL_decode_colour_attr_aubit (colour));
+
+ if (colour&AUBIT_ATTR_REVERSE && do_reverse==0) { ; }     // Maybe we should warn on these
+ if (!(colour&AUBIT_ATTR_REVERSE) && do_reverse==1) { ; }  // Maybe we should warn on these
+
+ set_field_fore (field, A4GL_decode_aubit_attr (colour,'f'));
+ set_field_back (field, A4GL_decode_aubit_attr (colour,'b'));
+
+return;
+
 
   colour=colour&0xff00;
-  A4GL_debug("set_field_colour_attr - do_reverse=%d colour=%d\n",do_reverse,colour);
+
 
   if (do_reverse && colour == AUBIT_COLOR_WHITE)
     {
@@ -849,7 +857,7 @@ A4GL_proc_key (int a, FORM * mform, struct s_screenio *s)
   A4GL_debug ("Got key %d", a);
 
   m_lastkey = a;
-  A4GL_set_last_key (A4GL_curses_to_aubit (a));
+  A4GL_set_last_key (a);
 
   if (a == acckey)
     {
@@ -881,14 +889,14 @@ A4GL_proc_key (int a, FORM * mform, struct s_screenio *s)
 
     case 127:
     case 8:
-    case KEY_DC:
-    case KEY_DL:
-    case KEY_BACKSPACE:
+    case A4GLKEY_DC:
+    case A4GLKEY_DL:
+    case A4GLKEY_BACKSPACE:
       return REQ_DEL_PREV;
     case 24:
       return REQ_DEL_CHAR;
 
-    case KEY_UP:
+    case A4GLKEY_UP:
       if (s->mode != MODE_INPUT_ARRAY)
 	{
 	  npage = A4GL_page_for_pfield (s) - 1;
@@ -903,15 +911,15 @@ A4GL_proc_key (int a, FORM * mform, struct s_screenio *s)
 	}
 
       /*
-         case KEY_PGUP : return REQ_PREV_PAGE;
-         case KEY_PGDN : return REQ_NEXT_PAGE;
+         case A4GLKEY_PGUP : return REQ_PREV_PAGE;
+         case A4GLKEY_PGDN : return REQ_NEXT_PAGE;
        */
 
     case '	':
-    case KEY_ENTER:
+    case A4GLKEY_ENTER:
     case 13:
     case 10:
-    case KEY_DOWN:
+    case A4GLKEY_DOWN:
       if (s->mode != MODE_INPUT_ARRAY
 	  || (a == '\t' && s->mode == MODE_INPUT_ARRAY))
 	{
@@ -936,10 +944,10 @@ A4GL_proc_key (int a, FORM * mform, struct s_screenio *s)
 
 
 
-    case KEY_LEFT:
+    case A4GLKEY_LEFT:
       return REQ_PREV_CHAR;
 
-    case KEY_RIGHT:
+    case A4GLKEY_RIGHT:
       return REQ_NEXT_CHAR;
 
     case 4:			// Control - D
@@ -2866,9 +2874,9 @@ A4GL_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
 
     case 127:
     case 8:
-    case KEY_DC:
-    case KEY_DL:
-    case KEY_BACKSPACE:
+    case A4GLKEY_DC:
+    case A4GLKEY_DL:
+    case A4GLKEY_BACKSPACE:
       A4GL_debug ("Req del prev");
       if (A4GL_get_curr_field_col (mform))
 	{
@@ -2882,20 +2890,20 @@ A4GL_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
       return 0;
 
     case '	':
-    case KEY_ENTER:
+    case A4GLKEY_ENTER:
     case 13:
     case 10:
-    case KEY_DOWN:
+    case A4GLKEY_DOWN:
 #ifdef DEBUG
       A4GL_debug ("Next field in a prompt - they must mean enter");
 #endif
       return 10;
 
-    case KEY_LEFT:
+    case A4GLKEY_LEFT:
       A4GL_int_form_driver (mform, REQ_PREV_CHAR);
       return 0;
 
-    case KEY_RIGHT:
+    case A4GLKEY_RIGHT:
       A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
       return 0;
 
