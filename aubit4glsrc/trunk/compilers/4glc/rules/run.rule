@@ -1,19 +1,14 @@
-run_cmd : RUN fgl_expr {
-print_system_run(0,0);
-} | RUN fgl_expr RETURNING variable {
-print_system_run(1,$<str>4);
-} | 
-RUN fgl_expr WITHOUT_WAITING {
-print_system_run(2,0);
-}
-|
-RUN fgl_expr WAIT {
-print_system_run(0,0);
-}
-| RUN fgl_expr EXIT {
-print_system_run(0,0);
-/* FIXME */
-}
+run_cmd : RUN fgl_expr  { print_system_run(0,0); } 
+	| RUN fgl_expr RETURNING variable { print_system_run(1,$<str>4); } 
+	| RUN fgl_expr WITHOUT_WAITING { print_system_run(2,0); }
+	| RUN fgl_expr run_mode RETURNING variable { print_system_run(1+$<integer_val>3,$<str>5); } 
+	| RUN fgl_expr run_mode WITHOUT_WAITING { print_system_run(2+$<integer_val>3,0); }
+	| RUN fgl_expr WAIT { print_system_run(0,0); }
+	| RUN fgl_expr EXIT { print_system_run(0,0); }
 ;
 
-
+run_mode : 
+	 IN_FORM_MODE {$<integer_val>$=256;}
+	| IN_LINE_MODE {$<integer_val>$=512;}
+;
+	
