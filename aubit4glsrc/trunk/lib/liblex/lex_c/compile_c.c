@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.46 2003-01-29 11:31:58 mikeaubury Exp $
+# $Id: compile_c.c,v 1.47 2003-01-29 14:35:07 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -288,7 +288,7 @@ void
 printc(char* fmt,... )
 {
 va_list ap;
-	debug("via printc (a) in lib\n");
+	//debug("via printc (a) in lib\n");
 	va_start(ap,fmt);
 	internal_lex_printc(fmt,&ap);
 }
@@ -301,7 +301,7 @@ char buff2[40960];
 char *ptr;
 int a;
 
-  debug("in real_lex_printc");
+  //debug("in real_lex_printc");
 
   if (outfile == 0)
   {

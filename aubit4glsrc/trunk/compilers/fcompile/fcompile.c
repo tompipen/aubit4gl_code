@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.23 2003-01-28 15:17:46 mikeaubury Exp $
+# $Id: fcompile.c,v 1.24 2003-01-29 14:35:05 mikeaubury Exp $
 #*/
 
 /**
@@ -217,7 +217,17 @@ char d[128];
 
 }
 
+#define DO_DEBUG
 
+#ifdef DO_DEBUG
+typedef union     {
+        char    str[1024];
+        u_expression *expr;
+} YYSTYPE;
+
+YYSTYPE yylval;
+
+#endif
 /**
  * Executed by the parser when it enconters some error
  *
@@ -238,6 +248,9 @@ yyerror(char *s)
   printf("Error compiling %s.per - check %s.err (xline=%d yline=%d)\n",
 	  outputfile,outputfile,lineno,yylineno
   );
+#ifdef DO_DEBUG
+  printf("%s\n",yylval.str);
+#endif
   exit (2);
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.95 2003-01-29 11:31:21 mikeaubury Exp $
+# $Id: mod.c,v 1.96 2003-01-29 14:34:37 mikeaubury Exp $
 #
 */
 
@@ -1574,12 +1574,17 @@ rettype (char *s)
   if (strcmp (s, "8") == 0)
     strcpy (rs, "fglmoney");
 
+  if (strcmp (s, "10") == 0)
+    strcpy (rs, "struct_dtime");
+
   if (strcmp (s, "11") == 0)
     strcpy (rs, "fglbyte");
   if (strcmp (s, "12") == 0)
     strcpy (rs, "fgltext");
   if (strcmp (s, "13") == 0)
     strcpy (rs, "char");
+  if (strcmp (s, "14") == 0)
+    strcpy (rs, "struct_ival");
 
   return rs;
 }

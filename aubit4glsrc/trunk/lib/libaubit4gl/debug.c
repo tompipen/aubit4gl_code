@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.16 2003-01-29 11:31:58 mikeaubury Exp $
+# $Id: debug.c,v 1.17 2003-01-29 14:35:06 mikeaubury Exp $
 #
 */
 
@@ -132,7 +132,7 @@ debug_full (char *fmt,...)
       va_start (args, fmt);
       vsprintf (buff, fmt, args);
       if (buff[strlen (buff) - 1] != ':')
-        fprintf (debugfile, "%-20s %-6d status=%6d sqlca.sqlcode=%6d\n ", g_fname, g_lineno, (int)status, sqlca.sqlcode);
+        fprintf (debugfile, "%-20s %-6d status=%6ld sqlca.sqlcode=%6ld\n ", g_fname, g_lineno, status, sqlca.sqlcode);
 
       fprintf (debugfile, "%s\n", buff);
 

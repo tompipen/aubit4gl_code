@@ -59,6 +59,10 @@ screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_S
 "["		{ strcpy(yylval.str, yytext); colno++;return(OPEN_SQUARE);}
 "end"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_END);}
 "]"		{ strcpy(yylval.str, yytext); colno++;return(CLOSE_SQUARE);}
+is[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNULLCHK;}
+is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNOTNULLCHK;}
+"is null" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNULLCHK;}
+"is not null" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNOTNULLCHK;}
 [0-9]+|[0-9]*\.[0-9]+  	{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(NUMBER_VALUE);}
 
 "\"" { if (in_screen_section==0) REJECT ; strcpy(yylval.str,yytext);  return CH; }
@@ -83,12 +87,10 @@ screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_S
 "<=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 "MATCHES" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 "LIKE" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
-"WHERE" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWWHERE;}
+"where" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWWHERE;}
 "AND" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWAND;}
 "OR" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWOR;}
 
-"IS[ ]+NULL" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNULLCHK;}
-"IS[ ]+NOT[ ]+NULL" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNOTNULLCHK;}
 "true" 		{if (ignorekw) REJECT;strcpy(yylval.str,"TRUE"); return XVAL;}
 "false" 		{if (ignorekw) REJECT;strcpy(yylval.str,"FALSE"); return XVAL;}
 "IN" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWIN;}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.31 2003-01-29 11:31:58 mikeaubury Exp $
+# $Id: stack.c,v 1.32 2003-01-29 14:35:07 mikeaubury Exp $
 #
 */
 
@@ -193,10 +193,21 @@ int
 pop_bool (void)
 {
   int ptr;
+  ptr=0;
+
   debug ("Popping boolean..");
-  pop_param (&ptr, DTYPE_SMINT, 0);
-  debug ("...%d\n", ptr);
-  return ptr;
+	//debug_print_stack();
+  ptr=pop_int();
+  //pop_param (&ptr, DTYPE_SMINT, 0);
+  debug ("Popping boolean gets %d %x",ptr,ptr);
+
+	if (ptr!=0&&ptr!=1) {
+			debug("SERIOUS PROBLEM ?????");
+			debug_print_stack();
+	} 
+  if (ptr) 
+	return 1;
+  return 0;
 }
 
 /**
@@ -204,15 +215,16 @@ pop_bool (void)
  *
  * @return The value poped.
  */
-int
+short
 pop_int (void)
 {
-  int ptr;
+  short ptr;
   int b;
   b = pop_param (&ptr, DTYPE_SMINT, 0);
 #ifdef DEBUG
   debug ("pop_int b=%d\n", b);
 #endif
+  ptr=ptr&0xffff;
   return ptr;
 }
 

@@ -654,12 +654,16 @@ opt_dec_ext : {strcpy($<str>$,"");}
 ;
 
 
-op_where: {$<expr>$=0;} | where_clause ;
+op_where: {$<expr>$=0;} | where_clause {
+$<expr>$=$<expr>1;
+}
+
+;
 
 where_clause : KWWHERE clauses {
 		$<expr>$=$<expr>2;
 	}
-		;
+;
 
 clauses : 
 	clause 
@@ -677,6 +681,16 @@ clause:
 		}
 	| value EQUAL value {
 		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2);
+	}
+	| value KWNULLCHK {
+		void *p;
+		p=create_char_expr("ISNULL");
+		$<expr>$=create_expr_comp_expr($<expr>1,p,"ISNULL");
+	}
+	| value KWNOTNULLCHK {
+		void *p;
+		p=create_char_expr("ISNOTNULL");
+		$<expr>$=create_expr_comp_expr($<expr>1,p,"ISNOTNULL");
 	}
 	| value  {
 		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2);

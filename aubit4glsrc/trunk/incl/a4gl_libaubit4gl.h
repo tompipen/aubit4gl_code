@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.31 2003-01-21 08:25:51 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.32 2003-01-29 14:35:05 mikeaubury Exp $
 #
 */
 
@@ -906,7 +906,7 @@
 
 	char *	new_string		(int a);
 	int 	pop_bool		(void);
-	int 	pop_int			(void);
+	short 	pop_int			(void);
 	long 	pop_long		(void);
 	long 	pop_date		(void);
 	float 	pop_float		(void);
@@ -1182,7 +1182,7 @@
 
 	/* ============================ conv.c ================================= */
 	void 	decode_interval 	(struct ival *ival, int *data);
-	int 	stod 				(char *zz, int *aa, int sz_ignore);
+	int 	stod 				(void *zz, void *aa, int sz_ignore);
 	int 	conv 				(int dtype1, void *p1, int dtype2, void *p2, int size);
 	void    set_convmatrix		(int dtype1,int dtype2,void *ptr);
 

@@ -1253,11 +1253,9 @@ find_type (char *s)
   if (strcmp ("fglmoney", s) == 0)
     return 8;
 
-  if (strcmp ("struct_dtime ", s) == 0)
+  if (strcmp ("struct_dtime", s) == 0)
     return 10;
 
-  if (strcmp ("struct_dtime ", s) == 0)
-    return 10;
 
   if (strcmp ("fglbyte", s) == 0)
     return 11;
@@ -1268,7 +1266,7 @@ find_type (char *s)
   if (strcmp ("varchar", s) == 0)
     return 13;
 
-  if (strcmp ("struct_ival ", s) == 0)
+  if (strcmp ("struct_ival", s) == 0)
     return 14;
 
   if (strcmp ("_RECORD", s) == 0)
@@ -1277,8 +1275,8 @@ find_type (char *s)
   if (strcmp ("form", s) == 0)
     return 9;
 
-  debug ("Invalid type : %s\n", s);
-  sprintf (errbuff, "Internal Error (Invalid type : %s)\n", s);
+  debug ("Invalid type : '%s'\n", s);
+  sprintf (errbuff, "Internal Error (Invalid type : '%s')\n", s);
   yyerror (errbuff);
   return 0;
 }
@@ -2105,6 +2103,8 @@ static char * rettype_integer (int n)
 
   //static char rs[20] = "long";
   //int a;
+
+debug("rettype_integer : %d\n",n);
 
   sprintf(s,"%d",n);
   return rettype(s);

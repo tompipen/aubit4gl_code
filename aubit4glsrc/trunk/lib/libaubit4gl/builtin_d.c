@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.13 2003-01-09 09:13:45 psterry Exp $
+# $Id: builtin_d.c,v 1.14 2003-01-29 14:35:05 mikeaubury Exp $
 #
 */
 
@@ -764,16 +764,22 @@ push_variable(void *ptr,int dtype)
    {
                 void *(*function) (void *);
                 void *nptr;
+		debug("HAS COPY FUNCTION...");
                 function=get_datatype_function_i(dtype,"COPY");
                 nptr=function(ptr);
                 push_param (nptr, dtype+DTYPE_MALLOCED);
                 return;
    }
 
+	debug("DOING SWITCH");
 	switch (dtype&DTYPE_MASK)
 	{
 		case 0: push_chars(ptr,dtype,DECODE_SIZE(dtype));return;break;
-		case 1: push_int(*(int *)ptr);return;break;
+		case 1: 
+				debug("SMALLINT= %d\n",*(short *)ptr);
+				push_int(*(int *)ptr);
+				return;
+				break;
 		case 2:
 		debug("LONG");
 		push_long(*(long *)ptr);return;break;

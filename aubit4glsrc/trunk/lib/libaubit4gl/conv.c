@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.21 2003-01-12 13:47:38 mikeaubury Exp $
+# $Id: conv.c,v 1.22 2003-01-29 14:35:06 mikeaubury Exp $
 #
 */
 
@@ -273,8 +273,7 @@ void (*setdtype[MAX_DTYPE]) (void *ptr1) =
 int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
 {
   {
-    ctoc, stoi, stol, stof, stosf, stodec, stol, stod, stof, NO, ctodt, NO,
-      NO, OK, ctoint},
+    ctoc, stoi, stol, stof, stosf, stodec, stol, stod, stof, NO, ctodt, NO, NO, OK, ctoint},
   {
     itoc, itoi, itol, itof, itosf, itodec, itol, itod, itomdec, NO, NO, NO,
       NO, itovc, NO},
@@ -720,16 +719,16 @@ btob (void *a, void *b, int size)
 int
 stoi (void *aa, void *zi, int sz_ignore)
 {
-  int *z;
+  short *z;
   char *a;
   char *eptr;
   int zz;
-  z = (int *) zi;
+  z = (short *) zi;
   a = (char *) aa;
   trim (a);
   zz = strlen (a);
   errno = 0;
-  *z = strtol (a, &eptr, 10);
+  *z = (short)strtol (a, &eptr, 10);
   if (eptr - a < zz)
     return 0;
   if (errno != 0 || *eptr != 0 || eptr == a)
@@ -1043,10 +1042,10 @@ int
 mdectoi (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
-  int *a;
+  short *a;
   char *z;
   debug ("mdectoi");
-  a = (int *) aa;
+  a = (short *) aa;
   z = (char *) zz;
   strcpy (buff, dec_to_str (z, 0));
   return stoi (buff, a, 0);
@@ -1244,10 +1243,10 @@ int
 dectoi (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
-  int *a;
+  short *a;
   char *z;
   debug ("dectoi");
-  a = (int *) aa;
+  a = (short *) aa;
   z = (char *) zz;
   dectos (z, buff, 64);
   return stoi (buff, a, 0);
@@ -1390,9 +1389,9 @@ int
 dtoi (void *aa, void *zz, int sz_ignore)
 {
   int *a;
-  int *z;
+  short *z;
   a = (int *) aa;
-  z = (int *) zz;
+  z = (short *) zz;
   *z = *a;
   return 1;
 }
@@ -1489,14 +1488,18 @@ ftod (void *aa, void *zz, int sz_ignore)
  *   - 0 :  There was a conversion error
  *   - 1 :  Conversion done.
  */
-int stod( char *str, int *date, int sz_ignore )
+int stod( void *str_v, void *date_v, int sz_ignore )
 {
   static char dbdate[10] = "";    // holds current DBDATE value
   static int d_pos,m_pos,y_pos;   // relative positions of day/month/year
   char   num[3][10];              // date numbers extracted from string
   char   *p;
   int    n;
+  char *str; 
+  int *date;
 
+  str=(char *)str_v;
+  date=(int *)date_v;
   // set date format from (A4GL_)DBDATE, or use Informix default "mdy4".
   // we only need to do this once, the first time stod() is called.
   // note - for this conversion we need only the three letters DMY
@@ -1704,14 +1707,15 @@ itoc (void *aa, void *zz, int size)
 int
 itol (void *aa, void *zz, int sz_ignore)
 {
-  int *a;
+  short *a;
   long *z;
   z = (long *) zz;
-  a = (int *) aa;
+  a = (short *) aa;
 #ifdef DEBUG
   {    debug ("itol");  }
 #endif
   *z = (long) *a;
+
   return 1;
 }
 
@@ -1814,14 +1818,13 @@ int
 ltoi (void *aa, void *zz, int sz_ignore)
 {
   long *a;
-  int *z;
+  short *z;
   a = (long *) aa;
-  z = (int *) zz;
-
+  z = (short *) zz;
 #ifdef DEBUG
   {    debug ("Ltoi");  }
 #endif
-  *z = (int) *a;
+  *z = (short) *a;
   return 1;
 }
 
@@ -1919,10 +1922,10 @@ int
 ftoi (void *aa, void *zz, int c)
 {
   double *a;
-  int *z;
-  z = (int *) zz;
+  short *z;
+  z = (short *) zz;
   a = (double *) aa;
-  *z = (int) *a;
+  *z = (short) *a;
   return 1;
 }
 
@@ -2023,10 +2026,10 @@ int
 sftoi (void *aa, void *zz, int c)
 {
   float *a;
-  int *z;
-  z = (int *) zz;
+  short *z;
+  z = (short *) zz;
   a = (float *) aa;
-  *z = (int) *a;
+  *z = (short) *a;
   return 1;
 }
 
@@ -2185,10 +2188,10 @@ ltol (void *aa, void *bb, int sz_ignore)
 int
 itoi (void *aa, void *bb, int sz_ignore)
 {
-  int *a;
-  int *b;
-  a = (int *) aa;
-  b = (int *) bb;
+  short *a;
+  short *b;
+  a = (short *) aa;
+  b = (short *) bb;
   *b = *a;
   return 1;
 }
@@ -2332,6 +2335,7 @@ conv (int dtype1, void *p1, int dtype2, void *p2, int size)
 
 {
   debug ("conv (%ld %ld)", *(long *) p1, *(long *) p2); 
+  debug ("conv (%x %x)", *(short *) p1, *(short *) p2); 
 
   debug("Convmatrix %d %d",dtype1&DTYPE_MASK,dtype2&DTYPE_MASK);
 }
