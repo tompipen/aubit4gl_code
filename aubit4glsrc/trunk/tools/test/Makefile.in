@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.in,v 1.1 2001-12-10 20:04:53 saferreira Exp $
+# $Id: Makefile.in,v 1.2 2001-12-13 02:53:24 afalout Exp $
 #
 
 ## ==================================================================
@@ -32,8 +32,11 @@ endif
 
 
 ifeq "$(PDFBUILD)" "yes"
-	4GLPCFLAGS+= -lpdf
-    4GLPCTESTFLAGS= -lpdf
+	4GLPCFLAGS		+=-lpdf
+    4GLPCTESTFLAGS	=-lpdf
+else
+	4GLPCFLAGS		+=-nopdf
+    4GLPCTESTFLAGS	=-nopdf
 endif
 
 ifeq "$(ODBC)" "no"
