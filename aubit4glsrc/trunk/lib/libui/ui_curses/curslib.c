@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.84 2004-01-27 21:05:58 mikeaubury Exp $
+# $Id: curslib.c,v 1.85 2004-01-31 13:13:53 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.84 2004-01-27 21:05:58 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.85 2004-01-31 13:13:53 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -1216,6 +1216,11 @@ A4GL_init_curses_stuff ()
   A4GL_debug ("Initializing curses environment");
 #endif
   initscr ();
+
+
+  if (A4GL_isyes(acl_getenv("NO_ALT_SCR"))) {
+ 	try_to_stop_alternate_view();
+  }
 
   if (has_colors () == FALSE);
   else
@@ -3110,6 +3115,41 @@ int x;
 	return x;
 }
 
+
+#ifdef NCURSES_VERSION
+#include <term.h>
+#define isprivate(s) ((s) != 0 && strstr(s, "\033[?") != 0)
+#endif
+
+void try_to_stop_alternate_view() {
+#ifdef NCURSES_VERSION
+    /*
+     * Cancel xterm's alternate-screen mode.
+     */
+	if ( isprivate(enter_ca_mode) && isprivate(exit_ca_mode)) {
+        /*
+         * initscr() or newterm() already did putp(enter_ca_mode) as a side
+         * effect of initializing the screen.  It would be nice to not even
+         * do that, but we do not really have access to the correct copy of
+         * the terminfo description until those functions have been invoked.
+         */
+        (void) putp(exit_ca_mode);
+        (void) putp(clear_screen);
+        /*
+         * Prevent ncurses from switching "back" to the normal screen when
+         * exiting from dialog.  That would move the cursor to the original
+         * location saved in xterm.  Normally curses sets the cursor position
+         * to the first line after the display, but the alternate screen
+         * switching is done after that point.
+         *
+         * Cancelling the strings altogether also works around the buggy
+         * implementation of alternate-screen in rxvt, etc., which clear
+         * more of the display than they should.
+         */
+        enter_ca_mode = 0;
+        exit_ca_mode = 0;
+    }
+#endif
+}
+
 /* ============================== EOF ============================== */
-
-
