@@ -401,9 +401,8 @@ LOGFILE=/tmp/testdb.log
 # @param dir The name of the test.
 ##
 new_test() {
-dir=$1
-nothing_done="1"
-  echo "DIR $dir"
+  dir=$1
+  nothing_done="1"
   if ! test -d $dir; then
     mkdir $dir
     cp template/prog.4gl template/.cvsignore $dir

@@ -114,7 +114,6 @@ MAIN
 	   aNVarchar NVARCHAR(20),
 	   aVarcharWithRes VARCHAR(20,10),
 	   aNVarcharWithRes NVARCHAR(20,10)
-
 	END RECORD
 
   WHENEVER ERROR CONTINUE
