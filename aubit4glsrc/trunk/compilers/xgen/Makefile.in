@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.2 2002-07-21 09:56:42 afalout Exp $
+# $Id: Makefile.in,v 1.1 2002-07-21 09:56:42 afalout Exp $
 #
 
 ROOT        =../..
@@ -37,39 +37,11 @@ include ${ROOT}/incl/Makefile-common
 ##                    		Settings
 ## ==================================================================
 
-#we don't want -Wall in CFLAGS when compiling rpcgen generated code because it would
-#give us bunch of warnings about unused varibles, that we cannot fix:
-CFLAGS_RPCGEN	=$(CFLAGS:%-Wall=%)
-SHARED			=-shared
+CMODS		=y.tab.c main.c
+OBJS		=${CMODS:.c=.o}
 
-RPC		=libXDRPACKER_struct_form${SO_EXT} libXDRPACKER_menu_list${SO_EXT} libXDRPACKER_report${SO_EXT}
-XGEN	=libDATA_struct_form${SO_EXT} libDATA_menu_list${SO_EXT} libDATA_report${SO_EXT}
-ANY		=pack_any${SO_EXT}
-
-ALL 	=${XGEN} ${ANY}
-
-#we don't need rpclib to do any of this, do we?
-#ifdef COMSPEC
-#	ifneq "@HAVE_RPCLIB@" "0"
-#		ALL			+=xxxtodoxxx
-#    endif
-#else
-#	ifneq "@HAVE_RPCLIB@" "0"
-#		ALL			+=${RPC}
-#    endif
-#endif
-
-#...but we do need rpcgen:
-ifeq "${USE_RPCGEN}" "0"
-	#FIXME: update this:
-	RPCGEN      =${CP} ${ROOT}/tools/cygwin/form_x_xdr.c ${ROOT}/tools/cygwin/form_x.h .
-	#ALL			+=${RPC}
-else
-	RPCGEN 		=@RPCGEN@
-	ALL			+=${RPC}
-endif
-
-XGENEXE    		=${ROOT}/compilers/xgen/xgen
+ALL			=xgen
+#use_xgen
 
 ## ==================================================================
 ##                          Targets
@@ -78,69 +50,30 @@ XGENEXE    		=${ROOT}/compilers/xgen/xgen
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-libDATA_struct_form${SO_EXT}: 		form_x.xo.c
-	${CC} $(CFLAGS) ${SHARED} -o $@ $^ form_x.xi.c form_x.xio.c
-	${CP} $@ ${LIBROOT}
+xgen: ${OBJS}
+	${CC} ${EXE_CFLAGS} $^ -o $@
+	${CP} $@ ${ROOT}/bin
 
-libDATA_menu_list${SO_EXT}: 		menu_x.xo.c
-	${CC} $(CFLAGS) ${SHARED} -o $@ $^ menu_x.xi.c menu_x.xio.c
-	${CP} $@ ${LIBROOT}
+y.tab.c: x.yacc lex.yy.c 
+#${ROOT}/common/dataio/form_x.x.h
+	${YACC} x.yacc
 
-libDATA_report${SO_EXT}: 			report.xo.c
-	${CC} $(CFLAGS) ${SHARED} -o $@ $^ report.xi.c report.xio.c
-	${CP} $@ ${LIBROOT}
+lex.yy.c: x.lex
+	${LEX} $^
 
-libXDRPACKER_struct_form${SO_EXT}:	form_x_xdr.c
-	${CC} $(CFLAGS_RPCGEN) ${SHARED} -o $@ $^
-	${CP} $@ ${LIBROOT}
+#use_xgen:
+#	(cd ../../common/dataio; make)
 
-libXDRPACKER_menu_list${SO_EXT}: 	menu_x_xdr.c
-	${CC} $(CFLAGS_RPCGEN) ${SHARED} -o $@ $^
-	${CP} $@ ${LIBROOT}
+#${ROOT}/common/dataio/form_x.x.h:
+#	${MAKE} -C ${ROOT}/common/dataio form_x.xo.c
 
-libXDRPACKER_report${SO_EXT}:  		report_xdr.c
-	${CC} $(CFLAGS_RPCGEN) ${SHARED} -o $@ $^
-	${CP} $@ ${LIBROOT}
-
-#FIXME: needs renaming, or is it obsolete?
-pack_any${SO_EXT}:
-	${CC} $(CFLAGS) ${SHARED} -o $@ menu_x.xio.c form_x.xio.c report.xio.c
-#no copy to lib here?
-
-## ==================================================================
-##                          Sub-targets
-## ==================================================================
-
-form_x_xdr.c: form_x.x
-	${RPCGEN} $^
-
-menu_x_xdr.c: menu_x.x
-	${RPCGEN} $^
-
-report_xdr.c: report.x
-	${RPCGEN} $^
-
-#"xgen form_x.x" will create:
-#form_x.x.h   form_x.xio.c  form_x.xs.h form_x.xi.c  form_x.xo.c
-
-form_x.xo.c: form_x.x
-	${XGENEXE} $^ struct_form
-
-menu_x.xo.c: menu_x.x
-	${XGENEXE} $^ menu_list
-
-report.xo.c: report.x
-	${XGENEXE} $^ report
-
-${XGENEXE}:
-	${MAKE} -C ${ROOT}/compilers/xgen
 
 ## ==================================================================
 ##                          Clean
 ## ==================================================================
 
 clean:
-	${RM} *.c *${SO_EXT} *.h *.bak
+	${RM} lex.yy.c  *.o  xgen  y.tab.c *.bak
 
 ## ==================================================================
 ##                         Other Targets
@@ -152,5 +85,5 @@ lclint: $(CMODS)
 	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
 	@echo "see ${LCLINTLOG} for results"
 
-#=============================== EOF ================================
 
+# ============================= EOF ==================================

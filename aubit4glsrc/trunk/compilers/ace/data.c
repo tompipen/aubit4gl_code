@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.5 2002-07-21 06:41:48 afalout Exp $
+# $Id: data.c,v 1.6 2002-07-21 09:56:42 afalout Exp $
 #*/
 
 /**
@@ -89,15 +89,11 @@ char * add_zero_rows_where (struct select_stmts *ptr);
 int find_sql_var (int colno);
 void add_fmt (int cat, char *col, struct commands commands);
 
-
-
-
 /*
 =====================================================================
                     Functions definitions
 =====================================================================
 */
-
 
 /**
  *

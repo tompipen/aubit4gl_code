@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.19 2002-07-21 06:41:49 afalout Exp $
+# $Id: esql.ec,v 1.20 2002-07-21 09:56:42 afalout Exp $
 #
 */
 
@@ -155,7 +155,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.19 2002-07-21 06:41:49 afalout Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.20 2002-07-21 09:56:42 afalout Exp $";
 #endif
 
 #ifdef WIN32
@@ -2387,7 +2387,7 @@ A4GLSQL_next_column(char **colname, int *dtype,int *size)
     return 0;
   *dtype = dataType;
   *size = length;
-  strcpy(colname,columnName); /* warning: passing arg 1 of `strcpy' from incompatible pointer type */
+  strcpy((char *)colname,columnName);
   getColumnsOrder++;
   return 1;
 }

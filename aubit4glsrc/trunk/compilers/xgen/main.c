@@ -1,4 +1,62 @@
-#include <stdio.h>
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: main.c,v 1.2 2002-07-21 09:56:42 afalout Exp $
+#*/
+
+/**
+ * @file
+ *
+ *
+ *
+ *
+ * @todo Doxygen comments to add to functions
+ */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#ifdef OLD_INCL
+	#include <stdio.h>
+#else
+    /* FIXME: this should be a4gl_xgen_int.h */
+	#define _NO_FORM_X_H_
+	#include "a4gl_libaubit4gl.h"
+#endif
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+
 extern int lineno;
 extern int colno;
 extern int yydebug;
@@ -18,7 +76,32 @@ extern FILE *hf;
 extern FILE *hsf;
 char export_name[128];
 
-static bname (char *str, char *str1, char *str2)
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+void write_genout(void);
+int yywrap(void);
+void yyerror (char *s);
+
+extern int 	yyparse			(void); /* in y.tab.c */
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+/**
+ *
+ * @todo Describe function
+ */
+/* static */
+void
+bname (char *str, char *str1, char *str2)
 {
   char fn[132];
   int a;
@@ -42,31 +125,35 @@ static bname (char *str, char *str1, char *str2)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 yyerror (char *s)
 {
-  char errfile[256];
-  FILE *f;
-  long ld;
 
   printf ("Error compiling %s.x (xline=%d yline=%d)\n",
 	  outputfile, lineno, lineno);
   exit (2);
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+int
 main (int argc, char *argv[])
 {
-  char a[128];
-  char b[128];
-  char c[128];
-  char d[128];
+char a[128];
+char b[128];
+char c[128];
+char d[128];
 int rval;
-//  FILE *fopn;
 
+  /* load settings from config file(s): */
 
-  //load settings from config file(s):
-
-yydebug=0;
+  yydebug=0;
   strcpy (d, "");
 
   if (argc > 1)
@@ -153,72 +240,89 @@ yydebug=0;
   fclose(hf);
   fclose(hsf);
 
+
+return 0;
 }
 
 
 
 
-yywrap() {
+/**
+ *
+ * @todo Describe function
+ */
+int
+yywrap(void)
+{
 	return 1;
 }
 
 
-write_genout() {
-fprintf(cfi,"#include \"%s\"\n",hfile);
-fprintf(cfio,"#include \"%s\"\n",hfile);
-fprintf(cfo,"#include \"%s\"\n",hfile);
+/**
+ *
+ * @todo Describe function
+ */
+void
+write_genout(void)
+{
+	fprintf(cfi,"#include \"%s\"\n",hfile);
+	fprintf(cfio,"#include \"%s\"\n",hfile);
+	fprintf(cfo,"#include \"%s\"\n",hfile);
 
 
-fprintf(cfio,"\n\nint write_%s(%s *s,char *filename) {\nint a;\n",export_name,export_name);
-fprintf(cfio,"%s s_s;\n",export_name);
-fprintf(cfio,"memcpy(&s_s,s,sizeof(s_s));\n");
-fprintf(cfio,"if (!open_packer(filename,'O')) return 0;\n");
-fprintf(cfio,"if (can_pack_all(\"%s\"))\n   a=pack_all(\"%s\",s,filename);\n else\n   a=output_%s(\"%s\",s_s,0,-1);\n",export_name,export_name,export_name,export_name);
-fprintf(cfio,"close_packer('O');\n");
-fprintf(cfio,"return a;\n");
-fprintf(cfio,"}\n");
-fprintf(cfio," \n");
+	fprintf(cfio,"\n\nint write_%s(%s *s,char *filename) {\nint a;\n",export_name,export_name);
+	fprintf(cfio,"%s s_s;\n",export_name);
+	fprintf(cfio,"memcpy(&s_s,s,sizeof(s_s));\n");
+	fprintf(cfio,"if (!open_packer(filename,'O')) return 0;\n");
+	fprintf(cfio,"if (can_pack_all(\"%s\"))\n   a=pack_all(\"%s\",s,filename);\n else\n   a=output_%s(\"%s\",s_s,0,-1);\n",export_name,export_name,export_name,export_name);
+	fprintf(cfio,"close_packer('O');\n");
+	fprintf(cfio,"return a;\n");
+	fprintf(cfio,"}\n");
+	fprintf(cfio," \n");
 
-fprintf(cfio,"\n\nint read_%s(%s *s,char *filename) {\nint a;\n",export_name,export_name);
-fprintf(cfio,"if (!open_packer(filename,'I')) return 0;\n");
-fprintf(cfio,"if (can_pack_all(\"%s\"))\n   a=unpack_all(\"%s\",s,filename);\n else\n   a=input_%s(\"%s\",s,0,-1);\n",export_name,export_name,export_name,export_name);
-fprintf(cfio,"close_packer('I');\n");
-fprintf(cfio,"return a;\n");
-fprintf(cfio,"}\n");
-fprintf(cfio," \n");
+	fprintf(cfio,"\n\nint read_%s(%s *s,char *filename) {\nint a;\n",export_name,export_name);
+	fprintf(cfio,"if (!open_packer(filename,'I')) return 0;\n");
+	fprintf(cfio,"if (can_pack_all(\"%s\"))\n   a=unpack_all(\"%s\",s,filename);\n else\n   a=input_%s(\"%s\",s,0,-1);\n",export_name,export_name,export_name,export_name);
+	fprintf(cfio,"close_packer('I');\n");
+	fprintf(cfio,"return a;\n");
+	fprintf(cfio,"}\n");
+	fprintf(cfio," \n");
 
-fprintf(hf,"#ifndef X_%s_X_H\n",outputfilename);
-fprintf(hf,"#define X_%s_X_H\n",outputfilename);
+	fprintf(hf,"#ifndef X_%s_X_H\n",outputfilename);
+	fprintf(hf,"#define X_%s_X_H\n",outputfilename);
 
-fprintf(hsf,"#ifndef XS_%s_XS_H\n",outputfilename);
-fprintf(hsf,"#define XS_%s_XS_H\n",outputfilename);
-fprintf(hsf,"#define bool int\n",outputfilename);
-fprintf(hsf,"#define istypedefed \n",outputfilename);
-fprintf(hsf,"#include <stdio.h>\n",outputfilename);
-fprintf(hsf,"#include <stdlib.h>\n",outputfilename);
+	fprintf(hsf,"#ifndef XS_%s_XS_H\n",outputfilename);
+	fprintf(hsf,"#define XS_%s_XS_H\n",outputfilename);
+	fprintf(hsf,"#define bool int\n"); //,outputfilename);
+	fprintf(hsf,"#define istypedefed \n"); //,outputfilename);
+	fprintf(hsf,"#include <stdio.h>\n"); //,outputfilename);
+	fprintf(hsf,"#include <stdlib.h>\n"); //,outputfilename);
 
-fprintf(hf,"#include \"%s\"\n",hsfile);
-//fprintf(hf,"int output_int (char *name, int val, int ptr, int isarr);\n");
-//fprintf(hf,"int output_long (char *name, long val, int ptr, int isarr);\n");
-//fprintf(hf,"int output_bool (char *name, int val, int ptr, int isarr);\n");
-//fprintf(hf,"int output_string (char *name, char *val, int ptr, int isarr);\n");
-//fprintf(hf,"int output_double (char *name, double val, int ptr, int isarr);\n");
-//fprintf(hf,"int output_start_struct (char *s, char *n, int ptr, int isarr);\n");
-//fprintf(hf,"int output_end_struct (char *s, char *n);\n");
-//fprintf(hf,"int output_start_union (char *s, char *n, int ptr, int isarr);\n");
-//fprintf(hf,"int output_nullptr (char *s);\n");
-//fprintf(hf,"int output_okptr (char *s);\n");
-//fprintf(hf,"int output_end_union (char *s, char *n);\n");
-//fprintf(hf,"int output_enum (char *name, char *s, int d);\n");
-//fprintf(hf,"int input_int (char *name, int *val, int ptr, int isarr);\n");
-//fprintf(hf,"int input_long (char *name, long *val, int ptr, int isarr);\n");
-//fprintf(hf,"int input_bool (char *name, int *val, int ptr, int isarr);\n");
-//fprintf(hf,"int input_string (char *name, char **val, int ptr, int isarr);\n");
-//fprintf(hf,"int input_double (char *name, double *val, int ptr, int isarr);\n");
-//fprintf(hf,"int input_start_struct (char *s, char *n, int ptr, int isarr);\n");
-//fprintf(hf,"int input_end_struct (char *s, char *n);\n");
-//fprintf(hf,"int input_start_union (char *s, char *n, int ptr, int isarr);\n");
-//fprintf(hf,"int input_ptr_ok (void );\n");
-//fprintf(hf,"int input_end_union (char *s, char *n);\n");
-//fprintf(hf,"int input_enum (char *name, int *d);\n");
+	fprintf(hf,"#include \"%s\"\n",hsfile);
+	//fprintf(hf,"int output_int (char *name, int val, int ptr, int isarr);\n");
+	//fprintf(hf,"int output_long (char *name, long val, int ptr, int isarr);\n");
+	//fprintf(hf,"int output_bool (char *name, int val, int ptr, int isarr);\n");
+	//fprintf(hf,"int output_string (char *name, char *val, int ptr, int isarr);\n");
+	//fprintf(hf,"int output_double (char *name, double val, int ptr, int isarr);\n");
+	//fprintf(hf,"int output_start_struct (char *s, char *n, int ptr, int isarr);\n");
+	//fprintf(hf,"int output_end_struct (char *s, char *n);\n");
+	//fprintf(hf,"int output_start_union (char *s, char *n, int ptr, int isarr);\n");
+	//fprintf(hf,"int output_nullptr (char *s);\n");
+	//fprintf(hf,"int output_okptr (char *s);\n");
+	//fprintf(hf,"int output_end_union (char *s, char *n);\n");
+	//fprintf(hf,"int output_enum (char *name, char *s, int d);\n");
+	//fprintf(hf,"int input_int (char *name, int *val, int ptr, int isarr);\n");
+	//fprintf(hf,"int input_long (char *name, long *val, int ptr, int isarr);\n");
+	//fprintf(hf,"int input_bool (char *name, int *val, int ptr, int isarr);\n");
+	//fprintf(hf,"int input_string (char *name, char **val, int ptr, int isarr);\n");
+	//fprintf(hf,"int input_double (char *name, double *val, int ptr, int isarr);\n");
+	//fprintf(hf,"int input_start_struct (char *s, char *n, int ptr, int isarr);\n");
+	//fprintf(hf,"int input_end_struct (char *s, char *n);\n");
+	//fprintf(hf,"int input_start_union (char *s, char *n, int ptr, int isarr);\n");
+	//fprintf(hf,"int input_ptr_ok (void );\n");
+	//fprintf(hf,"int input_end_union (char *s, char *n);\n");
+	//fprintf(hf,"int input_enum (char *name, int *d);\n");
 }
+
+
+/* ================================= EOF ============================= */

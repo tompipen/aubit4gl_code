@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.75 2002-07-14 08:09:39 afalout Exp $
+# $Id: Makefile.in,v 1.76 2002-07-21 09:56:29 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -313,6 +313,7 @@ log:
 
 corecompile:
 	$(MAKE) -C compilers/xgen
+	$(MAKE) -C common/dataio
 	$(MAKE) -C lib
 #	$(MAKE) -C lib/libtui
 #	$(MAKE) -C compilers/4glc/rules
@@ -522,7 +523,7 @@ clean.bin:
 	*.bak ide${EXE} fcompile-noodbc${EXE} 4glc-noodbc${EXE} \
 	4glp${EXE} mdecompile${EXE} fdecompile${EXE} fdecompile-j${EXE} \
 	aubit-config${EXE} fshow${EXE}  odbctest-*${EXE} \
-	aace adecompile \
+	aace adecompile xgen \
 	)
 
 clean.etc:

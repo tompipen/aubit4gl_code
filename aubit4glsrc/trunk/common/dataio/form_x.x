@@ -24,12 +24,15 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.1 2002-07-11 09:25:22 mikeaubury Exp $
+# $Id: form_x.x,v 1.2 2002-07-21 09:56:42 afalout Exp $
 #*/
 
 /**
  * @file
- * this file is processed by SUN rpcgen to create form_x_xdr.c and form_x.h
+ * this file is processed by:
+ *    SUN rpcgen to create form_x_xdr.c and form_x.h
+ *  or
+ *    xgen to create
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen

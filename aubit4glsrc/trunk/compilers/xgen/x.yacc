@@ -1,7 +1,15 @@
 %{
+
 #define _BISON_SIMPLE_INCL_
+/*
 #include <stdio.h>
 #include <string.h>
+*/
+
+/* FIXME: this should be a4gl_xgen_int.h */
+#define _NO_FORM_X_H_
+#include "a4gl_libaubit4gl.h"
+
 #define YYDEBUG 1
 int lineno=0;
 int colno=0;
@@ -25,9 +33,14 @@ struct mode {
 char cu[20][256]={"",""};
 int cu_cnt=0;
 
+extern void yyerror (char *s); /* in main.c */
+int 	yylex 			(void);
+int buffpos(void);
+
 void print_elem_out(char *type,char *s,struct mode m);
 void print_elem_in(char *type,char *s,struct mode m);
 void print_elem_sh(char *type,char *s,struct mode m);
+void print_elem(char *type,char *s,struct mode m);
 
 void print_elem(char *type,char *s,struct mode m) {
 	print_elem_out(type,s,m);
@@ -160,10 +173,10 @@ sprintf(buff,"%s%s /* cu_cnt=%d */",cu[cu_cnt],m.name,cu_cnt);
 	}
 
 	if (m.type==3) {
-		if (m.pointer==0) fprintf(cfo,"   if (!output_%s(\"%s\",r,0,-1)) return 0;\n",s,m.name,buff); 
+		if (m.pointer==0) fprintf(cfo,"   if (!output_%s(\"%s\",r,0,-1)) return 0;\n",s,m.name); /* ,buff); */
 		if (m.pointer==1) {
-			fprintf(cfo,"   if (r) {output_okptr(\"\");if (!output_%s(\"%s\",*r,1,-1)) return 0;}\n",buff,s,m.name,buff); 
-			fprintf(cfo,"   else      {if (!output_nullptr(\"%s\")) return 0;}\n",m.name); 
+			fprintf(cfo,"   if (r) {output_okptr(\"\");if (!output_%s(\"%s\",*r,1,-1)) return 0;}\n",buff,s); /* ,m.name,buff); */
+			fprintf(cfo,"   else      {if (!output_nullptr(\"%s\")) return 0;}\n",m.name);
 		}
 		return;
 	}
@@ -436,7 +449,7 @@ struct: STRUCT NAMED {
 	fprintf(hf,"int input_%s(char *rn,%s *r,int isptr,int arr);\n",$<str>2,$<str>2);
 	fprintf(cfi,"int input_%s(char *rn,%s *r,int isptr,int arr) {\n",$<str>2,$<str>2);
 	fprintf(cfi,"char *name=\"%s\";\n",$<str>2);
-	fprintf(cfi,"if (isptr==1&&r==0) return 1; /* Its just a null pointer */\n",$<str>2);
+	fprintf(cfi,"if (isptr==1&&r==0) return 1; /* Its just a null pointer */\n"); /* ,$<str>2); */
 
 	fprintf(cfi,"if (!input_start_struct(\"%s\",rn,isptr,arr)) return 0;\n",$<str>2);
 
@@ -544,7 +557,7 @@ union: UNION NAMED SWITCH OPEN_BRACKET  {
 	fprintf(hf,"int input_%s(char *rn,%s *r,int isptr,int arr);\n",$<str>2,$<str>2);
 	fprintf(cfi,"int input_%s(char *rn,%s *r,int isptr,int arr) {\n",$<str>2,$<str>2);
 	fprintf(cfi,"char *name=\"%s\";\n",$<str>2);
-	fprintf(cfi,"if (isptr==1&&r==0) return 1; /* Its just a null pointer */\n",$<str>2);
+	fprintf(cfi,"if (isptr==1&&r==0) return 1; /* Its just a null pointer */\n"); /* ,$<str>2); */
 	fprintf(cfi,"if (!input_start_union(\"%s\",rn,isptr,arr)) return 0;\n",$<str>2);
 
 	fprintf(hsf,"struct %s {\n",$<str>2);

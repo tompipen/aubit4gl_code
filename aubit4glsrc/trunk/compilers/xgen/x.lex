@@ -1,7 +1,7 @@
 /*
-	lex.yy.c was made from screen.lex using lex program
+	lex.yy.c was made from x.lex using lex program
     it is then included in y.tab.c that was generated from
-	screen.yacc using yacc
+	x.yacc using yacc
 
 */
 
@@ -74,7 +74,7 @@ return(NAMED);}
  *
  * @return The position
  */
-int buffpos(void) 
+int buffpos(void)
 {
   struct yy_buffer_state *y;
   y=YY_CURRENT_BUFFER;
