@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.67 2002-04-03 13:14:22 mikeaubury Exp $
+# $Id: 4glpc,v 1.68 2002-04-03 18:19:08 mikeaubury Exp $
 #
 
 ########################################################################
@@ -1129,7 +1129,19 @@ then
 else
 	FGLLIBS_COMMON="-L/lib/w32api -L/usr/local/lib" #$RPCLIB_NAME
 fi
-FGLLIBS_COMMON="$FGLLIBS_COMMON -lm  -lRPC_$A4GL_RPCTYPE"
+
+
+## This is a quick hack
+# RPC type and XDR are not really related...
+#
+if [ "$A4GL_RPCTYPE" != "NORPC" ]
+then
+	A4GL_XDRTYPE=XDR
+else
+	A4GL_XDRTYPE=NORPC
+fi
+
+FGLLIBS_COMMON="$FGLLIBS_COMMON -lm  -lRPC_$A4GL_XDRTYPE"
 FGLLIBS_STATIC="$FGLLIBS_COMMON -laclall"
 FGLLIBS_SHARED="$FGLLIBS_COMMON -laclshared"
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.2 2002-03-28 01:31:08 afalout Exp $
+# $Id: Makefile.in,v 1.3 2002-04-03 18:19:08 mikeaubury Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -37,11 +37,13 @@ override NOINCL=0
 
 CMODS_NORPC		=rpc_norpc.c
 CMODS_RPC		=rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c \
-				rpc_stack_xdr.c ../../../compilers/fcompile/form_x_xdr.c
+				rpc_stack_xdr.c 
+CMODS_XDR		= ../../../compilers/fcompile/form_x_xdr.c
 
 #CMODSNOSQL 			=${COMMONSRC}
 #CMODS_ODBC			=${CMODS_ODBCSQL} ${CMODS_ODBCEX}
 #OBJS_NOSQL			=${CMODS_NOSQL:.c=.o}
+OBJS_XDR			=${CMODS_XDR:.c=.o}
 OBJS_RPC			=${CMODS_RPC:.c=.o}
 OBJS_NORPC			=${CMODS_NORPC:.c=.o}
 #CMODS 				=${CMODSNOSQL} ${CMODS_DLSQL}
@@ -59,7 +61,7 @@ ifdef COMSPEC
 else
     ALL				+=libRPC_NORPC${SO_EXT}
 	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=libRPC_SUNRPC${SO_EXT}
+		ALL			+=libRPC_SUNRPC${SO_EXT} libRPC_XDR${SO_EXT}
     endif
 endif
 
@@ -77,6 +79,10 @@ all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
 libRPC_SUNRPC.so: ${OBJS_RPC}
+	${LD} ${SO_LDFLAGS} -o $@ $^
+	${CP} $@ ../..
+
+libRPC_XDR.so: ${OBJS_XDR}
 	${LD} ${SO_LDFLAGS} -o $@ $^
 	${CP} $@ ../..
 

@@ -170,7 +170,8 @@ sprintf($<str>$,"\"%s\"",$<str>1);
 remote_func_name : identifier 
 {
 sprintf($<str>$,"\"%s\"",$<str>1);
-}
+} 
+| identifier DOT identifier { sprintf($<str>$,"\"%s.%s\"",$<str>1,$<str>3); }
 ;
 
 

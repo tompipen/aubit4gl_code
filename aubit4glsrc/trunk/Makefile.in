@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.53 2002-04-03 13:14:17 mikeaubury Exp $
+# $Id: Makefile.in,v 1.54 2002-04-03 18:19:01 mikeaubury Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -67,6 +67,7 @@ TOLIBCUI	=$(SOURCE)/lib/libaclshared${SO_EXT} $(SOURCE)/lib/libEXREPORT_NOPDF${S
 			$(SOURCE)/lib/libRPC_NORPC${SO_EXT}
 
 ifneq "@HAVE_RPCLIB@" "0"
+	TOLIBCUI	+=$(SOURCE)/lib/libRPC_XDR${SO_EXT}
 	TOLIBCUI	+=$(SOURCE)/lib/libRPC_SUNRPC${SO_EXT}
 endif
 
@@ -89,6 +90,7 @@ endif
 
 ifneq "@HAVE_RPCLIB@" "0"
 	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libRPC_SUNRPC${SOEXP_EXT}
+	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libRPC_XDR${SOEXP_EXT}
 endif
 
 

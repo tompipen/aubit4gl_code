@@ -8,7 +8,7 @@ pause_screen_cmd : SETPMON  {
 
 start_rpc_cmd : START_EXTERN valid_port CLOSE_SQUARE FOR  remote_func_list
 	{
-		print_start_server(atoi($<str>2),$<str>5);
+		print_start_server($<str>2,$<str>5);
 	}
 ;
 

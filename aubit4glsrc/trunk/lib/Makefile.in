@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.43 2002-04-03 13:14:23 mikeaubury Exp $
+# $Id: Makefile.in,v 1.44 2002-04-03 18:19:08 mikeaubury Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -68,7 +68,7 @@ COMMONSRC= \
 	others.c \
 	pointers.c prompt.c \
 	read_dty.c readform.c readforms.c report.c rexp2.c ${CMODS_RESOURCE} \
-	screen.c sleep.c stack.c string.c extend_rep.c \
+	screen.c sleep.c rpc.c stack.c string.c extend_rep.c \
 	translate.c
 
 #SEPARATE_RPC=1
