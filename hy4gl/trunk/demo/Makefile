@@ -51,4 +51,4 @@ withdb: ${PROG.hye.db}
 	hy4gl $^ -o $@
 
 clean:
-	rm *.hye *.bak *.c
+	rm -f *.hye *.bak *.c

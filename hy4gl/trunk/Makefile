@@ -23,7 +23,7 @@
 # | contact David Prieto [davidp@sgth.es]                                |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.2 2001-10-25 03:29:09 afalout Exp $
+# $Id: Makefile,v 1.3 2001-10-25 04:20:26 afalout Exp $
 
 ## ==================================================================
 ##                              Settings
@@ -49,6 +49,8 @@ OBJ=hy4gl.o y.tab.o lex.yy.o asa.o genera.o genrpt.o genform.o
 ## ==================================================================
 
 all: hy4gl.e
+	@echo "Default build completed"
+
 
 log:
 	make > make.log 2>&1
@@ -57,7 +59,7 @@ log:
 .c.o:
 	gcc ${INCLPATH} -g -DVERSION='"$(VERSION)"' -Wall -c $<
 
-hy4gl.e:  ${OBJ}
+hy4gl.e: asa.h ${OBJ}
 	gcc -g -static -DVERSION='"$(VERSION)"' -o hy4gl.e  ${OBJ} -lfl -L. -L$(LIB_PGRES) -lpq -lcrypt
 	strip hy4gl.e
 	$(MAKE) install
@@ -78,17 +80,28 @@ asa.h:
 lib4gl:
 	$(MAKE) -C lib4gl
 
+test:
+	(cd demo; rm -f test_build.hye; hy4gl test_build.4gl -o test_build.hye; test_build.hye)
+
+
 ## ==================================================================
 ##                              Clean Targets
 ## ==================================================================
 
 clean:
 	rm -f *.bak *.o lex.yy* y.tab* asa.c asa.h
+	rm -f *.output *.tmp *.log c.h hy4gl.e
 
-clean.all: clean clean.lib
+
+clean.all: clean clean.lib clean.demo
+	@echo "Hy4gl source tree is now clean"
 
 clean.lib:
 	cd lib4gl ; $(MAKE) clean
+
+clean.demo:
+	cd demo ; $(MAKE) clean
+
 
 ## ==================================================================
 ##              Install, release, distribution Targets
