@@ -618,7 +618,7 @@ AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | DYNAMIC KW_SIZE EQUAL NUMBER_VALUE { fld->dynamic=atoi($<str>4);
 A4GL_debug("fld->dynamic=%d",fld->dynamic); }
 | DYNAMIC  { fld->dynamic=-1; A4GL_debug("dynamic=-1"); }
-| SQLONLY  { printf("Warining %s is not implemented for 4GL\n",$<str>1); }
+| SQLONLY  { printf("Warning %s is not implemented for 4GL\n",$<str>1); }
 | NOENTRY { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
 | NOUPDATE { A4GL_add_bool_attr(fld,FA_B_NOUPDATE); }
 | PICTURE EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_PICTURE,$<str>3); }
@@ -1199,6 +1199,12 @@ single_expression:
 	|expression STAR expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
 	|expression PLUS expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
 	|expression MINUS expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+
+	|MINUS expression { 
+			void *x; x=create_int_expr(0); $<expr>$=create_expr_comp_expr(x,$<expr>2,"-"); }
+	|PLUS expression  {
+			void *x; x=create_int_expr(0); $<expr>$=create_expr_comp_expr(x,$<expr>2,"+"); }
+
 	|expression DIVIDE expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
 	| expression LIKE expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
 	| expression KWNOT LIKE expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>4,"NOTLIKE"); }
@@ -1221,6 +1227,7 @@ evalue : field_tag_name  { $<expr>$=create_field_expr($<str>1); }
 | NUMBER_VALUE  {$<expr>$=create_int_expr(atoi($<str>1)); }
 | CHAR_VALUE    {$<expr>$=create_char_expr($<str>1);}
 | XVAL        { $<expr>$=create_special_expr($<str>1); }
+| KW_NULL { $<expr>$=create_special_expr($<str>1);}
 ;
 
 evalue_list : evalue {

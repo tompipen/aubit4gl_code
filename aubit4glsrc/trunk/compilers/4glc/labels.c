@@ -54,7 +54,7 @@ void A4GL_chk_and_clr_labels() {
 		a4gl_yyerror("Label not defined");
 	}
 	if (labels[a].usage==0 && labels[a].defined) {
-	 	printf ("Warning: label '%s' has defined but is not used @ line %d\n", labels[a].label,yylineno);
+	 	printf ("Warning: label '%s' has been defined but is not used @ line %d\n", labels[a].label,yylineno);
 	}
 	}
 	

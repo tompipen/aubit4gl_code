@@ -436,7 +436,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		WHEN "-n"			let mv_namespace="" continue for
 
 		WHEN "--stack_trace"		let a=a+1 let mv_stacktrace=arg_val(a) continue for
-		WHEN "-s"			let a=a+1 let mv_stacktrace=arg_val(a) continue for
+		WHEN "-s"			let mv_stacktrace=1 continue for
 		WHEN "-s0"			let mv_stacktrace=0 continue for
 		WHEN "-s1"			let mv_stacktrace=1 continue for
 
@@ -471,6 +471,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 
 		WHEN "-K"			let mv_keep=0 continue for
 		WHEN "--clean"			let mv_keep=0 continue for
+		WHEN "-nokeep"			let mv_keep=0 continue for
 
 		WHEN "-d"			let a=a+1 let mv_db=arg_val(a) continue for
 		WHEN "--database"		let a=a+1 let mv_db=arg_val(a) continue for

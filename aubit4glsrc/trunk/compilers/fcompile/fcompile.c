@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.43 2005-03-09 15:14:29 mikeaubury Exp $
+# $Id: fcompile.c,v 1.44 2005-03-14 18:35:09 mikeaubury Exp $
 #*/
 
 /**
@@ -245,8 +245,7 @@ a4gl_form_yyerror (char *s)
   char errfile[256];
   FILE *f;
   long ld;
-
-  ld = buffpos ();
+  ld = ftell(yyin); //buffpos ();
   sprintf (errfile, "%s.err", outputfilename);
   f = A4GL_write_errfile (yyin, errfile, ld - 1, yylineno);
   fprintf (f, "| %s", s);

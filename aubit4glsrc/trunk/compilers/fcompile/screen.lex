@@ -103,6 +103,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "@" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ATSIGN;}
 ":" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COLON;}
 "!=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
+"<>" 		{if (ignorekw) REJECT;strcpy(yylval.str,"!="); return COMPARISON;}
 ">=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 "<=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 "<" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext);  return LESSTHAN;}
@@ -246,8 +247,8 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "add" 		{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ADD ;}
 "update" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_UPDATE ;}
 "query" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_QUERY ;}
-"on ending" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ON_ENDING ;}
-"on beginning" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ON_BEGINNING;}
+on[ 	]ending 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ON_ENDING ;}
+on[	 ]beginning 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ON_BEGINNING;}
 "call" 		{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_CALL;}
 "bell" 		{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_BELL ;}
 "abort" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ABORT ;}
@@ -286,6 +287,7 @@ if (graphics_mode) {
 }
 strcpy(yylval.str, yytext);
  A4GL_debug("NAMED : %s\n",yytext); 
+	A4GL_debug("NAMED : %s\n",yytext);
 return(NAMED);}
 
 .	{
