@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.6 2003-06-16 06:51:00 mikeaubury Exp $
+# $Id: attributes.c,v 1.7 2003-06-16 17:14:04 mikeaubury Exp $
 #*/
 
 /**
@@ -61,12 +61,13 @@ PROMPT
 */
 struct s_std_attr
 {
-  int color;
+  int colour;
 
   int reverse;
   int underline;
   int bold;
   int dim;
+  int blink;
   int invisible;
 
   int normal;
@@ -173,6 +174,19 @@ struct s_all_attributes
   u_all;
 };
 
+
+struct s_std_attr *A4GL_determine_attribute_as_std_attr(int cmd_type, struct s_std_attr *attrib_curr, struct s_std_attr *attrib_field);
+//void A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str);
+struct s_std_attr *A4GL_determine_attribute_internal( struct s_std_attr *attrib_curr, struct s_std_attr *attrib_field, struct s_std_attr *syscol, struct s_std_attr *options, struct s_std_attr *disp_form, struct s_std_attr *open_window) ;
+void A4GL_attr_int_to_std(int attr,struct s_std_attr *p) ;
+int A4GL_determine_attribute_as_int(int cmd_type, struct s_std_attr *attrib_curr, struct s_std_attr *attrib_field) ;
+
+int A4GL_get_curr_form_attr(void) ;
+int A4GL_get_curr_window_attr(void) ;
+
+
+int A4GL_get_curr_form_attr(void) { return 0;}
+int A4GL_get_curr_window_attr(void) { return 0;}
 
 /*
 =====================================================================
@@ -285,40 +299,64 @@ A4GL_get_attr_from_string (char *s)
 }
 
 
-struct s_std_attr *A4GL_determine_attribute(int cmd_type, struct s_std_attr *attrib_curr, struct s_std_attr *attrib_field) {
+/* 
+
+go through the hierarchy to determine what attribute we should be using...
+
+*/
+
+struct s_std_attr *A4GL_determine_attribute_as_std_attr(int cmd_type, struct s_std_attr *attrib_curr, struct s_std_attr *attrib_field) {
 struct s_std_attr  std_options;
 struct s_std_attr  std_disp_form;
 struct s_std_attr  std_open_window;
-struct s_std_attr  *ptr_std_options;
-struct s_std_attr  *ptr_std_disp_form;
-struct s_std_attr  *ptr_std_open_window;
+struct s_std_attr  *ptr_std_options=0;
+struct s_std_attr  *ptr_std_disp_form=0;
+struct s_std_attr  *ptr_std_open_window=0;
 
 int int_options=0;
 int int_disp_form=0;
 int int_open_window=0;
 
+
 switch(cmd_type) {
         case FGL_CMD_DISPLAY_CMD:  // DISPLAY / DISPLAY @
         case FGL_CMD_DISPLAY_FIELD_CMD:  // DISPLAY TO, DISPLAY BY NAME
         case FGL_CMD_DISPLAY_FORM:
-  		int_options	=A4GL_get_option_value('d',4608);
+  		int_options	=A4GL_get_option_value('d');
   		int_disp_form	=A4GL_get_curr_form_attr();
   		int_open_window	=A4GL_get_curr_window_attr();
+		break;
+
+        case FGL_CMD_INPUT:
+        case FGL_CMD_CONSTRUCT:
+  		int_options	=A4GL_get_option_value('i');
+  		int_disp_form	=A4GL_get_curr_form_attr();
+  		int_open_window	=A4GL_get_curr_window_attr();
+		break;
 }
 
-return 0;
+
+if (int_options)   { ptr_std_options=&std_options; A4GL_attr_int_to_std(int_options,ptr_std_options); }
+if (int_disp_form) { ptr_std_disp_form=&std_disp_form; A4GL_attr_int_to_std(int_disp_form,ptr_std_disp_form); }
+if (int_open_window) { ptr_std_open_window=&std_open_window; A4GL_attr_int_to_std(int_open_window,ptr_std_open_window); }
+
+return A4GL_determine_attribute_internal(
+		attrib_curr,
+		attrib_field,
+		0, // We don't do syscol yet...
+		ptr_std_options,
+		ptr_std_disp_form,
+		ptr_std_open_window);
+		
 
 }
 
 
-struct s_std_attr *A4GL_determine_attribute_internal(
-struct s_std_attr *attrib_curr,
-struct s_std_attr *attrib_field,
-struct s_std_attr *syscol,
-struct s_std_attr *options,
-struct s_std_attr *disp_form,
-struct s_std_attr *open_window
-) {
+
+
+
+struct s_std_attr *A4GL_determine_attribute_internal( struct s_std_attr *attrib_curr, struct s_std_attr *attrib_field, struct s_std_attr *syscol, struct s_std_attr *options, struct s_std_attr *disp_form, struct s_std_attr *open_window) {
+
 static struct s_std_attr rval;
 
 /*
@@ -346,15 +384,116 @@ if (options)      { memcpy(&rval,options,	sizeof(struct s_std_attr)); return &rv
 if (disp_form)    { memcpy(&rval,disp_form,	sizeof(struct s_std_attr)); return &rval; }
 if (open_window)  { memcpy(&rval,open_window,	sizeof(struct s_std_attr)); return &rval; }
 
-
+return 0;
 
 }
 
-A4GL_get_curr_form_attr() {
+
+void A4GL_attr_int_to_std(int attr,struct s_std_attr *p) {
+  int col_int;
+  col_int = (attr & 0xf00);
+
+  p->colour=col_int;
+  p->reverse=0;
+  p->underline=0;
+  p->bold=0;
+  p->dim=0;
+  p->invisible=0;
+  p->normal=0;
+
+  if (attr & AUBIT_ATTR_NORMAL) 	p->normal=1;
+  if (attr & AUBIT_ATTR_REVERSE) 	p->reverse=1;
+  if (attr & AUBIT_ATTR_UNDERLINE) 	p->underline=1;
+  if (attr & AUBIT_ATTR_BOLD) 		p->bold=1;
+  if (attr & AUBIT_ATTR_BLINK) 		p->blink=1;
+  if (attr & AUBIT_ATTR_DIM) 		p->dim=1;
 }
-A4GL_get_option_value() {
+
+
+
+
+
+int A4GL_determine_attribute_as_int(int cmd_type, struct s_std_attr *attrib_curr, struct s_std_attr *attrib_field) {
+struct s_std_attr *r;
+int attr;
+r=A4GL_determine_attribute_as_std_attr(cmd_type, attrib_curr, attrib_field);
+attr=0;
+attr=attr+r->colour;
+if (r->normal) attr+=AUBIT_ATTR_NORMAL;
+if (r->reverse) attr+=AUBIT_ATTR_REVERSE;
+if (r->underline) attr+=AUBIT_ATTR_UNDERLINE;
+if (r->bold) attr+=AUBIT_ATTR_BOLD;
+if (r->blink) attr+=AUBIT_ATTR_BLINK;
+if (r->dim) attr+=AUBIT_ATTR_DIM;
+
+return attr;
 }
-A4GL_get_curr_window_attr() {
+
+
+
+
+
+/* This is our main calling point ! */
+int A4GL_determine_attribute(int cmd_type, int attrib_curr_int, struct struct_scr_field *fprop) {
+struct s_std_attr *r;
+struct s_std_attr attrib_curr;
+struct s_std_attr attrib_field;
+struct s_std_attr *ptr_attrib_curr=0;
+struct s_std_attr *ptr_attrib_field=0;
+
+int attr;
+
+/* Decode our current attribute */
+
+if (attrib_curr_int) {
+	A4GL_attr_int_to_std(attrib_curr_int,&attrib_curr);
+	ptr_attrib_curr=&attrib_curr;
+}
+
+if (fprop) {
+
+  	attrib_field.colour=fprop->colour&0xff00;
+
+
+  	attrib_field.reverse=0;
+  	attrib_field.underline=0;
+  	attrib_field.bold=0;
+  	attrib_field.dim=0;
+  	attrib_field.normal=0;
+
+	A4GL_attr_int_to_std(fprop->colour,&attrib_field);
+
+	if (A4GL_has_bool_attribute(fprop,FA_B_REVERSE)) {
+		attrib_field.reverse=1;
+	}
+
+	if (A4GL_has_bool_attribute(fprop,FA_B_INVISIBLE)) {
+  		attrib_field.invisible=1;
+	}
+
+
+	if (attrib_field.colour==FA_C_WHITE)  {
+		ptr_attrib_field=0;
+	} else {
+		ptr_attrib_curr=&attrib_field;
+	}
+} else {
+	ptr_attrib_field=0;
+	
+}
+
+
+r=A4GL_determine_attribute_as_std_attr(cmd_type, ptr_attrib_curr, ptr_attrib_field);
+attr=0;
+attr=attr+r->colour;
+if (r->normal) attr+=AUBIT_ATTR_NORMAL;
+if (r->reverse) attr+=AUBIT_ATTR_REVERSE;
+if (r->underline) attr+=AUBIT_ATTR_UNDERLINE;
+if (r->bold) attr+=AUBIT_ATTR_BOLD;
+if (r->blink) attr+=AUBIT_ATTR_BLINK;
+if (r->dim) attr+=AUBIT_ATTR_DIM;
+
+return attr;
 }
 
 /* =============================== EOF ================================== */

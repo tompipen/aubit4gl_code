@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.16 2003-06-13 18:40:57 mikeaubury Exp $
+# $Id: ops.c,v 1.17 2003-06-16 17:14:04 mikeaubury Exp $
 #
 */
 
@@ -1022,13 +1022,36 @@ A4GL_display_decimal (void *ptr, int size, int size_c,
 		 struct struct_scr_field *field_details, int display_type)
 {
 static char s[256];
-A4GL_push_dec(ptr,1);
-A4GL_pop_char(s,size_c);
+
+  //if (size_c==-1) { return 0; }
+
+
   if (display_type == DISPLAY_TYPE_DISPLAY) {
+	A4GL_push_dec(ptr,1);
+	
+	if (size_c==-1) {
+		char *ptr;
+		ptr=A4GL_char_pop();
+		strcpy(s,ptr);
+		free(ptr);
+	}
+	else {
+		A4GL_pop_char(s,size_c);
+	}
 	return s;
   }
 
   if (display_type== DISPLAY_TYPE_DISPLAY_AT) {
+	A4GL_push_dec(ptr,1);
+	if (size_c==-1) {
+		char *ptr;
+		ptr=A4GL_char_pop();
+		strcpy(s,ptr);
+		free(ptr);
+	} else {
+		A4GL_pop_char(s,size_c);
+	}
+
   	A4GL_ltrim(s);
 	return s;
   }
@@ -1041,14 +1064,32 @@ A4GL_display_money (void *ptr, int size, int size_c,
 	       struct struct_scr_field *field_details, int display_type)
 {
 static char s[256];
-A4GL_push_dec(ptr,1);
-A4GL_pop_char(s,size_c);
+
 
   if (display_type == DISPLAY_TYPE_DISPLAY) {
+	A4GL_push_dec(ptr,1);
+	if (size_c==0) {
+	char *ptr;
+		ptr=A4GL_char_pop();
+		strcpy(s,ptr);
+		free(ptr);
+	} else {
+		A4GL_pop_char(s,size_c);
+	}
 	return s;
   }
 
   if (display_type== DISPLAY_TYPE_DISPLAY_AT) {
+	A4GL_push_dec(ptr,1);
+	if (size_c==-1) {
+		char *ptr;
+		ptr=A4GL_char_pop();
+		strcpy(s,ptr);
+		free(ptr);
+	} else {
+		A4GL_pop_char(s,size_c);
+	}
+
   	A4GL_ltrim(s);
 	return s;
   }

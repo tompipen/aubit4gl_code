@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.21 2003-06-16 09:26:57 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.22 2003-06-16 17:14:04 mikeaubury Exp $
 #
 */
 
@@ -687,5 +687,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
     }
   A4GL_debug ("using: result str=%s", str);
 }
+
+
 
 /* ============================== EOF ========================== */
