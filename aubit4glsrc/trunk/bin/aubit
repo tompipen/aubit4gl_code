@@ -3,10 +3,10 @@
 #This is Aubit 4gl compiler warper script
 
 AUBITDIR=`aubit-config AUBITDIR`
-export AUBITDIR
-
 PATH=$AUBITDIR/bin:$PATH
-export PATH
+LD_LIBRARY_PATH=$AUBITDIR/lib:$LD_LIBRARY_PATH
+
+export AUBITDIR PATH LD_LIBRARY_PATH
 
 if [ $# -lt 1 -o "$1" = "--help" ]
 then

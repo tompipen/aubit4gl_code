@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.11 2002-01-09 02:03:35 afalout Exp $
+# $Id: Makefile.in,v 1.12 2002-01-09 04:05:04 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -1586,7 +1586,7 @@ old.2.in:
 	${CP} tools/test/Makefile.old tools/test/Makefile.in
 	${CP} tools/test/gui/Makefile.old tools/test/gui/Makefile.in
 
-config.rc:
+settings.rc:
 	@echo
 	@echo "A1 [/etc/opt/aubit4gl/aubitrc] =${A1}"
 	@echo "A2 [/opt/aubit4gl/etc/aubitrc] =${A2}"

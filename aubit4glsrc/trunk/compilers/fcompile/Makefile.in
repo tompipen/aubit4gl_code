@@ -1,45 +1,49 @@
-###############################################################
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib/libgui makefile		 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
 #
+# $Id: Makefile.in,v 1.6 2002-01-09 04:05:10 afalout Exp $
 #
-################################################################
-#
-# $Id: Makefile.in,v 1.5 2001-12-28 19:56:39 saferreira Exp $
-#
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ../../incl/Makefile-common
+
+override NOINCL=0
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-4GLPCFLAGS		=-make-compile -static -verbose
-CFLAGS 			+= -O2 -I../../lib -I.
+4GLPCFLAGS		=-make-compile -static -verbose -nogtk -L../../lib
+CFLAGS 			+=-I../../lib
 PROGRAM 		= fcompile
 
 ifdef COMSPEC
 	RPCGEN      = cp ../../tools/cygwin/form_x_xdr.c ../../tools/cygwin/form_x.h .
-#	(cp tools/cygwin/form_x_xdr.c compilers/fcompile )
-#	(cp tools/cygwin/menu_x_xdr.c compilers/menus)
-#	(cp tools/cygwin/form_x.h compilers/fcompile )
-#	(cp tools/cygwin/form_x.h lib)
-#	(cp tools/cygwin/form_x.h lib/libgui)
-#	(cp tools/cygwin/menu_x.h compilers/menus )
-#	(cp tools/cygwin/menu_x.h lib)
-
-
-	CC 			= gcc
-	LINK.c		=gcc
-	CFLAGS 		+= -I/usr/local/include
-	SH			=bash
-	4GLPCFLAGS	+= -nogtk #-lgtk4gl
-    LN			=cp
-    EXE			=.exe
 else
 	RPCGEN 		= rpcgen form_x.x
-	CC 			= cc
-	LINK.c		=cc
-    SH			=sh
-    LN			=ln -f
-#	4GLPCFLAGS	+= -lgtk4gl
-	4GLPCFLAGS	+= -nogtk #-noerrcode
 endif
 
 ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
@@ -50,12 +54,11 @@ ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
 	endif
 endif
 
-ifeq "$(PDFBUILD)" "yes"
-	4GLPCFLAGS	+=-lpdf
-else
-	4GLPCFLAGS	+=-nopdf
-endif
-
+#ifeq "$(PDFBUILD)" "yes"
+#	4GLPCFLAGS	+=-lpdf
+#else
+#	4GLPCFLAGS	+=-nopdf
+#endif
 
 SCRIPT 			=
 SOURCES.c 		= fcompile.c formwrite2.c  form_x_xdr.c
@@ -64,20 +67,12 @@ SOURCES.yacc 	=screen.yacc
 SOURCES.lex 	= screen.lex
 
 # Derived parameters.
-
 SOURCES 		= $(SOURCES.h) $(SOURCES.lex) $(SOURCES.yacc) $(SOURCES.c)
-
 TARGETS.c 		= y.tab.c
-
 TARGETS 		= $(TARGETS.c)
-
 OBJECTS 		= $(SOURCES.c:%.c=%.o) $(TARGETS.c:%.c=%.o)
-
 LINTFILES 		= $(SOURCES.c:%.c=%.ln) $(TARGETS.c:%.c=%.ln)
 
-CPPFLAGS 		+=
-LDFLAGS 		+= -s
-RM 				=rm -f
 
 ## ==================================================================
 ##                             Targets

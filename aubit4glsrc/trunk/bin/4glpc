@@ -8,7 +8,7 @@
 #this is main Aubit 4gl compiler .4gl files compiler script
 #You should not need to invoke actual compiler(s) (4glc, fcompile...) directly
 #
-# $Id: 4glpc,v 1.36 2002-01-07 09:43:01 afalout Exp $
+# $Id: 4glpc,v 1.37 2002-01-09 04:05:10 afalout Exp $
 #
 ########################################################################
 
@@ -258,33 +258,43 @@ ALLPARAMS=$@
 # we need this when making compiler:
 ENV_ODBC_LIB_DIR="$ODBC_LIB_DIR"
 ENV_ODBC_LIB_NAME="$ODBC_LIB_NAME"
-
 if [ -f ${AUBITETC}/aubitrc ]
 then
+	A1=${AUBITETC}/aubitrc
 	. ${AUBITETC}/aubitrc
 fi
 
-if [ -f $AUBITDIR/etc/aubitrc ]
+if [ "$MAKINGAUBIT" = "1" ]
 then
-	. $AUBITDIR/etc/aubitrc
+	AUBITDIR=$AUBIT_SRC_ROOT
 fi
 
+
+if [ "$AUBITDIR" != "" ]
+then
+	if [ -f $AUBITDIR/etc/aubitrc ]
+	then
+		A2=$AUBITDIR/etc/aubitrc
+		. $AUBITDIR/etc/aubitrc
+	fi
+fi
 if [ -f ~/.aubit4gl/aubitrc ]
 then
+	A5=~/.aubit4gl/aubitrc
 	. ~/.aubit4gl/aubitrc
 fi
 
 if [ -f ./.aubitrc ]
 then
+	A6=./.aubitrc
 	. ./.aubitrc
 fi
 
 if [ -f "$A4GL_INIFILE" ] && [ "$A4GL_INIFILE" != "" ]
 then
+	A7=$A4GL_INIFILE
 	. $A4GL_INIFILE
 fi
-
-
 
 #This is all now obsolete:
 #we want all config files read here in all cases (probably?)
@@ -523,6 +533,27 @@ do
         run_next
    ;;
 
+   -settings)
+        echo "Processed configuration files, in this order:"
+		echo
+		echo "A1 [/etc/opt/aubit4gl/aubitrc] =$A1"
+		echo "A2 [/opt/aubit4gl/etc/aubitrc] =$A2"
+		echo "A3 [../etc/aubitrc]            =$A3"
+		echo "A4 [etc/aubitrc]               =$A4"
+		echo "A5 [~/.aubit4gl/aubitrc]       =$A5"
+		echo "A6 [./.aubitrc]                =$A6"
+		echo "A7 ['A4GL_INIFILE']           =$A7"
+		echo
+
+        echo AUBITDIR = $AUBITDIR
+
+        if [ "$1" = "-settings" ] && [ "$2" = "" ]
+        then
+			exit 0
+        fi
+
+   ;;
+
    -overwrite_config)
 		OVERWRITE_CONFIG=1
    ;;
@@ -582,7 +613,7 @@ do
 				sed -e "/$STARTWITH/s/$STARTWITH/$REPLACEWITH/" $INFILE > $AUBITETC/aubitrc
 		        chmod a+r $AUBITETC/aubitrc
 
-                #we need to delete this file because AUBITDIR was not 
+                #we need to delete this file because AUBITDIR was not
 				#changed in it, and it would override settings from main
                 #file, which can confuse user if he is not aware of it:
                 rm $INFILE
@@ -773,6 +804,7 @@ do
 		  then
 	          $output "$fname: "
 			  $output ODBC_LIB_DIR=$ODBC_LIB_DIR, LD_LIBRARY_PATH=$LD_LIBRARY_PATH, A4GL_SQLTYPE=$A4GL_SQLTYPE
+              $output AUBITDIR=$AUBITDIR, PATH=$PATH
               $output "Executing (3) : $FGLCEXEC $a"
           fi
 

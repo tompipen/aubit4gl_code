@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2002-01-09 02:03:37 afalout Exp $
+# $Id: Makefile.in,v 1.9 2002-01-09 04:05:10 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -37,43 +37,34 @@ override NOINCL=0
 ## ==================================================================
 
 
-4GLPCFLAGS		=-make-compile -static -DDEBUG -Irules -L/lib -nogtk -g
+4GLPCFLAGS		=-make-compile -static -DDEBUG -Irules -L/lib -L../../lib -nogtk -g  -verbose -rdynamic
 ALL				=rules.t 4glc
 
 ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
 	ifneq "$(ODBC)" "no"
 		ALL		+=4glc-noodbc
 	endif
-else
-	4GLPCFLAGS	=-make-compile -static -DDEBUG -Irules -L/lib -nogtk -g
 endif
 
-#-lfl
-CFLAGS			+=-O2 -g -Irules -I../../lib -I../.. -I.. -I../../lib/libincl
+CFLAGS			+=-I../../lib -I../../lib/libincl -I../fcompile
+#-Irules
+#override CFLAGS	+=-I../fcompile #-I../mcompile
 
+#uncomment this to get debbuging in function yyparse() and then export YYDEBUG=1 to environment
+#YYDEBUG		=-DYYDEBUG=1
 
-ifdef COMSPEC
-	CFLAGS		+=-DWIN32
-    #uncomment this to get debbuging in function yyparse() and then export YYDEBUG=1 to environment
-	#YYDEBUG		=-DYYDEBUG=1
-    EXEEXT		=.exe
-	CPEXE		=cp
-#	4GLPCFLAGS	+= -lgtk -lgdk
-    SH			=bash
-else
-    EXEEXT		=
-	CPEXE		=ln -f
+ifndef COMSPEC
 	4GLPCFLAGS	+=-ldl
-    SH			=sh
 endif
 
-ifeq "$(PDFBUILD)" "yes"
-	4GLPCFLAGS	+=-lpdf
-else
-	4GLPCFLAGS	+=-nopdf
-endif
 
-4GLPC			=${SH} ../../bin/4glpc -verbose -rdynamic
+#ifeq "$(PDFBUILD)" "yes"
+#	4GLPCFLAGS	+=-lpdf
+#else
+#	4GLPCFLAGS	+=-nopdf
+#endif
+
+4GLPC			=${SH} ../../bin/4glpc
 
 4GLCAOBJ		=mod.o 4glc.o map.o rules/generated/states.o \
 				rules/generated/kw.o rules/generated/y.tab.o dim.o list.o
@@ -89,10 +80,7 @@ ifeq "$(OUTPUTLANG)" "perl"
 	4GLCAOBJ	+= compile_perl.o compile_c_gtk.o
 endif
 
-
 4GLCOBJ			=${4GLCAOBJ} lexer.o
-
-override CFLAGS	+=-I../fcompile #-I../mcompile
 
 ## ==================================================================
 ##                              Targets
@@ -156,3 +144,4 @@ clean.rules.generated:
 	(cd rules/generated; rm -f *.yacc *.c *.h single_words *.o *.yh *.rule *.output)
 
 
+#--------------------------------- EOF -----------------------------

@@ -1,33 +1,43 @@
-###############################################################
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib/libgui makefile		 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
 #
+# $Id: Makefile.in,v 1.6 2002-01-09 04:05:10 afalout Exp $
 #
-################################################################
-#
-# $Id: Makefile.in,v 1.5 2001-12-28 19:56:39 saferreira Exp $
-#
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ../../incl/Makefile-common
+
+override NOINCL=0
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-4GLPCFLAGS		= -make-compile -static -verbose
+4GLPCFLAGS		= -make-compile -static -verbose -L../../lib -nogtk
 PROGRAM 		=mcompile mdecompile
-
-ifdef COMSPEC
-	CC 			= gcc
-	LINK.c		=gcc
-    SH			=bash
-    LN			=CP
-    EXE			=.exe
-	4GLPCFLAGS  += -nogtk #-noerrcode
-else
-	CC 			= cc
-	LINK.c		=cc
-    SH			=sh
-    LN			=ln -f
-    EXE			=
-	4GLPCFLAGS  += -nogtk #-noerrcode
-endif
 
 ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
 	ifeq "$(ODBC)" "no"
@@ -37,11 +47,11 @@ ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
 	endif
 endif
 
-ifeq "$(PDFBUILD)" "yes"
-	4GLPCFLAGS	+=-lpdf
-else
-	4GLPCFLAGS	+=-nopdf
-endif
+#ifeq "$(PDFBUILD)" "yes"
+#	4GLPCFLAGS	+=-lpdf
+#else
+#	4GLPCFLAGS	+=-nopdf
+#endif
 
 SCRIPT 			=
 SOURCES.c 		= mcompile.c menuwrite.c  menu_x_xdr.c
@@ -50,18 +60,10 @@ SOURCES.yacc 	=menu.yacc
 SOURCES.lex 	= menu.lex
 
 SOURCES 		= $(SOURCES.h) $(SOURCES.lex) $(SOURCES.yacc) $(SOURCES.c)
-
 TARGETS.c 		= y.tab.c
-
 TARGETS 		= $(TARGETS.c)
-
 OBJECTS 		= $(SOURCES.c:%.c=%.o) $(TARGETS.c:%.c=%.o)
-
 LINTFILES 		= $(SOURCES.c:%.c=%.ln) $(TARGETS.c:%.c=%.ln)
-
-CFLAGS 			+= -O2
-CPPFLAGS 		+=
-LDFLAGS 		+= -s
 
 ## ==================================================================
 ##                             Targets

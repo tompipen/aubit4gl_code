@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.2 2002-01-09 02:03:37 afalout Exp $
+# $Id: Makefile-common.in,v 1.3 2002-01-09 04:05:10 afalout Exp $
 #
 
 .EXPORT_ALL_VARIABLES:
@@ -34,6 +34,8 @@
 #this internal variable points to default location of Aubit config files
 #Default=/etc/opt/aubit4gl
 AUBITETC=/etc/opt/aubit4gl
+
+AUBIT_SRC_ROOT=@aubitdir@
 
 #If you are looking here because make could not find "/etc/aubitrc"
 #then exucute "bin/4glpc -config" from Aubit source code root directory
@@ -50,7 +52,13 @@ ifeq "$(NOINCL)" "0"
 		A1:=${AUBITRCFILE}
 	endif
 
-
+	#override AUBITDIR set in bloabal aubitrc, in case it is pointing
+	#to some other location then this source code tree; there is no point
+	#to have AUBITDIR set in any other way then by "configure", when
+    #compiling Aibt compiler source code; it can cause bad combination of
+    #libraries, and in this place, it may cause completely wron include
+    #of aubitrc configured different then we want it while compiling
+	AUBITDIR=${AUBIT_SRC_ROOT}
 
 	ifneq "${AUBITDIR}" ""
 		AUBITRCFILE:=$(shell ls ${AUBITDIR}/etc/aubitrc ${NOERR})
@@ -60,20 +68,22 @@ ifeq "$(NOINCL)" "0"
 		endif
     endif
 
+		#No longer needed, since we are sure AUBITDIR is OK now:
+
 		#this is an attempt to locate aubitrc in absence of AUBITDIR,
         #or to override settings for aubitrc in case we are working
         #from different Aubit instrallation/source directory:
-		AUBITRCFILE:=$(shell ls ../etc/aubitrc ${NOERR})
-		ifneq "${AUBITRCFILE}" ""
-			include ${AUBITRCFILE}
-			A3:=${AUBITRCFILE}
-		endif
-
-		AUBITRCFILE:=$(shell ls etc/aubitrc ${NOERR})
-		ifneq "${AUBITRCFILE}" ""
-			include ${AUBITRCFILE}
-			A4:=${AUBITRCFILE}
-	    endif
+		#AUBITRCFILE:=$(shell ls ../etc/aubitrc ${NOERR})
+		#ifneq "${AUBITRCFILE}" ""
+		#	include ${AUBITRCFILE}
+		#	A3:=${AUBITRCFILE}
+		#endif
+        #
+		#AUBITRCFILE:=$(shell ls etc/aubitrc ${NOERR})
+		#ifneq "${AUBITRCFILE}" ""
+		#	include ${AUBITRCFILE}
+		#	A4:=${AUBITRCFILE}
+	    #endif
 
 
 	AUBITRCFILE:=$(shell ls ~/.aubit4gl/aubitrc ${NOERR})
@@ -94,6 +104,9 @@ ifeq "$(NOINCL)" "0"
 	endif
 
 endif
+
+#in all cases, override AUBITDIR set in any other way then by "configure"
+AUBITDIR=${AUBIT_SRC_ROOT}
 
 PATH:=${AUBITDIR}/bin:${PATH}
 #PATH:=../bin:${PATH}
@@ -128,10 +141,16 @@ INSTALL_GRP = nobody
 INSTALL_CMD = install
 INSTALL     = ${INSTALL_CMD} -c -o ${INSTALL_USR} -g ${INSTALL_GRP}
 MKPATH      = mkdir -p
+CPPFLAGS 	=
+LDFLAGS 	= -s
+
 
 #C compiler flags for Aubit libraries compilation: you should not
 #need to change this
-LIBCFLAGS			=-g -O2 -Ilibincl -I. -DAUTOBANG -DDEBUG
+
+CFLAGS				=-O2 -g -I. -DAUTOBANG -DDEBUG -I/usr/local/include
+
+LIBCFLAGS			=${CLFAGS} -Ilibincl
 
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 
@@ -140,6 +159,23 @@ LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 MAKINGAUBIT			=1
 export MAKINGAUBIT
 
+ifdef COMSPEC
+	CFLAGS		+=-DWIN32
+    EXEEXT		=.exe
+	EXE			=${EXEEXT}
+	CPEXE		=cp
+    SH			=bash
+	CC 			=gcc
+    LN			=cp
+else
+    EXEEXT		=
+	CPEXE		=ln -f
+    SH			=sh
+	CC 			=cc
+    LN			=ln -f
+endif
+
+LINK.c		=${CC}
 
 
 #----------------------------- EOF -----------------------------

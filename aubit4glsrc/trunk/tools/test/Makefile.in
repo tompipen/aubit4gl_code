@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.9 2002-01-09 02:03:38 afalout Exp $
+# $Id: Makefile.in,v 1.10 2002-01-09 04:05:10 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -35,17 +35,13 @@ include ../../incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-RM =rm -f
 4GLPCFLAGS=
-FGLPCEXEC=sh 4glpc
+FGLPCEXEC=${SH} ../../bin/4glpc
 
 ifdef COMSPEC
-	FGLPCEXEC=bash 4glpc
 	ifdef MONOLIT
 		4GLPCFLAGS += -mno-cygwin
 	endif
-else
-	FGLPCEXEC=sh 4glpc
 endif
 
 #ifdef NOGTK
@@ -57,13 +53,13 @@ else
 endif
 
 
-ifeq "$(PDFBUILD)" "yes"
-	4GLPCFLAGS		+=-lpdf
-    4GLPCTESTFLAGS	=-lpdf
-else
-	4GLPCFLAGS		+=-nopdf
-    4GLPCTESTFLAGS	=-nopdf
-endif
+#ifeq "$(PDFBUILD)" "yes"
+#	4GLPCFLAGS		+=-lpdf
+#    4GLPCTESTFLAGS	=-lpdf
+#else
+#	4GLPCFLAGS		+=-nopdf
+#    4GLPCTESTFLAGS	=-nopdf
+#endif
 
 ifeq "$(ODBC)" "no"
 	ifeq "$(ODBC_LINK)" "static"
@@ -100,7 +96,7 @@ pdf:
 #This is used from root makefile, to test id compiler is working after building it:
 test.build:
 	${RM} test_build.c test_build.h test_build.o test_build test_build.exe
-	${FGLPCEXEC} ${4GLPCTESTFLAGS} -nogtk test_build.4gl -o test_build #-verbose
+	${FGLPCEXEC} -settings -verbose ${4GLPCTESTFLAGS} -nogtk test_build.4gl -o test_build
 
 test.perl:
 	cd tools/test; 4glc_perl test_build.4gl
