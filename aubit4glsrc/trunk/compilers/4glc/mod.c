@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.177 2004-08-10 13:40:20 mikeaubury Exp $
+# $Id: mod.c,v 1.178 2004-08-12 15:15:52 mikeaubury Exp $
 #
 */
 
@@ -651,6 +651,16 @@ push_record (void)
 {
   /* in_record++; */
   push_type ("_RECORD", 0, 0);
+}
+
+/**
+ * The parser found the starting of a new object instance
+ */
+void
+push_object (char *objtype)
+{
+  /* in_record++; */
+  push_type ("_OBJECT", objtype, 0);
 }
 
 /**

@@ -83,7 +83,7 @@ void optimize ();
 
 long add_set_var (struct use_variable *var, long value_i, int once);
 
-void nset_param(struct param *p,int n);
+int nset_param(struct param *p,int n);
 void execute_start_block (long pc, struct cmd_block *c);
 struct variable_element *param_variable (char *dtype, char *name, struct param *size);
 struct variable_element *append_param_variable (struct variable_element *orig, struct variable_element *next);

@@ -193,7 +193,9 @@ set_var (long pc, struct cmd_set_var *sv)
   //struct param *nparam;
   int lvl;
   int narr;
+  int param_id1;
 
+//printf("set var %d\n",sv->value_param_id); 
   if (sv->value_param_id >= 0)
     {
       uset_var = &PARAM_ID (sv->value_param_id);
@@ -206,6 +208,9 @@ set_var (long pc, struct cmd_set_var *sv)
 	uset_var = nget_param (1);
     }
 
+if (sv->value_param_id==61) {
+	A4GL_breakpoint();
+}
   use_var = &sv->variable;
 
 
@@ -241,7 +246,6 @@ set_var (long pc, struct cmd_set_var *sv)
       int a;
       struct npvariable *npvar;
       struct cmd_set_var nsv;
-
 
 
       memset (&nsv, 0, sizeof (nsv));
@@ -372,8 +376,8 @@ set_var (long pc, struct cmd_set_var *sv)
 	      	int b;
 	      i.param_type = PARAM_TYPE_LITERAL_INT;
 	      i.param_u.n = a;
-	      nset_param (&i, 0);
-	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].x1subscript_param_id[0] = -1;
+	      param_id1=nset_param (&i, 99);
+	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].x1subscript_param_id[0] = param_id1;
 	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].x1subscript_param_id[1] = 0;
 	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].x1subscript_param_id[2] = 0;
 	      nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].x1element = -1;
@@ -385,8 +389,7 @@ set_var (long pc, struct cmd_set_var *sv)
 #endif
 
 	      set_var (pc, &nsv);
-	      //free (nsv.variable.sub.sub_val);
-		//printf("Freed\n");
+	      nset_param (0, param_id1);
 
 	    }
 	}
@@ -394,6 +397,7 @@ set_var (long pc, struct cmd_set_var *sv)
       if (narr == 2)
 	{			// Double element.
 	  int b;
+		printf("Double element\n");
 	  for (a = 0;
 	       a < uset_var->param_u.p_list->list_param_id.list_param_id_len;
 	       a++)
@@ -435,6 +439,8 @@ set_var (long pc, struct cmd_set_var *sv)
 #ifdef DO_DEBUG
 	      evaluate_param_i_into_integer( nsv.value_param_id,&c);
 	      printf("Two elements.. %d,%d = %d\n",a,b,c);
+	      	nset_param (0, 0);
+	      	nset_param (0, 1);
 #endif
 		  //free (nsv.variable.sub.sub_val);
 		//printf("Freed\n");
@@ -482,6 +488,9 @@ set_var (long pc, struct cmd_set_var *sv)
 	    {
 	      // Strange - it should be one of those....
 	      fprintf (logfile, "Strange size  reported %ld (size=%d)\n", x, size);
+		//printf("Odd : ");
+		//print_use_variable(use_var);
+		//printf(" = %d\n",x);
 	      *(long *) ptr = x;
 	    }
 
@@ -506,6 +515,7 @@ set_var_once (long pc, struct cmd_set_var1 *sv)
   long *ptr;
   int size;
 
+//printf("set var once\n");
   if (sv->set)
     return;
 
@@ -869,4 +879,9 @@ get_var_ptr (struct use_variable *uv, int *size)
   fprintf (stderr, "Unknown indirection : %d\n", indirect);
 
   exit (10);
+}
+
+
+A4GL_breakpoint() {
+printf("Break here\n");
 }

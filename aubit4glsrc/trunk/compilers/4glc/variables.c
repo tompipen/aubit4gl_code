@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.47 2004-08-11 18:04:58 mikeaubury Exp $
+# $Id: variables.c,v 1.48 2004-08-12 15:15:52 mikeaubury Exp $
 #
 */
 
@@ -314,6 +314,7 @@ variable_action (int category, char *name, char *type, char *n, char *function)
 #define MODE_ADD_ASSOC_ARRAY  	6
 #define MODE_ADD_NAME		7
 #define MODE_ADD_ENDRECORD	8
+#define MODE_ADD_ENDOBJECT	8
 #define MODE_ADD_TO_SCOPE	9
 #define MODE_ADD_END_ASSOC	10
 #define MODE_ADD_FUNCTION	11
@@ -395,6 +396,10 @@ A4GL_debug("scope=%c",scope);
   if (strcmp (name, "_RECORD") == 0 && mode == 0)
     {
       mode = MODE_ADD_RECORD;
+    }
+  if (strcmp (name, "_OBJECT") == 0 && mode == 0)
+    {
+      mode = MODE_ADD_OBJECT;
     }
 
   if (strcmp (name, "_ASSOCIATE") == 0 && mode == 0)
@@ -496,13 +501,13 @@ A4GL_debug("scope=%c",scope);
       curr_v[record_cnt]->data.v_record.record_cnt = 0;
       curr_v[record_cnt]->data.v_record.record_alloc = 0;
       curr_v[record_cnt]->data.v_record.linked = 0;
-      curr_v[record_cnt]->data.v_record.object_type = "Yes";
+      curr_v[record_cnt]->data.v_record.object_type = name;
       record_cnt++;
       curr_v[record_cnt] = 0;	/* Make sure we're starting fresh...*/
       break;
 
 
-    case MODE_ADD_ENDRECORD:
+    case MODE_ADD_ENDRECORD: // Also MODE_ADD_ENDOBJECT
       curr_v[record_cnt] = 0;
       record_cnt--;
       add_to_scope (record_cnt, 0);
@@ -1835,8 +1840,7 @@ get_variable_dets (char *s, int *type, int *arrsize,
     return -1;
 
 
-  *type =
-    v->data.v_simple.datatype + ((v->data.v_simple.dimensions[0]) << 16);
+  *type = v->data.v_simple.datatype + ((v->data.v_simple.dimensions[0]) << 16);
   *level = 1;
 
   if (v->is_array)

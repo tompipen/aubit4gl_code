@@ -36,14 +36,45 @@ static char *op_str[]={
 */
 
 
-struct param *last_set[10] ;
+struct param *last_set[10] ={0,0,0,0,0,0,0,0,0,0};
 
-void nset_param(struct param *p,int n) {
+int nset_param(struct param *p,int n) {
+
+	//printf("nset : %p %d\n",p,n);
+	if (n<0) {
+		n=-1-n;
+		//printf("n -> %d\n",n);
+	}
+
+	if (n>=99) {
+		int a;
+		for  (a=0;a<10;a++) {
+			if (last_set[a]==0) {n=a; break;}
+		}
+	}
+
+	if (p!=0) {
+		if (last_set[n])  {
+			printf("Can't use that - its already in use\n");
+			exit(32);
+		}
+	}
+	if (n<0||n>=10) {
+		printf("Internal error - param out of range\n");
+		exit(33);
+	}
 	last_set[n]=p;
+	//printf("set @ %d (%d) to %d\n",n,(0-(n+1)),p);
+	return 0-(n+1);
 }
 
 
 struct param *nget_param(int n) {
+	//printf("read from %d\n",n);
+	if (n<0||n>=10) {
+		printf("Internal error - param out of range\n");
+		exit(33);
+	}
 	return last_set[n];
 }
 
@@ -55,6 +86,14 @@ int a;
 if (e_i<0) {
 	if (e_i==-1) e=nget_param(0);
 	if (e_i==-2) e=nget_param(1);
+	if (e_i==-3) e=nget_param(2);
+	if (e_i==-4) e=nget_param(3);
+	if (e_i==-5) e=nget_param(4);
+	if (e_i==-6) e=nget_param(5);
+	if (e_i==-7) e=nget_param(6);
+	if (e_i==-8) e=nget_param(7);
+	if (e_i==-9) e=nget_param(8);
+	if (e_i==-10) e=nget_param(9);
 } else {
 	e=&PARAM_ID(e_i);
 }

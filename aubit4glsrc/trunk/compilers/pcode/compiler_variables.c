@@ -390,7 +390,7 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
 	  u->sub.sub_len++;
 	  u->sub.sub_val = realloc (u->sub.sub_val, sizeof (struct use_variable_sub) * u->sub.sub_len);
 	  memcpy (&u->sub.sub_val[u->sub.sub_len - 1], sub, sizeof (struct use_variable_sub));
-	  printf("mk_use_variable arr : %d %d %d\n",arr_i1,arr_i2,arr_i3);
+	  //printf("mk_use_variable arr : %d %d %d\n",arr_i1,arr_i2,arr_i3);
 	}
 
     }
@@ -529,7 +529,7 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
 	  sub->x1subscript_param_id[1] = arr_i2;
 	  sub->x1subscript_param_id[2] = arr_i3;
 	}
-      printf("Mk2 : %d %d %d\n",arr_i1,arr_i2,arr_i3);
+      //printf("Mk2 : %d %d %d\n",arr_i1,arr_i2,arr_i3);
       memcpy (&parent->sub.sub_val[u->sub.sub_len - 1], sub,
 	      sizeof (struct use_variable_sub));
       return parent;

@@ -75,6 +75,7 @@ run_module ()
   int pc_for_main;
   struct param main_params;
   struct param main_params_2;
+  int param_id;
 
   if (this_module.fglc_magic != FGLC_XDR_MAGIC)
     {
@@ -126,13 +127,12 @@ run_module ()
   main_params.param_u.p_list = malloc (sizeof (struct param_list));
   main_params.param_u.p_list->list_param_id.list_param_id_len = 1;
   main_params.param_u.p_list->list_param_id.list_param_id_val = malloc(sizeof(long));
-  nset_param(&main_params_2,0);
-
-  main_params.param_u.p_list->list_param_id.list_param_id_val[0]=-1;
-
+  param_id=nset_param(&main_params_2,99);
+  main_params.param_u.p_list->list_param_id.list_param_id_val[0]=param_id;
   main_params_2.param_type = PARAM_TYPE_LITERAL_INT;
   main_params_2.param_u.n = 0;
   run_function (a, &main_params);
+  nset_param (0, param_id);
   return 1;
 }
 

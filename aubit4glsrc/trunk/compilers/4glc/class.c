@@ -619,7 +619,7 @@ printf("read_class : %s\n",s);
 	sprintf(buff,"%d",sz);
 	set_current_variable_scope('T');
 	push_name(s,0);
-	push_record();
+	push_object(s);
 	//push_name("_object_type",0);
 	//push_type("-","4",0);
 	push_name("object_type",0);

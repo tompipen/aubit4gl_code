@@ -316,7 +316,7 @@ has_define:
 
 
 define_entry_op_set:
-		define_entry  ';'
+		define_entry  ';' {set_type(0);}
 ;
 
 
@@ -750,7 +750,7 @@ variable: IDENTIFIER 					{
 		$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0    ,0, 0,0,   $<str>1,0));
 	}
 	| IDENTIFIER '[' expr ']'  			{
-	printf("XX2\n");
+	//printf("XX2\n");
 		$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0,$<e_id>3,0,0,$<str>1,0));
 	}    
 	| IDENTIFIER '[' expr ']' '[' expr ']' 		{
