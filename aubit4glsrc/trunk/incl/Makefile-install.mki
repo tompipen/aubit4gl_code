@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.38 2002-10-30 01:46:44 afalout Exp $
+# $Id: Makefile-install.mki,v 1.39 2002-10-31 08:40:50 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -258,22 +258,24 @@ install.aubitbuild.cron:
 #prepare the scrip to run:
 	@echo "#!${SH}" > ${OUT}
 	@echo "" >> ${OUT}
-	@echo "BUILDAUBITDIR=${AUBIT_SRC_ROOT}" >> ${OUT}
+	@echo "AUBITDIR=${AUBIT_SRC_ROOT}" >> ${OUT}
 	@echo "LOGFILE=/tmp/cron.log" >> ${OUT}
 	@echo "SH=${SH}" >> ${OUT}
 	@echo "" >> ${OUT}
-	@echo "if [ ! -f $$BUILDAUBITDIR/bin/aubitbuild.sh ]; then" >> ${OUT}
-	@echo "	cd $$BUILDAUBITDIR" >> ${OUT}
-	@echo "	./configure" >> ${OUT}
+	@echo ". /etc/bashrc > /dev/null" >> ${OUT}
+	@echo "" >> ${OUT}
+	@echo "if [ ! -f $$AUBITDIR/bin/aubitbuild.sh ]; then" >> ${OUT}
+	@echo "	cd $$AUBITDIR" >> ${OUT}
+	@echo "	./configure > /tmp/aubit_configure.log 2>&1" >> ${OUT}
 	@echo "fi" >> ${OUT}
 	@echo "" >> ${OUT}
 	@echo 'echo "-------------------------------------" >> $$LOGFILE' >> ${OUT}
 	@echo 'date >> $$LOGFILE' >> ${OUT}
 	@echo '. /etc/profile >> $$LOGFILE' >> ${OUT}
-	@echo 'echo "Running : $$SH $$BUILDAUBITDIR/bin/aubitbuild.sh"  >> $$LOGFILE' >> ${OUT}
+	@echo 'echo "Running : $$SH $$AUBITDIR/bin/aubitbuild.sh"  >> $$LOGFILE' >> ${OUT}
 	@echo "" >> ${OUT}
 	@echo "##################################" >> ${OUT}
-	@echo '$$SH $$BUILDAUBITDIR/bin/aubitbuild.sh' >> ${OUT}
+	@echo '$$SH $$AUBITDIR/bin/aubitbuild.sh' >> ${OUT}
 	@echo "##################################" >> ${OUT}
 	@echo "" >> ${OUT}
 	@echo 'date >> $$LOGFILE' >> ${OUT}

@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.3 2002-10-30 01:46:44 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.4 2002-10-31 08:40:49 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -154,6 +154,11 @@ ARCHEXT=@ARCHEXT@
 SHORTNAME=@SHORTNAME@
 SRCSHORTNAME=@SHORTNAME@src
 BINSHORTNAME=@SHORTNAME@bin
+WINSETUPEXE_BASENAME=setup.exe
+FULLNAME='@FULLNAME@'
+#FULLNAME=Aubit
+AUBIT_VERSION=@AUBIT_VERSION@
+AUBIT_BUILD=@AUBIT_BUILD@
 
 #####################
 #name of the computer we are on:
@@ -199,6 +204,7 @@ else
 	#TEMPLATESRPM=xxxxx--template--.src.rpm
 	#TEMPLATEBINRPM=xxxxx--template--.rpm
     DLPAGEPATH=/usr/aubit/aubit4glwww/files
+	TEMPLATE_WINSETUPEXE=setup---template--.exe
 
 fi
 
@@ -264,9 +270,10 @@ GET=0
 UPLOAD=0
 CLEAN=0
 WARNINGS=1
+COMPARE=0
 
 if [ $# -lt 1 ]; then
-    
+
 	#do all steps:
 	if [ "$COMSPEC" = "" ]; then
 	    #UNIX
@@ -276,6 +283,7 @@ if [ $# -lt 1 ]; then
 	    GET=1
 	    UPLOAD=1
         CLEAN=1
+        COMPARE=1
 	else
 	    #Windows/CygWin
 	    MAKE=1
@@ -284,6 +292,7 @@ if [ $# -lt 1 ]; then
 	    GET=1
 	    UPLOAD=1
         CLEAN=0
+        COMPARE=1
 	fi
 
 else
@@ -303,6 +312,7 @@ else
 			echo "  get - get download page template from web server"
 			echo "  upload - upload created files to web server"
 			echo "  clean - remove created files when finished"
+			echo "  compare - download what you uploaded, and compare"
 			echo "When no action is specified, all will be performed"
 			echo " "
 		    exit 1
@@ -350,7 +360,9 @@ else
 	    clean)
 		    CLEAN=1
 	        ;;
-
+        compare)
+			COMPARE=1
+            ;;
 		*)
             echo "Parameter $a not recognised. Stop."
             echo "Try --help"
@@ -442,7 +454,7 @@ if test "$MAKE" = "1"; then
 		EXEC="make tar"; runexec
 
 		#cvs commit to check in build number
-		#	@cvs commit -m "commit.build ${BULDNO}" > commit.log
+		#	@cvs commit -m "commit.build $BULDNO" > commit.log
 		#/usr/bin/expect: invalid option -- m
 		#usage: expect [-div] [-c cmds] [[-f] cmdfile] [args]
 		#auto_cvs commit -m 'commit.build by aubitbuild.sh' failed with code 1
@@ -472,7 +484,7 @@ if test "$MAKE" = "1"; then
 				echo "                          Reported  Suppressed"
 				grep "^Total" lclint.log
             else
-                echo "Fix splint"
+                echo "FIXME: splint disabled on CygWin"
             fi
 
         fi
@@ -486,22 +498,25 @@ if test "$MAKE" = "1"; then
 
 fi
 
-#get file names of crteared archives:
-#aubit4glsrc-0.30RC3-115.tgz
+#get file names of created archives:
 if [ -f $AUBITSRCDIR/$SRCSHORTNAME-*.$ARCHEXT ]; then
     SOURCETARNAME=`ls $AUBITSRCDIR/$SRCSHORTNAME-*.$ARCHEXT`
     SOURCETARBASENAME=`basename $SOURCETARNAME`
 else
-    echo "ERROR: source archive not created. Stop"
-    exit 7
+	if test "$MAKE" = "1"; then
+		echo "ERROR: source archive not created. Stop"
+	    exit 7
+    fi
 fi
 
 if [ -f $AUBITBINDIR/$BINSHORTNAME-*.$ARCHEXT ]; then
     TARBALL=`ls $AUBITBINDIR/$BINSHORTNAME-*.$ARCHEXT`
     TARBALLBASENAME=`basename $TARBALL`
 else
-    echo "ERROR: binary archive not created."
-    exit 8
+	if test "$MAKE" = "1"; then
+		echo "ERROR: binary archive not created."
+	    exit 8
+    fi
 fi
 
 if test "$VERBOSE" = "1"; then
@@ -548,22 +563,38 @@ fi
 if test "$WINSETUP" = "1"; then
     ################## make Windows installer #######################
     STOPONERROR=0   #Continue even if next statemets fails
-    #EXEC="rm -f /usr/src/redhat/SRPMS/$SHORTNAME*.src.rpm"; runexec
-    #EXEC="rm -f /usr/src/redhat/RPMS/i586/$SHORTNAME*.rpm"; runexec
-    #EXEC="rm -rf /usr/src/redhat/BUILD/$SHORTNAME*"; runexec
+	EXEC="rm -rf $AUBITSRCDIR/etc/Output/"; runexec
 	STOPONERROR=1
 
     EXEC="cd $AUBITSRCDIR"; runexec
     EXEC="make winsetup"; runexec
-	#Setup program should now be at ${AUBITDIR}\etc\Output\setup.exe
-	WINSETUPEXE="$AUBITSRCDIR/etc/Output/setup.exe"
-	if ! [ -f $WINSETUPEXE ]; then
-		echo "Windows installer not created"
+fi
+
+	WINSETUPEXE="$AUBITSRCDIR/etc/Output/$WINSETUPEXE_BASENAME"
+	if ! [ -f "$WINSETUPEXE" ]; then
+		if test "$WINSETUP" = "1"; then
+			echo "Windows installer not created"
+        fi
         WINSETUPEXE=""
     else
-		echo "FIXME: Windows installer created - do link replacing on dl page"
+		#rename it to current version:
+		TMP_BASENAME="$FULLNAME $AUBIT_VERSION.$AUBIT_BUILD.exe"
+		TMP_WINSETUPEXE="$AUBITSRCDIR/etc/Output/$TMP_BASENAME"
+		mv "$WINSETUPEXE" "$TMP_WINSETUPEXE"
+        WINSETUPEXE_BASENAME="$TMP_BASENAME"
+        WINSETUPEXE_BASENAME_ESC=`echo $WINSETUPEXE_BASENAME | sed -e 's/ /\\\\ /'g`
+		WINSETUPEXE="$TMP_WINSETUPEXE"
+        WINSETUPEXE_ESC=`echo $WINSETUPEXE | sed -e 's/ /\\\\ /'g`
+
+
+        #echo "1 $WINSETUPEXE_BASENAME"
+        #echo "2 $WINSETUPEXE_BASENAME_ESC"
+        #echo "3 $WINSETUPEXE"
+        #echo "4 $WINSETUPEXE_ESC"
+
 	fi
-fi
+
+
 
 if test "$GET" = "1"; then
 
@@ -611,6 +642,11 @@ if test "$GET" = "1"; then
         else
 			echo "cp $DLTMP2 $DLTMP1"  >> $BINNAMESSCRIPT
 		fi
+		if test "$WINSETUPEXE" != ""; then
+	        #TEMPLATE_WINSETUPEXE			"$WINSETUPEXE"
+			echo "sed -e '/^$TEMPLATE_WINSETUPEXE/s/$TEMPLATE_WINSETUPEXE/$WINSETUPEXE_BASENAME/' $DLTMP1 > $DLTMP2"  >> $BINNAMESSCRIPT
+			echo "cp $DLTMP2 $DLTMP1"  >> $BINNAMESSCRIPT
+		fi
 
 	    EXEC="sh $BINNAMESSCRIPT"; runexec
 
@@ -655,8 +691,6 @@ fi
 
 if test "$UPLOAD" = "1"; then
 	    #################### Upload all ##########################
-		EXEC="cp $DLTMP1 $DOWNLOADPAGEBASE"; runexec
-
 		EXEC="$AUTO_SF_SCP $SOURCETARNAME"; runexec
 		EXEC="$AUTO_SF_SCP $TARBALL"; runexec
 
@@ -666,7 +700,11 @@ if test "$UPLOAD" = "1"; then
         if test "$BINRPM" != "" ; then
 			EXEC="$AUTO_SF_SCP $BINRPM"; runexec
         fi
-		
+
+		if test "$WINSETUPEXE" != ""; then
+			EXEC="$AUTO_SF_SCP $WINSETUPEXE"; runexec
+        fi
+
 		if [ "$COMSPEC" = "" ]; then
 			EXEC="$AUTO_SF_SCP $UNIXSRCBUILDNAMES"; runexec
 			EXEC="$AUTO_SF_SCP $UNIXBUILDNAMES"; runexec
@@ -676,15 +714,98 @@ if test "$UPLOAD" = "1"; then
         fi
 
 	    #upload html page last, so if we fail before, nothing is changed
+		EXEC="cp $DLTMP1 $DOWNLOADPAGEBASE"; runexec
 		EXEC="$AUTO_SF_SCP $DOWNLOADPAGEBASE"; runexec
 fi
 
+if test "$COMPARE" = "1"; then
+	####################### download and compare #################
 
-    #FIXME: download and compare
+    cd /tmp
+
+	if test "$SOURCETARBASENAME" != ""; then
+		if test " -f /tmp/$SOURCETARBASENAME"; then
+			rm -f /tmp/$SOURCETARBASENAME
+	    fi
+		EXEC="$AUTOSFSCPGET $SCPPATH/$SOURCETARBASENAME"; runexec
+		diff /tmp/$SOURCETARBASENAME $SOURCETARNAME
+		RET=$?
+		if test $RET != "0"
+		then
+	        echo "Error: /tmp/$SOURCETARBASENAME and $SOURCETARNAME are different"
+			ls -al /tmp/$SOURCETARBASENAME
+			ls -al $SOURCETARNAME
+			exit 54
+	    fi
+    fi
+
+	if test "$TARBALLBASENAME" != ""; then
+		if test " -f /tmp/$TARBALLBASENAME"; then
+			rm -f /tmp/$TARBALLBASENAME
+	    fi
+		EXEC="$AUTOSFSCPGET $SCPPATH/$TARBALLBASENAME"; runexec
+		diff /tmp/$TARBALLBASENAME $TARBALL
+		RET=$?
+		if test $RET != "0"
+		then
+	        echo "Error: /tmp/$TARBALLBASENAME and $TARBALL are different"
+			ls -al /tmp/$TARBALLBASENAME
+			ls -al $TARBALL
+			exit 54
+	    fi
+    fi
+
+	if test "$WINSETUPEXE" != ""; then
+		rm -f "/tmp/$WINSETUPEXE_BASENAME"
+
+#echo "a $WINSETUPEXE_BASENAME_ESC"
+#echo "b $WINSETUPEXE_BASENAME"
+#echo "c $WINSETUPEXE"
+
+#works OK:
+#scp -q afalout@aubit4gl.sourceforge.net:"/home/groups/a/au/aubit4gl/htdocs/files/Aubit\ 4GL\ compiler\ 0.30RC3.147.exe" .
+
+#Works:
+#$ auto_sf_scp_get /home/groups/a/au/aubit4gl/htdocs/files/Aubit 4GL compiler 0.30RC3.147.exe
+#spawn scp -q afalout@aubit4gl.sourceforge.net:"/home/groups/a/au/aubit4gl/htdocs/files/Aubit 4GL compiler 0.30RC3.147.exe" .
+# but you need to replace -> spawn scp -q afalout@aubit4gl.sourceforge.net:"$argv" .
+#with -> spawn scp -q afalout@aubit4gl.sourceforge.net:"[lrange $argv 0 5]" .
+#in auto_sf_scp_get !!!!
+
+
+#####################################################
+#Executing: auto_sf_scp_get /home/groups/a/au/aubit4gl/htdocs/files/Aubit 4GL compiler 0.30RC3.150.exe
+#####################################################
+#spawn scp -q afalout@aubit4gl.sourceforge.net:"/home/groups/a/au/aubit4gl/htdocs/files/Aubit 4GL compiler 0.30RC3.150.exe" .
+#afalout@aubit4gl.sourceforge.net's password:
+#scp: /home/groups/a/au/aubit4gl/htdocs/files/Aubit 4GL compiler 0.30RC3.150.exe: No such file or directory
 
 
 
-if test "$CLEAN" = "1"; then
+		#EXEC="$AUTOSFSCPGET $SCPPATH/$WINSETUPEXE_BASENAME_ESC"; runexec
+		EXEC="$AUTOSFSCPGET $SCPPATH/$WINSETUPEXE_BASENAME"; runexec
+		if test -f "/tmp/$WINSETUPEXE_BASENAME"; then
+			diff "/tmp/$WINSETUPEXE_BASENAME" "$WINSETUPEXE"
+			RET=$?
+			if test $RET != "0"
+			then
+		        echo "Error: /tmp/$WINSETUPEXE_BASENAME and $WINSETUPEXE are different"
+				ls -al "/tmp/$WINSETUPEXE_BASENAME"
+				ls -al "$WINSETUPEXE"
+				exit 54
+		    else
+		        echo "OK: /tmp/$WINSETUPEXE_BASENAME and $WINSETUPEXE are same"
+			fi
+        else
+			echo "download failed for /tmp/$WINSETUPEXE_BASENAME"
+        fi
+    fi
+
+	COMPARED_OK=1
+    cd -
+fi
+
+if test "$CLEAN" = "1" && test "$COMPARED_OK" = "1"; then
 
     #Clean
 	EXEC="rm -f $DLTMP1 $DLTMP2 $DOWNLOADPAGEBASE"; runexec
@@ -692,6 +813,11 @@ if test "$CLEAN" = "1"; then
 	EXEC="rm -f $CYSRCBUILDNAMES $CYBUILDNAMES"; runexec
 	EXEC="rm -f $UNIXSRCBUILDNAMES $UNIXBUILDNAMES"; runexec
 
+	#delete compare files:
+	EXEC="rm -f /tmp/$SOURCETARBASENAME"; runexec
+	EXEC="rm -f /tmp/$TARBALLBASENAME"; runexec
+
+	EXEC="make clean.aubitbuild"; runexec
 fi
 
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.99 2002-10-30 01:46:31 afalout Exp $
+# $Id: Makefile.in,v 1.100 2002-10-31 08:40:08 afalout Exp $
 #
 
 ## ==================================================================
@@ -245,7 +245,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 clean.config: clean.configure
 clean.configure: clean.makefiles clean.settings clean.splint
 	${RM} config.log config.status incl/config.h incl/a4gl_incl_config.h \
-	docs/doxy/Doxyfile etc/aubit-rpm.spec
+	docs/doxy/Doxyfile etc/aubit-rpm.spec configure configure.lineno libtool
 
 clean.settings:
 	${RM} etc/a4glrc etc/aubitbuild.mk etc/aubitenv etc/aubitrc
@@ -286,8 +286,14 @@ clean.root:
 #we must not clean *.tmp because of unixbuildnames.tmp:
 	$(RM) *.bak *.BAK libincl .*.bak core cyrpc.flg debug.out \
 	*.err ${PLATFORMINFO} make.log commit.log rpmbuild.log \
-	aubit4gl.lsm aubitdownload-template.htm rpmbuild.log \
-    tmpdlpage1.html
+	aubit4gl.lsm rpmbuild.log
+	rm -rf autom4te.cache
+
+#stuff created by aubitbuild.sh:
+clean.aubitbuild:
+	${RM} tmpdlpage1.html aubitdownload.htm tmpdlpage2.html aubitdownload-template.htm \
+    cybuildnames.tmp unixbuildnames.tmp unixsrcbuildnames.tmp cysrcbuildnames.tmp \
+    warning.log
 
 #FIXME: move this to appropriate makefile :
 	${RM} compilers/fcompile/fshow.glb compilers/fcompile/fshow.h \
@@ -461,6 +467,7 @@ ifndef COMSPEC
 	tar -cvzf ${SOURCETARBASENAME} *
 	@echo "Aubit tarball created"
 else
+#when on CygWin, maybe we should still use tar or bzip2, to preserve permissions, links...?
 	zip -r ${SOURCETARBASENAME} *
 	@echo "Aubit zipball created"
 endif

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install,v 1.8 2002-10-01 09:50:30 afalout Exp $
+# $Id: Makefile-install,v 1.9 2002-10-31 08:40:50 afalout Exp $
 #
 
 #This file gets installed to root of binary installation, under name "Makefile"
@@ -62,11 +62,15 @@ etc/aubitrc-bin:
 #config: etc/aubitrc-bin
 
 tar.bin: clean
-#	${RM} aubit4gl-bin-${TARGET}-${AUBIT_VERSION}.${AUBIT_BUILD}.tgz
-#	tar -cvzf aubit4gl-bin-${TARGET}-${AUBIT_VERSION}.${AUBIT_BUILD}.tgz *
 	${RM} ${BINTARBASENAME}
+ifndef COMSPEC
 	tar -cvzf ${BINTARBASENAME} *
 	@echo "Aubit binary installation tarball created"
+else
+#when on CygWin, maybe we should still use tar or bzip2, to preserve permissions, links...?
+	zip -r ${BINTARBASENAME} *
+	@echo "Aubit binary installation zipball created"
+endif
 
 clean:
 	${RM} config.status config.log etc/aubitrc.original
