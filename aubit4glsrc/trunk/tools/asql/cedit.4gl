@@ -14,9 +14,6 @@
 
 
 
-code
-#include <curses.h>
-endcode
 
 # maximum individual line length
 define line_length constant 255
@@ -92,6 +89,41 @@ endcode
 set pause mode off
 end function
 
+
+
+
+
+
+
+
+
+
+
+
+code
+#ifndef DIALECT_POSTGRES
+#include <curses.h>
+#else
+#define KEY_DOWN        0402            /* down-arrow key */
+#define KEY_UP          0403            /* up-arrow key */
+#define KEY_LEFT        0404            /* left-arrow key */
+#define KEY_RIGHT       0405            /* right-arrow key */
+#define KEY_HOME        0406            /* home key */
+#define KEY_BACKSPACE   0407            /* backspace key */
+
+#define KEY_NPAGE       0522            /* next-page key */
+#define KEY_PPAGE       0523            /* previous-page key */
+#define KEY_DC          0512            /* delete-character key */
+#define KEY_ENTER       0527            /* enter/send key */
+#define KEY_END         0550            /* end key */
+
+
+#endif
+
+endcode
+
+
+
 function edit_init()
 code
 key_left	=KEY_LEFT;
@@ -107,6 +139,11 @@ endcode
 let edit_lines=18
 
 end function
+
+
+
+
+
 
 
 function edit(p_edt)
@@ -446,4 +483,5 @@ if err then
 end if
 return err
 end function
+
 
