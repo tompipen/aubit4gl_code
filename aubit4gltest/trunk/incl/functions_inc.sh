@@ -2365,12 +2365,12 @@ if test "$RDBMS" = ""; then
 fi
 	test_db_exist $db
 	if test "$TEST" != ""; then 
-		echo "CR2"
+		#echo "CR2"
 		create_db $db
 	else
 		echo "Database $db exists"
 		drop_db $db	
-		echo "CR3"
+		#echo "CR3"
 		create_db $db
 	fi
 
@@ -2570,7 +2570,7 @@ dl=$5
 
 	if test "$VERBOSE" = "1"; then 
 		count_rows $loadname $db
-		let THIS_LOAD=CNT - BEFORE_LOAD
+		let THIS_LOAD=CNT-BEFORE_LOAD
 		echo "$THIS_LOAD rows loaded into $loadname"
 	fi
 	
@@ -2582,8 +2582,9 @@ dl=$5
 		exit $RET
 	fi
 	
-	if test "$VERBOSE" = "1"; then
-		if test -f $loadname.err; then 
+	if test -f $loadname.err; then
+		error "Load rejected some rows. See $loadname.err" "1"
+		if test "$VERBOSE" = "1"; then
 			cat $loadname.err
 		fi
 	fi
@@ -2676,7 +2677,54 @@ $dl'expect_fail_querix'$dl'sql_features_used'$dl'ansi_sql'$dl" > $logfile
 fi
 fi
 
-#total 41 columns 
+#total 42 columns 
+
+if test "$CATALOGUE_UNL_DBG" = "1"; then
+	echo "1  $dl$time$dl"
+	echo "2  $dl$test_no$dl"
+	echo "3  $dl$invalid$dl"
+	echo "4  $dl$is_db$dl"
+	echo "5  $dl$is_ec$dl"
+	echo "6  $dl$is_nosilent$dl"
+	echo "7  $dl$is_tui$dl"
+	echo "8  $dl$is_form$dl"
+	echo "9  $dl$is_report$dl"
+	echo "10 $dl$is_graphics$dl"
+	echo "11 $dl$is_prompt$dl"
+	echo "12 $dl$is_dump_screen$dl"
+	echo "13 $dl$is_long$dl"
+	echo "14 $dl$is_unknown$dl"
+	echo "15 $dl$is_cert$dl"
+	echo "16 $dl$is_obsolete$dl"
+	echo "17 $dl$is_described$dl"
+	echo "18 $dl$test_desc_txt$dl"
+	echo "19 $dl$test_compat_test$dl"
+	echo "20 $dl$expect_code$dl"
+	echo "21 $dl$se_required$dl"
+	echo "22 $dl$compile_only$dl"
+	echo "23 $dl$need_ifx_ver$dl"
+	echo "24 $dl$need_trans$dl"
+	echo "25 $dl$no_prefix$dl"
+	echo "26 $dl$need_compat$dl"
+	echo "27 $dl$old_makefile$dl"
+	echo "28 $dl$is_pcode_enabled$dl"
+	echo "29 $dl$is_no_cron$dl"
+	echo "30 $dl$scripted$dl"
+	echo "31 $dl$is_window$dl"
+	echo "32 $dl$test_ver$dl"
+	echo "33 $dl$run_tests_ver$dl"
+	echo "34 $dl$last_update$dl"
+	echo "35 $dl$expect_fail_cert$dl"
+	echo "36 $dl$expect_fail_esqli$dl"
+	echo "37 $dl$expect_fail_ecp$dl"
+	echo "38 $dl$expect_fail_ifx_p$dl"
+	echo "39 $dl$expect_fail_4js$dl"
+	echo "40 $dl$expect_fail_querix$dl"
+	echo "41 $dl$sql_features_used$dl"
+	echo "42 $dl$ansi_sql$dl"
+
+	exit 
+else
 
 echo "$time$dl$test_no$dl$invalid$dl$is_db$dl$is_ec$dl$is_nosilent$dl$is_tui\
 $dl$is_form$dl$is_report$dl$is_graphics$dl$is_prompt$dl$is_dump_screen\
@@ -2688,8 +2736,9 @@ $dl$is_window$dl$test_ver$dl$run_tests_ver$dl$last_update$dl$expect_fail_cert\
 $dl$expect_fail_esqli$dl$expect_fail_ecp$dl$expect_fail_ifx_p$dl$expect_fail_4js\
 $dl$expect_fail_querix$dl$sql_features_used$dl$ansi_sql$dl" >> $logfile
 
-}
+fi
 
+}
 
 ##
 # Log test run settings and summary results into Informix-style .unl file

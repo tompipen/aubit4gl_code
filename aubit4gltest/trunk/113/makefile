@@ -31,7 +31,8 @@ desc:
 		Warning - cursor FLUSH was previously thought to be a SELECT cursor \
 		but now turns out to be an INSERT cursor.You will need to add \
 			PRAGMA EMULATE INSERT CURSOR FOR FLUSH \
-		Note that this test explicityly sets A4GL_INCOMPAT_AT_RUNTIME=YES"
+		Note that this test explicityly sets A4GL_INCOMPAT_AT_RUNTIME=YES \
+		(compiling KL1a.4gl in OneMaxx)"
 
 db_test: 				; @echo "1"
 ec_test: 				; @echo "0"
@@ -43,8 +44,7 @@ graphic_test:			; @echo "0"
 console_prompt_test:	; @echo "0"
 dump_screen_test:		; @echo "0"
 long_test:				; @echo "0"
-cert_test:				; @echo "0"
-obsolete_test:			; @echo "0"
+cert_test:				; @echo "1"
 compat_test:			; @echo "1"
 expect_code:			; @echo "0"
 compile_only:			; @echo "1"

@@ -9,7 +9,7 @@
  
 database test1
 main
-define pr_invoicedetl record
+define pr_invoicedetl, pr_prodledg, pr_subaudit record
 		x char (10),
 		y char (10)
 	end record,
@@ -26,28 +26,28 @@ define pr_invoicedetl record
                          "and comm_date= ? ",
                          "and end_date= ? "
    prepare s2_subcustomer from pr_temp_text
-   declare c2_subcustomer cursor for s2_subcustomer
+   declare xxc2_subcustomer cursor for s2_subcustomer
 	
 	
 	
-   declare c1_invoicedetl cursor for
+   declare ooc1_invoicedetl cursor for
    		insert into invoicedetl values(pr_invoicedetl.*)
 		
 		BEGIN WORK
-   open c1_invoicedetl
+   open ooc1_invoicedetl
 
-   declare c_prodledg cursor for
+   declare wwc_prodledg cursor for
     insert into prodledg values(pr_prodledg.*)
    
-   open c_prodledg
-   declare c_subaudit cursor for
+   open wwc_prodledg
+   declare ttc_subaudit cursor for
     insert into subaudit values(pr_subaudit.*)
-   open c_subaudit
+   open ttc_subaudit
    
    
    
-   put c1_invoicedetl
-   flush c1_invoicedetl
+   put ooc1_invoicedetl
+   flush ooc1_invoicedetl
 
    		ROLLBACK WORK
 		
@@ -59,14 +59,16 @@ function update_issue()
 define pr_temp_text char (200)
 define cmpy char (3)
 define pr_label, pr_subhead, pr_customer, pr_prodstatus, pr_subcustomer, 
-	pr_subdetl, pr_subschedule record
+	pr_subdetl, pr_subschedule, pr_invoicedetl, pr_prodledg ,pr_subaudit record
 		x char (10),
-		y char (10)
+		y char (10),
+		sub_line_num smallint,
+		sub_num smallint,
+		issue_num smallint
 	end record
 	
 	
 
-	
 	
 define a, b, c, d, e, f char(20)
 
@@ -116,8 +118,8 @@ define a, b, c, d, e, f char(20)
                          "and part_code= ? ",
                          "and comm_date= ? ",
                          "and end_date= ? "
-   prepare s2_subcustomer from pr_temp_text
-   declare c2_subcustomer cursor for s2_subcustomer
+   prepare ees2_subcustomer from pr_temp_text
+   declare yyc2_subcustomer cursor for ees2_subcustomer
    declare c1_invoicedetl cursor for
     insert into invoicedetl values(pr_invoicedetl.*)
    open c1_invoicedetl
@@ -134,13 +136,13 @@ define a, b, c, d, e, f char(20)
                                  b
          fetch c_prodstatus into pr_prodstatus.*
       put c1_invoicedetl
-      open c2_subcustomer using a,
+      open yyc2_subcustomer using a,
                                 b,
                                 c,
                                 d,
                                 e,
                                 f
-      fetch c2_subcustomer into pr_subcustomer.*
+      fetch yyc2_subcustomer into pr_subcustomer.*
       open c2_subdetl
       fetch c2_subdetl into pr_subdetl.*
       open c2_subschedule

@@ -483,6 +483,9 @@ for a in $FLAGS; do
 			exit
 		;;
 		-certify)
+			echo "FIXME-broken"
+			exit 0
+			
 			#flage the test as certified in the makefile
 			CERT_TEST=1
 			continue

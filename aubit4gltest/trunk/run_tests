@@ -286,6 +286,10 @@ for a in $FLAGS; do
     -verbose-results | --verbose-results)   #Show more information about results
         #we already got this one set
         ;;
+
+	-cat-dbg) #used for debugging CATALOGUE_UNL function
+		CATALOGUE_UNL_DBG=1
+		;;
 		
 	-new-unl-db)
 		#Create database & tables to hold date from catalogues and test results
@@ -2145,6 +2149,9 @@ do
 			catalogue_unl
 		fi
 
+		if test "$CATALOGUE_UNL_DBG" = "1"; then 
+			catalogue_unl
+		fi
 
 	if test "$SH_DBG" = "1"; then 
 		echo "Determining if we can/should run test $TEST_NO"
