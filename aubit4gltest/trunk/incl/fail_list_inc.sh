@@ -11,9 +11,9 @@
 #lists that applu to Aubit compiler, since it anticipated that tests that fail 
 #using -eci will not work with any other Aubit configuration
 #NOTE: <*> = OK with -esqli
-EXPECT_TO_FAIL_TESTS="240 278 766 767 962 976 987"
+EXPECT_TO_FAIL_TESTS="240 766 767 962 976 987"
 #240 (numeric formating) http://aubit.com/mantis/bug_view_page.php?bug_id=0000495
-#278 (Too few variables for the number of fields) http://aubit.com/mantis/bug_view_page.php?bug_id=0000593
+#278 (Too few variables for the number of fields) http://aubit.com/mantis/bug_view_page.php?bug_id=0000593 # Should be fixed
 #766 (Key CONTROL-H was 49     and not 8) http://aubit.com/mantis/bug_view_page.php?bug_id=0000596
 #767 (wrong codes returned) http://aubit.com/mantis/bug_view_page.php?bug_id=0000597
 #962 (Error on near zero decimal comparison) http://aubit.com/mantis/bug_view_page.php?bug_id=0000601
@@ -22,10 +22,10 @@ EXPECT_TO_FAIL_TESTS="240 278 766 767 962 976 987"
 #233 failed once, but cant reproduce??
 
 #not reported (please enter bug report at: http://aubit.com/mantis)
-EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS 296 590 111"
-#296 Unable to read form.
-#590 Cannot open EXPLAIN output file. (Works with -ecp HOW? is it ignored?)
-#111 channel function not implemented
+EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS  590 111"
+#296 Unable to read form. # Should be there now...
+#590 Cannot open EXPLAIN output file. (Works with -ecp HOW? is it ignored?) 	# Yes - it is ignored..
+#111 channel function not implemented 						# Should be now
 
 # --------------------------------------------------------------------------
 #							-esql
@@ -34,7 +34,7 @@ EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS 296 590 111"
 ######################
 #Tests that currently fail with -esqli (but work with -cert)
 EXPECT_TO_FAIL_TESTS_ESQLI="80 685 694 703"
-#80 (Decimal or money value exceeds maximum precision) http://aubit.com/mantis/bug_view_page.php?bug_id=0000605
+#80 (Decimal or money value exceeds maximum precision) http://aubit.com/mantis/bug_view_page.php?bug_id=0000605 # Can you double check - 80 works on mine
 #685 same
 #694 same
 #703 same
