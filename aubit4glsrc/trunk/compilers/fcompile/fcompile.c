@@ -1,5 +1,13 @@
-   /* $Id: fcompile.c,v 1.4 2001-11-21 22:56:18 saferreira Exp $
+   /* $Id: fcompile.c,v 1.5 2001-11-22 00:14:10 saferreira Exp $
    /* */
+
+/**
+ * Main module from the form compiler.
+ *
+ * The form compiler parses a .per file and generates a .frm (compiled form)
+ *
+ * The frm is the file used at run-time by x4gl
+ */
 
 #include "../../lib/libincl/compiler.h"
 #include <stdio.h>
@@ -35,8 +43,14 @@ char outputfile[132];
 
 
 
-static
-bname (char *str, char *str1, char *str2)
+/**
+ *  From a file name takes the basename of the file (the file without extension)
+ *
+ *  @param str Origin file name
+ *  @param str1 Pointer to the place where the base name is putted
+ *  @param str2 Pointer to the place where the extension will be inserted
+ */
+static bname (char *str, char *str1, char *str2)
 {
 
   char fn[132];
@@ -167,6 +181,11 @@ init_form();
 }
 
 
+/**
+ * Executed by the parser when it enconters some error
+ *
+ * @param s String with error message sended by the parser
+ */
 yyerror (s)
      char *s;
 {
@@ -184,6 +203,11 @@ long ld;
 }
 
 
+/**
+ *  Executed when the parser arrives the end of parsing 
+ *
+ *  @return 
+ */
 yywrap(){
 return 1;
 }
