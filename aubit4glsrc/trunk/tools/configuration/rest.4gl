@@ -234,6 +234,7 @@ function display_txt()
 define a integer
 define b integer
 	set pause mode on
+	whenever error continue
 	for a=8 to 24
 		display "" at a,1
 	end for
@@ -243,6 +244,7 @@ define b integer
 			display lv_txt[a]  at b,1
 		end if
 	end for
+	whenever error stop
 	set pause mode off
 end function
 
