@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_rpc.c,v 1.9 2002-06-25 03:22:28 afalout Exp $
+# $Id: API_rpc.c,v 1.10 2002-08-19 10:17:46 afalout Exp $
 #
 */
 
@@ -40,20 +40,7 @@
 =====================================================================
 */
 
-
-
-#ifdef OLD_INCL
-
-	#include "a4gl_dbform.h"
-	#include "a4gl_debug.h"
-	#include "a4gl_aubit_lib.h"
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
-#endif
-
+#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================
@@ -70,11 +57,6 @@ static void *libptr=0;
 */
 
 static int 		(*func)				();
-/* void *			find_func			(void *p,char *s); on calldll.c */
-int				A4GLRPC_initlib 	(void);
-int				remote_func_call 	(char *host,int async,char *funcname,
-									int port,int np);
-
 
 /*
 =====================================================================

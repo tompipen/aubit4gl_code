@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.9 2002-08-19 08:08:19 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.10 2002-08-19 10:17:23 afalout Exp $
 #
 */
 
@@ -64,9 +64,68 @@
 		#undef WIN32
 	#endif
 
+	#ifndef BOOLEAN
+		#define BOOLEAN 	int
+		#define TRUE 		1
+		#define FALSE 		0
+	#endif
+
+
+    /* ======================= from a4gl_constats.h ================== */
+
+	#define ATTRIB_AUTONEXT 			1
+	#define ATTRIB_INVISIBLE 			2
+	#define ATTRIB_NOENTRY 				4
+	#define ATTRIB_REQUIRED 			8
+	#define ATTRIB_REVERSE 				16
+	#define ATTRIB_UPSHIFT 				32
+	#define ATTRIB_DOWNSHIFT 			64
+	#define ATTRIB_VERIFY 				128
+	#define ATTRIB_WORDWRAP 			256
+	#define ATTRIB_COLOUR 				512
+
+	#define NO 		(void *)0
+	#define FGL_OK 	(void *)1
+	#define DIGIT_ALIGN_RIGHT 			1
+	#define NUM_PARAM 					30
+	#define DATE_INVALID 				0
+	#define MAXDIG 						30
+
+	#define MODE_INPUT 					1
+	#define MODE_INPUT_WITHOUT_DEFAULTS 2
+	#define MODE_CONSTRUCT 				3
+	#define MODE_DISPLAY_ARRAY 			4
+	#define MODE_PROMPT 				5
+	#define FETCH_ABSOLUTE 				1
+	#define FETCH_RELATIVE 				2
+
+    /* ===================== from a4gl_dates.h ======================== */
+
+	#define	THURSDAY			4		/* for reformation */
+	#define	SATURDAY 			6		/* 1 Jan 1 was a Saturday */
+	#define	FIRST_MISSING_DAY 	639787	/* 3 Sep 1752 */
+	#define	NUMBER_MISSING_DAYS 11		/* 11 day correction */
+	#define	MAXDAYS				42		/* max slots in a month array */
+	#define	SPACE				-1		/* used in day array */
+	#define EPOCH 				693608
+
+	/* ============================= from a4gl_formxw.h ================ */
+
+   	#ifdef __CYGWIN__
+	    /* missing from rpcgen generated form_x.h on CygWin: */
+		#define bool_t int
+		#define u_int unsigned int
+	#endif
+
+	#ifdef MAX
+		#undef MAX
+	#endif
+
+	#ifdef MIN
+		#undef MIN
+	#endif
 
 	/* ======================== from a4gl_aubitcolours.h ========== */
-
 	#define AUBIT_COLOR_BLACK     0x00000
 	#define AUBIT_COLOR_RED       0x00100
 	#define AUBIT_COLOR_GREEN     0x00200
@@ -83,6 +142,45 @@
 	#define AUBIT_ATTR_BLINK      0x08000
 	#define AUBIT_ATTR_DIM        0x10000
 
+    /* ====================== from a4gl_errors.h ================== */
+	#define ERR_BADNOARGS 		1000
+	#define ABORT 				1
+	#define WARN 				2
+
+	#define WHEN_CONTINUE 		0
+	#define WHEN_STOP 			1
+	#define WHEN_CALL 			2
+	#define WHEN_GOTO 			3
+	#define WHEN_NOTSET 		4
+
+	#define WHEN_ERROR 			16
+	#define WHEN_ANYERROR 		32
+	#define WHEN_SQLERROR 		64
+	#define WHEN_WARNING 		128
+	#define WHEN_SQLWARNING		256
+	#define WHEN_NOTFOUND 		512
+	#define WHEN_SUCCESS 		1024
+	#define WHEN_SQLSUCCESS 	2048
+
+	#define A_WHEN_ERROR 		0
+	#define A_WHEN_ANYERROR 	1
+	#define A_WHEN_SQLERROR 	2
+	#define A_WHEN_WARNING 		3
+	#define A_WHEN_SQLWARNING	4
+	#define A_WHEN_NOTFOUND 	5
+	#define A_WHEN_SUCCESS	 	6
+	#define A_WHEN_SQLSUCCESS   7
+
+    /* =================== from a4gl_shockhelp.h ====================*/
+
+	/* On some crazy systems, these aren't defined. */
+	#ifndef EXIT_FAILURE
+		#define EXIT_FAILURE 1
+	#endif
+
+	#ifndef EXIT_SUCCESS
+		#define EXIT_SUCCESS 0
+	#endif
 
     /* ======================== from a4gl_match.h ================= */
 
@@ -93,129 +191,118 @@
 
 
     /* ========================= from a4gl_keys.h ================== */
-
-	#define A4GLKEY_ENTER 0xff01
-	#define A4GLKEY_DOWN 0xff02
-	#define A4GLKEY_UP 0xff03
-	#define A4GLKEY_LEFT 0xff04
-	#define A4GLKEY_RIGHT 0xff05
-	#define A4GLKEY_PGUP 0xff06
-	#define A4GLKEY_PGDN 0xff07
-	#define A4GLKEY_INS 0xff08
-	#define A4GLKEY_DEL 0xff09
-	#define A4GLKEY_HOME 0xff0a
-	#define A4GLKEY_END 0xff0b
-
-	#define A4GLKEY_CANCEL 0xfffe
-	#define A4GLKEY_F(x) (0xff10+x)
-
+	#define A4GLKEY_ENTER 	0xff01
+	#define A4GLKEY_DOWN 	0xff02
+	#define A4GLKEY_UP 		0xff03
+	#define A4GLKEY_LEFT 	0xff04
+	#define A4GLKEY_RIGHT 	0xff05
+	#define A4GLKEY_PGUP 	0xff06
+	#define A4GLKEY_PGDN 	0xff07
+	#define A4GLKEY_INS 	0xff08
+	#define A4GLKEY_DEL 	0xff09
+	#define A4GLKEY_HOME 	0xff0a
+	#define A4GLKEY_END 	0xff0b
+	#define A4GLKEY_CANCEL 	0xfffe
+	#define A4GLKEY_F(x) 	(0xff10+x)
 
     /* ========================= from a4gl_tunable.h ================ */
 
-	#define MAXLEN 80
-	#define MAXWIDTH 256
-	#define MAXTAGS 256
-	#define TAGSIZE 100
-	#define MAXSCREENS 10
-	#define MAXFIELDS 256
-	#define NUMTABS 100
-	#define BIGBUFF 1024
-	#define TABLESIZE 32
-	#define COLUMNSIZE 32
-	#define NUMALIAS 32
-	#define DBSIZE 32
-	#define SMALLSTRING 32
-	#define BIGSTRING 256
-	#define FNAMESIZE 64
-	#define MAXSCREENRECS 32
-	#define MAXCONSTANTS 1024
-
+	#define MAXLEN 			80
+	#define MAXWIDTH 		256
+	#define MAXTAGS 		256
+	#define TAGSIZE 		100
+	#define MAXSCREENS 		10
+	#define MAXFIELDS 		256
+	#define NUMTABS 		100
+	#define BIGBUFF 		1024
+	#define TABLESIZE 		32
+	#define COLUMNSIZE 		32
+	#define NUMALIAS 		32
+	#define DBSIZE 			32
+	#define SMALLSTRING 	32
+	#define BIGSTRING 		256
+	#define FNAMESIZE 		64
+	#define MAXSCREENRECS 	32
+	#define MAXCONSTANTS 	1024
 
     /* ========================== from a4gl_pointers.h =============== */
-
-	#define PANCODE '1'
-	#define WINCODE '2'
-	#define CURCODE '3'
-	#define PRECODE '4'
-	#define MNWINCODE '5'
-	#define MNPARCODE '6'
-	#define FORMCODE '7'
-	#define S_WINDOWSCODE '8'
-	#define S_FORMDETSCODE '9'
-	#define SESSCODE 'A'
-	#define RPC_FUNC 'B'
-	#define ATTRIBUTE 'C'
-	#define DROPSHADOW 'D'
-	#define COMPILED_FORM 'E'
-	#define MESSAGEWIN 'F'
-
+	#define PANCODE 		'1'
+	#define WINCODE 		'2'
+	#define CURCODE 		'3'
+	#define PRECODE 		'4'
+	#define MNWINCODE 		'5'
+	#define MNPARCODE 		'6'
+	#define FORMCODE 		'7'
+	#define S_WINDOWSCODE 	'8'
+	#define S_FORMDETSCODE 	'9'
+	#define SESSCODE 		'A'
+	#define RPC_FUNC 		'B'
+	#define ATTRIBUTE 		'C'
+	#define DROPSHADOW 		'D'
+	#define COMPILED_FORM 	'E'
+	#define MESSAGEWIN 		'F'
 
 	/* ========================= from a4gl_ui.h ====================== */
-
-	#define DESCLENGTH 10
-	#define nalloc(x) malloc(sizeof(x))
-	#define INVERT 1
-	#define NORM 0
-	#define BS KEY_BACKSPACE
-	#define FORMFEED 12
-	#define gotoxy(x,y) mja_gotoxy(x,y)
-	#define CR 13
-	#define ESC 27
-	#define HOMEKEY KEY_HOME
-	#define ENDKEY KEY_END
-	#define UPKEY KEY_UP
-	#define DOWNKEY KEY_DOWN
-	#define PGUPKEY KEY_PPAGE
-	#define PGDNKEY KEY_NPAGE
-	#define LEFTKEY KEY_LEFT
-	#define INSKEY KEY_IC
-	#define RIGHTKEY KEY_RIGHT
-	#define DELKEY KEY_BACKSPACE
-	#define F1 KEY_F(1)
-	#define F2 KEY_F(2)
-	#define F3 KEY_F(3)
-	#define F4 KEY_F(4)
-	#define F5 KEY_F(5)
-	#define F6 KEY_F(6)
-	#define F7 KEY_F(7)
-	#define F8 KEY_F(8)
-	#define F9 KEY_F(9)
-	#define F10 KEY_F(10)
-	#define F11 KEY_F(11)
-	#define F12 KEY_F(12)
-	#define MENU_ALL "_AlL_"
+	#define DESCLENGTH 		10
+	#define nalloc(x) 		malloc(sizeof(x))
+	#define INVERT 			1
+	#define NORM 			0
+	#define BS 				KEY_BACKSPACE
+	#define FORMFEED 		12
+	#define gotoxy(x,y) 	mja_gotoxy(x,y)
+	#define CR 				13
+	#define ESC 			27
+	#define HOMEKEY 		KEY_HOME
+	#define ENDKEY 			KEY_END
+	#define UPKEY 			KEY_UP
+	#define DOWNKEY 		KEY_DOWN
+	#define PGUPKEY 		KEY_PPAGE
+	#define PGDNKEY 		KEY_NPAGE
+	#define LEFTKEY 		KEY_LEFT
+	#define INSKEY 			KEY_IC
+	#define RIGHTKEY 		KEY_RIGHT
+	#define DELKEY 			KEY_BACKSPACE
+	#define F1 				KEY_F(1)
+	#define F2 				KEY_F(2)
+	#define F3 				KEY_F(3)
+	#define F4 				KEY_F(4)
+	#define F5 				KEY_F(5)
+	#define F6 				KEY_F(6)
+	#define F7 				KEY_F(7)
+	#define F8 				KEY_F(8)
+	#define F9 				KEY_F(9)
+	#define F10 			KEY_F(10)
+	#define F11 			KEY_F(11)
+	#define F12 			KEY_F(12)
+	#define MENU_ALL 		"_AlL_"
 	/* Datasave */
-	#define DATAVER 1
+	#define DATAVER 		1
 
-	#define NOTFOUND 1
-	#define WRONGVER 2
-	#define BADFILE 3
-	#define NOWRITE 4
-	#define BADWRITE 5
+	#define NOTFOUND 		1
+	#define WRONGVER 		2
+	#define BADFILE 		3
+	#define NOWRITE 		4
+	#define BADWRITE 		5
 
+	#define STREQL(a,b) 	(strcmp(a,b)==0)
+	#define STRNEQ(a,b) 	(strcmp(a,b)!=0)
+	#define STRIEQ(a,b) 	(strcasecmp(a,b)==0)
+	#define STRINEQ(a,b) 	(strcasecmp(a,b)!=0)
 
-    /* ---------------------- */
-
-	#define STREQL(a,b) (strcmp(a,b)==0)
-	#define STRNEQ(a,b) (strcmp(a,b)!=0)
-	#define STRIEQ(a,b) (strcasecmp(a,b)==0)
-	#define STRINEQ(a,b) (strcasecmp(a,b)!=0)
-
-
-	#define RES_PANEL 1
-	#define RES_ACLWINDOW 2
-	#define RES_CURSWINDOW 3
-	#define RES_ACLFORM 4
+	#define RES_PANEL 		1
+	#define RES_ACLWINDOW 	2
+	#define RES_CURSWINDOW 	3
+	#define RES_ACLFORM 	4
 
 	#define getptr_PANEL(b) (PANEL *)find_pointer(b,RES_PANEL)
 	#define getptr_s_windows(b) (struct s_windows *)find_pointer(b,RES_ACLWINDOW)
 	#define getptr_WINDOW(b) (WINDOW *)find_pointer(b,RES_CURSWINDOW)
 	#define getptr_s_form_dets(b) (struct s_form_dets *)find_pointer(b,RES_ACLFORM)
 
-	#define pushptr_PANEL(b,p)      add_pointer(b,RES_PANEL,p)
-	#define pushptr_s_windows(b,p)   add_pointer(b,RES_ACLWINDOW,p)
-	#define pushptr_WIN(b,p)         add_pointer(b,RES_CURSWINDOW,p)
-	#define pushptr_s_form_dets(b,p) add_pointer(b,RES_ACLFORM,p)
+	#define pushptr_PANEL(b,p)      	add_pointer(b,RES_PANEL,p)
+	#define pushptr_s_windows(b,p)   	add_pointer(b,RES_ACLWINDOW,p)
+	#define pushptr_WIN(b,p)         	add_pointer(b,RES_CURSWINDOW,p)
+	#define pushptr_s_form_dets(b,p) 	add_pointer(b,RES_ACLFORM,p)
 
 
 	/* available on to this library */
@@ -223,28 +310,38 @@
 
 	/* available to other files in the library */
 	#define LIBUSEONLY
-
 	#define LIBEXPORT
 
 	/* available to 4gl */
 	#define LIBINTERFACE
-
 	#define PANCODE '1'
 	#define WINCODE '2'
 
 
 	/* ========================= from a4gl_ui.h ====================== */
-
 	#define IDENTLEN 18;
 	#define ACL_MN_SHOW 0x0000
 	#define ACL_MN_HIDE 0x0001
 	#define A_BORDER 0x400
 	#define wchk() if (sqlca.sqlcode<0) werror_hand(__FILE__,__LINE__)
 
-    /* ========================== from a4gl_dtypes.h ==================== */
 
+    /* ==================== from incl_4glhdr.h =========================*/
+	#define fglerror(a,b) fgl_error(__LINE__,__FILE__,a,b)
+	#define AFT_FIELD_CHK(zzz,xxx) (_fld_dr==-98&&strcmp(fldname,zzz)==0)
+	#define BEF_FIELD_CHK(zzz,xxx) (_fld_dr==-97&&strcmp(fldname,zzz)==0)
+	#define BEF_DELETE  (_fld_dr==-12)
+	#define AFT_DELETE  (_fld_dr==-13)
+	#define BEF_INSERT  (_fld_dr==-14)
+	#define AFT_INSERT  (_fld_dr==-15)
+	#define BEF_ROW (_fld_dr==-10)
+	#define AFT_ROW  (_fld_dr==-11)
+	#define BEFORE_INP  (_fld_dr==-99)
+	#define AFTER_INP  (_fld_dr==-95)
+	#define ON_KEY(zzz) if (_fld_dr==-90&&chk_iskey(zzz))
+	#define set_status(a) set_status(a,0)
 
-
+	/* ========================== from a4gl_dtypes.h ==================== */
 	#define DTYPE_CHAR      0
 	#define DTYPE_SMINT     1
 	#define DTYPE_INT       2
@@ -276,16 +373,13 @@
 	#define DTYPE_VCHAR     13
 	#define DTYPE_INTERVAL  14
 */
-	#define DTYPE_MASK 255 /* bit pattern for data type */
+	#define DTYPE_MASK 		255 /* bit pattern for data type */
 
-	#define MAX_DTYPE  255
-	#define DTYPE_MALLOCED 256
+	#define MAX_DTYPE  		255
+	#define DTYPE_MALLOCED 	256
 
-
-	#define MAXDIG 30
-	#define MAXPNT 30
-
-
+	#define MAXDIG 			30
+	#define MAXPNT 			30
 
 /*
 =====================================================================
@@ -309,8 +403,8 @@
 	#include <signal.h>             /* SIGINT */
 	/*
 	to force LCLint to process <sys/types.h>, since form_x.h will include
-    rpc.h that needs fd_set.
-	included via /usr/include/sys/types.h but defined in /usr/include/sys/select.h
+    rpc.h that needs fd_set. included via /usr/include/sys/types.h but 
+	defined in /usr/include/sys/select.h
 	 */
 
 	/*@-skipposixheaders@*/
@@ -374,18 +468,22 @@
 	#endif
 
     /* API prototypes */
-	#include "a4gl_API_lex.h"
-	#include "a4gl_API_form.h"
-	#include "a4gl_API_menu.h"
-	#include "a4gl_API_msg.h"
-	#include "a4gl_API_sql.h"
-	#include "a4gl_API_packer.h"
-    //#include "a4gl_API_ui.h"
-    //#include "a4gl_API_exreport.h"
-    //#include "a4gl_API_rpc.h"
-	#include "a4gl_API_exdata.h"
+	#include "a4gl_API_lex.h"          	/* generated from .spec */
+	#include "a4gl_API_form.h"          /* generated from .spec */
+	#include "a4gl_API_menu.h"          /* generated from .spec */
+	#include "a4gl_API_msg.h"           /* generated from .spec */
+	#include "a4gl_API_packer.h"        /* generated from .spec */
+    #include "a4gl_API_exdata.h"        /* created manually */
+	#include "a4gl_API_ui.h"            /* created manually */
+	#include "a4gl_API_exreport.h"    	/* created manually */
+	#include "a4gl_API_sql.h"           /* created manually */
+	#include "a4gl_API_rpc.h"         	/* created manually */
 
-    #ifndef _NO_FORM_X_H_
+    /******************************************************
+    We really need to remove this - it depends on Sun RPC,
+    and therefore makes ALL Aubit code dependent on it!
+    *******************************************************/
+	#ifndef _NO_FORM_X_H_
 		#ifdef SRC_TREE
 			#include "../common/dataio/form_x.x.h"   /* struct_form */
         #else
@@ -399,15 +497,6 @@
                     Variables definitions
 =====================================================================
 */
-
-
-/*
-=====================================================================
-                    Functions prototypes
-=====================================================================
-*/
-
-
 
 	/* ========================= from a4gl_ui.h ====================== */
 
@@ -458,36 +547,36 @@
 	ACL_Menu;
 
 	typedef struct  {
-	int x,y;
-	int length;
-	struct field_geometry *field_up;
-	struct field_geometry *field_down;
-	struct field_geometry *field_left;
-	struct field_geometry *field_right;
-	struct field_geometry *field_next;
-	struct field_geometry *field_previous;
-	struct gen_field *master;
+		int x,y;
+		int length;
+		struct field_geometry *field_up;
+		struct field_geometry *field_down;
+		struct field_geometry *field_left;
+		struct field_geometry *field_right;
+		struct field_geometry *field_next;
+		struct field_geometry *field_previous;
+		struct gen_field *master;
 	} field_geometry;
 
 	typedef struct {
-	char colname[19];
-	char tabname[19];
-	int length;
-	int x,y;
-	int data_type;
-	int attributes; /*color etc.*/
-	int field_attributes; /*autonext etc.*/
-	char tag[19];
-	field_geometry *fields_list;
+		char colname[19];
+		char tabname[19];
+		int length;
+		int x,y;
+		int data_type;
+		int attributes; 		/*color etc.*/
+		int field_attributes; 	/*autonext etc.*/
+		char tag[19];
+		field_geometry *fields_list;
 	} gen_field;
 
 	typedef struct {
-	int x,y,width,height;
-	char form_name[19];
+		int x,y,width,height;
+		char form_name[19];
 	} gen_form;
 
 	#ifdef OBJECTMODULE
-		char opts[100][80];		/*menu options */
+		char opts[100][80];			/*menu options */
 		int abort_pressed;
 		int relxedit = 0, relyedit = 0;
 		int aborted;
@@ -502,41 +591,31 @@
 		extern int week_no;
 	#endif
 
-	void init_menu (void);		/*initialize menu structure */
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
-	int disp_menu (char *str, int x,int y);	/* display a menu with title 'str' at position y */
-
-	void banner (char str[], int a, int b, int c);
-
-	void title_box (char str[], int a, int x, int l);
-
-	void error_box(char *str);		/*print error message */
-
-	/* from curslib.c: */
-	void disp_opt (int row, int x, int y, int l, int type);
-
-	int do_key_menu (void);		/*internal function */
+	void 	init_menu 		(void);						/*initialize menu structure */
+	int 	disp_menu 		(char *str, int x,int y);	/* display a menu with title 'str' at position y */
+	void 	banner 			(char str[], int a, int b, int c);
+	void 	title_box 		(char str[], int a, int x, int l);
+	void 	error_box		(char *str);				/*print error message */
 
 	/* from curslib.c: */
-	void do_pause (void);			/*waits for a key press */
-	int edit (char *string, char type, int length, int x, int y);
-
-	int check_type (char c, char type, int flg, int len);
-
-	int ask_int (char *prompt);	/*  prompt for an integer from user  */
-	double ask_dbl (char *prompt);	/*  prompt for an integer from user  */
-	int ask_verify (char *prompt);	/*  prompt for verification  */
-
-	unsigned int getcursor (void);	/* Returns the shape of the current cursor */
-
-	/* from curslib.c: */
+	void 	disp_opt 		(int row, int x, int y, int l, int type);
+	int 	do_key_menu 	(void);		/*internal function */
+	void 	do_pause 		(void);			/*waits for a key press */
+	int 	edit 			(char *string, char type, int length, int x, int y);
+	int 	check_type 		(char c, char type, int flg, int len);
+	int 	ask_int 		(char *prompt);	/*  prompt for an integer from user  */
+	double 	ask_dbl 		(char *prompt);	/*  prompt for an integer from user  */
+	int 	ask_verify 		(char *prompt);	/*  prompt for verification  */
+	unsigned int getcursor 	(void);			/* Returns the shape of the current cursor */
 	void    strip_nl 		(char *str);
 
-
-	ACL_Menu *
-	new_menu (char *title,
-	          int x, int y,
-	          int mn_type, int help_no, int nopts,va_list *ap);
+	ACL_Menu * new_menu 	(char *title,int x, int y,int mn_type, int help_no, int nopts,va_list *ap);
 
 	struct text_info
 	  {
@@ -554,10 +633,10 @@
 	  };
 
 	typedef struct {
-	int code;
-	char *desc;
-	int color_attrib;
-	int attrib;
+		int code;
+		char *desc;
+		int color_attrib;
+		int attrib;
 	} attributes;
 
 	enum box_styles
@@ -590,25 +669,22 @@
 	char * glob_window (int x, int y, int w, int h, int border);
 	void * find_pointer (const char *pname, char t);
 
-    /* ============================================================= */
-
-	/* example from stack.h : */
-
-	/* OBJECTMODULE defined in keys.c */
-
+	/* OBJECTMODULE is defined in keys.c */
 	#ifdef OBJECTMODULE
-	/*	#if (defined(WIN32) && ! defined(__CYGWIN__))
+		/*	
+		#if (defined(WIN32) && ! defined(__CYGWIN__))
 		#ifdef WIN32
-    */
+		*/
 		#ifdef __CYGWIN__
 			dll_export struct s_form_attr std_dbscr;
 		#else
 			struct s_form_attr std_dbscr;
 		#endif
 	#else
-	/*	#if (defined(WIN32) && ! defined(__CYGWIN__))
+		/*	
+		#if (defined(WIN32) && ! defined(__CYGWIN__))
 		#ifdef WIN32
-    */
+		*/
 		#ifdef __CYGWIN__
 			dll_import struct s_form_attr std_dbscr;
 		#else
@@ -619,9 +695,9 @@
     /* ======================== from debug.h ========================*/
 
 
-	void debug_full (char *fmt,...);
-	void exitwith_sql(char *s) ;
-	void set_errm(char *s);
+	void 	debug_full 		(char *fmt,...);
+	void 	exitwith_sql	(char *s) ;
+	void 	set_errm		(char *s);
 
 	struct a4gl_dtime {
 	    int stime;
@@ -633,10 +709,10 @@
     /* ========================== from a4gl_dtypes.h ==================== */
 
 		struct s_typenames {
-		char *name;
-		int dtype;
-		int noentry;
-		int blank;
+			char *name;
+			int dtype;
+			int noentry;
+			int blank;
 		};
 
 		#ifdef IO
@@ -663,26 +739,8 @@
 
     /* ==================== from incl_4glhdr.h =========================*/
 
-
-
-	#define fglerror(a,b) fgl_error(__LINE__,__FILE__,a,b)
-	#define AFT_FIELD_CHK(zzz,xxx) (_fld_dr==-98&&strcmp(fldname,zzz)==0)
-	#define BEF_FIELD_CHK(zzz,xxx) (_fld_dr==-97&&strcmp(fldname,zzz)==0)
-	#define BEF_DELETE  (_fld_dr==-12)
-	#define AFT_DELETE  (_fld_dr==-13)
-	#define BEF_INSERT  (_fld_dr==-14)
-	#define AFT_INSERT  (_fld_dr==-15)
-	#define BEF_ROW (_fld_dr==-10)
-	#define AFT_ROW  (_fld_dr==-11)
-	#define BEFORE_INP  (_fld_dr==-99)
-	#define AFTER_INP  (_fld_dr==-95)
-	#define ON_KEY(zzz) if (_fld_dr==-90&&chk_iskey(zzz))
-	#define set_status(a) set_status(a,0)
-
 	/* not strictly voids - but saves getting into the details */
 	void *prepare_glob_sql (char *s,int ni,void *b);
-
-
 
 	/* ------------------ moved from 4gldef.h --------------------- */
 
@@ -857,33 +915,29 @@
 	#define DECODE_SIZE(x) (x>>16)
 
 	/* Prototpes for functions that should be seen */
-	char *	new_string(int a);
-	int 	pop_bool(void);
-	int 	pop_int(void);
-	long 	pop_long(void);
-	long 	pop_date(void);
-	float 	pop_float(void);
-	double 	pop_double(void);
-	int 	pop_var(void *p,int d) ;
-	int 	pop_var2(void *p,int d,int s) ;
-	double 	ret_var(void *p,int d) ;
-	int 	pop_char(char *z,int size);
-	char *	char_pop(void);
-	int 	pop_param(void *p,int d,int size);
-
+	char *	new_string		(int a);
+	int 	pop_bool		(void);
+	int 	pop_int			(void);
+	long 	pop_long		(void);
+	long 	pop_date		(void);
+	float 	pop_float		(void);
+	double 	pop_double		(void);
+	int 	pop_var			(void *p,int d) ;
+	int 	pop_var2		(void *p,int d,int s) ;
+	double 	ret_var			(void *p,int d) ;
+	int 	pop_char		(char *z,int size);
+	char *	char_pop		(void);
+	int 	pop_param		(void *p,int d,int size);
 	void 	pop_params		(struct BINDING *b,int n);
 	void 	push_param		(void *p,int d);
 	void 	push_params 	(struct BINDING *b, int n);
-
-	void 	push_user(void);
-	void 	push_today(void);
-	int 	opboolean(void);
-	void 	pop_args(int a) ;
-	void 	debug_print_stack(void) ;
-	void 	print_stack(void) ;
-
-
-	void 	locate_var(struct fgl_int_loc *p,char where,char *filename);
+	void 	push_user		(void);
+	void 	push_today		(void);
+	int 	opboolean		(void);
+	void 	pop_args		(int a);
+	void 	debug_print_stack(void);
+	void 	print_stack		(void);
+	void 	locate_var		(struct fgl_int_loc *p,char where,char *filename);
 
 
 	#if (defined(WIN32) && ! defined(__CYGWIN__))
@@ -953,11 +1007,10 @@
 	   int font;
 	};
 
-	double pdf_size(double f, char c,struct pdf_rep_structure *p);
+	double 	pdf_size		(double f, char c,struct pdf_rep_structure *p);
 
 	#define REP_TYPE_PDF 1
 	#define REP_TYPE_NORMAL 2
-
 	#define REPORT_START -1
 	#define REPORT_FINISH -2
 	#define REPORT_DATA -3
@@ -972,8 +1025,6 @@
 	#define REPORT_FIRSTPAGEHEADER -12
 	#define REPORT_LASTDATA -13
 	#define REPORT_PAGETRAILER -14
-
-
 	#define ERR_BADNOARGS 1000
 	#define ABORT 1
 	#define WARN 2
@@ -1016,20 +1067,14 @@
 	int 	aclfgl_fgl_getenv 	(int nargs);
 	void    aclfgl_mdy			(void);
 
-
 	int     fgl_fieldtouched	(char *fieldname);
 	void    close_database		(void);
 	char * 	let_substr 			(char *ca, int dtype, int a, int b,...);
-	char *substr(char *s,int dtype,int a,int b,...);
-
-
-	/* =========================== builtin.c =============================== */
-	/*int 	aclfgl_fgl_getenv 	(int nargs); */
+	char *	substr				(char *s,int dtype,int a,int b,...);
 	void	include_builtin_in_exe(void);
 	void 	set_scr_line 		(int a);
 	void 	set_arr_curr 		(int a);
 	int 	get_count 			(void);
-	/* void    aclfgl_mdy			(void); */
 	void    set_arr_count 		(int a);
 
 
@@ -1047,19 +1092,19 @@
 	void 	push_variable	(void *ptr,int dtype);
 	void 	push_interval	(struct ival *p);
 
-
-	void 	aclfgl_date(void);
-	void 	aclfgl_fgl_drawbox(int n);
-	int 	aclfgl_day(void);
-	int 	aclfgl_month(void);
-	int 	aclfgl_weekday(void);
-	int 	aclfgl_year(void);
-
 	int 	func_clip(void);
 	void 	func_concat(void);
 	void 	func_using(void);
 	int 	find_function(char *a);
 	double 	power(double a,double b);
+
+	void 	aclfgl_date		(void);
+	void 	aclfgl_fgl_drawbox(int n);
+	int 	aclfgl_day		(void);
+	int 	aclfgl_month	(void);
+	int 	aclfgl_weekday	(void);
+	int 	aclfgl_year		(void);
+
 
 	/* ============================ resource.c ============================= */
 	struct str_resource
@@ -1068,10 +1113,10 @@
 	    char value[127];
 	  };
 
-	char * 	find_str_resource_int (char *search, int a);
+	char * 	find_str_resource_int	(char *search, int a);
 	struct 	str_resource * build_user_resources(void);
-	int 	env_option_set		(char *s);
-	char*	acl_getenv 			(char *);
+	int 	env_option_set			(char *s);
+	char*	acl_getenv 				(char *);
 
 
 	/* ========================== gui_io.c ================================= */
@@ -1190,26 +1235,6 @@
 	#define ENCODE_SIZE(x) (x<<16)
 	#define DECODE_SIZE(x) (x>>16)
 
-
-	void pushop (int a);
-	char *params_on_stack (char *_paramnames[],int n);
-
-
-	int 	isnull 				(int type, char *buff);
-	void 	setnull 			(int type, char *buff, int size);
-	char *lrtrim(char *z) ;
-	void get_top_of_stack (int a, int *d, int *s, void **ptr);
-	void drop_param (void);
-	void push_null (void);
-	void init_blob (struct fgl_int_loc *p);
-	int read_param (void *p, int d, int size, int c);
-	int conv_to_interval (int a);
-	int chknull_boolean (int n, int n1, int n2);
-	int chknull (int n, int n1, int n2);
-	void push_bind (struct BINDING *b, int n, int no, int elemsize);
-
-
-
 	#define fglbyte struct fgl_int_loc
 	#define fgltext struct fgl_int_loc
 
@@ -1224,6 +1249,23 @@
 	#define acl_free(s) acl_free_full(s,__FILE__,__LINE__)
 	#define acl_malloc(a,b) acl_malloc_full(a,b,__FILE__,__LINE__)
 
+
+
+	void 	pushop 				(int a);
+	char *	params_on_stack 	(char *_paramnames[],int n);
+	int 	isnull 				(int type, char *buff);
+	void 	setnull 			(int type, char *buff, int size);
+	char *	lrtrim				(char *z) ;
+	void 	get_top_of_stack 	(int a, int *d, int *s, void **ptr);
+	void 	drop_param 			(void);
+	void 	push_null 			(void);
+	void 	init_blob 			(struct fgl_int_loc *p);
+	int 	read_param 			(void *p, int d, int size, int c);
+	int 	conv_to_interval 	(int a);
+	int 	chknull_boolean 	(int n, int n1, int n2);
+	int 	chknull 			(int n, int n1, int n2);
+	void 	push_bind 			(struct BINDING *b, int n, int no, int elemsize);
+
 	/* ============================ calldll.c ============================== */
 	void * 	dl_openlibrary 		(char *type, char *name);
 	void *  find_func_allow_missing (void *dllhandle, char *func);
@@ -1236,35 +1278,6 @@
 	int 	conv 				(int dtype1, void *p1, int dtype2, void *p2, int size);
 	void    set_convmatrix		(int dtype1,int dtype2,void *ptr);
 
-
-    /* ======================= from a4gl_constats.h ================== */
-
-	#define ATTRIB_AUTONEXT 1
-	#define ATTRIB_INVISIBLE 2
-	#define ATTRIB_NOENTRY 4
-	#define ATTRIB_REQUIRED 8
-	#define ATTRIB_REVERSE 16
-	#define ATTRIB_UPSHIFT 32
-	#define ATTRIB_DOWNSHIFT 64
-	#define ATTRIB_VERIFY 128
-	#define ATTRIB_WORDWRAP 256
-	#define ATTRIB_COLOUR 512
-
-	#define NO (void *)0
-	#define FGL_OK (void *)1
-	#define DIGIT_ALIGN_RIGHT 1
-	#define NUM_PARAM 30
-	#define DATE_INVALID 0
-	#define MAXDIG 30
-
-	#define MODE_INPUT 1
-	#define MODE_INPUT_WITHOUT_DEFAULTS 2
-	#define MODE_CONSTRUCT 3
-	#define MODE_DISPLAY_ARRAY 4
-	#define MODE_PROMPT 5
-	#define FETCH_ABSOLUTE 1
-	#define FETCH_RELATIVE 2
-
 	/* ============================ fglwrap.c ============================== */
 	void 	chk_err				(int lineno,char *fname);
 	int     fgl_error 			(int a, char *s, int err, int stat);
@@ -1272,17 +1285,6 @@
 	char * 	get_serno			(void);
 	void 	set_abort 			(int a);
 	void    check_and_show_id	(char *program, char *arg1);
-
-
-    /* ===================== from a4gl_dates.h ======================== */
-
-	#define	THURSDAY		4		/* for reformation */
-	#define	SATURDAY 		6		/* 1 Jan 1 was a Saturday */
-	#define	FIRST_MISSING_DAY 	639787		/* 3 Sep 1752 */
-	#define	NUMBER_MISSING_DAYS 	11		/* 11 day correction */
-	#define	MAXDAYS			42		/* max slots in a month array */
-	#define	SPACE			-1		/* used in day array */
-	#define EPOCH 693608
 
 	/* ========================= errfile.c================================== */
 	FILE *	mja_fopen			(char *name,char *mode);
@@ -1297,10 +1299,7 @@
 
     /* =========================== from a4gl_io.h ================ */
 
-	FILE *open_file_dbpath(char *fname);
-
-	/* ========================== API_exreport.c =========================== */
-	void	A4GLREPORT_initlib 	(void);
+	FILE *	open_file_dbpath	(char *fname);
 
 	/* ========================== match.c ================================== */
 	int 	aubit_strcasecmp 	(char *a, char *b);
@@ -1342,62 +1341,22 @@
 	  int popped;
 	};
 
-
-
 	void *      dif_get_bind 			(struct bound_list *list);
-	/* void        dif_start_bind 			(void); */
 	void *      dif_start_bind 			(void);
-
-
-#ifndef BOOLEAN
-# define BOOLEAN int
-# define TRUE 1
-# define FALSE 0
-#endif
-
 
     /* =================== from a4gl_shockhelp.h ====================*/
 
-
-	/* On some crazy systems, these aren't defined. */
-	#ifndef EXIT_FAILURE
-		#define EXIT_FAILURE 1
-	#endif
-	#ifndef EXIT_SUCCESS
-		#define EXIT_SUCCESS 0
-	#endif
+	struct 	in_addr *atoaddr	(char *address );
+	int 	make_connection		(char *service, int type, char *netaddress );
+	void 	ignore_pipe			(void);
 
 
-	struct in_addr *atoaddr(char *address );
-	int make_connection(char *service, int type, char *netaddress );
-	void ignore_pipe(void);
-
-
-	int atoport (char *service,char *proto);
-	int get_connection (int socket_type,u_short port,int *listener);
-	int sock_read (int sockfd, char *buf, size_t count);
-	int sock_write (int sockfd, char *buf, size_t count);
-	int sock_gets (int sockfd, char *str, size_t count);
-	int sock_puts (int sockfd,char *str);
-
-
-	/* ============================= from a4gl_formxw.h ================ */
-
-   	#ifdef __CYGWIN__
-	    /* missing from rpcgen generated form_x.h on CygWin: */
-		#define bool_t int
-		#define u_int unsigned int
-	#endif
-
-
-	#ifdef MAX
-		#undef MAX
-	#endif
-
-	#ifdef MIN
-		#undef MIN
-	#endif
-
+	int 	atoport 			(char *service,char *proto);
+	int 	get_connection 		(int socket_type,u_short port,int *listener);
+	int 	sock_read 			(int sockfd, char *buf, size_t count);
+	int 	sock_write 			(int sockfd, char *buf, size_t count);
+	int 	sock_gets 			(int sockfd, char *str, size_t count);
+	int 	sock_puts 			(int sockfd,char *str);
 
 	/* ============================ others.c ================================ */
 
@@ -1416,11 +1375,8 @@
 	void 	convlower			(char *s);
 	int 	get_lastkey 		(void);
 
-
-
 	/* ============================ io.c =================================== */
 	void 	bname 				(char *str, char *str1, char *str2);
-
 
 	/* ============================ keys.c ================================= */
 	int 	key_val				(char *str);
@@ -1439,8 +1395,8 @@
 	int 	screen_mode			(int a);
 
 	/* ============================ maths.c ================================ */
-	void * find_op_function(int dtype1,int dtype2,int op);
-	void add_op_function	(int dtype1,int dtype2,int op,void *function);
+	void * 	find_op_function	(int dtype1,int dtype2,int op);
+	void 	add_op_function		(int dtype1,int dtype2,int op,void *function);
 
 	/* ============================ translate.c ============================ */
 
@@ -1449,130 +1405,87 @@
     /* ========================== from a4gl_screen.h ==================== */
 
 	struct s_screenio {
-		int mode;
-		struct s_form_dets *currform;
-		void *currentfield;
-		struct s_metrics *currentmetrics;
-		int novars;
-		struct BINDING *vars;
-	        struct s_constr_list *constr;
-		int nfields;
-		void **field_list;
-		int field_changed;
-		int help_no;
+		int 	mode;
+		struct 	s_form_dets *currform;
+		void *	currentfield;
+		struct 	s_metrics *currentmetrics;
+		int 	novars;
+		struct 	BINDING *vars;
+		struct 	s_constr_list *constr;
+		int 	nfields;
+		void **	field_list;
+		int 	field_changed;
+		int 	help_no;
 
 	};
 
 	struct s_disp_arr {
-	 int no_fields;
-	 int no_lines;
-	 int no_arr;
-	 int last_arr;
-	 struct struct_screen_record *srec;
-	 int arr_elemsize;
-	 int scr_line;
-	 int arr_line;
-	 int highlight;
-	 struct s_form_dets *currform;
-	 struct BINDING *binding;
-	 int nbind;
-	 int cntrl;
+		int 	no_fields;
+		int 	no_lines;
+		int 	no_arr;
+		int 	last_arr;
+		struct 	struct_screen_record *srec;
+		int 	arr_elemsize;
+		int 	scr_line;
+		int 	arr_line;
+		int 	highlight;
+		struct 	s_form_dets *currform;
+		struct 	BINDING *binding;
+		int 	nbind;
+		int 	cntrl;
 	};
 
 	struct s_inp_arr {
-	  int mode;
-	  struct s_form_dets *currform;
-	  void *currentfield;
-	  struct s_metrics *currentmetrics;
-	  int novars;
-	  struct s_constr_list *constr;
-	  int nfields;
-	  void ***field_list;   /* this should probably be FIELD ***field_list; not void ? */
-	  int no_fields;
-	  int no_lines;
-	  int no_arr;
-	  int inp_flags;
-	  int arr_size;
-	  int last_arr;
-	  struct struct_screen_record *srec;
-	  int arr_elemsize;
-	  int scr_line;
-	  int arr_line;
-	  int highlight;
-	  struct BINDING *binding;
-	  int nbind;
-	  int cntrl;
-	  int help_no;
-	  int curr_attrib;
+		int 	mode;
+		struct 	s_form_dets *currform;
+		void *	currentfield;
+		struct 	s_metrics *currentmetrics;
+		int 	novars;
+		struct 	s_constr_list *constr;
+		int 	nfields;
+		void ***field_list;   /* this should probably be FIELD ***field_list; not void ? */
+		int 	no_fields;
+		int 	no_lines;
+		int 	no_arr;
+		int 	inp_flags;
+		int 	arr_size;
+		int 	last_arr;
+		struct 	struct_screen_record *srec;
+		int 	arr_elemsize;
+		int 	scr_line;
+		int 	arr_line;
+		int 	highlight;
+		struct 	BINDING *binding;
+		int 	nbind;
+		int 	cntrl;
+		int 	help_no;
+		int 	curr_attrib;
 	};
 
 
     /* ====================== from a4gl_prompt.h ================== */
 
 	struct s_prompt {
-		void *win;
-		int mode;
-		int charmode;
-		char *promptstr;
-		int lastkey;
-		void *f;
-		void *field;
-		int h;
+		void *	win;
+		int 	mode;
+		int 	charmode;
+		char *	promptstr;
+		int 	lastkey;
+		void *	f;
+		void *	field;
+		int 	h;
 	};
 
+	void * 	get_curr_form 	(void); /* in API_ui.c libtui/newpanels.c libgui/input.c */
+	int 	load_data		(char *fname,char *delims,char *tabname,...);
+	int 	inp_arr 		(struct s_inp_arr *disp, void *ptr, char *srecname, int attrib);
+	int 	set_scrline_ia 	(int np);
+	int 	set_arrline_ia 	(int np);
+	struct 	struct_screen_record *get_srec (char *name);
 
-	void * get_curr_form (void); /* in API_ui.c libtui/newpanels.c libgui/input.c */
-
-
-    /*
-	============================================================
-	================= from a4gl_runtime_tui.h ==================
-	============================================================
-	*/
-
-	/* From load.c */
-	int load_data(char *fname,char *delims,char *tabname,...);
-
-	/* ======================== From array.c ================================= */
-
-	/* From iarray.c */
-	int inp_arr (struct s_inp_arr *disp, void *ptr, char *srecname, int attrib);
-	int set_scrline_ia (int np);
-	int set_arrline_ia (int np);
-
-	/* From readforms.c */
-	struct struct_screen_record *get_srec (char *name);
-
-	/* From buildtin_d.c */
-	/*
-	void push_int(int p);
-	void push_long(long p);
-	void push_date(long p);
-	void push_float(float p);
-	void push_dec(char *p,int ismoney);
-	void push_double(double p);
-	void push_chars(char * p,int dtype,int size);
-	void push_char(char * p);
-	void aclfgl_date(void);
-	void aclfgl_fgl_drawbox(int n);
-	int aclfgl_day(void);
-	int aclfgl_month(void);
-	int aclfgl_weekday(void);
-	int aclfgl_year(void);
-	int func_clip(void);
-	void func_concat(void);
-	double power(double a,double b);
-	void func_using(void);
-	int find_function(char *a);
-	void push_variable(void *ptr,int dtype);
-    */
-	/*
-	void push_dtime(struct a4gl_dtime *p);
-	void push_interval(struct ival *p);
-    */
 	/* From sql.c */
-	char *get_currdbname(void);
-	long describe_stmt (char *stmt, int colno, int type);
+	char *	get_currdbname	(void);
+	long 	describe_stmt 	(char *stmt, int colno, int type);
 
 	/* From curslib.c (not completed) */
 	ACL_Menu *new_menu_tui (char *title,
@@ -1582,61 +1495,18 @@
 	ACL_Menu *new_menu_create_tui(
 			char *title, int x, int y, int mn_type, int help_no
 	);
-	char *disp_h_menu_tui (ACL_Menu * menu);
-	int endis_fields_tui(int en_dis,...) ;
-	void init_tui(void);
+	char *	disp_h_menu_tui 	(ACL_Menu * menu);
+	int 	endis_fields_tui	(int en_dis,...) ;
+	void 	init_tui			(void);
 
 	/* From newpanels.c (Not completed) */
-	struct s_form_dets *get_curr_form_tui(void);
-
-    /*              ** end **
-	============================================================
-	================= from a4gl_runtime_tui.h ==================
-	============================================================
-	*/
-
-
+	struct 	s_form_dets * get_curr_form_tui(void);
 
 	/* ====================== From formwrite2.c ====================== */
 	char *	char_val 		(char *s);
 
 	/* ============================ read_dty.c ============================= */
-	int 	get_dtype			(char *tabname, char *colname,char *dbname,char *tablist[]);
-
-
-
-    /* ====================== from a4gl_errors.h ================== */
-
-
-	#define ERR_BADNOARGS 1000
-	#define ABORT 1
-	#define WARN 2
-
-	#define WHEN_CONTINUE 0
-	#define WHEN_STOP 1
-	#define WHEN_CALL 2
-	#define WHEN_GOTO 3
-	#define WHEN_NOTSET 4
-
-	#define WHEN_ERROR 	16
-	#define WHEN_ANYERROR 	32
-	#define WHEN_SQLERROR 	64
-	#define WHEN_WARNING 	128
-	#define WHEN_SQLWARNING	256
-	#define WHEN_NOTFOUND 	512
-	#define WHEN_SUCCESS 	1024
-	#define WHEN_SQLSUCCESS 	2048
-
-	#define A_WHEN_ERROR 		0
-	#define A_WHEN_ANYERROR 	1
-	#define A_WHEN_SQLERROR 	2
-	#define A_WHEN_WARNING 		3
-	#define A_WHEN_SQLWARNING	4
-	#define A_WHEN_NOTFOUND 	5
-	#define A_WHEN_SUCCESS	 	6
-	#define A_WHEN_SQLSUCCESS	 	7
-
-
+	int 	get_dtype		(char *tabname, char *colname,char *dbname,char *tablist[]);
 
     /* ========================= from a4gl_acl_string.h ============ */
 
@@ -1652,7 +1522,7 @@
     /* ==================== from a4gl_aclform.h =================== */
 
 
-    	struct form_attr {
+   	struct form_attr {
 	    int iswindow;
 	    int form_line;
 	    int error_line;
@@ -1666,102 +1536,11 @@
 
 
 	/* ============================ errfile.c =============================== */
-
 	void    write_cont			(FILE *f);
 
-
-
     /* =========================== dataio.c =============================*/
-
-	int read_data_from_file(char *datatype, void *ptr, char *filename) ;
-	int write_data_to_file(char *datatype, void *ptr, char *filename) ;
-
-
-/*
-=======================================================================
-=======================================================================
-
-					        API headers
-
-=======================================================================
-=======================================================================
-*/
-
-
-	/* ========================= API_ui.c ================================== */
-	int 	show_help 			(int a);
-	int 	isscrmode 			(void);
-	void 	gotolinemode 		(void);
-	int 	A4GLUI_initlib 		(void);
-	void 	A4GLUI_ui_init 		(int argc,char *argv[]);
-	void 	zrefresh 			(void);
-	int 	islinemode 			(void);
-	void 	display_at 			(int n, int a);
-	void 	get_strings_from_attr(int attr,char *col_str,char *attr_str);
-	void 	set_scrmode			(char a);
-
-
-	struct s_form_attr
-	  {
-	    int mode;
-	    int colour;
-	    char border;
-	    int inpattr;
-	    int dispattr;
-	    int nextkey;
-	    int prevkey;
-	    int input_wrapmode;
-	    int comment_line;
-	    int form_line;
-	    int menu_line;
-	    int message_line;
-	    int prompt_line;
-	    int fcnt;
-	    int insmode;
-	    int error_line;
-	    int inskey;
-	    int delkey;
-	    int helpkey;
-	    int acckey;
-	    int fieldconstr;
-	    int sqlintr;
-	  };
-
-
-
-    	struct s_form_dets /* taken from a4gl_dbform.h */
-	  {
-	/* this was just
-		struct_form *fileform;
-		and it worked on Linux, but not on CygWin...??????
-	*/
-	    /* #ifndef _NO_FORM_X_H_ what was this about??? */
-			struct struct_form *fileform;
-        /* #endif */
-	    struct s_form_attr form_details;
-	    void *form;
-	    int fields_cnt;
-	    int currentmetrics;
-	    void *form_fields[1024];
-	    void *currentfield;
-	  };
-
-	int     read_metrics 		(struct s_form_dets * formdets);
-	int     read_fields 		(struct s_form_dets * formdets);
-	void 	gui_run_til_no_more (void);
-	int 	get_curr_width_gtk	(void);
-	int     get_attr_from_string(char *s);
-
-
-
-
-	/* ========================= API_sql.c ================================= */
-
-
-
-	void    A4GLSQL_set_status 	(int a, int sql);
-	int     A4GLSQL_close_cursor (char *cname);
-
+	int 	read_data_from_file	(char *datatype, void *ptr, char *filename) ;
+	int 	write_data_to_file	(char *datatype, void *ptr, char *filename) ;
 
 #endif /* #ifndef _AUBIT_LIB_INCL_EXT_ */
 

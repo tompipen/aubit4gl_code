@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: a4gl_API_sql.h,v 1.3 2002-08-13 11:56:48 afalout Exp $
+# $Id: a4gl_API_sql.h,v 1.4 2002-08-19 10:17:23 afalout Exp $
 #
 */
 
@@ -35,30 +35,6 @@
  * Header with prototypes of Dynamic Libraries loading for sql API access functions (API_sql.c)
  *
  */
-
-
-/*
-In file included from /usr/include/sql.h:17,
-                 from sql.c:74:
-/usr/include/sqltypes.h:149: redefinition of `UCHAR'
-../../libincl/a4gl_dlsql.h:39: `UCHAR' previously declared here
-
-typedef unsigned char UCHAR;
-*/
-
-/*
-In file included from ../../libincl/a4gl_dlsql.h:48,
-                 from sql.c:93:
-/usr/include/sqltypes.h:40: conflicting types for `HWND'
-/opt/informix/incl/cli/infxsql.h:90: previous declaration of `HWND'
-/usr/include/sqltypes.h:41: redefinition of `CHAR'
-/opt/informix/incl/cli/infxsql.h:113: `CHAR' previously declared here
-/usr/include/sqltypes.h:45: redefinition of `TCHAR'
-/opt/informix/incl/cli/infxsql.h:117: `TCHAR' previously declared here
-...etc... so we cannot include sqltypes.h here !
-
-#include "sqltypes.h" --defines UCHAR
-*/
 
 /* all SQL drivers define there own UCHAR - maybe we should not
 define it in any case? */
@@ -71,64 +47,84 @@ define it in any case? */
 #ifndef DLSQLDEF_INCL
 #define DLSQLDEF_INCL
 
-	int A4GLSQL_initlib (void);
-	/* void A4GLSQL_set_status (int a, int sql); -- moved to a4gl_aubit_lib since it is used extensively, and not only in SQL API */
 
-	int A4GLSQL_initsqllib(void); 			/* << from sql.c */
-	void A4GLSQL_xset_status(int a);
-	int A4GLSQL_init_connection   (char *dbName);
-	int A4GLSQL_get_status   (void);
-	char * A4GLSQL_get_curr_conn (void);
-	char *A4GLSQL_get_sqlerrm (void);
+/* ==================== from a4gl_database.h ============== */
 
 
-	int A4GLSQL_read_columns(char *tabname, char *colname, int *dtype, int *size);
-	int A4GLSQL_make_connection(UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p);
-	int A4GLSQL_get_datatype   (char *db, char *tab, char *col);
-	int A4GLSQL_init_session   (char *sessname, char *dsn, char *usr, char *pwd);
-	int A4GLSQL_set_conn   (char *sessname);
-    struct s_sid * A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind);
+	/**
+	 * An SQL statement identification structure.
+	 */
+	struct s_sid {
+		struct BINDING *ibind; 	/**< The input bind array */
+		struct BINDING *obind; 	/**< The output bind array */
+		int ni;                	/**< Number of elements in the input bind array*/
+		int no;               	/**< Number of elements in the output bind array*/
+		char *inputDescriptorName; 	/**< Name of input descriptor */
+		char *outputDescriptorName; /**< Name of output descriptor */
+		char *select;         	/**< The SQL statement content */
 
+	/* it looks like Andrej (me) messed up this while working on CygWin port
+	not sure why I changed this to int, but it's causing lot of warnings
+	on Linux in sql.c:
+		int hstmt;
+    */
+		void *hstmt;
+		char *statementName; 	/**< The name of the SQL statement */
+	};
 
+	/**
+	 * The cursor identification structure.
+	 */
+	struct s_cid {
+	  struct s_sid *statement;  /**< The statement used to declare the cursor */
+	  int mode;	            	/**< The cursor mode */
+	  void *hstmt;
+	};
 
-	int A4GLSQL_execute_implicit_sql   (struct s_sid *sid);
-	int A4GLSQL_close_session   (char *sessname);
-	int A4GLSQL_fill_array     (int mx, char **arr1, int szarr1,
-	  char **arr2, int szarr2, char *service, int mode, char *info  
-	);
-	struct s_sid * A4GLSQL_prepare_sql (char *s);
+	int 	A4GLSQL_initlib 		(void);
+	int 	A4GLSQL_initsqllib		(void); 			/* << from sql.c */
+	void 	A4GLSQL_xset_status		(int a);
+	int 	A4GLSQL_init_connection (char *dbName);
+	int 	A4GLSQL_get_status   	(void);
+	char * 	A4GLSQL_get_curr_conn 	(void);
+	char *	A4GLSQL_get_sqlerrm 	(void);
+	int 	A4GLSQL_read_columns	(char *tabname, char *colname, int *dtype, int *size);
+	int 	A4GLSQL_make_connection	(UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p);
+	int 	A4GLSQL_get_datatype   	(char *db, char *tab, char *col);
+	int 	A4GLSQL_init_session   	(char *sessname, char *dsn, char *usr, char *pwd);
+	int 	A4GLSQL_set_conn   		(char *sessname);
+	int 	A4GLSQL_close_session   (char *sessname);
+	int 	A4GLSQL_add_prepare   	(char *pname, struct s_sid *sid);
+	int 	A4GLSQL_open_cursor   	(int ni, char *s);
+	void 	A4GLSQL_put_insert		(struct BINDING *ibind,int n);
+	void 	A4GLSQL_unload_data		(char *fname,char *delims, char *sql1);
+	void 	A4GLSQL_commit_rollback (int mode);
+	void 	A4GLSQL_flush_cursor	(char *cursor);
+	char *	A4GLSQL_get_currdbname	(void);
+	int 	A4GLSQL_execute_sql   	(char *pname, int ni, struct BINDING *ibind);
+	long 	A4GLSQL_describe_stmt 	(char *stmt, int colno, int type);
+	int 	A4GLSQL_end_get_columns	(void);
+	int 	A4GLSQL_next_column		(char **colname, int *dtype,int *size);
+	int 	A4GLSQL_get_columns 	(char *tabname, char *colname, int *dtype, int *size);
+	void    A4GLSQL_set_status 		(int a, int sql);
+	int     A4GLSQL_close_cursor 	(char *cname);
+	
+	int 	A4GLSQL_execute_implicit_sql	(struct s_sid *sid);
+	int 	A4GLSQL_execute_sql_from_ptr 	(char *pname, int ni, char **ibind);
+	int 	A4GLSQL_execute_implicit_select (struct s_sid *sid);
+	void 	A4GLSQL_set_sqlca_sqlcode		(int a);
 
-	int A4GLSQL_add_prepare   (char *pname, struct s_sid *sid);
-	int A4GLSQL_execute_sql_from_ptr   (char *pname, int ni, char **ibind);
-	int A4GLSQL_execute_implicit_select   (struct s_sid *sid);
+    struct s_sid * 	A4GLSQL_prepare_glob_sql(char *s, int ni, struct BINDING *ibind);
+	struct s_sid * 	A4GLSQL_find_prepare 	(char *pname);
+	struct s_sid * 	A4GLSQL_prepare_sql 	(char *s);
+	struct s_sid *	A4GLSQL_prepare_select 	(struct BINDING *ibind,int ni,struct BINDING *obind,int no,char *s);
+	struct s_cid * 	A4GLSQL_declare_cursor	(int upd_hold,struct s_sid *sid,int scroll,char *cursname);
 
-	struct s_sid *
-	A4GLSQL_prepare_select (
-	      struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
+	int		A4GLSQL_fetch_cursor	(char *cursor_name,int fetch_mode,int fetch_when,
+		int nibind, struct BINDING *ibind);
 
-	struct s_cid *
-	A4GLSQL_declare_cursor(int upd_hold,struct s_sid *sid,int scroll,char *cursname);
-
-	void A4GLSQL_set_sqlca_sqlcode(int a);
-	int A4GLSQL_open_cursor   (int ni, char *s);
-	int A4GLSQL_fetch_cursor(
-		char *cursor_name, int fetch_mode, int fetch_when, 
-		int nibind, struct BINDING *ibind
-	);
-	void A4GLSQL_put_insert(struct BINDING *ibind,int n);
-	void A4GLSQL_unload_data(char *fname,char *delims, char *sql1);
-	void A4GLSQL_commit_rollback (int mode);
-	struct s_sid * 	A4GLSQL_find_prepare (char *pname);
-	void A4GLSQL_flush_cursor(char *cursor);
-	char *A4GLSQL_get_currdbname(void);
-	int A4GLSQL_execute_sql   (char *pname, int ni, struct BINDING *ibind);
-	long A4GLSQL_describe_stmt (char *stmt, int colno, int type);
-	int A4GLSQL_end_get_columns(void);
-
-	int A4GLSQL_next_column(char **colname, int *dtype,int *size);
-
-	int A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size);
-
+	int 	A4GLSQL_fill_array		(int mx, char **arr1, int szarr1,
+		char **arr2, int szarr2, char *service, int mode, char *info);
 
 
 #endif /* ifndef DLSQLDEF_INCL */

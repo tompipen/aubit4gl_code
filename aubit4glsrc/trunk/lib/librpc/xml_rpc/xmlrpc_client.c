@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: xmlrpc_client.c,v 1.6 2002-06-29 13:12:03 afalout Exp $
+# $Id: xmlrpc_client.c,v 1.7 2002-08-19 10:17:46 afalout Exp $
 #*/
 
 
@@ -44,27 +44,7 @@
 =====================================================================
 */
 
-
-
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <stdlib.h>
-
-	#include <xmlrpc.h>
-	#include <xmlrpc_client.h>
-
-	#include "a4gl_stack.h"
-	#include "a4gl_runtime_tui.h"		/* push_dtime */
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_rpc_rpcxml_int.h"
-
-#endif
-
+#include "a4gl_lib_rpc_rpcxml_int.h"
 
 /*
 =====================================================================
@@ -90,9 +70,7 @@ xmlrpc_env env;
 =====================================================================
 */
 
-void A4GLRPC_initlib(void);
 int fgl_rpc_1( char* host,char *func,int np);
-int remote_func_call(char *host,int async,char *func,int port,int np);
 
 /*
 =====================================================================
@@ -122,19 +100,20 @@ return 0;
  *
  * @todo Describe function
  */
-void
+int
 A4GLRPC_initlib(void)
 {
     xmlrpc_client_init(XMLRPC_CLIENT_NO_FLAGS, NAME, VERSION);
     xmlrpc_env_init(&env);
 	die_if_fault_occurred(&env);
+    return 1;
 }
 
 /**
  *
  * @todo Describe function
  */
-static char* 
+static char*
 get_string(xmlrpc_env* env, xmlrpc_value* in)
 {
     char* s;
