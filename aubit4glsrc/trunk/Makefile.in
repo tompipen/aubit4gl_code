@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.114 2003-02-22 01:51:50 afalout Exp $
+# $Id: Makefile.in,v 1.115 2003-02-23 00:05:17 afalout Exp $
 #
 
 ## ==================================================================
@@ -741,17 +741,43 @@ help.optional:
 
 
 ## ------------------------------------------------------------------
-##                       Maintainance utility targets
+##       Handle CVS commits and updates
 ## ------------------------------------------------------------------
 
-refresh.all: refresh.noyacc refresh.norpcgen refresh.norpclib
+####################
+#
+cvs.commit: refresh.all build
+	cvs commit
 
+####################
+#
+cvs.update:
+#remove configure to prevent menaingless merginig
+	cvs update -d
+
+
+## ------------------------------------------------------------------
+##       Maintainance of pre-assembled and pre-compiled files
+##       used in absence of compielr tools when vompiling from source code
+## ------------------------------------------------------------------
+
+####################
+#refresh all fules storred in CVS that are used in absence of verious
+#compiler tools:
+refresh.all: refresh.noyacc refresh.norpcgen refresh.norpclib refresh.perl
+
+####################
 #refresh pre-compiled parser files that are used for compilation on
-#platforms that don't have Yacc installed, from Yacc created files:
+#platforms that don't have Yacc (Bison) installed, or have incompatible version
+#from Yacc created files:
 refresh.noyacc:
+ifneq "${YACC}" "no"
 	${CP} compilers/4glc/rules/generated/y.tab.c tools/no_yacc/cygwin/compilers/4glc/rules/generated
 	${CP} compilers/4glc/rules/generated/y.tab.h tools/no_yacc/cygwin/compilers/4glc/rules/generated
 	${CP} compilers/4glc/rules/generated/kw.h tools/no_yacc/cygwin/compilers/4glc/rules/generated
+	${CP} compilers/4glc/mk_states_1.h tools/no_yacc/cygwin/compilers/4glc
+	${CP} compilers/4glc/mk_states.h tools/no_yacc/cygwin/compilers/4glc
+	${CP} compilers/4glc/mk_states.c tools/no_yacc/cygwin/compilers/4glc
 	${CP} compilers/fcompile/lex.yy.c tools/no_yacc/cygwin/compilers/fcompile
 	${CP} compilers/fcompile/y.tab.c tools/no_yacc/cygwin/compilers/fcompile
 	${CP} compilers/menus/lex.yy.c tools/no_yacc/cygwin/compilers/menus
@@ -759,23 +785,39 @@ refresh.noyacc:
 	${CP} compilers/xgen/y.tab.c tools/no_yacc/cygwin/compilers/xgen
 	${CP} compilers/xgen/lex.yy.c tools/no_yacc/cygwin/compilers/xgen
 #Check if this two exist first, they will not be there is we have no RPC:
-#	${CP} compilers/ace/y.tab.c tools/no_yacc/cygwin/compilers/ace
-#	${CP} compilers/ace/lex.yy.c tools/no_yacc/cygwin/compilers/ace
+#ace now uses xgen, should allways be there
+#ifneq "${USE_RPCGEN}" "0"
+	${CP} compilers/ace/y.tab.c tools/no_yacc/cygwin/compilers/ace
+	${CP} compilers/ace/lex.yy.c tools/no_yacc/cygwin/compilers/ace
+#else
+#	@echo "Skipping refresh.norpcgen - USE_RPCGEN=0."
+#endif
+else
+	@echo "Skipping refresh.noyacc - YACC=no."
+endif
 
-
+####################
+#Since we are using xgen now, this should be obsolete
 refresh.norpcgen:
 ifeq "${TARGET_OS}" "cygwin"
+ifneq "${USE_RPCGEN}" "0"
 	${CP} compilers/fcompile/form_x.h tools/cygwin
 	${CP} compilers/fcompile/form_x_xdr.c tools/cygwin
 	${CP} compilers/menus/menu_x.h tools/cygwin
 	${CP} compilers/menus/menu_x_xdr.c tools/cygwin
 #Check if this two exist first, they will not be there is we have no RPC:
-#	${CP} compilers/ace/report.h tools/cygwin
-#	${CP} compilers/ace/report_xdr.c tools/cygwin
+#ace uses xgen now,m should allways be there
+	${CP} compilers/ace/report.h tools/cygwin
+	${CP} compilers/ace/report_xdr.c tools/cygwin
+else
+	@echo "Skipping refresh.norpcgen - USE_RPCGEN=0."
+endif
 else
 	@echo "Not on CygWin - skipping."
 endif
 
+####################
+#Since we are using xgen now, this should be obsolete
 refresh.norpclib:
 ifeq "${CONFIRM}" "IknowWhatImDoing"
 ifeq "${TARGET_OS}" "cygwin"
@@ -797,6 +839,15 @@ else
 endif
 	@echo "CONFIRM != IknowWhatImDoing"
 endif
+
+####################
+#FIXME: add no_perl here
+refresh.perl:
+	@echo "FIXME: not storring Perl created files"
+
+## ------------------------------------------------------------------
+##                       Maintainance utility targets
+## ------------------------------------------------------------------
 
 #Find c files with same names
 find.dup.c.files:
