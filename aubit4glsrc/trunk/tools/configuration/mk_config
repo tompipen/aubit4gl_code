@@ -9,6 +9,13 @@ BEGIN {
 	desc["FORMS"]="Form Options"
 	desc["ODBC"]="ODBC Options"
 	desc["TUI"]="Text User Interface options"
+	desc["REPORT"]="Report generation options"
+	desc["PRINT"]="Printing options"
+	desc["MENU"]="Menu options"
+	desc["PCODE"]="P-code options"
+	desc["ESQL"]="ESQL/C code options"
+	desc["DEBUG"]="Debugging options"
+	desc["HELP"]="Help handling options"
 	no=0
 	print "FUNCTION do_display_txt(n)"
 	print "DEFINE n INTEGER"
@@ -102,7 +109,7 @@ END {
 		print "         call details_" var "()"
 		print " "
 	}
-	print "   COMMAND \"Exit\" \"Exit the configurator program\" HELP 2 exit menu"
+	print "   COMMAND KEY (\"Q\",\"q\") \"Quit\" \"Exit the configurator program\" HELP 2 exit menu"
 	print "   END MENU"
 	print "END MAIN"
 
@@ -120,7 +127,7 @@ END {
 
 			if (substr(options[help_no[name]],1,7)!="listing") {
 				num_op=split(options[help_no[name]],arr_options,"|")
-				print "   let mv_option_offscr[" a "].nvalues=" num_op 
+				print "   let mv_option_offscr[" a "].nvalues=" num_op
 				for (b in arr_options) {
 					print "   let mv_option_offscr[" a "].values[" b "]=\"" arr_options[b] "\""
 				}	
