@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui_io.c,v 1.6 2002-05-23 16:01:15 mikeaubury Exp $
+# $Id: gui_io.c,v 1.7 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -51,11 +51,21 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include <string.h> //strcpy()
+#include <string.h> 				/* strcpy() */
 
 
 #include "a4gl_aubit_lib.h"
 #include "a4gl_debug.h"
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+static void 	gui_send		(char *c,char *s);
+void 			gui_startmenu	(char *mnname,long mn);
+void 			gui_user		(char *txt);
 
 /*
 =====================================================================
@@ -70,7 +80,7 @@
  * @param c The comand to send.
  * @param s The parameters of the comand.
  */
-void
+static void
 gui_send(char *c,char *s)
 {
   char buff[25600];
@@ -272,7 +282,7 @@ gui_endform(void)
  * @param
  */
 void
-gui_startmenu(char *mnname,long mn) 
+gui_startmenu(char *mnname,long mn)
 {
 char buff[256];
 	sprintf(buff,"\"%s\" %lx",mnname,mn);

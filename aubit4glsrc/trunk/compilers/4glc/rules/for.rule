@@ -15,7 +15,7 @@ END FOR {
 
 pop_blockcommand("FOR");
 print_for_end();
-printcomment(" /*END FOR*/\n");}
+lex_printcomment(" /*END FOR*/\n");}
 ;
 
 for_step :	{
@@ -24,4 +24,6 @@ for_step :	{
 	|	STEP fgl_expr
 ;
 
+
+/* ============================= for.rule =========================== */
 

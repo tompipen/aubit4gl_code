@@ -19,6 +19,10 @@ VARIABLE A4GL_MENUTYPE
 *#include <gdk/gdk.h>
 *#include <gtk/gtk.h>
 
+* Name of the header file to be referenced with #include
+*HEADER_FILE API_menu.h
+
+
 
 //
 // ------- functions from lib/libmenu/menu_xdr/loadmenu.c

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.67 2002-05-30 06:25:12 afalout Exp $
+# $Id: mod.c,v 1.68 2002-06-01 11:54:58 afalout Exp $
 #
 */
 
@@ -775,7 +775,7 @@ print_variables (void)
   if (modlevel == -1)
     {
       debug ("/* global variables %d */\n", varcnt);
-      //printcomment ("/* global variables %d */\n", varcnt);
+      //lex_printcomment ("/* global variables %d */\n", varcnt);
 
       for (a = 0; a < varcnt; a++)
 	{
@@ -3479,33 +3479,33 @@ add_report_agg (char t, char *s1, char *s2, int a)
 
   if (t == 'C')
     {
-      printh ("static long _g%d=0;\n", a);
+      lex_printh ("static long _g%d=0;\n", a);
       return 1;
     }
 
   if (t == 'P')
     {
-      printh ("static long _g%d=0,_g%d=0;\n", a, a + 1);
+      lex_printh ("static long _g%d=0,_g%d=0;\n", a, a + 1);
       return 2;
     }
 
   if (t == 'S')
     {
-      printh ("static double _g%d=0;\n", a);
+      lex_printh ("static double _g%d=0;\n", a);
       return 1;
     }
 
   if (t == 'N' || t == 'X')
     {
-      printh ("static double _g%d=0;\n", a);
-      printh ("static int _g%dused=0;\n", a);
+      lex_printh ("static double _g%d=0;\n", a);
+      lex_printh ("static int _g%dused=0;\n", a);
       return 1;
     }
 
   if (t == 'A')
     {
-      printh ("static double _g%d=0;\n", a);
-      printh ("static long   _g%d=0;\n", a + 1);
+      lex_printh ("static double _g%d=0;\n", a);
+      lex_printh ("static long   _g%d=0;\n", a + 1);
       return 2;
     }
   use_group = 0;

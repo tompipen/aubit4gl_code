@@ -24,7 +24,7 @@ print_end_menu_2();
 menu_block_command : 
 	BEFORE_MENU 
 		{
-	 printcomment("/* Block%d_m2 (Before menu) */",menu_cnt);
+	 lex_printcomment("/* Block%d_m2 (Before menu) */",menu_cnt);
 		print_menu_block(-2) ;
                   }  
 	commands {
@@ -37,7 +37,7 @@ menu_block_command :
 		{
 debug("Menu=%d menu cnt=%d",menu_cnt,menu_cmd_cnt[menu_cnt]);
 		push_command(menu_cnt,menu_cmd_cnt[menu_cnt],$<str>2,$<str>3,$<str>4,$<str>5);
-		printcomment("/* Block%d_%d */",menu_cnt,menu_cmd_cnt[menu_cnt]-1);
+		lex_printcomment("/* Block%d_%d */",menu_cnt,menu_cmd_cnt[menu_cnt]-1);
 		print_menu_block(menu_cmd_cnt[menu_cnt]-1);
 		menu_cmd_cnt[menu_cnt]++;
 		} 
@@ -103,5 +103,5 @@ push_menu_title($<str>$);}
 ;
 
 
-// =========================== menu.rule ============================= */
+/* =========================== menu.rule ============================= */
 

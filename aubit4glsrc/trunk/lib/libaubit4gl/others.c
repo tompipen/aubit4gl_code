@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.11 2002-05-25 12:12:44 afalout Exp $
+# $Id: others.c,v 1.12 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -47,11 +47,11 @@
 #include "a4gl_dbform.h"
 #include "a4gl_debug.h"
 #include "a4gl_keys.h"
-//here only to satisfy libFORM_ (from compilers/fcompile/fcompile.c)
+/* here only to satisfy libFORM_ (from compilers/fcompile/fcompile.c) */
 #include "a4gl_formxw.h"
 
-#include "a4gl_aubit_lib.h" //fgl_error()
-#include "a4gl_runtime_tui.h" //push_long()
+#include "a4gl_aubit_lib.h" 		/* fgl_error() */
+#include "a4gl_runtime_tui.h" 		/* push_long() */
 /*
 =====================================================================
                     Variables definitions
@@ -59,7 +59,7 @@
 */
 
 
-//here only to satisfy libMENU_( from compilers/4glc/4glc.c)
+/* here only to satisfy libMENU_( from compilers/4glc/4glc.c) */
 char *outputfilename;
 
 struct struct_form the_form;
@@ -76,10 +76,14 @@ int m_lastkey = 0;
 
 
 
-char *replace_sql_var (char *s);
-int fgl_keyval(int _np);
+char *		replace_sql_var 	(char *s);
+char * 		char_val 			(char *s);
+int 		fgl_keyval			(int _np);
 
-
+int 		aclfgl_fgl_lastkey	(int _np);
+int 		aclfgl_fgl_keyval	(int _np);
+int 		aclfgl_upshift		(int _np);
+int 		aclfgl_downshift	(int _np);
 
 
 /*
@@ -97,7 +101,7 @@ int fgl_keyval(int _np);
  * @param _np Number of parameters passed by stack. Should be zero. If not
  * give an error.
  */
-int 
+int
 aclfgl_fgl_lastkey(int _np)
 {
   long _r;
@@ -163,7 +167,7 @@ fgl_keyval(int _np)
  * @param The number of parameters
  * @return Allways 1
  */
-int 
+int
 aclfgl_upshift(int _np)
 {
 char *v1;
@@ -185,8 +189,8 @@ char *v1;
  * @param The number of parameters
  * @return Allways 1
  */
-int 
-aclfgl_downshift(int _np) 
+int
+aclfgl_downshift(int _np)
 {
 char *v1;
 	if (_np!=1) { fgl_error(-3000,"",0,0);}

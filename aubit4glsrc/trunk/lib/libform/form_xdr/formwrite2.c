@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.7 2002-05-30 06:25:19 afalout Exp $
+# $Id: formwrite2.c,v 1.8 2002-06-01 11:54:59 afalout Exp $
 #*/
 
 /**
@@ -102,6 +102,11 @@ FILE *fyy;
 static void translate_form(void);
 extern char * translate(char *s); 	//translate.c
 extern void yyerror(char *s); 		//fcompile.c
+static void real_set_field (char *s, struct struct_scr_field *f);
+static void real_add_str_attr(struct struct_scr_field *f,int type,char *str);
+static void real_add_bool_attr(struct struct_scr_field *f,int type);
+static int real_isolated_xdr_struct_form( XDR *xdrp, struct struct_form *the_form);
+
 
 /*
 =====================================================================
@@ -346,8 +351,13 @@ add_srec_direct (char *tab, int a)
  * section )
  * @param f The field attributes filled in a struct (struct_scr_field)
  */
-void 
-set_field (char *s, struct struct_scr_field *f)
+void
+set_field (char *s, void* f)
+{
+	real_set_field(s,f);
+}
+static void
+real_set_field (char *s, struct struct_scr_field *f)
 {
   int a;
   char *ptr;
@@ -1040,8 +1050,13 @@ new_field_str_attribute(void)
  * @param type The attribute type
  * @param str The attribute to add
  */
-void 
-add_str_attr(struct struct_scr_field *f,int type,char *str)
+void
+add_str_attr(void* f,int type,char *str)
+{
+	real_add_str_attr(f,type,str);
+}
+static void
+real_add_str_attr(struct struct_scr_field *f,int type,char *str)
 {
   debug("add_str_attr %d - '%s'\n",type,str);
   if (str[0]!='\n')
@@ -1075,7 +1090,12 @@ add_str_attr(struct struct_scr_field *f,int type,char *str)
  *   
  */
 void
-add_bool_attr(struct struct_scr_field *f,int type)
+add_bool_attr(void* f,int type)
+{
+	real_add_bool_attr(f,type);
+}
+static void
+real_add_bool_attr(struct struct_scr_field *f,int type)
 {
   char *attrs[]={
         "AUTONEXT",
@@ -1174,7 +1194,12 @@ translate_form(void)
 //============== from decompile.c =====================
 /*   did not work, but still needed for fdecompile */
 int
-isolated_xdr_struct_form( XDR *xdrp, struct struct_form *the_form)
+isolated_xdr_struct_form( void* xdrp, void* the_form)
+{
+	real_isolated_xdr_struct_form(xdrp,the_form);
+}
+static int
+real_isolated_xdr_struct_form( XDR *xdrp, struct struct_form *the_form)
 {
 int a;
 	debug("In isolated xdr_struct_form..");

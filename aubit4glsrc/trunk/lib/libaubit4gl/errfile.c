@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.4 2002-05-18 11:56:47 afalout Exp $
+# $Id: errfile.c,v 1.5 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -70,9 +70,13 @@ int errline;
 =====================================================================
 */
 
-FILE *mja_fopen(char *name, char *mode);
-void find_nl(FILE *f,long fp,long *s,long *e);
-void prerrmark(FILE *f,int a);
+FILE *		mja_fopen		(char *name, char *mode);
+void 		find_nl			(FILE *f,long fp,long *s,long *e);
+void 		prerrmark		(FILE *f,int a);
+
+FILE * 		write_errfile	(FILE *f,char *fname,long as,int lineno);
+void 		write_cont		(FILE *f);
+
 
 /*
 =====================================================================
@@ -131,8 +135,8 @@ write_errfile(FILE *f,char *fname,long as,int lineno)
  *
  * @param f A pointer to the input source file.
  */
-void 
-write_cont(FILE *f) 
+void
+write_cont(FILE *f)
 {
   int a,s=1;
   a=2048;

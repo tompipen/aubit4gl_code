@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.5 2002-05-23 16:01:13 mikeaubury Exp $
+# $Id: extfile.c,v 1.6 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -42,10 +42,10 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h> //free()
+#include <stdlib.h> 			/* free() */
 
 
-#include "a4gl_stack.h" // pop_int()
+#include "a4gl_stack.h" 		/* pop_int() */
 #include "a4gl_io.h"
 #include "a4gl_debug.h"
 #include "a4gl_aubit_lib.h"
@@ -62,6 +62,16 @@ char *language_file_contents=0;
 //char helpbuff[10000];
 char disp[24][81];
 int max_width;
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+void 			set_help_file 			(char *fname);
+void 			set_lang_file 			(char *fname_orig);
+int 			aclfgl_fgl_show_help	(int a);
 
 /*
 =====================================================================
@@ -92,7 +102,7 @@ debug("Helpfile=%p",helpfile);
  *
  * @todo Describe function
  */
-void 
+void
 set_lang_file (char *fname_orig)
 {
 long l;

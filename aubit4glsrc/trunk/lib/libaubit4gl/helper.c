@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.7 2002-05-30 06:25:19 afalout Exp $
+# $Id: helper.c,v 1.8 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -42,7 +42,7 @@
 		                    Includes
 =====================================================================
 */
-//#include <malloc.h> - all already in stdlib.h
+
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -52,10 +52,7 @@
 #include "a4gl_debug.h"
 #include "a4gl_runtime_tui.h"
 #include "a4gl_aubit_lib.h"
-
-//don't include a4gl_dlsql.h here, since it need UCHAR defined, and this is
-// SQL driver dependent ????
-#include "a4gl_dlsql.h" //A4GLSQL_get_currdbname()
+#include "a4gl_dlsql.h" 		/* A4GLSQL_get_currdbname() */
 
 /*
 =====================================================================
@@ -65,8 +62,18 @@
 
 
 //extern char *A4GLSQL_get_currdbname(void);
-void strip_pc(char *s,char*d);
-int extract_numeral(char *s);
+void 		strip_pc			(char *s,char*d);
+int 		extract_numeral		(char *s);
+
+int 		aclfgl_i_rowid_s	(int arg);
+int 		aclfgl_m_rowid_s	(int arg);
+int 		aclfgl_r_rowid_s	(int arg);
+int 		aclfgl_s_rowid_s	(int arg);
+int 		aclfgl_w_rowid_s	(int arg);
+int 		aclfgl_fgl_prtscr	(int n);
+
+LIBPRIVATE int 	int_get_info_form	(char *ptr,char *info);
+LIBEXPORT int	aclfgl_get_info		(int np);
 
 
 /*
@@ -184,6 +191,7 @@ struct s_windows
   };
 
 
+static long	*ptr;
 
 /*
 =====================================================================
@@ -213,7 +221,7 @@ str_inarray(char *str,char **arr)
     /* {DEBUG} */ {debug("Digit = %d",digit);}
   #endif
 
-  for (a=0;arr[a];a++) 
+  for (a=0;arr[a];a++)
 	{
     if (strchr(arr[a],'%')) 
 		{
@@ -358,7 +366,7 @@ int_get_info_connection(char *ptr,char *info)
  * @return
  */
 LIBPRIVATE int
-int_get_info_statement(char *ptr,char *info) 
+int_get_info_statement(char *ptr,char *info)
 {
 int params;
 int a;
@@ -646,8 +654,6 @@ int a;
 
 /* Some bits stripped out */
 
-static long	*ptr;
-
 /**
  *
  * @param
@@ -742,7 +748,8 @@ aclfgl_w_rowid_s(int arg)
  * @return
  */
 int
-aclfgl_fgl_prtscr(int n) {
+aclfgl_fgl_prtscr(int n) 
+{
 	return 0;
 }
 

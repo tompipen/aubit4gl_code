@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.7 2002-05-26 06:26:49 afalout Exp $
+# $Id: function_call_stack.c,v 1.8 2002-06-01 11:54:59 afalout Exp $
 #*/
 
 /**
@@ -46,8 +46,8 @@
 */
 
 #include <stdio.h>
-#include <stdlib.h> 	//calloc() free()
-#include <string.h>     //strcpy() strcat() strcmp()
+#include <stdlib.h> 		/* calloc() free() */
+#include <string.h>     	/* strcpy() strcat() strcmp() */
 #include "a4gl_debug.h"
 
 /*
@@ -64,7 +64,14 @@
 =====================================================================
 */
 
-extern char *params_on_stack (char *_paramnames[],int n);
+extern char *	params_on_stack 				(char *_paramnames[],int n);
+
+void 			A4GLSTK_initFunctionCallStack	(void);
+void 			A4GLSTK_setCurrentLine			(const char *moduleName,int lineNumber);
+void 			A4GLSTK_pushFunction			(const char *functionName,char *params[],int n);
+void 			A4GLSTK_popFunction				(void);
+char * 			A4GLSTK_getStackTrace			(void);
+int 			A4GLSTK_isStackInfo				(void);
 
 /*
 =====================================================================

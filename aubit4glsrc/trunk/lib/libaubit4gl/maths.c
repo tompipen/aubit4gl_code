@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: maths.c,v 1.3 2002-05-26 06:26:49 afalout Exp $
+# $Id: maths.c,v 1.4 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -67,6 +67,11 @@ struct s_math *arr_math[MAX_DTYPE][MAX_DTYPE];
 =====================================================================
 */
 
+
+void        init_arr_math		(void);
+void        add_op_function		(int dtype1,int dtype2,int op,void *function);
+void *      find_op_function	(int dtype1,int dtype2,int op);
+
 /*
 =====================================================================
                     Functions definitions
@@ -74,10 +79,8 @@ struct s_math *arr_math[MAX_DTYPE][MAX_DTYPE];
 */
 
 
-//
-// How many parameters are we expecting for these ?
-//
 /**
+ * How many parameters are we expecting for these ?
  *
  * @todo Describe function
  */
@@ -120,8 +123,8 @@ return -1;
  *
  * @todo Describe function
  */
-void 
-init_arr_math(void) 
+void
+init_arr_math(void)
 {
 int a,b;
 	if (inited==0) {
@@ -139,8 +142,8 @@ int a,b;
  *
  * @todo Describe function
  */
-void 
-add_op_function(int dtype1,int dtype2,int op,void *function) 
+void
+add_op_function(int dtype1,int dtype2,int op,void *function)
 {
 	struct s_math *ptr_orig;
 	struct s_math *ptr_new;

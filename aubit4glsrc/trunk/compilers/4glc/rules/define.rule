@@ -15,9 +15,9 @@ define_multiple	:
 ;
 
 define_set :
-	DEFINE {dtypelist[0]=0;printcomment("/* define */\n");} def_part  {printcomment("/*end def */\n");}
+	DEFINE {dtypelist[0]=0;lex_printcomment("/* define */\n");} def_part  {lex_printcomment("/*end def */\n");}
 	| dim_section
-	| whenever_cmd 
+	| whenever_cmd
 ;
 
 def_part : def_part2 |  def_part COMMA def_part2
@@ -195,7 +195,7 @@ push_type("fglmoney",buff,0);}
 push_type("struct_dtime ",$<str>2,0);
 }
 		| 	INTERVAL interval_qual {push_type("struct_ival ",$<str>2,0);}
-		|  like_var {push_like($<str>1);fflush(stdout);printcomment("/*added(XXXXX)\n */");} 
+		|  like_var {push_like($<str>1);fflush(stdout);lex_printcomment("/*added(XXXXX)\n */");}
 		|  identifier {
 			char buff[256];
 			strcpy(buff,$<str>1);
@@ -227,7 +227,7 @@ push_type("struct_dtime ",$<str>2,0);
 
 like_var 	: 
 LIKE  tab_name  DOT col_name  {
-printcomment("/*column like(ZZZ)\n*/"); sprintf($<str>$,"%s.%s",$<str>2,$<str>4); printcomment ("/*set col...(ZZZ)\n*/");}
+lex_printcomment("/*column like(ZZZ)\n*/"); sprintf($<str>$,"%s.%s",$<str>2,$<str>4); lex_printcomment ("/*set col...(ZZZ)\n*/");}
 ;
 
 tab_name : define_ident {debug("--->%s\n",$<str>1);strcpy($<str>$,$<str>1);} ;

@@ -14,6 +14,8 @@ VARIABLE A4GL_FORMTYPE
 *API_PREFIX FORMAPI_
 * Add prefix for existing library functions:
 *LIB_PREFIX FORMLIB_
+* Name of the header file to be referenced with #include
+*HEADER_FILE API_form.h
 
 
 *========================================================================
@@ -29,6 +31,8 @@ VARIABLE A4GL_FORMTYPE
 //dump_srec (struct s_form_dets * fd)
 dump_srec void* fd -> void
 
+//void comments (struct struct_scr_field *fprop);
+comments void* fprop -> void
 
 //void set_default_form (struct s_form_attr *form)
 set_default_form void* form -> void
@@ -36,8 +40,8 @@ set_default_form void* form -> void
 //struct s_form_dets * read_form (char *fname, char *formname)
 read_form char* fname,char* formname -> void*
 
-//has_bool_attribute (struct struct_scr_field *f, int bool)
-has_bool_attribute void* f,int bool -> void
+//int has_bool_attribute (struct struct_scr_field *f, int bool)
+has_bool_attribute void* f,int bool -> int
 
 //int check_field_for_include (char *s, char *inc, int dtype)
 check_field_for_include char* s,char* inc,int dtype -> int
@@ -114,8 +118,8 @@ set_field char* s,void* f -> void
  * @param delim
  * @param label The screen label
  */
-//add_field(char *s, int x, int y, int wid, int scr, int delim,char *label)
-add_field char* s,int x,int y,int wid,int scr,int delim,char* label -> void
+//int add_field(char *s, int x, int y, int wid, int scr, int delim,char *label)
+add_field char* s,int x,int y,int wid,int scr,int delim,char* label -> int
 
 /**
  * Adds a new table to the form tables array

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.7 2002-05-23 09:29:35 afalout Exp $
+# $Id: error.c,v 1.8 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -44,7 +44,7 @@
 =====================================================================
 */
 
-#include "string.h" //strcmp()
+#include <string.h> 				/* strcmp() */
 #include <stdarg.h>
 
 #include "../generated/tmperrs.h"
@@ -70,6 +70,14 @@ char lasterrorstr[1024]="";
 //extern int status;
 int cache_status=0;
 int cache_statusno=0;
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+char * get_errm(int z);
 
 /*
 =====================================================================

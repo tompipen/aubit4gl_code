@@ -12,18 +12,19 @@ push_blockcommand("FOREACH");
 fetch_cursor_name
 {
 print_foreach_start();
-printcomment(" /* foreach */\n");
+lex_printcomment(" /* foreach */\n");
 }
 opt_foreach_into_fetch_part
 {
 print_foreach_next($<str>3,$<str>5);
 }
-commands  
+commands
 END_FOREACH {
-add_continue_blockcommand ("FOREACH");  
+add_continue_blockcommand ("FOREACH");
 print_foreach_end();
 pop_blockcommand("FOREACH");
 } ;
 
 
+/* ====================== foreach.rule ============================== */
 

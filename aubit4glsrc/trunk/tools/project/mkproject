@@ -1,6 +1,14 @@
 #!/bin/sh
 #set -x
 
+####################################################################
+#
+#   This script creates project.c file
+#
+#
+#
+####################################################################
+
 CURRDIR=$PWD
 
 if [ "$AUBITDIR" = "" ]
@@ -75,13 +83,38 @@ echo "
  * @todo Doxygen comments to add to functions
  */
 
-#include <string.h> //strcpy()
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+
+#include <string.h> 			/* strcpy() */
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+int 		internal_build		(void);
+char * 		internal_version	(void);
+void 		set_version			(int a,char *m,char *id);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 
 /**
  *
  * @todo Describe function
  */
-int 
+int
 internal_build(void)
 {
 	return $build;
@@ -92,18 +125,13 @@ internal_build(void)
  * @todo Describe function
  */
 char *
-internal_version(void) 
+internal_version(void)
 {
 	return \"$version\";
 }
 
 
 " > $PROJECTC
-
-
-#if [ "1" = "2" ]
-#then
-
 
 #######################################################
 #grep all C files in lib to create rest of project.c:
@@ -141,26 +169,12 @@ print "	strcpy(m,internal_versions[a].module);"
 print "	strcpy(id,internal_versions[a].id);"
 print "}"
 print ""
-print "// ============================== EOF =============================="
+print "/* ============================== EOF ============================== */"
 print " "
 
 
 }
 ' >> $PROJECTC2
 
-#fi
-
-#It should look like this:
-
-#struct s_ver_modules { char module[32]; char id[132];} internal_versions[]={
-#{"Module","ID Version Info"},
-#{"",0}
-#};
-#
-#set_version(int a,char *m,char *id) {
-#strcpy(m,internal_versions[a].module);
-#strcpy(id,internal_versions[a].id);
-#}
-
-
+# ========================= EOF ===============================
 

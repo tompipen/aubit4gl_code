@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.4 2002-05-20 20:17:37 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.5 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -70,8 +70,9 @@
 #include "a4gl_constats.h"
 #include "a4gl_stack.h"
 #include "a4gl_dtypes.h"
-#include "a4gl_debug.h"
+#include "a4gl_runtime_tui.h"			/* push_int() */
 #include "a4gl_aubit_lib.h"
+#include "a4gl_debug.h"
 
 /*
 =====================================================================
@@ -129,7 +130,24 @@ struct s_funcs builtin_funcs[]= {
 =====================================================================
 */
 
-extern char *using_date(int us,char *fmt);
+extern char *	using_date			(int us,char *fmt);
+
+
+void            aclfgl_hex         	(void);
+void            aclfgl_abs         	(void);
+void            aclfgl_root       	(void);
+void            aclfgl_sqrt        	(void);
+
+void            func_mod           	(void);
+void            func_pow           	(void);
+void            func_trunc         	(void);
+void            func_round         	(void);
+void            func_exp           	(void);
+void            func_logn          	(void);
+void            func_log10         	(void);
+void            func_length        	(void);
+
+static void 	push_byte			(void *ptr);
 
 /*
 =====================================================================
@@ -189,7 +207,7 @@ push_date(long p)
  * @param ptr A pointer to the byte stream to be pushed
  */
 void
-push_byte(void *ptr) 
+push_byte(void *ptr)
 {
 	//void *p2;
 	//p2=acl_malloc(sizeof(struct fgl_int_loc),"push_byte");
@@ -316,7 +334,7 @@ push_char(char * p)
  *
  * Used for 4GL HEX function
  */
-void 
+void
 aclfgl_hex(void)
 {
   long z;
@@ -332,8 +350,8 @@ aclfgl_hex(void)
  *
  * Used for 4GL ABS function.
  */
-void 
-aclfgl_abs(void) 
+void
+aclfgl_abs(void)
 {
 	double p;
 	p=pop_double();
@@ -371,7 +389,6 @@ func_mod(void)
  *
  * @todo Understand if not used and if not remove it
  */
-// static void //warning: `func_pow' defined but not used
 void
 func_pow(void)
 {
@@ -390,7 +407,7 @@ func_pow(void)
  *
  * @todo Describe function
  */
-void 
+void
 aclfgl_root(void)
 {
 	double p,p2,res;
@@ -406,7 +423,6 @@ aclfgl_root(void)
  *
  * @todo Describe function
  */
-//static void // warning: `aclfgl_sqrt' defined but not used
 void
 aclfgl_sqrt(void)
 {
@@ -423,7 +439,7 @@ aclfgl_sqrt(void)
  * @todo Describe function
  */
 //static void
-void 
+void
 func_trunc(void)
 {
 	exitwith("trunc not implemented\n");
@@ -458,9 +474,8 @@ func_exp(void)
  *
  * @todo Describe function
  */
-//static void
 void
-func_logn(void)  
+func_logn(void)
 {
 	exitwith("logn not implemented\n");
 }

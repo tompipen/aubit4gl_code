@@ -14,6 +14,8 @@ VARIABLE A4GL_LEXTYPE
 *API_PREFIX LEXAPI_
 * Add prefix for existing library functions:
 *LIB_PREFIX LEXLIB_
+* Name of the header file to be referenced with #include
+*HEADER_FILE API_lex.h
 
 * ======================================================================
 * Function calls definitions:
@@ -28,10 +30,10 @@ VARIABLE A4GL_LEXTYPE
 lex_printc char* fmt ... -> void
 
 //printh (char *fmt, ...)
-printh char* fmt ... -> void
+lex_printh char* fmt ... -> void
 
 //void printcomment (char *fmt,...)
-printcomment char* fmt ... -> void
+lex_printcomment char* fmt ... -> void
 
 //void print_sleep (void)
 print_sleep -> void
@@ -45,8 +47,8 @@ print_push_variable char* s -> void
 //void print_clr_status ()
 print_clr_status -> void
 
-//static void open_outfile(void)
-open_outfile -> void
+*//static void open_outfile(void)
+*open_outfile -> void
 
 //void incprint(void)
 incprint -> void
@@ -91,7 +93,7 @@ print_bind_pop1 char i -> void
 print_param char i -> int
 
 //int print_bind (char i)
-print_bind char i -> void
+print_bind char i -> int
 
 //int print_bind_expr (void *ptr, char i)
 print_bind_expr void* ptr,char i -> int

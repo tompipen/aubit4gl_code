@@ -1,6 +1,12 @@
-prompt_cmd	:	
-	PROMPT prompt_title opt_attributes FOR opt_char 
-        variable opt_help_no 
+/*
+=====================================================================
+                        Source: prompt.rule
+=====================================================================
+*/
+
+prompt_cmd	:
+	PROMPT prompt_title opt_attributes FOR opt_char
+        variable opt_help_no
         opt_attributes {
                 push_blockcommand("PROMPT");
 
@@ -13,12 +19,12 @@ prompt_cmd	:
 		add_continue_blockcommand ("PROMPT");
 		print_prompt_end($<str>6);
                 pop_blockcommand("PROMPT");
-                printcomment("/* END OF PROMPT */");
+                lex_printcomment("/* END OF PROMPT */");
                 }
 
 ;
 
-gui_prompt_cmd : 
+gui_prompt_cmd :
 	PROMPT prompt_title opt_attributes  RETURNING variable {
 		print_niy("GUI PROMPT");
 	}
@@ -47,7 +53,7 @@ prompt_title : fgl_expr_concat;
 
 
 
-
+/* ========================= prompt.rule ============================ */
 
 
 

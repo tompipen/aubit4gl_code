@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.8 2002-05-26 06:26:49 afalout Exp $
+# $Id: gui.c,v 1.9 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -105,13 +105,18 @@
 =====================================================================
 */
 
-void init_wsock (void);
-void proc_format (char *s, int a);
-int proc_gui_in (char *buff);
-void gui_kpress (void);
-void gui_click (void);
-int last_error (void);
+void 		init_wsock 		(void);
+void 		proc_format 	(char *s, int a);
+int 		proc_gui_in 	(char *buff);
+void 		gui_kpress 		(void);
+void 		gui_click 		(void);
+int 		last_error 		(void);
 
+void 		start_gui 		(void);
+void 		gui_close 		(void);
+static int 	find_str_in 	(char *s);
+char * 		read_clicked 	(void);
+void * 		decode_clicked 	(void);
 
 /*
 =====================================================================
@@ -177,7 +182,7 @@ proc_it (char *buff)
  * If the environment variable GUIPORT is set, act as a server in the port
  * defined.
  *
- * @return Nothing important.
+ * @return Nothing.
  */
 void
 start_gui (void)
@@ -260,7 +265,7 @@ read_gui (void)
 /**
  * Close the socket to the client.
  */
-void 
+void
 gui_close (void)
 {
   close (sock);
@@ -736,7 +741,7 @@ gui_click (void)
  *   - The position in the array of the string found.
  *   - -1 : The string wanted was not found.
  */
-int
+static int
 find_str_in (char *s)
 {
   int a;

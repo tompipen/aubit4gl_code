@@ -1,5 +1,4 @@
 /*
-*
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
@@ -25,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.3 2002-05-25 12:12:44 afalout Exp $
+# $Id: datatypes.c,v 1.4 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -77,10 +76,10 @@ struct s_datatype {
 
 /* 
 Functions allowed :
-	alloc		//
-	free 		//
-	output_LANG	// normal language representation (eg LANG=C)
-	output_SQL	// SQL representation (eg LANG=ODBC)
+	alloc			//
+	free 			//
+	output_LANG		// normal language representation (eg LANG=C)
+	output_SQL		// SQL representation (eg LANG=ODBC)
 	nset            // Set to null
 	zset            // Set to zero
 	isnull          // returns 1 if value is null, 0 if not
@@ -104,9 +103,15 @@ static void *libptr = 0;
 =====================================================================
 */
 
-void add_default_datatypes() ;
-static int (*func) ();
+void 		add_default_datatypes	(void);
+static int 	(*func) 				(void);
 
+static int 	add_datatype			(char *name,int rq,int precision);
+static int 	add_datatype_function_i	(int a,char *funcname,void *func);
+int 		add_datatype_function_n	(char *name,char *funcname,void *func);
+
+void 		add_conversion 			(char *from,char *to,void *func);
+int 		aclfgl_load_datatype 	(int nargs);
 
 /*
 =====================================================================
@@ -139,8 +144,8 @@ A4GLEXDATA_initlib (char *f)
 
 
 
-// Initialize all the datatypes
 /**
+ * Initialize all the datatypes
  *
  * @todo Describe function
  */
@@ -162,10 +167,9 @@ init_datatypes(void)
 
 
 
-
-// Returns 1 on success
-// return 0 on failure
 /**
+ * Returns 1 on success
+ * return 0 on failure
  *
  * @todo Describe function
  */
@@ -182,10 +186,9 @@ int n;
 
 
 
-
-// Returns 1 on success
-// return 0 on failure
 /**
+ * Returns 1 on success
+ * return 0 on failure
  *
  * @todo Describe function
  */
@@ -211,23 +214,21 @@ int n;
 
 
 
-
-//
-// add_datatype
-// Name      = name of datatype
-// rq        = requested datatype ID number
-// precision = precisness of the datatype
-//             this will determine which datatype would be used for numeric comparisons
-//		(eg float > smallfloat > int > smallint
-//             Therefore - if you are comparing a smallint to a float - you'd convert both to 'float'
-// returns the datatype  ID if successfull
-// or -1
 /**
+ *
+ * add_datatype
+ * Name      = name of datatype
+ * rq        = requested datatype ID number
+ * precision = precisness of the datatype
+ *             this will determine which datatype would be used for numeric comparisons
+ *		(eg float > smallfloat > int > smallint
+ *             Therefore - if you are comparing a smallint to a float - you'd convert both to 'float'
+ * returns the datatype  ID if successfull or -1
  *
  * @todo Describe function
  */
-int 
-add_datatype(char *name,int rq,int precision) 
+static int
+add_datatype(char *name,int rq,int precision)
 {
 	int a;
 
@@ -302,14 +303,14 @@ find_datatype(char *name)
 
 }
 
-// Returns 1 on success
-// return 0 on failure
 /**
+ * Returns 1 on success
+ * return 0 on failure
  *
  * @todo Describe function
  */
-int 
-add_datatype_function_i(int a,char *funcname,void *func) 
+static int
+add_datatype_function_i(int a,char *funcname,void *func)
 {
 	if (!inited) init_datatypes();
 	debug("Adding function %s to datatype %d (%p)",funcname,a,func);
@@ -317,26 +318,25 @@ add_datatype_function_i(int a,char *funcname,void *func)
 	dtypes[a].funcs=realloc(dtypes[a].funcs,
 
 			(dtypes[a].funcs_len+1)*sizeof(struct dtype_functions *));
-	
+
 	dtypes[a].funcs[dtypes[a].funcs_len]=malloc(sizeof(struct dtype_functions));
 	dtypes[a].funcs[dtypes[a].funcs_len]->name=funcname;
 	dtypes[a].funcs[dtypes[a].funcs_len]->function=func;
 
 	dtypes[a].funcs_len++;
 
-	
+
 	return 1;
 }
 
-
-// Returns 1 on success
-// return 0 on failure
 /**
+ * Returns 1 on success
+ * return 0 on failure
  *
  * @todo Describe function
  */
-int 
-add_datatype_function_n(char *name,char *funcname,void *func) 
+int
+add_datatype_function_n(char *name,char *funcname,void *func)
 {
 	int a;
 	if (!inited) init_datatypes();
@@ -349,9 +349,10 @@ add_datatype_function_n(char *name,char *funcname,void *func)
 
 
 
-// Returns 1 on success
-// return 0 on failure
 /**
+ * Returns 1 on success
+ * return 0 on failure
+ *
  *
  * @todo Describe function
  */
@@ -366,9 +367,10 @@ has_datatype_function_n(char *name,char *funcname)
 }
 
 
-// Returns 1 on success
-// return 0 on failure
 /**
+ * Returns 1 on success
+ * return 0 on failure
+ *
  *
  * @todo Describe function
  */
@@ -386,7 +388,8 @@ get_datatype_function_n(char *name,char *funcname)
  *
  * @todo Describe function
  */
-void add_conversion (char *from,char *to,void *func) 
+void
+add_conversion (char *from,char *to,void *func)
 {
 int a;
 int b;
@@ -436,7 +439,7 @@ add_default_datatypes(void)
  *
  * @todo Describe function
  */
-int 
+int
 aclfgl_load_datatype (int nargs)
 {
    	char *s;

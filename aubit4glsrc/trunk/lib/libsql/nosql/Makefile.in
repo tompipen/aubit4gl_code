@@ -24,13 +24,12 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2002-04-24 07:46:00 afalout Exp $
+# $Id: Makefile.in,v 1.10 2002-06-01 11:55:00 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ../../../incl/Makefile-common
-
-override NOINCL=0
+#override NOINCL=0
 
 ## ==================================================================
 ##                              Options
@@ -38,8 +37,8 @@ override NOINCL=0
 
 CFLAGS+=-I../../libincl -I../../../compilers/fcompile @RPCLIB_INCLUDE@
 
-ifeq "$COMSPEC" ""
-    ALL=nosql.so
+ifeq "${COMSPEC}" ""
+    ALL=libSQL_nosql.so
 else
     ALL=nosql.dll
 endif
@@ -50,8 +49,8 @@ endif
 
 ALL: ${ALL}
 
-
 nosql.so: libSQL_nosql.so
+
 libSQL_nosql.so: nosql.o
 	${LD} ${SO_LDFLAGS} $^ -o $@
 	cp $@ ../..

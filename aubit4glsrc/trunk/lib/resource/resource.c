@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.8 2002-05-20 20:17:38 mikeaubury Exp $
+# $Id: resource.c,v 1.9 2002-06-01 11:55:00 afalout Exp $
 #
 */
 
@@ -218,7 +218,7 @@ struct str_resource builtin_resource[] =
   {"_ERRORLINE", "-1"},
   {"_MESSAGELINE", "-2"},
   {"_COMMENTLINE", "-2"},
- 
+
 /* WINDOWS Compilation options */
   {"W32LIBSDIR", "-L/acl/lib"},
   {"W32LIBS", "-lpdcurs -lgdi32 -luser32 -lwsock32"},
@@ -246,6 +246,12 @@ int chk_dbdate (char *p);
 
 extern void trim_nl(char *p); //in aubit-config.c when used to make aubit-config executable.
 
+static char * chk_str_resource (char *s, struct str_resource *res);
+static int add_userptr (void *ptr);
+static char * find_str_resource (char *s);
+int replace_str_resource (char *s, char *neww);
+void dump_all_resource_vars(void);
+
 
 
 /*
@@ -261,7 +267,7 @@ extern void trim_nl(char *p); //in aubit-config.c when used to make aubit-config
  *
  * @param
  */
-char *
+static char *
 chk_str_resource (char *s, struct str_resource *res)
 {
   register int a;
@@ -289,7 +295,7 @@ chk_str_resource (char *s, struct str_resource *res)
  *
  * @param
  */
-int
+static int
 add_userptr (void *ptr)
 {
   user_resource = ptr;
@@ -348,7 +354,7 @@ find_str_resource_int (char *search, int a)
  *
  * @param
  */
-char *
+static char *
 find_str_resource (char *s)
 {
   char *ptr;

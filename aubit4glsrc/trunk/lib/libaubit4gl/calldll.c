@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.8 2002-05-25 12:12:44 afalout Exp $
+# $Id: calldll.c,v 1.9 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -42,17 +42,19 @@
 =====================================================================
 */
 
-#include <string.h> // strcpy() strcat()
+#include <string.h> /* strcpy() strcat() */
 
-/************************************************************************/
-/* Under Cygwin, we can use the dl family of calls, but we need to jump */
-/* through some hoops first. Specifically, we need to include           */
-/* <cygwin/cygwin_dll.h> and we need to use the DECLARE_CYGWIN_DLL()    */
-/* macro. During the link phase, we must use __cygwin_dll_entry@12 as   */
-/* the entry point. See http://sources.redhat.com/cygwin/dl-docs.html. */
-/* http://cygwin.com/faq/faq.html#SEC106 */
-/* http://www.neuro.gatech.edu/users/cwilson/cygutils/V1.1/dll-stuff/   */
-/************************************************************************/
+/*
+ **********************************************************************
+ * Under Cygwin, we can use the dl family of calls, but we need to jump
+ * through some hoops first. Specifically, we need to include
+ * <cygwin/cygwin_dll.h> and we need to use the DECLARE_CYGWIN_DLL()
+ * macro. During the link phase, we must use __cygwin_dll_entry@12 as
+ * the entry point. See http://sources.redhat.com/cygwin/dl-docs.html.
+ * http://cygwin.com/faq/faq.html#SEC106
+ * http://www.neuro.gatech.edu/users/cwilson/cygutils/V1.1/dll-stuff/
+ ***********************************************************************
+ */
 
 #if defined(__CYGWIN__)
 	#include <cygwin/cygwin_dll.h>
@@ -68,6 +70,20 @@
 */
 
 char tempbuff[1024];
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+static void 	badfunc 		(void);
+static int 		nullfunc		(void);
+int 			call_4gl_dll 	(char *filename, char *function, int args);
+void *          find_func 		(void *dllhandle, char *func);
+void *          find_func_double (void *dllhandle, char *func);
+
+
 
 /*
 =====================================================================
@@ -106,7 +122,7 @@ call_4gl_dll (char *filename, char *function, int args)
  *
  * This way if someone try to call a non existent function the program stops.
  */
-void
+static void
 badfunc (void)
 {
 //  exitwith ("No DLL Loaded");
@@ -117,7 +133,7 @@ badfunc (void)
  *
  * @todo Describe function
  */
-int
+static int
 nullfunc(void)
 {
 	debug("Calling DLL where no function defined (Allowed)");
@@ -212,7 +228,7 @@ find_func_double (void *dllhandle, char *func)
 {
   double (*func_ptr) ();
   debug("find_func_double: Finding pointer to DLL function %s which returns a double\n",func);
-  
+
  sprintf (tempbuff, "%s",func);
 
   if (dllhandle == 0)
@@ -231,8 +247,6 @@ find_func_double (void *dllhandle, char *func)
   }
   return func_ptr;
 }
-
-
 
 /**
  *
@@ -259,7 +273,8 @@ find_func_allow_missing (void *dllhandle, char *func)
 
 
 /**
- * Loading of 4gl dll for windows systems.
+ * Loading of 4gl dll for UNIX systems.
+ * Called from 4gl code
  *
  * @param filename The dynamic library file name.
  * @param function The function name.

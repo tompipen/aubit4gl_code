@@ -55,8 +55,15 @@ then
 fi
 
 specfile=$1
-lib=$2
-env=$3
+
+if [ "$2" == "-h" ]
+then
+	MAKE_HEADER=1
+else
+	lib=$2
+	env=$3
+fi
+
 lib_prefix=
 api_prefix=
 
@@ -82,31 +89,146 @@ then
 	lib_prefix=`awk '/^LIB_PREFIX /{print $2}' $specfile`
 fi
 
-echo "//Library=$lib env=$env"
+#name of the headers file to be refgerenced with #include
+if grep HEADER_FILE $specfile > /dev/null
+then
+	HEADER_FILE=`awk '/^HEADER_FILE /{print $2}' $specfile`
+fi
 
-awk -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" '
 
 
+#echo "/* Library=$lib env=$env */"
+
+if [ "$MAKE_HEADER" == "1" ]
+then
+	awk -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" '
+	BEGIN {
+	FS="[ 	,]"
+	print ""
+	print "/*"
+	print " * lib=" lib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
+	print " * @file"
+	print " * Function prototypes"
+	print " *"
+	print " * This file was created from .spec file of same name, using dlmagic script"
+	print " * - if you need to edit it, edit .spec file instad, and use [make filename.h]"
+	print " * to re-create it."
+	print " *"
+	print " * @todo See if the functions are static"
+	print " * or to be externally seen"
+	print " */"
+	print ""
+	print "/*******************************************************************"
+	print "* (c) 1997-2002 Aubit Computing Ltd."
+	print "*"
+	print "*"
+	print "********************************************************************/"
+	print ""
+	print "/*"
+	print "====================================================================="
+	print "                    Functions prototypes"
+	print "====================================================================="
+	print "*/"
+	print ""
+	}
+	/^LIBRARY / {next}
+	/^VARIABLE / {next}
+	/^HEADER_FILE / {next}
+	/^#/ {print
+		next
+	}
+	/^\// {print
+		next
+	}
+	/^extern/ {print
+		next
+	}
+	/^ \*/ {print
+		next
+	}
+	/^\*/ {next}
+	/^$/ {next}
+	/^[ 	]*$/ {next}
+	{
+	fname=$1
+	rtype="void"
+
+	c=0
+	for (a=2;a<=NF;a++) {
+	param_type[c]=$a
+	if (param_type[c]=="->") {
+		param_type[c]=""
+		a++
+		rtype=$a
+		break
+	}
+
+	if (param_type[c]=="...") {
+		param_name[c]=""
+		a++
+		c++
+		break
+	}
+
+
+	a++
+	param_name[c]=$a
+	c++;
+	}
+
+	printf rtype " " api_prefix fname "("
+	va_start=""
+	args=""
+	for (b=0;b<c;b++) {
+		printf("%s %s",param_type[b],param_name[b]);
+		if (param_type[b]=="...") {
+			va_start=last;
+			args=args ",&ap"
+		}
+		else {
+			args=args "," param_name[b]
+		}
+		last=param_name[b]
+		if (b<c-1) {
+			printf(",");
+		}
+	}
+	args=substr(args,2)
+	print ");"
+	print ""
+
+	}' < $specfile
+
+
+
+    exit 0
+fi
+
+
+awk -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" '
 BEGIN {
 FS="[ 	,]"
-print "/** lib=" lib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
-print "* @file"
-print "* File definition"
-print "*"
-print "* This file was created from .spec file of same name, using dlmagic script"
-print "* - if you need to edit it, edit .spec file instad, and use [make filename.c]"
-print "* to re-create it."
-print "*"
-print "* @todo Add Doxygen comments to file"
-print "* @todo Take the prototypes here declared. See if the functions are static"
-print "* or to be externally seen"
-print "* @todo Doxygen comments to add to functions"
-print "*/"
-print "/******************************************************************************"
+print "/*"
+print " * lib=" lib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
+print " * @file"
+print " * File definition"
+print " *"
+print " * This file was created from .spec file of same name, using dlmagic script"
+print " * - if you need to edit it, edit .spec file instad, and use [make filename.c]"
+print " * to re-create it."
+print " *"
+print " * @todo Add Doxygen comments to file"
+print " * @todo Take the prototypes here declared. See if the functions are static"
+print " * or to be externally seen"
+print " * @todo Doxygen comments to add to functions"
+print " */"
+print ""
+print "/*******************************************************************"
 print "* (c) 1997-2002 Aubit Computing Ltd."
 print "*"
 print "*"
-print "*******************************************************************************/"
+print "********************************************************************/"
+print ""
 print "#include <stdio.h>"
 print ""
 print "#include \"a4gl_dbform.h\""
@@ -114,12 +236,13 @@ print "#include \"a4gl_report.h\""
 print "#include \"a4gl_debug.h\""
 print "#include \"a4gl_stack.h\""
 print "#include \"a4gl_aubit_lib.h\""
+#print "#include \"" HEADER_FILE "\""
 print ""
 print "static void *libptr=0;"
 print "static int (*func)();"
 #print "static double (*func_d)();"
 print "void *find_func(void *p,char *s);"
-#print "void *find_func_allow_missing(void *p,char *s);"
+print "int A4GL" lib "_initlib (void);"
 print ""
 print "/**"
 print " * Library init function."
@@ -146,6 +269,7 @@ print ""
 }
 /^LIBRARY / {next}
 /^VARIABLE / {next}
+/^HEADER_FILE / {next}
 /^#/ {print
 	next
 }
@@ -163,6 +287,7 @@ print ""
 /^[ 	]*$/ {next}
 {
 fname=$1
+call_fname=$1
 rtype="void"
 
 c=0
@@ -177,6 +302,7 @@ if (param_type[c]=="->") {
 
 if (param_type[c]=="...") {
 	param_name[c]=""
+    call_fname="internal_"fname
 	a++
 	c++
 	break
@@ -222,7 +348,7 @@ print ") {"
 if (va_start!="") {print "va_list ap;"}
 
 print "   if (libptr==0) A4GL" lib "_initlib();"
-print "   func=find_func(libptr,\"" lib_prefix fname "\");"
+print "   func=find_func(libptr,\"" lib_prefix call_fname "\");"
 if (va_start!="") {
 	print "   va_start(ap," va_start ");"
 }

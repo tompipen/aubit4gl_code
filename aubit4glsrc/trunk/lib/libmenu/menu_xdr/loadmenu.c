@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.9 2002-05-30 11:18:39 mikeaubury Exp $
+# $Id: loadmenu.c,v 1.10 2002-06-01 11:55:00 afalout Exp $
 #*/
 
 /**
@@ -91,6 +91,9 @@ GtkWidget *tooltips = 0;
 */
 
 extern GtkWindow *get_curr_win_gtk (void);
+static GtkWidget * real_load_menu (char *fname, char *menu_id, int mode, void *handler);
+
+
 
 /*
 =====================================================================
@@ -336,8 +339,13 @@ create_menu (menu_list *m, char *id, int mode, void *handler)
  * @param handler The menu handler name.
  * @return A pointer to the menu widget created.
  */
-GtkWidget *
+void *
 load_menu (char *fname, char *menu_id, int mode, void *handler)
+{
+	return real_load_menu (fname,menu_id,mode,handler);
+}
+static GtkWidget *
+real_load_menu (char *fname, char *menu_id, int mode, void *handler)
 {
   struct menu_list the_menus;
   FILE *f;

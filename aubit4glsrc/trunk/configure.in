@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.65 2002-05-25 12:12:37 afalout Exp $
+# $Id: configure.in,v 1.66 2002-06-01 11:54:53 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -256,6 +256,7 @@ AC_SUBST(PIC)
 AC_SUBST(LDFLAGS_SHARED)
 AC_SUBST(YACC)
 AC_SUBST(LEX)
+#AC_SUBST(PREFIX)
 
 #curses:
 AC_SUBST(CURSES_LIB_PATH)
@@ -2172,6 +2173,19 @@ else
 fi
 
 ## ==================================================================
+##            Decide on install location
+## ==================================================================
+
+if test "$prefix" = "NONE"; then
+	if test "$cygwin" = "1" ; then
+		#/opt is not created by default on CygWin installations
+		prefix=/usr/local
+	else
+		prefix=/opt
+    fi
+fi
+
+## ==================================================================
 ##            Decide on default COMPILER OUTPUT driver
 ## ==================================================================
 
@@ -2202,8 +2216,7 @@ fi
 ##            Decide on files to be included in RPM
 ## ==================================================================
 
-PREFIX=/opt/aubit4gl
-LIB_PREFIX=$PREFIX/lib
+LIB_PREFIX=$prefix/aubit4gl/lib
 
 	if test "$GTKBUILD" != "no"; then
 		RPMFILE_1=$LIB_PREFIX/libUI_GTK.so

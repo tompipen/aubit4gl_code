@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.12 2002-05-30 11:18:39 mikeaubury Exp $
+# $Id: readforms.c,v 1.13 2002-06-01 11:54:59 afalout Exp $
 #*/
 
 /**
@@ -128,11 +128,11 @@ char dbname[64];
 /** @todo Take this prototype definition for a header file */
 //void default_attributes (FIELD * f, int dtype);
 //int comments (struct struct_scr_field *fprop);
-void comments (struct struct_scr_field *fprop);
+//void comments (struct struct_scr_field *fprop);
 static void do_translate_form(struct_form *the_form);
 static void read_attributes (struct s_form_dets *f);
 static int include_range_check (char *ss, char *ptr, int dtype);
-int has_bool_attribute (struct struct_scr_field *f, int bool);
+static int real_has_bool_attribute (struct struct_scr_field *f, int bool);
 
 //char *strip_quotes (char *s);
 //void *get_curr_form ();
@@ -151,6 +151,12 @@ char *string_width (char *a);
 //char *new_string (int a);
 int set_fields2 (int nv, struct BINDING *vars, int d, int n, ...);
 //int display_fields (FORM * mform, int n, ...);
+
+static void real_comments (struct struct_scr_field * fprop);
+static struct s_form_dets * real_read_form (char *fname, char *formname);
+static void real_set_default_form (struct s_form_attr *form);
+static void real_dump_srec (struct s_form_dets * fd);
+
 
 
 /*
@@ -198,8 +204,15 @@ ret_string (char *str)
 /**
  *
  */
-struct s_form_dets *
-read_form (char *fname, char *formname)
+void *
+read_form (char* fname, char* formname)
+{
+	debug("via read_form in lib");
+	return read_form(fname, formname);
+}
+
+static struct s_form_dets *
+real_read_form (char *fname, char *formname)
 {
 FILE *ofile = 0;
 int a;
@@ -212,69 +225,73 @@ XDR xdrp;
 trim (fname);
 trim (formname);
 
-  debug ("in read_form fname=%s formname=%s", fname, formname);
-  strcpy (buff, fname);
-  buff[strlen (buff) - 4] = 0;
+	debug ("in read_form fname=%s formname=%s", fname, formname);
+	strcpy (buff, fname);
+	buff[strlen (buff) - 4] = 0;
 
-  if (has_pointer (buff, COMPILED_FORM))
+	if (has_pointer (buff, COMPILED_FORM))
+    {
+	  int chkint;		// INT4
+		ptr = find_pointer (buff, COMPILED_FORM);
+
+		xdrmem_create (&xdrp, ptr, 128 * 1024, XDR_DECODE);
+		xdr_int (&xdrp, &chkint);
+
+		if (chkint != FCOMILE_XDR_MAGIC)
+		{
+			exitwith
+			("Couldnt open form - does not appear to be a valid form file");
+			return 0;
+		}
+    }
+	else
     {
       int chkint;		// INT4
-      ptr = find_pointer (buff, COMPILED_FORM);
+		debug ("Opening file");
+		ofile = (FILE *) open_file_dbpath (fname);
 
-      xdrmem_create (&xdrp, ptr, 128 * 1024, XDR_DECODE);
-      xdr_int (&xdrp, &chkint);
-      if (chkint != FCOMILE_XDR_MAGIC)
-	{
-	  exitwith
-	    ("Couldnt open form - does not appear to be a valid form file");
-	  return 0;
-	}
-    }
-  else
-    {
-      int chkint;		// INT4
-      debug ("Opening file");
-      ofile = (FILE *) open_file_dbpath (fname);
-      if (ofile == 0)
-	{
-	  exitwith ("Couldnt open form");
-	  return 0;
-	}
+		if (ofile == 0)
+		{
+			exitwith ("Couldnt open form");
+			return 0;
+        }
 
-      debug ("Checking magic header");
+		debug ("Checking magic header");
 
-      xdrstdio_create (&xdrp, ofile, XDR_DECODE);
-      xdr_int (&xdrp, &chkint);
+		xdrstdio_create (&xdrp, ofile, XDR_DECODE);
+		xdr_int (&xdrp, &chkint);
 
-      if (chkint != FCOMILE_XDR_MAGIC)
-	{
-	  exitwith
-	    ("Couldnt open form - does not appear to be a valid form file");
-	  return 0;
-	}
-      rewind (ofile);
+		if (chkint != FCOMILE_XDR_MAGIC)
+        {
+			exitwith
+			("Couldnt open form - does not appear to be a valid form file");
+			return 0;
+        }
+
+		rewind (ofile);
     }
 
 
-#ifdef DEBUG
-	/* {DEBUG} */ {debug ("fname=%s formname=%s", fname, formname); }
-#endif
+	#ifdef DEBUG
+		{debug ("fname=%s formname=%s", fname, formname); }
+	#endif
 
-  gui_startform (formname);
-  formdets =
+	gui_startform (formname);
+	formdets =
     (struct s_form_dets *) acl_malloc (sizeof (struct s_form_dets),
 				       "Readform");
-  formdets->fileform =
-    (struct_form *) acl_malloc (sizeof (struct_form), "Readform");
-  memset (formdets->fileform, 0, sizeof (struct_form));
+	formdets->fileform =
+    	(struct_form *) acl_malloc (sizeof (struct_form), "Readform");
+
+	memset (formdets->fileform, 0, sizeof (struct_form));
 
 
-  if (ptr == 0)
+	if (ptr == 0)
     {
       debug ("Reading form from file");
       xdrstdio_create (&xdrp, ofile, XDR_DECODE);
     }
-  else
+	else
     {
       debug ("Reading form from memory");
       xdrmem_create (&xdrp, find_pointer (buff, COMPILED_FORM), 128 * 1024,
@@ -282,14 +299,14 @@ trim (formname);
     }
 
 	a = xdr_struct_form (&xdrp, formdets->fileform);
-  
-  if (!a)
+
+	if (!a)
     {
       exitwith ("Unable to read form");
       return 0;
     }
 
-  if (formdets->fileform->fcompile_version != FCOMILE_XDR_VERSION)
+	if (formdets->fileform->fcompile_version != FCOMILE_XDR_VERSION)
     {
       debug ("Form version %d - my version %d",
 	     formdets->fileform->fcompile_version, FCOMILE_XDR_VERSION);
@@ -298,25 +315,22 @@ trim (formname);
     }
 
 
-  do_translate_form(formdets->fileform);
+	do_translate_form(formdets->fileform);
 
-  formdets->currentfield = 0;
- debug("formdets=%p",formdets);
-  read_attributes (formdets);
- debug("formdets=%p",formdets);
-  read_metrics (formdets);
- debug("formdets=%p",formdets);
-  read_fields (formdets);
- debug("formdets=%p",formdets);
-
-  debug ("Loaded form...");
-  gui_endform ();
-  debug ("Ended loading forms (%d, %d)", formdets->fileform->maxcol,
-	 formdets->fileform->maxline);
-  return formdets;
+	formdets->currentfield = 0;
+	debug("formdets=%p",formdets);
+	read_attributes (formdets);
+	debug("formdets=%p",formdets);
+	read_metrics (formdets);
+	debug("formdets=%p",formdets);
+	read_fields (formdets);
+	debug("formdets=%p",formdets);
+	debug ("Loaded form...");
+	gui_endform ();
+	debug ("Ended loading forms (%d, %d)", formdets->fileform->maxcol,
+										formdets->fileform->maxline);
+	return formdets;
 }
-
-
 
 
 
@@ -324,7 +338,13 @@ trim (formname);
  * Called from lib/libtui/newpanels.c so it should be in API_form
  */
 void
-set_default_form (struct s_form_attr *form)
+set_default_form (void* form)
+{
+	real_set_default_form (form);
+}
+
+static void
+real_set_default_form (struct s_form_attr *form)
 {
   form->mode = -1;
   form->insmode = 0;
@@ -350,7 +370,7 @@ read_attributes (struct s_form_dets *f)
 	     f->fileform->attributes.attributes_val[a].colour);
       if (f->fileform->attributes.attributes_val[a].colour == -1)
 	f->fileform->attributes.attributes_val[a].colour = 7;
-      if (has_bool_attribute /* see a4gl_aubit_lib.h for declaration */
+      if (real_has_bool_attribute /* see a4gl_aubit_lib.h for declaration */
 	  (&f->fileform->attributes.attributes_val[a], FA_B_REVERSE))
 	f->fileform->attributes.attributes_val[a].do_reverse = 1;
       else
@@ -362,10 +382,16 @@ read_attributes (struct s_form_dets *f)
 
 
 /**
- * Called from lib/libtui/ioform.c so should be in API_form
+ * Called from lib/libtui/ioform.c
  */
 void
-comments (struct struct_scr_field * fprop)
+comments(void* fprop)
+{
+	debug("via comments in lib");
+	real_comments(fprop);
+}
+static void
+real_comments (struct struct_scr_field * fprop)
 {
   if (fprop)
     {
@@ -378,14 +404,20 @@ comments (struct struct_scr_field * fprop)
     }
 }
 
-//looks like this is not used because it has return at the top?
-//but there is a call to it from libUI_TUI that needs to be removed
-//if the is the case - and from API_form.spec too
 /**
+ *
+ * looks like this is not used because it has return at the top?
+ * but there is a call to it from libUI_TUI that needs to be removed
+ * if the is the case - and from API_form.spec too
  *
  */
 void
-dump_srec (struct s_form_dets * fd)
+dump_srec (void * fd)
+{
+	real_dump_srec(fd);
+}
+static void
+real_dump_srec (struct s_form_dets * fd)
 {
   int a;
   int b;
@@ -595,7 +627,14 @@ strip_quotes (char *s)
 /**
  *
  */
-int has_bool_attribute (struct struct_scr_field *f, int bool)
+int
+has_bool_attribute (void* f, int bool)
+{
+	debug("via has_bool_attribute in lib");
+	has_bool_attribute(f,bool);
+}
+static int
+real_has_bool_attribute (struct struct_scr_field *f, int bool)
 {
   int a;
   debug ("Checking %p for %d\n", f, bool);

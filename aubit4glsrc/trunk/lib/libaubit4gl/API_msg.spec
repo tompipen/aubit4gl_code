@@ -10,6 +10,10 @@
 LIBRARY MSG
 * Name of the variable which will have second part of library name to load:
 VARIABLE A4GL_MSGTYPE
+* Name of the header file to be referenced with #include
+*HEADER_FILE API_msg.h
+
+
 *
 * Function calls definitions:
 * func-name param-type param-name ... -> returns"

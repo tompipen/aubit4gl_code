@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.5 2002-05-30 06:25:19 afalout Exp $
+# $Id: io.c,v 1.6 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -46,7 +46,7 @@
 
 #include "a4gl_dbform.h"
 #include "a4gl_tunable.h"
-#include "a4gl_aubit_lib.h"     //acl_getenv()
+#include "a4gl_aubit_lib.h"     /* acl_getenv() */
 #include "a4gl_debug.h"
 
 
@@ -64,6 +64,11 @@ FILE *oufile=0;
 =====================================================================
 */
 
+int 		read_int 			(FILE * ofile);
+void 		write_int 			(FILE * ofile, int la);
+FILE * 		try_to_open			(char *path,char *name,int keepopen);
+FILE * 		open_file_dbpath	(char *fname);
+
 
 /*
 =====================================================================
@@ -78,7 +83,7 @@ FILE *oufile=0;
  * @param ofile Pointer to the file to be readed. If 0 use global oufile.
  * @return The int readed.
  */
-int 
+int
 read_int (FILE * ofile)
 {
 

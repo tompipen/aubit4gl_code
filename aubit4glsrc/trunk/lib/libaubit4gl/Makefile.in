@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2002-05-28 10:32:08 afalout Exp $
+# $Id: Makefile.in,v 1.16 2002-06-01 11:54:59 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -68,7 +68,10 @@ OBJS				=${COMMONSRC:.c=.o} ${CMODS_PROJECT:.c=.o} ${OBJS_API}
 ##                              Options
 ## ==================================================================
 
-DLMAGIC		=../bin/dlmagic
+LIBINCL_PATH		=../libincl
+INCL_PATH			=../../incl
+
+DLMAGIC				=../bin/dlmagic
 
 ifdef COMSPEC
 	ALL				+=dllaubit4gl
@@ -76,7 +79,8 @@ else
     ALL				+=libaubit4gl${SO_EXT}
 endif
 
-CFLAGS				+=-I../../compilers/fcompile -I../libincl -I../../compilers/4glc -D_DEFINE_STATUSVARS_
+#-D_DEFINE_STATUSVARS_ moved in fglwrap.c
+CFLAGS				+=-I../../compilers/fcompile -I../../compilers/4glc -I${LIBINCL_PATH}
 
 #we don't want -Wall in CFLAGS when compiling form_x_xdr.c because it would
 #give us bunch of warnings about unised varibles, that we cannot fix
@@ -174,19 +178,23 @@ api: ${OBJS_API}
 #API_ui.c API_exreport.c API_sql.c API_rpc.c where created manually and
 #have no coresponding .spec file
 
+#created headers are included via a4gl_aubit.lib.h
+
 API_msg.c: API_msg.spec
 	${SH} ${DLMAGIC} $^ > $@
+	${SH} ${DLMAGIC} $^ -h > ${INCL_PATH}/a4gl_$*.h
 
 API_menu.c: API_menu.spec
 	${SH} ${DLMAGIC} $^ > $@
+	${SH} ${DLMAGIC} $^ -h > ${INCL_PATH}/a4gl_$*.h
 
 API_form.c: API_form.spec
 	${SH} ${DLMAGIC} $^ > $@
+	${SH} ${DLMAGIC} $^ -h > ${INCL_PATH}/a4gl_$*.h
 
 API_lex.c: API_lex.spec
 	${SH} ${DLMAGIC} $^ > $@
-
-
+	${SH} ${DLMAGIC} $^ -h > ${INCL_PATH}/a4gl_$*.h
 
 
 #----------------------------------- EOF -------------------------------

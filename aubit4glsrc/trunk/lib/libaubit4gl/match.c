@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.3 2002-05-20 11:41:12 afalout Exp $
+# $Id: match.c,v 1.4 2002-06-01 11:54:59 afalout Exp $
 #*/
 
 /**
@@ -44,8 +44,8 @@
 =====================================================================
 */
 
-#include <string.h> 	//strlen()
-#include <ctype.h> 		//toupper()
+#include <string.h> 	/* strlen() */
+#include <ctype.h> 		/* toupper() */
 
  /*
 =====================================================================
@@ -93,10 +93,16 @@
 */
 
 
-BOOLEAN is_pattern (char *pattern);
-BOOLEAN is_valid_pattern (char *pattern, int *error_type);
-int matche_after_star (register char *pattern, register char *text);
-int fast_match_after_star (register char *pattern, register char *text);
+BOOLEAN 	is_pattern 				(char *pattern);
+BOOLEAN 	is_valid_pattern 		(char *pattern, int *error_type);
+int 		matche_after_star 		(register char *pattern, register char *text);
+int 		fast_match_after_star 	(register char *pattern, register char *text);
+
+int 		matche 					(register char *p, register char *t);
+BOOLEAN 	match					(char *p, char *t);
+int 		aubit_strcasecmp 		(char *a, char *b);
+
+
 
 /*
 =====================================================================
@@ -289,7 +295,7 @@ is_valid_pattern (char *p, int *error_type)
  *  @param The text to be checked.
  *
  */
-int 
+int
 matche (register char *p, register char *t)
 {
       register char range_start, range_end;  /* start and end in range */
@@ -564,7 +570,7 @@ matche_after_star (register char *p, register char *t)
  * @param p The pattern to be used..
  * @param t The text to be checked.
  */
-BOOLEAN 
+BOOLEAN
 match( char *p, char *t )
 {
       int error_type;

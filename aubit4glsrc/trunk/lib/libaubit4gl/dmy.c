@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.4 2002-05-23 09:29:35 afalout Exp $
+# $Id: dmy.c,v 1.5 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -126,7 +126,9 @@ char *g_mnamesfull[]={
 =====================================================================
 */
 
-char *dategsub(char *s,char *r,char *p);
+char *		dategsub		(char *s,char *r,char *p);
+char *		using_date		(int dn,char *us);
+
 
 /*
 =====================================================================
@@ -234,6 +236,8 @@ dategsub(char *s,char *r,char *p)
 	return buff;
 }
 
+#ifdef REMOVEME
+
 /**
  * Does nothing.
  *
@@ -242,7 +246,7 @@ dategsub(char *s,char *r,char *p)
  * @return Allways 1
  */
 int
-get_day(void) 
+get_day(void)
 {
 	return 1;
 }
@@ -255,12 +259,13 @@ get_day(void)
  * @return Allways 0
  */
 int
-get_dayno(void) 
+get_dayno(void)
 {
 
 	return 0;
 }
 
+#endif
 
 // ================================ EOF ============================
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.18 2002-05-30 06:25:20 afalout Exp $
+# $Id: compile_c.c,v 1.19 2002-06-01 11:55:00 afalout Exp $
 #
 */
 
@@ -146,10 +146,7 @@ extern int constr_cnt;
 
 //function prototypes that must be here, not in header file:
 static void printc(char* fmt,... );
-void lex_printc(char *fmt, va_list *ap);
-void real_lex_printc(char *fmt, va_list *ap);
-
-
+//void lex_printc(char *fmt, va_list *ap);
 static void print_output_rep (struct rep_structure *rep);
 static void print_form_attrib (struct form_attr *form_attrib);
 static int print_field_bind (int ccc);
@@ -160,6 +157,16 @@ static int pr_when_do (char *when_str, int when_code, int l, char *f, char *when
 static void pr_report_agg (void);
 static void pr_report_agg_clr (void);
 static void print_menu (int mn);
+
+void internal_lex_printc(char *fmt, va_list *ap);
+void internal_lex_printcomment(char *fmt, va_list *ap);
+void internal_lex_printh(char *fmt, va_list *ap);
+
+
+//static void real_lex_printc(char *fmt, va_list *ap);
+static void real_print_expr (struct expr_str *ptr);
+static void real_print_func_call (char *identifier, struct expr_str *args, int args_cnt);
+static void real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
 
 
 /*
@@ -252,31 +259,6 @@ open_outfile(void)
   }
 }
 
-/*
-this redirects all calls to printc function originaling from LEX
-library itself, to LEXLIB_printc(). All calls from outside are made
-vi LEXAPI_printc() This was done because otherwise we would have
-discrepancy betweenm number of parameters passed to function between
-(...) and (va_list *args)
-*/
-
-static void 
-printc(char* fmt,... )
-{
-va_list ap;
-	debug("via printc in lib");
-	va_start(ap,fmt);
-	real_lex_printc(fmt,&ap);
-}
-
-
-void 
-lex_printc(char *fmt, va_list *ap)
-{
-	debug("via lex_printc in lib");
-	real_lex_printc(fmt,ap);
-}
-
 
 /**
  * Print the instructions to be generated to the target C file.
@@ -289,14 +271,24 @@ lex_printc(char *fmt, va_list *ap)
  * @param fmt the format to be passed to vsprintf
  * @param ... The variadic parameters to be passed to vsprintf
  */
-void
-real_lex_printc(char *fmt, va_list *ap)
+static void
+printc(char* fmt,... )
 {
-  //va_list args;
-  char buff[40960]="ERROR-empty init";
-  char *ptr;
-  int a;
-  char buff2[40960];
+va_list ap;
+	debug("via printc (a) in lib");
+	va_start(ap,fmt);
+	internal_lex_printc(fmt,&ap);
+}
+void
+internal_lex_printc(char *fmt, va_list *ap)
+{
+//va_list args;
+char buff[40960]="ERROR-empty init";
+char buff2[40960];
+char *ptr;
+int a;
+
+  debug("in real_lex_printc");
 
   if (outfile == 0)
   {
@@ -304,6 +296,9 @@ real_lex_printc(char *fmt, va_list *ap)
 	if (outfile == 0)
 		return;
   }
+    debug("before vsprintf");
+	debug("ap = %p\n",ap);
+	debug("fmt = %p\n",fmt);
 
 	//va_start (args, fmt);
 	vsprintf (buff, fmt, *ap);
@@ -350,13 +345,10 @@ real_lex_printc(char *fmt, va_list *ap)
 		}
   }
 
-
-
-// Having this will really slow it down...
-fflush(outfile);
-
-
+	/* Having this will really slow it down... */
+	fflush(outfile);
 }
+
 
 /**
  * Print the generated definitions to the target header file (.h)
@@ -366,21 +358,29 @@ fflush(outfile);
  * @param fmt the format to be passed to vsprintf
  * @param ... The variadic parameters to be passed to vsprintf
  */
-void
-printh (char *fmt, ...)
+static void
+printh(char* fmt,... )
 {
-  va_list args;
+va_list ap;
+	va_start(ap,fmt);
+	internal_lex_printh(fmt,&ap);
+}
+void
+//printh (char *fmt, ...)
+internal_lex_printh(char *fmt, va_list *ap)
+{
+//va_list args;
   if (outfile == 0)
     {
       open_outfile ();
     }
   if (outfile == 0)
     return;
-  va_start (args, fmt);
-  vfprintf (hfile, fmt, args);
+  //va_start (args, fmt);
+  //vfprintf (hfile, fmt, args);
+  vfprintf (hfile, fmt, ap);
 }
 
-#ifdef USE_PRINTCOMMENT
 /**
  * Print comments to the C output file.
  *
@@ -389,10 +389,19 @@ printh (char *fmt, ...)
  * @param fmt the format to be passed to vsprintf
  * @param ... The variadic parameters to be passed to vsprintf
  */
-void
-printcomment (char *fmt,...)
+static void
+printcomment(char* fmt,... )
 {
-  va_list args;
+va_list ap;
+	va_start(ap,fmt);
+	internal_lex_printcomment(fmt,&ap);
+}
+void
+//internal_printcomment (char *fmt,...)
+internal_lex_printcomment(char *fmt, va_list *ap)
+{
+#ifdef USE_PRINTCOMMENT
+//  va_list args;
   if (outfile == 0)
     {
       open_outfile ();
@@ -403,21 +412,20 @@ printcomment (char *fmt,...)
 
   if (acl_getenv ("COMMENTS"))
     {
-      va_start (args, fmt);
-      vfprintf (outfile, fmt, args);
+      //va_start (args, fmt);
+      //vfprintf (outfile, fmt, args);
+      vfprintf (outfile, fmt, ap);
     }
-}
 #else
-/**
- * Empty function for linking purposes when compiling without generation of
- * comments in the output C module
- */
-void
-printcomment (char *fmt,...)
-{
-// Do nothing...
-}
+	/**
+	 * Empty function for linking purposes when compiling without generation of
+	 * comments in the output C module
+	 */
+
+	/* Do nothing... */
+
 #endif
+}
 
 /**
  * Print the spaces corresponding to the scope level to have good
@@ -974,8 +982,15 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
  * @param ptr A pointer to an expr_str expression (structure that describes
  * an expression).
  */
+//this one gets called from API
 void
-print_expr (struct expr_str *ptr)
+print_expr(void* ptr)
+{
+	debug("via print_expr in lib");
+	real_print_expr(ptr);
+}
+static void
+real_print_expr (struct expr_str *ptr)
 {
   void *optr;
   debug ("Print expr... %p", ptr);
@@ -1557,10 +1572,18 @@ print_field_func (char type, char *name, char *var)
  * @param args The arguments
  * @param args_cnt The number of arguments
  */
+//print_func_call char* identifier,void* args,int args_cnt -> void
+
 void
-print_func_call (char *identifier, struct expr_str *args, int args_cnt)
+print_func_call(char *identifier, void* args, int args_cnt)
 {
-  print_expr (args);
+	debug("via print_func_call in lib");
+	real_print_func_call(identifier,args,args_cnt);
+}
+static void
+real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
+{
+  real_print_expr (args);
   printc ("/* done print expr */");
   printc ("{int _retvars;A4GLSQL_set_status(0);\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
@@ -1575,9 +1598,15 @@ print_func_call (char *identifier, struct expr_str *args, int args_cnt)
  * @param a3 The returning values
  */
 void
-print_pdf_call (char *a1, struct expr_str *args, char *a3)
+print_pdf_call(char *a1, void* args, char *a3)
 {
-  print_expr (args);
+	debug("via print_pdf_call in lib");
+	real_print_pdf_call(a1,args,a3);
+}
+static void
+real_print_pdf_call (char *a1, struct expr_str *args, char *a3)
+{
+  real_print_expr (args);
   printc ("{int _retvars;A4GLSQL_set_status(0);\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
   printc ("_retvars=pdf_pdffunc(&rep,%s,%s);\n", a1, a3);

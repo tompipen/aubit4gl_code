@@ -7,7 +7,7 @@
 
 let_cmd :
 LET {chk4var=1;} obind_var_let_list {chk4var=0;
-printcomment("/*let3*/\n");}  EQUAL reset_cnt op_expr_null
+lex_printcomment("/*let3*/\n");}  EQUAL reset_cnt op_expr_null
 {
 //int from_exprs;
 int to_vars;

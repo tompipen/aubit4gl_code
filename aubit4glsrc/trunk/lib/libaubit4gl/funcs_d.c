@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.7 2002-05-30 11:18:38 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.8 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -67,6 +67,15 @@
 */
 
 extern int errno;
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+int 			bname2	(char *str,char *str1,char *str2,char *str3);
+void 			trim_nl	(char *p);
 
 /*
 =====================================================================
@@ -200,7 +209,7 @@ trim(char *p)
  *
  * @param p The string to be trimmed.
  */
-void 
+void
 trim_nl(char *p)
 {
   int a;

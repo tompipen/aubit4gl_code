@@ -54,12 +54,12 @@ fgl_expr_ret_list 	: fgl_expr_ret
 {
 	/*set_counter(0);*/
 	sprintf($<str>$,"%d",get_counter_val());
-	printcomment("/*L1 %s*/\n",$<str>$);
+	lex_printcomment("/*L1 %s*/\n",$<str>$);
 }
 		| 	fgl_expr_ret_list COMMA fgl_expr_ret
 {
 	sprintf($<str>$,"%d",get_counter_val());
-	printcomment("/*L2 %s*/\n",$<str>$);
+	lex_printcomment("/*L2 %s*/\n",$<str>$);
 }
 ;
 
@@ -68,12 +68,12 @@ fgl_expr_list 	: fgl_expr
 {
 	/*set_counter(0);*/
 	sprintf($<str>$,"%d",get_counter_val());
-	printcomment("/*L1 %s*/\n",$<str>$);
+	lex_printcomment("/*L1 %s*/\n",$<str>$);
 }
 		| 	fgl_expr_list COMMA fgl_expr
 {
 	sprintf($<str>$,"%d",get_counter_val());
-	printcomment("/*L2 %s*/\n",$<str>$);
+	lex_printcomment("/*L2 %s*/\n",$<str>$);
 }
 ;
 
@@ -314,7 +314,7 @@ int a;
 	if (a==-2) 
 	{
 	        char b[40000];
-	        printcomment("/* print_push_rec... %s */",$<str>1);
+	        lex_printcomment("/* print_push_rec... %s */",$<str>1);
 	        incvcnt=print_push_rec($<str>1,b);
 	        inc_counter_by(incvcnt);
 			debug("Copy");
@@ -352,7 +352,7 @@ insql=0;
         yyerror("This can only be done in a report!");YYERROR;
       } 
       insql=0; 
-	printcomment("/* rep_Agg = %s\n*/",$<str>3);
+	lex_printcomment("/* rep_Agg = %s\n*/",$<str>3);
         sprintf($<str>$,$<str>3);
 	$<ptr>$=new_expr($<str>$);
       }
@@ -560,7 +560,7 @@ function_call_expr2:
 	opt_func_call_args 
 		{ 
 		sprintf($<str>$,"%d",get_counter_val()); 
-		printcomment("/*function_call_expr2 %s*/\n",$<str>$); 
+		lex_printcomment("/*function_call_expr2 %s*/\n",$<str>$);
 		drop_counter(); 
 		}
 	CLOSE_BRACKET 

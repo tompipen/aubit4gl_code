@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.5 2002-05-24 13:30:02 afalout Exp $
+# $Id: keys.c,v 1.6 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -61,8 +61,8 @@
 =====================================================================
 */
 
-int key_val2 (char *str);
-
+int 	key_val2 			(char *str);
+void    set_option_value	(char type,int keyval);
 
 /*
 =====================================================================
@@ -202,8 +202,8 @@ key_val2 (char *str)
  *
  * @todo Describe function
  */
-void 
-set_option_value(char type,int keyval) 
+void
+set_option_value(char type,int keyval)
 {
 	debug("Set option value : %c %d",type,keyval);
 	switch (type) 

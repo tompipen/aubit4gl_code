@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: err.c,v 1.3 2002-05-18 11:56:47 afalout Exp $
+# $Id: err.c,v 1.4 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -42,8 +42,8 @@
 =====================================================================
 */
 
-#include "string.h"     //strcpy()
-#include "stdio.h"  	// sprintf()
+#include "string.h"     	/* strcpy() */
+#include "stdio.h"  		/* sprintf() */
 #include "a4gl_debug.h"
 
 /*
@@ -52,7 +52,10 @@
 =====================================================================
 */
 
-extern char*get_errm(int a);
+extern char *	get_errm	(int a);
+char * 			err_print	(int a,char *s);
+
+
 
 /*
 =====================================================================

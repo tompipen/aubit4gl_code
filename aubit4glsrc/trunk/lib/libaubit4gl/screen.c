@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: screen.c,v 1.3 2002-05-20 11:41:12 afalout Exp $
+# $Id: screen.c,v 1.4 2002-06-01 11:54:59 afalout Exp $
 #*/
 
 /**
@@ -43,9 +43,9 @@
 =====================================================================
 */
 
-#include "a4gl_dbform.h" //needed for struct s_form_dets in function find_attribute
-#include "a4gl_aubit_lib.h" //zrefresh()
-#include "a4gl_debug.h" //debug()
+#include "a4gl_dbform.h" 	/* needed for struct s_form_dets in function find_attribute */
+#include "a4gl_aubit_lib.h" /* zrefresh() */
+#include "a4gl_debug.h" 	/* debug() */
 
 /*
 =====================================================================
@@ -57,6 +57,15 @@ extern int ui_mode;
 
 /*
 =====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+char * find_attribute (struct s_form_dets *f, int field_no);
+
+/*
+=====================================================================
                     Functions definitions
 =====================================================================
 */
@@ -65,16 +74,16 @@ extern int ui_mode;
  *
  * @param a
  */
-int 
+int
 screen_mode(int a)
 {
   static int smode=1;
-  if (a==-1) 
+  if (a==-1)
 	  return smode;
-  
-  if (a==smode) 
+
+  if (a==smode)
     return smode;
-  if (a==0) 
+  if (a==0)
   {
     smode=0;
     return smode;
@@ -84,8 +93,12 @@ screen_mode(int a)
 	return smode;
 }
 
-// moved here from lib/libform/form_xdr/readforms.c
 
+/**
+ * moved here from lib/libform/form_xdr/readforms.c
+ *
+ * @param a
+ */
 char *
 find_attribute (struct s_form_dets *f, int field_no)
 {
@@ -105,4 +118,4 @@ find_attribute (struct s_form_dets *f, int field_no)
 
 }
 
-// ============================ EOF ============================
+/* ============================ EOF ============================ */

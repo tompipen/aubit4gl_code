@@ -280,12 +280,12 @@ print_undo_use($<str>1);
 insql=0;strcpy($<str>$,$<str>3);}
 ;
 
-sql_commands :  schema {printcomment("/*  schema */\n");
+sql_commands :  schema {lex_printcomment("/*  schema */\n");
 	print_exec_sql($<str>1);
 
 sprintf($<str>$,"Schema");
 } 
-	| schema_element {printcomment("/*  schema  2*/\n");
+	| schema_element {lex_printcomment("/*  schema  2*/\n");
 
 	print_exec_sql($<str>1);
 
@@ -302,25 +302,25 @@ sprintf($<str>$,"Set Database");
 }
 	| delete_statement_position {
 //int c;
-printcomment("/*  delete 1 */\n");
+lex_printcomment("/*  delete 1 */\n");
 
 print_exec_sql_bound($<str>1);
 sprintf($<str>$,"Delete where current...");
 } 
 	| delete_statement_search {
 //int c;
-printcomment("/*  delete 2 */\n");
+lex_printcomment("/*  delete 2 */\n");
 
 print_exec_sql_bound($<str>1);
 sprintf($<str>$,"Delete where ...");
 } 
 	| fetch_statement {
 sprintf($<str>$,"Fetch");
-printcomment("/*  fetch */\n");
+lex_printcomment("/*  fetch */\n");
 } 
 	| insert_statement {
 //int c;
-printcomment("/*  insert */\n");
+lex_printcomment("/*  insert */\n");
 
 print_exec_sql_bound($<str>1);
 
@@ -1000,7 +1000,7 @@ select_statement:
         {
 			//start_bind('i',0,-1);
             start_bind('i',0);
-			printcomment("/* startbind */");
+			lex_printcomment("/* startbind */");
 		}
 	table_expression
         sel_p2 {
@@ -1035,7 +1035,7 @@ select_statement2_1:
 
 sel_p2 : {strcpy($<str>$,"");}
 | UNION op_all select_statement2 {
-       printcomment("/* UNION */");
+       lex_printcomment("/* UNION */");
        sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);
        }
 | order_by_clause 

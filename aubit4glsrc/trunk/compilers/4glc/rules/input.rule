@@ -35,7 +35,7 @@ field_command :
 	print_befaft_field_2();
 }
 	| BEFROW {
-		printcomment("/* before row */ \n");
+		lex_printcomment("/* before row */ \n");
 		print_befaft_field_1("BEF_ROW");
 } commands {
 	print_befaft_field_2();
@@ -55,7 +55,7 @@ field_command :
 } commands {
 	print_befaft_field_2();
 }
-	| BEFORE b_ins_or_delete_row {printcomment("/* before insert/delete */ \n");
+	| BEFORE b_ins_or_delete_row {lex_printcomment("/* before insert/delete */ \n");
 		print_befaft_field_1($<str>2);
 } commands {
 	print_befaft_field_2();

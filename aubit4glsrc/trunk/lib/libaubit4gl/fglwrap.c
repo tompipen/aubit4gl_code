@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.9 2002-05-30 06:25:19 afalout Exp $
+# $Id: fglwrap.c,v 1.10 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -46,7 +46,9 @@
 
 #define DEFINE_INTFLAG
 #define DEFINE_QUITFLAG
-
+#define _DEFINE_STATUSVARS_ /* one place we have to DEFINE them, for the
+                            rest of source files, they get only DECLARED
+                            as extern */
 /*
 =====================================================================
 		                    Includes
@@ -57,7 +59,7 @@
 #include <signal.h>
 #include <locale.h>
 #include <string.h>
-#include <unistd.h> //sleep()
+#include <unistd.h> 				/* sleep() */
 
 #ifdef __CYGWIN__
 	#include <windows.h>
@@ -70,8 +72,8 @@
 #include "a4gl_debug.h"
 #include "a4gl_keys.h"
 #include "a4gl_aubit_lib.h"
-#include "a4gl_dlsql.h"	// A4GLSQL_initlib()
-#include "a4gl_runtime_tui.h"// push_int()
+#include "a4gl_dlsql.h"				/* A4GLSQL_initlib() */
+#include "a4gl_runtime_tui.h"		/*  push_int() */
 
 /*
 =====================================================================
@@ -111,8 +113,22 @@ extern int errno;
 =====================================================================
 */
 
-extern int start_gui();
-void nodef_init();
+extern int 		start_gui			(void);
+void 			nodef_init			(void);
+void 			fgl_end				(void);
+void 			fgl_start			(int nargs,char *argv[]);
+void 			system_run			(int a);
+void 			generateError		(char *str,char *fileName,int lineno);
+void 			null_func			(void);
+int 			ass_hash 			(char **a, int s, int d, char *str, long size,int rw);
+void 			set_intr			(void);
+void 			def_int				(void);
+void 			def_quit			(void);
+char * 			clob				(char *s,char *p);
+int 			aclfgl_get_ui_mode	(void);
+int 			aclfgl_num_args		(int n);
+int 			aclfgl_arg_val		(int n);
+
 
 
 /*
@@ -126,7 +142,7 @@ void nodef_init();
  *
  * If in curses mode exit curses.
  */
-void 
+void
 fgl_end(void)
 {
   if (isscrmode ()) {
@@ -269,7 +285,7 @@ fgl_start(int nargs,char *argv[])
  *   - 2 In background mode.
  *   
  */
-void 
+void
 system_run(int a)
 {
   char *s;
@@ -309,7 +325,7 @@ isyes(char *s)
  * @param fileName A string with the source name.
  * @param lineno The line in the source where the error ocurred.
  */
-void 
+void
 generateError(char *str,char *fileName,int lineno)
 {
   if (isgui()) 
@@ -391,7 +407,7 @@ set_errm(char *s)
  * @param n Not used
  * @return allways 1
  */
-int 
+int
 aclfgl_num_args(int n)
 {
 	push_int(p_numargs-1);
@@ -403,7 +419,7 @@ aclfgl_num_args(int n)
  * @param n
  * @return allways 1
  */
-int 
+int
 aclfgl_arg_val(int n)
 {
   int k;
@@ -417,7 +433,7 @@ aclfgl_arg_val(int n)
 /**
  * Dont do nothing
  */
-void 
+void
 null_func(void)
 {
 }
@@ -448,7 +464,7 @@ ass_clrmem (char **a, int sz)
  *   - 0 : Reading from hash
  *   - Otherwise :
  */
-int 
+int
 ass_hash (char **a, int s, int d, char *str, long size,int rw)
 {
 
@@ -577,10 +593,9 @@ ass_hash (char **a, int s, int d, char *str, long size,int rw)
  *
  * @todo Describe function
  */
-void 
+void
 set_intr(void)
 {
-  	void def_int(void);
 
 	debug("-------------INTERRUPT----------------");
 	int_flag=TRUE;
@@ -642,7 +657,7 @@ nodef_init(void)
 /**
  * Start the DEFER INTERRUPT in windows systems
  */
-void 
+void
 def_int(void)
 {
 	debug("Setting interrupt mode");
@@ -784,7 +799,7 @@ check_and_show_id(char *program, char *arg1)
 /**
  * Yes it is... used (?)
  */
-int 
+int
 aclfgl_get_ui_mode(void)
 {
 	push_int(ui_mode);

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.41 2002-05-30 06:25:17 afalout Exp $
+# $Id: Makefile-common.in,v 1.42 2002-06-01 11:54:59 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -225,7 +225,9 @@ AUTOCONF_CFLAGS     =@CFLAGS@
 #-Wmissing-declarations:Toatal compiler warnings: 961
 #-Wredundant-decls:     Toatal compiler warnings: 5156 -> 14
 
-CFLAGS				+=-Wall -Wredundant-decls ${AUTOCONF_CFLAGS} -DAUTOBANG -DDEBUG -I/usr/local/include -I$(AUBITDIR)/incl
+CWARN               =-Wall -Wredundant-decls -Wmissing-declarations
+
+CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} -DAUTOBANG -DDEBUG -I/usr/local/include -I$(AUBITDIR)/incl
 #we are overriding LD_LIBRARY_PATH that might existed in environment:
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 
@@ -429,14 +431,13 @@ else
 	FGLPCEXEC	=aubit 4glpc
 endif
 
+PREFIX=@prefix@
 
 #install location:
 ifdef COMSPEC
-	PREFIX=/usr/local
 	#on Windows, dll libraries need to be in the path
 	LIB_INSTALL_LINK=/usr/local/bin
 else
-	PREFIX=/opt
 	#FSH and RPM rules say we should install binaries (links) in
 	#${PREFIX}/aubit4gl and libraries (links) in ${PREFIX}/lib. But this will
 	#in our case be /opt, and on 99% of the systems we will not have /opt/bin
@@ -450,9 +451,6 @@ else
 	#need to edit system files manualy
 
 	LIB_INSTALL_LINK=/usr/lib
-
-
-
 endif
 
 BIN_INSTALL_LINK=/usr/bin

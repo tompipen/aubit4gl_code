@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.6 2002-05-23 09:29:35 afalout Exp $
+# $Id: load.c,v 1.7 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -46,11 +46,11 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include <string.h> //strlen() strcopy() strcat()
+#include <string.h> 			/* strlen() strcopy() strcat() */
 
 #include "a4gl_aubit_lib.h"
 #include "a4gl_debug.h"
-#include "a4gl_dlsql.h" //A4GLSQL_fill_array()
+#include "a4gl_dlsql.h" 		/* A4GLSQL_fill_array() */
 
 /*
 =====================================================================
@@ -71,15 +71,13 @@
 */
 
 
-//extern int status;
-
-/// Buffer that contains the current line being loaded
+/* Buffer that contains the current line being loaded */
 char loadbuff[LOADBUFFSIZE];
 
-/// Column name list where information is to be loaded
+/* Column name list where information is to be loaded */
 char col_list[MAXLOADCOLS][MAXCOLLENGTH];
 
-/// Array with pointers to each delimiter in current load line
+/* Array with pointers to each delimiter in current load line */
 char *colptr[MAXLOADCOLS];
 
 
@@ -89,6 +87,13 @@ char *colptr[MAXLOADCOLS];
 =====================================================================
 */
 
+int     A4GLSQL_load_data	(char *fname,char *delims,char *tabname,...);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
  * Find the delimiters in the line to be loaded.

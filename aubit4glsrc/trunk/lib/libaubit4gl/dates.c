@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.5 2002-05-30 06:25:19 afalout Exp $
+# $Id: dates.c,v 1.6 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -94,6 +94,12 @@ struct s_days {
 };
 */
 
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
+
 /* leap year -- account for gregorian reformation in 1752 */
 #define	leap_year(yr) \
 	((yr) <= 1752 ? !((yr) % 4) : \
@@ -117,10 +123,14 @@ struct s_days {
 =====================================================================
 */
 
-void	day_array 	(int, int, int *);
-//int		day_in_week (int, int, int);
-int		day_in_year (int, int, int);
-int     y2kmode		(int yr);
+void			day_array 	(int, int, int *);
+//int			day_in_week (int, int, int);
+int				day_in_year (int, int, int);
+int     		y2kmode		(int yr);
+
+static long 	gen_dateno2	(int day, int month, int year);
+static int 		get_yr		(int d);
+int 			get_month	(int d);
 
 /*
 =====================================================================
@@ -184,8 +194,8 @@ int day, month, year;
  *
  * @return The date in internal format
  */
-long 
-gen_dateno2(day, month, year)
+static long
+gen_dateno2(int day, int month, int year)
 {
 	long temp;
 	if (month<1||month>12) return DATE_INVALID;
@@ -225,7 +235,7 @@ gen_dateno(int day,int month,int year)
  *  @param d The date
  *  @return The year
  */
-int
+static int
 get_yr(int d)
 {
 	int e;

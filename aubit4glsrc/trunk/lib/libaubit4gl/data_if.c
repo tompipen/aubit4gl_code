@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.5 2002-05-23 09:29:35 afalout Exp $
+# $Id: data_if.c,v 1.6 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -68,6 +68,15 @@ collect2: ld returned 1 exit status
 
 #include "a4gl_data_if.h"
 #include "a4gl_debug.h"
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+void * get_set(char *str,void *ptr,int mode,char *name,long var);
+
 
 /*
 =====================================================================
@@ -728,7 +737,7 @@ void *
 get_set(char *str,void *ptr,int mode,char *name,long var)
 {
 int a;
-	
+
 	debug("Get_set %s\n",str);
 	if ((a=atoi(str))!=0) {
 	 if (a==0) { /* s_screenio */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.9 2002-05-30 11:18:38 mikeaubury Exp $
+# $Id: conv.c,v 1.10 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -244,6 +244,19 @@ int stodec 		(void *a, void *z, int size);
 int stosf 		(void *aa, void *zz, int sz_ignore);
 int stoi 		(void *aa, void *zi, int sz_ignore);
 
+int 			mdectod 		(void *zz, void *aa, int sz_ignore);
+
+static char *   dec_math 		(char *s, char *w, char *r, char op);
+static void 	match_dec 		(char *f, char *t, int *a, int *b);
+void 			trim_decimals 	(char *s, int d);
+void 			set_setdtype	(int dtype, void *ptr);
+int             dectod 			(void *zz, void *aa, int sz_ignore);
+
+#ifdef TEST
+	static void 	exercise 		(void);
+	static void 	print_res_l 	(int ln, char *s);
+#endif
+
 
 /*
 =====================================================================
@@ -353,7 +366,11 @@ main (void)
   //printf("Calculating\n");
   dec_math (wrkbf2, wrkbf3, wrkbf, '*');
   //printf("-9x-0.9 =%s\n",dec_to_str(wrkbf));
-  //exercise();
+
+  #ifdef EXERCISE
+	  exercise();
+      print_res_l(0,'0');
+  #endif
 
 
   debug ("0.00003 %s\n", dec_to_str (inv (str_to_dec ("0.00003", 0))));
@@ -2783,7 +2800,7 @@ pr (char *wrkbf)
  * @param a
  * @param b
  */
-void 
+static void
 match_dec (char *f, char *t, int *a, int *b)
 {
   int l, lt;
@@ -3130,12 +3147,14 @@ mult_dec (char *s, char *v)
   return buff2;
 }
 
+#ifdef TEST
+
 /**
  * For testing purpose.
  *
  * Make some examples of decimal expressions.
  */
-void
+static void
 exercise (void)
 {
   char buffx[DBL_DIG1];
@@ -3167,7 +3186,7 @@ exercise (void)
 	      double_to_dec (x, buffx, 20, 8);
 	      double_to_dec (y, buffy, 20, 8);
 
-//printf("x=%lf ",x);debug("%s ",dec_to_str(buffx));debug("y=%lf ",y);debug("%s\n",dec_to_str(buffy));
+		/* printf("x=%lf ",x);debug("%s ",dec_to_str(buffx));debug("y=%lf ",y);debug("%s\n",dec_to_str(buffy)); */
 	      if (z == 0)
 		dec_math (buffx, buffy, buffz, '+');
 
@@ -3267,6 +3286,8 @@ exercise (void)
 	}
     }
 }
+
+#endif /* #ifdef TEST */
 
 /**
  *
@@ -3471,6 +3492,8 @@ trim_decimals (char *s, int d)
 }
 
 
+#ifdef TEST
+
 /**
  * Dump a value teling the line in the source where was found.
  *
@@ -3479,7 +3502,7 @@ trim_decimals (char *s, int d)
  * @param ln The line in the source code
  * @param s The value to be printed to the debug.
  */
-void
+static void
 print_res_l (int ln, char *s)
 {
 //  static int c = 0;
@@ -3487,6 +3510,8 @@ print_res_l (int ln, char *s)
   debug ("      ");
   pr (s);
 }
+
+#endif
 
 /**
  * Dump the information in a string in hexadecimal format.
@@ -4095,7 +4120,13 @@ set_convmatrix(int dtype1,int dtype2,void *ptr)
         convmatrix[dtype1][dtype2]=ptr;
 }
 
-void set_setdtype(int dtype, void *ptr) {
+/**
+*
+*
+**/
+void
+set_setdtype(int dtype, void *ptr)
+{
         setdtype[dtype]=ptr;
 }
 

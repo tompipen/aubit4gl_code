@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.9 2002-05-24 13:30:03 afalout Exp $
+# $Id: compile_perl.c,v 1.10 2002-06-01 11:55:00 afalout Exp $
 #
 */
 
@@ -134,74 +134,110 @@ static void pr_report_agg_clr (void);
 static void print_menu (int mn);
 
 
+static void real_lex_printc(char *fmt, va_list *ap);
+static void real_print_expr (struct expr_str *ptr);
+static void real_print_func_call (char *identifier, struct expr_str *args, int args_cnt);
+static void real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
+
+
+
 /*
 =====================================================================
                     Functions definitions
 =====================================================================
 */
 
+//this one is used only form this file
+static void
+printc(char* fmt,... )
+{
+va_list ap;
+	debug("via printc in lib");
+	va_start(ap,fmt);
+	real_lex_printc(fmt,&ap);
+}
+
+//this oen gets called freom API
+void
+lex_printc(char* fmt,... )
+{
+va_list ap;
+	debug("via lex_printc (2) in lib");
+	va_start(ap,fmt);
+	real_lex_printc(fmt,&ap);
+}
+
+
+
 /**
  *
  * @param
  * @return
  */
-void
-printc (char *fmt, ...)
+static void
+real_lex_printc(char *fmt, va_list *ap)
+//void
+//printc (char *fmt, ...)
 {
-  va_list args;
-  char buff[40960];
-  char *ptr;
-  int a;
+//  va_list args;
+char buff[40960];
+char *ptr;
+int a;
+char buff2[40960];
 
-  if (outfile == 0)
+	if (outfile == 0)
     {
       open_outfile ();
     }
 
-  if (outfile == 0)
-    return;
-  va_start (args, fmt);
-  if (acl_getenv ("INCLINES"))
+	if (outfile == 0)
+	    return;
+	
+	//va_start (args, fmt);
+	vsprintf (buff, fmt, *ap);
+
+	debug("buff in lib=%s\n",buff);
+	strcpy(buff2,fmt);
+	debug("fmt in lib=%s\n",buff2);
+
+
+	if (acl_getenv ("INCLINES"))
     {
-      vsprintf (buff, fmt, args);
-
-      for (a = 0; a < strlen (buff); a++)
-	{
-	  if (buff[a] == '\n')
-	    {
-	      if (infilename != 0)
+    	//vsprintf (buff, fmt, args);
+        for (a = 0; a < strlen (buff); a++)
 		{
-		  fprintf (outfile, "\n#line %d \"%s.4gl\"\n", yylineno,
-			   outputfilename);
-		}
-	      else
-		{
-		  fprintf (outfile, "\n#line %d \"null\"\n", yylineno);
-			 //  outputfilename);
-		}
-	    }
-	  else
-	    {
-	      fprintf (outfile, "%c", buff[a]);
-
-	      fflush (outfile);
-	    }
+			if (buff[a] == '\n')
+			{
+				if (infilename != 0)
+                {
+					fprintf (outfile, "\n#line %d \"%s.4gl\"\n", yylineno,
+					outputfilename);
+                }
+				else
+                {
+					fprintf (outfile, "\n#line %d \"null\"\n", yylineno);
+					//  outputfilename);
+                }
+			}
+			else
+			{
+				fprintf (outfile, "%c", buff[a]);
+				fflush (outfile);
+			}
+        }
 	}
-    }
-  else
+	else
     {
+		//vsprintf (buff, fmt, args);
+		ptr = strtok (buff, "\n");
 
-      vsprintf (buff, fmt, args);
-      ptr = strtok (buff, "\n");
-
-      while (ptr)
-	{
-	  print_space ();
-	  fprintf (outfile, "%s\n", ptr);
-	  ptr = strtok (0, "\n");
+		while (ptr)
+        {
+			print_space ();
+			fprintf (outfile, "%s\n", ptr);
+			ptr = strtok (0, "\n");
+        }
 	}
-
-    }
 }
 
 /**
@@ -845,7 +881,13 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
  * @return
  */
 void
-print_expr (struct expr_str *ptr)
+print_expr(void* ptr)
+{
+	debug("via print_expr in lib");
+	real_print_expr(ptr);
+}
+static void
+real_print_expr (struct expr_str *ptr)
 {
   void *optr;
   debug ("Print expr... %p", ptr);
@@ -1480,9 +1522,16 @@ print_field_func (char type, char *name, char *var)
  * @param args The arguments
  * @param args_cnt The number of arguments
  */
-void print_func_call (char *identifier, struct expr_str *args, int args_cnt)
+void
+print_func_call(char *identifier, void* args, int args_cnt)
 {
-  print_expr (args);
+	debug("via print_func_call in lib");
+	real_print_func_call(identifier,args,args_cnt);
+}
+static void
+real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
+{
+  real_print_expr (args);
   printc ("{my $a4gl_retvars; aubit4gl_pl::xset_status(0);\n");
   printc ("$a4gl_retvars=aclfgl_%s(%d);\n", identifier, args_cnt);
 }
@@ -1494,7 +1543,14 @@ void print_func_call (char *identifier, struct expr_str *args, int args_cnt)
  * @param args The pdf function arguments
  * @param a3 The returning values
  */
-void print_pdf_call (char *a1, struct expr_str *a2, char *a3)
+void
+print_pdf_call(char *a1, void* args, char *a3)
+{
+	debug("via print_pdf_call in lib");
+	real_print_pdf_call(a1,args,a3);
+}
+static void
+real_print_pdf_call (char *a1, struct expr_str *a2, char *a3)
 {
   printc ("%s {int _retvars;xset_status(0);\n", a2);
   printc ("_retvars=aclpdf(&rep,%s,%s);\n", a1, a3);
@@ -3740,10 +3796,11 @@ print_menu (int mn)
   int a;
   int c;
   c = 0;
-//
-// Just so you all know...
-// I really hate the way this does this - this will change to a menu item
-// binding I think..
+	/*
+	Just so you all know...
+	I really hate the way this does this - this will change to a menu item
+	binding I think..
+	*/
   for (a = 0; menu_stack[mn][a].menu_title[0] != 0 ||
        menu_stack[mn][a].menu_key[0] != 0 ||
        menu_stack[mn][a].menu_help[0] != 0; a++)

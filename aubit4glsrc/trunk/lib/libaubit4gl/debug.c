@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.7 2002-05-23 16:01:13 mikeaubury Exp $
+# $Id: debug.c,v 1.8 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -84,6 +84,9 @@ int g_lineno;
 //defined in header file
 //void debug_full (char *fmt,...);
 
+static void open_debugfile (void);
+
+
 
 /*
 =====================================================================
@@ -96,7 +99,7 @@ int g_lineno;
  *
  * @todo Describe function
  */
-void
+static void
 open_debugfile (void)
 {
   debugfile = mja_fopen ("debug.out", "w");

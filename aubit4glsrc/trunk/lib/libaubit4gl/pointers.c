@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.5 2002-05-23 16:01:15 mikeaubury Exp $
+# $Id: pointers.c,v 1.6 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -59,14 +59,14 @@
 */
 
 #include <string.h>
-#include <stdlib.h> //free()
+#include <stdlib.h> 			/* free() */
 
 #ifndef WIN32
 	#include <search.h>
 #endif
 
 #include "a4gl_debug.h"
-#include "a4gl_aubit_lib.h" //trim()
+#include "a4gl_aubit_lib.h" 	/* trim() */
 
 /*
 =====================================================================
@@ -121,6 +121,16 @@ struct s_node
 =====================================================================
 */
 
+int 		strcmpare		(const void *a,const void *b);
+void 		action 			(const void *nodep, const VISIT which, const int depth);
+void 		print_ptr_stack	(void);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 /**
  * Comparison function to use with bsearch.
  *
@@ -131,8 +141,8 @@ struct s_node
  *   - zero if a equals b
  *   - greater than zero if a greater b
  */
-int 
-strcmpare(const void *a,const void *b) 
+int
+strcmpare(const void *a,const void *b)
 {
 	return strcmp(a,b);
 }
@@ -150,7 +160,7 @@ strcmpare(const void *a,const void *b)
  *  - leaf
  * @param depth
  */
-void 
+void
 action (const void *nodep, const VISIT which, const int depth)
 {
   struct s_node *datap;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.3 2002-05-20 11:41:12 afalout Exp $
+# $Id: report.c,v 1.4 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -59,12 +59,29 @@
 =====================================================================
 */
 
-void aclfgli_skip_lines(struct rep_structure *rep);
-void fputmanyc(FILE *f,int c,int cnt);
-void set_column(struct rep_structure *rep);
-void free_duplicate_binding( struct BINDING *b,int n) ;
-struct BINDING *duplicate_binding(struct BINDING *b,int n) ;
-void skip_top_of_page(struct rep_structure *rep);
+void 				aclfgli_skip_lines	(struct rep_structure *rep);
+void 				fputmanyc			(FILE *f,int c,int cnt);
+void 				set_column			(struct rep_structure *rep);
+void 				free_duplicate_binding( struct BINDING *b,int n) ;
+struct BINDING *	duplicate_binding	(struct BINDING *b,int n) ;
+void 				skip_top_of_page	(struct rep_structure *rep);
+
+void 				rep_print 			(struct rep_structure *rep, int a,
+										int s,int right_margin);
+void 				need_lines			(struct rep_structure *rep);
+void 				add_spaces			(void);
+char * 				mk_temp_tab			(struct BINDING *b,int n);
+void 				make_report_table	(struct BINDING *b,int n);
+void 				add_row_report		(struct BINDING *b,int n);
+int 				init_report_table	(struct BINDING *b,int n,
+										struct BINDING *o,int no,
+										struct BINDING **reread);
+int 				report_table_fetch	(struct BINDING *reread,int n,
+										struct BINDING *b);
+void 				end_report_table	(struct BINDING *b,int n,
+										struct BINDING *reread);
+void 				rep_file_print		(struct rep_structure *rep,
+										char *fname, int opt_semi);
 
 /*
 =====================================================================
@@ -92,7 +109,7 @@ static char buff[256];
  *
  * @todo Describe function
  */
-void 
+void
 rep_print (struct rep_structure *rep, int a, int s,int right_margin)
 {
   int b;
@@ -453,7 +470,7 @@ add_row_report(struct BINDING *b,int n)
  */
 int
 init_report_table(struct BINDING *b,int n,struct BINDING *o,int no,
-struct BINDING **reread) 
+struct BINDING **reread)
 {
 int a1;
 int a2;
@@ -529,7 +546,7 @@ char tbuff[1024];
  * @todo Describe function
  */
 void
-end_report_table(struct BINDING *b,int n,struct BINDING *reread)
+end_report_table (struct BINDING *b,int n,struct BINDING *reread)
 {
 	free_duplicate_binding(reread,n);
 }
@@ -603,7 +620,7 @@ int a;
  * @todo Describe function
  */
 void
-rep_file_print(struct rep_structure *rep, char *fname, int opt_semi) 
+rep_file_print(struct rep_structure *rep, char *fname, int opt_semi)
 {
 	debug("Not implemented");
 	exitwith("Not implemented");

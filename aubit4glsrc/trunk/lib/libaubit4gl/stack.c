@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.16 2002-05-30 11:18:38 mikeaubury Exp $
+# $Id: stack.c,v 1.17 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -60,7 +60,7 @@
 	#include <pwd.h>
 #endif
 
-#include "a4gl_incl_4glhdr.h" 	//push_param()
+#include "a4gl_incl_4glhdr.h" 	/* push_param() */
 #include "a4gl_dbform.h"
 #include "a4gl_dates.h"
 #include "a4gl_constats.h"
@@ -69,7 +69,7 @@
 #include "a4gl_debug.h"
 #include "a4gl_acl_string.h"
 #include "a4gl_aubit_lib.h"
-#include "a4gl_runtime_tui.h"	//push_date()
+#include "a4gl_runtime_tui.h"	/* push_date() */
 #include "a4gl_dlsql.h"
 
 /*
@@ -171,13 +171,55 @@ int init_local_bindings = 0;
 struct BINDING *local_binding[LOCAL_BINDINGS];
 int num_local_binding[LOCAL_BINDINGS];
 
+struct bound_list
+{
+  struct BINDING *ptr;
+  int cnt;
+  int popped;
+};
+
+
 /*
 =====================================================================
                     Functions prototypes
 =====================================================================
 */
 
-// see a4gl_stack.h
+/* see a4gl_stack.h */
+
+
+void * 		pop_binding 			(int *n);
+void 		push_ascii 				(int a);
+void 		push_current 			(int a, int b);
+void 		push_time 				(void);
+void		push_disp_bind 			(struct BINDING *b, int n);
+int			chk_params 				(struct BINDING *b, int nb,
+									struct BINDING *o, int no);
+void        upshift_stk 			(void);
+int         isparamdate 			(void);
+void        set_init 				(struct BINDING *b, int n, int no);
+int         push_binding 			(void *ptr, int num);
+void        dif_start_bind 			(void);
+void        dif_add_bind 			(struct bound_list *list, void *dptr, 
+									int dtype, int size);
+void        dif_add_bind_date 		(struct bound_list *list, long a);
+void        dif_add_bind_smint 		(struct bound_list *list, int a);
+void        dif_add_bind_smint_ptr 	(struct bound_list *list, int *a);
+void        dif_add_bind_dbl_ptr 	(struct bound_list *list, double *a);
+void        dif_add_bind_int 		(struct bound_list *list, long a);
+void        dif_add_bind_float 		(struct bound_list *list, double a);
+void        dif_add_bind_smfloat 	(struct bound_list *list, float a);
+void        dif_add_bind_char 		(struct bound_list *list, char *a);
+void        dif_free_bind 			(struct bound_list *list);
+void *      dif_get_bind 			(struct bound_list *list);
+void        dif_print_bind 			(struct bound_list *list);
+long        dif_pop_bind_int 		(struct bound_list *list);
+char *      dif_pop_bind_char 		(struct bound_list *list);
+int         dif_pop_bind_smint 		(struct bound_list *list);
+int         dif_pop_bind_float 		(struct bound_list *list);
+int         dif_pop_bind_smfloat 	(struct bound_list *list);
+int         dif_pop_bind_dec 		(struct bound_list *list);
+int         dif_pop_bind_money 		(struct bound_list *list);
 
 /*
 =====================================================================
@@ -2135,14 +2177,6 @@ push_binding (void *ptr, int num)
   local_binding_cnt++;
   return 0;
 }
-
-
-struct bound_list
-{
-  struct BINDING *ptr;
-  int cnt;
-  int popped;
-};
 
 /**
  *

@@ -57,16 +57,16 @@ dim_push_type("struct_dtime ",$<str>2,0);
 }
                               |            INTERVAL interval_qual {dim_push_type("struct_ival ",0,0);}
                               |            dim_like_var
-{dim_push_like($<str>1);fflush(stdout);printcomment("/*added(XXXXX)\n */");} 
+{dim_push_like($<str>1);fflush(stdout);lex_printcomment("/*added(XXXXX)\n */");}
               ;
 
 
 
 dim_like_var      : 
 LIKE  tab_name  DOT col_name  {
-printcomment("/*column like(ZZZ)\n*/");
+lex_printcomment("/*column like(ZZZ)\n*/");
 sprintf($<str>$,"%s.%s",$<str>2,$<str>4)
-; printcomment ("/*set col...(ZZZ)\n*/");}
+; lex_printcomment ("/*set col...(ZZZ)\n*/");}
 ;
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.4 2002-05-26 06:26:49 afalout Exp $
+# $Id: interval.c,v 1.5 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -67,8 +67,8 @@
 
 extern int errno;
 int rval_type;
-struct ival rval_ival;		// 1
-double rval_double;		// 2
+struct ival rval_ival;			/* 1 */
+double rval_double;				/* 2 */
 
 
 /*
@@ -77,8 +77,15 @@ double rval_double;		// 2
 =====================================================================
 */
 
-int valid_int (char *s, int *data,int size);
-int mk_int_size(int s,int l);
+int 			valid_int 		(char *s, int *data,int size);
+int 			mk_int_size		(int s,int l);
+
+double 			get_rval_double	(void);
+struct ival * 	get_rval_ival	(void);
+int 			conv_invdatatoc	(int *data,int v1,int v2,int v3,char *buff);
+int 			op_ival 		(struct ival *a, struct ival *b,
+								double double_val,char op, char param);
+
 
 /*
 =====================================================================
@@ -194,7 +201,7 @@ conv_invdatatoc(int *data,int v1,int v2,int v3,char *buff)
  *        'D' is also used internally...
  */
 
-int 
+int
 op_ival (struct ival *a, struct ival *b, double double_val, char op,
  char param)
 {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.3 2002-05-20 11:41:13 afalout Exp $
+# $Id: aubit-config.c,v 1.4 2002-06-01 11:55:00 afalout Exp $
 #
 */
 
@@ -41,10 +41,24 @@
  * where required..
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdarg.h>
 #include <stdio.h>
-#include <string.h> //strcmp()
-#include <stdlib.h> //exit()
+#include <string.h> 		/* strcmp() */
+#include <stdlib.h> 		/* exit() */
+
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
 
 /*
 extern int strcmp (const char *, const char *);
@@ -57,8 +71,18 @@ extern void exitwith(void);
 extern void dump_all_resource_vars(void);
 extern char *acl_getenv (char *s);
 
+void trim_nl(char *p);
+void debug_full (char *fmt,...);
+void set_line(void);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 int
-main(int argc,char *argv[]) 
+main(int argc,char *argv[])
 {
 
 	//load settings from config file(s):
@@ -83,7 +107,7 @@ main(int argc,char *argv[])
  *  @param p The string to be trimmed.
  */
 void
-trim_nl(char *p) 
+trim_nl(char *p)
 {
         int a;
         for (a=strlen(p)-1;a>=0;a--) {
@@ -122,14 +146,16 @@ debug_full (char *fmt,...)
  * Dummy function
  */
 void
-exitwith(void) {
+exitwith(void) 
+{
 }
 
 /**
  * Dummy function
  */
 void
-set_line(void) {
+set_line(void)
+{
 }
 
 

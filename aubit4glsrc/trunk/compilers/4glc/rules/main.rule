@@ -69,14 +69,14 @@ identifier  OPEN_BRACKET
 }
 op_param_var_list CLOSE_BRACKET 
 {
-  printcomment("/* new function %s parameters*/\n",$<str>6); 
+  lex_printcomment("/* new function %s parameters*/\n",$<str>6);
   push_blockcommand("FUNC");
-  printcomment("/* define section */\n");
+  lex_printcomment("/* define section */\n");
 }
 define_section 
 {
   int c;
-  printcomment("/*end of define section */\n");
+  lex_printcomment("/*end of define section */\n");
   c=print_param('f');
   printPushFunction();
   print_func_args(c);
@@ -94,7 +94,7 @@ end_func_command :
     pop_blockcommand("FUNC");
     print_func_end();
     clr_function_constants ();
-    printcomment("/*end function*/\n");
+    lex_printcomment("/*end function*/\n");
   }
 ;
 
@@ -123,7 +123,7 @@ main_def:
 commands END_MAIN {
 pop_blockcommand("MAIN");
 print_main_end();
-printcomment("/*end main */\n");} ;
+lex_printcomment("/*end main */\n");} ;
 
 return_cmd : 
   RETURN reset_cnt op_fgl_expr_ret_list 
@@ -133,7 +133,7 @@ return_cmd :
   };
 
 op_fgl_expr_list : {strcpy($<str>$,"0");} | fgl_expr_list {
-printcomment("/* Got expr list */");
+lex_printcomment("/* Got expr list */");
 sprintf($<str>$,"%s",$<str>1);}
 ;
 
@@ -167,7 +167,7 @@ xglobals_entry : globals_entry | code_cmd |  whenever_cmd  | db_section
 globals_entry: GLOBALS {
 strcpy(curr_func,"[Globals]");
 push_blockcommand("GLOBALS");
-printcomment("/* start of globals */\n");
+lex_printcomment("/* start of globals */\n");
 } 
 glob_section 
 {
@@ -176,7 +176,7 @@ pop_blockcommand("GLOBALS");
 ;
 
 glob_section : define_section END_GLOBALS {
-printcomment("/* end of globals */");
+lex_printcomment("/* end of globals */");
 debug("end of globals\n");
 lastlineno=yylineno;
 }
@@ -216,13 +216,13 @@ op_param_var_list CLOSE_BRACKET
   printDeclareFunctionStack(buff);
 
   cnt=0;
-  printcomment("/* new function %s parameters*/\n",$<str>7);
+  lex_printcomment("/* new function %s parameters*/\n",$<str>7);
   push_blockcommand("FUNC");
-  printcomment("/* define section */\n");
+  lex_printcomment("/* define section */\n");
 }
 define_section
 {
-  printcomment("/*end of define section */\n");
+  lex_printcomment("/*end of define section */\n");
   print_param('f');
   printPushFunction();
   print_func_args(atoi($<str>7));

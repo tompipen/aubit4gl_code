@@ -4,12 +4,13 @@
 =====================================================================
 */
 
+
 variable: var_int
 {
 char buff[256];
 char buff2[256];
 strcpy(buff,$<str>1);
-printcomment("/* .. var %s*/",buff);
+lex_printcomment("/* .. var %s*/",buff);
 if (buff[0]!=' ') addmap("Use Variable",buff,curr_func,yylineno,infilename);
 if (strncmp(buff," ASSOCIATE_",11)!=0) {
 convlower(buff);
@@ -33,7 +34,7 @@ var_int :
 var: 
  var setident DOT dot_part_var { 
          sprintf ($<str>$, "%s.%s", $<str>1, $<str>4); 
-         printcomment("/* record building -> %s */\n",$<str>$);
+         lex_printcomment("/* record building -> %s */\n",$<str>$);
          }
 | 
  var setident DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE {
@@ -43,7 +44,7 @@ var:
          char buff2[256];
          char arrbuff[256];
 
-         printcomment("/* OPEN_SQUARE.. */\n");
+         lex_printcomment("/* OPEN_SQUARE.. */\n");
 
          sprintf(buff,"%s.%s",$<str>1,$<str>4);
          if (scan_variable(buff)==-1) {
@@ -52,15 +53,15 @@ var:
            YYERROR;
          }
 
-         printcomment("/*variable with [...]*/");
+         lex_printcomment("/*variable with [...]*/");
          get_variable_dets (buff,&type,&arrsize,&size,&level,arrbuff);
-         printcomment("/* Arrsize = %d size = %d*/",arrsize,size);
+         lex_printcomment("/* Arrsize = %d size = %d*/",arrsize,size);
 	 
          if (arrsize>0)
          {
              debug("Is array...");
              sprintf ($<str>$, "%s[%s]", buff, change_arr_elem($<str>6));
-             printcomment ("/* array variable %s num_arr_elem=%d arrbuff=%d*/\n", $<str>$,num_arr_elem($<str>6),num_arr_elem(arrbuff));
+             lex_printcomment ("/* array variable %s num_arr_elem=%d arrbuff=%d*/\n", $<str>$,num_arr_elem($<str>6),num_arr_elem(arrbuff));
          }
          else
          {
@@ -69,7 +70,7 @@ var:
                       (int)scan_variable (buff), $<str>6);
 
              addmap("Use Variable",buff,curr_func,yylineno,infilename);
-             printcomment ("/*character variable %s*/\n", $<str>$);
+             lex_printcomment ("/*character variable %s*/\n", $<str>$);
          }
 
          mcnt++;
@@ -88,7 +89,7 @@ char buff2[256];
            YYERROR;
          }
 
-printcomment("/*Associative Variable : %s*/\n",$<str>3);
+lex_printcomment("/*Associative Variable : %s*/\n",$<str>3);
 sprintf($<str>$," ASSOCIATE_%s(%s,1)",upshift($<str>1),$<str>3);
 };
 
@@ -101,7 +102,7 @@ char buff2[256];
            yyerror(buff2); 
            YYERROR;
          }
-printcomment("/*Associative Variable : %s*/\n",$<str>3);
+lex_printcomment("/*Associative Variable : %s*/\n",$<str>3);
 sprintf($<str>$," ASSOCIATE_%s(%s,0)",upshift($<str>1),$<str>3);
 };
 
@@ -123,9 +124,9 @@ identifier arr_subscripts
 //  char buff[256];
   char buff2[256];
   char arrbuff[256];
-  printcomment("/*array variable nnn */");
+  lex_printcomment("/*array variable nnn */");
   get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff);
-  printcomment("/*here %s %x */",$<str>1,type);
+  lex_printcomment("/*here %s %x */",$<str>1,type);
   if (scan_variable($<str>1)==-1) {
            sprintf(buff2,"'%s' does not represent a defined variable (7)",$<str>1);
            yyerror(buff2); 
@@ -151,15 +152,15 @@ identifier arr_subscripts
  
   if ((type & (0xffff != 0)) || (arrsize>0))
     {
-      printcomment("/* changing optbase for array: %s */\n",$<str>2);
+      lex_printcomment("/* changing optbase for array: %s */\n",$<str>2);
       sprintf ($<str>$, "%s[%s]", $<str>1, change_arr_elem($<str>2));
-      printcomment ("/* array variable %s*/\n", $<str>$);
+      lex_printcomment ("/* array variable %s*/\n", $<str>$);
     }
   else
     {
       sprintf ($<str>$, " substr(%s,%d,%s,0)", $<str>1, (int)scan_variable ($<str>1), $<str>2);
              addmap("Use Variable",$<str>1,curr_func,yylineno,infilename);
-      printcomment ("/*character variable %s*/\n", $<str>$);
+      lex_printcomment ("/*character variable %s*/\n", $<str>$);
     }
 }
 
@@ -242,10 +243,10 @@ if (strncmp(buff," ASSOCIATE_",11)!=0) {
 convlower(buff);
 }
 strcpy($<str>$,buff);
-printcomment("/* %s */\n",$<str>1);
+lex_printcomment("/* %s */\n",$<str>1);
   if (scan_variable (buff) == -1&&buff[0]!=' ')
     {
-      printcomment ("/*NOt a variable*/");
+      lex_printcomment ("/*NOt a variable*/");
       sprintf(buff,"%s is not a variable",$<str>1);
       yyerror(buff);
     }
@@ -264,7 +265,7 @@ let_var: let_array_r_variable {
   int b;
   char buff[256];
   char buff2[256];
-  printcomment("/*array variable .let. */");
+  lex_printcomment("/*array variable .let. */");
 
   sprintf($<str>$,"%s.%s",$<str>1,$<str>4);
 
@@ -278,19 +279,19 @@ let_var: let_array_r_variable {
   b = isarrvariable ($<str>$);
   a = scan_variable ($<str>$);
 
-  printcomment("/*a=%x b=%x */\n",a,b);
+  lex_printcomment("/*a=%x b=%x */\n",a,b);
 
   if (b != 0)
     {
       sprintf ($<str>$, "%s.%s[%s-1]", $<str>1, $<str>4,$<str>6);
-      printcomment ("/* array variable %s*/\n", $<str>$);
+      lex_printcomment ("/* array variable %s*/\n", $<str>$);
     }
   else
     {
       sprintf(buff,"%s.%s",$<str>1,$<str>4);
       sprintf ($<str>$, " let_substr(%s,%d,%s,0)", buff, a, $<str>6);
       addmap("Let Variable",buff,curr_func,yylineno,infilename);
-      printcomment ("/*character variable %s*/\n", $<str>$);
+      lex_printcomment ("/*character variable %s*/\n", $<str>$);
     }
 
   mcnt++;
@@ -313,7 +314,7 @@ identifier arr_subscripts
   int b;
 //  char buff[256];
   char buff2[256];
-  printcomment("/*.let. array variable */");
+  lex_printcomment("/*.let. array variable */");
 
   debug("?2 arrvar=%s",$<str>1);
   if (strchr($<str>2,':'))  {
@@ -397,14 +398,14 @@ sprintf($<str>$,"%d",c);
 
 
 ibind_var_list:	ibind_var {
-printcomment("/*STarted bind %s*/\n",$<str>1);
+lex_printcomment("/*STarted bind %s*/\n",$<str>1);
 start_bind('i',$<str>1);
-printcomment("/*STarted bind 2*/\n");
+lex_printcomment("/*STarted bind 2*/\n");
 strcpy($<str>$,"");
 }
 	|	
 ibind_var_list COMMA ibind_var {
-printcomment("/* Added */\n");
+lex_printcomment("/* Added */\n");
 add_bind('i',$<str>3);
 strcpy($<str>$,"");
 }
@@ -414,7 +415,7 @@ strcpy($<str>$,"");
 func_def_var : identifier | identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>2);}
 ;
 
-ibind_var : variable  {printcomment("/* Variable */\n");}
+ibind_var : variable  {lex_printcomment("/* Variable */\n");}
 	| variable THRU variable {
 			debug("Got an ibind thru...");
 			sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
@@ -440,25 +441,25 @@ obind_var : variable   {
 
 
 obind_var_let_list:	obind_let_var  {
-printcomment("/* start obind with  %s*/\n",$<str>1);
+lex_printcomment("/* start obind with  %s*/\n",$<str>1);
 start_bind('o',$<str>1);
 } 
 	|	obind_var_let_list COMMA obind_let_var {
-printcomment("/* add to obind %s */\n",$<str>3);
+lex_printcomment("/* add to obind %s */\n",$<str>3);
 add_bind('o',$<str>3);
 strcpy($<str>$,"");
 }
 ;
 
 obind_let_var : let_variable   {
-printcomment("/* Read variable %s*/\n",$<str>1);
+lex_printcomment("/* Read variable %s*/\n",$<str>1);
 }
 ;
 
 use_arr_var : variable {
-    printcomment("/* use_arr_var */\n");
+    lex_printcomment("/* use_arr_var */\n");
     start_arr_bind('o',$<str>1);
-    printcomment("/* use_arr_var complete */\n");
+    lex_printcomment("/* use_arr_var complete */\n");
 }
 ;
 
@@ -483,7 +484,7 @@ identifier OPEN_SQUARE num_list CLOSE_SQUARE
 //  char buff[256];
 //  char buff2[256];
   char arrbuff[256];
-  printcomment("/*..array_r_varid..*/");
+  lex_printcomment("/*..array_r_varid..*/");
 
   get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff);
   sprintf($<str>$,"%s[%s-1]",$<str>1,$<str>3);
@@ -491,14 +492,14 @@ identifier OPEN_SQUARE num_list CLOSE_SQUARE
 ;
 
 init_bind_var_list:	init_bind_var {
-printcomment("/*STarted bind %s*/\n",$<str>1);
+lex_printcomment("/*STarted bind %s*/\n",$<str>1);
 start_bind('N',$<str>1);
-printcomment("/*STarted bind 2*/\n");
+lex_printcomment("/*STarted bind 2*/\n");
 strcpy($<str>$,"");
 }
 	|	
 init_bind_var_list COMMA init_bind_var {
-printcomment("/* Added */\n");
+lex_printcomment("/* Added */\n");
 add_bind('N',$<str>3);
 strcpy($<str>$,"");
 }

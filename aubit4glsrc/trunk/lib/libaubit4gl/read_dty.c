@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: read_dty.c,v 1.5 2002-05-31 06:52:03 mikeaubury Exp $
+# $Id: read_dty.c,v 1.6 2002-06-01 11:54:59 afalout Exp $
 #
 */
 
@@ -46,8 +46,18 @@
 #include <stdio.h>
 #include "a4gl_dbform.h"
 #include "a4gl_stack.h"
-#include "a4gl_debug.h" //debug()
-#include "a4gl_dlsql.h" //A4GLSQL_get_datatype()
+#include "a4gl_debug.h" 		/* debug() */
+#include "a4gl_dlsql.h" 		/* A4GLSQL_get_datatype() */
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+int get_dtype(char *tabname, char *colname,char *dbname,char *tablist[]);
+
 
 /*
 =====================================================================
@@ -108,15 +118,7 @@ split_tab_col_type(char *str,char *str1,char *str2,char *str3)
 int
 get_dtype(char *tabname, char *colname,char *dbname,char **tablist)
 {
-//	FILE *ifile;
-//	char buff[132];
-//	char tab[20];
-//	char col[20];
-//	char dtype[20];
-//	char size[20];
 	int a,b;
-//    int dd;
-//    int fs;
 	b=0;
 
 	if (strlen(tabname)!=0)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.16 2002-05-30 06:25:20 afalout Exp $
+# $Id: nosql.c,v 1.17 2002-06-01 11:55:00 afalout Exp $
 #*/
 
 /**
@@ -50,15 +50,18 @@
 #include "a4gl_stack.h"
 #include "a4gl_pointers.h"
 #include "a4gl_dtypes.h"
+#include "a4gl_dlsql.h"
 #include "a4gl_aubit_lib.h"
 #include "a4gl_debug.h"
+
+
 /*
 =====================================================================
                     Variables definitions
 =====================================================================
 */
 
-typedef unsigned char UCHAR;
+//typedef unsigned char UCHAR;
 char lasterrorstr[1024] = "";
 
 /*
@@ -72,6 +75,7 @@ char *find_str_resource (char *s);
 struct s_sid *find_prepare (char *pname, int mode);
 //void A4GLSQL_set_status (int a, int sql);
 extern char * global_A4GLSQL_get_sqlerrm (void); //in API_sql.c
+
 
 /*
 =====================================================================
@@ -318,12 +322,11 @@ A4GLSQL_declare_cursor (int upd_hold, struct s_sid *sid, int scroll,
  *
  * @todo Describe function
  */
-int
+void
 A4GLSQL_set_sqlca_sqlcode (int a)
 {
   status = a;
   sqlca.sqlcode = a;
-  return 0;
 }
 
 /**
@@ -354,33 +357,30 @@ A4GLSQL_fetch_cursor (char *cursor_name,
  *
  * @todo Describe function
  */
-int
+void
 A4GLSQL_put_insert (struct BINDING *ibind, int n)
 {
   local_exitwith ("Could not put_insert - noODBC build");
-  return 0;
 }
 
 /**
  *
  * @todo Describe function
  */
-int
+void
 A4GLSQL_unload_data (char *fname, char *delims, char *sql1)
 {
   local_exitwith ("Could not unload_data - noODBC build");
-  return 0;
 }
 
 /**
  *
  * @todo Describe function
  */
-int
+void
 A4GLSQL_commit_rollback (int mode)
 {
   local_exitwith ("Could not commit_rollback - noODBC build");
-  return 0;
 }
 
 /**
@@ -398,11 +398,10 @@ A4GLSQL_find_prepare (char *pname, int mode)
  *
  * @todo Describe function
  */
-int
+void
 A4GLSQL_flush_cursor (char *cursor)
 {
 	local_exitwith ("Could not flush_cursor - noODBC build");
-  return 0;
 }
 
 /**
