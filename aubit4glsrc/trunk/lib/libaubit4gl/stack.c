@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.95 2004-07-10 09:48:34 mikeaubury Exp $
+# $Id: stack.c,v 1.96 2004-08-05 17:19:40 mikeaubury Exp $
 #
 */
 
@@ -495,6 +495,7 @@ A4GL_debug_print_stack();
 	{
 	  s = A4GL_new_string (dtype_alloc_char_size[f]);
 	  A4GL_pop_char (s, dtype_alloc_char_size[f]);
+	  if (dtype_alloc_char_size[f]==40) {A4GL_trim(s);}
 	}
 
       //trim (s);

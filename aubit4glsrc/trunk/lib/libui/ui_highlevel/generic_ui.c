@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.25 2004-07-27 16:50:33 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.26 2004-08-05 17:19:40 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -1414,7 +1414,11 @@ A4GL_gen_field_list (void ***field_list, struct s_form_dets *formdets,
   int attr_no;
   int srec_no;
   int cnt = 0;
-  if (formdets==0) return 0;
+  if (formdets==0) {
+                A4GL_exitwith("No form displayed");
+                return -1;
+  }
+
 #ifdef DEBUG
   {
     A4GL_debug ("gen_field_list - %p %p %d %p", field_list, formdets, a, ap);
@@ -2733,6 +2737,26 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
   else
     {
       int b;
+        int w;
+        int h;
+        w=A4GL_get_curr_width();
+        h=A4GL_get_curr_height();
+        if (A4GL_get_currwinno()==0) {
+                w=A4GL_screen_width();
+                h=A4GL_screen_height();
+        }
+
+        if (y<1|| y>h) {
+                A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
+                return;
+        }
+        if (x<1|| x>w) {
+                A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
+                return;
+        }
+
+        if (strlen(s)==0&&clr_line) return;
+
       A4GL_chkwin ();
       nattr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, a, 0, 0);
       a = nattr;

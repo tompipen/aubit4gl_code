@@ -3,15 +3,6 @@
 #include "variables.h"
 
 
-//extern struct variable **list_class;  /* Our List*/
-//extern int list_class_cnt;    /* Number used in our list*/
-//extern int list_class_alloc;  /* Space allocated for our list*/
-
-//extern struct variable **list_parent_class;   /* Our List*/
-//extern int list_parent_class_cnt;     /* Number used in our list*/
-//extern int list_parent_class_alloc;   /* Space allocated for our list*/
-
-
 
 
 /* This is from 4glc.c */

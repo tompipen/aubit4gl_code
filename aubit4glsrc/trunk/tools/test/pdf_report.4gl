@@ -67,6 +67,7 @@ on every row
 	print column 2 inches,c
 
 before group of t
+	skip to top of page
 	display "Processing table: ", t
 	print "";
 	call pdf_function("set_font_size",20);
@@ -77,7 +78,6 @@ before group of t
 
 after group of t
 	print column 5 inches, group count(*) using "<<<<"," Columns"
-	skip 3 lines
 
 end report
 

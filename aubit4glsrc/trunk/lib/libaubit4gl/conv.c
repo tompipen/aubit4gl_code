@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.83 2004-08-03 17:16:05 mikeaubury Exp $
+# $Id: conv.c,v 1.84 2004-08-05 17:19:40 mikeaubury Exp $
 #
 */
 
@@ -150,7 +150,7 @@ void A4GL_double_to_dec (double arg, char *buf, size_t length, size_t digits);
 //void A4GL_assertion                        (int a, char *s);
 
 
-int A4GL_valid_dt (char *s, int *data);
+static int A4GL_valid_dt (char *s, int *data,int size);
 
 int A4GL_ctoc (void *a, void *b, int size);
 //int A4GL_ctodt             (void *a, void *b, int size);
@@ -471,7 +471,7 @@ A4GL_inttoc (void *a1, void *b, int size)
       strcat (buff, buff2);
 
     }
-  A4GL_debug ("-->%s\n", A4GL_null_as_null(buff));
+  A4GL_debug ("-->'%s'\n", A4GL_null_as_null(buff));
   A4GL_ctoc (buff, b, size);
   return 1;
 }
@@ -655,7 +655,7 @@ data[6]=0;
 
  
 
-  valid=A4GL_valid_dt (a, data);
+  valid=A4GL_valid_dt (a, data,size);
 
   if (valid==2 && (d->ltime!=d->stime)) valid=0;
 
@@ -2773,7 +2773,7 @@ if (a) {
  *   - 0 : The date is not valid.
  *   - 1 : The date is valid.
  */
-int A4GL_valid_dt (char *s, int *data)
+int A4GL_valid_dt (char *s, int *data,int size)
 {
   int a;
   char buff[256];
@@ -3025,6 +3025,22 @@ int A4GL_valid_dt (char *s, int *data)
   if(data[5]<0||data[5]>59) return 0; // Seconds
 
 
+  { int l1_t; int l2_t; int l1_s; int l2_s;
+  //  Do we have compatible types ?
+  l1_t=dt_type&0xf0;
+  l1_s=size&0xf0;
+  l2_t=dt_type&0x0f;
+  l2_s=size&0x0f;
+  if (l2_t>=DT_SECOND) l2_t=DT_FRACTION;
+  if (l2_s>=DT_SECOND) l2_s=DT_FRACTION;
+
+  if (l1_t!=l1_s || l2_t!=l2_s) {
+	
+		A4GL_debug("Are they really compatible ? %d %d %d %d\n",l1_t,l1_s,l2_t,l2_s);
+		A4GL_debug("Informix(tm)4GL might complain about this and set it to null instead...");
+  }
+
+  }
   return 1;
 }
 
@@ -3070,7 +3086,9 @@ A4GL_valid_int (char *s, int *data, int size)
       return 0;
     }
 
+  while (s[0]==' '&&s[0]!=0) s++;
   strcpy (buff, s);
+  
   ptr[0] = &buff[0];
   A4GL_debug ("Splitting '%s'\n", A4GL_null_as_null(buff));
   cnt = 0;

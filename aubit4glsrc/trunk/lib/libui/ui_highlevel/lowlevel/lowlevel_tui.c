@@ -31,7 +31,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.31 2004-07-27 16:50:34 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.32 2004-08-05 17:19:41 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -66,7 +66,7 @@ Looks like it was removed in Curses 5.3???!
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.31 2004-07-27 16:50:34 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.32 2004-08-05 17:19:41 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -574,11 +574,11 @@ A4GL_LL_display_form (void *vf, int attrib)
     {
       if (UILIB_A4GL_iscurrborder ())
 	{
-	  A4GL_display_internal (1, a + 1, "", 0, 1);
+	  A4GL_display_internal (1, a + 1, " ", 0, 1);
 	}
       else
 	{
-	  A4GL_display_internal (1, a, "", 0, 1);
+	  A4GL_display_internal (1, a, " ", 0, 1);
 	}
     }
   A4GL_form_scale_form (f->form, &rows, &cols);
@@ -1347,9 +1347,12 @@ A4GL_LL_set_carat (void *form)
 PANEL *w;
   A4GL_form_pos_form_cursor (form);
   A4GL_debug("CURSES : set_carat");
-  A4GL_LL_screen_update();
-  w = (PANEL *) A4GL_get_currwin ();
+
+
+  //w = (PANEL *) A4GL_get_currwin ();
   //wrefresh(panel_window(w));
+  //A4GL_LL_screen_update();
+  
 }
 
 
@@ -2337,7 +2340,7 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
 		A4GL_LL_screen_update();
 		a=A4GL_LL_getch_swin (panel_window(cwin));
 		A4GL_debug("construct_large a=%d abort_pressed=%d",a,abort_pressed);
-		if (abort_pressed||a==-100) {abort_pressed=1;a=-100;break;}
+		if (abort_pressed||a==A4GLKEY_INTERRUPT || a==A4GLKEY_CANCEL) {break;}
 		if (A4GL_has_event_for_keypress(a,evt)) return a;
 
 

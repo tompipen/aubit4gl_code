@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.16 2004-06-25 18:25:37 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.17 2004-08-05 17:19:40 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.16 2004-06-25 18:25:37 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.17 2004-08-05 17:19:40 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -70,6 +70,7 @@ static int A4GL_proc_key_input (int a, void *mform, struct s_screenio *s);
 
 static void do_key_move (char lr, struct s_screenio *s, int a, int has_picture, char *picture);
 long inp_current_field = 0;
+int last_key_code=0;
 
 
 /*
@@ -428,6 +429,7 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
 	  if (A4GL_has_event_for_keypress(fcntrl.extent,evt)) {
 			A4GL_debug("GOT KEY PRESS... %d %d\n",A4GL_has_event_for_keypress(fcntrl.extent,evt));
 			rval=A4GL_has_event_for_keypress(fcntrl.extent,evt);
+   			last_key_code=sio->fcntrl[a].extent;
 			new_state=0;
 	  } else {
 		A4GL_proc_key_input (fcntrl.extent, sio->currform->form, sio);
@@ -582,7 +584,7 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
       if (fcntrl.state == 5)
 	{
 
-	  if (sio->mode == MODE_CONSTRUCT) {
+	  if (sio->mode == MODE_CONSTRUCT && last_key_code!=A4GLKEY_CANCEL) {
 			struct s_form_dets *form;
 			char rbuff[1024];
 			int w;
@@ -787,7 +789,15 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
 	      int field_no;
 	      char buff[10024];
 	      field_no = sio->curr_attrib;
-	      strcpy (buff, A4GL_LL_field_buffer (sio->currentfield, 0));
+                if (sio->currentfield==0) {
+                        A4GL_fgl_die_with_msg(1,"No current field");
+                }
+
+	      strncpy (buff, A4GL_LL_field_buffer (sio->currentfield, 0),sizeof(buff));
+                buff[10023]=0;
+                if (strlen(buff)>=10023) {
+                        A4GL_fgl_die_with_msg(1,"Internal error or string too long");
+                }
 
 
 	      if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
@@ -1546,7 +1556,7 @@ A4GL_comments (struct struct_scr_field *fprop)
   int cline;
   char buff[256];
   int attr;
-  if (!fprop) {strcpy(buff,""); }
+  if (!fprop) {strcpy(buff," "); }
   else {
   A4GL_debug ("Has property");
 
@@ -1593,7 +1603,7 @@ A4GL_comments (struct struct_scr_field *fprop)
     }
 
   A4GL_debug("Comments attr=%x buff=%s",attr,buff);
-  attr=attr&0xfffffff0;
+  //attr=attr&0xffffff00;
   A4GL_debug("And display the comments... %d,%d -'%s'",cline,1,buff);
   UILIB_A4GL_display_internal (1,cline, buff, attr, 1);
   A4GL_debug("Done display the comments... %d,%d -'%s'",cline,1,buff);

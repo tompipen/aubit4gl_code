@@ -58,7 +58,7 @@ void A4GL_pdf_aclfgli_skip_lines(void* rep);
 
 void A4GL_pdf_need_lines(void* rep);
 
-void A4GL_pdf_skip_top_of_page(void* rep);
+void A4GL_pdf_skip_top_of_page(void* rep,int n);
 
 void A4GL_pdf_set_info(void* p,char* creator);
 

@@ -102,10 +102,17 @@ FILE *f;
 
 sprintf(buff,"%s/import/%s",acl_getenv("AUBITETC"),s);
 f=fopen(buff,"r");
-	A4GL_debug("Try : %s = %p\n",buff,f);
+A4GL_debug("Try : %s = %p\n",buff,f);
 
 if (f==0) {
         sprintf(buff,"%s/etc/import/%s",acl_getenv("AUBITDIR"),s);
+        f=fopen(buff,"r");
+	A4GL_debug("Try : %s = %p\n",buff,f);
+}
+
+
+if (f==0) {
+        sprintf(buff,"./%s",s);
         f=fopen(buff,"r");
 	A4GL_debug("Try : %s = %p\n",buff,f);
 }

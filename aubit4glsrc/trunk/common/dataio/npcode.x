@@ -80,7 +80,7 @@ struct variable_element {
 	long dtype;
 	long i_arr_size[3]; /* Informix limits to 3 levels of array */
 	short unit_size;
-	long as;
+	/* long as; */
 	long total_size;
 	long offset; /* This is the offset for CAT_NORMAL/PARAMETER, or a pointer for STATIC or EXTERN */
 	struct variable_element next<>;
@@ -172,12 +172,13 @@ struct npcmd_call {
 struct use_variable_sub {
 	long x1subscript_param_id[3];
 	long x1element;
+	long subscript_all;
 };
 
 struct use_variable {
-	short variable_id;
-	short defined_in_block_pc; 	/* -1 for MODULE LEVEL */
-	char indirection;
+	short  variable_id;
+	short  defined_in_block_pc; 	/* -1 for MODULE LEVEL */
+	char   indirection;
 	struct use_variable_sub sub<>;
 };
 

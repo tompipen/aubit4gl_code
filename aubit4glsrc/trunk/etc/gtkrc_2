@@ -165,11 +165,21 @@ style "200" { # invisible
 }
 
 style "AppWindow" {
+	#base[NORMAL]="#ffffff"
         bg[NORMAL]       = "#ffffff"
-        bg[ACTIVE]       = "#ffffff"
+        #bg[ACTIVE]       = "#ffffff"
 	#bg_pixmap[NORMAL]= "moon5.png"
 	#bg_pixmap[ACTIVE]= "bkg_img.png"
 }
+
+style "MenuButtons" {
+	#base[NORMAL]     = "#ffffff"
+        bg[NORMAL]       = "#000000"
+        #bg[ACTIVE]       = "#ffffff"
+	#bg_pixmap[NORMAL] = "moon5.png"
+	#bg_pixmap[ACTIVE]= "moon5.png"
+}
+
 
 
 style "81" {
@@ -194,8 +204,11 @@ style "280" {
 	text[NORMAL]="#c0c0c0"
 }
 
-widget "*.AppWindow" style "AppWindow"
 widget "*" style "0"
+
+widget "*.MenuButtons" style "MenuButtons"
+
+widget "*.AppWindow" style "AppWindow"
 
 
 widget "*.0" style "0"

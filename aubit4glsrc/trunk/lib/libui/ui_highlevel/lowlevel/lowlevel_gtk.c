@@ -11,7 +11,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.48 2004-07-27 16:50:34 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.49 2004-08-05 17:19:41 mikeaubury Exp $";
 
 
 #define A4GL_GTK_FONT_FIXED "Fixed 10"
@@ -614,15 +614,19 @@ if (x==0&&y==0&&h==0&&w==0) {
 	hbox=gtk_hbox_new(0,3);
 	fixed = gtk_fixed_new ();
 	bb=gtk_vbutton_box_new();
+       	gtk_widget_set_name(GTK_WIDGET(bb), "MenuButtons");
+
 	gtk_button_box_set_layout(GTK_BUTTON_BOX(bb),GTK_BUTTONBOX_START);
+       	gtk_widget_set_name(GTK_WIDGET(hbox), "MenuButtons");
+
 	gtk_widget_show(hbox);
 	if (!A4GL_isyes(acl_getenv("TRADMENU"))) {
+        	gtk_widget_set_name(GTK_WIDGET(bb), "MenuButtons");
 		gtk_widget_show(bb);
 	}
 
 #if GTK_CHECK_VERSION(2,0,0)
 	gtk_fixed_set_has_window    (GTK_FIXED(fixed),1);
-
 #endif
         gtk_widget_show (GTK_WIDGET (fixed));
         gtk_widget_set_name(GTK_WIDGET(fixed), "AppWindow");
@@ -630,6 +634,7 @@ if (x==0&&y==0&&h==0&&w==0) {
 	gtk_widget_show(frame);
         gtk_container_add (GTK_CONTAINER (frame),fixed);
         gtk_container_add (GTK_CONTAINER (hbox), frame);
+        gtk_widget_set_name(GTK_WIDGET(frame), "AppWindow");
 	gtk_box_set_child_packing(GTK_BOX(hbox),frame,1,1,2,GTK_PACK_START);
 
 	frame=gtk_frame_new("");
@@ -640,11 +645,14 @@ if (x==0&&y==0&&h==0&&w==0) {
 	if (!A4GL_isyes(acl_getenv("TRADMENU"))) {
 		GtkWidget *f;
 		f=gtk_frame_new("");
+        	gtk_widget_set_name(GTK_WIDGET(f), "MenuButtons");
         	gtk_widget_set_usize (GTK_WIDGET (f), additional*gui_xwidth, (A4GL_LL_screen_height()+1)*gui_yheight);
 		gtk_widget_show(f);
+        	gtk_widget_set_name(GTK_WIDGET(f), "MenuButtons");
         	gtk_container_add (GTK_CONTAINER (f), bb);
         	gtk_container_add (GTK_CONTAINER (hbox), f);
-		gtk_box_set_child_packing(GTK_BOX(hbox),bb,0,0,2,GTK_PACK_START);
+		//gtk_box_set_child_packing(GTK_BOX(hbox),bb,0,0,2,GTK_PACK_START);
+		//gtk_box_set_child_packing(GTK_BOX(hbox),f,0,0,2,GTK_PACK_START);
 	}
         gtk_container_add (GTK_CONTAINER (win), hbox);
 	win_screen=fixed;
@@ -1711,7 +1719,7 @@ printf("public off\n");
 
 void A4GL_clear_prompt(struct s_prompt *prmt) {
 	gtk_widget_destroy(prmt->win);
-	A4GL_LL_screen_refresh();
+	A4GL_LL_screen_update();
 }
 
 

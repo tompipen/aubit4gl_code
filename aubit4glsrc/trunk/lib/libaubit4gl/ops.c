@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.55 2004-07-16 16:37:55 mikeaubury Exp $
+# $Id: ops.c,v 1.56 2004-08-05 17:19:40 mikeaubury Exp $
 #
 */
 
@@ -285,7 +285,16 @@ A4GL_in_dt_ops (int op)
   int d1;
   int d2;
   int s1;
+  int mdy_m,mdy_d,mdy_y;
   int s2;
+
+  long dt_days;
+  double dt_seconds;
+  long in_months;
+  long in_days;
+  double in_seconds;
+
+
   //void *ptr1;
   struct ival *pi;
   struct A4GLSQL_dtime *pd;
@@ -294,7 +303,7 @@ A4GL_in_dt_ops (int op)
   int start;
   char *ptr;
 
-  A4GL_debug ("in_dt_ops");
+  A4GL_debug ("in_dt_ops ");
   A4GL_get_top_of_stack (2, &d1, &s1, (void *) &pd);
   A4GL_get_top_of_stack (1, &d2, &s2, (void *) &pi);
 
@@ -353,15 +362,15 @@ dt.ltime=-1;
 
   A4GL_decode_interval (&in, &ival_data[0]);
 
-/*
-	printf("\n\nInterval : Y=%d\n",ival_data[0]);
-	printf("Interval : M=%d\n",ival_data[1]);
-	printf("Interval : D=%d\n",ival_data[2]);
-	printf("Interval : H=%d\n",ival_data[3]);
-	printf("Interval : M=%d\n",ival_data[4]);
-	printf("Interval : S=%d\n",ival_data[5]);
-	printf("Interval : F=%d\n",ival_data[6]);
-*/
+
+	A4GL_debug("\n\nInterval : Y=%d\n",ival_data[0]);
+	A4GL_debug("Interval : M=%d\n",ival_data[1]);
+	A4GL_debug("Interval : D=%d\n",ival_data[2]);
+	A4GL_debug("Interval : H=%d\n",ival_data[3]);
+	A4GL_debug("Interval : M=%d\n",ival_data[4]);
+	A4GL_debug("Interval : S=%d\n",ival_data[5]);
+	A4GL_debug("Interval : F=%d\n",ival_data[6]);
+
 
 
   A4GL_decode_datetime (&dt, &dtime_data[0]);
@@ -378,12 +387,208 @@ dt.ltime=-1;
 
 
 
+  dt_days=A4GL_gen_dateno (dtime_data[2], dtime_data[1], dtime_data[0]); // As a date....
 
+  //dt_seconds= (double)dtime_data[2]*24.0*60.0*60.0; // Days
+  dt_seconds=0;
+  dt_seconds+=(double)dtime_data[3]*60.0*60.0; // Hours
+  dt_seconds+=(double)dtime_data[4]*60.0; // Minutes
+  dt_seconds+=(double)dtime_data[5];
+  dt_seconds+=(double)dtime_data[6]/100000.0 ; // Seconds
+
+  in_months=ival_data[0]*12 + ival_data[1];
+  in_seconds=0;
+
+
+A4GL_debug(":::1 %d %lf %d -  %s",dt_days,dt_seconds,in_months,(op==OP_ADD)?"Add":"Subtract");
+
+  if (in_months) { // We're dealing with month information...
+	if (op==OP_ADD) {
+		dtime_data[1]+=in_months;
+		ok=1;
+	}
+
+	if (op==OP_SUB) {
+		dtime_data[1]-=in_months;
+		ok=1;
+	}
+
+	while (dtime_data[1]<1)  {dtime_data[1]+=12;dtime_data[0]--;}
+	while (dtime_data[1]>12)  {dtime_data[1]-=12;dtime_data[0]++;}
+
+	if (dtime_data[1]<1||dtime_data[1]>12) {
+		A4GL_assertion(1,"Month out of range...");
+	}
+
+	if (A4GL_days_in_month (dtime_data[1], dtime_data[0]) < dtime_data[2]) {
+		// We've done something like 30/01/2001 -> 30/02/2001 which isn't valid
+		A4GL_debug("dim=%d data[2]=%d data[1]=%d data[0]=%d\n",A4GL_days_in_month (dtime_data[1], dtime_data[0]),dtime_data[2],dtime_data[1],dtime_data[0]);
+		ok=0;
+  		A4GL_push_null (DTYPE_CHAR,0);
+		return;
+	}
+  } 
+
+  if (in_months==0) {
+  	in_seconds=(double)ival_data[2]*24.0*60.0*60.0; // Days
+  	in_seconds+=(double)ival_data[3]*60.0*60.0; // Hours
+  	in_seconds+=(double)ival_data[4]*60.0; // Minutes
+  	in_seconds+=ival_data[5]+(double)ival_data[6]/100000.0 ; // Seconds
+
+	A4GL_debug(":::2 %d %lf %d %lf %s",dt_days,dt_seconds,in_months,in_seconds,(op==OP_ADD)?"Add":"Subtract");
+	//printf(":::2 %d %lf %d %lf %s\n",dt_days,dt_seconds,in_months,in_seconds,(op==OP_ADD)?"Add":"Subtract");
+
+	if (op==OP_ADD) {
+		long d;
+		double dt;
+		dtime_data[2]=0;
+		dtime_data[3]=0;
+		dtime_data[4]=0;
+		dtime_data[5]=0;
+		dtime_data[6]=0;
+		ok=1;
+
+		dt_seconds+=in_seconds;
+		dt=trunc(dt_seconds);
+		d=(long)dt;
+		dtime_data[5]=d;
+		dt_seconds-=dt-0.000005;
+		dt_seconds*=100000;
+		d=dt_seconds;
+		dtime_data[6]=d;
+
+      		while (dtime_data[6] > 99999) { dtime_data[5]++; dtime_data[6] -= 100000; }
+      		while (dtime_data[5] >= 60) { dtime_data[4]++; dtime_data[5] -= 60; }
+      		// Minutes
+      		while (dtime_data[4] >= 60) { dtime_data[3]++; dtime_data[4] -= 60; }
+      		// Hours
+      		while (dtime_data[3] >= 24) { dtime_data[2]++; dtime_data[3] -= 24; }
+
+
+      		// Days
+
+		//printf("Delta for dt_days=%d\n",dtime_data[2]);
+		dt_days+=dtime_data[2];
+
+		A4GL_get_date(dt_days,&mdy_d,&mdy_m,&mdy_y);
+		dtime_data[2]=mdy_d;
+		dtime_data[1]=mdy_m;
+		dtime_data[0]=mdy_y;
+	
+
+	}	
+
+
+if (op==OP_SUB) {
+		long d;
+		double dt;
+
+
+	dtime_data[2]=0;
+	dtime_data[3]=0;
+	dtime_data[4]=0;
+	ok=1;
+
+	dt_seconds-=in_seconds;
+	dt=trunc(dt_seconds);
+	d=(long)dt;
+	dtime_data[5]=d;
+	dt_seconds-=dt-0.000005;
+	dt_seconds*=100000;
+	d=dt_seconds;
+	dtime_data[6]=d;
+
+
+      if (dtime_data[6] < 0)
+	{
+	  dtime_data[5]--;
+	  dtime_data[6] += 100000;
+	  //printf("Carry F\n");
+	}
+
+      // Seconds
+      while (dtime_data[5] < 0)
+	{
+	  dtime_data[4]--;
+	  dtime_data[5] += 60;	/* printf("Carry S\n"); */
+	}
+
+
+      // Minutes
+      while (dtime_data[4] < 0)
+	{
+	  dtime_data[3]--;
+	  dtime_data[4] += 60;	/* printf("Carry M\n"); */
+	}
+
+
+      // Hours
+      while (dtime_data[3] < 0)
+	{
+	  dtime_data[2]--;
+	  dtime_data[3] += 24;	/* printf("Carry H\n"); */
+	}
+
+      		while (dtime_data[6] > 99999) { dtime_data[5]++; dtime_data[6] -= 100000; }
+      		while (dtime_data[5] >= 60) { dtime_data[4]++; dtime_data[5] -= 60; }
+      		// Minutes
+      		while (dtime_data[4] >= 60) { dtime_data[3]++; dtime_data[4] -= 60; }
+      		// Hours
+      		while (dtime_data[3] >= 24) { dtime_data[2]++; dtime_data[3] -= 24; }
+
+
+	dt_days+=dtime_data[2];
+		A4GL_get_date(dt_days,&mdy_d,&mdy_m,&mdy_y);
+		dtime_data[2]=mdy_d;
+		dtime_data[1]=mdy_m;
+		dtime_data[0]=mdy_y;
+
+
+
+
+}
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#ifdef OLDWAY
   switch (op)
     {
     case OP_ADD:
       // Fractions
       dtime_data[6] += ival_data[6];
+
+
+
+
+
       while (dtime_data[6] > 99999)
 	{
 	  dtime_data[5]++;
@@ -410,7 +615,6 @@ dt.ltime=-1;
       dtime_data[3] += ival_data[3];
       while (dtime_data[3] >= 24)
 	{
-	  A4GL_debug ("Inc hours...");
 	  dtime_data[2]++;
 	  dtime_data[3] -= 24;
 	}
@@ -523,6 +727,14 @@ dt.ltime=-1;
       break;
     }
 
+#endif
+
+
+//printf("ok=%d\n",ok);
+
+
+
+
   if (ok)
     {
       A4GL_debug ("Datetime : Y=%d\n", dtime_data[0]);
@@ -540,6 +752,7 @@ dt.ltime=-1;
 	       dtime_data[2],
 	       dtime_data[3], dtime_data[4], dtime_data[5], dtime_data[6]);
 
+	//printf("buff_2=%s\n",buff_2);
       A4GL_debug ("Buff = %s", buff_2);
       start = 0;
       if (dtime_data[0] > 0 && !start)

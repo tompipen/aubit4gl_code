@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.18 2004-07-03 11:58:14 mikeaubury Exp $
+# $Id: input_array.c,v 1.19 2004-08-05 17:19:40 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.18 2004-07-03 11:58:14 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.19 2004-08-05 17:19:40 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -3009,7 +3009,7 @@ A4GL_set_arr_fields (int n, int attr, ...)
 #endif
   A4GL_debug ("set_arr_fields");
   ptr = &ap;
-  nofields = A4GL_gen_field_list (&field_list, formdets, n, ap);
+  nofields = A4GL_gen_field_list (&field_list, formdets, n, &ap);
   A4GL_debug ("Number of fields=%d", nofields);
   for (a = nofields; a >= 0; a--)
     {
