@@ -5,12 +5,12 @@ if_cmd	:
 		if_print_stack_cnt++;
 		if_print_stack[if_print_stack_cnt][0]=0;
 		if_print_stack[if_print_stack_cnt][1]=0;
-		if_print_section=0;
+		if_print_section[if_print_stack_cnt]=0;
 		print_if_start();
 	}
 		commands {
 		int a;
-		if_print_section=1;
+		if_print_section[if_print_stack_cnt]=1;
 	} op_else END_IF {
 		char wt;
 		print_if_end();
@@ -22,16 +22,11 @@ if_cmd	:
 				YYERROR;
 			}
 			
-			if (if_print_stack_cnt>1) {
-				if_print_stack[if_print_stack_cnt-1][0]+=if_print_stack[if_print_stack_cnt][0];
-				if_print_stack[if_print_stack_cnt-1][1]+=if_print_stack[if_print_stack_cnt][1];
+			if (if_print_stack_cnt>=1) {
+				if_print_stack[if_print_stack_cnt-1][if_print_section[if_print_stack_cnt-1]]+=if_print_stack[if_print_stack_cnt][0];
 			}
 		}
 		if_print_stack_cnt--;
-		//if (if_print_stack_cnt==0) {
-		//printf("Lines printed: %d in this if bit\n",if_print_stack[0][0]);
-		//}
-		if_print_section=0;
 	}
 ;
 

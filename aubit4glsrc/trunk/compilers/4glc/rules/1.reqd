@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.43 2003-09-29 15:10:37 mikeaubury Exp $
+# $Id: 1.reqd,v 1.44 2003-09-29 16:33:54 mikeaubury Exp $
 #
 */
 
@@ -190,7 +190,7 @@ struct input_array_attribs curr_input_array_attribs;
 
 int if_print_stack[100][2];
 int if_print_stack_cnt=0;
-int if_print_section=0;
+int if_print_section[100]={0,0,0,0};
 
 #include "../generic.h"
 

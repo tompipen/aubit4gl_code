@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.46 2003-09-29 15:10:37 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.47 2003-09-29 16:34:13 mikeaubury Exp $
 #
 */
 
@@ -4188,6 +4188,131 @@ A4GL_lex_parsed_fgl ()      {
 printc("/* END OF 4GL */");
 }
 
+
+
+void
+print_alloc_arr (char *s, char *d)
+{
+  char *ptr;
+  int a;
+  int l;
+  int dim[5] = { 0, 0, 0, 0, 0 };
+  int dimcnt = 0;
+  l = strlen (d);
+  ptr = d;
+  for (a = 0; a < l; a++)
+    {
+      if (d[a] == '(' && a == 0)
+        {
+          ptr = &d[a + 1];
+          continue;
+        }
+
+      if (d[a] == '[' && d[a + 1] == '(')
+        {
+          ptr = &d[a + 2];
+          continue;
+        }
+
+      if (d[a] == ')' && d[a + 1] == '-' && d[a + 2] == '1'
+          && d[a + 3] == ']')
+        {
+          d[a] = 0;
+          a += 3;
+          dim[dimcnt++] = atoi (ptr);
+
+        }
+    }
+  printc ("// ALLOC ARR %s -> %d %d %d", s, dim[0], dim[1], dim[2]);
+  if (dim[4] == 0)
+    {
+      dim[4] = 1;
+    }
+  if (dim[3] == 0)
+    {
+      dim[3] = 1;
+    }
+  if (dim[2] == 0)
+    {
+      dim[2] = 1;
+    }
+  if (dim[1] == 0)
+    {
+      dim[1] = 1;
+    }
+  if (dim[0] == 0)
+    {
+      dim[0] = 1;
+    }
+  l = dim[0] * dim[1] * dim[2] * dim[3] * dim[4];
+  printc ("%s=malloc(%d * sizeof(%s[0]));", s, l, s);
+}
+
+void
+print_realloc_arr (char *s, char *d)
+{
+  char *ptr;
+  int a;
+  int l;
+  int dim[5] = { 0, 0, 0, 0, 0 };
+  int dimcnt = 0;
+  l = strlen (d);
+  ptr = d;
+  for (a = 0; a < l; a++)
+    {
+      if (d[a] == '(' && a == 0)
+        {
+          ptr = &d[a + 1];
+          continue;
+        }
+
+      if (d[a] == '[' && d[a + 1] == '(')
+        {
+          ptr = &d[a + 2];
+          continue;
+        }
+
+      if (d[a] == ')' && d[a + 1] == '-' && d[a + 2] == '1'
+          && d[a + 3] == ']')
+        {
+          d[a] = 0;
+          a += 3;
+          dim[dimcnt++] = atoi (ptr);
+
+        }
+    }
+  printc ("// ALLOC ARR %s -> %d %d %d", s, dim[0], dim[1], dim[2]);
+  if (dim[4] == 0)
+    {
+      dim[4] = 1;
+    }
+  if (dim[3] == 0)
+    {
+      dim[3] = 1;
+    }
+  if (dim[2] == 0)
+    {
+      dim[2] = 1;
+    }
+  if (dim[1] == 0)
+    {
+      dim[1] = 1;
+    }
+  if (dim[0] == 0)
+    {
+      dim[0] = 1;
+    }
+  l = dim[0] * dim[1] * dim[2] * dim[3] * dim[4];
+  printc ("%s=realloc(%s,%d * sizeof(%s[0]));", s, s,l, s);
+}
+
+void
+print_dealloc_arr (char *s)
+{
+  printc ("free(%s);", s);
+}
+
 /* ================================ EOF ============================== */
+
 
 
