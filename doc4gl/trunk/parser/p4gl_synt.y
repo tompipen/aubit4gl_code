@@ -1527,15 +1527,15 @@ report
 report_def:
 	IDENTIFIER '(' op_argument_list ')' 
 		  op_local_variables
-		  output_section
-		  //order_by_section
+		  op_output_section
+		  op_order_by_section
 		  FORMAT format_section
 	  END_TOK REPORT  {StInsertFunction($1,lineno+1,(NAME_LIST *)0);}
 	  ;
 
-output_section
-	:  OUTPUT output_command_list
-	| 
+op_output_section
+	:
+	|  OUTPUT output_command_list
 	;
 
 output_command_list
@@ -1554,7 +1554,11 @@ output_command
 	| RIGHT MARGIN NUMBER
 	| PAGE LENGTH NUMBER
 	| TOP OF PAGE STRING
-	| order_by_section
+	;
+
+op_order_by_section
+	: order_by_section
+	|
 	;
 
 order_by_section
