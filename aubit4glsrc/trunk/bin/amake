@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 #
-# $Id: amake,v 1.24 2003-10-09 13:02:20 afalout Exp $
+# $Id: amake,v 1.25 2003-10-11 09:53:21 afalout Exp $
 #
 #####################################################################
 
@@ -464,6 +464,12 @@ if [ "$COMPOSITE_IS_TMP" = "1" ]; then
 			echo "Removing temp $COMPOSITE"
 		fi
 		rm $COMPOSITE
+    fi
+	if test -f $COMPOSITE.tmp; then
+		if [ "$VERBOSE" = "1" ]; then
+			echo "Removing temp $COMPOSITE.tmp"
+		fi
+		rm $COMPOSITE.tmp
     fi
 fi
 

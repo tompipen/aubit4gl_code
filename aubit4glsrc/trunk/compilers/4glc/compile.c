@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.40 2003-10-08 01:36:42 afalout Exp $
+# $Id: compile.c,v 1.41 2003-10-11 09:53:39 afalout Exp $
 #*/
 
 /**
@@ -90,6 +90,9 @@ extern int yydebug;		/* defined in y.tab.c _IF_ -DYYDEBUG is set */
 #else
 int yydebug;			/* if !-DYYDEBUG, we need to define it here */
 #endif
+
+
+  char extra_ccflags[1024] = "";
 
 
 /*
@@ -196,14 +199,19 @@ initArguments (int argc, char *argv[])
 
 
   // set valid options for getopt_long depending on putput language
-  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0
-      || strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0) {
-      //strcpy(opt_list,"Gs:co::d::l::?hSVvft");
-      strcpy (opt_list, "G4s:N:kKco::l::L::?hSVvftd:");
-    } else if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0) {
-      strcpy (opt_list, "G4s:N:?hSVvftd:");
-    } else { // all other A4GL_LEXTYPE types
-      strcpy (opt_list, "G4s:N:kKco::l::L::?hSVvftd:");
+	if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0
+      || strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
+	{
+	      //strcpy(opt_list,"Gs:co::d::l::?hSVvft");
+		strcpy (opt_list, "G4s:N:kKco::l::L::I::?hSVvftd:");
+    }
+    else if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0)
+	{
+		strcpy (opt_list, "G4s:N:?hSVvftd:");
+    }
+	else // all other A4GL_LEXTYPE types
+	{
+		strcpy (opt_list, "G4s:N:kKco::l::L::?hSVvftd:");
     }
 
   /* this call will intercept -v and -vfull arguments, that can be only
@@ -349,6 +357,18 @@ initArguments (int argc, char *argv[])
 	  strcat (extra_ldflags, optarg);
 	  strcat (extra_ldflags, "\"");
 	  strcat (extra_ldflags, " ");
+	  break;
+
+    /************************/
+	case 'I':		// CC/ESQL -I flags for include paths
+		#ifdef DEBUG
+		  A4GL_debug ("Pass trough option: %s\n", optarg);
+		#endif
+	  strcat (extra_ccflags, "-I");
+	  strcat (extra_ccflags, "\"");
+	  strcat (extra_ccflags, optarg);
+	  strcat (extra_ccflags, "\"");
+	  strcat (extra_ccflags, " ");
 	  break;
 
     /************************/
@@ -1127,8 +1147,8 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
             }
 			else //"A4GL_LEXDIALECT"="INFORMIX" - default
 			{
-       			  sprintf (buff, "esql %s.ec -c -o %s %s %s",
-				   aa, single_output_object, incl_path,
+       			  sprintf (buff, "esql %s.ec %s -c -o %s %s %s",
+				   aa, extra_ccflags, single_output_object, incl_path,
 				   pass_options);
 		    }
 	    } else { /* Pure C compiler output */
@@ -1314,29 +1334,21 @@ printUsage_help (char *argv[])
   printf ("\n");
 
   printf ("Other options :\n");
+  printf ("  -I -L -l : ");
   printf ("  -G     | --globals         : Generate the globals map file\n");
   printf ("  -S     | --silent          : no output other then errors\n");
   printf ("  -V     | --verbose         : Verbose output\n");
-  printf
-    ("  -N name| --namespace name         : Prefix all functions with name (default 'aclfgl_')\n");
+  printf ("  -N name| --namespace name         : Prefix all functions with name (default 'aclfgl_')\n");
   printf ("  -v     | --version         : Show compiler version and exit\n");
-  printf
-    ("  -f     | --version_full    : Show full compiler version and details\n");
+  printf ("  -f     | --version_full    : Show full compiler version and details\n");
   printf ("  -h|-?  | --help            : Show this help and exit\n");
-  printf
-    ("  -tTYPE | --lextype         : output language, TYPE=C(default) or PERL\n");
-  printf
-    ("  -k     | --keep            : keep intermediate files (defailt)\n");
-  printf
-    ("  -K     | --clean           : clean intermediate files when done\n");
-  printf
-    ("  -s0|1  | --stack_trace 0|1 : Include the stack trace in file:\n");
-  printf
-    ("                             : 0-Don't generate  1-Generate(Default)\n");
-  printf
-    ("If 'outfile' was not specified, it is generated from first 4gl file name\n");
-  printf
-    ("specified. All options that are not recognised, are passed to C compiler,\n");
+  printf ("  -tTYPE | --lextype         : output language, TYPE=C(default) or PERL\n");
+  printf ("  -k     | --keep            : keep intermediate files (defailt)\n");
+  printf ("  -K     | --clean           : clean intermediate files when done\n");
+  printf ("  -s0|1  | --stack_trace 0|1 : Include the stack trace in file:\n");
+  printf ("                             : 0-Don't generate  1-Generate(Default)\n");
+  printf ("If 'outfile' was not specified, it is generated from first 4gl file name\n");
+  printf ("specified. All options that are not recognised, are passed to C compiler,\n");
   printf ("if -c -o -d or -l was specified.\n");
   printf ("\n");
 
@@ -1362,6 +1374,13 @@ printUsage_help (char *argv[])
 
   printf ("\n");
   printf ("\n");
+
+  //command line options parser (opt_long()) will call this function 
+  //automatically when it encounters an error in options, so we must exit
+  //here with an error code to let the calling proglams (like 'make') know
+  // to stop:
+  exit (2);
+
 }
 
 

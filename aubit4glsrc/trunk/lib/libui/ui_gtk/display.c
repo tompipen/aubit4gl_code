@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display.c,v 1.12 2003-10-11 08:41:38 afalout Exp $
+# $Id: display.c,v 1.13 2003-10-11 09:53:39 afalout Exp $
 #*/
 
 /**
@@ -118,7 +118,9 @@ A4GL_display_generic (GtkWidget * k, char *s)
 
   if (strcasecmp (ptr, "LABEL") == 0)
     {
-//	GtkStyle *style;
+#if ! GTK_CHECK_VERSION(2,0,0)
+	GtkStyle *style;
+#endif
       gtk_label_set_text (GTK_LABEL (k), s);
 
 /* check whether a Gtk+ version equal to or greater than

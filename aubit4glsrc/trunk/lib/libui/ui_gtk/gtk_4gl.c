@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.23 2003-10-11 08:41:38 afalout Exp $
+# $Id: gtk_4gl.c,v 1.24 2003-10-11 09:53:39 afalout Exp $
 #*/
 
 /**
@@ -1142,7 +1142,9 @@ A4GL_display_at (int n, int a)
 	{
 	  if (strlen (s))
 	    {
-		//GtkStyle *style;
+#if ! GTK_CHECK_VERSION(2,0,0)
+		GtkStyle *style;
+#endif
 	      		A4GL_gui_set_field_fore ((GtkWidget *) lab, A4GL_decode_colour_attr_aubit (a));
 	      		gtk_label_set_text (lab, s);
 #if GTK_CHECK_VERSION(2,0,0)
@@ -1166,7 +1168,9 @@ A4GL_display_at (int n, int a)
 	{
 	  if (strlen (buff))
 	    {
-		//GtkStyle *style;
+#if ! GTK_CHECK_VERSION(2,0,0)
+		GtkStyle *style;
+#endif
 	      lab = (GtkLabel *) gtk_label_new (s);
 	      A4GL_gui_set_field_fore ((GtkWidget *) lab,
 				  A4GL_decode_colour_attr_aubit (a));

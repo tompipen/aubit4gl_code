@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.41 2003-08-26 04:38:44 afalout Exp $
+#	 $Id: a4gl.mk,v 1.42 2003-10-11 09:53:39 afalout Exp $
 
 ##########################################################################
 #
@@ -232,10 +232,12 @@ A4GL_CLEAN_FLAGS	=$(addprefix *,	$(A4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(A4
 ifeq "${USE_4GLPC}" "1"
 	${FAIL_CMPL_4GL}${A4GL_CC} $< -c -o ${OBJSTORE}$@
 else
+#-I to the directory 4GL file is in is needed for Informix ESQL/C compiler,
+#otherwise .h file created by 4glc will not be found by esql executable
 	${FAIL_CMPL_4GL}@if test "$(<D)" = "" -o "$(<D)" = "."; then \
 		EXEC="${A4GL_CC} $< -c -o ${OBJSTORE}$@"; \
 	else \
-		EXEC="${A4GL_CC} ${CYGWIN_ROOT}$< -c -o ${OBJSTORE}$@"; \
+		EXEC="${A4GL_CC} -I$(<D) ${CYGWIN_ROOT}$< -c -o ${OBJSTORE}$@"; \
 	fi; \
 	echo $$EXEC; \
 	$$EXEC; \
