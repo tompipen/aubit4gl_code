@@ -82,10 +82,10 @@ insert into systables (tabname,tabid) values ("zz9", 102);
  
 CREATE TABLE update_table_perm (
   firstColumn SMALLINT,
-  secondColumn CHAR(10),
+  secondColumn CHAR(30),
   thirdColumn INTEGER
 );
 
-CREATE VIEW v_update_table_perm AS SELECT * FROM update_table_perm;
+CREATE VIEW v_upd_tbl_perm AS SELECT * FROM update_table_perm;
 
 /* ======================== EOF ===========================*/
