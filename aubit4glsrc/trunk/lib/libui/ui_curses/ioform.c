@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.116 2005-02-03 12:06:02 mikeaubury Exp $
+# $Id: ioform.c,v 1.117 2005-02-04 14:59:08 mikeaubury Exp $
 #*/
 static char *module_id =
-  "$Id: ioform.c,v 1.116 2005-02-03 12:06:02 mikeaubury Exp $";
+  "$Id: ioform.c,v 1.117 2005-02-04 14:59:08 mikeaubury Exp $";
 /**
  * @file
  *
@@ -2421,6 +2421,7 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
       if (strlen (A4GL_get_str_attribute (f, FA_S_FORMAT)) > field_width)
 	{
 	  A4GL_exitwith ("Format is wider than the field");
+	      A4GL_drop_param ();
 	  return;
 	}
 

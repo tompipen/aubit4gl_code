@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.38 2005-01-05 20:04:14 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.39 2005-02-04 15:02:08 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -1697,6 +1697,7 @@ A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
       if (strlen (A4GL_get_str_attribute (f, FA_S_FORMAT)) > field_width)
 	{
 	  A4GL_exitwith ("Format is wider than the field");
+	      A4GL_drop_param ();
 	  return;
 	}
 
