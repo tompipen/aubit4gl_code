@@ -1,0 +1,22 @@
+display  "Name", "Owner", "Type", "Cluster", "Column"
+  format full "%-18s %-8s %-7s %-7s %-18s";
+foreach select idxname, owner, idxtype, clustered, colname, part2, part3,
+               part4, part5, part6, part7, part8
+  from <+lone put db select name from sysmaster:sysdatabases+>:sysindexes i,
+       <+get db+>:syscolumns c
+  where i.tabid=<+coded put tbl select tabid, tabname from
+                  <+get db+>:systables order by tabid+>
+    and c.tabid=i.tabid
+    and i.part1=c.colno
+  order by idxname
+  into name, owner, type, clustered, col1, part2, part3, part4, part5,
+       part6, part7, part8;
+    display name, owner, type, clustered, col1
+      format full "%-18s %-8s %3s     %3s     %-18s";
+    select colname from <+get db+>:syscolumns c
+      where c.colno in (<+separator "," get part2, part3, part4, part5,
+                          part6, part7, part8+>)
+        and c.tabid=<+get tbl+>
+      format full "\t\t\t\t\t    %-18s";
+    display "";
+done;

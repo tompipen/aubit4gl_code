@@ -1,0 +1,281 @@
+#	4gw.msh  -  Main help include file, ita
+#
+#	The 4glWorks application framework
+#	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
+#
+#	Initial release: Apr 96
+#	Current release: Jan 02
+#
+#	This library is free software; you can redistribute it and/or
+#	modify it under the terms of the GNU Lesser General Public
+#	License as published by the Free Software Foundation; either
+#	version 2.1 of the License, or (at your option) any later version.
+#
+#	This library is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#	Lesser General Public License for more details.
+#
+#	You should have received a copy of the GNU Lesser General Public
+#	License along with this library; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+.2
+                        Comandi di editing
+
+ctrl-A    commuta tra il modo inserimento ed il modo sovrascrittura
+
+ctrl-D    cancella tutti i caratteri a destra del cursore
+
+ctrl-H    sposta il cursore di una posizione verso sinistra senza cancellare
+          il carattere sottostante (altri tasti: <BS>, <freccia sinistra>)
+
+ctrl-J	  sposta il cursore sul campo successivo (altri tasti: <Enter>,
+	  <freccia giu`>, <ctrl-M>)
+
+ctrl-K	  sposta il cursore sul campo precedente (altro tasto: <freccia su>)
+
+ctrl-L    sposta il cursore di una posizione verso destra senza cancellare
+          il carattere sottostante (altro tasto: <freccia destra>)
+
+ctrl-R    ridisegna lo schermo
+
+ctrl-X    cancella il carattere su cui si trova il cursore
+.3
+                        Comandi di editing
+
+ctrl-A    commuta tra il modo inserimento ed il modo sovrascrittura
+
+ctrl-D    cancella tutti i caratteri a destra del cursore
+
+ctrl-E    elimina la riga in cui e` posizionato il cursore (altro tasto:
+	  <Remove>)
+
+ctrl-F    porta il cursore alla pagina successiva (altro tasto:
+	  <Next Scrn>)
+
+ctrl-G	  porta il cursore alla pagina precedente (altro tasto:
+	  <Prev Scrn>)
+
+ctrl-H    sposta il cursore di una posizione verso sinistra senza cancellare
+          il carattere sottostante (altri tasti: <BS>, <freccia sinistra>)
+
+ctrl-J	  sposta il cursore sul campo successivo (altri tasti: <Enter>,
+	  <freccia giu`>, <ctrl-M>)
+
+ctrl-K	  sposta il cursore sul campo precedente (altro tasto: <freccia su>)
+
+ctrl-L    sposta il cursore di una posizione verso destra senza cancellare
+          il carattere sottostante (altro tasto: <freccia destra>)
+
+ctrl-N    inserisce una riga vuota prima di quella in cui si trova il
+          cursore (Altro tasto: <Insert Here>)
+
+ctrl-R    ridisegna lo schermo
+
+ctrl-X    cancella il carattere su cui si trova il cursore
+.4
+                        Comandi di editing
+
+ctrl-A    commuta tra il modo inserimento ed il modo sovrascrittura
+
+ctrl-D    cancella tutti i caratteri a destra del cursore
+
+ctrl-E    elimina la riga in cui e` posizionato il cursore (altro tasto:
+	  <Remove>)
+
+ctrl-F    porta il cursore alla pagina successiva (altro tasto:
+	  <Next Scrn>)
+
+ctrl-G	  porta il cursore alla pagina precedente (altro tasto:
+	  <Prev Scrn>)
+
+ctrl-H    sposta il cursore di una posizione verso sinistra senza cancellare
+          il carattere sottostante (altri tasti: <BS>, <freccia sinistra>)
+
+ctrl-J	  sposta il cursore sul campo successivo (altri tasti: <Enter>,
+	  <freccia giu`>, <ctrl-M>)
+
+ctrl-K	  sposta il cursore sul campo precedente (altro tasto: <freccia su>)
+
+ctrl-L    sposta il cursore di una posizione verso destra senza cancellare
+          il carattere sottostante (altro tasto: <freccia destra>)
+
+ctrl-N    inserisce una riga vuota prima di quella in cui si trova il
+          cursore (Altro tasto: <Insert Here>)
+
+ctrl-O    inserisce il contenuto di un file nel buffer
+
+ctrl-P    scrive il contenuto del buffer su di un file
+
+ctrl-R    ridisegna lo schermo
+
+ctrl-X    cancella il carattere su cui si trova il cursore
+.10
+Per selezionare una delle opzioni:
+
+o   spostarsi su di essa con le frecce destra o sinistra o con la barra
+    spaziatrice e premere <RETURN> o <ENTER>;
+
+o   premere semplicemente la prima lettera maiuscola di ciascuna opzione
+
+Per uscire velocemente dal programma:
+
+o   premere "Control" e "X" contemporaneamente
+
+Per ripristinare lo schermo dopo un messaggio del "superuser":
+
+o   premere i tasti "Control" e "R" contemporaneamente
+
+Se sul video sono presenti dei dati:
+
+o   <freccia su> o <control-J> porta alla riga precedente
+
+o   <freccia giu`> o <control-K> porta alla riga successiva
+
+o   <Prev Scrn> o <control-G> porta alla pagina precedente
+
+o   <Next Scrn> o <control-F> porta alla pagina precedente
+
+o   <PF1> porta alla prima pagina (riga, argomento)
+
+o   <PF2> porta all'argomento precedente
+
+o   <PF3> porta all'argomento successivo
+
+o   <PF4> porta all'ultima pagina (riga, argomento)
+.11
+Per selezionare una delle opzioni:
+
+o   spostarsi su di essa con le frecce su o giu` o con la barra
+    spaziatrice e premere <RETURN> o <ENTER>;
+
+o   premere semplicemente la prima lettera di ciascuna opzione o, se
+    esistono piu` opzioni con la stessa iniziale, la successiva lettera
+    che appare maiuscola nell'opzione stessa.
+
+Per visualizzare un'ulteriore pagina di comandi
+
+o   <Next Scrn> porta alla pagina successiva
+
+o   <Prev Scrn> porta alla pagina precedente
+
+o   <PF1> porta alla prima pagina
+
+o   <PF4> porta all'ultima pagina
+
+
+Per ripristinare lo schermo dopo un messaggio del "superuser":
+
+o   premere i tasti "Control" e "R" contemporaneamente
+.12
+Il sistema vi sta informando di qualcosa e si aspetta, a secondo del
+messaggio che compare a video, che
+
+o    premiate un tasto qualsiasi, oppure
+o    premiate "S" (per dare una risposta affermativa), "N" (per dare
+     una risposta negativa).
+o    premiate "S", "N", o <DEL>, nel caso in qui si voglia interrompere
+     l'operazione in corso
+.21
+                         Aiuto Codici
+
+Questa finestra presenta un elenco completo dei codici disponibili per la
+voce di cui avete chiesto l'aiuto e dei relativi significati.
+Scegliete il codice che vi interessa posizionandovi su di esso con i tasti
+freccia, <Next Scrn>, <Prev Scrn> e <RET>, dopodiche` premete <ESC>.
+Se non intendevate chiedere nessun tipo di aiuto, premete <DEL>.
+.22
+                         Aiuto Codici
+
+Questa finestra presenta un elenco completo dei codici disponibili per la
+voce di cui avete chiesto l'aiuto e dei relativi significati.
+Potete scegliere uno o piu` codici semplicemente posizionandovi su di esso
+con i tasti freccia, <Next Scrn> o <Prev Scrn> e premendo <Spazio> o <RET>
+per marcarlo (di nuovo <Spazio> o <RET> per annullare la scelta);
+confermate le vostre scelte premendo <ESC>.
+Se non intendevate chiedere nessun tipo di aiuto, premete <DEL>.
+.23
+                         Aiuto campo
+
+Questa finestra presenta un elenco completo delle voci disponibili per il
+campo di cui avete chiesto l'aiuto.
+Scegliete la voce che vi interessa posizionandovi su di essa con i tasti
+freccia, <Next Scrn>, <Prev Scrn> e <RET>, dopodiche` premete <ESC>.
+Se non intendevate chiedere nessun tipo di aiuto, premete <DEL>.
+.24
+                         Aiuto campo
+
+Questa finestra presenta un elenco completo delle voci disponibili per il
+campo di cui avete chiesto l'aiuto.
+Potete scegliere una o piu` voci semplicemente posizionandovi su di essa
+con i tasti freccia, <Next Scrn> o <Prev Scrn> e premendo <Spazio> o <RET>
+per marcarla (di nuovo <Spazio> o <RET> per annullare la scelta);
+confermate le vostre scelte premendo <ESC>.
+Se non intendevate chiedere nessun tipo di aiuto, premete <DEL>.
+.31
+                        Stampanti
+
+Se siete arrivati sino a qua, e` evidente che la vostra intenzione e` di
+riattivare una stampante che non funziona.
+Per fare cio` indicate al sistema il codice della stampante da attivare
+(premete <ctrl-B> per avere una lista dei codici). Il sistema provvedera`
+a controllare la stampante avvertendovi di eventuali problemi scrivendo
+sul video la frase
+
+ E' inattiva: la riabilito? (s/n)
+
+Dovete a questo punto controllare la stampante, rimetterla in funzione
+e premere il tasto "S" per segnalare al sistema che tutto e` a posto.
+Se la stampante ha ancora problemi (o se avete premuto  "S" senza
+controllare e riparare la stampante), vi riapparira` a video la frase
+precedente, e questo sino a quando non vi deciderete a fare qualcosa o a
+premere il tasto "N" per dire al sistema che non avete piu` voglia di
+perdere tempo con la stampante guasta.
+Un ulteriore <DEL> vi riporta ai dati che stavate vedendo prima
+di tentare di riabilitare la stampante
+.32
+			 Stampanti
+
+Siete sul punto di attivare una stampa, ma ahime` il sistema vi chiede
+su quale stampante stampare e il numero di copie da fare.
+
+Ci sono fondamentalmente due possibilita`:
+
+1) Se sull'ultima riga non c'e` alcun messaggio di errore, il sistema
+e` semplicemente programmato per chiedervi se i dati indicati sono corretti
+o se magari non preferiate un'altra stampante.
+
+2) Se sull'ultima riga c'e` un messaggio di errore allora
+
+- Il sistema non sa dove fare la stampa richiesta
+- La stampante indicata non esiste
+- La stampante indicata non puo` eseguire la stampa richiesta
+- La stampante indicata e` guasta in maniera non facilmente riparabile.
+
+In ogni caso dovete scegliere un'altra stampante ed eventualmente
+avvertire il "superuser" perche` possano essere presi i provvedimenti
+del caso.
+
+Premendo <DEL> abbandonate la stampa.
+.33
+                         Stampanti
+
+Invocata una stampa, il sistema controlla se la stampante necessita di
+qualche intervento da parte dell'operatore (e` accesa? manca la carta?
+lucetta "ON LINE" spenta?, etc); Se si, sul video compare:
+
+ Procedi? (s/n)
+ Controllare la stampante <nome della stampante>
+
+L'utente a questo punto deve controllare la stampante, rimetterla in
+funzione, e premere il tasto "S" per segnalare al sistema che puo`
+riprendere la stampa.
+Se la stampante ha ancora problemi (o se avete premuto "S" senza
+controllare e riparare la stampante), vi riapparira` a video la frase
+precedente, e questo sino a quando non vi deciderete a fare qualcosa o
+rispondere con "N" o <DEL> per dire al sistema che la stampa va rimandata
+(Si noti che la stampa prima o poi uscira` quindi siete pregati di
+>>>>> NON FARNE ALTRE <<<<<) sino a che qualcun altro (magari piu` vicino
+alla stampante di quanto non lo siate voi) non la riattivi usando
+l'apposito comando.

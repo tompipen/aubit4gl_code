@@ -1,0 +1,79 @@
+2.0b11:
+rewritten external layer of sql interpreter in c.
+added sql_execute2
+cbuild changes default output location
+
+2.0b10:
+changed interface to sql_explode
+changed interface to sql_execute
+added esql/c (& esql/c 4 hack) version of statement manager of sql
+  interpreter
+extended sql interpreter syntax
+shuffled sql interpreter source file names again
+hash routines rewritten in c
+uni_scroller goes multiple pane (ted_scroller no longer needs to be a
+  scroller)
+some namespace cleanup
+cbuild handles yacc files
+
+2.0b9:
+Added mkfgwgo, a tool to build 4glworks aware rds runners.
+Revamped cbuild, now boosting defines & include files, and a rc file.
+Revamped sql scroller, now boosting more powerful formatting and more
+  powerful [pick list] expansions
+  Turned it into a library (iunis has all the scroller functionality
+  needed). 
+  Split into csql?, csis?.
+Added hash table functions.
+Added a handy table locking routine.
+Cosmetic changes to mnv_* & mnh_*.
+Added ted file IO routines.
+stb & dtb scrollers handle MB_reloadset.
+Added a couple of string functions.
+Routines in cstrc don't suffer from string parameter size limitation.
+Added text blob manipulation functions.
+Dropped mlt_drop & uni_drop, uni_newtext, uni_textdone
+  (no longer needed in the logic, simply remove them from your app,
+  or create an empty stand).
+Added ability to populate uni & mlt temp tables
+  with scroller in use (no rollback).
+
+2.0b8:
+Completely rewritten IO routines: now boosting multiple opened
+  streams, file locking, seek & tell, interface to user defined
+  streams, text folding at word boundaries (a la RFC 822) plus
+  a handful of other goodies. Definitely faster.
+  Old IO routines made available separately.
+Added a couple of string functions.
+Added options & absolute filenames processing to cbuild
+Unveiled workaround to blob printing (in cbuild, c4gl only), until
+  better solution found
+
+2.0b7:
+Added a few transaction related handy routines
+Moved the brw viewer to a forthcoming tool
+Removed a few shell scripts and routines that shouldn't have
+  been there in the first place
+Modified arg list to file_input
+
+2.0b6:
+Revamped cbuild
+Scrollers exit gracefully even without a current database
+
+2.0b5:
+Added a timer feature
+
+2.0b4:
+Added a query/pipe/file viewer
+Modified arg list to sql_open
+
+2.0b3:
+Added SQL scroller
+Modified arg list to mlt_help
+
+2.0b2:
+Revamped cbuild
+Released RDS support (untested on 4.x/6.x)
+
+2.0b1:
+Preview release 1

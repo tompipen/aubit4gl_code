@@ -1,0 +1,39 @@
+#	CPTR.txt  -  Printer related text, eng
+#
+#	The 4glWorks application framework
+#	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
+#
+#	Initial release: Oct 92
+#	Current release: Jan 02
+#
+#	This library is free software; you can redistribute it and/or
+#	modify it under the terms of the GNU Lesser General Public
+#	License as published by the Free Software Foundation; either
+#	version 2.1 of the License, or (at your option) any later version.
+#
+#	This library is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#	Lesser General Public License for more details.
+#
+#	You should have received a copy of the GNU Lesser General Public
+#	License along with this library; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+ck	Check the printer
+dm	Incompatible models!
+F1	Unknown form
+F2	Incompatible form
+F3	Form too short
+F4	Form too narrow
+F5	Only test possible is presence/absence of header/footer
+in	Printer disabled: enable it now?
+ns	Cannot print
+P1	No printer specified
+P2	Unknown printer
+P3	Printer not accepting requests
+P4	Too many reports active: hit <DEL>
+sa	Report being sent to printer
+SA	Printer active
+si	Report aborted
+SI	Printer disabled
