@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.15 2004-07-10 11:42:32 afalout Exp $
+# $Id: Makefile,v 1.16 2004-09-08 10:05:22 afalout Exp $
 #
 
 ROOT    =../..
@@ -72,6 +72,24 @@ ifeq "${TARGET_OS}" "solaris"
 	STATIC=
 endif
 
+ifdef COMSPEC
+    #FIXME!!!!! I'm using variable named TMP somewhere!!!!
+	TMP=/cygdrive/d/DOCUME~1/ADMINI~1/LOCALS~1/Temp
+    PWD=
+    export TMP
+    export PWD
+
+#from Mikes Makefile.cygwin:
+	CFLAGS=-g -O2 -Wall -D_REENTRANT -DIFX_THREAD -I${ROOT}/incl
+	ESQL=esql
+	ESQL_FLAGS= -thread
+	LDFLAGS=
+	INFORMIXDIR=E:/Program files/W2000/Informix/CSDK
+	XXX="${INFORMIXDIR}\bin\isqlt09a.dll"  "${INFORMIXDIR}\bin\igl4n304.dll" \
+		"${INFORMIXDIR}\bin\iglxn304.dll"  "${INFORMIXDIR}\bin\igo4n304.dll"
+endif
+
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -82,11 +100,15 @@ all: ${ALL}
 ###################
 libESQL_INFORMIX${SO_EXT}: ${LIBROOT}/libESQL_INFORMIX${SO_EXT}
 ${LIBROOT}/libESQL_INFORMIX${SO_EXT}: helper_funcs_informix.o
+ifneq "${COMSPEC}" ""
+	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $^ ${XXX} ${LIBAUBIT4GL} -o $@
+else
 	${IFMX_ESQLC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL}
 #Solaris:
 #	libtool --mode=link gcc -shared helper_funcs.o -o libESQL_INFORMIX.so \ 
 #		-L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql  `esql -libs`
 #	cp *.so .
+endif
 
 ###################
 libESQL_POSTGRES${SO_EXT}: ${LIBROOT}/libESQL_POSTGRES${SO_EXT}
@@ -113,12 +135,18 @@ ${LIBROOT}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
 ###################
 #Infromix ESQL/C compiler
 helper_funcs_informix.o: helper_funcs.ec
+ifneq "${COMSPEC}" ""
+	$(ESQL) $(ESQL_FLAGS) -e $<
+	$(CC) $(CFLAGS) -I"${INFORMIXDIR}\incl\esql" -c $(basename $<).c -o $@
+	-@rm $(basename $<).c $(basename $<).c_*
+else
 	${IFMX_ESQLC} -fPIC -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl
 #solaris:
 #	esql -e helper_funcs.ec -I.. -I/home/aubit4gl/aubit4glsrc/incl
 #	libtool --mode=compile gcc -fPIC -I$INFORMIXDIR/incl/esql -I.. \ 
 #		-I/home/aubit4gl/aubit4glsrc/incl  helper_funcs.c -c -o helper_funcs.o
-	
+endif
+
 ###################
 #PostgreSQL ESQL/C compiler
 helper_funcs_postgresql.o: helper_funcs.ec

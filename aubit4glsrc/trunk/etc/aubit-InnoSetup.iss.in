@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.14 2003-10-16 09:46:24 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.15 2004-09-08 10:05:20 afalout Exp $
 ;
 
 
@@ -663,14 +663,16 @@ Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygcheck.exe; DestDir: {app}\bin; Compo
 
 ;=========================
 ; Curses UI
-Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\tmp\libUI_TUI.dll; DestDir: {app}\lib; Components: TUI
+; no longer needed - we have UI_TUIN using PDcurses now
+; Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\tmp\libUI_TUI.dll; DestDir: {app}\lib; Components: TUI
 
 ;=========================
 ; CygWin Curses libs
-;used to be 6, bu now is 7 - need to find a way to automate this (using chgcheck?)
-Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygncurses7.dll; DestDir: {app}\bin; Components: TUI
-Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygform7.dll; DestDir: {app}\bin; Components: TUI
-Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygpanel7.dll; DestDir: {app}\bin; Components: TUI
+;used to be 6, but now is 7 - need to find a way to automate this (using chgcheck?)
+; Not needed anymore - using UI_TUIN now (PDcurses)
+;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygncurses7.dll; DestDir: {app}\bin; Components: TUI
+;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygform7.dll; DestDir: {app}\bin; Components: TUI
+;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygpanel7.dll; DestDir: {app}\bin; Components: TUI
 
 
 ;for CygWin curses to find terminfo, we have to set %HOME% to location ABOVE .terminfo directory.
@@ -679,7 +681,8 @@ Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\share\terminfo\c\cygwin; DestDir: {app}
 
 ;=========================
 ; CygWin support
-Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygwin1.dll; DestDir: {app}\bin; Components: TUI
+; Not needed anymore - using UI_TUIN now (PDcurses) so we dont need cygwin1.dll
+;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygwin1.dll; DestDir: {app}\bin; Components: TUI
 
 ;=========================
 ; GWD::4GL

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.71 2004-08-31 20:46:51 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.72 2004-09-08 10:05:21 afalout Exp $
 */
 
 /**
@@ -522,29 +522,6 @@ be used in applications which link to the library).
 #else
 	#define dll_export
 	#define dll_import extern
-#endif
-
-
-#ifdef MOVED_TO_LIB
-	#ifndef _DEFINE_STATUSVARS_	/* set from fglwrap.c --ONLY-- */
-		/* for everything except libaubit4gl: */
-		#ifndef _SQLCA_DEFINED_
-		  /*
-		     _SQLCA_DEFINED_ is set in esql.ec to prevent conflict with Informix headers
-		     that also define sqlca:
-		   */
-			#define _SQLCA_DEFINED_
-		#endif
-		//extern long a4gl_status;				/** 4gl global status variable */
-		//extern long int_flag;					/** 4gl interrupt ocurred global flag */
-		//extern long quit_flag;				/** 4gl quit ocurred global flag */
-	#else
-		/* only in libaubit4gl */
-		dll_export sqlca_struct a4gl_sqlca;	    /** Sqlca variable -- DEFINED WHERE ??? --*/
-		long a4gl_status;							/** 4gl global status variable */
-		long int_flag;						/** 4gl interrupt ocurred global flag */
-		long quit_flag;						/** 4gl quit ocurred global flag */
-	#endif
 #endif
 
 #ifdef __cplusplus

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.91 2004-08-31 20:46:53 mikeaubury Exp $
+# $Id: esql.ec,v 1.92 2004-09-08 10:05:22 afalout Exp $
 #
 */
 
@@ -86,7 +86,9 @@ $include sqlca;
 
 #include "a4gl_incl_4gldef.h"
 
-extern sqlca_struct a4gl_sqlca;
+//extern sqlca_struct a4gl_sqlca;
+dll_export sqlca_struct a4gl_sqlca;
+
 
 #if defined (WIN32) || defined (__CYGWIN__)
 #define _NO_FORM_H_
@@ -141,7 +143,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.91 2004-08-31 20:46:53 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.92 2004-09-08 10:05:22 afalout Exp $";
 #endif
 
 

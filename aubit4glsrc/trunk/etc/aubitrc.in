@@ -480,8 +480,11 @@ A4GL_MONEY_AS_DECIMAL=Y
 
 #List of Informix libraries esql compiler is using; needed in 4glpc to make
 #shared library
-IFX_LIBS="@IFX_LIBS@"
+#must use single quotes, because on Windows 'esql -libs' command will automatically
+#double quote anything with path in it
+IFX_LIBS='@IFX_LIBS@'
 
+INFORMIXDIR='@INFORMIXDIR@'
 
 #-------------------------------- EOF -----------------------------
 

@@ -1,29 +1,43 @@
 #
-# FIXME: this cript don't know how to make a shared library (.so/.dll)
+# FIXME: this script don't know how to make a shared library (.so/.dll)
 #
-
-
 SH_DEBUG=0
+ALL_FLAGS=$@
+###################
+for a in $ALL_FLAGS
+###################
+do
+	case $a in
+	-verbose)
+	   A4GLVERBOSE="yes"
+	   SH_DEBUG=1
+	   echo "Verbose mode ON"
+	   ;;
+	esac
+#######
+done
+#######
+	   
 if test "$SH_DEBUG" = "1"; then
-	echo "In esql_wrap : $@"
+	echo "In esql_wrap : $ALL_FLAGS"
 fi
 
-if [ "$INFORMIXDIR" = "" ]
-then
-	export INFORMIXDIR="c:/informix"
-fi
-
-if [ "$AUBITDIR" = "" ]
-then
+if [ "$AUBITDIR" = "" ]; then
     AUBITDIR=`aubit-config AUBITDIR`
-	if [ "$AUBITDIR" = "" ]
-	then
+	if [ "$AUBITDIR" = "" ]; then
         echo "ERROR: AUBITDIR unknown. Stop."
         exit 5
     fi
 fi
 
+#Contains values determined by Autoconf for INFORMIXDIR, IFX libs, etc.
+. $AUBITDIR/etc/aubitrc
 
+if [ "$INFORMIXDIR" = "" ]; then
+	echo "ERROR: INFORMIXDIR not set"
+	#export INFORMIXDIR="c:/informix"
+	exit 4
+fi
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib
 export LD_RUN_PATH=$LD_RUN_PATH:$AUBITDIR/lib:$POSTGRESDIR/lib
@@ -110,7 +124,8 @@ do
     fi
     out=`basename $a ".$ESQL_EXT"`
     cfiles="$cfiles $out.c"
-    GCC_COMPILE="gcc -c $out.c $other_args -I\"$INFORMIXDIR/incl/esql\" -I$AUBITDIR/incl"
+    GCC_COMPILE="gcc -c $out.c $other_args -I\"$INFORMIXDIR/incl/esql\" \
+		-I\"$INFORMIXDIR/CSDK/incl/esql\" -I$AUBITDIR/incl"
 
 	if test "$OUTPUT_IS_OBJECT" = "1"; then
 	    GCC_COMPILE="$GCC_COMPILE $output"
@@ -118,13 +133,21 @@ do
 	else
 	    echo "Compiling $out.c to object"
 	fi
-
-	echo $GCC_COMPILE
-    eval $GCC_COMPILE
+	LOGFILE=tmp.log
+	if test "$SH_DEBUG" = "1"; then	
+		echo "$GCC_COMPILE > $LOGFILE 2>&1"
+	fi
+	eval "$GCC_COMPILE > $LOGFILE 2>&1"
     RET=$?
 	if test "$RET" != "0"; then
+		echo "esql_wrap faled. GCC exit code was $RET - see $LOGFILE"
+		if test "$SH_DEBUG" != "1"; then
+			echo "Failed command was:"
+			echo "$GCC_COMPILE > $LOGFILE 2>&1"		
+		fi
         exit $RET
     fi
+	rm -f $LOGFILE
     ofiles="$ofiles $out.o"
 done
 
@@ -135,8 +158,11 @@ fi
 if test "$COMSPEC" != "" ; then 
 	#NOTE: On Windows, dll's must be in the PATH to be loadabe at run-time
 	#(There is no LD_LIBRARAY_PATH - system loader looks only in PATH)
-	LIB=bin
-	#LIB=lib
+	if test -d "$INFORMIXDIR/CSDK"; then
+		LIB=CSDK/bin
+	else
+		LIB=bin
+	fi
 	GCC_INFX="-mms-bitfields \
 		\"$INFORMIXDIR/$LIB/isqlt09a.dll\" \"$INFORMIXDIR/$LIB/igl4n304.dll\" \
 		\"$INFORMIXDIR/$LIB/iglxn304.dll\" \"$INFORMIXDIR/$LIB/igo4n304.dll\" "

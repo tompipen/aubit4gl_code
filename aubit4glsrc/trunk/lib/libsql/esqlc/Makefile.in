@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.33 2004-07-10 11:42:32 afalout Exp $
+# $Id: Makefile.in,v 1.34 2004-09-08 10:05:22 afalout Exp $
 #
 
 ROOT		=../../..
@@ -168,6 +168,34 @@ ifeq "${TARGET_OS}" "solaris"
 	ESQL_FLAGS+=-fPIC
 endif
 
+ifdef COMSPEC
+#from Mikes Makefile.cygwin:
+
+#.SUFFIXES: .ec .o .c
+
+	CFLAGS=-g -O2 -Wall -D_REENTRANT -DIFX_THREAD -I../../../incl -I..
+	#CC=gcc
+	ESQL=esql
+	ESQL_FLAGS= -thread
+	LDFLAGS=
+	
+	INFORMIXDIR=E:/Program files/W2000/Informix/CSDK
+	
+	XXX="${INFORMIXDIR}\bin\isqlt09a.dll"  "${INFORMIXDIR}\bin\igl4n304.dll" \
+		"${INFORMIXDIR}\bin\iglxn304.dll"  "${INFORMIXDIR}\bin\igo4n304.dll"
+	
+	LINKLIBS=-L../../ -laubit4gl
+
+	#.ec.o:
+	#	$(ESQL) $(ESQL_FLAGS) -e $<
+	#	$(CC) $(CFLAGS) -I"${INFORMIXDIR}\incl\esql" -c $*.c -o $*.o
+	#	-@rm $*.c $*.c_*
+	
+	#libSQL_ESQL.dll:  esql.o
+	#	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $^ ${XXX} ${LINKLIBS} -o $@
+
+endif
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -182,12 +210,19 @@ libSQL_esql${SO_EXT}: ${LIBROOT}/libSQL_esql${SO_EXT}
 ${LIBROOT}/libSQL_esql${SO_EXT}: ${SRC}
 #	cpp ${CPP_FLAGS} $^ -D__IFX__  > ifx_$^
 ifneq "${COMSPEC}" ""
-	"@IFMX_ESQLC@" -c $^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
-#	${CC} $(basename $<).c -o $(basename $<).o ${ESQL_INCLPATH} \
-#		-I"E:/Program files/W2000/Informix/CSDK/incl/esql"
-	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) esql.c ${IFX_LIBS} -o $@ ${LD_POSTFLAGS} \
-		-laubit4gl  -I"E:/Program files/W2000/Informix/CSDK/incl/esql" \
-		-I../../../incl -I. -I.. -L../..
+#OLD#	"@IFMX_ESQLC@" -c $^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
+#OLD##	${CC} $(basename $<).c -o $(basename $<).o ${ESQL_INCLPATH} \
+#OLD##		-I"E:/Program files/W2000/Informix/CSDK/incl/esql"
+#OLD#	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) esql.c ${IFX_LIBS} -o $@ ${LD_POSTFLAGS} \
+#OLD#		-laubit4gl  -I"E:/Program files/W2000/Informix/CSDK/incl/esql" \
+#OLD#		-I../../../incl -I. -I.. -L../..
+
+	$(ESQL) $(ESQL_FLAGS) -e $<
+	$(CC) $(CFLAGS) -I"${INFORMIXDIR}\incl\esql" -c $(basename $<).c -o $(basename $<).o
+	-@rm $(basename $<).c $(basename $<).c_*
+	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $(basename $<).o ${XXX} ${LINKLIBS} -o $@
+
+
 else
 	export INFORMIXC=@INFORMIXC@; "@IFMX_ESQLC@" -c $^ ${ESQL_FLAGS} \
 		${ESQL_INCLPATH} ${C_DFLAGS}
@@ -321,7 +356,7 @@ clean:
 	${RM} *.o *${SO_EXT} *.bak *.c *.obj *.c_ *.a *.dll *.lnk *.map *.exp \
 	*.lib .\#* ifx_* pg_* sap_* q_* ${LIBROOT}/libSQL_esql${SO_EXT} \
     ${LIBROOT}/libSQL_esqlPG${SO_EXT} ${LIBROOT}/libSQL_esqlSAP${SO_EXT} \
-	*.pcl *.lst
+	*.pcl *.lst *.so *~
 
 #------------------------------- EOF -------------------------------
 

@@ -22,7 +22,6 @@ else
 	exit 3
 fi
 
-
 if [ $# -lt 1 -o "$1" = "--help" ]
 then
 	echo "Creates run-time loadable library API definition source code "

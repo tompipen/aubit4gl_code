@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.131 2004-08-18 06:35:55 afalout Exp $
+# $Id: 4glpc,v 1.132 2004-09-08 10:05:19 afalout Exp $
 #
 
 ########################################################################
@@ -509,8 +509,8 @@ if [ "$MINGW" = "1" ]; then
 fi
 
 NCC_PG="ecpg_wrap"
-NCC_IFX="esql"
-#NCC_IFX="esql_wrap"
+#NCC_IFX="esql"
+NCC_IFX="esql_wrap"
 #CC is set via aubitrc config file:
 NCC_C="$CC" # -O2
 NCC_PCODE="c2pcode_fgl "
@@ -578,6 +578,8 @@ do
 	-verbose)
 	   A4GLVERBOSE="yes"
 	   SHOWERRCODE=1
+	   NCC_PG="$NCC_PG -verbose"
+	   NCC_IFX="$NCC_IFX -verbose"
 	   echo "Verbose mode ON"
 	   ;;
 	-o)

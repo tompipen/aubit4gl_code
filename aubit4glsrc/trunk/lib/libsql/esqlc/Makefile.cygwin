@@ -1,20 +1,23 @@
 .SUFFIXES: .ec .o .c
 
-
 CFLAGS=-g -O2 -Wall -D_REENTRANT -DIFX_THREAD -I../../../incl -I..
 CC=gcc
 ESQL=esql
 ESQL_FLAGS= -thread
 LDFLAGS=
 
+INFORMIXDIR=E:/Program files/W2000/Informix/CSDK
+
+XXX="${INFORMIXDIR}\bin\isqlt09a.dll"  "${INFORMIXDIR}\bin\igl4n304.dll" \
+	"${INFORMIXDIR}\bin\iglxn304.dll"  "${INFORMIXDIR}\bin\igo4n304.dll"
+
+LINKLIBS=-L../../ -laubit4gl
+
 .ec.o:
 	$(ESQL) $(ESQL_FLAGS) -e $<
-	$(CC) $(CFLAGS) -I"c:\informix\incl\esql"  -c $*.c -o $*.o
+	$(CC) $(CFLAGS) -I"${INFORMIXDIR}\incl\esql" -c $*.c -o $*.o
 	-@rm $*.c $*.c_*
 
-.c.o:
-	$(CC) $(CFLAGS) -I"c:\informix\incl\esql"  -c $*.c -o $*.o
+libSQL_ESQL.dll:  esql.o
+	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $^ ${XXX} ${LINKLIBS} -o $@
 
-
-libSQL_ESQL.so:  esql.o
-	$(CC) $(LDFLAGS) -DDEBUG -mms-bitfields  -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols esql.o "c:\informix\bin\isqlt09a.dll"  "c:\informix\bin\igl4n304.dll"  "c:\informix\bin\iglxn304.dll"  "c:\informix\bin\igo4n304.dll"  -L../../ -laubit4gl -o libSQL_ESQL.so
