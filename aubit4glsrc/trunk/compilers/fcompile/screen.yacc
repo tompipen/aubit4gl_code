@@ -549,8 +549,8 @@ A4GL_debug("fld->dynamic=%d",fld->dynamic); }
 
 
 def_val : 
-CHAR_VALUE
-| NUMBER_VALUE 
+CHAR_VALUE {strcpy($<str>$,$<str>1);}
+| NUMBER_VALUE  {strcpy($<str>$,$<str>1);}
 | SQL_VAR {sprintf($<str>$,"\n%s",$<str>1);}
 ;
 colors : color | colors color {

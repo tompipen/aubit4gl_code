@@ -22,4 +22,7 @@ struct pdf_layout {
 	float topmargin;
 	int paper_type;
 	int paper_orient;
+	char img_src[256];
+	int img_x;
+	int img_y;
 };

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.46 2004-10-23 13:36:31 mikeaubury Exp $
+# $Id: report.c,v 1.47 2004-11-04 21:12:42 pjfalbe Exp $
 #
 */
 
@@ -52,6 +52,21 @@
 #define ENTRY_DATA 4
 #define ENTRY_ENTRY_START 5
 #define ENTRY_ENTRY_END 6
+
+
+struct s_save_header_entry {
+	int page_no;
+	int line_no;
+	int col_no;
+	int entry;
+	char *s;
+};
+
+struct s_save_header {
+	struct s_save_header_entry *save;
+	int save_cnt;
+};
+
 static void report_write_entry (struct rep_structure *rep, char type);
 static void print_lvl (struct rep_structure *rep, int lvl);
 static void print_data (struct rep_structure *rep, char *buff, int entry);
@@ -111,6 +126,73 @@ int lvl = 0;
 =====================================================================
 */
 
+void add_header_entry(struct rep_structure *rep,struct s_save_header *hdr,char *buff,int entry) {
+		char *n;
+		if (strlen(buff)) {
+			n=strdup(buff);
+			A4GL_trim(n);
+			if (strlen(n) && strcmp(n,"\n")!=0) {
+				hdr->save_cnt++;
+				hdr->save=realloc(hdr->save,sizeof(struct s_save_header_entry)*hdr->save_cnt);
+				hdr->save[hdr->save_cnt-1].page_no=rep->page_no;
+				hdr->save[hdr->save_cnt-1].line_no=rep->line_no;
+				hdr->save[hdr->save_cnt-1].col_no=rep->col_no;
+				hdr->save[hdr->save_cnt-1].entry=entry;
+				hdr->save[hdr->save_cnt-1].s=strdup(buff);
+				A4GL_debug("Add header entry : %d %d %d %d %s\n",rep->page_no,rep->line_no,rep->col_no,entry,buff);
+			}
+			free(n);
+		}
+}
+
+
+void print_header_entries(struct rep_structure *rep) {
+int p;
+int l;
+int c;
+int a;
+struct s_save_header *hdr;
+
+// Save these away - we'll need to change them...
+
+p=rep->page_no;
+l=rep->line_no;
+c=rep->col_no;
+if (rep->header) {
+	hdr=(struct s_save_header *)rep->header;
+	for (a=0;a<hdr->save_cnt;a++) {
+		rep->page_no=hdr->save[a].page_no;
+		rep->line_no=hdr->save[a].line_no;
+		rep->col_no=hdr->save[a].col_no;
+		print_data(rep,hdr->save[a].s,hdr->save[a].entry);
+		A4GL_debug("PRINING         : %d %d %d %d %s\n",   rep->page_no,rep->line_no,rep->col_no,hdr->save[a].entry,hdr->save[a].s);
+		free(hdr->save[a].s);
+	}
+
+
+	rep->page_no=p;
+	rep->line_no=l;
+	rep->col_no=c;
+	free(hdr->save);
+	free(hdr);
+}
+}
+
+
+void free_header(struct rep_structure *rep) {
+struct s_save_header *hdr;
+int a;
+
+if (rep->header) {
+	hdr=(struct s_save_header *)rep->header;
+	for (a=0;a<hdr->save_cnt;a++) {
+		free(hdr->save[a].s);
+	}
+	free(hdr->save);
+	free(hdr);
+}
+}
+
 
 #define SECTION_NORMAL 0
 #define SECTION_HEADER 1
@@ -123,7 +205,12 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 {
   va_list ap;
   char buff[20000];
+
+  if (rep->output==0) {
+		A4GL_assertion(rep->output==0,"Report outfile file closed prematurely ?");
+  }
   va_start (ap, fmt);
+
   if (entry <= 0)
     entry = 0;
   vsprintf (buff, fmt, ap);
@@ -133,10 +220,16 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 
       if (rep->header)
 	{
-	  fprintf (rep->output, "%s", rep->header);
-	  free (rep->header);
-	  rep->header = 0;
+		if (rep->output_mode=='C') {
+			print_header_entries(rep);
+	  		rep->header = 0;
+		} else {
+	  		fprintf (rep->output, "%s", rep->header);
+	  		free (rep->header);
+	  		rep->header = 0;
+		}
 	}
+
       if (rep->output_mode == 'C')
 	{
 	  print_data (rep, buff, entry);
@@ -152,8 +245,13 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
     {
       if (rep->header)
 	{
-	  free (rep->header);
-	  rep->header = 0;
+		if (rep->output_mode == 'C') {
+			free_header(rep);
+	  		rep->header = 0;
+		} else {
+	  		free (rep->header);
+	  		rep->header = 0;
+		}
 	}			// we've got a cached header - don't do anything..
       else
 	{
@@ -173,10 +271,24 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
     {
       if (rep->output_mode == 'C')
 	{
-	  print_data (rep, buff, entry);
+	  if (rep->header) {
+		add_header_entry(rep,(struct s_save_header *)rep->header,buff,entry);
+	  } else {
+		struct s_save_header *hdr;
+		hdr=malloc(sizeof(struct s_save_header));
+		hdr->save_cnt=0;
+		hdr->save=0;
+		rep->header=(char *)hdr;
+		add_header_entry(rep,hdr,buff,entry);
+		
+	  }
+	  //print_data (rep, buff, entry);
+
 	}
       else
 	{
+
+
 	  if (rep->header)
 	    {
 	      int a;
@@ -189,6 +301,8 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 	    {
 	      rep->header = strdup (buff);
 	    }
+
+
 	}
     }
 

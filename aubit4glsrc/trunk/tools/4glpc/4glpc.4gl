@@ -584,7 +584,8 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 	end if
 
 	
-display "lv_arg=",lv_arg clipped
+
+#display "lv_arg=",lv_arg clipped
 
 	let lv_type=generate_ext("LIB")
 	IF lv_arg matches "*.a" or lv_arg matches lv_type  # Its a library
@@ -1167,7 +1168,6 @@ define lv_status integer
 define  lv_output char(512)
 define lv_runstr char(10240)
 
-
 if mv_makecompile then
 	if mv_verbose>=3 then
 		display "Make Compile - checking file times"
@@ -1204,12 +1204,15 @@ end if
 if mv_verbose>=4 then
 	display "OBJECTS       : ",mv_objects clipped
 end if
+
 run lv_runstr clipped returning lv_status
 
 if mv_verbose>=5 then
-display "Ran command"
+	display "Ran command"
 end if
+
 call check_exit_status(lv_status,lv_output,lv_runstr)
+
 end function
 
 function add_obj(lv_obj)

@@ -297,7 +297,7 @@ void load_file (void)
   FILE *fin;
   char *fname;
   int ok;
-  char buff[255];
+  char buff[255]="Error loading file";
   //char logrep[255];
   //char orig[255];
   //char rname[255];

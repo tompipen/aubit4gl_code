@@ -21,6 +21,7 @@ output_page (PDF *p, int w, int h,char **lines)
   float this_page_height;
   float printable;
   float eachline;
+  int image;
 
   if (layout_page_width==-1) {
 		switch(layout.paper_type) {
@@ -51,6 +52,30 @@ output_page (PDF *p, int w, int h,char **lines)
   if(orient==PAPER_ORIENT_LANDSCAPE) { this_page_height =layout_page_width; this_page_width=layout_page_height; }
 
   PDF_begin_page(p,this_page_width,this_page_height);
+
+
+
+  A4GL_trim(layout.img_src);
+
+  if (strlen(layout.img_src)) {
+	char img_class[200]="auto";A
+
+	if (strstr(layout.img_src,".gif")) { strcpy(img_class,"gif");  }
+	if (strstr(layout.img_src,".jpg")) { strcpy(img_class,"jpeg"); }
+	if (strstr(layout.img_src,".png")) { strcpy(img_class,"png");  }
+
+	if ((image = PDF_load_image(p, img_class, layout.img_src, 0, "")) == -1) { 
+		fprintf(stderr,"Error: Couldn't read image file.\n"); 
+	} else { 
+		double x;
+		double y;
+		x=layout.img_x;
+		y=layout.img_y;
+		PDF_fit_image(p, image, x, y, "fitmethod auto"); 
+		PDF_close_image(p, image); 
+	}
+  }
+
 
   if (font==-1) {
 		A4GL_trim(layout.fontname);

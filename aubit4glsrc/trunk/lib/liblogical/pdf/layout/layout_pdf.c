@@ -23,8 +23,15 @@ static void cp_boxes_to_data() {
 	layout.fontname[100]=0;
 
 	layout.fontsize=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(values[1]));
+	printf("read fontsize as : %d\n",layout.fontsize);
 	layout.leftmargin=gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(values[2]));
 	layout.topmargin=gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(values[3]));
+
+	memset(layout.img_src,0,255);
+	strcpy(layout.img_src,gtk_entry_get_text(GTK_ENTRY(values[6])));
+	layout.img_src[255]=0;
+	layout.img_x=gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(values[7]));
+	layout.img_y=gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(values[8]));
 
 	for (a=0;a<10;a++) {
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(paper_b[a]))) {
@@ -41,10 +48,17 @@ static void cp_boxes_to_data() {
 
 static void show_layout () {
 	int a;
+	printf("Show layout\n");
 	gtk_entry_set_text(GTK_ENTRY(values[0]),layout.fontname);
+	printf("fontsize = %d\n",layout.fontsize);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(values[1]),(gfloat)layout.fontsize);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(values[2]),(gfloat)layout.leftmargin);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(values[3]),(gfloat)layout.topmargin);
+
+	printf("img src=%s x=%d y=%d\n",layout.img_src,layout.img_x,layout.img_y);
+	gtk_entry_set_text(GTK_ENTRY(values[6]),layout.img_src);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(values[7]),(gfloat)layout.img_x);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(values[8]),(gfloat)layout.img_y);
 
 	for (a=0;a<10;a++) {
 		if (paper_b[a]==0) break;
@@ -61,7 +75,9 @@ static void show_layout () {
 }
 
 void LR_default_file(void *report,void* rbx,int rbs) {
+	printf("Loading file\n");
 	pdf_default_file();
+	printf("sl2\n");
 	show_layout();
 }
 
@@ -95,12 +111,14 @@ void LR_show_layout_rest(void *report, void *sb, void *vrbx, int rbs) {
 
 
 
-	table=gtk_table_new(7,3,0);
+	table=gtk_table_new(10,3,0);
 
 	gtk_container_add(sb,table);
 
 	lab=gtk_label_new("Font");        gtk_table_attach_defaults(GTK_TABLE(table),lab,0,1,0,1); labels[0]=lab; gtk_misc_set_alignment(GTK_MISC(lab), 0.1f, 0.5f);
+
 	lab=gtk_label_new("Font Size");   gtk_table_attach_defaults(GTK_TABLE(table),lab,0,1,1,2); labels[1]=lab; gtk_misc_set_alignment(GTK_MISC(lab), 0.1f, 0.5f);
+
 	lab=gtk_label_new("Left Margin"); gtk_table_attach_defaults(GTK_TABLE(table),lab,0,1,2,3); labels[2]=lab; gtk_misc_set_alignment(GTK_MISC(lab), 0.1f, 0.5f);
 		lab=gtk_label_new("Inches"); gtk_table_attach_defaults(GTK_TABLE(table),lab,2,3,2,3); gtk_misc_set_alignment(GTK_MISC(lab), 0.1f, 0.5f);
 	lab=gtk_label_new("Top Margin");  gtk_table_attach_defaults(GTK_TABLE(table),lab,0,1,3,4); labels[3]=lab; gtk_misc_set_alignment(GTK_MISC(lab), 0.1f, 0.5f);
@@ -108,7 +126,12 @@ void LR_show_layout_rest(void *report, void *sb, void *vrbx, int rbs) {
 	lab=gtk_label_new("Paper Size");  gtk_table_attach_defaults(GTK_TABLE(table),lab,0,1,4,5); labels[4]=lab; gtk_misc_set_alignment(GTK_MISC(lab), 0.1f, 0.5f);
 	lab=gtk_label_new("Paper Orient");gtk_table_attach_defaults(GTK_TABLE(table),lab,0,1,5,6); labels[5]=lab; gtk_misc_set_alignment(GTK_MISC(lab), 0.1f, 0.5f);
 
-	lab=gtk_label_new("\nThere is no Right margin or bottom margin\nYou will need to ensure that FONTSIZE\nis correctly set up in order to make sure that all\ndata will fit on the page");  gtk_table_attach_defaults(GTK_TABLE(table),lab,0,3,6,7); 
+	lab=gtk_label_new("Background Image"); gtk_table_attach_defaults(GTK_TABLE(table),lab,0,1,7,8); labels[6]=lab; gtk_misc_set_alignment(GTK_MISC(lab), 0.1f, 0.5f);
+
+	lab=gtk_label_new("Img X");gtk_table_attach_defaults(GTK_TABLE(table),lab,0,1,8,9); labels[7]=lab; gtk_misc_set_alignment(GTK_MISC(lab), 0.1f, 0.5f);
+	lab=gtk_label_new("Img Y");gtk_table_attach_defaults(GTK_TABLE(table),lab,0,1,9,10); labels[8]=lab; gtk_misc_set_alignment(GTK_MISC(lab), 0.1f, 0.5f);
+
+	lab=gtk_label_new("\nThere is no Right margin or bottom margin. You will need to ensure that FONTSIZE\nis correctly set up in order to make sure that all data will fit on the page\n");  gtk_table_attach_defaults(GTK_TABLE(table),lab,0,3,6,7); 
 	gtk_misc_set_alignment(GTK_MISC(lab), 0.0f, 0.0f);
 
 
@@ -143,6 +166,16 @@ void LR_show_layout_rest(void *report, void *sb, void *vrbx, int rbs) {
 	values[5]=hbox;
 	gtk_table_attach_defaults(GTK_TABLE(table),values[5],1,2,5,6); 
 	
+	values[6]=gtk_entry_new();
+	gtk_table_attach_defaults(GTK_TABLE(table),values[6],1,2,7,8); 
+	adj=(GtkAdjustment *)gtk_adjustment_new(0.0, 1.0, 640.0, 1.0, 10.0, 10.0);
+	values[7]=gtk_spin_button_new(adj,1.0,0); 
+	gtk_table_attach_defaults(GTK_TABLE(table),values[7],1,2,8,9); 
+	adj=(GtkAdjustment *)gtk_adjustment_new(0.0, 1.0, 640.0, 1.0, 10.0, 10.0);
+	values[8]=gtk_spin_button_new(adj,1.0,0); 
+	gtk_table_attach_defaults(GTK_TABLE(table),values[8],1,2,9,10); 
+
+
 	last=0;
 
         for (cnt=0;cnt<10;cnt++) {paper_b[cnt]=0;}
@@ -182,8 +215,11 @@ int LR_save_file(void *report, FILE *fin,void *rbx,int rbs) {
 }
 
 int LR_load_file(void *report, FILE *fin,void *rbx,int rbs) {
-	return pdf_load_file(fin);
+int n;
+	n=pdf_load_file(fin);
+	printf("sl1\n");
 	show_layout();
+	return n;
 }
 
 

@@ -6,7 +6,8 @@
 #include "../../processor/API_process.h"
 
 char **lines;
-
+int max_pages;
+int page_cnt;
 extern struct pdf_layout layout;
 
 
@@ -124,7 +125,19 @@ int RP_process_report (void *vreport, char *buff,void *rbx,int rbs)
       lines[a] = malloc (report->max_col + 1+report->left_margin);	// for the \NULL
     }
 
+  for (block = 0; block < report->nblocks; block++)
+    {
+      for (entry = 0; entry < report->blocks[block].nentries; entry++)
+	{
+          centry = &report->blocks[block].entries[entry];
+          page = centry->page_no;
+		if (page>max_pages) max_pages=page;
+	}
+    }
+
+  for (page_cnt=1;page_cnt<=max_pages;page_cnt++) {
   clear_page (report->max_col+report->left_margin, report->page_length);
+
 
   for (block = 0; block < report->nblocks; block++)
     {
@@ -132,27 +145,19 @@ int RP_process_report (void *vreport, char *buff,void *rbx,int rbs)
 	{
 	  centry = &report->blocks[block].entries[entry];
 	  page = centry->page_no;
-	  if (page != last_page)
-	    {
-	      if (page_touched && last_page != -1)
-		{
-		  output_page (p, report->max_col, report->page_length,lines);
-		  clear_page (report->max_col+report->left_margin, report->page_length);
-		}
-	      last_page = page;
-	    }
+	  if (page!=page_cnt) continue;
 
-
+		  //output_page (p, report->max_col, report->page_length,lines);
+		  //clear_page (report->max_col+report->left_margin, report->page_length);
 	  x = centry->col_no+report->left_margin;
 	  y = centry->line_no; //+report->top_margin;
 	  set_text (x, y, centry->string);
 	}
     }
-
-  if (page_touched)
-    {
       output_page (p, report->max_col, report->page_length,lines);
-    }
+  }
+
+
 PDF_close(p);
 PDF_delete(p);
 return 1;

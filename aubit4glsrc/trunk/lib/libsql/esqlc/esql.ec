@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.105 2004-11-04 13:16:57 pjfalbe Exp $
+# $Id: esql.ec,v 1.106 2004-11-04 21:12:44 pjfalbe Exp $
 #
 */
 
@@ -64,7 +64,7 @@
 =====================================================================
 */
 
-#define KAGEL_UNLOAD
+//#define KAGEL_UNLOAD
 #define IN_A4GL
 
 //Not referenced anywhere:
@@ -156,7 +156,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.105 2004-11-04 13:16:57 pjfalbe Exp $";
+  "@(#)$Id: esql.ec,v 1.106 2004-11-04 21:12:44 pjfalbe Exp $";
 #endif
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.15 2004-11-03 14:34:28 pjfalbe Exp $
+# $Id: sql.c,v 1.16 2004-11-04 21:12:42 pjfalbe Exp $
 #
 */
 
@@ -108,7 +108,7 @@ A4GLSQL_set_status (int a, int sql)
 {
   A4GL_debug ("A4GLSQL_set_status(%d,%d)",a, sql);
 
- if ((!aclfgli_get_err_flg ()) || a!=0) {
+ if ((!aclfgli_get_err_flg ()) || a>=0) {
   a4gl_status = a;
 
   if (sql)
