@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.39 2002-03-27 11:57:03 afalout Exp $
+# $Id: Makefile.in,v 1.40 2002-03-28 01:31:08 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -93,7 +93,7 @@ OBJS				=${CMODS:.c=.o} ${CMODS_PROJECT:.c=.o}
 ##                              Options
 ## ==================================================================
 
-ALL 				=aubit-config libPDF_NOPDF${SO_EXT} libSQL_noodbc${SO_EXT}
+ALL 				=aubit-config libPDF_NOPDF${SO_EXT}
 #libaclall.a
 #ALL_GUI				=libaclallgui.a
 #LDFLAGS				=-Map mapfile
@@ -102,13 +102,13 @@ ALL 				=aubit-config libPDF_NOPDF${SO_EXT} libSQL_noodbc${SO_EXT}
 
 ifdef COMSPEC
 #   LDFLAGS			+=-lc
-	ALL				+=dlllibRPC_NORPC dllaclshared
+	ALL				+=dlllibRPC_NORPC dllaclshared libSQL_noodbc${SO_EXT}
 
 	ifneq "@HAVE_RPCLIB@" "0"
 		ALL			+=dlllibRPC_SUNRPC
     endif
 else
-    ALL				+=libaclshared${SO_EXT} libRPC_NORPC${SO_EXT}
+    ALL				+=libaclshared${SO_EXT} libRPC_NORPC${SO_EXT} libSQL_noodbc${SO_EXT}
 	ifneq "@HAVE_RPCLIB@" "0"
 		ALL			+=libRPC_SUNRPC${SO_EXT}
     endif
@@ -164,8 +164,11 @@ endif
 ##                              Targets
 ## ==================================================================
 
-all: ${ALL}
+all: note ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
+
+note:
+	@echo "Building: ${ALL}"
 
 all_gui: ${ALL_GUI}
 	@echo "Default GUI targets (${ALL_GUI}) built successfully."
@@ -240,6 +243,15 @@ dllaclshared : $(OBJS) ${GUI_TUI}
 	${MAKE} libaclshared.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_RPCLIBNAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ ${PDF_LIBNAME} -L."
 #$RPCLIB_NAME
 
+#libaclshared.def: $(OBJS) ${GUI_TUI}
+#	dlltool --export-all --output-def $@ $^
+
+#we need to make export library before we can make actuall dll, becaus eof cyclical dependencies
+#between libSQL_xxx.dll and libaclshared.dll, since there can be no unresilved symols at link
+#time on Windows when mailing dll:
+#libaclshared.dll.a: $(OBJS) ${GUI_TUI}
+#	dlltool --output-exp $@ $^
+
 libSQL_noodbc.dll:
 	${MAKE} -C libsql/nosql nosql.dll
 
@@ -251,12 +263,6 @@ libPDF_NOPDF.dll:
 
 libgtk4gl.dll:
 	${MAKE} -C libgui
-
-#dlllibRPC_SUNRPC: ${CMODS_RPC}
-#	${MAKE} libRPC_SUNRPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${RPCLIB_NAME} ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
-
-#dlllibRPC_NORPC: ${CMODS_NORPC}
-#	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} " DLL_LDFLAGS="@RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
 
 ## ==================================================================
 ##                             Sub Targets

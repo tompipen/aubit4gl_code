@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.46 2002-03-27 11:57:02 afalout Exp $
+# $Id: Makefile.in,v 1.47 2002-03-28 01:30:53 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -445,8 +445,10 @@ ALL +=test
 ## ==================================================================
 
 all: ${ALL}
-	@echo "Aubit 4gl compiler default targets (${ALL}) compiled successfully."
-	@echo "You MUST install it before you can use it - execute 'make install'"
+	@echo " "
+	@echo "Successfully compiled Aubit compiler default targets :"
+	@echo "${ALL}."
+	@echo "You MUST install it before you can use it - execute 'make install'."
 	@echo "Thank you for using Aubit 4gl compiler"
 
 log:

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-03-25 07:42:44 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-03-28 01:31:08 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -58,8 +58,7 @@ libSQL_nosql.so: nosql.o
 
 nosql.dll: nosql.o
 	${MAKE} libSQL_nosql.dll DLLOBJS="$^" DLL_LDLIBS="-laclshared" DLL_LDFLAGS="-L../.."
-	cp libSQL_nosql.dll ../..
-	cp libSQL_nosql${DLL_EXPORTLIB_EXT} ../..
+	cp libSQL_nosql.dll libSQL_nosql${DLL_EXPORTLIB_EXT} ../..
 
 
 ## ==================================================================

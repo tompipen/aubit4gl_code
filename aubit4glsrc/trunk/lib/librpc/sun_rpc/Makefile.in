@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.1 2002-03-27 11:57:03 afalout Exp $
+# $Id: Makefile.in,v 1.2 2002-03-28 01:31:08 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -39,14 +39,13 @@ CMODS_NORPC		=rpc_norpc.c
 CMODS_RPC		=rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c \
 				rpc_stack_xdr.c ../../../compilers/fcompile/form_x_xdr.c
 
-	CMODSNOSQL 			=${COMMONSRC}
-
-CMODS_ODBC			=${CMODS_ODBCSQL} ${CMODS_ODBCEX}
-OBJS_NOSQL			=${CMODS_NOSQL:.c=.o}
+#CMODSNOSQL 			=${COMMONSRC}
+#CMODS_ODBC			=${CMODS_ODBCSQL} ${CMODS_ODBCEX}
+#OBJS_NOSQL			=${CMODS_NOSQL:.c=.o}
 OBJS_RPC			=${CMODS_RPC:.c=.o}
 OBJS_NORPC			=${CMODS_NORPC:.c=.o}
-CMODS 				=${CMODSNOSQL} ${CMODS_DLSQL}
-OBJS				=${CMODS:.c=.o} ${CMODS_PROJECT:.c=.o}
+#CMODS 				=${CMODSNOSQL} ${CMODS_DLSQL}
+#OBJS				=${CMODS:.c=.o} ${CMODS_PROJECT:.c=.o}
 
 ## ==================================================================
 ##                              Options
@@ -85,34 +84,39 @@ libRPC_NORPC.so: ${OBJS_NORPC}
 	${LD} ${SO_LDFLAGS} -o $@ $^
 	${CP} $@ ../..
 
-
-${OBJS_RPC} ${OBJS_NORPC}: form_x.h
-
-form_x.h:
-	${MAKE} -C ../../../compilers/fcompile rpc
-
 ## ==================================================================
 ##                       Windows 32 DLL Targets
 ## ==================================================================
 
 dlllibRPC_SUNRPC: ${CMODS_RPC}
-	${MAKE} libRPC_SUNRPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${RPCLIB_NAME} ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
-	${CP} libRPC_SUNRPC.dll ../..
-	${CP} libRPC_SUNRPC.dll.a ../..
+	${MAKE} libRPC_SUNRPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${RPCLIB_NAME} ${PDF_LIBNAME} -L../.. -I../../libincl -I../../../compilers/fcompile"
+	${CP} libRPC_SUNRPC.dll libRPC_SUNRPC.dll.a ../..
 
 dlllibRPC_NORPC: ${CMODS_NORPC}
-	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} " DLL_LDFLAGS="@RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
-	${CP} libRPC_NORPC.dll ../..
-	${CP} libRPC_NORPC.dll.a ../..
+	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} " DLL_LDFLAGS="@RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L../.. -I../../libincl -I../../../compilers/fcompile"
+	${CP} libRPC_NORPC.dll libRPC_NORPC.dll.a ../..
+
+## ==================================================================
+##                        Sub Targets
+## ==================================================================
+
+form_x.h:
+	${MAKE} -C ../../../compilers/fcompile rpc
+
+## ==================================================================
+##                        Dependencies
+## ==================================================================
+
+${OBJS_RPC} ${OBJS_NORPC}: form_x.h
+${CMODS_RPC} ${CMODS_NORPC}: form_x.h
 
 ## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
 
 clean :
-	${RM} $(OBJS) $(OBJS_DEBUG)
-	${RM} core
-	${RM} *.out *.glb *.so *.a  *.o  *.bak *.exe *.dll *.stackdump *.err
+#	${RM} $(OBJS) $(OBJS_DEBUG)
+	${RM} *.out *.glb *.so *.a  *.o  *.bak *.exe *.dll *.stackdump *.err core
 	${RM} *.base *.exp libRPC_NORPC.def libRPC_SUNRPC.def
 
 ## ==================================================================
