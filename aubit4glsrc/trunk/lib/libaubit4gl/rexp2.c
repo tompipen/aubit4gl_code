@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.25 2005-02-14 13:44:30 mikeaubury Exp $
+# $Id: rexp2.c,v 1.26 2005-02-15 08:45:54 mikeaubury Exp $
 #
 */
 
@@ -511,7 +511,6 @@ A4GL_debug("z=%d",z);
     A4GL_debug ("buff3= [ %s ]\n", buff3);
   }
 #endif
-  for (z=0;z<constr_size;z++) free(constr_bits[z]);
   return buff3;
 }
 
