@@ -58,55 +58,94 @@ fi
 PROGS=
 PARAMS=
 MKFLAGS=
+NEXT=
 
 if [ $# -lt 1 ]
 then
     PROGS=`ls *$MK`
 else
+	cnt=0
 	###########
 	for a in $@
     ###########
 	do
-		if [ -f $a$MK ]
-		then
-		    PROGS="$a$MK $PROGS"
-		else
-           ##########
-		   case $a in
-           ##########
+		let cnt=cnt+1
 
-		   #################this are parameters to this script:##########
-		   -all) PROGS=`ls *$MK`
-		   ;;
+        #############
+        case $NEXT in
+        #############
 
-		   -log) LOG="1"
-		   ;;
+        HEADER) HEADER=$a
+            	if ! [ -f $HEADER ]
+				then
+                    echo "Cannot find HEADER $HEADER. Stop."
+                    exit 3
+				fi
+				NEXT=
+                ;;
 
-		   -defaultinclude) OVERRIDEINCLUDE="0"
-		   ;;
+        FOOTER) FOOTER=$a
+            	if ! [ -f $FOOTER ]
+				then
+                    echo "Cannot find FOOTER $FOOTER. Stop."
+                    exit 3
+				fi
 
-		   -header) OVERRIDEINCLUDE="1"
-                #FIXME: HEADER=<next parameter>
-		   ;;
-
-		   -footer) OVERRIDEINCLUDE="1"
-                #FIXME: FOOTER=<next parameter>
-		   ;;
-
-		   #########anything else that starts with "-" is make flag:#####
-		   -*) MKFLAGS="$MKFLAGS $a"
-		   ;;
+				NEXT=
+                ;;
 
 
-		   ################anything else is make parameter:##############
-		   *)   PARAMS="$a $PARAMS"
+		*)  if [ -f $a$MK ]
+			then
+			    PROGS="$a$MK $PROGS"
+			else
+	           ##########
+			   case $a in
+	           ##########
+
+			   #################this are parameters to this script:##########
+			   -all) PROGS=`ls *$MK`
+			   ;;
+
+			   -log) LOG="1"
+			   ;;
+
+			   -defaultinclude) OVERRIDEINCLUDE="0"
+			   ;;
+
+			   -header) OVERRIDEINCLUDE="1"
+	                #HEADER=<next parameter>
+					#let next=cnt+1
+	                NEXT=HEADER
+
+			   ;;
+
+			   -footer) OVERRIDEINCLUDE="1"
+	                #FOOTER=<next parameter>
+                    NEXT=FOOTER
+
+			   ;;
+
+			   #########anything else that starts with "-" is make flag:#####
+			   -*) MKFLAGS="$MKFLAGS $a"
+			   ;;
 
 
-		  ;;
-		  ####
-		  esac
-          ####
-        fi
+			   ################anything else is make parameter:##############
+			   *)   PARAMS="$a $PARAMS"
+
+
+			  ;;
+			  ####
+			  esac
+	          ####
+	        fi
+            ;;
+
+        ####
+		esac
+        ####
+
 	####
 	done
     ####

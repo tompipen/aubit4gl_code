@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 #/bin/bash
 #this is main Aubit 4gl compiler .4gl files compiler script
 #You should not need to invoke actual compiler (4glc) directly
@@ -49,6 +49,7 @@ then
     echo '  -udbc (ODBC_LIB_NAME="udbc")'
     echo '  -odbc (ODBC_LIB_NAME="iodbc")'
     echo '  -as-ddl'
+    echo '  -i ignore errors and continue'
 	echo
     echo All options unknown to Aubit compiler will be passed to C compiler
     echo Please see Aubit 4gl manual for more information.
@@ -77,6 +78,9 @@ then
     echo '  -udbc (ODBC_LIB_NAME="udbc")'
     echo '  -odbc (ODBC_LIB_NAME="iodbc")'
     echo '  -as-ddl'
+    echo '  $A4GLRC - full path to file to be used instead of .a4glrc'
+    echo '  $ODBC_LIB_DIR'
+    echo '  $ODBC_LIB_NAME'
 	echo
     echo 'Note: 4glc, cc and other compilers invoked by this script will'
     echo '      recognise additional variables that might affect this script'
@@ -129,15 +133,50 @@ then
         AUBITDIR=`pwd`
 fi
 
-	if [ -f $AUBITDIR/etc/.a4glrc ]
+#save some things from environment, so they don't get overwtitten by .a4glrc -
+# we need this when making compiler:
+ENV_ODBC_LIB_DIR=$ODBC_LIB_DIR
+ENV_ODBC_LIB_NAME=$ODBC_LIB_NAME
+
+FOUNDRC=0
+
+if [ "$A4GLRC" = "" ]
+then
+	if [ -f /etc/a4glrc ]
 	then
-	. $AUBITDIR/etc/.a4glrc
+		. /etc/a4glrc
+	    FOUNDRC=1
+	else
+		if [ -f $AUBITDIR/etc/.a4glrc ]
+		then
+			. $AUBITDIR/etc/.a4glrc
+		    FOUNDRC=1
+		fi
 	fi
 
 	if [ -f $HOME/.a4glrc ]
 	then
-	. $HOME/.a4glrc
+		. $HOME/.a4glrc
+	    FOUNDRC=1
 	fi
+
+	if [ "$FOUNDRC" = "0" ]
+	then
+	    echo "Cannot find /etc/a4glrc, $AUBITDIR/etc/.a4glrc or $HOME/.a4glrc"
+	    echo "Stop."
+	    exit 5
+	fi
+else
+	if [ -f $A4GLRC ]
+	then
+		. $A4GLRC
+	    FOUNDRC=1
+    else
+	    echo "Cannot find $A4GLRC"
+	    echo "Stop."
+	    exit 5
+	fi
+fi
 
 COMPCC=""
 
@@ -198,6 +237,21 @@ then
 fi
 
 
+#restore things from before reading .a4glrc that where in environment:
+
+if [ "$ENV_ODBC_LIB_DIR" != "" ]
+then
+	ODBC_LIB_DIR=$ENV_ODBC_LIB_DIR
+    echo "Warning: using ODBC_LIB_DIR from environment: $ODBC_LIB_DIR"
+fi
+
+if [ "$ENV_ODBC_LIB_NAME" != "" ]
+then
+	ODBC_LIB_NAME=$ENV_ODBC_LIB_NAME
+    echo "Warning: using ODBC_LIB_NAME from environment: $ODBC_LIB_NAME"
+fi
+
+
 LAST=""
 INCLDIR="-I$AUBITDIR/incl"
 
@@ -221,10 +275,38 @@ do
    *.c) COMPCC="$COMPCC $a"
    ;;
 
-   *.per) fcompile -c $a
+   *.per)
+		  if [ "$A4GLVERBOSE" = "yes" ]
+		  then
+            $output Compiling form $a
+		  fi
+
+		  fcompile -c $a
+   		  fname=`basename $a .per`
+
+		  if ! [ -f $fname.c ]
+		  then
+            $output "Error compiling $a."
+            if [ "$IGNORE_ERRORS" != "1" ]
+            then
+				exit 6
+            fi
+          else
+	        COMPCC="$COMPCC $fname.c"
+          fi
+
+   ;;
+
+
+   *.per-old) fcompile -c $a
           fname=`basename $a .per`
         COMPCC="$COMPCC $fname.c"
    ;;
+
+   *.per-direct) fcompile $a
+   ;;
+
+
 
    *.msg)
         fname=`basename $a .msg`
@@ -306,6 +388,10 @@ do
 
    -echo) DOIT="echo"
    ;;
+
+   -i) IGNORE_ERRORS="1"
+   ;;
+
 
    -gtk) GTKGUI="Yes"
          export GTKGUI
@@ -479,8 +565,22 @@ LIBS="-L/root/ncurses/ncurses-5.2/lib -lform$DDEBUG -lpanel$DDEBUG -lncurses$DDE
 
 if [ "$NOCFILE" = "Y" ]
 then
-        exit
+   if [ "$A4GLVERBOSE" = "yes" ]
+   then
+	   $output No C files to compile.
+   fi
+	exit 0
 fi
+
+if [ "$COMPCC" = "" ]
+then
+   if [ "$A4GLVERBOSE" = "yes" ]
+   then
+	   $output No C files to compile.
+   fi
+   exit 0
+fi
+
 
 if [  "$GTKGUI" = "Yes" ]
 then
@@ -500,6 +600,8 @@ then
 		fi
     fi
 fi
+
+
 
 if [ "$ISMAKE" != "1" ]
 then
