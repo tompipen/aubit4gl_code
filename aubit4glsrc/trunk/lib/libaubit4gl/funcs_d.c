@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.14 2003-01-04 17:29:56 psterry Exp $
+# $Id: funcs_d.c,v 1.15 2003-02-16 14:20:10 mikeaubury Exp $
 #
 */
 
@@ -184,7 +184,7 @@ trim(char *p)
   int a;
   for (a=strlen(p)-1;a>=0;a--)
   {
-    if (p[a]!=' ')  break;
+    if (p[a]!=' '&&p[a]!='\t'&&p[a]!='\n'&&p[a]!='\r')  break;
     p[a]=0;
   }
 }
@@ -200,7 +200,7 @@ trim_nl(char *p)
   int a;
   for (a=strlen(p)-1;a>=0;a--)
   {
-    if (p[a]!=' '&&p[a]!='\n'&&p[a]!='\r')  break;
+    if (p[a]!=' '&&p[a]!='\n'&&p[a]!='\r'&&p[a]!='\t')  break;
     p[a]=0;
   }
 }
