@@ -92,16 +92,16 @@ set_clause_list_ss:
 			ansi_violation("Update (..)=(..)",1);
 		}
 	}
-    | XSET identifier DOT MULTIPLY EQUAL upd_val_list_ss  {
+    | XSET_ident_DOT_MULTIPLY_EQUAL upd_val_list_ss  {
 		char *ptr;
 
-		ptr=$<sql_string>6;
+		ptr=$<sql_string>2;
 		push_gen(UPDCOL,"*");
 
 		if (ptr[0]=='(') {
-			$<sql_string>$=make_sql_string("SET *= ",$<sql_string>6,0);
+			$<sql_string>$=make_sql_string("SET *= ",$<sql_string>2,0);
 		} else {
-			$<sql_string>$=make_sql_string("SET *=(",$<sql_string>6,")",0);
+			$<sql_string>$=make_sql_string("SET *=(",$<sql_string>2,")",0);
 		}
 
 		if (isyes(acl_getenv("FIXUPDATE"))) { 
