@@ -2785,21 +2785,21 @@ static const unsigned short yyrline[] =
     7964,  7967,  7971,  7972,  7973,  7974,  7975,  7981,  7982,  7983,
     7984,  7985,  7986,  7987,  7988,  7989,  7990,  7991,  7992,  7993,
     7994,  7998,  8004,  8005,  8017,  8029,  8029,  8033,  8034,  8035,
-    8036,  8040,  8041,  8042,  8047,  8061,  8112,  8114,  8116,  8118,
-    8122,  8127,  8129,  8132,  8134,  8136,  8140,  8143,  8148,  8153,
-    8157,  8166,  8167,  8171,  8183,  8186,  8182,  8205,  8205,  8209,
-    8210,  8213,  8214,  8215,  8216,  8217,  8218,  8219,  8224,  8225,
-    8229,  8232,  8237,  8241,  8246,  8250,  8255,  8259,  8262,  8266,
-    8269,  8274,  8278,  8289,  8295,  8295,  8296,  8297,  8304,  8313,
-    8313,  8315,  8316,  8317,  8318,  8319,  8320,  8321,  8322,  8323,
-    8324,  8325,  8326,  8327,  8328,  8329,  8330,  8331,  8332,  8333,
-    8334,  8335,  8336,  8337,  8338,  8339,  8340,  8341,  8342,  8343,
-    8344,  8345,  8346,  8347,  8348,  8349,  8350,  8351,  8352,  8353,
-    8354,  8355,  8356,  8357,  8358,  8359,  8360,  8361,  8362,  8363,
-    8364,  8365,  8366,  8367,  8368,  8369,  8370,  8371,  8372,  8373,
-    8374,  8375,  8376,  8377,  8378,  8379,  8380,  8381,  8382,  8383,
-    8384,  8385,  8386,  8387,  8388,  8389,  8390,  8391,  8392,  8393,
-    8394,  8395,  8396,  8397,  8398,  8399
+    8036,  8040,  8041,  8042,  8047,  8073,  8124,  8126,  8128,  8130,
+    8134,  8139,  8141,  8144,  8146,  8148,  8152,  8155,  8160,  8165,
+    8169,  8178,  8179,  8183,  8195,  8198,  8194,  8217,  8217,  8221,
+    8222,  8225,  8226,  8227,  8228,  8229,  8230,  8231,  8236,  8237,
+    8241,  8244,  8249,  8253,  8258,  8262,  8267,  8271,  8274,  8278,
+    8281,  8286,  8290,  8301,  8307,  8307,  8308,  8309,  8316,  8325,
+    8325,  8327,  8328,  8329,  8330,  8331,  8332,  8333,  8334,  8335,
+    8336,  8337,  8338,  8339,  8340,  8341,  8342,  8343,  8344,  8345,
+    8346,  8347,  8348,  8349,  8350,  8351,  8352,  8353,  8354,  8355,
+    8356,  8357,  8358,  8359,  8360,  8361,  8362,  8363,  8364,  8365,
+    8366,  8367,  8368,  8369,  8370,  8371,  8372,  8373,  8374,  8375,
+    8376,  8377,  8378,  8379,  8380,  8381,  8382,  8383,  8384,  8385,
+    8386,  8387,  8388,  8389,  8390,  8391,  8392,  8393,  8394,  8395,
+    8396,  8397,  8398,  8399,  8400,  8401,  8402,  8403,  8404,  8405,
+    8406,  8407,  8408,  8409,  8410,  8411
 };
 #endif
 
@@ -16540,22 +16540,34 @@ strcpy(yyval.str,A4GL_get_undo_use());
   case 1754:
 #line 8048 "fgl.yacc"
     {
-	if (scan_variable(yyvsp[0].str)!=-1&&(!system_var(yyvsp[0].str)))
+	int sv_val;
+	//printf("var_ident_ibind_ss : %s\n",$<str>1);
+	sv_val=scan_variable(yyvsp[0].str);
+
+	if (strncmp(yyvsp[0].str," a4gl_sub",9)==0) {
+		// Its a substring of a variable
+		sv_val=1;
+	}
+
+	if (sv_val!=-1&&(!system_var(yyvsp[0].str)))
 	{
+		// Its a variable
 		int z = 0,a = 0;
+		//printf("add as bind\n");
 		a=get_bind_cnt('i');
 		z=add_bind('i',yyvsp[0].str);
 		z-=a;
 		yyval.sql_string=strdup(A4GL_set_var_sql(z));
 
-	} else {
-		yyval.sql_string=strdup(yyvsp[0].str);
+	} else { 
+		// Its a column
+		yyval.sql_string=strdup(get_column_transform(yyvsp[0].str));
 	}
 }
     break;
 
   case 1755:
-#line 8062 "fgl.yacc"
+#line 8074 "fgl.yacc"
     {
 char r1[256];
 char r2[256];
@@ -16597,22 +16609,22 @@ struct variable *v_loop;
     break;
 
   case 1756:
-#line 8113 "fgl.yacc"
+#line 8125 "fgl.yacc"
     {set_whenever(WHEN_NOTFOUND|atoi(yyvsp[0].str),0);}
     break;
 
   case 1757:
-#line 8115 "fgl.yacc"
+#line 8127 "fgl.yacc"
     {set_whenever(WHEN_SQLERROR|atoi(yyvsp[0].str),0);}
     break;
 
   case 1758:
-#line 8117 "fgl.yacc"
+#line 8129 "fgl.yacc"
     {set_whenever(WHEN_ANYERROR|atoi(yyvsp[0].str),0);}
     break;
 
   case 1759:
-#line 8118 "fgl.yacc"
+#line 8130 "fgl.yacc"
     {
  		set_whento("");
 		set_whenever(WHEN_ERROR+WHEN_CONTINUE,0);
@@ -16620,7 +16632,7 @@ struct variable *v_loop;
     break;
 
   case 1760:
-#line 8123 "fgl.yacc"
+#line 8135 "fgl.yacc"
     {
 A4GL_debug("Whenever error...%d %d",WHEN_ERROR,atoi(yyvsp[0].str));
 set_whenever(WHEN_ERROR+atoi(yyvsp[0].str),0);
@@ -16628,41 +16640,41 @@ set_whenever(WHEN_ERROR+atoi(yyvsp[0].str),0);
     break;
 
   case 1761:
-#line 8128 "fgl.yacc"
+#line 8140 "fgl.yacc"
     {set_whenever(WHEN_SQLWARNING|atoi(yyvsp[0].str),0);}
     break;
 
   case 1762:
-#line 8129 "fgl.yacc"
+#line 8141 "fgl.yacc"
     {
 set_whenever(WHEN_WARNING+WHEN_CONTINUE,0);
 }
     break;
 
   case 1763:
-#line 8133 "fgl.yacc"
+#line 8145 "fgl.yacc"
     {set_whenever(WHEN_WARNING|atoi(yyvsp[0].str),0);}
     break;
 
   case 1764:
-#line 8135 "fgl.yacc"
+#line 8147 "fgl.yacc"
     {set_whenever(WHEN_SUCCESS|atoi(yyvsp[0].str),0);}
     break;
 
   case 1765:
-#line 8137 "fgl.yacc"
+#line 8149 "fgl.yacc"
     {set_whenever(WHEN_SQLSUCCESS|atoi(yyvsp[0].str),0);}
     break;
 
   case 1766:
-#line 8140 "fgl.yacc"
+#line 8152 "fgl.yacc"
     {
  set_whento("");
 			sprintf(yyval.str,"%d",WHEN_CONTINUE); }
     break;
 
   case 1767:
-#line 8144 "fgl.yacc"
+#line 8156 "fgl.yacc"
     {
 set_whento(yyvsp[0].str);
 sprintf(yyval.str,"%d",WHEN_GOTO);
@@ -16670,7 +16682,7 @@ sprintf(yyval.str,"%d",WHEN_GOTO);
     break;
 
   case 1768:
-#line 8149 "fgl.yacc"
+#line 8161 "fgl.yacc"
     {
 set_whento(yyvsp[0].str); 
 sprintf(yyval.str,"%d",WHEN_GOTO);
@@ -16678,14 +16690,14 @@ sprintf(yyval.str,"%d",WHEN_GOTO);
     break;
 
   case 1769:
-#line 8154 "fgl.yacc"
+#line 8166 "fgl.yacc"
     { set_whento(""); 
 sprintf(yyval.str,"%d",WHEN_STOP);
 }
     break;
 
   case 1770:
-#line 8158 "fgl.yacc"
+#line 8170 "fgl.yacc"
     {
 set_whento(yyvsp[0].str);
 sprintf(yyval.str,"%d",WHEN_CALL);
@@ -16693,12 +16705,12 @@ sprintf(yyval.str,"%d",WHEN_CALL);
     break;
 
   case 1772:
-#line 8168 "fgl.yacc"
+#line 8180 "fgl.yacc"
     {sprintf(yyval.str,"%s",yyvsp[0].str);}
     break;
 
   case 1774:
-#line 8183 "fgl.yacc"
+#line 8195 "fgl.yacc"
     {
 print_while_1();
 push_blockcommand("WHILE");
@@ -16706,14 +16718,14 @@ push_blockcommand("WHILE");
     break;
 
   case 1775:
-#line 8186 "fgl.yacc"
+#line 8198 "fgl.yacc"
     {
 print_while_2();
 }
     break;
 
   case 1776:
-#line 8190 "fgl.yacc"
+#line 8202 "fgl.yacc"
     {
 print_while_3();
 pop_blockcommand("WHILE");
@@ -16721,78 +16733,78 @@ pop_blockcommand("WHILE");
     break;
 
   case 1779:
-#line 8209 "fgl.yacc"
+#line 8221 "fgl.yacc"
     { strcpy(yyval.str,"0"); }
     break;
 
   case 1780:
-#line 8210 "fgl.yacc"
+#line 8222 "fgl.yacc"
     { strcpy(yyval.str,"1"); }
     break;
 
   case 1781:
-#line 8213 "fgl.yacc"
+#line 8225 "fgl.yacc"
     { print_clr_window("\"screen\""); }
     break;
 
   case 1782:
-#line 8214 "fgl.yacc"
+#line 8226 "fgl.yacc"
     { print_clr_window(yyvsp[0].str); }
     break;
 
   case 1783:
-#line 8215 "fgl.yacc"
+#line 8227 "fgl.yacc"
     { print_clr_window(yyvsp[0].str); }
     break;
 
   case 1784:
-#line 8216 "fgl.yacc"
+#line 8228 "fgl.yacc"
     { print_clr_form(0,0,"0"); }
     break;
 
   case 1785:
-#line 8217 "fgl.yacc"
+#line 8229 "fgl.yacc"
     { print_clr_form(0,0,"1"); }
     break;
 
   case 1786:
-#line 8218 "fgl.yacc"
+#line 8230 "fgl.yacc"
     { print_clr_form(yyvsp[-2].str,yyvsp[-1].str,yyvsp[0].str); }
     break;
 
   case 1787:
-#line 8219 "fgl.yacc"
+#line 8231 "fgl.yacc"
     {
 	print_clr_fields(yyvsp[-1].str,yyvsp[0].str);
 }
     break;
 
   case 1788:
-#line 8224 "fgl.yacc"
+#line 8236 "fgl.yacc"
     {sprintf(yyval.str,"%s",yyvsp[0].str);}
     break;
 
   case 1789:
-#line 8225 "fgl.yacc"
+#line 8237 "fgl.yacc"
     {sprintf(yyval.str,"%s,%s",yyvsp[-2].str,yyvsp[0].str);}
     break;
 
   case 1790:
-#line 8229 "fgl.yacc"
+#line 8241 "fgl.yacc"
     {
 	print_current_window("\"screen\"");
 }
     break;
 
   case 1791:
-#line 8233 "fgl.yacc"
+#line 8245 "fgl.yacc"
     {
 	print_current_window(yyvsp[0].str);
 }
     break;
 
   case 1792:
-#line 8237 "fgl.yacc"
+#line 8249 "fgl.yacc"
     {
 sprintf(yyval.str,"A4GL_cr_window");
 reset_attrib(&form_attrib);
@@ -16800,7 +16812,7 @@ reset_attrib(&form_attrib);
     break;
 
   case 1793:
-#line 8241 "fgl.yacc"
+#line 8253 "fgl.yacc"
     {
 sprintf(yyval.str,"A4GL_cr_window_form");
 reset_attrib(&form_attrib);
@@ -16808,7 +16820,7 @@ reset_attrib(&form_attrib);
     break;
 
   case 1794:
-#line 8246 "fgl.yacc"
+#line 8258 "fgl.yacc"
     {
 	print_show_window(yyvsp[0].str);
 	addmap("Show Window",yyvsp[0].str,curr_func,yylineno,infilename); 
@@ -16816,7 +16828,7 @@ reset_attrib(&form_attrib);
     break;
 
   case 1795:
-#line 8250 "fgl.yacc"
+#line 8262 "fgl.yacc"
     {
 	print_show_menu(yyvsp[-3].str,yyvsp[-1].str);
 	addmap("Call Menuhandler",yyvsp[-1].str,curr_func,yylineno,infilename); 
@@ -16824,7 +16836,7 @@ reset_attrib(&form_attrib);
     break;
 
   case 1796:
-#line 8255 "fgl.yacc"
+#line 8267 "fgl.yacc"
     {
 
 print_def_mn_file();
@@ -16833,33 +16845,33 @@ print_def_mn_file();
     break;
 
   case 1798:
-#line 8263 "fgl.yacc"
+#line 8275 "fgl.yacc"
     {addmap("Use Menu",yyvsp[0].str,curr_func,yylineno,infilename); }
     break;
 
   case 1800:
-#line 8269 "fgl.yacc"
+#line 8281 "fgl.yacc"
     {
 	print_hide_window(yyvsp[0].str);
 }
     break;
 
   case 1801:
-#line 8275 "fgl.yacc"
+#line 8287 "fgl.yacc"
     {
 print_move_window(yyvsp[-4].str,0);
 }
     break;
 
   case 1802:
-#line 8279 "fgl.yacc"
+#line 8291 "fgl.yacc"
     {
 print_move_window(yyvsp[-4].str,1);
 }
     break;
 
   case 1807:
-#line 8297 "fgl.yacc"
+#line 8309 "fgl.yacc"
     {
 chk4var=0;A4GL_lex_printcomment("/* [Comm:%s] */\n",yyval.str);
 if (acl_getenv("INCLINES"))
@@ -16870,7 +16882,7 @@ A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstr
     break;
 
   case 1808:
-#line 8304 "fgl.yacc"
+#line 8316 "fgl.yacc"
     {
 A4GL_lex_printcomment("/* [COMM:%s] */\n",yyvsp[0].str);chk4var=0;
 if (acl_getenv("INCLINES"))
@@ -16881,12 +16893,12 @@ lastlineno=yylineno;
     break;
 
   case 1809:
-#line 8313 "fgl.yacc"
+#line 8325 "fgl.yacc"
     {print_cmd_start();}
     break;
 
   case 1810:
-#line 8313 "fgl.yacc"
+#line 8325 "fgl.yacc"
     {print_cmd_end();}
     break;
 
@@ -16894,7 +16906,7 @@ lastlineno=yylineno;
     }
 
 /* Line 991 of yacc.c.  */
-#line 16897 "y.tab.c"
+#line 16909 "y.tab.c"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -17103,7 +17115,7 @@ yyreturn:
 }
 
 
-#line 8408 "fgl.yacc"
+#line 8420 "fgl.yacc"
 
 /* programmer routines */
 /*
