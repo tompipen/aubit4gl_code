@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.7 2003-08-01 08:32:09 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.8 2003-09-11 10:42:26 mikeaubury Exp $
 */
 
 /**
@@ -136,6 +136,7 @@ void A4GLSTK_popFunction (void);
 void A4GL_fgl_end_4gl_0 (void);
 void A4GL_fgl_end_4gl_1 (void); // Used on interrupt
 void A4GL_display_at (int n, int a);
+int A4GL_key_val(char *s);
 
 
 #define A4GL_FUNCTION

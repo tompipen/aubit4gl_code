@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.9 2003-09-08 08:11:25 afalout Exp $
+# $Id: Makefile,v 1.10 2003-09-11 10:42:26 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -108,7 +108,7 @@ helper_funcs_postgresql.o: helper_funcs.ec
 helper_funcs_sap.o: helper_funcs.ec
 #cpc will allways add .cpc extension to any source files
 	cp $^ $^.cpc
-	${SAPDB_ESQLC} $^ -I${INFORMIXDIR}/incl/esql -I${ROOT}/incl -o $@ -DDIALECT_SAP
+	${SAPDB_ESQLC} $^ -I${INFORMIXDIR}/incl/esql -I${ROOT}/incl -o $@ -DDIALECT_SAP -I/opt/sapdb/interfaces/precompiler/incl
 	rm $^.cpc
 
 #Querix ESQL/C compiler

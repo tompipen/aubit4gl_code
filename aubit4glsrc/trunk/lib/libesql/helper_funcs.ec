@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.4 2003-09-05 15:26:58 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.5 2003-09-11 10:42:26 mikeaubury Exp $
 #
 */
 
@@ -306,12 +306,6 @@ long orig_date;
 		A4GL_debug("Got date as : '%d' %x",*infx,*infx);
 		orig_date=*infx;
 		rjulmdy(orig_date,mdy); 				// Get the MDY from informix
-		if (mdy[2]>3000||mdy[2]<1000 || mdy[0]<1||mdy[0]>12||mdy[1]<1||mdy[1]>31) {
-			// Suspect date ?
-			A4GL_debug("SUSPECT DATE DETECTED..... : %d %d %d %d",orig_date,mdy[0],mdy[1],mdy[2]);
-			*a4gl=0;
-			return;
-		}
 		A4GL_debug("copy_date : mode=o - %d %d %d",mdy[0],mdy[1],mdy[2]);
 		*a4gl=A4GL_gen_dateno(mdy[1],mdy[0],mdy[2]); 	// And use it to generate an aubit.
 	}

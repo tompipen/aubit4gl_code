@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.94 2003-09-09 19:01:21 mikeaubury Exp $
+# $Id: compile_c.c,v 1.95 2003-09-11 10:42:26 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2008,9 +2008,11 @@ print_construct_2 (char *driver)
   if (!doing_pcode()) {
   	printc ("A4GL_debug(\"form_loop=%%d\",_fld_dr);");
   }
-  printc
-    ("\n}\n A4GL_push_constr(&_inp_io);\n A4GL_pop_params(ibind,1);\n }\n");
+  printc ("\n}\n");
   pop_blockcommand ("CONSTRUCT");	
+  printc (" A4GL_push_constr(&_inp_io);\n ");
+  printc (" A4GL_pop_params(ibind,1);");
+  printc ("}\n");
 }
 
 
@@ -4008,7 +4010,7 @@ printInitFunctionStack (void)
 {
   if (!isGenStackInfo ())
     return;
-  printc ("A4GLSTK_initFunctionCallStack();");
+  if (!doing_pcode()) printc ("A4GLSTK_initFunctionCallStack();");
 }
 
 /**
@@ -4130,15 +4132,22 @@ print_func_end (void)
 void
 print_main_1 (void)
 {
-  if (doing_cs()) {
+  if (doing_cs())  {
   	printc ("\n\npublic static void Main(string argv[]) {\n");
   	printc ("string[] _paramnames=new string[1]; _paramnames[0]={\"\"};");
   	printc ("int nargs=0;");
-  } else {
-  	printc ("\n\nA4GL_MAIN int main(int argc,char *argv[]) {\n");
+	return;
+  } 
+  if (doing_pcode())  {
+  	printc ("\n\nA4GL_MAIN int main(int nargs) {\n");
   	printc ("char *_paramnames[1]={\"\"};");
-  	printc ("int nargs=0;");
-  }
+	return;
+  } 
+
+
+  printc ("\n\nA4GL_MAIN int main(int argc,char *argv[]) {\n");
+  printc ("char *_paramnames[1]={\"\"};");
+  printc ("int nargs=0;");
 }
 
 /**
@@ -4152,8 +4161,10 @@ print_fgllib_start (char *db)
 {
 extern int is_schema;
   printc ("A4GLSTK_setCurrentLine(0,0);", yylineno);
+  if (!doing_pcode()) {
   if (doing_cs()) 	{ printc ("\nA4GL_fgl_start(argv.Count(),argv);\n"); }
   else 			{ printc ("\nA4GL_fgl_start(argc,argv);\n"); }
+  }
 
   if (db[0] != 0) {
 if (!is_schema)

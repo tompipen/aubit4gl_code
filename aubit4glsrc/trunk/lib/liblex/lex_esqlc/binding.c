@@ -28,6 +28,13 @@ int esql_type (void);
 
 static void print_sql_type_postgres (int a, char ioro);
 
+static char *decode_decimal_size_as_string(int n) {
+static char buff[256];
+int n2;
+n2=n>>16;
+sprintf(buff,"%d,%d",n2>>8,n2&255);
+return buff;
+}
 
 
 void
@@ -240,7 +247,7 @@ print_sql_type_infx (int a, char ioro)
 	  break;
 
 	case 5:
-	  printc ("decimal _vi_%d;", a);
+	  printc ("decimal(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
 	  break;
 
 	case 6:
@@ -251,7 +258,7 @@ print_sql_type_infx (int a, char ioro)
 	  printc ("int _vi_%d;", a);
 	  break;
 	case 8:
-	  printc ("money _vi_%d;", a);
+	  printc ("money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
 	  break;
 	case 9:
 	  printc ("Blah _vi_%d;", a);
@@ -299,7 +306,7 @@ print_sql_type_infx (int a, char ioro)
 	  printc ("float _vo_%d;", a);
 	  break;
 	case 5:
-	  	printc ("decimal _vo_%d;", a);
+	  	printc ("decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
 	  	break;
 	case 6:
 	  printc ("int _vo_%d;", a);
@@ -308,7 +315,7 @@ print_sql_type_infx (int a, char ioro)
 	  printc ("int _vo_%d;", a);
 	  break;
 	case 8:
-	  	printc ("money _vo_%d;", a);
+	  	printc ("money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
 	  break;
 	case 9:
 	  printc ("Blah _vo_%d;", a);
@@ -360,7 +367,7 @@ static void print_sql_type_postgres (int a, char ioro)
 	  break;
 
 	case 5:
-	  printc ("decimal _vi_%d;", a);
+	  printc ("decimal(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
 	  break;
 
 	case 6:
@@ -371,7 +378,7 @@ static void print_sql_type_postgres (int a, char ioro)
 	  printc ("date _vi_%d;", a);
 	  break;
 	case 8:
-	  printc ("money _vi_%d;", a);
+	  printc ("money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
 	  break;
 	case 9:
 	  printc ("Blah _vi_%d;", a);
@@ -419,7 +426,7 @@ static void print_sql_type_postgres (int a, char ioro)
 	  printc ("float _vo_%d;", a);
 	  break;
 	case 5:
-	  	printc ("decimal _vo_%d;", a);
+	  	printc ("decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
 	  break;
 	case 6:
 	  printc ("int _vo_%d;", a);
@@ -428,7 +435,7 @@ static void print_sql_type_postgres (int a, char ioro)
 	  printc ("date _vo_%d;", a);
 	  break;
 	case 8:
-	  	printc ("money _vo_%d;", a);
+	  	printc ("money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
 	  	break;
 	case 9:
 	  printc ("Blah _vo_%d;", a);
@@ -453,3 +460,5 @@ static void print_sql_type_postgres (int a, char ioro)
   printc ("\n");
 
 }
+
+

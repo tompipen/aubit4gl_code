@@ -10,7 +10,7 @@ prompt_cmd	:
         opt_attributes {
                 push_blockcommand("PROMPT");
 
-	print_prompt_1($<str>3,$<str>5,$<str>8,$<str>9,$<str>7) ;
+	print_prompt_1($<str>3,$<str>5,$<str>8,$<str>9,atoi($<str>7)) ;
 }
         prompt_key_sec {
 		if (strcmp($<str>5,"1")==0) {
