@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.19 2002-06-26 06:11:43 afalout Exp $
+# $Id: nosql.c,v 1.20 2002-07-26 14:37:04 mikeaubury Exp $
 #*/
 
 /**
@@ -81,7 +81,7 @@ char lasterrorstr[1024] = "";
 
 void local_exitwith (char *s);
 char *find_str_resource (char *s);
-struct s_sid *find_prepare (char *pname, int mode);
+struct s_sid *find_prepare (char *pname);
 extern char * global_A4GLSQL_get_sqlerrm (void); /* in API_sql.c */
 
 
@@ -398,7 +398,7 @@ A4GLSQL_commit_rollback (int mode)
  * @todo Describe function
  */
 struct s_sid *
-A4GLSQL_find_prepare (char *pname, int mode)
+A4GLSQL_find_prepare (char *pname)
 {
 	local_exitwith ("Could not find_prepare - noODBC build");
   return 0;

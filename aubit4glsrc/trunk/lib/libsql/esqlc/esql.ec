@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.21 2002-07-22 13:44:45 mikeaubury Exp $
+# $Id: esql.ec,v 1.22 2002-07-26 14:37:03 mikeaubury Exp $
 #
 */
 
@@ -155,7 +155,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.21 2002-07-22 13:44:45 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.22 2002-07-26 14:37:03 mikeaubury Exp $";
 #endif
 
 #ifdef WIN32
@@ -2221,7 +2221,7 @@ A4GLSQL_commit_rollback (int mode)
  *   - A pointer to the structure found in the tree.
  *   - 0 : The structure was not found
  */
-struct s_sid *A4GLSQL_find_prepare (char *pname, int mode)
+struct s_sid *A4GLSQL_find_prepare (char *pname)
 {
   struct s_sid *ptr;
 
@@ -2274,8 +2274,8 @@ int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
   struct s_sid *sid;
 
   debug("ESQL : A4GLSQL_execute_sql");
-  /** @todo : Fix the mode that is not used now */
-  sid = A4GLSQL_find_prepare (pname, 0);
+  /** @todo : Fix the mode that is not used now  - done remove comment */
+  sid = A4GLSQL_find_prepare (pname); // ,0
   sid->ibind = ibind;
   sid->ni    = ni;
   if ( processPreStatementBinds(sid) == 1 )

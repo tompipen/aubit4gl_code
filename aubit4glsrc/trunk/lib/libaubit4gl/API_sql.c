@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.17 2002-06-25 03:22:29 afalout Exp $
+# $Id: API_sql.c,v 1.18 2002-07-26 14:37:03 mikeaubury Exp $
 #
 */
 
@@ -716,11 +716,11 @@ A4GLSQL_commit_rollback   (int mode)
  */
 /* int --- struct s_sid * in sql.c */
 struct s_sid *
-A4GLSQL_find_prepare   (char *pname, int mode)
+A4GLSQL_find_prepare   (char *pname)
 {
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_find_prepare");
-  return (struct s_sid *)func(pname,mode);
+  return (struct s_sid *)func(pname);
 }
 
 /**

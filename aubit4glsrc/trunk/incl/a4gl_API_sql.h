@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: a4gl_API_sql.h,v 1.1 2002-07-07 06:53:20 afalout Exp $
+# $Id: a4gl_API_sql.h,v 1.2 2002-07-26 14:37:03 mikeaubury Exp $
 #
 */
 
@@ -119,7 +119,7 @@ define it in any case? */
 	void A4GLSQL_put_insert(struct BINDING *ibind,int n);
 	void A4GLSQL_unload_data(char *fname,char *delims, char *sql1);
 	void A4GLSQL_commit_rollback (int mode);
-	struct s_sid * 	A4GLSQL_find_prepare (char *pname, int mode);
+	struct s_sid * 	A4GLSQL_find_prepare (char *pname);
 	void A4GLSQL_flush_cursor(char *cursor);
 	char *A4GLSQL_get_currdbname(void);
 	int A4GLSQL_execute_sql   (char *pname, int ni, struct BINDING *ibind);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.6 2002-07-26 14:36:39 mikeaubury Exp $
+# $Id: fileio.c,v 1.1 2002-07-26 14:36:39 mikeaubury Exp $
 #*/
 
 /**
@@ -44,12 +44,12 @@
 
 #ifdef OLD_INCL
 
-	#include <stdio.h>
-	#include "report.h"
+#include <stdio.h>
+#include "report.h"
 
 #else
 
-    #include "a4gl_ace_int.h"
+#include "a4gl_ace_int.h"
 
 #endif
 
@@ -58,18 +58,157 @@
                     Variables definitions
 =====================================================================
 */
+
+extern FILE *yyin;
+char outputfile[132];
+int lineno;
+int colno;
+int ignorekw = 0;
+char *outputfilename;
+#ifdef YYDEBUG
+extern int yydebug;
+#else /*  */
+int yydebug;
+#endif /*  */
+
+
+
+
+
+int yywrap (void);
+
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+
 /**
  *
  * @todo Describe function
  */
 int
-main (int argc, char *argv[])
+yywrap (void)
 {
-  if (argc != 2) {
-      printf ("Usage\n   %s filename\n", argv[0]);
-      exit (1);
-  }
-  exit(compile_ace_report(argv[1]));
+  return 1;
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+void
+yyerror (char *s)
+{
+  char errfile[256];
+  FILE *f;
+  long ld;
+
+  ld = buffpos ();
+  sprintf (errfile, "%s.err", outputfile);
+  f = (FILE *) write_errfile (yyin, errfile, ld - 1, lineno);
+  fprintf (f, "| %s", s);
+  write_cont (yyin);
+  printf ("Error compiling %s.ace - check %s.err (xline=%d yline=%d)\n",
+	  outputfile, outputfile, lineno, lineno);
+  exit (2);
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+/*
+static void
+ace_bname (char *str, char *str1, char *str2)
+{
+  char fn[132];
+  int a;
+  char *ptr;
+  strcpy (fn, str);
+
+  for (a = strlen (fn); a >= 0; a--)
+    {
+      if (fn[a] == '.')
+        {
+          fn[a] = 0;
+          break;
+        }
+    }
+  ptr = &fn[a];
+  strcpy (str1, fn);
+  if (a >= 0)
+        strcpy (str2, ptr + 1);
+  else
+    str2[0] = 0;
+}
+*/
+
+int
+compile_ace_report (char *filename)
+{
+  char a[128];
+  char b[128];
+  char c[128];
+  char d[128];
+  int rval;
+
+  /* load settings from config file(s): */
+  build_user_resources ();
+
+  yydebug = 0;
+  strcpy (d, "");
+
+  check_and_show_id ("4GL ACE Compiler", filename);
+
+  outputfilename = outputfile;
+
+  strcpy (c, filename);
+
+  bname (c, a, b);
+
+  if (b[0] == 0)
+    {
+      strcat (c, ".ace");
+    }
+
+
+  strcpy (outputfilename, a);
+  /* strcat(outputfilename,".aarc"); */
+
+
+  yyin = (FILE *) mja_fopen (c, "r");
+
+  yydebug = 0;
+
+  if (yyin == 0)
+    {
+
+      printf ("Error opening file : %s\n", c);
+	return 2;
+    }
+
+  init_report ();
+  rval = yyparse ();
+
+  if (rval == 0)
+    {
+      check_sql_columns ();
+      write_report ();
+      printf("Ok\n");
+      return 0;
+    }
+  else
+    {
+      return 2;
+    }
+
+  return 2;
 }
 
 
+
+/* ================================= EOF =========================== */

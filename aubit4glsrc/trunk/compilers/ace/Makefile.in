@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.8 2002-07-21 06:41:48 afalout Exp $
+# $Id: Makefile.in,v 1.9 2002-07-26 14:36:39 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -37,10 +37,11 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 CMODS_XDR   =report_xdr.c
-CMODS       =${CMODS_XDR} y.tab.c main.c data.c output.c tables.c
+CMODS       =${CMODS_XDR} y.tab.c main.c data.c output.c tables.c fileio.c
 CMODS_DECOMP=${CMODS_XDR} dump.c
 #Mike's holding dump_4gl.c back for now - not in CVS
 CMODS_4GL    =${CMODS_XDR} dump_4gl.c
+CMODS_PERL   =${CMODS_XDR} y.tab.c dump_perl.c data.c output.c tables.c fileio.c
 
 REPORT_H    =report.h
 
@@ -48,6 +49,7 @@ OBJS_XDR    =${CMODS_XDR:.c=.o}
 OBJS		=${CMODS:.c=.o}
 OBJS_DECOMP =${CMODS_DECOMP:.c=.o}
 OBJS_4GL    =${CMODS_4GL:.c=.o}
+OBJS_PERL   =${CMODS_PERL:.c=.o} 
 
 ## ==================================================================
 ##                    Settings
@@ -84,6 +86,9 @@ adecompile: ${REPORT_H} ${OBJS_DECOMP}
 aace_4gl : ${REPORT_H} ${OBJS_4GL}
 	${4GLPC} $(CFLAGS) ${OBJS_4GL} -o $@
 
+#Cannot compile because dump_perl.c is missing from CVS
+aace_perl : ${REPORT_H} ${OBJS_PERL}
+	${4GLPC} $(CFLAGS) ${OBJS_PERL} -o $@
 
 ## ==================================================================
 ##                    Sub-Targets

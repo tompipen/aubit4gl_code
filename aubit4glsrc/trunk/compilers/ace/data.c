@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.6 2002-07-21 09:56:42 afalout Exp $
+# $Id: data.c,v 1.7 2002-07-26 14:36:39 mikeaubury Exp $
 #*/
 
 /**
@@ -130,6 +130,7 @@ init_report (void)
 
   add_variable("pageno","integer",CAT_BUILTIN,0,2,0);
   add_variable("lineno","integer",CAT_BUILTIN,0,2,0);
+  add_variable("today","date",CAT_BUILTIN,0,2,0);
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.38 2002-07-11 09:22:44 mikeaubury Exp $
+# $Id: sql.c,v 1.39 2002-07-26 14:37:04 mikeaubury Exp $
 #
 */
 
@@ -181,7 +181,7 @@
 char *decode_rc(int a);
 char *conv_date(char *s);
 int find_prepare2 (char *pname);
-struct s_sid *find_prepare (char *pname, int mode);
+struct s_sid *find_prepare (char *pname);
 int find_cursor_for_decl (char *cname);
 struct s_cid *A4GLSQL_find_cursor (char *cname);
 int need_quotes (int d);
@@ -835,7 +835,7 @@ int rc;
  * @return A pointer to the statement strucuture, 0 otherwise.
  */
 struct s_sid *
-A4GLSQL_find_prepare (char *pname, int mode)
+A4GLSQL_find_prepare (char *pname)
 {
   struct s_sid *ptr;
   debug ("chk %s was prepared", pname);
@@ -860,7 +860,7 @@ A4GLSQL_execute_sql (char *pname, int ni, struct BINDING * ibind)
 struct s_sid *sid;
   
   debug ("execute_sql");
-  sid = A4GLSQL_find_prepare (pname, 1);
+  sid = A4GLSQL_find_prepare (pname); //,1
   set_errm ("");
 
   if (sid==0) {
@@ -2743,7 +2743,7 @@ A4GLSQL_describe_stmt (char *stmt, int colno, int type)
   struct s_cid *cid;
   long z;
 
-  sid = A4GLSQL_find_prepare (stmt, 0);
+  sid = A4GLSQL_find_prepare (stmt); // ,0
   cid=0;
 
   if (sid == 0)
@@ -3120,7 +3120,7 @@ execute_sql_from_ptr (char *pname, int ni, char **ibind)
   HSTMT hstmt;
   struct s_sid *sid;
   debug ("execute_sql");
-  sid = A4GLSQL_find_prepare (pname, 1);
+  sid = A4GLSQL_find_prepare (pname); //,1
   set_errm ("");
 #ifdef DEBUG
   {    debug ("Sid=%p", sid);  }
