@@ -183,6 +183,10 @@ int special_cmd(struct cmd *c) {
 			A4GL_chk_err(c->cmd_u.c_chk_err_lineno,this_module.module_name);
 			return 1;
 	}
+	if (c->cmd_type==CMD_ERRCHK) {
+			// error checking...
+			return 1;
+	}
 
 	printf("Unknown command : %d\n",c->cmd_type);
 	return 0;

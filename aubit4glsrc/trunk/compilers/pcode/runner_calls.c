@@ -630,7 +630,10 @@ void * find_by_dlself(char *s)
 #endif
 		A4GL_debug("Looking for %s\n",buff);
       		ptr=dlsym (so_libs[a],buff);
-		if (ptr) return ptr;
+		if (ptr) {
+			A4GL_debug("Found in lib %d",a);
+			return ptr;
+		}
 	}
     }
 
