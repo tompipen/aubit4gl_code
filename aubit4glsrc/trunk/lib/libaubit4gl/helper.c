@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.16 2003-04-26 12:22:16 afalout Exp $
+# $Id: helper.c,v 1.17 2003-04-27 12:20:59 afalout Exp $
 #
 */
 
@@ -727,20 +727,37 @@ aclfgl_w_rowid_s(int arg)
  * @return
  */
 int
-aclfgl_fgl_prtscr(int n) 
+aclfgl_fgl_prtscr(int n)
 {
 	return 0;
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 char last_field[256];
 void set_last_field_name(char *s) {
         strcpy(last_field,s);
 }
+
+
+/**
+ *
+ * @param
+ * @return
+ */
 char *get_last_field_name(char *s) {
         return last_field;
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 add_compiled_form(char *s,char *packer,char *formtype,char *frm)
 {
@@ -753,8 +770,13 @@ add_compiled_form(char *s,char *packer,char *formtype,char *frm)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void *
-read_form(char *s,char *p) 
+read_form(char *s,char *p)
 {
 char old_packer[256]="";
 char old_formtype[256]="";

@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.36 2003-04-10 04:01:29 afalout Exp $
+#	 $Id: a4gl.mk,v 1.37 2003-04-27 12:20:59 afalout Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.36 2003-04-10 04:01:29 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.37 2003-04-27 12:20:59 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -43,6 +43,8 @@ endif
 #FIXME: 4GL_SRC_SUFFIXES should be in some common place for all compilers
 4GL_SRC_SUFFIXES	= .4gl .per .msg
 
+
+A4GL_PACKER			:=$(shell aubit-config A4GL_PACKER)
 
 ##########################################################################
 # Compilers and flags
@@ -136,14 +138,28 @@ A4GL_SOB_EXT=.aso
 A4GL_LIB_EXT=.aox
 #shared library:
 A4GL_SOL_EXT=.asx
-#Compiled form
-#FIXME: reverse => xml.afr
-A4GL_FRM_EXT=.afr.xml
+
+
+ifeq "${A4GL_PACKER}" "XML"
+	#Compiled form
+	#FIXME: reverse => xml.afr
+	A4GL_FRM_EXT=.afr.xml
+
+	#Compiled menu:
+	#FIXME: reverse => xml.mnu
+	A4GL_MNU_EXT=.mnu.xml
+endif
+ifeq "${A4GL_PACKER}" "PACKED"
+	#Compiled form
+	A4GL_FRM_EXT=.afr.dat
+
+	#Compiled menu:
+	A4GL_MNU_EXT=.mnu.dat
+endif
+
+
 #Compiler help
 A4GL_HLP_EXT=.hlp
-#Conmpiled menu:
-#FIXME: reverse => xml.mnu
-A4GL_MNU_EXT=.mnu.xml
 
 #ace intermediate file (to be converted to 4gl, or run using Perl aace runner)
 #A4GL_ACERC_EXT=.aarc.xml
@@ -228,8 +244,6 @@ lib%${A4GL_LIB_EXT}:  $(subst lib,,%.mk)
 
 ####################################
 # Rule for compiling form files
-#
-#With XML packer, fcompile will by default create forms with .frm.xml extension:
 %${A4GL_FRM_EXT}: %.per
 #	${FAIL_CMPL_FRM}${A4GL_FC} $^ ${FORMSTORE}$@
 	${FAIL_CMPL_FRM}${A4GL_FC} $<
@@ -270,10 +284,9 @@ lib%${A4GL_LIB_EXT}:  $(subst lib,,%.mk)
 	aubit mcompile $<
 
 ####################################
-# Rule for Aubit/Plexus Menu compiler - Non-XML packer:
-#
+# Rule for Aubit/Plexus Menu compiler
 #%.mnu: %${A4GL_MNU_EXT}
-%.mnu: %.menu
+%${A4GL_MNU_EXT}: %.menu
 	aubit mcompile $<
 
 ###################################

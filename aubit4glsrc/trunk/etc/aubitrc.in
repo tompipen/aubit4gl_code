@@ -113,7 +113,8 @@ EXDTYPE=@EXDTYPE@
 # pretty complicated stuff though using hashes for the data representation.
 # What you do with it after you've generated it is up to you, because this is
 # an output only library (ie it can't read back what its written).
-A4GL_PACKER=XML
+#A4GL_PACKER=XML
+A4GL_PACKER=PACKED
 
 ############
 #Procesing of reserved word is experimental. Set this to YES, if you want to

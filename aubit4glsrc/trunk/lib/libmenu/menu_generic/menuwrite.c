@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.7 2003-03-07 08:11:56 afalout Exp $
+# $Id: menuwrite.c,v 1.8 2003-04-27 12:20:59 afalout Exp $
 #*/
 
 /**
@@ -51,7 +51,7 @@
 =====================================================================
 */
 
-extern int as_c;
+extern int as_c; /* compile menu to C code, not as standalone resource file */
 int scr = 0;
 int cmaxcol = 0;
 int cmaxline = 0;
@@ -153,10 +153,12 @@ menu_list *	ptr;
 		fclose(fxx);
     }
 
-	if (as_c) {
+	if (as_c) 
+	/* compile menu to C code, not as standalone resource file */
+	{
 		int cnt=0;
 		int a;
-		debug("Asc\n");
+		debug("As C\n");
 		fxx=fopen(fname,"r");
 		fyy=fopen(fname2,"w");
 		fprintf(fyy,"char compiled_menu_%s[]={\n",outputfilename);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.36 2003-04-13 06:24:21 afalout Exp $
+# $Id: resource.c,v 1.37 2003-04-27 12:21:00 afalout Exp $
 #
 */
 
@@ -256,12 +256,17 @@ struct str_resource builtin_resource[] =
       specified in a4gl.mk, or you can even use aubit-config program to read
       then from aubitrc directly inside a4gl.mk
    */
-                                        // source file extensions:
+                                        // counterpart source file extensions:
   {"A4GL_MNU_EXT", 		".mnu"}, 		// .menu
   {"A4GL_HLP_EXT", 		".hlp"},        // .msg
   {"A4GL_FRM_BASE_EXT",	".afr"},        // .per
+  
   {"A4GL_FRM_XML_EXT", 	".xml.afr"},    // .per
-  {"A4GL_XML_EXT", 		".xml"},
+  {"A4GL_XML_EXT", 		".xml"},        // .per
+
+  {"A4GL_FRM_PACKED_EXT","afr.dat"},    // .per
+  {"A4GL_PACKED_EXT", 	".dat"},        // .per
+
   {"A4GL_OBJ_EXT", 		".ao"},         // .c/.4gl
   {"A4GL_LIB_EXT", 		".aox"},        // .c
   {"A4GL_EXE_EXT", 		".4ae"},        // .ao

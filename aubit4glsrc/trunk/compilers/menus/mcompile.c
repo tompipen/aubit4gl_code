@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.19 2003-04-27 10:48:47 mikeaubury Exp $
+# $Id: mcompile.c,v 1.20 2003-04-27 12:20:37 afalout Exp $
 #*/
 
 /**
@@ -78,7 +78,6 @@ menu_option_item * new_option(menu *m);
 */
 
 extern int as_c;
-//int as_c=1;
 
 #ifdef YYDEBUG
 	extern int yydebug;
@@ -119,9 +118,9 @@ int 			menu_cnt=0;
 int
 main (int argc, char* argv[])
 {
-  char a[128];
-  char b[128];
-  char c[128]; // menu source file name
+char a[128];
+char b[128];
+char c[128]; // menu source file name
 
 	setarg0(argv[0]);
 	debug("Initializing mcompile\n");
@@ -137,7 +136,7 @@ main (int argc, char* argv[])
 
 		if (strcmp(argv[1],"-c")==0)
 		{
-			as_c=1;
+			as_c=1; /* compile menu to C code - not a standalone resource */
     	  	strcpy (c, argv[2]);
 		}
 		else
@@ -167,7 +166,9 @@ main (int argc, char* argv[])
     }
 	else
     {
-      printf ("Usage\n   %s filename[.menu]\n", argv[0]);
+      printf ("Usage\n   %s [options] filename[.menu]\n", argv[0]);
+      printf ("Options:\n");
+	  printf ("-c compile menu to C code, not as stanalone resource file\n");
       exit (0);
     }
 
