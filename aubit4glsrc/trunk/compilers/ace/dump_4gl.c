@@ -263,7 +263,7 @@ dump_output ()
   if (this_report.output.report_to_where == 2)
     printf (" REPORT TO PIPE %s\n", this_report.output.report_to_filename);
   if (this_report.output.report_to_where == 3)
-    printf (" REPORT TO %s\n", this_report.output.report_to_filename);
+    printf (" REPORT TO \"%s\"\n", this_report.output.report_to_filename);
 
   if (reporderby)
     {
