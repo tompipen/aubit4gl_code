@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.91 2004-05-12 08:15:59 mikeaubury Exp $
+# $Id: curslib.c,v 1.92 2004-05-20 16:49:13 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.91 2004-05-12 08:15:59 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.92 2004-05-20 16:49:13 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -3113,9 +3113,18 @@ A4GL_debug("px=%d py=%d menu->gw_b=%d menu->y=%d",px,py,menu->gw_b,menu->y);
 
 int UILIB_A4GL_get_key(int timeout) {
 int x;
+	abort_pressed=0;
 	A4GL_chkwin();
 	x=A4GL_getch_win();
 	A4GL_debug("get_key returns %d (%x)",x,x);
+	if (A4GL_is_special_key(x,A4GLKEY_ACCEPT))   {
+			A4GL_debug("Looks like an accept - returning that instead");
+			x=A4GLKEY_ACCEPT;
+	}
+	if (abort_pressed) {
+			A4GL_debug("Looks like an interrupt - returning that instead");
+			x=A4GLKEY_INTERRUPT;
+	}
 	return x;
 }
 
