@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.164 2004-05-20 16:51:39 mikeaubury Exp $
+# $Id: compile_c.c,v 1.165 2004-05-23 14:04:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.164 2004-05-20 16:51:39 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.165 2004-05-23 14:04:52 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1147,6 +1147,9 @@ A4GL_prchkerr (int l, char *f)
  * 2 = call
  * 3 = goto 
  */
+  if (A4GL_isyes(acl_getenv("FUDGE_STATUS"))) {
+  	printc("if (!aclfgli_get_err_flg()) {a4gl_status=0;}");
+  }
 
   if (A4GL_doing_pcode () && 1)
     {
