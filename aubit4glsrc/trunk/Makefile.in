@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.94 2002-10-05 10:54:48 afalout Exp $
+# $Id: Makefile.in,v 1.95 2002-10-07 09:52:27 afalout Exp $
 #
 
 ## ==================================================================
@@ -641,11 +641,14 @@ help.options:
 ##                       Maintainance utility targets
 ## ------------------------------------------------------------------
 
+refresh.all: refresh.noyacc refresh.norpcgen refresh.norpclib
+
 #refresh pre-compiled parser files that are used for compilation on
 #platforms that don't have Yacc installed, from Yacc created files:
 refresh.noyacc:
 	${CP} compilers/4glc/rules/generated/y.tab.c tools/no_yacc/cygwin/compilers/4glc/rules/generated
 	${CP} compilers/4glc/rules/generated/y.tab.h tools/no_yacc/cygwin/compilers/4glc/rules/generated
+	${CP} compilers/4glc/rules/generated/kw.h tools/no_yacc/cygwin/compilers/4glc/rules/generated
 	${CP} compilers/fcompile/lex.yy.c tools/no_yacc/cygwin/compilers/fcompile
 	${CP} compilers/fcompile/y.tab.c tools/no_yacc/cygwin/compilers/fcompile
 	${CP} compilers/menus/lex.yy.c tools/no_yacc/cygwin/compilers/menus
@@ -662,6 +665,8 @@ ifeq "${TARGET_OS}" "cygwin"
 	${CP} compilers/fcompile/form_x_xdr.c tools/cygwin
 	${CP} compilers/menus/menu_x.h tools/cygwin
 	${CP} compilers/menus/menu_x_xdr.c tools/cygwin
+	${CP} compilers/ace/report.h tools/cygwin
+	${CP} compilers/ace/report_xdr.c tools/cygwin
 else
 	@echo "Not on CygWin - skipping."
 endif
