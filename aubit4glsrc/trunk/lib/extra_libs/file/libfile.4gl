@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: libfile.4gl,v 1.13 2005-03-01 08:25:46 mikeaubury Exp $
+	 $Id: libfile.4gl,v 1.14 2005-03-01 09:24:22 mikeaubury Exp $
 }
 
 {**
@@ -436,6 +436,7 @@ DEFINE direntry char(256)
 DEFINE r INTEGER
 
 code
+{
 	struct dirent *dp;
 	dp = readdir((DIR *)handle);
 	if (dp != NULL)
@@ -443,6 +444,7 @@ code
 		strcpy(direntry, dp->d_name);
 		r = 1;
 	}
+}
 endcode
 
 	IF r=0 THEN
