@@ -132,6 +132,9 @@ then
 		print "====================================================================="
 		print "*/"
 		print ""
+		print "#ifdef DEBUG"
+		print "#define DEBUG_SPEC"
+		print "#endif"
 	if (use_prefix==0) {
 		print "#ifndef __" lib "_H__"
 		print "#define __" lib "_H__"
@@ -309,6 +312,11 @@ print ""
 if (HEADER_FILE=="") print "#include \"a4gl_libaubit4gl_int.h\""
 else print "#include " HEADER_FILE 
 print ""
+print "#ifdef DEBUG"
+print "#ifndef DEBUG_SPEC"
+print "#define DEBUG_SPEC"
+print "#endif"
+print "#endif"
 print "static void *libptr=0;"
 #print "static int (*func)();"
 #print "static double (*func_d)();"
@@ -467,7 +475,7 @@ print ");"
 printf("static x_func_%s func_%s;\n",funccnt,funccnt)
 
 
-print "#ifdef DEBUG"
+print "#ifdef DEBUG_SPEC"
 debug_args=debug_args ")"
 if (args!="")
 print "A4GL_debug(\"" debug_args "\\n\"," dargs ");"
@@ -486,7 +494,7 @@ if (rtype=="void")
 	print "   func_" funccnt "(" args ");"
 else {
 	print "   rval=(" rtype ")func_" funccnt " (" args ");"
-	print "#ifdef DEBUG"
+	print "#ifdef DEBUG_SPEC"
 	print ring(rtype)
 	print "#endif"
 	print "return rval;"

@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.101 2004-11-23 13:40:24 mikeaubury Exp $
+# $Id: newpanels.c,v 1.102 2004-12-20 11:48:46 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.101 2004-11-23 13:40:24 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.102 2004-12-20 11:48:46 mikeaubury Exp $";
 
 /**
  * @file
@@ -2822,6 +2822,7 @@ LIBEXPORT int
   int r = 0;
   int nx, ny;
   struct s_windows *w;
+  A4GL_chkwin();
   x = A4GL_pop_int ();
   y = A4GL_pop_int ();
 #ifdef DEBUG
