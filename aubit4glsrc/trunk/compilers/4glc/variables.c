@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.16 2003-02-24 19:11:13 mikeaubury Exp $
+# $Id: variables.c,v 1.17 2003-02-24 19:53:41 mikeaubury Exp $
 #
 */
 
@@ -868,7 +868,7 @@ has_name (struct name_list *namelist, char *name)
     {
       if (strcasecmp (namelist->name, name) == 0)
 	return 1;
-      debug ("Check %s against %s nope", namelist->name, name);
+      //debug ("Check %s against %s nope", namelist->name, name);
       ptr_name = ptr_name->next;
     }
   return 0;
@@ -1673,7 +1673,7 @@ strip_bracket (char *s)
   int c = 0;
   int f = 0;
 
-  debug ("strip_bracket\n");
+  //debug ("strip_bracket\n");
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] == '[')

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.30 2003-02-24 19:11:37 mikeaubury Exp $
+# $Id: 1.reqd,v 1.31 2003-02-24 19:54:59 mikeaubury Exp $
 #
 */
 
@@ -189,7 +189,8 @@ char *		make_sql_string(char *first,...);
 
 
 
-	char	str[3100];  /* This would core dump in CygWin on call to */
+	//char	str[3100];  /* This would core dump in CygWin on call to */
+	char	str[1024];  /* This would core dump in CygWin on call to */
 						/* yyparse in y.tab.c - 3100 in maximum. */
 						/* Was: char	str[20000]; */
 

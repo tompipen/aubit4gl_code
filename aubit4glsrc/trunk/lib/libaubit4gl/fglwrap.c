@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.28 2003-02-17 16:46:34 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.29 2003-02-24 19:55:51 mikeaubury Exp $
 #
 */
 
@@ -320,19 +320,19 @@ int
 isyes(char *s)
 {
 	if (s==0) {
-		debug("isyes = false");
+		//debug("isyes = false");
 		return 0;
 	}
-	debug("isyes called with %s\n",s);
+	//debug("isyes called with %s\n",s);
 	if (s[0]==0) {
-		debug("isyes = false");
+		//debug("isyes = false");
 		return 0;
 	}
 	if (s[0]=='y'||s[0]=='Y'||s[0]=='1'||aubit_strcasecmp(s,"true")==0) {
-		debug("isyes = true");
+		//debug("isyes = true");
 		return 1;
 	}
-		debug("isyes = false");
+		//debug("isyes = false");
 	return 0;
 }
 
