@@ -111,11 +111,6 @@ int ec_check_and_report_error() {
 		return 0;
 	}
 
-
-		//return 1;
-	//} else {
-		//return 0;
-	//}
 }
 
 
@@ -163,15 +158,10 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 		p=list[a].stmt;
 
 
-			qry_type=prepare_query_1(p);
+//printf("P1\n");
+			qry_type=prepare_query_1(p,list[a].type);
+//printf("P2 %d\n",qry_type);
 			if (qry_type==-1) { goto end_query; }
-
-			//EXEC SQL PREPARE stExec from :p;
-			//if (ec_check_and_report_error()) { goto end_query; }
-			//EXEC SQL ALLOCATE DESCRIPTOR "d1";
-			//if (ec_check_and_report_error()) { goto end_query; }
-        		//EXEC SQL DESCRIBE stExec USING SQL DESCRIPTOR "d1";
-			//qry_type=sqlca.sqlcode;
 
 
 			if (qry_type==1) {
@@ -202,18 +192,16 @@ code
 
 				if (!execute_query_1(&raffected)) goto end_query;
 
-				//EXEC SQL EXECUTE stExec;
-				//if (ec_check_and_report_error()) { goto end_query; }
-				//raffected=sqlca.sqlerrd[0];
-				//EXEC SQL FREE stExec;
-				//if (ec_check_and_report_error()) { goto end_query; }
-
 
 			} else {
 				rpaginate=0;
 repeat_query: ;
 	A4GL_debug("EXEC Repeat query out=%p\n",out);
+
 				if (execute_select_prepare()) {
+
+					if (sqlca.sqlcode<0) goto end_query;
+
 					while (1) {
 					int b;
 					char buff[244];
@@ -261,24 +249,24 @@ A4GL_assertion(out==0,"No output file (2)");
 					if (out) {fprintf(out,"\n");fclose(out);out=0;}
 
 					if (!execute_select_free()) goto end_query;
-
-
-					//EXEC SQL CLOSE crExec;
-					//EXEC SQL free stExec;
-					//EXEC SQL free crExec;
-					//if (ec_check_and_report_error()) { A4GL_debug("EXEC ERR3"); goto end_query; }
-
 					
 				} else {
-					A4GL_push_char("Error executing select");
-   					A4GL_display_error(0,0);
-					sleep(1);
+					A4GL_debug("Error with %s",p);
+					//printf("ERR.... execute_select_prepare(..)\n");
+					if (exec_mode==EXEC_MODE_INTERACTIVE) {
+						A4GL_push_char("Error executing select");
+   						A4GL_display_error(0,0);
+						sleep(1);
+					}
+					goto end_query;
+					
 				}
 			}
 A4GL_debug("EXEC COMPLETE %d %d",a,list_cnt);
 		A4GL_debug("Qry type : %d",qry_type);
 end_query: ;
-	sprintf(msg,"Q:%d %d - ( %s )",qry_type, raffected,get_qry_msg(qry_type,raffected));
+//printf("P3 qry_type=%d \n",qry_type);
+	sprintf(msg,"Q:%d %d - ( %s )",qry_type, raffected, get_qry_msg(qry_type,raffected));
 
 endcode
 
@@ -472,6 +460,7 @@ if (sqlca.sqlcode>=0) {
 	A4GL_push_int(sqlca.sqlcode);
 	aclfgl_get_db_err_msg(1);
 	ptr=A4GL_char_pop();
+//printf("ptr=%s\n",ptr);
 	A4GL_trim(ptr);
 	sprintf(buff,"Error %d : %s",sqlca.sqlcode,ptr);
 	free(ptr);

@@ -1,34 +1,70 @@
+define mc_version constant "0.1"
 
 define mv_curr_db char(256)
 define lv_args array[100] of char(100)
 define lv_args_cnt integer
 define lv_input char(255)
+define lv_quiet integer
+define lv_echo integer
+
 
 main
 define lv_a integer
+define lv_cnt integer
 initialize mv_curr_db to null
+
+
+# if you don't want to see the banner
+# ever then set this to 1
+let lv_quiet=0
+
+
+let lv_echo=0
+
 defer interrupt
 code
 putenv("A4GL_AUTOBANG=Y");
 endcode
+
+let lv_cnt=1
 if num_args() then
 	for lv_a=1 to num_args()
-		let lv_args[lv_a]=arg_val(lv_a)
+		
+		if arg_val(lv_a)="-d" then
+			let lv_a=lv_a+1
+			let mv_curr_db=arg_val(lv_a)
+			call open_db()
+			continue for
+		end if
+
+		if arg_val(lv_a)="-q" then
+			let lv_quiet=1
+			continue for
+		end if
+
+		if arg_val(lv_a)="-e" then
+			let lv_echo=1
+			continue for
+		end if
+
+		if arg_val(lv_a)="-v" or arg_val(lv_a)="-V" then
+			display "(c) 2003 Aubit Computing Ltd"
+			display get_version()
+			exit program
+		end if
+
+		let lv_args[lv_cnt]=arg_val(lv_a)
+		let lv_cnt=lv_cnt+1
 	end for
-	let lv_args_cnt=num_args()
+
+	let lv_args_cnt=lv_cnt-1
 end if
 
 
 
 if lv_args_cnt then
 	let mv_curr_db=get_next_arg()
-	whenever error continue
-	database mv_curr_db
-	if sqlca.sqlcode<0 then
-		error "Unable to connect to database ",mv_curr_db
-	else
-		call set_curr_db(mv_curr_db)
-	end if
+	call open_db()
 end if
 
 
@@ -49,6 +85,9 @@ endcode
 options message line last
 
 
+if not lv_quiet then
+	call copyright_banner()
+end if
 
 call main_menu()
 
@@ -56,6 +95,16 @@ call remove_tmpfile()
 end main
 
 
+function open_db()
+	whenever error continue
+	database mv_curr_db
+
+	if sqlca.sqlcode<0 then
+		error "Unable to connect to database ",mv_curr_db
+	else
+		call set_curr_db(mv_curr_db)
+	end if
+end function
 
 ################################################################################
 function set_curr_db(p_dbname) 
@@ -154,4 +203,52 @@ for lv_y=6 to lv_maxy
 	display "" at lv_y,1
 end for
 set pause mode off
+end function
+
+
+function middle(s) 
+define s char(255)
+define s1 char(255)
+define w integer
+define a integer
+code
+w=A4GL_get_curr_width();
+endcode
+let a=w-length(s)
+let a=a/2
+let s1[a,255]=s
+return s1
+end function
+
+
+
+function get_version() 
+define lv_str char(80)
+define lv_dialect char(80)
+let lv_dialect="ODBC"
+code
+#ifdef DIALECT_INFORMIX
+strcpy(lv_dialect,"INFX ESQL/C");
+#endif
+
+#ifdef DIALECT_POSTGRES
+strcpy(lv_dialect,"POSTGRES");
+#endif
+endcode
+
+let lv_str="ACL ASQL Version ",mc_version," ", lv_dialect clipped
+return lv_str
+end function
+
+function copyright_banner()
+
+clear screen
+display middle(get_version()) at 7,1
+
+display middle("(c) 2003 Aubit Computing Ltd") at 9,1
+display middle("http://www.aubit.com") at 10,1
+display middle("Latest version available at:") at 13,1
+display middle("http://aubit4gl.sourceforge.net") at 14,1
+sleep 4
+clear screen
 end function

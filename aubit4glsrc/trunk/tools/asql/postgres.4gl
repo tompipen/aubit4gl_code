@@ -13,6 +13,7 @@ extern int outlines;
 extern int display_mode;
 extern int fetchFirst;
 static int get_size(int dtype,int size) ;
+int need_cursor_free=0;
 
 #define DISPLAY_ACROSS 1
 #define DISPLAY_DOWN   2
@@ -24,21 +25,42 @@ extern int *columnWidths;
 
 int firstFetchInit=0;
 
-void cp_sqlca() ;
+void cp_sqlca_full() ;
+char mv_errmsg[256]="No Message";
+
+#define cp_sqlca() cp_sqlca_full(__FILE__,__LINE__)
+
 int execute_select_prepare() {
+static int done_alloc=0;
 	open_display_file_c();
 
 	EXEC SQL WHENEVER SQLERROR CONTINUE;
+if (done_alloc) {
 	EXEC SQL deallocate descriptor descExec;
+	done_alloc=0;
+	if (sqlca.sqlcode<0) return 0;
+}
 	
+
+if (!done_alloc) {
 	EXEC SQL allocate descriptor descExec ;cp_sqlca();
 	if (sqlca.sqlcode<0) return 0;
+	done_alloc=1;
+}
+
+
+if (need_cursor_free) {
+		execute_select_free();
+}
 	
 	EXEC SQL declare crExec CURSOR FOR stExec;cp_sqlca();
        	if (sqlca.sqlcode<0) return 0;
-	
+
+	need_cursor_free=1;
+
 	EXEC SQL open crExec ;cp_sqlca();
 	if (sqlca.sqlcode<0) return 0;
+	need_cursor_free=3;
 
 	firstFetchInit=1;
 
@@ -72,8 +94,14 @@ define lv_code integer
 define lv_err1 char(255)
 define lv_err2 char(255)
 code
-rgetmsg(sqlca.sqlcode,lv_err1,sizeof(lv_err1));
-sprintf(lv_err2,lv_err1,sqlca.sqlerrm);
+
+//printf("3-->%s\n",mv_errmsg);
+if (lv_code!=-400) {
+	rgetmsg(sqlca.sqlcode,lv_err1,sizeof(lv_err1));
+	sprintf(lv_err2,lv_err1,sqlca.sqlerrm);
+} else {
+	strcpy(lv_err2,mv_errmsg);
+}
 A4GL_trim(lv_err2);
 endcode
 return lv_err2
@@ -414,7 +442,7 @@ A4GL_debug("Getting details for index %d",index);
                 break;
            default:
                 exec sql get descriptor descExec value :index :STRINGVAR=data;cp_sqlca();
-                sprintf(buffer,"<%s>",STRINGVAR);
+                sprintf(buffer,"%s",STRINGVAR);
                 break;
         }
 
@@ -442,21 +470,41 @@ A4GL_debug("BUFFER=%s",buffer);
 }
 
 
-int prepare_query_1(char *s) {
+int prepare_query_1(char *s,char type) {
+static int prepared;
 EXEC SQL BEGIN DECLARE SECTION;
 char *p;
 EXEC SQL END DECLARE SECTION;
 int qry_type;
 p=s;
-                        EXEC SQL PREPARE stExec from :p;cp_sqlca();
-                        //if (ec_check_and_report_error()) { return -1; }
-                        //EXEC SQL ALLOCATE DESCRIPTOR "d1";
-                        //if (ec_check_and_report_error()) { return -1; }
-                        //EXEC SQL DESCRIBE stExec USING SQL DESCRIPTOR "d1";
+
+qry_type=0;
+   if (prepared) {
+       EXEC SQL free stExec;cp_sqlca();
+       prepared=0;
+   }
+
+   EXEC SQL PREPARE stExec from :p;
+   //printf("PREPARE sqlca.sqlcode=%d\n",sqlca.sqlcode);
+   //printf("SQLERRD : %d %d %d %d %d %d\n", sqlca.sqlerrd[0], sqlca.sqlerrd[1], sqlca.sqlerrd[2], sqlca.sqlerrd[3], sqlca.sqlerrd[4], sqlca.sqlerrd[5]);
+   //printf(" -- %s %d\n",sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrm.sqlerrml);
 
 
-                        qry_type=sqlca.sqlcode;
-			return qry_type;
+cp_sqlca();
+
+
+   if (sqlca.sqlcode>=0) prepared=1;
+   else prepared=0;
+
+
+	if (type=='S') qry_type=0;
+	if (type=='U') qry_type=4;
+	if (type=='D') qry_type=5;
+	if (type=='I') qry_type=6;
+
+	if (prepared) return qry_type;
+	//printf("2PREPARE - bad\n");
+	return -1;
 }
 
 
@@ -465,7 +513,8 @@ int execute_query_1(int *raffected) {
 		*raffected=0;
                          EXEC SQL EXECUTE stExec;cp_sqlca();
                          if (ec_check_and_report_error()) { return 0; }
-                         *raffected=sqlca.sqlerrd[0];
+                         *raffected=sqlca.sqlerrd[2];
+	//printf("SQLERRD : %d %d %d %d %d %d\n", sqlca.sqlerrd[0], sqlca.sqlerrd[1], sqlca.sqlerrd[2], sqlca.sqlerrd[3], sqlca.sqlerrd[4], sqlca.sqlerrd[5]);
                          EXEC SQL FREE stExec;cp_sqlca();
                          if (ec_check_and_report_error()) { return 0; }
 	return 1;
@@ -474,11 +523,14 @@ int execute_query_1(int *raffected) {
 
 
 execute_select_free() {
-                          EXEC SQL CLOSE crExec;cp_sqlca();
-                          EXEC SQL free stExec;cp_sqlca();
-                          EXEC SQL free crExec;cp_sqlca();
+	A4GL_debug("execute_select_free");
+	
+                          if (need_cursor_free==3) EXEC SQL CLOSE crExec;  cp_sqlca();
+
+                          if (need_cursor_free>=1) EXEC SQL FREE crExec;  cp_sqlca();
 
                           if (ec_check_and_report_error()) { A4GL_debug("EXEC ERR3"); return 0; }
+	need_cursor_free=0;
 	return 1;
 }
 
@@ -629,8 +681,26 @@ static int get_size(int dtype,int size) {
 
 
 
-void cp_sqlca() {
+void cp_sqlca_full(char *file, int line) {
+//printf("CHECK %s %d - %d (%s)\n",file,line,sqlca.sqlcode,mv_errmsg);
 a4gl_sqlca.sqlcode=sqlca.sqlcode;
+a4gl_sqlca.sqlerrd[0]=sqlca.sqlerrd[0];
+a4gl_sqlca.sqlerrd[1]=sqlca.sqlerrd[1];
+a4gl_sqlca.sqlerrd[2]=sqlca.sqlerrd[2];
+a4gl_sqlca.sqlerrd[3]=sqlca.sqlerrd[3];
+a4gl_sqlca.sqlerrd[4]=sqlca.sqlerrd[4];
+a4gl_sqlca.sqlerrd[5]=sqlca.sqlerrd[5];
+if (sqlca.sqlcode<0) {
+	char *ptr;
+	strcpy(mv_errmsg,sqlca.sqlerrm.sqlerrmc);
+	//printf("--->%s\n",mv_errmsg);
+	ptr=strstr(mv_errmsg,"in line");
+	if (ptr) *ptr=0;
+	//printf("2-->%s\n",mv_errmsg);
+}
+
+
+
 }
 endcode
 

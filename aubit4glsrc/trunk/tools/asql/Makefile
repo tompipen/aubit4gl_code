@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.9 2003-11-15 13:20:36 afalout Exp $
+# $Id: Makefile,v 1.10 2003-11-15 15:54:11 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -79,7 +79,7 @@ endif
 #-verbose
 
 #-G stops esql/c putting #lines in the output so its easier to debug
-4GLPCFLAGS=-g
+4GLPCFLAGS=-O2
 
 ## ==================================================================
 ##                              Targets

@@ -632,7 +632,7 @@ if (indicator!=-1) {
 }
 
 
-int prepare_query_1(char *s) {
+int prepare_query_1(char *s,char type) {
 EXEC SQL BEGIN DECLARE SECTION;
 char *p;
 EXEC SQL END DECLARE SECTION;
