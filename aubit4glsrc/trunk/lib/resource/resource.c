@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.51 2003-08-23 00:42:59 afalout Exp $
+# $Id: resource.c,v 1.52 2003-09-01 15:58:19 mikeaubury Exp $
 #
 */
 
@@ -149,7 +149,8 @@ struct str_resource builtin_resource[] = {
   {"FIELD_INCL_MSG", " This value is not among the valid possibilties "},
   {"FIELD_REQD_MSG", " This field required an entered value "},
   {"FIELD_CONSTR_EXPR", " Error in expression "},
-  {"ARR_DIR_MSG"," There are no more rows in the direction you are going "},
+  {"FIELD_PICTURE_MSG", " You cannot use this editing feature because a picture exists "},
+  {"ARR_DIR_MSG",	" There are no more rows in the direction you are going "},
   {"INPARRAY_FULL_MSG"," Cannot insert another row - the input array is full "},
 
   {"MENUCSELECT", "0"},
@@ -275,7 +276,9 @@ struct str_resource builtin_resource[] = {
   {"COLOR_TUI_BKG","0"},
   {"COLOR_TUI_FG_DEF","-1"},
   {"COLOR_TUI_FG","7"},
-
+  {"NO_INVIS_ATTR","Y"}, // Don't Apply invisible attribute - rely on invisible option in fields
+			 // Setting to N will mess up TERM=SCOANSI and doesn't seem to 
+			// matter otherwise...
   /* all platforms Compilation options */
   {"A4GL_LINK_LIBS", "-laubit4gl"},
   {"A4GL_C_COMP", "gcc"},

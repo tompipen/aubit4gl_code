@@ -140,7 +140,7 @@ endcode
 	end if
 
 end for
-display "Deleted : ",lv_delcnt using "<<<<<<"," messages" at 24,40
+display "Deleted : ",lv_delcnt using "<<<<<<"," messages" at 24,20
 
 let lv_etime=current year to second
 let lv_ival=lv_etime-lv_stime
@@ -151,7 +151,7 @@ let lv_t=lv_delcnt
 let lv_t=lv_t/i
 let i=i/60
 let lv_t=lv_t*60
-display "In ",i ," minutes ",lv_t using "###&.&&","/m" at 24,65
+display "In ",i ," minutes ",lv_t using "###&.&&","/m" at 24,45
 set pause mode off
 if lv_started then
 	CALL A4GL_pop::popend()

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.89 2003-08-27 15:28:35 mikeaubury Exp $
+# $Id: compile_c.c,v 1.90 2003-09-01 15:58:19 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1051,6 +1051,17 @@ A4GL_prchkerr (int l, char *f)
  * 3 = goto 
  */
 
+if (doing_pcode()) {
+	printc("ERRCHK(%d,\"%s\"",l,f);
+	printc(",%d,\"%s\"",when_code[A_WHEN_SUCCESS],when_to[A_WHEN_SUCCESS]);
+	printc(",%d,\"%s\"",when_code[A_WHEN_NOTFOUND],when_to[A_WHEN_NOTFOUND]);
+	printc(",%d,\"%s\"",when_code[A_WHEN_SQLERROR],when_to[A_WHEN_SQLERROR]);
+	printc(",%d,\"%s\"",when_code[A_WHEN_ERROR],when_to[A_WHEN_ERROR]);
+	printc(",%d,\"%s\"",when_code[A_WHEN_WARNING],when_to[A_WHEN_WARNING]);
+	printc(");");
+	return;
+}
+
 #ifdef DEBUG
   A4GL_debug ("MJA A4GL_prchkerr %d %s", l, f);
 #endif
@@ -1984,7 +1995,9 @@ print_construct_2 (char *driver)
   printc ("if (_fld_dr==0) {\n");
   printc ("   _fld_dr= -95;continue;\n}\n");
   add_continue_blockcommand ("CONSTRUCT");
-  printc ("A4GL_debug(\"form_loop=%%d\",_fld_dr);");
+  if (!doing_pcode()) {
+  	printc ("A4GL_debug(\"form_loop=%%d\",_fld_dr);");
+  }
   printc
     ("\n}\n A4GL_push_constr(&_inp_io);\n A4GL_pop_params(ibind,1);\n }\n");
   pop_blockcommand ("CONSTRUCT");	
@@ -2080,7 +2093,7 @@ print_befaft_field_2 (void)
 void
 print_onkey_1 (char *key_list_str)
 {
-  printc ("ON_KEY(\"%s\") {\n", key_list_str);
+  printc ("if (ON_KEY(\"%s\")) {\n", key_list_str);
   printc ("A4GL_processed_onkey();\n");
 }
 
@@ -2312,7 +2325,7 @@ void
 print_for_start (char *var)
 {
   printc
-    ("\n{int _s,_e,_step;\n_step=A4GL_pop_int();_e=A4GL_pop_int();_s=A4GL_pop_int();\n");
+    ("\n{int _s;int _e;int _step;\n_step=A4GL_pop_int();_e=A4GL_pop_int();_s=A4GL_pop_int();\n");
   printc
     ("for (%s=_s; (%s<=_e&&_step>0)||(%s>=_e&&_step<0);%s+=_step) {\n",
      var, var, var, var);
@@ -4280,7 +4293,7 @@ print_declare_associate_1 (char *variable, char *size, char *n)
 {
   printc ("DEF_ASS (_usg%s,%s+1);\n", downshift (variable), size);
   printc
-    ("#define ASSOCIATE_%s(w,rw) %s[ass_hash(_usg%s,%s+1,%s,w,sizeof(_usg%s),rw)]\n",
+    ("#define ASSOCIATE_%s(w,rw) %s[A4GL_ass_hash(_usg%s,%s+1,%s,w,sizeof(_usg%s),rw)]\n",
      upshift (variable), downshift (variable), downshift (variable),
      n, size, downshift (variable));
 }
@@ -4298,7 +4311,7 @@ void
 print_declare_associate_2 (char *variable, char *size, char *n)
 {
   printc
-    ("#define ASSOCIATE_%s(w) %s[ass_hash(_usg%s,%s,%s+1,w,sizeof(_usg%s))]\n",
+    ("#define ASSOCIATE_%s(w) %s[A4GL_ass_hash(_usg%s,%s,%s+1,w,sizeof(_usg%s))]\n",
      upshift (variable), downshift (variable),
      downshift (variable), n, size, downshift (variable));
 }
@@ -4720,12 +4733,29 @@ char *
 A4GL_expr_for_call (char *ident, char *params, int line, char *file)
 {
   static char buff[2048];
-  sprintf (buff,
-	   "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n}\n",
-	   get_namespace (ident), ident, params, line, file);
+  if (doing_pcode()) {
+	sprintf(buff,"ECALL(%s%s,%d,%s)",get_namespace (ident), ident,line,params);
+  } else {
+        sprintf (buff, "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n}\n", get_namespace (ident), ident, params, line, file);
+  }
   add_function_to_header (ident, 1);
   return buff;
 }
+
+
+void
+print_foreach_close (char *cname)
+{
+  print_close('C',cname);
+}
+
+
+int doing_pcode() {
+	if (strcmp(acl_getenv("LEXTYPE"),"PCODE")==0) return 1;
+	if (strcmp(acl_getenv("FAKELEXTYPE"),"PCODE")==0) return 1;
+	return 0;
+}
+
 
 int doing_cs() {
 	if (strcmp(acl_getenv("LEXTYPE"),"CS")==0) return 1;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.88 2003-08-24 17:54:14 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.89 2003-09-01 15:58:18 mikeaubury Exp $
 #
 */
 
@@ -367,18 +367,18 @@
 
 
   /* ==================== from incl_4glhdr.h ========================= */
-#define A4GL_fglerror(a,b) 			A4GL_fgl_error(__LINE__,__FILE__,a,b)
-#define AFT_FIELD_CHK(zzz,xxx) 	(_fld_dr==-98&&strcmp(fldname,zzz)==0)
-#define BEF_FIELD_CHK(zzz,xxx) 	(_fld_dr==-97&&strcmp(fldname,zzz)==0)
-#define DO_BEFORE_DELETE  			(_fld_dr==-12)
-#define DO_AFTER_DELETE  			(_fld_dr==-13)
-#define DO_BEFORE_INSERT  			(_fld_dr==-14)
-#define DO_AFTER_INSERT  			(_fld_dr==-15)
-#define BEF_ROW 				(_fld_dr==-10)
-#define AFT_ROW  				(_fld_dr==-11)
+#define A4GL_fglerror(a,b) 		A4GL_fgl_error(__LINE__,__FILE__,a,b)
+#define AFT_FIELD_CHK(zzz,xxx) 		(_fld_dr==-98&&strcmp(fldname,zzz)==0)
+#define BEF_FIELD_CHK(zzz,xxx) 		(_fld_dr==-97&&strcmp(fldname,zzz)==0)
+#define DO_BEFORE_DELETE  		(_fld_dr==-12)
+#define DO_AFTER_DELETE  		(_fld_dr==-13)
+#define DO_BEFORE_INSERT  		(_fld_dr==-14)
+#define DO_AFTER_INSERT  		(_fld_dr==-15)
+#define BEF_ROW 			(_fld_dr==-10)
+#define AFT_ROW  			(_fld_dr==-11)
 #define BEFORE_INP  			(_fld_dr==-99)
-#define AFTER_INP  				(_fld_dr==-95)
-#define ON_KEY(zzz) 			if (_fld_dr==-90&&A4GL_chk_iskey(zzz))
+#define AFTER_INP  			(_fld_dr==-95)
+#define ON_KEY(zzz) 			(_fld_dr==-90&&A4GL_chk_iskey(zzz))
 
 #define set_status(a) 			A4GL_set_status(a,0)
 

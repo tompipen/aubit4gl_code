@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.31 2003-09-01 09:16:57 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.32 2003-09-01 15:58:19 mikeaubury Exp $
 #*/
 
 /**
@@ -444,7 +444,7 @@ process_control_stack (struct s_screenio *sio)
 			}
 
 
-  			if (has_picture) {
+  			if (has_picture&&ok) {
 				FORM *mform;
 				mform=sio->currform->form;
 				if (strchr("A#X",picture[mform->curcol])==0&&picture[mform->curcol])  do_key_move('R',sio,sio->fcntrl[a].extent, has_picture, picture) ;

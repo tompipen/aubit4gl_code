@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2003-09-01 00:01:11 afalout Exp $
+# $Id: Makefile,v 1.5 2003-09-01 15:58:18 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -45,10 +45,10 @@ include ${ROOT}/incl/Makefile-common
 
 #FIXME: use amake
 
-all : ${LIBROOT}/libA4GL_pop${SO_EXT} test.4ae
+all : ${LIBROOT}/liba4gl_pop${SO_EXT} test.4ae
 
 
-${LIBROOT}/libA4GL_pop${SO_EXT}: pop.4gl
+${LIBROOT}/liba4gl_pop${SO_EXT}: pop.4gl
 	${4GLPC_EXEC} -g -as-dll $^ -o $@ -lspopc
 
 

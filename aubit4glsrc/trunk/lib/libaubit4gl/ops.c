@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.32 2003-08-08 15:52:34 mikeaubury Exp $
+# $Id: ops.c,v 1.33 2003-09-01 15:58:19 mikeaubury Exp $
 #
 */
 
@@ -170,7 +170,9 @@ A4GL_in_dt_ops (int op)
   int ival_data[10];
   int dtime_data[10];
   int d1;
+  int d2;
   int s1;
+  int s2;
   //void *ptr1;
   struct ival *pi;
   struct A4GLSQL_dtime *pd;
@@ -181,15 +183,22 @@ A4GL_in_dt_ops (int op)
 
 A4GL_debug("in_dt_ops");
   A4GL_get_top_of_stack (2, &d1, &s1, (void **) &pd);
+  A4GL_get_top_of_stack (1, &d2, &s2, (void **) &pi);
 
-  A4GL_get_top_of_stack (1, &d1, &s1, (void **) &pi);
 
+  if ((d1 & DTYPE_MASK) != DTYPE_DTIME)
+    {
+      printf ("Confused... %d != %d\n", d1 & DTYPE_MASK, DTYPE_DTIME);
+    }
 
-  if ((d1 & DTYPE_MASK) != DTYPE_INTERVAL)
+  if ((d2 & DTYPE_MASK) != DTYPE_INTERVAL)
     {
       printf ("Confused... %d != %d\n", d1 & DTYPE_MASK, DTYPE_INTERVAL);
     }
 
+
+
+		
 
   in.stime = pi->stime;
   in.ltime = pi->ltime;
@@ -197,8 +206,22 @@ A4GL_debug("in_dt_ops");
   dt.ltime = pd->ltime;
   A4GL_pop_var2 (&in, DTYPE_INTERVAL, in.stime * 16 + in.ltime);
 
+  if (A4GL_isnull(DTYPE_INTERVAL,(void *)&in)) {
+		A4GL_debug("INTERVAL IS NULL\n");
+		A4GL_drop_param();
+		A4GL_push_null(DTYPE_CHAR,0);
+		return ;
+  }
+
 
   A4GL_pop_param (&dt, DTYPE_DTIME, dt.stime * 16 + dt.ltime);
+
+  if (A4GL_isnull(DTYPE_DTIME,(void *)&dt)) {
+		A4GL_debug("DATETIME IS NULL\n");
+		A4GL_push_null(DTYPE_CHAR,0);
+		return ;
+		
+  }
 
 
   A4GL_decode_interval (&in, &ival_data[0]);
@@ -428,7 +451,8 @@ A4GL_debug("in_dt_ops");
 
 
 
-  A4GL_push_int (0);
+  A4GL_push_int (0); // Or maybe push a null...
+  //A4GL_push_null (DTYPE_CHAR,0);
 }
 
 

@@ -23,7 +23,8 @@ commands
 END_FOREACH {
 add_continue_blockcommand ("FOREACH");
 print_foreach_end($<str>3);
-pop_blockcommand("FOREACH");
+pop_blockcommand("FOREACH"); 
+print_foreach_close($<str>3);
 } ;
 
 

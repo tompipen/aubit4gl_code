@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.50 2003-08-20 20:36:50 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.51 2003-09-01 15:58:19 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1232,8 +1232,8 @@ print_foreach_end (char *cname)
   printc ("}");
   printc ("}");
   printcomment ("/* end of foreach while loop */\n");
-  print_close('C', cname);
   printc ("}\n");
+  print_close('C', cname);
 }
 
 

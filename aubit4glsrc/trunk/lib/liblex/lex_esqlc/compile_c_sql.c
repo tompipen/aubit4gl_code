@@ -563,9 +563,10 @@ print_foreach_end (char *cname)
   printc ("}");
   printcomment ("/* end of foreach while loop */\n");
   printc("}");
-  print_close('C',cname);
   printc ("}\n");
 }
+
+
 
 char *get_column_transform(char *s) {
 return s;
