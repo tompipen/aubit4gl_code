@@ -16,10 +16,8 @@ VARIABLE A4GL_MENUTYPE
 *
 *we should not make libaubit4gl depend on GTK headers - but how do I then
 *return GtkWidget* ?
-#include <gdk/gdk.h>
-#include <gtk/gtk.h>
 write_menu
-load_menu char *fname,char *menu_id,int mode,void *handler -> GtkWidget*
+load_menu char* fname,char* menu_id,int mode,void* handler -> void*
 
 
 
