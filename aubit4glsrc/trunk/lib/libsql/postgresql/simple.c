@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.14 2004-04-21 08:23:16 mikeaubury Exp $
+# $Id: simple.c,v 1.15 2004-05-15 09:20:51 mikeaubury Exp $
 #*/
 
 
@@ -347,7 +347,9 @@ fixtype (char *type, int *d, int *s)
   if (strcmp (buff, "numeric") == 0)
     {
       *d = DTYPE_DECIMAL;
-      *s = (atoi (l1) * 16 + atoi (l2));
+	printf("NUMERIC : %s %s \n",l1,l2);
+      *s = ((atoi (l1) <<8) + atoi (l2));
+	printf(" = %d\n",*s);
     }
 
   if (strcmp (buff, "date") == 0)
