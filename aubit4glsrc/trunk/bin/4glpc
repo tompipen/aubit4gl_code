@@ -517,6 +517,11 @@ then
    fi
 
    eval $EXEC
+   if [ $? != 0 ]
+   then
+      $output "Error compiling... check"`expr "$LAST" : "..\(.*\)"`
+      exit 3
+   fi
 
 else
    $output "Generating Exec"
@@ -525,11 +530,12 @@ else
    then
 	   $output executing: $DOIT $GCC $COMPCC  $INCLDIR  $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $LAST
    fi
-   eval $DOIT $GCC $COMPCC  $INCLDIR  $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $LAST 
+   eval $DOIT $GCC $COMPCC  $INCLDIR  $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $LAST
 
    if [ $? != 0 ]
    then
       $output "Error compiling... check"`expr "$LAST" : "..\(.*\)"`
+      exit 2
    fi
 fi
 
