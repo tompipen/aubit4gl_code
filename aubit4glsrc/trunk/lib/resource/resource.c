@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.28 2003-01-30 11:54:39 afalout Exp $
+# $Id: resource.c,v 1.29 2003-02-12 23:05:34 afalout Exp $
 #
 */
 
@@ -104,7 +104,7 @@ struct str_resource builtin_resource[] =
 	which is usefull for debugging. Like:
 		#line 2 "../tools/test/test_build.4gl"
 	*/
-  {"INCLINES",			"yes"},
+  {"INCLINES",			"no"},   ///"yes" or "no"
 
   {"A4GL_RESERVEWORDS", "NO"},
   {"AUBITETC",			"/etc/opt/aubit4gl"}, /* points to default location of Aubit config files */

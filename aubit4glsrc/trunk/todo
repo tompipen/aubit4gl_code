@@ -9,7 +9,7 @@
 	Clean up error handling
 	Replace sqlca & status with acl_sqlca and acl_status -  use as sqlca&status in 4GL code
 		(This will allow other DBs to still have their own sqlca - which may be different).
-	
+
 
 
 ESQL/C
@@ -22,10 +22,11 @@ ESQL/C
 
 FIXME's
 	Fix 'em
+    TODO's - Do them (See DoxyGen @todo tags at http://www.falout.com/projects/Aubit4GL/doxy/html/pages.html )
 
 
 GTK
-	Make it work
+	Make it work - start with tools/test/gui code
 
 
 UI
@@ -43,6 +44,16 @@ SQL Parser
 	Separate SQL parser into different YACC file (to allow for multiple SQL dialects)
 	Bind substrings (also used in displays/inputs)
 
+SQL plugins
+	unixODBC bug (see bug db on SF)
+    Finish native PostgreSQL plugin (Sergio), create SAP DB native
+    show error when SQLUID/SQLPWD is not set on DEFINE ... LIKE
+
+ACE
+	ace still uses rpcgen, can't port to windows - use xgen
+
+XML-RPC
+    create server part
 
 TUI
 	implement Field attribute hierarchy
@@ -50,7 +61,34 @@ TUI
 	implement attribute 'lines' hierarchy
 	General cleanups..
 	clean up construct...
+    Windows TUI uses strange characters
+    DISPLAY without AT erises the screen completely - sends to stdout - should display _OVER_ existing display/screen
 
+PERL
+	fix "make perl"
 
+CVS
+    start branch tagging in CVS
+
+MANUALS
+    need complete update
+    archtecture diagram needs update for libPACKER, LEX_EC, SQL_PG...
+
+WEBSITE
+	Replace current static pages with PostNuke
+
+PACKAGING
+    create .deb (use Alien?)
+
+MISC
+    fix all compiler warnings
+	add "#ifdef DEBUG" arround _ALL_ debug() calls
+    complete DoxyGen function & variable comments
+    enter lclint descriptions to enable full lclint checking
+    fix Splint (lclint) warnings and extend to all libraries
+    check that "make extra" works
+    check code in tools/test/regression
+    Review & clean bugs in bugs database on SourceForge
 
 Ad-Hoc Bug Fixes
+

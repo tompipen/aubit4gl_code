@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.50 2003-02-12 08:53:22 mikeaubury Exp $
+# $Id: lexer.c,v 1.51 2003-02-12 23:04:49 afalout Exp $
 #*/
 
 /**
@@ -1001,7 +1001,7 @@ yylex (void *pyylval, int yystate)
    */
   if (a >= 1000 && isident (buff) && a != KW_TRUE &&
       a != KW_FALSE && a != KW_NULL &&
-      (strcmp (acl_getenv ("RESERVEWORDS"), "YES") != 0))
+      (strcmp (acl_getenv ("A4GL_RESERVEWORDS"), "YES") != 0))
     {
       r = wants_kw_token (yystate, a);
       debug ("wants_kw_token -> %d state = %d a=%d", r,yystate,a);
