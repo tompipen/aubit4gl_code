@@ -59,7 +59,7 @@ define max_buff constant 2001
 
 
 define lines array[max_buff] of char(line_length)
-define x,y 		integer
+define cursor_x,cursor_y 		integer
 define topline 		integer
 define leftcol 		integer
 define max_x integer
@@ -74,6 +74,7 @@ define key_home		integer
 define key_end		integer
 define key_pgup		integer
 define key_pgdn		integer
+define key_cancel	integer
 code
 int not_blank(char *s) {
 static int lastl=-1;
@@ -94,6 +95,7 @@ define c integer
 define l char(80)
 define t integer
 define rest char(line_length)
+define cline char (255)
 
 
 let c=edit_top
@@ -107,6 +109,9 @@ for a=topline to topline+edit_lines-1
 		let max_x=length(lines[a])
 	end if
 	let l=lines[a][leftcol,line_length]
+	if c==cursor_y+t-1 then
+		let cline=l
+	end if
 	display l,"" at c,1 	# attribute(green,dim)  # for that olde green screen feeling...
 
 	if leftcol>1 then display "+" at c,1 end if
@@ -118,14 +123,18 @@ end for
 let max_y=0
 
 code
-for (a=0;a<2001;a++) {
+for (a=0;a<201;a++) {
 	if (not_blank(lines[a])) {
 		max_y=a+1;
 	}
 }
-move(y+t-2,x-1);
-//refresh();
+
+//move(y+t-2,x-1);
 endcode
+if cline is null then
+	let cline=" "
+end if
+display cline[cursor_x] at cursor_y+t-1,cursor_x attribute(reverse)
 set pause mode off
 end function
 
@@ -141,21 +150,43 @@ end function
 
 
 code
-#ifndef DIALECT_POSTGRES
-#include <curses.h>
-#else
-#define KEY_DOWN        0402            /* down-arrow key */
-#define KEY_UP          0403            /* up-arrow key */
-#define KEY_LEFT        0404            /* left-arrow key */
-#define KEY_RIGHT       0405            /* right-arrow key */
-#define KEY_HOME        0406            /* home key */
-#define KEY_BACKSPACE   0407            /* backspace key */
 
-#define KEY_NPAGE       0522            /* next-page key */
-#define KEY_PPAGE       0523            /* previous-page key */
-#define KEY_DC          0512            /* delete-character key */
-#define KEY_ENTER       0527            /* enter/send key */
-#define KEY_END         0550            /* end key */
+#define A4GLKEY_ENTER           0xff01
+#define A4GLKEY_DOWN            0xff02
+#define A4GLKEY_UP              0xff03
+#define A4GLKEY_LEFT            0xff04
+#define A4GLKEY_RIGHT           0xff05
+#define A4GLKEY_PGUP            0xff06
+#define A4GLKEY_PGDN            0xff07
+#define A4GLKEY_INS             0xff08
+#define A4GLKEY_DEL             0xff09
+#define A4GLKEY_HOME            0xff0a
+#define A4GLKEY_END             0xff0b
+
+#define A4GLKEY_DC              0xff0c
+#define A4GLKEY_DL              0xff0d
+#define A4GLKEY_BACKSPACE       0xff0e
+#define A4GLKEY_SHTAB           0xff0f
+
+#define A4GLKEY_CANCEL          0xfffe
+
+#define A4GLKEY_F(x)            (0xff10+x)
+
+#ifndef DIALECT_POSTGRES
+//#include <curses.h>
+#else
+//#define KEY_DOWN        0402            /* down-arrow key */
+//#define KEY_UP          0403            /* up-arrow key */
+//#define KEY_LEFT        0404            /* left-arrow key */
+//#define KEY_RIGHT       0405            /* right-arrow key */
+//#define KEY_HOME        0406            /* home key */
+//#define KEY_BACKSPACE   0407            /* backspace key */
+
+//#define KEY_NPAGE       0522            /* next-page key */
+//#define KEY_PPAGE       0523            /* previous-page key */
+//#define KEY_DC          0512            /* delete-character key */
+//#define KEY_ENTER       0527            /* enter/send key */
+//#define KEY_END         0550            /* end key */
 
 
 #endif
@@ -166,15 +197,16 @@ endcode
 
 function edit_init()
 code
-key_left	=KEY_LEFT;
-key_right	=KEY_RIGHT;
-key_up		=KEY_UP;
-key_down	=KEY_DOWN;
-key_bs		=KEY_BACKSPACE;
-key_pgup	=KEY_PPAGE;
-key_pgdn	=KEY_NPAGE;
-key_home	=KEY_HOME;
-key_end		=KEY_END;
+key_left	=A4GLKEY_LEFT;
+key_right	=A4GLKEY_RIGHT;
+key_up		=A4GLKEY_UP;
+key_down	=A4GLKEY_DOWN;
+key_bs		=A4GLKEY_BACKSPACE;
+key_pgup	=A4GLKEY_PGUP;
+key_pgdn	=A4GLKEY_PGDN;
+key_home	=A4GLKEY_HOME;
+key_end		=A4GLKEY_END;
+key_cancel	=A4GLKEY_CANCEL;
 endcode
 let edit_lines=18
 
@@ -200,8 +232,8 @@ let edit_mode=p_edt
 let insmode=0
 let topline=1
 let leftcol=1
-let x=1
-let y=1
+let cursor_x=1
+let cursor_y=1
 call display_full()
 let c_as_char=" "
 let int_flag=false
@@ -215,19 +247,20 @@ while true
 		let insmode_txt="I"
 	end if
 	display insmode_txt at 4,78
-	display " Co:",x+leftcol-1,"/",max_x," Ln:",y+topline-1,"/",max_y," " at 4,2
+	display " Co:",cursor_x+leftcol-1,"/",max_x," Ln:",cursor_y+topline-1,"/",max_y," " at 4,2
 
 
 code
-c=getch();
+//c=getch();
+c=A4GL_get_key(-1);
 
-if (c==KEY_DC) c=24;
-if (c==KEY_ENTER)  c=13;
+if (c==A4GLKEY_DC) c=24;
+if (c==A4GLKEY_ENTER)  c=13;
 c_as_char[0]=c;
 endcode
 	if c>=32 and c<127 then
-		let tmp_x=x+leftcol-1
-		let tmp_y=y+topline-1
+		let tmp_x=cursor_x+leftcol-1
+		let tmp_y=cursor_y+topline-1
 		let tmp_line=lines[tmp_y]
 
 		if insmode=0 then
@@ -251,7 +284,7 @@ endcode
 		if insmode=1 then
 			call ins_nl()
 		end if
-		let x=1
+		let cursor_x=1
 		let leftcol=1
 		let c=key_down
 	end if
@@ -262,31 +295,31 @@ endcode
 		
 	case c
 		when key_home
-			let x=1 
+			let cursor_x=1 
 			let leftcol=1
 
 		when key_end
 			let leftcol=1
-			let x=length(lines[y+topline-1])
-			while x>79
+			let cursor_x=length(lines[cursor_y+topline-1])
+			while cursor_x>79
 				let leftcol=leftcol+1
-				let x=x-1
+				let cursor_x=cursor_x-1
 			end while
 
 		when key_left
-			if x>2 then 
-				let x=x-1 
+			if cursor_x>2 then 
+				let cursor_x=cursor_x-1 
 			else
-				if x=2 and leftcol>1 then
+				if cursor_x=2 and leftcol>1 then
 					let leftcol=leftcol-1
 				else
-					let x=1
+					let cursor_x=1
 				end if
 			end if
 	
 		when key_right
-			if x<79 then 
-				let x=x+1 
+			if cursor_x<79 then 
+				let cursor_x=cursor_x+1 
 			else
 				if leftcol<line_length then
 					let leftcol=leftcol+1
@@ -294,36 +327,36 @@ endcode
 			end if
 
 		when key_up
-			if y>1 then 
-				let y=y-1 
+			if cursor_y>1 then 
+				let cursor_y=cursor_y-1 
 			else
 				if topline>1 then
 					let topline=topline-1
 				end if
 			end if
-			if x+leftcol>length(lines[topline+y-1]) then
-				let x=length(lines[topline+y-1])+1
-				while x>79
+			if cursor_x+leftcol>length(lines[topline+cursor_y-1]) then
+				let cursor_x=length(lines[topline+cursor_y-1])+1
+				while cursor_x>79
 					let leftcol=leftcol+1
-					let x=x-1
+					let cursor_x=cursor_x-1
 				end while
 			end if
 
 
 		when key_down
-			if y<edit_lines then 
-				let y=y+1 
+			if cursor_y<edit_lines then 
+				let cursor_y=cursor_y+1 
 			else
 				if topline<max_buff then
 					let topline=topline+1
 				end if
 			end if
 
-			if x+leftcol>length(lines[topline+y-1]) then
-				let x=length(lines[topline+y-1])+1
-				while x>79
+			if cursor_x+leftcol>length(lines[topline+cursor_y-1]) then
+				let cursor_x=length(lines[topline+cursor_y-1])+1
+				while cursor_x>79
 					let leftcol=leftcol+1
-					let x=x-1
+					let cursor_x=cursor_x-1
 				end while
 			end if
 
@@ -332,7 +365,8 @@ endcode
 		when 24 call clr_char()
 		when 18 call display_full()
 		when 27 exit while
-		when -1 let int_flag=true exit while
+		when -100 let int_flag=true exit while
+		when key_cancel let int_flag=true exit while
 	end case
 end while
 if int_flag=false then
@@ -359,8 +393,8 @@ define tmp_line char(line_length) # Our current line
 define tmp_line2 char(line_length)  #Our inserted line
 define tmp_x,tmp_y integer
 define a integer
-	let tmp_x=x+leftcol-1
-	let tmp_y=y+topline-1
+	let tmp_x=cursor_x+leftcol-1
+	let tmp_y=cursor_y+topline-1
 	let tmp_line=lines[tmp_y]
 
 	if tmp_x>1 then
@@ -382,8 +416,8 @@ function clr_eol()
 define tmp_line char(line_length)
 define tmp_line2 char(line_length)
 define tmp_x,tmp_y integer
-	let tmp_x=x+leftcol-1
-	let tmp_y=y+topline-1
+	let tmp_x=cursor_x+leftcol-1
+	let tmp_y=cursor_y+topline-1
 	let tmp_line=lines[tmp_y]
 	if tmp_x>1 then
 		let tmp_line=tmp_line[1,tmp_x-1]
@@ -399,8 +433,8 @@ define tmp_line char(line_length)
 define tmp_line2 char(line_length)
 define tmp_x,tmp_y integer
 define a integer
-		let tmp_x=x+leftcol-1
-		let tmp_y=y+topline-1
+		let tmp_x=cursor_x+leftcol-1
+		let tmp_y=cursor_y+topline-1
 
 		let tmp_line=lines[tmp_y]
 		let tmp_line=tmp_line[tmp_x,line_length]

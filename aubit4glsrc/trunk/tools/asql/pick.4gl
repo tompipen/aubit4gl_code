@@ -227,6 +227,9 @@ if mv_cnt >=1 then
 			continue prompt
 		
 		end prompt
+		if fgl_lastkey()!=fgl_keyval("ENTER") then
+			continue while
+		end if
 	
 		if (lv_value !="," and lv_value!=".") or int_flag=true or lv_value is null then
 			exit while
