@@ -729,7 +729,8 @@ void end_define_gen(struct cmd_block *block) {
 int a;
 int size=0;
 // We must be in a block..
-A4GL_debug("This block has %d elements %d bytes\n",block->c_vars.c_vars_len,block->mem_to_alloc);
+//printf("end_define_gen\n");
+//printf("This block has %d elements %d bytes\n",block->c_vars.c_vars_len,block->mem_to_alloc);
 
 
 for (a=0;a<block->c_vars.c_vars_len;a++) {

@@ -238,7 +238,7 @@ id_list : IDENTIFIER
 */
 ;
 
-define:
+define: {end_define();}
 	| has_define {end_define();}
 ;
 

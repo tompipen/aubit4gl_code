@@ -88,6 +88,7 @@ fprintf(stderr,"ADDING to stack %p stack length : %d\n",b,callstack_cnt);
 	      // It will be in the module_variables table of another module
 	      n = &b->c_vars.c_vars_val[a];
 		ptr=resolve_externs(n->var->name_id);
+
 		if (ptr!=(void *)-1) {
 		  n->var->offset = (long) ptr;
 		  continue;

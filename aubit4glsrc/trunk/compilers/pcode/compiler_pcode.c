@@ -709,13 +709,13 @@ add_function (char *function_name, struct define_variables *v, int is_static)
 	  if (v->var_val[a].i_arr_size[0] == 0)
 	    {
 	      //printf("Adding %d as parameter variable\n",a);
-	      add_variable (CAT_PARAMETER, &v->var_val[a],
+	      add_variable (CAT_NORMAL, &v->var_val[a],
 			    GET_ID (v->var_val[a].name_id), 0);
 	    }
 	  else
 	    {
 	      //printf("Adding %d as parameter variable array \n",a);
-	      add_variable_array (CAT_PARAMETER, &v->var_val[a], GET_ID (v->var_val[a].name_id), &v->var_val[a].i_arr_size[0], 0);
+	      add_variable_array (CAT_NORMAL, &v->var_val[a], GET_ID (v->var_val[a].name_id), &v->var_val[a].i_arr_size[0], 0);
 	    }
 	}
 

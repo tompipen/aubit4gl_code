@@ -31,20 +31,6 @@ return ok;
 }
 
 
-// Here we need to define our call functions
-// It'll probably cause **lots** of warnings!
-//
-
-int printfmt(char *s,int a) {
-printf("s=%p a=%d\n",s,a);
-printf("s=%s\n Here goes :\n",s);
-printf(s,a);
-printf("\n\n");
-return 0;
-}
-
-
-
 struct call_funcs {
 	void *ptr;
 	char *name;
@@ -53,7 +39,6 @@ struct call_funcs {
 
 
 #include "calls.h"
-
 
 
 long handle_44(void *end_func,struct param *p) {

@@ -64,8 +64,7 @@ struct call_funcs system_funcs[]={
 	{ &aclfgli_get_err_flg,			"aclfgli_get_err_flg",			"4"},
 
 
-	{ &printfmt,				"printfmt",				"444"}, // Just for testing...
-	{ &printf,				"printf",				0}, 
+	{ &printf,				"printf",				0},  // Just for testing
 {0,0,0} 
 };
 
