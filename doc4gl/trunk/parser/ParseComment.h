@@ -16,3 +16,4 @@ void writeNewLine(void);
 void writeOtherComment(char *comm);
 void writeSeparator(char *comm);
 void markAsDeprecated(void);
+void setModuleDocument(void);

@@ -27,6 +27,8 @@ alnum [a-zA-Z_0-9]
 
 %%
 
+"@file" { setModuleDocument(); }
+
 "@process" { startProcess(); }
 
 "@param" { startParameter(); }

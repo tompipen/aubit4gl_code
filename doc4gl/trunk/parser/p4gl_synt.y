@@ -1845,7 +1845,7 @@ input_management_block_list
 /* Isto da conflitos - Tem 4 shift reduce que podem ter a ver com field clause*/
 /* Para poupar regras juntou-se o input com input array */
 input_management_block
-	: BEFORE FIELD field_clause_list fgl_statement_list 
+	: BEFORE FIELD field_clause_list op_fgl_statement_list 
 	| BEFORE INPUT                   fgl_statement_list
 	          /* Just for trying to use state machine */
 	| AFTER FIELD  field_clause_list fgl_statement_list 

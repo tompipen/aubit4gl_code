@@ -579,9 +579,10 @@ static struct FglKey {
 int IsFglKey(char *StrKey)
 {
   struct FglKey 
-			*low  = FglKey,
-         *high = END(FglKey), 
-         *mid; 
+
+	*low  = FglKey,
+  *high = END(FglKey), 
+  *mid; 
 
    int c;
 
@@ -619,8 +620,11 @@ int IsFglKey(char *StrKey)
 			 return 0;
 		 return 1;
 	 }
-	 printf("%s nao é fglkey\n",StrKey);
-    return 0;
+
+	 /* Other key, as a char */
+	 if ( strlen(StrKey) != 1 )
+	   return 0;
+   return 1;
 }
 
 
