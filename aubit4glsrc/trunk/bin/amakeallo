@@ -1462,6 +1462,7 @@ function doit {
 	
 	if test "$AMAKE" = "1"
     then
+	    date > $AMAKEERRORLOG
 		echo "Invoked with: $@" >> $AMAKEERRORLOG
 	    echo "Invoked in $PWD" >> $AMAKEERRORLOG
 		echo "-----------------------------------------------------" >> $AMAKEERRORLOG
@@ -1476,7 +1477,6 @@ function doit {
 		date > $CLOG
 	    date > $CORELOG
 	    date > $GLOBLOG
-	    date > $AMAKEERRORLOG
 	fi
 
     #################

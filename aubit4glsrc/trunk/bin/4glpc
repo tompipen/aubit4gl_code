@@ -386,13 +386,13 @@ then
 		ODBC_SHARED="-L$ENV_ODBC_LIB_DIR"
 		ODBC_STATIC="-L$ENV_ODBC_LIB_DIR"
 
-		echo "Warning: using ODBC_LIB_DIR from environment: $ODBC_LIB_DIR"
+		echo "NOTE: using ODBC_LIB_DIR from environment: $ODBC_LIB_DIR"
 	fi
 
 	if [ "$ENV_ODBC_LIB_NAME" != "" ]
 	then
 		ODBC_LIB_NAME=$ENV_ODBC_LIB_NAME
-	    echo "Warning: using ODBC_LIB_NAME from environment: $ODBC_LIB_NAME"
+	    echo "NOTE: using ODBC_LIB_NAME from environment: $ODBC_LIB_NAME"
 	fi
 fi
 
@@ -430,6 +430,25 @@ do
         run_next
    ;;
 
+   -run)
+        DO_AND_EXIT="exec"
+        run_next
+   ;;
+
+   -configexample)
+		cp etc/aubitenv.example /etc/aubitenv
+        cp etc/a4glrc.example /etc/a4glrc
+        cp etc/aubitbuild.mk.example /etc/aubitbuild.mk
+        cp etc/aubitbuild-multi.mk.example /etc/aubitbuild-multi.mk
+        chmod +x /etc/aubitenv
+		echo ""
+		echo "Example configuration files placed in /etc:"
+		echo "'aubitenv' 'a4glrc' 'aubitbuild.mk' and 'aubitbuild-multi.mk'"
+        echo "Please edit them to reflect your configuration."
+        echo "Then, execute: '. /etc/aubitenv' to set your environment."
+		echo ""
+		exit 0
+   ;;
 
    *.a) COMPCC="$COMPCC $a"
    ;;
@@ -936,7 +955,7 @@ then
 fi
 
 
-if [  "$GTKGUI" = "Yes" ]
+	if [  "$GTKGUI" = "Yes" ]
 then
 	if [ "$COMSPEC" = "" ]
 	then
