@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.15 2003-06-16 17:14:04 mikeaubury Exp $
+# $Id: keys.c,v 1.16 2003-06-18 09:38:23 mikeaubury Exp $
 #
 */
 
@@ -332,6 +332,7 @@ A4GL_get_option_value (char type)
       return std_dbscr.helpkey ;
       break;
     case 'd':
+		A4GL_debug("Returning dispattr : %x\n",std_dbscr.dispattr);
       return std_dbscr.dispattr ;
       break;
     case 'i':

@@ -68,13 +68,13 @@ void A4GL_copy_decimal (struct decimal *infx, fgldecimal * a4gl, int size,
 
 
 #define COPY_SQLCA
-#define popdec(x) {fgldecimal _s;A4GL_pop_var(&_s,0x1e100005);A4GL_copy_decimal(x,&_s,0x1e10,'i');}
-#define retdec(x) {fgldecimal _s;A4GL_copy_decimal(x,&_s,0x1e10,'o');A4GL_push_variable(&_s,0x1e100005);}
+//#define popdec(x) {fgldecimal _s;A4GL_pop_var(&_s,0x1e100005);A4GL_copy_decimal(x,&_s,0x1e10,'i');}
+//#define retdec(x) {fgldecimal _s;A4GL_copy_decimal(x,&_s,0x1e10,'o');A4GL_push_variable(&_s,0x1e100005);}
 
 
-#define popdtime(x) {char *_s;_s=A4GL_char_pop();dtcvasc(_s,&x);free(_s);}
+//#define popdtime(x) {char *_s;_s=A4GL_char_pop();dtcvasc(_s,&x);free(_s);}
+//#define retdtime(x) {char _s[123];dttoasc(&x,_s);push_char(_s);}
 
-#define retdtime(x) {char _s[123];dttoasc(&x,_s);push_char(_s);}
 #ifdef __cplusplus
 }
 #endif

@@ -152,6 +152,15 @@ retstring (char *s)
   A4GL_push_char (s);
 }
 
+
+rdayofweek(int n) {
+  int day, mn, yr;
+  long d2;
+  A4GL_get_date (n, &day, &mn, &yr);
+  d2 = A4GL_day_in_week (day, mn, yr);
+  return d2;
+
+}
 /*
 popbool(x)   
 popshort(x) 

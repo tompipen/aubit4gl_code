@@ -118,7 +118,8 @@ void A4GL_copy_datetime(dtime_t *infx, struct A4GLSQL_dtime *a4gl,int size,int m
 		char buff[255];
 		char *ptr;
 		int a;
-	if (risnull(DTYPE_DTIME,(void*)infx)) { A4GL_setnull(DTYPE_DTIME,(void *)a4gl,size); return;}
+
+		if (risnull(DTYPE_DTIME,(void*)infx)) { A4GL_setnull(DTYPE_DTIME,(void *)a4gl,size); return;}
 		
 		dttoasc(infx,buff);
 		A4GL_push_char(buff);
@@ -204,4 +205,33 @@ A4GL_copy_double(double *infx,double *a4gl,int size,int mode) {
 	}
 }
 
+
+
+void popdec(dec_t *x) {
+	char *s;
+	s=A4GL_char_pop();
+	deccvasc(s,strlen(s),x); 
+	free(s);
+}
+
+void retdec(dec_t *x) {
+	fgldecimal _s;
+	A4GL_copy_decimal(x,&_s,0x1e10,'o');
+	A4GL_push_variable(&_s,0x1e100005);
+}
+
+void popdtime(dtime_t *x) {
+	char *s;
+	s=A4GL_char_pop();
+	dtcvasc(s,x); 
+	free(s);
+}
+
+
+void retdtime(dtime_t *x) {
+	char s[123];
+	struct A4GLSQL_dtime d;
+	dttoasc(x,s);
+	A4GL_push_char(s);
+}
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.35 2003-06-16 06:51:01 mikeaubury Exp $
+# $Id: ioform.c,v 1.36 2003-06-18 09:38:23 mikeaubury Exp $
 #*/
 
 /**
@@ -114,7 +114,7 @@ extern char *A4GL_find_attribute (struct s_form_dets *f, int field_no);
 void A4GL_debug_print_field_opts (FIELD * a);
 void A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff);
 void A4GL_mja_set_field_buffer_contrl (FIELD * field, int nbuff, int ch);
-void A4GL_set_field_pop_attr (FIELD * field, int attr);
+void A4GL_set_field_pop_attr (FIELD * field, int attr,int cmd_type);
 int A4GL_find_field_no (FIELD * f, struct s_screenio *sio);
 void A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
 int A4GL_get_metric_for (struct s_form_dets *form, FIELD * f);
@@ -541,6 +541,14 @@ void
 A4GL_set_field_attr_with_attr (FIELD * field, int attr)
 {
   int r;
+  int nattr;
+  struct struct_scr_field *f;
+  f = (struct struct_scr_field *) (field_userptr (field));
+
+  nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, attr, f);
+  A4GL_debug("Passed in attribute: %x, determined attribute should be %x",attr,nattr);
+  attr=nattr;
+
   if (attr & AUBIT_ATTR_REVERSE)
     r = 1;
   else
@@ -556,6 +564,8 @@ A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
 {
   struct struct_scr_field *f;
   f = (struct struct_scr_field *) (field_userptr (field));
+
+  colour=colour&0xff00;
 
   if (do_reverse && colour == AUBIT_COLOR_WHITE)
     {
@@ -1711,7 +1721,12 @@ A4GL_disp_fields_ap (int n, int attr, va_list * ap)
       /* fldattr=field_opts(field_list[a]); */
       A4GL_debug ("MJA Calling A4GL_set_field_pop_attr - 1 - attr=%d", attr);
 
-      A4GL_set_field_pop_attr (field_list[a], attr);
+
+
+
+      A4GL_set_field_pop_attr (field_list[a], attr,FGL_CMD_DISPLAY_CMD);
+
+
 
       /* rc=set_field_opts(field_list[a],fldattr); */
       A4GL_debug_print_field_opts (field_list[a]);
@@ -2147,7 +2162,7 @@ A4GL_dump_fields (FIELD * fields[])
  * @todo Describe function
  */
 void
-A4GL_set_field_pop_attr (FIELD * field, int attr)
+A4GL_set_field_pop_attr (FIELD * field, int attr,int cmd_type)
 {
   char *ff;
   struct struct_scr_field *f;
@@ -2234,8 +2249,13 @@ A4GL_set_field_pop_attr (FIELD * field, int attr)
   A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
   oopt = field_opts (field);
   A4GL_set_field_attr (field);
+
+  attr=A4GL_determine_attribute(cmd_type, attr, f);
+
   if (attr != 0)
     A4GL_set_field_attr_with_attr (field, attr);
+
+
   A4GL_debug ("set field attr");
   fff = A4GL_get_curr_form ();
   A4GL_debug ("set field");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.27 2003-06-17 22:55:07 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.28 2003-06-18 09:38:23 mikeaubury Exp $
 #
 */
 
@@ -531,7 +531,7 @@ aclfgl_date (int n)
  * @todo Describe function
  */
 int
-aclfgl_day (int n)		/* FIXME: why does this function have a parameter, if it's not going to be used? */
+aclfgl_day (int n)		/* FIXME: why does this function have a parameter, if it's not going to be used?  it should always be 1*/
 {
   long d;
   int day, mn, yr;
@@ -547,7 +547,7 @@ aclfgl_day (int n)		/* FIXME: why does this function have a parameter, if it's n
  * @todo Describe function
  */
 int
-aclfgl_month (int n)		/* FIXME: why does this function have a parameter, if it's not going to be used? */
+aclfgl_month (int n)		/* FIXME: why does this function have a parameter, if it's not going to be used?  - it should always be 1 */
 {
   long d;
   int day, mn, yr;
@@ -563,7 +563,7 @@ aclfgl_month (int n)		/* FIXME: why does this function have a parameter, if it's
  * @todo Describe function
  */
 int
-aclfgl_weekday (int n)		/* FIXME: why does this function have a parameter, if it's not going to be used? */
+aclfgl_weekday (int n)		/* FIXME: why does this function have a parameter, if it's not going to be used? it should always be 1*/
 {
   long d;
   int day, mn, yr;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.45 2003-06-16 20:56:54 mikeaubury Exp $
+# $Id: newpanels.c,v 1.46 2003-06-18 09:38:23 mikeaubury Exp $
 #*/
 
 /**
@@ -1568,7 +1568,13 @@ A4GL_getmenu_line (void)
 void
 A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 {
+int nattr;
+
 A4GL_debug("display_internal : %d %d %s %d %d",x,y,s,a,clr_line);
+nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, a, 0);
+a=nattr;
+A4GL_debug("determine_attribute seems to be returning %x\n",a);
+
   if (x == -1 && y == -1)
     {
       A4GL_debug ("Line mode display");
