@@ -9,7 +9,7 @@
 SQLITE_DB="$AUBITDIR_UNIX/tools/$TEST_DB.db"
 
 if test "$USE_SQLITE" = "1" -o "$ODBC_USE_DB" = "SQLITE"; then
-
+ 	DB_TYPE="SQLITE"
 	if ! test -f $SQLITE_DB -o "$NEW_SQLITE" = "1"; then
 		rm -f $SQLITE_DB > /dev/null 2>&1
 		echo "creating SQLite testing database..."
@@ -22,7 +22,11 @@ if test "$USE_SQLITE" = "1" -o "$ODBC_USE_DB" = "SQLITE"; then
 	if test "$NEW_SQLITE" = "1"; then
         exit 0
     fi
-
+	SQLITE_VERSION=`sqlite -version`
+	if test "$VERBOSE" = "1"; then
+		echo "SQLite version $SQLITE_VERSION"
+	fi
+	
 	#remember to account for this scrit cd-ing into test directory
 	#when setting relative DBPATH to database file
 	if test "$PLATFORM" = "MINGW"; then
@@ -31,6 +35,8 @@ if test "$USE_SQLITE" = "1" -o "$ODBC_USE_DB" = "SQLITE"; then
 		DBPATH="$AUBITDIR_UNIX"
     fi
 	export DBPATH
+	
+	EXPECT_TO_FAIL="$EXPECT_TO_FAIL $EXPECT_TO_FAIL_SQLITE"
 fi
 
 ######################

@@ -31,12 +31,9 @@ function test_cntpp () {
 #Define list(s) of recognized SQL features
 define_sql_features () {
 
-#test_cntpp
-	
 if test "$DISABLE_SQL_FEATURES_CHECK" = "1"; then
 	return 
 fi
-#SH_DBG=1
 
 if test "$SH_DBG" = "1"; then 
 	echo "Loading SQL features list...."
@@ -45,271 +42,7 @@ fi
 #sql_features_used:
 #	@echo ""
 
-#SQL_UNIQUE -> what is that?
-
-#CLUSTER_INDEX -> CREATE_INDEX_CLUSTER
-#DESC_INDEX -> XXX
-#DDL_SYNONYM -> CREATE_SYSNONYM
-
-		#Legend for feature status fields:
-		#---------------------------------
-		#(P)OSSIBLE - all non-ANSI compatible SQL or db features that is posible
-		#to translate/emulate, but this is __NOT__ currently working
-		#It is anticipated that support for them will be implemented in the 
-		#near future
-		#
-		#(S)UPPORTED - all non-ANSI compatible SQL or db features that is posible
-		#to translate/emulate, and is implemented in Aubit and fully working
-		#
-		#(D)EPENDS - all non-ANSI compatible SQL or db features that is NOT posible
-		#to translate/emulate, so there behaviour will depend on functionality
-		#of the database back-end used. Only ANSI and ANSI-CNV should use this 
-		#status
-		#
-		#(I)MPOSSIBLE - all non-ANSI compatible SQL or db features that is NOT posible
-		#to translate/emulate, and never will be since it depends on the
-		#functionality of the back-end that CANNOT be emulated, translated
-		#or subsitituted
-
-		#Legend for feature type field:
-		#------------------------------
-		#D=DDL statement 
-		#S=SQL statement (Datata Manipulation Statement)
-		#C=Conectivity statement
-		#P=Procedure&trigger (Server Side) 
-		#F=Functions (Server Side)
-		#X=miXed
-		
-		#Array containing all possible / known SQL features names
-		#Fields:
-		#Field 1 - Feature status for any ANSI 92 compliant database (that has .cnv file)
-		#Field 2 - Feature status for any ANSI 92 compliant database (that does NOT have .cnv file)
-		#Field 3 - Feature status for Informix On-Line (5.x, 7.x, 9.x) databases
-		#Field 4 - Feature status for Informix SE (All versions) databases
-		#Field 5 - Feature status for PG 7.4 with Informix compatibility patch
-		#Field 6 - Feature status for vanilla (not patched) PostgreSQL 7.4 and 8
-		#Field 7 - Feature status for SQLite version xyz
-		#Field x - Feature status for MySQL version xyz
-		#Field x - Feature status for MaxDB (SAP DB) version xyz
-		#Field x - Feature status for Oracle version xyz
-		#Field x - Feature status for DB2 version xyz
-		#Field x - Feature status for MS SQL server version xyz
-		#Field x - Feature status for Sybase version xyz
-		#Field x - Feature status for Progress version xyz
-		#Field x - Feature status for Ingres version xyz
-		#Field x - Feature status for FireFox version xyz
-		#Field 8 - Feature type
-		#Field 9 - Feature name
-		#   1 2 3 4 5 6 7 8 9
-		SQL_FEATURES_NON_ANSI="\
-			I I S I I I I D ADD_CONSTRAINT \
-			I I S S S S S D ALTER_INDEX \
-			P P S S I I S D ALTER_TABLE \
-			I I S S I I S D ALTER_TABLE_ADD \
-			I I S S I I S D ALTER_TABLE_ADD_BEFORE \
-			I I S S I I S D ALTER_TABLE_DROP \
-			I I S S I I S D ALTER_TABLE_LOCK_MODE \
-			S S S S S S S S ANSI_DELETE \
-			S S S S S S S S ANSI_INSERT \
-			S S S S S S S S ANSI_SELECT \
-			S S S S S S S S ANSI_UPDATE \
-			S S S S S S S S BEGIN_WORK \
-			S S S S S S S S CLOSE_CURSOR \
-			S S S S S S S C CLOSE_DATABASE \
-			I I S S I I S D CLUSTER_INDEX \
-			S S S S S S S S COMMIT_WORK \
-			I I I S S S S D CREATE_AUDIT \
-			P P S S S S S D CREATE_DATABASE \
-			I I S S S S S D CREATE_DATABASE_IN \
-			I I S I S S S D CREATE_DATABASE_MODE_ANSI \
-			I I S S S S S D CREATE_DATABASE_WITH_LOG \
-			S S S S S S S D CREATE_INDEX \
-			P P S S S S S D CREATE_INDEX_ASC \
-			I I S S S S S D CREATE_INDEX_ASC_DESC \
-			I I S S S S S D CREATE_INDEX_CLUSTER \
-			I I S S S S S D CREATE_INDEX_COMPOSITE \
-			I I S S S S S D CREATE_INDEX_DESC \
-			S S S S S S S D CREATE_INDEX_UNIQUE \
-			I I S S S S S D CREATE_INDEX_UNIQUE_COMPOSITE \
-			I I S I S S S P CREATE_PROCEDURE \
-			I I S S I I S D CREATE_SYNONYM \
-			S S S S S S S D CREATE_TABLE \
-			I I S I I I I D CREATE_TABLE_EXTENT \
-			I I S S I I I D CREATE_TABLE_IN \
-			I I S S I I I D CREATE_TABLE_LOCK_MODE \
-			I I S I I I I D CREATE_TABLE_NEXT_SIZE \
-			S S S S S S S D CREATE_TEMP_TABLE \
-			I I S S S S S D CREATE_TEMP_TABLE_NO_LOG \
-			S S S S S S S D CREATE_VIEW_AS_SELECT \
-			S S S S S S S D CREATE_VIEW_AS_SELECT_MULTI_TABLE \
-			I I S S I I S D CREATE_VIEW_SELECT_WITH_CHECK \
-			S S S S S S S S CURSOR_SELECT \
-			S S S S S S S S CURSOR_SELECT_FOR_UPDATE \
-			S S S S S S S C DATABASE \
-			I I S S S S S C DATABASE_EXCLUSIVE \
-			P S S S S S S F DATETIME_EXTEND \
-			P S S S S S S D DDL_BYTE \
-			I I S S S S S D DDL_CHECK \
-			I I S S I I S D DDL_CONSTRAINT \
-			S S S S S S S D DDL_DATE \
-			S S S S S S S D DDL_DATETIME \
-			S S S S S S S D DDL_DEFAULT_VALUE \
-			P P S S S S S D DDL_DOUBLE_PRECISION \
-			P P S S I I S D DDL_FOREIGN_KEY \
-			I I S S S S S D DDL_INTERVAL \
-			S S S S S S S D DDL_MONEY \
-			P P S S S S S D DDL_NCHAR \
-			I I S I I I I D DDL_NEXT_SIZE \
-			S S S S S S S D DDL_NOT_NULL \
-			P P S S S S S D DDL_NVARCHAR \
-			P P S S S S S D DDL_PRIMARY_KEY \
-			I I S S S S S D DDL_REFERENCES \
-			P P S S S S S D DDL_SERIAL \
-			I I S S S S S D DDL_SET_CONSTRAINT \
-			I I S S I I S D DDL_SYNONYM \
-			P P S S S S S D DDL_TEXT \
-			P P S S S S S D DDL_UNIQUE \
-			S S S S S S S X DEFINE_LIKE \
-			P P S S S S S X DEFINE_LIKE_QUALIFIED_PATH \
-			I I S S S S S S DELETE_FROM_WHERE_ALL_SUBSELECT \
-			I I S S S S S S DELETE_FROM_WHERE_ANY_SUBSELECT \
-			P P S S S S S S DELETE_FROM_WHERE_EXISTS_SUBSELECT \
-			S S S S S S S S DELETE_FROM_WHERE_NULL \
-			I I S S S S S S DELETE_FROM_WHERE_SOME_SUBSELECT \
-			S S S S S S S S DELETE_FROM_WHERE_WITH_SUBSELECT \
-			I I S S I I S S DELETE_WHERE_CURRENT_OF \
-			I I S S I I S D DESC_INDEX \
-			I I I S S S S D DROP_AUDIT \
-			I I S I I I I D DROP_CONSTRAINT \
-			P P S S S S S D DROP_DATABASE \
-			S S S S S S S D DROP_INDEX \
-			I I S I S S S F DROP_PROCEDURE \
-			I I S S I I S D DROP_SYNONYM \
-			S S S S S S S D DROP_TABLE \
-			I I S I S S S F DROP_TRIGGER \
-			S S S S S S S D DROP_VIEW \
-			S S S S S S S S EXECUTE_INTO_USING \
-			S S S S S S S S EXECUTE_USING \
-			P P S S I S S S FETCH_RELATIVE \
-			S S S S S S S S FREE_CURSOR \
-			S S S S S S S X FREE_LOB \
-			P P S S I S S F FUNC_EXTEND \
-			P P S S I I S F FUNC_INTERVAL \
-			D D S S S S S F FUNC_SUBSTR \
-			S S S S S S S D GRANT \
-			S S S S S S S S GROUP_BY \
-			S S S S S S S S GROUP_BY_NUMBER \
-			I I S S S S S D IFX_SYSTABLES \
-			I I S I I I I D INDEX_FILLFACTOR \
-			S S S S S S S X INITIALIZE_LIKE \
-			S S S S S S S S INSERT_COLUMNLIST_EQ_VALUELIST \
-			S S S S S S S S INSERT_INTO_SELECT_FROM \
-			S S S S S S S X LOAD_FROM_INSERT_INTO \
-			I I S S S S S S LOCK_TABLE \
-			I I S S S S S S LOCK_TABLE_EXCLUSIVE \
-			I I S S S S S S LOCK_TABLE_SHARED \
-			I I S S I I S S META_DELETE_FROM_SYNONYM \
-			P P S S I I S S META_DELETE_FROM_VIEW \
-			P P S S S S S S META_DELETE_FROM_VIEW_MULTI_TABLE \
-			I I S S S S S S META_INSERT_MULTITABLE_VIEW \
-			I I S S I I S S META_INSERT_SYNONYM \
-			I I S S I I S S META_INSERT_VIEW \
-			P P S S S S S S META_SELECT_AS_ALIAS \
-			I I S S I I S S META_SELECT_FROM_SYNONYM \
-			S S S S I I S S META_SELECT_FROM_VIEW \
-			I I S S S S S S META_UPDATE_MULTI_TABLE_VIEW \
-			I I S S I I S S META_UPDATE_VIEW \
-			S S S S S S S S ORDER_BY \
-			S S S S S S S S ORDER_BY_ASC \
-			I I S S S S S S ORDER_BY_DESC \
-			S S S S S S S S ORDER_BY_NUMBER \
-			P P S S I S S S PUT_CURSOR \
-			I I I S S S S D RECOVER_TABLE \
-			I I S S S S S D RENAME_COLUMN \
-			I I S S S S S D RENAME_TABLE \
-			S S S S S S S X REPORT_ORDER_BY \
-			S S S S I I S D REVOKE \
-			S S S S S S S S ROLLBACK_WORK \
-			I I I S S S S D ROLLFORWARD_DATABASE \
-			I I S S S S S D ROWID \
-			I I S S I S S S SCROLL_CURSOR \
-			S S S S S S S S SELECT_ALL \
-			S S S S S S S S SELECT_AS \
-			S S S S S S S F SELECT_AVG \
-			S S S S S S S F SELECT_AVG_ALL \
-			S S S S S S S F SELECT_COUNT \
-			I I S S S S S F SELECT_COUNT_DISTINCT \
-			S S S S S S S S SELECT_DISTINCT \
-			S S S S S S S S SELECT_FOR_UPDATE \
-			S S S S I I S S SELECT_FOR_UPDATE_CURSOR \
-			S S S S S S S X SELECT_HAVING_COUNT \
-			S S S S S S S S SELECT_INTO_TEMP \
-			P P S S S S S X SELECT_INTO_TEMP_WITH_NO_LOG \
-			S S S S S S S F SELECT_MAX \
-			S S S S S S S X SELECT_MAX_ALL \
-			S S S S S S S F SELECT_MIN \
-			S S S S S S S X SELECT_MIN_ALL \
-			I I S S I I S S SELECT_OUTER \
-			D D S S I S S S SELECT_RELATIVE \
-			D D S S S S S F SELECT_SUBSTRING \
-			S S S S S S S F SELECT_SUM \
-			S S S S S S S X SELECT_SUM_ALL \
-			D D S S S S S S SELECT_UNION \
-			D D S S S S S S SELECT_UNION_ALL \
-			D D S S S S S S SELECT_WHERE_ALL_SUBSELECT \
-			S S S S S S S S SELECT_WHERE_BETWEEN \
-			S S S S S S S S SELECT_WHERE_EXISTS_SUBSELECT \
-			S S S S S S S S SELECT_WHERE_IN \
-			S S S S S S S S SELECT_WHERE_IN_SUBSELECT \
-			S S S S S S S S SELECT_WHERE_LIKE \
-			S S S S I I S S SELECT_WHERE_MATCHES \
-			S S S S S S S S SELECT_WHERE_NULL \
-			I I S S I I S D SET_BUFFERED_LOG \
-			I I S S S S S F SET_EXPLAIN \
-			I I S S S S S X SET_ISOLATION \
-			D D S S S S S X SET_LOCK_MODE \
-			D D I S I I S X SET_LOG \
-			S S S S S S S X SQLCA_SQLAWARN1 \
-			S S S S S S S X SQLCA_SQLAWARN2 \
-			S S S S I I S X SQLCA_SQLAWARN3 \
-			S S S S I I S X SQLCA_SQLAWARN4 \
-			S S S S S S S X SQLCA_SQLCODE \
-			S S S S I I S X SQLCA_SQLERRD1 \
-			S S S S I I S X SQLCA_SQLERRD2 \
-			S S S S S S S X SQLCA_SQLERRD3 \
-			S S S S I I S X SQLCA_SQLERRD4 \
-			S S S S I I S X SQLCA_SQLERRD5 \
-			S S S S S S S X SQLCA_SQLERRD6 \
-			S S S S I I S X SQLCA_SQLERRM \
-			S S S S I S S X SQL_END_SQL_BLOCK \
-			I I I S S S S D START_DATABASE \
-			I I I S S S S D START_DATABASE_WITH_LOG \
-			I I I S S S S D START_DATABASE_WITH_LOG_MODE_ANSI \
-			D D S S S S S X TABLENAME_DB_SERVER_USER_TABLE \
-			D D S S S S S X TABLENAME_DB_TABLE \
-			D D S S S S S X TABLENAME_DB_USER_TABLE \
-			P P S S S S S X UNLOAD_PATH_RELATIVE \
-			S S S S I I S X UNLOAD_TO \
-			S S S S S S S X UNLOAD_TO_SELECT_FROM \
-			S S S S I I S X UNLOAD_TO_SELECT_FROM_WHERE \
-			D D S S S S S S UNLOCK_TABLE \
-			S S S S S S S S UPDATE_COLUMNLIST_EQ_VALUELIST \
-			P P S S S S S S UPDATE_COLUMNLIST_EQ_VALUELIST_WITH_THRU \
-			S S S S S S S S UPDATE_SET_STAR \
-			S S S S S S S S UPDATE_SET_VALUE_WITH_SUBSELECT \
-			I I S S S S S D UPDATE_STATISTICS \
-			D D S S S S S S UPDATE_WHERE_CURRENT_OF \
-			S S S S S S S X VALIDATE_LIKE \
-			S S S S S S S S WHERE_ANY_SUBSELECT \
-			S S S S S S S S WHERE_BETWEEN \
-			S S S S S S S S WHERE_LIKE \
-			I I S S I I S S WHERE_LIKE_ESCAPE \
-			S S S S I I S S WHERE_MATCHES \
-			I I S S I I S S WHERE_MATCHES_ESCAPE \
-			S S S S S S S S WHERE_NOT_IN \
-			S S S S I I S S WHERE_NULL \
-			I I S S S S S S WHERE_SOME_SUBSELECT \
-			"
+		SQL_FEATURES_NON_ANSI=`cat $CURR_DIR/etc/db_features.conf | grep -v "^#"`
 
 		if test "$DB_TYPE" = ""; then
 			#We must know db type to work with db features
@@ -345,9 +78,7 @@ fi
 			*)	echo "ERROR: FEATURE_DB_TYPE=$FEATURE_DB_TYPE"; exit 5 ;;
 		esac
 		
-		
-		##############################################################
-		#Chop up the big list into separate lists depending on status
+		#Initialise counters:
 		CNT=0 ;	FIELD_CNT=0; ROW_CNT=0;
 		D_CNT=0; S_CNT=0; C_CNT=0; P_CNT=0; F_CNT=0; X_CNT=0
 		POSIBLE_CNT=0; SUPPORTED_CNT=0; IMPOSSIBLE_CNT=0; DEPEND_CNT=0
@@ -357,6 +88,9 @@ fi
 		P_P_CNT=0; P_S_CNT=0; P_I_CNT=0; P_D_CNT=0
 		F_P_CNT=0; F_S_CNT=0; F_I_CNT=0; F_D_CNT=0
 		X_P_CNT=0; X_S_CNT=0; X_I_CNT=0; X_D_CNT=0
+		
+		##############################################################
+		#Chop up the big list into separate lists depending on status
 		for field in $SQL_FEATURES_NON_ANSI ; do
 			let CNT=CNT+1
 			let FIELD_CNT=FIELD_CNT+1
@@ -407,7 +141,7 @@ fi
 						I) let F_I_CNT=F_I_CNT+1;;
 						D) let F_D_CNT=F_D_CNT+1;;
 					esac;;
-				X) #mixed
+				X) #miXed
 					let X_CNT=X_CNT+1
 					case $FEATURE_STATUS in 
 						P) let X_P_CNT=X_P_CNT+1;;
@@ -423,20 +157,15 @@ fi
 			elif test "$FIELD_CNT" = "9"; then #Feature name
 				case $FEATURE_STATUS in 
 				P) SQL_FEATURES_NON_ANSI_POSIBLE="$SQL_FEATURES_NON_ANSI_POSIBLE $field"
-					let POSIBLE_CNT=POSIBLE_CNT+1
-					;;
+					let POSIBLE_CNT=POSIBLE_CNT+1 ;;
 				S) SQL_FEATURES_NON_ANSI_SUPORTED="$SQL_FEATURES_NON_ANSI_SUPORTED $field"
-					let SUPPORTED_CNT=SUPPORTED_CNT+1
-					;;
+					let SUPPORTED_CNT=SUPPORTED_CNT+1 ;;
 				I) SQL_FEATURES_NON_ANSI_IMPOSIBLE="$SQL_FEATURES_NON_ANSI_IMPOSIBLE $field"
-					let IMPOSSIBLE_CNT=IMPOSSIBLE_CNT+1
-					;;
+					let IMPOSSIBLE_CNT=IMPOSSIBLE_CNT+1 ;;
 				D) SQL_FEATURES_NON_ANSI_DEPEND="$SQL_FEATURES_NON_ANSI_DEPEND $field"
-					let DEPEND_CNT=DEPEND_CNT+1
-					;;
+					let DEPEND_CNT=DEPEND_CNT+1 ;;
 				*) echo "ERROR: FEATURE_STATUS=$FEATURE_STATUS"
-					exit 5
-					;;
+					exit 5 ;;
 				esac
 				let ROW_CNT=ROW_CNT+1
 				FIELD_CNT=0
@@ -489,26 +218,6 @@ fi
 			exit
 		fi
 								
-		#List of all non-ANSI compatible SQL or db features EXPECTED TO FAIL when
-		#using current database and Aubit compiler in current mode
-#		SQL_FEATURES_NON_ANSI_EXPECT_FAIL="$SQL_FEATURES_NON_ANSI_POSIBLE \
-#								$SQL_FEATURES_NON_ANSI_IMPOSIBLE"
-	
-		#Statments not supported by 4Js ODI on non-Informix databases
-#		SQL_INCOMPAT_4JS="$SQL_FEATURES_NON_ANSI_IMPOSIBLE"
-				
-		#Statements incompatible using Aubit in PG EC mode against 
-		#Informix compatibility patched PG engine
-#		SQL_INCOMPAT_AUBIT_ECPG_PG_PATCHED="$SQL_FEATURES_NON_ANSI_EXPECT_FAIL"
-	
-		#Statements incompatible uisng Aubit in PG EC mode against 
-		#vanilla (not patched) PG engine V 7.4
-#		SQL_INCOMPAT_AUBIT_ECPG_PG_VANILLA="$SQL_FEATURES_NON_ANSI_EXPECT_FAIL"
-				
-		#Statements incompatible using Aubit in C mode (ODBC) against 
-		#vanilla (not patched) PG engine V 7.4
-#		SQL_INCOMPAT_AUBIT_C_PG_VANILLA="$SQL_FEATURES_NON_ANSI_EXPECT_FAIL"
-
 if test "$SH_DBG" = "1"; then 
 	echo "Loaded SQL features list."
 	exit 
@@ -519,19 +228,31 @@ fi
 
 #Check for incompatible SQL dialect features (tests 234 256 etc...)
 chech_sql_features () {
-#echo "chech_sql_features"
-
+	
+if test "$SH_DBG" = "1"; then 
+	echo "Checking SQL features..."
+	exit 
+fi
 	#NOTE: All tests should at least compile, regardless of what 
 	#SQL features are used in the code - so we will skip testing for SQL
 	#features if test is compile only, otherwise it might appear that some 
 	#tests that are compile-only 'work', but they 'work' because they are 
 	#never executed, and if they where, who knows what would happen
+	
+	#TODO- we have simmilar problem with tests that do not perform any 
+	#success checking at run-time, other then that program can run and
+	#exits with 0 status - which does not mean that feature is really working
+	#We will need to add new description to them, like no_runtime_check
+	#and then skip them here too... most of them by now have text "no runtime
+	#checking" in test description...
+	
 	if test "$DISABLE_SQL_FEATURES_CHECK" = "1" -o "$COMPILE_ONLY" = "1"; then
 		return
 	fi
 	
 	if test "$SQL_FEATURES_USED" = ""; then
-		#If test has no SQL/db features description, skip
+		#If test has no SQL/db features description, skip it - should never 
+		#happen if this is a db test
 		return
 	fi
 
@@ -576,6 +297,7 @@ chech_sql_features () {
 				#Skip all features expected to fail
 				INCOMPAT_FEATURE_LIST="$SQL_FEATURES_NON_ANSI_POSIBLE \
 								$SQL_FEATURES_NON_ANSI_IMPOSIBLE"
+							#should I add Depends here?
 			fi
 			;;
 		*) #All other non-Aubit 4GL compilers
@@ -594,7 +316,7 @@ chech_sql_features () {
 		for a in $SQL_FEATURES_USED; do
 			#...for every feature test is using...
 			for b in $INCOMPAT_FEATURE_LIST; do
-				#...look for it at list of features we consider incompatible 
+				#...look for it on list of features we consider incompatible 
 				if test "$a" = "$b"; then
 					#If match is found, add it to the list incompatible
 					#features this test is using
