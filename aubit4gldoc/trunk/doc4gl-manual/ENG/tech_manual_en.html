@@ -31,9 +31,9 @@
                 <li><a href="#Access to the repository"> Access to the repository</a></li> 
                 <li><a href="#Exporter for 4gl sources"> Exporter for 4gl source 
                   files</a></li>
-                <li><a href="#CSV Importer">CSV Importer&nbsp;</a></li>        
-                <li><a href="#CSV Exporter">CSV Exporter&nbsp;</a></li>        
-                <li><a href="#HTML Generation"> HTML generation</a></li>        
+                <li><a href="#CSV Importer">CSV Importer&nbsp;</a></li>         
+                <li><a href="#CSV Exporter">CSV Exporter&nbsp;</a></li>         
+                <li><a href="#HTML Generation"> HTML generation</a></li>         
               </ul>
             </li>
             <li><a href="#Web Navigator">Web Navigator</a></li>
@@ -60,14 +60,14 @@
          
 <h1> <a name="Introduction"> Introduction</a> </h1>
 <blockquote>
-      This manual presents the DOC4GL tools from the implementation point       
-of view. This document is part of DOC4GL documentation set. Please see <a href="../index.html">Doc4GL documentation index page</a>     
-  for other related documents.    
-      <p>This <i>Technical Manual</i> is intended for person that will install,    
-      configure and&nbsp; maintain DOC4GL installation, and for developers that    
-      will enhance it's functionality.&nbsp;</p>   
+      This manual presents the DOC4GL tools from the implementation point        
+of view. This document is part of DOC4GL documentation set. Please see <a href="../index.html">Doc4GL documentation index page</a>      
+  for other related documents.     
+      <p>This <i>Technical Manual</i> is intended for person that will install,     
+      configure and&nbsp; maintain DOC4GL installation, and for developers that     
+      will enhance it's functionality.&nbsp;</p>    
 </blockquote>
-<p><a href="#Table of contents">Back to Table of contents</a></p>   
+<p><a href="#Table of contents">Back to Table of contents</a></p>    
 <hr>
                    
   <h1> <a name="Architecture"> Architecture</a> </h1>
@@ -79,7 +79,7 @@ of view. This document is part of DOC4GL documentation set. Please see <a href="
      <br>
      </div>
 <blockquote>
-     In conceptual terms, it can be divided in the following components:                             
+     In conceptual terms, it can be divided in the following components:                              
     <ul>
           <li> <a href="#Repository"> Repository</a>
         </li>
@@ -93,9 +93,9 @@ of view. This document is part of DOC4GL documentation set. Please see <a href="
             <li> <a href="#Exporter for 4gl sources">Exporter for 4gl source 
               files</a>
             </li>
-            <li> <a href="#CSV Importer">CSV Importer&nbsp;</a> </li>        
-            <li> <a href="#CSV Exporter">CSV Exporter&nbsp;</a> </li>        
-            <li> <a href="#HTML Generation"> HTML generation</a>        
+            <li> <a href="#CSV Importer">CSV Importer&nbsp;</a> </li>         
+            <li> <a href="#CSV Exporter">CSV Exporter&nbsp;</a> </li>         
+            <li> <a href="#HTML Generation"> HTML generation</a>         
             </li>
                                
       </ul>
@@ -117,10 +117,10 @@ formats. It is possible to access data on-line, through available interfaces (in
            
     <h2> <a name="Documenter">Documenter</a> </h2>
 <blockquote>
-     The <i>documenter</i> is composed from modules programmed with 4GL programming         
-  languages, and DOC4GL tools. It was designed in attempt to guarantee the integrity of   
-     both,         
-  but this goal is still not fully reached.<p>Program written in Perl serves as user interface, for      
+     The <i>documenter</i> is composed from modules programmed with 4GL programming          
+  languages, and DOC4GL tools. It was designed in attempt to guarantee the integrity of    
+     both,          
+  but this goal is still not fully reached.<p>Program written in Perl serves as user interface, for       
 the execution of the different <i>documenter</i> actions. It allows execution in graphical environments   
   (GUI) or command line (CUI) without any interaction with the user (except when  
      generating messages) facilitating batch processing.</p>  
@@ -131,9 +131,9 @@ given that still did not reach one level of null dependence.</p>
                        
     <h3> <a name="Parser and Extractor of documentation from 4gl source code">Parser 
     and Extractor of documentation from 4gl source code</a> </h3>
-     Receiving the name of 4gl source file as parameter, it performs syntactic analysis,         
-  and loads the information into memory and later storing (if corresponding    
-     option was chosen) in a relational repository inside of a database.         
+     Receiving the name of 4gl source file as parameter, it performs syntactic analysis,          
+  and loads the information into memory and later storing (if corresponding     
+     option was chosen) in a relational repository inside of a database.          
   <p>
      It was build using the following tools:</p> 
                        
@@ -147,7 +147,7 @@ given that still did not reach one level of null dependence.</p>
                                
       </ul>
           </blockquote>
-   It can be executed with the following options:         
+   It can be executed with the following options:          
   <blockquote>
     <div align="left">
       <table border="0" bgcolor="#C0C0C0">
@@ -161,50 +161,50 @@ given that still did not reach one level of null dependence.</p>
                
       <blockquote>                  
         <ul>
-            <li>   -h:  Display this help message </li>          
-            <li>   -d:  Debug mode </li>          
-            <li>   -i:  Insert in the repository </li>          
-            <li>   -v:  Verbose mode </li>          
-            <li>   -w:  Warning level (1-10) </li>         
-            <li>   -c:  Generate documentation </li>          
-            <li>   -s: Standard comments will be documentation          
+            <li>   -h:  Display this help message </li>           
+            <li>   -d:  Debug mode </li>           
+            <li>   -i:  Insert in the repository </li>           
+            <li>   -v:  Verbose mode </li>           
+            <li>   -w:  Warning level (1-10) </li>          
+            <li>   -c:  Generate documentation </li>           
+            <li>   -s: Standard comments will be documentation           
           </li>
-            <li>   -p package:  Name of package </li>          
+            <li>   -p package:  Name of package </li>           
                    
         </ul>
           </blockquote>
                                    
         <h3> <a name="Access to the repository"> Access to the repository</a> </h3> 
-   The access to the repository (for reading and writing) is built in Informix ESQL/C,         
-  and as such it can only access and create the repositories in Informix    
-     databases, for the moment. Access to other databases will be implemented    
-     using Aubit 4gl ODBC connection methods.        
+   The access to the repository (for reading and writing) is built in Informix ESQL/C,          
+  and as such it can only access and create the repositories in Informix     
+     databases, for the moment. Access to other databases will be implemented     
+     using Aubit 4gl ODBC connection methods.         
   <p>Name of the database where the repository will be  
 installed is specified using the DATABASE environment variable.</p> 
                                                  
         <h3> <a name="Exporter for 4gl sources"> Exporter for 4gl sources</a> </h3> 
-     Developed in Perl under the object/class model, it reads the information         
-  from the repository, for one or more intended modules, and&nbsp; generates the    
-     comments           
-in <i> fgldoc</i> format and inserts them inside the 4gl source files.<h3><a name="CSV Importer">CSV Importer</a> </h3>          
-  Developed using Perl with Object/Class model, attempts to open the file specified and    
-     load information to a database with exactly the           
-same format. Optionally, later it can perform normalization of that information    
-     into normalized tables in the repository.         
+     Developed in Perl under the object/class model, it reads the information          
+  from the repository, for one or more intended modules, and&nbsp; generates the     
+     comments            
+in <i> fgldoc</i> format and inserts them inside the 4gl source files.<h3><a name="CSV Importer">CSV Importer</a> </h3>           
+  Developed using Perl with Object/Class model, attempts to open the file specified and     
+     load information to a database with exactly the            
+same format. Optionally, later it can perform normalization of that information     
+     into normalized tables in the repository.          
   <p>Note that loaded information in the CSV file format is of little or no use 
   to the user.</p>
                    
         <h3><a name="CSV Exporter">CSV Exporter</a> </h3> 
- Reads the information from fully normalized tables in relational database,         
-  un-normalize           
-it in the table p4gl_excel and unloads it in&nbsp;character separated format         
+ Reads the information from fully normalized tables in relational database,          
+  un-normalize            
+it in the table p4gl_excel and unloads it in&nbsp;character separated format          
   (CSV).
                    
         <h3><a name="HTML Generation">HTML Generation</a> </h3> 
-  To be able to use this information in off-line environments, it is possible to generate a set         
-  HTML formatted files with           
-all the repository information.         
-   This information cannot be modified or loaded, and loses the SQL access ability.   
+  To be able to use this information in off-line environments, it is possible to generate a set          
+  HTML formatted files with            
+all the repository information.          
+   This information cannot be modified or loaded, and loses the SQL access ability.    
   <p>
    This type of functionality is often used by similar documentation systems, as for example the  
   DoxyGen or Javadoc.</p> 
@@ -225,15 +225,21 @@ container, there will have to be compiled and installed in the correct place, fo
                                        
         <h2><a name="Repository Data Model">Repository Data Model</a> </h2> 
 <blockquote>
-     The repository of the DOC4GL has a relational structure, with referential         
-  integrity. It constitutes the central storage of the fgldoc tool. It is, for now, implemented and tested    
-     only using Informix DBMS.         
+     The repository of the DOC4GL has a relational structure, with referential          
+  integrity. It constitutes the central storage of the fgldoc tool. It is, for now, implemented and tested     
+     only using Informix DBMS. 
+     <p><a href="../images/ERwin-Doc4GL.jpg"><img border="2" src="../images/ERwin-Doc4GL_small1.jpg" alt="ERwin-Doc4GL.jpg (88971 bytes)" width="100" height="75"></a></p>
+     <p>Click on the image to see picture of Doc4GL database repository model as 
+     designed in ERwin.</p>
+     <p>Click here to open Adobe Acrobat (.pdf) file containing the image of <a href="../images/ERwin-Doc4GL.pdf">Doc4GL 
+     database repository model</a> showing all tables and there relationships as 
+     modeled in ERwin. You can download this model as ERwin (.er1) file <a href="../images/ERwin-Doc4GL.ER1">here</a>.</p>
   <p>
      Given the normalization of the structure (and the fact that it don't use <i>serial</i>     
 nor <i>rowid</i>), the conversion to other RDBMS (such as PostgreSQL)     
 should not be to complicated.</p>   
-  <p>Following is the description of each table of the relational repository.           
-We currently don't have descriptions for each column, but this is on the TO-DO         
+  <p>Following is the description of each table of the relational repository.            
+We currently don't have descriptions for each column, but this is on the TO-DO          
   list.</p>
   <p>Summary of database tables:</p>
                                                                         

@@ -51,7 +51,7 @@
 </P>
 <ul>
   <li>
-structural specifications</li>              
+structural specifications</li>               
   <li>manual specifications</li>
   <li>documents for the users</li>
 </ul>
@@ -145,7 +145,7 @@ system.
 <H2> <a name="Filing-cabinets Source"> Source files</a>&nbsp; 
 </H2>
 <blockquote>
-<P> The tool generates documentation with origin in 4GL source files:             
+<P> The tool generates documentation with origin in 4GL source files:              
 
 </P>
 <ul>
@@ -221,17 +221,17 @@ to be described by the comment entry.  The Javadoc tool uses this first phrase f
 for writing of summary information, that is easily recognizable. 
 
 </P>
-<P> This section (sentence) ends with the first full stop (&quot;.&quot;) followed by   
-one of the following:&nbsp;    
+<P> This section (sentence) ends with the first full stop (&quot;.&quot;) followed by    
+one of the following:&nbsp;     
 </P>
 <ul>
   <li>  
 space,</li>
   <li> tab,</li>
   <li> end of string</li> 
-  <li> or in first tag found.&nbsp;</li>  
+  <li> or in first tag found.&nbsp;</li>   
 </ul>
-<P>  In the following example, the first section finishes in &quot;Prof.&quot; :    
+<P>  In the following example, the first section finishes in &quot;Prof.&quot; :     
 </P>
   <blockquote>
 <PRE>{**
@@ -369,10 +369,25 @@ function setCliemntName(name)
   <li><b>Avoid abbreviations</b></li>
 </ul>
 <blockquote>
-<P > Use &quot;also known as&quot; instead of &quot;aka&quot;, or &quot;to be more 
-specific&quot; instead of &quot;i.e&quot;.
+<P > Use &quot;also known as&quot; instead of &quot;aka&quot;, or &quot;to be more  
+specific&quot; instead of &quot;i.e&quot;. 
 </P>
 </blockquote>
+<ul>
+  <li><b>Separator</b></li>
+</ul>
+<blockquote>
+<P > Optionally tags can be separated from the content/value with a column character:
+</P>
+  <blockquote>
+<P > @Author: John Smith
+</P>
+  </blockquote>
+<P > The : character will be removed from the documentation output.
+</P>
+</blockquote>
+<P > &nbsp;
+</P>
 <p> <a href="#Table of Content">Back to Table of Content</a> 
 </p>
 <hr>
@@ -384,24 +399,50 @@ specific&quot; instead of &quot;i.e&quot;.
 <P> <I> Tags </I><SPAN STYLE="font-style: normal"> must be included  
 in the following order: 
 </SPAN></P>
-<PRE STYLE="margin-left: 2cm">* <a href="#author">@author</a>
-* <a href="#version">@version</a>
-*
-* <a href="#param">@param</a>
-* <a href="#return">@return</a>
-* <a href="#see">@see</a>
-* <a href="#since">@since</a>
-* <a href="#deprecated">@deprecated</a>
-* <a href="#todo">@todo</a></PRE><P>
- FIXME: <a href="#process">@process</a> ?? 
+<PRE STYLE="margin-left: 2cm"><a href="#author">@author</a>
+<a href="#version">@version
+</a>
+<a href="#param">@param</a>
+<a href="#return">@return</a>
+<a href="#see">@see</a>
+<a href="#since">@since</a>
+<a href="#deprecated">@deprecated</a>
+<a href="#todo">@todo
+</a>@table (FIXME) for dynamic SQL statements that Doc4GL parser 
+   cannot automatically &quot;see&quot;</PRE><P>
+ &nbsp; 
 </P>
 <P>
- It is preferable to divide tags for related tablets.  
+ Tags on file (module) level <i>only</i>: 
 </P>
-<P> When same tag is inserted multiple times, it&nbsp; must be separated from others to    
-enhance readability.               
+<ul>
+  <li>
+ FIXME: <a href="#process">@process</a> ??</li> 
+  <li><a href="#file">@file</a>&nbsp;</li>
+</ul>
+<P>
+ Tags accepted in both module <i>and</i> function level comments:&nbsp;  
 </P>
-<P> @param tag must have the same order as corresponding function parameters. 
+<ul>
+  <li>@todo&nbsp;</li>
+  <li>@author</li>
+</ul>
+<p>Therefore, when writing a module level comment, that describes the 4Gl source 
+file as the whole, user may utilize following tags only:</p>
+<ul>
+  <li>
+ FIXME: <a href="#process">@process</a> ??</li> 
+  <li><a href="#file">@file</a>&nbsp;</li>
+  <li>@todo&nbsp;</li>
+  <li>@author</li>
+</ul>
+<P>
+ It is preferable to divide tags for related tablets.   
+</P>
+<P> When same tag is inserted multiple times, it&nbsp; must be separated from others to     
+enhance readability.                
+</P>
+<P>&nbsp; 
 </P>
 </blockquote>
 <H3> Description of comment tags
@@ -410,10 +451,10 @@ enhance readability.
 <P STYLE="margin-left: 0cm"><B> @<a name="author">author</a>
 </B></P>
   <blockquote>
-<P STYLE="font-weight: medium; margin-left: 0cm"> Omit if author is unknown.   
-FIXME: It can be used expans&#245;es                 
-efectuadas for the control of versoes.  If several exist, it must be                 
-commanded for log order.                 
+<P STYLE="font-weight: medium; margin-left: 0cm"> Omit if author is unknown.    
+FIXME: It can be used expans&#245;es                  
+efectuadas for the control of versoes.  If several exist, it must be                  
+commanded for log order.                  
 </P>
   </blockquote>
 <P STYLE="margin-left: 0cm"><B> @<a name="version">version</a>
@@ -429,13 +470,12 @@ modules.
 <P STYLE="margin-left: 0cm"><B>@<a name="param">param</a>
 </B></P>
   <blockquote>
-<P STYLE="margin-left: 0cm"><SPAN STYLE="font-weight: medium"> This tag must be followed by the name of the parameter (not 
-it's type).  Although it is redundant with the declaration of parameters, it is the only 
-way to associate a comments with the parameter.  For convention the first   
-substantive of the description must reflect the type of information   
-that it stores (it can be preceded by articles as &quot;   
-&quot;).
-</SPAN></P>
+<P STYLE="margin-left: 0cm"><SPAN STYLE="font-weight: medium"> This tag must be followed by the name of the parameter (not  
+it's type).  Although it is redundant with the declaration of parameters, it is the only  
+way to associate a comments with the parameter.  For convention the first    
+substantive of the description must reflect the type of information    
+that it stores (it can be preceded by articles as &quot;    
+&quot;). </SPAN>@param tag must have the same order as corresponding function parameters.</P> 
 <P STYLE="margin-left: 0cm"> Example:
 </P>
 <PRE STYLE="margin-left: 0cm">* @param num 		string formatting of the number
@@ -502,6 +542,14 @@ lacking in implementation.
 <p> FIXME 
 </p>
 </blockquote>
+<p> <b>@<a name="file">file</a></b> 
+</p>
+<blockquote>
+<p> This DoxyGen sybmol is not needed, and will be ignored by Doc4GL  
+</p>
+</blockquote>
+<p> DoxyGen/JavaDoc list of tags: <a href="http://www.stack.nl/~dimitri/doxygen/commands.html" target="_blank">http://www.stack.nl/~dimitri/doxygen/commands.html</a> 
+</p>
 </blockquote>
 <p> <a href="#Table of Content">Back to Table of Content</a>  
 </p>
