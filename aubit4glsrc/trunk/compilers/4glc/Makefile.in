@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.17 2002-03-19 11:07:54 afalout Exp $
+# $Id: Makefile.in,v 1.18 2002-03-22 08:28:57 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,21 +36,23 @@ override NOINCL=0
 ## ==================================================================
 
 4GLPC			=${SH} ../../bin/4glpc
-4GLPCFLAGS		=-make-compile -DDEBUG -Irules -L/lib -L../../lib -nogtk -g -verbose -L. -I.
+4GLPCFLAGS		=-make-compile -Irules -L/lib -L../../lib -g -verbose -L. -I.
+#-nogtk -DDEBUG
 
 ifndef COMSPEC
-	4GLPCFLAGS	+=-rdynamic -static
+	4GLPCFLAGS	+=${LINK_COMPILERS}
+#-rdynamic
 #else
 #	4GLPCFLAGS	+=${SO_GCCFLAGS}
 endif
 
 ALL				=rules.t 4glc
 
-ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
-	ifneq "$(ODBC)" "no"
-		ALL		+=4glc-noodbc
-	endif
-endif
+#ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
+#	ifneq "$(ODBC)" "no"
+#		ALL		+=4glc-noodbc
+#	endif
+#endif
 
 CFLAGS			+=-I../../lib -I../../lib/libincl -I../fcompile -Irules @RPCLIB_INCLUDE@ @CURSES_INC_PATH@
 #override CFLAGS	+=-I../fcompile #-I../mcompile

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.12 2002-03-16 03:19:21 afalout Exp $
+# $Id: Makefile.in,v 1.13 2002-03-22 08:28:57 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,8 +36,10 @@ override NOINCL=0
 ##                              Options
 ## ==================================================================
 
-4GLPCFLAGS		= -make-compile -static -verbose -L../../lib -nogtk
-PROGRAM 		=mcompile
+4GLPCFLAGS		=-make-compile ${LINK_COMPILERS} -verbose -L../../lib 
+#-rdynamic
+#-nogtk
+ALL				=mcompile
 
 ifeq "${USE_RPCGEN}" "0"
 	RPCGEN      =cp ../../tools/cygwin/menu_x_xdr.c ../../tools/cygwin/menu_x.h .
@@ -49,12 +51,7 @@ endif
 CFLAGS		   +=-I. @RPCLIB_INCLUDE@
 
 ifdef COMSPEC
-#	4GLPCFLAGS	+=-rdynamic
-#	RPCGEN      =@RPCGEN@ menu_x.x
-#else
-#	4GLPCFLAGS	+=${SO_GCCFLAGS}
 	CYGWIN_FLAGS=${RPCLIB_NAME}
-#	RPCGEN      = cp ../../tools/cygwin/menu_x_xdr.c ../../tools/cygwin/menu_x.h .
 endif
 
 ifeq "@YACC@" "no"
@@ -69,7 +66,7 @@ LEX_YY_C        =../../tools/no_yacc/cygwin/compilers/menus/lex.yy.c
 #	ifeq "$(ODBC)" "no"
 #		4GLPCFLAGS	+=-noodbc
 #	else
-#		PROGRAM 	+=mcompile-noodbc
+#		ALL 	+=mcompile-noodbc
 #	endif
 #endif
 
@@ -103,7 +100,7 @@ LINTFILES 		= $(SOURCES.c:%.c=%.ln) $(TARGETS.c:%.c=%.ln)
 ## ==================================================================
 
 
-all:	 $(PROGRAM)
+all:	 $(ALL)
 objects: $(SOURCES.c) $(TARGETS.c) $(OBJECTS)
 sources: $(SOURCES)
 targets: $(SOURCES) $(TARGETS)

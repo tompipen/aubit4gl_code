@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.34 2002-03-21 01:29:16 afalout Exp $
+# $Id: Makefile.in,v 1.35 2002-03-22 08:28:58 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -45,11 +45,10 @@ CMODS_ODBCEX    =libsql/odbc/sqlex.c
 CMODS_DLSQL		=dlsql.c
 CMODS_CONFIG	=aubit-config.c
 CMODS_RESOURCE	=resource.c
-
-#FIXME: create libRPC_RPC.so and libRPC_NORPC.so:
-CMODS_RPC		=rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c rpc_stack_xdr.c \
-					../compilers/fcompile/form_x_xdr.c
 CMODS_NORPC		=rpc_norpc.c
+CMODS_RPC		=rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c \
+				rpc_stack_xdr.c ../compilers/fcompile/form_x_xdr.c
+
 
 COMMONSRC= \
 	array.c \
@@ -73,22 +72,22 @@ COMMONSRC= \
 	screen.c sleep.c stack.c string.c \
 	translate.c
 
-#../compilers/fcompile/formwrite2.c
+SEPARATE_RPC=1
 
-
-COMMONSRC_RPC		= ${COMMONSRC} ${CMODS_RPC}
-COMMONSRC_NORPC		= ${COMMONSRC} ${CMODS_NORPC}
-
-ifeq "@HAVE_RPCLIB@" "0"
-	CMODSNOSQL 		=${COMMONSRC_NORPC}
+ifeq "${SEPARATE_RPC}" "1"
+	CMODSNOSQL 			=${COMMONSRC}
 else
-	CMODSNOSQL 		=${COMMONSRC_RPC}
+	ifeq "@HAVE_RPCLIB@" "0"
+		CMODSNOSQL 		=${COMMONSRC} ${CMODS_NORPC}
+	else
+		CMODSNOSQL 		=${COMMONSRC} ${CMODS_RPC}
+	endif
 endif
 
-
-
 CMODS_ODBC			=${CMODS_ODBCSQL} ${CMODS_ODBCEX}
-OBJS_NOSQL			+=${CMODS_NOSQL:.c=.o}
+OBJS_NOSQL			=${CMODS_NOSQL:.c=.o}
+OBJS_RPC			=${CMODS_RPC:.c=.o}
+OBJS_NORPC			=${CMODS_NORPC:.c=.o}
 
 ## ==================================================================
 ##                              Options
@@ -101,69 +100,45 @@ LDFLAGS				=-Map mapfile
 4GLPCFLAGS			=-verbose -nogtk
 
 ifdef COMSPEC
-#	LOCALCFLAGS		+=-DWIN32 -I/usr/local/include
 	LDFLAGS			+= ${RPCLIB_NAME} -lc
 	ALL				+=dllaclshared dlllibRPC_NORPC
 	ALL_GUI			+=dllaclsharedgui
-	ifeq "$(ODBC_LINK)" "static"
-		ifneq "$(ODBC)" "no"
-			ALL		+=libaclall-noodbc.a
-	    	ALL_GUI	+=libaclallgui-noodbc.a
-	    endif
-    endif
+	#ifeq "$(ODBC_LINK)" "static"
+	#	ifneq "$(ODBC)" "no"
+	#		ALL		+=libaclall-noodbc.a
+	#    	ALL_GUI	+=libaclallgui-noodbc.a
+	#    endif
+    #endif
 	ifneq "@HAVE_RPCLIB@" "0"
 		ALL			+=dlllibRPC_SUNRPC
     endif
 else
-	#LOCALCFLAGS		+= -g
-	#ifneq "$(ODBC)" "no"
-	#	LOCALCFLAGS	+= -I$(ODBCLIBDIR)
-    #endif
-	#ifeq "$(ODBC)" "iodbc"
-	#	LOCALCFLAGS	+=-I/usr/include/pgsql/iodbc -DIODBC
-	#endif
-#	ifeq "$(ODBC)" "no"
-#		ifeq "$(ODBC_LINK)" "static"
-#			LOCALCFLAGS	+=-DNOODBC
-#        	4GLPCFLAGS	+=-noodbc
-#        endif
-#	endif
-#	ifeq "$(PDFBUID)" "yes"
-#		LOCALCFLAGS	+= -DUSE_PDF_REPORTS
-#    endif
     ALL				+=libaclshared${SO_EXT} libRPC_NORPC${SO_EXT}
-#    ALL_GUI			+=libaclsharedgui${SO_EXT}
-
-	ifeq "$(ODBC_LINK)" "static"
-		ifneq "$(ODBC)" "no"
-		    ALL		+=libaclshared-noodbc${SO_EXT} libaclall-noodbc.a
-	    	ALL_GUI	+=libaclsharedgui-noodbc${SO_EXT} libaclallgui-noodbc.a
-	    endif
-    endif
+	#ifeq "$(ODBC_LINK)" "static"
+	#	ifneq "$(ODBC)" "no"
+	#	    ALL		+=libaclshared-noodbc${SO_EXT} libaclall-noodbc.a
+	#    	ALL_GUI	+=libaclsharedgui-noodbc${SO_EXT} libaclallgui-noodbc.a
+	#    endif
+    #endif
 	ifneq "@HAVE_RPCLIB@" "0"
 		ALL			+=libRPC_SUNRPC${SO_EXT}
     endif
 endif
 
-#ifndef CFLAGS
-#	CFLAGS			=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ ${LOCALCFLAGS}
-#endif
-
-#override	CFLAGS	+=-I../compilers/fcompile #-I../compilers/mcompile
-
-#CFLAGS				+=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../compilers/fcompile -Ilibincl
-#if particular location for RPC to be used was specified to configure, we have to place it
-#BEFORE other include paths, to avoid conflict:
+#This must NOT be += because it would place affitional parameters AFTER
+#existing parameters already in CFLAGS: we must not do this, because if
+#specific path is needed to RPClib, it MUST be BEFORE other potenitially
+#conflicting paths:
 CFLAGS				:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../compilers/fcompile -Ilibincl ${CFLAGS}
 
-ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
-	ifneq "$(ODBC)" "no"
-		CMODS 		=${CMODSNOSQL} ${CMODS_ODBC}
-	else
-		CMODS 		=${CMODSNOSQL} ${CMODS_NOSQL}
-	endif
-	OBJSNOSQL		=${OBJS_NOSQL}
-else #default: dynamic linking for SQL access libs
+#ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
+#	ifneq "$(ODBC)" "no"
+#		CMODS 		=${CMODSNOSQL} ${CMODS_ODBC}
+#	else
+#		CMODS 		=${CMODSNOSQL} ${CMODS_NOSQL}
+#	endif
+#	OBJSNOSQL		=${OBJS_NOSQL}
+#else #default: dynamic linking for SQL access libs
 
 	CMODS 			=${CMODSNOSQL} ${CMODS_DLSQL}
 
@@ -197,7 +172,7 @@ else #default: dynamic linking for SQL access libs
 		endif
 
 	endif
-endif
+#endif
 
 ifeq "$(PDFBUILD)" "yes"
 	ALL 			+=libPDF_PDF${SO_EXT}
@@ -207,86 +182,66 @@ else
     PDF_LIBNAME     =-lPDF_NOPDF
 endif
 
-
-#not used:
-#DLLNAME				=acl4gl
-#DLL_OBJS			=dll.o gui_gtk.o windef.def
-
 #====================================================================
 
 OBJS				=${CMODS:.c=.o} ${CMODS_PROJECT:.c=.o}
 OBJSNOSQL			+=${CMODSNOSQL:.c=.o} ${CMODS_PROJECT:.c=.o}
-
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 all: ${ALL}
-	@echo "Default targets ( ${ALL} ) built successfully."
+	@echo "Default targets (${ALL}) built successfully."
 
 all_gui: ${ALL_GUI}
-	@echo "GUI targets ( ${ALL_GUI} ) built successfully."
+	@echo "Default GUI targets (${ALL_GUI}) built successfully."
 
 aubit-config: ${CMODS_CONFIG} ${CMODS_RESOURCE}
-	gcc $^ -o $@ -I./libincl
+	gcc -I./libincl -o $@ $^
 	cp $@ ../bin
-
-libSQL_noodbc.so:
-	${MAKE} $(MKNAME) -C libsql/nosql nosql.so
-#	cp libsql/nosql/*.so .
-
-libSQL_iodbc.so:
-	${MAKE} $(MKNAME) -C libsql/odbc iodbc
-#	cp libsql/odbc/*.so .
-
-libSQL_unixodbc.so:
-	${MAKE} $(MKNAME) -C libsql/odbc unixodbc
-#	cp libsql/odbc/*.so .
-
-libSQL_esql${SO_EXT}:
-	${MAKE} $(MKNAME) -C libsql/esqlc
-#	cp libsql/libsqlc/*.so .
-
-libSQL_ifxodbc.so:
-	${MAKE} $(MKNAME) -C libsql/odbc ifxodbc
-
-libSQL_pgodbc.so:
-	${MAKE} $(MKNAME) -C libsql/odbc pgodbc
-
-
-#----------------- with ODBC, if ODBC != no ----------------------
 
 libaclall.a : $(OBJS) ${GUI_TUI}
 	ar rc $@ $^
 	ranlib $@
 
-libaclallgui.a : $(OBJS) ${GUI_GTK}
-	ar rc $@ $^
-	ranlib $@
-
 libaclshared.so : $(OBJS) ${GUI_TUI}
-	ld ${SO_LDFLAGS} $^ -o $@
-#-lform -lpanel -lncurses -Map  mapfile
+	ld ${SO_LDFLAGS} -o $@ $^
+#-Map  mapfile
 
-libaclsharedgui.so : $(OBJS) ${GUI_GTK}
-	ld ${SO_LDFLAGS} $^ -o $@
+libRPC_SUNRPC.so: ${OBJS_RPC}
+	ld ${SO_LDFLAGS} -o $@ $^
 
-#----------------- without ODBC, if ODBC = no (static ODBC) ------------
+libRPC_NORPC.so: ${OBJS_NORPC}
+	ld ${SO_LDFLAGS} -o $@ $^
 
-#obsolete-libaclall-noodbc.a: $(OBJSNOSQL)  ${GUI_TUI}
-#obsolete-	ar rc $@ $^
-#obsolete-	ranlib $@
+## ==================================================================
+##                       Targets in sub-makefiles
+## ==================================================================
 
-#obsolete-libaclallgui-noodbc.a: $(OBJSNOSQL) ${GUI_GTK}
-#obsolete-	ar rc $@ $^
-#obsolete-	ranlib $@
+libPDF_PDF.so:
+	${MAKE} -C libpdf $(MKNAME) $@
 
-#obsolete-libaclshared-noodbc.so:  $(OBJSNOSQL) ${GUI_TUI}
-#obsolete-	ld  $(SO_LDFLAGS) $^ -o $@
+libPDF_NOPDF.so:
+	${MAKE} -C libpdf $(MKNAME) $@
 
-#obsolete-libaclsharedgui-noodbc.so: $(OBJSNOSQL) ${GUI_GTK}
-#obsolete-	ld  $(SO_LDFLAGS) $^ -o $@
+libSQL_noodbc.so:
+	${MAKE} -C libsql/nosql nosql.so
+
+libSQL_iodbc.so:
+	${MAKE} -C libsql/odbc iodbc
+
+libSQL_unixodbc.so:
+	${MAKE} -C libsql/odbc unixodbc
+
+libSQL_esql${SO_EXT}:
+	${MAKE} -C libsql/esqlc
+
+libSQL_ifxodbc.so:
+	${MAKE} -C libsql/odbc ifxodbc
+
+libSQL_pgodbc.so:
+	${MAKE} -C libsql/odbc pgodbc
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
@@ -317,19 +272,16 @@ dllaclshared : $(OBJS) ${GUI_TUI}
 #obsolete-	cp libgtk4gl-rpc${DLL_EXPORTLIB_EXT} libgtk4gl${DLL_EXPORTLIB_EXT}
 
 libSQL_noodbc.dll:
-	${MAKE} $(MKNAME) -C libsql/nosql nosql.dll
+	${MAKE} -C libsql/nosql nosql.dll
 
 libSQL_odbc32.dll:
-	${MAKE} $(MKNAME) -C libsql/odbc odbc32
+	${MAKE} -C libsql/odbc odbc32
 
 libPDF_NOPDF.dll:
 	${MAKE} -C libpdf $(MKNAME) NOPDF.dll
 
 libgtk4gl.dll:
-	${MAKE} $(MKNAME) -C libgui
-
-#obsolete-defaclshared: $(OBJS) ${GUI_TUI}
-#obsolete-	${MAKE} libaclshared.def DLLOBJS="$^" DLL_LDLIBS="-lform -lpanel -lncurses ${RPCLIB_NAME} -lPDF_NOPDF" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -Llibpdf"
+	${MAKE} -C libgui
 
 dlllibRPC_SUNRPC: ${CMODS_RPC}
 	${MAKE} libRPC_SUNRPC.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
@@ -341,20 +293,6 @@ dlllibRPC_NORPC: ${CMODS_NORPC}
 ## ==================================================================
 ##                             Sub Targets
 ## ==================================================================
-
-libPDF_PDF.so:
-	${MAKE} -C libpdf $(MKNAME) $@
-
-
-libRPC_SUNRPC.so: ${CMODS_RPC}
-	ld ${SO_LDFLAGS} $^ -o $@
-
-libRPC_NORPC.so: ${CMODS_NORPC}
-	ld ${SO_LDFLAGS} $^ -o $@
-
-libPDF_NOPDF.so:
-	${MAKE} -C libpdf $(MKNAME) $@
-
 
 gui_tui.o: ${GUI_SRC}
 	${CC} -c $(CFLAGS) $^ -o $@
@@ -375,14 +313,10 @@ project.o: generated/${CMODS_PROJECT}
 generated/project.c:
 	(cd ../tools/project; ${SH} mkproject)
 
-#I see no point in this dependency?
-#generated/tmperrs.h : ${TMPERRSSRC}
 generated/tmperrs.h :
 	${SH} bin/mkerrors
 
 #dependencies:
-#make: Circular generated/tmperrs.h <- error.c dependency dropped.
-#generated/error.c : generated/tmperrs.h
 error.c : generated/tmperrs.h
 array.o: array.c ../compilers/fcompile/form_x_xdr.c
 

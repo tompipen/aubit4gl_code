@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.45 2002-03-21 00:22:46 afalout Exp $
+# $Id: configure.in,v 1.46 2002-03-22 08:28:54 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -202,6 +202,7 @@ AC_SUBST(RPCLIB_LFLAGS)
 AC_SUBST(RPCLIB_NAME)
 AC_SUBST(USE_RPCGEN)
 AC_SUBST(HAVE_RPCLIB)
+AC_SUBST(A4GL_RPCTYPE)
 
 #PDF
 AC_SUBST(USE_PDF)
@@ -280,6 +281,7 @@ PIC=-fPIC
 
 ODBC_LIB_NAME=noodbc
 A4GL_PDFTYPE=NOPDF
+A4GL_RPCTYPE=NORPC
 USE_PDF=no
 PDFBUILD=no
 PERLBUILD=no
@@ -1714,6 +1716,7 @@ AC_ARG_WITH(rpc,
 		    RPCLIB_LFLAGS="$TEST_L_FLAGS"
 		    AC_DEFINE(HAVE_RPCLIB,1,[ ])
 			HAVE_RPCLIB=1
+            A4GL_RPCTYPE=SUNRPC
 		else
 			if test "$RPC_FUNC_INTERNAL" != "1"; then
 				AC_DEFINE(HAVE_RPCLIB,0,[ ])

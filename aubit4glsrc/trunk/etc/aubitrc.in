@@ -47,6 +47,12 @@ A4GL_SQLTYPE=@A4GL_SQLTYPE@
 #Default: A4GL_PDFTYPE=NOPDF
 A4GL_PDFTYPE=@A4GL_PDFTYPE@
 
+
+############
+#Determine which RPC library will be linked to compiled programs
+#Options: SUNRPC, NORPC. Default: NORPC
+A4GL_RPCTYPE=@A4GL_RPCTYPE@
+
 #############
 #Defines in which UI mode will programs run. If you compiled them with -gtk
 #option, which is default, you can choose GUI (GTK is identical to GUI
@@ -79,6 +85,8 @@ OUTPUTLANG=c
 #SQLUID=mydbusername
 #SQLPWD=mydbpassword
 
+
+#obsolete: remove it:
 ##################
 #If you compiled compiler with PDF libraries (PDFBUILD=yes), you MUST
 #(Why?) instruct 4glpc linker to add libraries for PDF report generation,
@@ -87,7 +95,7 @@ OUTPUTLANG=c
 #4glpc instead):
 #Affects: 4glpc
 #Default: USE_PDF=no
-USE_PDF=@USE_PDF@
+#USE_PDF=@USE_PDF@
 
 ##################
 #defines command executed as C compiler for your system, when used by 4glpc:
@@ -178,7 +186,7 @@ ODBC_LIB_DIR=/usr/lib
 #that installed compiler, but
 ADD_LD_LIBRARY_PATH=@ADD_LD_LIBRARY_PATH@
 
-#this is used in makefiles and 4glpc:
+#this is used in makefiles and 4glpc (typically -lrpcsvc or -lrpclib):
 RPCLIB_NAME=@RPCLIB_NAME@
 
 ###############################

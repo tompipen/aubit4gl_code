@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.17 2002-03-19 11:07:54 afalout Exp $
+# $Id: Makefile.in,v 1.18 2002-03-22 08:28:57 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,7 +36,7 @@ override NOINCL=0
 ##                              Options
 ## ==================================================================
 
-4GLPCFLAGS		=-make-compile -static -verbose -nogtk -L../../lib
+4GLPCFLAGS		=-make-compile ${LINK_COMPILERS} -verbose -nogtk -L../../lib
 CFLAGS 			+=-I../../lib -I. @CURSES_INC_PATH@
 ALL		 		= fcompile fshow
 

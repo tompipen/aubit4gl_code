@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.59 2002-03-19 11:07:54 afalout Exp $
+# $Id: 4glpc,v 1.60 2002-03-22 08:28:57 afalout Exp $
 #
 
 ########################################################################
@@ -53,6 +53,9 @@ if [ ! "$COMSPEC" = "" ]
 then
 	USE_SHARED="Yes"
 fi
+
+#thsi still won't work on UNIX:
+#	USE_SHARED="Yes"
 
 
 #############
@@ -107,8 +110,8 @@ then
     echo '  -gtk/nogtk ($GTKGUI=Yes/No) include GTK libraries (default)'
     echo '  -verbose ($A4GLVERBOSE=yes) show additional info while compiling'
     echo '  -noerrcode () do not show eeror code on compile errors'
-	echo '  -pdf ($USE_PDF=yes) use PDF report libraries when compiling'
-	echo '      (if compiler was compiled with them)'
+#	echo '  -pdf  use PDF report libraries when compiling'
+#	echo '      (if compiler was compiled with them)'
     echo '  -udbc (ODBC_LIB_NAME="udbc")'
     echo '  -odbc (ODBC_LIB_NAME="iodbc")'
     echo '  -noodbc'
@@ -142,8 +145,8 @@ then
     echo '  -maponly'
     echo '  -gtk/nogtk ($GTKGUI=Yes/No) include GTK libraries (default)'
     echo '  -verbose ($A4GLVERBOSE=yes) show additional info while compiling'
-    echo '  -pdf ($USE_PDF=yes) use PDF report libraries when compiling'
-	echo '      (if compiler was compiled with them)'
+#    echo '  -pdf use PDF report libraries when compiling'
+#	echo '      (if compiler was compiled with them)'
     echo '  -udbc (ODBC_LIB_NAME="udbc")'
     echo '  -odbc (ODBC_LIB_NAME="iodbc")'
     echo '  -as-ddl'
@@ -1092,12 +1095,12 @@ do
    ;;
 
 
-   -pdf) 	export USE_PDF="yes"
-   ;;
-
-   -nopdf) 	export USE_PDF="no"
-            #echo Set USE_PDF to $USE_PDF
-   ;;
+#   -pdf) 	export USE_PDF="yes"
+#   ;;
+#
+#   -nopdf) 	export USE_PDF="no"
+#            #echo Set USE_PDF to $USE_PDF
+#   ;;
 
 
    -verbose) 	export A4GLVERBOSE="yes"
@@ -1292,10 +1295,10 @@ else  #UNIX
 fi
 
 
-if [ "$A4GLDEBUG" = "yes" ]
-then
-	echo "Finished processing switches. USE_PDF = $USE_PDF"
-fi
+#if [ "$A4GLDEBUG" = "yes" ]
+#then
+#	echo "Finished processing switches. USE_PDF = $USE_PDF"
+#fi
 
 if [ "$EXECNAME" = "-1" ]
 then
@@ -1309,76 +1312,18 @@ fi
 
 if [ "$COMSPEC" = "" ]
 then
-    #echo COMSPEC not defined: $COMSPEC
-    #-L$AUBITDIR/lib -L../../lib
-	#FGLLIBS_SHARED="-laclshared"$ui$ODBCFLAG" -lm -ldl"
-	#FGLLIBS_STATIC="-laclall"$ui$ODBCFLAG" -lm -ldl"
-	FGLLIBS_COMMON="-lm -ldl"
-	FGLLIBS_SHARED="-laclshared $FGLLIBS_COMMON"
-	FGLLIBS_STATIC="-laclall $FGLLIBS_COMMON"
-
+	FGLLIBS_COMMON="-ldl"
 else
-    #echo COMSPEC defined: $COMSPEC
-    #-L$AUBITDIR/lib -L../../lib
-	#FGLLIBS_SHARED="-laclallgui$ODBCFLAG -lm $RPCLIB_NAME -L/lib/w32api"
-	#FGLLIBS_STATIC="-laclallgui$ODBCFLAG -lm $RPCLIB_NAME -L/lib/w32api"
-
-    #-L$AUBITDIR/lib  -L../../lib
-	FGLLIBS_COMMON="-lm $RPCLIB_NAME -L/lib/w32api -L/usr/local/lib"
-	#FGLLIBS_STATIC="-laclall$ui$ODBCFLAG $FGLLIBS_COMMON"
-	#FGLLIBS_SHARED="-laclshared$ui$ODBCFLAG $FGLLIBS_COMMON"
-
-	FGLLIBS_STATIC="-laclall $FGLLIBS_COMMON"
-	FGLLIBS_SHARED="-laclshared $FGLLIBS_COMMON"
-
-
-	if [ "$ODBC_LIB_NAME" != "noodbc" ]
-    then
-		FGLLIBS_SHARED="$FGLLIBS_SHARED -lodbc32 -lodbccp32"
-		FGLLIBS_STATIC="$FGLLIBS_STATIC -lodbc32 -lodbccp32"
-    fi
-
+	FGLLIBS_COMMON="-L/lib/w32api -L/usr/local/lib" #$RPCLIB_NAME
 fi
-
-#if test "1" = "1" ; then
-#if test "$MAKINGAUBIT" != "1"
-	#we __HAVE__ to link with one or the other, this is NOT dinamically loaded
-    #everything that links to acl library eill need one or the other -
-    #this includes all compilers and all compiled programs
-    #we dhould NEVER link with -lpdf directly -  only -lPDF_PDF and
-    #-lPDF_PDF should be linked with -lpdf
-
-	if [ "$A4GL_PDFTYPE" = "PDF" ] && [ "$USE_PDF" = "yes" ]
-	then
-		FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_PDF"
-		FGLLIBS_STATIC="$FGLLIBS_STATIC -lPDF_PDF"
-	else
-        if test "$COMSPEC" != "" ; then
-			#linking with dll export library
-			FGLLIBS_SHARED="$FGLLIBS_SHARED $AUBITDIR/lib/libPDF_NOPDF.dll.a"
-			FGLLIBS_STATIC="$FGLLIBS_STATIC $AUBITDIR/lib/libPDF_NOPDF.dll.a"
-        else
-			FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_NOPDF"
-			FGLLIBS_STATIC="$FGLLIBS_STATIC -lPDF_NOPDF"
-		    #FGLLIBS_STATIC="$FGLLIBS_STATIC ../../lib/libPDF_NOPDF.so"
-        fi
-	fi
-#else
-#	if [ "$A4GLVERBOSE" = "yes" ]
-#	then
-#		echo "NOTE: invoked from Aubit compiler main makefile"
-#    fi
-#fi
-
-#-lcurses should now link only to libUI_TUI
-#if [ "$COMSPEC" != "" ] && [ "$MAKE4GLPC" != "Yes" ]; then
-#	FGLLIBS_SHARED="$FGLLIBS_SHARED -lcurses"
-#	FGLLIBS_STATIC="$FGLLIBS_STATIC -lcurses"
-#fi
+FGLLIBS_COMMON="$FGLLIBS_COMMON -lm -lPDF_$A4GL_PDFTYPE -lRPC_$A4GL_RPCTYPE"
+FGLLIBS_STATIC="$FGLLIBS_COMMON -laclall"
+FGLLIBS_SHARED="$FGLLIBS_COMMON -laclshared -shared"
 
 if [ "$A4GLDEBUG" = "yes" ]
 then
 	echo ------------------------------------------------------------------
+	echo USE_SHARED = $USE_SHARED
 	echo FGLLIBS_SHARED = $FGLLIBS_SHARED
 	echo FGLLIBS_STATIC = $FGLLIBS_STATIC
 	echo ------------------------------------------------------------------
@@ -1386,54 +1331,16 @@ fi
 
 if [ "$USE_SHARED" = "Yes" ]
 then
-		#if [ "$ODBC_LIB_NAME" != "noodbc" ]
-		#then
-	    #    if [ "$ODBC" = "" ]
-    	#    then
-        #		ODBC=$ODBC_SHARED
-	    #    fi
-		#	if [ "$ODBC" != "no" ]; then
-		#		FGLLIBS="$FGLLIBS_SHARED $ODBC"
-        #    fi
-		#else
-			#FGLLIBS="-shared $FGLLIBS_SHARED"
-            FGLLIBS="$FGLLIBS_SHARED"
-		#fi
+	FGLLIBS="$FGLLIBS_SHARED"
 else
-		#if [ "$ODBC_LIB_NAME" != "noodbc" ]
-		#then
-		#	if [ "$ODBC" = "" ]
-    	#    then
-        #        ODBC=$ODBC_STATIC
-        #	fi
-	    #    FGLLIBS="$FGLLIBS_STATIC $ODBC_STATIC"
-        #else
-	        FGLLIBS="$FGLLIBS_STATIC"
-        #fi
+	FGLLIBS="$FGLLIBS_STATIC"
 
-		if test "$COMSPEC" = ""; then
-			#without -rdynamic:
-			#Opps 1 - can't open DLL - /opt/aubit/aubit4glsrc/lib/libSQL_unixodbc.so: undefined symbol: status
-			LIBS="$LIBS -rdynamic"
-		fi
+	if test "$COMSPEC" = ""; then
+		#without -rdynamic:
+		#Opps 1 - can't open DLL - /opt/aubit/aubit4glsrc/lib/libSQL_unixodbc.so: undefined symbol: status
+		LIBS="$LIBS -rdynamic"
+	fi
 fi
-
-#LIBS="-lform$DDEBUG -lpanel$DDEBUG -lncurses$DDEBUG"
-#LIBS=""
-
-
-#if [ "$A4GL_SQLTYPE" = "" ] || [ "$A4GL_SQLTYPE" = "static" ]
-#then
-#	if [ "$ODBC_LIB_NAME" != "" ] && [ "$ODBC_LIB_NAME" != "noodbc" ]
-#	then
-#		LIBS="$LIBS -l$ODBC_LIB_NAME"
-#
-#		if [ "$ODBC_LIB_DIR" != "" ]
-#	    then
-#			LIBS="$LIBS -L$ODBC_LIB_DIR"
-#	    fi
-#	fi
-#fi
 
 if test "$USE_JABBER" = "1"
 then

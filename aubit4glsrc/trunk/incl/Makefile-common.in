@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.23 2002-03-16 12:00:03 afalout Exp $
+# $Id: Makefile-common.in,v 1.24 2002-03-22 08:28:58 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -196,10 +196,10 @@ CPPFLAGS 			=
 LDFLAGS 			=-s
 ALL_LIBS			=@LIBS@
 AUTOCONF_CFLAGS     =@CFLAGS@
-#set by autoconf: AUTOCONF_CFLAGS     =-g -O2
+#tipycally set by autoconf: AUTOCONF_CFLAGS     =-g -O2
 #fixme: set -DDEBUG and -g from configure:
 CFLAGS				+=${AUTOCONF_CFLAGS} -DAUTOBANG -DDEBUG -I/usr/local/include
-#-I.
+#we are overriding LD_LIBRARY_PATH that might existed in environment:
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 
 #To let know 4glpc we are in process of making compiler, and not
@@ -210,6 +210,12 @@ MAKINGAUBIT			=1
 PIC					=@PIC@
 USE_RPCGEN			=@USE_RPCGEN@
 HAVE_RPCLIB			=@HAVE_RPCLIB@
+
+#How do we wanat compilers (4glc, mcompile, mkmess, fcompile) linked:
+LINK_COMPILERS      =-static
+
+#got core dumps when trying this:
+#LINK_COMPILERS      =-shared
 
 ifdef COMSPEC
 	PATH		:=${AUBITDIR}/lib:/usr/local/lib:${PATH}
