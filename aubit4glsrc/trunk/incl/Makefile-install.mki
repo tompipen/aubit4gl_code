@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.99 2005-02-09 02:20:14 afalout Exp $
+# $Id: Makefile-install.mki,v 1.100 2005-03-04 08:07:14 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -126,6 +126,7 @@ endif
 else
 	@echo "ldocnfig not found on your system"
 endif
+
 
 #Add basic registry keys, so native windows executable can find aubitrc
 install.registry:

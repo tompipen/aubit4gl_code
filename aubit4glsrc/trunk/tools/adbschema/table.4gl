@@ -1,15 +1,21 @@
-define lv_colnames array[2000] of char(18)
+GLOBALS
+	DEFINE
+	gv_filer_out_table_prefix char (16)
+END GLOBALS
+
+
+define lv_colnames array[2000] of char(128) #in IDS varchar(128,0)
 define mv_idx_cnt smallint
 define lv_st record
-	tabname char(64),
-	owner char(8),
+	tabname char(128), 	#In IDS 9.x tabname (and most indentifiers) are varchar(128,0)
+	owner char(32),		#char(32) in IDS
 	tabid integer,
 	tabtype char(1)
 end record
 define dtparts array[10] of char(10)
 
 define lv_sc record
-	colname char(64),
+	colname char(128),
 	coltype integer,
 	collength integer,
 	colno integer,
@@ -17,8 +23,8 @@ define lv_sc record
 end record
 
 define lv_i record 
-	idxname    char(18),
-	owner      char(8),
+	idxname    char(18), 	# varchar(128,0) in IDS 9
+	owner      char(8),		#char 32 in IDS
 	tabid      integer,
 	idxtype    char(1),
 	clustered  char(1),
@@ -49,7 +55,7 @@ end record
 
 ################################################################################
 function dump_table(lv_t,lv_systables,lv_prefix_idx,lv_no_owner)
-define lv_t, lv_owner_i_str, lv_owner_t_str char(64)
+define lv_t, lv_owner_i_str, lv_owner_t_str char(64) #In IDS all varchar(128,0)
 define lv_str char(256)
 define lv_bigstr char(1000000)
 define lv_l char(1)
@@ -302,7 +308,7 @@ DEFINE lv_no_owner smallint
 			identifier length is 63. If this limit is problematic, it can be 
 			raised by changing the NAMEDATALEN constant in src/include/postgres_ext.h.
 			
-			But some version of Informix satabase are limited to char(18)
+			But some version of Informix database are limited to char(18)
 			
 			In most RDBMS systems  SQL identifiers and key words must begin with a letter
 			
@@ -312,6 +318,12 @@ DEFINE lv_no_owner smallint
 			database, but it can still happen we get a duplicate name.
 			Better sollution is needed
 			}
+			
+			#Some version of Informix RDBMS allow index name to begin 
+			#with a space, so we muct get rid of this
+			let lv_i.idxname = subst_spaces(lv_i.idxname)
+			
+			
 			let mv_idx_cnt= mv_idx_cnt + 1
 			let lv_i.idxname = "I", mv_idx_cnt using "&&&",lv_i.idxname clipped
 		end if
@@ -622,9 +634,11 @@ end function
 
 
 function dump(lv_type,lv_t,lv_systables) 
-define lv_t char(18)
-define lv_type char(1)
+define lv_t char(128) #table name - In IDS 9.x tabname (and most indentifiers) are varchar(128,0)
+define lv_type char(1)	#type of statement to dump: (L)OAD or (U)NLOAD
 DEFINE lv_systables integer	#true or false, process Informix sys* tables (default=0)
+define lv_serial_colname char(128) #name of the colums that is defines as SERIAL type
+define lv_tmp_string char(128)
 
 	let lv_t=downshift(lv_t)
 	
@@ -644,18 +658,62 @@ DEFINE lv_systables integer	#true or false, process Informix sys* tables (defaul
 		return
 	end if
 
+	#Filter-out (skip) table names that begin with user specified prefix
+	if gv_filer_out_table_prefix is not null then
+		let lv_tmp_string = gv_filer_out_table_prefix clipped, "*"
+		if lv_t matches lv_tmp_string then
+			#display "LOAD/UNLOAD: Filtering out ", lv_t clipped
+			return
+		end if
+	end if
+	
 	#must make sure we unload/load only tables not views or synonyms
-	select tabtype into lv_st.tabtype from systables where
-		tabname = lv_t
+	select tabtype,tabid into lv_st.tabtype, lv_st.tabid
+		from systables 
+			where tabname = lv_t
+	
 	if lv_st.tabtype = "" or lv_st.tabtype IS NULL then
 		display "Error: cannot get tabtype for ",lv_t clipped
 		exit program 1
 	end if
+
+	select colname into lv_serial_colname
+		from syscolumns
+			where tabid=lv_st.tabid
+				and coltype = 6 #SERIAL
 	
+	if status = notfound then
+		initialize lv_serial_colname to null
+	end if 
+				
 	if lv_st.tabtype = "T" then
 		case lv_type
 			when "U" display "UNLOAD TO '",lv_t clipped,".unl' SELECT * FROM ",lv_t clipped,";"
-			when "L" display "LOAD FROM '",lv_t clipped,".unl' INSERT INTO ",lv_t clipped,";"
+			when "L" 
+				display "LOAD FROM '",lv_t clipped,".unl' INSERT INTO ",lv_t clipped,";"
+{				
+issue - when loading data using LOAD FROM .... INSERT INTO ...
+that contains SERIAL column, data will be loaded, but associated sequence will 
+not get updated. So the first INSERT of 0 (zero) to that SERAIL column will fail,
+because the sequence does not "know" that there are rows allready in that table.
+
+Sollution: 
+identify tables using SERIAL in adbschemma before printing LOAD FROM stmt;
+Add this stmt after every LOAD FROM statement:
+	SELECT setval('tablename_colname_seq', max(colname)) FROM tablename;
+}				
+				if lv_serial_colname is not NULL then
+					display "IF dbms_dialect()='POSTGRESQL' THEN"
+					display "	let lv = \"SELECT setval('",
+						lv_t clipped,"_",
+						lv_serial_colname clipped,"_seq', max(",
+						lv_serial_colname clipped,")) FROM ",
+						lv_t clipped,";\""
+					display "	PREPARE cur1 FROM lv"
+					display "	EXECUTE cur1"
+					display "END IF"
+				end if
+				
 			otherwise
 				display "Operation >",lv_type, "< on table >", lv_t clipped, 
 					"< not implemented yet"
@@ -664,3 +722,22 @@ DEFINE lv_systables integer	#true or false, process Informix sys* tables (defaul
 	end if
 	
 end function
+
+#Substiture spaces in string with underline symbol
+function subst_spaces(lv_string)
+define 
+	lv_string char (128),
+	lv_length, cnt smallint
+	
+	let lv_length = length(lv_string)
+	
+	for cnt = 1 to lv_length
+		if lv_string[cnt] = " " then
+			let lv_string[cnt] = "_"
+		end if
+	end for
+	
+	return lv_string
+	
+end function
+

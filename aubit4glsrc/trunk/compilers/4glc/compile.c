@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.78 2005-02-22 12:25:38 mikeaubury Exp $
+# $Id: compile.c,v 1.79 2005-03-04 08:06:55 afalout Exp $
 #*/
 
 /**
@@ -104,7 +104,10 @@ int yydebug;			/* if !-DYYDEBUG, we need to define it here */
 static int compile_4gl (int compile_object, char a[128], char incl_path[128],
 			int silent, int verbose, char output_object[128],int win_95_98,
 			char informix_esql[128], char pg_esql[128], char extra_ccflags[1024],
-			int preserve_warn);
+			int preserve_warn, int each_obj_to_so, int put_object_in_currdir,
+			char *all_objects);
+			
+			
 void printUsage (char *argv[]);
 static void printUsage_help (char *argv[]);
 int initArguments (int argc, char *argv[]);
@@ -167,7 +170,10 @@ initArguments (int argc, char *argv[])
   int todo = 0;
   int c_to_o = 0;
   int flength = 0;
-
+  int each_obj_to_so = 0; /* compile each 4gl module to shared object (-shared) */
+  int put_object_in_currdir = 1; /* Make objects in curent dir regardless if input file had path */
+  int input_objects_cnt = 0; /* count of how many input objects there are on command line */
+  
   char *chrptr;
   char opt_list[40] = "";
   char mv_cmd[40] = "";  
@@ -179,7 +185,9 @@ initArguments (int argc, char *argv[])
   char l_path[1028] = "";
   char l_libs[1028] = "";
   char buff[4000] = "";
-  char all_objects[4000] = "";
+  //char all_objects[4000] = "";
+  char *all_objects = malloc(4000);
+  
   char extra_ldflags[1024] = "";
 
   static FILE *filep = 0;
@@ -191,8 +199,8 @@ initArguments (int argc, char *argv[])
     {"help", 0, 0, '?'},
     {"silent", 0, 0, 'S'},
     {"debug", 0, 0, 'g'},
-    {"shared", 0, 0, 'h'},
-    {"as-dll", 0, 0, 'h'},
+    {"shared", 0, 0, 'H'},		//compile each 4gl module to shared object
+    {"as-dll", 0, 0, 'h'},		//link all 4gl modules on command line into shared library
     {"verbose", 0, 0, 'V'},
     {"version", 0, 0, 'v'},
     {"version_full", 0, 0, 'f'},
@@ -218,7 +226,8 @@ initArguments (int argc, char *argv[])
   char informix_esql[128] = "";
   char pg_esql[128] = "";
   char pg_esql_libs[128] = "";  
-
+  strcpy (all_objects,"");
+  
 //Cant use shell scripts on Windows: esql_wrap ecpg_wrap
 //Cant use INFORMIXDIR to locate esqlc because of the CSDK subdir nonsense
 //But if I try to use full path, I get "'e:/Program' is not recognized as an 
@@ -243,7 +252,7 @@ initArguments (int argc, char *argv[])
 	/* set valid options for getopt_long depending on putput language*/
 	if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0 ||
       	strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0) {
-		strcpy (opt_list, "G4s:N:kwKco::l::W::L::I::?hSgVvftD:d:");
+		strcpy (opt_list, "G4s:N:kwKco::l::W::L::I::?hHSgVvftD:d:");
     } else if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0) {
 		strcpy (opt_list, "G4s:N:?hSgVvftd:");
     } else /* all other A4GL_LEXTYPE types*/ {
@@ -312,7 +321,7 @@ initArguments (int argc, char *argv[])
 		break;
 
     /************************/
-	case 'h':		/* Link resulting object(s) to shared library -shared or -as-dll */
+	case 'h':		/* Link resulting object(s) to shared library (--as-dll) */
 	  /* 
 	  	this is more or less meaningless, and is here for compatibility with
 	    C compiler style flags, because we decite linking tipe based on
@@ -322,6 +331,12 @@ initArguments (int argc, char *argv[])
 	   compile_exec = 0;
 	   break;;
 
+    /************************/
+	case 'H':		/* compile each 4gl module to shared object (--shared) */
+		each_obj_to_so=1;
+		break;;
+	   
+	   
     /************************/
 	case 'g':		/* -g --debug  (for C compiler flags compatibility */
 		//todo: pass -g to C compiler
@@ -372,7 +387,16 @@ initArguments (int argc, char *argv[])
 				//since GCC V3 are position independent by default
 				compile_object = 1;
 				compile_lib = 1;
+				/* Is that right?
+					compile_lib means that we rare to link all created objects into
+					shared library. This is to be eddect of --as-dll flag
+					--as-dll
+				*/
+					
+				
+				
 				//TODO: add -PIC to CFLAGS
+				// I snot all code position indepentent in GCC by default?
 			} else if ((strcmp (ext, acl_getenv ("A4GL_SOL_EXT")) == 0) ||
 				(strcmp (ext, ".so") == 0) ||
 				(strcmp (ext, ".dll") == 0)) { 
@@ -421,7 +445,7 @@ initArguments (int argc, char *argv[])
 		#endif
 		sprintf (extra_ldflags,"%s -l%s ",extra_ldflags,optarg);
 		break;
-	case 'D':		/* Extra libraries to link with; -l flag*/
+	case 'D':		/* Define C pre-rocesor variable (-D flag) */
 		#ifdef DEBUG
 	  		A4GL_debug ("Pass trough option: %s\n", optarg);
 		#endif
@@ -581,6 +605,8 @@ initArguments (int argc, char *argv[])
 	strcat (incl_path, " ");
 	sprintf (l_path, "-L\"%s/lib\" ",acl_getenv ("AUBITDIR"));
 	strcpy (l_libs, acl_getenv ("A4GL_LINK_LIBS"));
+	
+	//what about -g and -O flags?
 	strcpy (gcc_exec, acl_getenv ("A4GL_C_COMP"));
 
 	/* ============================================== */
@@ -610,6 +636,7 @@ initArguments (int argc, char *argv[])
 		}
 		/* ============================================== */
 		if (strcmp (b, "c") == 0) {
+			input_objects_cnt++;
 			//make .o from .c
 			#ifndef __MINGW32__
 			  sprintf (buff, "%s %s -c -o %s.o %s %s",
@@ -635,17 +662,31 @@ initArguments (int argc, char *argv[])
 				printf ("Error compiling %s.c - check %s.c.err\n", a, a);
 				printf ("Failed command was: %s\n", buff);
 				/*fixme: show err file*/
-				return ret;
+				exit (ret);
 			} else {
 				sprintf (all_objects, "%s %s.o ",all_objects,a);
 				c_to_o=1;
 				/* TODO: if -o specified .o, then we are done - exit here */
 			}
+			continue;
 		}
 		/* ============================================== */
 		if (strcmp (b, "4gl") == 0) {
+			input_objects_cnt++;
 			strcpy (outputfilename, a);
-			sprintf (all_objects, "%s %s%s ",all_objects,a,acl_getenv ("A4GL_OBJ_EXT"));
+			
+/*now done in compile_4gl - remove			
+			if (each_obj_to_so) {
+				sprintf (all_objects, "%s %s%s ",all_objects,a,
+					acl_getenv ("A4GL_SOB_EXT"));
+			} else {
+				sprintf (all_objects, "%s %s%s ",all_objects,a,
+					acl_getenv ("A4GL_OBJ_EXT"));				
+			}
+*/			
+//aaaaaa
+//			printf ("all_objects=%s\n", all_objects);
+
 			strcpy (infilename, c);
 			#ifdef DEBUG
 				A4GL_debug ("Compiling %s\n", infilename);
@@ -653,14 +694,19 @@ initArguments (int argc, char *argv[])
 			todo++;
 			x = compile_4gl (compile_object, a, incl_path, silent, verbose, 
 		  			output_object, win_95_98,informix_esql, pg_esql, extra_ccflags,
-					preserve_warn);
-		  
+					preserve_warn, each_obj_to_so, put_object_in_currdir,
+					all_objects);
+///aaaaaaa
+//			printf ("after return all_objects=%s\n", all_objects);
+			//exit (1);
+			
 			if (x) {
 				printf ("Exit code is: %d\n", x);
 				/*FIXME: if I use x, I get 0 on the shell?????*/
 				/*exit (x);*/
 				exit (99);
 			}
+			continue;
 		} else {
 			/* just pass stuff you don't understand to CC */
 			#ifdef DEBUG
@@ -669,7 +715,7 @@ initArguments (int argc, char *argv[])
 			strcat (pass_options, c);
 			strcat (pass_options, " ");
 		}
-	}
+	} //end for
 
     /*
         if (interpreter_run)
@@ -695,7 +741,41 @@ initArguments (int argc, char *argv[])
 		#endif
 	}
 
-
+	if (input_objects_cnt == 1) {
+		/* there was only one input file (.4gl/.c) on command line 
+			If output object is not an executable, then we are done.
+			
+			 what would a point be in making so or lib from one object?
+			 If user wants .so, then he can use --shared flag and get 
+			 so compiled directly form that object, without needing a linkling 
+			 stage - which is meaningfull only if more then one object needs
+			 to be linked or if executable needs to be created
+			
+			 Beside being pointless, we need to prevent this from happening,
+			 otherwise we might have a sittuation where we allready created
+			 x.so and the ask linker to make x.so form x.so
+		 */
+		if (compile_exec == 0) {
+			 if (compile_so || compile_lib) {
+				 //unless -o was different from input
+				 //printf ("output_object=%s\n",output_object);
+				 //printf ("all_objects=%s\n",all_objects);
+				 if (strcmp (all_objects, output_object) == 0) {
+					if (verbose) {printf ("WARNING: compile_so or _lib active with only one input. Disbled.\n");}
+					A4GL_debug ("WARNING: compile_so or _lib active with only one input. Disbled.");
+					compile_so=0;
+					compile_lib=0;
+					if (verbose) {printf ("Single input/output not exec - we are done.\n");}
+					A4GL_debug ("Single input/output not exec - we are done.");
+				 } else {
+					// output specified with -o is not the same we allready created - 
+					// so we must go troug linking stage even with one object...
+				 }
+			 }
+		}
+	}
+	
+	
 #ifdef DEBUG
 	A4GL_debug ("gcc_exec=%s", gcc_exec);
 	A4GL_debug ("all_objects=%s", all_objects);
@@ -1033,7 +1113,8 @@ static int
 compile_4gl (int compile_object, char fgl_basename[128], char incl_path[128],
 		int silent, int verbose, char output_object[128],int win_95_98,
 		char informix_esql[128], char pg_esql[128], char extra_ccflags[1024],
-		int preserve_warn)
+		int preserve_warn, int each_obj_to_so, int put_object_in_currdir,
+		char *all_objects)
 {
 int need_cc=0, yyparse_ret, ret, flength=0;
 char buff[1028];
@@ -1043,6 +1124,7 @@ char a_part[128], b_part[128];	//for bname()
 char *ptr;
 static FILE *filep = 0;
 char ext[8];
+static char local_pass_options[1024] = "";
 
 	/* store the directory part of file name, if any, so we can use it for GLOBALS
     file compilation, if nececery */
@@ -1091,6 +1173,16 @@ char ext[8];
 	A4GL_memfile_rewind (yyin);
 	A4GL_load_features();
 
+	/*
+	sprintf (buff, "A4GL_USE_INDICATOR=%s", acl_getenv ("A4GL_USE_INDICATOR"));
+	if (verbose){printf ("%s\n", buff);	}
+	*/
+	/* TODO - make sue that all settings required by ecpg
+		are set WHEN WE ARE COMPILING 4GL CODE
+	*/
+
+	
+	
 	if (yydebug) { printf ("Opened : %s\n", fgl_file); }
 	openmap (outputfilename);
 	if (!silent) {
@@ -1140,16 +1232,35 @@ char ext[8];
 				(strcmp (ext, ".o") == 0)) {
 			  /* user specified output file with -o, and output file is object */
 			  sprintf (single_output_object, "%s", output_object);
+/*			  
+			} else if ((strcmp (ext, acl_getenv ("A4GL_SOB_EXT")) == 0) ||
+				(strcmp (ext, ".so") == 0)) {
+			  // user specified output file with -o, and output file is SHARED object
+			  sprintf (single_output_object, "%s", output_object);
+*/			  
+			  /* This can be wrong because is more then one input file was on 
+			  	command line, user can sprify .so as output to indicate that 
+				final result of all objects should b elinked into .so -
+				AND NOT that each object should be created as shared object.
+				
+				So we will compile each object (as opposed to link) to .so
+				ONLy id --sheared flag was on the command line (as opposed to 
+				--as-dll)
+			  */
+			} else if (each_obj_to_so) {
+				// USer specified --shared flag
+				sprintf (single_output_object, "%s", output_object);
+				   //acl_getenv ("A4GL_SOB_EXT"));
 			} else {
 			  /* user did not specify output file using -o, or specified output
 				 file did not have Aubit object extension */
 			  /*FIXME: we can compile shared or static here*/
-				{
-					/* A4GL_strip path from input file name, so our object allways and up in
+			  	if (put_object_in_currdir)	{
+					/* strip path from input file name, so our object allways and up in
 					current directory - otherwise make file will not be able to find it using
 					VPATH when making objects for current explicit target.
 					FIXME: this should be done ONLY when -o option on command line did not have
-					pbject extension - if it did, and this included path, then this path should
+					object extension - if it did, and this included path, then this path should
 					be used when making object
 					*/
 					char **ppsz;
@@ -1175,6 +1286,7 @@ char ext[8];
 				*/
 				if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) {
 					char buff2[2000];
+					
 					sprintf (buff, "%s/bin/ecpg -C INFORMIX -t %s.cpc %s %s",
 					   acl_getenv ("POSTGRESDIR"), fgl_basename, incl_path, pass_options);
 					if (verbose){printf ("%s\n", buff);	}
@@ -1272,19 +1384,32 @@ char ext[8];
 			if ((strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0) || need_cc) {
 				/* 
 				Pure C compiler output or EC compiler that needs separate CC step
+				
+				It seems that all do - so we allways enter here
+				
 				FIXME: should we add C compiler flags -g and/or -O2 -DDEBUG here ?
 				create A4GL_CFLAGS in resource.c
 				*/
+				
+				if (each_obj_to_so) {
+					sprintf (local_pass_options, "%s -shared ",pass_options);
+				} else {
+					sprintf (local_pass_options, "%s -c ",pass_options);
+				}
+				
 				#ifndef __MINGW32__
-				  sprintf (buff, "%s %s.c -c -o %s %s %s %s",
+					//UNIX
+				  sprintf (buff, "%s %s.c -o %s %s %s %s",
 					   gcc_exec, fgl_basename, single_output_object, incl_path,
-					   pass_options, extra_ccflags);
+					   local_pass_options, extra_ccflags);
 				#else
+					//Windows
 				  sprintf (buff, "%s -mms-bitfields %s.c -c -o %s %s %s %s",
 					   gcc_exec, fgl_basename, single_output_object, incl_path,
-					   pass_options, extra_ccflags);
+					   local_pass_options, extra_ccflags);
 				#endif
 			}
+			
 			if (verbose){ printf ("%s\n", buff); }
 			if ( ! win_95_98 ) {
 				/*this apparently works on NT, but not on W98:*/
@@ -1304,6 +1429,13 @@ char ext[8];
 				return ret;
 			} else {
 				if (verbose) { printf ("C/EC compilation of the object successfull.\n"); }
+///aaaaaa				
+//printf ("2 all_objects=%s\n", all_objects);
+				//Add this output pbject to the list of all objects, we can use
+				//for final linking of library or executable:
+				sprintf (all_objects, "%s",single_output_object);
+//printf ("3 all_objects=%s\n", all_objects);
+				
 				if (preserve_warn) {
 					/* determine the c.err file size */
 					sprintf (buff, "%s.c.err", fgl_basename);
@@ -1441,7 +1573,8 @@ printUsage_help (char *argv[])
   printf ("  -w     | --keep-warn       : keep warnings output file [.warn](default=do not)\n");  
   printf ("  -K     | --clean           : clean intermediate files when done\n");
   printf ("  -s0|1  | --stack_trace 0|1 : Include the stack trace in file:\n");
-  printf ("  -h | --as-dll | --shared    : create shared library\n");
+  printf ("  -h     | --as-dll          : Make -o by linking all resulting object into shared library\n");
+  printf ("  -H     | --shared          : Compile each input object into shared object (.so/.aso/.dll)\n");  
   
   printf ("                             : 0-Don't generate  1-Generate(Default)\n");
   

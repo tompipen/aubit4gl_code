@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.183 2005-02-25 08:40:00 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.184 2005-03-04 08:07:14 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -56,11 +56,6 @@ MAKEFILE_COMMON_INCLUDED	=1
 #Default=/etc/opt/${AUBITNAME}
 AUBITETC			=@AUBITETC@
 
-#############
-#While compiling source code, force priority of 'aubitrc' present in this 
-#source code tree. Also applies to aubit-config calls made from makefles 
-A4GL_INIFILE			=@aubitdir@/etc/aubitrc
-
 #WARNING! configure is not creating this file when in binary tree,
 #it is copied in state as configured for source code distribution,
 #so in binary tree AUBIT_SRC_ROOT cannot be used since it's wrong,
@@ -68,12 +63,19 @@ A4GL_INIFILE			=@aubitdir@/etc/aubitrc
 #with binary distro only to install/deinstall and compile stuff in tools/test
 #so I guess it's OK - if not, we will have to pack Makefile-common.in with
 #binary distro and modify configure to create it for binary build too.
-AUBIT_SRC_ROOT		=@aubitdir@
+ifneq "${AUBIT_BIN_INSTALL}" "1"
+	AUBIT_SRC_ROOT		=@aubitdir@
+endif
 AUBIT_VERSION		=@AUBIT_VERSION@
 AUBIT_BUILD			=@AUBIT_BUILD@
 COMPILE_DATE		=@COMPILE_DATE@
 AC_TARGET			=@target@
 AC_TARGET_OS		=@target_os@
+
+#############
+#While compiling source code, force priority of 'aubitrc' present in this 
+#source code tree. Also applies to aubit-config calls made from makefles 
+A4GL_INIFILE			=${AUBIT_SRC_ROOT}/etc/aubitrc
 
 ifeq "${AC_TARGET_OS}" "mingw"
 	#override TARGET, because when using CygWin tools with MinGW GCC
@@ -117,7 +119,7 @@ SUBDIR:=$(shell pwd)
 ##                    Read configuration file(s)
 ## ==================================================================
 
-#All includes should become obsolete once autoconf is fully implemented
+
 ifndef NOINCL
 	NOINCL=0
 endif
@@ -201,8 +203,13 @@ ifeq "$(NOINCL)" "0"
     endif
 
 	ifdef A4GL_INIFILE
-		include $(A4GL_INIFILE)
-		A7:=$(A4GL_INIFILE)
+		#In binary install, this will point to wrong place,
+		#so we better first check if we have it
+		IS_THERE:=$(shell ls ${A4GL_INIFILE} ${NOERR})
+		ifneq "${IS_THERE}" ""
+			include $(A4GL_INIFILE)
+			A7:=$(A4GL_INIFILE)
+		endif
 	endif
 
 endif
@@ -295,8 +302,9 @@ ifeq "${GCC_MINGW}" "yes"
 	#TARGET_OS	=mingw
 endif
 
-
-PATH:=${AUBITDIR}/bin:${PATH}
+ifneq "${AUBIT_BIN_INSTALL}" "1"
+	PATH:=${AUBITDIR}/bin:${PATH}
+endif
 
 
 CONFIGURE_COMMAND=@CONFIGURE_COMMAND@
@@ -1007,6 +1015,8 @@ XDIALOG				=@XDIALOG@
 XDIALOG_VERSION		=@XDIALOG_VERSION@
 DIALOG				=@DIALOG@
 DIALOG_TYPE			=@DIALOG_TYPE@
+EXDATA_MPZ			=@EXDATA_MPZ@
+PERL				=@PERL@
 
 ## ==================================================================
 ##                      Moved from aubitrc:
@@ -1240,25 +1250,10 @@ IMPORT_FILES 	=@IMPORT_FILES@
 ##                    To incl directory
 ## ==================================================================
 
-AMAKE_INCL_FILES=@AMAKE_INCL_FILES@
-
-#This header files become nececery to install when a4gl_esql.h was introduced.
-#As a chain reaction, practically all external Aubit header files become a
-#dependency. Most, if not all, are not really needed and should be removed
-#from installation scripts:
-INCL_HEADERS_EC =@INCL_HEADERS_EC@
-INCL_HEADERS_EC_REMOVETHIS=@INCL_HEADERS_EC_REMOVETHIS@
-
-INCL_HEADERS =@ALL_INC@ ${INCL_HEADERS_EC} ${INCL_HEADERS_EC_REMOVETHIS}
-INCL_MAKE   =@INCL_MAKE@
+AMAKE_INCL_FILES	=@AMAKE_INCL_FILES@
+INCL_HEADERS 		=@ALL_INC@ 
+INCL_MAKE   		=@INCL_MAKE@
 INCL_FILES	=${INCL_MAKE} ${AMAKE_INCL_FILES} ${INCL_HEADERS}
-
-#FIXME: what about this:
-#		$(SOURCE)/common/dataio/form_x.x.h  $(SOURCE)/common/dataio/form_x.xs.h
-
-#do we want this or not in binary installation?
-#INCL_FILES_LEGACY=a4gl_API_form.h a4gl_API_menu.h a4gl_API_sql.h form_x.x.h \
-#		a4gl_API_lex.h a4gl_API_msg.h a4gl_libaubit4gl.h form_x.xs.h
 
 ## ==================================================================
 ##                    To Aubit binary installation root directory

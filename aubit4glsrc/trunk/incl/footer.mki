@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.39 2003-11-12 22:22:45 afalout Exp $
+#	 $Id: footer.mki,v 1.40 2005-03-04 08:07:14 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -169,15 +169,21 @@ endif
 	FILES.qo  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${Q4GL_OBJ_EXT}})
 	ifeq "${OBJS_LINK}" "SHARED"
 
-        #FIXME: we neet to take out the 4gl file from FILES.4gl list, that
-        #contatins MAIN block, as it will still need to be compiles to static
-		#object that will be made in executable, since shared libraries
-        #created here will need bot be passes as -l[lib]name on linking line -
-        #they will also need [lib] prefix added!
+		#shared libraries will need to be passes as -l[lib]name on linking line
+        #will linker accept .aso as -l ??
 
-		FILES.ao  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${A4GL_SOB_EXT}})
+		#Create list of non-MAIN modules:
+		FILES.4gl.notMAIN=$(filter-out ${MAIN.4gl},${FILES.4gl})
+		
+		#4GL modules that do NOT contain MAIN block will be compiled to shared objects:
+		FILES.ao  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl.notMAIN:.4gl=${A4GL_SOB_EXT}})
+		
+		#4GL module containg MAIN block needs to compile to static object:
+		FILES.ao  += $(addprefix ${ADDOBJSTORE}, ${MAIN.4gl:.4gl=${A4GL_OBJ_EXT}})
+		GLOB_GLOBALS_A4GL=${GLOB_GLOBALS:.obj=${A4GL_SOB_EXT}}		
     else
 		FILES.ao  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${A4GL_OBJ_EXT}})
+		GLOB_GLOBALS_A4GL=${GLOB_GLOBALS:.obj=${A4GL_OBJ_EXT}}		
     endif
 #FORMS
 	ifeq "$(POINTTOSTORE)" "1"
@@ -210,7 +216,10 @@ endif
 #DELETE IT AND RE-MAKE IT, and THEN it finds is - no idea why, but if something
 #like that happnes, do a full clean, and thern remake everything (or whatever
 #fails to link...)
-AUBIT_DEPS		=${FILES.ao} 	${FILES.aox}	${GLOB_GLOBALS:.obj=${A4GL_OBJ_EXT}}
+
+
+
+AUBIT_DEPS		=${FILES.ao} 	${FILES.aox}	${GLOB_GLOBALS_A4GL}
 D4GL_PCODE_DEPS	=${FILES.42m} 	${FILES.42x}	${GLOB_GLOBALS:.obj=${D4GL_OBJ_EXT}}
 D4GL_CCODE_DEPS	=${FILES.42o} 	${FILES.42FIX}	${GLOB_GLOBALS:.obj=${D4GL_COBJ_EXT}}
 I4GL_PCODE_DEPS	=${FILES.4go} 	${FILES.4gx}	${GLOB_GLOBALS:.obj=${I4GL_OBJ_EXT}}
@@ -218,7 +227,7 @@ I4GL_CCODE_DEPS	=${FILES.oFIX}	${FILES.4cx}	${GLOB_GLOBALS:.obj=${I4GL_COBJ_EXT}
 QUERIX_DEPS		=${FILES.qo} 	${FILES.qox}	${GLOB_GLOBALS:.obj=${Q4GL_OBJ_EXT}}
 
 ifneq "${LIBLINKFLG}" ""
-	AUBIT_LINK_DEPS	=${FILES.ao}	${GLOB_GLOBALS:.obj=${A4GL_OBJ_EXT}}
+	AUBIT_LINK_DEPS	=${FILES.ao}	${GLOB_GLOBALS_A4GL}
 else
 	AUBIT_LINK_DEPS	=${AUBIT_DEPS}
 endif
@@ -643,7 +652,18 @@ show:
 	@echo A4GL_CC = ${EXECSTORE}
 	@echo PATH.link = ${PATH.link}
 	@echo FILES.aubit.link = ${FILES.aubit.link}
-
+	@echo "PRG_EXT=${PRG_EXT}"
+	@echo "OBJ_EXT=${OBJ_EXT}"
+	@echo "FRM_EXT=${FRM_EXT}"
+	@echo "HLP_EXT=${HLP_EXT}"
+	@echo "LIB_EXT=${LIB_EXT}"
+	@echo "FRM=${FRM}"
+	@echo "OBJ=${OBJ}"
+	@echo "PRG=${PRG}"
+	@echo "LIB=${LIB}"
+	@echo "HLP=${HLP}"
+	
+	
 
 src:
 	@echo ${PROG}
@@ -655,6 +675,18 @@ src:
 src.all:
 	@echo ${ALL_SRC} ${PWD}
 
+#Targets we use from Amake to get files lists
+show.sources.GLOBALS.4gl:
+	@echo "${GLOBALS.4gl}"
+show.sources.FILES.4gl:
+	@echo "${FILES.4gl}"
+show_SET_VPATH_4GL:
+	@echo "${SET_VPATH_4GL}"
+show.MAIN.4gl:
+	@echo "${MAIN.4gl}"
+show.PROG:
+	@echo "${PROG}"
+	
 
 #Load module/program relatinships into Doc4GL database from make files
 #SRC_LOAD_UTIL must be set from calling program/makefile, like in MaxERPdefs.mki

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.283 2005-02-21 00:52:17 afalout Exp $
+dnl # $Id: configure.in,v 1.284 2005-03-04 08:04:41 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -627,8 +627,6 @@ AC_SUBST(ALL_MAKEFILE)
 AC_SUBST(CONVSQL_FILES)
 AC_SUBST(IMPORT_FILES)
 AC_SUBST(AMAKE_INCL_FILES)
-AC_SUBST(INCL_HEADERS_EC)
-AC_SUBST(INCL_HEADERS_EC_REMOVETHIS)
 AC_SUBST(ALL_INC)
 AC_SUBST(ROOT_FILES)
 AC_SUBST(ETC_FILES)
@@ -2163,41 +2161,18 @@ ALL_SH="aubit $AMAKE_SH"
 ##       Define permanent list of Includes to build/install
 ## ==================================================================
 
-#This header files become nececery to install when a4gl_esql.h was introduced.
-#As a chain reaction, practically all external Aubit header files become a
-#dependency. Most, if not all, are not really needed and should be removed
-#from installation scripts:
-INCL_HEADERS_EC="a4gl_esql.h a4gl_esql_infx.h a4gl_esql_postgres.h"
-
 AMAKE_INCL_FILES="header.mki footer.mki footer-c.mki a4gl.mk q4gl.mk d4gl.mk i4gl.mk"
 
-#Here we go again  - a4gl_4gl_callable.h requires all of this:
-#---DOES IT REALLY?----
-#WARNING: We use INCL_HEADERS_EC_REMOVETHIS somewhere in 'make install'
-#==== BUT NOT IN RMP/Windows installes file lists !!!!!
-#Temp. disabled - lets see what happens:
-xxxINCL_HEADERS_EC_REMOVETHIS="a4gl_libaubit4gl.h a4gl_API_form.h \
-	a4gl_API_menu.h a4gl_API_msg.h a4gl_API_packer.h a4gl_API_ui.h \
-	a4gl_exdata.h a4gl_API_exreport.h a4gl_API_sql.h a4gl_API_rpc.h \
-	a4gl_incl_infx.h a4gl_API_esql.h a4gl_API_help.h"
-#	../common/dataio/form_x.x.h
-
-#This is really needed (Feb 2005)
-INCL_HEADERS_EC_REMOVETHIS="a4gl_API_esql.h a4gl_incl_infx.h"
-
-
+#TODO: check that all of this is reallu needed in bynary installations:
 ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
         a4gl_exdata.h a4gl_API_exreport.h a4gl_API_form.h a4gl_API_help.h \
 		a4gl_API_menu.h a4gl_API_msg.h a4gl_API_rpc.h a4gl_API_sql.h a4gl_API_ui.h \
-		a4gl_API_sqlparse.h a4gl_API_esql.h a4gl_incl_infx.h"
-
-#INCL_FILES_LEGACY=a4gl_API_form.h a4gl_API_menu.h a4gl_API_sql.h form_x.x.h \
-#		a4gl_API_msg.h a4gl_libaubit4gl.h form_x.xs.h
-
-
-#not needed:
-#a4gl_API_esql.h <<< is needed!! a4gl_API_packer.h
-
+		a4gl_API_sqlparse.h a4gl_API_esql.h a4gl_incl_infx.h \
+		a4gl_API_esql.h a4gl_incl_infx.h \
+		a4gl_esql.h a4gl_esql_infx.h a4gl_esql_postgres.h \
+		a4gl_esql_ingres.h"
+		
+		
     COUNTER=0
 	for FILE in $ALL_INC ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
@@ -2338,7 +2313,7 @@ ROOT_FILES_DOC="README.txt"
 
 CONVSQL_FILES="README.txt INFORMIX-ORACLE.cnv ORACLE-INFORMIX.cnv \
 		INFORMIX-POSTGRESQL.cnv POSTGRESQL-INFORMIX.cnv \
-		INFORMIX-POSTGRES.cnv INFORMIX-SQLITE.cnv"
+		INFORMIX-POSTGRES.cnv INFORMIX-SQLITE.cnv INFORMIX-INGRES.cnv"
 
 #It looks like INFORMIX-POSTGRESQL.cnv is obsolete - confirm and remove
 		
@@ -8725,7 +8700,6 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 tools/test/db/informix/Makefile
                 tools/test/db/postgresql/Makefile
                 tools/test/ace/Makefile
-				tools/test/Makefile
                 bin/aubitbuild.sh
 				docs/doxy/Doxyfile])
 
@@ -9048,7 +9022,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.283 2005-02-21 00:52:17 afalout Exp $
+| $Id: configure.in,v 1.284 2005-03-04 08:04:41 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

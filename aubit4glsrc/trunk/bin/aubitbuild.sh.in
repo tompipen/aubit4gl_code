@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.62 2005-02-03 10:31:28 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.63 2005-03-04 08:06:55 afalout Exp $
 #
 
 #--------------------------------------------------------------------
@@ -809,10 +809,10 @@ function check_install () {
 type="$1"
 old_STOPONERROR=$STOPONERROR
 
-#This function esentially uses 4glpc.obsolet option -chk-install to compare
+#This function uses 4glpc.obsolete scripts option -chk-install to compare
 #files installed with files in source code tree, both ways - it checks 
 #that (1) all files (minus expected exceptions) present in compiled source code
-#tree end up in bunary installation, and (2) that all files that end up in 
+#tree end up in binary installation, and (2) that all files that end up in 
 #binary installation tree are expected there.
 
 #Note that we also check dependencies before making Windows setup,
@@ -837,18 +837,16 @@ export SOURCEDIR="$AUBITSRCDIR"
 	if test "$type" = "winsetup" -a "$WINSETUP" = "1" -a "$BUILD_MINGW" = "1"; then
 		STOPONERROR=0   #Continue even if next statemets fails
 		#Expects Aubit Windows setup executable to exist
-		EXEC="make winsetup.deinstall"; runexec
-		EXEC="make install.winsetup.silent"; runexec
-		EXEC="make install.check.winsetup.compare"; runexec
-		EXEC="make winsetup.deinstall"; runexec
+		EXEC="make winsetup.check"; runexec
 		STOPONERROR=$old_STOPONERROR
 		return
 	fi
 
 	if test "$type" = "rpm" -a "$RPM" = "1"; then
 		STOPONERROR=0   #Continue even if next statemets fails
-		#rpm.test: rpm.deinstall rpm.install rpm.test.files rpm.deinstall
-		EXEC="make rpm.test"; runexec
+		#rpm.test target invokes folowing sub-targets:
+		#rpm.deinstall rpm.install rpm.test.files rpm.deinstall
+		EXEC="make rpm.check"; runexec
 		STOPONERROR=$old_STOPONERROR
 		return
 	fi

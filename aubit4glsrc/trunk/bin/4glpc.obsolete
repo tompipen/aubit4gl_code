@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc.obsolete,v 1.9 2005-02-03 07:47:30 afalout Exp $
+# $Id: 4glpc.obsolete,v 1.10 2005-03-04 08:06:54 afalout Exp $
 #
 
 ########################################################################
@@ -1056,6 +1056,21 @@ do
 		if test "$SOURCEDIR" = ""; then
 			SOURCEDIR="$AUBITDIR_SRC"
 		fi
+
+		if test "$INSTALLDIR" = "$SOURCEDIR"; then
+			echo "ERROR: source and binary install directories are the same:"
+			echo "$INSTALLDIR"
+			exit 1
+		fi
+
+		if ! test -d "$INSTALLDIR"; then
+			echo "ERROR: INSTALLDIR ($INSTALLDIR) does not exist"
+			exit 1
+		fi
+		if ! test -d "$SOURCEDIR"; then
+			echo "ERROR: SOURCEDIR ($SOURCEDIR) does not exist"
+			exit 1
+		fi
 		
 		echo "Comparing binary install at $INSTALLDIR"
 		echo "with compiled source tree at $SOURCEDIR" 
@@ -1073,7 +1088,8 @@ do
 			.out .glb .ao .c .o .4pe.dat .xpm .zip .tar.gz .tgz .log noddy.txt .html .htm\
 			aubit4glsrc-*.txt configure.in .tmp .status \
 			BUGS.txt .m4 .mja todo todo.done autom4te.cache configure.lineno confdefs.h \
-			etc/config/bootstrap etc/config/ltmain.sh ChangeLog"
+			etc/config/bootstrap etc/config/ltmain.sh ChangeLog \
+			sqleditor.4ae"
 
 #Comparing binary install at d:/tmp/aubit4gl-silent
 #with compiled source tree at F:/cygwin/usr/src/aubit/aubit4glsrc
@@ -1087,7 +1103,7 @@ do
 			lib/libhelp lib/libincl lib/liblex lib/liblogical lib/libmenu \
 			lib/libmsg lib/libpacker lib/libpdf lib/librpc lib/libsql lib/libtui \
 			lib/libui lib/resource lib/swig lib/windows lib/libsqlparse CVS \
-			doxy debian incl/compat \
+			doxy debian incl/compat cccc \
 			lib/bin lib/data lib/extra_libs lib/generated \
 			tools/test/ace tools/test/db tools/test/altris \
 			tools/test/keys tools/test/lang tools/test/parser_bugs \
@@ -1113,15 +1129,21 @@ do
 			incl/a4gl_API_msg_lib.h incl/a4gl_API_ui_lib.h \
 			incl/a4gl_API_sqlparse_lib.h incl/API_lex.h \
 			incl/a4gl_API_sql_lib.h incl/a4gl_API_rpc_lib.h \
-			incl/a4gl_API_exreport_lib.h incl/stamp-h"
+			incl/a4gl_API_exreport_lib.h incl/stamp-h \
+			incl/a4gl_libaubit4gl.h incl/a4gl_API_packer.h"
+			
+			#seems a4gl_libaubit4gl.h and a4gl_API_packer.h are not needed any more?
 			
 			#FIXME: I'm not at all sure that this headers ignore list is 
 			#correct - see INCL_HEADERS_EC_REMOVETHIS in configure.in
 			
 		if test "$COMSPEC" != ""; then
+			#Ignore this files but ONLY on Windows
+			#Why did I do that????
+			#incl/a4gl_esql.h is ABSOLUTELY needed when using EC mode!!!
 			IGNORE_LIST="$IGNORE_LIST \		
 				incl/a4gl_API_esql.h incl/a4gl_API_packer.h \
-				incl/a4gl_esql.h incl/a4gl_esql_infx.h \
+				incl/a4gl_esql_infx.h \
 				incl/a4gl_esql_postgres.h incl/a4gl_incl_infx.h \
 				incl/a4gl_libaubit4gl.h"
 		fi
@@ -1238,9 +1260,11 @@ do
 					if test "$HAVE_IT" = "0"; then
 						echo "File $installed_file is installed, but is not in 'to install' list"
 						HAVE_UNEXPECTED=1
-						#ls $INSTALLDIR$installed_file
-						#ls $SOURCEDIR$installed_file
-						#exit 4
+						if test "1" = "2"; then 
+							ls $INSTALLDIR/$installed_file
+							ls $SOURCEDIR/$installed_file
+							exit 4
+						fi
 					fi
 				fi
 			done

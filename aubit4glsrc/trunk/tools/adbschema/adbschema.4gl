@@ -9,6 +9,12 @@ define mv_silent integer
 define mv_mode integer
 define mv_perms integer
 
+GLOBALS
+	DEFINE
+	gv_filer_out_table_prefix char (16)
+END GLOBALS
+
+
 function usage()
 	display " " 
 	display "ADBSCHEMA (c) 2005 Aubit Computing Ltd"
@@ -60,6 +66,7 @@ define
 	let lv_systables = false
 	let lv_prefix_idx = false
 	let lv_no_owner = false
+	initialize gv_filer_out_table_prefix to null
 	
 	if num_args()=0 then
 		call usage()
@@ -116,6 +123,10 @@ define
 				let a=a+1
 				let lv_dbname=arg_val(a)
 
+			when "-filter-out-table-prefix"
+				let a=a+1
+				let gv_filer_out_table_prefix=arg_val(a)
+				
 			when "-q" 
 				let mv_silent=1
 			
@@ -172,14 +183,24 @@ define
 			end if
 		else
 			if lv_4gl then
-				let lv_str="DATABASE ",lv_dbname
-				call outstr(lv_str)
 				call outstr("MAIN")
 				call outstr("DEFINE lv char (600)")
-
+				
+				call outstr("let lv=fgl_getenv(\"DB_NAME_TARGET\")")
+				call outstr("if lv = \"\" or lv IS NULL then")
+					#Use same database name as the one we unloaded from
+					let lv_str="	DATABASE ",lv_dbname clipped
+					call outstr(lv_str)
+					let lv_str="	DISPLAY \"Loading into db ",lv_dbname clipped,"\""
+					call outstr(lv_str)
+				call outstr("else")
+					call outstr("	DATABASE lv")
+					call outstr("	DISPLAY \"Loading into db \",lv CLIPPED")
+				call outstr("end if")
+				
 				#TODO - do not hard-code DMY - take if from $DBDATE at unload time
 				
-				#cant see a setting for DATE delimiter in PG?
+				#cant find a setting for DATE delimiter in PG?
 				
 				call outstr("IF dbms_dialect()='POSTGRESQL' THEN")
 				{

@@ -252,7 +252,14 @@ fi
 #Used to find libaubit4gl _only_ and _only_ on UNIX
 #LD_LIBRARY_PATH is UNIX only feature, so use UNIX path and separator
 export LD_LIBRARY_PATH=$AUBITDIR/lib:$LD_LIBRARY_PATH
-	
+
+if test "$POSTGRESDIR" = ""; then 
+	POSTGRESDIR=`aubit-config POSTGRESDIR`
+	if test "$POSTGRESDIR" != ""; then 
+		export LD_LIBRARY_PATH="$POSTGRESDIR/lib:$LD_LIBRARY_PATH"
+	fi
+fi
+
 #Strip drive letter, because it will contain ":"
 TMPAUBITDIR=`echo $AUBITDIR | sed -e 's/C://'g -e 's/c://'g`
 TMPAUBITDIR=`echo $TMPAUBITDIR | sed -e 's/D://'g -e 's/d://'g`

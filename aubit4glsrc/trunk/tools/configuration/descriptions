@@ -631,7 +631,8 @@ A4GL_EC_LOGSQL  UNKNOWN UNKNOWN
 ALWAYS_CONVERT  UNKNOWN UNKNOWN
 BEEP_BADMENUKEY UNKNOWN UNKNOWN
 BINDDATEASINT UNKNOWN UNKNOWN
-COMSPEC UNKNOWN UNKNOWN
+COMSPEC COMPILE/RUNTIME On Windows used to determine that we are on Windows
+	Not to be changed by user - this is a Windows system environment variable
 CORE_ON_ASSERT RUNTIME/DEBUG Force a core dump when encountering an assert
 	Aubit4GL uses a series of assertions to check data being used internally.
 	When one of these assertion fails - it generally indicates something has gone

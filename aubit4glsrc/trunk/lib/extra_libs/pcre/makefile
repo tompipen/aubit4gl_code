@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.6 2004-12-14 06:52:14 afalout Exp $
+# $Id: makefile,v 1.7 2005-03-04 08:07:14 afalout Exp $
 #
 
 #PCRE - Perl Compatible Regular Expressions
@@ -62,7 +62,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 4GLPC_EXEC=export A4GL_LEXTYPE=C; ${FGLPCEXEC}
-
+4GLPC_EXEC+=--verbose
 ALL=${LIBROOT}/libA4GL_pcre${SO_EXT} 
 
 4GLC	=${ROOT}/bin/4glc
@@ -79,7 +79,7 @@ all : ${ALL}
 ${LIBROOT}/libA4GL_pcre${SO_EXT}: match.4gl
 #	${4GLPC_EXEC} -g ${AS_DLL} $^ -o $@ -lspopc
 #	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl -lspopc
-	${4GLPC_EXEC} --verbose $^ ${VERBOSE_FLAG} ${IFLAGS} ${AS_DLL} -o $@ ${LFLAGS}
+	${4GLPC_EXEC} $^ ${VERBOSE_FLAG} ${IFLAGS} ${AS_DLL} -o $@ ${LFLAGS}
 	@echo "PCRE library sucesfully compiled."
 
 

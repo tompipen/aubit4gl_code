@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.15 2005-02-25 08:39:16 mikeaubury Exp $
+# $Id: Makefile,v 1.16 2005-03-04 08:02:30 afalout Exp $
 #
 
 ## ==================================================================
@@ -44,14 +44,12 @@ include incl/Makefile-common
 
 ###############################
 #Things we compile by default
-ALL					=settings api.headers corecompile libfile \
-						libstring test
+ALL					=settings api.headers corecompile libfile libstring
 
 ifneq "${enable_minimal}" "yes" 
 	ALL 			+=	liblogical glade aace pcode
 endif
 
-						
 ###############################
 #Things we compile with 'extra' target
 ALL_EXTRA  			=ide odbctest libhtml adbaccess adbload
@@ -91,7 +89,7 @@ endif
 ## ==================================================================
 
 #default: ${ALL} default.msg
-default: ${ALL} default.msg.tmp
+default: ${ALL} test default.msg.tmp
 	@echo " "
 
 default.msg.tmp:
@@ -678,19 +676,32 @@ endif
 	@echo "Thank you for using Aubit 4gl compiler"
 	@echo " "
 
+#WARNING: for some reason (sic!) assigning variables here MUST happen 
+#on the beggining of the line:
+ifeq "${INSTALLDIR}" ""
+INSTALLDIR=${INSTALL_DIR}
+endif
+ifeq "${SOURCEDIR}" ""
+SOURCEDIR=${AUBIT_SRC_ROOT}
+endif
 ########################
 #Check that 'make install' installed everything we expect, and not things
 #we dont expect/want:
 install.check:
-ifeq "${COMSPEC}" ""
-	export MAKINGAUBIT=0; ${SH} bin/4glpc.obsolete -chk-install
-else
-	export MAKINGAUBIT=0; ${SH} bin/4glpc.obsolete -chk-install
-endif
+
+	export MAKINGAUBIT=0; export SOURCEDIR="${SOURCEDIR}";export INSTALLDIR="${INSTALLDIR}"; \
+		${SH} bin/4glpc.obsolete -chk-install
 
 ########################
 #Check that Winsows setup  installed everything we expect, and not things (FULL LOOP)
-install.check.winsetup: winsetup.deinstall winsetup install.winsetup.silent install.check.winsetup.compare
+install.check.winsetup: winsetup winsetup.check
+
+#########################
+#Main target for checking windows installer files consistency
+#also invoked from aubitbuild.sh
+winsetup.check: winsetup.deinstall install.winsetup.silent install.check.winsetup.compare
+		#EXEC="make winsetup.deinstall"; runexec
+
 	@echo "WinSetup checks OK"
 	
 ########################
@@ -771,7 +782,7 @@ pack.ide:
 
 #Create installation tree
 install.tree:
-	${MKPATH} $(BIN_DEST) $(LIB_DEST) $(ETC_DEST) $(FGLPC_SETTINGS_DEST} \
+	${MKPATH} $(BIN_DEST) $(LIB_DEST) $(ETC_DEST) $(FGLPC_SETTINGS_DEST) \
 	$(INCL_DEST) $(TEST_DEST)/gui $(DOC_DEST) ${CONVSQL_DEST} ${IMPORT_DEST}
 	@echo "Aubit 4gl compiler instalation tree created"
 #FIXME: we need to chown installation tree to something, since installation has 
@@ -884,7 +895,7 @@ endif
 
 rpm.build: RPMCONFFILE:=${AUBITDIR}/etc/aubit-rpm.spec
 rpm.build: SRCTMP:=${RPMBUILDROOT}/SOURCES/${NAMEVERBLD}.${ARCHEXT}
-rpm.build: rpm.check
+rpm.build: rpm.check.all
 #RPM insists to have source code in ${RPMBUILDROOT}/SOURCES/ before it will
 #build it, and only then make src and bin RPM
 	@echo "+--------------------------------------------------------------------+"
@@ -932,9 +943,9 @@ endif
 	@echo "| 'make rpm' successfull, see rpmbuild.log for details               |"
 	@echo "+--------------------------------------------------------------------+"
 
-rpm.check: RPMCONFFILE:=${AUBITDIR}/etc/aubit-rpm.spec
-rpm.check: SRCTMP:=${RPMBUILDROOT}/SOURCES/${NAMEVERBLD}.${ARCHEXT}
-rpm.check: rpm.check.deps
+rpm.check.all: RPMCONFFILE:=${AUBITDIR}/etc/aubit-rpm.spec
+rpm.check.all: SRCTMP:=${RPMBUILDROOT}/SOURCES/${NAMEVERBLD}.${ARCHEXT}
+rpm.check.all: rpm.check.deps
 #      -bl    Do  a  "list check".  The "%files" section from the
 #              spec file is macro expanded, and checks are made to
 #              verify that each file exists.
@@ -1005,7 +1016,9 @@ rpm.test.files:
 	@echo "+--------------------------------------------------------------------+"
 
 #######################
-rpm.test: rpm.deinstall rpm.install rpm.test.files rpm.deinstall
+#The main target for testing of RPM package consitency; also invoked from
+#aubitbuild.sh as part of automatic nightly builds
+rpm.check: rpm.deinstall rpm.install rpm.test.files rpm.deinstall
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| RPM test finished"
 	@echo "+--------------------------------------------------------------------+"
@@ -1434,7 +1447,8 @@ show:
 	@echo "A4GL_LEXTYPE in aubit-config=`aubit-config A4GL_LEXTYPE`"
 	@echo "A4GL_LEXDIALECT=${A4GL_LEXDIALECT}"
 	@echo "A4GL_LEXDIALECT in aubit-config=`aubit-config A4GL_LEXDIALECT`"
-
+	@echo "FGLPC_SETTINGS_DEST=${FGLPC_SETTINGS_DEST}"
+	@echo "FGLPC_SETTINGS_PATH=${FGLPC_SETTINGS_PATH}"
 
 	
 show.platform: OUT="/tmp/showplatform"

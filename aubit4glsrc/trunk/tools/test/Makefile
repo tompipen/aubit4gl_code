@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.47 2004-10-04 13:50:27 afalout Exp $
+# $Id: Makefile,v 1.1 2005-03-04 08:11:29 afalout Exp $
 #
 
 ROOT    =../..
@@ -54,7 +54,8 @@ export A4GL_LEXTYPE DEBUG A4GL_SQLTYPE A4GL_UI
 #SOURCE FILES ! KEEP ALSO IN MIND THAT DEFAULT TARGETS HERE ARE SUPPOSED TO BE
 #ONLY FOR A LIGHT DEMO AND TO CONFIRM THAT COMPILER WORKS AND IS INSTALLED
 #CORRECTLY - SO WE DON'T WANT TOO MANY PROGRAMS HERE
-DEFAULT	=hello${A4GL_EXE_EXT} hello2${A4GL_EXE_EXT} hello_db${A4GL_EXE_EXT} testmenu${A4GL_EXE_EXT} testmenu${A4GL_MNU_EXT} \
+DEFAULT	=hello${A4GL_EXE_EXT} hello2${A4GL_EXE_EXT} hello_db${A4GL_EXE_EXT} \
+		testmenu${A4GL_EXE_EXT} testmenu${A4GL_MNU_EXT} \
 		form${A4GL_FRM_EXT} helpfile.hlp  file${A4GL_EXE_EXT}
 
 
@@ -62,7 +63,7 @@ SUB		=guidemos
 
 ALL		=${DEFAULT} assoc2${A4GL_EXE_EXT}
 
-ifeq "@EXDATA_MPZ@" "yes"
+ifeq "${EXDATA_MPZ}" "yes"
 	ALL	+=testmpz${A4GL_EXE_EXT}
 endif
 
@@ -81,6 +82,9 @@ ifneq "${AUBIT_BIN_INSTALL}" "1"
 	REGRES=regressiontests dbtests
     #examples we have only in source code tree, but not in binary installations:
 	ALL +=solitaire${A4GL_EXE_EXT}
+	4GLC=${ROOT}/bin/4glc
+else
+	4GLC=aubit 4glc
 endif
 
 ALL     +=${SUB}
@@ -125,13 +129,13 @@ test.build: test_build.4gl
 #Same purpose as test.build target, but for Perl compiler:
 test.perl: test_build.4gl
 #calldll.c            497    (     0,     0) 1 Function Not found : print_Constant
-	export A4GL_LEXTYPE=PERL; export DEBUG=ALL; ${ROOT}/bin/4glc ${VERBOSE_FLAG} $<
-	export A4GL_UI=TUI;  export DEBUG=ALL; @PERL@ ./$(basename $<).pl
+	export A4GL_LEXTYPE=PERL; export DEBUG=ALL; ${4GLC} ${VERBOSE_FLAG} $<
+	export A4GL_UI=TUI;  export DEBUG=ALL; ${PERL} ./$(basename $<).pl
 
 #For Pcode compiler:
 test.pcode: test_build.4gl
 #A4GL_FAKELEXTYPE isn't strictly needed - but it generates smaller C code:
-	export A4GL_FAKELEXTYPE=PCODE; ${ROOT}/bin/4glc $^
+	export A4GL_FAKELEXTYPE=PCODE; ${4GLC} $^
 #(Should generate .4pe.dat or 4pe.xml)
 	${ROOT}/bin/c2pcode_fgl $(basename $<).c 
 #do not add .xml or .dat - thats added by the packer:

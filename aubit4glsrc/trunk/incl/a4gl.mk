@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.54 2005-02-24 09:29:55 afalout Exp $
+#	 $Id: a4gl.mk,v 1.55 2005-03-04 08:07:14 afalout Exp $
 
 ##########################################################################
 #
@@ -99,7 +99,7 @@ ifdef COMSPEC
 endif
 
 ###########################
-#If this compilers needs objects ar run-time, set to 'yes':
+#If this compilers needs objects at run-time, set to 'yes':
 #note: applies only to static objects, not shared libraries
 A4GL_INST_OBJ		=no
 
@@ -152,13 +152,17 @@ else
 	#default
 	USE_4GLPC		=0
 	ifeq "${A4GL_FGLC}" ""
-		A4GL_FGLC		=4glc
+		A4GL_FGLC		=4glc 
 	endif
 	A4GL_CC_CMD     =${AUBIT_CMD} ${A4GL_FGLC} ${EXTRA_4GLC}
 	#--clean
 endif
 A4GL_CC_ENV     =
-A4GL_CC_FLAGS   = #--verbose
+#Variable VERBOSE is usually set by 'amake' but can be set in 
+#shell environemnt too
+ifeq "${VERBOSE}" "1"
+	A4GL_CC_FLAGS   = --verbose
+endif
 
 ###########################
 # A4GL C-code Linker
@@ -222,11 +226,11 @@ endif
 #Used in 4glpc
 export A4GL_OBJ_EXT
 
-#shared object:
+#shared object (single 4gl module compiled to shared library):
 A4GL_SOB_EXT=.aso
 #static library:
 A4GL_LIB_EXT=.aox
-#shared library:
+#shared library (More then one object (4gl module) linked in a shared library):
 A4GL_SOL_EXT=.asx
 #Form file:
 A4GL_FRM_BASE_EXT=.afr
@@ -289,39 +293,57 @@ A4GL_CLEAN_FLAGS	=$(addprefix *,	$(A4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(A4
 
 
 ####################################
-# Rule to compile an object file from a 4gl file
+# Rule to compile an STATIC object file from a 4gl file
 #
 #Note: we don't want to have separate rules for 4gl->c and then from c->o because
 #we want to allways have the dependency of the object to the 4gl source file.
 #Otherwise, make would be happy when it see that object is up-to-date in
 #respect to the c file, and ignore possible change in 4gl file
 #On Windows when using Cygwin tools (that use UNIX paths and Cygwing path mangling) and native
-#Windows 4glc and gcc (that know nothing about this CigWin paths) we need to add path to CygWin
+#Windows 4glc and gcc (that know nothing about this CygWin paths) we need to add path to CygWin
 #installation in front of any source file paths specified in rule call:
 #Note: we can produce .glb file by specifying --globals and that would be
-#much faster then doing a full compile
-#.4gl${A4GL_OBJ_EXT}:
+#much faster then doing a full compile when all we need is a .glb file
 %${A4GL_OBJ_EXT} %.glb: %.4gl
 ifeq "${USE_4GLPC}" "1"
-	${FAIL_CMPL_4GL}${A4GL_CC} $< -c -o ${OBJSTORE}$@
+	${FAIL_CMPL_4GL}${A4GL_CC} $< -c -o ${OBJSTORE}$*${A4GL_OBJ_EXT}
 else
 #-I to the directory 4GL file is in is needed for Informix ESQL/C compiler,
 #otherwise .h file created by 4glc will not be found by esql executable
 	${FAIL_CMPL_4GL}@if test "$(<D)" = "" -o "$(<D)" = "."; then \
-		EXEC="${A4GL_CC} $< -c -o ${OBJSTORE}$@"; \
+		EXEC="${A4GL_CC} $< -c -o ${OBJSTORE}$*${A4GL_OBJ_EXT}"; \
 	else \
-		EXEC="${A4GL_CC} -I$(<D) ${CYGWIN_ROOT}$< -c -o ${OBJSTORE}$@"; \
+		EXEC="${A4GL_CC} -I$(<D) ${CYGWIN_ROOT}$< -c -o ${OBJSTORE}$*${A4GL_OBJ_EXT}"; \
 	fi; \
 	echo $$EXEC; \
 	$$EXEC; RET=$$?; \
-	if test -f $*.cpc.err ; then cat $*.cpc.err >> /tmp/cpc_errors.log ; fi; \
 	exit $$RET;
 endif
+#if test -f $*.cpc.err ; then cat $*.cpc.err >> /tmp/cpc_errors.log ; fi; \
+
+SO_FLAG=--shared
+#SO_FLAG=--as-dll
 
 ####################################
 # Rule to compile an shared object file from a 4gl file
-%${A4GL_SOB_EXT} : %.4gl
-	${FAIL_CMPL_4GL}${A4GL_CC} $< -c --as-dll -o $@
+# Same as compiling A4GL_OBJ_EXT above but addind --as-dll when invoking 4glc/4glpc
+#if its -shared, that it cant be -c (of GCC will produce static object regardless of -shared)
+%${A4GL_SOB_EXT} %.glb: %.4gl
+#	${FAIL_CMPL_4GL}${A4GL_CC} $< ${SO_FLAG} -o $@
+ifeq "${USE_4GLPC}" "1"
+	${FAIL_CMPL_4GL}${A4GL_CC} $< ${SO_FLAG} -o ${OBJSTORE}$*${A4GL_SOB_EXT}
+else
+#-I to the directory 4GL file is in is needed for Informix ESQL/C compiler,
+#otherwise .h file created by 4glc will not be found by esql executable
+	${FAIL_CMPL_4GL}@if test "$(<D)" = "" -o "$(<D)" = "."; then \
+		EXEC="${A4GL_CC} $< ${SO_FLAG} -o ${OBJSTORE}$*${A4GL_SOB_EXT}"; \
+	else \
+		EXEC="${A4GL_CC} -I$(<D) ${CYGWIN_ROOT}$< ${SO_FLAG} -o ${OBJSTORE}$*${A4GL_SOB_EXT}"; \
+	fi; \
+	echo $$EXEC; \
+	$$EXEC; RET=$$?; \
+	exit $$RET;
+endif
 
 
 ####################################
