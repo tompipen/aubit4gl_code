@@ -5,7 +5,7 @@
 #include "lowlevel.h"
 #include "formdriver.h"
 #include "low_gtk.h"
-static char *module_id="$Id: lowlevel_gtk.c,v 1.11 2004-01-17 11:54:34 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.12 2004-01-17 13:12:08 mikeaubury Exp $";
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>     /* GDK_Down */
@@ -499,7 +499,11 @@ if (x==0&&y==0&&h==0&&w==0) {
         gtk_widget_set_name(GTK_WIDGET(win), "AppWindow");
 	//printf("set_name appwindow");
 	fixed = gtk_fixed_new ();
+
+#if GTK_CHECK_VERSION(2,0,0)
 	gtk_fixed_set_has_window    (GTK_FIXED(fixed),1);
+#endif
+
         gtk_widget_show (GTK_WIDGET (fixed));
         gtk_widget_set_name(GTK_WIDGET(fixed), "AppWindow");
         gtk_container_add (GTK_CONTAINER (win), fixed);
@@ -520,7 +524,9 @@ if (x==0&&y==0&&h==0&&w==0) {
       A4GL_debug ("w=%d h=%d\n", w / XWIDTH, h / YHEIGHT);
 
       win = gtk_fixed_new ();
+#if GTK_CHECK_VERSION(2,0,0)
       gtk_fixed_set_has_window    (GTK_FIXED(win),1);
+#endif
 
       gtk_widget_set_usize (GTK_WIDGET (win), w+gui_xwidth, h+gui_yheight);
       gtk_object_set_data (GTK_OBJECT (win), "FIXED", fixed);
@@ -571,7 +577,9 @@ if (x==0&&y==0&&h==0&&w==0) {
         }
       else
         {
+#if GTK_CHECK_VERSION(2,0,0)
 		gtk_fixed_set_has_window    (GTK_FIXED(win),1);
+#endif
           gtk_fixed_put (GTK_FIXED (win_screen), win, x,y);
           gtk_object_set_data (GTK_OBJECT (win), "FIXED", win);
           gtk_object_set_data (GTK_OBJECT (win), "TOP", win);
@@ -1329,7 +1337,9 @@ int
 
   p=gtk_fixed_new();
   gtk_object_set_data(GTK_OBJECT(p),"FIXED",p);
+#if GTK_CHECK_VERSION(2,0,0)
 		gtk_fixed_set_has_window    (GTK_FIXED(p),1);
+#endif
   gtk_widget_show(p);
   gtk_widget_set_usize (GTK_WIDGET (p), width*gui_xwidth, 1*gui_yheight);
   gtk_fixed_put(GTK_FIXED(cw),p,UILIB_A4GL_iscurrborder (),(promptline-1)*gui_yheight);
@@ -1461,7 +1471,7 @@ printf("public off\n");
 
 
 
-A4GL_clear_prompt(struct s_prompt *prmt) {
+void A4GL_clear_prompt(struct s_prompt *prmt) {
 	gtk_widget_destroy(prmt->win);
 	A4GL_LL_screen_refresh();
 }
@@ -2158,7 +2168,7 @@ void A4GL_LL_set_field_attr(void* field) {
 
 
 
-tstamp(char *s) {
+void tstamp(char *s) {
 static FILE *ts=0;
 static double ltime=0;
 static double lltime=0;
@@ -2180,7 +2190,7 @@ if (strcmp(s,"START")==0) {
 	lltime=ntime;
 	return;
 }
-fprintf(ts,"%s Since START %lf Since Last TS %lf\n",s,ntime-ltime,ntime-lltime);
+fprintf(ts,"%s Since START %f Since Last TS %f\n",s,ntime-ltime,ntime-lltime);
 lltime=ntime;
 }
 
