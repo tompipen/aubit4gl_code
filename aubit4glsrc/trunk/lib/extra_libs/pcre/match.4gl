@@ -11,7 +11,11 @@ endcode
 
 function pcre_text(i)
 define i integer
-return mv_arr[i]
+if i>0 and i<=10 then
+	return mv_arr[i]
+else
+	return " "
+end if
 end function
 
 function pcre_match(p,s)
