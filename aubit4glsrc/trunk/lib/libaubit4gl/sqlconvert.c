@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.17 2004-10-25 10:25:35 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.18 2004-10-25 11:23:14 mikeaubury Exp $
 #
 */
 
@@ -70,7 +70,9 @@ char *cvsql_names[]={
   "CVSQL_SQL_CURRENT_FUNCTION",
   "CVSQL_STRIP_ORDER_BY_INTO_TEMP",
   "CVSQL_ADD_CASCADE",
-  "CVSQL_OMIT_NO_LOG"
+  "CVSQL_OMIT_NO_LOG",
+  "CVSQL_OWNER_QUOTE",
+  "CVSQL_NO_OWNER_QUOTE"
 
 };
 
@@ -102,7 +104,9 @@ enum cvsql_type
   CVSQL_SQL_CURRENT_FUNCTION,
   CVSQL_STRIP_ORDER_BY_INTO_TEMP,
   CVSQL_ADD_CASCADE,
-  CVSQL_OMIT_NO_LOG
+  CVSQL_OMIT_NO_LOG,
+  CVSQL_OWNER_QUOTE,
+  CVSQL_NO_OWNER_QUOTE
 };
 
 
@@ -556,6 +560,8 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "STRIP_ORDER_BY_INTO_TEMP", len) == 0) return CVSQL_STRIP_ORDER_BY_INTO_TEMP;
   if (strncasecmp (p, "ADD_CASCADE", len) == 0) return CVSQL_ADD_CASCADE;
   if (strncasecmp (p, "OMIT_NO_LOG", len) == 0) return CVSQL_OMIT_NO_LOG;
+  if (strncasecmp (p, "OWNER_QUOTE", len) == 0) return CVSQL_OWNER_QUOTE;
+  if (strncasecmp (p, "NO_OWNER_QUOTE", len) == 0) return CVSQL_NO_OWNER_QUOTE;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
 printf("Unknown : %s\n",p);
