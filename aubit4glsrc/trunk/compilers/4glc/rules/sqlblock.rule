@@ -18,6 +18,7 @@ sql_block_entry:
 	SQL_TEXT 
 	| in_var {strcpy($<str>$,$<str>1);}
 	| sql_block_into {strcpy($<str>$,$<str>1);}
+/*
 | ABSOLUTE
 | ACCEPT
 | ACL_BUILTIN
@@ -218,7 +219,6 @@ sql_block_entry:
 | NOCR
 | NORMAL
 | NOT
-/*| NUMERIC */
 | OF
 | OFF
 | ON
@@ -335,7 +335,7 @@ sql_block_entry:
 | YEAR
 | YELLOW
 
-
+*/
 
 
 	;

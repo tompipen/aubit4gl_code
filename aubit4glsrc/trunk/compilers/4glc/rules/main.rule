@@ -40,6 +40,7 @@ module_entry :
 module_import 
 | module_code 
 | whenever_cmd
+| import_package
 | module_globals_section 
 | module_define_section  
 | db_section
