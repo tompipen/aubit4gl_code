@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.58 2005-03-09 15:14:39 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.59 2005-03-18 10:44:57 mikeaubury Exp $
 #
 */
 
@@ -405,6 +405,8 @@ a4gl_using (char *str, int s, char *fmt, double num)
   int a, variable_called_b;
   int isprnt = 0;
   double ad;
+  double num_dec;
+  char new_str[256];
 
   A4GL_debug ("In using... fmt=%s, num=%lf", fmt, num);
   for (a = 0; a < MAXPNT; a++)
@@ -457,8 +459,14 @@ a4gl_using (char *str, int s, char *fmt, double num)
     {
       ad = ad / 10;
     }
+
   num += ad;
-  sprintf (number, "%64.32f", num);
+
+  	sprintf (number, "%64.32f", num);
+
+  num_dec=num-floor(num);
+  A4GL_debug("Decimal portion = lf",num_dec);
+
   number[31] = 0;
   strcpy (str, fmt);
   variable_called_b = 30;
@@ -639,10 +647,15 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
 	}
     }
   variable_called_b = 0;
-A4GL_debug("str=%s",str);
+
+
+  sprintf(new_str,"%1.*lf",strlen(fm2)+1,num_dec);
+  ptr2=&new_str[2];
+  A4GL_debug("str=%s fm1=%s fm2=%s ptr2=%s",str,fm1,fm2,ptr2);
 
   for (a = 0; a < strlen (fm2); a++)
     {
+      A4GL_debug("a=%d fm[a]=%c",a,fm2[a]);
       if (a_strchr (rep_digit, fm2[a]))
 	{
 	  if (fm2[a] == ')')
@@ -658,11 +671,12 @@ A4GL_debug("str=%s",str);
 		  continue;
 		}
 	    }
-
+	  A4GL_debug("setting str[%d]=%c",a + strlen (fm1) + 1,ptr2[variable_called_b]);
 	  str[a + strlen (fm1) + 1] = ptr2[variable_called_b++];
 	}
       else
 	{
+	  A4GL_debug("setting str[%d]=%c",a + strlen (fm1) + 1,fm2[a]);
 	  str[a + strlen (fm1) + 1] = fm2[a];
 	}
     }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.116 2005-03-16 21:54:41 mikeaubury Exp $
+# $Id: stack.c,v 1.117 2005-03-18 10:44:58 mikeaubury Exp $
 #
 */
 
@@ -1126,6 +1126,7 @@ A4GL_debug("51 Have data");
 	{
 	  doublea = A4GL_pop_double ();
 	  doubleb = A4GL_pop_double ();
+		A4GL_debug("%lf %lf",doublea,doubleb);
 	}
       else
 	{
