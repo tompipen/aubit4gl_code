@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.2 2002-01-23 09:06:18 afalout Exp $
+# $Id: Makefile-install.mki,v 1.3 2002-01-26 13:40:46 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -125,8 +125,11 @@ deinstall.all: deinstall.libs.links deinstall.bin.links
 	${RM} $(INSTALL_DIR)/docs/changelog.txt $(INSTALL_DIR)/docs/COPYING $(INSTALL_DIR)/docs/CREDITS \
 		$(INSTALL_DIR)/docs/LICENSE
 #config examples
-	${RM} $(INSTALL_DIR)/etc/odbc.ini.example $(INSTALL_DIR)/etc/aubitrc.in
+	${RM} $(INSTALL_DIR)/etc/odbc.ini.example $(INSTALL_DIR)/etc/aubitrc-bin.in
 	rm -rf $(INSTALL_DIR)/etc/config
+
+#files created by configure:
+	${RM} $(INSTALL_DIR)/config.log $(INSTALL_DIR)/config.status $(INSTALL_DIR)/etc/aubitrc-bin
 
 #delete this directories only if they are now empty:
 	-rmdir $(INSTALL_DIR)/bin

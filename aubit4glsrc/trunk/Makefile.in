@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.24 2002-01-26 02:27:04 afalout Exp $
+# $Id: Makefile.in,v 1.25 2002-01-26 13:40:44 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -713,10 +713,14 @@ install.makefile-install:
 	${CP} etc/Makefile-install $(INSTALL_DIR)/Makefile
 	${CP} incl/Makefile-install.mki $(INSTALL_DIR)/incl
 	${CP} -r etc/config/ $(INSTALL_DIR)/etc
-	${CP} etc/aubitrc.in $(INSTALL_DIR)/etc
-	(cd etc; autoconf)
-	${CP} etc/configure $(INSTALL_DIR)
-
+	${CP} etc/aubitrc.in $(INSTALL_DIR)/etc/aubitrc-bin.in
+#Not all installations will have autoconf, and especially not version 2.5 or up
+#we need to have already generated configure in CVS
+#BUT-we better do this from main (root-source code) configure.in and use it
+#for binar distribution too, with --with-bin switch
+#	(cd etc; autoconf)
+#	${CP} etc/configure $(INSTALL_DIR)
+	${CP} configure $(INSTALL_DIR)
 #all targets common to installing compiled source code, AND installing
 #binary distributions are in here:
 ###################################
@@ -1594,13 +1598,6 @@ showbug: xsettings
 	${MAKE} XWZ=1 xsettings
 xsettings:
 	@echo "make invoked with flags : xx${MAKEFLAGS}xx"
-
-
-#Makefile: configure
-#	./configure CFLAGS="-L/opt/unixODBC/lib -L/opt/iODBC_3.0.5/libiodbc-3.0.5/iodbc/.libs"
-
-#configure:
-#s	autoconf
 
 old.2.in:
 	${CP} Makefile.old Makefile.in

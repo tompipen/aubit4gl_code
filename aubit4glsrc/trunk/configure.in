@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.22 2002-01-26 08:03:30 afalout Exp $
+# $Id: configure.in,v 1.23 2002-01-26 13:40:44 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -37,17 +37,44 @@
 AC_PREREQ(2.50)
 
 #Need to be here too, to be used in AC_INIT call:
-AUBIT_VERSION=`cat tools/project/version`
-AUBIT_BUILD=`cat tools/project/build`
+if test -f "tools/project/version" ; then
+	AUBIT_VERSION=`cat tools/project/version`
+	AUBIT_BUILD=`cat tools/project/build`
+fi
 
 #AC_INIT([Aubit4gl],[0.2],[aubit4gl-discuss@lists.sourceforge.net])
 AC_INIT([Aubit4gl],[$AUBIT_VERSION.$AUBIT_BUILD],[aubit4gl-discuss@lists.sourceforge.net])
 #location of additional Autoconf files
 AC_CONFIG_AUX_DIR(etc/config)
-#FIXME: what is this?
-AC_CONFIG_SRCDIR([compilers/4glc/4glc.c])
-#Location of llobal header to receive "#define xxxxx y" replacements:
-AC_CONFIG_HEADER([incl/config.h])
+
+#This script will be used for configuring binary distributions
+#when --with-bin switch is on command line
+if test "$with_bin" = "yes" ; then
+	AUBIT_SOURCE=0
+else #no switch, detect if we are in source code tree
+	if test -f "tools/project/version"; then
+		AUBIT_SOURCE=1
+    else
+		AUBIT_SOURCE=0
+    fi
+fi
+
+if test "$AUBIT_SOURCE" = "1" ; then
+    echo "Configuring source code"
+else
+    echo "Configuring binary distribution"
+fi
+
+
+if test "$AUBIT_SOURCE" = "1" ; then
+	#FIXME: what is this?
+	#This directive is expanded in initialisation part, and putting it in
+    #"if" have no effect:
+	#AC_CONFIG_SRCDIR([compilers/4glc/4glc.c])
+    AC_CONFIG_SRCDIR([bin/4glpc])
+	#Location of llobal header to receive "#define xxxxx y" replacements:
+	AC_CONFIG_HEADER([incl/config.h])
+fi
 
 AC_CANONICAL_SYSTEM
 
@@ -125,13 +152,12 @@ AC_SUBST(target)
 ##                             Defaults
 ## ==================================================================
 
-#This script will be used for configuring binary distributions too
-AUBIT_SOURCE=1
-
-#need to do this again, since the earlyer one was before initialisation,
-#and will not get in substitution otherwise:
-AUBIT_VERSION=`cat tools/project/version`
-AUBIT_BUILD=`cat tools/project/build`
+if test "$AUBIT_SOURCE" = "1" ; then
+	#need to do this again, since the earlyer one was before initialisation,
+	#and will not get in substitution otherwise:
+	AUBIT_VERSION=`cat tools/project/version`
+	AUBIT_BUILD=`cat tools/project/build`
+fi
 
 COMPILE_DATE=`date +%d-%m-%Y`
 aubitdir=`pwd`
@@ -211,23 +237,28 @@ fi
 ##                  Checks for standard programs
 ## ==================================================================
 
-AC_PROG_YACC
-if test "$YACC" != "bison -y"; then
-    #AC_MSG_WARN(You will need bison if you'd want to regenerate the Aubit parsers.)
-    AC_MSG_ERROR(Sorry, current Aubit source distribution will not work without Bison.)
-else
-    AC_MSG_CHECKING(bison version)
-#   set `bison --version| sed -e 's/^GNU Bison version //' -e 's/\./ /g'`
-	set `bison --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g'`
+if test "$AUBIT_SOURCE" = "1" ; then
+	AC_PROG_YACC
+	if test "$YACC" != "bison -y"; then
+	    #AC_MSG_WARN(You will need bison if you'd want to regenerate the Aubit parsers.)
+	    AC_MSG_ERROR(Sorry, current Aubit source distribution will not work without Bison.)
+	else
+	    AC_MSG_CHECKING(bison version)
+	#   set `bison --version| sed -e 's/^GNU Bison version //' -e 's/\./ /g'`
+		set `bison --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g'`
 
-    if test "$1" = "1" -a "$2" -lt "25"; then
-        AC_MSG_WARN(You will need bison 1.25 if you'd want to regenerate the Aubit parsers (found $1.$2).)
-    fi
-    AC_MSG_RESULT($1.$2 (ok))
+	    if test "$1" = "1" -a "$2" -lt "25"; then
+	        AC_MSG_WARN(You will need bison 1.25 if you'd want to regenerate the Aubit parsers (found $1.$2).)
+	    fi
+	    AC_MSG_RESULT($1.$2 (ok))
+	fi
+	AC_PROG_LEX
+	AC_PATH_PROG(DOXYGEN, doxygen, no)
+	AC_PATH_PROG(CVS_CLIENT, cvs, no)
+
 fi
 
 AC_PROG_CC
-AC_PROG_LEX
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
@@ -236,14 +267,10 @@ AC_PROG_AWK
 AC_PATH_PROG(PERL, perl, no)
 AC_PATH_PROG(SWIG, swig, no)
 AC_PATH_PROG(SH, sh, /bin/sh)
-AC_PATH_PROG(DOXYGEN, doxygen, no)
-AC_PATH_PROG(CVS_CLIENT, cvs, no)
 AC_PATH_PROG(LDD, ldd, no)
 AC_PATH_PROG(LDCONFIG, ldconfig, no)
-
-
-#Fixme: set GTKBUILD=no if one of this two is not found, even if libraries
-#are installed
+AC_PATH_PROG(AUTOCONF, autoconf, no)
+AC_PATH_PROG(ACLOCAL, aclocal, no)
 AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
@@ -1177,6 +1204,12 @@ if test "$PERL" != no; then
     fi
 fi
 
+## ==================================================================
+##            Decide on default SQL driver
+## ==================================================================
+
+
+
 
 ## ==================================================================
 ##         Checks for libraries expected in standard locations
@@ -1208,8 +1241,10 @@ AC_CHECK_LIB([panel], [main])
 ##                       Checks for header files
 ## ==================================================================
 
-AC_HEADER_STDC
-AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h ])
+if test "$AUBIT_SOURCE" = "1" ; then
+	AC_HEADER_STDC
+	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h ])
+fi
 
 ## ==================================================================
 ##      Checks for typedefs, structures, and compiler characteristics
@@ -1228,12 +1263,14 @@ AC_CHECK_SIZEOF(int, 4)
 ##                   Checks for library functions
 ## ==================================================================
 
-AC_FUNC_FORK
-AC_FUNC_MALLOC
-AC_FUNC_MEMCMP
-AC_TYPE_SIGNAL
-AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp select setenv setlocale socket strcasecmp strchr strdup strncasecmp strrchr strstr strtol])
+if test "$AUBIT_SOURCE" = "1" ; then
+	AC_FUNC_FORK
+	AC_FUNC_MALLOC
+	AC_FUNC_MEMCMP
+	AC_TYPE_SIGNAL
+	AC_FUNC_VPRINTF
+	AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp select setenv setlocale socket strcasecmp strchr strdup strncasecmp strrchr strstr strtol])
+fi
 
 ## ==================================================================
 ##                   Checks for Cygwin specifics
@@ -1298,7 +1335,8 @@ esac
 ##           Define which files we will substitute @xxx@ in
 ## ==================================================================
 
-AC_CONFIG_FILES([Makefile
+if test "$AUBIT_SOURCE" = "1" ; then
+	AC_CONFIG_FILES([Makefile
                 etc/aubitrc
                 incl/Makefile-common
 				compilers/4glc/Makefile
@@ -1321,6 +1359,14 @@ AC_CONFIG_FILES([Makefile
                 tools/odbctest/Makefile
                 tools/test/gui/Makefile
                 tools/test/Makefile])
+
+else
+
+	AC_CONFIG_FILES([
+                etc/aubitrc-bin
+                ])
+fi
+
 AC_OUTPUT
 
 
@@ -1351,8 +1397,15 @@ if test "$WARN_LD_LIBRARY_PATH" != ""; then
 fi
 
 echo ""
-echo "Aubit 4gl compiler source code is now configured."
-echo "Execute 'make' to compile it."
+
+if test "$AUBIT_SOURCE" = "1" ; then
+	echo "Aubit 4gl compiler source code is now configured."
+	echo "Execute 'make' to compile it."
+else
+	echo "Aubit 4gl compiler binary disrtibution now configured."
+	echo "Execute 'make install' to install it."
+fi
+
 echo "Thank you for using Aubit 4gl."
 echo ""
 

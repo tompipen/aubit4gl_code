@@ -36,7 +36,7 @@ AUBITDIR=@aubitdir@
 
 ############
 #name of SQL library to use when compiler was build with dynamic SQL support
-#Options: static nosql iodbc unixodbc
+#Options: static nosql iodbc unixodbc esql ifxodbc pgodbc odbc32
 #Default: A4GL_SQLTYPE=nosql
 A4GL_SQLTYPE=@A4GL_SQLTYPE@
 

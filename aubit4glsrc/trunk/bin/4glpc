@@ -30,7 +30,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.43 2002-01-26 13:00:13 saferreira Exp $
+# $Id: 4glpc,v 1.44 2002-01-26 13:40:46 afalout Exp $
 #
 
 ########################################################################
@@ -1303,15 +1303,16 @@ else
 
 fi
 
-if test "2" = "1" ; then
+if test "1" = "1" ; then
+#we __HAVE__ to link with one or the other, this is NOT dinamically loaded
 	if [ "$A4GL_PDFTYPE" = "PDF" ] && [ "$USE_PDF" = "yes" ]
 	then
 		FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_PDF"
 		FGLLIBS_STATIC="$FGLLIBS_STATIC -lPDF_PDF"
 	else
 		FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_NOPDF"
-		#FGLLIBS_STATIC="$FGLLIBS_STATIC -lPDF_NOPDF"
-	    FGLLIBS_STATIC="$FGLLIBS_STATIC ../../lib/libPDF_NOPDF.so"
+		FGLLIBS_STATIC="$FGLLIBS_STATIC -lPDF_NOPDF"
+	    	#FGLLIBS_STATIC="$FGLLIBS_STATIC ../../lib/libPDF_NOPDF.so"
 	fi
 fi
 
