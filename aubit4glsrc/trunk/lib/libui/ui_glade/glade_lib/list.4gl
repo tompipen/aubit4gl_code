@@ -46,7 +46,7 @@ code
 {
 GtkTreeViewColumn *c;
 A4GL_trim(lv_title);
-c=gtk_tree_view_get_column(lv_widget,0);
+c=gtk_tree_view_get_column(GTK_TREE_VIEW(lv_widget),0);
 gtk_tree_view_column_set_title  (c, lv_title);
 }
 endcode
@@ -65,7 +65,7 @@ if lv_widget=0 then return 0 end if
 code
 {
 GtkTreeViewColumn *c;
-c=gtk_tree_view_get_column(lv_widget,0);
+c=gtk_tree_view_get_column(GTK_TREE_VIEW(lv_widget),0);
 strcpy(lv_title,gtk_tree_view_column_get_title  (c));
 A4GL_trim(lv_title);
 }
@@ -91,7 +91,7 @@ GList *list;
 GtkTreeModel *model;
 GtkTreePath *path;
 gint *ints;
-	list=gtk_tree_selection_get_selected_rows(gtk_tree_view_get_selection(lv_widget),&model);
+	list=gtk_tree_selection_get_selected_rows(gtk_tree_view_get_selection(GTK_TREE_VIEW(lv_widget)),&model);
 	if (list!=0)  {
 		path=g_list_nth_data(list,0);
 		if (path!=0) {
@@ -148,7 +148,7 @@ GtkTreeIter iter;
 GtkListStore *store;
 A4GL_trim(lv_entry);
 printf("Insert %s @ %d\n",lv_entry,lv_index);
-store=gtk_tree_view_get_model(GTK_TREE_VIEW(lv_widget));
+store=(GtkListStore *)gtk_tree_view_get_model(GTK_TREE_VIEW(lv_widget));
 gtk_list_store_insert(GTK_LIST_STORE(store),&iter,lv_index);
 gtk_list_store_set (store, &iter,0,lv_entry,-1);
 }
@@ -195,7 +195,7 @@ GtkTreeModel *model;
 GtkTreePath *path;
 gint *ints;
 int a;
-        list=gtk_tree_selection_get_selected_rows(gtk_tree_view_get_selection(lv_widget),&model);
+        list=gtk_tree_selection_get_selected_rows(gtk_tree_view_get_selection(GTK_TREE_VIEW(lv_widget)),&model);
 
         if (list!=0)  {
 		for (a=0;a<=g_list_length(list);a++) {

@@ -1,9 +1,15 @@
-#include <stdio.h>
-#include <gtk/gtk.h>
-#include <string.h>
-#include "../common/a4gl_lle.h"
+#include "report_viewer.h"
 
-void setup_entry(int b,int e,GtkWidget *evt,GtkWidget *lab);
+//#include <stdio.h>
+//#include <gtk/gtk.h>
+//#include <string.h>
+//#include "../common/a4gl_lle.h"
+
+//void setup_entry(int b,int e,GtkWidget *evt,GtkWidget *lab);
+//void set_block_clicked(int rb);
+//int fake_clicked(int rb,int entry) ;
+
+
 GtkWidget *window;
 GtkWidget *notebook;
 
@@ -32,6 +38,8 @@ void edit_lle ( struct r_report *report);
 char *style_selected = "style \"selected\" {font_name=\"monospace 6\" bg[NORMAL] = \"#ffff77\"} widget \"*.selected\" style \"selected\"";
 char *style_unselected = "style \"unselected\" {font_name=\"monospace 6\" bg[NORMAL] = \"#eeeeee\" } widget \"*.unselected\" style \"unselected\"";
 char *style_unselectable = "style \"unselectable\" {font_name=\"monospace 6\" bg[NORMAL] = \"#ffffff\" } widget \"*.unselectable\" style \"unselectable\"";
+
+
 
 
 //extern struct r_report *report;
@@ -110,7 +118,7 @@ static gboolean
 label_clicked (GtkWidget * widget, GdkEventButton * event, gpointer user_data)
 {
   GtkWidget *status;
-  char *style;
+  //char *style;
   char txt[255];
   //char rc_string[256];
   int rb;
@@ -152,7 +160,7 @@ int fake_clicked(int rb,int entry) {
   	last_block = rb;
   	set_block_clicked(rb);
   }
-
+  return 0;
 }
 
 
@@ -174,7 +182,7 @@ label_clicked_block (GtkWidget * widget, GdkEventButton * event,
 		     gpointer user_data)
 {
   GtkWidget *status;
-  char *style;
+  //char *style;
   char txt[255];
   //char rc_string[256];
   int block;
@@ -209,6 +217,7 @@ evt_clicked_block (GtkWidget * widget, GdkEventButton * event,
 		   gpointer user_data)
 {
   label_clicked_block (widget, event, user_data);
+  return TRUE;
 }
 
 
@@ -259,9 +268,7 @@ void edit_lle ( struct r_report *report)
 #define DRAG_TARGET_NAME_0 "ReportBlock"
 #define DRAG_TARGET_INFO_0 0
 
-  GtkTargetEntry target_entry[]={
-	{DRAG_TARGET_NAME_0,0,DRAG_TARGET_INFO_0}
-  };
+  //GtkTargetEntry target_entry[]={ {DRAG_TARGET_NAME_0,0,DRAG_TARGET_INFO_0} };
 
   /* This is called in all GTK applications. Arguments are parsed
    * from the command line and are returned to the application. */
@@ -300,7 +307,7 @@ gtk_widget_set_usize (GTK_WIDGET (window),500,300);
 
   for (a = 0; a < report->max_page; a++)
     {
-	GtkWidget *fixed2;
+	//GtkWidget *fixed2;
       if (a >= MIN_PAGE && a < report->max_page - MAX_PAGE) continue;
       sprintf (buff, "Page %d", a + 1);
       label = gtk_label_new (buff);
@@ -336,7 +343,7 @@ gtk_widget_set_usize (GTK_WIDGET (window),500,300);
   gtk_widget_show (sw);
   gtk_container_add (GTK_CONTAINER (vbox), sw);
 	fixed=gtk_fixed_new();
-  gtk_fixed_put(fixed, notebook,0,0);
+  gtk_fixed_put(GTK_FIXED(fixed), notebook,0,0);
   gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW(sw),fixed);
 
 
@@ -362,7 +369,7 @@ gtk_widget_set_usize (GTK_WIDGET (window),500,300);
 	  if (fixed)
 	    {
 	      //char rc_string[256];
-	      char buff_style[256];
+	      //char buff_style[256];
 	      GtkWidget *evt;
 
 	      sprintf (where_why, "%c %s", report->blocks[block].where, report->blocks[block].why);

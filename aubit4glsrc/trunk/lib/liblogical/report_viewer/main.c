@@ -1,9 +1,11 @@
+#include "report_viewer.h"
+//#include <stdio.h>
+//#include <gtk/gtk.h>
+//#include <string.h>
+//#include "../common/a4gl_lle.h"
 
-#include <stdio.h>
-#include <gtk/gtk.h>
-#include <string.h>
+
 #include "a4gl_libaubit4gl.h"
-#include "../common/a4gl_lle.h"
 
 void edit_lle ( struct r_report *report);
 
