@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.53 2004-03-19 19:24:53 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.54 2004-05-12 08:15:59 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.53 2004-03-19 19:24:53 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.54 2004-05-12 08:15:59 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -84,6 +84,7 @@ struct s_movement
 };
 int do_input_nowrap = 0;
 extern WINDOW *currwin;
+char m_delims[10]="[]|";
 
 
 char *ops[] = {
@@ -130,8 +131,10 @@ A4GL_add_to_control_stack (struct s_screenio *sio, int op, FIELD * f,
 
 
   if (op==FORMCONTROL_KEY_PRESS) {
-  	A4GL_set_last_key (A4GLKEY_ACCEPT);
-	if (A4GL_is_special_key(extent,A4GLKEY_ACCEPT)) extent=A4GLKEY_ACCEPT;
+	if (A4GL_is_special_key(extent,A4GLKEY_ACCEPT)) {
+			extent=A4GLKEY_ACCEPT;
+  			A4GL_set_last_key (A4GLKEY_ACCEPT);
+	}
   }
 
 
@@ -536,7 +539,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		{
 		  FORM *mform;
 		  mform = sio->currform->form;
-		  if (strchr ("A#X", picture[mform->curcol]) == 0
+		  if (a_strchr ("A#X", picture[mform->curcol]) == 0
 		      && picture[mform->curcol])
 		    do_key_move ('R', sio, sio->fcntrl[a].extent, has_picture,
 				 picture);
@@ -599,6 +602,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
                                 int k;
 				mform=form->form;
                                 //A4GL_error_nobox("CONSTRUCT BY KEY",0);
+				strcpy(m_delims,form->fileform->delim);
                                 k=A4GL_construct_large(rbuff,evt,sio->fcntrl[a].extent,mform->curcol);
                                 fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
                                 if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a) && isalpha (a)) { a = tolower (a); }
@@ -858,7 +862,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 			really_ok=0;
 		}
 
-                if ( (sio->vars[field_no].dtype==DTYPE_INT|| sio->vars[field_no].dtype==DTYPE_SMINT|| sio->vars[field_no].dtype==DTYPE_SERIAL) && strchr(buff,'.') ) {
+                if ( (sio->vars[field_no].dtype==DTYPE_INT|| sio->vars[field_no].dtype==DTYPE_SMINT|| sio->vars[field_no].dtype==DTYPE_SERIAL) && a_strchr(buff,'.') ) {
 				A4GL_debug(". in an integer");
 				really_ok=0;
 		}
@@ -867,7 +871,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		if (really_ok==0) {
 			// 
                         A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
-
+ 			A4GL_comments (fprop);
                         if (A4GL_isyes(acl_getenv("A4GL_CLR_FIELD_ON_ERROR"))) {
                                         A4GL_clr_field (sio->currform->currentfield);
                         } else {
@@ -915,6 +919,10 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	}
       else
 	{
+             if (A4GL_isyes(acl_getenv("FIRSTCOL_ONERR_INCL"))) {
+                         A4GL_int_form_driver (sio->currform->form, REQ_BEG_FIELD);
+             }
+
 	  A4GL_init_control_stack (sio, 0);
 	  return -1;
 	}
@@ -1237,7 +1245,7 @@ do_key_move (char lr, struct s_screenio *s, int a, int has_picture,
       FORM *mform;
       mform = s->currform->form;
       newpos = mform->curcol;
-      if (strchr ("A#X", picture[newpos]))
+      if (a_strchr ("A#X", picture[newpos]))
 	return;
       do_key_move (lr, s, a, has_picture, picture);
     }
@@ -1454,18 +1462,35 @@ int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,
         int fl=0; // comment line...
         int fwidth;
         int a;
+char m_d1[2];
+char m_d2[2];
+int x=0;
         A4GL_debug("In construct_large");
 
         strcpy(rbuff,orig);
+if (m_delims[0]==' ')  {
+        m_delims[1]=' ';
+        m_delims[2]=' ';
+        m_delims[3]=0;
+}
+m_d1[0]=m_delims[0];
+m_d2[0]=m_delims[1];
+m_d1[1]=0;
+m_d2[1]=0;
+
 
         fwidth=UILIB_A4GL_get_curr_width ();
         if (fwidth>80) fwidth=80;
         cwin = (WINDOW *) A4GL_get_currwin ();
         fl = A4GL_getcomment_line ();
+       if (UILIB_A4GL_iscurrborder()) {
+               fl++;
+               x++;
+       }
         if (fl > UILIB_A4GL_get_curr_height ()) fl = UILIB_A4GL_get_curr_height ();
-        drwin = derwin (cwin, 1, fwidth, fl-1, 0);
+        drwin = derwin (cwin, 1, fwidth, fl-1, x);
 
-        buff[0]=A4GL_make_label(0,0,"[");
+        buff[0]=A4GL_make_label(0,0,m_d1);
         buff[1]=A4GL_make_field(0,1,1,fwidth-2);
         field_opts_on (buff[1], O_ACTIVE);
         field_opts_on (buff[1], O_EDIT);
@@ -1473,7 +1498,7 @@ int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,
         //set_max_field(buff[1],fwidth-2);
 
 
-        buff[2]=A4GL_make_label(0,fwidth-1,"]");
+        buff[2]=A4GL_make_label(0,fwidth-1,m_d2);
         buff[3]=0;
 
         f=new_form(buff);
@@ -1579,5 +1604,30 @@ void UILIB_A4GL_finish_screenio(void *sio, char *siotype) {
 	if (strcmp(siotype, "s_screenio")==0) {
 		A4GL_comments(0);
 	}
+
+}
+
+
+
+void UILIB_A4GL_reset_state_for(void *sio, char *siotype) {
+
+      if (strcmp(siotype,"s_inp_arr")==0) {
+              static void* last_sio=0;
+              struct s_inp_arr *s;
+              s=sio;
+              if (last_sio!=sio) {
+                      // May need to do a full redraw..
+                      last_sio=sio;
+                      if (sio) A4GL_idraw_arr_all(s);
+              }
+              if (s) {
+                      A4GL_set_arr_curr (s->arr_line);
+                              A4GL_set_scr_line (s->scr_line);
+              }
+
+      }
+
+      if (strcmp(siotype, "s_screenio")==0) {
+      }
 
 }

@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.79 2004-04-02 07:28:40 mikeaubury Exp $
+# $Id: iarray.c,v 1.80 2004-05-12 08:15:59 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: iarray.c,v 1.79 2004-04-02 07:28:40 mikeaubury Exp $";
+static char *module_id="$Id: iarray.c,v 1.80 2004-05-12 08:15:59 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -49,7 +49,7 @@ static char *module_id="$Id: iarray.c,v 1.79 2004-04-02 07:28:40 mikeaubury Exp 
 #include <ctype.h>
 
 //void A4GL_set_field_attr_with_attr (FIELD * field, int attr, int cmd_type);
-static void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
+void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
 void A4GL_set_curr_infield (long a);
 void debug_print_flags (void *sv, char *txt);
 int A4GL_get_attr_from_string (char *s);
@@ -362,7 +362,7 @@ iclear_srec (struct struct_screen_record *srec, struct s_inp_arr *inpa)
  *
  * @param
  */
-static void
+void
 A4GL_idraw_arr_all (struct s_inp_arr *inpa)
 {
   int a;
@@ -517,7 +517,11 @@ int really_ok=0;
 	free(ptr);
       A4GL_debug ("Popped field buffer into variable");
 	if (really_ok==0) {
+          struct struct_scr_field *fprop;
+                fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
 		A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
+ if (fprop) A4GL_comments (fprop);
+
  		if ( A4GL_isyes(acl_getenv("A4GL_CLR_FIELD_ON_ERROR"))) {
 			A4GL_clr_field (form->currentfield); 
                 } else {
@@ -609,6 +613,13 @@ iarr_loop (struct s_inp_arr *arr,struct aclfgl_event_list *evt)
 	  form->currentfield =
 	    arr->field_list[arr->scr_line - 1][arr->curr_attrib];
 	}
+
+
+      if (arr->currentfield != form->currentfield)
+        {
+          arr->currentfield=form->currentfield ;
+        }
+
 
       fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
       if (fprop)
@@ -2530,6 +2541,10 @@ A4GL_debug("Called pop_iarr_var - ok");
 	{
 	  new_state = 0;
 	  A4GL_debug ("Init control stack");
+             if (A4GL_isyes(acl_getenv("FIRSTCOL_ONERR_INCL"))) {
+                         A4GL_int_form_driver (arr->currform->form, REQ_BEG_FIELD);
+             }
+
 	  A4GL_init_control_stack (arr, 0);
 	  rval = -1;
 	  return -1;

@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.95 2004-04-13 09:02:29 mikeaubury Exp $
+# $Id: ioform.c,v 1.96 2004-05-12 08:15:59 mikeaubury Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.95 2004-04-13 09:02:29 mikeaubury Exp $";
+static char *module_id="$Id: ioform.c,v 1.96 2004-05-12 08:15:59 mikeaubury Exp $";
 /**
  * @file
  *
@@ -1004,6 +1004,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 				  ("X2222 Check for include has null...");
 				A4GL_error_nobox (acl_getenv
 						  ("FIELD_INCL_MSG"), 0);
+if (fprop != 0) A4GL_comments (fprop);
 				return -4;
 			      }
 			  }
@@ -1037,7 +1038,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 				if (!A4GL_conversion_ok(-1)) { pprval=0; }
 
 
-		    		if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && strchr(buff2,'.') ) {
+		    		if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && a_strchr(buff2,'.') ) {
 						A4GL_debug("Looks like a decimal in a numeric field");
 						pprval=0;
 		    		}
@@ -1051,6 +1052,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		    if (!pprval)
 		      {
 			A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
+			if (fprop != 0) A4GL_comments (fprop);
 
 			if (A4GL_isyes(acl_getenv("A4GL_CLR_FIELD_ON_ERROR"))) {
 					A4GL_clr_field (form->currentfield);
@@ -3308,6 +3310,7 @@ int ppr;
 		    else
 		      {
 			A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
+if (fprop != 0) A4GL_comments (fprop);
 
 			if (A4GL_isyes(acl_getenv("A4GL_CLR_FIELD_ON_ERROR"))) {
 					A4GL_clr_field (form->currentfield);
@@ -4070,7 +4073,7 @@ int pprval;
 				}
 
 				if (!A4GL_conversion_ok(-1)) { pprval=0; }
-		    		if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && strchr(buff2,'.') ) {
+		    		if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && a_strchr(buff2,'.') ) {
 					A4GL_debug("Looks like a decimal in a numeric field");
 					pprval=0;
 		    		}
@@ -4083,6 +4086,7 @@ int pprval;
 		    if (!pprval)
 		      {
 			A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
+if (fprop != 0) A4GL_comments (fprop);
 
 			if (A4GL_isyes(acl_getenv("A4GL_CLR_FIELD_ON_ERROR"))) {
 					A4GL_clr_field (form->currentfield);
@@ -4312,7 +4316,7 @@ A4GL_debug("Got fld_data as : %s",fld_data);
 
 				if (!A4GL_conversion_ok(-1)) { pprval=0; }
 
-		    		if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && strchr(fld_data,'.') ) {
+		    		if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && a_strchr(fld_data,'.') ) {
 					A4GL_debug("Looks like a decimal in a numeric field");
 					pprval=0;
 		    		}

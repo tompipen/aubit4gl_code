@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.13 2004-03-29 06:25:10 afalout Exp $
+# $Id: sqlconvert.c,v 1.14 2004-05-12 08:15:55 mikeaubury Exp $
 #
 */
 
@@ -79,7 +79,7 @@
 #define istabcol(x) (isalnum(x)||(x)=='.'||(x)=='_')
 #define iswordch(x) (isalnum(x)||(x)=='_')
 #define iscmpop(x) ((x)=='='||(x)=='!'||(x)=='>'||(x)=='<')
-#define isoperator(x)  (strchr("+-*/%|^[,]",(x)) != NULL)
+#define isoperator(x)  (a_strchr("+-*/%|^[,]",(x)) != NULL)
 
 /*
 =====================================================================
@@ -865,7 +865,7 @@ A4GL_cvsql_replace (char *sql, char *args)
   /* extract the search and replace strings from args */
   if (args == NULL || args[0] == '\0')
     return;
-  if ((t = strchr (args, '=')) == NULL)
+  if ((t = a_strchr (args, '=')) == NULL)
     return;
   rplc = A4GL_cv_next_token ((t + 1), &len, 0);
   if (rplc == NULL)

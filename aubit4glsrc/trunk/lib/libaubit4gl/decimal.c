@@ -60,6 +60,17 @@ fgldecimal *A4GL_str_to_dec (char *str, fgldecimal *dec) {
 	  decimal_char='.';
   }
 
+strcpy(str,str_orig);
+if (decimal_char!=',') {
+       int b=0;
+       for (a=0;a<strlen(str_orig);a++) {
+               if (str_orig[a]==',') continue;
+               str[b++]=str_orig[a];
+       }
+       str[b]=0;
+}
+
+
 
 	A4GL_debug("XYXY str to dec : %s",str);
 

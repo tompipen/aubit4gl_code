@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.122 2004-04-21 14:45:09 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.123 2004-05-12 08:15:51 mikeaubury Exp $
 #
 */
 
@@ -414,6 +414,9 @@
 #define DTYPE_TEXT      12
 #define DTYPE_VCHAR     13
 #define DTYPE_INTERVAL  14
+
+#define DTYPE_OBJECT    99
+
 #define DTYPE_MASK 		255	/* bit pattern for data type */
 #define DTYPE_MALLOCED 	256
 
@@ -1856,6 +1859,7 @@ int A4GL_fgl_infield (void *inp,char itype,...);
 #include "a4gl_API_msg.h"	/* generated from .spec */
 #include "a4gl_API_packer.h"	/* generated from .spec */
 #include "a4gl_API_ui.h"	/* generated from .spec */
+#include "a4gl_API_help.h"	/* generated from .spec */
 #include "a4gl_sql.h"	/* generated from .spec */
 
 

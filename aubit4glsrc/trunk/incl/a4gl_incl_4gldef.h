@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.68 2004-05-11 11:15:16 saferreira Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.69 2004-05-12 08:15:51 mikeaubury Exp $
 */
 
 /**
@@ -55,7 +55,7 @@
 	#endif
 #endif // _NO_SYSINCL_
 
-ifdef __cplusplus
+#ifdef __cplusplus
 
 extern "C"
 {
@@ -549,4 +549,5 @@ be used in applications which link to the library).
 #ifdef __cplusplus
 }
 #endif
+
 #endif				/* #ifndef FGLDEF_INCL */

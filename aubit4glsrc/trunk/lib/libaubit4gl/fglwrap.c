@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.62 2004-04-27 22:27:40 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.63 2004-05-12 08:15:55 mikeaubury Exp $
 #
 */
 
@@ -51,7 +51,7 @@
 
 /* FIXME: we should not need to pre-load anything */
 //#define _PRELOAD_SQL_		/* pre-load SQL module */
-#define _PRELOAD_REPORT_	/* pre-load EXREPORT module */
+//#define _PRELOAD_REPORT_	/* pre-load EXREPORT module */
 #define _PRELOAD_UI_		/* pre-load UI module */
 
 

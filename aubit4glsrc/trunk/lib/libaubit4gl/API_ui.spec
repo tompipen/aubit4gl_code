@@ -161,4 +161,5 @@ A4GLUI_ui_init int argc,char** argv -> void
 A4GL_acli_scroll_ap int n va_list* ap -> void
 A4GL_get_key int timeout -> int
 A4GL_create_menu void* m char* id int mode void* handler -> void*
+A4GL_reset_state_for void* sio char* siotype -> void
 

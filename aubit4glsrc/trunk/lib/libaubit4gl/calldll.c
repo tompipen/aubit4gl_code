@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.42 2004-04-27 22:27:40 mikeaubury Exp $
+# $Id: calldll.c,v 1.43 2004-05-12 08:15:53 mikeaubury Exp $
 #
 */
 
@@ -462,7 +462,7 @@ A4GL_find_func (void *dllhandle, char *func)
 
   if (dllhandle == 0)
     {
-      A4GL_debug ("Not found - bad handle");
+      A4GL_debug ("Not found - bad handle (%s)",func);
       A4GL_exitwith ("Could not open shared library");
       /* return badfunc; */
     }

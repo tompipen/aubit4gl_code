@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.90 2004-04-05 10:09:19 saferreira Exp $
+# $Id: curslib.c,v 1.91 2004-05-12 08:15:59 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.90 2004-04-05 10:09:19 saferreira Exp $";
+static char *module_id="$Id: curslib.c,v 1.91 2004-05-12 08:15:59 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -2157,15 +2157,15 @@ A4GL_chktag (char *buff, int fno)
   char buff2[132];
   char *ptr, *ptr_end;
   strcpy (buff2, buff);
-  ptr = strchr (buff2, '{');
+  ptr = a_strchr (buff2, '{');
   if (ptr == NULL)
     return;
   while (1)
     {
-      ptr = strchr (buff2, '{');
+      ptr = a_strchr (buff2, '{');
       if (ptr == NULL)
 	break;
-      ptr_end = strchr (buff2, '}');
+      ptr_end = a_strchr (buff2, '}');
       *ptr_end = 0;
       *ptr = 0;
       if (namescnt == MAXFIELDS)
@@ -2192,7 +2192,7 @@ A4GL_set_value (int fno, char *buffer)
   char *name;
   char *value;
   name = buffer;
-  value = strchr (buffer, '=');
+  value = a_strchr (buffer, '=');
   if (value == 0)
     return;
   *value = 0;

@@ -669,6 +669,13 @@ print_dealloc_arr char* s -> void
 print_alloc_arr char* s char* dim -> void
 print_realloc_arr char* s char* dim -> void
 get_in_exists_sql char* s char t -> void*
+CLASS_print_reflector -> void
+CLASS_set_class_name char* name -> void
+CLASS_set_parent_name char* name -> void
+CLASS_add_method char* name char* sig -> void
+CLASS_print_class_variable_type char* buff -> void
+CLASS_get_variable char* s -> char**
+CLASS_get_members char* s -> char**
 
 /*  ============================== EOF ================================= */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.19 2004-04-21 14:47:29 mikeaubury Exp $
+# $Id: ui.c,v 1.20 2004-05-12 08:15:56 mikeaubury Exp $
 #
 */
 
@@ -613,11 +613,11 @@ int A4GL_field_name_str_match(char *f1,char *f2) {
 int a;
 char *f1p;
 char *f2p;
-f1p=strchr(f1,'.');
+f1p=a_strchr(f1,'.');
 if(f1p) f1p++;
 else f1p=f1;
 
-f2p=strchr(f2,'.');
+f2p=a_strchr(f2,'.');
 if(f2p) f2p++;
 else f2p=f2;
 

@@ -38,6 +38,8 @@ call_ext :
         }
 	print_field_func('T',field_name_list_as_char($<field_list>3),$<str>6);
    } 
+
+
    | variable COLON identifier OPEN_BRACKET   {
 	new_counter();
    	addmap("Call",$<str>1,curr_func,yylineno,infilename);
@@ -57,6 +59,29 @@ call_ext :
 	print_returning();
 	/* strcpy($<str>$,$<str>5); */
    }
+
+   | variable MEMBER_FUNCTION identifier OPEN_BRACKET   {
+	new_counter();
+   	addmap("Call",$<str>1,curr_func,yylineno,infilename);
+   }
+   opt_func_call_args 
+   CLOSE_BRACKET 
+   {
+	int a;
+	dump_expr($<ptr>6);
+	a=get_counter_val();
+	drop_counter();
+ A4GL_debug("Printing call_func_call...");
+  	print_class_func_call($<str>1,$<str>3,$<ptr>6,a);
+   }
+   opt_return 
+   {
+	print_returning();
+	/* strcpy($<str>$,$<str>5); */
+   }
+
+
+
    | identifier OPEN_BRACKET {
 	new_counter();
    	addmap("Call",$<str>1,curr_func,yylineno,infilename);

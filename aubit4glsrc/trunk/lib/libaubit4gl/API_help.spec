@@ -12,6 +12,7 @@ LIBRARY HELP
 VARIABLE A4GL_HELPTYPE
 * Name of the header file to be referenced with #include
 *HEADER_FILE API_help.h
+LIB_PREFIX HELPLIB_
 
 
 *
@@ -22,7 +23,10 @@ VARIABLE A4GL_HELPTYPE
 /* TODO: extract function that creates compiled message file from mkmess */
 /* executable, and crate lib/libmsg/msg_native/writemsg.c */
 
-aclfgli_libhelp_showhelp int helpno -> int
+aclfgl_libhelp_showhelp int helpno -> int
+aclfgl_openiem int nparams -> int
+aclfgl_fetchiem int nparams -> int
+aclfgl_close int nparams -> int
 
 /* ------------------------ EOF ------------------------ */
 

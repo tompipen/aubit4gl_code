@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.40 2004-03-25 18:07:44 mikeaubury Exp $
+# $Id: variables.c,v 1.41 2004-05-12 08:14:00 mikeaubury Exp $
 #
 */
 
@@ -64,7 +64,7 @@ static struct variable *make_constant (char *name, char *value,
 static void initialize_v (void);
 static void set_arr_subscripts (char *s, int record_cnt);
 static int add_to_scope (int record_cnt, int unroll);
-static void dump_variable_records (struct variable **v, int cnt, int lvl);
+//static void dump_variable_records (struct variable **v, int cnt, int lvl);
 static struct variable *find_variable_in (char *s, struct variable **list,
 					  int cnt);
 
@@ -88,7 +88,8 @@ int A4GL_findex (char *str, char c);
 //void set_yytext (char *s);
 int isin_command (char *s);
 char *rettype (char *s);
-
+int last_record_cnt=0;
+static char *last_class_var[1024];
 
 
 #define ASSOC_INTERNAL "Internal"
@@ -113,6 +114,14 @@ struct variable **list_module = 0;
 int list_module_cnt = 0;
 int list_module_alloc = 0;
 
+struct variable **list_class = 0;
+int list_class_cnt = 0;
+int list_class_alloc = 0;
+
+
+struct variable **list_parent_class = 0;
+int list_parent_class_cnt = 0;
+int list_parent_class_alloc = 0;
 
 struct variable **list_local;
 int list_local_cnt;
@@ -145,6 +154,11 @@ get_variable_user_system ()
 
 
 
+void force_curr_v(struct variable *v,int rcnt) {
+	if (rcnt<0) rcnt=last_record_cnt;
+	curr_v[rcnt]=v;
+}
+
 /******************************************************************************/
 static void
 initialize_v (void)
@@ -167,7 +181,6 @@ set_arr_subscripts (char *s_orig, int record_cnt)
   char *ptr;
   char s[512]="            ";
 
-  /*printf("s_orig=%s\n",s_orig);*/
 
   if (s_orig == 0)
     {
@@ -190,7 +203,6 @@ set_arr_subscripts (char *s_orig, int record_cnt)
 	  if (s[a] == ']')
 	    {
 	      s[a] = 0;
-	      /*printf("--> %d %s\n",subcnt, ptr);*/
 	      curr_v[record_cnt]->arr_subscripts[subcnt++] = atoi (ptr);
 	      s[a] = ']';
 	      ptr = &s[a + 2];
@@ -309,10 +321,10 @@ variable_action (int category, char *name, char *type, char *n,
   if (!v_initialized)
     initialize_v ();
 
-
+last_record_cnt=record_cnt;
 
   scope = get_current_variable_scope ();
-
+A4GL_debug("scope=%c",scope);
   if (name == 0)
     name = "";
   if (type == 0)
@@ -422,6 +434,7 @@ variable_action (int category, char *name, char *type, char *n,
       break;
 
     case MODE_ADD_FUNCTION:
+	//printf("Make function\n");
       make_function (name, record_cnt);
       break;
 
@@ -510,6 +523,7 @@ variable_action (int category, char *name, char *type, char *n,
 
   if (mode == MODE_ADD_NAME)
     {
+	//printf("ADD NAME : %s\n",name);
       /* Is this the first name at this level ?*/
       if (curr_v[record_cnt] == 0)
 	{
@@ -587,16 +601,18 @@ make_function (char *name, int record_cnt)
   struct variable *local_v;
   int c;
   char scope;
+ extern int class_cnt;
 
   scope = get_current_variable_scope ();
 
-  set_current_variable_scope ('g');
+  if (class_cnt==0) set_current_variable_scope ('g');
+
+printf("MAKE FUNCTION : %s\n",name);
 
   A4GL_debug ("MAKE FUNCTION : %s\n", name);
   local_v = (struct variable *) malloc (sizeof (struct variable));
   local_v->names.name = strdup (name);
   A4GL_convlower (local_v->names.name);
-
   local_v->names.next = 0;
   local_v->variable_type = VARIABLE_TYPE_FUNCTION_DECLARE;
   local_v->user_system = get_variable_user_system ();
@@ -702,32 +718,6 @@ add_to_scope (int record_cnt, int unroll)
   variable_holder = 0;
   scope = get_current_variable_scope ();
 
-
-/*
-  if (unroll == 0)
-    {
-
-      orig = curr_v[record_cnt];
-      names = curr_v[record_cnt]->names.next;
-      curr_v[record_cnt]->names.next = 0;
-
-      if (names)
-	{
-	  while (names)
-	    {
-	      v_new = malloc (sizeof (struct variable));
-	      memcpy (v_new, curr_v[record_cnt], sizeof (struct variable));
-	      curr_v[record_cnt] = v_new;
-	      curr_v[record_cnt]->names.name = names->name;
-	      curr_v[record_cnt]->names.next = 0;
-	      add_to_scope (record_cnt, 1);
-	      names = names->next;
-	    }
-	  curr_v[record_cnt] = orig;
-	}
-    }
-
-*/
   if (unroll == 0)
     {
 
@@ -801,6 +791,14 @@ add_to_scope (int record_cnt, int unroll)
 	  alloc = &list_global_alloc;
 	}
 
+      if (scope == 'C')
+	{
+	  sprintf (local_scope, "C");
+	  variable_holder = &list_class;
+	  counter = &list_class_cnt;
+	  alloc = &list_class_alloc;
+	}
+
       if (scope == 'G')
 	{
 	  sprintf (local_scope, "g");
@@ -832,7 +830,6 @@ add_to_scope (int record_cnt, int unroll)
 
   if (*variable_holder && unroll == 0)
     {
-
       ptr = *variable_holder;
       for (a = 0; a < *counter; a++)
 	{
@@ -846,7 +843,6 @@ add_to_scope (int record_cnt, int unroll)
 	    }
 	}
     }
-
 
 
 
@@ -892,6 +888,7 @@ add_to_scope (int record_cnt, int unroll)
 
   ptr[*counter] = curr_v[record_cnt];
   (*counter)++;
+
   return 1;
 }
 
@@ -910,7 +907,8 @@ has_name (struct name_list *namelist, char *name)
 
   while (ptr_name)
     {
-      if (strcasecmp (namelist->name, name) == 0)
+	A4GL_debug("Check %s against %s\n",ptr_name->name,name);
+      if (strcasecmp (ptr_name->name, name) == 0)
 	return 1;
       /*debug ("Check %s against %s nope", namelist->name, name);*/
       ptr_name = ptr_name->next;
@@ -1011,6 +1009,7 @@ find_variable_in (char *s, struct variable **list, int cnt)
       if (v->variable_type == VARIABLE_TYPE_ASSOC)
 	{
 	  char buff[256];
+	printf("ASSOC\n");
 	  /* Associate arrays always have a single record like entry for the*/
 	  /* associated variable - and its always called 'internal'*/
 
@@ -1049,10 +1048,19 @@ A4GL_debug("find_variable_ptr : %s",s);
           strcpy (buff2, &s[A4GL_findex (s, ')') + 1]);
           buff[A4GL_findex (buff, '(')] = 0;
           strcat (buff, buff2);
-        /*printf("DOWNSHIFT : %s\n",buff);*/
           A4GL_convlower (buff);
 	  s=buff;
         }
+
+
+
+
+// s=rm_class_copy(s);
+
+
+
+
+ if (strncmp(s,"CLASS_COPY->",12)==0) { strcpy(buff,&s[12]); s=buff; } 
 
   if (s[0] >= 'A' && s[0] <= 'Z' && s[1] == '_')
     {
@@ -1081,6 +1089,43 @@ A4GL_debug("find_variable_ptr : %s",s);
       return ptr;
     }
 
+  ptr = find_variable_in (s, list_class, list_class_cnt); if (ptr) { return ptr; }
+  {
+	char buff[1024];
+	char p[1024];
+	int levels;
+	set_last_class_var("");
+	sprintf(buff,"this.%s",s);
+  	ptr = find_variable_in (buff, list_class, list_class_cnt); 
+	if (ptr) { 
+		return ptr; 
+	}
+	strcpy(p,"this");
+
+	A4GL_debug("Looking deeper into the class..");
+	for (levels=0;levels<20;levels++) {
+		strcat(p,".parent");
+		strcpy(buff,p);
+		A4GL_debug("Looking to see if it has a parent : %s",buff);
+  		ptr = find_variable_in (buff, list_class, list_class_cnt); 
+		if (ptr) {
+			strcat(buff,".");
+			strcat(buff,s);
+			A4GL_debug("Looking to see if its parent has this : %s",buff);
+  			ptr = find_variable_in (buff, list_class, list_class_cnt); 
+
+			if (ptr) {
+				set_last_class_var(&buff[5]);
+				return ptr;
+			}
+		} else { // No more parents...
+			break;
+		}
+	}
+
+
+  }
+
 
   ptr = find_variable_in (s, list_imported_global, list_imported_global_cnt);
   if (ptr)
@@ -1103,7 +1148,6 @@ find_variable (char *s_in, int *dtype, int *size, int *is_array,
 {
   struct variable *ptr;
   char s[1024];
-
   if (s_in[0] == ' ')
     return 1;
   strcpy (s, s_in);
@@ -1214,23 +1258,27 @@ dump_var_records (void)
 
 
 /******************************************************************************/
-static void
+void
 dump_variable_records (struct variable **v, int cnt, int lvl)
 {
   int a;
   int c;
   struct name_list *ptr;
-
+//printf("dump variable records %d %d\n",cnt,lvl);
   for (a = 0; a < cnt; a++)
     {
       for (c = 0; c < lvl; c++)
 	{
 	  printf ("  ");
 	}
-      ptr = &curr_v[a]->names;
+      ptr = &v[a]->names;
       while (ptr)
 	{
-	  printf ("%s", ptr->name);
+	if (ptr->name==0) {
+		printf("OOps - no name...\n");
+		exit(99);
+	}
+	  printf ("%-18s", ptr->name);
 	  ptr = ptr->next;
 	  if (ptr)
 	    printf (",");
@@ -1239,52 +1287,58 @@ dump_variable_records (struct variable **v, int cnt, int lvl)
 
 
 /* If its an array - tell them*/
-      if (curr_v[a]->is_array)
+      if (v[a]->is_array)
 	{
 	  for (c = 0; c < MAX_ARR_SUB; c++)
 	    {
-	      if (curr_v[a]->arr_subscripts[c])
+	      if (v[a]->arr_subscripts[c])
 		{
 		  if (c == 0)
 		    {
 		      printf ("ARRAY");
 		    }
-		  printf ("[%d]", curr_v[a]->arr_subscripts[c]);
+		  printf ("[%d]", v[a]->arr_subscripts[c]);
 		}
 	      printf (" ");
 
 	    }
 	}
 
-      switch (curr_v[a]->variable_type)
+//printf("a=%d type=%d\n",a,v[a]->variable_type);
+      switch (v[a]->variable_type)
 	{
 	case VARIABLE_TYPE_ASSOC:
 	  printf ("ASSOCIATE CHAR(%d) ARRAY[%d] OF\n",
-		  curr_v[a]->data.v_assoc.char_size,
-		  curr_v[a]->data.v_assoc.size);
-	  dump_variable_records (curr_v[a]->data.v_assoc.variables, 1,
+		  v[a]->data.v_assoc.char_size,
+		  v[a]->data.v_assoc.size);
+	  dump_variable_records (v[a]->data.v_assoc.variables, 1,
 				 lvl + 1);
 	  break;
 
 	case VARIABLE_TYPE_SIMPLE:
-	  printf ("  %d(%d)\n", curr_v[a]->data.v_simple.datatype,
-		  curr_v[a]->data.v_simple.dimensions[0]);
+	  printf ("  %d(%d)\n", v[a]->data.v_simple.datatype,
+		  v[a]->data.v_simple.dimensions[0]);
 	  break;
 
 
 	case VARIABLE_TYPE_RECORD:
-	  printf ("RECORD\n");
-	  dump_variable_records (curr_v[a]->data.v_record.variables,
-				 curr_v[a]->data.v_record.record_cnt,
+	  printf ("RECORD\n");fflush(stdout);
+	  dump_variable_records (v[a]->data.v_record.variables,
+				 v[a]->data.v_record.record_cnt,
 				 lvl + 1);
+      for (c = 0; c < lvl; c++)
+	{
+	  printf ("  ");
+	}
 	  printf ("END RECORD\n");
 
-	  if (curr_v[a]->data.v_record.linked)
+	  if (v[a]->data.v_record.linked)
 	    {
 	      struct name_list *ptr;
+		printf("IS LINKED\n\n"); fflush(stdout);
 	      printf ("Linked to %s (",
-		      curr_v[a]->data.v_record.linked->tabname);
-	      ptr = &curr_v[a]->data.v_record.linked->col_list;
+		      v[a]->data.v_record.linked->tabname);
+	      ptr = &v[a]->data.v_record.linked->col_list;
 
 	      while (ptr)
 		{
@@ -1300,20 +1354,25 @@ dump_variable_records (struct variable **v, int cnt, int lvl)
 
 	case VARIABLE_TYPE_CONSTANT:
 	  printf ("CONSTANT - ");
-	  if (curr_v[a]->data.v_const.consttype == CONST_TYPE_CHAR
-	      || curr_v[a]->data.v_const.consttype == CONST_TYPE_IDENT)
+	  if (v[a]->data.v_const.consttype == CONST_TYPE_CHAR
+	      || v[a]->data.v_const.consttype == CONST_TYPE_IDENT)
 	    {
-	      printf ("%s ", curr_v[a]->data.v_const.data.data_c);
+	      printf ("%s ", v[a]->data.v_const.data.data_c);
 	    }
 	  else
 	    {
-	      printf ("%d ", curr_v[a]->data.v_const.data.data_i);
+	      printf ("%d ", v[a]->data.v_const.data.data_i);
 	    }
 	  printf ("\n");
 	  break;
 
+	case VARIABLE_TYPE_FUNCTION_DECLARE:
+		printf(" FUNCTION\n");
+			break;
+
+
 	default:
-	  printf ("Unknown type : %d\n", curr_v[a]->variable_type);
+	  printf ("Unknown type : %d\n", v[a]->variable_type);
 
 
 	}
@@ -1347,6 +1406,17 @@ get_current_variable_scope (void)
 	{
 	  scope = 'G';
 	}
+
+      if (variable_scope == 'C') // Class
+	{
+	  scope = 'C';
+	}
+
+      if (variable_scope == 'P') // Class Parent
+	{
+	  scope = 'P';
+	}
+
       if (variable_scope == 'g')
 	{
 	  scope = 'g';
@@ -1397,7 +1467,6 @@ print_variables (void)
       A4GL_debug ("***** DUMP GVARS ****");
 #endif
 
-      /*printf("Dump Globals\n");*/
       if (only_doing_globals ())
 	{
 	  dump_gvars ();
@@ -1409,6 +1478,11 @@ print_variables (void)
   if (scope == 'm')
     {
       print_module_variables ();
+    }
+
+  if (scope == 'C')
+    {
+      print_class_variables ();
     }
 
 }
@@ -1429,6 +1503,18 @@ print_local_variables (void)
 
 }
 
+
+/******************************************************************************/
+void
+print_class_variables (void)
+{
+  int a;
+
+  for (a = 0; a < list_class_cnt; a++)
+    {
+      print_variable (list_class[a], 'C', 0);
+    }
+}
 
 
 /******************************************************************************/
@@ -1547,6 +1633,10 @@ find_type (char *s)
   if (strcmp ("form", s) == 0)
     return 9;
 
+  if (strncmp ("struct _class_struct_", s,21) == 0) {
+    return -3;
+	}
+
   A4GL_debug ("Invalid type : '%s'\n", s);
   sprintf (errbuff, "Internal Error (Invalid type : '%s')\n", s);
   a4gl_yyerror (errbuff);
@@ -1659,11 +1749,9 @@ get_variable_dets (char *s, int *type, int *arrsize,
           strcpy (buff2, &s[A4GL_findex (s, ')') + 1]);
           buff[A4GL_findex (buff, '(')] = 0;
           strcat (buff, buff2);
-        /*printf("DOWNSHIFT : %s\n",buff);*/
           A4GL_convlower (buff);
         }
 
-/*printf("get_var : %s\n",buff);*/
   strip_bracket (buff);
   v = find_variable_ptr (buff);
 
@@ -1911,10 +1999,6 @@ split_record (char *s, struct variable **v_record, struct variable **v1,
       return 0;
     }
 
-  /*printf ("All done here - v_record=%p v1=%p v2=%p\n", *v_record, *v1, *v2);*/
-  /*printf ("v_record->names.name=%s\n", (*v_record)->names.name);*/
-  /*printf ("v1->names.name=%s\n", (*v1)->names.name);*/
-  /*printf ("v2->names.name=%s\n", (*v2)->names.name);*/
   return 1;
 }
 
@@ -1932,7 +2016,6 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
   struct record_list_entry *e;
   struct record_list *list;
 
-/*printf("Add to record_list\n");*/
 
   if (v->is_array)
     {
@@ -1959,8 +2042,6 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
         char subscript[255];
         char fmt[255];
       /* We've got another bl**dy record - expand this one too...*/
-      /*printf ("IS ARRAY  : %d\n", v->is_array);*/
-      /*printf ("Add next level...\n");*/
 
         strcpy(subscript,"");
         strcpy(fmt,"");
@@ -2055,11 +2136,8 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 	int dim;
 	char subscript[255];
 	char fmt[255];
-	/*if (v->is_array) { printf("v->isarray && record %d %d %d %d %d\n", v->arr_subscripts[0], v->arr_subscripts[1], v->arr_subscripts[2], v->arr_subscripts[3], v->arr_subscripts[4]); }*/
 
       /* We've got another bl**dy record - expand this one too...*/
-      /*printf ("IS ARRAY  : %d\n", v->is_array);*/
-      /*printf ("Add next level...\n");*/
 
       	strcpy(subscript,"");
 	strcpy(fmt,"");
@@ -2141,7 +2219,6 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 	return list;
 
     }
-  /*printf ("Reached end of add_to_Record_list... bugger...\n");*/
   return 0;
 }
 
@@ -2644,7 +2721,7 @@ print_variable (struct variable *v, char scope, int level)
     }
 
   strcpy (name, v->names.name);
-  if (level == 0 && (A4GL_isyes (acl_getenv ("MARK_SCOPE"))))
+  if (level == 0 && A4GL_isyes (acl_getenv ("MARK_SCOPE"))  )
     {
       /*printf("%s %c %c %c\n",name,v->user_system,v->scope,scope);*/
       if (is_system_variable (name));
@@ -2662,6 +2739,12 @@ print_variable (struct variable *v, char scope, int level)
 	    {
 	      sprintf (name, "L_%s", v->names.name);
 	    }
+/*
+	  if (v->scope == 'C' || v->scope == 'c')
+	    {
+	      sprintf (name, "_this->%s", v->names.name);
+	    }
+*/
 	}
     }
 
@@ -2858,7 +2941,6 @@ print_nullify (char type)
 
       for (a = 0; a < list_cnt; a++)
 	{
-	  /*printf("Adding : %s\n",list[a]->names.name);*/
 	  if (list[a]->variable_type != VARIABLE_TYPE_CONSTANT)
 	    {
 	      add_bind ('N', list[a]->names.name);
@@ -2896,16 +2978,20 @@ char find_variable_scope (char *s_in)
 
   strip_bracket (s);
 
+//printf("find_variable_scope (%s)\n",s);
+
   ptr = find_variable_ptr (s);
+
   if (ptr == 0)
     {
       return 0;
     }
+
   if (ptr->scope == 0)
     {
       return 'G';
     }
-
+  //printf("=--->%c\n",ptr->scope);
   return toupper (ptr->scope);
 }
 
@@ -2956,4 +3042,15 @@ static int is_system_variable (char *s)
   if (strcmp (s, "aiplib_status") == 0)
     return 1;
   return 0;
+}
+
+
+
+void set_last_class_var(char *s) {
+	//printf("set last_class_var : -->%s\n",s);
+	strcpy(last_class_var,s);
+}
+char *get_last_class_var(void) {
+	//printf("Get last_class_var : %s\n",last_class_var);
+	return last_class_var;
 }

@@ -434,6 +434,8 @@ A4GL_debug("Order by Gives :%d\n",a);
 
 report_def : REPORT 
 	{ 
+    if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
+
 		rep_type=REP_TYPE_NORMAL; 
 		clr_function_constants (); 
 		clr_variable(); 
@@ -511,6 +513,8 @@ pause_msg : {strcpy($<str>$,"\"\"");}
 pdf_report_def : 
 PDF_REPORT 
 {
+    if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
+
 rep_type=REP_TYPE_PDF;
 clr_function_constants();
 clr_variable(); 

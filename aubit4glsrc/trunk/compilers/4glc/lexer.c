@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.88 2004-03-27 11:09:48 mikeaubury Exp $
+# $Id: lexer.c,v 1.89 2004-05-12 08:13:45 mikeaubury Exp $
 #*/
 
 /**
@@ -1247,7 +1247,7 @@ to_lower_str (char *s)
  *
  * @param s The string to be fixed
  */
-static void
+ static void
 fix_bad_strings (char *s)
 {
   char buff[10000];

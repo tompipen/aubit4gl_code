@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.28 2003-07-12 08:02:57 mikeaubury Exp $
+# $Id: debug.c,v 1.29 2004-05-12 08:15:54 mikeaubury Exp $
 #
 */
 
@@ -150,7 +150,7 @@ A4GL_debug_full (char *fmt, ...)
       else
 	fprintf (debugfile, "%-20s                       "," ");
 
-	if (strchr(buff,'\n')) 
+	if (a_strchr(buff,'\n')) 
       		fprintf (debugfile, " %s", buff);
 	else
       		fprintf (debugfile, " %s\n", buff);

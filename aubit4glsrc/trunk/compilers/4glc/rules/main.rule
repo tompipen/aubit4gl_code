@@ -5,9 +5,15 @@
 */
 
 
+module : 
+	class_module 
+	| trad_module
+;
 
+class_module: class_definition
+;
 
-module: op_module_header
+trad_module: op_module_header
 	{
 		if (glob_only==1) {
        			A4GL_debug("Read globals section so Im done\n");
@@ -20,8 +26,9 @@ module: op_module_header
 print_module_variable_init();
 		set_current_variable_scope('m');
 	}
- 	func_main_def 
+	func_main_def
 ;
+
 
 
 op_module_header: | module_header {
@@ -65,14 +72,12 @@ at_term_cmd :
 
 func_or_main	:	func_def
 		|	main_def
-		|	mem_func_def
 		|	report_def
 		|	pdf_report_def
                 |       menu_def
                 |       formhandler_def
 		|	code_cmd
 		| 	import_m
-		/* |	comment_cmd */
 		|       whenever_cmd
 		;
 
@@ -94,6 +99,7 @@ strcpy($<str>$,"static ");
  */
 func_def	: ldeffunction
 {
+  if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
   clr_variable(); lastlineno=yylineno;
   clr_function_constants (); 
 }
@@ -149,6 +155,7 @@ end_func_command :
 main_def:	
   MAIN 
   { 
+    if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
     lastlineno=yylineno;
     variable_action(-1,$<str>1,"","","add_function");
     sprintf(curr_func,"MAIN");
@@ -238,32 +245,6 @@ char b[256];
 | db_section
 ;
 
-mem_func_def : MEMBER_FUNCTION identifier MEMBER_OF identifier OPEN_BRACKET
-{
-  addmap("Define Member Function",curr_func,"MODULE",yylineno,infilename);
-}
-op_param_var_list CLOSE_BRACKET
-{
-  char buff[80];
-  sprintf(buff,"%s_%s_%d",$<str>4,$<str>2,atoi($<str>7));
-  sprintf(curr_func,"%s",buff);
-  print_func_start("",buff,1);
-  printDeclareFunctionStack(buff);
-
-  cnt=0;
-  A4GL_lex_printcomment("/* new function %s parameters*/\n",$<str>7);
-  push_blockcommand("FUNC");
-  A4GL_lex_printcomment("/* define section */\n");
-}
-define_section
-{
-	print_variables();
-  A4GL_lex_printcomment("/*end of define section */\n");
-  print_param('f');
-  printPushFunction();
-  print_func_args(atoi($<str>7));
-}
-op_code commands end_func_command;
 
 
 /* ========================== main.rule ============================= */

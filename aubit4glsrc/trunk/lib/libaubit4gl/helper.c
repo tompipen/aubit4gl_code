@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.27 2004-03-19 04:00:13 afalout Exp $
+# $Id: helper.c,v 1.28 2004-05-12 08:15:55 mikeaubury Exp $
 #
 */
 
@@ -210,7 +210,7 @@ str_inarray (char *str, char **arr)
 
   for (a = 0; arr[a]; a++)
     {
-      if (strchr (arr[a], '%'))
+      if (a_strchr (arr[a], '%'))
 	{
 	  A4GL_strip_pc (arr[a], buff);
 #ifdef DEBUG

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.75 2004-04-21 14:45:36 mikeaubury Exp $
+# $Id: conv.c,v 1.76 2004-05-12 08:15:54 mikeaubury Exp $
 #
 */
 
@@ -1262,8 +1262,8 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
 
   if (decimal_char==0) {
 	sprintf(buff,"%f",1.2);
-	if (strchr(buff,'.')) decimal_char='.';
-	if (strchr(buff,',')) decimal_char=',';
+	if (a_strchr(buff,'.')) decimal_char='.';
+	if (a_strchr(buff,',')) decimal_char=',';
 	if (decimal_char==0) {
 		decimal_char='.';
 	}
@@ -1275,7 +1275,7 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
  *z=0;
 
   /* watch out for any "," separators in the number - remove them first */
-  if (strchr (a, ',')&&decimal_char!=',')
+  if (a_strchr (a, ',')&&decimal_char!=',')
     {
       a = buff;
       for (n = 0, p = (char *) aa; *p > '\0' && n < 32; p++, n++)
@@ -1286,10 +1286,10 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
       *a = '\0';
       a = buff;
     }
-  if (decimal_char==',' && strchr(a,'.')) {
+  if (decimal_char==',' && a_strchr(a,'.')) {
 		char *ptr;
 		a=strdup(a);
-		ptr=strchr(a,'.');
+		ptr=a_strchr(a,'.');
 		*ptr=',';
 		duped=1;
 	

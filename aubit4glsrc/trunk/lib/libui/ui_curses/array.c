@@ -24,12 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.31 2004-03-23 13:10:22 mikeaubury Exp $
+# $Id: array.c,v 1.32 2004-05-12 08:15:58 mikeaubury Exp $
 #*/
 
 
 
-static char *module_id="$Id: array.c,v 1.31 2004-03-23 13:10:22 mikeaubury Exp $";
+static char *module_id="$Id: array.c,v 1.32 2004-05-12 08:15:58 mikeaubury Exp $";
 
 
 
@@ -489,9 +489,11 @@ draw_arr (arr, -1, arr->arr_line);
         arr->last_arr = arr->arr_line;
 	arr->arr_line = arr->arr_line + arr->srec->dim;
 	if (arr->arr_line >arr->no_arr) {
-		arr->scr_line=1;
+		//arr->scr_line=1;
 		arr->arr_line=arr->no_arr;
 	}
+       while (arr->arr_line<arr->scr_line) arr->scr_line--;
+
  	redisplay_arr (arr, 2);
         A4GL_set_arr_curr (arr->arr_line);
         A4GL_set_scr_line (arr->scr_line);
@@ -501,9 +503,9 @@ draw_arr (arr, -1, arr->arr_line);
 
 
     case A4GLKEY_PGDN :
-if ( (arr->arr_line+arr->srec->dim <= arr->no_arr) || ( (arr->arr_line+1< arr->no_arr)&&A4GL_isyes(acl_getenv("SCROLLTOEND"))))  {
+if ( (arr->arr_line+arr->srec->dim <= arr->no_arr) || ( (arr->arr_line< arr->no_arr)&&A4GL_isyes(acl_getenv("SCROLLTOEND"))))  {
 
-      if (arr->arr_line+1 < arr->no_arr) {
+      if (arr->arr_line+1 <= arr->no_arr) {
 		arr->cntrl=0-A4GLKEY_PGDN;
 	  if (A4GL_has_event(-11,evt)) return A4GL_has_event(-11,evt);
 	}
@@ -967,7 +969,7 @@ if (n>1) {
 f=UILIB_A4GL_get_curr_form (1);
 strcpy(barr,arr);
 
-ptr=strchr(barr,'.');
+ptr=a_strchr(barr,'.');
 
 if (ptr==0) {
         A4GL_exitwith("Internal error - expected a .* in screen record");

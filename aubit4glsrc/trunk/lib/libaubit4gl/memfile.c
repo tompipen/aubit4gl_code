@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.18 2004-03-24 14:10:22 mikeaubury Exp $
+# $Id: memfile.c,v 1.19 2004-05-12 08:15:55 mikeaubury Exp $
 #
 */
 
@@ -72,7 +72,7 @@ A4GL_memfile_fopen (char *f, char *mode)
       exit (1);
     }
 
-  if (strchr (mode, 'w'))
+  if (a_strchr (mode, 'w'))
     {
       printf ("Can't use memfile for Writing...");
       exit (1);

@@ -698,8 +698,7 @@ some:
 
 op_escape:
 		{strcpy($<str>$,"");}
-	| ESCAPE escape_character
-	{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+	| ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 	;
 
 pattern_ss:
@@ -784,11 +783,9 @@ comp_op:
 	| NOT_EQUAL {strcpy($<str>$,"!=");}
 	| LESS_THAN
 	| GREATER_THAN 
-        | NOT_MATCHES
-        //| NOT_LIKE
-	| MATCHES
+        /* | NOT_MATCHES */
+	/* | MATCHES */
 	| TILDE
-	//| LIKE {strcpy($<str>$,"likE");}
 	| LESS_THAN_EQ {strcpy($<str>$,"<=");}
 	| GREATER_THAN_EQ {strcpy($<str>$,">=");}
 	;

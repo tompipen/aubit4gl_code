@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.90 2004-04-21 14:47:25 mikeaubury Exp $
+# $Id: stack.c,v 1.91 2004-05-12 08:15:55 mikeaubury Exp $
 #
 */
 
@@ -342,6 +342,7 @@ A4GL_pop_var (void *p, int d)
   if (((z) != (1)))
     {
       A4GL_exitwith ("Error in conversion");
+      if (A4GL_isyes(acl_getenv("NO_CONV_ERR"))) { A4GL_debug("Ignoreing"); a4gl_status=0; }
 #ifdef DEBUG
       A4GL_debug ("1 pop_var: error in conversion %d\n", z);
 #endif
@@ -560,6 +561,7 @@ A4GL_conversion_ok(1);
 		if (b==0) {
 			A4GL_conversion_ok(0);
 			A4GL_debug("Bad conversion");
+			  if (A4GL_isyes(acl_getenv("NO_CONV_ERR"))) { A4GL_debug("Ignoreing"); a4gl_status=0; }
 		}
   	}
   }
@@ -1783,7 +1785,7 @@ int first;
       //A4GL_debug ("2 --> %s %lf", z1, a);
     }
 
-  if (strchr(z1,'/') && A4GL_stod (z1, &adate, 0) == 1) // Looks a bit like a date...
+  if (a_strchr(z1,'/') && A4GL_stod (z1, &adate, 0) == 1) // Looks a bit like a date...
     {
 
 	if (!A4GL_isnull(DTYPE_DATE,(void *)&adate)) {

@@ -43,7 +43,7 @@ code
 
 	static void myseterr( char *s);
 	static void fileerror(FILE *f, char *s);
-void A4GLHELP_initlib(void) ;
+void HELPLIB_A4GLHELP_initlib(void) ;
 endcode
 
 define constant HELPMAXLEN 78
@@ -60,7 +60,7 @@ define msgline char(HELPMAXLEN)
 define msgerror array[17] of record errline char(HELPMAXLEN) end record
 define msgerrcnt integer
 code
-void A4GLHELP_initlib(void) {
+void HELPLIB_A4GLHELP_initlib(void) {
 // Does nothing...
 }
 endcode
@@ -92,7 +92,7 @@ end main
 
 {---------------------------------------------------------------------
 
-	fetchiem()	Read next line from .iem message
+	aclfgl_fetchiem()	Read next line from .iem message
 		returns charcount, msgline
 	Side effects static vars: 
 		charcount: No of chars read from message
@@ -105,7 +105,7 @@ end main
 	Each call to fetchiem increases the static var charcount by the
 	length of the line read from the message.
 }
-local function fetchiem()
+function aclfgl_fetchiem()
 	define ok integer
 	
 	let ok = true
@@ -202,7 +202,7 @@ local function mynextpage(l_count, l_msg)
 		if l_count >= msglen or i >= 16 then
 			exit while
 		end if
-		call fetchiem() returning l_count, l_msg
+		call aclfgl_fetchiem() returning l_count, l_msg
 	end while
 	while i < 16
 		let i = i + 1
@@ -219,7 +219,7 @@ end function
 
 {---------------------------------------------------------------
 
-	openiem(filename, n) Open an iem (Informix error msg) file
+	aclfgl_openiem(filename, n) Open an iem (Informix error msg) file
 		1. Open the file
 		2. Check header 0xfe68 and len = no of messages
 		3. Step through index block until msg n found or len read
@@ -238,7 +238,7 @@ end function
 	Note the file I/O is done in code ... endcode blocks
 -------------------------------------------------------------------------
 }
-local function openiem( filename, n )
+function aclfgl_openiem( filename, n )
 	define filename char(128)
 	define n integer
 
@@ -385,12 +385,12 @@ indexrec[7]);
 				 n,filename);
 		myseterr(errmsg);
 	}
-//	fprintf(stderr, "At end of openiem, msgline = \n %s;", msgline);
+//	fprintf(stderr, "At end of aclfgl_openiem, msgline = \n %s;", msgline);
 }
 endcode
 	let msgline = msgline clipped
 	return charcount, msgline
-end function {openiem}
+end function {aclfgl_openiem}
 
 
 
@@ -425,7 +425,7 @@ endcode
 
 	open window w1 at 1,1 with form "a4gl_xxhelp"
 
-	call openiem(filename, n ) returning l_count, l_msg
+	call aclfgl_openiem(filename, n ) returning l_count, l_msg
 
 	if filenotfound or msgerrcnt > 0 then
 		call myshowerrors()

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.160 2004-04-30 19:09:10 mikeaubury Exp $
+# $Id: compile_c.c,v 1.161 2004-05-12 08:15:57 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.160 2004-04-30 19:09:10 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.161 2004-05-12 08:15:57 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1996,7 +1996,7 @@ if (has_function(identifier,&lib,0)) {
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
   printc ("_retvars=%s%s(%d);\n", get_namespace (identifier), identifier, args_cnt);
 }
-
+print_reset_state_after_call();
 
 }
 
@@ -2016,6 +2016,7 @@ real_print_class_func_call (char *var, char *identifier,
 
   printc ("_retvars=A4GL_call_datatype_function_i(&%s,%d,\"%s\",%d);\n",
 	  var, scan_variable (var), identifier, args_cnt);
+print_reset_state_after_call();
 
 }
 
@@ -2057,6 +2058,7 @@ print_call_shared (char *libfile, char *funcname, int nargs)
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
   printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,%s,%d);\n",
 	  libfile, funcname, nargs);
+print_reset_state_after_call();
 }
 
 /**
@@ -2084,6 +2086,7 @@ print_call_external (char *host, char *func, char *port, int nargs)
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
   printc ("_retvars=A4GL_remote_func_call(%s,%s,%s,%d);\n", host, func,
 	  port, nargs);
+print_reset_state_after_call();
 }
 
 /**
@@ -5261,11 +5264,11 @@ A4GL_expr_for_call (char *ident, char *params, int line, char *file)
 
 	if (has_function(ident,&lib,0)) {
 		// Call shared...
-  	sprintf(buff, "{int _retvars; A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,\"%s\",%s); if (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}",  lib, ident, params,line,file);
+  	sprintf(buff, "{int _retvars; A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,\"%s\",%s); if (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n%s}",  lib, ident, params,line,file,get_reset_state_after_call());
 
 	} else {
-      		sprintf (buff, "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n}\n",
-	       get_namespace (ident), ident, params, line, file);
+      		sprintf (buff, "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n%s}\n",
+	       get_namespace (ident), ident, params, line, file, get_reset_state_after_call());
 	}
     }
   add_function_to_header (ident, 1,"");
@@ -5900,6 +5903,22 @@ print_bind_set_value (char i)
 
 
 
+
+char* get_reset_state_after_call(void ) {
+   if (isin_command ("INPUT")  || isin_command ("CONSTRUCT")) {
+       int sio_id;
+       static char buff[255];
+               sio_id=get_sio_id("ALLINPUT");
+               sprintf(buff, "A4GL_reset_state_for(_sio_%d,_sio_kw_%d);",sio_id,sio_id);
+               return buff;
+   }
+   return "";
+}
+
+
+void print_reset_state_after_call(void) {
+       printc("%s",get_reset_state_after_call());
+}
 
 
 

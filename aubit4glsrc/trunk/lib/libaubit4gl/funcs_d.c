@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.32 2004-04-21 14:46:03 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.33 2004-05-12 08:15:55 mikeaubury Exp $
 #
 */
 
@@ -92,7 +92,7 @@ A4GL_bname2 (char *str, char *str1, char *str2, char *str3)
   char b2[10];
   char b3[10];
 
-  if (!strchr (str, '/'))
+  if (!a_strchr (str, '/'))
     {
       return 0;
     }
@@ -438,7 +438,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
     }
 
 #if defined (__MINGW32__)
-  if (strchr (fmt, '.'))
+  if (a_strchr (fmt, '.'))
     {
 #else
   if (index (fmt, '.'))
@@ -446,13 +446,13 @@ a4gl_using (char *str, int s, char *fmt, double num)
 #endif
       strcpy (fm1, fmt);
 #if defined (__MINGW32__)
-      p = (char *) strchr (fm1, '.');
+      p = (char *) a_strchr (fm1, '.');
 #else
       p = (char *) index (fm1, '.');
 #endif
       p[0] = 0;
 #if defined (__MINGW32__)
-      strcpy (fm2, strchr (fmt, '.') + 1);
+      strcpy (fm2, a_strchr (fmt, '.') + 1);
 #else
       strcpy (fm2, index (fmt, '.') + 1);
 #endif
@@ -487,13 +487,13 @@ a4gl_using (char *str, int s, char *fmt, double num)
       {
 	if (fmt[a] == '.')
 	  break;
-	if (strchr (rep_digit, fmt[a]))
+	if (a_strchr (rep_digit, fmt[a]))
 	  f_cnt++;
       }
     // count format string number place holders, after the decimal point
     while (a < strlen (fmt))
       {
-	if (strchr (rep_digit, fmt[a]))
+	if (a_strchr (rep_digit, fmt[a]))
 	  d_cnt++;
 	a++;
       }
@@ -547,7 +547,7 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
 
   for (a = strlen (fm1) - 1; a >= 0; a--)
     {
-      if (strchr (rep_digit, fm1[a]))
+      if (a_strchr (rep_digit, fm1[a]))
 	{
 	  if (((ptr1[b] == '0' && ptr1[b - 1] == ' ') || ptr1[b] == ' ')
 	      && isprnt == 1)
@@ -575,7 +575,7 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
 		  str[a] = '<';
 		  continue;
 		}
-	      p = strchr (canfloat_head, fm1[a]);
+	      p = a_strchr (canfloat_head, fm1[a]);
 	      if (p)
 		{
 		  p[0] = 1;
@@ -647,7 +647,7 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
 
   for (a = 0; a < strlen (fm2); a++)
     {
-      if (strchr (rep_digit, fm2[a]))
+      if (a_strchr (rep_digit, fm2[a]))
 	{
 	  if (fm2[a] == ')')
 	    {
@@ -767,4 +767,16 @@ int a_isprint(int a) {
 	if (a>0x7f) return 1;
 	return 0;
 }
+
+char *a_strchr(char *s,int c) {
+int a;
+if (s==0) return 0;
+
+for (a=0;a<strlen(s);a++) {
+        if (s[a]==c) return &s[a];
+}
+return 0;
+}
+
+
 /* ============================== EOF ========================== */

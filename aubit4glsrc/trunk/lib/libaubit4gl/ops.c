@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.50 2004-04-21 14:46:06 mikeaubury Exp $
+# $Id: ops.c,v 1.51 2004-05-12 08:15:55 mikeaubury Exp $
 #
 */
 
@@ -2002,7 +2002,7 @@ A4GL_display_decimal (void *ptr, int size, int size_c,
 
       if (size_c == -1)
 	{
-	  char *ptr2;
+	  char *ptr2=0;
 	  int n, l;
 	  //char buff[256];
 	  //char buff2[256];
@@ -2310,28 +2310,23 @@ void *ptr;
 }
 
 
+void A4GL_ltrim(char *s) {
+int a;
+char *buff;
+char *ptr=0;
+char *ptr2=0;
+buff=strdup(s);
+for (a=0;a<strlen(buff);a++) {
+        if (buff[a]==' ') continue;
+        ptr=&buff[a];
+        break;
+}
 
-void
-A4GL_ltrim (char *s)
-{
-  int a;
-  char *buff;
-  char *ptr = 0;
-  buff = strdup (s);
-
-  for (a = 0; a < strlen (buff); a++)
-    {
-      if (s[a] == ' ')
-	continue;
-      ptr = &s[a];
-      break;
-    }
-
-  if (ptr == 0)
-    return;
-
-  strcpy (s, ptr);
-  free (buff);
+if (ptr==0) return;
+ptr2=strdup(ptr);
+strcpy(s,ptr2);
+free(ptr2);
+free(buff);
 }
 
 
@@ -2425,7 +2420,7 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
 	  char *ptr;
 	  // It doesn't fit - 
 	  // what happens if we remove all the decimal places ?
-	  ptr = strchr (buff_sz, '.');
+	  ptr = a_strchr (buff_sz, '.');
 
 	  if (ptr)
 	    {

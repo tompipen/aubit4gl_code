@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: eval_field.c,v 1.4 2004-04-02 07:06:59 mikeaubury Exp $
+# $Id: eval_field.c,v 1.5 2004-05-12 08:15:55 mikeaubury Exp $
 #
 */
 
@@ -205,6 +205,8 @@ A4GL_debug("Evaludate field_expr - s=%s exprtype = %d",s,expr->itemtype);
 		{"AND",1,	102},
 		{"OR",1,	103},
 
+                {"ISNULL",0,    104},
+                {"ISNOTNULL",0, 105},
 
 
 		{0,0}
@@ -265,6 +267,24 @@ A4GL_debug("Evaludate field_expr - s=%s exprtype = %d",s,expr->itemtype);
 		return 1;
 	}
 
+       if (compid==104) { // ISNULL
+               ok=evaluate_field_expr(s,left,&na1,&nd1);
+               if (ok==0) return 0;
+               if (nd1) { A4GL_trim(na1); A4GL_push_char((char *)na1); } else { A4GL_push_long(na1); }
+               A4GL_pushop(OP_ISNULL);
+               *value=A4GL_pop_bool();
+               *is_char=0;
+       }
+
+
+       if (compid==105) { // ISNOTNULL
+               ok=evaluate_field_expr(s,left,&na1,&nd1);
+               if (ok==0) return 0;
+               if (nd1) { A4GL_trim(na1); A4GL_push_char((char *)na1); } else { A4GL_push_long(na1); }
+               A4GL_pushop(OP_ISNOTNULL);
+               *value=A4GL_pop_bool();
+               *is_char=0;
+       }
 
 	if (compid==102) {   // AND
 		ok=evaluate_field_expr(s,left,&na1,&nd1);

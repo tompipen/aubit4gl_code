@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: std_funcs.c,v 1.5 2003-05-12 14:24:01 mikeaubury Exp $
+# $Id: std_funcs.c,v 1.6 2004-05-12 08:15:52 mikeaubury Exp $
 #
 */
 
@@ -91,6 +91,7 @@ char *builtin_aclfgl_functions[] = {
   "w_rowid_s",
   "weekday",
   "year",
+  "aclfgl_libhelp_showhelp",
   0
 };
 

@@ -77,6 +77,7 @@ char *chk_alias(char *s);
 %token <str> 
 %token CH
 %token GRAPH_CH
+%token KW_COMPOSITES KW_LESS_THAN KW_GREATER_THAN
 %token INSTRUCTIONS ATTRIBUTES DATABASE BY KW_SCREEN_TITLE KW_SCREEN KW_SIZE OPEN_SQUARE KW_END CLOSE_SQUARE NUMBER_VALUE NAMED OPEN_BRACE CLOSE_BRACE TITLE
 FORMONLY COMMENT
 %token DYNAMIC COLON ATSIGN DOT WITHOUT KW_NULL INPUT TABLES PIPE EQUAL CHAR_VALUE
@@ -93,6 +94,13 @@ REQUIRED REVERSE VERIFY WORDWRAP COMPRESS NONCOMPRESS TO  AS
 /* extensions */
 %token LISTBOX BUTTON KW_PANEL
 %token KW_WS KW_TAB
+%token KW_MASTER_OF
+%token KW_BEFORE KW_AFTER KW_EDITADD KW_EDITUPDATE KW_REMOVE KW_OF
+%token KW_ADD KW_DISPLAY KW_UPDATE KW_QUERY KW_ON_ENDING KW_ON_BEGINNING
+%token KW_CALL
+%token KW_BELL KW_ABORT KW_LET KW_EXITNOW KW_REVERSE KW_NEXTFIELD
+%token KW_IF KW_THEN KW_ELSE
+
 
 %%
 
@@ -612,10 +620,16 @@ DELIMITERS CHAR_VALUE {
 A4GL_add_srec();
 } srec_dim OPEN_BRACKET srec_field_list CLOSE_BRACKET op_ltype op_semi
 | KW_PANEL OPEN_BRACKET NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_BRACKET TO OPEN_BRACKET NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_BRACKET 
+| composites
+| master_of
+| control_block 
 ;
+
 
 op_ltype : | AS LISTBOX;
  
+op_star: | STAR;
+
 op_semi: | SEMICOLON;
 
 srec_dim : 
@@ -973,6 +987,110 @@ value_list : value {
 
 ;
 
+
+
+
+
+composites:
+	KW_COMPOSITES KW_LESS_THAN comp_list KW_GREATER_THAN op_star KW_LESS_THAN comp_list KW_GREATER_THAN
+;
+
+comp_list: comp_item
+	| comp_list COMMA comp_item
+;
+
+comp_item : table_name DOT column_name 
+;
+
+table_name : named_or_kw;
+
+column_name : named_or_kw;
+
+control_block :
+	KW_BEFORE bef_act KW_OF column_list action
+	| KW_AFTER aft_act KW_OF column_list action
+	| KW_ON_BEGINNING func_call
+	| KW_ON_ENDING func_call
+	
+;
+
+action:
+	abort
+	| comments
+	| if
+	| let
+	| nextfield
+;
+
+
+if: KW_IF expression KW_THEN action op_else
+;
+op_else: | KW_ELSE action
+;
+
+abort : KW_ABORT ;
+
+let   : KW_LET field_tag EQUAL expression ;
+
+nextfield : KW_NEXTFIELD field_tag
+	| KW_NEXTFIELD KW_EXITNOW
+;
+
+comments :
+	COMMENTS CHAR_VALUE
+	| COMMENTS KW_BELL CHAR_VALUE
+	| COMMENTS KW_REVERSE CHAR_VALUE
+;
+
+
+
+
+bef_act :
+	KW_EDITADD
+	| KW_EDITUPDATE
+	| KW_REMOVE
+;
+
+aft_act:
+	KW_EDITADD
+	| KW_ADD
+	| KW_UPDATE
+	| KW_QUERY
+	| KW_REMOVE
+	| KW_DISPLAY
+	| KW_EDITUPDATE
+;
+
+column_list: column_entry
+	| column_list COMMA column_entry
+;
+
+column_entry : 
+	table_name DOT column_name
+	| column_name
+;
+
+master_of:
+	table_name KW_MASTER_OF table_name op_semi
+;
+
+func_call: KW_CALL OPEN_BRACKET op_func_call_args CLOSE_BRACKET
+;
+
+op_func_call_args: | func_call_args;
+
+
+func_call_args: 
+	func_call_arg | func_call_args COMMA func_call_arg
+;
+
+func_call_arg : expression
+;
+
+
+expression : clauses
+;
+
 any_kword : 
  AS
 | AUTONEXT
@@ -1064,5 +1182,6 @@ any_kword :
 
 
 /* =========================== EOF ============================ */
+
 
 

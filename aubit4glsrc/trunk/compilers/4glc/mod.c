@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.173 2004-04-20 17:46:33 mikeaubury Exp $
+# $Id: mod.c,v 1.174 2004-05-12 08:13:45 mikeaubury Exp $
 #
 */
 
@@ -815,6 +815,7 @@ scan_variables (char *s_n, int mode)
   memset(s,0,1024);
   strcpy(s,s_n);
 A4GL_debug("s=%s",A4GL_null_as_null(s));
+
   /*last_var_found = -1;*/
 
   /* MJA - NEWVARIABLE*/
@@ -847,6 +848,16 @@ A4GL_debug("s=%s",A4GL_null_as_null(s));
 	return -1;
     }
 
+/*
+ {
+	char xxx[1024];
+	strcpy(xxx,rm_class_copy(s));
+	strcpy(s,xxx);
+ }
+*/
+
+
+    if(strncmp(s,"CLASS_COPY->",12)==0) { strcpy(buff,&s[12]); strcpy(s,buff); }  
 
 
 A4GL_debug("find_variable : %s",A4GL_null_as_null(buff));
@@ -4379,37 +4390,79 @@ static char buff[256];
 }
 
 
-char *fgl_add_scope(char *s,int n) {
-char c;
-static char buffer[256];
-char buffer2[256];
+char *
+fgl_add_scope (char *s, int n)
+{
+  char c;
+  static char buffer[256];
+  char buffer2[1024];
 
-if (!A4GL_isyes(acl_getenv("MARK_SCOPE"))) {
-	return s;
+//printf("ADD SCOPE : %s\n",s);
+  if (strncmp(s,"CLASS_COPY->",12)==0) return s;
+//printf("Not class_copy\n");
+
+  strcpy (buffer2, s);
+  c = find_variable_scope (buffer2);
+
+  if (c == 'C' || c=='P');
+  else
+    {
+	//printf("c!='C'");
+      if (!A4GL_isyes (acl_getenv ("MARK_SCOPE")))
+	{
+	  return s;
+	}
+    }
+
+
+  if (buffer2[0] >= 'A' && buffer2[0] <= 'Z' && buffer2[1] == '_')
+    {
+      char buff[1024];
+      strcpy (buff, &buffer2[2]);
+      strcpy (buffer2, buff);
+    }
+
+
+
+  if (n == 0)
+    {
+      if (buffer2[0] == ' ')
+	{
+	  c = 'S';
+	}
+      else
+	{
+	  c = find_variable_scope (buffer2);
+	  if (c == 0)
+	    {
+	      c = 'S';
+	    }
+	}
+    }
+  else
+    {
+      c = n;
+    }
+
+
+//printf("c=%c\n",c);
+  if (c != 'S') {
+		if (c=='C'||c=='P') {
+			if (c=='C')  {
+    			sprintf (buffer, "CLASS_COPY->%s",  buffer2);
+			} else {
+			find_variable_ptr (buffer2);
+    			sprintf (buffer, "CLASS_COPY->%s",  get_last_class_var());
+			}
+		} else {
+    			sprintf (buffer, "%c_%s", c, buffer2);
+		}
+	}
+  else
+    sprintf (buffer, "%s", buffer2);
+
+  return buffer;
 }
-
-strcpy(buffer2,s);
-
-
-if (buffer2[0]>='A'&&buffer2[0]<='Z'&&buffer2[1]=='_') { char buff[1024]; strcpy(buff,&buffer2[2]); strcpy(buffer2,buff); }
-
-if (n==0) {
-  if (buffer2[0]==' ') {
-                c='S';
-  } else {
-        c=find_variable_scope(buffer2);
- if (c==0) { c='S'; }
-  }
-} else {
-	c=n;
-}
-
-  if (c!='S') sprintf(buffer,"%c_%s",c,buffer2);
-  else        sprintf(buffer,"%s",buffer2);
-
-return buffer;
-}
-
 
 int rep_no_orderby=0;
 
