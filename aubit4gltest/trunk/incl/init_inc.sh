@@ -29,8 +29,38 @@ fi
 
 IFX_RUNNER="$CURR_DIR/bin/testfglgo"
 FJSRUNNER="$CURR_DIR/bin/testfglrun"
+
+#######################
+#Set and check AUBITDIR
+if test "$AUBITDIR" = ""; then
+	AUBITDIR=`aubit-config AUBITDIR 2>/dev/null`
+	if test "$AUBITDIR" = ""; then
+		echo "ERROR: AUBITDIR not set and aubit-config not installed"
+		exit 3
+	else
+		export AUBITDIR
+	fi
+fi
+if test -f "$AUBITDIR/bin/4glpc" ; then 
+	chmod a+x $AUBITDIR/bin/4glpc
+else
+	echo "ERROR: invalid AUBITDIR ($AUBITDIR)"
+	exit 4
+fi
+
+#Even on Windows we have to use UNIX style path in this script. Since when using 
+#MinGW AUBITDIR must be Windows-stile, we must distinguish between them and use
+#only AUBITDIR_UNIX in this script
+AUBITDIR_UNIX="$AUBITDIR"
+
 if test "$AUBITDIR_SRC" = ""; then
-	AUBITDIR_SRC=/opt/aubit/aubit4glsrc
+	#maybe current aubitdir is aubit source dir?
+	if test -f "$AUBITDIR/lib/libaubit4gl/io.c"; then 
+		AUBITDIR_SRC="$AUBITDIR"
+	else
+		#Just guessing
+		AUBITDIR_SRC=/opt/aubit/aubit4glsrc
+	fi
 fi
 if test -d "$AUBITDIR_SRC"; then  
 	CUSTOM="$AUBITDIR_SRC/lib/extra_libs/infx_dump_screen/infx"
@@ -86,29 +116,6 @@ if test -f $a4gl_shtool; then
 	T_MD=`$a4gl_shtool echo -n -e %B 2>/dev/null`
 	T_ME=`$a4gl_shtool echo -n -e %b 2>/dev/null`
 fi
-
-#######################
-#Set and check AUBITDIR
-if test "$AUBITDIR" = ""; then
-	AUBITDIR=`aubit-config AUBITDIR 2>/dev/null`
-	if test "$AUBITDIR" = ""; then
-		echo "ERROR: AUBITDIR not set and aubit-config not installed"
-		exit 3
-	else
-		export AUBITDIR
-	fi
-fi
-if test -f "$AUBITDIR/bin/4glpc" ; then 
-	chmod a+x $AUBITDIR/bin/4glpc
-else
-	echo "ERROR: invalid AUBITDIR ($AUBITDIR)"
-	exit 4
-fi
-
-#Even on Windows we have to use UNIX style path in this script. Since when using 
-#MinGW AUBITDIR must be Windows-stile, we must distinguish between them and use
-#only AUBITDIR_UNIX in this script
-AUBITDIR_UNIX="$AUBITDIR"
 
 #######################
 #See what platform are we on:

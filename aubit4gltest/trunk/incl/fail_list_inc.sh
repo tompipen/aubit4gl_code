@@ -6,27 +6,19 @@
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
 #NOTE: <*> = OK with -esqli
-EXPECT_TO_FAIL_TESTS="240 670 706 278 \
-	766 767 911 912 913 914 915 961 962 976 987"
+EXPECT_TO_FAIL_TESTS="240 670 706 278 766 767 962 976 987"
 #240 (numeric formating) http://aubit.com/mantis/bug_view_page.php?bug_id=0000495
 #670 (syntax errors in generated EC code) http://aubit.com/mantis/bug_view_page.php?bug_id=0000477
 #706 (expression in SQL syntax error) http://aubit.com/mantis/bug_view_page.php?bug_id=0000515
 #278 (Too few variables for the number of fields) http://aubit.com/mantis/bug_view_page.php?bug_id=0000593
 #766 (Key CONTROL-H was 49     and not 8) http://aubit.com/mantis/bug_view_page.php?bug_id=0000596
 #767 (wrong codes returned) http://aubit.com/mantis/bug_view_page.php?bug_id=0000597
-#911 (An warning was not issued with truncation) http://aubit.com/mantis/bug_view_page.php?bug_id=0000599
-#912 same
-#913 same
-#914 <*>(A warning was not issued after an agregate with null values) - same?
-#915 (An warning was not issued after a select with less variables then into) -same?
-#961 (Error suming 1 to biggest date) http://aubit.com/mantis/bug_view_page.php?bug_id=0000600
 #962 (Error on near zero decimal comparison) http://aubit.com/mantis/bug_view_page.php?bug_id=0000601
 #976 (Error in conversion.) http://aubit.com/mantis/bug_view_page.php?bug_id=0000603
 #987 same ?
 
 #not reported (please enter bug report at: http://aubit.com/mantis)
-EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS 989"
-#989 (A smallfloat on a string was not converted to smallfloat)
+EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS "
 
 
 ######################
@@ -36,6 +28,8 @@ EXPECT_TO_FAIL_TESTS_ESQLI="80 685 694 703"
 #685 same
 #694 same
 #703 same
+
+
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
 EXPECT_TO_FAIL_TESTS_ECP="36 76 98 227 530 531 535"
@@ -79,7 +73,7 @@ EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
 
 
 
-	
+#####################################################
 #Expected to fail using Informix/4Js/Querix compiler
 EXPECT_TO_FAIL_IFX="102 227 251 254 319 487 706"
 #102,254 - dump_screen empty
@@ -121,6 +115,7 @@ INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 #498,499 no keys.in
 
 
+#testing function invocation:
 test_func() {
 x=$1
 	echo "Inside test_func"
@@ -131,4 +126,5 @@ x=$1
 	echo "exiting test_finc"
 	
 }
+
 

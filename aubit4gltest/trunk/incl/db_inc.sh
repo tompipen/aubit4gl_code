@@ -115,23 +115,45 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 	#Find PostgreSQL data directory of currently running PG engine (PGDATA)
 	if test "$PGDATA" = ""; then
 		PGDATA=`ps -auxw | grep postmaster | head -1 | awk '{print $14}'`
-		if test ! -d "$PGDATA"; then
-			#try guessing
-			if test -d "/var/lib/pgsql/data"; then
-				#RedHat RPM's
-				PGDATA="/var/lib/pgsql/data"
-			fi
-			if test -d "/usr/local/pgsql/data"; then
-				#PG default
-				PGDATA="/usr/local/pgsql/data"
-			fi
-			if test -d "/usr/local/pgsql/data-7.4"; then
-				#Andrej
-				PGDATA="/usr/local/pgsql/data-7.4"
-			fi
+		if test "$PGDATA" = ""; then 
+			echo "WARNING: PostgreSQL not running or started without -D flag"
+			echo "(using PGDATA, but no PGDATA present in environment)"			
+		else
 			if test ! -d "$PGDATA"; then
-				echo "WARNING: unable to set PGDATA"
+				echo "WARNING: PGDATA obtained from postmaster flags is not a directory ($PGDATA)"
+				unset PGDATA
+				#try guessing
+				if test -d "/var/lib/pgsql/data"; then
+					#RedHat RPM's
+					PGDATA="/var/lib/pgsql/data"
+				fi
+				if test -d "/usr/local/pgsql/data"; then
+					#PG default
+					PGDATA="/usr/local/pgsql/data"
+				fi
+				if test -d "/usr/local/pgsql/data-7.4"; then
+					#Andrej
+					PGDATA="/usr/local/pgsql/data-7.4"
+				fi
+				if test ! -d "$PGDATA"; then
+					echo "WARNING: unable to set PGDATA"
+					echo "Please set PGDATA manually."				
+				else
+					if test "$VERBOSE" = "1"; then 
+						echo "PGDATA set to $PGDATA"
+					fi
+				fi
+				
+			else
+				if test "$VERBOSE" = "1"; then 
+					echo "PGDATA set to $PGDATA"
+				fi
 			fi
+		fi
+	else
+		if test ! -d "$PGDATA"; then
+			echo "WARNING: specified PGDATA ($PGDATA) is not a directory"
+			unset PGDATA
 		fi
 	fi
 	
@@ -141,8 +163,8 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 		PG_CONF="$PGDATA/postgresql.conf"
 	else
 		echo "WARNING: failed to determine PG config file location"
+		PG_CONF="unknown"
 	fi
-	
 	
 	echo "\q" | $PSQL -d $TEST_DB > /tmp/tmp.dbaccess 2>&1
 	RET=$?
@@ -256,13 +278,13 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 	#################
 	#Tests to verify PG is configured as we need it for Informix
 	#compatibility
-	TMP=`echo 'show datestyle;' | $PSQL | grep -i "informix"`
+	TMP=`echo 'show datestyle;' | $PSQL -d $TEST_DB | grep -i "informix"`
 	if test "$TMP" = ""; then 
 		echo "WARNING: PostgreSQL config file ($PG_CONF)"
 		echo "does not contain needed setting:"
 		echo "datestyle = 'informix, mdy'"
 	fi
-	TMP=`echo 'show default_delim;' | $PSQL | grep "\|"`
+	TMP=`echo 'show default_delim;' | $PSQL -d $TEST_DB | grep "\|"`
 	if test "$TMP" = ""; then 
 		echo "WARNING: PostgreSQL config file ($PG_CONF)"
 		echo "does not contain needed setting:"

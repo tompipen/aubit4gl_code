@@ -1886,12 +1886,13 @@ do
 			if test "$NEED_TRANSACTION" = "1" -a "$DB_HAS_TRANSACTION" != "1" ; then 
 				if test "$USE_ESQLI" = "1" -o "$ODBC_USE_DB" = "IFX"; then		
 					if test "$VERBOSE" = "1"; then
-						ontape -s -B test1
+						ontape -s -B $TEST_DB
+						RET=$?
 						echo "NOTE: turned ON buffered logging"
 					else
-						ontape -s -B test1 > /dev/null					
+						ontape -s -B $TEST_DB > /dev/null
+						RET=$?
 					fi
-					RET=$?
 					if test "$RET" != "0"; then 
 						echo "ERROR: swithching logging mode ON failed"
 						exit $RET
@@ -1908,12 +1909,13 @@ do
 			if test "$NEED_TRANSACTION" = "2" -a "$DB_HAS_TRANSACTION" = "1"; then 
 				if test "$USE_ESQLI" = "1" -o "$ODBC_USE_DB" = "IFX"; then		
 					if test "$VERBOSE" = "1"; then
-						ontape -s -N test1
+						ontape -s -N $TEST_DB
+						RET=$?
 						echo "NOTE: turned OFF logging"
 					else
-						ontape -s -N test1 > /dev/null					
+						ontape -s -N $TEST_DB > /dev/null
+						RET=$?
 					fi
-					RET=$?
 					if test "$RET" != "0"; then 
 						echo "ERROR: swithching logging mode OFF failed"
 						exit $RET
