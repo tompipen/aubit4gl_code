@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.20 2003-07-12 08:02:57 mikeaubury Exp $
+# $Id: data_if.c,v 1.21 2003-11-12 17:36:10 mikeaubury Exp $
 #
 */
 
@@ -89,7 +89,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
   struct s_s_screenio_1
   {
     int mode;
-    void *currform;
+     struct s_form_dets *currform;
     void *currentfield;
     int curr_attrib;
     void *currentmetrics;
@@ -143,6 +143,19 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
       if (mode == GETSETSET)
 	{
 	  val->currform = (void *) var;
+	  return (void *) 1;
+	}
+    }
+
+  if (strcmp (name, "cform") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *) val->currform->form;
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->currform->form);
+      if (mode == GETSETSET)
+	{
+	  val->currform->form = (void *) var;
 	  return (void *) 1;
 	}
     }

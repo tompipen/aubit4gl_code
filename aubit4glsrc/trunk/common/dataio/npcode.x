@@ -25,6 +25,7 @@ enum cmd_type {
 	CMD_PUSH_LONG	,
 	CMD_PUSH_INT	,
 	CMD_PUSH_CHAR	,
+	CMD_PUSH_CHARV	,
 	CMD_CHK_ERR	,
 	CMD_PUSH_VARIABLE,
 	CMD_END_4GL_0	,
@@ -247,6 +248,7 @@ union cmd switch(int  cmd_type) {
 	case CMD_CHK_ERR: 	long c_chk_err_lineno;
 	case CMD_ERRCHK:	struct cmd_errchk 	*c_errchk;
 	case CMD_PUSH_CHAR:	long 			c_push_char;
+	case CMD_PUSH_CHARV: 	struct param 		*c_var;
 
 /*
 	case CMD_CHK_ERR		=103,

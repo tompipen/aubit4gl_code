@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.20 2003-10-11 08:41:38 afalout Exp $
+# $Id: attributes.c,v 1.21 2003-11-12 17:36:10 mikeaubury Exp $
 #*/
 
 /**
@@ -312,7 +312,7 @@ A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str)
     strcat (attr_str, "DIM ");
   if (attr & AUBIT_ATTR_INVISIBLE)
     strcat (attr_str, "INVISIBLE ");
-  A4GL_debug ("30 get_strings returning %s %s", col_str, attr_str);
+  A4GL_debug ("30 get_strings returning %s %s (DIM=%d)", col_str, attr_str,AUBIT_ATTR_DIM);
 }
 
 /**
