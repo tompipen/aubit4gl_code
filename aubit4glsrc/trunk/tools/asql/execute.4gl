@@ -100,9 +100,15 @@ define beganWork integer
 function set_exec_mode(em) 
 define em integer
 let exec_mode=em
+code
+A4GL_debug("setting exec_mode = %d",em);
+endcode
 end function
 
 function get_exec_mode()
+code
+A4GL_debug("getting exec_mode = %d",exec_mode);
+endcode
 return exec_mode
 end function
 
@@ -260,7 +266,7 @@ code
 first_open=1;
 set_display_lines();
 
-A4GL_debug("%d SQL statements",list_cnt);
+A4GL_debug("%d SQL statements - mode=%d",list_cnt,exec_mode);
 
 if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 	if (ofile==0) {
@@ -304,6 +310,8 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 
 
 endcode
+
+	if get_exec_mode()=0 then
 	let lv_cont=1
 	IF confirm(qry_type) THEN
 		MENU "Confirm "
@@ -315,7 +323,9 @@ endcode
 		END MENU
 	END IF
 
+	
 	MESSAGE "Please wait.."
+	end if
 code
 	
 
