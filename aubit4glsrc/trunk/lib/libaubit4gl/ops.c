@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.31 2003-08-07 18:31:15 mikeaubury Exp $
+# $Id: ops.c,v 1.32 2003-08-08 15:52:34 mikeaubury Exp $
 #
 */
 
@@ -237,7 +237,7 @@ A4GL_debug("in_dt_ops");
 
       // Seconds
       dtime_data[5] += ival_data[5];
-      while (dtime_data[5] > 60)
+      while (dtime_data[5] >= 60)
 	{
 	  dtime_data[4]++;
 	  dtime_data[5] -= 60;
@@ -245,7 +245,7 @@ A4GL_debug("in_dt_ops");
 
       // Minutes
       dtime_data[4] += ival_data[4];
-      while (dtime_data[4] > 60)
+      while (dtime_data[4] >= 60)
 	{
 	  dtime_data[3]++;
 	  dtime_data[4] -= 60;
@@ -253,7 +253,7 @@ A4GL_debug("in_dt_ops");
 
       // Hours
       dtime_data[3] += ival_data[3];
-      while (dtime_data[3] > 24)
+      while (dtime_data[3] >= 24)
 	{
 	  dtime_data[2]++;
 	  dtime_data[3] -= 24;
@@ -261,7 +261,7 @@ A4GL_debug("in_dt_ops");
 
       // Days
       dtime_data[2] += ival_data[2];
-      while (dtime_data[2] > 30)
+      while (dtime_data[2] >= 30)
 	{
 	  dtime_data[1]++;
 	  dtime_data[2] -= 30;							    /** @todo Fix this **/
@@ -269,7 +269,7 @@ A4GL_debug("in_dt_ops");
 
       // Months
       dtime_data[1] += ival_data[1];
-      while (dtime_data[1] > 12)
+      while (dtime_data[1] >= 12)
 	{
 	  dtime_data[0]++;
 	  dtime_data[1] -= 12;
@@ -283,7 +283,7 @@ A4GL_debug("in_dt_ops");
     case OP_SUB:
       // Fractions
       dtime_data[6] -= ival_data[6];
-      while (dtime_data[6] < 0)
+      if (dtime_data[6] < 0)
 	{
 	  dtime_data[5]--;
 	  dtime_data[6] += 100000;
@@ -314,29 +314,29 @@ A4GL_debug("in_dt_ops");
 	  dtime_data[3] += 24;	/* printf("Carry H\n"); */
 	}
 
-      while (dt.stime <= 3)
+      if (dt.stime <= 3)
 	{
 	  // Days
 	  dtime_data[2] -= ival_data[2];
-	  if (dtime_data[2] <= 1)
+	  while (dtime_data[2] <= 1)
 	    {
 	      dtime_data[1]--;
 	      dtime_data[2] += 30;	/** @todo Fix this **//*printf("Carry D\n"); */
 	    }
 	}
 
-      while (dt.stime <= 2)
+      if (dt.stime <= 2)
 	{
 	  // Months
 	  dtime_data[1] -= ival_data[1];
-	  if (dtime_data[1] <= 1)
+	  while (dtime_data[1] <= 1)
 	    {
 	      dtime_data[0]--;
 	      dtime_data[1] += 12;	/*printf("Carry M\n"); */
 	    }
 	}
 
-      while (dt.stime <= 1)
+      if (dt.stime <= 1)
 	{
 	  // Years
 	  dtime_data[0] -= ival_data[0];

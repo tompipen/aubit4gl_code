@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.24 2003-08-07 21:39:22 mikeaubury Exp $
+# $Id: keys.c,v 1.25 2003-08-08 15:52:34 mikeaubury Exp $
 #
 */
 
@@ -207,8 +207,13 @@ A4GL_key_val2 (char *str)
   if (mja_strcmp ("ESCAPE", str) == 0)
     return 27;
 
-  if (mja_strcmp("PGDN",str)==0) { return A4GLKEY_PGDN; }
-  if (mja_strcmp("PGUP",str)==0) { return A4GLKEY_PGUP; }
+  if (A4GL_isyes(acl_getenv("PGKEYSMOVE"))) {
+  	if (mja_strcmp("PGDN",str)==0) { return A4GLKEY_PGDN; }
+  	if (mja_strcmp("PGUP",str)==0) { return A4GLKEY_PGUP; }
+  } else {
+  	if (mja_strcmp("PGDN",str)==0) { return std_dbscr.nextkey; }
+  	if (mja_strcmp("PGUP",str)==0) {  return std_dbscr.prevkey;; }
+  }
 
   if (mja_strcmp("BACKSPACE",str)==0) { return A4GLKEY_BACKSPACE; }
   if (mja_strcmp("CANCEL",str)==0) { return A4GLKEY_CANCEL; }

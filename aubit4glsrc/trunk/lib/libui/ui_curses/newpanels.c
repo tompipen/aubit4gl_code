@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.65 2003-08-08 13:52:24 mikeaubury Exp $
+# $Id: newpanels.c,v 1.66 2003-08-08 15:52:38 mikeaubury Exp $
 #*/
 
 /**
@@ -60,6 +60,9 @@ dll_import sqlca_struct sqlca;
 
 #endif
 
+
+
+WINDOW * A4GL_window_on_top_ign_menu (void);
 /*
 =====================================================================
                     Constants definitions
@@ -1709,7 +1712,7 @@ void
 A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 {
 int nattr;
-
+WINDOW *wot;
 A4GL_debug("display_internal : %d %d %s %d %d",x,y,s,a,clr_line);
 A4GL_debug("determine_attribute seems to be returning %x\n",a);
 
@@ -1733,7 +1736,9 @@ A4GL_debug("determine_attribute seems to be returning %x\n",a);
 	nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, a, 0);
 	a=nattr;
       b = A4GL_xwattr_get (currwin);
-      a4glattr_wattrset (A4GL_window_on_top_ign_menu (), a);
+      wot=A4GL_window_on_top_ign_menu ();
+
+      a4glattr_wattrset (wot, a);
       A4GL_gui_print (a, s);
       A4GL_mja_gotoxy (x, y);
 	A4GL_debug("X=%d Y=%d",x,y);
@@ -1753,8 +1758,8 @@ A4GL_debug("determine_attribute seems to be returning %x\n",a);
       A4GL_debug (">> printed %s", s);
 
       /* b was got via curses - so we can use the curses version */
-      wattrset (A4GL_window_on_top (), b);
-      A4GL_mja_wrefresh (A4GL_window_on_top ());
+      wattrset (wot, b);
+      A4GL_mja_wrefresh (wot);
       A4GL_mja_refresh ();
     }
 }
