@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.20 2004-02-10 13:50:21 mikeaubury Exp $
+# $Id: colours.c,v 1.21 2004-11-05 14:21:11 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: colours.c,v 1.20 2004-02-10 13:50:21 mikeaubury Exp $";
+static char *module_id="$Id: colours.c,v 1.21 2004-11-05 14:21:11 mikeaubury Exp $";
 /**
  * @file
  * Gets the color code.
@@ -237,6 +237,8 @@ A4GL_decode_aubit_attr (int a, char s)
 	ca += A_REVERSE;
       if (strstr (attr, "INVISIBLE"))
 	ca += A_INVIS;
+      if (strstr (attr, "UNDERLINE"))
+	ca += A_UNDERLINE;
     }
 A4GL_debug("Returning ca = %d %x (visible=%d)",ca,ca,!(ca&A_INVIS));
 if (A4GL_isyes(acl_getenv("NO_INVIS_ATTR"))) {
