@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.30 2003-07-30 10:32:38 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.31 2003-08-07 18:31:15 mikeaubury Exp $
 #*/
 
 /**
@@ -236,7 +236,7 @@ A4GL_error_with (char *s, char *a, char *b)
   printf (s, a, b);
 
   A4GL_debug ("\n");
-  exit (0);
+  exit (1);
 }
 
 /**
