@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.62 2003-06-25 21:46:39 mikeaubury Exp $
+# $Id: stack.c,v 1.63 2003-06-28 09:09:26 mikeaubury Exp $
 #
 */
 
@@ -195,7 +195,15 @@ A4GL_pop_bool (void)
 
   A4GL_debug ("Popping boolean..");
   //debug_print_stack();
+
+
   ptr = A4GL_pop_int ();
+
+
+  if (A4GL_isnull(DTYPE_SMINT,(void *)&ptr)) {
+		A4GL_debug("Null can't be true..");
+		return 0;
+  }
   //pop_param (&ptr, DTYPE_SMINT, 0);
   A4GL_debug ("Popping boolean gets %d %x", ptr, ptr);
 
