@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.66 2002-03-31 07:05:31 afalout Exp $
+# $Id: 4glpc,v 1.67 2002-04-03 13:14:22 mikeaubury Exp $
 #
 
 ########################################################################
@@ -1129,7 +1129,7 @@ then
 else
 	FGLLIBS_COMMON="-L/lib/w32api -L/usr/local/lib" #$RPCLIB_NAME
 fi
-FGLLIBS_COMMON="$FGLLIBS_COMMON -lm -lPDF_$A4GL_PDFTYPE -lRPC_$A4GL_RPCTYPE"
+FGLLIBS_COMMON="$FGLLIBS_COMMON -lm  -lRPC_$A4GL_RPCTYPE"
 FGLLIBS_STATIC="$FGLLIBS_COMMON -laclall"
 FGLLIBS_SHARED="$FGLLIBS_COMMON -laclshared"
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.49 2002-03-31 07:05:31 afalout Exp $
+# $Id: mod.c,v 1.50 2002-04-03 13:14:22 mikeaubury Exp $
 #
 */
 
@@ -2439,6 +2439,7 @@ void init_report_structure (struct rep_structure *rep)
   
 void pdf_init_report_structure (struct pdf_rep_structure *rep)
 {
+debug("ZZ1 init structure...");
   rep->top_margin = -36.0;
   rep->bottom_margin = -36.0;
   rep->left_margin = -36.0;
@@ -2454,11 +2455,84 @@ void pdf_init_report_structure (struct pdf_rep_structure *rep)
   rep->col_no = 0.0;
   rep->output_mode = 'F';
   rep->font_size = 10;
-  rep->paper_size = 1;
+  rep->paper_size = 0;
   strcpy (rep->font_name, "\"Helvetica\"");
   strcpy (rep->output_loc, "\"stdout\"");
 }
 
+#define a0_width         (float) 2380.0
+#define a0_height        (float) 3368.0
+#define a1_width         (float) 1684.0
+#define a1_height        (float) 2380.0
+#define a2_width         (float) 1190.0
+#define a2_height        (float) 1684.0
+#define a3_width         (float) 842.0
+#define a3_height        (float) 1190.0
+#define a4_width         (float) 595.0
+#define a4_height        (float) 842.0
+#define a5_width         (float) 421.0
+#define a5_height        (float) 595.0
+#define a6_width         (float) 297.0
+#define a6_height        (float) 421.0
+#define b5_width         (float) 501.0
+#define b5_height        (float) 709.0
+#define letter_width     (float) 612.0
+#define letter_height    (float) 792.0
+#define legal_width      (float) 612.0
+#define legal_height     (float) 1008.0
+#define ledger_width     (float) 1224.0
+#define ledger_height    (float) 792.0
+#define p11x17_width     (float) 792.0
+#define p11x17_height    (float) 1224.0
+
+resize_paper(struct pdf_rep_structure *pdf_rep_struct) {
+int portrait=1;
+float a;
+
+debug("ZZ1 Fixing paper size.....");
+
+if (pdf_rep_struct->paper_size!=0) {
+
+if (pdf_rep_struct->paper_size<0) {
+		portrait=0;
+		pdf_rep_struct->paper_size=0-pdf_rep_struct->paper_size;
+}
+
+	switch (pdf_rep_struct->paper_size) {
+	case 1: 
+		pdf_rep_struct->page_length=0-a4_height;
+		pdf_rep_struct->page_width=0-a4_width;
+		break;
+	case 2: 
+		pdf_rep_struct->page_length=0-letter_height;
+		pdf_rep_struct->page_width=0-letter_width;
+		break;
+	case 3: 
+		pdf_rep_struct->page_length=0-legal_height;
+		pdf_rep_struct->page_width=0-legal_width;
+		break;
+
+	case 4:  // Not used....
+		pdf_rep_struct->page_length=0-a4_height;
+		pdf_rep_struct->page_width=0-a4_width;
+		break;
+
+	case 5: 
+		pdf_rep_struct->page_length=0-a5_height;
+		pdf_rep_struct->page_width=0-a5_width;
+		break;
+
+	}
+}
+
+
+if (portrait==0) { // Its landscape - swap it around....
+	a=pdf_rep_struct->page_length;
+	pdf_rep_struct->page_length=pdf_rep_struct->page_width;
+	pdf_rep_struct->page_width=a;
+}
+
+}
 
 int scan_orderby (char *varname, int cnt)
 {

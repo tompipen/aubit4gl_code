@@ -237,7 +237,7 @@ if (p->page_no) {
 	PDF_end_page(p->pdf_ptr);
 }
 
-debug("Begin page\n");
+debug("Begin page %lf %lf\n",p->page_width,p->page_length);
 	PDF_begin_page(p->pdf_ptr, p->page_width, p->page_length); 
 debug("Done\n");
 debug("find font %s\n",p->font_name);
@@ -281,9 +281,14 @@ debug("All done...");
 
 
 double pdf_size(double f, char c,struct pdf_rep_structure *p) {
-debug("pdf_size");
-	if (f<0) return 0-f;
-	else return pdf_metric((int)f,c,p);
+debug("pdf_size (%lf %c %p)",f,c,p);
+
+	if (f<0) {
+		debug("Returning 0-%lf",f);
+		return 0-f; // This is already in PDF units
+	}
+	else return pdf_metric((int)f,c,p); // This is in lines or chars
+
 }
 
 
@@ -392,6 +397,11 @@ debug("Scaling by %f %f",sx,sy);
 		y,p->line_no,
 		p->page_length);
 
+    	if (p->col_no==0) {
+         p->col_no+=p->left_margin;
+    	}
+	debug("x=%lf y=%lf",p->col_no,p->page_length-p->line_no-y);
+
 	PDF_place_image(p->pdf_ptr,n,p->col_no,p->page_length-p->line_no-y,sx);
 	
 	debug("Closing");
@@ -403,7 +413,8 @@ debug("Scaling by %f %f",sx,sy);
 }
 
 
-void A4GLPDF_initlib () {
+void A4GLREPORT_initlib () {
+	debug("Calling PDF_boot");
 	PDF_boot();
 }
 

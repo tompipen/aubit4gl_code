@@ -333,9 +333,17 @@ pdf_output_command :
 | PAGE_WIDTH nval {pdf_rep_struct.page_width=atof($<str>2);}
 | FONT_NAME CHAR_VALUE {strcpy(pdf_rep_struct.font_name,$<str>2);}
 | FONT_SIZE nval {pdf_rep_struct.font_size=atof($<str>2);}
+
 | PAPER_SIZE_IS_A4  {pdf_rep_struct.paper_size=1;}
 | PAPER_SIZE_IS_LETTER  {pdf_rep_struct.paper_size=2;}
 | PAPER_SIZE_IS_LEGAL  {pdf_rep_struct.paper_size=3;}
+| PAPER_SIZE_IS_A5  {pdf_rep_struct.paper_size=5;}
+
+| PAPER_SIZE_IS_A4_L  {pdf_rep_struct.paper_size=-1;}
+| PAPER_SIZE_IS_LETTER_L  {pdf_rep_struct.paper_size=-2;}
+| PAPER_SIZE_IS_LEGAL_L  {pdf_rep_struct.paper_size=-3;}
+| PAPER_SIZE_IS_A5_L  {pdf_rep_struct.paper_size=-5;}
+
 | PAGE_TRAILER_SIZE nval 
 | PAGE_HEADER_SIZE nval 
 | FIRST_PAGE_HEADER_SIZE nval 
@@ -390,6 +398,7 @@ lastlineno=yylineno;
 define_section
 report_section 
 {
+
 print_report_2(0,$<str>10);
 rordcnt=atoi($<str>10);
 }
@@ -456,6 +465,7 @@ lastlineno=yylineno;
 define_section
 pdf_report_section 
 {
+resize_paper(&pdf_rep_struct);
 print_report_2(1,$<str>10);
 rordcnt=atoi($<str>10);
 }

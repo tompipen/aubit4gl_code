@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2002-03-29 06:38:41 afalout Exp $
+# $Id: Makefile.in,v 1.9 2002-04-03 13:14:23 mikeaubury Exp $
 #
 
 
@@ -47,9 +47,9 @@ ifneq "${COMSPEC}" ""
 	endif
 else
 	ifeq "${PDFBUILD}" "no"
-	    ALL = libPDF_NOPDF.so
+	    ALL = libEXREPORT_NOPDF.so
 	else
-	    ALL = libPDF_PDF.so libPDF_NOPDF.so
+	    ALL = libEXREPORT_PDF.so libEXREPORT_NOPDF.so
 	endif
 endif
 
@@ -62,18 +62,18 @@ OBJECTS_PDF		=has_pdf.o
 
 all: ${ALL}
 
-libPDF_PDF.so: ${OBJECTS_PDF}
+libEXREPORT_PDF.so: ${OBJECTS_PDF}
 	${LD} @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@
 	cp $@ ..
 
-libPDF_NOPDF.so: ${OBJECTS_NOPDF}
+libEXREPORT_NOPDF.so: ${OBJECTS_NOPDF}
 	${LD} $(SO_LDFLAGS) ${OBJECTS_NOPDF} -o $@
 	cp $@ ..
 
 NOPDF.dll: ${OBJECTS_NOPDF}
-	${MAKE} libPDF_NOPDF.dll DLLOBJS="${OBJECTS_NOPDF}"
-	cp libPDF_NOPDF.dll ..
-	cp libPDF_NOPDF.dll.a ..
+	${MAKE} libEXREPORT_NOPDF.dll DLLOBJS="${OBJECTS_NOPDF}"
+	cp libEXREPORT_NOPDF.dll ..
+	cp libEXREPORT_NOPDF.dll.a ..
 
 PDF.dll:
 	@echo "Ooops: PDFlib on Windows?"

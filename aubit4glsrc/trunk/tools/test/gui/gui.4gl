@@ -19,7 +19,6 @@ let arr[3,3]=" "
 open form ttt from "gui" #"ttt"
 display form ttt
 
-
 if get_ui_mode()=0 then
 	display "Use 1,2,3 for top row" at 4,40
 	display "Use 4,5,6 for middle row" at 5,40
@@ -28,9 +27,9 @@ else
 	display "GUI mode... - use Ctrl-Shift-F1 for console"
 	display "Use mouse to select square" at 5,40
 	let f=field_to_widget(dummy)
-	call libUI_GTK::field_hide(f)
-	display "Hiding field", field_to_widget(dummy)
+	call UI_GTK::field_hide(f)
 end if
+
 
 input a from dummy
 	before input
@@ -52,7 +51,6 @@ input a from dummy
 end input
 
 message "All done" wait for key
-sleep 4
 
 end main
 
@@ -99,19 +97,19 @@ end if
 let r=check_win()
 
 if r="X" then
-	message "You Win  !!!"
+	message "You Win  !!!" WAIT FOR KEY
 	sleep 2
 	exit program
 end if
 
 if r="O" then
-	message "You Lost !!!"
+	message "You Lost !!!" WAIT FOR KEY
 	sleep 2
 	exit program
 end if
 
 if r="-" then
-	message "Its a draw"
+	message "Its a draw" WAIT FOR KEY
 	sleep 2
 	exit program
 end if

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.42 2002-04-02 08:17:33 afalout Exp $
+# $Id: Makefile.in,v 1.43 2002-04-03 13:14:23 mikeaubury Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -68,7 +68,7 @@ COMMONSRC= \
 	others.c \
 	pointers.c prompt.c \
 	read_dty.c readform.c readforms.c report.c rexp2.c ${CMODS_RESOURCE} \
-	screen.c sleep.c stack.c string.c \
+	screen.c sleep.c stack.c string.c extend_rep.c \
 	translate.c
 
 #SEPARATE_RPC=1
@@ -93,7 +93,7 @@ OBJS				=${CMODS:.c=.o} ${CMODS_PROJECT:.c=.o}
 ##                              Options
 ## ==================================================================
 
-ALL 				=aubit-config libPDF_NOPDF${SO_EXT}
+ALL 				=aubit-config libEXREPORT_NOPDF${SO_EXT}
 #libaclall.a
 #ALL_GUI				=libaclallgui.a
 #LDFLAGS				=-Map mapfile
@@ -146,12 +146,13 @@ else
 endif
 
 ifeq "$(PDFBUILD)" "yes"
-	ALL 			+=libPDF_PDF${SO_EXT}
-    PDF_LIBNAME     =-lPDF_PDF
-    AUBIT_PDFLIBNAME=-Llibpdf
-else
-    PDF_LIBNAME     =-lPDF_NOPDF
+	ALL 			+=libEXREPORT_PDF${SO_EXT}
 endif
+    #PDF_LIBNAME     =-lPDF_PDF
+    #AUBIT_PDFLIBNAME=-Llibpdf
+#else
+    #PDF_LIBNAME     =-lPDF_NOPDF
+#endif
 
 #cyclical dependency: I need SUNRPC to make libaclall, but I need aclall to make RPCLIB!
 #ifneq "@HAVE_RPCLIB@" "0"
@@ -198,10 +199,10 @@ libaclshared.so : $(OBJS) ${GUI_TUI}
 ##                       Targets in sub-makefiles
 ## ==================================================================
 
-libPDF_PDF.so:
+libEXREPORT_PDF.so:
 	${MAKE} -C libpdf $(MKNAME) $@
 
-libPDF_NOPDF.so:
+libEXREPORT_NOPDF.so:
 	${MAKE} -C libpdf $(MKNAME) $@
 
 libSQL_noodbc.so:
@@ -258,7 +259,7 @@ libSQL_noodbc.dll:
 libSQL_odbc32.dll:
 	${MAKE} -C libsql/odbc odbc32
 
-libPDF_NOPDF.dll:
+libEXREPORT_NOPDF.dll:
 	${MAKE} -C libpdf $(MKNAME) NOPDF.dll
 
 libgtk4gl.dll:
