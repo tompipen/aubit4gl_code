@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.106 2004-11-04 21:12:44 pjfalbe Exp $
+# $Id: esql.ec,v 1.107 2004-11-09 19:13:19 pjfalbe Exp $
 #
 */
 
@@ -156,7 +156,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.106 2004-11-04 21:12:44 pjfalbe Exp $";
+  "@(#)$Id: esql.ec,v 1.107 2004-11-09 19:13:19 pjfalbe Exp $";
 #endif
 
 
@@ -3979,10 +3979,47 @@ while (1) {
 	if (sqlca.sqlcode!=0) break;
 	//printf("---> %s\n",val);
 	ptr=A4GL_add_validation_elements_to_expr(ptr,val);
+	
 	// Process it...
 }
 return ptr;
 
+}
+
+char *A4GLSQL_syscolval_expr(char *tabname,char *colname,char *typ) {
+EXEC SQL BEGIN DECLARE SECTION;
+char buff[300];
+static char val[65];
+struct expr_str *ptr=0;
+EXEC SQL END DECLARE SECTION;
+char *cptr=0;
+//int cnt;
+
+cptr=acl_getenv("A4GL_SYSCOL_VAL");
+
+if (cptr==0) return 0;
+if (strlen(cptr)==0) return 0;
+if (strcmp(cptr,"NONE")==0) return 0;
+sprintf(buff,"select attrval from %s where attrname='%s' and tabname='%s' and colname='%s'",
+cptr ,typ,tabname,colname);
+A4GL_debug("buff=%s",buff);
+EXEC SQL PREPARE p_get_val2 FROM :buff;
+if (sqlca.sqlcode!=0) return 0;
+EXEC SQL DECLARE c_get_val2 CURSOR FOR p_get_val2;
+if (sqlca.sqlcode!=0) return 0;
+EXEC SQL OPEN c_get_val2 ;
+if (sqlca.sqlcode!=0) return 0;
+
+
+while (1) {
+	EXEC SQL FETCH c_get_val2 INTO  $val;
+	if (sqlca.sqlcode!=0) break;
+	A4GL_debug("Returning %s\n",val);
+	A4GL_trim(val);
+	return val;
+}
+
+return 0;
 }
 
 

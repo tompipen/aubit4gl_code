@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.88 2004-10-29 19:13:20 mikeaubury Exp $
+# $Id: sql.c,v 1.89 2004-11-09 19:13:29 pjfalbe Exp $
 #
 */
 
@@ -3958,7 +3958,9 @@ A4GLSQL_initsqllib (void)
   return 1;
 }
 
-
+char *A4GLSQL_syscolval_expr(char *tabname,char *colname,char *typ) {
+	return 0;
+}
 
 struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) {
 char *ptr2;
