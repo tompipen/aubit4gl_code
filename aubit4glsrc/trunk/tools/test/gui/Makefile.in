@@ -1,26 +1,68 @@
-#note: I plan to use Jleffler's makefile riles for this; this is just for now
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: Makefile.in,v 1.2 2002-01-13 09:40:47 afalout Exp $
+#
 
-RM =rm -f
+#note: I plan to use amake for this; this is just for now
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ../../../incl/Makefile-common
+override NOINCL=0
+
+## ==================================================================
+##                              Options
+## ==================================================================
 
 ifdef COMSPEC
 	ifdef MONOLIT
 		ADDFLAGS= -mno-cygwin
 	endif
-    SH=bash
-else
-    SH=sh
 endif
 
-	#-gtk is now default, so we don't really need this...
-	GTK=-gtk
-    ALL=other 4gl regression.4gl regression.per 4glguionly
+ifneq "${AUBIT_BIN_INSTALL}" "1"
+	FCOMPILE	=../../../bin/fcompile
+	MKMESS      =../../../bin/mkmess
+	FGLPCEXEC	=${SH} ../../../bin/4glpc
+else
+	FCOMPILE	=aubit fcompile
+	MKMESS      =aubit mkmess
+	FGLPCEXEC	=aubit 4glpc
+endif
+
+ALL=other 4gl regression.4gl regression.per 4glguionly
 
 #no longer needed:
-ADDFLAGS=-verbose -fnative-struct #-lgtk4gl_x
+#ADDFLAGS=-fnative-struct
+#ADDFLAGS=-verbose
 
+## ==================================================================
+##                              Targets
+## ==================================================================
 
 all: 4gl forms
-
 
 4gl: demo game
 
@@ -29,27 +71,24 @@ menu:
 #	(mcompile -c menu.menu)
 
 demo:
-	(${SH} 4glpc -gtk hello-gui.4gl -o hello-gui ${ADDFLAGS})
+	(${FGLPCEXEC} -gtk hello-gui.4gl -o hello-gui ${ADDFLAGS})
 
 game:
-	(${SH} 4glpc -gtk gui.4gl -o gui ${ADDFLAGS})
+	(${FGLPCEXEC} -gtk gui.4gl -o gui ${ADDFLAGS})
 
 forms:
-	(fcompile gui.per)
-	(fcompile widget.per)
-	(fcompile radio.per)
-	(fcompile multi.per)
-	(fcompile form-gui.per)
-
-
-
+	(${FCOMPILE} gui.per)
+	(${FCOMPILE} widget.per)
+	(${FCOMPILE} radio.per)
+	(${FCOMPILE} multi.per)
+	(${FCOMPILE} form-gui.per)
 
 help:
 	@echo "use 'make' to compile examples with GTK GUI"
-
 
 clean:
 	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.c *.o
 	${RM} *.hlp *.exe *.stackdump *.err
 	${RM} gui hello-gui
 
+#------------------------------- EOF ---------------------------

@@ -1,70 +1,33 @@
-/******************************************************************************
-* (c) 1997-1998 Aubit Computing Ltd.
-*
-* $Id: sqlex.c,v 1.4 2002-01-04 15:45:01 mikeaubury Exp $
-*
-* Project : Part Of Aubit 4GL Library Functions
-*
-* Change History :
-*	$Log: not supported by cvs2svn $
-*	Revision 1.3  2002/01/04 12:48:16  afalout
-*	getenv fixes
-*	
-*	Revision 1.2  2001/12/21 04:14:41  afalout
-*	RMP work
-*	
-*	Revision 1.1  2001/12/03 15:44:37  mikeaubury
-*	New dl sql stuff
-*	
-*	Revision 1.4  2001/09/20 08:55:16  afalout
-*	Enabling makefiles to compile all builds from one environment
-*	
-*	Revision 1.3  2001/08/24 20:45:25  mikeaubury
-*	Major fcompile updates.
-*	Minor environment variable handling updates (to get it to work again :-)
-*	
-*	Revision 1.2  2001/08/21 19:31:22  mikeaubury
-*	1. Changes for PUT
-*	2. Changes for Core dump on startup of 4glc (if AUBITGUI isn't set)
-*	
-*	Revision 1.1.1.1  2001/08/20 02:36:39  afalout
-*	Initial import to SF
-*	
-*	Revision 1.5  2001/08/13 01:07:43  afalout
-*	CygWin merge
-*	
-*	Revision 1.4  2001/06/25 00:06:04  afalout
-*	added IFDEF for unixODBC
-*	
-*	Revision 1.3  2001/06/12 03:37:33  afalout
-*	make install, make clean
-*	
-*	Revision 1.2  2000/09/28 02:42:23  afalout
-*	*** empty log message ***
-*	
-*	Revision 1.1.1.1  2000/01/29 03:11:52  cvs
-*	Initial import of compiler sources using jCVS client
-*	
-*	Revision 1.8  1999/01/28 23:13:18  fglcomp
-*	Latest Update 28/1/99
-*
-*	Revision 1.7  1998/12/24 08:05:53  fglcomp
-*	.
-*
-*	Revision 1.6  1998/12/17 20:59:02  fglcomp
-*	171298
-*
-*	Revision 1.5  1998/12/12 09:49:18  fglcomp
-*	12/12/98
-*
-*	Revision 1.3  1998/10/15 21:54:22  fglcomp
-*	Up till 15/10/98
-*
-*	Revision 1.2  1998/08/09 11:51:48  fglcomp
-*	Added ID classifications
-*
-*
-*******************************************************************************/
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: sqlex.c,v 1.5 2002-01-13 09:40:47 afalout Exp $
+#
+*/
+
 //#ifdef WIN32
 #ifdef __CYGWIN__
 	#define WIN32
@@ -85,9 +48,16 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include "../libincl/debug.h"
-#include "../libincl/dtypes.h"
-#include "../libincl/stack.h"
+#include "libincl/dtypes.h"
+
+// stack.h will eventually include stdlib.h, which uses getenv(), so
+// we need to set GETENV_OK and only then include debug.h
+#include "libincl/stack.h"
+#define GETENV_OK
+#include "libincl/debug.h"
+
+
+
 
 int scan_conn (char *s, char *p, HDBC conn);
 #define chk_rc(rc,stmt,call) chk_rc_full(rc,stmt,call,__LINE__,__FILE__)

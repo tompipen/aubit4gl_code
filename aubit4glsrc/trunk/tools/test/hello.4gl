@@ -17,7 +17,7 @@ menu "Hello test"
 		close window w1
 
 	command "form" "Open a form "
-	display "Form"
+		#display "Form"
         	open window w2 at 2,2 with form "form" attribute(border)
 
         #display "This is a line in the form" to s_info[1].info_line
@@ -29,42 +29,20 @@ menu "Hello test"
 
     command "config"
 
-		{
-		    initialize env to null
-		    let env = " "
+
 		    let varname = "AUBITDIR"
-
-			#This fgl_getenv, using variable, will fail:
 			let env = fgl_getenv(varname)
+			display "Using variable: ", varname clipped, " = ", env clipped at 5,5
 
-		    #this will display empty line, since fgl_getenv will fail to assign "env"
-		    #veriable, and set it to NULL string (bug #470960)
-			display varname clipped, " = ", env clipped
-		    display varname clipped
-		    display env clipped
-
-		}
-		    #this fgl_getenv will work OK:
+			
 			let env = fgl_getenv("AUBITDIR")
-		    #this will display empty line, since fgl_getenv will fail to assign "env"
-		    #veriable, and set it to NULL string (bug #470960)
-			display "AUBITDIR = ", env clipped at 3,5
+			display "Using string  : ","AUBITDIR = ", env clipped at 6,5
 
 
-			let env = fgl_getenv("MY_TEST")
-		    #this will display empty line, since fgl_getenv will fail to assign "env"
-		    #veriable, and set it to NULL string (bug #470960)
-			display "MY_TEST = ", env clipped at 4, 5 #6
-
-
-		{
-			#this DISPLAY will work OK:
-			let env = "something"
-		    display varname clipped, " = ", env clipped
-
-		}
-
-
+			let env = fgl_getenv("MY__impossible_TEST")
+			#this will display empty line, since fgl_getenv will fail to assign "env"
+		    #variable because it is not defined anywhere, and set it to NULL string (bug #470960)
+			display "MY_TEST = ", env clipped at 7,5 #6
 
 
 	command "exit"

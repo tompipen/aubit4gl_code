@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2002-01-09 07:25:50 afalout Exp $
+# $Id: Makefile.in,v 1.11 2002-01-13 09:40:46 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,8 +36,9 @@ override NOINCL=0
 ##                    Options
 ## ==================================================================
 
-
+4GLPC			=${SH} ../../bin/4glpc
 4GLPCFLAGS		=-make-compile -static -DDEBUG -Irules -L/lib -L../../lib -nogtk -g  -verbose -rdynamic
+
 ALL				=rules.t 4glc
 
 ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
@@ -63,7 +64,7 @@ endif
 #	4GLPCFLAGS	+=-nopdf
 #endif
 
-4GLPC			=${SH} ../../bin/4glpc
+
 
 4GLCAOBJ		=mod.o 4glc.o map.o rules/generated/states.o \
 				rules/generated/kw.o rules/generated/y.tab.o dim.o list.o
@@ -88,21 +89,18 @@ endif
 
 all: ${ALL}
 
-#4glc: rules.t
-4glc: ${4GLCOBJ} ../../lib/libaclall.a #rules.t
+4glc: ${4GLCOBJ} ../../lib/libaclall.a
+	@echo OUTPUTLANG = $(OUTPUTLANG)
 	${4GLPC} ${4GLPCFLAGS} -o $@ ${4GLCOBJ}
 	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
 
-#4glc_perl:
-4glc_perl: ${4GLCOBJ_PERL} ../../lib/libaclall.a #rules.t
+4glc_perl: ${4GLCOBJ_PERL} ../../lib/libaclall.a
 #	${4GLPC} ${4GLPCFLAGS} 	${4GLCOBJ_PERL} ../../tools/test/libpdf-dummy.c -o 4glc_perl
 	${4GLPC} ${4GLPCFLAGS} 	${4GLCOBJ_PERL} -o $@
 	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
 
 
-
-#4glc-noodbc: rules.t
-4glc-noodbc:  ${4GLCOBJ} ../../lib/libaclall-noodbc.a #rules.t
+4glc-noodbc:  ${4GLCOBJ} ../../lib/libaclall-noodbc.a
 	${4GLPC} -noodbc ${4GLPCFLAGS} 	${4GLCOBJ} -o $@
 	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
 

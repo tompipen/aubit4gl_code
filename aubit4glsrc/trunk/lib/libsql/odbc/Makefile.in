@@ -24,13 +24,25 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-01-09 02:03:38 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-01-13 09:40:46 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../../incl/Makefile-common
 
+#NO_EXPORT_VAR is needed because of bug in make. See Makefile-common
+NO_EXPORT_VAR=1
+include ../../../incl/Makefile-common
 override NOINCL=0
+
+#needed because of bug in make. See Makefile-common (NO_EXPORT_VAR)
+TMP_CFGLAGS:=${CFLAGS}
+unexport CFLAGS
+CFLAGS=${TMP_CFGLAGS}
+CFLAGS+=-DXXXXX
+
+#LOCAL_CFLAGS=-I../../.. -L../../.. -I../.. -L../.. -I../../../.. -L../../../.. -I../../libincl
+
+LOCAL_CFLAGS=-I../.. -I../../../compilers/fcompile
 
 ifdef IODBC_ODBC_LIB_DIR
 	IODBC_LFLAGS=-L$(IODBC_ODBC_LIB_DIR)
@@ -39,26 +51,46 @@ ifdef UNIXODBC_ODBC_LIB_DIR
 	UNIXODBC_LFLAGS=-L$(UNIXODBC_ODBC_LIB_DIR)
 endif
 
-override CFLAGS	+=-I../.. -I../../../compilers/fcompile -I.. -I/usr/include/pgsql/iodbc
-override CFLAGS	+= -I$(ODBCLIBDIR)
+#override CFLAGS	+=-I../.. -I../../../compilers/fcompile -I..
+CFLAGS	+=-I../.. -I../../../compilers/fcompile -I..
+# -I/usr/include/pgsql/iodbc
+
+ifdef ODBCLIBDIR
+	override CFLAGS	+= -I$(ODBCLIBDIR)
+endif
+
+OBJECTS=sql.o sqlex.o
+
+ifeq "${HAVE_UNIXODBC}" "yes"
+    ALL=unixodbc
+endif
+
+ifeq "${HAVE_IODBC}" "yes"
+    ALL+=iodbc
+endif
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-all : iodbc unixodbc
-iodbc: libSQL_iodbc.so
-unixodbc: libSQL_unixodbc.so
+all : ${ALL}
+#we MUST always clena first, because we don't know for which libs where
+#current object compiled, if they exists.
+iodbc: 		clean libSQL_iodbc.so
+unixodbc: 	clean libSQL_unixodbc.so
+
+
 
 libSQL_iodbc.so: CFLAGS+=-DIODBC
-libSQL_iodbc.so: sql.o sqlex.o
-	ld  -fPIC -shared sql.o sqlex.o -o libSQL_iodbc.so -liodbc ${IODBC_LFLAGS}
-	cp libSQL_iodbc.so ../..
+libSQL_iodbc.so: ${OBJECTS}
+	ld  -fPIC -shared $^ -o $@ -liodbc ${IODBC_LFLAGS}
+	cp $@ ../..
 
-libSQL_unixodbc.so: CFLAGS+=-DUNIXODBC
-libSQL_unixodbc.so: sql.o sqlex.o
-	ld  -fPIC -shared sql.o sqlex.o -o libSQL_unixodbc.so -lodbc ${UNIXODBC_LFLAGS}
-	cp libSQL_unixodbc.so ../..
+
+libSQL_unixodbc.so: CFLAGS+=-DUNIXODBC ${TMP_CFGLAGS} -DWWWWWW ${LOCAL_CFLAGS}
+libSQL_unixodbc.so: ${OBJECTS}
+	ld  -fPIC -shared $^ -o $@ -lodbc ${UNIXODBC_LFLAGS}
+	cp $@ ../..
 
 
 ## ==================================================================

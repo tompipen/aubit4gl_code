@@ -1,3 +1,34 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: mod.c,v 1.38 2002-01-13 09:40:46 afalout Exp $
+#
+*/
+
+
 /**
  * @file
  * It looks like functions to help the parsing of a module (a x4gl one). 
@@ -15,15 +46,18 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.37 2002-01-06 11:24:46 afalout Exp $
+* $Id: mod.c,v 1.38 2002-01-13 09:40:46 afalout Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.37  2002/01/06 11:24:46  afalout
+*	Configuration work
+*	
 *	Revision 1.36  2002/01/06 10:20:29  mikeaubury
 *	Fixes for resources
-*	
+*
 *	Revision 1.35  2001/12/07 18:20:07  mikeaubury
 *	dl stuff
 *	

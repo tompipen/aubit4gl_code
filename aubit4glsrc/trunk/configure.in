@@ -1,3 +1,31 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: configure.in,v 1.11 2002-01-13 09:40:43 afalout Exp $
+#
+
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.50)
@@ -8,24 +36,27 @@ AC_CONFIG_SRCDIR([compilers/4glc/4glc.c])
 AC_CONFIG_HEADER([incl/config.h])
 
 AC_CANONICAL_SYSTEM
+
+#<Aubit specifics ---------------------------------------------->
 test_rpclib="1"
 case "$target_os" in
-  linux-gnu)
-    echo "Linux gnu"
-    test_rpclib="0"
+	linux-gnu)
+	    echo "Linux gnu"
+    	test_rpclib="0"
 		;;
 	*linux*)
-    test_rpclib="0"
+	    test_rpclib="0"
 		;;
-  cygwin)
-    ODBC=odbc32;
-    ODBCMANAGER=$ODBC;
-    PDFBUILD=no	
+	cygwin)
+	    ODBC=odbc32;
+    	ODBCMANAGER=$ODBC;
+	    PDFBUILD=no
 esac
-
 
 AC_SUBST(aubitdir)dnl
 aubitdir=`pwd`
+
+#</Aubit specifics ---------------------------------------------->
 
 # Checks for programs.
 AC_PROG_YACC
@@ -38,6 +69,12 @@ AC_PROG_RANLIB
 
 
 AC_PATH_PROG(PERL, perl, no)
+AC_PATH_PROG(SWIG, swig, no)
+AC_PATH_PROG(RPCGEN, rpcgen, no)
+AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
+AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+
+
 AC_SUBST(PERL)dnl
 #if test "$PERL" != no; then
   #AC_MSG_WARN([perl found])
@@ -80,9 +117,101 @@ else
   AC_MSG_RESULT([Not checking rpclib because we are in Linux])
 fi
 
+#<Aubit specifics ---------------------------------------------->
+
+#We can also use this method if nececery:
+#for one_lib_aubit in $LIBS
+#do
+#	case $one_lib_aubit in
+#	  -lgtk )
+#	    echo "Have GTK GUI"
+#
+#		GTKBUILD=yyyyeeeessss
+#	  ;;
+#	  * )
+#	    echo LIBS = $one_lib_aubit
+#	esac
+#done
+
+
+#check if we have all we need to make GTK GUI
+AC_SUBST(GTKBUILD)dnl
+GTKBUILD=no
+AC_SUBST(AUBITGUI)dnl
+AUBITGUI=text
+if test $ac_cv_lib_gtk_main = yes; then
+	if test $ac_cv_lib_glib_main = yes; then
+		if test $ac_cv_lib_gdk_main = yes; then
+			GTKBUILD=yes
+			AUBITGUI=gtk
+        fi
+    fi
+fi
+
+#Fixme: we should test for GTK+ versions, and gtk-config (pkg-config) scritp
+
+#check which ODBC manager/driver to use:
+AC_SUBST(A4GL_SQLTYPE)dnl
+A4GL_SQLTYPE=nosql
+AC_SUBST(HAVE_IODBC)dnl
+HAVE_IODBC=no
+AC_SUBST(HAVE_UNIXODBC)dnl
+HAVE_UNIXODBC=no
+AC_SUBST(ODBC_LIB_NAME)dnl
+ODBC_LIB_NAME=noodbc
+
+if test $ac_cv_lib_iodbc_main = yes; then
+		A4GL_SQLTYPE=iodbc
+		ODBC_LIB_NAME=iodbc
+		HAVE_IODBC=yes
+fi
+if test $ac_cv_lib_odbc_main = yes; then
+		#if both iIODBC and unixODBC are installed, unixODBC is default:
+		A4GL_SQLTYPE=unixodbc
+		ODBC_LIB_NAME=odbc
+		HAVE_UNIXODBC=yes
+fi
+
+
+#Check if we can build PDFlib support:
+AC_SUBST(A4GL_PDFTYPE)dnl
+A4GL_PDFTYPE=NOPDF
+AC_SUBST(USE_PDF)dnl
+USE_PDF=no
+AC_SUBST(PDFBUILD)dnl
+PDFBUILD=no
+if test $ac_cv_lib_pdf_main = yes; then
+		A4GL_PDFTYPE=PDF
+		USE_PDF=yes
+        PDFBUILD=yes
+fi
+
+#Check if we can build Jabber support:
+AC_SUBST(JABBERBUILD)dnl
+JABBERBUILD=no
+if test $ac_cv_lib_iksemel_main = yes; then
+		JABBERBUILD=yes
+fi
+
+
+#Check if we can build Perl generating compiler:
+AC_SUBST(PERLBUILD)dnl
+PERLBUILD=no
+if test "$PERL" != no; then
+	if test "$SWIG" != no; then
+		#Fixme: How to test for MakeMaker Perl module ?
+			PERLBUILD=yes
+    fi
+fi
+
+
+#</Aubit specifics ---------------------------------------------->
+
+
+
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h gtk/gtk.h gtk.h ])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST

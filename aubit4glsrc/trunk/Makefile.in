@@ -23,26 +23,22 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.16 2002-01-11 03:16:19 afalout Exp $
+# $Id: Makefile.in,v 1.17 2002-01-13 09:40:43 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
 include incl/Makefile-common
 
+#FIXME: this shou8ld be obsoleted by configure and aubitrc:
 #we don't want sub-makefiles to include above again: But we dont't went
 #to export this gloably, since it would affect 4glpc sctipt!
-#NOINCL=1
 #Instead, we want tp pass it to makefiles as command line parameter,
 #only for make files that use it, but don't call 4glpc
+#NOINCL_PARAM=NOINCL=1
 
 #WARNING! cannot use ${MAKEFLAGS} because of make bug (see showbug:)
 #all replaced with BUGMAKEFLAGS
 
-#tells make to export all variables to child processes by default.
-#Warning: this will export EVERITHING you define here to sub-makefiles
-#and all commands/shell scripts that are called in make process, You
-#can use "unexport VARIABLE", if you need to prevent something from exporting:
-#.EXPORT_ALL_VARIABLES:
 
 ## ==================================================================
 ##                    ODBC Settings
@@ -52,15 +48,15 @@ ifeq "$(ODBC)" "unix"
 	#Human readable name, for archinve file name, etc.
 	ODBCMANAGER		=unixODBC
    	#additional flags for ifdef in C code, needed for this ODBC driver/manager
-	LIBCFLAGS 		+= -DUNIXODBC
+#	LIBCFLAGS 		+= -DUNIXODBC
 endif
 ifeq "$(ODBC)" "iodbc"
 	ODBCMANAGER		=iODBC
-	LIBCFLAGS 		+= -DIODBC
+#	LIBCFLAGS 		+= -DIODBC
 endif
 ifeq "$(ODBC)" "no"
 	ODBCMANAGER		=noODBC
-	LIBCFLAGS 		+= -DNOODBC
+#	LIBCFLAGS 		+= -DNOODBC
 	ODBCLIBDIR      =
 	ODBC_LIB_DIR    =
 	ODBC_LIB_NAME   = noodbc
@@ -94,7 +90,7 @@ endif
 ## ==================================================================
 
 ifeq "$(PDFBUILD)" "yes"
-	LIBCFLAGS 		+= -DUSE_PDF_REPORTS
+#	LIBCFLAGS 		+= -DUSE_PDF_REPORTS
 	PDFTYPE			=PDF
 else
 	PDFTYPE			=noPDF
@@ -121,7 +117,8 @@ INSTALL_DIR=${PREFIX}/aubit4gl
 #RPM setup:
 RPMBUILDROOT=/root/redhat
 
-SOURCE 		= $(AUBITDIR)
+#SOURCE 		= $(AUBITDIR)
+SOURCE 		=.
 #installation files
 TESTDIR     =$(SOURCE)/tools/test
 DOCDIR     	=$(SOURCE)/docs
@@ -149,7 +146,8 @@ endif
 #libaclall-noodbc.a  libaclall.a  libaclallgui-noodbc.a  libaclallgui.a
 
 
-TOLIBGTK	=$(SOURCE)/lib/libaclallgui.a $(SOURCE)/lib/libgtk4gl.so
+TOLIBGTK	=$(SOURCE)/lib/libaclallgui.a $(SOURCE)/lib/libgtk4gl_x.a \
+			$(SOURCE)/lib/libgtk4gl.so $(SOURCE)/lib/libaclsharedgui.so
 
 ifndef COMSPEC
 	TOLIBGTK	+=$(SOURCE)/lib/libgtk4gl_x.so
@@ -169,6 +167,14 @@ ifneq "$(ODBC)" "no"
 		TOLIBCUI	+=$(SOURCE)/lib/libaclall-noodbc.a
     endif
 endif
+
+ifeq "${HAVE_UNIXODBC}" "yes"
+	TOLIBCUI	+=$(SOURCE)/lib/libSQL_unixodbc.so
+endif
+ifeq "${HAVE_IODBC}" "yes"
+	TOLIBCUI	+=$(SOURCE)/lib/libSQL_isql.so
+endif
+
 
 MKFILNAME	=Makefile
 
@@ -193,6 +199,9 @@ TOIDE       =$(IDEDIR)/*.4gl $(IDEDIR)/*.c $(IDEDIR)/*.sh $(IDEDIR)/*.msg $(IDED
 	STARTWITH=^${OLDVALUE}
 	REPLACEWITH=${NEWVALUE}
 	AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
+
+#LIB_INSTALL_LINK=/usr/local/lib
+LIB_INSTALL_LINK=/usr/lib
 
 ##################################################
 #definitions of names for bynary distro file name:
@@ -239,7 +248,8 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
     DIRSEP			=\\
 	EXE				=.exe
 	#for packcygwin
-	CYSOURCE 		= $(AUBITDIR)
+	#CYSOURCE 		= $(AUBITDIR)
+    CYSOURCE 		=.
 	CYDLLTARGET		=${INSTALL_DIR}/dll
 	CYLIBTARGET1	=${INSTALL_DIR}/extralibs
 	LIBTARGET2		=/lib
@@ -416,28 +426,28 @@ log:
 
 corecompile: libs
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/4glc/rules
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/4glc PDFBUILD=${PDFBUILD} OUTPUTLANG=${OUTPUTLANG} NOINCL=1
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/4glc PDFBUILD=${PDFBUILD} OUTPUTLANG=${OUTPUTLANG} ${NOINCL_PARAM}
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/fcompile PDFBUILD=${PDFBUILD}
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/menus PDFBUILD=${PDFBUILD}
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/helpcompile #PDFBUILD=${PDFBUILD}
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} loadmap -C lib PDFBUILD=${PDFBUILD} NOINCL=1
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} loadmap -C lib PDFBUILD=${PDFBUILD} ${NOINCL_PARAM}
 	@echo Aubit 4gl compiler core is now compiled
 
 libs:
 #FIXME: check if all this is correvtly exported:
 # ODBC=${ODBC} PDFBUILD=${PDFBUILD} GTKBUILD=${GTKBUILD} JABBERBUILD=${JABBERBUILD}
 #warning! this will override all CFLAGS, etc. in ALL sub-makefiles!
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib CFLAGS="$(LIBCFLAGS)" NOINCL=1
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib CFLAGS="$(LIBCFLAGS)" ${NOINCL_PARAM}
 	@echo Aubit 4gl core libraries are now compiled
 
 #make  -C lib CFLAGS="-g -O2 -Ilibincl -I. -DAUTOBANG -DDEBUG -DIODBC -I/opt/unixODBC/include"
 
 gtkgui:
 #WARNING! Thhis will override CFLAGS in sub-makefile:
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib all_gui CFLAGS="$(LIBCFLAGS)" NOINCL=1
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui NOINCL=1
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib all_gui CFLAGS="$(LIBCFLAGS)" ${NOINCL_PARAM}
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui ${NOINCL_PARAM}
 #	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui libgtk4gl_x.so
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui gtk4gl_x NOINCL=1
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui gtk4gl_x ${NOINCL_PARAM}
 	@echo Aubit 4gl compiler GTK GUI is now compiled
 
 ide:
@@ -448,7 +458,7 @@ ide:
 perl: perl.compiler perl.lib test.perl
 
 perl.compiler:
-	${MAKE} ${MKNAME} -C compilers/4glc 4glc_perl PDFBUILD=no NOINCL=1
+	${MAKE} ${MKNAME} -C compilers/4glc 4glc_perl PDFBUILD=no ${NOINCL_PARAM}
 	@echo Aubit 4gl Perl-code generating version compiler created
 
 perl.lib:
@@ -508,11 +518,16 @@ unixrpc:
 ##                       Cleanup Targets
 ## ------------------------------------------------------------------
 
+#FIXME: "clean" should clean intermediate files resulting from compile, but will skip
+#executables and objects that are needed for instalation. After "clean", it should
+#still be possiblt to do "make install"
+clean:
+	@echo FIXME: only cleanall works
+
 clean.all: cleanall
 
 #will clean EVERYTHING that is not source file from CVS
 cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install clean.swig clean.project
-# clean.configure
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
 	$(MAKE) ${MKNAME} -C lib clean
 	$(MAKE) ${MKNAME} -C lib/libgui clean
@@ -558,11 +573,6 @@ clean.makefiles:
 	${RM} tools/test/gui/Makefile
 	${RM} Makefile
 
-
-#will clean intermediate files resulting from compile, but will skip
-#executables and objects that are needed for instalation
-clean:
-	@echo FIXME: only cleanall works
 
 clean.root:
 	$(RM) *.bak *.BAK libincl .*.bak core
@@ -614,7 +624,8 @@ clean.project:
 #make icons for KDE and GNOME: to IDE, to manual
 
 install: install.core install.example install.manual install.config \
-		install.links install.aubitrc install.libs.conf
+		install.links install.aubitrc install.libs.links
+#install.libs.conf
 	@echo Aubit compiler installed to $(INSTALL_DIR)
 #platform
 #etc/aubit-auto.spec
@@ -625,6 +636,10 @@ install.core: install.tree install.gtk
 	$(CP) $(TOROOT) $(INSTALL_DIR)
 	$(CP) $(TOINCL) $(INSTALL_DIR)/incl
 	$(CP) $(TOLIBCUI) $(INSTALL_DIR)/lib
+	@echo "#AUBIT_BIN_INSTALL is needed for make files to know they are not in Aubit compiler source code tree:" > /tmp/Makefile-common
+	@echo "AUBIT_BIN_INSTALL=1" >> /tmp/Makefile-common
+	@cat $(SOURCE)/incl/Makefile-common >> /tmp/Makefile-common
+	@mv /tmp/Makefile-common $(INSTALL_DIR)/incl
 	@echo Aubit 4gl core compiler files installed
 
 install.gtk:
@@ -638,7 +653,9 @@ install.config:
 
 install.example:
 	$(CP) $(TOTEST) $(INSTALL_DIR)/tools/test
+ifeq "${GTKBUILD}" "yes"
 	$(CP) $(TOTESTGUI) $(INSTALL_DIR)/tools/test/gui
+endif
 	@echo Aubit 4gl compiler programming examples are now installed
 
 install.manual:
@@ -698,6 +715,7 @@ install.links:
 	${LN_S} $(INSTALL_DIR)/bin/aubit $(PREFIX)/bin/aubit
 	@echo "Links to Aubit compiler installed to $(PREFIX)/bin/ "
 
+#This will work only on Linux, and Aubit loads from $AUBITDIR.lib anyway:
 install.libs.conf:
 ifeq "${GREP_LD_SO_CONF}" ""
 	echo "$(INSTALL_DIR)/lib" >> ${LD_SO_CONF}
@@ -708,13 +726,29 @@ else
 	@echo "${GREP_LD_SO_CONF} entry in ${LD_SO_CONF} already exists."
 endif
 
+install.libs.links: deinstall.libs.links
+ifeq "${GTKBUILD}" "yes"
+	${LN_S} $(INSTALL_DIR)/lib/libaclsharedgui.so ${LIB_INSTALL_LINK}/libaclsharedgui.so
+	${LN_S} $(INSTALL_DIR)/lib/libgtk4gl.so ${LIB_INSTALL_LINK}/libgtk4gl.so
+	${LN_S} $(INSTALL_DIR)/lib/libgtk4gl_x.so ${LIB_INSTALL_LINK}/libgtk4gl_x.so
+endif
+	${LN_S} $(INSTALL_DIR)/lib/libPDF_NOPDF.so ${LIB_INSTALL_LINK}/libPDF_NOPDF.so
 
-deinstall:
+
+deinstall.libs.links:
+#remove links to libraries:
+	${RM} ${LIB_INSTALL_LINK}/libaclsharedgui.so
+	${RM} ${LIB_INSTALL_LINK}/libgtk4gl.so
+	${RM} ${LIB_INSTALL_LINK}/libgtk4gl_x.so
+	${RM} ${LIB_INSTALL_LINK}/libPDF_NOPDF.so
+
+
+deinstall: deinstall.libs.links
 #deinstall: installdrop
 #we could just trop the whole $(INSTALL_DIR) tree, but this is not very safe;
 #in the case user placed some files there (stupido!) he will hate us nevertheless
-	-${MAKE} -c $(INSTALL_DIR)/tools/test clean
-	-${MAKE} -c $(INSTALL_DIR)/tools/test/gui clean
+	-${MAKE} -C $(INSTALL_DIR)/tools/test clean
+	-${MAKE} -C $(INSTALL_DIR)/tools/test/gui clean
 #Core compiler files:
 	${RM} $(INSTALL_DIR)/bin/4glc $(INSTALL_DIR)/bin/4glpc $(INSTALL_DIR)/bin/fcompile \
 		$(INSTALL_DIR)/bin/mcompile $(INSTALL_DIR)/bin/mkmess $(INSTALL_DIR)/bin/amake \
@@ -725,7 +759,10 @@ deinstall:
 	${RM} $(INSTALL_DIR)/incl/4glhdr.h $(INSTALL_DIR)/incl/acl4glgui.h $(INSTALL_DIR)/incl/*.mk \
 		$(INSTALL_DIR)/incl/*.mki $(INSTALL_DIR)/incl/Makefile-common
 	${RM} $(INSTALL_DIR)/lib/libaclall.a $(INSTALL_DIR)/lib/libaclshared.so \
-		$(INSTALL_DIR)/lib/libPDF_NOPDF.so $(INSTALL_DIR)/lib/libSQL_nosql.so
+		$(INSTALL_DIR)/lib/libPDF_NOPDF.so $(INSTALL_DIR)/lib/libSQL_nosql.so \
+    	$(INSTALL_DIR)/lib/libaclsharedgui.so $(INSTALL_DIR)/lib/libgtk4gl.so \
+		$(INSTALL_DIR)/lib/libgtk4gl_x.so $(INSTALL_DIR)/lib/libaclallgui.a  \
+		$(INSTALL_DIR)/lib/libgtk4gl_x.a  $(INSTALL_DIR)/lib/libSQL_unixodbc.so
 #examples:
 	${RM} $(INSTALL_DIR)/tools/test/*.4gl $(INSTALL_DIR)/tools/test/*.per \
 		$(INSTALL_DIR)/tools/test/Makefile $(INSTALL_DIR)/tools/test/*.msg
@@ -757,7 +794,8 @@ else
 	ldconfig
 	@echo "Refreshed ldconfig cache."
 endif
-
+	
+#remove links to binaries:
 	${RM} $(PREFIX)/bin/aubit-config $(PREFIX)/bin/aubit
 	@echo "Aubit compiler de-installed. Config file in ${AUBITETC} "
 	@echo "where not deleted."
@@ -765,7 +803,7 @@ endif
 tarinstall: platform
 #FIXME: check if it exists first
 #	(cd $(PREFIX); tar -cvzf $(SOURCE)/$(TARNAME) * $(A4GLRC))
-	(cd $(PREFIX); tar -cvzf $(SOURCE)/$(TARNAME) * )
+	(cd $(INSTALL_DIR); tar -cvzf $(SOURCE)/$(TARNAME) * )
 
 createcleantar: installdrop installall tarinstall
 	@echo "Aubit 4gl compiler binary disribution is now in $(SOURCE)/$(TARNAME)"
@@ -784,16 +822,16 @@ createcleantar: installdrop installall tarinstall
 #expect eof
 #--------------------------------
 source.tar:
-	${RMDIR} $(PREFIX)
-	mkdir $(PREFIX)
-	(cd $(PREFIX); autocvspasswd; cvs -z3 checkout $(AUBITCVSNAME))
-	(cd $(PREFIX)/$(AUBITCVSNAME); tar -cvzf $(SOURCETARNAME) * )
+	${RMDIR} $(INSTALL_DIR)
+	mkdir $(INSTALL_DIR)
+	(cd $(INSTALL_DIR); autocvspasswd; cvs -z3 checkout $(AUBITCVSNAME))
+	(cd $(INSTALL_DIR)/$(AUBITCVSNAME); tar -cvzf $(SOURCETARNAME) * )
 
 source.tar.sf:
-	${RMDIR} $(PREFIX)
-	mkdir $(PREFIX)
-	(export CVSROOT=${CVSROOTSF}; cd $(PREFIX); autosfcvsanonpasswd; cvs -z8 checkout $(AUBITCVSSFNAME))
-	(cd $(PREFIX)/$(AUBITCVSSFNAME); tar -cvzf $(SOURCETARNAME) * )
+	${RMDIR} $(INSTALL_DIR)
+	mkdir $(INSTALL_DIR)
+	(export CVSROOT=${CVSROOTSF}; cd $(INSTALL_DIR); autosfcvsanonpasswd; cvs -z8 checkout $(AUBITCVSSFNAME))
+	(cd $(INSTALL_DIR)/$(AUBITCVSSFNAME); tar -cvzf $(SOURCETARNAME) * )
 
 source.tar.location:
 	(cd $(SRCLOCATION); tar -cvzf $(SOURCETARNAME) * )
@@ -805,22 +843,22 @@ source.tar.curr: clean.all source.tar.location
 man.tar.sf:
 #use "cvs export" instead "cvs checkout" to get code without CVS directories
 #	export CVS_RSH=
-	${RMDIR} $(PREFIX)
-	mkdir $(PREFIX)
-	(export CVSROOT=${CVSROOTSF}; cd $(PREFIX); autosfcvsanonpasswd; cvs -z8 checkout $(AUBITCVSSFMANNAME))
-	(cd $(PREFIX)/$(AUBITCVSSFMANNAME); tar -cvzf $(MANFILENAME) * )
+	${RMDIR} $(INSTALL_DIR)
+	mkdir $(INSTALL_DIR)
+	(export CVSROOT=${CVSROOTSF}; cd $(INSTALL_DIR); autosfcvsanonpasswd; cvs -z8 checkout $(AUBITCVSSFMANNAME))
+	(cd $(INSTALL_DIR)/$(AUBITCVSSFMANNAME); tar -cvzf $(MANFILENAME) * )
 
 source.zip:
-	${RMDIR} $(PREFIX)
-	${MKPATH} $(PREFIX)
-	(cd $(PREFIX); autocvspasswd; cvs -w checkout $(AUBITCVSNAME))
-	(cd $(PREFIX)/$(AUBITCVSNAME); zip -r $(SOURCEZIPNAME) * )
+	${RMDIR} $(INSTALL_DIR)
+	${MKPATH} $(INSTALL_DIR)
+	(cd $(INSTALL_DIR); autocvspasswd; cvs -w checkout $(AUBITCVSNAME))
+	(cd $(INSTALL_DIR)/$(AUBITCVSNAME); zip -r $(SOURCEZIPNAME) * )
 
 source.zip.sf:
-	${RMDIR} $(PREFIX)
-	${MKPATH} $(PREFIX)
-	(cd $(PREFIX); autosfcvsanonpasswd; cvs -w -z8 checkout $(AUBITCVSSFNAME))
-	(cd $(PREFIX)/$(AUBITCVSSFNAME); zip -r $(SOURCEZIPNAME) * )
+	${RMDIR} $(INSTALL_DIR)
+	${MKPATH} $(INSTALL_DIR)
+	(cd $(INSTALL_DIR); autosfcvsanonpasswd; cvs -w -z8 checkout $(AUBITCVSSFNAME))
+	(cd $(INSTALL_DIR)/$(AUBITCVSSFNAME); zip -r $(SOURCEZIPNAME) * )
 
 source.zip.location:
 	(cd $(SRCLOCATION); zip -r $(SOURCEZIPNAME) * )
@@ -871,67 +909,67 @@ endif
 ## ------------------------------------------------------------------
 
 install.tree.cy:
-	@cd $(PREFIX); \
-	mkdir $(PREFIX)/dll; \
-	mkdir $(PREFIX)/extralibs;
+	@cd $(INSTALL_DIR); \
+	mkdir $(INSTALL_DIR)/dll; \
+	mkdir $(INSTALL_DIR)/extralibs;
 
 pack.cygwin:
-	${MAKE} ${MKNAME} installdrop PREFIX=${PREFIX}
-	${MAKE} ${MKNAME} install.tree PREFIX=${PREFIX}
-	${MAKE} ${MKNAME} install.tree.cy PREFIX=${PREFIX}
-	${MAKE} ${MKNAME} installx SOURCE=${CYSOURCE} PREFIX=${PREFIX} TOBIN="${CYTOBIN}" TOLIBGTK="${CYTOLIBGTK}"
-	${MAKE} ${MKNAME} install.example SOURCE=${CYSOURCE} PREFIX=${PREFIX}
+	${MAKE} ${MKNAME} installdrop INSTALL_DIR=${INSTALL_DIR}
+	${MAKE} ${MKNAME} install.tree INSTALL_DIR=${INSTALL_DIR}
+	${MAKE} ${MKNAME} install.tree.cy INSTALL_DIR=${INSTALL_DIR}
+	${MAKE} ${MKNAME} installx SOURCE=${CYSOURCE} INSTALL_DIR=${INSTALL_DIR} TOBIN="${CYTOBIN}" TOLIBGTK="${CYTOLIBGTK}"
+	${MAKE} ${MKNAME} install.example SOURCE=${CYSOURCE} INSTALL_DIR=${INSTALL_DIR}
 #FIXME: we should pack compiled IDE with binary distro, not sources
-	${MAKE} ${MKNAME} packide SOURCE=${CYSOURCE} PREFIX=${PREFIX}
+	${MAKE} ${MKNAME} packide SOURCE=${CYSOURCE} INSTALL_DIR=${INSTALL_DIR}
 	${MAKE} ${MKNAME} install.libs LIBTARGET1=${CYLIBTARGET1}
 	${MAKE} ${MKNAME} install.dll DLLTARGET=${CYDLLTARGET}
-	${MAKE} ${MKNAME} cygwin.runtime PREFIX=${PREFIX}
-	${MAKE} ${MKNAME} zip.install GUITYPE=GTK $(PREFIX) $(SOURCE)
+	${MAKE} ${MKNAME} cygwin.runtime INSTALL_DIR=${INSTALL_DIR}
+	${MAKE} ${MKNAME} zip.install GUITYPE=GTK $(INSTALL_DIR) $(SOURCE)
 
 
 cygwin.runtime.with.demo: cygwin.runtime cygwin.runtime.demo cygwin.zip.runtime
 
 #FIXME: if this programs are not compiled, make will stop: cygwin.runtime.demo
 cygwin.runtime: cygwin.runtime.tree
-	${CP} /bin/cygncurses?.dll $(PREFIX)/runtime/runtimelib
-	${CP} /bin/cygwin?.dll $(PREFIX)/runtime/runtimelib
-	${CP} /bin/cygform?.dll $(PREFIX)/runtime/runtimelib
-	${CP} /bin/cygpanel?.dll $(PREFIX)/runtime/runtimelib
-	${CP} ${DLLTARGET}/* $(PREFIX)/runtime/runtimelib
-	${CP} tools/cygwin/readme-runtime.html $(PREFIX)/runtime
+	${CP} /bin/cygncurses?.dll $(INSTALL_DIR)/runtime/runtimelib
+	${CP} /bin/cygwin?.dll $(INSTALL_DIR)/runtime/runtimelib
+	${CP} /bin/cygform?.dll $(INSTALL_DIR)/runtime/runtimelib
+	${CP} /bin/cygpanel?.dll $(INSTALL_DIR)/runtime/runtimelib
+	${CP} ${DLLTARGET}/* $(INSTALL_DIR)/runtime/runtimelib
+	${CP} tools/cygwin/readme-runtime.html $(INSTALL_DIR)/runtime
 #FIXME: At the moment, we are not making any .so or .dll on Windows
-#	${CP} lib/*.so $(PREFIX)/runtime/runtimelib
+#	${CP} lib/*.so $(INSTALL_DIR)/runtime/runtimelib
 
 cygwin.runtime.tree:
-	${MKPATH} $(PREFIX)/runtime
-	${MKPATH} $(PREFIX)/runtime/runtimelib
-	${MKPATH} $(PREFIX)/runtime/apps
+	${MKPATH} $(INSTALL_DIR)/runtime
+	${MKPATH} $(INSTALL_DIR)/runtime/runtimelib
+	${MKPATH} $(INSTALL_DIR)/runtime/apps
 
 cygwin.runtime.demo:
 	${MAKE} ${MKNAME} -C tools/test GTKBUILD=yes
 	${MAKE} ${MKNAME} -C tools/test/gui GTKBUILD=yes
-	cp ${CYSOURCE}/tools/test/*.exe $(PREFIX)/runtime/apps
-	cp ${CYSOURCE}/tools/test/gui/*.exe $(PREFIX)/runtime/apps
-	${CP} tools/cygwin/*.lnk.hide $(PREFIX)/runtime
-	${CP} tools/cygwin/unhide.bat $(PREFIX)/runtime
+	cp ${CYSOURCE}/tools/test/*.exe $(INSTALL_DIR)/runtime/apps
+	cp ${CYSOURCE}/tools/test/gui/*.exe $(INSTALL_DIR)/runtime/apps
+	${CP} tools/cygwin/*.lnk.hide $(INSTALL_DIR)/runtime
+	${CP} tools/cygwin/unhide.bat $(INSTALL_DIR)/runtime
 
 #if we unhide them before zip, zip will not find them:
 unhide.lnk:
-#	(cd $(PREFIX)/runtime; for afile in *.lnk.hide; do echo $$afile; done;)
-#	(cd $(PREFIX)/runtime; for afile in *.lnk.hide; do echo `basename "$$afile" .hide`; done;)
-	(cd $(PREFIX)/runtime; for afile in *.lnk.hide; do mv "$$afile" "`basename "$$afile" .hide`"; done;)
+#	(cd $(INSTALL_DIR)/runtime; for afile in *.lnk.hide; do echo $$afile; done;)
+#	(cd $(INSTALL_DIR)/runtime; for afile in *.lnk.hide; do echo `basename "$$afile" .hide`; done;)
+	(cd $(INSTALL_DIR)/runtime; for afile in *.lnk.hide; do mv "$$afile" "`basename "$$afile" .hide`"; done;)
 
 cygwin.zip.runtime:
 	${RM} $(SOURCE)/$(ZIPRUNTIMENAME)
-	(cd $(PREFIX)/runtime/; zip -r $(SOURCE)/$(ZIPRUNTIMENAME) * )
+	(cd $(INSTALL_DIR)/runtime/; zip -r $(SOURCE)/$(ZIPRUNTIMENAME) * )
 
 
 zip.install: platform
 #FIXME: check if it exists first
 	${RM} $(SOURCE)/$(ZIPNAME)
-	${CP} $(PLATFORMINFO) $(PREFIX)
-#	(cd $(PREFIX); zip -r $(SOURCE)/$(ZIPNAME) * $(A4GLRC))
-	(cd $(PREFIX); zip -r $(SOURCE)/$(ZIPNAME) * )
+	${CP} $(PLATFORMINFO) $(INSTALL_DIR)
+#	(cd $(INSTALL_DIR); zip -r $(SOURCE)/$(ZIPNAME) * $(A4GLRC))
+	(cd $(INSTALL_DIR); zip -r $(SOURCE)/$(ZIPNAME) * )
 install.libs:
 	cp ${L4}/glib${LIBVER}.lib ${LIBTARGET1}
 	cp ${L1}/gdk${LIBVER}.lib ${LIBTARGET1}
@@ -1508,7 +1546,7 @@ help.options:
 	@echo "  JABBERBUILD=(yes/no) NOTE: Must have ikemel lib installed"
 	@echo "  ODBC=iodbc/unix (ignored on Windows) NOTE: Must have ODBC lib installed"
 	@echo "  CYGWIN=mno-cygwin : compile to monolith CygWin target (Windows only)"
-	@echo "  PREFIX= where to install binaries, default is $AUBITDIR/install"
+	@echo "  PREFIX= where to install binaries, default is $PREFIX"
 	@echo
 	@echo
 
@@ -1560,10 +1598,10 @@ show.platform: platform.common
 
 platform: OUT = $(PLATFORMINFO)
 platform: savesettings platform.common
-	@cp $(OUT) $(PREFIX)
+	@cp $(OUT) $(INSTALL_DIR)
 	@cp $(OUT) ${PLATFORMINFOFULL}
 	@echo "platform: See result in ${OUT}"
-	@echo "Also copied to $(PREFIX)/$(OUT) and ${PLATFORMINFOFULL}"
+	@echo "Also copied to $(INSTALL_DIR)/$(OUT) and ${PLATFORMINFOFULL}"
 
 
 platform.common:

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.12 2002-01-11 03:02:16 afalout Exp $
+# $Id: Makefile.in,v 1.13 2002-01-13 09:40:47 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -36,12 +36,19 @@ override NOINCL=0
 ##                              Options
 ## ==================================================================
 
-#FCOMPILE	=aubit fcompile
-#MKMESS      =aubit mkmess
-FCOMPILE	=../../bin/fcompile
-MKMESS      =../../bin/mkmess
-FGLPCEXEC	=${SH} ../../bin/4glpc
-4GLPCFLAGS	=
+ifneq "${AUBIT_BIN_INSTALL}" "1"
+	FCOMPILE	=../../bin/fcompile
+	MKMESS      =../../bin/mkmess
+	FGLPCEXEC	=${SH} ../../bin/4glpc
+else
+	FCOMPILE	=aubit fcompile
+	MKMESS      =aubit mkmess
+	FGLPCEXEC	=aubit 4glpc
+endif
+
+
+
+#4GLPCFLAGS		=-verbose -settings
 
 
 ifdef COMSPEC
@@ -88,6 +95,7 @@ all: ${ALL}
 	@echo default targets successfully compiled
 
 4gl:
+	@echo AUBITDIR in Makefile=${AUBITDIR}
 	${FGLPCEXEC} ${4GLPCFLAGS} hello.4gl -o hello
 	${FGLPCEXEC} ${4GLPCFLAGS} hello2.4gl -o hello2
 	${FGLPCEXEC} ${4GLPCFLAGS} hello_db.4gl -o hello_db
@@ -212,7 +220,7 @@ tort.4gl.q:
 
 clean:
 	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.o *.4ae
-	${RM} hello hello2 hello_db test_build *.hlp *.exe
+	${RM} hello hello2 hello_db test_build filetest *.hlp *.exe
 	$(RM) *.stackdump *.exe *.err *.c
 	${RM} torturetest4glcomp *.tmp *.42m *.glb regression-test-4gl
 	${RM} *.42r gui/*.err pdf_report rr1.pdf gui/*.glb

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.14 2002-01-10 11:38:16 afalout Exp $
+# $Id: 4glc.c,v 1.15 2002-01-13 09:40:46 afalout Exp $
 #
 */
 
@@ -35,7 +35,7 @@
 
 /*
  *
- * $Id: 4glc.c,v 1.14 2002-01-10 11:38:16 afalout Exp $
+ * $Id: 4glc.c,v 1.15 2002-01-13 09:40:46 afalout Exp $
  */
 
 #include <stdio.h>
@@ -169,7 +169,8 @@ main (int argc, char *argv[])
 
   openmap(outputfilename);
   if (!A4GLSQL_initlib()) {
-	printf("Error opening SQL Library - check A4GL_SQLTYPE is set correctly\n");
+	printf("4glc: Error opening SQL Library - check A4GL_SQLTYPE is set correctly (A4GL_SQLTYPE=%s)\n", acl_getenv("A4GL_SQLTYPE"));
+//    printf ("A4GL_SQLTYPE=%s\n", acl_getenv("A4GL_SQLTYPE"));
 	exit(1);
   }
   x = yyparse ();

@@ -1,125 +1,51 @@
-/******************************************************************************
-* (c) 1997-1998 Aubit Computing Ltd.
-* 
-* $Id: sql.c,v 1.3 2002-01-04 12:48:16 afalout Exp $
-*
-* Project : Part Of Aubit 4GL Library Functions
-*
-* Change History :
-*	$Log: not supported by cvs2svn $
-*	Revision 1.2  2001/12/10 20:17:30  mikeaubury
-*	Better PDF report handling...
-*	
-*	Revision 1.1  2001/12/03 15:44:37  mikeaubury
-*	New dl sql stuff
-*	
-*	Revision 1.11  2001/11/21 22:56:18  saferreira
-*	Some compiler warnings fixed
-*	
-*	Revision 1.10  2001/11/19 10:31:13  mikeaubury
-*	new stuff - compile_<lang> changes
-*	
-*	Revision 1.9  2001/10/16 03:09:13  afalout
-*	NoODBC build and HTML form functionality prototype
-*	
-*	Revision 1.8  2001/10/05 18:16:41  mikeaubury
-*	Fixes
-*	
-*	Revision 1.7  2001/09/20 08:55:16  afalout
-*	Enabling makefiles to compile all builds from one environment
-*	
-*	Revision 1.6  2001/09/15 08:25:57  mikeaubury
-*	small changes
-*	
-*	Revision 1.5  2001/09/13 18:17:15  mikeaubury
-*	Allow SQL to work :-)
-*	
-*	Revision 1.4  2001/09/10 06:27:47  mikeaubury
-*	YMC
-*	
-*	Revision 1.3  2001/08/24 20:45:25  mikeaubury
-*	Major fcompile updates.
-*	Minor environment variable handling updates (to get it to work again :-)
-*	
-*	Revision 1.2  2001/08/21 19:31:22  mikeaubury
-*	1. Changes for PUT
-*	2. Changes for Core dump on startup of 4glc (if AUBITGUI isn't set)
-*	
-*	Revision 1.1.1.1  2001/08/20 02:36:38  afalout
-*	Initial import to SF
-*	
-*	Revision 1.12  2001/08/16 07:01:44  maubury
-*	updates
-*	
-*	Revision 1.11  2001/08/13 01:07:43  afalout
-*	CygWin merge
-*	
-*	Revision 1.10  2001/08/06 08:30:41  afalout
-*	minoir changes and bug fixing (some core dumps)
-*	
-*	Revision 1.9  2001/07/24 11:11:15  maubury
-*	Should now be able to connect with username and passwords as variables..
-*	
-*	Revision 1.8  2001/06/25 00:06:04  afalout
-*	added IFDEF for unixODBC
-*	
-*	Revision 1.7  2001/06/15 17:33:01  maubury
-*	*** empty log message ***
-*	
-*	Revision 1.6  2001/06/12 03:37:32  afalout
-*	make install, make clean
-*
-*	Revision 1.5  2001/06/12 01:10:16  afalout
-*	DOS format, makefiles work
-*	
-*	Revision 1.4  2001/04/30 17:28:43  maubury
-*	Datetime/interval changes
-*	Added basic input array
-*	
-*	Revision 1.3  2000/11/13 09:12:21  maubury
-*	
-*	Removed bug in commit/rollback
-*	
-*	Revision 1.2  2000/09/28 02:42:22  afalout
-*	*** empty log message ***
-*	
-*	Revision 1.1.1.1  2000/01/29 03:11:52  cvs
-*	Initial import of compiler sources using jCVS client
-*	
-*	Revision 1.9  1999/01/28 23:13:18  fglcomp
-*	Latest Update 28/1/99
-*
-*	Revision 1.8  1998/12/24 08:05:53  fglcomp
-*	.
-*
-*	Revision 1.7  1998/12/17 20:59:02  fglcomp
-*	171298
-*
-*	Revision 1.6  1998/12/12 09:49:18  fglcomp
-*	12/12/98
-*
-*	Revision 1.4  1998/10/15 21:54:22  fglcomp
-*	Up till 15/10/98
-*
-*	Revision 1.3  1998/08/09 20:50:06  fglcomp
-*	Changes made to describe_stmt to handle statements/cursor ID which do not exist
-*
-*	Revision 1.2  1998/08/09 11:51:48  fglcomp
-*	Added ID classifications
-*
-*
-*******************************************************************************/
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: sql.c,v 1.4 2002-01-13 09:40:46 afalout Exp $
+#
+*/
+
 #define DEFINE_SQLCA
 #define DEFINE_STATUS
 #define FETCH_ABSOLUTE 1
 #define FETCH_RELATIVE 2
 #include <stdio.h>
 #include <string.h>
-#include "../libincl/debug.h"
-#include "../libincl/database.h"
-#include "../libincl/stack.h"
-#include "../libincl/pointers.h"
-#include "../libincl/dtypes.h"
+#include "libincl/database.h"
+
+
+// stack.h will eventually include stdlib.h, which uses getenv(), so
+// we need to set GETENV_OK and only then include debug.h
+#include "libincl/stack.h"
+#define GETENV_OK
+#include "libincl/debug.h"
+
+
+#include "libincl/pointers.h"
+#include "libincl/dtypes.h"
 #include <stdlib.h>
 
 //#ifdef WIN32

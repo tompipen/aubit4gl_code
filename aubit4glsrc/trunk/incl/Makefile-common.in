@@ -25,10 +25,26 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.5 2002-01-11 03:02:15 afalout Exp $
+# $Id: Makefile-common.in,v 1.6 2002-01-13 09:40:46 afalout Exp $
 #
 
+
+ifneq "${NO_EXPORT_VAR}" "1"
+	#.EXPORT_ALL_VARIABLES: will cause this wires error when vatiable is
+	#appended to depending on lable like:
+	#libSQL_iodbc.so: CFLAGS+=-DIODBC
+	#in lib/libsql/odbc/Makefile.in :
+	#make: expand.c:489: allocated_variable_append: Assertion `current_variable_set_list->next != 0' failed.
+	#Aborted
+
+#tells make to export all variables to child processes by default.
+#Warning: this will export EVERITHING you define here to sub-makefiles
+#and all commands/shell scripts that are called in make process, You
+#can use "unexport VARIABLE", if you need to prevent something from exporting:
+#.EXPORT_ALL_VARIABLES: statement MUST be on the beginning of the line
 .EXPORT_ALL_VARIABLES:
+
+endif
 
 #############
 #this internal variable points to default location of Aubit config files
@@ -41,7 +57,10 @@ AUBIT_SRC_ROOT=@aubitdir@
 #then exucute "bin/4glpc -config" from Aubit source code root directory
 
 #All includes should become obsolete once autoconf is fully implemented
-NOINCL=0
+ifndef NOINCL
+	NOINCL=0
+endif
+
 ifeq "$(NOINCL)" "0"
 
 	NOERR=2>/dev/null
@@ -69,12 +88,11 @@ ifeq "$(NOINCL)" "0"
     #libraries, and in this place, it may cause completely wron include
     #of aubitrc configured different then we want it while compiling
 
-    #FIXME: how to do this?
 	#check if this file is included from make file in Aubit source tree or
 	#not. If we are not, we should not override AUBITDIR
-	#IF IncludedFromSourceTree then
+    ifneq "${AUBIT_BIN_INSTALL}" "1"
 		AUBITDIR=${AUBIT_SRC_ROOT}
-    #endif
+    endif
 
 	ifneq "${AUBITDIR}" ""
 		AUBITRCFILE:=$(shell ls ${AUBITDIR}/etc/aubitrc ${NOERR})
@@ -123,7 +141,9 @@ endif
 
 #in all cases, override AUBITDIR set in any other way then by "configure"
 #for compiling Aubit compiler from source code
-AUBITDIR=${AUBIT_SRC_ROOT}
+ifneq "${AUBIT_BIN_INSTALL}" "1"
+	AUBITDIR=${AUBIT_SRC_ROOT}
+endif
 
 PATH:=${AUBITDIR}/bin:${PATH}
 #PATH:=../bin:${PATH}
@@ -149,7 +169,7 @@ CP 			= cp
 RM 			= rm -f
 RMDIR		= rm -rf
 SH 			= /bin/sh
-CC 			= gcc
+CC 			= @CC@
 LN_S 		= ln -s
 AR 			= ar rc
 YACC 		= bison -y
@@ -162,10 +182,13 @@ CPPFLAGS 	=
 LDFLAGS 	= -s
 
 
+
+ALL_LIBS=@LIBS@
+
+
 #C compiler flags for Aubit libraries compilation: you should not
 #need to change this
-
-CFLAGS				=-O2 -g -I. -DAUTOBANG -DDEBUG -I/usr/local/include
+CFLAGS				=@CFLAGS@ -I. -DAUTOBANG -DDEBUG -I/usr/local/include
 
 LIBCFLAGS			=${CLFAGS} -Ilibincl
 
@@ -182,13 +205,11 @@ ifdef COMSPEC
 	EXE			=${EXEEXT}
 	CPEXE		=cp
     SH			=bash
-	CC 			=gcc
     LN			=cp
 else
     EXEEXT		=
 	CPEXE		=ln -f
     SH			=sh
-	CC 			=cc
     LN			=ln -f
 endif
 

@@ -8,7 +8,7 @@
 #this is main Aubit 4gl compiler .4gl files compiler script
 #You should not need to invoke actual compiler(s) (4glc, fcompile...) directly
 #
-# $Id: 4glpc,v 1.37 2002-01-09 04:05:10 afalout Exp $
+# $Id: 4glpc,v 1.38 2002-01-13 09:40:46 afalout Exp $
 #
 ########################################################################
 
@@ -254,19 +254,23 @@ function showerror {
 
 ALLPARAMS=$@
 
-#save some things from environment, so they don't get overwtitten by .a4glrc -
+#save some things from environment, so they don't get overwtitten by aubitrc -
 # we need this when making compiler:
 ENV_ODBC_LIB_DIR="$ODBC_LIB_DIR"
 ENV_ODBC_LIB_NAME="$ODBC_LIB_NAME"
+
 if [ -f ${AUBITETC}/aubitrc ]
 then
 	A1=${AUBITETC}/aubitrc
 	. ${AUBITETC}/aubitrc
 fi
 
-if [ "$MAKINGAUBIT" = "1" ]
+if [ "$MAKINGAUBIT" = "1" ] #if we are invoked from Aubit compiler makefiles
 then
-	AUBITDIR=$AUBIT_SRC_ROOT
+	if [ "$AUBIT_BIN_INSTALL" != "1" ] #and we are still in Aubit source code tree
+    then
+		AUBITDIR=$AUBIT_SRC_ROOT
+    fi
 fi
 
 
@@ -296,60 +300,20 @@ then
 	. $A4GL_INIFILE
 fi
 
-#This is all now obsolete:
-#we want all config files read here in all cases (probably?)
-#export NOINCL=0
-#
-#	FOUNDRC=0
-#
-#if [ "$A4GLRC" = "" ]
-#then
-#	if [ -f $AUBITETC/a4glrc ]
-#	then
-#	    FOUNDRC=$AUBITETC/a4glrc
-#	else
-#		if [ -f $AUBITDIR/etc/.a4glrc ]
-#		then
-#		    FOUNDRC=$AUBITDIR/etc/.a4glrc
-#		fi
-#	fi
-#
-#	if [ -f $HOME/.a4glrc ]
-#	then
-#	    FOUNDRC=$HOME/.a4glrc
-#	fi
-#
-#	if [ "$FOUNDRC" = "0" ] && [ "$1" != "-config" ] && [ "$1" != "-overwrite_config" ]
-#	then
-#	    echo "Cannot find $AUBITETC/a4glrc, $AUBITDIR/etc/.a4glrc or $HOME/.a4glrc"
-#	    echo "Stop."
-#		if [ "$A4GLVERBOSE" = "yes" ]
-#		then
-#    	    echo "Exiting with code 5"
-#	    fi
-#		exit 5
-#	else
-#        . $FOUNDRC
-#	fi
-#else
-#	if [ -f $A4GLRC ]
-#	then
-#	    FOUNDRC=$A4GLRC
-#		. $FOUNDRC
-#	else
-#	    echo "Cannot find $A4GLRC"
-#	    echo "Stop."
-#		if [ "$A4GLVERBOSE" = "yes" ]
-#		then
-#    	    echo "Exiting with code 5"
-#	    fi
-#		exit 5
-#	fi
-#fi
+if [ "$MAKINGAUBIT" = "1" ]
+then
+	#if we are invoked from Aubit compiler makefiles
+	if [ "$AUBIT_BIN_INSTALL" != "1" ]
+    then
+		#and we are still in Aubit source code tree
+		AUBITDIR=$AUBIT_SRC_ROOT
+    fi
+fi
 
 
 if [ "$AUBITDIR" = "" ]
 then
+	#if still emty, assume this script is in $AUBITDIR/bin
 	PATHTO4GLPC=`dirname $0`
 	PATHTO4GLPC=`dirname $PATHTO4GLPC` #remove bin/
     cd $PATHTO4GLPC
@@ -822,23 +786,19 @@ do
 			if [ -f $errfname ]
             then
 				showerror
-				#$output "Error compiling $a - see file $errfname"
 			else
 				if [ -f $dirn/$errfname ]
                 then
 					errfname=$dirn/$errfname
 					showerror
-					#$output "Error compiling $a - see file $errfname"
+					if [ "$A4GLVERBOSE" = "yes" ]
+					then
+		            	$output err_msg is: $err_msg
+		            fi
                 else
 					$output "Error compiling $a - error file NOT created"
+	            	$output err_msg is: $err_msg
                 fi
-            fi
-
-			if [ "$A4GLVERBOSE" = "yes" ]
-			then
-            	$output err_msg is: $err_msg
-                $output err_code is: $err_code
-                $output 'You can also "export DEBUG=ALL" to get "debug.out" file'
             fi
 
 			if [ "$A4GLVERBOSE" = "yes" ]
@@ -1107,19 +1067,34 @@ then
 	if [  "$GTKGUI" = "Yes" ]
     then
 
-		if [ "$GLIBVER" = "old" -o "$GLIBVER" = "" ]
+		#if [ "$GLIBVER" = "old" -o "$GLIBVER" = "" ]
+		if [ "$GLIBVER" = "old" ]
         then
 			GTKLIBS="-lgdk -lgtk -lglib"
 			#GTKLIBS="-lgdk-1.3 -lgtk-1.3 -lglib-1.3"
 	    else
-			#GLIB_LIBS=`pkg-config --libs $GLIBVER`
-			#GLIB_CFLAGS=`pkg-config --cflags $GLIBVER`
-			#GDKLIB_LIBS=`pkg-config --libs $GDKVER`
-			#GDKLIB_CFLAGS=`pkg-config --cflags $GDKVER`
-			GTKLIB_LIBS=`pkg-config --libs $GTKVER`
-			GTKLIB_CFLAGS=`pkg-config --cflags $GTKVER`
-			#GTKLIBS="$GLIB_LIBS $GLIB_CFLAGS $GDKLIB_LIBS $GDKLIB_CFLAGS $GTKLIB_LIBS $GTKLIB_CFLAGS"
-            GTKLIBS="$GTKLIB_LIBS $GTKLIB_CFLAGS"
+			if [ "$GLIBVER" != "" ]
+            then
+				#GLIB_LIBS=`pkg-config --libs $GLIBVER`
+				#GLIB_CFLAGS=`pkg-config --cflags $GLIBVER`
+				#GDKLIB_LIBS=`pkg-config --libs $GDKVER`
+				#GDKLIB_CFLAGS=`pkg-config --cflags $GDKVER`
+				GTKLIB_LIBS=`pkg-config --libs $GTKVER`
+				GTKLIB_CFLAGS=`pkg-config --cflags $GTKVER`
+				#GTKLIBS="$GLIB_LIBS $GLIB_CFLAGS $GDKLIB_LIBS $GDKLIB_CFLAGS $GTKLIB_LIBS $GTKLIB_CFLAGS"
+	            GTKLIBS="$GTKLIB_LIBS $GTKLIB_CFLAGS"
+			else
+				#if [ "@GTK_CONFIG@" != "no" ]
+                #then
+					GTKLIBS=`gtk-config --cflags`
+                    echo GTKLIBS = $GTKLIBS
+		        #else
+				#	if [ "@PKG_CONFIG@" != "no" ]
+                #   then
+				#		GLIB_CFLAGS		:=$(shell pkg-config --cflags glib)
+		        #   fi
+		        #fi
+            fi
 	    fi
 
 		if  [ "$MAKE4GLPC" != "Yes" ]
@@ -1135,6 +1110,22 @@ else
 		then
 			GTKLIBS="$GTKLIBS -lgtk4gl -lgtk4gl_x"
     	fi
+
+		if [ "$GLIBVER" != "old" ]
+        then
+			#if [ "@GTK_CONFIG@" != "no" ]
+            #then
+				GTKCFLAGS=`gtk-config --cflags`
+				#echo GTKCFLAGS = $GTKCFLAGS
+	        #else
+			#	if [ "@PKG_CONFIG@" != "no" ]
+            #   then
+			#		GLIB_CFLAGS		:=$(shell pkg-config --cflags glib)
+	        #   fi
+	        #fi
+
+			GTKLIBS="$GTKLIBS $GTKCFLAGS"
+		fi
     fi
 fi
 
