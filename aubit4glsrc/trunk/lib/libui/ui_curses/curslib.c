@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.36 2003-06-13 18:40:58 mikeaubury Exp $
+# $Id: curslib.c,v 1.37 2003-06-15 12:20:23 mikeaubury Exp $
 #*/
 
 /**
@@ -587,8 +587,16 @@ aclfgl_fgl_drawbox (int n)
   int xx, yy;
 //void *ptr=0;
   void *win;
+int chars_normal[]={ACS_HLINE,ACS_VLINE,ACS_ULCORNER,ACS_URCORNER,ACS_LLCORNER,ACS_LRCORNER};
+int chars_simple[]={'-','|','+','+','+','+'};
+int *chars;
 A4GL_chkwin();
 
+ if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
+ 	chars=chars_simple;
+ } else {
+	chars=chars_normal;
+ }
   c = 0;
 
   if (n == 5) c = A4GL_pop_int ();
@@ -605,26 +613,27 @@ A4GL_chkwin();
 
 #define PMOVE(x,y,c) 	mvwaddch(win,(y-1),(x-1),c)
 
+
   for (xx = x + 1; xx < x + w - 1; xx++)
     {
-      PMOVE (xx, y, ACS_HLINE);
+      PMOVE (xx, y, chars[0]);
 
-      PMOVE (xx, y + h - 1, ACS_HLINE);
+      PMOVE (xx, y + h - 1, chars[0]);
     }
 
   for (yy = y + 1; yy < y + h - 1; yy++)
     {
-      PMOVE (x, yy, ACS_VLINE);
+      PMOVE (x, yy, chars[1]);
 
-      PMOVE (x + w - 1, yy, ACS_VLINE);
+      PMOVE (x + w - 1, yy, chars[1]);
     }
 
-  PMOVE (x, y, ACS_ULCORNER);
-  PMOVE (x + w - 1, y, ACS_URCORNER);
+  PMOVE (x, y, chars[2]);
+  PMOVE (x + w - 1, y, chars[3]);
+  PMOVE (x, y + h - 1, chars[4]);
+  PMOVE (x + w - 1, y + h - 1, chars[5]);
 
-  PMOVE (x, y + h - 1, ACS_LLCORNER);
 
-  PMOVE (x + w - 1, y + h - 1, ACS_LRCORNER);
 
   A4GL_mja_refresh ();
   return 0;

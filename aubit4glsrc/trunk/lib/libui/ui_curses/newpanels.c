@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.43 2003-06-14 17:05:09 mikeaubury Exp $
+# $Id: newpanels.c,v 1.44 2003-06-15 12:20:23 mikeaubury Exp $
 #*/
 
 /**
@@ -433,7 +433,11 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 
       A4GL_set_bkg (win, attrib);
 
+   if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
+      wborder (win, '|', '|', '-', '-', '+','+', '+', '+');
+   } else {
       wborder (win, 0, 0, 0, 0, 0, 0, 0, 0);
+   }
       //wbkgdset (win, 0);
       A4GL_mja_wrefresh (win);
     }
@@ -570,7 +574,11 @@ A4GL_clr_window (char *win_name)
   if (win->winattr.border)
     {
       A4GL_debug ("Clr screen - redraw border");
+   if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
+      wborder (w, '|', '|', '-', '-', '+','+', '+', '+');
+   } else {
       wborder (w, 0, 0, 0, 0, 0, 0, 0, 0);
+   }
     }
   A4GL_zrefresh ();
   return;
@@ -1009,7 +1017,11 @@ A4GL_display_form (struct s_form_dets *f)
   if (f->form_details.border)
     {
       A4GL_debug ("Form has border");
-      wborder (currwin, 0, 0, 0, 0, 0, 0, 0, 0);
+   if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
+      wborder (w, '|', '|', '-', '-', '+','+', '+', '+');
+   } else {
+      wborder (w, 0, 0, 0, 0, 0, 0, 0, 0);
+   }
     }
 
   

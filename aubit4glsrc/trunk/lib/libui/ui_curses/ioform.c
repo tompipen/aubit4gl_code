@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.33 2003-06-13 18:40:58 mikeaubury Exp $
+# $Id: ioform.c,v 1.34 2003-06-15 12:20:23 mikeaubury Exp $
 #*/
 
 /**
@@ -196,25 +196,31 @@ A4GL_make_label (int frow, int fcol, char *label)
 		return 0;
 	}
 
-	switch (label[1]) {
-		case 'p': A4GL_mja_set_field_buffer_contrl (f, 0, '+'); break;
-		case 'q': A4GL_mja_set_field_buffer_contrl (f, 0, '+'); break;
-		case 'b': A4GL_mja_set_field_buffer_contrl (f, 0, '+'); break;
-		case 'd': A4GL_mja_set_field_buffer_contrl (f, 0, '+'); break;
-		case '-': A4GL_mja_set_field_buffer_contrl (f, 0, '-'); break;
-		case '|': A4GL_mja_set_field_buffer_contrl (f, 0, '|'); break;
-#ifdef NDEF
-		case 'p': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_ULCORNER); break;
-		case 'q': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_URCORNER); break;
-		case 'b': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LLCORNER); break;
-		case 'd': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LRCORNER); break;
-		case '-': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_HLINE); break;
-		case '|': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_VLINE); break;
-#endif
-
-		default : A4GL_debug("Unknown graphic : %c",label[1]); A4GL_exitwith("Unknown graphic"); return 0;
+	if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
+		switch (label[1]) {
+			case 'p': A4GL_mja_set_field_buffer_contrl (f, 0, '+'); break;
+			case 'q': A4GL_mja_set_field_buffer_contrl (f, 0, '+'); break;
+			case 'b': A4GL_mja_set_field_buffer_contrl (f, 0, '+'); break;
+			case 'd': A4GL_mja_set_field_buffer_contrl (f, 0, '+'); break;
+			case '-': A4GL_mja_set_field_buffer_contrl (f, 0, '-'); break;
+			case '|': A4GL_mja_set_field_buffer_contrl (f, 0, '|'); break;
+		}
+	} else {
+		set_field_back(f, A_ALTCHARSET);
+		switch(label[1]) {
+			case 'p': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_ULCORNER&0xff); break;
+			case 'q': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_URCORNER&0xff); break;
+			case 'b': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LLCORNER&0xff); break;
+			case 'd': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_LRCORNER&0xff); break;
+			case '-': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_HLINE&0xff); break;
+			case '|': A4GL_mja_set_field_buffer_contrl (f, 0, ACS_VLINE&0xff); break;
+			default : A4GL_debug("Unknown graphic : %c",label[1]); 
+					A4GL_exitwith("Unknown graphic"); return 0;
+		}
 	}
         set_field_opts (f, field_opts (f) & ~O_ACTIVE);
+
+
 	return f;
   }
 
