@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.33 2003-01-30 11:54:38 afalout Exp $
+# $Id: stack.c,v 1.34 2003-01-30 17:40:11 mikeaubury Exp $
 #
 */
 
@@ -1898,6 +1898,9 @@ setnull (int type, char *buff, int size)
     {
       debug ("Opps");
       exitwith ("Could not initialize variable to null");
+    }
+    if (type==0) {
+		debug("Set buff to %s\n",buff);
     }
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.32 2003-01-30 11:54:38 afalout Exp $
+# $Id: esql.ec,v 1.33 2003-01-30 17:41:24 mikeaubury Exp $
 #
 */
 
@@ -114,6 +114,8 @@
 #include "a4gl_lib_sql_esqlc_int.h"
 
 static long fixlength(int dtype,int length) ;
+static error_just_in_case() ;
+static int processPreStatementBinds(struct s_sid *sid);
 
 
 EXEC SQL include sqlca;
@@ -126,7 +128,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.32 2003-01-30 11:54:38 afalout Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.33 2003-01-30 17:41:24 mikeaubury Exp $";
 #endif
 
 /*
@@ -757,6 +759,8 @@ static struct s_sid *prepareSqlStatement(
 
   struct s_sid *sid = newStatement(ibind,ni,obind,no,s);
 
+debug("PrepareSQL : %s",s);
+
   statementName = sid->statementName;
   statementText = sid->select;
   EXEC SQL PREPARE :statementName FROM :statementText;
@@ -766,6 +770,13 @@ static struct s_sid *prepareSqlStatement(
     A4GLSQL_set_status(sqlca.sqlcode,1);
     return (struct s_sid *)0;
   }
+
+  if ( processPreStatementBinds(sid) == 1 ) {
+        debug("processPreStatementBinds failed ?");
+        error_just_in_case();
+        return 0;
+   }
+  debug("Prepared OK\n");
   return sid;
 }
 
@@ -781,7 +792,11 @@ static struct s_sid *prepareSqlStatement(
  */
 struct s_sid *A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
 {
-  return(prepareSqlStatement(ibind,ni,(struct BINDING *)0,0,s));
+  struct s_sid *ptr;
+  debug("S=%s\n",s);
+  ptr=prepareSqlStatement(ibind,ni,(struct BINDING *)0,0,s);
+  debug("Got ptr as %p",ptr);
+  return ptr;
 }
 
 /** 
@@ -836,20 +851,24 @@ static int bindInputValue(char *descName,int idx,struct BINDING *bind)
     long     date_var;
     dec_t    money_var;
     dtime_t  dtime_var;
+	//datetime year to second dtime_var;
     intrvl_t interval_var;
     /*
     fglbyte byte_var;
     fgltext text_var;
     */
+  
   EXEC SQL END DECLARE SECTION;
   fgldecimal  *fgl_decimal;
   FglDate     *fgl_date;
   fglmoney    *fgl_money;
   FglDatetime *fgl_dtime;
   FglInterval *fgl_interval;
+  char genData[256];
 
   dataType = getIfmxDataType(bind[idx].dtype);
   length   = bind[idx].size; // unfix_length...
+debug("In binding - %d %d",dataType,length);
 
   if ( isnull(dataType,bind[idx].ptr) )
   {
@@ -867,6 +886,9 @@ static int bindInputValue(char *descName,int idx,struct BINDING *bind)
     case DTYPE_CHAR:
     case DTYPE_VCHAR:
       char_var = bind[idx].ptr;
+
+	length++; // Add space for the \0
+
       EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         LENGTH = :length,
@@ -930,16 +952,32 @@ static int bindInputValue(char *descName,int idx,struct BINDING *bind)
         DATA = :money_var;
       break;
     case DTYPE_DTIME:
+
       fgl_dtime = (FglDatetime *)bind[idx].ptr;
-      if ( dtcvasc(fgl_dtime->data,&dtime_var) )
+
+      dttoc(fgl_dtime,&genData,30);
+      debug("DT = '%s'\n",genData);
+      dtime_var.dt_qual = 3594;
+      if ( dtcvasc(genData,&dtime_var) )
       {
+		debug("Invalid datetime!!");
 	/** @todo : We need to store this error */
         return 1;
       }
+	char_var=genData;
+	dataType=0;
+	length=255;
       EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
-        DATA = :dtime_var;
+        DATA = :char_var,
+	LENGTH = :length;
+	if (sqlca.sqlcode!=0) {
+			debug("Bugger - bombed");
+	} else {
+			debug("Bound ok");
+	}
       break;
+
     case DTYPE_INTERVAL:
       fgl_interval = (FglInterval *)bind[idx].ptr;
       if ( incvasc(fgl_interval->data,&interval_var) )
@@ -958,8 +996,11 @@ static int bindInputValue(char *descName,int idx,struct BINDING *bind)
     default:
       exitwith ("Invalid data type\n");
   }
-  if ( isSqlError() )
+  if ( isSqlError() ) {
+	debug("Problem");
     return 1;
+  }
+	debug("OK");
   return 0;
 }
 
@@ -990,8 +1031,10 @@ static int processInputBind(char *descName,int bCount,struct BINDING *bind)
   }
 
   for ( i = 0 ; i < bindCount ; i++ )
-    if ( bindInputValue(descriptorName,i,bind) == 1 )
+    if ( bindInputValue(descriptorName,i,bind) == 1 ) {
+		debug("Failed binding %d\n",i);
       return 1;
+    }
   return 0;
 }
 
@@ -1049,14 +1092,20 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
 
   EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
     :indicator = INDICATOR, :length = LENGTH;
-  if ( isSqlError() )
+  if ( isSqlError() ) {
+	debug("Err1");
     return 1;
-  if ( indicator == -1 )
-  {
-    setnull(dataType,bind[idx].ptr,length);
-    return;
   }
 
+  if ( indicator == -1 )
+  {
+    debug("Calling setnull %d %p %d\n",dataType,bind[idx].ptr,length);
+    setnull(dataType,bind[idx].ptr,length);      /* Something wrong with this */
+    //if (dataType==0) { debug("ptr=%s\n",bind[idx].ptr); }
+    return 0;
+  }
+
+  debug("datatype : %d",dataType);
   switch (dataType)
   {
     case DTYPE_CHAR:
@@ -1148,6 +1197,7 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
       fgl_dtime = malloc(sizeof(FglDatetime));
       if ( dttoasc(&dtime_var,fgl_dtime->data) )
       {
+	debug("Error with datetime");
 	/** @todo : Store the error somewhere */
         return 1;
       }
@@ -1174,8 +1224,12 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
     default:
       exitwith ("Invalid data type\n");
   }
-  if ( isSqlError() )
+  debug("Got to here");
+  if ( isSqlError() ) {
+	debug("Some isSqlError..");
     return 1;
+  }
+  debug("Ok");
   return 0;
 }
 
@@ -1227,8 +1281,10 @@ static int processOutputBind(char *descName,int bCount,struct BINDING *bind)
   register int i;
 
   for ( i = 0 ; i < bindCount ; i++ )
-    if ( bindOutputValue(descriptorName,i,bind) == 1 )
+    if ( bindOutputValue(descriptorName,i,bind) == 1 ) {
+	debug("Failed bind @ %d\n",i);
       return 1;
+    }
   return 0;
 }
 
@@ -1385,8 +1441,10 @@ static int processPreStatementBinds(struct s_sid *sid)
   {
     sid->inputDescriptorName = getDescriptorName(sid->statementName,'I');
 
-    if ( processInputBind(sid->inputDescriptorName,sid->ni,sid->ibind) == 1)
+    if ( processInputBind(sid->inputDescriptorName,sid->ni,sid->ibind) == 1) {
+		debug("Fail1 ");
       return 1;
+	}
   }
 
   if ( sid->obind != (struct BINDING *)0 && sid->no > 0 )
@@ -1401,12 +1459,15 @@ static int processPreStatementBinds(struct s_sid *sid)
       sid->no,
       sid->obind
     );
-    if ( rv == 1)
+    if ( rv == 1) {
+		debug("Fail2");
       return 1;
+	}
     descriptorName = sid->outputDescriptorName;
     statementName  = sid->statementName;
     EXEC SQL DESCRIBE :statementName USING SQL DESCRIPTOR :descriptorName;
   }
+		debug("OK3");
   return 0;
 }
 
@@ -1459,11 +1520,17 @@ static int processPosStatementBinds(struct s_sid *sid)
 {
   if ( sid->obind != (struct BINDING *)0 && sid->no > 0 )
   {
-    if ( processOutputBind(sid->outputDescriptorName,sid->no,sid->obind) == 1)
-      return 1;
+    debug("calling processOutputBind");
+    if ( processOutputBind(sid->outputDescriptorName,sid->no,sid->obind) == 1) {
+		debug("Failed..");
+      		return 1;
+	}
   }
-  if ( deallocateDescriptors(sid) == 1 )
-    return 1;
+  if ( deallocateDescriptors(sid) == 1 ) {
+	debug("Deallocating failed..");
+        return 1;
+  }
+  debug("All Ok in posStatementBinds");
   return 0;
 }
 
@@ -1487,16 +1554,37 @@ int A4GLSQL_execute_implicit_select (struct s_sid *sid)
   EXEC SQL end declare section;
 
   debug("ESQL : execute_implicit_select");
-  if (sid == 0)
+  if (sid == 0) {
+	debug("SID=0");
     return -1;
+  }
 
-  if ( processPreStatementBinds(sid) == 1 )
+  if ( processPreStatementBinds(sid) == 1 ) {
+	debug("processPreStatementBinds failed ?");
+	error_just_in_case();
+    	return 1;
+   }
+  if ( executeStatement(sid) == 1 ) {
+	debug("executeStatement failed ?");
+	error_just_in_case();
+    	return 1;
+  }
+  if ( processPosStatementBinds(sid) == 1 ) {
+	debug("processPosStatementBinds failed ?");
+	error_just_in_case();
     return 1;
-  if ( executeStatement(sid) == 1 )
-    return 1;
-  if ( processPosStatementBinds(sid) == 1 )
-    return 1;
+  }
+  debug("All ok ?");
   return 0;
+}
+
+static error_just_in_case() {
+if (sqlca.sqlcode==0) {
+	// We have an error - but its not in Informix...
+	// We'll fake one - how about -410
+	sqlca.sqlcode=-410;
+	esqlErrorHandler();
+}
 }
 
 /**
@@ -1520,19 +1608,30 @@ int A4GLSQL_execute_implicit_sql (struct s_sid *sid)
     int  inputBindCount;
   EXEC SQL end declare section;
   int rc = 0;
-
+  debug("In execute_implicit_sql");
   if ( sid == (struct s_sid *)0 )
   {
+    debug("Bugger - failed");
     /** @todo : I should store the error message and number somwehere */
     return 1;
   }
 
-  if ( processPreStatementBinds(sid) == 1 )
+  if ( processPreStatementBinds(sid) == 1 ) {
+	debug("Pre failed");
+	error_just_in_case();
     return 1;
-  if ( executeStatement(sid) == 1 )
+  }
+  if ( executeStatement(sid) == 1 ) {
+	debug("Execute failed");
+	error_just_in_case();
     return 1;
-  if ( processPosStatementBinds(sid) == 1 )
+  }
+  if ( processPosStatementBinds(sid) == 1 ) {
+	debug("Pos failed");
+	error_just_in_case();
     return 1;
+  }
+debug("OK");
   return 0;
 }
 
@@ -1648,8 +1747,11 @@ struct s_cid *A4GLSQL_declare_cursor(
       /** @todo : Assign an error code  */
       return (struct s_cid *)0;
   }
-  if ( isSqlError() )
+  if ( isSqlError() ) {
+	debug("Declare failed");
     return (struct s_cid *)0;
+  }
+  debug("Declared OK");
   add_pointer (cursname, PRECODE, cursorIdentification);
   return cursorIdentification;
 }

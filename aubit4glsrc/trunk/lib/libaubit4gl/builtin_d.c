@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.14 2003-01-29 14:35:05 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.15 2003-01-30 17:40:11 mikeaubury Exp $
 #
 */
 
@@ -267,7 +267,7 @@ void
 push_chars(char * p,int dtype,int size)
 {
 	char *ptr;
-	debug("In push_chars\n");
+	debug("In push_chars - %s\n",p);
 	ptr=(char *)new_string_set(strlen(p),p);
 	push_param(ptr,(DTYPE_CHAR+DTYPE_MALLOCED+ENCODE_SIZE(size)));
 }
@@ -746,7 +746,11 @@ push_interval(struct ival *p)
 void 
 push_variable(void *ptr,int dtype)
 {
-  debug("In push variable x");
+  
+  debug("In push variable dtype = %d (%x)",dtype,dtype);
+   if ((dtype&0xff)==0)  {
+		debug("Value = %s\n",ptr);
+  }
   if (isnull(dtype,ptr)) 
   {
     debug("In push variable... ptr is null");
