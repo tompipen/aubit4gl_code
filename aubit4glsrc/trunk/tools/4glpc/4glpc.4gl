@@ -431,9 +431,9 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		WHEN "--namespace"		let a=a+1 let mv_namespace=arg_val(a) continue for
 		WHEN "-namespace"		let a=a+1 let mv_namespace=arg_val(a) continue for
 
-		WHEN "-noprefix"		let mv_namespace="" continue for
-		WHEN "--noprefix"		let mv_namespace="" continue for
-		WHEN "-n"			let mv_namespace="" continue for
+		WHEN "-noprefix"		let mv_namespace=" " continue for
+		WHEN "--noprefix"		let mv_namespace=" " continue for
+		WHEN "-n"			let mv_namespace=" " continue for
 
 		WHEN "--stack_trace"		let a=a+1 let mv_stacktrace=arg_val(a) continue for
 		WHEN "-s"			let mv_stacktrace=1 continue for
