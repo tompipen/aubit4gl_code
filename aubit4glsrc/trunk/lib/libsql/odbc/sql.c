@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.62 2003-08-09 09:27:13 afalout Exp $
+# $Id: sql.c,v 1.63 2003-08-24 17:51:34 mikeaubury Exp $
 #
 */
 
@@ -1677,6 +1677,8 @@ A4GL_display_size (SWORD coltype, UDWORD collen, UCHAR * colname)
 
       return 26;		/* yyyy-mm-dd hh:mm:ss.ffffff */
 
+    case 91:
+	return 12; /* date */
     default:
       printf ("Unknown datatype, %d\n", coltype);
       return (0);
@@ -2368,6 +2370,8 @@ static int
 conv_sqldtype (int sqldtype, int sdim)
 {
   int ndtype;
+
+  if (sqldtype==SQL_TYPE_DATE) return DTYPE_DATE;
 
   if (sqldtype >= 0)
     ndtype = convpos_sql_to_4gl[sqldtype];
