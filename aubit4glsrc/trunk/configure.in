@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.97 2002-09-24 06:55:48 afalout Exp $
+# $Id: configure.in,v 1.98 2002-09-24 07:39:17 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -409,7 +409,6 @@ HAVE_UNIXODBC=no
 HAVE_IFXODBC=no
 HAVE_PGODBC=no
 PIC="-fPIC"
-LDFLAGS_SHARED="-fPIC -shared"
 ODBC_LIB_NAME=noodbc
 USE_PDF=no
 PDFBUILD=no
@@ -448,7 +447,8 @@ case $host in
 
 	#*-sun-solaris2.7 (Jonathan) and 2.8 (Andrej on SF CF)
 	*-sun-solaris*)
-        ;;
+		PIC="-fPIC"
+		;;
 
 	#powerpc-apple-darwin5.5 (Andrej on SF CF)
 	*-apple-darwin*)
@@ -466,6 +466,8 @@ case $host in
 		echo "    platform to the mailing list. Thank you."
         ;;
 esac
+
+LDFLAGS_SHARED="$PIC -shared"
 
 dnl Set of available languages.
 #ALL_LINGUAS="de fr es ko nl no pl pt sl sv"
@@ -2834,6 +2836,20 @@ LIB_PREFIX=$prefix/aubit4gl/lib
 	#RPMFILE_25=$LIB_PREFIX/
 	#RPMFILE_26=$LIB_PREFIX/
 
+
+## ==================================================================
+##           Translate Autoconf internals into our replace tags:
+## ==================================================================
+
+
+
+if test "$lt_cv_prog_cc_pic_works" = "yes"; then
+	#WARNING: this will overwrite PIC settings from the beginning of this file
+    #if this works OK, remove manually set ones there!
+	#lt_cv_prog_cc_pic=' -fno-common'
+	PIC="$lt_cv_prog_cc_pic"
+	LDFLAGS_SHARED="$PIC -shared"
+fi
 
 
 ## ==================================================================

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.73 2002-09-24 06:55:50 afalout Exp $
+# $Id: Makefile-common.in,v 1.74 2002-09-24 07:39:32 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -249,12 +249,17 @@ AWK                 =@AWK@
 #          options for ld, which again forces the allocation of the symbol
 #          table in the code produced (see ld(1) on a Sun).
 
+RDYNAMIC            =-rdynamic
+
 ifeq "${TARGET_OS}" "solaris"
 	#On Solaris: gcc: unrecognized option `-rdynamic'
 	#RDYNAMIC            =-rdynamic
-	RDYNAMIC            =
-else
-	RDYNAMIC            =-rdynamic
+	RDYNAMIC		=
+endif
+ifeq "${TARGET_OS}" "darwin"
+	#On Darwin:
+	#cc: unrecognized option `-rdynamic'
+	RDYNAMIC		=
 endif
 
 #Solaris ld:
