@@ -42,7 +42,7 @@ include ../Makefile-common
 ################
 #replace .per/.4gl with appropriate extesion in forms and modules list
 FORMS=${PER:.per=${A4GL_FORMEXT}}
-MODULES=${FGL:.4gl=${OBJ_EXT}}
+MODULES=${FGL:.4gl=${OBJ_EXT}} pop_ret_date.o
 HELP=${MSG:.msg=${HLP_EXT}}
 
 ################
@@ -109,8 +109,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This is not a test but a Testing template. \
-		Please provide brief description of functionality tested here."
+	@echo "pop_date"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -213,5 +212,9 @@ need_ifx_version:
 #"0" means "don't care"
 transaction:
 	@echo "0"
+need_compat:
+	@echo "1"
+noprefix:
+	@echo "1"
 	
 # ============================= EOF ================================
