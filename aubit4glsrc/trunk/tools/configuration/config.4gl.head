@@ -5,9 +5,15 @@
  * script is executed!
  *}
 
+code
+#include <stdio.h>
+
+FILE *fout=0;
+endcode
 
 define lv_txt array[200] of char(80)
-define lv_newvals associate char(30) with array[300] of char(255)
+
+define lv_newvals array[300] of char(255)
 
 define mv_option array[100] of record
 	name char(30),
@@ -21,6 +27,49 @@ define mv_option_offscr array[100] of record
 end record
 
 define mv_window_open integer
+define mv_save_type char(20)
+define mv_filename char(255)
+
+function set_save_type()
+menu "Save Type"
+        command "ksh/sh/bash env vars"
+                let mv_save_type="SH"
+                exit menu
+
+        command "csh env vars"
+                let mv_save_type="CSH"
+                exit menu
+
+        command "aubitrc"
+                let mv_save_type="RC"
+                exit menu
+
+        command "XML"
+                let mv_save_type="XML"
+                exit menu
+
+        command "Cancel"
+                initialize mv_save_type to null
+                exit menu
+end menu
+
+end function
+
+
+
+function load_newvals()
+define a integer
+define v char(50)
+for a=1 to 400
+	let v=get_name(a)
+	if v is null or v matches " " then
+		exit for
+	end if
+	let lv_newvals[a]=fgl_getenv(v)
+end for
+end function
+
+
 
 function load_possible_values(id)
 define
@@ -242,7 +291,7 @@ define lv_x char(30)
 			end if
 			call do_display_txt(mv_option_offscr[a].id)
 			display "CURRENT VALUE =",str clipped at 8,1
-			let str=lv_newvals<<mv_option[a].name>>
+			let str=lv_newvals[get_id(mv_option[a].name)]
 			display "NEW     VALUE =",str clipped at 9,1
 
 		on key(left)
@@ -260,10 +309,9 @@ define lv_x char(30)
 			let a=arr_curr()
 			call change(mv_option[a].name,a) returning str
 			let lv_name=mv_option[a].name
-			let lv_newvals<<lv_name>>=str
-			let str=lv_newvals<<lv_name>>
+			let lv_newvals[get_id(lv_name)]=str
+			let str=lv_newvals[get_id(lv_name)]
 			display "NEW     VALUE =",str clipped at 9,1
-
 			let int_flag=false
 
 
@@ -303,6 +351,219 @@ code
 }
 endcode
 let mv_option_offscr[a].nvalues=c;
+
+end function
+
+
+
+
+{*
+ *
+ *
+ *
+ *
+ *}
+function save_changed()
+define a integer
+define v char(50)
+define o,n char(255)
+
+call set_save_type()
+if mv_save_type is null then return 0 end if
+if not get_filename() then return 0 end if
+if not start_save(mv_filename) then return 0 end if
+
+for a=1 to 400
+	let v=get_name(a)
+	if v is null or v matches " " then
+		exit for
+	end if
+	let o=fgl_getenv(v)
+	let n=lv_newvals[a]
+	if o is null then let o= " " end if
+	if n is null then let n= " " end if
+	if o!=n then call save_details(v,n) end if
+end for
+call finish_save()
+return 1
+end function
+
+
+
+{*
+ *
+ *
+ *
+ *
+ *}
+function save_all()
+define a integer
+define v char(50)
+define o,n char(255)
+
+call set_save_type()
+if mv_save_type is null then return 0 end if
+if not get_filename() then return 0 end if
+if not start_save(mv_filename) then return 0 end if
+
+
+for a=1 to 400
+	let v=get_name(a)
+	if v is null or v matches " " then
+		exit for
+	end if
+	let n=lv_newvals[a]
+	if n is null then let n= " " end if
+	call save_details(v,n)
+end for
+call finish_save()
+return 1
+end function
+
+
+
+{*
+ *
+ *
+ *
+ *
+ *}
+function do_save()
+define lv_ok integer
+
+let lv_ok=0
+MENU "Save "
+	COMMAND "Only changed values"
+		if save_changed() then
+			let lv_ok=1
+			exit menu
+		end if
+
+	COMMAND "All values"
+		if save_all() then
+			let lv_ok=1
+			exit menu
+		end if
+END MENU
+return lv_ok
+end function
+
+
+
+
+{*
+ *
+ *
+ *
+ *
+ *}
+function ask_save()
+MENU "Do you want to save your changes ?"
+
+	COMMAND "Yes"
+		if do_save() then
+			exit menu
+		end if
+	COMMAND "No" 
+		exit menu
+END MENU
+end function
+	
+
+
+
+function file_exists(f)
+define f char(255)
+define ok integer
+code
+A4GL_trim(f);
+fout=fopen(f,"r");
+if (fout) ok=1;
+else ok=0;
+endcode
+return ok
+end function
+
+
+function get_filename()
+define f char(255)
+let int_flag=false
+prompt "Please enter filename :" for f
+if int_flag=true then
+	initialize mv_filename to null
+	return 0
+end if
+let mv_filename=f
+return 1
+end function
+
+function start_save(f)
+define f char(255)
+define lv_ok integer
+let lv_ok=1
+if file_exists(f) then
+	MENU "File exists - Overwrite ?"
+		COMMAND "No"
+			let lv_ok=0
+			exit menu
+
+		COMMAND "Yes"
+			let lv_ok=1
+			exit menu
+	end menu
+end if
+
+
+if lv_ok then
+code
+	A4GL_trim(f);
+	fout=fopen(f,"w");
+	if (fout==0) lv_ok=-1;
+endcode
+
+	if lv_ok=-1 then
+		error "It does not appear that you have the permissions to write that file"
+		let lv_ok=0
+	end if
+end if
+
+
+return  lv_ok
+end function
+
+
+
+
+function finish_save()
+code
+if (fout) fclose(fout);
+endcode
+end function
+
+
+
+
+function save_details(v,value)
+define v char(50)
+define value char(255)
+define lv_line char(300)
+case mv_save_type
+
+when "SH"
+	let lv_line="export ",v clipped,"=\"",value clipped,"\""
+
+when "RC"
+	let lv_line=v clipped,"=\"",value clipped,"\""
+
+when "CSH"
+	let lv_line="setenv ",v clipped," ",value clipped,""
+when "XML"
+	let lv_line="<VARIABLE NAME=",v clipped,">",value clipped,"</VARIABLE>"
+end case
+code
+A4GL_trim(lv_line);
+fprintf(fout,"%s\n",lv_line);
+endcode
 
 end function
 

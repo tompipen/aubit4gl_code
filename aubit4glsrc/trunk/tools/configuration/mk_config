@@ -101,6 +101,7 @@ END {
 	print "   OPTIONS HELP KEY \"F2\""
 	print "   DEFER INTERRUPT"
 	print "   CALL initialize()"
+	print "   CALL load_newvals()"
 	print "   MENU \"Main\""
 
 	for (var in arr_vars) {
@@ -112,7 +113,9 @@ END {
 	}
 	print "   COMMAND KEY (\"Q\",\"q\") \"Quit\" \"Exit the configurator program\" HELP 2 exit menu"
 	print "   END MENU"
+	print "   CALL ask_save()"
 	print "END MAIN"
+
 
 	for (var in arr_vars) {
 		xx=arr_vars[var];
@@ -140,6 +143,42 @@ END {
 		print "   call show_options(" a-1 ")"
 		print "END FUNCTION"
 	}
+
+	print " "
+	print "FUNCTION get_id(s)"
+	print "define s char(80)"
+	print "case s"
+	
+	cnt=1
+	for (var in arr_names) {
+		if (!printed[arr_names[var]]) {
+			print "when \"" arr_names[var] "\" return " cnt++
+		}
+		printed[arr_names[var]]=1
+	}
+	print "end case"
+	print "return 0"
+	print "END FUNCTION"
+
+	for (var in arr_names) {
+		printed[arr_names[var]]=0;
+	}
+
+	print " "
+	print "FUNCTION get_name(n)"
+	print "define n integer"
+	print "case n"
+	cnt=1
+	for (var in arr_names) {
+		if (!printed[arr_names[var]]) {
+			print "when " cnt++ " return \"" arr_names[var] "\""
+		}
+		printed[arr_names[var]]=1
+	}
+	print "end case"
+	print "return \"\""
+	print "end function"
+
 }' < descriptions
 
 

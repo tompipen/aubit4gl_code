@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: makefile,v 1.7 2004-02-06 22:50:17 afalout Exp $
+# $Id: makefile,v 1.8 2004-02-10 16:33:58 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -35,7 +35,7 @@ include ${ROOT}/incl/Makefile-common
 include ${ROOT}/incl/a4gl.mk
 
 A4GL_LEXTYPE=C
-DEBUG=ALL
+#DEBUG=ALL
 A4GL_SQLTYPE=nosql
 A4GL_UI=CONSOLE
 

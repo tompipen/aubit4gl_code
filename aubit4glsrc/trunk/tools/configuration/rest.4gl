@@ -10,7 +10,7 @@ define id integer
 define oldval char(255)
 define newval char(255)
 
-	open window shadow at 12,5 with 11 rows, 76 columns attribute(black,reverse)
+	open window shadow at 12,5 with 13 rows, 76 columns attribute(black,reverse)
 	open window w2 at 12,4 with form "change"  attribute(border,magenta,reverse,form line 1)
 	
 	display "Variable : ",x,"" at 1,1 attribute (reverse,cyan)
@@ -31,6 +31,7 @@ define newval char(255)
 		exit input
 	on key(f2,control-b)
 		call possible_values(id,newval) returning newval
+		#error "newval=",newval
 		display newval to newval
 	end input 
 	
