@@ -6,7 +6,7 @@
 #include "a4gl_API_ui_lib.h"
 #include "a4gl_API_ui.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.7 2004-01-25 13:00:24 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.8 2004-01-27 21:05:59 mikeaubury Exp $";
 
 void *UILIB_A4GL_get_curr_form (int n);
 
@@ -1323,11 +1323,13 @@ int
 }
 
 
-int UILIB_A4GL_open_gui_form_internal(char* name_orig,int absolute,int nat,char* like,int disable,void* handler_e,void* handler_c) {
+int UILIB_A4GL_open_gui_form_internal(long *form_variable,char* name_orig,int absolute,int nat,char* like,int disable,void* handler_e,void* handler_c) {
 int n;
 	A4GL_chkwin();
 	n=A4GL_LL_open_gui_form(name_orig,absolute,nat,like,disable,handler_e,handler_c);
+	*form_variable=n;
 	A4GL_LL_screen_update();
+	return n;
 
 }
 

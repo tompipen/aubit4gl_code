@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.15 2004-01-18 18:13:27 mikeaubury Exp $
+# $Id: ui.c,v 1.16 2004-01-27 21:05:58 mikeaubury Exp $
 #
 */
 
@@ -418,9 +418,9 @@ int a=-1;
 
 
 
-int A4GL_open_gui_form (char *name_orig, int absolute, int nat, char *like, int disable, void *handler_e, void (*handler_c (int a, int b)))
+int A4GL_open_gui_form (long *form_variable,char *name_orig, int absolute, int nat, char *like, int disable, void *handler_e, void (*handler_c (int a, int b)))
 {
-  return A4GL_open_gui_form_internal (name_orig, absolute, nat, like, disable, handler_e,handler_c);
+  return A4GL_open_gui_form_internal (form_variable,name_orig, absolute, nat, like, disable, handler_e,handler_c);
 }
 
 
@@ -715,6 +715,41 @@ return 0;
 
 
 
+/* These functions are used internally for ID_TO_INT and INT_TO_ID functions */
+
+char **gui_id_names=0;
+int gui_id_names_cnt=0;
+
+char  *A4GL_find_gui_id_name_from_id(int id) {
+	if (id<0||id>=gui_id_names_cnt) return 0;
+	return gui_id_names[id];
+}
+
+int A4GL_find_gui_id_from_name(char *s) {
+int a;
+	if (gui_id_names_cnt==0) return -1;
+
+	for (a=0;a<gui_id_names_cnt;a++) {
+		if (strcmp(gui_id_names[a],s)==0) return a;
+	}
+	return -1;
+}
+
+
+
+int A4GL_add_gui_id_name(char *s) {
+	int id;
+	id=A4GL_find_gui_id_from_name(s);
+	if (id==-1) {
+		gui_id_names_cnt++;
+		gui_id_names=realloc(gui_id_names,sizeof(char *)*gui_id_names_cnt);
+		gui_id_names[gui_id_names_cnt-1]=strdup(s);
+		return gui_id_names_cnt-1;
+	}
+	return id;
+}
+
+
+
+
 /* ============================= EOF ================================ */
-
-

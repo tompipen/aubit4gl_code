@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.108 2004-01-24 19:39:43 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.109 2004-01-27 21:05:58 mikeaubury Exp $
 #
 */
 
@@ -1802,7 +1802,7 @@ int A4GL_islinemode (void);
 int A4GL_disp_form_fields (int n, int attr, char *formname, ...);
 int A4GL_endis_fields (int en_dis, ...);
 int A4GL_disp_arr (void *disp, void *ptr, char *srecname, int attrib,void *evt, ...);
-int A4GL_open_gui_form (char *name_orig, int absolute, int nat, char *like, int disable, void *handler_e, void (*handler_c (int a, int b)));
+int A4GL_open_gui_form (long *form_variable,char *name_orig, int absolute, int nat, char *like, int disable, void *handler_e, void (*handler_c (int a, int b)));
 int A4GL_fgl_infield (void *inp,char itype,...);
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.83 2004-01-18 09:37:54 mikeaubury Exp $
+# $Id: curslib.c,v 1.84 2004-01-27 21:05:58 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.83 2004-01-18 09:37:54 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.84 2004-01-27 21:05:58 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -3018,7 +3018,7 @@ wrapper_wgetch (WINDOW * w)
 }
 
 int
- UILIB_A4GL_open_gui_form_internal (char *name_orig, int absolute, int nat,
+ UILIB_A4GL_open_gui_form_internal (long *form_variable,char *name_orig, int absolute, int nat,
 			     char *like, int disable, void *handler_e,
 			     void *handler_c)
 {

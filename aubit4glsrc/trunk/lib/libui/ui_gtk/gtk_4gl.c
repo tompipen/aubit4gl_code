@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.29 2004-01-23 10:09:00 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.30 2004-01-27 21:05:59 mikeaubury Exp $
 #*/
 
 /**
@@ -1303,8 +1303,8 @@ void
  * @todo describe function
  */
 int
-/* A4GL_open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c())) */
- UILIB_A4GL_open_gui_form_internal (char *name_orig, int absolute, int nat, char *like,
+/* A4GL_open_gui_form (long *form_variable,char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c())) */
+ UILIB_A4GL_open_gui_form_internal (long *form_variable,char *name_orig, int absolute, int nat, char *like,
 	       int disable, void *handler_e, void *phandler_c)
 {
   GtkWindow *win;
@@ -1403,8 +1403,8 @@ int
   gtk_widget_show (GTK_WIDGET (win));
 
   UILIB_A4GL_gui_run_til_no_more ();
-
-  return 1;
+  *form_variable=win;
+  return win;
 }
 
 /**
