@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.129 2003-06-14 13:13:52 afalout Exp $
+# $Id: Makefile-common.in,v 1.130 2003-07-20 06:53:25 afalout Exp $
 #
 
 
@@ -461,6 +461,25 @@ AUBIT_LIB			=-laubit4gl
 ifeq "${TARGET_OS}" "solaris"
 	AUBIT_LIB			+=-lc
 endif
+
+
+########################
+#Define compilers to use for compiling Aubit compiler generated code
+#NCC=gcc
+FGLC_OUTPUT_EXT=c
+
+#We should ignore A4GL_LEXTYPE while compiling the compiler
+#ifeq "${A4GL_LEXTYPE}" "EC"
+#	ifeq "$A4GL_LEXDIALECT" "POSTGRES"
+#		FGLC_OUTPUT_EXT=cpc
+#        NCC="ecpg_wrap"
+#	else
+#		FGLC_OUTPUT_EXT=ec
+#        NCC="esql"
+#    endif
+#endif
+
+
 
 ########################
 #do not install static libraries on CygWin:
@@ -944,6 +963,12 @@ ifneq "${COMSPEC}" ""
 	LIB_ALLWAYSCLEAN+=libUI_TUI.dll
 endif
 
+#Additional files to clean even if we would not install them under
+#current configuration:
+LIB_ALLWAYSCLEAN+=libA4GL_cint${SO_EXT} libMENU_XDR${SO_EXT} libUI_GTK${SO_EXT} \
+	libMENU_GENERIC${SO_EXT}
+
+
 ## ==================================================================
 ##                    To docs directory
 ## ==================================================================
@@ -1012,9 +1037,23 @@ AMAKE_INCL_FILES= \
         header.mki footer.mki footer-c.mki \
         a4gl.mk q4gl.mk d4gl.mk i4gl.mk
 
-INCL_FILES	= \
-		a4gl_incl_4glhdr.h a4gl_incl_4gldef.h Makefile-common \
-        Makefile-install.mki ${AMAKE_INCL_FILES}
+#This header files become nececery to install when a4gl_esql.h was introduced.
+#As a chain reaction, practically all external Aubit header files become a
+#dependency. Most, if not all, are not really needed and should be removed
+#from installation scripts:
+INCL_HEADERS_EC = a4gl_esql.h  a4gl_esql_infx.h a4gl_esql_postgres.h
+
+#INCL_HEADERS_EC_REMOVETHIS=a4gl_libaubit4gl.h a4gl_API_lex.h a4gl_API_form.h \
+#	a4gl_API_menu.h a4gl_API_msg.h a4gl_API_packer.h a4gl_API_ui.h \
+#	a4gl_API_exdata.h a4gl_API_exreport.h a4gl_API_sql.h a4gl_API_rpc.h \
+#	a4gl_incl_infx.h
+#	../common/dataio/form_x.x.h
+
+INCL_HEADERS =a4gl_incl_4glhdr.h a4gl_incl_4gldef.h ${INCL_HEADERS_EC} \
+	${INCL_HEADERS_EC_REMOVETHIS}
+
+
+INCL_FILES	= Makefile-common Makefile-install.mki ${AMAKE_INCL_FILES} ${INCL_HEADERS}
 
 #OBSOLETE: a4gl-rules.mki
 
@@ -1074,15 +1113,23 @@ FROMDOCS	=$(addprefix $(DOC_DEST)/,	$(DOC_FILES))
 FROMTEST	=$(addprefix $(TEST_DEST)/,	$(TEST_FILES))
 FROMETC		=$(addprefix $(ETC_DEST)/,	$(ETC_FILES)) $(addprefix $(ETC_DEST)/,	$(ETC_FILES_LEGACY)) $(addprefix $(ETC_DEST)/,	$(ETC_DEINST))
 FROMHOME	=$(addprefix $(HOME_DEST)/,	$(HOME_FILES))
-FROMROOT	=$(addprefix $(ROOT_DEST)/,	$(ROOT_FILES))
+FROMROOT	=$(addprefix $(ROOT_DEST)/,	$(ROOT_FILES)) $(ROOT_DEST)/libtool
 FROMINCL	=$(addprefix $(INCL_DEST)/,	$(INCL_FILES))  $(addprefix $(INCL_DEST)/,	$(INCL_FILES_LEGACY))
 FROMIDE     =$(addprefix $(IDE_DEST)/,	$(IDE_FILES))
 FROMCONVSQL =$(addprefix $(CONVSQL_DEST)/,$(CONVSQL_FILES))
 
+
+#Additional files to allways remove from bin, ecen id we would not install
+#them under current configuration:
 ifneq "${COMSPEC}" ""
 	FROMBIN	+=$(INSTALL_DIR)/${BIN_PATH}/run.exe
 endif
 FROMBIN		+=$(INSTALL_DIR)/${BIN_PATH}/4GL_metrics.cgi
+FROMBIN		+=$(INSTALL_DIR)/${BIN_PATH}/loadmap${EXE}
+FROMBIN		+=$(INSTALL_DIR)/${BIN_PATH}/mkmess${EXE}
+FROMBIN		+=$(INSTALL_DIR)/${BIN_PATH}/odbctest-iodbc3${EXE}
+FROMBIN		+=$(INSTALL_DIR)/${BIN_PATH}/odbctest-unixODBC${EXE}
+
 
 ## ==================================================================
 ##                    Automatic build Settings

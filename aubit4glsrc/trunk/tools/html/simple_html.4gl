@@ -2,7 +2,7 @@
 #
 #This is Aubit 4gl demo for CGI/HTML functionality
 #
-# $Id: simple_html.4gl,v 1.3 2002-02-15 11:33:47 afalout Exp $
+# $Id: simple_html.4gl,v 1.4 2003-07-20 06:53:26 afalout Exp $
 #
 ########################################################################
 
@@ -23,11 +23,11 @@ main
 end main
 
 
-this should produce highlited background on only this line:
+#this should produce highlited background on only this line:
 
-<DIV style="BACKGROUND: #e4e4e4; font-color: black"><B>From:</B> <A
-title=smathis@noblesys.com href="mailto:smathis@noblesys.com">Steve Mathis</A>
-</DIV>
+#<DIV style="BACKGROUND: #e4e4e4; font-color: black"><B>From:</B> <A
+#title=smathis@noblesys.com href="mailto:smathis@noblesys.com">Steve Mathis</A>
+#</DIV>
 
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.66 2003-07-18 16:17:31 mikeaubury Exp $
+# $Id: compile_c.c,v 1.67 2003-07-20 06:53:25 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -247,23 +247,23 @@ open_outfile (void)
   if (doing_esql ())
     {
       switch (esql_type ())
-	{
+		{
 
-	case 1:
-	  strcat (c, ".ec");
-	  break;
-	case 2:
-	  strcat (c, ".cpc");
-	  break;
-	}
+		case 1:
+		  strcat (c, ".ec");
+		  break;
+		case 2:
+		  strcat (c, ".cpc");
+		  break;
+		}
     }
   else
     {
-	if (strcmp(acl_getenv("LEXTYPE"),"CS")==0) {
-      		strcat (c, ".csp");
-	} else {
-      		strcat (c, ".c");
-	}
+		if (strcmp(acl_getenv("A4GL_LEXTYPE"),"CS")==0) {
+	      		strcat (c, ".csp");
+		} else {
+	      		strcat (c, ".c");
+		}
     }
 
   strcat (h, ".h");
@@ -275,6 +275,8 @@ open_outfile (void)
       printf ("Unable to open file %s (Check permissions)\n", c);
       exit (3);
     }
+
+  A4GL_debug ("Output file is %s", c);
 
   fprintf (outfile, "#define fgldate long\n");
   if (doing_esql ())
@@ -4543,7 +4545,7 @@ A4GL_set_var_sql (int doing_declare, int n)
 int
 doing_esql ()
 {
-  if (strcmp (acl_getenv ("LEXTYPE"), "EC") == 0)
+  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
     {
       return 1;
     }
@@ -4561,12 +4563,12 @@ int
 esql_type ()
 {
 
-  if (strcmp (acl_getenv ("LEXDIALECT"), "INFORMIX") == 0)
+  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "INFORMIX") == 0)
     {
       return 1;
     }
 
-  if (strcmp (acl_getenv ("LEXDIALECT"), "POSTGRES") == 0)
+  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
     {
       return 2;
     }

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.88 2003-06-14 13:13:52 afalout Exp $
+# $Id: Makefile.in,v 1.89 2003-07-20 06:53:25 afalout Exp $
 #
 
 ROOT    =..
@@ -87,15 +87,18 @@ LIBMSGNATIVE_PATH	=libmsg/msg_native
 LIBIMJABBER_PATH	=${ROOT}/tools/jabber $@
 LOADMAP_PATH		=${ROOT}/tools/loadmap
 AUBITCONFIG_PATH	=resource
+FILESCHEMA_PATH     =libsql/schema_in_file
+
+
+
+
 
 #Specify dependencies for libraries, so they get rebuilt if dependencies change:
 #FIXME: do this for all libraries in this make file
 LIBAUBIT4GL_DEPS	=$(wildcard ${LIBAUBIT4GL_PATH}/*.c) $(wildcard ${LIBAUBIT4GL_PATH}/*.h) \
 					$(wildcard ${LIBAUBIT4GL_PATH}/*.spec) $(wildcard ${LIBAUBIT4GL_PATH}/Makefile) \
                     ${AUBITCONFIG_PATH}/resource.c ${ALL_H}
-
 AUBITCONFIG_DEPS	=$(wildcard ${AUBITCONFIG_PATH}/*.c) $(wildcard ${AUBITCONFIG_PATH}/Makefile) ${ALL_H}
-
 LIBDATA_DEPS		=$(wildcard ${LIBRPCSUNRPC_PATH}/*.x) $(wildcard ${LIBRPCSUNRPC_PATH}/Makefile) ${ALL_H}
 LIBMSGNATIVE_DEPS	=$(wildcard ${LIBMSGNATIVE_PATH}/*.c) $(wildcard ${LIBMSGNATIVE_PATH}/*.h) \
 					$(wildcard ${LIBMSGNATIVE_PATH}/Makefile) ${ALL_H}
@@ -112,6 +115,8 @@ LIBEXDATA_DEPS		=$(wildcard ${LIBEXDATA_PATH}/*.c) $(wildcard ${LIBEXDATA_PATH}/
 					$(wildcard ${LIBEXDATA_PATH}/Makefile) ${ALL_H}
 LIBSQLNOSQL_DEPS	=$(wildcard ${LIBSQLNOSQL_PATH}/*.c) $(wildcard ${LIBSQLNOSQL_PATH}/*.h) \
 					$(wildcard ${LIBSQLNOSQL_PATH}/Makefile) ${ALL_H}
+FILESCHEMA_DEPS     =$(wildcard ${FILESCHEMA_PATH}/*.c) \
+					$(wildcard ${FILESCHEMA_PATH}/Makefile) ${ALL_H}
 LIBHELP_STD_DEPS	=$(wildcard ${LIBHELP_STD_PATH}/*.per) $(wildcard ${LIBHELP_STD_PATH}/*.4gl) \
 					$(wildcard ${LIBHELP_STD_PATH}/Makefile) ${ALL_H}
 LIBSQLPG_DEPS		=$(wildcard ${LIBSQLPG_PATH}/*.cpp) $(wildcard ${LIBSQLPG_PATH}/*.h) \
@@ -292,6 +297,9 @@ libSQL_unixodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 
 libSQL_odbc32.dll: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} odbc32
+
+libSQL_FILESCHEMA${SO_EXT}: ${FILESCHEMA_DEPS}
+	${MAKE} -C ${FILESCHEMA_PATH}
 
 ##############
 #libRPC_

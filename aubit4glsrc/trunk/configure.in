@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.176 2003-07-16 08:18:17 afalout Exp $
+dnl # $Id: configure.in,v 1.177 2003-07-20 06:53:17 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -226,6 +226,7 @@ AC_SUBST(A4GL_PDFTYPE)
 AC_SUBST(A4GL_RPCTYPE)
 AC_SUBST(A4GL_UI)
 AC_SUBST(A4GL_LEXTYPE)
+AC_SUBST(A4GL_LEXDIALECT)
 AC_SUBST(A4GL_FORMTYPE)
 AC_SUBST(A4GL_MENUTYPE)
 AC_SUBST(A4GL_MSGTYPE)
@@ -518,6 +519,7 @@ A4GL_PDFTYPE=NOPDF
 A4GL_RPCTYPE=NORPC
 A4GL_UI=CONSOLE
 A4GL_LEXTYPE=C
+A4GL_LEXDIALECT=INFORMIX
 A4GL_FORMTYPE=NOFORM
 A4GL_MENUTYPE=NOMENU
 A4GL_MSGTYPE=NATIVE
@@ -640,8 +642,8 @@ LIBFILE_17=$LIB_PREFIX/libDATA_struct_form$SO_EXT
 LIBFILE_18=$LIB_PREFIX/libHELP_std$SO_EXT
 LIBFILE_19=$LIB_PREFIX/libLEX_EC$SO_EXT
 LIBFILE_20=$LIB_PREFIX/libPACKER_MEMPACKED$SO_EXT
-LIBFILE_21=
-LIBFILE_22=
+LIBFILE_21=$LIB_PREFIX/libSQL_FILESCHEMA$SO_EXT
+LIBFILE_22=$LIB_PREFIX/libLEX_CS$SO_EXT
 LIBFILE_23=
 LIBFILE_24=
 LIBFILE_25=
@@ -650,6 +652,17 @@ LIBFILE_27=
 LIBFILE_28=
 LIBFILE_29=
 LIBFILE_30=
+
+
+#What are this guys for?
+#lib/libDATA_menu_list.so
+#lib/libDATA_report.so
+#lib/libDATA_struct_form.so
+#lib/libesqlhelper_funcs.so
+#lib/libXDRPACKER_menu_list.so
+#lib/libXDRPACKER_report.so
+#lib/libXDRPACKER_struct_form.so
+
 
 #Install location - must install first:
 #IS_SOURCE="$HOMEDRIVE$CYGWIN_PATH$prefix/$SHORTNAME"
@@ -818,11 +831,18 @@ GLIBC_VER=2.2.4
 
 
 ## ==================================================================
-##                  Checks for standard programs
+##                  Check make
 ## ==================================================================
 
-PHP_CONFIGURE_PART(Checking standard programs:)
 AC_PATH_PROG(MAKE, make, no)
+AC_PATH_PROG(GMAKE, gmake, no)
+
+if test "$GMAKE" = "no" ; then
+    #In case that we have "native" make, but gmake also on the system,
+    #we should use gmake
+	MAKE="$GMAKE"
+fi
+
 if test "$MAKE" = "no" ; then
 	if test "$AUBIT_SOURCE" = "1" ; then
 		AC_MSG_ERROR(Cannot compile Aubit from source code without 'make' - please install it. Stop.)
@@ -830,19 +850,26 @@ if test "$MAKE" = "no" ; then
 		AC_MSG_WARN(It will be much easier if you would install 'make')
     fi
 else
-		AC_MSG_CHECKING(make version)
-		#this creates fill set dump on Solaris
-		set `make --version | head -1|sed -e 's/^GNU Make version //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
-		if test "$1" != ""; then
-			if test "$1" = "3" -a "$2" -lt "50"; then
-		        AC_MSG_WARN(You will need GNU make version 3.50 or later (found $1.$2.$3).)
-	        else
-			    AC_MSG_RESULT($1.$2.$3 (ok))
-	        fi
+	AC_MSG_CHECKING(make version)
+	#this creates full set dump on Solaris
+	set `$MAKE --version | head -1 | sed -e 's/^GNU Make version //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
+	if test "$1" != ""; then
+		if test "$1" = "3" -a "$2" -lt "50"; then
+	        AC_MSG_WARN(You will need GNU make version 3.50 or later (found $1.$2.$3).)
         else
-			AC_MSG_ERROR(Aubit needs GNU 'make' - please install it. Stop.)
+		    AC_MSG_RESULT($1.$2.$3 (ok))
         fi
+	else
+        #Could not read versionj number
+		AC_MSG_ERROR(Aubit needs GNU 'make' - please install it. Stop.)
+	fi
 fi
+
+## ==================================================================
+##                  Checks for standard programs
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking standard programs:)
 
 if test "$AUBIT_SOURCE" = "1" ; then
 
@@ -1099,13 +1126,21 @@ fi
 ##                 Checks for CINT - C code interpreter
 ## ==================================================================
 
-    #FIXME: despite listing all this paths, cint executable will only be found
+    
+PHP_CONFIGURE_PART(Checking for C interpreter:)
+	#FIXME: despite listing all this paths, cint executable will only be found
     #if it's in the PATH - no idea why
 
 	save_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
 	LD_LIBRARY_PATH="/usr/local/cint:/opt/cint:$LD_LIBRARY_PATH"
+
+	save_PATH=$PATH
+	PATH=/opt/cint:$PATH
+
 	AC_PATH_PROG(CINT, cint, no, $PATH /usr/local/cint /opt/cint)
+
 	LD_LIBRARY_PATH="$save_LD_LIBRARY_PATH"
+    PATH="$save_PATH"
 
 ## ==================================================================
 ##                 Determine RPM build location
@@ -1802,6 +1837,10 @@ AC_ARG_WITH(pgodbc,
 		CPPFLAGS="$CPPFLAGS $TMP_PGODBC_INCLUDE"
 		LDFLAGS="$LDFLAGS $TMP_PGODBC_LFLAGS $TMP_PGODBC_INCLUDE"
 		# FIXME: Replace `main' with a function in `-lpsqlodbc':
+		
+#libodbcpsql.so - is unixODBC distributed driver for PG - test for that one too?
+
+
 		AC_CHECK_LIB([psqlodbc], [main])
 		if test $ac_cv_lib_psqlodbc_main = yes; then
 			#also check for headers, since they are not in PG ODBC RPM, they are
@@ -2259,12 +2298,11 @@ AC_ARG_WITH(gtk,
 			test "$PKG_CONFIG" != "no")); then
 
 			
-			#If bith gtk-config and phg-config are found, use pkg-config!
+			#If both gtk-config and phg-config are found, use pkg-config!
 			if (test "$GTK_CONFIG" != "no" && test "$PKG_CONFIG" = "no") ; then
-				GTK_NAME="using gtk-config"
-				#GTK_NAME=`$PKG_CONFIG --list-all | grep gtk | head -1 | awk '{print $1}'`
-				#GDK_NAME=`$PKG_CONFIG --list-all | grep gdk | head -1 | awk '{print $1}'`
-				#GLIB_NAME=`$PKG_CONFIG --list-all | grep glib |  head -1 | awk '{print $1}'`
+				GTK_NAME="gtk-config"
+				GDK_NAME="gtk-config"
+				GLIB_NAME="gtk-config"
 
 				GTK_INC_PATH=`$GTK_CONFIG --cflags`
 				GLIB_CFLAGS=$GTK_INC_PATH
@@ -2291,25 +2329,47 @@ AC_ARG_WITH(gtk,
 								AC_DEFINE(HAVE_GTK,1,[ ])
 								GTKBUILD=yes
                             else
+								#on some missconfigured systems, like default RedHat 7.2
+                                #pkg-config will not contain all entries we need
 								AC_MSG_WARN(cannot extract names from pkg-config.)
+								AC_MSG_WARN(GTK_NAME="$GTK_NAME")
+								AC_MSG_WARN(GDK_NAME="$GDK_NAME")
+								AC_MSG_WARN(GLIB_NAME="$GLIB_NAME")
 
-								if test "$HAVE_GTKLIBS" = ""; then
-									AC_MSG_WARN(Trying to find some trace of GTK+ libraries-please wait...)
-									#can This be /usr/local/lib too?
-									LIBGLIBTMP=`find /usr/lib -name libglib* 2>/dev/null`
-    	                            LIBGDKTMP=`find /usr/lib -name libgdk* 2>/dev/null`
-        	                        LIBGTKTMP=`find /usr/lib -name libgtk* 2>/dev/null`
+								#If we have gtk-config, we can in this case try to use it.
+                                #This is a copy of commands above
+								if test "$GTK_CONFIG" != "no"; then
+									AC_MSG_WARN(Using gtk-config instead of missconfigured pkg-config)
+									GTK_NAME="gtk-config"
+									GDK_NAME="gtk-config"
+									GLIB_NAME="gtk-config"
 
-									if test "$LIBGLIBTMP" != "" && test "$LIBGDKTMP" != "" && test "$LIBGTKTMP" != ""; then
-							        	AC_MSG_WARN(you apparently have GTK+ run-time libraries installed.)
-								        AC_MSG_WARN(but pkg-config info is installed with -devel- packages.)
-    	                            else
-								        AC_MSG_WARN(Nothing found)
+									GTK_INC_PATH=`$GTK_CONFIG --cflags`
+									GLIB_CFLAGS=$GTK_INC_PATH
+									GTKLIBS=`$GTK_CONFIG --libs`
+
+									AC_DEFINE(HAVE_GTK,1,[ ])
+									GTKBUILD=yes
+                                else
+									if test "$HAVE_GTKLIBS" = ""; then
+										AC_MSG_WARN(Trying to find some trace of GTK+ libraries-please wait...)
+										#can This be /usr/local/lib too?
+										LIBGLIBTMP=`find /usr/lib -name libglib* 2>/dev/null`
+	    	                            LIBGDKTMP=`find /usr/lib -name libgdk* 2>/dev/null`
+	        	                        LIBGTKTMP=`find /usr/lib -name libgtk* 2>/dev/null`
+
+										if test "$LIBGLIBTMP" != "" && test "$LIBGDKTMP" != "" && test "$LIBGTKTMP" != ""; then
+								        	AC_MSG_WARN(you apparently have GTK+ run-time libraries installed.)
+									        AC_MSG_WARN(but pkg-config info is installed with -devel- packages.)
+	    	                            else
+									        AC_MSG_WARN(Nothing found)
+										fi
+	        	                    else
+							        	AC_MSG_WARN(you apparently have GTK+ run-time libraries)
+							        	AC_MSG_WARN(version "$HAVE_GTKLIBS" installed.)
+										AC_MSG_WARN(but pkg-config info is installed with -devel- packages.)
 									fi
-        	                    else
-						        	AC_MSG_WARN(you apparently have GTK+ run-time libraries version $HAVE_GTKLIBS installed.)
-									AC_MSG_WARN(but pkg-config info is installed with -devel- packages.)
-								fi
+                                fi
                             fi
 
 	            else
@@ -3463,10 +3523,44 @@ fi
 if test "$default_comp" != ""; then
 	#User can force COMPILER driver default with --default-comp=xxxx switch
 	A4GL_LEXTYPE="$default_comp"
-#else
+	if test "$default_lexdialect" != ""; then
+		A4GL_LEXDIALECT="$default_lexdialect"
+    fi
+else
+
+	#C compiler is the default at this point...
+
+	#Disabled since Perl output is not working at the moment
 	#if test "$PERLBUILD" != "no"; then
 	#	A4GL_LEXTYPE="PERL"
     #fi
+
+	# C# output (Mono)
+	#if test "$CS_COMPILER" != "no"; then
+	#	A4GL_LEXTYPE="CS"
+    #fi
+
+
+	#If we have PostgreSQL ESQL/C compiler, we can use it, bypassing A4GL_SQLTYPE
+    #setting - this will limit Aubit DB connectivity to PostgreSQL ONLY.
+    #Postgres - the ecpg needs to be the absolute latest CVS
+	#version which has support for the "-C INFORMIX" flag (IIRC).
+	#Also - this version relies on a few backend changes for more Informix
+	#compatibilty - some of which won't make it into the official postgres
+	#releases and will need special patches...
+	#All these are available (open source etc) - they are just not what most people
+	#will have..
+	#if test "$PG_ESQLC" != "no" ; then
+	#	A4GL_LEXTYPE=EC
+	#	A4GL_LEXDIALECT=POSTGRES
+    #fi
+
+    #If we have Informix ESQL/C compiler, we can use it, bypassing A4GL_SQLTYPE
+    #setting - this will limit Aubit DB connectivity to Informix ONLY.
+	if test "$IFMX_ESQLC" != "no" ; then
+		A4GL_LEXTYPE=EC
+		A4GL_LEXDIALECT=INFORMIX
+    fi
 fi
 
 ## ==================================================================
@@ -3656,19 +3750,21 @@ fi
 
     if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
 		RPMFILE_21=$LIB_PREFIX/libA4GL_file$SO_EXT
+		PLUGIN_YES="$PLUGIN_YES FILE"
     else
         #we must set it to something, because of InnoSetup, and InnoSetup will
         #eliminate dupicates automatically:
 		#RPMFILE_21=$LIB_PREFIX/libaubit4gl$SO_EXT
 		RPMFILE_21=$IS_SOURCE/lib/libaubit4gl$SO_EXT
+        PLUGIN_NO="$PLUGIN_NO FILE"
 	fi
 
 
 
-
+    #FIXME: if this is uncoditional, move it to LIBFILE_XX not RPMFILE_xx
 	RPMFILE_22=$LIB_PREFIX/libA4GL_string$SO_EXT
 	RPMFILE_23=$LIB_PREFIX/libA4GL_HTML$SO_EXT_LINKABLE
-	PLUGIN_YES="$PLUGIN_YES FILE STRING HTML"
+	PLUGIN_YES="$PLUGIN_YES STRING HTML"
 
     #temp disabled:
     #if test "$HAVE_PGSQL_LIB" = "yes"; then

@@ -20,6 +20,10 @@
 #
 #   Note: Defaults are in (), dependencies in []
 #
+# You can override any and all settings defaults as defined in Aubit compiler,
+# not just ones listed in this file.
+# see output of "aubit-config -a" for list of all defaults and there values
+#
 ##########################################################################
 
 #############
@@ -40,7 +44,12 @@ AUBITDIR=@aubitdir@
 ############
 #Name of default SQL library to use.
 #When used: run-time and compile-time
-#Options: static (nosql) iodbc unixodbc esql ifxodbc pgodbc odbc32 sapodbc
+#Options: static (nosql) iodbc unixodbc esql ifxodbc pgodbc odbc32 sapodbc FILESCHEMA
+#FILESCHEMA is to be used **JUST** for compiling programs where either the database
+#doesn't exist yet - or you can't get immediate access to it..
+#This takes the 'database' as a filename (with a .schema extension) and uses
+#that to collect the data.
+#Warning: this setting is ignored when A4GL_LEXTYPE is set to EC
 A4GL_SQLTYPE=@A4GL_SQLTYPE@
 
 ############
@@ -52,7 +61,8 @@ A4GL_PDFTYPE=@A4GL_PDFTYPE@
 ############
 #Determine default RPC driver to load
 #When used: run-time only
-#Options: SUNRPC, (NORPC)
+#Options: SUNRPC, (NORPC), XMLRPC
+#Note: XMLRPC is client only at the moment
 A4GL_RPCTYPE=@A4GL_RPCTYPE@
 
 #############
@@ -64,21 +74,30 @@ A4GL_UI=@A4GL_UI@
 ############
 #Default output language driver for 4gl compiler:
 #When used: compile-time only
-#Options: PERL, (C)
+#Options: PERL, EC, (C), CS
+#Note: EC (Embedded SQL C) can be Informix ESQL/C or PostgreSQL (for use with ecpg)
+#using EC will limit Aubit DB connectivity to that of used EC compiler, ignoring
+#setting of A4GL_SQLTYPE
+#Note: CS is C#
 A4GL_LEXTYPE=@A4GL_LEXTYPE@
+
+############
+#When A4GL_LEXTYPE=EC, specify type of EC compiler to be used
+#Options: (INFORMIX), POSTGRES
+A4GL_LEXDIALECT=@A4GL_LEXDIALECT@
 
 ############
 #Default forms driver to be loaded
 #When used: run-time only
 #Options: (GENERIC), NOFORM, XDR
-#Generic implies that format specified with A4GL_PACKER will be used (?)
-#FIXME: tried using GENERIC - no go with XML
+#Generic implies that format specified with A4GL_PACKER will be used
 A4GL_FORMTYPE=@A4GL_FORMTYPE@
 
 ############
 #Default menu driver to be loaded:
 #When used: run-time only
-#Options: (NOMENU), XDR
+#Options: (NOMENU), XDR, GENERIC
+#Generic implies that format specified with A4GL_PACKER will be used
 A4GL_MENUTYPE=@A4GL_MENUTYPE@
 
 ############
@@ -107,7 +126,8 @@ EXDTYPE=@EXDTYPE@
 #  This stores and reads the data in an XML file. The reading is very limited
 # and can basically only read the XML files that it generates - IT IS NOT A
 # FULL BLOWN XML PARSER. It uses some odd constructs and isn't ideal - but
-# you'll get the idea when you see the output
+# you'll get the idea when you see the output. Size of created files is
+# much larger then PACKED or XDR
 # 4) PERL
 # This generates a data structure which can be used inside a perl program - its
 # pretty complicated stuff though using hashes for the data representation.
@@ -137,11 +157,17 @@ A4GL_SQLCONVERT=YES
 #syntax, but this can be changed by setting, for example:
 #A4GL_SQLDIALECT=ORACLE
 
+############
+#CONFIG FILE BASED CONVERSIONS
+#convert_sql() now uses configuration files.  These are by default
+#located in /opt/aubit4gl/etc/convertsql/, but that can be changed
+#with A4GL_SQLCNVPATH.
+#A4GL_SQLCNVPATH=/opt/aubit4gl/etc/convertsql
 
 ############
 #auto initializing module and function local variables. This setting is used at
 #compile-time only. Numeric variables are initializet to 0, everything else to NULL
-#To turn on, set to "Y"
+#To turn on, set to "Y" (??? or is that YES ???)
 A4GL_AUTONULL=Y
 
 
@@ -156,6 +182,68 @@ A4GL_ANSI_WARN=Yes
 ############
 #Full path to CINT C-code interpreter, if installed, othewise "no"
 A4GL_CINT=@CINT@
+
+
+#If not set, DBPATH will be used
+#A4GL_DBPATH
+
+
+#A4GL_PRG_EXT=.4ae
+#A4GL_OBJ_EXT=.ao
+#A4GL_FRM_EXT=.afr.xml
+#A4GL_HLP_EXT=.hlp
+#A4GL_LIB_EXT=.aox
+#A4GL_MNU_EXT=.mnu.xml
+
+############
+#where xxxx is a HEX code of a colour attribute - eg 1400 (for 0x1400)
+#for blue and reverse. Applies to all windows created when no attribute is
+#specified (including the main screen)
+#A4GL_BACKGROUND=xxxx
+
+
+############
+#LINES environment variables if they are set (It will use A4GL_COLUMNS
+#and A4GL_LINES in preference if they are defined).
+#This should make it work with a normal (not xterm) terminal session.
+#A4GL_COLUMNS=
+#A4GL_LINES=
+
+
+#############
+#if set to Y then +,|,- will be used to draw graphics characters instead of
+#proper borders (if available)
+#A4GL_SIMPLE_GRAPHICS=Y
+
+
+#############
+#If set to Y allows forms to contain the additional graphics characters
+#<,>,^,v, and + to be used for tee's and an  intersection...
+#So the following (view with fixed font!):
+#\gp--v--q\g
+#\g|  |  |\g
+#\g>--+--<\g
+#\g|  |  |\g
+#\gb--^--d\g
+#Will draw a box with an intersecting horizonal and vertical line.
+#Note - you'll need to set EXTENDED_GRAPHICS before you compile the form as
+#well as for the 4gl executable...
+#A4GL_EXTENDED_GRAPHICS=Y
+
+
+############
+#Aubit used to honouring the size y by x in the form, this has been removed.
+#If you require to specify the size, it can still be used by setting
+#A4GL_USE_FORM_SIZE=Y (using this is an aubit extension - and not default
+#informix behaviour!)
+#A4GL_USE_FORM_SIZE=Y
+
+############
+#Mechanism for doing some automated testing
+#A4GL_KEYFILE=(some filename in DBPATH)
+#A4GL_KEYDELAY=(time in usec 1000000 = 1 second, defaults to 0.1s)
+#A4GL_KEYFILE=
+#A4GL_KEYDELAY=
 
 ## ===================================================================
 ##     Run-time settings for Aubit compiled programs

@@ -1,5 +1,8 @@
 //#include "a4gl_incl_4glhdr.h"
-//#include "a4gl_libaubit4gl.h"
+
+
+//needed for DTYPE_MONEY DTYPE_DECIMAL DTYPE_DTIME DTYPE_DATE ...
+#include "a4gl_libaubit4gl.h"
 
 #include "a4gl_esql.h"
 

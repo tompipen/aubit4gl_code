@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2003-02-10 02:08:30 afalout Exp $
+# $Id: Makefile.in,v 1.6 2003-07-20 06:53:25 afalout Exp $
 #
 
 ROOT    =../../..
@@ -45,9 +45,9 @@ include ${ROOT}/incl/Makefile-common
 
 
 ${LIBROOT}/libA4GL_string${SO_EXT}: libstring.4gl
-	${SH} 4glpc -as-dll $^ -o $@
+	export A4GL_LEXTYPE=C; ${SH} 4glpc -as-dll $^ -o $@
 
 clean:
-	${RM} *.out *.c *.h *${SO_EXT} *.err *.bak *.glb *.h
+	${RM} *.out *.c *.${FGLC_OUTPUT_EXT} *.h *${SO_EXT} *.err *.bak *.glb *.h
 
 #============================== EOF =================================

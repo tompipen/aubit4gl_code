@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.13 2003-01-27 03:50:31 afalout Exp $
+# $Id: Makefile.in,v 1.14 2003-07-20 06:53:25 afalout Exp $
 #
 
 ROOT    =../..
@@ -39,8 +39,8 @@ override NOINCL=0
 ## ==================================================================
 
 4GLPCFLAGS=
-FGLPCEXEC=${SH} 4glpc
-AMAKE=../../bin/amake
+FGLPCEXEC=export A4GL_LEXTYPE=C; ${SH} 4glpc
+AMAKE=export A4GL_LEXTYPE=C; ${SH} ../../bin/amake
 
 ## ==================================================================
 ##                              Targets
@@ -51,8 +51,9 @@ all: html
 
 html:
 #	${AMAKE} simple_html
-#	sh ${AMAKE} -verbose A4GL_CC_LDFLAGS+=A4GL_CC_LDFLAGS+=-noodbc simple_html MOVETARGETTOSTORE=0
-	${SH} ${AMAKE} A4GL_CC_LDFLAGS+= A4GL_CC_LDFLAGS+= A4GL_CC_LDFLAGS+=simple_html MOVETARGETTOSTORE=0
+#	${AMAKE} -verbose A4GL_CC_LDFLAGS+=A4GL_CC_LDFLAGS+=-noodbc simple_html MOVETARGETTOSTORE=0
+#	${AMAKE} A4GL_CC_LDFLAGS+= A4GL_CC_LDFLAGS+= A4GL_CC_LDFLAGS+=simple_html MOVETARGETTOSTORE=0
+	${AMAKE} MOVETARGETTOSTORE=0
 
 
 #Create start-up shell script:
@@ -73,7 +74,7 @@ simple_html.sf:
 
 libA4GL_HTML${SO_EXT}: ${LIBROOT}/libA4GL_HTML${SO_EXT}
 ${LIBROOT}/libA4GL_HTML${SO_EXT}: libahtmllib.4gl
-	${SH} 4glpc -as-dll $^ -o $@
+	${FGLPCEXEC} -as-dll $^ -o $@
 #	${CP} $@ ../../../lib
 
 
@@ -123,14 +124,14 @@ help:
 
 clean: html.clean.all
 	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.o *.4ae \
-	simple_html *.hlp *.exe *.stackdump *.err *.tmp *.glb *.so
+	simple_html *.hlp *.exe *.stackdump *.err *.tmp *.glb *.so *.${FGLC_OUTPUT_EXT}
 
 
 html.clean.target:
-	${SH} ${AMAKE} simple_html clean.target
+	${AMAKE} simple_html clean.target
 
 html.clean.all:
-	${SH} ${AMAKE} simple_html clean
+	${AMAKE} simple_html clean
 
 
 #--------------------------- EOF -----------------------------------

@@ -9,7 +9,7 @@ PROG            = simple_html
 GLOBALS.4gl     = libahtmllib.4gl
 
 
-FILES.lib       =  libpdf-dummy.o
+#FILES.lib       =  libpdf-dummy.o
 
 FILES.4gl       = \
                         ${GLOBALS.4gl} \

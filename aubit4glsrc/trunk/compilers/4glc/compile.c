@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.30 2003-06-14 13:13:52 afalout Exp $
+# $Id: compile.c,v 1.31 2003-07-20 06:53:24 afalout Exp $
 #*/
 
 /**
@@ -600,69 +600,91 @@ initArguments (int argc, char *argv[])
   if (compile_exec)
     {
       A4GL_debug ("Linking exec\n");
-#if ( ! defined (__MINGW32__) && ! defined (__CYGWIN__) )
-      //We are on UNIX
-      sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s",
-	       gcc_exec, all_objects, output_object, l_path, l_libs,
-	       pass_options, extra_ldflags);
-#else
-      //We are on Windows
-      //WARNING: libs must be at the end
-      sprintf (buff, "%s %s -o %s %s %s %s %s",
-	       gcc_exec, all_objects, output_object, l_path, pass_options,
-	       l_libs, extra_ldflags);
-#endif
+	#if ( ! defined (__MINGW32__) && ! defined (__CYGWIN__) )
+	      //We are on UNIX
+	      
+		if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
+	    {
+            /*
+			When using Embedded C output, we need to run appropriate ESQL/C
+            compiler to do the linking
+            */
+		  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
+		    {
+
+			  sprintf (buff, "ecpg_wrap -rdynamic %s -o %s %s %s %s %s",
+			       all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+
+		    } else {
+				//"A4GL_LEXDIALECT"="INFORMIX" - default
+			  sprintf (buff, "esql -rdynamic %s -o %s %s %s %s %s",
+			       all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+
+		    }
+	    } else { /* Pure C compiler output */
+		  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s",
+		       gcc_exec, all_objects, output_object, l_path, l_libs,
+		       pass_options, extra_ldflags);
+        }
+	#else
+	      //We are on Windows
+	      //WARNING: libs must be at the end
+	      sprintf (buff, "%s %s -o %s %s %s %s %s",
+		       gcc_exec, all_objects, output_object, l_path, pass_options,
+		       l_libs, extra_ldflags);
+	#endif
     }
 
   if (compile_lib)
     {
-#ifndef __MINGW32__
-      A4GL_debug ("Linking static library\n");
+	#ifndef __MINGW32__
+	      A4GL_debug ("Linking static library\n");
 
-      sprintf (buff, "%s -static %s -o %s %s %s -shared %s %s",
-	       gcc_exec, all_objects, output_object, pass_options, l_path,
-	       l_libs, extra_ldflags);
-#else
-      /* On Windows, there can be no unresolved dependencies at link time - so we allways must
-         link with libaubit4gl - but we do not make any static Aubit libraries any more, so we
-         must link with .dll - meaning that we must force shared linking even when user specified
-         static flag */
-      A4GL_debug
-	("Static linking specified - forcing shared linking on Windows\n");
-      compile_lib = 0;
-      compile_so = 1;
-#endif
+	      sprintf (buff, "%s -static %s -o %s %s %s -shared %s %s",
+		       gcc_exec, all_objects, output_object, pass_options, l_path,
+		       l_libs, extra_ldflags);
+	#else
+	      /* On Windows, there can be no unresolved dependencies at link time - so we allways must
+	         link with libaubit4gl - but we do not make any static Aubit libraries any more, so we
+	         must link with .dll - meaning that we must force shared linking even when user specified
+	         static flag */
+	      A4GL_debug
+		("Static linking specified - forcing shared linking on Windows\n");
+	      compile_lib = 0;
+	      compile_so = 1;
+	#endif
     }
 
   if (compile_so)
     {
       A4GL_debug ("Linking shared library\n");
-#ifndef __MINGW32__
-      sprintf (buff, "%s -shared %s -o %s %s %s %s %s %s",
-	       gcc_exec, all_objects, output_object, l_path, l_libs,
-	       pass_options, extra_ldflags, incl_path);
-      //FIXME: add incl_path only if there are .c files in all_objects
+	#ifndef __MINGW32__
+	      sprintf (buff, "%s -shared %s -o %s %s %s %s %s %s",
+		       gcc_exec, all_objects, output_object, l_path, l_libs,
+		       pass_options, extra_ldflags, incl_path);
+	      //FIXME: add incl_path only if there are .c files in all_objects
 
-//gcc -shared  -o  -L/usr/src/aubit/aubit4glsrc/lib -laubit4gl helplib.c a4gl_xxhelp.afr.c -o ../libHELP_std.dll   -I/usr/src/aubit/aubit4glsrc/incl -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
+	//gcc -shared  -o  -L/usr/src/aubit/aubit4glsrc/lib -laubit4gl helplib.c a4gl_xxhelp.afr.c -o ../libHELP_std.dll   -I/usr/src/aubit/aubit4glsrc/incl -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
 
-#else
-      /*
-         NOTE: we are acutally making a Window dll here.
-         WARNING: libs must be at the end
-         WARNING: without -L ld on Windows won't find it's own ass!!!! Not even in curren directory!!!
-       */
+	#else
+	      /*
+	         NOTE: we are acutally making a Window dll here.
+	         WARNING: libs must be at the end
+	         WARNING: without -L ld on Windows won't find it's own ass!!!! Not even in curren directory!!!
+	       */
 
-      //FIXME: add incl_path only if there are .c files in all_objects
-      sprintf (buff,
-	       "%s -L. -shared -Wl,--out-implib=%s.a -Wl,--export-all-symbols %s -o %s %s %s %s %s %s",
-	       gcc_exec, output_object, all_objects, output_object,
-	       pass_options, l_path, l_libs, extra_ldflags, incl_path);
-
-
+	      //FIXME: add incl_path only if there are .c files in all_objects
+	      sprintf (buff,
+		       "%s -L. -shared -Wl,--out-implib=%s.a -Wl,--export-all-symbols %s -o %s %s %s %s %s %s",
+		       gcc_exec, output_object, all_objects, output_object,
+		       pass_options, l_path, l_libs, extra_ldflags, incl_path);
 
 
-#endif
 
+
+	#endif
     }
 
 
@@ -672,12 +694,13 @@ initArguments (int argc, char *argv[])
 	{
 	  printf ("%s\n", buff);
 	}
-      sprintf (buff, "%s > %s.err 2>&1", buff, output_object);
-#ifdef DEBUG
+    
+	sprintf (buff, "%s > %s.err 2>&1", buff, output_object);
+	#ifdef DEBUG
       A4GL_debug ("Runnung %s", buff);
-#endif
-      ret = system (buff);
-      if (ret)
+	#endif
+    ret = system (buff);
+    if (ret)
 	{
 	  printf ("Error compiling %s - check %s.err\n", output_object,
 		  output_object);
@@ -686,9 +709,7 @@ initArguments (int argc, char *argv[])
 	  //fixme: show err file
 	  //FIXME: if I exit with x, I get 0 code on the shell:
 	  exit (99);
-	}
-      else
-	{
+	} else {
 
 	  sprintf (buff, "%s.err", output_object);
 	  filep = fopen (buff, "r");
@@ -713,9 +734,9 @@ initArguments (int argc, char *argv[])
 
 	      sprintf (buff, "%s %s.err %s.warn", acl_getenv ("A4GL_MV_CMD"),
 		       output_object, output_object);
-#ifdef DEBUG
-	      A4GL_debug ("Runnung %s", buff);
-#endif
+			#ifdef DEBUG
+	    	  A4GL_debug ("Runnung %s", buff);
+			#endif
 	      ret = system (buff);
 
 	    }
@@ -739,9 +760,9 @@ initArguments (int argc, char *argv[])
 	      //sprintf (buff,"%s %s",acl_getenv("A4GL_RM_CMD"),all_objects);
 	      sprintf (buff, "%s %s.err", acl_getenv ("A4GL_RM_CMD"),
 		       output_object);
-#ifdef DEBUG
-	      A4GL_debug ("Runnung %s\n", buff);
-#endif
+			#ifdef DEBUG
+		      A4GL_debug ("Runnung %s\n", buff);
+			#endif
 	      ret = system (buff);
 	      if (ret)
 		{
@@ -752,20 +773,16 @@ initArguments (int argc, char *argv[])
 
 
 	}
-    }
-  else
+  } else {
+   	if (!todo)
     {
-      if (!todo)
-	{
 	  A4GL_debug
 	    ("Error in parameters to 4glc - no 4gl input files and no linking.\n");
 	  printf
 	    ("Error in parameters to 4glc - no 4gl input files and no linking.\n");
 	  return (5);
-
-	}
     }
-
+  }
   return x;
 }
 
@@ -946,26 +963,57 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 
 	    }
 
-	  //FIXME: should we add C compiler flags -g and/or -O2 -DDEBUG here ?
-	  //create A4GL_CFLAGS in resource.c
+		if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
+	    {
+            /*
+			When using Embedded C output, we need to run appropriate ESQL/C
+            on generated file to get a .c file and compile object file
+			from that
+            */
 
-#ifndef __MINGW32__
-	  sprintf (buff, "%s %s.c -c -o %s %s %s",
-		   gcc_exec, aa, single_output_object, incl_path,
-		   pass_options);
-#else
-	  sprintf (buff, "%s -mms-bitfields %s.c -c -o %s %s %s",
-		   gcc_exec, aa, single_output_object, incl_path,
-		   pass_options);
-#endif
+
+		  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
+		    {
+       			  sprintf (buff, "ecpg_wrap %s.cpc -c -o %s %s %s",
+				   aa, single_output_object, incl_path,
+				   pass_options);
+
+
+		    } else {
+				//"A4GL_LEXDIALECT"="INFORMIX" - default
+				//  esql  ./hello.ec -c -o ./hello.ao -I/opt/aubit4gl/incl  2> ./hello.ec.err
+
+       			  sprintf (buff, "esql %s.ec -c -o %s %s %s",
+				   aa, single_output_object, incl_path,
+				   pass_options);
+
+
+		    }
+	    } else { /* Pure C compiler output */
+
+		  //FIXME: should we add C compiler flags -g and/or -O2 -DDEBUG here ?
+		  //create A4GL_CFLAGS in resource.c
+
+			#ifndef __MINGW32__
+			  sprintf (buff, "%s %s.c -c -o %s %s %s",
+				   gcc_exec, aa, single_output_object, incl_path,
+				   pass_options);
+			#else
+			  sprintf (buff, "%s -mms-bitfields %s.c -c -o %s %s %s",
+				   gcc_exec, aa, single_output_object, incl_path,
+				   pass_options);
+			#endif
+        }
+
+
 	  if (verbose)
 	    {
 	      printf ("%s\n", buff);
 	    }
 	  sprintf (buff, "%s > %s.c.err 2>&1", buff, aa);
-#ifdef DEBUG
-	  A4GL_debug ("Runnung %s", buff);
-#endif
+		#ifdef DEBUG
+			A4GL_debug ("Runnung %s", buff);
+		#endif
 	  ret = system (buff);
 	  //see function system_run() in fglwrap.c
 	  if (ret)

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.8 2003-04-30 22:13:40 afalout Exp $
+# $Id: Makefile.in,v 1.9 2003-07-20 06:53:26 afalout Exp $
 #
 
 ROOT    =../../..
@@ -77,7 +77,7 @@ help:
 clean:
 	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.h *.c *.o *.4ae \
 	*.hlp *.exe *.stackdump *.err *.glb *${A4GL_FRM_EXT} ${FILES.4gl:.4gl=.h} \
-    calc game
+    calc game *.frm.xml *.afr.xml *.afr.dat
 
 
 

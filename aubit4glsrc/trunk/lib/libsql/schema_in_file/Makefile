@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2003-02-19 11:49:04 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2003-07-20 06:53:25 afalout Exp $
 #
 
 ROOT    =../../..
@@ -38,7 +38,8 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS+=-I.. -I${ROOT}/compilers/fcompile -I/usr/local/include -I/usr/local/rpc -I/usr/local
+#CFLAGS+=-I.. -I${ROOT}/compilers/fcompile -I/usr/local/include -I/usr/local/rpc -I/usr/local
+CFLAGS+=-I..
 
 ifeq "${TARGET_OS}" "cygwin"
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
@@ -52,13 +53,13 @@ ALL=${LIBROOT}/libSQL_FILESCHEMA${SO_EXT}
 
 ALL: ${ALL}
 
-FILESCHEMA${SO_EXT}: libSQL_FILESCHEMA${SO_EXT}
+#FILESCHEMA${SO_EXT}: libSQL_FILESCHEMA${SO_EXT}
 
 ${LIBROOT}/libSQL_FILESCHEMA${SO_EXT}: schema_in_file.o
 	${LD} ${SO_LDFLAGS} $^ -o $@  ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
 
 
 

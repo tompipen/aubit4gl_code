@@ -1259,15 +1259,21 @@ class - I haven't  got past the first few lines yet..
 
 Aubit compiler now by default compiles with dynamic SQL support.
 
-This means that just by changing a value of A4GL_SQLTYPE environment variable, you can decide at run-time which SQL libraries compiler and/or your programs will use.
+This means that just by changing a value of A4GL_SQLTYPE environment variable,
+you can decide at run-time which SQL libraries compiler and/or your programs will use.
 
-At the moment, there are "noodbc" "iodbc" and "unixodbc" dynamic SQL libraries available; naturally, on Windows, you only have the choice of "noodbc" and "odbc32", but since Windows OS always have ODBC manager, this is down to "odbc32".
+At the moment, there are "noodbc" "iodbc" and "unixodbc" dynamic SQL libraries 
+available; naturally, on Windows, you only have the choice of "noodbc" and "odbc32", 
+but since Windows OS always have ODBC manager, this is down to "odbc32".
 
 I see Mike already added new directory called "esqlc" - for native Informix support.
 
-David, since you implemented PostgreSQL native support in your Hy4GL, is there any code there we can use, and would you possibly be interested in implementing this for Aubit compiler?
+David, since you implemented PostgreSQL native support in your Hy4GL, is there 
+any code there we can use, and would you possibly be interested in implementing 
+this for Aubit compiler?
 
-Since UI support is already dynamically loaded (?), I suspect Mike's next target will be dynamic loading of language output modules in compiler (C, Perl, Java...)
+Since UI support is already dynamically loaded (?), I suspect Mike's next target
+will be dynamic loading of language output modules in compiler (C, Perl, Java...)
 
 Consequence of this, will be that I will reduce number of binary builds from 8 to 4:
 
@@ -1278,13 +1284,18 @@ to
 
 gtk-nopdf nogtk-nopdf gtk-pdf nogtk-pdf
 
-I can see no particular reason other then the size of the download, to separate GTK and noGTK builds, since if you don't have GTK libs installed, you can always use AUBITGUI=text. If this is correct, I can as well go down only to:
+I can see no particular reason other then the size of the download, to separate 
+GTK and noGTK builds, since if you don't have GTK libs installed, you can always 
+use AUBITGUI=text. If this is correct, I can as well go down only to:
 
 aubit-nopdf aubit-pdf
 
-Then again, it is still not clear to me why do we have PDFlib linked in 4glc and all libraries. Mike, if this can also be loaded dynamically, we can go down to one binary distribution.
+Then again, it is still not clear to me why do we have PDFlib linked in 4glc and 
+all libraries. Mike, if this can also be loaded dynamically, we can go down to 
+one binary distribution.
 
-There is libpdf-dummy.c in tools/html, can we do the same thing as we did with noodbc.c ?
+There is libpdf-dummy.c in tools/html, can we do the same thing as we did with 
+noodbc.c ?
 
 Configuration:
 --------------
@@ -1604,7 +1615,8 @@ Hi *,
 
 > All environment variables
 
-...or other configuration variables/definitions, not nececaly coming from environment, but from configuration files like like aubitrc..
+...or other configuration variables/definitions, not nececaly coming from 
+environment, but from configuration files like like aubitrc..
 
 > will be check for A4GL_oldname - if thats found,
 > its used. If its not - then it will work as before, eg
@@ -1632,7 +1644,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.18 2003-07-13 04:11:40 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.19 2003-07-20 06:53:24 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3612,6 +3624,8 @@ appears in an expression or as a column name (like 'user' or 'today').
 I've also included code for auto initializing module and function local
 variables (but you need to set A4GL_AUTONULL=YES to get this)...
 
+or is it just Y ?
+
 ===========================================================================
 
 
@@ -4136,6 +4150,16 @@ driver - which very much depends on which one you choose...
 
 
 =============================================================================
+
+> Probably no for postgres - the ecpg needs to be the absolute latest CVS
+> version which has support for the "-C INFORMIX" flag (IIRC).
+> Also - this version relies on a few backend changes for more Informix
+> compatibilty - some of which won't make it into the official postgres
+> releases and will need special patches...
+> All these are available (open source etc) - they are just not what most people
+> will have..
+>
+
 
 =============================================================================
 
