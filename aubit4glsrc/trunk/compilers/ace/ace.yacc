@@ -1375,6 +1375,12 @@ val_expression:
 		COPY($<expr>$.expr_u.sexpr->expr,$<expr>2); 
 		$<expr>$.expr_u.sexpr->operand=EXPR_COLUMN; 
 	}
+	| ASCII val_expression {
+		$<expr>$.type=EXPRTYPE_SIMPLE; 
+		$<expr>$.expr_u.sexpr=malloc(sizeof(struct simple_expr)); 
+		COPY($<expr>$.expr_u.sexpr->expr,$<expr>2); 
+		$<expr>$.expr_u.sexpr->operand=EXPR_ASCII; 
+	}
 	| val_expression SPACES  {
 		$<expr>$.type=EXPRTYPE_SIMPLE; 
 		$<expr>$.expr_u.sexpr=malloc(sizeof(struct simple_expr)); 
@@ -1402,6 +1408,7 @@ val_expression:
 		COPY($<expr>$.expr_u.sexpr->expr,$<expr>1); 
 		$<expr>$.expr_u.sexpr->operand=EXPR_CLIP; 
 	}
+
 	| val_expression units_qual {
 		printf("NIY\n");
 		sprintf($<str>$," %s %s",$<str>1,$<str>2);
