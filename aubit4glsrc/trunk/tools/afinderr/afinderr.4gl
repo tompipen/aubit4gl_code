@@ -60,8 +60,7 @@ if (d!=0) {
 		de=readdir(d);
 		if (!de) break;
 	
-		if (!strstr(de->d_name,".iem")) {
-			A4GL_debug("Ignoring file %s as it doesn't end in .iem",de->d_name);
+		if (!strstr(de->d_name,".iem") && ! strstr(de->d_name,".hlp")) {
 			continue;
 		}
 		strcpy(buff2,buff);
@@ -70,7 +69,6 @@ if (d!=0) {
 		if (strlen(de->d_name)) {
 		A4GL_push_char(buff2);
 		A4GL_push_long(n);
-		A4GL_debug("Looking for %d in %s",n,buff2);
 		aclfgl_newshowhelp(2);
 		} else {
 			printf("Can't readdir\n");
