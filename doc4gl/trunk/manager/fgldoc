@@ -12,7 +12,7 @@
 #  @todo Options tem de passar a ser usado como objecto
 #  @todo Forms para interacção com repositorio
 #
-#  $Id: fgldoc,v 1.8 2003-11-20 10:51:49 afalout Exp $
+#  $Id: fgldoc,v 1.9 2003-11-26 05:07:31 afalout Exp $
 #  $Author: afalout $
 #
 #  =========================================================================
@@ -1152,37 +1152,36 @@ sub printUsage()
 {
     print qq/Usage: fgldoc [options]
   Options:
-    --help
-    --quiet
-    --action=<ActionToDo>
-    --ui={GUI|CUI}
-    --process_file=<file_name>
-    --export_directory=<directory>
-    --export_source=<fglSourceName>
-    --insertEmptyComment
-    --sheet_file=<CSVfileName>
-    --normalize
-    --clean_repository
-    --send_line_to_log
-    --package_name=s
-    --clean_repository
-    --load_recursive
-    --import_directory=s
-    --export_html_directory=<htmlDirectoryName>
-    --export_html_module=<ModuleName.4gl>
-    --ignore_exist_dir
-    --database=<databaseName>
-    --locale=<language (current just en_us and pt_pt)>
+    --help  : Show this help message
+    --quiet : Do not show progress information
+    --action=<ActionToDo>   : Specify one of the actions
+    --ui={GUI|CUI}  : Start program in GUI or character mode
+    --process_file=<file_name>  : pipe separated (.unl) file to load process list from
+    --export_directory=<directory>  : Export something to this directory
+    --export_source=<fglSourceName> : ??/
+    --insertEmptyComment    : Insert empty comments to all modules when perfoming action ???
+    --sheet_file=<CSVfileName>  : Specify Comma Separated Values file for action ???
+    --normalize : Normalise data loaded in action ???
+    --clean_repository  : clear Repository On ImportCsv action
+    --send_line_to_log  : log progress and errors to /tmp/p4gl.log
+    --package_name=s    : Set package name (default='.')
+    --load_recursive    : Load information form modules recursively
+    --import_directory=s    : Specify directory from which to import something
+    --export_html_directory=<htmlDirectoryName> : Directory where HTML docs will be created
+    --export_html_module=<ModuleName.4gl> : Export only specified module to HTML
+    --ignore_exist_dir  : Ignore the fact that some directory exists
+    --database=<databaseName>   : Specify database name to connect to
+    --locale=<language (current just en_us and pt_pt)> : Language for messages
     --stop      : Stop when an error ocurr
   Actions:
-    test
-    importCsv
-    importFgl
-    export2Fgl
-    export2Csv
-    export2Html
-    createRepository
-    dropRepository
+    test        : No idea
+    importCsv   : Import data from Comma Separated Values file to database
+    importFgl   : Import data from 4GL modules
+    export2Fgl  : Export data from database to 4GL modules
+    export2Csv  : Export data from database to Comma Separated Values file
+    export2Html : Export data from database to static HTML files
+    createRepository    : Create empty database repository
+    dropRepository      : delete all tables Doc4GL tables from repository
 /;
 }
 

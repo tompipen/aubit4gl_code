@@ -10,26 +10,28 @@
 
  Inserts into tables:
 
-dd_temp
-p4gl_form_attribute_type
-p4gl_form
-p4gl_form_process
-systableext
-syscolumnext
-p4gl_form_table
-p4gl_form_column
-p4gl_table_process
-p4gl_form_attribute
-p4gl_column_process
-
-
+	dd_temp
+	p4gl_form_attribute_type
+	p4gl_form
+	p4gl_form_process
+	systableext
+	syscolumnext
+	p4gl_form_table
+	p4gl_form_column
+	p4gl_table_process
+	p4gl_form_attribute
+	p4gl_column_process
 
 
  *}
 
-#this allows DEFINE LIKE to be used without causing attempt to connect to this
-#database at run-time, but will work only with 4Js and Aubit.
-#replace with DATABASE stmt if you need to
+{
+ *
+ * this allows DEFINE LIKE to be used without causing attempt to connect to this
+ * database at run-time, but will work only with 4Js and Aubit.
+ * replace with DATABASE stmt if you need to
+ *
+ *}
 #schema maxdev
 database maxdev
 
@@ -39,14 +41,21 @@ define
     p_p4gl_form_column record like p4gl_form_column.*,
     p_p4gl_table_process record like p4gl_table_process.*,
 	p_p4gl_form_table record like p4gl_form_table.*,
+	p_p4gl_function_call record like p4gl_function_call.*,
+	p_p4gl_function record like p4gl_function.*,
+	p_p4gl_module_prog record like p4gl_module_prog.*,
 	p_systableext record like systableext.*,
 	p_syscolumnext record like syscolumnext.*,
 
 	l_fname, do_one_form char(264),
-    debug, warnings, verbose
+    debug, debug2, warnings, verbose, interactive,do_insert
         smallint,
     hush
-        char(1)
+        char(1),
+	reason_1,reason_2,reason_3,reason_4,reason_5,reason_6,reason_7,
+    exit_on_error
+        smallint
+
 
 {**
  * Main function
@@ -62,10 +71,11 @@ define
 	# database you wish to store your mapfile data in
 	#database informix
 
-    let debug = false    	#show debugging messages
+    let debug = true    	#show debugging messages
+    let debug2 = false      #additional deep debugging
     let warnings = true     #show warning messages
     let verbose = false     #show details of what you are doing
-
+    let exit_on_error = false
     let hush = ""
     #let hush = "#"
 
@@ -88,6 +98,7 @@ define
 		database db
 	    display "Connected to the database."
 
+        let interactive = false
 
         case type
             when "dd"
@@ -98,8 +109,15 @@ define
 				call count_data()
             when "clean"
                 call clean()
+            when "fixup"
+				call flag_ext_tables() #flag tables we know are used, but not by this code
+                call fixup() #see if we can find references to remaining non-registered tables
+				call drop_obsolete() #drop tables marked obsolete
+            when "endrun"
+				call function_calls()
 			otherwise
                 display "ERROR: unknown type"
+                exit program (2)
         end case
 
 		#CLOSE SESSION s_ifmx
@@ -108,7 +126,8 @@ define
 	else
        case arg_val(1)
 		when "interactive"
-    		let db = "maxdev"
+	        let interactive = true
+			let db = "maxdev"
 			database db
 			call main_menu()
 		when "clean"
@@ -121,20 +140,20 @@ define
 			call count_data()
 	   otherwise
 		   display "Usage:"
-		   display "loadmap file_name uid pwd db [dd|ddp|clean|cnt]"
+		   display "loadmap file_name uid pwd db [dd|ddp|clean|cnt|fixup|endrun]"
 		   display "loadmap [interactive|clean|cnt]"
 		   display ""
        end case
 	end if
 
-	call flag_ext_tables()
+	#call flag_ext_tables()
 
 
 end main
 
 
 {**
- *
+ * Get base name of the file out of the full path
  *
  *}
 function my_basename(buff)
@@ -157,7 +176,7 @@ define
 end function
 
 {**
- *
+ * Strip (remove) specified string out of the string
  *
  *}
 function strip(buff,strip_it)
@@ -182,7 +201,7 @@ function strip(buff,strip_it)
 end function
 
 {**
- *
+ * Clean all Doc4GL tables populated by any tool (p4gl,mkf,loadform,fgldoc)
  *
  *}
 function clean()
@@ -221,7 +240,7 @@ function clean()
 end function
 
 {**
- *
+ * Main menu for interactive mode
  *
  *}
 function main_menu()
@@ -230,16 +249,31 @@ function main_menu()
         command "Reports"
 
             menu "Reports"
-                command "1Tables by process" "Tables listed alphabeticaly, with all processes they belong to"
-                    call rep_table_process()
 
-                command "2Process/table" "Tables grouped by process"
-                    call rep_process_table()
+                command "Tables" "Tables reports"
 
-                command "3Unused" "TODO-Modules not referenced by make files"
+					menu "Tables"
+    					command "1Tables by process" "Tables listed alphabeticaly, with all processes they belong to"
+		                    call rep_table_process()
 
-                command "4Unused" "Tables not referenced by 4gl or per files"
-                    call rep_unused_tables()
+		                command "2Process/table" "Tables grouped by process"
+		                    call rep_process_table()
+
+		                command "4Unused" "Tables not referenced by 4gl or per files"
+		                    call rep_unused_tables()
+
+						command "exit" "Exit program"
+				            exit menu
+                    end menu
+
+                command "Modules" "Modules reports"
+
+                    menu "Modules"
+						command "3Unused" "TODO-Modules not referenced by make files"
+
+						command "exit" "Exit program"
+				            exit menu
+                    end menu
 
 				command "exit" "Exit program"
 		            exit menu
@@ -251,6 +285,11 @@ function main_menu()
                 command "Drop obsolete" "Drop all tables marked obsolete"
                     call drop_obsolete()
 
+                command "Fix-up" "Add tables flaged with @table tag to systableext"
+ 					#Needed because p4gl core dumps...
+					call flag_ext_tables()
+                    call fixup()
+
 				command "exit" "Exit program"
 		            exit menu
             end menu
@@ -261,8 +300,14 @@ function main_menu()
 
 end function
 
-
+{**
+ * Drop all tables marked obsolete from database
+ *
+ *
+ *}
 function drop_obsolete()
+define
+    p_tabname like systableext.tabname
 
 
     declare rd1 cursor for
@@ -272,23 +317,33 @@ function drop_obsolete()
             and tabtype = "O" #Doc4GL table types are T=table V=view U=undefined E=tEmporary O=obsolete
             and tabname in (select tabname from systables)
 
+    #######################################
+	foreach rd1 into p_systableext.tabname
+    #######################################
 
-    foreach rd1 into p_systableext.tabname
-        display "drop table ",p_systableext.tabname clipped, ";"
 
+		display "drop table ",p_systableext.tabname clipped, ";"
+        let p_tabname = p_systableext.tabname
+		drop table p_tabname
+#        drop table p_systableext.tabname
+#|_______________________________^
+#| Error at line 318, character 33
+#| syntax error, unexpected NUMBER_VALUE (.)
 
-
+    ###########
 	end foreach
+    ###########
 
 
 end function
 
 
-#Some tables are used by code external to our current source code tree-like ASP framework
+#
 
 {**
- *
- *
+ * Some tables are used by code external to our current source code tree-like
+ * ASP framework.
+ * We will insert them into systableext as 'X'
  *}
 function flag_ext_tables()
 
@@ -304,11 +359,8 @@ whenever error continue
 	insert into systableext (owner,tabname,tabtype)
 		values ("root","asp_pref","X")
 
-
 	insert into systableext (owner,tabname,tabtype)
 		values ("root","asp_contract","X")
-
-
 
 whenever error stop
 
@@ -317,12 +369,12 @@ end function
 
 
 {**
- *
+ * Tables listed alphabeticaly, with all processes they belong to
  *
  *}
 function rep_table_process()
 define
-    all_process,report_file
+    all_process,report_file,run_string
         char(200),
     total_tables,process_tables
         smallint
@@ -391,11 +443,15 @@ define
     finish report table_process
 
     error report_file clipped, " created."
+    let run_string= "less ",report_file
+    run run_string
+
+
 
 end function
 
 {**
- *
+ *  Tables listed alphabeticaly, with all processes they belong to
  *
  *}
 REPORT table_process(tabname,all_process,total_tables,process_tables)
@@ -448,9 +504,6 @@ FORMAT
 
         print
             "total tables in db:",total_tables using "<<<<"
-        print
-            "tables related/unrelated to process:", process_tables using "<<<<","/",total_tables-process_tables using "<<<<",
-            "(",((process_tables*100)/total_tables) using "<<<<","%)"
 
 		PRINT
 "_________________________________________________________________"
@@ -459,17 +512,22 @@ FORMAT
 END REPORT
 
 {**
- *
+ * Tables grouped by process
  *
  *}
 function rep_process_table()
 define
-    all_process,report_file
+    all_process,report_file,run_string,disp_process
         char(200),
-    total_tables,process_tables,this_process_ref_form,process_ref_form
+    total_tables,process_tables,this_process_ref_form,process_ref_form,
+    process_ref_module,
+	total_mod_refs,total_form_refs,total_refs,this_process_ref_module,
+    proc_cnt
         smallint,
-    tmp_id_process
-        char(10)
+    tmp_id_process,root_process
+        char(20),
+    p_tabtype
+        char(1)
 
     let report_file="process_table.txt"
 
@@ -487,28 +545,120 @@ define
 		from p4gl_table_process
 
 
+    #get root process
+    let root_process = "ERP"
+
+
     declare r3 cursor for
         select distinct id_process
             from p4gl_process
-                order by id_process
+            #where id_process <> "common"
+            #where sub_process_of = root_process  TODO?
+				order by id_process
 
-    foreach r3 into p_p4gl_process.id_process
+    let proc_cnt=0
+	############################################
+	foreach r3 into p_p4gl_process.id_process
+	############################################
+	    #For each (first level?) process...
 
-	    declare r4 cursor for
-            select distinct tabname
+        display "Scanning process ",p_p4gl_process.id_process clipped, "..."
+
+        select p4gl_process.disp_process into disp_process
+            from p4gl_process
+                where id_process = p_p4gl_process.id_process
+
+	    let proc_cnt=proc_cnt + 1
+
+        {
+		if proc_cnt = 2 then
+            exit foreach
+        end if
+        }
+
+		declare r4 cursor for
+            select 
+				#distinct tabname
+                *
                 from p4gl_table_process
                     where id_process = p_p4gl_process.id_process
+                    and owner matches "*" #TODO?
                         order by tabname
 
-        foreach r4 into p_p4gl_table_process.tabname
+	    ############################################
+		foreach r4 into p_p4gl_table_process.* #p_p4gl_table_process.tabname
+	    ############################################
+			#...find all tables assigned to this process...
+
+			#Doc4GL table types are T=table V=view U=undefined E=tEmporary O=obsolete
+			select tabtype into p_tabtype
+                from systableext
+	                where tabname = p_p4gl_table_process.tabname
+                    and owner = p_p4gl_table_process.owner	#"root"
+
+{
+
+who is stuffing "unknown" on tables that exist ????
+
+chech that this does not happen any more - maybe it was a bug
+
+owner     unknown
+tabname   vendor
+extowner
+tabalias
+remarks
+tabtype   U
+
+owner     root
+tabname   vendor
+extowner
+tabalias
+remarks
+tabtype
+
+owner     unknown
+tabname   customer
+extowner
+tabalias
+remarks
+tabtype   U
+
+owner     root
+tabname   customer
+extowner
+tabalias
+remarks
+tabtype
+
+
+
+}
+			if p_tabtype = "T" or (length(p_tabtype)=0) then
+                let p_tabtype = ""
+			end if
+
+			#if p_p4gl_table_process.tabname <> "addcharge" then continue foreach end if
 
 			#let process_tables = process_tables + 1
 
-            select count(*) into this_process_ref_form
+            #number of references to this table in forms of this process
+			select count(*) into this_process_ref_form
 				from p4gl_form_table, p4gl_form_process
                 where p4gl_form_table.tabname = p_p4gl_table_process.tabname
                 and p4gl_form_process.id_process = p_p4gl_process.id_process
                 and p4gl_form_process.form_id = p4gl_form_table.form_id
+
+            #Number of references to this table in modules of this process
+			select count(*) into this_process_ref_module
+				from p4gl_table_usage, p4gl_fun_process
+                where p4gl_table_usage.tabname = p_p4gl_table_process.tabname
+                and p4gl_fun_process.id_process = p_p4gl_process.id_process
+                and p4gl_fun_process.function_name = p4gl_table_usage.function_name
+                and p4gl_fun_process.module_name = p4gl_table_usage.module_name
+
+#display "this_process_ref_form=",this_process_ref_form
+#display "this_process_ref_module=",this_process_ref_module
+
 
 		    declare r5 cursor for
             select id_process
@@ -518,44 +668,102 @@ define
 						order by id_process
 
 	        let all_process=""
+            let total_mod_refs=0
+   	        let total_form_refs=0
+			let process_ref_form=0
+			let process_ref_module=0
+
+			##############################
 			foreach r5 into tmp_id_process
-	            select count(*) into process_ref_form
+            ##############################
+                #and for all OTHER table/process relations of this table (not THIS one)
+
+				#number of references to this table in forms of this process
+				select count(*) into process_ref_form
 					from p4gl_form_table, p4gl_form_process
         	        where p4gl_form_table.tabname = p_p4gl_table_process.tabname
             	    and p4gl_form_process.id_process = tmp_id_process
 					and p4gl_form_process.form_id = p4gl_form_table.form_id
 
-		            let all_process=all_process clipped, " ",tmp_id_process clipped,"(",process_ref_form using "<<<<<",")"
+	            #Number of references to this table in modules of this process
+				select count(*) into process_ref_module
+					from p4gl_table_usage, p4gl_fun_process
+	                where p4gl_table_usage.tabname = p_p4gl_table_process.tabname
+	                and p4gl_fun_process.id_process = p_p4gl_process.id_process
+	                and p4gl_fun_process.function_name = p4gl_table_usage.function_name
+	                and p4gl_fun_process.module_name = p4gl_table_usage.module_name
 
+
+#display tmp_id_process clipped, " process_ref_form=",process_ref_form
+#display tmp_id_process clipped, " process_ref_module=",process_ref_module
+
+				#Add this process counts to total count
+				let total_mod_refs=total_mod_refs+process_ref_module
+    	        let total_form_refs=total_form_refs+process_ref_form
+
+		        let all_process=all_process clipped, " ",tmp_id_process clipped,
+					"(",
+					process_ref_form using "<<<<&","/",
+					process_ref_module using "<<<<&",
+					")"
+
+			###########
 			end foreach
+            ###########
 
+            #add group process counts to total count
+			let total_mod_refs=total_mod_refs+this_process_ref_module
+   	        let total_form_refs=total_form_refs+this_process_ref_form
+   	        let total_refs=total_form_refs+total_mod_refs
+
+#display ">>>>>>total_mod_refs=",total_mod_refs
+#display ">>>>>>total_form_refs=",total_form_refs
+#display "======total_refs=",total_refs
 
 			output to report process_table(p_p4gl_table_process.tabname,
 							p_p4gl_process.id_process,total_tables,
-							process_tables,all_process,this_process_ref_form)
+							process_tables,all_process,this_process_ref_form,
+							total_mod_refs,total_form_refs,total_refs,
+							this_process_ref_module,disp_process,p_tabtype
+							)
+		###########
 		end foreach
-
+        ###########
+    ###########
     end foreach
+    ###########
+
+#sleep 10
 
     finish report process_table
 
     error report_file clipped, " created."
+    let run_string= "less ",report_file
+    run run_string
+
 
 end function
 
 {**
- *
+ * Tables grouped by process
  *
  *}
-REPORT process_table(tabname,id_process,total_tables,process_tables,all_process,this_process_ref_form)
+REPORT process_table(tabname,id_process,total_tables,process_tables,all_process,
+	this_process_ref_form,total_mod_refs,total_form_refs,total_refs,
+	this_process_ref_module,disp_process,p_tabtype)
 
 define
 	tabname like p4gl_table_process.tabname,
 	id_process like p4gl_process.id_process,
-    total_tables,process_tables,this_process_ref_form,group_cnt
+    total_tables,process_tables,this_process_ref_form,group_cnt,
+	total_mod_refs,total_form_refs,total_refs,this_process_ref_module,
+    sum_total_refs,sum_total_form_refs,sum_total_mod_refs,
+	all_form_refs,all_mod_refs
         smallint,
-   	all_process
-		char (200)
+   	all_process,disp_process
+		char (200),
+    p_tabtype
+        char (1)
 
 OUTPUT
 
@@ -570,16 +778,23 @@ FORMAT
 	FIRST PAGE HEADER
 	#################
 
+	let all_form_refs = 0
+	let all_mod_refs = 0
+
+
 
 		PRINT
 "_________________________________________________________________"
 
         print
-"tablename            # of forms ref. PROCESS(# of forms referencing)   ."
-        print
-"                     in this process "
-#carriercost                     1    AR(1) SS(2)
+"Table Name         |Tot.ref.(form/module)"
 
+		print
+"   TABTYPE         |This proc(form/module) |...other proc...(forms/modules)"
+
+		
+        print
+"Doc4GL table types are: T=table V=view U=undefined E=tEmporary O=obsolete"
 		PRINT
 "_________________________________________________________________"
 
@@ -591,51 +806,112 @@ FORMAT
         print
 		"_________________________________________________________________"
         print
-
 			"                       ",id_process clipped, " tables"
+        print column 10, disp_process clipped
+
 		PRINT
 		"_________________________________________________________________"
 
         let group_cnt = 0
+        let sum_total_refs = 0
+		let sum_total_form_refs = 0
+		let sum_total_mod_refs = 0
+
 
 	############
 	ON EVERY ROW
 	############
-        print
-            tabname ,this_process_ref_form using "<<<",
-            column 37,
+
+
+		print tabname clipped,
+            column 20,
+			total_refs
+			using "<<<&"
+			,"(",
+			total_form_refs
+			using "<<<&"
+			,"/",
+			total_mod_refs
+			using "<<<&"
+			,")"
+
+		print
+            #tabname ,
+            column 4,
+			p_tabtype clipped,
+            column 20,
+            id_process clipped,
+			#this_process_ref_form + this_process_ref_module using "<<<#",
+			"(",
+			this_process_ref_form using "<<<&",
+            "/",this_process_ref_module using "<<<&",")",
+            column 17,
 			all_process clipped
 
+        let sum_total_refs=sum_total_refs+total_refs
+		let sum_total_form_refs = sum_total_form_refs +  total_form_refs
+		let sum_total_mod_refs = sum_total_mod_refs + total_mod_refs
         let group_cnt = group_cnt + 1
 
     ##########################
 	after group of id_process
     ##########################
 
-        print "Total tables in process", group_cnt using "<<<<"
+        skip 1 line
+        print "Total tables in process: ",
+			group_cnt
+			using "<<<&"
+        print "Total process references: ", sum_total_refs
+			using "<<<&"
+			,"(",
+            sum_total_form_refs
+			using "<<<&"
+			,"/",
+            sum_total_mod_refs
+			using "<<<&"
+			,")"
 
+        let all_form_refs=all_form_refs+sum_total_form_refs
+        let all_mod_refs=all_mod_refs+sum_total_mod_refs
+
+		skip 1 line
 	###########
 	ON LAST ROW
 	###########
 
 		PRINT
-"_________________________________________________________________"
+"____________________________________________________________________________"
+
+    print "Total form references (inc multiple listed tables):",all_form_refs
+    print "Total mod. references (inc multiple listed tables):",all_mod_refs
+    skip 1 line
+
+    print " NOTE: table is listed under every process it is associated with"
 
 
+{
         print
-            "total tables in db:",total_tables
-        print
-            "tables related/unrelated to process:", process_tables using "<<<<","/",total_tables-process_tables using "<<<<",
-            "(",((process_tables*100)/total_tables) using "<<<<","%)"
+            "This application's total tables in db: ",total_tables using "<<<&"
 
+
+		print
+            "tables related/unrelated to process: ",
+			process_tables
+			using "<<<<"
+			,"/",total_tables-process_tables <<<<<< wrong
+			# using "<<<<"
+			,"(",((total_tables*100)/process_tables)
+			# using "<<<<"
+			,"%)"
+}
 		PRINT
-"_________________________________________________________________"
+"___________________________________________________________________________"
 
 
 END REPORT
 
 {**
- *
+ * Tables not referenced by 4gl or per files
  *
  *}
 function rep_unused_tables()
@@ -647,9 +923,9 @@ define
 	cnt_process,cnt_function,cnt_form,tmp_stat,found_in_4gl,found_in_per,tmp_cnt,
     counter,obsoleted,total_obsolete_tables,p4gl_parse_error,total_p4gl_parse_error,
     brute_force, output_counter,total_not_exist,total_obsolete_not_removed,
-    is_formonly
+    is_formonly,found_in_tag, buff_length, pos
         smallint,
-    tmp_id_process
+    tmp_id_process, process
         char(10),
     msg_txt char (180),
     oc char(2)
@@ -679,48 +955,6 @@ define
     select count (distinct tabname) into tables_with_form
 		from p4gl_form_table
 
-{
-
-                                                                    distinct
-systableext=		        380	p4gl(OK),loadform(OK),Dbdoc(CHECK)  380
-systables                                                           692 	(after deductions)
-
-p4gl_table_process=         649 p4gl(OK),loadform(OK)               379
-
-p4gl_table_usage=	        555	p4gl(OK)                            158     (actually p4gl_function_table)
-p4gl_form_table=	       2337	loadform(OK)                        342
-
-
-    select systables.tabname
-			from systables
-            where systables.tabid > 100
-			and not exists
-                 (select systableext.tabname from systableext, systables
-			where
-			systableext.tabname = systables.tabname)
-                order by systables.tabname
-
- drop   table alltables;
-   select distinct tabname from p4gl_table_usage
-   union
-   select distinct tabname from p4gl_table_process
-   union
-   select distinct tabname from p4gl_form_table
-   into temp alltables;
-
-select count(*) from alltables;                           380
-select count (distinct tabname) from alltables;             380
-
-
-select count(*) from systables
-where tabname not in (select tabname from systableext)
-and tabname not matches "p4gl_*"
-and tabid > 100                                             348-11=337
-
-}
-
-
-
 
 	select count(*) into total_doc4gl_tables
         from systableext
@@ -729,48 +963,40 @@ and tabid > 100                                             348-11=337
 	select count(*) into total_missing_tables
         from systableext
             where tabname not matches "p4gl_*"
-            and tabtype = "U" #Doc4GL table types are T=table V=view U=undefined E=tEmporary O=obsolete
-
+            and tabtype = "U"
+			#Doc4GL table types are T=table V=view U=undefined E=tEmporary O=obsolete X=external
 
 	select count(*) into total_obsolete_tables
         from systableext
             where tabname not matches "p4gl_*"
-            and tabtype = "O" #Doc4GL table types are T=table V=view U=undefined E=tEmporary O=obsolete
+            and tabtype = "O"
 
 	select count(*) into total_obsolete_not_removed
         from systableext
             where tabname not matches "p4gl_*"
-            and tabtype = "O" #Doc4GL table types are T=table V=view U=undefined E=tEmporary O=obsolete
+            and tabtype = "O"
             and tabname in (select tabname from systables)
 
 	select count(*) into total_not_exist from systableext
 		where tabname not in (select tabname from systables)
 
 	declare r6 cursor for
-{
-		select systables.tabname
-			from systables, systableext
-            where systables.tabid > 100
-			and systables.tabname not in
-                (select tabname from systableext)
-                order by systables.tabname
-}
-	select tabname from systables
-		where tabname not in (select tabname from systableext)
-		and tabname not matches "p4gl_*"
-		and tabid > 100                                         #348-11=337
-        and tabname <> "dd_temp"
-        and tabname <> "process"
-        and tabname <> "ext_table"
-        and tabname <> "ext_database"
-        and tabname <> "ext_column"
-        and tabname <> "table_process"
-        and tabname <> "sysmodules"
-        and tabname <> "d_modulos"
-        and tabname <> "d_mod_tab"
-        and tabname <> "systableext"
-        and tabname <> "syscolumnext"
-            order by tabname
+		select tabname from systables
+			where tabname not in (select tabname from systableext)
+			and tabname not matches "p4gl_*"
+			and tabid > 100                                         #348-11=337
+	        and tabname <> "dd_temp"
+	        and tabname <> "process"
+	        and tabname <> "ext_table"
+	        and tabname <> "ext_database"
+	        and tabname <> "ext_column"
+	        and tabname <> "table_process"
+	        and tabname <> "sysmodules"
+	        and tabname <> "d_modulos"
+	        and tabname <> "d_mod_tab"
+	        and tabname <> "systableext"
+	        and tabname <> "syscolumnext"
+	            order by tabname
 
 
 	whenever error continue
@@ -778,20 +1004,18 @@ and tabid > 100                                             348-11=337
         let tmp_stat=status
 	whenever error stop
 
-    #display "Status = ",tmp_stat
-
-        if tmp_stat <> 0 then
+    if tmp_stat <> 0 then
             #display "Creating table dd_temp"
 			#create table dd_temp (load_field char (300))
-        else
+    else
 	       #display "Cleaning dd_temp table  ."
 		   #delete from dd_temp
            drop table dd_temp
-        end if
+    end if
 
-        #must drop/create table every time to maintain line order
-		display "Creating table dd_temp"
-	 	create table dd_temp (load_field char (300))
+    #must drop/create table every time to maintain line order
+	display "Creating table dd_temp"
+	create table dd_temp (load_field char (300))
 
     let counter = 0
     let output_counter = 0
@@ -823,28 +1047,27 @@ and tabid > 100                                             348-11=337
         select count(*) into cnt_form
             from p4gl_form_table
                 where tabname = p_systableext.tabname
+
+
+
 {
-		if cnt_process = 0 then initialize cnt_process to null end if
-		if cnt_function = 0 then initialize cnt_function to null end if
-		if cnt_form = 0 then initialize cnt_form to null end if
-}
+    grep flags:
 
 	    #-l just file name where found
     	#-H filename and line in which found
         # -i, --ignore-case
 
-{
-	 -E, --extended-regexp
+		-E, --extended-regexp
               Interpret PATTERN as an extended regular expression
               (see below).
 
-       -e PATTERN, --regexp=PATTERN
+       	-e PATTERN, --regexp=PATTERN
               Use  PATTERN as the pattern; useful to protect pat­
               terns beginning with -.
 
-  -n, --line-number
+		-n, --line-number
 
-   -w, --word-regexp
+		-w, --word-regexp
               Select  only  those  lines  containing matches that
               form whole words.  The test is  that  the  matching
               substring  must  either  be at the beginning of the
@@ -854,37 +1077,35 @@ and tabid > 100                                             348-11=337
               character.   Word-constituent  characters  are let­
               ters, digits, and the underscore.
 
-      -x, --line-regexp
+		-x, --line-regexp
               Select only those matches that  exactly  match  the
               whole line.
 
-}
-#if 1=2 then
 
-        {
-
-
-
-
-             -F, --fixed-strings
+        -F, --fixed-strings
               Interpret PATTERN as a list of fixed strings, sepa­
               rated by newlines, any of which is to be matched.
 
 			grep  -l -i "accumulator\|andrej" *.per
 
-		}
+}
 
 
-        #Todo: how to avoid searching comment lines?
+        #################################################
+        #       4gl files
+        #################################################
+
+
+		#Todo: how to avoid searching comment lines?
 
 		let run_string= "find /opt/aubit/apps/erp/src -name '*.4gl' -exec grep -l -i ",
 			"'from ",p_systableext.tabname clipped,"\\|",   #delete / select "from x"
 			"into ",p_systableext.tabname clipped,"\\|",    #insert "into x"
 			"like ",p_systableext.tabname clipped,"\\.\\|", #define ... "like x."
-			"update ",p_systableext.tabname clipped,"'",    #"update x"
-			" ",oc," \\; > tmp.unl"
-#   create table faperiod
-#   create unique index faperiod_key on faperiod (cmpy_code, book_code,
+			"update ",p_systableext.tabname clipped,        #"update x"
+															#TODO:   create table x
+															#TODO:   create unique index zzz on x (...)
+			"' ",oc," \\; > tmp.unl"
 
 
 #		display run_string clipped
@@ -973,25 +1194,27 @@ and tabid > 100                                             348-11=337
 			end foreach
             close r7
 		end if
-#end if
 
-		#let run_string= "find /opt/aubit/apps/erp/src -name '*.per' -exec grep -l -i -w ",
-		#	p_systableext.tabname clipped," ",oc," \\; > tmp.unl"
-#what about ...type like prodsurcharge.x
+        #################################################
+        #       Form files
+        #################################################
+        let brute_force = false
+
 		#look for table.column notation
 		let run_string= "find /opt/aubit/apps/erp/src -name '*.per' -exec grep -l -i '",
 			p_systableext.tabname clipped,"\\.' ",oc," \\; > tmp.unl"
+			#TODO: what about ...type like prodsurcharge.x
 		#display run_string clipped
 		run run_string
 
-        {
-        There is little point in doing this - table will be liste in "tables"
+		{
+		look for table in "tables" section (complete line only)
+
+		There is little point in doing this - table will be liste in "tables"
         section (probably) only if table is actually used (to associate an
         screen fiels with table column. And if it was, above search already
         got it  .
 
-
-		#look for table in "tables" section (complete line only)
         #unfortunately tab or spaces in front or after table name can mess this one up
 		let run_string= "find /opt/aubit/apps/erp/src -name '*.per' -exec grep -l -i -x '",
 			p_systableext.tabname clipped,"' " ,oc," \\; >> tmp.unl"
@@ -1007,7 +1230,10 @@ and tabid > 100                                             348-11=337
 			exit program 1
 		end if
 
-        { There is very little point in doing this - only thing it (might)
+        {
+        Brute-force: just look for complete word
+
+		There is very little point in doing this - only thing it (might)
         catch is a table name in "tables section where there is a tab or space
 		used before or after table name
 
@@ -1106,22 +1332,6 @@ and tabid > 100                                             348-11=337
                             msg_txt,obsoleted,total_obsolete_tables,total_p4gl_parse_error,
                             total_not_exist,total_obsolete_not_removed
 							)
-
-				{
-				let msg_txt="c:/progra~1/GWD/gte.exe //APTIVA/ROOT/opt/aubit/apps/erp/",
-						run_string clipped
-
-				output to report unused_tables(p_systableext.tabname,
-							total_tables, total_doc4gl_tables,
-                            total_missing_tables,
-                           	tables_with_process,tables_with_function,tables_with_form,
-                            cnt_process,cnt_function,cnt_form,found_in_per,found_in_4gl,
-                            msg_txt,obsoleted,total_obsolete_tables,total_p4gl_parse_error,
-                            total_not_exist,total_obsolete_not_removed
-							)
-
-                }
-
 			end foreach
             close r8
 		end if
@@ -1129,8 +1339,9 @@ and tabid > 100                                             348-11=337
 		if found_in_per=0 and found_in_4gl=0 and cnt_process=0 and cnt_function =0 and cnt_form =0
 		then
             #insert it and mark it obsolete
-#            insert into systableext (owner,tabname,tabtype)
-#                values ("root",p_systableext.tabname,"O")#Doc4GL table types are T=table V=view U=undefined E=tEmporary O=obsolete
+            insert into systableext (owner,tabname,tabtype)
+                values ("root",p_systableext.tabname,"O")
+				#Doc4GL table types are T=table V=view U=undefined E=tEmporary O=obsolete
             let obsoleted=obsoleted+1
             let total_obsolete_tables=total_obsolete_tables+1
         end if
@@ -1148,8 +1359,18 @@ and tabid > 100                                             348-11=337
                             total_not_exist,total_obsolete_not_removed
 							)
         end if
+	end foreach
 
-    end foreach
+    if output_counter = 0 then
+			output to report unused_tables(p_systableext.tabname,
+							total_tables, total_doc4gl_tables,
+                            total_missing_tables,
+                           	tables_with_process,tables_with_function,tables_with_form,
+                            cnt_process,cnt_function,cnt_form,found_in_per,found_in_4gl,
+                            "",obsoleted,total_obsolete_tables,total_p4gl_parse_error,
+                            total_not_exist,total_obsolete_not_removed
+							)
+    end if
 
     finish report unused_tables
 
@@ -1258,30 +1479,26 @@ FORMAT
                 column 65, total_missing_tables using "<<<<"
 		print "Tables in Dbdoc no longer in db (obsoleted,temp,missing...):",
                 column 65, total_not_exist using "<<<<"
-
 		skip 1 line
-#		print "Tables we need to account for:",
+		#print "Tables we need to account for:",
 		print "Unique Tables without references in 4gl or per code:",
-			column 65, (total_tables-(total_doc4gl_tables-total_missing_tables-total_obsolete_not_removed)) using "<<<<"
-			#column 65, (total_tables-total_doc4gl_tables-total_obsolete_tables) using "<<<<"
-
+			column 65,
+			(total_tables-
+				(total_doc4gl_tables-total_missing_tables-total_obsolete_not_removed)
+			) + total_obsolete_tables
+				using "<<<<"
 		skip 1 line
-
 		print "Unique tables with process(es) assigned:",
 				column 65, tables_with_process using "<<<<"
         print "Unique tables referenced in function(s):",
-				column 65, tables_with_function using "<<<<"
+				column 65, tables_with_function using "<<<<"  #?????
         print "Unique Tables referenced in form(s):",
 				column 65, tables_with_form using "<<<<"
-
 		skip 1 line
-
 		print "Tables marked obsolete on this run:",
 				column 65, obsoleted using "<<<<"
 		print "Total p4gl parse errors:",
 				column 65, total_p4gl_parse_error using "<<<<"
-
-
 		PRINT
 "___________________________________________________________________"
 
@@ -1290,7 +1507,7 @@ END REPORT
 
 
 {**
- *
+ * Load data extracted from form files from file to temp table dd_temp
  *
  *}
 function load_dd()
@@ -1340,7 +1557,7 @@ define
 end function
 
 {**
- *
+ * Process (normalise) each row loaded with function load_dd
  *
  *}
 function process_dd()
@@ -1641,12 +1858,12 @@ warning_cnt=  1761 formonly=  3721
     #TODO - prompt to drop temp load table
 
 
-end function
+end function #function process_dd()
 
 
 {**
- *
- *
+ * Insert information about form attribute in Doc4GL database
+ * Called from function process_dd
  *}
 function store_data(attrib_type,attrib_code,curr_form_file,form_file,module,
 	desc_text,table_text,field_text)
@@ -1899,7 +2116,7 @@ loadparms.path_text form=        663
 	                #RE-Check if we have this form in contect of this table/column
 
 
- #-284	A subquery has returned not exactly one row.
+					#-284	A subquery has returned not exactly one row.
 					select p4gl_form_column.*, p4gl_form_table.* into p_p4gl_form_column.*, p_p4gl_form_table.*
 	                    from p4gl_form, p4gl_form_column, p4gl_form_table
 	                        where p4gl_form.form_id = p_p4gl_form.form_id
@@ -2165,49 +2382,6 @@ loadparms.path_text form=        663
 
                                 end if
 							end if
-
-
-{
-user	system	elapsed	CPU	text	data	inputs	outputs	major	swaps
-______________________________________________________________________________
-Command	exited	with	non-zero	status	2	0.99	0.26	0:02.05	60%	0	0	0
-0	4089	0	user	system	elapsed	CPU	text	data	inputs	outputs	major	swaps
-______________________________________________________________________________
-Command	exited	with	non-zero	status	2	1.91	0.55	0:02.97	82%	0	0	0
-0	8555	0	user	system	elapsed	CPU	text	data	inputs	outputs	major	swaps
-______________________________________________________________________________
-1.28	0.24	0:02.16	70%	0	0	0	0	4095	0	user	system	elapsed	CPU
-text	data	inputs	outputs	major	swaps
-______________________________________________________________________________
-Command	exited	with	non-zero	status	2	1.39	0.26	0:01.71	96%	0	0	0
-0	4275	0	user	system	elapsed	CPU	text	data	inputs	outputs	major	swaps
-______________________________________________________________________________
-3.71	1.30	0:07.04	71%	0	0	0	0	19049	0	user	system	elapsed	CPU
-text	data	inputs	outputs	major	swaps
-______________________________________________________________________________
-Command	exited	with	non-zero	status	2	2.05	0.44	0:02.58	96%	0	0	0
-
-
-after kill diff:
-
-
-user	system	elapsed	CPU	text	data	inputs	outputs	major	swaps
-______________________________________________________________________________
-Command	terminated	by	signal	2	14467.01	1532.85	8:10:48	54%	0	0	0
-0	6872	0	user	system	elapsed	CPU	text	data	inputs	outputs	major	swaps
-______________________________________________________________________________
-Command	exited	with	non-zero	status	2	1.58	0.83	0:21.37	11%	0	0	0
-0	8972	0	user	system	elapsed	CPU	text	data	inputs	outputs	major	swaps
-______________________________________________________________________________
-1.59	0.53	0:02.70	78%	0	0	0	0	6423	0	user	system	elapsed	CPU
-text	data	inputs	outputs	major	swaps
-______________________________________________________________________________
-Command	exited	with	non-zero	status	2	2.05	0.53	0:06.31	40%	0	0	0
-0	6923	0
-
-}
-
-
 						otherwise
                             display "ERROR: attrib_code=", attrib_code
                             exit program 6
@@ -2223,7 +2397,7 @@ Command	exited	with	non-zero	status	2	2.05	0.53	0:06.31	40%	0	0	0
 end function
 
 {**
- *
+ * Count and show counts of rows in all Doc4GL tables
  *
  *}
 function count_data()
@@ -2327,8 +2501,8 @@ define
 #populated by other methods:
 	select count (*) into cnt from p4gl_excel
     display "p4gl_excel=		", cnt,			"	TEMP(OK)"
-	select count (*) into cnt from p4gl_function_calls
-    display "p4gl_function_calls=	", cnt, 		"	p4gl_endrun(TODO)"
+	select count (*) into cnt from p4gl_func_calls
+    display "p4gl_func_calls=	", cnt, 		"	p4gl_endrun(TODO)"
 	display ""
 
 
@@ -2424,8 +2598,8 @@ create index i_fglobpgm1 on otherobj (progname);
 
 
 {**
- *
- *
+ * Drop all tables we know are obsolete
+ * TODO - move this function in database creation program
  *}
 function drop_obsolete_tables()
 
@@ -2583,7 +2757,7 @@ function drop_obsolete_tables()
 	drop table  transpextras                     ;
 	drop table  transprates                      ;
 	drop table  user_cmpy                        ;
-	drop table  v_prodhist                       ;
+	drop view  v_prodhist                       ;
 	drop table  v_salstatarea                    ;
 	drop table  v_salstatarpr                    ;
 	drop table  v_salstatcust                    ;
@@ -2625,6 +2799,10 @@ function drop_obsolete_tables()
     drop table  uom_convert          ;
 
 
+    drop table bin_code;
+    drop table poslocation;
+    drop table posstation;
+
     #Definitely NOT obsolete:
 #    drop table  backup;     #U111.per
 #	drop table  batch                            ;  #P24.4gl
@@ -2634,5 +2812,1116 @@ function drop_obsolete_tables()
 
 end function
 
+
+{
+user	system	elapsed	CPU	text	data	inputs	outputs	major	swaps
+______________________________________________________________________________
+Command	exited	with	non-zero	status	2	0.99	0.26	0:02.05	60%	0	0	0
+0	4089	0	user	system	elapsed	CPU	text	data	inputs	outputs	major	swaps
+______________________________________________________________________________
+Command	exited	with	non-zero	status	2	1.91	0.55	0:02.97	82%	0	0	0
+0	8555	0	user	system	elapsed	CPU	text	data	inputs	outputs	major	swaps
+______________________________________________________________________________
+1.28	0.24	0:02.16	70%	0	0	0	0	4095	0	user	system	elapsed	CPU
+text	data	inputs	outputs	major	swaps
+______________________________________________________________________________
+Command	exited	with	non-zero	status	2	1.39	0.26	0:01.71	96%	0	0	0
+0	4275	0	user	system	elapsed	CPU	text	data	inputs	outputs	major	swaps
+______________________________________________________________________________
+3.71	1.30	0:07.04	71%	0	0	0	0	19049	0	user	system	elapsed	CPU
+text	data	inputs	outputs	major	swaps
+______________________________________________________________________________
+Command	exited	with	non-zero	status	2	2.05	0.44	0:02.58	96%	0	0	0
+
+
+after kill diff:
+
+
+user	system	elapsed	CPU	text	data	inputs	outputs	major	swaps
+______________________________________________________________________________
+Command	terminated	by	signal	2	14467.01	1532.85	8:10:48	54%	0	0	0
+0	6872	0	user	system	elapsed	CPU	text	data	inputs	outputs	major	swaps
+______________________________________________________________________________
+Command	exited	with	non-zero	status	2	1.58	0.83	0:21.37	11%	0	0	0
+0	8972	0	user	system	elapsed	CPU	text	data	inputs	outputs	major	swaps
+______________________________________________________________________________
+1.59	0.53	0:02.70	78%	0	0	0	0	6423	0	user	system	elapsed	CPU
+text	data	inputs	outputs	major	swaps
+______________________________________________________________________________
+Command	exited	with	non-zero	status	2	2.05	0.53	0:06.31	40%	0	0	0
+0	6923	0
+
+}
+
+
 #---------------------------- EOF --------------------------------
 
+
+
+
+
+
+{**
+ * Find all tables not referenced by 4gl (not per?) files as determined by
+ * p4gl (fgldoc) (and loadform?) programs, and manually scan 4gl (and NOT per?)
+ * files to extract references
+ *
+ * TODO: Fix p4gl (and loadform?) so that we don't need this function
+ *
+ *}
+function fixup()
+define
+    all_process,report_file,run_string,module_basename,run_string2,load_string,
+        full_path
+        char(400),
+    total_tables,total_doc4gl_tables,total_missing_tables,
+	tables_with_process,tables_with_function,tables_with_form,
+	cnt_process,cnt_function,cnt_form,tmp_stat,found_in_4gl,found_in_per,tmp_cnt,
+    counter,obsoleted,total_obsolete_tables,p4gl_parse_error,total_p4gl_parse_error,
+    brute_force, output_counter,total_not_exist,total_obsolete_not_removed,
+    is_formonly,found_in_tag, buff_length, pos,found_function_name
+        smallint,
+    tmp_id_process, process
+        char(10),
+    msg_txt char (180),
+    oc char(2)
+
+    let obsoleted = 0
+    let total_p4gl_parse_error=0
+	let report_file="fix-up.txt"
+    let oc="{}"
+
+    start report unused_tables to report_file
+
+	create temp table dd_temp2(load_field char (300))
+
+	select count(*) into total_tables
+        from systables
+            where tabid > 100
+            and tabname not matches "p4gl_*"
+
+    #deduct Doc4GL/DBdoc tables not prefixed with p4gl_ + dd_temp
+	let total_tables = total_tables - 11
+
+
+    select count (distinct tabname) into tables_with_process
+        from p4gl_table_process
+
+    select count (distinct tabname) into tables_with_function
+        from p4gl_table_usage
+
+    select count (distinct tabname) into tables_with_form
+		from p4gl_form_table
+
+
+	select count(*) into total_doc4gl_tables
+        from systableext
+            where tabname not matches "p4gl_*"
+
+	select count(*) into total_missing_tables
+        from systableext
+            where tabname not matches "p4gl_*"
+            and tabtype = "U"
+			#Doc4GL table types are T=table V=view U=undefined E=tEmporary O=obsolete X=external
+
+	select count(*) into total_obsolete_tables
+        from systableext
+            where tabname not matches "p4gl_*"
+            and tabtype = "O"
+
+	select count(*) into total_obsolete_not_removed
+        from systableext
+            where tabname not matches "p4gl_*"
+            and tabtype = "O"
+            and tabname in (select tabname from systables)
+
+	select count(*) into total_not_exist from systableext
+		where tabname not in (select tabname from systables)
+
+	declare r16 cursor for
+		select tabname from systables
+			where tabname not in (select tabname from systableext)
+			and tabname not matches "p4gl_*"
+			and tabid > 100
+	        and tabname <> "dd_temp"
+	        and tabname <> "process"
+	        and tabname <> "ext_table"
+	        and tabname <> "ext_database"
+	        and tabname <> "ext_column"
+	        and tabname <> "table_process"
+	        and tabname <> "sysmodules"
+	        and tabname <> "d_modulos"
+	        and tabname <> "d_mod_tab"
+	        and tabname <> "systableext"
+	        and tabname <> "syscolumnext"
+	            order by tabname
+
+
+	whenever error continue
+        select count(*) into tmp_stat from dd_temp
+        let tmp_stat=status
+	whenever error stop
+
+    if tmp_stat <> 0 then
+            #display "Creating table dd_temp"
+			#create table dd_temp (load_field char (300))
+    else
+	       #display "Cleaning dd_temp table  ."
+		   #delete from dd_temp
+           drop table dd_temp
+    end if
+
+    #must drop/create table every time to maintain line order
+	display "Creating table dd_temp"
+	create table dd_temp (load_field char (300))
+
+    let counter = 0
+    let output_counter = 0
+    #######################################
+	foreach r16 into p_systableext.tabname
+    #######################################
+        let counter = counter + 1
+
+		display p_systableext.tabname clipped
+
+        select count(*) into cnt_process
+            from p4gl_table_process
+                where tabname = p_systableext.tabname
+
+        select count(*) into cnt_function
+            from p4gl_table_usage
+                where tabname = p_systableext.tabname
+
+        select count(*) into cnt_form
+            from p4gl_form_table
+                where tabname = p_systableext.tabname
+
+        #first see if we have this table flaged somewhere with @table:
+		let run_string= "find /opt/aubit/apps/erp/src -name '*.4gl' -exec grep -l -i ",
+			"'@table ",p_systableext.tabname clipped,"'",
+			" ",oc," \\; > tmp.unl"
+
+		#display run_string clipped
+		run run_string
+	    delete from dd_temp
+		load from "tmp.unl" insert into dd_temp
+
+		if status <> 0 then
+			display "error loading"
+			exit program 1
+		end if
+
+		select count(*) into found_in_tag from dd_temp
+		if found_in_tag > 0 then
+            #display "    flagged - ",p_systableext.tabname
+            #p4gl probably crached on this module, we will fix it now:
+
+			declare r17 cursor for
+                select * from dd_temp
+
+            ###########################
+			foreach r17 into run_string
+            ###########################
+                if length(run_string) < 2 then
+                    exit foreach
+                end if
+
+				let full_path=run_string
+				let module_basename = my_basename(full_path)
+				#display full_path clipped, " = ",module_basename clipped
+				let process=strip(full_path,"/opt/aubit/apps/erp/src")
+				#let process=strip(process,module_basename)
+
+				let buff_length=length (process)
+                for pos=buff_length to 1 step -1
+                    if process[pos]="/" then
+                        let process = process[2,pos-1]
+                        exit for
+                    end if
+                end for
+
+                let process = upshift(process)
+				#    -accumulator-GW2g.4gl-GL-
+                display "    -",p_systableext.tabname clipped, "-",module_basename clipped,"-",process clipped,"-"
+
+
+                #############################
+				#Check if we have this table:
+                #Can happen when we find multiple references and already
+                #added one or more.
+				select * from systableext
+                    where tabname = p_systableext.tabname
+                if status = NOTFOUND then
+	                #Insert table:
+					insert into systableext (owner,tabname,tabtype)
+						values ("root",p_systableext.tabname,"T")
+                        #Doc4GL table types are T=table V=view U=undefined E=tEmporary O=obsolete
+                end if
+
+
+                #############################
+				#check if we have this module:
+				select * from p4gl_module
+					where module_name = module_basename
+                if status = NOTFOUND then
+					#Insert module:
+    	            insert into p4gl_module (module_name, id_package)
+						values (module_basename, ".")
+                end if
+
+				##############################
+				#check if we have this table in context of this process
+                select * from p4gl_table_process
+					where id_process = process
+                    and owner = "root"
+                    and tabname = p_systableext.tabname
+                if status = NOTFOUND then
+                    insert into p4gl_table_process (id_process,owner,tabname)
+                        values (process,"root",p_systableext.tabname)
+                end if
+
+                ##############################
+				#check if we have this table in the context of this module:
+                select * from p4gl_table_usage
+                    where module_name = module_basename
+                    and id_package = "."
+					and function_name matches "*" #<<< ???/
+                    and owner = "root"
+                    and tabname = p_systableext.tabname
+                if status = NOTFOUND then
+                    #But we don't know the function name - we got this from "grep"!
+                    #And this relationship is a property of function - not module.
+                    #so we will know there is a reference, but not from where...
+                    #untill we no longer need to use this fix-up function (when
+                    #p4gl stops crashing...)
+
+					let run_string="grep -i -A 30 '@table ",p_systableext.tabname clipped,
+						"' ", full_path clipped, #/opt/aubit/apps/erp/src/",utility/U11.4gl,
+						" | grep -i '^function\\|^report' | cut -f 2 -d ' ' | cut -f 1 -d '('",
+						" > tmp.unl"
+
+					#display run_string clipped
+					run run_string
+					#create temp table dd_temp2(load_field char (300))
+                    delete from dd_temp2
+					load from "tmp.unl" insert into dd_temp2
+
+					if status <> 0 then
+						display "error loading"
+						exit program 1
+					end if
+
+					select count(*) into found_function_name from dd_temp2
+					if found_function_name > 0 then
+
+						declare tr17 cursor for
+            			    select * from dd_temp2
+
+			            #############################
+						foreach tr17 into load_string
+			            #############################
+
+                        display "Function name is ",load_string clipped
+
+						#check if we have this function
+                        select * from p4gl_function
+                            where id_package = "."
+                            and module_name = module_basename
+                            and function_name = load_string
+
+                        if status = NOTFOUND then
+                            insert into p4gl_function
+                            (id_package,module_name,function_name)
+                            values
+                            (".",module_basename,load_string)
+                        end if
+
+		                insert into p4gl_table_usage
+		                    (id_table_usage,module_name,id_package,function_name,owner,tabname,table_name,operation)
+                            values
+	                        (0,module_basename,".",load_string,"root",p_systableext.tabname,p_systableext.tabname,"X")
+                            #X is for unknown Select Update Insert Delete
+
+                        ###########
+                        end foreach
+                        ###########
+
+                    else
+                        display "Failed to extract function name for ",
+                            p_systableext.tabname clipped,
+                            " in ",full_path clipped
+                    end if
+
+                end if
+
+			###########
+			end foreach
+            ###########
+            continue foreach
+        else
+{
+    >>>>>>>>>>> Not flagged - backup         U111.per
+   >>>>>>>>>>> Not flagged - v_prodhist
+}
+
+			display "    >>>>>>>>>>> Not flagged - ",p_systableext.tabname
+
+			output to report unused_tables(p_systableext.tabname,
+					total_tables, total_doc4gl_tables,
+                    total_missing_tables,
+                  	tables_with_process,tables_with_function,tables_with_form,
+                    cnt_process,cnt_function,cnt_form,found_in_per,found_in_4gl,
+                    "Not flagged",obsoleted,total_obsolete_tables,total_p4gl_parse_error,
+                    total_not_exist,total_obsolete_not_removed
+				)
+
+            continue foreach
+		end if
+
+
+    ###########
+	end foreach
+    ###########
+
+    finish report unused_tables
+
+	drop table dd_temp2
+
+	if interactive then
+		error report_file clipped, " created."
+		let run_string= "less ",report_file
+		run run_string
+    else
+        display "Fix-up finished"
+	end if
+
+end function #fixup()
+
+{**
+ * For each function call registeres by p4gl, find function/module called
+ *
+ *}
+function function_calls()
+define
+    p_module_name
+        char(64),
+    params_passed, params_to_return,
+	params_expected,params_returned,
+    in_this_module,function_called_cnt,match_cnt,in_this_process,
+    in_this_group, target_match_cnt, same_targets, cnt, this_match_id,
+    err_cnt,all_same,calling_target_cnt,prev_mach_id,
+	still_unresolved_calls,no_called_function,
+	resolved_calls,total_calls
+        smallint,
+    calling_func_process
+        char (20),
+    prog_group
+        char (64),
+	pa_match array [200] of record
+		id_package char(64),
+		module_name char(64),
+		function_name char(50)
+    end record,
+	pa_matches array [200] of record
+		match_id smallint
+    end record
+
+
+    let do_insert = false
+	let err_cnt = 0
+
+	let reason_1 = 0
+	let reason_2 = 0
+	let reason_3 = 0
+	let reason_4 = 0
+	let reason_5 = 0
+	let reason_6 = 0
+	let reason_7 = 0
+
+    declare f1 cursor for
+        select * from p4gl_function_call
+            where function_call_id not in
+				(select function_call_id from p4gl_func_calls)
+                #order by function_name
+            and exists (select * from p4gl_function where
+               p4gl_function.function_name = p4gl_function_call.calls_func_name)
+
+	######################################
+	foreach f1 into p_p4gl_function_call.*
+    ######################################
+        #for each function call registered
+
+        #Get number of functions with name of the called function
+		select count(*) into function_called_cnt from p4gl_function
+                where function_name = p_p4gl_function_call.calls_func_name
+
+        #get number of parameters passed in a call
+        select count(*) into params_passed from p4gl_call_parameter
+            where function_call_id = p_p4gl_function_call.function_call_id
+
+        #get number of parameters expected to be returned by this call
+        select count(*) into params_to_return from p4gl_call_returning
+            where function_call_id = p_p4gl_function_call.function_call_id
+
+        display "========== ",p_p4gl_function_call.function_name clipped,
+        " (",params_passed using "<&","/",params_to_return using "<&",
+        ") in ",p_p4gl_function_call.module_name clipped,
+		" ==> ",p_p4gl_function_call.calls_func_name clipped
+
+		if function_called_cnt = 1 then
+            #we got only one function with this name - great!
+
+            #get module name for the function called
+			select module_name into p_module_name
+                from p4gl_function
+                    where function_name = p_p4gl_function_call.calls_func_name
+
+			call insert_function_calls
+   	            (p_p4gl_function_call.function_call_id,
+				".",
+				p_module_name,
+				p_p4gl_function_call.calls_func_name,
+				p_p4gl_function_call.function_name,
+				p_p4gl_function_call.module_name,
+				"only one",1)
+
+				#p_p4gl_function_call.calls_func_name,
+				#p_p4gl_function_call.calls_module_name)
+
+            continue foreach
+        else
+       		if function_called_cnt = 0 then
+                #probaly p4gl crashed...
+				display "cannot find function named ",
+					p_p4gl_function_call.calls_func_name clipped
+                let err_cnt = err_cnt + 1
+                continue foreach
+            end if
+
+			#there are multiple functions with same name
+            display "Found ", function_called_cnt using "<<<&", " functions named ",
+                p_p4gl_function_call.calls_func_name
+
+	        declare f2 cursor for
+    	        select * from p4gl_function
+        	        where function_name = p_p4gl_function_call.calls_func_name
+                    and id_package = p_p4gl_function_call.id_package
+
+{
+FIXME: p4gl does not track if call was to a function or report!
+
+function_type F R
+
+call_type F
+
+}
+
+			if debug then
+                display "FIXME: faking parameters check..."
+            end if
+
+			let match_cnt=0
+            #################################
+			foreach f2 into p_p4gl_function.*
+            #################################
+            #for each function with called name...
+
+		        #get number of parameters expected by this functions
+		        select count(*) into params_expected from p4gl_fun_parameter
+        		    where id_package = p_p4gl_function.id_package
+                    and module_name = p_p4gl_function.module_name
+                    and function_name = p_p4gl_function.function_name
+
+#TODO: p4gl_fun_return table is populated only form commnets, not from code
+                #get number of parameters returned by this function
+		        select count(*) into params_returned from p4gl_fun_return
+        		    where id_package = p_p4gl_function.id_package
+                    and module_name = p_p4gl_function.module_name
+                    and function_name = p_p4gl_function.function_name
+
+                #FIXME: we should really ignore zero counts for now, because
+                #we are not extracting some of this information, but we can't
+                #since this would exclude all functions not passing or returning
+                #anything...
+
+
+{ FIXME:
+
+we cannot rely on this: see function show_hold in holdwind.4gl and stopwind.4gl
+
+In first one:
+	1) p4gl extracted only first parameter
+	2) comment is garbage
+ In second one:
+	p4gl registered function, but NOT the parameter!
+
+In both cases, returns where not extracted at all (currently p4gl only
+extracts returns from comments, not from the code)
+
+even worse, tables p4gl_call_parameter and p4gl_call_returning are not
+populated at all at the moment!
+}
+
+                if 1=1 then
+				#disabled - see FIXME note below
+				#if (params_expected = params_passed) then
+					if debug2 then
+						display "OK: params expected: ",params_expected using "<&",
+							" passed: ", params_passed using "<&"
+                    end if
+
+	                if 1=1 then
+					#disabled - see FIXME note below
+					#if (params_returned = params_to_return) then
+                        #this function receives and returns exact NUMBER of
+                        #parameters as we have in the call
+						if debug2 then
+            	            display "OK: params returned: ",params_returned using "<&",
+								" to return: ",params_to_return using "<&"
+                        end if
+
+
+                        #TODO: now check data types of parameters in call and return
+                        #based on item_num
+                        if 1=1 then
+                            #variable types and there positions in call/return match
+
+                            let match_cnt=match_cnt+1
+                            let pa_match[match_cnt].id_package = p_p4gl_function.id_package
+                            let pa_match[match_cnt].module_name = p_p4gl_function.module_name
+                            let pa_match[match_cnt].function_name = p_p4gl_function.function_name
+                        end if
+
+					else
+						if debug2 then
+							display "WRONG: params returned: ",params_returned using "<&",
+								" to return ",params_to_return using "<&",
+	                            " in ", p_p4gl_function.module_name clipped
+                        end if
+					end if
+                else
+					if debug2 then
+					display "WRONG: params expected: ",params_expected using "<&",
+						" passed ", params_passed using "<&",
+                        " in ", p_p4gl_function.module_name clipped
+                    end if
+				end if
+
+            ###########
+			end foreach
+            ###########
+       	    close f2
+	    	free f2
+
+
+            if match_cnt = 1 then
+                #only one function with this name matches call/return parameters
+				
+				#should not happen because we disabled this above...
+
+                display "what the ... ????"
+                exit program
+
+				call insert_function_calls
+	   	            (p_p4gl_function_call.function_call_id,
+                    pa_match[match_cnt].id_package,
+                    pa_match[match_cnt].module_name,
+                    pa_match[match_cnt].function_name,
+					p_p4gl_function_call.function_name,
+					p_p4gl_function_call.module_name,
+					"only one matching parameters",2)
+
+					#p_p4gl_function_call.calls_func_name,
+					#p_p4gl_function_call.calls_module_name)
+				#exit program
+	            continue foreach
+
+            else
+	            if match_cnt = 0 then
+                    display "Ooops - no function matches this call's parameters/returns!"
+	                let err_cnt = err_cnt + 1
+                    if exit_on_error then
+						exit foreach
+                    else
+                        continue foreach
+                    end if
+                else
+					#multiple functions with this name matches call/return parameters
+
+                    #First, see if we have this function name in the same module where call is
+                    select count(*) into in_this_module
+                        from p4gl_function
+                            where module_name = p_p4gl_function_call.module_name
+                            and id_package = p_p4gl_function_call.id_package
+                            and function_name = p_p4gl_function_call.calls_func_name
+
+                    if in_this_module = 1 then
+                        #called function is in the same module as the call
+
+						call insert_function_calls
+			    	            (p_p4gl_function_call.function_call_id,
+								p_p4gl_function_call.id_package,
+								p_p4gl_function_call.module_name,
+								p_p4gl_function_call.calls_func_name,
+								p_p4gl_function_call.function_name,
+								p_p4gl_function_call.module_name,
+								"in same module as calling function",3)
+
+                        continue foreach
+
+                    end if
+
+                    #Maybe we can find only one function with this name in same process?
+
+					#Get process of the calling function
+                    select id_process into calling_func_process
+                        from p4gl_fun_process
+                            where id_package = p_p4gl_function_call.id_package
+                            and module_name = p_p4gl_function_call.module_name
+                            and function_name = p_p4gl_function_call.function_name
+
+					select count(*) into in_this_process
+                        from p4gl_fun_process
+                            where id_process = calling_func_process
+                            and id_package = p_p4gl_function_call.id_package
+                            and function_name = p_p4gl_function_call.calls_func_name
+
+                    if in_this_process = 1 then
+                        #there is only one function with called name in this process
+                        #we can assume (but not be absolutely sure!)
+                        #this is the one
+						
+						#get module name of that one
+						select module_name into  p_module_name
+	                        from p4gl_fun_process
+	                            where id_process = calling_func_process
+	                            and id_package = p_p4gl_function_call.id_package
+	                            and function_name = p_p4gl_function_call.calls_func_name
+
+						call insert_function_calls
+			    	            (p_p4gl_function_call.function_call_id,
+								p_p4gl_function_call.id_package,
+								p_module_name,
+								p_p4gl_function_call.calls_func_name,
+								p_p4gl_function_call.function_name,
+								p_p4gl_function_call.module_name,
+								"only one in same process",4)
+
+						continue foreach
+
+                    end if
+
+
+                    #Maybe we can find only one function with this name in same
+                    #file name prefix? (P12a P12b ...)
+					let prog_group = get_group(p_p4gl_function_call.module_name)
+					#display prog_group clipped ," = ", p_p4gl_function_call.module_name clipped
+                    let prog_group = prog_group clipped, "*"
+
+                    select count(*) into in_this_group
+						from p4gl_function
+                         where module_name matches prog_group
+                         and id_package = p_p4gl_function_call.id_package
+                         and function_name = p_p4gl_function_call.calls_func_name
+
+                    if in_this_group = 1 then
+                        #there is only one function with name called in this
+                        #group of modules (based on file name) so we can assume
+                        #(but can not be sure!) this is the one called
+
+						#get module name of that one
+						select module_name into  p_module_name
+	                        from p4gl_function
+	                         where module_name matches prog_group
+	                         and id_package = p_p4gl_function_call.id_package
+	                         and function_name = p_p4gl_function_call.calls_func_name
+
+						call insert_function_calls
+			    	            (p_p4gl_function_call.function_call_id,
+								p_p4gl_function_call.id_package,
+								p_module_name,
+								p_p4gl_function_call.calls_func_name,
+								p_p4gl_function_call.function_name,
+								p_p4gl_function_call.module_name,
+								"only one in module group (based on file name)",5)
+
+						continue foreach
+                    else
+	                    if in_this_group = 0 then
+                            display "No function called ",
+								p_p4gl_function_call.calls_func_name clipped,
+                                " in module group ",prog_group clipped
+                        else
+                            display in_this_group using "<<&"," function called ",
+								p_p4gl_function_call.calls_func_name clipped,
+                                " in module group ",prog_group clipped
+                            display "TODO: rename this functions to make then unique!"
+                        end if
+                    end if
+
+                    #Only thing we can do now (?) is to scan modules belonging to the
+                    #same program. But module where call originates can belong
+                    #to multiple programs - so which program do we look in?
+
+                    declare f3 cursor for
+                        select * from p4gl_module_prog
+                            where module_name = p_p4gl_function_call.module_name
+
+                    let target_match_cnt = 0 #here or after FOREACH ?
+                    let calling_target_cnt = 0
+
+                    #foreach target calling function is part of...
+					####################################
+					foreach f3 into p_p4gl_module_prog.*
+                    ####################################
+
+                        display "calling function in module ",
+							p_p4gl_function_call.module_name clipped,
+                            " is part of target ",
+                            p_p4gl_module_prog.program_name clipped
+
+                        let calling_target_cnt=calling_target_cnt+1
+
+						#look for called function(in array) in same target...
+	                    ########################
+						for cnt = 1 to match_cnt
+                        ########################
+
+							if debug then
+								display "select count(*) same_targets from p4gl_module_prog"
+								display "module_name =",pa_match[cnt].module_name clipped,"="
+								display "program_name =",p_p4gl_module_prog.program_name clipped,"="
+								display "id_package =",pa_match[cnt].id_package clipped,"="
+                            end if
+
+							select count(*) into same_targets from p4gl_module_prog
+                            	where module_name = pa_match[cnt].module_name
+                                and program_name = p_p4gl_module_prog.program_name
+                                and id_package =pa_match[cnt].id_package
+
+	        	            if same_targets = 1 then
+                                let target_match_cnt = target_match_cnt + 1
+                                let pa_matches[target_match_cnt].match_id = cnt
+
+								if debug then
+									display "function ",
+										pa_match[cnt].function_name clipped,
+	                                    " in module ", pa_match[cnt].module_name clipped,
+	                                    " is part of same target ",
+	                                    p_p4gl_module_prog.program_name clipped
+                                end if
+                            else
+                                if same_targets > 1 then
+                                    display "should not happen?"
+                                    exit program
+                                else
+                                    #none found
+									if debug then
+										display "function ",
+											pa_match[cnt].function_name clipped,
+	                                        " in module ", pa_match[cnt].module_name clipped,
+	                                        " is NOT part of target ",
+		                                    p_p4gl_module_prog.program_name clipped
+                                    end if
+								end if
+                            end if
+
+	                    #######
+						end for
+                        #######
+
+#p11.mk:			stopwind.4gl \
+
+                    ###########
+					end foreach
+                    ###########
+		      	    close f3
+    				free f3
+
+
+                    if target_match_cnt = 1 then
+						let this_match_id = pa_matches[target_match_cnt].match_id
+						call insert_function_calls
+			    	            (p_p4gl_function_call.function_call_id,
+								pa_match[this_match_id].id_package,
+								pa_match[this_match_id].module_name,
+								pa_match[this_match_id].function_name,
+								p_p4gl_function_call.function_name,
+								p_p4gl_function_call.module_name,
+								"only one in program definition based on make file",6)
+
+                        continue foreach
+
+                    else
+
+						if calling_target_cnt > 1 then
+                            display "originating module is part of ",
+								calling_target_cnt ," targets"
+                        end if
+
+                        if target_match_cnt = 0 then
+							display "WARNING: unable to match"
+	                        display "target_match_cnt=",target_match_cnt
+			                let err_cnt = err_cnt + 1
+
+
+                            #get list of all files containing function:
+							# find ./src -name "*.4gl" -exec grep -i -l -w "function create_table" {} \;
+
+                            #check if p4gl failed to parse all of them:
+							# grep -i tablefunc.4gl /tmp/p4gl.log
+							#p4gl: Directoria: /opt/aubit/apps/erp/src/common - Ficheiro: tablefunc.4gl - Line 142: parse error
+                            if exit_on_error then
+		                        exit foreach
+                            else
+                                continue foreach
+                            end if
+                        else
+							if calling_target_cnt > 1 then
+                                #check if they all point to the same one:
+                                let all_same=true
+								for cnt = 2 to target_match_cnt
+	                                let this_match_id=pa_matches[cnt].match_id
+                                    let prev_mach_id=pa_matches[cnt-1].match_id
+                                    if pa_match[this_match_id].module_name <> pa_match[prev_mach_id].module_name then
+display pa_match[this_match_id].module_name clipped,"<>", pa_match[prev_mach_id].module_name clipped
+										let all_same = false
+                                        exit for
+                                    end if
+                                end for
+	                            if all_same then
+									#we can pick any one match_id, siunce data will be the same
+									let this_match_id = pa_matches[1].match_id
+									call insert_function_calls
+					    	            (p_p4gl_function_call.function_call_id,
+										pa_match[this_match_id].id_package,
+										pa_match[this_match_id].module_name,
+										pa_match[this_match_id].function_name,
+										p_p4gl_function_call.function_name,
+										p_p4gl_function_call.module_name,
+										"only one in target definition based on makefile-multiple targets but all same",7)
+
+	                                continue foreach
+	                            end if
+
+							end if
+
+							#TODO: what now?
+							display "WARNING: unable to match - multiple matches:"
+	                        display "target_match_cnt=",target_match_cnt
+			                let err_cnt = err_cnt + 1
+	                        if exit_on_error then
+								exit foreach
+                            else
+                                continue foreach
+                            end if
+                        end if
+					end if
+
+
+                end if
+            end if
+
+        end if #function_call_cnt = 1
+
+    ###########
+	end foreach
+    ###########
+    close f1
+   	free f1
+
+    display ""
+	display "Total Errors:",err_cnt
+
+	display reason_1 using "###&"," only one"
+	display reason_2 using "###&"," only one matching parameters"
+	display reason_3 using "###&"," in same module as calling function"
+	display reason_4 using "###&"," only one in same process"
+	display reason_5 using "###&"," only one in module group (based on file name)"
+	display reason_6 using "###&"," only one in target definition based on makefile"
+	display reason_7 using "###&"," only one in target definition based on makefile-multiple targets but all same"
+
+    let reason_1 = reason_6 + reason_7
+	display "Had to use makefile to resolve calls ",reason_1 using "###&", " times - not good"
+
+		select count (*) into still_unresolved_calls from p4gl_function_call
+            where function_call_id not in
+				(select function_call_id from p4gl_func_calls)
+                #order by function_name
+            and exists (select * from p4gl_function where
+               p4gl_function.function_name = p4gl_function_call.calls_func_name)
+
+		select count (*) into no_called_function from p4gl_function_call
+            where function_call_id not in
+				(select function_call_id from p4gl_func_calls)
+                #order by function_name
+            and not exists (select * from p4gl_function where
+               p4gl_function.function_name = p4gl_function_call.calls_func_name)
+
+
+		select count (*) into resolved_calls from p4gl_func_calls
+		select count (*) into total_calls from p4gl_function_call
+{
+select count(*) a, function_name
+from p4gl_function
+where function_name <> "main"
+group by function_name
+having count(*) > 1
+order by a desc
+
+               a function_name
+
+              53 set_defaults
+              43 get_info
+              36 afile_status
+              36 query
+              35 auto_print
+              32 doit
+              19 scan_orders
+              19 select_orders
+              19 make_prompt
+              16 initialize_ord
+              16 process_order
+              16 select_cust
+              15 disp_hdr
+}
+
+##########################################################
+#FIXME: mkf.4gl is not processing libraries - see P21.mk
+#after this is done, we will have to, when using make files to determine function
+#calls, first expand file list of targets to inslude files as specified by .lib
+#target(s) !!!!
+##########################################################
+
+    display resolved_calls using "###&"," calls resolved, out of ", total_calls  using "###&"
+    display still_unresolved_calls using "###&"," calls still unresolved"
+    display no_called_function using "###&"," calls have no called function registered in Doc4GL db" #p4gl crashed
+    display ""
+
+
+end function #function function_calls()
+
+
+{**
+ * insert function call relationship in the database
+ *
+ *}
+function insert_function_calls(function_call_id,calls_id_package,calls_module_name,
+	calls_func_name,calling_function_name,calling_module_name,explain_txt,explain_type)
+define
+	function_call_id
+		integer,
+	calls_id_package
+        char (64),
+	calls_module_name, calling_module_name
+        char(64),
+	calls_func_name,calling_function_name
+        char(50),
+    explain_txt
+        char(80),
+    explain_type
+        smallint
+
+	display "function ",calling_function_name clipped," in ",
+		calling_module_name clipped, " calls ",
+		calls_func_name clipped, " in ",
+        calls_module_name clipped
+
+    display "   ",explain_txt clipped
+
+	let do_insert = false
+
+    case explain_type
+        when 1  #" only one"
+            #certenty: 100% (unless all functions failed to register with p4gl)
+            let do_insert = true
+			let reason_1 = reason_1 + 1
+        when 2  #" only one matching parameters"
+            #certenty: 0% (p4gl currently does not extract all information)
+			#let do_insert = true
+			let reason_2 = reason_2 + 1
+        when 3  #" in same module as calling function"
+            #certenty: 100%
+			let do_insert = true
+			let reason_3 = reason_3 + 1
+        when 4  #" only one in same process"
+            #certenty: moderate
+			#let do_insert = true
+			let reason_4 = reason_4 + 1
+        when 5  #" only one in module group (based on file name)"
+            #certenty: moderate
+			#let do_insert = true
+			let reason_5 = reason_5 + 1
+		when 6  #" only one in program definition based on make file"
+            #certenty: 100% but we should not use it to remove dependency on make files
+			#let do_insert = true
+			let reason_6 = reason_6 + 1
+        when 7  #"only one in program definition based on make file-multiple targets but all the same"
+            #certenty: 100% but we should not use it to remove dependency on make files
+			#let do_insert = true
+			let reason_7 = reason_7 + 1
+        otherwise
+            display "Invalid reason ",explain_type
+            exit program
+    end case
+
+
+
+	if do_insert then
+		insert into p4gl_func_calls
+	    (function_call_id,calls_id_package,calls_module_name,calls_func_name)
+	    values
+	    (function_call_id,calls_id_package,
+		calls_module_name,calls_func_name)
+    end if
+
+	let do_insert = false
+
+
+end function
+
+
+{**
+ * Get program group module belongs to based on file name (P11a, P11b, ...)
+ *
+ *}
+function get_group(module_name)
+define
+    module_group, module_name
+        char (64),
+    module_name_lenght, cnt, reached_numbers
+        smallint
+
+    let module_name = upshift(module_name)
+    let module_name_lenght = length(module_name)
+
+	#strip .4gl extension
+    if module_name[module_name_lenght-4,module_name_lenght] = ".4GL" then
+        let module_name = module_name[1,module_name_lenght-4]
+	    let module_name_lenght = length(module_name)
+    end if
+
+    #strip ALL characters after numbers
+    let reached_numbers = false
+    initialize module_group to null
+	for cnt = 1 to module_name_lenght
+        if module_name[cnt] matches "[0-9]" then
+            let reached_numbers = true
+        else
+            if reached_numbers then
+                #already passed numbers
+                let module_group = module_name[1,cnt-1]
+                exit for
+            end if
+        end if
+    end for
+
+    if module_group is not null then
+	    return module_group
+    else
+        return module_name
+    end if
+
+end function
+
+# =============================== EOF ==================================

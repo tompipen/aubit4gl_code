@@ -4,7 +4,7 @@
 #  AUTHOR : Sergio Ferreira
 #           Moredata, Lda - Lisbon, Portugal
 #
-# $Id: Makefile.in,v 1.10 2003-11-21 10:48:49 afalout Exp $
+# $Id: Makefile.in,v 1.11 2003-11-26 05:07:32 afalout Exp $
 #
 #  DESCRIPTION : Makefile for fgldoc 4gl parser compilation
 #
@@ -205,8 +205,14 @@ deinstall:
 	@echo ""
 
 
-run.loadform:
+run.loadform: loadform.4ae
 	@export A4GL_SQLTYPE=esql; export A4GL_UI=TUI; ./loadform.4ae interactive
+
+run.loadform.d: loadform.42r
+	@fglrun ./loadform.42r interactive
+
+run.mkf.d: mkf.42r
+	@fglrun ./mkf.42r -db-maxdev -m
 
 #  ==========================================================================
 #  Cleaning of all the garbage

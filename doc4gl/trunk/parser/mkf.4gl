@@ -1,3 +1,4 @@
+
 {
 Make file manupulation tool
 
@@ -39,6 +40,17 @@ Other tables are empty or have only one row
 
 }
 
+
+##########################################################
+#FIXME: mkf.4gl is not processing libraries - see P21.mk
+#after this is done, we will have to, when using make files to determine function
+#calls, first expand file list of targets to inslude files as specified by .lib
+#target(s) !!!! (in loadform.4gl)
+##########################################################
+
+database maxdev
+
+
 globals
 
 	define
@@ -59,9 +71,27 @@ globals
 	ga_libs_size, ga_4gl_size, ga_per_size, ga_msg_size, ga_menu_size smallint,
 
 	#run-time settings:
-	verbose,insert_data,debug_on smallint,
+	verbose,insert_data,debug_on,check_unresolved smallint,
 
-    this_package char (64)
+    this_package char (64),
+
+	list_cnt smallint,
+	pa_list array [200] of record
+		calls_module_name char (64)
+    end record,
+
+	func_cnt smallint,
+	pa_func array [1000] of record
+		function_call_id integer,
+		function_name char(64),
+		calls_func_name char(64),
+		scaned smallint,
+		exausted smallint,
+        calls_module_name char(64)
+    end record
+
+
+
 
 end globals
 
@@ -95,6 +125,9 @@ define
     let real_count = 0
 
     initialize system_name, target, target_type, verbose, insert_data,debug_on to null
+
+    let check_unresolved = false
+
 
     #let verbose=true
     #let insert_data = true
@@ -173,6 +206,9 @@ define
                 call generate_target_info()
                 exit program
 
+            when "-m"       #create all make files
+                call create_makefile()
+                exit program
 		end case
 
 {
@@ -421,7 +457,7 @@ end function
 
 
 {**
- * call all functions needed to perform data output (db insert or display) 
+ * call all functions needed to perform data output (db insert or display)
  * actions, from data we stored in global arrays
  *
  *}
@@ -858,7 +894,7 @@ define
 
     declare c2 cursor for
         select distinct function_name
-			from p4gl_function_calls
+			from p4gl_func_calls
                 where function_name = p_function_name
                 and module_name = target
                 and id_package = this_package
@@ -876,6 +912,633 @@ define
     exit program
 
 end function
+
+{**
+ *
+ *
+ *}
+function create_makefile()
+define
+	p_p4gl_function record like p4gl_function.*,
+	p_p4gl_function_call record like  p4gl_function_call.*,
+    p_p4gl_func_calls record like p4gl_func_calls.*,
+    this_func_cnt, cnt, p_call_cnt,all_exausted,has_existing_mkf,
+    unresolved_top_cnt, unresolved_cnt, tmp_cnt
+        smallint,
+    p_program_name,p_id_package
+        char(64),
+    p_call record
+		function_call_id like	 	p4gl_function_call.function_call_id,
+        id_package like         p4gl_function_call.id_package,
+        module_name like        p4gl_function_call.module_name,
+        function_name like         p4gl_function_call.function_name,
+        line like         p4gl_function_call.line,
+        call_type like        p4gl_function_call.call_type,
+        calls_func_name   like      p4gl_func_calls.calls_func_name,
+        calls_module_name like         p4gl_func_calls.calls_module_name
+    end record
+
+    let unresolved_top_cnt = 0
+    let unresolved_top_cnt = 0
+    let tmp_cnt = 0
+
+	declare m1 cursor for
+        select * from p4gl_function
+            where function_name = "main"
+
+    #################################
+	foreach m1 into p_p4gl_function.*
+    #################################
+    #for each function called "main"... (target)
+
+	    #new modules list
+		let list_cnt = 0
+
+        let unresolved_cnt=0
+        let unresolved_top_cnt=0
+
+		#add module of main function to modules list
+		call add_to_list(p_p4gl_function.module_name)
+
+        #See if we have name for this target:
+        select program_name into p_program_name
+            from p4gl_module_prog
+            where id_package = p_p4gl_function.id_package
+            and module_name = p_p4gl_function.module_name
+
+        if status = NOTFOUND then
+            #we do not have this program in existing make files,
+            #we will assume target name is same as module containing MAIN.
+            #we know it can't be library since libraries do not have MAIN block
+			let p_program_name = p_p4gl_function_call.module_name clipped
+            let has_existing_mkf = false
+        else
+            let has_existing_mkf = true
+		end if
+
+        display "========================= ",p_program_name clipped
+
+        #get list of all calls made from this main block
+		declare m2 cursor for
+            {
+			select p4gl_func_calls.* from
+				#p4gl_function_call
+                p4gl_func_calls, p4gl_function_call
+            where p4gl_function_call.id_package = p_p4gl_function.id_package
+            and p4gl_function_call.module_name = p_p4gl_function.module_name
+            and p4gl_function_call.function_name = p_p4gl_function.function_name #main
+            and p4gl_function_call.function_call_id = p4gl_func_calls.function_call_id
+            }
+			select
+			 	p4gl_function_call.function_call_id,
+                p4gl_function_call.id_package,
+                p4gl_function_call.module_name,
+                p4gl_function_call.function_name,
+                p4gl_function_call.line,
+                p4gl_function_call.call_type,
+                p4gl_func_calls.calls_func_name,
+                p4gl_func_calls.calls_module_name
+			from
+			     p4gl_function_call,p4gl_func_calls
+			where p4gl_function_call.id_package = p_p4gl_function.id_package
+			 and p4gl_function_call.module_name = p_p4gl_function.module_name
+			 and p4gl_function_call.function_name = p_p4gl_function.function_name #main only in this case
+			 #we want this join to get only associated/resolved calls
+             #there is little point persuing unresolved calls since they will not
+             #be able to provide module name of called function
+			 and p4gl_function_call.function_call_id = p4gl_func_calls.function_call_id
+
+            if check_unresolved then
+				#Find out if there are unsresolved calls on top level
+				select count(*) into unresolved_top_cnt
+				from p4gl_function_call #,p4gl_func_calls
+				where p4gl_function_call.id_package = p_p4gl_function.id_package
+				 and p4gl_function_call.module_name = p_p4gl_function.module_name
+				 and p4gl_function_call.function_name = p_p4gl_function.function_name #main only in this case
+				 and p4gl_function_call.function_call_id  not in
+					 (select function_call_id from p4gl_func_calls)
+            end if
+
+			#new function list
+			let func_cnt = 0
+			######################################
+			#foreach m2 into p_p4gl_function_call.*
+            foreach m2 into p_call.*
+            ######################################
+            #for each function call made in this "main" block...
+
+                if debug_on then
+					display "MAIN calls ", p_call.calls_func_name clipped
+                end if
+
+                #populate initial function list
+				call add_to_func_list(
+					p_call.function_call_id,
+					p_call.function_name,
+                	p_call.calls_func_name,
+					p_call.calls_module_name)
+
+           		call add_to_list(p_call.calls_module_name)
+
+                let p_id_package = p_call.id_package
+
+            ###########
+            end foreach
+            ###########
+		    close m2
+    		free m2
+
+            if func_cnt = 0 then
+                if debug_on then
+					display "Main did not make any calls!"
+                end if
+                #completely possible... do not exit
+				#exit program
+            end if
+
+
+            #########
+			while 1=1
+            #########
+            #loop untill all functions are scanned or exausted
+
+                if verbose then
+					display "func_cnt = ",func_cnt
+                end if
+
+                #prevent counter from expanding while we are in the FOR loop
+				let this_func_cnt=func_cnt
+                ############################
+                for cnt = 1 to this_func_cnt
+                ############################
+                #for each function call in array...
+
+                if pa_func[cnt].scaned = false then
+                #if not already scaned...
+
+                    if debug_on then
+						display "looking for calls from function ",
+							#pa_func[cnt].function_name clipped
+	                        pa_func[cnt].calls_func_name clipped
+	                        #," in ",pa_func[cnt].module_name
+                    end if
+
+					#get all calls made in function that was called
+					declare m3 cursor for
+                        {
+                        select p4gl_func_calls.* from p4gl_func_calls,p4gl_function_call
+                        #where function_call_id = pa_func[cnt].function_call_id
+                        where p4gl_function_call.function_call_id = p4gl_func_calls.function_call_id
+                        and p4gl_function_call.function_name = pa_func[cnt].calls_func_name
+                        }
+
+					select
+					 	p4gl_function_call.function_call_id,
+		                p4gl_function_call.id_package,
+		                p4gl_function_call.module_name,
+		                p4gl_function_call.function_name,
+		                p4gl_function_call.line,
+		                p4gl_function_call.call_type,
+		                p4gl_func_calls.calls_func_name,
+		                p4gl_func_calls.calls_module_name
+					from
+					     p4gl_function_call,p4gl_func_calls
+					where p4gl_function_call.id_package = p_id_package
+					 and p4gl_function_call.module_name = pa_func[cnt].calls_module_name
+					 and p4gl_function_call.function_name = pa_func[cnt].calls_func_name
+					 #we want this join to get only associated/resolved calls
+		             #there is little point persuing unresolved calls since they will not
+		             #be able to provide module name of called function
+					 and p4gl_function_call.function_call_id = p4gl_func_calls.function_call_id
+
+                    if check_unresolved then
+						#count unresolved calls from that calling function
+						select count (*) into tmp_cnt
+						from p4gl_function_call #,p4gl_func_calls
+						where p4gl_function_call.id_package = p_id_package
+						 and p4gl_function_call.module_name = pa_func[cnt].calls_module_name
+						 and p4gl_function_call.function_name = pa_func[cnt].calls_func_name
+						 and p4gl_function_call.function_call_id not in
+						 (select function_call_id from p4gl_func_calls)
+
+	                     let unresolved_cnt = unresolved_cnt + tmp_cnt
+                    end if
+
+					if debug_on and tmp_cnt > 0 then
+						display tmp_cnt using "<<&", " unresolved call(s) from ",
+							pa_func[cnt].calls_func_name clipped, " in ",
+						    pa_func[cnt].calls_module_name clipped
+                    end if
+
+                    let p_call_cnt = 0
+					###################################
+                    #foreach m3 into p_p4gl_func_calls.*
+                    foreach m3 into p_call.*
+                    ###################################
+                    #for each function call made by this function...
+                        let p_call_cnt=p_call_cnt+1
+
+                        {
+						display "Function ",pa_func[cnt].calls_func_name clipped,
+                            " calls ", p_p4gl_func_calls.calls_func_name clipped,
+                            " in ", p_p4gl_func_calls.calls_module_name
+
+						call add_to_func_list(
+							p_p4gl_func_calls.function_call_id, #id of the function call made
+							pa_func[cnt].function_name,  #name of the function making the call
+							p_p4gl_func_calls.calls_func_name #name of the function called
+		                	)
+
+						#Add module called function is in to modules list
+						call add_to_list(p_p4gl_func_calls.calls_module_name)
+                        }
+
+						if debug_on then
+							display "Function ",pa_func[cnt].calls_func_name clipped,
+	                            " calls ", p_call.calls_func_name clipped,
+	                            " in ", p_call.calls_module_name
+                        end if
+
+						call add_to_func_list(
+							p_call.function_call_id, #id of the function call made
+							p_call.function_name,  #name of the function making the call
+							p_call.calls_func_name, #name of the function called
+	       					p_call.calls_module_name) #name of the module where called function is
+
+						#Add module called function is in to modules list
+						call add_to_list(p_call.calls_module_name)
+
+
+
+                    ###########
+                    end foreach
+                    ###########
+                    close m3
+                    free m3
+
+					let pa_func[cnt].scaned = true
+                    if p_call_cnt = 0 then
+                        #This function made no calls, therefore it's the dead end
+						let pa_func[cnt].exausted = true
+                        if debug_on then
+							display "Function ",pa_func[cnt].function_name clipped,
+    	                        " has no calls to other functions"
+                        end if
+					end if
+                end if #already scanned
+
+				#######
+				end for
+                #######
+
+				let all_exausted = true
+
+                #######################
+                for cnt = 1 to func_cnt
+                #######################
+                #for each function call in array...
+					#check if it's scaned
+					if pa_func[cnt].scaned = false then
+                        let all_exausted = false
+                        if debug_on then
+							display "more work to do..."
+                        end if
+						exit for
+                    end if
+				#######
+				end for
+                #######
+
+                if all_exausted then
+                    if debug_on then
+						display "all exausted"
+                    end if
+					exit while
+                end if
+
+            #########
+			end while
+            #########
+
+            call output_makefile(p_program_name,has_existing_mkf,unresolved_cnt,unresolved_top_cnt)
+
+#for now, exit after first target make file is assembled
+exit foreach
+
+
+    ###########
+	end foreach
+    ###########
+
+    close m1
+    free m1
+
+end function
+
+{**
+ *
+ *
+ *}
+function add_to_list(p_calls_module_name)
+define
+	p_calls_module_name like p4gl_func_calls.calls_module_name,
+    cnt
+        smallint
+
+
+    for cnt = 1 to list_cnt
+        if pa_list[cnt].calls_module_name = p_calls_module_name then
+            #already have it
+			if debug_on then
+				display "module ",p_calls_module_name clipped,
+    	            " is already on the moduled list"
+            end if
+			return
+        end if
+    end for
+
+    if debug_on then
+		display "new module ",p_calls_module_name clipped
+    end if
+
+    #add it
+	let list_cnt = list_cnt + 1
+    if list_cnt > 200 then
+        display "module list exausted. Stop."
+        exit program
+    end if
+
+	let pa_list[list_cnt].calls_module_name = p_calls_module_name clipped
+
+end function
+
+{**
+ * id of the function call made
+ * name of the function making the call
+ * name of the function called
+ *}
+function add_to_func_list(p_function_call_id,p_function_name,p_calls_func_name,p_calls_module_name)
+define
+    p_function_call_id
+        integer,
+	p_function_name,p_calls_func_name,p_calls_module_name
+        char(64),
+    cnt smallint
+
+    {
+    if p_function_name = "main" then
+        display "ERROR - attempted to add 'main' to function list as caller..."
+        exit program
+    end if
+    }
+
+    if p_calls_func_name = "main" then
+        display "ERROR - attempted to add 'main' to function list as called..."
+        exit program
+    end if
+
+    for cnt = 1 to func_cnt
+        if pa_func[func_cnt].calls_func_name=p_calls_func_name then
+            #already have this function in the functions list
+			if debug_on then
+				display "function ",p_calls_func_name clipped,
+    	            " is already on the function list"
+            end if
+			return
+        end if
+    end for
+
+	if debug_on then
+		display "new call from ",p_function_name clipped, " to ", p_calls_func_name clipped
+    end if
+
+	#Add new function
+	let func_cnt=func_cnt+1
+
+    if func_cnt > 1000 then
+        display "function list exausted. Stop."
+        exit program
+    end if
+
+	let pa_func[func_cnt].function_call_id=p_function_call_id
+	let pa_func[func_cnt].function_name=p_function_name
+	let pa_func[func_cnt].calls_func_name=p_calls_func_name
+	let pa_func[func_cnt].scaned=false
+	let pa_func[func_cnt].exausted=false
+	let pa_func[func_cnt].calls_module_name = p_calls_module_name
+
+end function
+
+
+{**
+ *
+ *
+ *
+ *}
+function output_makefile(p_program_name,has_existing_mkf,unresolved_cnt,unresolved_top_cnt)
+define
+	cnt,has_existing_mkf,found_it,orig_make_modules_cnt,unresolved_cnt,unresolved_top_cnt
+    smallint,
+    p_program_name, mkf_file, p_id_process
+        char (64),
+    no_match
+        char(1),
+    p_p4gl_module_prog record like p4gl_module_prog.*
+
+    for cnt = 1 to func_cnt
+
+		if debug_on then
+			display "Function ",
+			pa_func[cnt].function_name clipped,
+	        " calls ",
+			pa_func[cnt].calls_func_name clipped,
+	        " in ",
+	       	pa_func[cnt].calls_module_name clipped,
+			" (",
+			pa_func[cnt].scaned using "&",
+	        "/",
+			pa_func[cnt].exausted using "&",")"
+        end if
+    end for
+
+    if debug_on then
+		display "=============================================== ",
+			p_program_name clipped, ".amk"
+    end if
+
+    for cnt = 1 to list_cnt
+        if has_existing_mkf then
+            select * from p4gl_module_prog
+                where program_name = p_program_name
+                and module_name = pa_list[cnt].calls_module_name
+                #and id_package =
+            if status = NOTFOUND then
+                let no_match = "*"
+            else
+                let no_match = ""
+			end if
+
+        end if
+
+		if debug_on then
+			display
+			pa_list[cnt].calls_module_name clipped,
+        	" ",
+			no_match clipped
+        end if
+    end for
+
+    #check if all modules from existing makefile are listed
+	if has_existing_mkf then
+
+        declare x1 cursor for
+            select * from p4gl_module_prog
+                where program_name = p_program_name
+                #and id_package =
+
+		let orig_make_modules_cnt = 0
+		foreach x1 into p_p4gl_module_prog.*
+        #for each module as per make file
+
+            let orig_make_modules_cnt = orig_make_modules_cnt + 1
+		    
+			let found_it = false
+			for cnt = 1 to list_cnt
+            #for each module as we determined
+
+                if pa_list[cnt].calls_module_name = p_p4gl_module_prog.module_name
+                then
+					let found_it = true
+                    exit for
+                end if
+
+            end for
+
+            if found_it = false then
+				if debug_on then
+					display "Module ",p_p4gl_module_prog.module_name clipped,
+                    	" is in make file but not on list"
+                end if
+            end if
+
+        end foreach
+    end if
+
+    #When we found module that was not in original make file, this can be
+    #an error, but it also can mean that orignal make file used libraries
+    #If it's an error, it is not fatal - program will still compile
+
+    #when there is an module in original make file, that we did not detect,
+    #it can be an error (due to unresolved call or maybe even complete module
+    #failed to parse because p4gl choked) or it can mean that originam make file
+    #had redundant module in it.
+
+	display "Original makefile has ",orig_make_modules_cnt using "<<&",
+        " modules, created makefile has ",list_cnt using "<<&",
+        " modules."
+
+    if check_unresolved then
+		let cnt = unresolved_cnt + unresolved_top_cnt
+		display "Total ",
+	            cnt using "<<&",
+	            " unresolved calls (",
+				unresolved_cnt using "<<&",
+				"/",
+				unresolved_top_cnt using "<<&",")"
+    else
+	    #for testing:
+		let cnt = 0
+    end if
+
+	if cnt>0 then
+        display "Make file would probably be invalid - will not create"
+    else
+
+        #There is no path in p4gl_module
+        #get process of MAIN block
+        select id_process into p_id_process
+           from p4gl_fun_process
+           where id_package = "."
+           and module_name = pa_list[1].calls_module_name
+           and function_name = "main"
+
+        let mkf_file = "/opt/aubit/apps/erp/src/",
+			downshift(p_id_process) clipped,"/",
+			p_program_name clipped,".amk"
+
+		start report rep_mkf to mkf_file
+        output to report rep_mkf(p_program_name)
+        finish report rep_mkf
+        display "Make file ",mkf_file clipped," created."
+
+        let mkf_file = "less ",mkf_file clipped
+        #run mkf_file
+
+	end if
+
+
+end function
+
+
+{**
+ *
+ *
+ *
+ *}
+report rep_mkf(p_program_name)
+define
+    p_program_name
+        char (64),
+    cnt
+        smallint
+
+OUTPUT
+
+	LEFT MARGIN 0
+	TOP MARGIN 0
+	BOTTOM MARGIN 0
+	#PAGE LENGTH 65
+    PAGE LENGTH 1
+
+FORMAT
+
+	#################
+	FIRST PAGE HEADER
+	#################
+
+    print "PROG		= ",p_program_name clipped
+
+	#FIXME: this will actually be MAIN module, not GLOBALS
+	print "GLOBALS.4gl	= ",pa_list[1].calls_module_name clipped
+
+
+	print "FILES.4gl	= \\"
+
+	print "		${GLOBALS.4gl} \\"
+
+
+	############
+	ON EVERY ROW
+	############
+
+		for cnt = 2 to list_cnt
+	        print
+    	    "		",pa_list[cnt].calls_module_name clipped, " \\"
+        end for
+
+	###########
+	ON LAST ROW
+	###########
+
+#TODO get forms/help files ussage
+#todo when all is working, clean existing data in p4gl_module_prog and insert new one.
+
+        print ""
+		print "FILES.per	= ${ALLFORMS.per}"
+        print ""
+
+end report
+
 
 # ================================== EOF ===============================
 
