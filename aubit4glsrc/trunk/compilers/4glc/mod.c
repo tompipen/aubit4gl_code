@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.153 2004-01-29 08:33:46 mikeaubury Exp $
+# $Id: mod.c,v 1.154 2004-02-01 08:14:35 mikeaubury Exp $
 #
 */
 
@@ -3698,6 +3698,9 @@ void expand_bind (struct binding_comp *bind, int btype, int cnt)
   static struct binding_comp *save_bind=0;
 
   xxxa=0;
+
+  if (cnt==0) return; /* theres nothing there to expand */
+
   save_bind=realloc(save_bind,sizeof(struct binding_comp)*cnt);
   for (xxxa = 0; xxxa < cnt; xxxa++)
     {
