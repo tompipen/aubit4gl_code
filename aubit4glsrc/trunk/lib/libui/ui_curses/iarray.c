@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.27 2003-07-18 16:17:32 mikeaubury Exp $
+# $Id: iarray.c,v 1.28 2003-07-23 12:05:23 mikeaubury Exp $
 #*/
 
 /**
@@ -591,6 +591,27 @@ static void process_key_press(struct s_inp_arr *arr,int a) {
 
   switch (a)
     {
+
+    case 127:
+    case 8:
+    case A4GLKEY_DC:
+    case A4GLKEY_DL:
+    case A4GLKEY_BACKSPACE:
+        A4GL_int_form_driver (mform, REQ_DEL_PREV);break;
+
+    case 4:                     // Control - D
+        A4GL_int_form_driver (mform, REQ_CLR_EOF);break;
+
+    case 1:                     // Control - A
+      form->form_details.insmode = form->form_details.insmode ? 0 : 1;
+
+      if (form->form_details.insmode) {
+        A4GL_int_form_driver (mform, REQ_INS_MODE);break;
+        }
+      else {
+        A4GL_int_form_driver (mform, REQ_OVL_MODE);break;
+        }
+
     case A4GLKEY_PGDN:
       A4GL_newMovement (arr,
 			arr->scr_line,
@@ -647,10 +668,10 @@ static void process_key_press(struct s_inp_arr *arr,int a) {
 
       break;
 
-    case A4GLKEY_BACKSPACE:
-      A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
-			arr->curr_attrib - 1);
-      break;
+    //case A4GLKEY_BACKSPACE:
+      //A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
+			//arr->curr_attrib - 1);
+      //break;
 
     case A4GLKEY_UP:
       A4GL_newMovement (arr,
@@ -1960,3 +1981,18 @@ arr=arrv;
       return 0;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
