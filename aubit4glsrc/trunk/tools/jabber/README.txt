@@ -108,6 +108,24 @@ There will be some more needed later, like:
 
 Suggestions?
 
+Credits:
+---------
+
+Some of examples for writing this code was contributed by Bernhard R. Link
+(brl@pcpool00.mathematik.uni-freiburg.de). Here is what he say:
+
+> Please note, that this is not that simple, as it interferes a littel bit
+> with the way the jabber-protocoll is build. An message may result in
+> some results, like status codes or the like, but it is hard to say which
+> time you are finished.
+>
+> I have some time ago started to write a program for iksemel
+> for it bases on jabber, I will attach it. Please change the
+> accountsnames, that are partly still added to it and be warned, that
+> it is far from complete...
+>
+> Hochachtungsvoll,
+> 	Bernhard R. Link
 
 Yours, Andrej Falout, http://www.falout.com/disclaimer.html
 
