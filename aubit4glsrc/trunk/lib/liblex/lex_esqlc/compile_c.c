@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.200 2004-11-26 08:56:26 mikeaubury Exp $
+# $Id: compile_c.c,v 1.201 2004-11-26 17:32:43 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.200 2004-11-26 08:56:26 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.201 2004-11-26 17:32:43 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -5142,7 +5142,11 @@ A4GL_set_var_sql (int doing_declare, int n)
 	      strcat (buff, ",");
 	    }
 
+      if (A4GLSQLCV_check_requirement ("USE_INDICATOR")) {
+	  sprintf (buff_small, " :_vi_%d INDICATOR :_vii_%d \n", a,a);
+	} else {
 	  sprintf (buff_small, " :_vi_%d\n", a);
+	}
 
 	  strcat (buff, buff_small);
 
