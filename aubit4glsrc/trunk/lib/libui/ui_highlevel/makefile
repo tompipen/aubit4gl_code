@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.38 2004-12-29 11:42:14 afalout Exp $
+# $Id: makefile,v 1.39 2004-12-31 03:20:39 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -421,12 +421,10 @@ SERVERS			=$(foreach api_name,${API_NAMES},${api_name}-server${EXE_EXT})
 DLOPEN_SUPPORT= ${LIBROOT}/libaubit4gl/calldll.o \
 				${LIBROOT}/resource/resource.o \
 				${LIBROOT}/libaubit4gl/error.o \
-				${LIBROOT}/libaubit4gl/pointers.o
+				${LIBROOT}/libaubit4gl/pointers.o 
 
 #Prevent 'make' from deleting our intermedate files:
-.PRECIOUS: %.o 
-.PRECIOUS: %.idl
-.PRECIOUS: %.c
+.SECONDARY:
 
 ## ==================================================================
 ##                        CORBA/ORBit targets
@@ -453,7 +451,8 @@ capi.servers: ${SERVERS}
 
 ######################################
 #Create Aubit CORBA plug-in for % API
-lib%_CLIENT${SO_EXT}: CAPI_%-common.o CAPI_%-stubs.o CAPI_%-client.o
+lib%_CLIENT${SO_EXT}: CAPI_%-common.o CAPI_%-stubs.o CAPI_%-client.o \
+	CLIENT_corba_server_util.o
 	${LD} ${SO_LDFLAGS} ${CAPI_LDFLAGS} -o $@ $^
 	cp $@ ${LIBROOT}/lib${shell echo "$*" | tr a-z A-Z }_CLIENT${SO_EXT}
 	@echo "Created: ${LIBROOT}/lib${shell echo "$*" | tr a-z A-Z }_CLIENT${SO_EXT}"
@@ -462,8 +461,9 @@ lib%_CLIENT${SO_EXT}: CAPI_%-common.o CAPI_%-stubs.o CAPI_%-client.o
 #######################################
 #Create Aubit plug-in CORBA server for % API
 %-server${EXE_EXT}: CAPI_%-common.o CAPI_%-skels.o CAPI_%-skelimpl.o \
-	CAPI_%-server.o ${LIBROOT}/libaubit4gl/API_%.o ${DLOPEN_SUPPORT} \
-	LOCAL_corba_server_util.o
+	CAPI_%-server.o ${DLOPEN_SUPPORT} ${LIBROOT}/libaubit4gl/API_%.o \
+	SERVER_corba_server_util.o 
+#	CAPI_corba_server_util.o
 	${CC} ${LDFLAGS} ${CAPI_LDFLAGS} -o $@ $^ ${LINK_LIBS_SERVER}
 
 
@@ -473,10 +473,14 @@ lib%_CLIENT${SO_EXT}: CAPI_%-common.o CAPI_%-stubs.o CAPI_%-client.o
 
 ####################################
 #Compile a separate object specifically for use in CORBA server (with -D__CAPI__)
-LOCAL_corba_server_util.o: ${LIBROOT}/libaubit4gl/corba_server_util.c
-	${CC} ${CFLAGS} -c $^ -o $@
+SERVER_corba_server_util.o: ${LIBROOT}/libaubit4gl/corba_server_util.c
+	${CC} ${CFLAGS} -c $^ -o $@ -D__CSERVER__
+CLIENT_corba_server_util.o: ${LIBROOT}/libaubit4gl/corba_server_util.c
+	${CC} ${CFLAGS} -c $^ -o $@ -D__CCLIENT__
+#CAPI_corba_server_util.o: ${LIBROOT}/libaubit4gl/corba_server_util.c
+#	${CC} ${CFLAGS} -c $^ -o $@ -D__CAPI__
 
-${DLOPEN_SUPPORT}:
+${DLOPEN_SUPPORT} ${LIBROOT}/libaubit4gl/API_%.o :
 	${MAKE} -C ${LIBROOT}/libaubit4gl
 	
 ####################################
@@ -498,16 +502,20 @@ CAPI_%-server.c: ${LIBROOT}/libaubit4gl/API_%.spec ${IDLMAGIC}
 #Create skelimpl C code from .idl specification
 CAPI_%-skelimpl.c: CAPI_%.idl
 #CAPI_%.h CAPI_%-common.c CAPI_%-stubs.c CAPI_%-skels.c CAPI_%-skelimpl.c: CAPI_%.idl
+	${RM} CAPI_$*-skelimpl.c
 	$(ORBIT_IDL) --skeleton-impl $^
+	@if test -f CAPI_$*-skelimpl.c; then echo "$(ORBIT_IDL) OK"; else echo "$(ORBIT_IDL) ERROR"; exit 1; fi
 
 #######################################
 #Create all needed (except skelimpl) CORBA C code from .idl specification
 CAPI_%.h CAPI_%-common.c CAPI_%-stubs.c CAPI_%-skels.c: CAPI_%.idl
+	${RM} CAPI_$*.h CAPI_$*-common.c CAPI_$*-stubs.c CAPI_$*-skels.c
 	$(ORBIT_IDL) $^
+	@if test -f CAPI_$*.h; then echo "$(ORBIT_IDL) OK"; else echo "$(ORBIT_IDL) ERROR"; exit 1; fi
 	
 #######################################
 #Create CORBA .idl specification from Aubit API .spec file
-CAPI_%.idl: ${LIBROOT}/libaubit4gl/API_%.spec
+CAPI_%.idl: ${LIBROOT}/libaubit4gl/API_%.spec ${IDLMAGIC}
 	${SH} ${IDLMAGIC} $< > $@
 
 ## ==================================================================
@@ -518,8 +526,9 @@ CAPI_%.idl: ${LIBROOT}/libaubit4gl/API_%.spec
 #Clean all CAPI intermedate files
 clean.capi:
 	${RM} CAPI_*-common.c CAPI_*.h CAPI_*.idl CAPI_*-skels.c CAPI_*-stubs.c \
-		CAPI_*-skelimpl.c *~ *.ior *.ref *.o
-
+		CAPI_*-skelimpl.c *~ *.ior *.ref *.o \
+		CAPI_*-client.c CAPI_*-server.c
+		
 #######################################
 #Clean all CAPI intermedate files and targets
 #NOTE: cleans only local targets in this this dir, not lib/ or bin/

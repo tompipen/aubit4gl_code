@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.275 2004-12-29 11:41:22 afalout Exp $
+dnl # $Id: configure.in,v 1.276 2004-12-31 03:19:37 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -501,6 +501,16 @@ AC_SUBST(WWW_DOCUMENT_ROOT)
 AC_SUBST(RPM)
 AC_SUBST(AUTOSPEC)
 AC_SUBST(RPMBUILDROOT)
+
+
+#ORBit CORBA:
+AC_SUBST(HAS_ORBIT_TYPE)
+AC_SUBST(ORBIT_IDL)
+AC_SUBST(ORBIT_NAME)
+AC_SUBST(ORBIT_VERSION)
+AC_SUBST(CAPI_LDFLAGS)
+AC_SUBST(CAPI_CFLAGS)
+AC_SUBST(ORBIT_CONFIG)
 
 #Jabber/Iksemel lib
 AC_SUBST(JABBERBUILD)
@@ -1831,6 +1841,7 @@ if test "$withval" != "no"; then
 	if test "$with_pdf" = ""; then              with_pdf=yes        ;fi
 	if test "$with_iksemel" = ""; then          with_iksemel=yes    ;fi
 	if test "$with_xmlrpc" = ""; then           with_xmlrpc=yes     ;fi
+	if test "$with_orbit" = ""; then           	with_orbit=yes     ;fi
 	if test "$GCC_MINGW" != "yes"; then 
 		if test "$with_rpc" = ""; then              FORCE_RPC=1         ;fi
 	fi
@@ -3018,6 +3029,80 @@ AC_PATH_PROG(AUTOSPEC, autospec, no)
 AC_PATH_PROG(PROG_SENDMAIL, sendmail, /usr/lib/sendmail, $PATH /usr/bin /usr/sbin /usr/etc /etc /usr/ucblib)
 if test -n "$PROG_SENDMAIL"; then
   AC_DEFINE(HAVE_SENDMAIL)
+fi
+
+## ==================================================================
+##                  Check for ORBit CORBA support
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for ORBit CORBA support:)
+
+AC_ARG_WITH(orbit,
+[  --with-orbit[=DIR]      Include ORBit CORBA support.  DIR is the ORBit
+                          install directory, defaults to /usr.],
+[
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+			if test "$COMSPEC" != "" -a "$MSYS_ROOTDIR" != ""; then
+				withval="$MSYS_ROOTDIR/local"
+			else
+	    		withval=/usr
+			fi
+		else
+			#user specified custom withval
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON ORBit"
+			WARN_LD_LIBRARY_PATH=1
+            ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+		fi
+
+		HAS_ORBIT_TYPE=0
+		AC_PATH_PROG(ORBIT_IDL, orbit-idl-2, no)		
+		AC_MSG_CHECKING(ORBit 2)
+		if test "$PKG_CONFIG" != "no"; then 
+			ORBIT_NAME="ORBit-2.0"
+			if $PKG_CONFIG --exists $ORBIT_NAME ; then
+				if test "$ORBIT_IDL" != "no"; then 
+					HAS_ORBIT_TYPE=2
+					ORBIT_VERSION=`$PKG_CONFIG --modversion $ORBIT_NAME`
+					AC_MSG_RESULT($ORBIT_NAME present ($ORBIT_VERSION))
+					CAPI_LDFLAGS="`$PKG_CONFIG $ORBIT_NAME ORBit-CosNaming-2.0 --libs`"
+					CAPI_CFLAGS="`$PKG_CONFIG $ORBIT_NAME ORBit-CosNaming-2.0 --cflags`"
+				else
+					AC_MSG_RESULT(no - missing orbit-idl-2)
+				fi
+			else
+				AC_MSG_RESULT(no - missing pkg-config $ORBIT_NAME package)
+			fi
+		else
+			AC_MSG_RESULT(no - missing pkg-config)
+		fi
+
+		if test "$HAS_ORBIT_TYPE" = "0"; then
+			AC_PATH_PROG(ORBIT_CONFIG, orbit-config, no)
+			AC_MSG_CHECKING(ORBit 1)
+			if test "$ORBIT_CONFIG" != "no"; then
+				if test "$ORBIT_IDL" != "no"; then 
+					HAS_ORBIT_TYPE=1
+					ORBIT_VERSION=`$ORBIT_CONFIG --version`
+					AC_PATH_PROG(ORBIT_IDL, orbit-idl, no)
+					AC_MSG_RESULT(present ($ORBIT_VERSION))
+					#there is apparently no diff between client and server targets:
+					CAPI_LDFLAGS="`$ORBIT_CONFIG --libs client`"
+					CAPI_CFLAGS="`$ORBIT_CONFIG --cflags client`"
+				else
+					AC_MSG_RESULT(no - missing orbit-idl-2)
+				fi
+			fi
+		fi
+	else
+		AC_MSG_RESULT(disabled)
+	fi
+],[
+	AC_MSG_RESULT(--with-orbit not specified)
+])
+
+if test "$enable_stop_orbit" = "yes" ; then
+	exit
 fi
 
 ## ==================================================================
@@ -8761,7 +8846,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.275 2004-12-29 11:41:22 afalout Exp $
+| $Id: configure.in,v 1.276 2004-12-31 03:19:37 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

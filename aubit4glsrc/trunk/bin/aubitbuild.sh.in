@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.60 2004-12-29 11:42:12 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.61 2004-12-31 03:20:38 afalout Exp $
 #
 
 #--------------------------------------------------------------------
@@ -519,9 +519,9 @@ function local_filesize () {
 #############################
 LOCAL_FILE="$1"
 
-	#if test "$SH_DEBUG" = "1"; then 
+	if test "$SH_DEBUG" = "1"; then 
 		echo "Trying to ls: .$LOCAL_FILE."
-	#fi
+	fi
 	FILESIZE_LOCAL="`ls -al \"$LOCAL_FILE\" | awk '{print $5}';`"
 	FILESIZE_LOCAL_HUMAN="`ls -alh \"$LOCAL_FILE\" | awk '{print $5}';`"
 	if test "$SH_DEBUG" = "1"; then	
@@ -820,7 +820,7 @@ old_STOPONERROR=$STOPONERROR
 		return
 	fi
 	
-	if test "$type" = "rpm"; then 
+	if test "$type" = "winsetup"; then
 		STOPONERROR=0   #Continue even if next statemets fails
 		#Expects Aubit Windows setup executable to exist
 		EXEC="make winsetup.deinstall"; runexec
@@ -831,7 +831,7 @@ old_STOPONERROR=$STOPONERROR
 		return
 	fi
 
-	if test "$type" = "winsetup"; then
+	if test "$type" = "rpm" -a "$RPM" = "1"; then
 		STOPONERROR=0   #Continue even if next statemets fails
 		#rpm.test: rpm.deinstall rpm.install rpm.test.files rpm.deinstall
 		EXEC="make rpm.test"; runexec
@@ -1146,8 +1146,9 @@ function func_get_winsetup_name () {
 		#created it, so rename it
 		prepare_winsetup_names
 		#rename it to current version:
-		
-		echo "moving : '$WINSETUPEXE_DEFAULT' to '$WINSETUPEXE'"
+		if test "$VERBOSE" = "1"; then
+			echo "moving : '$WINSETUPEXE_DEFAULT' to '$WINSETUPEXE'"
+		fi
 		mv "$WINSETUPEXE_DEFAULT" "$WINSETUPEXE"
 		show_winsetup_names
 	fi
@@ -1176,7 +1177,7 @@ function prepare_winsetup_names () {
 function show_winsetup_names () { 
 #######################################
 
-	#if test "$VERBOSE" = "1"; then
+	if test "$VERBOSE" = "1"; then
 			echo "Created Windows setup:"
 			echo "FULLNAME=$FULLNAME"
 			echo "AUBIT_VERSION=$AUBIT_VERSION"
@@ -1185,7 +1186,7 @@ function show_winsetup_names () {
 			echo "WINSETUPEXE_BASENAME_ESC=$WINSETUPEXE_BASENAME_ESC"
 			echo "WINSETUPEXE=$WINSETUPEXE"
 			echo "WINSETUPEXE_ESC=$WINSETUPEXE_ESC"
-	#fi
+	fi
 }
 
 ########################################
@@ -1440,8 +1441,9 @@ function upload_file () {
 #############################
 the_file="$1"
 #Do NOT single-quote file names to auto_sf_scp!
-
-echo "in upload_file(): the_file = $the_file"
+	if test "$VERBOSE" = "1"; then
+		echo "in upload_file(): the_file = $the_file"
+	fi
 
 	START_TIME=`date +%s`
 	EXEC="$AUTO_SF_SCP $the_file"; runexec

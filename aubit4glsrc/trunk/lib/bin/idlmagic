@@ -81,6 +81,7 @@ api_prefix=
 
 if grep "^LIBRARY " $specfile > /dev/null ; then
 	lib=`$AWK '/^LIBRARY /{print $2}' $specfile`
+	lib_downshift=`echo $lib | tr A-Z a-z` 
 fi
 
 if grep "^VARIABLE " $specfile > /dev/null ; then
@@ -117,6 +118,7 @@ if [ "$CREATE" = "idl" ]; then
 	BEGIN {
 		FS="[ \t,]+"
 		print ""
+		if (COMMENTS=="1") {		
 		print "/*"
 		print " * lib=" lib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
 		print " *"
@@ -131,9 +133,13 @@ if [ "$CREATE" = "idl" ]; then
 		print "                    CORBA IDL definitions"
 		print "====================================================================="
 		print "*/"
+		}
 		##include <callback-server.idl>
 		print ""
-		print "module Examples {"
+		#When inteface yyy declaration is used within module xxx
+		#we end up with typedef CORBA_Object yyy_xxx in lib.h - I dont
+		#think we need that
+		#print "module Examples {"
 		if (use_prefix==0) {
 			print "	interface " lib " {"
 		} else {
@@ -254,7 +260,8 @@ if [ "$CREATE" = "idl" ]; then
 	' < $specfile
 	echo ""
 	echo "	};"
-	echo "};"
+	#closing for 'module':
+	#echo "};"
 	echo ""
 
     exit 0
@@ -270,6 +277,7 @@ DBG=0
 $AWK -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" \
 	-v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" \
 	-v CREATE="$CREATE" -v COMMENTS="$COMMENTS" -v DBG="$DBG" \
+	-v lib_downshift="$lib_downshift" \
 	'
 
 function ring(rtype) {
@@ -326,7 +334,8 @@ print ""
 print ""
 }
 if (HEADER_FILE=="") print "#include \"a4gl_libaubit4gl_int.h\""
-else print "#include " HEADER_FILE 
+else print "#include " HEADER_FILE
+print "#include \"CAPI_" lib_downshift ".h\""
 print ""
 if (DBG=="1") {
 print "#ifdef DEBUG"
@@ -335,13 +344,16 @@ print "#define DEBUG_SPEC_CORBA"
 print "#endif"
 print "#endif"
 }
+
 if (CREATE=="server") print "static void *libptr=0;"
 #print "static int (*func)();"
 #print "static double (*func_d)();"
 #print "void *A4GL_find_func(void *p,char *s);"
-if (CREATE=="server") print "int A4GL" lib "_initlib (void);"
-if (CREATE=="server") print "void A4GL" lib "_clrlibptr (void);"
-if (CREATE=="server") print "int dlclose (void *__handle);"
+if (CREATE=="server") print "int A4GL_CSERVER_" lib "_initlib (void);"
+if (CREATE=="client") print "int A4GL_CCLIENT_" lib "_initlib (void);"
+if (CREATE=="server") print "void A4GL_CSERVER_" lib "_clrlibptr (void);"
+if (CREATE=="client") print "void A4GL_CCLIENT_" lib "_clrlibptr (void);"
+if (CREATE=="server") print "//int dlclose (void *__handle);"
 if (CREATE=="server") print ""
 if (COMMENTS=="1") {
 if (CREATE=="server") print "/**"
@@ -352,28 +364,105 @@ if (CREATE=="server") print " * @return ."
 if (CREATE=="server") print " */"
 if (CREATE=="server") print ""
 }
-if (CREATE=="server") print "void A4GL" lib "_clrlibptr (void) {"
-if (CREATE=="server") print "    if (libptr) {dlclose(libptr);}"
-if (CREATE=="server") print "    libptr=0;"
+if (CREATE=="server") print "void A4GL_CSERVER_" lib "_clrlibptr (void) {"
+if (CREATE=="client") print "void A4GL_CCLIENT_" lib "_clrlibptr (void) {"
+if (CREATE=="server") print "    //TODO- implement if needed CORBA server equivalent"
+if (CREATE=="client") print "    //TODO- implement if needed CORBA client equivalent"
+						print "    //if (libptr) {dlclose(libptr);}"
+						print "    //libptr=0;"
+						print "}"
+						print ""
+
+if (CREATE=="server") print "int main (int argc, char *argv[]) {"
+if (CREATE=="server") print "	int retcode;"
+if (CREATE=="server") print "	retcode=A4GL_CORBA_server_main(argc,argv); //in corba_server_util.c"
+if (CREATE=="server") print "	exit (retcode);"
 if (CREATE=="server") print "}"
-if (CREATE=="server") print ""
-if (CREATE=="server") print "int A4GL" lib "_initlib (void) {"
-if (CREATE=="server") print "typedef int (*x_func)(void);"
-if (CREATE=="server") print "static x_func func;";
-if (CREATE=="server") print "   libptr=(void *)A4GL_dl_openlibrary(\"" lib "\",acl_getenv(\"" env "\"));"
-if (CREATE=="server") print "   if (libptr==0) {"
-if (CREATE=="server") print "      A4GL_exitwith(\"Unable to open " $lib " library...\");"
-if (CREATE=="server") print "      return 0;"
-if (CREATE=="server") print "   }"
-if (CREATE=="server") print "   func=(x_func)A4GL_find_func_allow_missing(libptr,\"" lib_prefix "A4GL" lib "_initlib\");"
-if (CREATE=="server") print ""
-if (CREATE=="server") print "   if (func)"
-if (CREATE=="server") print "      return func();"
-if (CREATE=="server") print "   else"
-if (CREATE=="server") print "      return 1;"
-if (CREATE=="server") print "}"
-if (CREATE=="server") print ""
-print ""
+if (CREATE=="server") print " "
+						
+if (CREATE=="server") print "int A4GL_CSERVER_" lib "_initlib (void) {"
+if (CREATE=="client") print "int A4GL_CCLIENT_" lib "_initlib (void) {"
+if (CREATE=="server") print "//TODO-main() allready called server init func A4GL_CORBA_server_main() in corba_server_util.c"
+if (CREATE=="server") print "//Anything else to do/initialise here or is this obsolete for CORBA server?"
+if (CREATE=="client") print "//TODO-call CORBA client init func A4GL_CORBA_client_main() in corba_server_util.c"	
+						print "//typedef int (*x_func)(void);"
+						print "//static x_func func;"
+						print "//   libptr=(void *)A4GL_dl_openlibrary(\"" lib "\",acl_getenv(\"" env "\"));"
+						print "//   if (libptr==0) {"
+						print "//      A4GL_exitwith(\"Unable to open " $lib " library...\");"
+						print "//      return 0;"
+						print "//   }"
+						print "//   func=(x_func)A4GL_find_func_allow_missing(libptr,\"" lib_prefix "A4GL" lib "_initlib\");"
+						print "//"
+						print "//   if (func)"
+						print "//      return func();"
+						print "//   else"
+						print "      return 1;"
+						print "}"
+						print ""
+						print ""
+						
+						
+						
+if (CREATE=="server") {
+print "/* Creates servant and registers in context of ORB @orb. The ORB will"
+print " * delegate incoming requests to specific servant object.  @return"
+print " * object reference. If error occures @ev points to exception object"
+print " * on return."
+print " */"
+print "static CORBA_Object"
+print "server_activate_service (CORBA_ORB           orb,"
+print "			 PortableServer_POA  poa,"
+print "			 CORBA_Environment  *ev)"
+print "{"
+print lib " ref = CORBA_OBJECT_NIL;"
+print "	ref = impl_" lib "__create (poa, ev);" 
+print "	if (etk_raised_exception(ev)) { "
+print "		return CORBA_OBJECT_NIL;"
+print "	} else {"
+print "		return ref;"
+print "	}"
+print "}"
+}
+						
+
+if (CREATE=="client") {
+print "/*"
+print " * main - this is the CORBA client init function" 
+print " */"
+print "int A4GL_CORBA_client_main (int argc, char* argv[]) {"
+print "CORBA_char        filename[] = \"" lib ".ref\"; //ref file to discover server"
+print "CORBA_Environment ev[1];"
+print lib " service = CORBA_OBJECT_NIL;"
+print "CORBA_exception_init(ev);"
+print "	client_init (&argc, argv, &global_orb, ev);" 
+print "	etk_abort_if_exception(ev, \"init failed\");"
+print "	g_print (\"Reading service reference from file \"%s\"\n\", filename);"
+print "	service = (" lib ") etk_import_object_from_file (global_orb,filename,ev);" 
+print "	etk_abort_if_exception(ev, \"import service failed\");"
+print "	/* We would here invoke whatever function we want to call on the" 
+print "		server side, but we instead will just return after finised"
+print "		CORBA client initialisation, and let API functions do the calling"
+print "	*/"
+print "	//client_run (service, amount, ev);" 
+print "	//    etk_abort_if_exception(ev, \"service not reachable\");"
+print "	/* This cleanup probably is equivalent to "
+print "		void A4GL_CCLIENT_" lib "_clrlibptr (void) {"
+print "				if (libptr) {dlclose(libptr);}"
+print "				libptr=0;"
+print "		}"
+print "		for dlopen() API, and therefore should be in CAPI_%-client.c ?"
+print "		"
+print "		Otherwise, should we call it before we exit 4GL program?"
+print "	*/"
+print "	//client_cleanup (global_orb, service, ev);" 
+print "	//etk_abort_if_exception(ev, \"cleanup failed\");"
+print " "
+print "	return 0;"
+print "}"
+}
+
+
 }
 /^LIBRARY / {next}
 /^#ifdef/ {if (DBG=="0") next}

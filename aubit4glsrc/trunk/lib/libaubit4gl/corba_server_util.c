@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.1 2004-12-29 11:42:13 afalout Exp $
+# $Id: corba_server_util.c,v 1.2 2004-12-31 03:20:39 afalout Exp $
 #
 */
 
@@ -51,6 +51,142 @@
 
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
+#include <stdio.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <string.h>
+
+#ifndef _ASSERT_H
+	#include <assert.h>
+#endif
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+#ifdef __CAPI__
+//from #include "examples-toolkit.h" /* provides etk_abort_if_exception */ 
+
+#ifdef __ORBIT2__
+	#include <orbit/orbit.h>
+#else
+	#include <orb/orbit.h>
+#endif
+
+#include <ORBitservices/CosNaming.h>
+
+/* extracts type of exception: Three return Values are possible:
+ * CORBA_NO_EXCEPTION, CORBA_USER_EXCEPTION, CORBA_SYSTEM_EXCEPTION:/
+*/
+#define etk_exception_type(ev) (ev->_major)
+
+/** 
+ * test @ev for any exception 
+ */
+gboolean 
+etk_raised_exception (CORBA_Environment *ev);
+
+/** 
+ * test @ev for specific exception  @ex
+ */
+gboolean 
+etk_raised_exception_is_a (CORBA_Environment *ev, CORBA_char* ex);
+
+/**
+ * in case of any exception this operation will abort the process  
+ */
+void 
+etk_abort_if_exception(CORBA_Environment *ev, const char* mesg); 
+
+/**
+ * in case of any exception this operation will only free allocated resources
+ */
+void 
+etk_ignore_if_exception(CORBA_Environment *ev, const char* mesg); 
+
+/**
+ *
+ */
+void
+etk_export_object_to_stream (CORBA_ORB          orb,
+			     CORBA_Object       servant,
+			     FILE              *stream,
+			     CORBA_Environment *ev);
+
+
+/* Writes stringified object reference of @servant to file
+ * @filename. If error occures @ev points to exception object on
+ * return.
+ */
+void 
+etk_export_object_to_file (CORBA_ORB          orb,
+			   CORBA_Object       servant,
+			   char              *filename, 
+			   CORBA_Environment *ev);
+
+/**
+ *
+ */
+CORBA_Object
+etk_import_object_from_stream (CORBA_ORB          orb,
+			       FILE              *stream,
+			       CORBA_Environment *ev);
+
+/**
+ *
+ */
+CORBA_Object
+etk_import_object_from_file (CORBA_ORB          orb,
+			     CORBA_char        *filename,
+			     CORBA_Environment *ev);
+
+
+/** resolves default name-service, usually given to application as
+ * command line argument "-ORBInitRef NameService=IOR:0100000028..",
+ * or since release 2.8.0 corbalocs in form of URL can be used, eg:
+ * "-ORBInitRef NameService=corbaloc:iiop:HOSTNAME:PORT/NameService%00"
+ */
+CosNaming_NamingContext 
+etk_get_name_service (CORBA_ORB         orb,
+		      CORBA_Environment *ev);
+
+
+/* binds @servant object reference to unique @name at
+ * @name_service. @name is a NULL terminated list of strings
+ * (CORBA_char*). If error occures @ev points to exception object on
+ * return.
+ */
+void 
+etk_name_service_bind (CosNaming_NamingContext  name_service,
+		       CORBA_Object             servant,
+		       gchar                   *id_vec[], 
+		       CORBA_Environment       *ev);
+
+/* resolves object reference @return with unique @name at
+ *  @name_service. @name is a NULL terminated list of strings
+ *  (CORBA_char*).  If error occures @ev points to * exception object
+ *  on return.
+ */
+CORBA_Object 
+etk_name_service_resolve (CosNaming_NamingContext  name_service,
+			  gchar                   *id_vec[], 
+			  CORBA_Environment       *ev);
+
+			  
+#ifdef __CCLIENT__
+	int A4GL_CORBA_client_main (int argc, char* argv[]);
+#endif
+			  
+			  
+#endif //ifdef __CAPI__
+
+#ifndef __CCLIENT__
+//CORBA client plug-in allready has access to this via libaubit4gl, so this
+//block will be compiled only when this file is compiled
+//for use in libaubit4gl _AND_ CORBA server - but NOT CORBA client
 
 /*
 =====================================================================
@@ -60,11 +196,6 @@
 
 int dying=0;
 
-/*
-=====================================================================
-                    Functions prototypes
-=====================================================================
-*/
 
 /*
 =====================================================================
@@ -274,6 +405,8 @@ A4GL_aubit_strcasecmp (char *a, char *b)
   return -1;
 }
 
+#endif //ifndef __CCLIENT__
+
 
 /*
 =====================================================================
@@ -282,6 +415,9 @@ A4GL_aubit_strcasecmp (char *a, char *b)
 */
 
 #ifdef __CAPI__
+#ifdef __CSERVER__
+//CORBA server will need this to support above funstions, since it will 
+//not have access to libaubit4gl, which is on the CLIENT side
 
 /* first, dummy finctions we don't need in CORBA server */
 
@@ -311,26 +447,749 @@ char* A4GLSQL_get_errmsg( int a) { return 0; }
 */
 
 
+#endif //ifdef __CSERVER__
+
+
+
+
+
+
+
+
+
+
+
+#ifdef __CCLIENT__
+// ------------------------------- client funcs ----------------------------
+
+//Example 5-16. account-client.c
+
+/* account-client.c hacked by Frank Rehberger
+ * <F.Rehberger@xtradyne.de>.  */
+
+//#include "account.h"
+
+static CORBA_ORB  global_orb = CORBA_OBJECT_NIL; /* global orb */
+ 
+/* Is called in case of process signals. it invokes CORBA_ORB_shutdown()
+ * function, which will terminate the processes main loop.
+ */
+static
+void
+client_shutdown (int sig)
+{
+CORBA_Environment  local_ev[1];
+        CORBA_exception_init(local_ev);
+ 
+        if (global_orb != CORBA_OBJECT_NIL)
+        {
+                 CORBA_ORB_shutdown (global_orb, FALSE, local_ev); 
+                etk_abort_if_exception (local_ev, "caught exception");
+        }
+}
+ 
+        
+/* Inits ORB @orb using @argv arguments for configuration. For each
+ * ORBit options consumed from vector @argv the counter of @argc_ptr
+ * will be decremented. Signal handler is set to call
+ * echo_client_shutdown function in case of SIGINT and SIGTERM
+ * signals.  If error occures @ev points to exception object on
+ * return.
+ */
+static
+void
+client_init (int *argc_ptr,char *argv[],CORBA_ORB *orb, CORBA_Environment *ev)
+{
+    /* init signal handling */
+	signal(SIGINT,  client_shutdown);
+    signal(SIGTERM, client_shutdown);
+    /* create Object Request Broker (ORB) */
+    (*orb) = CORBA_ORB_init(argc_ptr, argv, "orbit-local-mt-orb", ev); 
+    if (etk_raised_exception(ev)) return;
+}
+
+/* Releases @servant object and finally destroys @orb. If error
+ * occures @ev points to exception object on return.
+ */
+static void
+client_cleanup (CORBA_ORB                 orb,
+                CORBA_Object              service,
+                CORBA_Environment        *ev)
+{
+	/* releasing managed object */
+    CORBA_Object_release(service, ev); 
+    if (etk_raised_exception(ev)) return;
+ 
+    /* tear down the ORB */
+    if (orb != CORBA_OBJECT_NIL) {
+		/* going to destroy orb.. */
+        CORBA_ORB_destroy(orb, ev); 
+        if (etk_raised_exception(ev)) return;
+    }
+}
+
+
+#ifdef _THIS_IS_JUST_AN_EXAMLE_
+/**
+ * This is example client code from ORBit manual of how a client should 
+ * invoke function in the server.
+ * SQLPARSE here is just a name of the API (was 'Account')
+ */
+static void
+client_run (SQLPARSE service, CORBA_long amount, CORBA_Environment *ev) {
+CORBA_long balance=0;
+	balance = SQLPARSE__get_balance (service, ev);
+	if (etk_raised_exception (ev)) return;
+	g_print ("balance %5d, ", balance);
+    if (amount > 0) {
+		SQLPARSE_deposit (service, amount, ev); 
+        if (etk_raised_exception (ev)) return;
+    } else {
+		SQLPARSE_withdraw (service, abs(amount), ev); 
+        if (etk_raised_exception (ev)) return;
+    }
+    balance = SQLPARSE__get_balance (service, ev); 
+	if (etk_raised_exception (ev)) return;
+    g_print ("new balance %5d\n", balance);
+}
+#endif //_THIS_IS_JUST_AN_EXAMLE_
+
+
+#ifdef __MOVED_TO_idlmagic_SCRIPT__
 /*
-gcc -L/usr/local/lib -L/usr/lib -L/usr/lib -lORBit -lIIOP -lORBitutil -lglib -lnsl -lm -o sqlparse-server CAPI_sqlparse-common.o CAPI_sqlparse-skels.o CAPI_sqlparse-skelimpl.o CAPI_sqlparse-server.o ../../libaubit4gl/API_sqlparse.o ../../libaubit4gl/calldll.o ../../resource/resource.o ../../libaubit4gl/error.o ../../libaubit4gl/pointers.o LOCAL_corba_server_util.o -ldl -lm
+ * main - this is the CORBA client init function 
+ */
+int
+//main(int argc, char* argv[])
+A4GL_CORBA_client_main (int argc, char* argv[]) {
+CORBA_char        filename[] = "account.ref"; //ref file to discover server
+//CORBA_long        amount=0;
+CORBA_Environment ev[1];
+/*
+	The intergace name (in this case 'Account' is typedef-ed in
+	<interface-name>.h created by orbit-idl compiler from .idl file, like:
+	  typedef CORBA_Object Account;
+	or in ccase of SQLPARSE API:
+		typedef CORBA_Object SQLPARSE;
+	
+	So this:
+	Account service = CORBA_OBJECT_NIL;
+	is supposed to be:
+*/
+SQLPARSE service = CORBA_OBJECT_NIL;
+/*
+	___BUT___ -this function is supposed to work for _ALL_ of our APIs
+	--HOW CAN I PASS THAT >>>NAME<< so I can use it such a way?
+	This also means we need to #include "CAPI_sqlparse.h" somewhere 
+	before we can use this typedef
+	
+	FIXME: the SQLPARSE above is hard-coded and it should not be!
+	same for _ALL_ other occurances of SQLPARSE word in this file!
+	Untill this is fixed, this will work only for SQLPARSE API
+*/
 
-../../libaubit4gl/API_sqlparse.o: In function `A4GLSQLPARSE_clrlibptr':
-/opt/aubit/aubit4glsrc/lib/libaubit4gl/API_sqlparse.c:42:multiple definition of `A4GLSQLPARSE_clrlibptr'
-CAPI_sqlparse-server.o:/opt/aubit/aubit4glsrc/lib/libui/ui_highlevel/CAPI_sqlparse-server.c:8: first defined here
+	CORBA_exception_init(ev);
+	client_init (&argc, argv, &global_orb, ev); 
+	etk_abort_if_exception(ev, "init failed");
+	//if (argc<2) g_error ("usage: %s <amount>", argv[0]);
+	//amount  = atoi(argv[1]);
+	g_print ("Reading service reference from file \"%s\"\n", filename);
+	service = (SQLPARSE) etk_import_object_from_file (global_orb,filename,ev); 
+	etk_abort_if_exception(ev, "import service failed");
 
-../../libaubit4gl/API_sqlparse.o: In function `A4GLSQLPARSE_initlib':
-/opt/aubit/aubit4glsrc/lib/libaubit4gl/API_sqlparse.c:47: multiple definition of `A4GLSQLPARSE_initlib'
-CAPI_sqlparse-server.o:/opt/aubit/aubit4glsrc/lib/libui/ui_highlevel/CAPI_sqlparse-server.c:13: first defined here
+	/* We would here invoke whatever function we want to call on the 
+		server side, but we instead will just return after finised
+		CORBA client initialisation, and let API functions do the calling
+	*/
+	//client_run (service, amount, ev); 
+    //    etk_abort_if_exception(ev, "service not reachable");
+
+	
+	/* This cleanup probably is equivalent to 
+		void A4GL_CCLIENT_" lib "_clrlibptr (void) {
+				if (libptr) {dlclose(libptr);}
+				libptr=0;"	
+		}
+		for dlopen() API, and therefore should be in 
+		CAPI_%-client.c ?
+		
+		Otherwise, should we call it before we exit 4GL program?
+	*/
+	//client_cleanup (global_orb, service, ev); 
+	//etk_abort_if_exception(ev, "cleanup failed");
+ 
+    //exit (0);
+	return 0;
+}
+#endif //ifdef __MOVED_TO_idlmagic_SCRIPT__
+
+// -----------------------end client funcs --------------------------
+#endif //ifdef __CCLIENT__
 
 
-/usr/lib/gcc-lib/i386-redhat-linux/2.96/../../../crt1.o: In function `_start':
-/usr/lib/gcc-lib/i386-redhat-linux/2.96/../../../crt1.o(.text+0x18): undefined reference to `main'
-collect2: ld returned 1 exit status
-make: *** [sqlparse-server] Error 1
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+#ifdef __CSERVER__
+// ----------------------- CORBA SERVER funcs --------------------------
+
+//Example 5-20. account-server.c
+
+/*
+ * account-server program. Hacked from Frank Rehberger
+ * <F.Rehberger@xtradyne.de>.
+ */
+
+//#include "account.h"
+//#include "account-skelimpl.c"
+
+static CORBA_ORB          global_orb = CORBA_OBJECT_NIL; /* global orb */
+static PortableServer_POA root_poa   = CORBA_OBJECT_NIL; /* root POA */
+	
+/* Is called in case of process signals. it invokes CORBA_ORB_shutdown()
+ * function, which will terminate the processes main loop.
+ */
+static
+void
+server_shutdown (int sig)
+{
+	CORBA_Environment  local_ev[1];
+	CORBA_exception_init(local_ev);
+
+        if (global_orb != CORBA_OBJECT_NIL)
+        {
+                 CORBA_ORB_shutdown (global_orb, FALSE, local_ev); 
+                etk_abort_if_exception (local_ev, "caught exception");
+        }
+}
+
+/* Inits ORB @orb using @argv arguments for configuration. For each
+ * ORBit options consumed from vector @argv the counter of @argc_ptr
+ * will be decremented. Signal handler is set to call
+ * echo_server_shutdown function in case of SIGINT and SIGTERM
+ * signals.  If error occures @ev points to exception object on
+ * return.
+ */static 
+void 
+server_init (int                 *argc_ptr, 
+	     char                *argv[],
+	     CORBA_ORB           *orb,
+	     PortableServer_POA  *poa,
+	     CORBA_Environment   *ev)
+{
+	PortableServer_POAManager  poa_manager = CORBA_OBJECT_NIL; 
+
+	CORBA_Environment  local_ev[1];
+	CORBA_exception_init(local_ev);
+
+	/* init signal handling */
+	signal(SIGINT,  server_shutdown);
+	signal(SIGTERM, server_shutdown);
+	
+	/* create Object Request Broker (ORB) */
+	
+         (*orb) = CORBA_ORB_init(argc_ptr, argv, "orbit-local-mt-orb", ev); 
+	if (etk_raised_exception(ev)) 
+		goto failed_orb;
+
+         (*poa) = (PortableServer_POA) 
+		CORBA_ORB_resolve_initial_references(*orb, "RootPOA", ev); 
+	if (etk_raised_exception(ev)) 
+		goto failed_poa;
+
+         poa_manager = PortableServer_POA__get_the_POAManager(*poa, ev); 
+	if (etk_raised_exception(ev)) 
+		goto failed_poamanager;
+
+	 PortableServer_POAManager_activate(poa_manager, ev); 
+	if (etk_raised_exception(ev)) 
+		goto failed_activation;
+
+         CORBA_Object_release ((CORBA_Object) poa_manager, ev); 
+	return;
+
+ failed_activation:
+ failed_poamanager:
+        CORBA_Object_release ((CORBA_Object) poa_manager, local_ev);
+ failed_poa:
+	CORBA_ORB_destroy(*orb, local_ev);		
+ failed_orb:
+	return;
+}
+
+/* Entering main loop @orb handles incoming request and delegates to
+ * servants. If error occures @ev points to exception object on
+ * return.
+ */
+static void 
+server_run (CORBA_ORB          orb,
+	    CORBA_Environment *ev)
+{
+        /* enter main loop until SIGINT or SIGTERM */
+	
+         CORBA_ORB_run(orb, ev); 
+	if (etk_raised_exception(ev)) return;
+
+        /* user pressed SIGINT or SIGTERM and in signal handler
+	 * CORBA_ORB_shutdown(.) has been called */
+}
+
+/* Releases @servant object and finally destroys @orb. If error
+ * occures @ev points to exception object on return.
+ */
+static void 
+server_cleanup (CORBA_ORB           orb,
+		PortableServer_POA  poa,
+		CORBA_Object        ref,
+		CORBA_Environment  *ev)
+{
+	PortableServer_ObjectId   *objid       = NULL;
+
+	 objid = PortableServer_POA_reference_to_id (poa, ref, ev); 
+	if (etk_raised_exception(ev)) return;
+		
+	/* Servant: deactivatoin - will invoke  __fini destructor */
+	 PortableServer_POA_deactivate_object (poa, objid, ev); 
+	if (etk_raised_exception(ev)) return;
+
+	 PortableServer_POA_destroy (poa, TRUE, FALSE, ev); 
+	if (etk_raised_exception(ev)) return;
+
+	CORBA_free (objid);
+
+         CORBA_Object_release ((CORBA_Object) poa, ev); 
+	if (etk_raised_exception(ev)) return;
+	
+         CORBA_Object_release (ref, ev); 
+	if (etk_raised_exception(ev)) return;
+
+        /* ORB: tear down the ORB */
+        if (orb != CORBA_OBJECT_NIL)
+        {
+                /* going to destroy orb.. */
+                 CORBA_ORB_destroy(orb, ev); 
+		if (etk_raised_exception(ev)) return;
+        }
+}
+
+
+#ifdef __MOVED_TO_idlmagic_SCRIPT__
+/* Creates servant and registers in context of ORB @orb. The ORB will
+ * delegate incoming requests to specific servant object.  @return
+ * object reference. If error occures @ev points to exception object
+ * on return.
+ */
+static CORBA_Object
+server_activate_service (CORBA_ORB           orb,
+			 PortableServer_POA  poa,
+			 CORBA_Environment  *ev)
+{
+SQLPARSE ref = CORBA_OBJECT_NIL;
+//FIXME - see comment on SQLPARSE in this file 
+	ref = impl_SQLPARSE__create (poa, ev); 
+	if (etk_raised_exception(ev)) { 
+		return CORBA_OBJECT_NIL;
+	} else {
+		return ref;
+	}
+}
+#endif //ifdef __MOVED_TO_idlmagic_SCRIPT__
+
+/* 
+ * main for server
+ */
+int
+//main (int argc, char *argv[])
+A4GL_CORBA_server_main (int argc, char* argv[])
+{
+	CORBA_Object servant = CORBA_OBJECT_NIL;
+	
+	//ref file to write coonection info to - to be used by cliet to find this server
+	CORBA_char filename[] = "account.ref";
+
+	CORBA_Environment  ev[1];
+	CORBA_exception_init(ev);
+	
+	 server_init (&argc, argv, &global_orb, &root_poa, ev); 
+	etk_abort_if_exception(ev, "failed ORB init");
+
+	 servant = server_activate_service (global_orb, root_poa, ev); 
+	etk_abort_if_exception(ev, "failed activating service");
+
+	g_print ("Writing service reference to: %s\n\n", filename);
+
+	 etk_export_object_to_file (global_orb, 
+				   servant, 
+				   filename, 
+				   ev); 
+	etk_abort_if_exception(ev, "failed exporting IOR");
+	
+	 server_run (global_orb, ev); 
+	etk_abort_if_exception(ev, "failed entering main loop");
+
+	 server_cleanup (global_orb, root_poa, servant, ev); 
+	etk_abort_if_exception(ev, "failed cleanup");
+
+	//exit (0);
+	return 0;
+}
+	
+
+// ----------------------- End CORBA SERVER funcs --------------------------
+#endif //ifdef __CSERVER__
+
+
+
+
+
+
+
+
+//------------ Utility functions from exaples-toolkit.c --------
+
+/** 
+ * test @ev for exception 
+ */
+gboolean 
+etk_raised_exception(CORBA_Environment *ev) 
+{
+	return ((ev)->_major != CORBA_NO_EXCEPTION);
+}
+
+/** 
+ * test @ev for exception 
+ */
+gboolean 
+etk_raised_exception_is_a (CORBA_Environment *ev, CORBA_char* id) 
+{
+	return ((ev)->_major != CORBA_NO_EXCEPTION)  &&                 
+		strcmp(id, CORBA_exception_id(ev)) == 0;
+}
+
+/**
+ *  
+ */
+void 
+etk_abort_if_exception (CORBA_Environment *ev, const char* mesg) 
+{
+	if (etk_raised_exception (ev)) {
+		g_error ("%s %s", mesg, CORBA_exception_id (ev));
+		CORBA_exception_free (ev); 
+		abort(); 
+	}
+}
+
+/**
+ *  
+ */
+void 
+etk_ignore_if_exception (CORBA_Environment *ev, const char* mesg) 
+{
+	if (etk_raised_exception (ev)) {
+		g_warning ("%s %s", mesg, CORBA_exception_id (ev));
+		CORBA_exception_free (ev); 
+	}
+}
+
+
+/**
+ *
+ */
+void
+etk_export_object_to_stream (CORBA_ORB          orb,
+			     CORBA_Object       servant,
+			     FILE              *stream,
+			     CORBA_Environment *ev)
+{
+        CORBA_char *objref = NULL;
+ 
+        /* write objref to file */
+         
+        objref = CORBA_ORB_object_to_string (orb, servant, ev);
+        if (etk_raised_exception(ev)) return;
+ 
+        /* print ior to terminal */
+        fprintf (stream, "%s\n", objref);
+        fflush (stream);
+ 
+        CORBA_free (objref);
+}
+
+
+/* Writes stringified object reference of @servant to file
+ * @filename. If error occures @ev points to exception object on
+ * return.
+ */
+void 
+etk_export_object_to_file (CORBA_ORB          orb,
+			   CORBA_Object       servant,
+			   char              *filename, 
+			   CORBA_Environment *ev)
+{
+//CORBA_char *objref = NULL;
+FILE       *file   = NULL;
+
+	/* write objref to file */
+	if ((file=fopen(filename, "w"))==NULL) 
+		g_error ("could not open %s\n", filename);
+	
+	/* print ior to stream */
+	etk_export_object_to_stream (orb, servant, file, ev);
+	fclose (file);
+}
+
+
+/**
+ *
+ */
+static gchar*
+etk_read_string_from_stream (FILE *stream)
+{
+gulong length = 4*1024; /* should suffice ordinary IOR string */
+gchar *objref = g_malloc0 (length*sizeof(gchar)); /* empty string */
+int c = 0;
+int i = 0;
+
+        /* skip leading white space */
+        while((c=fgetc(stream))!=EOF && g_ascii_isspace(c));
+        /* POST: c==EOF or c=first character */
+
+        if (c!=EOF)
+          /* PRE: c=first character */
+          /* append c to string while more c exist and c not white space */
+          do {
+            /* check size */
+            if (i>=(length-1)) {
+              length*=2;
+              objref=g_realloc (objref, length);
+            }
+            objref[i++] = c;
+          } while ((c=fgetc(stream))!=EOF && !g_ascii_isspace(c));
+          /* POST: first string read */
+
+        /* terminate string with \0 */
+        objref[i] = '\0';
+
+        /* INV: objref valid string, #objref>=0 */
+
+        return objref;
+}
+
+/**
+ *
+ */
+CORBA_Object
+etk_import_object_from_stream (CORBA_ORB          orb,
+			       FILE              *stream,
+			       CORBA_Environment *ev)
+{
+	CORBA_Object obj = CORBA_OBJECT_NIL;
+	gchar *objref=etk_read_string_from_stream (stream);
+
+	if (!objref || strlen (objref)==0) {
+		g_warning ("empty object reference");
+		if (objref) 
+			g_free (objref);
+		return CORBA_OBJECT_NIL;		
+	}
+
+	obj = (CORBA_Object) CORBA_ORB_string_to_object (orb,
+							 objref, 
+							 ev);
+	free (objref);
+	
+	return obj;
+}
+
+/**
+ *
+ */
+CORBA_Object
+etk_import_object_from_file (CORBA_ORB          orb,
+			      CORBA_char        *filename,
+			      CORBA_Environment *ev)
+{
+        CORBA_Object  obj    = NULL;
+        FILE         *file   = NULL;
+  
+        /* write objref to file */
+          
+        if ((file=fopen(filename, "r"))==NULL)
+                g_error ("could not open %s\n", filename);
+     
+        obj= etk_import_object_from_stream (orb, file, ev);
+         
+	if (obj==CORBA_OBJECT_NIL) 
+		g_warning ("object is NIL");
+
+        fclose (file);
+ 
+        return obj;
+}
+ 
+/**
+ */
+CosNaming_NamingContext 
+etk_get_name_service (CORBA_ORB orb, CORBA_Environment *ev)
+{
+//CORBA_char   *str=NULL;
+CORBA_Object  ref = (CORBA_Object) CORBA_ORB_resolve_initial_references(orb,
+								      "NameService", ev);
+    if (etk_raised_exception(ev)) return CORBA_OBJECT_NIL;
+	return (CosNaming_NamingContext) ref;
+}
+
+/** calculate length of NULL terminated string vector */
+static guint 
+id_vec_len (char *id_vec[]) 
+{ 
+gint i=0; 
+	for (i = 0; id_vec[i]; ++i); 
+	return i;
+} 
+
+/* binds @servant object reference to unique @name at
+ * @name_service. If error occures @ev points to exception object on
+ * return.
+ */
+void 
+etk_name_service_bind (CosNaming_NamingContext  name_service,
+		       CORBA_Object             servant,
+		       gchar                   *id_vec[], 
+		       CORBA_Environment       *ev)
+{
+gint i = 0;
+gint len = id_vec_len (id_vec);
+
+	/* Allocate a CosNaming::Name (sequence of CosNaming::NameComponent) */
+	CosNaming_Name *name = CosNaming_Name__alloc();
+
+	name->_buffer = CORBA_sequence_CosNaming_NameComponent_allocbuf(len);
+	name->_maximum = len;
+	name->_length  = 0;
+	
+	/* Relinquish ownership of the NameComponent to the
+         * sequence. When CORBA_free is called on it later, the
+         * NameComponent will be freed */	
+	CORBA_sequence_set_release (name, TRUE);
+
+	/* iterate components of name and create sub-context
+	 * (directory) if needed */ 
+	for (i = 0; i < len; ++i) {
+		name->_length = i+1;
+		name->_buffer[i].id   = CORBA_string_dup(id_vec[i]);
+		name->_buffer[i].kind = CORBA_string_dup(""); 
+		/* don't know what 'kind' shall be good for */ 
+
+		if (name->_length < len) {
+			/* create a sub-context */ 
+			CosNaming_NamingContext nc = 
+				CosNaming_NamingContext_bind_new_context (name_service, 
+									  name, ev);	
+			if (etk_raised_exception_is_a (ev, 
+						       ex_CosNaming_NamingContext_AlreadyBound))
+			{
+				/* ignore - ctx allread exists, this
+				 * is not dramatic */
+				CORBA_exception_free (ev);
+			} else if (etk_raised_exception (ev)) {
+				/* critical - unexpected exception  */ 
+				CORBA_free (name); 
+				return;
+			}
+		} else {
+			/* Bind object to last context - use 'rebind'
+			 * operation in case the name has been
+			 * registered allready in context - note, this
+			 * might interfere with other service choosing
+			 * same name */ 
+			CosNaming_NamingContext_rebind (name_service, 
+							name, 
+							servant,
+							ev);
+			if (etk_raised_exception(ev)) {
+				/* critical - can not bind object */ 
+				CORBA_free (name);
+				return;
+			}
+		}
+	}
+
+	CORBA_free (name);
+	return;
+}
+
+CORBA_Object 
+etk_name_service_resolve (CosNaming_NamingContext  name_service,
+			  gchar                   *id_vec[], 
+			  CORBA_Environment       *ev)
+{
+	CORBA_Object retval = CORBA_OBJECT_NIL;
+	gint i = 0;
+	gint len = id_vec_len (id_vec);
+
+	/* Allocate a CosNaming::Name (sequence of CosNaming::NameComponent) */
+	CosNaming_Name *name = CosNaming_Name__alloc();
+
+	g_assert (id_vec_len (id_vec) > 0);
+
+	name->_buffer = CORBA_sequence_CosNaming_NameComponent_allocbuf(len);
+	name->_maximum = len;
+	name->_length  = 0;
+	
+	/* Relinquish ownership of the NameComponent to the
+         * sequence. When CORBA_free is called on it later, the
+         * NameComponent will be freed */	
+	CORBA_sequence_set_release (name, TRUE);
+
+	/* iterate components of name and create sub-context
+	 * (directory) if needed */ 
+	for (i = 0; i < len; ++i) {
+		name->_length = i+1;
+		name->_buffer[i].id   = CORBA_string_dup(id_vec[i]);
+		name->_buffer[i].kind = CORBA_string_dup(""); 
+		/* don't know what 'kind' shall be good for */ 
+	}
+	
+	retval = CosNaming_NamingContext_resolve (name_service, 
+						  name, 
+						  ev);
+	
+	if (etk_raised_exception (ev)) { 
+		CORBA_free (name);
+		return CORBA_OBJECT_NIL;
+	}
+	
+	return retval;
+}
+//------------ end utility functions from exaples-toolkit.c --------
+
+#endif //__CAPI__
+
+/*
+missing in server exec:
+
+`impl_SQLPARSE__create'
+`CORBA_ORB_destroy'
+`server_activate_service'
+`g_ascii_isspace'
+`CosNaming_Name__alloc'
+`CORBA_sequence_CosNaming_NameComponent_allocbuf'
+`CosNaming_NamingContext_bind_new_context'
+`CosNaming_NamingContext_rebind'
+`CosNaming_NamingContext_resolve'
 */
 
 
-#endif //__CAPI__
 // ---------------------------------- EOF ---------------------------------
