@@ -4,7 +4,6 @@
 # header for Maximise .mk files
 #########################################
 
-
 ifdef MAKERULES
 	include $(MAKERULES)
 else
