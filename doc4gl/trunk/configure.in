@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.8 2003-01-21 03:05:01 afalout Exp $
+dnl # $Id: configure.in,v 1.9 2003-01-23 02:09:09 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -972,7 +972,7 @@ AC_PATH_PROG(PERL, perl, no)
 
 if test "$PERL" != "no"; then
 	AC_MSG_CHECKING(Perl version)
-	set `perl -v | head -2| grep "perl" | sed -e  's/v//' -e 's/\./ /g'`
+	set `$PERL -v | head -2| grep "perl" | sed -e  's/v//' -e 's/\./ /g'`
 	if test "$4" != ""; then
 		if test "$4" -lt "5"; then
 	        AC_MSG_ERROR(You will need Perl version 5.6 or later (found $4.$5.$6).)
@@ -1053,16 +1053,25 @@ fi
 	fi
 	AC_MSG_RESULT($PERL_MODULE_DIR)
 
-	AC_MSG_CHECKING(if library dir is in Perl @INC)
-    TMP=`perl -V | grep $PERL_MODULE_DIR`
+	AC_MSG_CHECKING(if library dir $PERL_MODULE_DIR is in Perl @INC)
+    TMP=`$PERL -V | grep $PERL_MODULE_DIR`
     if test "$TMP" = ""; then
-		AC_MSG_ERROR(Detected path ($PERL_MODULE_DIR) not found in Perl INC config. Stop.)
-    fi
-    TMP=`perl -V | grep $PERL_SITE_DIR`
+		AC_MSG_RESULT(No)
+		AC_MSG_WARN(Detected path ($PERL_MODULE_DIR) not found in Perl INC config.)
+		AC_MSG_WARN(Please check that this path appears in output of 'perl -V' command under section @INC)
+    else
+		AC_MSG_RESULT(Yes)
+	fi
+
+	AC_MSG_CHECKING(if library dir $PERL_SITE_DIR is in Perl @INC)
+	TMP=`$PERL -V | grep $PERL_SITE_DIR`
     if test "$TMP" = ""; then
-		AC_MSG_ERROR(Detected path ($PERL_SITE_DIR) not found in Perl INC config. Stop.)
+		AC_MSG_RESULT(No)
+		AC_MSG_WARN(Detected path ($PERL_SITE_DIR) not found in Perl INC config.)
+		AC_MSG_WARN(Please check that this path appears in output of 'perl -V' command under section @INC)
+    else
+		AC_MSG_RESULT(Yes)
     fi
-	AC_MSG_RESULT(Yes)
 
 	#installation info, with versions can be found:
 	#/usr/lib/perl5/5.6.0/i386-linux/perllocal.pod
