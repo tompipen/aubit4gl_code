@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.23 2002-11-28 06:43:18 afalout Exp $
+# $Id: resource.c,v 1.24 2002-12-08 06:34:37 afalout Exp $
 #
 */
 
@@ -381,7 +381,9 @@ find_str_resource (char *s)
 {
 char *ptr;
 
+	#ifdef DEBUG
 //  debug("Finding resource %s\n",s);
+    #endif
 
   /* look in user resources first */
   ptr = chk_str_resource (s, user_resource);
@@ -392,7 +394,9 @@ char *ptr;
   }
 
   if (ptr) {
+	#ifdef DEBUG
 //	debug("Resurce %s has value of: %s\n",s,ptr);
+    #endif
 	return ptr;
   } else {
 	return 0;
@@ -423,7 +427,7 @@ char *ptr;
 	ptr = (char *)getenv (s);
   }
 
-#ifdef __MINGW32__
+#if ( defined (WIN32) && ! defined (__CYGWIN__))
   if ( ptr == 0 ) {
 	/* try in Windows registry */
     /* why was this static? */
@@ -453,12 +457,20 @@ char *ptr;
 
   if (ptr==0)
   {
-	/* debug("Could not find value for %s\n",s); */
+	#ifdef DEBUG
+		//debug("Could not find value for %s\n",s);
+    #endif
 	return "";
   } else {
+
+	#ifdef DEBUG
+    /*
 	if (strcmp (s, "DEBUG") != 0) {
-		/* debug("returning %s=%s\n",s,ptr); */
+		debug("returning %s=%s\n",s,ptr);
     }
+    */
+    #endif
+
 	return ptr;
   }
 }
@@ -572,15 +584,23 @@ get_regkey (char *key, char *data, int n)
 {
 LONG a;
 DWORD l;
+	/*
+
+    WARNING!!!!
+
+    DO __NOT__ call debug() from this function - it will cause loop when looking for
+    value of DEBUG variable - and eventually core dump !!!!
 
 	#ifdef DEBUG
 		debug("serching Windows registry for %s",key);
 	#endif
+    */
 
   l = REG_SZ; //type of registry data - string
   if (newkey == 0) {
 	createkey ();
   }
+
   // The RegQueryValueEx function retrieves the type and data for a specified value name
   // associated with an open registry key.
   a = RegQueryValueEx (newkey, key, 0, &l, data, &n);
@@ -670,7 +690,9 @@ char buff[512];
 int a;
 FILE *resourcefile=0;
 
-	debug("Loading resources");
+	#ifdef DEBUG
+		debug("Loading resources");
+    #endif
 
 	if (loaded_resources) return build_resource;
 	if (build_resource) free(build_resource);
@@ -681,10 +703,15 @@ FILE *resourcefile=0;
 	resourcefile=fopen(buff,"r");
 	if (resourcefile!=0)
 	{
-		debug("From %s",buff);
+		#ifdef DEBUG
+			debug("From %s",buff);
+        #endif
 		add_resources_in(resourcefile); fclose(resourcefile);
-	}
-        else {debug("cannot read %s",buff);};
+	}else {
+		#ifdef DEBUG
+			debug("cannot read %s",buff);
+        #endif
+	};
 
 	/* -----------------  from $AUBITDIR/etc/aubitrc */
 
@@ -692,10 +719,16 @@ FILE *resourcefile=0;
 	resourcefile=fopen(buff,"r");
 	if (resourcefile!=0) 
 	{
-		debug("From %s",buff);
+		#ifdef DEBUG
+			debug("From %s",buff);
+        #endif
 		add_resources_in(resourcefile); fclose(resourcefile);
-	}
-        else {debug("cannot read %s",buff);};
+	}else {
+		#ifdef DEBUG
+			debug("cannot read %s",buff);
+        #endif
+	};
+
 
 	/* -----------------  from ~/.aubit4gl/aubitrc */
 
@@ -703,10 +736,15 @@ FILE *resourcefile=0;
 	resourcefile=fopen(buff,"r");
 	if (resourcefile!=0)
 	{
-		debug("From %s",buff);
+		#ifdef DEBUG
+			debug("From %s",buff);
+        #endif
 		add_resources_in(resourcefile); fclose(resourcefile);
-	}
-        else {debug("cannot read %s",buff);};
+	}else{
+		#ifdef DEBUG
+			debug("cannot read %s",buff);
+        #endif
+	};
 
 	/* -----------------  from ~/aubitrc */
 
@@ -717,10 +755,15 @@ FILE *resourcefile=0;
 	resourcefile=fopen(buff,"r");
 	if (resourcefile!=0) 
 	{
-		debug("From %s",buff);
+		#ifdef DEBUG
+			debug("From %s",buff);
+        #endif
 		add_resources_in(resourcefile); fclose(resourcefile);
-	}
-        else {debug("cannot read %s",buff);};
+	} else {
+		#ifdef DEBUG
+			debug("cannot read %s",buff);
+        #endif
+	};
 
 	/* ----------------- from ./.aubtirc */
 
@@ -728,10 +771,15 @@ FILE *resourcefile=0;
 	resourcefile=fopen(buff,"r");
 	if (resourcefile!=0) 
 	{
-		debug("From %s",buff);
+		#ifdef DEBUG
+			debug("From %s",buff);
+        #endif
 		add_resources_in(resourcefile); fclose(resourcefile);
-	}
-        else {debug("cannot read %s",buff);};
+	} else {
+		#ifdef DEBUG
+			debug("cannot read %s",buff);
+        #endif
+	};
 
 	/* ----------------- from $A4GL_INIFILE */
 
@@ -741,24 +789,35 @@ FILE *resourcefile=0;
 		resourcefile=fopen(buff,"r");
 		if (resourcefile!=0)
 		{
-			debug("From %s",buff);
+			#ifdef DEBUG
+				debug("From %s",buff);
+            #endif
 			add_resources_in(resourcefile);fclose(resourcefile);
-		}
-			else {debug("cannot read %s",buff);};
+		} else {
+			#ifdef DEBUG
+				debug("cannot read %s",buff);
+            #endif
+		};
 	}
 
 	if (build_resource_cnt)
 	{
-		debug("User resources\n --------------");
+		#ifdef DEBUG
+			debug("User resources\n --------------");
+        #endif
 		for (a=0;a<build_resource_cnt;a++)
 		{
-			debug("%d. %s = %s",a, build_resource[a].name, build_resource[a].value);
+			#ifdef DEBUG
+				debug("%d. %s = %s",a, build_resource[a].name, build_resource[a].value);
+            #endif
     	}
 
 	}
 
 	add_userptr (build_resource);
-	debug("Finished reading configuration");
+	#ifdef DEBUG
+		debug("Finished reading configuration");
+    #endif
 	return build_resource;
 }
 

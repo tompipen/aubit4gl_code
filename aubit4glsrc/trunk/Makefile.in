@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.102 2002-11-10 06:45:00 afalout Exp $
+# $Id: Makefile.in,v 1.103 2002-12-08 06:34:26 afalout Exp $
 #
 
 ## ==================================================================
@@ -653,9 +653,9 @@ help.targets:
 help.options:
 	@echo
 	@echo "Options: (first option is default)"
-	@echo "  PDFBUILD=(no/yes) NOTE: Must have PDF lib installed"
-	@echo "  GTKBUILD=(yes/no) NOTE: Must have GTK lib installed"
-	@echo "  JABBERBUILD=(yes/no) NOTE: Must have ikemel lib installed"
+#	@echo "  PDFBUILD=(no/yes) NOTE: Must have PDF lib installed"
+#	@echo "  GTKBUILD=(yes/no) NOTE: Must have GTK lib installed"
+#	@echo "  JABBERBUILD=(yes/no) NOTE: Must have ikemel lib installed"
 	@echo "  PREFIX= where to install binaries, default is $PREFIX"
 	@echo
 	@echo

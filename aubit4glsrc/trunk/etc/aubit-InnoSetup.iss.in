@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.4 2002-11-28 06:43:18 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.5 2002-12-08 06:34:36 afalout Exp $
 ;
 
 
@@ -166,6 +166,7 @@ Source: @IS_SOURCE@\tools\test\gui\widget.per; DestDir: {app}\tools\test\gui; Co
 ;=========================
 ; Help files:
 Source: @IS_SOURCE@\README.txt; DestDir: {app}; Components: help
+Source: @IS_SOURCE@\tools\cygwin\readme-runtime.html; DestDir: {app}; Components: help
 
 ;=========================
 ; Shell files:
@@ -299,8 +300,10 @@ Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rrun.sh; DestDir: {pf}\GWD\gwd-4g
 Filename: {app}\@FULLNAME@ on the Web.url; Section: InternetShortcut; Key: URL; String: http://@AUBIT_WEBSITE@; Flags: uninsdeleteentry
 
 [Icons]
-Name: {group}\@FULLNAME@ on the Web; Filename: {app}\@FULLNAME@ on the Web.url
-Name: {group}\Uninstall @FULLNAME@; Filename: {uninstallexe}
+Name: {group}\@FULLNAME@ on the Web; Filename: {app}\@FULLNAME@ on the Web.url; Components: runtime
+Name: {group}\Uninstall @FULLNAME@; Filename: {uninstallexe}; Components: runtime
+;FIXME: Components: sample
+Name: {group}\@FULLNAME@ Hello World; Filename: {app}\bin\run.exe; Parameters: hello.exe; WorkingDir: {app}\tools\test; IconFilename: {app}\docs\aubit4gl.ico; IconIndex: 1; Components: runtime
 
 [Registry]
 ;=========================
@@ -346,6 +349,8 @@ Type: files; Name: {app}\tools\test\*.err
 Type: files; Name: {app}\tools\test\*.glb
 Type: files; Name: {app}\tools\test\*.h
 Type: files; Name: {app}\tools\test\*.hlp
+Type: files; Name: {app}\tools\test\*.o
+Type: files; Name: {app}\tools\test\*.out
 
 [_ISTool]
 EnableISX=true

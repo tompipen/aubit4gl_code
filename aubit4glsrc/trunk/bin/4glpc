@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.87 2002-10-22 06:43:35 afalout Exp $
+# $Id: 4glpc,v 1.88 2002-12-08 06:34:36 afalout Exp $
 #
 
 ########################################################################
@@ -694,11 +694,8 @@ do
               $output "Executing (3) : $FGLCEXEC $a"
           fi
 
-	   #echo $FGLCEXEC $a
-
           err_msg=`"$FGLCEXEC" "$a"`
           err_code=$?
-		#echo "err_code = $err_code err_msg=$err_msg"
 
           if [ "$err_code" != "0" ]
           then

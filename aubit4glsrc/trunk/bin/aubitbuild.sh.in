@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.10 2002-11-28 06:43:18 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.11 2002-12-08 06:34:36 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -309,7 +309,7 @@ if [ $# -lt 1 ]; then
         WINSETUP=1
 	    GET=1
 	    UPLOAD=1
-        CLEAN=0
+        CLEAN=1
         COMPARE=1
 	fi
 
@@ -918,11 +918,21 @@ if test "$CLEAN" = "1" && test "$COMPARED_OK" = "1"; then
 	EXEC="rm -f $UNIXSRCBUILDNAMES $UNIXBUILDNAMES"; runexec
 
 	#delete compare files:
-	EXEC="rm -f /tmp/$SOURCETARBASENAME"; runexec
-	EXEC="rm -f /tmp/$TARBALLBASENAME"; runexec
-	EXEC="rm -f /tmp/$WINSETUPEXE_BASENAME"; runexec
-	EXEC="rm -f /tmp/$SOURCERPMBASENAME"; runexec
-	EXEC="rm -f /tmp/$BINRPMBASENAME"; runexec
+	if [ -f "/tmp/$SOURCETARBASENAME" ]; then
+		EXEC="rm -f /tmp/$SOURCETARBASENAME"; runexec
+    fi
+	if [ -f "/tmp/$TARBALLBASENAME" ]; then
+		EXEC="rm -f /tmp/$TARBALLBASENAME"; runexec
+    fi
+	if [ -f "/tmp/$WINSETUPEXE_BASENAME" ]; then
+		EXEC="rm -f /tmp/$WINSETUPEXE_BASENAME"; runexec
+    fi
+	if [ -f "/tmp/$SOURCERPMBASENAME" ]; then
+		EXEC="rm -f /tmp/$SOURCERPMBASENAME"; runexec
+    fi
+	if [ -f "/tmp/$BINRPMBASENAME" ]; then
+		EXEC="rm -f /tmp/$BINRPMBASENAME"; runexec
+    fi
 
 	#clean files created by aubitbuild script:
 	EXEC="make clean.aubitbuild"; runexec

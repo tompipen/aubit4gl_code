@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.46 2002-11-10 06:45:19 afalout Exp $
+# $Id: Makefile.in,v 1.47 2002-12-08 06:34:36 afalout Exp $
 #
 
 ROOT        =../..
@@ -101,24 +101,23 @@ all: $(ALL)
 	@echo "Default targets (${ALL}) successfully compiled."
 
 ${ROOT}/bin/fcompile: $(OBJECTS)
-#	${CC} ${EXE_CFLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
 	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
 
 ${ROOT}/bin/fdecompile-j : ${OBJS_DECOMPILE} ${OBJS_DUMP_JAVA}
-#	${CC} ${EXE_CFLAGS} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
 	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
 
 ${ROOT}/bin/fdecompile : ${OBJS_DECOMPILE} ${OBJS_DUMP_C}
-#	${CC} ${EXE_CFLAGS} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB} ${C_DFLAGS}
-#	${LD} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB} ${C_DFLAGS}
 	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
 
-fshow : ${ROOT}/bin/fshow
-${ROOT}/bin/fshow : fshow.4gl
-ifeq "${FCONVERT}" "yes"
-	${FCONVERT_CMD} $^
-endif
-	${FAIL_OK}${SH} ${4GLPC} $^ -o $@
+#fshow : clean.fshow ${ROOT}/bin/fshow
+
+${ROOT}/bin/fshow : fshow.4gl clean.fshow
+#ifeq "${FCONVERT}" "yes"
+#	${FCONVERT_CMD} $^
+#endif
+#	${FAIL_OK}${SH} ${4GLPC} $^ -o $@
+#	${FAIL_OK}../../bin/4glc -o$@ $<
+	(export DEBUG=ALL; ${ROOT}/bin/4glc -o$@ $<)
 
 
 ## ==================================================================
@@ -166,12 +165,14 @@ y.tab.o :       screen.yacc
 ##                          Clean Targets
 ## ==================================================================
 
-clean:
-#do NOT remove lex.yy.c and y.tab.c
-	$(RM) fcompile fcompile-noodbc $(OBJECTS) $(TARGETS.c) *.BAK *.delta \
-	core *~ *.ln *.output *.bak .*.bak *.exe lex.yy.c form_x.h form_x_xdr.c \
-	*.err fdecompile-j fdecompile fshow-gtk fshow fshow.c *.out \
-    *.o *.glb fshow.h
+clean: clean.fshow
+	$(RM) fcompile $(OBJECTS) $(TARGETS.c) *.BAK *.delta \
+	core *~ *.ln *.output *.bak *.exe lex.yy.c form_x.h form_x_xdr.c \
+	*.err fdecompile-j fdecompile *.out \
+    *.o *.glb
+
+clean.fshow:
+	${RM} fshow fshow.c fshow.h fshow.glb fshow.o fshow.exe ../../bin/fshow ../../bin/fshow.exe
 
 ## ==================================================================
 ##                         Other Targets

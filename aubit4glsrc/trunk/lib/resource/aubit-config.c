@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.6 2002-10-27 22:34:11 afalout Exp $
+# $Id: aubit-config.c,v 1.7 2002-12-08 06:34:37 afalout Exp $
 #
 */
 
@@ -34,11 +34,9 @@
  * aubit-config.c gets compiled up with
  * resource.c to form the "aubit-config" program
  *
- * $ aubit-config DBDATE
- * dmy4/
  *
  * This should be the first thing made and can then be used for the makefiles
- * where required..
+ * where required.
  */
 
 /*
@@ -59,13 +57,6 @@
 =====================================================================
 */
 
-
-/*
-extern int strcmp (const char *, const char *);
-extern int strlen(char);
-extern void exit(int);
-*/
-
 extern void build_user_resources(void);
 extern void exitwith(void);
 extern void dump_all_resource_vars(void);
@@ -74,6 +65,8 @@ extern char *acl_getenv (char *s);
 void trim_nl(char *p);
 void debug_full (char *fmt,...);
 void set_line(void);
+
+//char * DEBUG_CFG;
 
 /*
 =====================================================================
@@ -85,13 +78,20 @@ int
 main(int argc,char *argv[])
 {
 
-	/* load settings from config file(s): */
-	build_user_resources();
 
 	if (argc!=2) {
-		printf("Usage : %s [ VARIABLE_NAME | -a ] (-a = all)\n",argv[0]);
+		printf("\n");
+		printf("Usage:\n");
+		printf("     aubit-config [VARIABLE_NAME | -a]\n");
+		printf("        -a: show all set variables\n");
+		printf("\n");
 		exit(1);
 	}
+
+//	DEBUG_CFG = acl_getenv ("DEBUG_CFG");
+
+	/* load settings from config file(s): */
+	build_user_resources();
 
 	if (strcmp(argv[1],"-a")==0)
 		dump_all_resource_vars();
@@ -134,7 +134,9 @@ debug_full (char *fmt,...)
 
   */
 
-  if (strcmp ("ALL", acl_getenv ("DEBUG_CFG")) == 0 )
+
+	if (strcmp ("ALL", acl_getenv ("DEBUG_CFG")) == 0 )
+//	if (strcmp ("ALL", DEBUG_CFG) == 0 )
     {
 	  va_start (args, fmt);
 	  vsprintf (buff, fmt, args);

@@ -26,12 +26,12 @@
 ROOT    =../..
 
 #
-# $Id: Makefile.in,v 1.6 2002-11-10 06:45:20 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-12-08 06:34:37 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-override NOINCL=0
+#override NOINCL=0
 
 ## ==================================================================
 ##                              Options
@@ -47,12 +47,13 @@ ALL                 =${ROOT}/bin/loadmap
 
 all: ${ALL}
 
-loadmap : ${ROOT}/bin/loadmap
+#loadmap : ${ROOT}/bin/loadmap
 ${ROOT}/bin/loadmap : loadmap.4gl
-ifeq "${FCONVERT}" "yes"
-	${FCONVERT_CMD} $^
-endif
-	${FAIL_OK}${SH} ${4GLPC} ${4GLPCFLAGS} $^ -o $@
+#ifeq "${FCONVERT}" "yes"
+#	${FCONVERT_CMD} $^
+#endif
+#	${FAIL_OK}${SH} ${4GLPC} ${4GLPCFLAGS} $^ -o $@
+	(export DEBUG=ALL; ${ROOT}/bin/4glc -o$@ $<)
 
 ## ==================================================================
 ##                        Clean Targets
