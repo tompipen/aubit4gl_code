@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.53 2003-06-18 19:21:07 mikeaubury Exp $
+# $Id: compile_c.c,v 1.54 2003-06-20 16:13:17 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -4349,7 +4349,7 @@ A4GL_get_into_part (int doing_declare,int no)
   int a;
   if (doing_esql ())
     {
-	  char buff[20];
+	  char buff[30];
 
 		
 	  if (no == 0) return "";
@@ -4357,7 +4357,11 @@ A4GL_get_into_part (int doing_declare,int no)
 	  sprintf (buffer, "INTO \n");
 	  for (a = 0; a < no; a++)
 	    {
-	      sprintf (buff, "\t:_vo_%d\n", a);
+		if (!A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
+	      		sprintf (buff, "\t:_vo_%d\n", a);
+		} else {
+	      		sprintf (buff, "\t:_vo_%d INDICATOR :_voi_%d\n", a,a);
+		}
 	      if (a) strcat (buffer, ",");
 	      strcat (buffer, buff);
 	    }

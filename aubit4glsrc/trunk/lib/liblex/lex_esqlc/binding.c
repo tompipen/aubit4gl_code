@@ -114,24 +114,32 @@ make_sql_bind (char *sql, char *type)
 	      strcpy (buff_out, buff_small);
 	      for (a = 0; a < obindcnt; a++)
 		{
-		  print_sql_type (a, 'o');
+		char indicat[40];
+		  	print_sql_type (a, 'o');
 
+ 			if (!A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
+				strcpy(indicat,"0");
+			} else {
+				sprintf(indicat,"_voi_%d",a);
+			}
 		if ((obind[a].dtype & 0xffff)==0) {
-		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%d,%d,%d);\n",
+		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%s,%d,%d,%d);\n",
 			   obind[a].dtype & 0xffff, 
 				//obind[a].varname, 
 				a,
 				a,
+				indicat,
 			   obind[a].dtype >> 16,
 			obind[a].start_char_subscript,
 			obind[a].end_char_subscript);
 
 		} else {
-		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%d);\n",
+		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%s,%d);\n",
 			   obind[a].dtype & 0xffff, 
 				//obind[a].varname, 
 				a,
 				a,
+				indicat,
 			   obind[a].dtype >> 16
 			);
 
@@ -241,6 +249,10 @@ print_sql_type_infx (int a, char ioro)
 
   if (ioro == 'o')
     {
+ 	if (A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
+		printc("int _voi_%d;",a);
+	}
+
       switch (obind[a].dtype & 0xffff)
 	{
 	case 0:

@@ -4,7 +4,7 @@
 #include "a4gl_esql.h"
 
 
-void A4GL_copy_decimal(dec_t *infx,fgldecimal *a4gl,int size,char dir) {
+void A4GL_copy_decimal(dec_t *infx,fgldecimal *a4gl,int indicat,int size,char dir) {
 char b[65];
 A4GL_debug("Aubit size : %d %d\n",size & 15, size>>4);
 
@@ -21,7 +21,7 @@ if (dir=='i') {
 
 if (dir=='o') {
 	char *ptr;
-		if (risnull(DTYPE_DECIMAL,(void*)infx)) { A4GL_setnull(DTYPE_DECIMAL,(void *)a4gl,size); return;}
+	if (indicat==-1||risnull(DTYPE_DECIMAL,(void*)infx)) { A4GL_setnull(DTYPE_DECIMAL,(void *)a4gl,size); return;}
 	memset(b,0,65);
 	dectoasc(infx,b,64,16);
 	A4GL_push_char(b);
@@ -37,7 +37,7 @@ A4GL_debug("All done..");
 
 
 
-void A4GL_copy_money(dec_t *infx,fglmoney *a4gl,int size,char dir) {
+void A4GL_copy_money(dec_t *infx,fglmoney *a4gl,int indicat,int size,char dir) {
 char b[65];
 A4GL_debug("Aubit size : %d %d\n",size & 15, size>>4);
 
@@ -53,7 +53,7 @@ if (dir=='i') {
 
 if (dir=='o') {
         char *ptr;
-	if (risnull(DTYPE_MONEY,(void*)infx)) { A4GL_setnull(DTYPE_MONEY,(void *)a4gl,size); return;}
+	if (indicat==-1||risnull(DTYPE_MONEY,(void*)infx)) { A4GL_setnull(DTYPE_MONEY,(void *)a4gl,size); return;}
         memset(b,0,65);
         dectoasc(infx,b,64,16);
         A4GL_push_char(b);
@@ -89,7 +89,7 @@ int arr_dtime[]={
   };
 
 
-void A4GL_copy_datetime(dtime_t *infx, struct A4GLSQL_dtime *a4gl,int size,int mode) {
+void A4GL_copy_datetime(dtime_t *infx, struct A4GLSQL_dtime *a4gl,int indicat,int size,int mode) {
 
 	if (mode=='i') {
 		char *ptr;
@@ -119,7 +119,7 @@ void A4GL_copy_datetime(dtime_t *infx, struct A4GLSQL_dtime *a4gl,int size,int m
 		char *ptr;
 		int a;
 
-		if (risnull(DTYPE_DTIME,(void*)infx)) { A4GL_setnull(DTYPE_DTIME,(void *)a4gl,size); return;}
+		if (indicat==-1||risnull(DTYPE_DTIME,(void*)infx)) { A4GL_setnull(DTYPE_DTIME,(void *)a4gl,size); return;}
 		
 		dttoasc(infx,buff);
 		A4GL_push_char(buff);
@@ -146,61 +146,63 @@ A4GL_copy_interval() {
 
 
 
-A4GL_copy_char(char *infx,char *a4gl,int size,int mode,int x,int y) {
+A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y) {
+	
 	if (mode=='i') {
 		if (A4GL_isnull(0,(void *)a4gl)) {rsetnull(0,infx);return;}
 		strcpy((char *)(infx),(char *)(a4gl));
 	}
 	if (mode=='o') {
-		if (risnull(0,(void*)infx)) { A4GL_setnull(0,(void *)a4gl,size); return;}
+		if (indicat==-1||risnull(0,(void*)infx)) { A4GL_setnull(0,(void *)a4gl,size); return;}
+		infx[size]=0;
 		strcpy((char *)(a4gl),(char *)(infx));
 	}
 }
 
 
-A4GL_copy_smint(short *infx,short *a4gl,int size,int mode) {
+A4GL_copy_smint(short *infx,short *a4gl,int indicat,int size,int mode) {
 	if (mode=='i') {
 		if (A4GL_isnull(1,(void *)a4gl)) {rsetnull(1,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
-		if (risnull(1,(void*)infx)) { A4GL_setnull(1,(void *)a4gl,size); return;}
+		if (indicat==-1||risnull(1,(void*)infx)) { A4GL_setnull(1,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
 }
 
 
-A4GL_copy_int(long *infx,long *a4gl,int size,int mode) {
+A4GL_copy_int(long *infx,long *a4gl,int indicat,int size,int mode) {
 	if (mode=='i') {
 		if (A4GL_isnull(2,(void *)a4gl)) {rsetnull(2,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
-		if (risnull(2,(void*)infx)) { A4GL_setnull(2,(void *)a4gl,size); return;}
+		if (indicat==-1||risnull(2,(void*)infx)) { A4GL_setnull(2,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
 }
 
 
-A4GL_copy_float(float *infx,float *a4gl,int size,int mode) {
+A4GL_copy_float(float *infx,float *a4gl,int indicat,int size,int mode) {
 	if (mode=='i') {
 		if (A4GL_isnull(4,(void *)a4gl)) {rsetnull(4,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
-		if (risnull(4,(void*)infx)) { A4GL_setnull(4,(void *)a4gl,size); return;}
+		if (indicat==-1||risnull(4,(void*)infx)) { A4GL_setnull(4,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
 }
 
 
-A4GL_copy_double(double *infx,double *a4gl,int size,int mode) {
+A4GL_copy_double(double *infx,double *a4gl,int indicat,int size,int mode) {
 	if (mode=='i') {
 		if (A4GL_isnull(3,(void *)a4gl)) {rsetnull(3,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
-		if (risnull(3,(void*)infx)) { A4GL_setnull(3,(void *)a4gl,size); return;}
+		if (indicat==-1||risnull(3,(void*)infx)) { A4GL_setnull(3,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
 }
@@ -219,7 +221,7 @@ void retdec(void *vx) {
 	dec_t *x;
         fgldecimal _s;
 	x=vx;
-        A4GL_copy_decimal(x,&_s,0x1e10,'o');
+        A4GL_copy_decimal(x,&_s,0,0x1e10,'o');
         A4GL_push_variable(&_s,0x1e100005);
 }
 
