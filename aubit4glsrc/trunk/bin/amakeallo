@@ -16,24 +16,37 @@
 ############################
 function stats {
 ############################
+
+	let TOTALFAILED=COMPFAIL4GL+COMPFAILCCOMP+COMPFAILCORE+COMPFAILUNKNOWN+FAILCOMPATIBLE
+
 	echo "$COMPSUCCESS sucessfully compiled, $COMPFAIL4GL failed in 4gl, $COMPBEFORE already compiled."
     echo "$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason."
-	let TOTALFAILED=COMPFAIL4GL+COMPFAILCCOMP+COMPFAILCORE+COMPFAILUNKNOWN+FAILCOMPATIBLE
     echo "$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK."
     echo "$CCOMPWARNING produced warnings from C compiler, but compiled. Ignored $ZEROFILESIZE Files with no code."
-	echo "$NOGLBFILE glb files not found, but $OKNOGLBFILE compiled on the fly."
-    date
-
+	echo "$NOGLBFILE glb files not found, $OKNOGLBFILE compiled on the fly, $NO4GLNOGLBFILE 4gl's for making glb not found."
+    echo "$TESTCONTINUESKIP skipped since they failed in previous run"
+	date
 
     echo " " >> $ERRORLOG
 	echo "$COMPSUCCESS sucessfully compiled, $COMPFAIL4GL failed in 4gl, $COMPBEFORE already compiled." >> $ERRORLOG
     echo "$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason." >> $ERRORLOG
-	let TOTALFAILED=COMPFAIL4GL+COMPFAILCCOMP+COMPFAILCORE+COMPFAILUNKNOWN+FAILCOMPATIBLE >> $ERRORLOG
     echo "$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK." >> $ERRORLOG
     echo "$CCOMPWARNING produced warnings from C compiler, but compiled. Ignored $ZEROFILESIZE Files with no code." >> $ERRORLOG
-	echo "$NOGLBFILE glb files not found, but $OKNOGLBFILE compiled on the fly." >> $ERRORLOG
-    date >> $ERRORLOG
+	echo "$NOGLBFILE glb files not found, $OKNOGLBFILE compiled on the fly, $NO4GLNOGLBFILE 4gl's for making glb not found." >> $ERRORLOG
+    echo "$TESTCONTINUESKIP skipped since they failed in previous run" >> $ERRORLOG
+	date >> $ERRORLOG
 
+	echo " " >> $ZEROLOG
+	echo "Ignored $ZEROFILESIZE Files with no code." >> $ZEROLOG
+	date >> $ZEROLOG
+
+	echo " " >> $FGLLOG
+	echo "$COMPFAIL4GL failed in 4gl"  >> $FGLLOG
+	date >> $FGLLOG
+
+	echo " " >> $CLOG
+    echo "$COMPFAILCCOMP failed in C compiler" >> $CLOG
+	date >> $CLOG
 
 
 }
@@ -41,7 +54,7 @@ function stats {
 ############################
 function shortstats {
 ############################
-	echo "OK=$COMPSUCCESS 4gl=$COMPFAIL4GL skip=$COMPBEFORE c=$COMPFAILCCOMP core=$COMPFAILCORE ?=$COMPFAILUNKNOWN compat=$FAILCOMPATIBLE noglob=$OKNOGLBFILE/$NOGLBFILE cw=$CCOMPWARNING 0=$ZEROFILESIZE"
+	echo "OK=$COMPSUCCESS 4gl=$COMPFAIL4GL skip=$COMPBEFORE c=$COMPFAILCCOMP core=$COMPFAILCORE ?=$COMPFAILUNKNOWN compat=$FAILCOMPATIBLE glb=$OKNOGLBFILE/$NOGLBFILE/$NO4GLNOGLBFILE cw=$CCOMPWARNING 0=$ZEROFILESIZE &=$TESTCONTINUESKIP"
 
 }
 
@@ -63,6 +76,11 @@ function analiseerror {
 			if test $ERRLINES != "0"
 			then
 				cat $ERR | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR >> $ERRORLOG
+
+				echo "########################################## ($RET) $PWD/$ERR :" >> $FGLLOG
+				cat $ERR | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR >> $FGLLOG
+				echo "##########################################################" >> $FGLLOG
+
 				let COMPFAIL4GL=COMPFAIL4GL+1
 				if [ "$VERBOSE" = "1" ]
 			    then
@@ -70,6 +88,11 @@ function analiseerror {
 	            fi
 			else
 				$HEAD $ERR  >> $ERRORLOG
+
+				echo "########################################## ($RET) $PWD/$ERR :" >> $CLOG
+				$HEAD $ERR  >> $CLOG
+				echo "##########################################################" >> $CLOG
+
 				let COMPFAILCCOMP=COMPFAILCCOMP+1
 				if [ "$VERBOSE" = "1" ]
 			    then
@@ -86,6 +109,12 @@ function analiseerror {
 					echo "cc failed: $PWD/$FGL"
                 fi
 		        $HEAD $OBJERR >> $ERRORLOG
+
+				echo "########################################## ($RET) $PWD/$OBJERR :" >> $CLOG
+		        $HEAD $OBJERR >> $CLOG
+				echo "##########################################################" >> $CLOG
+
+
 				let COMPFAILCCOMP=COMPFAILCCOMP+1
             else
 			    if [ "$VERBOSE" = "1" ]
@@ -107,6 +136,8 @@ function analiseerror {
                 then
                     echo "This is zero size file, ignoring."
                     echo "This is zero size file, ignoring."  >> $ERRORLOG
+                    echo "#$PWD/$i" >> $ZEROLOG
+					ls -al $i >> $ZEROLOG
 					let ZEROFILESIZE=ZEROFILESIZE+1
 				else
 					ls core > /dev/null 2>&1
@@ -122,7 +153,7 @@ function analiseerror {
 						let COMPFAILCORE=COMPFAILCORE+1
 					else
 	                    #we have no err file, no object err file, and no core was dumped:
-						echo "NOT a core dump."  >> $ERRORLOG
+						echo "NOT a core dump. UNKNOWN failure reason."  >> $ERRORLOG
 						let COMPFAILUNKNOWN=COMPFAILUNKNOWN+1
 					fi;
                 fi
@@ -375,12 +406,26 @@ function compileit {
 				return
 			fi
 		fi
-		
+
 		if [ "$VERBOSE" = "1" ]
 	    then
 			echo $DESTDIR/$X or $AO not found
 	    fi
 	fi
+
+    ##################################
+    #Are we continuing same testing?
+    ##################################
+	if test $TESTCONTINUE = "1"
+   	then
+		if [ -f $ERRFILESDIR/$i ]
+        then
+			let TESTCONTINUESKIP=TESTCONTINUESKIP+1
+			echo "Continue - $i already tried and failed"
+            echo "Continue - $i already tried and failed"   >> $ERRORLOG
+            return
+        fi
+    fi
 
     #######################
 	#set compiler command:
@@ -481,13 +526,24 @@ function compileit {
 	        fi
 	        echo "File $DEPENDGLOB4GLFILE need to be prepared before $PWD/$i"  >> $ERRORLOG 2>&1;
 
-            #FIXME: I should not use basename here, because it will stip
-			#../ar/ from ../ar/AC.glb - so how do I change extension then?
-            #or, I can do basename on $DEPENDGLOB4GLFILE, and then do diff (how?)
-            #between that and $DEPENDGLOB4GLFILE, and diff will be path part
-
+            DIRNAME=`dirname $DEPENDGLOB4GLFILE`
 	        DEPEND4GLFILE=`basename $DEPENDGLOB4GLFILE .glb`.4gl;
-	        DEPEND4GLOBJ=`basename $DEPENDGLOB4GLFILE .glb`.ao;
+            DEPEND4GLFILE=$DIRNAME/$DEPEND4GLFILE
+			DEPEND4GLOBJ=`basename $DEPENDGLOB4GLFILE .glb`.ao;
+
+            if ! [ -f $DEPEND4GLFILE ]
+            then
+			    if [ "$VERBOSE" = "1" ]
+		    	then
+					echo "$DEPEND4GLFILE not found - aborting"
+                fi
+                echo "$DEPEND4GLFILE not found - aborting"  >> $ERRORLOG 2>&1;
+			    let NO4GLNOGLBFILE=NO4GLNOGLBFILE+1
+		        echo "##########################################################" >> $ERRORLOG
+				return
+			fi
+
+
 			A4GLGLOBPC="$FGLCOMPILER $DEPEND4GLFILE -c -o $DEPEND4GLOBJ"
 
 		    if [ "$VERBOSE" = "1" ]
@@ -510,7 +566,7 @@ function compileit {
 
 			if test $RET = "0"
 		    then
-			    OKNOGLBFILE=OKNOGLBFILE+1
+			    let OKNOGLBFILE=OKNOGLBFILE+1
 	        else
 			    if [ "$VERBOSE" = "1" ]
 	    		then
@@ -519,7 +575,7 @@ function compileit {
 				echo "Compiling $DEPENDGLOB4GLFILE from $PWD failed ($RET)."  >> $ERRORLOG 2>&1;
 				WASERROR=1
 				let COMPFAIL4GL=COMPFAIL4GL+1
-
+		        echo "##########################################################" >> $ERRORLOG
 				if test $STOPONERROR = "1"
 			    then
 					echo "Stop."
@@ -880,8 +936,8 @@ function doit {
 	#configuration:
 
 	ERRFILESDIR=/tmp/amakeallo
-	ERRORLOG=$ERRFILESDIR/amakeallo.log
-    FJSERRFILESDIR=$ERRFILESDIR-4js
+
+	FJSERRFILESDIR=$ERRFILESDIR-4js
 	AUBITERRFILESDIR=$ERRFILESDIR-aubit
 	DESTDIR=/tmp/amakeallo-objects
 	ROOTDIR=$PWD
@@ -909,6 +965,7 @@ function doit {
 	SKIPDIRS=
     HEAD=head
     #HEAD=head -n 20
+	TESTCONTINUE=0
 
 
 	###############
@@ -925,7 +982,9 @@ function doit {
     CCOMPWARNING=0
     NOGLBFILE=0
     OKNOGLBFILE=0
+    NO4GLNOGLBFILE=0
 	ZEROFILESIZE=0
+	TESTCONTINUESKIP=0
 
 	############
 	for a in $@
@@ -969,6 +1028,9 @@ function doit {
         -compat) 	COMPATIBLE=1
         ;;
 
+        -continue)  TESTCONTINUE=1
+        ;;
+
         -maxmode)   MAXMODE=1
 		;;
 
@@ -997,6 +1059,7 @@ function doit {
 			echo " -compat = ignore errors if they fail in 4Js too (do not ignore)"
 			echo " -maxmode = special mode for Maximise application testing"
 			echo " -v = verbose - show what you are doing"
+			echo " -continue - contine previous run, don't retry already failed"
 			echo " -debug = verbose + much more"
 			echo " -help = this help"
             echo
@@ -1018,7 +1081,6 @@ function doit {
 	if [ "$COMPILER" = "aubit" ]
 	then
 		ERRFILESDIR=$AUBITERRFILESDIR
-		ERRORLOG=$ERRFILESDIR/amakeallo.log
 		FGLCOMPILER=$AUBITCMPLCMD
 		COMPEXT=o
 		COMPEXT2=ao
@@ -1046,7 +1108,6 @@ function doit {
 	if [ "$COMPILER" = "4js" ]
 	then
 		ERRFILESDIR=$FJSERRFILESDIR
-		ERRORLOG=$ERRFILESDIR/amakeallo.log
 		FGLCOMPILER=$FOURJSCMPLCMD
 		COMPEXT=42m
 		COMPEXT2=
@@ -1060,6 +1121,12 @@ function doit {
         fi
 	fi
 
+   	ERRORLOG=$ERRFILESDIR/amakeallo.log
+    ZEROLOG=$ERRFILESDIR/zero_size.log
+    CLOG=$ERRFILESDIR/c_err.log
+    FGLLOG=$ERRFILESDIR/4gl_err.log
+
+
 	if test $VERBOSE = "0"
 	then
 		echo "NOTE: using $DESTDIR for objects store"
@@ -1067,10 +1134,16 @@ function doit {
 
 	if [ -d $ERRFILESDIR ]
 	then
-	    rm -rf $ERRFILESDIR
+	    if [ "$TESTCONTINUE" = "0" ]
+        then
+			rm -rf $ERRFILESDIR
+        fi
 	fi
 
-	mkdir $ERRFILESDIR
+	if ! [ -d $ERRFILESDIR ]
+	then
+		mkdir $ERRFILESDIR
+    fi
 
     if ! [ -d $DESTDIR ]
     then
@@ -1079,7 +1152,9 @@ function doit {
 
     date
     date > $ERRORLOG
-
+	date > $ZEROLOG
+	date > $FGLLOG
+	date > $CLOG
 
     #################
     #start compiling:

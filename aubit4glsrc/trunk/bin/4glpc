@@ -407,7 +407,15 @@ do
           errfname=`basename $a .4gl`.err;
 
           fname2="$dirn/$fname"
-          fname=$fname2
+          fname3="$dirn/$fname.4gl"
+		  fname=$fname2
+
+          if ! [ -f $fname3 ]
+          then
+            echo "$fname3 not found"
+            exit 10
+          fi
+
 
           if [ -f "$fname".err ]
           then
