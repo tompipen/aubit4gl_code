@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.57 2002-06-29 13:12:02 afalout Exp $
+# $Id: Makefile.in,v 1.58 2002-07-11 09:44:35 mikeaubury Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -45,7 +45,9 @@ override NOINCL=0
 ALL 	=aubit-config libEXREPORT_NOPDF${SO_EXT} libaubit4gl${SO_EXT} \
 		libRPC_NORPC${SO_EXT} libSQL_noodbc${SO_EXT} libFORM_NOFORM${SO_EXT} \
 		libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} libLEX_C${SO_EXT} \
-		libUI_CONSOLE${SO_EXT}
+		libUI_CONSOLE${SO_EXT} \
+		libPACKER_PACKED${SO_EXT} libPACKER_PERL${SO_EXT} libPACKER_XML${SO_EXT}
+
 
 
 ifeq "$(GTKBUILD)" "yes"
@@ -53,7 +55,7 @@ ifeq "$(GTKBUILD)" "yes"
 endif
 
 ifneq "@HAVE_RPCLIB@" "0"
-	ALL	+=libRPC_XDR${SO_EXT} libFORM_XDR${SO_EXT} libMENU_XDR${SO_EXT} libUI_TUI${SO_EXT}
+	ALL	+=libRPC_XDR${SO_EXT} libFORM_XDR${SO_EXT} libMENU_XDR${SO_EXT} libUI_TUI${SO_EXT} libPACKER_XDR.so
 endif
 
 ifneq "@XML_RPC@" "no"
@@ -200,6 +202,18 @@ libEXREPORT_PDF.so:
 
 libEXREPORT_NOPDF.so:
 	${MAKE} -C libpdf $@
+
+libPACKER_PACKED.so:
+	${MAKE} -C libpacker/packed
+
+libPACKER_PERL.so:
+	${MAKE} -C libpacker/perl
+
+libPACKER_XDR.so:
+	${MAKE} -C libpacker/xdr
+
+libPACKER_XML.so:
+	${MAKE} -C libpacker/xml
 
 libSQL_noodbc.so:
 	${MAKE} -C libsql/nosql nosql.so
