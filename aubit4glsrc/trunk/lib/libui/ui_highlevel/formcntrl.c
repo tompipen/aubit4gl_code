@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.18 2004-09-29 15:09:06 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.19 2005-01-05 20:04:14 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.18 2004-09-29 15:09:06 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.19 2005-01-05 20:04:14 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -1142,7 +1142,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
 
 // Wait for a key..
    A4GL_LL_set_carat(mform);
-  a = A4GL_getch_win ();
+  a = A4GL_getch_win (1);
 
   if (A4GL_is_special_key(a,A4GLKEY_ACCEPT)) {
 		a=A4GLKEY_ACCEPT;

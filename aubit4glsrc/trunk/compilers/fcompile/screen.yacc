@@ -17,6 +17,10 @@
 
 #include "a4gl_fcompile_int.h"
 
+int doing_4gl();
+
+
+
 /*
 =====================================================================
                     Variables definitions
@@ -77,29 +81,30 @@ char *chk_alias(char *s);
 %token <str> 
 %token CH
 %token GRAPH_CH
-%token KW_COMPOSITES KW_LESS_THAN KW_GREATER_THAN
+%token KW_COMPOSITES 
 %token INSTRUCTIONS ATTRIBUTES DATABASE BY KW_SCREEN_TITLE KW_SCREEN KW_SIZE OPEN_SQUARE KW_END CLOSE_SQUARE NUMBER_VALUE NAMED OPEN_BRACE CLOSE_BRACE TITLE
 FORMONLY COMMENT
 %token DYNAMIC COLON ATSIGN DOT WITHOUT KW_NULL INPUT TABLES PIPE EQUAL CHAR_VALUE
-%token SEMICOLON
-%token OPEN_BRACKET CLOSE_BRACKET STAR PLUS MINUS RECORD COMMA THROUGH TYPE DELIMITERS
+%token SEMICOLON LOOKUP JOINING
+%token OPEN_BRACKET CLOSE_BRACKET STAR DIVIDE PLUS MINUS RECORD COMMA THROUGH TYPE DELIMITERS
 %token KW_CHAR KW_INT KW_DATE KW_FLOAT SMALLFLOAT SMALLINT KW_DECIMAL MONEY DATETIME INTERVAL LIKE
 %token BLACK BLUE GREEN CYAN RED MAGENTA WHITE YELLOW REVERSE LEFT BLINK UNDERLINE
 %token   AUTONEXT COLOR COMMENTS DEFAULT VALIDATE DISPLAY DOWNSHIFT UPSHIFT FORMAT INCLUDE INVISIBLE NOUPDATE NOENTRY PICTURE PROGRAM
-REQUIRED REVERSE VERIFY WORDWRAP COMPRESS NONCOMPRESS TO  AS
+REQUIRED REVERSE QUERYCLEAR VERIFY WORDWRAP COMPRESS NONCOMPRESS TO  AS
 %token SERIAL KW_BYTE KW_TEXT VARCHAR SQL_VAR KW_NONSPACE
 %token SQLONLY  WIDGET CONFIG KW_NL
-%token COMPARISON KWOR KWAND KWWHERE KWNOT KWBETWEEN KWIN XVAL KWNULLCHK KWNOTNULLCHK
+%token COMPARISON LESSTHAN GREATERTHAN KWOR KWAND KWWHERE KWNOT KWBETWEEN KWIN XVAL KWNULLCHK KWNOTNULLCHK
 %token YEAR MONTH DAY HOUR MINUTE SECOND FRACTION
 /* extensions */
-%token LISTBOX BUTTON KW_PANEL
+%token LISTBOX BUTTON KW_PANEL DISPLAYONLY ALLOWING  
+
 %token KW_WS KW_TAB
 %token KW_MASTER_OF
 %token KW_BEFORE KW_AFTER KW_EDITADD KW_EDITUPDATE KW_REMOVE KW_OF
-%token KW_ADD KW_DISPLAY KW_UPDATE KW_QUERY KW_ON_ENDING KW_ON_BEGINNING
+%token KW_ADD KW_UPDATE KW_QUERY KW_ON_ENDING KW_ON_BEGINNING
 %token KW_CALL
-%token KW_BELL KW_ABORT KW_LET KW_EXITNOW KW_REVERSE KW_NEXTFIELD
-%token KW_IF KW_THEN KW_ELSE
+%token KW_BELL KW_ABORT KW_LET KW_EXITNOW KW_NEXTFIELD
+%token KW_IF KW_THEN KW_ELSE  KW_BEGIN KW_END KW_TOTAL KW_RIGHT KW_ZEROFILL
 
 
 %%
@@ -394,11 +399,15 @@ field_tag_name {
 	strcpy(currftag,$<str>1);
 	fldno=A4GL_find_field($<str>1);
 } 
-fpart_list SEMICOLON
+fpart_list 
+SEMICOLON
 ;
 
 fpart_list : 
-fpart | fpart_list fpart;
+fpart 
+| fpart_list fpart
+| fpart_list SEMICOLON fpart
+;
 
 fpart : 
 EQUAL { 
@@ -437,7 +446,8 @@ op_field_desc
 	}
 
 	A4GL_set_field(currftag,fld);
-};
+}
+;
 
 
 
@@ -479,6 +489,30 @@ field_type : FORMONLY DOT field_name field_datatype_null {
         fld->datatype=atoi($<str>4)&0xff;
         fld->dtype_size=dtype_size;
 }
+| DISPLAYONLY field_datatype_null {
+	static int xdo=0;
+	char buff[256];
+	sprintf(buff,"_do_%d",xdo++);
+	fld->tabname=strdup("formonly");
+	fld->colname=strdup(buff);
+        fld->datatype=atoi($<str>2)&0xff;
+	if (atoi($<str>2)&256) fld->not_null=1;
+	else fld->not_null=0;
+        fld->datatype=atoi($<str>2)&0xff;
+        fld->dtype_size=dtype_size;
+}
+| DISPLAYONLY ALLOWING INPUT field_datatype_null {
+	static int di=0;
+	char buff[256];
+	sprintf(buff,"_di_%d",di++);
+	fld->tabname=strdup("formonly");
+	fld->colname=strdup(buff);
+        fld->datatype=atoi($<str>4)&0xff;
+	if (atoi($<str>4)&256) fld->not_null=1;
+	else fld->not_null=0;
+        fld->datatype=atoi($<str>4)&0xff;
+        fld->dtype_size=dtype_size;
+}
 | named_or_kw DOT named_or_kw {
 	fld->tabname=strdup($<str>1); 
 	fld->colname=strdup($<str>3);
@@ -493,7 +527,51 @@ field_type : FORMONLY DOT field_name field_datatype_null {
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
         fld->dtype_size=A4GL_get_dtype_size();
         //if (fld->datatype==DTYPE_SERIAL) { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
-};
+}
+
+| STAR named_or_kw DOT named_or_kw {
+	fld->tabname=strdup($<str>2); 
+	fld->colname=strdup($<str>4);
+	fld->not_null=0;
+        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
+        fld->dtype_size=A4GL_get_dtype_size();
+        //if (fld->datatype==DTYPE_SERIAL) { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
+}
+| STAR named_or_kw {
+	fld->colname=strdup($<str>2);
+	fld->not_null=0;
+        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
+        fld->dtype_size=A4GL_get_dtype_size();
+}
+;
+
+
+
+lu_ft: field_tag_name 
+;
+
+lu_ft_eq_c:
+	lu_ft_eq_c_i
+	| lu_ft_eq_c COMMA lu_ft_eq_c_i
+;
+lu_ft_eq_c_i:
+	lu_ft EQUAL lu_fc 
+;
+
+lu_fc: 	named_or_kw DOT named_or_kw 
+	| named_or_kw 
+;
+
+lu_joincol:
+ 	named_or_kw DOT named_or_kw 
+	| named_or_kw 
+ 	| STAR named_or_kw DOT named_or_kw 
+	| STAR named_or_kw 
+;
+
+lu_join: JOINING 
+	| COMMA JOINING
+;
 
 
 op_field_desc : 
@@ -525,6 +603,7 @@ AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 
 		}
 } 
+| LOOKUP  lu_ft_eq_c lu_join lu_joincol 
 | COMMENTS EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_COMMENTS,$<str>3); }
 | DEFAULT EQUAL def_val { A4GL_add_str_attr(fld,FA_S_DEFAULT,$<str>3); }
 | DISPLAY LIKE named_or_kw {	A4GL_debug("WARNING : DISPLAY LIKE not really implemented");}
@@ -552,9 +631,10 @@ A4GL_debug("fld->dynamic=%d",fld->dynamic); }
 | REVERSE {
 	A4GL_add_bool_attr(fld,FA_B_REVERSE);
 }
-| VERIFY {
-	A4GL_add_bool_attr(fld,FA_B_VERIFY);
-}
+| VERIFY { A4GL_add_bool_attr(fld,FA_B_VERIFY); }
+| QUERYCLEAR   /* ADD */
+| KW_ZEROFILL   /* ADD */
+| KW_RIGHT   /* ADD */
 | WORDWRAP  {
 	A4GL_add_bool_attr(fld,FA_B_WORDWRAP);
 }
@@ -934,47 +1014,19 @@ clauses :
 ;
 
 clause: 
-	value COMPARISON value {
-		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2);
-		}
-	| value LIKE value {
-		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2);
-		}
-	| value KWNOT LIKE value {
-		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>4,"NOTLIKE");
-		}
-	| value EQUAL value {
-		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2);
-	}
-	| value KWNULLCHK {
-		void *p;
-		p=create_char_expr("ISNULL");
-		$<expr>$=create_expr_comp_expr($<expr>1,p,"ISNULL");
-	}
-	| value KWNOTNULLCHK {
-		void *p;
-		p=create_char_expr("ISNOTNULL");
-		$<expr>$=create_expr_comp_expr($<expr>1,p,"ISNOTNULL");
-	}
-	| value  {
-		$<expr>$=$<expr>1;
-			//create_expr_comp_expr($<expr>1,$<expr>3,$<str>2);
-	}
-	| value KWBETWEEN value KWAND value {
-		$<expr>$=create_list_expr();
-		add_list_expr($<expr>$,$<expr>3);
-		add_list_expr($<expr>$,$<expr>5);
-		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>$,"BETWEEN");
-	}
-	| value KWIN OPEN_BRACKET value_list CLOSE_BRACKET {
-		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>4,"IN");
-	}
-	| KWNOT clause {
-		$<expr>$=create_not_expr($<expr>2);
-	}
-	| OPEN_BRACKET clause CLOSE_BRACKET {
-		$<expr>$=$<expr>2;
-	}
+	value COMPARISON value { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	| value LESSTHAN value { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	| value GREATERTHAN value { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	| value LIKE value { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	| value KWNOT LIKE value { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>4,"NOTLIKE"); }
+	| value EQUAL value { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	| value KWNULLCHK { void *p; p=create_char_expr("ISNULL"); $<expr>$=create_expr_comp_expr($<expr>1,p,"ISNULL"); }
+	| value KWNOTNULLCHK { void *p; p=create_char_expr("ISNOTNULL"); $<expr>$=create_expr_comp_expr($<expr>1,p,"ISNOTNULL"); }
+	| value  { $<expr>$=$<expr>1; }
+	| value KWBETWEEN value KWAND value { $<expr>$=create_list_expr(); add_list_expr($<expr>$,$<expr>3); add_list_expr($<expr>$,$<expr>5); $<expr>$=create_expr_comp_expr($<expr>1,$<expr>$,"BETWEEN"); }
+	| value KWIN OPEN_BRACKET value_list CLOSE_BRACKET { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>4,"IN"); }
+	| KWNOT clause { $<expr>$=create_not_expr($<expr>2); }
+	| OPEN_BRACKET clause CLOSE_BRACKET { $<expr>$=$<expr>2; }
 ;
 
 value : fieldidentifier  {
@@ -984,9 +1036,7 @@ if (strcasecmp(currftag,$<str>1)!=0) {
 	
 }
 }
-| NUMBER_VALUE  {$<expr>$=create_int_expr(atoi($<str>1));
-printf("NUMBER VALUE : %s\n",$<str>1);
-}
+| NUMBER_VALUE  {$<expr>$=create_int_expr(atoi($<str>1)); printf("NUMBER VALUE : %s\n",$<str>1); }
 | CHAR_VALUE    {$<expr>$=create_char_expr($<str>1);}
 | XVAL          {
 	$<expr>$=create_special_expr($<str>1);
@@ -1012,7 +1062,7 @@ value_list : value {
 
 
 composites:
-	KW_COMPOSITES KW_LESS_THAN comp_list KW_GREATER_THAN op_star KW_LESS_THAN comp_list KW_GREATER_THAN
+	KW_COMPOSITES LESSTHAN comp_list GREATERTHAN op_star LESSTHAN comp_list GREATERTHAN
 ;
 
 comp_list: comp_item
@@ -1022,13 +1072,15 @@ comp_list: comp_item
 comp_item : table_name DOT column_name 
 ;
 
-table_name : named_or_kw;
+table_name : named_or_kw
+;
 
-column_name : named_or_kw;
+column_name : named_or_kw
+;
 
 control_block :
-	KW_BEFORE bef_act KW_OF column_list action
-	| KW_AFTER aft_act KW_OF column_list action
+	KW_BEFORE bef_act_list KW_OF column_list actions
+	| KW_AFTER aft_act_list KW_OF column_list actions
 	| KW_ON_BEGINNING func_call
 	| KW_ON_ENDING func_call
 	
@@ -1040,30 +1092,53 @@ action:
 	| if
 	| let
 	| nextfield
+	| func_call
+	| block
 ;
 
 
 if: KW_IF expression KW_THEN action op_else
 ;
+
+
 op_else: | KW_ELSE action
 ;
 
-abort : KW_ABORT ;
-
-let   : KW_LET field_tag EQUAL expression ;
-
-nextfield : KW_NEXTFIELD field_tag
-	| KW_NEXTFIELD KW_EXITNOW
+abort : KW_ABORT 
 ;
+
+let   : KW_LET field_tag_name EQUAL expression 
+;
+
+nextfield : KW_NEXTFIELD field_tag_name
+	  | KW_NEXTFIELD EQUAL field_tag_name
+	  | KW_NEXTFIELD KW_EXITNOW
+	  | KW_NEXTFIELD EQUAL KW_EXITNOW
+;
+
+block: 
+	KW_BEGIN actions KW_END
+;
+
+actions: action 
+	| actions action
+;
+
 
 comments :
 	COMMENTS CHAR_VALUE
 	| COMMENTS KW_BELL CHAR_VALUE
-	| COMMENTS KW_REVERSE CHAR_VALUE
+	| COMMENTS REVERSE CHAR_VALUE
 ;
 
 
+bef_act_list: 
+	bef_act | bef_act_list bef_act
+;
 
+aft_act_list: 
+	aft_act | aft_act_list aft_act
+;
 
 bef_act :
 	KW_EDITADD
@@ -1077,7 +1152,7 @@ aft_act:
 	| KW_UPDATE
 	| KW_QUERY
 	| KW_REMOVE
-	| KW_DISPLAY
+	| DISPLAY
 	| KW_EDITUPDATE
 ;
 
@@ -1094,7 +1169,7 @@ master_of:
 	table_name KW_MASTER_OF table_name op_semi
 ;
 
-func_call: KW_CALL OPEN_BRACKET op_func_call_args CLOSE_BRACKET
+func_call: KW_CALL named_or_kw OPEN_BRACKET op_func_call_args CLOSE_BRACKET
 ;
 
 op_func_call_args: | func_call_args;
@@ -1108,8 +1183,69 @@ func_call_arg : expression
 ;
 
 
-expression : clauses
+expression : 
+	single_expression
+	| expression KWAND expression {
+		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,"AND");  
+	}
+	| expression KWOR expression {
+		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,"OR");  
+	}
 ;
+
+op_expression_list : 
+	| expression_list
+;
+
+expression_list : expression
+	| expression_list COMMA expression
+;
+
+single_expression: 
+	expression COMPARISON expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	|expression LESSTHAN expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	|expression GREATERTHAN expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	|expression STAR expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	|expression PLUS expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	|expression MINUS expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	|expression DIVIDE expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	| expression LIKE expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	| expression KWNOT LIKE expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>4,"NOTLIKE"); }
+	| expression EQUAL expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	| expression KWNULLCHK { void *p; p=create_char_expr("ISNULL"); $<expr>$=create_expr_comp_expr($<expr>1,p,"ISNULL"); }
+	| expression KWNOTNULLCHK { void *p; p=create_char_expr("ISNOTNULL"); $<expr>$=create_expr_comp_expr($<expr>1,p,"ISNOTNULL"); }
+	| evalue  { $<expr>$=$<expr>1; }
+	| expression KWBETWEEN expression KWAND expression { $<expr>$=create_list_expr(); add_list_expr($<expr>$,$<expr>3); add_list_expr($<expr>$,$<expr>5); $<expr>$=create_expr_comp_expr($<expr>1,$<expr>$,"BETWEEN"); }
+	| expression KWIN OPEN_BRACKET evalue_list CLOSE_BRACKET { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>4,"IN"); }
+	| KWNOT expression { $<expr>$=create_not_expr($<expr>2); }
+	| OPEN_BRACKET expression CLOSE_BRACKET { $<expr>$=$<expr>2; }
+	| fcall_name OPEN_BRACKET op_expression_list CLOSE_BRACKET { $<expr>$=$<expr>3; }
+	| KW_TOTAL KW_OF field_tag_name { $<expr>$=$<expr>3; }
+;
+
+fcall_name: named_or_kw
+;
+
+evalue : field_tag_name  { $<expr>$=create_field_expr($<str>1); }
+| NUMBER_VALUE  {$<expr>$=create_int_expr(atoi($<str>1)); }
+| CHAR_VALUE    {$<expr>$=create_char_expr($<str>1);}
+| XVAL        { $<expr>$=create_special_expr($<str>1); }
+;
+
+evalue_list : evalue {
+		$<expr>$=create_list_expr();
+		add_list_expr($<expr>$,$<expr>1);
+	}
+| evalue_list COMMA evalue {
+		add_list_expr($<expr>1,$<expr>3);
+		$<expr>$=$<expr>1;
+	}
+
+;
+
+
+
+
 
 any_kword : 
  AS
@@ -1178,10 +1314,13 @@ any_kword :
 | UPSHIFT
 | VARCHAR
 | VERIFY 
+|  LOOKUP
+|  JOINING
 | WHITE
 | WIDGET 
 | WITHOUT
 | WORDWRAP 
+| QUERYCLEAR 
 | YELLOW
 | TYPE
 | LIKE

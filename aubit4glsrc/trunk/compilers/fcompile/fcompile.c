@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.39 2004-11-11 13:42:58 mikeaubury Exp $
+# $Id: fcompile.c,v 1.40 2005-01-05 20:02:04 mikeaubury Exp $
 #*/
 
 /**
@@ -92,6 +92,7 @@ char *rm_dup_quotes(char *s) ;
                     Functions definitions
 =====================================================================
 */
+int fcompile=0;
 
 
 /**
@@ -120,6 +121,9 @@ main (int argc, char *argv[])
   A4GL_debug ("Initializing fcompile\n");
   A4GL_setenv("A4GL_UI","CONSOLE");
   A4GL_fgl_start(argc,argv);
+  fcompile=0;
+  if (strstr(argv[0],"fcompile"))  fcompile=1;
+
 
   /* load settings from config file(s): */
   //A4GL_build_user_resources ();
@@ -352,5 +356,12 @@ for (a=0;a<strlen(s);a++) {
 }
 x[c]=0;
 return x;
+}
+
+int doing_4gl() {
+	if (A4GL_isyes(acl_getenv("FGLFRMCOMPILE"))) return 1;
+	if (A4GL_isno(acl_getenv("FGLFRMCOMPILE"))) return 0;
+	if (fcompile) return 1;
+	return 0;
 }
 /* ================================== EOF ============================= */

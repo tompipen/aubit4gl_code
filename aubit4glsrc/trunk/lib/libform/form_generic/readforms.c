@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.25 2004-12-16 10:21:25 mikeaubury Exp $
+# $Id: readforms.c,v 1.26 2005-01-05 20:04:14 mikeaubury Exp $
 #*/
 
 /**
@@ -148,13 +148,12 @@ real_read_form (char *fname, char *formname)
   A4GL_trim (fname);
   A4GL_trim (formname);
 
-  A4GL_debug ("in A4GL_read_form fname=%s formname=%s", fname, formname);
   //strcpy (buff, fname);
   //buff[strlen (buff) - 4] = 0;
 
 
 #ifdef DEBUG
-  A4GL_debug ("fname=%s formname=%s %s ", fname, formname);
+  A4GL_debug ("fname=%s formname=%s ", fname, formname);
 #endif
 
   //A4GL_gui_startform (formname);

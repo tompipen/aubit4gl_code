@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.45 2004-12-23 16:42:47 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.46 2005-01-05 20:04:15 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -83,7 +83,7 @@ Looks like it was removed in Curses 5.3???!
 #endif
 
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.45 2004-12-23 16:42:47 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.46 2005-01-05 20:04:15 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -235,7 +235,7 @@ void A4GL_do_pause (void)
       doupdate ();
     }
   A4GL_debug ("getch_win...");
-  A4GL_getch_win ();
+  A4GL_getch_win (0);
   A4GL_debug ("Done getch_win");
   UILIB_A4GL_remove_window ("pause");
 }
@@ -1609,7 +1609,7 @@ PANEL *w;
 
   //w = (PANEL *) A4GL_get_currwin ();
   //wrefresh(panel_window(w));
-  //A4GL_LL_screen_update();
+  A4GL_LL_screen_update();
   
 }
 
@@ -1624,10 +1624,11 @@ int
 A4GL_LL_getch_swin (void *window_ptr)
 {
   int a;
-  //if (A4GL_isgui ()) { return A4GL_get_gui_char (); }
-  //A4GL_reset_processed_onkey();
+
   A4GL_debug ("Reading from keyboard on window %p", window_ptr);
+
   A4GL_set_abort (0);
+
   a = A4GL_readkey ();
   if (a != 0)
     {
@@ -1638,13 +1639,16 @@ A4GL_LL_getch_swin (void *window_ptr)
   while (1)
     {
 #ifndef XCURSES
+	// Half delay seems to mess up pdcurses (at least under X)
       halfdelay (1);
 #endif
       //a = wgetch (window_ptr);
 	abort_pressed=0;
       a = getch ();
+
 #ifdef __MINGW32__
-if (a==3) abort_pressed=1;
+	// ^c
+	if (a==3) abort_pressed=1;
 #endif
 
       if (a == KEY_MOUSE)
@@ -3055,4 +3059,46 @@ A4GL_LL_wadd_wchar_xy_col_w (void *win, int x, int y, int oattr, wchar_t ch)
 void * A4GL_LL_create_menu (void * m, char *id, int mode, void *handler) {
 	A4GL_exitwith("Not in TUI mode");
 	return 0;
+}
+
+
+
+void A4GL_LL_clr_menu_disp (ACL_Menu * menu)
+{
+  static char buff[1025];
+  int off;
+  int w;
+  void *cw;
+  int y;
+
+  A4GL_debug ("Clearing menu clr_menu_disp - %p",menu);
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  memset (buff, ' ', 1023);
+  buff[1024]=0;
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+
+  w=UILIB_A4GL_get_curr_width ();
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  off=menu->menu_offset;
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  buff[w - off + 1] = 0;
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  y=menu->gw_y;
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  cw=A4GL_get_currwin ();
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  A4GL_wprintw (cw, 0, off - 1, y, buff);
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+}
+
+
+void
+A4GL_LL_h_disp_title (ACL_Menu * menu, char *str)
+{
+     A4GL_wprintw ((void *)A4GL_get_currwin (), 0, 1, menu->gw_y, "%s", str);
+}
+
+
+void A4GL_LL_set_acc_intr_keys(int n) {
+/* does nothing - required as it will be called from the HL driver */
 }

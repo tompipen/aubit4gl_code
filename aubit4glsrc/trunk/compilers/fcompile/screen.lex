@@ -13,6 +13,7 @@
 %a 4000
 %o 4200
 %x comment
+%x instructions
 %option yylineno
 /*%option interactive*/
 
@@ -101,11 +102,11 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "}" 		{strcpy(yylval.str,yytext); return CLOSE_BRACE;}
 "@" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ATSIGN;}
 ":" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COLON;}
-">" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 "!=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
-"<" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 ">=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 "<=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
+"<" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext);  return LESSTHAN;}
+">" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext);  return GREATERTHAN;}
 "MATCHES" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 "where" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWWHERE;}
 "AND" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWAND;}
@@ -135,6 +136,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "(" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return OPEN_BRACKET;}
 ")" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return CLOSE_BRACKET;}
 "*" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return STAR;}
+"/" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DIVIDE;}
 "+" 		{if (ignorekw) REJECT;
 			strcpy(yylval.str,yytext); 
 			if (graphics_mode) {
@@ -144,6 +146,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 				}
 		return PLUS;
 		}
+
 - 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); 
 			if (graphics_mode) {
 				strcpy(yylval.str,"\n-");
@@ -151,6 +154,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 				}
 		return MINUS;
 		}
+
 "," 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMMA;}
 "thru" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return THROUGH;}
 "through" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return THROUGH;}
@@ -187,6 +191,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 
 "autonext"	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return AUTONEXT;}
 "color"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COLOR;}
+"composites"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_COMPOSITES;}
 "comments"	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMMENTS;}
 "default"	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DEFAULT;}
 "display"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DISPLAY;}
@@ -202,6 +207,12 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "dynamic"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DYNAMIC;}
 "reverse"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return REVERSE;}
 "verify"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return VERIFY;}
+"queryclear"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return QUERYCLEAR;}
+"displayonly"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DISPLAYONLY;}
+"allowing"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ALLOWING;}
+"master of" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER_OF;}
+"lookup" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LOOKUP;}
+"joining" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return JOINING;}
 "wordwrap"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return WORDWRAP;}
 "compress"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPRESS;}
 "noncompress"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NONCOMPRESS;}
@@ -210,12 +221,46 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "to"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return TO;}
 "as"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return AS;}
 "noupdate"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NOUPDATE;}
-"zerofill"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SQLONLY;}
 "left"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LEFT;}
-"right"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SQLONLY;}
+
+"zerofill"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); if (doing_4gl()) return SQLONLY; else return KW_ZEROFILL;}
+"right"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); if (doing_4gl()) return SQLONLY; else return KW_RIGHT;}
+
 "listbox"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LISTBOX;}
 "button"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return BUTTON;}
+
 "panel"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_PANEL;}
+
+"before" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_BEFORE ;}
+"after" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_AFTER ;}
+"editadd" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_EDITADD ;}
+"editupdate" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_EDITUPDATE ;}
+"if" 		{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_IF ;}
+"remove" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_REMOVE ;}
+"of" 		{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_OF;}
+"add" 		{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ADD ;}
+"update" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_UPDATE ;}
+"query" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_QUERY ;}
+"on ending" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ON_ENDING ;}
+"on beginning" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ON_BEGINNING;}
+"call" 		{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_CALL;}
+"bell" 		{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_BELL ;}
+"abort" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ABORT ;}
+"let" 		{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_LET ;}
+"exitnow" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_EXITNOW ;}
+"nextfield" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_NEXTFIELD;}
+"then" 		{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_THEN ;}
+"else" 		{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ELSE;}
+"begin" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_BEGIN;}
+"total" 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_TOTAL;}
+
+
+
+
+
+
+
+
 
 [a-zA-Z]+[a-zA-Z\_0-9]*	{
 	if (ignorekw) REJECT;

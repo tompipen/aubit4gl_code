@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.23 2004-11-26 13:57:41 mikeaubury Exp $
+# $Id: input_array.c,v 1.24 2005-01-05 20:04:14 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.23 2004-11-26 13:57:41 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.24 2005-01-05 20:04:14 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -629,7 +629,7 @@ iarr_loop (struct s_inp_arr *arr,struct aclfgl_event_list *evt)
       //A4GL_LL_set_carat (mform);
 	//A4GL_LL_screen_update();
       abort_pressed = 0;
-      a = A4GL_getch_win ();
+      a = A4GL_getch_win (1);
 
 
         if (A4GL_is_special_key(a,A4GLKEY_ACCEPT)) a=A4GLKEY_ACCEPT;

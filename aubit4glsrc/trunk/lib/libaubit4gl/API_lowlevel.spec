@@ -127,7 +127,7 @@ A4GL_LL_set_field_back void* field int attr -> void
 
 /* void A4GL_LL_set_field_buffer void* field int n char* str */
 A4GL_LL_set_field_buffer void* field int n char* str -> void
-A4GL_LL_clr_field_buffer void* field int n  -> void
+A4GL_LL_clr_field_buffer void* field int n -> void
 
 /* void A4GL_LL_set_field_fore void* field int attr */
 A4GL_LL_set_field_fore void* field int attr -> void
@@ -166,7 +166,6 @@ A4GL_LL_switch_to_line_mode  -> void
 A4GL_LL_wadd_char_xy_col void* win int x int y int ch -> void
 A4GL_LL_wadd_char_xy_col_w void* win int x int y int ch -> void
 
-
 /* int UILIB_A4GL_prompt_loop void* vprompt int timeout void* evt_list*/
 A4GL_LL_prompt_loop void* vprompt int timeout void* evt_list -> int
 
@@ -184,3 +183,8 @@ A4GL_LL_open_gui_form char* name_orig  int absolute  int nat  char* like  int di
 A4GL_LL_set_window_title int nargs -> int
 A4GL_LL_widget_name_match void* w char* name -> int
 A4GL_LL_clr_form_fields int to_defaults char* defs  -> void
+A4GL_LL_clr_menu_disp ACL_Menu* menu -> void 
+A4GL_LL_h_disp_title ACL_Menu* menu char* str -> void
+A4GL_LL_set_acc_intr_keys int n -> void
+A4GL_LL_menu_loop ACL_Menu* menu -> int
+

@@ -87,8 +87,14 @@ void A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...) {
   unsigned char buff[2048];
   A4GL_chkwin ();
   va_start (args, fmt);
-  vsprintf (buff, fmt, args);
-  A4GL_debug("wprintw : %d %d   '%s' attr=%x",x,y,buff,attr);
+  memset(buff,0,sizeof(buff));
+  vsnprintf (buff, sizeof(buff)-1, fmt, args);
+  
+  buff[2047]=0;
+  A4GL_debug("wprintw : x=%d",x);
+  A4GL_debug("wprintw : y=%d",y);
+  A4GL_debug("wprintw : buff=%s",buff);
+  A4GL_debug("wprintw : attr=%x",attr);
   A4GLSQL_set_status (0, 0);
 #ifdef WIDEC
   A4GL_wprintw_internal(win,attr,x,y,buff,0);

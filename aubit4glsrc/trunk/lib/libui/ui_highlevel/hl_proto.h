@@ -29,7 +29,7 @@ int A4GL_get_currwinno(void);
 int A4GL_get_field_width(void *field);
 int A4GL_get_metric_for(struct s_form_dets *form, void *f);
 int A4GL_get_metric_no(struct s_form_dets *form, void *f);
-int A4GL_getch_win(void);
+int A4GL_getch_win(int allow_acc_intr);
 int A4GL_getcomment_line(void);
 int A4GL_geterror_line(void);
 int A4GL_getform_line(void);

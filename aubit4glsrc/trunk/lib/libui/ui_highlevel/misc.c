@@ -5,7 +5,7 @@
 #include "a4gl_API_ui_lib.h"
 #include "hl_proto.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.20 2004-12-17 13:19:08 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.21 2005-01-05 20:04:15 mikeaubury Exp $";
 
 //void *UILIB_A4GL_get_curr_form (int n);
 
@@ -1119,12 +1119,14 @@ A4GL_switch_to_scr_mode (void)
  * @return A value corresponding to the key typed.
  */
 int
-A4GL_getch_win (void)
+A4GL_getch_win (int allow_acc_intr)
 {
   int a;
   A4GL_debug ("getch_win called...");
-  a = A4GL_LL_getch_swin (A4GL_window_on_top ());
-  A4GL_clr_error_nobox ("A4GL_getch_win");
+   if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys(1); }
+   a = A4GL_LL_getch_swin (A4GL_window_on_top ());
+   A4GL_clr_error_nobox ("A4GL_getch_win");
+   if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys(0); }
   return a;
 }
 

@@ -636,6 +636,7 @@ int
 A4GL_form_pos_form_cursor (FORM * form)
 {
 char buff[245];
+A4GL_debug("A4GL_form_pos_form_cursor");
   if (form->current) {
 	WINDOW *w;
 	int incr;
@@ -915,3 +916,6 @@ A4GL_debug("Looking for first - maxfield=%d\n",form->maxfield);
   redraw_current_field(form);
   return E_OK;
 }
+
+
+

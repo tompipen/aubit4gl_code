@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.37 2004-12-02 09:33:24 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.38 2005-01-05 20:04:14 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -760,9 +760,13 @@ UILIB_A4GL_new_menu_create (char *title, int x, int y, int mn_type,
   menu->curr_option = 0;
   strcpy(menu->parent_window_name,UILIB_A4GL_get_currwin_name());
   //menu->window_name[0] = 0;
+  menu->w = 0;
+  menu->gw_x = 0;
+  menu->gw_y = 0;
   menu->x = x;
   menu->y = y;
   menu->curr_page = 0;
+  menu->menu_offset = 0;
   menu->mn_offset = 0;
   menu->first = 0;
   menu->num_opts = 0;
@@ -895,8 +899,13 @@ A4GL_new_menu (char *title,
   menu->help_no = help_no;
   menu->curr_option = 0;
   //menu->window_name[0] = 0;
+  menu->w=0;
   menu->x = x;
   menu->y = y;
+
+  menu->gw_x = 0;
+  menu->gw_y = 0;
+
   menu->curr_page = 0;
   menu->mn_offset = 0;
   opt1 = malloc (sizeof (ACL_Menu_Opts));

@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.16 2004-11-26 13:57:41 mikeaubury Exp $
+# $Id: display_array.c,v 1.17 2005-01-05 20:04:14 mikeaubury Exp $
 #*/
-static char *module_id="$Id: display_array.c,v 1.16 2004-11-26 13:57:41 mikeaubury Exp $";
+static char *module_id="$Id: display_array.c,v 1.17 2005-01-05 20:04:14 mikeaubury Exp $";
 /**
  * @file
  * Implementation of Display Array
@@ -373,7 +373,7 @@ disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
       A4GL_LL_set_carat(form->form);
 
 
-      a = A4GL_getch_win ();
+      a = A4GL_getch_win (1);
       if (abort_pressed) a=A4GLKEY_INTERRUPT;
       
 /*

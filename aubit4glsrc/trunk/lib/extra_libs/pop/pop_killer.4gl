@@ -89,7 +89,7 @@ for i=1 to nmsg
 
 		let txt=A4GL_pop::popgethead(i)
 		let subject=txt
-code 
+code
 {
 int a;
 char *ptr;

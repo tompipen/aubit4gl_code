@@ -11,17 +11,22 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.50 2004-09-06 09:28:06 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.51 2005-01-05 20:04:15 mikeaubury Exp $";
 
 
 #define A4GL_GTK_FONT_FIXED "Fixed 10"
 int gui_yheight=20; // 25
+static int has_stock_item(char *s) ;
+static char *stock_item(char *s) ;
 int gui_xwidth=9;
+static int menu_response=-1;
 void A4GL_gui_prompt_style (int a);
 void *A4GL_get_currwin (void);
 int A4GLHLUI_initlib(void);
 void tstamp(char *s) ;
 int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) ;
+static char A4GL_menu_pos(void) ;
+static void setup_ok_cancel(GtkWidget *ok_cancel) ;
 int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos) ;
 int A4GL_LL_fieldnametoid(char* f,char* s,int n) ;
 void A4GL_win_stack (struct s_windows *w, int op);
@@ -69,8 +74,11 @@ void A4GL_decode_gui_winname (char *name);
 int menu_callback (gpointer data);
 int A4GL_LL_hide_h_menu(ACL_Menu *menu);
 int A4GL_LL_disp_h_menu( ACL_Menu *menu);
-int A4GL_LL_menu_loop(ACL_Menu *menu);
+//int A4GL_LL_menu_loop(ACL_Menu *menu);
 void A4GL_LL_screen_refresh(void);
+static int cancel_callback (gpointer data) ;
+static int ok_callback (gpointer data) ;
+static int A4GL_show_ok_cancel(int n) ;
 
 #define KEY_BUFFER_SIZE 256 
 int keybuffer[KEY_BUFFER_SIZE];
@@ -170,6 +178,53 @@ static void add_keypress(int a) {
 }
 
 
+static int ok_callback (gpointer data) {
+	add_keypress(27);
+  	return TRUE;
+}
+
+static int cancel_callback (gpointer data) {
+#if (defined(WIN32) && ! defined(__CYGWIN__))
+		set_intr_win32 (SIGINT);
+#else
+		kill(0,SIGINT);
+#endif
+	add_keypress(3);
+  	return TRUE;
+}
+
+static void setup_ok_cancel(GtkWidget *ok_cancel) {
+GtkWidget *l;
+GtkWidget *b;
+//printf("Setting up ok cancel\n");
+
+// Set up the OK Button
+    //l=gtk_label_new("OK");
+    b=gtk_button_new_from_stock(GTK_STOCK_OK);
+    //gtk_container_add(GTK_CONTAINER(b),l);
+
+    //gtk_widget_set_name(GTK_WIDGET(b), "OK"); //gtk_object_set_data(GTK_OBJECT(b),"LABEL",l);
+    gtk_signal_connect_object (GTK_OBJECT (b), "clicked", GTK_SIGNAL_FUNC (ok_callback), 0);
+    gtk_widget_show(b);
+
+    //gtk_widget_show(l);
+    gtk_container_add(GTK_CONTAINER(ok_cancel),b);
+
+// Set up the Cancel Button
+    //l=gtk_label_new("Cancel");
+    //gtk_widget_show(l);
+
+    b=gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+
+
+    //gtk_container_add(GTK_CONTAINER(b),l);
+    //gtk_widget_set_name(GTK_WIDGET(b), "Cancel"); gtk_object_set_data(GTK_OBJECT(b),"LABEL",l);
+
+    gtk_signal_connect_object (GTK_OBJECT (b), "clicked", GTK_SIGNAL_FUNC (cancel_callback), 0);
+    gtk_widget_show(b);
+    gtk_container_add(GTK_CONTAINER(ok_cancel),b);
+
+}
 
 int
 A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
@@ -593,7 +648,7 @@ GtkWindow *screenwindow;
 void* A4GL_LL_create_window(int h,int w,int y,int x,int border) {
   GtkWidget *fixed=0;
   GtkWidget *win=0;              
-  GtkFrame *frame = 0;
+  GtkWidget *frame = 0;
   GtkWidget *wxx = 0;
   //int isscreenwin = 0;
 
@@ -601,7 +656,8 @@ void* A4GL_LL_create_window(int h,int w,int y,int x,int border) {
 if (x==0&&y==0&&h==0&&w==0) {
         int additional;
 	GtkWidget *hbox;
-	GtkWidget *bb;
+	GtkWidget *fglmenu_bb;
+	GtkWidget *ok_cancel;
 	GtkWidget *frame;
 	additional=0;
 	if (!A4GL_isyes(acl_getenv("TRADMENU"))) {
@@ -611,54 +667,103 @@ if (x==0&&y==0&&h==0&&w==0) {
         gtk_widget_set_usize (GTK_WIDGET (win), (A4GL_LL_screen_width()+additional)*gui_xwidth, (A4GL_LL_screen_height()+1)*gui_yheight);
         gtk_window_set_title (GTK_WINDOW (win), "4GL Application");
         gtk_widget_set_name(GTK_WIDGET(win), "AppWindow");
-	hbox=gtk_hbox_new(0,3);
-	fixed = gtk_fixed_new ();
-	bb=gtk_vbutton_box_new();
-       	gtk_widget_set_name(GTK_WIDGET(bb), "MenuButtons");
 
-	gtk_button_box_set_layout(GTK_BUTTON_BOX(bb),GTK_BUTTONBOX_START);
+	if ( A4GL_menu_pos()=='T'|| A4GL_menu_pos()=='B') {
+		hbox=gtk_vbox_new(0,3);
+	} else {
+		hbox=gtk_hbox_new(0,3);
+	}
+	if ( A4GL_menu_pos()=='T'|| A4GL_menu_pos()=='B') {
+		fglmenu_bb=gtk_hbutton_box_new();
+		ok_cancel=gtk_hbutton_box_new();
+ 	} else {
+		fglmenu_bb=gtk_vbutton_box_new();
+		ok_cancel=gtk_vbutton_box_new();
+	}
+       	gtk_widget_set_name(GTK_WIDGET(fglmenu_bb), "MenuButtons");
+       	gtk_widget_set_name(GTK_WIDGET(ok_cancel), "OKCancel");
+	setup_ok_cancel(ok_cancel);
+
+	gtk_button_box_set_layout(GTK_BUTTON_BOX(fglmenu_bb),GTK_BUTTONBOX_START);
+	gtk_button_box_set_layout(GTK_BUTTON_BOX(ok_cancel),GTK_BUTTONBOX_START);
+
+	//printf("HIDING OK_CANCEL");
+	gtk_widget_hide(ok_cancel); // We should only be showing fglmenu_bb or ok_cancel - never both
+
        	gtk_widget_set_name(GTK_WIDGET(hbox), "MenuButtons");
 
 	gtk_widget_show(hbox);
 	if (!A4GL_isyes(acl_getenv("TRADMENU"))) {
-        	gtk_widget_set_name(GTK_WIDGET(bb), "MenuButtons");
-		gtk_widget_show(bb);
+        	gtk_widget_set_name(GTK_WIDGET(fglmenu_bb), "MenuButtons");
+		gtk_widget_show(fglmenu_bb);
 	}
 
+
+
+	fixed = gtk_fixed_new ();
+        gtk_widget_set_name(GTK_WIDGET(fixed), "AppWindow");
 #if GTK_CHECK_VERSION(2,0,0)
 	gtk_fixed_set_has_window    (GTK_FIXED(fixed),1);
 #endif
         gtk_widget_show (GTK_WIDGET (fixed));
-        gtk_widget_set_name(GTK_WIDGET(fixed), "AppWindow");
-	frame=gtk_frame_new("");
+#ifdef USE_FRAMES
+	frame=gtk_frame_new(0);
+#else
+	frame=gtk_handle_box_new();
+#endif
+        gtk_widget_set_name(GTK_WIDGET(frame), "AppWindow");
+
+
+	if ( A4GL_menu_pos()=='L'|| A4GL_menu_pos()=='R') {
+		gtk_box_set_child_packing(GTK_BOX(hbox),frame,1,1,2,GTK_PACK_START);
+	} else {
+		gtk_box_set_child_packing(GTK_BOX(hbox),frame,1,1,0,GTK_PACK_START);
+	}
+
 	gtk_widget_show(frame);
         gtk_container_add (GTK_CONTAINER (frame),fixed);
-        gtk_container_add (GTK_CONTAINER (hbox), frame);
-        gtk_widget_set_name(GTK_WIDGET(frame), "AppWindow");
-	gtk_box_set_child_packing(GTK_BOX(hbox),frame,1,1,2,GTK_PACK_START);
-
-	frame=gtk_frame_new("");
-	gtk_widget_show(frame);
-
-        //gtk_container_add (GTK_CONTAINER (frame), bb);
 
 	if (!A4GL_isyes(acl_getenv("TRADMENU"))) {
 		GtkWidget *f;
-		f=gtk_frame_new("");
+		GtkWidget *vbox;
+#ifdef USE_FRAMES
+		f=gtk_frame_new(0);
+#else
+		f=gtk_handle_box_new();
+#endif
         	gtk_widget_set_name(GTK_WIDGET(f), "MenuButtons");
-        	gtk_widget_set_usize (GTK_WIDGET (f), additional*gui_xwidth, (A4GL_LL_screen_height()+1)*gui_yheight);
+		vbox=gtk_vbox_new(0,0);
+		if ( A4GL_menu_pos()=='L'|| A4GL_menu_pos()=='R') {
+        		gtk_widget_set_usize (GTK_WIDGET (vbox), additional*gui_xwidth, (A4GL_LL_screen_height()+1)*gui_yheight);
+		}  else {
+        		gtk_widget_set_usize (GTK_WIDGET (vbox), (A4GL_LL_screen_width()+1)*gui_xwidth,2*gui_yheight);
+		}
 		gtk_widget_show(f);
         	gtk_widget_set_name(GTK_WIDGET(f), "MenuButtons");
-        	gtk_container_add (GTK_CONTAINER (f), bb);
-        	gtk_container_add (GTK_CONTAINER (hbox), f);
-		//gtk_box_set_child_packing(GTK_BOX(hbox),bb,0,0,2,GTK_PACK_START);
-		//gtk_box_set_child_packing(GTK_BOX(hbox),f,0,0,2,GTK_PACK_START);
+
+		gtk_widget_show(vbox);
+        	gtk_container_add (GTK_CONTAINER (vbox), fglmenu_bb);
+        	gtk_container_add (GTK_CONTAINER (vbox), ok_cancel);
+		gtk_container_add(GTK_CONTAINER(f),vbox);
+
+		if ( A4GL_menu_pos()=='T'|| A4GL_menu_pos()=='L') {
+        		gtk_container_add (GTK_CONTAINER (hbox), f);
+        		gtk_container_add (GTK_CONTAINER (hbox), frame);
+		} else {
+        		gtk_container_add (GTK_CONTAINER (hbox), frame);
+        		gtk_container_add (GTK_CONTAINER (hbox), f);
+		}
+
 	}
+
+
+	gtk_box_set_spacing(GTK_BOX(hbox),0);
         gtk_container_add (GTK_CONTAINER (win), hbox);
+
 	win_screen=fixed;
         gtk_widget_set_usize (GTK_WIDGET (fixed), (A4GL_LL_screen_width())*gui_xwidth, (A4GL_LL_screen_height())*gui_yheight);
-        //gtk_widget_set_usize (GTK_WIDGET (bb), 180, (A4GL_LL_screen_height())*gui_yheight);
-        gtk_object_set_data (GTK_OBJECT (win_screen), "BB", bb);
+        gtk_object_set_data (GTK_OBJECT (win_screen), "BB", fglmenu_bb);
+        gtk_object_set_data (GTK_OBJECT (win_screen), "OKCANCEL",ok_cancel);
 
         gtk_object_set_data (GTK_OBJECT (win), "FIXED", fixed);
 	//gtk_widget_show (GTK_WIDGET (win));
@@ -707,8 +812,13 @@ if (x==0&&y==0&&h==0&&w==0) {
 
 
 	// Create a frame to go in our eventbox
-          frame = (GtkFrame *) gtk_frame_new (0);
+#ifdef USE_FRAMES
+          frame = (GtkWidget *) gtk_frame_new (0);
           gtk_frame_set_shadow_type (GTK_FRAME (frame), frame_style);
+#else
+          frame = (GtkWidget*)gtk_handle_box_new ();
+          gtk_handle_box_set_shadow_type (GTK_HANDLE_BOX(frame), frame_style);
+#endif
           gtk_widget_set_usize (GTK_WIDGET (frame), w+XWIDTH , h+YHEIGHT);
 
 	// Add our frame to the eventbox
@@ -881,7 +991,7 @@ a=gdk_key;
 
 
 void A4GL_LL_gui_run_til_no_more(void ) {
-  A4GL_debug("A4GL_LL_gui_run_til_no_more");
+  //A4GL_debug("A4GL_LL_gui_run_til_no_more");
   if (A4GL_screen_mode (-1))
     {
       while (gtk_events_pending ())
@@ -1000,13 +1110,17 @@ void A4GL_LL_make_window_top(void* w) {
       b = gtk_object_get_data (GTK_OBJECT (w), "TOP");
 	if (b) {
       		gtk_widget_hide (b);
-      		gtk_widget_show_all (b);
+
+      		//gtk_widget_show_all (b);
+      		gtk_widget_show (b);
+
 		return;
 	}
 
 
       gtk_widget_hide (w);
-      gtk_widget_show_all (w);
+      //gtk_widget_show_all (w);
+      gtk_widget_show (w);
 }
 
 void A4GL_LL_move_window(void* w,int y,int x) {
@@ -1415,6 +1529,7 @@ int A4GL_LL_set_new_page(void* field,int n) {
  *  ERROR HANDLING
  *****************************************************************************/
 void A4GL_LL_delete_errorwindow(void* curr_error_window) {
+A4GL_debug("error window : removing %p",curr_error_window);
 	gtk_widget_destroy(curr_error_window);
 }
 
@@ -1423,7 +1538,9 @@ void* A4GL_LL_create_errorwindow(int h,int w,int y,int x,int attr,char* str) {
 GtkWidget *frame;  // We want it in a nice frame
 GtkWidget *label;  // With some text
 GtkWidget *evt;    // And we'll use this to get a background colour...
+char buff[80];
 char *lab_utf=g_locale_to_utf8(str, -1, NULL, NULL, NULL);
+A4GL_debug("Create error window");
 
 frame=gtk_frame_new(0);
 label=gtk_label_new(lab_utf);
@@ -1434,7 +1551,11 @@ if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
 g_free(lab_utf);
 evt=gtk_event_box_new();
 
-gtk_widget_set_usize (GTK_WIDGET (frame), w*gui_xwidth , h*gui_yheight);
+if (A4GL_isyes(acl_getenv("FITOSIZE_ERRWIN")))  ;
+else {
+	gtk_widget_set_usize (GTK_WIDGET (frame), w*gui_xwidth , h*gui_yheight);
+}
+
 errorWindow=frame;
 gtk_container_add(GTK_CONTAINER(frame),evt);
 gtk_container_add(GTK_CONTAINER(evt),label);
@@ -1442,17 +1563,28 @@ gtk_fixed_put(win_screen,errorWindow,x*gui_xwidth,y*gui_yheight);
 // Align it halfway through the frame vertically, but on the left
 //
 gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5f);
-if (attr==0) attr=AUBIT_ATTR_REVERSE + AUBIT_COLOR_RED;
+if (attr==0) {
+	sprintf(buff,"Error");
+	gtk_widget_set_name(GTK_WIDGET(frame), buff);
+	gtk_widget_set_name(GTK_WIDGET(evt), buff);
+	gtk_widget_set_name(GTK_WIDGET(label), buff);
+} else {
+	sprintf(buff,"%x",attr>>8);
+	gtk_widget_set_name(GTK_WIDGET(frame), buff);
+	gtk_widget_set_name(GTK_WIDGET(evt), buff);
+	gtk_widget_set_name(GTK_WIDGET(label), buff);
+}
+
+
+
 
 //printf("SET FIELD FORE 2: %x\n",att,attrr);
-if (attr&0xffffff00) {
-	A4GL_LL_set_field_back ((GtkWidget *) evt  , attr&0xffffff00); 
-	A4GL_LL_set_field_fore ((GtkWidget *) label, attr&0xffffff00);
-}
+//if (attr&0xffffff00) { A4GL_LL_set_field_back ((GtkWidget *) evt  , attr&0xffffff00); A4GL_LL_set_field_fore ((GtkWidget *) label, attr&0xffffff00); }
 
 gtk_widget_show(evt);
 gtk_widget_show(label);
 gtk_widget_show(errorWindow);
+A4GL_debug("error window : Returning %p",errorWindow);
 return errorWindow;
 }
 
@@ -1615,8 +1747,8 @@ int
 	  //printf("Setting attributes for prompt string %x %x\n",A4GL_LL_decode_aubit_attr (ap, 'f')>>8, A4GL_LL_decode_aubit_attr (ap, 'b')>>8);
 //printf("SET FIELD FORE 4\n");
 	
-	  printf("ap fore %x\n",A4GL_LL_decode_aubit_attr (ap, 'f'));
-	  printf("ap back %x\n",A4GL_LL_decode_aubit_attr (ap, 'b'));
+	  //printf("ap fore %x\n",A4GL_LL_decode_aubit_attr (ap, 'f'));
+	  //printf("ap back %x\n",A4GL_LL_decode_aubit_attr (ap, 'b'));
 
           A4GL_LL_set_field_fore (fd.form_fields[0], A4GL_LL_decode_aubit_attr (ap, 'f'));
           A4GL_LL_set_field_back (evt, A4GL_LL_decode_aubit_attr (ap, 'b'));        
@@ -2138,6 +2270,7 @@ void* A4GL_LL_make_field(void *prop,int frow,int fcol,int rows,int cols) {
 
   if(strcasecmp("LABEL", widget_str)==0) {
     gtk_object_set_data(GTK_OBJECT(widget),"DISPLAY_LABEL",(void *)1);
+    gtk_widget_set_name(GTK_WIDGET(widget), "AppWindow");
     if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML")))
       gtk_label_set_use_markup(GTK_LABEL(widget), TRUE);
   }
@@ -2146,17 +2279,29 @@ void* A4GL_LL_make_field(void *prop,int frow,int fcol,int rows,int cols) {
 }
 
 void* A4GL_LL_make_label(int frow,int fcol,char* label) {
-GtkWidget *widget;
-char *label_utf=g_locale_to_utf8(label, -1, NULL, NULL, NULL);
-//printf("MAKE LABEL\n");
-widget=gtk_label_new(label_utf);
-if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
-  A4GL_debug("using PANGO ML for Label '%s'\n",label);
-  gtk_label_set_use_markup(GTK_LABEL(widget), TRUE);
-}
-g_free(label_utf);
+GtkWidget *widget=0;
+char *label_utf;
+
+
 if (strcmp(label,"[")==0) return 0;
 if (strcmp(label,"]")==0) return 0;
+
+
+
+label_utf=g_locale_to_utf8(label, -1, NULL, NULL, NULL);
+widget=gtk_label_new(label_utf);
+
+printf("Making label : %s\n",label);
+
+if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
+  	A4GL_debug("using PANGO ML for Label '%s'\n",label);
+  	gtk_label_set_use_markup(GTK_LABEL(widget), TRUE);
+}
+g_free(label_utf);
+
+
+gtk_widget_set_name(GTK_WIDGET(widget), "FormLabel");
+
 gtk_object_set_data(GTK_OBJECT(widget),"MF_FROW",(void *)frow);
 gtk_object_set_data(GTK_OBJECT(widget),"MF_FCOL",(void *)fcol);
 gtk_object_set_data(GTK_OBJECT(widget),"MF_ISLABEL",(void *)1);
@@ -2594,6 +2739,7 @@ int A4GL_LL_open_gui_form (char *name_orig, int absolute, int nat, char *like, i
 
 
   gtk_widget_show_all (GTK_WIDGET (win));
+  //gtk_widget_show (GTK_WIDGET (win));
   handler_c (0, 0);
   gtk_widget_show (GTK_WIDGET (win));
   return 1;
@@ -2699,8 +2845,7 @@ int A4GL_LL_fieldnametoid(char* f,char* s,int n) {
 
   //A4GL_exitwith ("serious bug in widget.c");
 
-  nofields =
-    A4GL_gen_field_chars ((void ***) &field_list, (GtkWindow *) formdets, s, n, 0);
+  nofields = A4GL_gen_field_chars ( (void *)&field_list, (GtkWindow *) formdets, s, n, 0);
 
   A4GL_debug ("done Getting field list - nofields=%d", nofields);
 
@@ -2942,13 +3087,18 @@ int A4GL_LL_disp_form_fields_ap(int n,int attr,char* formname,va_list* ap) {
   return 0;
 }
 
-static int menu_response=-1;
+
+
+
 
 int menu_callback (gpointer data) {
   //int nbutton;
   //A4GL_debug("Widget=%p data=%d\n",widget,data);
   //nbutton=(int)gtk_object_get_data(GTK_OBJECT(widget),"BUTTON");
   menu_response=(int)data;
+
+  A4GL_clr_error_nobox ("menu_callback");
+
   keybuffer_cnt=0; /* throw away buffered keys when menuoption is selected */
   return TRUE;
 }
@@ -2956,11 +3106,35 @@ int menu_callback (gpointer data) {
 
 int A4GL_LL_hide_h_menu(ACL_Menu *menu) {
   GtkWidget *bb;
+  //printf("hide_h_menu\n");
   bb=gtk_object_get_data(GTK_OBJECT(win_screen),"BB");
   if (bb==0) return 0;
   gtk_widget_hide(bb);
   return 1;
 }
+
+
+static int A4GL_show_ok_cancel(int n) {
+  GtkWidget *bb;
+  if (n) { 
+	//printf("SHOWING OK CANCEL\n");
+  	bb=gtk_object_get_data(GTK_OBJECT(win_screen),"OKCANCEL");
+  	if (bb==0) return 0;
+  	gtk_widget_show(bb);
+  	bb=gtk_object_get_data(GTK_OBJECT(win_screen),"BB");
+  	if (bb==0) return 0;
+  	gtk_widget_hide(bb);
+  } else { 
+  	bb=gtk_object_get_data(GTK_OBJECT(win_screen),"OKCANCEL");
+  	if (bb==0) return 0;
+  	gtk_widget_hide(bb);
+  	bb=gtk_object_get_data(GTK_OBJECT(win_screen),"BB");
+  	if (bb==0) return 0;
+  	gtk_widget_show(bb);
+  }
+  return 1;
+}
+
 
 int A4GL_LL_disp_h_menu( ACL_Menu *menu) {
   GtkWidget *bb;
@@ -2981,10 +3155,17 @@ int A4GL_LL_disp_h_menu( ACL_Menu *menu) {
 
   while (nbuttons<menu->num_opts) {
     GtkWidget *b;
+    GtkWidget *l;
     sprintf(buff,"BUTTON_%d",nbuttons);
-    b=gtk_button_new_with_label(" ");
+    l=gtk_label_new(" ");
+    b=gtk_button_new();
+    gtk_container_add(GTK_CONTAINER(b),l);
+    gtk_widget_set_name(GTK_WIDGET(b), "MenuButtons");
+    gtk_object_set_data(GTK_OBJECT(b),"LABEL",l);
+
     gtk_signal_connect_object (GTK_OBJECT (b), "clicked", GTK_SIGNAL_FUNC (menu_callback), (void *)nbuttons);
     gtk_widget_show(b);
+    gtk_widget_show(l);
     gtk_object_set_data(GTK_OBJECT(bb),buff,b);
     gtk_object_set_data(GTK_OBJECT(b),"BUTTON",(void *)nbuttons++);
     gtk_object_set_data(GTK_OBJECT(b),"OPT",0);
@@ -2997,17 +3178,29 @@ int A4GL_LL_disp_h_menu( ACL_Menu *menu) {
 
   for (a=0;a<nbuttons;a++) {
     GtkWidget *b;
+    GtkWidget *l;
     sprintf(buff,"BUTTON_%d",a);
     b=gtk_object_get_data(GTK_OBJECT(bb),buff);
+    gtk_button_set_use_stock(b,0);
+
     if (a>=menu->num_opts) {
       gtk_widget_hide(b);
     } else {
 #if GTK_CHECK_VERSION(2,0,0)
-      char *label_utf=g_locale_to_utf8(mo->opt_title, -1, NULL, NULL, NULL);
-      gtk_button_set_label(GTK_BUTTON(b), label_utf);
-      g_free(label_utf);
+	//printf("'%s'\n",mo->opt_title);
+	if (has_stock_item(mo->opt_title)) {
+		gtk_button_set_label(b,stock_item(mo->opt_title));
+    		gtk_button_set_use_stock(b,1);
+	} else {
+      		char *label_utf=g_locale_to_utf8(mo->opt_title, -1, NULL, NULL, NULL);
+      		l= gtk_object_get_data(GTK_OBJECT(b),"LABEL");
+			gtk_label_set_text(GTK_LABEL(l), label_utf);
+      		//gtk_button_set_label(GTK_BUTTON(b), label_utf);
+      		g_free(label_utf);
+	}
 #else
-      A4GL_debug("WARNING: GTK 1.2 has no gtk_button_set_label()");				
+	//printf("OLD LABEL: %s\n",mo->opt_title);
+	gtk_label_set_text(GTK_LABEL(l), mo->opt_title);
 #endif
       if (mo->attributes & ACL_MN_HIDE)
         gtk_widget_hide(b);
@@ -3040,7 +3233,7 @@ int A4GL_LL_menu_loop(ACL_Menu *menu) {
     if((key=get_keypress_from_buffer())>0) { /* key pressed: */
       ACL_Menu_Opts *f=menu->first; 
       int res=0;
-
+	A4GL_clr_error_nobox ("gtkmenu");
       /* first check optkey */
       while(f) {
         if(f->optkey[0]==key) {
@@ -3088,3 +3281,104 @@ void A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch) {
 	A4GL_assertion(1,"Not implemented A4GL_LL_wadd_char_xy_col_w");
 }
 
+
+
+
+void A4GL_LL_clr_menu_disp (ACL_Menu * menu)
+{
+  static char buff[1025];
+  int off;
+  int w;
+  void *cw;
+  int y;
+
+	if (A4GL_isyes(acl_getenv("TRADMENU"))) {
+
+  A4GL_debug ("Clearing menu clr_menu_disp - %p",menu);
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  memset (buff, ' ', 1023);
+  buff[1024]=0;
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+
+  w=UILIB_A4GL_get_curr_width ();
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  off=menu->menu_offset;
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  buff[w - off + 1] = 0;
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  y=menu->gw_y;
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  cw=A4GL_get_currwin ();
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  A4GL_wprintw (cw, 0, off - 1, y, buff);
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  }
+}
+
+
+void
+A4GL_LL_h_disp_title (ACL_Menu * menu, char *str)
+{
+
+if (A4GL_isyes(acl_getenv("TRADMENU"))) {
+        A4GL_wprintw ((void *)A4GL_get_currwin (), 0, 1, menu->gw_y, "%s", str);
+}
+
+
+}
+
+
+
+static char A4GL_menu_pos(void) {
+static char pos=0;
+char *c;
+if (pos==0)  {
+	if (A4GL_isyes(acl_getenv("MENUTOP")))     {pos='T'; return pos;}
+	if (A4GL_isyes(acl_getenv("MENUBOTTOM")))  {pos= 'B'; return pos;}
+	if (A4GL_isyes(acl_getenv("MENULEFT")))    {pos= 'L'; return pos;}
+	if (A4GL_isyes(acl_getenv("MENURIGHT")))   {pos= 'R'; return pos;}
+	c=acl_getenv("MENURIGHT");
+	if (c==0) {pos= 'R'; return pos;}
+	if (strlen(c)==0) {pos= 'R'; return pos;}
+	if (c[0]=='T') {pos= 'T'; return pos;}
+	if (c[0]=='L') {pos= 'L'; return pos;}
+	if (c[0]=='B') {pos= 'B'; return pos;}
+	if (c[0]=='R') {pos= 'R'; return pos;}
+	pos='R'; 
+}
+
+return pos;
+}
+
+
+
+void A4GL_LL_set_acc_intr_keys(int n) {
+	//printf("show_ok_cancel(n=%d)\n",n);
+	A4GL_show_ok_cancel(n) ;
+}
+
+
+
+static int has_stock_item(char *s) {
+	if (stock_item(s)) return 1;
+	else return 0;
+}
+
+static char *stock_item(char *s) {
+char *ptr;
+char buff[256];
+char buff2[256];
+if (s[0]==' ') {
+	strcpy(buff,&s[1]);
+} else {
+	strcpy(buff,s);
+}
+A4GL_trim(buff);
+a4gl_upshift(buff);
+sprintf(buff2,"A4GL_STOCK_%s",buff);
+ptr=acl_getenv(buff2);
+if (ptr==0) return 0;
+if (strlen(ptr)==0) return 0;
+return ptr;
+
+}

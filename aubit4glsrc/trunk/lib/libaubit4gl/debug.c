@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.36 2004-12-17 13:19:02 mikeaubury Exp $
+# $Id: debug.c,v 1.37 2005-01-05 20:04:13 mikeaubury Exp $
 #
 */
 
@@ -177,6 +177,7 @@ A4GL_debug_full (char *fmt, ...)
       || strcmp (g_fname, acl_getenv ("DEBUG")) == 0)
     {
       va_start (args, fmt);
+	memset(buff,0,sizeof(buff));
       vsnprintf (buff, 400,fmt, args);
 
 	buff[400]=0;
