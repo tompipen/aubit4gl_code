@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.40 2004-02-10 13:50:20 mikeaubury Exp $
+# $Id: API_sql.c,v 1.41 2004-03-03 07:34:41 mikeaubury Exp $
 #
 */
 
@@ -812,6 +812,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sql1,int nbind,struct BIND
       A4GL_convert_sql (source_dialect, curr_sess->dbms_dialect, sql1);
     }
   A4GL_func = A4GL_find_func (libptr, "A4GLSQL_unload_data");
+  A4GL_trim(fname);
   A4GL_func (fname, delims, sql1,nbind,ibind);
 }
 
