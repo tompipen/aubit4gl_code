@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.34 2004-12-15 06:40:34 afalout Exp $
+# $Id: makefile,v 1.35 2004-12-15 07:51:49 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -113,8 +113,6 @@ endif
 ##                              Curses Options
 ## ==================================================================
 
-PDCURSES_OBJ		=lowlevel_tui_noform.o form_tui.o width_narrow.o
-PDCURSESX_OBJ		=lowlevel_tui_noformX.o form_tui.o width_narrow.o
 PDCURSESX_CFLAGS	=${XCURSES_CFLAGS} -DXCURSES -I${ROOT}/incl -I..
 
 ifneq "${HAVE_CURSES}" "0"
@@ -178,7 +176,15 @@ CFLAGS			+=-g -I${ROOT}/incl -I.. -I${LIBROOT}/libaubit4gl
 ##                              Source files
 ## ==================================================================
 
-OBJS= forms.o generic_ui.o menu.o display_array.o formcntrl.o input_array.o misc.o 
+OBJS	=forms.o generic_ui.o menu.o display_array.o formcntrl.o input_array.o misc.o 
+OBJS2	=lowlevel_tui.o width_narrow.o
+OBJS4	=lowlevel_tui_noform_wide.o form_tui.o width_wide.o
+OBJS5	=lowlevel_gtk.o widget_gtk.o menu_gtk.o width_narrow.o
+
+LIBS3	=-lpanel_g -lncurses_g -lgpm
+
+PDCURSES_OBJ		=lowlevel_tui_noform.o form_tui.o width_narrow.o
+PDCURSESX_OBJ		=lowlevel_tui_noformX.o form_tui.o width_narrow.o
 
 ## ==================================================================
 ##                              Targets
@@ -189,38 +195,40 @@ all: ${ALL}
 
 #What was this is should it be removed completely? Mike?
 #${LIBROOT}/libUI_HLGENERIC${SO_EXT}: $(OBJS) API_lowlevel.o
-#	gcc -L${ROOT}/lib -rdynamic -shared $(OBJS) API_lowlevel.o -o libUI_HLGENERIC${SO_EXT} -laubit4gl
-#	cp *${SO_EXT} ../..
+#	gcc -L${ROOT}/lib -rdynamic -shared $(OBJS) API_lowlevel.o -o $@ -laubit4gl
 #	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
 #Standard Curses based plug-in
 libUI_HL_TUI${SO_EXT}: ${LIBROOT}/libUI_HL_TUI${SO_EXT}
-${LIBROOT}/libUI_HL_TUI${SO_EXT}: $(OBJS) lowlevel_tui.o width_narrow.o
-	${LD} -g ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME} 
+${LIBROOT}/libUI_HL_TUI${SO_EXT}: clean $(OBJS) ${OBJS2}
+	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${OBJS2} \
+		${LINKLIBS} ${CURSES_LIB_NAME} 
 
 #TUI mode plug-in with Aubit's own implementation of Curses libform
 #This also enables PDcurses to be used instead of Ncurses, since PDcurses have 
 #no libform implementation (PDcurses are only Curses implementation available for Windows)
 libUI_HL_TUIN${SO_EXT}: ${LIBROOT}/libUI_HL_TUIN${SO_EXT}
-${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) ${PDCURSES_OBJ}
-	${LD} -g ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  
+${LIBROOT}/libUI_HL_TUIN${SO_EXT}: clean $(OBJS) ${PDCURSES_OBJ}
+	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSES_OBJ} \
+		${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  
 
 #Statically linked TUIN
 libUI_HL_TUINs${SO_EXT}: ${LIBROOT}/libUI_HL_TUINs${SO_EXT}
-${LIBROOT}/libUI_HL_TUINs${SO_EXT}: $(OBJS) ${PDCURSES_OBJ}
-	${LD} -g ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} \
-		${PD_CURSES_LIB_NAME}
-#		d:/cygwin/tmp/pdcurs26/win32/panel.a d:/cygwin/tmp/pdcurs26/win32/pdcurses.a		
+${LIBROOT}/libUI_HL_TUINs${SO_EXT}: clean $(OBJS) ${PDCURSES_OBJ}
+	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSES_OBJ} \
+		${LINKLIBS} ${PD_CURSES_LIB_NAME}
 
 #Debug version of TUIN, using debug library libpanel_g
 libUI_HL_TUIN-DEBUG${SO_EXT}: ${LIBROOT}/libUI_HL_TUIN-DEBUG${SO_EXT}
-${LIBROOT}/libUI_HL_TUIN-DEBUG${SO_EXT}: $(OBJS) ${PDCURSES_OBJ}
-	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}  -lpanel_g -lncurses_g -lgpm
+${LIBROOT}/libUI_HL_TUIN-DEBUG${SO_EXT}: clean $(OBJS) ${PDCURSES_OBJ}
+	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSES_OBJ} \
+		${LINKLIBS} ${LIBS3}
 
 #Not shure what this is? Mike?
 libUI_HL_TUINW${SO_EXT}: ${LIBROOT}/libUI_HL_TUINW${SO_EXT}
-${LIBROOT}/libUI_HL_TUINW${SO_EXT}: $(OBJS) lowlevel_tui_noform_wide.o form_tui.o width_wide.o
-	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} -L/usr/local/widec/lib -static -lpanelw_g -lncursesw_g
+${LIBROOT}/libUI_HL_TUINW${SO_EXT}: clean $(OBJS) ${OBJS4}
+	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${OBJS4} ${LINKLIBS} \
+		-L/usr/local/widec/lib -static -lpanelw_g -lncursesw_g
 
 #TUI linked with Xcurses from PDcurses
 #
@@ -239,13 +247,15 @@ ${LIBROOT}/libUI_HL_TUINW${SO_EXT}: $(OBJS) lowlevel_tui_noform_wide.o form_tui.
 libUI_HL_TUIX${SO_EXT}: ${LIBROOT}/libUI_HL_TUIX${SO_EXT}
 ${LIBROOT}/libUI_HL_TUIX${SO_EXT}: CFLAGS=${PDCURSESX_CFLAGS}
 ${LIBROOT}/libUI_HL_TUIX${SO_EXT}: clean $(OBJS) ${PDCURSESX_OBJ} 
-	${LD} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSESX_OBJ} ${LINKLIBS} ${XCURSES_LIBS} -lXpanel
+	${LD} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSESX_OBJ} ${LINKLIBS} \
+		${XCURSES_LIBS} -lXpanel
 	
 	
 #Standard GTK+ based plug-in
 libUI_HL_GTK${SO_EXT}: ${LIBROOT}/libUI_HL_GTK${SO_EXT}
-${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o menu_gtk.o width_narrow.o
-	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $^ ${LINKLIBS} ${GTKLIBS} -Wl,--export-dynamic -L/opt/gnome/lib  ${GTKLIBS}
+${LIBROOT}/libUI_HL_GTK${SO_EXT}: clean $(OBJS) ${OBJS5}
+	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $(OBJS) ${OBJS5} \
+		${LINKLIBS} ${GTKLIBS} -Wl,--export-dynamic -L/opt/gnome/lib  ${GTKLIBS}
 
 ## ==================================================================
 ##                              Sub-Targets
@@ -256,7 +266,6 @@ ${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o menu_gtk.o
 
 #so is it now only this one, or...
 a4gl_API_lowlevel.h: ${LIBROOT}/libaubit4gl/API_lowlevel.spec
-#	(cd ${LIBROOT}/libaubit4gl && ${SH} ../bin/dlmagic ./API_lowlevel.spec -h > ../libui/ui_highlevel/a4gl_API_lowlevel.h)
 	${SH} ${LIBROOT}/bin/dlmagic $^ -h > $@
 
 width_narrow.o: width.c
@@ -287,15 +296,12 @@ widget_gtk.o: lowlevel/widget_gtk.c
 	${CC} ${CFLAGS_GTK_C} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@ $(GTK_INC_PATH)
 
 menu_gtk.o: lowlevel/menu_gtk.c
-	${CC} ${CFLAGS_GTK_C} -c -I$(ROOT)/incl -I../../../common/dataio -I. -Ilowlevel $^ -o $@ $(GTK_INC_PATH)
+	${CC} ${CFLAGS_GTK_C} -c -I$(ROOT)/incl -I../../../common/dataio -I. \
+		-Ilowlevel $^ -o $@ $(GTK_INC_PATH)
 
 ## ==================================================================
 ##                              Dependencies
 ## ==================================================================
-
-#All objects depend on API headers:
-#${OBJS}: ${ROOT}/incl/a4gl_API_lex.h ${ROOT}/incl/a4gl_API_form.h ${ROOT}/incl/a4gl_API_menu.h \
-	#${ROOT}/incl/a4gl_API_msg.h ${ROOT}/incl/a4gl_API_packer.h ${ROOT}/incl/a4gl_API_ui.h a4gl_API_lowlevel.h
 
 #Rule to generate API's:
 ${ROOT}/incl/a4gl_API_%.h :

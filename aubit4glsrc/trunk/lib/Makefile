@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.110 2004-11-27 06:43:43 afalout Exp $
+# $Id: Makefile,v 1.1 2004-12-15 07:51:48 afalout Exp $
 #
 
 ROOT    =..
@@ -236,16 +236,19 @@ libUI_CONSOLE${SO_EXT}: ${LIBUICONSOLE_DEPS}
 #	$(MAKE) -C ${LIBUIHL_PATH}
 
 libUI_HL_TUI${SO_EXT}: ${LIBUIHL_DEPS}
-	$(MAKE) -C ${LIBUIHL_PATH} libUI_HL_TUI${SO_EXT}
+	$(MAKE) -C ${LIBUIHL_PATH} $@
 
 libUI_HL_TUIN${SO_EXT}: ${LIBUIHL_DEPS}
-	$(MAKE) -C ${LIBUIHL_PATH} libUI_HL_TUIN${SO_EXT}
+	$(MAKE) -C ${LIBUIHL_PATH} $@
 
 libUI_HL_TUINs${SO_EXT}: ${LIBUIHL_DEPS}
-	$(MAKE) -C ${LIBUIHL_PATH} libUI_HL_TUINs${SO_EXT}
+	$(MAKE) -C ${LIBUIHL_PATH} $@
 
+libUI_HL_TUIX${SO_EXT}: ${LIBUIHL_DEPS}
+	$(MAKE) -C ${LIBUIHL_PATH} $@
+	
 libUI_HL_GTK${SO_EXT}: ${LIBUIHL_DEPS}
-	$(MAKE) -C ${LIBUIHL_PATH} libUI_HL_GTK${SO_EXT}
+	$(MAKE) -C ${LIBUIHL_PATH} $@
 
 libA4GL_glade${SO_EXT}: ${LIBUIGLADELIB_DEPS}
 	$(MAKE) -C ${LIBUIGLADELIB_PATH}
