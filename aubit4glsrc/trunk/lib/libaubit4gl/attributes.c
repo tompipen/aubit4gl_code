@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.21 2003-11-12 17:36:10 mikeaubury Exp $
+# $Id: attributes.c,v 1.22 2003-11-13 19:06:26 mikeaubury Exp $
 #*/
 
 /**
@@ -160,6 +160,7 @@ enum e_attribute_type
   ATTR_STRING
 };
 
+/*
 struct s_all_attributes
 {
   int attribute_type;
@@ -174,6 +175,7 @@ struct s_all_attributes
   }
   u_all;
 };
+*/
 
 int A4GL_get_attr_from_string (char *s);
 
