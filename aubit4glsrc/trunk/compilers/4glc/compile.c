@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.10 2003-02-25 04:15:33 afalout Exp $
+# $Id: compile.c,v 1.11 2003-02-27 22:13:35 afalout Exp $
 #*/
 
 /**
@@ -164,6 +164,14 @@ static struct option long_options[] =
     {0, 0, 0, 0},
   };
 
+struct skip_param
+{
+    char param[128];
+};
+struct skip_param s_param[128];
+int skip_param_idx=0;
+int skip_cnt=0, skipit=0;
+
 	#ifdef DEBUG
 		debug ("Parsing the comand line arguments\n");
 		debug("Arg 0 set to >%s<",getarg0());
@@ -204,6 +212,18 @@ static struct option long_options[] =
 
       case 'o':              /* compile and optionally Link resulting object(s) */
 		sprintf (output_object,"%s",(NULL == optarg) ? "" : optarg);
+		if (strcmp (output_object, "") == 0) {
+            /* if required parameter to the -o flag was not immediately
+            nex to the flag, and returned in optarg, maybe it was spcified as
+            next parameter, separated from -o flag with space(s):
+            */
+			sprintf (output_object,"%s",(NULL == argv[optind]) ? "" : argv[optind]);
+
+      		if (strcmp (output_object, "") != 0) {
+				sprintf (s_param[skip_param_idx].param,"%s",output_object);
+                skip_param_idx++;
+            }
+		}
 
 		if (strcmp (output_object, "") != 0) {
 
@@ -214,34 +234,40 @@ static struct option long_options[] =
 
 			if (strcmp (ext, acl_getenv ("A4GL_OBJ_EXT")) == 0) {
 				compile_object = 1;
-	        }
+			}
+			else
+			{
+				if (strcmp (ext, acl_getenv ("A4GL_EXE_EXT")) == 0) {
+					compile_object = 1;
+					compile_exec = 1;
+		        } else {
 
-			if (strcmp (ext, acl_getenv ("A4GL_EXE_EXT")) == 0) {
-				compile_object = 1;
-				compile_exec = 1;
-	        }
+					if (strcmp (ext, acl_getenv ("A4GL_LIB_EXT")) == 0) {
+						compile_object = 1;
+						compile_lib = 1;
+			        } else {
+				        //FIXME: and what about shared library?
+                        /*
+						printf("Invalid output file=%s\n", output_object);
+						printf("ERROR: extension not specified or invalid\n");
+						exit (1);
+                        */
 
-			if (strcmp (ext, acl_getenv ("A4GL_LIB_EXT")) == 0) {
-				compile_object = 1;
-				compile_lib = 1;
-	        }
+                        /* we will have to assume executable when there is no 
+						textension, as this is a common practioce on UNIX */
+						debug ("assuming executable, there was no extension on -o parameter");
+						compile_object = 1;
+						compile_exec = 1;
+                    }
+                }
+            }
+
         } else {
             printf ("Error: -o flag specified with no parameter\n");
 			printf("optind=%s\n", argv[optind]);
 			printf("option_index=%s\n", argv[option_index]);
-            /*
-
-[root@aptiva common]# aubit 4glc --clean  ccorpwind.4gl -c -o ccorpwind.ao
-Error: -o flag specified with no parameter
-optind=ccorpwind.ao
-option_index=SAPDBROOT=/opt/sapdb
-
-
-            */
 			exit (5);
         }
-
-        //FIXME: and what about shared library, or when extension is not Aubit one?
 
 		break;
 
@@ -300,7 +326,10 @@ option_index=SAPDBROOT=/opt/sapdb
 		check_and_show_id ("4GL Compiler", "-vfull");
         exit (0);
 
-       default : 			/* Everything else we did not define  */
+       default : 			/* Everything else we did not define - should
+	   							never happen since getopt_long() should reject
+                                all flags not defined in opt_list
+							 */
 		printf("Invalid option=%s\n", argv[optind]);
 		printf("Invalid option=%s\n", argv[option_index]);
 		exit (1);
@@ -358,7 +387,22 @@ option_index=SAPDBROOT=/opt/sapdb
 
 	for (index = optind; index < argc; index++)
     {
-		outputfilename = outputfile; /* set where ? */
+		for ( skip_cnt = 0; skip_cnt < skip_param_idx; skip_cnt++)
+        {
+			if (strcmp (s_param[skip_cnt].param,argv[index]) == 0)
+			{
+                /* skip this param - it was passed as value for an command line flag (like -o) */
+				skipit=1;
+				break;
+            }
+        }
+
+        if (skipit) {
+            skipit=0;
+            continue;
+        }
+
+		outputfilename = outputfile; /* C file name - set where ? */
 
 		strcpy (c, argv[index]);
 		bname (c, a, b);
@@ -566,26 +610,28 @@ option_index=SAPDBROOT=/opt/sapdb
  *
  *
  * @param compile_object
- * @param a
+ * @param aa input source file, with path but no extension
  * @param incl_path
  * @param silent
  * @param verbose
  * @param output_object -- not really needed - remove it
  */
 static int
-compile_4gl(int compile_object,char a[128],char incl_path[128],int silent,int verbose,char output_object[128])
+compile_4gl(int compile_object,char aa[128],char incl_path[128],int silent,int verbose,char output_object[128])
 {
 int x, ret, flength;
 char buff[1028];
 char single_output_object[128]="";
 char c[128]; //The 4gl file
+char a[128], b[128];
 char *ptr;
 static FILE *filep = 0;
+char ext[8];
 
   /* store the directory part of file name, if any, so we can use it for GLOBALS
   file compilation, if nececery */
 
-  sprintf(c,"%s%s",a,".4gl");
+  sprintf(c,"%s%s",aa,".4gl");
   strcpy (buff, c);
   debug("Compiling: %s\n",c);
 
@@ -681,60 +727,75 @@ static FILE *filep = 0;
 
 	if (compile_object)
 	{
+		bname (output_object, a, b);
+        strcpy (ext,".");
+		strcat (ext,b);
 
-        //FIXME: we can compile shared or static here
+		if (strcmp (ext, acl_getenv ("A4GL_OBJ_EXT")) == 0) {
+            /* user specified output file with -o, and output file is object */
+			sprintf (single_output_object,"%s",output_object);
+		} else {
+            /* user did not specify output file using -o, or specified output 
+			file did not have Aubit object extension */
 
-
-	   {
-       /* strip path from input file name, so our object allways and up in
-	   current directory - otherwise make file will not be able to find it using
-       VPATH when making objects for current explicit target.
-	   FIXME: this should be done ONLY when -o option on command line did not have
-       pbject extension - if it did, and this included path, then this path should
-       be used when making object
-	   */
-	   char** ppsz;
-       char* psz;
-
-		   ppsz = &psz;
-    	   *ppsz = a;
-           a4gl_basename(ppsz);
-    	   strcpy(single_output_object,*ppsz);
-       }
+	        //FIXME: we can compile shared or static here
 
 
-		//Ouptout name of the single file object allways must be same as
-        //the 4gl file we are compiling, regardless of what might be set
-        //on command line with -o
-		sprintf (single_output_object,"%s%s",single_output_object,acl_getenv ("A4GL_OBJ_EXT"));
+		   {
+	       /* strip path from input file name, so our object allways and up in
+		   current directory - otherwise make file will not be able to find it using
+	       VPATH when making objects for current explicit target.
+		   FIXME: this should be done ONLY when -o option on command line did not have
+	       pbject extension - if it did, and this included path, then this path should
+	       be used when making object
+		   */
+		   char** ppsz;
+	       char* psz;
+
+			   ppsz = &psz;
+	    	   *ppsz = aa;
+	           a4gl_basename(ppsz);
+	    	   strcpy(single_output_object,*ppsz);
+	       }
+
+
+			//Ouptout name of the single file object allways must be same as
+	        //the 4gl file we are compiling, regardless of what might be set
+	        //on command line with -o
+			sprintf (single_output_object,"%s%s",single_output_object,acl_getenv ("A4GL_OBJ_EXT"));
+
+        }
+
+        //FIXME: should we add C compiler flags -g and/or -O2 -DDEBUG here ?
+        //create A4GL_CFLAGS in resource.c
 
    		#ifndef __MINGW32__
 			sprintf (buff, "%s %s.c -c -o %s %s %s",
-				gcc_exec,a,single_output_object,incl_path,pass_options);
+				gcc_exec,aa,single_output_object,incl_path,pass_options);
         #else
 			sprintf (buff, "%s -mms-bitfields %s.c -c -o %s %s %s",
-				gcc_exec,a,single_output_object,incl_path,pass_options);
+				gcc_exec,aa,single_output_object,incl_path,pass_options);
         #endif
 		if (verbose) {
 			printf ("%s\n",buff);
         }
-		sprintf (buff,"%s > %s.c.err 2>&1",buff,a);
+		sprintf (buff,"%s > %s.c.err 2>&1",buff,aa);
 		#ifdef DEBUG
 			debug("Runnung %s",buff);
         #endif
 		ret=system (buff);
         //see function system_run() in fglwrap.c
 		if (ret) {
-			printf ("Error compiling %s.c - check %s.c.err\n",a,a);
+			printf ("Error compiling %s.c - check %s.c.err\n",aa,aa);
 			printf ("Failed command was: %s\n",buff);
 			//fixme: show err file
             return ret;
         }
 		else
 		{
-			
+
 			/* determine the c.err file size */
-			sprintf (buff,"%s.c.err",a);
+			sprintf (buff,"%s.c.err",aa);
             filep = fopen (buff, "r");
             //	f = mja_fopen (ii, "r");
 			fseek(filep,0,SEEK_END);
@@ -769,7 +830,7 @@ static FILE *filep = 0;
 
 
 				debug ("%s file size is not zero %d\n",buff,flength);
-				sprintf (buff,"mv %s.c.err %s.c.warn",a,a);
+				sprintf (buff,"mv %s.c.err %s.c.warn",aa,aa);
 				#ifdef DEBUG
 					debug("Runnung %s",buff);
 		        #endif
@@ -784,13 +845,13 @@ static FILE *filep = 0;
 			{
 				//is it smart to delete .glb files?
 				sprintf (buff,"%s %s.err %s.c.err %s.h %s.c ", //%s.glb
-					acl_getenv("A4GL_RM_CMD"),a,a,a,a);     //,a
+					acl_getenv("A4GL_RM_CMD"),aa,aa,aa,aa);     //,aa
 				#ifdef DEBUG
 					debug("Runnung %s",buff);
 		        #endif
 				ret=system (buff);
 				if (ret) {
-					printf ("Clean of %s intermediate files failed\n",a);
+					printf ("Clean of %s intermediate files failed\n",aa);
 					printf ("Failed command was: %s\n",buff);
 	            }
             }

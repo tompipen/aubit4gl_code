@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.28 2003-02-24 07:53:06 afalout Exp $
+#	 $Id: a4gl.mk,v 1.29 2003-02-27 22:13:40 afalout Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.28 2003-02-24 07:53:06 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.29 2003-02-27 22:13:40 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -196,12 +196,12 @@ ifeq "${USE_4GLPC}" "1"
 	${FAIL_CMPL_4GL}${A4GL_CC} $< -c -o ${OBJSTORE}$@
 else
 	${FAIL_CMPL_4GL}@if test "$(<D)" = "" -o "$(<D)" = "."; then \
-		echo "${A4GL_CC} $< -c -o${OBJSTORE}$@"; \
-		${A4GL_CC} $< -c -o${OBJSTORE}$@; \
+		EXEC="${A4GL_CC} $< -c -o ${OBJSTORE}$@"; \
 	else \
-		echo "${A4GL_CC} ${CYGWIN_ROOT}$< -c -o${OBJSTORE}$@"; \
-		${A4GL_CC} ${CYGWIN_ROOT}$< -c -o${OBJSTORE}$@; \
+		EXEC="${A4GL_CC} ${CYGWIN_ROOT}$< -c -o ${OBJSTORE}$@"; \
 	fi; \
+	echo $$EXEC; \
+	$$EXEC; \
 	exit $$?;
 endif
 
@@ -255,7 +255,7 @@ lib%${A4GL_LIB_EXT}:  $(subst lib,,%.mk)
 #executed from anywhere else!
 #.msg.iem:
 .msg${A4GL_HLP_EXT}:
-	${FAIL_CMPL_HLP}${A4GL_MC} $^
+	${FAIL_CMPL_HLP}${A4GL_MC} $^ $@
 #because of this make fill always recompile help file, since it can't
 #find .hlp files; can we make aubit compiler to automatically look for
 #.hlp if it can't find .iem (or other extension sopecified in code):

@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: header.mki,v 1.15 2003-02-11 03:43:14 afalout Exp $
+#	 $Id: header.mki,v 1.16 2003-02-27 22:13:40 afalout Exp $
 
 ############################################
 #   Aubit 4gl compiler - amake system
@@ -38,7 +38,7 @@ FGLDBPATH	:=${SCH_DIR}:${FGLDBPATH}
 export FGLDBPATH
 
 #show additional debugging messages
-VERBOSE		=1
+#VERBOSE		=1
 
 #If you want to ignore some compiler's errors, for instance, to see if
 #everything else will work, set this to -

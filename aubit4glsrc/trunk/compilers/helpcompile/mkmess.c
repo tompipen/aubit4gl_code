@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkmess.c,v 1.8 2003-02-12 05:53:53 afalout Exp $
+# $Id: mkmess.c,v 1.9 2003-02-27 22:13:36 afalout Exp $
 #*/
 
 /**
@@ -92,10 +92,10 @@ char ext[128];
 	build_user_resources();
 
 
-  if ( (argc!=2) || (strcmp (argv[1], "--help") == 0) )
+  if ( argc == 1 || (strcmp (argv[1], "--help") == 0) )
   {
     printf("Aubit 4GL compiler - help message compiler\n");
-	printf("Usage: mkmess [path]helpfile[.msg]\n");
+	printf("Usage: mkmess [path]helpfile[.msg] [[path]outfile.ext]\n");
     exit(0);
   }
 
@@ -118,7 +118,14 @@ char ext[128];
 
   debug("Input file is %s\n",fname_msg);
 
-  sprintf(fname_hlp,"%s%s",pathfilename,acl_getenv ("A4GL_HLP_EXT"));
+  if (argc==3) {
+    /* user specified output file name/path as second parameter on command line */
+	  sprintf(fname_hlp,"%s",argv[2]);
+
+  } else {
+	  sprintf(fname_hlp,"%s%s",pathfilename,acl_getenv ("A4GL_HLP_EXT"));
+  }
+
   sprintf(fname_tmp,"%s.tmp",pathfilename);
 
   debug("Input file is %s\n",fname_msg);

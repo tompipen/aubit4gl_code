@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.161 2003-02-25 04:14:44 afalout Exp $
+dnl # $Id: configure.in,v 1.162 2003-02-27 22:12:26 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -600,7 +600,7 @@ LIBFILE_14=$LIB_PREFIX/libFORM_GENERIC${SO_EXT}
 LIBFILE_15=$LIB_PREFIX/libDATA_menu_list${SO_EXT}
 LIBFILE_16=$LIB_PREFIX/libDATA_report${SO_EXT}
 LIBFILE_17=$LIB_PREFIX/libDATA_struct_form${SO_EXT}
-LIBFILE_18=$LIB_PREFIX/libMENU_GENERIC${SO_EXT}
+LIBFILE_18=
 LIBFILE_19=$LIB_PREFIX/libLEX_EC${SO_EXT}
 LIBFILE_20=
 LIBFILE_21=
@@ -3305,8 +3305,6 @@ fi
 ##              RPM packaging, install/seinstall and build process
 ## ==================================================================
 
-#RPMFILE_1 is free - use it
-
 	if test "$HAVE_CURSES" = "1" || test "$HAVE_PDCURSES" = "1"; then
         RPMFILE_2=$LIB_PREFIX/libUI_TUI$SO_EXT
         PLUGIN_YES="$PLUGIN_YES TUI"
@@ -3479,9 +3477,10 @@ fi
     #so it needs to be AFTER all other plug-ins needed by 4glc, like SQL plug-ins:
 	if test "$GTKBUILD" != "no"; then
 		RPMFILE_25=$LIB_PREFIX/libUI_GTK$SO_EXT
-        PLUGIN_YES="$PLUGIN_YES GTK"
+		RMPFILE_1=$LIB_PREFIX/libMENU_GENERIC${SO_EXT}
+		PLUGIN_YES="$PLUGIN_YES GTK MENU_GENERIC"
 	else
-        PLUGIN_NO="$PLUGIN_NO GTK"
+        PLUGIN_NO="$PLUGIN_NO GTK MENU_GENERIC"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.gtk"
 	fi
 

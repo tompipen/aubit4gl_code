@@ -119,148 +119,22 @@ MISC
     check that "make extra" works
     check code in tools/test/regression
     Review & clean bugs in bugs database on SourceForge
+    create 4gl program to create .schema files from systables data as 4gl report
+		[table1]
+		column datatype size
+		column datatype size
+		[table2]
+		column datatype size
+
+    remove lib/liblex/lex_c from CVS
+
+Windows port
+    export SQLCA explicitly - cannot be auto-imported
+
 
 Ad-Hoc Bug Fixes
 ----------------
-
-
-===========================================================================
-CREATE TABLE fails:
-
-TABLE mbparms row size = 730 number of columns = 115 index size = 9
-Err:Program stopped at 'base.4gl', line number 11533.
-Error status number -201.
-
-4gl function call stack :
-max_db.4gl (Line 124) calls create_init_tables()
-MAIN
-make: *** [db] Error 1
-
-NOTE: TABLE mbparms row size = 730 number of columns = 115 index size = 9
-
-
-create table mbparms
-  (
-    cmpy_code char(2),
-    cred_limit_amt decimal(16,2),
-    term_code char(3),
-    tax_code char(3),
-    currency_code char(3),
-    stmnt_ind char(1),
-    dun_code char(3),
-    hold_code char(3),
-    inv_level_ind char(1),
-    pay_ind char(1),
-    invoice_to_ind char(1),
-    price_high_per decimal(6,3),
-    price_low_per decimal(6,3),
-    cart_high_per decimal(6,3),
-    cart_low_per decimal(6,3),
-    other_high_per decimal(6,3),
-    other_low_per decimal(6,3),
-    price_auth_ind char(1),
-    exp_git_acct_code char(18),
-    ref1_text char(20),
-    ref1_ind char(1),
-    ref2_text char(20),
-    ref2_ind char(1),
-    ref3_text char(20),
-    ref3_ind char(1),
-    ref4_text char(20),
-    ref4_ind char(1),
-    ref5_text char(20),
-    ref5_ind char(1),
-    ref6_text char(20),
-    ref6_ind char(1),
-    ref7_text char(20),
-    ref7_ind char(1),
-    ref8_text char(20),
-    ref8_ind char(1),
-    pallet_part_code char(15),
-    cart_acct_code char(18),
-    flag1_text char(20),
-    flag1_ind char(1),
-    flag1_dd_ind char(1),
-    flag1_dd_text char(6),
-    flag2_text char(20),
-    flag2_ind char(1),
-    flag2_dd_ind char(1),
-    flag2_dd_text char(6),
-    flag3_text char(20),
-    flag3_ind char(1),
-    flag3_dd_ind char(1),
-    flag3_dd_text char(6),
-    flag4_text char(20),
-    flag4_ind char(1),
-    flag4_dd_ind char(1),
-    flag4_dd_text char(6),
-    flag5_text char(20),
-    flag5_ind char(1),
-    flag5_dd_ind char(1),
-    flag5_dd_text char(6),
-    flag6_text char(20),
-    flag6_ind char(1),
-    flag6_dd_ind char(1),
-    flag6_dd_text char(6),
-    flag7_text char(20),
-    flag7_ind char(1),
-    flag7_dd_ind char(1),
-    flag7_dd_text char(6),
-    flag8_text char(20),
-    flag8_ind char(1),
-    flag8_dd_ind char(1),
-    flag8_dd_text char(6),
-    auto_transp_flag char(1),
-    vend_code char(8),
-    ref_acct_code char(18),
-    labour_acct_code char(18),
-    head_info_flag char(1),
-    wip_acct_code char(18),
-    rev_susp_acct char(18),
-    slcost_acct_code char(18),
-    int_custtype_code char(3),
-    intrev_acct_code char(18),
-    cust_type char(3),
-    def_cash_flag char(1),
-    inv_reqd_flag char(1),
-    cred_reqd_flag char(1),
-    mail_reqd_flag char(1),
-    inv_format_ind char(1),
-    cred_format_ind char(1),
-    int_comm_per decimal(6,3),
-    accrual_date date,
-    accr_year_num smallint,
-    accr_period_num smallint,
-    accr_signon_code char(8),
-    revaccr_acct_code char(18),
-    expaccr_acct_code char(18),
-    cts_mask_ind char(1),
-    trans_mask_ind char(1),
-    intclear_acct_code char(18),
-    pal_move_ind char(1),
-    prod_move_ind char(1),
-    flag1_inst_ind char(1),
-    flag2_inst_ind char(1),
-    flag3_inst_ind char(1),
-    flag4_inst_ind char(1),
-    flag5_inst_ind char(1),
-    flag6_inst_ind char(1),
-    flag7_inst_ind char(1),
-    flag8_inst_ind char(1),
-    oe_sitecont_ind char(1),
-    oe_siteph_ind char(1),
-    oe_xstreet_ind char(1),
-    cfwd_sitecont_ind char(1),
-    cfwd_siteph_ind char(1),
-    cfwd_xstreet_ind char(1),
-    update_dwell_ind char(1),
-    update_gstat_ind char(1),
-    cart_charge_ind char(1)
-  );
-
-works OK from dbaccess
-
-===========================================================================
+    See BUGS.txt and http://sourceforge.net/tracker/?group_id=32409&atid=405150
 
 
 

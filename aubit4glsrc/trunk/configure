@@ -7362,7 +7362,7 @@ LIBFILE_14=$LIB_PREFIX/libFORM_GENERIC${SO_EXT}
 LIBFILE_15=$LIB_PREFIX/libDATA_menu_list${SO_EXT}
 LIBFILE_16=$LIB_PREFIX/libDATA_report${SO_EXT}
 LIBFILE_17=$LIB_PREFIX/libDATA_struct_form${SO_EXT}
-LIBFILE_18=$LIB_PREFIX/libMENU_GENERIC${SO_EXT}
+LIBFILE_18=
 LIBFILE_19=$LIB_PREFIX/libLEX_EC${SO_EXT}
 LIBFILE_20=
 LIBFILE_21=
@@ -19948,8 +19948,6 @@ fi
 ##              RPM packaging, install/seinstall and build process
 ## ==================================================================
 
-#RPMFILE_1 is free - use it
-
 	if test "$HAVE_CURSES" = "1" || test "$HAVE_PDCURSES" = "1"; then
         RPMFILE_2=$LIB_PREFIX/libUI_TUI$SO_EXT
         PLUGIN_YES="$PLUGIN_YES TUI"
@@ -20118,9 +20116,10 @@ fi
     #so it needs to be AFTER all other plug-ins needed by 4glc, like SQL plug-ins:
 	if test "$GTKBUILD" != "no"; then
 		RPMFILE_25=$LIB_PREFIX/libUI_GTK$SO_EXT
-        PLUGIN_YES="$PLUGIN_YES GTK"
+		RMPFILE_1=$LIB_PREFIX/libMENU_GENERIC${SO_EXT}
+		PLUGIN_YES="$PLUGIN_YES GTK MENU_GENERIC"
 	else
-        PLUGIN_NO="$PLUGIN_NO GTK"
+        PLUGIN_NO="$PLUGIN_NO GTK MENU_GENERIC"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.gtk"
 	fi
 
@@ -20178,9 +20177,9 @@ else
 
 fi
 
-  echo "$as_me:20181: result: " >&5
+  echo "$as_me:20180: result: " >&5
 echo "${ECHO_T}" >&6
-  echo "$as_me:20183: result: ${T_MD}Creating files:${T_ME}" >&5
+  echo "$as_me:20182: result: ${T_MD}Creating files:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Creating files:${T_ME}" >&6
 
 cat >confcache <<\_ACEOF
@@ -20262,7 +20261,7 @@ DEFS=-DHAVE_CONFIG_H
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files $CONFIG_STATUS"
-{ echo "$as_me:20265: creating $CONFIG_STATUS" >&5
+{ echo "$as_me:20264: creating $CONFIG_STATUS" >&5
 echo "$as_me: creating $CONFIG_STATUS" >&6;}
 cat >$CONFIG_STATUS <<_ACEOF
 #! $SHELL
@@ -20438,7 +20437,7 @@ cat >>$CONFIG_STATUS <<\EOF
     echo "$ac_cs_version"; exit 0 ;;
   --he | --h)
     # Conflict between --help and --header
-    { { echo "$as_me:20441: error: ambiguous option: $1
+    { { echo "$as_me:20440: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -20457,7 +20456,7 @@ Try \`$0 --help' for more information." >&2;}
     ac_need_defaults=false;;
 
   # This is an error.
-  -*) { { echo "$as_me:20460: error: unrecognized option: $1
+  -*) { { echo "$as_me:20459: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -20565,7 +20564,7 @@ do
   "etc/aubitrc-bin" ) CONFIG_FILES="$CONFIG_FILES etc/aubitrc-bin" ;;
   "default-1" ) CONFIG_COMMANDS="$CONFIG_COMMANDS default-1" ;;
   "incl/a4gl_incl_config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS incl/a4gl_incl_config.h" ;;
-  *) { { echo "$as_me:20568: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:20567: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -21016,7 +21015,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:21019: creating $ac_file" >&5
+    { echo "$as_me:21018: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -21034,7 +21033,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:21037: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:21036: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -21047,7 +21046,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:21050: error: cannot find input file: $f" >&5
+           { { echo "$as_me:21049: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -21108,7 +21107,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:21111: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:21110: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -21119,7 +21118,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:21122: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:21121: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -21132,7 +21131,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:21135: error: cannot find input file: $f" >&5
+           { { echo "$as_me:21134: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -21249,7 +21248,7 @@ cat >>$CONFIG_STATUS <<\EOF
   rm -f $tmp/in
   if test x"$ac_file" != x-; then
     if cmp -s $ac_file $tmp/config.h 2>/dev/null; then
-      { echo "$as_me:21252: $ac_file is unchanged" >&5
+      { echo "$as_me:21251: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
@@ -21583,13 +21582,13 @@ X
 
 fi
 
-echo "$as_me:21586: result: " >&5
+echo "$as_me:21585: result: " >&5
 echo "${ECHO_T}" >&6
-echo "$as_me:21588: result: Thank you for using Aubit 4gl compiler." >&5
+echo "$as_me:21587: result: Thank you for using Aubit 4gl compiler." >&5
 echo "${ECHO_T}Thank you for using Aubit 4gl compiler." >&6
-echo "$as_me:21590: result:               $AUBIT_PUBLISHER" >&5
+echo "$as_me:21589: result:               $AUBIT_PUBLISHER" >&5
 echo "${ECHO_T}              $AUBIT_PUBLISHER" >&6
-echo "$as_me:21592: result: " >&5
+echo "$as_me:21591: result: " >&5
 echo "${ECHO_T}" >&6
 
 #------------------------------ EOF --------------------------------

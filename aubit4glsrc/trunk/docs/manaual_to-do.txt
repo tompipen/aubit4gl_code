@@ -1630,7 +1630,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.10 2003-02-22 01:02:26 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.11 2003-02-27 22:13:37 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3640,4 +3640,27 @@ For ANSI_ERROR - it will bomb the compile (.err file etc)
 
 If neither of these is set - then nothing happens at all and the compiler is
 happy....
+
+============================================================================
+
+Added a FILESCHEMA sql library.
+This is to be used **JUST** for compiling programs where either the database
+doesn't exist yet - or you can't get immediate access to it..
+This takes the 'database' as a filename (with a .schema extension) and uses
+that to collect the data.
+
+The format of the file is :
+
+[table1]
+column datatype size
+column datatype size
+column datatype size
+[table2]
+column datatype size
+column datatype size
+column datatype size
+
+etc...
+
+=============================================================================
 
