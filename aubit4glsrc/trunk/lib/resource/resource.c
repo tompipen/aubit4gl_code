@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.93 2005-01-13 12:25:55 mikeaubury Exp $
+# $Id: resource.c,v 1.94 2005-02-11 16:52:39 mikeaubury Exp $
 #
 */
 
@@ -164,7 +164,9 @@ struct str_resource builtin_resource[] = {
   {"MAP4GL", "N"},
   {"SCROLLBACKTO1","Y"}, // Allow Display Array to move back to srec[1] when scr_line>1
   {"LOGNAME", "UNKNOWN"},
-  {"NOCLOBBER", "N"},
+
+  {"NOCLOBBER", "Y"},
+
 #ifdef WIN32
   {"EXTENDED_FETCH", "Y"},
 #else
