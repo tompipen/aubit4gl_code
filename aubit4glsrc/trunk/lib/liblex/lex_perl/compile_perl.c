@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.51 2003-12-09 11:23:44 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.52 2004-02-09 08:07:47 mikeaubury Exp $
 #
 */
 
@@ -611,7 +611,7 @@ print_exit_loop (int type, int n)
  * @return
  */
 void
-print_rep_ret (int report_cnt)
+print_rep_ret (int report_cnt,int n)
 {
   printc ("goto report%d_ctrl;\n\n", report_cnt);
 }
@@ -642,7 +642,7 @@ print_output_rep (struct rep_structure *rep)
   printc ("else rep.output_mode=_rout1[0];\n");
   printc ("rep.report=&%s;\n", get_curr_rep_name ());
   printc ("trim(rep.output_loc);");
-  print_rep_ret (report_cnt);
+  print_rep_ret (report_cnt,0);
 
 }
 
@@ -680,7 +680,7 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
   printc ("else rep.output_mode=_rout1[0];\n");
   printc ("rep.report=&%s;\n", get_curr_rep_name ());
   printc ("trim(rep.output_loc);");
-  print_rep_ret (report_cnt);
+  print_rep_ret (report_cnt,0);
 }
 
 /**
@@ -2899,7 +2899,7 @@ print_report_2 (int pdf, char *repordby)
     ("   if (_g>0) { _useddata=1;for (_p=_g;_p<=(sizeof(_ordbind)/sizeof(struct BINDING));_p++) %s(_p,REPORT_BEFOREGROUP);}\n",
      get_curr_rep_name ());
   printc ("   _useddata=1;\n");
-  print_rep_ret (report_cnt);
+  print_rep_ret (report_cnt,0);
   printc ("}\n\n");
   printc ("if (acl_ctrl==REPORT_FINISH) {\n");
   printc ("    if (fgl_rep_orderby==1) {\n");
@@ -2928,7 +2928,7 @@ print_report_2 (int pdf, char *repordby)
   printc ("   _started=1;\n");
   printc ("goto output_%d;\n", report_cnt);
   printc ("}\n\n");
-  print_rep_ret (report_cnt);
+  print_rep_ret (report_cnt,0);
   if (pdf)
     pdf_print_output_rep (&pdf_rep_struct);
   else

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.82 2004-01-31 09:01:19 mikeaubury Exp $
+# $Id: stack.c,v 1.83 2004-02-09 08:07:35 mikeaubury Exp $
 #
 */
 
@@ -66,6 +66,7 @@ struct passwd
 #endif
 
 
+static void A4GL_debug_print_stack_simple(char *msg) ;
 /*
 =====================================================================
                     Constants definitions
@@ -521,6 +522,8 @@ A4GL_pop_param (void *p, int d, int size)
   void *ptr1;
   char *ptr;
 
+A4GL_conversion_ok(1);
+A4GL_debug("pop_param");
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
 
   params_cnt--;
@@ -534,18 +537,27 @@ A4GL_pop_param (void *p, int d, int size)
 
 
   if (ptr1==0) {
+		A4GL_conversion_ok(1);
+		A4GL_debug("ptr1=0");
 		A4GL_setnull(d,p,size);
 		return 1;
   } else {
   	if (A4GL_isnull(d1,ptr1)) {
+		A4GL_conversion_ok(1);
+		A4GL_debug("Isnull\n");
 		//char *ptr=0;if (d1!=0) *ptr=0;
 		A4GL_setnull(d,p,size);
 		//printf("Setnull %d %p %d %p %d",d1,s1,d,p,size);
 		b=1;
   	} else {
+		A4GL_debug("Doing conv");
 		A4GL_conversion_ok(1);
   		b = A4GL_conv (params[params_cnt].dtype & DTYPE_MASK, params[params_cnt].ptr, d & DTYPE_MASK, p, size);
-		if (b==0) A4GL_conversion_ok(0);
+		
+		if (b==0) {
+			A4GL_conversion_ok(0);
+			A4GL_debug("Bad conversion");
+		}
   	}
   }
  //A4GL_debug("99 After A4GL_conv");
@@ -1863,7 +1875,7 @@ return;
 #endif
 }
 
-A4GL_debug_print_stack_simple(char *msg) {
+void A4GL_debug_print_stack_simple(char *msg) {
 char buff[20];
 int a;
 printf("* Stack has : %d entries --- %s\n",params_cnt,msg);

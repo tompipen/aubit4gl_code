@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.5 2004-01-23 10:10:35 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.6 2004-02-09 08:07:52 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.5 2004-01-23 10:10:35 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.6 2004-02-09 08:07:52 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -753,8 +753,12 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
       int attr;
       if (sio->mode != MODE_CONSTRUCT)
 	ffc_rval = A4GL_form_field_chk (sio, -1);
-      else
+      else {
+	int daf;
 	ffc_rval = A4GL_form_field_constr (sio, -1);
+        daf=A4GL_do_after_field(sio->currentfield,sio);
+        if (!daf) ffc_rval=-4;
+	}
 
 
       A4GL_debug ("form_Field_chk returns %d\n", a);
@@ -1266,7 +1270,7 @@ A4GL_proc_key_input (int a, void *mform, struct s_screenio *s)
 
   int at_first = 0;
   int at_last = 0;
-
+  
   c = A4GL_LL_get_carat (mform);
   if (c == 0)
     {

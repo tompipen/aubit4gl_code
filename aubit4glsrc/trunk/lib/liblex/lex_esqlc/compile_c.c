@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.132 2004-02-09 07:25:20 afalout Exp $
+# $Id: compile_c.c,v 1.133 2004-02-09 08:07:36 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.132 2004-02-09 07:25:20 afalout Exp $";
+static char *module_id="$Id: compile_c.c,v 1.133 2004-02-09 08:07:36 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -84,6 +84,10 @@ static void add_to_ordbyfields(int n);
 static void order_by_report_stack();
 extern void expand_bind (struct binding_comp *bind, int btype, int cnt);
 */
+
+
+
+int rep_print_entry=0;
 int doing_cs (void);
 /*
 =====================================================================
@@ -96,6 +100,7 @@ int doing_cs (void);
 #define ONE_NOT_ZERO(x) (x?x:1)
 
 
+int rep_print_code;
 int last_orderby_type = -1;
 void print_report_table (char *repname, char type, int c);
 extern int get_rep_no_orderby (void);
@@ -606,6 +611,12 @@ void
 print_repctrl_block (void)
 {
   printc ("rep_ctrl%d_%d:\n", report_cnt, report_stack_cnt);
+
+  if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
+  	printc("A4GL_push_report_section(&rep,_module_name,_reportName,%d,'%c',\"%s\",%d);",yylineno,get_curr_report_stack_whytype(),get_curr_report_stack_why(),rep_print_code);
+	rep_print_entry=0;
+  }
+
 }
 
 
@@ -659,7 +670,7 @@ print_report_ctrl (void)
       printc ("  if (_useddata) {");
 
       printc ("   %s(0,REPORT_LASTROW);", get_curr_rep_name ());
-      printc ("   if (rep.page_no<=1) {A4GL_%srep_print(&rep,0,1,0);A4GL_%srep_print(&rep,0,0,0);}",ispdf(),ispdf());	/* MJA 13092003*/
+      printc ("   if (rep.page_no<=1) {A4GL_%srep_print(&rep,0,1,0,-1);A4GL_%srep_print(&rep,0,0,0,-1);}",ispdf(),ispdf());	/* MJA 13092003*/
       printc ("   rep.finishing=1;");
       printc ("   A4GL_skip_top_of_page(&rep,999);");
       printc ("}");
@@ -859,9 +870,12 @@ print_exit_loop (int type, int n)
  */
 void
 /* print_rep_ret (void) */
-print_rep_ret (int report_cntx)
+print_rep_ret (int report_cntx,int addit)
 {
-  printc ("goto report%d_ctrl;\n\n", report_cnt);
+  if (A4GL_isyes(acl_getenv("REPORT_TRACE")) && addit) {
+   	printc("A4GL_pop_report_section(&rep,%d);",rep_print_code++);
+  }
+  printc ("goto report%d_ctrl; /* G1 */\n\n", report_cnt);
 }
 
 /**
@@ -887,6 +901,8 @@ print_output_rep (struct rep_structure *rep)
   printc ("rep.page_length=%d;\n", rep->page_length);
   printc ("rep.header=0;\n");
   printc ("rep.finishing=0;\n");
+  printc ("rep.repName=_reportName;\n");
+  printc ("rep.modName=_module_name;\n");
   printc ("rep.page_no=%d;\n", rep->page_no);
   printc ("rep.printed_page_no=%d;\n", rep->printed_page_no);
   printc ("rep.line_no=%d;\n", rep->line_no);
@@ -899,8 +915,8 @@ print_output_rep (struct rep_structure *rep)
   printc ("else rep.output_mode=_rout1[0];\n");
   printc ("rep.report=(void *)&%s;\n", get_curr_rep_name ());
   printc ("A4GL_trim(rep.output_loc);");
-  printc ("A4GL_%srep_print(&rep,-1,-1,-1);",ispdf());
-  print_rep_ret (report_cnt);
+  printc ("A4GL_%srep_print(&rep,-1,-1,-1,-1);",ispdf());
+  print_rep_ret (report_cnt,0);
 }
 
 /**
@@ -924,6 +940,8 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
   printc ("rep.lines_in_first_header=-1;\n");
   printc ("rep.print_section=0;\n");
   printc ("rep.finishing=0;\n");
+  printc ("rep.repName=_reportName;\n");
+  printc ("rep.modName=_module_name;\n");
 
   printc ("rep.top_margin=A4GL_pdf_size(%f,'l',&rep);\n", rep->top_margin);
   printc ("rep.bottom_margin=A4GL_pdf_size(%f,'l',&rep);\n",
@@ -948,7 +966,7 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
   printc ("else rep.output_mode=_rout1[0];\n");
   printc ("rep.report=&%s;\n", get_curr_rep_name ());
   printc ("A4GL_trim(rep.output_loc);");
-  print_rep_ret (report_cnt);
+  print_rep_ret (report_cnt,0);
 }
 
 /**
@@ -3375,16 +3393,16 @@ print_format_every_row (void)
 
   printc ("{int _rr;for (_rr=0;_rr<%d;_rr++) {", fbindcnt);
   printc ("A4GL_push_char(rbindvarname[_rr]);\n");
-  printc ("A4GL_%srep_print(&rep,1,1,0); A4GL_push_long(19); A4GL_set_column(&rep);A4GL_%srep_print(&rep,1,1,0); \n",ispdf(),ispdf());
+  printc ("A4GL_%srep_print(&rep,1,1,0,-1); A4GL_push_long(19); A4GL_set_column(&rep);A4GL_%srep_print(&rep,1,1,0,-1); \n",ispdf(),ispdf());
   printc ("A4GL_push_variable(rbind[_rr].ptr,rbind[_rr].dtype);");
-  printc ("A4GL_%srep_print(&rep,1,1,0); A4GL_%srep_print(&rep,0,0,0);\n",ispdf(),ispdf());
+  printc ("A4GL_%srep_print(&rep,1,1,0,-1); A4GL_%srep_print(&rep,0,0,0,-1);\n",ispdf(),ispdf());
   printc ("}");
   printc
-    ("A4GL_push_char(\" \");A4GL_%srep_print(&rep,1,1,0); A4GL_%srep_print(&rep,0,0,0);",ispdf(),ispdf());
+    ("A4GL_push_char(\" \");A4GL_%srep_print(&rep,1,1,0,-1); A4GL_%srep_print(&rep,0,0,0,-1);",ispdf(),ispdf());
   printc ("}");
   /* printc ("#error FORMAT EVERY ROW not implemented yet");
      print_rep_ret (); */
-  print_rep_ret (report_cnt);
+  print_rep_ret (report_cnt,0);
 
 }
 
@@ -3452,23 +3470,23 @@ void
 print_report_print (int type, char *semi, char *wordwrap)
 {
 int semi_i;
-static int rep_print_code=0;
  
   if (semi==0) semi_i=0; else semi_i=1;
-  if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
-	printc("{int _rpblock;\n_rpblock=A4GL_push_report_print(&rep,_module_name,%d,'%c',\"%s\",%d);",
-	yylineno,get_curr_report_stack_whytype(),get_curr_report_stack_why(),rep_print_code);
+/*
+if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
+	printc("A4GL_push_report_print_entry(&rep,%d,%d,%d);",yylineno,rep_print_code,rep_print_entry);
   }
+*/
   if (type == 0)
-    printc ("A4GL_%srep_print(&rep,0,%s,0);\n", ispdf (), semi);
+    printc ("A4GL_%srep_print(&rep,0,%s,0,-1);\n", ispdf (), semi);
 
   if (type == 1)
-    printc ("A4GL_%srep_print(&rep,1,1,%s);\n", ispdf (), wordwrap);
-
+    printc ("A4GL_%srep_print(&rep,1,1,%s,%d);\n", ispdf (), wordwrap,rep_print_entry++);
+/*
   if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
-   	printc("A4GL_pop_report_print(&rep,_rpblock,%d);}",rep_print_code);
-	rep_print_code++;
+	printc("A4GL_pop_report_print_entry(&rep,%d,%d);",rep_print_code,rep_print_entry++);
   }
+*/
 }
 
 /**
@@ -3552,8 +3570,9 @@ print_report_1 (char *name)
 {
   strcpy (mv_repname, name);
   add_function_to_header (name, 2);
-  printc ("A4GL_REPORT void %s%s (int _nargs,int acl_ctrl) {\n",
-	  get_namespace (name), name, name);
+  printc ("A4GL_REPORT void %s%s (int _nargs,int acl_ctrl) {\n", get_namespace (name), name, name);
+  printc("static char *_reportName=\"%s\";\n",name);
+  rep_print_code=0;
 }
 
 /**
@@ -3623,7 +3642,7 @@ print_report_2 (int pdf, char *repordby)
   /* This was put in to force a page header if*/
   /* data was sent - but not used..*/
   /* But this prints too early here...*/
-  /*printc ("   A4GL_rep_print(&rep,0,1,0);");*/
+  /*printc ("   A4GL_rep_print(&rep,0,1,0,-1);");*/
 
 
   printc ("   _g=A4GL_chk_params(rbind,%d,_ordbind,acl_rep_ordcnt);\n", cnt);
@@ -3639,7 +3658,7 @@ print_report_2 (int pdf, char *repordby)
   printc ("               %s(_p,REPORT_BEFOREGROUP);", get_curr_rep_name ());
   printc ("   }");
   printc ("   _useddata=1;\n");
-  print_rep_ret (report_cnt);
+  print_rep_ret (report_cnt,0);
   printc ("}\n\n");
   printc ("if (acl_ctrl==REPORT_FINISH) {\n");
   if (last_orderby_type == 1)
@@ -3691,7 +3710,7 @@ print_report_2 (int pdf, char *repordby)
   printc ("   _started=1;\n");
   printc ("goto output_%d;\n", report_cnt);
   printc ("}\n\n");
-  print_rep_ret (report_cnt);
+  print_rep_ret (report_cnt,0);
   if (pdf)
     pdf_print_output_rep (&pdf_rep_struct);
   else

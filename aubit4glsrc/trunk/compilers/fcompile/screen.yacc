@@ -72,6 +72,7 @@ char *chk_alias(char *s);
 }
 %token <str> 
 %token CH
+%token GRAPH_CH
 %token INSTRUCTIONS ATTRIBUTES DATABASE BY KW_SCREEN_TITLE KW_SCREEN KW_SIZE OPEN_SQUARE KW_END CLOSE_SQUARE NUMBER_VALUE NAMED OPEN_BRACE CLOSE_BRACE TITLE
 FORMONLY COMMENT
 %token DYNAMIC COLON ATSIGN DOT WITHOUT KW_NULL INPUT TABLES PIPE EQUAL CHAR_VALUE
@@ -82,11 +83,12 @@ FORMONLY COMMENT
 %token   AUTONEXT COLOR COMMENTS DEFAULT VALIDATE DISPLAY DOWNSHIFT UPSHIFT FORMAT INCLUDE INVISIBLE NOENTRY PICTURE PROGRAM
 REQUIRED REVERSE VERIFY WORDWRAP COMPRESS NONCOMPRESS TO  AS
 %token SERIAL KW_BYTE KW_TEXT VARCHAR SQL_VAR
-%token SQLONLY  WIDGET CONFIG
+%token SQLONLY  WIDGET CONFIG KW_NL
 %token COMPARISON KWOR KWAND KWWHERE KWNOT KWBETWEEN KWIN XVAL KWNULLCHK KWNOTNULLCHK
 %token YEAR MONTH DAY HOUR MINUTE SECOND FRACTION
 /* extensions */
 %token LISTBOX BUTTON KW_PANEL
+%token KW_WS
 
 %%
 
@@ -154,9 +156,9 @@ screens_section :
 ;
 
 screens_rest: op_size 
-		{ ignorekw=1; 
+		{ 
 		lineno=0; scr++; if (scr>1) newscreen=1; } 
-	OPEN_BRACE { lineno=0; } 
+	OPEN_BRACE { ignorekw=1; lineno=0; } 
 	screen_layout 
 	CLOSE_BRACE 
 		{ ignorekw=0; if (lineno>the_form.maxline) the_form.maxline=lineno;in_screen_section=0;} 
@@ -166,7 +168,7 @@ screens_rest: op_size
 
 
 
-op_size : 
+op_size :  
 | KW_SIZE NUMBER_VALUE 
 | KW_SIZE NUMBER_VALUE BY NUMBER_VALUE {
 	int c;
@@ -199,40 +201,61 @@ some_text: named_or_kw {
 		if (buff[a]=='_') buff[a]=' ';
 	}
 	strcpy($<str>$,buff);
-}
+} 
+	
 ;
 
 screen_element : 
 some_text {
+	     A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
+	colno+=strlen($<str>1);
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
-	     A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,strlen($<str>1),scr,0,$<str>1);
 }
 | field  
-| CH {
+
+| GRAPH_CH {
 	char buff[256];
+	sprintf(buff,"\n%s",$<str>1);
+	A4GL_add_field("_label",1+colno-1,lineno,1,scr,0,$<str>1);
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
-	strcpy(buff,$<str>1);
-	if (buff[0]=='\n') A4GL_add_field("_label",1+colno-1,lineno,1,scr,0,$<str>1);
-	else A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,1,scr,0,$<str>1);
-}
+} 
+
 | PIPE {
 	char buff[256];
 	strcpy(buff,$<str>1);
+	A4GL_add_field("_label",colno+1,lineno,1,scr,0,$<str>1);
+	colno+=strlen($<str>1);
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
-	if (buff[0]=='\n') A4GL_add_field("_label",1+colno-1,lineno,1,scr,0,$<str>1);
-	else A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,1,scr,0,$<str>1);
 }
 
 
 | CHAR_VALUE {
+	     A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
+	colno+=strlen($<str>1);
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
-	     A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,strlen($<str>1),scr,0,$<str>1);
 } 
 
+| ch_list {
+	char buff[256];
+	A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
+	//printf("colno was %d for '%s'\n",colno,$<str>1);
+	colno+=strlen($<str>1);
+	if (colno>the_form.maxcol) the_form.maxcol=colno; 
+	if (lineno>the_form.maxline) the_form.maxline=lineno;
+}  
+| KW_WS {colno++;}
+| KW_NL {colno=0;lineno++;}
+
+
+
+;
+
+ch_list: CH {strcpy($<str>$,$<str>1);}
+	| ch_list CH {sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
 ;
 
 
@@ -255,7 +278,7 @@ CLOSE_SQUARE
 
 
 field_element : 
-field_tag_name {
+field_tag_name_scr {
 	strcpy($<str>$,$<str>1);
 } 
 | 
@@ -616,12 +639,30 @@ field_name : named_or_kw {
 }
 ;
 
+
+op_ws : | ws
+;
+
+ws: KW_WS {colno++;} | ws KW_WS {colno++;}
+;
+
+
+
 field_tag_name : 
-named_or_kw {
+named_or_kw  {
 	strcpy($<str>$,$<str>1);
 	A4GL_make_downshift($<str>$);
+	colno+=strlen($<str>1);
 	}
-	;
+;
+
+field_tag_name_scr : 
+op_ws named_or_kw op_ws {
+	strcpy($<str>$,$<str>2);
+	A4GL_make_downshift($<str>$);
+	colno+=strlen($<str>2);
+	}
+;
 
 datatype : 
 KW_CHAR {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.62 2004-01-16 19:03:51 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.63 2004-02-09 08:07:33 mikeaubury Exp $
 */
 
 /**
@@ -447,6 +447,8 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
     int print_section;
 	char *header;
 	int finishing;
+	char *repName;
+	char *modName;
   };
 
 
@@ -479,6 +481,8 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
     int print_section;
 	char *header;
 	int finishing;
+	char *repName;
+	char *modName;
   };
 #endif
 

@@ -47,6 +47,7 @@ define lv_action integer
 let lv_cnt=0
 
 set pause mode on
+MESSAGE ""
 call clear_screen_portion()
 call set_exec_mode(0)
 code

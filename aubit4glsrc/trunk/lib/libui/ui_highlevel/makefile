@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.11 2004-02-03 04:55:07 afalout Exp $
+# $Id: makefile,v 1.12 2004-02-09 08:07:52 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -105,10 +105,10 @@ CFLAGS			:=${CURSES_INC_PATH} -I/usr/include/ncurses ${CFLAGS} -I.. -I. -I${ROOT
 
 
 ifneq "${HAVE_CURSES}" "0"
-	ALL			+=${LIBROOT}/libUI_HL_TUI${SO_EXT}
+	ALL			+= ${LIBROOT}/libUI_HL_TUI${SO_EXT} ${LIBROOT}/libUI_HL_TUIN${SO_EXT}
 else
 	ifneq "${HAVE_PDCURSES}" "0"
-		ALL			+=${LIBROOT}/libUI_HL_TUI${SO_EXT}
+		ALL			+=${LIBROOT}/libUI_HL_TUIN${SO_EXT}
 	endif
 endif
 
@@ -173,6 +173,10 @@ ${LIBROOT}/libUI_HL_TUI${SO_EXT}: $(OBJS) lowlevel_tui.o
 #	cp *${SO_EXT} ../..
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME} ${CURSES_LIB_PATH}
 
+
+${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} -lpanel -lcurses  ${CURSES_LIB_PATH}
+
 ${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o
 #	gcc -rdynamic -shared $(OBJS) lowlevel_gtk.o widget_gtk.o  -o libUI_HL_GTK${SO_EXT} -laubit4gl $(GTK_INC_PATH) $(GTK_LIB_PATH) $(GTKLIBS)
 #	cp *${SO_EXT} ../..
@@ -197,6 +201,11 @@ a4gl_API_lowlevel.h: ../../libaubit4gl/API_lowlevel.spec
 
 
 lowlevel_tui.o: lowlevel/lowlevel_tui.c
+	${CC} ${CFLAGS} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
+
+lowlevel_tui_noform.o: lowlevel/lowlevel_tui.c
+	${CC} ${CFLAGS} -DNO_CURSES_FORM -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
+form_tui.o: lowlevel/form_tui.c
 	${CC} ${CFLAGS} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
 
 lowlevel_gtk.o: lowlevel/lowlevel_gtk.c API_lowlevel.h

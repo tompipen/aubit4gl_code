@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.29 2004-02-02 09:38:13 afalout Exp $
+# $Id: Makefile.in,v 1.30 2004-02-09 08:07:49 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -183,7 +183,7 @@ ifneq "${COMSPEC}" ""
 #	${CC} $(basename $<).c -o $(basename $<).o ${ESQL_INCLPATH} -I"E:/Program files/W2000/Informix/CSDK/incl/esql"
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) esql.c ${IFX_LIBS} -o $@ ${LD_POSTFLAGS} -laubit4gl  -I"E:/Program files/W2000/Informix/CSDK/incl/esql" -I../../../incl -I. -I.. -L../..
 else
-	INFORMIXC=@INFORMIXC@; "@IFMX_ESQLC@" -c $^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
+	export INFORMIXC=@INFORMIXC@; "@IFMX_ESQLC@" -c $^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 endif
 
@@ -194,7 +194,7 @@ endif
 libSQL_esqlI${SO_EXT}: ${LIBROOT}/libSQL_esqlI${SO_EXT}
 ${LIBROOT}/libSQL_esqlI${SO_EXT}: esql_compatible.ec
 	cpp ${CPP_FLAGS} $^ -D__IFX__  > ifx_$^
-	INFORMIXC=@INFORMIXC@; "@IFMX_ESQLC@" -c ifx_$^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
+	export INFORMIXC=@INFORMIXC@; "@IFMX_ESQLC@" -c ifx_$^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) ifx_esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 
 ##################
@@ -250,7 +250,7 @@ ${LIBROOT}/libSQL_esqlPG${SO_EXT}: esql_compatible.ec
 libSQL_c_esql.so: ${LIBROOT}/libSQL_c_esql.so
 ${LIBROOT}/libSQL_c_esql.so: esql_simple_infx.ec
 # -I/opt/informix/v7.30 -I.. -I../.. -I../../../compilers/fcompile -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H
-	INFORMIXC=@INFORMIXC@; @IFMX_ESQLC@ -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
+	export INFORMIXC=@INFORMIXC@; @IFMX_ESQLC@ -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
 #gcc -L/opt/informix/v7.30/lib -L /opt/informix/v7.30/lib/esql -L/opt/informix/v7.30/lib/cli -shared esql_simple_infx.o -lifsql -lifasf -lifgen -lifos -lifgls -lc -ldl -lcrypt /opt/informix/v7.30/lib/esql/checkapi.o -lifglx -o ../../libSQL_esql_simple_infx.so
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) $(basename $<).o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 

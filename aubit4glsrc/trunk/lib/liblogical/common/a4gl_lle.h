@@ -1,0 +1,58 @@
+/*
+
+
+Logical Layout Engine header file
+
+
+*/
+
+#define ENTRY_START 1
+#define ENTRY_BLOCK 2
+#define ENTRY_BLOCK_END 3
+#define ENTRY_DATA 4
+#define ENTRY_ENTRY_START 5
+#define ENTRY_ENTRY_END 6
+
+struct r_report_block_entries
+{
+  int page_no;
+  int line_no;
+  int col_no;
+  int entry_id;
+  char *string;
+};
+
+struct r_report_block
+{
+  int line;
+  char where;
+  char *why;
+  int rb;
+  int nentries;
+  struct r_report_block_entries *entries;
+};
+
+struct r_report
+{
+  int version_no;
+  int ctime;
+  int top_margin;
+  int bottom_margin;
+  int left_margin;
+  int right_margin;
+  int page_length;
+  int max_page;
+  int max_line;
+  char *repName;
+  char *modName;
+  int max_col;
+  int nblocks;
+  struct r_report_block *blocks;
+};
+
+
+struct r_report *read_report_output(char *fname);
+
+void process_report (FILE * fout, struct r_report *r);
+
+

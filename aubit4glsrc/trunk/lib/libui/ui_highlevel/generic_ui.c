@@ -4,7 +4,7 @@
 #include "a4gl_API_lowlevel.h"
 #include "formdriver.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.6 2004-01-18 18:12:54 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.7 2004-02-09 08:07:52 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 
@@ -2476,7 +2476,7 @@ A4GL_clr_field (void *f)
 }
 
 
-void
+int
 A4GL_do_after_field (void *f, struct s_screenio *sio)
 {
   int a;
@@ -2548,12 +2548,14 @@ A4GL_do_after_field (void *f, struct s_screenio *sio)
 					 (fprop->datatype == 0)
 					 || (fprop->datatype == 8));
 	      A4GL_debug ("ptr=%s", ptr);
-	      if (ptr == 0)
+	      if (ptr == 0) {
 		A4GL_error_nobox (acl_getenv ("FIELD_CONSTR_EXPR"), 0);
+		return 0;
+		}
 	    }
 	}
     }
-
+	return 1;
 }
 
 

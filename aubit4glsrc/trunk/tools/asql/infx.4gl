@@ -173,6 +173,7 @@ END FUNCTION
 
 FUNCTION do_paginate() 
 define rpaginate integer
+MESSAGE " "
 code
    while (1) {
 	extern int outlines;
@@ -185,6 +186,9 @@ code
 endcode
 
 END FUNCTION
+
+
+
 FUNCTION get_type(l_coltype, l_collength)
 DEFINE l_coltype     INTEGER,
        l_collength   INTEGER,

@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.90 2004-01-23 10:06:31 mikeaubury Exp $
+# $Id: ioform.c,v 1.91 2004-02-09 08:07:51 mikeaubury Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.90 2004-01-23 10:06:31 mikeaubury Exp $";
+static char *module_id="$Id: ioform.c,v 1.91 2004-02-09 08:07:51 mikeaubury Exp $";
 /**
  * @file
  *
@@ -124,7 +124,7 @@ static int A4GL_get_metric_no (struct s_form_dets *form, FIELD * f);
 int A4GL_field_name_match (FIELD * f, char *s);
 static void A4GL_do_before_field (FIELD * f, struct s_screenio *sio);
 static int A4GL_find_field_no (FIELD * f, struct s_screenio *sio);
-static void A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
+int A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
 static void A4GL_set_init_pop (FIELD * f);
 static int A4GL_get_metric_for (struct s_form_dets *form, FIELD * f);
 static void A4GL_dump_fields (FIELD * fields[]);
@@ -1981,7 +1981,7 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
  *
  * @todo Describe function
  */
-void
+int
 A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 {
   int a;
@@ -2055,13 +2055,15 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 					 (fprop->datatype == 0)
 					 || (fprop->datatype == 8));
 	      A4GL_debug ("ptr=%s", ptr);
-	      if (ptr == 0)
+	      if (ptr == 0) {
 		A4GL_error_nobox (acl_getenv ("FIELD_CONSTR_EXPR"), 0);
+		return 0;
+		}
 	    }
 	}
     }
   A4GL_debug ("Done after field - field_status=%d", field_status (f));
-
+  return 1;
 }
 
 
@@ -2472,7 +2474,7 @@ A4GL_form_field_constr (struct s_screenio *sio, int m)
   mform = sio->currform->form;
   form = sio->currform;
 
-  if (m)
+  if (m==1)
     {
       form->currentfield = 0;
       form->currentmetrics = 0;
@@ -2481,6 +2483,8 @@ A4GL_form_field_constr (struct s_screenio *sio, int m)
     }
 
 	A4GL_debug("ZZ9PA - CHECK CHECK - continuing");
+
+ A4GL_debug("currentfield=%p current_field(mform)=%p",form->currentfield,current_field (mform));
 
   if (form->currentfield != current_field (mform))
     {
@@ -2556,7 +2560,7 @@ A4GL_form_field_constr (struct s_screenio *sio, int m)
 
   pos_form_cursor (mform);
   A4GL_debug_print_stack ();
-
+  A4GL_debug("form_field_constr returning %d",flg);
   return flg;
 }
 

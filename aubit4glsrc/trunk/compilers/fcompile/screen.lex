@@ -18,9 +18,9 @@
 
 %%
 [\r] ;
-[\n] 	{lineno++;colno=0;graphics_mode=0;REJECT}
-[ ]	{ colno++;}
-[\t]	{ colno++; while ((colno%8)!=0) colno++; }
+[\n] 	{if (ignorekw==1) return KW_NL; else {graphics_mode=0;REJECT; }}
+[ ]	{ if (ignorekw==1) return KW_WS; }
+[\t]	{ while ((colno%8)!=0) colno++; if (ignorekw==1) {colno--;return KW_WS;}}
 [	 \n]	;
 <comment>"}"	{BEGIN INITIAL;}
 <comment>.	;
@@ -39,17 +39,17 @@
 [pdqb]  {
         if (ignorekw==0) REJECT;
         if (graphics_mode==0) REJECT;
-        colno++;
+        //colno++;
         sprintf(yylval.str, "\n%s",yytext);
-        return (CH);
+        return (GRAPH_CH);
 }
 
 [v<>+^] {
         if (graphics_mode==0) REJECT;
 	if (!A4GL_isyes(acl_getenv("EXTENDED_GRAPHICS"))) REJECT;
-        colno++;
+        //colno++;
         sprintf(yylval.str, "\n%s",yytext);
-        return (CH);
+        return (GRAPH_CH);
 }
 
 "like"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(LIKE);}
@@ -115,10 +115,13 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "NOT" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNOT;}
 
 "." 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DOT;}
-"|" 		{ strcpy(yylval.str,yytext); colno++; if (graphics_mode==0) return PIPE; 
-			else {
+"|" 		{ strcpy(yylval.str,yytext); 
+			if (graphics_mode==0) {
+				colno++; 
+				return PIPE; 
+			} else {
 				sprintf(yylval.str,"\n|");
-				return CH; 
+				return GRAPH_CH; 
 			}
 		}
 "=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return EQUAL;}
@@ -213,17 +216,23 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "panel"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_PANEL;}
 
 [a-zA-Z]+[a-zA-Z\_0-9]*	{
-	if (ignorekw) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext);
+	if (ignorekw) REJECT;
+	strcpy(yylval.str, yytext);
+	//colno+=strlen(yytext);
 	A4GL_debug("NAMED : %s\n",yytext);
  	return(NAMED);
 }
 [a-zA-Z\_0-9]+[a-zA-Z\_0-9]*	{
-if (ignorekw!=1) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext); 
+if (ignorekw!=1) REJECT;
+strcpy(yylval.str, yytext);
+//colno+=strlen(yytext); 
  A4GL_debug("NAMED : %s\n",yytext); 
 return(NAMED);}
 
 .	{
-	strcpy(yylval.str,yytext);colno++;
+        if (ignorekw==0) REJECT;
+	strcpy(yylval.str,yytext);
+	//colno++;
 	if (graphics_mode) {
 		if (
 			strcmp(yytext,"+")==0 ||
@@ -234,6 +243,9 @@ return(NAMED);}
 			strcmp(yytext,"-")==0 ||
 			strcmp(yytext,"|")==0 ) {
 			sprintf(yylval.str,"\n%s",yytext);
+			printf("Graphic...\n");
+			colno++;
+			return  GRAPH_CH;
 		}
 	}
  A4GL_debug("CH : %s\n",yytext);  

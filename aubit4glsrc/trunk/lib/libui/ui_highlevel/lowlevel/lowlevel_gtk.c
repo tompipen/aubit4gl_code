@@ -8,7 +8,7 @@
 #include "formdriver.h"
 #include "low_gtk.h"
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.19 2004-01-23 10:12:37 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.20 2004-02-09 08:07:53 mikeaubury Exp $";
 
 
 #include <gtk/gtk.h>
@@ -543,8 +543,6 @@ if (x==0&&y==0&&h==0&&w==0) {
 #if GTK_CHECK_VERSION(2,0,0)
 	gtk_fixed_set_has_window    (GTK_FIXED(fixed),1);
 
-#else
-	A4GL_debug("FIXME: gtk_fixed_set_has_window() is GTK2 only function - what is the GTK1 equivalent?");
 #endif
         gtk_widget_show (GTK_WIDGET (fixed));
         gtk_widget_set_name(GTK_WIDGET(fixed), "AppWindow");
@@ -569,8 +567,6 @@ if (x==0&&y==0&&h==0&&w==0) {
 
 #if GTK_CHECK_VERSION(2,0,0)
 	gtk_fixed_set_has_window    (GTK_FIXED(win),1);
-#else
-	A4GL_debug("FIXME: gtk_fixed_set_has_window() is GTK2 only function - what is the GTK1 equivalent?");
 #endif
 
       gtk_widget_set_usize (GTK_WIDGET (win), w+gui_xwidth, h+gui_yheight);
@@ -624,9 +620,6 @@ if (x==0&&y==0&&h==0&&w==0) {
         {
 	#if GTK_CHECK_VERSION(2,0,0)
 		gtk_fixed_set_has_window    (GTK_FIXED(win),1);
-
-	#else
-		A4GL_debug("FIXME: gtk_fixed_set_has_window() is GTK2 only function - what is the GTK1 equivalent?");
 	#endif
           gtk_fixed_put (GTK_FIXED (win_screen), win, x,y);
           gtk_object_set_data (GTK_OBJECT (win), "FIXED", win);
@@ -1427,8 +1420,6 @@ int
 
 #if GTK_CHECK_VERSION(2,0,0)
 	gtk_fixed_set_has_window    (GTK_FIXED(p),1);
-#else
-	A4GL_debug("FIXME: gtk_fixed_set_has_window() is GTK2 only function - what is the GTK1 equivalent?");
 #endif
   gtk_widget_show(p);
   gtk_widget_set_usize (GTK_WIDGET (p), width*gui_xwidth, 1*gui_yheight);

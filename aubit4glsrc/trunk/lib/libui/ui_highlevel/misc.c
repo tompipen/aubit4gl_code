@@ -6,7 +6,7 @@
 #include "a4gl_API_ui_lib.h"
 #include "a4gl_API_ui.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.8 2004-01-27 21:05:59 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.9 2004-02-09 08:07:52 mikeaubury Exp $";
 
 void *UILIB_A4GL_get_curr_form (int n);
 
@@ -629,6 +629,10 @@ UILIB_A4GL_push_constr (void *vs)
 				     A4GL_LL_field_buffer (f, 0),
 				     ((fprop->datatype & 0xffff) == 0)
 				     || ((fprop->datatype & 0xffff) == 8));
+
+
+ 	  A4GL_assertion(ptr==0,"Pointer returned from A4GL_construct is null");
+
 	  if (strlen (ptr) > 0)
 	    {
 	      A4GL_debug ("ptr=%s\n", ptr);

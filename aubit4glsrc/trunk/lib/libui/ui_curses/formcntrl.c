@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.48 2004-01-23 10:06:24 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.49 2004-02-09 08:07:50 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.48 2004-01-23 10:06:24 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.49 2004-02-09 08:07:50 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -742,13 +742,20 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
       int ffc_rval;
       struct struct_scr_field *fprop;
       int attr;
+
+	A4GL_debug("AFTER FIELD - mode=%d (construct=%d)",sio->mode,MODE_CONSTRUCT);
+
       if (sio->mode != MODE_CONSTRUCT)
 	ffc_rval = A4GL_form_field_chk (sio, -1);
-      else
+      else {
+	int daf;
 	ffc_rval = A4GL_form_field_constr (sio, -1);
+	daf=A4GL_do_after_field(sio->currentfield,sio);
+	if (!daf) ffc_rval=-4;
+	}
 
 
-      A4GL_debug ("form_Field_chk returns %d\n", a);
+      A4GL_debug ("form_Field_chk returns %d\n", ffc_rval);
 
       if (ffc_rval != -4)
 	{
@@ -823,12 +830,19 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		}
 
 		really_ok=1;
+		A4GL_trim(buff);
+		if (strlen(buff)&&A4GL_isnull(sio->vars[field_no].dtype,sio->vars[field_no].ptr)) {
+			A4GL_debug("Not empty and var is null");
+			really_ok=0;
+		}
 
-		if (strlen(buff)&&A4GL_isnull(sio->vars[field_no].dtype,sio->vars[field_no].ptr)) really_ok=0;
-
-		if (!A4GL_conversion_ok(-1)) really_ok=0;
+		if (!A4GL_conversion_ok(-1)) {
+			A4GL_debug("CONVERSION ERROR");
+			really_ok=0;
+		}
 
                 if ( (sio->vars[field_no].dtype==DTYPE_INT|| sio->vars[field_no].dtype==DTYPE_SMINT|| sio->vars[field_no].dtype==DTYPE_SERIAL) && strchr(buff,'.') ) {
+				A4GL_debug(". in an integer");
 				really_ok=0;
 		}
 

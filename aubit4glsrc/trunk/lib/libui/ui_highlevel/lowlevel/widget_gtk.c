@@ -1,4 +1,4 @@
-static char *module_id="$Id: widget_gtk.c,v 1.3 2004-01-23 10:13:01 mikeaubury Exp $";
+static char *module_id="$Id: widget_gtk.c,v 1.4 2004-02-09 08:07:54 mikeaubury Exp $";
 #include "../API_lowlevel.h"
 #include "a4gl_libaubit4gl.h"
 
@@ -581,6 +581,11 @@ A4GL_make_pixbuf_gw (char *filename)
  //gtk_widget_show(hbox);
  gtk_widget_show(widget);
 return widget;
+}
+#else
+void * A4GL_make_pixbuf_gw (char *filename) {
+	A4GL_exitwith("make_pixbuf not available with GTK1.2");
+	return 0;
 }
 #endif
 

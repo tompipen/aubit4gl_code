@@ -7,10 +7,18 @@ static int A4GL_curses_to_aubit_int (int a);
 #include "a4gl_API_ui_lib.h"
 #include "lowlevel.h"
 #include <curses.h>
+
+
+#ifndef NO_CURSES_FORM
+#include "aubit_form.h"
 #include <form.h>
+#else
+#include "aubit_noform.h"
+#endif
+
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.10 2004-02-01 03:16:54 afalout Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.11 2004-02-09 08:07:53 mikeaubury Exp $";
 
 int inprompt = 0;
 
@@ -498,7 +506,7 @@ A4GL_LL_display_form (void *vf, int attrib)
 	  A4GL_display_internal (1, a, "", 0, 1);
 	}
     }
-  scale_form (f->form, &rows, &cols);
+  A4GL_form_scale_form (f->form, &rows, &cols);
   rows = f->fileform->maxline - 1;
   cols = f->fileform->maxcol;
 
@@ -585,11 +593,11 @@ A4GL_LL_display_form (void *vf, int attrib)
   wclear (drwin);
   if (a == E_POSTED)
     {
-      unpost_form (f->form);
-      a = set_form_win (f->form, panel_window(w));
+      A4GL_form_unpost_form (f->form);
+      a = A4GL_form_set_form_win (f->form, panel_window(w));
     }
 
-  a = set_form_sub (f->form, drwin);
+  a = A4GL_form_set_form_sub (f->form, drwin);
 
   A4GL_debug ("setup windows");
   keypad (panel_window ((PANEL *) w), TRUE);
@@ -604,13 +612,13 @@ A4GL_LL_display_form (void *vf, int attrib)
     }
 
   A4GL_debug ("post the form s_form_dets=%p form=%p", f, f->form);
-  a = post_form (f->form);
+  a = A4GL_form_post_form (f->form);
 
   if (a == E_POSTED)
     {
       A4GL_debug ("Form posted already - dumping and re-doing");
-      unpost_form (f->form);
-      a = post_form (f->form);
+      A4GL_form_unpost_form (f->form);
+      a = A4GL_form_post_form (f->form);
     }
 
   if (f->form_details.border)
@@ -861,7 +869,7 @@ A4GL_LL_make_field (void *prop,int frow, int fcol, int rows, int cols)
   A4GL_debug ("Creating new field entry y=%d x=%d rows=%d width=%d\n", frow,
 	      fcol, rows, cols);
 
-  f = new_field (rows, cols, frow, fcol, 0, 0);
+  f = A4GL_form_new_field (rows, cols, frow, fcol, 0, 0);
 
   if (f)
     {
@@ -869,11 +877,11 @@ A4GL_LL_make_field (void *prop,int frow, int fcol, int rows, int cols)
       A4GL_debug ("Field created - setting attributes");
       /*A4GL_set_field_attr (f); */
       A4GL_debug ("ZZZZ - SET OPTS");
-      field_opts_off (f, O_ACTIVE);
-      field_opts_off (f, O_EDIT);
-      field_opts_off (f, O_BLANK);
+      A4GL_form_field_opts_off (f, O_ACTIVE);
+      A4GL_form_field_opts_off (f, O_EDIT);
+      A4GL_form_field_opts_off (f, O_BLANK);
       A4GL_debug ("STATIC ON");
-      field_opts_off (f, O_STATIC);
+      A4GL_form_field_opts_off (f, O_STATIC);
     }
   else
     {
@@ -898,13 +906,13 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
     {
       A4GL_debug ("Making graphic character %c @ frow=%d fcol=%d\n", label[1],
 		  frow, fcol);
-      f = new_field (1, 1, frow, fcol, 0, 0);
+      f = A4GL_form_new_field (1, 1, frow, fcol, 0, 0);
     }
   else
     {
       A4GL_debug ("Making normal label '%s' @ frow=%d fcol=%d\n", label, frow,
 		  fcol);
-      f = new_field (1, l, frow, fcol, 0, 0);
+      f = A4GL_form_new_field (1, l, frow, fcol, 0, 0);
     }
 
   if (f == 0)
@@ -948,7 +956,7 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
 	{
 	  if (!A4GL_isyes (acl_getenv ("EXTENDED_GRAPHICS")))
 	    {
-	      set_field_back (f, A_ALTCHARSET);
+	      A4GL_form_set_field_back (f, A_ALTCHARSET);
 	      switch (label[1])
 		{
 		case 'p':
@@ -976,7 +984,7 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
 	    }
 	  else
 	    {
-	      set_field_back (f, A_ALTCHARSET);
+	      A4GL_form_set_field_back (f, A_ALTCHARSET);
 	      A4GL_debug ("Extended graphics : %c ACS_HLINE=%d", label[1],
 			  ACS_HLINE);
 	      switch (label[1])
@@ -1024,8 +1032,8 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
 	}
       if (is_graphics)
 	{
-	  set_field_opts (f, field_opts (f) & ~O_ACTIVE);
-	  A4GL_debug ("SET FIELD OPTS : STATIC %x ", field_opts (f) & O_STATIC);
+	  A4GL_form_set_field_opts (f, A4GL_form_field_opts (f) & ~O_ACTIVE);
+	  A4GL_debug ("SET FIELD OPTS : STATIC %x ", A4GL_form_field_opts (f) & O_STATIC);
 	  return f;
 	}
       else
@@ -1041,10 +1049,10 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
   if (f)
     {
       A4GL_debug ("99 set field buffer to label = **%s**", label);
-      set_field_buffer (f, 0, label);
+      A4GL_form_set_field_buffer (f, 0, label);
       //A4GL_mja_set_field_buffer (f, 0, label);
-      set_field_opts (f, field_opts (f) & ~O_ACTIVE);
-      A4GL_debug ("SET FIELD OPTS : STATIC %x ", field_opts (f) & O_STATIC);
+      A4GL_form_set_field_opts (f, A4GL_form_field_opts (f) & ~O_ACTIVE);
+      A4GL_debug ("SET FIELD OPTS : STATIC %x ", A4GL_form_field_opts (f) & O_STATIC);
     }
   else
     {
@@ -1060,20 +1068,20 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
 int
 A4GL_LL_set_new_page (void *field, int n)
 {
-  set_new_page (field, n);
+  A4GL_form_set_new_page (field, n);
 }
 
 
 void
 A4GL_LL_set_field_userptr (void *field, void *ptr)
 {
-  set_field_userptr (field, ptr);
+  A4GL_form_set_field_userptr (field, ptr);
 }
 
 void *
 A4GL_LL_get_field_userptr (void *field)
 {
-  return field_userptr (field);
+  return A4GL_form_field_userptr (field);
 }
 
 void
@@ -1082,11 +1090,11 @@ A4GL_LL_set_field_attr (void *field)
   struct struct_scr_field *f;
   int bc;
   int fc;
-  bc = field_back (field);
-  fc = field_fore (field);
+  bc = A4GL_form_field_back (field);
+  fc = A4GL_form_field_fore (field);
 
   A4GL_debug ("In set_field_attr");
-  f = (struct struct_scr_field *) (field_userptr (field));
+  f = (struct struct_scr_field *) (A4GL_form_field_userptr (field));
   if (f == 0)
     return;
   A4GL_debug ("Setting defs");
@@ -1097,38 +1105,38 @@ A4GL_LL_set_field_attr (void *field)
     {
       A4GL_debug ("Autoskip");
       A4GL_debug ("ZZZZ - SET OPTS");
-      field_opts_on (field, O_AUTOSKIP);
+      A4GL_form_field_opts_on (field, O_AUTOSKIP);
     }
 
   if (A4GL_has_bool_attribute (f, FA_B_INVISIBLE))
     {
       A4GL_debug ("Invisible ***");
       A4GL_debug ("ZZZZ - SET OPTS");
-      field_opts_off (field, O_PUBLIC);
+      A4GL_form_field_opts_off (field, O_PUBLIC);
     }
 
   if (f->dynamic != 0)
     {
       A4GL_debug ("ZZZZ - SET OPTS STATIC OFF");
-      field_opts_off (field, O_STATIC);
+      A4GL_form_field_opts_off (field, O_STATIC);
 
       if (f->dynamic == -1)
 	{
 	  A4GL_debug ("Max size is lots CARAT");
-	  set_max_field (field, 0);
+	  A4GL_form_set_max_field (field, 0);
 	}
       else
 	{
 	A4GL_debug("set max field : %d\n",f->dynamic);
-	  set_max_field (field, f->dynamic);
+	  A4GL_form_set_max_field (field, f->dynamic);
 	  A4GL_debug ("Max size=%d CARAT", f->dynamic);
 	}
 
     }
   else
     {
-      field_opts_off (field, O_STATIC);
-      set_max_field (field, A4GL_get_field_width(field));
+      A4GL_form_field_opts_off (field, O_STATIC);
+      A4GL_form_set_max_field (field, A4GL_get_field_width(field));
       //field_opts_on (field, O_STATIC);
     }
 
@@ -1136,24 +1144,24 @@ A4GL_LL_set_field_attr (void *field)
     {
       A4GL_debug ("No entry");
       A4GL_debug ("ZZZZ - SET OPTS");
-      field_opts_off (field, O_ACTIVE);
-      field_opts_off (field, O_EDIT);
+      A4GL_form_field_opts_off (field, O_ACTIVE);
+      A4GL_form_field_opts_off (field, O_EDIT);
     }
   if (A4GL_has_bool_attribute (f, FA_B_REQUIRED))
     {
       A4GL_debug ("ZZZZ - SET OPTS");
-      field_opts_off (field, O_NULLOK);
+      A4GL_form_field_opts_off (field, O_NULLOK);
     }
   else
     {
       A4GL_debug ("ZZZZ - SET OPTS");
-      field_opts_on (field, O_NULLOK);
+      A4GL_form_field_opts_on (field, O_NULLOK);
     }
 
   if (A4GL_has_bool_attribute (f, FA_B_COMPRESS))
     {
       A4GL_debug ("ZZZZ - SET OPTS");
-      field_opts_on (field, O_WRAP);
+      A4GL_form_field_opts_on (field, O_WRAP);
     }
 
   //A4GL_set_field_colour_attr (field, f->do_reverse, f->colour); // MJA REMOVE COLOUR FROM X
@@ -1169,19 +1177,19 @@ A4GL_LL_new_form (void *vfd)
 struct s_form_dets *fd;
 fd=vfd;
 
-  return new_form ((FIELD **) fd->form_fields);
+  return A4GL_form_new_form ((FIELD **) fd->form_fields);
 }
 
 void
 A4GL_LL_set_form_userptr (void *form, void *data)
 {
-  set_form_userptr (form, data);
+  A4GL_form_set_form_userptr (form, data);
 }
 
 void *
 A4GL_LL_get_form_userptr (void *form)
 {
-  return form_userptr (form);
+  return A4GL_form_form_userptr (form);
 }
 
 
@@ -1189,7 +1197,7 @@ A4GL_LL_get_form_userptr (void *form)
 char *
 A4GL_LL_field_buffer (void *field, int n)
 {
-  return field_buffer (field, n);
+  return A4GL_form_field_buffer (field, n);
 }
 
 
@@ -1198,8 +1206,8 @@ A4GL_LL_set_field_buffer (void *field, int n, char *str)
 {
 int a;
 A4GL_debug("LL_set_field_buffer : '%s' ",str);
-  a=set_field_buffer (field, n, str);
-A4GL_debug("set_field_buffer : %s returns %d field buffer=%s opts=%x",str,a,field_buffer(field,n),field_opts(field));
+  a=A4GL_form_set_field_buffer (field, n, str);
+A4GL_debug("set_field_buffer : %s returns %d field buffer=%s opts=%x",str,a,A4GL_form_field_buffer(field,n),A4GL_form_field_opts(field));
 A4GL_debug_print_field_opts(field);
 
 }
@@ -1209,7 +1217,7 @@ A4GL_debug_print_field_opts(field);
 int
 A4GL_LL_field_opts (void *field)
 {
-  return field_opts (field);
+  return A4GL_form_field_opts (field);
 }
 
 
@@ -1217,7 +1225,7 @@ int
 A4GL_LL_set_field_opts (void *field, int oopt)
 {
   A4GL_debug ("SET FIELD OPTS : STATIC %x ", oopt & O_STATIC);
-  set_field_opts (field, oopt);
+  A4GL_form_set_field_opts (field, oopt);
 return A4GL_LL_field_opts(field);
 }
 
@@ -1225,21 +1233,21 @@ return A4GL_LL_field_opts(field);
 void
 A4GL_LL_set_field_fore (void *field, int attr)
 {
-  set_field_fore (field, attr);
+  A4GL_form_set_field_fore (field, attr);
 }
 
 
 void
 A4GL_LL_set_field_back (void *field, int attr)
 {
-  set_field_back (field, attr);
+  A4GL_form_set_field_back (field, attr);
 }
 
 
 void
 A4GL_LL_set_current_field (void *form, void *field)
 {
-  set_current_field (form, field);
+  A4GL_form_set_current_field (form, field);
 }
 
 
@@ -1247,7 +1255,7 @@ void
 A4GL_LL_set_carat (void *form)
 {
 PANEL *w;
-  pos_form_cursor (form);
+  A4GL_form_pos_form_cursor (form);
   A4GL_debug("CURSES : set_carat");
   A4GL_LL_screen_update();
   w = (PANEL *) A4GL_get_currwin ();
@@ -1313,33 +1321,33 @@ A4GL_LL_get_carat (void *form)
 {
   FORM *mform;
   mform = form;
-  A4GL_debug ("get CARAT : %d in %p", mform->curcol, current_field (mform));
+  A4GL_debug ("get CARAT : %d in %p", mform->curcol, A4GL_form_current_field (mform));
   return mform->curcol;
 }
 
 int
 A4GL_LL_int_form_driver (void *mform, int mode)
 {
-  form_driver (mform, mode);
+  A4GL_form_form_driver (mform, mode);
 	return 1;
 }
 
 void *
 A4GL_LL_current_field (void *form)
 {
-  return current_field (form);
+  return A4GL_form_current_field (form);
 }
 
 void
 A4GL_LL_set_form_page (void *form, int page)
 {
-  set_form_page (form, page);
+  A4GL_form_set_form_page (form, page);
 }
 
 int
 A4GL_LL_form_page (void *form)
 {
-  form_page (form);
+  A4GL_form_form_page (form);
 }
 
 
@@ -1382,7 +1390,7 @@ A4GL_LL_delete_errorwindow (void *curr_error_window)
 int
 A4GL_LL_field_status (void *field)
 {
-  return field_status (field);
+  return A4GL_form_field_status (field);
 }
 
 
@@ -1556,7 +1564,7 @@ A4GL_LL_dump_screen (int n)
 int
 A4GL_LL_set_field_status (void *f, int stat)
 {
-  set_field_status (f, stat);
+  A4GL_form_set_field_status (f, stat);
 }
 
 
@@ -1620,8 +1628,9 @@ A4GL_LL_initialize_display ()
 {
   A4GL_debug ("LL_initialize_display *************************");
   initscr ();
-  
-  try_to_stop_alternate_view();
+  if (A4GL_isyes(acl_getenv("NO_ALT_SCR"))) {
+  	try_to_stop_alternate_view();
+  }
 
   if (has_colors () == FALSE);
   else
@@ -1732,7 +1741,7 @@ int rblock;
 
       A4GL_push_char (buff);
       prompt->mode = 2;
-      unpost_form (prompt->f);
+      A4GL_form_unpost_form (prompt->f);
       A4GL_clear_prompt (prompt);
       return 0;
     }
@@ -1740,7 +1749,7 @@ int rblock;
   if (prompt->mode > 0)
     return 0;
 
-      pos_form_cursor (mform);
+      A4GL_form_pos_form_cursor (mform);
       A4GL_LL_screen_update ();
       abort_pressed = 0;
       was_aborted = 0;
@@ -1754,24 +1763,37 @@ int rblock;
       prompt->lastkey = A4GL_get_lastkey ();
 
       if (abort_pressed) {
+	printf("INTERRUPT!");
       	A4GL_set_last_key ( A4GL_key_val ("INTERRUPT"));
 	prompt_last_key 	= A4GL_key_val ("INTERRUPT");;
 	prompt->lastkey		= A4GL_key_val ("INTERRUPT");;
+
+      		if (!A4GL_has_event_for_keypress(prompt->lastkey,evt)) {
+      			A4GL_push_null (DTYPE_CHAR, 1);
+      			prompt->mode = 2;
+      			A4GL_form_unpost_form (prompt->f);
+      			A4GL_clear_prompt (prompt);
+			return rblock;
+		}
 	}
 
       A4GL_debug ("No lastkey..");
       rblock=A4GL_has_event_for_keypress(prompt->lastkey,evt);
+
       if (rblock) { // We appear to be all done here...
       		A4GL_push_null (DTYPE_CHAR, 1);
       		prompt->mode = 2;
-      		unpost_form (prompt->f);
+      		A4GL_form_unpost_form (prompt->f);
       		A4GL_clear_prompt (prompt);
 		return rblock;
-      }
-
+      } 
+      
+    if (was_aborted)  {
+		prompt->mode=2;
+		return 0;
+	}
+    
     a = A4GL_proc_key_prompt (a, mform, prompt);
-    if (was_aborted)
-    abort_pressed = 1;
 
 
   if (a == 0)
@@ -1890,7 +1912,7 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
     }
   A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1,
 	      width - 1);
-  set_new_page (sarr[field_cnt - 1], 1);
+  A4GL_form_set_new_page (sarr[field_cnt - 1], 1);
   sarr[field_cnt++] =
     (void *) A4GL_LL_make_field (0,0, strlen (promptstr), 1, width + 1);
   prompt->field = sarr[field_cnt - 1];
@@ -1904,7 +1926,7 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
 
   A4GL_default_attributes (prompt->field, 0);
   A4GL_debug ("STATIC OFF");
-  field_opts_off (prompt->field, O_STATIC);
+  A4GL_form_field_opts_off (prompt->field, O_STATIC);
 
   A4GL_debug ("ap=%d(%x) af=%d(%x)", ap, ap, af, af);
   ap = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, ap, 0, 0);
@@ -1931,12 +1953,12 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
       if (af & AUBIT_ATTR_INVISIBLE)
 	{
 	  A4GL_debug ("Invisible");
-	  field_opts_off (prompt->field, O_PUBLIC);
+	  A4GL_form_field_opts_off (prompt->field, O_PUBLIC);
 	}
 
     }
 
-  field_opts_on (prompt->field, AUBIT_O_NULLOK);
+  A4GL_form_field_opts_on (prompt->field, AUBIT_O_NULLOK);
   A4GL_debug ("Set attributes");
 
   buff[0] = 0;			/* -2 */
@@ -1948,7 +1970,7 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
 
   A4GL_debug ("Made fields");
 
-  f = new_form ((FIELD **) &sarr);
+  f = A4GL_form_new_form ((FIELD **) &sarr);
   A4GL_debug ("Form f = %p", f);
   prompt->f = f;
   A4GLSQL_set_status (0, 0);
@@ -1957,10 +1979,10 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
     return (prompt->mode = 2);
 
   d = derwin (p, 0, 0, width + 1, 1);
-  set_form_win (f, p);
-  set_form_sub (f, d);
+  A4GL_form_set_form_win (f, p);
+  A4GL_form_set_form_sub (f, d);
   A4GL_debug ("Set form win");
-  a = post_form (f);
+  a = A4GL_form_post_form (f);
   A4GL_debug ("Posted form=%d", a);
 
 
@@ -1992,7 +2014,7 @@ A4GL_LL_scale_form (void *vf, int *y, int *x)
 {
   struct s_form_dets *f;
 	f=vf;
-  scale_form (f->form, y, x);
+  A4GL_form_scale_form (f->form, y, x);
   A4GL_debug ("y=%d x=%x", y, x);
 }
 
@@ -2000,7 +2022,7 @@ int
 A4GL_LL_get_field_width_dynamic (void *f)
 {
   int x, y, a;
-  dynamic_field_info (f, &y, &x, &a);
+  A4GL_form_dynamic_field_info (f, &y, &x, &a);
   return x * y;
 }
 
@@ -2028,12 +2050,12 @@ void A4GL_LL_set_max_field (void *f, int n)
 int a;
 	A4GL_debug("set max field : %d\n",n);
 	if (n==0)  {
-  		a=set_max_field (f, 0);
+  		a=A4GL_form_set_max_field (f, 0);
 	} else {
 		FIELD *rfield;
 		rfield=f;
 		if (rfield->dcols>n) rfield->dcols=n;
-  		a=set_max_field (f, n);
+  		a=A4GL_form_set_max_field (f, n);
 	}
 }
 
@@ -2043,7 +2065,7 @@ A4GL_debug_print_field_opts (FIELD * a)
 {
   long z;
   char str[8048] = "";
-  z = field_opts (a);
+  z = A4GL_form_field_opts (a);
   if (z & O_VISIBLE)
     strcat (str, " O_VISIBLE");
   if (z & O_ACTIVE)
@@ -2136,7 +2158,7 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
 	A4GL_debug("In construct_large");
 
 	strcpy(rbuff,orig);
-
+	A4GL_trim(rbuff);
 	fwidth=UILIB_A4GL_get_curr_width (); 
 	if (fwidth>80) fwidth=80;
         cwin = (PANEL *) A4GL_get_currwin ();
@@ -2157,9 +2179,9 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
 
 	f=A4GL_LL_new_form(buff);
 
-        set_form_win (f, panel_window(cwin));
-        set_form_sub (f, drwin);
-	a=post_form(f);
+        A4GL_form_set_form_win (f, panel_window(cwin));
+        A4GL_form_set_form_sub (f, drwin);
+	a=A4GL_form_post_form(f);
 	A4GL_debug("construct - post_form = %d",a);
 	A4GL_mja_set_field_buffer(buff[1],0,rbuff);
 	A4GL_LL_screen_update();
@@ -2223,7 +2245,7 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
 	strcpy(orig,A4GL_LL_field_buffer(buff[1],0));
 
 	A4GL_debug("Unpost and delete...");
-        unpost_form(f);
+        A4GL_form_unpost_form(f);
 	delwin(derwin);
 	A4GL_LL_screen_update();
 	A4GL_comments(0);
@@ -2235,7 +2257,7 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
 	#define isprivate(s) ((s) != 0 && strstr(s, "\033[?") != 0)
 #endif
 
-void try_to_stop_alternate_view() {
+void try_to_stop_alternate_view(void) {
 #ifdef NCURSES_VERSION
     /*
      * Cancel xterm's alternate-screen mode.
@@ -2281,7 +2303,7 @@ void try_to_stop_alternate_view() {
 */
 int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) {
   
-#ifdef FIX_THIS_C&P_FROM_GTK
+#ifdef FIX_THIS_C_AND_P_FROM_GTK
   int a;
   int flg;
   struct s_form_dets *formdets;

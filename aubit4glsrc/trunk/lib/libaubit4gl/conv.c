@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.67 2004-01-18 12:57:39 mikeaubury Exp $
+# $Id: conv.c,v 1.68 2004-02-09 08:07:34 mikeaubury Exp $
 #
 */
 
@@ -2565,7 +2565,7 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
   {				/* A4GL_debug ("convert %d %p %d %p\n", dtype1, p1, dtype2, p2); */
   }
 #endif
-
+  A4GL_conversion_ok(1);
   ptr = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK];
 
   //A4GL_debug("ptr=%p",ptr);

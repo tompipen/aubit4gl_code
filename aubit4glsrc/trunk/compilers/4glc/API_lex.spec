@@ -72,8 +72,8 @@ print_continue_loop int n,char* s -> void
 /* void print_exit_loop (int type, int n) */
 print_exit_loop int type,int n -> void
 
-/* void print_rep_ret (int report_cnt) */
-print_rep_ret int report_cnt -> void
+/* void print_rep_ret (int report_cnt,int logit) */
+print_rep_ret int report_cnt int dolog -> void
 
 /* prchkerr (int l, char *f) */
 A4GL_prchkerr int l,char* f -> void

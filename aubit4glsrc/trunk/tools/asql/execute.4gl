@@ -315,7 +315,7 @@ endcode
 		END MENU
 	END IF
 
-
+	MESSAGE "Please wait.."
 code
 	
 

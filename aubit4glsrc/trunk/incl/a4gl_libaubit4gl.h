@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.109 2004-01-27 21:05:58 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.110 2004-02-09 08:07:33 mikeaubury Exp $
 #
 */
 
@@ -1059,6 +1059,8 @@ void A4GL_display_at (int n, int a);
     int print_section;
     char *header;
 	int finishing;
+	char *repName;
+	char *modName;
   };
   struct pdf_rep_structure
   {
@@ -1090,6 +1092,8 @@ void A4GL_display_at (int n, int a);
     int print_section;
     char *header;
     int finishing;
+	char *repName;
+	char *modName;
   };
 
 #endif

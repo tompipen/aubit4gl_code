@@ -6,14 +6,17 @@ unset DEBUG
 
 if [ "$1" != "" ] 
 then
-	cvs update -d 
+	if [ $1 = "1" ] 
+	then
+		cvs update -d 
+	fi
 	make cleanall
 	./configure  --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb  --prefix=/home/aubit4gl/aubit4gl
 fi
 
 
 
-cd /home/aubit4gl/sourceforge/aubit4glsrc
+cd /home/aubit4gl/sourceforge/aubit4glsrc.development
 make log
 
 if [ $? != 0 ]
@@ -22,37 +25,37 @@ then
 	tail -10 make.log
 	exit
 fi
-cd /home/aubit4gl/sourceforge/aubit4glsrc
+cd /home/aubit4gl/sourceforge/aubit4glsrc.development
 cd lib/libui/ui_curses
 sh make_static
 
-cd /home/aubit4gl/sourceforge/aubit4glsrc
+cd /home/aubit4gl/sourceforge/aubit4glsrc.development
 cd lib/libsql/esqlc
 sh make_static
 sh make_simple
 
 
-cd /home/aubit4gl/sourceforge/aubit4glsrc/lib/libesql
+cd /home/aubit4gl/sourceforge/aubit4glsrc.development/lib/libesql
 sh make_static
 sh make_simple
 
 
-cd /home/aubit4gl/sourceforge/aubit4glsrc
+cd /home/aubit4gl/sourceforge/aubit4glsrc.development
 cp lib/*.so /home/aubit4gl/aubit4gl/lib
 cp incl/*.h /home/aubit4gl/aubit4gl/incl
-cd /home/aubit4gl/sourceforge/aubit4glsrc/tools/asql
+cd /home/aubit4gl/sourceforge/aubit4glsrc.development/tools/asql
 make asql_i.4ae
 make asql_p.4ae
 cp asql_i.4ae asql_p.4ae  /home/aubit4gl/aubit4gl/bin
 
-cd /home/aubit4gl/sourceforge/aubit4glsrc/tools/afinderr
+cd /home/aubit4gl/sourceforge/aubit4glsrc.development/tools/afinderr
 
-cp /home/aubit4gl/sourceforge/aubit4glsrc/tools/afinderr/afinderr /home/aubit4gl/aubit4gl/bin
-cp /home/aubit4gl/sourceforge/aubit4glsrc/help/* /home/aubit4gl/aubit4gl/help
+cp /home/aubit4gl/sourceforge/aubit4glsrc.development/tools/afinderr/afinderr /home/aubit4gl/aubit4gl/bin
+cp /home/aubit4gl/sourceforge/aubit4glsrc.development/help/* /home/aubit4gl/aubit4gl/help
 
-cd /home/aubit4gl/sourceforge/aubit4glsrc/tools/test/build_tests
-find /home/aubit4gl/sourceforge/aubit4glsrc/tools/test/build_tests -name "*.4ae" -exec rm {} \;
-find /home/aubit4gl/sourceforge/aubit4glsrc/tools/test/build_tests -name "*.afr*" -exec rm {} \;
+cd /home/aubit4gl/sourceforge/aubit4glsrc.development/tools/test/build_tests
+find /home/aubit4gl/sourceforge/aubit4glsrc.development/tools/test/build_tests -name "*.4ae" -exec rm {} \;
+find /home/aubit4gl/sourceforge/aubit4glsrc.development/tools/test/build_tests -name "*.afr*" -exec rm {} \;
 sh run_tests
 if grep -y "Fail" build.log 
 then

@@ -1165,6 +1165,7 @@ end function
 
 FUNCTION do_paginate()
 define rpaginate integer
+MESSAGE ""
 code
    while (1) {
         extern int outlines;
