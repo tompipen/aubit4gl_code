@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.86 2004-12-07 01:43:56 afalout Exp $
+# $Id: Makefile-install.mki,v 1.87 2004-12-09 23:59:12 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -125,6 +125,36 @@ else
 endif
 else
 	@echo "ldocnfig not found on your system"
+endif
+
+#Add basic registry keys, so native windows executable can find aubitrc
+install.registry:
+ifdef COMSPEC
+#A4GL_UI; ValueData: GTK
+#Version; ValueData: @AUBIT_VERSION@.@AUBIT_BUILD@; Flags: uninsdeletekey
+#ValueName: A4GL_SQLTYPE; ValueData: sqlite;
+	regtool add  "/HKCU/Software/Aubit project"
+	regtool add  "/HKCU/Software/Aubit project/Aubit 4GL compiler"
+	regtool add  "/HKLM/Software/Aubit project"
+	regtool add  "/HKLM/Software/Aubit project/Aubit 4GL compiler"
+#AUBITDIR	
+	regtool add  "/HKCU/Software/Aubit project/Aubit 4GL compiler/AUBITDIR"
+	regtool -s set "/HKCU/Software/Aubit project/Aubit 4GL compiler/AUBITDIR" "${AUBITDIR}"
+	regtool add  "/HKLM/Software/Aubit project/Aubit 4GL compiler/AUBITDIR"
+	regtool -s set "/HKLM/Software/Aubit project/Aubit 4GL compiler/AUBITDIR" "${AUBITDIR}"
+#A4GL_INIFILE
+	regtool add  "/HKCU/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE"
+	regtool -s set "/HKCU/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE" "${CYGWIN_PATH_WIN}/etc/opt/aubit4gl/abutrc"
+	regtool add  "/HKLM/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE"
+	regtool -s set "/HKLM/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE" "${CYGWIN_PATH_WIN}/etc/opt/aubit4gl/abutrc"
+#Show current settings
+	@echo "-------------------------HKCU-----------------------------------"
+	@echo "AUBITDIR=`regtool get "/HKCU/Software/Aubit project/Aubit 4GL compiler/AUBITDIR"`"
+	@echo "A4GL_INIFILE=`regtool get "/HKCU/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE"`"	
+	@echo "-------------------------HKLM-----------------------------------"
+	@echo "AUBITDIR=`regtool get "/HKLM/Software/Aubit project/Aubit 4GL compiler/AUBITDIR"`"
+	@echo "A4GL_INIFILE=`regtool get "/HKLM/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE"`"	
+	@echo "----------------------------------------------------------------"	
 endif
 
 #######################################
@@ -424,14 +454,17 @@ PDFLIB_SRC          =PDFlib-Lite-5.0.3-Unix-src
 PDFLIB_SRC_TGZ		=${PDFLIB_SRC}.tar.gz
 
 #Linux binary:
-#NOTE: Binary packages of PDFlib will require commertial licensing, otherwise they will print
-#stuff on your pages! We are installing SRC package by default - not binary
+#NOTE: Binary packages of PDFlib will require commertial licensing, 
+#otherwise they will print stuff on your pages! We are installing SRC 
+#package by default - not binary
 PDFLIB_BIN_PATH		=http://www.pdflib.com/products/pdflib/download/503
 PDFLIB_BIN_TGZ		=PDFlib-5.0.3-Linux.tar.gz
 
 #Windows (source?):
-PDFLIB_WIN_PATH     =http://www.pdflib.com/products/pdflib/download
-PDFLIB_WIN_NAME     =PDFlib-5.0.1-Windows
+#PDFLIB_WIN_PATH     =http://www.pdflib.com/products/pdflib/download
+#PDFLIB_WIN_NAME     =PDFlib-5.0.1-Windows
+PDFLIB_WIN_PATH     =http://www.pdflib.com/products/pdflib/download/601src
+PDFLIB_WIN_NAME     =PDFlib-Lite-6.0.1
 PDFLIB_WIN_ZIP		=${PDFLIB_WIN_NAME}.zip
 
 
@@ -766,17 +799,8 @@ SXML_SRC_GZ				=${SXML_SRC}.tar.gz
 
 #################
 # 32: Valgrind
-#Valgrind is Linux only - no Windows port
+#Valgrind is Linux only - no Windows port - IS THERE AN EQUIVALENT ON WINDOWS?
 VALGRING_INFO			=http://valgrind.kde.org
-
-
-
-
-
-
-
-
-
 
 ##################
 # 33: PostgreSQL with Informix compatibility patches
@@ -833,17 +857,26 @@ install.iodbc: ${IODBC_RUNTIME_RPM} ${IODBC_SDK_RPM} ${IODBC_GUI_RPM}
 
 ########################
 # 2: Install PDFlib:
-
-
 ifdef COMSPEC
 install.pdflib: ${PDFLIB_WIN_ZIP}
-	unzip $^ -d ${SYSTEMDRIVE}/tmp
+ifeq "${PDF_WIN_TYPE}" "bin"
+	${UNZIP} $^ -d ${SYSTEMDRIVE}/tmp
 #Copy and rename only dll/h/lib files (must add lib prefix for Autoconf to find them)
 	${MKPATH} /usr/local/lib/
 	${MKPATH} /usr/local/include
 	cp ${SYSTEMDRIVE}/tmp/${PDFLIB_WIN_NAME}/pdflib/pdflib.dll /usr/local/lib/libpdf.dll
 	cp ${SYSTEMDRIVE}/tmp/${PDFLIB_WIN_NAME}/pdflib/pdflib.lib /usr/local/lib/libpdf.lib
 	cp ${SYSTEMDRIVE}/tmp/${PDFLIB_WIN_NAME}/pdflib/pdflib.h /usr/local/include
+else
+#Build it from source code - this failed under CygWin shell using MinGW GCC
+#so it has to be compiled using MSYS
+#TODO - can I invoke MYSYS shell directly form here? something like:
+#/cygdrive/d/msys/1.0/bin/sh.exe -c ". /etc/profile; cd /f/cygwin/tmp/PDFlib-Lite-6.0.1; make install"
+	${UNZIP} $^ -d /tmp
+#	${UNZIP} $^ -d ${SYSTEMDRIVE}/tmp
+	cd /tmp/${PDFLIB_WIN_NAME}; ./configure; make; make install
+#	cd ${SYSTEMDRIVE}/tmp; ./configure; make; make install
+endif
 else
 install.pdflib: ${PDFLIB_SRC_TGZ}
 	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
@@ -945,7 +978,7 @@ install.doxygen: ${DOXYGEN_RPM}
 # 9: Install Informix ESQL/C compiler and ODBC libraries
 install.ifx.esql: ${IFXESQLC_BIN_ZIP}
 	mkdir -p /tmp/ifxcsdk
-	unzip $^ -d /tmp/ifxcsdk
+	${UNZIP} $^ -d /tmp/ifxcsdk
 	mkdir -p ${INFORMIXDIR}
 #this will automatically create group 'informix':
 	-useradd informix
@@ -1154,26 +1187,18 @@ install.gtk.dev: ${GTK_GTK_DEV_RPM} ${GTK_GDK_DEV_RPM} ${GTK_GLIB_DEV_RPM} \
 
 ifdef COMSPEC
 install.sqlite: ${SQLITE_WIN_LIB} ${SQLITE_WIN_EXE}
-	unzip ${SQLITE_WIN_LIB} -d ${SYSTEMDRIVE}/tmp
-	unzip ${SQLITE_WIN_EXE} -d ${SYSTEMDRIVE}/WINNT
-#	@echo ${SYSTEMROOT} #='D:\WINNT'
-#	@echo ${WINDIR}	#='D:\WINNT'
-#	cp /tmp/sqlite.exe ${SYSTEMDRIVE}/WINNT
+	${UNZIP} ${SQLITE_WIN_LIB} -d ${SYSTEMDRIVE}/tmp
+	${UNZIP} ${SQLITE_WIN_EXE} -d ${SYSTEMDRIVE}/WINNT
 #We need this two so sqlite.exe can work:
 	cp ${SYSTEMDRIVE}/tmp/sqlite.def ${SYSTEMDRIVE}/WINNT/sqlite.def
 	cp ${SYSTEMDRIVE}/tmp/sqlite.dll ${SYSTEMDRIVE}/WINNT/sqlite.dll
-#We need this two so we can link Aubit
-	cp ${SYSTEMDRIVE}/tmp/sqlite.def /lib/libsqlite.def
-	cp ${SYSTEMDRIVE}/tmp/sqlite.dll /lib/libsqlite.dll
+#We need this two so we can link Aubit. Note that we added 'lib' prefix
+	cp ${SYSTEMDRIVE}/tmp/sqlite.def /usr/lib/libsqlite.def
+	cp ${SYSTEMDRIVE}/tmp/sqlite.dll /usr/lib/libsqlite.dll
 else
 install.sqlite: ${SQLITE_RPM_LIB} ${SQLITE_RPM_DEV}
 	${RPM} -i $^
 endif
-#/cygdrive/d/MinGW/bin:
-#/cygdrive/d/WINNT/system32:
-#/cygdrive/d/WINNT
-#/usr/bin:
-#/usr/local/bin:/usr/bin:/bin::/lib:
 	@echo " "
 	@echo "Package info & manuals: ${SQLITE_INFO}"
 	@echo " "
@@ -1183,7 +1208,7 @@ endif
 #SQLite ODBC driver:
 ifdef COMSPEC
 install.sqlite.odbc: ${SQLITE_ODBC_WIN}
-	unzip ${SQLITE_ODBC_WIN} -d ${SYSTEMDRIVE}/tmp/sqliteodbc
+	${UNZIP} ${SQLITE_ODBC_WIN} -d ${SYSTEMDRIVE}/tmp/sqliteodbc
 	cd ${SYSTEMDRIVE}/tmp/sqliteodbc; inst.exe
 #There is no .a/.def file there, so we can't link with this anyway...
 #	cp ${SYSTEMDRIVE}/tmp/sqliteodbc/sqliteodbc.dll /lib/libsqliteodbc.dll
@@ -1201,8 +1226,31 @@ endif
 ##################
 # 27: libspopc
 install.libspopc: ${SPOPC_TGZ_SRC}
+ifdef COMSPEC
+	cd /tmp; tar --gunzip -xf ${CYG_AUBITDIR}/$^
+#examples/poptest1.c:13:24: sys/socket.h: No such file or directory
+#examples/poptest1.c:14:19: netdb.h: No such file or directory
+#examples/poptest1.c:15:24: netinet/in.h: No such file or directory
+
+#if you are under windows, add: -lwsock32 and compile with -DWIN32
+#if you want libspopc fully reentrant, compile with -D_REENTRANT
+
+
+#make install will do:
+#       cp libspopc-$(VERSION).a /usr/lib
+#       ln -s /usr/lib/libspopc-$(VERSION).a /usr/lib/libspopc.a
+#       cp libspopc.h /usr/include/
+#Since native Windows executables do not understand CygWin symlinks, we 
+#need to make phisical copy of the library:
+	cp /lib/libspopc.a /lib/libspopc-tmp.a
+	rm /lib/libspopc.a
+	cp /lib/libspopc-tmp.a /lib/libspopc.a
+	cd /tmp/${SPOPC_SRC}; make install
+else
 	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
-	cd /tmp/${SPOPC_SRC}; ./configure; make; make install
+#No .configure
+	cd /tmp/${SPOPC_SRC}; make; make install
+endif	
 	@echo " "
 	@echo "Package info & manuals: ${SPOPC_INFO}"
 	@echo " "
@@ -1215,14 +1263,21 @@ install.libspopc: ${SPOPC_TGZ_SRC}
 #WARNING - Cint needs -ltermcap and -lbsd
 #######################
 
-#ifdef COMSPEC
-#install.cint: ${CINT_TAR_GZ_BIN_WIN}
-#else
 install.cint: ${CINT_TAR_GZ_SRC}
-#endif
 ifdef COMSPEC
-	#must NOT be installed under cygwin, because makecint is Windows native
-	#executable and knows nothing about CygWin path mapping (cygdrive)
+#------------------------------------------------
+#WARNING: if you get something like :
+#d:/cint/src/G__ci.a(CallFunc.o)(.text+0x5f6):CallFunc.cxx: undefined reference to `_Unwind_Resume'
+#Then you have missmatch between GCC use to make cint and the one used to make
+#Aubit cint support
+#------------------------------------------------
+#NOTE: must NOT be installed under cygwin tree, because makecint is Windows native
+#	executable and knows nothing about CygWin path mapping (cygdrive)
+#NOTE: Can't be compiled from CygWin because of path mangling (cygdrive)
+#	So will need MinGW MSYS to compile it since .bat files provided work only
+#	for MSVC and shell scripts need, well... shell!
+#NOTE: If cint hangs on vecbool.h, just interuppt it - install will still work
+
 	${MKPATH} /cygdrive/d/${CINT_SRC}-src
 	cd /cygdrive/d/${CINT_SRC}-src; tar -xvzf ${CYG_AUBITDIR}/$^
 	@echo "Unpacked to /cygdrive/d/${CINT_SRC}-src"
@@ -1237,12 +1292,12 @@ ifdef COMSPEC
 	@echo "Then, execute:"
 	@echo "bash ./setup platform/mingw"
 	@echo "bash ./INSTALLBIN --bindir=/cygdrive/d/cint --libdir=/cygdrive/d/cint
-#Not sure about this:
-#Can't be compiled from CygWin because of path mangling (cygdrive)
-#So will need MinGW MSYS to compile it since .bat files provided work only
-#for MSVC and shell scripts need, well... shell!
-	cd /cygdrive/d/${CINT_SRC}-src; ${SH} ./setup platform/mingw
-	cd /cygdrive/d/${CINT_SRC}-src; ${SH} ./INSTALLBIN --bindir=/cygdrive/d/cint --libdir=/cygdrive/d/cint	
+#CygWin version (did not work):
+#	cd /cygdrive/d/${CINT_SRC}-src; ${SH} ./setup platform/mingw
+#	cd /cygdrive/d/${CINT_SRC}-src; ${SH} ./INSTALLBIN --bindir=/cygdrive/d/cint --libdir=/cygdrive/d/cint
+#MSYS version:
+#	cd /d/cint5.15/; sh ./setup platform/mingw
+#	cd /d/cint5.15/; sh ./INSTALLBIN --bindir=/d/cint --libdir=/d/cint
 else
 	${MKPATH} /tmp/${CINT_SRC}
 	cd /tmp/${CINT_SRC}; tar -xvzf ${AUBIT_SRC_ROOT}/$^
@@ -1269,10 +1324,15 @@ endif
 
 ##################
 # 29: PDcurses
-install.pdcurses: ${PDCURSES_SRC_ZIP}
+install.pdcurses: ${PDCURSES_SRC_ZIP} ${PDCURSES_WIN_ZIP}
 ifdef COMSPEC
+#	rm -rf ${PDCURSES_WIN_INSTALLDIR}
+#First, install MSVC pre-compiled binaries, containing the .dll that we
+#dont get when compiling from source code using MinGW GCC"
+	${UNZIP} ${PDCURSES_WIN_ZIP} -d ${PDCURSES_WIN_INSTALLDIR}
+#Now, compile it from source code so we get static libs too:
 	-mkdir /tmp/${PDCURSES_SRC}
-	cd /tmp/${PDCURSES_SRC}; /bin/unzip ${CYG_AUBITDIR}/$^ -d /tmp/${PDCURSES_SRC}
+	cd /tmp/${PDCURSES_SRC}; ${UNZIP} ${CYG_AUBITDIR}/${PDCURSES_SRC_ZIP} -d /tmp/${PDCURSES_SRC}
 	cd /tmp/${PDCURSES_SRC}/win32; ${MAKE} -f mingwin32.mak \
 		PDCURSES_HOME=`cygpath -w /tmp/${PDCURSES_SRC}` CC_HOME=${GCC_HOME_WINPATH}
 #There is no install target there, have to install it manually:
@@ -1291,7 +1351,7 @@ ifdef COMSPEC
 	@echo "flag to ./configure for Aubit to detect it."
 else
 #	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
-	unzip $^ -d /tmp
+	${UNZIP} $^ -d /tmp
 	cd /tmp/${PDCURSES_SRC}; ./configure; make; make install
 endif	
 	@echo " "
@@ -1326,18 +1386,18 @@ ifdef COMSPEC
 	cd /tmp; tar --gunzip -xf ${CYG_AUBITDIR}/$^
 	cd /tmp/${SXML_SRC}; ./configure; make
 #install target fails on Windows because it has hard-coded username 'root'
-#which does not exost on Windows
-#	cd /tmp/${SXML_SRC}; install -o ${USER} -g ${USER} -m 0644 libsxml.a /usr/lib
+#which does not exist on Windows, so we will intall neded files ourselves:
 	cd /tmp/${SXML_SRC}; install -o ${USER} -m 0644 libsxml.a /usr/lib
 	cd /tmp/${SXML_SRC}; install -o ${USER} -m 0755 libsxml.so /usr/lib/libsxml.dll
-	cd /tmp/${SXML_SRC}; install -o ${USER} -m 0644 sxml.h /usr/include	
-	
+	cd /tmp/${SXML_SRC}; install -o ${USER} -m 0644 sxml.h /usr/include
+	@echo " "
+	@echo "Installed files to /usr/lib and /usr/include"
 else
 	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
 	cd /tmp/${SXML_SRC}; ./configure; make; make install	
 endif	
 
-	
+
 	@echo " "
 	@echo "Package info & manuals: ${SXML_INFO}"
 	@echo " "
@@ -1518,7 +1578,8 @@ ${PDCURSES_SRC_ZIP}:
 	${WGET} ${PDCURSES_WIN_PATH}/$@
 ${PGIFX_SRC_GZ}:
 	${WGET} ${PGIFX_SRC_PATH}/$@
-
+${PDCURSES_WIN_ZIP}:
+	${WGET} ${PDCURSES_WIN_PATH}/$@ 
 
 #############################################
 #       SQLite tests

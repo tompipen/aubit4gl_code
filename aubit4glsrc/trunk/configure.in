@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.263 2004-12-08 06:59:57 whaslbeck Exp $
+dnl # $Id: configure.in,v 1.264 2004-12-09 23:57:36 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -395,6 +395,7 @@ AC_SUBST(IFX_LFLAGS)
 AC_SUBST(IFX_INCLUDE)
 AC_SUBST(IFX_C_MAKE)
 AC_SUBST(INFORMIXDIR)
+AC_SUBST(INFORMIXDIR_UNQUOTED)
 AC_SUBST(INFORMIXC)
 
 
@@ -531,6 +532,7 @@ AC_SUBST(GCC_VERSION_MINOR)
 AC_SUBST(GCC_MINGW)
 AC_SUBST(GCC_HOME_WINPATH)
 AC_SUBST(GCC_HOME_CYGPATH)
+AC_SUBST(CYGWIN_PATH_WIN)
 AC_SUBST(HAS_CHECK)
 AC_SUBST(WGET)
 AC_SUBST(REDHAT_VER)
@@ -547,6 +549,8 @@ AC_SUBST(CINTSYSDIR)
 AC_SUBST(SQLITE_LDPATH)
 AC_SUBST(Q_ESQLC)
 AC_SUBST(AUBIT_LICENSE)
+AC_SUBST(PCRE_INC_PATH)
+AC_SUBST(PCRE_LIB_PATH)
 
 #Inno Setup:
 AC_SUBST(IS_SOURCE)
@@ -1649,7 +1653,9 @@ if test "$withval" != "no"; then
 	if test "$with_pdf" = ""; then              with_pdf=yes        ;fi
 	if test "$with_iksemel" = ""; then          with_iksemel=yes    ;fi
 	if test "$with_xmlrpc" = ""; then           with_xmlrpc=yes     ;fi
-	if test "$with_rpc" = ""; then              FORCE_RPC=1         ;fi
+	if test "$GCC_MINGW" != "yes"; then 
+		if test "$with_rpc" = ""; then              FORCE_RPC=1         ;fi
+	fi
 
 
 	############ database ##########
@@ -1840,9 +1846,10 @@ COMP_LIBS="LEX_EC LEX_C LEX_CS LEX_PERL"
 #buit in all cases:
 #FIXME: A4GL_HTML should be linkable (LIB_EXPORTLIB), but we are using 4glc 
 #to create dll, and we don't get .a file...
-NEED_4GLC_ALL_libs="HELP_std A4GL_string A4GL_HTML channel"
+NEED_4GLC_ALL_libs="HELP_std A4GL_string A4GL_HTML channel A4GL_file"
 
-if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
+#Seems to be working now - remove:
+#if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
 	#On CygWin/MinGW:
 	#make[3]: Entering directory `/usr/src/aubit/aubit4glsrc/lib/extra_libs/file'
 	#/usr/bin/bash 4glc --as-dll libfile.4gl -o libA4GL_file.dll
@@ -1850,8 +1857,8 @@ if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
 	#d:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccA9aaaa.o(.text+0x1834):libfile.c: undefined reference to `trim_nl'
 	#d:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccA9aaaa.o(.text+0x1846):libfile.c: undefined reference to `push_char'
 	#========================================
-	NEED_4GLC_ALL_libs="$NEED_4GLC_ALL_libs A4GL_file"
-fi
+#	NEED_4GLC_ALL_libs="$NEED_4GLC_ALL_libs A4GL_file"
+#fi
 
 ALL_LIBS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE \
 		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_menu_list DATA_report \
@@ -2160,11 +2167,17 @@ CONVSQL_FILES="README.txt INFORMIX-ORACLE.cnv ORACLE-INFORMIX.cnv \
 	done
 
 ## ==================================================================
-##       Define permanent list of import files to install
+##       Define permanent list of Windows import files to install
 ## ==================================================================
 
-IMPORT_FILES="a4gl_file  a4gl_glade  a4gl_html  a4gl_pcre  a4gl_string  \
+#Import files (libA4GL_glade.dll.a for example) are leeded to do linking
+#on winfows. They are not neded for dlopen-ed libs, just for -l link flags
+
+#This is apparently unused; investigate.
+
+IMPORT_FILES="A4GL_file  A4GL_glade  A4GL_html  A4GL_pcre  A4GL_string  \
 	default  README"
+#Fixme: what are default and README doing here?
 
     COUNTER=0
 	for FILE in $IMPORT_FILES ; do
@@ -2743,6 +2756,318 @@ if test -n "$PROG_SENDMAIL"; then
 fi
 
 ## ==================================================================
+##            Check for SXML - a simple XML parser libray 
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for SXML libraries:)
+AC_ARG_WITH(sxml,
+[  --with-sxml[=DIR]          Include SXML support.  DIR is the SXML base
+                          install directory, defaults to /usr/local.],
+[
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+			if test "$COMSPEC" = ""; then 
+	    		withval=/usr/local
+			else
+				#NOTE: sinc eon CygWin /usr/lib is symling to /usr,
+				#files installed there actually end up in /lib, as far as
+				#native Windows executable (GCC) is concerned
+				withval="`cygpath -m /`"
+			fi
+		else
+			#user specified custom withval
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+	    fi
+		#Store current values
+		old_LIBS="$LIBS"
+		old_LDFLAGS="$LDFLAGS"
+		old_CFLAGS="$CFLAGS"
+		old_CPPFLAGS="$CPPFLAGS"
+
+		LDFLAGS="-L$withval/lib $LDFLAGS"
+		if test "$COMSPEC" = ""; then
+			CPPFLAGS="-I$withval/include $CPPFLAGS"
+		else
+			CPPFLAGS="-I$withval/usr/include $CPPFLAGS"
+		fi
+		
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "LDFLAGS=$LDFLAGS"
+			echo "CPPFLAGS=$CPPFLAGS"
+		fi
+		
+		AC_CHECK_LIB([sxml], [main])
+		AC_CHECK_HEADERS([ sxml.h ])		
+		AC_MSG_CHECKING(if we can use SXML)
+		#De we really need gmp.h here, or was thsi a C&P typo?
+		#if test "$ac_cv_header_gmp_h" = "yes" -a "$ac_cv_lib_sxml_main" = "yes"; then
+		if test "$ac_cv_header_sxml_h" = "yes" -a "$ac_cv_lib_sxml_main" = "yes"; then
+			HAVE_SXMLLIB=1
+			AC_MSG_RESULT(yes)
+		else
+			AC_MSG_RESULT(no)
+	    fi
+
+		
+		#Restore values
+		LIBS="$old_LIBS"
+		LDFLAGS="$old_LDFLAGS"
+		CFLAGS="$old_CFLAGS"
+		CPPFLAGS="$old_CPPFLAGS"
+
+    else
+		AC_MSG_RESULT(disabled)
+    fi
+],[
+	AC_MSG_RESULT(--with-sxml not specified)
+])
+
+if test "$enable_stop_sxml" = "yes" ; then
+	exit
+fi
+
+## ==================================================================
+##            Check for PCRE - Perl Compatible Regular Expressions
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for PCRE libraries:)
+AC_ARG_WITH(pcre,
+[  --with-pcre[=DIR]          Include PCRE support.  DIR is the PCRE base
+                          install directory, defaults to /usr/local.],
+[
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+	    	withval=/usr/local
+		else
+			#user specified custom withval
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+	    fi
+
+		#Store current values
+		old_LIBS="$LIBS"
+		old_LDFLAGS="$LDFLAGS"
+		old_CFLAGS="$CFLAGS"
+		old_CPPFLAGS="$CPPFLAGS"
+
+		if test "$COMSPEC" = ""; then
+			CPPFLAGS="-I$withval/include $CPPFLAGS"
+			LDFLAGS="-L$withval/lib $LDFLAGS"
+		else
+			PCRE_INC_PATH=`cygpath -m $withval`
+			CPPFLAGS="-I$PCRE_INC_PATH/include $CPPFLAGS"
+			PCRE_LIB_PATH=`cygpath -m $withval`
+			LDFLAGS="-L$PCRE_LIB_PATH/bin $LDFLAGS"
+		fi
+		
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "LDFLAGS=$LDFLAGS"
+			echo "CPPFLAGS=$CPPFLAGS"
+		fi
+		
+		AC_CHECK_LIB([pcre], [main])
+		AC_CHECK_HEADERS([ pcre.h ])
+		AC_MSG_CHECKING(if we can use PCRE)
+		if test "$ac_cv_lib_pcre_main" = "yes"; then
+			if test "$COMSPEC" = ""; then 
+				if test "$ac_cv_header_pcre_h" = "yes"; then
+					HAVE_PCRELIB=1
+					AC_MSG_RESULT(yes)
+				else
+					AC_MSG_RESULT(no - missing headers)
+				fi
+			else
+				#On Windows binary distro of pcre, there are no header files
+				HAVE_PCRELIB=1
+				AC_MSG_RESULT(yes)
+			fi
+		else
+			AC_MSG_RESULT(no)
+	    fi
+
+		#Restore values
+		LIBS="$old_LIBS"
+		LDFLAGS="$old_LDFLAGS"
+		CFLAGS="$old_CFLAGS"
+		CPPFLAGS="$old_CPPFLAGS"
+
+    else
+		AC_MSG_RESULT(disabled)
+    fi
+],[
+	AC_MSG_RESULT(--with-pcre not specified)
+])
+
+if test "$enable_stop_pcre" = "yes" ; then
+	exit
+fi
+
+## ==================================================================
+##            Check for POP support
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for POP libraries:)
+AC_ARG_WITH(pop,
+[  --with-pop[=DIR]          Include POP support.  DIR is the POP base
+                          install directory, defaults to /usr/local.],
+[
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+			if test "$COMSPEC" = ""; then 
+	    		withval=/usr/local
+			else
+				#NOTE: since on CygWin /usr/lib is symling to /usr,
+				#files installed there actually end up in /lib, as far as
+				#native Windows executable (GCC) is concerned
+				withval="`cygpath -m /`"
+			fi
+		else
+			#user specified custom withval
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+	    fi
+		
+		#Store current values
+		old_LIBS="$LIBS"
+		old_LDFLAGS="$LDFLAGS"
+		old_CFLAGS="$CFLAGS"
+		old_CPPFLAGS="$CPPFLAGS"
+
+		if test "$COMSPEC" = ""; then
+			CPPFLAGS="-I$withval/include $CPPFLAGS"
+			LDFLAGS="-L$withval/lib $LDFLAGS"
+		else
+			POP_INC_PATH="`cygpath -m $withval`/usr/include"
+			CPPFLAGS="-I$POP_INC_PATH $CPPFLAGS"
+			POP_LIB_PATH="`cygpath -m $withval`/lib"
+			LDFLAGS="-L$POP_LIB_PATH $LDFLAGS"
+		fi
+		
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "LDFLAGS=$LDFLAGS"
+			echo "CPPFLAGS=$CPPFLAGS"
+		fi
+		
+		AC_CHECK_LIB([spopc], [main])
+		AC_CHECK_HEADERS([ libspopc.h ])
+		AC_MSG_CHECKING(if we can use POP)
+		if test "$ac_cv_lib_spopc_main" = "yes" -a "$ac_cv_header_libspopc_h" = "yes"; then
+			HAVE_POPLIB=1
+			AC_MSG_RESULT(yes)
+		else
+			AC_MSG_RESULT(no)
+	    fi
+		
+		#Restore values
+		LIBS="$old_LIBS"
+		LDFLAGS="$old_LDFLAGS"
+		CFLAGS="$old_CFLAGS"
+		CPPFLAGS="$old_CPPFLAGS"
+		
+    else
+		AC_MSG_RESULT(disabled)
+    fi
+],[
+	AC_MSG_RESULT(--with-pop not specified)
+])
+
+if test "$enable_stop_pop" = "yes" ; then
+	exit
+fi
+
+## ==================================================================
+##                  Check for PDF support
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for PDF support:)
+
+AC_ARG_WITH(pdf,
+[  --with-pdf[=DIR]          Include PDF support.  DIR is the PDFlib
+                          install directory, defaults to /usr/local.],
+[
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+	    	withval=/usr/local
+		else
+			#user specified custom withval
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PDF"
+			WARN_LD_LIBRARY_PATH=1
+            ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+		fi
+
+		AC_PATH_PROG(PDFLIB_CONFIG, pdflib-config, no)
+		
+		if test "$PDFLIB_CONFIG" != "no"; then 
+			PDF_LIBDIR=`pdflib-config --libdir`
+			PDF_INCDIR=`pdflib-config --includedir`
+			PDF_VERSION=`pdflib-config --version`
+			#PDF_LDFLAGS=`pdflib-config --ldflags`
+			#PDF_CFLAGS=`pdflib-config --cflags`
+		fi
+		
+		old_LIBS=$LIBS
+		old_LDFLAGS=$LDFLAGS
+        old_CFLAGS=$CFLAGS
+        old_CPPFLAGS=$CPPFLAGS
+
+		if test "$GCC_MINGW" != "yes"; then
+			TEST_PDFLIB_I_FLAGS="-I$withval/include"
+			TEST_PDFLIB_L_FLAGS="-L$withval/lib"
+        else
+			withval="`cygpath -m $withval`"		
+			TEST_PDFLIB_I_FLAGS="-I$withval/include"
+			TEST_PDFLIB_L_FLAGS="-L$withval/lib"
+        fi
+
+		TEST_PDFLIB_FLAGS="$TEST_PDFLIB_I_FLAGS $TEST_PDFLIB_L_FLAGS"
+		LDFLAGS="$LDFLAGS $TEST_PDFLIB_FLAGS -lm"
+		CFLAGS="$CFLAGS $TEST_PDFLIB_FLAGS"
+		#C preprocesor flags
+		CPPFLAGS="$CPPFLAGS $TEST_PDFLIB_I_FLAGS"
+
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "LDFLAGS=$LDFLAGS"
+			echo "CPPFLAGS=$CPPFLAGS"
+			echo "PDF_LIBDIR=$PDF_LIBDIR"
+			echo "PDF_INCDIR=$PDF_INCDIR"
+			echo "PDF_VERSION=$PDF_VERSION"
+			
+		fi
+		
+		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
+		# FIXME: Replace `main' with a function in `-lpdf':
+		AC_CHECK_LIB([pdf], [main])
+		AC_CHECK_HEADERS([ pdflib.h ])
+		LIBS=$old_LIBS
+		LDFLAGS=$old_LDFLAGS
+		CFLAGS=$old_CFLAGS
+        CPPFLAGS=$old_CPPFLAGS
+
+		AC_MSG_CHECKING(if we can use PDF)
+		if test $ac_cv_lib_pdf_main = yes -a "$ac_cv_header_pdflib_h" = "yes"; then
+			USE_PDF=yes
+    	    PDFBUILD=yes
+			PDFLIB_I_FLAGS="$TEST_PDFLIB_I_FLAGS"
+			PDFLIB_L_FLAGS="$TEST_PDFLIB_L_FLAGS"
+		    AC_DEFINE(HAVE_PDF,1,[ ])
+		    AC_MSG_RESULT(yes)
+		else
+		    AC_DEFINE(HAVE_PDF,0,[ ])
+		    AC_MSG_RESULT(no)
+		fi
+	else
+		AC_MSG_RESULT(disabled)
+	fi
+],[
+	AC_MSG_RESULT(--with-pdf not specified)
+])
+
+if test "$enable_stop_pdf" = "yes" ; then
+	exit
+fi
+
+## ==================================================================
 ##                 Checks for CINT - C code interpreter
 ## ==================================================================
 
@@ -2847,7 +3172,8 @@ AC_ARG_WITH(cint,
 				fi
 			else
 				#On Windows, we dont have to worry about dependencies
-				AC_MSG_RESULT(Use Cint - yes)
+				AC_MSG_CHECKING(if we can use Cint)
+				AC_MSG_RESULT(yes)
 			fi
 		else
 			AC_MSG_RESULT(Use Cint - NO - no cint and/or makecint executable)
@@ -2866,9 +3192,9 @@ AC_ARG_WITH(cint,
 ])
 
 if test "$enable_ac_debug" = "yes" ; then
-	echo "1 $LDFLAGS"
-	echo "a $save_LDFLAGS"
-	echo "2 $LD_LIBRARY_PATH"
+	echo "LDFLAGS=$LDFLAGS"
+	echo "save_LDFLAGS=$save_LDFLAGS"
+	echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 fi
 
 if test "$enable_stop_cint" = "yes" ; then
@@ -2879,6 +3205,9 @@ fi
 ##                 Determine RPM build location
 ## ==================================================================
 
+
+PHP_CONFIGURE_PART(RPM package settings:)
+AC_MSG_CHECKING(RPM build root)	
 
 #MACHTYPE is a environment variable - not a Autoconf one
 case "$MACHTYPE" in
@@ -2908,6 +3237,8 @@ case "$MACHTYPE" in
         ;;
 
 esac
+
+AC_MSG_RESULT($RPMBUILDROOT)
 
 ## ==================================================================
 ##                 Checks for other 4gl compiles
@@ -3487,6 +3818,7 @@ AC_ARG_WITH(informix,
 #on Windows, we MUST quote INFORMIXDIR
 #On UNIX, we MUST NOT quote it
 if test "$COMSPEC" != ""; then 
+	INFORMIXDIR_UNQUOTED="$INFORMIXDIR"
 	INFORMIXDIR="'$INFORMIXDIR'"
 fi
 
@@ -4223,31 +4555,52 @@ fi
         if test "$withval" != "no"; then
 
 	        if test "$withval" = "yes"; then
-                withval="/usr"
+            	if test "$GCC_MINGW" = "yes"; then
+					#Note that on CygWin /usr/lib is a symlink to /lib
+					#but when we convert paths to native Windows paths, 
+					#<CYGDIR>/usr/lib DOES NOT EXIST - because native Windows
+					#executables know nothing about CygWin symlinking!!!!
+					withval="/"
+				else
+					withval="/usr"
+				fi
 			fi
 
 			PATH="$withval/bin:$old_PATH"
 
+			#readline library is needed to link SQLite
 			AC_CHECK_LIB([readline], [main])
 
 			AC_PATH_PROG(SQLITE, sqlite, no)
 
-	        if test "$SQLITE" != "no"; then
+	        if test "$SQLITE" != "no" -a "$COMSPEC" = ""; then
 				#we found executable, set withval to the place
 				#you found sqlite executable in
 				TMP=`dirname $SQLITE`
                 #to remove bin/
 				withval=`dirname $TMP`
 			fi
+			
+			if test "$GCC_MINGW" = "yes"; then
+				#WARNING: paths for MinGW GCC MUST use forward slash - NOT backslash!!!
+				SQLITE_ROOT=`cygpath -m "$withval"`
+			else
+				SQLITE_ROOT="$withval"
+			fi
 
 			AC_MSG_CHECKING(SQLite base install directory)
-			AC_MSG_RESULT($withval)
-			SQLITE_LDPATH="$withval/lib"
+			AC_MSG_RESULT($SQLITE_ROOT)
+			
+			SQLITE_LDPATH="$SQLITE_ROOT/lib"
 			LDFLAGS="-L$SQLITE_LDPATH"
-			CLFAGS="-I$withval/include"
+			CLFAGS="-I$SQLITE_ROOT/include"
 
 			# FIXME: Replace `main' with a function in `-lc':
 			AC_CHECK_LIB([sqlite], [main])
+			
+			#I don't think we need sqlite.h - we are using private copy of
+			#it as sqlite-local.h in lib/libsql/odbc
+			#as well as sqliteodbc.h and sqliteodbc.c
 			AC_CHECK_HEADERS([ sqlite.h ])
 
 			if test "$ac_cv_lib_sqlite_main" = "yes" ; then
@@ -5388,72 +5741,6 @@ AC_ARG_WITH(iksemel,
 ])
 
 ## ==================================================================
-##                  Check for PDF support
-## ==================================================================
-
-PHP_CONFIGURE_PART(Checking for PDF support:)
-
-AC_ARG_WITH(pdf,
-[  --with-pdf[=DIR]          Include PDF support.  DIR is the PDFlib
-                          install directory, defaults to /usr/local.],
-[
-	if test "$withval" != "no"; then
-		if test "$withval" = "yes"; then
-	    	withval=/usr/local
-		else
-			#user specified custom withval
-			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PDF"
-			WARN_LD_LIBRARY_PATH=1
-            ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
-		fi
-
-		old_LIBS=$LIBS
-		old_LDFLAGS=$LDFLAGS
-        old_CFLAGS=$CFLAGS
-        old_CPPFLAGS=$CPPFLAGS
-
-		if test "$GCC_MINGW" != "yes"; then
-			TEST_PDFLIB_I_FLAGS="-I$withval/include"
-			TEST_PDFLIB_L_FLAGS="-L$withval/lib"
-        else
-			TEST_PDFLIB_I_FLAGS="-I$CYGWIN_DRIVE:$CYGWIN_PATH$withval/include"
-			TEST_PDFLIB_L_FLAGS="-L$CYGWIN_DRIVE:$CYGWIN_PATH$withval/lib"
-        fi
-
-		TEST_PDFLIB_FLAGS="$TEST_PDFLIB_I_FLAGS $TEST_PDFLIB_L_FLAGS"
-		LDFLAGS="$LDFLAGS $TEST_PDFLIB_FLAGS"
-		CFLAGS="$CFLAGS $TEST_PDFLIB_FLAGS"
-		#C preprocesor flags
-		CPPFLAGS="$CPPFLAGS $TEST_PDFLIB_I_FLAGS"
-
-		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
-		# FIXME: Replace `main' with a function in `-lpdf':
-		AC_CHECK_LIB([pdf], [main])
-		AC_CHECK_HEADERS([ pdflib.h ])
-		LIBS=$old_LIBS
-		LDFLAGS=$old_LDFLAGS
-		CFLAGS=$old_CFLAGS
-        CPPFLAGS=$old_CPPFLAGS
-
-		if test $ac_cv_lib_pdf_main = yes && test "$ac_cv_header_pdflib_h" = "yes"; then
-			USE_PDF=yes
-    	    PDFBUILD=yes
-			PDFLIB_I_FLAGS="$TEST_PDFLIB_I_FLAGS"
-			PDFLIB_L_FLAGS="$TEST_PDFLIB_L_FLAGS"
-		    AC_DEFINE(HAVE_PDF,1,[ ])
-		    #AC_MSG_RESULT(yes)
-		else
-		    AC_DEFINE(HAVE_PDF,0,[ ])
-		    #AC_MSG_RESULT(no)
-		fi
-	else
-		AC_MSG_RESULT(disabled)
-	fi
-],[
-	AC_MSG_RESULT(--with-pdf not specified)
-])
-
-## ==================================================================
 ##                  Check for Sun RPC support
 ## ==================================================================
 
@@ -5777,117 +6064,6 @@ AC_ARG_WITH(mpz,
     fi
 ],[
 	AC_MSG_RESULT(--with-mpz not specified)
-])
-
-
-## ==================================================================
-##            Check for POP support
-## ==================================================================
-
-PHP_CONFIGURE_PART(Checking for POP libraries:)
-AC_ARG_WITH(pop,
-[  --with-pop[=DIR]          Include POP support.  DIR is the POP base
-                          install directory, defaults to /usr/local.],
-[
-	if test "$withval" != "no"; then
-		if test "$withval" = "yes"; then
-	    	withval=/usr/local
-		else
-			#user specified custom withval
-		    CUSTOM_WITHVAL=1
-			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
-	    fi
-		AC_CHECK_LIB([spopc], [main])
-		if test "$ac_cv_lib_spopc_main" = "yes"; then
-			AC_CHECK_HEADERS([ libspopc.h ])
-			HAVE_POPLIB=1
-	    fi
-    else
-		AC_MSG_RESULT(disabled)
-    fi
-],[
-	AC_MSG_RESULT(--with-pop not specified)
-])
-
-## ==================================================================
-##            Check for PCRE - Perl Compatible Regular Expressions
-## ==================================================================
-
-PHP_CONFIGURE_PART(Checking for PCRE libraries:)
-AC_ARG_WITH(pcre,
-[  --with-pcre[=DIR]          Include PCRE support.  DIR is the PCRE base
-                          install directory, defaults to /usr/local.],
-[
-	if test "$withval" != "no"; then
-
-		if test "$withval" = "yes"; then
-	    	withval=/usr/local
-		else
-			#user specified custom withval
-		    CUSTOM_WITHVAL=1
-			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
-	    fi
-
-		AC_CHECK_LIB([pcre], [main])
-		if test "$ac_cv_lib_pcre_main" = "yes"; then
-			AC_CHECK_HEADERS([ pcre.h ])
-			HAVE_PCRELIB=1
-	    fi
-
-    else
-		AC_MSG_RESULT(disabled)
-    fi
-],[
-	AC_MSG_RESULT(--with-pcre not specified)
-])
-
-## ==================================================================
-##            Check for SXML - 
-## ==================================================================
-
-PHP_CONFIGURE_PART(Checking for SXML libraries:)
-AC_ARG_WITH(sxml,
-[  --with-sxml[=DIR]          Include SXML support.  DIR is the SXML base
-                          install directory, defaults to /usr/local.],
-[
-	if test "$withval" != "no"; then
-		if test "$withval" = "yes"; then
-	    	withval=/usr/local
-		else
-			#user specified custom withval
-		    CUSTOM_WITHVAL=1
-			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
-	    fi
-		#Store current values
-		old_LIBS="$LIBS"
-		old_LDFLAGS="$LDFLAGS"
-		old_CFLAGS="$CFLAGS"
-		old_CPPFLAGS="$CPPFLAGS"
-
-		LDFLAGS="-L$withval/lib $LDFLAGS"
-		CPPFLAGS="-I$withval/include $CPPFLAGS"
-		AC_CHECK_LIB([sxml], [main])
-		AC_CHECK_HEADERS([ sxml.h ])		
-		AC_MSG_CHECKING(if we can use SXML)
-		if test "$ac_cv_header_gmp_h" = "yes" -a "$ac_cv_lib_sxml_main" = "yes"; then
-			HAVE_SXMLLIB=1
-			AC_MSG_RESULT(yes)
-		else
-			AC_MSG_RESULT(no)
-	    fi
-
-		
-		#Restore values
-		LIBS="$old_LIBS"
-		LDFLAGS="$old_LDFLAGS"
-		CFLAGS="$old_CFLAGS"
-		CPPFLAGS="$old_CPPFLAGS"
-
-    else
-		AC_MSG_RESULT(disabled)
-    fi
-],[
-	AC_MSG_RESULT(--with-sxml not specified)
 ])
 
 ## ==================================================================
@@ -6745,7 +6921,7 @@ else
         A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
     fi
 
-	if test "$AUBIT_SOURCE" = "0" && test "$A4GL_SQLTYPE" = "nosql"; then
+	if test "$AUBIT_SOURCE" = "0" -a "$A4GL_SQLTYPE" = "nosql"; then
 		########## SQLite engine staticaly linked with Aubit plug-in #############
 		if test "$SQLITE_LIB" = "1" ; then
 			A4GL_LEXTYPE=C
@@ -7009,6 +7185,8 @@ PLUGIN_NO_LINKABLE=
 				PLUGIN_NO="$PLUGIN_NO UI_TUI UI_HL_TUI"
 				#Will be on all known Linux installations, but not by default on CygWin
 				INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL "
+			else
+				PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS UI_TUI UI_HL_TUI"
 			fi
 		else
 			#no Curses and no PDcurses
@@ -7017,6 +7195,8 @@ PLUGIN_NO_LINKABLE=
 				PLUGIN_NO="$PLUGIN_NO UI_TUI UI_HL_TUI UI_HL_TUIN UI_HL_TUINs"
 				#Will be on all known Linux installations, but not by default on CygWin
 				INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL "
+			else
+				PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS UI_TUI UI_HL_TUI UI_HL_TUIN UI_HL_TUINs"
 			fi
 		fi
 	fi
@@ -7100,6 +7280,8 @@ PLUGIN_NO_LINKABLE=
 			#SUN RPC does not exist for MinGW anyway
 			PLUGIN_NO="$PLUGIN_NO RPC_XDR FORM_XDR XDRPACKER_menu_list XDRPACKER_report XDRPACKER_struct_form PACKER_XDR"
 			INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sunrpc"
+		else
+			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS RPC_XDR FORM_XDR XDRPACKER_menu_list XDRPACKER_report XDRPACKER_struct_form PACKER_XDR"
         fi
 	fi
 
@@ -7170,18 +7352,25 @@ fi
 	
 	#All libMENU_xxx need libUI_GTK on Windows to be linked with, to
     #resolve symbols - so all libMENU_ must be built after libUI_GTK
-	if test "$HAVE_RPCLIB" != "0" && test "$GTKBUILD" != "no"; then
+	if test "$HAVE_RPCLIB" != "0" -a "$GTKBUILD" != "no"; then
 		PLUGIN_YES="$PLUGIN_YES MENU_XDR"
     else
-        PLUGIN_NO="$PLUGIN_NO MENU_XDR"
+		if test "$GCC_MINGW" != "yes"; then	
+			#hide MENU_XDR from list of not to build - no Sun RPC with MinGW GCC
+			PLUGIN_NO="$PLUGIN_NO MENU_XDR"
+		else
+			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS MENU_XDR" 
+		fi
     fi
 
 	#SQLite native connection
 	if test "$SQLITE_LIB" = "1"; then
 		PLUGIN_YES="$PLUGIN_YES SQL_sqlite"
-		if test "$GCC_MINGW" != "yes" && test "$cygwin" != "1"; then
+		if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
 			#no static SQLite library supplied for Windows
 			PLUGIN_YES="$PLUGIN_YES SQL_sqliteS"
+		else
+			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS SQL_sqliteS"
         fi
     else
         PLUGIN_NO="$PLUGIN_NO SQL_sqlite SQL_sqliteS"
@@ -7284,8 +7473,6 @@ fi
     PLUGIN_NO="$PLUGIN_NO $PLUGIN_NO_LINKABLE"
 
 #SWIG?
-
-#A4GL_file  
 
 #MENU_XDR
 
@@ -7461,16 +7648,21 @@ cat<<X
 | You will need lex if you'd want to regenerate the Aubit parsers.   |
 X
 fi
-TMP=`echo $PATH | grep :/lib:`
-if test "$GTKBUILD" = "yes" && test "$cygwin" = "1" && test "$TMP" = ""; then
-cat<<X
-+--------------------------------------------------------------------+
-|                        *** WARNING ***                             |
-| Add /lib to your PATH - GTK+ libraries where found there, and you  |
-| are on Windows - Windows native library loader searches PATH to    |
-| to find libraries, but /lib is not in PATH on CygWin by default!   |
-X
-fi
+
+
+#This is now obsolete, as GTK installers take care of GTK paths - remove:
+#TMP=`echo $PATH | grep :/lib:`
+#if test "$GTKBUILD" = "yes" && test "$cygwin" = "1" && test "$TMP" = ""; then
+#cat<<X
+#+--------------------------------------------------------------------+
+#|                        *** WARNING ***                             |
+#| Add /lib to your PATH - GTK+ libraries where found there, and you  |
+#| are on Windows - Windows native library loader searches PATH to    |
+#| to find libraries, but /lib is not in PATH on CygWin by default!   |
+#X
+#fi
+
+
 if test "$WARN_YACC" = "1"; then
 cat<<X
 +--------------------------------------------------------------------+
@@ -7592,22 +7784,34 @@ cat<<X
 | You have specified one or more --with-xxxx=<path> switches to      |
 | 'configure' script, specifiying package installed in non-standard  |
 | <path> In most cases, you will have to add this path to your PATH  |
+X
+if test "$COMSPEC" = ""; then
+LD_LIBRARY_PATH_LABEL="LD_LIBRARY_PATH"
+cat<<Y
 | and/or LD_LIBRARY_PATH and/or ld.so.conf in your run-time          |
+Y
+else
+LD_LIBRARY_PATH_LABEL="PATH"
+cat<<Z
+| in your run-time                                                   |
+Z
+fi
+cat<<Q
 | environment, for Aubit compilers and compiler programs to be able  |
 | to find nedded programs and/or libraries that belong to this way   |
 | specified package in non-standard place. We will try to do this    |
 | automatically for you:                                             |
-X
+Q
 if test "$enable_ac_debug" = "yes" ; then
 cat<<X
 |                                                                    |
-| (DEBUG) Reason for LD_LIBRARY_PATH warning:                        |
+| (DEBUG) Reason for $LD_LIBRARY_PATH_LABEL warning:
 | "$WARN_LD_LIBRARY_REASON"
 |                                                                    |
 | (DEBUG) configure invoked with flags:                              |
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
-| (DEBUG) LD_LIBRARY_PATH to add:                                    |
+| (DEBUG) $LD_LIBRARY_PATH_LABEL to add: 
 | ADD_LD_LIBRARY_PATH=$ADD_LD_LIBRARY_PATH
 |                                                                    |
 X
@@ -7666,6 +7870,16 @@ cat<<X
 | $PLUGIN_NO
 X
 fi
+
+if test "$PLATFORM_UNAVAILABLE_OPTIONS" != "" ; then
+cat<<X
++--------------------------------------------------------------------+
+| Aubit options not available on this platform:                      |
+| $PLATFORM_UNAVAILABLE_OPTIONS
++--------------------------------------------------------------------+
+X
+fi
+
 if test "$WARN_PGCOMPAT" = "1" ; then
 cat<<X
 +--------------------------------------------------------------------+
@@ -7703,7 +7917,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.263 2004-12-08 06:59:57 whaslbeck Exp $
+| $Id: configure.in,v 1.264 2004-12-09 23:57:36 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

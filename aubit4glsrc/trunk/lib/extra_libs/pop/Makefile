@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.11 2004-10-04 13:50:02 afalout Exp $
+# $Id: Makefile,v 1.12 2004-12-09 23:59:12 afalout Exp $
 #
 
 ROOT    =../../..
@@ -44,25 +44,27 @@ ALL=${LIBROOT}/libA4GL_pop${SO_EXT}
 
 4GLC	=${ROOT}/bin/4glc
 
+ifdef COMSPEC
+	CFLAGS	+=-I$(shell cygpath -m /usr/include) -L$(shell cygpath -m /lib)
+	LINKLIBS=-lwsock32
+endif
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 #FIXME: use amake
 
-
 ######### !!!!!!!!! PLEASE keep A4GL_ in UPPERCASE !!!!!!!!! ###############
 all : ${ALL}
 
 ${LIBROOT}/libA4GL_pop${SO_EXT}: pop.c
 #	${4GLPC_EXEC} -g ${AS_DLL} $^ -o $@ -lspopc
-	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl -lspopc
+	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl -lspopc ${LINKLIBS}
 	@echo "POP library sucesfully compiled."
-
 
 pop.c: pop.4gl
 	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} ${VERBOSE_FLAG} $^
-
 
 #Move this test in tools/test/build_test
 test.4ae: test.4gl test.per

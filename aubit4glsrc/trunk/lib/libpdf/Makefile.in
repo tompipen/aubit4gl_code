@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.17 2004-09-28 09:49:21 afalout Exp $
+# $Id: Makefile.in,v 1.18 2004-12-09 23:59:14 afalout Exp $
 #
 
 ROOT        =../..
@@ -60,19 +60,11 @@ OBJECTS_PDF		=has_pdf.o
 all: ${ALL}
 
 ${LIBROOT}/libEXREPORT_PDF${SO_EXT}: ${OBJECTS_PDF}
-	${LD} @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS}
+#WARNING: On Windows libs must be et the end
+	${LD} @PDFLIB_L_FLAGS@ $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS} -lpdf
 
 ${LIBROOT}/libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
 	${LD} $(SO_LDFLAGS) ${OBJECTS_NOPDF} -o $@ ${LINKLIBS}
-
-#NOPDF.dll: ${OBJECTS_NOPDF}
-#	${MAKE} libEXREPORT_NOPDF.dll DLLOBJS="${OBJECTS_NOPDF}"
-#	${CP} libEXREPORT_NOPDF.dll ${LIBROOT}
-#	${CP} libEXREPORT_NOPDF.dll.a ${LIBROOT}
-
-#PDF.dll:
-#	@echo "Ooops: PDFlib on Windows?"
-
 
 ## ==================================================================
 ##                              Clean

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.168 2004-12-07 01:43:55 afalout Exp $
+# $Id: Makefile-common.in,v 1.169 2004-12-09 23:59:12 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -344,7 +344,7 @@ LDFLAGS_SHARED		=@LDFLAGS_SHARED@
 AWK                 =@AWK@
 STRIP               =@STRIP@
 FIND				=find
-
+UNZIP				=unzip
 
 #Default strip difference :
 #-rwxr-xr-x    1 root     root       701702 Jan 28 18:25 bin/4glc
@@ -616,7 +616,8 @@ ifdef COMSPEC #############Windows platform - CygWin/MinGW related:#############
 
 	#Only for CygWin - Windows 'find' is useless anyway
 	FIND=/bin/find
-
+	UNZIP=/bin/unzip
+	
 	#dll on Windows are loaded by standard Windows loader, that don't
 	#understand CygWin symbolic links:
 	SOEXP_EXT   	=${SO_EXT}.a
@@ -870,22 +871,26 @@ export PATH
 #Convert Autoconf variables into Make variables here, so we don't need to
 #process every make file with Autoconf:
 
-GCC_HOME_WINPATH=@GCC_HOME_WINPATH@
-GCC_HOME_CYGPATH=@GCC_HOME_CYGPATH@
-PGSQL_INCDIR=@PGSQL_INCDIR@
-PGSQL_INCLUDE=@PGSQL_INCLUDE@
-PGSQL_LIBDIR=@PGSQL_LIBDIR@
-PG_ESQLC=@PG_ESQLC@
-ECPG_INCDIR=@ECPG_INCDIR@
-ECPG_LIBDIR=@ECPG_LIBDIR@
-ECPG_LFLAGS=@ECPG_LFLAGS@
-ECPG_IFLAGS=@ECPG_IFLAGS@
-IFMX_ESQLC=@IFMX_ESQLC@
-SAPDB_ESQLC=@SAPDB_ESQLC@
-Q_ESQLC=@Q_ESQLC@
-EXE_EXT=@EXEEXT@
-HAVE_PGSQL_LIB=@HAVE_PGSQL_LIB@
-POSTGRESDIR=@POSTGRESDIR@
+INFORMIXDIR			=@INFORMIXDIR@
+INFORMIXDIR_UNQUOTED=@INFORMIXDIR_UNQUOTED@
+SQLITE_LDPATH		=@SQLITE_LDPATH@
+CYGWIN_PATH_WIN		=@CYGWIN_PATH_WIN@
+GCC_HOME_WINPATH	=@GCC_HOME_WINPATH@
+GCC_HOME_CYGPATH	=@GCC_HOME_CYGPATH@
+PGSQL_INCDIR		=@PGSQL_INCDIR@
+PGSQL_INCLUDE		=@PGSQL_INCLUDE@
+PGSQL_LIBDIR		=@PGSQL_LIBDIR@
+PG_ESQLC			=@PG_ESQLC@
+ECPG_INCDIR			=@ECPG_INCDIR@
+ECPG_LIBDIR			=@ECPG_LIBDIR@
+ECPG_LFLAGS			=@ECPG_LFLAGS@
+ECPG_IFLAGS			=@ECPG_IFLAGS@
+IFMX_ESQLC			=@IFMX_ESQLC@
+SAPDB_ESQLC			=@SAPDB_ESQLC@
+Q_ESQLC				=@Q_ESQLC@
+EXE_EXT				=@EXEEXT@
+HAVE_PGSQL_LIB		=@HAVE_PGSQL_LIB@
+POSTGRESDIR			=@POSTGRESDIR@
 
 GLIB_CFLAGS			=@GLIB_CFLAGS@
 GTK_INC_PATH		=@GTK_INC_PATH@
@@ -910,6 +915,10 @@ LIBPQ_FE_H_IFLAGS	=@LIBPQ_FE_H_IFLAGS@
 
 PDFLIB_L_FLAGS		=@PDFLIB_L_FLAGS@
 PDFLIB_I_FLAGS		=@PDFLIB_I_FLAGS@
+
+PCRE_INC_PATH		=@PCRE_INC_PATH@
+PCRE_LIB_PATH		=@PCRE_LIB_PATH@
+
 
 ## ==================================================================
 ##                      Moved from aubitrc:

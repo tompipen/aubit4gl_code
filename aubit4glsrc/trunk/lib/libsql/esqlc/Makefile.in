@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.39 2004-12-01 07:21:08 afalout Exp $
+# $Id: Makefile.in,v 1.40 2004-12-09 23:59:14 afalout Exp $
 #
 
 ROOT		=../../..
@@ -121,10 +121,9 @@ ifdef COMSPEC
     #export TMP
     #export PWD
 
-
-	IFX_LIBS="E:\Program files\W2000\Informix\CSDK\lib\isqlt09a.lib" "E:\Program files\W2000\Informix\CSDK\lib\igl4n304.lib" "E:\Program files\W2000\Informix\CSDK\lib\iglxn304.lib" "E:\Program files\W2000\Informix\CSDK\lib\igo4n304.lib"
-	# netapi32.lib wsock32.lib user32.lib winmm.lib
-
+	INFORMIXDIR_CSDK	=${INFORMIXDIR_UNQUOTED}/CSDK
+	IFX_LIBS="${INFORMIXDIR_CSDK}\bin\isqlt09a.dll"  "${INFORMIXDIR_CSDK}\bin\igl4n304.dll" \
+		"${INFORMIXDIR_CSDK}\bin\iglxn304.dll"  "${INFORMIXDIR_CSDK}\bin\igo4n304.dll"
 
 else
 #    ESQL_INCLPATH	=-I${LIBROOT} -I${ROOT}/compilers/fcompile
@@ -180,11 +179,14 @@ ifdef COMSPEC
 	ESQL_FLAGS= -thread
 	LDFLAGS=
 	
-	INFORMIXDIR=E:/Program files/W2000/Informix/CSDK
+	#INFORMIXDIR=CRAP-HARD-CODED-E:/Program files/W2000/Informix/CSDK
 	
-	XXX="${INFORMIXDIR}\bin\isqlt09a.dll"  "${INFORMIXDIR}\bin\igl4n304.dll" \
-		"${INFORMIXDIR}\bin\iglxn304.dll"  "${INFORMIXDIR}\bin\igo4n304.dll"
-	
+	INFORMIXDIR_CSDK	=${INFORMIXDIR_UNQUOTED}/CSDK
+	IFX_LIBS="${INFORMIXDIR_CSDK}\bin\isqlt09a.dll"  "${INFORMIXDIR_CSDK}\bin\igl4n304.dll" \
+		"${INFORMIXDIR_CSDK}\bin\iglxn304.dll"  "${INFORMIXDIR_CSDK}\bin\igo4n304.dll"
+		
+		
+		
 	LINKLIBS=-L../../ -laubit4gl
 
 	#.ec.o:
@@ -193,7 +195,7 @@ ifdef COMSPEC
 	#	-@rm $*.c $*.c_*
 	
 	#libSQL_ESQL.dll:  esql.o
-	#	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $^ ${XXX} ${LINKLIBS} -o $@
+	#	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $^ ${IFX_LIBS} ${LINKLIBS} -o $@
 
 endif
 
@@ -220,9 +222,9 @@ ${LIBROOT}/libSQL_esql${SO_EXT}: ${SRC}
 #	cpp ${CPP_FLAGS} $^ -D__IFX__  > ifx_$^
 ifneq "${COMSPEC}" ""
 	$(ESQL) $(ESQL_FLAGS) -e $<
-	$(CC) $(CFLAGS) -I"${INFORMIXDIR}\incl\esql" -c $(basename $<).c -o $(basename $<).o
+	$(CC) $(CFLAGS) -I"${INFORMIXDIR_CSDK}\incl\esql" -c $(basename $<).c -o $(basename $<).o
 	-@rm $(basename $<).c $(basename $<).c_*
-	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $(basename $<).o ${XXX} ${LINKLIBS} -o $@
+	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $(basename $<).o ${IFX_LIBS} ${LINKLIBS} -o $@
 else
 	export INFORMIXC=@INFORMIXC@; @IFMX_ESQLC@ -c $^ ${ESQL_FLAGS} \
 		${ESQL_INCLPATH} ${C_DFLAGS}

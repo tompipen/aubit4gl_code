@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.23 2004-12-01 07:21:08 afalout Exp $
+# $Id: Makefile,v 1.24 2004-12-09 23:59:13 afalout Exp $
 #
 
 ROOT    =../..
@@ -88,9 +88,9 @@ ifdef COMSPEC
 	ESQL		=esql
 	ESQL_FLAGS	=-thread
 	LDFLAGS		=
-	INFORMIXDIR	=E:/Program files/W2000/Informix/CSDK
-	XXX="${INFORMIXDIR}\bin\isqlt09a.dll"  "${INFORMIXDIR}\bin\igl4n304.dll" \
-		"${INFORMIXDIR}\bin\iglxn304.dll"  "${INFORMIXDIR}\bin\igo4n304.dll"
+	INFORMIXDIR_CSDK	=${INFORMIXDIR_UNQUOTED}/CSDK
+	IFX_WIN_LIBS="${INFORMIXDIR_CSDK}\bin\isqlt09a.dll"  "${INFORMIXDIR_CSDK}\bin\igl4n304.dll" \
+		"${INFORMIXDIR_CSDK}\bin\iglxn304.dll"  "${INFORMIXDIR_CSDK}\bin\igo4n304.dll"
 endif
 
 ifneq "${COMSPEC}" ""
@@ -111,7 +111,7 @@ all: ${ALL}
 libESQL_INFORMIX${SO_EXT}: ${LIBROOT}/libESQL_INFORMIX${SO_EXT}
 ${LIBROOT}/libESQL_INFORMIX${SO_EXT}: helper_funcs_informix.o
 ifneq "${COMSPEC}" ""
-	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $^ ${XXX} ${LIBAUBIT4GL} -o $@
+	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $^ ${IFX_WIN_LIBS} ${LIBAUBIT4GL} -o $@
 else
 	${IFMX_ESQLC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} 
 #Solaris:
@@ -155,10 +155,10 @@ ifneq "${COMSPEC}" ""
 #WARNING: esql will strip all quotes, and invoke esqlc with un-quoted paths
 #that may contain spaces. If you get message "Input file name has invalid suffix ''"
 #that is probably what happened. You must double-quote it ('"..."')
-	$(ESQL) -dcmdl $(ESQL_FLAGS) -DDIALECT_INFORMIX -I'"${INFORMIXDIR}/incl"' -e $<
+	$(ESQL) -dcmdl $(ESQL_FLAGS) -DDIALECT_INFORMIX -I'"${INFORMIXDIR_CSDK}/incl"' -e $<
 #-I"${INFORMIXDIR}/CSDK/incl"	
-	$(CC) $(CFLAGS) -DDIALECT_INFORMIX -I"${INFORMIXDIR}/incl/esql" \
-		-I"${INFORMIXDIR}/incl" -c $(basename $<).c -o $@
+	$(CC) $(CFLAGS) -DDIALECT_INFORMIX -I"${INFORMIXDIR_CSDK}/incl/esql" \
+		-I"${INFORMIXDIR_CSDK}/incl" -c $(basename $<).c -o $@
 	-@rm $(basename $<).c $(basename $<).c_*
 else
 	${IFMX_ESQLC} -fPIC -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl \

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2004-08-08 01:42:18 afalout Exp $
+# $Id: Makefile,v 1.5 2004-12-09 23:59:14 afalout Exp $
 #
 
 ROOT		=../../../..
@@ -54,7 +54,8 @@ all: ${ALL}
 ${LIBROOT}/libLOGREPPROC_PDF.so : process_pdf.o pdf_handling.o ../common/common_pdf.c
 #	gcc  -z -Wl,+s -Wl,-E -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl  -lpdf
 #	${LD} @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS}
-	${LD} ${CFLAGS} ${PDFLIB_L_FLAGS} -lpdf $(SO_LDFLAGS) $^ -o $@ ${LINKLIBS}
+#WARNING - on Windows libraries must be at the end
+	${LD} ${CFLAGS} ${PDFLIB_L_FLAGS} $(SO_LDFLAGS) $^ -o $@ ${LINKLIBS} -lpdf
 	
 process_pdf.o: ../../layout_engine/API_layout.h
 

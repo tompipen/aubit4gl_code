@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2004-08-08 01:42:18 afalout Exp $
+# $Id: Makefile,v 1.4 2004-12-09 23:59:13 afalout Exp $
 #
 
 LIBROOT		=../../..
@@ -62,9 +62,9 @@ GTKLIBS				:=$(subst -rdynamic,,${GTKLIBS})
 
 #Need to find better sollution for this:
 #dropline.net and other installers have -lintl, but zip has -lintl-1
-ifeq "${HOSTNAME}" "istation"
-	GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
-endif
+#ifeq "${HOSTNAME}" "istation"
+#	GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
+#endif
 
 CFLAGS				+=-I.. -I. -I${ROOT}/incl ${GLIB_CFLAGS} ${GTK_INC_PATH} \
 					${GTK_LIB_PATH} -I/usr/local/include/ncurses

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.4 2004-10-04 13:50:01 afalout Exp $
+# $Id: makefile,v 1.5 2004-12-09 23:59:12 afalout Exp $
 #
 
 #PCRE - Perl Compatible Regular Expressions
@@ -51,6 +51,15 @@
 ROOT    =../../..
 LIBROOT =${ROOT}/lib
 
+ifdef COMSPEC
+	IFLAGS	=-I${ROOT}/tools/cygwin
+	LFLAGS	=-L${PCRE_LIB_PATH}/bin -lpcre
+	#PCRE_INC_PATH
+else
+	LFLAGS	=-lpcre
+endif
+
+
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
 
@@ -76,7 +85,7 @@ all : ${ALL}
 ${LIBROOT}/libA4GL_pcre${SO_EXT}: match.4gl
 #	${4GLPC_EXEC} -g ${AS_DLL} $^ -o $@ -lspopc
 #	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl -lspopc
-	${4GLPC_EXEC} $^ ${VERBOSE_FLAG} ${AS_DLL} -o $@ -lpcre
+	${4GLPC_EXEC} --verbose $^ ${VERBOSE_FLAG} ${IFLAGS} ${AS_DLL} -o $@ ${LFLAGS}
 	@echo "PCRE library sucesfully compiled."
 
 

@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.17 2004-10-04 13:49:59 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.18 2004-12-09 23:59:12 afalout Exp $
 ;
 
 
@@ -41,7 +41,7 @@
 ; * @todo Verify that there is no non-MinGW gcc in path before MinGW one, hiding it (or use mingw-gcc.exe in 4glc.exe instead of gcc.exe).
 ; * @todo Update readme
 ; * @todo shortcut to hello.exe via run.exe not working any more?
-; * @todo Don't require MinGW is installing only run-time
+; * @todo Dont require MinGW is installing only run-time
 ; * @todo Find out why installer takes forever to create shortcuts in start menu
 ; * @todo Convert readme to DOS format or HTML
 ; * @todo Check if SQLite ODBC drivers are installed first, before offering to install them
@@ -162,7 +162,7 @@ Filename: "{app}\bin\inst.exe"; Description: "Run SQLite ODBC installer"; Status
 [INI]
 Filename: {app}\@FULLNAME@ on the Web.url; Section: InternetShortcut; Key: URL; String: http://@AUBIT_WEBSITE@; Flags: uninsdeleteentry
 
-;We don't want to de-install PATH entry in autoexec.bat (Flags: uninsdeletesection;)
+;We dont want to de-install PATH entry in autoexec.bat (Flags: uninsdeletesection;)
 ;This will cause a "bad command or file name" message when autoexec.bat is run, since it will create
 ;entry [Aubit4gl] in there, but all will work fine and there is no other way to add to the PATH so
 ;we have to use this method:

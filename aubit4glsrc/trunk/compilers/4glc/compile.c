@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.72 2004-12-01 07:21:07 afalout Exp $
+# $Id: compile.c,v 1.73 2004-12-09 23:59:10 afalout Exp $
 #*/
 
 /**
@@ -103,7 +103,7 @@ int yydebug;			/* if !-DYYDEBUG, we need to define it here */
 
 static int compile_4gl (int compile_object, char a[128], char incl_path[128],
 			int silent, int verbose, char output_object[128],int win_95_98,
-			char informix_esql[128], char pg_esql[128]);
+			char informix_esql[128], char pg_esql[128], char extra_ccflags[1024]);
 void printUsage (char *argv[]);
 static void printUsage_help (char *argv[]);
 int initArguments (int argc, char *argv[]);
@@ -262,7 +262,7 @@ initArguments (int argc, char *argv[])
 			win_95_98=1;
 		}
 		//printf ("SH=%s\n",acl_getenv ("SH"));
-		if (! strcmp (acl_getenv ("SH"), "") == 0) {
+		if ((! strcmp (acl_getenv ("SH"), "") == 0) || (! strcmp (acl_getenv ("SHELL"), "") == 0)) {
 			shell_is_bash=1;
 			//printf ("yes, shell_is_bash=%d\n"),shell_is_bash;
 			//does not seem to work
@@ -308,7 +308,7 @@ initArguments (int argc, char *argv[])
 		break;
 
     /************************/
-	case 'h':		/* Link resulting object(s) to shared library */
+	case 'h':		/* Link resulting object(s) to shared library -shared or -as-dll */
 	  /* 
 	  	this is more or less meaningless, and is here for compatibility with
 	    C compiler style flags, because we decite linking tipe based on
@@ -639,7 +639,7 @@ initArguments (int argc, char *argv[])
 			#endif
 			todo++;
 			x = compile_4gl (compile_object, a, incl_path, silent, verbose, 
-		  				output_object, win_95_98,informix_esql, pg_esql);
+		  				output_object, win_95_98,informix_esql, pg_esql, extra_ccflags);
 		  
 			if (x) {
 				printf ("Exit code is: %d\n", x);
@@ -892,9 +892,9 @@ initArguments (int argc, char *argv[])
 
 	      /*FIXME: add incl_path only if there are .c files in all_objects*/
 	      sprintf (buff,
-		       "%s -L. -shared -Wl,--out-implib=%s.a -Wl,--export-all-symbols %s -o %s %s %s %s %s %s",
+		       "%s -L. -shared -Wl,--out-implib=%s.a -Wl,--export-all-symbols %s -o %s %s %s %s %s %s %s",
 		       gcc_exec, output_object, all_objects, output_object,
-		       pass_options, l_path, l_libs, extra_ldflags, incl_path);
+		       l_path, extra_ccflags, incl_path, pass_options, extra_ldflags, l_libs);
 	#endif /* UNIX or MinGW */
     }
 
@@ -1007,7 +1007,7 @@ initArguments (int argc, char *argv[])
 static int
 compile_4gl (int compile_object, char fgl_basename[128], char incl_path[128],
 		int silent, int verbose, char output_object[128],int win_95_98,
-		char informix_esql[128], char pg_esql[128])
+		char informix_esql[128], char pg_esql[128], char extra_ccflags[1024])
 {
 int need_cc=0, yyparse_ret, ret, flength=0;
 char buff[1028];
@@ -1236,13 +1236,13 @@ char ext[8];
 				create A4GL_CFLAGS in resource.c
 				*/
 				#ifndef __MINGW32__
-				  sprintf (buff, "%s %s.c -c -o %s %s %s",
+				  sprintf (buff, "%s %s.c -c -o %s %s %s %s",
 					   gcc_exec, fgl_basename, single_output_object, incl_path,
-					   pass_options);
+					   pass_options, extra_ccflags);
 				#else
-				  sprintf (buff, "%s -mms-bitfields %s.c -c -o %s %s %s",
+				  sprintf (buff, "%s -mms-bitfields %s.c -c -o %s %s %s %s",
 					   gcc_exec, fgl_basename, single_output_object, incl_path,
-					   pass_options);
+					   pass_options, extra_ccflags);
 				#endif
 			}
 			if (verbose){ printf ("%s\n", buff); }

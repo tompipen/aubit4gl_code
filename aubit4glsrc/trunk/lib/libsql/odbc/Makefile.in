@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.40 2004-09-28 09:49:23 afalout Exp $
+# $Id: Makefile.in,v 1.41 2004-12-09 23:59:14 afalout Exp $
 #
 
 ROOT    =../../..
@@ -69,14 +69,18 @@ CFLAGS_SQLITE	=-DDONTINCLUDEDATASOURCES -DSQLITEODBC -DHAVE_LIBVERSION=1 \
 
 ifneq "${COMSPEC}" ""
 	LINKLIBS		=-L${LIBROOT} -laubit4gl
-	#On Windows we renamed .dll/.def files in original distribution (adding 'lib' prefix) and
-    #copyed them to /cygwin/lib directory:
-	SQLITE_LINKLIBS	=-LD:/cygwin/lib
+	#On Windows we renamed .dll/.def files in original distribution 
+	#(adding 'lib' prefix) and copied them to /cygwin/lib directory:
+	#WARNING: paths for MinGW GCC MUST use forward slash - NOT backslash!!!
+	CYGWIN_PATH_WIN :=$(shell cygpath -m "${CYGWIN_PATH_WIN}")
+	SQLITE_LDPATH	:=$(shell cygpath -m "${SQLITE_LDPATH}")
+	SQLITE_LINKLIBS	=-L${CYGWIN_PATH_WIN}/lib -L${SQLITE_LDPATH}
 	CFLAGS_SQLITE	+=-DDLL_EXPORT -DPIC -DMEMORY_DEBUG=2
 
 else
 	CFLAGS_SQLITE	+=-DHAVE_USLEEP=1 -L/usr/local/lib -L/usr/lib
 endif
+
 
 #ifneq "${GCC_MINGW}" "yes"
 #	CFLAGS_SQLITE	+=-DHAVE_USLEEP=1
@@ -170,20 +174,17 @@ ${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-I${ROOT}/tools/odbctest/incl ${C
 ${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lsqliteodbc
 
-#FIXME: use $DBPATH to find SQLite .db file, so that user don't have to specify
-#full path & file name in DATABASE statement. Append .db extension automaticaly.
-#DATABSE 'xyz' should be resolved to <full_path>xyz.db before calling dbopen()
-#* Find out why Aubit generates "Error: Could not disconnect from database" when program exits.
-#* Test SQL compatibility
+#SQLite plug-in dynamically linked with SQLite library/engine:
 ${LIBROOT}/libSQL_sqlite${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLITE_DIRECT
 ${LIBROOT}/libSQL_sqlite${SO_EXT}: ${OBJECTS} sqliteodbc.o
 	${LD} ${SO_LDFLAGS} $^ -o $@ ${SQLITE_LINKLIBS} -lsqlite ${LINKLIBS}
 
 #SQLite plug-in statically linked with SQLite library/engine:
+#NOTE: no static SQLite library supplied for Windows
 ${LIBROOT}/libSQL_sqliteS${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLITE_DIRECT
 ${LIBROOT}/libSQL_sqliteS${SO_EXT}: ${OBJECTS} sqliteodbc.o
 #	${LD} ${SO_LDFLAGS} $^ -o $@ @SQLITE_LDPATH@/libsqlite.a
-	${LD} ${SO_LDFLAGS} -Wl,-static $^ -o $@ -L@SQLITE_LDPATH@ ${SQLITE_LINKLIBS} -lsqlite ${LINKLIBS}
+	${LD} ${SO_LDFLAGS} -Wl,-static $^ -o $@ -L${SQLITE_LDPATH} ${SQLITE_LINKLIBS} -lsqlite ${LINKLIBS}
 
 ## ==================================================================
 ##                              Clean
