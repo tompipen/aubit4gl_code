@@ -78,7 +78,7 @@ int fcall_cnt=0;
 %}
 %start module
 %union	  {
-	char	str[2048];
+	char	str[20000];
 	  }
 
 

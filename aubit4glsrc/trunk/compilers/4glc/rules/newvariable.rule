@@ -389,6 +389,10 @@ sprintf($<str>$,"");
 func_def_var : identifier;
 
 ibind_var : variable  {printcomment("/* Variable */\n");}
+	| variable THRU variable {
+			sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
+		}
+
 ;
 
 obind_var_list:	obind_var  {

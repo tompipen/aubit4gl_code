@@ -97,6 +97,7 @@ sprintf($<str>$,"%s",$<str>1);}
 
 db_section	:	 /*empty*/ {strcpy($<str>$,"");lastlineno=yylineno;}
 		|	set_database {strcpy(hdr_dbname,$<str>1);lastlineno=yylineno;}
+		|	db_section set_database {strcpy(hdr_dbname,$<str>2);lastlineno=yylineno;}
 	;
 
 set_database 	: DATABASE dbase_name {open_db($<str>2);strcpy($<str>$,$<str>2);lastlineno=yylineno;};

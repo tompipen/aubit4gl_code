@@ -1,12 +1,16 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.3 2001-09-01 19:57:31 mikeaubury Exp $
+* $Id: mod.c,v 1.4 2001-09-04 21:51:02 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.3  2001/09/01 19:57:31  mikeaubury
+*	major bug fixes...
+*	Be care with records - new print_push_record ...
+*	
 *	Revision 1.2  2001/08/31 18:22:31  mikeaubury
 *	minor fixes,
 *	incl requirement for a : on a label
@@ -754,6 +758,8 @@ scan_variables (char *s, int mode)
   if (s[0] == 0)
     return -1;
 
+  if (strchr(s,'\n')) return -2; // This is a variable thru variable..
+ 
   strcpy (buff, s);
   if (s[0] == ' ')
     {
@@ -864,7 +870,7 @@ scan_variables (char *s, int mode)
 	}
 
     }
-  debug ("Variable not there");
+  debug ("Variable not there : %s",s);
 
   return -1;
 
@@ -1500,7 +1506,7 @@ print_space ()
 printc (char *fmt, ...)
 {
   va_list *args;
-  char buff[4096];
+  char buff[40960];
   char *ptr;
   int a;
 
@@ -2359,13 +2365,74 @@ push_bind_rec (char *s, char bindtype)
   char buff[256];
   char bb[256];
   char bbb[256];
+  char endoflist[256];
+char save[256];
   char *ptr;
   int lvl = 0;
+
   debug ("In push_bind_rec : %s\n", s);
+
+  strcpy(endoflist,"");
+  if (strchr(s,'\n')) {
+	int v1;
+	int v2;
+	char *ptr1;
+	char *ptr2;
+
+	char r1[256];
+	char r2[256];
+	char buff[256];
+
+	
+	strcpy(save,s);
+	s=save;
+
+  	ptr=strchr(save,'\n');
+
+	*ptr=0;
+	ptr++;
+	strcpy(endoflist,ptr);
+	debug("Thru splits to %s and %s",s,ptr);
+
+	strcpy(r1,s);
+	ptr1=strrchr(r1,'.');
+	*ptr1=0;
+	ptr1++;
+
+	strcpy(r2,s);
+	ptr2=strrchr(r2,'.');
+	*ptr2=0;
+
+	if (strcmp(r1,r2)!=0) {
+		yyerror("Records for thru look different...");
+	}
+
+	v1=scan_variable(s);
+	if (v2==-1) {
+		yyerror("Variable not found (first entry in thru)");
+	}
+	v1=last_var_found;
+	debug("v1=%d",v1);
+
+	v2=scan_variable(ptr);
+	if (v2==-1) {
+		yyerror("Variable not found (second entry in thru)");
+	}
+	v2=last_var_found;
+	debug("v2=%d",v2);
+	
+	for (a=v1;a<=v2;a++) {
+		sprintf(buff,"%s.%s",r1,vars[a].var_name);
+		      add_bind (bindtype, buff);
+	}
+	return;
+  }
+
   if (s[0] == '.' && s[1] == 0)
     return -1;
   if (s[0] == 0)
     return -1;
+
   strcpy (buff, s);
   strcat (buff, ".");
   /*strip_bracket(buff); */
@@ -3755,7 +3822,7 @@ words (int cnt, int pos, FILE * f, char *p)
 
   if (stricmp (buff, "<ident>") == 0)
     {
-      printf ("check %s\n", p);
+      //printf ("check %s\n", p);
       if (isident (p) == 0)
 	return 0;
     }
@@ -4100,9 +4167,9 @@ print_push_rec_old_delete_me (char *s, char *b)
   char buff[256];
   int cnt=0;
   char bb[256];
-  char buffer[10000] = "";
-  char buffer2[10000];
-  char nbuff[10000];
+  char buffer[30000] = "";
+  char buffer2[30000];
+  char nbuff[30000];
   char *ptr;
   int lvf;
   int lvl = 0;
@@ -4165,7 +4232,7 @@ print_push_rec_old_delete_me (char *s, char *b)
 		  if (z != -2)
 		    {
 		      strcpy (buffer2, buffer);
-		      sprintf (buffer, "%s push_variable(&%s%s,%d);\n",
+		      sprintf (buffer, "%s push_variable(&%s%s,0x%x);\n",
 			       buffer2, bb, vars[a].var_name, z);
 		      a++;
 		      cnt++;
@@ -4208,14 +4275,29 @@ print_push_rec (char *s, char *b)
   char buff[256];
   int cnt=0;
   char bb[256];
-  char buffer[10000] = "";
-  char buffer2[10000];
-  char nbuff[10000];
+  char buffer[40000] = "";
+  char buffer2[40000];
+  char nbuff[40000];
   char *ptr;
   int lvf;
   int lvl = 0;
+  char endoflist[256];
+  char save[256];
 
+debug("print_push_rec");
+  strcpy(endoflist,"");
 
+  if (strchr(s,'\n')) {
+	debug("Have a thru");
+		strcpy(save,s);
+		s=save;
+		ptr=strchr(save,'\n');
+		*ptr=0;
+		ptr++;
+		strcpy(endoflist,ptr);
+	debug("Splits to %s and %s",s,endoflist);
+		
+  }
   strcpy(bb,s);
 
   bb[strlen(bb)-1]=0;
@@ -4255,7 +4337,7 @@ print_push_rec (char *s, char *b)
 		  if (z != -2)
 		    {
 		      strcpy (buffer2, buffer);
-		      sprintf (buffer, "%spush_variable(&%s%s,%d);\n",
+		      sprintf (buffer, "%s  xx push_variable(&%s%s,0x%x);\n",
 		       buffer2, bb, vars[a].var_name, z);
 		      cnt++;
 		    }
@@ -4274,6 +4356,10 @@ print_push_rec (char *s, char *b)
 		      a++;
 		}
 
+	      if (strcmp (vars[a].var_name, endoflist) == 0) {
+		debug("Done the last one...");
+		break;
+		}
     }
   return -1;
 }

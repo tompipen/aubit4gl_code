@@ -111,7 +111,9 @@ NOT fgl_expr_c {
 {
         sprintf($<str>$,"push_int(0);");inc_counter();
 }
-| OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  {strcpy($<str>$,$<str>2);}
+| OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  {
+	strcpy($<str>$,$<str>3);
+}
 ;
 
 initial_expr: 
@@ -182,10 +184,11 @@ inc_counter();
 if (a==-1) { sprintf($<str>$,"push_char(%s);",$<str>1);inc_counter(); }
 
 if (a==-2) {
-        char b[10000];
+        char b[40000];
         printcomment("/* print_push_rec... %s */",$<str>1);
         incvcnt=print_push_rec($<str>1,b); 
         inc_counter_by(incvcnt);
+	debug("Copy");
         strcpy($<str>$,b);
         }
    }

@@ -412,7 +412,7 @@ int states=-1;
 
 	if (stricmp(buff,"<ident>")==0)  {
 		strcpy(idents[idents_cnt++],p);
-		printf("check %s\n",p);
+		//printf("check %s\n",p);
 		if (isident(p)==0) return 0;
 	} else {
 		if (stricmp(p,buff)!=0) {

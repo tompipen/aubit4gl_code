@@ -25,20 +25,27 @@ call_ext :
    addmap('C',$<str>1,curr_func,yylineno,infilename);
    } 
    opt_func_call_args 
-   {sprintf($<str>$,"%d",get_counter_val());drop_counter();}
+   {debug("Got args");
+   sprintf($<str>$,"%d",get_counter_val());drop_counter();}
    CLOSE_BRACKET 
    {
+	debug("D0");
    printc("%s {int _retvars;set_status(0);\n",$<str>4);
+	debug("D01");
    printc("_retvars=aclfgl_%s(%s);\n",$<str>1,$<str>5);
+	debug("D1");
    }
    opt_return 
    { int cnt;
    printc("{\n");
+	debug("D2");
    cnt=print_bind('i');
    printc("if (_retvars!= %d ) {pop_args(_retvars);set_status(-3001);}\n",cnt,lastlineno,infilename);
    printc("else {set_status(0);pop_params(ibind,%d);}\n",cnt);
    printc("}\n");
-   printc("}\n"); }
+   printc("}\n"); 
+	debug("D3");
+}
    | SHARED char_or_var IN char_or_var OPEN_BRACKET {
 	set_status(0);
 	new_counter();
