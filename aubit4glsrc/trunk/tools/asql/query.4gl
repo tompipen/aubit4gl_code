@@ -527,13 +527,14 @@ define lv_fname char(255)
 define a integer
 
 display "Choose a file to load","" at 2,1
-
+let a=0
 code
 {
 	char **dir;
 	dir=read_directory(".",".sql");
         if (dir) {
 		for (a=0;dir[a];a++) {
+			A4GL_debug("READ FILE: %s",dir[a]);
 			strcpy(lv_fname,dir[a]);
 endcode
 			call set_pick(a+1,lv_fname);

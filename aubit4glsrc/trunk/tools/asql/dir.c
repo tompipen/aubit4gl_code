@@ -59,7 +59,8 @@ dirp = opendir( dir);
 	buff[strlen(name)-strlen(spec)]=0;
 	
 	cnt++;
-	names=realloc(names,sizeof(char *)*cnt);
+	names=realloc(names,sizeof(char *)*(cnt+1));
+	A4GL_debug("DIR : %s",buff);
 	names[cnt-1]=strdup(buff);
       /************************************************************************
       * Here we are examining one of the components of the directory entry's
@@ -74,6 +75,8 @@ dirp = opendir( dir);
    names=realloc(names,sizeof(char *)*cnt);
    names[cnt-1]=0;
    m_names=names;
+
+   return names;
 }
 
 
