@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.8 2004-02-10 10:21:31 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.9 2004-03-09 09:35:50 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 
@@ -1037,7 +1037,7 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 
       for (b = 0; b < strlen (s); b++)
 	{
-	  A4GL_LL_wadd_char_xy_col (wot, x, y, a + s[b]);
+	  A4GL_LL_wadd_char_xy_col (wot, x, y, (a&0xffffff00) + (s[b]&0xff));
 	  x++;
 	}
 
@@ -1055,7 +1055,7 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 	  	buff[1023] = 0;
 	  	for (b = 0; b < strlen (buff); b++)
 	    	{
-	      	A4GL_LL_wadd_char_xy_col (wot, x, y, a + buff[b]);
+	      	A4GL_LL_wadd_char_xy_col (wot, x, y, (a&0xffffff00) + (buff[b]&0xff));
 	      	x++;
 	    	}
 		}

@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.8 2004-03-04 16:27:49 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.9 2004-03-09 09:35:49 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.8 2004-03-04 16:27:49 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.9 2004-03-09 09:35:49 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -1563,25 +1563,31 @@ A4GL_comments (struct struct_scr_field *fprop)
     }
 
   attr = A4GL_get_curr_window_attr ();
+	A4GL_debug("Attr1=%x\n",attr);
 
   if (!attr)
     {
       attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0);
+	A4GL_debug("Attr2=%x\n",attr);
     }
 
 
   if (A4GL_isyes (acl_getenv ("COMMENT_LIKE_INPUT")))
     {
       attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0);
+	A4GL_debug("Attr3=%x\n",attr);
     }
 
   if (A4GL_isyes (acl_getenv ("COMMENT_LIKE_DISPLAY")))
     {
       attr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, 0, 0, 0);
+	A4GL_debug("Attr4=%x\n",attr);
     }
 
-
+  A4GL_debug("Comments attr=%x buff=%s",attr,buff);
+  attr=attr&0xfffffff0;
   UILIB_A4GL_display_internal (1, cline, buff, attr, 1);
+  //UILIB_A4GL_display_internal (1, cline, buff, 0, 1);
 
   A4GL_LL_screen_update ();
 
