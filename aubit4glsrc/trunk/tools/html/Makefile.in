@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-03-16 03:19:21 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-03-29 10:02:20 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -39,32 +39,6 @@ override NOINCL=0
 FGLPCEXEC=${SH} 4glpc
 AMAKE=../../bin/amake
 
-ifdef COMSPEC
-	ifdef MONOLIT
-		4GLPCFLAGS += -mno-cygwin
-	endif
-endif
-
-#ifdef NOGTK
-ifeq "$(GTKBUILD)" "yes"
-	#-gtk is now default, so we don't really need this...
-	4GLPCFLAGS+= -gtk
-else
-	4GLPCFLAGS+= -nogtk
-endif
-
-
-ifeq "$(PDFBUILD)" "yes"
-	4GLPCFLAGS+= -lpdf
-    4GLPCTESTFLAGS= -lpdf
-endif
-
-ifeq "$(ODBC)" "no"
-	4GLPCFLAGS+= -noodbc
-	4GLPCTESTFLAGS+= -noodbc
-endif
-
-
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -72,10 +46,10 @@ endif
 all: html
 	@echo default targets successfully compiled
 
-html: libpdf-dummy.o
+html:
 #	${AMAKE} -nogtk simple_html
 #	sh ${AMAKE} -verbose A4GL_CC_LDFLAGS+=-nogtk A4GL_CC_LDFLAGS+=-noodbc simple_html MOVETARGETTOSTORE=0
-	${SH} ${AMAKE} A4GL_CC_LDFLAGS+=-nogtk A4GL_CC_LDFLAGS+=-noodbc A4GL_CC_LDFLAGS+=-nopdf simple_html MOVETARGETTOSTORE=0
+	${SH} ${AMAKE} A4GL_CC_LDFLAGS+= A4GL_CC_LDFLAGS+= A4GL_CC_LDFLAGS+=simple_html MOVETARGETTOSTORE=0
 
 
 #Create start-up shell script:
@@ -95,8 +69,9 @@ simple_html.sf:
 	@echo "simple_html sh script created"
 
 
-#Compile dummy PDF library:
-libpdf-dummy.o: libpdf-dummy.c
+libA4GL_html.so: libahtmllib.4gl
+	${SH} 4glpc -as-dll $^ -o $@
+	cp $@ ../../../lib
 
 
 ## ==================================================================
