@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.31 2004-11-28 14:33:16 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.32 2004-11-30 08:55:57 mikeaubury Exp $
 #
 */
 
@@ -2032,7 +2032,8 @@ return s;
 
 
 
-A4GLSQLCV_sql_func(char *f,char *param) {
+
+char *A4GLSQLCV_sql_func(char *f,char *param) {
 static char buff[256];
 int b;
 sprintf(buff,"%s(%s)",f,param);
