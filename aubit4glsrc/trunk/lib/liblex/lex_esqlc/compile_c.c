@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.77 2003-07-28 07:04:14 mikeaubury Exp $
+# $Id: compile_c.c,v 1.78 2003-07-28 17:27:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2491,7 +2491,7 @@ print_import (char *func, int nargs)
   int a;
   char buff[1024];
   char buff2[1024];
-  printc ("\n\n%s%s (int nargs) {\n", get_namespace (func), func);
+  printc ("\n\nA4GL_FUNCTION %s%s (int nargs) {\n", get_namespace (func), func);
   printc ("long _argc[%d];\n", nargs);
   printc ("long _retval;");
   printc
@@ -3299,7 +3299,7 @@ print_report_1 (char *name)
 {
   strcpy(mv_repname,name);
   add_function_to_header (name, 2);
-  printc ("void %s%s (int nargs,int acl_ctrl) {\n", get_namespace (name), name,
+  printc ("A4GL_REPORT void %s%s (int nargs,int acl_ctrl) {\n", get_namespace (name), name,
 	  name);
 }
 
@@ -4035,10 +4035,10 @@ print_func_start (char *isstatic, char *fname, int type)
   printc (" \n");
   printc (" \n");
   if (type == 0)
-    printc ("\n%sint %s%s (int nargs){ /* Funtion Start */\n", isstatic,
+    printc ("\n A4GL_FUNCTION %sint %s%s (int nargs){ /* Funtion Start */\n", isstatic,
 	    get_namespace (fname), fname);
   if (type == 1)
-    printc ("\n%sint %s%s (int nargs){ /* Funtion Start */\n", isstatic,
+    printc ("\n A4GL_REPORT %sint %s%s (int nargs){ /* Funtion Start */\n", isstatic,
 	    get_namespace (fname), fname);
 }
 
@@ -4091,7 +4091,7 @@ print_main_1 (void)
   	printc ("string[] _paramnames=new string[1]; _paramnames[0]={\"\"};");
   	printc ("int nargs=0;");
   } else {
-  	printc ("\n\nint main(int argc,char *argv[]) {\n");
+  	printc ("\n\nA4GL_MAIN int main(int argc,char *argv[]) {\n");
   	printc ("char *_paramnames[]={\"\"};");
   	printc ("int nargs=0;");
   }
@@ -4666,7 +4666,7 @@ print_import_legacy (char *s)
 {
   printc ("\n");
   printc ("\n");
-  printc ("\n\nstatic int %s%s(int n) {\nreturn %s(n);\n}\n",
+  printc ("\n\nA4GL_FUNCTION static int %s%s(int n) {\nreturn %s(n);\n}\n",
 	  get_namespace (s), s, s);
   printc ("\n");
   printc ("\n");
@@ -4682,10 +4682,10 @@ add_function_to_header (char *identifier, int params)
     {
       A4GL_add_pointer (identifier, 'X', (void *) 1);
       if (params == 1) // Normal Function
-	printh ("int %s%s (int n);\n", get_namespace (identifier),
+	printh ("A4GL_FUNCTION int %s%s (int n);\n", get_namespace (identifier),
 		identifier);
       if (params == 2) // Report...
-	printh ("void %s%s (int n,int a);\n", get_namespace (identifier),
+	printh ("A4GL_REPORT void %s%s (int n,int a);\n", get_namespace (identifier),
 		identifier);
     }
 }

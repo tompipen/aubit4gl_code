@@ -84,14 +84,14 @@ extern long curr_line_no;
 extern long err_status;
 extern long aiplib_status;
 static int _done_init_module_variables=1;
-static void init_module_variables() {
+A4GL_INTERNAL_FUNCTION static void init_module_variables() {
 if (_done_init_module_variables==0) return;
 _done_init_module_variables=0;
 }
  
  
  
-int aclfgl_set_window_title (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_set_window_title (int nargs){ /* Funtion Start */
 static char _functionName[] = "set_window_title";
    char s [256+1];
    struct BINDING fbind[]={ /* print_param */
@@ -114,7 +114,7 @@ static char _functionName[] = "set_window_title";
  
  
  
-int aclfgl_get_window_title (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_get_window_title (int nargs){ /* Funtion Start */
 static char _functionName[] = "get_window_title";
    char s [256+1];
    struct BINDING fbind[]={ /* print_param */
@@ -137,7 +137,7 @@ static char _functionName[] = "get_window_title";
  
  
  
-int aclfgl_set_window_icon (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_set_window_icon (int nargs){ /* Funtion Start */
 static char _functionName[] = "set_window_icon";
    char s [256+1];
    long w;
@@ -163,7 +163,7 @@ static char _functionName[] = "set_window_icon";
  
  
  
-int aclfgl_a4gl_run_gui (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_a4gl_run_gui (int nargs){ /* Funtion Start */
 static char _functionName[] = "a4gl_run_gui";
    struct BINDING fbind[]={ /* print_param */
    }; /* end of binding */
@@ -185,7 +185,7 @@ static char _functionName[] = "a4gl_run_gui";
  
  
  
-int aclfgl_set_frame_style (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_set_frame_style (int nargs){ /* Funtion Start */
 static char _functionName[] = "set_frame_style";
    long s;
    struct BINDING fbind[]={ /* print_param */
@@ -207,7 +207,7 @@ static char _functionName[] = "set_frame_style";
  
  
  
-int aclfgl_yeild (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_yeild (int nargs){ /* Funtion Start */
 static char _functionName[] = "yeild";
    struct BINDING fbind[]={ /* print_param */
    }; /* end of binding */
@@ -226,7 +226,7 @@ static char _functionName[] = "yeild";
  
  
  
-int aclfgl_set_window_type (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_set_window_type (int nargs){ /* Funtion Start */
 static char _functionName[] = "set_window_type";
    long a;
    struct BINDING fbind[]={ /* print_param */
@@ -248,7 +248,7 @@ static char _functionName[] = "set_window_type";
  
  
  
-int aclfgl_set_prompt_style (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_set_prompt_style (int nargs){ /* Funtion Start */
 static char _functionName[] = "set_prompt_style";
    long a;
    struct BINDING fbind[]={ /* print_param */
@@ -278,7 +278,7 @@ store_filename(GtkFileSelection *selector, gpointer user_data)
  
  
  
-int aclfgl_get_filename (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_get_filename (int nargs){ /* Funtion Start */
 static char _functionName[] = "get_filename";
    char title [256+1];
    char fname [256+1];
@@ -360,7 +360,7 @@ static char _functionName[] = "get_filename";
  
  
  
-int aclfgl_app_top_get (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_app_top_get (int nargs){ /* Funtion Start */
 static char _functionName[] = "app_top_get";
    long a;
    struct BINDING fbind[]={ /* print_param */
@@ -392,7 +392,7 @@ static char _functionName[] = "app_top_get";
  
  
  
-int aclfgl_app_hide (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_app_hide (int nargs){ /* Funtion Start */
 static char _functionName[] = "app_hide";
    struct BINDING fbind[]={ /* print_param */
    }; /* end of binding */
@@ -411,7 +411,7 @@ static char _functionName[] = "app_hide";
  
  
  
-int aclfgl_app_show (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_app_show (int nargs){ /* Funtion Start */
 static char _functionName[] = "app_show";
    struct BINDING fbind[]={ /* print_param */
    }; /* end of binding */
@@ -430,7 +430,7 @@ static char _functionName[] = "app_show";
  
  
  
-int aclfgl_app_maximize (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_app_maximize (int nargs){ /* Funtion Start */
 static char _functionName[] = "app_maximize";
    struct BINDING fbind[]={ /* print_param */
    }; /* end of binding */
@@ -449,7 +449,7 @@ static char _functionName[] = "app_maximize";
  
  
  
-int aclfgl_app_minimize (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_app_minimize (int nargs){ /* Funtion Start */
 static char _functionName[] = "app_minimize";
    struct BINDING fbind[]={ /* print_param */
    }; /* end of binding */
@@ -468,7 +468,7 @@ static char _functionName[] = "app_minimize";
  
  
  
-int aclfgl_app_restore (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_app_restore (int nargs){ /* Funtion Start */
 static char _functionName[] = "app_restore";
    struct BINDING fbind[]={ /* print_param */
    }; /* end of binding */
@@ -487,7 +487,7 @@ static char _functionName[] = "app_restore";
  
  
  
-int aclfgl_entry_max_chars_set (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_entry_max_chars_set (int nargs){ /* Funtion Start */
 static char _functionName[] = "entry_max_chars_set";
    long l;
    long g;
@@ -514,7 +514,7 @@ static char _functionName[] = "entry_max_chars_set";
  
  
  
-int aclfgl_entry_selected_cut (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_entry_selected_cut (int nargs){ /* Funtion Start */
 static char _functionName[] = "entry_selected_cut";
    long g;
    struct BINDING fbind[]={ /* print_param */
@@ -538,7 +538,7 @@ static char _functionName[] = "entry_selected_cut";
  
  
  
-int aclfgl_entry_selected_copy (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_entry_selected_copy (int nargs){ /* Funtion Start */
 static char _functionName[] = "entry_selected_copy";
    long g;
    struct BINDING fbind[]={ /* print_param */
@@ -562,7 +562,7 @@ static char _functionName[] = "entry_selected_copy";
  
  
  
-int aclfgl_entry_selected_paste (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_entry_selected_paste (int nargs){ /* Funtion Start */
 static char _functionName[] = "entry_selected_paste";
    long g;
    struct BINDING fbind[]={ /* print_param */
@@ -586,7 +586,7 @@ static char _functionName[] = "entry_selected_paste";
  
  
  
-int aclfgl_entry_selection_set (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_entry_selection_set (int nargs){ /* Funtion Start */
 static char _functionName[] = "entry_selection_set";
    long s;
    long e;
@@ -620,7 +620,7 @@ static char _functionName[] = "entry_selection_set";
  
  
  
-int aclfgl_entry_text_get (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_entry_text_get (int nargs){ /* Funtion Start */
 static char _functionName[] = "entry_text_get";
    long g;
    struct BINDING fbind[]={ /* print_param */
@@ -649,7 +649,7 @@ static char _functionName[] = "entry_text_get";
  
  
  
-int aclfgl_field_hide (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_field_hide (int nargs){ /* Funtion Start */
 static char _functionName[] = "field_hide";
    long g;
    struct BINDING fbind[]={ /* print_param */
@@ -673,7 +673,7 @@ static char _functionName[] = "field_hide";
  
  
  
-int aclfgl_field_show (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_field_show (int nargs){ /* Funtion Start */
 static char _functionName[] = "field_show";
    long g;
    struct BINDING fbind[]={ /* print_param */
@@ -695,7 +695,7 @@ static char _functionName[] = "field_show";
  
  
  
-int aclfgl_form_caption_get (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_form_caption_get (int nargs){ /* Funtion Start */
 static char _functionName[] = "form_caption_get";
    struct BINDING fbind[]={ /* print_param */
    }; /* end of binding */
@@ -714,7 +714,7 @@ static char _functionName[] = "form_caption_get";
  
  
  
-int aclfgl_form_hide (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_form_hide (int nargs){ /* Funtion Start */
 static char _functionName[] = "form_hide";
    struct BINDING fbind[]={ /* print_param */
    }; /* end of binding */
@@ -733,7 +733,7 @@ static char _functionName[] = "form_hide";
  
  
  
-int aclfgl_form_show (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_form_show (int nargs){ /* Funtion Start */
 static char _functionName[] = "form_show";
    struct BINDING fbind[]={ /* print_param */
    }; /* end of binding */
@@ -752,7 +752,7 @@ static char _functionName[] = "form_show";
  
  
  
-int aclfgl_form_is_open (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_form_is_open (int nargs){ /* Funtion Start */
 static char _functionName[] = "form_is_open";
    long s;
    struct BINDING fbind[]={ /* print_param */
@@ -783,7 +783,7 @@ static int tolist(GtkWidget *a) {
  
  
  
-int aclfgl_list_count_get (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_list_count_get (int nargs){ /* Funtion Start */
 static char _functionName[] = "list_count_get";
    long g;
    struct BINDING fbind[]={ /* print_param */
@@ -807,7 +807,7 @@ static char _functionName[] = "list_count_get";
  
  
  
-int aclfgl_list_current_get (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_list_current_get (int nargs){ /* Funtion Start */
 static char _functionName[] = "list_current_get";
    long s;
    struct BINDING fbind[]={ /* print_param */
@@ -835,7 +835,7 @@ static char _functionName[] = "list_current_get";
  
  
  
-int aclfgl_list_delete (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_list_delete (int nargs){ /* Funtion Start */
 static char _functionName[] = "list_delete";
    long s;
    long n;
@@ -863,7 +863,7 @@ static char _functionName[] = "list_delete";
  
  
  
-int aclfgl_list_insert (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_list_insert (int nargs){ /* Funtion Start */
 static char _functionName[] = "list_insert";
    long s;
    long n;
@@ -897,7 +897,7 @@ static char _functionName[] = "list_insert";
  
  
  
-int aclfgl_list_selected (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_list_selected (int nargs){ /* Funtion Start */
 static char _functionName[] = "list_selected";
    long s;
    long n;
@@ -929,7 +929,7 @@ static char _functionName[] = "list_selected";
  
  
  
-int aclfgl_splat_with_image (int nargs){ /* Funtion Start */
+ A4GL_FUNCTION int aclfgl_splat_with_image (int nargs){ /* Funtion Start */
 static char _functionName[] = "splat_with_image";
    long w;
    char img_file [256+1];

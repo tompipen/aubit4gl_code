@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.48 2003-07-28 07:04:14 mikeaubury Exp $
+# $Id: curslib.c,v 1.49 2003-07-28 17:27:51 mikeaubury Exp $
 #*/
 
 /**
@@ -306,6 +306,7 @@ A4GL_error_nobox (char *str,int attr)
   if (attr==0) attr=A_REVERSE; //+A4GL_colour_code (COLOR_RED);
   else attr=A4GL_decode_aubit_attr (attr, 'w');
   wattrset (w, attr);
+  A4GL_debug("Calling subwin_print...");
   A4GL_subwin_print (w, str);
   //wrefresh(w);
 #ifdef DEBUG
@@ -1646,13 +1647,14 @@ A4GL_disp_h_menu (void* menuv)
   int cl, cpt, mnln, cw;
   char *parent_window;
   long attrib = 0; 
+
   ACL_Menu *menu;
   menu=menuv;
 
 #ifdef DEBUG
   A4GL_debug ("Adding window for menu");
   A4GL_debug ("Current metrics : %d %d %d", A4GL_get_curr_left (),
-	 A4GL_get_curr_print_top () - 1, A4GL_get_curr_width ());
+  A4GL_get_curr_print_top () - 1, A4GL_get_curr_width ());
 #endif
   mnln = A4GL_getmenu_line () - 1;
   if (menu->window_name[0] == 0)
@@ -1765,8 +1767,8 @@ A4GL_menu_loop (void* menuv)
   ACL_Menu_Opts *old_option;
   int a;
   int key_pressed;
-ACL_Menu *menu;
-menu=menuv;
+  ACL_Menu *menu;
+  menu=menuv;
 
 
 /*
@@ -2047,6 +2049,7 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
       if (type == INVERT)
 	{
 	  A4GL_debug ("Printing ...   %s", A4GL_string_width (opt1->shorthelp));
+  		A4GL_debug("Calling subwin_print.. %s.",opt1->shorthelp);
 	  A4GL_subwin_print (menu->menu_win, "%s", A4GL_string_width (opt1->shorthelp));
 	}
 
@@ -2059,6 +2062,7 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
       else
  A4GL_menu_setcolor (menu, NORMAL_MENU);
 
+  A4GL_debug("Calling subwin_print...");
       A4GL_subwin_print (menu->menu_win, "%s", opt1->opt_title);
       A4GL_menu_setcolor (menu, NORMAL_MENU);
     }
@@ -2079,6 +2083,7 @@ A4GL_h_disp_title (ACL_Menu * menu, char *str)
 A4GL_debug("h_disp_title : %s",str);
   A4GL_subwin_gotoxy (menu->menu_win, 1, 1,A4GL_get_curr_border());
   A4GL_menu_setcolor (menu, NORMAL_MENU);
+  A4GL_debug("Calling subwin_print...");
   A4GL_subwin_print (menu->menu_win, "%s", str);
   A4GL_menu_setcolor (menu, NORMAL_MENU);
   A4GL_zrefresh ();
@@ -2096,6 +2101,7 @@ static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos)
   A4GL_debug ("MORE MARKERS : Displaying ... at %d %d", pos + offset, 1);
   A4GL_subwin_gotoxy (menu->menu_win, pos + offset, 1,A4GL_get_curr_border());
   A4GL_menu_setcolor (menu, NORMAL_MENU);
+  A4GL_debug("Calling subwin_print...");
   A4GL_subwin_print (menu->menu_win, " ...");
 }
 
@@ -2112,6 +2118,7 @@ A4GL_clr_menu_disp (ACL_Menu * menu)
   /* needs fix on width */
   A4GL_menu_setcolor (menu, NORMAL_TEXT);
   A4GL_subwin_gotoxy (menu->menu_win, menu->menu_offset, menu->menu_line,A4GL_get_curr_border());
+  A4GL_debug("Calling subwin_print...");
   A4GL_subwin_print (menu->menu_win,
 		"                                                                                                                                                               ");
 }
@@ -3399,6 +3406,7 @@ static int A4GL_menu_getkey (ACL_Menu * menu)
       //wprintw (menu->menu_win, "%s", menu->menu_title);
 	
 
+  A4GL_debug("Calling subwin_print...");
 	A4GL_subwin_print (menu->menu_win, "%s:",menu->menu_title);
 
 

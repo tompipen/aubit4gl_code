@@ -37,11 +37,14 @@ A4GL_string_width (char *s)
 {
   char buff[10];
   int a;
-  static char buff2[132];
+  static char buff2[1024];
 
   a = A4GL_get_curr_width () - 2;
+  A4GL_debug("String width=%d",a);
   sprintf (buff, "%%-%d.%ds", a, a);
+  A4GL_debug("Buff=%s - s=%s",buff,s);
   sprintf (buff2, buff, s);
+  A4GL_debug("Buff2=%s",buff2);
   return buff2;
 }
 

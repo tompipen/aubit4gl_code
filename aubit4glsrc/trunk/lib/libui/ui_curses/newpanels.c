@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.60 2003-07-18 16:17:32 mikeaubury Exp $
+# $Id: newpanels.c,v 1.61 2003-07-28 17:27:51 mikeaubury Exp $
 #*/
 
 /**
@@ -353,6 +353,13 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 
   if (strcmp (name, "screen") == 0)
     {
+	if (A4GL_screen_width ()>255) {
+		A4GL_exitwith("Screen too wide - maximum 255 characters");
+		A4GL_chk_err(0,"");
+		//A4GL_core_dump();
+		return 0;
+	}
+
       h = A4GL_screen_height () - 1;
       w = A4GL_screen_width () - 1;
       A4GL_debug ("Creating window : h=%d w=%d y=%d x=%d", h, w, y - 1, x - 1);
@@ -2182,8 +2189,8 @@ A4GL_subwin_print (WINDOW * win, char *fmt, ...)
 {
   va_list args;
   A4GL_chkwin ();
-  A4GL_debug ("subwin_print '%s' on window %p", fmt, win);
   va_start (args, fmt);
+  A4GL_debug ("subwin_print '%s' on window %p", fmt, win);
   A4GL_mja_vwprintw (win, fmt, &args);	/*  MJAMJAMJA */
   A4GL_mja_wrefresh (win);
   return 0;
@@ -2319,8 +2326,15 @@ A4GL_subwin_setcolor (WINDOW * win, int typ)
 int
 A4GL_mja_vwprintw (WINDOW * win, char *fmt, va_list * args)
 {
-  char buff[256];
+  char buff[1024];
+
   vsprintf (buff, fmt, *args);
+	
+  if (strlen(buff)>256) {
+	char *ptr=0;
+	printf("OOps...\n");fflush(stdout);
+	*ptr=0;
+  }
   A4GL_debug ("mja_vwprintw..> '%s' attribute %x", buff, A4GL_xwattr_get (win));
   if (A4GL_xwattr_get (win) == 0x20)
     {

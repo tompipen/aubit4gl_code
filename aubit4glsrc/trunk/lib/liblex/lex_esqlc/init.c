@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: init.c,v 1.4 2003-05-12 14:24:21 mikeaubury Exp $
+# $Id: init.c,v 1.5 2003-07-28 17:27:51 mikeaubury Exp $
 */
 
 #include "a4gl_lib_lex_esqlc_int.h"
@@ -38,7 +38,7 @@ void
 print_module_variable_init (void)
 {
   printc ("static int _done_init_module_variables=1;\n");
-  printc ("static void init_module_variables() {");
+  printc ("A4GL_INTERNAL_FUNCTION static void init_module_variables() {");
   printc ("if (_done_init_module_variables==0) return;");
   printc ("_done_init_module_variables=0;");
   print_nullify ('M');
