@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.27 2003-01-21 08:25:52 afalout Exp $
+# $Id: calldll.c,v 1.28 2003-02-19 11:46:34 mikeaubury Exp $
 #
 */
 
@@ -415,6 +415,12 @@ int (*func_ptr) (void);
   {
 	debug("Function Not found");
 	exitwith("Could not find function in shared library");
+	// This is so critical - we're out of here...
+	
+	gotolinemode();
+	printf("Critical error - Unable to find function %s in shared library\n",func);
+	fgl_end();
+	exit(1);
 		/* return badfunc; */
   }
 

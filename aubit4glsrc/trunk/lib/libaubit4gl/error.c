@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.16 2003-01-11 16:05:47 mikeaubury Exp $
+# $Id: error.c,v 1.17 2003-02-19 11:46:34 mikeaubury Exp $
 #
 */
 
@@ -129,7 +129,6 @@ int a;
 	}
 
 	exitwith("Unknown error");
-
     #endif
 }
 
