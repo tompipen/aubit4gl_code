@@ -1,9 +1,9 @@
 
 #Sections you may need to modify are marked with <<<<<<<<<<<<<<<<<<<<<<<<<<<<(x)
+
 ################
 #All common settings and rules are included:
 include ${MAKEFILE_COMMON}
-
 
 ## ======================================================================
 ##                  Local Setings - user modifiable
@@ -32,7 +32,7 @@ include ${MAKEFILE_COMMON}
 
 ################
 #This is set in comon make file; overide it if you need to here
-#A4GL_KEYFILE=keys.in
+A4GL_KEYFILE=keys.in
 #A4GL_KEYDELAY=10000
 
 ## ======================================================================
@@ -82,13 +82,13 @@ run: compile
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
-#	${DEFAULT_RUN}
+	${DEFAULT_RUN}
 #To run program and diff the stdout output against a file, testing for difference:
 #	${DEFAULT_DIFF}
 #Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
 #program to a file for diff-ing, but expect output file to be created by dumping
 #the screen to file using a function call in the program itself:
-	${DEFAULT_DUMP_DIFF}
+#	${DEFAULT_DUMP_DIFF}
 #If you need to explicitly state program name to run (eg. when test have more then
 #one program that needs to be executed), try this:
 #	${DBG} ./progname${NAMED_[DIFF|RUN]}
@@ -109,7 +109,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This tests an issue with using the insert key when data is already in the field"
+	@echo "This is not a test but a Testing template. \
+		Please provide brief description of functionality tested here."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -214,7 +215,3 @@ transaction:
 	@echo "0"
 	
 # ============================= EOF ================================
-
-ansi_sql_compat:
-	@echo "1"
-

@@ -18,6 +18,8 @@ desc:
 transaction:
 	@echo "2"
 	
+db_test:
+	@echo "1"
 
 #################
 #List here any SQL dialect-specific features that may be incompatible

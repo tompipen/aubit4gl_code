@@ -766,7 +766,7 @@ cat > $script <<X
 		is_cert smallint,
 		is_obsolete smallint,
 		is_described smallint,
-		test_desc_txt varchar,
+		test_desc_txt varchar(255),
 		test_compat_test smallint,
 		expect_code char(3),
 		se_required smallint,
@@ -789,7 +789,7 @@ cat > $script <<X
 		expect_fail_ifx_p smallint,
 		expect_fail_4js smallint,
 		expect_fail_querix smallint,
-		sql_features_used varchar,
+		sql_features_used varchar(255),
 		ansi_sql smallint
 	);
 X
@@ -867,7 +867,7 @@ cat > $script <<X
 		db_ver char(40),
 		make_ver char(40),
 		sh_ver char(40),
-		log_text varchar
+		log_text varchar(255)
 		);
 X
 

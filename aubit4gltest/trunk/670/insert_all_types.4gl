@@ -57,7 +57,7 @@ DEFINE r_ RECORD
 
      #aDateTimeFF DATETIME FRACTION TO FRACTION,
      #aDateTimeFFScale DATETIME FRACTION TO FRACTION(3),
-
+{
 	   # Interval(s)
      aIntervalYY INTERVAL YEAR TO YEAR,
      aIntervalYPrecY INTERVAL YEAR (4) TO YEAR,
@@ -103,7 +103,7 @@ DEFINE r_ RECORD
      aIntervalSPrecFScale INTERVAL SECOND (2) TO FRACTION(2),
      #aIntervalFF INTERVAL FRACTION TO FRACTION,
      #aIntervalFFScale INTERVAL FRACTION TO FRACTION(3),
-	
+	}
 	   # CHARS
 	   aCharacter CHARACTER,
 	   aCharacterWithSize CHARACTER(20),
@@ -115,6 +115,7 @@ DEFINE r_ RECORD
 	   aNVarchar NVARCHAR(20),
 	   aVarcharWithReserve VARCHAR(20,10),
 	   aNVarcharWithRes NVARCHAR(20,10)
+
 	END RECORD
 
 MAIN
@@ -178,7 +179,7 @@ MAIN
      aDateTimeSFScale DATETIME SECOND TO FRACTION(2),
      #aDateTimeFF DATETIME FRACTION TO FRACTION,
      #aDateTimeFFScale DATETIME FRACTION TO FRACTION(3),
-
+{
 	   # Interval(s)
      aIntervalYY INTERVAL YEAR TO YEAR,
      aIntervalYPrecY INTERVAL YEAR (4) TO YEAR,
@@ -224,6 +225,7 @@ MAIN
      aIntervalSPrecFS INTERVAL SECOND (2) TO FRACTION(2),
      #aIntervalFF INTERVAL FRACTION TO FRACTION,
      #aIntervalFFScale INTERVAL FRACTION TO FRACTION(3),
+}
 	   aCharacter CHARACTER,
 	   aCharacterWithSz CHARACTER(30),
 	   aChar CHAR,
@@ -288,11 +290,12 @@ MAIN
   LET r_.aDateTimeMinF  = "59:59:9999"
   LET r_.aDateTimeMinFScale  = "59:59:99"
   LET r_.aDateTimeSS  = "59"
-  LET r_.aDateTimeSF  = "59:9999"
-  LET r_.aDateTimeSFScale  = "59:99"
+  LET r_.aDateTimeSF  = "59.9999"
+  LET r_.aDateTimeSFScale  = "59.99"
   #r_.aDateTimeFF  = "9999"
   #r_.aDateTimeFFScale  = "99"
 	 # Interval(s) =
+{
   LET r_.aIntervalYY  = "1"
   LET r_.aIntervalYY  = "-1"
   LET r_.aIntervalYPrecY  = "1"
@@ -332,12 +335,13 @@ MAIN
   LET r_.aIntervalMinPrecFScale  = "1:1.1"
   LET r_.aIntervalSS  = "1"
   LET r_.aIntervalSPrecS  = "1"
-  LET r_.aIntervalSF  = "1:1"
+  LET r_.aIntervalSF  = "1.1"
   LET r_.aIntervalSPrecF  = "1.1"
   LET r_.aIntervalSFScale  = "1.1"
   LET r_.aIntervalSPrecFScale  = "1.1"
   #r_.aIntervalFF  = "1"
   #r_.aIntervalFFScale  = "1"
+}
 	# 
 	LET r_.aCharacter = "C"
 	LET r_.aCharacterWithSize = "Hello world"
@@ -416,6 +420,7 @@ function display_it()
 	display "r_.aDateTimeSS=",r_.aDateTimeSS
 	display "r_.aDateTimeSF=",r_.aDateTimeSF
 	display "r_.aDateTimeSFScale=",r_.aDateTimeSFScale
+{
 	display "r_.aIntervalYY=",r_.aIntervalYY
 	display "r_.aIntervalYY=",r_.aIntervalYY
 	display "r_.aIntervalYPrecY=",r_.aIntervalYPrecY
@@ -459,6 +464,7 @@ function display_it()
 	display "r_.aIntervalSPrecF=",r_.aIntervalSPrecF
 	display "r_.aIntervalSFScale=",r_.aIntervalSFScale
 	display "r_.aIntervalSPrecFScale=",r_.aIntervalSPrecFScale
+}
 	display "r_.aCharacter=",r_.aCharacter
 	display "r_.aCharacterWithSize=",r_.aCharacterWithSize
 	display "r_.aChar=",r_.aChar

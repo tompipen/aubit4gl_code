@@ -174,7 +174,7 @@ EXPECT_TO_FAIL_QUERIX="234 240 351 359 362 363 364 365 366 372 373 374 376 380 \
 #Tests that currently fail because of the errors in the test itself
 INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 	922 923 924 925 926 927 928 929 930 931 932 933 934 935 948 949 950 951 952 \
-	953 954 955 956 957 958 959 964	966 284 918 \
+	953 954 955 956 957 958 959 964	966  918 \
 	938 939 940 941 942 943 944 945 946 947  498 499 "
 #752 - fails to run under informix 4gl
 #707 - fails to run under informix 4gl
@@ -189,7 +189,6 @@ INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 #...942 943 944 945 946 947 - fails even with -ifx-p (.c files with informix headers)
 #926 missing function
 #934 no test files
-#284 no makefile
 #956 missing 4gl file
 #498,499 no keys.in
 

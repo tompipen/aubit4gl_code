@@ -18,6 +18,8 @@ desc:
 #"0" means "don't care"
 transaction:
 	@echo "2"
+db_test:
+	@echo "1"
 
 ansi_sql_compat:
 	@echo "0"

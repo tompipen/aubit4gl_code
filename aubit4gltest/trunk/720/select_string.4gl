@@ -31,11 +31,11 @@ MAIN
     LET exitStatus = 1
   END IF
   IF lv_doubleQuoted != "Double quoted" THEN
-    DISPLAY "Diferent string value"
+    DISPLAY "Diferent DQ string value : ",lv_doubleQuoted
     LET exitStatus = 1
   END IF
   IF lv_singleQuoted != "Single quoted" THEN
-    DISPLAY "Diferent string value"
+    DISPLAY "Diferent SQ string value ",lv_singleQuoted
     LET exitStatus = 1
   END IF
   EXIT PROGRAM exitStatus
