@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.35 2003-06-12 17:40:20 mikeaubury Exp $
+# $Id: curslib.c,v 1.36 2003-06-13 18:40:58 mikeaubury Exp $
 #*/
 
 /**
@@ -2963,12 +2963,13 @@ A4GL_find_shown (ACL_Menu * menu, int chk, int dir)
  * @todo Describe function
  */
 void
-aclfgli_pr_message (int attr, int wait)
+aclfgli_pr_message_internal (int attr, int wait,char *s)
 {
   char p[2048];
   long w;
   int ml;
   int width;
+  //char *s;
   WINDOW *cw;
   char buff[256];
   static WINDOW *mw;
@@ -2976,13 +2977,16 @@ aclfgli_pr_message (int attr, int wait)
   A4GL_debug ("In message...");
   cw = (WINDOW *) A4GL_get_currwin ();
   ml = A4GL_getmessage_line ();
+
   if (ml<0) {
 	A4GL_exitwith("Internal error - negative messageline");
 	return ;
   }
-  A4GL_debug ("MJA - Got message line as %d\n", ml);
+  A4GL_debug ("MJA - Got message line as %d - %s\n", ml,s);
   width = A4GL_get_curr_width ();
-  A4GL_pop_char (p, A4GL_get_curr_width ());
+
+  A4GL_push_char(s);
+  A4GL_pop_char (p, width);
 
   if (strlen (p) == 0)
     {
@@ -3007,7 +3011,6 @@ aclfgli_pr_message (int attr, int wait)
       A4GL_push_int (1);
       A4GL_display_at (1, attr);
     }
-
   return;			/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
   A4GL_debug (" NW PTR");
@@ -3829,10 +3832,12 @@ void A4GL_comments (struct struct_scr_field *fprop)
   if (!fprop) return;
   A4GL_debug ("Has property");
 
-  if (!A4GL_has_str_attribute (fprop, FA_S_COMMENTS)) return;
-
-  strcpy(buff,A4GL_get_str_attribute (fprop, FA_S_COMMENTS));
-  A4GL_strip_quotes (buff);
+  if (!A4GL_has_str_attribute (fprop, FA_S_COMMENTS)) {
+	strcpy(buff,"");
+  } else {
+  	strcpy(buff,A4GL_get_str_attribute (fprop, FA_S_COMMENTS));
+  	A4GL_strip_quotes (buff);
+  }
   
   cline=A4GL_getcomment_line();
   buff[A4GL_get_curr_width()]=0;

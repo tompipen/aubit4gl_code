@@ -1,3 +1,9 @@
+echo "In ecpg_wrap"
+if [ "$POSTGRESDIR" = "" ]
+then
+	export POSTGRESDIR=/usr/local/pgsql
+fi
+
 ECPG_EXT=cpc
 
 while [ "$1" != "" ]
@@ -46,6 +52,6 @@ do
 	cfiles="$cfiles $out.c"
 done
 
-echo gcc $other_args $cfiles
-gcc -I$POSTGRESDIR/include $other_args $cfiles
+echo gcc  -I$POSTGRESDIR/include $other_args $cfiles
+gcc  -I$POSTGRESDIR/include $other_args $cfiles -L$POSTGRESDIR/lib -lecpg
 		

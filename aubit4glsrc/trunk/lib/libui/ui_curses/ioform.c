@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.32 2003-06-13 10:04:01 mikeaubury Exp $
+# $Id: ioform.c,v 1.33 2003-06-13 18:40:58 mikeaubury Exp $
 #*/
 
 /**
@@ -2122,18 +2122,18 @@ A4GL_set_field_pop_attr (FIELD * field, int attr)
   int a;
   int field_width;
   long oopt;
-  char using_buff[256];
   int d1;
   int s1;
-  int isneg;
   void* ptr1;
-  A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
+  int has_format=0;
+  int ignore_formatting=0;
 
-  A4GL_debug("set_field_pop_attr d1=%d",d1);
+
+  A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
+  field_width=A4GL_get_field_width (field);
 
   ff = A4GL_new_string (A4GL_get_field_width (field));
-  A4GL_pop_char (ff, A4GL_get_field_width (field));
-  A4GL_debug ("set_field_pop_attr : display %s to field %d", ff, attr);
+
   f = (struct struct_scr_field *) (field_userptr (field));
 
   if (A4GL_has_bool_attribute (f, FA_B_REVERSE))
@@ -2143,85 +2143,61 @@ A4GL_set_field_pop_attr (FIELD * field, int attr)
 
   A4GL_debug ("f->do_reverse=%d attr=%d", a, attr);
 
-/*
-  if (attr)
-    {
-      if (f->do_reverse)
-        f->do_reverse = 0;
-      else
-        f->do_reverse = 1;
-    }
-  else
-    {
-      if (f->do_reverse)
-        f->do_reverse = 1;
-      else
-        f->do_reverse = 0;
-    }
-*/
+  has_format=A4GL_has_str_attribute (f, FA_S_FORMAT);
 
-  if (A4GL_has_str_attribute (f, FA_S_FORMAT))
+// 'Format' is valid for a lot of datatypes -
+// but not all...
+// If we are passing **IN** a character string
+// for example - we'll omit the formatting...
+
+  switch (d1&DTYPE_MASK) {
+	case DTYPE_CHAR:
+	case DTYPE_BYTE:
+	case DTYPE_TEXT:
+	case DTYPE_VCHAR: ignore_formatting=1;
+  }
+
+
+  if (has_format&&!ignore_formatting) 
     {
-      A4GL_push_char (ff);
+	A4GL_debug("Has specified format..");
+	if (strlen(A4GL_get_str_attribute (f, FA_S_FORMAT))>field_width) {
+		A4GL_exitwith("Format is wider than the field");
+		return ;
+	}
+
+// I think these 2 can be removed...
+      //A4GL_pop_char (ff, field_width );
+      //A4GL_push_char (ff);
       A4GL_push_char (A4GL_get_str_attribute (f, FA_S_FORMAT));
       A4GL_pushop (OP_USING);
-      A4GL_debug ("Has format - need to process it... (%s) (%s)", ff,
-		  A4GL_get_str_attribute (f, FA_S_FORMAT));
-      A4GL_pop_param (ff, DTYPE_CHAR, A4GL_get_field_width (field));
-      A4GL_debug ("Has format - processed it to (%s) ", ff);
+    } 
 
-    } else {
-	/* There appears a discrepency between a number->char conversion
-		for strings and an number->field display...
-		The ->character ends up left aligned by default
-		The ->field is right aligned...
-		We'll use the datatype of the data passed in to see
-		if its a number (decimal & money don't seem affected)
-		and generate an appropriate USING for it...
-	*/
-	strcpy(using_buff,"");
-	field_width=A4GL_get_field_width (field);
-	switch (d1&DTYPE_MASK) {
-		case DTYPE_INT:
-		case DTYPE_SMINT:
-		case DTYPE_SERIAL:
-			memset(using_buff,'-',255);
-			using_buff[field_width]=0;
-			using_buff[field_width-1]='&';
-			break;
-
-		case DTYPE_FLOAT:
-		case DTYPE_SMFLOAT:
-			A4GL_debug("DTYPE_FLOAT set_field_pop_attr");
-			if (strchr(ff,'-')) {
-				memset(using_buff,'-',255);
-				isneg=1;
-			} else {
-				memset(using_buff,'#',255);
-				isneg=0;
-			}
-
-			if (field_width>=3+isneg) {
-				using_buff[field_width  ]=0;
-				using_buff[field_width-1]='&';
-				using_buff[field_width-2]='.';
-				using_buff[field_width-3]='&';
-			} else {
-				using_buff[field_width  ]=0;
-				using_buff[field_width-1]='&';
-			}
-			break;
+    if (!has_format&&!ignore_formatting) {
+	A4GL_debug("Has no format.. d1=%d",d1&DTYPE_MASK);
+	if (A4GL_has_datatype_function_i (d1 & DTYPE_MASK, "DISPLAY")) {
+		char *ptr;
+        	char *(*function) (void *, int, int, struct struct_scr_field *, int);
+	A4GL_debug("check for specific display routine");
+        	function = A4GL_get_datatype_function_i (d1 & DTYPE_MASK, "DISPLAY");
+		if (function) {
+		A4GL_debug("Has a function - calling");
+        	ptr = function (ptr1, s1, field_width,f,DISPLAY_TYPE_DISPLAY_TO);
+		A4GL_debug("Returns %p\n",ptr);
+		} else {
+		ptr=0;
 		}
-	A4GL_debug("set_field_pop_attr - using_buff='%s' field_width=%d",using_buff,field_width);
-	if (strlen(using_buff)) {
-      		A4GL_push_char (ff);
-      		A4GL_push_char (using_buff);
-      		A4GL_pushop (OP_USING);
-      		A4GL_pop_param (ff, DTYPE_CHAR, A4GL_get_field_width (field));
-      		A4GL_debug ("faked a format - processed it to (%s) ", ff);
-
+		if (ptr!=0) {
+			A4GL_debug("Here.. %s",ptr);
+			A4GL_drop_param();
+			A4GL_debug("Dropped - pushing mine..");
+			A4GL_push_char(ptr);
+		} 
 	}
+
     }
+
+  A4GL_pop_char (ff, A4GL_get_field_width (field));
   A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
   oopt = field_opts (field);
   A4GL_set_field_attr (field);
@@ -2236,6 +2212,7 @@ A4GL_set_field_pop_attr (FIELD * field, int attr)
   f->do_reverse = a;
   A4GL_debug ("done ");
   set_field_opts (field, oopt);
+  free(ff);
 }
 
 

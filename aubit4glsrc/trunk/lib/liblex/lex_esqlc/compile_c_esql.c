@@ -91,7 +91,7 @@ print_foreach_next (char *cursorname, char *into)
   no = print_bind ('o');
   print_conversions ('i');
   printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n",
-	  A4GL_strip_quotes (cursorname), A4GL_get_into_part (no), ni, no);
+	  A4GL_strip_quotes (cursorname), A4GL_get_into_part (0,no), ni, no);
   printc("internal_recopy_%s_o_Dir();",A4GL_strip_quotes(cursorname));
   print_copy_status ();
   print_conversions ('o');
@@ -260,7 +260,7 @@ print_put (char *cname)
 	{
 	  if (a)
 	    printc (",");
-	  printc ("   $_vi_%d", a);
+	  printc ("   :_vi_%d", a);
 	}
     }
   printc (";");
@@ -570,7 +570,7 @@ print_fetch_3 (char *ftp, char *into)
     }
 
 
-  printc ("%s %s ;", buff, A4GL_get_into_part (no));
+  printc ("%s %s ;", buff, A4GL_get_into_part (0,no));
   if (strcmp (into, "0,0") != 0)
     {
       print_copy_status ();
@@ -684,22 +684,21 @@ void
 print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 {
   char buff[256];
-  //int a;
 int intprflg=0;
-  printc ("/* print_declare a1=%s h1=%d a2=%s h2=%d a3=%s */\n", a1, h1, a2, h2, a3);
-  //printc(" /* nibind=%d a2=%s*/\n",get_bind_cnt('i'),a2);
-  //printc(" /* nobind=%d a3=%s */\n",get_bind_cnt('o'),a3);
 
-  if (a2[0]=='"') { start_bind('i',0); start_bind('o',0); last_ni=0; last_no=0; 
-  	print_conversions('0');
+  if (a2[0]=='"') { 
+		start_bind('i',0); start_bind('o',0); 
+		last_ni=0; 
+		last_no=0; 
+  		print_conversions('0');
   }
 
-  if (strstr (a2, "INTO $") != 0)
-    {
-      a4gl_yyerror
-	("ESQL lexer cannot handle DECLARE .. INTO at present, put the INTO on the FETCH/FOREACH instead...");
-      return;
-    }
+  //if (strstr (a2, "INTO $") != 0)
+    //{
+      //a4gl_yyerror
+	//("ESQL lexer cannot handle DECLARE .. INTO at present, put the INTO on the FETCH/FOREACH instead...");
+      //return;
+    //}
 
   if (a2[0] == '"')
     {
@@ -730,7 +729,7 @@ int intprflg=0;
       printc ("     FOR UPDATE");
     }
   printc (";");
-  printc(" /* A2='%s'*/",a2);
+  //printc(" /* A2='%s'*/",a2);
   print_copy_status ();
   printh("static int acli_ni_%s=%d;\n",A4GL_strip_quotes(a3),last_ni);
   printh("static int acli_no_%s=%d;\n",A4GL_strip_quotes(a3),last_no);

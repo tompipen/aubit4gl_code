@@ -75,7 +75,8 @@ fetch_statement:
     }
 ;
 
-
+declare_cursor_name  :       ident_or_var {sprintf($<str>$,"%s",$<str>1);doing_declare=1;}
+;
 
 fetch_part: 
 	fetch_place  fetch_cursor_name
@@ -966,26 +967,30 @@ print_undo_use($<str>1);
 
 ;
 
-declare_cmd : opt_use DECLARE fetch_cursor_name CURSOR FOR cursor_specification_all_ss {insql=0;chk4var=0;} curs_forupdate {
+declare_cmd : opt_use DECLARE declare_cursor_name CURSOR FOR cursor_specification_all_ss {insql=0;chk4var=0;} curs_forupdate {
 		print_declare($<str>8,$<sql_string>6,$<str>3,0,0);
 		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
 		print_undo_use($<str>1);
+		doing_declare=0;
 	}
-	| opt_use DECLARE fetch_cursor_name CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;} curs_forupdate {
+	| opt_use DECLARE declare_cursor_name CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;} curs_forupdate {
 		print_declare($<str>9,$<sql_string>7,$<str>3,2,0); 
 		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
 		print_undo_use($<str>1);
+		doing_declare=0;
 	}
 
-        | opt_use DECLARE fetch_cursor_name SCROLL_CURSOR_FOR cursor_specification_sel_ss {insql=0;chk4var=0;} curs_forupdate {
+        | opt_use DECLARE declare_cursor_name SCROLL_CURSOR_FOR cursor_specification_sel_ss {insql=0;chk4var=0;} curs_forupdate {
 		print_declare($<str>7,$<sql_string>5,$<str>3,0,1); 
 		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
 		print_undo_use($<str>1);
+		doing_declare=0;
 	}
-       	| opt_use DECLARE fetch_cursor_name SCROLL_CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;} curs_forupdate {
+       	| opt_use DECLARE declare_cursor_name SCROLL_CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;} curs_forupdate {
 		print_declare($<str>9,$<sql_string>7,$<str>3,2,1); 
 		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
 		print_undo_use($<str>1);
+		doing_declare=0;
 	}
 ;
 
@@ -1110,7 +1115,7 @@ tmp_tabname: identifier;
 
 opt_into_sel_ss :  { start_bind('o',0);$<sql_string>$=make_sql_string("",0); }
 	| INTO  obind_var_list { 
-		$<sql_string>$=make_sql_string(A4GL_get_into_part(get_bind_cnt('o')),0 ); 
+		$<sql_string>$=make_sql_string(A4GL_get_into_part(doing_declare,get_bind_cnt('o')),0 ); 
 
 	}
 ;

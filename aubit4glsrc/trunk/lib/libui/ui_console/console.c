@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.7 2003-05-15 07:10:45 mikeaubury Exp $
+# $Id: console.c,v 1.8 2003-06-13 18:40:58 mikeaubury Exp $
 #*/
 
 /**
@@ -119,10 +119,8 @@ A4GL_ui_init (int argc, char *argv[])
  * @todo Describe function
  */
 void
-aclfgli_pr_message (int attr, int wait)
+aclfgli_pr_message_internal (int attr, int wait,char *s)
 {
-  char *s;
-  s = A4GL_char_pop ();
   A4GL_trim (s);
   printf ("%s\n", s);
   free (s);

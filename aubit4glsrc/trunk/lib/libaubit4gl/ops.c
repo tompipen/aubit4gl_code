@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.15 2003-06-06 09:52:35 mikeaubury Exp $
+# $Id: ops.c,v 1.16 2003-06-13 18:40:57 mikeaubury Exp $
 #
 */
 
@@ -66,6 +66,7 @@ void A4GL_add_default_operations (void);
 void A4GL_dt_in_ops (int op);
 void A4GL_in_dt_ops (int op);
 void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
+void A4GL_ltrim(char *s) ;
 void A4GL_dt_dt_ops (int op);
 //int A4GL_ctodt (void *a, void *b, int size);
 //int A4GL_ctoint (void *a, void *b, int size);
@@ -855,6 +856,7 @@ A4GL_display_int (void *ptr, int size, int size_c,
   long a;
   static char buff[256];
   a = *(long *) ptr;
+  A4GL_debug("A4GL_display_int..");
 
   if (display_type == DISPLAY_TYPE_DISPLAY)
     {
@@ -868,8 +870,16 @@ A4GL_display_int (void *ptr, int size, int size_c,
 
   if (display_type == DISPLAY_TYPE_DISPLAY_TO)
     {
-      A4GL_push_long (a);
-      A4GL_pop_char (buff, size_c);
+		char using_buff[256];
+		memset(using_buff,'-',255);
+		using_buff[size_c]=0;
+		using_buff[size_c-1]='&';
+
+		A4GL_push_long(a);
+		A4GL_push_char(using_buff);
+		A4GL_pushop (OP_USING);
+      		A4GL_pop_char (buff, size_c);
+		A4GL_debug("display_int Got '%s'",buff);
     }
 
   return buff;
@@ -883,6 +893,8 @@ A4GL_display_smint (void *ptr, int size, int size_c,
   static char buff[256];
   a = *(short *) ptr;
 
+  A4GL_debug("A4GL_display_smint..");
+
   if (display_type == DISPLAY_TYPE_DISPLAY)
     {
       sprintf (buff, "%6d", a);
@@ -895,8 +907,15 @@ A4GL_display_smint (void *ptr, int size, int size_c,
 
   if (display_type == DISPLAY_TYPE_DISPLAY_TO)
     {
-      A4GL_push_int (a);
-      A4GL_pop_char (buff, size_c);
+                char using_buff[256];
+                memset(using_buff,'-',255);
+                using_buff[size_c]=0;
+                using_buff[size_c-1]='&';
+		A4GL_push_int(a);
+		A4GL_push_char(using_buff);
+                A4GL_pushop (OP_USING);
+                A4GL_pop_char (buff, size_c);
+		A4GL_debug("display_smint Got '%s'",buff);
     }
 
   return buff;
@@ -1002,6 +1021,18 @@ char *
 A4GL_display_decimal (void *ptr, int size, int size_c,
 		 struct struct_scr_field *field_details, int display_type)
 {
+static char s[256];
+A4GL_push_dec(ptr,1);
+A4GL_pop_char(s,size_c);
+  if (display_type == DISPLAY_TYPE_DISPLAY) {
+	return s;
+  }
+
+  if (display_type== DISPLAY_TYPE_DISPLAY_AT) {
+  	A4GL_ltrim(s);
+	return s;
+  }
+
   return 0;
 }
 
@@ -1009,7 +1040,20 @@ char *
 A4GL_display_money (void *ptr, int size, int size_c,
 	       struct struct_scr_field *field_details, int display_type)
 {
-  return 0;
+static char s[256];
+A4GL_push_dec(ptr,1);
+A4GL_pop_char(s,size_c);
+
+  if (display_type == DISPLAY_TYPE_DISPLAY) {
+	return s;
+  }
+
+  if (display_type== DISPLAY_TYPE_DISPLAY_AT) {
+  	A4GL_ltrim(s);
+	return s;
+  }
+
+return 0;
 }
 
 char *
@@ -1104,5 +1148,24 @@ DTYPE_SERIAL
 
 }
 
+
+
+void A4GL_ltrim(char *s) {
+int a;
+char *buff;
+char *ptr=0;
+buff=strdup(s);
+
+for (a=0;a<strlen(buff);a++) {
+	if (s[a]==' ') continue;
+	ptr=&s[a]; 
+	break;
+}
+
+if (ptr==0) return;
+
+strcpy(s,ptr);
+free(buff);
+}
 
 /* ========================== EOF ========================== */

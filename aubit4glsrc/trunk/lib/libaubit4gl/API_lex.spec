@@ -367,8 +367,8 @@ print_op char* type -> void
 /* void print_niy (char *type) */
 print_niy char* type -> void
 
-/* void print_message (int type, char *attr, int wait) */
-print_message int type,char* attr,int wait -> void
+/* void print_message (int type, char *attr, int wait,int exprs) */
+print_message int type,char* attr,int wait,int exprs -> void
 
 /* void print_system_run (int type, char *rvar) */
 print_system_run int type,char* rvar -> void
@@ -638,9 +638,9 @@ print_import_legacy char* s -> void
 
 print_cmd_end -> void
 
-A4GL_get_into_part int n -> char*
+A4GL_get_into_part int d int n -> char*
 
-A4GL_set_var_sql int n -> char*
+A4GL_set_var_sql int d int n -> char*
 
 A4GL_lex_parsed_fgl -> void
 A4GL_bad_identifiers char* ident -> int

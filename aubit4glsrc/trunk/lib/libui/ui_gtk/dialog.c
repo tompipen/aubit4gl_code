@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dialog.c,v 1.6 2003-06-06 09:52:38 mikeaubury Exp $
+# $Id: dialog.c,v 1.7 2003-06-13 18:40:59 mikeaubury Exp $
 #*/
 
 /**
@@ -273,7 +273,7 @@ main (int argc, char *argv[])
  * @param wait The time to wait during the message presentation.
  */
 void
-aclfgli_pr_message (int a, int wait)
+aclfgli_pr_message_internal (int a, int wait,char *s)
 {
   char *p;
 	/** 
@@ -281,12 +281,10 @@ aclfgli_pr_message (int a, int wait)
 	 * but the headers needs some clean.
 	 */
 
-  p = (char *) A4GL_char_pop ();
-  A4GL_debug ("In aclfgli_pr_message (GUI)- p=%s", p);
   if (wait)
-    A4GL_gtkdialog ("Message", "", BUTTONS_OK, BUTTON_OK, 0, p);
+    A4GL_gtkdialog ("Message", "", BUTTONS_OK, BUTTON_OK, 0, s);
   else
-    A4GL_msg_window_gtk (p);
+    A4GL_msg_window_gtk (s);
 }
 
 /**

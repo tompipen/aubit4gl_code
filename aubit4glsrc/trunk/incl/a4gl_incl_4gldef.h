@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.43 2003-06-10 22:20:51 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.44 2003-06-13 18:40:56 mikeaubury Exp $
 */
 
 /**
@@ -291,7 +291,7 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
   int A4GL_req_field (void *s, int size, char *fieldname, int fno);
   void A4GL_set_infield_from_stack (void);
   int A4GL_form_loop (void *s,int init);
-  void aclfgli_pr_message (int attr, int wait);
+  void aclfgli_pr_message (int attr, int wait,int nexpr);
   int A4GL_push_constr (void *s);	// really a s_screenio - but not in an app
   int A4GL_cr_window_form (char *name, int iswindow, int form_line,
 		      int error_line, int prompt_line, int menu_line,

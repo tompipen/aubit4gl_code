@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.33 2003-05-30 18:34:07 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.34 2003-06-13 18:40:58 mikeaubury Exp $
 #
 */
 
@@ -2997,12 +2997,12 @@ print_push_variable (char *s)
  * @return
  */
 void
-print_message (int type, char *attr, int wait)
+print_message (int type, char *attr, int wait,int n)
 {
   if (type == 0)
-    printc ("aubit4gl_pl::aclfgli_pr_message(%s,%d);\n", attr, wait);
+    printc ("aubit4gl_pl::aclfgli_pr_message(%s,%d,%d);\n", attr, wait,n);
   else
-    printc ("aubit4gl_pl::aclfgli_pr_message_cap(%d,%d);\n", attr, wait);
+    printc ("aubit4gl_pl::aclfgli_pr_message_cap(%d,%d,%d);\n", attr, wait,n);
 }
 
 /**

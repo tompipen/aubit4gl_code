@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.41 2003-06-12 17:39:45 mikeaubury Exp $
+# $Id: conv.c,v 1.42 2003-06-13 18:40:57 mikeaubury Exp $
 #
 */
 
@@ -838,12 +838,24 @@ A4GL_stol (void *aa, void *zi, int sz_ignore)
   z = (long *) zi;
   errno = 0;
   A4GL_trim (a);
+
+  A4GL_debug("Processing %s",a);
   zz = strlen (a);
   *z = strtol (a, &eptr, 10);
-  if (eptr - a < zz)
-    return 0;
+
+  if (eptr - a < zz) {
+	A4GL_debug("Fail check 1 a=%p eptr=%p zz=%d",a,eptr,zz);
+  	strtod (a, &eptr);
+  	if (eptr - a < zz) {
+    		return 0;
+	}
+	A4GL_debug("Close shave - its a float..");
+  }
+
+
   if (errno != 0 || eptr[0] != 0 || eptr == a)
     {
+	A4GL_debug("Fail check 2");
       return 0;
     }
   return 1;
@@ -1080,10 +1092,14 @@ int
 A4GL_mdectos (void *z, void *w, int size)
 {
   char *buff;
-  buff = A4GL_dec_to_str (z, size);
+  char buff2[256];
+  buff = A4GL_dec_to_str (z, 0);
   A4GL_debug ("dec_to_str -> '%s'\n", buff);
-  strcpy (w, buff);
+   strcpy(buff2,buff);
+  A4GL_ltrim(buff);
+  A4GL_string_set (w, buff2, size);
   A4GL_debug ("w = %s\n", buff);
+
   return 1;
 }
 
@@ -1215,15 +1231,16 @@ int
 A4GL_dectos (void *z, void *w, int size)
 {
   char *buff;
-  //int r;
-  //debug ("dectos: z = '%s', size=%d", z, size);
-  //dump (z);
-
-  buff = A4GL_dec_to_str (z, size);
+  char buff2[200];
+  buff = A4GL_dec_to_str (z, 0);
   A4GL_debug ("dec_to_str -> '%s'\n", buff);
-  //r = ctoc(buff, w, size);
-  strcpy (w, buff);
-  A4GL_debug ("w = %s\n", buff);
+  strcpy(buff2,buff);
+  A4GL_ltrim(buff2);
+  A4GL_string_set (w, buff2, size);
+
+  A4GL_debug ("w = %s\n", w);
+
+
   return 1;
 
 }

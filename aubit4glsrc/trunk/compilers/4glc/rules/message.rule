@@ -1,17 +1,14 @@
-message_cmd : msg_start msg_next {start_state("message",0);} 
+message_cmd : msg_start msg_next 
 ;
 
 msg_next : {
-		print_message(0,"0",0);
-		start_state("message",0);
+		print_message(0,"0",0,message_cnt);
 	   }
  	| attributes_def op_msg_wait { 
-		print_message(0,$<str>1,atoi($<str>2));
-		start_state("message",0);
+		print_message(0,$<str>1,atoi($<str>2),message_cnt);
 	  } 
  	| msg_wait { 
-		print_message(0,"0",atoi($<str>1));
-		start_state("message",0);
+		print_message(0,"0",atoi($<str>1),message_cnt);
 	  } 
 
 	| gui_message
@@ -26,7 +23,10 @@ gui_message:
 ;
 
 
-msg_start : KWMESSAGE {start_state("message",1);} fgl_expr_concat ;
+msg_start : KWMESSAGE reset_cnt fgl_expr_list {
+		strcpy($<str>$,$<str>3);
+		message_cnt=atoi($<str>3);
+		};
 
 op_msg_wait : {strcpy($<str>$,"0");} | WAIT_FOR_KEY {strcpy($<str>$,"1");} 
 ;

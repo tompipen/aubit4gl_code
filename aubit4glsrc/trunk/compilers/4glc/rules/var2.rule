@@ -54,7 +54,7 @@ var_ident_ibind_ss :  var2
 		a=get_bind_cnt('i');
 		z=add_bind('i',$<str>1);
 		z-=a;
-		$<sql_string>$=strdup(A4GL_set_var_sql(z));
+		$<sql_string>$=strdup(A4GL_set_var_sql(doing_declare,z));
 
 	} else { 
 		// Its a column
