@@ -109,15 +109,15 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "checks a select with an order by with into temp - tests whether STRIP_ORDER_BY_INTO_TEMP is required \
-	eg for use with postgres"
+	@echo "Tests conversion from/to money/smallint (MID 639)"
+
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
 ################
 #If this test needs database, return 1
 db_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #return 1 if tests use/require ESQL compiler output, instead of C output
@@ -174,7 +174,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped
@@ -203,6 +203,7 @@ unknown_test:
 
 ################
 #Specify minimum version of Informix compiler this test can be executed with
+#example: 	@echo "7.31"
 need_ifx_version:
 	@echo "0"
 
@@ -216,18 +217,16 @@ transaction:
 #################
 #List here any SQL dialect-specific features that may be incompatible
 #with some database back-ends, like:
-#ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM CREATE_TEMP_TABLE 
-#CREATE_VIEW DROP_AUDIT DROP_INDEX DROP_SYNONYM GRANT RECOVER_TABLE 
-#RENAME_COLUMN RENAME_TABLE REVOKE ROLLFORWARD_DATABASE SELECT_INTO_TEMP 
-#SET_EXPLAIN SET_LOG START_DATABASE UPDATE_STATISTICS
-#SERIAL ROWID
-#...etc...
+#ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM CREATE_TEMP_TABLE etc... 
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo "SELECT_INTO_TEMP"
+	@echo ""
+
 	
-# ============================= EOF ================================
-
+#################
+#If test is ANSI SQL 92 compatible, set to "1", if not to "0"
+#If unknown, leave empty
 ansi_sql_compat:
-	@echo "0"
+	@echo ""
 
+# ============================= EOF ================================

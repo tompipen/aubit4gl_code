@@ -104,7 +104,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "EXECUTE prepared stabase statement."
+	@echo "EXECUTE prepared database statement."
 	@echo "No run-time checking."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)

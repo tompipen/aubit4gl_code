@@ -51,13 +51,12 @@ DEFINE
 
 #Aubit has open_file open_pipe set_delimiter close read	
 	
-	
-{
-	--# CALL channel::write(handle, write_string)
-	--# CALL channel::set_delimiter("pipe",",")
+
+	 # CALL channel::write(handle, write_string)
+	 #CALL channel::set_delimiter("pipe",",")
 
 
-}
+
 
 
 	exit program (0)
@@ -189,7 +188,7 @@ define
 #To record:
 
 #Commented out because it failes to compile with Aubit ATM:
-	--#let ret = channel::read(handle, [buffer_record.Buff1, buffer_record.Buff2, buffer_record.Buff3])
+	let ret = channel::read(handle, [buffer_record.Buff1, buffer_record.Buff2, buffer_record.Buff3])
 	let tmp_status = status
 	display "ret=",ret
 	let success = ChannelStatus(tmp_status)
