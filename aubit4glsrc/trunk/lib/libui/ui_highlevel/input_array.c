@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.12 2004-03-19 19:24:53 mikeaubury Exp $
+# $Id: input_array.c,v 1.13 2004-03-20 21:07:12 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.12 2004-03-19 19:24:53 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.13 2004-03-20 21:07:12 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -104,7 +104,7 @@ static void A4GL_add_to_control_stack (struct s_inp_arr *sio, int op,
 				       void *f, char *parameter, int extent);
 
 static void A4GL_newMovement (struct s_inp_arr *arr, int scr_line,
-			      int arr_line, int attrib);
+			      int arr_line, int attrib,char why);
 static void A4GL_init_control_stack (struct s_inp_arr *sio, int malloc_data);
 
 //static int A4GL_set_fields_inp_arr (void *vsio, int n);
@@ -145,7 +145,7 @@ do_key_move (char lr, struct s_inp_arr *arr, int a, int has_picture,
       if (at_last)
 	{
 	  A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
-			    arr->curr_attrib + 1);
+			    arr->curr_attrib + 1,'R');
 	}
       else
 	{
@@ -163,11 +163,11 @@ do_key_move (char lr, struct s_inp_arr *arr, int a, int has_picture,
 	  if (arr->curr_attrib)
 	    {
 	      A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
-				arr->curr_attrib - 1);
+				arr->curr_attrib - 1,'L');
 	    }
 	  else
 	    {
-	      A4GL_newMovement (arr, arr->scr_line - 1, arr->arr_line - 1, 0);
+	      A4GL_newMovement (arr, arr->scr_line - 1, arr->arr_line - 1, 0,'U');
 	    }
 	}
       else
@@ -789,11 +789,11 @@ A4GL_debug("process_key_press inp_arr %d",a);
           if (arr->curr_attrib)
             {
               A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
-                                arr->curr_attrib - 1);
+                                arr->curr_attrib - 1,'L');
             }
           else
             {
-              A4GL_newMovement (arr, arr->scr_line - 1, arr->arr_line - 1, 0);
+              A4GL_newMovement (arr, arr->scr_line - 1, arr->arr_line - 1, 0,'L');
             }
         break;
 
@@ -802,7 +802,7 @@ A4GL_debug("process_key_press inp_arr %d",a);
 	{
 	  A4GL_newMovement (arr,
 			    arr->scr_line,
-			    arr->arr_line + arr->scr_dim, arr->curr_attrib);
+			    arr->arr_line + arr->scr_dim, arr->curr_attrib,'D');
 	}
       else
 	{
@@ -810,7 +810,7 @@ A4GL_debug("process_key_press inp_arr %d",a);
 	  d = arr->arr_size - arr->arr_line;
 	  A4GL_newMovement (arr,
 			    arr->scr_dim,
-			    arr->arr_line + d, arr->curr_attrib);
+			    arr->arr_line + d, arr->curr_attrib,'D');
 
 	}
       break;
@@ -820,11 +820,11 @@ A4GL_debug("process_key_press inp_arr %d",a);
 	{
 	  A4GL_newMovement (arr,
 			    arr->scr_line,
-			    arr->arr_line - arr->scr_dim, arr->curr_attrib);
+			    arr->arr_line - arr->scr_dim, arr->curr_attrib,'U');
 	}
       else
 	{
-	  A4GL_newMovement (arr, 1, 1, arr->curr_attrib);
+	  A4GL_newMovement (arr, 1, 1, arr->curr_attrib,'U');
 
 	}
       break;
@@ -834,7 +834,7 @@ A4GL_debug("process_key_press inp_arr %d",a);
     case A4GLKEY_DOWN:
       A4GL_newMovement (arr,
 			arr->scr_line + 1, arr->arr_line + 1,
-			arr->curr_attrib);
+			arr->curr_attrib,'D');
 
       break;
 
@@ -845,7 +845,7 @@ A4GL_debug("process_key_press inp_arr %d",a);
 	{
 	  A4GL_newMovement (arr,
 			    arr->scr_line, arr->arr_line,
-			    arr->curr_attrib + 1);
+			    arr->curr_attrib + 1,'R');
 	}
       else
 	{
@@ -859,11 +859,11 @@ A4GL_debug("process_key_press inp_arr %d",a);
 	  if (arr->curr_attrib)
 	    {
 	      A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
-				arr->curr_attrib - 1);
+				arr->curr_attrib - 1,'L');
 	    }
 	  else
 	    {
-	      A4GL_newMovement (arr, arr->scr_line - 1, arr->arr_line - 1, 0);
+	      A4GL_newMovement (arr, arr->scr_line - 1, arr->arr_line - 1, 0,'U');
 	    }
 	}
       else
@@ -893,7 +893,7 @@ A4GL_debug("process_key_press inp_arr %d",a);
     case '\t':
     case A4GLKEY_ENTER:
       A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
-			arr->curr_attrib + 1);
+			arr->curr_attrib + 1,'R');
 
       break;
 
@@ -904,7 +904,7 @@ A4GL_debug("process_key_press inp_arr %d",a);
     case A4GLKEY_UP:
       A4GL_newMovement (arr,
 			arr->scr_line - 1, arr->arr_line - 1,
-			arr->curr_attrib);
+			arr->curr_attrib,'U');
       break;
 
     case -99:
@@ -1120,7 +1120,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinpa, int defs, char *srecname, int attrib,
 
       inpa->curr_attrib = 0;
       //debug("MJAMJA setting current field = %p",inpa->field_list[inpa->scr_line - 1][inpa->curr_attrib]);
-      A4GL_newMovement (inpa, 0, 0, 0);
+      A4GL_newMovement (inpa, 0, 0, 0,'R');
 
       inpa->last_scr_line = -1;
       inpa->last_arr_line = -1;
@@ -1452,13 +1452,12 @@ void *memdup(void *ptr,int size) {
  */
 void
 A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
-		  int attrib)
+		  int attrib,char why)
 {
   struct s_movement *ptr;
   void *last_field = 0;
   void *next_field;
   struct struct_scr_field *f;
-  static int dir = 0;
 
 
   A4GL_debug ("newMovement %d %d %d", scr_line, arr_line, attrib);
@@ -1477,7 +1476,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 	{
 	  A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
 	}
-      A4GL_newMovement (arr, scr_line, 1, attrib);
+      A4GL_newMovement (arr, scr_line, 1, attrib,why);
       return;
     }
 
@@ -1490,7 +1489,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
       // attempt to move too far to the left
       // In informix - this results in just going up a line - still on field 0
       A4GL_debug ("Too far to the left");
-      A4GL_newMovement (arr, scr_line, arr_line - 1, 0);
+      A4GL_newMovement (arr, scr_line, arr_line - 1, 0,why);
       return;
     }
 
@@ -1499,7 +1498,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
     {
       A4GL_debug ("Too far down in screen lines");
       scr_line = arr->scr_dim;
-      A4GL_newMovement (arr, scr_line, arr_line, attrib);
+      A4GL_newMovement (arr, scr_line, arr_line, attrib,why);
       return;
     }
 
@@ -1507,7 +1506,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
     {
       A4GL_debug ("Too far up in screen lines");
       scr_line = 1;
-      A4GL_newMovement (arr, scr_line, arr_line, attrib);
+      A4GL_newMovement (arr, scr_line, arr_line, attrib,why);
       return;
     }
 
@@ -1516,7 +1515,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
       A4GL_debug ("scr lines too big for current line %d %d", scr_line,
 		  arr_line);
       scr_line = arr_line - scr_line + 1;
-      A4GL_newMovement (arr, scr_line, arr_line, attrib);
+      A4GL_newMovement (arr, scr_line, arr_line, attrib,why);
       return;
     }
 
@@ -1526,7 +1525,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
     {
       // Too far over to the right - wrap around to the start of the next line
       A4GL_debug ("Too far to the right");
-      A4GL_newMovement (arr, scr_line + 1, arr_line + 1, 0);
+      A4GL_newMovement (arr, scr_line + 1, arr_line + 1, 0,why);
       return;
     }
 
@@ -1536,7 +1535,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
     {				// Attempting to move off the bottom of the array...
       A4GL_debug ("Too far down the program array");
       A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
-      A4GL_newMovement (arr, arr->scr_line, arr->arr_size, arr->curr_attrib);
+      A4GL_newMovement (arr, arr->scr_line, arr->arr_size, arr->curr_attrib,why);
       // Do nothing at all...
       return;
     }
@@ -1574,17 +1573,6 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
       while (1)
 	{
 
-	  if (dir == 0)
-	    {
-	      if (attrib >= arr->curr_attrib)
-		{		// We want to move to the right..
-		  dir = 1;
-		}
-	      else
-		{
-		  dir = -1;
-		}
-	    }
 	  A4GL_debug ("next_field= srec[%d %d]\n", scr_line, attrib);
 	  next_field = arr->field_list[0][attrib];
 	  A4GL_debug ("next_field = %p", next_field);
@@ -1597,7 +1585,9 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 	      || (f->datatype == DTYPE_SERIAL))
 	    {
 	      A4GL_debug ("Darn - next field is no entry too...");
-	      attrib += dir;
+		if (why=='R'||why==0||why=='D')  attrib++;
+		else attrib--;
+
 	      if (attrib >= arr->srec->attribs.attribs_len)
 		{
 		  attrib = 0;
@@ -1606,9 +1596,8 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 		  if (arr_line > arr->arr_size)
 		    {		// Attempting to move off the bottom of the array...
 	  		A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
-			dir=0;
 		      A4GL_debug ("Too far down - should really error at this point");
- 			A4GL_newMovement (arr, scr_line-1, arr_line-1, 0);
+ 			A4GL_newMovement (arr, scr_line-1, arr_line-1, 0,why);
 		      return;
 		    }
 		}
@@ -1623,8 +1612,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 	  else
 	    {
 	      A4GL_debug ("Found somewhere free...");
-		dir=0;
-	      A4GL_newMovement (arr, scr_line, arr_line, attrib);	// So keep going...
+	      A4GL_newMovement (arr, scr_line, arr_line, attrib,why);	// So keep going...
 	      return;
 	    }
 	}
@@ -1633,7 +1621,6 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 
 
 
-  dir=0;
   ptr = malloc (sizeof (struct s_movement));
   ptr->scr_line = scr_line;
   ptr->arr_line = arr_line;
@@ -2163,7 +2150,7 @@ A4GL_debug("a=%d op=%d HEF",a,arr->fcntrl[a].op);
 		      A4GL_LL_set_current_field (curses_form,
 						 arr->currentfield);
 		      A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
-					arr->curr_attrib + 1);
+					arr->curr_attrib + 1,'R');
 		    }
 
 		}
@@ -2682,7 +2669,7 @@ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
       arr->currform->currentfield = 0;
       arr->currentfield = 0;
       A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
-			arr->curr_attrib + 1);
+			arr->curr_attrib + 1,'R');
       return 1;
     }
 
@@ -2696,7 +2683,7 @@ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
       arr->currform->currentfield = 0;
       arr->currentfield = 0;
       A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
-			arr->curr_attrib - 1);
+			arr->curr_attrib - 1,'L');
       return 1;
     }
 
@@ -2741,7 +2728,7 @@ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
 		  // How risky is this ?
 		  arr->currform->currentfield = 0;
 		  arr->currentfield = 0;
-		  A4GL_newMovement (arr, arr->scr_line, arr->arr_line, a);
+		  A4GL_newMovement (arr, arr->scr_line, arr->arr_line, a,'R');
 		}
 	      return 1;
 	    }
