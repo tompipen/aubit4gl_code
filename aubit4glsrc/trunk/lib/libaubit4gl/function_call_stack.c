@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.6 2002-05-18 11:56:47 afalout Exp $
+# $Id: function_call_stack.c,v 1.7 2002-05-26 06:26:49 afalout Exp $
 #*/
 
 /**
@@ -46,7 +46,7 @@
 */
 
 #include <stdio.h>
-#include <stdlib.h> 	//calloc()
+#include <stdlib.h> 	//calloc() free()
 #include <string.h>     //strcpy() strcat() strcmp()
 #include "a4gl_debug.h"
 
@@ -159,13 +159,14 @@ int a;
 /**
  * Pop the last function from the stack.
  */
-void 
+void
 A4GLSTK_popFunction(void)
 {
-  if (functionCallStack[functionCallPointer-1].params) free(functionCallStack[functionCallPointer-1].params);
-//   warning: passing arg 1 of `free' discards qualifiers from pointer target type
-
-
+  if (functionCallStack[functionCallPointer-1].params)
+  		free((void *)functionCallStack[functionCallPointer-1].params);
+	//   warning: passing arg 1 of `free' discards qualifiers from pointer target type
+	//extern void free (void *__ptr) __THROW;
+	//static FunctionCall *functionCallStack;
 
   functionCallPointer--;
   if ( functionCallPointer < 0 )

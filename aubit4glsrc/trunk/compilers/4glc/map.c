@@ -1,3 +1,32 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: map.c,v 1.9 2002-05-26 06:26:43 afalout Exp $
+#*/
+
 /**
  * @file
  * Generation of map file.
@@ -8,12 +37,31 @@
  * It is a file with pipe separated columns and \n separated records
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdio.h>
+
 #include "a4gl_aubit_lib.h"
 #include "a4gl_debug.h"
 
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 /// The map file pointer opened file
 static FILE *mapfile = 0;
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
  * Open the map file.
@@ -23,7 +71,8 @@ static FILE *mapfile = 0;
  *
  * @param s The map file name
  */
-void openmap (char *s)
+void 
+openmap (char *s)
 {
   char buff[256];
   debug ("openmap...");
@@ -60,6 +109,7 @@ void openmap (char *s)
  *          started.
  * @param m The x4gl module name
  */
+void
 addmap (char *t, char *s, char *w, int l, char *m)
 {
   debug ("Adding to map... %p", mapfile);
@@ -70,8 +120,11 @@ addmap (char *t, char *s, char *w, int l, char *m)
 /**
  * Close the map file
  */
-void closemap (void)
+void 
+closemap (void)
 {
   if (mapfile)
     fclose (mapfile);
 }
+
+// ================================ EOF ==============================

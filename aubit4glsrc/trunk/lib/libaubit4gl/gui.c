@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.7 2002-05-23 16:01:14 mikeaubury Exp $
+# $Id: gui.c,v 1.8 2002-05-26 06:26:49 afalout Exp $
 #
 */
 
@@ -789,13 +789,14 @@ read_clicked (void)
 void *
 decode_clicked (void)
 {
-  void *ptr;
+  void *ptr = 0;
   char buff[40];
   debug ("In decode_clicked");
   debug ("m_retval=%s", m_cretval);
   sprintf (buff, "0x%s", m_cretval);
   debug ("Buff set to %s", buff);
-  sscanf (buff, "%lx", (long unsigned int) &ptr); // waring: format argument is not a pointer (arg 3)
+//  sscanf (buff, "%lx", (long unsigned int) &ptr); // waring: format argument is not a pointer (arg 3)
+    sscanf (buff, "%px", &ptr);
   debug ("Ptr set to %p", ptr);
   return ptr;
 }

@@ -1,4 +1,9 @@
 #!/bin/sh
+
+#
+# This script creates states.c from sata/defstates file
+#
+
 awk '
 BEGIN {
 	cnt=1;
@@ -17,16 +22,25 @@ BEGIN {
 {
 	for (a=1;a<=NF;a++) {
 		cond[cstate,states[cstate]++]=$a
-		
+
 		cons[cnt++]=$a
 	}
 }
 
 END {
+
+	print "/* "
+	print " * Created with procstates shell script from data/defstates - do not edit "
+	print " */"
+	print ""
 	print "#include \"kw.h\""
-	print "static char *names[]={"
-		for (a in state) { print "   \"" a "\"," }
-	print "0};"
+	print "#include \"string.h\""
+	print "#include \"a4gl_debug.h\""
+	print "#include \"a4gl_4glc_4glc.h\""
+	print ""
+#	print "static char *names[]={"
+#		for (a in state) { print "   \"" a "\"," }
+#	print "0};"
 	print " "
 	print "int statecnt[]={"
 		for (a in state) { 
@@ -34,13 +48,15 @@ END {
 		}
 	print "0};"
 	print " "
-	print "init_states() {"
+	print "void"
+	print "init_states(void) {"
 	for (a=1;a<cnt;a++) {
 		print "    turn_state(" cons[a] ",0);"
 	}
 	print "}"
 
 	print ""
+	print "void"
 	print "start_state(char *s,int on_off) {"
 	cnt=0
 	for (a in state) {
@@ -48,7 +64,7 @@ END {
 		print "      if (on_off==1) statecnt[" cnt "]++;"
 		print "      else           statecnt[" cnt "]--;"
 		print " "
-		print "debug(\"Start state %s %d\\n\",s,on_off);"
+		print "      debug(\"Start state %s %d\\n\",s,on_off);"
 		#print "      if (statecnt[" cnt "]>0&&on_off==0) return;"
 		print " "
 		for (b=0;b<states[a];b++) {
@@ -60,6 +76,9 @@ END {
 	cnt++
 	}
 	print "}"
+	print ""
+	print "/* ============================= EOF ============================= */"
+	print ""
 }' data/defstates > generated/states.c
 
 

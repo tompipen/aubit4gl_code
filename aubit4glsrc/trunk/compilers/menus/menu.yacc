@@ -1,8 +1,18 @@
 %{
-//#include "menu_x.h"
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+
+#include <stdio.h>
+#include <string.h>
+
 #include "a4gl_menuxw.h"
 #include "a4gl_compiler.h"
-
+#include "a4gl_aubit_lib.h"
 #ifdef __CYGWIN__
 	#define GETENV_OK
 	//On Cygwin, something here will eventually include stdlib.h, that will have getenv
@@ -10,8 +20,12 @@
 #endif
 
 #include "a4gl_debug.h"
-#include <stdio.h>
-#include <string.h>
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 extern int ignorekw;
 extern int lineno;
@@ -29,11 +43,35 @@ extern char *outputfilename;
 extern FILE *yyin;
 struct menu *m;
 
-/* Functions prototipes */
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
 menu *nmenu();
 menu_option_item *new_option(menu *m);
 void *get_menu();
 char *char_val (char *s);
+
+//from mcompile.c
+extern void pop_menu(void);
+extern void push_menu(void *a);
+
+
+//#define yylex fgl_comp_lex
+int yylex(void);
+//#define yyerror fgl_comp_error
+int yyerror (char* s);
+
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 %}
 %start menu_def

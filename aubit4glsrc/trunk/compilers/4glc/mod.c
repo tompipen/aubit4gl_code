@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.65 2002-05-25 12:12:44 afalout Exp $
+# $Id: mod.c,v 1.66 2002-05-26 06:26:43 afalout Exp $
 #
 */
 
@@ -1745,7 +1745,7 @@ pushLikeAllTableColumns(char *tableName)
 
   debug ("pushLikeAllTableColumns()");
   //A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
-  rval = A4GLSQL_get_columns(tableName,colname,idtype, isize);
+  rval = A4GLSQL_get_columns(tableName,colname,&idtype, &isize);
   if (rval == 0 && tableName)
   {
     sprintf (buff, "%s does not exist in the database", tableName);
@@ -1758,6 +1758,7 @@ pushLikeAllTableColumns(char *tableName)
     colname[0] = 0;
     debug ("Looking for table '%s' col '%s'", tableName, colname);
 
+    //int A4GLSQL_next_column(char *colname, int *dtype,int *size);
     rval = A4GLSQL_next_column(colname,&idtype,&isize);
 
     if (rval == 0 )

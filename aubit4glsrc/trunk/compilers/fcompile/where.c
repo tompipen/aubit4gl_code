@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: where.c,v 1.5 2002-04-25 06:32:45 afalout Exp $
+# $Id: where.c,v 1.6 2002-05-26 06:26:48 afalout Exp $
 #
 */
 
@@ -34,20 +34,54 @@
  *
  */
 
-//#include "form_x.h"
-#include "a4gl_formxw.h"
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
 
-#include "a4gl_fcomp_fcompile.h"
-#include "a4gl_compiler.h"
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+
+#include "a4gl_formxw.h"
+#include "a4gl_fcomp_fcompile.h"
+#include "a4gl_compiler.h"
 #include "a4gl_dbform.h"
-#include "a4gl_debug.h"
 #include "a4gl_fcomp_where.h"
-/**************************************************************************/
-/* Create simple types                                                    */
-/**************************************************************************/
+#include "a4gl_debug.h"
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+void print_lvl (int lvl);
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+/***********************/
+/* Create simple types */
+/***********************/
+
+/**
+ *
+ * @todo Describe function
+ */
 t_expression *
 create_field_expr (char *fieldname)
 {
@@ -58,6 +92,10 @@ create_field_expr (char *fieldname)
   return ptr;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 t_expression *
 create_int_expr (long intval)
 {
@@ -68,6 +106,10 @@ create_int_expr (long intval)
   return ptr;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 t_expression *
 create_char_expr (char *charval)
 {
@@ -87,6 +129,10 @@ create_char_expr (char *charval)
 	FALSE
 etc.
 */
+/**
+ *
+ * @todo Describe function
+ */
 t_expression *
 create_special_expr (char *charval)
 {
@@ -101,6 +147,10 @@ create_special_expr (char *charval)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 t_expression *
 create_not_expr (t_expression * expr)
 {
@@ -111,8 +161,12 @@ create_not_expr (t_expression * expr)
   return ptr;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 t_expression *
-create_list_expr ()
+create_list_expr (void)
 {
   t_expression *ptr;
   ptr = malloc (sizeof (t_expression));
@@ -122,6 +176,10 @@ create_list_expr ()
   return ptr;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 t_expression *
 add_list_expr (t_expression * ptr, t_expression * expr)
 {
@@ -144,6 +202,10 @@ add_list_expr (t_expression * ptr, t_expression * expr)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 t_expression *
 create_expr_expr (t_complex_expr * expr)
 {
@@ -154,6 +216,10 @@ create_expr_expr (t_complex_expr * expr)
   return ptr;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 t_expression *
 create_expr_comp_expr (t_expression * expr1, t_expression * expr2, char *comp)
 {
@@ -169,9 +235,12 @@ create_expr_comp_expr (t_expression * expr1, t_expression * expr2, char *comp)
   return ptr;
 }
 
-/**************************************************************************/
 
-
+/**
+ *
+ * @todo Describe function
+ */
+void
 dump_expr (t_expression * expr, int lvl)
 {
   t_complex_expr *ptr2;
@@ -186,7 +255,7 @@ dump_expr (t_expression * expr, int lvl)
   if (expr->itemtype == ITEMTYPE_SPECIAL)
     {
       print_lvl (lvl);
-      printf ("*%d", expr->u_expression_u.special);
+      printf ("*%p", expr->u_expression_u.special);
     }
 
   if (expr->itemtype == ITEMTYPE_LIST)
@@ -238,6 +307,11 @@ dump_expr (t_expression * expr, int lvl)
 
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 print_lvl (int lvl)
 {
   int a;
@@ -250,7 +324,13 @@ print_lvl (int lvl)
 
 
 #ifdef TESTWHERE
-main ()
+
+/**
+ *
+ * @todo Describe function
+ */
+void
+main (void)
 {
   void *p[10];
   p[0] = create_field_expr ("bibble");
@@ -264,3 +344,6 @@ main ()
   dump_expr (p[6], 0);
 }
 #endif
+
+
+// ============================== EOF =================================

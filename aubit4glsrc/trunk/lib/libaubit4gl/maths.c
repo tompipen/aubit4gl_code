@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: maths.c,v 1.2 2002-05-23 16:01:15 mikeaubury Exp $
+# $Id: maths.c,v 1.3 2002-05-26 06:26:49 afalout Exp $
 #
 */
 
@@ -35,11 +35,22 @@
  *
  *
  */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include "a4gl_stack.h"
 #include "a4gl_dtypes.h"
 #include "a4gl_debug.h"
 
-
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 struct s_math {
 	int op;
@@ -48,59 +59,89 @@ struct s_math {
 };
 
 static int inited=0;
-
-
 struct s_math *arr_math[MAX_DTYPE][MAX_DTYPE];
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 
 //
 // How many parameters are we expecting for these ?
 //
-static int nparam_op(int op) {
-	switch (op) {
-	case OP_NOT:
-	case OP_ISNOTNULL:
-	case OP_ISNULL: 
-	    return 1;
+/**
+ *
+ * @todo Describe function
+ */
+static int 
+nparam_op(int op) 
+{
+	switch (op) 
+	{
+		case OP_NOT:
+		case OP_ISNOTNULL:
+		case OP_ISNULL:
+		    return 1;
 
-	case OP_CONCAT:
-	case OP_EQUAL:
-	case OP_NOT_EQUAL:
-	case OP_OR:
-	case OP_AND:
-	case OP_LESS_THAN:
-	case OP_GREATER_THAN:
-	case OP_GREATER_THAN_EQ:
-	case OP_LESS_THAN_EQ:
-	case OP_LIKE:
-	case OP_USING:
-	case OP_CLIP:
-	case OP_MATCHES:  
-	case OP_ADD:
-	case OP_SUB:
-	case OP_MULT:
-	case OP_MOD:
-	case OP_DIV: 
-	case OP_POWER: 
-			return 2;
-}
+		case OP_CONCAT:
+		case OP_EQUAL:
+		case OP_NOT_EQUAL:
+		case OP_OR:
+		case OP_AND:
+		case OP_LESS_THAN:
+		case OP_GREATER_THAN:
+		case OP_GREATER_THAN_EQ:
+		case OP_LESS_THAN_EQ:
+		case OP_LIKE:
+		case OP_USING:
+		case OP_CLIP:
+		case OP_MATCHES:
+		case OP_ADD:
+		case OP_SUB:
+		case OP_MULT:
+		case OP_MOD:
+		case OP_DIV:
+		case OP_POWER:
+				return 2;
+	}
 
 return -1;
 }
 
-void init_arr_math() {
+/**
+ *
+ * @todo Describe function
+ */
+void 
+init_arr_math(void) 
+{
 int a,b;
-if (inited==0) {
-inited=1;
-for (a=0;a<MAX_DTYPE;a++) {
-	for (b=0;b<MAX_DTYPE;b++) {
-		arr_math[a][b]=0;
+	if (inited==0) {
+	inited=1;
+	for (a=0;a<MAX_DTYPE;a++) {
+		for (b=0;b<MAX_DTYPE;b++) {
+			arr_math[a][b]=0;
+		}
+	}
 	}
 }
-}
-}
 
 
-void add_op_function(int dtype1,int dtype2,int op,void *function) {
+/**
+ *
+ * @todo Describe function
+ */
+void 
+add_op_function(int dtype1,int dtype2,int op,void *function) 
+{
 	struct s_math *ptr_orig;
 	struct s_math *ptr_new;
 
@@ -133,7 +174,13 @@ void add_op_function(int dtype1,int dtype2,int op,void *function) {
 
 
 
-void *find_op_function(int dtype1,int dtype2,int op) {
+/**
+ *
+ * @todo Describe function
+ */
+void *
+find_op_function(int dtype1,int dtype2,int op)
+{
 	struct s_math *ptr_orig;
 	if (inited==0) init_arr_math();
 
@@ -168,3 +215,4 @@ void *find_op_function(int dtype1,int dtype2,int op) {
 
 }
 
+// =============================== EOF ================================

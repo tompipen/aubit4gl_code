@@ -1,3 +1,31 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: fcompile.c,v 1.17 2002-05-26 06:26:48 afalout Exp $
+#*/
 
 /**
  * @file
@@ -8,23 +36,32 @@
  * The frm is the file used at run-time by x4gl
  */
 
- /*
-  * $Id: fcompile.c,v 1.16 2002-05-24 13:30:02 afalout Exp $
-  */
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#include <stdio.h>
 
 //here becaus of struct_form: FIXME - fcompile should not depend on RPCGEN
 #include "a4gl_formxw.h"
 #include "a4gl_compiler.h"
-#include <stdio.h>
+#include "a4gl_fcomp_fcompile.h"
 #include "a4gl_aubit_lib.h"
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 extern int as_c;
+
 #ifdef YYDEBUG
-extern int yydebug;
-
-
+	extern int yydebug;
 #else /*  */
-int yydebug;
-
+	int yydebug;
 #endif /*  */
 
 extern int yylineno;
@@ -58,6 +95,14 @@ int newscreen = 0;
 int fstart;
 struct struct_scr_field *fld;
 struct struct_form the_form;
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 
 /**
  *  From a file name takes the basename of the file (the file without extension)
@@ -97,13 +142,14 @@ static bname (char *str, char *str1, char *str2)
  * @param argc The argument count
  * @param argv The argument values
  */
-int main (int argc, char *argv[])
+int 
+main (int argc, char *argv[])
 {
   char a[128];
   char b[128];
   char c[128];
   char d[128];
-  FILE *fopn;
+//  FILE *fopn;
 
 
 	//load settings from config file(s):
@@ -191,7 +237,8 @@ int main (int argc, char *argv[])
  *
  * @param s String with error message sended by the parser
  */
-void yyerror(char *s)
+void 
+yyerror(char *s)
 {
   char errfile[256];
   FILE *f;
@@ -237,9 +284,11 @@ yyerror (char *s)
  *
  *  @return 
  */
-int yywrap(void)
+int 
+yywrap(void)
 {
   return 1;
 }
 
+// ================================== EOF =============================
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.13 2002-05-23 16:01:15 mikeaubury Exp $
+# $Id: stack.c,v 1.14 2002-05-26 06:26:49 afalout Exp $
 #
 */
 
@@ -716,6 +716,7 @@ push_param (void *p, int d)
 	debug("Calling OP function");
 
 	function=find_op_function(dtype_1,dtype_2,d);
+
 
 	if (function) {
 		debug("Calling specified function for %d %d, %d",dtype_1&DTYPE_MASK,dtype_2&DTYPE_MASK,d);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.9 2002-05-25 12:12:44 afalout Exp $
+# $Id: API_sql.c,v 1.10 2002-05-26 06:26:49 afalout Exp $
 #
 */
 
@@ -246,7 +246,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
  *   - 0 : Error ocurred.
  */
 int 
-A4GLSQL_next_column(char *colname, int *dtype,int *size)
+A4GLSQL_next_column(char **colname, int *dtype,int *size)
 {
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_next_column");

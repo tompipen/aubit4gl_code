@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.3 2002-05-18 11:56:47 afalout Exp $
+# $Id: interval.c,v 1.4 2002-05-26 06:26:49 afalout Exp $
 #
 */
 
@@ -243,9 +243,7 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
   valid_int (b_str, data_b,mk_int_size(b->stime,b->ltime));
   */
 
-  decode_interval (a, data_a); // warning: passing arg 2 of `decode_interval' from incompatible pointer type
-		//void decode_interval 	(struct ival *ival, int *data);
-
+  decode_interval (a, data_a);
   decode_interval (b, data_b);
 
   debug("Got interval data");

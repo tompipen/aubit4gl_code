@@ -1,3 +1,11 @@
+/*
+	lex.yy.c was made from screen.lex using lex program
+    it is then included in y.tab.c that was generated from
+	screen.yacc using yacc
+
+*/
+
+
 %e 1000
 %p 4000
 %n 700
@@ -190,4 +198,20 @@ int buffpos(void)
   y=YY_CURRENT_BUFFER;
   return (int)(yy_c_buf_p-y->yy_ch_buf);
 }
+
+
+/* dummy function to eliminate wanrings about static
+functions not being used */
+void
+dummy_not_used_prevent_warning(void)
+{
+	//static void *yy_flex_realloc YY_PROTO(( void *, yy_size_t ));
+	yy_flex_realloc (0,0);
+
+	//static void yyunput YY_PROTO(( int c, char *buf_ptr ));
+	yyunput (0,0);
+}
+
+
+/* ============================== EOF =============================== */
 

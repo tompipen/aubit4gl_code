@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-05-23 09:29:34 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-05-26 06:26:48 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -43,6 +43,7 @@ else
 	Y_TAB_C_DEP	=generated/fgl.yacc
 endif
 
+CFLAGS  +=-I.. -I../../../lib/libincl
 
 ## ==================================================================
 ##                              Targets
@@ -56,10 +57,8 @@ generated/states.c: data/defstates
 generated/kw.h: generated/single_words
 	${SH} bin/convkw
 
-
 generated/kw.c: generated/single_words
 	${SH} bin/convkw
-
 
 generated/single_words: data/kwords
 	${SH} bin/convkw.single

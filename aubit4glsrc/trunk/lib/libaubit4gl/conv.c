@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.7 2002-05-25 12:12:44 afalout Exp $
+# $Id: conv.c,v 1.8 2002-05-26 06:26:49 afalout Exp $
 #
 */
 
@@ -173,8 +173,9 @@ void setno 		(void *p);
 void setsf 		(void *p);
 
 int inttoint 	(void *a, void *b, int size);
-int inttoc 		(void *a1, void *b, int size);
+//int inttoint 	(struct ival *a, void *b, int size);
 
+int inttoc 		(void *a1, void *b, int size);
 int mdectol 	(void *zz, void *aa, int sz_ignore);
 int mdectof 	(void *zz, void *aa, int sz_ignore);
 int mdectos 	(void *z, void *w, int size);
@@ -315,7 +316,7 @@ int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
   {
   NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO},
   {
-  inttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO,inttoint}
+  inttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO,inttoint} // warning: initialization from incompatible pointer type
 };
 
 
@@ -397,16 +398,25 @@ main (void)
  * @param size
  * @return Allways 1
  */
+/*
+4glc: relocation error: /opt/aubit/aubit4glsrc/lib/libaubit4gl.so: undefined symbol: inttoint
+*/
 int
 inttoint (void *a, void *b, int size)
+//inttoint (struct ival *a, void *b, int size)
 {
 //char buff[256];
 int data[10];
 int val1,val2,val3;
 struct ival *d;
+struct ival *e;
+
+
 
   debug ("inttoint\n");
   d=b;
+  e=a;
+
   d->ltime = size & 15;
   d->stime = size >> 4;
 
@@ -414,18 +424,16 @@ struct ival *d;
   val2 = (size >> 4) & 15;
   val3 = (size >> 8) & 15;
 
-
-  exitwith ("serious bug in conv.c");
-
 	//void decode_interval (struct ival *ival, int *data);
-  decode_interval ((struct ival *)a, &data); // warning: passing arg 2 of `decode_interval' from incompatible pointer type
-
+  //decode_interval (a,(int *) data); // warning: passing arg 2 of `decode_interval' from incompatible pointer type
+  decode_interval (e,(int *) data);
 
   debug("Converting to %d %d %d\n",val1,val2,val3);
   conv_invdatatoc(data,val1,val2,val3,d->data);
   debug("Set b..");
   return 1;
 }
+
 
 /**
  *
@@ -3987,21 +3995,15 @@ valid_int (char *s, int *data,int size)
 void
 decode_interval (struct ival *ival, int *data)
 {
-//  int a;
-  char buff[256];
-//  int b;
-  int i;
-  int cnt = 0;
-//  int has_yr_month = 0;
-  char buff2[64];
-//  int has_rest = 0;
-//  int buff_size;
-//  int size_type;
-  int s1;
-  int s2;
-  int c;
-  int cpc;
-  int c2;
+char buff[256];
+int i;
+int cnt = 0;
+char buff2[64];
+int s1;
+int s2;
+int c;
+int cpc;
+int c2;
 
   char *codes[] = { "YEAR", "MONTH", "DAY", "HOUR", "MINUTE",
     "SECOND", "FRACTION",
@@ -4026,7 +4028,7 @@ decode_interval (struct ival *ival, int *data)
 
   s1 = ival->stime % 16;
   s2 = ival->stime / 16;
-debug("s1=%d s2=%d",s1,s2);
+  debug("s1=%d s2=%d",s1,s2);
 
   sprintf (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
 	   ival->data[0], ival->data[1], ival->data[2], ival->data[3],
@@ -4035,10 +4037,10 @@ debug("s1=%d s2=%d",s1,s2);
 	   ival->data[8], ival->data[9],
 	   ival->data[10], ival->data[11],
 	   ival->data[12], ival->data[13],
-	   ival->data[14], ival->data[15], 
+	   ival->data[14], ival->data[15],
    	   ival->data[16], ival->data[17], ival->data[18]);
 
-debug("buff=%s\n",buff);
+  debug("buff=%s\n",buff);
 
   cnt = 0;
   for (c = 1; c < s1; c++)

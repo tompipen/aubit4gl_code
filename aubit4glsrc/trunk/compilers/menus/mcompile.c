@@ -1,47 +1,115 @@
-   /* $Id: mcompile.c,v 1.7 2002-05-06 07:21:15 afalout Exp $
-   /* */
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: mcompile.c,v 1.8 2002-05-26 06:26:49 afalout Exp $
+#*/
+
+/**
+ * @file
+ * GUI mode menu definition compiler main entry.
+ *
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ * @todo Doxygen comments to add to functions
+ */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#include <stdio.h>
 
 #include "a4gl_compiler.h"
-#include <stdio.h>
-extern int as_c;
-//#include "menu_x.h"
 #include "a4gl_menuxw.h"
+#include "a4gl_aubit_lib.h"
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
 
-FILE *mja_fopen(char *name, char *mode);
-FILE *write_errfile(FILE *f,char *s,long p,int l);
+FILE *	mja_fopen		(char *name, char *mode);
+FILE *	write_errfile	(FILE *f,char *s,long p,int l);
+void    init_menu		(void);
+
+// in lex.yy.c
+extern int buffpos		(void);
+//#define yyparse fgl_comp_parse
+extern int 	yyparse		(void);
+
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
+
+#define MAXMENUS 256
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+extern int as_c;
+
 #ifdef YYDEBUG
-extern int yydebug;
-
-
+	extern int yydebug;
 #else /*  */
-int yydebug;
-
+	int yydebug;
 #endif /*  */
 
 extern int yylineno;
 extern long fileseek;
-
 extern int yyleng;
-
 extern char yytext[];
-#define MAXMENUS 256
 extern int chk4var;
-
 extern int lcnt;
 extern int lineno;
 extern FILE *yyin;
-
-
 int ignorekw = 0;
 int colno = 0;
 int as_c=1;
 int lineno = 0;
-
 char *outputfilename;
-
 char outputfile[132];
+extern struct menu_list the_menus;
+void *stackmenus[1000];
+int menu_cnt=0;
 
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
  * Breaks the file name to take the file name without extension and dir name
@@ -55,6 +123,7 @@ char outputfile[132];
  * @param str1 A pointer to the place where to return the left part.
  * @param str2 A pointer to the place where to return the right part.
  */
+/* now in libaubit4gl
 static
 bname (char *str, char *str1, char *str2)
 {
@@ -92,9 +161,14 @@ bname (char *str, char *str1, char *str2)
     str2[0] = 0;
 
 }
+*/
 
 
-
+/**
+ *
+ * @todo Describe function
+ */
+int
 main (argc, argv)
      int argc;
      char *argv[];
@@ -103,7 +177,7 @@ main (argc, argv)
   char a[128];
   char b[128];
   char c[128];
-  FILE *fopn;
+//  FILE *fopn;
 
 	//load settings from config file(s):
 	build_user_resources();
@@ -162,21 +236,29 @@ main (argc, argv)
       exit (0);
 
     }
-init_menu();
+  
+  init_menu();
 
   return (yyparse ());
 
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
+int
 yyerror (s)
      char *s;
 {
 char errfile[256];
 FILE *f;
-long ld;
+long ld = 0;
 
   ld=buffpos();
+
+
   sprintf(errfile,"%s.err",outputfile);
   f=write_errfile(yyin,errfile,ld-1,yylineno);
   fprintf (f, "| %s", s);
@@ -186,19 +268,36 @@ long ld;
 }
 
 
-yywrap(){
-return 1;
+/**
+ *
+ * @todo Describe function
+ */
+int
+yywrap(void)
+{
+	return 1;
 }
 
-extern struct menu_list the_menus;
 
-init_menu() {
+/**
+ *
+ * @todo Describe function
+ */
+void
+init_menu(void)
+{
 	the_menus.menus.menus_len=0;
 	the_menus.menus.menus_val=0;
 	the_menus.menus.menus_val=malloc(sizeof(menu)*MAXMENUS); // MAX 256 Menus
 }
 
-menu *nmenu() {
+/**
+ *
+ * @todo Describe function
+ */
+menu *
+nmenu(void) 
+{
 menu *m;
 int l;
 	l=++the_menus.menus.menus_len;
@@ -217,7 +316,13 @@ int l;
 	return m;
 }
 
-menu_option_item *new_option(menu *m) {
+/**
+ *
+ * @todo Describe function
+ */
+menu_option_item *
+new_option(menu *m) 
+{
 menu_option_item *i;
 	m->options.options_len++;
 	if ( m->options.options_len>1000) {
@@ -235,20 +340,35 @@ menu_option_item *i;
 	return i;
 }
 
-
-
-void *stackmenus[1000];
-int menu_cnt=0;
-
-push_menu(void *a) {
+/**
+ *
+ * @todo Describe function
+ */
+void
+push_menu(void *a) 
+{
 	stackmenus[menu_cnt++]=a;
 }
 
-pop_menu() {
+/**
+ *
+ * @todo Describe function
+ */
+void
+pop_menu(void)
+{
 	menu_cnt--;
 }
 
-void *get_menu() {
+/**
+ *
+ * @todo Describe function
+ */
+void *
+get_menu(void) 
+{
 	return stackmenus[menu_cnt-1];
 }
 
+
+// ================================= EOF ===============================
