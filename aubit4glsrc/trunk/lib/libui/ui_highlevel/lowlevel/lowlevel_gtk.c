@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.31 2004-03-12 17:02:04 whaslbeck Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.32 2004-03-13 08:41:50 whaslbeck Exp $";
 
 
 #include <gtk/gtk.h>
@@ -2222,8 +2222,7 @@ if (mode<=255 && a_isprint(mode) && mode >=' ') {
 
 		case AUBIT_REQ_END_FIELD:
 				{	
-				char *x;
-				x=g_locale_from_utf8(gtk_entry_get_text(GTK_ENTRY(cwidget)), -1, NULL, NULL, NULL);
+				char *x=g_locale_from_utf8(gtk_entry_get_text(GTK_ENTRY(cwidget)), -1, NULL, NULL, NULL);
 				A4GL_trim(x);
 				form->curcol=strlen(x); 
 				g_free(x);
@@ -2250,8 +2249,10 @@ if (mode<=255 && a_isprint(mode) && mode >=' ') {
 
 		case AUBIT_REQ_DEL_PREV:
 				//printf("DEL PREV\n");
-				gtk_editable_delete_text(GTK_EDITABLE(cwidget),form->curcol-1,form->curcol);
-				form->curcol--;
+                                if(form->curcol>0) {
+                                  gtk_editable_delete_text(GTK_EDITABLE(cwidget),form->curcol-1,form->curcol);
+                                  form->curcol--;
+                                }
 				break;
 
 		case AUBIT_REQ_FIRST_FIELD: 
