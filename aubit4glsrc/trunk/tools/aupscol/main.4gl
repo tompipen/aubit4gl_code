@@ -58,14 +58,14 @@ while true
 	let lv_tabname=get_tabname()
 	let lv_colname=get_colname()
 
-	let lv_str="select count(*) from ",fgl_getenv("A4GL_UPSCOL_VAL")," where tabname=? and colname=?"
+	let lv_str="select count(*) from ",fgl_getenv("A4GL_SYSCOL_VAL")," where tabname=? and colname=?"
 	prepare p_hv_cnt from lv_str
 	declare c_hv_cnt cursor for p_hv_cnt
 	open c_hv_cnt using lv_tabname,lv_colname
 	fetch c_hv_cnt into lv_cnt
 
 	if lv_cnt then
-		let lv_str="select ",get_rowid(),",* from ",fgl_getenv("A4GL_UPSCOL_VAL")," where tabname=? and colname=?"
+		let lv_str="select ",get_rowid(),",* from ",fgl_getenv("A4GL_SPSCOL_VAL")," where tabname=? and colname=?"
 		prepare p_hv_get from lv_str
 
 		declare c_hv_get cursor for p_hv_get
@@ -182,7 +182,7 @@ while true
 	let lv_tabname=get_tabname()
 	let lv_colname=get_colname()
 
-	let lv_str="select count(*) from ",fgl_getenv("A4GL_UPSCOL_ATT")," where tabname=? and colname=?"
+	let lv_str="select count(*) from ",fgl_getenv("A4GL_SYSCOL_ATT")," where tabname=? and colname=?"
 	prepare p_ha_cnt from lv_str
 	declare c_ha_cnt cursor for p_ha_cnt
 	open c_ha_cnt using lv_tabname,lv_colname
@@ -190,7 +190,7 @@ while true
 
 
         if lv_cnt then
-                let lv_str="select ",get_rowid(),",* from ",fgl_getenv("A4GL_UPSCOL_ATT")," where tabname=? and colname=?"
+                let lv_str="select ",get_rowid(),",* from ",fgl_getenv("A4GL_SYSCOL_ATT")," where tabname=? and colname=?"
                 prepare p_ha_get from lv_str
 
                 declare c_ha_get cursor for p_ha_get
@@ -262,18 +262,25 @@ function cr_validate()
 define lv_ok integer
 define lv_str char(2000)
 whenever error continue
-	let lv_str="select * from ",fgl_getenv("A4GL_UPSCOL_VAL")," where 1=0"
+	let lv_str="select * from ",fgl_getenv("A4GL_SYSCOL_VAL")," where 1=0"
 	prepare ptstval from lv_str
-	declare ctstval cursor for ptstval
-	open ctstval
-	fetch ctstval
+	if sqlca.sqlcode=0 then
+		declare ctstval cursor for ptstval
+		if sqlca.sqlcode=0 then
+			open ctstval
+			if sqlca.sqlcode=0 then
+				fetch ctstval
+			end if
+		end if
+	end if
+
 whenever error stop
 
-	if sqlca.sqlcode!=0 then
+	if sqlca.sqlcode<0 then
 		MENU "Create Validation Table ?"
 		COMMAND "Yes"
-
-		let lv_str=" create table ",fgl_getenv("A4GL_UPSCOL_VAL")," ( tabname char(18), colname char(18), attrname char(10), attrval char(64))"
+		
+		let lv_str=" create table ",fgl_getenv("A4GL_SYSCOL_VAL")," ( tabname char(18), colname char(18), attrname char(10), attrval char(64))"
 		prepare pcrval from lv_str
 		execute pcrval
 
@@ -303,7 +310,7 @@ function cr_attrib()
 define lv_ok integer
 define lv_str char(2000)
 whenever error continue
-	let lv_str="select * from ",fgl_getenv("A4GL_UPSCOL_ATT")," where 1=0"
+	let lv_str="select * from ",fgl_getenv("A4GL_SYSCOL_ATT")," where 1=0"
 	prepare ptstatt from lv_str
 	declare ctstatt cursor for ptstatt
 	open ctstatt
@@ -314,7 +321,7 @@ whenever error stop
 		MENU "Create Attribute Table ?"
 		COMMAND "Yes"
 
-		let lv_str=" create table ",fgl_getenv("A4GL_UPSCOL_ATT")," (tabname char(18), colname char(18), seqno serial , color smallint, inverse char(1), underline char(1), blink char(1), left char(1), def_format char(64), condition char(64))"
+		let lv_str=" create table ",fgl_getenv("A4GL_SYSCOL_ATT")," (tabname char(18), colname char(18), seqno serial , color smallint, inverse char(1), underline char(1), blink char(1), left char(1), def_format char(64), condition char(64))"
 		prepare pcratt from lv_str
 		execute  pcratt
 

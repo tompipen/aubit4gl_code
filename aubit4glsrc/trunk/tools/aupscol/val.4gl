@@ -125,14 +125,14 @@ LET lv_tabname=get_tabname()
 LET lv_colname=get_colname()
 if lv_rid<=0 then
 	# Insert
-	LET lv_str="INSERT INTO ",fgl_getenv("A4GL_UPSCOL_VAL")," VALUES (?,?,?,?)      "
+	LET lv_str="INSERT INTO ",fgl_getenv("A4GL_SYSCOL_VAL")," VALUES (?,?,?,?)      "
 	PREPARE p_ins_add_val FROM lv_str
 	DISPLAY lv_str at 19,1
 	display lv_tabname," ",lv_colname," ",lv_type," ",lv_value at 20,1
 	sleep 2
 	EXECUTE p_ins_add_val USING lv_tabname,lv_colname,lv_type,lv_value
 ELSE
-	LET lv_str="UPDATE ",fgl_getenv("A4GL_UPSCOL_VAL")," SET attrname=?, attrval=? WHERE ",get_rowid(),"=?"
+	LET lv_str="UPDATE ",fgl_getenv("A4GL_SYSCOL_VAL")," SET attrname=?, attrval=? WHERE ",get_rowid(),"=?"
 	PREPARE p_upd_add_val FROM lv_str
 	EXECUTE p_upd_add_val USING lv_type,lv_value,lv_rid
 END IF
@@ -159,7 +159,7 @@ END FUNCTION
 FUNCTION del_validate(lv_rid)
 DEFINE lv_rid INTEGER
 DEFINE lv_str CHAR(255)
-LET lv_str="DELETE FROM ",fgl_getenv("A4GL_UPSCOL_VAL")," WHERE ",get_rowid(),"=?"
+LET lv_str="DELETE FROM ",fgl_getenv("A4GL_SYSCOL_VAL")," WHERE ",get_rowid(),"=?"
 PREPARE p_del_val FROM lv_str
 EXECUTE lv_str using lv_rid
 END FUNCTION

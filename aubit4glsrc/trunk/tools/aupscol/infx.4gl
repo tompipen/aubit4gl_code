@@ -12,7 +12,9 @@ call display_banner()
 #call set_curr_db("aubit4gl")
 #return
 
-
+if fgl_getenv("A4GL_LEXDIALECT") != "INFORMIX" then
+	call aclfgl_setenv("A4GL_LEXDIALECT","INFORMIX")
+end if
 
 display "Please wait..." at 2,1
 code

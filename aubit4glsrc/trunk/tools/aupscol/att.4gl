@@ -74,7 +74,7 @@ if lv_rid<=0 then
 	initialize lv_rec.def_format to null
 	initialize lv_rec.condition to null
 else
-	let lv_str="select * from ",fgl_getenv("A4GL_UPSCOL_ATT")," where ",get_rowid(),"=",lv_rid
+	let lv_str="select * from ",fgl_getenv("A4GL_SYSCOL_ATT")," where ",get_rowid(),"=",lv_rid
 	prepare p_g_att from lv_str
 	declare c_g_att cursor for p_g_att
 	open c_g_att
@@ -142,11 +142,11 @@ menu "ATTRIBUTE"
 
 	command "Exit_set"
 		if lv_rid<=0 then
-			let lv_str="INSERT INTO ",fgl_getenv("A4GL_UPSCOL_ATT")," values (?,?,?,?,?,?,?,?,?)"
+			let lv_str="INSERT INTO ",fgl_getenv("A4GL_SYSCOL_ATT")," values (?,?,?,?,?,?,?,?,?)"
 			prepare p_ins_att from lv_str
 			execute p_ins_att using lv_rec.*
 		else
-			let lv_str="UPDATE ",fgl_getenv("A4GL_UPSCOL_ATT")," set (color,inverse,underline,blink,left,def_format,condition)=(?,?,?,?,?,?,?) where ",get_rowid()," = ",lv_rid
+			let lv_str="UPDATE ",fgl_getenv("A4GL_SYSCOL_ATT")," set (color,inverse,underline,blink,left,def_format,condition)=(?,?,?,?,?,?,?) where ",get_rowid()," = ",lv_rid
 			prepare p_ins_att from lv_str
 			execute p_ins_att using lv_rec.color,lv_rec.inverse,lv_rec.blink,lv_rec.underline,lv_rec.left,lv_rec.def_format,lv_rec.condition
 		end if
@@ -185,7 +185,7 @@ end function
 function del_attribute(lv_rid)
 define lv_rid integer
 define lv_str char(80)
-let lv_str="DELETE FROM ",fgl_getenv("A4GL_UPSCOL_ATT")," WHERE ",get_rowid()," = ",lv_rid
+let lv_str="DELETE FROM ",fgl_getenv("A4GL_SYSCOL_ATT")," WHERE ",get_rowid()," = ",lv_rid
 prepare p_del_att from lv_str
 execute p_del_att
 end function
