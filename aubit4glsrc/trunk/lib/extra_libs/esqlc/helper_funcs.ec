@@ -3,20 +3,34 @@
 
 
 void copy_decimal(dec_t *infx,fgldecimal *a4gl,int size,char dir) {
+char b[65];
 debug("Aubit size : %d %d\n",size & 15, size>>4);
+
 if (dir=='i') {
 	char *ptr;
-	push_dec(a4gl,0);
-	ptr=char_pop();
-	debug("Ptr=%s\n",ptr);
+	debug("copy_decimal 'i' %x",(size<<16)+5);
+	push_variable(a4gl,(size<<16)+5);
+   	pop_var2(&b,0,0x28);
+	debug("Ptr=%s\n",b);
+	deccvasc(b,strlen(b),infx);
 }
 
 if (dir=='o') {
 	char *ptr;
-	debug("Ptr=dec_t=%p\n",infx);
-	debug("dec_t.dec_exp=%d\n",infx->dec_exp);
-	debug("dec_t.dec_pos=%d\n",infx->dec_pos);
-	debug("dec_t.dec_ndgts=%d\n",infx->dec_ndgts);
+	memset(b,0,65);
+	dectoasc(infx,b,64,16);
+	push_variable(b,(64<<16));
+	debug("Copy_decimal 'o' - gets %s",b);
+	pop_var2(a4gl,5,0x1e10);
+
+		push_variable(a4gl,(size<<16)+5);
+   		pop_var2(&b,0,0x28);
+		debug("Double check gives : %s",b);
+	//debug("copy_decimal 'o' Ptr=dec_t=%p\n",infx);
+	//debug("dec_t.dec_exp=%d\n",infx->dec_exp);
+	//debug("dec_t.dec_pos=%d\n",infx->dec_pos);
+	//debug("dec_t.dec_ndgts=%d\n",infx->dec_ndgts);
+	
 }
 
 
