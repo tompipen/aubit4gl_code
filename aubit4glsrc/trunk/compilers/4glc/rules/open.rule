@@ -69,10 +69,10 @@ print_open_session($<str>2,$<str>4,$<str>5);
 
 ;
 open_cursor_cmd :
-	OPEN cursor_name {
+	OPEN fetch_cursor_name {
 	print_open_cursor($<str>2,"0");
 }
-	| OPEN cursor_name KW_USING reset_cnt fgl_expr_list {
+	| OPEN fetch_cursor_name KW_USING reset_cnt fgl_expr_list {
 	print_open_cursor($<str>2,$<str>5); /* CHANGED from $<str>4 */
 }
 ;
