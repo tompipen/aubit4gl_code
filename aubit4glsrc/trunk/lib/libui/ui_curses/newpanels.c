@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.27 2003-04-27 17:14:54 mikeaubury Exp $
+# $Id: newpanels.c,v 1.28 2003-04-28 12:29:51 mikeaubury Exp $
 #*/
 
 /**
@@ -1240,23 +1240,22 @@ getch_swin (WINDOW * window_ptr)
       halfdelay (1);
       //a = wgetch (window_ptr);
       a = getch ();
-      	debug("Got a as %d\n",a);
 
       if (a == KEY_MOUSE)
 	{
 	  debug ("Mouse event...");
 	}
 
-      if (aborted)
+      if (abort_pressed)
 	{
-	  debug ("Aborted!");
+	  debug ("MJAC Aborted!");
 	  a = KEY_CANCEL;
 	  break;
 	}
 
       if (a != -1)
 	{
-	  debug ("Key Pressed");
+	  debug ("MJAC Key Pressed %d",a);
 	  break;
 	}
 
@@ -1449,11 +1448,32 @@ int clr_end_of_line=0;
   }
 
 
+debug_print_stack();
   debug("Got %d arguments",n);
 
   for (z = 0; z <= n - 1; z++)
     {
-	ptr=char_pop();
+        get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
+	ptr=0;
+	if (has_datatype_function_i (tos_dtype&DTYPE_MASK, "DISPLAY")) {
+		char *(*function) (void *,int,int,struct struct_scr_field *,int);
+		function=get_datatype_function_i (tos_dtype&DTYPE_MASK, "DISPLAY");
+
+		if (x==-1&&y==-1) {
+			ptr=function(tos_ptr,tos_size,-1,(struct struct_scr_field *)0,DISPLAY_TYPE_DISPLAY);
+		} else {
+			ptr=function(tos_ptr,tos_size,-1,(struct struct_scr_field *)0,DISPLAY_TYPE_DISPLAY_AT);
+		}
+
+		if (ptr!=0) {
+			drop_param();
+		}
+	}
+
+	if (ptr==0) {
+		ptr=char_pop();
+	}
+
 	debug("DISPLAY_AT : '%s'\n",ptr);
 	buff=realloc(buff,strlen(s)+strlen(ptr)+1);
 	s=realloc(s,strlen(s)+strlen(ptr)+1);
@@ -1469,26 +1489,10 @@ int clr_end_of_line=0;
       debug ("Line mode display");
       if (isscrmode ())
 	{
-	  debug ("In screen mode");
 	  mja_endwin ();
-	  debug ("display_at... '%s'", s);
-	  printf ("%s\n", s);
-	  fflush (stdout);
-#ifdef DEBUG
-	  {	    debug ("Printed");	  }
-#endif
-	  gui_print (a, s);
-#ifdef DEBUG
-	  {	    debug ("printed it");	  }
-#endif
 	}
-      else
-	{
-	  gui_print (a, s);
-	  printf ("%s\n", s);
-	  fflush (stdout);
-	  debug ("Linemode display %s\n", s);
-	}
+      printf ("%s\n", s);
+      fflush (stdout);
     }
   else
     {

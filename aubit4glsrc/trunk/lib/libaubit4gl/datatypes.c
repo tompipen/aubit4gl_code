@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.13 2003-03-02 15:23:43 mikeaubury Exp $
+# $Id: datatypes.c,v 1.14 2003-04-28 12:29:44 mikeaubury Exp $
 #
 */
 
@@ -211,6 +211,9 @@ has_datatype_function_i (int a, char *funcname)
   for (n = 0; n < dtypes[a].funcs_len; n++)
     {
       //debug ("   %s", dtypes[a].funcs[n]->name);
+
+      //printf("%s %s",dtypes[a].funcs[n]->name, funcname) ;
+
       if (strcmp (dtypes[a].funcs[n]->name, funcname) == 0)
 	{
 	  //debug ("Found it");

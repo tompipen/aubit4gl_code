@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.51 2003-04-24 08:31:44 mikeaubury Exp $
+# $Id: stack.c,v 1.52 2003-04-28 12:29:46 mikeaubury Exp $
 #
 */
 
@@ -445,7 +445,8 @@ char_pop (void)
 	  pop_char (s, dtype_alloc_char_size[f]);
 	}
 
-      trim (s);
+      //trim (s);
+	debug("char_pop - pushing char : '%s'",s);
       push_char (s);
       params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
     }		/* if last entry is not a character string make it one */

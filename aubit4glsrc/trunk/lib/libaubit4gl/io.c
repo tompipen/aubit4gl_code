@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.9 2003-04-13 06:23:45 afalout Exp $
+# $Id: io.c,v 1.10 2003-04-28 12:29:45 mikeaubury Exp $
 #
 */
 
@@ -346,11 +346,15 @@ try_to_open(char *path,char *name,int keepopen)
   char buff[2048];
   FILE *f;
 
+if (strlen(path)) {
   #ifndef WIN32
   sprintf(buff,"%s/%s",path,name);
   #else
   sprintf(buff,"%s\\%s",path,name);
   #endif
+} else {
+	sprintf(buff,name);
+}
   debug("Opening path '%s'",buff);
   if (strlen(name)==0) return 0;
 
@@ -381,6 +385,10 @@ char *ptr;
 int str_len;
   
   memset(str_path,0,2048);
+
+  if (try_to_open("",fname,0)) {
+	  return try_to_open("",fname,1);
+  }
 
   if (try_to_open(".",fname,0)) {
 	  return try_to_open(".",fname,1);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.11 2003-03-29 16:33:26 mikeaubury Exp $
+# $Id: ops.c,v 1.12 2003-04-28 12:29:45 mikeaubury Exp $
 #
 */
 
@@ -69,6 +69,20 @@ void decode_datetime(struct A4GLSQL_dtime *d, int *data);
 void dt_dt_ops(int op);
 int ctodt                (void *a, void *b, int size);
 int ctoint               (void *a, void *b, int size);
+
+
+char * display_int(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
+char * display_smint(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
+char * display_float(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
+char * display_smfloat(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
+char * display_date(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
+char * display_char(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
+char * display_decimal(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
+char * display_money(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
+char * display_dtime(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
+char * display_interval(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
+char * display_byte(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
+char * display_text(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
 
 /*
 =====================================================================
@@ -630,6 +644,160 @@ if (op != (OP_SUB)) {
 	
 }
 
+
+/*
+	display_...
+	
+	these accept 4 parameters
+
+	ptr  		= pointer to original data
+	size 		= size of data (for decimal etc)
+	size_c		= size of character string to return into
+	field_details 	= pointer to a field (or '0' for a normal 'display')
+	display_type	=
+				DISPLAY_TYPE_DISPLAY
+				DISPLAY_TYPE_DISPLAY_AT
+				DISPLAY_TYPE_DISPLAY_TO
+
+		This allows the routine to differenciate between different DISPLAY types...
+
+*/
+
+
+char * display_int(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
+	long a;
+	static char buff[256];
+	a=*(long *)ptr;
+
+	if (display_type==DISPLAY_TYPE_DISPLAY) {
+		sprintf(buff,"%11ld",a);
+	}
+
+	if (display_type==DISPLAY_TYPE_DISPLAY_AT) {
+		sprintf(buff,"%ld",a);
+	}
+
+	if (display_type==DISPLAY_TYPE_DISPLAY_TO) {
+		push_long(a);
+		pop_char(buff,size_c);
+	}
+
+	return buff;
+}
+
+char * display_smint(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
+        short a;
+        static char buff[256];
+        a=*(short *)ptr;
+
+        if (display_type==DISPLAY_TYPE_DISPLAY) {
+                sprintf(buff,"%6d",a);
+        }
+
+        if (display_type==DISPLAY_TYPE_DISPLAY_AT) {
+                sprintf(buff,"%d",a);
+        }
+
+        if (display_type==DISPLAY_TYPE_DISPLAY_TO) {
+                push_int(a);
+                pop_char(buff,size_c);
+        }
+
+	return buff;
+
+}
+
+char * display_float(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
+        double a;
+        static char buff[256];
+        a=*(double *)ptr;
+
+        if (display_type==DISPLAY_TYPE_DISPLAY) {
+                sprintf(buff,"%14.2f",a);
+        }
+
+        if (display_type==DISPLAY_TYPE_DISPLAY_AT) {
+		int cnt;
+                sprintf(buff,"%f",a);
+		for (cnt=strlen(buff)-1;cnt>0;cnt--) {
+			if (cnt<=1) break;
+			if (buff[cnt-1]=='.') break;
+			if (buff[cnt]!='0') break;
+			if (buff[cnt]=='0') buff[cnt]=0;
+		
+		}
+        }
+
+        if (display_type==DISPLAY_TYPE_DISPLAY_TO) {
+                push_double(a);
+                pop_char(buff,size_c);
+        }
+	return buff;
+
+}
+
+char * display_smfloat(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
+        float a;
+        static char buff[256];
+        a=*(float *)ptr;
+
+        if (display_type==DISPLAY_TYPE_DISPLAY) {
+                sprintf(buff,"%14.2f",a);
+        }
+
+        if (display_type==DISPLAY_TYPE_DISPLAY_AT) {
+                int cnt;
+                sprintf(buff,"%f",a);
+                for (cnt=strlen(buff)-1;cnt>0;cnt--) {
+                        if (cnt<=1) break;
+                        if (buff[cnt-1]=='.') break;
+                        if (buff[cnt]!='0') break;
+                        if (buff[cnt]=='0') buff[cnt]=0;
+
+                }
+        }
+
+        if (display_type==DISPLAY_TYPE_DISPLAY_TO) {
+                push_float(a);
+                pop_char(buff,size_c);
+        }
+
+	return buff;
+
+}
+
+char * display_date(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
+return 0;
+}
+
+char * display_char(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
+return 0;
+}
+
+char * display_decimal(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
+return 0;
+}
+
+char * display_money(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
+return 0;
+}
+
+char * display_dtime(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
+return 0;
+}
+
+char * display_interval(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
+return 0;
+}
+
+char * display_byte(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
+return 0;
+}
+
+char * display_text(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
+return 0;
+}
+
 /**
  *
  *
@@ -676,6 +844,20 @@ DTYPE_SERIAL
 	add_op_function(DTYPE_DTIME,	DTYPE_DTIME,	OP_MATH,dt_dt_ops);
 
 	debug("Finished adding default operations");
+
+
+	add_datatype_function_i(DTYPE_INT,	"DISPLAY",display_int);
+	add_datatype_function_i(DTYPE_SMINT,	"DISPLAY",display_smint);
+	add_datatype_function_i(DTYPE_FLOAT,	"DISPLAY",display_float);
+	add_datatype_function_i(DTYPE_SMFLOAT,	"DISPLAY",display_smfloat);
+	add_datatype_function_i(DTYPE_DATE,	"DISPLAY",display_date);
+	add_datatype_function_i(DTYPE_CHAR,	"DISPLAY",display_char);
+	add_datatype_function_i(DTYPE_DECIMAL,	"DISPLAY",display_decimal);
+	add_datatype_function_i(DTYPE_MONEY,	"DISPLAY",display_money);
+	add_datatype_function_i(DTYPE_DTIME,	"DISPLAY",display_dtime);
+	add_datatype_function_i(DTYPE_INTERVAL,	"DISPLAY",display_interval);
+	add_datatype_function_i(DTYPE_BYTE,	"DISPLAY",display_byte);
+	add_datatype_function_i(DTYPE_TEXT,	"DISPLAY",display_text);
 
 
 }

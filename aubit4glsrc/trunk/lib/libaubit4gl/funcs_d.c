@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.17 2003-04-23 16:37:19 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.18 2003-04-28 12:29:45 mikeaubury Exp $
 #
 */
 
@@ -285,24 +285,39 @@ int
 digittoc(int *a,char *z,char *fmt,int dtype,int size)    
 {
 	static char buff[100];
+
+
+
 #ifdef DEBUG
 	 {debug("digittoc"); }
 #endif
 	sprintf(buff,fmt,*a);
+
 #ifdef DEBUG
 	 {debug("digittoc: %s",buff); }
 #endif
-	if (strlen(buff)>size) {
-		memset(z,'*',size);
-		pad_string(z,size);
-		return 0;
 
-	}
+
+
+#define DIGIT_ALIGN_LEFT
+
 #ifdef DIGIT_ALIGN_LEFT
 	sprintf(buff,"%%-%d%s",size,fmt);
 #else
 	sprintf(buff,"%%%d%s",size,fmt);
 #endif
+
+/*
+	if (strlen(buff)>size) {
+		memset(z,'*',size);
+		pad_string(z,size);
+		return 0;
+	}
+*/
+
+
+//printf("Format = %s\n",buff);fflush(stdout);
+
 #ifdef DEBUG
 	 {debug("digittoc: buff set to %s",buff);}
 #endif

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.14 2003-04-24 13:36:00 mikeaubury Exp $
+# $Id: iarray.c,v 1.15 2003-04-28 12:29:51 mikeaubury Exp $
 #*/
 
 /**
@@ -452,7 +452,11 @@ iarr_loop (struct s_inp_arr *arr)
       mja_pos_form_cursor(mform);
       abort_pressed=0;
       a = getch_win ();
-      if (abort_pressed) a = -1;
+      if (abort_pressed) {
+		a = -1;
+		fprintf(stderr,"ABORT\n");
+		fflush(stderr);
+	}
       m_lastkey = a;
     }
 
@@ -549,6 +553,10 @@ iarr_loop (struct s_inp_arr *arr)
 
     case 27:
       add_to_control_stack(arr,FORMCONTROL_EXIT_INPUT_OK,0,0,a);
+	break;
+
+    case -1:
+      add_to_control_stack(arr,FORMCONTROL_EXIT_INPUT_ABORT,0,0,a);
 	break;
 		
     }
@@ -1179,6 +1187,7 @@ new_state=99;
 
 	if (arr->fcntrl[a].op==FORMCONTROL_EXIT_INPUT_ABORT) {
 		//extern int int_flag;
+		debug("FORM ABORT..");
 		int_flag=1;
 		add_to_control_stack(arr,FORMCONTROL_AFTER_INPUT,0,0,0);
 		rval=0;

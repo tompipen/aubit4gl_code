@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.35 2003-04-22 08:58:29 mikeaubury Exp $
+# $Id: conv.c,v 1.36 2003-04-28 12:29:44 mikeaubury Exp $
 #
 */
 
@@ -1190,10 +1190,11 @@ dectos (void *z, void *w, int size)
   //dump (z);
 
   buff = dec_to_str (z, size);
-  debug("dec_to_str -> %s\n", buff);
-  r = ctoc(buff, w, size);
+  debug("dec_to_str -> '%s'\n", buff);
+  //r = ctoc(buff, w, size);
+  strcpy(w,buff);
   debug("w = %s\n", buff);
-  return r;
+  return 1;
 }
 
 /**
@@ -1733,6 +1734,7 @@ itoc (void *aa, void *zz, int size)
   char fmt[10] = "d";
   int *a;
   char *z;
+char buff[256];
   a = (int *) aa;
   *a = ((*a) & 0xffff);
   z = (char *) zz;
@@ -1741,8 +1743,15 @@ itoc (void *aa, void *zz, int size)
 #ifdef DEBUG
       {	debug ("itoc return from digittoc using %s", fmt);      }
 #endif
-      sprintf (z, fmt, *(int *) a);
+      sprintf (buff, fmt, *(short *) a);
     }
+	if(strlen(buff)>size)  {
+		memset(z,'*',size);
+		z[size]=0;
+	} else {
+		strcpy(z,buff);
+	}
+
   return 1;
 }
 
@@ -1843,6 +1852,7 @@ ltoc (void *aa, void *zz, int size)
   long *a;
   char *z;
   char fmt[10] = "ld";
+char buff[256];
   z = (char *) zz;
   a = (long *) aa;
 #ifdef DEBUG
@@ -1853,7 +1863,13 @@ ltoc (void *aa, void *zz, int size)
 #ifdef DEBUG
       {	debug ("ltoc return from digittoc using %s", fmt);      }
 #endif
-      sprintf (z, fmt, *(long *) a);
+      sprintf (buff, fmt, *(long *) a);
+	if (strlen(buff)>size) {
+		memset(buff,'*',size);
+		buff[size]=0;
+	}
+	strcpy(z,buff);
+        pad_string(z,size);
     }
   return 1;
 }
@@ -1953,12 +1969,31 @@ ftoc (void *aa, void *zz, int c)
   double *a;
   char *z;
   char fmt[10] = ".2lf";
+char buff[256];
   a = (double *) aa;
   z = (char *) zz;
-  if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c))
-    {
-      sprintf (z, fmt, *a);
-    }
+
+  strcpy(buff,"******************************************");
+  if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c)) { sprintf (buff, fmt, *a); }
+
+  if (strlen(buff)>c) {
+        // Its too long...
+        strcpy(fmt,".1f");
+        if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c)) { sprintf (buff, fmt, *a); }
+        if (strlen(buff)>c) {
+                strcpy(fmt,".0f");
+                if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c)) { sprintf (buff, fmt, *a); }
+        }
+  }
+
+  if (strlen(buff)>c) {
+        memset(z,'*',c);
+        z[c]=0;
+  } else {
+        strcpy(z,buff);
+  }
+
+
   return 1;
 }
 
@@ -2057,12 +2092,29 @@ sftoc (void *aa, void *zz, int c)
   float *a;
   char *z;
   char fmt[10] = ".2f";
+  char buff[256];
   a = (float *) aa;
   z = (char *) zz;
-  if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c))
-    {
-      sprintf (z, fmt, *a);
-    }
+  strcpy(buff,"******************************************");
+  if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c)) { sprintf (buff, fmt, *a); }
+
+  if (strlen(buff)>c) {
+	// Its too long...
+	strcpy(fmt,".1f");
+  	if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c)) { sprintf (buff, fmt, *a); }
+  	if (strlen(buff)>c) {
+		strcpy(fmt,".0f");
+  		if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c)) { sprintf (buff, fmt, *a); }
+	}
+  }
+  if (strlen(buff)>c) {
+	memset(z,'*',c);
+	z[c]=0;
+  } else {
+	strcpy(z,buff);
+  }
+
+
   return 1;
 }
 

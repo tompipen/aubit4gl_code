@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.45 2003-04-23 16:37:13 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.46 2003-04-28 12:29:12 mikeaubury Exp $
 #
 */
 
@@ -1434,6 +1434,15 @@ extern "C" {
 
 	void a4gl_usleep(int a);
 	void A4GL_pause(char *s);
+
+/* 
+   used by display routines to convert a datatype 
+   to a string suitable for display 
+*/
+
+#define DISPLAY_TYPE_DISPLAY 	1
+#define DISPLAY_TYPE_DISPLAY_AT 2
+#define DISPLAY_TYPE_DISPLAY_TO 3
 
 
 #ifdef __cplusplus
