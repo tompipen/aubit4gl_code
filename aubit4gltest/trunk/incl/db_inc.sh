@@ -3,12 +3,18 @@
 #                           Check if we have the database required
 ##############################################################################
 
-
 ######################
 #Check and create SQLite db
-SQLITE_DB="$AUBITDIR_UNIX/tools/$TEST_DB.db"
+function check_sqlite () {
 
-if test "$USE_SQLITE" = "1" -o "$ODBC_USE_DB" = "SQLITE"; then
+	SQLITE_DB="$AUBITDIR_UNIX/tools/$TEST_DB.db"
+	
+	if test "$COMSPEC" != ""; then 
+		#SQLite is a native Windows executable - so it needs native Windows path for db
+		SQLITE_DB="`cygpath -m $SQLITE_DB`"
+	fi
+
+	
  	DB_TYPE="SQLITE"
 	
 	TMPTMP=`type sqlite3 2>/dev/null`
@@ -36,6 +42,11 @@ if test "$USE_SQLITE" = "1" -o "$ODBC_USE_DB" = "SQLITE"; then
 	if ! test -f $SQLITE_DB ; then
 		echo "creating SQLite testing database..."
 		new_testdb sqlite
+		if ! test -f $SQLITE_DB ; then
+			echo "ERROR: failed to create SQLite database:"
+			echo "$SQLITE_DB"
+			exit 4
+		fi
 	else
 		if test "$VERBOSE" = "1"; then
 			echo "Found SQLite db in $SQLITE_DB"
@@ -55,6 +66,12 @@ if test "$USE_SQLITE" = "1" -o "$ODBC_USE_DB" = "SQLITE"; then
 	export DBPATH
 	
 	EXPECT_TO_FAIL="$EXPECT_TO_FAIL $EXPECT_TO_FAIL_SQLITE"
+
+}
+
+
+if test "$USE_SQLITE" = "1" -o "$ODBC_USE_DB" = "SQLITE"; then
+	check_sqlite
 fi
 
 ######################

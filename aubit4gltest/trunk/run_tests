@@ -865,6 +865,15 @@ for a in $FLAGS; do
 		export A4GL_PACKER=PACKED
         ;;
 
+	-disable-sqlconvert) #Disable run-time conversion of SQL dialects
+		export A4GL_SQLCONVERT=NO
+		;;
+
+	-sqlconvert) #Enable run-time conversion of SQL dialects
+		export A4GL_SQLCONVERT=YES
+		;;
+
+		
     -xml)            	#use XML packer for resource files
 		export A4GL_FORMTYPE=GENERIC; export A4GL_MENUTYPE=GENERIC
 		export A4GL_PACKER=XML
@@ -1221,7 +1230,9 @@ for a in $FLAGS; do
 		echo " TEST DATABASE CREATION:"
 		echo " -<x>-new    Create new database from scripts. <x>="
 		echo "             sqlite | pg | informix | sap"
-
+		echo ""
+		echo " -disable-sqlconvert Disable run-time conversion of SQL dialects"
+		echo " -sqlconvert         Enable run-time conversion of SQL dialects"
 		echo ""
 		if test "$HELP_ALL" != "1"; then
 			exit 0

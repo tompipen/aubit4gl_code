@@ -2480,7 +2480,7 @@ TMP2=tmp2
 # @param SCRIPT SQL script to run
 # @param File to log execution into
 ##
-run_sql_script() {
+function run_sql_script() {
 RDBMS=$1
 DB=$2
 SCRIPT=$3
@@ -2513,6 +2513,10 @@ AS_USER=$5
 		;;
 		
 	sqlite)
+
+		if test "$VERBOSE" = "1"; then 
+			echo "cat $SCRIPT | $SQLITE_EXE $SQLITE_DB"
+		fi
 		cat $SCRIPT | $SQLITE_EXE $SQLITE_DB
         RET=$?
 		;;
@@ -2897,11 +2901,13 @@ function check_skip() {
 		#   SKIP_REASON_CODES="$SKIP_REASON_CODES 14"
 		#	SKIP_REASON="cannot run with TERM=$TERM on MinGW using Cygwin Curses."
 	    #fi
-		if test "$IS_DUMP_SCREEN_TEST" = "1" -a "$TERM" != "xterm"; then
-			SKIP_DUMP_SCREEN_NOT_XTERM_LIST="$SKIP_DUMP_SCREEN_NOT_XTERM_LIST $TEST_NO"
-			SKIP_REASON="cannot use dump_screen() with TERM=$TERM (need xterm)."
-			SKIP_REASON_CODES="$SKIP_REASON_CODES 15"
-		fi
+		
+		#This seems to be working now too, since Mike rewrited the dump_screen() function
+		#if test "$IS_DUMP_SCREEN_TEST" = "1" -a "$TERM" != "xterm"; then
+		#	SKIP_DUMP_SCREEN_NOT_XTERM_LIST="$SKIP_DUMP_SCREEN_NOT_XTERM_LIST $TEST_NO"
+		#	SKIP_REASON="cannot use dump_screen() with TERM=$TERM (need xterm)."
+		#	SKIP_REASON_CODES="$SKIP_REASON_CODES 15"
+		#fi
 	    if test "$IS_GRAPHIC_TEST" = "1" -a "$NO_GRAPHIC" = "1"; then
 			SKIP_REASON="uses platform specific characters."
 			SKIP_REASON_CODES="$SKIP_REASON_CODES 16"
