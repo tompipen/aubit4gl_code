@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.45 2003-02-05 00:05:00 mikeaubury Exp $
+# $Id: lexer.c,v 1.46 2003-02-05 22:33:34 mikeaubury Exp $
 #*/
 
 /**
@@ -899,11 +899,13 @@ yylex (void *pyylval, int yystate)
     }
 
   a=ftell(yyin);
+  if (yyin_len) {
   a=a*100/yyin_len;
   if (a>last_pc) {
 		last_pc=a;
 		if (strcmp(acl_getenv("PRINTPROGRESS"),"Y")==0)
 			printf("%d %% complete\n",last_pc);
+  }
   }
 
   a = chk_word (yyin, buff);

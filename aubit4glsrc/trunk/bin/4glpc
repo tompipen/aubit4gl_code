@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.95 2003-02-04 13:19:23 mikeaubury Exp $
+# $Id: 4glpc,v 1.96 2003-02-05 22:32:59 mikeaubury Exp $
 #
 
 ########################################################################
@@ -432,7 +432,8 @@ LAST=""
 INCLDIR="-I$AUBITDIR/incl $GTK_INC_PATH"
 
 #CC is set via aubitrc config file:
-CC="$CC -O2"
+
+NCC="$CC -O2"
 
 #This may help while compiling, but compiled programs will not run
 #if it's not in his environmnet. So set your environment!
@@ -596,6 +597,11 @@ do
    *.c) COMPCC="$COMPCC $a"
    ;;
 
+   *.ec) NCC="esql"
+   	COMPCC="$COMPCC $a"
+   ;;
+
+
    *.per)
 		  if [ "$A4GLVERBOSE" = "yes" ]
 		  then
@@ -664,13 +670,13 @@ do
 
    *.4gl)
 
-		dirn=`dirname $a`
+	dirn=`dirname $a`
         fname=`basename $a .4gl`
         errfname=`basename $a .4gl`.err;
 
         fname2="$dirn/$fname"
         fname3="$dirn/$fname.4gl"
-		fname=$fname2
+	fname=$fname2
 
         #if we did not invoked 4gl compile from inside directory where 4gl is,
         #CC will not be able to find it's .h file:
@@ -818,11 +824,11 @@ do
 				#make an object from 4gl file :
 				#if [ "$COMSPEC" = "" ]
 				#then
-					EXEC="$DOIT $CC $CFLAGS $fname.c -c -o $fname.ao $INCLDIR 2> $fname.c.err"
+					EXEC="$DOIT $NCC $CFLAGS $fname.c -c -o $fname.ao $INCLDIR 2> $fname.c.err"
 				#else
-				#	EXEC="$DOIT $CC $CFLAGS $fname.c -c -o $fname.ao $INCLDIR 2> $fname.c.err"
+				#	EXEC="$DOIT $NCC $CFLAGS $fname.c -c -o $fname.ao $INCLDIR 2> $fname.c.err"
                 #    #remove this duplication
-				#	#EXEC="$DOIT $CC $CFLAGS $fname.c -o $fname.ao -c $INCLDIR 2> $fname.c.err"
+				#	#EXEC="$DOIT $NCC $CFLAGS $fname.c -o $fname.ao -c $INCLDIR 2> $fname.c.err"
 				#fi
 
 				if [ "$A4GLVERBOSE" = "yes" ]
@@ -1085,9 +1091,9 @@ if [ "$ISMAKE" != "1" ]
 then
 	if [ "$COMSPEC" = "" ]
 	then
-		EXEC="$DOIT $CC $CFLAGS $COMPCC $INCLDIR $LAST"
+		EXEC="$DOIT $NCC $CFLAGS $COMPCC $INCLDIR $LAST"
     else
-        EXEC="$DOIT $CC $CFLAGS $COMPCC -c $INCLDIR $LAST"
+        EXEC="$DOIT $NCC $CFLAGS $COMPCC -c $INCLDIR $LAST"
     fi
 
    if [ "$A4GLVERBOSE" = "yes" ]
@@ -1119,11 +1125,11 @@ else
    if [ "$A4GLVERBOSE" = "yes" ]
    then
 	   $output "Generating Exec"
-	   echo "executing (2) : $DOIT $CC $CFLAGS $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"
+	   echo "executing (2) : $DOIT $NCC $CFLAGS $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"
 
 		if [ "$A4GLDEBUG" = "yes" ]; then
 		   echo $DOIT
-		   echo $CC
+		   echo $NCC
 		   echo $COMPCC
 		   echo $INCLDIR
 		   echo $FGLLIBSDIR
@@ -1138,7 +1144,7 @@ else
 	    fi
    fi
 
-	eval "$DOIT $CC $CFLAGS $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"
+	eval "$DOIT $NCC $CFLAGS $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"
 	err_code=$?
 
 	if [ $err_code != 0 ]

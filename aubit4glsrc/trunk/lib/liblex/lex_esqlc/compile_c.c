@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.2 2003-02-05 07:39:44 afalout Exp $
+# $Id: compile_c.c,v 1.3 2003-02-05 22:33:37 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -222,10 +222,10 @@ open_outfile(void)
 	}
     }
 
-  if (strcmp(acl_getenv("LEXTYPE"),"EC")==0) {
-  strcat (c, ".ec");
+  if (doing_esql()) {
+  	strcat (c, ".ec");
   } else {  
-  strcat (c, ".c");
+  	strcat (c, ".c");
   }
   strcat (h, ".h");
   strcat (err, ".err");
@@ -238,6 +238,9 @@ open_outfile(void)
 
   fprintf (outfile, "#define fgldate long\n");
   fprintf (outfile, "#include \"a4gl_incl_4glhdr.h\"\n");
+  if (doing_esql()) {
+  	fprintf (outfile, "#include \"a4gl_esql.h\"\n");
+  }
   if (strchr(h,'/')!=0)
   	fprintf (outfile, "#include \"%s\"\n", strrchr(h,'/')+1);
   else
@@ -1342,6 +1345,7 @@ int a;
 		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
 	}
       printc ("\n}; /* end of binding */\n");
+      if (doing_esql()) { make_sql_bind(0,"i"); }
       start_bind (i, 0);
       return a;
     }
@@ -1386,6 +1390,7 @@ int a;
 		  (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
 	}
       printc ("\n}; /* end of binding */\n");
+      if (doing_esql()) { make_sql_bind(0,"o"); }
       start_bind (i, 0);
       return a;
     }
@@ -3888,6 +3893,7 @@ char *
 get_push_literal (char type, char *value)
 {
   static char buff[80];
+  strcpy(buff,"SOME ERROR");
   if (type == 'D')      /* Double */
     {
       sprintf (buff, "push_double(%f);\n", atof (value));
@@ -3951,4 +3957,61 @@ void print_cmd_end() {
 	printc("\n/* End command */\n");
 }
 
+char *get_into_part(int no) {
+	static char buffer[10000];
+	int a;
+	if (doing_esql()) {
+	         char buff[20];
+
+		 if (no==0) return "";
+
+	         sprintf(buffer,"INTO ");
+	         for (a=0;a<no;a++) {
+			   sprintf(buff,"$_vo_%d",a);
+			   if (a) strcat(buffer,",");
+			   strcat(buffer,buff);
+                 }
+	} else {
+		return "";
+	}
+	return buffer;
+}
+
+char *set_var_sql(int n) {
+	int a;
+	static char buff[2000];
+
+	if (doing_esql()) {
+		int z;
+		// FIXME
+		z=get_bind_cnt('i');
+		strcpy(buff,"");
+		for (a=z-n;a<z;a++) {
+			char buff_small[20];
+			if (a!=z-n) {
+				strcat(buff,",");
+			}
+			sprintf(buff_small,"$_vi_%d",a);
+			strcat(buff,buff_small);
+	        }
+		return buff;
+	} else {
+		strcpy(buff,"");
+               for (a=0;a<n;a++) { 
+		       if (a>0) {
+			       strcat(buff,",");
+		       } 
+		       strcat(buff,"?"); 
+	       }
+	       return buff;
+	}
+}
+
+
+int doing_esql() {
+  if (strcmp(acl_getenv("LEXTYPE"),"EC")==0) {
+	  return 1;
+  } 
+  return 0;
+}
 /* =========================== EOF ================================ */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.48 2003-02-04 13:19:25 mikeaubury Exp $
+# $Id: compile_c.c,v 1.49 2003-02-05 22:33:36 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2250,9 +2250,9 @@ print_foreach_next (char *cursorname, char *into)
   printc ("A4GLSQL_set_sqlca_sqlcode(0);\n");
   printc ("A4GLSQL_open_cursor(0,%s);\n", cursorname);
   printc ("while (1) {\n");
-  ni = print_bind ('i');
-  printc ("A4GLSQL_fetch_cursor(%s,%d,1,%d,ibind);\n", cursorname,
-	  FETCH_RELATIVE, ni);
+  ni = print_bind ('o');
+  printc ("A4GLSQL_fetch_cursor(%s,%d,1,%d,obind);\n", cursorname,
+	  FETCH_RELATIVE, no);
   printc ("if (sqlca.sqlcode<0||sqlca.sqlcode==100) break;\n");
 }
 
@@ -4483,4 +4483,27 @@ void print_cmd_end() {
 	printc("\n/* End command */\n");
 }
 
+char *get_into_part(int no) {
+	return "";
+}
+
+
+char *set_var_sql(int n) {
+int a;
+static char buff[2000];
+
+strcpy(buff,"");
+for (a=0;a<n;a++) { 
+       if (a>0) {
+	       strcat(buff,",");
+       } 
+       strcat(buff,"?"); 
+}
+return buff;
+}
+
 /* =========================== EOF ================================ */
+
+
+
+

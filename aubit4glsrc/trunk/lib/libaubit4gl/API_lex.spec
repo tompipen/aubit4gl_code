@@ -626,6 +626,8 @@ print_gtk_menuhandler_end -> void
 
 print_cmd_start -> void
 print_cmd_end -> void
+get_into_part int n -> char*
+set_var_sql int n -> char*
 /*  ============================== EOF ================================= */
 
 

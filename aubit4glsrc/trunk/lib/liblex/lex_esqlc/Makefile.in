@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.1 2003-02-05 03:34:54 mikeaubury Exp $
+# $Id: Makefile.in,v 1.2 2003-02-05 22:33:36 mikeaubury Exp $
 #
 
 ROOT        =../../..
@@ -41,7 +41,7 @@ include ${ROOT}/incl/Makefile-common
 
 
 4GLCOBJ_C		=compile_c.o compile_c_gtk.o compile_c_sql.o
-4GLCOBJ_EC		=compile_c.o compile_c_gtk.o compile_c_esql.o
+4GLCOBJ_EC		=compile_c.o compile_c_gtk.o compile_c_esql.o binding.o
 
 ## ==================================================================
 ##                    Options

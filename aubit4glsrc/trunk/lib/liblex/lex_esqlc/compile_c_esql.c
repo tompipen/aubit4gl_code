@@ -26,8 +26,8 @@ print_exec_sql_bound (char *s)
   int c;
   printc ("{\n");
   c = print_bind ('i');
-  printc
-    ("EXEC SQL %s; /* exec_sql_bound */\n", s);
+  print_conversions('i');
+  printc ("EXEC SQL %s; /* exec_sql_bound */\n", s);
   printc ("}\n");
 }
 
@@ -66,11 +66,16 @@ void
 print_foreach_next (char *cursorname, char *into)
 {
   int ni;
+  int no;
   printc ("sqlca.sqlcode=0;\n");
-  printc ("\nEXEC SQL OPEN  %s;\n", strip_quotes(cursorname));
+  printc ("\nEXEC SQL OPEN  %s; /* into=%s */\n", strip_quotes(cursorname),into);
   printc ("while (1) {\n");
   ni = print_bind ('i');
-  printc ("\nEXEC SQL FETCH  %s;\n",strip_quotes(cursorname));
+  no = print_bind ('o');
+  print_conversions('i');
+  printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n",strip_quotes(cursorname),get_into_part(no),ni,no);
+  print_conversions('o');
+
   printc ("if (sqlca.sqlcode<0||sqlca.sqlcode==100) break;\n");
 }
 
@@ -143,7 +148,11 @@ print_linked_cmd (int type, char *var)
 	}
       if (type == 'S')
 	no = print_bind ('o');
+
       ni = print_bind ('i');
+  	print_conversions('i');
+
+
       if (type == 'S')
 	sprintf (buff, "SELECT * FROM %s WHERE ", tabname);
       if (type == 'D')
@@ -213,6 +222,7 @@ print_put (void)
   int n;
   printc ("{\n");
   n = print_bind ('i');
+print_conversions('i');
   printc ("EXEC SQL PUT /*fixme - cursorname ? */\n", n);
   printc ("}\n");
 }
@@ -253,6 +263,7 @@ print_execute (char *stmt, int using)
     {
       printc ("{\n");
       ni = print_bind ('i');
+print_conversions('i');
       printc ("EXEC SQL %s; /* Execute */\n", stmt);
       printc ("}\n");
     }
@@ -328,7 +339,7 @@ print_sql_commit (int t)
 void
 print_fetch_3 (char *ftp, char *into)
 {
-  printc ("\nEXEC SQL FETCH  %s INTO %s;\n", strip_quotes(ftp), into);
+  printc ("\nEXEC SQL FETCH  %s INTO %s; /*fetch3*/\n", strip_quotes(ftp), into);
 }
 
 /**
@@ -368,7 +379,9 @@ print_init_conn (char *db)
 void
 print_do_select (char *s)
 {
-  printc ("EXEC SQL %s;\n}/* do_select */", s);
+  printc ("EXEC SQL %s;\n/* do_select */", s);
+  print_conversions('o');
+  printc("}\n");
 }
 
 /**
@@ -409,7 +422,13 @@ print_flush_cursor (char *s)
 void
 print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 {
-  printc ("/* %s+%d,%s,%d,%s */", a1, h1, a2, h2, a3);
+  printc ("/* %s+%d,%s,%d,%s */\n", a1, h1, a2, h2, a3);
+  printc(" /* nibind=%d */\n",get_bind_cnt('i'));
+  printc(" /* nobind=%d a3=%s */\n",get_bind_cnt('o'),a3);
+  if (strstr(a2,"INTO $")!=0) {
+	  	yyerror("ESQL lexer cannot handle DECLARE .. INTO at present, put the INTO on the FETCH/FOREACH instead...");
+		return;
+  }
   printc ("EXEC SQL DECLARE %s CURSOR FOR %s;\n",strip_quotes(a3),a2);
   printc ("}\n");
 
@@ -463,6 +482,7 @@ print_select_all (char *buff)
   printc ("{\n");
   ni = print_bind ('i');
   no = print_bind ('o');
+print_conversions('i');
   sprintf (b2, "%s ",  buff);
   return b2;
 }

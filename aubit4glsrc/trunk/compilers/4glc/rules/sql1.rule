@@ -140,13 +140,13 @@ sprintf($<str>$,"0,0");
 	INTO {
 	debug("FETCH INTO  ...");
 	/* start_bind('i',0,-1); */
-    start_bind('i',0);
+    start_bind('o',0);
 }
-    ibind_var_list 
+    obind_var_list 
 {
-	int ni;
-	ni=print_bind('i');
-	sprintf($<str>$,"%d,ibind",ni);
+	int no;
+	no=print_bind('o');
+	sprintf($<str>$,"%d,obind",no);
 }
 ;
 
@@ -157,9 +157,9 @@ sprintf($<str>$,"0,0");
 	INTO {
 	debug("FETCH INTO  ...");
 	/* start_bind('i',0,-1); */
-    start_bind('i',0);
+    start_bind('o',0);
 }
-        ibind_var_list {
+        obind_var_list {
 /*
 int ni;
 ni=print_bind('i');
@@ -977,18 +977,18 @@ select_statement_full :
 ;
 
 select_statement:
-	SELECT op_ad select_list {debug("Got select list...\n");}
+	SELECT 
+	op_ad 
+	select_list 
+	{debug("Got select list...\n");}
         opt_into_sel
-        {
-			/* start_bind('i',0,-1); */
-            start_bind('i',0);
-			lex_printcomment("/* startbind */");
-		}
+        { /* start_bind('i',0,-1); */ start_bind('i',0); lex_printcomment("/* startbind */"); }
 	table_expression
         sel_p2 {
              char buff[1024];
              sprintf(buff,"%s %s %s %s %s %s", $<str>1, $<str>2, $<str>3, $<str>5, $<str>7,$<str>8);
-	    strcpy($<str>$,print_select_all(buff));
+	     debug("call print_select_all with %s\n",buff);
+	     strcpy($<str>$,print_select_all(buff));
 
 }
 ;
@@ -1030,7 +1030,10 @@ tmp_tabname: identifier;
 
 
 opt_into_sel :  { start_bind('o',0);strcpy($<str>$,""); }
-	| INTO  obind_var_list { strcpy($<str>$,""); }
+	| INTO  obind_var_list { 
+		
+		strcpy($<str>$,get_into_part(get_bind_cnt('o'))); 
+	}
 ;
 
 
