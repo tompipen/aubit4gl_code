@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.14 2004-02-10 13:50:20 mikeaubury Exp $
+# $Id: match.c,v 1.15 2004-03-17 14:49:10 mikeaubury Exp $
 #*/
 
 /**
@@ -724,19 +724,28 @@ int
 A4GL_aubit_strcasecmp (char *a, char *b)
 {
   int c;
-  for (c = 0; c <= min (strlen (a), strlen (b)); c++)
+  int l1;
+  int l2;
+  int m;
+   
+  l1=strlen(a);
+  l2=strlen(b);
+
+  if (l1>l2) m=l2;
+	else m=l1;
+  
+  for (c = 0; c <= m; c++)
     {
       if (toupper (a[c]) > toupper (b[c]))
 	return 1;
       if (toupper (a[c]) < toupper (b[c]))
 	return -1;
     }
-  if (strlen (a) == strlen (b))
-    return 0;
-  if (strlen (a) > strlen (b))
-    return 1;
-  else
-    return -1;
+
+  if (l1 == l2) return 0;
+  if (l1 > l2 ) return 1;
+
+  return -1;
 }
 
 

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.148 2004-03-17 13:33:55 mikeaubury Exp $
+# $Id: compile_c.c,v 1.149 2004-03-17 14:49:56 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.148 2004-03-17 13:33:55 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.149 2004-03-17 14:49:56 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -441,8 +441,8 @@ void
 A4GL_internal_lex_printc (char *fmt, va_list * ap)
 {
 /* va_list args; */
-  char buff[40960] = "ERROR-empty init";
-  char buff2[40960];
+  static char buff[40960] = "ERROR-empty init";
+  static char buff2[40960];
   char *ptr;
   int a;
 

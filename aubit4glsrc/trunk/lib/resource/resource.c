@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.70 2004-03-17 14:05:28 mikeaubury Exp $
+# $Id: resource.c,v 1.71 2004-03-17 14:49:57 mikeaubury Exp $
 #
 */
 
@@ -528,7 +528,7 @@ find_str_resource (char *s)
 char *
 acl_getenv (char *s)
 {
-char prefixed_string[1024];
+static char prefixed_string[1024];
 #ifdef DEBUG_VARIABLE_USAGE
 static FILE *fd1=0;
 #endif
@@ -539,9 +539,8 @@ static char *value_not_set="VALUE_NOT_SET";
 char *ptr_env=0, *ptr_env_A4GL=0,*ptr_resources=0, *ptr_resources_A4GL=0, *ptr_registry=0, *ptr=0;
 int cumulate = 0;
 char cumulate_char=0;
-
-char cumulated_string[2048]="";
-char cumulated_string_tmp[2048]="";
+static char cumulated_string[2048]="";
+static char cumulated_string_tmp[2048]="";
 
 #ifdef DEBUG_VARIABLE_USAGE
 if (fd1==0) {
