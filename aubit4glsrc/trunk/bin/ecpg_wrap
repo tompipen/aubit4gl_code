@@ -88,7 +88,26 @@ do
 		continue
 	fi
 
-	if [ "$a" = "-C" -o "$a" = "-D" -o "$a" = "-I"  ]
+	xx=`expr $a : "-I\(.*\)"`
+	if [ "$xx" != "" ] 
+	then
+		incl_args="$incl_args -I $xx"
+		shift
+		continue
+	fi
+
+	if [ "$a" = "-I"  ]
+	then
+		incl_args="$incl_args $a"
+		shift
+		a=$1
+		incl_args="$incl_args $a"
+		shift
+		continue
+	fi
+
+
+	if [ "$a" = "-C" -o "$a" = "-D"  ]
 	then
 		ecpg_args="$ecpg_args $a"
 		shift
@@ -106,6 +125,7 @@ do
 		b=$d/`basename "$c" ".$ECPG_EXT"`
 		bc=$d/`basename "$c" ".c"`
 		bo=$d/`basename "$c" ".o"`
+		bao=$d/`basename "$c" ".ao"`
 		b4go=$d/`basename "$c" ".4go"`
 	else
 		c=`basename "$a" `
@@ -115,7 +135,9 @@ do
 		bc=`basename "$c" ".c"`
 		bc2=./`basename "$c" ".c"`
 		bo=`basename "$c" ".o"`
+		bao=`basename "$c" ".ao"`
 		bo2=./`basename "$c" ".o"`
+		bao2=./`basename "$c" ".ao"`
 		b4go=`basename "$c" ".4go"`
 		b4go2=./`basename "$c" ".4go"`
 	fi
@@ -142,6 +164,13 @@ do
 		continue
 	fi
 
+	if [ "$bao" = $a -o "$bao2" = $a ]
+	then
+		ofiles="$ofiles $a"
+		shift
+		continue
+	fi
+
 
 	if [ $a = "-o" ]
 	then
@@ -160,6 +189,7 @@ do
 	fi
 
 	other_args="$other_args $a"
+	echo "ADDED $a to other_args"
 
 	shift
 done
@@ -168,9 +198,13 @@ if test "$SH_DEBUG" = "1"; then
 	echo "SOURCES : " $srcs
 fi
 
+
+echo "incl_args=$incl_args"
+
+
 for a in $srcs
 do
-	ECPG_RUN="$POSTGRESDIR/bin/ecpg -C INFORMIX_SE -rno_indicator -t $ecpg_args $a"
+	ECPG_RUN="$POSTGRESDIR/bin/ecpg -C INFORMIX_SE -rno_indicator -t $ecpg_args $incl_args $a"
     #-C INFORMIX_SE
     echo $ECPG_RUN
     eval $ECPG_RUN
@@ -185,7 +219,7 @@ do
 
     if [ "$ECPG_ONLY" = "0" ]
     then
-    	GCC_COMPILE="gcc -c $out.c $PG_IFLAGS $other_args"
+    	GCC_COMPILE="gcc $incl_args $other_args -c $out.c $PG_IFLAGS "
 
 	if test "$OUTPUT_IS_OBJECT" = "1"; then
 	    GCC_COMPILE="$GCC_COMPILE $output"
@@ -213,7 +247,8 @@ if [ $COMPILE_OBJ = 1 -o "$ofiles" = "" ]; then
 	fi
 fi
 
-GCC_RUN="gcc $ofiles $csrcs $PG_IFLAGS $other_args  -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes -lpq -lm -L$AUBITDIR/lib -laubit4gl $output"
+GCC_RUN="gcc $ofiles $csrcs $PG_IFLAGS $other_args  -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes -lpq -lm -L$AUBITDIR/lib -laubit4gl $output $incl_args"
+echo "GCC_RUN="
 echo $GCC_RUN
 eval $GCC_RUN
 RET=$?

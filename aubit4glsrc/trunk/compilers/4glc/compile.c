@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.51 2004-01-29 09:39:41 mikeaubury Exp $
+# $Id: compile.c,v 1.52 2004-03-06 07:57:23 mikeaubury Exp $
 #*/
 
 /**
@@ -391,7 +391,7 @@ initArguments (int argc, char *argv[])
 		#ifdef DEBUG
 		  A4GL_debug ("Pass trough option: %s\n", optarg);
 		#endif
-	  strcat (extra_ccflags, "-I");
+	  strcat (extra_ccflags, "-I ");
 	  strcat (extra_ccflags, "\"");
 	  strcat (extra_ccflags, optarg);
 	  strcat (extra_ccflags, "\"");
@@ -518,7 +518,7 @@ initArguments (int argc, char *argv[])
   A4GL_init_datatypes ();
 
   /* prepare CC flags */
-  strcpy (incl_path, "-I");
+  strcpy (incl_path, "-I ");
   strcat (incl_path, "\"");
   strcat (incl_path, acl_getenv ("AUBITDIR"));
   strcat (incl_path, "/incl");
@@ -672,7 +672,7 @@ initArguments (int argc, char *argv[])
             compiler to do the linking */
 			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
 		  	{
-				sprintf (buff, "ecpg_wrap %s -o %s %s %s %s %s %s ",get_rdynamic(),
+				sprintf (buff, "ecpg_wrap %s %s -o %s %s %s %s %s ",get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
 		    }
@@ -1195,7 +1195,7 @@ char ext[8];
 						printf ("PG EC compilation of the object successfull.\n");
 					}
 					need_cc=1;
-					  strcat (incl_path, "-I");
+					  strcat (incl_path, "-I ");
 					  strcat (incl_path, "\"");
 					  strcat (incl_path, acl_getenv ("POSTGRESDIR"));
 					  strcat (incl_path, "/include");
@@ -1203,7 +1203,7 @@ char ext[8];
 					  strcat (incl_path, " ");
 
                       /* /usr/include/pgsql/libpq-fe.h*/
-					  strcat (incl_path, "-I");
+					  strcat (incl_path, "-I ");
 					  strcat (incl_path, "\"");
 					  strcat (incl_path, "/usr/include/pgsql");
 					  strcat (incl_path, "\"");
