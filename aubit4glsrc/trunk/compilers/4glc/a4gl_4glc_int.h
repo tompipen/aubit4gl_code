@@ -1,5 +1,11 @@
 //	#define __GNU_LIBRARY__
-	#include <getopt.h> 			/* struct option */
+	
+#ifndef __sun__
+	#ifndef __sparc__
+		// No getopt.h on Solaris
+		#include <getopt.h> 			/* struct option */
+    #endif
+#endif
 
 #include "a4gl_libaubit4gl.h"
 

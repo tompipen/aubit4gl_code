@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.63 2002-09-21 08:37:31 afalout Exp $
+# $Id: Makefile-common.in,v 1.64 2002-09-21 12:02:18 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -221,7 +221,7 @@ AWK                 =@AWK@
 
 
 #FIXME: use gcc to do linking, not ld directly.  Instead of 'ld -shared',
-#use 'gcc -shared'.  If you MUST pass linker specific options to ld, use 
+#use 'gcc -shared'.  If you MUST pass linker specific options to ld, use
 #'-Wl,--my-ld-option' in your gcc. On Cygwin, using 'ld' directly will not 
 #automatically pick up the w32api libraries, even if they are installed.
 #command line.
@@ -339,7 +339,6 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
 	CFLAGS		+=-DWIN32 -fnative-struct
     EXEEXT		=.exe
 	EXE			=${EXEEXT}
-    SH			=bash
 	SO_LDFLAGS	=${RDYNAMIC} ${PIC}
 	SO_GCCFLAGS =-Xlinker ${RDYNAMIC}
 	DLL_EXPORTLIB_EXT=.dll.a
@@ -373,9 +372,6 @@ else ####################### Platform is UNIX ##############################
     #flags to CC when making and linking executables:
 	EXE_CFLAGS  =${RDYNAMIC}
 	EXEEXT		=
-    SH			=sh
-
-
 	LN			=${LN_H}
 	#we should not use hard links when we are installing, because this
     #can cause errors like "Invalid cross-device link" when source

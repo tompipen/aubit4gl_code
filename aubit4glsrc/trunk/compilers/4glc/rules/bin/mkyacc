@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkyacc,v 1.11 2002-09-21 08:37:31 afalout Exp $
+# $Id: mkyacc,v 1.12 2002-09-21 12:02:18 afalout Exp $
 #
 
 # This script builds "generated/fgl.yacc" files from several files
@@ -41,7 +41,7 @@ then
 	touch generated/fgl.yacc
 fi
 cat [0-8]*.reqd generated/kw.yh 9*.reqd *.rule generated/single_words.rule > generated/fgl.yacc
-echo "/* ========================== from mkyac =========================== */" >> generated/fgl.yacc
+echo "/* ========================== from mkyacc =========================== */" >> generated/fgl.yacc
 echo "commands : | command1 ;" >> generated/fgl.yacc
 echo "all_commands : commands_all | commands_all SEMICOLON ;" >> generated/fgl.yacc
 
@@ -66,7 +66,7 @@ grep -h "^[^ ]*_cmd.*:" *.rule  | $AWK '
 (NR==1) {print " 		" $1 >> "generated/fgl.yacc"}
 (NR!=1) {print "	|	" $1 >> "generated/fgl.yacc"}'
 
-echo "/* ========================== end from mkyac =========================== */" >> generated/fgl.yacc
+echo "/* ========================== end from mkyacc =========================== */" >> generated/fgl.yacc
 cat last.reqd >> generated/fgl.yacc
 chmod 444 generated/fgl.yacc
 
