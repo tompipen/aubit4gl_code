@@ -8476,7 +8476,7 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-if test "$SH" == "no"; then
+if test "$SH" = "no"; then
 	# Extract the first word of "sh", so it can be a program name with args.
 set dummy sh; ac_word=$2
 echo "$as_me:8482: checking for $ac_word" >&5

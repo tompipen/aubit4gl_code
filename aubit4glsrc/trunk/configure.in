@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.89 2002-09-22 01:18:15 afalout Exp $
+# $Id: configure.in,v 1.90 2002-09-22 01:26:00 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -707,7 +707,7 @@ AC_PATH_PROG(SWIG, swig, no)
 
 
 AC_PATH_PROG(SH, bash, no)
-if test "$SH" == "no"; then
+if test "$SH" = "no"; then
 	AC_PATH_PROG(SH, sh, /bin/sh)
 	AC_MSG_WARN(Aubit compiler need bash, sh will probably fail.)
 fi
