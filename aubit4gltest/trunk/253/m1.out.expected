@@ -1,0 +1,50 @@
+5 menus & submenus
+Menu : file
+   mn_new (New)  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+   mn_open (Open)  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+   mn_save (Save)  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+   mn_saveas (Save As)  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+   mn_exit (Exit)  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+Menu : mymenu
+   mn_file (_File)  [Submenu ->file]  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+   mn_edit (_Edit)  [Submenu ->mn_edit]  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+   mn_useful (Useful Stuff)  [Submenu ->mn_useful]  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+   mn_help (Help)  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+Menu : mn_edit
+   mn_cut (Cut)  Keys= Check=0 Attr=0 Color=-1
+ Image='gui/img1.xpm'
+   mn_copy (Copy)  Keys= Check=0 Attr=0 Color=-1
+ Image='gui/linux.xpm'
+   mn_paste (Paste)  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+   mn_zoom (Zoom)  [Submenu ->mn_zoom]  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+Menu : mn_zoom
+   mn_in (In)  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+   mn_out (Out)  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+   mn_fit (To Fit)  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+Menu : mn_useful
+   mn_form (Open Window & Form)  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+   mn_sform (Open small Window & Form)  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+   mn_screen (Open Form on Screen)  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+   mn_lots (Open lots of windows)  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+   mn_loop (Loop windows)  Keys= Check=0 Attr=0 Color=-1
+ Image=''
+   mn_closewin (Close windows)  Keys= Check=0 Attr=0 Color=-1
+ Image=''

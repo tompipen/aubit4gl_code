@@ -1,0 +1,20 @@
+Test 1:
+Input Time: 2004-08-01 11:15:00
+Adding time:2004-08-01 12:16:00
+Subtracting time:2004-08-01 10:14:00
+Test 2:
+Input Time: 2004-09-01 11:15:00
+Adding time:2004-09-01 12:16:00
+Subtracting time:2004-09-01 10:14:00
+Test 3:
+Input Time: 2004-08-30 11:15:00
+Adding time:2004-08-30 12:16:00
+Subtracting time:2004-08-30 10:14:00
+Test 4:
+Input Time: 2004-09-01 00:01:00
+Adding time:2004-09-01 01:02:00
+Subtracting time:2004-08-31 23:00:00
+Test 5:
+Input Time: 2004-08-30 23:59:00
+Adding time:2004-08-31 01:00:00
+Subtracting time:2004-08-30 22:58:00
