@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.25 2004-12-02 09:33:21 mikeaubury Exp $
+# $Id: data_if.c,v 1.26 2005-01-21 10:57:30 mikeaubury Exp $
 #
 */
 
@@ -304,6 +304,22 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
 	  return (void *) 1;
 	}
     }
+
+  if (strcmp (name, "processed_onkey") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *) val->processed_onkey;
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->processed_onkey);
+      if (mode == GETSETSET)
+	{
+	  val->processed_onkey = (int) var;
+	  return (void *) 1;
+	}
+    }
+
+
+
   A4GL_debug ("No found name %s\n", A4GL_null_as_null(name));
 
   return (void *) 0;		/* unknown value */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.22 2004-07-09 16:45:04 mikeaubury Exp $
+# $Id: rexp2.c,v 1.23 2005-01-21 10:57:30 mikeaubury Exp $
 #
 */
 
@@ -288,11 +288,22 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
 	      || (z > 1 && isop (constr_bits[z], 0) != OR))
 	    {
 
-	      k = atoi (constr_bits[z]);
+		char *eptr;
+		k=1;
+		strtol(constr_bits[z], &eptr, 10);
+		A4GL_debug("eptr=%p *eptr=%p\n",eptr,*eptr);
+		if (eptr==0) k=0;
+		if (eptr) {
+			if (*eptr != 0 ) {
+				k=0;
+			}
+		}
+
 	      if (k || k2);
 	      else
 		{
 		  /* error in numeric */
+			A4GL_debug("error in numeric");
 		
 		  return 0;
 		}
@@ -312,6 +323,7 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
  A4GL_debug ("Expression error");
       }
 #endif
+	A4GL_debug("error in expression");
       return 0;
     }
   if (z == 0 && z2 == 0)
