@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.91 2002-09-22 23:02:08 afalout Exp $
+# $Id: configure.in,v 1.92 2002-09-22 23:33:35 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2448,6 +2448,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 		if test "$ac_cv_lib_iberty_getopt_long" = "yes"; then
 			GETOPT_LONG=iberty
 			AC_MSG_RESULT(using iberty getopt_long)
+            echo "LD_LIBRARY_PATH = $LD_LIBRARY_PATH xx $LIBPATH"
         else
 			GETOPT_LONG=no
 			AC_MSG_RESULT(using Aubit included getopt sources)
