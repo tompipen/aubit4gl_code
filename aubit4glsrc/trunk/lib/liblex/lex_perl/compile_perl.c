@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.39 2003-07-15 17:09:05 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.40 2003-07-23 14:41:13 mikeaubury Exp $
 #
 */
 
@@ -107,7 +107,7 @@ extern int rep_type;
 extern int sreports_cnt;
 extern char when_to_tmp[64];
 
-
+//#ifdef __NEED_DLL_IMPORT__
 dll_import int when_code[8];
 dll_import struct s_report sreports[1024];
 dll_import struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
@@ -119,6 +119,22 @@ dll_import struct binding_comp ordbind[NUMBINDINGS];
 dll_import struct s_constr_buff constr_buff[256];
 dll_import char when_to[64][8];
 dll_import struct s_report_stack report_stack[REPORTSTACKSIZE];
+/*
+#else
+	extern int 			when_code[8];
+	extern struct 		s_report sreports[1024];
+	extern struct 		s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
+	extern struct 		binding_comp ibind[NUMBINDINGS];
+	extern struct 		binding_comp nullbind[NUMBINDINGS];
+	extern struct 		binding_comp obind[NUMBINDINGS];
+	extern struct 		binding_comp fbind[NUMBINDINGS];
+	extern struct 		binding_comp ordbind[NUMBINDINGS];
+	extern struct 		s_constr_buff constr_buff[256];
+	extern char 		when_to[64][8];
+	extern struct 		s_report_stack report_stack[REPORTSTACKSIZE];
+#endif
+*/
+
 
 extern int ordbindcnt;
 extern int ibindcnt;
@@ -161,9 +177,9 @@ static void printcomment (char *fmt, ...);
 void dump_unwind (void);
 
 
-void A4GL_internal_lex_printc (char *fmt, va_list * ap);
-void A4GL_internal_lex_printcomment (char *fmt, va_list * ap);
-void A4GL_internal_lex_printh (char *fmt, va_list * ap);
+void internal_A4GL_lex_printc (char *fmt, va_list * ap);
+void internal_A4GL_lex_printcomment (char *fmt, va_list * ap);
+void internal_A4GL_lex_printh (char *fmt, va_list * ap);
 
 static void real_print_expr (struct expr_str *ptr);
 static void real_print_func_call (char *identifier, struct expr_str *args,
@@ -187,13 +203,13 @@ printc (char *fmt, ...)
   A4GL_debug ("via printc in lib");
   va_start (ap, fmt);
   /* real_lex_printc(fmt,&ap); */
-  internal_lex_printc (fmt, &ap);
+  internal_A4GL_lex_printc (fmt, &ap);
 }
 
 /* this oen gets called freom API */
 /*
 void
-internal_lex_printc(char* fmt,... )
+internal_A4GL_lex_printc(char* fmt,... )
 {
 va_list ap;
 	A4GL_debug("via A4GL_lex_printc (2) in lib");
@@ -214,7 +230,7 @@ static void
 real_lex_printc(char *fmt, va_list *ap)
 */
 void
-internal_lex_printc (char *fmt, va_list * ap)
+internal_A4GL_lex_printc (char *fmt, va_list * ap)
 /*
 void
 printc (char *fmt, ...)
@@ -1787,7 +1803,7 @@ print_construct_2 (char *driver)
  * @return
  */
 void
-print_construct_3 (int byname, char *constr_str, char *attr,int cattr)
+print_construct_3 (int byname, char *constr_str, char *field_list,char *attr,int cattr)
 {
   int ccc;
   int k;
@@ -1818,7 +1834,7 @@ print_construct_3 (int byname, char *constr_str, char *attr,int cattr)
     {
       printc
 	("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
-	 attr);
+	 field_list);
     }
 
   printc
@@ -3368,7 +3384,7 @@ print_end_menu_2 (int n)
  * @return
  */
 void
-print_menu_block (int menu,int n)
+print_menu_block (int mnno,int n)
 {
   printc (" if ($cmd_no==%d) {\n", n);
 }
@@ -3826,7 +3842,7 @@ print_start_record (int isstatic_extern, char *vname,char *arrsize,int level)
      if (isstatic_extern == 2)
      printc ("extern ");
    */
-  printh ("struct a4glStruct_%s => {\n", vname);
+  printc ("struct a4glStruct_%s => {\n", vname);
 }
 
 /**
@@ -3838,16 +3854,16 @@ void
 print_end_record (char *vname, char *arrsize,int level)
 {
   printing_record--;
-  if ((int)arrsize == -1)
+  if (atoi(arrsize) == -1)
     {
-      printc ("} \n", vname);
+      printc ("}; \n", vname);
     }
   else
     {
       printc ("} %s[%s];\n", vname, arrsize);
     }
 
-  printc ("my $vname=a4glStruct_%s->new();", vname);
+  printc ("my $%s=a4glStruct_%s->new();", vname,vname);
 }
 
 
@@ -3978,12 +3994,12 @@ printcomment (char *fmt, ...)
 {
   va_list ap;
   va_start (ap, fmt);
-  internal_lex_printcomment (fmt, &ap);
+  internal_A4GL_lex_printcomment (fmt, &ap);
 }
 
 void
 /* internal_printcomment (char *fmt,...) */
-internal_lex_printcomment (char *fmt, va_list * ap)
+internal_A4GL_lex_printcomment (char *fmt, va_list * ap)
 {
 
   return;
@@ -4081,6 +4097,84 @@ printPopFunction (void)
 
 
 
+char *reserved_words_in_perl[] = {
+  "asm",
+  "auto",
+  "break",
+  "case",
+  "char",
+  "const",
+  "continue",
+  "default",
+  "do",
+  "double",
+  "else",
+  "enum",
+  "extern",
+  "float",
+  "for",
+  "goto",
+  "if",
+  "int",
+  "long",
+  "register",
+  "return",
+  "short",
+  "signed",
+  "sizeof",
+  "static",
+  "struct",
+  "switch",
+  "typedef",
+  "union",
+  "unsigned",
+  "void",
+  "volatile",
+  "while",
+  "bool",
+  0
+};
 
+int
+A4GL_bad_identifiers (char *s)
+{
+  int a;
+  for (a = 0; reserved_words_in_perl[a]; a++)
+    {
+      if (strcasecmp (s, reserved_words_in_perl[a]) == 0)
+	return 1;
+    }
+  return 0;
+}
+
+void print_module_variable_init(void) {
+// Do nothing
+}
+
+void                                            
+print_cmd_start ()                              {                                               
+	  printc ("\n\naclfgli_clr_err_flg();\n\n");    
+}                                               
+														
+/**                                             
+ *                                              
+* @todo Describe function                      
+  */                                             
+void                                            
+print_cmd_end ()                                
+  {                                               
+	 //printc("\naclfgli_clr_err_flg()\n\n");      
+	printc ("\n/* End command */\n");             
+}
+
+char *get_column_transform(char *s) {  
+return s;                              
+}                                      
+void                        
+A4GL_lex_parsed_fgl ()      {
+printc("/* END OF 4GL */");
+}
 
 /* ================================ EOF ============================== */
+
+

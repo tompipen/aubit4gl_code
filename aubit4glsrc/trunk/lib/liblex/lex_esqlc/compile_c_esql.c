@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.42 2003-07-23 11:49:04 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.43 2003-07-23 14:41:04 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -353,7 +353,7 @@ print_locate (char where, char *var, char *fname)
 void
 print_set_conn (char *conn)
 {
-  printc ("EXEC SQL SET CONNECTION TO %s;\n", conn);
+  printc ("EXEC SQL SET CONNECTION %s;\n", conn);
   print_copy_status ();
 }
 
@@ -464,19 +464,43 @@ void
 print_open_session (char *s, char *v, char *user)
 {
 
-  printc ("EXEC SQL OPEN SESSION %s", s);
+
+
+  	printc("{");
+	printc("EXEC SQL BEGIN DECLARE SECTION;");
+	printc("char _u[256];");
+	printc("char _p[256];");
+	printc("EXEC SQL END DECLARE SECTION;");
+	if (strlen(user)) {
+  	if (strcmp (user, "?") == 0)
+    	{
+		printc("strcpy(_u,A4GL_char_pop());");
+    	} else {
+		char buff[256];
+		char *ptr;
+		strcpy(buff,user);
+		ptr=strchr(buff,',');
+		if (ptr) {
+			 *ptr=0;
+			ptr++;
+		}
+		printc("strcpy(_u,%s);",buff);
+		if (ptr) {
+			printc("strcpy(_p,%s);",ptr);
+		}
+	}	
+	}
+
+  	printc ("EXEC SQL CONNECT TO  '%s' AS %s", v,s);
+	if (strlen(user)) {
+		printc("USER :_u USING :_p");
+	}
+	printc("/* s=%s v=%s user=%s */",s,v,user);
+
+  printc(";");
   print_copy_status ();
 
-
-  if (strcmp (user, "?") == 0)
-    {
-      printc (",A4GL_char_pop(),%s);\n", user);
-    }
-  else
-    {
-      printc (",\"%s\",%s);\n", v, user);
-    }
-
+  printc("}");
 }
 
 /**

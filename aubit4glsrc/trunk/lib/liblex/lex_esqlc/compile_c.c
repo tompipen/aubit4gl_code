@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.71 2003-07-23 11:49:04 mikeaubury Exp $
+# $Id: compile_c.c,v 1.72 2003-07-23 14:41:04 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1950,21 +1950,27 @@ print_construct_2 (char *driver)
 {
   printc ("if (_fld_dr== -95) {\n");
   printc ("   break;\n}\n");
-  printc ("if (_fld_dr== -98) {\n");
-  printc
-    ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); _fld_dr= -97;continue;\n}\n");
-  printc ("_fld_dr= %s;\n", driver);
-  printc ("if (_fld_dr== -1) {\n");
-  printc
-    ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); _fld_dr= -98;continue;\n}\n");
+  printc ("if (_fld_dr== -197) {\n");
+  printc ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack();");
+  printc ("   _fld_dr= -97;continue;\n}\n");
+
+  printc ("_fld_dr= %s;_forminit=0;\n", driver);
+
+
+  printc ("if (_fld_dr== -198) { /* After field */\n" );
+  printc ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); ");
+  printc ("   _fld_dr= -98;continue;\n}\n");
   printc ("if (_fld_dr==0) {\n");
   printc ("   _fld_dr= -95;continue;\n}\n");
   add_continue_blockcommand ("CONSTRUCT");
   printc ("A4GL_debug(\"form_loop=%%d\",_fld_dr);");
   printc
     ("\n}\n A4GL_push_constr(&_inp_io);\n A4GL_pop_params(ibind,1);\n }\n");
-  pop_blockcommand ("CONSTRUCT");	/* FIXME */
+  pop_blockcommand ("CONSTRUCT");	
 }
+
+
+
 
 /**
  * Print the third phase of the CONSTRUCT C implementation in the 
@@ -1978,7 +1984,7 @@ print_construct_2 (char *driver)
  * @param attr The attribute list to be used.
  */
 void
-print_construct_3 (int byname, char *constr_str, char *attr,int cattr)
+print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,int cattr)
 {
   int ccc;
   int k;
@@ -2000,7 +2006,9 @@ print_construct_3 (int byname, char *constr_str, char *attr,int cattr)
   printc ("SET(\"s_screenio\",_inp_io,\"constr\",constr_flds);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"mode\",%d);\n", MODE_CONSTRUCT);
   if (byname == 1)
-    {
+    { 
+	printc(" /* byname */");
+
       printc
 	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),(void *)GET(\"s_screenio\",_inp_io,\"currform\"),");
       print_field_bind_constr ();
@@ -2008,9 +2016,10 @@ print_construct_3 (int byname, char *constr_str, char *attr,int cattr)
     }
   else
     {
+	printc(" /* not byname */");
       printc
 	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),(void *)GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
-	 attr);
+	 fld_list);
     }
 
   printc
@@ -2798,21 +2807,25 @@ print_input_2 (char *s)
   //}
   //else
   //{
+
+
   printc ("if (_fld_dr== -95) {/* after input */\n");
   printc ("   break;\n}\n");
   printc ("if (_fld_dr== -197) {/* before field */\n");
-  printc
-    ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); _fld_dr= -97;continue;\n}\n");
+  printc ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack();");
+  printc ("    _fld_dr= -97;continue;\n}\n");
   printc ("_fld_dr=%s;_forminit=0;\n", s);
   printc ("if (_fld_dr== -198) {/* after field */\n");
-  printc
-    ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); _fld_dr= -98;continue;\n}\n");
+  printc ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); ");
+  printc ("   _fld_dr= -98;continue;\n}\n");
   printc ("if (_fld_dr==0) { /* after input 2 */\n");
   printc ("   _fld_dr= -95;continue;\n}\n");
   add_continue_blockcommand ("INPUT");
   printc ("\n}\n");
   pop_blockcommand ("INPUT");
   printc ("}\n");
+
+
   //}
 }
 
