@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.64 2003-09-15 16:03:06 mikeaubury Exp $
+# $Id: esql.ec,v 1.65 2003-09-19 16:16:59 mikeaubury Exp $
 #
 */
 
@@ -140,7 +140,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.64 2003-09-15 16:03:06 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.65 2003-09-19 16:16:59 mikeaubury Exp $";
 #endif
 
 
@@ -1001,9 +1001,12 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
       dtime_var.dt_qual = 3594;
       if (dtcvasc (genData, &dtime_var))
 	{
-	  A4GL_debug ("Invalid datetime!!");
-	/** @todo : We need to store this error */
-	  return 1;
+      		dtime_var.dt_qual = 1642;
+      		if (dtcvasc (genData, &dtime_var)) {
+	  		A4GL_debug ("Invalid datetime!!");
+			/** @todo : We need to store this error */
+	  		return 1;
+		}
 	}
       char_var = genData;
       dataType = 0;

@@ -225,13 +225,16 @@ sub process_expr_complex {
 
 	$right=eval_expr($expr->{"expr"}{"expr2"});
 
+# following 2 lines to fix concation problem
+if ( ! defined $right ) { $right=""; }
+if ( ! defined $left ) { $left=""; }
 	if ($op eq "EXPR_CONCAT") {return $left.$right;}
-	if ($op eq "EXPR_MUL") {return $left*$right;}
-	if ($op eq "EXPR_ADD") {return $left+$right;}
-	if ($op eq "EXPR_SUB") {return $left-$right;}
-	if ($op eq "EXPR_DIV") {return $left/$right;}
-	if ($op eq "EXPR_MOD") {return $left%$right;}
-	if ($op eq "EXPR_POW") {return $left**$right;}
+	if ($op eq "EXPR_MUL") {return do_math($left,'*',$right);}
+	if ($op eq "EXPR_ADD") {return do_math($left,'+',$right);}
+	if ($op eq "EXPR_SUB") {return do_math($left,'-',$right);}
+	if ($op eq "EXPR_DIV") {return do_math($left,'/',$right);}
+	if ($op eq "EXPR_MOD") {return do_math($left,'%',$right);}
+	if ($op eq "EXPR_POW") {return do_math($left,'**',$right);}
 	if ($op eq "EXPR_AND") {return $left && $right;}
 	if ($op eq "EXPR_OR") {return $left || $right;}
 	if ($op eq "EXPR_USING") {
@@ -240,6 +243,33 @@ sub process_expr_complex {
 	}
 
 die "Unknown COMPLEX expression operator $op";
+}
+
+sub do_math {
+my ($left,$op,$right)=@_;
+
+# take out commas they botch the math
+$left =~ s/,//g;
+$right =~ s/,//g;
+
+my $math;
+my $add_currency=0;
+if ($left =~ m/^ *?[\$](-?[0-9]+(\.[0-9]*)?)$/ ||
+    $right =~ m/^ *?[\$](-?[0-9]+(\.[0-9]*)?)$/ ) {
+
+   ($math = $left.$op.$right) =~ s/\$//g;
+   $add_currency=1;
+   }
+else {
+   $math = $left.$op.$right;
+   }
+
+$math=~s/ //g;
+my $res = eval $math;
+
+if ( $add_currency ) { $res = "\$".$res; }
+
+return $res;
 }
 
 #------------------------------------------------------------
@@ -520,7 +550,7 @@ sub cmd_need  	{
 
 	$nlines=$p->{nlines};
 	
-	if ($lineno+$nlines+$bottom_margin > $page_length) {
+	if ($lineno+$nlines+$bottom_margin > $page_length -1) {
 		skip_to_top_of_page();
 	}
 

@@ -226,6 +226,7 @@ $result_i="";
 
 
         $b=0;
+        my $result_d = " " x length($arr_fmt[1]);
 	for ($a=0;$a<length($arr_fmt[1]);$a++) {
 		$ch=substr($arr_fmt[1],$a,1);
 
