@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.49 2003-01-27 05:47:35 afalout Exp $
+# $Id: sql.c,v 1.50 2003-02-14 13:14:22 mikeaubury Exp $
 #
 */
 
@@ -665,7 +665,7 @@ struct s_sid *sid;
 #ifdef DEBUG
 	{ debug ("Bound any data... ni=%d", ni); }
 #endif
-  return ODBC_exec_prepared_sql (&sid->hstmt);
+  return ODBC_exec_prepared_sql (sid->hstmt);
 }
 
 /**
@@ -2013,11 +2013,14 @@ ODBC_exec_prepared_sql (HSTMT hstmt)
 {
 int rc;
 
+debug("In exec_prepared_sql");
+
   rc = SQLExecute (hstmt);
+
   rc=chk_need_blob(rc,hstmt);
 
   chk_rc (rc, hstmt, "SQLExecute");
-  /* set_sqlca (hstmt, "ODBC_exec_prepared_sql : After SQLExecute", 0); */
+   set_sqlca (hstmt, "ODBC_exec_prepared_sql : After SQLExecute", 0); 
 
 #ifdef DEBUG
 	/* {DEBUG} */{debug ("Result=%d", rc);}
