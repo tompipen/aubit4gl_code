@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.6 2004-02-10 10:21:31 mikeaubury Exp $
+# $Id: input_array.c,v 1.7 2004-02-10 19:05:24 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.6 2004-02-10 10:21:31 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.7 2004-02-10 19:05:24 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -1773,12 +1773,20 @@ A4GL_debug("a=%d op=%d HEF",a,arr->fcntrl[a].op);
   if (arr->fcntrl[a].op == FORMCONTROL_EXIT_INPUT_ABORT)
     {
       //extern int int_flag;
-	A4GL_comments (0);
-      A4GL_debug ("FORM ABORT..");
-      int_flag = 1;
-      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
-      rval = -1;
-      new_state = 0;
+	  if (arr->fcntrl[a].state == 99) {
+			A4GL_comments (0);
+      			A4GL_debug ("FORM ABORT..");
+      			int_flag = 1;
+      			A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
+      			rval = -1;
+      			new_state = 10;
+	} 
+
+
+  	if (arr->fcntrl[a].state == 10) {
+			new_state=0;
+	}
+
     }
 
 

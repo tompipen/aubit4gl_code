@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.70 2004-02-10 13:50:21 mikeaubury Exp $
+# $Id: iarray.c,v 1.71 2004-02-10 19:05:20 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: iarray.c,v 1.70 2004-02-10 13:50:21 mikeaubury Exp $";
+static char *module_id="$Id: iarray.c,v 1.71 2004-02-10 19:05:20 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -1734,12 +1734,14 @@ static int process_control_stack_internal (struct s_inp_arr *arr)
 
       if (arr->fcntrl[a].state == 99)
 	{
+	A4GL_debug("DO -95");
 	  new_state = 50;
 	  rval = -95;		// Do any AFTER INPUT section
 	}
 
       if (arr->fcntrl[a].state == 50)
 	{
+	A4GL_debug("DO -94");
 	  A4GL_comments(0);
 	  new_state = 0;
 	  rval = -94;		// CLEANUP
@@ -1750,6 +1752,7 @@ static int process_control_stack_internal (struct s_inp_arr *arr)
   if (arr->fcntrl[a].op == FORMCONTROL_EXIT_INPUT_OK)
     {
 
+	A4GL_debug("DO EXIT_INPUT_OK");
 	  A4GL_comments(0);
 
       if (arr->fcntrl[a].state == 99)
@@ -1786,12 +1789,21 @@ static int process_control_stack_internal (struct s_inp_arr *arr)
   if (arr->fcntrl[a].op == FORMCONTROL_EXIT_INPUT_ABORT)
     {
       //extern int int_flag;
-      A4GL_debug ("FORM ABORT..");
-	A4GL_comments(0);
-      int_flag = 1;
-      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
-      rval = 0;
-      new_state = 0;
+	      if (arr->fcntrl[a].state == 99 )  {
+      			A4GL_debug ("FORM ABORT..");
+			A4GL_comments(0);
+      			int_flag = 1;
+			A4GL_debug("DO EXIT_INPUT_ABORT");
+      			A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
+      			rval = 0;
+      			new_state = 10;
+		}
+	        if (arr->fcntrl[a].state == 10 )  {
+			new_state=0;
+			return -1;
+		}
+
+
     }
 
 
