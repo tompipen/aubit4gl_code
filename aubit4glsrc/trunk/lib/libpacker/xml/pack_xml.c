@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.8 2003-02-26 22:28:13 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.9 2003-04-07 16:26:48 mikeaubury Exp $
 #*/
 
 /**
@@ -260,6 +260,7 @@ char buff[256];
 		/* write XML file */
 				outfile = fopen (buff, "w");
 		if (outfile) {
+			set_last_outfile(buff);
 			fprintf(outfile,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 			return 1;
 		} else {

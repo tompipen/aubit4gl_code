@@ -1,3 +1,5 @@
+
+#ifdef MOVED_TO_LIBAUBIT4GL
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -10,3 +12,4 @@ long memfile_ftell(FILE *f);
 int memfile_ungetc(int c,FILE *F);
 int memfile_feof(FILE *f);
 int memfile_fread(char *ptr,int s,int n,FILE *f) ;
+#endif

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.7 2002-10-22 06:43:37 afalout Exp $
+# $Id: readforms.c,v 1.8 2003-04-07 16:26:38 mikeaubury Exp $
 #*/
 
 /**
@@ -170,7 +170,7 @@ ret_string (char *str)
  *
  */
 void *
-read_form (char *fname, char *formname)
+read_form_internal (char *fname, char *formname)
 {
   debug ("via read_form in lib");
   return real_read_form (fname, formname);
@@ -696,5 +696,8 @@ do_translate_form (struct_form * the_form)
 
 
 
+void A4GLFORM_initlib() {
+	// Does nothing...
+}
 
 /* ============================ EOF ============================== */

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.47 2003-03-22 09:42:33 mikeaubury Exp $
+# $Id: Makefile.in,v 1.48 2003-04-07 16:26:32 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -41,7 +41,7 @@ CMODS_PROJECT	=project.c
 
 CMODS_API   = \
 	API_ui.c API_exreport.c API_sql.c API_rpc.c \
-	API_lex.c API_form.c API_menu.c API_msg.c API_packer.c
+	API_lex.c API_form.c API_menu.c API_msg.c API_packer.c API_help.c
 
 #In alphabetical order:
 COMMONSRC= \
@@ -57,7 +57,7 @@ COMMONSRC= \
 	load.c dataio.c \
 	match.c maths.c ops.c \
 	others.c \
-	pointers.c \
+	pointers.c memfile.c \
 	read_dty.c report.c rexp2.c ${LIBROOT}/resource/resource.c \
 	screen.c sqlconvert.c stack_ops.c stack.c string.c \
 	translate.c

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.42 2003-04-02 11:34:58 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.43 2003-04-07 16:26:28 mikeaubury Exp $
 #
 */
 
@@ -283,6 +283,8 @@
 	#define COMPILED_FORM 	'E'
 	#define MESSAGEWIN 		'F'
 	#define PTR_ATTRIBUTE 		'G'
+	#define COMPILED_FORM_PACKER 	'H'
+	#define COMPILED_FORM_FORMTYPE 	'I'
 
 	/* ========================= from a4gl_ui.h ====================== */
 	#define DESCLENGTH 		10

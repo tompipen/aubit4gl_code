@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.11 2003-02-12 05:53:53 afalout Exp $
+# $Id: formwrite2.c,v 1.12 2003-04-07 16:26:38 mikeaubury Exp $
 #*/
 
 /**
@@ -896,10 +896,29 @@ struct_form *ptr;
     {
       int cnt = 0;
       int a;
+      int len;
       debug ("Asc...\n");
-      fxx = fopen (fname, "r");
+      fxx = fopen (get_last_outfile(), "r");
+      if (fxx==0) {
+	      error_with("Unable to open output file(%s)\n",fname,0);
+	      return;
+      }
+      fseek(fxx,0,SEEK_END);
+
+      len=ftell(fxx);
+      rewind(fxx);
+
+      sprintf(fname2,"%s.c",fname);
+
       fyy = fopen (fname2, "w");
+
+
       fprintf (fyy, "char compiled_form_%s[]={\n", outputfilename);
+
+      fprintf (fyy, "0x%02x,\n", len&255); len/=256;
+      fprintf (fyy, "0x%02x,\n", len&255); len/=256;
+      fprintf (fyy, "0x%02x,\n", len&255); len/=256;
+      fprintf (fyy, "0x%02x,\n", len&255); len/=256;
 
       while (!feof (fxx))
 	{
@@ -969,7 +988,7 @@ getdatatype (char *col, char *tab)
       debug ("get_dtype failed\n");
       sprintf (buff, "%s.%s not found in database", tab, col);
       //yyerror (buff);
-      exitwith(buff);
+      error_with(buff,"","");
     }
   return a;
 }

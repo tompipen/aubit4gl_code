@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.27 2003-04-02 18:54:01 mikeaubury Exp $
+# $Id: compile_c.c,v 1.28 2003-04-07 16:26:43 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1602,9 +1602,10 @@ print_returning (void)
  * @todo Describe function
  */
 void
-print_form_is_compiled (char *s)
+print_form_is_compiled (char *s,char *packer,char *formtype)
 {
-  printc ("add_compiled_form(\"%s\",compiled_form_%s);\n", s, s);
+	//printf("%s - %s - %s\n",s,packer,formtype);
+  printc ("add_compiled_form(\"%s\",%s,%s,compiled_form_%s);\n", s, packer,formtype,s);
   printh ("extern char compiled_form_%s[];\n", s);
 }
 

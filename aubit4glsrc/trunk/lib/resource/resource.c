@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.34 2003-03-09 07:26:48 afalout Exp $
+# $Id: resource.c,v 1.35 2003-04-07 16:26:52 mikeaubury Exp $
 #
 */
 
@@ -96,6 +96,7 @@ struct str_resource builtin_resource[] =
   {"A4GL_RPCTYPE",		"NORPC"},
   {"A4GL_MENUTYPE",		"NOMENU"},
   {"A4GL_MSGTYPE",		"NATIVE"},
+  {"A4GL_HELPTYPE",		"std"},
   {"EXDTYPE",           ""},
 //  {"AUBITDIR",			"@aubitdir@  we should try setting AUBITDIR relative to location of invoked executable, if not already set
 

@@ -36,7 +36,7 @@ comments void* fprop -> void
 set_default_form void* form -> void
 
 /* struct s_form_dets * read_form (char *fname, char *formname) */
-read_form char* fname,char* formname -> void*
+read_form_internal char* fname,char* formname -> void*
 
 /* int has_bool_attribute (struct struct_scr_field *f, int bool) */
 has_bool_attribute void* f,int boolval -> int

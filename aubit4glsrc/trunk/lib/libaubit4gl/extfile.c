@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.10 2003-01-21 08:25:53 afalout Exp $
+# $Id: extfile.c,v 1.11 2003-04-07 16:26:33 mikeaubury Exp $
 #
 */
 
@@ -53,6 +53,7 @@ FILE *langfile = 0;
 char *language_file_contents=0;
 char disp[24][81];
 int max_width;
+char *curr_help_filename=0;
 
 /*
 =====================================================================
@@ -78,8 +79,11 @@ void 			set_lang_file 			(char *fname_orig);
 void
 set_help_file (char *fname)
 {
-  if (helpfile != 0)
-    fclose (helpfile);
+  if (helpfile != 0) fclose (helpfile);
+
+  if (curr_help_filename) free(curr_help_filename);
+  curr_help_filename=strdup(fname);
+
   helpfile = (FILE *)open_file_dbpath(fname);
   if (helpfile==0) {
         exitwith("Unable to open help file");
@@ -142,7 +146,7 @@ int
 aclfgl_fgl_show_help(int a)
 {
     a=pop_int();
-    show_help(a);
+    aclfgl_show_help(a);
 	return 0;
 }
 
@@ -216,6 +220,27 @@ has_helpfile(void)
 	else return 0;
 }
 
+/*
+ * This is the main show_help function...
+ * 
+*/
+int aclfgl_show_help(int n) {
+	long a;
+		a=pop_long();
+	if (has_helpfile()) {
+		push_char((char *)get_helpfilename());
+		push_long(a);
+		aclfgli_libhelp_showhelp(2);
+	}
+}
+
+
+char *get_helpfilename(void) 
+{
+	if (helpfile) return curr_help_filename;
+	else return 0;
+}
+
 /**
  *
  * @todo Describe function
@@ -224,6 +249,17 @@ char *
 get_help_disp(int n) 
 {
 	return disp[n];
+}
+
+char last_outfile[256]="";
+void set_last_outfile(char *s) {
+	debug("last_outfile=%s",s);
+	strcpy(last_outfile,s);
+}
+
+char *get_last_outfile(void) {
+	debug("Returning last_outfile=%s",last_outfile);
+	return last_outfile;
 }
 
 /* ================================ EOF =============================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.23 2002-10-20 12:02:38 afalout Exp $
+# $Id: readforms.c,v 1.24 2003-04-07 16:26:39 mikeaubury Exp $
 #*/
 
 /**
@@ -170,7 +170,7 @@ ret_string (char *str)
  *
  */
 void *
-read_form (char* fname, char* formname)
+read_form_internal (char* fname, char* formname)
 {
 	debug("via read_form in lib");
 	return real_read_form(fname, formname);

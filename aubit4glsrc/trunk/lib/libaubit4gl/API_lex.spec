@@ -121,7 +121,7 @@ print_getfldbuf char* fields -> void
 print_returning -> void
 
 /* void print_form_is_compiled (char *s) */
-print_form_is_compiled char* s -> void
+print_form_is_compiled char* s char* packer char* formtype -> void
 
 /* void print_field_func (char type, char *name, char *var) */
 print_field_func char type,char* name,char* var -> void

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.19 2003-03-29 16:48:31 mikeaubury Exp $
+# $Id: curslib.c,v 1.20 2003-04-07 16:26:48 mikeaubury Exp $
 #*/
 
 /**
@@ -1139,7 +1139,7 @@ setreledit (int x, int y)
  * @todo Describe function
  */
 int
-show_help (int no)
+show_help_old (int no)
 {
   struct text_info t_info;
   int r_flg = 0;
@@ -1700,14 +1700,16 @@ menu_loop (ACL_Menu * menu)
       if (a == 23 || a == key_val ("HELP"))
 	{
 	#ifdef DEBUG
-	  debug ("....SHOWHELP....");
+	  debug ("....SHOWHELP.... menu->curr_option->help_no=%d",menu->curr_option->help_no);
+	  debug ("menu->curr_option=%p",menu->curr_option);
 	#endif
 	  if (menu->curr_option->help_no)
 	    {
 	      int hlp;
 	      hlp = menu->curr_option->help_no;
 	      debug ("Curroption=%p", menu->curr_option);
-	      show_help (hlp);
+	      	push_int(hlp);
+	      aclfgl_show_help (1);
 	      debug ("After show help Curroption=%p", menu->curr_option);
 	      continue;
 	    }
@@ -2956,7 +2958,7 @@ aclfgli_pr_message (int attr, int wait)
   debug ("Message : '%s'", p);
   push_char (p);
 
-  debug ("MJA - Wait =%d\n", wait);
+  debug (" Wait =%d\n", wait);
   if (wait == 0)
     {
       push_int (ml);
@@ -2973,13 +2975,13 @@ aclfgli_pr_message (int attr, int wait)
 
   return;			/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
-  debug ("MJA - NW PTR");
+  debug (" NW PTR");
   sprintf (buff, "MS%p", cw);
 
   if (has_pointer (buff, MESSAGEWIN))
     {
       mw = find_pointer (buff, MESSAGEWIN);
-      debug ("MJA Removing old message window... %p", mw);
+      debug ("Removing old message window... %p", mw);
       delwin (mw);
       del_pointer (buff, MESSAGEWIN);
       wsyncup (cw);
@@ -2993,7 +2995,7 @@ aclfgli_pr_message (int attr, int wait)
       debug ("Creating new message window");
       mw =
 	derwin (cw, 1, width, ml - 1 + iscurrborder () * 2, iscurrborder ());
-      debug ("MJA Created window %p", mw);
+      debug ("Created window %p", mw);
       touchwin (mw);
       add_pointer (buff, MESSAGEWIN, mw);
       debug ("Message String : %s", p);
@@ -3059,11 +3061,11 @@ size_menu (ACL_Menu * menu)
 #endif
       if ((opt1->attributes & ACL_MN_HIDE) != ACL_MN_HIDE)
 	{
-	  debug ("MJA Show %s\n", opt1->opt_title);
+	  debug (" Show %s\n", opt1->opt_title);
 	}
       else
 	{
-	  debug ("MJA HIdden %s\n", opt1->opt_title);
+	  debug (" HIdden %s\n", opt1->opt_title);
 	}
       if ((opt1->attributes & ACL_MN_HIDE) != ACL_MN_HIDE)
 	{
@@ -3439,7 +3441,7 @@ new_menu_tui_oldway (char *title,
     return 0;
   strcpy (buff, title);
   trim (buff);
-  debug ("MJA - Menu title : '%s'", title);
+  debug (" - Menu title : '%s'", title);
   menu = nalloc (ACL_Menu);
   strcpy (menu->menu_title, buff);
   trim (menu->menu_title);
@@ -3564,6 +3566,7 @@ add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
   char op1[256];
   int nopts;
   opt1 = nalloc (ACL_Menu_Opts);
+  debug("MJAMJA helpno=%d",helpno);
 
   opt1->next_option = 0;
   opt1->prev_option = 0;
@@ -3571,6 +3574,7 @@ add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
 
   debug ("In add menu option : %s\n", txt);
 
+  debug("MJAMJA helpno=%d",helpno);
   if (menu->first == 0)
     {
       debug ("Setting first..\n");
@@ -3582,6 +3586,7 @@ add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
   nopts = menu->num_opts;
   opt2 = menu->last;
   opt1->opt_no = nopts - 1;
+  debug("MJAMJA helpno=%d",helpno);
   if (opt1 != opt2)
     {
       opt2->next_option = opt1;
@@ -3592,6 +3597,7 @@ add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
   debug ("opt1 : prev=%p next=%p", opt1->prev_option, opt1->next_option);
   debug ("opt2 : prev=%p next=%p", opt2->prev_option, opt2->next_option);
 
+  debug("MJAMJA helpno=%d",helpno);
   if (strlen (txt))
     {
       strcpy (opt1->opt_title, " ");
@@ -3605,15 +3611,20 @@ add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
       strcpy (opt1->opt_title, "");
     }
 
+  debug("MJAMJA helpno=%d",helpno);
   opt1->optlength = strlen (opt1->opt_title);
+  debug("MJAMJA helpno=%d",helpno);
   strcpy (opt1->optkey, keys);
+  debug("MJAMJA helpno=%d",helpno);
   strcpy (opt1->shorthelp, desc);
-  opt1->help_no = help_no;
+  debug("MJA setting opt1->help_no = %d",helpno);
+  opt1->help_no = helpno;
   opt1->attributes = attr;
   if (opt1->optlength == 0)
     opt1->attributes |= ACL_MN_HIDE;
   menu->last = (ACL_Menu_Opts *) opt1;
   menu->num_opts = nopts;
+  debug("MJA opt1->help_no = %d",opt1->help_no);
 }
 
 /**
@@ -3635,6 +3646,8 @@ finish_create_menu (ACL_Menu * menu)
 
   gui_setfocus ((int) menu->curr_option);
   gui_endmenu ((int) menu);
+  debug("Current option=%p",menu->curr_option);
+  debug("Current option help=%d",menu->curr_option->help_no);
   return;
 }
 
@@ -3663,7 +3676,7 @@ new_menu (char *title,
     return 0;
   strcpy (buff, title);
   trim (buff);
-  debug ("MJA - Menu title : '%s'", title);
+  debug (" Menu title : '%s'", title);
   menu = nalloc (ACL_Menu);
   strcpy (menu->menu_title, buff);
   trim (menu->menu_title);
@@ -3695,7 +3708,7 @@ new_menu (char *title,
 	}
       opt1->opt_no = ret;
       argp_c = va_arg (*ap, char *);
-      debug ("MJA argp_c = %s\n", argp_c);
+      debug ("argp_c = %s\n", argp_c);
       if (strlen (argp_c))
 	{
 	  strcpy (opt1->opt_title, " ");

@@ -21,8 +21,12 @@ ibind_var_list {
 }
 
    | FORM_IS_COMPILED OPEN_BRACKET identifier CLOSE_BRACKET {
-	print_form_is_compiled($<str>3);
+	print_form_is_compiled($<str>3,"","");
 	}
+   | FORM_IS_COMPILED OPEN_BRACKET identifier COMMA CHAR_VALUE COMMA CHAR_VALUE CLOSE_BRACKET {
+	print_form_is_compiled($<str>3,$<str>5,$<str>7);
+	}
+   | INFIELD OPEN_BRACKET field_name CLOSE_BRACKET RETURNING variable
    | INFIELD OPEN_BRACKET field_name CLOSE_BRACKET RETURNING variable
    {
 	print_field_func('I',$<str>3,$<str>6);

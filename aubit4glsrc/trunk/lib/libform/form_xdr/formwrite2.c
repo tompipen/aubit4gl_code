@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.21 2003-03-28 08:07:20 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.22 2003-04-07 16:26:38 mikeaubury Exp $
 #*/
 
 /**
@@ -887,10 +887,21 @@ struct_form *ptr;
 	{
 		int cnt=0;
 		int a;
+		int len;
 		debug("Asc...\n");
 		fxx=fopen(fname,"r");
+		fseek(fxx,0,SEEK_END);
+            	len=ftell(fxx);
+	        rewind(fxx);
+
+
 		fyy=fopen(fname2,"w");
 		fprintf(fyy,"char compiled_form_%s[]={\n",outputfilename);
+		fprintf (fyy, "0x%02x,\n", len&255); len/=256;
+		fprintf (fyy, "0x%02x,\n", len&255); len/=256;
+		fprintf (fyy, "0x%02x,\n", len&255); len/=256;
+		fprintf (fyy, "0x%02x,\n", len&255); len/=256;
+
 
 		while (!feof(fxx)) 
 		{

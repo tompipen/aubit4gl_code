@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.10 2003-04-02 11:36:09 mikeaubury Exp $
+# $Id: iarray.c,v 1.11 2003-04-07 16:26:50 mikeaubury Exp $
 #*/
 
 /**
@@ -1004,12 +1004,14 @@ debug("init_control_stack - malloc_data = %d\n",malloc_data);
 /*
  * memdup - Allocate a block of memory just like another block
 */
+/*
 void *memdup(void *ptr,int size) {
 	void *p2;
 	p2=malloc(size);
 	memcpy(p2,ptr,size);
 	return p2;
 }
+*/
 
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.29 2003-03-29 16:33:25 mikeaubury Exp $
+# $Id: builtin.c,v 1.30 2003-04-07 16:26:33 mikeaubury Exp $
 #
 */
 
@@ -672,6 +672,12 @@ A4GL_startlog (char *fname,int l,int n)
 }
 
 
+int has_errorlog() {
+	if (error_log_file) return 1;
+	return 0;
+}
+
+
 /**
  * The ERRORLOG( ) function copies its argument into the current error log file.
  */
@@ -682,7 +688,6 @@ A4GL_errorlog (char *fname,int l,int n)
 	char *date_str;
 	char *time_str;
 	int d;
-
 	s=char_pop();
 	debug("ERROR LOG - %s Line:%d %s\n",fname,l,s);
 

@@ -1,5 +1,3 @@
-
-#ifdef MOVED_TO_LIBAUBIT4GL
 /*
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
@@ -26,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.4 2003-04-07 16:24:50 mikeaubury Exp $
+# $Id: memfile.c,v 1.1 2003-04-07 16:26:37 mikeaubury Exp $
 #
 */
 
@@ -42,6 +40,7 @@
 		                    Includes
 =====================================================================
 */
+#include "a4gl_libaubit4gl_int.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -87,6 +86,42 @@ FILE *memfile_fopen(char *f,char *mode) {
 
         pos=0;
 	return in;
+}
+
+void *memdup(void *ptr,int size) {
+	        void *p2;
+	        p2=malloc(size);
+	        memcpy(p2,ptr,size);
+	        return p2;
+}
+
+
+FILE *memfile_fopen_buffer(char *ptr,int len) {
+        pos=0;
+	if (len==-1) {
+		int l;
+		int c1;
+		int c2;
+		int c3;
+		int c4;
+		c1=((unsigned char)ptr[0])&0xff;
+		c2=((unsigned char)ptr[1])&0xff;
+		c3=((unsigned char)ptr[2])&0xff;
+		c4=((unsigned char)ptr[3])&0xff;
+		debug("size=%d %d %d %d",c1,c2,c3,c4);
+		l=c4;
+		l=l*256+c3;
+		l=l*256+c2;
+		l=l*256+c1;
+		len=l;
+		ptr+=4;
+	}
+	debug("open_packer - length=%d",len);
+	buff_len=len;
+	buff=memdup(ptr,len);
+	dump_buffer(ptr,30);
+	in=buff;
+	return buff;
 }
 
 
@@ -155,7 +190,9 @@ int memfile_feof(FILE *f) {
 		debug("pos = %ld buff_len = %ld f=%x in=%x\n",pos,buff_len,f,in);
 		strncpy(buffer,&buff[pos],255);
 		buff[255]=0;
-		a4gl_yyerror("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
+		debug("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
+		printf("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
+		exit(2);
 		return feof(f);
 	} else {
 		//printf("pos = %d buff_len = %d f=%x in=%x\n",pos,buff_len,f,in);
@@ -165,12 +202,47 @@ int memfile_feof(FILE *f) {
 
 int memfile_fread(char *ptr,int s,int n,FILE *f) {
 	if (f!=in) {
+		debug("Reading from fread with a file...This is bad!!!");
 		return fread(ptr,s,n,f);
 	} else {
+		int a;
+		debug("Reading from buff start@:%d s=%d n=%d",pos,s,n);
 		memcpy(ptr,&buff[pos],s*n);
+		for (a=0;a<s*n;a++) {
+			debug("%02x: %c",
+					ptr[a]&0xff,
+					isprint(ptr[a]&0xff)?ptr[a]&0xff:'.'
+					);
+		}
+
+		debug("And from pos:");
+		for (a=0;a<s*n;a++) {
+			debug("%02x: %c",
+					buff[pos+a]&0xff,
+					isprint(buff[pos+a]&0xff)?buff[pos+a]&0xff:'.'
+					);
+		}
+
 		pos+=s*n;
-		return 0;
+		debug("Reading from buff pos now %d",pos);
+		return n;
 	}
 }
 
-#endif
+dump_buffer(char *s,int l) {
+	int a;
+	char buff[256];
+	char buffx[256];
+	strcpy(buff,"");
+	debug("Dump buffer");
+	for (a=0;a<l;a++) {
+		sprintf(buffx,"0x%02x,",s[a]&0xff);
+		strcat(buff,buffx);
+		if (strlen(buff)>=80) {
+			strcat(buff,":");
+			debug("%s",buff);
+			strcpy(buff,"");
+		}
+	}
+	debug("%s",buff);
+}

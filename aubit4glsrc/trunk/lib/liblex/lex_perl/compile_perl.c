@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.26 2003-02-25 04:15:37 afalout Exp $
+# $Id: compile_perl.c,v 1.27 2003-04-07 16:26:44 mikeaubury Exp $
 #
 */
 
@@ -1524,7 +1524,7 @@ print_returning (void)
  * @return
  */
 void
-print_form_is_compiled (char *s)
+print_form_is_compiled (char *s,char *packer,char *formtype)
 {
   printc ("add_compiled_form(\"%s\",compiled_form_%s);\n", s, s);
   printh ("extern char compiled_form_%s[];\n", s);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xdr.c,v 1.5 2003-01-21 11:33:20 mikeaubury Exp $
+# $Id: pack_xdr.c,v 1.6 2003-04-07 16:26:46 mikeaubury Exp $
 #*/
 
 /**
@@ -142,8 +142,10 @@ XDR xdrp;
    We can only write to the current directory - but we
    can open files from anywhere on the dbpath
   */
-	if (dir=='O')
+	if (dir=='O') {
 	  fxx = fopen(filename,"wb");
+	  set_last_outfile(filename);
+	}
 	else
 	  fxx = (FILE *) open_file_dbpath (filename);
 

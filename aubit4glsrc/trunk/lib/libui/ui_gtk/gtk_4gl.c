@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.10 2003-01-21 08:25:57 afalout Exp $
+# $Id: gtk_4gl.c,v 1.11 2003-04-07 16:26:51 mikeaubury Exp $
 #*/
 
 /**
@@ -98,7 +98,7 @@ cr_window (char *s, int iswindow, int form_line, int error_line,	/*  Ignored */
 	       int border,	/* Ignored */
 	       int comment_line,	/* Ignored */
 	       int message_line, int attrib) ;
-GtkFixed * read_form_gtk (char *fname);
+//GtkFixed * read_form_gtk (char *fname);
 void show_form (GtkWindow * mainfrm, GtkFixed * form);
 void cr_window_form (char *s,
 		    int iswindow,
@@ -486,8 +486,8 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
  * @param fname The file form name without frm extension.
  * @return The panel where the form is showed.
  */
-GtkFixed *
-read_form_gtk (char *fname)
+void *
+read_form_internal (char *fname,char *formname)
 {
   struct struct_form *the_form;
   //FILE *f;
@@ -724,8 +724,9 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
   debug ("x,y=%d,%d", x, y);
 
   debug ("Create window & form");
-  sprintf (buff, "%s%s", fname,acl_getenv ("A4GL_FRM_BASE_EXT"));
-  form = (GtkFixed *) read_form_gtk (buff);
+  //sprintf (buff, "%s%s", fname,acl_getenv ("A4GL_FRM_BASE_EXT"));
+  //
+  form = (GtkFixed *) read_form (fname,s);
   debug_last_field_created ("read form");
 
   gui_run_til_no_more ();
@@ -762,8 +763,8 @@ open_form (char *form_id)
   char buff[256];
   filename = char_pop ();
   trim(filename);
-  sprintf (buff, "%s%s", filename,acl_getenv ("A4GL_FRM_BASE_EXT"));
-  form = read_form_gtk (buff);
+  //sprintf (buff, "%s%s", filename,acl_getenv ("A4GL_FRM_BASE_EXT"));
+  form = read_form (filename,form_id);
   debug_last_field_created ("after reading form");
   debug ("Adding form code for %s", form_id);
   gtk_object_ref (GTK_OBJECT (form));
@@ -1110,7 +1111,7 @@ close_form (char *name)
 }
 
 /**
- * @todo : Confirm that this function is not used and remove it.
+ * @todo 
  */
 int
 /* open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c())) */
@@ -1136,7 +1137,7 @@ open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, v
     }
 
 
-  strcat (formname, acl_getenv ("A4GL_FRM_BASE_EXT"));
+  //strcat (formname, acl_getenv ("A4GL_FRM_BASE_EXT"));
 
   win = (GtkWindow *) gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (win), "");
@@ -1178,7 +1179,7 @@ open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, v
 		      GTK_SIGNAL_FUNC (handler_e), win);
   */
 
-  form = (GtkFixed *) read_form_gtk (formname);
+  form = (GtkFixed *) read_form (formname,"uhmmm");
   printf(">>>>      Setting currform...\n");
   debug(">>>>      Setting currform... for %p  to %p\n",fixed,form);
   if (form==0) {
