@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.39 2003-06-20 14:50:32 mikeaubury Exp $
+# $Id: ioform.c,v 1.40 2003-06-22 13:02:19 mikeaubury Exp $
 #*/
 
 /**
@@ -2341,6 +2341,7 @@ A4GL_set_init_pop_attr (FIELD * field, int attr)
 
   f->do_reverse = a;
   A4GL_debug ("done ");
+  free(ff);
 
 }
 

@@ -1234,7 +1234,7 @@ value_expression_complex_ss :
 	value_expression_initial_ss DIVIDE value_expression_ss
 		{$<sql_string>$=make_sql_string($<sql_string>1,"/",$<sql_string>3,0);}
 	| value_expression_initial_ss units_qual
-		{$<sql_string>$=make_sql_string($<sql_string>1,$<str>2,0);}
+		{$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2,0);}
 	| value_expression_initial_ss MULTIPLY value_expression_ss
 		{$<sql_string>$=make_sql_string($<sql_string>1,"*",$<sql_string>3,0);}
 	| value_expression_initial_ss PLUS value_expression_ss

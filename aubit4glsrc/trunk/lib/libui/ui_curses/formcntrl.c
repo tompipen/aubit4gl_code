@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.7 2003-06-20 15:25:48 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.8 2003-06-22 13:02:19 mikeaubury Exp $
 #*/
 
 /**
@@ -392,22 +392,33 @@ process_control_stack (struct s_screenio *sio)
 
   if (sio->fcntrl[a].op == FORMCONTROL_BEFORE_FIELD)
     {
-	struct struct_scr_field *fprop;
+      struct struct_scr_field *fprop;
+	int attr;
       ptr_movement = (struct s_movement *) sio->fcntrl[a].parameter;
       new_state = 0;
       sio->curr_attrib = ptr_movement->attrib_no;
       A4GL_debug ("Before field - fieldname=%p", sio->fcntrl[a].field_name);
       A4GL_debug ("Before field - fieldname=%s", sio->fcntrl[a].field_name);
-      A4GL_push_long ((long) sio->currentfield);
-      A4GL_push_char (sio->fcntrl[a].field_name);
+
+
+
       sio->currentfield = sio->field_list[sio->curr_attrib];
       set_current_field (sio->currform->form, sio->currentfield);
       pos_form_cursor (sio->currform->form);
       sio->currform->currentfield=sio->currentfield;
-	fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+      fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+      attr=A4GL_determine_attribute(FGL_CMD_INPUT,sio->attrib, fprop);
+      if (attr != 0) A4GL_set_field_attr_with_attr (sio->currentfield,attr, FGL_CMD_INPUT);
+      A4GL_set_init_value (sio->currentfield, sio->vars[sio->curr_attrib].ptr, sio->vars[sio->curr_attrib].dtype);
+
+
 	A4GL_debug("Adding comments...");
+
+
       A4GL_comments (fprop);
 
+      A4GL_push_long ((long) sio->currentfield);
+      A4GL_push_char (sio->fcntrl[a].field_name);
 	A4GL_debug("New current field set to %p",sio->currentfield);
 
       rval = -197;

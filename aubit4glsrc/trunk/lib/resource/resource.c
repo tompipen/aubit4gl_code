@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.41 2003-06-12 17:40:25 mikeaubury Exp $
+# $Id: resource.c,v 1.42 2003-06-22 13:02:19 mikeaubury Exp $
 #
 */
 
@@ -242,6 +242,32 @@ struct str_resource builtin_resource[] = {
   {"_MESSAGELINE", "-2"},
   {"_COMMENTLINE", "-2"},
 
+#ifndef WIN32
+  {"COLOR_TUI_BLACK","0"},
+  {"COLOR_TUI_RED","1"},
+  {"COLOR_TUI_GREEN","2"},
+  {"COLOR_TUI_YELLOW","3"},
+  {"COLOR_TUI_BLUE","4"},
+  {"COLOR_TUI_MAGENTA","5"},
+  {"COLOR_TUI_CYAN","6"},
+  {"COLOR_TUI_WHITE","7"},
+
+#else
+  {"COLOR_TUI_BLACK","0"},
+  {"COLOR_TUI_BLUE","1"},
+  {"COLOR_TUI_GREEN","2"},
+  {"COLOR_TUI_CYAN","3"},
+  {"COLOR_TUI_RED","4"},
+  {"COLOR_TUI_MAGENTA","5"},
+  {"COLOR_TUI_YELLOW","6"},
+  {"COLOR_TUI_WHITE","7"},
+#endif
+
+
+  {"COLOR_TUI_BKG_DEF","-1"},
+  {"COLOR_TUI_BKG","0"},
+  {"COLOR_TUI_FG_DEF","-1"},
+  {"COLOR_TUI_FG","7"},
 
   /* all platforms Compilation options */
   {"A4GL_LINK_LIBS", "-laubit4gl"},

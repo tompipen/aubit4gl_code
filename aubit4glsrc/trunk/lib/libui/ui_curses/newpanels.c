@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.49 2003-06-19 18:22:01 mikeaubury Exp $
+# $Id: newpanels.c,v 1.50 2003-06-22 13:02:19 mikeaubury Exp $
 #*/
 
 /**
@@ -1384,6 +1384,57 @@ A4GL_getch_swin (WINDOW * window_ptr)
  * @todo Describe function
  */
 int
+A4GL_real_getch_swin (WINDOW * window_ptr)
+{
+  int a;
+  if (A4GL_isgui ())
+    {
+      return A4GL_get_gui_char ();
+    }
+
+  A4GL_debug ("Reading from keyboard on window %p", window_ptr);
+  A4GL_set_abort (0);
+  a=A4GL_readkey();
+  if (a!=0) {
+                A4GL_debug("Read %d from keyfile",a);
+                return a;
+        }
+
+  while (1)
+    {
+      halfdelay (1);
+      if (window_ptr) a = wgetch (window_ptr);
+      else a = getch ();
+
+      if (a == KEY_MOUSE)
+        {
+          A4GL_debug ("Mouse event...");
+        }
+
+      if (abort_pressed)
+        {
+          A4GL_debug ("MJAC Aborted!");
+          a = KEY_CANCEL;
+          break;
+        }
+
+      if (a != -1)
+        {
+          A4GL_debug ("MJAC Key Pressed %d", a);
+          break;
+        }
+
+    }
+  cbreak ();
+  A4GL_debug ("Got char from keyboard : %d", a);
+  return a;
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+int
 A4GL_decode_line_scr (int l)
 {
 	A4GL_debug("decode_line_scr - l=%d",l);
@@ -2190,15 +2241,55 @@ int
 A4GL_init_colour_pairs (void)
 {
 int bkgcolor;
+int colors[8];
+int bkg_def;
+int bkg;
+int fg;
+int fg_def;
+int a;
+colors[0]=atoi(acl_getenv("COLOR_TUI_BLACK"));
+colors[1]=atoi(acl_getenv("COLOR_TUI_RED"));
+colors[2]=atoi(acl_getenv("COLOR_TUI_GREEN"));
+colors[3]=atoi(acl_getenv("COLOR_TUI_YELLOW"));
+colors[4]=atoi(acl_getenv("COLOR_TUI_BLUE"));
+colors[5]=atoi(acl_getenv("COLOR_TUI_MAGENTA"));
+colors[6]=atoi(acl_getenv("COLOR_TUI_CYAN"));
+colors[7]=atoi(acl_getenv("COLOR_TUI_WHITE"));
 
-if (have_default_colors) bkgcolor=-1;
-else {
-	bkgcolor=COLOR_BLACK;
+bkg_def=atoi(acl_getenv("COLOR_TUI_BKG_DEF"));
+bkg=atoi(acl_getenv("COLOR_TUI_BKG"));
+
+fg_def=atoi(acl_getenv("COLOR_TUI_FG_DEF"));
+fg=atoi(acl_getenv("COLOR_TUI_FG"));
+
+for (a=0;a<=7;a++) {
+	A4GL_debug("Colours : %d %d",a,colors[a]);
+}
+A4GL_debug("Background if we have defaults : %d",bkg_def);
+A4GL_debug("Background if we dont have defaults : %d",bkg);
+A4GL_debug("BLACK : %d %d",colors[0],COLOR_BLACK);
+A4GL_debug("YELLOW : %d %d",colors[3],COLOR_YELLOW);
+A4GL_debug("WHITE : %d %d",colors[7],COLOR_WHITE);
+
+
+if (have_default_colors) {
+	bkgcolor=bkg_def;
+	fg=fg_def;
+} else {
+	bkgcolor=bkg;
 }
 
+A4GL_debug("Colours - BKG=%d\n",bkgcolor);
+  init_pair (1, colors[0], bkgcolor);
+  init_pair (2, colors[1], bkgcolor);
+  init_pair (3, colors[2], bkgcolor);
+  init_pair (4, colors[3], bkgcolor);
+  init_pair (5, colors[4], bkgcolor);
+  init_pair (6, colors[5], bkgcolor);
+  init_pair (7, colors[6], bkgcolor);
+  init_pair (8, colors[7], bkgcolor);
 
-#ifndef WIN32
-  A4GL_debug ("Non WIN32 color scheme");
+#ifdef OLD
   init_pair (1, COLOR_BLACK, bkgcolor);
   init_pair (2, COLOR_RED, bkgcolor);
   init_pair (3, COLOR_GREEN, bkgcolor);
@@ -2207,10 +2298,10 @@ else {
   init_pair (6, COLOR_MAGENTA, bkgcolor);
   init_pair (7, COLOR_CYAN, bkgcolor);
   init_pair (8, COLOR_WHITE, bkgcolor);
+#endif
 
 
-#else
-
+/* Moved to a resource...
   A4GL_debug ("WIN32 color scheme");
   init_pair (1, COLOR_BLACK, COLOR_BLACK);
   init_pair (2, COLOR_BLUE, COLOR_BLACK);
@@ -2220,8 +2311,14 @@ else {
   init_pair (6, COLOR_MAGENTA, COLOR_BLACK);
   init_pair (7, COLOR_YELLOW, COLOR_BLACK);
   init_pair (8, COLOR_WHITE, COLOR_BLACK);
+*/
 
+A4GL_debug("Assume default colors : %d %d",bkgcolor,fg);
+#ifdef NCURSES_VERSION
+  assume_default_colors(fg,bkgcolor);
 #endif
+  //assume_default_colors(COLOR_WHITE,COLOR_BLACK);
+
   return 0;
 }
 

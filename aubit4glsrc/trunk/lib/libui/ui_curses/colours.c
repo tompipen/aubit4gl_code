@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.6 2003-06-18 19:21:07 mikeaubury Exp $
+# $Id: colours.c,v 1.7 2003-06-22 13:02:19 mikeaubury Exp $
 #*/
 
 /**
@@ -208,6 +208,17 @@ A4GL_decode_aubit_attr (int a, char s)
   return ca;
 }
 
-
+void A4GL_init_color(int n,int r,int g,int b) {
+#ifdef NCURSES_VERSION
+	if (can_change_color())   {
+		A4GL_debug("Changing Colour - %d %d %d %d",n,r,g,b);
+		init_color(n,r,g,b);
+	} else {
+		A4GL_debug("Cannot change colour %d %d %d %d - not supported by terminal",n,r,g,b);
+	}
+#else
+	A4GL_debug("Cannot change colour - not supported unless using ncurses");
+#endif
+}
 
 /* ========================= EOF ========================= */
