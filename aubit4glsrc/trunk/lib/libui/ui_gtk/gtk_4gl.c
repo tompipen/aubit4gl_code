@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: gtk_4gl.c,v 1.2 2002-07-11 09:22:44 mikeaubury Exp $
 #*/
 
 /**
@@ -495,11 +495,13 @@ GtkFixed *
 read_form_gtk (char *fname)
 {
   struct struct_form *the_form;
-  FILE *f;
-  XDR xdrp;
+  //FILE *f;
+  //XDR xdrp;
   int a;
   GtkWidget *rwindow;
   GtkWidget *fixed;
+
+  /*
 
   debug ("Opening file %s\n", fname);
   f = (FILE *) open_file_dbpath (fname);
@@ -510,13 +512,22 @@ read_form_gtk (char *fname)
       return 0;
     }
   debug ("Clearing memory...");
+  */
+
+
   the_form = malloc (sizeof (struct_form));
 
   memset (the_form, 0, sizeof (struct_form));
-  xdrstdio_create (&xdrp, f, XDR_DECODE);
 
-	a = xdr_struct_form (&xdrp, the_form);
-	/*
+  a=read_data_from_file("struct_form",the_form,fname);
+
+
+   //xdrstdio_create (&xdrp, f, XDR_DECODE);
+   //a = xdr_struct_form (&xdrp, the_form);
+
+
+
+   /*
 	this is just a workaround - it still keep libUI_GTK dependent on
     libFORM_XDR, and therefore Sun RPC XDR functions:
 	a=isolated_xdr_struct_form(&xdrp,the_form); //in lib/libform/form_xdr/formwrite2.c

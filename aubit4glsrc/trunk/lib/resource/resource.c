@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.11 2002-06-25 03:22:31 afalout Exp $
+# $Id: resource.c,v 1.12 2002-07-11 09:22:44 mikeaubury Exp $
 #
 */
 
@@ -106,8 +106,9 @@ struct str_resource builtin_resource[] =
   {"AUBITGUI",    "TUI"},
   {"ACL_MOUSE",   "N"},
   {"A4GL_SQLTYPE", "nosql"},
-  {"A4GL_FORMTYPE", "XDR"},
-  {"NOCURSES", "N"},            /* FIXME: NOCURSES is now AUBITGUI=CONSOLE */
+  {"A4GL_FORMTYPE", "GENERIC"},
+  {"A4GL_PACKER", "XML"},
+  {"CONSOLE", "N"},            /* FIXME: NOCURSES is now AUBITGUI=CONSOLE */
   {"GUIPORT", ""},
   {"A4GL_LEXTYPE","C"},
   {"DBDATE", "MDY4/"},

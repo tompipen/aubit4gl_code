@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.37 2002-06-26 06:11:44 afalout Exp $
+# $Id: sql.c,v 1.38 2002-07-11 09:22:44 mikeaubury Exp $
 #
 */
 
@@ -137,6 +137,12 @@
 #endif
 
 
+#ifndef TRUE
+#define TRUE 1
+#endif
+#ifndef FALSE 
+#define FALSE 0
+#endif
 /*
 =====================================================================
                     Constants definitions

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.17 2002-07-11 09:22:44 mikeaubury Exp $
+# $Id: readforms.c,v 1.1 2002-07-11 09:22:44 mikeaubury Exp $
 #*/
 
 /**
@@ -35,44 +35,41 @@
  * or to be externally seen
  * @todo Doxygen comments to add to functions
  */
- 
- /*
-=====================================================================
-		                    Includes
-=====================================================================
-*/
 
-/* We don't want the xgen .h file we want the
-   XDR/rpcgen one instead
-*/
-#define USE_XDR_H
+ /*
+    =====================================================================
+    Includes
+    =====================================================================
+  */
+
+
 
 #ifdef OLD_INCL
 
-	#include <signal.h>
-	#include <ctype.h>
-	#include <assert.h>
+#include <signal.h>
+#include <ctype.h>
+#include <assert.h>
 
-	#ifdef __CYGWIN__
-		#include <rpc/rpc.h>
-	#endif
+#ifdef __CYGWIN__
+#include <rpc/rpc.h>
+#endif
 
-	#include "a4gl_dbform.h"
-	#include "a4gl_constats.h"
-	#include "a4gl_dtypes.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_pointers.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_io.h"
-	#include "a4gl_runtime_tui.h"			/* push_char() */
-	#include "a4gl_debug.h"
+#include "a4gl_dbform.h"
+#include "a4gl_constats.h"
+#include "a4gl_dtypes.h"
+#include "a4gl_stack.h"
+#include "a4gl_pointers.h"
+#include "a4gl_aubit_lib.h"
+#include "a4gl_io.h"
+#include "a4gl_runtime_tui.h"	/* push_char() */
+#include "a4gl_debug.h"
 
 #else
 
-    #include "a4gl_lib_form_xdr_int.h"
-    #include "form_x.h"
+#include "a4gl_lib_form_xdr_int.h"
 
 #endif
+
 
 
 
@@ -107,7 +104,7 @@
 */
 
 #ifdef __CYGWIN__
-	extern int status;
+extern int status;
 #endif
 
 /*xdr_struct_form is not part of RPC_[NO]RPC
@@ -136,21 +133,28 @@ char dbname[64];
 */
 
 /** @todo Take this prototype definition for a header file */
-static void do_translate_form(struct_form *the_form);
+static void do_translate_form (struct_form * the_form);
 static void read_attributes (struct s_form_dets *f);
 static int include_range_check (char *ss, char *ptr, int dtype);
-static int real_has_bool_attribute (struct struct_scr_field *f, int bool);
+static int real_has_bool_attribute (struct struct_scr_field *f, int boolval);
 
 char *read_string_dup (FILE * ofile);
 char *string_width (char *a);
 int set_fields2 (int nv, struct BINDING *vars, int d, int n, ...);
 
-static void real_comments (struct struct_scr_field * fprop);
-static struct s_form_dets * real_read_form (char *fname, char *formname);
+static void real_comments (struct struct_scr_field *fprop);
+static struct s_form_dets *real_read_form (char *fname, char *formname);
 static void real_set_default_form (struct s_form_attr *form);
-static void real_dump_srec (struct s_form_dets * fd);
+static void real_dump_srec (struct s_form_dets *fd);
 
 
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+#ifndef FALSE
+#define FALSE 0
+#endif
 
 /*
 =====================================================================
@@ -198,106 +202,120 @@ ret_string (char *str)
  *
  */
 void *
-read_form (char* fname, char* formname)
+read_form (char *fname, char *formname)
 {
-	debug("via read_form in lib");
-	return real_read_form(fname, formname);
+  debug ("via read_form in lib");
+  return real_read_form (fname, formname);
 }
 
 static struct s_form_dets *
 real_read_form (char *fname, char *formname)
 {
-FILE *ofile = 0;
-int a;
-struct s_form_dets *formdets;
-char buff[80];
-char *ptr = 0;
-XDR xdrp;
-trim (fname);
-trim (formname);
+  FILE *ofile = 0;
+  int a;
+  struct s_form_dets *formdets;
+  char buff[80];
+  char *ptr = 0;
 
-	debug ("in read_form fname=%s formname=%s", fname, formname);
-	strcpy (buff, fname);
-	buff[strlen (buff) - 4] = 0;
+  //XDR xdrp;
 
-	if (has_pointer (buff, COMPILED_FORM))
+  trim (fname);
+  trim (formname);
+
+  debug ("in read_form fname=%s formname=%s", fname, formname);
+  strcpy (buff, fname);
+  buff[strlen (buff) - 4] = 0;
+
+#ifdef NOLONGERUSED
+  if (has_pointer (buff, COMPILED_FORM))
     {
-	  int chkint;		/* INT4 */
-		ptr = find_pointer (buff, COMPILED_FORM);
+      int chkint;		/* INT4 */
+      ptr = find_pointer (buff, COMPILED_FORM);
 
-		xdrmem_create (&xdrp, ptr, 128 * 1024, XDR_DECODE);
-		xdr_int (&xdrp, &chkint);
+      xdrmem_create (&xdrp, ptr, 128 * 1024, XDR_DECODE);
+      xdr_int (&xdrp, &chkint);
 
-		if (chkint != FCOMILE_XDR_MAGIC)
-		{
-			exitwith
-			("Couldnt open form - does not appear to be a valid form file");
-			return 0;
-		}
+      if (chkint != FCOMILE_XDR_MAGIC)
+	{
+	  exitwith
+	    ("Couldnt open form - does not appear to be a valid form file");
+	  return 0;
+	}
     }
-	else
+  else
     {
       int chkint;		/*  INT4 */
-		debug ("Opening file");
-		ofile = (FILE *) open_file_dbpath (fname);
+      debug ("Opening file");
+      ofile = (FILE *) open_file_dbpath (fname);
 
-		if (ofile == 0)
-		{
-			exitwith ("Couldnt open form");
-			return 0;
-        }
+      if (ofile == 0)
+	{
+	  exitwith ("Couldnt open form");
+	  return 0;
+	}
 
-		debug ("Checking magic header");
+      debug ("Checking magic header");
 
-		xdrstdio_create (&xdrp, ofile, XDR_DECODE);
-		xdr_int (&xdrp, &chkint);
+      xdrstdio_create (&xdrp, ofile, XDR_DECODE);
+      xdr_int (&xdrp, &chkint);
 
-		if (chkint != FCOMILE_XDR_MAGIC)
-        {
-			exitwith
-			("Couldnt open form - does not appear to be a valid form file");
-			return 0;
-        }
+      if (chkint != FCOMILE_XDR_MAGIC)
+	{
+	  exitwith
+	    ("Couldnt open form - does not appear to be a valid form file");
+	  return 0;
+	}
 
-		rewind (ofile);
+      rewind (ofile);
     }
 
+#endif
 
-	#ifdef DEBUG
-		{debug ("fname=%s formname=%s", fname, formname); }
-	#endif
+   
 
-	gui_startform (formname);
-	formdets =
+
+#ifdef DEBUG
+  {
+    debug ("fname=%s formname=%s", fname, formname);
+  }
+#endif
+
+  gui_startform (formname);
+  formdets =
     (struct s_form_dets *) acl_malloc (sizeof (struct s_form_dets),
 				       "Readform");
-	formdets->fileform =
-    	(struct_form *) acl_malloc (sizeof (struct_form), "Readform");
+  formdets->fileform =
+    (struct_form *) acl_malloc (sizeof (struct_form), "Readform");
 
-	memset (formdets->fileform, 0, sizeof (struct_form));
+  memset (formdets->fileform, 0, sizeof (struct_form));
 
 
-	if (ptr == 0)
+#ifdef NOLONGERUSED
+  if (ptr == 0)
     {
       debug ("Reading form from file");
       xdrstdio_create (&xdrp, ofile, XDR_DECODE);
     }
-	else
+  else
     {
       debug ("Reading form from memory");
       xdrmem_create (&xdrp, find_pointer (buff, COMPILED_FORM), 128 * 1024,
 		     XDR_DECODE);
     }
+#endif
 
-	a = xdr_struct_form (&xdrp, formdets->fileform);
+debug("Calling read_data_from_file with : struct_form,%p,%s",formdets->fileform,fname);
+  a=read_data_from_file("struct_form",formdets->fileform,fname);
 
-	if (!a)
+  //a = xdr_struct_form (&xdrp, formdets->fileform);
+
+  if (!a)
     {
       exitwith ("Unable to read form");
       return 0;
     }
 
-	if (formdets->fileform->fcompile_version != FCOMILE_XDR_VERSION)
+  if (formdets->fileform->fcompile_version != FCOMILE_XDR_VERSION)
     {
       debug ("Form version %d - my version %d",
 	     formdets->fileform->fcompile_version, FCOMILE_XDR_VERSION);
@@ -306,21 +324,21 @@ trim (formname);
     }
 
 
-	do_translate_form(formdets->fileform);
+  do_translate_form (formdets->fileform);
 
-	formdets->currentfield = 0;
-	debug("formdets=%p",formdets);
-	read_attributes (formdets);
-	debug("formdets=%p",formdets);
-	read_metrics (formdets);
-	debug("formdets=%p",formdets);
-	read_fields (formdets);
-	debug("formdets=%p",formdets);
-	debug ("Loaded form...");
-	gui_endform ();
-	debug ("Ended loading forms (%d, %d)", formdets->fileform->maxcol,
-										formdets->fileform->maxline);
-	return formdets;
+  formdets->currentfield = 0;
+  debug ("formdets=%p", formdets);
+  read_attributes (formdets);
+  debug ("formdets=%p", formdets);
+  read_metrics (formdets);
+  debug ("formdets=%p", formdets);
+  read_fields (formdets);
+  debug ("formdets=%p", formdets);
+  debug ("Loaded form...");
+  gui_endform ();
+  debug ("Ended loading forms (%d, %d)", formdets->fileform->maxcol,
+	 formdets->fileform->maxline);
+  return formdets;
 }
 
 
@@ -329,9 +347,9 @@ trim (formname);
  * Called from lib/libtui/newpanels.c so it should be in API_form
  */
 void
-set_default_form (void* form)
+set_default_form (void *form)
 {
-	real_set_default_form (form);
+  real_set_default_form (form);
 }
 
 static void
@@ -361,7 +379,7 @@ read_attributes (struct s_form_dets *f)
 	     f->fileform->attributes.attributes_val[a].colour);
       if (f->fileform->attributes.attributes_val[a].colour == -1)
 	f->fileform->attributes.attributes_val[a].colour = 7;
-      if (real_has_bool_attribute /* see a4gl_aubit_lib.h for declaration */
+      if (real_has_bool_attribute	/* see a4gl_aubit_lib.h for declaration */
 	  (&f->fileform->attributes.attributes_val[a], FA_B_REVERSE))
 	f->fileform->attributes.attributes_val[a].do_reverse = 1;
       else
@@ -376,13 +394,13 @@ read_attributes (struct s_form_dets *f)
  * Called from lib/libtui/ioform.c
  */
 void
-comments(void* fprop)
+comments (void *fprop)
 {
-	debug("via comments in lib");
-	real_comments(fprop);
+  debug ("via comments in lib");
+  real_comments (fprop);
 }
 static void
-real_comments (struct struct_scr_field * fprop)
+real_comments (struct struct_scr_field *fprop)
 {
   if (fprop)
     {
@@ -403,12 +421,12 @@ real_comments (struct struct_scr_field * fprop)
  *
  */
 void
-dump_srec (void * fd)
+dump_srec (void *fd)
 {
-	real_dump_srec(fd);
+  real_dump_srec (fd);
 }
 static void
-real_dump_srec (struct s_form_dets * fd)
+real_dump_srec (struct s_form_dets *fd)
 {
   int a;
   int b;
@@ -417,17 +435,17 @@ real_dump_srec (struct s_form_dets * fd)
 
   debug ("fd=%p srecs_cnt=%ld", fd, fd->fileform->records.records_len);
   for (a = 0; a < fd->fileform->records.records_len; a++)
-	{
-		debug ("Screen record : %s [%d] (%d)\n",
-		fd->fileform->records.records_val[a].name,
-	    fd->fileform->records.records_val[a].dim,
-	    fd->fileform->records.records_val[a].attribs.attribs_len);
+    {
+      debug ("Screen record : %s [%d] (%d)\n",
+	     fd->fileform->records.records_val[a].name,
+	     fd->fileform->records.records_val[a].dim,
+	     fd->fileform->records.records_val[a].attribs.attribs_len);
       for (b = 0;
 	   b < fd->fileform->records.records_val[a].attribs.attribs_len; b++)
-		{
-		  debug ("                    %d\n",
+	{
+	  debug ("                    %d\n",
 		 fd->fileform->records.records_val[a].attribs.attribs_val[b]);
-		}
+	}
     }
 }
 
@@ -453,15 +471,15 @@ get_srec (char *name)
       return (struct struct_screen_record *) 0;
     }
 
-  debug("fileform=%p name=%p(%s)",form->fileform,name,name);
+  debug ("fileform=%p name=%p(%s)", form->fileform, name, name);
 
   a = find_srec (form->fileform, name);
   debug ("Got %d", a);
   if (a == -1)
     return (struct struct_screen_record *) 0;
   else
-    return (struct struct_screen_record *) &form->fileform->records.
-      records_val[a];
+    return (struct struct_screen_record *) &form->fileform->
+      records.records_val[a];
 }
 
 /**
@@ -618,20 +636,20 @@ strip_quotes (char *s)
  *
  */
 int
-has_bool_attribute (void* f, int bool)
+has_bool_attribute (void *f, int boolval)
 {
-	debug("via has_bool_attribute in lib");
-	real_has_bool_attribute(f,bool);
+  debug ("via has_bool_attribute in lib");
+  real_has_bool_attribute (f, boolval);
 }
 static int
-real_has_bool_attribute (struct struct_scr_field *f, int bool)
+real_has_bool_attribute (struct struct_scr_field *f, int boolval)
 {
   int a;
-  debug ("Checking %p for %d\n", f, bool);
+  debug ("Checking %p for %d\n", f, boolval);
   for (a = 0; a < f->bool_attribs.bool_attribs_len; a++)
     {
-      debug ("%d %d %d\n", bool, a, f->bool_attribs.bool_attribs_len);
-      if (f->bool_attribs.bool_attribs_val[a] == bool)
+      debug ("%d %d %d\n", boolval, a, f->bool_attribs.bool_attribs_len);
+      if (f->bool_attribs.bool_attribs_val[a] == boolval)
 	return 1;
     }
   debug ("Nope");
@@ -643,13 +661,13 @@ real_has_bool_attribute (struct struct_scr_field *f, int bool)
  */
 /*
 static int
-set_bool_attribute (struct struct_scr_field * f, int bool, int value)
+set_bool_attribute (struct struct_scr_field * f, int boolval, int value)
 {
   int a;
 
   for (a = 0; a < f->bool_attribs.bool_attribs_len; a++)
     {
-      if (f->bool_attribs.bool_attribs_val[a] == bool)
+      if (f->bool_attribs.bool_attribs_val[a] == boolval)
 	return 1;
     }
 
@@ -661,38 +679,49 @@ set_bool_attribute (struct struct_scr_field * f, int bool, int value)
  *
  */
 static void
-do_translate_form(struct_form *the_form)
+do_translate_form (struct_form * the_form)
 {
-int a;
-int b;
-char *ptr;
+  int a;
+  int b;
+  char *ptr;
 
-	for (a=0;a<the_form->metrics.metrics_len;a++)
+  for (a = 0; a < the_form->metrics.metrics_len; a++)
     {
-    	if (strncmp(the_form->metrics.metrics_val[a].label,"get_translated_id:",18)==0)
-		{
-			ptr=&the_form->metrics.metrics_val[a].label[18];
-			ptr=(char *)get_translated_id(ptr);
-			the_form->metrics.metrics_val[a].label=ptr;
-		}
-	}
-
-    for (b=0;b< the_form->attributes.attributes_len;b++)
+      if (strncmp
+	  (the_form->metrics.metrics_val[a].label, "get_translated_id:",
+	   18) == 0)
 	{
-    	for (a=0;a<the_form->attributes.attributes_val[b].str_attribs.str_attribs_len;a++)
-		{
-        	if (the_form->attributes.attributes_val[b].str_attribs.str_attribs_val[a].type==FA_S_COMMENTS)
-			{
-    	    	if (strncmp(the_form->attributes.attributes_val[b].str_attribs.str_attribs_val[a].value, "get_translated_id:",18)==0)
-				{
-            	    ptr=&the_form->attributes.attributes_val[b].str_attribs.str_attribs_val[a].value[18];
-					ptr=(char *)get_translated_id(ptr);
-	       	        if (ptr)
-		                the_form->attributes.attributes_val[b].str_attribs.str_attribs_val[a].value=ptr;
-				}
-			}
-		}
+	  ptr = &the_form->metrics.metrics_val[a].label[18];
+	  ptr = (char *) get_translated_id (ptr);
+	  the_form->metrics.metrics_val[a].label = ptr;
 	}
+    }
+
+  for (b = 0; b < the_form->attributes.attributes_len; b++)
+    {
+      for (a = 0;
+	   a <
+	   the_form->attributes.attributes_val[b].str_attribs.str_attribs_len;
+	   a++)
+	{
+	  if (the_form->attributes.attributes_val[b].str_attribs.
+	      str_attribs_val[a].type == FA_S_COMMENTS)
+	    {
+	      if (strncmp
+		  (the_form->attributes.attributes_val[b].str_attribs.
+		   str_attribs_val[a].value, "get_translated_id:", 18) == 0)
+		{
+		  ptr =
+		    &the_form->attributes.attributes_val[b].str_attribs.
+		    str_attribs_val[a].value[18];
+		  ptr = (char *) get_translated_id (ptr);
+		  if (ptr)
+		    the_form->attributes.attributes_val[b].str_attribs.
+		      str_attribs_val[a].value = ptr;
+		}
+	    }
+	}
+    }
 }
 
 
@@ -855,4 +884,3 @@ has_str_attribute (struct struct_scr_field * f, int str)
 
 
 /* ============================ EOF ============================== */
-

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.13 2002-06-26 06:11:43 afalout Exp $
+# $Id: formwrite2.c,v 1.14 2002-07-11 09:22:44 mikeaubury Exp $
 #*/
 
 /**
@@ -41,8 +41,13 @@
 */
 
 
-#ifdef OLD_INCL
 
+/* We don't want the xgen .h file we want the
+   XDR/rpcgen one instead
+*/
+#define USE_XDR_H
+
+#ifdef OLD_INCL
 	#include <stdio.h>
 	#include <ctype.h>
 	#include <string.h>
@@ -63,9 +68,9 @@
 #else
 
     #include "a4gl_lib_form_xdr_int.h"
+    #include "form_x.h"
 
 #endif
-
 
 
 /*
