@@ -23,17 +23,17 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.23 2002-01-26 13:40:44 afalout Exp $
+# $Id: configure.in,v 1.24 2002-01-27 07:00:36 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
-
+#This script is used to configure BOTH source code and binary distributions
 
 ## ==================================================================
 ##                             Initialise
 ## ==================================================================
 
-
+#We need autoconf at least version 2.50
 AC_PREREQ(2.50)
 
 #Need to be here too, to be used in AC_INIT call:
@@ -65,14 +65,17 @@ else
     echo "Configuring binary distribution"
 fi
 
+#FIXME: what is this?
+#This directive is expanded in initialisation part, and putting it in
+#"if" have no effect:
+#AC_CONFIG_SRCDIR([compilers/4glc/4glc.c])
+#so we need to specify file which is in both source code and
+#binary distributions:
+AC_CONFIG_SRCDIR([bin/4glpc])
+
 
 if test "$AUBIT_SOURCE" = "1" ; then
-	#FIXME: what is this?
-	#This directive is expanded in initialisation part, and putting it in
-    #"if" have no effect:
-	#AC_CONFIG_SRCDIR([compilers/4glc/4glc.c])
-    AC_CONFIG_SRCDIR([bin/4glpc])
-	#Location of llobal header to receive "#define xxxxx y" replacements:
+	#Location of global header to receive "#define xxxxx y" replacements:
 	AC_CONFIG_HEADER([incl/config.h])
 fi
 
@@ -139,6 +142,8 @@ AC_SUBST(RPCLIB_LFLAGS)
 AC_SUBST(USE_PDF)
 AC_SUBST(PDFBUILD)
 AC_SUBST(A4GL_PDFTYPE)
+AC_SUBST(PDFLIB_I_FLAGS)
+AC_SUBST(PDFLIB_L_FLAGS)
 
 #other
 AC_SUBST(JABBERBUILD)
@@ -146,7 +151,7 @@ AC_SUBST(PERL)
 AC_SUBST(PERLBUILD)
 AC_SUBST(LDCONFIG)
 AC_SUBST(target)
-
+AC_SUBST(ADD_LD_LIBRATY_PATH)
 
 ## ==================================================================
 ##                             Defaults
@@ -195,7 +200,7 @@ case $host in
 		cygwin=1
 		;;
     *)
-        AC_MSG_WARN(You are using not tested platform)
+        AC_MSG_WARN(You are using untested platform)
 		echo "Please report success or failure to compile Aubit on this platform to the mailing list. Thank you."
         ;;
 esac
@@ -252,7 +257,12 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	    fi
 	    AC_MSG_RESULT($1.$2 (ok))
 	fi
+
 	AC_PROG_LEX
+	if test "$LEX" = "no"; then
+		AC_MSG_ERROR(Sorry, current Aubit source distribution will not work without Lex.)
+    fi
+
 	AC_PATH_PROG(DOXYGEN, doxygen, no)
 	AC_PATH_PROG(CVS_CLIENT, cvs, no)
 
@@ -271,42 +281,57 @@ AC_PATH_PROG(LDD, ldd, no)
 AC_PATH_PROG(LDCONFIG, ldconfig, no)
 AC_PATH_PROG(AUTOCONF, autoconf, no)
 AC_PATH_PROG(ACLOCAL, aclocal, no)
-AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
-AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
-
-#AC_PATH_PROG(PROG_SENDMAIL, sendmail, /usr/lib/sendmail, $PATH /usr/bin /usr/sbin /usr/etc /etc /usr/ucblib)
-#if test -n "$PROG_SENDMAIL"; then
-#  AC_DEFINE(HAVE_SENDMAIL)
-#fi
+AC_PATH_PROG(PROG_SENDMAIL, sendmail, /usr/lib/sendmail, $PATH /usr/bin /usr/sbin /usr/etc /etc /usr/ucblib)
+if test -n "$PROG_SENDMAIL"; then
+  AC_DEFINE(HAVE_SENDMAIL)
+fi
 
 
 ## ==================================================================
 ##                 Checks for other 4gl compiles
 ## ==================================================================
 
-#classic Informix 4gl P-coode
-
 #classic Informix 4gl C-code
+#FIXME: names?
 
-AC_PATH_PROG(I4GL_PCOMPILER, fglpc, no)
-AC_PATH_PROG(I4GL_PRUNTIME, fglgo, no)
-
-#4Js BDL / Informix D4GL
-
+AC_MSG_CHECKING(4Js BDL / Informix D4GL)
 AC_PATH_PROG(FJS_PCOMPILER, fglcomp, no)
 AC_PATH_PROG(FJS_PRUNTIME, fglrun, no)
 
+AC_MSG_CHECKING(Querix compiler)
+#4gl code compiler have same name as Plexus  = fglc so we look
+#for Form Compiler
+AC_PATH_PROG(QUERIX_COMP, fmpc, no)
 
-#Querix
 
-#Plexus - only on WIN32
+if test "$cygwin" = "1" ; then
+	AC_MSG_CHECKING(Plexus XDP AD32 - FGLC Compiler)
+	#same name as Querix:
+	#AC_PATH_PROG(PLEXUS_COMP, fglc, no)
+	AC_PATH_PROG(PLEXUS_COMP, mkesq, no)
+else
+	AC_MSG_CHECKING(Classic Informix 4gl P-coode)
+	AC_PATH_PROG(I4GL_PCOMPILER, fglpc, no)
+	AC_PATH_PROG(I4GL_PRUNTIME, fglgo, no)
+fi
 
 ## ==================================================================
 ##                 Checks for web server CGI support
 ## ==================================================================
 
+#see if we can enable Aubit CGI/HTMLlib compile, DoxyGen web
+#install, FGLDOC web server support
 
+AC_MSG_CHECKING(Web server support)
+AC_PATH_PROG(APACHECTL, apachectl, no)
+AC_PATH_PROG(HTTPD, httpd, no)
+
+#If we have web server:
+
+	#DO we have JSP needed for FGLDOC?
+
+    #Where is CGI directory?
 
 
 
@@ -316,6 +341,11 @@ AC_PATH_PROG(FJS_PRUNTIME, fglrun, no)
 ## ==================================================================
 ##                 Checks for Informix ESQL/C support
 ## ==================================================================
+
+#force this check even if not specified on command line:
+if test "$with_informix" = ""; then
+	with_informix=yes
+fi
 
 AC_MSG_CHECKING(for Informix ESQL/C support)
 
@@ -346,6 +376,14 @@ WARNING: You specified Informix base install directory that is different
 	 exactly what you are doing."
 				fi
     		fi
+
+			if test "$withval" != "yes"; then
+				WARN_LD_LIBRARY_PATH=1
+	            ADD_LD_LIBRATY_PATH="$withval/lib:$withval/lib/esql:$ADD_LD_LIBRATY_PATH"
+            else
+				WARN_LD_LIBRARY_PATH=1
+	            ADD_LD_LIBRATY_PATH="$INFORMIXDIR/lib:$INFORMIXDIR/lib/esql:$ADD_LD_LIBRATY_PATH"
+			fi
 
 			#First check if we haev esql installed at all:
 			AC_PATH_PROG(IFMX_ESQLC, esql, no)
@@ -506,8 +544,13 @@ fi
 
 
 ## ==================================================================
-##                 Checks for PostgreSQL support
+##                 Checks for PostgreSQL lib support
 ## ==================================================================
+
+#force this check even if not specified on command line:
+if test "$with_pgsql" = ""; then
+	with_pgsql=yes
+fi
 
 AC_MSG_CHECKING(for PostgresSQL support)
 AC_ARG_WITH(pgsql,
@@ -518,6 +561,9 @@ AC_ARG_WITH(pgsql,
   if test "$withval" != "no"; then
     if test "$withval" = "yes"; then
 		withval=/usr/local
+    else
+		WARN_LD_LIBRARY_PATH=1
+        ADD_LD_LIBRATY_PATH="$withval:$ADD_LD_LIBRATY_PATH"
     fi
 
     PGSQL_INCDIR=$withval/include
@@ -541,12 +587,23 @@ AC_ARG_WITH(pgsql,
     CFLAGS="$CFLAGS $PGSQL_INCLUDE"
     LDFLAGS="$LDFLAGS $PGSQL_LFLAGS"
     LIBS="$LIBS $PGSQL_LIBS"
-    AC_DEFINE(HAVE_PGSQL)
-    AC_MSG_RESULT(yes)
-    AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
-    CFLAGS=$old_CFLAGS; LDFLAGS=$old_LDFLAGS; LIBS=$old_LIBS
+
+	# FIXME: Replace `main' with a function in `-lc':
+	AC_CHECK_LIB([pq], [main])
+
+	if test "$ac_cv_lib_pq_main" = "yes"; then
+		AC_DEFINE(HAVE_PGSQL)
+        HAVE_PGSQL_LIB=yes
+	    #AC_MSG_RESULT(yes)
+	    AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
+    else
+        HAVE_PGSQL_LIB=no
+		#AC_MSG_RESULT(no)
+    fi
+
+	CFLAGS=$old_CFLAGS; LDFLAGS=$old_LDFLAGS; LIBS=$old_LIBS
   else
-    AC_MSG_RESULT(no)
+    AC_MSG_RESULT(disabled)
   fi
 ],[
   AC_MSG_RESULT(--with-pgsql not specified)
@@ -638,17 +695,18 @@ else
 	if test "$ac_cv_lib_ifcli_main" = "yes"; then
 		HAVE_IFXODBC=yes
 
-		INFORMIXODBC_WARNING="
-		Warning:
-		 ODBC library directory ($INFORMIXDIR/lib/cli) must be in your LD_LIBRARY_PATH
-		   environment variable value.
-		   LD_LIBRARY_PATH=$INFORMIXDIR/lib/cli:$INFORMIXDIR/lib/esql:$LD_LIBRARY_PATH
-		   export LD_LIBRARY_PATH
-		Configuration files used by Informix ODBC driver:
-		$INFORMIXDIR/etc/odbc.ini
-		$INFORMIXDIR/etc/odbcinst.ini
-		$INFORMIXDIR/etc/setup.odbc
-	    "
+		WARN_LD_LIBRARY_PATH=1
+        ADD_LD_LIBRATY_PATH="$INFORMIXDIR/lib/cli:$ADD_LD_LIBRATY_PATH"
+
+
+#		INFORMIXODBC_WARNING="
+#-------------------------------WARNING---------------------------------
+#To use Informix ODBC driver, ODBC library directory
+#($INFORMIXDIR/lib/cli) must be in your LD_LIBRARY_PATH environment
+#variable value. Configuration files used by Informix ODBC driver
+#(all in $INFORMIXDIR/etc/): odbc.ini odbcinst.ini setup.odbc
+#
+#	    "
 	else
 
 
@@ -729,6 +787,7 @@ AC_ARG_WITH(iodbc,
 	    	withval=/usr/local
 		else
 			WARN_LD_LIBRARY_PATH=1
+            ADD_LD_LIBRATY_PATH="$withval/lib:$ADD_LD_LIBRATY_PATH"
 		fi
 
 		old_LIBS=$LIBS
@@ -741,7 +800,6 @@ AC_ARG_WITH(iodbc,
 		LDFLAGS=$old_LDFLAGS
 
 		if test $ac_cv_lib_iodbc_main = yes; then
-			A4GL_SQLTYPE=iodbc
 			ODBC_LIB_NAME=iodbc
 			HAVE_IODBC=yes
 
@@ -788,6 +846,7 @@ AC_ARG_WITH(unixodbc,
     	withval=/usr/local
 	else
 		WARN_LD_LIBRARY_PATH=1
+        ADD_LD_LIBRATY_PATH="$withval:$ADD_LD_LIBRATY_PATH"
     fi
 
 	if test "$withval" != "no"; then
@@ -802,9 +861,6 @@ AC_ARG_WITH(unixodbc,
 		LDFLAGS=$old_LDFLAGS
 
 		if test $ac_cv_lib_odbc_main = yes; then
-			#if more then one ODBC support was detected, this one will
-            #ovverride A4GL_SQLTYPE set earlier in this script:
-			A4GL_SQLTYPE=unixodbc
 			ODBC_LIB_NAME=odbc
 			HAVE_UNIXODBC=yes
 		    UNIXODBC_INCLUDE=-I$withval/include
@@ -851,7 +907,14 @@ AC_ARG_WITH(esoob,
   #PHP_WITH_SHARED
   if test "$withval" = "yes"; then
     withval=/usr/local/easysoft/oob/client
+	WARN_LD_LIBRARY_PATH=1
+	ADD_LD_LIBRATY_PATH="$withval:$ADD_LD_LIBRATY_PATH"
+  else
+	WARN_LD_LIBRARY_PATH=1
+    ADD_LD_LIBRATY_PATH="$withval:$ADD_LD_LIBRATY_PATH"
   fi
+
+
   if test "$withval" != "no"; then
     ODBC_INCDIR=$withval/include
     ODBC_LIBDIR=$withval/lib
@@ -892,6 +955,9 @@ AC_ARG_WITH(custom-odbc,
 [
   if test "$withval" = "yes"; then
     withval=/usr/local
+  else
+	WARN_LD_LIBRARY_PATH=1
+    ADD_LD_LIBRATY_PATH="$withval:$ADD_LD_LIBRATY_PATH"
   fi
   if test "$withval" != "no"; then
     ODBC_INCDIR=$withval/include
@@ -916,6 +982,10 @@ fi
 ##                  Check for GTK+ GUI support
 ## ==================================================================
 
+AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
+AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+
+
 #force this check even if not specified on command line:
 if test "$with_gtk" = ""; then
 		with_gtk=yes
@@ -930,8 +1000,8 @@ AC_ARG_WITH(gtk,
 	    	withval=/usr/local
 		else
 			WARN_LD_LIBRARY_PATH=1
+		    ADD_LD_LIBRATY_PATH="$withval:$ADD_LD_LIBRATY_PATH"
 		fi
-
 
         #If pkg-config was not found, but --with-gtk path was specified,
         #try this, it will work on some CygWin GTK ports
@@ -1064,25 +1134,106 @@ AC_ARG_WITH(gtk,
 ##                  Check for Jabber IM support
 ## ==================================================================
 
-# FIXME: Replace `main' with a function in `-liksemel':
-AC_CHECK_LIB([iksemel], [main])
+AC_MSG_CHECKING(for Jabber support)
 
-if test $ac_cv_lib_iksemel_main = yes; then
-		JABBERBUILD=yes
+#force this check even if not specified on command line:
+if test "$with_iksemel" = ""; then
+	with_iksemel=yes
 fi
+
+AC_ARG_WITH(iksemel,
+[  --with-iksemel[=DIR]   Include Jabber/iksemel support.  DIR is the iksemel
+                          install directory, defaults to /usr/local.],
+[
+	#PHP_WITH_SHARED
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+	    	withval=/usr/local
+		else
+			WARN_LD_LIBRARY_PATH=1
+            ADD_LD_LIBRATY_PATH="$withval/lib:$ADD_LD_LIBRATY_PATH"
+		fi
+
+		old_LIBS=$LIBS
+		old_LDFLAGS=$LDFLAGS
+		TEST_IKSEMEL_FLAGS="-I$withval/include -L$withval/lib"
+		LDFLAGS="$LDFLAGS $TEST_IKSEMEL_FLAGS"
+		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
+		# FIXME: Replace `main' with a function in `-liksemel':
+		AC_CHECK_LIB([iksemel], [main])
+		LIBS=$old_LIBS
+		LDFLAGS=$old_LDFLAGS
+
+		if test $ac_cv_lib_iksemel_main = yes; then
+			JABBERBUILD=yes
+		    AC_DEFINE(HAVE_IKSEMEL,1,[ ])
+		    #AC_MSG_RESULT(yes)
+		else
+		    AC_DEFINE(HAVE_IKSEMEL,0,[ ])
+		    #AC_MSG_RESULT(no)
+		fi
+	else
+		AC_MSG_RESULT(disabled)
+	fi
+],[
+	AC_MSG_RESULT(--with-iksemel not specified)
+])
 
 ## ==================================================================
 ##                  Check for PDF support
 ## ==================================================================
 
-# FIXME: Replace `main' with a function in `-lpdf':
-AC_CHECK_LIB([pdf], [main])
+AC_MSG_CHECKING(for PDF support)
 
-if test $ac_cv_lib_pdf_main = yes; then
-		A4GL_PDFTYPE=PDF
-		USE_PDF=yes
-        PDFBUILD=yes
+#force this check even if not specified on command line:
+if test "$with_pdf" = ""; then
+	with_pdf=yes
 fi
+
+AC_ARG_WITH(pdf,
+[  --with-pdf[=DIR]       Include PDF support.  DIR is the pdflibl
+                          install directory, defaults to /usr/local.],
+[
+	#PHP_WITH_SHARED
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+	    	withval=/usr/local
+		else
+			WARN_LD_LIBRARY_PATH=1
+            ADD_LD_LIBRATY_PATH="$withval/lib:$ADD_LD_LIBRATY_PATH"
+		fi
+
+		old_LIBS=$LIBS
+		old_LDFLAGS=$LDFLAGS
+		TEST_PDFLIB_I_FLAGS="-I$withval/include"
+		TEST_PDFLIB_L_FLAGS="-L$withval/lib"
+		TEST_PDFLIB_FLAGS="$TEST_PDFLIB_I_FLAGS $TEST_PDFLIB_L_FLAGS"
+		LDFLAGS="$LDFLAGS $TEST_PDFLIB_FLAGS"
+		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
+		# FIXME: Replace `main' with a function in `-lpdf':
+		AC_CHECK_LIB([pdf], [main])
+		LIBS=$old_LIBS
+		LDFLAGS=$old_LDFLAGS
+
+		if test $ac_cv_lib_pdf_main = yes; then
+			A4GL_PDFTYPE=PDF
+			USE_PDF=yes
+    	    PDFBUILD=yes
+			PDFLIB_I_FLAGS="$TEST_PDFLIB_I_FLAGS"
+			PDFLIB_L_FLAGS="$TEST_PDFLIB_L_FLAGS"
+		    AC_DEFINE(HAVE_PDF,1,[ ])
+		    #AC_MSG_RESULT(yes)
+		else
+		    AC_DEFINE(HAVE_PDF,0,[ ])
+		    #AC_MSG_RESULT(no)
+		fi
+	else
+		AC_MSG_RESULT(disabled)
+	fi
+],[
+	AC_MSG_RESULT(--with-pdf not specified)
+])
+
 
 ## ==================================================================
 ##                  Check for RPC lib support
@@ -1148,6 +1299,7 @@ AC_ARG_WITH(rpc,
 	    	withval=/usr/local
 		else
 			WARN_LD_LIBRARY_PATH=1
+		    ADD_LD_LIBRATY_PATH="$withval:$ADD_LD_LIBRATY_PATH"
 	    fi
 
 		old_LIBS=$LIBS
@@ -1209,7 +1361,39 @@ fi
 ## ==================================================================
 
 
+#if more then one ODBC support was detected, this one will
+#ovverride A4GL_SQLTYPE set earlier in this script:
+#Options: static nosql iodbc unixodbc esql ifxodbc pgodbc odbc32
 
+if test "$default_odbc" != ""; then
+	#User can force SQL driver default with --default-odbc=xxxx switch
+	A4GL_SQLTYPE="$default_odbc"
+else
+    ############# native ####################
+	if test "$HAVE_PGSQL_LIB" = "yes" ; then
+		A4GL_SQLTYPE=pgsql
+    fi
+	if test "$IFMX_ESQLC" != "no" ; then
+		A4GL_SQLTYPE=esql
+	fi
+	############# ODBC drivers ##############
+	if test "$HAVE_PGODBC" = "yes" ; then
+		A4GL_SQLTYPE=pgodbc
+	fi
+	if test "$HAVE_IFXODBC" = "yes" ; then
+		A4GL_SQLTYPE=ifxodbc
+	fi
+	############# ODBC managers #############
+	if test "$HAVE_IODBC" = "yes" ; then
+		A4GL_SQLTYPE=iodbc
+	fi
+	if test "$HAVE_UNIXODBC" = "yes" ; then
+		A4GL_SQLTYPE=unixodbc
+	fi
+	if test "$cygwin" = "1"; then
+		A4GL_SQLTYPE=odbc32
+	fi
+fi
 
 ## ==================================================================
 ##         Checks for libraries expected in standard locations
@@ -1386,14 +1570,18 @@ fi
 
 if test "$WARN_LD_LIBRARY_PATH" != ""; then
     echo ""
-	echo "-------------------------------WARNING---------------------------------"
-    echo "You have specified one or more --with-xxxx=<path> switches to"
-    echo "'configure' script, specifiying package installed in non-standard <path>."
-	echo "In most cases, you will have to add this path to your PATH and/or"
-    echo "LD_LIBRARY_PATH in your run-time environment, for Aubit compilers and"
-    echo "compiler programs to be able to find nedded prgrams and/or libraries"
+	echo "-------------------------------WARNING-----------------------------------"
+    echo "You have specified one or more --with-xxxx=<path> switches to 'configure'"
+    echo "script, specifiying package installed in non-standard <path> In most"
+	echo "cases, you will have to add this path to your PATH and/or LD_LIBRARY_PATH"
+    echo "and/or ld.so.conf in your run-time environment, for Aubit compilers and"
+    echo "compiler programs to be able to find nedded programs and/or libraries"
     echo "that belong to this way specified package in non-standard place."
+    echo "We will try to do this automatically for you:"
     echo ""
+
+    make ldconfig
+
 fi
 
 echo ""

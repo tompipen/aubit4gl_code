@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.3 2002-01-26 13:40:46 afalout Exp $
+# $Id: Makefile-install.mki,v 1.4 2002-01-27 07:00:39 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -37,18 +37,25 @@ install.aubitrc:
 #	@echo REPLACEWITH = ${REPLACEWITH}
 ifneq "${INFILE}" ""
 	sed -e "/${STARTWITH}/s/${STARTWITH}/${REPLACEWITH}/" ${INFILE} > /tmp/aubitrc.tmp
-else
-	cp etc/aubitrc /tmp/aubitrc.tmp
-endif
+#else
+#	cp ${INFILE} /tmp/aubitrc.tmp
+#endif
 ifeq "${AUBITRCFILEEXISTS}" ""
 	${MKPATH} ${AUBITETC}
 	mv /tmp/aubitrc.tmp ${AUBITETC}/aubitrc
 	chmod a+r ${AUBITETC}/aubitrc
 	@echo "Configuration files installed to ${AUBITETC}/aubitrc"
 else
-	@echo "WARNING: Configuration file aubitrc exists in ${AUBITETC}/aubitrc - WILL NOT OVERWRITE"
+	@echo " "
+	@echo "WARNING: Configuration file aubitrc exists in ${AUBITETC}/aubitrc"
+	@echo "====================== WILL NOT OVERWRITE ======================"
+	@echo "use 'make install.aubitrc aubitrc=new' if you want to do that "
+	@echo "Automatically created aubitrc placed in /tmp/aubitrc.tmp"
+	@echo " "
 endif
-
+else
+	@echo "ERROR: cannot find etc/aubitrc - please run 'configure' "
+endif
 
 install.links:
 #This links bin programs to location of Aubit bynary installation:
@@ -75,6 +82,9 @@ ifeq "${GTKBUILD}" "yes"
 	${LN_S} $(INSTALL_DIR)/lib/libgtk4gl.so ${LIB_INSTALL_LINK}/libgtk4gl.so
 	${LN_S} $(INSTALL_DIR)/lib/libgtk4gl_x.so ${LIB_INSTALL_LINK}/libgtk4gl_x.so
 endif
+ifeq "${PDFBUILD}" "yes"
+	${LN_S} $(INSTALL_DIR)/lib/libPDF_PDF.so ${LIB_INSTALL_LINK}/libPDF_PDF.so
+endif
 	${LN_S} $(INSTALL_DIR)/lib/libPDF_NOPDF.so ${LIB_INSTALL_LINK}/libPDF_NOPDF.so
 	${LN_S} $(INSTALL_DIR)/lib/libaclshared.so ${LIB_INSTALL_LINK}/libaclshared.so
 
@@ -84,6 +94,7 @@ deinstall.libs.links:
 	${RM} ${LIB_INSTALL_LINK}/libgtk4gl.so
 	${RM} ${LIB_INSTALL_LINK}/libgtk4gl_x.so
 	${RM} ${LIB_INSTALL_LINK}/libPDF_NOPDF.so
+	${RM} ${LIB_INSTALL_LINK}/libPDF_PDF.so
 	${RM} ${LIB_INSTALL_LINK}/libaclshared.so
 
 deinstall.bin.links:
@@ -113,7 +124,8 @@ deinstall.all: deinstall.libs.links deinstall.bin.links
 		$(INSTALL_DIR)/lib/libgtk4gl_x.so $(INSTALL_DIR)/lib/libaclallgui.a  \
 		$(INSTALL_DIR)/lib/libgtk4gl_x.a  $(INSTALL_DIR)/lib/libSQL_unixodbc.so \
         $(INSTALL_DIR)/lib/libSQL_iodbc.so $(INSTALL_DIR)/lib/libSQL_esql.so  \
-		$(INSTALL_DIR)/lib/libSQL_ifxodbc.so  $(INSTALL_DIR)/lib/libSQL_pgodbc.so
+		$(INSTALL_DIR)/lib/libSQL_ifxodbc.so  $(INSTALL_DIR)/lib/libSQL_pgodbc.so \
+        $(INSTALL_DIR)/lib/libPDF_PDF.so
 
 
 #examples:
@@ -158,6 +170,27 @@ test:
 	${MAKE} ${MKNAME} -C tools/test test.build PDFBUILD=${PDFBUILD}
 	@echo in Makefile: LD_LIBRARY_PATH = ${LD_LIBRARY_PATH}
 	@export NOCURSES=Yes; export AUBITGUI=TUI; tools/test/test_build
+
+
+ldconfig:
+ifneq "@LDCONFIG@" "no"
+	@echo "Adding to ${LD_SO_CONF} :"
+	@echo " "
+	@for apath in ${ADD_LD_LIBRATY_PATH_SPACE}; do X=`grep $$apath ${LD_SO_CONF}`; if test "$$X" = ""; then echo $$apath ; echo $$apath >> ${LD_SO_CONF}; fi; done;
+	@echo " "
+	ldconfig
+	@echo "Refreshed ldconfig cache."
+else
+	@echo ' ' >> ${HOME}/.bashrc
+	@echo '#Added automatically by Aubit 4gl compiler confgure: ' >> ${HOME}/.bashrc
+	@echo 'export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:${ADD_LD_LIBRATY_PATH}' >> ${HOME}/.bashrc
+	@echo "Added to your ${HOME}/.bashrc script LD_LIBRARY_PATH definition:"
+	@echo "${ADD_LD_LIBRATY_PATH}"
+	@echo "Please source this file, by typing:"
+	@echo "    . ${HOME}/.bashrc"
+	@echo "BEFORE you attempt to compile Aubit source code, or run Aubit programs."
+	@echo ""
+endif
 
 
 #</block for binary install Makefile ===================================>

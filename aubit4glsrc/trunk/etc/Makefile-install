@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install,v 1.3 2002-01-26 13:40:46 afalout Exp $
+# $Id: Makefile-install,v 1.4 2002-01-27 07:00:39 afalout Exp $
 #
 
 #This file gets installed to root of binary installation, under name "Makefile"
@@ -34,9 +34,9 @@
 #All stuff common to more then one Aubit compiler make file is there:
 include incl/Makefile-common
 
-install: config install.links install.aubitrc install.libs.links remove.aubitrc \
+install: config install.links install.aubitrc install.libs.links \
 		test
-
+#remove.aubitrc \
 #install.libs.conf
 	@echo Aubit compiler binary disrtibution installed.
 
@@ -47,8 +47,9 @@ include incl/Makefile-install.mki
 
 #we have to remove aubitrc created by configure, so it don't override
 #the one installed in /etc/opt/aubit4gl/aubitrc.
-remove.aubitrc:
-	mv etc/aubitrc etc/aubitrc.original
+#we don't have to do this any more, since it's now named aubitrc-bin
+#remove.aubitrc:
+#	mv etc/aubitrc-bin etc/aubitrc-bin.original
 
 tar: clean
 #COMPILE_DATE=20-01-2002
@@ -72,20 +73,23 @@ deinstall: deinstall.libs.links deinstall.bin.links
 	@echo "preserve all files created after installation."
 
 help:
-	@echo "This is Aubit binary installation mkae file"
+	@echo ""
+	@echo "This is Aubit 4gl compiler binary installation make file"
 	@echo "execute 'make' to install Aubit compiler on your system."
-	@echo "You can specify flags to 'configure' using, for example: "
-	@echo "    make CPARAM=--with-iodbc[=<path>]"
+	@echo ""
 	@echo "Options:"
 	@echo ""
-	@echo "install - install binary distribuiton on your system (same as just 'make')"
-	@echo "clean - clean Aubit binary distribution installation tree"
-	@echo "tar - create tar archive of Aubit binary distribution installation tree"
-	@echo "zip - create zip archive of Aubit binary distribution installation tree"
-	@echo "config - scan the system for installed options, create aubitrc configuration file"
-	@echo "         (same as typing 'configure --with-bin')"
-	@echo "deinstall - remove all links/files outside Aubit installation tree"
+	@echo "install   install binary distribuiton on your system (same as just 'make')"
+	@echo "clean     clean Aubit binary distribution installation tree"
+	@echo "tar       create tar archive of Aubit binary distribution installation tree"
+	@echo "zip       create zip archive of Aubit binary distribution installation tree"
+	@echo "config    scan the system for installed options, create aubitrc configuration"
+	@echo "          file (same as typing 'configure --with-bin')"
+	@echo "          You can specify flags to 'configure' using, for example: "
+	@echo "          make CPARAM=--with-iodbc[=<path>]"
+	@echo "deinstall remove all links/files outside Aubit installation tree"
 	@echo ""
 	@echo "    Thank you for using Aubit 4gl compiler."
+	@echo ""
 
 #--------------------------- EOF ------------------------------

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.11 2002-01-26 02:27:07 afalout Exp $
+# $Id: Makefile-common.in,v 1.12 2002-01-27 07:00:39 afalout Exp $
 #
 
 
@@ -344,9 +344,13 @@ INSTALL_DIR=${PREFIX}/aubit4gl
 #Set AUBITDIR in aubitrc settings:
 	TOREPLACE=^AUBITDIR
 
-	#we don't have etc/aubitrc in binary distro:
-	#INFILE=${AUBITDIR}/etc/aubitrc
-	INFILE:=$(shell ls ${AUBITDIR}/etc/aubitrc ${NOERR})
+	ifeq "${AUBIT_BIN_INSTALL}" "1"
+		INFILE:=$(shell ls ${AUBITDIR}/etc/aubitrc-bin ${NOERR})
+    else
+		INFILE:=$(shell ls ${AUBITDIR}/etc/aubitrc ${NOERR})
+    endif
+
+
 	ifneq "${INFILE}" ""
 		OLDVALUE:=$(shell grep "${TOREPLACE}" ${INFILE} | awk '{print $1}' | sed -e "s/\//\\\\\//g")
 		NEWVALUE:=$(shell echo "AUBITDIR=$(INSTALL_DIR)" | sed -e "s/\//\\\\\//g")
@@ -354,13 +358,40 @@ INSTALL_DIR=${PREFIX}/aubit4gl
 		REPLACEWITH=${NEWVALUE}
     endif
 
-	AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
+    #command line parameter to make : "make aubitrc=new"
+    #this will force ${AUBITETC}/aubitrc to be overwriten with new one
+	ifneq "${aubitrc}" "new"
+		AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
+    endif
 
 ifneq "@LDCONFIG@" "no"
 	LD_SO_CONF=/etc/ld.so.conf
 	GREP_LD_SO_CONF:=$(shell grep ${INSTALL_DIR}/lib ${LD_SO_CONF})
 	GREP_LD_SO_CONF_REMOVE:=$(shell echo "${GREP_LD_SO_CONF}" | sed -e "s/\//\\\\\//g")
 endif
+
+#All paths to libraries, that configure script detected outside standard
+#library paths. We can use them when compiling, we can use them even in
+#4glpc, but when user try to run compiled program, they will unlimately
+#fail unless this paths are in LD_LIBRARY_PATH, or in Lunix, optionally in
+#/etc/ld.so.conf (don't forget ro run "ldconfig" is you change ld.so.conf
+#file manually!)
+#We have 2 choices to make user's life easier:
+#1) On linux only, we can stuff them in ld.so.conf, and re-run ldconfig.
+#   this will be done with "make ldconfig". This will work immediately,
+#   but it depenfd on user's rights to write to this file, and works only
+#   on Linux.
+#   NOTE: ld.so.conf apparently only applies to dynamic loader - but NOT
+#   compiler linker ?
+#
+#2) On non-Linux systems, we can try to stuff them in /etc/profile, (depending
+#	on user's rights) or $HOME/.bashrc (? $HOME/.profile), and source this
+#	file as ".$HOME/.bashrc". This should also work immediately.
+#
+ADD_LD_LIBRATY_PATH=@ADD_LD_LIBRATY_PATH@
+#ADD_LD_LIBRATY_PATH_SPACE=${ADD_LD_LIBRATY_PATH::/=--}
+#ADD_LD_LIBRATY_PATH_SPACE:=$(shell echo ${ADD_LD_LIBRATY_PATH} | sed -e "s%:% %g")
+ADD_LD_LIBRATY_PATH_SPACE:=$(shell echo ${ADD_LD_LIBRATY_PATH} |  sed -e "s/:/ /g")
 
 #</options needed also for binary disrto makefile========================>
 

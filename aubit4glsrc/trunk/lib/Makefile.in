@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.20 2002-01-26 04:18:02 afalout Exp $
+# $Id: Makefile.in,v 1.21 2002-01-27 07:00:39 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -106,11 +106,11 @@ endif
 
 override	CFLAGS			+=-I../compilers/fcompile #-I../compilers/mcompile
 
-ifeq "$(PDFBUILD)" "yes"
-	4GLPCFLAGS		+=-lpdf
-else
-	4GLPCFLAGS		+=-nopdf
-endif
+#ifeq "$(PDFBUILD)" "yes"
+#	4GLPCFLAGS		+=-lpdf
+#else
+#	4GLPCFLAGS		+=-nopdf
+#endif
 
 COMMONSRC= \
 	array.c bogus.c builtin.c builtin_d.c conv.c colours.c curslib.c \
@@ -285,8 +285,8 @@ gui_gtk.o: gui.c
 	${CC} -c $(CFLAGS) -DUSE_GTK gui.c -o gui_gtk.o
 
 loadmap:
-	-${SH} ${4GLPC} ${4GLPCFLAGS} loadmap.4gl -o loadmap
-	-cp loadmap${EXE} ../bin
+	${SH} ${4GLPC} ${4GLPCFLAGS} -nopdf loadmap.4gl -o loadmap
+	cp loadmap${EXE} ../bin
 
 
 generated/tmperrs.h : ${TMPERRSSRC}
