@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.9 2004-07-20 15:21:15 mikeaubury Exp $
+# $Id: sql.c,v 1.10 2004-07-20 15:40:41 mikeaubury Exp $
 #
 */
 
@@ -282,11 +282,12 @@ struct s_sid* A4GLSQL_prepare_sql (char *s)
       s = A4GL_apisql_strdup (s);
       A4GL_convert_sql (source_dialect, curr_sess->dbms_dialect, s);
     }
-  return (struct s_sid *) A4GLSQL_prepare_sql_internal (s);
+  return (struct s_sid *) A4GLSQL_prepare_select (0,0,0,0,s);
 }
 
 
 
+#ifdef NO_LONGER_USED
 /**
  * Used from load.c
  *
@@ -300,6 +301,7 @@ A4GLSQL_execute_sql_from_ptr (char *pname, int ni, char **ibind)
 {
   return A4GLSQL_execute_sql_from_ptr_internal (pname, ni, *ibind);
 }
+#endif
 
 
 
