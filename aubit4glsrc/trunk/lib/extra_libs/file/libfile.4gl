@@ -60,21 +60,6 @@ endcode
 	RETURN r
 END FUNCTION
 
-####################################
-FUNCTION rewind(handle)
-####################################
-DEFINE handle INTEGER
-DEFINE r INTEGER
-	
-	IF handle=0 THEN
-		LET status=-101
-		RETURN 0
-	END IF
-code
-	rewind(handle);
-endcode
-
-END FUNCTION
 
 ####################################
 FUNCTION ftell(handle)
@@ -219,6 +204,23 @@ code
 endcode
 	
 	RETURN r
+
+END FUNCTION
+
+####################################
+FUNCTION rewind(handle)
+####################################
+DEFINE handle INTEGER
+DEFINE r INTEGER
+	
+	IF handle=0 THEN
+		LET status=-101
+		RETURN 0
+	END IF
+
+code
+	rewind(handle);
+endcode
 
 END FUNCTION
 
