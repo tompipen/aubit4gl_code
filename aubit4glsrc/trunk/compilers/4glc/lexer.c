@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.40 2003-01-19 23:49:57 psterry Exp $
+# $Id: lexer.c,v 1.41 2003-01-28 18:02:47 psterry Exp $
 #*/
 
 /**
@@ -917,7 +917,8 @@ yylex (void *pyylval, int yystate)
    * need to be checked. If the current parser state is expecting an
    * identifier but not this keyword, then assume it's an identifier
    */
-  if ( a >= 1000 && isident(buff) &&
+  if ( a >= 1000 && isident(buff) && a != KW_TRUE &&
+       a != KW_FALSE && a != KW_NULL &&
        (strcmp(acl_getenv("RESERVEWORDS"),"NO")==0) )
   {
     r = wants_kw_token(yystate,a);
@@ -1029,3 +1030,4 @@ get_idents(int a)
 
 
 /* ================================== EOF ========================= */
+
