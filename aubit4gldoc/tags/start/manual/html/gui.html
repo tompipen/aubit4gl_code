@@ -1,0 +1,708 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>To compile a 4gl program with gui support</title>
+<base target="_self">
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h1 align="center"><a name="Top of Page - Aubit 4gl Graphical User Interface (GUI)">Aubit
+4gl Graphical User Interface (GUI)</a>
+</h1>
+
+<hr>
+<p>In this chapter:</p>
+<ul>
+  <li><a href="#Compiling and running Aubit 4gl program in GUI mode">Compiling
+    and running Aubit 4gl program in GUI mode</a></li>
+  <li><a href="#GUI Menus">GUI Menus</a></li>
+  <li><a href="#GUI form files">GUI form files</a></li>
+  <li><a href="#GUI interface development status, progress and issues">GUI
+    interface development status, progress and issues</a></li>
+</ul>
+
+<p><a href="#Top of Page - Aubit 4gl Graphical User Interface (GUI)">Back to top</a>
+</p>
+
+<hr>
+
+<h3><a name="Compiling and running Aubit 4gl program in GUI mode">Compiling and
+running Aubit 4gl program in GUI mode</a>
+</h3>
+
+<p>To compile a 4gl program with GTK+ GUI support :
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; 4glpc -gtk filename.4gl -o filename
+</p>
+
+<p>(note: -gtk switch is now default for 4glpc)
+</p>
+
+<p>
+This will generate a CUI/GUI switchable version.
+To use the GUI you must set the A4GLGUI environment variable:
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; AUBITGUI=gtk<br>
+&nbsp;&nbsp;&nbsp; export AUBITGUI
+</p>
+
+<p>
+All options for AUBITGUI are: text, curses, gtk, gui (not case sensitive)
+</p>
+
+<p>
+You can then run it as normal (make sure you have the DISPLAY environment
+variable pointing to your X server).
+</p>
+
+<p><i><u>
+Notes:</u></i>
+</p>
+
+<p>
+1) You must recompile any forms (these have changed!) The new forms will work
+for GUI and CUI modes whether you have compiled the 4gl with -gtk or not.
+</p>
+
+<p>
+2) Make sure that there is no form_x.h in lib/libincl (the makefile should
+remove this anyway)
+</p>
+
+<p>
+3) Make sure that you're using the new libraries (ie if you've copied any to /usr/lib, /usr/local/lib  etc. that these are updated).
+</p>
+
+<p><i><u>
+Longer term :</u></i>
+</p>
+
+<p>
+We'll need to add to assist.4gl to add in lots of useful functions - I've made
+a start - should be a few good examples to copy.
+</p>
+
+<p>
+Client/Server mode - I've started to split the display bits from the rest of
+the library (look at lib/gui.c). This is used to do the redirecting from CUI to
+GUI modes. It should be possible to add to this to extend GUIs to non-GTK or
+remote displays.
+</p>
+
+<p>
+VERY IMPORTANT : I've not tested lots of things and this is a very first draft.
+Lots of things are not implemented yet - eg. attributes (colors, upshifts,
+formats etc) on input/display statements. I will ***need*** help to do all of
+these.
+</p>
+
+<p>The way it works at the minute is really bad (uses #define to force a call to
+the GUI function instead of the CUI function.)
+</p>
+
+<p>Eventually - I'd like to do a libtui (text mode), and get the calls routed via
+a variable (ui_mode). In that way you would compile the code in the same way (ie no -gtk), but have a command line/environment variable used to specify the
+runtime mode (Text or Graphical).
+</p>
+
+<p>You might also want to set the environment variable 'NOCURSES' before running :
+</p>
+
+<blockquote>
+
+<p>NOCURSES=<br>
+export NOCURSES<br>
+./file
+</p>
+
+</blockquote>
+
+<p>This will enable some of the output to be printed (There is some debugging stuff, GTK error messages and the output of "DISPLAY", and printf (if you use the embedded C code))
+without turning on curses. (This isn't 100% effective yet.)
+</p>
+
+<p>There are still a lot of things to work out (don't try CLEAR FORM/fieldname ... for
+example).&nbsp;
+</p>
+
+<p>&nbsp;
+</p>
+
+<p><a href="#Top of Page - Aubit 4gl Graphical User Interface (GUI)">Back to top</a>
+</p>
+
+<hr>
+<h3><a name="GUI Menus">GUI Menus</a></h3>
+<p>FIXME: add menu syntax to &quot;A4GL enhancements to standard 4gl &quot;</p>
+<p>There are two ways to use menus in GUI mode. The first is the traditional 4GL menu command in 4GL :</p>
+<blockquote>
+  <p>MENU  ...<br>
+  &nbsp;&nbsp;&nbsp; COMMAND ...<br>
+  &nbsp;&nbsp;&nbsp; COMMAND ...<br>
+  END MENU</p>
+</blockquote>
+<p>This should work as before - but does not look very GUI. There is no support for drop down menus for example.</p>
+<p>A GUI specific alternative is to use menu files.</p>
+<p>Menu files have a couple of benefits :</p>
+<ol>
+  <li>They are the only way to get GUI looking drop down menus</li>
+  <li>You can distribute different files, eg. in different languages (Only a very small benefit!)</li>
+</ol>
+<p>Menu are loaded from this file using the 'SHOW MENU' 4GL command.</p>
+<p>eg.&nbsp;</p>
+<p>&nbsp;&nbsp;&nbsp; SHOW MENU my_menu USING my_menuhandler</p>
+<p>You should then have a MENUHANDLER function to deal with clicks on menu items:</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>MENUHANDLER my_menuhandler
+        <p>DEFINE somevariables...</p>
+        <p>BEFORE SHOW MENU</p>
+        <p>&nbsp;&nbsp;&nbsp;	ENABLE MENUITEM mn_1 # You can use MENUITEM or MENUITEMS here<br>
+        &nbsp;&nbsp;&nbsp;	ENABLE MENUITEMS mn_2,mn_3<br>
+        &nbsp;&nbsp;&nbsp;	DISABLE MENUITEM mn_1,mn_3<br>
+        &nbsp;&nbsp;&nbsp;	DISABLE MENUITEMS mn_1</p>
+        <p>ON mn_2</p>
+        <p>&nbsp;&nbsp;&nbsp;	DISPLAY "Hello World"</p>
+        <p>ON mn_3</p>
+        <p>&nbsp;&nbsp;&nbsp;	EXIT PROGRAM</p>
+        <p>END MENUHANDLER</td>
+    </tr>
+  </table>
+</div>
+<p>By default menus are loaded from a file called "menu.mnu", you can specify an
+alternate filename by using  a FROM clause :</p>
+<p>	eg.&nbsp;</p>
+<p>&nbsp;&nbsp;&nbsp; SHOW MENU my_menu USING my_menuhandler FROM "myfile"</p>
+<p>The .mnu will be automatically appended.</p>
+<p><i><u>Menu File Format</u></i></p>
+<p>Source menu files have the extension '.menu', which will be compiled to '.mnu' by the mcompile command.</p>
+<p>FIXME: add to &quot;using compilers&quot;</p>
+<p>&nbsp;&nbsp;&nbsp; $ mcompile filename</p>
+<p>If no extension is specified .menu is assumed.</p>
+<p>mcompile can also compile the menu file into C code which can be included in the
+application directly (this means you don't need to distrubute the .mnu file) using the -c option.</p>
+<p>&nbsp;&nbsp;&nbsp; $ mcompile -c filename</p>
+<p>This will generated a .c which can be linked into the application.</p>
+<p>&nbsp;&nbsp;&nbsp; $ mcompile -c mymenu</p>
+<p>		will compile mymenu.menu into mymenu.c</p>
+<p>&nbsp;&nbsp;&nbsp; $ mcompile mymenu</p>
+<p>		will compile mymenu.menu into mymenu.mnu</p>
+<p><i><u>.menu files</u></i></p>
+<p>A menu file contains one or more MENUs. Each menu has an associated ID :</p>
+<blockquote>
+  <p>MENU file<br>
+	....<br>
+  END MENU</p>
+</blockquote>
+<p>Within the menu you can place OPTIONs, these are specified as follows :</p>
+<p>&nbsp;&nbsp;&nbsp; OPTION id     "Caption"</p>
+<p>You can also specify an image for an option in addition to the caption :</p>
+<p>&nbsp;&nbsp;&nbsp; OPTION id  Image="filename"   "Caption"</p>
+<p>Note : At present all images must be in .xpm format</p>
+<p>Although not fully implemented yet, you can also specify attributes for an option. Currently the only option allowed is 'RIGHT' [not implemented] which will right align the menu item (Often used for Help), although there may be
+others later...</p>
+<p>&nbsp;&nbsp;&nbsp; OPTION id     "Caption" ATTRIBUTES(RIGHT)</p>
+<p><i><u>Simple example of GUI menu ussage:</u></i></p>
+<p>A Typical file menu may look like this:</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>MENU file
+        <blockquote>
+          <p>OPTION mn_new Image=&quot;New.xpm&quot; &quot;New&quot;<br>
+          OPTION mn_open Image=&quot;Open.xpm&quot; &quot;Open&quot;<br>
+          OPTION mn_save &quot;Save&quot;<br>
+          OPTION mn_saveas &quot;Save As&quot;<br>
+          OPTION mn_exit &quot;Exit&quot;</p>
+        </blockquote>
+        <p>END MENU</td>
+    </tr>
+  </table>
+</div>
+<p>The above example will probably not appear as you'd imagine, the menu is displayed across the screen, what you'd normally have is a File menu, with the options listed as a drop down menu.</p>
+<p>This is done using SUBMENUs. These have the same parameters as options :</p>
+<p>Eg.</p>
+<p>&nbsp;&nbsp;&nbsp; SUBMENU mn_file "_File" Image="file.xpm" .. ATTRIBUTE(RIGHT)</p>
+<p>Options to submenus are listed between the SUBMENU and an END SUBMENU :</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>		SUBMENU mn_zoom "Zoom"
+        <blockquote>
+          <p>			OPTION mn_in "In"<br>
+			OPTION mn_out "In"<br>
+			OPTION mn_fit "To Fit"</p>
+        </blockquote>
+        <p>		END SUBMENU</td>
+    </tr>
+  </table>
+</div>
+<p>Additionally, because these may be reused, you can specify the ID of the SUBMENU:</p>
+<p>&nbsp;&nbsp;&nbsp; SUBMENU mn_file "_File" USE file</p>
+<p>In which case the compiler will substitute the options associated with a MENU
+with the specified ID.</p>
+<p>Eg.</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>MENU file
+        <blockquote>
+          <p>                OPTION mn_new    "New"<br>
+                OPTION mn_open   "Open"<br>
+                OPTION mn_save   "Save"<br>
+                OPTION mn_saveas "Save As"<br>
+                OPTION mn_exit   "Exit"</p>
+        </blockquote>
+        <p>END MENU</p>
+        <p>MENU mymenu</p>
+        <p>&nbsp;&nbsp;&nbsp;	SUBMENU mn_file "_File" USE file</p>
+        <p>END MENU</td>
+    </tr>
+  </table>
+</div>
+<p>Is the same as :</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>MENU mymenu
+        <blockquote>
+          <p>	SUBMENU mn_file "_File"</p>
+          <blockquote>
+            <p>                OPTION mn_new    "New"<br>
+                OPTION mn_open   "Open"<br>
+                OPTION mn_save   "Save"<br>
+                OPTION mn_saveas "Save As"<br>
+                OPTION mn_exit   "Exit"</p>
+          </blockquote>
+          <p>	END SUBMENU</p>
+        </blockquote>
+        <p>END MENU</td>
+    </tr>
+  </table>
+</div>
+<p>You can also nest SUBMENUs</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>	SUBMENU mn_edit "_Edit"
+        <blockquote>
+          <p>		OPTION mn_cut  IMAGE="m1.xpm"  "Cut"<br>
+		OPTION mn_copy Image="Copy.xpm" "Copy"<br>
+		OPTION mn_paste "Pastxxxxxxxxxxxxxxxxxxxxxxxxe"</p>
+          <p>		SUBMENU mn_zoom "Zoom"</p>
+          <blockquote>
+            <p>			OPTION mn_in "In"<br>
+			OPTION mn_out "In"<br>
+			OPTION mn_fit "To Fit"</p>
+          </blockquote>
+          <p>		END SUBMENU</p>
+        </blockquote>
+        <p>	END SUBMENU</td>
+    </tr>
+  </table>
+</div>
+<p>Again - these can be either direct (as in the above example) or SUBMENU .. USE.</p>
+<p>A complete example :</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>MENU file
+        <blockquote>
+          <p>		OPTION mn_new    "New"<br>
+		OPTION mn_open   "Open"<br>
+		OPTION mn_save   "Save"<br>
+		OPTION mn_saveas "Save As"<br>
+		OPTION mn_exit   "Exit"</p>
+        </blockquote>
+        <p>END MENU</p>
+        <p>MENU mymenu</p>
+        <blockquote>
+          <p>	SUBMENU mn_file "_File" USE file</p>
+          <blockquote>
+            <p>	SUBMENU mn_edit "_Edit"</p>
+            <blockquote>
+              <p>		OPTION mn_cut  IMAGE="m1.xpm"  "Cut"<br>
+		OPTION mn_copy Image="Copy.xpm" "Copy"<br>
+		OPTION mn_paste "Pastxxxxxxxxxxxxxxxxxxxxxxxxe"</p>
+              <blockquote>
+                <p>SUBMENU mn_zoom &quot;Zoom&quot;</p>
+                <blockquote>
+                  <p>OPTION mn_in &quot;In&quot;<br>
+                  OPTION mn_out &quot;In&quot;<br>
+                  OPTION mn_fit &quot;To Fit&quot;</p>
+                </blockquote>
+                <p>END SUBMENU</p>
+              </blockquote>
+            </blockquote>
+            <p>	END SUBMENU</p>
+            <p>	SUBMENU mn_useful "Useful Stuff"</p>
+            <blockquote>
+              <p>		OPTION mn_form "Open Window &amp; Form"<br>
+		OPTION mn_sform "Open small Window &amp; Form"<br>
+		OPTION mn_screen "Open Form on Screen"<br>
+		OPTION mn_lots "Open lots of windows"<br>
+		OPTION mn_loop "Loop windows"<br>
+		OPTION mn_closewin "Close windows"</p>
+            </blockquote>
+            <p>	END SUBMENU</p>
+          </blockquote>
+          <p>	OPTION mn_help "Help" ATTRIBUTES(RIGHT)</p>
+        </blockquote>
+        <p>END MENU</td>
+    </tr>
+  </table>
+</div>
+<p>In this example - your program could 'SHOW MENU' mymenu or file.</p>
+<p><i><u>Handling menu options</u></i></p>
+<p>In code, options can be enabled or disabled using	ENABLE MENUITEM id or	DISABLE MENUITEM id</p>
+<p>Note :</p>
+<p>You can't use the 'SHOW OPTION "caption"' AND 'HIDE OPTION "caption"' ! These are for the traditional menu command.</p>
+<p>&nbsp;</p>
+
+<p><a href="#Top of Page - Aubit 4gl Graphical User Interface (GUI)">Back to top</a>
+</p>
+
+<hr>
+
+<h3><a name="GUI form files">GUI form files</a>
+</h3>
+
+<p>New version of fcompile with minor changes to the original which can eventually be used for the text mode as well. It generates a slightly different output format which is currently incompatible with the old fcompile.
+</p>
+
+<p>This includes extensions (which are present in the current fcompile in CVS) as well as a new one 'SCREEN TITLE'.
+</p>
+
+<p><i><u>Extensions</u></i>
+</p>
+
+<p>SCREEN TITLE
+</p>
+
+<p>fcompile can compile multiple screen sections into a single .per. Where more than one screen section is specified, the GTK GUI places each screen on a separate tab window (GtkNotebook). These will be
+labeled 'Screen n'. You can specify an alternate title with this extension :
+</p>
+
+<p>multi.per:
+</p>
+
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>
+
+<p>database formonly
+</p>
+
+<p>screen title "Address" size 15 by 60<br>
+{<br>
+..<br>
+}
+</p>
+
+<p>screen title "Contact" size 15 by 60<br>
+{<br>
+..<br>
+}
+</p>
+
+<p>screen title "Jobs" size 15 by 60<br>
+{<br>
+..<br>
+}
+</p>
+
+      </td>
+    </tr>
+  </table>
+</div>
+
+<p>WIDGET
+</p>
+
+<p>WIDGET is a new parameter that specifies what should be place instead of an entry field (textbox).
+Currently this can contain "TEXT", "BUTTON", "CHECK" (checkbox), "LABEL" (text label - not
+editable), &quot;PIXMAP" (picture - currently only xpm format handled), "COMBO" (combo box) , or "RADIO" (radio buttons).
+More will be added when I get the chance!!
+</p>
+
+<p>eg.
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; f001=formonly.fld1, WIDGET="CHECK";
+</p>
+
+<p>CONFIG
+</p>
+
+<p>When using a WIDGET, there are some specific things that may need setting - the CONFIG parameter is used to specify these.
+</p>
+
+<p>For all widgets you can specify a WIDTH and a HEIGHT (integers - in character
+spacing) If no width is specified - the size of the field on the form is used. If no height is specified a single character height will be used.
+</p>
+
+<p>eg.
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; f001=formonly.fld1, WIDGET="BUTTON",
+CONFIG=&quot;WIDTH=5&quot;;
+</p>
+
+<p>Some widgets require special config parameters, eg PIXMAP requires a FILENAME:
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; f001=formonly.fld1, WIDGET="PIXMAP",
+CONFIG=&quot;FILENAME='aubit.xpm'&quot;;
+</p>
+
+<p>[ When config parameters require strings, place them in single quotes. ]
+</p>
+
+<p>Some widgets have optional parameters :
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; f001=formonly.fld1, WIDGET="BUTTON",
+CONFIG=&quot;LABEL='OK'&quot;;
+</p>
+
+<p>or
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; f001=formonly.fld1, WIDGET="BUTTON", CONFIG=&quot;IMAGE='okpic.xpm'&quot;;
+</p>
+
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>
+
+<p>WIDGET PIXMAP<br>
+CONFIG REQUIRED STR FILENAME filename (xpm format)
+</p>
+
+<p>WIDGET BUTTON<br>
+CONFIG OPTIONAL STR LABEL  label to use<br>
+CONFIG OPTIONAL STR IMAGE  image to use (xpm format)
+</p>
+
+<p>WIDGET RADIO<br>
+CONFIG REQUIRED INT NUM  label to use<br>
+CONFIG REQUIRED STR Ln   Label for button 'n'<br>
+CONFIG REQUIRED STR Vn   Value for button 'n'
+</p>
+
+<p>WIDGET ENTRY/TEXT/DEFAULT<br>
+CONFIG OPTIONAL INT MAXCHARS   maximum field size
+</p>
+
+<p>WIDGET LABEL<br>
+CONFIG REQUIRED STR CAPTION Caption for label
+</p>
+
+<p>WIDGET CHECK<br>
+CONFIG OPTIONAL STR LABEL  label for checkbox (may be clicked)<br>
+CONFIG OPTIONAL STR VALUE  value for checkbox
+</p>
+
+<p>WIDGET CHECK<br>
+CONFIG NONE
+</p>
+
+      </td>
+    </tr>
+  </table>
+</div>
+
+<p><i><u>gtk_form</u></i>
+</p>
+
+<p>Once you've compiled your form using the new fcompile, you can use gtk_form to show how it would look.
+There are no command line options on gtk_form, although gtk_init takes parameters (but I don't know what most
+of them do!).
+</p>
+
+<p>There is also a GTKRC file which allows you to specify a scheme for example :
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; GTKRC=/usr/local/share/themes/Redmond95/gtk/gtkrc<br>
+&nbsp;&nbsp;&nbsp; export GTKRC
+</p>
+
+<p>You can select different themes by setting GTKRC under KDE (under GNOME I think this is automatic)
+</p>
+
+<p>This program will not do anything useful once your form is displayed - but it should indicate when a field gains
+focus and when it is clicked or changed (depending on the widget type).
+</p>
+
+<p><i><u>Examples (in test/gui/)</u></i>
+</p>
+
+<p>	multi.per - An example of a multi screen form<br>
+	radio.per - Radio buttons<br>
+	widget.per - Many widgets on a single screen
+</p>
+
+<p><a href="#Top of Page - Aubit 4gl Graphical User Interface (GUI)">Back to top</a>
+</p>
+
+<hr>
+<h3><a name="GUI interface development status, progress and issues">GUI
+interface development status, progress and issues</a></h3>
+<p>FIXME: unsorted comments on GUI development:</p>
+<p><u><i>Status:</i></u></p>
+
+<p>So far I have a basic DISPLAY AT, DISPLAY .. TO ... and DISPLAY BY NAME. (90%)
+</p>
+
+<p>Got HIDE WINDOW, SHOW WINDOW, MOVE WINDOW 100% complete
+</p>
+
+<p>CURRENT WINDOW IS .. 100% complete (may need some attention later)
+</p>
+
+<p>ENABLE/DISABLE fields.. 100% complete
+</p>
+
+<p>Open Window 90% complete
+</p>
+
+<p>Open Form 90% complete
+</p>
+
+<p>Work on Menus and menuhandlers (90% complete)
+</p>
+
+<p>Started on Input statement (40% complete)
+</p>
+
+<p>Still have to deal with the modality issue, disabling, formhandlers, and the rest of the input &amp; construct stuff..
+</p>
+
+<p>Currently there is no support for 'SET PAUSE MODE ...' within the GTK stuff..
+</p>
+
+<p><i><u>I'll also run the assumptions by you :</u></i>
+</p>
+
+<p>1) Opening a window in the old fashioned way will open a 'frame' in GTK on the
+'screen' window.
+</p>
+
+<p>2) The menu command works pretty much the same as now (no multilevels, title to
+the left). Currently the only valid menu line is '1'
+</p>
+
+<p>3) All fields on a form will be disabled by default when the form is loaded (I
+may change this for PIXMAPs as they are dimmed when disabled and can't be activated anyway).
+</p>
+
+<p>4) Menu Handlers will load menus from a menu file, this allows for internationalisation and also allows descriptions of multilevel menus to be
+loaded at runtime. This uses an 'mcompile' command to compile into a runable menu (Details to follow).
+</p>
+
+<p>5) The only way to open a new X type window will be with the SHOW WINDOW xxx USING formhandler command. In this way - all current 4GL stuff should work and
+look the same as the text based one (with the additional widgets obviously)..&nbsp;
+</p>
+
+<p>6) Comments in forms and menus are displayed as tooltips rather than having a
+line of their own
+</p>
+
+<p>7) The DISPLAY AT is a bit dodgy - it works by putting a label at the specified
+position, if a label was started at that position it will be remove before the new one is created. if the text to display is "" then the label will be removed
+and no new label created. This may cause a problem with code like :&nbsp;
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; DISPLAY "Hello World" at 1,1<br>
+&nbsp;&nbsp;&nbsp; DISPLAY "World!" at 1,7
+</p>
+
+<p>Which would display "Hello World!" in the TUI mode, in GUI mode - you'd have two labels, one on top of the other, how it appears would depend on the type of
+font used, but it could be :&nbsp;
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; Hello World!
+</p>
+
+<p>or
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; HellWorld!&nbsp;
+</p>
+
+<p> (if the font is larger than my spacing)
+</p>
+
+<p>or
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; Hello WWorld!&nbsp;
+</p>
+
+<p> (if the font is smaller)
+</p>
+
+<p>This will be a problem mainly with proportionaly spaced fonts. For courier and
+friends - we should be able to get the right spacings..
+</p>
+
+<p><i><u>Colors issues in GUI :</u></i>
+</p>
+
+<p>So far all colors and attributes (except border) are ignored. I need to investigate how to do this in GTK (any ideas ?)
+</p>
+
+<p><i><u>Threads</u></i>
+</p>
+
+<p>So far I havn't needed to have any extra threads, although there are a couple
+of functions which may be called from 4gl, they will be something like :
+</p>
+
+<p>	FUNCTION gui_run_till_idle()
+</p>
+
+<p>and
+</p>
+
+<p>	FUNCTION gui_run_till_terminate()
+</p>
+
+<p>the 'till_idle" function will allow GTK to catch up with itself during complex
+programming. (At the minute all operations which do something to GTK, opening a window, displaying some text etc, run this after completing.
+the "till_terminate" function will run gtk_main() which is a loop that will stop the 4GL program terminating and should be the last function called in
+MAIN..END MAIN if you use formhandlers or menuhanlders.
+</p>
+
+<p><i><u>Progress</u></i>
+</p>
+
+<p>I'll try to get something posted up by the middle of the week. In the meantime - if anyone fancies helping - if you can brush up/read up on
+GTK it would be helpful, there will be a lot of 4GL functions that we will need to write to handle the nicer things (for example - I already have a 4GL
+function to set the window title which appears in the title bar...)&nbsp;
+</p>
+
+<p>We'll need more for adding and maintaining list boxes etc.
+</p>
+
+<p><a href="#Top of Page - Aubit 4gl Graphical User Interface (GUI)">Back to top</a>
+</p>
+
+<hr>
+
+<p>&nbsp;
+</p>
+
+</body>
+
+</html>

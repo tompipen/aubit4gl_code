@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<TITLE>OUTPUT TO REPORT</TITLE>
+</HEAD><BODY>
+<B>OUTPUT TO REPORT
+<P></P>
+</B>The OUTPUT TO REPORT statement passes a single set of data values (called an
+input record) to a REPORT statement.
+<P></P>
+<IMG SRC="4GLREF00000179.gif" ALT="4GLREF00000179.gif" BORDER="0" USEMAP="#map109" WIDTH="455" HEIGHT="73"><MAP NAME="map109"><AREA COORDS="272,22,362,48" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+<B>blob</B> is the name of a TEXT or BYTE variable to be passed to the report.
+<P></P>
+<B>report</B>  is the name of a 4GL report by which to format the input record. 
+<P></P>
+You must also declare this identifier in a REPORT statement, and invoke the
+report with a previous START REPORT statement..
+<P></P>
+The OUTPUT TO REPORT statement passes data to a report, and instructs 4GL to
+process and format the data as the next input record of the report.
+<P></P>
+An input record is the ordered set of values returned by the expressions that
+you list between the parentheses. Returned values are passed to the specified
+report, as part of the input record. The input record can correspond to a
+retrieved row from the database, or to a 4GL program record, but 4GL does not require
+this correspondence.
+<P></P>
+The members of the input record that you specify in the expression list of the
+OUTPUT TO REPORT statement must correspond to elements of the formal argument
+list in the REPORT definition in their number and their position, and must be
+of compatible data types. 
+<P></P>
+Arguments of the TEXT or BYTE data types are passed by reference, rather than
+by value; arguments of other data types are passed by value. A report can use
+the WORDWRAP operator with the PRINT statement to display TEXT values. A report
+cannot display BYTE values; the character string &lt;byte value&gt; in output from
+the report indicates a BYTE value.
+<P></P>
+You typically include the OUTPUT TO REPORT statement within a WHILE, FOR, or
+FOREACH loop, so that the program passes data to the report one input record at
+a time. The portion of the 4GL program that includes START REPORT, OUTPUT TO
+REPORT, and FINISH REPORT statements that reference the same report is sometimes
+called the report driver. 
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFCALL.htm"></A></B><A HREF="4GLREFCALL.htm">CALL</A> 
+<P></P>
+<A HREF="4GLREFFINISH_REPORT.htm">FINISH REPORT</A> 
+<P></P>
+<A HREF="4GLREF4GL_Boolean_Expressions.htm">REPORT</A> 
+<P></P>
+<A HREF="4GLREFSTART_REPORT.htm">START REPORT</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

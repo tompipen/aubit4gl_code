@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>ARR_CURR( )</TITLE>
+</HEAD><BODY>
+<B>ARR_CURR( )
+<P></P>
+</B>During or immediately after the INPUT ARRAY or DISPLAY ARRAY statement the
+ARR_CURR( ) function returns the number of the program record within the program
+array that is displayed in the current line of a screen array. 
+<P></P>
+<IMG SRC="4GLREF00000065.gif" ALT="4GLREF00000065.gif" BORDER="0" WIDTH="455" HEIGHT="31">
+<P></P>
+The current line of a screen array is the line that displays the screen cursor
+at the beginning of a BEFORE ROW or AFTER ROW clause. 
+<P></P>
+The ARR_CURR( ) function returns an integer value. The first row of the
+program array and the first line (that is, topmost) of the screen array are both
+numbered 1. The built-in functions ARR_CURR( ) and SCR_LINE( ) can return different
+values if the program array is larger than the screen array. 
+<P></P>
+You can pass ARR_CURR( ) as an argument when you call a function. In this way
+the function receives as its argument the current record of whatever array is
+referenced in the INPUT ARRAY or DISPLAY ARRAY statement. 
+<P></P>
+The ARR_CURR( ) function can be used to force a FOR loop to begin beyond the
+first line of an array by setting a variable to ARR_CURR( ) and then using that
+variable as the starting value for the FOR loop. 
+<P></P>
+<B>References 
+<P></P>
+<A HREF="4GLREFARRCOUNT_.htm"></A></B><A HREF="4GLREFARRCOUNT_.htm">ARR_COUNT( )</A> 
+<P></P>
+<A HREF="4GLREFSCRLINE_.htm">SCR_LINE( )</A> 
+<P></P>
+</BODY>
+</HTML>

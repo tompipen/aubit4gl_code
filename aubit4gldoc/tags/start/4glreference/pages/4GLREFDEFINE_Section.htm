@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>DEFINE Section</TITLE>
+</HEAD><BODY>
+</UL><B>DEFINE Section
+<P></P>
+</B>This section declares the data type of each argument in the REPORT prototype,
+and of any additional local variables that are referenced only within the
+REPORT program block. The DEFINE section is required if you pass arguments to the
+report, or if you reference local variables in the report.
+<P></P>
+<IMG SRC="4GLREF00000002.gif" ALT="4GLREF00000002.gif" BORDER="0" USEMAP="#map2" WIDTH="457" HEIGHT="63"><MAP NAME="map2"><AREA COORDS="234,30,352,55" HREF="4GLREFDEFINE00000433.htm#4def374a"></MAP>
+<P></P>
+<B><UL><LI>ariable</B>  is the identifier of a local variable that you declare here.
+<P></P>
+</UL>For declaring local variables, the same rules apply to the DEFINE section as
+to the DEFINE statement in MAIN and FUNCTION program blocks. 
+<P></P>
+<B>Two exceptions, however, restrict the data types of formal arguments:
+<P></P>
+</B>Report argument cannot be of type ARRAY
+<P></P>
+Report argument cannot be records which have ARRAY members
+<P></P>
+<B>You must include arguments in the report prototype, and declare them in the
+DEFINE section if one or more of the following conditions is true:
+<P></P>
+</B>When you use the FORMAT EVERY ROW specification for a default report. In this
+case, you must pass all the values for each record of the report.
+<P></P>
+When there is an <A HREF="4GLREFORDER_BY_Section.htm">ORDER BY section</A> in the report. In this case, you must pass all the values for each record of
+the report.
+<P></P>
+If an aggregate value that depends on all records of the report appears
+anywhere except in the ON LAST ROW control block, then you must pass each of the
+records of the report through the argument list. Examples of aggregates that depend
+on all records include using GROUP PERCENT(*) anywhere in a report, or using
+any aggregate without the GROUP keyword anywhere outside the ON LAST ROW control
+block.
+<P></P>
+When you use the AFTER GROUP OF control block. In this case, you must pass at
+least the arguments that are named in that control block.
+<P></P>
+The order of declarations in the DEFINE section is not restricted, but code
+may be easier to read if you list arguments before local variables. If the DEFINE
+section declares a variable or argument with the same identifier as a global
+or module variable, that global or module variable is not visible in the report. 
+<P></P>
+</BODY>
+</HTML>

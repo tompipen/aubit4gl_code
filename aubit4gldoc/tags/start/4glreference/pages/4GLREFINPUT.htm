@@ -1,0 +1,142 @@
+<HTML>
+<HEAD>
+<TITLE>INPUT</TITLE>
+</HEAD><BODY>
+<B>INPUT
+<P></P>
+</B>The INPUT statement supports data entry by users into fields of a screen form
+<P></P>
+<IMG SRC="4GLREF00000155.gif" ALT="4GLREF00000155.gif" BORDER="0" USEMAP="#map95" WIDTH="591" HEIGHT="97"><MAP NAME="map95"><AREA COORDS="391,45,461,92" HREF="4GLREFINPUT.htm#4fed618e"><AREA COORDS="134,34,198,73" HREF="4GLREFATTRIBUTE00000476.htm"><AREA COORDS="53,11,106,51" HREF="4GLREFINPUT.htm#13b165ee"></MAP>
+<P></P>
+<B>number</B> is a literal integer to specify a Help message number.
+<P></P>
+The INPUT statement <A HREF="4GLREFassign.htm">assign</A>s to one or more variables the values users enter into the fields of a screen
+form. This statement can include statement blocks to be executed under
+conditions that you specify, such as screen cursor movement, or other user actions. 
+<P></P>
+<B>To use this statement, you must do the following: 
+<P></P>
+</B><OL><LI> Specify screen field(s) in a form specification file, and compile the form.
+<P></P>
+<LI> Declare variable(s) with the DEFINE statement.
+<P></P>
+<LI> Open and display the screen form in either of the following ways:
+<P></P>
+</OL>The OPEN FORM and DISPLAY FORM statements.
+<P></P>
+An OPEN WINDOW statement that uses the WITH FORM keywords.
+<P></P>
+<OL START="4"><LI> Use the INPUT statement to values to the variables from data that the user
+enters into fields of the screen form.
+<P></P>
+</OL><B>When the INPUT statement is encountered, 4GL does the following:
+<P></P>
+</B><OL><LI> Displays any default values in the screen fields, unless you specify the
+WITHOUT DEFAULTS keywords. 
+<P></P>
+<LI> Moves the cursor to the first field explicitly or implicitly referenced in the <A HREF="4GLREFbinding.htm">binding</A> clause, and waits for the user to enter a value in that field.
+<P></P>
+<LI> Assigns the user-entered field value to a corresponding program variable when
+the user moves the cursor from the field or presses the <A HREF="4GLREFAccept_key.htm">Accept key</A>.
+<P></P>
+</OL>The INPUT statement activates the current form (the form that was most
+recently displayed, or the form in the current <A HREF="4GLREF4GL_window.htm#7f79dad5">4GL window</A>). When the INPUT statement completes execution, the form is deactivated.
+After the user chooses Accept, the INSERT statement of SQL can insert values from
+the program variables into the appropriate database tables.
+<P></P>
+<B>The Input Binding Clause
+<P></P>
+</B>The binding clause temporarily associates fields of the screen form with 4GL
+variables, so that the 4GL program can manipulate values that the user enters in
+the form. INPUT statements supports two types of binding clauses:
+<P></P>
+In the special case where all of the variables have names that are identical
+(apart from qualifiers) to the names of simple fields and fields within screen <A HREF="4GLREFarray00000023.htm">array</A>s, you can specify INPUT BY NAME variable list to bind the specified variables
+to their namesake fields implicitly.
+<P></P>
+In the general case, you can specify INPUT variable list FROM field list to
+bind any combination of simple and structured variables explicitly to any
+combination of simple fields and fields within screen arrays.
+<P></P>
+<IMG SRC="4GLREF00000156.gif" ALT="4GLREF00000156.gif" BORDER="0" USEMAP="#map96" WIDTH="575" HEIGHT="127"><MAP NAME="map96"><AREA COORDS="458,36,522,74" HREF="4GLREFField_Clause.htm"></MAP>
+<P></P>
+<B><UL><LI>ariable</B>  is the name of a variable to store values entered in the field. It can be of
+any simple data type.
+<P></P>
+</UL>Here variable supports the syntax of a receiving variable in the LET
+statement, but you can also use record.* or the THRU or THROUGH notation to specify all
+or some of the members of a program record.
+<P></P>
+The field names must be among those declared in the ATTRIBUTE section of the
+form specification file of the current form. These can include simple fields,
+members of screen records, multiple-segment WORDWRAP fields, and FORMONLY fields,
+but cannot include records from screen arrays. 
+<P></P>
+<B>The INPUT Form Management Blocks
+<P></P>
+</B>Each INPUT Form Management block includes a statement block of at least one
+statement, and an activation clause that specifies when to execute the statement
+block. 
+<P></P>
+<B>An INPUT form management block can specify any of the following:
+<P></P>
+</B>The statements to execute before or after visiting specific screen fields.
+<P></P>
+The statements to execute when the user presses a key sequence.
+<P></P>
+The statements to execute before or after the INPUT statement.
+<P></P>
+The next field to which to move the screen cursor.
+<P></P>
+When to terminate execution of the INPUT statement.
+<P></P>
+<B>The activation clause can specify any one of the following:
+<P></P>
+</B>Pre- and post-INPUT actions (the BEFORE or AFTER INPUT clause)
+<P></P>
+Pre- and post-INSERT actions (the BEFORE or AFTER INSERT clause)
+<P></P>
+Pre- and post-DELETE actions (the BEFORE or AFTER DELETE clause)
+<P></P>
+Keyboard sequence conditions (the ON KEY clause)
+<P></P>
+Cursor movement conditions (the BEFORE or AFTER FIELD clause, and
+<P></P>
+the BEFORE or AFTER ROW clause)
+<P></P>
+<B>The statement block can include any SQL or 4GL statements, as well as:
+<P></P>
+</B>Cursor movement instructions (the NEXT FIELD or NEXT ROW clause)
+<P></P>
+Termination of the INPUT statement (the EXIT INPUT statement)
+<P></P>
+Returning control to the user, without terminating the INPUT statement (the
+CONTINUE INPUT statement).
+<P></P>
+The activation clause and the statement block correspond respectively to the
+left-hand and right-hand elements in the following syntax diagram:
+<P></P>
+<IMG SRC="4GLREF00000157.gif" ALT="4GLREF00000157.gif" BORDER="0" USEMAP="#map97" WIDTH="580" HEIGHT="180"><MAP NAME="map97"><AREA COORDS="202,64,273,91" HREF="4GLREFField_Clause.htm"></MAP>
+<P></P>
+<B>field </B>in the name of a field in the current form.
+<P></P>
+<B>key </B>is one or more keywords to specify physical or logical keys. 
+<P></P>
+<B>statement</B> is a SQL statement or other 4GL statement.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFDEFER.htm"></A></B><A HREF="4GLREFDEFER.htm">DEFER</A> 
+<P></P>
+<A HREF="4GLREFDISPLAY_ARRAY.htm">DISPLAY ARRAY</A> 
+<P></P>
+<A HREF="4GLREFINPUT_ARRAY.htm">INPUT ARRAY</A> 
+<P></P>
+<A HREF="4GLREFOPEN_WINDOW.htm#beef7ac7">OPEN WINDOW</A> 
+<P></P>
+<A HREF="4GLREFOPTIONS.htm">OPTIONS</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

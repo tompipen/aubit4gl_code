@@ -1,0 +1,75 @@
+<HTML>
+<HEAD>
+<TITLE>Field Clause</TITLE>
+</HEAD><BODY>
+<B>Field Clause
+<P></P>
+</B>The field clause specifies one or more screen fields or screen records.
+<P></P>
+<IMG SRC="4GLREF00000224.gif" ALT="4GLREF00000224.gif" BORDER="0" USEMAP="#map143" WIDTH="457" HEIGHT="173"><MAP NAME="map143"><AREA COORDS="330,125,386,161" HREF="4GLREFTHRU_or_THROUGH_Keywords_and__No.htm"></MAP>
+<P></P>
+<B>field  </B>is a field name, as declared in the ATTRIBUTES section of the form
+specification file. 
+<P></P>
+<B>line  </B>is an integer expression, enclosed within brackets, to specify a record within
+the screen array. Here 1 &lt;= line &lt;= size, for size the array size that is
+declared in the INSTRUCTIONS section. If you omit the [line] specification, the
+default is the first record.
+<P></P>
+<B>screen array </B>is the 4GL identifier that you declared for a screen array in the INSTRUCTIONS
+section of the form specification file.  
+<P></P>
+<B>screen record</B> is the 4GL identifier that you declared for a screen record, or else a table
+reference (as the name of a default screen record).  
+<P></P>
+<B>table reference</B> is the name, alias, or synonym of a database table or view. 
+<P></P>
+A table reference cannot include table qualifiers. You must declare an alias
+in the form specification file, for any table reference that requires a
+qualifying prefix (such as database, server, or owner). Here the FORMONLY keyword acts
+like a table reference for fields that are not associated with a database
+column.
+<P></P>
+You can use the asterisk ( * ) symbol to specify every field in a screen
+record. 
+<P></P>
+Some contexts, such as the NEXT FIELD clause, support only a single-field
+subset of this syntax. In these contexts, the THRU or THROUGH keyword, asterisk
+notation, and comma-separated list of field names are not valid.
+<P></P>
+<B>You can specify one or more of the following in the field clause:
+<P></P>
+</B>A field name without qualifiers (field) if this name is unique in the form
+<P></P>
+A field name, qualified by a table reference (FORMONLY field or table field)
+<P></P>
+An individual member of a screen record (record field)
+<P></P>
+An individual field within a screen array (array [line].field)
+<P></P>
+A set of consecutive fields in a screen record (by the THRU notation)
+<P></P>
+An entire screen record (record.*)
+<P></P>
+The first screen record in a screen array (array.* )
+<P></P>
+Any entire record within a screen array (array [line].*)
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFCLEAR.htm"></A></B><A HREF="4GLREFCLEAR.htm">CLEAR</A> 
+<P></P>
+<A HREF="4GLREFCONSTRUCT.htm">CONSTRUCT</A> 
+<P></P>
+<A HREF="4GLREFDISPLAY.htm">DISPLAY</A> 
+<P></P>
+<A HREF="4GLREFINPUT.htm">INPUT</A> 
+<P></P>
+<A HREF="4GLREFINPUT_ARRAY.htm">INPUT ARRAY</A> 
+<P></P>
+<A HREF="4GLREFSCROLL.htm">SCROLL</A> 
+<P></P>
+<A HREF="4GLREFTHRU_or_THROUGH_Keywords_and__No.htm">THRU</A> 
+<P></P>
+</BODY>
+</HTML>

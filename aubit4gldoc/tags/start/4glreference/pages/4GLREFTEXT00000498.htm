@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>TEXT</TITLE>
+</HEAD><BODY>
+<B>TEXT
+<P></P>
+</B>The TEXT data type stores character data in ASCII strings. TEXT resembles the
+BYTE data type, but 4GL supports features to display TEXT variables whose
+values are restricted to combinations of printable ASCII characters and the
+following control characters:
+<P></P>
+TAB (= CONTROL-I)
+<P></P>
+NEWLINE (= CONTROL-J)
+<P></P>
+FORMFEED (= CONTROL-L)
+<P></P>
+<B>NOTE</B>: If you include other non-printable characters in a TEXT string, the features
+of 4GL for displaying TEXT values may not operate correctly.
+<P></P>
+Character strings stored as TEXT variables have a theoretical limit of 2**31
+bytes, and a practical limit determined by the available storage on your system.
+The INFORMIX-SE database engine does not support TEXT columns, but regardless
+of the engine, you can declare 4GL variables of type TEXT. 
+<P></P>
+You can use a TEXT variable to store, retrieve, or update the contents of a
+TEXT database column, or to reference a file that you wish to display to users of
+the 4GL program through a text editor. After you declare a TEXT data type, you
+must use the LOCATE statement to specify the storage location.
+<P></P>
+When you select a TEXT column, you can assign all or part of it to a variable.
+Use bracket ( [ ] ) symbols and comma-separated subscripts to reference only a
+specified part of a TEXT value.
+<P></P>
+</BODY>
+</HTML>

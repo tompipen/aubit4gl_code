@@ -1,0 +1,31 @@
+<HTML>
+<HEAD>
+<TITLE>ERR_PRINT( )</TITLE>
+</HEAD><BODY>
+<B>ERR_PRINT( )
+<P></P>
+</B>The ERR_PRINT( ) function displays on the Error line the text of an SQL or 4GL
+error message, corresponding to a negative integer argument. 
+<P></P>
+<IMG SRC="4GLREF00000081.gif" ALT="4GLREF00000081.gif" BORDER="0" USEMAP="#map49" WIDTH="461" HEIGHT="43"><MAP NAME="map49"><AREA COORDS="141,10,243,37" HREF="4GLREFInteger_Expressions.htm"></MAP>
+<P></P>
+The argument of ERR_PRINT( ) specifies an error message number. This must be
+less than zero. It is typically the value of the global status variable, which
+is affected by both SQL and 4GL errors. For SQL errors only, you can examine the
+global SQLCA.SQLCODE record. 
+<P></P>
+ERR_PRINT( ) is most useful when you are developing a 4GL program. The message
+that it returns is probably not helpful to the user of your application. 
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFERRGET_.htm"></A></B><A HREF="4GLREFERRGET_.htm">ERR_GET( )</A> 
+<P></P>
+<A HREF="4GLREFERRQUIT_.htm">ERR_QUIT( )</A> 
+<P></P>
+<A HREF="4GLREFERRORLOG_.htm">ERRORLOG( )</A> 
+<P></P>
+<A HREF="4GLREFSTARTLOG_.htm">STARTLOG( )</A> 
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,42 @@
+<HTML>
+<HEAD>
+<TITLE>SCREEN Section</TITLE>
+</HEAD><BODY>
+<B>SCREEN Section 
+<P></P>
+</B>The SCREEN section of the form specification file specifies the vertical and
+horizontal dimensions of the physical screen, and the position of one or more
+display fields and other information that will appear on the screen form. This
+section is required. It has the following syntax: 
+<P></P>
+<IMG SRC="4GLREF00000028.gif" ALT="4GLREF00000028.gif" BORDER="0" USEMAP="#map7" WIDTH="573" HEIGHT="55"><MAP NAME="map7"><AREA COORDS="367,13,447,37" HREF="4GLREFSCREEN_Section.htm#074959e1"></MAP>
+<P></P>
+<B>lines</B> is a literal integer that specifies how many lines of characters (measured
+vertically) the form can display. The default is 24. 
+<P></P>
+<B>characters</B> is a literal integer, specifying how many characters (measured horizontally) a
+line can display. The default is the maximum number of characters in any line
+of the screen-layout. 
+<P></P>
+The SCREEN keyword is required. As in other sections of a form specification
+file, the keyword END is not required, but it is recognized by the Form Compiler
+to provide compatibility with earlier Informix products. 
+<P></P>
+A single pair of braces ( { } ) symbols, immediately preceded and immediately
+followed by Newline characters, must enclose the screen-layout. Do not use
+braces ( { } ) as comment indicators within the SCREEN section. 
+<P></P>
+<B>The Screen Layout
+<P></P>
+</B>The screen-layout of the SCREEN section must be enclosed in braces ( { } ). It
+consists of display fields and (optionally) text characters. 
+<P></P>
+<IMG SRC="4GLREF00000029.gif" ALT="4GLREF00000029.gif" BORDER="0" WIDTH="532" HEIGHT="125">
+<P></P>
+<B>field-tag</B> is 4GL identifier of no more than 50 characters within each field. The length
+of a <A HREF="4GLREFfield_tag.htm">field tag</A> cannot exceed the field width.
+<P></P>
+<B>character</B> is a printable character of text that will appear in the form.
+<P></P>
+</BODY>
+</HTML>

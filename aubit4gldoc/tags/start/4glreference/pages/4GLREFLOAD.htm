@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>LOAD</TITLE>
+</HEAD><BODY>
+<B>LOAD
+<P></P>
+</B>The LOAD statement inserts data from an <A HREF="4GLREFASCII00000025.htm">ASCII</A> file into an existing table.  
+<P></P>
+<IMG SRC="4GLREF00000163.gif" ALT="4GLREF00000163.gif" BORDER="0" USEMAP="#map101" WIDTH="582" HEIGHT="177"><MAP NAME="map101"><AREA COORDS="265,136,347,164" HREF="4GLREFTable_Qualifiers.htm"></MAP>
+<P></P>
+<B>character </B>is a quoted string, specifying a delimiter symbol.
+<P></P>
+<B>column </B>is the name of a column in table, in parentheses. If you omit the list of
+column names, the default is all the columns of table.
+<P></P>
+<B>delimiter  </B>is a CHAR or VARCHAR variable containing a symbol.
+<P></P>
+<B>filename </B>is the specification (within quotation marks) of a file that contains the
+input data. This can include a pathname. If filename includes a pathname that
+contains one or more backslash ( \ ) symbols, then you must use a pair of
+backslashes ( \\ ) to represent each backslash. 
+<P></P>
+<B>file variable </B>is a CHAR or VARCHAR variable containing a filename.
+<P></P>
+<B>insert variable</B> is a CHAR or VARCHAR variable containing an INSERT clause. 
+<P></P>
+<B>table </B>is the name of a table, synonym, or view. in the current database (as
+specified by a prior DATABASE statement in the same module),or in a database specified
+in the table qualifier.
+<P></P>
+The LOAD statement must include an INSERT statement (either directly or in a
+variable) to specify where to store the data. LOAD appends the new rows to the
+specified table, synonym, or view. It does not overwrite existing data. It
+cannot add a row that has the same key as an existing row. You cannot use the
+PREPARE statement to preprocess a LOAD statement.
+<P></P>
+The user who executes the LOAD statement must have Insert privileges for table.
+<P></P>
+<B>Reference
+<P></P>
+<A HREF="4GLREFDATABASE00000431.htm"></A></B><A HREF="4GLREFDATABASE00000431.htm">DATABASE</A> 
+<P></P>
+<A HREF="4GLREFUNLOAD.htm">UNLOAD</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

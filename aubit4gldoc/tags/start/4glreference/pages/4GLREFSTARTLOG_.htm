@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>STARTLOG( )</TITLE>
+</HEAD><BODY>
+<B>STARTLOG( )
+<P></P>
+</B>The STARTLOG( ) function opens an error log file. 
+<P></P>
+<IMG SRC="4GLREF00000103.gif" ALT="4GLREF00000103.gif" BORDER="0" WIDTH="454" HEIGHT="50">
+<P></P>
+<B>filename</B> is a quoted string to specify a filename (and optional path name and file
+extension) of the error log file. 
+<P></P>
+<B><UL><LI>ariable</B> is a variable of type CHAR or VARCHAR containing a filename (and optional path
+name and file extension) of the error log file.
+<P></P>
+</UL>The following is a typical sequence to implement error logging:
+<P></P>
+Call STARTLOG( ) in the MAIN program block to open or create an error log file.
+<P></P>
+Use a LET statement with ERR_GET(status) to retrieve the error text and to
+assign this value to a program variable.
+<P></P>
+Use ERRORLOG( ) to make an entry into the error log file.
+<P></P>
+The last two steps are not needed, if you are satisfied with the error records
+that are automatically produced after STARTLOG( ) has been invoked. After you
+call the STARTLOG( ) function, a record of every subsequent error that occurs
+during the execution of your program is written to the error log file, provided
+that the WHENEVER ERROR CONTINUE statement is not in effect. 
+<P></P>
+The error record consists of the date, time, source-module name and line
+number, error number, and error message. You can also write your own messages in the
+error log file by using the ERRORLOG( ).
+<P></P>
+<B>References 
+<P></P>
+<A HREF="4GLREFERRGET_.htm"></A></B><A HREF="4GLREFERRGET_.htm">ERR_GET( )</A> 
+<P></P>
+<A HREF="4GLREFERRORLOG_.htm">ERRORLOG( )</A> 
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>DEFER</TITLE>
+</HEAD><BODY>
+<B>DEFER
+<P></P>
+</B>The DEFER statement prevents 4GL from terminating program execution when the
+user presses the Interrupt key or the Quit key.
+<P></P>
+<IMG SRC="4GLREF00000125.gif" ALT="4GLREF00000125.gif" BORDER="0" WIDTH="457" HEIGHT="60">
+<P></P>
+DEFER is a method of intercepting asynchronous signals from outside the
+program. 
+<P></P>
+Unless it includes the DEFER statement, the 4GL application terminates
+whenever the user presses the Interrupt key or the Quit key. The Interrupt key is
+CONTROL-C, and the Quit key is CONTROL-\. (Here the Quit key emulates the effect of
+the Quit key on UNIX systems.)
+<P></P>
+<B>The DEFER statement tells 4GL to set a built-in global variable to a non-zero
+value, rather than terminate, when the user presses one of these keys:
+<P></P>
+</B>If the user presses the Interrupt key when DEFER INTERRUPT has been specified,
+4GL sets the built-in global variable int_flag to TRUE.
+<P></P>
+If the user presses the Quit key when DEFER QUIT has been specified, 4GL sets
+the built-in global variable quit_flag to TRUE. 
+<P></P>
+The DEFER INTERRUPT and DEFER QUIT statements can appear only in the MAIN
+program block, and only once there in any program. Once executed, the DEFER
+statement remains in effect for the duration of the program; you cannot restore the
+original function of the Interrupt key or the Quit key.
+<P></P>
+4GL programs can include code to check whether int_flag or quit_flag is TRUE,
+and if so, to take appropriate action. Be sure also to reset int_flag or
+quit_flag to FALSE (that is, to zero) so that subsequent tests are valid. 
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFCONSTRUCT.htm"></A></B><A HREF="4GLREFCONSTRUCT.htm">CONSTRUCT</A> 
+<P></P>
+<A HREF="4GLREFDISPLAY_ARRAY.htm">DISPLAY ARRAY</A> 
+<P></P>
+<A HREF="4GLREFINPUT.htm">INPUT</A> 
+<P></P>
+<A HREF="4GLREFINPUT_ARRAY.htm">INPUT ARRAY</A> 
+<P></P>
+<A HREF="4GLREFMAIN.htm">MAIN</A> 
+<P></P>
+<A HREF="4GLREFMENU00000455.htm">MENU</A> 
+<P></P>
+<A HREF="4GLREFPROMPT.htm">PROMPT</A> 
+<P></P>
+<A HREF="4GLREFWHENEVER.htm#b7ca4914">WHENEVER</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+<TITLE>ATTRIBUTE</TITLE>
+</HEAD><BODY>
+<B>ATTRIBUTE
+<P></P>
+</B>The ATTRIBUTE clause assigns visual attributes in some 4GL statements.
+<P></P>
+<IMG SRC="4GLREF00000193.gif" ALT="4GLREF00000193.gif" BORDER="0" WIDTH="546" HEIGHT="280">
+<P></P>
+Keywords listed at the left of this diagram specify color; those at the right
+specify intensity. 
+<P></P>
+<B>The ATTRIBUTE clause can appear in the following statements:
+<P></P>
+</B><TABLE><TR VALIGN=TOP><TD><B></B>CONSTRUCT 
+<BR></TD><TD>DISPLAY FORM 
+<BR></TD><TD>INPUT ARRAY 
+<BR></TD></TR><TR VALIGN=TOP><TD>DISPLAY
+<BR></TD><TD>ERROR
+<BR></TD><TD>MESSAGE
+<BR></TD></TR><TR VALIGN=TOP><TD>DISPLAY ARRAY
+<BR></TD><TD>INPUT
+<BR></TD><TD>PROMPT
+<BR></TD></TR></TABLE>Besides these statements, both the OPEN WINDOW statement and the OPTIONS
+statement can include ATTRIBUTE clauses that support additional keywords.
+<P></P>
+An attribute clause in any statement except OPEN WINDOW or OPTIONS can specify
+zero or more of the BLINK, REVERSE, and UNDERLINE attributes, and zero or one
+of the other attributes. That is, all of the attributes except BLINK, REVERSE,
+and UNDERLINE are mutually exclusive.
+<P></P>
+The BLINK and UNDERLINE attributes have no effect in Windows, but are included
+for compatibility with 4GL programs written for character-based environments.
+<P></P>
+<B>References
+<P></P>
+</B><TABLE><TR VALIGN=TOP><TD><B><A HREF="4GLREFCONSTRUCT.htm"></A></B><A HREF="4GLREFCONSTRUCT.htm">CONSTRUCT</A> 
+<BR></TD><TD><A HREF="4GLREFINPUT.htm">INPUT</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDATABASE00000431.htm">DATABASE</A> 
+<BR></TD><TD><A HREF="4GLREFINPUT_ARRAY.htm">INPUT ARRAY</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDISPLAY.htm">DISPLAY</A> 
+<BR></TD><TD><A HREF="4GLREFMESSAGE.htm">MESSAGE</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDISPLAY_ARRAY.htm">DISPLAY ARRAY</A> 
+<BR></TD><TD><A HREF="4GLREFOPEN_WINDOW.htm#beef7ac7">OPEN WINDOW</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDISPLAY_FORM.htm">DISPLAY FORM</A> 
+<BR></TD><TD><A HREF="4GLREFOPTIONS.htm">OPTIONS</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFERROR00000438.htm">ERROR</A> 
+<BR></TD><TD><A HREF="4GLREFPROMPT.htm">PROMPT</A> 
+<BR></TD></TR></TABLE>
+<P></P>
+</BODY>
+</HTML>

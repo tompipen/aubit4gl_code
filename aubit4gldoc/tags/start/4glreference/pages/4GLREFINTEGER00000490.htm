@@ -1,0 +1,26 @@
+<HTML>
+<HEAD>
+<TITLE>INTEGER</TITLE>
+</HEAD><BODY>
+<B>INTEGER
+<P></P>
+</B>The INTEGER data type stores whole numbers in a range from -2,147,483,647 to
++2,147,483,647. The negative number -2,147,483,648 is a reserved value that
+cannot be used. INTEGER values are stored as signed four-byte binary integers, with
+a scale of zero. This data type is typically used to stores counts,
+quantities, categories coded as natural numbers, and the like.
+<P></P>
+Arithmetic operations on binary integers are typically without rounding error;
+these operations and sort comparisons are performed more efficiently than on
+FLOAT or DECIMAL data. INTEGER values, however, can only store data whose
+absolute value is less than 2**31. Any fractional part of the value is discarded. If
+a value exceeds this numeric range, neither 4GL nor the database engine can
+store the data value as an INTEGER data type. 
+<P></P>
+Note: INTEGER variables can store SERIAL values from the database. If a user
+inserts a new row into the database, 4GL automatically assigns the next whole
+number in sequence to any field linked to a SERIAL column. Users do not need to
+enter data into such fields. Once assigned, a SERIAL value cannot be changed. 
+<P></P>
+</BODY>
+</HTML>

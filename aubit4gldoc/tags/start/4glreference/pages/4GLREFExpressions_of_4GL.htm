@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<TITLE>Expressions of 4GL</TITLE>
+</HEAD><BODY>
+<B>Expressions of 4GL
+<P></P>
+</B>A 4GL expression is a sequence of operands, operators, and parentheses that
+INFORMIX-4GL can evaluate as a single value. 
+<P></P>
+<IMG SRC="4GLREF00000201.gif" ALT="4GLREF00000201.gif" BORDER="0" USEMAP="#map125" WIDTH="455" HEIGHT="252"><MAP NAME="map125"><AREA COORDS="207,32,324,59" HREF="4GLREFTime_Expressions.htm"><AREA COORDS="207,69,324,95" HREF="4GLREFCharacter_Expressions.htm"><AREA COORDS="208,105,325,131" HREF="4GLREFNumber_Expressions.htm"><AREA COORDS="213,140,316,167" HREF="4GLREFInteger_Expressions.htm"><AREA COORDS="224,176,307,214" HREF="4GLREF4GL_Boolean_Expressions.htm"></MAP>
+<P></P>
+Statements, functions, form specifications, operators, and expressions can
+have expressions as arguments, components, or operands.  The context where an
+expression appears, as well as its syntax, determines the data type of its returned
+value. It is convenient to classify 4GL expressions into the following five
+categories, based on the data type of what they return: 
+<P></P>
+<B>Boolean </B>a value that is either TRUE or FALSE or NULL
+<P></P>
+<B>Integer </B>a whole-number value of data type INT or SMALLINT
+<P></P>
+<B>Number </B>a value of any number data type
+<P></P>
+<B>Character</B> a character string of data type CHAR or VARCHAR
+<P></P>
+<B>Time </B>a value of data type DATE, DATETIME, or INTERVAL
+<P></P>
+If the term 4GL expression is not qualified as one of these five specific data
+types, then the expression can be any of these data types.
+<P></P>
+As the diagram suggests, 4GL Boolean expressions are special cases of integer
+expressions, and integer expressions are a logical subset of number
+expressions. You can substitute a 4GL Boolean or integer expression where a number
+expression is valid (unless this results in an attempt to divide by zero).
+<P></P>
+<B>Named Values as Operands
+<P></P>
+</B>A 4GL expression can include the name of a variable of any simple data type or
+the constants TRUE or FALSE. The variable can also be a simple member of a
+record, or a simple element of an array:
+<P></P>
+<IMG SRC="4GLREF00000202.gif" ALT="4GLREF00000202.gif" BORDER="0" USEMAP="#map126" WIDTH="454" HEIGHT="170"><MAP NAME="map126"><AREA COORDS="290,104,355,140" HREF="4GLREFInteger_Expressions.htm"></MAP>
+<P></P>
+<B>Function Calls as Operands
+<P></P>
+</B>A 4GL expression can include calls to functions that return exactly one value:
+<P></P>
+<IMG SRC="4GLREF00000203.gif" ALT="4GLREF00000203.gif" BORDER="0" USEMAP="#map127" WIDTH="454" HEIGHT="120"><MAP NAME="map127"><AREA COORDS="286,77,356,115" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+<B>function</B> is the name of a function. The parentheses are required, regardless of whether
+the function takes any arguments.
+<P></P>
+The function can be a programmer-defined or built-in function, provided that
+it returns a single value of a data type that is valid in the expression.
+(Function calls as arguments can return multiple values.) 
+<P></P>
+</BODY>
+</HTML>

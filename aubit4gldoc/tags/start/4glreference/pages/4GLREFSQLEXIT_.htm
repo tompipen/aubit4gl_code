@@ -1,0 +1,29 @@
+<HTML>
+<HEAD>
+<TITLE>SQLEXIT( )</TITLE>
+</HEAD><BODY>
+<B>SQLEXIT( )
+<P></P>
+</B>The SQLEXIT( ) function terminates the connection of the 4GL application to
+the database server, and returns a status code of zero. (No compilation error
+occurs if your application ignores this returned value.) 
+<P></P>
+<IMG SRC="4GLREF00000102.gif" ALT="4GLREF00000102.gif" BORDER="0" WIDTH="462" HEIGHT="38">
+<P></P>
+On a Windows system that uses version 4.1 of INFORMIX-NET PC, only one 4GL
+application at a given time can have a connection to an SQL database server. If
+two or more 4GL applications are running, and a connection is already open, the
+4GL application that has the connection must first invoke the SQLEXIT( )
+function before any other 4GL application or development tool like the PEM, Source
+Compiler, or Form Compiler can connect to a database. (Otherwise, runtime error
+-854 occurs.)
+<P></P>
+SQLEXIT( ) rolls back any open transaction, closes the current database, and
+terminates the INFORMIX-NET PC or local pstartsql connection and any client
+process supporting the 4GL application on a remote server. If the current database
+is remote, or if it uses transaction logging, first issue the CLOSE DATABASE
+statement before calling SQLEXIT( ). To verify that the rollback or database
+closure succeeded, examine the SQLCA record.
+<P></P>
+</BODY>
+</HTML>

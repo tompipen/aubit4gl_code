@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+<TITLE>UNITS</TITLE>
+</HEAD><BODY>
+<B>UNITS
+<P></P>
+</B>The UNITS operator returns an INTERVAL value, based on a single time unit. 
+<P></P>
+<IMG SRC="4GLREF00000106.gif" ALT="4GLREF00000106.gif" BORDER="0" USEMAP="#map62" WIDTH="456" HEIGHT="43"><MAP NAME="map62"><AREA COORDS="9,12,116,38" HREF="4GLREFInteger_Expressions.htm"></MAP>
+<P></P>
+<B>keyword</B> is one of the following keywords to specify a time unit: 
+<P></P>
+YEAR MONTH DAY
+<BR>HOUR MINUTE SECOND FRACTION(n)
+<P></P>
+Here n is an integer, greater than zero but less than 6, to specify the scale
+of the SECOND specification.
+<P></P>
+The UNITS operator returns an INTERVAL value for a single unit of time, such
+as DAY TO DAY, YEAR TO YEAR, or HOUR TO HOUR. If you substitute a number
+expression for the integer operand, any fractional part of the returned value is
+discarded before the UNITS operator is applied.
+<P></P>
+The UNITS operator has a higher precedence than any arithmetic or Boolean
+operator. You may need parentheses around its operand, if this is an expression
+that includes other operators. Any left-hand arithmetic operand that includes the
+UNITS operator must be enclosed within parentheses. 
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFArithmetic_Operators00000378.htm"></A></B><A HREF="4GLREFArithmetic_Operators00000378.htm">Arithmetic Operators</A> 
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,66 @@
+<HTML>
+<HEAD>
+<TITLE>COLOR Attribute</TITLE>
+</HEAD><BODY>
+<B>COLOR
+<P></P>
+</B>The COLOR attribute displays field text in a color or with other video
+attributes, either unconditionally, or only if a <A HREF="4GLREFBoolean.htm">Boolean</A> expression is TRUE.
+<P></P>
+<IMG SRC="4GLREF00000037.gif" ALT="4GLREF00000037.gif" BORDER="0" USEMAP="#map11" WIDTH="465" HEIGHT="93"><MAP NAME="map11"><AREA COORDS="331,49,435,86" HREF="4GLREFCOLOR_Attribute.htm#746b97f8"><AREA COORDS="58,25,118,54" HREF="4GLREFATTRIBUTES_Section.htm#1ccfe80d"></MAP>
+<P></P>
+<B>field-tag</B> is the <A HREF="4GLREFfield_tag.htm">field tag</A> that you declared in the SCREEN section.
+<P></P>
+<B>display mode</B> is one of the keywords to specify a color or an intensity. You can specify
+zero or one color, and zero or more intensities.
+<P></P>
+If you do not use the WHERE keyword to specify a 4GL Boolean expression, then
+the intensity and/or color in your display mode list applies to the field. 
+<P></P>
+<A NAME="746b97f8"></A><B>Boolean Expressions in 4GL Form Specification Files
+<P></P>
+</B>This is the syntax of 4GL Boolean expressions in the WHERE clause of a COLOR
+attribute specification.
+<P></P>
+<IMG SRC="4GLREF00000038.gif" ALT="4GLREF00000038.gif" BORDER="0" USEMAP="#map12" WIDTH="578" HEIGHT="531"><MAP NAME="map12"><AREA COORDS="167,423,236,459" HREF="4GLREFCharacter_Expressions.htm"><AREA COORDS="350,347,432,381" HREF="4GLREFExpressions_of_4GL.htm"><AREA COORDS="456,270,512,318" HREF="4GLREFExpressions_of_4GL.htm"><AREA COORDS="330,270,389,318" HREF="4GLREFExpressions_of_4GL.htm"><AREA COORDS="406,101,491,135" HREF="4GLREFExpressions_of_4GL.htm"><AREA COORDS="168,78,250,115" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+<B>char </B>is a single ASCII character, enclosed between a pair of single ( ' ) or double
+( &quot; ) quotation marks.
+<P></P>
+<B>character</B> is one or more literal or special characters, enclosed between two single ( '
+) or double ( &quot; ) quotation marks
+<P></P>
+<B>field tag</B> is the field tag of the current field.
+<P></P>
+In this diagram, terms for other 4GL expressions are restricted subsets.
+Except for the constants TRUE and FALSE, you cannot reference the name of a program <A HREF="4GLREFvariable.htm">variable</A> or <A HREF="4GLREFconstant.htm">constant</A> in the WHERE clause of a COLOR attribute specification. You can, however,
+include a <A HREF="4GLREFfield_tag.htm">field tag</A> or a <A HREF="4GLREFliteral.htm">literal</A> value wherever the name of a variable can appear in a 4GL expression that is
+a component of the 4GL Boolean expression. 
+<P></P>
+If any component of the 4GL Boolean expression is NULL, then the value of the
+entire 4GL Boolean expression is FALSE (rather than NULL), unless the IS NULL
+keywords are also included in the expression. Applying the NOT operator to a
+NULL value does not change its FALSE evaluation. 
+<P></P>
+<B>Related Attributes
+<P></P>
+</B><TABLE><TR VALIGN=TOP><TD><B><A HREF="4GLREFAUTONEXTAttribute.htm#dff45350"></A></B><A HREF="4GLREFAUTONEXTAttribute.htm#dff45350">AUTONEXT</A> 
+<BR></TD><TD><A HREF="4GLREFINCLUDE_Attribute.htm">INCLUDE</A> 
+<BR></TD><TD><A HREF="4GLREFREVERSE_Attribute.htm">REVERSE</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFCOMMENTS_Attribute.htm">COMMENTS</A> 
+<BR></TD><TD><A HREF="4GLREFINVISIBLE_Attribute.htm">INVISIBLE</A> 
+<BR></TD><TD><A HREF="4GLREFUPSHIFT_Attribute.htm">UPSHIFT</A>
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDEFAULT_Attribute.htm">DEFAULT</A>
+<BR></TD><TD><A HREF="4GLREFNOENTRY_Attribute.htm">NOENTRY</A>
+<BR></TD><TD><A HREF="4GLREFVALIDATE_LIKE_Attribute.htm">VALIDATE LIKE</A>
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDISPLAY_LIKE_Attribute.htm">DISPLAY LIKE</A>
+<BR></TD><TD><A HREF="4GLREFPICTURE_Attribute.htm">PICTURE</A>
+<BR></TD><TD><A HREF="4GLREFVERIFY_Attribute.htm">VERIFY</A>
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDOWNSHIFT_Attribute.htm">DOWNSHIFT</A>
+<BR></TD><TD><A HREF="4GLREFPROGRAM_Attribute.htm">PROGRAM</A>
+<BR></TD><TD><A HREF="4GLREFWORDWRAP_Attribute.htm">WORDWRAP</A>
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFFORMAT_Attribute.htm">FORMAT</A>
+<BR></TD><TD><A HREF="4GLREFREQUIRED_Attribute.htm">REQUIRED</A>
+<BR></TD><TD>
+<BR>&nbsp;</TD></TR></TABLE><B></B></BODY>
+</HTML>

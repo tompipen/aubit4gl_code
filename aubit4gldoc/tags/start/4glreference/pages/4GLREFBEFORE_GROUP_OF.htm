@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>BEFORE GROUP OF</TITLE>
+</HEAD><BODY>
+<B>BEFORE GROUP OF
+<P></P>
+</B>The BEFORE GROUP OF control block specifies the action that INFORMIX-4GL takes
+before it processes a group of records. Grouping is determined by the ORDER BY
+specification in the SELECT statement or in the REPORT routine. 
+<P></P>
+<IMG SRC="4GLREF00000014.gif" ALT="4GLREF00000014.gif" BORDER="0" WIDTH="452" HEIGHT="49">
+<P></P>
+<B><UL><LI>ariable</B>  is the name of a variable from the list of arguments to the REPORT routine.
+You must pass at least the value of variable through the arguments of the REPORT
+routine.
+<P></P>
+</UL><B>statement</B> is a Report execution statement or other 4GL statement. 
+<P></P>
+A group of records is all of the input records that contain the same value for
+the variable specified after the BEFORE GROUP OF keywords. This group variable
+must be passed through the report arguments. A report can include no more than
+one BEFORE GROUP OF control block for each group variable. 
+<P></P>
+When 4GL executes the statements in a BEFORE GROUP OF control block, the
+report variables have the values from the first record of the new group. From this
+perspective, the BEFORE GROUP OF control block could be thought of as the on
+first record of group control block.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFAFTER_GROUP_OF.htm"></A></B><A HREF="4GLREFAFTER_GROUP_OF.htm">AFTER GROUP OF</A> 
+<P></P>
+<A HREF="4GLREFFIRST_PAGE_HEADER.htm">FIRST PAGE HEADER</A> 
+<P></P>
+<A HREF="4GLREFEVERY_ROW.htm">EVERY ROW</A> 
+<P></P>
+<A HREF="4GLREFON_EVERY_ROW.htm">ON EVERY ROW</A>  
+<P></P>
+<A HREF="4GLREFON_LAST_ROW.htm">ON LAST ROW</A> 
+<P></P>
+<A HREF="4GLREFPAGE_HEADER00000343.htm">PAGE HEADER</A> 
+<P></P>
+<A HREF="4GLREFPAGE_TRAILER00000344.htm">PAGE TRAILER</A> 
+<P></P>
+</BODY>
+</HTML>

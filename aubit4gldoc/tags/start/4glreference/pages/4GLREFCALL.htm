@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>CALL</TITLE>
+</HEAD><BODY>
+</UL><B>CALL
+<P></P>
+</B>The CALL statement invokes a specified function.
+<P></P>
+<IMG SRC="4GLREF00000112.gif" ALT="4GLREF00000112.gif" BORDER="0" USEMAP="#map68" WIDTH="540" HEIGHT="91"><MAP NAME="map68"><AREA COORDS="431,49,497,84" HREF="4GLREFLET.htm"><AREA COORDS="181,49,272,77" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+<B>function</B>  is the name of the function to be executed.
+<P></P>
+<B>You can use the CALL statement to invoke functions from a 4GL application:
+<P></P>
+</B>Programmer-defined 4GL functions
+<P></P>
+4GL <A HREF="4GLREFbuiltin_function.htm">built-in function</A>s
+<P></P>
+C language functions
+<P></P>
+ESQL/C functions (if you have the INFORMIX-ESQL/C product)
+<P></P>
+Programmer-defined 4GL functions are defined in FUNCTION statements. These can
+appear in the same source file as the MAIN statement, or they can be compiled
+in separate .4GL modules (individually, or with other function and report
+definitions) and linked later to the MAIN program block. 
+<P></P>
+When 4GL encounters a CALL statement at run time, it locates the specified
+FUNCTION program block and executes its statements in sequence. If the function is
+not a built-in function, a link-time error occurs unless exactly one
+definition of that function exists in the modules that comprise the program.
+<P></P>
+The program block containing the CALL statement is called the <A HREF="4GLREFcalling_routine.htm">calling routine</A>. The RETURNING clause can specify the name of one or more variables that the
+function returns to the calling routine. This variable (or list of variables)
+has the same syntax as a receiving variable in the LET statement.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFDEFINE00000433.htm"></A></B><A HREF="4GLREFDEFINE00000433.htm">DEFINE</A> 
+<P></P>
+<A HREF="4GLREFFUNCTION00000443.htm">FUNCTION</A> 
+<P></P>
+<A HREF="4GLREFRETURN.htm">RETURN</A> 
+<P></P>
+<A HREF="4GLREFWHENEVER.htm#b7ca4914">WHENEVER</A> 
+<P></P>
+</BODY>
+</HTML>

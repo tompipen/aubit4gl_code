@@ -1,0 +1,136 @@
+<HTML>
+<HEAD>
+<TITLE>DISPLAY ARRAY</TITLE>
+</HEAD><BODY>
+<B>DISPLAY ARRAY
+<P></P>
+</B>The DISPLAY ARRAY statement displays program <A HREF="4GLREFarray00000023.htm">array</A> values in a screen array, so that the user can scroll through the screen
+array. 
+<P></P>
+<IMG SRC="4GLREF00000136.gif" ALT="4GLREF00000136.gif" BORDER="0" USEMAP="#map83" WIDTH="584" HEIGHT="90"><MAP NAME="map83"><AREA COORDS="410,44,460,84" HREF="4GLREFDISPLAY_ARRAY.htm#f2cb829e"><AREA COORDS="277,34,350,72" HREF="4GLREFATTRIBUTE00000476.htm"></MAP>
+<P></P>
+<B>record array </B>is the identifier of a program array of RECORD variables. 
+<P></P>
+<B>screen array</B> is the identifier of a screen array. 
+<P></P>
+<B>To use the DISPLAY ARRAY statement, you must do the following:
+<P></P>
+</B><OL><LI> Define the screen array in the form specification file.
+<P></P>
+<LI> Use DEFINE to declare an array of program records, whose members correspond in
+name, data type, and order to the screen array fields.
+<P></P>
+<LI> Open and display the screen form with either of the following:
+<P></P>
+</OL>The OPEN FORM and DISPLAY FORM statements.
+<P></P>
+The OPEN WINDOW statement with the WITH FORM clause.
+<P></P>
+<OL START="4"><LI> Fill the program array with data to be displayed, counting the number of
+program records being filled with retrieved data.
+<P></P>
+<LI> Call the SET_COUNT(x) function, with x the number of filled records.
+<P></P>
+<LI> Use the DISPLAY ARRAY statement to display the program array values in the
+screen array fields.
+<P></P>
+</OL>The SET_COUNT( ) function sets the initial value of the ARR_COUNT( ) function.
+If you do not call SET_COUNT( ), then 4GL cannot determine how much data to
+display, and so the screen array remains empty.
+<P></P>
+The DISPLAY ARRAY statement binds the screen array fields to the member
+records of the program array. The number of variables in each record of the program
+array must be the same as the number of fields in each screen record (that is,
+in a single row of the screen array). Each mapped variable must have the same
+data type or a compatible data type as the corresponding field.
+<P></P>
+The size of the screen array (from the form specification file) determines the
+number of program records that 4GL displays at one time on the screen. The
+size of the program array determines how many retrieved rows of data the program
+can store. The size of the program array can exceed the size of the screen
+array. In this case, the user can scroll through the rows on the form.
+<P></P>
+<B>When 4GL encounters a DISPLAY ARRAY statement, it does the following:
+<P></P>
+</B><OL><LI> Displays the program array values in the screen array fields.
+<P></P>
+<LI> Moves the cursor to the first field in the first screen record.
+<P></P>
+<LI> Waits for the user to press a scroll key (by default, F3 to scroll forward, or
+F4 to scroll backwards) or the Next Page or Previous Page keys or mouse
+buttons, or to choose <A HREF="4GLREFAccept_key.htm">Accept key</A>.
+<P></P>
+</OL>Since the DISPLAY ARRAY statement does not terminate until the user presses
+the Accept or Interrupt key, you may want to display a message informing the
+user. 
+<P></P>
+<B>By default, 4GL displays variables and constants as follows:
+<P></P>
+</B>Right-justifies number values in a screen field.
+<P></P>
+Left-justifies <A HREF="4GLREFcharacter00000048.htm">character</A> values in a screen field. 
+<P></P>
+Truncates the displayed value, if a character value is longer than the field.
+<P></P>
+Fills the field with asterisks ( * ) to indicate an overflow, if a number
+value is larger than the field can display. 
+<P></P>
+If the field contains a BYTE value, displays &lt;byte value&gt; in the field.
+<P></P>
+<A NAME="f2cb829e"></A><B>The ON KEY Blocks
+<P></P>
+</B>The ON KEY keywords specify a block of statements to be executed when the user
+selects one of the specified keys. This is the syntax of the ON KEY block:
+<P></P>
+<IMG SRC="4GLREF00000137.gif" ALT="4GLREF00000137.gif" BORDER="0" WIDTH="459" HEIGHT="102">
+<P></P>
+<B>key name</B> is one or more of these keywords, in uppercase or lowercase letters, separated
+by commas, to specify a key:
+<P></P>
+<TABLE><TR VALIGN=TOP><TD>ACCEPT
+<BR></TD><TD>HELP
+<BR></TD><TD>NEXT or
+<BR></TD><TD>RETURN
+<BR></TD></TR><TR VALIGN=TOP><TD>DELETE
+<BR></TD><TD>INSERT
+<BR></TD><TD>NEXTPAGE
+<BR></TD><TD>RIGHT
+<BR></TD></TR><TR VALIGN=TOP><TD>DOWN
+<BR></TD><TD>INTERRUPT
+<BR></TD><TD>PREVIOUS or 
+<BR></TD><TD>TAB
+<BR></TD></TR><TR VALIGN=TOP><TD>ESC or ESCAPE
+<BR></TD><TD>LEFT
+<BR></TD><TD>PREVPAGE 
+<BR></TD><TD>UP
+<BR></TD></TR></TABLE><TABLE><TR VALIGN=TOP><TD>F1 through F64
+<BR></TD><TD>
+<BR>&nbsp;</TD><TD>
+<BR>&nbsp;</TD><TD>
+<BR>&nbsp;</TD></TR><TR VALIGN=TOP><TD>CONTROL-<I>char</I>  (except A, D, H, I, J, L, M, R, or X)
+<BR></TD><TD>
+<BR>&nbsp;</TD><TD>
+<BR>&nbsp;</TD><TD>
+<BR>&nbsp;</TD></TR></TABLE><B>statement </B>is an SQL statement or some other 4GL statement. 
+<P></P>
+For key name you can also substitute the NEXTPAGE keyword as a synonym for
+NEXT, and PREVPAGE as a synonym for PREVIOUS.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFATTRIBUTE00000476.htm"></A></B><A HREF="4GLREFATTRIBUTE00000476.htm">ATTRIBUTE</A> 
+<P></P>
+<A HREF="4GLREFDISPLAY.htm">DISPLAY</A> 
+<P></P>
+<A HREF="4GLREFINPUT_ARRAY.htm">INPUT ARRAY</A> 
+<P></P>
+<A HREF="4GLREFOPEN_WINDOW.htm#beef7ac7">OPEN WINDOW</A> 
+<P></P>
+<A HREF="4GLREFOPTIONS.htm">OPTIONS</A> 
+<P></P>
+<A HREF="4GLREFSCROLL.htm">SCROLL</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

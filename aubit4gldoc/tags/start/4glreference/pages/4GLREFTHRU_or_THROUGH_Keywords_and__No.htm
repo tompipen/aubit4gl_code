@@ -1,0 +1,42 @@
+<HTML>
+<HEAD>
+<TITLE>THRU or THROUGH Keywords and .* Notation</TITLE>
+</HEAD><BODY>
+<B>THRU or THROUGH Keywords and .* Notation
+<P></P>
+</B>To list consecutive set members in the same order as in their declaration, you
+can use the .* notation to specify the entire set, or you can use the keyword
+THRU (or THROUGH, its synonym) to specify a subset of consecutive items:
+<P></P>
+<IMG SRC="4GLREF00000225.gif" ALT="4GLREF00000225.gif" BORDER="0" WIDTH="457" HEIGHT="207">
+<P></P>
+<B>first </B>is the name of some member variable or field of the record.
+<P></P>
+<B>last </B>is a variable or field that was declared later than first.
+<P></P>
+<B>line  </B>is an integer expression, within brackets, to specify a record in screen
+array. Here 1 &lt;= line &lt;= size, for size the declared array size.
+<P></P>
+<B>record variable </B> is the name of a structured variable of the RECORD data type.
+<P></P>
+<B>same </B>is the name of the same record or table that qualified first.
+<P></P>
+<B>screen array</B> is the 4GL identifier of a screen array.  
+<P></P>
+<B>screen record</B> is the name of a screen record, or the name, alias, or synonym of a table or
+view. (as the name of a default screen record). 
+<P></P>
+<B>table </B>is the name, synonym, or alias of a database table or view.
+<P></P>
+These notational devices in 4GL statements can simplify lists of structured
+sets of fields of a screen record, or member variables of a program record. (The
+columns of a database table can be referenced by the asterisk notation, but you
+cannot use THRU nor THROUGH to specify a partial list of columns.)
+<P></P>
+If the ALTER TABLE statement has changed the order, the names, the data types,
+or the number of the columns in table since you compiled your program, then
+you might need to modify your program and its screen forms that reference that
+table before you can use these notational devices.
+<P></P>
+</BODY>
+</HTML>

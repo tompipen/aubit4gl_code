@@ -1,0 +1,32 @@
+<HTML>
+<HEAD>
+<TITLE>CHAR</TITLE>
+</HEAD><BODY>
+<B>CHAR
+<P></P>
+</B>The CHAR data type of 4GL can store any ASCII character string, up to a length
+specified between parentheses ( ( ) ) symbols in the size parameter of the
+DEFINE statement that declares the data type. The size can range from 1 to 32,767. 
+<P></P>
+The resulting default CHAR data type can store only a single character. In a
+form, you cannot specify the size of a FORMONLY CHAR field; the size defaults to
+the field length from the screen layout. On the INFORMIX-SE engine, the
+maximum data string length that a CHAR column can store is 32,511.   
+<P></P>
+The CHAR data type requires one byte of storage per character, or size bytes.
+When a string value is passed between a CHAR variable and a CHAR database
+column, or between two CHAR variables, exactly size bytes of data are transferred,
+for size the declared length of the 4GL variable or the database column that
+receives the string. If the length of the data string is shorter than this size,
+the string is padded with trailing blank spaces to fill the declared size. If
+the string is longer than size, then the stored value is truncated. A character
+string returned by a function can contain no more than 511 bytes of data. 
+<P></P>
+To perform arithmetic on numbers stored in variables, use a number data type.
+CHAR variables can store digits, but you might not be able to use them in some
+calculations. Similarly, leading zeros (as in some postal codes) are stripped
+from values stored as the number data types INTEGER or SMALLINT. You should
+store such values as CHAR data types.
+<P></P>
+</BODY>
+</HTML>

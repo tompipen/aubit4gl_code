@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>FORMAT Section</TITLE>
+</HEAD><BODY>
+<B>FORMAT Section
+<P></P>
+</B>A 4GL REPORT routine must contain a FORMAT section. The FORMAT section
+determines what the output from the report will look like. It works with the values
+that are passed to the routine through the argument list, or with global or
+modular variables in each record of the report. The FORMAT section begins with the
+FORMAT keyword, and ends with the END REPORT keywords. 
+<P></P>
+4GL supports two types of FORMAT sections. The simplest (a default report)
+contains only the EVERY ROW keywords between the FORMAT and END REPORT keywords.
+<P></P>
+More complex FORMAT sections can contain control blocks, such as ON EVERY ROW
+and BEFORE GROUP OF, containing statements for execution while the report is
+being processed. Each control block can contain report execution statements, such
+as PRINT or SKIP n LINES, or other 4GL statements. Sections that follow
+describe the syntax of default FORMAT sections, of these seven types of control
+blocks, and of the report execution statements that can appear only within a control
+block. The FORMAT section has the following structure: 
+<P></P>
+<IMG SRC="4GLREF00000012.gif" ALT="4GLREF00000012.gif" BORDER="0" USEMAP="#map3" WIDTH="447" HEIGHT="291"><MAP NAME="map3"><AREA COORDS="182,225,273,249" HREF="4GLREFPAGE_TRAILER00000344.htm"><AREA COORDS="184,261,273,286" HREF="4GLREFON_LAST_ROW.htm"><AREA COORDS="179,189,278,213" HREF="4GLREFON_EVERY_ROW.htm"><AREA COORDS="167,117,290,142" HREF="4GLREFFIRST_PAGE_HEADER.htm"><AREA COORDS="170,81,287,105" HREF="4GLREFBEFORE_GROUP_OF.htm"><AREA COORDS="174,46,282,69" HREF="4GLREFAFTER_GROUP_OF.htm"></MAP>
+<P></P>
+If you do not use the EVERY ROW keywords to specify a default report, you can
+combine one or more control blocks in any order within the FORMAT section.
+Except for BEFORE GROUP OF and AFTER GROUP OF control blocks, each type of control
+block must be unique within the report.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFAFTER_GROUP_OF.htm"></A></B><A HREF="4GLREFAFTER_GROUP_OF.htm">AFTER GROUP OF</A> 
+<P></P>
+<A HREF="4GLREFBEFORE_GROUP_OF.htm">BEFORE GROUP OF</A> 
+<P></P>
+<A HREF="4GLREFEVERY_ROW.htm">EVERY ROW</A> 
+<P></P>
+<A HREF="4GLREFFIRST_PAGE_HEADER.htm">FIRST PAGE HEADER</A> 
+<P></P>
+<A HREF="4GLREFON_EVERY_ROW.htm">ON EVERY ROW</A> 
+<P></P>
+<A HREF="4GLREFON_LAST_ROW.htm">ON LAST ROW</A> 
+<P></P>
+<A HREF="4GLREFPAGE_HEADER00000343.htm">PAGE HEADER</A> 
+<P></P>
+<A HREF="4GLREFPAGE_TRAILER00000344.htm">PAGE TRAILER</A> 
+<P></P>
+</BODY>
+</HTML>

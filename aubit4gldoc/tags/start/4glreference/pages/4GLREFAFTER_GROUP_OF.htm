@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>AFTER GROUP OF</TITLE>
+</HEAD><BODY>
+<B>AFTER GROUP OF
+<P></P>
+</B>The AFTER GROUP OF control block specifies the action that INFORMIX-4GL takes
+after it processes a group of sorted records. Grouping is determined by the
+ORDER BY specification in the SELECT statement or in the REPORT routine.
+<P></P>
+<IMG SRC="4GLREF00000013.gif" ALT="4GLREF00000013.gif" BORDER="0" WIDTH="465" HEIGHT="41">
+<P></P>
+<B>statement</B> is a Report execution statement or other 4GL statement. 
+<P></P>
+<B><UL><LI>ariable</B> is the name of a variable from the list of arguments to the REPORT routine.
+You must pass at least the value of variable through the arguments of the REPORT
+routine.
+<P></P>
+</UL>A group of records is all of the input records that contain the same value for
+the variable whose name follows the AFTER GROUP OF keywords. This group
+variable must be passed through the report arguments. A report can include no more
+than one AFTER GROUP OF control block for each group variable.
+<P></P>
+When 4GL executes the statements in a AFTER GROUP OF control block, local
+variables have the values from the last record of the new group. From this
+perspective, the AFTER GROUP OF control block could be thought of as the on last record
+of group control block.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFBEFORE_GROUP_OF.htm"></A></B><A HREF="4GLREFBEFORE_GROUP_OF.htm">BEFORE GROUP OF</A> 
+<P></P>
+<A HREF="4GLREFEVERY_ROW.htm">EVERY ROW</A> 
+<P></P>
+<A HREF="4GLREFFIRST_PAGE_HEADER.htm">FIRST PAGE HEADER</A> 
+<P></P>
+<A HREF="4GLREFON_EVERY_ROW.htm">ON EVERY ROW</A> 
+<P></P>
+<A HREF="4GLREFON_LAST_ROW.htm">ON LAST ROW</A> 
+<P></P>
+<A HREF="4GLREFPAGE_HEADER00000343.htm">PAGE HEADER</A> 
+<P></P>
+<A HREF="4GLREFPAGE_TRAILER00000344.htm">PAGE TRAILER</A> 
+<P></P>
+<A HREF="4GLREFAggregate_Report_Functions.htm">Aggregate Report Functions</A> 
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,20 @@
+<HTML>
+<HEAD>
+<TITLE>transaction</TITLE>
+</HEAD><BODY>
+<B>transaction
+<P></P>
+</B>A collection of one or more SQL statements that must be treated as a single
+unit of work. The SQL statements within the transaction must all be successful
+for the transaction to succeed. If one of the statements in a transaction fails,
+the entire transaction can be rolled back (canceled). If the transaction is
+successful, the work is committed and all changes to the database from the
+transaction are accepted. The transaction log contains the changes made to the
+database during a transaction. If a database is not ANSI-compliant, it uses singleton
+transactions if it does not use a transaction log and it uses explicit
+transactions otherwise. If a database is ANSI-compliant, it uses implicit transactions. 
+<P></P>
+See also <A HREF="4GLREFANSIcompliant.htm">ANSI-compliant</A>, <A HREF="4GLREFcommit.htm">commit</A>, <A HREF="4GLREFexplicit_transaction.htm">explicit transaction</A>, <A HREF="4GLREFimplicit_transaction.htm">implicit transaction</A>, <A HREF="4GLREFlog.htm#d7c4253b">log</A>, <A HREF="4GLREFroll_back.htm">roll back</A>, <A HREF="4GLREFsingleton_transaction.htm">singleton transaction</A>.
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,139 @@
+<HTML>
+<HEAD>
+<TITLE>DEFINE</TITLE>
+</HEAD><BODY>
+<B>DEFINE
+<P></P>
+</B>The DEFINE statement declares the names and <A HREF="4GLREFData_Types_of_INFORMIX4GL.htm">data types</A> of 4GL variables.
+<P></P>
+<IMG SRC="4GLREF00000002.gif" ALT="4GLREF00000002.gif" BORDER="0" USEMAP="#map74" WIDTH="457" HEIGHT="63"><MAP NAME="map74"><AREA COORDS="234,30,352,55" HREF="4GLREFDEFINE00000433.htm#4def374a"></MAP>
+<P></P>
+<B><UL><LI>ariable</B> is a name that you declare here as the identifier of a variable. 
+<P></P>
+</UL>A variable is a named location in memory that can store a single value, or an
+ordered set of values. Except for predefined global variables like status,
+int_flag, quit_flag, or the SQLCA record, you cannot reference a variable before it
+has been declared by the DEFINE statement. 
+<P></P>
+<B>Declaring the Names and Data Types of Variables
+<P></P>
+</B>The DEFINE statement must declare the name and the data type of each new
+variable, either explicitly or else implicitly (by using the LIKE keyword):
+<P></P>
+<IMG SRC="4GLREF00000126.gif" ALT="4GLREF00000126.gif" BORDER="0" USEMAP="#map75" WIDTH="459" HEIGHT="288"><MAP NAME="map75"><AREA COORDS="232,121,307,148" HREF="4GLREFTable_Qualifiers.htm"><AREA COORDS="194,186,291,215" HREF="4GLREFDEFINE00000433.htm#bd8e3c4b"><AREA COORDS="196,253,284,282" HREF="4GLREFDEFINE00000433.htm#a1149f3b"><AREA COORDS="310,221,401,251" HREF="4GLREFDEFINE00000433.htm#2adad2fb"><AREA COORDS="327,144,407,184" HREF="4GLREFDEFINE00000433.htm#e4b37c8e"></MAP>
+<P></P>
+<B>column</B> is the name of a database column, qualified by the name or synonym of a table
+or view.
+<P></P>
+<B>table  </B>is the name or synonym of a database table or view
+<P></P>
+<B><UL><LI>ariable </B> is the name of the variable. This must be unique among variables within the
+same scope of reference
+<P></P>
+</UL><B>Variables of Simple Data Types
+<P></P>
+</B><IMG SRC="4GLREF00000127.gif" ALT="4GLREF00000127.gif" BORDER="0" USEMAP="#map76" WIDTH="580" HEIGHT="451"><MAP NAME="map76"><AREA COORDS="168,300,274,329" HREF="4GLREFTime_Expressions.htm#cc12ad54"><AREA COORDS="168,339,274,369" HREF="4GLREFTime_Expressions.htm#98323f2a"></MAP>
+<P></P>
+<B>maximum size</B> is a whole number from 1 to 255, specifying the largest number of characters
+that the VARCHAR data type can store. 
+<P></P>
+<B>precision </B>specifies the total number of decimal digits, from 1 to 32.
+<P></P>
+<B>reserve size</B> is a whole number, from 0 to maximum size. The default is 0. 
+<BR>(Like precision for FLOAT  or DOUBLE PRECISION, 4GL accepts this value for
+compatibility with SQL, but does not use this value.)
+<P></P>
+<B>scale </B>is a whole number, from 1 to precision, specifying the number of digits in the
+fractional part of a fixed-point number.
+<P></P>
+<B>size </B>is a whole number from 1 to 32,767, specifying how many characters a CHAR data
+type can store. The default is 1.
+<P></P>
+<B>Indirect Typing
+<P></P>
+</B>You can use LIKE after the names of variables to declare variables that have
+the same simple data types as specified columns in a database table.)
+<P></P>
+<IMG SRC="4GLREF00000128.gif" ALT="4GLREF00000128.gif" BORDER="0" WIDTH="462" HEIGHT="215">
+<P></P>
+<B>column</B> is the identifier of some column in table, as it appears in the syscolumns
+table of the system catalog.
+<P></P>
+<B>database</B> is the identifier of the database in which the table resides.
+<P></P>
+<B>owner </B>is the login name of the owner of the table containing the column.
+<P></P>
+<B>server </B>is the identifier of an OnLine server. The @ symbol is required.
+<P></P>
+<B>table </B>is the identifier or synonym of a table or view in the specified database or
+else a default database from the DATABASE statement.
+<P></P>
+<B><UL><LI>ariable</B> is the 4GL identifier of a variable that you declare here.
+<P></P>
+</UL>If table is a view, then column cannot be based on an aggregate. If LIKE
+references a SERIAL column, the new variable is of the INTEGER data type.
+<P></P>
+<B>Variables of Large Data Types
+<P></P>
+</B>These store pointers to binary large object (<A HREF="4GLREFblob.htm">BLOB</A>) values, up to 2**31 <A HREF="4GLREFbyte00000042.htm">byte</A>s in size (or up to a limit imposed by your implementation of INFORMIX-OnLine):
+<P></P>
+TEXT Character strings.
+<P></P>
+BYTE Anything that can be digitized and stored on your system.
+<P></P>
+<IMG SRC="4GLREF00000129.gif" ALT="4GLREF00000129.gif" BORDER="0" WIDTH="454" HEIGHT="56">
+<P></P>
+<B>Variables of Structured Data Types
+<P></P>
+</B>INFORMIX-4GL supports two structured data types for storing sets of values:
+<P></P>
+ARRAY  <A HREF="4GLREFarray00000023.htm">Array</A>s of values of any data type except ARRAY.
+<P></P>
+RECORD Sets of values of any data type, or any combination of types.
+<P></P>
+<B>ARRAY Variables
+<P></P>
+</B>The ARRAY keyword declares a structured variable that  can store a 1-, 2-, or
+3-dimensional array of values, all of the same data type: 
+<P></P>
+<IMG SRC="4GLREF00000130.gif" ALT="4GLREF00000130.gif" BORDER="0" USEMAP="#map77" WIDTH="573" HEIGHT="135"><MAP NAME="map77"><AREA COORDS="382,70,509,96" HREF="4GLREFDEFINE00000433.htm#bd8e3c4b"><AREA COORDS="380,35,509,62" HREF="4GLREFDEFINE00000433.htm#e4b37c8e"></MAP>
+<P></P>
+<B>size</B> is the number (up to 32,767) of elements in a dimension. Dimensions can be
+different sizes, up to the limit of your C compiler.
+<P></P>
+The elements of an ARRAY variable can be  of any data type except ARRAY. The
+limit on the total number of elements in an array is compiler-dependent.
+<P></P>
+<B>RECORD Variables
+<P></P>
+</B>A 4GL program record is a collection of members, each of which is a variable.
+The member variables of a record can be of any 4GL data type, including the
+simple data types, the structured (ARRAY, RECORD) data types, and the large (
+BYTE, and TEXT) data types.:
+<P></P>
+<IMG SRC="4GLREF00000131.gif" ALT="4GLREF00000131.gif" BORDER="0" USEMAP="#map78" WIDTH="702" HEIGHT="170"><MAP NAME="map78"><AREA COORDS="274,125,374,161" HREF="4GLREFTable_Qualifiers.htm"><AREA COORDS="266,58,405,93" HREF="4GLREFData_Types_of_INFORMIX4GL.htm"></MAP>
+<P></P>
+<B>member</B> is a name that you declare for a member variable of the record; this
+identifier must be unique within the record.
+<P></P>
+<B>table</B> is the name or synonym of a table or view in a database from the table
+qualifier, or in a default database that DATABASE specified before the first program
+block in this module. You cannot specify table.* here, if table is a view
+containing an aggregate column.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFDATABASE00000431.htm"></A></B><A HREF="4GLREFDATABASE00000431.htm">DATABASE</A> 
+<P></P>
+<A HREF="4GLREFFUNCTION00000443.htm">FUNCTION</A> 
+<P></P>
+<A HREF="4GLREFGLOBALS.htm">GLOBALS</A> 
+<P></P>
+<A HREF="4GLREFMAIN.htm">MAIN</A> 
+<P></P>
+<A HREF="4GLREFREPORT00000465.htm">REPORT</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

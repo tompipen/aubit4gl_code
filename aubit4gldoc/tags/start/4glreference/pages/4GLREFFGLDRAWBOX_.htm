@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+<TITLE>FGL_DRAWBOX( )</TITLE>
+</HEAD><BODY>
+<B>FGL_DRAWBOX( )
+<P></P>
+</B>The FGL_DRAWBOX( ) function displays a rectangle of a specified size.
+<P></P>
+<IMG SRC="4GLREF00000085.gif" ALT="4GLREF00000085.gif" BORDER="0" WIDTH="463" HEIGHT="52">
+<P></P>
+<B>color</B>  is an integer expression that returns a positive whole number, specifying a
+foreground color code.
+<P></P>
+<B>height</B>  is an integer expression, specifying the number of screen lines occupied by
+the rectangle.
+<P></P>
+<B>left-offset</B> is an integer expression, specifying the horizontal coordinate (in characters)
+of the upper-left corner of the rectangle, where 1 is the first (or left-most)
+character in a line of the current 4GL window.
+<P></P>
+<B>line</B> is an integer expression, specifying the vertical coordinate of the upper-left
+corner, where 1 means the first (or topmost) line.
+<P></P>
+<B>width</B>  is an integer expression, specifying the number of character positions
+occupied by each line of the rectangle.
+<P></P>
+The FGL_DRAWBOX( ) function draws a rectangle with the upper left corner at
+(line, left-offset) and the specified height and width. These dimensions must
+have positive integer values, in units of lines and character positions, where
+(0,0) is the upper-left corner of the current 4GL window. The optional color
+number must correspond to one of the following foreground colors:
+<P></P>
+
+<P></P>
+<TABLE><TR VALIGN=TOP><TD><B>Color Number
+<BR></B></TD><TD><B>Foreground Color
+<BR></B></TD></TR><TR VALIGN=TOP><TD><B></B>0
+<BR></TD><TD>WHITE
+<BR></TD></TR><TR VALIGN=TOP><TD><OL><LI>
+<BR>&nbsp;</TD><TD></OL>YELLOW
+<BR></TD></TR><TR VALIGN=TOP><TD><OL START="2"><LI>
+<BR>&nbsp;</TD><TD></OL>MAGENTA
+<BR></TD></TR><TR VALIGN=TOP><TD><OL START="3"><LI>
+<BR>&nbsp;</TD><TD></OL>RED
+<BR></TD></TR><TR VALIGN=TOP><TD><OL START="4"><LI>
+<BR>&nbsp;</TD><TD></OL>CYAN
+<BR></TD></TR><TR VALIGN=TOP><TD><OL START="5"><LI>
+<BR>&nbsp;</TD><TD></OL>GREEN
+<BR></TD></TR><TR VALIGN=TOP><TD><OL START="6"><LI>
+<BR>&nbsp;</TD><TD></OL>BLUE
+<BR></TD></TR><TR VALIGN=TOP><TD><OL START="7"><LI>
+<BR>&nbsp;</TD><TD></OL>BLACK
+<BR></TD></TR></TABLE><B></B></BODY>
+</HTML>

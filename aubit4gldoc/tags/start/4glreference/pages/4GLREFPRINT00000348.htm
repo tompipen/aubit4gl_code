@@ -1,0 +1,112 @@
+<HTML>
+<HEAD>
+<TITLE>PRINT</TITLE>
+</HEAD><BODY>
+<B>PRINT
+<P></P>
+</B>The PRINT statement produces output from a REPORT routine.
+<P></P>
+<IMG SRC="4GLREF00000023.gif" ALT="4GLREF00000023.gif" BORDER="0" USEMAP="#map4" WIDTH="546" HEIGHT="297"><MAP NAME="map4"><AREA COORDS="100,203,174,242" HREF="4GLREFCharacter_Expressions.htm"><AREA COORDS="101,159,217,186" HREF="4GLREFPRINT00000348.htm#16344de9"><AREA COORDS="101,25,183,48" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+<B>BYTE variable</B> is the identifier of an 4GL variable of data type BYTE.
+<P></P>
+<B>filename</B> is a character string, enclosed between quotation ( &quot; ) marks, and specifying
+the name of an <A HREF="4GLREFASCII00000025.htm">ASCII</A> file to include in the output from the report. The filename can include a
+path name.
+<P></P>
+<B>left offset</B> is an expression that evaluates to a positive whole number, specifying a
+character position offset (from the left margin) no greater than the difference
+(right margin - left margin).
+<P></P>
+<B>relative offset</B> is an expression that evaluates to a positive whole number, specifying an
+offset (from the current character position) no greater than the difference (right
+margin - current position).
+<P></P>
+<B>temporary</B> is an expression that evaluates to a positive whole number, specifying the
+absolute position of a temporary right margin. 
+<P></P>
+<B>TEXT variable</B> is the identifier of an 4GL variable of the TEXT data type.
+<P></P>
+This statement can include character data in the form of an ASCII file, a TEXT
+variable, or a comma-separated expression list of character expressions in the
+output of the report. (For a TEXT variable or filename, you cannot specify
+additional output in the same PRINT statement.) You cannot display a BYTE value.
+Unless its scope of reference is global or the current module, any program
+variable in expression list must be declared in the <A HREF="4GLREFDEFINE_Section.htm">DEFINE section</A>.
+<P></P>
+Output is sent to the file, pipe, or device specified in the REPORT TO clause
+of the <A HREF="4GLREFOUTPUT_Section.htm">OUTPUT section</A>, or in the TO clause of the START REPORT statement of the calling routine.
+Otherwise, the screen displays the output.
+<P></P>
+<A NAME="16344de9"></A><B>Aggregate Report Functions 
+<P></P>
+</B>Aggregate report functions summarize data from several records in a report.
+The syntax and effects of these functions in a report resemble those of SQL
+aggregate functions, but are not identical.
+<P></P>
+<IMG SRC="4GLREF00000024.gif" ALT="4GLREF00000024.gif" BORDER="0" USEMAP="#map5" WIDTH="672" HEIGHT="188"><MAP NAME="map5"><AREA COORDS="269,144,383,178" HREF="4GLREFExpressions_of_4GL.htm"><AREA COORDS="519,52,608,99" HREF="4GLREF4GL_Boolean_Expressions.htm"><AREA COORDS="268,104,385,137" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="268,63,388,96" HREF="4GLREFNumber_Expressions.htm"></MAP>
+<P></P>
+The expression (in parentheses) that SUM( ), AVG( ), MIN( ), or MAX( ) take as
+an argument is typically of a number or INTERVAL data type; large binary and
+structured data types are not valid. The AVG( ), SUM( ), MIN( ), and MAX( )
+aggregates all ignore records for which their arguments have NULL values, but each
+returns NULL if every record has a NULL value for the argument.
+<P></P>
+<B>The GROUP Keyword
+<P></P>
+</B>This optional keyword causes the <A HREF="4GLREFaggregate_function.htm">aggregate function</A> to include data only for a group of records that have the same value on a
+variable that you specify in an AFTER GROUP OF control block. An aggregate
+function can only include the GROUP keyword within an AFTER GROUP OF control block.
+<P></P>
+<B>The WHERE Clause
+<P></P>
+</B>The optional WHERE clause allows you to select among records passed to the
+report, so that only records for which the Boolean expression is TRUE are included.
+<P></P>
+<B>The AVG( ) and SUM( ) Aggregates 
+<P></P>
+</B>These evaluate as the average (that is, the arithmetic mean value) and the
+total (respectively) of expression among all records, or among records qualified
+by the optional WHERE clause and any GROUP specification. 
+<P></P>
+<B>The COUNT ( * ) and PERCENT ( * ) Aggregates
+<P></P>
+</B>These return, respectively, the total number of records qualified by the
+optional WHERE clause, and the percentage of the total number of records in the
+report. You must include the ( * ) symbols. 
+<P></P>
+<B>The MIN( ) and MAX( ) Aggregates
+<P></P>
+</B>These evaluates as the minimum value and maximum value (respectively) for
+expression among all records, or among records qualified by the optional WHERE
+clause and any GROUP specification. For character data, greater than means after in
+the <A HREF="4GLREFASCII00000025.htm">ASCII</A> collating sequence, where a&gt; A&gt; 1, and less than means before in the ASCII
+sequence, where 1&lt; A&lt; a. For DATETIME or DATE data, greater than means later and
+less than means earlier in time. Appendix A lists the ASCII collating sequence.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFNEED00000346.htm"></A></B><A HREF="4GLREFNEED00000346.htm">NEED</A> 
+<P></P>
+<A HREF="4GLREFPAUSE00000347.htm">PAUSE</A> 
+<P></P>
+<A HREF="4GLREFPRINT00000348.htm">PRINT</A> 
+<P></P>
+<A HREF="4GLREFSKIP00000349.htm">SKIP</A> 
+<P></P>
+<A HREF="4GLREFSPACE_or_SPACES.htm">SPACE</A> or <A HREF="4GLREFSPACE_or_SPACES.htm">SPACES</A> 
+<P></P>
+<A HREF="4GLREFWORDWRAP_Operator.htm">WORDWRAP</A> 
+<P></P>
+<A HREF="4GLREFPAGENO.htm">PAGENO</A> 
+<P></P>
+<A HREF="4GLREFLINENO.htm">LINENO</A> 
+<P></P>
+<A HREF="4GLREFCOLUMN00000384.htm">COLUMN</A> 
+<P></P>
+<A HREF="4GLREFASCII00000381.htm">ASCII</A> 
+<P></P>
+<A HREF="4GLREFAggregate_Report_Functions.htm">Aggregate Report Functions</A> 
+<P></P>
+</BODY>
+</HTML>

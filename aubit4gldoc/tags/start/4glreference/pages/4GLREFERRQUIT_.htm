@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+<TITLE>ERR_QUIT( )</TITLE>
+</HEAD><BODY>
+<B>ERR_QUIT( )
+<P></P>
+</B>The ERR_QUIT( ) function displays on the Error line the text of an SQL or 4GL
+error message, corresponding to a negative integer argument, and then
+terminates the program. 
+<P></P>
+<IMG SRC="4GLREF00000082.gif" ALT="4GLREF00000082.gif" BORDER="0" USEMAP="#map50" WIDTH="455" HEIGHT="34"><MAP NAME="map50"><AREA COORDS="155,2,256,29" HREF="4GLREFInteger_Expressions.htm"></MAP>
+<P></P>
+The argument of ERR_QUIT( ) specifies an error message number. This must be
+less than zero. It is typically the value of the global status variable, which is
+affected by both SQL and 4GL errors. For SQL errors only, you can examine the
+global SQLCA.SQLCODE record. 
+<P></P>
+The ERR_QUIT( ) function is identical to the ERR_PRINT( ) function, except
+that ERR_QUIT( ) terminates execution once the message is printed. ERR_QUIT( ) is
+primarily useful when you are developing a 4GL program. The message that it
+returns is probably not helpful to the user of your application.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFERRGET_.htm"></A></B><A HREF="4GLREFERRGET_.htm">ERR_GET( )</A> 
+<P></P>
+<A HREF="4GLREFERRPRINT_.htm">ERR_PRINT( )</A> 
+<P></P>
+<A HREF="4GLREFERRORLOG_.htm">ERRORLOG( )</A> 
+<P></P>
+<A HREF="4GLREFSTARTLOG_.htm">STARTLOG( )</A> 
+<P></P>
+</BODY>
+</HTML>

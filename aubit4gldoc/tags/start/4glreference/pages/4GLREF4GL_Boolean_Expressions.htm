@@ -1,0 +1,95 @@
+<HTML>
+
+<HEAD>
+<TITLE>4GL Boolean Expressions</TITLE>
+</HEAD><BODY>
+
+<B>4GL Boolean Expressions
+<P></P>
+</B>A 4GL Boolean expression is one that returns either TRUE (defined as 1) or
+FALSE (defined as 0) or NULL. The syntax of Boolean expressions in 4GL statements
+is not identical to that of Boolean conditions in SQL statements. Boolean
+expressions of INFORMIX-4GL have the following syntax:
+<P></P>
+<IMG SRC="4GLREF00000204.gif" ALT="4GLREF00000204.gif" BORDER="0" USEMAP="#map128" WIDTH="463" HEIGHT="326"><MAP NAME="map128"><AREA COORDS="282,230,396,258" HREF="4GLREF4GL_Boolean_Expressions.htm#802d1652"><AREA COORDS="176,262,243,288" HREF="4GLREF4GL_Boolean_Expressions.htm#7f88a344"><AREA COORDS="153,200,266,229" HREF="4GLREF4GL_Boolean_Expressions.htm#e83a4db1"><AREA COORDS="281,294,395,322" HREF="4GLREF4GL_Boolean_Expressions.htm#c7d1bf85"><AREA COORDS="278,112,361,140" HREF="4GLREFExpressions_of_4GL.htm#0f2fb87c"><AREA COORDS="272,48,369,78" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+Any type of expression can be a 4GL Boolean expression. You can use an INT or
+SMALLINT variable to store the returned value.
+<P></P>
+<B>Boolean Comparisons
+<P></P>
+</B>Boolean comparisons use relational operators to test any type of expression
+for equality or inequality. You can also use the IS NULL operator to test for
+NULL values, or the MATCHES or LIKE operator to compare character strings.
+<P></P>
+Boolean expressions in the CASE, IF, or WHILE statements, or in the WHERE
+clause of a COLOR attribute specification return FALSE if any element of the
+comparison is NULL, unless it is the operand of the IS NULL operator.
+<P></P>
+<B>Relational Comparisons
+<P></P>
+</B>This is the syntax for relational comparisons in 4GL Boolean expressions:
+<P></P>
+<IMG SRC="4GLREF00000205.gif" ALT="4GLREF00000205.gif" BORDER="0" USEMAP="#map129" WIDTH="458" HEIGHT="157"><MAP NAME="map129"><AREA COORDS="338,35,430,65" HREF="4GLREFExpressions_of_4GL.htm"><AREA COORDS="140,36,232,66" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+<B>The LIKE and MATCHES Operators
+<P></P>
+</B>In character string comparisons, you can use the LIKE or MATCHES operators to
+test whether a character value matches a quoted string that can include wild
+card characters. If either operand evaluates to NULL, then the entire string
+comparison evaluates to NULL. Use a NULL test if you want to detect and exclude
+NULL values.
+<P></P>
+You can use the following syntax to compare character strings:
+<P></P>
+<IMG SRC="4GLREF00000206.gif" ALT="4GLREF00000206.gif" BORDER="0" USEMAP="#map130" WIDTH="582" HEIGHT="107"><MAP NAME="map130"><AREA COORDS="67,49,134,86" HREF="4GLREFCharacter_Expressions.htm"></MAP>
+<P></P>
+<B>char</B> is a single ASCII character, enclosed between a pair of single ( ' ) or double
+ ( &quot; ) quotation marks, to specify an escape symbol.
+<P></P>
+<B>criterion</B> is a character expression. The string that it returns can include literal
+characters, wild cards, and other symbols.
+<P></P>
+<B>The NULL Test
+<P></P>
+</B>If any operand of a 4GL Boolean comparison or is NULL, then the value of the
+comparison is FALSE (rather than NULL), unless the IS NULL keywords are also
+included in the expression. Applying the NOT or IS NOT NULL operator to a NULL
+operand does not change its FALSE evaluation.
+<P></P>
+If you need to process NULL values in a different way from other values, you
+can use the IS NULL operator to test for NULL value.  It has the syntax:
+<P></P>
+<IMG SRC="4GLREF00000207.gif" ALT="4GLREF00000207.gif" BORDER="0" USEMAP="#map131" WIDTH="457" HEIGHT="90"><MAP NAME="map131"><AREA COORDS="117,36,208,64" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+<B>BLOB variable</B>  is the name of a variable of the BYTE or TEXT data type.
+<P></P>
+If you omit the NOT operator, the comparison returns TRUE if the left-hand
+operand has a NULL value.
+<P></P>
+If you include the NOT operator, this 4GL Boolean expression returns TRUE if
+the operand is not NULL. Otherwise, it evaluates as FALSE.
+<P></P>
+<B>NOTE</B>: The NULL test (like the WORDWRAP string operator with TEXT variables) is an
+exception to the general rule that variables of the BYTE or TEXT data types
+cannot appear in 4GL expressions.
+<P></P>
+<B>Set Membership Test
+<P></P>
+</B>The IN operator cannot appear in any 4GL statements that is not also an SQL
+statement, but it can appear in the COLOR attribute specification of a 4GL form.
+This is the syntax of the IN operator to test for set membership.
+<P></P>
+<IMG SRC="4GLREF00000208.gif" ALT="4GLREF00000208.gif" BORDER="0" USEMAP="#map132" WIDTH="536" HEIGHT="89"><MAP NAME="map132"><AREA COORDS="373,50,463,79" HREF="4GLREFExpressions_of_4GL.htm"><AREA COORDS="85,52,175,79" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+If you omit the NOT operator, this test returns TRUE if any expression in the
+comma-separated list at the right matches the expression on the left. 
+<P></P>
+If you include the NOT operator, the test returns FALSE if no expression in
+the list matches the expression on the left. 
+<P></P>
+The list of members must be in parentheses. (Like a DATETIME or INTERVAL
+literal, the IN operator requires parentheses but is not a function call.)
+<P></P>
+</BODY>
+</HTML>

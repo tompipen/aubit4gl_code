@@ -1,0 +1,121 @@
+<HTML>
+<HEAD>
+<TITLE>Built-In Functions and Operators  Overview</TITLE>
+</HEAD><BODY>
+<H1>4GL Built-In Functions and Operators Overview</H1><B>
+<P></P>
+Functions in INFORMIX-4GL Programs
+</B>
+<p>In 4GL, a function is a named collection of statements that performs a task.
+<p>
+The FUNCTION statement can define functions. 4GL programs can invoke the
+following types of functions:
+<ul>
+  <li>
+Programmer-defined 4GL functions</li>
+  <li>
+4GL built-in functions</li>
+  <li>
+SQL built-in functions</li>
+  <li>
+C functions</li>
+  <li>
+ESQL/C functions (if you have the INFORMIX-ESQL/C product)</li>
+</ul>
+<B>Programmer-Defined 4GL Functions
+</B>
+<p>The FUNCTION program block begins with the FUNCTION keyword and ends with the
+END FUNCTION keywords. These enclose a program block of the 4GL statements that
+compose the function; these are executed when the function is invoked. This is
+the syntax of the FUNCTION statement:
+<p>
+<IMG SRC="4GLREF00000058.gif" ALT="4GLREF00000058.gif" BORDER="0" USEMAP="#map31" WIDTH="592" HEIGHT="120"><MAP NAME="map31"><AREA COORDS="407,75,464,113" HREF="4GLREFRETURN.htm"><AREA COORDS="295,51,356,88" HREF="4GLREFDEFINE00000433.htm"></MAP>
+<ul>
+  <li>
+<B>argument</B> is the name of a formal argument to the function.</li>
+  <li>
+<B>function</B>  is the name that you declare for the function.</li>
+  <li>
+<B>statement</B> is an SQL statement or other 4GL statement.</li>
+</ul>
+Names of functions must be unique among the names of functions, reports, and
+global variables within the program, and cannot be the same as formal arguments
+of the same function.
+<p>
+No other FUNCTION, REPORT, nor MAIN program block can be included in a
+FUNCTION definition, but it can include statements that produce a report, or call a
+function, or execute a RUN statement that invokes another program.
+<p>
+<B>Syntax of Built-In Functions and Operators
+</B>
+<p>Operators that are represented by non-alphabetic symbols are grouped under the
+headings <A HREF="4GLREFArithmetic_Operators00000378.htm">Arithmetic Operators</A> and <A HREF="4GLREFBoolean_Operators.htm#eb6ee245">Relational Operators</A>.
+
+<P></P>
+<TABLE width="510"><TR VALIGN=TOP><TD width="255"><B>BUILT-IN FUNCTIONS</B>&nbsp;</TD><TD width="229"><B>BUILT-IN OPERATORS</B>&nbsp;</TD></TR></TABLE><TABLE><TR VALIGN=TOP><TD><A HREF="4GLREFARGVAL_.htm">ARG_VAL( )</A> 
+    </TD><TD><A HREF="4GLREFFGLLASTKEY__.htm">FGL_LASTKEY( )</A> 
+<BR></TD><TD><A HREF="4GLREFBoolean_Operators.htm">AND</A> 
+    </TD><TD><A HREF="4GLREFLINENO.htm">LINENO</A> 
+    </TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFARRCOUNT_.htm">ARR_COUNT( )</A> 
+    </TD><TD><A HREF="4GLREFLENGTH_.htm">LENGTH( )</A> 
+    </TD><TD><A HREF="4GLREFASCII00000381.htm">ASCII</A> 
+    </TD><TD><A HREF="4GLREFBoolean_Operators.htm#a0c0dabd">MATCHES</A>
+    </TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFARRCURR_.htm">ARR_CURR( )</A> 
+    </TD><TD><A HREF="4GLREFAggregate_Report_Functions.htm">MAX( )</A> 
+    </TD><TD><A HREF="4GLREFBoolean_Operators.htm#0716bfaf">BETWEEN...AND</A>
+<BR></TD><TD><A HREF="4GLREFMDY_.htm">MDY( )</A> 
+    </TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFAggregate_Report_Functions.htm">AVG( )</A> 
+    </TD><TD><A HREF="4GLREFAggregate_Report_Functions.htm">MIN( )</A> 
+    </TD><TD><A HREF="4GLREFCLIPPED00000383.htm">CLIPPED</A> 
+    </TD><TD><A HREF="4GLREFMONTH_.htm">MONTH( )</A> 
+    </TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFAggregate_Report_Functions.htm">COUNT(*)</A> 
+    </TD><TD><A HREF="4GLREFNUMARGS_.htm">NUM_ARGS( )</A> 
+    </TD><TD><A HREF="4GLREFCOLUMN00000384.htm">COLUMN</A> 
+    </TD><TD><A HREF="4GLREFBoolean_Operators.htm">NOT</A> 
+    </TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDOWNSHIFT_.htm">DOWNSHIFT</A> 
+    </TD><TD><A HREF="4GLREFAggregate_Report_Functions.htm">PERCENT(*)</A> 
+    </TD><TD><A HREF="4GLREFCURRENT00000385.htm">CURRENT</A> 
+    </TD><TD><A HREF="4GLREFBoolean_Operators.htm">OR</A>
+    </TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFERRGET_.htm">ERR_GET( )</A> 
+    </TD><TD><A HREF="4GLREFSCRLINE_.htm">SCR_LINE( )</A> 
+    </TD><TD><A HREF="4GLREFDATE00000386.htm">DATE</A> 
+    </TD><TD><A HREF="4GLREFPAGENO.htm">PAGENO</A> 
+    </TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFERRPRINT_.htm">ERR_PRINT( )</A> 
+    </TD><TD><A HREF="4GLREFSETCOUNT_.htm">SET_COUNT( )</A> 
+    </TD><TD><A HREF="4GLREFDATE_.htm">DATE( )</A> 
+    </TD><TD><A HREF="4GLREFSPACE_or_SPACES.htm">SPACE</A> 
+    </TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFERRQUIT_.htm">ERR_QUIT( )</A> 
+    </TD><TD><A HREF="4GLREFSHOWHELP_.htm">SHOWHELP( )</A> 
+    </TD><TD><A HREF="4GLREFDAY_.htm">DAY( )</A> 
+    </TD><TD><A HREF="4GLREFTIME.htm">TIME</A> 
+    </TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFERRORLOG_.htm">ERRORLOG( )</A> 
+    </TD><TD><A HREF="4GLREFSTARTLOG_.htm">STARTLOG( )</A> 
+    </TD><TD><A HREF="4GLREFEXTEND_.htm">EXTEND( )</A> 
+    </TD><TD><A HREF="4GLREFTODAY.htm">TODAY</A> 
+    </TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFFGLDRAWBOX_.htm">FGL_DRAWBOX( )</A> 
+<BR></TD><TD><A HREF="4GLREFSQLEXIT_.htm">SQLEXIT( )</A> 
+    </TD><TD><A HREF="4GLREFFIELDTOUCHED_.htm">FIELD_TOUCHED( )</A> 
+<BR></TD><TD><A HREF="4GLREFUNITS.htm">UNITS</A> 
+    </TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFFGLGETENV_.htm">FGL_GETENV( )</A> 
+    </TD><TD><A HREF="4GLREFAggregate_Report_Functions.htm">SUM( )</A> 
+    </TD><TD><A HREF="4GLREFGETFLDBUF_.htm">GET_FLDBUF( )</A> 
+    </TD><TD><A HREF="4GLREFUSING.htm">USING</A> 
+    </TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFFGLKEYVAL_.htm">FGL_KEYVAL( )</A> 
+    </TD><TD><A HREF="4GLREFUPSHIFT_.htm">UPSHIFT( )</A> 
+    </TD><TD><A HREF="4GLREFBoolean_Operators.htm#0716bfaf">IN( )</A> 
+    </TD><TD><A HREF="4GLREFWEEKDAY_.htm">WEEKDAY( )</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD>
+&nbsp;</TD><TD>
+&nbsp;</TD><TD><A HREF="4GLREFINFIELD_.htm">INFIELD( )</A> 
+    </TD><TD><A HREF="4GLREFWORDWRAP_Operator.htm">WORDWRAP</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD>
+&nbsp;</TD><TD>
+&nbsp;</TD><TD><A HREF="4GLREFBoolean_Operators.htm#d7cf1d68">IS NULL</A>
+    </TD><TD><A HREF="4GLREFYEAR_.htm">YEAR( )</A> 
+    </TD></TR><TR VALIGN=TOP><TD>
+&nbsp;</TD><TD>
+&nbsp;</TD><TD><A HREF="4GLREFBoolean_Operators.htm#a0c0dabd">LIKE</A>
+    </TD><TD>
+&nbsp;</TD></TR></TABLE>   
+</BODY>
+</HTML>

@@ -1,0 +1,146 @@
+<HTML>
+<HEAD>
+<TITLE>MENU</TITLE>
+</HEAD><BODY>
+<B>MENU
+<P></P>
+</B>The MENU statement creates and displays a ring menu. With the keyboard or
+mouse, the user can choose menu options that execute blocks of statements.
+<P></P>
+<IMG SRC="4GLREF00000167.gif" ALT="4GLREF00000167.gif" BORDER="0" USEMAP="#map104" WIDTH="458" HEIGHT="68"><MAP NAME="map104"><AREA COORDS="207,28,320,55" HREF="4GLREFMENU00000455.htm#77e1a90c"></MAP>
+<P></P>
+<B>title</B> a quoted string that specifies a display label for the ring menu. 
+<P></P>
+<B><UL><LI>ariable</B> is a CHAR or VARCHAR variable containing a display label.
+<P></P>
+</UL>This statement specifies and displays a ring menu that occupies two lines in
+the current <A HREF="4GLREF4GL_window.htm#7f79dad5">4GL window</A>. 
+<P></P>
+<B>The MENU statement can do the following:
+<P></P>
+</B>Create and display a screen menu, including a title of the menu.
+<P></P>
+Define and display a list of menu options that the user can select.
+<P></P>
+Specify a single-line description to display for each menu option.
+<P></P>
+Designate Help message numbers for each menu option.
+<P></P>
+Specify a block of 4GL statements to execute for each menu option.
+<P></P>
+<B>When it encounters a MENU statement, 4GL performs these actions:
+<P></P>
+</B><OL><LI> Displays in the current 4GL window the title and the options of the menu.
+<P></P>
+<LI> Moves the menu cursor to the first option, and displays its description. (The
+order of options is determined by their order in the control blocks. The menu
+cursor marks the current menu option with a double border.)
+<P></P>
+<LI> Waits for the user to press the <A HREF="4GLREFactivation_key.htm">activation key</A> for a MENU control block, or to terminate the MENU statement by pressing the
+Quit or Interrupt key.
+<P></P>
+<LI> If the user presses an activation key, 4GL executes the statements in the
+corresponding control block, until it encounters one of these statements:
+<P></P>
+ </OL>EXIT MENU statement. 4GL then exits from the menu.
+<P></P>
+ CONTINUE MENU statement. 4GL skips any remaining statements in the MENU
+control block, and re displays the menu.
+<P></P>
+ Last statement in the MENU control block. 4GL re displays the menu so that the
+user can choose another option.
+<P></P>
+A menu can appear above or below a screen form, but not within a form. 4GL
+displays the menu title and the menu options on the Menu line. This reserved line
+is positioned by the most recent MENU LINE specification in the OPTIONS or OPEN
+WINDOWS statement. The default position is to the first line of the current
+4GL window.
+<P></P>
+Unless the title and at least one option can fit on the screen or in the
+current 4GL window, a run-time error occurs. 
+<P></P>
+The title of a menu is just a display label; you cannot reference a menu by
+name. To repeat the same menu and all its behavior in different parts of a
+program, you can include the MENU statement in a FUNCTION definition, so that you can
+invoke the function when you want the menu to appear. 
+<P></P>
+<B>The MENU Control Blocks
+<P></P>
+</B>Each control block includes a statement block of at least one statement, and
+an activation clause that specifies when to execute the statement block. Any of
+three types of activation clauses can appear within MENU control blocks: 
+<P></P>
+BEFORE MENU clause (to execute the block before the menu is displayed)
+<P></P>
+COMMAND option clause (to specify the name and description of an option, an
+optional activation key(s) to choose the option, and an optional Help message
+code; execute the block when the user chooses the option)
+<P></P>
+Hidden option clause (a COMMAND clause that only specifies activation key(s)
+to execute a statement block if the key is pressed; no option name, option
+description, nor Help message number is specified).
+<P></P>
+The statement block can specify SQL or other 4GL statements to execute when a
+user presses a key sequence, as well as special MENU instructions:
+<P></P>
+The next menu option to highlight with the menu cursor.
+<P></P>
+Whether to suppress or restore the display of one or more menu options.
+<P></P>
+Whether to exit from the MENU statement.
+<P></P>
+The activation clause and statement block correspond respectively to the
+left-hand and right-hand syntax elements in the diagram that follows:
+<P></P>
+<IMG SRC="4GLREF00000168.gif" ALT="4GLREF00000168.gif" BORDER="0" WIDTH="575" HEIGHT="197">
+<P></P>
+<B>key </B>is a letter, a literal symbol in quotation marks, or a keyword. (Quotation
+marks are not required if key is a single letter of the alphabet.) This list of up
+to four (4) activation keys must be enclosed in parentheses. 
+<P></P>
+<B>number </B>is an integer that identifies the Help message for this menu option. You must
+have used the OPTIONS statement previously to identify the Help file containing
+the message.
+<P></P>
+<B>option description</B> is a quoted string or the name of a CHAR or VARCHAR variable that contains an
+option description for the Menu help line.
+<P></P>
+<B>option name  </B>is a quoted string or the name of a CHAR or VARCHAR variable that contains the
+name of the menu option. This cannot be longer than the width of the current
+4GL window.
+<P></P>
+<B>statement </B>is an SQL statement or other 4GL statement.
+<P></P>
+<B>The COMMAND Clause
+<P></P>
+</B>The COMMAND clause can define a menu option that appear after the menu title
+in the Menu line, as well as its description that appear in the following line
+when the menu cursor is on the option. It has the following syntax:
+<P></P>
+<IMG SRC="4GLREF00000169.gif" ALT="4GLREF00000169.gif" BORDER="0" WIDTH="581" HEIGHT="109">
+<P></P>
+<B>Invisible Menu Options
+<P></P>
+</B>You can add an invisible option (an option that is never displayed) to a menu
+by including a KEY clause in the COMMAND clause of the MENU control block, but
+not specifying an option name nor an option description.
+<P></P>
+<IMG SRC="4GLREF00000170.gif" ALT="4GLREF00000170.gif" BORDER="0" WIDTH="446" HEIGHT="48">
+<P></P>
+The key cannot be the activation key of any other COMMAND clause. If you
+specify a letter here as the activation key, this must be different from the first <A HREF="4GLREFcharacter00000048.htm">character</A> of any option of the same menu.
+<P></P>
+<B>References 
+<P></P>
+<A HREF="4GLREFCONTINUE.htm"></A></B><A HREF="4GLREFCONTINUE.htm">CONTINUE</A> 
+<P></P>
+<A HREF="4GLREFDEFER.htm">DEFER</A> 
+<P></P>
+<A HREF="4GLREFOPEN_WINDOW.htm#beef7ac7">OPEN WINDOW</A> 
+<P></P>
+<A HREF="4GLREFOPTIONS.htm">OPTIONS</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

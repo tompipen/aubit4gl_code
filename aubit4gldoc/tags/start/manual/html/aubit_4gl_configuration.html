@@ -1,0 +1,176 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Aubit 4GL Configuration</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p align="center"><font size="6"><a name="Top of page - Aubit 4GL Configuration">Aubit 4GL Configuration</a></font></p>
+<hr>
+<p>In this chapter:</p>
+<p><a href="#.a4glrc configuration file">.a4glrc configuration file</a></p>
+<ul>
+  <li>ODBC_LIB_DIR</li>
+  <li>AUBITDIR</li>
+  <li>ODBC_SHARED</li>
+  <li>...</li>
+</ul>
+<p><a href="#General UNIX environment config related to Aubit 4GL">General UNIX env config related to Aubit 4GL:</a></p>
+<ul>
+  <li>LD_LIBRARY_PATH</li>
+  <li>PATH</li>
+</ul>
+<p><a href="#Runtime environment">Runtime environment</a></p>
+<ul>
+  <li>SQLUID</li>
+  <li>SQLPWD</li>
+  <li>HELPTEXT</li>
+</ul>
+<p><a href="#Runtime parameters to programs">Runtime parameters to programs</a></p>
+<p>&nbsp;</p>
+<hr>
+<h3><a name=".a4glrc configuration file">.a4glrc configuration file</a></h3>
+<p>This file is processed only by fglpc script (main 4gl file compiler and
+linker), in the following order:</p>
+<ol>
+  <li>it is read from $AUBITDIR location, where it must exist</li>
+  <li>it the file with this name is found in your $HOME, the settings found
+    there will override the settings previously taken from $AUBITDIR</li>
+</ol>
+<p>Please note that fglpc compiler is also used in the process of compiling the
+Aubit4gl compiler from source files distribution.</p>
+<p>example .a4glrc file:</p>
+<blockquote>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td># Aubit 4gl **compiler** configuration file<br>
+#<br>
+#location of ODBC libraries (iODBC manager or other)<br>
+        ODBC_LIB_DIR=/usr/openlink/lib<br>
+<br>
+#where Aubit 4gl is installed: here you can override aubitenv if you need<br>
+        #AUBITDIR=/usr/aubit/Aubit4gl<br>
+<br>
+#optionally you can specify separate location for NCURSES<br>
+        #NCURSES_LIB_DIR=/opt/home/fglcomp/ncurses/lib<br>
+<br>
+#defines command executed as C compiler for your system<br>
+        GCC=&quot;cc -O"<br>
+<br>
+#To link a4gl with Informix CLI ODBC driver:<br>
+        #ODBC_LIB_NAME=ifcli<br>
+        #ODBC_LIB_DIR=$INFORMIXDIR/lib/cli<br>
+<br>
+#Defines explicit libraries for use with non-iODBC manager drivers,<br>
+#like Informix CLI (now called just Informix ODBC) that is part<br>
+#of free Informix Client SDK (CSDK). If you will be using iODBC, do not<br>
+#use this, it is default<br>
+        #ODBC_SHARED=&quot;-L$INFORMIXDIR/lib/cli -lcli -ldl&quot;<br>
+        #ODBC_STATIC=&quot;-L$INFORMIXDIR/lib/cli -lcli -ldl&quot;</td>
+    </tr>
+  </table>
+</div>
+
+</blockquote>
+
+<ul>
+  <li>AUBITDIR<br>
+    Specifies the location of the directory the Aubit 4gl compiler is installed
+    in&nbsp;<br>
+    <br>
+    Default: NONE<br>
+  </li>
+  <li>NCURSES_LIB_DIR<br>
+    Optionally you can specify separate location for NCURSES libraries, for instance,
+    when you have different versions of NCURSES libraries installed on the
+    system.<br>
+    <br>
+    Default: like for all other libraries, the LD_LIBRARY_PATH (or other
+    appropriate setting depending on your platform and compiler) is used<br>
+  </li>
+  <li>GCC<br>
+    Defines command to execute for C compiler<br>
+    <br>
+    Default: &quot;gcc&quot;<br>
+  </li>
+  <li>ODBC_LIB_DIR<br>
+    Specifies the location of ODBC libraries. Typically, this will be ODBC
+    manager installation directory like iODBC manager or other manager, but it
+    can also point to the locattion of the specific ODBC driver, like in the
+    example file, for Informix ODBC driver direct linking (Informic CLI from
+    Informix CSDK package)<br>
+    <br>
+    Defaults: LD_LIBRARY_PATH<br>
+  </li>
+  <li>ODBC_SHARED<br>
+    <br>
+    Default:<br>
+  </li>
+  <li>ODBC_STATIC<br>
+    <br>
+    Default:<br>
+  </li>
+  <li>ODBC_LIB_NAME<br>
+    <br>
+    Default: &quot;iodbc' (The iODBC manager library)</li>
+</ul>
+<p><a href="#Top of page - Aubit 4GL Configuration">Back to top</a></p>
+<hr>
+<h3><a name="General UNIX environment config related to Aubit 4GL">General UNIX environment config related to Aubit 4GL</a></h3>
+<p>Typically, this environment variable will already be present in your
+startup/login scripts. We recommend that you use 'aubitenv' script to modify
+and/or add this kind of settings, and include a call from your system login
+scripts (typically /etc/profile) or user specific login scripts to this file.</p>
+<p>&nbsp;</p>
+<ul>
+  <li>LD_LIBRARY_PATH<br>
+    Must include at least $AUBITDIR/lib for A4GL compiler to work properly<br>
+    <br>
+  </li>
+  <li>PATH<br>
+    Must include at least $AUBITDIR/bin for A4G compiler to work properly</li>
+</ul>
+<p><a href="#Top of page - Aubit 4GL Configuration">Back to top</a></p>
+<hr>
+<h3><a name="Runtime environment">Runtime environment</a></h3>
+<p>This environment variables will typicaly be used at runtime, and therefore we
+recommend that you use 'aubitenv' script to modify and/or add this kind of
+settings, and include a call from your system login scripts (typically
+/etc/profile) or user specific login scripts to this file.</p>
+<p>&nbsp;</p>
+<ul>
+  <li>SQLUID<br>
+    Username to be used for database connection. Also used for DEFINE LIKE
+    syntax support when compiling 4gl code<br>
+    <br>
+    &nbsp;&nbsp;&nbsp; Default: NONE<br>
+  </li>
+  <li>SQLPWD<br>
+    Password to be used for database connection. Also used for DEFINE LIKE
+    syntax support when compiling 4gl code<br>
+    <br>
+    &nbsp;&nbsp;&nbsp; Default: NONE<br>
+  </li>
+  <li>HELPTEXT<br>
+    Sets the title for the help window<br>
+    <br>
+    &nbsp;&nbsp;&nbsp; Default: NONE</li>
+</ul>
+<p>DEBUG</p>
+<h3><a name="Runtime parameters to programs">Runtime parameters to programs</a></h3>
+<p>NOCURSES</p>
+<p>AUBIT_Y2K</p>
+<p>&nbsp;</p>
+<p><a href="#Top of page - Aubit 4GL Configuration">Back to top</a></p>
+<hr>
+
+</body>
+
+</html>
+

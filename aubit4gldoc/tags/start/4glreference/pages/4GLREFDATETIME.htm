@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>DATETIME</TITLE>
+</HEAD><BODY>
+<B>DATETIME
+<P></P>
+</B>The DATETIME data type stores an instant in time, expressed as a calendar date
+and time-of-day. You specify the time units that the DATETIME value stores;
+the precision can range from a year through a fraction of a second.
+<P></P>
+Data are stored as DECIMAL numbers that represent a contiguous sequence of
+values, each representing units of time. Its declaration uses this syntax: 
+<P></P>
+<IMG SRC="4GLREF00000197.gif" ALT="4GLREF00000197.gif" BORDER="0" USEMAP="#map120" WIDTH="456" HEIGHT="40"><MAP NAME="map120"><AREA COORDS="175,8,284,35" HREF="4GLREFTime_Expressions.htm#cc12ad54"></MAP>
+<P></P>
+The scale and precision specification is called the DATETIME qualifier. It
+uses a first TO last format to declare variables and screen fields. 
+<P></P>
+<B>You must substitute one or two of these keywords for the first and last terms:
+<P></P>
+</B><TABLE><TR VALIGN=TOP><TD><B>Keyword 
+<BR></B></TD><TD><B>Corresponding Time Unit and Range of Values 
+<BR></B></TD></TR><TR VALIGN=TOP><TD><B></B>YEAR
+<BR></TD><TD>A year, numbered from 0001 (A.D.) to 9999. 
+<BR></TD></TR><TR VALIGN=TOP><TD>MONTH
+<BR></TD><TD>A month, numbered from 1 to 12. 
+<BR></TD></TR><TR VALIGN=TOP><TD>DAY
+<BR></TD><TD>A day, numbered from 1 to 31, as appropriate for its month. 
+<BR></TD></TR><TR VALIGN=TOP><TD>HOUR
+<BR></TD><TD>An hour, numbered from 0 (midnight) to 23. 
+<BR></TD></TR><TR VALIGN=TOP><TD>MINUTE
+<BR></TD><TD>A minute, numbered from 0 to 59. 
+<BR></TD></TR><TR VALIGN=TOP><TD>SECOND
+<BR></TD><TD>A second, numbered from 0 to 59. 
+<BR></TD></TR><TR VALIGN=TOP><TD>FRACTION (scale)
+<BR></TD><TD>A decimal fraction of a second, with a scale of up to five digits. 
+<BR></TD></TR><TR VALIGN=TOP><TD>FRACTION
+<BR></TD><TD>The default scale is three digits (thousandth of a second). 
+<BR></TD></TR></TABLE><B>DATETIME Literals and Delimiters
+<P></P>
+</B>Statements of 4GL can assign values to DATETIME data types. The simplest way
+to do this is as a DATETIME literal or as a character string. Both formats
+represent a specific DATETIME value as a numeric DATETIME value.
+<P></P>
+<IMG SRC="4GLREF00000198.gif" ALT="4GLREF00000198.gif" BORDER="0" USEMAP="#map121" WIDTH="537" HEIGHT="81"><MAP NAME="map121"><AREA COORDS="239,44,375,69" HREF="4GLREFTime_Expressions.htm#2b3a5a7d"><AREA COORDS="10,7,112,35" HREF="4GLREFTime_Expressions.htm#2b3a5a7d"><AREA COORDS="397,42,499,70" HREF="4GLREFTime_Expressions.htm#cc12ad54"></MAP>
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>PAGE HEADER</TITLE>
+</HEAD><BODY>
+<B>PAGE HEADER
+<P></P>
+</B>The PAGE HEADER control block specifies the action that INFORMIX-4GL takes
+before it begins processing each page of the report. It can specify what
+information (if any) appears at the top of each new page of the report. 
+<P></P>
+<IMG SRC="4GLREF00000019.gif" ALT="4GLREF00000019.gif" BORDER="0" WIDTH="455" HEIGHT="40">
+<P></P>
+<B>statement</B> is a Report execution statement or other 4GL statement. 
+<P></P>
+You can use a PAGE HEADER control block to display column headings. The FIRST
+PAGE HEADER control block overrides this control block on the first page of a
+report. 
+<P></P>
+New group values can appear in the PAGE HEADER control block when this control
+block is executed after a simultaneous end-of-group and end-of-page situation.
+4GL delays the processing of the PAGE HEADER control block until it encounters
+the first PRINT, SKIP, or NEED statement in the ON EVERY ROW control block.
+This guarantees that any group columns printed in the PAGE HEADER control block
+have the same values as the columns printed in the ON EVERY ROW control block.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFAFTER_GROUP_OF.htm"></A></B><A HREF="4GLREFAFTER_GROUP_OF.htm">AFTER GROUP OF</A> 
+<P></P>
+<A HREF="4GLREFBEFORE_GROUP_OF.htm">BEFORE GROUP OF</A> 
+<P></P>
+<A HREF="4GLREFFIRST_PAGE_HEADER.htm">FIRST PAGE HEADER</A> 
+<P></P>
+<A HREF="4GLREFON_EVERY_ROW.htm">ON EVERY ROW</A> 
+<P></P>
+<A HREF="4GLREFON_LAST_ROW.htm">ON LAST ROW</A> 
+<P></P>
+<A HREF="4GLREFPAGE_TRAILER00000344.htm">PAGE TRAILER</A> 
+<P></P>
+</BODY>
+</HTML>

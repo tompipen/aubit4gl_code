@@ -1,0 +1,92 @@
+<HTML>
+<HEAD>
+<TITLE>OUTPUT Section</TITLE>
+</HEAD><BODY>
+<B>OUTPUT Section
+<P></P>
+</B>The OUTPUT section is an optional section that can specify the number of lines
+on each page of report output and the size of the margins. Without the OUTPUT
+section, INFORMIX-4GL uses default values to format each page. 
+<P></P>
+<IMG SRC="4GLREF00000003.gif" ALT="4GLREF00000003.gif" BORDER="0" WIDTH="460" HEIGHT="201">
+<P></P>
+<B>command </B>is a quoted string, specifying a program, shell script, or command line to
+receive the output from the report.
+<P></P>
+<B>filename </B>is a quoted string, specifying the name of a file to receive the report
+output. The filename can also include a path name.
+<P></P>
+<B>size </B>is a literal integer that specifies the vertical height of the page or the top
+or bottom margin (in lines), or the horizontal width of the left or right
+margin (in character positions).
+<P></P>
+<B>string </B>is a quoted string, specifying the page-eject character sequence.
+<P></P>
+<B><UL><LI>ariable </B>is the name of a CHAR or VARCHAR variable that contains a shell script or
+command line to receive the output from the report.
+<P></P>
+</UL>This section can direct the output from the report to a file or to a printer
+as the default output destination.
+<P></P>
+<B>Sending Report Output to a Pipe
+<P></P>
+</B>The specification after the PIPE keyword must return the name of a program,
+shell script, or command line that is to receive the report output. This can also
+include command line arguments.
+<P></P>
+The REPORT TO PIPE option can direct the output to a program that sends the
+output to the correct printer, or to some other process. The pipe feature is
+supported under Windows by writing to a temporary file GXRPT.TMP in the current
+working directory. Once the report is complete, this file is automatically
+deleted. Since no other window can be active during execution of a report that
+specifies REPORT TO PIPE, there is no possibility of competition for this temporary
+file between two 4GL applications.
+<P></P>
+<B>Sending Report Output to a Printer
+<P></P>
+</B>If you specify REPORT TO PRINTER, INFORMIX-4GL sends the report to the Print
+Manager. 
+<P></P>
+(INFORMIX-4GL on UNIX uses the DBPRINT environment variable to specify a
+default printer. On Windows systems, 4GL produces printed output through the Print
+Manager and ignores the value of the DBPRINT environment variable.)
+<P></P>
+<B>Sending Report Output to a File
+<P></P>
+</B>Use the REPORT TO &quot;filename&quot; option to send output to a file. You can then
+send the file to a printer of your choice. If filename is stored in a program
+variable, you must pass that variable as an argument to the REPORT routine in the
+argument list.
+<P></P>
+<B>Sending Report Output to the Report Window
+<P></P>
+</B>If both the REPORT TO clause and the TO clause of the START REPORT statement
+are omitted, output is directed to the Report window. 4GL reports are generated
+in <A HREF="4GLREFASCII00000025.htm">ASCII</A> characters for output to files or printers, but 4GL changes the way they are
+displayed on the screen. The Report window is a persistent GUI window that
+appears when the report is completely assembled and ready for viewing. 
+<P></P>
+The Report window is controlled by the GUI window manager. It has no mouse
+bar, but it does have a 4GL ring menu with Next, Previous, and Resume options.
+Rather than prompt the user for a RETURN at the end of a screen, the Report window
+highlights the Next option and waits for the user to click that option or
+press RETURN.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFBOTTOM_MARGIN_Clause.htm"></A></B><A HREF="4GLREFBOTTOM_MARGIN_Clause.htm">BOTTOM MARGIN Clause</A>
+<P></P>
+<A HREF="4GLREFLEFT_MARGIN_Clause.htm">LEFT MARGIN Clause</A>
+<P></P>
+<A HREF="4GLREFPAGE_LENGTH_Clause.htm">PAGE LENGTH Clause</A>
+<P></P>
+<A HREF="4GLREFREPORT_TO_Clause.htm">REPORT TO Clause</A>
+<P></P>
+<A HREF="4GLREFRIGHT_MARGIN_Clause.htm">RIGHT MARGIN Clause</A>
+<P></P>
+<A HREF="4GLREFTOP_MARGIN_Clause.htm">TOP MARGIN Clause</A>
+<P></P>
+<A HREF="4GLREFTOP_OF_PAGE_Clause.htm">TOP OF PAGE Clause</A>
+<P></P>
+</BODY>
+</HTML>

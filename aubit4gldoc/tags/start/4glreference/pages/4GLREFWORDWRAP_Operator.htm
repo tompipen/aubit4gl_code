@@ -1,0 +1,49 @@
+<HTML>
+<HEAD>
+<TITLE>WORDWRAP Operator</TITLE>
+</HEAD><BODY>
+<B>WORDWRAP
+<P></P>
+</B>The WORDWRAP operator divides a long text string into segments that appear in
+successive lines of a 4GL report. (This operator can appear only in the PRINT
+statement in the FORMAT section of a REPORT program block.) 
+<P></P>
+<IMG SRC="4GLREF00000110.gif" ALT="4GLREF00000110.gif" BORDER="0" USEMAP="#map66" WIDTH="462" HEIGHT="78"><MAP NAME="map66"><AREA COORDS="57,14,131,52" HREF="4GLREFCharacter_Expressions.htm"></MAP>
+<P></P>
+<B>temporary</B> is an integer expression whose returned value specifies the absolute position
+(in characters), counting from the left edge of the page, of a temporary right
+margin. 
+<P></P>
+<B>TEXT variable</B> is the name of a 4GL variable of the TEXT data type.
+<P></P>
+The WORDWRAP operator automatically wraps successive segments of long
+character strings onto successive lines of output from a 4GL report. The string value
+of any expression or TEXT variable that is too long to fit between the current
+character position and the specified or default right margin is divided into
+segments and displayed between temporary margins: 
+<P></P>
+The current character position becomes the temporary left margin.
+<P></P>
+Unless you specify RIGHT MARGIN temporary, the right margin defaults to 132,
+or to the size from the RIGHT MARGIN clause of the OUTPUT section. 
+<P></P>
+Specify WORDWRAP RIGHT MARGIN integer expression to set a temporary right
+margin, counting from the left edge of the page. This cannot be smaller than the
+current character position, nor greater than 132 (or else the size from the RIGHT
+MARGIN clause of the OUTPUT section). The current character position becomes
+the temporary left margin. These temporary values override the specified or
+default left and right margins from the OUTPUT section. 
+<P></P>
+After the PRINT statement has executed, any explicit or default margins from
+the OUTPUT section are restored. 
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFLINENO.htm"></A></B><A HREF="4GLREFLINENO.htm">LINENO</A> 
+<P></P>
+<A HREF="4GLREFPAGENO.htm">PAGENO</A> 
+<P></P>
+<A HREF="4GLREFSPACE_or_SPACES.htm">SPACES</A> 
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,84 @@
+<HTML>
+<HEAD>
+<TITLE>DISPLAY</TITLE>
+</HEAD><BODY>
+<B>DISPLAY
+<P></P>
+</B>The DISPLAY statement to display data values on the screen. (To produce output
+within a REPORT routine, you must use PRINT, rather than DISPLAY.) The syntax
+of DISPLAY determines whether output appears in the Line mode overlay, or in a
+specified line of the current <A HREF="4GLREF4GL_window.htm#7f79dad5">4GL window</A>, or in a form.
+<P></P>
+<IMG SRC="4GLREF00000132.gif" ALT="4GLREF00000132.gif" BORDER="0" USEMAP="#map79" WIDTH="564" HEIGHT="342"><MAP NAME="map79"><AREA COORDS="360,159,412,196" HREF="4GLREFField_Clause.htm"><AREA COORDS="465,181,531,219" HREF="4GLREFATTRIBUTE00000476.htm"><AREA COORDS="458,108,523,146" HREF="4GLREFATTRIBUTE00000476.htm"></MAP>
+<P></P>
+<B>format string</B> is a quoted string to specify a display format.
+<P></P>
+<B>left-offset </B>is an integer variable or a literal integer, specifying the position of the
+first <A HREF="4GLREFcharacter00000048.htm">character</A> of the next item of output within the current line of the screen or window.
+<P></P>
+<B>line </B>is an integer variable or a literal integer, specifying the position of a line
+of the screen or of the current window.
+<P></P>
+<B>number </B>is a whole number, specifying an <A HREF="4GLREFASCII00000025.htm">ASCII</A> code to be displayed.
+<P></P>
+<B><UL><LI>alue </B>is a quoted string, or the 4GL identifier of a named constant or variable,
+specifying a value to be displayed.
+<P></P>
+<B><LI>ariable </B>is the name of a variable that is also the name of a field.
+<P></P>
+</UL>The DISPLAY statement sends output directly to the screen, or to specified
+fields of a screen form  The DISPLAY statement cannot reference values of the
+ARRAY or BYTE data types. After DISPLAY is executed, changing the value of a
+displayed variable has no effect on the current display until you execute the DISPLAY
+statement again. 
+<P></P>
+<B>Sending Output to the Line Mode Overlay
+<P></P>
+</B>The DISPLAY statement without qualifying clauses (or with the COLUMN operator)
+sends output to the Line mode overlay:
+<P></P>
+<IMG SRC="4GLREF00000133.gif" ALT="4GLREF00000133.gif" BORDER="0" USEMAP="#map80" WIDTH="567" HEIGHT="72"><MAP NAME="map80"><AREA COORDS="402,22,492,49" HREF="4GLREFDISPLAY.htm"></MAP>
+<P></P>
+<B>left-offset</B> specifies the position of the first character of the next item of output
+within the Line mode overlay
+<P></P>
+<B>Sending Output to the Current Window
+<P></P>
+</B>If you include the AT keyword and specify coordinates, output is displayed,
+beginning in that location in the current 4GL window:
+<P></P>
+<IMG SRC="4GLREF00000134.gif" ALT="4GLREF00000134.gif" BORDER="0" USEMAP="#map81" WIDTH="546" HEIGHT="92"><MAP NAME="map81"><AREA COORDS="440,48,505,86" HREF="4GLREFATTRIBUTE00000476.htm"><AREA COORDS="234,25,298,62" HREF="4GLREFDISPLAY.htm"></MAP>
+<P></P>
+<B>left-offset</B> specifies the position of the first character of the next item of output
+within the current line of the screen or window. 
+<P></P>
+<B>line </B>is an integer expression that returns a positive value, to specify a line of
+the current 4GL window (which can be the <A HREF="4GLREFApplication_window.htm">Application window</A> itself, if no other 4GL window is current.)
+<P></P>
+<B>Sending Output to a Screen Form
+<P></P>
+</B>You can use the TO clause or the BY NAME clause to display output in the
+fields of a screen form, using the Formatted mode of display.
+<P></P>
+<IMG SRC="4GLREF00000135.gif" ALT="4GLREF00000135.gif" BORDER="0" USEMAP="#map82" WIDTH="565" HEIGHT="106"><MAP NAME="map82"><AREA COORDS="452,60,533,100" HREF="4GLREFATTRIBUTE00000476.htm"><AREA COORDS="342,22,412,53" HREF="4GLREFField_Clause.htm"><AREA COORDS="186,21,272,50" HREF="4GLREFDISPLAY.htm"></MAP>
+<P></P>
+<B><UL><LI>ariable</B> is the name of a variable that is also the name of a field.
+<P></P>
+</UL><B>References
+<P></P>
+<A HREF="4GLREFINPUT.htm"></A></B><A HREF="4GLREFINPUT.htm">INPUT</A> 
+<P></P>
+<A HREF="4GLREFDISPLAY_ARRAY.htm">DISPLAY ARRAY</A> 
+<P></P>
+<A HREF="4GLREFDISPLAY_FORM.htm">DISPLAY FORM</A> 
+<P></P>
+<A HREF="4GLREFOPEN_WINDOW.htm#beef7ac7">OPEN WINDOW</A> 
+<P></P>
+<A HREF="4GLREFOPTIONS.htm">OPTIONS</A> 
+<P></P>
+<A HREF="4GLREFPRINT00000463.htm">PRINT</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

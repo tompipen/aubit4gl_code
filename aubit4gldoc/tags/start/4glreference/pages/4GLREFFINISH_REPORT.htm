@@ -1,0 +1,62 @@
+<HTML>
+<HEAD>
+<TITLE>FINISH REPORT</TITLE>
+</HEAD><BODY>
+<B>FINISH REPORT
+<P></P>
+</B>The FINISH REPORT statement completes processing of a 4GL report. 
+<P></P>
+<IMG SRC="4GLREF00000142.gif" ALT="4GLREF00000142.gif" BORDER="0" WIDTH="456" HEIGHT="36">
+<P></P>
+<B>report</B>  is the name of a 4GL report, as declared in the REPORT statement.
+<P></P>
+You can use the FINISH REPORT statement to indicate the end of a report driver
+and to complete processing of the report. FINISH REPORT must follow a START
+REPORT statement, and at least one OUTPUT TO REPORT statement, that reference the
+same report.
+<P></P>
+If the REPORT definition includes an ORDER BY section with no EXTERNAL
+keyword, or specifies aggregates based on all the input records, 4GL makes two passes
+through the input records. During the first pass, it uses the database engine
+to sort the data, and then stores the sorted values in a temporary file. During
+the second pass, it calculates any aggregate values, and produces output from
+data in the temporary files.
+<P></P>
+<B>Executing the FINISH REPORT statement performs the following actions:
+<P></P>
+</B>Completes the second pass, if report is a two-pass report. These second pass
+activities handle the calculation and output of any aggregate values that are
+based on all the input records in the report, such as COUNT(*) or PERCENT(*) with
+no GROUP qualifier.
+<P></P>
+Executes any AFTER GROUP OF control blocks.
+<P></P>
+Executes any PAGE HEADER, ON LAST ROW, and PAGE TRAILER control blocks needed
+to complete the report.
+<P></P>
+Copies any data from the output buffers of the report to what START REPORT or
+the report definition specified as the destination. If none was specified,
+output goes to the Report window.
+<P></P>
+<A HREF="4GLREFclose.htm">Close</A>s the Select cursor on any temporary table that was created to order the input
+records or to perform aggregate calculations.
+<P></P>
+Deallocates memory for any local BYTE or TEXT variables in the report.
+<P></P>
+Terminates processing of the 4GL report, and deletes from the database any
+files that held temporary tables for a two-pass report.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFDATABASE00000431.htm"></A></B><A HREF="4GLREFDATABASE00000431.htm">DATABASE</A> 
+<P></P>
+<A HREF="4GLREFOUTPUT_TO_REPORT.htm">OUTPUT TO REPORT</A> 
+<P></P>
+<A HREF="4GLREFREPORT00000465.htm">REPORT</A> 
+<P></P>
+<A HREF="4GLREFSTART_REPORT.htm">START REPORT</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

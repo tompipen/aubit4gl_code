@@ -1,0 +1,42 @@
+<HTML>
+<HEAD>
+<TITLE>UNLOAD</TITLE>
+</HEAD><BODY>
+<B>UNLOAD
+<P></P>
+</B>The UNLOAD statement copies data from the current database to a file.     
+<P></P>
+<IMG SRC="4GLREF00000188.gif" ALT="4GLREF00000188.gif" BORDER="0" WIDTH="569" HEIGHT="85">
+<P></P>
+<B>character</B> is a literal delimiter symbol, enclosed between quotation marks.
+<P></P>
+<B>delimiter variable</B> is a CHAR or VARCHAR variable containing single symbol to separate adjacent
+columns within the ASCII representation each row from the database in the output
+file.
+<P></P>
+<B>filename </B>specifies the name of an output file in which to store the rows retrieved by
+the SELECT statement. This can include a pathname.
+<P></P>
+<B>file variable</B> is a CHAR or VARCHAR variable containing a filename.
+<P></P>
+<B>select variable</B> is a CHAR or VARCHAR variable containing a SELECT statement.
+<P></P>
+The UNLOAD statement must include a SELECT statement (directly, or in a
+variable) to specify what rows to copy into filename. UNLOAD does not delete the
+copied data. The user must have Select privileges on every column specified in the
+SELECT statement.
+<P></P>
+The DATABASE statement must first open the database that SELECT accesses.
+<P></P>
+You cannot use the PREPARE statement to preprocess an UNLOAD statement.
+<P></P>
+<B>Reference
+<P></P>
+<A HREF="4GLREFDATABASE00000431.htm"></A></B><A HREF="4GLREFDATABASE00000431.htm">DATABASE</A> 
+<P></P>
+<A HREF="4GLREFLOAD.htm">LOAD</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+<TITLE>DATE( )</TITLE>
+</HEAD><BODY>
+<B>DATE( )
+<P></P>
+</B>The DATE( ) operator can take a CHAR, VARCHAR, DATETIME, INTEGER, or SMALLINT
+argument and return the corresponding DATE value. 
+<P></P>
+<IMG SRC="4GLREF00000077.gif" ALT="4GLREF00000077.gif" BORDER="0" USEMAP="#map45" WIDTH="456" HEIGHT="106"><MAP NAME="map45"><AREA COORDS="135,76,256,99" HREF="4GLREFInteger_Expressions.htm"><AREA COORDS="136,41,257,66" HREF="4GLREFCharacter_Expressions.htm"><AREA COORDS="135,6,259,32" HREF="4GLREFTime_Expressions.htm#7ecb4334"></MAP>
+<P></P>
+The DATE( ) operator is useful for data-type conversion to a DATE value, or to
+a count of days since the beginning of the last year of the 19th century:
+<P></P>
+Convert a properly formatted character string representation of a numeric date
+to a DATE value. (The default format is mm/dd/yy but the DBDATE environment
+variable can change this default.) 
+<P></P>
+Converting a DATETIME value to a negative or positive integer. 
+<P></P>
+The returned integer corresponds to the number of days between the specified
+date and December 31, 1899.
+<P></P>
+Obtaining a DATE value from a negative or positive integer, measuring the
+number of days between the specified date and December 31, 1899.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFCURRENT00000385.htm"></A></B><A HREF="4GLREFCURRENT00000385.htm">CURRENT</A> 
+<P></P>
+<A HREF="4GLREFDATE00000386.htm">DATE</A> 
+<P></P>
+<A HREF="4GLREFMDY_.htm">MDY( )</A> 
+<P></P>
+<A HREF="4GLREFTODAY.htm">TODAY</A> 
+<P></P>
+<A HREF="4GLREFUNITS.htm">UNITS</A> 
+<P></P>
+</BODY>
+</HTML>

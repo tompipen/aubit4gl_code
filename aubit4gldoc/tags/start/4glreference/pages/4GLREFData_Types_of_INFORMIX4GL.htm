@@ -1,0 +1,66 @@
+<HTML>
+<HEAD>
+<TITLE>Data Types of INFORMIX-4GL</TITLE>
+</HEAD><BODY>
+<B>Data Types of INFORMIX-4GL
+<P></P>
+</B>You must declare a data type for each variable, FORMONLY field, and formal
+argument of a function or report.
+<P></P>
+<B>These are the 4GL data types:
+<P></P>
+</B><TABLE><TR VALIGN=TOP><TD><B>Data Type
+<BR></B></TD><TD><B>Kind of Values Stored 
+<BR></B></TD></TR><TR VALIGN=TOP><TD><B><A HREF="4GLREFARRAY00000479.htm"></A></B><A HREF="4GLREFARRAY00000479.htm">ARRAY OF type</A> 
+<BR></TD><TD>Arrays of values of any other single data type.
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFBYTE00000480.htm">BYTE</A> 
+<BR></TD><TD>Any kind of binary data.
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFCHAR.htm">CHAR</A> 
+<BR></TD><TD>Character strings of up to 32,767 ASCII characters.
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFCHARACTER00000482.htm">CHARACTER</A> 
+<BR></TD><TD>(This keyword is a synonym for CHAR.)
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDATE00000483.htm">DATE</A> 
+<BR></TD><TD>Points in time, specified as calendar dates.
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDATETIME.htm">DATETIME</A> 
+<BR></TD><TD>Points in time, specified as calendar dates and time-of-day.
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDEC.htm">DEC</A> 
+<BR></TD><TD>(This keyword is a synonym for DECIMAL.)
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDECIMAL.htm">DECIMAL</A> 
+<BR></TD><TD>Fixed point numbers, of a specified scale and precision.
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDOUBLE_PRECISION.htm">DOUBLE PRECISION</A> 
+<BR></TD><TD>(These keywords are a synonym for FLOAT.)
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFFLOAT.htm">FLOAT</A> 
+<BR></TD><TD>Floating-point numbers, of up to 32-digit precision. 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFINT.htm">INT</A> 
+<BR></TD><TD>(This keyword is a synonym for INTEGER.)
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFINTEGER00000490.htm">INTEGER</A> 
+<BR></TD><TD>Whole numbers, from -2,147,483,647 to +2,147,483,647.
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFINTERVAL00000491.htm">INTERVAL</A> 
+<BR></TD><TD>Spans of time in years and months, or else in smaller time units.
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFMONEY.htm">MONEY</A> 
+<BR></TD><TD>Currency amounts, with definable scale and precision.
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFNUMERIC.htm">NUMERIC</A> 
+<BR></TD><TD>(This keyword is a synonym for DECIMAL.)
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFREAL.htm">REAL</A> 
+<BR></TD><TD>(This keyword is a synonym for SMALLFLOAT.)
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFRECORD00000495.htm">RECORD</A> 
+<BR></TD><TD>Ordered sets of values, of any combination of 4GL data types.
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFSMALLFLOAT.htm">SMALLFLOAT</A> 
+<BR></TD><TD>Floating-point numbers, of up to 16-digit precision. 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFSMALLINT.htm">SMALLINT</A> 
+<BR></TD><TD>Whole numbers, from -32,767 to +32,767.
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFTEXT00000498.htm">TEXT</A>
+<BR></TD><TD>Character strings of any length.
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFVARCHAR.htm">VARCHAR</A>
+<BR></TD><TD>Character strings of varying length, no greater than 255.
+<BR></TD></TR></TABLE><IMG SRC="4GLREF00000194.gif" ALT="4GLREF00000194.gif" BORDER="0" USEMAP="#map117" WIDTH="570" HEIGHT="137"><MAP NAME="map117"><AREA COORDS="400,72,510,97" HREF="4GLREFRECORD00000495.htm"><AREA COORDS="270,48,371,73" HREF="4GLREFARRAY00000479.htm"><AREA COORDS="135,24,235,52" HREF="4GLREFThe_Simple_Data_Types.htm"></MAP>
+<P></P>
+Except for ARRAY and RECORD, each of these corresponds to a data type of SQL.
+(The SERIAL type of SQL is not a 4GL data type. You can use variables of the
+INTEGER data type to store SERIAL values from the database.)
+<P></P>
+TEXT and BYTE are called the large data types; ARRAY and RECORD are called the
+structured data types. All other 4GL data types are simple data types.
+<P></P>
+</BODY>
+</HTML>
