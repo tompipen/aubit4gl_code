@@ -836,56 +836,62 @@ check_postgresql () {
 
 	#Find PostgreSQL data directory of currently running PG engine (PGDATA)
 	if test "$PGDATA" = ""; then
-		if test "$COMSPEC" = ""; then 
-		#su -l postgres -s /bin/sh -c "$POSTGRES_BIN/pg_ctl -D $PG_DATA status"
-		#We need wide output to get full command line:
-		PGDATA=`ps -auxw | grep postmaster | head -1 | awk '{print $14}'`
-		if test "$PGDATA" = ""; then
-			#This is a backup - but it will probably fail to give us 
-			#full command we need to determine PGDATA:
-			PGDATA=`ps -ef | grep postmaster | head -1 | awk '{print $11}'`
-			echo "WARNING: using 'ps -ef' - 'ps -auxw' returned nothing"
-		fi
-		if test "$PGDATA" = ""; then 
-			echo "WARNING: PostgreSQL not running or started without -D flag"
-			echo "(using PGDATA, but no PGDATA present in environment)"
-			echo "ps -ef | grep postmaster"
-			ps -ef | grep postmaster
-			echo "ps -auxw | grep postmaster"
-			ps -auxw | grep postmaster
-		else
+		if test "$COMSPEC" = ""; then #On UNIX 
+			#su -l postgres -s /bin/sh -c "$POSTGRES_BIN/pg_ctl -D $PG_DATA status"
+			#We need wide output to get full command line:
+			PGDATA=`ps -auxw | grep postmaster | head -1 | awk '{print $14}'`
+			#Sometimes retrns clipped path, so test it:
 			if test ! -d "$PGDATA"; then
-				echo "WARNING: PGDATA obtained from postmaster flags is not a directory ($PGDATA)"
 				unset PGDATA
-				#try guessing
-				if test -d "/var/lib/pgsql/data"; then
-					#RedHat RPM's
-					PGDATA="/var/lib/pgsql/data"
+			fi
+			if test "$PGDATA" = ""; then
+				#This is a backup - but it will probably fail to give us 
+				#full command we need to determine PGDATA:
+				if test "$VERBOSE" = "1"; then
+					echo "WARNING: trying 'ps -efw' because 'ps -auxw' did not work"
 				fi
-				if test -d "/usr/local/pgsql/data"; then
-					#PG default
-					PGDATA="/usr/local/pgsql/data"
-				fi
-				if test -d "/usr/local/pgsql/data-7.4"; then
-					#Andrej
-					PGDATA="/usr/local/pgsql/data-7.4"
-				fi
+				PGDATA=`ps -efw | grep postmaster | head -1 | awk '{print $11}'`
+			fi
+			if test "$PGDATA" = ""; then 
+				echo "WARNING: PostgreSQL not running or started without -D flag"
+				echo "(using PGDATA, but no PGDATA present in environment)"
+				echo "ps -ef | grep postmaster"
+				ps -ef | grep postmaster
+				echo "ps -auxw | grep postmaster"
+				ps -auxw | grep postmaster
+			else
 				if test ! -d "$PGDATA"; then
-					echo "WARNING: unable to set PGDATA"
-					echo "Please set PGDATA manually."				
+					echo "WARNING: PGDATA obtained from postmaster flags is not a directory ($PGDATA)"
+					unset PGDATA
+					#try guessing
+					if test -d "/var/lib/pgsql/data"; then
+						#RedHat RPM's
+						PGDATA="/var/lib/pgsql/data"
+					fi
+					if test -d "/usr/local/pgsql/data"; then
+						#PG default
+						PGDATA="/usr/local/pgsql/data"
+					fi
+					if test -d "/usr/local/pgsql/data-7.4"; then
+						#Andrej
+						PGDATA="/usr/local/pgsql/data-7.4"
+					fi
+					if test ! -d "$PGDATA"; then
+						echo "WARNING: unable to set PGDATA"
+						echo "Please set PGDATA manually."				
+					else
+						if test "$VERBOSE" = "1"; then 
+							echo "PGDATA set to $PGDATA"
+						fi
+					fi
+					
 				else
 					if test "$VERBOSE" = "1"; then 
 						echo "PGDATA set to $PGDATA"
 					fi
 				fi
-				
-			else
-				if test "$VERBOSE" = "1"; then 
-					echo "PGDATA set to $PGDATA"
-				fi
 			fi
-		fi
-		else
+		else #On Windows
 			POSTGRESDIR_LIB="`cygpath -u "$POSTGRESDIR"`/lib"
 			#echo $POSTGRESDIR_LIB
 			export PATH="$POSTGRESDIR_LIB:$PATH"
@@ -3078,6 +3084,344 @@ function do_skip() {
     fi
 }
 
+
+##############################################################################
+#                           Finalise results & clean-up
+##############################################################################
+
+function show_results () {
+
+cd $CURR_DIR
+
+########################
+#calculate success percentage
+VAR1=$PASS_CNT
+VAR2=$RUN_CNT
+#VAR2=200
+#VAR1=50
+if test "$RUN_CNT" != "0"; then
+	#RESULT1=`perl -e '$X=shift @ARGV;$Y=shift @ARGV;;$Z=int(100-($X/($Y/100)));print "$Z";' $VAR2 $VAR1`
+	RESULT=`perl -e '$X=shift @ARGV;$Y=shift @ARGV;;$Z=int($X*100/($Y));print "$Z";' $VAR1 $VAR2`
+	#echo "r1=$RESULT1 r2=$RESULT" >> $LOGFILE
+else
+	RESULT=0
+fi
+
+#####################
+#Complete results log file
+
+echo "" >> $LOGFILE
+echo "Skipped: $SKIP_CNT Run: $RUN_CNT Passed: $PASS_CNT Failed: $FAIL_CNT ${T_MD}Success: $RESULT %${T_ME}" >> $LOGFILE
+if test "$KILL_CNT" != "0"; then 
+	echo "Had to kill $KILL_CNT tests: $KILL_LIST" >> $LOGFILE
+fi
+if test "$EXPECTED_TO_FAIL_CNT" != "0"; then 
+	echo "Expected to fail: $EXPECTED_TO_FAIL_LIST ($EXPECTED_TO_FAIL_CNT)"  >> $LOGFILE
+fi
+if test "$NOT_EXPECTED_TO_FAIL_CNT" != "0"; then 
+	echo "NOT expected to fail: $NOT_EXPECTED_TO_FAIL_LIST ($NOT_EXPECTED_TO_FAIL_CNT)" >> $LOGFILE
+fi
+if test "$NOT_CERT_CNT" != "0"; then 
+	echo "NOT certified: $NOT_CERT_LIST ($NOT_CERT_CNT)" >> $LOGFILE
+fi
+if test "$SKIP_NODESC_LIST" != ""; then 
+	echo "Skipped as not descsribed: $SKIP_NODESC_LIST" >> $LOGFILE
+fi
+if test "$EXPECTED_TO_FAIL_PASSED_CNT" != "0"; then 
+	echo "Expected to fail, but passed: $EXPECTED_TO_FAIL_PASSED_CNT ($EXPECTED_TO_FAIL_PASSED_LIST)" >> $LOGFILE
+fi
+if test "$SKIP_INVALID_LIST" != "" ; then 
+	echo "Skipped $SKIP_INVALID_CNT tests as invalid (PLEASE FIX OR OBSOLETE): $SKIP_INVALID_LIST" >> $LOGFILE
+fi
+if test "$SKIP_KEYS_IN_LIST" != ""; then
+	echo "Skipped as use keys.in: $SKIP_KEYS_IN_LIST" >> $LOGFILE
+fi
+if test "$SKIP_OLD_MAKEFILE_LIST" != ""; then 
+	echo "Skipped - has old makefile: $SKIP_OLD_MAKEFILE_LIST" >> $LOGFILE
+fi
+if test "$SKIP_DUMP_SCREEN" != ""; then 
+	echo "Skipped dump_screen tests: $SKIP_DUMP_SCREEN" >> $LOGFILE
+fi
+	SKIP_OTHER_LIST="\
+	$SKIP_PCODE_LIST $SKIP_TUI_LIST $SKIP_LONG_LIST $SKIP_CONSOLE_LIST \
+	$SKIP_NONDB_LIST $SKIP_DB_LIST $SKIP_NOSILENT_LIST $SKIP_NOVERSION_LIST\
+	$SKIP_GRAPHIC_LIST $SKIP_NOMAKEFILE_LIST $SKIP_NOCOMPAT_LIST $SKIP_NO_CRON_LIST \
+	$SKIP_TRANS_LIST $SKIP_NO_SCRDUMP_PDCURSES_LIST $SKIP_BLACKLIST_LIST \
+	$SKIP_DUMP_SCREEN_NOT_XTERM_LIST $SKIP_INCOMPAT_SQL_LIST $SKIP_NON_ANSI_LIST"
+	#clipp it:
+	SKIP_OTHER_LIST=`echo $SKIP_OTHER_LIST`
+	
+	VERBOSE_RESULTS_LOG="$CURR_DIR/verbose_results.log"
+	SQLFEATURES_LOGFILE="$CURR_DIR/sql_features.log"
+	rm -f $SQLFEATURES_LOGFILE $VERBOSE_RESULTS_LOG
+	
+	if test "$SKIP_DUMP_SCREEN_NOT_XTERM_LIST" != "" ; then 
+		echo "Skipped DUMP_SCREEN - not xterm: $SKIP_DUMP_SCREEN_NOT_XTERM_LIST" >> $VERBOSE_RESULTS_LOG
+	fi
+	if test "$SKIP_NON_ANSI_LIST" != ""; then	
+		echo "Skipped ANSI SQL incompatible: ($SKIP_NON_ANSI_CNT) $SKIP_NON_ANSI_LIST" >> $VERBOSE_RESULTS_LOG	
+	fi
+	if test "$SKIP_INCOMPAT_SQL_LIST" != "" ; then 
+		echo "Skipped incompatible SQL ($SKIP_INCOMPAT_SQL_CNT): $SKIP_INCOMPAT_SQL_LIST" >> $LOGFILE
+		echo "Skipped incompatible SQL: $SKIP_INCOMPAT_SQL_LIST_WITH_FEATURES"  >> $VERBOSE_RESULTS_LOG
+	fi
+	if test "$SKIP_PCODE_LIST" != "" ; then 
+		echo "Skipped PCODE: $SKIP_PCODE_LIST" >> $VERBOSE_RESULTS_LOG
+	fi
+	if test "$SKIP_TUI_LIST" != "" ; then 
+		echo "Skipped TUI: $SKIP_TUI_LIST" >> $VERBOSE_RESULTS_LOG
+	fi 
+	if test "$SKIP_LONG_LIST" != "" ; then 
+		echo "Skipped long: $SKIP_LONG_LIST" >> $VERBOSE_RESULTS_LOG
+	fi 
+	if test "$SKIP_CONSOLE_LIST" != "" ; then 
+		echo "Skipped console: $SKIP_CONSOLE_LIST" >> $VERBOSE_RESULTS_LOG
+	fi
+	if test "$SKIP_BLACKLIST_LIST" != "" ; then 
+		echo "Skipped black-listed: $SKIP_BLACKLIST_LIST" >> $VERBOSE_RESULTS_LOG
+	fi
+	if test "$SKIP_NO_SCRDUMP_PDCURSES_LIST" != "" ; then 
+		echo "Skipped screen_dump() with PDcurses: $SKIP_NO_SCRDUMP_PDCURSES_LIST" >> $VERBOSE_RESULTS_LOG
+	fi
+	if test "$VERBOSE" = "1"; then
+		#usually very long lists, and not terribly usefull
+		if test "$SKIP_NONDB_LIST" != "" ; then 
+			echo "Skipped NODB: $SKIP_NONDB_LIST" >> $VERBOSE_RESULTS_LOG
+		fi 
+		if test "$SKIP_DB_LIST" != "" ; then 
+			echo "Skipped DB: $SKIP_DB_LIST" >> $VERBOSE_RESULTS_LOG
+		fi
+	fi
+	if test "$SKIP_NOSILENT_LIST" != "" ; then 
+		echo "Skipped NOSILENT: $SKIP_NOSILENT_LIST" >> $VERBOSE_RESULTS_LOG
+	fi 
+	if test "$SKIP_NOVERSION_LIST" != "" ; then 
+		echo "Skipped NOVERSION: $SKIP_NOVERSION_LIST" >> $VERBOSE_RESULTS_LOG
+	fi
+	if test "$SKIP_GRAPHIC_LIST" != "" ; then 
+		echo "Skipped GRAPHIC: $SKIP_GRAPHIC_LIST" >> $VERBOSE_RESULTS_LOG
+	fi 
+	if test "$SKIP_NOMAKEFILE_LIST" != "" ; then 
+		echo "Skipped NOMEAKEFILE: $SKIP_NOMAKEFILE_LIST" >> $VERBOSE_RESULTS_LOG
+	fi 
+	if test "$SKIP_NOCOMPAT_LIST" != "" ; then 
+		echo "Skipped NOCOMPAT: $SKIP_NOCOMPAT_LIST" >> $VERBOSE_RESULTS_LOG
+	fi
+	if test "$SKIP_NO_CRON_LIST" != "" ; then 
+		echo "Skipped NO_CRON: ($IS_NO_CRON_CNT) $SKIP_NO_CRON_LIST" >> $VERBOSE_RESULTS_LOG
+	fi
+	if test "$SKIP_TRANS_LIST" != "" ; then 
+		echo "Skipped 'cant determine trans state' or 'cant swich trans mode': $SKIP_TRANS_LIST" >> $VERBOSE_RESULTS_LOG
+	fi 
+	
+	if test "$PASS_FULL_LIST" = "1"; then 
+		if test "$PASS_DB_TESTS" != "" ; then 
+			echo "Pass db: ($PASS_DB_CNT) $PASS_DB_TESTS" >> $VERBOSE_RESULTS_LOG
+		fi
+		if test "$PASS_NONDB_TESTS" != "" ; then 
+			echo "Pass non-db: ($PASS_NONDB_CNT) $PASS_NONDB_TESTS" >> $VERBOSE_RESULTS_LOG
+		fi
+	fi
+	#if test "$VERBOSE_RESULTS" = "1"; then
+		echo "Pass db: ($PASS_DB_CNT) Pass non-db: ($PASS_NONDB_CNT)" >> $VERBOSE_RESULTS_LOG
+	#fi
+	if test "$FAIL_FULL_LIST" = "1"; then	
+		if test "$FAIL_DB_TESTS" != "" ; then 
+			echo "Fail db: ($FAIL_DB_CNT) $FAIL_DB_TESTS" >> $VERBOSE_RESULTS_LOG
+		fi
+		if test "$FAIL_NONDB_TESTS" != "" ; then 
+			echo "Fail non-db: ($FAIL_NONDB_CNT) $FAIL_NONDB_TESTS" >> $VERBOSE_RESULTS_LOG
+		fi
+	fi
+	#if test "$VERBOSE_RESULTS" = "1"; then
+		echo "Fail db: ($FAIL_DB_CNT) Fail non-db: ($FAIL_NONDB_CNT)" >> $VERBOSE_RESULTS_LOG
+	#fi
+	ALL_FAILED="$FAIL_DB_TESTS $FAIL_NONDB_TESTS"
+	if test "$ALL_FAILED" != " " -a "$SHOW_FAIL_DESC" = "1"; then 
+		echo "------------------------- Failed tests descriptions ---------------------------" >> $VERBOSE_RESULTS_LOG
+		for TEST_NO in $ALL_FAILED; do
+			desc_txt=`$MAKE -s -C $TEST_NO desc 2>/dev/null`
+			echo "#$TEST_NO : $desc_txt" >> $VERBOSE_RESULTS_LOG
+		done
+		echo "-------------------------------------------------------------------------------" >> $VERBOSE_RESULTS_LOG
+	fi
+
+	if test "$IS_DB_NO_SQL_FEATURES_DESC" != ""; then
+		#This is bad; DB tests should have SQL/db features used described
+		echo "ERROR: DB tests but have no features description : $IS_DB_NO_SQL_FEATURES_DESC" >> $LOGFILE
+	fi
+	if test "$NOT_ANSI_NO_SQL_FEATURES_DESC" != ""; then 
+		#This is bad; DB tests should have SQL/db features used described	
+		echo "ERROR: Not ANSI compatible but have no features description : $NOT_ANSI_NO_SQL_FEATURES_DESC" >> $LOGFILE
+	fi
+	
+	if test "$PASS_INCOMPAT_SQL" != ""; then
+		#This is certanly wrong; need to change feature status; test cannot\
+		#possibly pass if feature is incompatible
+		echo "" >> $LOGFILE
+		echo "ERROR: Passed, but SQL features used are listed as incompatible:" >> $LOGFILE
+		echo "$PASS_INCOMPAT_SQL" >> $LOGFILE
+		echo "" >> $LOGFILE
+	fi
+	
+	if test "$FAIL_COMPAT_SQL" != ""; then
+		#This is not nececeraly an error - test can fail for some other reason,
+		#even when sql/db features are compatible
+		echo "" >> $SQLFEATURES_LOGFILE
+		echo "WARNING: Failed, but SQL features used are listed as compatible:" >> $SQLFEATURES_LOGFILE
+		echo "$FAIL_COMPAT_SQL" >> $SQLFEATURES_LOGFILE
+		echo "" >> $SQLFEATURES_LOGFILE
+	fi	
+	
+	if test "$FEATURE_NOT_EXPECTED" != ""; then
+		#This is an error - correct the feature description in makefile or
+		#in array of feature descriptions
+		echo "" >> $LOGFILE
+		echo "ERROR: SQL features used not expected by compatiblity check:" >> $LOGFILE
+		echo "$FEATURE_NOT_EXPECTED" >> $LOGFILE
+		echo "" >> $LOGFILE
+	fi
+
+	#Eliminate working features from failed features list, test that contains
+	#them must have failed for some other reason, since feature is also
+	#present in test(s) that passed
+	if test "$SQL_FEATURES_PASS_LIST" != ""; then
+		#If pass list is not empty...
+		for failed_feature in $SQL_FEATURES_FAIL_LIST; do
+			#...for every featre found in failed tests...
+			HAS_MATCH=0
+			for working_feature in $SQL_FEATURES_PASS_LIST; do	
+			#...look for that feature in pass list...
+				if test "$working_feature" = "$failed_feature"; then
+					#Found feature from failed test in passed test, so ignore it
+					#echo "feature $working_feature appears on both PASS nad FAIL lists"
+					HAS_MATCH=1
+					break
+				fi
+			done
+			if test "$HAS_MATCH" = "0"; then 
+				#Not found, store it in filteres list
+				FILTERED_SQL_FEATURES_FAIL_LIST="$FILTERED_SQL_FEATURES_FAIL_LIST $failed_feature"
+			else
+				#found, store it in filtered-out list
+				ELIMINATED_SQL_FEATURES_FAIL_LIST="$ELIMINATED_SQL_FEATURES_FAIL_LIST $failed_feature"
+			fi
+		done
+	else
+		#no pass list - nothing to filter out
+		FILTERED_SQL_FEATURES_FAIL_LIST="$SQL_FEATURES_FAIL_LIST"
+	fi
+	if test "$SH_DBG" = "1"; then 
+		echo ""	
+		echo "SQL_FEATURES_PASS_LIST=$SQL_FEATURES_PASS_LIST"
+		echo ""
+		echo "SQL_FEATURES_FAIL_LIST=$SQL_FEATURES_FAIL_LIST"
+		echo "---------------------------------------------------------"
+		echo "ELIMINATED_SQL_FEATURES_FAIL_LIST=$ELIMINATED_SQL_FEATURES_FAIL_LIST"
+		echo ""
+		echo "FILTERED_SQL_FEATURES_FAIL_LIST=$FILTERED_SQL_FEATURES_FAIL_LIST"
+		echo ""
+	fi
+	
+	if test "$SQL_FEATURES_PASS_LIST" != ""; then
+		#This is 100% correct
+		echo "" >> $SQLFEATURES_LOGFILE
+		echo "All working DB features:"  >> $SQLFEATURES_LOGFILE
+		echo "$SQL_FEATURES_PASS_LIST"  >> $SQLFEATURES_LOGFILE		
+		echo "" >> $SQLFEATURES_LOGFILE
+	fi
+	if test "$FILTERED_SQL_FEATURES_FAIL_LIST" != ""; then
+		#This is potentially not 100% correct, since we can have here listed
+		#an feature that did not fail, but the test in which it appeared did 
+		#for some other reason, and the same feature did not appear in any
+		#of the tests that passed, so we could not eliminate it from fail list
+		echo "" >> $SQLFEATURES_LOGFILE
+		echo "DB features used in failed tests (and possibly/probably not working):" >> $SQLFEATURES_LOGFILE
+		echo "$FILTERED_SQL_FEATURES_FAIL_LIST" >> $SQLFEATURES_LOGFILE		
+		echo "" >> $SQLFEATURES_LOGFILE		
+	fi
+	
+if test "$VERBOSE_RESULTS" = "1"; then
+	echo ""	 >> $LOGFILE
+	cat "$VERBOSE_RESULTS_LOG"  >> $LOGFILE
+	echo ""	 >> $LOGFILE
+else
+	#if test "$SKIP_OTHER_LIST" != "" ; then 
+	#	echo "Other skipped tests: $SKIP_OTHER_LIST" >> $LOGFILE
+	#fi
+	echo ""	 >> $LOGFILE
+	echo "See `basename $VERBOSE_RESULTS_LOG` for details of skipped tests" >> $LOGFILE
+fi 
+
+	echo "See `basename $SQLFEATURES_LOGFILE` for detailed SQL features analisys" >> $LOGFILE
+	echo ""	 >> $LOGFILE
+	
+if test "$NOT_COMPAT_BUT_PASSED" != ""; then 
+	#test is not described as compatible, but even using non-aubit compiler 
+	#it passed, so it should be described as compatible
+	echo "TODO-add non-Aubit compilers compatible descriptor to: $NOT_COMPAT_BUT_PASSED" >> $LOGFILE
+fi
+if test "$PASS_LIST" != "" -a "$SHOW_PASSED" = "1"; then 
+	echo "Passed: $PASS_LIST" >> $LOGFILE
+fi
+if test "$FAIL_CNT" = "$EXPECTED_TO_FAIL_CNT" -o "$FAIL_CNT" -lt "$EXPECTED_TO_FAIL_CNT" ; then
+	echo "RESULT: EXPECTED" >> $LOGFILE
+	RESULT=0
+else
+	#"$FAIL_CNT" is more then "$EXPECTED_TO_FAIL_CNT"
+	echo "*********** RESULT: UNEXPECTED ******************" >> $LOGFILE
+	RESULT=1
+fi
+if test "$VERBOSE" = "1"; then 
+	echo "" >> $LOGFILE
+	echo "see `basename $RESLOGFILE` and $TIME_FILE" >> $LOGFILE
+fi	
+echo "----------------------------- aubit-config -a ------------------------------" > $RESLOGFILE
+$AUBITDIR_UNIX/bin/aubit-config$EXE_EXT -a  >> $RESLOGFILE 2>&1
+if test "$VERBOSE" = "1"; then
+	echo "" >> $LOGFILE
+	echo "Finished at:" >> $LOGFILE
+	#we want exact time here - do not use $DATE
+	date >> $LOGFILE
+	echo "" >> $LOGFILE
+fi
+
+#####################
+#Show results to the user
+if test "$SHORT_SUMMARY" != "1"; then
+	cat $LOGFILE
+else
+    if test "$ALL_DB" = "1"; then
+		echo "Skipped: $SKIP_CNT Passed: $PASS_CNT Failed: $FAIL_CNT" >> $CURR_DIR/alldb.log
+		echo "" >> $CURR_DIR/alldb.log
+
+        FAIL_CNT_TOT=`cat $CURR_DIR/fail.cnt`
+        PASS_CNT_TOT=`cat $CURR_DIR/pass.cnt`
+
+		let FAIL_CNT_NEW=FAIL_CNT+FAIL_CNT_TOT
+		let PASS_CNT_NEW=PASS_CNT+PASS_CNT_TOT
+
+		echo "$FAIL_CNT_NEW" > $CURR_DIR/fail.cnt
+        echo "$PASS_CNT_NEW" > $CURR_DIR/pass.cnt
+	fi
+	if test "$NO_ECHO" != "1"; then
+		echo "Skipped: $SKIP_CNT Passed: $PASS_CNT Failed: $FAIL_CNT"
+    	echo "See $LOGFILE for details."
+    fi
+
+fi
+if test "$UNL_LOG" = "1"; then 
+	FINISH_ALL_TIME=`date +%s`
+	test_run_unl
+	echo ""
+	echo "Logging files closed:"
+	echo "  results_$HOSTNAME$U$date_stamp.unl"
+	echo "  test_run_$HOSTNAME$U$date_stamp.unl"
+fi
+echo ""
+cd $CURR_DIR
+
+}
 
 
 

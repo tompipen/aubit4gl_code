@@ -109,7 +109,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This tests the handling of -ve decimal numbers"
+	@echo "handling of -ve decimal numbers"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -173,7 +173,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped
@@ -219,13 +219,13 @@ transaction:
 #ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM CREATE_TEMP_TABLE etc... 
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo ""
+	@echo "NONE"
 
 	
 #################
 #If test is ANSI SQL 92 compatible, set to "1", if not to "0"
 #If unknown, leave empty
 ansi_sql_compat:
-	@echo ""
+	@echo "1"
 
 # ============================= EOF ================================

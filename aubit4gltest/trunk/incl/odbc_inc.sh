@@ -20,14 +20,19 @@
 #Obay $ODBCINI: Informix, iODBC, UnixODBC, SqliteODBC, SAP
 #WARNING: Ignore $ODBCINI: Postgresql
 
-if [ "$NOKILLODBCINI" = "" -a "$ODBCINI" != "" ] 
-then
+#if [ "$NOKILLODBCINI" = "" -a "$ODBCINI" != "" ]; then
+if test "$ODBCINI" = "" ; then
 	export ODBCINI=$CURR_DIR/etc/odbc.ini
 fi
-export ODBCINSTINI=$CURR_DIR/etc/odbcinst.ini
 
-if ! test -f "$ODBCINI"; then
-    touch $ODBCINI
+if test "$ODBCINSTINI" = ""; then 
+	export ODBCINSTINI=$CURR_DIR/etc/odbcinst.ini
+fi
+
+if [ "$ODBCINI" != "" ]; then
+	if ! test -f "$ODBCINI"; then
+		touch $ODBCINI
+	fi
 fi
 
 #########################

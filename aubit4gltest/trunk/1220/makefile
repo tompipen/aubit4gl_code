@@ -219,13 +219,13 @@ transaction:
 #ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM CREATE_TEMP_TABLE etc... 
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo ""
+	@echo "CREATE_TEMP_TABLE ANSI_INSERT ANSI_SELECT"
 
 	
 #################
 #If test is ANSI SQL 92 compatible, set to "1", if not to "0"
 #If unknown, leave empty
 ansi_sql_compat:
-	@echo ""
+	@echo "1"
 
 # ============================= EOF ================================

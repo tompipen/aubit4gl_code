@@ -112,19 +112,34 @@ USERNAME=`whoami`
 PSQL=psql
 if test "$POSTGRESDIR" = ""; then
 	POSTGRESDIR=`aubit-config POSTGRESDIR`
+	if test ! -d "$POSTGRESDIR"; then
+		if test "$VERBOSE" = "1"; then
+			echo "WARNING: POSTGRESDIR reported by aubit-config is invalid ($POSTGRESDIR)"
+		fi
+		
+		POSTGRESDIR=`ps -efw | grep postmaster | head -1 | awk '{print $8}'`
+		POSTGRESDIR=`dirname $POSTGRESDIR`
+		POSTGRESDIR=`dirname $POSTGRESDIR`
+	fi
 fi
 if test "$POSTGRESDIR" != ""; then
-	if test ! -d "$POSTGRESDIR"; then
-		echo "WARNING: POSTGRESDIR is invalid ($POSTGRESDIR)" 
-	else
+	if test -d "$POSTGRESDIR"; then
 		export POSTGRESDIR
+		export LD_LIBRARY_PATH="$POSTGRESDIR/lib:$LD_LIBRARY_PATH"
+		if test "$VERBOSE" = "1"; then
+			echo "Note: POSTGRESDIR set to ($POSTGRESDIR)"
+		fi
 		if test -f "$POSTGRESDIR/bin/postgres" ; then
 			#It can be only ecpg installation there, so check if actuall
 			#engine and tools are also there
 			POSTGRES_BIN=$POSTGRESDIR/bin
 			PSQL="$POSTGRES_BIN/psql"
 		fi
+	else
+		echo "WARNING: POSTGRESDIR is invalid ($POSTGRESDIR)"
 	fi
+else
+	echo "WARNING: POSTGRESDIR is empty"
 fi
 
 #remove this:

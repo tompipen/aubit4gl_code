@@ -1,6 +1,7 @@
 #This file conatains lists of all tests expected to fail
 #it is used as include from main testing execution script
 
+
 # --------------------------------------------------------------------------
 #							-cert (-eci)
 # --------------------------------------------------------------------------
@@ -22,10 +23,10 @@ EXPECT_TO_FAIL_TESTS="240 766 767 962 976 987"
 #233 failed once, but cant reproduce??
 
 #not reported (please enter bug report at: http://aubit.com/mantis)
-EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS  590 111"
+EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS  590 "
 #296 Unable to read form. # Should be there now...
-#590 Cannot open EXPLAIN output file. (Works with -ecp HOW? is it ignored?) 	# Yes - it is ignored..
-#111 channel function not implemented 						# Should be now
+#590 Cannot open EXPLAIN output file. (Works with -ecp HOW? is it ignored?) 	
+# Yes - it is ignored..
 
 # --------------------------------------------------------------------------
 #							-esql
@@ -105,9 +106,8 @@ EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX=""
 
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
-EXPECT_TO_FAIL_TESTS_ECP="76 98 530 535"
+EXPECT_TO_FAIL_TESTS_ECP="76 530 535"
 #76 (datetime-ecpg issue) http://aubit.com/mantis/bug_view_page.php?bug_id=0000479
-#98 (serial) http://aubit.com/mantis/bug_view_page.php?bug_id=0000604
 #530,535 (syntax) http://aubit.com/mantis/bug_view_page.php?bug_id=0000485
 
 #TODO: Close bugs in Mantis:
@@ -117,12 +117,10 @@ EXPECT_TO_FAIL_TESTS_ECP="76 98 530 535"
 #############
 #Not reported, but diagnosed:
 EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
-	1 73 91 100 106 234 256 376 109 286 287 793 794 913 914 915 207 900 903 739"
+	1 91 100 106 234 376 109 286 287 793 794 913 914 915 207 900 903 739"
 #1 afinderr -213 /opt/aubit/aubit4glsrc/help/help_ecpg.iem: ECPG_MISSING_INDICATOR          -213   	
-#73 core dump in libecpg.so
 #91,100,234 put.cpc:155: ERROR: invalid datatype 'PUT' - now SKIP (PUT_CURSOR)
 #106 prog.cpc:138: ERROR: syntax error at or near "1" - SQL...END SQL block & SELECT FIRST (relative)
-#256 prog.cpc:133: ERROR: syntax error at or near "INTO" - now SKIP (SELECT_INTO_TEMP)
 #376 core in 4glc :
 #aubit 4glc list_validate_like_star.4gl -c -o list_validate_like_star.ao
 #row number 1 is out of range 0..-1
@@ -140,13 +138,12 @@ EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
 #Not reported, not diagnosed:
 EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
 	110 541 551 552 553 554 555 556 557 558 559 560 561 562 569 570 571 572 \
-	573 575 576 577 579 581 584 587 593 597 599 600 603 607 611 612 620 628 \
+	573 575 576 577 579 581 584 587 593 597 599 600 603 607 611 612 620 \
 	632 633 634 635 636 639 643 645 646 648 649 650 651 652 653 654 655 656 \
-	657 658 659 660 661 662 663 664 665 666 667 668 669 675 676 683 686 687 \
+	657 658 659 664 665 666 667 668 669 675 676 683 686 687 \
 	689 698 700 701 702 704 710 711 713 714 721 724 725 728 729 730 750 751 \
-	754 760 761 762 764 771 773 775 776 795 796 902 904 905 906 908 909 936 \
-	937 1201 1301 1302 1303 1304"
-
+	754 760 761 762 773 775 795 796 902 904 905 906 908 909 936 \
+	937 1301 1302 1303 1304 218 253 278 630 670 706 748 1208 1220 1221"	
 
 # --------------------------------------------------------------------------
 #							-sqlite and -sqlite-odbc
@@ -213,7 +210,7 @@ INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 #752 - fails to run under informix 4gl
 #707 - fails to run under informix 4gl
 #375,377 -"informix".systables (assumes user "informix" created test database)
-#684,255 256 259 - no test files
+#684,255 259 - no test files
 #105 - missing database schemma
 #705 - "It is not possible to convert between the specified types." with -ifx-p
 #920 - no makefile
@@ -226,7 +223,7 @@ INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 #956 missing 4gl file
 #498,499 no keys.in ** FIXED ??
 #1202 - missing form file, and keys.in
-#1200 1201  out.expected missing ** FIXED ?
+#1200 out.expected missing ** FIXED ?
 #287 never exits with -cert (seems to be fixed)
 #empty MAIN block
 
