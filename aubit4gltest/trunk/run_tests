@@ -85,10 +85,11 @@ EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
 
 ######################
 #Tests that currently fail because of the errors in the test itself
-INVALID_TESTS="375 377 249 684 105 705 217"
+INVALID_TESTS="375 377 249 684 105 705 217 22"
 #105 - missing database schemma
 #705 - It is not possible to convert between the specified types.
 #217 - -as-dll problem with 4glpc
+#invalid keys.in file - waits for final ESC
 
 ##############################################################################
 #							Describe tests:
@@ -725,7 +726,8 @@ for a in $FLAGS; do
                     #NOTE: this is NOT the same as -noecho
 		SILENT=1
 		SHOW_TIME=0
-		if ! test "$NO_ECHO"; then
+		#if ! test "$NO_ECHO"; then
+		if test "$VERBOSE" = "1"; then
 			echo "** "
 			echo "** WARNING:"
 			echo "** Some tests can't run in silent mode and will be skipped"
@@ -1126,7 +1128,8 @@ for a in $FLAGS; do
 		
 	-described)         #run only described tests
         DESCRIBED_ONLY=1
-		if ! test "$NO_ECHO"; then
+		#if ! test "$NO_ECHO"; then
+		if test "$VERBOSE" = "1"; then
 			echo "** "
 			echo "** WARNING:"
 			echo "** Tests not described will be skipped"
@@ -1994,12 +1997,6 @@ if test "$USE_ESQLI" = "1" -o "$NEW_IFMX" = "1" -o "$ODBC_USE_DB" = "IFX"; then
 
     if test "$TEST" != "" || test "$NEW_IFMX" = "1"; then
         echo "Creating Informix database $TEST_DB"
-		#Note that some tests (like 642) need transaction log to work
-		#If Informix database was not created with one, use 
-		# ontape -s -B test1   ... or...
-		# ondblog nolog test1
-		# ondblog buf test1
-
         dbaccess - - > /tmp/credbtmp.log 2>&1 <<!
         create database '$TEST_DB' with log
 !
@@ -2484,7 +2481,6 @@ do
 
 	#if test "$INFO_ALL" = "1" ; then
 	#	echo " ------------------- Info for test $a -----------------------"
-	#	$SH run_tests -info $a
 	#	continue
 	#fi
 	
@@ -2831,7 +2827,6 @@ do
     fi
 
     if test "$NO_SKIP" != "1"; then
-
 		if test "$NEED_IFX_VERSION" != "" -a "$NEED_IFX_VERSION" != "0"; then
 			if test "$USE_COMP" = "ifx-p"; then
 				echo "FIXME: check version"			
@@ -2840,7 +2835,10 @@ do
 	
 		if test "$A4GL_FAKELEXTYPE" = "PCODE" && test "$IS_PCODE_ENABLED" = "0"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			echo "Skipping p-code disabled test #$a." >> $LOGFILE
+			if test "$VERBOSE" = "1"; then
+				echo "Skipping p-code disabled test #$a." >> $LOGFILE
+			fi
+			SKIP_PCODE_LIST="$SKIP_PCODE_LIST $a"
 	        continue
         fi
 		if test "$IS_INVALID_TEST" = "1"; then
@@ -2849,77 +2847,119 @@ do
 			if test "$RUN_ONE" != ""; then
 				echo "Skipping invalid test #$a." >> $LOGFILE
 			fi
-			
 			#echo "WARNING - test is invalid - please FIX IT or list it as OBSOLETE." >> $LOGFILE
 	        continue
 	    fi
 
 		if test "$IS_TUI_TEST" != "1" && test "$ONLY_TUI" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			echo "Skipping non-TUI test #$a." >> $LOGFILE
+			if test "$VERBOSE" = "1"; then
+				echo "Skipping non-TUI test #$a." >> $LOGFILE
+			fi
+			SKIP_TUI_LIST="$SKIP_TUI_LIST $a"
 	        continue
 	    fi
 
 		if test "$IS_LONG_TEST" = "1" && test "$SKIP_LONG" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			echo "Skipping long running test #$a." >> $LOGFILE
+			if test "$VERBOSE" = "1"; then
+				echo "Skipping long running test #$a." >> $LOGFILE
+			fi
+			SKIP_LONG_LIST="$SKIP_LONG_LIST $a"
 	        continue
 	    fi
 		if test "$UI" = "CONSOLE" && (test "$IS_CONSOLE_PROMPT_TEST" = "1" || test "$IS_DUMP_SCREEN_TEST" = "1" || test "$IS_FORM_TEST" = "1") ; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			echo "Skipping test #$a in CONSOLE mode." >> $LOGFILE
+			if test "$VERBOSE" = "1"; then
+				echo "Skipping test #$a in CONSOLE mode." >> $LOGFILE
+			fi
+			SKIP_CONSOLE_LIST="$SKIP_CONSOLE_LIST $a"
 	        continue
 	    fi
 	    if test "$IS_DESCRIBED" != "1" && test "$DESCRIBED_ONLY" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			echo "Skipping not described test #$a." >> $LOGFILE
+			if test "$VERBOSE" = "1"; then
+				echo "Skipping not described test #$a." >> $LOGFILE
+			fi
 			SKIP_NODESC_LIST="$SKIP_NODESC_LIST $a"
 			continue
 	    fi
 		if test "$IS_DB_TEST" != "1" && test "$ONLY_DB" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			echo "Skipping non-DB test #$a." >> $LOGFILE
+			if test "$VERBOSE" = "1"; then
+				echo "Skipping non-DB test #$a." >> $LOGFILE
+			fi
+			SKIP_NONDB_LIST="$SKIP_NONDB_LIST $a"
 	        continue
 	    fi
 		if test "$IS_DB_TEST" = "1" && test "$NO_DB" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			echo "Skipping DB dependent test #$a." >> $LOGFILE
+			if test "$VERBOSE" = "1"; then
+				echo "Skipping DB dependent test #$a." >> $LOGFILE
+			fi
+			SKIP_DB_LIST="$SKIP_DB_LIST $a"
 	        continue
 	    fi
 	    if test "$IS_NOSILENT_TEST" = "1" && test "$SILENT" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			echo "Skipping test #$a - cannot run in silent mode." >> $LOGFILE
+			if test "$VERBOSE" = "1"; then
+				echo "Skipping test #$a - cannot run in silent mode." >> $LOGFILE
+			fi
+			SKIP_NOSILENT_LIST="$SKIP_NOSILENT_LIST $a"
 	        continue
 	    fi
 	    if test "$IS_TUI_TEST" = "1" && test "$TERM" != "xterm" && test "$PLATFORM" = "MINGW"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			echo "Skipping test #$a - cannot run with TERM=$TERM on MinGW using Cygwin Curses." >> $LOGFILE
+			if test "$VERBOSE" = "1"; then
+				echo "Skipping test #$a - cannot run with TERM=$TERM on MinGW using Cygwin Curses." >> $LOGFILE
+			fi
 	        continue
 	    fi
 	    if test "$IS_GRAPHIC_TEST" = "1" && test "$NO_GRAPHIC" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			echo "Skipping test #$a that uses platform specific characters." >> $LOGFILE
+			if test "$VERBOSE" = "1"; then
+				echo "Skipping test #$a that uses platform specific characters." >> $LOGFILE
+			fi
+			SKIP_GRAPHIC_LIST="$SKIP_GRAPHIC_LIST $a"
 	        continue
 	    fi
 		if [ ! -f $CURR_DIR/$a/makefile -a ! -f $CURR_DIR/$a/Makefile ]
 		then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			echo "$a Not run - no Makefile" >> $LOGFILE
+			if test "$VERBOSE" = "1"; then
+				echo "$a Not run - no Makefile" >> $LOGFILE
+			fi
+			SKIP_NOMAKEFILE_LIST="$SKIP_NOMAKEFILE_LIST $a"
 			continue
 		fi
 		
 		if test "$USE_COMP" != "aubit" -a "$compat_test" != "1"; then 
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			echo "$a Not run - $USE_COMP specified on non-compat test" >> $LOGFILE
+			if test "$VERBOSE" = "1"; then
+				echo "$a Not run - $USE_COMP specified on non-compat test" >> $LOGFILE
+			fi
 			continue
+			SKIP_NOCOMPAT_LIST="$SKIP_NOCOMPAT_LIST $a"
 		fi
+
+		###############################################################
+		#Check if we need to swiths transaction logging mode in RDBMS
+		###############################################################
 		
 		if test "$DB_HAS_TRANSACTION" != "NULL" ; then 
 			if test "$NEED_TRANSACTION" = "1" -a "$DB_HAS_TRANSACTION" != "1" ; then 
 				if test "$USE_ESQLI" = "1" -o "$ODBC_USE_DB" = "IFX"; then		
-					#ondblog buf test1 - leaves DB in locked state
-					ontape -s -B test1
-					echo "NOTE: turned ON buffered logging"
+					if test "$VERBOSE" = "1"; then
+						ontape -s -B test1
+						echo "NOTE: turned ON buffered logging"
+					else
+						ontape -s -B test1 > /dev/null					
+					fi
+					RET=$?
+					if test "$RET" != "0"; then 
+						echo "ERROR: swithching logging mode ON failed"
+						exit $RET
+					fi
 					DB_HAS_TRANSACTION="1"
 				else
 					#Don't know how to turn on transactions for this RDBMS			
@@ -2931,9 +2971,17 @@ do
 			fi
 			if test "$NEED_TRANSACTION" = "2" -a "$DB_HAS_TRANSACTION" = "1"; then 
 				if test "$USE_ESQLI" = "1" -o "$ODBC_USE_DB" = "IFX"; then		
-					#ondblog nolog test1 - leaves DB locked
-					ontape -s -N test1
-					echo "NOTE: turned OFF logging"
+					if test "$VERBOSE" = "1"; then
+						ontape -s -N test1
+						echo "NOTE: turned OFF logging"
+					else
+						ontape -s -N test1 > /dev/null					
+					fi
+					RET=$?
+					if test "$RET" != "0"; then 
+						echo "ERROR: swithching logging mode OFF failed"
+						exit $RET
+					fi
 					DB_HAS_TRANSACTION="0"				
 				else
 					#Don't know how to turn off transactions for this RDBMS
@@ -2954,6 +3002,8 @@ do
 
 	if test "$SILENT" != "1"; then
 		echo "------------------------- Running test #$a ---------------------------"
+	else
+		echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bRunning test $a..."	
     fi
 
 	if test "$ALL_COMPILE_ONLY" = "1"; then 
@@ -3217,6 +3267,15 @@ fi
 if test "$SKIP_INVALID_LIST" != "" ; then 
 	echo "Skipped as invalid (PLEASE FIX OR OBSOLETE): $SKIP_INVALID_LIST" >> $LOGFILE
 fi
+
+	SKIP_OTHER_LIST="\
+	$SKIP_PCODE_LIST $SKIP_TUI_LIST $SKIP_LONG_LIST $SKIP_CONSOLE_LIST \
+	$SKIP_NONDB_LIST $SKIP_DB_LIST $SKIP_NOSILENT_LIST \
+	$SKIP_GRAPHIC_LIST $SKIP_NOMAKEFILE_LIST $SKIP_NOCOMPAT_LIST"
+
+if test "$SKIP_OTHER_LIST" != "" ; then 
+	echo "Other skipped tests: $SKIP_OTHER_LIST" >> $LOGFILE
+fi
 if test "$FAIL_CNT" = "$EXPECTED_TO_FAIL_CNT" -o "$FAIL_CNT" -lt "$EXPECTED_TO_FAIL_CNT" ; then
 	echo "RESULT: EXPECTED" >> $LOGFILE
 	RESULT=0
@@ -3269,3 +3328,5 @@ cd $CURR_DIR
 exit $RESULT
 
 # =================================== EOF =================================
+
+
