@@ -55,7 +55,7 @@ call_ext :
    opt_return 
    {
 	print_returning();
-	strcpy($<str>$,$<str>5); /* ? */
+	/* strcpy($<str>$,$<str>5); */
    }
    | identifier OPEN_BRACKET {
 	new_counter();
@@ -76,7 +76,7 @@ call_ext :
    opt_return 
    {
 	print_returning();
-	strcpy($<str>$,$<str>5); /* ? */
+	/* strcpy($<str>$,$<str>5);  */
    }
    | SHARED char_or_var IN char_or_var OPEN_BRACKET {
 	A4GLSQL_set_status(0,0);
