@@ -11,7 +11,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.49 2004-08-05 17:19:41 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.50 2004-09-06 09:28:06 mikeaubury Exp $";
 
 
 #define A4GL_GTK_FONT_FIXED "Fixed 10"
@@ -3080,3 +3080,11 @@ int A4GL_LL_menu_loop(ACL_Menu *menu) {
   A4GL_LL_hide_h_menu(menu);
   return menu_response;
 }
+
+
+
+
+void A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch) {
+	A4GL_assertion(1,"Not implemented A4GL_LL_wadd_char_xy_col_w");
+}
+
