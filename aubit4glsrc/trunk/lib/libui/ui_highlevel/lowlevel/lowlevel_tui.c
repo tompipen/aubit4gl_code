@@ -8,7 +8,7 @@ static int A4GL_curses_to_aubit_int (int a);
 #include <form.h>
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.5 2004-01-18 09:54:56 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.6 2004-01-18 12:37:38 mikeaubury Exp $";
 
 int inprompt = 0;
 
@@ -368,9 +368,15 @@ int
 A4GL_LL_colour_code (int a)
 {
   int z, b;
+  static int ismono=-1;
+  static int isclassic=-1;
   z = 1;
+  if (ismono==-1) {
+  	ismono=A4GL_isyes (acl_getenv ("MONO"));
+  }
+	
 
-  if (!has_colors () || A4GL_isyes (acl_getenv ("MONO")))
+  if (!has_colors () || ismono)
     {
       A4GL_debug ("MJA - STANDOUT");
       if (a == 7)
@@ -382,7 +388,10 @@ A4GL_LL_colour_code (int a)
       //{
       //z *= 2;
       //}
-      if (!A4GL_isyes (acl_getenv ("CLASSIC_I4GL_MONO")))
+      if (isclassic==-1) {
+		isclassic=A4GL_isyes (acl_getenv ("CLASSIC_I4GL_MONO"));
+	}
+      if (!isclassic) 
 	{
 	  if (a == 1)
 	    z = A_BOLD;		// RED
@@ -719,6 +728,7 @@ int A4GL_LL_decode_aubit_attr (int a, char s)
   char colour[20];
   char attr[256];
   int ca;			/* Curses attribute */
+  static int noinvis=-1;
 
   A4GL_get_strings_from_attr (a, colour, attr);
 
@@ -783,7 +793,10 @@ int A4GL_LL_decode_aubit_attr (int a, char s)
 	ca += A_INVIS;
     }
 //A4GL_debug("Returning ca = %d %x (visible=%d)",ca,ca,!(ca&A_INVIS));
-  if (A4GL_isyes (acl_getenv ("NO_INVIS_ATTR")))
+  if (noinvis==-1) {
+	noinvis=A4GL_isyes (acl_getenv ("NO_INVIS_ATTR"));
+  }
+  if (noinvis) 
     {
       if (ca & A_INVIS)
 	ca -= A_INVIS;
