@@ -7,7 +7,7 @@ dump for aubit and Informix)
 
 
 #include <stdio.h>
-#include <ncurses.h>
+#include <curses.h>
 #include "fglsys.h"
 
 FILE *f;

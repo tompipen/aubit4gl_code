@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.149 2004-03-02 23:50:29 afalout Exp $
+# $Id: Makefile-common.in,v 1.150 2004-03-09 07:12:34 afalout Exp $
 #
 
 
@@ -361,19 +361,23 @@ endif
 ifeq "${TARGET_OS}" "solaris"
 	#On Solaris: gcc: unrecognized option `-rdynamic'
 	RDYNAMIC		=
+	#Solaris ld:
+	#   In static mode, -dn, relocatable object files given as argu-
+	#     ments are combined to produce an executable object file.  If
+	#     the  -r  option  is  specified, relocatable object files are
+	#     combined to produce one relocatable object file
+	#
 endif
 ifeq "${TARGET_OS}" "darwin"
 	#On Darwin:
 	#cc: unrecognized option `-rdynamic'
 	RDYNAMIC		=
 endif
-
-#Solaris ld:
-#   In static mode, -dn, relocatable object files given as argu-
-#     ments are combined to produce an executable object file.  If
-#     the  -r  option  is  specified, relocatable object files are
-#     combined to produce one relocatable object file
-#
+ifeq "${TARGET_OS}" "hpux"
+	#On HPUX: gcc: unrecognized option `-rdynamic'
+	RDYNAMIC=-a1 -z -Wl,+s -Wl,-E
+	CFLAGS+=-fPIC -D__hpux__
+endif
 
 
 #FIXME: use gcc to do linking, not ld directly.  Instead of 'ld -shared',

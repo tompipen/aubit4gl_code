@@ -255,7 +255,7 @@ attributes attributes_list[] = {
 		   symbol newscr: referenced symbol not found - STOP
 		 */
 
-		//from ncurses/curses.h:
+		//from curses.h:
 		//extern WINDOW   *newscr;
 WINDOW *newscr;
 #endif

@@ -39,7 +39,7 @@
  * as ^?. Printable characters are displayed as is.
  */
 
-/* $Id: unctrl.h,v 1.2 2003-05-12 14:24:35 mikeaubury Exp $ */
+/* $Id: unctrl.h,v 1.3 2004-03-09 07:12:35 afalout Exp $ */
 
 #ifndef _UNCTRL_H
 #define _UNCTRL_H	1
@@ -52,7 +52,7 @@ extern "C"
 {
 #endif
 
-#include <ncurses/curses.h>
+#include <curses.h>
 
 #undef unctrl
   extern NCURSES_CONST char *unctrl (chtype);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.53 2004-03-08 02:43:40 afalout Exp $
+# $Id: compile.c,v 1.54 2004-03-09 07:12:30 afalout Exp $
 #*/
 
 /**
@@ -391,7 +391,8 @@ initArguments (int argc, char *argv[])
 		#ifdef DEBUG
 		  A4GL_debug ("Pass trough option: %s\n", optarg);
 		#endif
-	  strcat (extra_ccflags, "-I ");
+	  //WARNING: gcc don't like space between -I and qupted strings
+		strcat (extra_ccflags, "-I");
 	  strcat (extra_ccflags, "\"");
 	  strcat (extra_ccflags, optarg);
 	  strcat (extra_ccflags, "\"");
@@ -518,7 +519,7 @@ initArguments (int argc, char *argv[])
   A4GL_init_datatypes ();
 
   /* prepare CC flags */
-  strcpy (incl_path, "-I ");
+  strcpy (incl_path, "-I");
   strcat (incl_path, "\"");
   strcat (incl_path, acl_getenv ("AUBITDIR"));
   strcat (incl_path, "/incl");
@@ -1198,7 +1199,7 @@ char ext[8];
 						printf ("PG EC compilation of the object successfull.\n");
 					}
 					need_cc=1;
-					  strcat (incl_path, "-I ");
+					  strcat (incl_path, "-I");
 					  strcat (incl_path, "\"");
 					  strcat (incl_path, acl_getenv ("POSTGRESDIR"));
 					  strcat (incl_path, "/include");
@@ -1206,7 +1207,7 @@ char ext[8];
 					  strcat (incl_path, " ");
 
                       /* /usr/include/pgsql/libpq-fe.h*/
-					  strcat (incl_path, "-I ");
+					  strcat (incl_path, "-I");
 					  strcat (incl_path, "\"");
 					  strcat (incl_path, "/usr/include/pgsql");
 					  strcat (incl_path, "\"");

@@ -1644,7 +1644,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.29 2004-01-15 05:44:05 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.30 2004-03-09 07:12:33 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3746,7 +3746,7 @@ work the same way :
 
 
 #include <stdio.h>
-#include <ncurses.h>
+#include <curses.h>
 #include "fglsys.h"
 
 FILE *f;
