@@ -120,7 +120,7 @@ generate_order_by (struct select_stmts *ptr)
       b = ptr->orderby_list.orderby_list_val[a];
       if (a)
 	strcat (buff, ",");
-      strcat (buff, "lv_data.x_");
+      strcat (buff, "lv_data.");
       strcat (buff, this_report.variables.variables_val[b].name);
     }
   reporderby = buff;
@@ -203,9 +203,15 @@ print_variables (int class, int inrec)
 	    printf ("DEFINE ");
 
 
-	  printf ("x_%s %s",
+if (inrec) {
+	  printf ("%s %s",
 		  this_report.variables.variables_val[a].name,
 		  this_report.variables.variables_val[a].datatype_string);
+} else { 
+	  printf ("mv_%s %s",
+		  this_report.variables.variables_val[a].name,
+		  this_report.variables.variables_val[a].datatype_string);
+}
 
 	  k++;
 	  if (!inrec)
@@ -225,7 +231,7 @@ print_set_params ()
   for (a = 0; a < this_report.variables.variables_len; a++)
     {
       if (this_report.variables.variables_val[a].category == CAT_PARAM)
-	printf ("LET x_%s=arg_val(%d)\n",
+	printf ("LET mv_%s=arg_val(%d)\n",
 		this_report.variables.variables_val[a].name,
 		this_report.variables.variables_val[a].param_no);
 
@@ -412,12 +418,17 @@ decode_compare (struct compare_expr *e)
 void
 decode_simple (struct simple_expr *e)
 {
+if (e->operand==EXPR_CLIP) { 
+  decode_expr (&e->expr);
+  printf(" %s ",decode_op (e->operand));
+} else {
 if (e->operand==EXPR_COLUMN||e->operand==EXPR_ASCII) {
   printf(" %s ",decode_op (e->operand));
   decode_expr (&e->expr);
 } else {
   printf(" %s ",decode_op (e->operand));
   decode_expr (&e->expr);
+}
 }
 }
 
@@ -504,7 +515,7 @@ decode_expr (struct expr *e)
       printf ("%f", e->expr_u.d);
       break;
     case EXPRTYPE_STRING:
-      printf ("\"%s\"", e->expr_u.s);
+      printf ("\"%s\"", trans(e->expr_u.s));
       break;
     case EXPRTYPE_VARIABLE:
       print_variable (e->expr_u.varid);
@@ -747,11 +758,11 @@ dump_format ()
 	  printf ("\nON EVERY ROW\n");
 	  break;
 	case FORMAT_BEFORE_GROUP:
-	  printf ("\nBEFORE GROUP OF lv_data.x_%s\n",
+	  printf ("\nBEFORE GROUP OF lv_data.%s\n",
 		  decode_column (&this_report.fmt.fmt_val[a]));
 	  break;
 	case FORMAT_AFTER_GROUP:
-	  printf ("\nAFTER GROUP OF lv_data.x_%s\n",
+	  printf ("\nAFTER GROUP OF lv_data.%s\n",
 		  decode_column (&this_report.fmt.fmt_val[a]));
 	  break;
 	case FORMAT_ON_LAST_ROW:
@@ -786,14 +797,14 @@ print_variable (int a)
 
       if (this_report.variables.variables_val[a].category == CAT_SQL)
 	{
-	  printf ("lv_data.x_%s",
+	  printf ("lv_data.%s",
 		  this_report.variables.variables_val[a].name);
 	  return;
 	}
 
       if (this_report.variables.variables_val[a].category != CAT_SQL)
 	{
-	  printf ("x_%s", this_report.variables.variables_val[a].name);
+	  printf ("mv_%s", this_report.variables.variables_val[a].name);
 	}
     }
 }
@@ -828,7 +839,7 @@ replace_vars_sql (struct select_stmts *ptr)
       //
       cptr[ptr->varpos.varpos_val[a]] = 0;
       strcat (buff, lpos);
-      strcat (buff, "x_");
+      strcat (buff, "mv_");
       strcat (buff,
 	      this_report.variables.variables_val[ptr->varids.
 						  varids_val[a]].name);
@@ -839,4 +850,19 @@ replace_vars_sql (struct select_stmts *ptr)
   free (cptr);
 
   return buff;
+}
+
+
+char *trans(char *s) {
+static char buff[256];
+int a;
+int c=0;
+for (a=0;a<strlen(s);a++) {
+	if (s[a]=='"') {
+			buff[c++]='\\';
+    }
+buff[c++]=s[a];
+}
+buff[c]=0;
+return buff;
 }
