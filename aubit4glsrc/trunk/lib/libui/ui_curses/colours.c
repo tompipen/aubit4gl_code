@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.5 2003-05-15 07:10:45 mikeaubury Exp $
+# $Id: colours.c,v 1.6 2003-06-18 19:21:07 mikeaubury Exp $
 #*/
 
 /**
@@ -85,6 +85,7 @@ A4GL_colour_code (int a)
 
   if (!has_colors ())
     {
+	A4GL_debug("MJA - STANDOUT");
       z = A_STANDOUT;
       for (b = 0; b <= a; b++)
 	{
@@ -92,10 +93,11 @@ A4GL_colour_code (int a)
 	}
       return z;
     }
-  A4GL_debug ("Returning color code (%d+1)\n", a);
-  if (a == 0)
-    return 0;
-  return COLOR_PAIR (a + 1);
+  A4GL_debug ("MJA Returning color code (%d+1)\n", a);
+  if (a == 0) return 0;
+  a=COLOR_PAIR (a + 1);
+  A4GL_debug ("MJA Returning color code = %d\n", a);
+  return a;
 }
 
 /**
@@ -109,10 +111,13 @@ A4GL_decode_colour_attr_aubit (int a)
   char colour[20];
   char attr[256];
 //int col;
-  A4GL_debug ("Decoding a");
+  A4GL_debug ("MJA Decoding %d",a);
   A4GL_get_strings_from_attr (a, colour, attr);
 
-  A4GL_debug ("Got colour as : %s", colour);
+  A4GL_debug ("MJA Got colour as : %s - %s", colour,attr);
+  A4GL_trim(colour);
+
+  if (strlen(colour)==0) return A4GL_colour_code(COLOR_WHITE);
 
   if (strcmp (colour, "BLACK") == 0)
     return A4GL_colour_code (COLOR_BLACK);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.9 2003-05-23 13:05:02 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.10 2003-06-18 19:21:07 mikeaubury Exp $
 #*/
 
 /**
@@ -190,7 +190,7 @@ A4GL_open_packer (char *basename, char dir)
 
   if (toupper (dir) == 'O')
     {
-      sprintf (buff, "%s.dat", basename);
+      sprintf (buff, "%s%s", basename,acl_getenv("A4GL_PACKED_EXT"));
       outfile = fopen (buff, "w");
 
       if (outfile)

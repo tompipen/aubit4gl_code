@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.17 2003-06-16 09:26:57 mikeaubury Exp $
+# $Id: data_if.c,v 1.18 2003-06-18 19:21:02 mikeaubury Exp $
 #
 */
 
@@ -102,6 +102,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
     int help_no;
     void *fcntrl;
     int fcntrl_cnt;
+    int attrib;
   };
 
   struct s_s_screenio_1 *val;
@@ -197,6 +198,20 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
 	  return (void *) 1;
 	}
     }
+
+  if (strcmp (name, "attrib") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *) val->attrib;
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->attrib);
+      if (mode == GETSETSET)
+	{
+	  val->attrib = (int ) var;
+	  return (void *) 1;
+	}
+    }
+
 
   if (strcmp (name, "constr") == 0)
     {

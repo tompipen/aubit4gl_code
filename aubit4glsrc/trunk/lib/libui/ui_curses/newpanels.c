@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.47 2003-06-18 11:07:22 mikeaubury Exp $
+# $Id: newpanels.c,v 1.48 2003-06-18 19:21:08 mikeaubury Exp $
 #*/
 
 /**
@@ -74,6 +74,7 @@ dll_import sqlca_struct sqlca;
 =====================================================================
 */
 
+extern int have_default_colors;
 WINDOW *currwin;
 int scr_width = -1;
 int scr_height = -1;
@@ -339,13 +340,10 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 
       //win = newwin (A4GL_screen_height (), A4GL_screen_width (), 0, 0);
       win = newwin (0, 0, 0, 0);
-
       A4GL_debug ("Calling screen height");
       A4GL_debug ("h=%d", h);
       A4GL_debug ("Calling screen width");
       A4GL_debug ("w=%d", w);
-      A4GL_set_bkg (win, attrib);
-
       A4GL_gui_win (name, A4GL_screen_height (), A4GL_screen_width (), 1, 1, 0, (long) win);
       A4GL_add_pointer (name, WINCODE, win);
     }
@@ -1576,8 +1574,6 @@ A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 int nattr;
 
 A4GL_debug("display_internal : %d %d %s %d %d",x,y,s,a,clr_line);
-nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, a, 0);
-a=nattr;
 A4GL_debug("determine_attribute seems to be returning %x\n",a);
 
   if (x == -1 && y == -1)
@@ -1594,8 +1590,11 @@ A4GL_debug("determine_attribute seems to be returning %x\n",a);
     {
       int b;
       /* WINDOW *win; */
-
+	A4GL_debug("Check we have CURSES env");
       A4GL_chkwin ();
+	A4GL_debug("Done");
+nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, a, 0);
+a=nattr;
       b = A4GL_xwattr_get (currwin);
       a4glattr_wattrset (A4GL_window_on_top (), a);
       A4GL_gui_print (a, s);
@@ -2187,17 +2186,25 @@ A4GL_mja_vwprintw (WINDOW * win, char *fmt, va_list * args)
 int
 A4GL_init_colour_pairs (void)
 {
+int bkgcolor;
+
+if (have_default_colors) bkgcolor=-1;
+else {
+	bkgcolor=COLOR_BLACK;
+}
+
 
 #ifndef WIN32
   A4GL_debug ("Non WIN32 color scheme");
-  init_pair (1, COLOR_BLACK, COLOR_BLACK);
-  init_pair (2, COLOR_RED, COLOR_BLACK);
-  init_pair (3, COLOR_GREEN, COLOR_BLACK);
-  init_pair (4, COLOR_YELLOW, COLOR_BLACK);
-  init_pair (5, COLOR_BLUE, COLOR_BLACK);
-  init_pair (6, COLOR_MAGENTA, COLOR_BLACK);
-  init_pair (7, COLOR_CYAN, COLOR_BLACK);
-  init_pair (8, COLOR_WHITE, COLOR_BLACK);
+  init_pair (1, COLOR_BLACK, bkgcolor);
+  init_pair (2, COLOR_RED, bkgcolor);
+  init_pair (3, COLOR_GREEN, bkgcolor);
+  init_pair (4, COLOR_YELLOW, bkgcolor);
+  init_pair (5, COLOR_BLUE, bkgcolor);
+  init_pair (6, COLOR_MAGENTA, bkgcolor);
+  init_pair (7, COLOR_CYAN, bkgcolor);
+  init_pair (8, COLOR_WHITE, bkgcolor);
+
 
 #else
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.27 2003-06-17 22:55:07 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.28 2003-06-18 19:21:07 mikeaubury Exp $
 #*/
 
 /**
@@ -962,11 +962,10 @@ A4GL_getdatatype (char *col, char *tab)
   int c;
   A4GL_debug ("getdatatype\n");
   c=0;
-
   for (a = 0; a < the_form.tables.tables_len; a++)
     {
-         if (strcasecmp(the_form.tables.tables_val[a].tabname,tab)==0&&strlen(the_form.tables.tables_val[a].alias)) {
-                tab=the_form.tables.tables_val[a].alias;
+         if (strcasecmp(the_form.tables.tables_val[a].alias,tab)==0&&strlen(the_form.tables.tables_val[a].alias)) {
+                tab=the_form.tables.tables_val[a].tabname;
                 tabs[c++] = strdup (the_form.tables.tables_val[a].alias);
         }
       else {
@@ -975,7 +974,7 @@ A4GL_getdatatype (char *col, char *tab)
     }
 
 
-  tabs[the_form.tables.tables_len] = 0;
+  tabs[c] = 0;
 
   A4GL_debug ("Calling A4GL_get_dtype with %s %s %s", the_form.dbname, tab, col);
   /* int        A4GL_get_dtype                       (char *tabname, char *colname,char *dbname,char *tablist[]); */

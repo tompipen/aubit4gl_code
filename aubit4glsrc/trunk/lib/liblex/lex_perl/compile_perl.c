@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.35 2003-06-16 09:26:57 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.36 2003-06-18 19:21:07 mikeaubury Exp $
 #
 */
 
@@ -1803,7 +1803,7 @@ print_construct_2 (char *driver)
  * @return
  */
 void
-print_construct_3 (int byname, char *constr_str, char *attr)
+print_construct_3 (int byname, char *constr_str, char *attr,int cattr)
 {
   int ccc;
   int k;
@@ -1817,6 +1817,7 @@ print_construct_3 (int byname, char *constr_str, char *attr)
   printc ("if (_fld_dr==-100) {\n");
   printc ("SET(\"s_screenio\",\"_inp_io\",\"vars\",ibind);\n");
   printc ("SET(\"s_screenio\",\"_inp_io\",\"novars\",%d);\n", ccc);
+  printc ("SET(\"s_screenio\",\"_inp_io\",\"attrib\",%d);\n", cattr);
   printc ("SET(\"s_screenio\",\"_inp_io\",\"currform\",get_curr_form());\n");
   printc ("SET(\"s_screenio\",\"_inp_io\",\"currentfield\",0);\n");
   printc ("SET(\"s_screenio\",\"_inp_io\",\"currentmetrics\",0);\n");
@@ -2406,7 +2407,7 @@ print_input_2 (char *s)
  * @return
  */
 void
-print_input (int byname, char *defs, char *helpno, char *fldlist)
+print_input (int byname, char *defs, char *helpno, char *fldlist,int attr)
 {
   int ccc;
   printc ("{int _fld_dr=-100;char *fldname;char _inp_io[%d];",
@@ -2425,6 +2426,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
   printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
   printc ("SET(\"s_screenio\",_inp_io,\"help_no\",%s);\n", helpno);
+  printc ("SET(\"s_screenio\",_inp_io,\"attrib\",%s);\n", attr);
   printc ("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"mode\",%d+%s);\n", MODE_INPUT, defs);

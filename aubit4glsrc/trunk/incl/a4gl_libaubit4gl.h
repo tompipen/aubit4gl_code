@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.65 2003-06-18 11:07:12 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.66 2003-06-18 19:20:38 mikeaubury Exp $
 #
 */
 
@@ -1458,6 +1458,7 @@ enum cmd_types {
     int help_no;
     struct s_formcontrol *fcntrl;
     int fcntrl_cnt;
+    int attrib;
   };
 
   struct s_disp_arr

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.52 2003-06-16 09:26:57 mikeaubury Exp $
+# $Id: compile_c.c,v 1.53 2003-06-18 19:21:07 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1933,7 +1933,7 @@ print_construct_2 (char *driver)
  * @param attr The attribute list to be used.
  */
 void
-print_construct_3 (int byname, char *constr_str, char *attr)
+print_construct_3 (int byname, char *constr_str, char *attr,int cattr)
 {
   int ccc;
   int k;
@@ -1948,6 +1948,7 @@ print_construct_3 (int byname, char *constr_str, char *attr)
   printc ("if (_fld_dr== -100) {\n");
   printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
+  printc ("SET(\"s_screenio\",_inp_io,\"attrib\",%d);\n", cattr);
   printc ("SET(\"s_screenio\",_inp_io,\"currform\",A4GL_get_curr_form());\n");
   printc ("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
@@ -2776,7 +2777,7 @@ print_input_2 (char *s)
  * @param fldlist The form field list from where the input is made.
  */
 void
-print_input (int byname, char *defs, char *helpno, char *fldlist)
+print_input (int byname, char *defs, char *helpno, char *fldlist,int attr)
 {
   int ccc;
   printc ("{int _fld_dr= -100;char *fldname;char _inp_io[%d];",
@@ -2792,6 +2793,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
   printc ("SET(\"s_screenio\",_inp_io,\"currform\",A4GL_get_curr_form());\n");
   printc ("if ((int)GET(\"s_screenio\",_inp_io,\"currform\")==0) break;\n");
   printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
+  printc ("SET(\"s_screenio\",_inp_io,\"attrib\",%d);\n",attr);
   printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
   printc ("SET(\"s_screenio\",_inp_io,\"help_no\",%s);\n", helpno);
   printc ("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");

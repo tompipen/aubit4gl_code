@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.36 2003-06-18 09:38:23 mikeaubury Exp $
+# $Id: ioform.c,v 1.37 2003-06-18 19:21:08 mikeaubury Exp $
 #*/
 
 /**
@@ -153,7 +153,7 @@ int A4GL_curr_metric_is_first (void);
 int A4GL_curr_metric_is_veryfirst (void);
 int A4GL_curr_metric_is_verylast (void);
 int A4GL_curses_to_aubit (int a);
-void A4GL_set_field_attr_with_attr (FIELD * field, int attr);
+void A4GL_set_field_attr_with_attr (FIELD * field, int attr,int cmd_type);
 int A4GL_gen_field_chars_ap (FIELD *** field_list,
 			     struct s_form_dets *formdets, va_list * ap);
 
@@ -538,14 +538,14 @@ A4GL_set_field_attr (FIELD * field)
 }
 
 void
-A4GL_set_field_attr_with_attr (FIELD * field, int attr)
+A4GL_set_field_attr_with_attr (FIELD * field, int attr,int cmd_type)
 {
   int r;
   int nattr;
   struct struct_scr_field *f;
   f = (struct struct_scr_field *) (field_userptr (field));
 
-  nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, attr, f);
+  nattr=A4GL_determine_attribute(cmd_type, attr, f);
   A4GL_debug("Passed in attribute: %x, determined attribute should be %x",attr,nattr);
   attr=nattr;
 
@@ -566,10 +566,12 @@ A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
   f = (struct struct_scr_field *) (field_userptr (field));
 
   colour=colour&0xff00;
+  A4GL_debug("set_field_colour_attr - do_reverse=%d colour=%d\n",do_reverse,colour);
 
   if (do_reverse && colour == AUBIT_COLOR_WHITE)
     {
       A4GL_debug ("XX1 REVERSE");
+	A4GL_debug("DOINGREVERSE");
       set_field_fore (field, A_REVERSE);
       set_field_back (field, A_REVERSE);
     }
@@ -578,19 +580,21 @@ A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
   if (do_reverse && colour != AUBIT_COLOR_WHITE)
     {
       A4GL_debug ("XX2 REVERSE");
-      set_field_back (field,
-		      A4GL_decode_colour_attr_aubit (colour) | A_REVERSE);
-      set_field_fore (field,
-		      A4GL_decode_colour_attr_aubit (colour) | A_REVERSE);
+	A4GL_debug("DOINGREVERSE");
+      set_field_back (field, A4GL_decode_colour_attr_aubit (colour) | A_REVERSE);
+      set_field_fore (field, A4GL_decode_colour_attr_aubit (colour) | A_REVERSE);
     }
 
   if (do_reverse == 0 && colour != AUBIT_COLOR_WHITE)
     {
-      set_field_fore (field, A4GL_decode_colour_attr_aubit (colour));
-      set_field_back (field, A4GL_decode_colour_attr_aubit (colour));
+	A4GL_debug("XX3 NO REVERSE & COLOUR %d",colour);
+      	set_field_fore (field, A4GL_decode_colour_attr_aubit (colour));
+      	set_field_back (field, A4GL_decode_colour_attr_aubit (colour));
     }
+
   if (do_reverse == 0 && colour == AUBIT_COLOR_WHITE)
     {
+	A4GL_debug("XX3 NO REVERSE & NO COLOUR");
       set_field_fore (field, A4GL_decode_colour_attr_aubit (colour));
       set_field_back (field, A4GL_decode_colour_attr_aubit (colour));
     }
@@ -1446,6 +1450,8 @@ A4GL_set_fields (void *vsio)
   FIELD *firstfield = 0;
   int nofields;
   struct s_screenio *sio;
+  int attr;
+
   sio = vsio;
 
   wid = 0;
@@ -1546,6 +1552,13 @@ A4GL_set_fields (void *vsio)
 	  flg = 1;
 	}
 
+	
+	prop = (struct struct_scr_field *) field_userptr (field_list[a]);
+
+  	attr=A4GL_determine_attribute(FGL_CMD_INPUT,sio->attrib, prop);
+
+  	if (attr != 0) A4GL_set_field_attr_with_attr (field_list[a],attr, FGL_CMD_INPUT);
+
       set_field_status (field_list[a], 0);
     }
 
@@ -1556,6 +1569,8 @@ A4GL_set_fields (void *vsio)
     {
       A4GL_error_box ("NO active field\n", 0);
     }
+  A4GL_zrefresh();
+  sleep(1);
   return 1;
 }
 
@@ -2189,7 +2204,7 @@ A4GL_set_field_pop_attr (FIELD * field, int attr,int cmd_type)
   else
     a = 0;
 
-  A4GL_debug ("f->do_reverse=%d attr=%d", a, attr);
+  A4GL_debug ("f->do_reverse=%d attr=%x", a, attr);
 
   has_format=A4GL_has_str_attribute (f, FA_S_FORMAT);
 
@@ -2253,14 +2268,14 @@ A4GL_set_field_pop_attr (FIELD * field, int attr,int cmd_type)
   attr=A4GL_determine_attribute(cmd_type, attr, f);
 
   if (attr != 0)
-    A4GL_set_field_attr_with_attr (field, attr);
+    A4GL_set_field_attr_with_attr (field, attr,cmd_type);
 
 
   A4GL_debug ("set field attr");
   fff = A4GL_get_curr_form ();
   A4GL_debug ("set field");
   A4GL_mja_set_field_buffer (field, 0, ff);
-  A4GL_debug ("set field buffer");
+  A4GL_debug ("set field buffer setting do_reverse=%d",a);
 
   f->do_reverse = a;
   A4GL_debug ("done ");
@@ -2316,7 +2331,7 @@ A4GL_set_init_pop_attr (FIELD * field, int attr)
   set_current_field (fff->form, field);
   A4GL_debug ("set field");
   A4GL_mja_set_field_buffer (field, 0, ff);
-  A4GL_debug ("set field buffer");
+  A4GL_debug ("set field buffer do_reverse=%d",a);
 
   f->do_reverse = a;
   A4GL_debug ("done ");
@@ -3293,9 +3308,10 @@ A4GL_clr_form (int to_default)
 	  k = &formdets->fileform->metrics.metrics_val[metric_no];
 	  f = (FIELD *) k->field;
 
-	  A4GL_set_field_attr_with_attr ((FIELD *) formdets->fileform->
-					 metrics.metrics_val[metric_no].field,
-					 0);
+	  A4GL_debug("Calling set_field_attr_with_attr for clearing..");
+
+	  A4GL_set_field_attr_with_attr ((FIELD *) formdets->fileform->metrics.metrics_val[metric_no].field,
+					 0,FGL_CMD_CLEAR);
 
 	  if (!to_default)
 	    {

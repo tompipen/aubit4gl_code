@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.38 2003-06-18 11:07:22 mikeaubury Exp $
+# $Id: curslib.c,v 1.39 2003-06-18 19:21:08 mikeaubury Exp $
 #*/
 
 /**
@@ -88,6 +88,7 @@
 WINDOW *curr_error_window=0;
 PANEL *curr_error_panel=0;
 
+int have_default_colors=0;
 
 int aborted;
 char arr[MAXFORM][MAXFIELDS][A4GL_MAXWIDTH];
@@ -1338,15 +1339,20 @@ A4GL_init_curses_stuff ()
   A4GL_debug ("Initializing curses environment");
 #endif
   initscr ();
-  bkgdset (BLANK);
-  start_color ();
 
+  if (has_colors() == FALSE) ;
+  else {
+  	start_color ();
+	refresh();
 #ifndef __sun__
 #ifndef __sparc__
   //curses function not available on Solaris (!!!!?????)
   use_default_colors ();
+  have_default_colors=1;
+
 #endif
 #endif
+  }
 
   cbreak ();
   noecho ();
@@ -1354,8 +1360,10 @@ A4GL_init_curses_stuff ()
   intrflush (stdscr, TRUE);
   keypad (stdscr, TRUE);
 
+  if (has_colors()) {
   start_color ();
   A4GL_init_colour_pairs ();
+  }
   A4GL_init_windows ();
 
   A4GL_mja_gotoxy (1, 1);
@@ -3198,10 +3206,12 @@ A4GL_size_menu (ACL_Menu * menu)
 void
 A4GL_set_bkg (WINDOW * win, int attr)
 {
-
-  wbkgd (win, A4GL_decode_aubit_attr (attr, 'w'));
-  //wbkgdset (win, 0);
-  wbkgdset (win, A4GL_decode_aubit_attr (attr, 'w'));
+if (attr!=0xff) {
+  wbkgd (win, 		A4GL_decode_aubit_attr (attr, 'w'));
+  wbkgdset (win, 	A4GL_decode_aubit_attr (attr, 'w'));
+} else {
+  wbkgdset (win, 0);
+}
 
 }
 

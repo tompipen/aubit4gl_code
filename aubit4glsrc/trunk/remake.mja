@@ -1,8 +1,9 @@
-
-
-#cvs update -d 
-#make cleanall
-#./configure --with-efence=/usr/lib
+if [ "$1" != "" ] 
+then
+	cvs update -d 
+	make cleanall
+	./configure --with-efence=/usr/lib
+fi
 make log
 cd /home/aubit4gl/sourceforge/aubit4glsrc
 cd lib/libui/ui_curses

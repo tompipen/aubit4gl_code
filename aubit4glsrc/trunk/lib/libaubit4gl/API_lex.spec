@@ -167,7 +167,7 @@ print_construct_1 -> void
 print_construct_2 char* driver -> void
 
 /* void print_construct_3 (int byname, char *constr_str, char *attr) */
-print_construct_3 int byname,char* constr_str,char* attr -> void
+print_construct_3 int byname,char* constr_str,char* attr,int cattr -> void
 
 /* void print_befaft_field_1 (char *fieldexpr) */
 print_befaft_field_1 char* fieldexpr -> void
@@ -279,7 +279,7 @@ print_input_1 -> void
 print_input_2 char* s -> void
 
 /* void print_input (int byname, char *defs, char *helpno, char *fldlist) */
-print_input int byname,char* defs,char* helpno,char* fldlist -> void
+print_input int byname,char* defs,char* helpno,char* fldlist,int attr -> void
 
 /* char * print_input_array (char *arrvar, char *helpno, char *defs, char *srec, char *attr) */
 print_input_array char* arrvar,char* helpno,char* defs,char* srec,char* attr,void* inp_attr -> char*

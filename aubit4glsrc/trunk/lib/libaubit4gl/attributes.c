@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.9 2003-06-18 09:38:23 mikeaubury Exp $
+# $Id: attributes.c,v 1.10 2003-06-18 19:21:02 mikeaubury Exp $
 #*/
 
 /**
@@ -318,7 +318,6 @@ int int_options=0;
 int int_disp_form=0;
 int int_open_window=0;
 
-
 switch(cmd_type) {
         case FGL_CMD_DISPLAY_CMD:  // DISPLAY / DISPLAY @
         case FGL_CMD_DISPLAY_FIELD_CMD:  // DISPLAY TO, DISPLAY BY NAME
@@ -469,6 +468,11 @@ struct s_std_attr *ptr_attrib_field=0;
 struct struct_scr_field *fprop;
 int attr;
 
+if (cmd_type==FGL_CMD_CLEAR) { // Dont bother with clear...
+	A4GL_debug("CMD_CLEAR Attributes are always 0...");
+	return 0;
+}
+
 fprop=vfprop;
 /* Decode our current attribute */
 
@@ -529,10 +533,12 @@ A4GL_debug("ptr_attrib_field=%p\n",ptr_attrib_field);
 r=A4GL_determine_attribute_as_std_attr(cmd_type, ptr_attrib_curr, ptr_attrib_field);
 
 if (r==0) {
-		A4GL_debug("no Attribute specified anywhere...");
+	A4GL_debug("no Attribute specified anywhere...");
 		return 0;
 }
-A4GL_debug("determined Attribute : %x %d %d %d %d %d %d", r->colour, r->normal, r->reverse, r->underline, r->bold, r->blink, r->dim);
+
+
+A4GL_debug("MJAMJAMJA determined Attribute : %x %d %d %d %d %d %d", r->colour, r->normal, r->reverse, r->underline, r->bold, r->blink, r->dim);
 attr=0;
 A4GL_debug("Have Attribute..");
 attr=attr+r->colour;
@@ -543,6 +549,7 @@ if (r->bold) attr+=AUBIT_ATTR_BOLD;
 if (r->blink) attr+=AUBIT_ATTR_BLINK;
 if (r->dim) attr+=AUBIT_ATTR_DIM;
 A4GL_debug("Returning Attribute : %d\n",attr);
+
 return attr;
 }
 
