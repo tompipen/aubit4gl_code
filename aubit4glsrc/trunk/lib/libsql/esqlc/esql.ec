@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.117 2004-12-17 13:19:04 mikeaubury Exp $
+# $Id: esql.ec,v 1.118 2004-12-21 09:22:01 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.117 2004-12-17 13:19:04 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.118 2004-12-21 09:22:01 mikeaubury Exp $";
 #endif
 
 
@@ -1100,29 +1100,38 @@ int arr_dtime[]={
 	TYPE =:dataType, DATA =:smfloat_var;
       break;
     case DTYPE_DECIMAL: 
+	{ char *b;
 	vptr=(void *)bind[idx].ptr;
-      fgl_decimal = (fgldecimal *) vptr;
-	char_var=(char *)&fgl_decimal->dec_data[2];
-      if (deccvasc (char_var, strlen (char_var), &decimal_var))
+        fgl_decimal = (fgldecimal *) vptr;
+	b=A4GL_dec_to_str(fgl_decimal,0);
+	
+	//char_var=(char *)&fgl_decimal->dec_data[2];
+	//A4GL_debug("char_var=%s\n",char_var);
+      if (deccvasc (b, strlen (b), &decimal_var))
 	{
 	/** @todo : We need to store this error */
 	  return 1;
+	}
 	}
       EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
 	TYPE =:dataType, DATA =:decimal_var;
       break;
-    case DTYPE_MONEY:
+    case DTYPE_MONEY: {
+	char *b;
 	vptr=(void *)bind[idx].ptr;
       fgl_money = (fglmoney *) vptr;
-	char_var=(char *)&fgl_money->dec_data[2];
-      if (deccvasc (char_var, strlen (char_var), &money_var))
+	b=A4GL_dec_to_str(fgl_money,0);
+	//char_var=(char *)&fgl_money->dec_data[2];
+      if (deccvasc (b, strlen (b), &money_var))
 	{
 	/** @todo : We need to store this error */
 	  return 1;
 	}
+	}
       EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
 	TYPE =:dataType, DATA =:money_var;
       break;
+
 
     case DTYPE_DATE:
       fgl_date = (long *) bind[idx].ptr;
