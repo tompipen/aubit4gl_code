@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: a4gl_API_sql.h,v 1.9 2003-01-15 22:29:07 saferreira Exp $
+# $Id: a4gl_API_sql.h,v 1.10 2003-01-17 23:22:39 psterry Exp $
 #
 */
 
@@ -94,8 +94,9 @@ extern "C" {
 	int 	A4GLSQL_get_datatype   	(char *db, char *tab, char *col);
 	int 	A4GLSQL_init_session   	(char *sessname, char *dsn, char *usr, char *pwd);
 	int 	A4GLSQL_set_conn   		(char *sessname);
-	int		A4GLSQL_dbms_type 		(void);
 	char *	A4GLSQL_dbms_name 		(void);
+	char *	A4GLSQL_dbms_dialect 	(void);
+	void	A4GLSQL_set_dialect 	(char *dialect);
 	int		A4GLSQL_close_session   (char *sessname);
 	int 	A4GLSQL_add_prepare   	(char *pname, struct s_sid *sid);
 	int 	A4GLSQL_open_cursor   	(int ni, char *s);
@@ -134,16 +135,7 @@ extern "C" {
 
 /* ======================= sqlconvert.c ==================== */
 
-#define DBMS_INFORMIX	 0
-#define DBMS_SAPDB	 1
-#define DBMS_POSTGRESQL	 2
-#define DBMS_MYSQL	 3
-#define DBMS_ORACLE	 4
-#define DBMS_SQLSERVER	 5
-#define DBMS_INTERBASE	 6
-#define DBMS_OTHER    	99
-
-void convert_sql( int dbms, char *sql );
+void convert_sql( char *source_dialect, char *target_dialect, char *sql );
 
 #ifdef __cplusplus
 }
