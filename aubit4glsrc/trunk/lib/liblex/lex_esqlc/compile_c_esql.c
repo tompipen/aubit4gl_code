@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.114 2005-03-17 09:46:13 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.115 2005-03-19 08:51:11 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.114 2005-03-17 09:46:13 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.115 2005-03-19 08:51:11 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -1601,7 +1601,6 @@ doing_esql_unload=A4GLSQLCV_check_requirement("ESQL_UNLOAD");
 
   if (doing_esql_unload) {
 	int ni;
-		printf("UNLOAD1\n");
 		printc("{ /* un1 */");
   		ni = print_bind_definition ('i');
 		print_bind_set_value('i');

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.23 2005-03-09 15:15:13 mikeaubury Exp $
+# $Id: simple.c,v 1.24 2005-03-19 08:51:23 mikeaubury Exp $
 #*/
 
 
@@ -370,11 +370,13 @@ fixtype (char *type, int *d, int *s)
   if (strcmp (buff, "integer") == 0)
     {
       *d = DTYPE_INT;
+	*s=sizeof(long);
     }
 
   if (strcmp (buff, "smallint") == 0)
     {
       *d = DTYPE_SMINT;
+	*s=sizeof(short);
     }
 
   if (strcmp (buff, "numeric") == 0)
@@ -386,6 +388,7 @@ fixtype (char *type, int *d, int *s)
   if (strcmp (buff, "date") == 0)
     {
       *d = DTYPE_DATE;
+	*s=sizeof(long);
     }
 
   if (strcmp (buff, "money") == 0)
@@ -396,7 +399,7 @@ fixtype (char *type, int *d, int *s)
   if (strcmp (buff, "timestamp") == 0)
     {
       *d = DTYPE_DTIME;
-      *s = 0x16000a;
+      *s = 22;
     }
 
   if (strcmp (buff, "real") == 0)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.114 2005-03-16 10:46:42 mikeaubury Exp $
+# $Id: sql.c,v 1.115 2005-03-19 08:51:11 mikeaubury Exp $
 #
 */
 
@@ -2548,22 +2548,28 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
       return;
     }
 
+
+  if (bind->dtype != DTYPE_CHAR && bind->dtype!=DTYPE_VCHAR) {
+    size = 0;
+  } else {
+	if (bind->start_char_subscript==0) {
+    		size = bind->size;
+	} else {
+    		size = bind->end_char_subscript-bind->start_char_subscript+1;
+	}
+  }
+
 #ifdef DEBUG
-  A4GL_debug ("Binding %d=(%d %d %p)", pos, bind->dtype, bind->size,
-	      bind->ptr);
-  if (bind->dtype == 0)
+  A4GL_debug ("Binding %d=(%d %d %p)", pos, bind->dtype, bind->size, bind->ptr);
+  if (bind->dtype == DTYPE_CHAR || bind->dtype==DTYPE_VCHAR)
     {
-      A4GL_debug (" is a string : %s", bind->ptr);
+      A4GL_debug (" is a string : '%s' %d %d %d = %d", bind->ptr,bind->size,bind->start_char_subscript,bind->end_char_subscript,size);
     }
 #endif
 
-  if (bind->dtype != 0)
-    size = 0;
-  else
-    size = bind->size;
 
 #ifdef DEBUG
-  if (bind->dtype == 0)
+  if (bind->dtype == DTYPE_CHAR)
     {
       A4GL_debug (" Binding : %s ", bind->ptr);
     }

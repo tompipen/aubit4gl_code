@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.82 2005-03-09 15:14:39 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.83 2005-03-19 08:44:47 mikeaubury Exp $
 #
 */
 
@@ -1044,7 +1044,7 @@ A4GL_check_and_show_id (char *program, char *arg1)
 
   if (strcmp (arg1, "-v") == 0)
     {
-      printf ("(c) 1997-2003 Aubit project\n%s\n\n", program);
+      printf ("(c) 1997-2005 Aubit project\n%s\n\n", program);
       /*
          printf("Serial Number %s\n\nVersion       %s\nBuild Level   %d\n",
          get_serno(),internal_version(),internal_build()
@@ -1058,7 +1058,7 @@ A4GL_check_and_show_id (char *program, char *arg1)
 
   if (strcmp (arg1, "-vfull") == 0)
     {
-      printf ("(c) 1997-2003 Aubit project\n%s\n\n", program);
+      printf ("(c) 1997-2005 Aubit project\n%s\n\n", program);
       printf ("Version       %s\nBuild Level   %d\n",
 	      A4GL_internal_version (), A4GL_internal_build ());
       for (a = 0;; a++)
