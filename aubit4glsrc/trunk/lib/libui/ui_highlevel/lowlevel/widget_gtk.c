@@ -1,4 +1,4 @@
-static char *module_id="$Id: widget_gtk.c,v 1.7 2004-02-13 10:28:20 mikeaubury Exp $";
+static char *module_id="$Id: widget_gtk.c,v 1.8 2004-03-12 10:24:36 whaslbeck Exp $";
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
 #include "lowlevel.h"
@@ -348,6 +348,9 @@ A4GL_fld_val_generic (GtkWidget * k)
 {
   char *ptr;
   char *txt;
+  char *utf;
+  static char txt_buf[256];
+
   A4GL_debug ("in A4GL_fld_val_generic k=%p\n", k);
 
   ptr = gtk_object_get_data (GTK_OBJECT (k), "WIDGETSNAME");
@@ -357,7 +360,7 @@ A4GL_fld_val_generic (GtkWidget * k)
 
   if (ptr == NULL)
     {
-      A4GL_debug ("Cant find tyhe widget!");
+      A4GL_debug ("Cant find the widget!");
       return (char *) 1;
     }
 
@@ -366,12 +369,21 @@ A4GL_fld_val_generic (GtkWidget * k)
   if (strcasecmp (ptr, "LABEL") == 0)
     {
       gtk_label_get (GTK_LABEL (k), &txt);
-      return txt;
+      utf=g_locale_from_utf8(txt, -1, NULL, NULL, NULL);
+      strncpy(txt_buf, utf, 256);
+      g_free(utf);
+      return txt_buf;
+      //return g_locale_from_utf8(txt, -1, NULL, NULL, NULL);
     }
 
   if (strcasecmp (ptr, "ENTRY") == 0 || strcasecmp (ptr, "TEXT") == 0)
     {
-      return (char*)gtk_entry_get_text (GTK_ENTRY (k));
+      //return (char*)gtk_entry_get_text (GTK_ENTRY (k));
+      utf=g_locale_from_utf8(gtk_entry_get_text(GTK_ENTRY(k)), -1, NULL, NULL, NULL);
+      strncpy(txt_buf, utf, 256);
+      g_free(utf);
+      return txt_buf;
+      //return g_locale_from_utf8((char*)gtk_entry_get_text (GTK_ENTRY (k)), -1, NULL, NULL, NULL);
       //return (char *) 1;
     }
 
@@ -379,7 +391,7 @@ A4GL_fld_val_generic (GtkWidget * k)
     {
       int a;
       GtkWidget *btn;
-      char *ptr;
+      //char *ptr;
       char buff[20];
       for (a = 0;; a++)
         {
@@ -389,8 +401,12 @@ A4GL_fld_val_generic (GtkWidget * k)
             break;
           if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (btn)))
             {
-              ptr = gtk_object_get_data (GTK_OBJECT (btn), "Value");
-              return ptr;
+              utf=g_locale_from_utf8(gtk_object_get_data (GTK_OBJECT (btn), "Value"), -1, NULL, NULL, NULL);
+	      strncpy(txt_buf, utf, 256);
+	      g_free(utf);
+	      return txt_buf;
+              // ptr = gtk_object_get_data (GTK_OBJECT (btn), "Value");
+              //return g_locale_from_utf8(ptr, -1, NULL, NULL, NULL);
             }
         }
       return NULL;
@@ -409,7 +425,10 @@ A4GL_fld_val_generic (GtkWidget * k)
       aclfgl_mdy (3);
       A4GL_pop_var2 (&buff, 0, 20);
       A4GL_trim (buff);
-      return buff;
+      utf=g_locale_from_utf8(buff, -1, NULL, NULL, NULL);
+      strncpy(txt_buf, utf, 256);
+      g_free(utf);
+      return txt_buf;
     }
 
   if (strcasecmp (ptr, "SCROLLBAR") == 0)
@@ -713,7 +732,7 @@ A4GL_cr_button (void)
     {
       if (strlen (label))
 	{
-	  l = (GtkLabel *) gtk_label_new (label);
+	  l = (GtkLabel *) gtk_label_new (g_locale_to_utf8(label, -1, NULL, NULL, NULL));
 	  gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (l));
 	  gtk_widget_show (GTK_WIDGET (l));
 	  gtk_object_set_data (GTK_OBJECT (b), "LABEL", l);
@@ -772,7 +791,7 @@ A4GL_cr_radio (void)
       ptr = A4GL_find_param (buff);
       A4GL_debug ("   %s\n", ptr);
 
-      btn = gtk_radio_button_new_with_label (btn_grp, ptr);
+      btn = gtk_radio_button_new_with_label (btn_grp, g_locale_to_utf8(ptr, -1, NULL, NULL, NULL));
       btn_grp = (GSList *) gtk_radio_button_group (GTK_RADIO_BUTTON (btn));
       gtk_box_pack_start (GTK_BOX (hbox), btn, TRUE, TRUE, 0);
       gtk_widget_show (btn);
@@ -836,7 +855,7 @@ A4GL_cr_label (void)
   GtkWidget *label;
   char *caption;
   caption = A4GL_find_param ("CAPTION");
-  label = gtk_label_new (caption);
+  label = gtk_label_new (g_locale_to_utf8(caption, -1, NULL, NULL, NULL));
   gtk_widget_show (label);
   A4GL_add_signal_grab_focus (label, 0);
   A4GL_add_signal_clicked (label, 0);
@@ -859,7 +878,7 @@ A4GL_cr_check (void)
 
   if (label)
     {
-      checkbox = gtk_check_button_new_with_label (label);
+      checkbox = gtk_check_button_new_with_label (g_locale_to_utf8(label, -1, NULL, NULL, NULL));
     }
   else
     {
@@ -1361,17 +1380,20 @@ int
 A4GL_display_generic (GtkWidget * k, char *s)
 {
   char *ptr;
+  char *utf;
   A4GL_debug ("in A4GL_display_generic k=%p s='%s'\n", k, s);
 
   ptr = gtk_object_get_data (GTK_OBJECT (k), "WIDGETSNAME");
 
   if (ptr == 0)
     {
-      A4GL_debug ("Cant find tyhe widget!");
+      A4GL_debug ("Cant find the widget!");
       return 1;
     }
 
   A4GL_debug ("Widgettye=%s\n", ptr);
+
+  utf=g_locale_to_utf8(s, -1, NULL, NULL, NULL);
 
   if (strcasecmp (ptr, "BUTTON") == 0)
     {
@@ -1379,7 +1401,8 @@ A4GL_display_generic (GtkWidget * k, char *s)
       w = gtk_object_get_data (GTK_OBJECT (k), "LABEL");
       if (w)
 	{
-	  gtk_label_set_text (GTK_LABEL (w), s);
+	  gtk_label_set_text (GTK_LABEL (w), utf);
+	  g_free(utf);
 	}
     }
 
@@ -1391,7 +1414,8 @@ A4GL_display_generic (GtkWidget * k, char *s)
 	GtkStyle *style;
 #endif
 
-      gtk_label_set_text (GTK_LABEL (k), s);
+      gtk_label_set_text (GTK_LABEL (k), utf);
+      g_free(utf);
 
 /* check whether a Gtk+ version equal to or greater than
  * major.minor.micro is present.
@@ -1401,7 +1425,8 @@ A4GL_display_generic (GtkWidget * k, char *s)
 
   if (strcasecmp (ptr, "ENTRY") == 0 || strcasecmp (ptr, "TEXT") == 0)
     {
-      gtk_entry_set_text (GTK_ENTRY (k), s);
+      gtk_entry_set_text (GTK_ENTRY (k), utf);
+      g_free(utf);
       return 1;
     }
 
@@ -1412,7 +1437,8 @@ A4GL_display_generic (GtkWidget * k, char *s)
       fflush (stdout);
 
       k = gtk_object_get_data (GTK_OBJECT (k), "Child");
-      gtk_clist_append (GTK_CLIST (k), &s);
+      gtk_clist_append (GTK_CLIST (k), &utf);
+      g_free(utf);
 
     }
 

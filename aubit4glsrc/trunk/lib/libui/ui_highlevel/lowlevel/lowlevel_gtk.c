@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.28 2004-03-07 16:30:17 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.29 2004-03-12 10:24:12 whaslbeck Exp $";
 
 
 #include <gtk/gtk.h>
@@ -174,7 +174,7 @@ int
 A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
 {
 
-  printf ("Key Pressed! %x %x (%s) widget=%p user_data=%p\n", event->keyval, event->state, gdk_keyval_name (event->keyval),widget,user_data);
+  // printf ("Key Pressed! %x %x (%s) widget=%p user_data=%p\n", event->keyval, event->state, gdk_keyval_name (event->keyval),widget,user_data);
 
   if (event->state & 4)
     {                           /*  Control key held down... */
@@ -187,7 +187,6 @@ A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
     {
       keypressed = event->keyval;
     }
-
 
   add_keypress(keypressed);
   actionfield = widget;
@@ -231,7 +230,9 @@ void A4GL_hide_console (void)
  */
 void A4GL_add_to_console (char *s)
 {
-  gtk_clist_append (GTK_CLIST (console_list), &s);
+  char *utf=g_locale_to_utf8(s, -1, NULL, NULL, NULL);
+  gtk_clist_append (GTK_CLIST (console_list), &utf);
+  g_free(utf);
 }
 
 /**
@@ -367,6 +368,7 @@ int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis
   int rval;
   GtkDialog *win;
   GtkLabel *label;
+  char *label_utf;
 /*   GtkButton *but; */
 
 /* Only do modal for now... */
@@ -378,7 +380,9 @@ int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis
 
   gtk_signal_connect (GTK_OBJECT (win),
                       "delete_event", GTK_SIGNAL_FUNC (gtk_true), NULL);
-  label = (GtkLabel *) gtk_label_new (msg);
+  label_utf=g_locale_to_utf8(msg, -1, NULL, NULL, NULL);
+  label = (GtkLabel *) gtk_label_new (label_utf);
+  g_free(label_utf);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->vbox),
                      GTK_WIDGET (label));
 
@@ -716,7 +720,7 @@ void A4GL_LL_error_box(char* str,int attr) {
 char* A4GL_LL_field_buffer(void* field,int n) {
 char *ptr;
         ptr=A4GL_fld_val_generic (field);
-	//printf("Got field value as : '%s'\n",ptr);
+	// printf("Got field value as : '%s'\n",ptr);
 	return ptr;
 }
 
@@ -1145,7 +1149,7 @@ void A4GL_LL_wadd_char_xy_col(void* win,int x,int y,int ch) {
 
   long old_attr=0;
   long has_old_attr=0;
-  char cbuff[2];
+  char cbuff[10];
   cbuff[0]=ch&0xff;
   cbuff[1]=0;
 	
@@ -1199,9 +1203,10 @@ A4GL_debug("Wadd_char to window %p %d %d %x",win,x,y,ch);
 
 
       if (!lab) {
+		char *lab_utf=g_locale_to_utf8(cbuff, -1, NULL, NULL, NULL);
 		//printf("NEW LABEL FOR : %d %d\n",x,y);
-                lab = (GtkLabel *) gtk_label_new (cbuff);
-
+                lab = (GtkLabel *) gtk_label_new (lab_utf);
+		g_free(lab_utf);
 
 		e=(GtkEventBox *)gtk_event_box_new();
                 gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (e), A4GL_getx_coords(x), A4GL_gety_coords(y));
@@ -1227,8 +1232,10 @@ A4GL_debug("Wadd_char to window %p %d %d %x",win,x,y,ch);
         	gtk_widget_show (GTK_WIDGET (e));
 
       } else {
+		char *txt_utf=g_locale_to_utf8(cbuff, -1, NULL, NULL, NULL);
 		has_old_attr=1;
-                gtk_label_set_text (lab, cbuff);
+                gtk_label_set_text (lab, txt_utf);
+		g_free(txt_utf);
 #if GTK_CHECK_VERSION(2,0,0)
 		gtk_widget_set_size_request (GTK_WIDGET(lab), gui_xwidth, gui_yheight);
 #endif		
@@ -1339,9 +1346,11 @@ void* A4GL_LL_create_errorwindow(int h,int w,int y,int x,int attr,char* str) {
 GtkWidget *frame;  // We want it in a nice frame
 GtkWidget *label;  // With some text
 GtkWidget *evt;    // And we'll use this to get a background colour...
+char *lab_utf=g_locale_to_utf8(str, -1, NULL, NULL, NULL);
 
 frame=gtk_frame_new(0);
-label=gtk_label_new(str);
+label=gtk_label_new(lab_utf);
+g_free(lab_utf);
 evt=gtk_event_box_new();
 
 gtk_widget_set_usize (GTK_WIDGET (frame), w*gui_xwidth , h*gui_yheight);
@@ -2042,8 +2051,10 @@ return widget;
 
 void* A4GL_LL_make_label(int frow,int fcol,char* label) {
 GtkWidget *widget;
+char *label_utf=g_locale_to_utf8(label, -1, NULL, NULL, NULL);
 //printf("MAKE LABEL\n");
-widget=gtk_label_new(label);
+widget=gtk_label_new(label_utf);
+g_free(label_utf);
 if (strcmp(label,"[")==0) return 0;
 if (strcmp(label,"]")==0) return 0;
 gtk_object_set_data(GTK_OBJECT(widget),"MF_FROW",(void *)frow);
@@ -2062,15 +2073,15 @@ char *s;
 GtkWidget *w;
 form=vform;
 //printf("SET FOCUS %p\n",form->widgets[form->currentfield]);
-printf("current field = %d\n",form->currentfield);
+//printf("current field = %d\n",form->currentfield);
 w=form->widgets[form->currentfield];
-printf("w=%p\n",w);
+//printf("w=%p\n",w);
 
 gtk_widget_grab_focus (GTK_WIDGET (w));
-printf("Grabbed focus\n");
+//printf("Grabbed focus\n");
 s=gtk_object_get_data(GTK_OBJECT(w),"WIDGETSNAME");
 
-printf("set_carat - %s\n",s);
+//printf("set_carat - %s\n",s);
 if (s) {
 if (strcmp(s,"ENTRY")==0) {
 	gtk_editable_set_position(GTK_EDITABLE(form->widgets[form->currentfield]),form->curcol);
@@ -2156,22 +2167,28 @@ cwidget=form->widgets[form->currentfield];
 if (mode<=255 && a_isprint(mode) && mode >=' ') {
 	gint iopos;
 	char buff[2];
+	char *utf;
 	buff[0]=mode;
 	buff[1]=0;
-	//printf(" - CHAR (%c) - %s\n",mode,buff);
+	utf=g_locale_to_utf8(buff, -1, NULL, NULL, NULL);
+	// printf(" - CHAR (%c) - %s (UTF: %s)\n",mode,buff,utf);
 	if (form->ovlins==1) {
-		//printf("Insert mode\n");
+		// printf("Insert mode - insert (%c) at %d\n", mode, form->curcol);
 		iopos=form->curcol;
-		gtk_editable_insert_text(GTK_EDITABLE(cwidget),buff,1,&iopos);
-			form->curcol++;
-		//printf("curcol now : %d\n",form->curcol);
+		gtk_editable_insert_text(GTK_EDITABLE(cwidget), utf, strlen(utf), &iopos);
+		form->curcol++;
+		//form->curcol+=strlen(utf);
+		// printf("curcol now : %d\n",form->curcol);
 	} else {
-		//printf("overwrite mode %d\n",form->curcol);
+		// printf("overwrite mode - overwrite (%c) at %d\n", mode, form->curcol);
 		gtk_editable_delete_text(GTK_EDITABLE(cwidget),form->curcol,form->curcol+1);
 		iopos=form->curcol;
-		gtk_editable_insert_text(GTK_EDITABLE(cwidget),buff,1,&iopos);
+		gtk_editable_insert_text(GTK_EDITABLE(cwidget), utf, strlen(utf), &iopos);
 		form->curcol++;
+		//form->curcol+=strlen(utf);
+		// printf("curcol now : %d\n",form->curcol);
 	}
+	g_free(utf);
 } else {
 	switch (mode) {
 		case AUBIT_REQ_BEG_FIELD: 
@@ -2181,10 +2198,10 @@ if (mode<=255 && a_isprint(mode) && mode >=' ') {
 		case AUBIT_REQ_END_FIELD:
 				{	
 				char *x;
-				x=strdup(gtk_entry_get_text(GTK_ENTRY(cwidget)));
+				x=g_locale_from_utf8(gtk_entry_get_text(GTK_ENTRY(cwidget)), -1, NULL, NULL, NULL);
 				A4GL_trim(x);
 				form->curcol=strlen(x); 
-				free(x);
+				g_free(x);
 				}
 				break;
 
@@ -2883,7 +2900,9 @@ ACL_Menu_Opts *mo;
 				gtk_widget_hide(b);
 			} else {
 				#if GTK_CHECK_VERSION(2,0,0)
-					gtk_button_set_label(GTK_BUTTON(b),mo->opt_title);
+					char *label_utf=g_locale_to_utf8(mo->opt_title, -1, NULL, NULL, NULL);
+					gtk_button_set_label(GTK_BUTTON(b), label_utf);
+					g_free(label_utf);
 				#else
 					A4GL_debug("WARNING: GTK 1.2 has no gtk_button_set_label()");				
 				#endif
