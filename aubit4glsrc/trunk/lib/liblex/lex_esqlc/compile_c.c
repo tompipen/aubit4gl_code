@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.209 2005-01-12 11:15:18 mikeaubury Exp $
+# $Id: compile_c.c,v 1.210 2005-01-19 09:55:33 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.209 2005-01-12 11:15:18 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.210 2005-01-19 09:55:33 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1077,7 +1077,7 @@ pr_report_agg (void)
 	  A4GL_debug ("X2");
 	  print_expr (sreports[z].rep_cond_expr);
 	  A4GL_debug ("X3");
-	  printc ("_res=A4GL_pop_double(); _g%d+=_res;}\n ", a);
+	  printc ("_res=A4GL_pop_double(); _g%dused++; _g%d+=_res;}\n ", a,a);
 	}
 
       if (t == 'A')
@@ -1144,7 +1144,7 @@ char b[255];
 	      printc ("_g%d=0;\n", a);
 	    }
 
-	  if (t == 'N' || t == 'X')
+	  if (t == 'N' || t == 'X' || t=='S')
 	    {
 	      printc ("_g%dused=0;\n", a);
 	    }

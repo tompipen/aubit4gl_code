@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.102 2005-01-12 11:15:18 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.103 2005-01-19 09:55:34 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.102 2005-01-12 11:15:18 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.103 2005-01-19 09:55:34 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -527,7 +527,8 @@ print_prepare (char *xstmt, char *sqlvar)
   printc ("\nEXEC SQL PREPARE %s FROM :_s;\n", stmt, sqlvar);
 A4GL_save_sql("PREPARE %s",sqlvar);
 
-  printc ("free(_s);\n}\n");
+  printc ("free(_s);\n");
+  printc("}\n");
   print_copy_status ();
 }
 
@@ -1123,41 +1124,37 @@ A4GL_save_sql("FLUSH %s",A4GL_strip_quotes(s));
 void
 print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 {
-char buff[256];
-int intprflg=0;
-static char *cname=0;
-if (cname) free(cname);
-set_suppress_lines();
-cname=strdup(A4GL_strip_quotes(a3));
+  char buff[256];
+  int intprflg = 0;
+  static char *cname = 0;
+  if (cname)
+    free (cname);
+  set_suppress_lines ();
+  cname = strdup (A4GL_strip_quotes (a3));
 
 
-printc("/* a1=%s a2=%s a3=%s */",a1,a2,a3);
-  if (a2[0] == '"')
+  printc ("/* a1=%s a2=%s a3=%s */", a1, a2, a3);
+  if (a2[0] == '"' )
     {
       printc ("{ /* DC 0 */");
     }
 
 
-  if (a2[0]=='"') { 
-		start_bind('i',0); start_bind('o',0); 
-		last_ni=0; 
-		last_no=0; 
-  		print_conversions('0');
-  }
+  if (a2[0] == '"')
+    {
+      start_bind ('i', 0);
+      start_bind ('o', 0);
+      last_ni = 0;
+      last_no = 0;
+      print_conversions ('0');
+    }
 
-
-  /*if (strstr (a2, "INTO $") != 0)*/
-    /*{*/
-      /*a4gl_yyerror*/
-	/*("ESQL lexer cannot handle DECLARE .. INTO at present, put the INTO on the FETCH/FOREACH instead...");*/
-      /*return;*/
-    /*}*/
 
 
   if (strlen (a1) && h2)
     {
       a4gl_yyerror ("Updates are not allowed on a scroll cursor");
-clr_suppress_lines();
+      clr_suppress_lines ();
       return;
     }
 
@@ -1167,99 +1164,118 @@ clr_suppress_lines();
       strcat (buff, " SCROLL");
     }
   strcat (buff, " CURSOR");
-  if (h1 || esql_type ()==2) /* All postgres cursors should be with hold*/
+  if (h1 || esql_type () == 2)	/* All postgres cursors should be with hold */
     {
       strcat (buff, " WITH HOLD");
     }
 
   printc ("%s FOR", buff);
-A4GL_save_sql("DECLARE CURSOR FOR %s",a2);
+  A4GL_save_sql ("DECLARE CURSOR FOR %s", a2);
   printc ("     %s ", A4GL_strip_quotes (a2));
-  /*if (strlen (a1))*/
-    /*{*/
-      /*printc ("     FOR UPDATE");*/
-	/*if (a1[0]!=' ') {*/
-		/*printc(" OF %s",a1);*/
-	/*}*/
-    /*}*/
+
   printc (";");
   print_copy_status ();
 
 
-if (last_no && A4GLSQLCV_check_requirement("NO_DECLARE_INTO")) {
-	a4gl_yyerror ("You cannot use an INTO with a declare with the target database");
-	return;
+  if (last_no && A4GLSQLCV_check_requirement ("NO_DECLARE_INTO"))
+    {
+      a4gl_yyerror
+	("You cannot use an INTO with a declare with the target database");
+      return;
+    }
+  printh ("static int acli_ni_%s=%d;\n", cname, last_ni);
+  printh ("static int acli_no_%s=%d;\n", cname, last_no);
+  printh ("static struct BINDING *acli_bi_%s=0;\n", cname);
+  printh ("static struct BINDING *acli_bo_%s=0;\n", cname);
+  printh ("static struct BINDING *acli_nbi_%s=0;\n", cname);
+  printh ("static struct BINDING *acli_nbo_%s=0;\n", cname);
+  printh ("static struct BINDING *acli_nbii_%s=0;\n", cname);
+  printh ("static struct BINDING *acli_nboi_%s=0;\n", cname);
+  /*printh("#undef ibind\n#undef obind\n"); */
+  /*printh("#define ibind acli_bi_%s\n",A4GL_strip_quotes(a3)); */
+  /*printh("#define obind acli_bo_%s\n",A4GL_strip_quotes(a3)); */
+
+  printh ("\n\nstatic void internal_recopy_%s_i_Dir(void) {\n", cname);
+  printh ("struct BINDING *ibind;\n");
+  printh ("struct BINDING *native_binding_i;\n");
+  printh ("struct BINDING *native_binding_i_ind;\n");
+  printh ("ibind=acli_bi_%s;\n", cname);
+  printh ("native_binding_i_ind=acli_nbii_%s;\n", cname);
+  printh ("native_binding_i=acli_nbi_%s;\n", cname);
+  print_conversions ('I');
+
+  printh ("}\n");
+
+  printh ("\n\nstatic void internal_recopy_%s_o_Dir(void) {\n", cname);
+  printh ("struct BINDING *obind;\n");
+  printh ("struct BINDING *native_binding_o;\n");
+  printh ("struct BINDING *native_binding_o_ind;\n");
+  printh ("obind=acli_bo_%s;\n", cname);
+  printh ("native_binding_o=acli_nbo_%s;\n", cname);
+  printh ("native_binding_o_ind=acli_nboi_%s;\n", cname);
+  print_conversions ('O');
+  printh ("}\n");
+  printh
+    ("\n\nstatic void internal_set_%s(struct BINDING *i,struct BINDING *o,struct BINDING *ni,struct BINDING *no,struct BINDING *nii,struct BINDING *noi) {\n",
+     cname);
+  printh ("acli_bi_%s=i;\n", cname);
+  printh ("acli_bo_%s=o;\n", cname);
+  printh ("acli_nbi_%s=ni;\n", cname);
+  printh ("acli_nbo_%s=no;\n", cname);
+  printh ("acli_nbii_%s=nii;\n", cname);
+  printh ("acli_nboi_%s=noi;\n", cname);
+  printh ("}\n");
+
+  intprflg = 0;
+  if (last_ni)
+    intprflg++;
+  if (last_no)
+    intprflg += 2;
+  printc ("/* intprflg=%d last_ni=%d last_no=%d */\n", intprflg, last_ni,
+	  last_no);
+
+
+  switch (intprflg)
+    {
+    case 3:
+      if (!A4GLSQLCV_check_requirement ("USE_INDICATOR"))
+	sprintf (buff, "0,0");
+      else
+	sprintf (buff, "native_binding_i_ind,native_binding_o_ind");
+      printc
+	("internal_set_%s(ibind,obind,native_binding_i,native_binding_o,%s);",
+	 cname, buff);
+      break;
+    case 2:
+      if (!A4GLSQLCV_check_requirement ("USE_INDICATOR"))
+	sprintf (buff, "0,0");
+      else
+	sprintf (buff, "0,native_binding_o_ind");
+      printc ("internal_set_%s(0,obind,0,native_binding_o,%s);", cname, buff);
+      break;
+    case 1:
+      if (!A4GLSQLCV_check_requirement ("USE_INDICATOR"))
+	sprintf (buff, "0,0");
+      else
+	sprintf (buff, "native_binding_i_ind,0");
+      printc ("internal_set_%s(ibind,0,native_binding_i,0,%s);", cname, buff);
+      break;
+    case 0:
+      printc ("internal_set_%s(0,0,0,0,0,0);", cname);
+      break;
+    default:
+      printc ("#error No internal_set written\n");
+      break;
+
+    }
+
+  printc ("} /* DC 1*/\n");
+  clr_suppress_lines ();
+
 }
-  printh("static int acli_ni_%s=%d;\n",cname,last_ni);
-  printh("static int acli_no_%s=%d;\n",cname,last_no);
-  printh("static struct BINDING *acli_bi_%s=0;\n",cname);
-  printh("static struct BINDING *acli_bo_%s=0;\n",cname);
-  printh("static struct BINDING *acli_nbi_%s=0;\n",cname);
-  printh("static struct BINDING *acli_nbo_%s=0;\n",cname);
-  printh("static struct BINDING *acli_nbii_%s=0;\n",cname);
-  printh("static struct BINDING *acli_nboi_%s=0;\n",cname);
-  /*printh("#undef ibind\n#undef obind\n");*/
-  /*printh("#define ibind acli_bi_%s\n",A4GL_strip_quotes(a3));*/
-  /*printh("#define obind acli_bo_%s\n",A4GL_strip_quotes(a3));*/
-
-  printh("\n\nstatic void internal_recopy_%s_i_Dir(void) {\n",cname);
-  printh("struct BINDING *ibind;\n");
-  printh("struct BINDING *native_binding_i;\n");
-  printh("struct BINDING *native_binding_i_ind;\n");
-  printh("ibind=acli_bi_%s;\n",cname);
-  printh("native_binding_i_ind=acli_nbii_%s;\n",cname);
-  printh("native_binding_i=acli_nbi_%s;\n",cname);
-  print_conversions('I');
-
-  printh("}\n");
-
-  printh("\n\nstatic void internal_recopy_%s_o_Dir(void) {\n",cname);
-  printh("struct BINDING *obind;\n");
-  printh("struct BINDING *native_binding_o;\n");
-  printh("struct BINDING *native_binding_o_ind;\n");
-  printh("obind=acli_bo_%s;\n",cname);
-  printh("native_binding_o=acli_nbo_%s;\n",cname);
-  printh("native_binding_o_ind=acli_nboi_%s;\n",cname);
-  print_conversions('O');
-  printh("}\n");
-  printh("\n\nstatic void internal_set_%s(struct BINDING *i,struct BINDING *o,struct BINDING *ni,struct BINDING *no,struct BINDING *nii,struct BINDING *noi) {\n",cname);
-  printh("acli_bi_%s=i;\n",cname);
-  printh("acli_bo_%s=o;\n",cname);
-  printh("acli_nbi_%s=ni;\n",cname);
-  printh("acli_nbo_%s=no;\n",cname);
-  printh("acli_nbii_%s=nii;\n",cname);
-  printh("acli_nboi_%s=noi;\n",cname);
-  printh("}\n");
-
-intprflg=0;
-if (last_ni) intprflg++;
-if (last_no) intprflg+=2;
-printc("/* intprflg=%d last_ni=%d last_no=%d */\n",intprflg, last_ni,last_no);
 
 
-switch (intprflg) {
-	case 3: 
-				if (!A4GLSQLCV_check_requirement("USE_INDICATOR")) sprintf(buff,"0,0");
-				else sprintf(buff,"native_binding_i_ind,native_binding_o_ind");
-				printc("internal_set_%s(ibind,obind,native_binding_i,native_binding_o,%s);",cname,buff); break;
-	case 2: 
-				if (!A4GLSQLCV_check_requirement("USE_INDICATOR")) sprintf(buff,"0,0");
-				else sprintf(buff,"0,native_binding_o_ind");
-				printc("internal_set_%s(0,obind,0,native_binding_o,%s);",cname,buff); break;
-	case 1: 
-				if (!A4GLSQLCV_check_requirement("USE_INDICATOR")) sprintf(buff,"0,0");
-				else sprintf(buff,"native_binding_i_ind,0");
-				printc("internal_set_%s(ibind,0,native_binding_i,0,%s);",cname,buff); break;
-	case 0: 
-				printc("internal_set_%s(0,0,0,0,0,0);",cname); break;
-	default: printc("#error No internal_set written\n");break;
-	
-}
 
-  printc("} /* DC 1*/\n"); 
-clr_suppress_lines();
-
-}
 
 /**
  * Create the C code implementation to a cursor specification.
@@ -1336,6 +1352,7 @@ print_select_all (char *buff)
   print_bind_set_value('o');
   print_conversions ('i');
   b2 = strdup (buff);
+  printc(" /* end of print_select_all */");
   return b2;
 }
 
