@@ -654,6 +654,7 @@ report_def : REPORT
 	END_REPORT 
 	{
 		pop_blockcommand("REPORT");
+ 	A4GL_chk_and_clr_labels();
 		print_report_end() ;
 		}
 ;

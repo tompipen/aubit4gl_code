@@ -4,6 +4,7 @@ A4GL_debug("Label : %s\n",get_idents(0));
 strcpy(buff,get_idents(0));
 A4GL_convlower(buff);
 print_label(buff);
+A4GL_label_defined(buff);
 }
 ;
 

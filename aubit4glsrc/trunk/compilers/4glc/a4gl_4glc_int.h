@@ -365,8 +365,9 @@ void import_package(char *s);
 void set_whenever_store (int c, char *p) ;
 void dump_variable_records (struct variable **v, int cnt, int lvl);
 void class_set_parent (void);
-
-
+void A4GL_label_used(char *s) ;
+void A4GL_chk_and_clr_labels(void) ;
+void A4GL_label_defined(char *s) ;
 
 char *
 rm_class_copy (char *s);

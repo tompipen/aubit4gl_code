@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.203 2005-02-25 08:39:59 mikeaubury Exp $
+# $Id: mod.c,v 1.204 2005-02-26 09:25:29 mikeaubury Exp $
 #
 */
 
@@ -52,6 +52,8 @@
 #include "variables.h"
 #include <ctype.h>
 #include <errno.h>
+#define FEATURE_USED            'X'
+
 /*
 =====================================================================
                     Constants definitions
@@ -4835,7 +4837,7 @@ while (1) {
 	A4GL_trim(buff);
 	if (buff[0]=='#') continue;
 	if (strlen(buff)==0) continue;
-	A4GL_add_pointer(buff,'.',1);
+	A4GL_add_pointer(buff,FEATURE_USED,1);
 }
 fclose(f);
 	
@@ -4852,7 +4854,7 @@ void A4GL_add_feature(char *feature) {
 	}
 	
 	if (dump_features==0) return;
-	if (!A4GL_has_pointer(feature,'.')) {
+	if (!A4GL_has_pointer(feature,FEATURE_USED)) {
 		A4GL_set_sql_features();
 		f=fopen(sql_features,"a");
 		if (f==0) {
@@ -4860,7 +4862,7 @@ void A4GL_add_feature(char *feature) {
 			failed++;
 			return;
 		}
-		A4GL_add_pointer(feature,'.',1);
+		A4GL_add_pointer(feature,FEATURE_USED,1);
 		fprintf(f,"%s\n",feature);
 		fclose(f);
 	 }

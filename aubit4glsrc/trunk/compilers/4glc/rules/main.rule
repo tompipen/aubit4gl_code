@@ -149,6 +149,7 @@ end_func_command :
     print_func_end();
     clr_function_constants ();
     A4GL_lex_printcomment("/*end function*/\n");
+    A4GL_chk_and_clr_labels();
   }
 ;
 
@@ -175,6 +176,7 @@ main_def:
   }
 commands END_MAIN {
 pop_blockcommand("MAIN");
+    A4GL_chk_and_clr_labels();
 print_main_end();
 A4GL_lex_printcomment("/*end main */\n");} ;
 
