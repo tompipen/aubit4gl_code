@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.15 2002-10-22 06:43:36 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.16 2002-11-19 18:02:10 mikeaubury Exp $
 */
 
 /**
@@ -172,33 +172,33 @@
 	int     aclfgl_errorlog 	(char *string);
 	int     aclfgl_showhelp 	(int helpnumber);
 	int 	aclfgl_fgl_getenv 	(int nargs);
-	void    aclfgl_mdy			(void);
+	int    aclfgl_mdy			(int nargs);
 
 	/* ======================= From buildtin_d.c ====================*/
 
-	void 	aclfgl_date		(void);
+	int 	aclfgl_date		(int nargs);
 //	void 	aclfgl_fgl_drawbox(int n);
-	int 	aclfgl_day		(void);
-	int 	aclfgl_month	(void);
-	int 	aclfgl_weekday	(void);
-	int 	aclfgl_year		(void);
+	int 	aclfgl_day		(int nargs);
+	int 	aclfgl_month	(int nargs);
+	int 	aclfgl_weekday	(int nargs);
+	int 	aclfgl_year		(int nargs);
 
-	void            aclfgl_hex         	(void);
-	void            aclfgl_abs         	(void);
-	void            aclfgl_root       	(void);
-	void            aclfgl_sqrt        	(void);
+	int            aclfgl_hex         	(int nargs);
+	int            aclfgl_abs         	(int nargs);
+	int            aclfgl_root       	(int nargs);
+	int            aclfgl_sqrt        	(int nargs);
 
 
 	/* ============= from assist.4gl/.c ======================= */
 	int aclfgl_run_gui (int nargs);
 
     /* ============== from curslib.c =========================== */
-	void aclfgl_fgl_drawbox (int n);
+	int aclfgl_fgl_drawbox (int n);
 
     /* ======================= API_ui.c ===================== */
 
-	int     aclfgl_set_page		(void);
-	int     aclfgl_get_page		(void);
+	int     aclfgl_set_page		(int nargs);
+	int     aclfgl_get_page		(int nargs);
 
     /* =================== sql.c ============================ */
 

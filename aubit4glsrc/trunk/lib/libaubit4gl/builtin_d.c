@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.9 2002-08-31 06:19:59 afalout Exp $
+# $Id: builtin_d.c,v 1.10 2002-11-19 18:02:46 mikeaubury Exp $
 #
 */
 
@@ -299,8 +299,8 @@ push_char(char * p)
  *
  * Used for MDY 4GL function!
  */
- void 
- aclfgl_mdy(void)
+int
+ aclfgl_mdy(int n)
 {
   int m,d,y;
   long z;
@@ -309,6 +309,7 @@ push_char(char * p)
   m=pop_int();
   z=gen_dateno(d,m,y);
   push_date(z);
+return 1;
 }
 
 /**
@@ -317,14 +318,15 @@ push_char(char * p)
  *
  * Used for 4GL HEX function
  */
-void
-aclfgl_hex(void)
+int
+aclfgl_hex(int n)
 {
   long z;
   char buff[100];
   z=pop_long();
   sprintf(buff,"0x%x",(int)z);
   push_char(buff);
+return 1;
 }
 
 /**
@@ -333,13 +335,14 @@ aclfgl_hex(void)
  *
  * Used for 4GL ABS function.
  */
-void
-aclfgl_abs(void)
+int
+aclfgl_abs(int n)
 {
 	double p;
 	p=pop_double();
 	if (p<0) p=0-p;
 	push_double(p);
+	return 1;
 }
 
 /**
@@ -389,8 +392,8 @@ func_pow(void)
  *
  * @todo Describe function
  */
-void
-aclfgl_root(void)
+int
+aclfgl_root(int n)
 {
 	double p,p2,res;
 	p=pop_double();
@@ -398,6 +401,7 @@ aclfgl_root(void)
 	p=1/p;
 	res=pow(p2,p);
 	push_double(res);
+return 1;
 }
 
 /**
@@ -405,14 +409,15 @@ aclfgl_root(void)
  *
  * @todo Describe function
  */
-void
-aclfgl_sqrt(void)
+int
+aclfgl_sqrt(int n)
 {
 	double p,p2,res;
 	p2=pop_double();
 	p=1/2;
 	res=pow(p2,p);
 	push_double(res);
+	return 1;
 }
 
 /**
@@ -487,12 +492,13 @@ func_length(void)
  *
  * @todo Describe function
  */
-void 
-aclfgl_date(void)
+int
+aclfgl_date(int n)
 {
   long d;
   d=pop_date();
   push_date(d);
+return 1;
 }
 
 /**
@@ -501,7 +507,7 @@ aclfgl_date(void)
  * @todo Describe function
  */
 int 
-aclfgl_day(void)
+aclfgl_day(int n)
 {
   long d;
   int day,mn,yr;
@@ -517,7 +523,7 @@ aclfgl_day(void)
  * @todo Describe function
  */
 int 
-aclfgl_month(void)
+aclfgl_month(int n)
 {
 	long d;
 	int day,mn,yr;
@@ -533,7 +539,7 @@ aclfgl_month(void)
  * @todo Describe function
  */
 int 
-aclfgl_weekday(void)
+aclfgl_weekday(int n)
 {
 	long d;
 	int day,mn,yr;
@@ -551,7 +557,7 @@ aclfgl_weekday(void)
  * @todo Describe function
  */
 int 
-aclfgl_year(void)
+aclfgl_year(int n)
 {
 	long d;
 	int day,mn,yr;
