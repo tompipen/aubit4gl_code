@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 #
-# $Id: amake,v 1.26 2003-10-21 10:29:20 afalout Exp $
+# $Id: amake,v 1.27 2003-11-05 08:14:45 afalout Exp $
 #
 #####################################################################
 
@@ -326,6 +326,7 @@ fi
     do
         echo "aMaking $ONEPROG"
 
+		#assume make file will be an composite
 		COMPOSITE_IS_TMP=1
 
 		if [ "$PARAM_PATH" != "" ]; then
@@ -446,7 +447,8 @@ fi
 				if [ "$PARAM_PATH" != "" ]; then
 		            cd -
         		fi
-				exit $RET
+				break
+				#exit $RET
             fi
 		fi
 
@@ -454,25 +456,29 @@ fi
 	done
     ####
 
-#if [ "$COMPOSITE_IS_TMP" = "1" ]; then
+
+if [ "$COMPOSITE_IS_TMP" = "1" ]; then
+	#otherwise we would remove the "real" .mk file!
 	if test -f $COMPOSITE; then
 		if [ "$VERBOSE" = "1" ]; then
 			echo "Removing temp $COMPOSITE"
 		fi
 		rm $COMPOSITE
     fi
-	if test -f $COMPOSITE.tmp; then
-		if [ "$VERBOSE" = "1" ]; then
-			echo "Removing temp $COMPOSITE.tmp"
-		fi
-		rm $COMPOSITE.tmp
-    fi
-#fi
+fi
+
+if test -f $COMPOSITE.tmp; then
+	if [ "$VERBOSE" = "1" ]; then
+		echo "Removing temp $COMPOSITE.tmp"
+	fi
+	rm $COMPOSITE.tmp
+fi
 
 if [ "$PARAM_PATH" != "" ]; then
     cd -
 fi
 
+exit $RET
 
 #------------------------------- EOF ----------------------------------
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.66 2003-07-25 22:04:53 mikeaubury Exp $
+# $Id: Makefile.in,v 1.67 2003-11-05 08:14:52 afalout Exp $
 #
 
 ROOT		=../..
@@ -121,6 +121,10 @@ ifeq "${GCC_MINGW}" "yes"
 	LINKLIBS	+=-liberty
 endif
 
+ifeq "something" "blah"
+	LD_EXE_FLAGS=-export-dynamic
+endif
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -129,11 +133,11 @@ all: ${ALL}
 	@echo "Default targets (${ALL}) successfully compiled."
 
 ${ROOT}/bin/4glc: ${4GLCAOBJ}
-	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB}
-#ifeq "${STRIP_EXECUTABLES}" "yes"
-	${CP}  $@${EXEEXT} $@-strip${EXEEXT} 
+	${LD_EXE} ${LD_EXE_FLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB}
+ifeq "${STRIP_EXECUTABLES}" "yes"
+	${CP}  $@${EXEEXT} $@-strip${EXEEXT}
 	${STRIP} $@-strip${EXEEXT}
-#endif
+endif
 
 ## ==================================================================
 ##                            Windows Targets

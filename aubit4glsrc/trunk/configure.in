@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.205 2003-10-21 10:29:14 afalout Exp $
+dnl # $Id: configure.in,v 1.206 2003-11-05 08:13:32 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1354,6 +1354,7 @@ dnl internationalization macros
 
 #examlpe - USE iT
 #AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
+# $Id: configure.in,v 1.206 2003-11-05 08:13:32 afalout Exp $
 
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
@@ -1627,7 +1628,7 @@ RUNTIME_EXE="loadmap fshow $AMAKE_BIN_EXE"
 COMP_EXE="4glc fcompile fdecompile mcompile mdecompile amkmessage unmkmessage \
         aace adecompile convertsql aace_4gl aace_perl default_frm afinderr"
 
-PCODE_EXE="c2pcode checker runner runner_fgl"
+PCODE_EXE="c2pcode c2pcode_fgl checker checker_fgl runner runner_fgl"
 
 if test "$GCC_MINGW" != "yes"; then
 	#Pcode stuff needs RCPlib which does not exist on Windows/MinGW
@@ -5734,14 +5735,16 @@ PLUGIN_NO_LINKABLE=
 		if test "$PG_ESQLC" != "no" ; then
 			#ESQL based PG plug-in based on 'simple' template using ecpg in no-Informix mode
 			PLUGIN_YES="$PLUGIN_YES SQL_c_ecpg"
-        fi
+        else
+			PLUGIN_NO="$PLUGIN_NO SQL_c_ecpg"
+		fi
 
 if test "disabled" = ""; then
 		#"real" one written in CPP - Sergio never finised it... :-(
 		PLUGIN_YES="$PLUGIN_YES SQL_pgDEVEL"
 fi
 	else
-		PLUGIN_NO="$PLUGIN_NO SQL_pg"
+		PLUGIN_NO="$PLUGIN_NO SQL_pg SQL_c_ecpg"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
 	fi
 
@@ -6232,6 +6235,9 @@ cat<<X
 |                                                                    |
 | (DEBUG) configure invoked with flags:                              |
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
+|                                                                    |
+| CONFIGURE_VERSION:                                                 |
+| $Id: configure.in,v 1.206 2003-11-05 08:13:32 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.13 2003-11-04 15:45:22 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.14 2003-11-05 08:14:53 afalout Exp $
 #*/
 
 /**
@@ -463,8 +463,8 @@ A4GL_pdf_rep_close (struct pdf_rep_structure *p)
 double
 A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p)
 {
-  A4GL_debug ("pdf_size (%lf %c %p)", f, c, p);
   int size;
+  A4GL_debug ("pdf_size (%lf %c %p)", f, c, p);
 
   if (f < 0)
     {
