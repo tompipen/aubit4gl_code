@@ -2,28 +2,12 @@ construct_cmd	:	CONSTRUCT
 {
 push_blockcommand("CONSTRUCT");
 } 
-
 constr_rest 
 {
-printc("} /* end of initialization */\n");} 
+	print_construct_1();
+} 
 end_constr {
-printc("if (_fld_dr==-95) {\n");
-printcomment("/* after input */\n");
-printc("   break;\n}\n");
-printc("if (_fld_dr==-98) {\n");
-printcomment("/* before field */\n");
-printc("   fldname=char_pop(); _fld_dr=-97;continue;\n}\n");
-printc("_fld_dr=%s;\n",$<str>3);
-printc("if (_fld_dr==-1) {\n");
-printcomment("/* after field */\n");
-printc("   fldname=char_pop(); _fld_dr=-98;continue;\n}\n");
-printc("if (_fld_dr==0) {\n");
-printcomment("/* after input 2 */\n");
-printc("   _fld_dr=-95;continue;\n}\n");
-add_continue_blockcommand ("CONSTRUCT");  
-printc("debug(\"form_loop=%%d\",_fld_dr);");
-printc("\n}\n push_constr(&_inp_io);\n pop_params(ibind,1);\n }\n");
-pop_blockcommand("CONSTRUCT"); /* FIXME */
+	print_construct_2($<str>3);
 }
 ;
 
@@ -31,55 +15,15 @@ pop_blockcommand("CONSTRUCT"); /* FIXME */
 constr_rest:
 BY_NAME variable ON constr_col_list opt_defs  opt_attributes
 {
-int ccc;
-int k;
-printc("{\n");
-printc(" /* FIXME - no attributes.. */\n");
-start_bind('i',$<str>2);
-k=print_bind('i');
-ccc=print_constr();
-printc("int _fld_dr=-100;char *fldname;char _inp_io[%d];\n",sizeof(struct s_screenio)+10);
-printc("while(_fld_dr!=0){\n");
-printc("if (_fld_dr==-100) {\n");
-printcomment("/* constr by name */\n");
-printc("SET(\"s_screenio\",\"_inp_io\",\"vars\",ibind);\n");
-printc("SET(\"s_screenio\",\"_inp_io\",\"novars\",%d);\n",ccc);
-printc("SET(\"s_screenio\",\"_inp_io\",\"currform\",get_curr_form());\n");
-printc("SET(\"s_screenio\",\"_inp_io\",\"currentfield\",0);\n");
-printc("SET(\"s_screenio\",\"_inp_io\",\"currentmetrics\",0);\n");
-printc("SET(\"s_screenio\",\"_inp_io\",\"constr\",constr_flds);\n");
-printc("SET(\"s_screenio\",\"_inp_io\",\"mode\",%d);\n",MODE_CONSTRUCT);
-printc("SET(\"s_screenio\",\"_inp_io\",\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
-print_field_bind_constr();
-printc(" /* */,0));\n");
-printc("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
-printc("_fld_dr=-99;\n");
-sprintf($<str>$,"form_loop(&_inp_io)");
-reset_constr();
+	print_construct_3(1,$<str>2,$<str>6);
+	sprintf($<str>$,"form_loop(&_inp_io)"); /* FIXME */
+	reset_constr();
 }
 | variable ON constr_col_list opt_defs FROM fld_list  opt_attributes
 {
-int ccc;
-int k;
-printc("{\n");
-start_bind('i',$<str>1);
-k=print_bind('i');
-ccc=print_constr('c');
-printc("int _fld_dr=-100;char *fldname;char _inp_io[%d];\n",sizeof(struct s_screenio)+10);
-printc("while(_fld_dr!=0){\n");
-printc("if (_fld_dr==-100) {\n");
-printc("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
-printc("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n",ccc);
-printc("SET(\"s_screenio\",_inp_io,\"currform\",get_curr_form());\n");
-printc("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
-printc("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
-printc("SET(\"s_screenio\",_inp_io,\"constr\",constr_flds);\n");
-printc("SET(\"s_screenio\",_inp_io,\"mode\",%d);\n",MODE_CONSTRUCT);
-printc("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",$<str>6);
-printc("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
-printc("_fld_dr=-99;\n");
-sprintf($<str>$,"form_loop(&_inp_io)");
-reset_constr();
+	print_construct_3(0,$<str>1,$<str>7);
+	sprintf($<str>$,"form_loop(&_inp_io)"); /* FIXME */
+	reset_constr();
 }
 ;
 
@@ -111,15 +55,33 @@ constr_extra_commands : constr_extra_command | constr_extra_commands constr_extr
 
 constr_extra_command :  
 	  BEFFIELD bef_c_field_list  {
-		printcomment("/* before field %s */\n");
-		printc("if (%s) {",$<str>2);} commands {printc("}\n");
-}
+		print_befaft_field_1($<str>2);
+	} 
+	commands {
+		print_befaft_field_2();
+
+	}
 	| AFTFIELD aft_c_field_list {
-		printcomment(" /* after field %s */\n");
-		printc("if (%s) {\n",$<str>2);} commands {printc("}\n");}
-	| on_key_command {printcomment("/* on key */\n ");printc("ON_KEY(\"%s\") {\n",$<str>1);} commands {printc("}\n");}
-	| AFTCONSTRUCT {printcomment("/* after construct */ \n");printc("if AFTER_INP {\n");} commands {printc("}\n");}
-	| BEFCONSTRUCT {printcomment("/* before construct */ \n");printc("if BEFORE_INP {\n");} commands {printc("}\n");}
+		print_befaft_field_1($<str>2);
+	} commands {
+		print_befaft_field_2();
+	}
+	| on_key_command {
+		print_onkey_1($<str>1);
+	} commands {
+		print_onkey_2();
+	}
+	| AFTCONSTRUCT {
+		print_befaft_field_1("AFTER_INP");
+	} commands {
+		print_befaft_field_2();
+	}
+	| BEFCONSTRUCT {
+		print_befaft_field_1("BEFORE_INP");
+		} 
+	commands {
+		print_befaft_field_2();
+	}
 ;
 
 
@@ -129,14 +91,18 @@ constr_extra_command :
 bef_c_field_list :
 	field_name2 {sprintf($<str>$,"BEF_FIELD_CHK(%s)",$<str>1);}
 	| bef_c_field_list COMMA field_name2 {
-	  sprintf($<str>$,"%s||BEF_FIELD_CHK(%s)",$<str>1,$<str>3);
+	  char buff[80];
+	  sprintf(buff,"BEF_FIELD_CHK(%s)",$<str>3);
+	  generate_or($<str>$,$<str>1,buff);
 	}
 ;
 
 aft_c_field_list :
 	field_name2 {sprintf($<str>$,"AFT_FIELD_CHK(%s)",$<str>1);}
 	|aft_c_field_list COMMA field_name2 {
-	  sprintf($<str>$,"%s||AFT_FIELD_CHK(%s)",$<str>1,$<str>3);
+	  char buff[80];
+	  sprintf(buff,"AFT_FIELD_CHK(%s)",$<str>3);
+	  generate_or($<str>$,$<str>1,buff);
 	}
 ;
 

@@ -11,6 +11,7 @@ void *new_expr(char *value) ;
 void *append_expr(void *orig_ptr,char *value);
 void *append_expr_expr(void *orig_ptr,void *second_ptr);
 
+int in_define=0;
 #include "../../lib/libincl/dbform.h"
 #include "../../lib/libincl/report.h"
 #include "../../lib/libincl/oform.h"
@@ -20,6 +21,7 @@ void *append_expr_expr(void *orig_ptr,void *second_ptr);
 //#include "../libincl/screen.h"
 #include "../../lib/libincl/constats.h"
 #include "../../lib/libincl/prompt.h"
+#include "../print_protos.h"
 extern int lineno;
 extern int read_glob_var;
 extern int modlevel;

@@ -10,27 +10,51 @@ define_multiple	:
 define_set :
 	DEFINE {dtypelist[0]=0;printcomment("/* define */\n");} def_part  {printcomment("/*end def */\n");}
 	| dim_section
+	| code_cmd 
+	| whenever_cmd 
 ;
 
 def_part : def_part2 |  def_part COMMA def_part2
 ;
 
-def_part2:	 
-CONSTANT identifier op_equal CHAR_VALUE   { add_constant('c',$<str>4,$<str>2); addmap('c',$<str>2,curr_func,yylineno,infilename); }
-| CONSTANT identifier op_equal real_number { add_constant('f',$<str>4,$<str>2);
-addmap('c',$<str>2,curr_func,yylineno,infilename);
- }
-| CONSTANT identifier op_equal INT_VALUE    { add_constant('i',$<str>4,$<str>2);
-addmap('c',$<str>2,curr_func,yylineno,infilename);
- }
-| var_def_list  dtype_ident 
-
+define_ident : {in_define=1;} identifier {in_define=0;strcpy($<str>$,$<str>2);}
 ;
 
-var_def_name	:	identifier {
+def_part2:	 
+CONSTANT define_ident op_equal CHAR_VALUE   { add_constant('c',$<str>4,$<str>2); addmap("Constant",$<str>2,curr_func,yylineno,infilename); }
+| CONSTANT define_ident op_equal real_number { add_constant('f',$<str>4,$<str>2);
+addmap("Constant",$<str>2,curr_func,yylineno,infilename);
+ }
+| CONSTANT define_ident op_equal INT_VALUE    { 
+add_constant('i',$<str>4,$<str>2);
+addmap("Constant",$<str>2,curr_func,yylineno,infilename);
+ }
+| var_def_list  dtype_ident 
+| define_ident  CONSTANT { } constant_value {
+char buff[20];
+strncpy(buff,$<str>4,3);
+if (buff[0]=='"') {
+	add_constant('c',$<str>4,$<str>1);
+}  else {
+	if (strchr($<str>4,'.')) 
+		add_constant('f',$<str>4,$<str>1);
+	else
+		add_constant('i',$<str>4,$<str>1);
+}
+
+addmap("Constant",$<str>1,curr_func,yylineno,infilename);
+}
+;
+
+constant_value : 
+	INT_VALUE | CHAR_VALUE | real_number | MINUS INT_VALUE {
+		sprintf($<str>$,"-%d",$<str>2);}
+;
+
+var_def_name	:	define_ident {
 /*AF CygWin FIX */
 push_name($<str>$,0);
-addmap('d',$<str>1,curr_func,yylineno,infilename);
+addmap("Define",$<str>1,curr_func,yylineno,infilename);
 }
 ;
 
@@ -41,7 +65,7 @@ var_def_list	: var_def_name
 op_char : | CHAR;
 
 array_variable	: 
-ARRAY OPEN_SQUARE number_arr_list CLOSE_SQUARE {
+ARRAY  OPEN_SQUARE  number_arr_list CLOSE_SQUARE {
 debug("defines array %s",$<str>3);
 push_type(0,0,$<str>3);
 }
@@ -80,12 +104,12 @@ number_value_arr: INT_VALUE
 /*{push_type(0,0,$<str>1); }*/
 
 record_variable	: RECORD {push_record();in_record++;} def_part END_RECORD {pop_record();in_record--;}
-| 	RECORD_LIKE {in_record++;push_record();debug("Like\n");} identifier DOT MULTIPLY
+| 	RECORD_LIKE {in_record++;push_record();debug("Like\n");} define_ident DOT MULTIPLY
                   {debug("Link Table : %s\n",$<str>3);
                   push_rectab($<str>3);
                   pop_record();in_record--;} 
 | 	LINKED_TO {
-		push_record();debug("Like\n");} identifier PRIMARY_KEY OPEN_BRACKET link_to_pk_list CLOSE_BRACKET
+		push_record();debug("Like\n");} define_ident PRIMARY_KEY OPEN_BRACKET link_to_pk_list CLOSE_BRACKET
                {
 		  debug("Table:%s\n",$<str>3);
 		  add_link_to($<str>3,$<str>6);
@@ -101,7 +125,7 @@ link_to_pk_list : link_to_pk | link_to_pk_list COMMA link_to_pk {
 }
 ;
 
-link_to_pk : identifier
+link_to_pk : define_ident
 ;
 
 
@@ -114,12 +138,20 @@ dtype	:
 			array_variable 
 		|	record_variable 
 		|	CHAR {push_type("char","1",0);}
-		|	CHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {push_type("char",$<str>3,0);}
+		|	CHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+char buff[80];
+if (atoi($<str>3)==4) {
+	addmap("size=4","----",curr_func,yylineno,infilename); 
+}
+push_type("char",$<str>3,0);
+}
 		|	VARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {push_type("char",$<str>3,0);}
 		|	VARCHAR OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET {push_type("char",$<str>3,0);}
 		|	INTEGER {push_type("long",0,0);}
-		| 	AS identifier {push_dim($<str>2);}
+		| 	AS define_ident {push_dim($<str>2);}
 		|	SMALLINT {push_type("int",0,0);}
+		|	KWFORM {push_type("form",0,0);}
+		|	STATUSBOX {push_type("form",0,0);}
 		|	DECIMAL { char buff[256];
 				sprintf(buff,"%d",16*256+2);
 				push_type("fgldecimal",buff,0);
@@ -149,6 +181,8 @@ push_type("fglmoney",buff,0);}
 		|	SMALLFLOAT {push_type("float",0,0);}
 		|	DATE {push_type("fgldate",0,0);}
 		|	BYTE {push_type("fglbyte",0,0);}
+		|	BYTES_USE_AS_IMAGE {push_type("fglbyte",0,0);}
+		|	BYTES_USE_AS_ASCII {push_type("fgltext",0,0);}
 		|	TEXT {push_type("fgltext",0,0);}
 		| 	DATETIME datetime_qual {
 push_type("struct_dtime ",$<str>2,0);
@@ -166,9 +200,9 @@ LIKE  tab_name  DOT col_name  {
 printcomment("/*column like(ZZZ)\n*/"); sprintf($<str>$,"%s.%s",$<str>2,$<str>4); printcomment ("/*set col...(ZZZ)\n*/");}
 ;
 
-tab_name : identifier {debug("--->%s\n",$<str>1);strcpy($<str>$,$<str>1);} ;
+tab_name : define_ident {debug("--->%s\n",$<str>1);strcpy($<str>$,$<str>1);} ;
 
-col_name : identifier {debug("--->%s\n",$<str>1);strcpy($<str>$,$<str>1);} ;
+col_name : define_ident {debug("--->%s\n",$<str>1);strcpy($<str>$,$<str>1);} ;
 
 datetime_qual :  {strcpy($<str>$,"0");} | dtime_start
 TO 
@@ -207,6 +241,14 @@ debug("    %s",$<str>2);
 strcpy($<str>$,$<str>2);
 };
 
+opt_unit_size: {
+debug("Nothing in fraction - assume 2");
+strcpy($<str>$,"2");} |  OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+debug("    %s",$<str>2);
+strcpy($<str>$,$<str>2);
+};
+
+
 dtfrac: INT_VALUE {
 if (atoi($<str>1)>5) {
 yyerror("Fraction values are between 0 and 5");
@@ -215,7 +257,7 @@ YYERROR;
 }
 ;
 
-int_start : {start_state("interval_val",1);} int_start_unit opt_frac {start_state("interval_val",0); sprintf($<str>$,"%d",atoi($<str>3)*16+atoi($<str>2));}
+int_start : {start_state("interval_val",1);} int_start_unit opt_unit_size {start_state("interval_val",0); sprintf($<str>$,"%d",atoi($<str>3)*16+atoi($<str>2));}
 ;
 
 int_start_unit : YEAR {strcpy($<str>$,"1");}

@@ -1,6 +1,8 @@
 
 check_menu_cmd : CHECK_MENUITEM menu_item_list
-{printc("check_menuitems(%s,0);\n",$<str>2);}
+{
+print_gui_do_menuitems($<str>2,'C');
+}
 ;
 
 menu_item_list:
@@ -14,23 +16,37 @@ menu_item:  identifier {
 ;
 
 uncheck_menu_cmd : UNCHECK_MENUITEM menu_item_list
-{printc("uncheck_menuitems(%s,0);\n",$<str>2);}
+{
+print_gui_do_menuitems($<str>2,'U');
+}
 ;
 
 disable_cmd : DISABLE_MENUITEMS menu_item_list
-{printc("endis_menuitems(0,%s,0);\n",$<str>2);}
+{
+print_gui_do_menuitems($<str>2,'D');
+}
         | DISABLE fld_list
-{printc("endis_fields(0,%s,0);\n",$<str>2);}
+{
+print_gui_do_fields($<str>2,'D');
+}
         | DISABLE_FORM form_name KWFIELD fld_list
-{printc("endis_form(0,%s,%s,0);\n",$<str>2,$<str>4);}
+{
+print_gui_do_form($<str>2,$<str>4,'D');
+}
 ;
 
 enable_cmd : ENABLE_MENUITEMS menu_item_list
-{printc("endis_menuitems(1,%s,0);\n",$<str>2);}
+{
+print_gui_do_menuitems($<str>2,'E');
+}
         | ENABLE fld_list
-{printc("endis_fields(1,%s,0);\n",$<str>2);}
+{
+print_gui_do_fields($<str>2,'E');
+}
         | ENABLE_FORM form_name KWFIELD fld_list
-{printc("endis_form(1,%s,%s,0);\n",$<str>2,$<str>4);}
+{
+print_gui_do_form($<str>2,$<str>4,'E');
+}
 ;
 
 msg_box_cmd : MESSAGEBOX fgl_expr_list
@@ -51,29 +67,10 @@ op_returning_msg :
 
 op_caption : | CAPTION fgl_expr_list ;
 
-op_icon : | ICON fgl_expr ;
+op_icon : | ICON INT_VALUE  ;
 
-op_buttons : | BUTTONS but_list op_def_but;
+op_buttons : | BUTTONS INT_VALUE op_def_but;
 
-op_def_but : DEFAULT but_val;
-
-but_list :
-        BUTTONS_OK
-| BUTTONS_OK_CANCEL
-| BUTTONS_RETRY_CANCEL
-| BUTTONS_ABORT_RETRY_IGNORE
-| BUTTONS_YES_NO
-| BUTTONS_YES_NO_CANCEL
-;
-but_val :
-        BUTTON_OK
-        | BUTTON_CANCEL
-        | BUTTON_ABORT
-        | BUTTON_RETRY
-        | BUTTON_IGNORE
-        | BUTTON_YES
-        | BUTTON_NO
-;
-
+op_def_but : | DEFAULT INT_VALUE;
 
 

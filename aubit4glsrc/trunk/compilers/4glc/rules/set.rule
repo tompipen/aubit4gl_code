@@ -7,12 +7,14 @@ SQLSEON
 | SQLSIRR
 | SQLSICS
 | SQLSICR
-| SET_SESSION_TO conn_id { printc("set_conn(%s);\n",$<str>2); }
+| SET_SESSION_TO conn_id { 
+	print_set_conn($<str>2);
+}
 | SET_SESSION op_conn_id OPTION char_or_var TO char_or_var {
-      printc("set_conn_options(%s,%s,%s);\n",$<str>2,$<str>4,$<str>6);
+	print_set_options("conn",$<str>2,$<str>4,$<str>6);
 }
 | SET_CURSOR cursor_name OPTION char_or_var TO char_or_var {
-      printc("set_stmt_options(%s,%s,%s);\n",$<str>2,$<str>4,$<str>6);
+	print_set_options("stmt",$<str>2,$<str>4,$<str>6);
 }
 ;
 

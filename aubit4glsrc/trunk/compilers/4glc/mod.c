@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.20 2001-10-29 14:42:00 mikeaubury Exp $
+* $Id: mod.c,v 1.21 2001-11-11 20:04:08 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.20  2001/10/29 14:42:00  mikeaubury
+*	Allow varibles in IN and EXISTS when using SQL
+*	
 *	Revision 1.19  2001/10/28 17:10:36  mikeaubury
 *	Added IN and EXISTS, (and NOT IN and NOT EXISTS) tests for 4gl, so
 *		if exists (select * from systables where tabid=1) then
@@ -147,6 +150,8 @@ int inc = 0;
 #include <stdarg.h>
 #include <stdlib.h>
 
+
+extern int in_define;
 
 struct expr_str {
         char *expr;
@@ -1190,6 +1195,9 @@ find_type (char *s)
   if (strcmp ("_RECORD", s) == 0)
     return -2;
 
+  if (strcmp ("form", s) == 0)
+    return 9;
+
   debug ("Invalid type : %s\n", s);
   sprintf (errbuff, "Internal Error (Invalid type : %s)\n", s);
   yyerror (errbuff);
@@ -1236,6 +1244,24 @@ set_4gl_vars ()
   set_variable ("pageno", "long", "----", "----", 0);
   set_variable ("lineno", "long", "----", "----", 0);
   set_variable ("usrtime", "long", "----", "----", 0);
+
+
+
+
+/* These are for my personal use! MJA */
+  set_variable ("curr_hwnd", "long", "----", "----", 0);
+  set_variable ("curr_form", "long", "----", "----", 0);
+
+  set_variable ("err_file_name", "char", "32", "----", 0);
+  set_variable ("err_line_no", "long", "----", "----", 0);
+
+  set_variable ("curr_file_name", "char", "32", "----", 0);
+  set_variable ("curr_line_no", "long", "----", "----", 0);
+
+  set_variable ("err_status", "long", "----", "----", 0);
+  set_variable ("aiplib_status", "long", "----", "----", 0);
+
+
   set_variable ("time", "char", "8", "----", 0);
   add_constant ('i', "100", strdup ("notfound"));
   var_hdr_finished = varcnt;
@@ -1776,6 +1802,10 @@ open_outfile ()
   strcat (err, ".err");
   //printf ("Opening files :\n %s\n %s\n", c, h);
   outfile = mja_fopen (c, "w");
+  if (outfile==0) {
+		printf("Unable to open file %s (Check permissions)\n",c);
+		exit(3);
+  }
   //ferr = mja_fopen (err, "w");
 
   fprintf (outfile, "#define fgldate long\n");
@@ -2156,6 +2186,8 @@ exit_loop (char *cmd_type)
 {
   int a;
   int g = 0;
+  int printed=0;
+
   for (a = ccnt - 1; a >= 0; a--)
     {
 
@@ -2173,7 +2205,20 @@ exit_loop (char *cmd_type)
       return;
     }
 
-  printc ("goto END_BLOCK_%d;", command_stack[a].block_no);
+    if (strcmp(cmd_type,"MENU")==0) {
+	printc("cmd_no=-3;continue;\n");   
+	printed=1;
+    } 
+
+    if (strcmp(cmd_type,"PROMPT")==0) {
+ 	printc("_p.mode=1;\n"); 
+	printed=1;
+    } 
+
+
+    if (printed==0) {
+  	printc ("goto END_BLOCK_%d;", command_stack[a].block_no);
+    }
 }
 
 push_report_block (char *why, char whytype)
@@ -3057,7 +3102,14 @@ dump_gvars ()
 	       vars[a].tabname, vars[a].pklist, vars[a].level);
 
     }
-  fclose (f);
+   fprintf(f,"***CONSTANTS***\n");
+
+   for (a=0;a<const_cnt;a++) {
+		if (const_arr[a].scope=='g')
+		fprintf(f,"%c %s %s\n",const_arr[a].type,const_arr[a].name,const_arr[a].ptr);
+   }
+
+   fclose (f);
 }
 
 read_glob (char *s)
@@ -3102,8 +3154,12 @@ read_glob (char *s)
   debug ("DBNAME=%s from globals", dbname);
   while ( !feof (f))
     {
+  	fgets (line, 255, f);
+	if (feof(f)) break;
+	trim(line);
+	if (strcmp(line,"***CONSTANTS***")==0) break;
 
-      fscanf (f, "%s %s %s %s %s %s %d\n",
+        sscanf (line, "%s %s %s %s %s %s %d\n",
 	      vars[varcnt].var_name,
 	      vars[varcnt].var_type,
 	      vars[varcnt].var_size,
@@ -3128,6 +3184,19 @@ read_glob (char *s)
   if (varcnt>=MAXVARS) { exitwith("Too many variables"); yyerror("Too many variables"); }
       varcnt++;
     }
+
+  while ( !feof (f))
+    {
+	char ct;
+	char cn[256];
+	char cv[256];
+  	fgets (line, 255, f);
+	if (feof(f)) break;
+	trim(line);
+	sscanf(line,"%c %s %s",&ct,&cn,&cv);
+	add_constant(ct,cv,cn);
+   }
+
   fclose (f);
 
 
@@ -3523,7 +3592,7 @@ add_constant (char t, char *ptr, char *name)
       yyerror ("Duplicate Constant");
     }
 
-  if (isin_command ("FUNC") || isin_command ("REPORT"))
+  if (isin_command ("FUNC") || isin_command ("REPORT") || isin_command("FORMHANDLER")||isin_command("MENUHANDLER"))
     {
       scope = 'f';
     }
@@ -3534,6 +3603,7 @@ add_constant (char t, char *ptr, char *name)
   const_arr[const_cnt].type = t;
   strcpy (const_arr[const_cnt].name, name);
   const_arr[const_cnt].type = t;
+  const_arr[const_cnt].scope = scope;
   const_arr[const_cnt].ptr = strdup (ptr);
   const_cnt++;
 }
@@ -3545,9 +3615,9 @@ clr_function_constants ()
   debug ("Clr constants\n");
   for (a = 0; a <= const_cnt; a++)
     {
-      if (const_arr[const_cnt].scope == 'f')
+      if (const_arr[a].scope == 'f')
 	{
-	  const_arr[const_cnt].name[0] = 0;
+	  const_arr[a].name[0] = 0;
 	}
       else
 	lcnt = a;
@@ -3561,10 +3631,13 @@ check_for_constant (char *name, char *buff)
 {
   int x;
 
+  if (in_define) return 0;
+
   for (x = 0; x < const_cnt; x++)
     {
       if (aubit_strcasecmp (name, const_arr[x].name) == 0)
 	{
+	debug("Found constant @ %d type=%c scope=%c",x,const_arr[x].type,const_arr[x].scope);
 	  strcpy (buff, const_arr[x].ptr);
 	  switch (const_arr[x].type)
 	    {
@@ -4787,4 +4860,17 @@ int c=0;
 		ptr=ptr->next;
 	}
 return c;
+}
+
+
+/* 
+This is something internal for MikeA
+*/
+tr_glob_fname(char *s) {
+char buff[256];
+int a;
+for (a=0;a<=strlen(s);a++) {
+	if (s[a]=='\\') s[a]='/';
+	s[a]=tolower(s[a]);
+}
 }

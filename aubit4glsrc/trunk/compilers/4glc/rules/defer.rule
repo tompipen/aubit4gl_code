@@ -1,6 +1,10 @@
-defer_cmd	:	DEFER_INTERRUPT {printc("def_int();");}
+defer_cmd	:	DEFER_INTERRUPT {
+				print_defer(0);
+			}
 
-		|	DEFER_QUIT {printc("def_quit();");}
+		|	DEFER_QUIT {
+				print_defer(1);
+			}
 		;
 
 

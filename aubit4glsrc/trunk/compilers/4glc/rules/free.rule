@@ -1,7 +1,7 @@
 free_cmd : 
 		FREE cursor_name
 		{
-		printc("/* FREE CUROSR .. FIXME */\n");
+		print_niy("Free Cursor");
 		strcpy($<str>$,"");
 		}
 ;

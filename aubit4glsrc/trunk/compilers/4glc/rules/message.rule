@@ -1,7 +1,19 @@
 message_cmd :
- msg_start fgl_expr_concat opt_attributes op_msg_wait { printc("aclfgli_pr_message(%s,%d);\n",$<str>3,atoi($<str>4)); start_state("message",0);}  msg_end
+ msg_start fgl_expr_concat opt_attributes op_msg_wait { 
+
+print_message(0,$<str>3,atoi($<str>4));
+
+
+start_state("message",0);}  msg_end
  ;
- | msg_start fgl_expr_concat opt_attributes CAPTION fgl_expr_concat op_msg_wait { printc("aclfgli_pr_message_cap(%d,%d);\n",atoi($<str>3),atoi($<str>6)); }  msg_end;
+ | KWMESSAGE
+	fgl_expr_list
+        op_caption
+        op_icon
+        op_buttons
+        op_disable_msg
+        op_returning_msg msg_end
+;
 
 
 msg_start : KWMESSAGE {start_state("message",1);} ;

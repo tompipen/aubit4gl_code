@@ -1,24 +1,6 @@
 import_m : IMPORT_FUNCTION identifier OPEN_BRACKET INT_VALUE CLOSE_BRACKET
 {
-int a;
-char buff[1024];
-char buff2[1024];
-printc("\n\naclfgl_%s (int nargs) {\n",$<str>2);
-printc("long _argc[%s];\n",$<str>4);
-printc("long _retval;");
-printc("   if (nargs!=%s) {status=-30174;pop_args(nargs);return 0;}\n",$<str>4,yylineno);
-
-for (a=1;a<=atoi($<str>4);a++) { printc("   _argc[%d]=pop_int();\n",atoi($<str>4)-a); }
-sprintf(buff,"_retval=(long)%s(",$<str>2);
-for (a=0;a<=atoi($<str>4)-1;a++) {
-
-	if (a>0) strcat(buff,",");
-	sprintf(buff2,"_argc[%d]",a); 
-	strcat(buff,buff2);
-}
-strcat(buff,");\n   push_int(_retval);\n   return 1;\n");
-strcat(buff,"}\n\n\n");
-printc(buff);
+	print_import($<str>2,atoi($<str>4));
 }
 ;
 

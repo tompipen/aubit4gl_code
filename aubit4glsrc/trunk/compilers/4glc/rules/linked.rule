@@ -1,150 +1,18 @@
 linked_cmd :
 	SELECT_USING variable {
-	char tabname[64];
-	char pklist[256];
-	int no;
-	int ni;
-	if (last_var_is_linked(tabname,pklist)) {
-		char buff[80];
-		char buff2[80];
-		int no;
-		int no_keys;
-		int azcnt;
-		printc("{\n");
-		start_bind('o',0);	
-		sprintf(buff,"%s.*",$<str>2);
-		add_bind('o',buff);
-		debug("Finding number of keys...\n");
-		no_keys=linked_split(pklist,0,0);
-		debug("No of keys=%d",no_keys);
-		start_bind('i',0);	
-		for (azcnt=1;azcnt<=no_keys;azcnt++) {
-			debug("Getting key no %d",azcnt);
-			linked_split(pklist,azcnt,buff2);
-			sprintf(buff,"%s.%s",$<str>2,buff2);
-			debug("Adding linked %s",buff);
-			add_bind('i',buff);
-			debug(" key count %d %d\n",azcnt,no_keys);
-		}
-		no=print_bind('o');
-		ni=print_bind('i');
-		sprintf(buff,"SELECT * FROM %s WHERE ",tabname);
-		for (azcnt=1;azcnt<=no_keys;azcnt++) {
-			if (azcnt>1) strcat(buff,"AND");
-			linked_split(pklist,azcnt,buff2);	
-			strcat(buff," ");
-			strcat(buff,buff2);
-			strcat(buff,"=? ");
-		}
-        	printc("execute_implicit_select(prepare_select(ibind,%d,obind,%d,\"%s\"));",
-                             ni,no,buff);
-		printc("}\n");
-	} else {
-		yyerror("Not a linked variable");
+		if (!print_linked_cmd('S',$<str>2)) yyerror("Not a linked variable");
 	}
-}
 ;
 
 linked_del_cmd :
 	DELETE_USING variable {
-	char tabname[64];
-	char pklist[256];
-	int no;
-	int ni;
-	
-	if (last_var_is_linked(tabname,pklist)) {
-		char buff[80];
-		char buff2[80];
-		int no;
-		int no_keys;
-		int azcnt;
-		printc("{\n");
-		debug("Finding number of keys...\n");
-		no_keys=linked_split(pklist,0,0);
-		debug("No of keys=%d",no_keys);
-		start_bind('i',0);	
-
-
-		for (azcnt=1;azcnt<=no_keys;azcnt++) {
-			debug("Getting key no %d",azcnt);
-			linked_split(pklist,azcnt,buff2);
-			sprintf(buff,"%s.%s",$<str>2,buff2);
-			debug("Adding linked %s",buff);
-			add_bind('i',buff);
-			debug(" key count %d %d\n",azcnt,no_keys);
-		}
-		ni=print_bind('i');
-
-		sprintf(buff,"DELETE FROM %s WHERE ",tabname);
-		for (azcnt=1;azcnt<=no_keys;azcnt++) {
-			if (azcnt>1) strcat(buff,"AND");
-			linked_split(pklist,azcnt,buff2);	
-			strcat(buff," ");
-			strcat(buff,buff2);
-			strcat(buff,"=? ");
-		}
-        	printc("execute_implicit_sql(prepare_glob_sql(\"%s\",%d,ibind));",buff,ni);
-		printc("}\n");
-	} else {
-		yyerror("Not a linked variable");
+		 if (!print_linked_cmd('D',$<str>2)) yyerror("Not a linked variable");
 	}
-}
 ;
 
 linked_upd_cmd :
 	UPDATE_USING variable {
-	char tabname[64];
-	char pklist[2000];
-	char buffer[2000];
-	int no;
-	int ni;
-	
-	if (last_var_is_linked(tabname,pklist)) {
-		char buff[2000];
-		char buff2[2000];
-		int no;
-		int no_keys;
-		int azcnt;
-		printc("{\n");
-		debug("Finding number of keys...\n");
-		no_keys=linked_split(pklist,0,0);
-		debug("No of keys=%d",no_keys);
-
-		start_bind('i',0);	
-		set_pklist(pklist);
-		sprintf(buffer,"%s.*",$<str>2);
-
-		// add all our update values....
-		push_bind_rec(buffer,'u');
-
-		for (azcnt=1;azcnt<=no_keys;azcnt++) {
-			debug("Getting key no %d",azcnt);
-			linked_split(pklist,azcnt,buff2);
-			sprintf(buff,"%s.%s",$<str>2,buff2);
-			debug("Adding linked %s",buff);
-			add_bind('i',buff);
-			debug(" key count %d %d\n",azcnt,no_keys);
-		}
-		debug("Printing bindings...");
-		ni=print_bind('i');
-		debug("Setting query");
-		sprintf(buff,"UPDATE %s SET (%s)=(%s) WHERE ",tabname,
-	get_upd_using_notpk(),get_upd_using_queries()
-);
-		debug("Setting where clause");
-		for (azcnt=1;azcnt<=no_keys;azcnt++) {
-			if (azcnt>1) strcat(buff,"AND");
-			linked_split(pklist,azcnt,buff2);	
-			strcat(buff," ");
-			strcat(buff,buff2);
-			strcat(buff,"=? ");
-		}
-		debug("Printing SQL");
-        	printc("execute_implicit_sql(prepare_glob_sql(\"%s\",%d,ibind));",buff,ni);
-		printc("}\n");
-	} else {
-		yyerror("Not a linked variable");
-	}
+		 if (!print_linked_cmd('U',$<str>2)) yyerror("Not a linked variable");
 }
 ;
 

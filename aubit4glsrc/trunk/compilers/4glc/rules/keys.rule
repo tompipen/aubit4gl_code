@@ -16,7 +16,9 @@ key_do	: key_value  {strcpy($<str>$,$<str>1);}
 	| OPEN_BRACKET key_value_list CLOSE_BRACKET  {strcpy($<str>$,$<str>2);}
 ;
 
-key_value_list : key_value | key_value_list COMMA key_value {sprintf($<str>$,"%s||%s",$<str>1,$<str>3);}
+key_value_list : key_value | key_value_list COMMA key_value {
+	sprintf($<str>$,"%s||%s",$<str>1,$<str>3);
+}
 ;
 
 key_value : {start_state("keymode",1);} key_value_1 {start_state("keymode",0);strcpy($<str>$,$<str>2);} 

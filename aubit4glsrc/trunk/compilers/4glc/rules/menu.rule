@@ -2,22 +2,14 @@ menu_cmd	:	MENU {
    	menu_cnt=npush_menu();
    	menu_cmd_cnt[menu_cnt]=1;
    	push_blockcommand("MENU");
-   	printc("{void *m;\n\nint cmd_no=-1;\n");
-   	printc("while (cmd_no!=-3) {\n switch(cmd_no)  {\n");
+	print_menu_1();
 	} 
 	menu_title menu_commands end_menu_command;
 
 end_menu_command  : END_MENU {
-   printc("\n}");
-   printcomment(" /*end switch */\n");
-   printc("if (cmd_no==-1) {\n");
-   print_menu(menu_cnt);
-   printc("}\n");
+print_end_menu_1();
    add_continue_blockcommand ("MENU");
-   printc("cmd_no=menu_loop(m);\n}free_menu(m);\n");
-   printcomment("/* end cwhile */\n");
-   printcomment("/* end menu */\n \n");
-   printc("}\n");
+print_end_menu_2();
    pop_blockcommand("MENU");
    pop_menu();
 }
@@ -25,10 +17,13 @@ end_menu_command  : END_MENU {
 
 menu_block_command : 
 	BEFORE_MENU 
-		{ printcomment("/* Block%d_m2 (Before menu) */",menu_cnt);
-                  printc(" case -2: \n"); 
+		{
+	 printcomment("/* Block%d_m2 (Before menu) */",menu_cnt);
+		print_menu_block(-2) ;
                   }  
-	commands {printc("break;\n");}
+	commands {
+		print_menu_block_end();
+	}
 | COMMAND 
         opt_key 
         menu_opt_name 
@@ -38,19 +33,22 @@ menu_block_command :
 debug("Menu=%d menu cnt=%d",menu_cnt,menu_cmd_cnt[menu_cnt]);
 		push_command(menu_cnt,menu_cmd_cnt[menu_cnt],$<str>2,$<str>3,$<str>4,$<str>5);
 		printcomment("/* Block%d_%d */",menu_cnt,menu_cmd_cnt[menu_cnt]-1);
-                printc("case %d : /* Menu %d */\n   ", menu_cmd_cnt[menu_cnt]-1,menu_cnt);
+		print_menu_block(menu_cmd_cnt[menu_cnt]-1);
 		menu_cmd_cnt[menu_cnt]++;
 		} 
-	commands {printc("break;\n");}
+	commands {
+		print_menu_block_end();
+}
 | COMMAND 
         opt_key 
 		{
 		push_command(menu_cnt,menu_cmd_cnt[menu_cnt],$<str>2,"\"\"","\"\"",0);
-		printc("/* Block%d_%d */\ncase %d :\n   ",
-			menu_cnt,menu_cmd_cnt[menu_cnt]-1,menu_cmd_cnt[menu_cnt]-1);
+		print_menu_block(menu_cmd_cnt[menu_cnt]-1);
 		menu_cmd_cnt[menu_cnt]++;
 		} 
-	commands {printc("break;\n");}
+	commands {
+		print_menu_block_end();
+}
 ;
 
 menu_commands : menu_block_command | menu_commands menu_block_command;
@@ -67,16 +65,17 @@ menu_optional_desc	:      {strcpy($<str>$,"\"\"");}
                         | CHAR_VALUE {strcpy($<str>$,$<str>1);};
 
 next_option_cmd : NEXT_OPTION opt_name {
-printc("next_option(m,%s);\n",$<str>2);
+	print_option_op('N',$<str>2);
 }
 ;
 
 show_option_cmd : SHOW_OPTION opt_name_list {
-printc("menu_show(m,%s,0);\n",$<str>2);}
+	print_option_op('S',$<str>2);
+}
 ;
 
 hide_option_cmd : HIDE_OPTION opt_name_list {
-printc("menu_hide(m,%s,0);\n",$<str>2);
+	print_option_op('H',$<str>2);
 }
 ;
 

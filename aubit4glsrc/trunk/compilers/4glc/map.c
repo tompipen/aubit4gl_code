@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: map.c,v 1.1.1.1 2001-08-20 02:35:33 afalout Exp $
+* $Id: map.c,v 1.2 2001-11-11 20:04:08 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.1.1.1  2001/08/20 02:35:33  afalout
+*	Initial import to SF
+*	
 *	Revision 1.3  2001/06/12 03:37:15  afalout
 *	make install, make clean
 *	
@@ -43,9 +46,9 @@ debug("Mapfile=%p",mapfile);
 }
 }
 
-addmap(char t,char *s,char *w,int l,char *m) {
+addmap(char *t,char *s,char *w,int l,char *m) {
   debug("Adding to map... %p",mapfile);
-  if (mapfile) fprintf(mapfile,"%c|%s|%s|%d|%s|\n", t,s,w,l,m);
+  if (mapfile) fprintf(mapfile,"%s|%s|%s|%d|%s|\n", t,s,w,l,m);
 }
 
 closemap()

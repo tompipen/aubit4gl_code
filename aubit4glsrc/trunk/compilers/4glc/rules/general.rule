@@ -16,7 +16,10 @@ coords		:	a_number COMMA a_number {sprintf($<str>$,"%s,%s",$<str>1,$<str>3); }
 
 display_coords	:	coords;
 
-field_name	:	identifier {sprintf($<str>$,"\"%s\",1",$<str>1);}
+field_name	:	
+		identifier {sprintf($<str>$,"\"%s\",1",$<str>1);}
+		| INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { sprintf($<str>$,"int_to_id($<str>3)"); }
+		| identifier DOT INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { sprintf($<str>$,"int_to_id($<str>3)"); }
 		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE
 {sprintf($<str>$,"\"%s\",%s",$<str>1,$<str>3);}
 			| identifier DOT MULTIPLY
@@ -29,35 +32,36 @@ field_name	:	identifier {sprintf($<str>$,"\"%s\",1",$<str>1);}
 {sprintf($<str>$,"\"%s.%s\",%s",$<str>1,$<str>6,$<str>3);}
 ;
 
-cursor_name	:	ident_or_var {printc("push_char(%s);\n",$<str>1);
-	addmap('Q',last_var,curr_func,yylineno,infilename);
-}
+cursor_name	:	ident_or_var {
+				print_pushchar();
+				addmap("Cursor",last_var,curr_func,yylineno,infilename);
+			}
 ;
 
 foreach_cursor_name	:	ident_or_var {sprintf($<str>$,"push_char(%s);\n",$<str>1);
-	addmap('Q',last_var,curr_func,yylineno,infilename);
+	addmap("Cursor",last_var,curr_func,yylineno,infilename);
 };
 
 fetch_cursor_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);};
 
 win_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);
-addmap('w',last_var,curr_func,yylineno,infilename);
+addmap("Window",last_var,curr_func,yylineno,infilename);
 }
 
 ;
 
 open_win_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);
-addmap('W',last_var,curr_func,yylineno,infilename);
+addmap("Open Window",last_var,curr_func,yylineno,infilename);
 }
 ;
 
 form_name	: ident_or_var {sprintf($<str>$,"%s",$<str>1);
-addmap('f',last_var,curr_func,yylineno,infilename);
+addmap("Form",last_var,curr_func,yylineno,infilename);
 }
 ;
 
 open_form_name	: ident_or_var {sprintf($<str>$,"%s",$<str>1);
-addmap('F',last_var,curr_func,yylineno,infilename);
+addmap("Open Form",last_var,curr_func,yylineno,infilename);
 }
 ;
 
@@ -159,7 +163,6 @@ reserved_word :
 	|DROP
 	|FOREIGN
 	|EXISTS
-	|UPDATE
 	|YEAR
 	|MONTH
 	|DAY
@@ -170,5 +173,7 @@ reserved_word :
 	|DATE
 	|TEXT
 	|DELETE
+	|VALIDATE
 	|ESCAPE
+	|UPSHIFT
 ;

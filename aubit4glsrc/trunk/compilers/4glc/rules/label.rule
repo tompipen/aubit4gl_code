@@ -3,7 +3,7 @@ label_cmd : LABEL identifier {
 }
 | LABEL identifier COLON
 {
-	printc("%s:\n",$<str>2);
+	print_label($<str>2);
 }
 ;
 

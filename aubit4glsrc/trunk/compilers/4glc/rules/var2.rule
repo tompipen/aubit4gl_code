@@ -1,7 +1,7 @@
 var_ident :  var2  {
 if (scan_variable($<str>1)!=-1)
 {
-printc("push_param(&%s,0x%x);\n",$<str>1,scan_variable($<str>1)); 
+print_push_variable($<str>1);
 strcpy($<str>$,"?");
 }
 fflush(stdout);

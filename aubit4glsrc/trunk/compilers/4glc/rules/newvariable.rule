@@ -4,7 +4,7 @@ char buff[256];
 char buff2[256];
 strcpy(buff,$<str>1);
 printcomment("/* .. var %s*/",buff);
-if (buff[0]!=' ') addmap('v',buff,curr_func,yylineno,infilename);
+if (buff[0]!=' ') addmap("Use Variable",buff,curr_func,yylineno,infilename);
 if (strncmp(buff," ASSOCIATE_",11)!=0) {
 convlower(buff);
 }
@@ -62,7 +62,7 @@ var:
              sprintf ($<str>$, " substr(%s,%d,%s,0)", buff, 
                       scan_variable (buff), $<str>6);
 
-             addmap('v',buff,curr_func,yylineno,infilename);
+             addmap("Use Variable",buff,curr_func,yylineno,infilename);
              printcomment ("/*character variable %s*/\n", $<str>$);
          }
 
@@ -152,7 +152,7 @@ identifier arr_subscripts
   else
     {
       sprintf ($<str>$, " substr(%s,%d,%s,0)", $<str>1, scan_variable ($<str>1), $<str>2);
-             addmap('v',$<str>1,curr_func,yylineno,infilename);
+             addmap("Use Variable",$<str>1,curr_func,yylineno,infilename);
       printcomment ("/*character variable %s*/\n", $<str>$);
     }
 }
@@ -230,7 +230,7 @@ let_variable: let_var
 {
 char buff[256];
 strcpy(buff,$<str>1);
-addmap('L',buff,curr_func,yylineno,infilename);
+addmap("Let Variable",buff,curr_func,yylineno,infilename);
 
 if (strncmp(buff," ASSOCIATE_",11)!=0) {
 convlower(buff);
@@ -281,7 +281,7 @@ let_var: let_array_r_variable
     {
       sprintf(buff,"%s.%s",$<str>1,$<str>4);
       sprintf ($<str>$, " let_substr(%s,%d,%s,0)", buff, a, $<str>6);
-      addmap('L',buff,curr_func,yylineno,infilename);
+      addmap("Let Variable",buff,curr_func,yylineno,infilename);
       printcomment ("/*character variable %s*/\n", $<str>$);
     }
 
@@ -326,7 +326,7 @@ identifier OPEN_SQUARE num_list CLOSE_SQUARE
   else
     {
       sprintf ($<str>$, " let_substr(%s,%d,%s,0)", $<str>1, scan_variable ($<str>1), $<str>3);
-      addmap('L',$<str>1,curr_func,yylineno,infilename);
+      addmap("Let Variable",$<str>1,curr_func,yylineno,infilename);
       debug ("/*character variable %s*/\n", $<str>$);
     }
 
@@ -411,7 +411,7 @@ sprintf($<str>$,"");
 ;
 
 obind_var : variable   {
-	addmap('l',$<str>1,curr_func,yylineno,infilename);
+	addmap("OBIND",$<str>1,curr_func,yylineno,infilename);
 	}
 ;
 

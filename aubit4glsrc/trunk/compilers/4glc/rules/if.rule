@@ -1,13 +1,17 @@
 if_cmd	: 
 	IF 
 	fgl_expr 
-	THEN  {printc("if (pop_bool()) {\n");}
+	THEN  {
+		print_if_start();
+	}
 		commands
 	op_else
-	END_IF {printc("} /* END OF IF */\n");}
+	END_IF {
+		print_if_end();
+	}
 ;
 
-op_else : | ELSE {printc("} else {\n");} commands ;
-
-
+op_else : | ELSE {
+		print_if_else();
+	} commands ;
 

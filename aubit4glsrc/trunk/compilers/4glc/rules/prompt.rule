@@ -1,26 +1,27 @@
 prompt_cmd	:	
-	
 	PROMPT prompt_title opt_attributes FOR opt_char 
         variable opt_help_no 
         opt_attributes {
                 push_blockcommand("PROMPT");
-                printc("{char _p[%d];int _fld_dr;\n",sizeof(struct s_prompt));
-                printc("start_prompt(&_p,%s,%s,%s,%s);\n",$<str>3,$<str>5,$<str>7,$<str>8);
-                printc("while (GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=prompt_loop(&_p);\n");
+
+	print_prompt_1($<str>3,$<str>5,$<str>7,$<str>8) ;
 }
         prompt_key_sec {
 		if (strcmp($<str>5,"1")==0) {
-                    printcomment("/* PROMPT ... CHAR */");
-                    printc("if (_fld_dr) break;\n");
+			print_prompt_forchar();
                 }
 		add_continue_blockcommand ("PROMPT");
-	        printc("}\n");
-                printc("pop_var(&%s,%d);\n",$<str>6,scan_variable($<str>6));
-	        printc("}\n");
+		print_prompt_end($<str>6);
                 pop_blockcommand("PROMPT");
                 printcomment("/* END OF PROMPT */");
                 }
 
+;
+
+gui_prompt_cmd : 
+	PROMPT prompt_title opt_attributes  RETURNING variable {
+		print_niy("GUI PROMPT");
+	}
 ;
 
 opt_char : /* empty */ {strcpy($<str>$,"0");}
@@ -34,7 +35,11 @@ prompt_key_sec :  /* empty */ {strcpy($<str>$,"");}
 prompt_key_clause : on_key_command_prompt
 	| prompt_key_clause on_key_command_prompt ;
 
-on_key_command_prompt : on_key_command {printc("ON_KEY(\"%s\") {\n",$<str>1);} commands {printc("continue;}\n");}
+on_key_command_prompt : on_key_command {
+	print_onkey_1($<str>1);
+} commands {
+	print_onkey_2_prompt();
+}
 ;
 
 

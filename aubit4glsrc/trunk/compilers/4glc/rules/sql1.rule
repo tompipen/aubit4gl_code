@@ -57,8 +57,9 @@ upd_val : value_expression | KW_NULL | subquery  ;
 
 rollback_statement:
 	ROLLBACK_W 
-		{printc("commit_rollback(0);\n");
-}
+		{
+		print_sql_commit(0);
+		}
 	;
 
 
@@ -107,20 +108,26 @@ insert_value:
 
 fetch_statement:
 	FETCH 
-{printc("{\n");} 
-fetch_part {printc("{\n");} opt_into_fetch_part
-{ printc("fetch_cursor(%s,%s);}\n}\n",$<str>3,$<str>5); }
+{
+print_fetch_1();
+} 
+fetch_part {
+print_fetch_2();
+} opt_into_fetch_part
+{
+print_fetch_3($<str>3,$<str>5);
+}
 ;
 
 fetch_part: 
 	fetch_place  fetch_cursor_name
 {sprintf($<str>$,"%s,%s",$<str>2,$<str>1);
-addmap('>',$<str>2,curr_func,yylineno,infilename);
+addmap("Fetch Cursor",$<str>2,curr_func,yylineno,infilename);
 }
         | fetch_cursor_name
 {sprintf($<str>$,"%s,%d,1",$<str>1,FETCH_RELATIVE);
 
-addmap('>',$<str>1,curr_func,yylineno,infilename);
+addmap("Fetch Cursor",$<str>1,curr_func,yylineno,infilename);
 }
 ;
 
@@ -131,14 +138,11 @@ sprintf($<str>$,"0,0");
 	INTO {
 debug("FETCH INTO  ...");
 start_bind('i',0,-1);
-printcomment("/* Into on fetch */\n");
 }
         ibind_var_list {
 int ni;
-printcomment("/* got list */\n");
 ni=print_bind('i');
 sprintf($<str>$,"%d,ibind",ni);
-printcomment("/* printed list */\n");
 }
 	;
 
@@ -212,12 +216,12 @@ op_asc_desc: {strcpy($<str>$,"");}
 	;
 
 begin_statement: BEGIN_WORK {
-printc("commit_rollback(-1);");
+print_sql_commit(-1);
 };
 
 commit_statement:
 	COMMIT_W {
-		printc("commit_rollback(1);\n");
+		print_sql_commit(1);
 	}
 	;
 
@@ -233,9 +237,9 @@ set_database_cmd :
         DATABASE var_ident op_exclusive
 {
 if (strcmp($<str>2,"?")==0) {
-      printc("init_connection(char_pop());\n");
+	print_init_conn(0);
 } else {
-      printc("init_connection(\"%s\");\n",$<str>2);
+	print_init_conn($<str>2);
 }
 }
 
@@ -243,19 +247,26 @@ if (strcmp($<str>2,"?")==0) {
 
 
 
-sql_cmd : opt_use {insql=1;} sql_commands {printc($<str>1);insql=0;strcpy($<str>$,$<str>3);}
+sql_cmd : opt_use {insql=1;} sql_commands {
+print_undo_use($<str>1);
+insql=0;strcpy($<str>$,$<str>3);}
 ;
 
 sql_commands :  schema {printcomment("/*  schema */\n");
-           printc("execute_implicit_sql(prepare_glob_sql(\"%s\",0,0));\n",$<str>1);
+	print_exec_sql($<str>1);
+
 sprintf($<str>$,"Schema");
 } 
 	| schema_element {printcomment("/*  schema  2*/\n");
-printc("execute_implicit_sql(prepare_glob_sql(\"%s\",0,0));\n",$<str>1);
+
+	print_exec_sql($<str>1);
+
 sprintf($<str>$,"Schema Element");
 } 
 	| commit_statement 
-	| misc_sql { printc("execute_implicit_sql(prepare_glob_sql(\"%s\",0,0));\n",$<str>1); }
+	| misc_sql {
+	print_exec_sql($<str>1);
+ }
 	| begin_statement 
 	| set_database_cmd
 {
@@ -264,19 +275,15 @@ sprintf($<str>$,"Set Database");
 	| delete_statement_position {
 int c;
 printcomment("/*  delete 1 */\n");
-printc("{\n");
-c=print_bind('i');
-printc("execute_implicit_sql(prepare_glob_sql(\"%s\",%d,ibind));\n",$<str>1,c);
-printc("}\n");
+
+print_exec_sql_bound($<str>1);
 sprintf($<str>$,"Delete where current...");
 } 
 	| delete_statement_search {
 int c;
 printcomment("/*  delete 2 */\n");
-printc("{\n");
-c=print_bind('i');
-printc("execute_implicit_sql(prepare_glob_sql(\"%s\",%d,ibind));\n",$<str>1,c);
-printc("}\n");
+
+print_exec_sql_bound($<str>1);
 sprintf($<str>$,"Delete where ...");
 } 
 	| fetch_statement {
@@ -286,24 +293,21 @@ printcomment("/*  fetch */\n");
 	| insert_statement {
 int c;
 printcomment("/*  insert */\n");
-printc("{\n");
-c=print_bind('i');
-printc("execute_implicit_sql(prepare_glob_sql(\"%s\",%d,ibind));\n",$<str>1,c);
-printc("}\n");
+
+print_exec_sql_bound($<str>1);
+
+
 sprintf($<str>$,"insert");
 
 } 
 	| rollback_statement 
-	| select_statement_full {printc("execute_implicit_select(%s);\n}\n",$<str>1);
-sprintf($<str>$,"select");
+	| select_statement_full {
+	print_do_select($<str>1);
+	sprintf($<str>$,"select");
 } 
 	| update_statement {
 int c;
-printcomment("/* update */\n");
-printc("{\n");
-c=print_bind('i');
-printc("execute_implicit_sql(prepare_glob_sql(\"%s\",%d,ibind));\n",$<str>1,c);
-printc("}\n");
+print_exec_sql_bound($<str>1);
 sprintf($<str>$,"update");
 } 
 	;
@@ -735,8 +739,7 @@ char_string_type:
 exact_numeric_type:
 	NUMERIC OPEN_BRACKET precision op_scale CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-	| SERIAL {
-	printc("/*serial*/\n");}
+	| SERIAL 
 	| DECIMAL OPEN_BRACKET precision op_scale CLOSE_BRACKET
 	| MONEY OPEN_BRACKET precision op_scale CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
@@ -789,13 +792,13 @@ scale:
 table_name:
 	CHAR_VALUE {
 		sprintf($<str>$," %s",strip_quotes($<str>1));
-		addmap('t',$<str>$,curr_func,yylineno,infilename);
+		addmap("Use Table",$<str>$,curr_func,yylineno,infilename);
 	}
 	| table_identifier {sprintf($<str>$,$<str>1);
-addmap('t',$<str>1,curr_func,yylineno,infilename);
+addmap("Use Table",$<str>1,curr_func,yylineno,infilename);
 }
-	| db_name COLON table_identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap('t',$<str>$,curr_func,yylineno,infilename); }
-	| CHAR_VALUE DOT table_identifier { sprintf($<str>$,"\\\"%s\\\"%s%s",strip_quotes($<str>1),$<str>2,$<str>3); addmap('t',$<str>$,curr_func,yylineno,infilename); }
+	| db_name COLON table_identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
+	| CHAR_VALUE DOT table_identifier { sprintf($<str>$,"\\\"%s\\\"%s%s",strip_quotes($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
 
 	;
 
@@ -817,18 +820,18 @@ col_arr : {strcpy($<str>$,"");}
 
 column_name: identifier col_arr
 { 
-addmap('c',$<str>1,curr_func,yylineno,infilename); 
+addmap("Use Column",$<str>1,curr_func,yylineno,infilename); 
 sprintf($<str>$,"%s%s",$<str>1,$<str>2);
 }
 	| table_name setident DOT identifier col_arr
 {
 sprintf($<str>$,"%s.%s%s",$<str>1,$<str>4,$<str>5);
-addmap('c',$<str>$,curr_func,yylineno,infilename);
+addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
 }
 	| table_name setident DOT MULTIPLY
  {
 sprintf($<str>$,"%s.%s",$<str>1,$<str>4);
-addmap('c',$<str>$,curr_func,yylineno,infilename);
+addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
 }
 
 
@@ -884,32 +887,36 @@ dbase_name	:	identifier {strcpy($<str>$,$<str>1);}
 
 flush_cmd : opt_use
 	FLUSH fetch_cursor_name  {
-		printc("flush_cursor(%s);\n\n",$<str>3);
-		addmap('D',$<str>3,curr_func,yylineno,infilename);
-		printc($<str>1);
+	print_flush_cursor($<str>3);
+		addmap("Flush Cursor",$<str>3,curr_func,yylineno,infilename);
+print_undo_use($<str>1);
 		}
 
 ;
 
 declare_cmd : opt_use
-	DECLARE fetch_cursor_name CURSOR FOR cursor_specification_all {insql=0;chk4var=0;} curs_forupdate {printc("declare_cursor(%s,%s,0,%s);\n}\n",$<str>8,$<str>6,$<str>3);
-addmap('D',$<str>3,curr_func,yylineno,infilename);
-printc($<str>1);
+	DECLARE fetch_cursor_name CURSOR FOR cursor_specification_all {insql=0;chk4var=0;} curs_forupdate {
+print_declare($<str>8,$<str>6,$<str>3,0,0);
+addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
+print_undo_use($<str>1);
 }
-	| opt_use DECLARE fetch_cursor_name CURSOR WITH_HOLD FOR cursor_specification_sel {insql=0;chk4var=0;} curs_forupdate {printc("declare_cursor(%s+2,%s,0,%s);\n}\n",$<str>9,$<str>7,$<str>3);
-addmap('D',$<str>3,curr_func,yylineno,infilename);
-printc($<str>1);
+	| opt_use DECLARE fetch_cursor_name CURSOR WITH_HOLD FOR cursor_specification_sel {insql=0;chk4var=0;} curs_forupdate {
+print_declare($<str>9,$<str>7,$<str>3,2,0); 
+addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
+print_undo_use($<str>1);
 }
 
         | opt_use DECLARE fetch_cursor_name SCROLL_CURSOR_FOR cursor_specification_sel {insql=0;chk4var=0;} curs_forupdate
-{printc("declare_cursor(%s,%s,1,%s);\n}\n",$<str>7,$<str>5,$<str>3);
-addmap('D',$<str>3,curr_func,yylineno,infilename);
-printc($<str>1);
+{
+print_declare($<str>7,$<str>5,$<str>3,0,1); 
+addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
+print_undo_use($<str>1);
 }
         | opt_use DECLARE fetch_cursor_name SCROLL_CURSOR WITH_HOLD FOR cursor_specification_sel {insql=0;chk4var=0;} curs_forupdate
-{printc("declare_cursor(%s,%s,1,%s);\n}\n",$<str>9,$<str>7,$<str>3);
-addmap('D',$<str>3,curr_func,yylineno,infilename);
-printc($<str>1);
+{
+print_declare($<str>9,$<str>7,$<str>3,0,1); 
+addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
+print_undo_use($<str>1);
 }
 
 
@@ -931,12 +938,14 @@ colident: identifier
 
 cursor_specification_all:
 	cursor_specification_sel
-	| insert_statement { printc("{\n");sprintf($<str>$,"prepare_sql(\"%s\")",$<str>1); }
+	| insert_statement { 
+		strcpy($<str>$,print_curr_spec(1,$<str>1));
+	}
 ;
 
 cursor_specification_sel:
-	 stmt_id {printc("{\n");sprintf($<str>$,"find_prepare(%s)",$<str>1
-);
+	 stmt_id {
+		strcpy($<str>$,print_curr_spec(2,$<str>1));
 }
 	| select_statement ;
 
@@ -960,14 +969,9 @@ select_statement:
 	table_expression 
         sel_p2 {
              char buff[1024];
-             int ni,no;
-             printc("{\n"); 
-             sprintf(buff,"%s %s %s %s %s %s", 
-                   $<str>1, $<str>2, $<str>3, $<str>5, $<str>7,$<str>8);
-             ni=print_bind('i');
-             no=print_bind('o');
-             sprintf($<str>$,"prepare_select(ibind,%d,obind,%d,\"%s\")",
-                             ni,no,buff);
+             sprintf(buff,"%s %s %s %s %s %s", $<str>1, $<str>2, $<str>3, $<str>5, $<str>7,$<str>8);
+	    strcpy($<str>$,print_select_all(buff));
+
 }
 ;
 
@@ -1095,14 +1099,16 @@ value_specification:
 	;
 
 unload_cmd :  opt_use UNLOAD_TO ufile opt_delim select_statement2 {
-printc("unload_data(%s,%s, /*1*/ \"%s\" /*2*/);\n",$<str>3,$<str>4,$<str>5);
+
+print_unload($<str>3,$<str>4,$<str>5);
+print_undo_use($<str>1);
 }
 ;
 
 
 load_cmd :  opt_use LOAD_FROM ufile opt_delim INSERT_INTO table_name opt_col_list {
-printc("load_data(%s,%s,\"%s\",%s);\n",$<str>3,$<str>4,$<str>6,$<str>7);
-printc($<str>1);
+print_load($<str>3,$<str>4,$<str>6,$<str>7);
+print_undo_use($<str>1);
 };
 
 opt_delim : {strcpy($<str>$,"\"|\"");} | DELIMITER char_or_var {
@@ -1132,10 +1138,8 @@ ufile : CHAR_VALUE | variable;
 
 
 opt_use : {strcpy($<str>$,"");} | USE_SESSION conn_id FOR {
-printc("{char _sav_cur_conn[32];\n");
-printc("strcpy(_sav_cur_conn,get_curr_conn());\n");
-printc("set_conn(%s);\n",$<str>3);
-strcpy($<str>$,"set_conn(_sav_cur_conn);}");
+print_use_session($<str>3);
+strcpy($<str>$,get_undo_use());
 }
 ;
 

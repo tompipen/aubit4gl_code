@@ -2,34 +2,33 @@ case_cmd	:
 CASE 
 fgl_expr  
 {
-printcomment("/* case expr */\n");
 push_blockcommand("CASE");
 setinc(1);
 incprint();
-printc("while (1==1) {char *s=0;if (s==0) {s=char_pop();}\n");setinc(1);
+print_case(1);
+setinc(1);
 } 
 when_unit_expr
 op_otherwise_command_expr
 end_case_command 
 {
-printc("break;\n");
-printcomment("/* end of case */\n");
+print_after_when(0);
 pop_blockcommand("CASE");
 }
 
 | 
-CASE { printcomment("/* case */\n"); push_blockcommand("CASE"); 
+CASE {  push_blockcommand("CASE"); 
 setinc(1);
 incprint(); 
-printc("while (1==1) {\n");setinc(1);
+print_case(0);
+setinc(1);
 } 
 when_unit 
 op_otherwise_command
 end_case_command 
 {
-printc("break;\n");
+print_after_when(0);
 pop_blockcommand("CASE");
-printcomment("/* end of case */\n");
 }
 ;
 
@@ -45,30 +44,37 @@ END_CASE {setinc(-1);incprint();}
 
 op_otherwise_command : | OTHERWISE {
 incprint();
-} commands {incprint();printc("break;\n");}
+} commands {incprint();
+print_after_when(0);
+}
 ;
 
 op_otherwise_command_expr : | OTHERWISE 
 {incprint();} 
 commands 
-{incprint();printc("break;\n");}
+{incprint();
+print_after_when(0);
+}
 ;
 
 when_command	: WHEN  fgl_expr {
-printc("if (pop_bool()) {\n");
+print_when(0);
+
 incprint();
 }
-commands {incprint();printc("break;}\n");setinc(-1);}
+commands {incprint();
+print_after_when(1);
+setinc(-1);}
 ;
 
 
 when_command_expr	: WHEN fgl_expr {
 incprint();
-printc("push_char(s);");
-printc("pushop(OP_EQUAL);\n");
-printc("if (pop_bool()) {\n");
+print_when(1);
 }
-commands {incprint();printc("\nbreak;}\n");printcomment("/* end of when */\n");setinc(-1);}
+commands {incprint();
+print_after_when(1);
+setinc(-1);}
 ;
 
 

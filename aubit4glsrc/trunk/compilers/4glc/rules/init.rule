@@ -1,12 +1,10 @@
 init_cmd : INITIALIZE init_bind_var_list {debug("init to\n");} TO KW_NULL
  {
-  int cnt;
-  printc("{\n");
-  cnt=print_bind('N');
-  printc("set_init(nullbind,%d);\n",cnt);
-  printc("}\n");
+	print_init()
  }
-| INITIALIZE init_bind_var_list LIKE init_tab_list 
+| INITIALIZE init_bind_var_list LIKE init_tab_list  {
+	print_init_table($<str>4);
+}
 ;
 
 

@@ -18,6 +18,8 @@ extern int chk4var;
 char *lastword;
 int lastlex=-2;
 
+extern int in_define;
+
 int xccode=0;
 int ccnt=0;
 char xwords[256][256];
@@ -354,12 +356,12 @@ if (strcmp(p,"sql_code")==0&&xccode==0) {
 		return KW_CSTART;
 }
 
-if (strcmp(p,"code")==0&&xccode==0) {
+if (strcasecmp(p,"code")==0&&xccode==0) {
 		xccode=1;
 		return KW_CSTART;
 }
 
-if (strcmp(p,"endcode")==0&&xccode) {
+if (strcasecmp(p,"endcode")==0&&xccode) {
 		printc("/* End of code */");
 		xccode=0;
 		return KW_CEND;

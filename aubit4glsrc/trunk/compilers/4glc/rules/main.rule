@@ -19,38 +19,43 @@ func_or_main2 : func_or_main
 
 at_term_cmd :
         AT_TERMINATION_CALL  identifier {
-		printc("exitwith(\"NOT IMPLEMENTED : AT TERMINATION\");");
+		print_at_termination($<str>2);
 	}
 ;
 
 func_or_main	:	func_def
 		|	main_def
-		|	 mem_func_def
+		|	mem_func_def
 		|	report_def
 		|	pdf_report_def
                 |       menu_def
+		| whenever_cmd 
                 |       formhandler_def
 		|	code_cmd
 		| 	import_m
 		|	comment_cmd
 		;
 
-op_code : |code_cmd;
+op_code : |code_cmd | whenever_cmd  ;
 
 
 ldeffunction :  FUNCTION {strcpy($<str>$,"");} | LOCAL FUNCTION
-{strcpy($<str>$,"static ");} ;
+{
+strcpy($<str>$,"static ");
+} ;
 
 func_def	: ldeffunction
-{clr_variable(); lastlineno=yylineno; }
+{
+clr_variable(); lastlineno=yylineno;
+clr_function_constants (); 
+}
 identifier  OPEN_BRACKET  
 { 
 sprintf(curr_func,"%s",$<str>3);
-addmap('F',curr_func,"MODULE",yylineno,infilename);
-printc(" \n");
-printc(" \n");
-printc(" \n");
-printc("\n%sint aclfgl_%s (int nargs){ \n",$<str>1,$<str>3); cnt=0; }
+addmap("Declare Function",curr_func,"MODULE",yylineno,infilename);
+print_func_start($<str>1,$<str>3,0);
+cnt=0;
+ }
 op_param_var_list CLOSE_BRACKET 
 {
 printcomment("/* new function %s parameters*/\n",$<str>6); 
@@ -60,14 +65,17 @@ define_section
 int c;
 printcomment("/*end of define section */\n");
 c=print_param('f');
-printc("if (nargs!=%d) {status=-30174;pop_args(nargs);return 0;}\n",c,yylineno); printc("pop_params(fbind,%d);\n",c);
+print_func_args(c);
+
 } op_code
 commands  
 end_func_command;
 
 end_func_command : END_FUNCTION {
-		printc("return 0;\n");
-		pop_blockcommand("FUNC");printc("}\n");
+		print_func_defret0();
+		pop_blockcommand("FUNC");
+		print_func_end();
+clr_function_constants ();
 printcomment("/*end function*/\n");}
 	;
 
@@ -81,22 +89,22 @@ lastlineno=yylineno;
 sprintf(curr_func,"MAIN");
 clr_variable(); 
 push_blockcommand("MAIN"); 
-addmap('M',curr_func,"MODULE",yylineno,infilename);
-printc("\n\nmain(int argc,char *argv[]) {\n");
+addmap("MAIN",curr_func,"MODULE",yylineno,infilename);
+print_main_1();
 } 
 define_section
 {
-printc("\nfgl_start(argc,argv);\n");
-if (hdr_dbname[0]!=0) {
-     printc("init_connection(\"%s\");\n",hdr_dbname);
-     printc("if (sqlca.sqlcode<0) chk_err(%d,_module_name);\n",lastlineno);
+print_fgllib_start(hdr_dbname);
+
 }
-}
-commands END_MAIN {pop_blockcommand("MAIN");printc("fgl_end();\n}");
+commands END_MAIN {
+pop_blockcommand("MAIN");
+print_main_end();
 printcomment("/*end main */\n");} ;
 
 return_cmd : RETURN reset_cnt op_fgl_expr_ret_list {
-printc("return %s;",$<str>3);
+
+print_return(atoi($<str>3));
 } ;
 
 op_fgl_expr_list : {strcpy($<str>$,"0");} | fgl_expr_list {
@@ -126,8 +134,11 @@ globals_section : /* empty */ {strcpy($<str>$,"");lastlineno=yylineno;}
 ;
 
 actual_globals_section : 
-	globals_entry
-	| actual_globals_section globals_entry
+	xglobals_entry
+	| actual_globals_section xglobals_entry
+;
+
+xglobals_entry : globals_entry | code_cmd |  whenever_cmd 
 ;
 
 globals_entry: GLOBALS {
@@ -150,7 +161,11 @@ lastlineno=yylineno;
 int a;
 char b[256];
 lastlineno=yylineno;
+
 strcpy(b,$<str>1);
+
+tr_glob_fname(b);
+
 debug("Reading globals file %s\n",b);
 rm_quote(b);
 read_glob(b);
@@ -166,14 +181,15 @@ if (glob_only==0) {
 
 mem_func_def : MEMBER_FUNCTION identifier MEMBER_OF identifier OPEN_BRACKET
 {
-addmap('F',curr_func,"MODULE",yylineno,infilename);
+addmap("Define Member Function",curr_func,"MODULE",yylineno,infilename);
 }
 op_param_var_list CLOSE_BRACKET
 {
 char buff[80];
 sprintf(buff,"%s_%s_%d",$<str>4,$<str>2,atoi($<str>7));
 sprintf(curr_func,"%s",buff);
-printc("\n\n\nint aclm_%s (int nargs){ \n",buff);
+print_func_start("",buff,1);
+
 cnt=0;
 printcomment("/* new function %s parameters*/\n",$<str>7);
 push_blockcommand("FUNC");
@@ -182,8 +198,7 @@ define_section
 {
 printcomment("/*end of define section */\n");
 print_param('f');
-printc("if (nargs!=%s) {status=-30174;pop_args(nargs);return 0;}\n",$<str>7,yylineno);
-printc("pop_params(fbind,%s);\n",$<str>7);
+print_func_args(atoi($<str>7));
 } op_code
 commands
 end_func_command;

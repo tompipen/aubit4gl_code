@@ -1,19 +1,18 @@
 
 formhandler_def :
         FORMHANDLER identifier {
-        printc("void hnd_e_%s(GtkWidget *widget,GdkEvent *event,gpointer data) {\n",$<str>2);
-        printc("  hnd_%s(widget,1,event,data);\n",$<str>2);
-        printc("}\n");
-        printc("int hnd_c_%s(GtkWidget *widget,gpointer data) {\n",$<str>2);
-        printc("  return hnd_%s(widget,0,0,data);\n",$<str>2);
-        printc("}\n");
-        printc("int hnd_%s (GtkWidget *widget, int isevent,GdkEvent *event,gpointer data) {\n",$<str>2);
+		sprintf(curr_func,"%s",$<str>2); 
+		print_formhandler($<str>2);
+		start_state("formhandler",1);
+	push_blockcommand("FORMHANDLER");
         }
         define_section
         op_bef_ev_list
         op_input_section
         op_aft_ev_list
-        END_FORMHANDLER {printc("}\n");}
+        END_FORMHANDLER {print_end_formhandler(); 
+pop_blockcommand("FORMHANDLER");
+start_state("formhandler",0);}
 ;
 
 op_input_section : | input_section;
@@ -28,14 +27,14 @@ bef_ev_list :
 
 bef_ev :
         BEFORE_EVENT {
-                printc("if (BEFORE_EVENT) {\n");
+		print_event('B');
         }  commands {
-                printc("}\n");
+		print_event_2();
         }
         | BEFORE_OPEN_FORM {
-                printc("if (BEFORE_OPEN_FORM) {\n");
+		print_event('b');
         } commands {
-                printc("}\n");
+		print_event_2();
         }
 ;
 
@@ -49,25 +48,24 @@ aft_ev_list :
 
 aft_ev :
          AFTER_EVENT {
-                printc("if (AFTER_EVENT) {\n");
+		print_event('A');
         }  commands {
-                printc("}\n");
+		print_event_2();
         }
         | BEFORE_CLOSE_FORM {
-                printc("if (BEFORE_CLOSE_FORM) {\n");
+		print_event('a');
         } commands {
-                printc("}\n");
+		print_event_2();
         }
 ;
-
 
 input_section : input_sub_section field_ops END_INPUT
 ;
 
 input_sub_section :
-        INPUT
-        | INPUT in_variable_list FROM in_id_list
-        | INPUT BY_NAME in_bn_variable_list
+        FORMHANDLER_INPUT
+        | FORMHANDLER_INPUT in_variable_list FROM in_id_list
+        | FORMHANDLER_INPUT BY_NAME in_bn_variable_list
 ;
 
 
@@ -87,19 +85,31 @@ field_ops :
 ;
 
 field_op :
-        BEFORE_ANY { printc("if (BEFORE_ANY) {\n"); } commands {
-printc("}\n");
-}
-        | AFTER_ANY { printc("if (AFTER_ANY) {\n"); } commands {
-printc("}\n");
-}
-        | BEFORE in_id_list { printc("if (BEFORE_FIELD(%s)) {\n",$<str>2); }
-commands { printc("}\n"); }
-        | AFTER in_id_list { printc("if (AFTER_FIELD(%s)) {\n",$<str>2); }
-commands { printc("}\n"); }
-        | ON in_id_list { printc("if (ON_FIELD(%s)) {\n",$<str>2); }
-commands { printc("}\n"); }
-
+        BEFORE_ANY { 
+			print_gtk_field('B',0);
+		} commands {
+			print_gtk_field_2();
+		}
+        | AFTER_ANY { 
+			print_gtk_field('A',0);
+		} commands {
+			print_gtk_field_2();
+		}
+        | BEFORE in_id_list {
+			print_gtk_field('b',$<str>2);
+		} commands { 
+			print_gtk_field_2();
+		}
+        | AFTER in_id_list {
+			print_gtk_field('a',$<str>2);
+		} commands { 
+			print_gtk_field_2();
+		}
+        | ON in_id_list { 
+			print_gtk_field('o',$<str>2);
+		} commands { 
+			print_gtk_field_2();
+		}
 ;
 
 

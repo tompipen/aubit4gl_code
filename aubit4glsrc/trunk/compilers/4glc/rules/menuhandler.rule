@@ -2,14 +2,15 @@
 menu_def :
         MENUHANDLER identifier  {
                 strcpy(menuhandler,$<str>2);
-                printc("void aclfglmn_%s(char *p) {\n",$<str>2);}
+	sprintf(curr_func,"%s",$<str>2); 
+	print_gtk_menuhandler_1($<str>2);
+}
         define_section {
                 push_blockcommand("MENUH");
         }
         menu_handler_elements END_MENUHANDLER
                 {
                         pop_blockcommand("MENUH");
-                printc(" /* end of menuhandler */\n");
                 }
 ;
 
@@ -20,22 +21,21 @@ menu_handler_elements :
 
 menu_handler_element :
         BEFORE_SHOW_MENU {
-                printc("if (strcmp(p,\"__BSM__\")==0) {\n");
+
+		print_gtk_menuhandler_bsm();
+
                 push_blockcommand("BSM");
         } commands {
                 pop_blockcommand("BSM");
-                printc("}/* before show menu*/\n");
+		print_gtk_menuhandler_bsm_end();
+
         }
         | ON identifier {
-                char buff[256];
-                printc("if (strcmp(p,\"__BSM__\")==0) {");
-                sprintf(buff,"\"%s\"",$<str>2);
-                printc("  if (!mn_itemexists(%s)) { exitwith(\"Menu item does not exist\");\n}",buff);
-                printc("}\nif (strcmp(p,%s)==0) {",buff);
+print_gtk_menuhandler_on($<str>2);
                 push_blockcommand("ON");
         } commands {
                 pop_blockcommand("ON");
-                printc("}\n");
+		print_gtk_menuhandler_on_end();
 }
 ;
 

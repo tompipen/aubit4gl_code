@@ -1,6 +1,10 @@
 exit_prog_cmd : 
-EXIT_PROGRAM {printc("fgl_end();exit(0);");} 
-| EXIT_PROGRAM fgl_expr {printc("fgl_end();exit(pop_int());");} 
+EXIT_PROGRAM {
+	print_exit_program(0);
+} 
+| EXIT_PROGRAM fgl_expr {
+	print_exit_program(1);
+} 
 ;
 
 

@@ -85,7 +85,7 @@ fgl_expr {debug("L1\n");set_counter(1);sprintf($<str>$,"1");}
 fgl_expr_concat	: 	fgl_expr {sprintf($<str>$,"%d",get_counter_val());}
 		| 	fgl_expr_concat COMMA fgl_expr
 {
-printc("pushop(OP_CONCAT);\n");
+print_op("OP_CONCAT");
 dec_counter();sprintf($<str>$,"%d",get_counter_val());
 }
 ;
@@ -315,6 +315,7 @@ COLUMN fgl_expr_c
 	sprintf($<str>$,"%sset_column(&rep);",ispdf());
 	$<ptr>$=append_expr($<ptr>2,$<str>$);
 }
+
 | COLUMNS fgl_expr_c 
 {
 sprintf($<str>$,"%sset_column(&rep);",ispdf());
@@ -526,7 +527,7 @@ function_call_expr2:
 identifier 
 OPEN_BRACKET 
 { 
-addmap('I',$<str>1,curr_func,yylineno,infilename);
+addmap("Call",$<str>1,curr_func,yylineno,infilename);
 new_counter(); } 
 opt_func_call_args 
 { sprintf($<str>$,"%d",get_counter_val()); printcomment("/*function_call_expr2 %s*/\n",$<str>$); drop_counter(); }
@@ -571,9 +572,8 @@ sprintf($<str>$,"{int _retvars;\n_retvars=fgl_getfldbuf(%s);\nif (_retvars != 1 
 	$<ptr>$=new_expr($<str>$);
 
 } 
-| FIELDTOWIDGET OPEN_BRACKET field_name CLOSE_BRACKET {sprintf($<str>$,"push_int(fgl_fieldnametoid(%s));",$<str>3); 
-	$<ptr>$=new_expr($<str>$);
-}
+| FIELDTOWIDGET OPEN_BRACKET field_name CLOSE_BRACKET {sprintf($<str>$,"push_int(fgl_fieldnametoid(%s));",$<str>3); $<ptr>$=new_expr($<str>$); }
+| ID_TO_INT OPEN_BRACKET field_name CLOSE_BRACKET {sprintf($<str>$,"push_int(fgl_fieldnametoid(%s));",$<str>3); $<ptr>$=new_expr($<str>$); }
 | INFIELD OPEN_BRACKET field_name CLOSE_BRACKET {sprintf($<str>$,"push_int(fgl_infield(%s));",$<str>3); 
 	$<ptr>$=new_expr($<str>$);
 }
@@ -616,15 +616,15 @@ builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
 
 pdf_expr : fgl_expr_c POINTS  {
 //sprintf($<str>$,"%s push_double(-1);pushop(OP_MULT)",$<str>1);
-	$<ptr>$=append_expr($<ptr>2,"push_double(-1);pushop(OP_MULT);");
+	$<ptr>$=append_expr($<ptr>1,"push_double(-1);pushop(OP_MULT);");
 }
         |  fgl_expr_c  MM     {
 //sprintf($<str>$,"%s push_double(-28.3465);pushop(OP_MULT);",$<str>1);
-	$<ptr>$=append_expr($<ptr>2,"push_double(-28.3465);pushop(OP_MULT);");
+	$<ptr>$=append_expr($<ptr>1,"push_double(-28.3465);pushop(OP_MULT);");
 }
         |  fgl_expr_c INCHES     {
 //sprintf($<str>$,"%s push_double(-72.0);pushop(OP_MULT);",$<str>1);
-	$<ptr>$=append_expr($<ptr>2,"push_double(-72.0);pushop(OP_MULT);");
+	$<ptr>$=append_expr($<ptr>1,"push_double(-72.0);pushop(OP_MULT);");
 }
 ;
 

@@ -1,5 +1,5 @@
 drops_cmd : drops_c {
-           printc("execute_implicit_sql(prepare_glob_sql(\"%s\",0,0));\n",$<str>1);
+	print_exec_sql($<str>1);
 }
 ;
 
@@ -11,7 +11,7 @@ drops_c : DROP_TABLE  {sprintf($<str>$, "%s",$<str>1);}
 view_name : identifier;
 
 create_cmd : create_c_1 {
-           printc("execute_implicit_sql(prepare_glob_sql(\"%s\",0,0));\n",$<str>1);
+	print_exec_sql($<str>1);
 
 }
 ;

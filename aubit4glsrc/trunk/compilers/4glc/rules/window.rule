@@ -1,25 +1,29 @@
-
 op_clr_fields : | KWFIELD fld_list
 ;
 
 op_to_defs : 
-{strcpy($<str>$,"0");}
-| TO_DEFAULTS { strcpy($<str>$,"1"); }
+{
+strcpy($<str>$,"0");
+}
+| TO_DEFAULTS {
+strcpy($<str>$,"1"); 
+}
 ;
 
 clear_cmd	:	CLEARSCR
-{ printc("clr_window(\"screen\");\n"); }
-		|	CLEARWIN win_name
-{ printc("clr_window(%s);\n",$<str>2); }
+{ 
+print_clr_window("\"screen\"");
+}
+		|	CLEARWIN win_name { print_clr_window($<str>2); }
+		|	CLEARSTAT win_name { print_clr_window($<str>2); }
 		|	CLEARFORM {
-	printc("**** NOT IMPLEMENTED YET *****\n");
+	print_clr_form(0,0,0);
 }
 		|	CLEARFORM form_name op_clr_fields  op_to_defs {
-	printc("**** NOT IMPLEMENTED YET *****\n");
-debug("FIXME");
+	print_clr_form($<str>2,$<str>3,$<str>4);
 }
 		|	CLEAR fld_list op_to_defs {
-	printc("**** NOT IMPLEMENTED YET *****\n");
+	print_clr_fields($<str>2,$<str>3);
 }
 ;
 
@@ -28,40 +32,58 @@ fld_list	:	field_name  {sprintf($<str>$,"%s",$<str>1);}
 ;
 
 
-current_win_cmd	:	CWIS {printc("current_window(\"screen\");\n");}
+current_win_cmd	:	CWIS {
+	print_current_window("\"screen\"");
+}
 		|	CURRENT_WINDOW_IS win_name 
-{printc("current_window(%s);",$<str>2);
+{
+	print_current_window($<str>2);
 };
 
-window_type	:	fgl_expr ROWS COMMA fgl_expr COLUMNS {sprintf($<str>$,"cr_window");reset_attrib(&form_attrib);}
-		|	KWFORM fgl_expr {sprintf($<str>$,"cr_window_form");
+window_type	:	fgl_expr ROWS COMMA fgl_expr COLUMNS {
+sprintf($<str>$,"cr_window");
+reset_attrib(&form_attrib);
+}
+		|	KWFORM fgl_expr {
+sprintf($<str>$,"cr_window_form");
 reset_attrib(&form_attrib);
 };
 
 show_cmd : SHOW_WINDOW win_name {
-	printc("show_window(%s);\n",$<str>2);
+	print_show_window($<str>2);
+	addmap("Show Window",$<str>2,curr_func,yylineno,infilename); 
 }
 | SHOW_MENU menu_name USING menu_handler op_mnfile {
-	printh("void aclfglmn_%s(char *);\n",$<str>4);
-	printc("show_menu(\"%s\",aclfglmn_%s);\n",$<str>2,$<str>4);
+	print_show_menu($<str>2,$<str>4);
+	addmap("Call Menuhandler",$<str>4,curr_func,yylineno,infilename); 
 }
 ;
-op_mnfile : { printc("push_char(\"menu\"); /* default menu file */\n"); } | FROM fgl_expr
+op_mnfile : {
+
+print_def_mn_file();
+
+} | FROM fgl_expr
 ;
 
-menu_name: identifier;
+menu_name: identifier
+{addmap("Use Menu",$<str>1,curr_func,yylineno,infilename); }
+;
 
 menu_handler: identifier;
 
 
 hide_cmd : HIDE_WINDOW win_name {
-	printc("hide_window(%s);\n",$<str>2);
+	print_hide_window($<str>2);
 }
 ;
 
 move_cmd : MOVE_WINDOW win_name TO fgl_expr COMMA fgl_expr 
-{printc("movewin(%s,1);",$<str>2);}
+{
+print_move_window($<str>2,0);
+}
           |  MOVE_WINDOW win_name BY fgl_expr COMMA fgl_expr
-{printc("movewin(%s,0);",$<str>2);}
+{
+print_move_window($<str>2,1);
+}
 ;
 

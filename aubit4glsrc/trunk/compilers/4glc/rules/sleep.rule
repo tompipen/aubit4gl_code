@@ -1,3 +1,6 @@
-sleep_cmd : SLEEP fgl_expr {printc("sleep_i();\n");};
+sleep_cmd : SLEEP fgl_expr {
+		print_sleep();
+	}
+;
 
 

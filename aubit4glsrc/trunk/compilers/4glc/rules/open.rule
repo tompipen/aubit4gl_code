@@ -1,18 +1,35 @@
 open_window_cmd :
 	OPEN_WINDOW open_win_name AT coords WITH window_type win_attributes  {
 form_attrib.iswindow=1;
-printc("%s(%s,",$<str>6,$<str>2);
-print_form_attrib(&form_attrib);
-printc(");\n");
+print_open_window($<str>2,$<str>6);
 sprintf($<str>$,"open window");
 }
 ;
 
-formhandler_name:identifier
+op_at_statusbox : 
+	| AT OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET op_size_statusbox
+;
+
+op_size_statusbox : 
+	| SIZE OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET
+;
+
+open_statusbox_cmd :
+	OPEN_STATUSBOX identifier op_at_statusbox
+{
+	print_niy("OPEN_STATUSBOX");
+}
+;
+
+formhandler_name:identifier {
+addmap("Call Formhandler",$<str>1,curr_func,yylineno,infilename); 
+}
 ;
 open_form_cmd :
 	OPEN_FORM open_form_name  open_form_rest
-		{ printc($<str>3,$<str>2,$<str>2); }
+		{
+		print_open_form($<str>3,$<str>2,$<str>2);
+		}
 ;
 
 open_form_rest: open_form_gui
@@ -40,21 +57,17 @@ op_absolute: {strcpy($<str>$,"0");}
 open_session_cmd : 
  OPEN_SESSION conn_id TO_DATABASE var_ident user_details
  {
-  printc("init_session(%s",$<str>2);
-    if (strcmp($<str>5,"?")==0) {
-        printc(",char_pop(),%s);\n",$<str>5);
-  } else {
-        printc(",\"%s\",%s);\n",$<str>4,$<str>5);
-  }
+print_open_session($<str>2,$<str>4,$<str>5);
+
 }
 
 ;
 open_cursor_cmd :
 	OPEN cursor_name {
-printc("open_cursor(0,%s);\n",$<str>2);
+	print_open_cursor($<str>2,"0");
 }
 	| OPEN cursor_name USING reset_cnt fgl_expr_list {
-printc("open_cursor(%s,%s);\n",$<str>4,$<str>2);
+	print_open_cursor($<str>2,$<str>5); /* CHANGED from $<str>4 */
 }
 ;
 
@@ -77,14 +90,8 @@ op_disable : {strcpy($<str>$,"0");} | DISABLE_PROGRAM {strcpy($<str>$,"1");}
 
 
 connect_cmd :
- CONNECT_TO var_ident op_connect_as con_user_details
- {
-  printc("init_session(%s",$<str>3);
-    if (strcmp($<str>4,"?")==0) {
-        printc(",char_pop(),%s);\n",$<str>4);
-  } else {
-        printc("    ,\"%s\",%s);\n",$<str>2,$<str>4);
-  }
+CONNECT_TO var_ident op_connect_as con_user_details {
+	print_open_session($<str>3,$<str>2,$<str>4);
 }
 ;
 

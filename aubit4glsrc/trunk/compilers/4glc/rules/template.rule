@@ -23,38 +23,38 @@ list_copy($<str>3,$<str>1);
 
 template_single_value :
 		PROMPT CHAR_VALUE  {
-		char *a; a=new_id(); strcpy($<str>$,a); list_prompt_single(a,$<str>2);}
+		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_prompt_single(a,$<str>2);}
 	| 	PROMPT_MANY CHAR_VALUE  {
-		char *a; a=new_id(); strcpy($<str>$,a); list_prompt_many(a,$<str>2);}
+		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_prompt_many(a,$<str>2);}
 	| 	PROMPT INT_VALUE COMMA CHAR_VALUE  {
-		char *a; a=new_id(); strcpy($<str>$,a); list_prompt_many(a,$<str>4);}
+		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_prompt_many(a,$<str>4);}
 	|	CHAR_VALUE {
-		char *a; a=new_id(); strcpy($<str>$,a); list_set_single(a,$<str>1);}
+		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_set_single(a,$<str>1);}
 	| 	INT_VALUE {
-		char *a; a=new_id(); strcpy($<str>$,a); list_set_single(a,$<str>1);}
+		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_set_single(a,$<str>1);}
 ;
 
 template_value : 
 		COLUMNS identifier  {
-		char *a; a=new_id(); strcpy($<str>$,a); list_columns(a,$<str>2);}
+		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_columns(a,$<str>2);}
 	| identifier
 	| 	template_single_value
 	|       template_value PLUS template_value {
-		char *a; a=new_id(); strcpy($<str>$,a); list_set_plus(a,$<str>1,$<str>3);}
+		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_set_plus(a,$<str>1,$<str>3);}
 	|	template_value MINUS template_value {
-		char *a; a=new_id(); strcpy($<str>$,a); list_set_minus(a,$<str>1,$<str>3);}
+		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_set_minus(a,$<str>1,$<str>3);}
 	|	template_value IN template_value {
-		char *a; a=new_id(); strcpy($<str>$,a); list_in(a,$<str>1,$<str>3);}
+		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_in(a,$<str>1,$<str>3);}
 	| 	OPEN_BRACKET template_value CLOSE_BRACKET {
 			strcpy($<str>$,$<str>2);
 	}
 	|	APPEND template_single_value TO template_value  {
-		char *a; a=new_id(); strcpy($<str>$,a); list_append(a,$<str>4,$<str>2);}
+		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_append(a,$<str>4,$<str>2);}
 
 	|	PREPEND template_single_value TO template_value  {
-		char *a; a=new_id(); strcpy($<str>$,a); list_append(a,$<str>4,$<str>2);}
+		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_append(a,$<str>4,$<str>2);}
 	| 	USE template_value WITH template_single_value ON template_value  {
-		char *a; a=new_id(); strcpy($<str>$,a); list_append($<str>2,$<str>6,$<str>4,a);}
+		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_append($<str>2,$<str>6,$<str>4,a);}
 ;
 
 

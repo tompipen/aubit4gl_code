@@ -1,5 +1,19 @@
-run_cmd : RUN fgl_expr {printc("system_run(0);");} | RUN fgl_expr RETURNING variable {printc("system_run(1);pop_var(&%s,%d);\n",$<str>4,scan_variable($<str>4));} | 
-RUN fgl_expr WITHOUT_WAITING {printc("system_run(2);");}
+run_cmd : RUN fgl_expr {
+print_system_run(0,0);
+} | RUN fgl_expr RETURNING variable {
+print_system_run(1,$<str>4);
+} | 
+RUN fgl_expr WITHOUT_WAITING {
+print_system_run(2,0);
+}
+|
+RUN fgl_expr WAIT {
+print_system_run(0,0);
+}
+| RUN fgl_expr EXIT {
+print_system_run(0,0);
+/* FIXME */
+}
 ;
 
 
