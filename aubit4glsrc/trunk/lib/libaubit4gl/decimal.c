@@ -14,6 +14,7 @@ fgldecimal *A4GL_init_dec(fgldecimal *dec, int length, int digits) {
 
 fgldecimal * A4GL_str_to_dec (char *str, fgldecimal *dec) {
 char head[256];
+char head2[256];
 char tail[256];
 char tmp[3];
 int a;
@@ -116,7 +117,24 @@ while (carry) {
 if (carry) head_i++;
 
 tail[decimals]=0;
+A4GL_debug("head_len=%d",head_len);
+A4GL_debug("head_i=%d head='%s'",head_i,head);
 sprintf(buff,"%0*ld",head_len,head_i);
+memset(head2,'0',255);
+
+head2[head_len]=0;
+strcpy(&head2[head_len-strlen(head)],head);
+if (carry) {
+	for (a=strlen(head2)-1;a>=0;a--) {
+		head2[a]++;
+		if (head2[a]<='9') break;
+		head[a]='0';
+	}
+}
+strcpy(buff,head2);
+A4GL_debug("head2=%s\n",head2);
+
+
 sprintf(&dec->dec_data[2],buff);
 strcat(&dec->dec_data[2],".");
 strcat(&dec->dec_data[2],tail);
