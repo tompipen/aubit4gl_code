@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.14 2001-09-22 20:09:59 mikeaubury Exp $
+* $Id: mod.c,v 1.15 2001-10-05 18:16:40 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.14  2001/09/22 20:09:59  mikeaubury
+*	Fixes
+*	
 *	Revision 1.13  2001/09/18 08:32:23  mikeaubury
 *	More fixes..
 *	
@@ -1560,7 +1563,7 @@ print_space ()
 
 printc (char *fmt, ...)
 {
-  va_list *args;
+  va_list args;
   char buff[40960];
   char *ptr;
   int a;
@@ -1620,7 +1623,7 @@ printc (char *fmt, ...)
 yyerrorf (char *fmt, ...)
 {
   char buff[256];
-  va_list *args;
+  va_list args;
   va_start (args, fmt);
   vsprintf (buff, fmt, args);
   yyerror (buff);
@@ -1629,7 +1632,7 @@ yyerrorf (char *fmt, ...)
 #ifdef USE_PRINTCOMMENT
 printcomment (char *fmt, ...)
 {
-  va_list *args;
+  va_list args;
   if (outfile == 0)
     {
       open_outfile ();
@@ -1648,7 +1651,7 @@ printcomment (char *fmt, ...)
 
 printh (char *fmt, ...)
 {
-  va_list *args;
+  va_list args;
   if (outfile == 0)
     {
       open_outfile ();
