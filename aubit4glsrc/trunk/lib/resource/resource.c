@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.52 2003-09-01 15:58:19 mikeaubury Exp $
+# $Id: resource.c,v 1.53 2003-11-28 06:02:01 afalout Exp $
 #
 */
 
@@ -583,7 +583,11 @@ A4GL_getenv_registry (char *s,char *prefixed_string)
 {
 char *ptr=0;
 	#if ( (defined (WIN32) || defined (__MINGW32__)) && ! defined (__CYGWIN__))
-      /* try in Windows registry */
+      /* try in Windows registry 
+        Works only with native Windows port, since I don't think CygWin
+        provides RegQueryValueEx function... (?)
+
+	  */
       /* why was this static? */
       //static char buff[1024];
       char buff[1024];
