@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.15 2002-01-13 09:40:46 afalout Exp $
+# $Id: 4glc.c,v 1.16 2002-01-13 14:58:15 mikeaubury Exp $
 #
 */
 
@@ -35,7 +35,7 @@
 
 /*
  *
- * $Id: 4glc.c,v 1.15 2002-01-13 09:40:46 afalout Exp $
+ * $Id: 4glc.c,v 1.16 2002-01-13 14:58:15 mikeaubury Exp $
  */
 
 #include <stdio.h>
@@ -182,7 +182,7 @@ main (int argc, char *argv[])
     }
 
   closemap ();
-
+  
   if (yydebug)
     {
       printf ("Exit\n");
