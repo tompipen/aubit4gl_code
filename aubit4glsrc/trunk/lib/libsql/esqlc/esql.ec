@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.27 2003-01-27 07:02:37 afalout Exp $
+# $Id: esql.ec,v 1.28 2003-01-28 15:27:29 mikeaubury Exp $
 #
 */
 
@@ -123,7 +123,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.27 2003-01-27 07:02:37 afalout Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.28 2003-01-28 15:27:29 mikeaubury Exp $";
 #endif
 
 /*
@@ -2073,7 +2073,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
   if ( isSqlError() )
     return; /* return 1; */
 
-  EXEC SQL ALLOCATE DESCRIPTOR 'descUnload';
+  EXEC SQL ALLOCATE DESCRIPTOR 'descUnload' WITH MAX 256;
   if ( isSqlError() )
     return; /* return 1; */
 
@@ -2295,7 +2295,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 	return 0;
   }
 
-  EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns';
+  EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns' WITH MAX 256;
   if ( isSqlError() )
   {
 	#ifdef DEBUG
@@ -2415,6 +2415,7 @@ static int getSQLDataType(char *connName, char *tabname,char *colname,
   EXEC SQL END DECLARE SECTION;
 
   sprintf(strSelect,"select %s from %s",colname,tabname);
+debug("SQL = %s",strSelect);
   EXEC SQL PREPARE stReadColumns FROM :strSelect;
   if ( isSqlError() )
   {
