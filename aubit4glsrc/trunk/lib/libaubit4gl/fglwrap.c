@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.44 2003-06-19 18:22:00 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.45 2003-06-20 06:17:51 mikeaubury Exp $
 #
 */
 
@@ -111,8 +111,17 @@ char *A4GL_clob (char *s, char *p);
  *
  * If in curses mode exit curses.
  */
+
 void
-A4GL_fgl_end (void)
+A4GL_fgl_end_4gl_0 ()
+{
+
+A4GL_fgl_end();
+exit (0);
+}
+
+void
+A4GL_fgl_end ()
 {
   if (A4GL_isscrmode ())
     {
@@ -124,7 +133,6 @@ A4GL_fgl_end (void)
   A4GL_close_database ();
   A4GL_close_errorlog_file ();
   A4GL_debug ("End of program - exit(0).");
-  exit (0);
 }
 
 void
@@ -827,9 +835,9 @@ A4GL_nodef_init ()
   int ret;
 
 #ifdef OTHER_UNIX
-  sa.sa_sigaction = (void *) A4GL_fgl_end;
+  sa.sa_sigaction = (void *) A4GL_fgl_end_4gl_0;
 #else
-  sa.sa_handler = (void *) A4GL_fgl_end;
+  sa.sa_handler = (void *) A4GL_fgl_end_4gl_0;
 #endif
   sigemptyset (&sa.sa_mask);
   sa.sa_flags = 0;
