@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.13 2003-10-05 22:48:38 afalout Exp $
+# $Id: widget.c,v 1.14 2003-10-10 06:52:44 mikeaubury Exp $
 #*/
 
 /**
@@ -520,6 +520,10 @@ w=wv;
     return 0;
   return A4GL_attr_name_match (s, name);
 
+}
+
+int get_widget_next_size() {
+        return widget_next_size;
 }
 
 #if GTK_CHECK_VERSION(2,0,0)
