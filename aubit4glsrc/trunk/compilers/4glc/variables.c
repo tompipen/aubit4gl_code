@@ -219,6 +219,7 @@ variable_action (int category, char *name, char *type, char *n,
   static int record_cnt = 0;
   char scope;
   static int adding_assoc = 0;
+	  struct name_list *ptr;
 #define MODE_ADD_CONSTANT  	1
 #define MODE_ADD_RECORD    	2
 #define MODE_ADD_TYPE      	3
@@ -323,6 +324,7 @@ variable_action (int category, char *name, char *type, char *n,
       mode = MODE_ADD_NAME;
     }
 
+debug("Mode=%d\n",mode);
 
 // We don't need to do the adding of the array for an assoc_array - this will already have been done...
   if (mode == MODE_ADD_ARRAY)
@@ -445,9 +447,9 @@ variable_action (int category, char *name, char *type, char *n,
   if (mode == MODE_ADD_NAME)
     {
       // Is this the first name at this level ?
-
       if (v[record_cnt] == 0)
 	{
+	  debug("First at level");
 	  v[record_cnt] = malloc (sizeof (struct variable));
 	  v[record_cnt]->names.name = strdup (name);
 	  v[record_cnt]->names.next = 0;
@@ -472,18 +474,31 @@ variable_action (int category, char *name, char *type, char *n,
 	{
 	  // We've already got one name..
 	  // Add some more to the list..
-	  struct name_list *ptr;
 
+	debug("Already have first at this level");
 	  // Walk to the end of the current list of names
 	  ptr = &v[record_cnt]->names;
-	  while (ptr->next != 0)
+	debug("Walking..");
+	  while (ptr->next != 0) {
+		debug("Walk..");
 	    ptr = ptr->next;
+	}
 
 	  ptr->next = malloc (sizeof (struct name_list));
 	  ptr = ptr->next;
 	  ptr->next = 0;
 	  ptr->name = strdup (name);
 	}
+
+	
+
+	// some debugging stuff...
+  	ptr = &v[record_cnt]->names;
+	while (ptr) {
+		debug(" --> %s\n",ptr->name);
+		ptr=ptr->next;
+	}
+	
     }
 
   // v[record_cnt] should now hold the variable we've just generated
@@ -561,7 +576,7 @@ add_to_scope (int record_cnt, int unroll)
   scope = get_current_variable_scope ();
 
 
-
+/*
   if (unroll == 0)
     {
 
@@ -584,6 +599,31 @@ add_to_scope (int record_cnt, int unroll)
 	  v[record_cnt] = orig;
 	}
     }
+
+*/
+  if (unroll == 0)
+    {
+
+      orig = v[record_cnt];
+      names = v[record_cnt]->names.next;
+
+      if (names)
+	{
+      	  names = v[record_cnt];
+	  while (names)
+	    {
+	      v_new = malloc (sizeof (struct variable));
+	      memcpy (v_new, v[record_cnt], sizeof (struct variable));
+	      v[record_cnt] = v_new;
+	      v[record_cnt]->names.name = names->name;
+	      v[record_cnt]->names.next = 0;
+	      add_to_scope (record_cnt, 1);
+	      names = names->next;
+	    }
+		return 1;
+	}
+    }
+
 
 // If record_cnt is set then we're not adding it as a variable 
 // to local/module/global scope - but to the record at the level above...
@@ -1539,6 +1579,7 @@ split_record (char *s, struct variable **v_record, struct variable **v1,
   char *ptr;
 
   // MJA - NEWVARIABLE
+debug("SPLIT_RECORD : %s\n",s);
 
   if (strchr (s, '\n'))
     {
@@ -1549,6 +1590,7 @@ split_record (char *s, struct variable **v_record, struct variable **v1,
       char r2[256];
       //char buff[256];
 
+	debug("Got a thru...");
 
       strcpy (save, s);
       s = save;
@@ -1574,6 +1616,8 @@ split_record (char *s, struct variable **v_record, struct variable **v1,
 	  return 0;
 	}
 
+
+	debug("Record : %s\n",r1);
       strcpy (s, r1);
       strcpy (endoflist, r1);
       strcat (endoflist, ".");
@@ -1714,6 +1758,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
   int record_start = -1;
   int record_end = -1;
   struct variable *v_record;
+debug("Split_record_list... %s",s);
 
   if (strchr (s, '\n'))
     {
@@ -1739,10 +1784,11 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 	  return 0;
 	}
 
+	debug("record1=%s record2=%s\n",record1,record2);
 
+	debug("prefix=%s\n",prefix);
 
-
-      if (prefix != 0)
+      if (prefix != 0 && strlen(prefix))
 	{
 	  sprintf (prefix_buff, "%s.", prefix);
 	}
@@ -1758,7 +1804,8 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 
       strcpy (subrecord1, dot[0]);
       strcpy (subrecord2, dot[1]);
-
+	
+debug("subrecord1=%s subrecord2=%s\n",subrecord1,subrecord2);
 
       // At this point record1 and record2 should be the same...
       // We'll get rid of any crud from record2 (any brackets etc) to find it 
@@ -1781,16 +1828,19 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 
       for (a = 0; a < v_record->data.v_record.record_cnt; a++)
 	{
+	      debug("Record @ %d = %s",a,v_record->data.v_record.variables[a]->names.name);
 	  if (strcasecmp
 	      (v_record->data.v_record.variables[a]->names.name,
 	       subrecord1) == 0)
 	    {
+		debug("Record start @ %d\n",a);
 	      record_start = a;
 	    }
 	  if (strcasecmp
 	      (v_record->data.v_record.variables[a]->names.name,
 	       subrecord2) == 0)
 	    {
+		debug("Record end @ %d\n",a);
 	      record_end = a;
 	    }
 	}
@@ -1866,7 +1916,10 @@ split_record_list (char *s, char *prefix, struct record_list *list)
       yyerror ("Couldn't find end variable");
       return 0;
     }
-
+  if (record_start>record_end) {
+	yyerror("Starting point in THRU is after the end point");
+	return 0;
+  }
 
   if (list == 0)
     {
@@ -1904,9 +1957,10 @@ push_bind_rec (char *s, char bindtype)
 //int size;
 //char buff[256];
   struct record_list *list;
+debug("In push_bind_rec : '%s'",s);
 
   list = split_record_list (s, "", 0);
-
+debug("Got list : %p",list);
 
   if (list == 0)
     {
