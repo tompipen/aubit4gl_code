@@ -10844,6 +10844,8 @@ echo "$as_me: WARNING: ** want to regenerate the Aubit parsers" >&2;}
 				#So a quick fix is setting LANG to C (or unset LANG, which is the
 				#same) "by hand" before ./configure. A better fix is to change
 				#the Makefile (replace "bison" with "LANG=C bison" or something)
+
+				#BISON="LANG=C LC_ALL=C; nice -n -20 $BISON -y"
 				BISON="LANG=C LC_ALL=C $BISON -y"
 			fi
 		else
@@ -30515,7 +30517,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 30518 "configure"' > conftest.$ac_ext
+  echo '#line 30520 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -31071,7 +31073,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 31074 "configure"
+#line 31076 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -31169,7 +31171,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 31172 "configure"
+#line 31174 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -36015,7 +36017,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.290 2004-12-07 20:23:04 whaslbeck Exp $
+| $Id: configure,v 1.291 2004-12-08 06:59:14 whaslbeck Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
