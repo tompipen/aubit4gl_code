@@ -5,7 +5,7 @@ $execline = "export HOME=/home/users/a/af/afalout; export WWW=/home/groups/a/au/
 		$retvar = array("first line");
 		$string = exec($execline,$retvar, $return_status);
 
-        if ( $return_status) { # zero=false on success , != 127
+        #if ( $return_status) { # zero=false on success , != 127
 	        #message( "<BR>Status=".$return_status." Last line=".$string."<BR>");
 			echo "<BR>Error refreshing Aubit 4gl WWW site from CVS, status = $return_status<BR>";
 			echo "----command output----:<br>";
@@ -14,8 +14,8 @@ $execline = "export HOME=/home/users/a/af/afalout; export WWW=/home/groups/a/au/
 	        }
 	        echo "----end array-----<br>";
 			flush();
-            die;
-		}
+        #    die;
+		#}
 
 
 	echo "Aubit 4gl WWW site refresshed from CVS \n\n";
