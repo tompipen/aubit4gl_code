@@ -1,0 +1,15 @@
+1.2a
+Changed directory structure
+
+1.2
+Made some network optimizations
+Added config file parameters
+Requires 4glworks 2.0b10
+
+1.1
+Added file IO capabilities in message editor
+Added autoconfiguration support
+Requires 4glWorks 2.0b9
+
+1.0
+Premier release -- needs 4glWorks 2.0b8

@@ -1,0 +1,56 @@
+4gwMenus demo 1.0 release noted					May, 21 1999
+
+This demo is nothing else but the 4glWorks demo application with 4gwMenus
+capabilities added to it. All of what you find in the 4gwdemo readme applies
+to this application as well, with a couple of notable additions, which are
+the only info you'll find here.
+
+1) Application usage
+First/Applications allows you to tailor the application, adding new menu
+entries & data browsers.
+
+The viewer functionality is straight forward, the only points wort nothing are
+that, when adding/modifying applications
+
+- Type is the type of whatever you enter, which comprises
+
+M:  a piece of sql which is allowed to perform data maipulations
+Q:  a piece of sql which will only return data
+P:  is an external application whose output will be displaied in a data
+    browser
+Ex: an external application, to be executed in the background if x is B, or
+    that need a user confirmation before continuing with 4gwMenus usage, if
+    x is W.
+
+- Menu is a menu chain which will allow you to execute the application.
+  Note that names of hardwired or already used menus (except for the
+  final name!) are allowed.
+
+- Users is a list of users allowed to use the application. Public, as you
+  would expect, means that the application is publicly available.
+
+- Application is the actual text. This can be a piece of sql, with extended 
+  commands, expansions and formats, exactly as for the Sql Interpreter, or
+  any piece of shell scripting, awk, perl, whatever, but this time with
+  expansions only
+
+2) Scripter
+This is a small sql interpreter with formatting capabilities, which takes
+a piece of sql in the standard input, and outputs the results on the standard
+output. Apart from demonstrating html formatting (use the -h switch, or the
+-w width, to set the output width), this can be used to fire sql statements
+in the background, after having made use of expansions from within 4gwMenus,
+as you will see from one of the demo scripts included.
+Note that html formatting is pretty basic and does not include appropriate
+HTML headers & trailers (ie HTML & BODY tags, and the whole of the HEAD section)
+This has been done so that page looks can be customized from outside scripter
+using style sheets.
+
+3) demo menu entries
+In case you have not proceeded with the automatic tool compilation, run the 
+following to create a few sample menus:
+
+dbaccess fgedemo < 4gwmods/menusdemo/etc/menusdemo.sql
+
+That's all, folks!
+Marco Greco <marco@4glworks.com>

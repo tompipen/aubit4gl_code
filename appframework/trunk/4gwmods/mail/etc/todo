@@ -1,0 +1,18 @@
+As of rel 1.1, the following items need to be looked into
+
+- original message reload
+- better editor
+- spell checker
+
+- some settings last for the duration of the viewer and are not folder
+  dependant
+- a way to keep track of message status
+- real threaded order
+- mime compliance
+- killfiles
+- search functions
+- message encription
+
+Do let me know of any other feature that might be of interest.
+
+Marco Greco <marco@4glworks.com>

@@ -1,0 +1,9 @@
+1.0b:
+Changed directory structure
+Adapted to 4glworks 2.b11 (uses sql_execute2)
+
+1.0a:
+Adapted to 4glworks 2.b10 (changes to hst_ & sql_explode)
+
+1.0:
+Premier release

@@ -1,0 +1,31 @@
+4gwMail demo 1.2 release notes					May 23, 1999
+
+Well, I'm afraid you won't find much info here. The application is simple
+enough that it can be learned just by browsing the menus, but if you really
+insist in having a couple of hints, here they are:
+
+"Messages" lets you access all the message related commands (reply, forward,
+print, copy, move, etc...). In case you're wondering, eXport and Save both
+write a message to a file, the only difference being in the amount of headers
+written to it.
+
+"Folders" is the way to go for the folder related ops (create, drop, newsgroup
+[un]subscription, folder selection, etc...)
+
+"View" lets you display (& set) preferences, and switch between message center
+and folder display.
+
+Message composition is straight fordward - the only thing worth noting is
+that you do not need to enter a complete RFC822 date in the expires: field -
+the application will try to figure one out of what you write. It catches
+almost anything, try it out! 
+
+Application-wide preferences are stored in $DBPATH/4gwmail.rc, user
+preferences in $HOME/.4gwmailrc. These are just about the only two compiled
+in strings. All others can be made to suit your tastes by appropriately
+changing the .txt files in $DBPATH/maildemo
+
+And Oh, yes! you quit the damn thing with Ctrl-X.
+
+Have fun,
+Marco Greco <marco@4glworks.com>

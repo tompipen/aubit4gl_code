@@ -1,0 +1,77 @@
+{
+	MILFP.per  -  mail preferences form, eng
+
+	4gwMail, a news and mail client 4glWorks module
+	Copyright (C) 1997-2002 Marco Greco (marco@4glworks.com)
+
+	Initial release: Oct 97
+	Current release: Jan 02
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License as published by the Free Software Foundation; either
+	version 2.1 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Lesser General Public License for more details.
+
+	You should have received a copy of the GNU Lesser General Public
+	License along with this library; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+}
+database formonly
+
+screen
+{
+ From     [f001                                                                ]
+ Signature[f002                                                                ]
+ Inbox    [f003                                                                ]
+ Folders  [f004                                                                ]
+ Sent     [f005          ]
+ Sendmail [f006                                                                ]
+ NNTP Host[f007                                                                ]
+ NNTP Port[f008                                                                ]
+ Newsrc   [f009                                                                ]
+
+ Signature [a|d|d|d|d|d|d|d]
+[f00a                                                                          ]
+[f00a                                                                          ]
+[f00a                                                                          ]
+[f00a                                                                          ]
+[f00a                                                                          ]
+[f00a                                                                          ]
+[f00a                                                                          ]
+}
+
+attributes
+
+f001 = formonly.sender, reverse,
+       comments = "empty field defaults to system returned user id";
+f002 = formonly.signature, reverse,
+       comments = "empty field defaults to $HOME/.signature";
+f003 = formonly.inbox, reverse,
+       comments = "empty field defaults to $MAIL";
+f004 = formonly.folders, reverse,
+       comments = "empty field defaults to $HOME/mail";
+f005 = formonly.sent, reverse,
+       comments = "value relative to folders path, empty field defaults to sent";
+f006 = formonly.sendmail, reverse,
+       comments = "empty field defaults to /usr/lib/sendmail -t";
+f007 = formonly.nntphost, reverse,
+       comments = "empty field defaults to localhost";
+f008 = formonly.nntpport, reverse,
+       comments = "empty field defaults to nntp";
+f009 = formonly.newsrc, reverse,
+       comments = "empty field defaults to $HOME/.newsrc";
+f00a = formonly.txt, reverse, autonext;
+a    = formonly.dummy, invisible;
+d    = formonly.d, invisible, noentry;
+
+instructions
+
+delimiters "  ";
+screen record s_ted[7] (txt, d);
+
+end

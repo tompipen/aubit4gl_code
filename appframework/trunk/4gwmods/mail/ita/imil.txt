@@ -1,0 +1,97 @@
+#	IMIL.txt  -  4gwmail messages, ita
+#
+#	4gwMail, a news and mail client 4glWorks module
+#	Copyright (C) 1997-2002 Marco Greco (marco@4glworks.com)
+#
+#	Initial release: Oct 97
+#	Current release: Jan 02
+#
+#	This library is free software; you can redistribute it and/or
+#	modify it under the terms of the GNU Lesser General Public
+#	License as published by the Free Software Foundation; either
+#	version 2.1 of the License, or (at your option) any later version.
+#
+#	This library is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#	Lesser General Public License for more details.
+#
+#	You should have received a copy of the GNU Lesser General Public
+#	License along with this library; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+asn	Gia` sottoscritto
+cmp	Invio Messaggio
+cna	Per quanto a volte sia il caso, non puoi cancellare messaggi altrui
+cp	Messaggio copiato
+dex	Non piu` di un "Expires" per messaggio!
+dm	Destinatario inesistente?
+ef	La cartella esiste gia`
+ena	Ci diamo al plagio?
+ewn	Impossibile modificare sottoscrizioni
+ewp	Impossibile modificare il file delle preferenze
+ews	Impossibile scrivere nella cartella dei messaggi inviati
+ex2	Dagli almeno un paio di giorni di vita!
+heaf	Autore               Oggetto                                  Data
+heam	Folder                                                  Messaggi
+mi	Messaggio inoltrato
+mo01	Gen
+mo02	Feb
+mo03	Mar
+mo04	Apr
+mo05	Mag
+mo06	Giu
+mo07	Lug
+mo08	Ago
+mo09	Set
+mo10	Ott
+mo11	Nov
+mo12	Dic
+mv	Messagio spostato
+nf	Impossibile identificare il messaggio da eliminare
+nha	Spiacente, ma nessun aiuto e` disponibile
+nm	E` arrivata nuova posta
+nrs	A chi devo spedire il messaggio?
+nsg	Newsgroup inesistente
+nsp	Errore nell'attivazione del sistema di consegna della posta
+pna	Il server delle news non consente l'invio di nuovi messaggi
+prf	Preferenze
+#
+#	%a author name, or author's mailbox if name missing
+#	%d message date
+#	%f full from: header
+#
+qstart	-- %d, cosi` parlo` %a:
+qend	-- fine messaggio originario
+#
+#	System calls errors
+#
+se004	Operazione interrotta
+#
+#	These are SCO based
+#
+se104	La rete non e` attiva
+se105	La rete non e` raggiungibile
+se114	Mancata risposta entro il time-out
+se115	Connessione rifiutata
+se116	Il server non risponde
+se117	Server non raggiungibile
+#
+#	These are Linux based
+#
+se100	La rete non e` attiva
+se101	La rete non e` raggiungibile
+se110	Mancata risposta entro il time-out
+se111	Connessione rifiutata
+se112	Il server non risponde
+se113	Server non raggiungibile
+#
+sf	Impossibile usare la cartella corrente
+sr	Il server risponde:
+wd0	Dom
+wd1	Lun
+wd2	Mar
+wd3	Mer
+wd4	Gio
+wd5	Ven
+wd6	Sab

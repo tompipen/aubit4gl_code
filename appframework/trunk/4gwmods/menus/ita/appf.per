@@ -1,0 +1,74 @@
+{
+	APPF.per  -  applications input form, ita
+
+	4gwMenus, an isql menus like 4glWorks module
+	Copyright (C) 1998-2002 Marco Greco (marco@4glworks.com)
+
+	Initial release:  May 98
+	Current release:  Jan 02
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License as published by the Free Software Foundation; either
+	version 2.1 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Lesser General Public License for more details.
+
+	You should have received a copy of the GNU Lesser General Public
+	License along with this library; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+}
+database formonly
+
+screen
+{
+ Codice:[f001 ] Descrizione:[f002                                    ] Tipo:[f3]
+
+ Menu:[f004            |f004            |f004            |f004            ]
+[f005                                                                          ]
+
+ Utenti[f006    |f006    |f006    |f006    |f006    |f006    |f006    |f006    ]
+
+ Applicazione [a|a|a|a] [b|b|b|b|b|b|b|b] [c|c|c|c|c|c|c|c|c|c]
+[f007                                                                          ]
+[f007                                                                          ]
+[f007                                                                          ]
+[f007                                                                          ]
+[f007                                                                          ]
+[f007                                                                          ]
+[f007                                                                          ]
+[f007                                                                          ]
+[f007                                                                          ]
+[f007                                                                          ]
+}
+end
+
+attributes
+
+f001 = formonly.code_app type smallint not null, autonext, reverse,
+       comments = "Immettere il codice richiesto",
+       include = (1 to 32000);
+f002 = formonly.desc_app type char not null, autonext, reverse;
+f3   = formonly.app_type type char not null, autonext, reverse, upshift,
+       comments = "Immettere il codice richiesto o Control-B per aiuto",
+       include = ("M", "Q", "P", "E", "EB", "EW");
+f004 = formonly.desc_mnu, autonext, reverse;
+f005 = formonly.comment, autonext, reverse;
+f006 = formonly.link_usr, autonext, reverse;
+f007 = formonly.txt, autonext, reverse,
+       comments = "Ctrl-O legge file, Ctrl-P scrive file";
+a    = formonly.dummy_m, invisible, noentry;
+b    = formonly.dummy_u, invisible, noentry;
+c    = formonly.d, invisible, noentry;
+
+instructions
+
+delimiters "  ";
+screen record s_mnu[4] (desc_mnu, dummy_m);
+screen record s_a2u[8] (link_usr, dummy_u);
+screen record s_ted[10] (txt, d);
+
+end
