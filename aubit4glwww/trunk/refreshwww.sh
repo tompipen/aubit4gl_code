@@ -30,30 +30,47 @@
 #   of this script when user click on the link; protect
 #   this page with username/password, using .htaccess file
 #
+##!/bin/sh
+#export CVS_RSH=
+#export CVSROOT=':pserver:anonymous@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl'
+#cvs -z8 checkout aubit4glsrc
 #
 #
 #####################################################
 
-export CVS_RSH=
-#export CVSROOT=':pserver:anonymous@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl'
-export CVSROOT=':pserver:anonymous@cvs1.aubit4gl.sourceforge.net:/cvsroot/aubit4gl'
-#autosfcvsanonpasswd
+
+if [ "$1" = "-anon" ]
+then
+	export CVS_RSH=
+	export CVSROOT=':pserver:anonymous@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl'
+else
+	autosfcvsanonpasswd
+fi
 
 cd $HOME
 
-#this needs password:
-#cvs -dafalout@cvs1:/cvsroot/aubit4gl co aubit4glwww
-cvs -z8 checkout aubit4glsrc
+if [ "$1" = "-anon" ]
+then
+	cvs -z8 checkout aubit4glsrc
+else
+	#this needs password:
+	cvs -dafalout@cvs1:/cvsroot/aubit4gl co aubit4glwww
+fi
 
 rm -rf $WWW/*
 cd aubit4glwww
 cp -r * $WWW
 cd $WWW
 
-#this needs password
-#cvs -dafalout@cvs1:/cvsroot/aubit4gl co aubit4gldoc
-cvs -z8 checkout aubit4gldoc
+
+if [ "$1" = "-anon" ]
+then
+	cvs -z8 checkout aubit4gldoc
+else
+	#this needs password
+	cvs -dafalout@cvs1:/cvsroot/aubit4gl co aubit4gldoc
+fi
 
 echo "Aubit web site refreshed from CVS"
-sh refresh_hy4gl.sh
+sh refresh_hy4gl.sh $1
 
