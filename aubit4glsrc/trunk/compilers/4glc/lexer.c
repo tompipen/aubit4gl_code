@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.62 2003-02-28 17:42:39 mikeaubury Exp $
+# $Id: lexer.c,v 1.63 2003-03-06 19:01:06 mikeaubury Exp $
 #*/
 
 /**
@@ -91,7 +91,7 @@ int lastlex = -2;
 int xccode = 0;
 int word_cnt = 0;
 
-char yyline[256] = "";		/* Current line read so far, incl. CR/LF */
+char yyline[2000] = "";		/* Current line read so far, incl. CR/LF */
 int yyline_len = 0;		/* Length of current line */
 long yyline_fpos = 0;		/* FIle position of start of current line */
 
@@ -1152,7 +1152,7 @@ debug("-> %d (NAMED_GEN=%d)\n",a,NAMED_GEN);
     }
   word_cnt = 0;
 
- debug ("lexer returns  a=%d, buff=%s\n", a, buff);
+  debug ("lexer returns  a=%d, buff=%s\n", a, buff);
 
   return a;
 }

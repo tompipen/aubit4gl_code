@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.107 2003-02-24 19:11:07 mikeaubury Exp $
+# $Id: mod.c,v 1.108 2003-03-06 19:01:08 mikeaubury Exp $
 #
 */
 
@@ -159,7 +159,7 @@ int 		report_stack_cnt = 0;
 int 		report_cnt = 1;
 int 		nblock_no = 1;
 
-#define GEN_STACK_SIZE 200
+#define GEN_STACK_SIZE 500
 char 		gen_stack[GEN_STACKS][GEN_STACK_SIZE][80];
 int 		gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 struct 		s_constr_buff constr_buff[256];

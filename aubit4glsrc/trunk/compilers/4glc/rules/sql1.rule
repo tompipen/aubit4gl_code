@@ -789,7 +789,7 @@ in_predicate_ss:
 		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,0);
 	}
 	| value_expression_ss NOT_IN OPEN_BRACKET in_value_list CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string($<sql_string>1," NOT IN (",$<sql_string>4,")",0);
+		$<sql_string>$=make_sql_string($<sql_string>1," NOT IN (",$<str>4,")",0);
 	}
 	| value_expression_ss NOT_IN subquery_ss {
 		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,0);
