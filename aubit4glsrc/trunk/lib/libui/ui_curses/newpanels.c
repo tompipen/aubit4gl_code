@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.104 2005-01-24 10:35:15 mikeaubury Exp $
+# $Id: newpanels.c,v 1.105 2005-02-04 12:22:04 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.104 2005-01-24 10:35:15 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.105 2005-02-04 12:22:04 mikeaubury Exp $";
 
 /**
  * @file
@@ -62,6 +62,7 @@ dll_import sqlca_struct sqlca;
 #endif
 
 
+void A4GL_monitor_key_pressed(int a) ;
 
 WINDOW * A4GL_window_on_top_ign_menu (void);
 void A4GL_make_window_with_this_form_current(void *form);
