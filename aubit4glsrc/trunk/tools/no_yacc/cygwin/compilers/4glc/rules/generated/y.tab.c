@@ -9150,6 +9150,11 @@ strcpy(yyval.str,"0,0");
     { yyval.ptr=A4GL_new_expr("A4GL_add_spaces();"); }
     break;
 
+  case 396:
+#line 2394 "fgl.yacc"
+    {inc_counter();}
+    break;
+
   case 402:
 #line 2400 "fgl.yacc"
     {
@@ -13495,7 +13500,7 @@ racnt+=a;
 
   case 1128:
 #line 5845 "fgl.yacc"
-    { rep_struct.output_mode='P';strcpy(rep_struct.output_loc,"\"lp\"");}
+    { rep_struct.output_mode='P';strcpy(rep_struct.output_loc,"acl_getenv(\"DBPRINT\"");}
     break;
 
   case 1129:
@@ -16647,42 +16652,42 @@ strcpy(yyval.str,A4GL_get_undo_use());
 
   case 1733:
 #line 8136 "fgl.yacc"
-    {yyval.sql_string=make_sql_string("MAX(",yyvsp[-2].str,yyvsp[-1].sql_string,")",0);printf("C7\n");}
+    {yyval.sql_string=make_sql_string("MAX(",yyvsp[-2].str,yyvsp[-1].sql_string,")",0);}
     break;
 
   case 1734:
 #line 8137 "fgl.yacc"
-    {yyval.sql_string=make_sql_string("MIN(",yyvsp[-2].str,yyvsp[-1].sql_string,")",0);printf("C8\n");}
+    {yyval.sql_string=make_sql_string("MIN(",yyvsp[-2].str,yyvsp[-1].sql_string,")",0);}
     break;
 
   case 1735:
 #line 8138 "fgl.yacc"
-    {yyval.sql_string=make_sql_string("SUM(",yyvsp[-2].str,yyvsp[-1].sql_string,")",0);printf("C9\n");}
+    {yyval.sql_string=make_sql_string("SUM(",yyvsp[-2].str,yyvsp[-1].sql_string,")",0);}
     break;
 
   case 1736:
 #line 8139 "fgl.yacc"
-    {yyval.sql_string=make_sql_string("COUNT(",yyvsp[-2].str,yyvsp[-1].sql_string,")",0);printf("C10\n");}
+    {yyval.sql_string=make_sql_string("COUNT(",yyvsp[-2].str,yyvsp[-1].sql_string,")",0);}
     break;
 
   case 1737:
 #line 8140 "fgl.yacc"
-    {yyval.sql_string=make_sql_string(yyvsp[-3].str,"(",yyvsp[-1].sql_string,")",0);printf("C11\n");}
+    {yyval.sql_string=make_sql_string(yyvsp[-3].str,"(",yyvsp[-1].sql_string,")",0);}
     break;
 
   case 1738:
 #line 8141 "fgl.yacc"
-    {yyval.sql_string=make_sql_string("DATE(",yyvsp[-1].sql_string,")",0);printf("C12\n");}
+    {yyval.sql_string=make_sql_string("DATE(",yyvsp[-1].sql_string,")",0);}
     break;
 
   case 1739:
 #line 8142 "fgl.yacc"
-    {yyval.sql_string=make_sql_string("(",yyvsp[-1].sql_string,")",0);printf("C13\n");}
+    {yyval.sql_string=make_sql_string("(",yyvsp[-1].sql_string,")",0);}
     break;
 
   case 1740:
 #line 8143 "fgl.yacc"
-    {yyval.sql_string=make_sql_string("EXTEND(",yyvsp[-1].sql_string,")",0);printf("C14\n");}
+    {yyval.sql_string=make_sql_string("EXTEND(",yyvsp[-1].sql_string,")",0);}
     break;
 
   case 1741:
@@ -17108,7 +17113,7 @@ lastlineno=yylineno;
     }
 
 /* Line 991 of yacc.c.  */
-#line 17111 "y.tab.c"
+#line 17116 "y.tab.c"
 
   yyvsp -= yylen;
   yyssp -= yylen;

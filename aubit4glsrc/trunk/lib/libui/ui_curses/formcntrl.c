@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.23 2003-08-05 13:58:27 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.24 2003-08-07 09:07:12 mikeaubury Exp $
 #*/
 
 /**
@@ -726,8 +726,19 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
   struct s_form_attr *form;
   struct struct_scr_field *fprop;
   struct s_form_dets *fd;
-  //int npage;
   int acckey;
+
+  int at_first=0;
+  int at_last=0;
+  
+  if (mform->curcol==0) {
+		at_first=1;
+  }
+  if (mform->curcol==A4GL_get_field_width(current_field(mform))-1) {
+		at_last=1;
+  }
+
+  //int npage;
   fd = A4GL_getfromform (mform);
   form = &fd->form_details;
   do_input_nowrap = 0;
@@ -820,10 +831,26 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 
 
     case A4GLKEY_LEFT:
-	A4GL_int_form_driver (mform, REQ_PREV_CHAR);break;
+	if (at_first) 	{
+		if (s->curr_attrib) A4GL_newMovement(s,s->curr_attrib-1); //  go to previous field
+	} else {
+		A4GL_int_form_driver (mform, REQ_PREV_CHAR); // go to previous character
+	}
+
+	break;
 
     case A4GLKEY_RIGHT:
-	A4GL_int_form_driver (mform, REQ_NEXT_CHAR);break;
+	if (at_last) { // Acts light KEY_DOWN at last position in the field
+	    if (std_dbscr.input_wrapmode == 0 && A4GL_curr_metric_is_used_last_s_screenio (s, f)) {
+                A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
+                return 0;
+            } else {
+			A4GL_newMovement(s,s->curr_attrib+1);
+	    }
+	} else {
+		A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
+	}
+	break;
 
     case 4:                     // Control - D
 	A4GL_int_form_driver (mform, REQ_CLR_EOF);break;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.36 2003-08-06 20:28:38 mikeaubury Exp $
+# $Id: iarray.c,v 1.37 2003-08-07 09:07:13 mikeaubury Exp $
 #*/
 
 /**
@@ -544,9 +544,20 @@ process_key_press (struct s_inp_arr *arr, int a)
 {
   struct s_form_dets *form;
   FORM *mform;
+  int at_first=0;
+  int at_last=0;
 
   form = arr->currform;
   mform = form->form;
+
+
+  if (mform->curcol==0) {
+                at_first=1;
+  }
+  if (mform->curcol==A4GL_get_field_width(current_field(mform))-1) {
+                at_last=1;
+  }
+
   A4GL_debug ("In process_key_press : %d", a);
 
 
@@ -643,17 +654,23 @@ process_key_press (struct s_inp_arr *arr, int a)
 
     case A4GLKEY_RIGHT:
       A4GL_debug ("Key_right");
-      A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
+      if (at_last) {
+      		A4GL_newMovement (arr,
+			arr->scr_line , arr->arr_line ,
+			arr->curr_attrib+1);
+      } else {
+      		A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
+	}
       break;
 
     case A4GLKEY_LEFT:
-
-
-      if (a == A4GLKEY_LEFT && mform->curcol == 0 && mform->currow == 0)
-	{
-	  A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
-			    arr->curr_attrib - 1);
-	}
+	  if (at_first) {
+		if (arr->curr_attrib) {
+	  		A4GL_newMovement (arr, arr->scr_line, arr->arr_line, arr->curr_attrib - 1);
+		} else {
+	  		A4GL_newMovement (arr, arr->scr_line-1, arr->arr_line-1,0 );
+		}
+	  }
       else
 	{
 	  A4GL_int_form_driver (mform, REQ_PREV_CHAR);
@@ -1325,6 +1342,8 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
   if (arr_line > arr->arr_size)
     {				// Attempting to move off the bottom of the array...
       A4GL_debug ("Too far down the program array");
+	  A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
+      A4GL_newMovement (arr, arr->scr_line, arr->arr_size, arr->curr_attrib );
       // Do nothing at all...
       return;
     }
