@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.49 2003-01-25 04:04:55 afalout Exp $
+# $Id: Makefile-install.mki,v 1.50 2003-01-25 05:29:28 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -472,6 +472,15 @@ install.xmlrpc: ${XMLRPC_RPM} ${LIBWWW_RPM}
 install.ifx.esql: ${IFXESQLC_BIN_ZIP}
 	mkdir -p /tmp/ifxcsdk
 	unzip $^ -d /tmp/ifxcsdk
+	mkdir -p ${INFORMIXDIR}
+#this will automatically create group 'informix':
+	-useradd informix
+	export INFORMIXDIR=${INFORMIXDIR};	rpm -i --relocate /opt/informix=${INFORMIXDIR} csdk.rpm
+#ERROR: INFORMIXDIR does not match the target directory name provided in
+#the rpm command.  If you are not installing this product in the
+#default INFORMIXDIR name for Linux (/opt/informix), you MUST provide
+#your INFORMIXDIR directory name with the --prefix (RPM 2.X syntax)
+#or --relocate (RPM 3.X syntax) parameter in your rpm -i command line.
 	@echo "Package info & manuals: ${IFXESQLC_INFO}"
 	@echo " "
 	@echo "Informix CSDK (contains ESQL/C compiler) installed.  Please re-run 'configure' to detect changes."
