@@ -31,7 +31,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.37 2004-12-06 21:21:22 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.38 2004-12-08 13:07:38 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -66,7 +66,7 @@ Looks like it was removed in Curses 5.3???!
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.37 2004-12-06 21:21:22 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.38 2004-12-08 13:07:38 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -412,7 +412,7 @@ void A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch)
   void *p;
   attr = A4GL_LL_decode_aubit_attr (ch & 0xffffff00, 'w');
   ch2 = ch & 0xff;
-  A4GL_debug ("x=%d y=%d ch2=%c", x, y, ch2);
+  //A4GL_debug ("x=%d y=%d ch2=%c", x, y, ch2);
   p = panel_window (win);
   if (!UILIB_A4GL_iscurrborder () || A4GL_get_currwinno () == 0)
     {
@@ -433,10 +433,10 @@ void A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch)
   int ch2;
   int attr;
   void *p;
-A4GL_debug("A4GL_LL_wadd_char_xy_col_w called");
+//A4GL_debug("A4GL_LL_wadd_char_xy_col_w called");
   attr = A4GL_LL_decode_aubit_attr (ch & 0xffffff00, 'w');
   ch2 = ch & 0xff;
-  A4GL_debug ("x=%d y=%d ch2=%c", x, y, ch2);
+  //A4GL_debug ("x=%d y=%d ch2=%c", x, y, ch2);
   p =win;
   if (!UILIB_A4GL_iscurrborder () || A4GL_get_currwinno () == 0)
     {
@@ -449,7 +449,7 @@ A4GL_debug("A4GL_LL_wadd_char_xy_col_w called");
 	}
   else {
 		if (ch2==0) ch2='*';
-		A4GL_debug("----> waddch  %p %d %d %x ATTR=%x CH=%d",p,y,x,ch,attr,ch2);
+		//A4GL_debug("----> waddch  %p %d %d %x ATTR=%x CH=%d",p,y,x,ch,attr,ch2);
     		mvwaddch (p, y, x, attr + ch2);
 	}
 	wrefresh(p);
@@ -1409,6 +1409,9 @@ A4GL_LL_getch_swin (void *window_ptr)
       halfdelay (1);
       //a = wgetch (window_ptr);
       a = getch ();
+#ifdef __MINGW32__
+if (a==3) abort_pressed=1;
+#endif
 
       if (a == KEY_MOUSE)
 	{
@@ -1899,7 +1902,7 @@ int rblock;
       prompt->lastkey = A4GL_get_lastkey ();
 
       if (abort_pressed) {
-	printf("INTERRUPT!");
+	//printf("INTERRUPT!");
       	A4GL_set_last_key ( A4GL_key_val ("INTERRUPT"));
 	prompt_last_key 	= A4GL_key_val ("INTERRUPT");;
 	prompt->lastkey		= A4GL_key_val ("INTERRUPT");;
@@ -1969,6 +1972,7 @@ int rblock;
   A4GL_debug ("Requesting Validation : %p %x %d", mform, a, a);
   if ((a_isprint (a) ))
     {
+	A4GL_debug("Printable");
       A4GL_LL_int_form_driver (mform, a);
       A4GL_debug ("Called int_form_driver");
       A4GL_LL_int_form_driver (mform, AUBIT_REQ_VALIDATION);
@@ -1991,7 +1995,7 @@ int rblock;
 	}
     }
 
-
+A4GL_debug("Done..");
   return -1000;
 }
 
