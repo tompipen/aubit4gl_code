@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql_compatible.ec,v 1.2 2003-09-08 08:11:26 afalout Exp $
+# $Id: esql_compatible.ec,v 1.3 2003-09-09 12:01:01 afalout Exp $
 #
 */
 
@@ -64,10 +64,7 @@
 =====================================================================
 */
 
-int first_line_dummy;
-
-//Not referenced anywhere:
-//#define DEFINE_SQLCA
+//int first_line_dummy;
 
 /** Informix ESQL/C database connector type */
 #define ESQL_CONNECTOR   0
@@ -78,12 +75,10 @@ int first_line_dummy;
 #define _SQLCA_DEFINED_
 
 
-//#ifndef __QUERIX__
+
 #ifndef __SAP__
 $include sqlca;
-//#else
-//not sure about this:
-//$include qxdefs.h;
+//$include qxdefs.h; //included automatically by esqlc
 #endif
 
 #ifdef __SAP__
@@ -100,9 +95,125 @@ $include sqlca;
 
 #endif
 
-int a4gl_incl_4gldefSTART;
+
+#ifdef __QUERIX__
+	//avoid conficts with header files that esqlc will automaticall include
+	
+	#define _NO_SYSINCL_
+
+	#define _BITS_TYPES_H
+	#define _WCHAR_H
+	#define _G_config_h
+    #define _IO_STDIO_H
+
+    //#define _SIGSET_H_types
+    //#define _SYS_SELECT_H
+    #define _STDLIB_H
+    #define _SYS_TYPES_H
+    #define _NO_INT_QUIT_FLAG_
+
+	#ifndef IFX_THREAD
+		//extern struct sqlca_s sqlca;
+		//extern int4 SQLCODE;
+		extern char SQLSTATE[];
+	#else /* IFX_THREAD */
+		//extern int4 * ifx_sqlcode();
+		//extern struct sqlca_s * ifx_sqlca();
+		//#define SQLCODE (*(ifx_sqlcode()))
+		#define SQLSTATE ((char *)(ifx_sqlstate()))
+		//#define sqlca (*(ifx_sqlca()))
+	#endif /* IFX_THREAD */
+
+	//from SAP cpc.h:
+	#define       sqlnmax                 300
+	#define       sqlidentifiermx          64    /* vsp00c */
+	typedef unsigned char sqlidentifier [ sqlidentifiermx ];
+	typedef short          sqlint2;
+	typedef signed int     sqlint4;
+
+	struct SQLCOL
+	{
+	        char coltype;
+	        char colmode;
+	        char colio;
+	        char colfrac;
+	        sqlint4 collen;
+	        sqlint4 colpos;           /* column buffer position (relative) */
+	        sqlint2 coliolen;         /* column byte length */
+	        char colisnum;          /* (numeric column) ? 1 : 0 */
+	        char colisuni;          /* (unicode column) ? 1 : 0 */
+	        char colislong;         /* (long column) ? 1 : 0 */
+	        sqlint2 colvartype;       /* host variable type */
+	        sqlint2 colindtype;       /* indicator variable type */
+	#if defined(__cplusplus) || defined(__STDC__)
+	        int (*coltobuf) (const struct SQLCOL *col, char *buf, const void *va,
+	                sqlint4 cl, sqlint4 vs, sqlint2 vl, sqlint2 vf);
+	        int (*colfrombuf) (const struct SQLCOL *col, const char *buf,
+	                void *va, sqlint4 cl, sqlint4 vs, sqlint2 vl, sqlint2 vf);
+	                         /* input and output conversion functions */
+	        int (*coltoindi) (sqlint4 ival, void *indi,sqlint2 indl,sqlint2 indf);
+	        int (*colfromindi) (sqlint4 *ival, const void *indi, sqlint2 indl,
+	                sqlint2 indf); /* indicator conversion functions */
+	#else
+	        int (*coltobuf) ();
+	        int (*colfrombuf) (); /* input and output conversion functions */
+	        int (*coltoindi) ();
+	        int (*colfromindi) (); /* indicator conversion functions */
+	#endif
+	};
+
+
+	typedef struct     {
+                      sqlidentifier colname;
+                      sqlint2       colio;
+                      char          colmode,
+   									colfill1 [3];
+                      sqlint2       coltype;
+                      sqlint4       collength;
+                      sqlint2       colfrac,
+                                    colfill2,
+                                    hostvartype,
+                                    hostcolsize;
+                      sqlint4       hostindicator;
+			#if defined(__cplusplus) || defined(__STDC__)
+                      void         *hostvaraddr;
+			#else
+                      char         *hostvaraddr;
+			#endif
+                      sqlint4      *hostindaddr;
+                      struct SQLCOL col;
+              }
+                   sqlvartype;
+
+	struct SQLROW
+	{
+	        sqlint4 ireclen; /* irecord length = Max (icolpos) + its (coliolen) */
+	        sqlint4 oreclen; /* orecord length = Max (ocolpos) + its (coliolen) */
+	};
+
+
+	typedef struct     {
+                      char          sqldaid [8] ;
+                      sqlint4       sqlmax;
+                      sqlint2       sqln,
+                                    sqld;
+                      sqlint4       sqlloop,
+                                    sqloffset;
+                      sqlint2       sqlkano,
+                                    sqlprno,
+                                    sqlkamode,
+                                    sqlfill;
+                      struct SQLROW sqlrow;
+                      sqlvartype    sqlvar [sqlnmax] ;
+                   }
+                   sqldatype;
+
+
+#endif
+
+//int a4gl_incl_4gldefSTART;
 #include "a4gl_incl_4gldef.h"
-int a4gl_incl_4gldefEND;
+//int a4gl_incl_4gldefEND;
 
 extern sqlca_struct a4gl_sqlca;
 
@@ -232,9 +343,15 @@ static int processPreStatementBinds(struct s_sid *sid);
 
 
 #else
-    #define INTO_SQL_DESCRIPTOR INTO SQL DESCRIPTOR
-	#define USING_SQL_DESCRIPTOR USING SQL DESCRIPTOR
-    #define USING_SQL_DESCRIBE_DESCRIPTOR USING SQL DESCRIPTOR
+	#ifndef __QUERIX__
+		#define INTO_SQL_DESCRIPTOR INTO SQL DESCRIPTOR
+		#define USING_SQL_DESCRIPTOR USING SQL DESCRIPTOR
+	    #define USING_SQL_DESCRIBE_DESCRIPTOR USING SQL DESCRIPTOR
+	#else
+		#define INTO_SQL_DESCRIPTOR INTO
+		#define USING_SQL_DESCRIPTOR USING //DESCRIPTOR -- ??
+		#define USING_SQL_DESCRIBE_DESCRIPTOR USING SQL DESCRIPTOR
+	#endif
 #endif
 
 
@@ -245,7 +362,7 @@ static int processPreStatementBinds(struct s_sid *sid);
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.2 2003-09-08 08:11:26 afalout Exp $";
+	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.3 2003-09-09 12:01:01 afalout Exp $";
 #endif
 
 
@@ -609,11 +726,13 @@ int A4GLSQL_make_connection
     char *passwd;
   EXEC SQL end declare section;
   int retval = 0;
-
   dbName   = strdup(server);
   userName = strdup(uid_p);
-  passwd   = strdup(pwd_p); //Querix esql/c compiler chokes here....
+  passwd   = strdup(pwd_p);
+#ifndef __QUERIX__
+  //Querix esql/c compiler chokes here:
   EXEC SQL connect to :dbName as 'default' user :userName using :passwd;
+#endif
   if ( isSqlError() )
     retval = 1;
   else
@@ -665,7 +784,7 @@ static char *initPassword(const char *passwd)
 }
 
 /**
- * Init a new connection to the database and associate with an explicit 
+ * Init a new connection to the database and associate with an explicit
  * session name.
  *
  * If the user identification was not set gets the values fromthe environment.
@@ -713,12 +832,13 @@ int A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
   }
   else
   {
-    if (userName == NULL || password == NULL )
-      EXEC SQL connect to :dbName as :connectionName;
-    else
-    {
-      EXEC SQL connect to :dbName as :connectionName
+    if (userName == NULL || password == NULL ) {
+	  EXEC SQL connect to :dbName as :connectionName;
+    } else {
+#ifndef __QUERIX_FIX__
+	  EXEC SQL connect to :dbName as :connectionName
         user :userName using :password;
+#endif
       free(userName);
       free(password);
     }
@@ -931,7 +1051,7 @@ struct s_sid *A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
  *
  * Note : This function is till in early stage. For now do not do nothing.
  *
- * @todo : Confirm that the datatypes reach here how informix need it 
+ * @todo : Confirm that the datatypes reach here how informix need it
  *
  * @param dataType The aubit 4gl data type.
  * @return The informix data type.
@@ -963,21 +1083,26 @@ static int bindInputValue(char *descName,int idx,struct BINDING *bind)
 {
   static const char function[] = "bindInputValue";
   EXEC SQL begin declare section;
-    char   *descriptorName = descName;
-    int    index = idx+1;
-    int    length;
-    int    dataType;
+	char   *descriptorName = descName;
+	int    index = idx+1;
+	int    length;
+	int    dataType;
 //ecpg chockes here with: ERROR: invalid datatype 'loc_t'
-//this variable is not used anyway
+//this variable is not used anyway:
 //	loc_t  blob;
-
     char     *char_var;
-    short      smint_var, *smint_ptr;
-    long     int_var, *int_ptr;
-    double   float_var, *float_ptr;
-    float    smfloat_var, *smfloat_ptr;
+	short    smint_var;
+	short    *smint_ptr;
+//WARNING: Querix compiler generates parse error when declaring more then one
+//variable like this:
+//	long     int_var, *int_ptr;
+	long     int_var;
+	long	 *int_ptr;
+	double   float_var;
+	double   *float_ptr;
+	float    smfloat_var;
+	float    *smfloat_ptr;
 #ifndef __PG__
-
 	//ecpg chokes here with:  ERROR: invalid datatype 'Numeric'
 	dec_t    decimal_var;
 	dec_t    money_var;
@@ -992,15 +1117,13 @@ static int bindInputValue(char *descName,int idx,struct BINDING *bind)
 	datetime  dtime_var;
 //#define intrvl_t crap
 //#include "datetime.h"
-
 	intrvl_t interval_var;
 #endif
-    long     date_var;
+	long     date_var;
     /*
     fglbyte byte_var;
     fgltext text_var;
     */
-  
   EXEC SQL END DECLARE SECTION;
   fgldecimal  *fgl_decimal;
   FglDate     *fgl_date;
@@ -1015,10 +1138,12 @@ A4GL_debug("In binding - %d %d ptr=%p",dataType,length,bind[idx].ptr);
 
   if ( A4GL_isnull(dataType,bind[idx].ptr) )
   {
-    EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
+#ifndef __QUERIX_FIX__
+	EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
       TYPE = :dataType,
       LENGTH = :length,
       INDICATOR = -1;
+#endif
     if ( isSqlError() )
       return 1;
     return 0;
@@ -1033,40 +1158,49 @@ A4GL_debug("Not null");
       char_var = bind[idx].ptr;
 
 	length++; // Add space for the \0
-
+#ifndef __QUERIX_FIX__
       EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         LENGTH = :length,
         DATA = :char_var;
+#endif
       break;
 
     case DTYPE_SMINT:
       smint_ptr = (short *)bind[idx].ptr;
       smint_var = (short)*smint_ptr;
-      EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
+#ifndef __QUERIX_FIX__
+	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :smint_var;
+#endif
       break;
     case DTYPE_INT:
       int_ptr = (long *)bind[idx].ptr;
       int_var = (long) *int_ptr;
-      EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
+#ifndef __QUERIX_FIX__
+	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :int_var;
+#endif
       break;
     case DTYPE_FLOAT:
       float_ptr = (double *)bind[idx].ptr;
       float_var = (double)*float_ptr;
-      EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
+#ifndef __QUERIX_FIX__
+	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :float_var;
+#endif
       break;
     case DTYPE_SMFLOAT:
       smfloat_ptr = (float *)bind[idx].ptr;
       smfloat_var = (float) *smfloat_ptr;
-      EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
+#ifndef __QUERIX_FIX__
+	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :smfloat_var;
+#endif
       break;
     case DTYPE_DECIMAL:
       fgl_decimal = (fgldecimal *)bind[idx].ptr;
@@ -1075,16 +1209,20 @@ A4GL_debug("Not null");
 	/** @todo : We need to store this error */
         return 1;
       }
-      EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
+#ifndef __QUERIX_FIX__
+	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :decimal_var;
+#endif
       break;
     case DTYPE_DATE:
       fgl_date = (long *)bind[idx].ptr;
       date_var = (long) *fgl_date;
-      EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
+#ifndef __QUERIX_FIX__
+	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :date_var;
+#endif
       break;
     case DTYPE_MONEY:
       fgl_money = (fglmoney *)bind[idx].ptr;
@@ -1093,9 +1231,11 @@ A4GL_debug("Not null");
 	/** @todo : We need to store this error */
         return 1;
       }
-      EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
+#ifndef __QUERIX_FIX__
+	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :money_var;
+#endif
       break;
     case DTYPE_DTIME:
 
@@ -1113,10 +1253,12 @@ A4GL_debug("Not null");
 	char_var=genData;
 	dataType=0;
 	length=255;
-      EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
+#ifndef __QUERIX_FIX__
+	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :char_var,
 	LENGTH = :length;
+#endif
 	if (sqlca.sqlcode!=0) {
 			A4GL_debug("Bugger - bombed");
 	} else {
@@ -1131,9 +1273,14 @@ A4GL_debug("Not null");
 	/** @todo : We need to store this error */
         return 1;
       }
-      EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
+#ifndef __QUERIX_FIX__
+	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :interval_var;
+#else
+      //generates this:
+//      {char *__qxSql[] = { "SET Error! Error! ? VALUE ? TYPE = ? , DATA = ?", 0, };BIND __qxUseList[] = { { SQLVCHAR, 255}, { SQLINT, 4}, { SQLINT, 4}, { SQLINTRVAL, 0}, }; __qxUseList[0].sqldata=(char *)descriptorName; __qxUseList[1].sqldata=(char *)&index; __qxUseList[2].sqldata=(char *)&dataType; __qxUseList[3].sqldata=(char *)&interval_var; __qxUseList[3].sqllen=interval_var.in_qual; SQLCODE = SqlDdl(__qxSql,4,__qxUseList);}
+#endif
       break;
     case DTYPE_TEXT:
       break;
@@ -1169,11 +1316,14 @@ static int processInputBind(char *descName,int bCount,struct BINDING *bind)
     int  bindCount = bCount;
   EXEC SQL end declare section;
   register int i;
-
+#ifndef __QUERIX_FIX__
   EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
+#endif
   if (sqlca.sqlcode==-480) {
-  	EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
+#ifndef __QUERIX_FIX__
+	EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
   	EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
+#endif
   }
 
   if ( isSqlError() )
@@ -1250,8 +1400,10 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
   dataType = getIfmxDataType(bind[idx].dtype);
   length   = bind[idx].size; // unfix datatype ?
 
+#ifndef __QUERIX_FIX__
   EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
     :indicator = INDICATOR, :length = LENGTH;
+#endif
   if ( isSqlError() ) {
 	A4GL_debug("Err1");
     return 1;
@@ -1270,7 +1422,8 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
   {
     case DTYPE_CHAR:
     case DTYPE_VCHAR:
-      EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
+#ifndef __QUERIX_FIX__
+	  EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
         :length = LENGTH;
       if ( isSqlError() )
         return 1;
@@ -1380,7 +1533,8 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
       EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
         :dataType = TYPE,
         :interval_var = DATA;
-      if ( isSqlError() )
+#endif
+	  if ( isSqlError() )
         return 1;
       fgl_interval = malloc(sizeof(FglInterval));
       if ( intoasc(&interval_var,fgl_interval->data) )
@@ -1427,14 +1581,18 @@ static int allocateOutputDescriptor(char *descName,
   register int i;
   A4GL_debug("allocOutout - %s cnt=%d",descriptorName,bindCount);
   bindCount+=256;
+#ifndef __QUERIX_FIX__
   EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
+#endif
   A4GL_debug("Status=%d",sqlca.sqlcode);
   if (sqlca.sqlcode==-480) {
 	sqlca.sqlcode=0;
 	A4GL_set_a4gl_sqlca_sqlcode(0);
 	A4GL_debug("Try dealloc and alloc");
-  	EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
+#ifndef __QUERIX_FIX__
+	EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
   	EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
+#endif
   }
   A4GL_debug("Done");
   if ( isSqlError() )
@@ -1532,13 +1690,52 @@ static int executeStatement(struct s_sid *sid)
 	//this is how SAP needs to have descriptor defined:
 	sqldatype inputDescriptorName;
 	sqldatype outputDescriptorName;
+/*
+typedef struct     {
+                      char          sqldaid [8] ;
+                      sqlint4       sqlmax;
+                      sqlint2       sqln,
+                                    sqld;
+                      sqlint4       sqlloop,
+                                    sqloffset;
+                      sqlint2       sqlkano,
+                                    sqlprno,
+                                    sqlkamode,
+                                    sqlfill;
+                      struct SQLROW sqlrow;
+                      sqlvartype    sqlvar [sqlnmax] ;
+                   }
+                   sqldatype;
+
+  struct s_sid
+  {
+    struct BINDING *ibind;		    //< The input bind array
+    struct BINDING *obind;		    //< The output bind array
+    int ni;				    //< Number of elements in the input bind array
+    int no;				    //< Number of elements in the output bind array
+    char *inputDescriptorName;		    //< Name of input descriptor (ESQL)
+    char *outputDescriptorName;		    //< Name of output descriptor (ESQL)
+    char *select;			    //< The SQL statement content
+    void *hstmt;			    //< A pointer to the statement handle
+    char *statementName;		    //< The name of the SQL statement
+  };
+
+
+*/
+
 #endif
 
   int rc = 0;
 
   statementName        = sid->statementName;
+
+#ifdef __SAP__
+  sprintf(inputDescriptorName.sqldaid,"%s",sid->inputDescriptorName);
+  sprintf(outputDescriptorName.sqldaid,"%s",sid->outputDescriptorName);
+#else
   inputDescriptorName  = sid->inputDescriptorName;
   outputDescriptorName = sid->outputDescriptorName;
+#endif
   A4GL_debug("ExecuteStatement");
   switch (getStatementBindType(sid))
   {
@@ -1566,6 +1763,7 @@ static int executeStatement(struct s_sid *sid)
 
       break;
     case INPUT_OUTPUT_BIND:
+
 #ifndef __SAP__
 	  EXEC SQL EXECUTE :statementName
 #else
@@ -1582,7 +1780,8 @@ static int executeStatement(struct s_sid *sid)
     //
     //;
 		INTO_SQL_DESCRIPTOR &outputDescriptorName
-			USING_SQL_DESCRIPTOR &inputDescriptorName;
+	;
+	//		USING_SQL_DESCRIPTOR &inputDescriptorName;
 #endif
 
       break;
@@ -1700,12 +1899,14 @@ A4GL_debug("allocateOutputDescriptorName - %s\n",sid->outputDescriptorName);
   A4GL_debug("a4");
     descriptorName = sid->outputDescriptorName;
     statementName  = sid->statementName;
-    EXEC SQL DESCRIBE :statementName
-//-808   Not yet implemented
+#ifndef __QUERIX_FIX__
+	EXEC SQL DESCRIBE :statementName
 #ifndef __SAP__
 		USING_SQL_DESCRIBE_DESCRIPTOR :descriptorName;
 #else
-        ;
+		//-808   Not yet implemented
+		;
+#endif
 #endif
   A4GL_debug("a4.1");
   }
@@ -1731,7 +1932,9 @@ static int deallocateDescriptors(struct s_sid *sid)
   if ( sid->ibind != (struct BINDING *)0 && sid->ni > 0 )
   {
     descriptorName = sid->inputDescriptorName;
-    EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
+#ifndef __QUERIX_FIX__
+	EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
+#endif
     free(descriptorName);
     sid->inputDescriptorName=0;
   }
@@ -1741,8 +1944,10 @@ static int deallocateDescriptors(struct s_sid *sid)
   if ( sid->obind != (struct BINDING *)0 && sid->no > 0 )
   {
     descriptorName = sid->outputDescriptorName;
-    EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
-    free(descriptorName);
+#ifndef __QUERIX_FIX__
+	EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
+#endif
+	free(descriptorName);
     sid->outputDescriptorName=0;
   }
   if ( isSqlError() )
@@ -1754,7 +1959,7 @@ static int deallocateDescriptors(struct s_sid *sid)
  * Process the binds of a statement after the execution.
  *
  * the structure s_sid is expanded to have the descriptor names.
- * 
+ *
  * @param sid A pointer to the statement identification structure.
  * @return
  *  - 0 : Binds made.
@@ -1985,7 +2190,7 @@ struct s_cid *A4GLSQL_declare_cursor(
       break;
     case SIMPLE_SCROLL:
 #ifdef __SAP__
-        A4GL_debug("no SCROLL CURSOR with SAP DB");
+        A4GL_debug("no SCROLL CURSOR with SAP DB (??)");
 #else
 	  EXEC SQL DECLARE :cursorName SCROLL CURSOR FOR :statementName;
 #endif
@@ -1998,7 +2203,7 @@ struct s_cid *A4GLSQL_declare_cursor(
       break;
     case FOR_UPDATE_WITH_HOLD:
 #ifdef __SAP__
-        A4GL_debug("no SCROLL CURSOR with SAP DB");
+        A4GL_debug("no SCROLL CURSOR with SAP DB (??)");
 #else
 	  /*
       EXEC SQL DECLARE :cursorName SCROLL CURSOR FOR :statementName
@@ -2008,7 +2213,7 @@ struct s_cid *A4GLSQL_declare_cursor(
       break;
     case WITH_HOLD:
 #ifdef __SAP__
-        A4GL_debug("No CURSOR WITH HOLD with SAP DB");
+        A4GL_debug("No CURSOR WITH HOLD with SAP DB (??)");
 #else
 	  EXEC SQL DECLARE :cursorName CURSOR WITH HOLD FOR :statementName;
 #endif
@@ -2052,13 +2257,17 @@ int A4GLSQL_open_cursor (int ni, char *s)
     char *cursorName = s;
 //  struct s_cid *cursorIdentification;
 //  struct s_sid *sid;
-    char *inputDescriptorName;
+#ifndef __SAP__
+	char *inputDescriptorName;
     char *outputDescriptorName;
-
+#endif
   EXEC SQL END DECLARE SECTION;
   struct s_cid *cursorIdentification;
   struct s_sid *sid;
-
+#ifdef __SAP__
+	sqldatype inputDescriptorName;
+	sqldatype outputDescriptorName;
+#endif
 
   A4GL_debug("Open Cursor");
 
@@ -2067,8 +2276,14 @@ int A4GLSQL_open_cursor (int ni, char *s)
 
   A4GL_debug("Got cursorIdentification as : %p",cursorIdentification);
   sid=cursorIdentification->statement;
+  
+#ifdef __SAP__
+  sprintf(inputDescriptorName.sqldaid,"%s",sid->inputDescriptorName);
+  sprintf(outputDescriptorName.sqldaid,"%s",sid->outputDescriptorName);
+#else
   inputDescriptorName  = sid->inputDescriptorName;
   outputDescriptorName = sid->outputDescriptorName;
+#endif
   A4GL_debug("Descritors : %s %s",inputDescriptorName,outputDescriptorName);
 
   processPreStatementBinds(sid); // MJA 150503
@@ -2083,11 +2298,7 @@ int A4GLSQL_open_cursor (int ni, char *s)
 #ifndef __SAP__
 		USING_SQL_DESCRIPTOR :inputDescriptorName;
 #else
-//andrej
-;
-//		USING_SQL_DESCRIPTOR :inputDescriptorName;
-        //generates:
-		//sqccdaa(sqlcap,:inputDescriptorName); ( parse error before `:')
+		USING_SQL_DESCRIPTOR &inputDescriptorName;
 #endif
 	break;
 
@@ -2103,9 +2314,7 @@ int A4GLSQL_open_cursor (int ni, char *s)
 #ifndef __SAP__
 		USING_SQL_DESCRIPTOR :inputDescriptorName;
 #else
-//andrej
-;
-//		USING_SQL_DESCRIPTOR :inputDescriptorName;
+		USING_SQL_DESCRIPTOR &inputDescriptorName;
 #endif
 	break;
   }
@@ -2186,14 +2395,18 @@ int A4GLSQL_fetch_cursor (char *cursor_name,
 		      int fetch_mode, int fetch_when, int nobind,
 		      struct BINDING *obind)
 {
-/* andrej
   EXEC SQL BEGIN DECLARE SECTION;
     char *cursorName = cursor_name;
-    char *descriptorName;
+#if ! defined (__SAP__) && ! defined (__QUERIX__)
+	char *descriptorName;
+#endif
     int position = fetch_when;
   EXEC SQL END DECLARE SECTION;
   struct s_sid *sid;
   struct s_cid *cid;
+#if defined (__SAP__) || defined (__QUERIX__)
+	sqldatype descriptorName;
+#endif
 
   cid = (struct s_cid *)A4GL_find_pointer_val (cursorName, PRECODE);
   sid = (struct s_sid *) cid->statement;
@@ -2207,39 +2420,136 @@ int A4GLSQL_fetch_cursor (char *cursor_name,
   sid->no = nobind;
   //** @todo : Maybe input bind should be cleaned (if exist)
   if ( processPreStatementBinds(sid) == 1 )
-    return 1;
-  descriptorName = sid->outputDescriptorName;
+	return 1;
 
+#if ! defined (__SAP__) && ! defined (__QUERIX__)
+  descriptorName = sid->outputDescriptorName;
+#else
+  sprintf(descriptorName.sqldaid,"%s",sid->outputDescriptorName);
+#endif
   switch (getFetchType(fetch_mode,fetch_when))
   {
     case FETCH_FIRST:
-      EXEC SQL FETCH FIRST :cursorName
+
+//can't make this work; as is, I get "invalid type argument of `->'" when compiling generated
+//c code that looks like this:
+//{SQLCODE = SqlScroll(ESQLCursor(cursorName),descriptorName->sqld,&descriptorName->sqlvar,0,0,3,0);}
+//so this whole block is commented out for Querix
+#ifndef __QUERIX_FIX__
+
+	  EXEC SQL FETCH FIRST :cursorName
+#ifndef __SAP__
+	#ifndef __QUERIX_FIX__
 		USING_SQL_DESCRIPTOR :descriptorName;
+    #else
+		//OK	  EXEC SQL FETCH FIRST :cursorName;// USING SQL DESCRIPTOR :descriptorName;
+		//BAD	  EXEC SQL FETCH FIRST :cursorName USING :descriptorName;
+		//BAD	  EXEC SQL FETCH FIRST :cursorName USING DESCRIPTOR :descriptorName;
+		//OK	  EXEC SQL FETCH FIRST :cursorName USING DESCRIPTOR 'descriptorName';
+		//BAD	  EXEC SQL FETCH FIRST :cursorName USING SQL DESCRIPTOR 'descriptorName';
+		//BAD	  EXEC SQL FETCH FIRST :cursorName USING DESCRIPTOR &descriptorName;
+		//OK, but invalid code	  EXEC SQL FETCH FIRST :cursorName USING DESCRIPTOR 'descriptorName';
+//andrej: stopped working on Querix here:
+//descriptorName must be struct (probably sqldatype)
+		USING DESCRIPTOR descriptorName;
+		//generates: {SQLCODE = SqlScroll(ESQLCursor(cursorName),descriptorName->sqld,&descriptorName->sqlvar,0,0,3,0);}
+    #endif
+#else
+		USING_SQL_DESCRIPTOR &descriptorName;
+#endif
+
+
       break;
     case FETCH_LAST:
-      EXEC SQL FETCH LAST :cursorName 
+      EXEC SQL FETCH LAST :cursorName
+#ifndef __SAP__
+	#ifndef __QUERIX_FIX__
 		USING_SQL_DESCRIPTOR :descriptorName;
-      break;
+    #else
+		USING DESCRIPTOR descriptorName;
+    #endif
+#else
+		USING_SQL_DESCRIPTOR &descriptorName;
+#endif
+
+	  break;
     case FETCH_NEXT:
       EXEC SQL FETCH NEXT :cursorName
-	  	USING_SQL_DESCRIPTOR :descriptorName;
-      break;
+#ifndef __SAP__
+	#ifndef __QUERIX_FIX__
+		USING_SQL_DESCRIPTOR :descriptorName;
+    #else
+		USING DESCRIPTOR descriptorName;
+    #endif
+#else
+		USING_SQL_DESCRIPTOR &descriptorName;
+#endif
+
+	  break;
     case FETCH_PREVIOUS:
-      EXEC SQL FETCH PREVIOUS :cursorName 
+      EXEC SQL FETCH PREVIOUS :cursorName
+#ifndef __SAP__
+	#ifndef __QUERIX_FIX__
 		USING_SQL_DESCRIPTOR :descriptorName;
-      break;
+    #else
+		USING DESCRIPTOR descriptorName;
+    #endif
+#else
+		USING_SQL_DESCRIPTOR &descriptorName;
+#endif
+
+	  break;
     case FETCH_CURRENT:
-      EXEC SQL FETCH CURRENT :cursorName 
+      EXEC SQL FETCH CURRENT :cursorName
+#ifndef __SAP__
+	#ifndef __QUERIX_FIX__
 		USING_SQL_DESCRIPTOR :descriptorName;
-      break;
+    #else
+		USING DESCRIPTOR descriptorName;
+    #endif
+#else
+		USING_SQL_DESCRIPTOR &descriptorName;
+#endif
+
+	  break;
     case FETCH__RELATIVE:
-      EXEC SQL FETCH RELATIVE :position :cursorName 
+#ifndef __QUERIX_FIX__
+	  EXEC SQL FETCH RELATIVE :position :cursorName
+#else
+//	  EXEC SQL FETCH RELATIVE :position :cursorName
+#endif
+#ifndef __SAP__
+	#ifndef __QUERIX_FIX__
 		USING_SQL_DESCRIPTOR :descriptorName;
-      break;
+    #else
+//		USING DESCRIPTOR descriptorName;
+    #endif
+#else
+		USING_SQL_DESCRIPTOR &descriptorName;
+#endif
+
+	  break;
     case FETCH__ABSOLUTE:
-      EXEC SQL FETCH ABSOLUTE :position :cursorName 
+#ifndef __QUERIX_FIX__
+	  EXEC SQL FETCH ABSOLUTE :position :cursorName
+#else
+//	  EXEC SQL FETCH ABSOLUTE :position :cursorName
+#endif
+#ifndef __SAP__
+	#ifndef __QUERIX_FIX__
 		USING_SQL_DESCRIPTOR :descriptorName;
-      break;
+    #else
+//		USING DESCRIPTOR descriptorName;
+    #endif
+#else
+		USING_SQL_DESCRIPTOR &descriptorName;
+#endif
+
+
+
+#endif //__QUERIX_FIX__
+
+	  break;
     otherwise:
       A4GL_exitwith ("Invalid fetch");
   }
@@ -2249,7 +2559,7 @@ int A4GLSQL_fetch_cursor (char *cursor_name,
     return 0;
   if ( processPosStatementBinds(sid) == 1 )
     return 1;
-*/
+
   return 0;
 }
 
@@ -2287,10 +2597,10 @@ exec sql end declare section;
     if ( processInputBind(descriptorName,n,ibind) == 1)
       A4GL_exitwith ("Error binding");
   }
-  
-   EXEC SQL PUT :cursorName 
+#ifndef __QUERIX_FIX__
+   EXEC SQL PUT :cursorName
 	USING_SQL_DESCRIPTOR $descriptorName ;
-
+#endif
 }
 
 /**
@@ -2340,10 +2650,10 @@ static int printField(FILE *unloadFile,int idx,char *descName)
   FglDatetime *fgl_dtime;
   FglInterval *fgl_interval;
   int rc = 0;
-
+#ifndef __QUERIX_FIX__
   EXEC SQL GET DESCRIPTOR 'descUnload'  VALUE :index
     :indicator = INDICATOR, :dataType = TYPE;
-        
+#endif
   if (indicator == -1) 
   {
     return 0;
@@ -2353,7 +2663,8 @@ static int printField(FILE *unloadFile,int idx,char *descName)
   {
     case DTYPE_CHAR:
     case DTYPE_VCHAR:
-      EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
+#ifndef __QUERIX_FIX__
+	  EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
         :length = LENGTH;
       if ( isSqlError() )
       {
@@ -2484,7 +2795,8 @@ static int printField(FILE *unloadFile,int idx,char *descName)
       EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
         :dataType = TYPE,
         :interval_var = DATA;
-      if ( isSqlError() )
+#endif
+	  if ( isSqlError() )
       {
         rc = 1;
 	break;
@@ -2563,7 +2875,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
   EXEC SQL PREPARE stUnload FROM :strSql;
   if ( isSqlError() )
     return; /* return 1; */
-
+#ifndef __QUERIX_FIX__
   EXEC SQL ALLOCATE DESCRIPTOR 'descUnload'   WITH MAX 256;
 
   EXEC SQL DESCRIBE stUnload
@@ -2574,25 +2886,32 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
 	//USING_SQL_DESCRIBE_DESCRIPTOR &descUnload;
 #endif
 
+#endif
 
   if ( isSqlError() ) {
+#ifndef __QUERIX_FIX__
 	EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+#endif
     return; // return 1;
   }
-
+#ifndef __QUERIX_FIX__
   EXEC SQL GET DESCRIPTOR 'descUnload' :numberOfColumns = COUNT;
-
+#endif
   if ( isSqlError() ) {
+#ifndef __QUERIX_FIX__
 	EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
-    return; //return 1;
+#endif
+	return; //return 1;
   }
 
 
   EXEC SQL DECLARE crUnload CURSOR FOR stUnload;
 
   if ( isSqlError() ) {
+#ifndef __QUERIX_FIX__
 	EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
-    return; // return 1;
+#endif
+	return; // return 1;
   }
 
   processInputBind("escInpUnload",nbind,ibind);
@@ -2604,8 +2923,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
 #ifndef __SAP__
 		USING_SQL_DESCRIPTOR 'descInpUnload';
 #else
-	//; //goes fine trough cpc and then causes "character constant too long" in GCC
-	USING_SQL_DESCRIPTOR &descInpUnload;
+		USING_SQL_DESCRIPTOR &descInpUnload;
 #endif
   }
 
@@ -2613,7 +2931,9 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
 
   if ( isSqlError() )
   {
-    EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+#ifndef __QUERIX_FIX__
+	EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+#endif
     return; // return 1;
   }
 
@@ -2624,17 +2944,19 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
   {
 
 	//A4GL_debug("Here6");
-    EXEC SQL FETCH crUnload
+#ifndef __QUERIX_FIX__
+	EXEC SQL FETCH crUnload
 #ifndef __SAP__
 		USING_SQL_DESCRIPTOR 'descUnload';
 #else
-		//USING_SQL_DESCRIPTOR 'descUnload'; // character constant too long
 		USING_SQL_DESCRIPTOR &descUnload;
 #endif
-
+#endif
 	if ( isSqlError() ) {
-      EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
-      return; // return 1;
+#ifndef __QUERIX_FIX__
+	  EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+#endif
+	  return; // return 1;
     }
     if ( strcmp(SQLSTATE,"02000") == 0 )
       break;
@@ -2660,7 +2982,9 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
   EXEC SQL FREE stUnload;
   EXEC SQL FREE crUnload;
   //A4GL_debug("Here9");
+#ifndef __QUERIX_FIX__
   EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+#endif
   if ( isSqlError() )
     rc = 1;
   return; // return 0;
@@ -2837,10 +3161,14 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 	return 0;
   }
 
+#ifndef __QUERIX_FIX__
   EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns' WITH MAX :MaxColumns;
+#endif
   if (sqlca.sqlcode==-480) {
+#ifndef __QUERIX_FIX__
   EXEC SQL DEALLOCATE DESCRIPTOR 'descReadAllColumns' ;
   EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns' ;
+#endif
   }
   if ( isSqlError() )
   {
@@ -2850,14 +3178,16 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 	return 0;
   }
 
+#ifndef __QUERIX_FIX__
   EXEC SQL DESCRIBE stReadAllColumns
-//-808   Not yet implemented
 #ifndef __SAP__
 	USING_SQL_DESCRIBE_DESCRIPTOR 'descReadAllColumns';
 #else
-    ;
+	//-808   Not yet implemented
+	;
 #endif
-  
+#endif
+
   if ( isSqlError() )
   {
 	#ifdef DEBUG
@@ -2866,7 +3196,9 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 	return 0;
   }
 
+#ifndef __QUERIX_FIX__
   EXEC SQL GET DESCRIPTOR 'descReadAllColumns' :numberOfColumns = COUNT;
+#endif
   if ( isSqlError() )
   {
 	#ifdef DEBUG
@@ -2952,8 +3284,10 @@ int A4GLSQL_next_column(char **colname, int *dtype,int *size)
   if ( idx > getColumnsMax )
     return 0;
 
+#ifndef __QUERIX_FIX__
   EXEC SQL GET DESCRIPTOR 'descReadAllColumns' VALUE :idx
     :columnName = NAME, :dataType = TYPE, :length = LENGTH;
+#endif
   if ( isSqlError() )
     return 0;
 
@@ -2974,7 +3308,9 @@ int A4GLSQL_next_column(char **colname, int *dtype,int *size)
  */
 int A4GLSQL_end_get_columns(void)
 {
+#ifndef __QUERIX_FIX__
   EXEC SQL DEALLOCATE DESCRIPTOR 'descReadAllColumns';
+#endif
   if ( isSqlError() )
   {
     return 0;
@@ -3015,33 +3351,45 @@ A4GL_debug("SQL = %s",strSelect);
     return 1;
   }
 
+#ifndef __QUERIX_FIX__
   EXEC SQL ALLOCATE DESCRIPTOR 'descReadColumns';
-  if ( isSqlError() )
-  {
-    return 1;
-  }
-
-  EXEC SQL DESCRIBE stReadColumns
-//-808   Not yet implemented
-#ifndef __SAP__
-	  USING_SQL_DESCRIBE_DESCRIPTOR 'descReadColumns';
-#else
-    ;
 #endif
   if ( isSqlError() )
   {
-    EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
     return 1;
   }
 
-  EXEC SQL GET DESCRIPTOR 'descReadColumns' VALUE 0
-    :dataType = TYPE, :length = LENGTH;
+#ifndef __QUERIX_FIX__
+  EXEC SQL DESCRIBE stReadColumns
+#ifndef __SAP__
+	  USING_SQL_DESCRIBE_DESCRIPTOR 'descReadColumns';
+#else
+	//-808   Not yet implemented
+	;
+#endif
+#endif
   if ( isSqlError() )
   {
-    EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
+#ifndef __QUERIX_FIX__
+	EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
+#endif
+	return 1;
+  }
+
+#ifndef __QUERIX_FIX__
+  EXEC SQL GET DESCRIPTOR 'descReadColumns' VALUE 0
+    :dataType = TYPE, :length = LENGTH;
+#endif
+  if ( isSqlError() )
+  {
+#ifndef __QUERIX_FIX__
+	EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
+#endif
     return 1;
   }
+#ifndef __QUERIX_FIX__
   EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
+#endif
   if ( isSqlError() )
   {
     return 1;
@@ -3083,34 +3431,45 @@ int A4GLSQL_read_columns(char *tabname,char *colname,int *dtype,int *size)
   {
     return 0;
   }
-
+#ifndef __QUERIX_FIX__
   EXEC SQL ALLOCATE DESCRIPTOR 'descReadColumns';
-  if ( isSqlError() )
-  {
-    return 0;
-  }
-
-  EXEC SQL DESCRIBE stXReadColumns
-//-808   Not yet implemented
-#ifndef __SAP__
-	USING_SQL_DESCRIBE_DESCRIPTOR 'descReadColumns';
-#else
-    ;
 #endif
   if ( isSqlError() )
   {
-    EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
     return 0;
   }
 
-  EXEC SQL GET DESCRIPTOR 'descReadColumns' VALUE 1
-    :dataType = TYPE, :length = LENGTH;
+#ifndef __QUERIX_FIX__
+  EXEC SQL DESCRIBE stXReadColumns
+#ifndef __SAP__
+	USING_SQL_DESCRIBE_DESCRIPTOR 'descReadColumns';
+#else
+	//-808   Not yet implemented
+	;
+#endif
+#endif
   if ( isSqlError() )
   {
-    EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
+#ifndef __QUERIX_FIX__
+	EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
+#endif
+	return 0;
+  }
+
+#ifndef __QUERIX_FIX__
+  EXEC SQL GET DESCRIPTOR 'descReadColumns' VALUE 1
+    :dataType = TYPE, :length = LENGTH;
+#endif
+  if ( isSqlError() )
+  {
+#ifndef __QUERIX_FIX__
+	EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
+#endif
     return 0;
   }
+#ifndef __QUERIX_FIX__
   EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
+#endif
   if ( isSqlError() )
   {
     return 0;

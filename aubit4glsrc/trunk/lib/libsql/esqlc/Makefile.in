@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.24 2003-09-08 08:11:26 afalout Exp $
+# $Id: Makefile.in,v 1.25 2003-09-09 12:01:01 afalout Exp $
 #
 
 ROOT		=../../..
@@ -110,49 +110,40 @@ else
 	ALL				=${LIBROOT}/libSQL_esql${SO_EXT}
 endif
 
+
+#C pre-processor flags:
 CPP_FLAGS=-I${ROOT}/incl -I.. -P
 #-P - line numbers - cpc don't like them
-#-C
+#-C - keep comments
 
-#ansi c          ::  -E cansi
-#c++             ::  -E cplus
-#check nocheck   ::  -H nocheck              (default: -H check)
-#      syntax    ::  -H syntax
-#comment         ::  -o
-#compatible      ::  -C
-#datetime eur    ::  -D eur                  (default: -D internal)
-#         iso    ::  -D iso
-#         jis    ::  -D jis
-#         usa    ::  -D usa
-#dblocale        ::  -x <dblocale>
-#extern          ::  -e
-#isolation-level ::  -I <isolation level>    (default: -I 10)
-#list            ::  -l
-#margins         ::  -m <mbegin>,<mend>      (default: -m 1,132)
-#maxpacketsize   ::  -b <maxpacketsize>      (default: -b 16000)
-#nowarn          ::  -w
-#precom          ::  -c
-#profile         ::  -R
-#program         ::  -P <progname>           (default: -P <filename>)
-#serverdb        ::  -d <serverdb>
-#servernode      ::  -n <servernode>
-#silent          ::  -s
-#sqlmode internal::  -S internal               (default: -S internal)
-#        ansi    ::  -S ansi
-#        ansiora ::  -S ansiora
-#        db2     ::  -S db2
-#        oracle  ::  -S oracle
-#timeout         ::  -t <timeout>
-#trace file      ::  -F <tracefn>
-#      long      ::  -X
-#      short     ::  -T
-#unicode		::  -G unicode
-#user            ::  -u <usern>,<passw>
-#userkey         ::  -U <userkey>
-#version         ::  -V
-
+#SAP DB esql pre-compiler flags:
 CPC_FLAGS=-H nocheck -c
 #-u dba,dba -d TST
+
+#SAP DB esql linker:
+CPCLNK=${SAPDBROOT}/interfaces/precompiler/bin/cpclnk
+
+ifeq "${TARGET_OS}" "cygwin"
+	LIBAUBIT4GL=-L${LIBROOT} -laubit4gl
+endif
+
+PGLIBS=-L${ECPG_LIBDIR} ${ECPG_LFLAGS} -lecpg -lecpg_compat -lpgtypes
+
+ifneq "${COMSPEC}" ""
+	QUERIX_IFLAGS=-I"${QUERIXDIR}/include"
+    #-I"E:/Program files/W2000/QueriX/include"
+	QUERIX_LFLAGS=-L"${QUERIXDIR}/lib"
+    QUERIX_LIBS="${QUERIXDIR}/lib/libesql.lib" "${QUERIXDIR}/lib/libesql.lib" \
+				"${QUERIXDIR}/lib/libfgl.lib"
+	#"${QUERIXDIR}/lib/libsqlc.lib"
+	#"${QUERIXDIR}/bin/libfgl.dll"
+else
+	QUERIX_IFLAGS=-I${QUERIXDIR}/incl
+	QUERIX_LFLAGS=-L${QUERIXDIR}/lib
+    STATIC=-static
+    QUERIX_LIBS=-lesql
+endif
+
 
 ## ==================================================================
 ##                              Targets
@@ -162,6 +153,7 @@ ALL: ${ALL}
 
 #remove this once esql_compatible.ec is finished:
 
+##################
 #ESQL/C database plug-in compiled with Informix ESQL/C compiler:
 libSQL_esql${SO_EXT}: ${LIBROOT}/libSQL_esql${SO_EXT}
 ${LIBROOT}/libSQL_esql${SO_EXT}: ${SRC}
@@ -172,6 +164,7 @@ ${LIBROOT}/libSQL_esql${SO_EXT}: ${SRC}
 
 #------------------------ esql_compatible.ec ----------------------------
 
+##################
 #ESQL/C database plug-in compiled with Informix ESQL/C compiler:
 libSQL_esqlI${SO_EXT}: ${LIBROOT}/libSQL_esqlI${SO_EXT}
 ${LIBROOT}/libSQL_esqlI${SO_EXT}: esql_compatible.ec
@@ -179,34 +172,39 @@ ${LIBROOT}/libSQL_esqlI${SO_EXT}: esql_compatible.ec
 	INFORMIXC=@INFORMIXC@; @IFMX_ESQLC@ -c ifx_$^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) ifx_esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 
+##################
 #Querix ESQL/C compiler:
+#HEAD= > /tmp/scr.scr 2>&1; head /tmp/scr.scr
+HEAD_NOWARN= 2>&1 | grep -v "warning:" | grep -v "In function" > /tmp/scr.scr ; head /tmp/scr.scr
+BREAK=@exit 1
 libSQL_esqlQ${SO_EXT}: ${LIBROOT}/libSQL_esqlQ${SO_EXT}
-${LIBROOT}/libSQL_esqlQ${SO_EXT}:
+${LIBROOT}/libSQL_esqlQ${SO_EXT}: esql_compatible.ec
 ##must remove .c file or .ec will not get recompiled
-#	-rm xxx.c
-#need quotes because of the path on Windows
-	"${Q_ESQLC}" -D__QUERIX__ -I"E:/Program files/W2000/QueriX/include" ${SRC} -o $@
-#	${CC} -DDIALECT_QUERIX -g -c -o $@ helper_funcs.c -I${ROOT}/incl ${QUERIX_IFLAGS}
+	rm -f q_$(basename $<).c
+	cpp ${CPP_FLAGS} $^ -D__QUERIX__ -D__QUERIX_FIX__ > q_$^
 ##-DNEWERA
-#	rm xxx_funcs.c
+#need quotes because of the path on Windows
+	"${Q_ESQLC}" q_$^ ${HEAD}
+#	${BREAK}
+	${CC} -g -c q_$(basename $<).c -o q_$(basename $<).o -I${ROOT}/incl ${QUERIX_IFLAGS} ${HEAD_NOWARN}
+#	${BREAK}
+	${CC} -shared -g q_$(basename $<).o -o $@ ${QUERIX_LFLAGS} ${QUERIX_LIBS}
+#	rm -f q_$(basename $<).c
 
-
-
-
+##################
 #SAP DB ESQL/C compiler:
+PRECIOUS : sap_esql_compatible.ec.o
 libSQL_esqlSAP${SO_EXT}: ${LIBROOT}/libSQL_esqlSAP${SO_EXT}
 ${LIBROOT}/libSQL_esqlSAP${SO_EXT}: esql_compatible.ec
 #cpc will allways add .cpc extension to any source files
-#	cp $^ $^.cpc
-	cpp ${CPP_FLAGS} $^ -D__SAP__  -I/opt/sapdb/interfaces/precompiler/incl > sap_$^.cpc
-#	${SAPDB_ESQLC} ${CPC_FLAGS} sap_$^ -I${ROOT}/incl -o sap_$^.o 2>&1 | grep -v "warning:"
-	${SAPDB_ESQLC} ${CPC_FLAGS} sap_$^ -I${ROOT}/incl 2>&1 | grep -v "warning:"
-	${CC} -c -I/opt/sapdb/interfaces/precompiler/incl -I../../../incl -o sap_$^.o sap_$^.c
+	cpp ${CPP_FLAGS} $^ -D__SAP__  -I${SAPDBROOT}/interfaces/precompiler/incl > sap_$^.cpc
+	${SAPDB_ESQLC} ${CPC_FLAGS} sap_$^ -I${ROOT}/incl 2>&1
+	${CC} -c -I${SAPDBROOT}/interfaces/precompiler/incl -I${ROOT}/incl -o sap_$^.o sap_$^.c
 #	rm sap_$^.cpc
-#	/opt/sapdb/interfaces/precompiler/bin/cpclnk sap_esql.o -o $@
-	${CC} -shared sap_$^.o -o $@
+#	${CPCLNK} -shared sap_esql_compatible.ec.o
+	${CC} -shared sap_$^.o -o $@ -L${SAPDBROOT}/interfaces/precompiler/lib -lpcrl -lsqlca -ldl
 
-
+##################
 #PostgreSQL ESQL/C compiler:
 libSQL_esqlPG${SO_EXT}: ${LIBROOT}/libSQL_esqlPG${SO_EXT}
 ${LIBROOT}/libSQL_esqlPG${SO_EXT}: esql_compatible.ec
@@ -214,39 +212,43 @@ ${LIBROOT}/libSQL_esqlPG${SO_EXT}: esql_compatible.ec
 	${PG_ESQLC} -I/opt/ecpg-cvs/include -C INFORMIX -t pg_$^
 #	${CC} ${STATIC} -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
 
+##################
 #Plexus also has esql/c compiler (c:\xdp32\esqlc.exe)
 
-#FIXME: what are this files doing?
-#esql_simple_ecpg.ec
-#esql_simple_infx.ec
-#esql_simple_template.ec
 
-
-#moved here from separate script:
-simple:
-#INFORMIXC=gcc; /opt/informix/v7.30/bin/esql -c esql_simple_infx.ec  -I/opt/informix/v7.30 -I.. -I../.. -I../../../compilers/fcompile -I../../libincl -I/home/aubit4gl/sourceforge/aubit4glsrc/incl -I/home/aubit4gl/sourceforge/aubit4glsrc/incl -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H
+###################
+#Simple Informix ESQL/C plug-in, based on 'simple' template
+#FIXME: does not compile
+#FIXME: Not sure what is this good for, when we already have working one?
+libSQL_esql_simple_infx.so: ${LIBROOT}/libSQL_esql_simple_infx.so
+${LIBROOT}/libSQL_esql_simple_infx.so: esql_simple_infx.ec
+# -I/opt/informix/v7.30 -I.. -I../.. -I../../../compilers/fcompile -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H
+	INFORMIXC=@INFORMIXC@; @IFMX_ESQLC@ -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
 #gcc -L/opt/informix/v7.30/lib -L /opt/informix/v7.30/lib/esql -L/opt/informix/v7.30/lib/cli -shared esql_simple_infx.o -lifsql -lifasf -lifgen -lifos -lifgls -lc -ldl -lcrypt /opt/informix/v7.30/lib/esql/checkapi.o -lifglx -o ../../libSQL_esql_simple_infx.so
-	export POSTGRESDIR=/usr/local/pgsql;
-	LD_RUN_PATH=${LD_RUN_PATH}:${POSTGRESDIR}/lib
-	export LD_RUN_PATH
-	$POSTGRESDIR/bin/ecpg -ct  esql_simple_ecpg.ec
-	rm libSQL_c_ecpg.so
-	rm ../../libSQL_c_ecpg.so
-	cc -c -I. -I.. -I$AUBITDIR/incl -I$POSTGRESDIR/include esql_simple_ecpg.c
-	gcc -shared -o libSQL_c_ecpg.so esql_simple_ecpg.o -L$AUBITDIR/lib -laubit4gl -L$POSTGRESDIR/lib -lecpg
-	cp libSQL_c_ecpg.so ../..
+	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) $(basename $<).o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 
+
+###################
+#Simple PG - ecpg NOT in Informix compatible mode!!! Based on 'simple' template
+libSQL_c_ecpg.so: ${LIBROOT}/libSQL_c_ecpg.so
+${LIBROOT}/libSQL_c_ecpg.so: esql_simple_ecpg.ec
+#	LD_RUN_PATH=${LD_RUN_PATH}:${POSTGRESDIR}/lib; export LD_RUN_PATH
+	${PG_ESQLC} -ct $^
+	${CC} -c -I. -I.. -I${ROOT}/incl -I$(ECPG_INCDIR) ${ECPG_IFLAGS} $(basename $<).c -o $(basename $<).o
+	${CC} -shared -o $@ $(basename $<).o -L${LIBROOT} ${PGLIBS} ${LIBAUBIT4GL}
+
+##################
 #moved here from separate script
-static:
-	esql -static esql.ec -I.. -I/home/aubit4gl/sourceforge/aubit4glsrc/incl -L/home/aubit4gl/sourceforge/aubit4glsrc/lib -laubit4gl --shared -o libSQL_esql_s.so
-	cp libSQL_esql_s.so ../..
-
-
+#FIXME: remove it - no need for separate taret jsut for a -static flag...s
+#static:
+#	esql -static esql.ec -I.. -I/home/aubit4gl/sourceforge/aubit4glsrc/incl -L/home/aubit4gl/sourceforge/aubit4glsrc/lib -laubit4gl --shared -o libSQL_esql_s.so
+#	cp libSQL_esql_s.so ../..
 
 ## ==================================================================
 ##                              Sub-Targets
 ## ==================================================================
 
+#Debugging: show current settings od make variables
 show:
 	@echo "ONLY_IFX_LIBS=${ONLY_IFX_LIBS}"
 	@echo "IFXLIBS_LIB=${IFXLIBS_LIB}"
