@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.33 2004-11-12 18:03:49 pjfalbe Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.34 2004-11-16 14:44:02 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -1439,6 +1439,7 @@ int
 int A4GL_gen_field_list (void *** field_list, struct s_form_dets *formdets, int max_number, va_list * ap)
 {
   struct s_field_name_list list;
+  list.field_name_list=0;
 
   A4GL_make_field_slist_from_ap(&list,ap);
 

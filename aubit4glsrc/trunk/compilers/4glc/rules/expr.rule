@@ -69,14 +69,11 @@ fgl_expr_ret_list 	: fgl_expr_ret
 ;
 
 
-fgl_expr_list 	: fgl_expr
-{
+fgl_expr_list 	: fgl_expr {
 	/*set_counter(0);*/
 	sprintf($<str>$,"%d",get_counter_val());
-	A4GL_lex_printcomment("/*L1 %s*/\n",$<str>$);
-}
-		| 	fgl_expr_list KW_COMMA fgl_expr
-{
+	A4GL_lex_printcomment("/*L1 %s*/\n",$<str>$); }
+		| 	fgl_expr_list KW_COMMA fgl_expr {
 	sprintf($<str>$,"%d",get_counter_val());
 	A4GL_lex_printcomment("/*L2 %s*/\n",$<str>$);
 }

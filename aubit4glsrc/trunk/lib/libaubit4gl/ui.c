@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.28 2004-11-12 18:12:53 pjfalbe Exp $
+# $Id: ui.c,v 1.29 2004-11-16 14:44:00 mikeaubury Exp $
 #
 */
 
@@ -255,10 +255,10 @@ int A4GL_gen_field_chars (void ***field_list, void *formdets, ...)
   va_list ap;
   int a;
   va_start (ap, formdets);
-
   a=A4GL_gen_field_chars_ap(field_list, formdets, &ap);
   va_end(ap);
-return a;
+
+  return a;
 }
 
 void A4GL_display_at (int n, int a)
@@ -341,7 +341,12 @@ void A4GL_display_at (int n, int a)
   	A4GL_display_internal (x, y, s, a, clr_end_of_line);
   } else {
 	if (clr_end_of_line && A4GL_was_last_empty() && n==1 && (tos_dtype &0xff)== 0 && tos_size == 0) {
-  	A4GL_display_internal (x, y, " " , a, clr_end_of_line);
+  		if (x>=0&&y>=0) A4GL_display_internal (x, y, " " , a, clr_end_of_line); // Screen mode
+  		else A4GL_display_internal (x, y, "" , a, 0); // Line mode
+
+	} else {
+  		A4GL_display_internal (x, y, "" , a, 0); 
+
 	}
   }
 

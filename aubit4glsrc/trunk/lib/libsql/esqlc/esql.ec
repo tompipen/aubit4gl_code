@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.109 2004-11-11 17:24:57 mikeaubury Exp $
+# $Id: esql.ec,v 1.110 2004-11-16 14:44:01 mikeaubury Exp $
 #
 */
 
@@ -79,7 +79,7 @@
 #define _SQLCA_DEFINED_
 #include  <sqltypes.h>
 #include <string.h>
-#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__)
+#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,sizeof(d))
 static void copy_sqlca_Stuff(int warnings) ;
 
 
@@ -156,7 +156,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.109 2004-11-11 17:24:57 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.110 2004-11-16 14:44:01 mikeaubury Exp $";
 #endif
 
 

@@ -417,8 +417,9 @@ op_field_desc
 	        yyerror("A button must have a default value for its caption");
 	        YYERROR;
 	}
-	if (!(A4GL_has_str_attribute(fld,FA_S_PICTURE))) {
+	if (!(A4GL_has_str_attribute(fld,FA_S_PICTURE)) && strcmp(the_form.dbname,"formonly")!=0 ) {
 		char *p;
+	
 		p=A4GLSQL_syscolval_expr(fld->tabname,fld->colname,"PICTURE");
 		if (p) {
 			// Theres a picture in syscolval - but nothing in the form -

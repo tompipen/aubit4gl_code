@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.36 2004-09-29 15:09:03 mikeaubury Exp $
+# $Id: helper.c,v 1.37 2004-11-16 14:44:00 mikeaubury Exp $
 #
 */
 
@@ -308,10 +308,14 @@ int_get_info_form (char *ptr, char *info)
       A4GL_push_int (p->fileform->fields.fields_len);
       break;
     case 6:
+	if (used_value<p->fileform->attributes.attributes_len) {
       sprintf (buff, "%s.%s",
 	       p->fileform->attributes.attributes_val[used_value].tabname,
 	       p->fileform->attributes.attributes_val[used_value].colname);
       A4GL_push_char (buff);
+	} else {
+      		A4GL_push_char ("");
+	}
       break;
     case 7:
       A4GL_push_int (p->fileform->attributes.attributes_len);

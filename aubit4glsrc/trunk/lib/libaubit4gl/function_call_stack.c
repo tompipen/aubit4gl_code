@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.17 2004-11-09 20:28:42 pjfalbe Exp $
+# $Id: function_call_stack.c,v 1.18 2004-11-16 14:44:00 mikeaubury Exp $
 #*/
 
 /**
@@ -177,7 +177,11 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
   A4GL_debug ("=====&&&&&&============PUSH %s %d,\n", functionName, n);
   for (a = 0; a < n; a++)
     {
-      A4GL_debug (" Param %d (%s)", a + 1, params[a]);
+	if (params[a]==0) {
+		A4GL_debug("Theres gonna be trouble - wasn't expecting this one..");
+	} else {
+      	A4GL_debug (" Param %d (%s)", a + 1, params[a]);
+	}
     }
   functionCallStack[functionCallPointer].functionName = functionName;
   functionCallStack[functionCallPointer].moduleName = currentModuleName;

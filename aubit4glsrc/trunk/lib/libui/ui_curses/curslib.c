@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.97 2004-08-31 20:46:54 mikeaubury Exp $
+# $Id: curslib.c,v 1.98 2004-11-16 14:44:01 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.97 2004-08-31 20:46:54 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.98 2004-11-16 14:44:01 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -278,6 +278,14 @@ A4GL_debug("After");
   UILIB_A4GL_zrefresh ();
 }
 
+
+void A4GL_refresh_error_window() {
+	if (curr_error_panel_visible) {
+  		show_panel(curr_error_panel);
+		update_panels();
+		doupdate();
+	}
+}
 
 
 void

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.140 2004-11-01 05:11:18 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.141 2004-11-16 14:44:00 mikeaubury Exp $
 #
 */
 
@@ -1983,7 +1983,7 @@ struct s_field_name_list {
 	int nfields;
 	struct s_field_name *field_name_list;
 };
-
+void A4GL_gen_field_slist( struct s_field_name_list *list, va_list *ap);
 
 
 int A4GL_menu_hide (ACL_Menu * menu, ...);

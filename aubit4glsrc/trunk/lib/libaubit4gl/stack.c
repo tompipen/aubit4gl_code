@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.105 2004-11-09 20:28:42 pjfalbe Exp $
+# $Id: stack.c,v 1.106 2004-11-16 14:44:00 mikeaubury Exp $
 #
 */
 
@@ -2031,6 +2031,11 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 	// If there are more than 20 parameters -
 	// ignore the rest....
 
+	if (a&&_paramnames[a]==0) {
+		A4GL_debug("Ran out of parameters");
+      		z=add_to_z(z," + MORE");
+		return z;
+	}
       if (n>20) {z=add_to_z(z,"...");break;}
 
 
