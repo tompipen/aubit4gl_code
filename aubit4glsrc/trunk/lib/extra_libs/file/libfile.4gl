@@ -18,8 +18,6 @@ endcode
 	WHENEVER ANY ERROR CONTINUE
 	WHENEVER SQLERROR CONTINUE
 
-	IMPORT FUNCTION ferror(1)
-
 
 ####################################
 FUNCTION popen(p_command,mode)
@@ -74,6 +72,25 @@ DEFINE r INTEGER
 
 code
 	r=ftell(handle);
+endcode
+
+	RETURN r
+
+END FUNCTION
+
+####################################
+FUNCTION ferror(handle)
+####################################
+DEFINE handle INTEGER
+DEFINE r INTEGER
+
+	IF handle=0 THEN
+		LET status=-101
+		RETURN 0
+	END IF
+
+code
+	r=ferror((FILE *)handle);
 endcode
 
 	RETURN r
