@@ -18,7 +18,8 @@ define a smallint
     let a = 1000
     display by name a
     sleep 3
-	call aclfgl_dump_screen("out")	
+	call aclfgl_dump_screen("out")
+	sleep 1
     close window w
 end main
 
