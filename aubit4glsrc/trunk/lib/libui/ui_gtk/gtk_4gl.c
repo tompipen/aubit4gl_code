@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.21 2003-10-08 17:09:52 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.22 2003-10-10 08:50:33 mikeaubury Exp $
 #*/
 
 /**
@@ -427,6 +427,7 @@ A4GLUI_ui_init (int argc, char *argv[])
 		     (0x0));
   wait = 1;
   A4GL_gui_run_til_no_more ();
+
 
   gtk_key_snooper_install (KeySnooper, 0);
   A4GL_create_console ();

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.14 2003-10-10 06:52:44 mikeaubury Exp $
+# $Id: widget.c,v 1.15 2003-10-10 08:50:33 mikeaubury Exp $
 #*/
 
 /**
@@ -492,7 +492,7 @@ KeySnooper (GtkWidget * grab_widget, GdkEventKey * event, gpointer func_data)
     }
 
   fflush (stdout);
-  A4GL_keypress (grab_widget, event, func_data);
+  //A4GL_keypress (grab_widget, event, func_data);
   A4GL_clr_error_gtk ();
   return 0;
 }
@@ -524,6 +524,10 @@ w=wv;
 
 int get_widget_next_size() {
         return widget_next_size;
+}
+
+char *field_buffer(GtkWidget *w,int n) {
+return A4GL_fld_val_generic (w);
 }
 
 #if GTK_CHECK_VERSION(2,0,0)
