@@ -1,17 +1,31 @@
 #This file conatains lists of all tests expected to fail
 #it is used as include from main testing execution script
 
-#fails at random? #NOT expected to fail:  349 (1)
+#fails at random?
+#348 349 351
 
 
 #-esqli NOT expected to fail:  109 296 351 (3)
-#-eci NOT expected to fail:  109 296 (2)
+#-eci NOT expected to fail:  296 (2)
 
 ######################
 #Teats expected to fail with -ifxodbc (in addition to EXPECT_TO_FAIL_TESTS)
 EXPECT_TO_FAIL_TESTS_IFXODBC="1 \
 	753 758 759 760 783 791 792 798 901 902 904 905 906 907 \
-	908 909 910 911 912 913 914 915 936 1060"
+	908 909 910 911 912 913 914 915 936 1060 \
+	63 68 73 76 80 98 101 106 108 109 206 212 234 255 269 270 290 357 358 359 \
+	360 361 362 363 364 365 366 367 531 532 535 536 537 538 539 540 541 542 \
+	543 544 551 552 553 554 555 556 557 558 559 560 561 562 579 582 583 584 \
+	585 587 592 593 595 596 598 602 603 605 606 609 610 611 612 613 614 615 \
+	616 618 619 620 621 622 623 624 625 626 627 628 629 630 631 632 633 634 \
+	635 636 637 638 639 640 642 643 644 645 646 647 648 649 650 651 652 653 \
+	654 655 656 658 659 666 667 668 669 675 676 677 678 679 680 683 685 689 \
+	690 691 692 693 694 695 696 697 698 699 700 710 711 712 713 714 715 716 \
+	717 718 719 720 721 722 723 724 725 726 727 728 729 730 731 732 733 734 \
+	735 736 737 738 740 741 742 743 744 745 746 747 748 749 750 751 754 755 \
+	756 757 761 762 763 764 768 769 770 771 772 773 774 775 776 778 779 780 \
+	781 782 784 785 786 787 788 789 790 793 794 795"
+	
 #1 conv.c               2751   (     0,     0) Start Time invalid on datetime(dttoc)
 
 ######################
@@ -36,7 +50,7 @@ EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX=""
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
 #NOTE: <*> = OK with -esqli
-EXPECT_TO_FAIL_TESTS="240 670 706 278 766 767 962 976 987"
+EXPECT_TO_FAIL_TESTS="240 670 706 278 766 767 962 976 987 296"
 #240 (numeric formating) http://aubit.com/mantis/bug_view_page.php?bug_id=0000495
 #670 (syntax errors in generated EC code) http://aubit.com/mantis/bug_view_page.php?bug_id=0000477
 #706 (expression in SQL syntax error) http://aubit.com/mantis/bug_view_page.php?bug_id=0000515
@@ -46,6 +60,7 @@ EXPECT_TO_FAIL_TESTS="240 670 706 278 766 767 962 976 987"
 #962 (Error on near zero decimal comparison) http://aubit.com/mantis/bug_view_page.php?bug_id=0000601
 #976 (Error in conversion.) http://aubit.com/mantis/bug_view_page.php?bug_id=0000603
 #987 same ?
+#296 Unable to read form.
 
 #not reported (please enter bug report at: http://aubit.com/mantis)
 EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS "

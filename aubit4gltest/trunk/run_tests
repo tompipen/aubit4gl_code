@@ -59,14 +59,14 @@ for a in $FLAGS; do
 		-shdbg) 	#run_tests shell script debugging 
 			SH_DBG=1
 			;;
-        -verbose)   #Show more information about what is going on
+        -verbose | --verbose)   #Show more information about what is going on
             VERBOSE=1
 			;;
-        -verbose-results)   #Show more information about results			
+        -verbose-results | --verbose-results)   #Show more information about results			
 			VERBOSE_RESULTS=1
 			;;
 
-		-help-all)			
+		-help-all | --help-all)			
 			FLAGS="-help -help-general -help-utility -help-test -help-debug \
 				-help-db -help-other -help-results -help-examples"
 			HELP_ALL=1
@@ -182,10 +182,10 @@ for a in $FLAGS; do
 		#got that allready
 		;;
 
-    -verbose)   #Show more information about what is going on
+    -verbose | --verbose)   #Show more information about what is going on
         #we already got this one set
         ;;
-    -verbose-results)   #Show more information about results
+    -verbose-results | --verbose-results)   #Show more information about results
         #we already got this one set
         ;;
 

@@ -8,7 +8,7 @@ prog.4ae: v1.o prog.4gl
 	
 v1.o: v1.per
 	(export A4GL_FORMTYPE=GENERIC; export A4GL_PACKER=PACKED; fcompile -c v1.per)
-	${FGLC} -verbose -c v1.afr.c -o v1.afr.o
+	${FGLC} --verbose -c v1.afr.c -o v1.afr.o
 	
 clean:
 	rm -f prog.4ae prog.c prog.glb prog.h v1.afr v1.afr.c v1.afr.dat v1.c v1.err *.o
