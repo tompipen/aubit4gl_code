@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.8 2002-06-25 03:22:30 afalout Exp $
+# $Id: keys.c,v 1.9 2002-09-25 23:59:55 afalout Exp $
 #
 */
 
@@ -49,20 +49,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include "a4gl_dbform.h"
-	#include "a4gl_debug.h"
-	#include "a4gl_pointers.h"
-	#include "a4gl_keys.h"
-	#include "a4gl_aubit_lib.h"
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
-#endif
+#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================
@@ -88,8 +75,9 @@ void    set_option_value	(char type,int keyval);
 int
 check_keys (int val, char *str2)
 {
-  char *ptr;
-  int a;
+char *ptr;
+int a;
+  
   ptr = str2;
   for (a = 0; a < strlen (str2); a++)
     {
@@ -116,10 +104,11 @@ check_keys (int val, char *str2)
 int
 check_key (int val, char *a, int ln)
 {
-  char buff[20];
+char buff[20];
+  
   strncpy (buff, a, ln);
   buff[ln] = 0;
-debug("Checking key %d against %s  ln=%d",val,a,ln);
+  debug("Checking key %d against %s  ln=%d",val,a,ln);
   if (ln == 1)
     {
       if (tolower (buff[0]) == tolower (val))
@@ -152,8 +141,9 @@ int a;
 int
 key_val2 (char *str)
 {
-  int a;
-  char b[3];
+int a;
+char b[3];
+  
   debug("In key_val str=%s",str);
 
   if (strlen (str) == 1)
@@ -161,25 +151,25 @@ key_val2 (char *str)
       return str[0];
     }                           /*single character */
 
-  if (mja_strcmp ("ACCEPT", str) == 0) return std_dbscr.acckey;
-  if (mja_strcmp ("DELETE", str) == 0) return std_dbscr.delkey;
-  if (mja_strcmp ("INSERT", str) == 0) return std_dbscr.inskey;
-  if (mja_strcmp ("HELP", str) == 0) return std_dbscr.helpkey;
-  if (mja_strcmp ("NEXT", str) == 0) return std_dbscr.nextkey;
-  if (mja_strcmp ("NEXTPAGE", str) == 0) return std_dbscr.nextkey;
-  if (mja_strcmp ("PREV", str) == 0) return std_dbscr.prevkey;
-  if (mja_strcmp ("PREVPAGE", str) == 0) return std_dbscr.prevkey;
-  if (mja_strcmp ("ACCEPT", str) == 0) return std_dbscr.acckey;
+  if (mja_strcmp ("ACCEPT", str) == 0) 		return std_dbscr.acckey;
+  if (mja_strcmp ("DELETE", str) == 0) 		return std_dbscr.delkey;
+  if (mja_strcmp ("INSERT", str) == 0) 		return std_dbscr.inskey;
+  if (mja_strcmp ("HELP", str) == 0) 		return std_dbscr.helpkey;
+  if (mja_strcmp ("NEXT", str) == 0) 		return std_dbscr.nextkey;
+  if (mja_strcmp ("NEXTPAGE", str) == 0) 	return std_dbscr.nextkey;
+  if (mja_strcmp ("PREV", str) == 0) 		return std_dbscr.prevkey;
+  if (mja_strcmp ("PREVPAGE", str) == 0) 	return std_dbscr.prevkey;
+  if (mja_strcmp ("ACCEPT", str) == 0) 		return std_dbscr.acckey;
 
-  if (mja_strcmp ("INTERRUPT", str) == 0) return -100;
-  if (mja_strcmp ("RETURN", str) == 0) return    A4GLKEY_ENTER;
-  if (mja_strcmp ("ENTER", str) == 0) return     A4GLKEY_ENTER;
-  if (mja_strcmp ("TAB", str) == 0) return '	';
-  if (mja_strcmp ("DOWN", str) == 0) return      A4GLKEY_DOWN;
-  if (mja_strcmp ("UP", str) == 0) return 	A4GLKEY_UP;
-  if (mja_strcmp ("LEFT", str) == 0) return 	A4GLKEY_LEFT;
-  if (mja_strcmp ("RIGHT", str) == 0) return 	A4GLKEY_RIGHT;
-  if (mja_strcmp ("ESCAPE", str) == 0) return 27;
+  if (mja_strcmp ("INTERRUPT", str) == 0) 	return -100;
+  if (mja_strcmp ("RETURN", str) == 0) 		return A4GLKEY_ENTER;
+  if (mja_strcmp ("ENTER", str) == 0) 		return A4GLKEY_ENTER;
+  if (mja_strcmp ("TAB", str) == 0) 		return '	';
+  if (mja_strcmp ("DOWN", str) == 0) 		return A4GLKEY_DOWN;
+  if (mja_strcmp ("UP", str) == 0) 			return A4GLKEY_UP;
+  if (mja_strcmp ("LEFT", str) == 0) 		return A4GLKEY_LEFT;
+  if (mja_strcmp ("RIGHT", str) == 0) 		return A4GLKEY_RIGHT;
+  if (mja_strcmp ("ESCAPE", str) == 0) 		return 27;
 
   if (mja_strncmp ("CONTROL", str, 7) == 0)
     {

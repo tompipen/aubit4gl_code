@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.19 2002-09-23 11:39:30 afalout Exp $
+# $Id: fglwrap.c,v 1.20 2002-09-25 23:59:55 afalout Exp $
 #
 */
 
@@ -60,32 +60,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include <signal.h>                 /* SIGINT */
-	#include <locale.h>                 /* setlocale() */
-	#include <string.h>
-	#include <unistd.h> 				/* sleep() */
-
-	#ifdef __CYGWIN__
-		#include <windows.h>
-		#include <errno.h>
-	#endif
-
-	#include "a4gl_dbform.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_debug.h"
-	#include "a4gl_keys.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_dlsql.h"				/* A4GLSQL_initlib() */
-	#include "a4gl_runtime_tui.h"		/*  push_int() */
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
-#endif
+#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================
@@ -93,14 +68,14 @@
 =====================================================================
 */
 
-int p_numargs=0;
-int isdebug=0;
-char *p_args[256];
-int ui_mode=0;
-int int_flag;
+int 	p_numargs	=0;
+int 	isdebug		=0;
+char *	p_args[256];
+int 	ui_mode		=0;
+int 	int_flag;
 
-int quit_flag;
-int abort_pressed;
+int 	quit_flag;
+//int 	abort_pressed;
 
 extern int errno;
 
@@ -203,6 +178,7 @@ char *p;
 	if (acl_getenv("A4GL_UI")) {
 		p=acl_getenv("A4GL_UI");
 
+		//where is CONSOLE?
 		if (strcasecmp(p,"TEXT")==0  )	ui_mode=0;
 		if (strcasecmp(p,"CURSES")==0) 	ui_mode=0;
 		if (strcasecmp(p,"GTK")==0) 	ui_mode=1;
@@ -285,8 +261,8 @@ char *p;
     #endif
 
 	/*
-    FIXME: programs should do make connection call only when they
-    encounter DATABSE, CONNECT, etc - since we now have no-ODBC build
+    FIXME: programs should make connection call only when they
+    encounter DATABSE, CONNECT, etc
 	*/
 
 	#ifdef DEBUG

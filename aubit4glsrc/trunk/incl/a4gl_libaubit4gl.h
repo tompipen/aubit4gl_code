@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.16 2002-09-25 23:23:07 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.17 2002-09-25 23:59:54 afalout Exp $
 #
 */
 
@@ -585,22 +585,6 @@
 		char form_name[19];
 	} gen_form;
 
-	#ifdef OBJECTMODULE
-		char opts[100][80];			/*menu options */
-		int abort_pressed;
-		int relxedit = 0, relyedit = 0;
-		int aborted;
-		long time_offset = 0;
-		int week_no = -1;
-	#else
-		extern char opts[10][80];	/*menu options */
-		extern int abort_pressed;
-		extern int relxedit, relyedit;
-		extern int aborted;
-		extern long time_offset;
-		extern int week_no;
-	#endif
-
 /*
 =====================================================================
                     Functions prototypes
@@ -678,8 +662,15 @@
 	char * 	glob_window 		(int x, int y, int w, int h, int border);
 	void * 	find_pointer 		(const char *pname, char t);
 
-	/* OBJECTMODULE is defined in keys.c */
+	/* OBJECTMODULE is defined ONLY in keys.c */
 	#ifdef OBJECTMODULE
+		char 	opts[100][80];			/*menu options */
+		int 	abort_pressed;
+		int 	relxedit = 0, relyedit = 0;
+		int 	aborted;
+		long 	time_offset = 0;
+		int 	week_no = -1;
+
 		/*
 		#if (defined(WIN32) && ! defined(__CYGWIN__))
 		#ifdef WIN32
@@ -690,7 +681,14 @@
 			struct s_form_attr std_dbscr;
 		#endif
 	#else
-		/*	
+		extern char 	opts[10][80];	/*menu options */
+		extern int 		abort_pressed;
+		extern int 		relxedit, relyedit;
+		extern int 		aborted;
+		extern long 	time_offset;
+		extern int 		week_no;
+
+		/*
 		#if (defined(WIN32) && ! defined(__CYGWIN__))
 		#ifdef WIN32
 		*/
@@ -700,6 +698,7 @@
 			extern struct s_form_attr std_dbscr;
 		#endif
 	#endif
+
 
     /* ======================== from debug.h ========================*/
 

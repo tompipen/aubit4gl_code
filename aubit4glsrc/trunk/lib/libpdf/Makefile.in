@@ -24,17 +24,14 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.13 2002-09-25 05:42:15 afalout Exp $
+# $Id: Makefile.in,v 1.14 2002-09-25 23:59:55 afalout Exp $
 #
 
 ROOT        =../..
 LIBROOT     =..
 
-
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-
-override NOINCL=0
 
 ## ==================================================================
 ##                              Options
@@ -43,16 +40,14 @@ override NOINCL=0
 CFLAGS+=-I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile @PDFLIB_I_FLAGS@ @PDFLIB_L_FLAGS@
 
 ifneq "${COMSPEC}" ""
-	ifeq "${PDFBUILD}" "no"
-	    ALL = NOPDF.dll
-	else
-	    ALL = PDF.dll NOPDF.dll
+    ALL 		=NOPDF.dll
+	ifneq "${PDFBUILD}" "no"
+	    ALL 	+=PDF.dll
 	endif
 else
-	ifeq "${PDFBUILD}" "no"
-	    ALL = libEXREPORT_NOPDF${SO_EXT}
-	else
-	    ALL = libEXREPORT_PDF${SO_EXT} libEXREPORT_NOPDF${SO_EXT}
+	ALL 		=${LIBROOT}/libEXREPORT_NOPDF${SO_EXT}
+	ifneq "${PDFBUILD}" "no"
+	    ALL 	+=${LIBROOT}/libEXREPORT_PDF${SO_EXT}
 	endif
 endif
 
@@ -65,13 +60,11 @@ OBJECTS_PDF		=has_pdf.o
 
 all: ${ALL}
 
-libEXREPORT_PDF${SO_EXT}: ${OBJECTS_PDF}
+${LIBROOT}/libEXREPORT_PDF${SO_EXT}: ${OBJECTS_PDF}
 	${LD} @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@
-	${CP} $@ ${LIBROOT}
 
-libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
+${LIBROOT}/libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
 	${LD} $(SO_LDFLAGS) ${OBJECTS_NOPDF} -o $@
-	${CP} $@ ${LIBROOT}
 
 NOPDF.dll: ${OBJECTS_NOPDF}
 	${MAKE} libEXREPORT_NOPDF.dll DLLOBJS="${OBJECTS_NOPDF}"
@@ -87,7 +80,7 @@ PDF.dll:
 ## ==================================================================
 
 clean:
-	rm -f *.o *${SO_EXT} *.bak *.base *.dll *.def *.exp *.a
+	${RM} *.o *${SO_EXT} *.bak *.base *.dll *.def *.exp *.a
 
 
 # ----------------------------- EOF ---------------------------------
