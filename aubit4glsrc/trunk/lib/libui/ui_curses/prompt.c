@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.18 2003-07-09 16:19:23 mikeaubury Exp $
+# $Id: prompt.c,v 1.19 2003-07-12 08:03:03 mikeaubury Exp $
 #*/
 
 /**
@@ -404,8 +404,9 @@ A4GL_curses_to_aubit (int a)
     return A4GLKEY_LEFT;
   if (a == KEY_RIGHT)
     return A4GLKEY_RIGHT;
-  if (a == KEY_ENTER)
-    return A4GLKEY_ENTER;
+
+  if (a == KEY_ENTER) return A4GLKEY_ENTER;
+  if (a == 13) return A4GLKEY_ENTER;
 
   //if (a==KEY_PGDN) return A4GLKEY_PGDN;
   //if (a==KEY_PGUP) return A4GLKEY_PGUP;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fields.c,v 1.5 2003-05-15 07:10:46 mikeaubury Exp $
+# $Id: fields.c,v 1.6 2003-07-12 08:03:03 mikeaubury Exp $
 #*/
 
 /**
@@ -71,7 +71,7 @@ A4GL_endis_fields_ap (int en_dis, va_list * ap)
   int a;
   int nofields;
   GtkWidget **field_list;
-  formdets = GTK_WIDGET (A4GL_get_curr_form ());
+  formdets = GTK_WIDGET (A4GL_get_curr_form (1));
 
 
   A4GL_debug ("Formdets = %p\n", formdets);

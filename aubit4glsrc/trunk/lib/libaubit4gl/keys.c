@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.19 2003-07-04 09:43:39 mikeaubury Exp $
+# $Id: keys.c,v 1.20 2003-07-12 08:02:57 mikeaubury Exp $
 #
 */
 
@@ -80,6 +80,7 @@ A4GL_check_keys (int val, char *str2)
   char *ptr;
   int a;
 
+  A4GL_debug("check_keys : %d %s",val,str2);
   ptr = str2;
   for (a = 0; a < strlen (str2); a++)
     {
@@ -160,24 +161,33 @@ A4GL_key_val2 (char *str)
   if (mja_strcmp ("INSERT", str) == 0)
     return std_dbscr.inskey;
   if (mja_strcmp ("HELP", str) == 0)
-    return std_dbscr.helpkey;
+   return std_dbscr.helpkey;
+
   if (mja_strcmp ("NEXT", str) == 0)
     return std_dbscr.nextkey;
+
   if (mja_strcmp ("NEXTPAGE", str) == 0)
     return std_dbscr.nextkey;
+
   if (mja_strcmp ("PREV", str) == 0)
     return std_dbscr.prevkey;
+
   if (mja_strcmp ("PREVPAGE", str) == 0)
     return std_dbscr.prevkey;
+
   if (mja_strcmp ("ACCEPT", str) == 0)
     return std_dbscr.acckey;
 
   if (mja_strcmp ("INTERRUPT", str) == 0)
     return -100;
+
   if (mja_strcmp ("RETURN", str) == 0)
     return A4GLKEY_ENTER;
+
+
   if (mja_strcmp ("ENTER", str) == 0)
     return A4GLKEY_ENTER;
+
   if (mja_strcmp ("TAB", str) == 0)
     return '	';
   if (mja_strcmp ("DOWN", str) == 0)

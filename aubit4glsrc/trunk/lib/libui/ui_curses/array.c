@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.7 2003-06-19 18:22:01 mikeaubury Exp $
+# $Id: array.c,v 1.8 2003-07-12 08:03:01 mikeaubury Exp $
 #*/
 
 /**
@@ -71,6 +71,8 @@ int cmode = 0;
 int A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname,
 		 int attrib, va_list * ap);
 
+
+static void A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr, int arr_line,int first_only,...);
 /*
 =====================================================================
                     Functions definitions
@@ -83,7 +85,7 @@ int A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname,
  * @param srec The screen record information structure.
  */
 static void
-clear_srec (struct struct_screen_record *srec)
+clear_srec (struct s_disp_arr *disp,struct struct_screen_record *srec)
 {
   int a;
   int b;
@@ -93,20 +95,31 @@ clear_srec (struct struct_screen_record *srec)
   strcpy (srec1, srec->name);
   strcat (srec1, ".*");
   A4GL_debug ("Got fields as %s", srec1);
+
+
   for (b = 0; b < srec->dim; b++)
     {
-      for (a = 0; a < srec->attribs.attribs_len + 1; a++)
-
-	{
-
-	  A4GL_push_char (" ");
-
-	}
-      A4GL_debug ("disp_fields(%d,%d,%s,%d,%d)", srec->attribs.attribs_len + 1, 0,
-	     srec1, b, 0, 0);
-      A4GL_disp_arr_fields (srec->attribs.attribs_len + 1, 0, 0, srec1, b + 1, 0,
-		       0);
+  	A4GL_disp_arr_fields_v2 (disp, 
+				1,  // blank
+			 	0,  // Attribute
+				0,  // arr_line
+				0, // first_only
+				srec1, // screen record
+				b+1, // field line
+				0,0);
     }
+
+
+return;
+
+/*
+      for (a = 0; a < srec->attribs.attribs_len + 1; a++) {
+	  A4GL_push_char (" ");
+	}
+      A4GL_disp_arr_fields (srec->attribs.attribs_len + 1, 0, 0, srec1, b + 1, 0, 0);
+
+    }
+*/
 }
 
 /**
@@ -137,6 +150,7 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
   scr_line = no - topline + 1;
   strcpy (srec2, disp->srec->name);
   strcat (srec2, ".*");
+
   if (type == 2)
     {
       A4GL_debug ("calling set_arr_Fields");
@@ -149,24 +163,42 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
       return;
     }
 
-  if (first_only)
-    A4GL_push_bind (disp->binding, 1, no, disp->arr_elemsize);
-  else
-    A4GL_push_bind (disp->binding, disp->nbind, no, disp->arr_elemsize);
+  //if (first_only)
+    //A4GL_push_bind (disp->binding, 1, no, disp->arr_elemsize);
+  //else
+    //A4GL_push_bind (disp->binding, disp->nbind, no, disp->arr_elemsize);
 
   A4GL_debug ("Print array no %d to scr %d", no, disp->scr_line);
   A4GL_debug ("calling disp_arR_fields");
 
+  //disp->highlight=1;
+
   if (disp->highlight)
     {
       A4GL_debug ("With highlight");
-      A4GL_disp_arr_fields (disp->nbind, first_only, type * A_REVERSE, srec2,
-		       scr_line, 0, 0);
+  	A4GL_disp_arr_fields_v2 (disp, 
+				0,  // blank
+			 	type*AUBIT_ATTR_REVERSE,  // Attribute
+				no,  // arr_line
+				first_only,
+				srec2, // screen record
+				scr_line, // field line
+				0,0);
+
     }
   else
     {
       A4GL_debug ("Without highlight");
-      A4GL_disp_arr_fields (disp->nbind, first_only, 0, srec2, scr_line, 0, 0);
+  	A4GL_disp_arr_fields_v2 (disp, 
+				0,  // blank
+			 	0,  // Attribute
+				no,  // arr_line
+				first_only,
+				srec2, // screen record
+				scr_line, // field line
+				0,0);
+
+      //A4GL_disp_arr_fields (disp->nbind, first_only, 0, srec2, scr_line, 0, 0);
     }
 }
 
@@ -201,13 +233,14 @@ draw_arr_all (struct s_disp_arr *disp)
 #endif
 	}
     }
+
   draw_arr (disp, 1, disp->arr_line);
+
 #ifdef DEBUG
   {
     A4GL_debug ("after draw_arr (7)");
   }
 #endif
-  A4GL_mja_refresh ();
 }
 
 /**
@@ -282,7 +315,7 @@ disp_loop (struct s_disp_arr *arr)
     A4GL_debug ("Currform=%p (s_form_dets)", form);
   }
 #endif
-  if (form != A4GL_get_curr_form ())
+  if (form != A4GL_get_curr_form (1))
     {
       A4GL_exitwith ("Input form is not the current form!");
       exit (0);
@@ -324,25 +357,30 @@ disp_loop (struct s_disp_arr *arr)
 
       draw_arr (arr, -1, arr->arr_line);
       A4GL_mja_wrefresh (currwin);
+
+
+	//A4GL_zrefresh();
+
       a = A4GL_getch_win ();
+	A4GL_debug("Got a as %x\n",a);
       m_lastkey = a;
     }
   redisp = 0;
   switch (a)
     {
-    case KEY_DOWN:
+    case A4GLKEY_DOWN:
       A4GL_debug ("Key down");
       if (arr->arr_line < arr->no_arr)
 	{
 
-	  arr->cntrl = 0 - KEY_DOWN;
+	  arr->cntrl = 0 - A4GLKEY_DOWN;
 
 	  return -11;
 
 	}
       break;
 
-    case 0 - KEY_DOWN:
+    case 0 - A4GLKEY_DOWN:
       A4GL_debug ("Keydown +");
       arr->last_arr = arr->arr_line;
       arr->arr_line++;
@@ -366,19 +404,19 @@ disp_loop (struct s_disp_arr *arr)
       return -10;
       break;
 
-    case KEY_UP:
+    case A4GLKEY_UP:
       if (arr->arr_line > 1)
 
 	{
 
-	  arr->cntrl = 0 - KEY_UP;
+	  arr->cntrl = 0 - A4GLKEY_UP;
 
 	  return -11;
 
 	}
       break;
 
-    case 0 - KEY_UP:
+    case 0 - A4GLKEY_UP:
       arr->last_arr = arr->arr_line;
       arr->arr_line--;
       A4GL_debug ("Is really up");
@@ -440,7 +478,7 @@ A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib
 	  return 0;
 	}
 
-      disp->currform = A4GL_get_curr_form ();
+      disp->currform = A4GL_get_curr_form (1);
 #ifdef DEBUG
       {
  A4GL_debug ("disp->currform=%p", disp->currform);
@@ -472,7 +510,7 @@ A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib
 	}
 
       A4GL_debug ("Clearing Record");
-      clear_srec (disp->srec);
+      clear_srec (disp,disp->srec);
       A4GL_debug ("Cleared record");
       for (a = 0; a < disp->srec->dim; a++)
 
@@ -616,5 +654,66 @@ aclfgl_set_scrline(int np)
   return 0;
 }
 */
+
+
+
+
+
+
+static void
+A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr, int arr_line, int first_only, ...)
+{
+  int a;
+  va_list ap;
+  int flg;
+  struct s_form_dets *formdets;
+  FIELD **field_list;
+  int nofields;
+  char *cptr;
+  static char buff[256];
+  struct struct_scr_field *f;
+  A4GL_debug ("In disp_arr_fields_v2 - %p blank=%d attr=%d arr_line=%d",disp,blank,attr,arr_line);
+  formdets = A4GL_get_curr_form (1);
+  flg = 0;
+
+  va_start (ap, arr_line);
+
+	
+  nofields = A4GL_gen_field_list (&field_list, formdets, 9999 , &ap);
+
+  A4GL_debug("disp_arr_fields_v2 - %d fields",nofields);
+
+  if (first_only) nofields=0;
+
+  for (a=nofields;a>=0;a--) {
+  	f = (struct struct_scr_field *) (field_userptr (field_list[a]));
+  	attr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, attr, f);
+  	if (attr != 0) A4GL_set_field_attr_with_attr (field_list[a], attr,FGL_CMD_DISPLAY_CMD);
+
+  	if (!blank) {
+			A4GL_debug("Displaying something..");
+             		cptr=(char *) disp->binding[a].ptr + disp->arr_elemsize * (arr_line - 1);
+             		A4GL_push_param (cptr, disp->binding[a].dtype+ENCODE_SIZE(disp->binding[a].size));
+    	} else {
+			A4GL_debug("Displaying blank..");
+                        strcpy(buff,"");
+                        cptr=&buff[0];
+			A4GL_setnull(disp->binding[a].dtype, cptr,disp->binding[a].size);
+                        A4GL_push_null (disp->binding[a].dtype, disp->binding[a].size);
+        }
+  	A4GL_display_field_contents(field_list[a],disp->binding[a].dtype,disp->binding[a].size,cptr);
+	if (first_only) set_current_field (formdets->form, field_list[a]);
+
+  }
+  free(field_list);
+
+}
+
+
+
+
+
+
+
 
 /* =============================== EOF ============================ */

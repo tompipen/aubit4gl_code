@@ -54,7 +54,7 @@ print_close (char type, char *name)
       printc ("A4GL_remove_window(%s);\n", name);
       break;
     case 'D':
-      printc ("A4GL_close_database();\n");
+      printc ("EXEC SQL DISCONNECT 'default';\n");
       break;
     case 'S':
       printc ("EXEC SQL CLOSE SESSION %s;\n", A4GL_strip_quotes (name));

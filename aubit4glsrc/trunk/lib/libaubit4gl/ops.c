@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.23 2003-07-04 19:13:09 mikeaubury Exp $
+# $Id: ops.c,v 1.24 2003-07-12 08:02:57 mikeaubury Exp $
 #
 */
 
@@ -895,9 +895,18 @@ A4GL_display_int (void *ptr, int size, int size_c,
 
   if (display_type == DISPLAY_TYPE_DISPLAY_TO)
     {
-		char using_buff[256];
-      if (A4GL_isnull(DTYPE_INT,ptr)) { strcpy(buff,""); return buff; }
+	char using_buff[256];
+	A4GL_debug("DISPLAY_TYPE_DISPLAY_TO : %d",*(int *)ptr);
+
+      		if (A4GL_isnull(DTYPE_INT,ptr)) { 
+			A4GL_debug("Int value is null");
+			strcpy(buff,""); return buff; 
+		}
   		a = *(long *) ptr;
+      		if (A4GL_isnull(DTYPE_INT,&a)) { 
+			A4GL_debug("Int value is null");
+			strcpy(buff,""); return buff; 
+		}
 		if (A4GL_has_str_attribute (field_details, FA_S_FORMAT)) {
 			strcpy(using_buff,(A4GL_get_str_attribute(field_details,FA_S_FORMAT)));
 		} else {
@@ -1236,7 +1245,7 @@ A4GL_debug("Display_money");
   if (display_type == DISPLAY_TYPE_DISPLAY_TO)
     {
         char using_buff[256];
-	if (A4GL_isnull(DTYPE_DECIMAL,ptr)) {
+	if (A4GL_isnull(DTYPE_MONEY,ptr)) {
 		strcpy(buff,"");
 		return buff;
 	}
@@ -1380,6 +1389,7 @@ static char buff[256];
 char buff2[256];
 int dig;
 int dec;
+A4GL_assertion (ptr==0, "make_using has been passed a null pointer..");
 strcpy(buff,"-------------------------------------------------------------------------------------------------------------------");
 dig=NUM_DIG(ptr)*2;
 dec=NUM_DEC(ptr);

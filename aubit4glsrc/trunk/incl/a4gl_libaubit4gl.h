@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.71 2003-07-07 14:19:56 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.72 2003-07-12 08:02:11 mikeaubury Exp $
 #
 */
 
@@ -1543,7 +1543,7 @@ enum cmd_types {
 	int insmode;
   };
 
-  void *A4GL_get_curr_form (void);	/* in API_ui.c libtui/newpanels.c libgui/input.c */
+  void *A4GL_get_curr_form (int warn_if_no_form);	/* in API_ui.c libtui/newpanels.c libgui/input.c */
   int load_data (char *fname, char *delims, char *tabname, ...);
   int A4GL_inp_arr (void *disp, int ptr, char *srecname, int attrib, int init);
   int set_scrline_ia (int np);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.51 2003-07-04 09:43:38 mikeaubury Exp $
+# $Id: conv.c,v 1.52 2003-07-12 08:02:56 mikeaubury Exp $
 #
 */
 
@@ -3385,10 +3385,16 @@ A4GL_init_dec (char *s, int len, int d)
   A4GL_debug ("init_dec len=%d,d=%d", len, d);
   if (len % 2 == 1)
     len++;			/* This was missing - odd number decimals wouldn't allocate the right space! */
+
+
   if (s == 0)
     {
+	A4GL_debug("Alloc some space");
       s = malloc (len + OFFSET_DEC (s));
     }
+
+  A4GL_debug("memset - %p 0 %d",s,len+OFFSET_DEC(s));
+
   memset (s, 0, len + OFFSET_DEC (s));
   SET_DIG (s, len / 2);
   SET_DEC (s, d);

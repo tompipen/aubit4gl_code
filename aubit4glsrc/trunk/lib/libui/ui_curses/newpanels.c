@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.56 2003-07-04 19:13:21 mikeaubury Exp $
+# $Id: newpanels.c,v 1.57 2003-07-12 08:03:02 mikeaubury Exp $
 #*/
 
 /**
@@ -893,6 +893,9 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
   A4GL_debug ("In display_form");
   w = currwin;
 
+  sprintf(buff,"%p",f);
+  A4GL_add_pointer (buff, ATTRIBUTE, (void *) attrib);
+
   if (w == 0)
     {
       A4GL_error_box ("NO WINDOW",0);
@@ -1157,7 +1160,7 @@ A4GL_get_curr_win (void)
  * @todo Describe function
  */
 void *
-A4GL_get_curr_form (void)
+A4GL_get_curr_form (int warn_if_no_form)
 {
   char buff[80];
   sprintf (buff, "currwinno=%d", currwinno);
@@ -1171,7 +1174,9 @@ A4GL_get_curr_form (void)
   /*error_box(buff); */
   if (windows[currwinno].form == 0)
     {
-      A4GL_exitwith ("No current form");
+	if (warn_if_no_form)  {
+      		A4GL_exitwith ("No current form");
+	}
       return 0;
     }
   return windows[currwinno].form;

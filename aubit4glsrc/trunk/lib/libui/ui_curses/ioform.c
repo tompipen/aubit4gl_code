@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.46 2003-07-09 16:19:23 mikeaubury Exp $
+# $Id: ioform.c,v 1.47 2003-07-12 08:03:02 mikeaubury Exp $
 #*/
 
 /**
@@ -560,14 +560,20 @@ void
 A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
 {
   struct struct_scr_field *f;
+int fg;
+int bg;
   f = (struct struct_scr_field *) (field_userptr (field));
   A4GL_debug("set_field_colour_attr - do_reverse=%d colour=%d - %d\n",do_reverse,colour,A4GL_decode_colour_attr_aubit (colour));
 
  if (colour&AUBIT_ATTR_REVERSE && do_reverse==0) { ; }     // Maybe we should warn on these
  if (!(colour&AUBIT_ATTR_REVERSE) && do_reverse==1) { ; }  // Maybe we should warn on these
 
- set_field_fore (field, A4GL_decode_aubit_attr (colour,'f'));
- set_field_back (field, A4GL_decode_aubit_attr (colour,'B'));
+ fg=A4GL_decode_aubit_attr (colour,'f');
+ bg=A4GL_decode_aubit_attr (colour,'B');
+ set_field_fore (field, fg);
+ set_field_back (field, bg);
+
+ A4GL_debug("FG=%x BG=%x",fg,bg);
 
 return;
 
@@ -647,6 +653,8 @@ A4GL_req_field_input (struct s_screenio *s, ...)
 }
 #endif
 
+
+#ifdef MOVED_TO_IARRAY
 /**
  *
  * @todo Describe function
@@ -685,6 +693,7 @@ A4GL_req_field_input_array (struct s_inp_arr *s, ...)
   free (ptr);
   return 1;
 }
+#endif
 
 
 #ifdef MOVED_TO_FORM_CONTROL
@@ -708,9 +717,9 @@ A4GL_form_loop (void *vs)
   A4GL_debug ("form_loop0..  currentfield=%p status = %d", form->currentfield,
 	      field_status (form->currentfield));
 
-  if (form != A4GL_get_curr_form ())
+  if (form != A4GL_get_curr_form (1))
     {
-      A4GL_debug ("form=%p curr_form=%p", form, A4GL_get_curr_form ());
+      A4GL_debug ("form=%p curr_form=%p", form, A4GL_get_curr_form (1));
       A4GL_exitwith ("Input form is not current");
       return 0;
     }
@@ -1160,13 +1169,28 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		  if (strlen(buff2)==0) return 0;
 		  A4GL_push_param (buff2, DTYPE_CHAR);
 
-	      	  if (A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield))) {
-				return 0;
+	      	  if (!A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield))) {
+		 		A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
+		 		A4GL_mja_set_field_buffer (form->currentfield, 0, " ");
+		 		set_current_field (mform, form->currentfield);
+		 		return -4;
 		  } 
-		 A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
-		 A4GL_mja_set_field_buffer (form->currentfield, 0, " ");
-		 set_current_field (mform, form->currentfield);
-		 return -4;
+
+ 		if (A4GL_check_field_for_include
+              		(field_buffer (sio->currform->currentfield, 0),
+               		A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
+               			fprop->datatype) == 0) {
+              			A4GL_error_nobox ("This value is not available", 0);
+		 		set_current_field (mform, form->currentfield);
+				return -4;
+            	}
+
+
+				return 0;
+
+
+
+
 
 	/*
 			{
@@ -1197,6 +1221,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 	      }
 	  }
     }
+
 
 
 return 0;
@@ -1608,7 +1633,7 @@ set_fields2 (int nv, struct BINDING *vars, int d, int n, ...)
   struct struct_scr_field *field;
   FIELD **field_list;
   int nofields;
-  formdets = A4GL_get_curr_form ();
+  formdets = A4GL_get_curr_form (1);
   flg = 0;
 
   A4GL_debug ("Turning off all");
@@ -1721,7 +1746,7 @@ A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 
   A4GL_chkwin();
   A4GL_debug ("In disp_fields");
-  formdets = A4GL_get_curr_form ();
+  formdets = A4GL_get_curr_form (1);
 #ifdef DEBUG
   {
     A4GL_debug ("Status=%d formdets=%p", a4gl_status, formdets);
@@ -2229,7 +2254,6 @@ A4GL_set_field_pop_attr (FIELD * field, int attr,int cmd_type)
 
 
 
-  A4GL_display_field_contents(field,d1,s1,ptr1);
 
   A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
   oopt = field_opts (field);
@@ -2237,18 +2261,19 @@ A4GL_set_field_pop_attr (FIELD * field, int attr,int cmd_type)
 
   attr=A4GL_determine_attribute(cmd_type, attr, f);
 
-  if (attr != 0)
-    A4GL_set_field_attr_with_attr (field, attr,cmd_type);
+  if (attr != 0) A4GL_set_field_attr_with_attr (field, attr,cmd_type);
 
 
   A4GL_debug ("set field attr");
-  fff = A4GL_get_curr_form ();
+  fff = A4GL_get_curr_form (1);
   A4GL_debug ("set field");
   A4GL_debug ("set field buffer setting do_reverse=%d",a);
 
   f->do_reverse = a;
   A4GL_debug ("done ");
   set_field_opts (field, oopt);
+
+  A4GL_display_field_contents(field,d1,s1,ptr1);
 
 
 }
@@ -2372,7 +2397,7 @@ A4GL_set_init_pop_attr (FIELD * field, int attr)
   A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
   A4GL_set_field_attr (field);
   A4GL_debug ("set field attr");
-  fff = A4GL_get_curr_form ();
+  fff = A4GL_get_curr_form (1);
   A4GL_debug ("got curr form");
   set_current_field (fff->form, field);
   A4GL_debug ("set field");
@@ -2403,7 +2428,8 @@ A4GL_iarr_arr_fields (int n, int fonly, int attr, ...)
   int nofields;
   A4GL_debug ("In disp_fields");
 
-  formdets = A4GL_get_curr_form ();
+  formdets = A4GL_get_curr_form (1);
+
 
   flg = 0;
   va_start (ap, attr);
@@ -2431,7 +2457,7 @@ A4GL_iarr_arr_fields (int n, int fonly, int attr, ...)
 
 
 
-
+#ifdef REMOVED
 /**
  *
  * @todo Describe function
@@ -2446,7 +2472,7 @@ A4GL_disp_arr_fields (int n, int fonly, int attr, ...)
   FIELD **field_list;
   int nofields;
   A4GL_debug ("In disp_fields");
-  formdets = A4GL_get_curr_form ();
+  formdets = A4GL_get_curr_form (1);
   flg = 0;
 
 
@@ -2468,11 +2494,16 @@ A4GL_disp_arr_fields (int n, int fonly, int attr, ...)
       for (a = 0; a <= nofields; a++)
 	{
 	  A4GL_debug ("field_list[%d]=%p", a, field_list[a]);
+
+
+
 	  A4GL_set_init_pop_attr (field_list[a], attr);
 	  A4GL_debug ("set_init_pop complete");
 	}
     }
+  free(field_list);
 }
+#endif
 
 /**
  *
@@ -2492,7 +2523,7 @@ A4GL_set_arr_fields (int n, int attr, ...)
   return;			/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
   A4GL_debug ("In disp_fields");
-  formdets = A4GL_get_curr_form ();
+  formdets = A4GL_get_curr_form (1);
   flg = 0;
 
   va_start (ap, attr);
@@ -2508,11 +2539,11 @@ A4GL_set_arr_fields (int n, int attr, ...)
   for (a = nofields; a >= 0; a--)
     {
       A4GL_debug ("field_list[%d]=%p", field_list[a]);
-      fff = A4GL_get_curr_form ();
+      fff = A4GL_get_curr_form (1);
       set_current_field (fff->form, field_list[a]);
       A4GL_debug ("set_init_pop complete");
     }
-  set_current_field (fff->form, field_list[nofields]);
+  set_current_field (fff->form, field_list[0]); // was nofields....
 }
 
 
@@ -2764,7 +2795,7 @@ A4GL_scan_for_field (char *s)
   struct s_form_dets *f;
   FIELD *fld;
   int a;
-  f = A4GL_get_curr_form ();
+  f = A4GL_get_curr_form (1);
   if (f == 0)
     return 0;
 
@@ -2814,7 +2845,7 @@ A4GL_fgl_infield (char *s, int a)
   A4GL_debug ("fgl_infield - looking for %s", s);
 
 
-  f = A4GL_get_curr_form ();
+  f = A4GL_get_curr_form (1);
 
   A4GL_debug ("Current field = %p\n", current_field (f->form));
   A4GL_debug ("Current field = %p\n", f->currentfield);
@@ -2844,7 +2875,7 @@ A4GL_fgl_getfldbuf_ap (char *s, int n)
 
 
   A4GL_debug ("In fgl_getfldbuf - @todo ALLOW MORE THAN ONE FIELD");
-  f = A4GL_get_curr_form ();
+  f = A4GL_get_curr_form (1);
   A4GL_debug ("fld_getfldbuf    f=%p", f);
 
   if (f == 0)
@@ -3342,7 +3373,7 @@ A4GL_clr_form (int to_default)
 
   A4GLSQL_set_status (0, 0);
 
-  formdets = A4GL_get_curr_form ();
+  formdets = A4GL_get_curr_form (1);
 
   /* Go through each field */
   for (a = 0; a < formdets->fileform->attributes.attributes_len; a++)
@@ -3409,7 +3440,7 @@ A4GL_curr_metric_is_last (void)
 {
   struct s_form_dets *form;
   int a;
-  form = A4GL_get_curr_form ();
+  form = A4GL_get_curr_form (1);
   a = A4GL_get_curr_metric (form);
 
   if (a == -1)
@@ -3441,7 +3472,7 @@ A4GL_curr_metric_is_first (void)
 {
   struct s_form_dets *form;
   int a;
-  form = A4GL_get_curr_form ();
+  form = A4GL_get_curr_form (1);
   a = A4GL_get_curr_metric (form);
   if (a == -1)
     {
@@ -3463,7 +3494,7 @@ A4GL_curr_metric_is_veryfirst (void)
 {
   struct s_form_dets *form;
   int a;
-  form = A4GL_get_curr_form ();
+  form = A4GL_get_curr_form (1);
   a = A4GL_get_curr_metric (form);
   if (a == -1)
     {
@@ -3487,7 +3518,7 @@ A4GL_curr_metric_is_verylast (void)
 {
   struct s_form_dets *form;
   int a;
-  form = A4GL_get_curr_form ();
+  form = A4GL_get_curr_form (1);
   a = A4GL_get_curr_metric (form);
   if (a == -1)
     {
@@ -3537,7 +3568,7 @@ aclfgl_set_page (int n)
   int b;
   struct s_form_dets *f;
   b = A4GL_pop_int ();
-  f = A4GL_get_curr_form ();
+  f = A4GL_get_curr_form (1);
   set_form_page (f->form, b);
   refresh ();
   return 0;
@@ -3551,7 +3582,7 @@ int
 aclfgl_get_page (int n)
 {
   struct s_form_dets *f;
-  f = A4GL_get_curr_form ();
+  f = A4GL_get_curr_form (1);
   A4GL_push_int (form_page (f->form));
   return 1;
 }
@@ -3629,7 +3660,7 @@ int a;
 FIELD **field_list;
 int c;
 
-  c = A4GL_gen_field_chars_ap (&field_list, A4GL_get_curr_form(), ap);
+  c = A4GL_gen_field_chars_ap (&field_list, A4GL_get_curr_form(1), ap);
   for (a=0;a<=c;a++) {
 	A4GL_mja_set_field_buffer(field_list[a],0,"");
   }
@@ -3639,4 +3670,109 @@ int c;
   //}
 }
 
+int
+A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
+{
+  char buff[80] = "";
+  char buff2[80] = "";
+  FORM *mform;
+  int x, y;
+  int flg = 0;
+  struct s_form_dets *form;
+  struct struct_scr_field *fprop;
+
+A4GL_debug("form_field_chk_iarr....");
+  mform = sio->currform->form;
+  A4GL_debug ("CHeck fields 1 m=%d", m);
+  form = sio->currform;
+  A4GL_debug ("CHeck fields 2 currentfield=%p status = %d",
+	      form->currentfield, field_status (form->currentfield));
+
+  fprop = 0;
+  if (m > 0)
+    {
+      A4GL_debug ("CHeck fields 3");
+      form->currentfield = 0;
+      form->currentmetrics = 0;
+      A4GL_debug (" m ");
+      return 0;
+    }
+
+
+  A4GL_debug (" current field %p  form says currfield=%p m=%d",
+	      form->currentfield, current_field (mform), m);
+  A4GL_debug ("field_status(form->currentfield)=%d field_status(currfield)=%d", field_status (form->currentfield), field_status (current_field (mform)));
+  if ((form->currentfield != current_field (mform)) || m < 0)
+    {
+      /*
+         A4GL_debug ("Setting focus");
+         A4GL_gui_setfocus (current_field (mform));
+       */
+      A4GL_debug ("Is different");
+      fprop = 0;
+
+      if (form->currentfield != 0)
+	if (field_userptr (form->currentfield) != 0)
+	  {
+	    A4GL_debug ("Is a proper field");
+	    fprop =
+	      (struct struct_scr_field
+	       *) (field_userptr (form->currentfield));
+	    A4GL_debug ("fprop=%p", fprop);
+
+
+
+	    if (fprop != 0)
+	      {
+
+		int d1,s1;
+		char *ptr1;
+
+		A4GL_debug("15 fprop!=0");
+		if ((fprop->datatype&DTYPE_MASK)==DTYPE_CHAR) ;
+		else {
+
+
+
+		  A4GL_modify_size (&buff[4], form->fileform->metrics.  metrics_val[A4GL_get_metric_for
+						(form,
+						 form->currentfield)].w);
+
+		  strcpy (&buff[4], field_buffer (form->currentfield, 0));
+
+		  strcpy (buff2, &buff[4]);
+		  A4GL_trim (buff2);
+		  getsyx (y, x);
+		  A4GL_trim (buff2);
+
+		A4GL_debug("15 Check buff2='%s'",buff2);
+		  if (strlen(buff2)!=0)  {
+		  	A4GL_push_param (buff2, DTYPE_CHAR);
+
+	      	  	if (!A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield))) {
+		 		A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
+		 		A4GL_mja_set_field_buffer (form->currentfield, 0, " ");
+		 		set_current_field (mform, form->currentfield);
+		 		return -4;
+		  	} 
+		   }
+		}
+
+
+		A4GL_debug("CHECK FOR INCLUDE");
+ 		if (A4GL_check_field_for_include
+              		(field_buffer (sio->currform->currentfield, 0),
+               		A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
+               			fprop->datatype) == 0) {
+              			A4GL_error_nobox ("This value is not available", 0);
+		 		//set_current_field (mform, form->currentfield);
+				return -4;
+            	}
+	
+	}
+	}
+	}
+	return 0;
+
+}
 /* ================================ EOF ============================== */

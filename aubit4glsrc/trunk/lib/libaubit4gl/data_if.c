@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.19 2003-07-07 14:20:23 mikeaubury Exp $
+# $Id: data_if.c,v 1.20 2003-07-12 08:02:57 mikeaubury Exp $
 #
 */
 
@@ -349,7 +349,7 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
 
   val = (struct s_s_inp_arr_1 *) ptr;
 
-  A4GL_debug ("val=%p nbind=%d\n", val, val->nbind);
+
   if (strcmp (name, "mode") == 0)
     {
       if (mode == GETSETGET)

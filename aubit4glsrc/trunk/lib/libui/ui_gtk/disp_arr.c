@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: disp_arr.c,v 1.7 2003-05-15 07:10:46 mikeaubury Exp $
+# $Id: disp_arr.c,v 1.8 2003-07-12 08:03:03 mikeaubury Exp $
 #*/
 
 /**
@@ -293,7 +293,7 @@ disp_loop (struct s_disp_arr *arr)
     A4GL_debug ("Currform=%p (s_form_dets)", form);
   }
 #endif
-  if (form != A4GL_get_curr_form ())
+  if (form != A4GL_get_curr_form (1))
     {
       A4GL_exitwith ("Input form is not the current form!");
       exit (0);
@@ -527,7 +527,7 @@ A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib
 	  return 0;
 	}
 
-      disp->currform = A4GL_get_curr_form ();
+      disp->currform = A4GL_get_curr_form (1);
 
 
       A4GL_debug ("Trying to find scroll widget currform = %p", disp->currform);
@@ -779,7 +779,7 @@ A4GL_disp_arr_fields (int n, int fonly, int attr, ...)
   int nofields;
 
   A4GL_debug ("In disp_fields");
-  formdets = A4GL_get_curr_form ();
+  formdets = A4GL_get_curr_form (1);
   flg = 0;
 
   va_start (ap, attr);
@@ -832,7 +832,7 @@ A4GL_set_arr_fields (int n, int attr, ...)
   return;
 
   A4GL_debug ("In disp_fields");
-  formdets = A4GL_get_curr_form ();
+  formdets = A4GL_get_curr_form (1);
   flg = 0;
 
   va_start (ap, attr);
@@ -852,7 +852,7 @@ A4GL_set_arr_fields (int n, int attr, ...)
   for (a = nofields; a >= 0; a--)
     {
       A4GL_debug ("field_list[%d]=%p", field_list[a]);
-      fff = A4GL_get_curr_form ();
+      fff = A4GL_get_curr_form (1);
 
       /* set_current_field (fff->form, field_list[a]); */
       A4GL_debug ("set_init_pop complete");
@@ -1123,7 +1123,7 @@ A4GL_idisp_arr_fields (int n, int fonly, int attr, ...)
   int nofields;
 
   A4GL_debug ("In A4GL_disp_fields - attr=%d");
-  formdets = A4GL_get_curr_form ();
+  formdets = A4GL_get_curr_form (1);
   flg = 0;
 
   va_start (ap, attr);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.28 2003-07-09 16:19:22 mikeaubury Exp $
+# $Id: others.c,v 1.29 2003-07-12 08:02:57 mikeaubury Exp $
 #
 */
 
@@ -558,7 +558,7 @@ A4GL_get_srec (char *name)
   int a;
   struct s_form_dets *form;
   A4GL_debug ("Get_srec");
-  form = A4GL_get_curr_form ();
+  form = A4GL_get_curr_form (1);
   A4GL_debug ("found form");
 
   A4GL_debug ("Got form %p", form);

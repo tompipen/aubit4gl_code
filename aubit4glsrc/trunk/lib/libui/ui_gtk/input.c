@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.11 2003-05-22 12:14:46 mikeaubury Exp $
+# $Id: input.c,v 1.12 2003-07-12 08:03:03 mikeaubury Exp $
 #*/
 
 /**
@@ -108,12 +108,17 @@ int A4GL_field_name_match_gtk (GtkWidget * f, char *s);
  * @return The current form
  */
 void *
-A4GL_get_curr_form (void)
+A4GL_get_curr_form (int warn_if_no_form)
 {
   GtkWidget *w;
 
   A4GL_debug ("**** GET_CURR_FORM_GTK\n");
   w = (GtkWidget *) A4GL_get_curr_win_gtk ();
+	if (w==0) {
+		if (warn_if_no_form) {
+			A4GL_exitwith("No form");
+		}
+	}
 
 
   A4GL_debug ("get_curr_form as %p ", w);
@@ -644,7 +649,7 @@ A4GL_disp_fields_ap (int n, int attr, va_list * ap)
   a4gl_status = 0;
   A4GL_debug_last_field_created ("disp_fields1 ");
   A4GL_debug ("In disp_fields");
-  formdets = A4GL_get_curr_form ();
+  formdets = A4GL_get_curr_form (1);
 
   if (a4gl_status != 0)
     return;

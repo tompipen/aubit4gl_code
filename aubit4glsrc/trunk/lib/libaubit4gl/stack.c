@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.65 2003-07-04 09:43:39 mikeaubury Exp $
+# $Id: stack.c,v 1.66 2003-07-12 08:02:58 mikeaubury Exp $
 #
 */
 
@@ -624,7 +624,7 @@ A4GL_push_param (void *p, int d)
 
   size = DECODE_SIZE (d);
   d = d & 0xffff;
-
+  A4GL_debug("50 push_param %p %d size=%d",p,d,size);
   if (params == 0)
     {
       A4GL_debug ("20 Assign stack");
@@ -652,6 +652,7 @@ A4GL_push_param (void *p, int d)
 					 alloc_params_cnt);
     }
 
+A4GL_debug("51 Allocated stack space %d %d",d,OP_MASK_BASE);
 
 
   if (d == FUNCTION_OP)
@@ -663,6 +664,7 @@ A4GL_push_param (void *p, int d)
   if (d < OP_MASK_BASE)
     {
 
+A4GL_debug("51 Have data");
 #ifdef DEBUG
       /*  A4GL_debug ("7 Adding ptr=%p d=%d (%d masked) to stack %d\n", p, d, d & DTYPE_MASK, params_cnt); */
 #endif
@@ -671,6 +673,8 @@ A4GL_push_param (void *p, int d)
 	  A4GL_exitwith ("Stack overflow");
 	  A4GL_chk_err (-1, "Internal");
 	}
+
+
       params[params_cnt].ptr = p;
       params[params_cnt].dtype = d;
 
@@ -695,6 +699,7 @@ A4GL_push_param (void *p, int d)
 
       params[params_cnt].size = size;
       params_cnt++;
+	A4GL_debug("99 All done..");
       return;
     }
 
@@ -2063,6 +2068,9 @@ A4GL_setnull (int type, void *vbuff, int size)
   int a;
   char c;
   char *buff;
+
+
+
   A4GL_debug ("Set null");
   buff = (char *) vbuff;
 
@@ -2190,12 +2198,15 @@ A4GL_isnull (int type, char *buff)
     }
 
 
+  A4GL_debug("25 Checking bytes...");
+
   for (a = 0; a < 9; a++)
     {
       if ((unsigned char) (nset[type][a]) != (unsigned char) IGN)
 	{
 	  if ((unsigned char) (buff[a]) != (unsigned char) (nset[type][a]))
 	    {
+		A4GL_debug("40 Not null @ %d (%d!=%d)",a,buff[a],nset[type][a]);
 	      return 0;
 	    }
 	}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.7 2003-05-15 07:10:46 mikeaubury Exp $
+# $Id: widget.c,v 1.8 2003-07-12 08:03:03 mikeaubury Exp $
 #*/
 
 /**
@@ -445,7 +445,7 @@ A4GL_fgl_fieldnametoid (char *f, char *s, int n)
   A4GL_debug ("fgl_fieldnametoid (%p,%d)", s, n);
 
 
-  formdets = (GtkWidget *) A4GL_get_curr_form ();
+  formdets = (GtkWidget *) A4GL_get_curr_form (1);
   A4GL_debug ("Getting field list formdets=%p parent=%p", formdets,
 	 gtk_object_get_data ((GtkObject *) formdets, "PARENT"));
 
