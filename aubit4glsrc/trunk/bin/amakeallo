@@ -551,6 +551,7 @@ function compileit {
 	        DEPEND4GLFILE=`basename $DEPENDGLOB4GLFILE .glb`.4gl;
             DEPEND4GLFILE=$DIRNAME/$DEPEND4GLFILE
 			DEPEND4GLOBJ=`basename $DEPENDGLOB4GLFILE .glb`.ao;
+			DEPEND4GLERR=`basename $DEPENDGLOB4GLFILE .glb`.err;
 
             if ! [ -f $DEPEND4GLFILE ]
             then
@@ -596,6 +597,41 @@ function compileit {
 	            fi
 				echo "Compiling $DEPENDGLOB4GLFILE from $PWD failed ($RET)."  >> $ERRORLOG
 				echo "Compiling $DEPENDGLOB4GLFILE from $PWD failed ($RET)."  >> $GLOBLOG
+				
+
+		        ######################################################
+		        #is this "does not exist in the database ()" error ?
+		        ######################################################
+
+				if [ -f $DEPEND4GLERR ]
+                then
+
+					ERRLINES=`cat $DEPEND4GLERR | grep -c "does not exist in the database ()"`
+					if [ "$SCRIPTDEBUG" = "1" ]
+				    then
+			    			echo "'does not exist in the database ()' found in $DEPEND4GLERR = $ERRLINES"
+			        fi
+					if test $ERRLINES != "0"
+					then
+				        let FAILDEFLIKE=FAILDEFLIKE+1
+					    if [ "$VERBOSE" = "1" ]
+					    then
+							echo "Ignoring error - fails DEFINE LIKE not in database."
+			            fi
+						echo "Ignoring error - fails DEFINE LIKE not in database." >> $ERRORLOG
+					    #FIXME: log filename to $DEFINELIKELIST
+			            #FIXME: extract error lines to $DEFINELIKEERROR
+				        echo "##########################################################" >> $ERRORLOG
+						return
+			        fi
+                else
+					echo "$DEPEND4GLERR not created." >> $ERRORLOG
+				    if [ "$VERBOSE" = "1" ]
+				    then
+						echo "$DEPEND4GLERR not created."
+                    fi
+				fi
+
 				WASERROR=1
 				#we will step on this file again, so we don't want to count this twice:
 				#let COMPFAIL4GL=COMPFAIL4GL+1
@@ -1000,7 +1036,7 @@ function doit {
     COMPILER=aubit
     #compiler used for compatibility fail check:
 	ALTCOMPILER=4js
-    AUBITCMPLCMD="4glpc -debug -noerrcode" #-verbose
+    AUBITCMPLCMD="4glpc -noerrcode" #-verbose -debug
     FOURJSCMPLCMD=fglcomp
     QUERIXCMPLCMD=fglc
     RECURSIVE=0

@@ -453,7 +453,13 @@ do
 
           if [ "$err_code" != "0" ]
           then
-		  	if [ -f $errfname ]
+			if [ "$err_code" = "139" ]
+	        then
+	        	echo "4glc core dump"
+	            exit 139
+			fi
+
+			if [ -f $errfname ]
             then
 				showerror
 				$output "Error compiling $a - see $errfname"
@@ -465,7 +471,6 @@ do
 			then
             	$output err_msg is: $err_msg
                 $output err_code is: $err_code
-                $output Please check file "$fname".err
                 $output 'You can also "export DEBUG=ALL" to get "debug.out" file'
             fi
 

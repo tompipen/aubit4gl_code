@@ -1,4 +1,4 @@
-#   @(#)$Id: a4gl.mk,v 1.4 2001-09-12 13:22:28 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.5 2001-09-15 01:01:09 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -80,6 +80,8 @@ A4GL_SUFFIXES = .ao .4gl .c .4ae .afr .per .iem .msg .hlp
 #.4gl.ao:
 .4gl.ao:
 	${A4GL_CC} $< -c -o ${OBJSTORE}$@
+#	${A4GL_CC} $? -c -o ${OBJSTORE}$@
+
 #	${A4GL_CC} $< -c -o $@
 #using VPATH:
 #	echo $^
@@ -101,6 +103,7 @@ A4GL_SUFFIXES = .ao .4gl .c .4ae .afr .per .iem .msg .hlp
 #using VPATH:
 #	${A4GL_FC} $^ > /dev/null
 	${A4GL_FC} $^ ${FORMSTORE}$@
+	rm -f ${FORMSTORE}$*.frm
 	ln ${FORMSTORE}$@ ${FORMSTORE}$*.frm
 #if I do this, programs will not be able to find forms; this need to be
 #changed in form compiler and aubit compiler. Untill we do, make will always

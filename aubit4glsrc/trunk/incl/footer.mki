@@ -87,10 +87,12 @@ DEBRIS.i4gl = ${FILES.4go} ${FILES.frm} ${FILES.iem}
 DEBRIS.aubit = 	${FILES.ao} ${FILES.afr} ${FILES.hlp} ${FILES.4gl:.4gl=.c} \
 				${FILES.4gl:.4gl=.h} ${FILES.per:.per=.c} \
 				${GLOBALS.4gl:.4gl=.glb} \
-				$(addprefix ${FORMSTORE}, ${FILES.afr})
+				${OBJSTORE}${PROG.4ae} \
+                $(addprefix ${OBJSTORE}, ${FILES.ao}) \
 
-#				${OBJSTORE}${PROG.4ae} \
-#                $(addprefix ${OBJSTORE}, ${FILES.ao}) \
+#				$(addprefix ${FORMSTORE}, ${FILES.afr}) \
+#				$(addprefix ${FORMSTORE}, ${FILES.frm})
+
 
 
 default:	${DEFAULT}
@@ -120,6 +122,7 @@ ${PROG.42r}:	${DBASE.sch} ${FILES.42m}
 #${PROG.4ae}:	debug ${FILES.ao} enddebug
 ${PROG.4ae}:	${FILES.ao}
 #	echo ***DEBUG 1:*** ${FILES.ao}
+#	@echo $?
 	${A4GL_CC} -o $@ $^ ${A4GL_CC_LDFLAGS}
 
 ${PROG.42e}:	${DBASE.sch} ${FILES.42o}

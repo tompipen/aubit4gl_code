@@ -25,10 +25,9 @@ vpath %.42r ${MAXDIR}/gprog
 vpath %.42m ${MAXDIR}/gprog:${MAXDIR}/winds:${MAXDIR}/main
 vpath %.42f ${MAXDIR}/gform:${MAXDIR}/gform/ENG
 vpath %.42x ${MAXDIR}/gprog
-vpath %.4ae ${MAXDIR}/aprog
-vpath %.ao  ${MAXDIR}/aprog
-#vpath %.ao  ../aprog
-GPATH = ${MAXDIR}/aprog:${MAXDIR}/aform
+#vpath %.4ae ${MAXDIR}/aprog
+#vpath %.ao  ${MAXDIR}/aprog
+#GPATH = ${MAXDIR}/aprog:${MAXDIR}/aform
 vpath %.afr ${MAXDIR}/aform
 
 #all files in /help, should be named as *.msg, but are not:
@@ -45,9 +44,9 @@ ALLFORMS.per= $(wildcard *.per) $(wildcard ./ENG/*.per)
 DBASE     	= maindb
 
 #LIBSTORE    =${MAXDIR}/aprog/
-OBJSTORE    =${MAXDIR}/aprog/
-EXECSTORE   =${MAXDIR}/aprog/
-FORMSTORE	=${MAXDIR}/aform/
+#OBJSTORE    =${MAXDIR}/aprog/
+#EXECSTORE   =${MAXDIR}/aprog/
+#FORMSTORE	=${MAXDIR}/aform/
 #HELPSTORE	=${MAXDIR}/aprog/
 
 #------------------------ EOF ------------------------------
