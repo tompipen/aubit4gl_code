@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.8 2003-05-15 07:10:37 mikeaubury Exp $
+# $Id: dump.c,v 1.9 2004-01-29 08:35:41 mikeaubury Exp $
 #*/
 
 /**
@@ -112,7 +112,7 @@ main (int argc, char *argv[])
 
 
 
-  //XDR xdrp;
+  /*XDR xdrp;*/
   int a;
 
   if (argc != 2)
@@ -132,9 +132,9 @@ main (int argc, char *argv[])
   fclose (f);
   memset (&this_report, 0, sizeof (struct report));
 
-  //xdrstdio_create (&xdrp, f, XDR_DECODE);
+  /*xdrstdio_create (&xdrp, f, XDR_DECODE);*/
 
-  //a = xdr_report (&xdrp, &this_report);       //in lib/libform/form_xdr/formwrite2.c
+  /*a = xdr_report (&xdrp, &this_report);       //in lib/libform/form_xdr/formwrite2.c*/
 
   a = A4GL_read_data_from_file ("report", &this_report, argv[1]);
 

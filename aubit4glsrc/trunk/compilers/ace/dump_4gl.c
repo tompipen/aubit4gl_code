@@ -450,7 +450,7 @@ decode_simple (struct simple_expr *e)
 void
 decode_agg (int aggid)
 {
-  //this_report.aggs.aggs_val[aggid].
+  /*this_report.aggs.aggs_val[aggid].*/
   if (this_report.aggs.aggs_val[aggid].isgroup)
     {
       printf (" GROUP ");
@@ -583,7 +583,7 @@ void
 decode_if (struct cmd_if *cmd)
 {
   printf ("IF ");
-  //printf ("");
+  /*printf ("");*/
   decode_expr (&cmd->condition);
   printf (" THEN \n");
   lvl++;
@@ -847,9 +847,9 @@ replace_vars_sql (struct select_stmts *ptr)
   lpos = &cptr[0];
   for (a = 0; a < ptr->varpos.varpos_len; a++)
     {
-      // Firstly - split our string into segments
-      // by blanking out the '?' to /0
-      //
+      /* Firstly - split our string into segments*/
+      /* by blanking out the '?' to /0*/
+      /**/
       cptr[ptr->varpos.varpos_val[a]] = 0;
       strcat (buff, lpos);
       strcat (buff, "mv_");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.83 2004-01-28 16:21:03 mikeaubury Exp $
+# $Id: lexer.c,v 1.84 2004-01-29 08:33:44 mikeaubury Exp $
 #*/
 
 /**
@@ -51,10 +51,10 @@
 #include "y.tab.h"
 #include <ctype.h>
 
-//prevent a4gl_4glc_int.h from including windows.h that we don't need here, that would
-//mess up constants defined in y.tab.h generated with new version of Bison
-// To Mike: please resist the urge to name constants like "CHAR" "STRING" "COMMA" etc.
-// please use A4GL_ namespace.
+/*prevent a4gl_4glc_int.h from including windows.h that we don't need here, that would*/
+/*mess up constants defined in y.tab.h generated with new version of Bison*/
+/* To Mike: please resist the urge to name constants like "CHAR" "STRING" "COMMA" etc.*/
+/* please use A4GL_ namespace.*/
 #define _NO_WINDOWS_H_
 #include "a4gl_4glc_int.h"
 
@@ -170,22 +170,22 @@ mja_fgetc (FILE * f)
 
   /* UNIX will end the line with 13(CR=\r) and 10(LF=\n); DOS will end it with only 10(LF=\n) */
 
-  if (a == '\n')		//ASCII 10 = LF
+  if (a == '\n')		/*ASCII 10 = LF*/
     {
       yylineno++;
       fpos = A4GL_memfile_ftell (f);
     }
 
-// maintain a buffer (yyline) holding current line being scanned
+/* maintain a buffer (yyline) holding current line being scanned*/
   if ((yyline_len == 0) || (yyline[yyline_len - 1] == '\n'))
-    // we're starting a new line - clear and reset
+    /* we're starting a new line - clear and reset*/
     {
       yyline[0] = a;
       yyline_len = 1;
       yyline_fpos = A4GL_memfile_ftell (f);
     }
   else
-    // append char to line buffer - avoid overflow by shifting left
+    /* append char to line buffer - avoid overflow by shifting left*/
     {
       if (yyline_len > 255)
 	{
@@ -214,7 +214,7 @@ mja_ungetc (int a, FILE * f)
       fpos = A4GL_memfile_ftell (f);
     }
 
-  // remove from current line buffer
+  /* remove from current line buffer*/
   if (yyline_len > 0)
     yyline[--yyline_len] = '\0';
 
@@ -678,7 +678,7 @@ read_word2 (FILE * f, int *t)
       ccat (word, a, instrs || instrd);
       escp = 0;
 
-    }				// while loop ends here
+    }				/* while loop ends here*/
 
 }
 
@@ -1022,7 +1022,7 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
 	  static char tmpbuff[2000];
 	  A4GL_memfile_fseek (f, yyline_fpos, SEEK_SET);
 	  tl = A4GL_memfile_ftell (f);
-	  //printf("a-tl = %d\n",a-tl);
+	  /*printf("a-tl = %d\n",a-tl);*/
 	  A4GL_memfile_fread (tmpbuff, a - tl, 1, f);
 	  tmpbuff[a - tl] = 0;
 	  strcpy (&yyline[yyline_len], tmpbuff);
@@ -1108,9 +1108,9 @@ fix_bad_strings (char *s)
 	  continue;
 	}
 
-// We have one '\'
+/* We have one '\'*/
 
-      if(!strchr(allowed_escape,s[a+1])) {  // Fix \something where something isnt valid..
+      if(!strchr(allowed_escape,s[a+1])) {  /* Fix \something where something isnt valid..*/
 	  buff[c++] = s[a + 1];
 	  a++;
 	  continue;
@@ -1127,15 +1127,15 @@ fix_bad_strings (char *s)
   return;
 }
 
-//static int sql_kword(int a) {
-//switch (a) {
-	//case WHERE:
-	//case FROM:
-	//case SELECT:
-		//return 1;
-//}
-//return 0;
-//}
+/*static int sql_kword(int a) {*/
+/*switch (a) {*/
+	/*case WHERE:*/
+	/*case FROM:*/
+	/*case SELECT:*/
+		/*return 1;*/
+/*}*/
+/*return 0;*/
+/*}*/
 
 
 /**
@@ -1148,7 +1148,7 @@ fix_bad_strings (char *s)
  * @todo - convert identifier to USER_DTYPE if required....
  */
 int
-//yylex (void)
+/*yylex (void)*/
 a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 {
   int a;
@@ -1156,15 +1156,15 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   char buffval[20480];
   int allow;
   static int last_pc = 0;
-//int r;
-//short *stack_cnt;
+/*int r;*/
+/*short *stack_cnt;*/
   strcpy(buff,"");
 
-  //printf("In yylex ... yystate=%d\n", yystate);
-  //printf("%p %d  %p %p\n",pyylval,yystate,yys1,yys2);
-  //for (stack_cnt=(short *)yys2;stack_cnt>=(short *)yys1;stack_cnt--) {
-  //printf(" ==>%d\n",*stack_cnt);
-  //}
+  /*printf("In yylex ... yystate=%d\n", yystate);*/
+  /*printf("%p %d  %p %p\n",pyylval,yystate,yys1,yys2);*/
+  /*for (stack_cnt=(short *)yys2;stack_cnt>=(short *)yys1;stack_cnt--) {*/
+  /*printf(" ==>%d\n",*stack_cnt);*/
+  /*}*/
 
   current_yylex_state = yystate;
 
@@ -1203,8 +1203,8 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
   A4GL_debug ("chk_word returns token=%d, buff=%s state=%d\n", a, buff, yystate);
 
-  //if (chk4var)
-  //a = NAMED_GEN;
+  /*if (chk4var)*/
+  /*a = NAMED_GEN;*/
 
 
   allow = allow_token_state (yystate, a);
@@ -1251,14 +1251,14 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
       a != KW_FALSE && a != KW_NULL &&
       (strcmp (acl_getenv ("A4GL_RESERVEWORDS"), "YES") != 0))
     {
-      //r=chk_for_kw_in(yys1,yys2,a,buff);
+      /*r=chk_for_kw_in(yys1,yys2,a,buff);*/
 
 
 
-      //r = wants_kw_token (yystate, a);
+      /*r = wants_kw_token (yystate, a);*/
 
 
-      //printf ("wants_kw_token -> %d state = %d a=%d", r,yystate,a);
+      /*printf ("wants_kw_token -> %d state = %d a=%d", r,yystate,a);*/
       switch (r)
 	{
 	case 0:
@@ -1330,14 +1330,14 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
       to_lower_str (buff);
     }
 
-  //printf("Buff=%s\n",buff);
+  /*printf("Buff=%s\n",buff);*/
   if (strlen(buff)) fix_bad_strings (buff);
-  //printf("After Buff=%s\n",buff);
+  /*printf("After Buff=%s\n",buff);*/
 
   /* call set_str() to send back to the parser the text/value 
    * associated with the token.
    */
-  //set_str (buff);
+  /*set_str (buff);*/
   set_str (pyylval, buff);
 
   lastword = buff;
@@ -1406,7 +1406,7 @@ get_namespace (char *s)
 {
 
   if (is_builtin_func (s))
-    return "aclfgl_";		// Always has aclfgl_...
+    return "aclfgl_";		/* Always has aclfgl_...*/
 
   return namespace;
 }

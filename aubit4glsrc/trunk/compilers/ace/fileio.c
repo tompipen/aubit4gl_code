@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fileio.c,v 1.7 2003-06-06 09:52:35 mikeaubury Exp $
+# $Id: fileio.c,v 1.8 2004-01-29 08:35:41 mikeaubury Exp $
 #*/
 
 /**
@@ -52,11 +52,11 @@
 
 extern FILE *yyin;
 extern char *outputfilename;	/* defined in libaubit4gl */
-//#ifdef YYDEBUG
+/*#ifdef YYDEBUG*/
 extern int a4gl_ace_yydebug;	/* defined in y.tab.c */
-//#else /*  */
-//int yydebug;
-//#endif /*  */
+/*#else */
+/*int yydebug;*/
+/*#endif */
 
 char outputfile[132];
 int lineno;

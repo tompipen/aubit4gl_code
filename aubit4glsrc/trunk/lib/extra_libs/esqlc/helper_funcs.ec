@@ -1,7 +1,7 @@
-//#include "a4gl_incl_4glhdr.h"
+/*#include "a4gl_incl_4glhdr.h"*/
 
 
-//needed for DTYPE_MONEY DTYPE_DECIMAL DTYPE_DTIME DTYPE_DATE ...
+/*needed for DTYPE_MONEY DTYPE_DECIMAL DTYPE_DTIME DTYPE_DATE ... */
 
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_esql.h"
@@ -34,8 +34,6 @@ if (dir=='o') {
 	A4GL_push_char(b);
 	A4GL_pop_var2(a4gl,5,size);
 
-	//A4GL_push_variable(a4gl,(size<<16)+5);
-   	//A4GL_pop_var2(&b,0,0x28);
 }
 
 A4GL_debug("All done..");
@@ -78,10 +76,11 @@ if (dir=='o') {
 
 
 
-
+/*
 // A4GL datetimes scales range from 0->107
 // some of these are not valid - but an array is a quick way to
 // look up the corresponding Informix Dtype qualifiers...
+*/
 int arr_dtime[]={
    	0,0,0, 	0, 	0, 	0, 	0, 	0, 	0, 	0, 	0, 
   0, 	0, 	0, 	0, 	0, 	0, 	1024, 	1538, 	2052, 	2566, 
@@ -118,11 +117,11 @@ a4gl=a4glv;
 #endif
 		dtcvasc(ptr,infx);
 
-// Debugging stuff only
+/* Debugging stuff only*/
 	A4GL_debug("Copy datetime in - aubit=%s\n",ptr);
 		dttoasc(infx,buff);
 	A4GL_debug("                Informix=%s\n",buff);
-// End of Debugging stuff only
+/* End of Debugging stuff only*/
 
 		free(ptr);
 	}
@@ -139,13 +138,13 @@ a4gl=a4glv;
 		A4GL_pop_param(a4gl,DTYPE_DTIME,size);
 
 
-// Debugging stuff only
+/* Debugging stuff only */
 		A4GL_push_dtime(a4gl);
 		ptr=A4GL_char_pop();
 	A4GL_debug("Copy datetime out - aubit=%s\n",ptr);
 	A4GL_debug("                Informix=%s\n",buff);
 		free(ptr);
-// End of Debugging stuff only
+/* End of Debugging stuff only */
 	}
 
 
@@ -168,7 +167,7 @@ void A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,in
 	
 		}
 		strcpy((char *)(infx),(char *)(a4gl));
-		A4GL_trim(infx); // @todo -  what about varchars ... ?
+		A4GL_trim(infx); /* @todo -  what about varchars ... ? */
 	}
 	if (mode=='o') {
 		if (indicat==-1||risnull(CCHARTYPE,(void*)infx)) { A4GL_setnull(0,(void *)a4gl,size); return;}
@@ -187,9 +186,9 @@ long orig_date;
 	if (mode=='i') {
 		if (A4GL_isnull(DTYPE_DATE,(void *)a4gl)) {rsetnull(CDATETYPE,(void *)infx);return;}
 		A4GL_get_date(*a4gl,&mdy_i[1],&mdy_i[0],&mdy_i[2]);
-		mdy[0]=mdy_i[0]; // In aubit - these are integers
-		mdy[1]=mdy_i[1]; // so we need to copy them into the shorts
-		mdy[2]=mdy_i[2]; // That informix is expecting
+		mdy[0]=mdy_i[0]; /* In aubit - these are integers */
+		mdy[1]=mdy_i[1]; /* so we need to copy them into the shorts */
+		mdy[2]=mdy_i[2]; /* That informix is expecting *
 		A4GL_debug("copy_date : mode=i - %d %d %d",mdy[0],mdy[1],mdy[2]);
 		rmdyjul(mdy,infx); // Set the informix one
 	}
@@ -198,7 +197,7 @@ long orig_date;
 		if (indicat==-1||risnull(CDATETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DATE,(void *)a4gl,size); return;}
 		A4GL_debug("Got date as : '%d' %x",*infx,*infx);
 		orig_date=*infx;
-		rjulmdy(orig_date,mdy); 				// Get the MDY from informix
+		rjulmdy(orig_date,mdy); 				/* Get the MDY from informix */
 		if (mdy[2]>3000||mdy[2]<1000 || mdy[0]<1||mdy[0]>12||mdy[1]<1||mdy[1]>31) {
 			// Suspect date ?
 			A4GL_debug("SUSPECT DATE DETECTED..... : %d %d %d %d",orig_date,mdy[0],mdy[1],mdy[2]);

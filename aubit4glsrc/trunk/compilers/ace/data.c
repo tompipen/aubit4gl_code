@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.19 2003-05-15 07:10:37 mikeaubury Exp $
+# $Id: data.c,v 1.20 2004-01-29 08:35:41 mikeaubury Exp $
 #*/
 
 /**
@@ -234,7 +234,7 @@ ace_add_variable (char *name, char *dstring, int category, int pno, int dtype,
 
   if (dim == 0)
     {
-      //printf ("Decoding datatype %s\n", dstring);
+      /*printf ("Decoding datatype %s\n", dstring);*/
       ob = strchr (dstring, '(');
       if (ob)
 	{
@@ -336,7 +336,7 @@ add_select (char *sql, char *temptabname)
   int whereposcnt = 0;
   char buffer[80];
 
-//printf(":-> %s\n",sql);
+/*printf(":-> %s\n",sql);*/
   /*
      sql may contain newlines, these signify special data in the select 
      statement...
@@ -448,7 +448,7 @@ add_select (char *sql, char *temptabname)
     ptr->has_where = 1;
 
 
-  //printf("Added : %d-%s\n",this_report.getdata.get_data_u.selects.selects_len,ptr->statement);
+  /*printf("Added : %d-%s\n",this_report.getdata.get_data_u.selects.selects_len,ptr->statement);*/
 }
 
 /**
@@ -533,13 +533,13 @@ add_zero_rows_where (struct select_stmts *ptr)
 {
   char *buff;
   char *buff1;
-  buff = malloc (strlen (ptr->statement) + 200);	// We need a little extra space...
+  buff = malloc (strlen (ptr->statement) + 200);	/* We need a little extra space...*/
 
   return ptr->statement;
   if (ptr->has_where == 0)
     {
       /* There is no where clause currently */
-      //printf("statement=\n%s\nwherepos1=%d\n",ptr->statement,ptr->wherepos1);
+      /*printf("statement=\n%s\nwherepos1=%d\n",ptr->statement,ptr->wherepos1);*/
 
       strncpy (buff, ptr->statement, ptr->wherepos1);
       buff[ptr->wherepos1] = 0;
@@ -609,7 +609,7 @@ execute_selects (void)
 
   int colsize;
   int coltype;
-  //char colname[256];
+  /*char colname[256];*/
   char *colname;
   int vid = 0;
 
@@ -659,7 +659,7 @@ execute_selects (void)
 
       for (b = 0; b < ptr->varids.varids_len; b++)
 	{
-	  //printf("Add null value");
+	  /*printf("Add null value");*/
 	  /* void dif_add_bind_int (void *list, long a); */
 	  dif_add_bind_int (xi, (long) nval);
 	  xic++;

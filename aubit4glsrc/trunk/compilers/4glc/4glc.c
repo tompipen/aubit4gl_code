@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.47 2003-05-15 07:10:19 mikeaubury Exp $
+# $Id: 4glc.c,v 1.48 2004-01-29 08:33:30 mikeaubury Exp $
 #
 */
 
@@ -55,7 +55,7 @@ extern int lcnt;
 extern FILE *yyin;
 extern char *outputfilename;	/* Defined in libaubit4gl */
 extern char infilename[132];
-extern int yyin_len;		//now in map.c
+extern int yyin_len;		/*now in map.c*/
 
 /*
 =====================================================================
@@ -100,7 +100,7 @@ main (int argc, char *argv[])
       printf ("Exit\n");
     }
 
-  //dump_var_records();
+  /*dump_var_records();*/
   A4GL_debug ("Exiting 4glc");
   exit (x);
 }

@@ -836,7 +836,6 @@ select_statement:
 in_select_statement:
 	SELECT op_ad sq_select_list table_expression sel_p2 {
              char buff[30000];
-             //int ni = 0,no = 0;
              sprintf(buff,"%s %s %s %s %s", $<str>1, $<str>2, $<str>3, $<str>4, $<str>5);
              sprintf($<str>$,"push_char(\"%s\");",buff);
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.34 2004-01-04 15:52:35 mikeaubury Exp $
+# $Id: variables.c,v 1.35 2004-01-29 08:34:00 mikeaubury Exp $
 #
 */
 
@@ -47,15 +47,15 @@
 #include "variables.h"
 
 
-// CONFIGURABLE...
+/* CONFIGURABLE...*/
 #define RECORD_LEVELS 128
-// 
+/* */
 
 extern char *outputfilename;
 
 
 /******************************************************************************/
-// Prototypes of static functions in this module...
+/* Prototypes of static functions in this module...*/
 static int has_name (struct name_list *namelist, char *name);
 static char get_variable_user_system (void);
 static struct variable *make_constant (char *name, char *value,
@@ -81,7 +81,7 @@ void make_function (char *name, int record_cnt);
 /******************************************************************************/
 
 
-//void dump_gvars (void);
+/*void dump_gvars (void);*/
 void set_yytext (char *s);
 int isin_command (char *s);
 char *rettype (char *s);
@@ -92,19 +92,19 @@ char *rettype (char *s);
 
 extern int in_define;
 
-// Are we setting User variables or System Variables ?
+/* Are we setting User variables or System Variables ?*/
 char system_or_user = '-';
 
 
-// Lists for our variables in each scope...
-struct variable **list_global = 0;	// Our List
-int list_global_cnt = 0;	// Number used in our list
-int list_global_alloc = 0;	// Space allocated for our list
+/* Lists for our variables in each scope...*/
+struct variable **list_global = 0;	/* Our List*/
+int list_global_cnt = 0;	/* Number used in our list*/
+int list_global_alloc = 0;	/* Space allocated for our list*/
 
 
-struct variable **list_imported_global = 0;	// Our List
-int list_imported_global_cnt = 0;	// Number used in our list
-int list_imported_global_alloc = 0;	// Space allocated for our list
+struct variable **list_imported_global = 0;	/* Our List*/
+int list_imported_global_cnt = 0;	/* Number used in our list*/
+int list_imported_global_alloc = 0;	/* Space allocated for our list*/
 
 struct variable **list_module = 0;
 int list_module_cnt = 0;
@@ -116,7 +116,7 @@ int list_local_cnt;
 int list_local_alloc;
 
 
-// Current variable...
+/* Current variable...*/
 struct variable *curr_v[RECORD_LEVELS];
 int v_initialized = 0;
 
@@ -137,8 +137,8 @@ get_variable_user_system ()
   return system_or_user;
 }
 
-//static void set_variable_scope(char n)        { scope=n; }
-//static char get_variable_scope()              { return scope; }
+/*static void set_variable_scope(char n)        { scope=n; }*/
+/*static char get_variable_scope()              { return scope; }*/
 
 
 
@@ -164,7 +164,7 @@ set_arr_subscripts (char *s_orig, int record_cnt)
   char *ptr;
   char s[512];
 
-  //printf("s_orig=%s\n",s_orig);
+  /*printf("s_orig=%s\n",s_orig);*/
 
   if (s_orig == 0)
     {
@@ -187,11 +187,11 @@ set_arr_subscripts (char *s_orig, int record_cnt)
 	  if (s[a] == ']')
 	    {
 	      s[a] = 0;
-	      //printf("--> %d %s\n",subcnt, ptr);
+	      /*printf("--> %d %s\n",subcnt, ptr);*/
 	      curr_v[record_cnt]->arr_subscripts[subcnt++] = atoi (ptr);
 	      s[a] = ']';
 	      ptr = &s[a + 2];
-	      a++;		// Skip over '['
+	      a++;		/* Skip over '['*/
 	    }
 	}
       curr_v[record_cnt]->arr_subscripts[subcnt++] = atoi (ptr);
@@ -236,7 +236,7 @@ add_linked_columns (struct linked_variable *linked, char *collist_orig)
 
 	}
     }
-// Last column to add...
+/* Last column to add...*/
   if (ptr_name == 0)
     {
       linked->col_list.name = strdup (ptr);
@@ -328,9 +328,9 @@ variable_action (int category, char *name, char *type, char *n,
   A4GL_debug ("variable_action (%d %s %s %s %s)\n", category, name, type, n,
 	      function);
 
-// Try to determine what we are doing.
-// This comes about from the old way of handling variables and
-// should be fixed properly sometime...
+/* Try to determine what we are doing.*/
+/* This comes about from the old way of handling variables and*/
+/* should be fixed properly sometime...*/
 
   if (strcmp (function, "add_constant") == 0 && mode == 0)
     {
@@ -382,7 +382,7 @@ variable_action (int category, char *name, char *type, char *n,
 
   A4GL_debug ("Mode=%d\n", mode);
 
-// We don't need to do the adding of the array for an assoc_array - this will already have been done...
+/* We don't need to do the adding of the array for an assoc_array - this will already have been done...*/
   if (mode == MODE_ADD_ARRAY)
     {
       if (adding_assoc == 1)
@@ -398,10 +398,10 @@ variable_action (int category, char *name, char *type, char *n,
 
 
 
-// Have we worked it out ?
+/* Have we worked it out ?*/
   if (mode == 0)
     {
-      // This shouldn't happen....
+      /* This shouldn't happen....*/
       printf ("Don't know what to do...\n");
       printf ("%d Name = %s type = %s n=%s function = %s\n", category, name,
 	      type, n, function);
@@ -410,7 +410,7 @@ variable_action (int category, char *name, char *type, char *n,
 
 
 
-// Now actually do it...
+/* Now actually do it...*/
   switch (mode)
     {
     case MODE_ADD_CONSTANT:
@@ -430,7 +430,7 @@ variable_action (int category, char *name, char *type, char *n,
       curr_v[record_cnt]->data.v_record.record_alloc = 0;
       curr_v[record_cnt]->data.v_record.linked = 0;
       record_cnt++;
-      curr_v[record_cnt] = 0;	// Make sure we're starting fresh...
+      curr_v[record_cnt] = 0;	/* Make sure we're starting fresh...*/
       break;
 
     case MODE_ADD_ENDRECORD:
@@ -493,7 +493,7 @@ variable_action (int category, char *name, char *type, char *n,
 
 
     case MODE_ADD_NAME:
-      break;			// We'll deal with this later
+      break;			/* We'll deal with this later*/
 
     default:
       printf ("Run out of actions %d\n", mode);
@@ -503,11 +503,11 @@ variable_action (int category, char *name, char *type, char *n,
     }
 
 
-  // We need to do this outside of the switch so that ADD_ASSOC and ADD_LINK can call it too...
+  /* We need to do this outside of the switch so that ADD_ASSOC and ADD_LINK can call it too...*/
 
   if (mode == MODE_ADD_NAME)
     {
-      // Is this the first name at this level ?
+      /* Is this the first name at this level ?*/
       if (curr_v[record_cnt] == 0)
 	{
 	  A4GL_debug ("First at level");
@@ -521,9 +521,9 @@ variable_action (int category, char *name, char *type, char *n,
 
 	  curr_v[record_cnt]->src_module = outputfilename;
 
-	  // Reports, menuhandlers & formhandlers
-	  // should all maintain their values between calls - hence
-	  // they will always be static....
+	  /* Reports, menuhandlers & formhandlers*/
+	  /* should all maintain their values between calls - hence*/
+	  /* they will always be static....*/
 	  if (isin_command ("REPORT") || isin_command ("FORMHANDLER")
 	      || isin_command ("MENUHANDLER"))
 	    {
@@ -535,11 +535,11 @@ variable_action (int category, char *name, char *type, char *n,
 	}
       else
 	{
-	  // We've already got one name..
-	  // Add some more to the list..
+	  /* We've already got one name..*/
+	  /* Add some more to the list..*/
 
 	  A4GL_debug ("Already have first at this level");
-	  // Walk to the end of the current list of names
+	  /* Walk to the end of the current list of names*/
 	  ptr = &curr_v[record_cnt]->names;
 	  A4GL_debug ("Walking..");
 	  while (ptr->next != 0)
@@ -556,7 +556,7 @@ variable_action (int category, char *name, char *type, char *n,
 
 
 
-      // some debugging stuff...
+      /* some debugging stuff...*/
       ptr = &curr_v[record_cnt]->names;
       while (ptr)
 	{
@@ -566,8 +566,8 @@ variable_action (int category, char *name, char *type, char *n,
 
     }
 
-  // curr_v[record_cnt] should now hold the variable we've just generated
-  //
+  /* curr_v[record_cnt] should now hold the variable we've just generated*/
+  /**/
   if (mode == MODE_ADD_TO_SCOPE)
     {
       add_to_scope (record_cnt, 0);
@@ -749,18 +749,18 @@ add_to_scope (int record_cnt, int unroll)
     }
 
 
-// If record_cnt is set then we're not adding it as a variable 
-// to local/module/global scope - but to the record at the level above...
+/* If record_cnt is set then we're not adding it as a variable */
+/* to local/module/global scope - but to the record at the level above...*/
 
 
   if (record_cnt)
     {
-      // We can add to an associative array - or a record....
+      /* We can add to an associative array - or a record....*/
 
       if (curr_v[record_cnt - 1]->variable_type != VARIABLE_TYPE_RECORD
 	  && curr_v[record_cnt - 1]->variable_type != VARIABLE_TYPE_ASSOC)
 	{
-	  // We have a problem...
+	  /* We have a problem...*/
 	  printf ("Last variable level was not a record!\n");
 	  assert (0);
 	}
@@ -773,7 +773,7 @@ add_to_scope (int record_cnt, int unroll)
 	  alloc = &curr_v[record_cnt - 1]->data.v_record.record_alloc;
 	}
 
-      // We can only store one variable here...
+      /* We can only store one variable here...*/
       if (curr_v[record_cnt - 1]->variable_type == VARIABLE_TYPE_ASSOC)
 	{
 	  tmp_1 = 0;
@@ -825,7 +825,7 @@ add_to_scope (int record_cnt, int unroll)
     }
 
 
-// Now - we can add to our variables list for our scope...
+/* Now - we can add to our variables list for our scope...*/
 
   if (*variable_holder && unroll == 0)
     {
@@ -909,7 +909,7 @@ has_name (struct name_list *namelist, char *name)
     {
       if (strcasecmp (namelist->name, name) == 0)
 	return 1;
-      //debug ("Check %s against %s nope", namelist->name, name);
+      /*debug ("Check %s against %s nope", namelist->name, name);*/
       ptr_name = ptr_name->next;
     }
   return 0;
@@ -928,16 +928,16 @@ find_variable_in (char *s, struct variable **list, int cnt)
 
 
 
-  // If we have no variables at this level - we can't do anything
+  /* If we have no variables at this level - we can't do anything*/
   if (list == 0)
     {
       return 0;
     }
 
-  // Copy across our variable so we can play with it...
+  /* Copy across our variable so we can play with it...*/
   strcpy (var_section, s);
   strip_bracket (var_section);
-  // Reset our next section (anything after a '.')
+  /* Reset our next section (anything after a '.')*/
   strcpy (var_nextsection, "");
 
   ptr_c = strchr (var_section, '.');
@@ -956,26 +956,26 @@ find_variable_in (char *s, struct variable **list, int cnt)
   for (a = 0; a < cnt; a++)
     {
       v = list[a];
-      // Can we find the name at this point ?
+      /* Can we find the name at this point ?*/
       if (!has_name (&v->names, var_section)
 	  && !strcmp (var_section, "*") == 0)
-	continue;		// No
+	continue;		/* No*/
 
-      // If we get to here we've found our name!
-      // Now we need to know what to do next....
+      /* If we get to here we've found our name!*/
+      /* Now we need to know what to do next....*/
 
       A4GL_debug ("v->variable_type=%d\n", v->variable_type);
       if (v->variable_type == VARIABLE_TYPE_FUNCTION_DECLARE)
 	{
-	  //debug("Got something .... %s @ %d (%s)\n",s,a,v->names.name);
-	  //a4gl_yyerror("This is the name of a function!");
+	  /*debug("Got something .... %s @ %d (%s)\n",s,a,v->names.name);*/
+	  /*a4gl_yyerror("This is the name of a function!");*/
 	  continue;
 	}
 
       if (v->variable_type == VARIABLE_TYPE_SIMPLE
 	  || v->variable_type == VARIABLE_TYPE_CONSTANT)
 	{
-	  // This is too easy...
+	  /* This is too easy...*/
 	  return v;
 	}
 
@@ -984,7 +984,7 @@ find_variable_in (char *s, struct variable **list, int cnt)
 	{
 
 
-	  // look for the next portion...
+	  /* look for the next portion...*/
 	  A4GL_trim (var_nextsection);
 	  if (strcmp (var_nextsection, "*") == 0)
 	    {
@@ -1008,11 +1008,11 @@ find_variable_in (char *s, struct variable **list, int cnt)
       if (v->variable_type == VARIABLE_TYPE_ASSOC)
 	{
 	  char buff[256];
-	  // Associate arrays always have a single record like entry for the
-	  // associated variable - and its always called 'internal'
+	  /* Associate arrays always have a single record like entry for the*/
+	  /* associated variable - and its always called 'internal'*/
 
-	  // If we're just looking for that - then we're fine...
-	  // But if that is a record - we need to carry on doing our nextsection bits
+	  /* If we're just looking for that - then we're fine...*/
+	  /* But if that is a record - we need to carry on doing our nextsection bits*/
 	  if (strlen (var_nextsection))
 	    {
 	      sprintf (buff, "%s.%s", ASSOC_INTERNAL, var_nextsection);
@@ -1046,7 +1046,7 @@ A4GL_debug("find_variable_ptr : %s",s);
           strcpy (buff2, &s[A4GL_findex (s, ')') + 1]);
           buff[A4GL_findex (buff, '(')] = 0;
           strcat (buff, buff2);
-        //printf("DOWNSHIFT : %s\n",buff);
+        /*printf("DOWNSHIFT : %s\n",buff);*/
           A4GL_convlower (buff);
 	  s=buff;
         }
@@ -1058,7 +1058,7 @@ A4GL_debug("find_variable_ptr : %s",s);
       strcpy (s, buff);
     }
 
-// First we look locally - then at module level - then globally
+/* First we look locally - then at module level - then globally*/
 
   ptr = find_variable_in (s, list_local, list_local_cnt);
   if (ptr)
@@ -1129,7 +1129,7 @@ A4GL_debug("-->%s",s);
 
   last_variable_ptr_found = ptr;
 
-  // Do they want the pointer ?
+  /* Do they want the pointer ?*/
   if (var_ptr)
     {
       *var_ptr = ptr;
@@ -1139,13 +1139,13 @@ A4GL_debug("-->%s",s);
 
   if (ptr->variable_type == VARIABLE_TYPE_ASSOC)
     {
-      // They don't want the assoc - they want the referenced variable...
+      /* They don't want the assoc - they want the referenced variable...*/
       ptr = ptr->data.v_assoc.variables[0];
-      *var_ptr = ptr;		// Carry on working with this one instead...
+      *var_ptr = ptr;		/* Carry on working with this one instead...*/
       last_variable_ptr_found = ptr;
     }
 
-  // We will probably have a simple variables at this point...
+  /* We will probably have a simple variables at this point...*/
   if (ptr->variable_type == VARIABLE_TYPE_SIMPLE)
     {
 
@@ -1176,7 +1176,7 @@ A4GL_debug("-->%s",s);
       return 0;
     }
 
-  // Don't know how we got to here....
+  /* Don't know how we got to here....*/
   a4gl_yyerror ("Internal error in find_variable");
   return 0;
 
@@ -1235,7 +1235,7 @@ dump_variable_records (struct variable **v, int cnt, int lvl)
       printf (" ");
 
 
-// If its an array - tell them
+/* If its an array - tell them*/
       if (curr_v[a]->is_array)
 	{
 	  for (c = 0; c < MAX_ARR_SUB; c++)
@@ -1368,7 +1368,7 @@ print_variables (void)
 
   char scope;
 
-  // MJA - NEWVARIABLE
+  /* MJA - NEWVARIABLE*/
 
   A4GL_debug
     ("/**********************************************************/\n");
@@ -1394,7 +1394,7 @@ print_variables (void)
       A4GL_debug ("***** DUMP GVARS ****");
 #endif
 
-      //printf("Dump Globals\n");
+      /*printf("Dump Globals\n");*/
       if (only_doing_globals ())
 	{
 	  dump_gvars ();
@@ -1564,14 +1564,14 @@ isvartype (char *s, int mode)
 	return 0;
   }
   if (mode == 1)
-    {				// Isarray
+    {				/* Isarray*/
       return v->is_array;
     }
 
 
 
   if (mode == 2)
-    {				// Isrecord
+    {				/* Isrecord*/
 
       if (v->variable_type == VARIABLE_TYPE_ASSOC)
 	{
@@ -1655,11 +1655,11 @@ get_variable_dets (char *s, int *type, int *arrsize,
           strcpy (buff2, &s[A4GL_findex (s, ')') + 1]);
           buff[A4GL_findex (buff, '(')] = 0;
           strcat (buff, buff2);
-        //printf("DOWNSHIFT : %s\n",buff);
+        /*printf("DOWNSHIFT : %s\n",buff);*/
           A4GL_convlower (buff);
         }
 
-//printf("get_var : %s\n",buff);
+/*printf("get_var : %s\n",buff);*/
   strip_bracket (buff);
   v = find_variable_ptr (buff);
 
@@ -1707,7 +1707,7 @@ check_for_constant (char *name, char *buff)
 {
   struct variable *v;
   int dbg = 0;
-  //char buff2[256];
+  /*char buff2[256];*/
   strcpy (buff, name);
 
 
@@ -1765,7 +1765,7 @@ check_for_constant (char *name, char *buff)
     }
 
 
-// Shouldn't get to here...
+/* Shouldn't get to here...*/
 
   return 0;
 }
@@ -1789,7 +1789,7 @@ strip_bracket (char *s)
       if (f == 0 && s[a] != ' ') {
 	buff[c++] = s[a];
 	buff[c]=0;
-	//A4GL_debug("--> %s",buff);
+	/*A4GL_debug("--> %s",buff);*/
 	}
       if (s[a] == ']')
 	f--;
@@ -1810,7 +1810,7 @@ split_record (char *s, struct variable **v_record, struct variable **v1,
   char save[256];
   char *ptr;
 
-  // MJA - NEWVARIABLE
+  /* MJA - NEWVARIABLE*/
   A4GL_debug ("SPLIT_RECORD : %s\n", s);
 
   if (strchr (s, '\n'))
@@ -1820,7 +1820,7 @@ split_record (char *s, struct variable **v_record, struct variable **v1,
 
       char r1[256];
       char r2[256];
-      //char buff[256];
+      /*char buff[256];*/
 
       A4GL_debug ("Got a thru...");
 
@@ -1907,10 +1907,10 @@ split_record (char *s, struct variable **v_record, struct variable **v1,
       return 0;
     }
 
-  //printf ("All done here - v_record=%p v1=%p v2=%p\n", *v_record, *v1, *v2);
-  //printf ("v_record->names.name=%s\n", (*v_record)->names.name);
-  //printf ("v1->names.name=%s\n", (*v1)->names.name);
-  //printf ("v2->names.name=%s\n", (*v2)->names.name);
+  /*printf ("All done here - v_record=%p v1=%p v2=%p\n", *v_record, *v1, *v2);*/
+  /*printf ("v_record->names.name=%s\n", (*v_record)->names.name);*/
+  /*printf ("v1->names.name=%s\n", (*v1)->names.name);*/
+  /*printf ("v2->names.name=%s\n", (*v2)->names.name);*/
   return 1;
 }
 
@@ -1928,12 +1928,12 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
   struct record_list_entry *e;
   struct record_list *list;
 
-//printf("Add to record_list\n");
+/*printf("Add to record_list\n");*/
 
   if (v->is_array)
     {
-      //a4gl_yyerror ("Can't use a variable containing an array in this context\n");
-      //return 0;
+      /*a4gl_yyerror ("Can't use a variable containing an array in this context\n");*/
+      /*return 0;*/
     }
 
   list = *list_ptr;
@@ -1954,9 +1954,9 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
         int dim;
         char subscript[255];
         char fmt[255];
-      // We've got another bl**dy record - expand this one too...
-      //printf ("IS ARRAY  : %d\n", v->is_array);
-      //printf ("Add next level...\n");
+      /* We've got another bl**dy record - expand this one too...*/
+      /*printf ("IS ARRAY  : %d\n", v->is_array);*/
+      /*printf ("Add next level...\n");*/
 
         strcpy(subscript,"");
         strcpy(fmt,"");
@@ -2051,11 +2051,11 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 	int dim;
 	char subscript[255];
 	char fmt[255];
-	//if (v->is_array) { printf("v->isarray && record %d %d %d %d %d\n", v->arr_subscripts[0], v->arr_subscripts[1], v->arr_subscripts[2], v->arr_subscripts[3], v->arr_subscripts[4]); }
+	/*if (v->is_array) { printf("v->isarray && record %d %d %d %d %d\n", v->arr_subscripts[0], v->arr_subscripts[1], v->arr_subscripts[2], v->arr_subscripts[3], v->arr_subscripts[4]); }*/
 
-      // We've got another bl**dy record - expand this one too...
-      //printf ("IS ARRAY  : %d\n", v->is_array);
-      //printf ("Add next level...\n");
+      /* We've got another bl**dy record - expand this one too...*/
+      /*printf ("IS ARRAY  : %d\n", v->is_array);*/
+      /*printf ("Add next level...\n");*/
 
       	strcpy(subscript,"");
 	strcpy(fmt,"");
@@ -2137,7 +2137,7 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 	return list;
 
     }
-  //printf ("Reached end of add_to_Record_list... bugger...\n");
+  /*printf ("Reached end of add_to_Record_list... bugger...\n");*/
   return 0;
 }
 
@@ -2174,7 +2174,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
       dot[1] = strrchr (record2, '.');
       if (dot[0] == 0 || dot[1] == 0)
 	{
-	  // Can't find a dot in a thru ?
+	  /* Can't find a dot in a thru ?*/
 	  a4gl_yyerror
 	    ("At least one of the entries in the 'thru' is not part of a record");
 	  return 0;
@@ -2210,15 +2210,15 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 
       A4GL_debug ("subrecord1=%s subrecord2=%s\n", subrecord1, subrecord2);
 
-      // At this point record1 and record2 should be the same...
-      // We'll get rid of any crud from record2 (any brackets etc) to find it 
-      // in our variables list
-      // We'll keep record1 intact..
+      /* At this point record1 and record2 should be the same...*/
+      /* We'll get rid of any crud from record2 (any brackets etc) to find it */
+      /* in our variables list*/
+      /* We'll keep record1 intact..*/
 
       strip_bracket (record2);
       v_record = find_variable_ptr (record2);
 
-      // Can we find it - is it declared ?
+      /* Can we find it - is it declared ?*/
       if (v_record == 0)
 	{
 	  printf ("Whoops - record not found for %s (1)\n", record2);
@@ -2278,7 +2278,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 
       if (strstr (s, ".*") != 0 && strlen (prefix) == 0)
 	{
-	  //extern int yyline;
+	  /*extern int yyline;*/
 	  char buff[255];
 	  char buff2[255];
 	  char *ptr;
@@ -2305,7 +2305,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 
 	  return list;
 	}
-      //printf ("S=%s\n", s);
+      /*printf ("S=%s\n", s);*/
       a4gl_yyerror ("ERROR: Variable is not a record!\n");
       return 0;
     }
@@ -2335,7 +2335,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
     }
 
 
-  // Now - we'll start scanning through our record entries - looking for the first one...
+  /* Now - we'll start scanning through our record entries - looking for the first one...*/
 
 
   for (a = record_start; a <= record_end; a++)
@@ -2344,7 +2344,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 	  (&list, prefix_buff, v_record->data.v_record.variables[a]) == 0)
 	{
 	  printf ("Bugger -  something went wrong...\n");
-	  // Should free list here...
+	  /* Should free list here...*/
 	  return 0;
 	}
     }
@@ -2359,9 +2359,9 @@ int
 push_bind_rec (char *s, char bindtype)
 {
   int a;
-//int dtype;
-//int size;
-//char buff[256];
+/*int dtype;*/
+/*int size;*/
+/*char buff[256];*/
   struct record_list *list;
   A4GL_debug ("In push_bind_rec : '%s'", s);
 
@@ -2435,20 +2435,20 @@ print_push_rec (char *s, void **b)
       return 0;
     }
 
-//printf("list->records_cnt=%d\n",list->records_cnt);
+/*printf("list->records_cnt=%d\n",list->records_cnt);*/
 
   for (a = 0; a < list->records_cnt; a++)
     {
-      //printf("a=%d\n",a);
+      /*printf("a=%d\n",a);*/
       dtype = list->list[a]->variable->data.v_simple.datatype;
       size = list->list[a]->variable->data.v_simple.dimensions[0];
       dtype += size << 16;
 
       sprintf (buff, "A4GL_push_variable(&%s,0x%x);", list->list[a]->name,
 	       dtype);
-      //printf("**** %s\n",buff);
+      /*printf("**** %s\n",buff);*/
       A4GL_append_expr (*b, buff);
-      //printf("a=%d list->records_cnt=%d\n",a,list->records_cnt);
+      /*printf("a=%d list->records_cnt=%d\n",a,list->records_cnt);*/
     }
   return list->records_cnt;
 
@@ -2474,7 +2474,7 @@ recursive_print_push_rec (char *s, void **b, char *stem_orig)
 
 
   if (strchr (s, '\n') == 0)
-    {				// Ie - its not a range....
+    {				/* Ie - its not a range....*/
       vtype = find_variable (s, &dtype, &size, &is_array, 0);
     }
   else
@@ -2483,7 +2483,7 @@ recursive_print_push_rec (char *s, void **b, char *stem_orig)
     }
 
 
-  // Variable not found...
+  /* Variable not found...*/
   if (vtype == 0)
     {
       printf ("Variable not found - should have been picked up already - %s",
@@ -2491,7 +2491,7 @@ recursive_print_push_rec (char *s, void **b, char *stem_orig)
       exit (0);
     }
 
-  // Normal variable
+  /* Normal variable*/
   if (vtype == 1)
     {
       dtype += size << 16;
@@ -2502,7 +2502,7 @@ recursive_print_push_rec (char *s, void **b, char *stem_orig)
 
   if (vtype == -2)
     {
-      //printf ("Splitting...'%s'\n", s);
+      /*printf ("Splitting...'%s'\n", s);*/
 
       if (split_record (s, &v_record, &v_start, &v_end))
 	{
@@ -2514,7 +2514,7 @@ recursive_print_push_rec (char *s, void **b, char *stem_orig)
 	      exit (0);
 	    }
 
-	  //printf ("START LOOPING\n");
+	  /*printf ("START LOOPING\n");*/
 	  v_loop = v_start;
 
 	  ptr = strchr (s, '\n');
@@ -2528,31 +2528,31 @@ recursive_print_push_rec (char *s, void **b, char *stem_orig)
 		}
 	    }
 
-	  //printf ("s=%s\n", s);
+	  /*printf ("s=%s\n", s);*/
 
 	  while (v_loop)
 	    {
 	      char bbz[256];
-	      //if (strchr(s,'*')) { // Get rid of the .*
-	      //strcpy(bbz,s); bbz[strlen(bbz)-2]=0; 
-	      //}  else {
+	      /*if (strchr(s,'*')) { // Get rid of the .**/
+	      /*strcpy(bbz,s); bbz[strlen(bbz)-2]=0; */
+	      /*}  else {*/
 	      strcpy (bbz, s);
-	      //strcat(bbz,".");
-	      //}
+	      /*strcat(bbz,".");*/
+	      /*}*/
 
-	      //strcat(bbz,v_loop->names.name); // Get the propper name
+	      /*strcat(bbz,v_loop->names.name); // Get the propper name*/
 
-	      //printf ("Looking again for '%s'\n", bbz);
+	      /*printf ("Looking again for '%s'\n", bbz);*/
 	      c += recursive_print_push_rec (bbz, b, stem);
 	      v_loop = get_next_variable (v_record, v_loop, v_end);
 	    }
-	  //printf ("END LOOPING\n");
+	  /*printf ("END LOOPING\n");*/
 	  return c;
 
 	}
       else
 	{
-	  // Couldn't split the record - shouldn't happen...
+	  /* Couldn't split the record - shouldn't happen...*/
 	  printf ("Couldn't split record : %s\n", s);
 	}
     }
@@ -2566,9 +2566,9 @@ recursive_print_push_rec (char *s, void **b, char *stem_orig)
 void
 clr_function_constants ()
 {
-  // Here - we need to clear down the current 'locals' lists...
-  // as a quick fix - we'll just zero everything
-  // but these *really* should be 'freed' properly.....
+  /* Here - we need to clear down the current 'locals' lists...*/
+  /* as a quick fix - we'll just zero everything*/
+  /* but these *really* should be 'freed' properly.....*/
   list_local_cnt = 0;
   list_local_alloc = 0;
   list_local = 0;
@@ -2584,7 +2584,7 @@ print_variable (struct variable *v, char scope, int level)
   char name[256];
   static_extern_flg = 0;
   strcpy (arrbuff, "-1");
-  // are we dealing with the sqlca variable ?
+  /* are we dealing with the sqlca variable ?*/
   if (level == 0 && strcmp (v->names.name, "sqlca") == 0)
     {
 #ifdef DEBUG
@@ -2617,7 +2617,7 @@ print_variable (struct variable *v, char scope, int level)
 
 
 
-  if (level == 0)		// We only print 'static' or 'extern' at the start of a record/variable - not a nested record
+  if (level == 0)		/* We only print 'static' or 'extern' at the start of a record/variable - not a nested record*/
     {
       if (scope == 'G')
 	{
@@ -2641,7 +2641,7 @@ print_variable (struct variable *v, char scope, int level)
   strcpy (name, v->names.name);
   if (level == 0 && (A4GL_isyes (acl_getenv ("MARK_SCOPE"))))
     {
-      //printf("%s %c %c %c\n",name,v->user_system,v->scope,scope);
+      /*printf("%s %c %c %c\n",name,v->user_system,v->scope,scope);*/
       if (is_system_variable (name));
       else
 	{
@@ -2681,7 +2681,7 @@ print_variable (struct variable *v, char scope, int level)
 	}
 
       if (v->data.v_simple.datatype == 0)
-	{			// Its a 'char' (may need varchar & friends too...
+	{			/* Its a 'char' (may need varchar & friends too...*/
 	  print_define_char (tmpbuff, v->data.v_simple.dimensions[0],
 			     static_extern_flg);
 	}
@@ -2716,7 +2716,7 @@ print_variable (struct variable *v, char scope, int level)
       sprintf (buff1, "%d", v->data.v_assoc.char_size);
       sprintf (buff2, "%d", v->data.v_assoc.size);
 
-      //print_declare_associate_2 (v->names.name,buff1,buff2);
+      /*print_declare_associate_2 (v->names.name,buff1,buff2);*/
 
       memcpy (&v2, v->data.v_assoc.variables[0], sizeof (struct variable));
 
@@ -2729,8 +2729,8 @@ print_variable (struct variable *v, char scope, int level)
 
   if (v->variable_type == VARIABLE_TYPE_CONSTANT)
     {
-      // Maybe we should print out #define's for these ?
-      // Maybe not - they should already have been converted by lexer.c
+      /* Maybe we should print out #define's for these ?*/
+      /* Maybe not - they should already have been converted by lexer.c*/
     }
 
 
@@ -2750,8 +2750,8 @@ rettype_integer (int n)
 {
   char s[200];
 
-  //static char rs[20] = "long";
-  //int a;
+  /*static char rs[20] = "long";*/
+  /*int a;*/
 
   A4GL_debug ("rettype_integer : %d\n", n);
 
@@ -2786,7 +2786,7 @@ make_pk_list (struct name_list *nlist)
 int
 last_var_is_linked (char *tabname, char *pklist)
 {
-  // MJA - NEWVARIABLE
+  /* MJA - NEWVARIABLE*/
   strcpy (pklist, "");
   strcpy (tabname, "");
 
@@ -2848,7 +2848,7 @@ print_nullify (char type)
 
       for (a = 0; a < list_cnt; a++)
 	{
-	  //printf("Adding : %s\n",list[a]->names.name);
+	  /*printf("Adding : %s\n",list[a]->names.name);*/
 	  if (list[a]->variable_type != VARIABLE_TYPE_CONSTANT)
 	    {
 	      add_bind ('N', list[a]->names.name);

@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.7 2004-01-06 12:22:08 mikeaubury Exp $
+# $Id: memfile.c,v 1.8 2004-01-29 08:33:46 mikeaubury Exp $
 #
 */
 
@@ -213,7 +213,7 @@ A4GL_memfile_feof (FILE * f)
     }
   else
     {
-      //printf("pos = %d buff_len = %d f=%x in=%x\n",pos,buff_len,f,in);
+      /*printf("pos = %d buff_len = %d f=%x in=%x\n",pos,buff_len,f,in);*/
       return pos > buff_len;
     }
 }

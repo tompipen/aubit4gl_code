@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: generic.c,v 1.4 2004-01-23 09:53:43 mikeaubury Exp $
+# $Id: generic.c,v 1.5 2004-01-29 08:33:34 mikeaubury Exp $
 #*/
 
 /**
@@ -65,7 +65,7 @@ new_variable (void)
 }
 
 
-// Type can be s,i,d or n (for null)
+/* Type can be s,i,d or n (for null)*/
 struct generic_entry_literal *
 new_literal (char type, char *ptr)
 {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.152 2004-01-28 16:21:03 mikeaubury Exp $
+# $Id: mod.c,v 1.153 2004-01-29 08:33:46 mikeaubury Exp $
 #
 */
 
@@ -100,23 +100,23 @@ int A4GL_get_nevents(void) ;
 void A4GL_get_event(int n,int *i,char **s) ;
 
 int A4GL_findex (char *str, char c);
-//void push_validate (char *t2);
+/*void push_validate (char *t2);*/
 int A4GL_get_attr_from_string (char *s);
-//char get_curr_report_stack_whytype (void);
+/*char get_curr_report_stack_whytype (void);*/
 char find_variable_scope (char *s_in);
 
-//void set_rep_no_orderby(int n) ;
+/*void set_rep_no_orderby(int n) ;*/
 int get_rep_no_orderby(void) ;
 int get_validate_list_cnt(void) ;
-//void clr_validate_list(void) ;
-//struct expr_str *A4GL_get_validate_expr(int n) ;
-//int A4GL_escape_quote_owner(void) ;
+/*void clr_validate_list(void) ;*/
+/*struct expr_str *A4GL_get_validate_expr(int n) ;*/
+/*int A4GL_escape_quote_owner(void) ;*/
 struct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname);
 
-//void A4GL_add_event(int n,char *s) ;
-//void A4GL_add_onkey_key(char *s) ;
-//void A4GL_drop_events(void) ;
-//void A4GL_new_events(void) ;
+/*void A4GL_add_event(int n,char *s) ;*/
+/*void A4GL_add_onkey_key(char *s) ;*/
+/*void A4GL_drop_events(void) ;*/
+/*void A4GL_new_events(void) ;*/
 
 /*
 =====================================================================
@@ -135,7 +135,7 @@ long fpos;
 
 void dump_updvals (void);
 char *pop_gen (int a);
-//int gen_cnt (int a);
+/*int gen_cnt (int a);*/
 void copy_gen (int a, int b);
 extern int menu_cnt;			/** The count of menus found */
 extern int yylineno;			/** The source file line number */
@@ -148,13 +148,13 @@ static char pklist[2048] = "";
 static char upd_using_notpk[5000] = "";
 static int upd_using_notpk_cnt = 0;
 extern char current_upd_table[64];
-//static int    const_cnt = 0;
+/*static int    const_cnt = 0;*/
 
 int rep_type = 0;	      /** The report type */
 
-//int           last_var_found = -1;
+/*int           last_var_found = -1;*/
 
-//int           var_hdr_finished;
+/*int           var_hdr_finished;*/
 int isin_command (char *cmd_type);
 
 
@@ -198,7 +198,7 @@ int report_stack_cnt = 0;
 int report_cnt = 1;
 int nblock_no = 1;
 
-//#define GEN_STACK_SIZE 5000
+/*#define GEN_STACK_SIZE 5000*/
 #define GEN_STACK_SIZE 10000
 
 char gen_stack[GEN_STACKS][GEN_STACK_SIZE][80];
@@ -275,7 +275,7 @@ char *get_default_database (void);
 =====================================================================
 */
 char *rettype (char *s);
-//static int                    is_pk                           (char *s);
+/*static int                    is_pk                           (char *s);*/
 int yywrap (void);
 struct sreports *get_sreports (int z);
 void a4gl_add_variable (char *name, char *type, char *n);
@@ -283,9 +283,9 @@ static void push_validate_column(char *tabname,char *colname) ;
 
 char *get_namespace (char *s);
 char *make_sql_string (char *first, ...);
-//void do_print_menu_1(void) ;
-//void do_print_menu_block_end(void) ;
-//int get_blk_no(void) ;
+/*void do_print_menu_1(void) ;*/
+/*void do_print_menu_block_end(void) ;*/
+/*int get_blk_no(void) ;*/
 char *do_clobbering(char *f,char *s) ;
 
 /*
@@ -371,11 +371,11 @@ with_strip_bracket (const char *buff)
  * @param type The data type of the variable
  * @paran n
  */
-//?static
+/*?static*/
 void
 a4gl_add_variable (char *name, char *type, char *n)
 {
-// MJA - NEWVARIABLE
+/* MJA - NEWVARIABLE*/
   A4GL_debug ("a4gl_add_variable");
   variable_action (-1, name, type, n, "a4gl_add_variable");
 }
@@ -386,7 +386,7 @@ a4gl_add_variable (char *name, char *type, char *n)
 void
 clr_variable (void)
 {
-  // Does nothing
+  /* Does nothing*/
 }
 
 /**
@@ -395,7 +395,7 @@ clr_variable (void)
 void
 inmod (void)
 {
-  // Does nothing
+  /* Does nothing*/
 }
 
 /**
@@ -451,7 +451,7 @@ print_record (int z, char ff, char *vname)
   /*  It should be declared here because the two function are tighly coupled */
   static void print_variable (int z, char ff);
 
-  // MJA - NEWVARIABLE
+  /* MJA - NEWVARIABLE*/
 
   A4GL_debug ("Print record %s\n", vname);
 
@@ -577,7 +577,7 @@ push_type (char *a, char *n, char *as)
 
   variable_action (-1, a, n, as, "push_type");
 
-  // MJA - NEWVARIABLE
+  /* MJA - NEWVARIABLE*/
 
 
 /* DELETE THIS WHEN DONE .........FIXME FIXME FIXME...........
@@ -634,15 +634,15 @@ void
 add_link_to (char *tab, char *pkey)
 {
 
-  //char *pt;
-  //char *pk;
-  //int z;
+  /*char *pt;*/
+  /*char *pk;*/
+  /*int z;*/
   A4GL_debug ("Adding link to %s %s\n", tab, pkey);
 
   variable_action (-1, tab, pkey, "", "add_link_to");
 
 
-  // MJA - NEWVARIABLE
+  /* MJA - NEWVARIABLE*/
 
 }
 
@@ -738,27 +738,27 @@ A4GL_findex (char *str, char c)
 static long
 scan_variables (char *s_n, int mode)
 {
-  //int a;
+  /*int a;*/
 
-  //long z;
+  /*long z;*/
   long z_new;
    char s[1024];
   char buff[256];
   char buff2[256];
-  //char *ptr;
-  //int dir;
+  /*char *ptr;*/
+  /*int dir;*/
 
-  //int flg;
-  //int lvl = 0;
+  /*int flg;*/
+  /*int lvl = 0;*/
   int dtype;
   int size;
   int vval;
   memset(s,0,1024);
   strcpy(s,s_n);
 A4GL_debug("s=%s",s);
-  //last_var_found = -1;
+  /*last_var_found = -1;*/
 
-  // MJA - NEWVARIABLE
+  /* MJA - NEWVARIABLE*/
   if (s[0] == '.' && s[1] == '\0')
     return -1;
 
@@ -781,7 +781,7 @@ A4GL_debug("s=%s",s);
 	  strcpy (buff2, &s[A4GL_findex (s, ')') + 1]);
 	  buff[A4GL_findex (buff, '(')] = 0;
 	  strcat (buff, buff2);
-	//printf("DOWNSHIFT : %s\n",buff);
+	/*printf("DOWNSHIFT : %s\n",buff);*/
 	  A4GL_convlower (buff);
 	}
       else
@@ -796,7 +796,7 @@ A4GL_debug("find_variable : %s",buff);
   if (vval == 1)
     {
       z_new = dtype + (size << 16);
-      //printf("OK - %x (%d %d)\n",z_new,dtype,size);
+      /*printf("OK - %x (%d %d)\n",z_new,dtype,size);*/
       return z_new;
     }
 
@@ -806,7 +806,7 @@ A4GL_debug("find_variable : %s",buff);
     }
 
 
-  //printf("Find_variable returns %d for %s\n",vval,buff);
+  /*printf("Find_variable returns %d for %s\n",vval,buff);*/
   return vval;
 
 
@@ -966,7 +966,7 @@ isvartype (char *s, int mode)
   int dir;
   int lvl = 0;
 
-  // MJA - NEWVARIABLE
+  /* MJA - NEWVARIABLE*/
   if (s[0] == '.' && s[1] == 0)
     return -1;
   if (s[0] == 0)
@@ -1128,7 +1128,7 @@ scan_arr_variable (char *s)
 void
 add_constant (char t, char *ptr, char *name)
 {
-  //char scope = 'm';
+  /*char scope = 'm';*/
   int x;
   char buff[256];
   x = 0;
@@ -1213,9 +1213,9 @@ set_4gl_vars (void)
 
   variable_action (-1, "notfound", "100", "i", "add_constant");
 
-// @todo - QUICK HACK
-//variable_action(-1,"sqlca","a4gl_sqlca","C","add_constant");
-//variable_action(-1,"status","a4gl_status","C","add_constant");
+/* @todo - QUICK HACK*/
+/*variable_action(-1,"sqlca","a4gl_sqlca","C","add_constant");*/
+/*variable_action(-1,"status","a4gl_status","C","add_constant");*/
 
   variable_action (-1, "false", "0", "i", "add_constant");
   variable_action (-1, "true", "1", "i", "add_constant");
@@ -1416,12 +1416,12 @@ pushValidateTableColumn (char *tableName, char *columnName)
   int rval;
   int idtype;
   int isize;
-  //char csize[20];
-  //char cdtype[20];
+  /*char csize[20];*/
+  /*char cdtype[20];*/
   char buff[300];
 
   A4GL_debug ("pushValidateTableColumn()");
-//printf("Table name = %s column name=%s\n",tableName,columnName);
+/*printf("Table name = %s column name=%s\n",tableName,columnName);*/
   rval = A4GLSQL_read_columns (tableName, columnName, &idtype, &isize);
   if (rval == 0)
     {
@@ -1430,8 +1430,8 @@ pushValidateTableColumn (char *tableName, char *columnName)
       a4gl_yyerror (buff);
       return 0;
     }
-  //sprintf (cdtype, "%d", idtype & 15);
-  //sprintf (csize, "%d", isize);
+  /*sprintf (cdtype, "%d", idtype & 15);*/
+  /*sprintf (csize, "%d", isize);*/
   trim_spaces (columnName);
   push_validate_column (tableName,columnName);
   return 1;
@@ -1444,8 +1444,8 @@ pushValidateAllTableColumns (char *tableName)
   int isize = 0;
   int idtype = 0;
   char colname[256] = "";
-  //char csize[20];
-  //char cdtype[20];
+  /*char csize[20];*/
+  /*char cdtype[20];*/
   char buff[300];
   char *ccol;
 
@@ -1482,17 +1482,17 @@ pushValidateAllTableColumns (char *tableName)
       if (rval == 0)
 	break;
 
-      //sprintf (cdtype, "%d", idtype & 15);
-      //sprintf (csize, "%d", isize);
-      //A4GL_debug ("%d %d", idtype, isize);
-      //A4GL_debug ("---> %s %s", cdtype, csize);
-      //A4GL_debug ("A4GLSQL_read_columns: Pushing %s %s %s", colname, cdtype,
-	     //csize);
+      /*sprintf (cdtype, "%d", idtype & 15);*/
+      /*sprintf (csize, "%d", isize);*/
+      /*A4GL_debug ("%d %d", idtype, isize);*/
+      /*A4GL_debug ("---> %s %s", cdtype, csize);*/
+      /*A4GL_debug ("A4GLSQL_read_columns: Pushing %s %s %s", colname, cdtype,*/
+	     /*csize);*/
       trim_spaces (colname);
       push_validate_column (tableName,colname);
 
-      //push_name (colname, 0);
-      //push_type (rettype (cdtype), csize, 0);
+      /*push_name (colname, 0);*/
+      /*push_type (rettype (cdtype), csize, 0);*/
     }
   A4GLSQL_end_get_columns ();
   return 0;
@@ -1614,10 +1614,10 @@ push_validate (char *t2)
   char *columnName;
   char t[256];
   A4GL_debug ("In push_validate");
-  //printf("t2=%s\n",t2);
+  /*printf("t2=%s\n",t2);*/
 
 
-// Skip any owner bit...
+/* Skip any owner bit...*/
   if (t2[0]=='\\' && t2[1]=='"') {
 	char *x;
 	x=strchr(t2,'.');
@@ -1709,7 +1709,7 @@ push_menu_title (char *s)
 void
 push_blockcommand (char *cmd_type)
 {
-  //printf("push_blockcommand %s\n",cmd_type);
+  /*printf("push_blockcommand %s\n",cmd_type);*/
   A4GL_debug ("START BLOCK %s", cmd_type);
   A4GL_debug ("\n\n--------->%s\n\n", cmd_type);
   A4GL_debug (" /* new block %s %d */\n", cmd_type, ccnt);
@@ -1904,7 +1904,7 @@ void
 push_gen (int a, char *s)
 {
   A4GL_debug ("Push %d %s - %d\n", a, s, gen_stack_cnt[a]);
-  //printf ("Push %d %s - %d\n", a, s,gen_stack_cnt[a]);
+  /*printf ("Push %d %s - %d\n", a, s,gen_stack_cnt[a]);*/
   if (gen_stack_cnt[a] >= GEN_STACK_SIZE)
     {
       printf ("Out of stack!\n");
@@ -1928,10 +1928,10 @@ copy_gen (int a, int b)
   int c;
 
 
-//dump_updvals();
+/*dump_updvals();*/
   if (gen_stack_cnt[a] && gen_stack[a][gen_stack_cnt[a] - 1][0] == '(')
     {
-      //printf ("POP\n");
+      /*printf ("POP\n");*/
       pop_gen (a);
     }
 
@@ -1946,9 +1946,9 @@ copy_gen (int a, int b)
 char *
 pop_gen (int a)
 {
-  //printf ("Popgen called\n");
-  //printf ("UPDVAL2 cnt = %d\n", gen_stack_cnt[UPDVAL2]);
-  //dump_updvals();
+  /*printf ("Popgen called\n");*/
+  /*printf ("UPDVAL2 cnt = %d\n", gen_stack_cnt[UPDVAL2]);*/
+  /*dump_updvals();*/
   gen_stack_cnt[a]--;
   return gen_stack[a][gen_stack_cnt[a]];
 
@@ -2041,7 +2041,7 @@ int
 add_bind (char i, char *var_i)
 {
   long dtype;
-//char c;
+/*char c;*/
 char var[2048]="";
 A4GL_debug("add_bind: %c %s\n",i,var_i);
 strcpy(var,var_i);
@@ -2058,8 +2058,8 @@ strcpy(var,var_i);
 
 
 	switch (i) {
-	case 'f': strcpy(var,fgl_add_scope(var_i,'L'));break; // Function parameters
-	case 'O': strcpy(var,fgl_add_scope(var_i,'L'));break; // Report order by
+	case 'f': strcpy(var,fgl_add_scope(var_i,'L'));break; /* Function parameters*/
+	case 'O': strcpy(var,fgl_add_scope(var_i,'L'));break; /* Report order by*/
 	default: strcpy(var,fgl_add_scope(var_i,0));
 	}
 
@@ -2084,7 +2084,7 @@ strcpy(var,var_i);
 	  ibind[ibindcnt].start_char_subscript = 0;
 	  ibind[ibindcnt].end_char_subscript = 0;
 
-//printf("var= '%s'\n",var);
+/*printf("var= '%s'\n",var);*/
 	  if (strncmp (var, " a4gl_substr(", 8) != 0)
 	    {
 	      strcpy (ibind[ibindcnt].varname, var);
@@ -2114,7 +2114,7 @@ strcpy(var,var_i);
 	      ibind[ibindcnt].dtype = s_dtype;
 	      ibind[ibindcnt].start_char_subscript = s_sstart;
 	      ibind[ibindcnt].end_char_subscript = s_send;
-	      //printf("%s %d %d %d\n",ibind[ibindcnt].varname,ibind[ibindcnt].dtype,ibind[ibindcnt].start_char_subscript,ibind[ibindcnt].end_char_subscript);
+	      /*printf("%s %d %d %d\n",ibind[ibindcnt].varname,ibind[ibindcnt].dtype,ibind[ibindcnt].start_char_subscript,ibind[ibindcnt].end_char_subscript);*/
 	    }
 	  ibindcnt++;
 	}
@@ -2326,11 +2326,11 @@ continue_loop (char *cmd_type)
 
 
 
-// We have to do some messing around here...
-// If we want to 'continue input' - we call continue_input("INPUT")
-// if we want a next field ... that does the next field bit - then calls continue_input("INPUTREQ")
-// Here - we will always be looking for "INPUT" - but pass on the INPUT/INPUTREQ to the print stage...
-// Same goes for construct
+/* We have to do some messing around here...*/
+/* If we want to 'continue input' - we call continue_input("INPUT")*/
+/* if we want a next field ... that does the next field bit - then calls continue_input("INPUTREQ")*/
+/* Here - we will always be looking for "INPUT" - but pass on the INPUT/INPUTREQ to the print stage...*/
+/* Same goes for construct*/
 
 
   internal_cmd_type=strdup(cmd_type);
@@ -2956,8 +2956,8 @@ push_construct_table (char *tableName)
   int isize = 0;
   int idtype = 0;
   char colname[256] = "";
-  //char csize[20];
-  //char cdtype[20];
+  /*char csize[20];*/
+  /*char cdtype[20];*/
   char buff[300];
   char *ccol;
 
@@ -3691,8 +3691,8 @@ void expand_bind (struct binding_comp *bind, int btype, int cnt)
 {
   char buff[256];
   int b1;
-  //int b2;
-  //int b3;
+  /*int b2;*/
+  /*int b3;*/
   int dim;
   int xxxa;
   static struct binding_comp *save_bind=0;
@@ -3726,8 +3726,8 @@ void expand_bind (struct binding_comp *bind, int btype, int cnt)
          		char arrbuff[256];
 		
 		
-	//printf("Warning: Using an array at this point may not be supported (%s) @ line %d\n",buff,yylineno); 
- 		//printf("GET1 : %s\n",buff);
+	/*printf("Warning: Using an array at this point may not be supported (%s) @ line %d\n",buff,yylineno); */
+ 		/*printf("GET1 : %s\n",buff);*/
         		get_variable_dets (buff,&type,&arrsize,&size,&level,arrbuff);
 			for (b1=0;b1<arrsize;b1++) {
 				sprintf(buff2,"%s[%d]",buff,b1);
@@ -3849,7 +3849,7 @@ A4GL_new_expr (char *value)
   ptr->next = 0;
   ptr->expr = strdup (value);
   A4GL_debug ("newexpr : %s -> %p\n", value, ptr);
-  //dump_expr(ptr);
+  /*dump_expr(ptr);*/
   return ptr;
 }
 
@@ -3877,7 +3877,7 @@ A4GL_append_expr (struct expr_str *orig_ptr, char *value)
     }
   orig_ptr->next = ptr;
   A4GL_debug ("Appended expr");
-  //dump_expr(start);
+  /*dump_expr(start);*/
   return start;
 }
 #endif
@@ -3900,7 +3900,7 @@ A4GL_append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
 	orig_ptr = orig_ptr->next;
     }
   orig_ptr->next = second_ptr;
-  //dump_expr(start);
+  /*dump_expr(start);*/
   return start;
 }
 
@@ -4059,8 +4059,8 @@ fix_update_expr (int mode)
   int isize = 0;
   int idtype = 0;
   char colname[256] = "";
-  //char csize[20];
-  //char cdtype[20];
+  /*char csize[20];*/
+  /*char cdtype[20];*/
   char buff[1000];
   char *ccol;
   strcpy (big_buff, "SET ");
@@ -4068,7 +4068,7 @@ fix_update_expr (int mode)
 
   if (mode == 1)
     {
-      // It will only be a '*' anyway....
+      /* It will only be a '*' anyway....*/
       if (db_used == 0)
 	{
 	  sprintf (buff,
@@ -4142,7 +4142,7 @@ make_sql_string (char *first, ...)
       if (next == 0)
 	break;
       l += strlen (next);
-      l++;			// Extra space...
+      l++;			/* Extra space...*/
       ptr = realloc (ptr, l);
       strcat (ptr, next);
     }
@@ -4242,7 +4242,7 @@ static char *add_clobber(char *buff_orig,char *important) {
 static char buff_new[256];
 static int p=0;
 char b1[256];
-//printf("add clobber : %s %s\n",buff_orig,important);
+/*printf("add clobber : %s %s\n",buff_orig,important);*/
 	strcpy(buff_new,buff_orig);
 
 	if (has_clobber(buff_orig)) return get_clobber(buff_orig);
@@ -4256,7 +4256,7 @@ char b1[256];
 
 
 
-	if (strlen(buff_orig)<=20) { // Extra 2 for the quotes...
+	if (strlen(buff_orig)<=20) { /* Extra 2 for the quotes...*/
 		clob_arr[clob_arr_cnt-1].orig=strdup(buff_orig);
 		clob_arr[clob_arr_cnt-1].new=strdup(buff_new);
 		clob_arr[clob_arr_cnt-1].important=strdup(important);
@@ -4275,7 +4275,7 @@ char b1[256];
 char *do_clobbering(char *f,char *s) {
 static char buff[256];
 	if (A4GL_isyes(acl_getenv("NOCLOBBER"))) {
-		//printf("NOCLOBBER : %s\n",s);
+		/*printf("NOCLOBBER : %s\n",s);*/
 		sprintf(buff,"\"%s\"",s);
 		return buff;
 	}
@@ -4345,16 +4345,16 @@ struct s_validate *validate_list=0;
 int validate_list_cnt=0;
 
 int get_validate_list_cnt(void) {
-//int a;
-	//printf("Return count : %d\n",validate_list_cnt);
-//for (a=0;a<validate_list_cnt;a++) {
-	//printf("   %s %s %p\n",validate_list[a].tabname,validate_list[a].colname,validate_list[a].expr);
-//}
+/*int a;*/
+	/*printf("Return count : %d\n",validate_list_cnt);*/
+/*for (a=0;a<validate_list_cnt;a++) {*/
+	/*printf("   %s %s %p\n",validate_list[a].tabname,validate_list[a].colname,validate_list[a].expr);*/
+/*}*/
 	return validate_list_cnt;
 }
 	
 void clr_validate_list(void) {
-	//printf("Clear list\n");
+	/*printf("Clear list\n");*/
 	if (validate_list) free(validate_list);	
 	validate_list_cnt=0;
 	validate_list=0;
@@ -4362,20 +4362,20 @@ void clr_validate_list(void) {
 
 static void push_validate_column(char *tabname,char *colname) {
 	validate_list_cnt++;
-	//printf("Add to list %s %s\n",tabname,colname);
+	/*printf("Add to list %s %s\n",tabname,colname);*/
 	validate_list=realloc(validate_list,sizeof(struct s_validate)*validate_list_cnt);
-	//A4GL_trim(tabname);
-	//A4GL_trim(colname);
+	/*A4GL_trim(tabname);*/
+	/*A4GL_trim(colname);*/
 	strcpy(validate_list[validate_list_cnt-1].tabname,tabname);
 	strcpy(validate_list[validate_list_cnt-1].colname,colname);
 	validate_list[validate_list_cnt-1].expr=A4GLSQL_get_validation_expr(tabname,colname);
-	//printf("-->%p (%d)\n",validate_list[validate_list_cnt-1].expr,validate_list_cnt-1);
-	//printf("%d elements\n",length_expr(validate_list[validate_list_cnt-1].expr));
+	/*printf("-->%p (%d)\n",validate_list[validate_list_cnt-1].expr,validate_list_cnt-1);*/
+	/*printf("%d elements\n",length_expr(validate_list[validate_list_cnt-1].expr));*/
 	
 }
 
 struct expr_str *A4GL_get_validate_expr(int n) {
-	//printf("-->%p for %d\n",validate_list[n].expr,n);
+	/*printf("-->%p for %d\n",validate_list[n].expr,n);*/
 	return validate_list[n].expr;
 }
 
@@ -4426,7 +4426,7 @@ void A4GL_add_onkey_key(char *s) {
 }
 
 void A4GL_add_event(int n,char *s) {
-	//printf("Add Event : %d %s\n",n,s);
+	/*printf("Add Event : %d %s\n",n,s);*/
 	event_queue[nevent_queue].nevents++;
 	event_queue[nevent_queue].events=realloc(event_queue[nevent_queue].events,sizeof(struct s_event)*event_queue[nevent_queue].nevents);
 	event_queue[nevent_queue].events[event_queue[nevent_queue].nevents-1].n=n;
@@ -4434,12 +4434,12 @@ void A4GL_add_event(int n,char *s) {
 }
 
 int A4GL_get_nevents(void) {
-	//printf("nevents=%d\n", event_queue[nevent_queue].nevents);
+	/*printf("nevents=%d\n", event_queue[nevent_queue].nevents);*/
 	return event_queue[nevent_queue].nevents;
 }
 
 void A4GL_get_event(int n,int *i,char **s) {
-	//printf("getevent : %d\n", n);
+	/*printf("getevent : %d\n", n);*/
 	*i=event_queue[nevent_queue].events[n].n;
 	*s=event_queue[nevent_queue].events[n].s;
 }

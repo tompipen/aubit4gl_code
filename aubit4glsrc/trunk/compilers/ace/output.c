@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: output.c,v 1.6 2003-05-15 07:10:37 mikeaubury Exp $
+# $Id: output.c,v 1.7 2004-01-29 08:35:41 mikeaubury Exp $
 #*/
 
 /**
@@ -109,14 +109,6 @@ A4GL_write_report (void)
 
 
 
-  //fxx = fopen(fname,"wb");
-
-  //if (fxx == 0)
-  //{
-  //printf("Couldnt open file for write (%s)\n", fname);
-  //}
-  //xdrstdio_create(&xdrp, fxx, XDR_ENCODE);
-  //a=xdr_report(&xdrp,ptr);
 
 
   if (!a)
@@ -125,8 +117,6 @@ A4GL_write_report (void)
       printf ("Unable to write data\n");
     }
 
-  //xdr_destroy(&xdrp);
-  //fclose(fxx);
 }
 
 

@@ -30,7 +30,7 @@ aclfgl_dump_screen (int n)
   char buffer[255];
   char *buff;
 
-//w=find_pointer ("screen", WINCODE);
+/*w=find_pointer ("screen", WINCODE);*/
   w = curscr;
   refresh();
   if (n == 1)

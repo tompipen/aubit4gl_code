@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.22 2004-01-27 17:07:12 mikeaubury Exp $
+# $Id: globals.c,v 1.23 2004-01-29 08:33:35 mikeaubury Exp $
 #
 */
 
@@ -58,17 +58,17 @@
 
 /* These are all located in variables.c */
 
-extern struct variable **list_global;	// Our List
-extern int list_global_cnt;	// Number used in our list
-extern int list_global_alloc;	// Space allocated for our list
-extern struct variable **list_imported_global;	// Our List
-extern int list_imported_global_cnt;	// Number used in our list
-extern int list_imported_global_alloc;	// Space allocated for our list
+extern struct variable **list_global;	/* Our List*/
+extern int list_global_cnt;	/* Number used in our list*/
+extern int list_global_alloc;	/* Space allocated for our list*/
+extern struct variable **list_imported_global;	/* Our List*/
+extern int list_imported_global_cnt;	/* Number used in our list*/
+extern int list_imported_global_alloc;	/* Space allocated for our list*/
 
 /* This is from 4glc.c */
 
 extern char *outputfilename;
-extern char currinfile_dirname[1024];	//path to 4gl file we are currently compiling
+extern char currinfile_dirname[1024];	/*path to 4gl file we are currently compiling*/
 
 extern int is_schema;
 /*
@@ -434,7 +434,7 @@ generate_globals_for (char *s)
   strcpy (buff, s);
 
 
-  //NOTE: we will get path in s only if it was specified in GLOBALS declaration
+  /*NOTE: we will get path in s only if it was specified in GLOBALS declaration*/
   if (strchr (buff, '/'))
     {
       strcpy (dirname, buff);
@@ -447,8 +447,8 @@ generate_globals_for (char *s)
     {
       if (currinfile_dirname)
 	{
-	  //use path that was passed to 4glc with 4gl file name of main 4gl
-	  //source file we are compiling, if any
+	  /*use path that was passed to 4glc with 4gl file name of main 4gl*/
+	  /*source file we are compiling, if any*/
 	  strcpy (dirname, currinfile_dirname);
 
 	}
@@ -477,8 +477,8 @@ generate_globals_for (char *s)
       system (buff);
     }
 #endif
-  //why cd? just pass the path in file name... */
-  //sprintf (buff, "cd %s; 4glc --globals %s.4gl", dirname, fname);
+  /*why cd? just pass the path in file name... */
+  /*sprintf (buff, "cd %s; 4glc --globals %s.4gl", dirname, fname);*/
   sprintf (buff, "4glc --globals %s/%s.4gl", dirname, fname);
 #ifdef DEBUG
   A4GL_debug ("Executing system call: %s\n", buff);
@@ -520,7 +520,7 @@ read_glob (char *s)
   int start = 0;
   int a;
 
-  // MJA - NEWVARIABLE
+  /* MJA - NEWVARIABLE*/
   strcpy (ii, s);
   strcat (ii, ".glb");
 #ifdef DEBUG
@@ -545,7 +545,7 @@ read_glob (char *s)
 #ifdef DEBUG
       A4GL_debug ("Couldnt open globals file %s\n", ii);
 #endif
-      // add path
+      /* add path*/
       strcpy (iii, currinfile_dirname);
       strcat (iii, "/");
       strcat (iii, ii);
@@ -697,7 +697,7 @@ read_global_float (FILE * f, char *name, double *val)
 static void
 read_variable_header (FILE * f, struct variable *v)
 {
-//struct name_list *ptr;
+/*struct name_list *ptr;*/
   int a;
   int cnt;
 
@@ -844,7 +844,7 @@ read_variable_assoc (FILE * f, struct variable *v)
 
 static void
 read_variable_function (FILE * f, struct variable *v) {
-// Does nothing - reserved for future use...
+/* Does nothing - reserved for future use...*/
 }
 
 
