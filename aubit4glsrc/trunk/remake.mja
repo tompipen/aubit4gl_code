@@ -8,10 +8,6 @@ then
 	./configure  --with-pgsql=/usr/local/pgsql
 fi
 
-cd /home/aubit4gl/sourceforge/aubit4glsrc
-cd lib/extra_libs/esqlc
-sh make_static
-sh make_simple
 
 
 cd /home/aubit4gl/sourceforge/aubit4glsrc
@@ -33,6 +29,9 @@ sh make_static
 sh make_simple
 
 
+cd /home/aubit4gl/sourceforge/aubit4glsrc/lib/libesql
+sh make_static
+sh make_simple
 
 
 cd /home/aubit4gl/sourceforge/aubit4glsrc
