@@ -35,6 +35,8 @@ key_value_1 : 	FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
         |       TAB {strcpy($<str>$,$<str>1);}
         |       LEFT {strcpy($<str>$,$<str>1);}
         |       RIGHT {strcpy($<str>$,$<str>1);}     
+        |       NEXTPAGE {strcpy($<str>$,$<str>1);}     
+        |       PREVPAGE {strcpy($<str>$,$<str>1);}     
 	|       CHAR_VALUE { rm_quotes($<str>1); strcpy($<str>$,$<str>1); }
 ;
 

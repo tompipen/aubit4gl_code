@@ -404,12 +404,15 @@ static char *read_word2 (FILE * f, int *t)
 	  instrd = 1;
 	  continue;
 	}
-      if (a == '\"' && instrs == 1)
-	{
-	  ccat (word, '\\', instrs || instrd);
-	  ccat (word, '\"', instrs || instrd);
-	  continue;
-	}
+
+      //if (a == '\"' && instrs == 1)
+	//{
+	  //ccat (word, '\\', instrs || instrd);
+	  //ccat (word, '\"', instrs || instrd);
+	  //continue;
+	//}
+
+
       if (a == '\'' && !escp && instrd == 0)
 	{
 	  if (instrs == 1)
@@ -422,6 +425,9 @@ static char *read_word2 (FILE * f, int *t)
 	  instrs = 1;
 	  continue;
 	}
+
+
+
       ccat (word, a, instrs || instrd);
       escp = 0;
     }

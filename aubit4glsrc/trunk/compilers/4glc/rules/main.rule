@@ -1,5 +1,5 @@
 
-module	:	op_code op_template db_section op_code globals_section op_code 
+module	:	op_code op_template globals_section op_code 
 {
 int a;
 modlevel=-1;
@@ -114,12 +114,10 @@ printcomment("/* Got expr list */");
 sprintf($<str>$,"%s",$<str>1);}
 ;
 
-db_section	:	 /*empty*/ {strcpy($<str>$,"");lastlineno=yylineno;}
-		|	set_database {strcpy(hdr_dbname,$<str>1);lastlineno=yylineno;}
-		|	db_section set_database {strcpy(hdr_dbname,$<str>2);lastlineno=yylineno;}
-	;
-
-set_database 	: DATABASE dbase_name {open_db($<str>2);strcpy($<str>$,$<str>2);lastlineno=yylineno;};
+db_section	:	  DATABASE dbase_name {open_db($<str>2);
+			strcpy(hdr_dbname,$<str>2);
+			lastlineno=yylineno;}
+;
 
 globals_section : /* empty */ {strcpy($<str>$,"");lastlineno=yylineno;}
 | actual_globals_section {
@@ -140,7 +138,7 @@ actual_globals_section :
 	| actual_globals_section xglobals_entry
 ;
 
-xglobals_entry : globals_entry | code_cmd |  whenever_cmd 
+xglobals_entry : globals_entry | code_cmd |  whenever_cmd  | db_section
 ;
 
 globals_entry: GLOBALS {

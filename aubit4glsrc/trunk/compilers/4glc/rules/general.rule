@@ -144,7 +144,6 @@ reserved_word :
 	|OPTION
 	|CYAN
 	|HEADER
-	|DATABASE
 	|DBA
 	|DBYNAME
 	|DEC

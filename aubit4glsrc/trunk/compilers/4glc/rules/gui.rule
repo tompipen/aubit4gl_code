@@ -49,12 +49,12 @@ print_gui_do_form($<str>2,$<str>4,'E');
 }
 ;
 
-msg_box_cmd : MESSAGEBOX fgl_expr_list
+msg_box_cmd : MESSAGEBOX {start_state("messagebox",1);} fgl_expr_list
         op_caption
         op_icon
         op_buttons
         op_disable_msg
-        op_returning_msg
+        op_returning_msg {start_state("messagebox",0);}
 ;
 
 op_disable_msg :

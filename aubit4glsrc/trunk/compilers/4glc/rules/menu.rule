@@ -26,8 +26,7 @@ menu_block_command :
 	}
 | COMMAND 
         opt_key 
-        menu_opt_name 
-        menu_optional_desc 
+        menu_opt_name menu_optional_desc 
 	opt_help_no
 		{
 debug("Menu=%d menu cnt=%d",menu_cnt,menu_cmd_cnt[menu_cnt]);
@@ -41,6 +40,7 @@ debug("Menu=%d menu cnt=%d",menu_cnt,menu_cmd_cnt[menu_cnt]);
 }
 | COMMAND 
         opt_key 
+	opt_help_no
 		{
 		push_command(menu_cnt,menu_cmd_cnt[menu_cnt],$<str>2,"\"\"","\"\"",0);
 		print_menu_block(menu_cmd_cnt[menu_cnt]-1);

@@ -181,12 +181,12 @@ var_list:var
 
 arr_subscripts : 
 	OPEN_SQUARE num_list CLOSE_SQUARE {
-		debug("Subscript or substring");
+		debug("---> Subscript or substring");
 		strcpy($<str>$,$<str>2);
 	}
 |
 	OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE {
-		debug("Subscript & substring");
+		debug("---> Subscript & substring");
 		sprintf($<str>$,"%s:%s",$<str>2,$<str>5);
 	}
 ;
@@ -248,7 +248,9 @@ printcomment("/* %s */\n",$<str>1);
   mcnt = 0;
 };
 
-let_var: let_array_r_variable
+let_var: let_array_r_variable {
+		debug("Array..");
+}
 | let_var setident DOT let_var_dot { sprintf ($<str>$, "%s.%s", $<str>1, $<str>4); }
 | let_var setident DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE
 {
@@ -298,8 +300,9 @@ MULTIPLY
 ;
 
 let_array_r_variable:
-identifier OPEN_SQUARE num_list CLOSE_SQUARE
+identifier arr_subscripts
 {
+/*OPEN_SQUARE num_list CLOSE_SQUARE*/
   int a;
   int b;
   char buff[256];
@@ -307,6 +310,19 @@ identifier OPEN_SQUARE num_list CLOSE_SQUARE
   printcomment("/*.let. array variable */");
 
   debug("?2 arrvar=%s",$<str>1);
+  if (strchr($<str>2,':'))  {
+	char lbuff[256];
+	char rbuff[256];
+	char tmpbuff[256];
+	char *ptr;
+	sprintf(lbuff,$<str>2);
+	sprintf(rbuff,strchr($<str>2,':')+1);
+	ptr=strchr(lbuff,':');
+	*ptr=0;
+        sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
+        sprintf ($<str>$, " let_substr(%s,%d,%s,0)", tmpbuff, scan_variable (tmpbuff), rbuff);
+  } else {
+  	//if (strchr($<str>2,':')) 
   b = isarrvariable ($<str>1);
   a = scan_variable ($<str>1);
          if (a==-1) {
@@ -320,16 +336,16 @@ identifier OPEN_SQUARE num_list CLOSE_SQUARE
 
   if (b != 0)
     {
-      sprintf ($<str>$, "%s[%s]", $<str>1, change_arr_elem($<str>3));
+      sprintf ($<str>$, "%s[%s-1]", $<str>1, $<str>2);
       debug ("/* array variable %s*/\n", $<str>$);
     }
   else
     {
-      sprintf ($<str>$, " let_substr(%s,%d,%s,0)", $<str>1, scan_variable ($<str>1), $<str>3);
+      sprintf ($<str>$, " let_substr(%s,%d,%s,0)", $<str>1, scan_variable ($<str>1), $<str>2);
       addmap("Let Variable",$<str>1,curr_func,yylineno,infilename);
       debug ("/*character variable %s*/\n", $<str>$);
     }
-
+ }
   mcnt++;
 
 }

@@ -38,6 +38,6 @@ END {
 print "{0,0}"
 print "};"
 }
-' *.c > generated/tmperrs.h
+' *.c libsql/odbc/*.c libsql/esqlc/*.c libsql/nosql/nosql.c > generated/tmperrs.h
 
 

@@ -33,7 +33,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.7 2002-01-18 03:09:10 afalout Exp $
+# $Id: sql.c,v 1.8 2002-01-20 15:45:23 mikeaubury Exp $
 #
 */
 
@@ -471,10 +471,15 @@ int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING * ibind)
   debug ("execute_sql");
   sid = A4GLSQL_find_prepare (pname, 1);
   set_errm ("");
+
+  if (sid==0) {
+	exitwith("Can't execute unprepared statement");
+	return;
+  }
 #ifdef DEBUG
 /* {DEBUG} */
   {
-    debug ("Sid=%p", sid);
+    debug (" prepare statement - Sid=%p ", sid);
   }
 #endif
 #ifdef DEBUG
