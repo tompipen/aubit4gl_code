@@ -2,11 +2,17 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "simple.h"
 #include "a4gl_libaubit4gl.h"
 
 
+void clr_stmt(void) ;
+void add_stmt(struct element *e);
+char * make_sql_string (char *first, ...);
+int yyparse(void) ;
+int yylex(void);
 
 
 
@@ -14,7 +20,7 @@
 struct element *list=0;
 int list_cnt=0;
 
-void clr_stmt() {
+void clr_stmt(void) {
 	if (list) free(list);
 	list_cnt=0;
 	list=0;
@@ -59,9 +65,9 @@ make_sql_string (char *first, ...)
 }
 
 
-int yyparse() {
+int yyparse(void) {
 int line=1;
-int in_stmt=0;
+//int in_stmt=0;
 char *ptr=0;
 char *ptr_new=0;
 struct element *e=0;

@@ -121,20 +121,44 @@ function copy_file(src,dest)
 define src char(255)
 define dest char(255)
 define lv_str char(600)
+define buff char(255);
 define f integer
+define fo integer
+define ok integer
+let ok=0
 code
+
 A4GL_trim(src);
+A4GL_trim(dest);
 f=(long)fopen(src,"r");
+
 if (!f)  {
 	strcat(src,".sql");
 	f=(long)fopen(src,"r");
+} 
+
+if (f) {
+	fo=(long)fopen(dest,"w");
+}
+
+if (fo&&f) {
+	rewind(f);
+	while (1) {
+		strcpy(buff,"");
+		fgets(buff,255,f);
+		if (feof(f)) { break; }
+		buff[255]=0;
+		fprintf(fo,"%s",buff);
+	}
+	fclose(f);
+	fclose(fo);
+	ok=1;
 }
 endcode
-if f then
-	let lv_str="cp ",src clipped," ",dest
-	run lv_str
-else
+
+if not ok then
 	error "Unable to open file ",src
+	sleep 1
 end if
 end function
 

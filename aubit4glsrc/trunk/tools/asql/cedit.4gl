@@ -67,7 +67,7 @@ for a=topline to topline+edit_lines-1
 		let max_x=length(lines[a])
 	end if
 	let l=lines[a][leftcol,line_length]
-	display l,"" at c,1
+	display l,"" at c,1 attribute(green,dim)
 
 	if leftcol>1 then display "+" at c,1 end if
 	let rest=lines[a][leftcol,line_length]
@@ -261,6 +261,14 @@ endcode
 					let topline=topline-1
 				end if
 			end if
+			if x+leftcol>length(lines[topline+y-1]) then
+				let x=length(lines[topline+y-1])+1
+				while x>79
+					let leftcol=leftcol+1
+					let x=x-1
+				end while
+			end if
+
 
 		when key_down
 			if y<edit_lines then 
@@ -270,6 +278,15 @@ endcode
 					let topline=topline+1
 				end if
 			end if
+
+			if x+leftcol>length(lines[topline+y-1]) then
+				let x=length(lines[topline+y-1])+1
+				while x>79
+					let leftcol=leftcol+1
+					let x=x-1
+				end while
+			end if
+
 		when 1 let insmode=1-insmode
 		when 4 call clr_eol()
 		when 24 call clr_char()
@@ -351,9 +368,9 @@ define a integer
 		if tmp_line =" " then
 			let tmp_line=lines[tmp_y]
 			if tmp_x>1 THEN
-			let lines[tmp_y]=tmp_line[1,tmp_x-1], lines[tmp_y+1] clipped
+				let lines[tmp_y]=tmp_line[1,tmp_x-1], lines[tmp_y+1] clipped
 			else
-			let lines[tmp_y]=lines[tmp_y+1] clipped
+				let lines[tmp_y]=lines[tmp_y+1] clipped
 			end if
 			for a=tmp_y+1 to max_buff-1
 				let lines[a]=lines[a+1]
