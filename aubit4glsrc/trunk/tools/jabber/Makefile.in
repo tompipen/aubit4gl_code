@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-04-02 08:50:34 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-07-07 04:28:10 afalout Exp $
 #
 
 include ../../incl/Makefile-common
@@ -36,7 +36,7 @@ override NOINCL=0
 
 AMAKE		=../../bin/amake
 AMAKE_FLAGS	=-verbose A4GL_CC_LDFLAGS+=-liksemel USESTORE=0 MOVETARGETTOSTORE=0
-#AMAKE_FLAGS+=A4GL_CC_LDFLAGS+=-nogtk A4GL_CC_LDFLAGS+=-noodbc A4GL_CC_LDFLAGS+=-nopdf
+#AMAKE_FLAGS+=A4GL_CC_LDFLAGS+=A4GL_CC_LDFLAGS+=-noodbc A4GL_CC_LDFLAGS+=-nopdf
 
 ifneq "@JABBERBUILD@" "no"
     ALL 	=test_im

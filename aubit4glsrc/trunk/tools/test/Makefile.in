@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.18 2002-06-29 13:12:03 afalout Exp $
+# $Id: Makefile.in,v 1.19 2002-07-07 04:28:10 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -97,7 +97,7 @@ pdf:
 #This is used from root makefile, to test id compiler is working after building it:
 test.build:
 	${RM} test_build.c test_build.h test_build.o test_build test_build.exe
-	${FGLPCEXEC} -settings -verbose ${4GLPCTESTFLAGS} -nogtk test_build.4gl -o test_build
+	${FGLPCEXEC} -settings -verbose ${4GLPCTESTFLAGS} test_build.4gl -o test_build
 
 test.perl:
 	cd tools/test; 4glc_perl test_build.4gl
@@ -117,8 +117,7 @@ other:
 ## ==================================================================
 
 help:
-	@echo "use 'make NOGTK=1' to compile without GTK GUI"
-	@echo "use 'make' to compile with GTK GUI"
+	@echo "use 'make' to compile examples"
 
 ## ==================================================================
 ##                           Clean targets

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2002-04-02 08:50:34 afalout Exp $
+# $Id: Makefile.in,v 1.9 2002-07-07 04:28:10 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -47,8 +47,8 @@ all: html
 	@echo default targets successfully compiled
 
 html:
-#	${AMAKE} -nogtk simple_html
-#	sh ${AMAKE} -verbose A4GL_CC_LDFLAGS+=-nogtk A4GL_CC_LDFLAGS+=-noodbc simple_html MOVETARGETTOSTORE=0
+#	${AMAKE} simple_html
+#	sh ${AMAKE} -verbose A4GL_CC_LDFLAGS+=A4GL_CC_LDFLAGS+=-noodbc simple_html MOVETARGETTOSTORE=0
 	${SH} ${AMAKE} A4GL_CC_LDFLAGS+= A4GL_CC_LDFLAGS+= A4GL_CC_LDFLAGS+=simple_html MOVETARGETTOSTORE=0
 
 
@@ -108,7 +108,7 @@ put.manual:
 ## ==================================================================
 
 help:
-	@echo "use 'make NOGTK=1' to compile without GTK GUI"
+	@echo "use 'make' to compile without GTK GUI"
 	@echo "use 'make' to compile with GTK GUI"
 
 

@@ -31,7 +31,7 @@
 	#include "a4gl_incl_4gldef.h"
 
 #ifndef OLD_INCL
-    #include "a4gl_libaubit4gl.h"
+	#include "a4gl_libaubit4gl.h"
 #endif
 
     #ifndef _DEFINE_STATUSVARS_  /* set from lib/libaubit4gl/Makefile */

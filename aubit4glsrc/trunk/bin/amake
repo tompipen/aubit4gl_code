@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 
-# $Id: amake,v 1.10 2002-01-18 03:09:10 afalout Exp $
+# $Id: amake,v 1.11 2002-07-07 04:28:05 afalout Exp $
 
 #####################################################################
 
@@ -197,8 +197,8 @@ else
 #4glpc   -o AS1b.4ae AS1b.ao
 
 #OK:
-#amake AS1b  -verbose -nogtk
-#Command is: make -nogtk -f AS1b.mk
+#amake AS1b  -verbose 
+#Command is: make -f AS1b.mk
 #4glpc   -o AS1b.4ae AS1b.ao
 
 
