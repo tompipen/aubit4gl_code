@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.42 2003-03-02 14:06:58 mikeaubury Exp $
+# $Id: stack.c,v 1.43 2003-03-02 15:23:43 mikeaubury Exp $
 #
 */
 
@@ -478,9 +478,9 @@ pop_param (void *p, int d, int size)
 	  	assertion(1,"Stack got corrupted");
 		exit(0);
   }
-  debug ("pop_param... %d %d %d", params[params_cnt].dtype & DTYPE_MASK,
-	 d & DTYPE_MASK, size);
-  debug ("             %p %p ", params[params_cnt].ptr, p);
+  //debug ("pop_param... %d %d %d", params[params_cnt].dtype & DTYPE_MASK,
+	 //d & DTYPE_MASK, size);
+  //debug ("             %p %p ", params[params_cnt].ptr, p);
 
 
   b = conv (params[params_cnt].dtype & DTYPE_MASK,
@@ -1303,48 +1303,40 @@ struct timeval tv2;
 //long fracs;
 
 
-  debug("push_current %d %d\n",a,b);
+  //debug("push_current %d %d\n",a,b);
 /*  setlocale(LC_ALL,""); */
-  debug ("In push_current");
+  //debug ("In push_current");
   gettimeofday(&tv1,0);
-  	(void) time (&now);
-  	debug ("Called time...");
-	local_time = localtime (&now);
+  	//(void) time (&now);
+  	//debug ("Called time...");
+	local_time = localtime (&tv1.tv_sec);
 	year = local_time->tm_year + 1900;
 	month = local_time->tm_mon + 1;
 	mja_day = local_time->tm_mday;
-  gettimeofday(&tv2,0);
-
- // Its quite possible that the time has clicked over
- // between the localtime and the gettimeofday
- // So we'll try again...
-  if (tv1.tv_usec>tv2.tv_usec) {
-		printf("---> %d %d\n",tv1.tv_usec,tv2.tv_usec);
-		push_current(a,b);
-		return;
- }
 
 /*
        0000000000111111111122222
        0123456789012345678901234
        YYYY-MM-DD hh:mm:ss.fffff
 */
-  sprintf (buff, "%04d-%02d-%02d %02d:%02d:%02d.%05ld000000000000",
+  sprintf (buff, "%04d-%02d-%02d %02d:%02d:%02d.%06ld",
 	   year, month, mja_day, local_time->tm_hour,
-	   local_time->tm_min, local_time->tm_sec, tv1.tv_usec/10
+	   local_time->tm_min, local_time->tm_sec, tv1.tv_usec
 	/* , 0 */
 	   /* no support for fractions of a second yet */
     );
+  //printf("--2>%s\n",buff);
+  buff[27]=0;
+  //printf("--3>%s\n",buff);
   debug ("Time is %s", buff);
-
-  debug ("a=%d b=%d ",a,b);
+  //debug ("a=%d b=%d ",a,b);
   pstart=ptrs2[b]+1;
-  debug("pstart=%d buff=%s\n",pstart,buff);
+  //debug("pstart=%d buff=%s\n",pstart,buff);
   buff[pstart]=0;
 
-debug("Set buff to %s\n",buff);
+//debug("Set buff to %s\n",buff);
   strcpy (buff2, &buff[ptrs[a]]);
-debug("Set buff2 to %s\n",buff2);
+  //printf("-->%s\n",buff2);
 
   n=(a<<4)+b;
 
@@ -1427,8 +1419,8 @@ int
 opboolean (void)
 {
   int d1, d2;
-  char *z1;
-  char *z2;
+  char *z1=0;
+  char *z2=0;
   double a, b;
   int cmp;
   int adate;
@@ -1457,6 +1449,8 @@ opboolean (void)
 	    cmp = 1;
 	  acl_free (z1);
 	  acl_free (z2);
+	z1=0;
+	z2=0;
 	  debug ("String compare gives %d\n", cmp);
 	  return cmp;
 	}
@@ -1492,7 +1486,6 @@ opboolean (void)
       z1 = char_pop ();
       a = pop_double ();
       b = atof (z1);
-	free(z1);
       debug ("1 --> %s %lf", z1, a);
     }
   else
@@ -1501,7 +1494,6 @@ opboolean (void)
       a = pop_double ();
       z1 = char_pop ();
       b = atof (z1);
-      free(z1);
       debug ("2 --> %s %lf", z1, a);
     }
 
@@ -1512,7 +1504,8 @@ opboolean (void)
 
     }
 
-  acl_free (z1);
+  if (z1) acl_free (z1);
+  if (z2) acl_free (z2);
 
   if (b > a)
     {

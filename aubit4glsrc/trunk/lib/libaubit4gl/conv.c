@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.32 2003-03-02 14:06:58 mikeaubury Exp $
+# $Id: conv.c,v 1.33 2003-03-02 15:23:43 mikeaubury Exp $
 #
 */
 
@@ -656,9 +656,8 @@ ctodt (void *a, void *b, int size)
       debug ("S %d\n", data[5]);
       debug ("F %d\n", data[6]);
 
-      sprintf (d->data, "%04d%02d%02d%02d%02d%02d%d00000",
+      sprintf (d->data, "%04d%02d%02d%02d%02d%02d%05d00000",
 	       data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
-	debug("MJA ---> %s\n",d->data);
 
       return 1;
     }
@@ -709,8 +708,8 @@ dttoc (void *a, void *b, int size)
 
   for (cnt = d->stime-1 ; cnt <= d->ltime-1 ; cnt++)
     {
-      debug ("cnt=%d", cnt);
-      debug ("   pos=%d sizes=%d", pos[cnt], sizes[cnt]);
+      //debug ("cnt=%d", cnt);
+      //debug ("   pos=%d sizes=%d", pos[cnt], sizes[cnt]);
       strncpy (&buff[x], &d->data[pos[cnt]], sizes[cnt]);
       x += sizes[cnt];
       if (cnt < d->ltime-1 )
@@ -3834,7 +3833,20 @@ valid_dt (char *s, int *data)
 	  return 0;
 	}
 
-      data[i-1 ] = atoi (ptr[i - a]);
+      if (i==7) {
+		int l;
+		char buff[10];
+		strncpy(buff,ptr[i-a],9);
+		buff[5]=0;
+		l=strlen(ptr[i-a]);
+		if (l==1) data[i-1] = atoi (ptr[i-a])*10000;
+		if (l==2) data[i-1] = atoi (ptr[i-a])*1000;
+		if (l==3) data[i-1] = atoi (ptr[i-a])*100;
+		if (l==4) data[i-1] = atoi (ptr[i-a])*10;
+		if (l==5) data[i-1] = atoi (ptr[i-a])*1;
+	} else {
+      		data[i-1 ] = atoi (ptr[i - a]);
+	}
 
       debug ("%s -> '%s'\n", codes[i], ptr[i - a]);
     }
@@ -3933,8 +3945,8 @@ valid_int (char *s, int *data,int size)
 
   type[cnt] = 0;
   dt_type = -1;
-  debug ("cnt=%d\n", cnt);
-  debug ("type='%s' size=0x%x\n", type,size);
+  //debug ("cnt=%d\n", cnt);
+  //debug ("type='%s' size=0x%x\n", type,size);
 
   if (strcmp (type, "") == 0)
     {
@@ -4126,8 +4138,8 @@ void decode_datetime(struct A4GLSQL_dtime *d, int *data) {
   for (cnt = d->stime-1 ; cnt <= d->ltime-1 ; cnt++)
     {
 	
-      debug ("cnt=%d", cnt);
-      debug ("   pos=%d sizes=%d", pos[cnt], sizes[cnt]);
+      //debug ("cnt=%d", cnt);
+      //debug ("   pos=%d sizes=%d", pos[cnt], sizes[cnt]);
       strncpy (&buff[x], &d->data[pos[cnt]], sizes[cnt]);
 
 	data_internal[cnt]=atoi_n(&buff[x],sizes[cnt]);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.24 2003-03-02 14:06:58 mikeaubury Exp $
+# $Id: builtin.c,v 1.25 2003-03-02 15:23:43 mikeaubury Exp $
 #
 */
 
@@ -806,13 +806,14 @@ char buff[255];
 	debug("acli_datetime s=%s n=%d\n",s,n);
   	c.ltime = n&16;
   	c.stime = n/16;
+        //printf("--1>%s\n",s);
 	ctodt(s,&c,n);
-	debug("acli_dtime - pop'd c - n=%x",n);
+	//printf("acli_dtime - pop'd c - n=%x\ndata=%s\n",n,c.data);
 	push_dtime(&c);
 	debug("ADDED DATETIME TO STACK - %d %d",c.stime,c.ltime);
 	
 	pop_char(buff,40);
-	debug("DOUBLE CHECK GIVES : %s",buff);
+	//printf("DOUBLE CHECK GIVES : %s\n",buff);
 	push_dtime(&c);
 
 }
