@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.109 2002-09-27 03:57:29 afalout Exp $
+# $Id: configure.in,v 1.110 2002-09-27 06:25:24 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -487,6 +487,23 @@ ALL_LINGUAS="en"
 dnl internationalization macros
 #AM_GNU_GETTEXT
 
+#check if we can install in $prefix
+	if test "$prefix" = "NONE"; then
+	    prefix="/opt"
+	fi
+	AC_MSG_CHECKING(install root 'prefix=$prefix')
+	if test -w "$prefix"; then
+		AC_MSG_RESULT(Yes ($prefix))
+    else
+		if test -w "$HOME"; then
+			prefix=$HOME
+			AC_MSG_RESULT(No (will use $prefix instead))
+        else
+			AC_MSG_ERROR(Cannot determine install path. HOME=$HOME Stop.)
+        fi
+    fi
+
+LIB_PREFIX=$prefix/aubit4gl/lib
 
 #List of libraries that we allways make. Here so we don't have to maintain it
 #separately for RPM config file, install/deinstall and lib Makefile:
@@ -533,27 +550,27 @@ LIBFILE_30=
 if test "$enable_debug" = "no" ; then
     # FIXME: strip executables
     CFLAGS="$CFLAGS -DNODEBUG"
-	AC_MSG_WARN(Debugging disabled)
+	AC_MSG_WARN(Debugging disabled, use --enable_debug to enable it.)
 	AUBIT_DEBUG=0
 else
     #FIXME: DEBUG=ALL in environment? aubitrc?
-    CLFAGS="$CFLAGS -g -Wall -DDEBUG"
-	echo "Debugging enabled"
+    CFLAGS="$CFLAGS -g -Wall -DDEBUG"
+	echo "Debugging enabled. Set DEBUG=ALL in environment/aubitrc to get debug.out trace."
 fi
 
 if test "$enable_yy_debug" = "yes" ; then
 	#for debbuging in function yyparse() export YYDEBUG=1 to environment:
 	YYDEBUG="-DYYDEBUG=1"
-	echo "YY Debugging enabled"
+	echo "YY Debugging enabled, export YYDEBUG=1 to environment to turn it on."
 else
-	echo "YY Debugging disabled"
+	echo "YY Debugging disabled, specify --enable_yy_debug to turn it on."
 fi
 
 if test "$enable_yacc_debug" = "yes" ; then
 	DEBUG_BISON="--debug"
 	echo "Yacc Debugging enabled"
 else
-	echo "Yacc Debugging disabled"
+	echo "Yacc Debugging disabled, specify --enable_yacc_debug to turn it on."
 fi
 
 #in libLEX_xxx printc():
@@ -736,7 +753,7 @@ fi
 AC_PATH_PROG(LDD, ldd, no)
 
 AC_PATH_PROG(LCLINTEXE,lclint,no)
-	
+
 	if test "$LCLINTEXE" = "no"; then
 		AC_PATH_PROG(LCLINTEXE,splint,no)
     fi
@@ -2836,8 +2853,6 @@ fi
 ##              RPM packaging, install/seinstall and build process
 ## ==================================================================
 
-LIB_PREFIX=$prefix/aubit4gl/lib
-
 	if test "$GTKBUILD" != "no"; then
 		RPMFILE_1=$LIB_PREFIX/libUI_GTK$SO_EXT
     fi
@@ -2909,7 +2924,6 @@ LIB_PREFIX=$prefix/aubit4gl/lib
 	#RPMFILE_24=$LIB_PREFIX/
 	#RPMFILE_25=$LIB_PREFIX/
 	#RPMFILE_26=$LIB_PREFIX/
-
 
 ## ==================================================================
 ##           Translate Autoconf internals into our replace tags:

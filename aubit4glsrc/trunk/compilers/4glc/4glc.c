@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.34 2002-09-27 04:45:16 afalout Exp $
+# $Id: 4glc.c,v 1.35 2002-09-27 06:25:42 afalout Exp $
 #
 */
 
@@ -240,7 +240,11 @@ main(int argc, char *argv[])
   int fname_arg_no = 1;
 
   /** @todo : Remove things that are to use */
+#if (defined(__MACH__) && defined(__APPLE__))
+
+#else
   int useGetopt = 1;
+#endif
   init_states ();
 
   yydebug = 0;
@@ -302,7 +306,7 @@ main(int argc, char *argv[])
 
   if (yydebug)
     {
-      printf ("Opened : %s\n", c);
+      printf ("Opened : %s\n", infilename); //c);
     }
 
   openmap(outputfilename);
@@ -313,7 +317,7 @@ main(int argc, char *argv[])
 
   init_datatypes();
   debug("after init_datatypes");
-  x = yyparse ();
+  x = yyparse (); /* we core dump here on Darwin */
   debug("after yyparse");
 
   if (yydebug)
