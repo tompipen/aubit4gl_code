@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.81 2002-09-08 10:38:02 afalout Exp $
+# $Id: configure.in,v 1.82 2002-09-16 09:06:58 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2084,6 +2084,16 @@ AC_ARG_WITH(rpc,
 				#This checks are just to make debugging easier if real one fails, and should be removed in future:
 				AC_CHECK_LIB(rpcsvc, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
 				AC_CHECK_LIB(rpcsvc, xdr_argument ,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
+
+				case $host in
+					*solaris*)
+				        #sparc-sun-solaris2.8
+                        #I'm obviously looking for wrong functions on Solaris:
+						RPCLIB_NAME=-lrpcsvc
+						;;
+
+				esac
+
 			fi
         fi
 
