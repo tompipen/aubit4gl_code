@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.26 2003-01-21 08:25:55 afalout Exp $
+# $Id: esql.ec,v 1.27 2003-01-27 07:02:37 afalout Exp $
 #
 */
 
@@ -123,7 +123,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.26 2003-01-21 08:25:55 afalout Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.27 2003-01-27 07:02:37 afalout Exp $";
 #endif
 
 /*
@@ -197,7 +197,7 @@ static void esqlWarningHandler(void)
  *
  * @return 
  *   - 1 : An sql error was ocurred.
- *   - 0 : No error 
+ *   - 0 : No error
  */
 static int isSqlError()
 {
@@ -2118,7 +2118,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
       break;
 
     cnt++;
-    for ( colcnt = 1; colcnt <= numberOfColumns; colcnt++) 
+    for ( colcnt = 1; colcnt <= numberOfColumns; colcnt++)
     {
       if ( printField(unloadFile,colcnt,"descUnload") == 1 )
       {
@@ -2274,12 +2274,6 @@ int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
  *   - 1 : Information readed.
  *   - 0 : Error ocurred.
  */
-/*
-B
-B
-B
-*/
-/* Bad Blue Boys ? - No wrong termtype...(oops) */
 
 /* int A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size); */
 /* int A4GLSQL_get_columns(char *tabname) */
@@ -2295,25 +2289,39 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   EXEC SQL PREPARE stReadAllColumns FROM :strSelect;
   if ( isSqlError() )
   {
-    return 0;
+	#ifdef DEBUG
+		debug("Error in EXEC SQL PREPARE");
+    #endif
+	return 0;
   }
 
   EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns';
   if ( isSqlError() )
   {
-    return 0;
+	#ifdef DEBUG
+		debug("Error in EXEC SQL ALLOCATE DESCRIPTOR");
+    #endif
+	return 0;
   }
 
   EXEC SQL DESCRIBE stReadAllColumns USING SQL DESCRIPTOR 'descReadAllColumns';
   if ( isSqlError() )
   {
-    return 0;
+	#ifdef DEBUG
+		debug("Error in EXEC SQL DESCRIBE");   //here we crash on large row count
+    #endif
+	return 0;
   }
 
   EXEC SQL GET DESCRIPTOR 'descReadAllColumns' :numberOfColumns = COUNT;
   if ( isSqlError() )
   {
-    return 0;
+	#ifdef DEBUG
+		debug("Error in EXEC SQL GET DESCRIPTOR, numberOfColumns = %s", numberOfColumns);
+        //FIXME: can we read error returned by ESQL/C lib here, and sent it to debug() ?
+		debug("ESQL/C Error message:%s", A4GLSQL_get_sqlerrm());
+    #endif
+	return 0;
   }
 
   getColumnsMax = numberOfColumns;
