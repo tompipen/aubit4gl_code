@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.73 2004-04-21 08:23:24 mikeaubury Exp $
+# $Id: resource.c,v 1.74 2004-04-27 13:27:38 mikeaubury Exp $
 #
 */
 
@@ -417,11 +417,11 @@ chk_str_resource (char *s, struct str_resource *res)
       return 0;
     }
 
+
   for (a = 0; strlen (res[a].name) != 0; a++)
     {
       if (strcmp (res[a].name, s) == 0)
 	{
-
 	  return res[a].value;
 	}
     }
@@ -526,6 +526,8 @@ find_str_resource (char *s)
     }
 }
 
+#define DEBUG_VARIABLE_USAGE 0
+
 /**
  * Get the contents of an resources or environment variable.
  * WARNING - DO NOT USE CALLS TO A4GL_debug() in this function (OR ANY FUNCTIION 
@@ -559,6 +561,8 @@ if (fd1==0) {
 
 #ifdef USE_OPTIMISATION
 ptr=(char *)A4GL_find_pointer (s,STR_RESOURCE_VAL);
+
+
 if (ptr)  {
 	if (ptr==value_not_set)  { /* BEFORE you complain - this is RIGHT!
 				 I don't want a string comparison - I want to see If this is set
@@ -568,12 +572,14 @@ if (ptr)  {
 #ifdef DEBUG_VARIABLE_USAGE
 		if (fd1) fprintf(fd1,"%s - CACHED (Not set)\n",s);
 #endif
-		return "";
-	}
+		if (strcmp(s,"AUBITDIR")!=0) return "";
+	} else {
+
 #ifdef DEBUG_VARIABLE_USAGE
 	if (fd1) fprintf(fd1,"%s - CACHED (%s)\n",s,ptr);
 #endif
 	return ptr;
+	}
 }
 
 #endif
@@ -608,8 +614,9 @@ if (ptr)  {
 
 
 	ptr_registry=A4GL_getenv_registry (s,(char *) prefixed_string); /*Windows registry */
-	ptr_resources_A4GL = find_str_resource (prefixed_string); 		/* Try in resources */
+	ptr_resources_A4GL = find_str_resource (prefixed_string); 	/* Try in resources */
 	ptr_resources = find_str_resource (s); 		/* Try in resources */
+
 
     if (cumulate) {
 		if (ptr_env_A4GL != 0) {
@@ -857,7 +864,6 @@ createkey (void)
 {
   LONG a;
   DWORD disp;
-  //printf("In createkey\n");
   a = RegCreateKeyEx (HKEY_LOCAL_MACHINE,
 		      /* user will need Administrator privilege to write in HKLM, maybe we should
 		         use HKCU instead ? */
@@ -923,6 +929,7 @@ A4GL_build_user_resources (void)
 char buff[1024];
 int a;
 FILE *resourcefile = 0;
+
 
 	#ifdef DEBUG
 		A4GL_debug ("Loading resources");
