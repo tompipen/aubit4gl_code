@@ -797,106 +797,106 @@ builtin_expr : curr_v_clause {
                sprintf($<str>$,"A4GL_push_current(%s);",$<str>1);
 		$<ptr>$=A4GL_new_expr($<str>$);
           	}
-               | DATE  { inc_counter(); strcpy($<str>$,"A4GL_push_today();");
-		$<ptr>$=A4GL_new_expr($<str>$);
+		       | DATE  { inc_counter(); strcpy($<str>$,"A4GL_push_date_expr();");
+			$<ptr>$=A4GL_new_expr($<str>$);
+			}
+
+	;
+
+	builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET 
+	{ 
+		$<ptr>$=A4GL_append_expr($<ptr>3,"A4GL_upshift_stk();");
+	}
+	|               DOWNSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
+	{ 
+		$<ptr>$=A4GL_append_expr($<ptr>3,"A4GL_downshift_stk();");
+	}
+	| ASCII fgl_expr_c  { 
+		$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_push_ascii();");
+	}
+	| EXTEND extend_parameters { 
+		$<ptr>$=A4GL_append_expr($<ptr>2,"aclfgli_extend();"); } 
+	;
+
+
+
+	pdf_expr : fgl_expr_c POINTS  {
+		$<ptr>$=A4GL_append_expr($<ptr>1,"A4GL_push_double(-1);A4GL_pushop(OP_MULT);");
+	}
+		|  fgl_expr_c  MM     {
+		$<ptr>$=A4GL_append_expr($<ptr>1,"A4GL_push_double(-28.3465);A4GL_pushop(OP_MULT);");
+	}
+		|  fgl_expr_c INCHES     {
+		$<ptr>$=A4GL_append_expr($<ptr>1,"A4GL_push_double(-72.0);A4GL_pushop(OP_MULT);");
+	}
+	;
+
+	/*
+	variable_or_current: 
+		CURRENT COMMA s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_current(%s,%s);",$<str>3,$<str>5); }
+		| variable COMMA s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_extend(%s,%s,%s);",$<str>1,$<str>3,$<str>5); }
+		| CURRENT s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_current(%s,%s);",$<str>2,$<str>4); }
+	;
+	*/
+
+
+
+
+	interval_func_params :
+	CHAR_VALUE {
+		strcpy($<str>$,$<str>1);
+	}
+	|  numeric_time_interval {
+		strcpy($<str>$,$<str>1);
+	}
+	;
+
+	numeric_time_interval:
+		MINUS numeric_time_interval {sprintf($<str>$,"-%s",$<str>2);}
+		| numeric_time_unit_big	{sprintf($<str>$,"\"%s\"",$<str>1);}
+		| numeric_time_unit_small	{sprintf($<str>$,"\"%s\"",$<str>1);}
+	;
+
+	numeric_time_unit_small : 
+		INT_VALUE 										/* DD or HH or MM or SS */
+		| INT_VALUE INT_VALUE 			{sprintf($<str>$,"%s %s",$<str>1,$<str>2);}		/* DD HH */
+		| INT_VALUE INT_VALUE COLON INT_VALUE 	{sprintf($<str>$,"%s %s:%s",$<str>1,$<str>2,$<str>4);}		/* DD HH:MM */
+		| INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE 	 {sprintf($<str>$,"%s %s:%s:%s",$<str>1,$<str>2,$<str>4,$<str>6);} /* DD HH:MM:SS*/
+		| INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE	{sprintf($<str>$,"%s %s:%s:%s",$<str>1,$<str>2,$<str>4,$<str>6);} /* DD HH MM SS.FFFF*/
+
+		| INT_VALUE COLON INT_VALUE 			{sprintf($<str>$,"%s:%s",$<str>1,$<str>3);} /* HH MM */
+		| INT_VALUE COLON INT_VALUE COLON INT_VALUE 	{sprintf($<str>$,"%s:%s:%s",$<str>1,$<str>3,$<str>5);} /* HH MM SS*/
+		| INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE	{sprintf($<str>$,"%s:%s:%s",$<str>1,$<str>3,$<str>5);} /* HH MM SS.FFFF*/
+
+		| INT_VALUE COLON NUMBER_VALUE			{sprintf($<str>$,"%s:%s",$<str>1,$<str>3);}	/* MM SS.FFFF*/
+		| NUMBER_VALUE					{sprintf($<str>$,"%s",$<str>1);}		/* SS.FFFF*/
+		| DOT INT_VALUE {sprintf($<str>$,"0.%s",$<str>2);}
+	;
+
+	numeric_time_unit_big:
+		INT_VALUE
+		| INT_VALUE MINUS INT_VALUE 
+			{sprintf($<str>$,"%s-%s",$<str>1,$<str>3);}
+	;
+
+
+	field_name_list_as_struct : field_name_as_struct {
+				$<field_list>$=new_field_list();
+				$<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
+			} |
+		field_name_list_as_struct COMMA field_name_as_struct {
+				$<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
 		}
+	;
 
-;
-
-builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET 
-{ 
-	$<ptr>$=A4GL_append_expr($<ptr>3,"A4GL_upshift_stk();");
-}
-|               DOWNSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
-{ 
-	$<ptr>$=A4GL_append_expr($<ptr>3,"A4GL_downshift_stk();");
-}
-| ASCII fgl_expr_c  { 
-	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_push_ascii();");
-}
-| EXTEND extend_parameters { 
-	$<ptr>$=A4GL_append_expr($<ptr>2,"aclfgli_extend();"); } 
-;
-
-
-
-pdf_expr : fgl_expr_c POINTS  {
-	$<ptr>$=A4GL_append_expr($<ptr>1,"A4GL_push_double(-1);A4GL_pushop(OP_MULT);");
-}
-        |  fgl_expr_c  MM     {
-	$<ptr>$=A4GL_append_expr($<ptr>1,"A4GL_push_double(-28.3465);A4GL_pushop(OP_MULT);");
-}
-        |  fgl_expr_c INCHES     {
-	$<ptr>$=A4GL_append_expr($<ptr>1,"A4GL_push_double(-72.0);A4GL_pushop(OP_MULT);");
-}
-;
-
-/*
-variable_or_current: 
-	CURRENT COMMA s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_current(%s,%s);",$<str>3,$<str>5); }
-	| variable COMMA s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_extend(%s,%s,%s);",$<str>1,$<str>3,$<str>5); }
-	| CURRENT s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_current(%s,%s);",$<str>2,$<str>4); }
-;
-*/
-
-
-
-
-interval_func_params :
-CHAR_VALUE {
-	strcpy($<str>$,$<str>1);
-}
-|  numeric_time_interval {
-	strcpy($<str>$,$<str>1);
-}
-;
-
-numeric_time_interval:
-	MINUS numeric_time_interval {sprintf($<str>$,"-%s",$<str>2);}
-	| numeric_time_unit_big	{sprintf($<str>$,"\"%s\"",$<str>1);}
-	| numeric_time_unit_small	{sprintf($<str>$,"\"%s\"",$<str>1);}
-;
-
-numeric_time_unit_small : 
-	INT_VALUE 										/* DD or HH or MM or SS */
-	| INT_VALUE INT_VALUE 			{sprintf($<str>$,"%s %s",$<str>1,$<str>2);}		/* DD HH */
-	| INT_VALUE INT_VALUE COLON INT_VALUE 	{sprintf($<str>$,"%s %s:%s",$<str>1,$<str>2,$<str>4);}		/* DD HH:MM */
-	| INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE 	 {sprintf($<str>$,"%s %s:%s:%s",$<str>1,$<str>2,$<str>4,$<str>6);} /* DD HH:MM:SS*/
-	| INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE	{sprintf($<str>$,"%s %s:%s:%s",$<str>1,$<str>2,$<str>4,$<str>6);} /* DD HH MM SS.FFFF*/
-
-	| INT_VALUE COLON INT_VALUE 			{sprintf($<str>$,"%s:%s",$<str>1,$<str>3);} /* HH MM */
-	| INT_VALUE COLON INT_VALUE COLON INT_VALUE 	{sprintf($<str>$,"%s:%s:%s",$<str>1,$<str>3,$<str>5);} /* HH MM SS*/
-	| INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE	{sprintf($<str>$,"%s:%s:%s",$<str>1,$<str>3,$<str>5);} /* HH MM SS.FFFF*/
-
-	| INT_VALUE COLON NUMBER_VALUE			{sprintf($<str>$,"%s:%s",$<str>1,$<str>3);}	/* MM SS.FFFF*/
-	| NUMBER_VALUE					{sprintf($<str>$,"%s",$<str>1);}		/* SS.FFFF*/
-	| DOT INT_VALUE {sprintf($<str>$,"0.%s",$<str>2);}
-;
-
-numeric_time_unit_big:
-	INT_VALUE
-	| INT_VALUE MINUS INT_VALUE 
-		{sprintf($<str>$,"%s-%s",$<str>1,$<str>3);}
-;
-
-
-field_name_list_as_struct : field_name_as_struct {
-                        $<field_list>$=new_field_list();
-                        $<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
-		} |
-	field_name_list_as_struct COMMA field_name_as_struct {
-                        $<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
-	}
-;
-
-field_name_list_or_char_as_struct : field_name_or_char_as_struct {
-                        $<field_list>$=new_field_list();
-                        $<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
-		} |
-	field_name_list_or_char_as_struct COMMA field_name_or_char_as_struct {
-                        $<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
-	}
-;
+	field_name_list_or_char_as_struct : field_name_or_char_as_struct {
+				$<field_list>$=new_field_list();
+				$<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
+			} |
+		field_name_list_or_char_as_struct COMMA field_name_or_char_as_struct {
+				$<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
+		}
+	;
 
 
 /* ============================ expr.rule =========================== */
