@@ -82,7 +82,7 @@ ident_or_var	: setident ident_p2 unsetident {
 ;
 
 ident_p2 : NAMED {
-sprintf($<str>$,"\"%s:%s\"",clobber,downshift($<str>1)) ;
+sprintf($<str>$,"\"%s_%s\"",clobber,downshift($<str>1)) ;
 strcpy(last_var,downshift($<str>1));
 } | VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET
 {

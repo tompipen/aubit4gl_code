@@ -99,7 +99,7 @@ bef_field_list :
 	| bef_field_list COMMA field_name {
 	char buff[80];
 	sprintf(buff,"BEF_FIELD_CHK(%s)",$<str>3);
-	generate_or($<str>$,$<str>1,$<str>3);
+	generate_or($<str>$,$<str>1,buff);
 	}
 ;
 
@@ -108,7 +108,7 @@ aft_field_list :
 	|aft_field_list COMMA field_name {
 	char buff[80];
 	sprintf(buff,"AFT_FIELD_CHK(%s)",$<str>3);
-	generate_or($<str>$,$<str>1,$<str>3);
+	generate_or($<str>$,$<str>1,buff);
 	}
 ;
 
