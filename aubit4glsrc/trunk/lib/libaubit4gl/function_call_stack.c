@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.9 2002-06-06 12:31:26 afalout Exp $
+# $Id: function_call_stack.c,v 1.10 2002-06-25 03:22:30 afalout Exp $
 #*/
 
 /**
@@ -45,10 +45,19 @@
 =====================================================================
 */
 
-#include <stdio.h>
-#include <stdlib.h> 		/* calloc() free() */
-#include <string.h>     	/* strcpy() strcat() strcmp() */
-#include "a4gl_debug.h"
+
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+	#include <stdlib.h> 		/* calloc() free() */
+	#include <string.h>     	/* strcpy() strcat() strcmp() */
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
 
 /*
 =====================================================================
@@ -64,14 +73,17 @@
 =====================================================================
 */
 
-extern char *	params_on_stack 				(char *_paramnames[],int n);
+#ifdef OLD_INCL
+	extern char *	params_on_stack 				(char *_paramnames[],int n);
+	void 			A4GLSTK_pushFunction			(const char *functionName,char *params[],int n);
+	void 			A4GLSTK_popFunction				(void);
+	char * 			A4GLSTK_getStackTrace			(void);
+	int 			A4GLSTK_isStackInfo				(void);
+#endif
 
 void 			A4GLSTK_initFunctionCallStack	(void);
 void 			A4GLSTK_setCurrentLine			(const char *moduleName,int lineNumber);
-void 			A4GLSTK_pushFunction			(const char *functionName,char *params[],int n);
-void 			A4GLSTK_popFunction				(void);
-char * 			A4GLSTK_getStackTrace			(void);
-int 			A4GLSTK_isStackInfo				(void);
+
 
 /*
 =====================================================================

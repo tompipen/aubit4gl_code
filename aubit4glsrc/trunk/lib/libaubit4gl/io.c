@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.7 2002-06-06 12:31:26 afalout Exp $
+# $Id: io.c,v 1.8 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -42,13 +42,22 @@
 =====================================================================
 */
 
-#include <stdio.h>
 
-#include "a4gl_dbform.h"
-#include "a4gl_tunable.h"
-#include "a4gl_aubit_lib.h"     /* acl_getenv() */
-#include "a4gl_debug.h"
 
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+
+	#include "a4gl_dbform.h"
+	#include "a4gl_tunable.h"
+	#include "a4gl_aubit_lib.h"     /* acl_getenv() */
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
 
 /*
 =====================================================================
@@ -67,7 +76,10 @@ FILE *oufile=0;
 int 		read_int 			(FILE * ofile);
 void 		write_int 			(FILE * ofile, int la);
 FILE * 		try_to_open			(char *path,char *name,int keepopen);
-FILE * 		open_file_dbpath	(char *fname);
+
+#ifdef OLD_INCL
+	FILE * 		open_file_dbpath	(char *fname);
+#endif
 
 
 /*

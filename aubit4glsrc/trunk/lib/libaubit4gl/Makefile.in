@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.20 2002-06-11 08:42:27 afalout Exp $
+# $Id: Makefile.in,v 1.21 2002-06-25 03:22:29 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -81,7 +81,7 @@ else
 endif
 
 #-D_DEFINE_STATUSVARS_ moved in fglwrap.c
-C_LOCAL_IFLAGS      =-I../../compilers/fcompile -I../../compilers/4glc -I${LIBINCL_PATH}
+#C_LOCAL_IFLAGS      =-I../../compilers/fcompile -I../../compilers/4glc -I${LIBINCL_PATH}
 CFLAGS				+=${C_LOCAL_IFLAGS}
 
 #we don't want -Wall in CFLAGS when compiling form_x_xdr.c because it would

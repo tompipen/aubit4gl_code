@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_rpc.c,v 1.8 2002-06-11 08:42:26 afalout Exp $
+# $Id: API_rpc.c,v 1.9 2002-06-25 03:22:28 afalout Exp $
 #
 */
 
@@ -40,9 +40,20 @@
 =====================================================================
 */
 
-#include "a4gl_dbform.h"
-#include "a4gl_debug.h"
-#include "a4gl_aubit_lib.h"
+
+
+#ifdef OLD_INCL
+
+	#include "a4gl_dbform.h"
+	#include "a4gl_debug.h"
+	#include "a4gl_aubit_lib.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
+
 
 /*
 =====================================================================

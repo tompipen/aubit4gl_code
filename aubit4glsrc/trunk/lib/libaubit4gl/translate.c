@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.7 2002-06-06 12:31:27 afalout Exp $
+# $Id: translate.c,v 1.8 2002-06-25 03:22:31 afalout Exp $
 #
 */
 
@@ -40,13 +40,23 @@
 =====================================================================
 */
 
-#include <stdio.h>
-#include <string.h> 			/* strdup() */
-#include <stdlib.h> 			/* realloc() */
 
-#include "a4gl_debug.h" 		/* debug() */
-#include "a4gl_io.h" 			/* open_file_dbpath() */
-#include "a4gl_aubit_lib.h" 	/* stripnl() */
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+	#include <string.h> 			/* strdup() */
+	#include <stdlib.h> 			/* realloc() */
+
+	#include "a4gl_debug.h" 		/* debug() */
+	#include "a4gl_io.h" 			/* open_file_dbpath() */
+	#include "a4gl_aubit_lib.h" 	/* stripnl() */
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
+
 
 /*
 =====================================================================

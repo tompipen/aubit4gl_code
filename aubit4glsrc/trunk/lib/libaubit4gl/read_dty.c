@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: read_dty.c,v 1.7 2002-06-06 12:31:27 afalout Exp $
+# $Id: read_dty.c,v 1.8 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -43,12 +43,20 @@
 =====================================================================
 */
 
-#include <stdio.h>
-#include "a4gl_dbform.h"
-#include "a4gl_stack.h"
-#include "a4gl_debug.h" 		/* debug() */
-#include "a4gl_dlsql.h" 		/* A4GLSQL_get_datatype() */
 
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+	#include "a4gl_dbform.h"
+	#include "a4gl_stack.h"
+	#include "a4gl_debug.h" 		/* debug() */
+	#include "a4gl_dlsql.h" 		/* A4GLSQL_get_datatype() */
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
 
 /*
 =====================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.6 2002-06-10 16:00:59 mikeaubury Exp $
+# $Id: datatypes.c,v 1.7 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -47,10 +47,20 @@
 =====================================================================
 */
 
-#include "a4gl_stack.h"
-#include "a4gl_dtypes.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_debug.h"
+
+#ifdef OLD_INCL
+
+	#include "a4gl_stack.h"
+	#include "a4gl_dtypes.h"
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
+
 
 /*
 =====================================================================

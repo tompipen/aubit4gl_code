@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.7 2002-06-06 12:31:26 afalout Exp $
+# $Id: keys.c,v 1.8 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -49,11 +49,20 @@
 =====================================================================
 */
 
-#include "a4gl_dbform.h"
-#include "a4gl_debug.h"
-#include "a4gl_pointers.h"
-#include "a4gl_keys.h"
-#include "a4gl_aubit_lib.h"
+
+#ifdef OLD_INCL
+
+	#include "a4gl_dbform.h"
+	#include "a4gl_debug.h"
+	#include "a4gl_pointers.h"
+	#include "a4gl_keys.h"
+	#include "a4gl_aubit_lib.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
 
 /*
 =====================================================================

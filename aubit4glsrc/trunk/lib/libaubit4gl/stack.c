@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.17 2002-06-01 11:54:59 afalout Exp $
+# $Id: stack.c,v 1.18 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -47,30 +47,39 @@
 =====================================================================
 */
 
-#include <stdio.h>
-#include <math.h>
-#include <sys/types.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 
-#ifndef WIN32
-	#include <unistd.h>
-	#include <pwd.h>
+#ifdef OLD_INCL
+	
+	#include <stdio.h>
+	#include <math.h>
+	#include <sys/types.h>
+	#include <ctype.h>
+	#include <stdlib.h>
+	#include <string.h>
+	#include <time.h>
+
+	#ifndef WIN32
+		#include <unistd.h>
+		#include <pwd.h>
+	#endif
+
+	#include "a4gl_incl_4glhdr.h" 	/* push_param() */
+	#include "a4gl_dbform.h"
+	#include "a4gl_dates.h"
+	#include "a4gl_constats.h"
+	#include "a4gl_stack.h"
+	#include "a4gl_dtypes.h"
+	#include "a4gl_debug.h"
+	#include "a4gl_acl_string.h"
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_runtime_tui.h"	/* push_date() */
+	#include "a4gl_dlsql.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
 #endif
-
-#include "a4gl_incl_4glhdr.h" 	/* push_param() */
-#include "a4gl_dbform.h"
-#include "a4gl_dates.h"
-#include "a4gl_constats.h"
-#include "a4gl_stack.h"
-#include "a4gl_dtypes.h"
-#include "a4gl_debug.h"
-#include "a4gl_acl_string.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_runtime_tui.h"	/* push_date() */
-#include "a4gl_dlsql.h"
 
 /*
 =====================================================================

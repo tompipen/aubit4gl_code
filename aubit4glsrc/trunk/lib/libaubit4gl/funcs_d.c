@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.9 2002-06-06 12:31:26 afalout Exp $
+# $Id: funcs_d.c,v 1.10 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -42,23 +42,32 @@
 =====================================================================
 */
 
-#include <math.h>
-#include <sys/types.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <locale.h>
-#include <time.h>
 
-#include "a4gl_dbform.h"
-#include "a4gl_dates.h"
-#include "a4gl_constats.h"
-#include "a4gl_stack.h"
-#include "a4gl_dtypes.h"
-#include "a4gl_debug.h"
-#include "a4gl_aubit_lib.h"
+#ifdef OLD_INCL
 
+	#include <math.h>
+	#include <sys/types.h>
+	#include <ctype.h>
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <string.h>
+	#include <locale.h>
+	#include <time.h>
+
+	#include "a4gl_dbform.h"
+	#include "a4gl_dates.h"
+	#include "a4gl_constats.h"
+	#include "a4gl_stack.h"
+	#include "a4gl_dtypes.h"
+	#include "a4gl_debug.h"
+	#include "a4gl_aubit_lib.h"
+
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
 
 /*
 =====================================================================

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.48 2002-06-11 08:42:26 afalout Exp $
+# $Id: Makefile-common.in,v 1.49 2002-06-25 03:22:28 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -198,6 +198,7 @@ LN_H                =ln --force
 AR 					=ar rc
 #YACC 				=bison -y
 YACC                =@YACC@ @DEBUG_BISON@
+#FIXME: this should be set by configure:
 LEX					=flex -i
 NICE                =nice -20
 INSTALL_USR			=nobody
@@ -220,17 +221,26 @@ AUTOCONF_CFLAGS     =@CFLAGS@
 #tipycally set by autoconf: AUTOCONF_CFLAGS     =-g -O2
 #fixme: set -DDEBUG and -g from configure:
 
-#FIXME: -DAUTOBANG added to CFLAGS applies ONLY to lib/libtui/curslib.c
-#FIXME: this should not use -D, but acl_getenv(A4GL_AUTOBANG) instead
-
 #Total header files (.h) in Aubit: 102 (76 in lib/ incl/ and compilers/)
 
 
 NON_PEDANTIC_OK		=1
 #cannot use -pedantic, too much warnings
 CWARN               =-Wall -Wredundant-decls -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
-C_IFLAGS            =-I/usr/local/include -I$(AUBITDIR)/incl
-C_DFLAGS            =-DAUTOBANG -DDEBUG
+C_IFLAGS            =-I/usr/local/include
+C_DFLAGS            =-DDEBUG
+
+#This can be ovverriden from command line: "make OLD_INCL=0" to compile
+#with new include files:
+OLD_INCL=1
+
+ifeq "${OLD_INCL}" "1"
+	C_IFLAGS        +=-I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libincl -I$(AUBITDIR)/compilers/fcompile
+	C_DFLAGS        +=-DOLD_INCL
+else
+	C_IFLAGS        +=-I$(AUBITDIR)/tools
+endif
+
 
 CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} ${C_DFLAGS} ${C_IFLAGS}
 #we are overriding LD_LIBRARY_PATH that might existed in environment:

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: screen.c,v 1.4 2002-06-01 11:54:59 afalout Exp $
+# $Id: screen.c,v 1.5 2002-06-25 03:22:30 afalout Exp $
 #*/
 
 /**
@@ -43,9 +43,18 @@
 =====================================================================
 */
 
-#include "a4gl_dbform.h" 	/* needed for struct s_form_dets in function find_attribute */
-#include "a4gl_aubit_lib.h" /* zrefresh() */
-#include "a4gl_debug.h" 	/* debug() */
+
+#ifdef OLD_INCL
+
+	#include "a4gl_dbform.h" 	/* needed for struct s_form_dets in function find_attribute */
+	#include "a4gl_aubit_lib.h" /* zrefresh() */
+	#include "a4gl_debug.h" 	/* debug() */
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
 
 /*
 =====================================================================

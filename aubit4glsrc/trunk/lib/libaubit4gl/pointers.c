@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.7 2002-06-06 12:31:26 afalout Exp $
+# $Id: pointers.c,v 1.8 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -58,15 +58,26 @@
 =====================================================================
 */
 
-#include <string.h>
-#include <stdlib.h> 			/* free() */
 
-#ifndef WIN32
-	#include <search.h>
+
+#ifdef OLD_INCL
+
+	#include <string.h>
+	#include <stdlib.h> 			/* free() */
+
+	#ifndef WIN32
+		#include <search.h>
+	#endif
+
+	#include "a4gl_debug.h"
+	#include "a4gl_aubit_lib.h" 	/* trim() */
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
 #endif
 
-#include "a4gl_debug.h"
-#include "a4gl_aubit_lib.h" 	/* trim() */
 
 /*
 =====================================================================

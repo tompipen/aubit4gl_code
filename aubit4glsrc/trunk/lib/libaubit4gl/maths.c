@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: maths.c,v 1.5 2002-06-06 12:31:26 afalout Exp $
+# $Id: maths.c,v 1.6 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -42,10 +42,18 @@
 =====================================================================
 */
 
-#include "a4gl_stack.h"
-#include "a4gl_dtypes.h"
-#include "a4gl_debug.h"
 
+#ifdef OLD_INCL
+
+	#include "a4gl_stack.h"
+	#include "a4gl_dtypes.h"
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
 /*
 =====================================================================
                     Variables definitions
@@ -70,7 +78,9 @@ struct s_math *arr_math[MAX_DTYPE][MAX_DTYPE];
 
 void        init_arr_math		(void);
 void        add_op_function		(int dtype1,int dtype2,int op,void *function);
-void *      find_op_function	(int dtype1,int dtype2,int op);
+#ifdef OLD_INCL
+ void *      find_op_function	(int dtype1,int dtype2,int op);
+#endif
 
 /*
 =====================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.9 2002-06-06 12:31:26 afalout Exp $
+# $Id: helper.c,v 1.10 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -43,16 +43,25 @@
 =====================================================================
 */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
 
-#include "a4gl_dbform.h"
-#include "a4gl_pointers.h"
-#include "a4gl_debug.h"
-#include "a4gl_runtime_tui.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_dlsql.h" 		/* A4GLSQL_get_currdbname() */
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+	#include <string.h>
+	#include <stdarg.h>
+
+	#include "a4gl_dbform.h"
+	#include "a4gl_pointers.h"
+	#include "a4gl_debug.h"
+	#include "a4gl_runtime_tui.h"
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_dlsql.h" 		/* A4GLSQL_get_currdbname() */
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
 
 /*
 =====================================================================

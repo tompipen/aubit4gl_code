@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.7 2002-06-06 12:31:26 afalout Exp $
+# $Id: extfile.c,v 1.8 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -40,15 +40,23 @@
 =====================================================================
 */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h> 			/* free() */
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+	#include <string.h>
+	#include <stdlib.h> 			/* free() */
 
 
-#include "a4gl_stack.h" 		/* pop_int() */
-#include "a4gl_io.h"
-#include "a4gl_debug.h"
-#include "a4gl_aubit_lib.h"
+	#include "a4gl_stack.h" 		/* pop_int() */
+	#include "a4gl_io.h"
+	#include "a4gl_debug.h"
+	#include "a4gl_aubit_lib.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
 
 /*
 =====================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.16 2002-06-11 12:45:41 afalout Exp $
+# $Id: API_sql.c,v 1.17 2002-06-25 03:22:29 afalout Exp $
 #
 */
 
@@ -47,15 +47,23 @@
 =====================================================================
 */
 
-#include <stdio.h>
-#include <string.h>
-#include <dlfcn.h>
-#include "a4gl_sqlca.h"
-#include "a4gl_database.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_dlsql.h"         /* UCHAR */
-#include "a4gl_debug.h"
 
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+	#include <string.h>
+	#include <dlfcn.h>
+	#include "a4gl_sqlca.h"
+	#include "a4gl_database.h"
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_dlsql.h"         /* UCHAR */
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
 
 /*
 =====================================================================

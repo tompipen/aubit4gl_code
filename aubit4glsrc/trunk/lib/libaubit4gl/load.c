@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.8 2002-06-06 12:31:26 afalout Exp $
+# $Id: load.c,v 1.9 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -44,13 +44,22 @@
 =====================================================================
 */
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h> 			/* strlen() strcopy() strcat() */
 
-#include "a4gl_aubit_lib.h"
-#include "a4gl_debug.h"
-#include "a4gl_dlsql.h" 		/* A4GLSQL_fill_array() */
+#ifdef OLD_INCL
+
+	#include <stdarg.h>
+	#include <stdio.h>
+	#include <string.h> 			/* strlen() strcopy() strcat() */
+
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_debug.h"
+	#include "a4gl_dlsql.h" 		/* A4GLSQL_fill_array() */
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
 
 /*
 =====================================================================

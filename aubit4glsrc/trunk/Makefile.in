@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.69 2002-06-11 08:42:20 afalout Exp $
+# $Id: Makefile.in,v 1.70 2002-06-25 03:22:27 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -312,6 +312,7 @@ corecompile:
 	$(MAKE) -C compilers/4glc
 	$(MAKE) -C compilers/fcompile
 	$(MAKE) -C compilers/menus
+	$(MAKE) -C compilers/ace
 	$(MAKE) -C compilers/helpcompile
 	$(MAKE) -C lib loadmap
 	@echo Aubit 4gl compiler core is now compiled
@@ -421,16 +422,6 @@ doxy.install.www:
 doxy.install.search:
 	cp docs/doxy/html/doxysearch.cgi @CGI_DIR@
 
-
-## ==================================================================
-##                              Make RPC
-## ==================================================================
-
-#this should happen in local make flies, as needed:
-#rpc:
-#	$(MAKE) -C compilers/fcompile rpc
-#	$(MAKE) -C compilers/menus rpc
-
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
@@ -456,6 +447,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 	$(MAKE) -C compilers/4glc clean
 	$(MAKE) -C compilers/fcompile clean
 	$(MAKE) -C compilers/menus clean
+	$(MAKE) -C compilers/ace clean
 	$(MAKE) -C compilers/helpcompile clean
 	$(MAKE) -C tools/test clean
 	$(MAKE) -C tools/test/gui clean
@@ -514,6 +506,7 @@ clean.bin:
 	*.bak ide${EXE} fcompile-noodbc${EXE} 4glc-noodbc${EXE} \
 	4glp${EXE} mdecompile${EXE} fdecompile${EXE} fdecompile-j${EXE} \
 	aubit-config${EXE} fshow${EXE}  odbctest-*${EXE} \
+	aace adecompile \
 	)
 
 clean.etc:

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.9 2002-06-06 12:31:26 afalout Exp $
+# $Id: error.c,v 1.10 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -44,12 +44,23 @@
 =====================================================================
 */
 
-#include <string.h> 				/* strcmp() */
-#include <stdarg.h>
 
-#include "../generated/tmperrs.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_debug.h"
+#ifdef OLD_INCL
+
+	#include <string.h> 				/* strcmp() */
+	#include <stdarg.h>
+
+	#include "../generated/tmperrs.h"
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+	#include "../generated/tmperrs.h"
+
+#endif
+
 
 /*
 =====================================================================

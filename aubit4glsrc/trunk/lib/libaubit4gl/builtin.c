@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.6 2002-06-06 12:31:26 afalout Exp $
+# $Id: builtin.c,v 1.7 2002-06-25 03:22:29 afalout Exp $
 #
 */
 
@@ -42,12 +42,23 @@
 =====================================================================
 */
 
-#include "a4gl_dbform.h"
-#include "a4gl_errors.h"
-#include "a4gl_dlsql.h"         /* A4GLSQL_set_status() */
-#include "a4gl_runtime_tui.h" 	/* push_int() */
-#include "a4gl_aubit_lib.h" 	/* trim() etc. */
-#include "a4gl_debug.h"
+
+#ifdef OLD_INCL
+	
+	#include "a4gl_dbform.h"
+	#include "a4gl_errors.h"
+	#include "a4gl_dlsql.h"         /* A4GLSQL_set_status() */
+	#include "a4gl_runtime_tui.h" 	/* push_int() */
+	#include "a4gl_aubit_lib.h" 	/* trim() etc. */
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
+
+
 
 /*
 =====================================================================
@@ -65,23 +76,40 @@ int m_scr_line = 0;
 =====================================================================
 */
 
-int 	aclfgl_set_count 	(int nargs);
-int 	aclfgl_arr_count 	(int nargs);
-int 	aclfgl_scr_line 	(int nargs);
-int 	aclfgl_arr_curr 	(int nargs);
-int     aclfgl_length 		(int nargs);
-int     aclfgl_err_get		(int statusnumber);
-int     aclfgl_err_print	(int statusnumber);
-int     aclfgl_err_quit		(int statusnumber);
-int     aclfgl_startlog 	(char *filename);
-int     aclfgl_errorlog 	(char *string);
-int     aclfgl_showhelp 	(int helpnumber);
+/*
+	Note : all functions with aclfgl_ prefix are callable from
+	compiled 4gl code, since all references to functions get aclfgl_ prefix
+	appended to them by 4gl compiler. Therefore, compiled 4gl code CANNOT
+    call any function in Aubit libraries without aclfgl prefix.
+*/
 
-int     fgl_fieldtouched	(char *fieldname);
-void    close_database		(void);
-char * 	let_substr 			(char *ca, int dtype, int a, int b,...);
-void    get_arr_curr 		(int a);
-void    get_scr_line 		(int a);
+
+/* void    get_arr_curr 		(int a); */
+/* void    get_scr_line 		(int a); */
+
+
+#ifdef OLD_INCL
+	int 	aclfgl_set_count 	(int nargs);
+	int 	aclfgl_arr_count 	(int nargs);
+	int 	aclfgl_scr_line 	(int nargs);
+	int 	aclfgl_arr_curr 	(int nargs);
+	int     aclfgl_length 		(int nargs);
+	int     aclfgl_err_get		(int statusnumber);
+	int     aclfgl_err_print	(int statusnumber);
+	int     aclfgl_err_quit		(int statusnumber);
+	int     aclfgl_startlog 	(char *filename);
+	int     aclfgl_errorlog 	(char *string);
+	int     aclfgl_showhelp 	(int helpnumber);
+/* 	int 	aclfgl_fgl_getenv 	(int nargs); */
+/* 	void    aclfgl_mdy			(void); */
+
+
+	int     fgl_fieldtouched	(char *fieldname);
+	void    close_database		(void);
+	char * 	let_substr 			(char *ca, int dtype, int a, int b,...);
+/*	char *substr(char *s,int dtype,int a,int b,...); */
+
+#endif
 
 /*
 =====================================================================
@@ -254,10 +282,7 @@ substr (char *ca, int dtype, int a, int b,...)
   static char *np = 0;
   static char *np2 = 0;
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("substr");
-  }
+  {    debug ("substr");  }
 #endif
   if (np != 0)
     acl_free (np);
@@ -269,10 +294,7 @@ substr (char *ca, int dtype, int a, int b,...)
   if (np[0] == 0)
     {
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("NULL");
-      }
+      {	debug ("NULL");      }
 #endif
       pad_string (np, DECODE_SIZE (dtype));
     }
@@ -280,33 +302,19 @@ substr (char *ca, int dtype, int a, int b,...)
   b--;
 
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug (">>>>Start with %s", np);
-  }
-#endif
-#ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug (">>>>a=%d b=%d dtype=%d,\n ", a, b, dtype);
-  }
+  {    debug (">>>>Start with %s", np);  }
+  {    debug (">>>>a=%d b=%d dtype=%d,\n ", a, b, dtype);  }
 #endif
 
   if (b == -1)
     b = a;
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug (">>>>Allocated %d bytes", b - a + 2);
-  }
+  {    debug (">>>>Allocated %d bytes", b - a + 2);  }
 #endif
   strncpy (np2, &np[a], b - a + 1);
   np2[b - a + 1] = 0;
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug (">>>>Set to %s", np2);
-  }
+  {    debug (">>>>Set to %s", np2);  }
 #endif
   return np2;
 }
@@ -324,23 +332,12 @@ let_substr (char *ca, int dtype, int a, int b,...)
   char *np;
   int size;
 #ifdef DEBUG
-/* {DEBUG} */ 
-  {
-    debug ("let_substr");
-  }
+  {    debug ("let_substr");  }
 #endif
   pad_string (ca, DECODE_SIZE (dtype));
 #ifdef DEBUG
-/* {DEBUG} */ 
-  {
-    debug ("Start with '%s'", ca);
-  }
-#endif
-#ifdef DEBUG
-/* {DEBUG} */ 
-  {
-    debug ("a=%d b=%d dtype=%d,\n ", a, b, dtype);
-  }
+  {    debug ("Start with '%s'", ca);  }
+  {    debug ("a=%d b=%d dtype=%d,\n ", a, b, dtype);  }
 #endif
   if (b == 0)
     b = a;
@@ -348,23 +345,12 @@ let_substr (char *ca, int dtype, int a, int b,...)
   np = (char *)acl_malloc (size + 1, "let_substr");
   pop_char (np, size);
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("   Stack contained %s\n", np);
-  }
-#endif
-#ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("   Size=%d", size);
-  }
+  {    debug ("   Stack contained %s\n", np);  }
+  {    debug ("   Size=%d", size);  }
 #endif
   strncpy (&ca[a - 1], np, size);
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("Set to %s", ca);
-  }
+  {    debug ("Set to %s", ca);  }
 #endif
   return ca;
 }
@@ -420,12 +406,13 @@ set_scr_line (int a)
  * @todo : Remove if not used.
  * @param a The current array to be setted.
  */
+/*
 void
 get_arr_curr (int a)
 {
   m_arr_curr = a;
 }
-
+*/
 
 /**
  * Sets the current array.
@@ -434,12 +421,13 @@ get_arr_curr (int a)
  * @todo : Remove if not used.
  * @param a The current array to be setted.
  */
+/*
 void
 get_scr_line (int a)
 {
   m_scr_line = a;
 }
-
+*/
 
 #ifdef _WINDOWS
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.13 2002-06-08 06:48:10 afalout Exp $
+# $Id: fglwrap.c,v 1.14 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -43,17 +43,17 @@
 =====================================================================
 */
 
+	#define DEFINE_INTFLAG
+	#define DEFINE_QUITFLAG
+	#define _DEFINE_STATUSVARS_ /* one place we have to DEFINE them, for the
+	                            rest of source files, they get only DECLARED
+	                            as extern */
 
-#define DEFINE_INTFLAG
-#define DEFINE_QUITFLAG
-#define _DEFINE_STATUSVARS_ /* one place we have to DEFINE them, for the
-                            rest of source files, they get only DECLARED
-                            as extern */
+	/* FIXME: we should not need to pre-load anything */
+	#define _PRELOAD_SQL_ 		/* pre-load SQL module */
+	#define _PRELOAD_REPORT_  	/* pre-load EXREPORT module */
+	#define _PRELOAD_UI_ 		/* pre-load UI module */
 
-/* FIXME: we should not need to pre-load anything */
-#define _PRELOAD_SQL_ 		/* pre-load SQL module */
-#define _PRELOAD_REPORT_  	/* pre-load EXREPORT module */
-#define _PRELOAD_UI_ 		/* pre-load UI module */
 /*
 =====================================================================
 		                    Includes
@@ -61,23 +61,31 @@
 */
 
 
-#include <signal.h>
-#include <locale.h>
-#include <string.h>
-#include <unistd.h> 				/* sleep() */
+#ifdef OLD_INCL
 
-#ifdef __CYGWIN__
-	#include <windows.h>
-	#include <errno.h>
+	#include <signal.h>                 /* SIGINT */
+	#include <locale.h>                 /* setlocale() */
+	#include <string.h>
+	#include <unistd.h> 				/* sleep() */
+
+	#ifdef __CYGWIN__
+		#include <windows.h>
+		#include <errno.h>
+	#endif
+
+	#include "a4gl_dbform.h"
+	#include "a4gl_stack.h"
+	#include "a4gl_debug.h"
+	#include "a4gl_keys.h"
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_dlsql.h"				/* A4GLSQL_initlib() */
+	#include "a4gl_runtime_tui.h"		/*  push_int() */
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
 #endif
-
-#include "a4gl_dbform.h"
-#include "a4gl_stack.h"
-#include "a4gl_debug.h"
-#include "a4gl_keys.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_dlsql.h"				/* A4GLSQL_initlib() */
-#include "a4gl_runtime_tui.h"		/*  push_int() */
 
 /*
 =====================================================================
@@ -865,7 +873,7 @@ the user presses the Interrupt key or the Quit key.
 
 DEFER is a method of intercepting asynchronous signals from outside the program.
 
-Unless it includes the DEFER statement, the 4GL application terminates 
+Unless it includes the DEFER statement, the 4GL application terminates
 whenever the user presses the Interrupt key or the Quit key. The Interrupt 
 key is CONTROL-C, and the Quit key is CONTROL-\. (Here the Quit key 
 emulates the effect of the Quit key on UNIX systems.)
@@ -884,8 +892,8 @@ MAIN program block, and only once there in any program. Once executed,
 the DEFER statement remains in effect for the duration of the program; 
 you cannot restore the original function of the Interrupt key or the Quit key.
 
-4GL programs can include code to check whether int_flag or quit_flag 
-is TRUE, and if so, to take appropriate action. Be sure also to reset 
+4GL programs can include code to check whether int_flag or quit_flag
+is TRUE, and if so, to take appropriate action. Be sure also to reset
 int_flag or quit_flag to FALSE (that is, to zero) so that subsequent 
 tests are valid.
 

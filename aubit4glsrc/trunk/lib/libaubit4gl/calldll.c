@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.12 2002-06-11 08:42:27 afalout Exp $
+# $Id: calldll.c,v 1.13 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -42,26 +42,37 @@
 =====================================================================
 */
 
-#include <string.h> /* strcpy() strcat() */
 
-/*
- **********************************************************************
- * Under Cygwin, we can use the dl family of calls, but we need to jump
- * through some hoops first. Specifically, we need to include
- * <cygwin/cygwin_dll.h> and we need to use the DECLARE_CYGWIN_DLL()
- * macro. During the link phase, we must use __cygwin_dll_entry@12 as
- * the entry point. See http://sources.redhat.com/cygwin/dl-docs.html.
- * http://cygwin.com/faq/faq.html#SEC106
- * http://www.neuro.gatech.edu/users/cwilson/cygutils/V1.1/dll-stuff/
- ***********************************************************************
- */
+#ifdef OLD_INCL
+	
+	#include <string.h> /* strcpy() strcat() */
 
-#if defined(__CYGWIN__)
-	#include <cygwin/cygwin_dll.h>
+	/*
+	 **********************************************************************
+	 * Under Cygwin, we can use the dl family of calls, but we need to jump
+	 * through some hoops first. Specifically, we need to include
+	 * <cygwin/cygwin_dll.h> and we need to use the DECLARE_CYGWIN_DLL()
+	 * macro. During the link phase, we must use __cygwin_dll_entry@12 as
+	 * the entry point. See http://sources.redhat.com/cygwin/dl-docs.html.
+	 * http://cygwin.com/faq/faq.html#SEC106
+	 * http://www.neuro.gatech.edu/users/cwilson/cygutils/V1.1/dll-stuff/
+	 ***********************************************************************
+	 */
+
+	#if defined(__CYGWIN__)
+		#include <cygwin/cygwin_dll.h>
+	#endif
+
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
 #endif
 
-#include "a4gl_aubit_lib.h"
-#include "a4gl_debug.h"
+
 
 /*
 =====================================================================

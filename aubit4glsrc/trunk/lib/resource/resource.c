@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.10 2002-06-06 12:31:29 afalout Exp $
+# $Id: resource.c,v 1.11 2002-06-25 03:22:31 afalout Exp $
 #
 */
 
@@ -43,21 +43,36 @@
 =====================================================================
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h> 		/* toupper() */
 
-/*
-This is only source code file in which we should allowe getenv() function
-call. Everywhere else, we should use acl_getenv. To allow use of getenv,
-we will define this two variables:
-*/
-#define GETENV_OK
-#define WGETENV_OK
-#include "a4gl_debug.h"
-#include "a4gl_aubit_lib.h"
 
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <string.h>
+	#include <ctype.h> 		/* toupper() */
+
+	/*
+	This is only source code file in which we should allowe getenv() function
+	call. Everywhere else, we should use acl_getenv. To allow use of getenv,
+	we will define this two variables:
+	*/
+	#define GETENV_OK
+	#define WGETENV_OK
+	#include "a4gl_debug.h"
+	#include "a4gl_aubit_lib.h"
+
+#else
+	/*
+	This is only source code file in which we should allowe getenv() function
+	call. Everywhere else, we should use acl_getenv. To allow use of getenv,
+	we will define this two variables:
+	*/
+	#define GETENV_OK
+	#define WGETENV_OK
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
 /*
 =====================================================================
                     Constants definitions

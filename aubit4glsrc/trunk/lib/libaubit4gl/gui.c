@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.10 2002-06-05 07:04:55 afalout Exp $
+# $Id: gui.c,v 1.11 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -80,22 +80,32 @@
 =====================================================================
 */
 
-#include <unistd.h> 			/* close() write() */
 
-#ifndef WIN32
-	#include <sys/time.h>
+
+#ifdef OLD_INCL
+
+	#include <unistd.h> 			/* close() write() */
+
+	#ifndef WIN32
+		#include <sys/time.h>
+	#endif
+
+	#ifdef __CYGWIN__
+		#include <sys/time.h>
+	#endif
+
+
+	#include "a4gl_dbform.h"
+	#include "a4gl_sockhelp.h"
+	#include "a4gl_debug.h"
+	#include "a4gl_runtime_tui.h"
+	#include "a4gl_aubit_lib.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+	#include <errno.h> /* EINTR */
 #endif
-
-#ifdef __CYGWIN__
-	#include <sys/time.h>
-#endif
-
-
-#include "a4gl_dbform.h"
-#include "a4gl_sockhelp.h"
-#include "a4gl_debug.h"
-#include "a4gl_runtime_tui.h"
-#include "a4gl_aubit_lib.h"
 
 /*
 =====================================================================

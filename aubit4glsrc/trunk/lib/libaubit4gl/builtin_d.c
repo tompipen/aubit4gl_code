@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.6 2002-06-05 07:04:55 afalout Exp $
+# $Id: builtin_d.c,v 1.7 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -53,23 +53,31 @@
 =====================================================================
 */
 
-#include <math.h>
-#include <sys/types.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <locale.h>
-#include <time.h>
+#ifdef OLD_INCL
 
-#include "a4gl_dbform.h"
-#include "a4gl_dates.h"
-#include "a4gl_constats.h"
-#include "a4gl_stack.h"
-#include "a4gl_dtypes.h"
-#include "a4gl_runtime_tui.h"			/* push_int() */
-#include "a4gl_aubit_lib.h"
-#include "a4gl_debug.h"
+	#include <math.h>
+	#include <sys/types.h>
+	#include <ctype.h>
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <string.h>
+	#include <locale.h>
+	#include <time.h>
+
+	#include "a4gl_dbform.h"
+	#include "a4gl_dates.h"
+	#include "a4gl_constats.h"
+	#include "a4gl_stack.h"
+	#include "a4gl_dtypes.h"
+	#include "a4gl_runtime_tui.h"			/* push_int() */
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
 
 /*
 =====================================================================
@@ -78,7 +86,13 @@
 */
 
 /* #define DIGIT_ALIGN_LEFT */
-extern int errno;
+
+/*
+builtin_d.c:89: warning: function declaration isn't a prototype
+builtin_d.c:89: warning: redundant redeclaration of `__errno_location' in same scope
+*/
+
+/* extern int errno; */
 
 /**
  * Structure that describes the functions used.

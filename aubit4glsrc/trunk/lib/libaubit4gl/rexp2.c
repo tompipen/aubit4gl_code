@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.8 2002-06-06 12:31:27 afalout Exp $
+# $Id: rexp2.c,v 1.9 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -83,18 +83,27 @@
 */
 
 
-#include <stdlib.h> /* atoi() */
-#include <string.h> /* strlen() */
 
-#ifdef __CYGWIN__
-	#include "regex2.h"
+#ifdef OLD_INCL
+
+	#include <stdlib.h> /* atoi() */
+	#include <string.h> /* strlen() */
+
+	#ifdef __CYGWIN__
+		#include "regex2.h"
+	#else
+		#include "regex.h"
+	#endif
+
+	#include "a4gl_match.h"
+	#include "a4gl_debug.h"
+	#include "a4gl_aubit_lib.h"
+
 #else
-	#include "regex.h"
-#endif
 
-#include "a4gl_match.h"
-#include "a4gl_debug.h"
-#include "a4gl_aubit_lib.h"
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
 
 /*
 =====================================================================

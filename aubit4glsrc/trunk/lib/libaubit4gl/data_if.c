@@ -24,31 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.8 2002-06-06 12:31:26 afalout Exp $
+# $Id: data_if.c,v 1.9 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
-
-/* I don't think so (Andrej) : */
-/*******************************************************/
-/* This file was automatically generated - do not edit */
-/*******************************************************/
-
-
-/* This file _IS_ used, if not :
-
-sh ../../bin/4glpc fshow.4gl -o fshow
-============ FIRST ERROR: ==============
-/tmp/cc2r1wE7.o: In function `main':
-/opt/aubit/aubit4glsrc/compilers/fcompile/./fshow.c:99: undefined reference to `get_set'
-collect2: ld returned 1 exit status
-========================================
-
-*/
-
-
 /**
  * @file
+ *
+ * Used by C compiled 4gl code
  *
  * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
@@ -63,11 +46,19 @@ collect2: ld returned 1 exit status
 =====================================================================
 */
 
-#include <string.h>
-#include <stdlib.h> 		/* free() */
+#ifdef OLD_INCL
 
-#include "a4gl_data_if.h"
-#include "a4gl_debug.h"
+	#include <string.h>
+	#include <stdlib.h> 		/* free() */
+
+	#include "a4gl_data_if.h"
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
 
 /*
 =====================================================================
@@ -75,7 +66,19 @@ collect2: ld returned 1 exit status
 =====================================================================
 */
 
-void * get_set(char *str,void *ptr,int mode,char *name,long var);
+#ifdef OLD_INCL
+
+	void * get_set(char *str,void *ptr,int mode,char *name,long var);
+
+#endif
+
+
+static void * get_set_s_screenio(void *ptr,int mode,char *name,long var);
+static void * get_set_s_inp_arr(void *ptr,int mode,char *name,long var);
+static void * get_set_s_prompt(void *ptr,int mode,char *name,long var);
+static void * get_set_rep_structure(void *ptr,int mode,char *name,long var);
+static void * get_set_s_disp_arr(void *ptr,int mode,char *name,long var);
+
 
 
 /*
@@ -87,6 +90,7 @@ void * get_set(char *str,void *ptr,int mode,char *name,long var);
 
 /**
  * Handler for s_screenio
+ *
  * @todo Describe function
  */
 static void *
@@ -187,6 +191,7 @@ struct s_s_screenio_1 *val;
 
 /**
  * Handler for s_inp_arr
+ *
  * @todo Describe function
  */
 static void *
@@ -383,6 +388,7 @@ struct s_s_inp_arr_1 *val;
 
 /**
  * Handler for s_prompt
+ *
  * @todo Describe function
  */
 static void *
@@ -464,7 +470,6 @@ struct s_s_prompt_1 *val;
  *
  * The rep structure is a report identification structure.
  *
- * @todo Understand if this function is not used and if not remove it
  *
  * @param ptr
  * @param mode
@@ -765,6 +770,7 @@ int a;
 	debug("No found %s\n",str);
 	return (void *)0;
 }
+
 
 
 /* ================================ EOF ============================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.13 2002-06-06 12:31:26 afalout Exp $
+# $Id: others.c,v 1.14 2002-06-25 03:22:30 afalout Exp $
 #
 */
 
@@ -44,14 +44,24 @@
 */
 
 
-#include "a4gl_dbform.h"
-#include "a4gl_debug.h"
-#include "a4gl_keys.h"
-/* here only to satisfy libFORM_ (from compilers/fcompile/fcompile.c) */
-#include "a4gl_formxw.h"
 
-#include "a4gl_aubit_lib.h" 		/* fgl_error() */
-#include "a4gl_runtime_tui.h" 		/* push_long() */
+#ifdef OLD_INCL
+
+	#include "a4gl_dbform.h"
+	#include "a4gl_debug.h"
+	#include "a4gl_keys.h"
+	/* here only to satisfy libFORM_ (from compilers/fcompile/fcompile.c) */
+	#include "a4gl_formxw.h"
+
+	#include "a4gl_aubit_lib.h" 		/* fgl_error() */
+	#include "a4gl_runtime_tui.h" 		/* push_long() */
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
+
 /*
 =====================================================================
                     Variables definitions
