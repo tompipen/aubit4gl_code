@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.39 2002-10-07 11:06:25 afalout Exp $
+# $Id: Makefile.in,v 1.40 2002-10-13 01:40:34 afalout Exp $
 #
 
 ROOT    	=../..
@@ -247,7 +247,7 @@ clean : clean.generated
 	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c \
 		form_x_xdr.c form_x.h project.c core \
 		*.out *.glb *${SO_EXT_LINKABLE} *.a  *.o  *.bak *.dll *.stackdump *.err \
-		*.base *.exp libaubit4gl.def
+		*.base *.exp *.def
 
 clean.generated:
 	${RM} ${LIBROOT}/generated/errdefs ${LIBROOT}/generated/tmperrs.h \

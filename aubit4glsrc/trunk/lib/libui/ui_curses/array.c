@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.2 2002-09-26 01:32:15 afalout Exp $
+# $Id: array.c,v 1.3 2002-10-13 01:40:35 afalout Exp $
 #*/
 
 /**
@@ -40,20 +40,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include "a4gl_tui_tui.h"
-	#include "a4gl_dbform.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_runtime_tui.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_ui_tui_int.h"
-
-#endif
+#include "a4gl_lib_ui_tui_int.h"
 
 /*
 =====================================================================
@@ -61,6 +48,7 @@
 =====================================================================
 */
 
+//extern struct 	struct_screen_record *get_srec (char *name);
 /* struct struct_screen_record *get_srec (char *); */
 
 /*

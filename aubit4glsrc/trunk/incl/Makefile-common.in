@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.87 2002-10-07 11:06:24 afalout Exp $
+# $Id: Makefile-common.in,v 1.88 2002-10-13 01:40:34 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -565,7 +565,8 @@ ifneq "${AUBIT_BIN_INSTALL}" "1"
 else
 	FCOMPILE	=aubit fcompile
 	MKMESS      =aubit mkmess
-	FGLPCEXEC	=aubit 4glpc
+	#4glpc needs bash to run - old sh will not do. We need to fix this in "aubit" script
+	FGLPCEXEC	=aubit ${SH} 4glpc
 	MCOMPILE	=aubit mcompile
 endif
 
@@ -892,16 +893,34 @@ COMPILEDATE	:=$(shell date +%d-%m-%Y)
 
 BIN_SCRIPTS =amake amakeallo amakeallf 4glpc aubit prepmake genmake
 BIN_EXE		=4glc${EXEEXT} fcompile${EXEEXT} xgen${EXEEXT} \
-			mcompile${EXEEXT} mkmess${EXEEXT} loadmap${EXEEXT} \
-			aubit-config${EXEEXT} mdecompile${EXEEXT} fdecompile${EXEEXT} \
-			fshow${EXEEXT} aace${EXEEXT} adecompile${EXEEXT}
+			mcompile${EXEEXT} mkmess${EXEEXT} \
+			aubit-config${EXEEXT} mdecompile${EXEEXT} fdecompile${EXEEXT}
+
+
+#This two can fail to compile, when 4glc is not working:
+ifneq "$(shell ls $(SOURCE)/bin/loadmap${EXEEXT} 2> /dev/null)" ""
+	BIN_EXE		+=loadmap${EXEEXT}
+endif
+ifneq "$(shell ls $(SOURCE)/bin/fshow${EXEEXT} 2> /dev/null)" ""
+	BIN_EXE		+=fshow${EXEEXT}
+endif
 
 
 #Building this is optional
 #FIXME: move this to configure
+#Cannot make ace without rpclib:
+ifneq "$(shell ls $(SOURCE)/bin/aace${EXEEXT} 2> /dev/null)" ""
+	BIN_EXE		+=aace${EXEEXT}
+endif
+#Cannot make ace without rpclib:
+ifneq "$(shell ls $(SOURCE)/bin/adecompile${EXEEXT} 2> /dev/null)" ""
+	BIN_EXE		+=adecompile${EXEEXT}
+endif
+#needs missing source code
 ifneq "$(shell ls $(SOURCE)/bin/fdecompile-j${EXEEXT} 2> /dev/null)" ""
 	BIN_EXE		+=fdecompile-j${EXEEXT}
 endif
+#user's manual choice:
 ifneq "$(shell ls $(SOURCE)/bin/odbctest-unixODBC${EXE} 2> /dev/null)" ""
 	BIN_EXE		+=odbctest-unixODBC${EXE}
 endif
@@ -930,17 +949,16 @@ TMP_LIBFILES= \
 
 LIB_DEFAULT =$(notdir ${TMP_LIBFILES})
 
-#18
-#			libLEX_PERL${SO_EXT} \
-#			libaubit4gl${SO_EXT} libEXREPORT_NOPDF${SO_EXT} \
-#			libSQL_nosql${SO_EXT} libUI_CONSOLE${SO_EXT} \
-#			libRPC_NORPC${SO_EXT} libFORM_NOFORM${SO_EXT} \
-#            libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} \
-#            libLEX_C${SO_EXT} libDATA_menu_list${SO_EXT} libDATA_report${SO_EXT} \
-#			libDATA_struct_form${SO_EXT} libPACKER_PACKED${SO_EXT} \
-#			libPACKER_PERL${SO_EXT} libPACKER_XDR${SO_EXT} libPACKER_XML${SO_EXT} \
-#            libFORM_GENERIC${SO_EXT}
+#libFORM_GENERIC.dll': No such fi
+#libMENU_XDR.dll': No such file o
+#libRPC_XDR.dll': No such file or
+#libFORM_XDR.dll': No such file o
 
+#libXDRPACKER_menu_list.dll': No
+#libXDRPACKER_report.dll': No suc
+#libXDRPACKER_struct_form.dll': N
+
+#libPACKER_XDR.dll': No such file
 
 LIB_SO		=${LIB_DEFAULT}
 
@@ -973,7 +991,9 @@ endif
 LIB_FILES   		=${LIB_SO} ${LIB_OPTIONAL}
 
 ifneq "${COMSPEC}" ""
-	LIB_FILES +=${LIB_EXPORTLIB}
+	#libexportlib4glcomp.dll is really a 4glc executable compiled as dll !!!!
+	#but it is needed by libLEX_C.dll - don't ask me why...
+	LIB_FILES +=${LIB_EXPORTLIB} libexportlib4glcomp.dll
 endif
 
 ## ==================================================================

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2002-10-07 11:06:28 afalout Exp $
+# $Id: Makefile.in,v 1.10 2002-10-13 01:40:34 afalout Exp $
 #
 
 ROOT        =../../..
@@ -55,10 +55,10 @@ endif
 
 CFLAGS			+=-I.. -I. -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile -I${ROOT}/compilers/4glc/rules -I${ROOT}/compilers/4glc
 ifeq "${TARGET_OS}" "cygwin"
-	LINKLIBS	=-L${LIBROOT} -L${ROOT}/compilers/4glc -lexportlib4glcomp -laubit4gl
-	#not needed any more : --enable-auto-import
-#gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -o ../../libLEX_C.dll compile_c.o compile_c_gtk.o -L../.. -laubit4gl -L../../../compilers/4glc -lexportlib4glcomp.dll.a
-    ALL         =${ROOT}/compilers/4glc/libexportlib4glcomp${SO_EXT}.a
+	LINKLIBS	+=-L${ROOT}/compilers/4glc -lexportlib4glcomp
+	LINKDEPS    =${ROOT}/compilers/4glc/libexportlib4glcomp.dll.a
+	#LINKLIBS	+=${ROOT}/compilers/4glc/libexportlib4glcomp.def
+	LINKLIBS	+=-L${LIBROOT} -laubit4gl
 endif
 
 ALL         	+=${LIBROOT}/libLEX_C${SO_EXT}
@@ -69,8 +69,8 @@ ALL         	+=${LIBROOT}/libLEX_C${SO_EXT}
 
 ALL: ${ALL}
 
-${LIBROOT}/libLEX_C${SO_EXT} : ${4GLCOBJ_C}
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+${LIBROOT}/libLEX_C${SO_EXT} : ${4GLCOBJ_C} ${LINKDEPS}
+	${LD} ${SO_LDFLAGS} -o $@ ${4GLCOBJ_C} ${LINKLIBS}
 ifeq "${SO_EXT}" ".dll"
 	${MV} TMP${SOEXP_EXT} $@.a
 endif
@@ -82,7 +82,7 @@ endif
 #../fcompile/form_x.h:
 #	make -C ../fcompile rpc
 
-${ROOT}/compilers/4glc/libexportlib4glcomp${SO_EXT}.a:
+${LINKDEPS}:
 	${MAKE} -C ${ROOT}/compilers/4glc libexportlib4glcomp.dll.a
 
 ## ==================================================================

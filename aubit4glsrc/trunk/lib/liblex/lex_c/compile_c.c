@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.35 2002-10-07 16:11:23 mikeaubury Exp $
+# $Id: compile_c.c,v 1.36 2002-10-13 01:40:34 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -109,8 +109,8 @@ extern struct 	rep_structure rep_struct;
 extern struct 	pdf_rep_structure pdf_rep_struct;
 extern struct 	form_attr form_attrib;
 extern int 		menu_cnt;
-extern int 		ccnt;		/**< Block counter - defined in lexer.c */
-extern char 	mmtitle[132][132];
+extern int 		ccnt;				/**< Block counter - defined in lexer.c */
+extern char 	mmtitle[132][132]; 	/** Menu titles */
 extern int 		report_stack_cnt;
 extern int 		report_cnt;
 extern int 		rep_type;

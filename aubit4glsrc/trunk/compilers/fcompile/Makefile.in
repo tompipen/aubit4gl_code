@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.42 2002-10-07 11:06:23 afalout Exp $
+# $Id: Makefile.in,v 1.43 2002-10-13 01:40:34 afalout Exp $
 #
 
 ROOT        =../..
@@ -141,6 +141,11 @@ form_x.h form_x_xdr.c: form_x.x
 
 form_x_xdr.o: form_x_xdr.c
 	${CC} ${CFLAGS_FORM_X_XDR_C} -c -o $@ $^
+
+
+#libexportlibformcomp.dll.a: ${4GLCAOBJ} ${4GLCOBJ_C}
+#	${CC} -shared -Wl,--output-def=libexportlibformcomp.def -Wl,--out-implib=libexportlibformcomp.dll.a $^ -Wl,--export-all-symbols ${AUBIT_LIB} -L${ROOT}/lib
+
 
 ## ==================================================================
 ##                          Dependencies

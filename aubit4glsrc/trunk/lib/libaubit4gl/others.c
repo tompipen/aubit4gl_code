@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.16 2002-08-31 06:19:59 afalout Exp $
+# $Id: others.c,v 1.17 2002-10-13 01:40:34 afalout Exp $
 #
 */
 
@@ -52,13 +52,19 @@
 */
 
 
-/* here only to satisfy libMENU_( from compilers/4glc/4glc.c) */
-char *outputfilename;
+/* here only to satisfy libMENU_( from compilers/4glc/4glc.c)
+also referenced from 4glc.c and other places.
+Move it to a4gl_libaubit4gl.h
+*/
+char *		outputfilename;
+int 		ccnt = 0; /* was in lexer.c */
 
-struct struct_form the_form;
-struct struct_scr_field *fld;
-int as_c=1;
-int m_lastkey = 0;
+
+
+struct 		struct_form the_form;
+struct 		struct_scr_field *fld;
+int 		as_c=1;
+int 		m_lastkey = 0;
 
 
 /*
@@ -473,6 +479,38 @@ char_val (char *s)
   return str;
 }
 
+
+/** Moved from readforms.c
+ *
+ *
+ */
+struct struct_screen_record *
+get_srec (char *name)
+{
+  int a;
+  struct s_form_dets *form;
+  debug ("Get_srec");
+  form = get_curr_form ();
+  debug ("found form");
+
+  debug ("Got form %p", form);
+
+  if (form == 0)
+    {
+      debug ("No form...");
+      return (struct struct_screen_record *) 0;
+    }
+
+  debug ("fileform=%p name=%p(%s)", form->fileform, name, name);
+
+  a = find_srec (form->fileform, name);
+  debug ("Got %d", a);
+  if (a == -1)
+    return (struct struct_screen_record *) 0;
+  else
+    return (struct struct_screen_record *) &form->fileform->
+      records.records_val[a];
+}
 
 /* ============================== EOF ========================== */
 

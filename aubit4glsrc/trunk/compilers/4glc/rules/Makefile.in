@@ -24,29 +24,29 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2002-10-07 11:06:22 afalout Exp $
+# $Id: Makefile.in,v 1.11 2002-10-13 01:40:33 afalout Exp $
 #
 
 ROOT		=../../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-#override NOINCL=0
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
 ifeq "@YACC@" "no"
-#	Y_TAB_C_DEP	=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
-	Y_TAB_C_DEP	=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/fgl.yacc
+	Y_TAB_C		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
+#	Y_TAB_C_DEP	=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/fgl.yacc
+	Y_TAB_C_DEP	=
     CFLAGS		+=-I${ROOT}/tools/no_yacc/cygwin/compilers/4glc
 else
+	Y_TAB_C		=generated/y.tab.c
 	Y_TAB_C_DEP	=generated/fgl.yacc
 endif
 
 CFLAGS  +=-I..
-#-I${ROOT}/lib/libincl
 
 ## ==================================================================
 ##                              Targets
@@ -79,7 +79,7 @@ generated/fgl.yacc: *.rule *.reqd generated/kw.yh generated/single_words.rule
 # A Bison parser, will use fgl.yacc to create y.tab.c from it
 generated/y.tab.c: ${Y_TAB_C_DEP}
 ifeq "@YACC@" "no"
-	${CP} ${Y_TAB_C_DEP} .
+	${CP} ${Y_TAB_C} .
 else
 	(cd generated; unset DEBUG; ${YACC} -d -v fgl.yacc)
 endif

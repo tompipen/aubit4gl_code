@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.95 2002-10-07 09:52:27 afalout Exp $
+# $Id: Makefile.in,v 1.96 2002-10-13 01:40:26 afalout Exp $
 #
 
 ## ==================================================================
@@ -61,17 +61,16 @@ endif
 
 default: ${ALL}
 	@echo " "
-	@echo "Successfully compiled Aubit compiler default targets :"
-	@echo "${ALL}."
-	@echo "You MUST install it before you can use it - execute 'make install'."
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|      Successfully compiled Aubit compiler default targets          |"
+	@echo "| You MUST install it before you can use it - execute 'make install' |"
+	@echo "| Current default install settings :                                 |"
+	@echo "| PREFIX           =${PREFIX} (under ${AUBITNAME}) "
+	@echo "| LIB_INSTALL_LINK =${LIB_INSTALL_LINK}"
+	@echo "| BIN_INSTALL_LINK =${BIN_INSTALL_LINK}"
+	@echo "| Execute 'make extra' to compile additional components.             |"
+	@echo "+--------------------------------------------------------------------+"
 	@echo " "
-	@echo "Default install dir=${PREFIX} (under ${AUBITNAME})"
-	@echo "Use 'make install PREFIX=/where/to/install to install in different place."
-	@echo "Library link will be installed to ${LIB_INSTALL_LINK}"
-	@echo "Programs links will be installed to ${BIN_INSTALL_LINK}"
-	@echo "Specify LIB_INSTALL_LINK and/or BIN_INSTALL_LINK to change this."
-	@echo " "
-	@echo "Execute 'make extra' to compile additional components."
 	@echo "Thank you for using Aubit 4gl compiler"
 
 all: default extra install
@@ -360,7 +359,15 @@ ifneq "${AUBITRCFILEEXISTS}" ""
 	@echo "Automatically created aubitrc placed in /tmp/aubitrc.tmp"
 	@echo " "
 endif
-	@echo Aubit compiler installed to $(INSTALL_DIR)
+	@echo " "
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Aubit compiler installed to $(INSTALL_DIR)"
+	@echo "| You can test the installation by executing:                        |"
+	@echo "| cd $(INSTALL_DIR)/tools/test; make  "
+	@echo "+--------------------------------------------------------------------+"
+	@echo " "
+	@echo "Thank you for using Aubit 4gl compiler"
+	@echo " "
 
 #install compiler core files
 install.core: install.tree
@@ -745,29 +752,31 @@ newfile:
 
 settings.common:
 #	@echo "OUT = " ${OUT}
-	@echo "make invoked with flags : ${MAKEFLAGS}" >> ${OUT}
-	@echo "make invoked in : ${PWD}" >> ${OUT}
-	@echo "Reading from root makefile variables:" >> ${OUT}
-	@echo -------------- Optional libraries ---------------- >> ${OUT}
-	@echo "GTKBUILD        = ${GTKBUILD}" >> ${OUT}
-	@echo "PDFBUILD        = ${PDFBUILD}" >> ${OUT}
-	@echo "JABBERBUILD     = ${JABBERBUILD}" >> ${OUT}
-	@echo -------------- ODBC settings --------------------- >> ${OUT}
-	@echo "HAVE_UNIXODBC   = ${HAVE_UNIXODBC}" >> ${OUT}
-	@echo "HAVE_IODBC      = ${HAVE_IODBC}" >> ${OUT}
-	@echo "ODBC_LINK       = ${ODBC_LINK}" >> ${OUT}
-	@echo "ODBC            = ${ODBC}" >> ${OUT}
-	@echo "ODBCLIBDIR      = ${ODBCLIBDIR}" >> ${OUT}
-	@echo "ODBC_LIB_DIR    = ${ODBC_LIB_DIR}" >> ${OUT}
-	@echo "ODBC_LIB_NAME   = ${ODBC_LIB_NAME}" >> ${OUT}
-	@echo -------------- C Compiler settings --------------- >> ${OUT}
-	@echo "CFLAGS          = ${CFLAGS}" >> ${OUT}
-	@echo "LD_LIBRARY_PATH = ${LD_LIBRARY_PATH}" >> ${OUT}
-	@echo -------------------------------------------------- >> ${OUT}
-	@echo COMPILEDATE=$(COMPILEDATE) AUBITVERSION=$(AUBITVERSION) AUBITBUILD=$(AUBITBUILD) >> ${OUT}
-	@echo AUBITDIR=${AUBITDIR} OS=$(TARGET) TARGET_OS=${TARGET_OS}>> ${OUT}
-	@echo CONFIGURE_COMMAND = ${CONFIGURE_COMMAND}>> ${OUT}
-	@echo -------------------------------------------------- >> ${OUT}
+	@echo "+--------------------------------------------------------------------+" >> ${OUT}
+	@echo "| make invoked with flags : ${MAKEFLAGS}" >> ${OUT}
+	@echo "| make invoked in : ${PWD}" >> ${OUT}
+	@echo "| Reading from root makefile variables:" >> ${OUT}
+#	@echo -------------- Optional libraries ---------------- >> ${OUT}
+#	@echo "GTKBUILD        = ${GTKBUILD}" >> ${OUT}
+#	@echo "PDFBUILD        = ${PDFBUILD}" >> ${OUT}
+#	@echo "JABBERBUILD     = ${JABBERBUILD}" >> ${OUT}
+#	@echo -------------- SQL settings --------------------- >> ${OUT}
+#	@echo "HAVE_UNIXODBC   = ${HAVE_UNIXODBC}" >> ${OUT}
+#	@echo "HAVE_IODBC      = ${HAVE_IODBC}" >> ${OUT}
+#	@echo "ODBC_LINK       = ${ODBC_LINK}" >> ${OUT}
+#	@echo "ODBC            = ${ODBC}" >> ${OUT}
+#	@echo "ODBCLIBDIR      = ${ODBCLIBDIR}" >> ${OUT}
+#	@echo "ODBC_LIB_DIR    = ${ODBC_LIB_DIR}" >> ${OUT}
+#	@echo "ODBC_LIB_NAME   = ${ODBC_LIB_NAME}" >> ${OUT}
+	@echo "+--------------------- C Compiler settings --------------------------+" >> ${OUT}
+	@echo "| CFLAGS          = ${CFLAGS}" >> ${OUT}
+	@echo "| LD_LIBRARY_PATH = ${LD_LIBRARY_PATH}" >> ${OUT}
+	@echo "+--------------------------------------------------------------------+" >> ${OUT}
+	@echo "| COMPILEDATE=$(COMPILEDATE) AUBITVERSION=$(AUBITVERSION) AUBITBUILD=$(AUBITBUILD)" >> ${OUT}
+	@echo "| AUBITDIR=${AUBITDIR} OS=$(TARGET) TARGET_OS=${TARGET_OS}" >> ${OUT}
+	@echo "| CONFIGURE_COMMAND = ${CONFIGURE_COMMAND}" >> ${OUT}
+	@echo "+--------------------------------------------------------------------+" >> ${OUT}
+
 
 show.platform: OUT="/tmp/showplatform"
 show.platform: platform.common

@@ -7609,6 +7609,7 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 
+
 #SQL
 
 
@@ -7846,6 +7847,7 @@ SO_EXT=.so
 SO_EXT_LINKABLE=$SO_EXT
 #ARCHEXT=tar.gz
 ARCHEXT=tgz
+XMLRPC_C_CONFIG=no
 
 #defaults for aubitrc:
 A4GL_SQLTYPE=nosql
@@ -7949,7 +7951,7 @@ LIBFILE_14=$LIB_PREFIX/libFORM_GENERIC${SO_EXT}
 LIBFILE_15=$LIB_PREFIX/libDATA_menu_list${SO_EXT}
 LIBFILE_16=$LIB_PREFIX/libDATA_report${SO_EXT}
 LIBFILE_17=$LIB_PREFIX/libDATA_struct_form${SO_EXT}
-LIBFILE_18=
+LIBFILE_18=$LIB_PREFIX/libMENU_GENERIC${SO_EXT}
 LIBFILE_19=
 LIBFILE_20=
 LIBFILE_21=
@@ -10647,6 +10649,7 @@ echo "${ECHO_T}no" >&6
 				SAPDB_LIBDIR="-L$SAPDBROOT/depend/lib -L$SAPDBROOT/interfaces/precompiler/lib"
 			else
 				#user specified custom withval
+				WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SAPESQLC"
 				WARN_LD_LIBRARY_PATH=1
 				SAPDB_INCDIR="-I$withval/depend/incl -I$withval/interfaces/precompiler/incl"
 				SAPDB_LIBDIR="-L$withval/depend/lib -L$withval/interfaces/precompiler/lib"
@@ -10798,6 +10801,7 @@ echo "${ECHO_T}no" >&6
 				IFX_LIBDIR="-L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql"
 			else
 				#user specified custom withval
+				WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON IESQLC"
 				WARN_LD_LIBRARY_PATH=1
 				IFX_INCDIR=$withval/incl/esql
 				IFX_LIBDIR="-L$withval/lib -L$withval/lib/esql"
@@ -11062,6 +11066,7 @@ if test "${with_pgsql+set}" = set; then
 		withval=/usr/local
     else
 		#user specified custom withval
+		WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PGESQLC"
 		WARN_LD_LIBRARY_PATH=1
         ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
     fi
@@ -11405,7 +11410,8 @@ fi
 		HAVE_IFXODBC=yes
 
 		WARN_LD_LIBRARY_PATH=1
-        ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib/cli:$ADD_LD_LIBRARY_PATH"
+		WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON IFXODBC"
+		ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib/cli:$ADD_LD_LIBRARY_PATH"
 		INFORMIXODBC_WARNING=1
 	else
 		old_LIBS=$LIBS
@@ -11536,6 +11542,7 @@ if test "${with_sapodbc+set}" = set; then
 	    	withval=/opt/sapdb #$SAPDBROOT
 		else
 			#user specified custom withval
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SAPODBC"
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/interfaces/odbc/lib:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -11808,6 +11815,7 @@ if test "${with_pgodbc+set}" = set; then
 	    	withval=/usr
 		else
 			#user specified custom withval
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PGODBC"
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -12092,6 +12100,7 @@ if test "${with_iodbc+set}" = set; then
 	    	withval=/usr/local
 		else
 			#user specified custom withval
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON iODBC"
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -12228,6 +12237,7 @@ if test "${with_unixodbc+set}" = set; then
     	withval=/usr/local
 	else
 		#user specified custom withval
+		WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON unixODBC"
 		WARN_LD_LIBRARY_PATH=1
         ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
     fi
@@ -12370,6 +12380,7 @@ if test "${with_esoob+set}" = set; then
 	ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
   else
 	#user specified custom withval
+	WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON ODBCbridge"
 	WARN_LD_LIBRARY_PATH=1
     ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
   fi
@@ -12424,6 +12435,7 @@ if test "${with_custom_odbc+set}" = set; then
     withval=/usr/local
   else
 	#user specified custom withval
+	WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON CustODBC"
 	WARN_LD_LIBRARY_PATH=1
     ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
   fi
@@ -12490,7 +12502,7 @@ if test "${with_gtk+set}" = set; then
 	    	withval=/usr/local
 		else
 			#user specified custom withval
-			WARN_LD_LIBRARY_PATH=1
+			CUSTOM_WITHVAL=1
 		    ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
 		fi
 
@@ -12844,6 +12856,13 @@ _ACEOF
 
 					GTKBUILD=yes
 
+					if test "$CUSTOM_WITHVAL" = "1"; then
+						#user specified custom withval
+						WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON GTK"
+						WARN_LD_LIBRARY_PATH=1
+					fi
+
+
 					if test "$GTK_CONFIG" != "no"; then
 	                    #this will get assigned in makefile iteself
 						echo "$as_me:$LINENO: checking using gtk-config in Makefile" >&5
@@ -12934,6 +12953,8 @@ echo "${ECHO_T}--with-gtk not specified" >&6
 
 fi;
 
+CUSTOM_WITHVAL=0
+
 
 #Fixme: we should test for GTK+ versions
 
@@ -12965,6 +12986,7 @@ if test "${with_iksemel+set}" = set; then
 	    	withval=/usr/local
 		else
 			#user specified custom withval
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON Jabber"
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -13096,6 +13118,7 @@ if test "${with_pdf+set}" = set; then
 	    	withval=/usr/local
 		else
 			#user specified custom withval
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PDF"
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -13343,8 +13366,8 @@ echo $ECHO_N "checking for RPC support... $ECHO_C" >&6
 	    	withval=/usr/local
 		else
 			#user specified custom withval
-			WARN_LD_LIBRARY_PATH=1
-		    ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
 	    fi
 
 		old_LIBS=$LIBS
@@ -14011,6 +14034,14 @@ _ACEOF
 				HAVE_RPCLIB=1
 			fi
 		fi
+
+		if test "$CUSTOM_WITHVAL" = "1"; then
+			if test "$HAVE_RPCLIB" = "1"; then
+				#user specified custom withval
+				WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON RPC"
+				WARN_LD_LIBRARY_PATH=1
+            fi
+		fi
 	else
 		echo "$as_me:$LINENO: result: disbled" >&5
 echo "${ECHO_T}disbled" >&6
@@ -14037,6 +14068,7 @@ echo "${ECHO_T}--with-rpc not specified" >&6
 
 fi;
 
+CUSTOM_WITHVAL=0
 
 #I't probably ok to link it even if we don' need it, but if RPC functions
 #are already in standard libraryes (Linux), we really don't need to:
@@ -18374,7 +18406,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 18377 "configure"' > conftest.$ac_ext
+  echo '#line 18409 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -18842,7 +18874,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18845 "configure"
+#line 18877 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -18940,7 +18972,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18943 "configure"
+#line 18975 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -20425,7 +20457,7 @@ else
 		A4GL_RPCTYPE="XMLRPC"
     fi
 
-	if test "$HAVE_RPCLIB" != "no"; then
+	if test "$HAVE_RPCLIB" != "0"; then
 		A4GL_RPCTYPE="XDR"
     fi
 fi
@@ -20438,9 +20470,12 @@ if test "$default_form" != ""; then
 	#User can force FORM driver default with --default-form=xxxx switch
 	A4GL_FORMTYPE="$default_form"
 else
-	if test "$HAVE_RPCLIB" != "no"; then
+	#FIXME: do we want to use XDR forms any more?
+	if test "$HAVE_RPCLIB" != "0"; then
 		A4GL_FORMTYPE="XDR"
     fi
+
+	A4GL_FORMTYPE="GENERIC"
 fi
 
 ## ==================================================================
@@ -20451,9 +20486,12 @@ if test "$default_menu" != ""; then
 	#User can force MENU driver default with --default-menu=xxxx switch
 	A4GL_MENUTYPE="$default_menu"
 else
-	if test "$HAVE_RPCLIB" != "no"; then
+	if test "$HAVE_RPCLIB" != "0"; then
 		A4GL_MENUTYPE="XDR"
     fi
+
+	A4GL_MENUTYPE="GENERIC"
+
 fi
 
 ## ==================================================================
@@ -20530,6 +20568,27 @@ if test "$default_msg" != ""; then
     #fi
 fi
 
+## ==================================================================
+##  Decide on default packer driver for forms,menus and reports (ace)
+## ==================================================================
+
+if test "$default_packer" != ""; then
+	#User can force PACKER driver default with --default-packer=xxxx switch
+	A4GL_PACKER="$default_packer"
+else
+
+	#Simple data
+	#A4GL_PACKER=PACKED
+
+	A4GL_PACKER=XML
+
+   	if test "$HAVE_RPCLIB" != "0"; then
+		A4GL_PACKER=XDR
+    fi
+
+	#A4GL_PACKER=PERL
+
+fi
 
 ## ==================================================================
 ##				Decide on targets that are built/istalled/packaged
@@ -20577,7 +20636,8 @@ fi
 		RPMFILE_10=$LIB_PREFIX/libRPC_XMLRPC$SO_EXT
     fi
 
-	if test "$HAVE_RPCLIB" != "no"; then
+	if test "$HAVE_RPCLIB" != "0"; then
+
 		RPMFILE_11=$LIB_PREFIX/libMENU_XDR$SO_EXT
 		RPMFILE_12=$LIB_PREFIX/libRPC_XDR$SO_EXT
 		RPMFILE_13=$LIB_PREFIX/libFORM_XDR$SO_EXT
@@ -20632,7 +20692,7 @@ fi
 
 if test "$AUBIT_SOURCE" = "1" ; then
 
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ac_config_files="$ac_config_files Makefile etc/aubitrc etc/aubit-rpm.spec incl/Makefile-common common/dataio/Makefile compilers/4glc/Makefile compilers/4glc/rules/Makefile compilers/fcompile/Makefile compilers/helpcompile/Makefile compilers/menus/Makefile compilers/ace/Makefile compilers/xgen/Makefile lib/libaubit4gl/Makefile lib/libform/form_xdr/Makefile lib/libform/noform/Makefile lib/libform/form_generic/Makefile lib/libmenu/menu_xdr/Makefile lib/libmenu/menu_nomenu/Makefile lib/libmsg/msg_native/Makefile lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile lib/libpdf/Makefile lib/libui/ui_console/Makefile lib/libui/ui_curses/Makefile lib/libui/ui_gtk/Makefile lib/resource/Makefile lib/libsql/nosql/Makefile lib/libsql/odbc/Makefile lib/libsql/esqlc/Makefile lib/libsql/postgresql/Makefile lib/libsql/sapdb/Makefile lib/librpc/no_rpc/Makefile lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile lib/extra_libs/file/Makefile lib/extra_libs/string/Makefile lib/libpacker/packed/Makefile lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile lib/libpacker/xml/Makefile lib/libexdata/Makefile lib/swig/domake lib/Makefile tools/adbaccess/Makefile tools/loadmap/Makefile tools/adbload/Makefile tools/html/Makefile tools/ide/Makefile tools/jabber/Makefile tools/odbctest/Makefile tools/test/gui/Makefile tools/test/regression/Makefile tools/test/lang/Makefile tools/test/db/Makefile tools/test/Makefile bin/aubitbuild.sh docs/doxy/Doxyfile"
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ac_config_files="$ac_config_files Makefile etc/aubitrc etc/aubit-rpm.spec incl/Makefile-common common/dataio/Makefile compilers/4glc/Makefile compilers/4glc/rules/Makefile compilers/fcompile/Makefile compilers/helpcompile/Makefile compilers/menus/Makefile compilers/ace/Makefile compilers/xgen/Makefile lib/libaubit4gl/Makefile lib/libform/form_xdr/Makefile lib/libform/noform/Makefile lib/libform/form_generic/Makefile lib/libmenu/menu_xdr/Makefile lib/libmenu/menu_nomenu/Makefile lib/libmenu/menu_generic/Makefile lib/libmsg/msg_native/Makefile lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile lib/libpdf/Makefile lib/libui/ui_console/Makefile lib/libui/ui_curses/Makefile lib/libui/ui_gtk/Makefile lib/resource/Makefile lib/libsql/nosql/Makefile lib/libsql/odbc/Makefile lib/libsql/esqlc/Makefile lib/libsql/postgresql/Makefile lib/libsql/sapdb/Makefile lib/librpc/no_rpc/Makefile lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile lib/extra_libs/file/Makefile lib/extra_libs/string/Makefile lib/libpacker/packed/Makefile lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile lib/libpacker/xml/Makefile lib/libexdata/Makefile lib/swig/domake lib/Makefile tools/adbaccess/Makefile tools/loadmap/Makefile tools/adbload/Makefile tools/html/Makefile tools/ide/Makefile tools/jabber/Makefile tools/odbctest/Makefile tools/test/gui/Makefile tools/test/regression/Makefile tools/test/lang/Makefile tools/test/db/Makefile tools/test/Makefile bin/aubitbuild.sh docs/doxy/Doxyfile"
 
 
 else
@@ -21174,6 +21234,7 @@ do
   "lib/libform/form_generic/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libform/form_generic/Makefile" ;;
   "lib/libmenu/menu_xdr/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libmenu/menu_xdr/Makefile" ;;
   "lib/libmenu/menu_nomenu/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libmenu/menu_nomenu/Makefile" ;;
+  "lib/libmenu/menu_generic/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libmenu/menu_generic/Makefile" ;;
   "lib/libmsg/msg_native/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libmsg/msg_native/Makefile" ;;
   "lib/liblex/lex_c/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/liblex/lex_c/Makefile" ;;
   "lib/liblex/lex_perl/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/liblex/lex_perl/Makefile" ;;
@@ -21352,6 +21413,7 @@ s,@A4GL_LEXTYPE@,$A4GL_LEXTYPE,;t t
 s,@A4GL_FORMTYPE@,$A4GL_FORMTYPE,;t t
 s,@A4GL_MENUTYPE@,$A4GL_MENUTYPE,;t t
 s,@A4GL_MSGTYPE@,$A4GL_MSGTYPE,;t t
+s,@A4GL_PACKER@,$A4GL_PACKER,;t t
 s,@ODBC_LIB_NAME@,$ODBC_LIB_NAME,;t t
 s,@IFMX_ESQLC@,$IFMX_ESQLC,;t t
 s,@IFX_ESQL_FLAGS@,$IFX_ESQL_FLAGS,;t t
@@ -22061,33 +22123,34 @@ cat<<X
 | You will need bison if you'd want to regenerate the Aubit parsers. |
 X
 fi
-if test "$WARN_RPCGEN" = "1"; then
-cat<<X
-+--------------------------------------------------------------------+
-|                        *** WARNING ***                             |
-| "rpcgen" not found. Will use pre-compiled RPC files from           |
-| tools/cygwin/                                                      |
-| Use 'make refresh.norpcgen' on source tree with rpcgen installed.  |
-X
-fi
-if test "$WARN_RPCGEN" = "2"; then
-cat<<X
-+--------------------------------------------------------------------+
-|                        *** WARNING ***                             |
-| "rpcgen" not found. Will use pre-compiled RPC files from CygWin    |
-| port. ---NOT SURE THIS WILL WORK---                                |
-X
-fi
-if test "$WARN_RPCLIB" = "1"; then
-cat<<X
-+--------------------------------------------------------------------+
-|                        *** WARNING ***                             |
-| 'rpclib' not found. You will not be able to compile or open form   |
-| and menu files or use Sun RPC functionality of Aubit 4gl compiler. |
-| Consider installing Sun RPC. Will use header files from            |
-| tools/no_rpc/. Use 'make refresh.norpclib' on system with rpclib   |                                                    |
-X
-fi
+#Don't war about missing librpc/rpcgen any more, since we now have libpacker:
+#if test "$WARN_RPCGEN" = "1"; then
+#cat<<X
+#+--------------------------------------------------------------------+
+#|                        *** WARNING ***                             |
+#| "rpcgen" not found. Will use pre-compiled RPCgen-erated files from |
+#| tools/cygwin/                                                      |
+#| Use 'make refresh.norpcgen' on source tree with rpcgen installed.  |
+#X
+#fi
+#if test "$WARN_RPCGEN" = "2"; then
+#cat<<X
+#+--------------------------------------------------------------------+
+#|                        *** WARNING ***                             |
+#| "rpcgen" not found. Will use pre-compiled RPCgen-erated files from |
+#| CygWin port. ---NOT SURE THIS WILL WORK---                         |
+#X
+#fi
+#if test "$WARN_RPCLIB" = "1"; then
+#cat<<X
+#+--------------------------------------------------------------------+
+#|                        *** WARNING ***                             |
+#| 'rpclib' not found. You will not be able to compile or open form   |
+#| and menu files or use Sun RPC functionality of Aubit 4gl compiler. |
+#| Consider installing Sun RPC. Will use header files from            |
+#| tools/no_rpc/. Use 'make refresh.norpclib' on system with rpclib   |
+#X
+#fi
 if test "$WARN_UI" = "1"; then
 cat<<X
 +--------------------------------------------------------------------+
@@ -22161,6 +22224,7 @@ cat<<X
 | to find nedded programs and/or libraries that belong to this way   |
 | specified package in non-standard place. We will try to do this    |
 | automatically for you:                                             |
+WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON"
 X
 
 	if test "$ADD_LD_LIBRARY_PATH" != ""; then

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.3 2002-08-31 06:20:00 afalout Exp $
+# $Id: menuwrite.c,v 1.4 2002-10-13 01:40:35 afalout Exp $
 #*/
 
 /**
@@ -43,7 +43,7 @@
 */
 
 
-#include "a4gl_lib_menu_xdr_int.h"
+#include "a4gl_lib_menu_generic_int.h"
 
 /*
 =====================================================================
@@ -84,10 +84,6 @@ FILE *fyy;
 
 void error_with (char *s, char *a, char *b);
 
-#ifdef OLD_INCL
-	void write_menu (void);
-#endif
-
 /*
 =====================================================================
                     Functions definitions
@@ -126,7 +122,7 @@ write_menu (void)
   char fname[132];
   char fname2[132];
   int a;
-  XDR xdrp;
+//  XDR xdrp;
   menu_list *ptr;
   ptr=&the_menus;
   strcpy (fname, outputfilename);
@@ -148,7 +144,7 @@ write_menu (void)
 		error_with("Unable to write data\n",0,0);
 	}
 
-	xdr_destroy(&xdrp);
+//	xdr_destroy(&xdrp);
 	fclose(fxx);
 
 	if (as_c) {

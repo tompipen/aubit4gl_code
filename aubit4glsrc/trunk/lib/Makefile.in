@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.73 2002-09-27 04:05:32 afalout Exp $
+# $Id: Makefile.in,v 1.74 2002-10-13 01:40:34 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -60,8 +60,8 @@ note:
 
 #FIXME: remove the need to have different target names, and remove this:
 
-libSQL_nosql.dll:
-	${MAKE} -C libsql/nosql nosql.dll
+#libSQL_nosql.dll:
+#	${MAKE} -C libsql/nosql nosql.dll
 
 libSQL_odbc32.dll:
 	${MAKE} -C libsql/odbc odbc32
@@ -125,6 +125,9 @@ libFORM_XDR${SO_EXT} :
 
 libMENU_NOMENU${SO_EXT} :
 	${MAKE} -C libmenu/menu_nomenu
+
+libMENU_GENERIC${SO_EXT} :
+	${MAKE} -C libmenu/menu_generic
 
 libMENU_XDR${SO_EXT} :
 	${MAKE} -C libmenu/menu_xdr

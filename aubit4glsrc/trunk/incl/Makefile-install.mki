@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.32 2002-10-07 11:06:24 afalout Exp $
+# $Id: Makefile-install.mki,v 1.33 2002-10-13 01:40:34 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -58,7 +58,7 @@ ifeq "$(shell  if test -w ${AUBITETC} ; then echo 1; fi)" "1"
 	chmod a+r ${AUBITETC}/aubitrc
 	@echo "Configuration files installed to ${AUBITETC}/aubitrc"
 else
-	@echo "WARNING: ${AUBITETC} is not writable."
+	@echo "======== WARNING: ${AUBITETC} is not writable. ==========="
 endif
 else
 	@echo " "
@@ -253,7 +253,3 @@ endif
 
 #</block for binary install Makefile ===================================>
 
-
-aa:
-	@echo ${NAMEVERBLD}
-	@echo $(SOURCETARNAME)

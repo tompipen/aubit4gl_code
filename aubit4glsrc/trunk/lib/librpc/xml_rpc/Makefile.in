@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2002-09-25 05:42:15 afalout Exp $
+# $Id: Makefile.in,v 1.9 2002-10-13 01:40:35 afalout Exp $
 #
 
 
@@ -110,7 +110,7 @@ dlllibRPC_XMLRPC: ${CMODS_RPC}
 clean :
 #	${RM} $(OBJS) $(OBJS_DEBUG)
 	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err core
-	${RM} *.base *.exp libRPC_XMLRPC.def
+	${RM} *.base *.exp *.def
 
 ## ==================================================================
 ##                         Other Targets

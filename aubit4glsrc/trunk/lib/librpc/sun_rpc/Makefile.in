@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.11 2002-09-26 07:27:32 afalout Exp $
+# $Id: Makefile.in,v 1.12 2002-10-13 01:40:35 afalout Exp $
 #
 
 ROOT    =../../..
@@ -101,7 +101,7 @@ ${CMODS_RPC} : form_x.h
 
 clean :
 	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err \
-	core *.base *.exp libRPC_NORPC.def libRPC_XDR.def
+	core *.base *.exp *.def
 
 ## ==================================================================
 ##                         Other Targets

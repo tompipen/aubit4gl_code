@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-09-25 05:42:14 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-10-13 01:40:34 afalout Exp $
 #
 
 ROOT    =../../..
@@ -33,7 +33,7 @@ LIBROOT =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-override NOINCL=0
+#override NOINCL=0
 
 ## ==================================================================
 ##                              Source files
@@ -48,15 +48,15 @@ OBJS_FORM_GENERIC	=${CMODS_FORM_GENERIC:.c=.o}
 ##                              Options
 ## ==================================================================
 
-ifdef COMSPEC
-	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=dllFORM_GENERIC
-    endif
-else
-	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=${LIBROOT}/libFORM_GENERIC${SO_EXT}
-    endif
-endif
+#ifdef COMSPEC
+#	ifneq "@HAVE_RPCLIB@" "0"
+#		ALL			+=dllFORM_GENERIC
+#    endif
+#else
+#	ifneq "@HAVE_RPCLIB@" "0"
+#		ALL			+=${LIBROOT}/libFORM_GENERIC${SO_EXT}
+#    endif
+#endif
 
 #This must NOT be += because it would place affitional parameters AFTER
 #existing parameters already in CFLAGS: we must not do this, because if
@@ -72,6 +72,14 @@ CFLAGS				:=-I.. ${CFLAGS}
 #ba able to compile or open forms and menus, since they compiled output
 #file format is outpudte in GENERIC format for portability:
 
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	#LINKLIBS	+=-L${ROOT}/compilers/fcompile -lexportlibformcomp
+	#ALL         =${ROOT}/compilers/4glc/libexportlibformcomp${SO_EXT}.a
+endif
+
+ALL				+=${LIBROOT}/libFORM_GENERIC${SO_EXT}
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -84,17 +92,20 @@ note:
 
 ${LIBROOT}/libFORM_GENERIC${SO_EXT} : ${OBJS_FORM_GENERIC}
 #	${LD} ${SO_LDFLAGS} ${RPCLIB_NAME} -o $@ $^
-	${LD} ${SO_LDFLAGS} -o $@ $^
-#	${CP} $@ ${LIBROOT}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
+
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
 ## ==================================================================
 
-.PHONY : dllFORM_GENERIC
-dllFORM_GENERIC : ${CMODS_FORM_GENERIC}  ${ROOT}/compilers/fcompile/form_x.h
-	${MAKE} libFORM_GENERIC.dll DLLOBJS="${CMODS_FORM_GENERIC}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I${ROOT}/compilers/fcompile -I${ROOT}/incl"
-	${CP} libFORM_GENERIC.dll ${ROOT}
+#.PHONY : dllFORM_GENERIC
+#dllFORM_GENERIC : ${CMODS_FORM_GENERIC}  ${ROOT}/compilers/fcompile/form_x.h
+#	${MAKE} libFORM_GENERIC.dll DLLOBJS="${CMODS_FORM_GENERIC}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I${ROOT}/compilers/fcompile -I${ROOT}/incl"
+#	${CP} libFORM_GENERIC.dll ${ROOT}
 
 
 ## ==================================================================
@@ -103,6 +114,9 @@ dllFORM_GENERIC : ${CMODS_FORM_GENERIC}  ${ROOT}/compilers/fcompile/form_x.h
 
 ci: $(CMODS)
 	ci -l  $^
+
+${ROOT}/compilers/fcompile/libexportlibformcomp${SO_EXT}.a:
+	${MAKE} -C ${ROOT}/compilers/fcompile libexportlibformcomp${SO_EXT}
 
 #${ROOT}/compilers/fcompile/form_x_xdr.c  ${ROOT}/compilers/fcompile/form_x.h:
 #	${MAKE} -C ${ROOT}/compilers/fcompile rpc

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-09-26 02:14:09 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-10-13 01:40:34 afalout Exp $
 #
 
 ROOT    =../../..
@@ -37,10 +37,10 @@ include ${ROOT}/incl/Makefile-common
 ##                              Source files
 ## ==================================================================
 
-CMODS_PROJECT	=project.c
+#CMODS_PROJECT	=project.c
 
 #require XDR frunctions, part of Sun RPClib:
-CMODS_FORM_XDR		=${ROOT}/compilers/fcompile/form_x_xdr.c readforms.c formwrite2.c
+#CMODS_FORM_XDR		=${ROOT}/compilers/fcompile/form_x_xdr.c readforms.c formwrite2.c
 
 CMODS_FORM_NOFORM	=form_noform.c
 
@@ -53,15 +53,20 @@ OBJS_FORM_XDR      =${CMODS_FORM_XDR:.c=.o}
 ##                              Options
 ## ==================================================================
 
-ifdef COMSPEC
-	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			=dllFORM_XDR
-    endif
-else
-	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			=${LIBROOT}/libFORM_XDR${SO_EXT}
-    endif
+#ifdef COMSPEC
+#	ifneq "@HAVE_RPCLIB@" "0"
+#		ALL			=dllFORM_XDR
+#    endif
+#else
+#	ifneq "@HAVE_RPCLIB@" "0"
+		ALL			=${LIBROOT}/libFORM_NOFORM${SO_EXT}
+#    endif
+#endif
+
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
+
 
 #This must NOT be += because it would place affitional parameters AFTER
 #existing parameters already in CFLAGS: we must not do this, because if
@@ -81,17 +86,20 @@ CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile $
 ## ==================================================================
 
 ${LIBROOT}/libFORM_NOFORM${SO_EXT} : ${OBJS_FORM_NOFORM}
-	${LD} ${SO_LDFLAGS} -o $@ $^
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
 
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
 ## ==================================================================
 
-.PHONY : dllFORM_NOFORM
-dllFORM_NOFORM : ${CMODS_FORM_NOFORM}
-	${MAKE} libFORM_NOFORM.dll DLLOBJS="$^"
-	${CP} libFORM_NOFORM.dll ${LIBROOT}
+#.PHONY : dllFORM_NOFORM
+#dllFORM_NOFORM : ${CMODS_FORM_NOFORM}
+#	${MAKE} libFORM_NOFORM.dll DLLOBJS="$^"
+#	${CP} libFORM_NOFORM.dll ${LIBROOT}
 
 ## ==================================================================
 ##                             Sub Targets
@@ -119,7 +127,7 @@ clean :
 	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c form_x_xdr.c form_x.h \
 	project.c aubit-config loadmap loadmap.c loadmap.h core \
 	*.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err \
-	*.base *.exp libaubit4gl.def
+	*.base *.exp *.def
 
 
 ## ==================================================================

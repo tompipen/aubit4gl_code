@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-10-07 11:06:29 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-10-13 01:40:35 afalout Exp $
 #
 
 LIBROOT=../..
@@ -103,7 +103,7 @@ clean :
 	form_x_xdr.c form_x.h project.c aubit-config \
 	loadmap loadmap.c loadmap.h core \
 	*.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err \
-	*.base *.exp libaubit4gl.def
+	*.base *.exp *.def
 
 
 ## ==================================================================

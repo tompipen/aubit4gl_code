@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.114 2002-10-07 11:05:54 afalout Exp $
+dnl # $Id: configure.in,v 1.115 2002-10-13 01:40:27 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -189,6 +189,7 @@ AC_SUBST(A4GL_LEXTYPE)
 AC_SUBST(A4GL_FORMTYPE)
 AC_SUBST(A4GL_MENUTYPE)
 AC_SUBST(A4GL_MSGTYPE)
+AC_SUBST(A4GL_PACKER)
 
 #SQL
 AC_SUBST(ODBC_LIB_NAME)
@@ -427,6 +428,7 @@ SO_EXT=.so
 SO_EXT_LINKABLE=$SO_EXT
 #ARCHEXT=tar.gz
 ARCHEXT=tgz
+XMLRPC_C_CONFIG=no
 
 #defaults for aubitrc:
 A4GL_SQLTYPE=nosql
@@ -526,7 +528,7 @@ LIBFILE_14=$LIB_PREFIX/libFORM_GENERIC${SO_EXT}
 LIBFILE_15=$LIB_PREFIX/libDATA_menu_list${SO_EXT}
 LIBFILE_16=$LIB_PREFIX/libDATA_report${SO_EXT}
 LIBFILE_17=$LIB_PREFIX/libDATA_struct_form${SO_EXT}
-LIBFILE_18=
+LIBFILE_18=$LIB_PREFIX/libMENU_GENERIC${SO_EXT}
 LIBFILE_19=
 LIBFILE_20=
 LIBFILE_21=
@@ -926,6 +928,7 @@ AC_ARG_WITH(sapdb,
 				SAPDB_LIBDIR="-L$SAPDBROOT/depend/lib -L$SAPDBROOT/interfaces/precompiler/lib"
 			else
 				#user specified custom withval
+				WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SAPESQLC"
 				WARN_LD_LIBRARY_PATH=1
 				SAPDB_INCDIR="-I$withval/depend/incl -I$withval/interfaces/precompiler/incl"
 				SAPDB_LIBDIR="-L$withval/depend/lib -L$withval/interfaces/precompiler/lib"
@@ -1020,6 +1023,7 @@ AC_ARG_WITH(informix,
 				IFX_LIBDIR="-L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql"
 			else
 				#user specified custom withval
+				WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON IESQLC"
 				WARN_LD_LIBRARY_PATH=1
 				IFX_INCDIR=$withval/incl/esql
 				IFX_LIBDIR="-L$withval/lib -L$withval/lib/esql"
@@ -1145,6 +1149,7 @@ AC_ARG_WITH(pgsql,
 		withval=/usr/local
     else
 		#user specified custom withval
+		WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PGESQLC"
 		WARN_LD_LIBRARY_PATH=1
         ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
     fi
@@ -1231,7 +1236,8 @@ else
 		HAVE_IFXODBC=yes
 
 		WARN_LD_LIBRARY_PATH=1
-        ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib/cli:$ADD_LD_LIBRARY_PATH"
+		WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON IFXODBC"
+		ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib/cli:$ADD_LD_LIBRARY_PATH"
 		INFORMIXODBC_WARNING=1
 	else
 		old_LIBS=$LIBS
@@ -1298,6 +1304,7 @@ AC_ARG_WITH(sapodbc,
 	    	withval=/opt/sapdb #$SAPDBROOT
 		else
 			#user specified custom withval
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SAPODBC"
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/interfaces/odbc/lib:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -1372,6 +1379,7 @@ AC_ARG_WITH(pgodbc,
 	    	withval=/usr
 		else
 			#user specified custom withval
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PGODBC"
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -1459,6 +1467,7 @@ AC_ARG_WITH(iodbc,
 	    	withval=/usr/local
 		else
 			#user specified custom withval
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON iODBC"
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -1518,6 +1527,7 @@ AC_ARG_WITH(unixodbc,
     	withval=/usr/local
 	else
 		#user specified custom withval
+		WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON unixODBC"
 		WARN_LD_LIBRARY_PATH=1
         ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
     fi
@@ -1584,6 +1594,7 @@ AC_ARG_WITH(esoob,
 	ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
   else
 	#user specified custom withval
+	WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON ODBCbridge"
 	WARN_LD_LIBRARY_PATH=1
     ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
   fi
@@ -1632,6 +1643,7 @@ AC_ARG_WITH(custom-odbc,
     withval=/usr/local
   else
 	#user specified custom withval
+	WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON CustODBC"
 	WARN_LD_LIBRARY_PATH=1
     ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
   fi
@@ -1682,7 +1694,7 @@ AC_ARG_WITH(gtk,
 	    	withval=/usr/local
 		else
 			#user specified custom withval
-			WARN_LD_LIBRARY_PATH=1
+			CUSTOM_WITHVAL=1
 		    ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
 		fi
 
@@ -1721,6 +1733,13 @@ AC_ARG_WITH(gtk,
 		if test "$ac_cv_lib_gtk_main" = yes && test "$ac_cv_lib_glib_main" = yes && test "$ac_cv_lib_gdk_main" = yes; then
 					AC_DEFINE(HAVE_GTK,1,[ ])
 					GTKBUILD=yes
+
+					if test "$CUSTOM_WITHVAL" = "1"; then
+						#user specified custom withval
+						WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON GTK"
+						WARN_LD_LIBRARY_PATH=1
+					fi
+
 
 					if test "$GTK_CONFIG" != "no"; then
 	                    #this will get assigned in makefile iteself
@@ -1799,6 +1818,8 @@ AC_ARG_WITH(gtk,
 	AC_MSG_RESULT(--with-gtk not specified)
 ])
 
+CUSTOM_WITHVAL=0
+
 
 #Fixme: we should test for GTK+ versions
 
@@ -1824,6 +1845,7 @@ AC_ARG_WITH(iksemel,
 	    	withval=/usr/local
 		else
 			#user specified custom withval
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON Jabber"
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -1878,6 +1900,7 @@ AC_ARG_WITH(pdf,
 	    	withval=/usr/local
 		else
 			#user specified custom withval
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PDF"
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -1971,8 +1994,8 @@ AC_ARG_WITH(rpc,
 	    	withval=/usr/local
 		else
 			#user specified custom withval
-			WARN_LD_LIBRARY_PATH=1
-		    ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
 	    fi
 
 		old_LIBS=$LIBS
@@ -2089,6 +2112,14 @@ AC_ARG_WITH(rpc,
 				HAVE_RPCLIB=1
 			fi
 		fi
+
+		if test "$CUSTOM_WITHVAL" = "1"; then
+			if test "$HAVE_RPCLIB" = "1"; then
+				#user specified custom withval
+				WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON RPC"
+				WARN_LD_LIBRARY_PATH=1
+            fi
+		fi
 	else
 		AC_MSG_RESULT(disbled)
 		AC_DEFINE(HAVE_RPCLIB,0,[ ])
@@ -2102,6 +2133,7 @@ AC_ARG_WITH(rpc,
 	AC_MSG_RESULT(--with-rpc not specified)
 ])
 
+CUSTOM_WITHVAL=0
 
 #I't probably ok to link it even if we don' need it, but if RPC functions
 #are already in standard libraryes (Linux), we really don't need to:
@@ -2556,7 +2588,7 @@ else
 		A4GL_RPCTYPE="XMLRPC"
     fi
 
-	if test "$HAVE_RPCLIB" != "no"; then
+	if test "$HAVE_RPCLIB" != "0"; then
 		A4GL_RPCTYPE="XDR"
     fi
 fi
@@ -2569,9 +2601,12 @@ if test "$default_form" != ""; then
 	#User can force FORM driver default with --default-form=xxxx switch
 	A4GL_FORMTYPE="$default_form"
 else
-	if test "$HAVE_RPCLIB" != "no"; then
+	#FIXME: do we want to use XDR forms any more?
+	if test "$HAVE_RPCLIB" != "0"; then
 		A4GL_FORMTYPE="XDR"
     fi
+
+	A4GL_FORMTYPE="GENERIC"
 fi
 
 ## ==================================================================
@@ -2582,9 +2617,12 @@ if test "$default_menu" != ""; then
 	#User can force MENU driver default with --default-menu=xxxx switch
 	A4GL_MENUTYPE="$default_menu"
 else
-	if test "$HAVE_RPCLIB" != "no"; then
+	if test "$HAVE_RPCLIB" != "0"; then
 		A4GL_MENUTYPE="XDR"
     fi
+
+	A4GL_MENUTYPE="GENERIC"
+
 fi
 
 ## ==================================================================
@@ -2661,6 +2699,27 @@ if test "$default_msg" != ""; then
     #fi
 fi
 
+## ==================================================================
+##  Decide on default packer driver for forms,menus and reports (ace)
+## ==================================================================
+
+if test "$default_packer" != ""; then
+	#User can force PACKER driver default with --default-packer=xxxx switch
+	A4GL_PACKER="$default_packer"
+else
+
+	#Simple data
+	#A4GL_PACKER=PACKED
+
+	A4GL_PACKER=XML
+
+   	if test "$HAVE_RPCLIB" != "0"; then
+		A4GL_PACKER=XDR
+    fi
+
+	#A4GL_PACKER=PERL
+
+fi
 
 ## ==================================================================
 ##				Decide on targets that are built/istalled/packaged
@@ -2708,7 +2767,8 @@ fi
 		RPMFILE_10=$LIB_PREFIX/libRPC_XMLRPC$SO_EXT
     fi
 
-	if test "$HAVE_RPCLIB" != "no"; then
+	if test "$HAVE_RPCLIB" != "0"; then
+
 		RPMFILE_11=$LIB_PREFIX/libMENU_XDR$SO_EXT
 		RPMFILE_12=$LIB_PREFIX/libRPC_XDR$SO_EXT
 		RPMFILE_13=$LIB_PREFIX/libFORM_XDR$SO_EXT
@@ -2781,6 +2841,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 lib/libform/form_generic/Makefile
                 lib/libmenu/menu_xdr/Makefile
                 lib/libmenu/menu_nomenu/Makefile
+                lib/libmenu/menu_generic/Makefile
                 lib/libmsg/msg_native/Makefile
                 lib/liblex/lex_c/Makefile
                 lib/liblex/lex_perl/Makefile
@@ -2853,33 +2914,34 @@ cat<<X
 | You will need bison if you'd want to regenerate the Aubit parsers. |
 X
 fi
-if test "$WARN_RPCGEN" = "1"; then
-cat<<X
-+--------------------------------------------------------------------+
-|                        *** WARNING ***                             |
-| "rpcgen" not found. Will use pre-compiled RPC files from           |
-| tools/cygwin/                                                      |
-| Use 'make refresh.norpcgen' on source tree with rpcgen installed.  |
-X
-fi
-if test "$WARN_RPCGEN" = "2"; then
-cat<<X
-+--------------------------------------------------------------------+
-|                        *** WARNING ***                             |
-| "rpcgen" not found. Will use pre-compiled RPC files from CygWin    |
-| port. ---NOT SURE THIS WILL WORK---                                |
-X
-fi
-if test "$WARN_RPCLIB" = "1"; then
-cat<<X
-+--------------------------------------------------------------------+
-|                        *** WARNING ***                             |
-| 'rpclib' not found. You will not be able to compile or open form   |
-| and menu files or use Sun RPC functionality of Aubit 4gl compiler. |
-| Consider installing Sun RPC. Will use header files from            |
-| tools/no_rpc/. Use 'make refresh.norpclib' on system with rpclib   |                                                    |
-X
-fi
+#Don't war about missing librpc/rpcgen any more, since we now have libpacker:
+#if test "$WARN_RPCGEN" = "1"; then
+#cat<<X
+#+--------------------------------------------------------------------+
+#|                        *** WARNING ***                             |
+#| "rpcgen" not found. Will use pre-compiled RPCgen-erated files from |
+#| tools/cygwin/                                                      |
+#| Use 'make refresh.norpcgen' on source tree with rpcgen installed.  |
+#X
+#fi
+#if test "$WARN_RPCGEN" = "2"; then
+#cat<<X
+#+--------------------------------------------------------------------+
+#|                        *** WARNING ***                             |
+#| "rpcgen" not found. Will use pre-compiled RPCgen-erated files from |
+#| CygWin port. ---NOT SURE THIS WILL WORK---                         |
+#X
+#fi
+#if test "$WARN_RPCLIB" = "1"; then
+#cat<<X
+#+--------------------------------------------------------------------+
+#|                        *** WARNING ***                             |
+#| 'rpclib' not found. You will not be able to compile or open form   |
+#| and menu files or use Sun RPC functionality of Aubit 4gl compiler. |
+#| Consider installing Sun RPC. Will use header files from            |
+#| tools/no_rpc/. Use 'make refresh.norpclib' on system with rpclib   |
+#X
+#fi
 if test "$WARN_UI" = "1"; then
 cat<<X
 +--------------------------------------------------------------------+
@@ -2953,6 +3015,7 @@ cat<<X
 | to find nedded programs and/or libraries that belong to this way   |
 | specified package in non-standard place. We will try to do this    |
 | automatically for you:                                             |
+WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON"
 X
 
 	if test "$ADD_LD_LIBRARY_PATH" != ""; then

@@ -6,12 +6,15 @@ AUBITDIR=`aubit-config AUBITDIR`
 
 if [ "$AUBITDIR" = "" ]; then
     echo "ERROR: AUBITDIR is empty. Stop."
+	aubit-config AUBITDIR
     exit 3
 fi
 
 PATH=$AUBITDIR/bin:$PATH
 LD_LIBRARY_PATH=$AUBITDIR/lib:$LD_LIBRARY_PATH
-
+if [ "$COMSPEC" != "" ]; then
+	PATH=$AUBITDIR/lib:$PATH
+fi
 export AUBITDIR PATH LD_LIBRARY_PATH
 
 if [ $# -lt 1 -o "$1" = "--help" ]
@@ -38,6 +41,9 @@ then
 fi
 
 COMMAND=$1
+
+#FIXME: on CygWin, we must add "bash" in front of "4glpc" otherwise standard "sh" will be
+#used and give us bunch of errors in 4glpc. We need to recognize and fix this here
 
    ################
    case $COMMAND in

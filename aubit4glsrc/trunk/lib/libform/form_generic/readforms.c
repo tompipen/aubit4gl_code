@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.4 2002-10-07 16:11:22 mikeaubury Exp $
+# $Id: readforms.c,v 1.5 2002-10-13 01:40:34 afalout Exp $
 #*/
 
 /**
@@ -425,6 +425,7 @@ real_dump_srec (struct s_form_dets *fd)
  *
  *
  */
+/* moved to others.c
 struct struct_screen_record *
 get_srec (char *name)
 {
@@ -452,6 +453,7 @@ get_srec (char *name)
     return (struct struct_screen_record *) &form->fileform->
       records.records_val[a];
 }
+*/
 
 /**
  * called from lib/libtui/ioform.c so it should be in API_form

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.46 2002-10-07 11:06:21 afalout Exp $
+# $Id: Makefile.in,v 1.47 2002-10-13 01:40:33 afalout Exp $
 #
 
 ROOT		=../..
@@ -70,7 +70,6 @@ endif
 ##                    Options
 ## ==================================================================
 
-#ALL				=rules.t ${ROOT}/bin/4glc
 ALL				=${ROOT}/bin/4glc
 
 C_LOCAL_IFLAGS  =-I${ROOT}/lib -I${ROOT}/lib/libincl -I${ROOT}/lib/liblex/lex_c -I. -I../fcompile -Irules -I${GENRULES}
@@ -92,11 +91,7 @@ ${ROOT}/bin/4glc: ${4GLCAOBJ}
 ## ==================================================================
 
 libexportlib4glcomp.dll.a: ${4GLCAOBJ} ${4GLCOBJ_C}
-#	${MAKE} libexportlib4glcomp.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_LIB}" DLL_LDFLAGS="-L${ROOT}/lib"
-#	dlltool --export-all --output-def $@ $^
-#	dlltool --export-all --output-exp libexportlib4glcomp.dll.a $^
-	${CC} -shared -Wl,--output-def=libexportlib4glcomp.def -Wl,--out-implib=libexportlib4glcomp.dll.a $^ -Wl,--export-all-symbols ${AUBIT_LIB} -L${ROOT}/lib
-#	${CC} -shared  -Wl,--output-def=libA4GLLEX_C.def -Wl,--out-implib=libA4GLLEX_C.dll.a $^ -Wl,--export-all-symbols
+	${CC} -shared -o ${ROOT}/lib/libexportlib4glcomp.dll -Wl,--out-implib=libexportlib4glcomp.dll.a $^ -Wl,--export-all-symbols ${AUBIT_LIB} -L${ROOT}/lib
 
 ## ==================================================================
 ##                            Sub Targets
@@ -157,7 +152,7 @@ lclint: $(CMODS)
 ## ==================================================================
 
 clean: clean.rules.generated clean.rules
-	${RM} *${SO_EXT} *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .*.bak .\#* 4glp *.log *.dll *.dll.a
+	${RM} *${SO_EXT} *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .*.bak .\#* 4glp *.log *.dll *.dll.a *.def
 
 clean.rules.generated:
 	(cd rules/generated; ${RM} *.yacc *.c *.h single_words *.o *.yh *.rule *.output *.bak .*.bak)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.3 2002-09-01 10:40:10 afalout Exp $
+# $Id: formwrite2.c,v 1.4 2002-10-13 01:40:34 afalout Exp $
 #*/
 
 /**
@@ -59,7 +59,13 @@ int maxline;
 struct struct_screen_record *curr_rec;
 char buff_xdr[30000];
 extern char *outputfilename;
-extern struct struct_form the_form;
+
+
+#ifdef __CYGWIN__
+	dll_import struct struct_form the_form;
+#else
+	extern struct struct_form the_form;
+#endif
 extern struct struct_scr_field *fld;
 
 
@@ -87,7 +93,7 @@ FILE *fyy;
 
 static void translate_form (void);
 extern char *translate (char *s);	/* translate.c */
-extern void yyerror (char *s);	/* fcompile.c */
+//extern void yyerror (char *s);	/* fcompile.c */
 static void real_set_field (char *s, struct struct_scr_field *f);
 static void real_add_str_attr (struct struct_scr_field *f, int type,
 			       char *str);
@@ -955,7 +961,8 @@ getdatatype (char *col, char *tab)
     {
       debug ("get_dtype failed\n");
       sprintf (buff, "%s.%s not found in database", tab, col);
-      yyerror (buff);
+      //yyerror (buff);
+      exitwith(buff);
     }
   return a;
 }

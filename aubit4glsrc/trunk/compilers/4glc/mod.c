@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.85 2002-10-07 16:10:55 mikeaubury Exp $
+# $Id: mod.c,v 1.86 2002-10-13 01:40:33 afalout Exp $
 #
 */
 
@@ -153,8 +153,8 @@ int 		curr_rep_block;
 int 		max_menu_no = 0;
 struct 		s_report sreports[1024];
 int 		sreports_cnt = 0;
-char 		mmtitle[132][132];         /** Menu titles */
-extern char *outputfilename;    /** Variables dump output file name */
+char 		mmtitle[132][132];         	/** Menu titles */
+extern char *outputfilename;    		/** Variables dump output file name */
 int 		read_glob_var = 0;
 int 		counters[256];
 int 		count_counters = 0;

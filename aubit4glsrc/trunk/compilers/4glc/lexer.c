@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.33 2002-09-08 09:53:25 mikeaubury Exp $
+# $Id: lexer.c,v 1.34 2002-10-13 01:40:33 afalout Exp $
 #*/
 
 /**
@@ -48,23 +48,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <string.h>
-
-	#include "a4gl_aubit_lib.h" 			/* acl_getenv() */
-	#include "a4gl_4glc_4glc.h"
-	#include "rules/generated/kw.h"
-	#include "rules/generated/y.tab.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_4glc_int.h"
-
-#endif
+#include "a4gl_4glc_int.h"
 
 
 /*
@@ -89,24 +73,18 @@
 =====================================================================
 */
 
-/* Extern reserved words table */
-extern struct s_kw kwords[];
-char idents[256][256];
-int idents_cnt = 0;
-extern char curr_func[];
-extern char infilename[];
-FILE *yyin = 0; 		/* Pointer to the source file openen being parsed */
-int yylineno = 1; 		/* Current line number */
-extern int chk4var;
-char *lastword;
-int lastlex = -2;
-extern int yyin_len;
-extern int in_define;
-int xccode = 0;
-int ccnt = 0;
-char xwords[256][256];
-int word_cnt = 0;
-long fpos;
+
+char 			idents[256][256];
+int 			idents_cnt = 0;
+FILE *			yyin = 0; 			/* Pointer to the source file openen being parsed */
+int 			yylineno = 1; 		/* Current line number */
+char *			lastword;
+int 			lastlex = -2;
+int 			xccode = 0;
+extern int 		ccnt; 				/* defined in others.c */
+char 			xwords[256][256];
+int 			word_cnt = 0;
+long 			fpos;
 
 struct translate_string {
 	char *from;
@@ -114,8 +92,15 @@ struct translate_string {
 	char *identifier;
 };
 
-extern struct translate_string *translate_list;
-extern int translate_list_cnt;
+/* Extern reserved words table */
+extern struct 	s_kw kwords[];
+extern char 	curr_func[];
+extern char 	infilename[];
+extern int 		yyin_len;
+extern int 		in_define;
+extern struct 	translate_string *translate_list;
+extern int 		translate_list_cnt;
+extern int 		chk4var;
 
 /*
 =====================================================================

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.23 2002-09-24 01:59:40 afalout Exp $
+# $Id: Makefile.in,v 1.24 2002-10-13 01:40:35 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -60,8 +60,16 @@ ALL=${DEFAULT} assoc pdf_report file test_select testmenu testmpz ${SUB} ${REGRE
 ## ==================================================================
 
 default: ${DEFAULT}
-	@echo "Default simple demo targets successfully compiled"
-	@echo "Try 'make all' for more example code"
+	@echo " "
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Default simple demo targets successfully compiled                  |"
+	@echo "| Try 'make all' for more example code.                              |"
+	@echo "| You can run compiled demo program 'hello' by executing:            |"
+	@echo "| ./hello                                                            |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo " "
+	@echo "Thank you for using Aubit 4gl compiler"
+	@echo " "
 
 all: ${ALL}
 	@echo all targets successfully compiled
