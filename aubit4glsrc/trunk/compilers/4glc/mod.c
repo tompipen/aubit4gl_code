@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.163 2004-03-14 15:59:16 mikeaubury Exp $
+# $Id: mod.c,v 1.164 2004-03-14 16:33:09 mikeaubury Exp $
 #
 */
 
@@ -2275,6 +2275,7 @@ get_bind_cnt (char i)
     return nullbindcnt;
   if (i == 'o')
     return obindcnt;
+  if (i=='O') return ordbindcnt;
   if (i == 'f' || i == 'F')
     return fbindcnt;
   return 0;
@@ -4482,6 +4483,7 @@ void A4GL_get_event(int n,int *i,char **s) {
 
 
 void A4GL_copy_fbind_to_Obind() {
+//printf("Copying fbind %d %d\n",fbindcnt,ordbindcnt);
 memcpy(ordbind,fbind,sizeof(struct binding_comp)*fbindcnt);
 ordbindcnt=fbindcnt;
 }
