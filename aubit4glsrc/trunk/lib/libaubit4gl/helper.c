@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.32 2004-06-25 18:25:25 mikeaubury Exp $
+# $Id: helper.c,v 1.33 2004-09-21 06:08:04 mikeaubury Exp $
 #
 */
 
@@ -575,8 +575,8 @@ int_get_info_window (char *ptr, char *info)
       A4GL_exitwith ("Invalid Window info request");
       return 0;
     }
-
-  return 0;
+  A4GL_debug("params=%d",params);
+  return params;
 
 }
 
