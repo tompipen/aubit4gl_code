@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.103 2002-09-25 07:01:08 afalout Exp $
+# $Id: configure.in,v 1.104 2002-09-25 07:52:20 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1833,6 +1833,11 @@ fi
 ##                  Check for GTK+ GUI support
 ## ==================================================================
 
+#Fixme: use AC native macros:
+#AM_PATH_GTK(1.0.2,, [AC_MSG_ERROR([GTK not in path])])
+#AM_PATH_GTKMM(0.9.5,, [AC_MSG_ERROR([GTK not in path])])
+
+
 #AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
 #AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
@@ -2430,30 +2435,36 @@ AC_CHECK_LIB([check], [suite_create])
 ##                       Checks for header files
 ## ==================================================================
 
-
-#xxxx
 if test "$AUBIT_SOURCE" = "1" ; then
 	#AC_STDC_HEADERS
 	AC_HEADER_STDC
-	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h search.h])
+	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h])
 	#AC_HAVE_HEADERS(string.h fcntl.h sys/file.h sys/param.h)
 
-    #FIXME: stop if no search.h
-	#a simple fix is to get a copy of search.h from the Darwin CVS tree's
-	#libedit pkg, as follows:
-	#cvs -d :pserver:(username)@anoncvs.opensource.apple.com:/cvs/Darwin login
-	#CVS password: (password)
-	#cvs -d :pserver:blakers@anoncvs.opensource.apple.com:/cvs/Darwin checkout libedit
-	#cp /usr/ports/libedit/libedit/search.h /usr/include/search.h
+   	AC_CHECK_HEADERS([search.h])
+	if test `eval echo '${'$as_ac_Header'}'` != yes; then
+	    #FIXME: stop if no search.h
+		#a simple fix is to get a copy of search.h from the Darwin CVS tree's
+		#libedit pkg, as follows:
+		#cvs -d :pserver:(username)@anoncvs.opensource.apple.com:/cvs/Darwin login
+		#CVS password: (password)
+		#cvs -d :pserver:blakers@anoncvs.opensource.apple.com:/cvs/Darwin checkout libedit
+		#cp /usr/ports/libedit/libedit/search.h /usr/include/search.h
 
+   		AC_MSG_WARN(Using Aubit provided search.h)
+
+    fi
 
 	AC_CHECK_HEADERS([dlfcn.h])
 	if test `eval echo '${'$as_ac_Header'}'` != yes; then
-	#if test "$HAVE_DLFCN_H" != "1"; then
+
 		#libdl: Aubit loads plugins using the dlopen() interface (except on HP-UX).
 		#This is not the OS X way, but Apple has supplied the dlcompat library to
 		#simulate this interface. This library and its header file dlfcn.h are
 		#required for Aubit to compile.
+
+		#Clear cached value:
+		unset ac_cv_header_dlfcn_h
 
         #/sw/include/dlfcn.h
         old_CLFAGS="$CFLAGS"
