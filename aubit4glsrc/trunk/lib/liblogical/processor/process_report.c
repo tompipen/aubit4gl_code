@@ -183,9 +183,11 @@ main (int argc, char *argv[])
 
   if (RP_process_report (report, buff, rbx, rbs))
     {
-      if (ispipe == 0)
+      if (ispipe == 0 )
 	{
+	if (random_name) {
 	  printf ("OK - output should be in %s\n", ofile);
+	}
 	}
       else
 	{

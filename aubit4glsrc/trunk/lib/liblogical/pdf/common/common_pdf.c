@@ -10,7 +10,7 @@
 struct pdf_layout layout;
 
 void pdf_default_file() {
-	printf("default file\n");
+	//printf("default file\n");
 	strcpy(layout.fontname,"Courier");
 	layout.fontsize		=8;
 	layout.leftmargin	=0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.50 2004-11-10 16:00:39 pjfalbe Exp $
+# $Id: report.c,v 1.51 2004-11-10 23:46:36 pjfalbe Exp $
 #
 */
 
@@ -54,6 +54,7 @@
 #define ENTRY_ENTRY_END 6
 
 
+static int email_report(char *fname,char *otype) ;
 int rs_with_page_length=-1;
 int rs_with_left_margin=-1;
 int rs_with_right_margin=-1;
@@ -378,7 +379,7 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,
       else
 	{
 
-	  if (rep->output_mode == 'F')
+	  if (rep->output_mode == 'F' || rep->output_mode=='M')
 	    {
 
 
@@ -1401,7 +1402,7 @@ A4GL_convert_report (struct rep_structure *rep, char *ofile,
 
   running_program=A4GL_get_running_program();
 
-  if (to_pipe)
+  if (to_pipe==1)
     {
 
       if (strlen (layout))
@@ -1433,6 +1434,11 @@ A4GL_convert_report (struct rep_structure *rep, char *ofile,
 
   system (buff);
 
+  if (to_pipe==2) {
+		printf("Sending %s",ofile);
+		email_report(ofile,otype);
+  }
+
   free (ofile);
   free (otype);
   free (layout);
@@ -1443,6 +1449,13 @@ void A4GL_free_report(struct rep_structure *rep) {
 		rep->output_mode=' ';
 		//unlink(rep->output_loc);
 	}
+
+	if (rep->output_mode=='M') {
+		//email_report(rep->output_loc,0);
+		unlink(rep->output_loc);
+		rep->output_mode=' ';
+	}
+
 }
 
 
@@ -1489,5 +1502,25 @@ char *A4GL_find_report_dim_string(char *type,int value) {
 // not implemented yet...
 }
 
+
+
+static int email_report(char *fname,char *fhint) {
+  if (fhint) {
+   A4GL_push_char(fhint);
+  } else {
+   A4GL_push_char( " " );
+  }
+   A4GL_push_char(fname);
+   A4GL_push_char("mike.aubury@aubit.com");
+   A4GL_call_4gl_dll("fgl_smtp","send_report",3);
+}
+
+
+
+char *A4GL_get_tmp_rep(char *mod,char *f) {
+static char buff[256];
+tmpnam(buff);
+return buff;
+}
 
 /* ============================= EOF ================================ */

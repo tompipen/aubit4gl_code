@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.42 2004-07-11 23:54:54 afalout Exp $
+# $Id: others.c,v 1.43 2004-11-10 23:46:36 pjfalbe Exp $
 #
 */
 
@@ -112,6 +112,12 @@ aclfgl_fgl_lastkey (int _np)
 
   A4GL_push_long (_r);
   return 1;
+}
+
+
+int aclfgl_aclfgl_get_user(int n) {
+	A4GL_push_user ();
+	return 1;
 }
 
 /**
