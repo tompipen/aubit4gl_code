@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.18 2004-04-09 09:33:07 mikeaubury Exp $
+# $Id: makefile,v 1.19 2004-04-12 10:00:39 whaslbeck Exp $
 #
 
 LIBROOT		=../..
@@ -178,8 +178,8 @@ width_wide.o: width.c
 ## ==================================================================
 
 
-API_lowlevel.c: ${LIBROOT}/libaubit4gl/API_lowlevel.spec API_lowlevel.h a4gl_API_lowlevel.h
-	(cd ${LIBROOT}/libaubit4gl && ${SH} ../bin/dlmagic ./API_lowlevel.spec > ../libui/ui_highlevel/API_lowlevel.c)
+#API_lowlevel.c: ${LIBROOT}/libaubit4gl/API_lowlevel.spec API_lowlevel.h a4gl_API_lowlevel.h
+#	(cd ${LIBROOT}/libaubit4gl && ${SH} ../bin/dlmagic ./API_lowlevel.spec > ../libui/ui_highlevel/API_lowlevel.c)
 
 
 #so is it now only this one, or...
@@ -195,7 +195,7 @@ lowlevel_tui_noform.o: lowlevel/lowlevel_tui.c
 form_tui.o: lowlevel/form_tui.c
 	${CC} ${CFLAGS} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
 
-lowlevel_gtk.o: lowlevel/lowlevel_gtk.c API_lowlevel.h
+lowlevel_gtk.o: lowlevel/lowlevel_gtk.c a4gl_API_lowlevel.h
 	${CC} ${CFLAGS_GTK_C} -c -I$(ROOT)/incl -I. -Ilowlevel $< -o $@ $(GTK_INC_PATH)
 
 widget_gtk.o: lowlevel/widget_gtk.c

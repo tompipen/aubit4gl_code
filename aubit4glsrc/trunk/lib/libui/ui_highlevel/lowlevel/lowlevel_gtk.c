@@ -1,5 +1,5 @@
 #include "a4gl_libaubit4gl.h"
-#include "../API_lowlevel.h"
+#include "a4gl_API_lowlevel.h"
 #include "a4gl_API_ui_lib.h"
 #include "a4gl_incl_4gldef.h"
 #include "forms.h"
@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.39 2004-03-25 04:55:45 afalout Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.40 2004-04-12 10:01:42 whaslbeck Exp $";
 
 
 #include <gtk/gtk.h>

@@ -1,10 +1,10 @@
-static char *module_id="$Id: widget_gtk.c,v 1.11 2004-03-18 22:47:27 whaslbeck Exp $";
+static char *module_id="$Id: widget_gtk.c,v 1.12 2004-04-12 10:01:42 whaslbeck Exp $";
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
 #include "lowlevel.h"
 #include "formdriver.h"
 #include "low_gtk.h"
-#include "../API_lowlevel.h"
+#include "a4gl_API_lowlevel.h"
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>     /* GDK_Down */
