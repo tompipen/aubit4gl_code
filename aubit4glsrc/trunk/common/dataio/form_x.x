@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.7 2003-08-27 15:28:27 mikeaubury Exp $
+# $Id: form_x.x,v 1.8 2004-05-21 13:01:22 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  * that results in compiler warnings for unused variable
  */
 
-const FCOMILE_XDR_VERSION = 105;
+const FCOMILE_XDR_VERSION = 106;
 const FCOMILE_XDR_MAGIC = 0xa4fc1234;
 
 struct struct_metrics
@@ -77,7 +77,8 @@ enum FIELD_ATTRIBUTES_BOOL {
 	FA_B_COMPRESS,
 	FA_B_UPSHIFT,
 	FA_B_DOWNSHIFT,
-	FA_B_REQUIRED
+	FA_B_REQUIRED,
+	FA_B_NOUPDATE
 	
 };
 
