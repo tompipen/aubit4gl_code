@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.43 2004-07-09 16:45:04 mikeaubury Exp $
+# $Id: report.c,v 1.44 2004-07-17 07:10:27 mikeaubury Exp $
 #
 */
 
@@ -1192,7 +1192,7 @@ report_write_int (struct rep_structure *rep, int n)
 	} 
 
 	if (n<32000) {
-		s=htons(n);
+		s=a4gl_htons(n);
 		report_write_char(rep,254);
 		fwrite(&s,sizeof(s),1,rep->output);
 	}
@@ -1200,7 +1200,7 @@ report_write_int (struct rep_structure *rep, int n)
 	report_write_char(rep,255);
 */
 
-  n = htonl (n);
+  n = a4gl_htonl (n);
   fwrite (&n, sizeof (n), 1, rep->output);
 }
 

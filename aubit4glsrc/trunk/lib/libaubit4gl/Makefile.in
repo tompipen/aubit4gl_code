@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.69 2004-06-27 03:16:54 afalout Exp $
+# $Id: Makefile.in,v 1.70 2004-07-17 07:10:27 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -54,7 +54,7 @@ CMODS_API   =${API_C} ${API_SPEC:.spec=.c}
 
 #List of all non-API source files of libaubit4gl, -- IN ALPHABETIC ORDER -- :
 COMMONSRC= \
-	attributes.c \
+	attributes.c ns.c \
 	builtin.c builtin_d.c \
 	calldll.c conv.c compat.c \
 	data_if.c dates.c dmy.c  datatypes.c dataio.c decimal.c dynmem.c \
