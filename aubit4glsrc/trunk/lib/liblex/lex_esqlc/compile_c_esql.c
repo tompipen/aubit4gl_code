@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.94 2004-11-09 20:28:43 pjfalbe Exp $
+# $Id: compile_c_esql.c,v 1.95 2004-11-18 21:17:59 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.94 2004-11-09 20:28:43 pjfalbe Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.95 2004-11-18 21:17:59 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -905,11 +905,11 @@ print_fetch_3 (char *ftp, char *into)
 
 A4GL_save_sql(buff,0);
 
+  print_copy_status ();
   if (strcmp (into, "0,0") != 0)
     {
       print_conversions ('o');
     } 
-  print_copy_status ();
   printc("internal_recopy_%s_o_Dir();",sqcname);
   printc ("}");
   printc ("}");
