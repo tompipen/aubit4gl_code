@@ -306,7 +306,15 @@ ufunc_name: NAMED
 def_ascii_list : variable datatype | def_ascii_list COMMA variable datatype
 ;
 
-variable: NAMED
+variable: NAMED {
+	char buff[256];
+	int a;
+	strcpy(buff,$<str>1);
+	for (a=0;a<strlen(buff);a++) {
+		buff[a]=toupper(buff[a]);
+	}
+	strcpy($<str>$,buff);
+	}
 ;
 
 datatype :
@@ -1357,12 +1365,23 @@ val_expression:
 		$<expr>$.type=EXPRTYPE_BUILTIN;
 		$<expr>$.expr_u.name=strdup($<str>1);
 	}
+	| DATE {
+		int v;
+		v=find_variable("today");
+		$<expr>$.type=EXPRTYPE_VARIABLE;
+		if (v==-1) {
+			printf("Warning : %s is not a defined variable\n",$<str>1);
+		} 
+		$<expr>$.expr_u.varid=v;
+	}
+
 	| DATE  OPEN_BRACKET  val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=malloc(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=strdup("DATE");
                 $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
+
 	| MONTH  OPEN_BRACKET  val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=malloc(sizeof(struct expr_call));
