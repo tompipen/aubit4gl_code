@@ -1,0 +1,105 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   common makefile include    |
+# | This file should be included in ALL Aubit 4gl compiler make files    |
+# | that are used to compile Aubit compiler itself                       |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: Makefile-common.in,v 1.1 2002-01-08 02:06:56 afalout Exp $
+#
+
+.EXPORT_ALL_VARIABLES:
+
+#############
+#this internal variable points to default location of Aubit config files
+#Default=/etc/opt/aubit4gl
+AUBITETC=/etc/opt/aubit4gl
+
+#If you are looking here because make could not find "/etc/aubitrc"
+#then exucute "bin/4glpc -config" from Aubit source code root directory
+
+#All includes should become obsolete once autoconf is fully implemented
+NOINCL=0
+ifeq "$(NOINCL)" "0"
+	include ${AUBITETC}/aubitrc
+
+	#we should also attempt to read this locations, if they exist, for
+    #concsystency, but I don't know how to test if file exists here... ?
+	#$AUBITDIR/etc/aubitrc,
+	#~/.aubit4gl/aubitrc
+	#./.aubitrc
+
+	ifdef A4GL_INIFILE
+		include $(A4GL_INIFILE)
+	endif
+
+endif
+
+PATH:=${AUBITDIR}/bin:${PATH}
+#PATH:=../bin:${PATH}
+
+
+#if this make file is named "Makefile.old", set MKNAME to  "-f Makefile.old"
+#if this make file is named "Makefile.in", set MKNAME to  "" (empty) or "-f Makefile"
+#if this make file is named "Makefile", DO NOT edit it!
+MKNAME=
+
+
+#Lclint C code checker flags:
+LCLINTFLAGS			= -weak
+LCLINTLOG  			= lclint.log
+LCLINTLOGCMD		= ${LCLINTLOG} 2>&1
+
+####################
+#commands to use:
+MAKE		= make
+MKDIR 		= mkdir
+CD 			= cd
+CP 			= cp
+RM 			= rm -f
+RMDIR		= rm -rf
+SH 			= /bin/sh
+CC 			= gcc
+LN_S 		= ln -s
+AR 			= ar rc
+YACC 		= bison -y
+INSTALL_USR	= nobody
+INSTALL_GRP = nobody
+INSTALL_CMD = install
+INSTALL     = ${INSTALL_CMD} -c -o ${INSTALL_USR} -g ${INSTALL_GRP}
+MKPATH      = mkdir -p
+
+#C compiler flags for Aubit libraries compilation: you should not
+#need to change this
+LIBCFLAGS			=-g -O2 -Ilibincl -I. -DAUTOBANG -DDEBUG
+
+LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
+
+#To let know 4glpc we are in process of making compiler, and not
+#compiling 4gl programs
+MAKINGAUBIT			=1
+export MAKINGAUBIT
+
+
+
+#----------------------------- EOF -----------------------------

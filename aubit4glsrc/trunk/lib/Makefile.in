@@ -24,29 +24,11 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2002-01-06 11:24:46 afalout Exp $
+# $Id: Makefile.in,v 1.11 2002-01-08 02:06:59 afalout Exp $
 #
 
-#############
-#this internal variable points to default location of Aubit config files
-#Default=/etc/opt/aubit4gl
-AUBITETC=/etc/opt/aubit4gl
-
-ifndef NOINCL
-    NOINCL=0
-endif
-
-ifeq "$(NOINCL)" "0"
-	ifdef AUBITBUILDMK
-		include $(AUBITBUILDMK)
-	else
-		include ${AUBITETC}/aubitbuild.mk
-	endif
-
-	ifdef AUBITBUILDMKMULTI
-		include $(AUBITBUILDMKMULTI)
-	endif
-endif
+#All stuff common to more then one Aubit compiler make file is there:
+include ../incl/Makefile-common.in
 
 override NOINCL=0
 
