@@ -15,7 +15,7 @@ opt_allopts 	: COMMENT_LINE line_no {printc("set_option_value('C',%s);\n",$<str>
 		| NEXT single_key_val {printc("set_option_value('N',%s);\n",$<str>2);}
 		| PREVIOUS single_key_val {printc("set_option_value('p',%s);\n",$<str>2);iskey=0;}
 		| HELP single_key_val {printc("set_option_value('H',%s);\n",$<str>2);}
-		| HELP KW_FILE file_name {printc("set_help_file(%s);\n",$<str>3);}
+		| HELP_FILE file_name {printc("set_help_file(%s);\n",$<str>2);}
 		| DISPLAY attributes_def {printc("set_option_value('d',%s);\n",$<str>2);}
 		| INPUT attributes_def {printc("set_option_value('i',%s);\n",$<str>2);}
 		| INPUT_WRAP {printc("set_option_value('W',1);\n");}

@@ -277,7 +277,7 @@ output_command :
 | PAGE_LENGTH INT_VALUE {rep_struct.page_length=atoi($<str>2);}
 | REPORT_TO CHAR_VALUE {rep_struct.output_mode='F';strcpy(rep_struct.output_loc,$<str>2);}
 | REPORT_TO_PIPE CHAR_VALUE {rep_struct.output_mode='P';strcpy(rep_struct.output_loc,$<str>2);}
-
+| TOP_OF_PAGE CHAR_VALUE {strcpy(rep_struct.top_of_page,$<str>2);}
 ;
 
 pdf_output_commands : pdf_output_command | pdf_output_commands pdf_output_command;
@@ -576,4 +576,5 @@ op_wordwrap:
 	{strcpy($<str>$,"0");}
  	| WORDWRAP { sprintf($<str>$,"rep.right_margin"); }
 	| WORDWRAP RIGHT_MARGIN INT_VALUE { sprintf($<str>$,"%s",$<str>3); }
+	| WORDWRAP RIGHT_MARGIN variable { sprintf($<str>$,"%s",$<str>3); }
 ;
