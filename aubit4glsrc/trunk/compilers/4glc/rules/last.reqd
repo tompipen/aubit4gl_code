@@ -30,10 +30,19 @@ set_hdrdbname(char *s)
 	strcpy(hdr_dbname,s);
 }
 
+//use this set_str() if YYPURE and YYLEX_PARAM are not set
+//void
+//set_str(char *s)
+//	strcpy(yylval.str,s);
+//}
+
+//use this set_str() if YYPURE and YYLEX_PARAM are set
 void
-set_str(char *s)
+set_str(void *p, char *s)
 {
-	strcpy(yylval.str,s);
+	YYSTYPE *y;
+	y = (YYSTYPE *) p;
+	strcpy( y->str, s );
 }
 
 /* ====================== last.reqd =============================== */

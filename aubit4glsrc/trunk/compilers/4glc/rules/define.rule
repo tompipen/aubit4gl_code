@@ -211,7 +211,7 @@ push_type("struct_dtime ",$<str>2,0);
 				debug("Got function as %p",function);
 
                 /*  warning: comparison between pointer and integer */
-				if ((int)function != -1) 
+				if ((int)function != -1 && (int)function != 0)
 				{
 					debug("call returns %s\n",function());
 					strcpy(buff,function());
