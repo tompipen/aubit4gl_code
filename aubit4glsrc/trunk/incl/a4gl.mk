@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.46 2004-03-01 00:59:52 afalout Exp $
+#	 $Id: a4gl.mk,v 1.47 2004-03-27 11:50:40 afalout Exp $
 
 ##########################################################################
 #
@@ -38,10 +38,16 @@ endif
 #Files compiler uses as source files:
 4GL_SRC_SUFFIXES	=.4gl .per .msg
 
-ifdef COMSPEC
-    SH				=bash
-else
-    SH				=sh
+ifndef SH
+	ifdef COMSPEC
+		SH				=bash
+	else
+		SH				=sh
+	endif
+endif
+
+ifndef SHELL
+	SHELL=${SH}
 endif
 
 #------- end of common stuff ------------
@@ -190,6 +196,10 @@ else
 	DEFAULT_LINK=${A4GL_FGLC} $^ -o $@
 	
 endif
+
+#Used in 4glpc
+export A4GL_OBJ_EXT
+
 #shared object:
 A4GL_SOB_EXT=.aso
 #static library:

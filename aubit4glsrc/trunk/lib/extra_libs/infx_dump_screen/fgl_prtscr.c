@@ -76,7 +76,7 @@
 #endif
 #endif
 static int fd1, fd3;
-
+#define FRAME
 
 /*
  *
@@ -100,14 +100,33 @@ aclfgl_dump_screen (int pcnt)
 	register	CHAR	**line,	*data;
 	register	int y,x;
 	register	char	c;
-	int i; /* J. A. */
+	int i; 
 #endif
-	char filnam [35]; 
-	char cmdstring [160]; 
-	char pipestring [81]; 
-
+	char filnam [256]; 
+	char cmdstring [1028]; 
+	char pipestring [256]; 
+	int ret;
+#ifdef DEBUG
+	long cur_date;
+	extern int errno;
+	FILE *fptr;
+	time(&cur_date);
+	//fptr = fopen("time_file.tmp","a");
+	fptr = fopen("dump_screen.log","w");
+	fprintf(fptr,"Started at %s\n", ctime(&cur_date));
+	//printf("\nStarted at %s\n", ctime(&cur_date));
+	//fclose(fptr);
+#endif
+	
 	popquote (pipestring, 80);
 	clip(pipestring);
+	strcat (pipestring, ".4js");
+	
+#ifdef DEBUG  
+	fprintf(fptr,"Destination file is %s\n",pipestring);
+#endif
+	
+	
 
 #if C4GL
 #ifdef OBSOLETE
@@ -123,18 +142,38 @@ aclfgl_dump_screen (int pcnt)
 	}
 #endif
 	sprintf(filnam, "/tmp/%d.out", getpid());
+#ifdef DEBUG  
+	fprintf(fptr,"Temp file is %s\n",filnam);
+#endif
 	
 	if ((fp=fopen(filnam, "w")) != (FILE *)0) {
-		/* Added for screen box */
-		fputc ('+', fp);
-		for (i=0; i<78; i++) {
-			fputc ('-', fp);
-		}
-		fputc ('+', fp);
-		fputc ('\n', fp);
+		#ifdef DEBUG
+			fprintf(fptr,"Opened %s for writing\n",filnam);
+		#endif
+		#ifdef FRAME
+			/* Added for screen box */
+			fputc ('+', fp);
+			for (i=0; i<78; i++) {
+				fputc ('-', fp);
+			}
+			fputc ('+', fp);
+			fputc ('\n', fp);
+		#endif
+		#ifdef DEBUG
+			fprintf(fptr,"line(win->_y)=%d y(win->_maxy)=%d\n",win->_y,win->_maxy);
+			//win->_y=1097253761 win->_maxy=-931 - always the same
+			//
+
+		#endif
 		for (y=0, line=win->_y; y<win->_maxy; y++, line++) {
+			#ifdef DEBUG
+				fprintf(fptr,"for level 1\n");
+			#endif
 			/* fputc ('|', fp);*/ 
 			for (x=0, data=*line; x < win->_maxx; x++, data++) {
+				#ifdef DEBUG
+					fprintf(fptr,"for level 2\n");
+				#endif
 				c=(char) *data & _CHARACTER;
 #ifdef OBSOLETE				
 				if ((*data &_GRAPHMODE) && *GB) {
@@ -152,24 +191,36 @@ aclfgl_dump_screen (int pcnt)
 			/* fputc ('|', fp);*/ 
 			fputc ('\n', fp);
 		}
-		fputc ('+', fp); 
-		for (i=0; i<78; i++) {
-			fputc ('-', fp);
-		}
-		fputc ('+', fp); 
-		fputc ('\n', fp);
+		
+		#ifdef FRAME
+			fputc ('+', fp); 
+			for (i=0; i<78; i++) {
+				fputc ('-', fp);
+			}
+			fputc ('+', fp); 
+			fputc ('\n', fp);
+		#endif
+
 		fclose (fp);
+		#ifdef DEBUG
+	  		fprintf(fptr,"Closed %s\n", filnam);
+		#endif
+		
 	} else {
-		printf ("Cannot open file %s for writing",filnam);
+		//printf ("Cannot open file %s for writing",filnam);
+	  #ifdef DEBUG
+	  	fprintf(fptr,"Failed to open %s\n", filnam);
+		fclose(fptr);
+	  #endif
 		return 1;
 	}
 
-	sprintf (cmdstring, "%s%s%s%s%s", 
-		"cat ", 	//
-		filnam, 	//file we just created
-		pipestring,	//filename in function call
-		"; rm -f ", //
-		filnam);	//file we just created
+	sprintf (cmdstring, "%s %s > %s", 
+		"cat", 			//
+		filnam, 		//file we just created
+		pipestring);	//filename in function call
+		
+	//sprintf (cmdstring, "%s %s %s",cmdstring,"; rm -f",filnam);
 	
 #else //#if C4GL
 	// /tmp/prtscr.32766out: No such file or directory
@@ -178,8 +229,22 @@ aclfgl_dump_screen (int pcnt)
 	sprintf (cmdstring, "%s < %s%s%s%s", 
 		"../decap ", filnam, pipestring, "; rm -f ", filnam); 
 #endif
-	printf ("Running: %s",cmdstring);
-	system (cmdstring);
+	#ifdef DEBUG  
+		fprintf(fptr,"Running: >%s<\n",cmdstring);
+	#endif
+
+	ret = system (cmdstring);
+	//system (cmdstring);
+	#ifdef DEBUG
+		fprintf(fptr,"Command returned code %d\n", ret);	
+	#endif
+	
+	
+#ifdef DEBUG  
+	fprintf(fptr,"Finished at %s\n", ctime(&cur_date));
+	fclose(fptr);
+#endif
+	
 	return 0;
 }
 

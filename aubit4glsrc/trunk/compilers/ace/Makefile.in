@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.22 2003-02-28 06:34:10 afalout Exp $
+# $Id: Makefile.in,v 1.23 2004-03-27 11:50:39 afalout Exp $
 #
 
 
@@ -58,7 +58,8 @@ include ${ROOT}/incl/Makefile-common
 
 ifeq "${YACC}" "no"
 	Y_TAB_C		=${ROOT}/tools/no_yacc/cygwin/compilers/ace/y.tab.c
-	CFLAGS      +=-I${ROOT}/tools/cygwin -I${ROOT}/tools/no_rpc/cygwin
+	CFLAGS      +=-I${ROOT}/tools/cygwin -I${ROOT}/tools/no_rpc/cygwin \
+				-I${ROOT}/tools/no_yacc/cygwin/compilers/ace
 else
 	Y_TAB_C		=y.tab.c
 endif

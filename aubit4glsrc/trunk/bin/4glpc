@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.126 2004-03-25 04:54:33 afalout Exp $
+# $Id: 4glpc,v 1.127 2004-03-27 11:48:55 afalout Exp $
 #
 
 ########################################################################
@@ -96,6 +96,9 @@ if [ "$COMSPEC" != "" ]; then
     fi
 fi
 
+	if test "$A4GL_OBJ_EXT" = ""; then 
+		A4GL_OBJ_EXT=.ao
+	fi
     ERRCHAR=^\|
 	GOBACKLINES=10
 	GOAFTERLINES=2
@@ -140,7 +143,7 @@ if [ $# -lt 1 -o "$1" = "--help" ]; then
     echo
     echo Usage:
     echo '  4glpc sourcefile.type [...] [options] executablename.4ae'
-    echo '  4glpc sourcefile.4gl -c -o objectname.ao'
+    echo '  4glpc sourcefile.4gl -c -o objectname$A4GL_OBJ_EXT'
     echo '  4glpc sourcefile.4gl -o executablename.4ae'
 	echo
     echo ' For details, try: '
@@ -729,7 +732,7 @@ do
 				if [ "$CMPL" = "yes" ]; then
                     #try to compile it
 					THIS4GL=`find . -name $a`
-    	            THISOBJ=`basename $THIS4GL .4gl`.ao
+    	            THISOBJ=`basename $THIS4GL .4gl`$A4GL_OBJ_EXT
         	        THISPATH=`dirname $THIS4GL`
                     if [ ! -f "$THISPATH/$THISOBJ" ]; then
 						echo "aubit 4glpc $THIS4GL -c -o $THISPATH/$THISOBJ"
@@ -744,7 +747,7 @@ do
                 fi
 				if [ "$CMPL" = "clean" ]; then
 					THIS4GL=`find . -name $a`
-    	            THISOBJ=`basename $THIS4GL .4gl`.ao
+    	            THISOBJ=`basename $THIS4GL .4gl`$A4GL_OBJ_EXT
         	        THISPATH=`dirname $THIS4GL`
                     if [ -f "$THISPATH/$THISOBJ" ]; then
                         rm $THISPATH/$THISOBJ
@@ -1084,20 +1087,20 @@ do
 				if test "$NO_LINKING"; then
 					#got -c flag, single object only on command line
 					if test "$OUTFILE" = ""; then
-						OUTFILE="$fname.ao"
+						OUTFILE="$fname$A4GL_OBJ_EXT"
 					fi
 				else
 					#no -c flag, can have multiple object on command line,
 					#so -o may or may not not be the same thing
-					OUTFILE="$fname.ao"
+					OUTFILE="$fname$A4GL_OBJ_EXT"
 				fi
 				#if [ "$COMSPEC" = "" ]
 				#then
 					EXEC="$DOIT $NCC $CFLAGS $fname.$FGLC_OUTPUT_EXT -c -o $OUTFILE $INCLDIR 2> $fname.$FGLC_OUTPUT_EXT.err"
 				#else
-				#	EXEC="$DOIT $NCC $CFLAGS $fname.$FGLC_OUTPUT_EXT -c -o $fname.ao $INCLDIR 2> $fname.$FGLC_OUTPUT_EXT.err"
+				#	EXEC="$DOIT $NCC $CFLAGS $fname.$FGLC_OUTPUT_EXT -c -o $fname$A4GL_OBJ_EXT $INCLDIR 2> $fname.$FGLC_OUTPUT_EXT.err"
                 #    #remove this duplication
-				#	#EXEC="$DOIT $NCC $CFLAGS $fname.$FGLC_OUTPUT_EXT -o $fname.ao -c $INCLDIR 2> $fname.$FGLC_OUTPUT_EXT.err"
+				#	#EXEC="$DOIT $NCC $CFLAGS $fname.$FGLC_OUTPUT_EXT -o $fname$A4GL_OBJ_EXT -c $INCLDIR 2> $fname.$FGLC_OUTPUT_EXT.err"
 				#fi
 
 				if [ "$A4GLVERBOSE" = "yes" ]; then
@@ -1137,7 +1140,7 @@ do
 	       		        fi
 					fi
 				fi
-				COMPCC="$COMPCC $fname.ao"
+				COMPCC="$COMPCC $fname$A4GL_OBJ_EXT"
             else
 				COMPCC="$COMPCC $fname.$FGLC_OUTPUT_EXT"
             fi

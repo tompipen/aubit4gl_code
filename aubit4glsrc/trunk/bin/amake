@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 #
-# $Id: amake,v 1.27 2003-11-05 08:14:45 afalout Exp $
+# $Id: amake,v 1.28 2004-03-27 11:48:58 afalout Exp $
 #
 #####################################################################
 
@@ -54,7 +54,15 @@ RULESDIR=$AUBITDIR/incl
 #export MAKERULES="$RULESDIR/i4gl.mk $RULESDIR/d4gl.mk $RULESDIR/a4gl.mk $RULESDIR/q4gl.mk"
 #export MAKERULES="$RULESDIR/a4gl.mk"
 #export MAKERULES="$RULESDIR/d4gl.mk $RULESDIR/a4gl.mk"
-MAKE=make
+
+if test "$MAKE" = ""; then
+	MAKE=gmake
+	#Amake can't use non-GNU make anyhow
+	#echo "NOTE: MAKE was not set - defaulting to $MAKE" 
+fi
+if test "$MAKE" != "gmake"; then 
+	echo "WARNING: Amake requires GNU make (gmake) - current MAKE is set to $MAKE"
+fi
 MK=".mk"
 
 rm -f *.err
@@ -342,12 +350,12 @@ fi
 
 		if test "$CLEANOBJECTS" = "1"
 	    then
-            make -f $ONEPROG clean DEFAULT=$DEFAULT
+            $MAKE -f $ONEPROG clean DEFAULT=$DEFAULT
         fi
 
 		if test "$CLEANTARGET" = "1"
 	    then
-            make -f $ONEPROG clean.target DEFAULT=$DEFAULT
+            $MAKE -f $ONEPROG clean.target DEFAULT=$DEFAULT
         fi
 
 		if [ "$ONEPROG" = "allsinglelibs.mk" ]

@@ -61,7 +61,7 @@ int mode = 1;
 char buffer[255];
 char *buff;
 
-#define DEBUG 1
+//#define DEBUG 1
 
 #ifdef DEBUG
 	long cur_date;
