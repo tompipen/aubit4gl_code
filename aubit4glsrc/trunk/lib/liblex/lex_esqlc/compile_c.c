@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.201 2004-11-26 17:32:43 mikeaubury Exp $
+# $Id: compile_c.c,v 1.202 2004-11-29 22:33:08 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.201 2004-11-26 17:32:43 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.202 2004-11-29 22:33:08 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -165,6 +165,7 @@ extern int ordbindcnt;
 extern int ibindcnt;
 extern int nullbindcnt;
 extern int obindcnt;
+extern int ebindcnt;
 extern int fbindcnt;
 extern int constr_cnt;
 
@@ -175,6 +176,7 @@ dll_import struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
 dll_import struct binding_comp ibind[NUMBINDINGS];
 dll_import struct binding_comp nullbind[NUMBINDINGS];
 dll_import struct binding_comp obind[NUMBINDINGS];
+dll_import struct binding_comp ebind[NUMBINDINGS];
 dll_import struct binding_comp fbind[NUMBINDINGS];
 dll_import struct binding_comp ordbind[NUMBINDINGS];
 dll_import struct s_constr_buff constr_buff[256];
@@ -1770,6 +1772,7 @@ int
 print_bind_expr (void *ptr, char i)
 {
   int a;
+
   char buff[256];
   if (i == 'i')
     {
@@ -1800,6 +1803,69 @@ print_bind_expr (void *ptr, char i)
       start_bind (i, 0);
       return a;
     }
+
+
+  if (i == 'o')
+    {
+      sprintf (buff, "struct BINDING obind[%d]={", ONE_NOT_ZERO (obindcnt));
+      A4GL_append_expr (ptr, buff);
+      if (obindcnt == 0)
+	{
+	  A4GL_append_expr (ptr, "{0,0,0}");
+	}
+      for (a = 0; a < obindcnt; a++)
+	{
+	  if (a > 0)
+	    A4GL_append_expr (ptr, ",");
+	  sprintf (buff, "{0,%d,%d}", 
+		   (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
+	  A4GL_append_expr (ptr, buff);
+	}
+      A4GL_append_expr (ptr, "};");
+
+      if (doing_esql ())
+        {
+          A4GL_append_expr(ptr,make_sql_bind_expr (0, "i"));
+        }
+      for (a=0;a<obindcnt;a++) {
+      		sprintf(buff,"obind[%d].ptr=&%s;",a,obind[a].varname);
+	  	A4GL_append_expr (ptr, buff);
+      }
+      start_bind (i, 0);
+      return a;
+    }
+
+  if (i == 'e')
+    {
+      sprintf (buff, "struct BINDING ebind[%d]={", ONE_NOT_ZERO (ebindcnt));
+      A4GL_append_expr (ptr, buff);
+      if (ebindcnt == 0)
+	{
+	  A4GL_append_expr (ptr, "{0,0,0}");
+	}
+      for (a = 0; a < ebindcnt; a++)
+	{
+	  if (a > 0)
+	    A4GL_append_expr (ptr, ",");
+	  sprintf (buff, "{0,%d,%d}", 
+		   (int) ebind[a].dtype & 0xffff, (int) ebind[a].dtype >> 16);
+	  A4GL_append_expr (ptr, buff);
+	}
+      A4GL_append_expr (ptr, "};");
+
+      if (doing_esql ())
+        {
+          A4GL_append_expr(ptr,make_sql_bind_expr (0, "i"));
+        }
+      for (a=0;a<ebindcnt;a++) {
+      		sprintf(buff,"ebind[%d].ptr=&%s;",a,ebind[a].varname);
+	  	A4GL_append_expr (ptr, buff);
+      }
+      start_bind (i, 0);
+      return a;
+    }
+
+
 
   return 0;
 }
@@ -2087,6 +2153,34 @@ print_call_shared (char *libfile, char *funcname, int nargs)
 	  libfile, funcname, nargs);
 print_reset_state_after_call();
 }
+
+void
+print_call_shared_bound (char *libfile, char *funcname)
+{
+int ni,no;
+  printc ("{int _retvars;\n");
+  ni = print_bind_definition ('i');
+  no = print_bind_definition ('o');
+  print_bind_set_value ('i');
+  print_bind_set_value ('o');
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
+  printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll_bound(%s,%s,%d,ibind,%d,obind);}\n", libfile, funcname, ni,no);
+print_reset_state_after_call();
+}
+
+void *get_call_shared_bound_expr(char *lname,char *fname) { 
+	char buff_small[200];
+	int ni;
+	int no;
+	void *ptr;
+	ptr=A4GL_new_expr("");
+	ni=print_bind_expr(ptr,'i');
+	no=print_bind_expr(ptr,'e');
+	sprintf(buff_small,"{int _retvars; A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll_bound(%s,%s,%d,ibind,%d,ebind);if (_retvars!= 1 && a4gl_status==0 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,_module_name);}}\n", lname, fname, ni,no,yylineno);
+  	return A4GL_append_expr(ptr,buff_small);
+}
+
+
 
 /**
  * Print the C implementation of the last part of Shared library function

@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.2 2004-11-01 05:11:18 afalout Exp $
+	 $Id: channel.4gl,v 1.3 2004-11-29 22:32:53 mikeaubury Exp $
 }
 
 {**
@@ -265,7 +265,7 @@ end function
  *
  *}
 ######################################## 
-function read(handle,nvars)
+function fgl_read(handle,nvars)
 ########################################
 define handle char(64)
 define nvars integer
@@ -290,5 +290,14 @@ code
 	}
 endcode
 
+code
+aclfgl_read(int ni,void *i,int no,void *o) {
+/* Our handle should be on the stack */
+
+
+	A4GL_push_int(1);
+	return 1;
+}
+endcode
 # ------------------------------- EOF ----------------------------
 

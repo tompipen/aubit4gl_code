@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.93 2004-11-25 15:36:46 mikeaubury Exp $
+# $Id: conv.c,v 1.94 2004-11-29 22:33:04 mikeaubury Exp $
 #
 */
 
@@ -1281,7 +1281,7 @@ A4GL_mdectosf (void *zz, void *aa, int sz_ignore)
   z = (fgldecimal *) zz;
   a = (float *) aa;
   strcpy (buff, A4GL_dec_to_str (z, 0));
-  return A4GL_stof (buff, a, 0);
+  return A4GL_stosf (buff, a, 0);
 }
 
 
@@ -1390,12 +1390,67 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
 int
 A4GL_stosf (void *aa, void *zz, int sz_ignore)
 {
+/* cc 04.11.28 
+change and use same logic as A4GL_stof() 
+ to handle ',' as '.' 
   char *a;
   float *z;
   a = (char *) aa;
   z = (float *) zz;
   sscanf (a, "%f", z);
   return 1;
+*/
+
+char *a; 
+ float *z; 
+ char *p; 
+ char buff[32]; 
+ int n; 
+ int ok; 
+ int duped=0; 
+ 
+ if (decimal_char==0) { 
+ sprintf(buff,"%f",1.2); 
+ if (a_strchr(buff,'.')) decimal_char='.'; 
+ if (a_strchr(buff,',')) decimal_char=','; 
+ if (decimal_char==0) { 
+ decimal_char='.'; 
+ }
+ }
+
+a = (char *) aa; 
+ 
+ z = (float *) zz; 
+ *z=0; 
+ 
+ /* watch out for any "," separators in the number - remove them first */ 
+ if (a_strchr (a, ',')&&decimal_char!=',') 
+ { 
+ a = buff; 
+ for (n = 0, p = (char *) aa; *p > '\0' && n < 32; p++, n++) 
+ { 
+ if (*p != ',') 
+ *a++ = *p; 
+ } 
+ *a = '\0'; 
+ a = buff; 
+ } 
+ if (decimal_char==',' && a_strchr(a,'.')) { 
+ char *ptr; 
+ a=strdup(a); 
+ ptr=a_strchr(a,'.'); 
+ *ptr=','; 
+ duped=1; 
+ 
+ } 
+ 
+ ok=sscanf (a, "%f", z); 
+ if (duped) free(a); 
+ A4GL_debug ("stosf: string %s ", A4GL_null_as_null(a)); 
+ A4GL_debug ("stosf: small float %lf", *z); 
+ A4GL_debug ("stosf: OK=%d", ok); 
+ return ok; 
+
 }
 
 

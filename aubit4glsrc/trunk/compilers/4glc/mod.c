@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.189 2004-11-28 14:32:51 mikeaubury Exp $
+# $Id: mod.c,v 1.190 2004-11-29 22:28:57 mikeaubury Exp $
 #
 */
 
@@ -218,6 +218,7 @@ struct binding_comp nullbind[NUMBINDINGS];
  */
 struct binding_comp obind[NUMBINDINGS];
 struct binding_comp fbind[NUMBINDINGS];
+struct binding_comp ebind[NUMBINDINGS];
 struct binding_comp ordbind[NUMBINDINGS];
 
 int ordbindcnt = 0;
@@ -225,6 +226,7 @@ int ibindcnt = 0;			/** Number of elements in ibind array */
 int nullbindcnt = 0;
 int obindcnt = 0;
 int fbindcnt = 0;
+int ebindcnt = 0;
 
 
 /**
@@ -2245,6 +2247,25 @@ strcpy(var,var_i);
       return obindcnt;
     }
 
+  if (i == 'e')
+    {
+      if (dtype == -2 || strstr (var, ".*"))
+	{
+	  push_bind_rec (var, i);
+	}
+      else
+	{
+	if (ebindcnt>=NUMBINDINGS) {
+		a4gl_yyerror("Internal error - ran out of bindings...");
+		return 0;
+	}
+	  strcpy (ebind[ebindcnt].varname, var);
+	  ebind[ebindcnt].dtype = dtype;
+	  ebindcnt++;
+	}
+      return ebindcnt;
+    }
+
   if (i == 'O')
     {
       if (dtype == -2 || strstr (var, ".*"))
@@ -2328,6 +2349,10 @@ start_bind (char i, char *var)
     {
       fbindcnt = 0;
     }
+  if (i == 'e')
+    {
+      ebindcnt = 0;
+    }
 
   if (var != 0)
     return add_bind (i, var);
@@ -2352,8 +2377,8 @@ get_bind_cnt (char i)
     return ibindcnt;
   if (i == 'N')
     return nullbindcnt;
-  if (i == 'o')
-    return obindcnt;
+  if (i == 'o') return obindcnt;
+  if (i == 'e') return ebindcnt;
   if (i=='O') return ordbindcnt;
   if (i == 'f' || i == 'F')
     return fbindcnt;
@@ -2975,8 +3000,7 @@ add_arr_bind (char i, char *nvar)
 
   if (i == 'o')
     {
-      if (dtype == -2)
-	push_bind_rec (var, i);
+      if (dtype == -2) push_bind_rec (var, i);
       else
 	{
 	  strcpy (obind[obindcnt].varname, var);
@@ -2985,6 +3009,19 @@ add_arr_bind (char i, char *nvar)
 	}
       return obindcnt;
     }
+  if (i == 'e')
+    {
+      if (dtype == -2) push_bind_rec (var, i);
+      else
+	{
+	  strcpy (ebind[ebindcnt].varname, var);
+	  ebind[ebindcnt].dtype = dtype;
+	  ebindcnt++;
+	}
+      return ebindcnt;
+    }
+
+
   if (i == 'f' || i == 'F')
     {
       strcpy (fbind[fbindcnt].varname, var);
@@ -3013,10 +3050,8 @@ start_arr_bind (char i, char *var)
     {
       nullbindcnt = 0;
     }
-  if (i == 'o')
-    {
-      obindcnt = 0;
-    }
+  if (i == 'o') { obindcnt = 0; }
+  if (i == 'e') { ebindcnt = 0; }
   if (i == 'f' || i == 'F')
     {
       fbindcnt = 0;
@@ -4280,6 +4315,49 @@ make_sql_string_and_free (char *first, ...)
 			free(next);
 		}
 	}
+    }
+  A4GL_debug("Generated : %s\n",ptr);
+  return ptr;
+}
+
+char *
+pg_make_sql_string_and_free (char *first, ...)
+{
+  va_list ap;
+  char *ptr = 0;
+  int l;
+  char *next;
+  int n;
+  n = 0;
+  va_start (ap, first);
+  ptr = strdup (first);
+
+
+  if (A4GL_isyes(acl_getenv("FREE_SQL_MEM"))) {
+	free(first);
+  }
+  first=0;
+  l = strlen (ptr);
+
+  while (1)
+    {
+      n++;
+      next = va_arg (ap, char *);
+      if (next == 0)
+	break;
+      l += strlen (next);
+      l+=3;			/* Extra space...*/
+      ptr = realloc (ptr, l);
+	if (strlen(ptr)) {
+		if (!ispunct(ptr[strlen(ptr)-1])) {
+			strcat(ptr," ");
+		}	
+	}
+
+      strcat (ptr, next);
+      if (A4GL_isyes(acl_getenv("FREE_SQL_MEM"))) {
+			free(next);
+      }
     }
   A4GL_debug("Generated : %s\n",ptr);
   return ptr;

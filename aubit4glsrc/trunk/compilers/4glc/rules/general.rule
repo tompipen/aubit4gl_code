@@ -166,9 +166,24 @@ YYERROR;
 };
 
 
+conn_id : ident_or_var;
+
+
 real_number : NUMBER_VALUE | DOT INT_VALUE {
 		sprintf($<str>$,".%s",$<str>2);
 };
+
+char_or_var : CHAR_VALUE | variable {
+                if ((scan_variable($<str>1)&15)!=0) {a4gl_yyerror("Variable must be of type charr..");YYERROR;}
+}
+;
+
+opt_use : {strcpy($<str>$,"");} | USE_SESSION conn_id FOR {
+	print_use_session($<str>3);
+	strcpy($<str>$,A4GL_get_undo_use());
+}
+;
+
 
 
 /*

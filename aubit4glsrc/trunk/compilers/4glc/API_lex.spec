@@ -148,6 +148,10 @@ print_pdf_call char* a1,void* args,char* a3 -> void
 /* void print_call_shared (char *libfile, char *funcname, int nargs) */
 print_call_shared char* libfile,char* funcname,int nargs -> void
 
+
+/* void print_call_shared_bound (char *libfile, char *funcname) */
+print_call_shared_bound char* libfile char* funcname -> void
+
 /* void print_end_call_shared () */
 print_end_call_shared -> void
 
@@ -205,6 +209,8 @@ print_display_by_name char* attr -> void
 
 /* char * get_display_str (int type, char *s, char *f) */
 A4GL_get_display_str int type,char* s,char* f -> char*
+
+get_call_shared_bound_expr  char* lib char* name -> void*
 
 /* void print_display (char *fmt, char *expr, char *attr) */
 print_display char* fmt,char* expr,char* attr -> void

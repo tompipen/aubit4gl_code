@@ -550,19 +550,20 @@ ibind_var : variable  {A4GL_lex_printcomment("/* Variable */\n");}
 	| INT_VALUE {sprintf($<str>$,"\"%s\"",$<str>1);}
 ;
 
-obind_var_list:	obind_var  {
-start_bind('o',$<str>1);
-} 
-	|	obind_var_list KW_COMMA obind_var {
-add_bind('o',$<str>3);
-strcpy($<str>$,"");
-}
+obind_var_list:	obind_var  { start_bind('o',$<str>1); } 
+	|	obind_var_list KW_COMMA obind_var { add_bind('o',$<str>3); strcpy($<str>$,""); }
 ;
 
-obind_var : variable   {
-	addmap("OBIND",$<str>1,curr_func,yylineno,infilename);
-	}
+obind_var : variable   { addmap("OBIND",$<str>1,curr_func,yylineno,infilename); }
 	| variable THRU variable { A4GL_debug("Got an obind thru..."); sprintf($<str>$,"%s\n%s",$<str>1,$<str>3); }
+;
+
+ebind_var_list:	ebind_var  { start_bind('e',$<str>1); } 
+	|	ebind_var_list KW_COMMA ebind_var { add_bind('e',$<str>3); strcpy($<str>$,""); }
+;
+
+ebind_var : variable   { addmap("EBIND",$<str>1,curr_func,yylineno,infilename); }
+	| variable THRU variable { A4GL_debug("Got an ebind thru..."); sprintf($<str>$,"%s\n%s",$<str>1,$<str>3); }
 ;
 
 

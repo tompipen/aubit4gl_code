@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.47 2004-09-28 19:33:36 whaslbeck Exp $
+# $Id: calldll.c,v 1.48 2004-11-29 22:32:53 mikeaubury Exp $
 #
 */
 
@@ -698,6 +698,119 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
   return a;
 
 }
+
+
+
+/**
+ * Loading of 4gl dll for UNIX systems.
+ * Called from 4gl code
+ *
+ * @param filename The dynamic library file name.
+ * @param function The function name.
+ * @param args The arguments ???
+ */
+int
+A4GL_call_4gl_dll_bound (char *filename, char *function, int ni,struct BINDING *ibind,int no,struct BINDING *obind)
+{
+  void *dllhandle;
+  char buff[512];
+  char nfunc[256];
+  char nfile[256];
+  int (*func_ptr_b) (int,void*,int,void*);
+  int a;
+
+  if ((!acl_getenv ("AUBITDIR"))
+      || (strcmp (acl_getenv ("AUBITDIR"), "") == 0))
+    {
+      A4GL_exitwith ("Error: Cannot determine AUBITDIR - STOP.");
+      A4GL_fgl_die_with_msg(43,"Error: Cannot determine AUBITDIR - STOP");
+    }
+
+  A4GLSQL_set_status (0, 0);
+  strcpy (nfile, filename);
+
+  if (strncmp(nfile,"a4gl_",5)==0) { /* Do upshift on A4GL */
+	nfile[0]='A';
+	nfile[1]='4';
+	nfile[2]='G';
+	nfile[3]='L';
+  }
+A4GL_debug("nfile=%s\n",A4GL_null_as_null(nfile));
+
+strcpy(nfunc,"");
+if (strncmp(function,"aclfglclass",11)!=0)  {
+
+#if (defined(__MACH__) && defined(__APPLE__))
+  strcpy (nfunc, "aclfgl__");
+#else
+  strcpy (nfunc, "aclfgl_");
+#endif
+}
+  strcat (nfunc, function);
+  A4GL_trim (nfunc);
+  A4GL_trim (nfile);
+
+  A4GL_debug ("Trying %s", A4GL_null_as_null(filename));
+  dllhandle = dlopen (filename, RTLD_LAZY);
+  if (dllhandle == 0)
+    A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null(dlerror ()));
+
+  if (dllhandle == 0)
+    {
+      sprintf (buff, "%s/lib/lib%s.%s", acl_getenv ("AUBITDIR"), nfile,SO_EXT);
+      A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
+      dllhandle = dlopen (buff, RTLD_LAZY);
+      if (dllhandle == 0)
+ A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null(dlerror ()));
+    }
+
+  if (dllhandle == 0)
+    {
+      sprintf (buff, "./lib%s.%s", nfile,SO_EXT);
+      A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
+      dllhandle = dlopen (buff, RTLD_LAZY);
+      if (dllhandle == 0)
+ A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null(dlerror ()));
+    }
+
+  if (dllhandle == 0)
+    {
+      sprintf (buff, "./%s.%s", nfile,SO_EXT);
+      A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
+      dllhandle = dlopen (buff, RTLD_LAZY);
+      if (dllhandle == 0)
+ A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null(dlerror ()));
+    }
+
+
+
+  if (dllhandle == 0)
+    {
+      A4GL_debug ("No library handle");
+      A4GL_exitwith ("Unable to load shared library file");
+      return -1;
+    }
+
+  func_ptr_b = dlsym (dllhandle, nfunc);
+
+  if (func_ptr_b == 0)
+    {
+      A4GL_debug ("No function handle");
+      A4GL_exitwith ("Unable to load function from shared libary");
+      return -1;
+    }
+
+  A4GL_debug ("Calling function");
+  a = func_ptr_b (ni,ibind,no,obind);
+  //A4GL_debug ("Closing handle");
+  //dlclose (dllhandle);
+  return a;
+
+}
+
+
+
+
 #define TRACE_DLL_CALLS
 void inc_usage (char *s) {
 static FILE *usg=0;
