@@ -28,7 +28,8 @@ addmap('c',$<str>2,curr_func,yylineno,infilename);
 ;
 
 var_def_name	:	identifier {
-push_name($<str>$);
+/*AF CygWin FIX */
+push_name($<str>$,0);
 addmap('d',$<str>1,curr_func,yylineno,infilename);
 }
 ;
