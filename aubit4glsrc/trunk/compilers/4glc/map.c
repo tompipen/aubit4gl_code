@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.17 2002-11-25 02:12:49 afalout Exp $
+# $Id: map.c,v 1.18 2002-11-25 22:26:18 afalout Exp $
 #*/
 
 /**
@@ -371,7 +371,9 @@ printUsage(char *argv[])
   printf("Options:\n");
   printf("\n");
 
-  /* FIXME: make sure we don't have conflict with GCC options */
+  /* FIXME: make sure we don't have conflict with GCC options - for pass-trough */
+
+  /* FIXME: verify we have all options of 4glpc script here */
 
   printf("When A4GL_LEXTYPE=C :\n");
   printf("  -c compile to object(s), do not link\n");
