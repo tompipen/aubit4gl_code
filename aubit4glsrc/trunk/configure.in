@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.217 2004-02-06 22:50:16 afalout Exp $
+dnl # $Id: configure.in,v 1.218 2004-02-08 23:10:46 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1439,7 +1439,7 @@ dnl internationalization macros
 
 #examlpe - USE iT
 #AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
-# $Id: configure.in,v 1.217 2004-02-06 22:50:16 afalout Exp $
+# $Id: configure.in,v 1.218 2004-02-08 23:10:46 afalout Exp $
 
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
@@ -3086,7 +3086,7 @@ AC_ARG_WITH(pgsql,
     PGSQL_INCLUDE=-I$PGSQL_INCDIR
     PGSQL_LFLAGS=-L$PGSQL_LIBDIR
     PGSQL_LIBS=-lpq
-#configure.in:309: error: possibly undefined macro: AC_ADD_LIBRARY_WITH_PATH
+#configure.fin:309: error: possibly undefined macro: AC_ADD_LIBRARY_WITH_PATH
 #configure.in:310: error: possibly undefined macro: AC_ADD_INCLUDE
 #	AC_ADD_LIBRARY_WITH_PATH(pq, $PGSQL_LIBDIR)
 #   AC_ADD_INCLUDE($PGSQL_INCDIR)
@@ -4344,7 +4344,8 @@ AC_ARG_WITH(gtk,
 			test "$PKG_CONFIG" != "no")); then
 
 			
-			#If both gtk-config and phg-config are found, use pkg-config!
+			#If both gtk-config and phg-config are found, use pkg-config
+			#Because gtk-config is GTK 1.2 only, and has no GTK 2.0 information
 			if (test "$GTK_CONFIG" != "no" && test "$PKG_CONFIG" = "no") ; then
 				GTK_NAME="gtk-config"
 				GDK_NAME="gtk-config"
@@ -4362,12 +4363,35 @@ AC_ARG_WITH(gtk,
 
                             #pkg-config needs package name as parameter, and on Cygwin,
                             #this iclude version names, so we need to extract this names first:
+						
+							#Frist try to see if pgk-config has info on GTK+ version 2
+                            GTK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gtk+-2.0 " | head -1 | awk '{print $1}'`
+							GDK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gdk-2.0 " | head -1 | awk '{print $1}'`
+							GLIB_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^glib-2.0 " |  head -1 | awk '{print $1}'`
 
-                            GTK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep ^gtk | head -1 | awk '{print $1}'`
-							GDK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep ^gdk | head -1 | awk '{print $1}'`
-							GLIB_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep ^glib |  head -1 | awk '{print $1}'`
+                            if test "$GTK_NAME" = "" \
+								-o "$GDK_NAME" = "" \
+								-o "$GLIB_NAME" = ""; 
+							then
+								#No GTK+ version 2 info, try old 1.2
+	                            GTK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gtk " | head -1 | awk '{print $1}'`
+								GDK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gdk " | head -1 | awk '{print $1}'`
+								GLIB_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^glib " |  head -1 | awk '{print $1}'`
+							else
+								GTK_VERSION="2.0"
+								AC_DEFINE(HAVE_GTK_VERSION,2,[ ])
+								AC_MSG_RESULT(GTK+ 2.0 found with pkg-config)								
+							fi
 
-                            if test "$GTK_NAME" != "" && test "$GDK_NAME" != "" && test "$GLIB_NAME" != ""; then
+                            if test "$GTK_NAME" != "" \
+								&& test "$GDK_NAME" != "" \
+								&& test "$GLIB_NAME" != ""; 
+							then
+								if test "$GTK_VERSION" = ""; then 
+									GTK_VERSION="1.2"; 
+									AC_DEFINE(HAVE_GTK_VERSION,1.2,[ ])		
+									AC_MSG_RESULT(GTK+ 1.2 found with pkg-config)
+								fi
 	                            GTK_LIB_PATH=`$PKG_CONFIG --libs-only-L $GTK_NAME`
 								GTK_INC_PATH=`$PKG_CONFIG --cflags-only-I $GTK_NAME`
 								GTKLIBS=`$PKG_CONFIG --libs-only-l $GTK_NAME`
@@ -4377,6 +4401,14 @@ AC_ARG_WITH(gtk,
                             else
 								#on some missconfigured systems, like default RedHat 7.2
                                 #pkg-config will not contain all entries we need
+								#WARNING: pkg-config will fail on many sistems 
+								#where not all dependent libraries (dev packages)
+								#are installed. pkg-config will in this cases just
+								#exit with error message about missing package at 
+								#the point where it encounters missing information.
+								#So if package we are looking for is AFTER the package
+								#that cannot be resolved, --list-all will not show 
+								#that package we are looking for is there, even if it is.
 								AC_MSG_WARN(cannot extract names from pkg-config.)
 								AC_MSG_WARN(GTK_NAME="$GTK_NAME")
 								AC_MSG_WARN(GDK_NAME="$GDK_NAME")
@@ -4470,6 +4502,7 @@ AC_MSG_CHECKING(GTK+ support)
 AC_MSG_RESULT($GTKBUILD ($GTK_NAME $GDK_NAME $GLIB_NAME))
 
 #Fixme: we should test for GTK+ versions
+
 
 ## ==================================================================
 ##                  Check for Jabber IM support
@@ -6541,7 +6574,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.217 2004-02-06 22:50:16 afalout Exp $
+| $Id: configure.in,v 1.218 2004-02-08 23:10:46 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

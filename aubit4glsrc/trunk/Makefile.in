@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.138 2004-02-03 04:54:43 afalout Exp $
+# $Id: Makefile.in,v 1.139 2004-02-08 23:10:39 afalout Exp $
 #
 
 ## ==================================================================
@@ -264,17 +264,11 @@ clean:
 	@echo FIXME: only cleanall works
 
 #will clean EVERYTHING that is not source file from CVS
-distclean: clean.distclean clean.all clean.tools clean.aubitbuild clean.config
-	${FIND} . -name "*~" -exec rm {} \;
-	${FIND} . -name "*.bak" -exec rm {} \;
-	${FIND} . -name "debug.out" -exec rm {} \;
-	${FIND} . -name "*.o" -exec rm {} \;	
+distclean: clean.all clean.tools clean.aubitbuild clean.distclean clean.config
 	@echo Aubit 4gl compiler source tree now distribution clean
 
 clean.distclean:
 	-$(MAKE) -C tools/fgldoc distclean
-	${RM} tools/fgldoc/confdefs.h tools/fgldoc/config.cache tools/fgldoc/config.log
-
 
 #will clean EVERYTHING that is not source file from CVS appart from Autoconf generated stuff
 clean.all: cleanall
@@ -379,8 +373,7 @@ clean.makefiles:
     lib/libform/form_generic/Makefile lib/libmenu/menu_generic/Makefile \
 	lib/libsql/sapdb/Makefile tools/4glunit/Makefile \
 	tools/test/db/informix/Makefile tools/test/db/postgresql/Makefile \
-    tools/fgldoc/Makefile lib/libpacker/mempacked/Makefile \
-	tools/test/ace/Makefile \
+    tools/fgldoc/Makefile \
     Makefile
 
 
@@ -421,7 +414,9 @@ clean.bin:
 	aace${EXE} aace_4gl${EXE} aace_perl${EXE} adecompile${EXE} xgen${EXE} dbbeauty${EXE} *.err \
     iid${EXE} infmx_tidy${EXE} *.4ae *-strip${EXE} \
 	convertsql${EXE} *.warn unmkmessage${EXE} amkmessage${EXE} default_frm${EXE} afinderr${EXE} \
-	*.afr.dat *.afr.xml configurator${EXE} asql asql${EXE} *.hlp \
+	*.afr.dat *.afr.xml configurator${EXE} *.hlp \
+	checker${EXE} runner_fgl${EXE} asql${EXE} aupscol${EXE} checker_fgl${EXE} c2pcode${EXE} \
+	aubitbuild.sh  c2pcode_fgl${EXE} runner${EXE} \
 	)
 
 clean.etc:
@@ -429,7 +424,7 @@ clean.etc:
 	rm -rf etc/Output
 
 clean.incl:
-	${RM} incl/*.bak .\#* ./incl/a4gl_API_lex.h ./incl/API_lex.h ./incl/a4gl_API_lex_lib.h
+	${RM} incl/*.bak .\#*
 
 clean.docs:
 	rm -rf docs/doxy/html
