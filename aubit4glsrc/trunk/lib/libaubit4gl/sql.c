@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.10 2004-07-20 15:40:41 mikeaubury Exp $
+# $Id: sql.c,v 1.11 2004-07-20 19:45:14 whaslbeck Exp $
 #
 */
 
@@ -82,6 +82,8 @@ int A4GLSQL_loadConnector (char *name);
 
 void A4GL_global_A4GLSQL_set_sqlcode (int n);
 void A4GLSQL_set_sqlerrm( char *m,char *p);
+struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni,
+    struct BINDING *obind, int no, char *s);
 /*
 =====================================================================
                     Functions definitions
