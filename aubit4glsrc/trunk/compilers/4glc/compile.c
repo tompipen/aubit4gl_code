@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.24 2003-04-26 12:21:38 afalout Exp $
+# $Id: compile.c,v 1.25 2003-04-27 10:48:33 mikeaubury Exp $
 #*/
 
 /**
@@ -327,6 +327,7 @@ char extra_ldflags[1024] = "";
 	case '4': 
 	  	compiling_system_4gl=1;
 		break;
+
 	case 'l':		// Extra libraries to link with
 		#ifdef DEBUG
 			  debug ("Pass trough option: %s\n", optarg);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.18 2003-03-07 04:37:35 afalout Exp $
+# $Id: mcompile.c,v 1.19 2003-04-27 10:48:47 mikeaubury Exp $
 #*/
 
 /**
@@ -147,8 +147,9 @@ main (int argc, char* argv[])
 		}
 
 		bname (c, a, b);
+		//printf("c=%s a=%s b=%s\n",c,a,b);
 
-		if (b[0] == 0)
+		if (a[0] == 0)
 		{
 			/* add extension to the menu source file specified, if it don't 
 			have it already */
