@@ -225,14 +225,14 @@ upd_value_expression_complex_ss :
         | upd_value_expression_initial_ss PLUS upd_value_expression_ss {$<sql_string>$=make_sql_string($<sql_string>1,"+",$<sql_string>3,0);}
         | upd_value_expression_initial_ss MINUS upd_value_expression_ss {$<sql_string>$=make_sql_string($<sql_string>1,"-",$<sql_string>3,0);}
         | AVG OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("AVERAGE(",$<str>3,$<sql_string>4,")",0);}
-        | XMAX OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("MAX(",$<str>3,$<sql_string>4,")",0);printf("C7\n");}
-        | XMIN OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("MIN(",$<str>3,$<sql_string>4,")",0);printf("C8\n");}
-        | SUM OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("SUM(",$<str>3,$<sql_string>4,")",0);printf("C9\n");}
-        | COUNT OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("COUNT(",$<str>3,$<sql_string>4,")",0);printf("C10\n");}
-        | identifier OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string($<str>1,"(",$<sql_string>3,")",0);printf("C11\n");}
-        | DATE OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("DATE(",$<sql_string>3,")",0);printf("C12\n");}
-        | OPEN_BRACKET upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("(",$<sql_string>2,")",0);printf("C13\n");}
-        | EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("EXTEND(",$<sql_string>3,")",0);printf("C14\n");}
+        | XMAX OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("MAX(",$<str>3,$<sql_string>4,")",0);}
+        | XMIN OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("MIN(",$<str>3,$<sql_string>4,")",0);}
+        | SUM OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("SUM(",$<str>3,$<sql_string>4,")",0);}
+        | COUNT OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("COUNT(",$<str>3,$<sql_string>4,")",0);}
+        | identifier OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string($<str>1,"(",$<sql_string>3,")",0);}
+        | DATE OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("DATE(",$<sql_string>3,")",0);}
+        | OPEN_BRACKET upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("(",$<sql_string>2,")",0);}
+        | EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("EXTEND(",$<sql_string>3,")",0);}
 ;
 
 

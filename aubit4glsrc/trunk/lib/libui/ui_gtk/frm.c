@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: frm.c,v 1.5 2003-05-15 07:10:46 mikeaubury Exp $
+# $Id: frm.c,v 1.6 2003-08-06 07:35:36 mikeaubury Exp $
 #*/
 
 /**
@@ -239,6 +239,18 @@ void
 A4GL_clr_form (int to_default)
 {
   /* Not implemented yet */
+}
+
+
+
+int A4GL_read_metrics (void *formdets) {
+	// Does nothing in GTK - but we need a function to be here anyway...
+	return 1;
+}
+int
+A4GL_read_fields (void *formdetsv) {
+	// Does nothing in GTK - but we need a function to be here anyway...
+	return 1;
 }
 
 /* =============================== EOF ============================== */

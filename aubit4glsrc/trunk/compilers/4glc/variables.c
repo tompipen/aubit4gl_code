@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.26 2003-06-27 15:02:00 mikeaubury Exp $
+# $Id: variables.c,v 1.27 2003-08-06 07:34:42 mikeaubury Exp $
 #
 */
 
@@ -1855,10 +1855,10 @@ split_record (char *s, struct variable **v_record, struct variable **v1,
       return 0;
     }
 
-  printf ("All done here - v_record=%p v1=%p v2=%p\n", *v_record, *v1, *v2);
-  printf ("v_record->names.name=%s\n", (*v_record)->names.name);
-  printf ("v1->names.name=%s\n", (*v1)->names.name);
-  printf ("v2->names.name=%s\n", (*v2)->names.name);
+  //printf ("All done here - v_record=%p v1=%p v2=%p\n", *v_record, *v1, *v2);
+  //printf ("v_record->names.name=%s\n", (*v_record)->names.name);
+  //printf ("v1->names.name=%s\n", (*v1)->names.name);
+  //printf ("v2->names.name=%s\n", (*v2)->names.name);
   return 1;
 }
 
@@ -1912,14 +1912,14 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
   if (v->variable_type == VARIABLE_TYPE_RECORD)
     {
       // We've got another bl**dy record - expand this one too...
-      printf ("IS ARRAY  : %d\n", v->is_array);
-      printf ("Add next level...\n");
+      //printf ("IS ARRAY  : %d\n", v->is_array);
+      //printf ("Add next level...\n");
       sprintf (buff, "%s.%s.*", prefix_buff, v->names.name);
       return split_record_list (buff, buff, list);
       *list_ptr = list;
     }
 
-  printf ("Reached end of add_to_Record_list... bugger...\n");
+  //printf ("Reached end of add_to_Record_list... bugger...\n");
   return 0;
 }
 
@@ -2086,7 +2086,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 
 	  return list;
 	}
-      printf ("S=%s\n", s);
+      //printf ("S=%s\n", s);
       a4gl_yyerror ("ERROR: Variable is not a record!\n");
       return 0;
     }
@@ -2282,7 +2282,7 @@ recursive_print_push_rec (char *s, void **b, char *stem_orig)
 
   if (vtype == -2)
     {
-      printf ("Splitting...'%s'\n", s);
+      //printf ("Splitting...'%s'\n", s);
 
       if (split_record (s, &v_record, &v_start, &v_end))
 	{
@@ -2294,7 +2294,7 @@ recursive_print_push_rec (char *s, void **b, char *stem_orig)
 	      exit (0);
 	    }
 
-	  printf ("START LOOPING\n");
+	  //printf ("START LOOPING\n");
 	  v_loop = v_start;
 
 	  ptr = strchr (s, '\n');
@@ -2308,7 +2308,7 @@ recursive_print_push_rec (char *s, void **b, char *stem_orig)
 		}
 	    }
 
-	  printf ("s=%s\n", s);
+	  //printf ("s=%s\n", s);
 
 	  while (v_loop)
 	    {
@@ -2322,11 +2322,11 @@ recursive_print_push_rec (char *s, void **b, char *stem_orig)
 
 	      //strcat(bbz,v_loop->names.name); // Get the propper name
 
-	      printf ("Looking again for '%s'\n", bbz);
+	      //printf ("Looking again for '%s'\n", bbz);
 	      c += recursive_print_push_rec (bbz, b, stem);
 	      v_loop = get_next_variable (v_record, v_loop, v_end);
 	    }
-	  printf ("END LOOPING\n");
+	  //printf ("END LOOPING\n");
 	  return c;
 
 	}

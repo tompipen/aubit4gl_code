@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.133 2003-08-04 09:51:15 mikeaubury Exp $
+# $Id: mod.c,v 1.134 2003-08-06 07:34:42 mikeaubury Exp $
 #
 */
 
@@ -744,7 +744,7 @@ scan_variables (char *s_n, int mode)
 	  strcpy (buff2, &s[findex (s, ')') + 1]);
 	  buff[findex (buff, '(')] = 0;
 	  strcat (buff, buff2);
-	printf("DOWNSHIFT : %s\n",buff);
+	//printf("DOWNSHIFT : %s\n",buff);
 	  A4GL_convlower (buff);
 	}
       else
@@ -1745,7 +1745,7 @@ copy_gen (int a, int b)
 //dump_updvals();
   if (gen_stack_cnt[a] && gen_stack[a][gen_stack_cnt[a] - 1][0] == '(')
     {
-      printf ("POP\n");
+      //printf ("POP\n");
       pop_gen (a);
     }
 
@@ -1760,8 +1760,8 @@ copy_gen (int a, int b)
 char *
 pop_gen (int a)
 {
-  printf ("Popgen called\n");
-  printf ("UPDVAL2 cnt = %d\n", gen_stack_cnt[UPDVAL2]);
+  //printf ("Popgen called\n");
+  //printf ("UPDVAL2 cnt = %d\n", gen_stack_cnt[UPDVAL2]);
   //dump_updvals();
   gen_stack_cnt[a]--;
   return gen_stack[a][gen_stack_cnt[a]];
@@ -3964,7 +3964,7 @@ char b1[256];
 char *do_clobbering(char *f,char *s) {
 static char buff[256];
 	if (A4GL_isyes(acl_getenv("NOCLOBBER"))) {
-		printf("NOCLOBBER : %s\n",s);
+		//printf("NOCLOBBER : %s\n",s);
 		sprintf(buff,"\"%s\"",s);
 		return buff;
 	}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.46 2003-08-02 10:41:12 afalout Exp $
+# $Id: compile_c_esql.c,v 1.47 2003-08-06 07:35:36 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1035,6 +1035,7 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
 				printc("char _unlfname[512];");
 				printc("EXEC SQL END DECLARE SECTION;");
 				printc("strcpy(_unlfname,%s);",file);
+				printc("A4GL_trim(_unlfname);");
 			}
 
   			printc ("EXEC SQL UNLOAD TO %s DELIMITER %s %s ;",filename,delim_s,sql);
@@ -1103,6 +1104,7 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
                                 printc("char _loadfname[512];");
                                 printc("EXEC SQL END DECLARE SECTION;");
                                 printc("strcpy(_loadfname,%s);",file);
+                                printc("A4GL_trim(_loadfname);");
 			}
 
 	printc ("EXEC SQL LOAD FROM %s DELIMITER %s ",filename,delim_s);
