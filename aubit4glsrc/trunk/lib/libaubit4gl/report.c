@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.32 2003-12-05 22:12:11 mikeaubury Exp $
+# $Id: report.c,v 1.33 2004-01-12 14:08:25 mikeaubury Exp $
 #
 */
 
@@ -97,7 +97,7 @@ void A4GL_finished_report (void);
 
 static void report_print(struct rep_structure *rep,char *fmt,...) {
 va_list ap;
-char buff[2000];
+char buff[20000];
 va_start(ap,fmt);
 
 vsprintf(buff,fmt,ap);

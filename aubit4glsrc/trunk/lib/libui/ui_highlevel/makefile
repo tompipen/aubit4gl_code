@@ -4,7 +4,7 @@ GTK_INC_PATH    =-I/usr/local/include/gtk-2.0 -I/usr/local/lib/gtk-2.0/include -
 GTK_LIB_PATH    =-L/usr/local/lib
 GTKLIBS                 =-lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangox-1.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0
 
-CFLAGS+=-I/home/aubit4gl/sourceforge/aubit4glsrc/incl -I.. -g -I../../libaubit4gl
+CFLAGS+=-I$(AUBITDIR)/incl -I.. -g -I../../libaubit4gl
 
 
 
