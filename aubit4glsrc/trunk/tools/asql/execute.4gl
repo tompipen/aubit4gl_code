@@ -55,6 +55,7 @@ int first_open=0;
 int field_widths(void) ;
 char **columnNames=0;
 int *columnWidths=0;
+int *columnAlign=0;
 
 #define EXEC_MODE_INTERACTIVE   0
 #define EXEC_MODE_FILE          1
@@ -207,7 +208,7 @@ int ec_check_and_report_error() {
 void set_display_lines() {
 	if (exec_mode==EXEC_MODE_INTERACTIVE) {
 	if (display_lines==-1) {
-        	display_lines=A4GL_get_curr_height()-8;
+        	display_lines=A4GL_get_curr_height()-6;
 	}
 	}
 }
@@ -252,8 +253,11 @@ set_display_lines();
 A4GL_debug("%d SQL statements",list_cnt);
 
 if (exec_mode!=EXEC_MODE_INTERACTIVE) {
-	if (ofile==0) ofile=(long)stdout;
+	if (ofile==0) {
+		ofile=(long)stdout;
+	}
 	exec_out=(FILE *)ofile;
+	fprintf(exec_out,"\n\n");
 }
 
 
@@ -391,7 +395,7 @@ if sqlca.sqlcode>=0 then
 		message msg clipped
 	else
 code
-	fprintf(stderr,"%s",msg);
+	fprintf(stderr,"%s\n",msg);
 endcode
 		display " "
 	end if
