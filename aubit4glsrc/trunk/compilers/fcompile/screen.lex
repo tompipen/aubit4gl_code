@@ -51,6 +51,7 @@
 "title"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(TITLE);}
 screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_SCREEN_TITLE);}
 "type"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(TYPE);}
+"like" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LIKE;}
 "record"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(RECORD);}
 "formonly"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(FORMONLY);}
 "size"		{ if (ignorekw) REJECT;strcpy(yylval.str, yytext); return(KW_SIZE);}
@@ -110,8 +111,7 @@ screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_S
 "," 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMMA;}
 "thru" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return THROUGH;}
 "through" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return THROUGH;}
-"like" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LIKE;}
-"not" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NOT;}
+"not" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NOT;}
 "delimiters" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DELIMITERS;}
 "delimiter" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DELIMITERS;}
 "char" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_CHAR;}

@@ -92,9 +92,17 @@ database_section screen_section op_table_section attribute_section op_instructio
 ;
 database_section :
 DATABASE FORMONLY {the_form.dbname=strdup("formonly");}
-| DATABASE dbname WITHOUT KW_NULL INPUT {the_form.dbname=($<str>2);}
+| DATABASE dbname WITHOUT KW_NULL INPUT {the_form.dbname=($<str>2);
+if (A4GLSQL_init_connection   ($<str>2)) {
+		yyerror("Unable to connect to database\n");
+}
+}
 | DATABASE FORMONLY WITHOUT KW_NULL INPUT {the_form.dbname=("formonly");}
-| DATABASE dbname {the_form.dbname=strdup($<str>2);}
+| DATABASE dbname {the_form.dbname=strdup($<str>2);
+if (A4GLSQL_init_connection($<str>2)) {
+		yyerror("Unable to connect to database\n");
+}
+}
 ;
 
 named_or_kw :
@@ -348,38 +356,40 @@ OPEN_SQUARE NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_SQUARE {
 	fld->subscripts[1]=atoi($<str>4);
 };
 
-field_type :
-FORMONLY DOT field_name {
+
+
+field_datatype_null : field_datatype  {
+			strcpy($<str>$,$<str>1);
+			}
+		| field_datatype NOT KW_NULL {
+			sprintf($<str>$,"%d",atoi($<str>1)+256);
+		}
+
+field_datatype : {strcpy($<str>$,"0");}
+	| 	TYPE LIKE named_or_kw DOT named_or_kw {
+			sprintf($<str>$,"%d",getdatatype_fcompile($<str>5,$<str>3));
+		}
+	| 	TYPE LIKE named_or_kw {
+			sprintf($<str>$,"%d",getdatatype_fcompile($<str>3,""));
+		}
+	| 	TYPE datatype {
+			strcpy($<str>$,$<str>2);
+		}
+;
+
+field_type : FORMONLY DOT field_name field_datatype {
 	fld->tabname=strdup("formonly");
 	fld->colname=strdup($<str>3);
-}
-| FORMONLY DOT field_name TYPE datatype {
-	fld->tabname=strdup("formonly");
-	fld->colname=strdup($<str>3);
-	fld->datatype=atoi($<str>5);
-}
-| FORMONLY DOT field_name TYPE datatype NOT KW_NULL {
-	fld->tabname=strdup("formonly");
-	fld->colname=strdup($<str>3);
-	fld->datatype=atoi($<str>5)+256;
-}
-| FORMONLY DOT field_name TYPE LIKE named_or_kw {
-	fld->tabname=strdup("formonly");
-	fld->colname=strdup($<str>3);
-}
-| FORMONLY DOT field_name TYPE LIKE named_or_kw DOT named_or_kw {
-	fld->tabname=strdup("formonly");
-	fld->colname=strdup($<str>3);
-	exitwith("NEEDS FIXING");
+        fld->datatype=atoi($<str>4);
 }
 | named_or_kw DOT named_or_kw {
 	fld->tabname=strdup($<str>1); 
 	fld->colname=strdup($<str>3);
-        fld->datatype=getdatatype(fld->colname,fld->tabname);
+        fld->datatype=getdatatype_fcompile(fld->colname,fld->tabname);
 }
 | named_or_kw {
 	fld->colname=strdup($<str>1);
-        fld->datatype=getdatatype(fld->colname,fld->tabname);
+        fld->datatype=getdatatype_fcompile(fld->colname,"");
 };
 
 
@@ -406,8 +416,8 @@ AUTONEXT { add_bool_attr(fld,FA_B_AUTONEXT); }
 } 
 | COMMENTS EQUAL CHAR_VALUE { add_str_attr(fld,FA_S_COMMENTS,$<str>3); }
 | DEFAULT EQUAL def_val { add_str_attr(fld,FA_S_DEFAULT,$<str>3); }
-| DISPLAY LIKE named_or_kw
-| DISPLAY LIKE named_or_kw DOT named_or_kw
+| DISPLAY LIKE named_or_kw {	debug("WARNING : DISPLAY LIKE not really implemented");}
+| DISPLAY LIKE named_or_kw DOT named_or_kw {	debug("WARNING : DISPLAY LIKE not really implemented");}
 | DOWNSHIFT { add_bool_attr(fld,FA_B_DOWNSHIFT); }
 | UPSHIFT { add_bool_attr(fld,FA_B_UPSHIFT); }
 | FORMAT EQUAL CHAR_VALUE { add_str_attr(fld,FA_S_FORMAT,$<str>3); }
@@ -557,8 +567,8 @@ field_list_item  | field_list_item THROUGH field_list_item {add_srec_attribute("
 ;
 
 
-field_name :
-named_or_kw;
+field_name : named_or_kw
+;
 
 field_tag_name : 
 named_or_kw {
@@ -728,12 +738,12 @@ any_kword :
 | DATABASE
 | DATETIME
 | DEFAULT
+| TYPE
+| LIKE
 | DELIMITERS
-| DISPLAY
 | DOWNSHIFT
 | DYNAMIC 
 | FORMAT
-| FORMONLY 
 | GREEN
 | INCLUDE
 | INPUT
@@ -752,7 +762,6 @@ any_kword :
 | KW_SIZE 
 | KW_TEXT 
 | LEFT
-| LIKE 
 | LISTBOX
 | MAGENTA
 | MONEY
@@ -774,7 +783,6 @@ any_kword :
 | THROUGH 
 | TITLE
 | TO  
-| TYPE 
 | UNDERLINE
 | UPSHIFT
 | VARCHAR

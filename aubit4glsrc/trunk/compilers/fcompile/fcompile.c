@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.22 2003-01-21 08:25:50 afalout Exp $
+# $Id: fcompile.c,v 1.23 2003-01-28 15:17:46 mikeaubury Exp $
 #*/
 
 /**
@@ -276,5 +276,18 @@ yywrap(void)
   return 1;
 }
 
+
+
+int getdatatype_fcompile(char *col,char *tab) {
+int a;
+	a=getdatatype(col,tab);
+	if (a==-1) {
+		yyerror("Column/Table not found");
+		return -1;
+	}
+	debug("%s.%s = %d\n",tab,col,a);
+	return a;
+}
 /* ================================== EOF ============================= */
+
 
