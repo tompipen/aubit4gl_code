@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.189 2004-11-05 15:12:14 mikeaubury Exp $
+# $Id: compile_c.c,v 1.190 2004-11-05 16:59:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.189 2004-11-05 15:12:14 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.190 2004-11-05 16:59:25 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -930,11 +930,11 @@ print_output_rep (struct rep_structure *rep)
   printc ("_rep.lines_in_trailer=-1;\n");
   printc ("_rep.lines_in_first_header=-1;\n");
   printc ("_rep.print_section=0;\n");
-  printc ("_rep.top_margin=%d;\n", rep->top_margin);
-  printc ("_rep.bottom_margin=%d;\n", rep->bottom_margin);
-  printc ("_rep.left_margin=%d;\n", rep->left_margin);
-  printc ("_rep.right_margin=%d;\n", rep->right_margin);
-  printc ("_rep.page_length=%d;\n", rep->page_length);
+  printc ("_rep.top_margin= A4GL_set_report_dim_int(\"TOP MARGIN\",%d);\n", rep->top_margin);
+  printc ("_rep.bottom_margin= A4GL_set_report_dim_int(\"BOTTOM MARGIN\",%d);\n", rep->bottom_margin);
+  printc ("_rep.left_margin= A4GL_set_report_dim_int(\"LEFT MARGIN\",%d);\n", rep->left_margin);
+  printc ("_rep.right_margin= A4GL_set_report_dim_int(\"RIGHT MARGIN\",%d);\n", rep->right_margin);
+  printc ("_rep.page_length= A4GL_set_report_dim_int(\"PAGE LENGTH\",%d);\n", rep->page_length);
   printc ("_rep.header=0;\n");
   printc ("_rep.finishing=0;\n");
   printc ("_rep.repName=_reportName;\n");
@@ -3423,11 +3423,12 @@ print_push_null (void)
  * @param repname The report name.
  */
 void
-print_start_report (char *where, char *out, char *repname)
+print_start_report (char *where, char *out, char *repname,char *dim)
 {
   add_function_to_header (repname, 2,"");
   printc ("A4GL_push_char(\"%s\");\n", where);
   printc ("A4GL_push_char(%s);\n", out);
+ printc ("A4GL_set_report_dim(%s);", dim);
   printc ("%s%s(2,REPORT_START);", get_namespace (repname), repname);
 }
 

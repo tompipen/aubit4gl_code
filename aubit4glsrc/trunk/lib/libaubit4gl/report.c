@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.47 2004-11-04 21:12:42 pjfalbe Exp $
+# $Id: report.c,v 1.48 2004-11-05 16:57:44 mikeaubury Exp $
 #
 */
 
@@ -53,6 +53,13 @@
 #define ENTRY_ENTRY_START 5
 #define ENTRY_ENTRY_END 6
 
+
+int rs_with_page_length=-1;
+int rs_with_left_margin=-1;
+int rs_with_right_margin=-1;
+int rs_with_top_margin=-1;
+int rs_with_bottom_margin=-1;
+char *rs_with_top_of_page="";
 
 struct s_save_header_entry {
 	int page_no;
@@ -1406,4 +1413,50 @@ void A4GL_free_report(struct rep_structure *rep) {
 		//unlink(rep->output_loc);
 	}
 }
+
+
+void A4GL_set_report_dim(int with_page_length,int with_left_margin,int with_right_margin,int with_top_margin,int with_bottom_margin,char *with_top_of_page) {
+	rs_with_page_length	= with_page_length;
+	rs_with_left_margin	= with_left_margin;
+	rs_with_right_margin	= with_right_margin;
+	rs_with_top_margin	= with_top_margin;
+	rs_with_bottom_margin	= with_bottom_margin;
+	rs_with_top_of_page	= with_top_of_page;
+}
+
+
+
+int A4GL_set_report_dim_int(char *type,int value) {
+	if (strcmp(type,"PAGE LENGTH")==0) {
+		if (rs_with_page_length!=-1) return rs_with_page_length;
+		return value;
+	}
+
+	if (strcmp(type,"LEFT MARGIN")==0) {
+		if (rs_with_left_margin!=-1) return rs_with_left_margin;
+		return value;
+	}
+	if (strcmp(type,"RIGHT MARGIN")==0) {
+		if (rs_with_right_margin!=-1) return rs_with_right_margin;
+		return value;
+	}
+
+	if (strcmp(type,"TOP MARGIN")==0) {
+		if (rs_with_top_margin!=-1) return rs_with_top_margin;
+		return value;
+	}
+
+	if (strcmp(type,"BOTTOM MARGIN")==0) {
+		if (rs_with_bottom_margin!=-1) return rs_with_bottom_margin;
+		return value;
+	}
+
+}
+
+
+char *A4GL_find_report_dim_string(char *type,int value) {
+// not implemented yet...
+}
+
+
 /* ============================= EOF ================================ */

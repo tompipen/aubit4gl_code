@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.16 2004-11-04 21:12:42 pjfalbe Exp $
+# $Id: sql.c,v 1.17 2004-11-05 16:57:44 mikeaubury Exp $
 #
 */
 
@@ -84,8 +84,7 @@ void A4GL_global_A4GLSQL_set_sqlcode (int n);
 void A4GLSQL_set_sqlerrm( char *m,char *p);
 struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni,
     struct BINDING *obind, int no, char *s);
-struct s_sid * A4GLSQL_prepare_glob_sql (char *s, int ni,
-    struct BINDING *ibind);
+struct s_sid * A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind);
 void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void  *ibind);
 void *A4GLSQL_find_prepare (char *pname);
 int A4GLSQL_add_prepare (char *pname, void *vsid);

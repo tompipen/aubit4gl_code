@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.53 2004-10-23 13:36:32 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.54 2004-11-05 16:59:26 mikeaubury Exp $
 #
 */
 
@@ -2678,10 +2678,11 @@ print_locate (char where, char *var, char *fname)
  * @return
  */
 void
-print_start_report (char *repname, char *where, char *out)
+print_start_report (char *repname, char *where, char *out,char *dim)
 {
   printc ("push_char(\"%s\");\n", where);
   printc ("push_char(%s);\n", out);
+  printc ("A4GL_set_report_dim(%s);", dim);
   printc ("acl_fglr_%s(2,REPORT_START);", repname);
 }
 
