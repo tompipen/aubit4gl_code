@@ -12,7 +12,7 @@ menu "WIN Hello test"
 
 	command "Form" "Open a form "
 		display "Form"
-        	open window w2 at 2,2 with form "form-gtk" attribute(border)
+        	open window w2 at 2,2 with form "form-gui" attribute(border)
 
         	display "This is a line in the form" to s_info[1].info_line
         	display "This is line 2 in the form" to s_info[2].info_line

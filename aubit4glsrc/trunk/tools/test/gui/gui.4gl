@@ -16,7 +16,7 @@ let arr[3,1]=" "
 let arr[3,2]=" "
 let arr[3,3]=" "
 
-open form ttt from "ttt"
+open form ttt from "gui" #"ttt"
 display form ttt
 
 
