@@ -190,13 +190,15 @@ fi
 					exit 5 ;;
 				esac
 				let ROW_CNT=ROW_CNT+1
-				let DOTS_CNT=DOTS_CNT+1
-				if test "$DOTS_CNT" = "20"; then 
-					DOTS_CNT=0
-					DOTS=""
+				if test "$VERBOSE" = "1"; then 
+					let DOTS_CNT=DOTS_CNT+1
+					if test "$DOTS_CNT" = "20"; then 
+						DOTS_CNT=0
+						DOTS=""
+					fi
+					DOTS="$DOTS."
+					echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bLoading SQL features$DOTS                     "
 				fi
-				DOTS="$DOTS."
-				echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bLoading SQL features$DOTS                     "
 				FIELD_CNT=0
 			#######################################
 			#else
@@ -2854,19 +2856,25 @@ function check_skip() {
 			SKIP_REASON_CODES="$SKIP_REASON_CODES 8"
 			SKIP_CONSOLE_LIST="$SKIP_CONSOLE_LIST $TEST_NO"
 	    fi
-		if test "$IS_DUMP_SCREEN_TEST" = "1" && (test "$UI" = "HL_TUIN" -o "$UI" = "HL_TUINs") ; then
-			SKIP_REASON="screen_dump() not implemented in PDcurses."
-			SKIP_REASON_CODES="$SKIP_REASON_CODES 9"
-			SKIP_NO_SCRDUMP_PDCURSES_LIST="$SKIP_NO_SCRDUMP_PDCURSES_LIST $TEST_NO"
-	    fi
+#This now appears to be working
+#DUMP_SCREEN_TESTS="10 102 103 104 105 11 15 220 223 229 230 231 236 247 \
+#	252 254 263 29 4 6 67 74 8 276 277 278"
+
+#		if test "$IS_DUMP_SCREEN_TEST" = "1" && (test "$UI" = "HL_TUIN" -o "$UI" = "HL_TUINs") ; then
+#			SKIP_REASON="scr_dump() screen_dump() not implemented in PDcurses."
+#			SKIP_REASON_CODES="$SKIP_REASON_CODES 9"
+#			SKIP_NO_SCRDUMP_PDCURSES_LIST="$SKIP_NO_SCRDUMP_PDCURSES_LIST $TEST_NO"
+#	    fi
 	    if test "$IS_DESCRIBED" != "1" -a "$DESCRIBED_ONLY" = "1"; then
 			SKIP_REASON="not described"
 			SKIP_REASON_CODES="$SKIP_REASON_CODES 10"
 			SKIP_NODESC_LIST="$SKIP_NODESC_LIST $TEST_NO"
 	    fi
-
+		
+		#check if we are to skip non-db tests
 		check_skip_non_db
 		
+		#check if we are to skip db tests
 		if test "$IS_DB_TEST" = "1" -a "$NO_DB" = "1"; then
 			SKIP_REASON="DB dependent"
 			SKIP_REASON_CODES="$SKIP_REASON_CODES 12"

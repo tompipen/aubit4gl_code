@@ -72,7 +72,7 @@ fi
 if test "$COMSPEC" != ""; then 
 	A4GL_PATH_SEP=":"
 	#convert AUBITDIR to cygwin path so shell can find executables
-	AUBITDIR_UNIX=`echo "$AUBITDIR" | sed -e 's/[cC]\:/\/cygdrive\/c/' -e 's/[dD]\:/\/cygdrive\/d/'`
+	AUBITDIR_UNIX=`cygpath -u "$AUBITDIR"`
 else
 	AUBITDIR_UNIX="$AUBITDIR"
 fi
