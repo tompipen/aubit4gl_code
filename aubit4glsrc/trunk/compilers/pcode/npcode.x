@@ -172,6 +172,7 @@ struct npcmd_call {
 struct use_variable_sub {
 	long x1subscript_param_id[3];
 	long x1element;
+	long subscript_all;
 };
 
 struct use_variable {

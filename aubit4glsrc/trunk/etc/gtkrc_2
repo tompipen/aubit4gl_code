@@ -69,7 +69,7 @@ style "0" {  # Black
   	text[SELECTED]   = "#000000"
   	text[ACTIVE]     = "#000000"
 
-  	font_name = "monospace 10"
+  	font_name = "monospace 8"
 
 }
 
@@ -165,9 +165,8 @@ style "200" { # invisible
 }
 
 style "AppWindow" {
-
-        #bg[NORMAL]       = "#ffffff"
-        #bg[ACTIVE]       = "#ffffff"
+        bg[NORMAL]       = "#ffffff"
+        bg[ACTIVE]       = "#ffffff"
 	#bg_pixmap[NORMAL]= "moon5.png"
 	#bg_pixmap[ACTIVE]= "bkg_img.png"
 }

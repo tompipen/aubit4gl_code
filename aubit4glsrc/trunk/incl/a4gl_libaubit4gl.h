@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.129 2004-07-17 09:02:49 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.130 2004-07-27 16:50:33 mikeaubury Exp $
 #
 */
 
@@ -299,6 +299,10 @@
 #define COMPILED_FORM_FORMTYPE 	'I'
 #define DYNMEMALLOC 		'J'
 #define STR_RESOURCE_VAL 		'K'
+#define CHANNEL_IN		'L'
+#define CHANNEL_OUT		'M'
+#define CHANNEL_DELIM		'N'
+#define CHANNEL_PIPE		'P'
 
   /* ========================= from a4gl_ui.h ====================== */
 #define DESCLENGTH 		10

@@ -127,6 +127,7 @@ A4GL_LL_set_field_back void* field int attr -> void
 
 /* void A4GL_LL_set_field_buffer void* field int n char* str */
 A4GL_LL_set_field_buffer void* field int n char* str -> void
+A4GL_LL_clr_field_buffer void* field int n  -> void
 
 /* void A4GL_LL_set_field_fore void* field int attr */
 A4GL_LL_set_field_fore void* field int attr -> void

@@ -11,7 +11,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.47 2004-07-11 02:58:03 afalout Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.48 2004-07-27 16:50:34 mikeaubury Exp $";
 
 
 #define A4GL_GTK_FONT_FIXED "Fixed 10"
@@ -1061,7 +1061,7 @@ int A4GL_LL_screen_width(void ) {
         if (acl_getenv("COLUMNS")) {
 			if (strlen(acl_getenv("COLUMNS"))) w=atoi(acl_getenv("COLUMNS"));
 	}
-	printf("screen width=%d\n",w);
+	//printf("screen width=%d\n",w);
 	return w;
 }
 
@@ -1097,6 +1097,7 @@ int a;
 
 void A4GL_LL_set_field_back(void* field,int attr) {
   char buff[255];
+  //printf("set field back %p %x\n",field,attr);
   if (allocated_colors == 0)
     A4GL_alloc_colors ();
   //gtk_widget_set_style (field, rcolorStyles[attr & 7]);
@@ -1128,6 +1129,7 @@ void A4GL_LL_set_field_back(void* field,int attr) {
 void A4GL_LL_set_field_fore(void* field,int attr) {
   char buff[255];
   char *ptr;
+  //printf("set field fore %p %x\n",field,attr);
 ptr=gtk_object_get_data(field,"WIDGETSNAME");
   if (allocated_colors == 0)
     A4GL_alloc_colors ();
@@ -1160,6 +1162,7 @@ ptr=gtk_object_get_data(field,"WIDGETSNAME");
 
 int A4GL_LL_set_field_opts(void* field,int oopt) {
 
+//printf("field opts %p %x\n",field,oopt);
 	gtk_object_set_data(GTK_OBJECT((GtkWidget *)field),"FIELD_OPTS",(void *)oopt);
 
     if (oopt & AUBIT_O_ACTIVE || oopt & AUBIT_O_EDIT) {
@@ -1395,7 +1398,7 @@ void A4GL_LL_set_max_field(void* f,int n) {
 }
 
 int A4GL_LL_set_new_page(void* field,int n) {
-	printf("SET NEW PAGE %p %d\n",field,n);
+	//printf("SET NEW PAGE %p %d\n",field,n);
   	gtk_object_set_data (GTK_OBJECT (field), "NEWPAGE",(void *)1);
 	return 1;
 }
@@ -1472,7 +1475,7 @@ char buff[256];
 void *x;
 char *ptr;
 	sprintf(buff,"%x",attr>>8);
-	printf("set_bkg : %s\n",buff);
+	//printf("set_bkg : %s\n",buff);
 	ptr=(char *)gtk_widget_get_name(GTK_WIDGET(win));
 	// If its an appwindow - we don't want to rename it..
 	if (strcmp(ptr,"AppWindow")==0) return;
@@ -1480,12 +1483,12 @@ char *ptr;
 	gtk_widget_set_name(GTK_WIDGET(win), buff);
 	x=gtk_object_get_data(GTK_OBJECT(win),"FIXED");
         if (x) {
-		printf("Set bkg on fixed too..\n");
+		//printf("Set bkg on fixed too..\n");
 		gtk_widget_set_name(GTK_WIDGET(x), buff);
 	}
 	x=gtk_object_get_data(GTK_OBJECT(win),"TOP");
         if (x) {
-		printf("Set bkg on top too..\n");
+		//printf("Set bkg on top too..\n");
 		gtk_widget_set_name(GTK_WIDGET(x), buff);
 	}
 
@@ -1603,19 +1606,29 @@ int
         {
 	  //printf("Setting attributes for prompt string %x %x\n",A4GL_LL_decode_aubit_attr (ap, 'f')>>8, A4GL_LL_decode_aubit_attr (ap, 'b')>>8);
 //printf("SET FIELD FORE 4\n");
+	
+	  printf("ap fore %x\n",A4GL_LL_decode_aubit_attr (ap, 'f'));
+	  printf("ap back %x\n",A4GL_LL_decode_aubit_attr (ap, 'b'));
+
           A4GL_LL_set_field_fore (fd.form_fields[0], A4GL_LL_decode_aubit_attr (ap, 'f'));
           A4GL_LL_set_field_back (evt, A4GL_LL_decode_aubit_attr (ap, 'b'));        
-        }
+        } else {
+  		A4GL_LL_set_field_back (fd.form_fields[0], A4GL_LL_colour_code (0));
+  		A4GL_LL_set_field_fore (fd.form_fields[0], A4GL_LL_colour_code (7));
+
+	}
     }
 
     }
   A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
   A4GL_LL_set_new_page (fd.form_fields[field_cnt - 1], 1);
+
   fd.form_fields[field_cnt++] = (void *) A4GL_LL_make_field (0,0, strlen (promptstr), 1, width - 1);
+
   gtk_fixed_put (GTK_FIXED (p), fd.form_fields[field_cnt-1],  (strlen(promptstr)+1)*gui_xwidth,0);
   prompt->field = fd.form_fields[field_cnt - 1];
 
-  fd.form_fields[field_cnt++] = 0;        /* (void *) A4GL_make_label (0, strlen(promptstr)+width-1,"|"); */
+  //fd.form_fields[field_cnt++] = 0;        /* (void *) A4GL_make_label (0, strlen(promptstr)+width-1,"|"); */
   for (a=0;a<field_cnt;a++) {
 		if (fd.form_fields[a]) gtk_widget_show(GTK_WIDGET(fd.form_fields[a]));
   }
@@ -1625,11 +1638,15 @@ int
   A4GL_debug ("set field to =%p", prompt->field);
   A4GL_debug ("Field=%p", prompt->field);
 
-  /* A4GL_default_attributes (fd.form_fields[0], 0); */
+   //A4GL_default_attributes (fd.form_fields[0], 0); 
 
   A4GL_default_attributes (prompt->field, 0);
   A4GL_debug ("STATIC OFF");
-printf("static off\n");
+//printf("static off\n");
+
+  //A4GL_field_opts_off (fd.form_fields[0], AUBIT_O_STATIC);
+
+
   A4GL_field_opts_off (prompt->field, AUBIT_O_STATIC);
 
   //printf ("ap=%d(%x) af=%d(%x)", ap, ap, af, af);
@@ -2136,7 +2153,7 @@ gtk_object_set_data(GTK_OBJECT(widget),"MF_FROW",(void *)frow);
 gtk_object_set_data(GTK_OBJECT(widget),"MF_FCOL",(void *)fcol);
 gtk_object_set_data(GTK_OBJECT(widget),"MF_ISLABEL",(void *)1);
 gtk_object_set_data(GTK_OBJECT(widget),"MF_LABELSTR",strdup(label));
-//printf("Made\n");
+//printf("Made label %p - %s\n",widget,label);
 return widget;
 
 }
@@ -2222,7 +2239,7 @@ if (form->npages>1) {
 	form->notebook=0;
 }
 
-printf("Making form notebook=%p\n",form->notebook);
+//printf("Making form notebook=%p\n",form->notebook);
 for (a=0;fd->form_fields[a];a++)  {
 	form->widgets[a]=fd->form_fields[a];
         A4GL_gui_set_active (form->widgets[a],0);
@@ -2341,7 +2358,9 @@ if (mode<=255 && a_isprint(mode) && mode >=' ') {
 				break;
 
 
-		case AUBIT_REQ_VALIDATION: printf("REQ_VALIDATION\n"); break;
+		case AUBIT_REQ_VALIDATION: 
+			//printf("REQ_VALIDATION\n"); 
+			break;
 
 
 	default: 
@@ -2781,7 +2800,7 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
         if (fl > UILIB_A4GL_get_curr_height ()) fl = UILIB_A4GL_get_curr_height ();
 	drwin=gtk_fixed_new();
 	v=gtk_hbox_new(0,1);
-printf("Making fields\n");
+//printf("Making fields\n");
 
 
         fd.form_fields[0]=gtk_label_new("[");
@@ -2808,8 +2827,8 @@ printf("Making fields\n");
 	//A4GL_field_opts_off (fd.form_fields[1], AUBIT_O_STATIC);
 
 
-printf("All done..");
-printf("Add to container b0=%p b1=%p b2=%p v=%p\n",fd.form_fields[0],fd.form_fields[1],fd.form_fields[2],v);
+////printf("All done..");
+//printf("Add to container b0=%p b1=%p b2=%p v=%p\n",fd.form_fields[0],fd.form_fields[1],fd.form_fields[2],v);
         f=A4GL_LL_new_form(&fd);
 	
   	f->currentfield=1;
@@ -2828,7 +2847,7 @@ printf("Add to container b0=%p b1=%p b2=%p v=%p\n",fd.form_fields[0],fd.form_fie
 
 	gtk_widget_show_all(drwin);
 
-printf("Add vbox to fixed..");
+//printf("Add vbox to fixed..");
         A4GL_LL_screen_update();
 
         A4GL_LL_int_form_driver(f,AUBIT_REQ_OVL_MODE);
@@ -2837,18 +2856,18 @@ printf("Add vbox to fixed..");
                 //for (a=0;a<=initpos;a++) {
                         //A4GL_LL_int_form_driver(f,AUBIT_REQ_NEXT_CHAR);
                 //}
-		printf("Go to end of field...\n");
+		//printf("Go to end of field...\n");
                 A4GL_LL_int_form_driver(f,AUBIT_REQ_END_FIELD);
-		printf("done\n");
+		//printf("done\n");
         }
 
         a=0;
 
         while (looping) {
-		printf("call set carat\n"); fflush(stdout);
+		//printf("call set carat\n"); fflush(stdout);
                 A4GL_LL_set_carat(f);
                 A4GL_LL_screen_update();
-		printf("call getch\n"); fflush(stdout);
+		//printf("call getch\n"); fflush(stdout);
                 a=A4GL_LL_getch_swin (cwin);
 
                 if (abort_pressed) break;

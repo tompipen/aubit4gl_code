@@ -31,7 +31,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.30 2004-07-05 11:05:46 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.31 2004-07-27 16:50:34 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -66,7 +66,7 @@ Looks like it was removed in Curses 5.3???!
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.30 2004-07-05 11:05:46 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.31 2004-07-27 16:50:34 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -382,7 +382,7 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
 	}
     }
   pan = new_panel (win);
-  A4GL_debug ("pan=%p", pan);
+  A4GL_debug ("new_panel pan=%p", pan);
   keypad (win, TRUE);
   top_panel (pan);
 	A4GL_debug("su");
@@ -396,8 +396,11 @@ void
 A4GL_LL_remove_window (void *x)
 {
   WINDOW *w;
+	A4GL_debug("remove window... del_panel : %p",x);
   w = panel_window (x);
+	A4GL_debug("w=%p",w);
   del_panel (x);
+	A4GL_debug("Deleted panel %p\n",x);
   delwin (w);
 }
 
@@ -1452,7 +1455,7 @@ char buff[255];
   win = newwin (h, w, y, x);
   A4GL_debug ("win=%p", win);
   p = new_panel (win);
-  A4GL_debug ("p=%p", p);
+  A4GL_debug ("new_panel p=%p", p);
   if (attr == 0)
     attr = A_REVERSE;		//+A4GL_colour_code (COLOR_RED);
   else

@@ -378,6 +378,10 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
       u->sub.sub_val = 0;
       if (arr_i1)
 	{
+      	struct cmd *command;
+ 
+	  command = &this_module.functions.functions_val[this_module.functions.  functions_len - 1].cmds.cmds_val[p->param_u.  uv-> defined_in_block_pc];
+	 
 	  sub = malloc (sizeof (struct use_variable_sub));
 	  sub->x1element = -1;
 	  sub->x1subscript_param_id[0] = arr_i1;
@@ -430,12 +434,7 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
 	{
 
 	  //printf("Local variable in block @ PC=%d\n",p->param_u.uv->defined_in_block_pc);
-	  command =
-	    &this_module.functions.functions_val[this_module.functions.
-						 functions_len -
-						 1].cmds.cmds_val[p->param_u.
-								  uv->
-								  defined_in_block_pc];
+	  command = &this_module.functions.functions_val[this_module.functions.  functions_len - 1].cmds.cmds_val[p->param_u.  uv-> defined_in_block_pc];
 
 	}
       if (command->cmd_type != CMD_BLOCK)

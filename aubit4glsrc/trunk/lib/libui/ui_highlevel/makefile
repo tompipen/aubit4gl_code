@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.27 2004-07-11 23:54:55 afalout Exp $
+# $Id: makefile,v 1.28 2004-07-27 16:50:34 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -190,7 +190,7 @@ ${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o widt
 
 libUI_HL_TUINW${SO_EXT}: ${LIBROOT}/libUI_HL_TUINW${SO_EXT}
 ${LIBROOT}/libUI_HL_TUINW${SO_EXT}: $(OBJS) lowlevel_tui_noform_wide.o form_tui.o width_wide.o
-	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} -L/usr/local/widec/lib -static -lpanelw -lncursesw
+	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} -L/usr/local/widec/lib -static -lpanelw_g -lncursesw_g
 
 libUI_HL_GTK${SO_EXT}: ${LIBROOT}/libUI_HL_GTK${SO_EXT}
 ${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o menu_gtk.o width_narrow.o

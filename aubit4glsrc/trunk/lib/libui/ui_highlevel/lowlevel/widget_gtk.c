@@ -1,4 +1,4 @@
-static char *module_id="$Id: widget_gtk.c,v 1.12 2004-04-12 10:01:42 whaslbeck Exp $";
+static char *module_id="$Id: widget_gtk.c,v 1.13 2004-07-27 16:50:34 mikeaubury Exp $";
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
 #include "lowlevel.h"
@@ -726,6 +726,7 @@ A4GL_cr_button (void)
       if (strlen (label))
 	{
 	  char *utf=g_locale_to_utf8(label, -1, NULL, NULL, NULL);
+	printf("utf=%s\n",utf);
 	  l = (GtkLabel *) gtk_label_new (utf);
 //	  if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
 //	    A4GL_debug("using PANGO ML for Label '%s'\n",label);

@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.24 2004-07-03 11:58:14 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.25 2004-07-27 16:50:33 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -36,7 +36,7 @@ int A4GL_conversion_ok(int);
 #define POS_VERY_LAST   4
 #define POS_LAST                8
 
-void *curr_error_window;
+void *curr_error_window=0;
 
 
 void A4GL_size_menu (ACL_Menu * menu);
@@ -1720,10 +1720,9 @@ A4GL_error_nobox (char *str, int attr)
   A4GL_debug ("Eline=%d\n", eline);
 
 
-  w =
-    A4GL_LL_create_errorwindow (1, A4GL_LL_screen_width () - 1, eline, 0,
+  w = A4GL_LL_create_errorwindow (1, A4GL_LL_screen_width () - 1, eline, 0,
 				attr, str);
-
+  A4GL_debug("Error Window=%p",w);
   curr_error_window = w;
   A4GL_LL_screen_update ();
 }
@@ -1740,9 +1739,11 @@ A4GL_clr_error_nobox (char *dbg_fromwhere)
   if (curr_error_window)
     {
 
+	A4GL_debug("clr error window");
       A4GL_LL_delete_errorwindow (curr_error_window);
       curr_error_window = 0;
       A4GL_LL_screen_update ();
+	A4GL_debug("done...");
       return;
     }
 
