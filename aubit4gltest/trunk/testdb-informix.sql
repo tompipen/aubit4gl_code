@@ -1,3 +1,8 @@
+/*
+// Tables that should be created in informix engine.
+// This table is not yet completed.
+*/
+
 CREATE TABLE update_table (
   firstColumn SMALLINT,
   secondColumn CHAR(10),
