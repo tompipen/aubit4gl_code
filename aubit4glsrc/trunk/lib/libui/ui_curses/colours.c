@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.15 2003-09-29 15:10:37 mikeaubury Exp $
+# $Id: colours.c,v 1.16 2003-09-29 20:12:48 mikeaubury Exp $
 #*/
 
 /**
@@ -88,17 +88,21 @@ A4GL_colour_code (int a)
 	A4GL_debug("MJA - STANDOUT");
       if (a==7) return 0;
       if (a==0) return 0;
-      z = A_STANDOUT;
+      //z = A_STANDOUT;
       //for (b = 0; b <= a; b++)
 	//{
 	  //z *= 2;
 	//}
-	if (a==1)  z=A_BOLD;     // RED
-	if (a==2)  z=A_DIM;     // GREEN
-	if (a==3)  z=A_BOLD;     // YELLOW
-	if (a==4)  z=A_DIM;     // BLUE
-	if (a==5)  z=A_BOLD;     // MAGENTA
-	if (a==6)  z=A_DIM;     // CYAN
+	if (!A4GL_isyes(acl_getenv("CLASSIC_I4GL_MONO"))) {
+		if (a==1)  z=A_BOLD;     // RED
+		if (a==2)  z=A_DIM;     // GREEN
+		if (a==3)  z=A_BOLD;     // YELLOW
+		if (a==4)  z=A_DIM;     // BLUE
+		if (a==5)  z=A_BOLD;     // MAGENTA
+		if (a==6)  z=A_DIM;     // CYAN
+	} else {
+		z=0;
+	}
 	A4GL_debug("colour code for mono for %d = %d",a,z);
 
 
