@@ -1160,7 +1160,7 @@ value_expression_complex_ss :
 	| literal {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
 	| KW_TRUE {$<sql_string>$=make_sql_string_and_free(strdup("1"),0);}
 	| KW_FALSE {$<sql_string>$=make_sql_string_and_free(strdup("0"),0);}
-	| USER {$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_get_sqlconst("TODAY")),0);}
+	| USER {$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_get_sqlconst("USER")),0);}
 	| KW_TODAY {$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_get_sqlconst("TODAY")),0);}
 	| MULTIPLY {$<sql_string>$=make_sql_string_and_free(strdup("*"),0);}
 	| COUNT_MULTIPLY {$<sql_string>$=make_sql_string_and_free(strdup("COUNT(*)"),0);}
@@ -1221,10 +1221,6 @@ opt_delim : {strcpy($<str>$,"\"|\"");} | DELIMITER char_or_var {
 strcpy($<str>$,$<str>2);
 };
 
-char_or_var : CHAR_VALUE | variable {
-		if ((scan_variable($<str>1)&15)!=0) {a4gl_yyerror("Variable must be of type charr..");YYERROR;}
-}
-;
 
 opt_col_list: {strcpy($<str>$,"0");} | OPEN_BRACKET col_list CLOSE_BRACKET {
 sprintf($<str>$,"%s,0",$<str>2);
@@ -1243,13 +1239,7 @@ simple_column_name : identifier {
 ufile : CHAR_VALUE | variable;
 
 
-opt_use : {strcpy($<str>$,"");} | USE_SESSION conn_id FOR {
-print_use_session($<str>3);
-strcpy($<str>$,A4GL_get_undo_use());
-}
-;
 
-conn_id : ident_or_var;
 
 
 
