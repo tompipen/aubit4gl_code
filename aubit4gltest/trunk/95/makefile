@@ -10,7 +10,7 @@ run: m1.4ae
 	
 	
 desc:
-	@echo "Old makefile"
+	@echo "UPDATE ... WHERE CURRENT OF.."
 	
 ################
 #If database this test runs against MUST have transactions support, set to "1"

@@ -1,20 +1,18 @@
-{**
- * @file
- * Decribe the test here
- * @process TEST_GENERAL
- *}
- 
-#if you need to use database, use "test1"
-#database test1
+
+database test1
+
 main
+	define b char(4)
 
-#It is recomended that you use temp tables
-#	create temp table abc(x char(10), y char(10))
+	create temp table pgt1(a char(5))
+	insert into pgt1 values ('crap')
 
-#Use 	
-#	call aclfgl_dump_screen("out")
-# To generate screen dump to be compared against expected screen representation
-# Default diff expect file names "out" and  "out.expected"
+	select a into b from pgt1 where ord(a)<111
 
+	display b
 
+	update pgt1 set a='good' where ord(a)<111
+	select a into b from pgt1 where ord(a)<111
+	display b
+	drop table pgt1
 end main
