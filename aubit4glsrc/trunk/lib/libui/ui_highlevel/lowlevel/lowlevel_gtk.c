@@ -5,7 +5,7 @@
 #include "lowlevel.h"
 #include "formdriver.h"
 #include "low_gtk.h"
-static char *module_id="$Id: lowlevel_gtk.c,v 1.10 2004-01-17 11:13:35 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.11 2004-01-17 11:54:34 mikeaubury Exp $";
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>     /* GDK_Down */
@@ -1780,6 +1780,7 @@ GtkWidget *labwidget;
         	x=(int)gtk_object_get_data(GTK_OBJECT(form->widgets[a]),"MF_FCOL")*gui_xwidth;
         	y=(int)gtk_object_get_data(GTK_OBJECT(form->widgets[a]),"MF_FROW")*gui_yheight;
 		gtk_fixed_put(GTK_FIXED(drwin),form->widgets[a],x,y);
+		gtk_widget_ref(form->widgets[a]);
 	}
 	gtk_widget_show(form->widgets[a]);
   
