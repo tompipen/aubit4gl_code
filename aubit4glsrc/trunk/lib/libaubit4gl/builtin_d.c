@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.58 2005-01-24 10:34:59 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.59 2005-01-29 17:29:42 mikeaubury Exp $
 #
 */
 
@@ -576,11 +576,13 @@ int aclfgl_time(int n) {
  * @todo Describe function
  */
 int
-aclfgl_day (int n)		/* FIXME: why does this function have a parameter, if it's not going to be used?  it should always be 1*/
+aclfgl_day (int n) 
+/* FIXME: why does this function have a parameter, if it's not going to be used?  it should always be 1 - because the fglcall will always pass it one...*/
 {
   long d;
   int day, mn, yr;
   d = A4GL_pop_date ();
+  if (A4GL_isnull (DTYPE_DATE, (void *) &d)) {A4GL_push_null(DTYPE_INT,0); return 1;}
   A4GL_get_date (d, &day, &mn, &yr);
   A4GL_push_int (day);
   return 1;
@@ -597,6 +599,7 @@ aclfgl_month (int n)		/* FIXME: why does this function have a parameter, if it's
   long d;
   int day, mn, yr;
   d = A4GL_pop_date ();
+  if (A4GL_isnull (DTYPE_DATE, (void *) &d)) {A4GL_push_null(DTYPE_INT,0); return 1;}
   A4GL_get_date (d, &day, &mn, &yr);
   A4GL_push_int (mn);
   return 1;
@@ -614,6 +617,7 @@ aclfgl_weekday (int n)		/* FIXME: why does this function have a parameter, if it
   int day, mn, yr;
   long d2;
   d = A4GL_pop_date ();
+  if (A4GL_isnull (DTYPE_DATE, (void *) &d)) {A4GL_push_null(DTYPE_INT,0); return 1;}
   A4GL_get_date (d, &day, &mn, &yr);
   d2 = A4GL_day_in_week (day, mn, yr);
   A4GL_push_long (d2);
@@ -631,6 +635,7 @@ aclfgl_year (int n)
   long d;
   int day, mn, yr;
   d = A4GL_pop_date ();
+  if (A4GL_isnull (DTYPE_DATE, (void *) &d)) {A4GL_push_null(DTYPE_INT,0); return 1;}
   A4GL_get_date (d, &day, &mn, &yr);
   A4GL_push_int (yr);
   return 1;
