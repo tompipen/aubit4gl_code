@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.30 2004-03-12 14:10:07 whaslbeck Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.31 2004-03-12 17:02:04 whaslbeck Exp $";
 
 
 #include <gtk/gtk.h>
@@ -394,6 +394,10 @@ int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis
   else
     label_utf=NULL;
   label = (GtkLabel *) gtk_label_new (label_utf);
+  if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
+    A4GL_debug("using PANGO ML for Label '%s'\n",msg);
+    gtk_label_set_use_markup(label, TRUE);
+  }
   g_free(label_utf);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->vbox),
                      GTK_WIDGET (label));
@@ -1362,6 +1366,10 @@ char *lab_utf=g_locale_to_utf8(str, -1, NULL, NULL, NULL);
 
 frame=gtk_frame_new(0);
 label=gtk_label_new(lab_utf);
+if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
+  A4GL_debug("using PANGO ML for Label '%s'\n", str);
+  gtk_label_set_use_markup(label, TRUE);
+}
 g_free(lab_utf);
 evt=gtk_event_box_new();
 
@@ -2066,6 +2074,11 @@ GtkWidget *widget;
 char *label_utf=g_locale_to_utf8(label, -1, NULL, NULL, NULL);
 //printf("MAKE LABEL\n");
 widget=gtk_label_new(label_utf);
+if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
+  A4GL_debug("using PANGO ML for Label '%s'\n",label);
+  gtk_label_set_use_markup(widget, TRUE);
+}
+gtk_label_set_use_markup(widget, A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML")));    
 g_free(label_utf);
 if (strcmp(label,"[")==0) return 0;
 if (strcmp(label,"]")==0) return 0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.65 2004-03-12 14:07:08 whaslbeck Exp $
+# $Id: resource.c,v 1.66 2004-03-12 17:03:20 whaslbeck Exp $
 #
 */
 
@@ -345,6 +345,9 @@ struct str_resource builtin_resource[] = {
   {"A4GL_DIALOG_YES", "Yes"},
   {"A4GL_DIALOG_NO", "No"},
   {"A4GL_DIALOG_ERROR", "Error"},
+
+  /* GUI HL_GTK Stuff */
+  {"A4GL_USE_PANGO_ML", "N"}, /* set to Y to use PangoML in Labels */
 
   /* End of definitions */
   {"", "0"}

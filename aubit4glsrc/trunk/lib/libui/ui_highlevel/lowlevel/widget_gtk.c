@@ -1,4 +1,4 @@
-static char *module_id="$Id: widget_gtk.c,v 1.8 2004-03-12 10:24:36 whaslbeck Exp $";
+static char *module_id="$Id: widget_gtk.c,v 1.9 2004-03-12 17:02:05 whaslbeck Exp $";
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
 #include "lowlevel.h"
@@ -373,25 +373,20 @@ A4GL_fld_val_generic (GtkWidget * k)
       strncpy(txt_buf, utf, 256);
       g_free(utf);
       return txt_buf;
-      //return g_locale_from_utf8(txt, -1, NULL, NULL, NULL);
     }
 
   if (strcasecmp (ptr, "ENTRY") == 0 || strcasecmp (ptr, "TEXT") == 0)
     {
-      //return (char*)gtk_entry_get_text (GTK_ENTRY (k));
       utf=g_locale_from_utf8(gtk_entry_get_text(GTK_ENTRY(k)), -1, NULL, NULL, NULL);
       strncpy(txt_buf, utf, 256);
       g_free(utf);
       return txt_buf;
-      //return g_locale_from_utf8((char*)gtk_entry_get_text (GTK_ENTRY (k)), -1, NULL, NULL, NULL);
-      //return (char *) 1;
     }
 
   if (strcasecmp (ptr, "RADIO") == 0)
     {
       int a;
       GtkWidget *btn;
-      //char *ptr;
       char buff[20];
       for (a = 0;; a++)
         {
@@ -405,8 +400,6 @@ A4GL_fld_val_generic (GtkWidget * k)
 	      strncpy(txt_buf, utf, 256);
 	      g_free(utf);
 	      return txt_buf;
-              // ptr = gtk_object_get_data (GTK_OBJECT (btn), "Value");
-              //return g_locale_from_utf8(ptr, -1, NULL, NULL, NULL);
             }
         }
       return NULL;
@@ -732,7 +725,13 @@ A4GL_cr_button (void)
     {
       if (strlen (label))
 	{
-	  l = (GtkLabel *) gtk_label_new (g_locale_to_utf8(label, -1, NULL, NULL, NULL));
+	  char *utf=g_locale_to_utf8(label, -1, NULL, NULL, NULL);
+	  l = (GtkLabel *) gtk_label_new (utf);
+//	  if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
+//	    A4GL_debug("using PANGO ML for Label '%s'\n",label);
+//          gtk_label_set_use_markup(l, TRUE);
+//        }
+	  g_free(utf);
 	  gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (l));
 	  gtk_widget_show (GTK_WIDGET (l));
 	  gtk_object_set_data (GTK_OBJECT (b), "LABEL", l);
@@ -855,7 +854,13 @@ A4GL_cr_label (void)
   GtkWidget *label;
   char *caption;
   caption = A4GL_find_param ("CAPTION");
-  label = gtk_label_new (g_locale_to_utf8(caption, -1, NULL, NULL, NULL));
+  char *utf=g_locale_to_utf8(caption, -1, NULL, NULL, NULL);
+  label = gtk_label_new (utf);
+//  if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
+//    A4GL_debug("using PANGO ML for Label '%s'\n",caption);
+//    gtk_label_set_use_markup(label, TRUE);
+//  }
+  g_free(utf);
   gtk_widget_show (label);
   A4GL_add_signal_grab_focus (label, 0);
   A4GL_add_signal_clicked (label, 0);
@@ -878,7 +883,9 @@ A4GL_cr_check (void)
 
   if (label)
     {
-      checkbox = gtk_check_button_new_with_label (g_locale_to_utf8(label, -1, NULL, NULL, NULL));
+      char *utf=g_locale_to_utf8(label, -1, NULL, NULL, NULL);
+      checkbox = gtk_check_button_new_with_label (utf);
+      g_free(utf);
     }
   else
     {
@@ -1415,6 +1422,10 @@ A4GL_display_generic (GtkWidget * k, char *s)
 #endif
 
       gtk_label_set_text (GTK_LABEL (k), utf);
+      if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
+	A4GL_debug("using PANGO ML for Label '%s'\n", s);
+	gtk_label_set_use_markup(GTK_LABEL(k), TRUE);
+      }
       g_free(utf);
 
 /* check whether a Gtk+ version equal to or greater than
