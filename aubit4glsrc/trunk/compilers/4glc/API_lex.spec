@@ -319,7 +319,7 @@ print_linked_cmd int type,char* var -> int
 print_locate char where,char* var,char* fname -> void
 
 /* void print_start_report (char *where, char *out, char *repname) */
-print_start_report char* where,char* out,char* repname -> void
+print_start_report char* where,char* out,char* repname char* dimsetting -> void
 
 /* void print_output_to_report (char *repname, char *nvalues) */
 print_output_to_report char* repname,char* nvalues -> void

@@ -103,6 +103,7 @@ do
 	if [ "$a" = "-e" ]
 	then
 		ECPG_ONLY=1
+		COMPILE_OBJ=0
 		shift
 		continue
 	fi
@@ -115,7 +116,8 @@ do
 		continue
 	fi
 
-	xx=`expr $a : "-I\(.*\)"`
+
+	xx=`expr "$a" : "-I\(.*\)"`
 	if [ "$xx" != "" ] 
 	then
 		incl_args="$incl_args -I $xx"
@@ -144,7 +146,7 @@ do
 		continue
 	fi
 
-	d=`dirname $a`
+	d=`dirname "$a"`
 
 	if [ "$d" != "" -a "$d" != "." ]
 	then
@@ -278,6 +280,12 @@ do
     	ofiles="$ofiles $out.o"
     fi
 done
+
+
+if [ "$ECPG_ONLY" = "1" ]
+then
+exit 0
+fi
 
 if [ $COMPILE_OBJ = 1 -o "$ofiles" = "" ]; then
 	if [ "$csrcs" = "" ]; then

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.25 2004-11-05 15:11:03 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.26 2004-11-07 14:49:57 mikeaubury Exp $
 #
 */
 
@@ -54,6 +54,7 @@
 /* struct to hold list of functions from conversion file(s) */
 /* empty string that can be pointed to */
 char empty[] = "";
+char *CV_matches(char *typ,char *string,char *esc) ;
 
 char *cvsql_names[]={
   "CVSQL_NONE",
@@ -623,11 +624,24 @@ static char buff[256];
 
 char *A4GLSQLCV_matches_string(char *str,char *esc) {
 static char buff[1024];
+
+if (0&&A4GLSQLCV_check_requirement("MATCHES_TO_LIKE")) {
+		sprintf(buff,"LIKE %s",CV_matches("LIKE",str,esc));
+		return buff;
+}
+if (0&&A4GLSQLCV_check_requirement("MATCHES_TO_REGEX")) {
+		sprintf(buff,"~ %s",CV_matches("~",str,esc));
+		return buff;
+}
+
 if (strlen(esc)) {
 		sprintf(buff,"MATCHES %s %s",str,esc);
 } else {
 		sprintf(buff,"MATCHES %s ",str);
 }
+
+
+
 return buff;
 }
 
@@ -941,6 +955,54 @@ void
 A4GL_cvsql_matches_regex (char *sql, char *args)
 {
   A4GL_cvsql_matches (sql, "~");
+}
+
+
+char *CV_matches(char *typ,char *string,char *esc) {
+char buff[1024];
+	if (string[0]!='\'') {
+		// Can't change a string we cant see....
+		// maybe if we call a stored procedure or
+		// something - but thats outside our scope ATM...
+		return string;
+	}
+
+	if (type[0]=='~') {
+		buff[0]='\'';
+		buff[1]='^'; // Tie it to the beginning of the string
+		buff[2]=0;
+	} else {
+		buff[0]='\'';
+		buff[1]=0;
+	}
+
+	for (a=1;a<strlen(string);a++) {
+		char small[20];
+
+		if (string[a]=='?') {
+			if (typ[0]=='~') strcpy(small,".");
+			else strcpy(small,"_");
+			strcat(buff,small);
+			continue;
+		}
+
+		if (string[a]=='*') {
+			if (typ[0]=='~') strcpy(small,".*");
+			else strcpy(small,"%");
+			strcat(buff,small);
+			continue;
+		}
+
+		if (typ[0]=='~'&&(string[a]=='*'||string[a]=='.')) { strcat(buff,"\\"); }
+		if (typ[0]!='~'&&(string[a]=='%'||string[a]=='_')) { strcat(buff,"\\"); }
+
+		small[0]=string[a];
+		small[1]=0;
+		strcat(buff,small);
+
+
+	}
+return buff;
 }
 
 /*

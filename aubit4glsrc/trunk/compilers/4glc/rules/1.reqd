@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.56 2004-10-15 15:00:19 mikeaubury Exp $
+# $Id: 1.reqd,v 1.57 2004-11-07 14:49:57 mikeaubury Exp $
 #
 */
 
@@ -133,6 +133,12 @@ extern int 	rep_type;
 extern int 	yylineno;
 extern int compiling_system_4gl;
 int isin_formhandler=0;
+int with_page_length=-1;
+int with_left_margin=-1;
+int with_right_margin=-1;
+int with_top_margin=-1;
+int with_bottom_margin=-1;
+char *with_top_of_page="";
 
 int table_cnt=0;
 int sql_mode=0;

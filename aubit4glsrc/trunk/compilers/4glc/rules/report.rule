@@ -5,39 +5,64 @@
 */
 
 
-start_cmd : START_REPORT rep_name TO_PRINTER  {
+start_cmd : START_REPORT rep_name TO_PRINTER  op_with_dim {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-			print_start_report("P","acl_getenv(\"DBPRINT\")",$<str>2);
+			print_start_report("P","acl_getenv(\"DBPRINT\")",$<str>2,$<str>4);
 			}
-	    | START_REPORT rep_name TO rout  {
+	    | START_REPORT rep_name TO rout op_with_dim {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-			print_start_report("F",$<str>4,$<str>2);
+			print_start_report("F",$<str>4,$<str>2,$<str>5);
 			}
-	    | START_REPORT rep_name TO_FILE rout  {
+	    | START_REPORT rep_name TO_FILE rout op_with_dim {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-			print_start_report("F",$<str>4,$<str>2);
+			print_start_report("F",$<str>4,$<str>2,$<str>5);
 			}
-	    | START_REPORT rep_name TO_PIPE rout  {
+	    | START_REPORT rep_name TO_PIPE rout op_with_dim {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-			print_start_report("P",$<str>4,$<str>2);
+			print_start_report("P",$<str>4,$<str>2,$<str>5);
 			}
-	    | START_REPORT rep_name TO_SCREEN  {
+	    | START_REPORT rep_name TO_SCREEN op_with_dim {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-			print_start_report("S","\"\"",$<str>2);
+			print_start_report("S","\"\"",$<str>2,$<str>4);
 			}
-	    | START_REPORT rep_name AS_CONVERTABLE {
+	    | START_REPORT rep_name AS_CONVERTABLE  op_with_dim {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-			print_start_report("C","\"\"",$<str>2);
+			print_start_report("C","\"\"",$<str>2,$<str>4);
 			}
-	    | START_REPORT rep_name {
+	    | START_REPORT rep_name  op_with_dim {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-			print_start_report("","\"\"",$<str>2);
+			print_start_report("","\"\"",$<str>2,$<str>3);
 			}
 ;
 
+op_with_dim:
+	{strcpy($<str>$,"-1,-1,-1,-1,-1,\"\"");}
+	| WITH with_list {sprintf($<str>$,"%d,%d,%d,%d,%d,\"%s\"",with_page_length,with_left_margin,with_right_margin,with_top_margin,with_bottom_margin,with_top_of_page);
+			with_page_length=-1;
+			with_left_margin=-1;
+			with_right_margin=-1;
+			with_top_margin=-1;
+			with_bottom_margin=-1;
+			with_top_of_page="";
+	}
+;
 
+with_list:
+	with_entry
+	| with_list KW_COMMA with_entry
+	| with_list with_entry
+;
 
-
+with_entry:
+	PAGE_LENGTH INT_VALUE {with_page_length=atoi($<str>2);}
+	| TOP_MARGIN INT_VALUE {with_top_margin=atoi($<str>2);}
+	| BOTTOM_MARGIN INT_VALUE {with_bottom_margin=atoi($<str>2);}
+	| LEFT_MARGIN INT_VALUE {with_left_margin=atoi($<str>2);}
+	| RIGHT_MARGIN INT_VALUE {with_right_margin=atoi($<str>2);}
+	| TOP_OF_PAGE CHAR_VALUE {with_top_of_page=strdup($<str>2);}
+;
+	
+ 
 
 convert_cmd : 	CONVERT_REPORT rep_name TO var_or_char AS var_or_char KW_USING var_or_char {
 			print_convert_report($<str>2, $<str>4,$<str>6,$<str>8);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.75 2004-10-28 22:04:55 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.76 2004-11-07 14:49:57 mikeaubury Exp $
 */
 
 /**
@@ -426,7 +426,8 @@ int a_isprint(int a);
   /* ======================== datatypes.c ================ */
 
   int aclfgl_load_datatype (int nargs);
-
+void A4GL_set_report_dim(int with_page_length,int with_left_margin,int with_right_margin,int with_top_margin,int with_bottom_margin,char *with_top_of_page);
+int A4GL_set_report_dim_int(char *type,int value);
 
 struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
 #ifndef REP_STRUCTURE

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.12 2004-03-25 18:07:50 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.13 2004-11-07 14:49:57 mikeaubury Exp $
 */
 
 /**
@@ -83,6 +83,10 @@ void A4GL_def_int (void);
 void A4GL_def_quit (void);
 void A4GL_make_report_table (struct BINDING *b, int n);
 int A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, struct BINDING **reread);
+void *A4GLSQL_prepare_glob_sql (char *s, int ni, void  *ibind);
+struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
+
+
 void A4GL_rep_file_print (struct rep_structure *rep, char *fname, int opt_semi);
 void A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,int entry);
 int A4GL_report_table_fetch (struct BINDING *reread, int n, struct BINDING *b);
