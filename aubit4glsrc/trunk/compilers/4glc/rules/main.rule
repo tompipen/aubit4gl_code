@@ -49,9 +49,10 @@ printcomment("/* new function %s parameters*/\n",$<str>6);
 push_blockcommand("FUNC");printcomment("/* define section */\n");}
 define_section 
 {
+int c;
 printcomment("/*end of define section */\n");
-print_param('f');
-printc("if (nargs!=%s) {status=-30174;pop_args(nargs);return 0;}\n",$<str>6,yylineno); printc("pop_params(fbind,%s);\n",$<str>6);
+c=print_param('f');
+printc("if (nargs!=%d) {status=-30174;pop_args(nargs);return 0;}\n",c,yylineno); printc("pop_params(fbind,%d);\n",c);
 } op_code
 commands  
 end_func_command;

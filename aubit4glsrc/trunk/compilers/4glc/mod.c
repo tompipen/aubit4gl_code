@@ -1,12 +1,16 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.9 2001-09-08 09:57:41 mikeaubury Exp $
+* $Id: mod.c,v 1.10 2001-09-10 17:47:39 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.9  2001/09/08 09:57:41  mikeaubury
+*	Does anyone know another phrase for 'yet more changes' ?
+*	They are too numerous and small to mention individually....
+*	
 *	Revision 1.8  2001/09/07 23:15:46  afalout
 *	Exit codes
 *	
@@ -218,7 +222,7 @@ constr_buff[256];
 
 int constr_cnt = 0;
 
-#define NUMBINDINGS 256
+#define NUMBINDINGS 2048
 
 struct binding ibind[NUMBINDINGS];
 struct binding obind[NUMBINDINGS];
@@ -236,6 +240,9 @@ int printc (char *fmt, ...);
 
 char *rettype (char *s);
 
+#define MAXVARS 2000
+
+
 struct variables
 {
 
@@ -250,7 +257,7 @@ struct variables
   char *tabname;
   char *pklist;
 }
-vars[2000];
+vars[MAXVARS];
 
 int modlevel = -1;
 
@@ -344,6 +351,7 @@ add_variable (char *name, char *type, char *n)
   debug ("added var\n");
   vars[varcnt].tabname = EMPTY;
   vars[varcnt].pklist = EMPTY;
+  if (varcnt>=MAXVARS) { exitwith("Too many variables"); yyerror("Too many variables"); }
   varcnt++;
 
 }
@@ -1111,6 +1119,7 @@ set_variable (char *name, char *type, char *n, char *as, int lvl)
 
   strcpy (vars[varcnt].var_arrsize, as);
 
+  if (varcnt>=MAXVARS) { exitwith("Too many variables"); yyerror("Too many variables"); }
   varcnt++;
 
 }
@@ -1293,6 +1302,7 @@ push_menu_title (char *s)
 push_blockcommand (char *cmd_type)
 {
 
+  debug("START BLOCK %s",cmd_type);
   debug ("\n\n--------->%s\n\n", cmd_type);
   debug (" /* new block %s %d */\n", cmd_type, ccnt);
   strcpy (command_stack[ccnt].cmd_type, cmd_type);
@@ -1339,6 +1349,7 @@ pop_blockcommand (char *cmd_type)
   int a;
 
   char err[80];
+  debug("END BLOCK %s",cmd_type);
 /* more checks here ! */
   ccnt--;
   if (command_stack[ccnt].block_no > 0)
@@ -1367,8 +1378,8 @@ pop_blockcommand (char *cmd_type)
 
     }
 
-  sprintf (err, "%s was not last block command\n", cmd_type);
-
+  sprintf (err, "%s was not last block command (I've got a %s @ %d)\n", cmd_type,command_stack[ccnt].cmd_type,ccnt); 
+  debug(err);
   debug ("------------------\n");
   for (a = 0; a <= ccnt; a++)
     {
@@ -2923,6 +2934,7 @@ read_glob (char *s)
 	     vars[varcnt].var_arrsize,
 	     vars[varcnt].tabname, vars[varcnt].pklist, vars[varcnt].level);
 
+  if (varcnt>=MAXVARS) { exitwith("Too many variables"); yyerror("Too many variables"); }
       varcnt++;
     }
   fclose (f);

@@ -416,6 +416,8 @@ do
             exit 10
           fi
 
+          # Create the blank...
+          touch $fname.c
 
           if [ -f "$fname".err ]
           then
