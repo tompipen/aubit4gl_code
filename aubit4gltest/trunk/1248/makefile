@@ -16,15 +16,16 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; ${DEFAULT_RUN}
-#	${DEFAULT_DIFF} ${DEFAULT_DUMP_DIFF}
+run: compile ; ${DEFAULT_DIFF} 
+#${DEFAULT_RUN}
+#${DEFAULT_DUMP_DIFF}
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
 desc:
-	@echo "Test for declaring insert cursor with static (not variable) value in insert cursor declaration This was causing Aubit to print EC code (INFORMIX dialect) with missing opening left curly bracket."
+	@echo "Tests rolling back - mid 717"
 
 db_test: 				; @echo "1"
 ec_test: 				; @echo "0"
@@ -36,13 +37,14 @@ graphic_test:			; @echo "0"
 console_prompt_test:	; @echo "0"
 dump_screen_test:		; @echo "0"
 long_test:				; @echo "0"
-cert_test:				; @echo "1"
-compat_test:			; @echo "1"
+cert_test:				; @echo "0"
+obsolete_test:			; @echo "0"
+compat_test:			; @echo "0"
 expect_code:			; @echo "0"
-compile_only:			; @echo "1"
+compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
-transaction:			; @echo "0"
+transaction:			; @echo "1"
 sql_features_used:		; @echo ""
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""

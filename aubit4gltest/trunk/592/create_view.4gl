@@ -4,6 +4,7 @@ DATABASE test1
 MAIN
 	WHENEVER ERROR CONTINUE 
 	DROP TABLE xpto
+	drop view vxpto
 	WHENEVER ERROR STOP 
   CREATE TABLE xpto (
 	  anIntField INTEGER,

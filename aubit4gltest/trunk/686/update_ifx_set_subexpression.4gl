@@ -25,6 +25,7 @@ MAIN
     aSingleQuoteStr VARCHAR(50,10)
   )
 
+display "CREATED"
   LET dt = mdy(12,31,1999)
   INSERT INTO xpto 
       (firstColumn,secondColumn,thirdColumn,aUser,aDate,aDatetime,anInterval,
@@ -40,6 +41,7 @@ MAIN
          'Single quote'
         )
 
+display "INSERTED"
   UPDATE xpto 
       SET (secondColumn,thirdColumn,aUser,aDate,aDatetime,
            anInterval,aToday,aCurrent,aSingleQuoteStr)
@@ -55,12 +57,15 @@ MAIN
         )
     WHERE firstColumn = 1 and (secondColumn = USER OR aCurrent = CURRENT)
 
+display "UPDATED"
   DECLARE cr CURSOR FOR 
-    SELECT secondColumn, thirdColumn, aDate, aDateTime, anInterval
+    SELECT secondColumn, thirdColumn, aDate, aDateTime , anInterval
       FROM xpto
-  FOREACH cr INTO str, sm, dt, dtt, it
-    DISPLAY "<", str clipped, ">", "<", sm, ">", "<",  dt, ">", "<", dtt, ">",
-      "<", it, ">"
+
+display "DECLARE"
+
+  FOREACH cr INTO str, sm, dt, dtt , it
+    DISPLAY "<", str clipped, ">", "<", sm, ">", "<",  dt, ">", "<", dtt, ">", "<", it, ">"
   END FOREACH
   DROP TABLE xpto
 END MAIN

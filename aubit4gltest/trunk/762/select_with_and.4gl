@@ -45,7 +45,7 @@ MAIN
 	DECLARE cr_ CURSOR FOR
     SELECT keyColumn, valueColumn, dateColumn
       FROM xpto
-      WHERE valueColumn LIKE "the%" AND dateColumn = mdy(1,1,2000)
+      WHERE valueColumn LIKE "the%" AND dateColumn = dt #mdy(1,1,2000)
 			ORDER BY 1
 
 	OPEN cr_

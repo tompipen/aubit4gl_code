@@ -22,8 +22,11 @@ main
   insert into xpto values (2,"Two")
   insert into xpto values (3,"Three")
 
+  display "U1"
   call use_cursor()
+  display "U2"
   call use_cursor()
+  display "U3"
   drop table xpto
 end main
 
@@ -33,16 +36,17 @@ function use_cursor()
     aString CHAR(20)
   end record
 
-  declare cr_update cursor for 
-    select xpto.an_int, xpto.a_string
-      from xpto
-      for update
+  declare cr_update cursor for select xpto.an_int, xpto.a_string from xpto for update
+
   begin work
   open cr_update
+
   fetch cr_update into lv_r_xpto.*
-  update xpto set a_string = "The One"
-    where current of cr_update
+
+  update xpto set a_string = "The One" where current of cr_update
+
   close cr_update
+
   commit work
 end function
 

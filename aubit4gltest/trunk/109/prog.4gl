@@ -48,11 +48,17 @@ define    query_text CHAR(250)
 	display "select first record"
 	let query_text = "select * from sftest"
 	PREPARE utfm001tq_st FROM query_text
+	display "Prepared"
 	DECLARE utfm001tq_list SCROLL CURSOR FOR utfm001tq_st
-	
+	display "declared"
 	OPEN utfm001tq_list
-	FETCH FIRST utfm001tq_list INTO p_sftest.*
+	display "open"
+	FETCH 
+		FIRST 
+		utfm001tq_list INTO p_sftest.*
+	display "fetch"
 	close utfm001tq_list
+	display "Closed"
 	
 	display "lock that record"
 	

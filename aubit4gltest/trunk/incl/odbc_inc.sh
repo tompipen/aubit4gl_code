@@ -240,6 +240,7 @@ if test "$IS_ODBC" = "1"; then
 					echo "Driver=$DRV_IFX" >> $ODBC_INI_PATH
 					echo "Database=$TEST_DB"  >> $ODBC_INI_PATH
 					echo "Servername=$INFORMIXSERVER"  >> $ODBC_INI_PATH
+					echo "Enablescrollablecursors=1"  >> $ODBC_INI_PATH
 					#Optional stuff:
 					#LogonID=xxx
 					#pwd=xxx
@@ -258,6 +259,8 @@ if test "$IS_ODBC" = "1"; then
 					echo "Driver=$DRV_SQLITE"  >> $ODBC_INI_PATH
 					echo "Database=/opt/aubit/aubit4glsrc/tools/$TEST_DB.db"  >> $ODBC_INI_PATH
 					echo "Servername=localhost"  >> $ODBC_INI_PATH
+					echo "Trace 		= Yes" >> $ODBC_INI_PATH
+					echo "TraceFileName 	= /tmp/sqlite.log" >> $ODBC_INI_PATH
 					#Optional stuff:
 					#echo "; optional lock timeout in milliseconds"  >> $ODBC_INI_PATH
 					#echo "Timeout=2000"  >> $ODBC_INI_PATH

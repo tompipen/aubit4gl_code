@@ -19,6 +19,7 @@ define lv_d date
     INSERT INTO testunlo (f2, f3, f4, f5) VALUES (1, 1, lv_d, 1)
     INSERT INTO testunlo (f2, f3, f4, f5) VALUES (2, 2, lv_d, 2)
     LET l_parm = 1
+    UNLOAD TO "all.out" SELECT * FROM testunlo 
     DISPLAY "UNLOAD START"
     UNLOAD TO "out" SELECT * FROM testunlo WHERE f1 > l_parm
     DISPLAY "UNLOAD completed"
