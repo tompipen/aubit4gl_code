@@ -39,7 +39,7 @@ open_form_rest: open_form_gui
 ;
 
 open_form_gui:  op_at_gui op_like_gui op_disable USING formhandler_name
-	{sprintf($<str>$,"open_gui_form(%%s,%s,%s,%s,%s);",$<str>1,$<str>2,$<str>3,$<str>5);}
+	{sprintf($<str>$,"open_gui_form(%%s,%s,%s,%s,hnd_e_%s,hnd_c_%s);",$<str>1,$<str>2,$<str>3,$<str>5,$<str>5);}
 ;
 
 op_at_gui:{strcpy($<str>$,"0,0");} | AT op_absolute OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET 

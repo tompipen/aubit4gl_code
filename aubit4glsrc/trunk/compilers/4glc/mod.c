@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.25 2001-11-21 22:56:16 saferreira Exp $
+* $Id: mod.c,v 1.26 2001-11-25 15:29:30 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.25  2001/11/21 22:56:16  saferreira
+*	Some compiler warnings fixed
+*	
 *	Revision 1.24  2001/11/19 10:31:13  mikeaubury
 *	new stuff - compile_<lang> changes
 *	
@@ -685,7 +688,7 @@ print_variable (int z, char ff)
 	       vars[z].var_name, atoi (vars[z].var_arrsize));
     }
 
-  if (isin_command ("REPORT"))
+  if (isin_command ("REPORT")||isin_command("FORMHANDLER")||isin_command("MENUHANDLER"))
     {
       if (strcmp (vars[z].var_type, "char") == 0)
 	{
@@ -746,7 +749,7 @@ print_record (int z, char ff,char *vname)
   int lvl = 1;
 debug("Print record %s\n",vname);
 
-  if (isin_command ("REPORT"))
+  if (isin_command ("REPORT")||isin_command("FORMHANDLER")||isin_command("MENUHANDLER"))
     {
       if (ff != '-')
 	{
@@ -1405,7 +1408,8 @@ push_blockcommand (char *cmd_type)
   strcpy (command_stack[ccnt].cmd_type, cmd_type);
   if (strcmp (cmd_type, "MAIN") == 0
       || strcmp (cmd_type, "FUNC") == 0 ||
-      strcmp (cmd_type, "REPORT") == 0 || strcmp (cmd_type, "GLOBALS") == 0)
+      strcmp (cmd_type, "REPORT") == 0 || strcmp (cmd_type, "GLOBALS") == 0 ||
+      strcmp (cmd_type, "FORMHANDLER") == 0 || strcmp (cmd_type, "MENUHANDLER") == 0)
     {
       command_stack[ccnt].block_no = -1;
     }

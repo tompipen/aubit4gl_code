@@ -85,7 +85,8 @@ sprintf($<str>$,"\"%s:%s\"",clobber,downshift($<str>1)) ;
 strcpy(last_var,downshift($<str>1));
 } | VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET
 {
-sprintf($<str>$,"clob(\"%s\",%s)",clobber,$<str>3);
+//sprintf($<str>$,"clob(\"%s\",%s)",clobber,$<str>3);
+strcpy($<str>$,$<str>3);
 sprintf(last_var,"->%s",$<str>3);
 }
 ;

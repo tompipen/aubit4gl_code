@@ -6,12 +6,14 @@ formhandler_def :
 		start_state("formhandler",1);
 	push_blockcommand("FORMHANDLER");
         }
-        define_section
+        define_section 
+	 op_code
         op_bef_ev_list
         op_input_section
         op_aft_ev_list
-        END_FORMHANDLER {print_end_formhandler(); 
+        END_FORMHANDLER {
 pop_blockcommand("FORMHANDLER");
+print_end_formhandler(); 
 start_state("formhandler",0);}
 ;
 
