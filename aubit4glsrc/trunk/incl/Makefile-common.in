@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.141 2003-10-05 22:48:37 afalout Exp $
+# $Id: Makefile-common.in,v 1.142 2003-10-08 01:36:43 afalout Exp $
 #
 
 
@@ -769,7 +769,7 @@ ECPG_IFLAGS=@ECPG_IFLAGS@
 IFMX_ESQLC=@IFMX_ESQLC@
 SAPDB_ESQLC=@SAPDB_ESQLC@
 Q_ESQLC=@Q_ESQLC@
-
+EXE_EXT=@EXEEXT@
 
 ## ==================================================================
 ##                      Moved from aubitrc:
@@ -910,8 +910,8 @@ ifneq "$(shell ls $(SOURCE)/bin/odbctest-iodbc2${EXE} 2> /dev/null)" ""
 	BIN_EXE		+=odbctest-iodbc2${EXE}
 endif
 
-BIN_FILES   =${BIN_SCRIPTS} ${BIN_EXE}
-AMAKE_BIN_FILES	=${AMAKE_BIN_SCRIPTS} ${AMAKE_BIN_EXE}
+BIN_FILES   =${BIN_SCRIPTS} $(addsuffix ${EXE_EXT},${BIN_EXE})
+AMAKE_BIN_FILES	=${AMAKE_BIN_SCRIPTS} $(addsuffix ${EXE_EXT},${AMAKE_BIN_EXE})
 
 
 #Additional files to allways remove from bin, even if we would not install

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.200 2003-10-05 22:48:27 afalout Exp $
+dnl # $Id: configure.in,v 1.201 2003-10-08 01:36:30 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1170,6 +1170,9 @@ CINT=no
 LCLINTEXE=no
 STRIP_EXECUTABLES=no
 cygwin=0
+
+SLASH=\\
+
 INFORMIXC=$CC
 HAVE_CURSES=0
 HAVE_PDCURSES=0
@@ -1459,8 +1462,10 @@ A4GL_DBPATH=$aubitdir/tools:$prefix/$SHORTNAME/tools
     fi
 
 #Install location - must install first:
-#Source code location:
-IS_SOURCE="$HOMEDRIVE$CYGWIN_PATH$aubitdir"
+#Source code location (#MUST use backslash for InnoSetup):
+#IS_SOURCE=`echo "$HOMEDRIVE$CYGWIN_PATH$aubitdir" | sed -e 's/\//\\/g'`
+IS_SOURCE=`echo "D:/cygwin/usr/src/aubit/aubit4glsrc" | sed -e 's/\//\\\\/g'`
+
 #Location of GTK libraries - should be obsolete
 #IS_SOURCE_GTK="$HOMEDRIVE$CYGWIN_PATH/lib"
 
@@ -1506,22 +1511,22 @@ LIB_EXPORTLIB=aubit4gl
 	for FILE in $LIB_EXPORTLIB ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "LIBFILE_$COUNTER='$LIB_PREFIX/lib$FILE$SO_EXT_LINKABLE'"
-		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE/lib/lib$FILE$SO_EXT_LINKABLE; DestDir: {app}/bin; Components: runtime'"
+		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT_LINKABLE; DestDir: {app}\bin; Components: runtime'"
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		#Windows exports library:
-		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE/lib/lib$LIB_EXPORTLIB$SO_EXT_LINKABLE.a; DestDir: {app}/lib; Components: runtime'"
+		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$LIB_EXPORTLIB$SO_EXT_LINKABLE.a; DestDir: {app}\lib; Components: runtime'"
     done
 
 	for FILE in $COMP_LIBS ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "LIBFILE_$COUNTER='$LIB_PREFIX/lib$FILE$SO_EXT'"
-		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE/lib/lib$FILE$SO_EXT; DestDir: {app}/lib; Components: compiler'"
+		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT; DestDir: {app}\lib; Components: compiler'"
 	done
 
 	for FILE in $ALL_LIBS ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "LIBFILE_$COUNTER='$LIB_PREFIX/lib$FILE$SO_EXT'"
-		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE/lib/lib$FILE$SO_EXT; DestDir: {app}/lib; Components: runtime'"
+		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT; DestDir: {app}\lib; Components: runtime'"
 	done
 
 
@@ -1577,17 +1582,17 @@ fi
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE$EXEEXT'"
 		#DestName: "4glc.exe"; CopyMode: alwaysoverwrite;
-		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE/bin/$FILE$EXEEXT; DestDir: {app}/bin; CopyMode: normal; Components: compiler'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE$EXEEXT; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
 	done
 
 	for FILE in $RUNTIME_EXE ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE$EXEEXT'"
-		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE/bin/$FILE$EXEEXT; DestDir: {app}/bin; CopyMode: normal; Components: runtime'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE$EXEEXT; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
 	done
 
 	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-	eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE/lib/lib4glc.dll; DestDir: {app}/bin; CopyMode: normal; Components: compiler'"
+	eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\lib\lib4glc.dll; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
 
 
 
@@ -1610,7 +1615,7 @@ ALL_SH="4glpc aubit ecpg_wrap $AMAKE_SH"
 	for FILE in $ALL_SH ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "SHFILE_$COUNTER='$INST_BASE/bin/$FILE'"
-		eval "ISSHFILE_$COUNTER='Source: $IS_SOURCE/bin/$FILE; DestDir: {app}/bin; Components: Shell'"
+		eval "ISSHFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE; DestDir: {app}\bin; Components: Shell'"
 	done
 	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 	eval "SHFILE_$COUNTER='$INST_BASE/configure'"
@@ -1669,7 +1674,7 @@ ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
 	for FILE in $ALL_INC ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "INCFILE_$COUNTER='$INST_BASE/incl/$FILE'"
-		eval "ISINCFILE_$COUNTER='Source: $IS_SOURCE/incl/$FILE; DestDir: {app}/incl; Components: compiler'"
+		eval "ISINCFILE_$COUNTER='Source: $IS_SOURCE\incl\\$FILE; DestDir: {app}\incl; Components: compiler'"
 	done
 
     COUNTER2=0
@@ -1677,7 +1682,7 @@ ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		COUNTER2=`(expr $COUNTER2 + 1) 2>/dev/null`
 		eval "INCFILE_$COUNTER='$INST_BASE/incl/$FILE'"
-		eval "ISAMAKEFILE_$COUNTER2='Source: $IS_SOURCE/incl/$FILE; DestDir: {app}/incl; Components: Make'"
+		eval "ISAMAKEFILE_$COUNTER2='Source: $IS_SOURCE\incl\\$FILE; DestDir: {app}\incl; Components: Make'"
 	done
 
 ## ==================================================================
@@ -1727,13 +1732,13 @@ ALL_EXAMP_GUI="gui.per calc.per form-gui.per gui.4gl calc.4gl hello-gui.4gl \
 	for FILE in $ALL_EXAMP ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "EXAMPFILE_$COUNTER='$INST_BASE/tools/test/$FILE'"
-		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE/tools/test/$FILE; DestDir: {app}/tools/test; Components: 4GLexamples'"
+		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE\tools\test\\$FILE; DestDir: {app}\tools\test; Components: 4GLexamples'"
 	done
 
 	for FILE in $ALL_EXAMP_GUI ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "EXAMPFILE_$COUNTER='$INST_BASE/tools/test/gui/$FILE'"
-		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE/tools/test/gui/$FILE; DestDir: {app}/tools/test/gui; Components: 4GLexamples'"
+		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE\tools\test\gui\\$FILE; DestDir: {app}\tools\test\gui; Components: 4GLexamples'"
 	done
 
 #Now add Makefile to be used for installation only:
@@ -1747,6 +1752,7 @@ ALL_EXAMP_GUI="$ALL_EXAMP_GUI Makefile"
 INCL_MAKE="Makefile-common Makefile-install.mki"
 
 ALL_MAKEFILE="tools/test/Makefile tools/test/gui/Makefile Makefile"
+IS_ALL_MAKEFILE=`echo "$ALL_MAKEFILE" | sed -e 's/\//\\\\/g'`
 
 #;Source: @IS_SOURCE@\Makefile; DestDir: {app}; Components: Make
 #Source: @IS_SOURCE@\tools\test\gui\Makefile; DestDir: {app}\tools\test\gui; Components: Make
@@ -1758,14 +1764,19 @@ ALL_MAKEFILE="tools/test/Makefile tools/test/gui/Makefile Makefile"
 	for FILE in $ALL_MAKEFILE ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "MAKEFILE_$COUNTER='$INST_BASE/$FILE'"
+	done
+
+    COUNTER=0
+	for FILE in $IS_ALL_MAKEFILE ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		FILEDIR=`dirname $FILE`
-		eval "ISINCFILE_$COUNTER='Source: $IS_SOURCE/$FILE; DestDir: {app}/$FILEDIR; Components: Make'"
+		eval "ISMAKEFILE_$COUNTER='Source: $IS_SOURCE\\$FILE; DestDir: {app}\\$FILEDIR; Components: Make'"
 	done
 
 	for FILE in $INCL_MAKE ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "MAKEFILE_$COUNTER='$INST_BASE/incl/$FILE'"
-		eval "ISINCFILE_$COUNTER='Source: $IS_SOURCE/incl/$FILE; DestDir: {app}/incl; Components: Make'"
+		eval "ISMAKEFILE_$COUNTER='Source: $IS_SOURCE\incl\\$FILE; DestDir: {app}\incl; Components: Make'"
 	done
 
 
@@ -1795,13 +1806,13 @@ ROOT_FILES_DOC="README.txt"
 	for FILE in $ALL_DOC ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "DOCFILE_$COUNTER='%doc $INST_BASE/docs/$FILE'"
-		eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE/docs/$FILE; DestDir: {app}/docs; Components: runtime'"
+		eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE\docs\\$FILE; DestDir: {app}\docs; Components: runtime'"
 	done
 	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 	eval "DOCFILE_$COUNTER='%doc $INST_BASE/$ROOT_FILES_DOC'"
-	eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE/$ROOT_FILES_DOC; DestDir: {app}; Components: help'"
+	eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE\\$ROOT_FILES_DOC; DestDir: {app}; Components: help'"
 	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-	eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE/tools/cygwin/readme-runtime.html; DestDir: {app}; Components: help'"
+	eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE\tools\cygwin\readme-runtime.html; DestDir: {app}; Components: help'"
 
 ## ==================================================================
 ##       Define permanent list of conversion files to build/install
@@ -1815,7 +1826,7 @@ CONVSQL_FILES="README.txt INFORMIX-ORACLE.cnv ORACLE-INFORMIX.cnv \
 	for FILE in $CONVSQL_FILES ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "CONVFILE_$COUNTER='%doc $INST_BASE/etc/convertsql/$FILE'"
-		eval "ISCONVFILE_$COUNTER='Source: $IS_SOURCE/etc/convertsql/$FILE; DestDir: {app}/etc/convertsql; Components: runtime'"
+		eval "ISCONVFILE_$COUNTER='Source: $IS_SOURCE\etc\convertsql\\$FILE; DestDir: {app}\etc\convertsql; Components: runtime'"
 	done
 
 

@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.27 2003-08-20 07:39:21 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.28 2003-10-08 01:36:42 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -320,28 +320,7 @@ WARNINGS=1
 COMPARE=0
 
 if [ $# -lt 1 ]; then
-
-	#do all steps:
-	if [ "$COMSPEC" = "" ]; then
-	    #UNIX
-	    MAKE=1
-	    RPM=1
-        WINSETUP=0
-	    GET=1
-	    UPLOAD=1
-        CLEAN=1
-        COMPARE=1
-	else
-	    #Windows/CygWin
-	    MAKE=1
-	    RPM=0
-        WINSETUP=1
-	    GET=1
-	    UPLOAD=1
-        CLEAN=1
-        COMPARE=1
-	fi
-
+    DO_ALL=1
 else
 	for a in $@
 	do
@@ -352,6 +331,7 @@ else
 			echo "  $0 [options] [actions]"
 			echo "Options:"
 			echo "  -verbose - output additional info"
+			echo "  -anyday - ignore date schedule, run on any day"
 			echo "Actions:"
 			echo "  make - make tarballs, source and binary"
 			echo "  rpm - make RPM's, source and binary"
@@ -369,25 +349,8 @@ else
 	    -verbose)
 		    VERBOSE=1
 			if [ $# -lt 2 ]; then
-				#do all steps, this is only parameter on command line:
-				if [ "$COMSPEC" = "" ]; then
-				    #UNIX
-				    MAKE=1
-				    RPM=1
-                    WINSETUP=0
-				    GET=1
-				    UPLOAD=1
-			        CLEAN=1
-				else
-				    #Windows/CygWin
-				    MAKE=1
-				    RPM=0
-                    WINSETUP=1
-				    GET=1
-				    UPLOAD=1
-			        CLEAN=0
-				fi
-            fi
+            	DO_ALL=1
+			fi
 		    ;;
 	    make)
 			MAKE=1
@@ -412,28 +375,14 @@ else
             ;;
 
         all)
-				if [ "$COMSPEC" = "" ]; then
-				    #UNIX
-				    MAKE=1
-				    RPM=1
-                    WINSETUP=0
-				    GET=1
-				    UPLOAD=1
-			        CLEAN=1
-				else
-				    #Windows/CygWin
-				    MAKE=1
-				    RPM=0
-                    WINSETUP=1
-				    GET=1
-				    UPLOAD=1
-			        CLEAN=0
-				fi
-
+			DO_ALL=1
             ;;
 
 		-anyday)
 			ANYDAY=1
+			if [ $# -lt 2 ]; then
+				DO_ALL=1
+            fi
             ;;
 
 		*)
@@ -445,12 +394,34 @@ else
 	done
 fi
 
+if test "$DO_ALL" = "1"; then
+	#do all steps:
+	if [ "$COMSPEC" = "" ]; then
+	    #UNIX
+	    MAKE=1
+	    RPM=1
+        WINSETUP=0
+	    GET=1
+	    UPLOAD=1
+        CLEAN=1
+        COMPARE=1
+	else
+	    #Windows/CygWin
+	    MAKE=1
+	    RPM=0
+        WINSETUP=1
+	    GET=1
+	    UPLOAD=1
+        CLEAN=1
+        COMPARE=1
+	fi
+fi
 
 
 DAY=`date | awk '{print $3}'`
 
-if [ "$DAY" != "1" ] && [ "$DAY" != "5" ] && [ "$DAY" != "10" ] && [ "$DAY" != "15" ] && [ "$DAY" != "20" ] && [ "$DAY" != "25" ]; then
-    if [ "$ANYDAY" = "0" ]; then
+if [ "$ANYDAY" = "0" ]; then
+	if [ "$DAY" != "1" ] && [ "$DAY" != "5" ] && [ "$DAY" != "10" ] && [ "$DAY" != "15" ] && [ "$DAY" != "20" ] && [ "$DAY" != "25" ]; then
 		#echo "Will run only on 1,5,10,15,20 & 25 day of the month - today is $DAY. STOP."
 		exit
     fi
@@ -764,7 +735,7 @@ if test "$WINSETUP" = "1"; then
     TMP=`cygcheck.exe lib/libaubit4gl.dll | grep cygwin1.dll`
     if test "$TMP" != ""; then
         echo "ERROR: libaubit4gl.dll depends on cygwin1.dll"
-exit 4
+		exit 4
     else
 	    TMP=`cygcheck.exe bin/4glc.exe | grep cygwin1.dll`
 	    if test "$TMP" != ""; then
@@ -780,6 +751,9 @@ exit 4
 		fi
 
 	fi
+
+	#Run all build tests in tools/test/build_tests/...
+	make test.build
 
 fi
 

@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.11 2003-09-22 07:03:48 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.12 2003-10-08 01:36:43 afalout Exp $
 ;
 
 
@@ -758,6 +758,7 @@ var
 	GWDPath: String; //Path where GWD is installed
 	FinishedInstall: Boolean;
 	DebugPaths: Boolean;
+    DebugOptions: Boolean;
 	InstalledSQLITEODBC: Boolean;
     ToAddToSYSpath: String;
     ToAddToUSERpath: String;
@@ -941,9 +942,16 @@ function ParamCount: Integer;
 Returns the number of command line parameters passed to Setup.
 }
 
+	DebugPaths := False;
     Test :=ExpandConstant('{param:DebugPaths|no}');
 	if Test = 'yes' then begin
-		DebugPaths := True; 	//Debuggung of the installer script ( /DebugPaths=yes )
+		DebugPaths := True; 	//Debuggung of the installer script paths ( /DebugPaths=yes )
+	end;
+
+	DebugOptions := False;
+    Test :=ExpandConstant('{param:DebugOptions|no}');
+	if Test = 'yes' then begin
+		DebugOptions := True; 	//Debuggung of the installer script options ( /DebugOptions=yes )
 	end;
 
 	Abort := False; //Initialise Abort flag
@@ -1206,10 +1214,12 @@ end;
 function GetSQLiteODBCinstalled(): Boolean;
 begin
 
-	if InstalledSQLITEODBC = True then begin
-		MsgBox ('GetSQLiteODBCinstalled=TRUE',mbInformation,MB_OK);
-    end else begin
-		MsgBox ('GetSQLiteODBCinstalled=FALSE',mbInformation,MB_OK);
+	if DebugOptions = True then begin
+		if InstalledSQLITEODBC = True then begin
+			MsgBox ('GetSQLiteODBCinstalled=TRUE',mbInformation,MB_OK);
+	    end else begin
+			MsgBox ('GetSQLiteODBCinstalled=FALSE',mbInformation,MB_OK);
+	    end;
     end;
 
 	Result := InstalledSQLITEODBC;

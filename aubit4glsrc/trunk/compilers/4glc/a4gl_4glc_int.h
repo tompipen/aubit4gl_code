@@ -5,6 +5,12 @@
 	// No getopt.h on Solaris
     //will use one in tools/getopt:
 
+#ifdef HAVE_CONFIG_H
+	/* header automatically created with AutoConf-configure 
+	must include here to be able to test for HAVE_GETOPT_H
+	*/
+	#include "a4gl_incl_config.h"
+#endif
 
 #if HAVE_GETOPT_H           /* struct option */
 	#include <getopt.h>

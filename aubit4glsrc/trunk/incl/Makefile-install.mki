@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.70 2003-09-17 11:55:42 afalout Exp $
+# $Id: Makefile-install.mki,v 1.71 2003-10-08 01:36:43 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -377,7 +377,9 @@ libltdl:
 
 #Create Windows setup wizzard executable:
 winsetup:
+ifndef NOREFRESH
 	(cd ${AUBITDIR}; config.status --file etc/aubit-InnoSetup.iss)
+endif
 	unix2dos -D ${AUBITDIR}/etc/aubit-InnoSetup.iss
 #	(cd "E:\Program files\W2000\My Inno Setup Extensions 3"; iscc "${WIN_CYGPATH}/${AUBITDIR}/etc/aubit-InnoSetup.iss")
 	(cd "E:\Program files\W2000\My Inno Setup Extensions 3"; iscc "${AUBITDIR}/etc/aubit-InnoSetup.iss")

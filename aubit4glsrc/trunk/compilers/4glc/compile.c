@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.39 2003-08-23 00:42:58 afalout Exp $
+# $Id: compile.c,v 1.40 2003-10-08 01:36:42 afalout Exp $
 #*/
 
 /**
@@ -814,6 +814,7 @@ initArguments (int argc, char *argv[])
     
 	 #ifndef __MINGW32__
 	  	//this apparently works on NT, but not on W98:
+        //FIXME: find a way to determine which Windows we are running on at run-time
 		sprintf (buff, "%s > %s.err 2>&1", buff, output_object);
      #else
 		sprintf (buff, "%s > %s.err", buff, output_object);
