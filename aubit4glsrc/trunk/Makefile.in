@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.86 2002-09-23 07:15:39 afalout Exp $
+# $Id: Makefile.in,v 1.87 2002-09-23 07:21:46 afalout Exp $
 #
 
 ## ==================================================================
@@ -77,13 +77,13 @@ default: ${ALL}
 	@echo "Successfully compiled Aubit compiler default targets :"
 	@echo "${ALL}."
 	@echo "You MUST install it before you can use it - execute 'make install'."
-    @echo " "
+	@echo " "
 	@echo "Default install dir=${PREFIX}"
 	@echo "Use 'make install PREFIX=/where/to/install to install in different place."
 	@echo "Library link will be installed to ${LIB_INSTALL_LINK}"
 	@echo "Programs links will be installed to ${BIN_INSTALL_LINK}"
 	@echo "Specify LIB_INSTALL_LINK and/or BIN_INSTALL_LINK to change this."
-    @echo " "
+	@echo " "
 	@echo "Execute 'make extra' to compile additional components."
 	@echo "Thank you for using Aubit 4gl compiler"
 
