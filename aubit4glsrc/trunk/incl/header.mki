@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: header.mki,v 1.16 2003-02-27 22:13:40 afalout Exp $
+#	 $Id: header.mki,v 1.17 2003-03-05 07:27:47 afalout Exp $
 
 ############################################
 #   Aubit 4gl compiler - amake system
@@ -91,12 +91,6 @@ RM 			= rm -f
 #need to do that:
 ALLFORMS.per	=$(wildcard *.per)
 
-####################
-#This database name will be used if 4Js/D4GL schemma file (.sch) If you
-#dont use one of this compilers, you can ignore it.
-#needs to be prepared. You can override this in you local .mk file if
-#you have different database for different progams.
-#DBASE     	= mydatabasename
 
 ####################
 #define path for make to find .sch files i fnot in current dir:

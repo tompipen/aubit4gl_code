@@ -784,7 +784,9 @@ Cognos' PowerHouse 4GL, and Information Builders' FOCUS
 language project with the goal of embedding AI into
 programming, but the effort fizzled.
 
-INFORMIX-4GL: development environment composed by Menus (GUI generator), Forms (4GL code generator), ID (debugger), QuickStep (state machine) and a set of interfaces with C, Cobol, Adam Fortran.
+INFORMIX-4GL: development environment composed by Menus (GUI generator), 
+Forms (4GL code generator), ID (debugger), QuickStep (state machine) and a 
+set of interfaces with C, Cobol, Adam Fortran.
 
 INFORMIX-OpenCase: software development environment based on ToolBus (a software bus), ToolKit (interface with INFORMIX-4GL) and Encapsulator.
 
@@ -1630,7 +1632,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.11 2003-02-27 22:13:37 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.12 2003-03-05 07:27:46 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3176,6 +3178,17 @@ To doc4gl manual:
 
 ======================================================================
 
+> what do one do with .aarc.xml files, that result from aace compiler?
+
+Not alot..
+You can convert it to perl script (which 99% works - with only a couple
+of quirks!)
+
+Or convert it to 4gl... (which also works)
+
+
+--------------------------------------------------------------------------
+
 > > compilers/ace/perl_runner ?
 >
 > I missed that dir - do you have anything that describe it's usage?
@@ -3353,27 +3366,6 @@ a standalone program.
 
 You'll obviously need to remove that in order to put it into a larger
 program...
-
-
-
-
-
-Again - check the license:
-
-# (c) 2002 Aubit Computing Ltd
-#
-# NOTE : This code is not covered by the GPL and is not part of the core
-#        Aubit4gl system or maintained by the Aubit4GL team.
-#
-#        If you wish to use this code the following condition applies :
-#
-#          You must NOT use this code or any code that is generated in any
-#          commercial application without prior consent of Aubit Computing Ltd
-#
-# For full details of the licensing terms - please contact Aubit Computing Ltd
-#
-*/
-
 
 ======================================================================
 
@@ -3663,4 +3655,13 @@ column datatype size
 etc...
 
 =============================================================================
+
+> New feature :
+>
+> A4GL_BACKGROUND=xxxx
+> where xxxx is a HEX code of a colour attribute - eg 1400 (for 0x1400)
+> for blue and reverse...
+>
+> Applies to all windows created when no attribute is specified (including
+> the main screen)
 

@@ -8,6 +8,11 @@ define bxxx record
 end record
 define a char(40)
 
+#  options form line 4 	#this gives the result one would expect for a default;
+                        #form is opened after menu and message lines - on line 3
+
+
+
 let axxx=1
 
 menu "Hello test"
@@ -29,7 +34,12 @@ menu "Hello test"
 
         display "This is a line in the form" to s_info[1].info_line attribute(reverse)
         display "This is line 2 in the form" to s_info[2].info_line
-        sleep 2
+
+        menu "Close window"
+            command "OK" "Close this window"
+                exit menu
+        end menu
+
 		close window w2
 
 

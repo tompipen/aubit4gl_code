@@ -85,7 +85,7 @@
 :let version = "@(#)privileg.ace	1.4"
 }
 
-database stores_demo end
+database maxdev end
 
 define
 	variable last_tabid	integer

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2003-01-27 05:47:35 afalout Exp $
+# $Id: Makefile.in,v 1.8 2003-03-05 07:27:47 afalout Exp $
 #
 
 LIBROOT=../..
@@ -136,8 +136,12 @@ GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
 CFLAGS			+=-I.. -I. -I${ROOT}/incl -I${ROOT}/common/dataio ${GLIB_CFLAGS} ${GTK_INC_PATH} ${GTK_LIB_PATH}
 #CFLAGS	:=-I${ROOT}/compilers/menus ${CFLAGS} -I${ROOT}/compilers/menus -I${ROOT}/common/dataio
 
+CFLAGS			:=$(subst /target/build,/usr,${CFLAGS})
+GTK_LIB_PATH    :=$(subst /target/build,/usr,${GTK_LIB_PATH})
+
 CFLAGS		 	:=$(subst /target,/usr,${CFLAGS})
 GTK_LIB_PATH 	:=$(subst /target,/usr,${GTK_LIB_PATH})
+
 
 ifeq "${WIN_PATH}" "1"
 	GTK_LIB_PATH 	:=$(subst -L,-L${WIN_CYGPATH},${GTK_LIB_PATH})  -L${WIN_CYGPATH}/lib

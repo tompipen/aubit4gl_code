@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.29 2003-03-02 03:29:51 afalout Exp $
+#	 $Id: footer.mki,v 1.30 2003-03-05 07:27:47 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -28,15 +28,28 @@
 #
 #############################################################################
 
+ifneq "${DBASE}" "${FORMS_DBASE}"
+	#prevent forms from compiling, since they have hard-coded default database name:
+	FILES.per=
+endif
+
+
 ########################
 #Set name for 4Js database definition file to be created/used
 ifneq "$(DBASE)" ""
 	DBASE.sch = ${DBASE}.sch
 endif
 
-
+########################
+#Some dummy makefiles may not specify name of the target:
 ifeq "${PROG}" ""
 	PROG=no-name-specified.lib
+endif
+
+########################
+#Prevent targets on GLOB_GLOBALS_EXCEPTION list from linking GLOB_GLOBALS objects
+ifneq "$(filter ${GLOB_GLOBALS_EXCEPTION},${PROG})" ""
+	GLOB_GLOBALS=
 endif
 
 #######################
@@ -203,7 +216,6 @@ I4GL_PCODE_DEPS	=${FILES.4go} 	${FILES.4gx}	${GLOB_GLOBALS:.obj=${I4GL_OBJ_EXT}}
 I4GL_CCODE_DEPS	=${FILES.oFIX}	${FILES.4cx}	${GLOB_GLOBALS:.obj=${I4GL_COBJ_EXT}}
 QUERIX_DEPS		=${FILES.qo} 	${FILES.qox}	${GLOB_GLOBALS:.obj=${Q4GL_OBJ_EXT}}
 
-
 ifneq "${LIBLINKFLG}" ""
 	AUBIT_LINK_DEPS	=${FILES.ao}	${GLOB_GLOBALS:.obj=${A4GL_OBJ_EXT}}
 else
@@ -286,13 +298,35 @@ all:	aubit querix d4gl-pcode d4gl-ccode i4gl-pcode i4gl-ccode
 #make reaches prgram target, examine dependencies, applies VPATH and hopefully
 #finds them. If this does not help, remove it, since it's redundant:
 #aubit	  :	${FILES.aox} ${PROG.4ae} ${FILES.afr} ${FILES.hlp}
-aubit	  :	${AUBIT_DEPS} 		${PROG.4ae} ${FILES.afr} ${FILES.hlp}
+aubit	  :	${AUBIT_DEPS} 		${PROG.4ae} ${FILES.afr} ${FILES.hlp} ${FILES.4gl:.4gl=.glb} ${GLOB_GLOBALS:.obj=.glb}
 d4gl-pcode:	${D4GL_PCODE_DEPS} 	${PROG.42r} ${FILES.42f} ${FILES.42h}
 d4gl-ccode:	${D4GL_CCODE_DEPS} 	${PROG.42e} ${FILES.42f} ${FILES.42h}
 i4gl-pcode:	${I4GL_PCODE_DEPS} 	${PROG.4gi} ${FILES.frm} ${FILES.iem}
 i4gl-ccode:	${I4GL_CCODE_DEPS} 	${PROG.4ge} ${FILES.frm} ${FILES.iem}
 querix    : ${QUERIX_DEPS} 		${PROG.4qe} ${FILES.pic} ${FILES.qms}
 plexus:
+
+
+#When using Aubit, out-of-date .glb files can make a mess; compiler will not
+#check if coresopinfign 4gl file changed or not, and just use .glb file it found;
+#we can instruct 4glc to clean them after each compile, forcing them to allways
+#be up-to-date, but this will force large number of 4gl files
+#to get recompile over and over again, every time they are listed in
+#GLOBALS "filename.4gl" directive, which is time consuming; So the general rule
+#must be:
+#    file.glb must depend on file.4gl, and get re-created if .4gl changed
+#Attemt to acomplish this is adding:
+# ${FILES.4gl:.4gl=.glb} ${GLOB_GLOBALS:.obj=.glb}
+#to the "aubit:" target; if it works as expected, the things below should not be 
+#needed, and this can be removed:
+ifeq "$(DEFAULT)" "aubit"
+#%.ao: %.4gl -- implied
+#%.glb: %.4gl
+#%.glb: %${A4GL_OBJ_EXT}
+#%.glb: %.4gl
+#${GLOB_GLOBALS:.obj=.glb}: ${GLOB_GLOBALS:.obj=${A4GL_OBJ_EXT}}
+endif
+
 
 # =======================================================================
 #                            Aubit Targets

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.125 2003-03-02 03:29:51 afalout Exp $
+# $Id: Makefile-common.in,v 1.126 2003-03-05 07:27:47 afalout Exp $
 #
 
 
@@ -370,10 +370,6 @@ ifeq "${TARGET_OS}" "darwin"
 	LD_EXE          =${CC} ${LDFLAGS} -ldl ${RDYNAMIC}
 endif
 
-ifeq "@EFENCE@" "yes"
-#enable memeory debugging with Electric Fence
-	LD_EXE          +=-lefence
-endif
 
 
 ALL_LIBS			=@LIBS@
@@ -572,6 +568,14 @@ endif
 ## ==================================================================
 ##                              Libtool configuration
 ## ==================================================================
+
+
+ifeq "@EFENCE@" "yes"
+#enable memeory debugging with Electric Fence
+	SO_LDFLAGS		+=-lefence
+	LD_EXE			+=-lefence
+endif
+
 
 
 #/bin/sh ../../libtool --mode=link gcc  -g -O2  -o mkmess  mkmess.o -laubit4gl -lcheck -lpanel -lform -ldl -lcurses -lc -lgmp

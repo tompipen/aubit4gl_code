@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.1 2003-03-02 03:29:52 afalout Exp $
+# $Id: Makefile.in,v 1.2 2003-03-05 07:27:48 afalout Exp $
 #
 
 ROOT    =../../..
@@ -38,7 +38,9 @@ include ${ROOT}/incl/?4gl.mk
 ##                              Options
 ## ==================================================================
 
-DEFAULT	=perms.aarc.xml
+ACE_SRC=perms
+
+DEFAULT	=${ACE_SRC}${A4GL_ACERC_EXT} ${ACE_SRC}${A4GL_PRG_EXT}
 
 .PHONY: default all help clean
 
@@ -72,7 +74,7 @@ clean:
 	*.hlp *.exe *.stackdump *.err *.c *.tmp *.42m *.glb \
 	*.42r rr1.pdf *.ao *.log *.4ge *.pl *.pm \
 	test_build.c ${FILES.4gl:.4gl=.h} assoc file *.aso .\#* \
-	.*.frm.xml *.afr.xml *.mnu.xml *.aox *.warn *.aarc.xml
+	.*.frm.xml *.afr.xml *.mnu.xml *.aox *.warn *.aarc.xml ${ACE_SRC}.4gl
 
 
 # ============================== EOF ================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.44 2003-03-03 23:05:43 afalout Exp $
+# $Id: stack.c,v 1.45 2003-03-05 07:27:47 afalout Exp $
 #
 */
 
@@ -1229,6 +1229,8 @@ push_user (void)
 #ifndef __MINGW32__
   a = getuid ();
   p = getpwuid (a);
+#else
+    printf ("FIXME: no getuid() / getpwuid() on MinGW\n");
 #endif
   //printf ("User=%s\n", p->pw_name);
   push_char (p->pw_name);
@@ -1280,6 +1282,57 @@ push_today (void)
   push_date (z);
 }
 
+
+#if defined (_WIN32) && !defined (__CYGWIN__)
+
+#include <sys/timeb.h>
+#include <sys/types.h>
+#include <winsock.h>
+
+void gettimeofday(struct timeval* t,void* timezone)
+{       struct _timeb timebuffer;
+        _ftime( &timebuffer );
+        t->tv_sec=timebuffer.time;
+        t->tv_usec=1000*timebuffer.millitm;
+}
+
+#endif
+
+
+
+#ifdef ANOTHER_EXAMPLE_OF GETTIMEOFDAY
+
+// see http://sources.redhat.com/ml/gdb/2001-05/msg00076.html
+// http://www.linuxjournal.com/article.php?sid=5574
+// see http://lists.ntop.org/pipermail/ntop-dev/2001-November/000227.html
+
+/*  winbase.h definitions */
+typedef struct _FILETIME {
+	unsigned long dwLowDateTime;
+	unsigned long dwHighDateTime;
+} FILETIME;
+
+void __stdcall GetSystemTimeAsFileTime(FILETIME*);
+
+/*time from 1 Jan 1601 to 1 Jan 1970 in 100ns units */
+#define _W32_FT_OFFSET (116444736000000000LL)
+
+typedef union {
+	long long ns100; /*time since 1 Jan 1601 in 100ns units */
+	FILETIME ft;
+} w32_ftv;
+
+void nt_gettimeofday(struct timeval* p, struct timezone* tz /* IGNORED */)
+{
+		w32_ftv _now;
+		GetSystemTimeAsFileTime( &(_now.ft) );
+	        p->tv_usec=(long)((_now.ns100 / 10LL) % 1000000LL );
+		p->tv_sec= (long)((_now.ns100-_W32_FT_OFFSET)/10000000LL);
+	return;
+}
+#endif
+
+
 /**
  *
  *
@@ -1306,12 +1359,12 @@ struct timeval tv2;
   //debug("push_current %d %d\n",a,b);
 /*  setlocale(LC_ALL,""); */
   //debug ("In push_current");
-  
-#ifndef __MINGW32__
+
+//#ifndef __MINGW32__
   gettimeofday(&tv1,0);
-#else
-    printf ("no gettimeofday on Windows");
-#endif
+//#else
+//    printf ("FIXME: no gettimeofday on Windows\n");
+//#endif
   	//(void) time (&now);
   	//debug ("Called time...");
 	local_time = localtime (&tv1.tv_sec);

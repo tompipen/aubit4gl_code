@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.30 2003-03-02 03:29:51 afalout Exp $
+#	 $Id: a4gl.mk,v 1.31 2003-03-05 07:27:47 afalout Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.30 2003-03-02 03:29:51 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.31 2003-03-05 07:27:47 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -125,12 +125,7 @@ A4GL_MC         = ${A4GL_MC_CMD} ${A4GL_MC_FLAGS}
 # Define suffixes which are recognised.
 
 #Executable:
-#ifneq "${COMSPEC}" ""
-#	A4GL_PRG_EXT=.4ae.exe
-#	#A4GL_PRG_EXT=.exe
-#else
-	A4GL_PRG_EXT=.4ae
-#endif
+A4GL_PRG_EXT=.4ae
 
 #static object:
 A4GL_OBJ_EXT=.ao
@@ -148,6 +143,10 @@ A4GL_HLP_EXT=.hlp
 #Conmpiled menu:
 #FIXME: reverse => xml.mnu
 A4GL_MNU_EXT=.mnu.xml
+
+#ace intermediate file (to be converted to 4gl, or run using Perl aace runner)
+#A4GL_ACERC_EXT=.aarc.xml
+A4GL_ACERC_EXT=.aarc
 
 #Files that compiler created, but are not neded at run-time, that are safe to delete:
 A4GL_TMP_SUFFIXES_DELETE=${A4GL_OBJ_EXT} ${A4GL_LIB_EXT} .err .glb
@@ -265,19 +264,30 @@ lib%${A4GL_LIB_EXT}:  $(subst lib,,%.mk)
 # Rule for Aubit/Plexus Menu compiler
 #
 %${A4GL_MNU_EXT}: %.menu
-	mcompile $<
+	aubit mcompile $<
 
 ####################################
 # Rule for Aubit/Plexus Menu compiler - Non-XML packer:
 #
 #%.mnu: %${A4GL_MNU_EXT}
 %.mnu: %.menu
-	mcompile $<
+	aubit mcompile $<
 
 ###################################
-#Rule to compile Ace report files
-%.aarc.xml: %.ace
-	aace $<
+#Rule to compile Ace report files to intermediate file
+%${A4GL_ACERC_EXT}: %.ace
+	export A4GL_PACKER=XDR; aubit aace $<
+
+
+###################################
+#Rule to convert aace compiled file to 4gl code
+#NOTE: it will ALLWAYS include MAIN block.
+#FIXME: add a --nomain switch to aace_4gl
+#NOTE: aace_4gl does NOT work on .xml files created by aace (Bad format)
+.PRECIOUS: %.4gl
+%.4gl: %${A4GL_ACERC_EXT}
+	aubit aace_4gl $< > $@
+
 
 
 #--------------------------- EOF --------------------------------
