@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.197 2005-02-16 13:19:38 mikeaubury Exp $
+# $Id: mod.c,v 1.198 2005-02-22 09:24:04 mikeaubury Exp $
 #
 */
 
@@ -4832,7 +4832,19 @@ char *A4GL_decode_packtype(char *s) {
 
 
 void A4GL_add_feature(char *feature) {
-	/* Reserved for future use */
+	static int dump_features=-1;
+	FILE *f;
+	if (dump_features==-1) {
+		dump_features=A4GL_isyes(acl_getenv("DUMP_FEATURES"));
+	}
+	
+	if (dump_features==0) return;
+	if (!A4GL_has_pointer(feature,'.')) {
+		f=fopen("sql_features","a");
+		A4GL_add_pointer(feature,'.',1);
+		fprintf(f,"%s\n",feature);
+		fclose(f);
+	 }
 }
 
 

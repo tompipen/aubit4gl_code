@@ -29,6 +29,7 @@ where_upd_ss : {
 		rm_quotes($<str>2);
 		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>$),0);
+		add_feature("UPDATE_WHERE_CURRENT_OF");
 	}
 	| WHERE search_condition_ss {
 		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); pop_all_gen(UPDVAL2,"!");
@@ -39,6 +40,7 @@ where_upd_ss : {
 
 set_clause_list_ss: 
     XSET_OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {
+			 add_feature("UPDATE_COLUMNLIST_EQ_VALUELIST");
 		$<sql_string>$=make_sql_string_and_free(strdup("SET ("),strdup($<str>2),strdup(")=("),$<sql_string>6,kw_cb,0);
 
 		if (A4GL_isyes(acl_getenv("FIXUPDATE"))) { 
@@ -49,6 +51,7 @@ set_clause_list_ss:
 		}
     }
     | XSET_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {	
+			 add_feature("UPDATE_SET_STAR");
 		$<sql_string>$=make_sql_string_and_free(strdup("SET *=("),$<sql_string>2,kw_cb,0);
 		push_gen(UPDCOL,"*");
 		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||1) { 
@@ -59,6 +62,7 @@ set_clause_list_ss:
 		}
     }
     | XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {	
+			 add_feature("UPDATE_SET_STAR");
 		$<sql_string>$=make_sql_string_and_free(strdup("SET *=("),$<sql_string>2,kw_cb,0);
 		push_gen(UPDCOL,"*");
 		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||1) { 
@@ -71,10 +75,12 @@ set_clause_list_ss:
 
 
     | XSET upd_columns_ss  {
+			 add_feature("UPDATE_COLUMN_EQ_VALUE_LIST");
 		$<sql_string>$=make_sql_string_and_free(strdup("SET "),$<sql_string>2,0);
     }
     | XSET_MULTIPLY_EQUAL upd_val_list_ss  {
 		char *ptr;
+			 add_feature("UPDATE_SET_STAR");
 
 		ptr=$<sql_string>2;
 		push_gen(UPDCOL,"*");
@@ -94,6 +100,7 @@ set_clause_list_ss:
 	}
     | XSET_ident_DOT_MULTIPLY_EQUAL upd_val_list_ss  {
 		char *ptr;
+			 add_feature("UPDATE_SET_STAR");
 
 		ptr=$<sql_string>2;
 		push_gen(UPDCOL,"*");
@@ -237,13 +244,14 @@ upd_value_expression_complex_ss :
         | OPEN_BRACKET upd_value_expression_ss CLOSE_BRACKET 			{$<sql_string>$=make_sql_string_and_free(kw_ob,$<sql_string>2,kw_cb,0);}
 
         | EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {
+			add_feature("EXTEND");
                         $<sql_string>$=$<sql_string>3;
         }
 
 
 
-        | datetime_value_qualified 						{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
-        | interval_value_qualified 						{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
+        | datetime_value_qualified 						{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0); add_feature("FUNC_DATETIME");}
+        | interval_value_qualified 						{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0); add_feature("FUNC_INTERVAL");}
 
 ;
 

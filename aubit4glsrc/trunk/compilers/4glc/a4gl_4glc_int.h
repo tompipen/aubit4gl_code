@@ -431,6 +431,7 @@ char *A4GL_CV_print_select_all(char *s) ;
 char *A4GL_compiled_sqlpack(void);
 char *A4GL_decode_packtype(char *s);
 
+#define add_feature A4GL_add_feature
 
 
 /* ============================= EOF ================================= */

@@ -9,10 +9,17 @@ drops_c : DROP_TABLE table_name {
 			} else {
 				sprintf($<str>$, "DROP TABLE %s",$<str>2);
 			}
+			add_feature("DROP_TABLE");
 		}
-	| DROP_VIEW table_name 		{sprintf($<str>$,"%s %s ",$<str>1,$<str>2);}
-	| DROP_INDEX idx_name 		{sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
-	| DROP_TRIGGER identifier 	{sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+	| DROP_VIEW table_name 		{sprintf($<str>$,"%s %s ",$<str>1,$<str>2);
+			add_feature("DROP_VIEW");
+}
+	| DROP_INDEX idx_name 		{sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+			add_feature("DROP_INDEX");
+}
+	| DROP_TRIGGER identifier 	{sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+			add_feature("DROP_TRIGGER");
+}
 ;
 
 
@@ -23,10 +30,12 @@ create_statement_ss : create_c_1  {$<sql_string>$=strdup($<str>1);}
 create_c_2_ss  : 
 	CREATE_TABLE table_name OPEN_BRACKET table_element_list_ss CLOSE_BRACKET opt_cr_table_extra {
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,kw_ob,$<sql_string>4,kw_cb,strdup($<str>6),0);
+		add_feature("CREATE_TABLE");
 	} 
 
 	| CREATE_TEMP_TABLE table_name OPEN_BRACKET table_element_list_ss CLOSE_BRACKET opt_cr_table_extra op_no_log {
 		$<sql_string>$=A4GLSQLCV_create_temp_table($<str>2,$<sql_string>4,$<str>6,$<str>7);
+		add_feature("CREATE_TEMP_TABLE");
 	}
 
 ;
@@ -43,11 +52,11 @@ cr_table_extra :
 
 
 cr_table_extra_entry : 
-	IN space_name {sprintf($<str>$," IN %s",$<str>2);}
-	| EXTENT_SIZE INT_VALUE {sprintf($<str>$," EXTENT SIZE %s",$<str>2); }
-	| NEXT_SIZE INT_VALUE {sprintf($<str>$," NEXT SIZE %s",$<str>2); }
-	| LOCK_MODE_PAGE {sprintf($<str>$," LOCK MODE PAGE");}
-	| LOCK_MODE_ROW {sprintf($<str>$," LOCK MODE ROW");}
+	IN space_name {sprintf($<str>$," IN %s",$<str>2);add_feature("CREATE_TABLE_IN");}
+	| EXTENT_SIZE INT_VALUE {sprintf($<str>$," EXTENT SIZE %s",$<str>2); add_feature("CREATE_TABLE_EXTENT_SIZE");}
+	| NEXT_SIZE INT_VALUE {sprintf($<str>$," NEXT SIZE %s",$<str>2); add_feature("CREATE_TABLE_NEXT_SIZE"); }
+	| LOCK_MODE_PAGE {sprintf($<str>$," LOCK MODE PAGE"); add_feature("CREATE_TABLE_LOCK_MODE"); }
+	| LOCK_MODE_ROW {sprintf($<str>$," LOCK MODE ROW"); add_feature("CREATE_TABLE_LOCK_MODE");}
 ;
 
 space_name : NAMED;
@@ -66,8 +75,15 @@ cr_index_extra_entry :
 
 
 create_c_1  : 
-	CREATE_U_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {sprintf($<str>$,"CREATE UNIQUE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);} 
+	CREATE_U_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {sprintf($<str>$,"CREATE UNIQUE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
+		add_feature("CREATE_INDEX");
+		add_feature("CREATE_INDEX_UNIQUE");
+	
+} 
 	| CREATE_UC_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
+		add_feature("CREATE_INDEX");
+		add_feature("CREATE_INDEX_UNIQUE");
+		add_feature("CREATE_INDEX_CLUSTER");
 		if (A4GLSQLCV_check_requirement("OMIT_INDEX_CLUSTER")) {
 		sprintf($<str>$,"CREATE UNIQUE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 		} else {
@@ -75,31 +91,53 @@ create_c_1  :
 		}
 	} 
 	| CREATE_C_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
+		add_feature("CREATE_INDEX");
+		add_feature("CREATE_INDEX_CLUSTER");
 		if (A4GLSQLCV_check_requirement("OMIT_INDEX_CLUSTER")) {
 			sprintf($<str>$,"CREATE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 		} else {
 			sprintf($<str>$,"CREATE CLUSTER INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 		}
 	} 
-	| CREATE_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {sprintf($<str>$," CREATE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);} 
+	| CREATE_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
+			add_feature("CREATE_INDEX");
+			sprintf($<str>$," CREATE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
+	} 
 	| CREATE_DATABASE ident_or_var {
+		add_feature("CREATE_DATABASE");
 		a4gl_yyerror("You cannot create a database from within Aubit4gl - if the target database allows - prepare and execute it manually");
 	}
 	| DROP_DATABASE ident_or_var {
+		add_feature("DROP_DATABASE");
 		a4gl_yyerror("You cannot drop a database from within Aubit4gl - if the target database allows - prepare and execute it manually");
 	}
-	| CREATE_SYNONYM table_name FOR table_name { sprintf($<str>$,"%s %s FOR %s",$<str>1,$<str>2,$<str>4); }
-	| CREATE_AUDIT_FOR table_name IN CHAR_VALUE { sprintf($<str>$,"CREATE AUDIT FOR %s IN '%s'",$<str>2,A4GL_strip_quotes($<str>4)); }
-	| DROP_AUDIT_FOR table_name  { sprintf($<str>$,"DROP AUDIT FOR %s",$<str>2); }
-	| DROP_SYNONYM table_name { sprintf($<str>$,"%s %s",$<str>1,$<str>2); }
-	| RECOVER_TABLE table_name { sprintf($<str>$,"RECOVER TABLE %s",$<str>2); }
-	| ROLLFORWARD_DATABASE var_ident_qchar { sprintf($<str>$,"ROLLFORWARD DATABASE %s",$<str>2); }
+	| CREATE_SYNONYM table_name FOR table_name { 
+			add_feature("CREATE_SYNONYM");
+			sprintf($<str>$,"%s %s FOR %s",$<str>1,$<str>2,$<str>4); 
+	}
+	| CREATE_AUDIT_FOR table_name IN CHAR_VALUE { 
+		add_feature("CREATE_AUDIT");
+		sprintf($<str>$,"CREATE AUDIT FOR %s IN '%s'",$<str>2,A4GL_strip_quotes($<str>4)); 
+	}
+	| DROP_AUDIT_FOR table_name  { 
+		add_feature("DROP_AUDIT");
+		sprintf($<str>$,"DROP AUDIT FOR %s",$<str>2); }
+	| DROP_SYNONYM table_name { 
+		add_feature("DROP_SYNONYM");
+		sprintf($<str>$,"%s %s",$<str>1,$<str>2); }
+	| RECOVER_TABLE table_name { 
+		add_feature("RECOVER_TABLE");
+		sprintf($<str>$,"RECOVER TABLE %s",$<str>2); }
+	| ROLLFORWARD_DATABASE var_ident_qchar { 
+		add_feature("ROLLFORWARD_DATABASE");
+		sprintf($<str>$,"ROLLFORWARD DATABASE %s",$<str>2); }
 ;
 
 
 
 op_no_log : {strcpy($<str>$,"");} 
 	| WITH_NO_LOG {
+		add_feature("SELECT_INTO_TEMP_WITH_NO_LOG");
 		if (A4GLSQLCV_check_requirement("OMIT_NO_LOG")) {
 			strcpy($<str>$,"");
 		} else {
@@ -116,6 +154,7 @@ idx_column_list :
 
 idx_column : 
  identifier ASC {
+		add_feature("CREATE_INDEX_ASC");
 		if (A4GLSQLCV_check_requirement("OMIT_INDEX_ORDER")) {
 			sprintf($<str>$,"%s",$<str>1);
 		} else {
@@ -123,6 +162,7 @@ idx_column :
 		}
 }
 | identifier DESC {
+		add_feature("CREATE_INDEX_ASC_DESC");
 		if (A4GLSQLCV_check_requirement("OMIT_INDEX_ORDER")) {
 			sprintf($<str>$,"%s",$<str>1);
 		} else {
@@ -157,12 +197,15 @@ table_element_ss:
 
 
 alter_statement_ss : ALTER_TABLE identifier alter_clauses_ss {
+		add_feature("ALTER_TABLE");
 	$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,$<sql_string>3,0);
 	}
 	| ALTER_INDEX idx_name TO_CLUSTER {
+		add_feature("ALTER_INDEX_CLUSTER");
 		$<sql_string>$=make_sql_string_and_free(strdup("ALTER INDEX "),strdup($<str>2),strdup(" TO CLUSTER"),0);
 		}
 	| ALTER_INDEX idx_name TO_NOT_CLUSTER {
+		add_feature("ALTER_INDEX_NOT_CLUSTER");
 		$<sql_string>$=make_sql_string_and_free(strdup("ALTER INDEX "),strdup($<str>2),strdup(" TO NOT CLUSTER"),0);
 		}
 ;

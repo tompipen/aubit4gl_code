@@ -5,7 +5,7 @@
 */
 
 rollback_statement:
-	ROLLBACK_W  {  A4GL_add_feature("ROLLBACK_WORK"); }
+	ROLLBACK_W  {  add_feature("ROLLBACK_WORK"); }
 ;
 
 
@@ -15,10 +15,10 @@ insert_statement_ss:
 	table_name  { strcpy(current_ins_table,$<str>3);}
 	op_insert_column_list 
 	ins_2_ss {
-		
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1), kw_space,strdup($<str>3),kw_space,strdup($<str>5),kw_space,$<sql_string>6,0); 
 		$<sql_string>$=A4GLSQLCV_generate_ins_string(current_ins_table,$<sql_string>$);
 			pop_all_gen(INSCOL,"!"); pop_all_gen(INSVAL,"!"); 
+		add_feature("ANSI_INSERT");
 	}
 ;
 
@@ -27,7 +27,9 @@ ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET { i
 ;
 
 op_insert_column_list: {strcpy($<str>$,""); push_gen(INSCOL,"*"); }
-	| OPEN_BRACKET insert_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+	| OPEN_BRACKET insert_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
+			 add_feature("INSERT_COLUMNLIST_EQ_VALUELIST");
+		}
 ;
 
 
@@ -69,18 +71,16 @@ delete_statement_search_ss:
 	DELETE_FROM table_name op_where_clause_ss
               {
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,$<sql_string>3,0);
+			if (strstr($<sql_string>3," EXISTS ")) {
+				add_feature("DELETE_FROM_WHERE_EXISTS_SUBSELECT");
+			}
 		}
 ;
-/*
-order_by_clause_ss: order_by_clause {
-	$<sql_string>$=strdup($<str>1);
-}
-;*/
 
 
 order_by_clause:
 	ORDER BY sort_specification_list
-	{sprintf($<str>$,"ORDER BY %s",$<str>3);}
+	{sprintf($<str>$,"ORDER BY %s",$<str>3); add_feature("ORDER_BY");}
 ;
 
 sort_specification_list:
@@ -91,33 +91,36 @@ sort_specification_list:
 sort_specification: sort_spec op_asc_desc {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
 ;
 
-sort_spec: INT_VALUE 
+sort_spec: INT_VALUE  { add_feature("ORDER_BY_NUMBER");}
 	| column_name 
 ;
 
 op_asc_desc: {strcpy($<str>$,"");}
 	| ASC 
+		{add_feature("ORDER_BY_ASC"); strcpy($<str>$,"ASC");}
 	| DESC
+		{add_feature("ORDER_BY_DESC"); strcpy($<str>$,"DESC");}
 ;
 
-begin_statement: BEGIN_WORK  { A4GL_add_feature("BEGIN_WORK"); }
+begin_statement: BEGIN_WORK  { add_feature("BEGIN_WORK"); }
 ;
 
 commit_statement:
-	COMMIT_W  { A4GL_add_feature("COMMIT_WORK"); }
+	COMMIT_W  { add_feature("COMMIT_WORK"); }
 ;
 
 
-op_exclusive :
+op_db_exclusive :
 		{strcpy($<str>$,"");}
 	|	EXCLUSIVE {
+		add_feature("DATABASE_EXCLUSIVE");
 		strcpy($<str>$,"EXCLUSIVE");
 	}
 ;
 
 
 set_database_cmd : 
-       DATABASE var_ident_qchar op_exclusive
+       DATABASE var_ident_qchar op_db_exclusive
 {
 if (strcmp($<str>2,"?")==0) {
 	print_init_conn(0);
@@ -129,13 +132,13 @@ if (strcmp($<str>2,"?")==0) {
 ;
 
 other_misc_infx_stmt  :
-        UPDATESTATS_T   identifier {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
-        | UPDATESTATS
+        UPDATESTATS_T   identifier {sprintf($<str>$,"%s %s",$<str>1,$<str>2); add_feature("UPDATE_STATISTICS_TABLE");}
+        | UPDATESTATS {add_feature("UPDATE_STATISTICS");}
 ;
 
 
 misc_infx_stmt: 
-	MISC_INFX_SQL
+	MISC_INFX_SQL 
 	| other_misc_infx_stmt
 ;
 
@@ -167,10 +170,10 @@ sql_commands :
 
 
 privilege_definition:
-	GRANT privileges ON table_name TO grantee_list op_with_grant_option {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);  A4GL_add_feature("GRANT"); }
-	| REVOKE privileges ON table_name FROM grantee_list  {sprintf($<str>$,"%s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);  A4GL_add_feature("REVOKE"); }
-	| GRANT db_priv TO grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4); A4GL_add_feature("GRANT"); }
-	| REVOKE db_priv FROM grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4);  A4GL_add_feature("REVOKE"); }
+	GRANT privileges ON table_name TO grantee_list op_with_grant_option {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);  add_feature("GRANT"); }
+	| REVOKE privileges ON table_name FROM grantee_list  {sprintf($<str>$,"%s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);  add_feature("REVOKE"); }
+	| GRANT db_priv TO grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4); add_feature("GRANT"); }
+	| REVOKE db_priv FROM grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4);  add_feature("REVOKE"); }
 ;
 
 
@@ -329,11 +332,10 @@ table_constraint_definition_ss:
 
 
 default_clause:
-	  DEFAULT literal {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-	  | DEFAULT_USER {sprintf($<str>$," DEFAULT USER");}
-	  | DEFAULT_TODAY {sprintf($<str>$," DEFAULT TODAY");}
-	| DEFAULT_NULL
-{sprintf($<str>$," %s",$<str>1);}
+	  DEFAULT literal {sprintf($<str>$," %s %s",$<str>1,$<str>2); add_feature("DDL_DEFAULT_VALUE"); }
+	  | DEFAULT_USER {sprintf($<str>$," DEFAULT USER"); add_feature("DDL_DEFAULT_VALUE"); }
+	  | DEFAULT_TODAY {sprintf($<str>$," DEFAULT TODAY"); add_feature("DDL_DEFAULT_VALUE"); }
+	  | DEFAULT_NULL { sprintf($<str>$," %s",$<str>1); add_feature("DDL_DEFAULT_VALUE"); }
 ;
 
 
@@ -442,7 +444,7 @@ schema_element_ss:
 
 having_clause_ss:
 	HAVING search_condition_ss {
-		 A4GL_add_feature("HAVING"); 
+		 add_feature("HAVING"); 
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,$<sql_string>2,0);
 	}
 ;
@@ -450,7 +452,7 @@ having_clause_ss:
 
 group_by_clause_ss:
 	GROUP_BY column_specification_list_ss {
-		 A4GL_add_feature("GROUP_BY"); 
+		 add_feature("GROUP_BY"); 
 		$<sql_string>$=make_sql_string_and_free(strdup("GROUP BY "),$<sql_string>2,0);
 	}
 ;
@@ -488,8 +490,8 @@ table_reference_list:
 
 table_reference:
 	  tname {sprintf($<str>$," %s ", $<str>1);}
-	| OUTER tname {sprintf($<str>$," %s %s ",$<str>1,$<str>2);}
-	| OUTER OPEN_BRACKET tname_list  CLOSE_BRACKET {sprintf($<str>$," %s (%s) ",$<str>1,$<str>3);}
+	| OUTER tname {sprintf($<str>$," %s %s ",$<str>1,$<str>2); add_feature("SELECT_OUTER");}
+	| OUTER OPEN_BRACKET tname_list  CLOSE_BRACKET {sprintf($<str>$," %s (%s) ",$<str>1,$<str>3);add_feature("SELECT_OUTER");}
 ;
 
 tname: table_name  { strcpy($<str>$,A4GLSQLCV_make_tablename($<str>1,0));}
@@ -501,19 +503,6 @@ tname: table_name  { strcpy($<str>$,A4GLSQLCV_make_tablename($<str>1,0));}
 tname_list : table_reference | tname_list KW_COMMA table_reference { sprintf($<str>$," %s,%s ",$<str>1,$<str>3);  }
 ;
 
-/*
-table_expression_old_ss:
-	from_clause  
-	op_where_clause_ss
-	op_group_by_clause_ss
-	op_having_clause_ss {
-		if (table_cnt>1) {
-			printf("Warning : possible missing link between tables in select @ line %d\n",yylineno);
-		}
-		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,$<sql_string>2,kw_space,$<sql_string>3,kw_space,$<sql_string>4,0);
-	}
-;
-*/
 
 table_expression_2_ss: from_clause  op_where_clause_2_ss
 		{$<sql_string>$=make_sql_string_and_free($<str>1," ",$<sql_string>2,0);}
@@ -531,11 +520,6 @@ op_group_by_clause_2_ss:
 
 
 
-/*
-op_having_clause_2_ss : op_order_by_clause_ss  {$<sql_string>$=$<sql_string>1;}
-	| having_clause_ss op_order_by_clause_ss {$<sql_string>$=make_sql_string_and_free($<sql_string>1," ",$<sql_string>2,0);}
-;
-*/
 
 
 op_having_clause_2_ss :  {$<sql_string>$=strdup("");}
@@ -544,30 +528,10 @@ op_having_clause_2_ss :  {$<sql_string>$=strdup("");}
 
 
 
-/*
-op_order_by_clause_ss:
-	{$<sql_string>$=strdup("");}
-	| order_by_clause_ss {$<sql_string>$=$<sql_string>1;}
-*/
-
 
 op_where_clause_ss:  { $<sql_string>$=strdup("");}
 	| where_clause_ss {$<sql_string>$=$<sql_string>1;}
 ;
-/*
-op_group_by_clause_ss:  {
-	$<sql_string>$=strdup("");
-}
-	| group_by_clause_ss {
-		$<sql_string>$=$<sql_string>1;
-}
-;
-*/
-/*
-op_having_clause_ss: {$<sql_string>$=strdup("");}
-	| having_clause_ss {$<sql_string>$=$<sql_string>1;}
-;
-*/
 
 search_condition_ss:
 	boolean_term_ss {
@@ -616,10 +580,10 @@ exists_predicate_ss:
 
 
 
-op_escape:
-		{strcpy($<str>$,"");}
-	| ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-;
+op_escape: {strcpy($<str>$,"");} 	 | ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);} 
+op_matches_escape: {strcpy($<str>$,"");} | ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_MATCHES_ESCAPE");} ;
+op_ilike_escape: {strcpy($<str>$,"");} 	 | ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_ILIKE_ESCAPE");} ;
+op_like_escape: {strcpy($<str>$,"");} 	 | ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_LIKE_ESCAPE");} ;
 
 pattern_ss:
 	value_expression_initial_ss {$<sql_string>$=$<sql_string>1;}
@@ -671,11 +635,11 @@ comparison_predicate_ss:
 	}
 	| value_expression_ss op_not BETWEEN value_expression_ss KW_AND value_expression_ss { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),strdup(" BETWEEN "),$<sql_string>4,strdup(" AND "),$<sql_string>6,0);
 	}
-	| value_expression_ss LIKE pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
-	| value_expression_ss NOT_LIKE pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
-	| value_expression_ss ILIKE pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
-	| value_expression_ss NOT_ILIKE pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
-	| value_expression_ss op_not MATCHES pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2), strdup(A4GLSQLCV_matches_string($<sql_string>4,$<str>5)),0);
+	| value_expression_ss LIKE pattern_ss op_like_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
+	| value_expression_ss NOT_LIKE pattern_ss op_like_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
+	| value_expression_ss ILIKE pattern_ss op_ilike_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
+	| value_expression_ss NOT_ILIKE pattern_ss op_ilike_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
+	| value_expression_ss op_not MATCHES pattern_ss op_matches_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2), strdup(A4GLSQLCV_matches_string($<sql_string>4,$<str>5)),0);
 		}
 ;
 
@@ -740,16 +704,20 @@ char_string_type:
 ;
 
 exact_numeric_type:
-	SERIAL  {strcpy($<str>$,"SERIAL");}
+	SERIAL  {strcpy($<str>$,"SERIAL"); add_feature("DDL_SERIAL"); }
 	| SERIAL OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+			add_feature("DDL_SERIAL");
 			if (A4GLSQLCV_check_requirement("NO_SERIAL_START_VALUE"))  {
 				sprintf($<str>$,"SERIAL");
 			} else {
 				sprintf($<str>$,"SERIAL(%s)",$<str>3);
 			}
 	}
-	| KW_DECIMAL 
+	| KW_DECIMAL  {
+ 			add_feature("DDL_DECIMAL");
+	}
 	| KW_DECIMAL OPEN_BRACKET precision op_scale CLOSE_BRACKET {
+ 			add_feature("DDL_DECIMAL");
 		if (strlen($<str>4)) {
 			sprintf($<str>$,"DECIMAL(%s%s)",$<str>3,$<str>4);
 		} else {
@@ -757,6 +725,7 @@ exact_numeric_type:
 		}
 	}
 	| MONEY OPEN_BRACKET precision op_scale CLOSE_BRACKET {
+ 			add_feature("DDL_MONEY");
 		if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
 			sprintf($<str>$," DECIMAL(%s%s)",$<str>3,$<str>4);
 		} else {
@@ -766,36 +735,40 @@ exact_numeric_type:
 
 
 	| MONEY  {
+ 			add_feature("DDL_MONEY");
 		if (A4GLSQLCV_check_requirement ("MONEY_AS_DECIMAL")) {
 			strcpy($<str>$,"DECIMAL");
 		} else {
 			strcpy($<str>$,"MONEY");
 		}
 	}
-        | KW_DATE {strcpy($<str>$,"DATE");}
+        | KW_DATE {strcpy($<str>$,"DATE");
+ 			add_feature("DDL_DATE"); }
 	| INTEGER {strcpy($<str>$,"INTEGER");}
 	| SMALLINT {strcpy($<str>$,"SMALLINT");}
-	| NCHAR {strcpy($<str>$,"NCHAR");}
-	| NCHAR OPEN_BRACKET length CLOSE_BRACKET {sprintf($<str>$,"NCHAR(%s)",$<str>3);}
-	| NVARCHAR
-	| NVARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"NVARCHAR(%s)",$<str>3);}
+	| NCHAR {strcpy($<str>$,"NCHAR"); add_feature("DDL_NCHAR");}
+	| NCHAR OPEN_BRACKET length CLOSE_BRACKET {sprintf($<str>$,"NCHAR(%s)",$<str>3); add_feature("DDL_NCHAR");}
+	| NVARCHAR {add_feature("DDL_NVARCHAR");}
+	| NVARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"NVARCHAR(%s)",$<str>3); add_feature("DDL_NVARCHAR");}
 	| NVARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
+			add_feature("DDL_NVARCHAR");
 			if (A4GLSQLCV_check_requirement("IGNORE_DTYPE_VARCHAR_MIN"))  {
 				sprintf($<str>$,"NVARCHAR(%s)",$<str>3);
 			} else {
 				sprintf($<str>$,"NVARCHAR(%s,%s)",$<str>3,$<str>5);
 			}
 	}
-	| DATETIME s_curr TO e_curr {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
-	| DATETIME 
-	| INTERVAL s_curr TO e_curr {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
-	| INTERVAL
-	| INTERVAL s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET TO e_curr {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
-	| TEXT
-	| KW_BYTE
-	| VARCHAR
-	| VARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"VARCHAR(%s)",$<str>3);}
+	| DATETIME s_curr TO e_curr {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); add_feature("DDL_DATETIME");}
+	| DATETIME  {add_feature("DDL_DATETIME");}
+	| INTERVAL s_curr TO e_curr {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); add_feature("DDL_INTERVAL");}
+	| INTERVAL {add_feature("DDL_INTERVAL");}
+	| INTERVAL s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET TO e_curr {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7); add_feature("DDL_INTERVAL");}
+	| TEXT {add_feature("DDL_TEXT");}
+	| KW_BYTE {add_feature("DDL_BYTE");}
+	| VARCHAR {add_feature("DDL_VARCHAR");}
+	| VARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"VARCHAR(%s)",$<str>3);add_feature("DDL_VARCHAR");}
 	| VARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
+			add_feature("DDL_VARCHAR");
 			if (A4GLSQLCV_check_requirement("IGNORE_DTYPE_VARCHAR_MIN"))  {
 				sprintf($<str>$,"VARCHAR(%s)",$<str>3);
 			} else {
@@ -1230,20 +1203,22 @@ select_statement_unload : select_statement2_ss sel_finish_unload {
 
 
 unload_cmd :  opt_use UNLOAD_TO ufile opt_delim select_statement_unload {
-print_unload($<str>3,$<str>4,$<sql_string>5);
-print_undo_use($<str>1);
+	add_feature("UNLOAD");
+	print_unload($<str>3,$<str>4,$<sql_string>5);
+	print_undo_use($<str>1);
 }
 ;
 
 
 load_cmd :  
 opt_use LOAD_FROM ufile opt_delim INSERT_INTO table_name opt_col_list {
-print_load($<str>3,$<str>4,$<str>6,$<str>7);
-print_undo_use($<str>1);
+	add_feature("LOAD");
+	print_load($<str>3,$<str>4,$<str>6,$<str>7);
+	print_undo_use($<str>1);
 }
 | opt_use LOAD_FROM ufile opt_delim variable {
-print_load_str($<str>3,$<str>4,$<str>5);
-print_undo_use($<str>1);
+	print_load_str($<str>3,$<str>4,$<str>5);
+	print_undo_use($<str>1);
 }
 
 ;
