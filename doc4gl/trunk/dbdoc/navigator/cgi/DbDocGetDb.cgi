@@ -12,11 +12,12 @@ use CGI qw/:standard/;
 use CGI::Carp qw(fatalsToBrowser);
 use DBI;
 
-#  This should be more generic but for now it stays 
+#  This should be more generic but for now it stays
 sub ValInformixEnv
 {
-   $ENV{INFORMIXDIR} = "/usr/informix";
-   $ENV{INFORMIXSERVER} = "unstable";
+    #FIXME: get this from Autoconf:
+   $ENV{INFORMIXDIR} = "/opt/informix";
+   $ENV{INFORMIXSERVER} = "aptiva_ids";
 }
 
 sub DbDocError
@@ -31,18 +32,27 @@ sub DbDocError
 	ValInformixEnv();
 
   $serversfile="$ENV{INFORMIXDIR}/etc/sqlhosts";
-  @servers = `cat $serversfile|grep -v '^#'|grep -v '^ *\$'|cut -d' ' -f1`;
-  #print "Servers: ", @servers,br;
+
+  @servers = `cat $serversfile|grep -v '^#'|grep -v '^ *\$'|  sed -e 's/	/ /g' | cut -d' ' -f1`;
+
+  if (defined($DEBUG)) {
+  	print "Servers: ", @servers,br;
+  }
   print h1("AVAILABLE DATABASES");
 
   foreach $server ( @servers )
   {
-	  chomp($server);
-	  #print br,"Server: $server",br,"<BLOCKQUOTE>";
+	 chomp($server);
      $ENV{INFORMIXSERVER} = $server;
      $Database = "sysmaster";
 
-     $dbh = DBI->connect("dbi:Informix:$Database");
+	 if (defined($DEBUG)) {
+		 print br,"Server: $server",br,"Database: $Database<BLOCKQUOTE>";
+     }
+
+     $dbh = DBI->connect("dbi:Informix:$Database")
+		or die "Error connecting to DB.";
+		#or die "Error connecting to DB: " .  $dbh->errstr;
 
 	   print "<HR><H2>Server: $ENV{INFORMIXSERVER}</H2>";
 	   print "<BLOCKQUOTE>";

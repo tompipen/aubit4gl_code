@@ -163,7 +163,7 @@ function     get_esquema()
 		existe_extensao smallint,
 		desc_tabela     char(254),
 		dumm smallint
-	
+
 	whenever error stop
 	let str_sel = "select  systables.tabname, systables.tabid, colname, ",
 					  " syscolumns.colno, ",
@@ -273,7 +273,7 @@ function 	 get_chaves(tabela,idtabela)
    define
 		tabela   char(19),
 		idtabela integer
-   
+
 	initialize chave_primaria to null
 	if not get_primaria_explicita(tabela,idtabela) then
 		if not get_primaria_unique(tabela,idtabela) then
@@ -688,14 +688,16 @@ function GetValidacoes(idtabela,nocoluna)
 		return
 	end if
 
-	let str_matches = "*", pr_esquema.nome_col clipped, "*"
+	#let str_matches = "*", pr_esquema.nome_col clipped, "*"
+	let str_matches = "%", pr_esquema.nome_col clipped, "%"
 	declare cr_validacao cursor for
 	select checktext from tmp_checks
-		where checktext matches str_matches
+		#where checktext matches str_matches
+        where checktext like str_matches
 	let idx_validacoes = 1
 	let pr_esquema.inc_col = ""
 	foreach cr_validacao into PrValidacoes[idx_validacoes].texto
-		let pr_esquema.inc_col = pr_esquema.inc_col clipped, 
+		let pr_esquema.inc_col = pr_esquema.inc_col clipped,
 			 PrValidacoes[idx_validacoes].texto clipped
 	   let idx_validacoes = idx_validacoes + 1
 	end foreach
@@ -703,9 +705,9 @@ function GetValidacoes(idtabela,nocoluna)
 	close cr_validacao
 end function
 
-#  ============================================================================ 
+#  ============================================================================
 #  Fim das validacoes
-#  ============================================================================ 
+#  ============================================================================
 function FimValidacoes()
 	delete from tmp_checks
 	let TextoValidacoes = ""
@@ -776,21 +778,21 @@ end function
 #  Mostra a lista de tabelas orgaizada por ordem alfabetica em formato HTML
 #  ============================================================================ 
 report     r_html_tabelas(nome_tabela,desc_tabela)
-{}
+
    define
 		nome_tabela char(19),
 		starterr smallint,
 		desc_tabela char(254)
 
-   
-   
-   
-   
-   
-   
-   
-   
-   
+
+
+
+
+
+
+
+
+
    output
 		 left margin 0
 		 top margin 0
@@ -1138,7 +1140,8 @@ end function
 #  ============================================================================ 
 #  Lista de modulos de uma base de dados
 #  ============================================================================ 
-report     r_html_modulos(codigo,nome) 
+report     r_html_modulos(codigo,nome)
+
    define
 		codigo char(5),
 		starterr smallint,
@@ -1149,7 +1152,7 @@ report     r_html_modulos(codigo,nome)
 		bottom margin 0
 		page length 10000
 		left margin 0
-	
+
 	format
 
 		first page header
@@ -1157,7 +1160,9 @@ report     r_html_modulos(codigo,nome)
 				 let starterr = icgi_start()
 			    print "<HTML>"
 			    print "<HEAD>"
-			    print "<META NAME=\"Generator\" CONTENT=\"bdesquema\">"
+
+				print "<META NAME=\"Generator\" CONTENT=\"bdesquema\">"
+
 			    print "<TITLE> "
 			    print "Módulos da base de dados : ",bdados
 			    print "</TITLE> "
@@ -1172,7 +1177,7 @@ report     r_html_modulos(codigo,nome)
           display "<CENTER><BR>"
 	       display "<TABLE BORDER=0 WIDTH='100%' CELLSPACING=0 CELLPADDING=6 ",
 			         "BGCOLOR='#000000'>",
-			         "<TR> <TD>" 
+			         "<TR> <TD>"
           display "<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 ",
 			         "BGCOLOR='#CC3300' WIDTH='100%'>",
 			        "<TR><TD ALIGN=CENTER>"
@@ -1183,9 +1188,11 @@ report     r_html_modulos(codigo,nome)
 		   print nome clipped
 		   print "</TD>"
 		   print "<TD>"
+
 			print    "<B><A HREF=\"/cgi-bin/r4gl?bdesquema&bdesquema&",
-						bdados clipped, 
+						bdados clipped,
 						"&TABMOD&",codigo clipped, "\"></B>"
+
 			print    "<P>"
 			print codigo clipped
 			print       "</A>"
@@ -1195,9 +1202,11 @@ report     r_html_modulos(codigo,nome)
 			print "Tabelas nao associadas a qualquer módulo"
 		   print "</TD>"
 		   print "<TD>"
+
 			print       "<A HREF=\"/cgi-bin/r4gl?bdesquema&bdesquema&",
-					      bdados clipped, 
+					      bdados clipped,
 					      "&TABMOD&SMOD\">SemMod</A>"
+
 			print "</TD></TR>"
 			print "</TABLE>"
 	      display "</TD></TR>"
@@ -1205,8 +1214,10 @@ report     r_html_modulos(codigo,nome)
 	      display "</TD></TR>"
 	      display "</TABLE>"
 			print "</BLOCKQUOTE>"
+
 			print       "<A HREF='/cgi-bin/r4gl?bdesquema&BdeUtil&",
 					      bdados clipped, "'>Utiltários</A>"
+
 			print "<P><FONT SIZE=-2><I>&copy Despodata"
 
 #			print "<FORM>"
@@ -1218,4 +1229,6 @@ report     r_html_modulos(codigo,nome)
 #		print "</FORM>"
 			print "</BODY>"
 end report
+
+
 

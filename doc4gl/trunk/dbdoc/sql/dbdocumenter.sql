@@ -1,3 +1,10 @@
+-- This DDL is now integrated in doc4gl/manager/P4glRepository.pm, since
+-- this Doc4GL module is used to vreate Doc4GL database repository, and we
+-- want to use Dbdoc together with Doc4GL, as one tool, so we want to have
+-- integrated database.
+
+-- Use this script ONLY if you want to use Dbdoc WITHOUT the rest of the Doc4GL
+
 
 create table systableext 
 (

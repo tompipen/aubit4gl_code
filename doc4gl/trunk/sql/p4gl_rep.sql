@@ -1,3 +1,6 @@
+-- Don't use this script - use "fgldoc --action=createRepository" instead to
+-- create Doc4GL and Dbdoc repository
+
 
 -- ============================================================================
 -- Repositório de sobre informação de programas de 4gl 
@@ -5,6 +8,11 @@
 -- ============================================================================
 
 {
+-- don't use this - use "fgldoc --action=dropRepository"
+-- to drop Doc4gl/DBdoc database repository, or
+-- 	"fgldoc --clean_repository" to delete data
+
+
 drop table p4gl_package;
 drop table p4gl_program;
 drop table p4gl_module;

@@ -43,7 +43,8 @@ sub getParameters {
 #  ==========================================================================
 sub InformixEnvironment()
 {
-   $ENV{INFORMIXDIR}="/usr/informix";
+   #FIXME: get this from Autoconf
+   $ENV{INFORMIXDIR}="/opt/informix";
 }
 
 
@@ -124,11 +125,18 @@ sub otherOptions() {
 #  ==========================================================================
 sub connectDatabase {
 	$DBName = param("database");
+   	$server = param("server");
 	if (!defined($DBName)) {
 		$DBName = "despodata";
 	}
-  $db = DBI->connect ( "dbi:Informix:".$DBName ) or 
-				die "Impossivel conectar à BD\n";
+
+	 if (defined($DEBUG)) {
+		 print br,"Server: $server",br,"Database: $DBName<BLOCKQUOTE>";
+     }
+
+  $ENV{INFORMIXSERVER} = $server;
+  $db = DBI->connect ( "dbi:Informix:".$DBName ) or
+				die "Error connecting to DB $DBName\@$server\n";
 }
 
 

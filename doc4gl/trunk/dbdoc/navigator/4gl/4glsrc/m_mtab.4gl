@@ -1,4 +1,4 @@
-GLOBALS "/usr/desenvolv/include/d_libglob.4gl"
+GLOBALS "4glsrc/d_libglob.4gl"
 
 define
    pr_chaves record

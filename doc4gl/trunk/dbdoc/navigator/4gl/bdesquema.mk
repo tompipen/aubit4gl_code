@@ -3,7 +3,7 @@ PROG		= bdesquema
 
 GLOBALS.4gl	= main_bde.4gl
 
-FILEs.lib   =alllib.lib
+FILES.lib   =alllib.lib
 
 
 FILES.4gl	= \

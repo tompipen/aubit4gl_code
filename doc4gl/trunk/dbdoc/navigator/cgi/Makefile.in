@@ -1,13 +1,55 @@
-
-
-
 # Compilacao e instalacao do Bdesquema na sua versao perl
 
-MODULES=DbDocModules.cgi DbDocument.cgi DbDocGetDb.cgi DbDocUpdDescription.cgi \
-DbAudit.cgi
-CGI_BIN=/usr/lib/cgi-bin
+ROOT    =../../..
 
-.PHONY:install
+include ${ROOT}/FgldocDefs.mk
+
+# =========================================================================
+#                           Settings
+# =========================================================================
+
+
+MODULES=\
+	DbDocModules.cgi \
+	DbDocument.cgi \
+	DbDocGetDb.cgi \
+	DbDocUpdDescription.cgi \
+	DbAudit.cgi
+
+
+.PHONY:install clean
+
+# =========================================================================
+#                           Targets
+# =========================================================================
 
 install:
-	cp $(MODULES) $(CGI_BIN)
+	${CP} $(MODULES) $(CGI_BIN)
+	cd $(CGI_BIN); chown apache $(MODULES)
+	cd $(CGI_BIN); chgrp apache $(MODULES)
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             DBdoc CGI browser installed..                          |"
+	@echo "|       Access it at http://localhost/cgi-bin/DbDocGetDb.cgi         |"
+	@echo "| NOTE: database access will be performed under username which is    |"
+	@echo "|       used to run web server - therefore you will need to GRANT    |"
+	@echo "|       CONNECT to this user for each database you wish to access.   |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
+
+# =========================================================================
+#                           Clean
+# =========================================================================
+
+clean:
+	${RM} *.bak
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             DBdoc CGI browser source code now clean.               |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+Makefile: Makefile.in
+	cd ${ROOT}; config.status --file=dbdoc/navigator/cgi/Makefile; cd -

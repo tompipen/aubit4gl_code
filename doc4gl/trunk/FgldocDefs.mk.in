@@ -3,7 +3,7 @@
 #
 #  It was developed by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: FgldocDefs.mk.in,v 1.13 2003-05-13 11:29:50 afalout Exp $
+#  $Id: FgldocDefs.mk.in,v 1.14 2003-05-26 10:06:36 afalout Exp $
 #
 #  ==========================================================================
 
@@ -58,6 +58,10 @@ BINDIR			=@prefix@/bin
 #name we will use for the browser application URL, war file, etc.,
 JSP_APP_NAME	=@JSP_APP_NAME@
 
+#name we will use for the DBbrowser application URL, war file, etc.,
+JSP_DBAPP_NAME	=@JSP_DBAPP_NAME@
+
+
 #Name of the directory to install Perl manager application:
 PERL_APP_NAME	=@PERL_APP_NAME@
 
@@ -77,6 +81,11 @@ endif
 #  ==========================================================================
 TOMCAT_DIR		=@TOMCAT_DIR@
 
+
+#Where to install Dbdoc CGI-BIN navigator component:
+#CGI_BIN=/usr/lib/cgi-bin
+#CGI_BIN=/var/www/cgi-bin
+CGI_BIN=@CGI_DIR@
 
 #  ==========================================================================
 #  Application dir inside tomcat, or other jsp container.
@@ -106,6 +115,16 @@ DOC4GL_SERVICE=@DOC4GL_SERVICE@
 DOC4GL_HOSTNAME=@DOC4GL_HOSTNAME@
 DOC4GL_SGDBURL=@DOC4GL_SGDBURL@
 DOC4GL_CONNECTIONTYPE=@DOC4GL_CONNECTIONTYPE@
+
+
+DBDOC_USERNAME=@DBD_INFORMIX_USERNAME@
+DBDOC_PASSWORD=@DBD_INFORMIX_PASSWORD@
+DBDOC_SERVER=@DBDOC_SERVER@
+DBDOC_DBNAME=@DBDOC_DBNAME@
+DBDOC_SERVICE=@DBDOC_SERVICE@
+DBDOC_HOSTNAME=@DBDOC_HOSTNAME@
+DBDOC_SGDBURL=@DBDOC_SGDBURL@
+DBDOC_CONNECTIONTYPE=@DBDOC_CONNECTIONTYPE@
 
 
 #location where shared jar files can be found / storred

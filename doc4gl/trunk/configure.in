@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.14 2003-05-09 08:41:44 afalout Exp $
+dnl # $Id: configure.in,v 1.15 2003-05-26 10:06:36 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -335,10 +335,19 @@ AC_SUBST(DOC4GL_SERVICE)
 AC_SUBST(DOC4GL_HOSTNAME)
 AC_SUBST(DOC4GL_SGDBURL)
 AC_SUBST(DOC4GL_CONNECTIONTYPE)
+
+AC_SUBST(DBDOC_SERVER)
+AC_SUBST(DBDOC_DBNAME)
+AC_SUBST(DBDOC_SERVICE)
+AC_SUBST(DBDOC_HOSTNAME)
+AC_SUBST(DBDOC_SGDBURL)
+AC_SUBST(DBDOC_CONNECTIONTYPE)
+
 AC_SUBST(TOMCAT_USER)
 AC_SUBST(TOMCAT_PASSWORD)
 
 AC_SUBST(JSP_APP_NAME)
+AC_SUBST(JSP_DBAPP_NAME)
 AC_SUBST(PERL_APP_NAME)
 
 
@@ -359,6 +368,7 @@ fi
 
 #name we will use for the browser application URL, war file, etc.,
 JSP_APP_NAME=fgldocumenter
+JSP_DBAPP_NAME=dbdocumenter
 
 #Name of the directory to install Perl manager application:
 PERL_APP_NAME=$JSP_APP_NAME
@@ -395,20 +405,30 @@ TOMCAT_DIR=no
 #for this purpose. User is expected to pass default db name in most cases, using
 #--with-doc4gl-db autoconf flag:
 DOC4GL_DB="p4gl_repository"
+DBDOC_DBNAME=$DOC4GL_DB
+
 DBD_INFORMIX_USERNAME="informix"
 DBD_INFORMIX_PASSWORD="U-N-K-N-O-W-N"
-DOC4GL_SERVER="INFORMIXSERVER=unstable"
-DOC4GL_SERVICE=1530
 
-#Apparently localhost and 127.0.0.1 (loopback interface) will not work when 
+DOC4GL_SERVER="INFORMIXSERVER=unstable"
+DBDOC_SERVER=$DOC4GL_SERVER
+
+DOC4GL_SERVICE=1530
+DBDOC_SERVICE=$DOC4GL_SERVICE
+
+#Apparently localhost and 127.0.0.1 (loopback interface) will not work when
 #used in Informix JDBC driver connection string - must use host name or IP address
 DOC4GL_HOSTNAME=`hostname`
+DBDOC_HOSTNAME=$DOC4GL_HOSTNAME
 
 DOC4GL_SGDBURL="informix-sqli"
+DBDOC_SGDBURL=$DOC4GL_SGDBURL
+
 DOC4GL_CONNECTIONTYPE="jdbc"
+DBDOC_CONNECTIONTYPE=$DOC4GL_CONNECTIONTYPE
+
 TOMCAT_USER=admin
 TOMCAT_PASSWORD=tomcat
-
 
 #defaults for doc4glrc:
 A4GL_SQLTYPE=nosql
@@ -580,6 +600,10 @@ PHP_CONFIGURE_PART(Creating/verifying Doc4GL Database:)
 		#p4gl_process p4gl_fun_process p4gl_fun_parameter p4gl_fun_return
 		#p4gl_fun_todo p4gl_table_usage p4gl_excel
 
+		
+		#FIIIIIIIIIIIIIIIXXXXXXXXXXXXXXXXXXXXMEEE!!!!!
+        #We should use use "fgldoc --action=createRepository" instead here!
+
 		AC_MSG_CHECKING('$DOC4GL_DB' db tables - p4gl_rep)
 		dbaccess $DOC4GL_DB -qcr sql/p4gl_rep > /tmp/p4gl_rep.log 2>&1
 		RET=$?
@@ -587,9 +611,21 @@ PHP_CONFIGURE_PART(Creating/verifying Doc4GL Database:)
 	        AC_MSG_WARN(Statement returned code $RET. See /tmp/p4gl_rep.log)
         else
 			#TableOOPScreated.OOPSDOOPStabase closed
-			AC_MSG_RESULT(Created)
+			AC_MSG_RESULT(Created - Doc4GL)
 		fi
-    else
+
+		#And now, Dbdoc tables:
+		dbaccess $DOC4GL_DB -qcr dbdoc/sql/dbdocumenter > /tmp/dbdocumenter.log 2>&1
+		RET=$?
+		if test "$RET" != "0"; then
+	        AC_MSG_WARN(Statement returned code $RET. See /tmp/dbdocumenter.log)
+        else
+			#TableOOPScreated.OOPSDOOPStabase closed
+			AC_MSG_RESULT(Created - DBdoc)
+		fi
+
+
+	else
 		AC_MSG_RESULT(OK)
 	fi
 
@@ -1598,8 +1634,14 @@ if test "$doc4gl_SOURCE" = "1" ; then
 				parser/Makefile
                 browser/Makefile
                 browser/build.properties
+                dbdoc/navigator/jsp/build.properties
+                dbdoc/navigator/jsp/Makefile
 				etc/fgldocrc
                 docs/Doxyfile
+				dbdoc/navigator/Makefile
+				dbdoc/navigator/4gl/Makefile
+				dbdoc/navigator/cgi/Makefile
+				dbdoc/Makefile
 				FgldocDefs.mk])
 
 else
@@ -1615,6 +1657,11 @@ if test "$PERL" != "no"; then
 	cd manager
 	$PERL Makefile.PL
     cd -
+
+	cd dbdoc/manager
+	$PERL Makefile.PL
+    cd -
+
 fi
 
 

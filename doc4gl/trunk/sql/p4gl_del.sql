@@ -1,3 +1,7 @@
+-- don't use this - use "fgldoc --action=dropRepository"
+-- to drop Doc4gl/DBdoc database repository, or
+-- 	"fgldoc --clean_repository" to delete data
+
 
 -- ============================================================================
 -- Limpeza do Repositório de sobre informação de programas de 4gl 

@@ -1,0 +1,157 @@
+
+ROOT    =..
+
+include ${ROOT}/FgldocDefs.mk
+
+# =========================================================================
+#                           Settings
+# =========================================================================
+
+
+ALL=navigator manager jdbdoc
+
+# =========================================================================
+#                           Targets
+# =========================================================================
+
+all: ${ALL}
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| All DBdoc components: ${ALL}"
+	@echo "|	            successfully compiled.                              |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+#New Java-only dbdoc
+jdbdoc:
+	${MAKE} -C jdbdoc
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             DBdoc jdbdoc component successfully compiled.          |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+#Perl manager tool, for import/export of meta-data
+manager:
+#This will invoke makefile created by Perl MakeMaker from Makefile.PL:
+	$(MAKE) -C manager
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             DBdoc manager component successfully compiled.         |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+#"Old" navigator has 3 tools: 4GL, CGI, and JSP
+navigator:
+	${MAKE} -C navigator
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             DBdoc navigator components successfully compiled.      |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+#sql
+
+
+# =========================================================================
+#                           Install
+# =========================================================================
+
+install: install.manager install.navigator install.jdbdoc
+
+###########################
+# Install DBdoc Manager component
+# This will invoke makefile created by Perl MakeMaker from Makefile.PL, so we
+# need to do some preparation work here:
+install.manager:
+#	mkdir -p $(PERL_MODULE_DIR)/img
+#	mkdir -p $(PERL_MODULE_DIR)/L10N
+	${INSTALL} manager/dbdoc ${BINDIR}
+	chmod a+x ${BINDIR}/dbdoc
+#Note that Perl generated make file will install to:
+#Installing /usr/local/lib/perl5/site_perl/5.8.0/FglDocumenter/img/ftv2lastnode.gif
+#Installing /usr/local/bin/fgldoc
+#Maybe I should use PREFIX=xyz to controll install location?
+	$(MAKE) -C manager install
+#This will be installed by Perl generated makefile, now obsolete (check!)
+#	${INSTALL} manager/FglDocumenter/*.pm $(PERL_MODULE_DIR)
+#	${INSTALL} manager/FglDocumenter/img/*.gif $(PERL_MODULE_DIR)/img
+#	${INSTALL} manager/FglDocumenter/L10N/*.pm $(PERL_MODULE_DIR)/L10N
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             DBdoc manager successfully instaled to:                |"
+	@echo "| bddoc executable in  : ${BINDIR}"
+	@echo "| Perl modules in      : $(PERL_MODULE_DIR)"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+install.navigator:
+	${MAKE} -C navigator
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             DBdoc navigator components successfully installed.     |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
+install.jdbdoc:
+	${MAKE} -C jdbdoc
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             DBdoc jdbdoc component successfully installed.         |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+# =========================================================================
+#                           Deinstall
+# =========================================================================
+
+deinstall:
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             FIXME- not implemented.                                |"
+#	@echo "|             DBdoc successfully de-installed.                       |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+deinstall.navigator:
+deinstall.jdbdoc:
+deinstall.manager:
+
+
+# =========================================================================
+#                           Clean
+# =========================================================================
+
+clean: clean.manager
+	${RM} *.bak
+	${MAKE} -C jdbdoc clean
+	${MAKE} -C navigator clean
+	cd sql; ${RM} *.bak
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             DBdoc source code tree now clean.                      |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
+###########################
+# clean all DBdoc Perl Manager files
+clean.manager:
+	$(MAKE) -C manager clean
+#Perl created makefile - from Makefile.PL - will rename Makefle to Makefile.old
+#so we have to restore that:
+	cd manager; mv Makefile.old Makefile
+	cd manager; ${RM} *.bak pm_to_blib
+	cd manager/DbDocumenter; ${RM} *.bak
+#	cd manager/DbDocumenter/test; ${RM} *.bak
+	rm -rf blib
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             DBdoc manager source code now clean.                   |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
+Makefile: Makefile.in
+	cd ${ROOT}; config.status --file=dbdoc/Makefile; cd -

@@ -5,7 +5,7 @@
 #  Methods to interact with a repository in p4gl format.
 #
 #  $Author: afalout $
-#  $Id: P4glRepository.pm,v 1.6 2003-05-15 10:23:26 afalout Exp $
+#  $Id: P4glRepository.pm,v 1.7 2003-05-26 10:07:11 afalout Exp $
 #
 #  @todo Correcto tratamento de erros e mensagens
 #  @todo Retirar dependencia directa de outros packages (sempre por objecto)
@@ -500,15 +500,6 @@ sub create
   /);
 
 
-# Use Sergio's DD tool tables instead for table and columns:
-#  $rv = $obj->execSql(qq/create table p4gl_table (
-#    table_name    char(50) not null primary key,
-#	id_package    char(64) not null,
-#    comments char(255)
-#  );
-#  /);
-
-
   $rv = $obj->execSql(qq/create table p4gl_excel (
     module_name   char(64) not null,
     id_process    char(10),
@@ -519,6 +510,53 @@ sub create
     comments      char(255)
   );
   /);
+
+
+# Tables for Dbdoc:
+
+  $rv = $obj->execSql(qq/create table systableext (
+	  owner char(32),
+	  tabname char(32),
+	  extowner char(32),
+	  tabalias char(32),
+	  remarks char(254),
+	  primary key (owner,tabname)
+  );
+  /);
+
+
+  $rv = $obj->execSql(qq/create table syscolumnext (
+	  owner char(32),
+	  tabname char(32),
+	  colname char(32),
+	  extowner char(32),
+	  colalias char(32),
+	  collabel char(32),
+	  coltitle char(32),
+	  remarks char(254),
+	  subtype char(4),
+	  class char(32),
+	  primary key (owner,tabname,colname)
+  );
+  /);
+
+
+  $rv = $obj->execSql(qq/create table d_modulos (
+	  codigo char(5),
+	  nome char(40)
+  );
+  /);
+
+
+
+  $rv = $obj->execSql(qq/create table d_mod_tab (
+	  codmod char(5),
+	  tabname char(19)
+  );
+  /);
+
+#End of Dbdoc tables
+
 
   return $retval;
 }
