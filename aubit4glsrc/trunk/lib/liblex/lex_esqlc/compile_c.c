@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.1 2003-02-05 03:34:54 mikeaubury Exp $
+# $Id: compile_c.c,v 1.2 2003-02-05 07:39:44 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -81,7 +81,7 @@
 =====================================================================
 */
 
-#include "a4gl_lib_lex_c_int.h"
+#include "a4gl_lib_lex_esqlc_int.h"
 
 /*
 =====================================================================
