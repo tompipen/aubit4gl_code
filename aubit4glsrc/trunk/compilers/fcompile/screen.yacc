@@ -171,11 +171,13 @@ op_size :
 | KW_SIZE NUMBER_VALUE BY NUMBER_VALUE {
 	int c;
 	int l;
-	c=atoi($<str>4);
-	l=atoi($<str>2);
-        if (c>the_form.maxcol) the_form.maxcol=c;
-        if (l>the_form.maxline) the_form.maxline=l;
-	/* printf("Set to %d %d\n",the_form.maxcol,the_form.maxline); */
+	if (A4GL_isyes(acl_getenv("USE_FORM_SIZE"))) {
+		c=atoi($<str>4);
+		l=atoi($<str>2);
+        	if (c>the_form.maxcol) the_form.maxcol=c;
+        	if (l>the_form.maxline) the_form.maxline=l;
+		/* printf("Set to %d %d\n",the_form.maxcol,the_form.maxline); */
+	}
 }
 ;
 
