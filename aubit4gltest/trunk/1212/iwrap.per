@@ -1,0 +1,26 @@
+database formonly
+screen
+{
+Name       [f001                                              ]
+Address    [f002                                              ]
+           [f003                                              ]
+           [f004                                              ]
+Town       [f005                                              ]
+}
+end
+
+attributes
+f001=formonly.f1;
+f002=formonly.f2;
+f003=formonly.f3;
+f004=formonly.f4;
+f005=formonly.f5;
+
+instructions
+screen record sr (
+formonly.f1,
+formonly.f2,
+formonly.f3,
+formonly.f4,
+formonly.f5)
+end

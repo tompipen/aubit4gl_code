@@ -11,7 +11,6 @@ ins_text char(180)
 #display "xx"
 #exit program
 
-
 	declare c1 cursor for
 		select tabname,tabid from systables where
 			(tabid<30 or tabid>89) and tabid <> 3 and tabid < 100

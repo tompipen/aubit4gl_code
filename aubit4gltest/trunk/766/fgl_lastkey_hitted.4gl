@@ -57,10 +57,11 @@ FUNCTION myGetKey(keyName,keyVal)
 	DEFINE keyVal SMALLINT
 	DEFINE ans SMALLINT
 
-  DISPLAY "Hit ", keyName CLIPPED, " : " AT 1, 1
+  DISPLAY "Hit ", keyName CLIPPED, " : " #AT 1, 1
 	LET ans = fgl_getkey()
 	IF ans != keyVal THEN
-		ERROR "Key ", keyName CLIPPED, " was ", ans, " and not ", keyVal
+		display "Key ", keyName CLIPPED, " was ", ans, " and not ", keyVal
+		sleep 1
 	  LET retVal = TRUE
 	END IF
 END FUNCTION

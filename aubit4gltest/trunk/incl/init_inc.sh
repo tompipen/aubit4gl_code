@@ -20,7 +20,10 @@ fi
 
 CURR_DIR=`pwd`
 export A4GL_PRG=".4ae"
-export FGLC=4glc
+if [ "$FGLC" = "" ]
+then
+	export FGLC=4glc
+fi
 USE_COMP=aubit
 MAKE_TARGET=run
 MAKE=gmake

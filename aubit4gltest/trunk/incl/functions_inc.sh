@@ -1202,7 +1202,7 @@ check_postgresql () {
 	export A4GL_OMIT_NO_LOG=Y
 
 	# No indicator variables (=YES Adds indicators to SQL statements to check for nulls)
-	export A4GL_USE_INDICATOR=N
+	#export A4GL_USE_INDICATOR=N
 
 	# When needed use the ecpg UNLOAD statement rather than the aubit code
 	export A4GL_ESQL_UNLOAD=Y
