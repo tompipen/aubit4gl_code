@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.64 2005-03-29 11:24:13 mikeaubury Exp $
+# $Id: report.c,v 1.65 2005-03-29 21:27:35 mikeaubury Exp $
 #
 */
 
@@ -873,6 +873,7 @@ A4GL_make_report_table (struct BINDING *b, int n)
 void A4GL_unload_report_table(struct BINDING *b) {
   char buff[1024];
   struct BINDING *ibind=0;
+  return;
   sprintf (buff, "SELECT * FROM %s", gen_rep_tab_name (b));
 	A4GLSQL_unload_data("zz9pa","|", buff,0,ibind);
 }
