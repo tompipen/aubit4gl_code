@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.107 2003-10-12 12:04:38 mikeaubury Exp $
+# $Id: compile_c.c,v 1.108 2003-10-26 19:12:02 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1046,7 +1046,7 @@ pr_report_agg_clr (void)
   int a;
   int t;
   int in_b;
-
+char b[255];
   for (z = 0; z < sreports_cnt; z++)
     {
 /*
@@ -1055,7 +1055,9 @@ pr_report_agg_clr (void)
 */
       a = sreports[z].a;
       t = sreports[z].t;
-      in_b = sreports[z].in_b;
+	sprintf(b,"%d",sreports[z].in_b);
+      in_b = gen_ord(b);
+      
       if (in_b > 0)
 	{
 	  printc ("if (nargs==-%d&&acl_ctrl==REPORT_AFTERGROUP) {\n", in_b);

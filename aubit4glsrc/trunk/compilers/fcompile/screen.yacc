@@ -402,11 +402,13 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 	fld->colname=strdup($<str>3);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
+        //if (fld->datatype==DTYPE_SERIAL) { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
 }
 | named_or_kw {
 	fld->colname=strdup($<str>1);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
+        //if (fld->datatype==DTYPE_SERIAL) { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
 };
 
 

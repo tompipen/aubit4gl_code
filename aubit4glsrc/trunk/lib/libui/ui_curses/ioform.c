@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.77 2003-09-17 07:05:42 mikeaubury Exp $
+# $Id: ioform.c,v 1.78 2003-10-26 19:12:03 mikeaubury Exp $
 #*/
 
 /**
@@ -604,10 +604,10 @@ A4GL_set_field_attr (FIELD * field)
 
   if (A4GL_has_bool_attribute (f, FA_B_NOENTRY))
     {
-      A4GL_debug ("No entry");
-		A4GL_debug("ZZZZ - SET OPTS");
-      field_opts_off (field, O_ACTIVE);
-      field_opts_off (field, O_EDIT);
+        A4GL_debug ("No entry");
+	A4GL_debug("ZZZZ - SET OPTS");
+        field_opts_off (field, O_ACTIVE);
+        field_opts_off (field, O_EDIT);
     }
 
   if (A4GL_has_bool_attribute (f, FA_B_REQUIRED))
@@ -3530,7 +3530,7 @@ A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, FIELD * f)
 
       fprop = (struct struct_scr_field *) (field_userptr (s->field_list[a]));
 
-      if (!A4GL_has_bool_attribute (fprop, FA_B_NOENTRY))
+      if (!A4GL_has_bool_attribute (fprop, FA_B_NOENTRY) || (fprop->datatype==DTYPE_SERIAL && s->mode != MODE_CONSTRUCT) )
 	{
 	  A4GL_debug ("Field is not noentry");
 	  last_usable = a;

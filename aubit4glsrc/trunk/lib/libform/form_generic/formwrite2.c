@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.23 2003-10-13 12:43:57 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.24 2003-10-26 19:12:01 mikeaubury Exp $
 #*/
 
 /**
@@ -1014,8 +1014,7 @@ A4GL_getdatatype (char *col, char *tab)
    */
   A4GL_debug ("get_dtype returns %d", a);
   /* 6-2 ? CHECK */
-  if (a == 6)
-    a = 2;
+  //if (a == 6) a = 2;
 
   if (a == -1)
     {

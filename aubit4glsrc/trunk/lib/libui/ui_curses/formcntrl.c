@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.35 2003-09-17 07:05:42 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.36 2003-10-26 19:12:03 mikeaubury Exp $
 #*/
 
 /**
@@ -241,7 +241,7 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
   next_field = sio->field_list[attrib];
   f = (struct struct_scr_field *) (field_userptr (next_field));
 
-  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY))
+  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)|| (f->datatype==DTYPE_SERIAL && sio->mode != MODE_CONSTRUCT))
     {
       int dir = 0;
       while (1)
@@ -261,7 +261,7 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
           next_field = sio->field_list[attrib];
           f = (struct struct_scr_field *) (field_userptr (next_field));
 
-          if (A4GL_has_bool_attribute (f, FA_B_NOENTRY))
+          if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)|| (f->datatype==DTYPE_SERIAL))
             {
               attrib += dir;
               if (attrib > sio->nfields) 
@@ -415,6 +415,7 @@ process_control_stack (struct s_screenio *sio)
 					switch (sio->vars[sio->curr_attrib].dtype) {
 					case DTYPE_SMINT:
 					case DTYPE_INT:
+					case DTYPE_SERIAL:
 					case DTYPE_FLOAT:
 					case DTYPE_SMFLOAT:
 					case DTYPE_DECIMAL:
@@ -785,6 +786,7 @@ A4GL_form_loop (void *vs,int init)
   if (init==1) {
 	A4GL_debug("------------------------------------------------------");
 	s->currform->currentfield=0;
+	abort_pressed=0;
   }
   form = s->currform;
   A4GL_set_abort (0);
@@ -844,7 +846,7 @@ A4GL_mja_pos_form_cursor (mform);
   a = A4GL_getch_win ();
   m_lastkey = a;
   A4GL_set_last_key (a);
-     A4GL_clr_error_nobox();
+     A4GL_clr_error_nobox("A4GL_form_loop");
 
   if (abort_pressed) a = -1;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.54 2003-10-22 10:43:59 mikeaubury Exp $
+# $Id: iarray.c,v 1.55 2003-10-26 19:12:03 mikeaubury Exp $
 #*/
 
 /**
@@ -1562,7 +1562,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
   next_field = arr->field_list[scr_line - 1][attrib];
   f = (struct struct_scr_field *) (field_userptr (next_field));
 
-  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY))
+  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY) || (f->datatype==DTYPE_SERIAL))
     {
       static int dir = 0;
       A4GL_debug ("Requested field is noentry");
@@ -1586,7 +1586,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
 	  f = (struct struct_scr_field *) (field_userptr (next_field));
 	  A4GL_debug ("fprop=%p", f);
 
-	  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY))
+	  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY) || (f->datatype==DTYPE_SERIAL))
 	    {
 	      A4GL_debug ("Darn - next field is no entry too...");
 	      attrib += dir;
@@ -1983,6 +1983,7 @@ process_control_stack (struct s_inp_arr *arr)
 			{
 			case DTYPE_SMINT:
 			case DTYPE_INT:
+			case DTYPE_SERIAL:
 			case DTYPE_FLOAT:
 			case DTYPE_SMFLOAT:
 			case DTYPE_DECIMAL:

@@ -95,7 +95,7 @@ do
 	cfiles="$cfiles $out.c"
 done
 
-GCC_RUN="gcc  -I$POSTGRESDIR/include $other_args $cfiles -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes -lpq -lm -L$AUBITDIR/lib -laubit4gl"
+GCC_RUN="gcc $cfiles -I$POSTGRESDIR/include $other_args  -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes -lpq -lm -L$AUBITDIR/lib -laubit4gl"
 echo $GCC_RUN
 eval $GCC_RUN
 RET=$?

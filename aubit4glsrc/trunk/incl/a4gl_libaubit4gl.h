@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.98 2003-10-12 12:04:30 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.99 2003-10-26 19:12:00 mikeaubury Exp $
 #
 */
 
@@ -1715,7 +1715,7 @@ a4gl_basename (char **ppsz);
 void
 A4GL_error_nobox (char *str,int attr);
 void
-A4GL_clr_error_nobox (void);
+A4GL_clr_error_nobox (char *dbg_fromwhere);
 //int A4GL_fgl_getfldbuf_ap (char *s, int n,...);
 //int A4GL_fgl_fieldtouched_input_ap(Tscreenio *s,  va_list *ap);
 void A4GL_core_dump(void);

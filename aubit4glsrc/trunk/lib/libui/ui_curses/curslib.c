@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.62 2003-09-30 10:32:09 mikeaubury Exp $
+# $Id: curslib.c,v 1.63 2003-10-26 19:12:02 mikeaubury Exp $
 #*/
 
 /**
@@ -286,7 +286,7 @@ A4GL_error_nobox (char *str,int attr)
 
   A4GL_chkwin();
   if (curr_error_window) {
-		A4GL_clr_error_nobox ();
+		A4GL_clr_error_nobox ("A4GL_error_nobox");
   }
   eline = A4GL_geterror_line ()-1;
   A4GL_debug("Eline=%d\n",eline);
@@ -348,11 +348,11 @@ A4GL_error_nobox_old (char *str)
 
 
 void
-A4GL_clr_error_nobox (void)
+A4GL_clr_error_nobox (char *dbg_fromwhere)
 {
   int a;
   A4GL_chkwin();
-  A4GL_debug("MJA clr_error_nobox");
+  A4GL_debug("MJA clr_error_nobox called from %s",dbg_fromwhere);
   if (curr_error_window) {
 	A4GL_debug("MJA Clear error");
 	del_panel(curr_error_panel);
@@ -3447,6 +3447,7 @@ static int A4GL_menu_getkey (ACL_Menu * menu)
       //a = wrapper_wgetch (menu->menu_win);
 	a=A4GL_real_getch_swin (menu->menu_win);
 	A4GL_debug("MJA11 a=%d menu->menu_win=%p\n",a,menu->menu_win);
+        A4GL_clr_error_nobox("Menu");
       if (a == -1)
 	{
 	  if (abort_pressed)

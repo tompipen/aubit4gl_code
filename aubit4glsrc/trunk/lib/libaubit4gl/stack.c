@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.75 2003-09-19 14:08:05 mikeaubury Exp $
+# $Id: stack.c,v 1.76 2003-10-26 19:12:01 mikeaubury Exp $
 #
 */
 
@@ -1812,6 +1812,7 @@ return;
 		case DTYPE_CHAR:
 		case DTYPE_SMINT:
 		case DTYPE_INT:
+		case DTYPE_SERIAL:
 		case DTYPE_FLOAT:
 		case DTYPE_SMFLOAT:
 		case DTYPE_DATE:

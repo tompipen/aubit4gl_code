@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.77 2003-07-27 17:28:12 mikeaubury Exp $
+# $Id: lexer.c,v 1.78 2003-10-26 19:11:30 mikeaubury Exp $
 #*/
 
 /**
@@ -990,6 +990,7 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
 
     }
 
+A4GL_debug("p=%s buff=%s",p,buff);
   /* check for literal numbers - these cannot be key words or identifiers */
   strcpy (str, p);
 

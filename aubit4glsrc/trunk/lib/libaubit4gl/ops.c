@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.41 2003-10-12 12:02:28 mikeaubury Exp $
+# $Id: ops.c,v 1.42 2003-10-26 19:12:01 mikeaubury Exp $
 #
 */
 
@@ -1575,6 +1575,7 @@ DTYPE_SERIAL
   A4GL_add_op_function (DTYPE_SERIAL, DTYPE_INT, OP_MATH, A4GL_int_int_ops);
   A4GL_add_op_function (DTYPE_SERIAL, DTYPE_SMINT, OP_MATH, A4GL_int_int_ops);
   A4GL_add_op_function (DTYPE_SERIAL, DTYPE_DATE, OP_MATH, A4GL_int_int_ops);
+
   A4GL_add_op_function (DTYPE_INT, DTYPE_SERIAL, OP_MATH, A4GL_int_int_ops);
   A4GL_add_op_function (DTYPE_SMINT, DTYPE_SERIAL, OP_MATH, A4GL_int_int_ops);
   A4GL_add_op_function (DTYPE_DATE, DTYPE_SERIAL, OP_MATH, A4GL_int_int_ops);
@@ -1591,6 +1592,7 @@ DTYPE_SERIAL
 
 
   A4GL_add_datatype_function_i (DTYPE_INT, "DISPLAY", A4GL_display_int);
+  A4GL_add_datatype_function_i (DTYPE_SERIAL, "DISPLAY", A4GL_display_int);
   A4GL_add_datatype_function_i (DTYPE_SMINT, "DISPLAY", A4GL_display_smint);
   A4GL_add_datatype_function_i (DTYPE_FLOAT, "DISPLAY", A4GL_display_float);
   A4GL_add_datatype_function_i (DTYPE_SMFLOAT, "DISPLAY", A4GL_display_smfloat);
