@@ -22,6 +22,8 @@ if (to_vars>=1) {
 }
 ;
 
-op_expr_null : KW_NULL {printc("push_null();\n");strcpy($<str>$,"1");} | fgl_expr_concat ;
+op_expr_null : KW_NULL {printc("push_null();\n");strcpy($<str>$,"1");} 
+	| fgl_expr_concat 
+	;
 
 

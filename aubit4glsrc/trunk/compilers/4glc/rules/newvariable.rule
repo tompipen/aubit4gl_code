@@ -389,7 +389,8 @@ sprintf($<str>$,"");
 ;
 
 
-func_def_var : identifier;
+func_def_var : identifier | identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>2);}
+;
 
 ibind_var : variable  {printcomment("/* Variable */\n");}
 	| variable THRU variable {

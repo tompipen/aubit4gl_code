@@ -7,7 +7,8 @@ initial_expr
 | builtin_expr
 | pdf_expr
 | literal_expr
-| MINUS fgl_expr_c {sprintf($<str>$,"push_int(0);%s; pushop(OP_SUB);",$<str>2);}
+| MINUS fgl_expr_c {sprintf($<str>$,"push_int(0);%s pushop(OP_SUB);",$<str>2);}
+| PLUS fgl_expr_c {sprintf($<str>$,"%s",$<str>2);}
 ;
 
 fgl_next:
@@ -79,8 +80,7 @@ fgl_expr_concat	: 	fgl_expr {sprintf($<str>$,"%d",get_counter_val());}
 fgl_expr: fgl_expr_c {printc("%s\n",$<str>1);}
 ;
 
-op_int_sign :
-{strcpy($<str>$,"");} | int_sign
+op_int_sign : {strcpy($<str>$,"");} | int_sign
 ;
 
 int_sign	: PLUS 
