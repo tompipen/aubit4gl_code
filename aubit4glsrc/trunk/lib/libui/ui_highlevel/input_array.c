@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.13 2004-03-20 21:07:12 mikeaubury Exp $
+# $Id: input_array.c,v 1.14 2004-04-01 17:48:38 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.13 2004-03-20 21:07:12 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.14 2004-04-01 17:48:38 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -763,7 +763,7 @@ A4GL_debug("process_key_press inp_arr %d",a);
       break;
 
     case 18:
-      A4GL_LL_screen_refresh ();
+      A4GL_LL_screen_redraw ();
       break;
 
     case 4:			// Control - D
@@ -1521,7 +1521,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 
 
 
-  if (attrib >= arr->srec->attribs.attribs_len)
+  if (attrib >= arr->srec->attribs.attribs_len && attrib>=0)
     {
       // Too far over to the right - wrap around to the start of the next line
       A4GL_debug ("Too far to the right");
@@ -1588,7 +1588,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 		if (why=='R'||why==0||why=='D')  attrib++;
 		else attrib--;
 
-	      if (attrib >= arr->srec->attribs.attribs_len)
+	      if (attrib >= arr->srec->attribs.attribs_len && attrib>=0)
 		{
 		  attrib = 0;
 		  scr_line++;
@@ -1604,7 +1604,8 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 
 	      if (attrib < 0)
 		{
-		  attrib = arr->srec->attribs.attribs_len;
+		  attrib = 0; //arr->srec->attribs.attribs_len;
+		  why=0;
 		  scr_line--;
 		  arr_line--;
 		}
