@@ -30,7 +30,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.47 2002-02-05 06:41:58 afalout Exp $
+# $Id: 4glpc,v 1.48 2002-02-15 11:33:46 afalout Exp $
 #
 
 ########################################################################
@@ -366,8 +366,9 @@ PATH=$AUBITDIR/bin:$PATH
 
 if [ "$GTKGUI" = "" ]
 then
-    if [ -f  $AUBITDIR/lib/libaclsharedgui.so ]
-    then
+    #if [ -f  $AUBITDIR/lib/libaclsharedgui.so/dll ]
+    if [ "$GTKBUILD" = "yes" ]
+	then
 		export GTKGUI="Yes"
     	export ui=gui
     else
@@ -1220,16 +1221,22 @@ then
 				#GTKLIBS="$GLIB_LIBS $GLIB_CFLAGS $GDKLIB_LIBS $GDKLIB_CFLAGS $GTKLIB_LIBS $GTKLIB_CFLAGS"
 	            GTKLIBS="$GTKLIB_LIBS $GTKLIB_CFLAGS"
 			else
-				#if [ "@GTK_CONFIG@" != "no" ]
-                #then
-					GTKLIBS=`gtk-config --cflags`
+				if [ "$GTK_CONFIG" != "no" ]
+				then
+					GTKLIBS=`$GTK_CONFIG --cflags`
                     echo GTKLIBS = $GTKLIBS
-		        #else
-				#	if [ "@PKG_CONFIG@" != "no" ]
-                #   then
-				#		GLIB_CFLAGS		:=$(shell pkg-config --cflags glib)
-		        #   fi
-		        #fi
+		        else
+					if [ "$PKG_CONFIG" != "no" ]
+                   then
+						#GTK_NAME="@GTK_NAME@"
+						#GDK_NAME="@GDK_NAME@"
+						#GLIB_NAME="@GLIB_NAME@"
+						#GTKLIBS=`$PKG_CONFIG --cflags $GLIB_NAME`
+                        GTKLIBS=`$PKG_CONFIG --cflags $GTK_NAME`
+	               else
+    					echo "ERROR: no PKG_CONFIG, no GTK_CONFIG. Stop."
+				   fi
+		        fi
             fi
 	    fi
 
@@ -1249,16 +1256,22 @@ else
 
 		if [ "$GLIBVER" != "old" ]
         then
-			#if [ "@GTK_CONFIG@" != "no" ]
-            #then
-				GTKCFLAGS=`gtk-config --cflags`
+			if [ "$GTK_CONFIG" != "no" ]
+            then
+				GTKCFLAGS=`$GTK_CONFIG --cflags`
 				#echo GTKCFLAGS = $GTKCFLAGS
-	        #else
-			#	if [ "@PKG_CONFIG@" != "no" ]
-            #   then
-			#		GLIB_CFLAGS		:=$(shell pkg-config --cflags glib)
-	        #   fi
-	        #fi
+	        else
+				if [ "$PKG_CONFIG" != "no" ]
+               then
+					#GTK_NAME="@GTK_NAME@"
+					#GDK_NAME="@GDK_NAME@"
+					#GLIB_NAME="@GLIB_NAME@"
+					#GTKLIBS=`$PKG_CONFIG --cflags $GLIB_NAME`
+                    GTKLIBS=`$PKG_CONFIG --cflags $GTK_NAME`
+               else
+                    echo "ERROR: no PKG_CONFIG, no GTK_CONFIG. Stop."
+			   fi
+	        fi
 
 			GTKLIBS="$GTKLIBS $GTKCFLAGS"
 		fi
@@ -1294,7 +1307,7 @@ else
 	#FGLLIBS_STATIC="-laclallgui$ODBCFLAG -lm $RPCLIB_NAME -L/lib/w32api"
 
     #-L$AUBITDIR/lib  -L../../lib
-	FGLLIBS_COMMON="-lm $RPCLIB -L/lib/w32api -L/usr/local/lib"
+	FGLLIBS_COMMON="-lm $RPCLIB_NAME -L/lib/w32api -L/usr/local/lib"
 	FGLLIBS_STATIC="-laclall$ui$ODBCFLAG $FGLLIBS_COMMON"
 	FGLLIBS_SHARED="-laclshared$ui$ODBCFLAG $FGLLIBS_COMMON"
 
@@ -1319,9 +1332,15 @@ fi
 		FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_PDF"
 		FGLLIBS_STATIC="$FGLLIBS_STATIC -lPDF_PDF"
 	else
-        FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_NOPDF"
-		FGLLIBS_STATIC="$FGLLIBS_STATIC -lPDF_NOPDF"
-	    #FGLLIBS_STATIC="$FGLLIBS_STATIC ../../lib/libPDF_NOPDF.so"
+        if test "$COMSPEC" != "" ; then
+			#linking with dll export library
+			FGLLIBS_SHARED="$FGLLIBS_SHARED $AUBITDIR/lib/libPDF_NOPDF.dll.a"
+			FGLLIBS_STATIC="$FGLLIBS_STATIC $AUBITDIR/lib/libPDF_NOPDF.dll.a"
+        else
+			FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_NOPDF"
+			FGLLIBS_STATIC="$FGLLIBS_STATIC -lPDF_NOPDF"
+		    #FGLLIBS_STATIC="$FGLLIBS_STATIC ../../lib/libPDF_NOPDF.so"
+        fi
 	fi
 #else
 #	if [ "$A4GLVERBOSE" = "yes" ]

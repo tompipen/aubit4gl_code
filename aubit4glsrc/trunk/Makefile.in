@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.29 2002-02-05 06:41:56 afalout Exp $
+# $Id: Makefile.in,v 1.30 2002-02-15 11:33:41 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -122,26 +122,26 @@ SOURCE 		=.
 TESTDIR     =$(SOURCE)/tools/test
 DOCDIR     	=$(SOURCE)/docs
 IDEDIR     	=$(SOURCE)/tools/ide
-TOBIN		=$(SOURCE)/bin/4glc $(SOURCE)/bin/4glpc $(SOURCE)/bin/fcompile \
-			$(SOURCE)/bin/mcompile $(SOURCE)/bin/mkmess $(SOURCE)/bin/amake \
+TOBIN		=$(SOURCE)/bin/4glc${EXEEXT} $(SOURCE)/bin/4glpc $(SOURCE)/bin/fcompile${EXEEXT} \
+			$(SOURCE)/bin/mcompile${EXEEXT} $(SOURCE)/bin/mkmess${EXEEXT} $(SOURCE)/bin/amake \
 			$(SOURCE)/bin/amakeallo $(SOURCE)/bin/amakeallf \
-			$(SOURCE)/bin/loadmap $(SOURCE)/bin/aubit $(SOURCE)/bin/aubit-config \
-            $(SOURCE)/bin/genmake $(SOURCE)/bin/mdecompile $(SOURCE)/bin/prepmake \
-			$(SOURCE)/bin/fdecompile $(SOURCE)/bin/fshow
+			$(SOURCE)/bin/loadmap${EXEEXT} $(SOURCE)/bin/aubit $(SOURCE)/bin/aubit-config${EXEEXT} \
+            $(SOURCE)/bin/genmake $(SOURCE)/bin/mdecompile${EXEEXT} $(SOURCE)/bin/prepmake \
+			$(SOURCE)/bin/fdecompile${EXEEXT} $(SOURCE)/bin/fshow${EXEEXT}
 
 ifeq "$(GTKBUILD)" "yes"
-	TOBIN		+=$(SOURCE)/bin/fshow-gtk
+	TOBIN		+=$(SOURCE)/bin/fshow-gtk${EXEEXT}
 endif
 
 ifeq "$(OUTPUTLANG)" "java"
-	TOBIN		+=$(SOURCE)/bin/fdecompile-j
+	TOBIN		+=$(SOURCE)/bin/fdecompile-j${EXEEXT}
 endif
 
 
 ifneq "$(ODBC)" "no"
 	ifeq "$(ODBC_LINK)" "static"
-		TOBIN	+=$(SOURCE)/bin/4glc-noodbc $(SOURCE)/bin/fcompile-noodbc \
-					$(SOURCE)/bin/mcompile-noodbc
+		TOBIN	+=$(SOURCE)/bin/4glc-noodbc${EXEEXT} $(SOURCE)/bin/fcompile-noodbc${EXEEXT} \
+					$(SOURCE)/bin/mcompile-noodbc${EXEEXT}
     endif
 endif
 
@@ -155,18 +155,24 @@ endif
 #libaclall-noodbc.a  libaclall.a  libaclallgui-noodbc.a  libaclallgui.a
 
 
-TOLIBGTK	=$(SOURCE)/lib/libaclallgui.a $(SOURCE)/lib/libgtk4gl_x.a \
-			$(SOURCE)/lib/libgtk4gl.so $(SOURCE)/lib/libaclsharedgui.so
+TOLIBGTK	=$(SOURCE)/lib/libgtk4gl${SO_EXT} $(SOURCE)/lib/libaclsharedgui${SO_EXT} $(SOURCE)/lib/libgtk4gl_x${SO_EXT}
+TOLIBCUI	=$(SOURCE)/lib/libaclshared${SO_EXT} $(SOURCE)/lib/libPDF_NOPDF${SO_EXT} $(SOURCE)/lib/libSQL_nosql${SO_EXT}
 
-ifndef COMSPEC
-	TOLIBGTK	+=$(SOURCE)/lib/libgtk4gl_x.so
+ifneq "${STATICLIB_INST}" "no"
+	TOLIBGTK+=$(SOURCE)/lib/libgtk4gl.a $(SOURCE)/lib/libaclallgui.a $(SOURCE)/lib/libgtk4gl_x.a
+	TOLIBCUI+=$(SOURCE)/lib/libaclall.a
 endif
 
-TOLIBCUI	=$(SOURCE)/lib/libaclall.a $(SOURCE)/lib/libaclshared.so \
-            $(SOURCE)/lib/libPDF_NOPDF.so $(SOURCE)/lib/libSQL_nosql.so
+TOLIB_EXPORTLIB =$(SOURCE)/lib/libaclshared${SOEXP_EXT} \
+            $(SOURCE)/lib/libPDF_NOPDF${SOEXP_EXT} $(SOURCE)/lib/libSQL_nosql${SOEXP_EXT}
+
+TOLIBGTK_EXPORTLIB	=$(SOURCE)/lib/libgtk4gl${SOEXP_EXT} $(SOURCE)/lib/libaclsharedgui${SOEXP_EXT} \
+					$(SOURCE)/lib/libgtk4gl_x${SOEXP_EXT}
+
+
 
 ifeq "${PDFBUILD}" "yes"
-    TOLIBCUI +=$(SOURCE)/lib/libPDF_PDF.so
+    TOLIBCUI +=$(SOURCE)/lib/libPDF_PDF${SO_EXT}
 endif
 
 ifneq "$(ODBC)" "no"
@@ -183,23 +189,23 @@ ifneq "$(ODBC)" "no"
 endif
 
 ifeq "${HAVE_UNIXODBC}" "yes"
-	TOLIBCUI	+=$(SOURCE)/lib/libSQL_unixodbc.so
+	TOLIBCUI	+=$(SOURCE)/lib/libSQL_unixodbc${SO_EXT}
 endif
 ifeq "${HAVE_IODBC}" "yes"
-	TOLIBCUI	+=$(SOURCE)/lib/libSQL_iodbc.so
+	TOLIBCUI	+=$(SOURCE)/lib/libSQL_iodbc${SO_EXT}
 endif
 
 ifneq "@IFMX_ESQLC@" "no"
-	TOLIBCUI	+=$(SOURCE)/lib/libSQL_esql.so
+	TOLIBCUI	+=$(SOURCE)/lib/libSQL_esql${SO_EXT}
 endif
 
 ifneq "@HAVE_IFXODBC@" "no"
-    ALL				+=libSQL_ifxodbc.so
-	TOLIBCUI	+=$(SOURCE)/lib/libSQL_ifxodbc.so
+    ALL				+=libSQL_ifxodbc${SO_EXT}
+	TOLIBCUI	+=$(SOURCE)/lib/libSQL_ifxodbc${SO_EXT}
 endif
 
 ifneq "@HAVE_PGODBC@" "no"
-	TOLIBCUI	+=$(SOURCE)/lib/libSQL_pgodbc.so
+	TOLIBCUI	+=$(SOURCE)/lib/libSQL_pgodbc${SO_EXT}
 endif
 
 
@@ -413,7 +419,13 @@ MANFILENAME     =$(SOURCE)/$(MANFILEBASENAME)
 ##                    Define default target
 ## ==================================================================
 
-ALL             = Makefile settings ${MAKERPC} corecompile
+
+
+#ifneq "$(COMSPEC)" ""
+#	ALL     =dll.exp.libs
+#endif
+
+ALL			+=Makefile settings ${MAKERPC} corecompile
 
 ifeq "$(GTKBUILD)" "yes"
 	ifdef COMSPEC
@@ -443,13 +455,20 @@ log:
 	@${MAKE} ${MKNAME} ${BUGMAKEFLAGS} > make.log 2>&1
 	@echo "make finished successfuly, see make.log for details."
 
+
+#dll.exp.libs:
+#	$(MAKE) ${MKNAME} -C lib exp_aclshared
+#	$(MAKE) ${MKNAME} -C compilers/4glc exp_4glc
+
+
+
 corecompile: libs
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/4glc/rules
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/4glc #PDFBUILD=${PDFBUILD} OUTPUTLANG=${OUTPUTLANG} ${NOINCL_PARAM}
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/fcompile #PDFBUILD=${PDFBUILD}
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/menus #PDFBUILD=${PDFBUILD}
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/helpcompile #PDFBUILD=${PDFBUILD}
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} loadmap -C lib #PDFBUILD=${PDFBUILD} ${NOINCL_PARAM}
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/4glc
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/fcompile
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/menus
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/helpcompile
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} loadmap -C lib
 	@echo Aubit 4gl compiler core is now compiled
 
 libs:
@@ -463,10 +482,11 @@ libs:
 
 gtkgui:
 #WARNING! Thhis will override CFLAGS in sub-makefile:
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib all_gui #CFLAGS="$(LIBCFLAGS)" ${NOINCL_PARAM}
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui #${NOINCL_PARAM}
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib all_gui
+#	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui
 #	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui libgtk4gl_x.so
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui gtk4gl_x #${NOINCL_PARAM}
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui gtk4gl_x
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/fcompile fshow-gtk
 	@echo Aubit 4gl compiler GTK GUI is now compiled
 
@@ -568,8 +588,11 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 	$(MAKE) ${MKNAME} -C tools/jabber clean
 	@echo Aubit 4gl compiler source tree is now clean
 
+clean.config: clean.configure
 clean.configure: clean.makefiles clean.settings
-	${RM} config.log config.status incl/config.h
+	${RM} config.log config.status incl/config.h docs/doxy/doxyfile \
+            etc/aubit-rpm.spec 
+#incl/a4gl-rules.mki
 
 clean.settings:
 	${RM} etc/a4glrc etc/aubitbuild.mk etc/aubitenv etc/aubitrc
@@ -585,6 +608,7 @@ clean.makefiles:
 	${RM} lib/libgui/Makefile
 	${RM} lib/libpdf/Makefile
 	${RM} lib/libsql/nosql/Makefile
+	${RM} lib/libsql/esqlc/Makefile
 	${RM} lib/libsql/odbc/Makefile
 	${RM} lib/extra_libs/file/Makefile
 	${RM} tools/adbaccess/Makefile
@@ -617,10 +641,12 @@ clean.root:
 
 
 clean.bin:
-	(cd bin;${RM} 4glc fcompile mcompile mkmess 4glc-noodbc fcompile-noodbc \
-	mcompile-noodbc loadmap 4glc.exe fcompile.exe mkmess.exe mcompile.exe \
-	loadmap.exe *.bak ide fcompile-noodbc.exe mcompile-noodbc.exe 4glc-noodbc.exe \
-	4glc_perl mdecompile fdecompile fdecompile-j aubit-config fshow fshow-gtk)
+	(cd bin;${RM} 4glc${EXE} fcompile${EXE} mcompile${EXE} mkmess${EXE} \
+	mcompile-noodbc${EXE} loadmap${EXE} \
+	*.bak ide${EXE} fcompile-noodbc${EXE} 4glc-noodbc${EXE} \
+	4glc_perl${EXE} mdecompile${EXE} fdecompile${EXE} fdecompile-j${EXE} \
+	aubit-config${EXE} fshow${EXE} fshow-gtk${EXE} \
+	)
 
 clean.etc:
 	${RM} etc/*.bak etc/aubit-auto.spec
@@ -644,7 +670,7 @@ clean.swig:
 
 clean.project:
 	(cd tools/project; ${RM} *.bak)
-
+	(cd tools/cygwin; ${RM} *.bak)
 ## ------------------------------------------------------------------
 ##                       Installation Targets: *NIX
 ## ------------------------------------------------------------------
@@ -677,6 +703,10 @@ install.core: install.tree install.gtk
 	$(CP) $(TOROOT) $(INSTALL_DIR)
 	$(CP) $(TOINCL) $(INSTALL_DIR)/incl
 	$(CP) $(TOLIBCUI) $(INSTALL_DIR)/lib
+ifneq "${COMSPEC}" ""
+	$(CP) ${TOLIB_EXPORTLIB} $(INSTALL_DIR)/lib
+	$(CP) ${TOLIBGTK_EXPORTLIB} $(INSTALL_DIR)/lib
+endif
 	@echo "#AUBIT_BIN_INSTALL is needed for make files and 4glpc to know they are not in Aubit compiler source code tree:" > /tmp/Makefile-common
 	@echo "AUBIT_BIN_INSTALL=1" >> /tmp/Makefile-common
 	@cat $(SOURCE)/incl/Makefile-common >> /tmp/Makefile-common

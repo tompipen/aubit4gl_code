@@ -201,7 +201,20 @@ RPCLIB_NAME=-l@RPCLIB_NAME@
 #$GTKPATH/bin and $GTKPATH/lib in yout PATH
 #GTKPATH=/usr/src/gtk
 
+#needed also in 4glpc:
+GTK_CONFIG="@GTK_CONFIG@"
+PKG_CONFIG="@PKG_CONFIG@"
+#package names reported by gtk-config or pkg-config:
+GTK_NAME="@GTK_NAME@"
+GDK_NAME="@GDK_NAME@"
+GLIB_NAME="@GLIB_NAME@"
+
+
+
 
 #FIXME: missing stuff from aubitbuild-multi.mk
+
+
+
 
 #-------------------------------- EOF -----------------------------

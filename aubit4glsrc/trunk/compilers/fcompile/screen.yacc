@@ -163,7 +163,7 @@ some_text {
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	add_field("_label",1+colno-strlen($<str>1),lineno,strlen($<str>1),scr,0,$<str>1);
-} 
+}
 | field  
 | CH {
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
@@ -548,7 +548,7 @@ KW_CHAR {
 } 
 | SMALLFLOAT {
 	strcpy($<str>$,"4");
-} 
+}
 | SMALLINT {
 	strcpy($<str>$,"1");
 } 
@@ -658,7 +658,7 @@ value : fieldidentifier  {$<expr>$=create_field_expr($<str>1);}
 | NUMBER_VALUE  {$<expr>$=create_int_expr(atoi($<str>1));}
 | CHAR_VALUE    {$<expr>$=create_char_expr($<str>1);}
 | XVAL          {$<expr>$=create_special_expr($<str>1);}
-; 
+;
 
 fieldidentifier : NAMED 
 ;

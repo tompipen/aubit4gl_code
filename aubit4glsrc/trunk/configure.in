@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.31 2002-02-05 06:58:50 afalout Exp $
+# $Id: configure.in,v 1.32 2002-02-15 11:33:41 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -310,10 +310,10 @@ esac
 
 if test "$enable_debug" = "no" ; then
 	#FIXME: where should I implement AUBIT_DEBUG in code:
-    # gcc -g
-    # DEBUG=ALL
+    # DEBUG = -g -Wall #-O2
+    # DEBUG=ALL in environment
     # strip executables
-    #-DDEBUG
+    #-DDEBUG -DNODEBUG in code
 	AC_MSG_WARN(Debugging disabled)
 	AUBIT_DEBUG=0
 fi
@@ -440,6 +440,19 @@ AC_PATH_PROG(PERL, perl, no)
 AC_PATH_PROG(SWIG, swig, no)
 AC_PATH_PROG(SH, sh, /bin/sh)
 AC_PATH_PROG(LDD, ldd, no)
+
+AC_PATH_PROG(CYGCHECK, cygcheck, no)
+
+#$ cygcheck ../bin/4glc.exe
+#../bin/4glc.exe
+#  C:\cygwin\bin\cygncurses6.dll
+#    C:\cygwin\bin\cygwin1.dll
+#      C:\WINNT\System32\KERNEL32.dll
+#        C:\WINNT\System32\NTDLL.DLL
+#  C:\cygwin\bin\cygform6.dll
+#  C:\cygwin\bin\cygpanel6.dll
+#  .\libPDF_NOPDF.dll
+
 AC_PATH_PROG(LDCONFIG, ldconfig, no)
 AC_PATH_PROG(AUTOCONF, autoconf, no)
 AC_PATH_PROG(ACLOCAL, aclocal, no)
@@ -1491,11 +1504,14 @@ AC_ARG_WITH(pdf,
 #Note: on Linux, rpclib functions are in libc. On other systems, for
 #example Windows/CygWin, this will be a separate library that we will need
 
-AC_CHECK_FUNCS([__rpc_thread_svc_fdset])
+#AC_CHECK_FUNCS([__rpc_thread_svc_fdset])
+AC_CHECK_FUNCS([svctcp_create])
 		#We will get #define HAVE___rpc_thread_svc_fdset in config.h, but no variables
 		#are defined when testing functions.
 
-if test `eval echo '${'$as_ac_var'}'` != yes ; then
+#if test `eval echo '${'$as_ac_var'}'` != yes ; then
+#if test "$ac_cv_func___rpc_thread_svc_fdset" != "yes"; then
+if test "$ac_cv_func_svctcp_create" != "yes"; then
 	RPC_FUNC_INTERNAL=0
 	#This happened on ia64-unknown-linux-gnu
 	case $host in
@@ -1549,9 +1565,9 @@ AC_ARG_WITH(rpc,
 		if test "$ac_cv_lib_rpcsvc_main" = "yes"; then
 			#seems rpc library is rpcsvc on aix and sparc-sun-solaris2.7
 			#which defines a bunch of symbols starting 'xdr_'
-			AC_CHECK_LIB(rpcsvc, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
+			#AC_CHECK_LIB(rpcsvc, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
 			AC_CHECK_LIB(rpcsvc, svctcp_create ,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
-			AC_CHECK_LIB(rpcsvc, xdr_argument ,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
+			#AC_CHECK_LIB(rpcsvc, xdr_argument ,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
 
 			if test "$ac_cv_lib_rpcsvc___rpc_thread_svc_fdset" = "yes" || test "$ac_cv_lib_rpcsvc_svctcp_create_" = "yes" || test "$ac_cv_lib_rpcsvc_xdr_argument_" = "yes"; then
                 echo "Found RPC functions in -lrpcsvc"
@@ -1562,9 +1578,9 @@ AC_ARG_WITH(rpc,
         fi
 
 		if test "$ac_cv_lib_rpclib_main" = "yes"; then
-			AC_CHECK_LIB(rpclib, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
+			#AC_CHECK_LIB(rpclib, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
 			AC_CHECK_LIB(rpclib, svctcp_create ,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
-			AC_CHECK_LIB(rpclib, xdr_argument ,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
+			#AC_CHECK_LIB(rpclib, xdr_argument ,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
 
 			if test "$ac_cv_lib_rpclib___rpc_thread_svc_fdset" = "yes" || test "$ac_cv_lib_rpclib_svctcp_create_" = "yes" || test "$ac_cv_lib_rpclib_xdr_argument_" = "yes"; then
 				echo "Found RPC functions in -lrpclib"
@@ -1663,7 +1679,10 @@ else
 		A4GL_SQLTYPE=unixodbc
 	fi
 	if test "$cygwin" = "1"; then
-		A4GL_SQLTYPE=odbc32
+		#A4GL_SQLTYPE=odbc32
+
+        echo "WARNING: SQL on Windows temporaraly disabled"
+		A4GL_SQLTYPE=nosql
 	fi
 fi
 
@@ -1766,6 +1785,15 @@ AC_SUBST(LIBGREET_DLL_IMPORT)
 case $host in
 	*-*-cygwin | *-*-cygwin* | *-*-pw32*)
 
+	
+
+AC_CYGWIN
+AC_MINGW32
+AC_OBJEXT
+AC_EXEEXT
+
+AC_LIBTOOL_WIN32_DLL
+	
 	_LT_AC_LOCK                         #checking for dlfcn.h... yes
 	AC_LIBTOOL_DLOPEN_SELF              #checking for BSD-compatible nm... /usr/bin/nm -B
 	AC_LIBTOOL_PROG_LD_SHLIBS           #checking command to parse /usr/bin/nm -B output... ok

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.11 2002-02-05 06:41:59 afalout Exp $
+# $Id: Makefile.in,v 1.12 2002-02-15 11:33:47 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -72,14 +72,6 @@ ifeq "${HAVE_IODBC}" "yes"
     ALL+=iodbc
 endif
 
-
-#############
-#DLL
-A_DLLNAME			=libSQL_odbc32
-#A_DLLOBJS			=dll.o gui_gtk.o windef.def
-#A_DLLOBJS			=${OBJECTS}
-
-
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -88,7 +80,7 @@ A_DLLNAME			=libSQL_odbc32
 all :
 #	@echo "Default ODBC targets compiled successfully"
 	@echo "Must specify 'unixodbc' or 'iodbc' (because clean is not working...)"
-#we MUST always clena first, because we don't know for which libs where
+#we MUST always clean first, because we don't know for which libs where
 #current object compiled, if they exists.
 iodbc: 		clean show libSQL_iodbc.so
 	@echo "iODBC target compiled successfully"
@@ -102,15 +94,20 @@ ifxodbc: 	clean show libSQL_ifxodbc.so
 pgodbc: 	clean show libSQL_pgodbc.so
 	@echo "PostgreSQL ODBC target compiled successfully"
 
-odbc32: 	clean show libSQL_odbc32.dll
+odbc32: 	clean show ${OBJECTS}
+	${MAKE} libSQL_odbc32.dll DLLOBJS="${OBJECTS}"
+	cp libSQL_odbc32.dll ../..
 	@echo "Windows ODBC target compiled successfully"
+
+########################################
+include ../../../incl/a4gl-rules.mki
+########################################
 
 
 libSQL_iodbc.so: CFLAGS+=-DIODBC @IODBC_INCLUDE@ @IODBC_LFLAGS@ ${LOCAL_CFLAGS}
 libSQL_iodbc.so: ${OBJECTS}
 	ld ${SO_LDFLAGS} $^ -o $@ @IODBC_LIBS@ @IODBC_LFLAGS@
 	cp $@ ../..
-
 
 libSQL_unixodbc.so: CFLAGS+=-DUNIXODBC @UNIXODBC_INCLUDE@ @UNIXODBC_LFLAGS@ ${LOCAL_CFLAGS}
 libSQL_unixodbc.so: ${OBJECTS}
@@ -122,70 +119,11 @@ libSQL_ifxodbc.so: ${OBJECTS}
 	ld ${SO_LDFLAGS} $^ -o $@ -lifcli -rpath ${INFORMIXDIR}/lib/esql -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql
 	cp $@ ../..
 
-
 libSQL_pgodbc.so: CFLAGS+=-DPGODBC @PGODBC_INCLUDE@ @PGODBC_LFLAGS@ ${LOCAL_CFLAGS}
 libSQL_pgodbc.so: ${OBJECTS}
 	ld ${SO_LDFLAGS} $^ -o $@ -lpsqlodbc @PGODBC_LFLAGS@
 	cp $@ ../..
 
-libSQL_odbc32.so: CFLAGS+=${LOCAL_CFLAGS}
-libSQL_odbc32.so: ${OBJECTS}
-	ld ${SO_LDFLAGS} $^ -o $@ -lodbc32
-	cp $@ ../..
-
-
-#libSQL_odbc32.dll: CFLAGS+=${LOCAL_CFLAGS}
-#libSQL_odbc32.dll: ${OBJECTS}
-#	gcc -s -Wl,--base-file,mydll.base -o mydll.dll mydll.o -Wl,-e,_mydll_init@12
-#	dlltool --base-file mydll.base --def mydll.def --output-exp mydll.exp --dllname mydll.dll
-#	gcc -s -Wl,--base-file,mydll.base,mydll.exp -o mydll.dll mydll.o -Wl,-e,_mydll_init@12
-#	dlltool --base-file mydll.base --def mydll.def --output-exp mydll.exp --dllname mydll.dll
-#	gcc -Wl,mydll.exp -o mydll.dll mydll.o -Wl,-e,_mydll_init@12
-#	dlltool --def mydll.def --dllname mydll.dll --output-lib mydll.a
-#Now, when you build your program, you link against the import library:
-#gcc -o myprog myprog.o mydll.a
-
-
-#see example from http://sources.redhat.com/cygwin/cygwin-ug-net/dll.html
-# To learn how to build DLLs using cygwin tools, see
-#http://www.neuro.gatech.edu/users/cwilson/cygutils/V1.1/dll-stuff/
-
-
-
-#dll: ${A_DLLNAME}.dll
-libSQL_odbc32.dll: A_DLLOBJS=${OBJECTS}
-libSQL_odbc32.dll: ${A_DLLOBJS}
-%.dll: $(A_DLLOBJS)
-	@echo "Using DLL target template..."
-#create .base, link initial .dll
-	gcc -s -Wl,--base-file,$*.base ${SO_GCCFLAGS} -o $*.dll $(A_DLLOBJS) -Wl,-e,_$*_init@12
-#create .def file
-	echo EXPORTS > $*.def
-	nm $*.dll | grep ' T _' | sed 's/.* T _//' >> $*.def
-#continue...
-	dlltool --base-file $*.base --def $*.def --output-exp $*.exp --dllname $*.dll
-	gcc -s -Wl,--base-file,$*.base,$*.exp ${SO_GCCFLAGS} -o $*.dll $(A_DLLOBJS) -Wl,-e,_$*_init@12
-	dlltool --base-file $*.base --def $*.def --output-exp $*.exp --dllname $*.dll
-	gcc -Wl,$*.exp ${SO_GCCFLAGS} -o $*.dll $(A_DLLOBJS) -Wl,-e,_$*_init@12
-#build the import library:
-	dlltool --def $*.def --dllname $*.dll --output-lib $*.a
-	cp $@ ../..
-	@echo "DLL $*.dll built successfully. Link exe with $*.a export library."
-
-
-
-# This rule builds the Cygwin Python DLL
-libpython$(VERSION).dll.a: $(LIBRARY_OBJS)
-	dlltool --export-all --output-def $@ $^
-	gcc -shared -Wl,--enable-auto-image-base -Wl,--out-implib=$@ -o $@ $^
-
-
-
-.PHONY : show
-show:
-	@echo LOCAL_CFLAGS = ${LOCAL_CFLAGS}
-	@echo CFLAGS = ${CFLAGS}
-	@echo TMP_CFGLAGS = ${TMP_CFGLAGS}
 
 ## ==================================================================
 ##                              Clean
@@ -194,5 +132,13 @@ show:
 .PHONY : clean
 clean:
 	rm -f *.o *.bak *.so *.base *.dll *.def *.exp *.a
+
+
+.PHONY : show
+show:
+	@echo LOCAL_CFLAGS = ${LOCAL_CFLAGS}
+	@echo CFLAGS = ${CFLAGS}
+	@echo TMP_CFGLAGS = ${TMP_CFGLAGS}
+
 
 ## ----------------------------- EOF -------------------------------

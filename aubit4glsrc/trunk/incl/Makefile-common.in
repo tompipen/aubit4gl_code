@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.15 2002-02-05 06:41:58 afalout Exp $
+# $Id: Makefile-common.in,v 1.16 2002-02-15 11:33:46 afalout Exp $
 #
 
 
@@ -230,29 +230,32 @@ MAKINGAUBIT			=1
 PIC=@PIC@
 
 ifdef COMSPEC
+	PATH		:=${AUBITDIR}/lib:/usr/local/lib:${PATH}
 	CFLAGS		+=-DWIN32
     EXEEXT		=.exe
 	EXE			=${EXEEXT}
+	SO_EXT      =.dll
 	CPEXE		=cp
     SH			=bash
     LN			=cp
     SO_LDFLAGS	=-rdynamic ${PIC}
 	SO_GCCFLAGS =-Xlinker -rdynamic
+	DLL_EXPORTLIB_EXT=.dll.a
+	#dll on Windows are loaded by standard Windows loader, that don't
+	#understand CygWin symbolic links:
+	LN_S_LIB    =cp
+	SOEXP_EXT   =${SO_EXT}.a
+    #do not install static libraries on CygWin:
+	STATICLIB_INST=no
 else
     EXEEXT		=
+	SO_EXT      =.so
 	CPEXE		=ln -f
     SH			=sh
     LN			=ln -f
     SO_LDFLAGS	=${PIC} -shared
-
+	LN_S_LIB    =${LN_S}
 endif
-
-#package names reported by gtk-config or pkg-config:
-GTK_NAME="@GTK_NAME@"
-GDK_NAME="@GDK_NAME@"
-GLIB_NAME="@GLIB_NAME@"
-
-
 
 ####################### from aubitbuild-multi.mk ####################
 
@@ -344,21 +347,30 @@ GLIB_NAME="@GLIB_NAME@"
 #<options needed also for binary disrto makefile========================>
 
 #install location:
-PREFIX=/opt
+ifdef COMSPEC
+	PREFIX=/usr/local
+	#on Windows, dll libraries need to be in the path
+	LIB_INSTALL_LINK=/usr/local/bin
+else
+	PREFIX=/opt
+	#FSH and RPM rules say we should install binaries (links) in
+	#${PREFIX}/aubit4gl and libraries (links) in ${PREFIX}/lib. But this will
+	#in our case be /opt, and on 99% of the systems we will not have /opt/bin
+	#already in the path, and /opt/lib will not be in libraries search path.
+	#This conflicts with RPM rule that say that installed programs "must be
+	#operational" after RPM install is finished. Therefore, we have to use
+	#/usr/lib and /usr/bin:
+
+	#/usr/local/lib is not in default lib load path on RedHat, so we MUST use
+	#/usr/lib to get things working immediately after installation, without the
+	#need to edit system files manualy
+
+	LIB_INSTALL_LINK=/usr/lib
 
 
-#FSH and RPM rules say we should install binaries (links) in
-#${PREFIX}/aubit4gl and libraries (links) in ${PREFIX}/lib. But this will
-#in our case be /opt, and on 99% of the systems we will not have /opt/bin
-#already in the path, and /opt/lib will not be in libraries search path.
-#This conflicts with RPM rule that say that installed programs "must be
-#operational" after RPM install is finished. Therefore, we have to use
-#/usr/lib and /usr/bin:
 
-#/usr/local/lib is not in default lib load path on RedHat, so we MUST use
-#/usr/lib to get things working immediately after installation, without the
-#need to edit system files manualy
-LIB_INSTALL_LINK=/usr/lib
+endif
+
 BIN_INSTALL_LINK=/usr/bin
 
 INSTALL_DIR=${PREFIX}/aubit4gl
@@ -435,3 +447,13 @@ export LD_LIBRARY_PATH
 #in Aubit compiler source code tree; it is added to this file by "make install"
 export AUBIT_BIN_INSTALL
 #----------------------------- EOF -----------------------------
+
+
+%.dll %.def %.dll.a: $(DLLOBJS)
+#$(DLL_NAME) $(DLL_EXP_DEF) $(DLL_EXP_LIB): $(DLL_OBJS)
+#	gcc -shared -Wl,--out-implib=$(DLL_EXP_LIB) -o $(DLL_NAME) $(DLL_OBJS) -Wl,--export-all-symbols $(DLL_LDLIBS)
+	@echo "Using single line gcc:"
+	gcc -shared -Wl,--out-implib=$*.dll.a -o $*.dll $(DLLOBJS) -Wl,--export-all-symbols  $(DLL_LDFLAGS) $(DLL_LDLIBS)
+#	cp $@.a $@.a.bak
+
+

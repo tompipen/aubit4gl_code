@@ -2,7 +2,7 @@
 #
 #This is Aubit 4gl demo for CGI/HTML functionality
 #
-# $Id: simple_html.4gl,v 1.2 2001-11-21 01:54:08 afalout Exp $
+# $Id: simple_html.4gl,v 1.3 2002-02-15 11:33:47 afalout Exp $
 #
 ########################################################################
 
@@ -21,6 +21,17 @@ main
 	call select_page()
 
 end main
+
+
+this should produce highlited background on only this line:
+
+<DIV style="BACKGROUND: #e4e4e4; font-color: black"><B>From:</B> <A
+title=smathis@noblesys.com href="mailto:smathis@noblesys.com">Steve Mathis</A>
+</DIV>
+
+
+
+
 
 
 ###################################

@@ -24,13 +24,29 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-02-05 06:41:58 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-02-15 11:33:46 afalout Exp $
 #
+ifneq "${COMSPEC}" ""
+	ifeq "${PDFBUILD}" "no"
+	    ALL = NOPDF.dll
+	else
+	    ALL = PDF.dll NOPDF.dll
+	endif
+else
+	ifeq "${PDFBUILD}" "no"
+	    ALL = libPDF_NOPDF.so
+	else
+	    ALL = libPDF_PDF.so libPDF_NOPDF.so
+	endif
+endif
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ../../incl/Makefile-common
 
 override NOINCL=0
+
+OBJECTS_NOPDF	=nopdf.o
+OBJECTS_PDF		=has_pdf.o
 
 ## ==================================================================
 ##                              Options
@@ -42,22 +58,28 @@ override CFLAGS+=-I.. -I../../compilers/fcompile @PDFLIB_I_FLAGS@ @PDFLIB_L_FLAG
 ##                              Targets
 ## ==================================================================
 
-all: libPDF_PDF.so libPDF_NOPDF.so
+all: ${ALL}
 
-libPDF_PDF.so: has_pdf.o
-	ld @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) has_pdf.o -o $@
+libPDF_PDF.so: ${OBJECTS_PDF}
+	ld @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@
 	cp $@ ..
 
-libPDF_NOPDF.so: nopdf.o
-	ld  $(SO_LDFLAGS) nopdf.o -o $@
+libPDF_NOPDF.so: ${OBJECTS_NOPDF}
+	ld  $(SO_LDFLAGS) ${OBJECTS_NOPDF} -o $@
 	cp $@ ..
+
+NOPDF.dll: ${OBJECTS_NOPDF}
+	${MAKE} libPDF_NOPDF.dll DLLOBJS="${OBJECTS_NOPDF}"
+	cp libPDF_NOPDF.dll ..
+	cp libPDF_NOPDF.dll.a ..
+
 
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
 
 clean:
-	rm -f *.o *.so *.bak
+	rm -f *.o *.so *.bak *.base *.dll *.def *.exp *.a
 
 
 # ----------------------------- EOF ---------------------------------

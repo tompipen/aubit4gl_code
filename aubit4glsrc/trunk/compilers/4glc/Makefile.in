@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.14 2002-02-05 06:41:58 afalout Exp $
+# $Id: Makefile.in,v 1.15 2002-02-15 11:33:46 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,12 +36,12 @@ override NOINCL=0
 ## ==================================================================
 
 4GLPC			=${SH} ../../bin/4glpc
-4GLPCFLAGS		=-make-compile -static -DDEBUG -Irules -L/lib -L../../lib -nogtk -g  -verbose -L. -I.
+4GLPCFLAGS		=-make-compile -DDEBUG -Irules -L/lib -L../../lib -nogtk -g -verbose -L. -I.
 
 ifndef COMSPEC
-	4GLPCFLAGS	+=-rdynamic
-else
-	4GLPCFLAGS	+=${SO_GCCFLAGS}
+	4GLPCFLAGS	+=-rdynamic -static
+#else
+#	4GLPCFLAGS	+=${SO_GCCFLAGS}
 endif
 
 ALL				=rules.t 4glc
@@ -95,7 +95,7 @@ endif
 all: ${ALL}
 
 4glc: ${4GLCOBJ} ../../lib/libaclall.a
-	@echo OUTPUTLANG = $(OUTPUTLANG)
+#	@echo OUTPUTLANG = $(OUTPUTLANG)
 	${4GLPC} ${4GLPCFLAGS} -o $@ ${4GLCOBJ}
 	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
 
@@ -110,6 +110,13 @@ all: ${ALL}
 	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
 
 
+.PHONY : exp_4glc
+exp_4glc : ${4GLCOBJ}
+	${MAKE} lib4glc${DLL_EXPORTLIB_EXT} DLLOBJS="${4GLCOBJ}"
+
+########################################
+include ../../incl/a4gl-rules.mki
+########################################
 
 ## ==================================================================
 ##                            Sub Targets

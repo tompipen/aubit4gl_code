@@ -10,12 +10,10 @@ In file included from /usr/include/netinet/in.h:14,
 /usr/local/include/rpc/types.h:60: warning: this is the location of the previous
  definition
 
-
 in rpc/rpc.h :
 
 #include <rpc/types.h>
 #include <netinet/in.h>
-
 
 
 */
@@ -104,6 +102,7 @@ typedef enum FA_COLOUR FA_COLOUR;
 bool_t xdr_FA_COLOUR();
 
 
+
 enum FA_ATTRIBUTES_STRING {
 	FA_S_INCLUDE = 0,
 	FA_S_PICTURE = 1,
@@ -124,6 +123,14 @@ struct struct_field_attr_string {
 };
 typedef struct struct_field_attr_string struct_field_attr_string;
 bool_t xdr_struct_field_attr_string();
+
+
+struct colours {
+        enum FA_COLOUR colour;
+        struct u_expression *whereexpr;
+};
+typedef struct colours colours;
+
 
 /*
 struct struct_scr_field {
@@ -174,7 +181,7 @@ struct struct_scr_field {
 	} colours;
 };
 typedef struct struct_scr_field struct_scr_field;
-
+bool_t xdr_struct_scr_field();
 //----</new>------------
 
 
@@ -288,22 +295,21 @@ struct struct_form {
 	char *magic2;
 };
 typedef struct struct_form struct_form;
-
-
 bool_t xdr_struct_form();
 
 
-#endif //#ifndef XDRFILE
+//#endif //#ifndef XDRFILE
 
 
 //==================================================================
 
+/*
 struct colours {
 	enum FA_COLOUR colour;
 	struct u_expression *whereexpr;
 };
 typedef struct colours colours;
-
+*/
 
 enum ITEMTYPES {
 	ITEMTYPE_INT = 1,
@@ -406,4 +412,7 @@ extern bool_t xdr_t_expression ();
 }
 #endif
 
+#endif //#ifndef XDRFILE
+
 #endif /* !_FORM_X_H_RPCGEN */
+

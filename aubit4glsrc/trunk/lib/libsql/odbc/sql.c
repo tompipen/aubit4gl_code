@@ -33,8 +33,58 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.14 2002-02-05 06:41:59 afalout Exp $
+# $Id: sql.c,v 1.15 2002-02-15 11:33:47 afalout Exp $
 #
+*/
+
+/*
+    man dlltool :
+
+   The  first  file  is  a  .def  file  which specifies which
+   functions are exported from the DLL, which  functions  the
+   DLL  imports,  and  so on.  This is a text file and can be
+   created by hand, or dlltool can be used to create it using
+   the  -z option.  In this case dlltool will scan the object
+   files specified on its  command  line  looking  for  those
+   functions  which  have  been  specially  marked  as  being
+   exported and put entries for them  in  the  .def  file  it
+   creates.
+
+   In  order to mark a function as being exported from a DLL,
+   it needs to have an  -export:<name_of_function>  entry  in
+   the .drectve section of the object file.  This can be done
+   in C by using the asm() operator:
+
+             asm (".section .drectve");
+             asm (".ascii \"-export:my_func\"");
+
+             int my_func (void) { ... }
+
+asm (".section .drectve");
+
+asm (".ascii \"-export:set_line\"");
+asm (".ascii \"-export:debug_xx_full\"");
+asm (".ascii \"-export:SQLBindParameter@40\"");
+
+asm (".ascii \"-import:set_line\"");
+asm (".ascii \"-import:debug_xx_full\"");
+asm (".ascii \"-import:SQLBindParameter@40\"");
+
+//SQLBindParameter(hstmt, ipar, SQL_PARAM_INPUT, SQL_C_BINARY, SQL_LONGVARBINARY, 0, 0, rgbValue, 0, &cbval);
+
+extern SQLRETURN SQL_API SQLBindParameter (
+//extern SQLBindParameter (
+    SQLHSTMT hstmt,
+    SQLUSMALLINT ipar,
+    SQLSMALLINT fParamType,
+    SQLSMALLINT fCType,
+    SQLSMALLINT fSqlType,
+    SQLUINTEGER cbColDef,
+    SQLSMALLINT ibScale,
+    SQLPOINTER rgbValue,
+    SQLINTEGER cbValueMax,
+    SQLINTEGER * pcbValue);
+
 */
 
 #define DEFINE_SQLCA
@@ -188,27 +238,25 @@ typedef struct
 sqlca_struct;
 */
 
-dll_export sqlca_struct sqlca;
 
-dll_export int status;
+#if (defined(WIN32) && notdefined(__CYWIN__)) // && defined DLL_EXPORT
 
-#ifdef __CYGWIN__
-#include <windows.h>
-int WINAPI
+	dll_export sqlca_struct sqlca;
+	dll_export int status;
 
-libSQL_odbc32_init(HANDLE h, DWORD reason, void *foo)
-{
-  return 1;
-}
+	#include <windows.h>
+	int WINAPI
 
-#endif
+	libSQL_odbc32_init(HANDLE h, DWORD reason, void *foo)
+	{
+	  return 1;
+	}
 
-#if (defined(WIN32) || defined(__CYWIN__)) && defined DLL_EXPORT
-char
-libSQL_odbc32_is_dll (void)
-{
-  return 1;
-}
+	char
+	libSQL_odbc32_is_dll (void)
+	{
+	  return 1;
+	}
 #endif /* WIN32 && DLL_EXPORT */
 
 
@@ -246,7 +294,7 @@ debug("All done returning rc=%d\n",rc);
 return rc;
 }
 
-static int count_queries(char *s) 
+static int count_queries(char *s)
 {
   char *ptr;
   int cnt=0;

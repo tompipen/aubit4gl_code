@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.22 2002-02-05 06:41:58 afalout Exp $
+# $Id: Makefile.in,v 1.23 2002-02-15 11:33:46 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,36 +36,26 @@ override NOINCL=0
 ##                              Options
 ## ==================================================================
 
-
-#ODBC				=iodbc
-#PDFBUILD			=no
-ALL 				=libPDF_NOPDF.so aubit-config
-
-
+ALL 				=aubit-config
+ALL_GUI				=libaclallgui.a
 #-DNODEBUG -g
-
 LOCALCFLAGS			=-O2 -Ilibincl -I. -DAUTOBANG -DDEBUG
 LDFLAGS				=-Map mapfile
 4GLPC               =../bin/4glpc
 4GLPCFLAGS			=-verbose -nogtk
 
 ifdef COMSPEC
-#	LOCALCFLAGS		+=-DWIN32 -I/usr/src/rpc-4.0
-#default RPC install path on CygWin is /usr/local/include:
 	LOCALCFLAGS		+=-DWIN32 -I/usr/local/include
 	LDFLAGS			+= ${RPCLIB_NAME} -lc
-	ALL				+=libaclall.a libSQL_odbc32.so libaclshared.so
-    ALL_GUI			=libaclallgui.a libaclsharedgui.so
-
+	ALL				+=libaclall.a libPDF_NOPDF.dll dllaclshared
+#libSQL_odbc32.dll
+	ALL_GUI			+=dllaclsharedgui
 	ifeq "$(ODBC_LINK)" "static"
 		ifneq "$(ODBC)" "no"
 			ALL			+=libaclall-noodbc.a
 	    	ALL_GUI		+=libaclallgui-noodbc.a
 	    endif
     endif
-    CC				=gcc
-    SH				=bash
-    EXE             =.exe
 else
 	LOCALCFLAGS		+= -g
 	ifneq "$(ODBC)" "no"
@@ -73,20 +63,18 @@ else
     endif
 	ifeq "$(ODBC)" "iodbc"
 		LOCALCFLAGS	+=-I/usr/include/pgsql/iodbc -DIODBC
-		#LOCALCFLAGS+=-Ilocal_odbc_incl -DIODBC
-		#LOCALCFLAGS+=-I/opt/unixODBC/include  -DIODBC
 	endif
 	ifeq "$(ODBC)" "no"
 		ifeq "$(ODBC_LINK)" "static"
-			LOCALCFLAGS	+=-DNOODBC #-Ilocal_odbc_incl
+			LOCALCFLAGS	+=-DNOODBC
         	4GLPCFLAGS	+=-noodbc
         endif
 	endif
 	ifeq "$(PDFBUID)" "yes"
 		LOCALCFLAGS	+= -DUSE_PDF_REPORTS
     endif
-    ALL				+=libaclshared.so libaclall.a
-    ALL_GUI			=libaclsharedgui.so libaclallgui.a
+    ALL				+=libaclshared.so libaclall.a libPDF_NOPDF.so
+    ALL_GUI			+=libaclsharedgui.so
 
 	ifeq "$(ODBC_LINK)" "static"
 		ifneq "$(ODBC)" "no"
@@ -139,7 +127,13 @@ ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
 else #default: dynamic linking for SQL access libs
     ALL     		+=libsqlso
 	CMODS 			=${CMODSNOSQL} dlsql.c
-    LIBSQL			=libSQL_noodbc.so
+
+	ifdef COMSPEC
+		LIBSQL		=libSQL_noodbc.dll
+    else
+		LIBSQL		=libSQL_noodbc.so
+    endif
+
 
 	ifeq "$(HAVE_IODBC)" "yes"
 	    LIBSQL		+=libSQL_iodbc.so
@@ -193,8 +187,8 @@ aubit-config: aubit-config.c resource.c
 libsqlso: ${LIBSQL}
 
 libSQL_noodbc.so:
-	${MAKE} $(MKNAME) -C libsql/nosql
-	cp libsql/nosql/*.so .
+	${MAKE} $(MKNAME) -C libsql/nosql nosql.so
+#	cp libsql/nosql/*.so .
 
 libSQL_iodbc.so:
 	${MAKE} $(MKNAME) -C libsql/odbc iodbc
@@ -215,8 +209,6 @@ libSQL_ifxodbc.so:
 libSQL_pgodbc.so:
 	${MAKE} $(MKNAME) -C libsql/odbc pgodbc
 
-libSQL_odbc32.so:
-	${MAKE} $(MKNAME) -C libsql/odbc odbc32
 
 #----------------- with ODBC, if ODBC != no ----------------------
 
@@ -229,18 +221,10 @@ libaclallgui.a : $(OBJS) gui_gtk.o
 	ranlib libaclallgui.a
 
 libaclshared.so : $(OBJS) gui_tui.o
-#	touch libaclshared.so
-#	rm libaclshared.so
 	ld ${SO_LDFLAGS} $(OBJS) gui_tui.o -o $@ #-lform -lpanel -lncurses -Map  mapfile
-#FIXME: remove this ln:
-#	ln aclshared.so libaclshared.so
 
 libaclsharedgui.so : $(OBJS) gui_gtk.o
-#	touch libaclsharedgui.so
-#	rm libaclsharedgui.so
 	ld ${SO_LDFLAGS} $(OBJS) gui_gtk.o -o $@ #-lform -lpanel -lncurses -Map  mapfile
-#FIXME: remove this ln:
-#	ln aclsharedgui.so libaclsharedgui.so
 
 #----------------- without ODBC, if ODBC = no ----------------------
 
@@ -253,18 +237,43 @@ libaclallgui-noodbc.a: $(OBJSNOSQL) gui_gtk.o
 	ranlib libaclallgui-noodbc.a
 
 libaclshared-noodbc.so:  $(OBJSNOSQL) gui_tui.o
-#	touch libaclshared-noodbc.so
-#	rm libaclshared-noodbc.so
 	ld  $(SO_LDFLAGS) $(OBJSNOSQL) gui_tui.o -o $@ #-lform -lpanel -lncurses -Map  mapfile
-#FIXME: remove this ln:
-#	ln aclshared-noodbc.so libaclshared-noodbc.so
 
 libaclsharedgui-noodbc.so: $(OBJSNOSQL) gui_gtk.o
-#	touch libaclsharedgui-noodbc.so
-#	rm libaclsharedgui-noodbc.so
 	ld  $(SO_LDFLAGS) $(OBJSNOSQL) gui_gtk.o -o $@ #-lform -lpanel -lncurses -Map  mapfile
-#FIXME: remove this ln:
-#	ln aclsharedgui-noodbc.so libaclsharedgui-noodbc.so
+
+## ==================================================================
+##                       Windows 32 DLL Targets
+## ==================================================================
+
+.PHONY : dllaclshared
+dllaclshared : $(OBJS) gui_tui.o
+	${MAKE} libaclshared.dll DLLOBJS="$(OBJS) gui_tui.o" DLL_LDLIBS="-lform -lpanel -lncurses -lrpclib -lPDF_NOPDF" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -Llibpdf"
+#$RPCLIB_NAME
+
+#when this is linked with -gtk4gl that is linked with -rpclib, linking will fail with duplicated definitions;
+#when this is linked with -gtk4gl that is linked WITHOUT -rpclib, linking will work, but compiled programs (like hello.exe)
+#will fail with missing entry poit to xdr_array in libgtk4gl.dll
+
+#problem: both libaclsharedgui.dll and libgtk4gl.dll MUST be linked with rpclib,
+#aclsharedgui to resolve symbols at link time, and gtk4gl at run-time (???)
+#because there can be no unresolved symbols at link time, when making Windows DLL - but,
+#rpclib have no dll, only static .a, so both .dll's end up with full rpclib linked in them statically.
+#(temporary) Solution: create libgtk4gl-norpc.
+.PHONY : dllaclsharedgui
+dllaclsharedgui : $(OBJS) gui_gtk.o
+	${MAKE} libaclsharedgui.dll DLLOBJS="$^" DLL_LDLIBS="-lgtk4gl -lform -lpanel -lncurses -lrpclib -lPDF_NOPDF" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -Llibpdf -L."
+#$RPCLIB_NAME
+#overwrite non-rpclib with rpclib linked (runtime) versions:
+	cp libgtk4gl-rpc.dll libgtk4gl.dll
+	cp libgtk4gl-rpc${DLL_EXPORTLIB_EXT} libgtk4gl${DLL_EXPORTLIB_EXT}
+
+libSQL_noodbc.dll:
+	${MAKE} $(MKNAME) -C libsql/nosql nosql.dll
+
+libSQL_odbc32.dll:
+	${MAKE} $(MKNAME) -C libsql/odbc odbc32
+
 
 ## ==================================================================
 ##                             Sub Targets
@@ -276,6 +285,8 @@ libPDF_PDF.so:
 libPDF_NOPDF.so:
 	${MAKE} -C libpdf $(MKNAME) libPDF_NOPDF.so
 
+libPDF_NOPDF.dll:
+	${MAKE} -C libpdf $(MKNAME) NOPDF.dll
 
 gui_tui.o: gui.c
 	${CC} -c $(CFLAGS) gui.c -o gui_tui.o
@@ -315,36 +326,6 @@ array.o: array.c ../compilers/fcompile/form_x_xdr.c
 
 
 ## ==================================================================
-##                       Windows 32 DLL Targets
-## ==================================================================
-
-#acl4gl.def:
-#	echo "EXPORTS" > acl4gl.def
-#	echo "sqlca @1 DATA" >> acl4gl.def
-#	echo "status @2 DATA" >> acl4gl.def
-#	echo "std_dbscr @3 DATA" >> acl4gl.def
-
-acl4gl.dll: $(DLL_OBJS) libaclall.a
-	gcc -shared --dll -Wl,--export-dynamic  -Wl,--out-implib=libacl4gl.dll.a -Wl,--enable-auto-image-base  -o acl4gl.dll $(DLL_OBJS) -L. -laclall -lgtk4gl -lgtk -lgdk -lglib  ${RPCLIB_NAME} -lodbc32 -lform -lpanel -lcurses
-	dlltool -l libacl4gl_1.a -a -D acl4gl.dll -d windef.def -U
-
-A_DLLNAME=acl4gltest
-A_DLLOBJS=dll.o libaclall.a
-
-#see example from http://sources.redhat.com/cygwin/cygwin-ug-net/dll.html
-$(A_DLLNAME).dll: $(A_DLLOBJS)
-	echo "EXPORTS" > $(A_DLLNAME).def
-	gcc -s -Wl,--base-file,$(A_DLLNAME).base -o $(A_DLLNAME).dll $(A_DLLOBJS) -Wl,-e,_$(A_DLLNAME)_init@12
-	dlltool --base-file $(A_DLLNAME).base --def $(A_DLLNAME).def --output-exp $(A_DLLNAME).exp --dllname $(A_DLLNAME).dll
-	gcc -s -Wl,--base-file,$(A_DLLNAME).base,$(A_DLLNAME).exp -o $(A_DLLNAME).dll $(A_DLLOBJS) -Wl,-e,_$(A_DLLNAME)_init@12
-	dlltool --base-file $(A_DLLNAME).base --def $(A_DLLNAME).def --output-exp $(A_DLLNAME).exp --dllname $(A_DLLNAME).dll
-	gcc -Wl,$(A_DLLNAME).exp -o $(A_DLLNAME).dll $(A_DLLOBJS) -Wl,-e,_$(A_DLLNAME)_init@12
-	dlltool --def $(A_DLLNAME).def --dllname $(A_DLLNAME).dll --output-lib $(A_DLLNAME).a
-
-
-
-
-## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
 
@@ -353,6 +334,7 @@ clean : clean.generated clean.libsql clean.libpdf clean.libincl
 	${RM} form_x_xdr.c form_x.h project.c aubit-config
 	${RM} loadmap loadmap.c loadmap.h core
 	${RM} *.out *.glb *.so *.a  *.o  *.bak *.exe *.dll *.stackdump *.err
+	${RM} *.base *.exp libaclshared.def
 
 clean.generated:
 	${RM} generated/errdefs generated/tmperrs.h
