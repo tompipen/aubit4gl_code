@@ -2,7 +2,7 @@
 #include "lowlevel.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel.c,v 1.3 2005-03-23 08:24:15 afalout Exp $";
+		"$Id: lowlevel.c,v 1.4 2005-03-25 12:48:35 afalout Exp $";
 #endif
 
 
@@ -53,8 +53,7 @@ A4GL_LL_screen_mode ()
 }
 
 void
-A4GL_LL_screen_update (void)
-{
+A4GL_LL_screen_update (void) {
 // Update the physical screen
   printf ("screen update\n");
 }

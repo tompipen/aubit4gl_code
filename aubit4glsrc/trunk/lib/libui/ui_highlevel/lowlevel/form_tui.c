@@ -1,15 +1,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include "a4gl_libaubit4gl.h"
+#include "a4gl_API_lowlevel.h"
+#include "a4gl_API_ui_lib.h"
 #include "aubit_noform.h"
 #ifdef XCURSES
 	#include <xpanel.h>
 #else
 	#include <panel.h>
 #endif
+#include "hl_proto.h"
 
-
-void A4GL_LL_screen_refresh();
+void A4GL_LL_screen_refresh(void);
 
 
 /* A lot of this is copied from ncurses libform and hacked...
@@ -110,18 +112,16 @@ void A4GL_LL_screen_refresh();
 static void
 redraw_field (FIELD * f)
 {
-  int x, y;
-  //WINDOW *w;
-  int attr;
-  char **ptr;
-      char clr_buff[2000];
-  static char *buff = 0;
-  static int buff_len = 0;
-//int ls;
-  int row;
-  char *xbuff;
-  PANEL *wot;
-  A4GL_debug("Redraw field : %p",f);
+int x, y;
+int attr;
+char **ptr;
+static char *buff = 0;
+static int buff_len = 0;
+int row;
+char *xbuff;
+PANEL *wot;
+
+	A4GL_debug("Redraw field : %p",f);
 
 
   if (f == 0)
@@ -149,10 +149,13 @@ redraw_field (FIELD * f)
   y = f->frow;
   x = f->fcol;
 
-
-
   wot= Get_Form_Window(f->form);
-
+  /*
+  warning: assignment from incompatible pointer type
+  PANEL *wot;
+  #define Get_Form_Window(form) ((form)->sub?(form)->sub:((form)->win?(form)->win:stdscr))
+  */
+  
   memset(buff,0,buff_len);
 
   if ((!(f->opts&O_VISIBLE)) || (!(f->opts&O_PUBLIC)) || (f->fore&A_INVIS)) {	
@@ -635,26 +638,23 @@ A4GL_form_free_form (FORM * form)
 int
 A4GL_form_pos_form_cursor (FORM * form)
 {
-char buff[245];
-A4GL_debug("A4GL_form_pos_form_cursor");
-  if (form->current) {
-	WINDOW *w;
-	int incr;
-
-if (UILIB_A4GL_iscurrborder ()) incr=1; else incr=0;
-
-	//w=form->sub;
- w = (void *) panel_window(A4GL_window_on_top_ign_menu ());
-
-if (w) {
-	wmove(w,form->current->frow+incr, form->current->fcol+form->curcol+incr); 
-	wcursyncup(w);
-	wrefresh(w);
-} 
-  } else {
-	A4GL_debug("pos_form_cursor called when form current = 0....");
-  }
-  return E_OK;
+//char buff[245];
+	A4GL_debug("A4GL_form_pos_form_cursor");
+	if (form->current) {
+		WINDOW *w;
+		int incr;
+		if (UILIB_A4GL_iscurrborder ()) incr=1; else incr=0;
+		//w=form->sub;
+		w = (void *) panel_window(A4GL_window_on_top_ign_menu ());
+		if (w) {
+			wmove(w,form->current->frow+incr, form->current->fcol+form->curcol+incr); 
+			wcursyncup(w);
+			wrefresh(w);
+		} 
+	} else {
+		A4GL_debug("pos_form_cursor called when form current = 0....");
+	}
+	return E_OK;
 }
 
 

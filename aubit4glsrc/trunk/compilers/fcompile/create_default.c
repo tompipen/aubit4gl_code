@@ -20,7 +20,7 @@ int attribs_cnt=0;
 
 static int get_size(int dtype,int size);
 static char *spaces(int dtype,int size,char *id);
-
+void usage(char *progname);
 static void incbuff(char *s);
 static char *get_id(int dtype,int size);
 
@@ -64,41 +64,42 @@ int a;
 int b;
 char buff[256];
 
-if (strlen(s)==1) {
-	if (s[0]=='z') {
-		printf("Too many one length fields\n");
-		exit (1);
+	if (strlen(s)==1) {
+		if (s[0]=='z') {
+			printf("Too many one length fields\n");
+			exit (1);
+		}
+		s[0]=s[0]+1;
+		return;
 	}
-	s[0]=s[0]+1;
-	return;
-}
-
-
-b=atoi(&s[1]);
-b++;
-
-sprintf(buff,"%c%*d",s[0],strlen(s)-1,b);
-
-if (strlen(buff)>strlen(s)) {
-	if (s[0]=='z') {
-		printf("Run out of %d length fields\n",strlen(s));
-		exit(1);
+	
+	
+	b=atoi(&s[1]);
+	b++;
+	
+	sprintf(buff,"%c%*d",s[0],(int)strlen(s)-1,b);
+	
+	if (strlen(buff)>strlen(s)) {
+		if (s[0]=='z') {
+			printf("Run out of %d length fields\n",strlen(s));
+			exit(1);
+		}
+		s[0]++;
+		b=0;
+		sprintf(buff,"%c%*d",s[0],(int)strlen(s)-1,b);
 	}
-	s[0]++;
-	b=0;
-	sprintf(buff,"%c%*d",s[0],strlen(s)-1,b);
-}
 
-strcpy(s,buff);
-for (a=0;a<strlen(s);a++) {
-	if (s[a]==' ') s[a]='0';
-}
+	strcpy(s,buff);
+	for (a=0;a<strlen(s);a++) {
+		if (s[a]==' ') s[a]='0';
+	}
 
 }
 
 
 
-char *get_id(int dtype,int size) {
+char *
+get_id(int dtype,int size) {
 static char buff[4][20]={"a","a0","a00","f000"};
 static int used[4]={0,0,0,0};
 size=get_size(dtype,size);
@@ -114,9 +115,10 @@ return buff[size];
 
 
 
-void usage(char *progname) {
-printf("Usage\n%s -d dbname -t tabname [-t tabname ..]  [-o outputfile]\n",progname);
-exit(0);
+void 
+usage(char *progname) {
+	printf("Usage\n%s -d dbname -t tabname [-t tabname ..]  [-o outputfile]\n",progname);
+	exit(0);
 }
 
 int main(int argc,char *argv[]) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_gtk.c,v 1.6 2005-03-23 08:24:16 afalout Exp $
+# $Id: menu_gtk.c,v 1.7 2005-03-25 12:48:35 afalout Exp $
 #*/
 
 /**
@@ -68,7 +68,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: menu_gtk.c,v 1.6 2005-03-23 08:24:16 afalout Exp $";
+		"$Id: menu_gtk.c,v 1.7 2005-03-25 12:48:35 afalout Exp $";
 #endif
 
 
@@ -298,8 +298,10 @@ make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm, char *id,
  * @param handler
  * @return A pointer to the menu widget created.
  */
-void * A4GL_LL_create_menu (menu_list * m, char *id, int mode, void *handler)
-{
+//void * A4GL_LL_create_menu (menu_list * m, char *id, int mode, void *handler)
+//had to change to void pointer to allow prototype to apply to both 
+//GUI and TUI variants of this function
+void * A4GL_LL_create_menu (void * m, char *id, int mode, void *handler) {
   GtkWidget *menubar;
   GtkWindow *cwin;
   extern GtkWidget *win_screen;

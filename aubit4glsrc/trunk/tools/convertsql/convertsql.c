@@ -22,7 +22,7 @@ process_stdin (char *dialect_in, char *dialect_out)
   char c;
   char quote = 0;
   int slash = 0;
-  int n = 0;
+//  int n = 0;
   char *ptr;
 
   buff = malloc (buffsize);

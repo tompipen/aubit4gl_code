@@ -69,23 +69,23 @@ static int get_bind_cnt (char i);
 static void rm_quotes (char *s);
 static void A4GL_CV_print_exec_sql(char *s);
 
-static void print_set_conn(char *conn) ;
+//andrej static void print_set_conn(char *conn) ;
 static void print_load (char *fname,char *delim,char *tab,char *col) ;
 static void print_load_str (char *fname,char *delim,char *query) ;
 static void print_sql_commit (int n) ;
-static void print_select_all (char *s) ;
+//andrej static void print_select_all (char *s) ;
 static void print_exec_sql (char *s) ;
-static void print_exec_sql_bound (char *s) ;
+//andrej static void print_exec_sql_bound (char *s) ;
 static void print_exec_select (char *s)    ;
 static void print_undo_use (char *use_stuff) ;
 static void print_unload (char *fname,char *delim,char *sql) ;
 static void print_use_session (char *conn_id) ;
 static void print_init_conn (char *s) ;
 static void print_unable_to_parse(void) ;
-static int yywrap(void) ;
+//andrej static int yywrap(void) ;
 static int start_bind (char c,int n);
 static int A4GLSQLCV_process(void);
-static int meminput(char *buf,int maxsize);
+//andrej static int meminput(char *buf,int maxsize);
 static int sqlparse_yyerror(char *s) ;
 
 

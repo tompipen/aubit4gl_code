@@ -1,6 +1,6 @@
 #ifndef lint
 	static char const module_id[] =
-		"$Id: forms.c,v 1.19 2005-03-23 08:24:15 afalout Exp $";
+		"$Id: forms.c,v 1.20 2005-03-25 12:48:34 afalout Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -270,12 +270,6 @@ UILIB_A4GL_disp_form (char *name, int attr)
   return 0;
 }
 
-
-
-
-
-
-
 /**
  *
  * @todo Describe function
@@ -290,6 +284,10 @@ UILIB_A4GL_iscurrborder (void)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_getprompt_line (void)
 {
@@ -350,6 +348,10 @@ return a;
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_getcomment_line (void)
 {
@@ -453,6 +455,10 @@ return a;
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_getform_line (void)
 {
@@ -480,9 +486,10 @@ A4GL_getform_line (void)
 }
 
 
-
-
-
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_chkwin (void)
 {
@@ -498,6 +505,10 @@ A4GL_chkwin (void)
   return 1;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 A4GL_mja_endwin (void)
 {
@@ -509,6 +520,10 @@ A4GL_mja_endwin (void)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 UILIB_A4GL_display_error (int a, int wait)
 {
@@ -528,6 +543,10 @@ UILIB_A4GL_display_error (int a, int wait)
   a4gl_status = 0;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_getmenu_line (void)
 {
@@ -545,9 +564,6 @@ A4GL_getmenu_line (void)
         while (a>=UILIB_A4GL_get_curr_height()) a--;
 	A4GL_debug("MENU LINE : %d",a);
         return a;
-
-
-
 
 }
 
@@ -605,7 +621,12 @@ A4GL_glob_window (int x, int y, int w, int h, int border)
 }
 #endif
 
-int A4GL_decode_line_ib (int l)
+/**
+ *
+ * @todo Describe function
+ */
+int 
+A4GL_decode_line_ib (int l)
 {
   if (l > 0)
     {
@@ -706,6 +727,10 @@ A4GL_decode_line (int l)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_decode_line_scr (int l)
 {
@@ -727,6 +752,10 @@ A4GL_decode_line_scr (int l)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_get_curr_border (void)
 {
@@ -845,6 +874,10 @@ UILIB_A4GL_get_curr_height (void)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void *
 A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
 			   int attr)
@@ -912,6 +945,10 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 UILIB_aclfgl_fgl_drawbox (int n)
 {
@@ -1008,6 +1045,10 @@ UILIB_aclfgl_fgl_drawbox (int n)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void *
 A4GL_create_blank_window (char *name, int x, int y, int w, int h, int border)
 {
@@ -1026,6 +1067,10 @@ A4GL_create_blank_window (char *name, int x, int y, int w, int h, int border)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_init_windows (void)
 {
@@ -1053,6 +1098,10 @@ A4GL_init_windows (void)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_find_win (void *w)
 {
@@ -1067,6 +1116,10 @@ A4GL_find_win (void *w)
   return 0;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 void *
 A4GL_find_form_for_win (void *w)
 {
@@ -1084,6 +1137,10 @@ A4GL_find_form_for_win (void *w)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 UILIB_A4GL_current_window (char *win_name)
 {
@@ -1113,6 +1170,10 @@ A4GL_debug("Current window : %s",win_name);
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 LIBEXPORT void
 UILIB_A4GL_hide_window (char *winname)
 {
@@ -1138,6 +1199,10 @@ UILIB_A4GL_hide_window (char *winname)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void *
 A4GL_create_window (char *name, int x, int y, int w, int h,
 		    int iswindow,
@@ -1279,6 +1344,10 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 UILIB_A4GL_remove_window (char *win_name)
 {
@@ -1319,14 +1388,28 @@ static struct s_windows *win_stack[1024];
 /** The windows stack counter / index */
 static int win_stack_cnt = 0;
 
-int A4GL_win_stack_cnt (void ) {
+/**
+ *
+ * @todo Describe function
+ */
+int 
+A4GL_win_stack_cnt (void ) {
 	return win_stack_cnt;
 }
 
-void *A4GL_window_on_stack(int cnt) {
+/**
+ *
+ * @todo Describe function
+ */
+void *
+A4GL_window_on_stack(int cnt) {
 	return win_stack[cnt]->win;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 A4GL_win_stack (struct s_windows *w, int op)
 {
@@ -1369,7 +1452,12 @@ A4GL_win_stack (struct s_windows *w, int op)
 }
 
 
-void A4GL_dump_winstack (void)
+/**
+ *
+ * @todo Describe function
+ */
+void 
+A4GL_dump_winstack (void)
 {
   int a;
   for (a = 0; a < win_stack_cnt; a++)
@@ -1379,6 +1467,10 @@ void A4GL_dump_winstack (void)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void *
 A4GL_get_currwin (void)
 {
@@ -1387,6 +1479,10 @@ A4GL_get_currwin (void)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_get_currwinno (void)
 {
@@ -1397,13 +1493,23 @@ A4GL_get_currwinno (void)
 
 
 
-void * A4GL_window_on_top (void)
+/**
+ *
+ * @todo Describe function
+ */
+void * 
+A4GL_window_on_top (void)
 {
   return A4GL_get_currwin ();
 }
 
 
-void * A4GL_window_on_top_ign_menu (void)
+/**
+ *
+ * @todo Describe function
+ */
+void * 
+A4GL_window_on_top_ign_menu (void)
 {
   int a;
   for (a = win_stack_cnt - 1; a >= 0; a--)
@@ -1418,6 +1524,10 @@ return 0;
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
 {
@@ -1454,6 +1564,10 @@ A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 A4GL_set_field_attr_with_attr (void *field, int attr, int cmd_type)
 {
@@ -1478,6 +1592,10 @@ A4GL_set_field_attr_with_attr (void *field, int attr, int cmd_type)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 A4GL_set_field_colour_attr (void *field, int do_reverse, int colour)
 {
@@ -1550,6 +1668,10 @@ A4GL_set_field_colour_attr (void *field, int do_reverse, int colour)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 LIBEXPORT void
 UILIB_A4GL_show_window (char *winname)
 {
@@ -1568,6 +1690,10 @@ UILIB_A4GL_show_window (char *winname)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 LIBEXPORT int
 UILIB_A4GL_movewin (char *winname, int absol)
 {
@@ -1639,6 +1765,10 @@ UILIB_A4GL_movewin (char *winname, int absol)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 UILIB_A4GL_clr_window (char *win_name)
 {
@@ -1674,7 +1804,12 @@ UILIB_A4GL_clr_window (char *win_name)
 }
 
 
-void A4GL_make_window_with_this_form_current(void *form) {
+/**
+ *
+ * @todo Describe function
+ */
+void 
+A4GL_make_window_with_this_form_current(void *form) {
 int a;
 for (a=0;a<MAXWIN;a++) {
         if (windows[a].form==form) {
@@ -1688,7 +1823,12 @@ for (a=0;a<MAXWIN;a++) {
 
 
 
-void* A4GL_add_window(int x,int y,int w,int h,char *name,void *fd, void *win) {
+/**
+ *
+ * @todo Describe function
+ */
+void * 
+A4GL_add_window(int x,int y,int w,int h,char *name,void *fd, void *win) {
 int a;
 void *ww=0;
 
@@ -1729,6 +1869,10 @@ return ww;
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 UILIB_A4GL_set_option_value_for_current_window (char type, int keyval)
 {
@@ -1758,6 +1902,10 @@ UILIB_A4GL_set_option_value_for_current_window (char type, int keyval)
     }
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 UILIB_A4GL_get_option_value_for_current_window (char type)
 {
@@ -1790,4 +1938,4 @@ A4GL_assertion(1,"Unknown option value");
 return 0;
 }
 
-
+/* ==================================== EOF ================================*/

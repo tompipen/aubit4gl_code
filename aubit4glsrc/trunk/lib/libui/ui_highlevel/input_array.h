@@ -1,5 +1,6 @@
 /* input_array.h */
 
+void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
 
 /*
 

@@ -89,3 +89,7 @@ void A4GL_wprintw(void *win, int attr, int x, int y, char *fmt, ...);
 void chk_for_picture(void *f, char *buff);
 void debug_print_flags(void *sv, char *txt);
 void* A4GL_add_window(int x, int y, int w, int h, char *name, void *fd, void *win);
+void A4GL_wprintw_window (void *win, int attr, int x, int y, char *fmt, ...);
+//void A4GL_LL_screen_update(void ); //defined in a4gl_API_lowlevel
+//int UILIB_A4GL_iscurrborder (void); //defined in a4gl_API_ui_lib.h
+

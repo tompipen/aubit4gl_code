@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.29 2005-03-09 15:14:39 mikeaubury Exp $
+# $Id: io.c,v 1.30 2005-03-25 12:48:32 afalout Exp $
 #
 */
 
@@ -61,10 +61,7 @@ FILE *oufile = 0;
 int A4GL_read_int (FILE * ofile);
 void A4GL_write_int (FILE * ofile, int la);
 FILE *A4GL_try_to_open (char *path, char *name, int keepopen);
-char *A4GL_fullpath_classpath (char *fname) ;
 static char * A4GL_fullpath_xpath (char *fname,char *path);
-//FILE * A4GL_open_file_classpath (char *fname);
-
 
 /*
 =====================================================================

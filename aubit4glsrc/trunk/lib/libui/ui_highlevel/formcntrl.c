@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.22 2005-03-23 08:24:15 afalout Exp $
+# $Id: formcntrl.c,v 1.23 2005-03-25 12:48:34 afalout Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.22 2005-03-23 08:24:15 afalout Exp $";
+		"$Id: formcntrl.c,v 1.23 2005-03-25 12:48:34 afalout Exp $";
 #endif
 /**
  * @file
@@ -55,7 +55,7 @@ int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
 int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos,char *l,char *r);
-int A4GL_conversion_ok(int);
+//int A4GL_conversion_ok(int);
 
 extern int m_lastkey;
 #define CONTROL_STACK_LENGTH 10

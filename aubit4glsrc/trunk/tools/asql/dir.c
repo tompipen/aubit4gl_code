@@ -3,10 +3,11 @@
 #include <dirent.h>
 #include <stdlib.h>
 #include <string.h>
+#include "a4gl_incl_4glhdr.h" /* A4GL_debug() */
 
 char **read_directory(char *dir,char *spec) ;
-void free_directory() ;
-
+void free_directory(void) ;
+int compare_str(const void *vs1,const void *vs2);
 
 char **m_names=0;
 
@@ -34,7 +35,8 @@ int a;
 
 
 
-char **read_directory(char *dir,char *spec) {
+char **
+read_directory(char *dir,char *spec) {
 DIR *dirp;
 char **names=0;
 char *name;
@@ -42,7 +44,7 @@ int cnt=0;
 char buff[255];
 struct dirent *direntp;
 dirp = opendir( dir);
-	if (dirp==0) {m_names=0; return;}
+	if (dirp==0) {m_names=0; return 0;}
 
    /***************************************************************************
    * readdir() returns either a pointer to a structure containing directory
@@ -80,7 +82,7 @@ dirp = opendir( dir);
 }
 
 
-void free_directory() {
+void free_directory(void) {
 int a;
 if (m_names==0) return;
 for (a=0;m_names[a];a++) free(m_names[a]);

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.187 2005-03-23 08:24:08 afalout Exp $
+# $Id: Makefile-common.in,v 1.188 2005-03-25 12:48:31 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -1029,6 +1029,12 @@ DIALOG				=@DIALOG@
 DIALOG_TYPE			=@DIALOG_TYPE@
 EXDATA_MPZ			=@EXDATA_MPZ@
 PERL				=@PERL@
+
+
+GETOPT_LONG			=@GETOPT_LONG@
+RPCLIB_INCLUDE		=@RPCLIB_INCLUDE@
+CURSES_INC_PATH		=@CURSES_INC_PATH@
+YYDEBUG				=@YYDEBUG@
 
 ## ==================================================================
 ##                      Moved from aubitrc:

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.19 2005-03-23 08:18:43 afalout Exp $
+# $Id: Makefile,v 1.20 2005-03-25 12:47:20 afalout Exp $
 #
 
 ## ==================================================================
@@ -528,9 +528,9 @@ clean.settings:
 	${RM} etc/a4glrc etc/aubitbuild.mk etc/aubitenv etc/aubitrc
 
 clean.makefiles:
-	${RM} compilers/4glc/Makefile compilers/4glc/rules/Makefile \
+	${RM} compilers/4glc/rules/Makefile \
 	compilers/fcompile/Makefile compilers/helpcompile/Makefile \
-	compilers/menus/Makefile incl/Makefile-common \
+	incl/Makefile-common \
     lib/libui/ui_console/Makefile lib/libpdf/Makefile \
     lib/libsql/nosql/Makefile \
     lib/extra_libs/file/Makefile \

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.33 2004-12-07 20:27:01 whaslbeck Exp $
+# $Id: Makefile,v 1.1 2005-03-25 12:48:31 afalout Exp $
 #
 
 ROOT        =../..
@@ -40,15 +40,17 @@ override NOINCL=0
 
 ALL				=${ROOT}/bin/mcompile ${ROOT}/bin/mdecompile
 
-ifeq "${USE_RPCGEN}" "0"
-	RPCGEN      =${CP} ${ROOT}/tools/cygwin/menu_x_xdr.c ${ROOT}/tools/cygwin/menu_x.h .
-else
-	RPCGEN      =@RPCGEN@ menu_x.x
-endif
+#Should be obsolete - using xgen instead of rpcgen
+#ifeq "${USE_RPCGEN}" "0"
+#	RPCGEN      =${CP} ${ROOT}/tools/cygwin/menu_x_xdr.c ${ROOT}/tools/cygwin/menu_x.h .
+#else
+#	RPCGEN      =${RPCGEN} menu_x.x
+#endif
 
 C_LOCAL_IFLAGS  =-I. -I${ROOT}/lib/libincl -I../fcompile
 #FIXME: this compiler should not depend on RPC:
-CFLAGS		   +=${C_LOCAL_IFLAGS} @RPCLIB_INCLUDE@
+#CFLAGS		   +=${C_LOCAL_IFLAGS} ${RPCLIB_INCLUDE}
+CFLAGS		   +=${C_LOCAL_IFLAGS}
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 
 ## ==================================================================
@@ -81,30 +83,24 @@ endif
 ##                             Targets
 ## ==================================================================
 
-
 all: $(ALL)
 	@echo "Default targets ($(ALL)) successfully compiled"
 
 ${ROOT}/bin/mcompile: $(OBJECTS)
-#	${CC} ${CFLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
 	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
-#	${LN} $@${EXE} ${ROOT}/bin/$@${EXE}
 
 ${ROOT}/bin/mdecompile: ${OBJS_DECOMPILE}
-#	${CC} -o $@ ${CFLAGS} $^ -L${ROOT}/lib ${AUBIT_LIB}
 	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
-#	${CP} $@ ${ROOT}/bin
 
 ## ==================================================================
 ##                             Sub Targets
 ## ==================================================================
 
-menu_x_xdr.c:  menu_x.x
-#${MENU_X_XDR}: menu_x.x
-	${RPCGEN}
+#menu_x_xdr.c:  menu_x.x
+#	${RPCGEN}
 
-menu_x.h: menu_x.x
-	${RPCGEN}
+#menu_x.h: menu_x.x
+#	${RPCGEN}
 
 y.tab.c: ${Y_TAB_C_DEP}
 ifeq "${YACC}" "no"
@@ -114,19 +110,24 @@ else
 endif
 
 lex.yy.c: $(SOURCES.lex)
-ifeq "@LEX@" "no"
+ifeq "${LEX}" "no"
 	${CP} ${LEX_YY_C} .
 else
-	flex -i $(SOURCES.lex)
+	${LEX} $(SOURCES.lex)
 endif
 
-rpc:
-	${RPCGEN}
+#rpc:
+#	${RPCGEN}
 
-#%.o: %.c
-#	${CC} ${CFLAGS_GTK_C} -c -o $@ $^
-
-
+XGENEXE    		=${ROOT}/bin/xgen
+	
+#use xgen rather than rpcgen then use "menu_x.xs.h" instead of menu_x.h
+menu_x.xs.h menu_x.xi.c: menu_x.x ${XGENEXE}
+	${XGENEXE} $<
+	
+${XGENEXE}:
+	${MAKE} -C ${ROOT}/compilers/xgen
+	
 ## ==================================================================
 ##                             Dependencies
 ## ==================================================================
@@ -136,17 +137,23 @@ y.tab.o: lex.yy.c
 #rpc: menu_x_xdr.c
 
 #FIXME: mcompile should not depend on rpcgen:
-mcompile.o: menu_x.h
+#menu_x.h=rpcgen menu_x.xs.h=xgen
+#mcompile.o: menu_x.h menu_x.xs.h
+mcompile.o: menu_x.xs.h
 
 ## ==================================================================
 ##                          Clean targets
 ## ==================================================================
 
-clean:
+clean: clean.xgen
 	$(RM) mcompile mcompile-noodbc $(OBJECTS) $(TARGETS.c) *.BAK *.delta core *~ *.ln \
 	*.output lex.yy.c *.err *.out decompiler menu_x_xdr.c menu_x.h \
-	*.bak .*.bak *.exe mdecompile *.o *.dll *.a
+	*.bak .*.bak *.exe mdecompile *.o *.dll *.a lclint.log
 
+#Clean files created by xgen
+clean.xgen:
+	${RM} menu_x.x.h menu_x.xs.h menu_x.xi.c menu_x.xio.c menu_x.xo.c
+	
 ## ==================================================================
 ##                           Other targets
 ## ==================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.83 2005-03-19 08:44:47 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.84 2005-03-25 12:48:32 afalout Exp $
 #
 */
 
@@ -175,80 +175,50 @@ int b = 0;
 void *ptr;
 char *p;
 
-
 	strcpy(running_program,argv[0]);
-  A4GL_build_user_resources ();
+	A4GL_build_user_resources ();
 
-  /* 
-     This does nothing - but we NEED IT!
-     If builtin is not in the executable then we get link errors
-     todo: find out why is this needed
-   */
-  A4GL_include_builtin_in_exe ();
+	/* 
+	This does nothing - but we NEED IT!
+	If builtin is not in the executable then we get link errors
+	todo: find out why is this needed
+	*/
+	A4GL_include_builtin_in_exe ();
 
-  /* Initialise external datatypes module */
-  A4GL_init_datatypes ();
+	/* Initialise external datatypes module */
+	A4GL_init_datatypes ();
 
-  /* load settings from config file(s): */
+   	p = acl_getenv ("A4GL_UI");
 
-
-/*
-#ifdef _PRELOAD_SQL_
-  if (!A4GLSQL_initlib ())
-    {
-      printf
-	("4gllib: Error opening SQL Library - check A4GL_SQLTYPE is set correctly (A4GL_SQLTYPE=%s)\n",
-	 acl_getenv ("A4GL_SQLTYPE"));
-      exit (1);
-    }
-
-	#ifdef DEBUG
-	  A4GL_debug ("Connecting to database...");
-	#endif
-	  A4GLSQL_initsqllib ();
-#endif
-*/
-  
-//  if (acl_getenv ("A4GL_UI"))  {     A4GL_UI will always be there, since it's defined in resource.c
-      p = acl_getenv ("A4GL_UI");
-
-      if (A4GL_aubit_strcasecmp (p, "CONSOLE") == 0)
+	if (A4GL_aubit_strcasecmp (p, "CONSOLE") == 0)
 		ui_mode = 0;
-	  if (A4GL_aubit_strcasecmp (p, "TEXT") == 0)
+	if (A4GL_aubit_strcasecmp (p, "TEXT") == 0)
 		ui_mode = 0;
-      if (A4GL_aubit_strcasecmp (p, "CURSES") == 0)
+	if (A4GL_aubit_strcasecmp (p, "CURSES") == 0)
 		ui_mode = 0;
-	  if (A4GL_aubit_strcasecmp (p, "GTK") == 0)
+	if (A4GL_aubit_strcasecmp (p, "GTK") == 0)
 		ui_mode = 1;
-      if (A4GL_aubit_strcasecmp (p, "GUI") == 0)
+	if (A4GL_aubit_strcasecmp (p, "GUI") == 0)
 		ui_mode = 1;
-//    }
-
-  p_numargs = nargs;
+	
+	p_numargs = nargs;
   /* setlocale(LC_ALL, "") could break DECIMAL handling, if LC_NUMERIC != C */
   /* setlocale (LC_ALL, ""); */
   setlocale (LC_CTYPE, "");
 	#ifdef DEBUG
-	  {
 	    A4GL_debug ("Starting 4gl program - %d arguments argv=%p", nargs, argv);
-	  }
 	#endif
-
 
   /* FIXME: we already printed something to stdout at this point... */
   /* printf("Check.."); */
 
-  b = 0;
-  for (a = 0; a < MAX_ARGS; a++)
-    {
-      if (a < nargs)
-	{
-	  p_args[b++] = strdup (argv[a]);
-	}
-      else
-	{
-	  p_args[b++] = 0;
-	}
+  	b = 0;
+	for (a = 0; a < MAX_ARGS; a++) {
+		if (a < nargs) {
+			p_args[b++] = strdup (argv[a]);
+		} else {
+			p_args[b++] = 0;
+		}
     }
 
 #ifdef DEBUG
@@ -875,6 +845,8 @@ A4GL_nodef_init ()
 
 /**
  *
+ * Please describe this function
+ *
  */
 void A4GL_core_dump(void) {
 static int core_dumping=0;
@@ -923,6 +895,11 @@ if (core_dumping==1) {
 
 }
 
+/**
+ *
+ * Please describe this function
+ *
+ */
 void
 A4GL_set_core_dump (void)
 {
@@ -1263,7 +1240,10 @@ if (A4GL_isyes(acl_getenv("NEED_SIGPIPE")) || 1 ) {
 }
 
 
-
+/**
+ *
+ * @todo Describe function
+ */
 void A4GL_logsql(int lineno,char *module, char *s) {
 if (s==0) return;
 A4GL_debug("SQL on line %d in %s:%s\n",lineno,module,s);

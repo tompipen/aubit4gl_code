@@ -37,8 +37,6 @@ int A4GL_dlclose (void *);
 /* Prototypes from funcs_d.c */
 char *a_strchr(char *s,int c);
 
-/* Prototypes from fglwrap.c */
-void A4GL_fgl_die_with_msg(int n,char *s);
 
 /* Prototypes from compat.c */
 int fgl_getkey(void);

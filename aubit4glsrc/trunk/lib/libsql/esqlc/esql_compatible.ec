@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql_compatible.ec,v 1.13 2004-11-04 13:16:57 pjfalbe Exp $
+# $Id: esql_compatible.ec,v 1.14 2005-03-25 12:48:33 afalout Exp $
 #
 */
 
@@ -363,7 +363,7 @@ static int processPreStatementBinds(struct s_sid *sid);
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.13 2004-11-04 13:16:57 pjfalbe Exp $";
+	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.14 2005-03-25 12:48:33 afalout Exp $";
 #endif
 
 
@@ -491,7 +491,6 @@ char *A4GLSQL_get_sqlerrm (void)
  *
  * Just initialize the error handling.
  */
-/* void */	/* int A4GLSQL_initsqllib(void); */			/* << from sql.c */
 int
 A4GLSQL_initsqllib (void)
 {

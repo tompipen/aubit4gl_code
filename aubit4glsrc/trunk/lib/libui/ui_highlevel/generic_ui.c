@@ -4,16 +4,22 @@
 #include "a4gl_API_lowlevel.h"
 #include "formdriver.h"
 #include "hl_proto.h"
+#include "input_array.h"
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.41 2005-03-23 08:24:15 afalout Exp $";
+		"$Id: generic_ui.c,v 1.42 2005-03-25 12:48:34 afalout Exp $";
 #endif
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
 static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap);
 static void A4GL_move_bar (ACL_Menu * menu, int a);
+int A4GL_gen_field_list_from_slist_internal (void ***field_list, struct s_form_dets *formdets, int a, struct s_field_name_list *list);
+//int UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv, void *listv);
+
+
+
 static int started = -1;
 int
 A4GL_find_attrib_from_metric (struct_form * f, int metric_no);
@@ -22,7 +28,7 @@ A4GL_find_fields_no_metric (struct_form * f, int metric_no);
 int
 A4GL_find_attrib_from_field (struct_form * f, int field_no);
 int UILIB_A4GLUI_initlib (void);
-int A4GL_conversion_ok(int);
+//int A4GL_conversion_ok(int);
 
 #define COLOR_BLACK     0
 #define COLOR_RED       1
@@ -215,12 +221,11 @@ A4GL_find_char (ACL_Menu * menu, int key)
 static void
 A4GL_move_bar (ACL_Menu * menu, int a)
 {
-  ACL_Menu_Opts *opt1;
-  ACL_Menu_Opts *opt2;
-  int flg;
-  int dir = 0;
-  int opage, npage;
-  void *z;
+ACL_Menu_Opts *opt1;
+ACL_Menu_Opts *opt2;
+int flg;
+int dir = 0;
+int opage, npage;
   if (menu->gw_x < 0)
     {
       char *ptr = 0;
@@ -1430,12 +1435,12 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
 
 
 int
- UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv, void *listv)
+UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv, void *listv)
 {
-  int a;
-  void ***field_list;
-  struct s_form_dets *formdets;
-  struct s_field_name_list *list;
+int a;
+void ***field_list;
+struct s_form_dets *formdets;
+struct s_field_name_list *list;
 
   field_list = field_listv;
   formdets = formdetsv;

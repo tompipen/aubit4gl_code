@@ -1,5 +1,5 @@
 #
-# $Id: makefile,v 1.10 2005-03-14 21:39:23 mikeaubury Exp $
+# $Id: makefile,v 1.11 2005-03-25 12:48:31 afalout Exp $
 #
 
 ROOT		=../..
@@ -91,7 +91,7 @@ else
 	@echo "No lex (${LEX}) Using ${LEX_YY_C}"
 endif
 
-y.tab.o: ${Y_TAB_C} ${LEX_YY_C} util.c
+y.tab.o: ${Y_TAB_C} ${LEX_YY_C} util.c ilist.h
 	${CC} ${CFLAGS} -c $< -o $@
 	
 ## ==================================================================
@@ -100,7 +100,7 @@ y.tab.o: ${Y_TAB_C} ${LEX_YY_C} util.c
 
 clean:
 	${RM} *.o *.so *.dll ${ALL} 2.reqd *~ sql.yacc \
-	y.tab.h y.tab.c y.output m2.lex lex.yy.c
+	y.tab.h y.tab.c y.output m2.lex lex.yy.c lex.sqlparse_yy.c
 
 
 

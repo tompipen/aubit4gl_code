@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.287 2005-03-23 08:21:14 afalout Exp $
+dnl # $Id: configure.in,v 1.288 2005-03-25 12:47:51 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -8658,12 +8658,10 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 etc/aubit-InnoSetup.iss
                 incl/Makefile-common
 				common/dataio/Makefile
-				compilers/4glc/Makefile
 				compilers/4glc/mk_states_c
                 compilers/4glc/rules/Makefile
                 compilers/fcompile/Makefile
                 compilers/helpcompile/Makefile
-                compilers/menus/Makefile
                 compilers/ace/Makefile
                 lib/libform/form_xdr/Makefile
                 lib/libform/noform/Makefile
@@ -9030,7 +9028,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.287 2005-03-23 08:21:14 afalout Exp $
+| $Id: configure.in,v 1.288 2005-03-25 12:47:51 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

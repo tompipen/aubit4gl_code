@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.24 2004-09-28 13:36:32 afalout Exp $
+# $Id: Makefile,v 1.25 2005-03-25 12:48:31 afalout Exp $
 #
 
 ROOT    =../..
@@ -258,7 +258,12 @@ y.tab.o : simple.yacc npcode.xs.h
 endif
 #bison -y -r all -d -v $^
 # add -t for yacc debugging...
+ifneq "${BISON}" "no"
 	${BISON} -y -t -d -v $<
+else
+	@echo "AutoConf did not detect valid version of Bison on your system"
+	@exit 1
+endif
 	$(CC) ${CFLAGS} -g -c y.tab.c
 
 lex.yy.c: simple.lex

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.35 2005-03-09 15:15:12 mikeaubury Exp $
+# $Id: nosql.c,v 1.36 2005-03-25 12:48:33 afalout Exp $
 #*/
 
 /**
@@ -65,8 +65,6 @@ int A4GLSQL_get_datatype (char *db, char *tab, char *col);
 void * A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *ibind);
 void * A4GLSQL_prepare_sql_internal (char *s);
 int A4GLSQL_execute_sql_from_ptr_internal (char *pname, int ni, char *ibind);
-int A4GLSQL_initsqllib (void);
-
 
 /*
 =====================================================================

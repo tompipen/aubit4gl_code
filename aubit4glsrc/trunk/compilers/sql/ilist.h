@@ -6,3 +6,12 @@ struct ilist {
 	int i4;
 	int i5;
 } ;
+
+
+#ifdef YYLEX_PARAM
+	//YYLEX yylex (YYLEX_PARAM);
+	int yylex (YYLEX_PARAM);
+#else
+	//YYLEX yylex ();
+	int yylex (void);
+#endif

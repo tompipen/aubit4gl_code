@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.115 2005-03-19 08:51:11 mikeaubury Exp $
+# $Id: sql.c,v 1.116 2005-03-25 12:48:33 afalout Exp $
 #
 */
 
@@ -82,23 +82,9 @@ static int do_fake_transactions(void) ;
 =====================================================================
 */
 
-/*
-#ifndef TRUE
-	#define TRUE 1
-#endif
-#ifndef FALSE
-	#define FALSE 0
-#endif
-*/
-
-int A4GLSQL_initsqllib (void);
 int A4GLSQL_get_datatype (char *db, char *tab, char *col);
 int A4GL_dttoc (void *a, void *b, int size);
-
-
 void *A4GLSQL_prepare_sql_internal (char *s);
-//void * A4GLSQL_find_prepare (char *pname);
-//int A4GLSQL_execute_sql (char *pname, int ni, void *vibind);
 void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind);
 int A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p);
 void *A4GL_bind_datetime (void *ptr_to_dtime_var);
@@ -106,7 +92,6 @@ void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 #define FETCH_ABSOLUTE 		1
 #define FETCH_RELATIVE 		2
 #define DTYPE_DATE 			7
-//#define A4GL_exitwith                         A4GL_exitwith_sql
 #define MAXCURSORS 			100
 #define MAXPREPARE 			100
 #define MAXCOLS 			100

@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_gtk.c,v 1.55 2005-03-23 08:24:15 afalout Exp $";
+		"$Id: lowlevel_gtk.c,v 1.56 2005-03-25 12:48:35 afalout Exp $";
 #endif
 
 
@@ -75,8 +75,6 @@ void A4GL_run_gtkrc(void) ;
 void A4GL_decode_gui_winname (char *name);
 int menu_callback (gpointer data);
 int A4GL_LL_hide_h_menu(ACL_Menu *menu);
-int A4GL_LL_disp_h_menu( ACL_Menu *menu);
-//int A4GL_LL_menu_loop(ACL_Menu *menu);
 void A4GL_LL_screen_refresh(void);
 static int cancel_callback (gpointer data) ;
 static int ok_callback (gpointer data) ;

@@ -1,9 +1,52 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: class.c,v 1.9 2005-03-25 12:48:30 afalout Exp $
+#
+*/
+
+/**
+ * @file
+ * 
+ */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
 
 #include "a4gl_4glc_int.h"
 #include "variables.h"
 
-
-
+/*
+=====================================================================
+		                    Variables
+=====================================================================
+*/
 
 /* This is from 4glc.c */
 char *allbuff = 0;
@@ -22,7 +65,7 @@ struct variable **list_parent = 0;
 /* Externally callable (non-static) functions */
 
 
-int read_class (char *s,int is_parent);
+//andrej int read_class (char *s,int is_parent);
 
 /* static functions declared here */
 static void write_variable_header (struct variable *v);
@@ -47,7 +90,8 @@ static void read_variable_constant (struct variable *v);
 static void write_variable_function (struct variable *v);
 static void read_variable_function (struct variable *v);
 static void do_append (void);
-void dump_class (void);
+//andrej void dump_class (void);
+int class_call(char *s,char *f,int args);
 
 /*
 =====================================================================
@@ -84,18 +128,19 @@ write_class_int (char *name, int val)
 }
 
 
-int class_call(char *s,char *f,int args) {
+int 
+class_call(char *s,char *f,int args) {
 char buff[512];
 char *fname;
-strcpy(buff,s);
-strcat(buff,acl_getenv("A4GL_DLL_EXT"));
-fname=A4GL_fullpath_classpath(buff);
-printf("fname=%p (%s)\n",fname,buff);
-if (fname==0) {
-	a4gl_yyerror("Unable to open class file");
-	return;
-}
-return A4GL_call_4gl_dll(fname,f,args);
+	strcpy(buff,s);
+	strcat(buff,acl_getenv("A4GL_DLL_EXT"));
+	fname=A4GL_fullpath_classpath(buff);
+	printf("fname=%p (%s)\n",fname,buff);
+	if (fname==0) {
+		a4gl_yyerror("Unable to open class file");
+		return 0;
+	}
+	return A4GL_call_4gl_dll(fname,f,args);
 }
 
 
@@ -608,8 +653,8 @@ printf("read_class : %s\n",s);
       dump_variable_records (list_class, list_class_cnt, 0);
 
     } else {
-	int a;
-	struct variable v;
+	//int a;
+	//struct variable v;
 	char buff[256];
 	int sz;
 	printf("dim_Set_name : %s\n",s);
@@ -916,11 +961,11 @@ read_variable_record (struct variable *v)
  * @param
  */
 static void
-read_variable_object (struct variable *v)
-{
-  int a;
-  int is_linked;
+read_variable_object (struct variable *v) {
+int a;
+int is_linked;
 char buff[255];
+
   v->data.v_record.linked = 0;
   read_class_int ("COUNT", &v->data.v_record.record_cnt);
   if (v->data.v_record.record_cnt == 0)
@@ -948,8 +993,9 @@ char buff[255];
       read_variable_header (v->data.v_record.variables[a]);
     }
 
-  read_class_string ("OBJECT_TYPE", buff,255);
+	read_class_string ("OBJECT_TYPE", (char **)buff,255);
 	v->data.v_record.object_type=strdup(buff);
+
 }
 
 

@@ -1,29 +1,95 @@
-/* 
-	this file is #include'd into y.tab.c so we can make a lot of these functions static...
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: util.c,v 1.16 2005-03-25 12:48:31 afalout Exp $
+#
+*/
+
+/**
+ * @file
+ * This file is #include'd into y.tab.c so we can make a lot of these functions static
+ */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
 */
 
 #include "a4gl_libaubit4gl.h"
-void *nbs=0;
 
+/*
+=====================================================================
+		                    Variables
+=====================================================================
+*/
+
+void *nbs=0;
 struct sql_stmt {
         int type;
         char *val;
 };
-
-extern int yydebug;
-
 struct sql_stmt *stmts=0;
 int stmts_cnt=0;
 char last_conversion[256];
 
-static void dump_insvals ();
 
+/*
+=====================================================================
+		                    Prototypes
+=====================================================================
+*/
 
+//extern int yydebug; //y.tab.c:3742: warning: previous declaration of `sqlparse_yydebug'
+static void dump_insvals (void);
 static void add_sql(int n,char *s) ;
 
+/*
+=====================================================================
+		                    Functions definitions
+=====================================================================
+*/
+
+void dummy_prevent_sqlparse_warnings_dummy(void);
+void 
+dummy_prevent_sqlparse_warnings_dummy(void) {
+void * dummy;
+	
+	dummy=yy_flex_realloc( 0,0 );
+	yyunput( 0, 0);
+
+}
+
+
+/**
+ *
+ * @todo Describe function
+ */
 static void
-trim_spaces (char *s)
-{
+trim_spaces (char *s) {
   int l;
   for (l = strlen (s) - 1; l >= 0; l--)
     {
@@ -34,9 +100,12 @@ trim_spaces (char *s)
     }
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 static char *
-pop_gen (int a)
-{
+pop_gen (int a) {
   /*printf ("Popgen called\n");*/
   /*printf ("UPDVAL2 cnt = %d\n", gen_stack_cnt[UPDVAL2]);*/
   /*dump_updvals();*/
@@ -46,6 +115,10 @@ pop_gen (int a)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 static char *
 make_sql_string_and_free (char *first, ...)
 {
@@ -104,6 +177,10 @@ make_sql_string_and_free (char *first, ...)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 push_gen (int a, char *s)
 {
@@ -117,6 +194,10 @@ push_gen (int a, char *s)
   strcpy (gen_stack[a][gen_stack_cnt[a]++], s);
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 copy_gen (int a, int b)
 {
@@ -140,11 +221,19 @@ copy_gen (int a, int b)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 static int
 gen_cnt (int a) {
  return gen_stack_cnt[a];
 } 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 pop_all_gen (int a, char *s)
 {
@@ -162,6 +251,10 @@ pop_all_gen (int a, char *s)
 
 static void ansi_violation(char *s,int n) { }
 
+/**
+ *
+ * @todo Describe function
+ */
 static char *
 fix_update_expr (int mode)
 {
@@ -233,37 +326,74 @@ fix_update_expr (int mode)
 
 
 
-static int A4GL_escape_quote_owner(void) {
+/**
+ *
+ * @todo Describe function
+ */
+static int 
+A4GL_escape_quote_owner(void) {
         if (strcmp(acl_getenv("A4GL_QUOTE_OWNER"),"Y")==0) return 1;
         if (strcmp(acl_getenv("A4GL_QUOTE_OWNER"),"N")==0) return 1;
         if (strcmp(acl_getenv("A4GL_LEXTYPE"),"EC")==0)  return 0;
         return 1;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 static char *A4GL_get_into_part (int a,int b) { return 0;} 
 
+/**
+ *
+ * @todo Describe function
+ */
 static char *A4GL_get_undo_use (void) { return 0;} 
 
+/**
+ *
+ * @todo Describe function
+ */
 static void A4GL_lex_printcomment (char *fmt,...) { } 
 
+/**
+ *
+ * @todo Describe function
+ */
 static void addmap (char *s,char *f,char *m,int lno,char *fname) { } 
 
+/**
+ *
+ * @todo Describe function
+ */
 static int get_bind_cnt (char i)
 {
 	return 0;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 static int scan_variable (char *S) {
 // Can't be a variable - we don't have 'em
 return 0; 
 } 
 
+/**
+ *
+ * @todo Describe function
+ */
 static int start_bind (char c,int n) { 
 return 0;
 } 
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 static void
 rm_quotes (char *s)
 {
@@ -283,12 +413,20 @@ rm_quotes (char *s)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 static void mark_sql_start(void) {
 	this_sql_start=sql_string_cnt+1;
 
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 static char *
 fix_insert_expr (int mode)
 {
@@ -369,6 +507,10 @@ fix_insert_expr (int mode)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 static char *get_bad_sql(void) {
 	static char buff[2000];
 	memset(buff,0,2000);
@@ -384,7 +526,12 @@ static char *get_bad_sql(void) {
 
 
 
-static void A4GLSQLCV_loadbuffer(char *fname) {
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+A4GLSQLCV_loadbuffer(char *fname) {
 	if (nbs) yy_delete_buffer(nbs);
 
 	if (strcmp(fname,"-")==0) {
@@ -403,7 +550,12 @@ static void A4GLSQLCV_loadbuffer(char *fname) {
 }
 
 
-static void A4GLSQLCV_setbuffer(char *s) {
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+A4GLSQLCV_setbuffer(char *s) {
 	if (nbs) yy_delete_buffer(nbs);
 	if (Sql) free(Sql);
 	Sql=strdup(s);
@@ -414,7 +566,7 @@ static void A4GLSQLCV_setbuffer(char *s) {
 	Sql_file=0;
 }
 
-
+/* andrej
 static int meminput(char *buf,int maxsize) {
 	if (input_from_file) {
 		int a;
@@ -427,10 +579,15 @@ static int meminput(char *buf,int maxsize) {
 	}
 	return 1;
 }
+*/
 
 
-
-static int sqlparse_yyerror(char *s) {
+/**
+ *
+ * @todo Describe function
+ */
+static int 
+sqlparse_yyerror(char *s) {
 	A4GL_debug("%s Sql=%p\n",s,Sql);
 	if (Sql) {
 		char buff[200];
@@ -448,12 +605,21 @@ static int sqlparse_yyerror(char *s) {
 }
 
 
-static char *convstrsql(char *s) {
+/**
+ *
+ * @todo Describe function
+ */
+static char *
+convstrsql(char *s) {
 	if (s[0]=='\'') return s;
 	return convstr_dbl_to_single(s) ;
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 static char *
 convstr_dbl_to_single (char *s)
 {
@@ -491,20 +657,30 @@ convstr_dbl_to_single (char *s)
 
 
 
-static int yywrap() {
+/**
+ *
+ * @todo Describe function
+ */
+//andrej static 
+int yywrap() {
 	return 1;
 }
 
 
-
+/* andrej
 static void a4gl_char_cpy(char *dest,char *src,int dbl) {
 		strcpy(dest,src);
 }
+*/
 
 
 
-
-static void A4GL_CV_print_exec_sql(char *s) {
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+A4GL_CV_print_exec_sql(char *s) {
 	sql_type=1;
 	if (sql_string) sql_string=0;
 	sql_string=strdup(s);
@@ -512,14 +688,25 @@ static void A4GL_CV_print_exec_sql(char *s) {
 }
 
 
-static void A4GL_CV_print_exec_sql_bound(char *s) {
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+A4GL_CV_print_exec_sql_bound(char *s) {
 	sql_type=2;
 	if (sql_string) sql_string=0;
 	sql_string=strdup(s);
 	add_sql(sql_type,sql_string);
 }
+/* andrej 
+static void print_exec_sql_bound (char *s) {
+	add_sql(8,strdup(s));
+        free(s);
+}
+*/
 
-
+/* andrej 
 static void print_set_conn(char *conn) {
 char s[256];
 
@@ -537,18 +724,33 @@ char s[256];
 		add_sql(sql_type,sql_string);
 	}
 }
+*/
 
 
-
-static void print_load (char *fname,char *delim,char *tab,char *cols) {
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+print_load (char *fname,char *delim,char *tab,char *cols) {
         printf("Load can't be prepared...");
 }
 
-static void print_load_str (char *fname,char *delim,char *sql) {
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+print_load_str (char *fname,char *delim,char *sql) {
         printf("Invalid syntax for a prepare statement");
 }
 
-static void print_sql_commit (int n) { 
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+print_sql_commit (int n) { 
 char *s=0;
   if (n==-1) {
 	sql_type=3;
@@ -570,43 +772,72 @@ char *s=0;
 
 
 
-static void print_select_all (char *s) {
+/**
+ *
+ * @todo Describe function
+ */
+/* andrej
+static void 
+print_select_all (char *s) {
 	add_sql(6,strdup(s));
     	free(s);
 }
+*/
 
-
-static void print_exec_sql (char *s) {
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+print_exec_sql (char *s) {
 	add_sql(7,strdup(s));
     	free(s);
 free(s);
 }
 
-
-
-static void print_exec_sql_bound (char *s) {
-	add_sql(8,strdup(s));
-        free(s);
-}
-
-static void print_exec_select (char *s)    {
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+print_exec_select (char *s)    {
 	add_sql(9,strdup(s));
 	free(s);
 }
 
 
 
-static void print_undo_use (char *s) {
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+print_undo_use (char *s) {
         printf("Invalid in prepare");
 }
 
-static void print_unload (char *f,char *d,char *sql) {
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+print_unload (char *f,char *d,char *sql) {
 }
 
-static void print_use_session (char *s) { }
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+print_use_session (char *s) { }
 
 
-static void print_init_conn (char *s) {
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+print_init_conn (char *s) {
 char buff[256];
 	if (A4GLSQLCV_check_requirement("USE_DATABASE_STMT")) {
 	 	sprintf(buff,"DATABASE %s",s);
@@ -617,7 +848,12 @@ char buff[256];
         }
 }
 
-static void print_unable_to_parse() {
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+print_unable_to_parse() {
 	char *s;
 	s=get_bad_sql();
 	add_sql(11,strdup(s));
@@ -625,14 +861,19 @@ static void print_unable_to_parse() {
 }
 
 
-static void add_sql(int n,char *s) {
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+add_sql(int n,char *s) {
 static int last_was_err=0;
 static char *last_s=0;
 
-if (n==-1) {
-	last_s=0;
-	return;
-}
+	if (n==-1) {
+		last_s=0;
+		return;
+	}
 	if (n!=11) {
 		if (last_was_err&&last_s) {
 			last_was_err=0;
@@ -656,7 +897,12 @@ if (n==-1) {
 
 
 
-static char * A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect, char *sql,int from_file) {
+/**
+ *
+ * @todo Describe function
+ */
+static char * 
+A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect, char *sql,int from_file) {
 	char buff[255];
 	int a;
 	static char *ptr=0;
@@ -712,7 +958,12 @@ return ptr;
 }
 
 
-char * A4GLSQLCV_convert_sql (char *target_dialect, char *sql) {
+/**
+ *
+ * @todo Describe function
+ */
+char * 
+A4GLSQLCV_convert_sql (char *target_dialect, char *sql) {
 char *ptr;
 	sql=strdup(sql);
 	ptr=A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql,0) ;
@@ -721,11 +972,21 @@ char *ptr;
 }
 
 
-char * A4GLSQLCV_convert_file (char *target_dialect, char *sql) {
+/**
+ *
+ * @todo Describe function
+ */
+char * 
+A4GLSQLCV_convert_file (char *target_dialect, char *sql) {
 	return A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql,1) ;
 }
 
-static int A4GLSQLCV_process(void) {
+/**
+ *
+ * @todo Describe function
+ */
+static int 
+A4GLSQLCV_process(void) {
         was_ok=1;
 	sql_string_cnt=0;
 	this_sql_start=0;
@@ -735,20 +996,33 @@ static int A4GLSQLCV_process(void) {
 
 
 
-void A4GL_add_feature(char *feature) {
+/**
+ *
+ * @todo Describe function
+ */
+void 
+A4GL_add_feature(char *feature) {
         /* Reserved for future use */
 }
 
-
-void A4GLSQLPARSE_initlib(void) {
+/* prototype is in API_sqlparse.c that is generated by dlmagic - it should be
+ in a header file so we can include it here, instead duplication the prototype */
+int A4GLSQLPARSE_initlib (void);
+/**
+ *
+ * @todo Describe function
+ */
+int 
+A4GLSQLPARSE_initlib(void) {
+	return 0;
 }
 
-
-
-
-
-
-char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
+/**
+ *
+ * @todo Describe function
+ */
+char *
+A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
         char buff[40000];
         if (A4GLSQLCV_check_requirement("FULL_INSERT")) {
                 sprintf(buff,"INSERT INTO %s %s",current_ins_table,fix_insert_expr(1));
@@ -760,7 +1034,12 @@ char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
 }
 
 
-static void dump_insvals ()
+/**
+ *
+ * @todo Describe function
+ */
+static void 
+dump_insvals ()
 {
   int a;
   for (a = 0; a < gen_stack_cnt[INSCOL]; a++)
@@ -773,3 +1052,6 @@ static void dump_insvals ()
       printf ("INSVAL[%d] : %s\n", a,gen_stack[INSVAL][a]);
     }
 }
+
+/* ====================================== EOF ============================ */
+

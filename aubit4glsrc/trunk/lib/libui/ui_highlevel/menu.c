@@ -3,12 +3,13 @@
 #include "a4gl_API_ui_lib.h"
 #include "a4gl_API_lowlevel.h"
 #include "hl_proto.h"
+#include "lowlevel.h"
 #include <ctype.h>
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: menu.c,v 1.15 2005-03-23 08:24:15 afalout Exp $";
+		"$Id: menu.c,v 1.16 2005-03-25 12:48:34 afalout Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);

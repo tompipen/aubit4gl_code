@@ -28275,7 +28275,7 @@ fi
 
 if test "$AUBIT_SOURCE" = "1" ; then
 
-	ac_config_files="$ac_config_files etc/aubitrc etc/aubit-rpm.spec etc/aubit-InnoSetup.iss incl/Makefile-common common/dataio/Makefile compilers/4glc/Makefile compilers/4glc/mk_states_c compilers/4glc/rules/Makefile compilers/fcompile/Makefile compilers/helpcompile/Makefile compilers/menus/Makefile compilers/ace/Makefile lib/libform/form_xdr/Makefile lib/libform/noform/Makefile lib/libform/form_generic/Makefile lib/libmenu/menu_xdr/Makefile lib/libmenu/menu_nomenu/Makefile lib/libmenu/menu_generic/Makefile lib/libmsg/msg_native/Makefile lib/liblex/lex_c/Makefile lib/liblex/lex_esqlc/Makefile lib/liblex/lex_perl/Makefile lib/libpdf/Makefile lib/libui/ui_console/Makefile lib/libui/ui_curses/Makefile lib/resource/Makefile lib/libsql/nosql/Makefile lib/libsql/postgresql/Makefile lib/libsql/sapdb/Makefile lib/librpc/no_rpc/Makefile lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile lib/extra_libs/file/Makefile lib/extra_libs/string/Makefile lib/libpacker/packed/Makefile lib/libpacker/mempacked/Makefile lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile lib/libpacker/xml/Makefile lib/libexdata/Makefile lib/swig/domake tools/adbaccess/Makefile tools/loadmap/Makefile tools/adbload/Makefile tools/html/Makefile tools/ide/Makefile tools/4glunit/Makefile tools/odbctest/Makefile tools/test/gui/Makefile tools/test/regression/Makefile tools/test/lang/Makefile tools/test/db/Makefile tools/test/db/informix/Makefile tools/test/db/postgresql/Makefile tools/test/ace/Makefile bin/aubitbuild.sh docs/doxy/Doxyfile"
+	ac_config_files="$ac_config_files etc/aubitrc etc/aubit-rpm.spec etc/aubit-InnoSetup.iss incl/Makefile-common common/dataio/Makefile compilers/4glc/mk_states_c compilers/4glc/rules/Makefile compilers/fcompile/Makefile compilers/helpcompile/Makefile compilers/ace/Makefile lib/libform/form_xdr/Makefile lib/libform/noform/Makefile lib/libform/form_generic/Makefile lib/libmenu/menu_xdr/Makefile lib/libmenu/menu_nomenu/Makefile lib/libmenu/menu_generic/Makefile lib/libmsg/msg_native/Makefile lib/liblex/lex_c/Makefile lib/liblex/lex_esqlc/Makefile lib/liblex/lex_perl/Makefile lib/libpdf/Makefile lib/libui/ui_console/Makefile lib/libui/ui_curses/Makefile lib/resource/Makefile lib/libsql/nosql/Makefile lib/libsql/postgresql/Makefile lib/libsql/sapdb/Makefile lib/librpc/no_rpc/Makefile lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile lib/extra_libs/file/Makefile lib/extra_libs/string/Makefile lib/libpacker/packed/Makefile lib/libpacker/mempacked/Makefile lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile lib/libpacker/xml/Makefile lib/libexdata/Makefile lib/swig/domake tools/adbaccess/Makefile tools/loadmap/Makefile tools/adbload/Makefile tools/html/Makefile tools/ide/Makefile tools/4glunit/Makefile tools/odbctest/Makefile tools/test/gui/Makefile tools/test/regression/Makefile tools/test/lang/Makefile tools/test/db/Makefile tools/test/db/informix/Makefile tools/test/db/postgresql/Makefile tools/test/ace/Makefile bin/aubitbuild.sh docs/doxy/Doxyfile"
 
 else
 
@@ -28609,12 +28609,10 @@ do
   "etc/aubit-InnoSetup.iss" ) CONFIG_FILES="$CONFIG_FILES etc/aubit-InnoSetup.iss" ;;
   "incl/Makefile-common" ) CONFIG_FILES="$CONFIG_FILES incl/Makefile-common" ;;
   "common/dataio/Makefile" ) CONFIG_FILES="$CONFIG_FILES common/dataio/Makefile" ;;
-  "compilers/4glc/Makefile" ) CONFIG_FILES="$CONFIG_FILES compilers/4glc/Makefile" ;;
   "compilers/4glc/mk_states_c" ) CONFIG_FILES="$CONFIG_FILES compilers/4glc/mk_states_c" ;;
   "compilers/4glc/rules/Makefile" ) CONFIG_FILES="$CONFIG_FILES compilers/4glc/rules/Makefile" ;;
   "compilers/fcompile/Makefile" ) CONFIG_FILES="$CONFIG_FILES compilers/fcompile/Makefile" ;;
   "compilers/helpcompile/Makefile" ) CONFIG_FILES="$CONFIG_FILES compilers/helpcompile/Makefile" ;;
-  "compilers/menus/Makefile" ) CONFIG_FILES="$CONFIG_FILES compilers/menus/Makefile" ;;
   "compilers/ace/Makefile" ) CONFIG_FILES="$CONFIG_FILES compilers/ace/Makefile" ;;
   "lib/libform/form_xdr/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libform/form_xdr/Makefile" ;;
   "lib/libform/noform/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libform/noform/Makefile" ;;
@@ -28664,7 +28662,7 @@ do
   "etc/aubitrc-bin" ) CONFIG_FILES="$CONFIG_FILES etc/aubitrc-bin" ;;
   "default-1" ) CONFIG_COMMANDS="$CONFIG_COMMANDS default-1" ;;
   "incl/a4gl_incl_config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS incl/a4gl_incl_config.h" ;;
-  *) { { echo "$as_me:28667: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:28665: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -29993,7 +29991,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:29996: creating $ac_file" >&5
+    { echo "$as_me:29994: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -30011,7 +30009,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:30014: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:30012: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -30024,7 +30022,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:30027: error: cannot find input file: $f" >&5
+           { { echo "$as_me:30025: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -30085,7 +30083,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:30088: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:30086: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -30096,7 +30094,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:30099: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:30097: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -30109,7 +30107,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:30112: error: cannot find input file: $f" >&5
+           { { echo "$as_me:30110: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -30226,7 +30224,7 @@ cat >>$CONFIG_STATUS <<\EOF
   rm -f $tmp/in
   if test x"$ac_file" != x-; then
     if cmp -s $ac_file $tmp/config.h 2>/dev/null; then
-      { echo "$as_me:30229: $ac_file is unchanged" >&5
+      { echo "$as_me:30227: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
@@ -30612,7 +30610,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.316 2005-03-23 08:18:43 afalout Exp $
+| $Id: configure,v 1.317 2005-03-25 12:47:35 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
@@ -30644,13 +30642,13 @@ X
 
 fi
 
-echo "$as_me:30647: result: " >&5
+echo "$as_me:30645: result: " >&5
 echo "${ECHO_T}" >&6
-echo "$as_me:30649: result: Thank you for using Aubit 4gl compiler." >&5
+echo "$as_me:30647: result: Thank you for using Aubit 4gl compiler." >&5
 echo "${ECHO_T}Thank you for using Aubit 4gl compiler." >&6
-echo "$as_me:30651: result:               $AUBIT_PUBLISHER" >&5
+echo "$as_me:30649: result:               $AUBIT_PUBLISHER" >&5
 echo "${ECHO_T}              $AUBIT_PUBLISHER" >&6
-echo "$as_me:30653: result: " >&5
+echo "$as_me:30651: result: " >&5
 echo "${ECHO_T}" >&6
 
 #------------------------------ EOF --------------------------------

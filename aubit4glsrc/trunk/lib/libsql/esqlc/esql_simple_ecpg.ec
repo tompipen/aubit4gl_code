@@ -693,37 +693,40 @@ A4GLSQL_dbms_dialect (void)
   return "POSTGRES";
 }
 
-A4GLSQL_initlib ()
-{
+A4GLSQL_initlib (){
 }
 
 A4GLSQL_initsqllib() {
 }
-
-
-
 
 void *A4GL_add_validation_elements_to_expr(void *ptr,char *val) {
 char *ptr2;
 char *ptrn;
 char buff[256];
 A4GL_trim(val);
-ptr2=val;
-while (1) {
-        ptrn=strtok(ptr2,",");
-        if (ptrn==0) break;
-        if (ptr2) {ptr2=0;}
 
-        sprintf(buff,"A4GL_push_char(\"%s\");",ptrn);
-
-        if (ptr==0) {
-                ptr=A4GL_new_expr(buff);
-        } else {
-                A4GL_append_expr(ptr,buff);
-        }
-
-}
-return ptr;
+	ptr2=val;
+	while (1) {
+			ptrn=strtok(ptr2,",");
+			if (ptrn==0) break;
+			if (ptr2) {ptr2=0;}
+	
+			sprintf(buff,"A4GL_push_char(\"%s\");",ptrn);
+	
+			if (ptr==0) {
+					//ptr=A4GL_new_expr(buff);
+					ptr=A4GL_new_expr((char *)buff);
+					/*
+					warning: assignment makes pointer from integer without a cast
+					void * A4GL_new_expr (char *value);
+					void *ptr
+					*/
+			} else {
+					A4GL_append_expr(ptr,buff);
+			}
+	
+	}
+	return ptr;
 }
 
 

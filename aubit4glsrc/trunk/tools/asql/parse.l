@@ -20,8 +20,9 @@ IS			(u|U|l|L)*
 %{
 #include <stdio.h>
 #include "simple.h"
+#include <string.h>                   /* strcpy() */
 
-void count();
+void count(void);
 %}
 
 %%
@@ -73,7 +74,7 @@ int column = 0;
 extern int debug_mode;
 
 void 
-count ()
+count (void)
 {
   int i;
 

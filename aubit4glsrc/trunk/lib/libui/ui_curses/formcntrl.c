@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.75 2005-03-23 08:24:12 afalout Exp $
+# $Id: formcntrl.c,v 1.76 2005-03-25 12:48:34 afalout Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.75 2005-03-23 08:24:12 afalout Exp $";
+		"$Id: formcntrl.c,v 1.76 2005-03-25 12:48:34 afalout Exp $";
 #endif
 /**
  * @file
@@ -46,8 +46,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #include <ctype.h>
 #define CONTROL_STACK_LENGTH 10
-void
-A4GL_fgl_die_with_msg(int n,char *s);
+//void A4GL_fgl_die_with_msg(int n,char *s);
 
 
 char *a_strchr(char *s,int c);

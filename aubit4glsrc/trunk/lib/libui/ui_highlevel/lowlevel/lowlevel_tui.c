@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.49 2005-03-23 08:24:16 afalout Exp $ 
+ $Id: lowlevel_tui.c,v 1.50 2005-03-25 12:48:35 afalout Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,7 +85,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_tui.c,v 1.49 2005-03-23 08:24:16 afalout Exp $";
+		"$Id: lowlevel_tui.c,v 1.50 2005-03-25 12:48:35 afalout Exp $";
 #endif
 int inprompt = 0;
 void *A4GL_get_currwin (void);
@@ -96,8 +96,10 @@ int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
 int A4GL_LL_decode_colour_attr_aubit(int a) ;
 int A4GL_LL_get_field_width_dynamic (void *f);
+//void * A4GL_LL_create_menu (void * m, char *id, int mode, void *handler);
 int A4GL_LL_fieldnametoid(char* f,char* s,int n) ;
 int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) ;
+//int A4GL_LL_disp_h_menu( ACL_Menu *menu);
 static void
 A4GL_debug_print_field_opts (FIELD * a);
 int chars_normal[6];
@@ -1610,7 +1612,7 @@ A4GL_LL_set_current_field (void *form, void *field)
 void
 A4GL_LL_set_carat (void *form)
 {
-PANEL *w;
+//PANEL *w;
   A4GL_form_pos_form_cursor (form);
   A4GL_debug("CURSES : set_carat");
 
@@ -1861,7 +1863,7 @@ A4GL_LL_dump_screen (int n)
   WINDOW *w;
   int mode = 1;
   char *buff;
-  int is_line_drawing;
+//  int is_line_drawing;
   
   
 	#ifdef DEBUG
@@ -2116,7 +2118,7 @@ A4GL_LL_screen_mode ()
 void
 A4GL_LL_initialize_display ()
 {
-		char *argv[1];
+//		char *argv[1];
 #ifdef DEBUG	
 	A4GL_debug ("LL_initialize_display *************************");
 #endif	

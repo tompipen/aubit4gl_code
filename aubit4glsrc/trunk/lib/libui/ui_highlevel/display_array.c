@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.19 2005-03-23 08:24:15 afalout Exp $
+# $Id: display_array.c,v 1.20 2005-03-25 12:48:34 afalout Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: display_array.c,v 1.19 2005-03-23 08:24:15 afalout Exp $";
+		"$Id: display_array.c,v 1.20 2005-03-25 12:48:34 afalout Exp $";
 #endif
 /**
  * @file
@@ -58,6 +58,8 @@ int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
                     Functions prototypes
 =====================================================================
 */
+
+int UILIB_aclfgl_set_arrline(int np);
 
 //extern struct         struct_screen_record *A4GL_get_srec (char *name);
 /* struct struct_screen_record *A4GL_get_srec (char *); */

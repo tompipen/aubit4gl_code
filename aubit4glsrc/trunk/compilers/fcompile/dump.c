@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.16 2005-03-09 15:14:29 mikeaubury Exp $
+# $Id: dump.c,v 1.17 2005-03-25 12:48:30 afalout Exp $
 #*/
 
 /**
@@ -42,15 +42,7 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-#include "a4gl_formxw.h"
-
-#else
-
 #include "a4gl_fcompile_int.h"
-
-#endif
 
 /*
 =====================================================================
@@ -97,7 +89,7 @@ static void dump_metrics (struct_form * f);
 static void dump_fields_desc (struct_form * f);
 static void dump_records (struct_form * f);
 static void dump_tables (struct_form * f);
-void dump_form_desc (struct_form * f);
+//andrej void dump_form_desc (struct_form * f);
 void dump_expr (t_expression * expr, int lvl);
 void print_lvl (int lvl);
 
@@ -149,64 +141,40 @@ dump_form_desc (struct_form * f)
 static void
 dump_attributes (struct_form * f)
 {
-  int a;
-  int b;
-  printf ("\nAttributes %d\n", f->attributes.attributes_len);
-  for (a = 0; a < f->attributes.attributes_len; a++)
-    {
-      printf ("Attribute %d\n", a);
-      printf ("   field_no : %d\n", f->attributes.attributes_val[a].field_no);
-      printf ("   colname : '%s'\n", f->attributes.attributes_val[a].colname);
-      printf ("   tabname : '%s'\n", f->attributes.attributes_val[a].tabname);
-      printf ("   subscript[0] : %d\n",
-	      f->attributes.attributes_val[a].subscripts[0]);
-      printf ("   subscript[1] : %d\n",
-	      f->attributes.attributes_val[a].subscripts[1]);
-      printf ("   subscript[2] : %d\n",
-	      f->attributes.attributes_val[a].subscripts[2]);
-      printf ("   datatype : %d (%d)\n",
-	      f->attributes.attributes_val[a].datatype,
-	      f->attributes.attributes_val[a].dtype_size);
-      printf ("   dynamic  : %d\n", f->attributes.attributes_val[a].dynamic);
-      for (b = 0;
-	   b < f->attributes.attributes_val[a].str_attribs.str_attribs_len;
-	   b++)
-	{
-	  printf ("          STRING (%d) %s='%s'\n",
-		  f->attributes.attributes_val[a].str_attribs.
-		  str_attribs_val[b].type,
-		  desc_str[f->attributes.attributes_val[a].str_attribs.
-			   str_attribs_val[b].type],
-		  f->attributes.attributes_val[a].str_attribs.
-		  str_attribs_val[b].value);
-	}
-      for (b = 0;
-	   b < f->attributes.attributes_val[a].bool_attribs.bool_attribs_len;
-	   b++)
-	{
-	  printf ("          BOOLEAN %d %s\n",
-		  f->attributes.attributes_val[a].bool_attribs.
-		  bool_attribs_val[b],
-		  desc_bool[f->attributes.attributes_val[a].bool_attribs.
-			    bool_attribs_val[b]]);
-	}
-      //printf ("   colour : %d\n", f->attributes.attributes_val[a].colour);
-      if (f->attributes.attributes_val[a].colours.colours_len)
-	{
-	  int b;
-	  printf ("   Specified colours (%d)\n",
-		  f->attributes.attributes_val[a].colours.colours_len);
-	  for (b = 0; b < f->attributes.attributes_val[a].colours.colours_len;
-	       b++)
-	    {
-	      printf ("        colour=%d WHERE ",
-		      f->attributes.attributes_val[a].colours.colours_val[b].
-		      colour);
-	      dump_expr (f->attributes.attributes_val[a].colours.
-			 colours_val[b].whereexpr, 0);
-	    }
-
-	}
+int a;
+int b;
+	printf ("\nAttributes %d\n", f->attributes.attributes_len);
+	for (a = 0; a < f->attributes.attributes_len; a++) {
+		printf ("Attribute %d\n", a);
+		printf ("   field_no : %d\n", f->attributes.attributes_val[a].field_no);
+		printf ("   colname : '%s'\n", f->attributes.attributes_val[a].colname);
+		printf ("   tabname : '%s'\n", f->attributes.attributes_val[a].tabname);
+		printf ("   subscript[0] : %d\n",f->attributes.attributes_val[a].subscripts[0]);
+		printf ("   subscript[1] : %d\n",f->attributes.attributes_val[a].subscripts[1]);
+		printf ("   subscript[2] : %d\n", f->attributes.attributes_val[a].subscripts[2]);
+		printf ("   datatype : %d (%d)\n", f->attributes.attributes_val[a].datatype,
+	      	f->attributes.attributes_val[a].dtype_size);
+		printf ("   dynamic  : %d\n", f->attributes.attributes_val[a].dynamic);
+		for (b = 0; b < f->attributes.attributes_val[a].str_attribs.str_attribs_len; b++) {
+			printf ("          STRING (%d) %s='%s'\n",
+				f->attributes.attributes_val[a].str_attribs.str_attribs_val[b].type,
+				desc_str[f->attributes.attributes_val[a].str_attribs.str_attribs_val[b].type],
+				f->attributes.attributes_val[a].str_attribs.str_attribs_val[b].value);
+		}
+		for (b = 0; b < f->attributes.attributes_val[a].bool_attribs.bool_attribs_len; b++){
+			printf ("          BOOLEAN %d %s\n",
+				f->attributes.attributes_val[a].bool_attribs.bool_attribs_val[b],
+				desc_bool[f->attributes.attributes_val[a].bool_attribs.bool_attribs_val[b]]);
+		}
+		if (f->attributes.attributes_val[a].colours.colours_len) {
+			int b;
+			printf ("   Specified colours (%d)\n", f->attributes.attributes_val[a].colours.colours_len);
+			for (b = 0; b < f->attributes.attributes_val[a].colours.colours_len;b++){
+				printf ("        colour=%d WHERE ",
+					(int)f->attributes.attributes_val[a].colours.colours_val[b].colour);
+				dump_expr (f->attributes.attributes_val[a].colours.colours_val[b].whereexpr, 0);
+			}
+		}
     }
 }
 

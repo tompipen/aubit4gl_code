@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.125 2005-03-23 12:58:57 mikeaubury Exp $
+# $Id: esql.ec,v 1.126 2005-03-25 12:48:33 afalout Exp $
 #
 */
 
@@ -158,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.125 2005-03-23 12:58:57 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.126 2005-03-25 12:48:33 afalout Exp $";
 #endif
 
 
@@ -316,7 +316,6 @@ A4GLSQL_get_sqlerrm (void)
  *
  * Just initialize the error handling.
  */
-/* void *//* int A4GLSQL_initsqllib(void); *//* << from sql.c */
 int
 A4GLSQL_initsqllib (void)
 {
@@ -1113,80 +1112,89 @@ int arr_dtime[]={
 	TYPE =:dataType, DATA =:smfloat_var;
       break;
     case DTYPE_DECIMAL: 
-	{ char *b;
-	vptr=(void *)bind[idx].ptr;
-        fgl_decimal = (fgldecimal *) vptr;
-	b=A4GL_dec_to_str(fgl_decimal,0);
-	
-	//char_var=(char *)&fgl_decimal->dec_data[2];
-	//A4GL_debug("char_var=%s\n",char_var);
-      if (deccvasc (b, strlen (b), &decimal_var))
-	{
-	/** @todo : We need to store this error */
-	  return 1;
-	}
-	}
-      EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
-	TYPE =:dataType, DATA =:decimal_var;
-      break;
-    case DTYPE_MONEY: {
-	char *b;
-	vptr=(void *)bind[idx].ptr;
-      fgl_money = (fglmoney *) vptr;
-	b=A4GL_dec_to_str(fgl_money,0);
-	//char_var=(char *)&fgl_money->dec_data[2];
-      if (deccvasc (b, strlen (b), &money_var))
-	{
-	/** @todo : We need to store this error */
-	  return 1;
-	}
-	}
-      EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
-	TYPE =:dataType, DATA =:money_var;
-      break;
+		{ 
+			char *b;
+			vptr=(void *)bind[idx].ptr;
+			fgl_decimal = (fgldecimal *) vptr;
+			b=A4GL_dec_to_str(fgl_decimal,0);
+			if (deccvasc (b, strlen (b), &decimal_var)) {
+				/** @todo : We need to store this error */
+				return 1;
+			}
+		}
+		EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
+		TYPE =:dataType, DATA =:decimal_var;
+		break;
+    case DTYPE_MONEY: 
+		{
+			char *b;
+			vptr=(void *)bind[idx].ptr;
+			fgl_money = (fglmoney *) vptr;
+			b=A4GL_dec_to_str(fgl_money,0);
+			/* 
+				warning: passing arg 1 of `A4GL_dec_to_str' from incompatible pointer type
+				char *A4GL_dec_to_str (fgldecimal *dec, int size) ;	
+				fglmoney *fgl_money;
+				
+				but they are same:
+				
+				  typedef struct
+				  {
+					unsigned char dec_data[64];	   
+				  }
+				  fgldecimal;
+				
+				  typedef struct
+				  {
+					unsigned char dec_data[64];	   
+				  }
+				  fglmoney;
+				
+				So what is GCC complaining about???
+				Should we create separate A4GL_money_to_str() ??
+				Or cast it:
+					b=A4GL_dec_to_str((fgldecimal)fgl_money,0);
+			*/
+			if (deccvasc (b, strlen (b), &money_var)) {
+				/** @todo : We need to store this error */
+				return 1;
+			}
+		}
+		EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
+		TYPE =:dataType, DATA =:money_var;
+		break;
 
-
-    case DTYPE_DATE:
-      fgl_date = (long *) bind[idx].ptr;
-      date_var = (long) *fgl_date;
-      EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
-	TYPE =:dataType, DATA =:date_var;
-      break;
-
-
-    case DTYPE_DTIME:
-
-      fgl_dtime = (FglDatetime *) bind[idx].ptr;
-
-      A4GL_dttoc (fgl_dtime, &genData, 30);
-      A4GL_debug ("DT = '%s' dtype=%d size=%d %d\n", genData,bind[idx].dtype,bind[idx].size,
+	case DTYPE_DATE:
+    	fgl_date = (long *) bind[idx].ptr;
+		date_var = (long) *fgl_date;
+		EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
+		TYPE =:dataType, DATA =:date_var;
+		break;
+	case DTYPE_DTIME:
+		fgl_dtime = (FglDatetime *) bind[idx].ptr;
+		A4GL_dttoc (fgl_dtime, &genData, 30);
+		A4GL_debug ("DT = '%s' dtype=%d size=%d %d\n", genData,bind[idx].dtype,bind[idx].size,
 			TU_DTENCODE(bind[idx].size>>4,bind[idx].size&0x15));
-      dtime_var.dt_qual = arr_dtime[bind[idx].dtype,bind[idx].size];
-//TU_DTENCODE(bind[idx].size>>4,bind[idx].size&0x15);
-//3594;
-      if (dtcvasc (genData, &dtime_var))
-	{
+		dtime_var.dt_qual = arr_dtime[bind[idx].dtype,bind[idx].size];
+		if (dtcvasc (genData, &dtime_var)) {
       		dtime_var.dt_qual = 1642;
       		if (dtcvasc (genData, &dtime_var)) {
-	  		A4GL_debug ("Invalid datetime!!");
-			/** @todo : We need to store this error */
-	  		return 1;
+	  			A4GL_debug ("Invalid datetime!!");
+				/** @todo : We need to store this error */
+				return 1;
+			}
 		}
-	}
-      char_var = genData;
-      dataType = 0;
-      length = 255;
-      EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
-	TYPE =:dataType, DATA =:char_var, LENGTH =:length;
-      if (sqlca.sqlcode != 0)
-	{
-	  A4GL_debug ("Bugger - bombed");
-	}
-      else
-	{
-	  A4GL_debug ("Bound ok");
-	}
-      break;
+		char_var = genData;
+		dataType = 0;
+		length = 255;
+		EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
+		TYPE =:dataType, DATA =:char_var, LENGTH =:length;
+		if (sqlca.sqlcode != 0)	{
+			A4GL_debug ("Bugger - bombed");
+		} else {
+			A4GL_debug ("Bound ok");
+		}
+		break;
 
     case DTYPE_INTERVAL:
  	A4GL_sql_copy_interval((void *)&interval_var,  bind[idx].ptr,0,bind[idx].size,'i');

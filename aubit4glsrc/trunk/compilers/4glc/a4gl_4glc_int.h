@@ -1,10 +1,10 @@
+
+#ifndef _A4GL_4GLC_INT_H_
+#define _A4GL_4GLC_INT_H_
+
 #include "variables.h"
 
 //      #define __GNU_LIBRARY__
-
-//#if ! (defined(__sun__) && ! defined(__sparc__))
-	// No getopt.h on Solaris
-    //will use one in tools/getopt:
 
 #ifdef HAVE_CONFIG_H
 	/* header automatically created with AutoConf-configure 
@@ -13,29 +13,17 @@
 	#include "a4gl_incl_config.h"
 #endif
 
-#if HAVE_GETOPT_H           /* struct option */
-	#include <getopt.h>
-#else
-	#include "../../tools/getopt/getopt.h"
+#ifndef _GETOPT_H
+	#if HAVE_GETOPT_H           /* struct option */
+		#include <getopt.h>
+	#else
+		#include "../../tools/getopt/getopt.h"
+	#endif
+	#ifndef _GETOPT_H
+		#define _GETOPT_H
+	#endif
 #endif
 
-/*
-
-#else
-	struct option
-	{
-	# if (defined __STDC__ && __STDC__) || defined __cplusplus
-	  const char *name;
-	# else
-	  char *name;
-	# endif
-	  int has_arg;
-	  int *flag;
-	  int val;
-	};
-
-#endif
-*/
 #include "a4gl_libaubit4gl.h"
 #include "API_lex.h"
 
@@ -109,12 +97,13 @@ char *get_idents (int a);
 	/* =================== Implemented in mod.c ========================== */
 char *get_report_stack_why (int a);
 char get_report_stack_whytype (int a);
-
+/* now on a4gl_libaubit4gl.h
 struct expr_str
 {
   char *expr;
   struct expr_str *next;
 };
+*/
 void resize_paper (struct pdf_rep_structure *pdf_rep_struct);
 void clr_variable (void);
 void inmod (void);
@@ -274,8 +263,8 @@ struct s_constr_buff
 char *get_var_name (int z);
 void chk_init_var (char *s);
 void dump_expr (struct expr_str *orig_ptr);
-void *A4GL_new_expr (char *value);
-void *A4GL_append_expr (struct expr_str *orig_ptr, char *value);
+// moved to aubit4gl.h void *A4GL_new_expr (char *value);
+// moved to aubit4gl.h void *A4GL_append_expr (struct expr_str *orig_ptr, char *value);
 void *A4GL_append_expr_expr (struct expr_str *orig_ptr,
 			struct expr_str *second_ptr);
 int length_expr (struct expr_str *ptr);
@@ -455,5 +444,6 @@ char A4GL_cursor_type(char *s);
 // that way - we can just grep for printf...
 #define PRINTF printf
 
+#endif   //ifndef _A4GL_4GLC_INT_H_
 
 /* ============================= EOF ================================= */

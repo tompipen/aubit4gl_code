@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.30 2005-03-09 15:14:14 mikeaubury Exp $
+# $Id: globals.c,v 1.31 2005-03-25 12:48:30 afalout Exp $
 #
 */
 
@@ -48,7 +48,7 @@
 #include "a4gl_4glc_int.h"
 #include "variables.h"
 
-int A4GL_setenv(char *name, char *value, int overwrite);
+//andrej int A4GL_setenv(char *name, char *value, int overwrite);
 int has_default_database (void);
 char *get_default_database (void);
 /*
