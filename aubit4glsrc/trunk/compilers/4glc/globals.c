@@ -390,17 +390,25 @@ static void
 read_global_int (FILE * f, char *name, int *val)
 {
   char buff[256];
+  char buff2[256];
   sprintf (buff, "%s=%%d\n", name);
-  fscanf (f, buff, val);
+  *val=0;
+  fgets(buff2,255,f);
+  printf("Buff2=%s\n",buff2);
+  sscanf (buff2, buff, val);
 }
 
 static void
 read_global_string (FILE * f, char *name, char **val, int alloc)
 {
   char buff[256];
+  int a;
   char buff2[2000];
+  char buff3[2000];
+  fgets(buff3,2000,f);
+  strcpy(buff2,"");
   sprintf (buff, "%s=%%s\n", name);
-  fscanf (f, buff, buff2);
+  a=sscanf (buff3, buff, buff2);
 
   if (alloc)
     {
@@ -417,16 +425,20 @@ static void
 read_global_char (FILE * f, char *name, char *val)
 {
   char buff[256];
+  char buff3[256];
+  fgets(buff3,255,f);
   sprintf (buff, "%s=%%c\n", name);
-  fscanf (f, buff, val);
+  sscanf (buff3, buff, val);
 }
 
 static void
 read_global_float (FILE * f, char *name, double *val)
 {
   char buff[256];
+  char buff3[256];
+  fgets(buff3,255,f);
   sprintf (buff, "%s=%%lf\n", name);
-  fscanf (f, buff, val);
+  sscanf (f, buff, val);
 }
 
 
