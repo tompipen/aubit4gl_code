@@ -23,7 +23,7 @@ A4GL_pdf_skip_to void* rep, double a -> void
 A4GL_pdf_skip_by void* rep, double a -> void
 A4GL_pdf_aclfgli_skip_lines void* rep -> void
 A4GL_pdf_need_lines void* rep -> void
-A4GL_pdf_skip_top_of_page void* rep -> void
+A4GL_pdf_skip_top_of_page void* rep int n -> void
 A4GL_pdf_set_info void* p,char* creator  -> void
 A4GL_pdf_rep_close void* p -> void
 A4GL_pdf_size double f, char c, void* p -> double

@@ -138,14 +138,14 @@ A4GL_debug("Call to void A4GL_pdf_need_lines(%p)\n",rep);
    func_7(rep);
 }
 
-void A4GL_pdf_skip_top_of_page(void* rep) {
-static void (*func_8)(void *  );
+void A4GL_pdf_skip_top_of_page(void* rep,int n) {
+static void (*func_8)(void *  ,int );
 #ifdef DEBUG
-A4GL_debug("Call to void A4GL_pdf_skip_top_of_page(%p)\n",rep);
+A4GL_debug("Call to void A4GL_pdf_skip_top_of_page(%p,%d)\n",rep,n);
 #endif
    if (libptr==0) A4GLEXREPORT_initlib();
    func_8=A4GL_find_func(libptr,"A4GL_pdf_skip_top_of_page");
-   func_8(rep);
+   func_8(rep,n);
 }
 
 void A4GL_pdf_set_info(void* p,char* creator) {

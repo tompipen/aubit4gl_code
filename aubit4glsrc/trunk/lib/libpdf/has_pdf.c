@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.16 2004-05-19 15:10:03 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.17 2004-08-02 06:40:27 mikeaubury Exp $
 #*/
 
 /**
@@ -76,7 +76,7 @@ void A4GL_pdf_aclfgli_skip_lines (struct pdf_rep_structure *rep);
 void A4GL_pdf_fputmanyc (FILE * f, int c, int cnt);
 void A4GL_pdf_set_column (struct pdf_rep_structure *rep);
 void A4GL_pdf_set_info (void *p, char *creator);
-void A4GL_pdf_skip_top_of_page (struct pdf_rep_structure *rep);
+void A4GL_pdf_skip_top_of_page (struct pdf_rep_structure *rep.int n);
 
 void A4GL_pdf_rep_print (struct pdf_rep_structure *rep, int a, int s,
 		    int right_margin);
@@ -269,7 +269,7 @@ rep=vrep;
       rep->col_no += needn;
 #ifdef DEBUG
       {
- printf ("Colno increased by %f\n", needn);
+ //printf ("Colno increased by %f\n", needn);
  A4GL_debug ("Colno increased by %d", needn);
       }
 #endif
@@ -353,7 +353,7 @@ rep=vrep;
   A4GL_debug ("need lines");
   a = A4GL_pdf_metric (A4GL_pop_int (), 'l', rep);
   if (rep->line_no > (rep->page_length - rep->bottom_margin - a))
-    A4GL_pdf_skip_top_of_page (rep);
+    A4GL_pdf_skip_top_of_page (rep,2);
 }
 
 /**
@@ -361,18 +361,38 @@ rep=vrep;
  * @todo Describe function
  */
 void
-A4GL_pdf_skip_top_of_page (void *vrep)
+A4GL_pdf_skip_top_of_page (void *vrep,int n)
 {
+struct rep_structure *rep;
   int z;
-struct pdf_rep_structure *rep;
+  int a;
+
 rep=vrep;
+  a =
+    rep->page_length - rep->line_no - rep->bottom_margin -
+    rep->lines_in_trailer;
 
-  z = rep->page_no;
+  a =
+    rep->page_length - rep->line_no - rep->bottom_margin -
+    rep->lines_in_trailer;
 
-  while (z == rep->page_no)
+  if (n != 1 || rep->page_no)
     {
-      A4GL_push_char ("");
-      A4GL_pdf_rep_print (rep, 1, 0, 0,-1);
+      if (rep->header)
+        return;
+      if (rep->line_no == 0)
+        return;
+    }
+
+
+  if (a)
+    {
+      for (z = 0; z < a; z++)
+        {
+          A4GL_pdf_rep_print (rep, 0, 0, 0, -4);
+        }
+
+      A4GL_pdf_rep_print (rep, 0, 0, 0, -5);
     }
 
 }
@@ -453,7 +473,7 @@ void
 A4GL_pdf_move (struct pdf_rep_structure *p)
 {
   A4GL_debug ("Move to %f %f", p->col_no, p->line_no);
-  printf ("Move to %f %f\n", p->col_no, p->line_no);
+  //printf ("Move to %f %f\n", p->col_no, p->line_no);
   PDF_set_text_pos (p->pdf_ptr, p->col_no, p->page_length - p->line_no);
 }
 

@@ -122,6 +122,19 @@ retflo (float *a)
 
 }
 
+void retdec_aubit (fgldecimal *x) {
+char *ptr;
+int size;
+#define NUM_DIG(x)               ((x[0])&127 )
+#define NUM_DEC(x)               ((x[1]))
+#define NUM_BYTES(x)     (NUM_DIG(x)+OFFSET_DEC(x))
+ptr=x;
+	size=(NUM_DIG(ptr)<<8);
+	size+=NUM_DEC(ptr);
+	A4GL_push_dec(x,0,size);
+}
+
+
 
 //void rsetnull(int d,void *ptr) {
 //      setnull(d,ptr,0);
