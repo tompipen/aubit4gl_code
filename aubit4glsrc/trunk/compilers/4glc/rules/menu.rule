@@ -3,11 +3,11 @@ menu_cmd	:	MENU {
    	menu_cmd_cnt[menu_cnt]=1;
    	push_blockcommand("MENU");
 	print_menu_1();
-	} 
+	}
 	menu_title menu_commands end_menu_command;
 
 end_menu_command  : END_MENU {
-print_end_menu_1();
+   print_end_menu_1();
    add_continue_blockcommand ("MENU");
 print_end_menu_2();
    pop_blockcommand("MENU");

@@ -1,23 +1,30 @@
 
 /**
  * @file
- * It looks like function to help the parsing of a module (a x4gl one). 
+ * It looks like functions to help the parsing of a module (a x4gl one). 
  * For that the name mod.c
  *
  * @todo Doxygen comments in all functions
  * @todo static in modular variables
  * @todo const in read only strings
+ * @todo -Wmissig-prototypes
+ * @todo -Wstrict-prototypes
+ * @todo -Wall
+ * @todo -pedantic
  */
 
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.32 2001-11-30 21:34:00 saferreira Exp $
+* $Id: mod.c,v 1.33 2001-12-02 22:34:45 saferreira Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.32  2001/11/30 21:34:00  saferreira
+*	Warnigs and prototypes fixed and Doxygen comments added
+*	
 *	Revision 1.31  2001/11/29 22:26:57  saferreira
 *	Some more warnings fixed and Doxygen comments added
 *	
@@ -269,12 +276,15 @@ int curr_rep_block;
 
 int max_menu_no = 0;
 
-
 struct s_report sreports[1024];
 int sreports_cnt = 0;
 
+/// Menu titles
 char mmtitle[132][132];
+
+/// Variables dump output file name
 extern char *outputfilename;
+
 int read_glob_var = 0;
 int counters[256];
 int count_counters = 0;
@@ -349,6 +359,7 @@ struct cmds
 }
 command_stack[200];
 
+/// Command stack counter / index (number of elements in command_stack)
 #ifdef LEXER
 int ccnt = 0;
 #else
@@ -369,22 +380,23 @@ int in_record = 0;
 struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
 
 /**
+ * Not Used
+ *
+ * @todo If not used remove it
  *
  * @param z
  * @return
  */
 static char *print (char *z)
 {
-
   static char c[10] = "(null)";
 
   if (z == 0)
-    {
-      return c;
-    }
+  {
+    return c;
+  }
 
   return z;
-
 }
 
 /**
@@ -503,21 +515,19 @@ static isin_command (char *cmd_type)
 {
 
   int z;
-  //printf ("Check for %s %d \n", cmd_type, ccnt);
   if (ccnt == 0)
-    {
-      //printf ("Stack is empty\n");
-      return 0;
-    }
+  {
+    return 0;
+  }
 
   for (z = ccnt - 1; z >= 0; z--)
+  {
+
+    if (command_stack[z].cmd_type == 0 || command_stack[z].cmd_type[0] == 0)
+      continue;
+
+    if (strcmp (command_stack[z].cmd_type, cmd_type) == 0)
     {
-
-      if (command_stack[z].cmd_type == 0 || command_stack[z].cmd_type[0] == 0)
-	continue;
-
-      if (strcmp (command_stack[z].cmd_type, cmd_type) == 0)
-	{
 	  debug ("OK\n");
 	  return 1;
 	}
@@ -760,7 +770,7 @@ static void dump_gvars(void)
  *   - The parameter pointer if not null
  *   - An empty string otherwise (with just one NULL caracter)
  */
-static char *ignull (const char *ptr)
+static char *ignull (char *ptr)
 {
   static char *empty = "";
   if (ptr)
@@ -879,12 +889,34 @@ void print_variables (int z)
 
 }
 
+/**
+ * The parser found a new variable name and inserts it in the variable array.
+ *
+ * @todo Document what is the parameter n
+ *
+ * @param a The variable name
+ * @param n
+ */
 void push_name (char *a, char *n)
 {
   debug ("In mod.c : push_name  a = %s n = %d \n", a, n);
   add_variable (a, 0, n);
 }
 
+
+/**
+ * Add a new type into the variables array.
+ *
+ * Executed directly by the parser.
+ *
+ * The variables names are allready filled in the array.
+ * All of them that have no typr yet associated are defined with this
+ * data type.
+ *
+ * @param a The data type name
+ * @param n  The number of elements if the variable is char, decimal
+ * @param as If it is recognizing an array is the number of elements
+ */
 void push_type (char *a, char *n, char *as)
 {
   int z;
@@ -937,12 +969,18 @@ void push_type (char *a, char *n, char *as)
 
 }
 
+/**
+ * The parser found the starting of a new record.
+ */
 void push_record (void)
 {
   //in_record++;
   push_type ("_RECORD", 0, 0);
 }
 
+/**
+ * The parser found a new associative array.
+ */
 void push_associate (char *a, char *b)
 {
   push_type ("_ASSOCIATE", a, b);
@@ -1005,14 +1043,23 @@ int getinc(void)
   return inc;
 }
 
-static findex (char *str, char c)
+/**
+ * Find a character in a string.
+ *
+ * @param str The string where to find the caracter
+ * @param c The character to be found in a string
+ * @return 
+ *   - The index of the character if found in the string
+ *   - 0 if not found
+ */
+static int findex (char *str, char c)
 {
   int a;
   for (a = 0; a < strlen (str); a++)
-    {
-      if (str[a] == c)
-	return a;
-    }
+  {
+    if (str[a] == c)
+      return a;
+  }
   return 0;
 }
 
@@ -1267,6 +1314,18 @@ long scan_variable (char *s)
   return a;
 }
 
+/**
+ *
+ * @todo Document the possible return values
+ *
+ * @param s
+ * @param mode
+ * @return
+ *   - 0
+ *   - -1
+ *   - 1
+ *   - 
+ */
 static long isvartype (char *s, int mode)
 {
   int a;
@@ -1329,6 +1388,17 @@ static long isvartype (char *s, int mode)
   return 0;
 }
 
+/**
+ * Check if the variable is array type.
+ *
+ * @todo Document the possible return values
+ *
+ * @param s The variable name
+ * @return
+ *   - -1 
+ *   - 0 
+ *   - 1
+ */
 long isarrvariable (char *s)
 {
   long a;
@@ -1337,7 +1407,17 @@ long isarrvariable (char *s)
   return a;
 }
 
-
+/**
+ * Check if a variable is a record.
+ *
+ * @todo Document the possible return values
+ *
+ * @param s The variable name
+ * @return
+ *   - -1
+ *   - 0
+ *   - 1
+ */
 static long isrecvariable (char *s)
 {
   return isvartype (s, 2);
@@ -1691,6 +1771,13 @@ static int push_like2 (char *t2)
 
 }
 
+/**
+ * The parser found a new variable like table.column.
+ *
+ * Its gonna be inserted in the variables array.
+ *
+ * @param t The table and column (table.column format)
+ */
 void push_like (char *t)
 {
 
@@ -1699,6 +1786,11 @@ void push_like (char *t)
   debug ("<<<<<<\n");
 }
 
+/**
+ * The parse found a new record like table.*
+ *
+ * @param t The table name
+ */
 void push_rectab (char *t)
 {
   push_like (t);
@@ -1858,8 +1950,12 @@ int in_command (char *cmd_type)
 }
 
 
-
-static trim (char *s)
+/**
+ * Trim the New Line at the end of a string.
+ * 
+ * @param s The string to be trimmed
+ */
+static void trim(char *s)
 {
   if (s[strlen (s) - 1] == '\n')
     s[strlen (s) - 1] = 0;
@@ -1910,6 +2006,14 @@ static yyerrorf (char *fmt, ...)
   yyerror (buff);
 }
 
+/**
+ * Checks if a column is part of primary key
+ *
+ * @param s The string containing the primary key column name
+ * @return 
+ *   - 1 : The column is part of PK 
+ *   - 0 : The column is not part of PK 
+ */
 static int is_pk (char *s)
 {
   int a;
@@ -1918,14 +2022,14 @@ static int is_pk (char *s)
   debug ("Checking if %s is a pk in %s", s, pklist);
   a = linked_split (pklist, 0, 0);
   for (cnt = 1; cnt <= a; cnt++)
+  {
+    linked_split (pklist, cnt, buff);
+    if (strcasecmp (s, buff) == 0)
     {
-      linked_split (pklist, cnt, buff);
-      if (strcasecmp (s, buff) == 0)
-	{
-	  debug ("Yes");
-	  return 1;
-	}
+      debug ("Yes");
+      return 1;
     }
+  }
   if (strlen (upd_using_notpk) > 0)
     strcat (upd_using_notpk, ",");
   strcat (upd_using_notpk, s);
@@ -2248,34 +2352,68 @@ int how_many_in_bind (char i)
     return ordbindcnt - 1;
 }
 
-
-
+/**
+ * The parser found a CONTINUE instruction for a specific loop command.
+ *
+ * One example could be CONTINUE WHILE.
+ *
+ * The loop commands could be:
+ *   - WHILE
+ *   - INPUT
+ *   - FOREACH
+ *   - FOR
+ *   - CONSTRUCT
+ *   - DISPLAY
+ *   - MENU
+ *
+ *   Finds backwards the opened corresponding command. 
+ *   This means that if we have a CONTINUE WHILE then it belongs to the
+ *   last founded (and not yet closed) WHILE.
+ *
+ * @param cmd_type The string containing the type name of the loop used
+ */
 void continue_loop (char *cmd_type)
 {
   int a;
   int g = 0;
   for (a = ccnt - 1; a >= 0; a--)
+  {
+    debug ("continue_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
+
+    if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
     {
-
-      debug ("continue_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
-
-      if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
-	{
-	  g = 1;
-	  break;
-	}
+      g = 1;
+      break;
     }
+  }
   if (g == 0)
-    {
-      debug ("/* wanted to continue a %s but wasnt in one! */", cmd_type);
-      return;
-    }
-
+  {
+    debug ("/* wanted to continue a %s but wasnt in one! */", cmd_type);
+    return;
+  }
   print_continue_loop (command_stack[a].block_no);
 }
 
-
-
+/**
+ * The parser found a EXIT instruction for a specific loop command.
+ *
+ * One example could be EXIT WHILE.
+ *
+ * The loop commands could be:
+ *   - WHILE
+ *   - INPUT
+ *   - FOREACH
+ *   - FOR
+ *   - CONSTRUCT
+ *   - DISPLAY
+ *   - MENU
+ *
+ *   Finds backwards the opened corresponding command. 
+ *   This means that if we have a EXIT WHILE then it belongs to the
+ *   last founded (and not yet closed) WHILE.
+ *
+ * @param cmd_type The string containing the type name of the loop used
+ */
 void exit_loop (char *cmd_type)
 {
   int a;
@@ -2283,39 +2421,38 @@ void exit_loop (char *cmd_type)
   int printed = 0;
 
   for (a = ccnt - 1; a >= 0; a--)
+  {
+    debug ("exit_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
+
+    if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
     {
-
-      debug ("exit_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
-
-      if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
-	{
-	  g = 1;
-	  break;
-	}
+      g = 1;
+      break;
     }
+  }
   if (g == 0)
-    {
-      debug ("/* wanted to exit a %s but wasnt in one! */", cmd_type);
-      return;
-    }
+  {
+    debug ("/* wanted to exit a %s but wasnt in one! */", cmd_type);
+    return;
+  }
 
   if (strcmp (cmd_type, "MENU") == 0)
-    {
-      print_exit_loop ('M', 0);
-      printed = 1;
-    }
+  {
+    print_exit_loop ('M', 0);
+    printed = 1;
+  }
 
   if (strcmp (cmd_type, "PROMPT") == 0)
-    {
-      print_exit_loop ('P', 0);
-      printed = 1;
-    }
+  {
+    print_exit_loop ('P', 0);
+    printed = 1;
+  }
 
 
   if (printed == 0)
-    {
-      print_exit_loop (0, command_stack[a].block_no);
-    }
+  {
+    print_exit_loop (0, command_stack[a].block_no);
+  }
 }
 
 void set_curr_block (int a)
@@ -2323,6 +2460,14 @@ void set_curr_block (int a)
   curr_rep_block = a;
 }
 
+/**
+ * The parser found a new report block
+ *
+ * @todo Comment the parameters
+ *
+ * @param why
+ * @param whytype
+ */
 void push_report_block (char *why, char whytype)
 {
   set_curr_block (0);
@@ -2338,7 +2483,13 @@ static get_curr_rep ()
   return report_cnt;
 }
 
-void init_report_structure (struct rep_structure * rep)
+/**
+ * Initializes a new report structurem where some information about it
+ * is stored.
+ *
+ * @param rep The report structure pointer
+ */
+void init_report_structure (struct rep_structure *rep)
 {
   rep->top_margin = 3;
   rep->bottom_margin = 3;
@@ -3613,17 +3764,22 @@ void *append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
   return start;
 }
 
-
+/**
+ * Checks and return the length of an expression
+ * 
+ * @param ptr 
+ * @return The number of operands in an expression
+ */
 int length_expr (struct expr_str * ptr)
 {
   void *optr;
   int c = 0;
   debug ("Print expr... %p", ptr);
   while (ptr)
-    {
-      c++;
-      ptr = ptr->next;
-    }
+  {
+    c++;
+    ptr = ptr->next;
+  }
   return c;
 }
 
