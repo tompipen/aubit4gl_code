@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.12 2003-09-30 14:41:07 mikeaubury Exp $
+# $Id: widget.c,v 1.13 2003-10-05 22:48:38 afalout Exp $
 #*/
 
 /**
@@ -88,8 +88,6 @@ char *desc_bool[] = {
 };
 
 
-#ifndef OLD_INCL
-
 struct s_widgets widgets[] = {
   /*   Widget Type  cr_ function     parameters (placeholder).. */
   {"", A4GL_cr_textbox, {"MAXCHARS", 0}},
@@ -117,7 +115,9 @@ struct s_widgets widgets[] = {
    */
   {0}
 };
-#endif
+
+
+#define A4GL_GTK_FONT_FIXED "Fixed 10"
 
 
 /*
@@ -133,17 +133,15 @@ place - see a4gl_aubit_lib.h
 //int A4GL_gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, ...);
 
 
-char *A4GL_decode_config (struct_form * f, int a);
-char *A4GL_decode_comments (struct_form * f, int a);
-char *A4GL_decode_widget (struct_form * f, int a);
-//int fgl_fieldnametoid(char *f,char *s,int n);
+char *	A4GL_decode_config 	(struct_form * f, int a);
+char *	A4GL_decode_comments (struct_form * f, int a);
+char *	A4GL_decode_widget 	(struct_form * f, int a);
+int 	A4GL_strnullcmp 	(char *s1, char *s2);
 
-#ifdef OLD_INCL
-int KeySnooper (GtkWidget * grab_widget, GdkEventKey * event,
-		gpointer func_data);
+#if GTK_CHECK_VERSION(2,0,0)
+	void A4GL_ChangeWidgetFont(GtkLabel *label,char *font);
 #endif
-int A4GL_strnullcmp (char *s1, char *s2);
-//int A4GL_widget_name_match (GtkWidget * w, char *name);
+
 
 /*
 =====================================================================
@@ -306,7 +304,7 @@ A4GL_debug_last_field_created (char *txt)
  * use a tex entry.
  *
  * @param metric_no The metric number of the field to be implemented.
- * @param f A pointer to the strucutre where the information of the form is 
+ * @param f A pointer to the strucutre where the information of the form is
  * stored.
  * @panel panel_to_add_to_window Panel where the widgets are layed out.
  */
@@ -524,10 +522,7 @@ w=wv;
 
 }
 
-
-#define A4GL_GTK_FONT_FIXED "Fixed 10"
-
-
+#if GTK_CHECK_VERSION(2,0,0)
 void A4GL_ChangeWidgetFont(GtkLabel *label,char *font) {
 PangoFontDescription    *pfd;
 int a;
@@ -548,5 +543,7 @@ A4GL_debug("A4GL_ChangeWidgetFont");
         /* freeing PangoFontDescription, cause it has been copied by prev. call */
         pango_font_description_free(pfd);
 }
+
+#endif
 
 /* ============================== EOF =============================== */

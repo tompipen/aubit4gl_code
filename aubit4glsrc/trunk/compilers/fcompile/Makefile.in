@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.53 2003-08-28 11:29:20 mikeaubury Exp $
+# $Id: Makefile.in,v 1.54 2003-10-05 22:48:37 afalout Exp $
 #
 
 ROOT        =../..
@@ -105,6 +105,13 @@ ${ROOT}/bin/default_frm: create_default.o
 
 ${ROOT}/bin/fcompile: $(OBJECTS)
 	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
+
+#> ifneq "${TARGET_OS}" "hpux"
+#>         ${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
+#> else
+#>         ${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} -lLEX_EC -lSQL_esql
+#> endif
+
 
 ${ROOT}/bin/fdecompile-j : ${OBJS_DECOMPILE} ${OBJS_DUMP_JAVA}
 	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}

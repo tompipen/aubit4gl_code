@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.9 2003-07-26 04:47:16 afalout Exp $
+# $Id: Makefile.in,v 1.10 2003-10-05 22:48:38 afalout Exp $
 #
 
 ROOT    =../..
@@ -95,6 +95,14 @@ use.amake:
 
 misql.4ae.run:
 	misql.4ae
+
+
+install:
+	${CP} misql.4ae $(INSTALL_DIR)/${BIN_PATH}/adbaccess
+	chmod a+x $(INSTALL_DIR)/${BIN_PATH}/adbaccess
+	chmod a+r ${FILES.per:.per=.afr.dat}
+	${CP} ${FILES.per:.per=.afr.dat} $(INSTALL_DIR)/${INCL_PATH}
+	@echo "Installed to ${INCL_PATH}"
 
 
 ## ==================================================================

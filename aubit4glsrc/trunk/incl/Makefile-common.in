@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.140 2003-09-22 07:03:49 afalout Exp $
+# $Id: Makefile-common.in,v 1.141 2003-10-05 22:48:37 afalout Exp $
 #
 
 
@@ -456,8 +456,6 @@ LINK_COMPILERS      =-dynamic
 #LINK_COMPILERS      =-shared
 #which Aubit library we want to link Aubit executables/compiler with. This
 #flag is forwarded to C linker:
-#AUBIT_LIB			=-laclall
-#AUBIT_LIB			=-laclshared
 AUBIT_LIB			=-laubit4gl
 ifeq "${TARGET_OS}" "solaris"
 	AUBIT_LIB			+=-lc

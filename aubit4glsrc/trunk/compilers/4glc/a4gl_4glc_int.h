@@ -4,8 +4,16 @@
 //#if ! (defined(__sun__) && ! defined(__sparc__))
 	// No getopt.h on Solaris
     //will use one in tools/getopt:
-#include <getopt.h>		/* struct option */
+
+
+#if HAVE_GETOPT_H           /* struct option */
+	#include <getopt.h>
+#else
+	#include "../../tools/getopt/getopt.h"
+#endif
+
 /*
+
 #else
 	struct option
 	{

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.199 2003-09-22 07:02:15 afalout Exp $
+dnl # $Id: configure.in,v 1.200 2003-10-05 22:48:27 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -119,6 +119,10 @@ if test "$AUBITCONF_FLAG" != "running"; then
 		echo "}" >> order.c
 		echo "" >> order.c
 
+        #Above code is obsolete; see AC_C_BIGENDIAN later in the code
+
+
+
 	##############################
 
 
@@ -156,7 +160,11 @@ X
 
 			#so we don't enter the loop:
 			export AUBITCONF_FLAG=running
-			aubitconf $CONFIGURE_COMMAND
+
+            #Got to strip single quote arroung it added apprently by autoconf itself...
+			TMP_PARAMS=`echo $CONFIGURE_COMMAND |  tr -d "[' ]"`
+
+			aubitconf $TMP_PARAMS
 			err_code=$?
 			#prevent errors when exiting first instance, that did not egt chance
 	        #to create this files, but expects them:
@@ -215,8 +223,29 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	AM_CONFIG_HEADER(incl/a4gl_incl_config.h)
 fi
 
-#configure.in:151: warning: AC_ARG_PROGRAM was called before AC_CANONICAL_TARGET
-#AC_  CANONICAL_  TARGET
+#AC_TRY_RUN (program, [action-if-true [, action-if-false [, action-if-cross-compiling]]])
+#program is the text of a C program, on which shell variable and backquote substitutions
+#are performed. If it compiles and links successfully and returns an exit status of 0 when executed,
+#run shell commands action-if-true. Otherwise run shell commands action-if-false; the exit status of
+#the program is available in the shell variable `$?'. This macro uses CFLAGS or CXXFLAGS, CPPFLAGS, LDFLAGS, and LIBS when compiling.
+
+#If the C compiler being used does not produce executables that run on the system where configure is
+#being run, then the test program is not run. If the optional shell commands action-if-cross-compiling
+#	are given, they are run instead. Otherwise, configure prints an error message and exits.
+
+AC_C_BIGENDIAN
+#   If words are stored with the most significant byte first (like Motorola and SPARC,
+#but not Intel and VAX, CPUs), define WORDS_BIGENDIAN.
+
+
+AC_CYGWIN
+#  Checks for the Cygwin environment. If present, sets shell variable CYGWIN to `yes'.
+#If not present, sets CYGWIN to the empty string.
+
+
+#configure.in:151: warning: AC_ARG_PROGRAM was called before AC_ CANONICAL_ TARGET
+#but if I uncomment it, it complains that it was invoked multiple times!
+#AC_ CANONICAL_ TARGET
 AC_CANONICAL_SYSTEM
 
 #prevent libtool from trying to build static libraries
@@ -1154,6 +1183,16 @@ USE_RPCGEN=0
 SYSDRIVE=$SYSTEMDRIVE
 AC_EXEEXT
 AC_OBJEXT
+
+
+AC_OBJEXT
+#   Defines substitute variable OBJEXT based on the output of the compiler, after .c files have been excluded. Typically set to `.o' if Unix, `.obj' if Win32.
+
+
+AC_MINGW32
+#  Checks for the MingW32 compiler environment. If present, sets shell variable MINGW32 to `yes'. If not present, sets MINGW32 to the empty string.
+
+
 
 SO_EXT=.so
 SO_EXT_LINKABLE=$SO_EXT
@@ -4865,7 +4904,10 @@ PHP_CONFIGURE_PART(Checking for header files:)
 if test "$AUBIT_SOURCE" = "1" ; then
 	#AC_STDC_HEADERS
 	AC_HEADER_STDC
-	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h share.h])
+	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h \
+		netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h \
+		sys/time.h unistd.h share.h])
+
 	#AC_HAVE_HEADERS(string.h fcntl.h sys/file.h sys/param.h)
 
    	AC_CHECK_HEADERS([search.h])
