@@ -13,7 +13,10 @@ MAIN
 			FROM formonly.account_number
 			
 		if queryStr!=" 1=1" then
-			display "BAD" exit program 1
+			display "BAD: >", queryStr clipped, "<"
+			#Windows:  BAD: >temp_tbl.account_number='1234'<
+			sleep 5
+			exit program 1
 		end if
 	exit program 0
 

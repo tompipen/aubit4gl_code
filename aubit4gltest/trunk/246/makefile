@@ -79,7 +79,16 @@ compile: progname${TARGET_EXT} ${FORMS} ${HELP}
 ################
 #Run the compiled test
 run: compile
-	${SH} ./run_prog
+#${SH} ./run_prog <- moved here:
+	./progname.4ae | grep "here are no more rows in the direction you are going" > /dev/null
+#this is bad because it will fail on Windows "too small" problem
+#need to find a better way...
+#${DEFAULT_DIFF} --cant work because of curses control codes?
+#So it appears that all this is testing is if program generated above message?
+#out.expected file is ignored.
+#created log file (call startlog("a")) is apparently ignored
+	
+	
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:

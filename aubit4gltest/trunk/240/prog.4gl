@@ -1,9 +1,14 @@
+# See http://aubit4gl.sourceforge.net/aubit4gldoc/4glreference/pages/4GLREFUSING.htm
+
+
 Define lv_date date
 define lv_num float
+define dbmoney_string char(20)
 main
 let lv_date=mdy(2,13,1970)
 
-
+let dbmoney_string = fgl_getenv("DBMONEY")
+#display "DBMONEY= >",dbmoney_string clipped, "<"
 
 LET lv_num= 0 
 DISPLAY lv_num USING "#####"," ","#####"

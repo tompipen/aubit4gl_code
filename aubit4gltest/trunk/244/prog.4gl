@@ -15,7 +15,11 @@ MAIN
     		OPTIONS DISPLAY ATTRIBUTE(WHITE,BOLD)
 
 	END CONSTRUCT
-   if lv_ok!=1 or query_string!= "hca_list.cacct_no='222'" then
-	EXIT PROGRAM 1
-   end if
+	if lv_ok!=1 or query_string!= "hca_list.cacct_no='222'" then
+   		display "lv_ok= >",lv_ok,"< query_string= >",query_string clipped, "<"
+		#lv_ok=          1query_string= >hca_list.cacct_no='2'<
+		sleep 5
+		EXIT PROGRAM 1
+	end if
+	
 END MAIN

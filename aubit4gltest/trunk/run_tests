@@ -192,19 +192,19 @@ for a in $FLAGS; do
 			fi
 			
 			#check for real
-			TMP1=`find $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l -i aclfgl_dump_screen {} \;`
+			TMP1=`$FIND $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l -i aclfgl_dump_screen {} \;`
 			if test "$TMP1" != ""; then 
 				REALLY_IS_DUMP_SCREEN_TEST=1
 			else
 				REALLY_IS_DUMP_SCREEN_TEST=0
 			fi
-			TMP1=`find $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l -i A4GL_clr_window {} \;`
+			TMP1=`$FIND $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l -i A4GL_clr_window {} \;`
 			if test "$TMP1" != ""; then 
 				REALLY_IS_CLR_WINDOW_TEST=1
 			else
 				REALLY_IS_CLR_WINDOW_TEST=0
 			fi
-			TMP1=`find $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l -i aclfgl_fgl_drawbox {} \;`
+			TMP1=`$FIND $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l -i aclfgl_fgl_drawbox {} \;`
 			if test "$TMP1" != ""; then 
 				REALLY_IS_FGL_DRAWBOX_TEST=1
 			else
@@ -273,7 +273,20 @@ for a in $FLAGS; do
 		;;
 		
 	-aubitrc-test)	#Use aubitrc in aubit4gltest directory to override local installation settings
-		export A4GL_INIFILE="$CURR_DIR/aubitrc-testing"
+		if test "$PLATFORM" = "MINGW"; then 
+			#export A4GL_INIFILE="d:/cygwin/usr/src/aubit/aubit4gltest/etc/aubitrc-testing"
+			echo "FIXME: On Windows DBMONEY ends up empty after reading A4GL_INIFILE"
+			echo "FIXME: Try -show-config"
+			unset A4GL_INIFILE
+		else
+			export A4GL_INIFILE="$CURR_DIR/etc/aubitrc-testing"
+		fi
+		if test "$A4GL_INIFILE" != ""; then 
+			if test ! -f $A4GL_INIFILE; then 
+				echo "ERROR: Aubit RC file ($A4GL_INIFILE) missing. Stop."
+				exit 4
+			fi
+		fi
 		;;
 		
 	-alldbrun)       #this script was invoked from alltests loop
@@ -1271,7 +1284,7 @@ for a in $FLAGS; do
 	*)              #everything else should be a test number
 		if test "$SHOW_4GL_ERROR" = "1"; then 
 			#echo "a=$a"
-			x=`eval find $CURR_DIR/$a -name \'*.err\'`
+			x=`eval $FIND $CURR_DIR/$a -name \'*.err\'`
 			#echo $x
 			#exit
 			if test "$x" = ""; then
@@ -1319,6 +1332,10 @@ for a in $FLAGS; do
 ####
 done
 ####
+
+if test "$A4GL_FORMTYPE" = "GENERIC" -a "$A4GL_PACKER" = "PACKED" -a "$PLATFORM" = "MINGW"; then
+	EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_MINGW_PACKED"
+fi	
 
 if test "$LOOP_TIMES" != ""; then 
 	if test "$RUN_ONE" != ""; then
@@ -1721,7 +1738,20 @@ do
 	esac
 	
 	if test "$SHOW_CONFIG" = "1"; then
+		echo "A4GL_INIFILE=$A4GL_INIFILE"
 		$AUBITDIR_UNIX/bin/aubit-config$EXE_EXT -a
+		
+		echo "aubit-config A4GL_AUBITRC returns :`aubit-config A4GL_AUBITRC`"
+		echo "aubit-config DBMONEY returns      :`aubit-config DBMONEY`"
+		echo "in environment: DBMONEY=$DBMONEY"
+		
+		unset A4GL_INIFILE
+		echo "A4GL_INIFILE=$A4GL_INIFILE"
+		
+		echo "aubit-config A4GL_AUBITRC returns :`aubit-config A4GL_AUBITRC`"
+		echo "aubit-config DBMONEY returns      :`aubit-config DBMONEY`"
+		echo "in environment: DBMONEY=$DBMONEYc"
+		
 		exit 0
 	fi
 	
