@@ -150,7 +150,7 @@ A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y) 
 	
 	if (mode=='i') {
 		if (A4GL_isnull(0,(void *)a4gl)) {
-			printf("Making infx null\n");
+			//printf("Making infx null\n");
 				rsetnull(CCHARTYPE,infx);
 			return;
 	

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.9 2003-07-07 14:20:24 mikeaubury Exp $
+# $Id: colours.c,v 1.10 2003-07-15 17:09:05 mikeaubury Exp $
 #*/
 
 /**
@@ -171,6 +171,10 @@ A4GL_decode_aubit_attr (int a, char s)
   if (s == 'w')
     {
       ca = A4GL_decode_colour_attr_aubit (a);
+
+      if (strstr (attr, "INVISIBLE"))
+	ca += A_INVIS;
+
       if (strstr (attr, "NORMAL"))
 	ca += A_NORMAL;
       if (strstr (attr, "REVERSE"))
@@ -189,6 +193,10 @@ A4GL_decode_aubit_attr (int a, char s)
   if (s == 'f')
     {
       ca = A4GL_decode_colour_attr_aubit (a);
+
+      if (strstr (attr, "INVISIBLE"))
+	ca += A_INVIS;
+
       if (strstr (attr, "NORMAL"))
 	ca += A_NORMAL;
       if (strstr (attr, "REVERSE"))
@@ -213,8 +221,10 @@ A4GL_decode_aubit_attr (int a, char s)
       ca = A4GL_decode_colour_attr_aubit (a);
       if (strstr (attr, "REVERSE"))
 	ca += A_REVERSE;
+      if (strstr (attr, "INVISIBLE"))
+	ca += A_INVIS;
     }
-A4GL_debug("Returning ca = %d %x",ca,ca);
+A4GL_debug("Returning ca = %d %x (visible=%d)",ca,ca,!(ca&A_INVIS));
   return ca;
 }
 

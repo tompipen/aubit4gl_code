@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.24 2003-07-12 08:02:57 mikeaubury Exp $
+# $Id: ops.c,v 1.25 2003-07-15 17:09:05 mikeaubury Exp $
 #
 */
 
@@ -896,17 +896,20 @@ A4GL_display_int (void *ptr, int size, int size_c,
   if (display_type == DISPLAY_TYPE_DISPLAY_TO)
     {
 	char using_buff[256];
-	A4GL_debug("DISPLAY_TYPE_DISPLAY_TO : %d",*(int *)ptr);
+		A4GL_debug("DISPLAY_TYPE_DISPLAY_TO : %d",*(int *)ptr);
 
       		if (A4GL_isnull(DTYPE_INT,ptr)) { 
 			A4GL_debug("Int value is null");
 			strcpy(buff,""); return buff; 
 		}
+
   		a = *(long *) ptr;
-      		if (A4GL_isnull(DTYPE_INT,&a)) { 
+
+      		if (A4GL_isnull(DTYPE_INT,(void *)&a)) { 
 			A4GL_debug("Int value is null");
 			strcpy(buff,""); return buff; 
 		}
+	
 		if (A4GL_has_str_attribute (field_details, FA_S_FORMAT)) {
 			strcpy(using_buff,(A4GL_get_str_attribute(field_details,FA_S_FORMAT)));
 		} else {

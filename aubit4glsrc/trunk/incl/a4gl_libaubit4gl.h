@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.72 2003-07-12 08:02:11 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.73 2003-07-15 17:08:48 mikeaubury Exp $
 #
 */
 
@@ -189,6 +189,7 @@ extern "C"
 #define AUBIT_ATTR_BOLD       		0x04000
 #define AUBIT_ATTR_BLINK      		0x08000
 #define AUBIT_ATTR_DIM        		0x10000
+#define AUBIT_ATTR_INVISIBLE   		0x20000
 
   /* ====================== from a4gl_errors.h ================== */
 #define ERR_BADNOARGS 		1000
@@ -1692,13 +1693,14 @@ void A4GL_fgl_end_4gl_0 (void);
 
 int A4GL_get_option_value (char type);
 
+void A4GL_processed_onkey(void) ;
+void A4GL_reset_processed_onkey(void);
+int A4GL_has_processed_onkey(void);
 
 
 #ifdef __cplusplus
 }
 #endif
-
-
 
 
 

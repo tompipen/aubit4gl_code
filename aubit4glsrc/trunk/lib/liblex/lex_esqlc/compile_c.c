@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.63 2003-07-13 04:11:40 afalout Exp $
+# $Id: compile_c.c,v 1.64 2003-07-15 17:09:05 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -72,7 +72,14 @@
 =====================================================================
 */
 
-
+/*
+void add_function_to_header (char *identifier, int parms);
+char *get_namespace (char *s);
+void print_init_var (char *name, char *prefix, int alvl);
+void printcomment (char *fmt, ...);
+int is_builtin_func (char *s);
+*/
+int doing_cs(void );
 /*
 =====================================================================
 		                    Includes
@@ -1968,7 +1975,7 @@ print_construct_3 (int byname, char *constr_str, char *attr,int cattr)
   printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
   printc ("SET(\"s_screenio\",_inp_io,\"attrib\",%d);\n", cattr);
-  printc ("SET(\"s_screenio\",_inp_io,\"currform\",A4GL_get_curr_form());\n");
+  printc ("SET(\"s_screenio\",_inp_io,\"currform\",A4GL_get_curr_form(1));\n");
   printc ("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"constr\",constr_flds);\n");
@@ -2025,6 +2032,7 @@ void
 print_onkey_1 (char *key_list_str)
 {
   printc ("ON_KEY(\"%s\") {\n", key_list_str);
+  printc ("A4GL_processed_onkey();\n");
 }
 
 /**
@@ -2810,7 +2818,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist,int attr)
   printc ("*/");
   printc ("/* input by name */");
   ccc = print_bind ('i');
-  printc ("SET(\"s_screenio\",_inp_io,\"currform\",A4GL_get_curr_form());\n");
+  printc ("SET(\"s_screenio\",_inp_io,\"currform\",A4GL_get_curr_form(1));\n");
   printc ("if ((int)GET(\"s_screenio\",_inp_io,\"currform\")==0) break;\n");
   printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"attrib\",%d);\n",attr);
@@ -2878,7 +2886,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc
     ("SET(\"s_inp_arr\",_inp_io,\"arr_size\",sizeof(%s)/sizeof(%s[0]));\n",
      arrvar, arrvar);
-  printc ("SET(\"s_inp_arr\",_inp_io,\"currform\",A4GL_get_curr_form());\n");
+  printc ("SET(\"s_inp_arr\",_inp_io,\"currform\",A4GL_get_curr_form(1));\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"inp_flags\",%d);\n", inp_flags);
   printc ("if ((int)GET(\"s_inp_arr\",_inp_io,\"currform\")==0) break;\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"currentfield\",0);\n");
@@ -3738,7 +3746,7 @@ print_menu_1 (int n)
 void
 print_menu_1b (int n)
 {
-  printc (" switch(cmd_no_%d)  {\n", n);
+  //printc (" switch(cmd_no_%d)  {\n", n);
 }
 
 /**
@@ -3786,7 +3794,7 @@ print_menu (int mn, int n)
 void
 print_end_menu_1 (int n)
 {
-  printc ("\n}");
+  //printc ("\n}");
   printcomment (" /*end switch */\n");
   printc ("if (cmd_no_%d==-1) {\n", n);
   print_menu (menu_cnt, n);
@@ -3817,9 +3825,9 @@ print_end_menu_2 (int n)
  *
  */
 void
-print_menu_block (int n)
+print_menu_block (int menu,int n)
 {
-  printc (" case %d: \n", n);
+  printc (" if (cmd_no_%d==%d) { \n", menu,n);
 }
 
 /**
@@ -3833,7 +3841,7 @@ print_menu_block (int n)
 void
 print_menu_block_end (int n)
 {
-  printc ("cmd_no_%d=-4;goto MENU_START_%d;", n, n);
+  printc ("cmd_no_%d=-4;goto MENU_START_%d; } ", n, n);
 }
 
 /**
@@ -4270,7 +4278,7 @@ void
 print_start_record (int isstatic_extern, char *varname,char *arrsize,int level)
 {
 char buff[20]="";
-int n;
+//int n;
 
   if (isstatic_extern == 1) strcat(buff,"static ");
   if (isstatic_extern == 2)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.47 2003-07-12 08:03:02 mikeaubury Exp $
+# $Id: ioform.c,v 1.48 2003-07-15 17:09:06 mikeaubury Exp $
 #*/
 
 /**
@@ -3598,6 +3598,60 @@ A4GL_bomb_out ()
   *ptr = 0;
 }
 
+
+int
+A4GL_fgl_fieldtouched_input_array_ap (struct s_inp_arr *s, va_list * ap)
+{
+  int a;
+  int c;
+  int b;
+  FIELD **field_list;
+  int found;
+  c = A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
+  if (c >= 0)
+    {
+      for (a = 0; a <= c; a++)
+	{
+	  found = 0;
+	  A4GL_debug ("fieldtouched FIELD : %p a=%d c=%d - status=%d\n",
+		      field_list[a], a, c, field_status (field_list[a]));
+
+	  // Have a look to see if we are currently inputing this one...
+	  for (b = 0; b <= s->nfields; b++)
+	    {
+	      if (field_list[a] == field_list[b])
+		found = 1;
+	    }
+	  if (!found)
+	    {
+	      // We don't appear to be...
+	      A4GL_exitwith ("Field is not currently being input");
+	      return 0;
+	    }
+	}
+      A4GL_debug ("fieldtouched_input - checking field_status");
+
+      for (a = 0; a <= c; a++)
+	{
+	  if (field_status (field_list[a]))
+	    {
+	      A4GL_debug ("fieldtouched Field status is set for %p",
+			  field_list[a]);
+	      free (field_list);
+	      return 1;
+	    }
+	}
+      A4GL_debug ("fieldtouched Field status not set for any..");
+      free (field_list);
+      return 0;
+
+    }
+  else
+    {
+      A4GL_exitwith ("field_touched called with no fields...");
+      return 0;
+    }
+}
 
 
 int

@@ -23,6 +23,9 @@ void make_sql_bind (char *sql, char *type);
 void print_sql_type (int a, char ioro);
 void print_sql_type_infx (int a, char ioro);
 void printc (char *fmt, ...);
+void printh (char *fmt, ...);
+int esql_type (void);
+
 
 
 
@@ -120,7 +123,7 @@ make_sql_bind (char *sql, char *type)
  			if (!A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
 				strcpy(indicat,"0");
 			} else {
-				sprintf(indicat,"_voi_%d",a);
+				sprintf(indicat,"native_binding_o_ind[%d].ptr",a);
 			}
 		if ((obind[a].dtype & 0xffff)==0) {
 		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%s,%d,%d,%d);\n",
@@ -152,6 +155,7 @@ make_sql_bind (char *sql, char *type)
 
 
 	if (strchr (type, 'i')) {
+
 		char comma=' ';
       		printc("struct BINDING native_binding_i[]={\n");
 		if(ibindcnt==0) { printc("{0,0,0}"); }
@@ -160,6 +164,9 @@ make_sql_bind (char *sql, char *type)
 			comma=',';
 		}
  		printc("};\n");
+
+
+
 	}
 
 	if (strchr (type, 'o')) {
@@ -171,6 +178,21 @@ make_sql_bind (char *sql, char *type)
 			comma=',';
 		}
  		printc("};\n");
+		
+ 		if (A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
+		char comma=' ';
+      		printc("struct BINDING native_binding_o_ind[]={\n");
+		if(obindcnt==0) { printc("{0,0,0}"); }
+		for (a=0;a<obindcnt;a++) {
+			printc(" %c{&_voi_%d,%d,%d}",comma,a,2,4);
+			comma=',';
+		}
+ 		printc("};\n");
+		
+		}
+
+
+
 	}
 
       
@@ -250,7 +272,7 @@ print_sql_type_infx (int a, char ioro)
   if (ioro == 'o')
     {
  	if (A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
-		printc("int _voi_%d;",a);
+		printc("  short _voi_%d;",a);
 	}
 
       switch (obind[a].dtype & 0xffff)

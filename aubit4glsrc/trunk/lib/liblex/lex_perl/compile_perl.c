@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.38 2003-07-13 04:11:41 afalout Exp $
+# $Id: compile_perl.c,v 1.39 2003-07-15 17:09:05 mikeaubury Exp $
 #
 */
 
@@ -3368,7 +3368,7 @@ print_end_menu_2 (int n)
  * @return
  */
 void
-print_menu_block (int n)
+print_menu_block (int menu,int n)
 {
   printc (" if ($cmd_no==%d) {\n", n);
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.57 2003-07-12 08:03:02 mikeaubury Exp $
+# $Id: newpanels.c,v 1.58 2003-07-15 17:09:06 mikeaubury Exp $
 #*/
 
 /**
@@ -45,6 +45,7 @@
 */
 
 #include "a4gl_lib_ui_tui_int.h"
+int A4GL_curses_to_aubit (int a);
 #include <ctype.h>
 
 /*
@@ -113,7 +114,8 @@ struct s_windows windows[MAXWIN];
 =====================================================================
 */
 /** @todo Take this prototypes of from here */
-
+int
+A4GL_real_getch_swin (WINDOW * window_ptr);
 int A4GL_mja_vwprintw (WINDOW * win, char *fmt, va_list * args);
 //int   A4GL_current_window          (char *win_name);
 void print_panel_stack (void);
@@ -883,7 +885,8 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
   int rows, cols;
   char buff[80];
   int a;
-  int informix_behaviour = 1;
+
+  //int informix_behaviour = 1;
   WINDOW *w;
   WINDOW *drwin;
   /*  FIELD **p; */
@@ -1373,7 +1376,7 @@ A4GL_getch_swin (WINDOW * window_ptr)
     {
       return A4GL_get_gui_char ();
     }
-
+  A4GL_reset_processed_onkey();
   A4GL_debug ("Reading from keyboard on window %p", window_ptr);
   A4GL_set_abort (0);
   a=A4GL_readkey();
@@ -1409,7 +1412,7 @@ A4GL_getch_swin (WINDOW * window_ptr)
     }
   cbreak ();
   a=A4GL_curses_to_aubit (a); // Convert it to an aubit key...
-  A4GL_debug ("Got char from keyboard : %d F2=%d LEFT=%d", a,KEY_F(2),KEY_LEFT);
+  A4GL_debug ("Got char from keyboard : %d F2=%d LEFT=%d 4GL for f5 = %d", a,KEY_F(2),KEY_LEFT,A4GLKEY_F (5));
   return a;
 }
 
@@ -2001,8 +2004,28 @@ A4GL_open_form (char *name)
 void
 A4GL_close_form (char *formname)
 {
+  void *ptr;
+int a;
   A4GL_chkwin();
-  A4GL_debug ("FIXME : A4GL_close_form not implemented");
+  //A4GL_debug ("FIXME : A4GL_close_form not implemented");
+
+  ptr=A4GL_find_pointer(formname,S_FORMDETSCODE);
+
+  if (ptr==0) {
+	A4GL_exitwith("Form not open");
+	return;
+  }
+
+
+  A4GL_del_pointer (formname, S_FORMDETSCODE);
+
+  for (a = 0; a < MAXWIN; a++) {
+	if (windows[a].form==ptr) {
+		windows[a].form=0;
+	}
+  }
+  acl_free(ptr);
+ 
 }
 
 

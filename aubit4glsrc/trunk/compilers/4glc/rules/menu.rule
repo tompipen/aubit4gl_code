@@ -31,7 +31,7 @@ menu_block_command :
 	BEFORE_MENU 
 		{
 	 A4GL_lex_printcomment("/* Block%d_m2 (Before menu) */",menu_cnt);
-		print_menu_block(-2) ;
+		print_menu_block(menu_blk[menu_cnt],-2) ;
                   }  
 	commands {
 		do_print_menu_block_end();
@@ -44,7 +44,7 @@ menu_block_command :
 A4GL_debug("Menu=%d menu cnt=%d",menu_cnt,menu_cmd_cnt[menu_cnt]);
 		push_command(menu_cnt,menu_cmd_cnt[menu_cnt],$<str>2,$<str>3,$<str>4,$<str>5);
 	 A4GL_lex_printcomment("/* Block%d_%d */",menu_cnt,menu_cmd_cnt[menu_cnt]-1);
-		print_menu_block(menu_cmd_cnt[menu_cnt]-1);
+		print_menu_block(menu_blk[menu_cnt],menu_cmd_cnt[menu_cnt]-1);
 		menu_cmd_cnt[menu_cnt]++;
 		} 
 	commands {
@@ -55,7 +55,7 @@ A4GL_debug("Menu=%d menu cnt=%d",menu_cnt,menu_cmd_cnt[menu_cnt]);
 	opt_help_no
 		{
 		push_command(menu_cnt,menu_cmd_cnt[menu_cnt],$<str>2,"\"\"","\"\"",0);
-		print_menu_block(menu_cmd_cnt[menu_cnt]-1);
+		print_menu_block(menu_blk[menu_cnt],menu_cmd_cnt[menu_cnt]-1);
 		menu_cmd_cnt[menu_cnt]++;
 		} 
 	commands {

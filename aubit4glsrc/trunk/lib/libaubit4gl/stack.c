@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.66 2003-07-12 08:02:58 mikeaubury Exp $
+# $Id: stack.c,v 1.67 2003-07-15 17:09:05 mikeaubury Exp $
 #
 */
 
@@ -519,6 +519,8 @@ A4GL_pop_param (void *p, int d, int size)
 	
   	}
   }
+ A4GL_debug("99 After A4GL_conv");
+
 
   if (params[params_cnt].dtype & DTYPE_MALLOCED)
     {
@@ -534,6 +536,7 @@ A4GL_pop_param (void *p, int d, int size)
 	  acl_free (ptr);
 	}
     }
+ A4GL_debug("99 return %d",b);
   return b;
 }
 

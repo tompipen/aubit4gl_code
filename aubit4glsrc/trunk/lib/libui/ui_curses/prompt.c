@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.19 2003-07-12 08:03:03 mikeaubury Exp $
+# $Id: prompt.c,v 1.20 2003-07-15 17:09:06 mikeaubury Exp $
 #*/
 
 /**
@@ -137,6 +137,11 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
     {
       set_field_back (sarr[1], A4GL_decode_aubit_attr (af, 'f'));
       set_field_fore (sarr[1], A4GL_decode_aubit_attr (af, 'b')); // maybe need 'B' for whole field..
+      if (af&AUBIT_ATTR_INVISIBLE) {
+          A4GL_debug ("Invisible");
+          field_opts_off (sarr[1], O_PUBLIC);
+          }
+
     }
 
   field_opts_on (sarr[1], O_NULLOK);

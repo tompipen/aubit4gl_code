@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.40 2003-07-13 04:11:40 afalout Exp $
+# $Id: compile_c_esql.c,v 1.41 2003-07-15 17:09:05 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -858,6 +858,7 @@ int intprflg=0;
   printh("static struct BINDING *acli_bo_%s=0;\n",A4GL_strip_quotes(a3));
   printh("static struct BINDING *acli_nbi_%s=0;\n",A4GL_strip_quotes(a3));
   printh("static struct BINDING *acli_nbo_%s=0;\n",A4GL_strip_quotes(a3));
+  printh("static struct BINDING *acli_nboi_%s=0;\n",A4GL_strip_quotes(a3));
   //printh("#undef ibind\n#undef obind\n");
   //printh("#define ibind acli_bi_%s\n",A4GL_strip_quotes(a3));
   //printh("#define obind acli_bo_%s\n",A4GL_strip_quotes(a3));
@@ -873,29 +874,37 @@ int intprflg=0;
   printh("\n\nstatic void internal_recopy_%s_o_Dir(void) {\n",A4GL_strip_quotes(a3));
   printh("struct BINDING *obind;\n");
   printh("struct BINDING *native_binding_o;\n");
+  printh("struct BINDING *native_binding_o_ind;\n");
   printh("obind=acli_bo_%s;\n",A4GL_strip_quotes(a3));
   printh("native_binding_o=acli_nbo_%s;\n",A4GL_strip_quotes(a3));
+  printh("native_binding_o_ind=acli_nboi_%s;\n",A4GL_strip_quotes(a3));
   print_conversions('O');
   printh("}\n");
-  printh("\n\nstatic void internal_set_%s(struct BINDING *i,struct BINDING *o,struct BINDING *ni,struct BINDING *no) {\n",A4GL_strip_quotes(a3));
+  printh("\n\nstatic void internal_set_%s(struct BINDING *i,struct BINDING *o,struct BINDING *ni,struct BINDING *no,struct BINDING *noi) {\n",A4GL_strip_quotes(a3));
   printh("acli_bi_%s=i;\n",A4GL_strip_quotes(a3));
   printh("acli_bo_%s=o;\n",A4GL_strip_quotes(a3));
   printh("acli_nbi_%s=ni;\n",A4GL_strip_quotes(a3));
   printh("acli_nbo_%s=no;\n",A4GL_strip_quotes(a3));
+  printh("acli_nboi_%s=noi;\n",A4GL_strip_quotes(a3));
   printh("}\n");
 
-	intprflg=0;
-	if (last_ni) intprflg++;
-	if (last_no) intprflg+=2;
-	printc("/* intprflg=%d last_ni=%d last_no=%d */\n",intprflg, last_ni,last_no);
-	switch (intprflg) {
-		case 3: printc("internal_set_%s(ibind,obind,native_binding_i,native_binding_o);",A4GL_strip_quotes(a3)); break;
-		case 2: printc("internal_set_%s(0,obind,0,native_binding_o);",A4GL_strip_quotes(a3)); break;
-		case 1: printc("internal_set_%s(ibind,0,native_binding_i,0);",A4GL_strip_quotes(a3)); break;
-		case 0: printc("internal_set_%s(0,0,0,0);",A4GL_strip_quotes(a3)); break;
-		default: printc("#error No internal_set written\n");break;
+intprflg=0;
+if (last_ni) intprflg++;
+if (last_no) intprflg+=2;
+printc("/* intprflg=%d last_ni=%d last_no=%d */\n",intprflg, last_ni,last_no);
+if (!A4GL_isyes(acl_getenv("USE_INDICATOR")))
+	sprintf(buff,"0");
+else
+	sprintf(buff,"native_binding_o_ind");
 
-	}
+switch (intprflg) {
+	case 3: printc("internal_set_%s(ibind,obind,native_binding_i,native_binding_o,%s);",A4GL_strip_quotes(a3),buff); break;
+	case 2: printc("internal_set_%s(0,obind,0,native_binding_o,%s);",A4GL_strip_quotes(a3),buff); break;
+	case 1: printc("internal_set_%s(ibind,0,native_binding_i,0,0);",A4GL_strip_quotes(a3)); break;
+	case 0: printc("internal_set_%s(0,0,0,0,0);",A4GL_strip_quotes(a3)); break;
+	default: printc("#error No internal_set written\n");break;
+	
+}
 
   printc("}\n");
 

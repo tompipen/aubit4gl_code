@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.52 2003-07-12 08:02:56 mikeaubury Exp $
+# $Id: conv.c,v 1.53 2003-07-15 17:09:05 mikeaubury Exp $
 #
 */
 
@@ -860,6 +860,7 @@ A4GL_stol (void *aa, void *zi, int sz_ignore)
 	A4GL_debug("Fail check 1 a=%p eptr=%p zz=%d",a,eptr,zz);
   	strtod (a, &eptr);
   	if (eptr - a < zz) {
+		A4GL_debug("OK");
     		return 0;
 	}
 	A4GL_debug("Close shave - its a float..");
@@ -871,6 +872,7 @@ A4GL_stol (void *aa, void *zi, int sz_ignore)
 	A4GL_debug("Fail check 2");
       return 0;
     }
+		A4GL_debug("OK");
   return 1;
 }
 
@@ -1082,9 +1084,9 @@ A4GL_stodec (void *a, void *z, int size)
   A4GL_init_dec (z, h, t);
 
   A4GL_debug ("After init\n");
-  A4GL_dump (z);
+  //A4GL_dump (z);
   eptr = A4GL_str_to_dec (a, z);
-  A4GL_dump (z);
+  //A4GL_dump (z);
 
   if (eptr)
     {
@@ -1283,7 +1285,7 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
   char buff[32];
   int n;
 
-  A4GL_debug ("stof aa = %s, zz = %f", aa, (double *) zz);
+  //A4GL_debug ("stof aa = %s, zz = %f", aa, (double *) zz);
   a = (char *) aa;
 
   z = (double *) zz;
@@ -1341,15 +1343,18 @@ A4GL_stosf (void *aa, void *zz, int sz_ignore)
 int
 A4GL_dectol (void *zz, void *aa, int sz_ignore)
 {
-  char buff[64];
+  static char buff[64];
   long *a;
   char *z;
+int rval;
   A4GL_debug ("dectol");
   a = (long *) aa;
   z = (char *) zz;
   A4GL_debug ("dectol");
   A4GL_dectos (z, buff, 64);
-  return A4GL_stol (buff, a, 0);
+  rval=A4GL_stol (buff, a, 0);
+  A4GL_debug("rval=%d",rval);
+  return rval;
 }
 
 /**
@@ -1365,15 +1370,19 @@ A4GL_dectol (void *zz, void *aa, int sz_ignore)
 int
 A4GL_dectoi (void *zz, void *aa, int sz_ignore)
 {
-  char buff[64];
+  static char buff[64];
   short *a;
   char *z;
+int rval;
   A4GL_debug ("dectoi");
   a = (short *) aa;
   z = (char *) zz;
   A4GL_dectos (z, buff, 64);
   A4GL_debug("--> %s\n",buff);
-  return A4GL_stoi (buff, a, 0);
+
+  rval=A4GL_stoi (buff, a, 0);
+
+  return rval;
 }
 
 /**
@@ -2604,23 +2613,36 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
 
   ptr = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK];
 
+  A4GL_debug("ptr=%p",ptr);
+
   if (ptr == NO)
     {
       A4GL_debug ("No! - %d %d", dtype1, dtype2);
+
+
+
       setdtype[dtype2 & DTYPE_MASK] (p2);
+
+
+
+
       return -1;
+
+
+
+
     }
 
-  {
-	//if (p1&&p2) {
-    		//A4GL_debug ("conv (%ld %lx)", *(long *) p1, *(long *) p2);
-    		//A4GL_debug ("conv (%x %x)", *(short *) p1, *(short *) p2);
-	//}
-
-    //A4GL_debug ("Convmatrix %d %d --- size=%d", dtype1 & DTYPE_MASK, dtype2 & DTYPE_MASK, size);
-  }
+{
+  A4GL_debug("dtype1=0x%x dtype2=0x%x",dtype1,dtype2);
+  A4GL_debug("Masked : dtype1=%d dtype2=%d",dtype1&DTYPE_MASK,dtype2&DTYPE_MASK);
+}
 
   rval = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK] (p1, p2, size);
+
+ {
+  A4GL_debug("rval=%x\n",rval);
+  }
 
 
   return rval;
@@ -3927,6 +3949,8 @@ A4GL_dump (char *s)
   int a;
   char buff[256] = "";
   char buff2[256] = "";
+return;
+
   sprintf (buff, "Dump : %p\n", s);
   for (a = 0; a <= 7; a++)
     {

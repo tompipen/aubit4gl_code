@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.24 2003-07-12 08:03:01 mikeaubury Exp $
+# $Id: iarray.c,v 1.25 2003-07-15 17:09:05 mikeaubury Exp $
 #*/
 
 /**
@@ -47,9 +47,9 @@
 #include "a4gl_lib_ui_tui_int.h"
 #include <ctype.h>
 
-void A4GL_set_field_attr_with_attr (FIELD * field, int attr,int cmd_type);
-static void
-A4GL_idraw_arr_all (struct s_inp_arr *inpa);
+void A4GL_set_field_attr_with_attr (FIELD * field, int attr, int cmd_type);
+static void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
+int A4GL_req_field_input_array (struct s_inp_arr *s, ...);
 
 #define CONTROL_STACK_LENGTH 10
 
@@ -59,10 +59,11 @@ A4GL_idraw_arr_all (struct s_inp_arr *inpa);
 =====================================================================
 */
 
-extern int m_lastkey;
+//extern int m_lastkey;
 extern WINDOW *currwin;
 struct s_inp_arr *curr_arr_inp;
 void A4GL_mja_set_current_field (FORM * form, FIELD * field);
+int A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m);
 
 struct s_movement
 {
@@ -96,7 +97,7 @@ static void A4GL_add_to_control_stack (struct s_inp_arr *sio, int op,
 static void A4GL_newMovement (struct s_inp_arr *arr, int scr_line,
 			      int arr_line, int attrib);
 static void A4GL_init_control_stack (struct s_inp_arr *sio, int malloc_data);
-void A4GL_display_field_contents(FIELD *field,int d1,int s1,char *ptr1) ;
+void A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1);
 void *A4GL_memdup (void *ptr, int size);
 /*
 =====================================================================
@@ -111,51 +112,64 @@ void *A4GL_memdup (void *ptr, int size);
  * @param
  */
 
-static void insert_line_in_array(struct s_inp_arr *inpa) {
-int a;
-char *src_ptr;
-char *dest_ptr;
+static void
+insert_line_in_array (struct s_inp_arr *inpa)
+{
+  int a;
+  char *src_ptr;
+  char *dest_ptr;
 
-A4GL_debug("insert_line_in_array no_arr=%d arr_size=%d arr_line=%d", inpa->no_arr, inpa->arr_size, inpa->arr_line);
+  A4GL_debug ("insert_line_in_array no_arr=%d arr_size=%d arr_line=%d",
+	      inpa->no_arr, inpa->arr_size, inpa->arr_line);
 
-if (inpa->no_arr>=inpa->arr_size) {
-	A4GL_debug("Array too large");
-	return ;
+  if (inpa->no_arr >= inpa->arr_size)
+    {
+      A4GL_debug ("Array too large");
+      return;
+    }
+
+  for (a = inpa->no_arr; a >= inpa->arr_line; a--)
+    {
+      src_ptr = (char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a - 2);
+      dest_ptr = (char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a - 1);
+      memcpy (dest_ptr, src_ptr, inpa->arr_elemsize);
+    }
+  inpa->no_arr++;
+
+
+  init_arr_line (inpa, inpa->arr_line);
+  A4GL_idraw_arr_all (inpa);
 }
 
-for (a=inpa->no_arr;a>=inpa->arr_line;a--) {
-	src_ptr=(char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a - 2);
-	dest_ptr=(char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a - 1);
-	memcpy(dest_ptr,src_ptr,inpa->arr_elemsize);
-}
-inpa->no_arr++;
-
-
-init_arr_line (inpa, inpa->arr_line);
-A4GL_idraw_arr_all (inpa);
-}
-
-static void delete_line_in_array(struct s_inp_arr *inpa) {
-int a;
-char *src_ptr;
-char *dest_ptr;
-A4GL_debug("delete_line_in_array no_arr=%d arr_size=%d arr_line=%d", inpa->no_arr, inpa->arr_size, inpa->arr_line);
-	if (inpa->no_arr) {
-		for (a=inpa->arr_line;a<=inpa->no_arr;a++) {
-			src_ptr=(char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a);
-			dest_ptr=(char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a - 1);
-			memcpy(dest_ptr,src_ptr,inpa->arr_elemsize);
-		}
-		init_arr_line (inpa, inpa->no_arr);
-		inpa->no_arr--;
-	} else {
-		init_arr_line (inpa, 1);
-		inpa->no_arr=1;
-		inpa->arr_line=1;
+static void
+delete_line_in_array (struct s_inp_arr *inpa)
+{
+  int a;
+  char *src_ptr;
+  char *dest_ptr;
+  A4GL_debug ("delete_line_in_array no_arr=%d arr_size=%d arr_line=%d",
+	      inpa->no_arr, inpa->arr_size, inpa->arr_line);
+  if (inpa->no_arr)
+    {
+      for (a = inpa->arr_line; a <= inpa->no_arr; a++)
+	{
+	  src_ptr = (char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a);
+	  dest_ptr =
+	    (char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a - 1);
+	  memcpy (dest_ptr, src_ptr, inpa->arr_elemsize);
 	}
+      init_arr_line (inpa, inpa->no_arr);
+      inpa->no_arr--;
+    }
+  else
+    {
+      init_arr_line (inpa, 1);
+      inpa->no_arr = 1;
+      inpa->arr_line = 1;
+    }
 
 
-A4GL_idraw_arr_all (inpa);
+  A4GL_idraw_arr_all (inpa);
 }
 
 /**
@@ -177,7 +191,7 @@ A4GL_idraw_arr (struct s_inp_arr *inpa, int type, int no)
 #endif
   if (type < 0)
     {
-	A4GL_assertion (1==1,"I didn't think type was ever <0");
+      A4GL_assertion (1 == 1, "I didn't think type was ever <0");
       type = 0 - type;
       fonly = 1;
     }
@@ -203,7 +217,7 @@ A4GL_idraw_arr (struct s_inp_arr *inpa, int type, int no)
   if (no > inpa->no_arr)
     {
       A4GL_debug ("arr no out of range %d %d\n", scr_line, inpa->scr_dim);
-      A4GL_iarr_arr_fields (inpa, inpa->display_attrib, 0,scr_line,1);
+      A4GL_iarr_arr_fields (inpa, inpa->display_attrib, 0, scr_line, 1);
       return;
     }
 
@@ -223,7 +237,7 @@ A4GL_idraw_arr (struct s_inp_arr *inpa, int type, int no)
     }
 
 
-  A4GL_iarr_arr_fields (inpa, inpa->display_attrib, no,scr_line,0);
+  A4GL_iarr_arr_fields (inpa, inpa->display_attrib, no, scr_line, 0);
 }
 
 /**
@@ -232,13 +246,13 @@ A4GL_idraw_arr (struct s_inp_arr *inpa, int type, int no)
  * @param
  */
 static void
-iclear_srec (struct struct_screen_record *srec,struct s_inp_arr *inpa)
+iclear_srec (struct struct_screen_record *srec, struct s_inp_arr *inpa)
 {
   int b;
 
   for (b = 0; b < inpa->scr_dim; b++)
     {
-	A4GL_iarr_arr_fields (inpa, inpa->display_attrib,0,b+1,1);
+      A4GL_iarr_arr_fields (inpa, inpa->display_attrib, 0, b + 1, 1);
     }
 }
 
@@ -404,8 +418,10 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
 {
 
 
-  A4GL_debug ("In pop_iarr_var %d %d currentfield=%p", x, y,form->currentfield);
-  if (form->currentfield==0) return 1;
+  A4GL_debug ("In pop_iarr_var %d %d currentfield=%p", x, y,
+	      form->currentfield);
+  if (form->currentfield == 0)
+    return 1;
   y--;
 
 
@@ -446,7 +462,7 @@ iarr_loop (struct s_inp_arr *arr)
   form = arr->currform;
   A4GL_set_array_mode ('I');
 
-  m_lastkey = 0;
+  //m_lastkey = 0;
 #ifdef DEBUG
   {
     A4GL_debug ("Currform=%p (s_form_dets)", form);
@@ -476,15 +492,9 @@ iarr_loop (struct s_inp_arr *arr)
     }
   else
     {
-      if (form->currentfield !=
-	  arr->field_list[arr->scr_line - 1][arr->curr_attrib])
+      if (form->currentfield != arr->field_list[arr->scr_line - 1][arr->curr_attrib])
 	{
-
-
-		printf("RESET!!!");
-
-	  form->currentfield =
-	    arr->field_list[arr->scr_line - 1][arr->curr_attrib];
+	  form->currentfield = arr->field_list[arr->scr_line - 1][arr->curr_attrib];
 	}
       A4GL_mja_set_current_field (mform, form->currentfield);
       A4GL_mja_pos_form_cursor (mform);
@@ -493,10 +503,12 @@ iarr_loop (struct s_inp_arr *arr)
       if (abort_pressed)
 	{
 	  a = -1;
-	  fprintf (stderr, "ABORT\n");
-	  fflush (stderr);
+	  //fprintf (stderr, "ABORT\n");
+	  //fflush (stderr);
 	}
-      m_lastkey = a;
+	A4GL_debug("calling set_last_key : %d",a);
+	A4GL_set_last_key(a);
+      //m_lastkey = a;
     }
 
 
@@ -505,26 +517,41 @@ iarr_loop (struct s_inp_arr *arr)
 
   if (a != 10)
     {
-	struct struct_scr_field *fprop;
+      struct struct_scr_field *fprop;
 
       A4GL_debug ("Getting fprop");
-      fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
+      fprop =
+	(struct struct_scr_field *) (field_userptr (form->currentfield));
       if (fprop != 0)
-        {
-          A4GL_debug ("Downshift?");
-          if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
-              && isalpha (a))
-            {
-              a = tolower (a);
-            }
-          A4GL_debug ("Upshift ?");
-          if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
-              && isalpha (a))
-            {
-              a = toupper (a);
-            }
-        }
-  }
+	{
+	  A4GL_debug ("Downshift?");
+	  if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
+	      && isalpha (a))
+	    {
+	      a = tolower (a);
+	    }
+	  A4GL_debug ("Upshift ?");
+	  if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
+	      && isalpha (a))
+	    {
+	      a = toupper (a);
+	    }
+	}
+    }
+
+
+  A4GL_add_to_control_stack (arr, FORMCONTROL_KEY_PRESS, 0, 0, a);
+  return -1;
+}
+
+
+static void process_key_press(struct s_inp_arr *arr,int a) {
+  struct s_form_dets *form;
+  FORM *mform;
+
+  form = arr->currform;
+  mform = form->form;
+  A4GL_debug("In process_key_press : %d",a);
 
 
 
@@ -550,18 +577,23 @@ iarr_loop (struct s_inp_arr *arr)
 
   if (a == A4GL_key_val ("INSERT"))
     {
-	if (arr->allow_insert) {
-		if (arr->no_arr<arr->arr_size) {
-		a = A4GLKEY_INS;
-		} else {
-			A4GL_debug("Insert disabled - too many rows");
-		}
+      if (arr->allow_insert)
+	{
+	  if (arr->no_arr < arr->arr_size)
+	    {
+	      a = A4GLKEY_INS;
+	    }
+	  else
+	    {
+	      A4GL_debug ("Insert disabled - too many rows");
+	    }
 	}
     }
 
   if (a == A4GL_key_val ("DELETE"))
     {
-	if (arr->allow_insert) a = A4GLKEY_DEL;
+      if (arr->allow_insert)
+	a = A4GLKEY_DEL;
     }
 
 
@@ -601,20 +633,25 @@ iarr_loop (struct s_inp_arr *arr)
 
 
     case A4GLKEY_INS:
-          A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT, arr->currentfield, 0, 0);
-          A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT, arr->currentfield, 0, 0);
-		break;
+      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT,
+				 arr->currentfield, 0, 0);
+      A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT,
+				 arr->currentfield, 0, 0);
+      break;
 
-    case A4GLKEY_DEL: 
-          A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_DELETE, arr->currentfield, 0, 0);
-          A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_DELETE, arr->currentfield, 0, 0);
-		break;
+    case A4GLKEY_DEL:
+      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_DELETE,
+				 arr->currentfield, 0, 0);
+      A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_DELETE,
+				 arr->currentfield, 0, 0);
+      break;
 
     case 10:
     case 13:
     case '\t':
     case A4GLKEY_ENTER:
-      A4GL_newMovement (arr, arr->scr_line, arr->arr_line, arr->curr_attrib + 1);
+      A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
+			arr->curr_attrib + 1);
 
       break;
 
@@ -638,16 +675,6 @@ iarr_loop (struct s_inp_arr *arr)
       break;
 
     }
-
-
-
-  if (a > 0 && a < 255)
-    {
-      A4GL_add_to_control_stack (arr, FORMCONTROL_KEY_PRESS, 0, 0, a);
-    }
-
-
-  return -1;
 
 }
 
@@ -729,7 +756,7 @@ A4GL_inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
   curr_arr_inp = inpa;
   A4GL_debug ("In A4GL_inp_arr : %s %p %p %d", srecname, defs, inpa, attrib);
 
-  inpa->display_attrib=attrib;
+  inpa->display_attrib = attrib;
 
   if (inpa->srec == 0)
     {
@@ -758,14 +785,15 @@ A4GL_inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
       inpa->cntrl = 1;
       inpa->highlight = 0;
 
-      if (inpa->count!=-1) {
-		inpa->no_arr=inpa->count;
-      		A4GL_set_arr_count (inpa->no_arr);
-      }
+      if (inpa->count != -1)
+	{
+	  inpa->no_arr = inpa->count;
+	  A4GL_set_arr_count (inpa->no_arr);
+	}
 
       A4GL_debug ("********** no_arr=%d\n", inpa->no_arr);
       A4GL_debug ("********** nbind=%d\n", inpa->nbind);
-    
+
       if (inpa->no_arr == 0)
 	init_arr_line (inpa, 0);
 
@@ -790,21 +818,25 @@ A4GL_inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
 
 	{
 
-	  A4GL_debug ("Too many or too few variables for fields %d %d", inpa->srec->dim, inpa->nbind);
+	  A4GL_debug ("Too many or too few variables for fields %d %d",
+		      inpa->srec->dim, inpa->nbind);
 
 	  return 0;
 
 	}
 
-      inpa->scr_dim=inpa->srec->dim;
+      inpa->scr_dim = inpa->srec->dim;
 
-      if (inpa->maxcount!=-1) {
-		if (inpa->maxcount>inpa->arr_size) {
-			A4GL_exitwith("MAXCOUNT out of range (<0 or > array record size)");
-			return 0;
-		}
-		inpa->arr_size=inpa->maxcount;
-      }
+      if (inpa->maxcount != -1)
+	{
+	  if (inpa->maxcount > inpa->arr_size)
+	    {
+	      A4GL_exitwith
+		("MAXCOUNT out of range (<0 or > array record size)");
+	      return 0;
+	    }
+	  inpa->arr_size = inpa->maxcount;
+	}
 
       A4GL_debug ("Clearing Record");
       A4GL_debug ("Cleared record");
@@ -817,7 +849,7 @@ A4GL_inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
       inpa->field_list = (void ***) fld_list;
       A4GL_set_fields_inp_arr (inpa);
 
-      iclear_srec (inpa->srec,inpa);
+      iclear_srec (inpa->srec, inpa);
 
       A4GL_idraw_arr (inpa, 1, inpa->arr_line);
 
@@ -834,11 +866,10 @@ A4GL_inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
       inpa->curr_attrib = 0;
       //debug("MJAMJA setting current field = %p",inpa->field_list[inpa->scr_line - 1][inpa->curr_attrib]);
       A4GL_newMovement (inpa, 0, 0, 0);
-
+	return -99;
     }
   A4GL_debug ("inpaarr4");
   //ireinpalay_arr (inpa, 2);
-
 
   return iarr_loop (inpa);
 }
@@ -1148,7 +1179,7 @@ A4GL_init_control_stack (struct s_inp_arr *sio, int malloc_data)
       sio->fcntrl[a].extent = 0;
 
     }
-  sio->fcntrl_cnt=0;
+  sio->fcntrl_cnt = 0;
 }
 
 
@@ -1277,7 +1308,8 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 
   if (A4GL_has_bool_attribute (f, FA_B_NOENTRY))
     {
-      int dir = 0;
+      static int dir = 0;
+      A4GL_debug("Requested field is noentry");
       while (1)
 	{
 
@@ -1300,12 +1332,18 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 
 	  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY))
 	    {
+	      A4GL_debug("Darn - next field is no entry too...");
 	      attrib += dir;
 	      if (attrib >= arr->srec->attribs.attribs_len)
 		{
 		  attrib = 0;
 		  scr_line++;
 		  arr_line++;
+ 			if (arr_line > arr->arr_size)
+    			{				// Attempting to move off the bottom of the array...
+				A4GL_debug("Too far down - should really error at this point");
+				return;
+			}
 		}
 
 	      if (attrib < 0)
@@ -1410,18 +1448,20 @@ process_control_stack (struct s_inp_arr *arr)
 
 
       if (arr->fcntrl[a].state == 99)
-        {
-          A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, arr->currentfield, 0, 0);
-          new_state = 50;
-          rval=-90;
-        }
+	{
+	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD,
+				     arr->currentfield, 0, 0);
+	  new_state = 50;
+	  rval = -90;
+	}
 
 
-      if (arr->fcntrl[a].state==50) {
-      	new_state = 0;
-      	A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
-      	rval = 0;
-      }
+      if (arr->fcntrl[a].state == 50)
+	{
+	  new_state = 0;
+	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
+	  rval = 0;
+	}
 
     }
 
@@ -1439,16 +1479,18 @@ process_control_stack (struct s_inp_arr *arr)
 
   if (arr->fcntrl[a].op == FORMCONTROL_BEFORE_DELETE)
     {
-        if (arr->fcntrl[a].state == 99) {
-                new_state = 50;
-                rval = -12;
-        }
+      if (arr->fcntrl[a].state == 99)
+	{
+	  new_state = 50;
+	  rval = -12;
+	}
 
-        if (arr->fcntrl[a].state == 50) {
-                // We want to do the actual delete here...
-		new_state=0;
-                delete_line_in_array(arr);
-        }
+      if (arr->fcntrl[a].state == 50)
+	{
+	  // We want to do the actual delete here...
+	  new_state = 0;
+	  delete_line_in_array (arr);
+	}
 
     }
 
@@ -1466,7 +1508,7 @@ process_control_stack (struct s_inp_arr *arr)
 
       if (ptr_movement->arr_line > arr->no_arr)
 	{
-	  A4GL_set_arr_count (ptr_movement->arr_line); // No new lines ...
+	  A4GL_set_arr_count (ptr_movement->arr_line);	// No new lines ...
 	  init_arr_line (arr, ptr_movement->arr_line);
 	  arr->no_arr++;
 	}
@@ -1479,7 +1521,7 @@ process_control_stack (struct s_inp_arr *arr)
       A4GL_debug ("MJAMJA a=%d s=%d", ptr_movement->arr_line,
 		  ptr_movement->scr_line);
 
-      if (arr->scr_line != ptr_movement->scr_line); // ireinpalay_arr (arr, 1);
+      if (arr->scr_line != ptr_movement->scr_line);	// ireinpalay_arr (arr, 1);
       else
 	ireinpalay_arr (arr, 2);
 
@@ -1497,16 +1539,18 @@ process_control_stack (struct s_inp_arr *arr)
 
   if (arr->fcntrl[a].op == FORMCONTROL_BEFORE_INSERT)
     {
-	if (arr->fcntrl[a].state == 99) { // BEFORE INSERT 
-      		new_state = 50;
-      		rval = -11;
+      if (arr->fcntrl[a].state == 99)
+	{			// BEFORE INSERT 
+	  new_state = 50;
+	  rval = -11;
 	}
 
 
-	if (arr->fcntrl[a].state == 50) {
-		// We want to do the actual insert here...
-		new_state=0;
-		insert_line_in_array(arr);
+      if (arr->fcntrl[a].state == 50)
+	{
+	  // We want to do the actual insert here...
+	  new_state = 0;
+	  insert_line_in_array (arr);
 	}
     }
 
@@ -1519,30 +1563,54 @@ process_control_stack (struct s_inp_arr *arr)
 
   if (arr->fcntrl[a].op == FORMCONTROL_KEY_PRESS)
     {
+
       if (arr->fcntrl[a].state == 99)
 	{
 	  new_state = 50;
 	  rval = -90;
 	}
 
+
       if (arr->fcntrl[a].state == 50)
 	{
+	  new_state = 25;
+	  if (!A4GL_has_processed_onkey ())
+	    {
+		A4GL_debug("process_key_press");
+	      	process_key_press(arr,arr->fcntrl[a].extent);
+	    } else {
+		A4GL_debug("No process_key_press - had an onkey");
+	    }
+	  rval=-1;
+	}
+
+
+
+      if (arr->fcntrl[a].state == 25)
+	{
 	  new_state = 0;
-	  A4GL_debug ("Checking key state.. %d", arr->fcntrl[a].extent);
-	  if (arr->fcntrl[a].extent>=0 && arr->fcntrl[a].extent<=255) {
-	  	A4GL_int_form_driver (arr->currform->form, arr->fcntrl[a].extent);
-	  	A4GL_int_form_driver (arr->currform->form, REQ_VALIDATION);
-		if (isprint(arr->fcntrl[a].extent)) {
-                                switch (arr->binding[arr->curr_attrib].dtype) {
-                                case DTYPE_SMINT:
-                                case DTYPE_INT:
-                                case DTYPE_FLOAT:
-                                case DTYPE_SMFLOAT:
-                                case DTYPE_DECIMAL:
-                                case DTYPE_MONEY:  A4GL_int_form_driver (arr->currform->form, REQ_CLR_EOF);
-                                }
-	  	}
-	  }
+
+	      A4GL_debug ("Checking key state.. %d", arr->fcntrl[a].extent);
+	      if (arr->fcntrl[a].extent >= 0 && arr->fcntrl[a].extent <= 255)
+		{
+		  A4GL_int_form_driver (arr->currform->form,
+					arr->fcntrl[a].extent);
+		  A4GL_int_form_driver (arr->currform->form, REQ_VALIDATION);
+		  if (isprint (arr->fcntrl[a].extent))
+		    {
+		      switch (arr->binding[arr->curr_attrib].dtype)
+			{
+			case DTYPE_SMINT:
+			case DTYPE_INT:
+			case DTYPE_FLOAT:
+			case DTYPE_SMFLOAT:
+			case DTYPE_DECIMAL:
+			case DTYPE_MONEY:
+			  A4GL_int_form_driver (arr->currform->form,
+						REQ_CLR_EOF);
+			}
+		    }
+		}
 	}
     }
 
@@ -1553,54 +1621,74 @@ process_control_stack (struct s_inp_arr *arr)
       int attr;
 
       if (arr->fcntrl[a].state == 99)
-        {
-                new_state = 50;
-      		ptr_movement = (struct s_movement *) arr->fcntrl[a].parameter;
-		A4GL_debug("Movearray to %d,%d,%d", ptr_movement->scr_line, ptr_movement->arr_line, ptr_movement->attrib_no);
-      		arr->curr_attrib = ptr_movement->attrib_no;
-      		arr->arr_line = ptr_movement->arr_line;
-      		arr->scr_line = ptr_movement->scr_line;
+	{
+	  new_state = 50;
+	  ptr_movement = (struct s_movement *) arr->fcntrl[a].parameter;
+	  A4GL_debug ("Movearray to %d,%d,%d", ptr_movement->scr_line,
+		      ptr_movement->arr_line, ptr_movement->attrib_no);
+	  arr->curr_attrib = ptr_movement->attrib_no;
+	  arr->arr_line = ptr_movement->arr_line;
+	  arr->scr_line = ptr_movement->scr_line;
 
-      		arr->currentfield = arr->field_list[arr->scr_line - 1][arr->curr_attrib];
-      		A4GL_push_long ((long) arr->currentfield);
-      		A4GL_push_char (arr->fcntrl[a].field_name);
-      		rval = -197;
+	  arr->currentfield =
+	    arr->field_list[arr->scr_line - 1][arr->curr_attrib];
+	  A4GL_push_long ((long) arr->currentfield);
+	  A4GL_push_char (arr->fcntrl[a].field_name);
+	  rval = -197;
 	}
 
 
-	if (arr->fcntrl[a].state == 50) {
-		char *cptr;
-      		arr->currentfield = arr->field_list[arr->scr_line - 1][arr->curr_attrib];
-                set_current_field (arr->currform->form, arr->currentfield);
-                arr->currform->currentfield=arr->currentfield;
-                A4GL_debug("Processed after users 'BEFORE FIELD'");
+      if (arr->fcntrl[a].state == 50)
+	{
+	  char *cptr;
+	  arr->currentfield =
+	    arr->field_list[arr->scr_line - 1][arr->curr_attrib];
+	  set_current_field (arr->currform->form, arr->currentfield);
+	  arr->currform->currentfield = arr->currentfield;
+	  A4GL_debug ("Processed after users 'BEFORE FIELD'");
 
-                fprop = (struct struct_scr_field *) (field_userptr (arr->currentfield));
-                attr=A4GL_determine_attribute(FGL_CMD_INPUT,arr->display_attrib, fprop);
-
-
-
-                        if (arr->highlight) {
-                                if (attr&AUBIT_ATTR_REVERSE) attr=attr-AUBIT_ATTR_REVERSE;
-                                else attr=attr+AUBIT_ATTR_REVERSE;
-                        }
-
-                        if (arr->curr_display) {
-                                A4GL_debug("Got curr_display : %s\n",arr->curr_display);
-                                attr=A4GL_get_attr_from_string(arr->curr_display);
-                        }
-
-                if (attr != 0) A4GL_set_field_attr_with_attr (arr->currentfield,attr, FGL_CMD_INPUT);
-		cptr=(char *) arr->binding[arr->curr_attrib].ptr + arr->arr_elemsize * (arr->arr_line - 1);
-		A4GL_push_param (cptr, arr->binding[arr->curr_attrib].dtype+ENCODE_SIZE(arr->binding[arr->curr_attrib].size));
+	  fprop =
+	    (struct struct_scr_field *) (field_userptr (arr->currentfield));
+	  attr =
+	    A4GL_determine_attribute (FGL_CMD_INPUT, arr->display_attrib,
+				      fprop);
 
 
 
-		A4GL_display_field_contents(arr->currentfield,arr->binding[arr->curr_attrib].dtype,arr->binding[arr->curr_attrib].size,cptr);
+	  if (arr->highlight)
+	    {
+	      if (attr & AUBIT_ATTR_REVERSE)
+		attr = attr - AUBIT_ATTR_REVERSE;
+	      else
+		attr = attr + AUBIT_ATTR_REVERSE;
+	    }
 
-                A4GL_comments (fprop);
-                pos_form_cursor (arr->currform->form);
-                new_state = 0;
+	  if (arr->curr_display)
+	    {
+	      A4GL_debug ("Got curr_display : %s\n", arr->curr_display);
+	      attr = A4GL_get_attr_from_string (arr->curr_display);
+	    }
+
+	  if (attr != 0)
+	    A4GL_set_field_attr_with_attr (arr->currentfield, attr,
+					   FGL_CMD_INPUT);
+	  cptr =
+	    (char *) arr->binding[arr->curr_attrib].ptr +
+	    arr->arr_elemsize * (arr->arr_line - 1);
+	  A4GL_push_param (cptr,
+			   arr->binding[arr->curr_attrib].dtype +
+			   ENCODE_SIZE (arr->binding[arr->curr_attrib].size));
+
+
+
+	  A4GL_display_field_contents (arr->currentfield,
+				       arr->binding[arr->curr_attrib].dtype,
+				       arr->binding[arr->curr_attrib].size,
+				       cptr);
+
+	  A4GL_comments (fprop);
+	  pos_form_cursor (arr->currform->form);
+	  new_state = 0;
 	}
 
     }
@@ -1609,70 +1697,93 @@ process_control_stack (struct s_inp_arr *arr)
   if (arr->fcntrl[a].op == FORMCONTROL_AFTER_FIELD)
     {
       struct struct_scr_field *fprop;
-	int attr;
-	int is_ok=1;
+      int attr;
+      //int is_ok = 1;
 
 
 
-        int ffc_rval;
-        ffc_rval=A4GL_form_field_chk_iarr (arr, -1);
+      int ffc_rval;
+      ffc_rval = A4GL_form_field_chk_iarr (arr, -1);
 
 
-        A4GL_debug("form_Field_chk returns %d\n",ffc_rval);
-
-	
-        if (ffc_rval!=-4) {
-		//int field_no;
-   		char buff[1024];
-		char *cptr;
-                //field_no=arr->curr_attrib;
-                new_state = 0;
-                strcpy(buff,field_buffer (arr->currentfield, 0));
-                A4GL_trim(buff);
-
-                if (strlen(buff)) {
-                        A4GL_debug("Field is not null");
-                        A4GL_push_char (buff);
-                } else {
-                        A4GL_debug("Field is null");
-                        A4GL_push_null(DTYPE_CHAR,0);
-                }
+      A4GL_debug ("form_Field_chk returns %d\n", ffc_rval);
 
 
-		pop_iarr_var (arr->currform, arr->curr_attrib, arr->arr_line, arr->arr_elemsize, arr->binding);	
-                cptr=(char *) arr->binding[arr->curr_attrib].ptr + arr->arr_elemsize * (arr->arr_line - 1);
+      if (ffc_rval != -4)
+	{
+	  //int field_no;
+	  char buff[1024];
+	  char *cptr;
+	  //field_no=arr->curr_attrib;
+	  new_state = 0;
+	  strcpy (buff, field_buffer (arr->currentfield, 0));
+	  A4GL_trim (buff);
 
-                fprop = (struct struct_scr_field *) (field_userptr (arr->currentfield));
-                attr=A4GL_determine_attribute(FGL_CMD_INPUT,arr->display_attrib, fprop);
+	  if (strlen (buff))
+	    {
+	      A4GL_debug ("Field is not null");
+	      A4GL_push_char (buff);
+	    }
+	  else
+	    {
+	      A4GL_debug ("Field is null");
+	      A4GL_push_null (DTYPE_CHAR, 0);
+	    }
 
 
-                        if (arr->highlight) {
-                                if (attr&AUBIT_ATTR_REVERSE) attr=attr-AUBIT_ATTR_REVERSE;
-                                else attr=attr+AUBIT_ATTR_REVERSE;
-                        }
+	  pop_iarr_var (arr->currform, arr->curr_attrib, arr->arr_line,
+			arr->arr_elemsize, arr->binding);
+	  cptr =
+	    (char *) arr->binding[arr->curr_attrib].ptr +
+	    arr->arr_elemsize * (arr->arr_line - 1);
 
-                        if (arr->curr_display) {
-                                A4GL_debug("Got curr_display : %s\n",arr->curr_display);
-                                attr=A4GL_get_attr_from_string(arr->curr_display);
-                        }
-
-
-                if (attr != 0) A4GL_set_field_attr_with_attr (arr->currentfield,attr, FGL_CMD_INPUT);
-
+	  fprop =
+	    (struct struct_scr_field *) (field_userptr (arr->currentfield));
+	  attr =
+	    A4GL_determine_attribute (FGL_CMD_INPUT, arr->display_attrib,
+				      fprop);
 
 
+	  if (arr->highlight)
+	    {
+	      if (attr & AUBIT_ATTR_REVERSE)
+		attr = attr - AUBIT_ATTR_REVERSE;
+	      else
+		attr = attr + AUBIT_ATTR_REVERSE;
+	    }
 
-                A4GL_push_param (cptr, arr->binding[arr->curr_attrib].dtype+ENCODE_SIZE(arr->binding[arr->curr_attrib].size));
-	 	A4GL_display_field_contents(arr->currentfield,arr->binding[arr->curr_attrib].dtype,arr->binding[arr->curr_attrib].size,cptr);
-      		new_state = 0;
-      		A4GL_push_long ((long) arr->currentfield);
-      		A4GL_push_char (arr->fcntrl[a].field_name);
-      		rval = -198;
-	} else {
-		new_state=0;
-              	A4GL_init_control_stack (arr,0);
-              	rval=-1;
-		return -1;
+	  if (arr->curr_display)
+	    {
+	      A4GL_debug ("Got curr_display : %s\n", arr->curr_display);
+	      attr = A4GL_get_attr_from_string (arr->curr_display);
+	    }
+
+
+	  if (attr != 0)
+	    A4GL_set_field_attr_with_attr (arr->currentfield, attr,
+					   FGL_CMD_INPUT);
+
+
+
+
+	  A4GL_push_param (cptr,
+			   arr->binding[arr->curr_attrib].dtype +
+			   ENCODE_SIZE (arr->binding[arr->curr_attrib].size));
+	  A4GL_display_field_contents (arr->currentfield,
+				       arr->binding[arr->curr_attrib].dtype,
+				       arr->binding[arr->curr_attrib].size,
+				       cptr);
+	  new_state = 0;
+	  A4GL_push_long ((long) arr->currentfield);
+	  A4GL_push_char (arr->fcntrl[a].field_name);
+	  rval = -198;
+	}
+      else
+	{
+	  new_state = 0;
+	  A4GL_init_control_stack (arr, 0);
+	  rval = -1;
+	  return -1;
 	}
 
 
@@ -1686,7 +1797,8 @@ process_control_stack (struct s_inp_arr *arr)
     {
       if (arr->fcntrl[a].state == new_state)
 	{
-	A4GL_debug("new_state=%d state=%d",new_state,arr->fcntrl[a].state);
+	  A4GL_debug ("new_state=%d state=%d", new_state,
+		      arr->fcntrl[a].state);
 	  A4GL_exitwith ("Internal error - no change in state..");
 	}
       A4GL_debug ("Setting input control state to %d", new_state);
@@ -1711,13 +1823,16 @@ process_control_stack (struct s_inp_arr *arr)
 
 
 
-void A4GL_iarr_arr_fields (struct s_inp_arr *arr,int attr,int arr_line,int scr_line,int blank) {
+void
+A4GL_iarr_arr_fields (struct s_inp_arr *arr, int attr, int arr_line,
+		      int scr_line, int blank)
+{
   int a;
   int flg;
   struct s_form_dets *formdets;
   char *cptr;
   char buff[256];
-int da;
+  int da;
 
   struct struct_scr_field *fprop;
   A4GL_debug ("In disp_fields");
@@ -1728,42 +1843,61 @@ int da;
   //if (fonly && nofields >= 0) nofields = 0;
 
 
-  for (a=0;a<arr->nbind;a++) {
+  for (a = 0; a < arr->nbind; a++)
+    {
 
-                fprop = (struct struct_scr_field *) (field_userptr (arr->field_list[scr_line-1][a]));
-
-
-                attr=A4GL_determine_attribute(FGL_CMD_INPUT,attr, fprop);
-		da=attr;
-
-		if (arr_line==arr->arr_line) {
-
-			if (arr->highlight) {
-				if (da&AUBIT_ATTR_REVERSE) da=da-AUBIT_ATTR_REVERSE;
-				else da=da+AUBIT_ATTR_REVERSE;
-			}
-
-			if (arr->curr_display) {
-				A4GL_debug("Got curr_display : %s\n",arr->curr_display);
-				da=A4GL_get_attr_from_string(arr->curr_display);
-			}
-		}
+      fprop =
+	(struct struct_scr_field
+	 *) (field_userptr (arr->field_list[scr_line - 1][a]));
 
 
-                if (attr != 0) A4GL_set_field_attr_with_attr (arr->field_list[scr_line-1][a],da, FGL_CMD_INPUT);
-		
-		if (!blank) {
-			cptr=(char *) arr->binding[a].ptr + arr->arr_elemsize * (arr_line - 1);
-			A4GL_push_param (cptr, arr->binding[a].dtype+ENCODE_SIZE(arr->binding[a].size));
-		} else {
-			strcpy(buff,"");
-			cptr=buff;
-			A4GL_push_null (DTYPE_CHAR,1);
-		}
+      attr = A4GL_determine_attribute (FGL_CMD_INPUT, attr, fprop);
+      da = attr;
 
-		A4GL_display_field_contents(arr->field_list[scr_line-1][a],arr->binding[a].dtype,arr->binding[a].size,cptr);
+      if (arr_line == arr->arr_line)
+	{
 
-        }
+	  if (arr->highlight)
+	    {
+	      if (da & AUBIT_ATTR_REVERSE)
+		da = da - AUBIT_ATTR_REVERSE;
+	      else
+		da = da + AUBIT_ATTR_REVERSE;
+	    }
+
+	  if (arr->curr_display)
+	    {
+	      A4GL_debug ("Got curr_display : %s\n", arr->curr_display);
+	      da = A4GL_get_attr_from_string (arr->curr_display);
+	    }
+	}
+
+
+      if (attr != 0)
+	A4GL_set_field_attr_with_attr (arr->field_list[scr_line - 1][a], da,
+				       FGL_CMD_INPUT);
+
+      if (!blank)
+	{
+	  cptr =
+	    (char *) arr->binding[a].ptr + arr->arr_elemsize * (arr_line - 1);
+	  A4GL_push_param (cptr,
+			   arr->binding[a].dtype +
+			   ENCODE_SIZE (arr->binding[a].size));
+	}
+      else
+	{
+	  strcpy (buff, "");
+	  cptr = buff;
+	  A4GL_push_null (DTYPE_CHAR, 1);
+	  A4GL_setnull(arr->binding[a].dtype, cptr,arr->binding[a].size);
+	}
+
+      A4GL_display_field_contents (arr->field_list[scr_line - 1][a],
+				   arr->binding[a].dtype,
+				   arr->binding[a].size, cptr);
+
+    }
 
 }
 
@@ -1781,47 +1915,53 @@ A4GL_req_field_input_array (struct s_inp_arr *arr, ...)
   va_list ap;
   va_list ap2;
   va_start (ap, arr);
-  va_start(ap2,arr);
-  field_name=va_arg(ap2,char *);
+  va_start (ap2, arr);
+  field_name = va_arg (ap2, char *);
 
 
-      A4GL_newMovement (arr, arr->scr_line, arr->arr_line, arr->curr_attrib + 1);
+  A4GL_newMovement (arr, arr->scr_line, arr->arr_line, arr->curr_attrib + 1);
 
-  if (strcmp(field_name,"+")==0) { // Next field next
-                        A4GL_init_control_stack (arr,0);
-                        arr->currform->currentfield=0;
-                        A4GL_newMovement(arr,arr->scr_line,arr->arr_line,arr->curr_attrib+1);
-                        return 1;
-  }
+  if (strcmp (field_name, "+") == 0)
+    {				// Next field next
+      A4GL_init_control_stack (arr, 0);
+      arr->currform->currentfield = 0;
+      A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
+			arr->curr_attrib + 1);
+      return 1;
+    }
 
-  if (strcmp(field_name,"-")==0) { // Next field previous
-                        A4GL_init_control_stack (arr,0);
-                        arr->currform->currentfield=0;
-                        A4GL_newMovement(arr,arr->scr_line,arr->arr_line,arr->curr_attrib-1);
-                        return 1;
-  }
+  if (strcmp (field_name, "-") == 0)
+    {				// Next field previous
+      A4GL_init_control_stack (arr, 0);
+      arr->currform->currentfield = 0;
+      A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
+			arr->curr_attrib - 1);
+      return 1;
+    }
 
 
   A4GL_debug ("req_field");
 
   a = A4GL_gen_field_list (&ptr, arr->currform, 1, &ap);
 
-  A4GL_debug("A=%d MJAMJA123",a);
+  A4GL_debug ("A=%d MJAMJA123", a);
   if (a >= 0)
     {
-        for (a=0;a<=arr->nbind;a++) {
-                if (arr->field_list[arr->scr_line][a]==ptr[0]) {
-                        A4GL_init_control_stack (arr,0);
+      for (a = 0; a < arr->nbind; a++)
+	{
+	  if (arr->field_list[arr->scr_line][a] == ptr[0])
+	    {
+	      A4GL_init_control_stack (arr, 0);
 
 
-                        // How risky is this ?
-                        arr->currform->currentfield=0;
+	      // How risky is this ?
+	      arr->currform->currentfield = 0;
 
 
-                        A4GL_newMovement(arr,arr->scr_line,arr->arr_line,a);
-                        return 1;
-                }
-        }
+	      A4GL_newMovement (arr, arr->scr_line, arr->arr_line, a);
+	      return 1;
+	    }
+	}
       A4GL_exitwith ("Field not found");
       return 0;
     }
