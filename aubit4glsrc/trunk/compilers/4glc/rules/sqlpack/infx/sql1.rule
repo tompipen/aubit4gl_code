@@ -1264,15 +1264,13 @@ value_expression_complex_ss :
 	| YEAR OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("YEAR",$<sql_string>3));}
 	| MONTH OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("MONTH",$<sql_string>3));}
 	| DAY OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("DAY",$<sql_string>3));}
+	| MDY OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("MDY",$<sql_string>3));}
+	| WEEKDAY OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("WEEKDAY",$<sql_string>3));}
 	| KW_DOW OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("DOW",$<sql_string>3));}
-	| KW_DATE OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=
-strdup(A4GLSQLCV_sql_func("DATE",$<sql_string>3));}
+	| KW_DATE OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$= strdup(A4GLSQLCV_sql_func("DATE",$<sql_string>3));}
 	| identifier OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func($<str>1,$<sql_string>3));}
 	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("("),$<sql_string>2,kw_cb,0);}
-	| EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {
-			add_feature("EXTEND");
-			$<sql_string>$=$<sql_string>3;
-	}
+	| EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET { add_feature("EXTEND"); $<sql_string>$=$<sql_string>3; }
 	| datetime_value_qualified { $<sql_string>$=make_sql_string_and_free(strdup($<str>1),0); add_feature("FUNC_DATETIME");}
 	| interval_value_qualified {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0); add_feature("FUNC_INTERVAL");}
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.48 2005-02-26 08:41:50 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.49 2005-03-01 08:25:46 mikeaubury Exp $
 #
 */
 
@@ -2267,12 +2267,12 @@ sprintf(buff,"%s(%s)",f,param);
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE_SQLFUNC) {
 		if (strcasecmp(f,conversion_rules[b].data.from)==0) {
+			printf("Here...\n");
 			sprintf(buff,conversion_rules[b].data.to,param);
 			break;
 		}
 	}
 }
-
 return buff;
 }
 

@@ -229,7 +229,8 @@ upd_val_ss :
 
 upd_value_expression_ss:
         upd_value_expression_initial_ss {
-                $<sql_string>$=A4GLSQLCV_check_expr($<sql_string>1);
+                $<sql_string>$=strdup(A4GLSQLCV_check_expr($<sql_string>1));
+		free($<sql_string>1);
         }
         | MINUS upd_value_expression_initial_ss {
 		char *s;
