@@ -44,7 +44,7 @@ extern "C"
 #define COPY_DATA_IN_10(a4gl,infx,size) A4GL_copy_datetime(infx,a4gl,0,size,'i')
 #define COPY_DATA_IN_11(a4gl,infx,size) A4GL_copy_blob_byte(infx,a4gl,0,size,'i')
 #define COPY_DATA_IN_12(a4gl,infx,size) A4GL_copy_blob_text(infx,a4gl,0,size,'i')
-#define COPY_DATA_IN_13(a4gl,infx,size) A4GL_copy_char(infx,a4gl,0,size,'i')
+#define COPY_DATA_IN_13(a4gl,infx,size,x,y) A4GL_copy_char(infx,a4gl,0,size,'i',x,y)
 #define COPY_DATA_IN_14(a4gl,infx,size) A4GL_copy_interval(infx,a4gl,0,size,'i')
 
 #define COPY_DATA_OUT_0(a4gl,infx,i,size,x,y) A4GL_copy_char(infx,a4gl,i,size,'o',x,y)
@@ -60,7 +60,7 @@ extern "C"
 #define COPY_DATA_OUT_10(a4gl,infx,i,size) A4GL_copy_datetime(infx,a4gl,i,size,'o')
 #define COPY_DATA_OUT_11(a4gl,infx,i,size) A4GL_copy_blob_byte(infx,a4gl,i,size,'o')
 #define COPY_DATA_OUT_12(a4gl,infx,i,size) A4GL_copy_blob_text(infx,a4gl,i,size,'o')
-#define COPY_DATA_OUT_13(a4gl,infx,i,size) A4GL_copy_char(infx,a4gl,i,size,'o')
+#define COPY_DATA_OUT_13(a4gl,infx,i,size,x,y) A4GL_copy_char(infx,a4gl,i,size,'o',x,y)
 #define COPY_DATA_OUT_14(a4gl,infx,i,size) A4GL_copy_interval(infx,a4gl,i,size,'o')
 
 
