@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.45 2003-11-20 12:57:12 mikeaubury Exp $
+# $Id: compile.c,v 1.46 2003-11-20 13:42:12 mikeaubury Exp $
 #*/
 
 /**
@@ -57,7 +57,12 @@
 #define ANSI_MODE_WARN   1
 #define ANSI_MODE_ERROR  2
 
+
+#if ( defined(__CYGWIN__) )
+char *informix_esql="esql_cygwin";
+#else
 char *informix_esql="esql";
+#endif
 
 
 /* -------- static --------- */
