@@ -379,6 +379,7 @@ else break;
 if (buffer[strlen(buffer)-1]=='.') buffer[strlen(buffer)-1]=0;
 }
 
+static void ltrim2(char *s);
 static void ltrim(char *s) {
 char *ptr;
 ltrim2(s);
