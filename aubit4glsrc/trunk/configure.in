@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.107 2002-09-26 02:54:28 afalout Exp $
+# $Id: configure.in,v 1.108 2002-09-26 06:35:11 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2468,6 +2468,12 @@ if test "$AUBIT_SOURCE" = "1" ; then
    		AC_MSG_WARN(Using Aubit provided search.h)
 
     fi
+
+   	AC_CHECK_HEADERS([getopt.h])
+	if test `eval echo '${'$as_ac_Header'}'` != yes; then
+		AC_MSG_WARN(Using Aubit provided getopt.h)
+    fi
+
 
 	AC_CHECK_HEADERS([dlfcn.h])
 	if test `eval echo '${'$as_ac_Header'}'` != yes; then

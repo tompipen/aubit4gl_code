@@ -17,6 +17,17 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
    02111-1307 USA.  */
 
+//#include "a4gl_libaubit4gl.h"
+
+#if (defined(__MACH__) && defined(__APPLE__))
+    //all defined in libSystem
+	#define GETOPT_OPTARG
+	#define GETOPT_OPTIND
+	#define GETOPT_GETOPT
+	#define GETOPT_OPTERR
+	#define GETOPT_OPTOPT
+#endif
+
 #ifndef _GETOPT_H
 
 #ifndef __need_getopt

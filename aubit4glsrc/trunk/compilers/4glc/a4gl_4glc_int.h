@@ -1,10 +1,10 @@
 //	#define __GNU_LIBRARY__
-	
-#ifndef __sun__
-	#ifndef __sparc__
-		// No getopt.h on Solaris
-		#include <getopt.h> 			/* struct option */
-    #endif
+
+//#if ! (defined(__sun__) && ! defined(__sparc__))
+	// No getopt.h on Solaris
+    //will use one in tools/getopt:
+	#include <getopt.h> 			/* struct option */
+/*
 #else
 	struct option
 	{
@@ -13,15 +13,13 @@
 	# else
 	  char *name;
 	# endif
-	  /* has_arg can't be an enum because some compilers complain about
-	     type mismatches in all the code that assumes it is an int.  */
 	  int has_arg;
 	  int *flag;
 	  int val;
 	};
 
 #endif
-
+*/
 #include "a4gl_libaubit4gl.h"
 
 	#include "rules/generated/kw.h"
@@ -32,9 +30,6 @@
 
 //	#include "kw.h"
 //	#include "y.tab.h"
-
-
-
 
 /* ==================== from a4gl_4glc_4glc.h ===================== */
 

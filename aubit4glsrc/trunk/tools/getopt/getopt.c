@@ -112,7 +112,9 @@
    Also, when `ordering' is RETURN_IN_ORDER,
    each non-option ARGV-element is returned here.  */
 
+#ifndef GETOPT_OPTARG
 char *optarg;
+#endif
 
 /* Index in ARGV of the next element to be scanned.
    This is used for communication to and from the caller
@@ -127,7 +129,9 @@ char *optarg;
    how much of ARGV has been scanned so far.  */
 
 /* 1003.2 says this must be 1 before any call.  */
+#ifndef GETOPT_OPTIND
 int optind = 1;
+#endif
 
 /* Formerly, initialization of getopt depended on optind==0, which
    causes problems with re-calling getopt as programs generally don't
@@ -147,13 +151,17 @@ static char *nextchar;
 /* Callers store zero here to inhibit the error message
    for unrecognized options.  */
 
+#ifndef GETOPT_OPTERR
 int opterr = 1;
+#endif
 
 /* Set to an option character which was unrecognized.
    This must be initialized on some systems to avoid linking in the
    system's own getopt implementation.  */
 
+#ifndef GETOPT_OPTOPT
 int optopt = '?';
+#endif
 
 /* Describe how to deal with options that follow non-option ARGV-elements.
 
@@ -970,6 +978,7 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
   }
 }
 
+#ifndef GETOPT_GETOPT
 int
 getopt (argc, argv, optstring)
      int argc;
@@ -981,6 +990,7 @@ getopt (argc, argv, optstring)
 			   (int *) 0,
 			   0);
 }
+#endif
 
 #endif	/* Not ELIDE_CODE.  */
 
