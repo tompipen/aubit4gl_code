@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.177 2004-08-12 06:22:27 mikeaubury Exp $
+# $Id: compile_c.c,v 1.178 2004-08-13 07:04:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.177 2004-08-12 06:22:27 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.178 2004-08-13 07:04:13 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -2972,7 +2972,7 @@ print_init_var (char *name, char *prefix, int alvl)
 	}
     }
 
-  if (dont_print==0) printc ("A4GL_setnull(%d,&%s,%d); ", d & 0xffff, prefix2, size);
+  if (dont_print==0) printc ("A4GL_setnull(%d,&%s,%d);\n", d & 0xffff, prefix2, size);
 
   if (printing_arr && !dont_print)
     {
