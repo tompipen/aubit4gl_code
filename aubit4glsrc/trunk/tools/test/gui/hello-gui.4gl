@@ -108,16 +108,23 @@ end function
 function mh_test()
 ####################
 
-	SHOW MENU my_menu USING my_menuhandler #default = "menu.mnu"
+#	SHOW MENU my_menu USING my_menuhandler #default = "menu.mnu"
 	#SHOW MENU my_menu USING my_menuhandler FROM "myfile"
 
 #	ENABLE MENUITEM id
 
 #	DISABLE MENUITEM id
 
-
+#    SHOW WINDOW MyWindow USING my_formhandler
 
 end function
+
+{
+============ FIRST ERROR: ==============
+./hello-gui.c: In function `aclfglmn_my_menuhandler':
+./hello-gui.c:546: parse error at end of input
+========================================
+
 
 ############################
 MENUHANDLER my_menuhandler
@@ -136,6 +143,8 @@ DEFINE testvar char(20)
 	ON mn_3
 		EXIT PROGRAM
 
+
+
 END MENUHANDLER
 
-
+}
