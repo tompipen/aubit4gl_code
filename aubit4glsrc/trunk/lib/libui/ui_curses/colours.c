@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.25 2005-03-23 08:24:11 afalout Exp $
+# $Id: colours.c,v 1.26 2005-03-23 10:32:04 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: colours.c,v 1.25 2005-03-23 08:24:11 afalout Exp $";
+		"$Id: colours.c,v 1.26 2005-03-23 10:32:04 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -102,8 +102,9 @@ A4GL_colour_code (int a)
   A4GL_debug ("MJA Returning color code (%d+1)\n", a);
   if (a == 0) return 0;
 	if (a==7){
-		 // white...
-		a=0;
+		 //// white...
+		a=COLOR_PAIR(8);
+		//a=0;
 	} else {
   		a=COLOR_PAIR (a + 1);
 	}

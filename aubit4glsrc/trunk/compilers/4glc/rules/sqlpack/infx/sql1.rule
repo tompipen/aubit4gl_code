@@ -492,6 +492,7 @@ group_by_clause_ss:
 	}
 ;
 
+/*
 column_specification_list_ss:
 	  column_specification_ss {
 		$<sql_string>$=$<sql_string>1;
@@ -500,6 +501,7 @@ column_specification_list_ss:
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(","),$<sql_string>3,0);
 	}
 ;
+*/
 
 gr_column_specification_list_ss:
 	  gr_column_specification_ss {
@@ -1217,6 +1219,7 @@ column_specification_ss : value_expression_ss {
 }
 
 ;
+
 
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.98 2005-03-23 08:24:16 afalout Exp $
+# $Id: resource.c,v 1.99 2005-03-23 10:32:05 mikeaubury Exp $
 #
 */
 
@@ -303,6 +303,7 @@ struct str_resource builtin_resource[] = {
 #endif
 
 
+  {"RESTARTLOG","N"},
   {"DBL2DEC_USING","Y"},
   {"COLOR_TUI_BKG_DEF","-1"},
   {"COLOR_TUI_BKG","0"},

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.123 2005-03-01 18:23:36 mikeaubury Exp $
+# $Id: esql.ec,v 1.124 2005-03-23 10:32:04 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.123 2005-03-01 18:23:36 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.124 2005-03-23 10:32:04 mikeaubury Exp $";
 #endif
 
 
@@ -727,16 +727,15 @@ if (mode=='i'||mode=='o') ; else { A4GL_assertion(1,"Mode should be 'o' or 'i'")
                         ndig_s=size>>8;
                         s=(size>>4)&0xf;
                         e=(size&0xf);
-                        printf("%x %d %d %d %d\n",size,size,ndig_s,s,e);
+                        //printf("%x %d %d %d %d\n",size,size,ndig_s,s,e);
                         infx->in_qual=TU_IENCODE(ndig_s,tr[s],tr[e]);
                 }
         incvasc(ptr,infx);
 
         // Debugging stuff only
                 A4GL_debug("Copy interval in - aubit=%s\n",ptr);
-                printf("Copy interval in - aubit=%s\n",ptr);
-                        intoasc(infx,buff);
-                printf("                Informix=%s\n",buff);
+                //printf("Copy interval in - aubit=%s\n",ptr); intoasc(infx,buff);
+                //printf("                Informix=%s\n",buff);
                 A4GL_debug("                Informix=%s\n",buff);
         // End of Debugging stuff only
 
@@ -2288,6 +2287,7 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
   		cursorIdentification = malloc (sizeof (struct s_cid));
   		cursorIdentification->statement = sid;
   }
+  //printf("declare\n");
   statementName = sid->statementName;
 
   A4GL_debug ("declare obind count=%d", sid->no);
@@ -2320,6 +2320,7 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
       /** @todo : Assign an error code  */
 	  return (struct s_cid *) 0;
 	}
+  //printf("declared\n");
 
   if (isSqlError ())
     {
@@ -2392,10 +2393,11 @@ A4GLSQL_open_cursor (char *s,int ni,void *vibind)
   EXEC SQL END DECLARE SECTION;
 
 
-
+//printf("Open\n");
   cursorIdentification = A4GL_find_pointer (s, CURCODE);
 
   if (cursorIdentification==0) {
+//printf("Open - nope\n");
 		A4GL_sql_exitwith("Cursor not found");
 		return 1;
 	}
@@ -2467,6 +2469,7 @@ A4GLSQL_open_cursor (char *s,int ni,void *vibind)
 		sid->ibind=save_ibind;
 	}
 
+//printf("Opened\n");
   if (isSqlError ())
     return 1;
   return 0;
@@ -3904,9 +3907,15 @@ A4GLSQL_close_cursor (char *currname)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char *cursorName = currname;
+  void *ptr;
   EXEC SQL END DECLARE SECTION;
 
   EXEC SQL CLOSE:cursorName;
+  if (A4GL_has_pointer (currname, CURCODE)) {
+		ptr=A4GL_find_pointer(currname,CURCODE);
+		if (ptr) free(ptr);
+		A4GL_del_pointer(currname,CURCODE);
+  }
   if (isSqlError ())
     return 1;
   return 0;

@@ -108,9 +108,8 @@ insql=0;strcpy($<str>$,$<str>3);}
 
 
 
-flush_cmd : opt_use
-	FLUSH fetch_cursor_name  {
-A4GL_cursor_flush($<str>2);
+flush_cmd : opt_use FLUSH fetch_cursor_name  {
+	A4GL_cursor_flush($<str>3);
 	print_flush_cursor($<str>3);
 		addmap("Flush Cursor",$<str>3,curr_func,yylineno,infilename);
 print_undo_use($<str>1);
