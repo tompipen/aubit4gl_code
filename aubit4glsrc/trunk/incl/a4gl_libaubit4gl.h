@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.82 2003-08-02 10:41:12 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.83 2003-08-06 20:28:38 mikeaubury Exp $
 #
 */
 
@@ -143,7 +143,9 @@
 #define FGL_OK 						(void *)1
 #define DIGIT_ALIGN_RIGHT 			1
 #define NUM_PARAM 					30
-#define DATE_INVALID 				0
+//#define DATE_INVALID 				0
+#define DATE_INVALID 				0x80000000
+
 #define MAXDIG 						30
 
   /* ===================== from a4gl_dates.h ======================== */

@@ -35,7 +35,7 @@ fgl_next:
 | comparison_expr
 | in_expr
 | SPACES { $<ptr>$=A4GL_new_expr("A4GL_add_spaces();"); }
-| interval_expr
+| interval_expr {inc_counter();}
 | null_expr
 | string_match_expr
 | clip_expr 

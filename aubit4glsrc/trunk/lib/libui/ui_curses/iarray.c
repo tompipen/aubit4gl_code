@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.35 2003-08-05 13:58:28 mikeaubury Exp $
+# $Id: iarray.c,v 1.36 2003-08-06 20:28:38 mikeaubury Exp $
 #*/
 
 /**
@@ -2095,11 +2095,11 @@ A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
 	      A4GL_init_control_stack (arr, 0);
 
 
-	      // How risky is this ?
-	      arr->currform->currentfield = 0;
-
-
-	      A4GL_newMovement (arr, arr->scr_line, arr->arr_line, a);
+	      if (a!=arr->curr_attrib) {
+	      		// How risky is this ?
+	      		arr->currform->currentfield = 0;
+	      		A4GL_newMovement (arr, arr->scr_line, arr->arr_line, a);
+		}
 	      return 1;
 	    }
 	}
