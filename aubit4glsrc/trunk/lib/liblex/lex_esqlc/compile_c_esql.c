@@ -491,8 +491,10 @@ print_fetch_3 (char *ftp, char *into)
 
 
   printc("%s %s ;",buff,get_into_part(no));
-  print_copy_status();
-  print_conversions('o');
+  if(strcmp(into,"0,0")!=0) {
+  	print_copy_status();
+  	print_conversions('o');
+  }
   printc("}");
   printc("}");
 }
