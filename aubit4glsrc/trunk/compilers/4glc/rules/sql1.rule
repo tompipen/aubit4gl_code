@@ -65,13 +65,10 @@ fetch_statement:
     {
       print_fetch_1();
     } 
-  fetch_part 
+  fetch_part opt_into_fetch_part
     {
       print_fetch_2();
-    } 
-	opt_into_fetch_part
-    {
-      print_fetch_3($<str>3,$<str>5);
+      print_fetch_3($<str>3,$<str>4);
     }
 ;
 
@@ -93,8 +90,7 @@ addmap("Fetch Cursor",$<str>1,curr_func,yylineno,infilename);
 opt_into_fetch_part: {
 A4GL_debug("no into\n");
 strcpy($<str>$,"0,0");
-} | 
-	INTO {
+} | INTO {
  A4GL_debug("FETCH INTO  ...");
 	/* start_bind('i',0,-1); */
     start_bind('o',0);
@@ -102,7 +98,7 @@ strcpy($<str>$,"0,0");
     obind_var_list 
 {
 	int no;
-	no=print_bind('o');
+	no=get_bind_cnt('o');
 	sprintf($<str>$,"%d,obind",no);
 }
 ;

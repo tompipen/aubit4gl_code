@@ -218,11 +218,11 @@ variable_entry :
 		
           		if (A4GL_aubit_strcasecmp($<str>1,"pageno")==0) {
                		flg=1;
-               		strcpy($<str>$,"A4GL_push_variable(&rep.page_no,2);");
+               		strcpy($<str>$,"A4GL_push_variable(&_rep.page_no,2);");
                   		}
           		if (A4GL_aubit_strcasecmp($<str>1,"lineno")==0) {
                		flg=1;
-               		strcpy($<str>$,"A4GL_push_variable(&rep.line_no,2);");
+               		strcpy($<str>$,"A4GL_push_variable(&_rep.line_no,2);");
           		}
 
          		if (flg==0) {

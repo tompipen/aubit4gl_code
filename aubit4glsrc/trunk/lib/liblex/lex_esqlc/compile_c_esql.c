@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.69 2004-02-26 19:50:52 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.70 2004-02-29 15:03:19 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.69 2004-02-26 19:50:52 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.70 2004-02-29 15:03:19 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -1494,10 +1494,10 @@ if (type=='F') {
 	print_bind_definition('o');
 	print_bind_set_value('o');
 	sprintf(buff,"\"%s\",FETCH_RELATIVE,1",cname);
-	sprintf(buff2,"%d,rbind",c);
+	sprintf(buff2,"%d,_rbind",c);
 	print_fetch_3(buff,buff2);
 	printc("if (sqlca.sqlcode!=0) break;");
-        printc("A4GL_push_params (rbind, %d);",c);
+        printc("A4GL_push_params (_rbind, %d);",c);
 
 }
 

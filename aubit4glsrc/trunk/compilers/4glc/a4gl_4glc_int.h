@@ -267,7 +267,7 @@ struct s_constr_buff
     /* ------------------------ end from a4gl_4glc_compiledefs.h ------------------- */
 
 
-void expand_bind (struct binding_comp *bind, int btype, int cnt);
+//void expand_bind (struct binding_comp *bind, int btype, int cnt);
 char *get_var_name (int z);
 void chk_init_var (char *s);
 void dump_expr (struct expr_str *orig_ptr);

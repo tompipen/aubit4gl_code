@@ -92,6 +92,10 @@ print_param char i -> int
 /* int print_bind (char i) */
 print_bind char i -> int
 
+print_bind_definition char i -> int
+
+print_bind_set_value char i -> int
+
 /* int print_bind_expr (void *ptr, char i) */
 print_bind_expr void* ptr,char i -> int
 
@@ -121,6 +125,7 @@ print_getfldbuf char* fields -> void
 
 /* void print_returning () */
 print_returning -> void
+
 
 /* void print_form_is_compiled (char *s) */
 print_form_is_compiled char* s char* packer char* formtype -> void

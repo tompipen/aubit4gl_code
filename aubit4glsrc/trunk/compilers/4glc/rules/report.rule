@@ -416,7 +416,7 @@ pdf_output_command :
 op_rep_order_by : {
 int a;
 set_rep_no_orderby(1);
-a=print_bind('O');
+a=print_bind_definition('O');
 print_order_by_type(2,-1);
 sprintf($<str>$,"%d",a);
 }
@@ -424,7 +424,7 @@ sprintf($<str>$,"%d",a);
 {
 int a;
 set_rep_no_orderby(0);
-a=print_bind('O');
+a=print_bind_definition('O');
 print_order_by_type(1,a);
 sprintf($<str>$,"%d",a);
 A4GL_debug("Order by Gives :%d\n",a);
@@ -432,7 +432,7 @@ A4GL_debug("Order by Gives :%d\n",a);
 | ORDER_EXTERNAL_BY obind_var_list_ord {
 int a;
 set_rep_no_orderby(0);
-a=print_bind('O');
+a=print_bind_definition('O');
 print_order_by_type(2,a);
 sprintf($<str>$,"%d",a);
 A4GL_debug("Order by Gives :%d\n",a);
@@ -583,7 +583,7 @@ pdf_functions :
 
 op_wordwrap:
 	{strcpy($<str>$,"0");}
- 	| WORDWRAP { strcpy($<str>$,"rep.right_margin"); }
+ 	| WORDWRAP { strcpy($<str>$,"_rep.right_margin"); }
 	| WORDWRAP RIGHT_MARGIN INT_VALUE { sprintf($<str>$,"%s",$<str>3); }
 	| WORDWRAP RIGHT_MARGIN variable { sprintf($<str>$,"%s",$<str>3); }
 ;

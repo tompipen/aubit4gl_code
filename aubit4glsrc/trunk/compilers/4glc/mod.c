@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.159 2004-02-15 10:20:09 mikeaubury Exp $
+# $Id: mod.c,v 1.160 2004-02-29 15:02:19 mikeaubury Exp $
 #
 */
 
@@ -2280,6 +2280,15 @@ get_bind_cnt (char i)
   return 0;
 }
 
+
+char *get_bind_varname(char i,int n) {
+	if (i=='o') {
+		return obind[n].varname;
+	}
+	if (i=='i') {
+		return ibind[n].varname;
+	}
+}
 /**
  * Gets the number of elements filled in a bind array.
  *

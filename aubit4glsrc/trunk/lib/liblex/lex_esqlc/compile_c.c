@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.138 2004-02-26 19:50:52 mikeaubury Exp $
+# $Id: compile_c.c,v 1.139 2004-02-29 15:03:19 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.138 2004-02-26 19:50:52 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.139 2004-02-29 15:03:19 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -624,7 +624,7 @@ print_repctrl_block (void)
   printc ("rep_ctrl%d_%d:\n", report_cnt, report_stack_cnt);
 
   if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
-  	printc("A4GL_push_report_section(&rep,_module_name,_reportName,%d,'%c',\"%s\",%d);",yylineno,get_curr_report_stack_whytype(),get_curr_report_stack_why(),rep_print_code);
+  	printc("A4GL_push_report_section(&_rep,_module_name,_reportName,%d,'%c',\"%s\",%d);",yylineno,get_curr_report_stack_whytype(),get_curr_report_stack_why(),rep_print_code);
 	rep_print_entry=0;
   }
 
@@ -654,11 +654,11 @@ print_report_ctrl (void)
   A4GL_debug
     ("/* ********************************************************** */\n");
   printc ("report%d_ctrl:\n", report_cnt);
-  printc ("if (rep.lines_in_header      ==-1) rep.lines_in_header=%d;",
+  printc ("if (_rep.lines_in_header      ==-1) _rep.lines_in_header=%d;",
 	  rep_struct.lines_in_header);
-  printc ("if (rep.lines_in_first_header==-1) rep.lines_in_first_header=%d;",
+  printc ("if (_rep.lines_in_first_header==-1) _rep.lines_in_first_header=%d;",
 	  rep_struct.lines_in_first_header);
-  printc ("if (rep.lines_in_trailer     ==-1) rep.lines_in_trailer=%d;",
+  printc ("if (_rep.lines_in_trailer     ==-1) _rep.lines_in_trailer=%d;",
 	  rep_struct.lines_in_trailer);
 
   order_by_report_stack ();
@@ -681,12 +681,12 @@ print_report_ctrl (void)
       printc ("  if (_useddata) {");
 
       printc ("   %s(0,REPORT_LASTROW);", get_curr_rep_name ());
-      printc ("   if (rep.page_no<=1) {A4GL_%srep_print(&rep,0,1,0,-1);A4GL_%srep_print(&rep,0,0,0,-1);}",ispdf(),ispdf());	/* MJA 13092003*/
-      printc ("   rep.finishing=1;");
-      printc ("   A4GL_skip_top_of_page(&rep,999);");
+      printc ("   if (_rep.page_no<=1) {A4GL_%srep_print(&_rep,0,1,0,-1);A4GL_%srep_print(&_rep,0,0,0,-1);}",ispdf(),ispdf());	/* MJA 13092003*/
+      printc ("   _rep.finishing=1;");
+      printc ("   A4GL_skip_top_of_page(&_rep,999);");
       printc ("}");
       printc ("  _started=0;");
-      printc ("  if (rep.output) {fclose(rep.output);rep.output=0;}");
+      printc ("  if (_rep.output) {fclose(_rep.output);_rep.output=0;}");
       printc ("  return;");
       printc ("}\n");
 
@@ -694,7 +694,7 @@ print_report_ctrl (void)
   else
     {
       printc
-	("if (acl_ctrl==REPORT_LASTDATA) {if (_useddata) %s(0,REPORT_LASTROW);_started=0;A4GL_pdf_rep_close(&rep);return;}\n",
+	("if (acl_ctrl==REPORT_LASTDATA) {if (_useddata) %s(0,REPORT_LASTROW);_started=0;A4GL_pdf_rep_close(&_rep);return;}\n",
 	 get_curr_rep_name ());
 
     }
@@ -702,13 +702,13 @@ print_report_ctrl (void)
   if (rep_type == REP_TYPE_NORMAL)
     {
       printc
-	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;if (rep.output) {fclose(rep.output);rep.output=0;}return;}\n",
+	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;if (_rep.output) {fclose(_rep.output);_rep.output=0;}return;}\n",
 	 get_curr_rep_name ());
     }
   else
     {
       printc
-	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;A4GL_pdf_rep_close(&rep);return;}\n",
+	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;A4GL_pdf_rep_close(&_rep);return;}\n",
 	 get_curr_rep_name ());
 
     }
@@ -751,12 +751,12 @@ print_report_ctrl (void)
 
       if (get_report_stack_whytype (a) == 'P')
 	printc
-	  ("if (acl_ctrl==REPORT_PAGEHEADER&&rep.page_no==1) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
+	  ("if (acl_ctrl==REPORT_PAGEHEADER&&_rep.page_no==1) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
       if (get_report_stack_whytype (a) == 'p')
 	printc
-	  ("if (acl_ctrl==REPORT_PAGEHEADER&&(rep.page_no!=1||(rep.page_no==1&&rep.has_first_page==0))) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
+	  ("if (acl_ctrl==REPORT_PAGEHEADER&&(_rep.page_no!=1||(_rep.page_no==1&&_rep.has_first_page==0))) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
     }
   pr_report_agg_clr ();
@@ -884,7 +884,7 @@ void
 print_rep_ret (int report_cntx,int addit)
 {
   if (A4GL_isyes(acl_getenv("REPORT_TRACE")) && addit) {
-   	printc("A4GL_pop_report_section(&rep,%d);",rep_print_code++);
+   	printc("A4GL_pop_report_section(&_rep,%d);",rep_print_code++);
   }
   printc ("goto report%d_ctrl; /* G1 */\n\n", report_cnt);
 }
@@ -901,32 +901,33 @@ static void
 print_output_rep (struct rep_structure *rep)
 {
   printc ("output_%d:\n", report_cnt);
-  printc ("rep.lines_in_header=-1;\n");
-  printc ("rep.lines_in_trailer=-1;\n");
-  printc ("rep.lines_in_first_header=-1;\n");
-  printc ("rep.print_section=0;\n");
-  printc ("rep.top_margin=%d;\n", rep->top_margin);
-  printc ("rep.bottom_margin=%d;\n", rep->bottom_margin);
-  printc ("rep.left_margin=%d;\n", rep->left_margin);
-  printc ("rep.right_margin=%d;\n", rep->right_margin);
-  printc ("rep.page_length=%d;\n", rep->page_length);
-  printc ("rep.header=0;\n");
-  printc ("rep.finishing=0;\n");
-  printc ("rep.repName=_reportName;\n");
-  printc ("rep.modName=_module_name;\n");
-  printc ("rep.page_no=%d;\n", rep->page_no);
-  printc ("rep.printed_page_no=%d;\n", rep->printed_page_no);
-  printc ("rep.line_no=%d;\n", rep->line_no);
-  printc ("rep.col_no=%d;\n", rep->col_no);
+  //print_bind_set_value('O');
+  printc ("_rep.lines_in_header=-1;\n");
+  printc ("_rep.lines_in_trailer=-1;\n");
+  printc ("_rep.lines_in_first_header=-1;\n");
+  printc ("_rep.print_section=0;\n");
+  printc ("_rep.top_margin=%d;\n", rep->top_margin);
+  printc ("_rep.bottom_margin=%d;\n", rep->bottom_margin);
+  printc ("_rep.left_margin=%d;\n", rep->left_margin);
+  printc ("_rep.right_margin=%d;\n", rep->right_margin);
+  printc ("_rep.page_length=%d;\n", rep->page_length);
+  printc ("_rep.header=0;\n");
+  printc ("_rep.finishing=0;\n");
+  printc ("_rep.repName=_reportName;\n");
+  printc ("_rep.modName=_module_name;\n");
+  printc ("_rep.page_no=%d;\n", rep->page_no);
+  printc ("_rep.printed_page_no=%d;\n", rep->printed_page_no);
+  printc ("_rep.line_no=%d;\n", rep->line_no);
+  printc ("_rep.col_no=%d;\n", rep->col_no);
   printc ("if (strlen(_rout2)==0)\n");
-  printc ("strcpy(rep.output_loc,%s);\n", rep->output_loc);
-  printc ("else strcpy(rep.output_loc,_rout2);\n");
+  printc ("strcpy(_rep.output_loc,%s);\n", rep->output_loc);
+  printc ("else strcpy(_rep.output_loc,_rout2);\n");
   printc ("if (strlen(_rout1)==0)\n");
-  printc ("rep.output_mode='%c';\n", rep->output_mode);
-  printc ("else rep.output_mode=_rout1[0];\n");
-  printc ("rep.report=(void *)&%s;\n", get_curr_rep_name ());
-  printc ("A4GL_trim(rep.output_loc);");
-  printc ("A4GL_%srep_print(&rep,-1,-1,-1,-1);",ispdf());
+  printc ("_rep.output_mode='%c';\n", rep->output_mode);
+  printc ("else _rep.output_mode=_rout1[0];\n");
+  printc ("_rep.report=(void *)&%s;\n", get_curr_rep_name ());
+  printc ("A4GL_trim(_rep.output_loc);");
+  printc ("A4GL_%srep_print(&_rep,-1,-1,-1,-1);",ispdf());
   print_rep_ret (report_cnt,0);
 }
 
@@ -942,41 +943,41 @@ static void
 pdf_print_output_rep (struct pdf_rep_structure *rep)
 {
   printc ("output_%d:\n", report_cnt);
-  printc ("strcpy(rep.font_name,%s);\n", rep->font_name);
-  printc ("rep.font_size=%f;\n", rep->font_size);
-  printc ("rep.paper_size=%d;\n", rep->paper_size);
-  printc ("rep.header=0;\n");
-  printc ("rep.lines_in_header=-1;\n");
-  printc ("rep.lines_in_trailer=-1;\n");
-  printc ("rep.lines_in_first_header=-1;\n");
-  printc ("rep.print_section=0;\n");
-  printc ("rep.finishing=0;\n");
-  printc ("rep.repName=_reportName;\n");
-  printc ("rep.modName=_module_name;\n");
+  printc ("strcpy(_rep.font_name,%s);\n", rep->font_name);
+  printc ("_rep.font_size=%f;\n", rep->font_size);
+  printc ("_rep.paper_size=%d;\n", rep->paper_size);
+  printc ("_rep.header=0;\n");
+  printc ("_rep.lines_in_header=-1;\n");
+  printc ("_rep.lines_in_trailer=-1;\n");
+  printc ("_rep.lines_in_first_header=-1;\n");
+  printc ("_rep.print_section=0;\n");
+  printc ("_rep.finishing=0;\n");
+  printc ("_rep.repName=_reportName;\n");
+  printc ("_rep.modName=_module_name;\n");
 
-  printc ("rep.top_margin=A4GL_pdf_size(%f,'l',&rep);\n", rep->top_margin);
-  printc ("rep.bottom_margin=A4GL_pdf_size(%f,'l',&rep);\n",
+  printc ("_rep.top_margin=A4GL_pdf_size(%f,'l',&_rep);\n", rep->top_margin);
+  printc ("_rep.bottom_margin=A4GL_pdf_size(%f,'l',&_rep);\n",
 	  rep->bottom_margin);
-  printc ("rep.page_length=A4GL_pdf_size(%f,'l',&rep);\n", rep->page_length);
-  printc ("rep.left_margin=A4GL_pdf_size(%f,'c',&rep);\n", rep->left_margin);
-  printc ("rep.right_margin=A4GL_pdf_size(%f,'c',&rep);\n",
+  printc ("_rep.page_length=A4GL_pdf_size(%f,'l',&_rep);\n", rep->page_length);
+  printc ("_rep.left_margin=A4GL_pdf_size(%f,'c',&_rep);\n", rep->left_margin);
+  printc ("_rep.right_margin=A4GL_pdf_size(%f,'c',&_rep);\n",
 	  rep->right_margin);
-  printc ("rep.page_width=A4GL_pdf_size(%f,'c',&rep);\n", rep->page_width);
+  printc ("_rep.page_width=A4GL_pdf_size(%f,'c',&_rep);\n", rep->page_width);
 
-  printc ("rep.page_no=%d;\n", rep->page_no);
-  printc ("rep.printed_page_no=%d;\n", rep->printed_page_no);
+  printc ("_rep.page_no=%d;\n", rep->page_no);
+  printc ("_rep.printed_page_no=%d;\n", rep->printed_page_no);
 
-  printc ("rep.line_no=%f;\n", rep->line_no);
-  printc ("rep.col_no=%f;\n", rep->col_no);
+  printc ("_rep.line_no=%f;\n", rep->line_no);
+  printc ("_rep.col_no=%f;\n", rep->col_no);
 
   printc ("if (strlen(_rout2)==0)\n");
-  printc ("strcpy(rep.output_loc,%s);\n", rep->output_loc);
-  printc ("else strcpy(rep.output_loc,_rout2);\n");
+  printc ("strcpy(_rep.output_loc,%s);\n", rep->output_loc);
+  printc ("else strcpy(_rep.output_loc,_rout2);\n");
   printc ("if (strlen(_rout1)==0)\n");
-  printc ("rep.output_mode='%c';\n", rep->output_mode);
-  printc ("else rep.output_mode=_rout1[0];\n");
-  printc ("rep.report=&%s;\n", get_curr_rep_name ());
-  printc ("A4GL_trim(rep.output_loc);");
+  printc ("_rep.output_mode='%c';\n", rep->output_mode);
+  printc ("else _rep.output_mode=_rout1[0];\n");
+  printc ("_rep.report=&%s;\n", get_curr_rep_name ());
+  printc ("A4GL_trim(_rep.output_loc);");
   print_rep_ret (report_cnt,0);
 }
 
@@ -1531,7 +1532,11 @@ print_param (char i)
       printc ("static ");
     }
 
-  printc ("struct BINDING %cbind[%d]={ /* print_param */\n", i, ONE_NOT_ZERO(fbindcnt));
+  if (i=='r') {
+    printc ("struct BINDING _rbind[%d]={ /* print_param */\n", i, ONE_NOT_ZERO(fbindcnt));
+  } else {
+    printc ("struct BINDING %cbind[%d]={ /* print_param */\n", i, ONE_NOT_ZERO(fbindcnt));
+  }
       if (fbindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -1552,7 +1557,7 @@ print_param (char i)
   printc ("\n}; /* end of binding */\n");
   if (i == 'r')
     {
-      printc ("static char *rbindvarname[%d]={\n", ONE_NOT_ZERO(fbindcnt));
+      printc ("static char *_rbindvarname[%d]={\n", ONE_NOT_ZERO(fbindcnt));
 	if (fbindcnt==0) {printc("0");}
 
 
@@ -1697,8 +1702,7 @@ print_bind (char i)
       /*} else {*/
       /*}*/
 
-      printc ("static struct BINDING _ordbind[%d]={\n",
-	      ONE_NOT_ZERO (ordbindcnt));
+      printc ("static struct BINDING _ordbind[%d]={\n", ONE_NOT_ZERO (ordbindcnt));
       if (ordbindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -2009,7 +2013,7 @@ real_print_pdf_call (char *a1, struct expr_str *args, char *a3)
   real_print_expr (args);
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-  printc ("_retvars=A4GL_pdf_pdffunc(&rep,%s,%s);\n", a1, a3);
+  printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%s);\n", a1, a3);
 }
 
 /**
@@ -3412,13 +3416,13 @@ print_format_every_row (void)
 
 
   printc ("{int _rr;for (_rr=0;_rr<%d;_rr++) {", fbindcnt);
-  printc ("A4GL_push_char(rbindvarname[_rr]);\n");
-  printc ("A4GL_%srep_print(&rep,1,1,0,-1); A4GL_push_long(19); A4GL_set_column(&rep);A4GL_%srep_print(&rep,1,1,0,-1); \n",ispdf(),ispdf());
-  printc ("A4GL_push_variable(rbind[_rr].ptr,rbind[_rr].dtype);");
-  printc ("A4GL_%srep_print(&rep,1,1,0,-1); A4GL_%srep_print(&rep,0,0,0,-1);\n",ispdf(),ispdf());
+  printc ("A4GL_push_char(_rbindvarname[_rr]);\n");
+  printc ("A4GL_%srep_print(&_rep,1,1,0,-1); A4GL_push_long(19); A4GL_set_column(&_rep);A4GL_%srep_print(&_rep,1,1,0,-1); \n",ispdf(),ispdf());
+  printc ("A4GL_push_variable(_rbind[_rr].ptr,_rbind[_rr].dtype);");
+  printc ("A4GL_%srep_print(&_rep,1,1,0,-1); A4GL_%srep_print(&_rep,0,0,0,-1);\n",ispdf(),ispdf());
   printc ("}");
   printc
-    ("A4GL_push_char(\" \");A4GL_%srep_print(&rep,1,1,0,-1); A4GL_%srep_print(&rep,0,0,0,-1);",ispdf(),ispdf());
+    ("A4GL_push_char(\" \");A4GL_%srep_print(&_rep,1,1,0,-1); A4GL_%srep_print(&_rep,0,0,0,-1);",ispdf(),ispdf());
   printc ("}");
   /* printc ("#error FORMAT EVERY ROW not implemented yet");
      print_rep_ret (); */
@@ -3432,7 +3436,7 @@ print_format_every_row (void)
 void
 print_need_lines (void)
 {
-  printc ("A4GL_%sneed_lines(&rep);\n", ispdf ());
+  printc ("A4GL_%sneed_lines(&_rep);\n", ispdf ());
 }
 
 /**
@@ -3442,7 +3446,7 @@ void
 print_skip_lines (double d)
 {
   printc ("A4GL_push_int(%d);", (int) d);
-  printc ("A4GL_%saclfgli_skip_lines(&rep);\n", ispdf ());
+  printc ("A4GL_%saclfgli_skip_lines(&_rep);\n", ispdf ());
 }
 
 /**
@@ -3451,7 +3455,7 @@ print_skip_lines (double d)
 void
 print_skip_top (void)
 {
-  printc ("A4GL_%sskip_top_of_page(&rep,0);\n", ispdf ());
+  printc ("A4GL_%sskip_top_of_page(&_rep,0);\n", ispdf ());
 }
 
 /**
@@ -3460,7 +3464,7 @@ print_skip_top (void)
 void
 print_skip_by (double nval)
 {
-  printc ("A4GL_pdf_skip_by(&rep,%f);\n", nval);
+  printc ("A4GL_pdf_skip_by(&_rep,%f);\n", nval);
 }
 
 /**
@@ -3469,7 +3473,7 @@ print_skip_by (double nval)
 void
 print_skip_to (char *nval)
 {
-  printc ("A4GL_pdf_skip_to(&rep,%s);\n", nval);
+  printc ("A4GL_pdf_skip_to(&_rep,%s);\n", nval);
 }
 
 /**
@@ -3494,17 +3498,17 @@ int semi_i;
   if (semi==0) semi_i=0; else semi_i=1;
 /*
 if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
-	printc("A4GL_push_report_print_entry(&rep,%d,%d,%d);",yylineno,rep_print_code,rep_print_entry);
+	printc("A4GL_push_report_print_entry(&_rep,%d,%d,%d);",yylineno,rep_print_code,rep_print_entry);
   }
 */
   if (type == 0)
-    printc ("A4GL_%srep_print(&rep,0,%s,0,-1);\n", ispdf (), semi);
+    printc ("A4GL_%srep_print(&_rep,0,%s,0,-1);\n", ispdf (), semi);
 
   if (type == 1)
-    printc ("A4GL_%srep_print(&rep,1,1,%s,%d);\n", ispdf (), wordwrap,rep_print_entry++);
+    printc ("A4GL_%srep_print(&_rep,1,1,%s,%d);\n", ispdf (), wordwrap,rep_print_entry++);
 /*
   if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
-	printc("A4GL_pop_report_print_entry(&rep,%d,%d);",rep_print_code,rep_print_entry++);
+	printc("A4GL_pop_report_print_entry(&_rep,%d,%d);",rep_print_code,rep_print_entry++);
   }
 */
 }
@@ -3522,7 +3526,7 @@ if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
 void
 print_report_print_file (char *fname, char *semi)
 {
-  printc ("%sA4GL_rep_file_print(&rep,%s,%s);\n", ispdf (), fname, semi);
+  printc ("%sA4GL_rep_file_print(&_rep,%s,%s);\n", ispdf (), fname, semi);
 }
 
 /**
@@ -3544,7 +3548,7 @@ print_report_print_file (char *fname, char *semi)
 void
 print_report_print_img (char *scaling, char *blob, char *type, char *semi)
 {
-  printc ("%s pdf_blob_print(&rep,&%s,\"%s\",%s);\n", scaling,
+  printc ("%s pdf_blob_print(&_rep,&%s,\"%s\",%s);\n", scaling,
 	  blob, type, semi);
 }
 
@@ -3619,17 +3623,19 @@ print_report_2 (int pdf, char *repordby)
   int cnt;
   int a;
   if (pdf)
-    printc ("static struct pdf_rep_structure rep;\n");
+    printc ("static struct pdf_rep_structure _rep;\n");
   else
-    printc ("static struct rep_structure rep;\n");
+    printc ("static struct rep_structure _rep;\n");
 
   printc ("static char _rout1[256];\n");
   printc ("static char _rout2[256];\n");
   printc ("static int _useddata=0;\n");
   printc ("static int _started=0;\n");
+  printc ("static int _assigned_ordbind=0;\n");
   cnt = print_param ('r');
-  printc
-    ("if (acl_ctrl==REPORT_SENDDATA&&_started==0&&fgl_rep_orderby!=1) {");
+  printc(" if (_assigned_ordbind==0) { _assigned_ordbind=1;"); print_bind_set_value('O'); printc("}");
+
+  printc ("if (acl_ctrl==REPORT_SENDDATA&&_started==0&&fgl_rep_orderby!=1) {");
   printc ("    A4GLSQL_set_status(-5555,0);\n");
   printc ("    return;\n");
   printc ("    }\n");
@@ -3648,10 +3654,10 @@ print_report_2 (int pdf, char *repordby)
       for (a = 0; a < cnt; a++)
 	{
 	  printc
-	    ("A4GL_setnull(rbind[%d].dtype,rbind[%d].ptr,rbind[%d].size);", a,
+	    ("A4GL_setnull(_rbind[%d].dtype,_rbind[%d].ptr,_rbind[%d].size);", a,
 	     a, a);
 	}
-      printc ("A4GL_pop_params(rbind,%d);", cnt);
+      printc ("A4GL_pop_params(_rbind,%d);", cnt);
       print_report_table (mv_repname, 'R', cnt);
       printc ("return;}");
     }
@@ -3663,15 +3669,15 @@ print_report_2 (int pdf, char *repordby)
   /* This was put in to force a page header if*/
   /* data was sent - but not used..*/
   /* But this prints too early here...*/
-  /*printc ("   A4GL_rep_print(&rep,0,1,0,-1);");*/
+  /*printc ("   A4GL_rep_print(&_rep,0,1,0,-1);");*/
 
 
-  printc ("   _g=A4GL_chk_params(rbind,%d,_ordbind,acl_rep_ordcnt);\n", cnt);
+  printc ("   _g=A4GL_chk_params(_rbind,%d,_ordbind,acl_rep_ordcnt);\n", cnt);
   printc
     ("   if (_g>0&&_useddata) {for (_p=acl_rep_ordcnt;_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
      get_curr_rep_name ());
-  /*for (a=0;a<cnt;a++) { printc("A4GL_setnull(rbind[%d].dtype,rbind[%d].ptr,rbind[%d].size);",a,a,a); }*/
-  printc ("   A4GL_pop_params(rbind,%d);\n", cnt);
+  /*for (a=0;a<cnt;a++) { printc("A4GL_setnull(_rbind[%d].dtype,_rbind[%d].ptr,_rbind[%d].size);",a,a,a); }*/
+  printc ("   A4GL_pop_params(_rbind,%d);\n", cnt);
   printc ("   if (_useddata==0) {_g=1;}\n");
   printc ("   if (_g>0) {");
   printc ("        _useddata=1;");
@@ -3691,10 +3697,10 @@ print_report_2 (int pdf, char *repordby)
       printc ("        A4GL_push_char(_rout2);\n");
       printc ("        %s(2,REPORT_RESTART);\n", get_curr_rep_name ());
 
-      /*printc ("        A4GL_init_report_table(rbind,%d,_ordbind,acl_rep_ordcnt,&reread);\n", cnt);*/
+      /*printc ("        A4GL_init_report_table(_rbind,%d,_ordbind,acl_rep_ordcnt,&reread);\n", cnt);*/
       print_report_table (mv_repname, 'I', cnt);
 
-      /*printc ("        while (A4GL_report_table_fetch(reread,%d,rbind))",cnt);*/
+      /*printc ("        while (A4GL_report_table_fetch(reread,%d,_rbind))",cnt);*/
       print_report_table (mv_repname, 'F', cnt);
 
       printc ("                    %s(%d,REPORT_SENDDATA);\n",
@@ -3702,7 +3708,7 @@ print_report_2 (int pdf, char *repordby)
       printc (" }");
       printc ("        %s(0,REPORT_FINISH);\n", get_curr_rep_name ());
 
-      /*printc ("        A4GL_end_report_table(rbind,%d,reread);",cnt);*/
+      /*printc ("        A4GL_end_report_table(_rbind,%d,reread);",cnt);*/
       print_report_table (mv_repname, 'E', cnt);
 
       printc ("        return;");
@@ -4599,6 +4605,8 @@ void
 print_fetch_2 (void)
 {
   printc ("{");
+  print_bind_definition('o');
+  print_bind_set_value('o');
 }
 
 
@@ -5648,6 +5656,33 @@ print_bind_definition (char i)
 	}
       return a;
     }
+  if (i == 'O')
+    {
+      printc ("\n");
+      expand_bind (&ordbind[0], 'O', ordbindcnt);
+      printc ("static struct BINDING _ordbind[%d]={\n", ONE_NOT_ZERO (ordbindcnt));
+      if (ordbindcnt == 0)
+	{
+	  printc ("{0,0,0}");
+	}
+
+      for (a = 0; a < ordbindcnt; a++)
+	{
+	  printc ("{0,%d,%d,%d,%d}%c", 
+		  (int) ordbind[a].dtype & 0xffff, (int) ordbind[a].dtype >> 16,
+		  ordbind[a].start_char_subscript, ordbind[a].end_char_subscript, (a<ordbindcnt-1)?',':' '
+);
+	}
+      printc ("\n}; /* end of binding */\n");
+      current_ordbindcnt = ordbindcnt;
+      if (doing_esql ())
+	{
+	  make_sql_bind (0, "O");
+	}
+      start_bind(i,0);
+      return a;
+    }
+
 
     printf("UNEXPECTED BINDING %c\n",i);
     exit(3);
@@ -5693,6 +5728,16 @@ print_bind_set_value (char i)
       start_bind (i, 0);
       return a;
     }
+  if (i == 'O')
+    {
+      for (a = 0; a < current_ordbindcnt; a++)
+	{
+	  printc ("_ordbind[%d].ptr=&%s;", a,ordbind[a].varname);
+	}
+      start_bind (i, 0);
+      return a;
+    }
+
 
   return 0;
 }

@@ -1,7 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.31 2004-02-11 09:25:43 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_sql.c,v 1.32 2004-02-29 15:03:19 mikeaubury Exp $";
 
 void print_report_table(char *repname,char type, int c);
 void printh (char *fmt, ...);
@@ -612,18 +612,18 @@ return s;
 void print_report_table(char *repname,char type, int c) {
 /* We don't need repname here - but the ESQL/C version does.. */
 if (type=='R')
-  printc ("A4GL_add_row_report_table (rbind,%d);",c);
+  printc ("A4GL_add_row_report_table (_rbind,%d);",c);
 
 if (type=='F') 
-  printc ("        while (A4GL_report_table_fetch(reread,%d,rbind)) {",c);
+  printc ("        while (A4GL_report_table_fetch(reread,%d,_rbind)) {",c);
 
 if (type=='I')
-  printc ("        A4GL_init_report_table(rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n", c);
+  printc ("        A4GL_init_report_table(_rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n", c);
 
 if (type=='E') 
-  printc ("        A4GL_end_report_table(rbind,%d,reread);",c);
+  printc ("        A4GL_end_report_table(_rbind,%d,reread);",c);
 if (type=='M')
-  printc ("       A4GL_make_report_table(rbind,%d);",c);
+  printc ("       A4GL_make_report_table(_rbind,%d);",c);
 
 }
 
