@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.6 2003-06-13 10:04:01 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.7 2003-06-20 15:25:48 mikeaubury Exp $
 #*/
 
 /**
@@ -287,8 +287,9 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
   if (last_field!=next_field || 1) {
   	A4GL_add_to_control_stack (sio, FORMCONTROL_BEFORE_FIELD, next_field, A4GL_memdup (ptr, sizeof (struct s_movement)), 0);
   	if (last_field) {
-		if (last_field!=next_field)
+		if (last_field!=next_field) {
 			A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD, last_field, 0, 0);
+		}
 	}
   } else {
   	free (ptr);
@@ -491,12 +492,14 @@ A4GL_req_field_input (struct s_screenio *s, ...)
 
   if (strcmp(field_name,"+")==0) { // Next field next
 			A4GL_init_control_stack (s,0);
+			s->currform->currentfield=0;
 			A4GL_newMovement(s,s->curr_attrib+1);
 			return 1;
   }
 
   if (strcmp(field_name,"-")==0) { // Next field previous
 			A4GL_init_control_stack (s,0);
+			s->currform->currentfield=0;
 			A4GL_newMovement(s,s->curr_attrib-1);
 			return 1;
   }
@@ -511,6 +514,12 @@ A4GL_req_field_input (struct s_screenio *s, ...)
 	for (a=0;a<=s->nfields;a++) {
 		if (s->field_list[a]==ptr[0]) {
 			A4GL_init_control_stack (s,0);
+
+
+			// How risky is this ?
+			s->currform->currentfield=0;
+
+
 			A4GL_newMovement(s,a);
 			return 1;
 		}

@@ -26,3 +26,4 @@ cp incl/*.h /home/aubit4gl/aubit4gl/incl
 
 cd /home/aubit4gl/sourceforge/tools/afinderr
 make
+cp /home/aubit4gl/sourceforge/help /home/aubit4gl/aubit4gl/help
