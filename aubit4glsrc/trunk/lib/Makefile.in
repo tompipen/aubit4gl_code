@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.87 2003-04-11 12:45:46 afalout Exp $
+# $Id: Makefile.in,v 1.88 2003-06-14 13:13:52 afalout Exp $
 #
 
 ROOT    =..
@@ -339,6 +339,9 @@ libesqlhelper_funcs${SO_EXT}: ${4GLC} ${LIBESQLCHELPER_DEPS}
 
 libA4GL_HTML${SO_EXT_LINKABLE}: ${4GLC} ${LIBHTML_DEPS}
 	$(MAKE) -C ${LIBHTML_PATH} $@
+
+libA4GL_cint${SO_EXT_LINKABLE}:
+	cd ../cint; ${SH} make_cintlib
 
 aubit-config: ${AUBITCONFIG_DEPS}
 	${MAKE} -C ${AUBITCONFIG_PATH}

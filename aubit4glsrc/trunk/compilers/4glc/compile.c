@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.29 2003-05-16 06:49:33 afalout Exp $
+# $Id: compile.c,v 1.30 2003-06-14 13:13:52 afalout Exp $
 #*/
 
 /**
@@ -480,41 +480,41 @@ initArguments (int argc, char *argv[])
   strcpy (l_libs, acl_getenv ("A4GL_LINK_LIBS"));
   strcpy (gcc_exec, acl_getenv ("A4GL_C_COMP"));
 
-  for (index = optind; index < argc; index++)
+	for (index = optind; index < argc; index++)
     {
-      for (skip_cnt = 0; skip_cnt < skip_param_idx; skip_cnt++)
-	{
-	  if (strcmp (s_param[skip_cnt].param, argv[index]) == 0)
-	    {
-	      /* skip this param - it was passed as value for an command line flag (like -o) */
-	      skipit = 1;
-	      break;
-	    }
-	}
+		for (skip_cnt = 0; skip_cnt < skip_param_idx; skip_cnt++)
+		{
+			if (strcmp (s_param[skip_cnt].param, argv[index]) == 0)
+			{
+				/* skip this param - it was passed as value for an command line flag (like -o) */
+				skipit = 1;
+				break;
+			}
+        }
 
-      if (skipit)
-	{
-	  skipit = 0;
-	  continue;
-	}
+		if (skipit)
+        {
+			skipit = 0;
+			continue;
+        }
 
-      outputfilename = outputfile;	/* C file name - set where ? */
+		outputfilename = outputfile;	/* C file name - set where ? */
 
-      strcpy (c, argv[index]);
-      A4GL_bname (c, a, b);
+		strcpy (c, argv[index]);
+		A4GL_bname (c, a, b);
 
-      if (strcmp (b, "4gl") == 0)
-	{
-	  strcpy (outputfilename, a);
-	  strcat (all_objects, a);
-	  strcat (all_objects, acl_getenv ("A4GL_OBJ_EXT"));
-	  strcat (all_objects, " ");
-	  strcpy (infilename, c);
-#ifdef DEBUG
-	  A4GL_debug ("Compiling %s\n", infilename);
-#endif
+		if (strcmp (b, "4gl") == 0)
+        {
+		  strcpy (outputfilename, a);
+		  strcat (all_objects, a);
+		  strcat (all_objects, acl_getenv ("A4GL_OBJ_EXT"));
+		  strcat (all_objects, " ");
+		  strcpy (infilename, c);
+		  #ifdef DEBUG
+			  A4GL_debug ("Compiling %s\n", infilename);
+		  #endif
 
-/* nonsense
+			/* nonsense
 			if (strcmp (output_object, "") == 0) {
              If user did not name output file explicityl,
             set output file name based on file name of the first 4gl file
@@ -535,31 +535,44 @@ initArguments (int argc, char *argv[])
                 }
 
             }
-*/
-	  todo++;
-	  x =
-	    compile_4gl (compile_object, a, incl_path, silent, verbose,
-			 output_object);
-	  if (x)
-	    {
-	      printf ("Exit code is: %d\n", x);
-	      //FIXME: if I use x, I get 0 on the shell?????
-	      //exit (x);
-	      exit (99);
-	    }
+			*/
+		  todo++;
+		  x = compile_4gl (compile_object, a, incl_path, silent, verbose, output_object);
+		  if (x)
+		  {
+	    	  printf ("Exit code is: %d\n", x);
+		      //FIXME: if I use x, I get 0 on the shell?????
+		      //exit (x);
+	    	  exit (99);
+		  }
 
-	}
-      else
-	{
-	  /* just pass stuff you don't understand to CC */
-#ifdef DEBUG
-	  A4GL_debug ("Pass trough option: %s\n", c);
-#endif
-
-	  strcat (pass_options, c);
-	  strcat (pass_options, " ");
-	}
+		} else {
+		  /* just pass stuff you don't understand to CC */
+			#ifdef DEBUG
+			  A4GL_debug ("Pass trough option: %s\n", c);
+			#endif
+		  strcat (pass_options, c);
+		  strcat (pass_options, " ");
+		}
     }
+
+    /*
+        if (interpreter_run)
+        {
+			setup environment for "CINT" C intrpreter and
+			run C file specified as parameter to this script using "cint" executable
+
+            // add A4GL_CINT to aubitrc from configure so we know if we have 
+			// Cint on the system and where
+			if acl_getenv ("A4GL_CINT") != "no"
+            {
+				export CINTSYSDIR=/usr/local/cint
+				export PATH=$PATH:$CINTSYSDIR
+				cint -p -I$AUBITDIR/incl -l$AUBITDIR/lib/libA4GL_cint.so $1.c
+            }
+        }
+
+    */
 
   if (!todo)
     {

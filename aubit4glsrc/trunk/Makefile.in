@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.121 2003-05-25 04:32:31 afalout Exp $
+# $Id: Makefile.in,v 1.122 2003-06-14 13:13:35 afalout Exp $
 #
 
 ## ==================================================================
@@ -492,6 +492,9 @@ install.tree:
 	${MKPATH} $(BIN_DEST) $(LIB_DEST) $(ETC_DEST) \
 	$(INCL_DEST) $(TEST_DEST)/gui $(DOC_DEST) ${CONVSQL_DEST}
 	@echo "Aubit 4gl compiler instalation tree created"
+#FIXME: we need to chown installation tree to something, since installation has 
+#to be run as root - or use "install" utility?
+#FIXME: we must chech is user is "root" before installing
 
 install.makefile-install:
 	${CP} etc/Makefile-install $(ROOT_DEST)/Makefile

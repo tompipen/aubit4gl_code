@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.172 2003-05-25 03:47:20 afalout Exp $
+dnl # $Id: configure.in,v 1.173 2003-06-14 13:13:39 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -308,6 +308,7 @@ AC_SUBST(WWW_DOCUMENT_ROOT)
 #RPM
 AC_SUBST(RPM)
 AC_SUBST(AUTOSPEC)
+AC_SUBST(RPMBUILDROOT)
 
 #Jabber/Iksemel lib
 AC_SUBST(JABBERBUILD)
@@ -350,7 +351,7 @@ AC_SUBST(STRIP)
 AC_SUBST(WINDOWS_DRIVE)
 AC_SUBST(CYGWIN_PATH)
 AC_SUBST(EFENCE)
-
+AC_SUBST(CINT)
 
 #Inno Setup:
 AC_SUBST(IS_SOURCE)
@@ -1071,6 +1072,52 @@ AC_PATH_PROG(PROG_SENDMAIL, sendmail, /usr/lib/sendmail, $PATH /usr/bin /usr/sbi
 if test -n "$PROG_SENDMAIL"; then
   AC_DEFINE(HAVE_SENDMAIL)
 fi
+
+## ==================================================================
+##                 Checks for CINT - C code interpreter
+## ==================================================================
+
+    #FIXME: despite listing all this paths, cint executable will only be found
+    #if it's in the PATH - no idea why
+
+	save_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
+	LD_LIBRARY_PATH="/usr/local/cint:/opt/cint:$LD_LIBRARY_PATH"
+	AC_PATH_PROG(CINT, cint, no, $PATH /usr/local/cint /opt/cint)
+	LD_LIBRARY_PATH="$save_LD_LIBRARY_PATH"
+
+## ==================================================================
+##                 Determine RPM build location
+## ==================================================================
+
+
+#MACHTYPE is a environment variable - not a Autoconf one
+case $MACHTYPE in
+	*-mandrake-linux-gnu)
+		RPMBUILDROOT=/usr/src/RPM
+		;;
+
+    *-redhat-linux-gnu)
+
+		#REDHAT_VER
+		#configure:7266: checking RedHat version
+		#configure:7270: result: Red Hat Linux release 7.2 (Enigma) (7.2)
+
+        case $REDHAT_VER in
+	        6.*)
+				RPMBUILDROOT=/root/redhat
+	            ;;
+
+			*) 	#redhat 7.2
+				RPMBUILDROOT=/usr/src/redhat
+			    ;;
+        esac
+        ;;
+
+    *) #Probably not a RPM based distro
+		RPMBUILDROOT=no
+        ;;
+
+esac
 
 ## ==================================================================
 ##                 Checks for other 4gl compiles
@@ -3491,8 +3538,13 @@ fi
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.xmlrpc"
 	fi
 
-#RPMFILE_11 is unused - use it.
-
+	if test "$CINT" != "no"; then
+		RPMFILE_11=$LIB_PREFIX/libA4GL_cint$SO_EXT
+        PLUGIN_YES="$PLUGIN_YES CINT"
+	else
+        PLUGIN_NO="$PLUGIN_NO CINT"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.cint"
+	fi
 
 	if test "$HAVE_RPCLIB" != "0"; then
 		RPMFILE_12=$LIB_PREFIX/libRPC_XDR$SO_EXT
@@ -3659,6 +3711,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 incl/Makefile-common
 				common/dataio/Makefile
 				compilers/4glc/Makefile
+				compilers/4glc/mk_states_c
                 compilers/4glc/rules/Makefile
                 compilers/fcompile/Makefile
                 compilers/helpcompile/Makefile

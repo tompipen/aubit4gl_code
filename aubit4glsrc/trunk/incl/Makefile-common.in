@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.128 2003-05-25 03:47:40 afalout Exp $
+# $Id: Makefile-common.in,v 1.129 2003-06-14 13:13:52 afalout Exp $
 #
 
 
@@ -77,6 +77,9 @@ ifeq "${TARGET_OS}" ""
 endif
 ifeq "${TARGET_OS}" ""
 	TARGET_OS=$(findstring darwin,${TARGET})
+endif
+ifeq "${TARGET_OS}" ""
+	TARGET_OS=$(findstring hpux,${TARGET})
 endif
 
 ifeq "${TARGET_OS}" ""
@@ -359,6 +362,10 @@ else
 	LD              =${CC}
 endif
 
+#ifeq "${TARGET_OS}" "hpux"
+#	LD              =ld
+#endif
+
 #LD Command to use for linking executables:
 LD_EXE              =${CC} ${RDYNAMIC}
 
@@ -565,6 +572,11 @@ ifeq "${TARGET_OS}" "darwin"
 		#to link correctly. (huh?)
 endif
 
+ifeq "${TARGET_OS}" "hpux"
+	#SO_LDFLAGS	=-b
+	SO_LDFLAGS	+=-fPIC
+endif
+
 ## ==================================================================
 ##                              Libtool configuration
 ## ==================================================================
@@ -765,13 +777,7 @@ MANUAL_GTK="@GTKLIBS@ @GTK_LIB_PATH@ @GTK_INC_PATH@"
 
 ################################
 #RPM setup:
-#FIXME: determine this from configure script:
-#redhat 6:
-#RPMBUILDROOT=/root/redhat
-#redhat 7.2
-RPMBUILDROOT=/usr/src/redhat
-#Mandtrake:
-#RPMBUILDROOT=/usr/src/RPM
+RPMBUILDROOT=@RPMBUILDROOT@
 
 BIN_PATH    =bin
 LIB_PATH    =lib

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.32 2003-05-25 03:47:40 afalout Exp $
+# $Id: calldll.c,v 1.33 2003-06-14 13:13:52 afalout Exp $
 #
 */
 
@@ -357,7 +357,24 @@ A4GL_dl_openlibrary (char *type, char *p)
 		  sprintf (buff, "%s_%s.dll", buff2, plugin_name);
 		  //printf("buff = %s\n",buff);
 		#else
-			#if defined(__HPUX__)
+/*
+#define hppa 1
+#define hpux 1
+#define __hp9000s800__ 1
+#define __hppa 1
+#define __hpux 1
+#define __hp9000s700 1
+#define __hp9k8__ 1
+#define hp9000s800 1
+#define __hppa__ 1
+#define __hp9k8 1
+#define __hp9000s800 1
+#define hp9k8 1
+#define __hpux__ 1
+#define __VERSION__ "3.2"
+*/
+
+			#if defined(__hpux__) //HP-UX UNIX OS
 			  sprintf (buff, "%s/lib/lib%s_%s.sl", acl_getenv ("AUBITDIR"), type,
 				   plugin_name);
             #else
