@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.115 2003-10-31 18:30:40 mikeaubury Exp $
+# $Id: 4glpc,v 1.116 2003-11-15 07:39:56 afalout Exp $
 #
 
 ########################################################################
@@ -440,6 +440,8 @@ if [ "$MINGW" = "1" ]; then
 	INCLDIR="$INCLDIR -I$CYG_ROOT$AUBITDIR/incl"
 fi
 
+NCC_PG="ecpg_wrap"
+NCC_IFX="esql"
 
 
 #CC is set via aubitrc config file:
@@ -457,10 +459,10 @@ then
 	if [ "$A4GL_LEXDIALECT"  = "POSTGRES" ]
 	then
 		FGLC_OUTPUT_EXT=cpc
-        NCC="ecpg_wrap"
+        NCC=$NCC_PG
 	else
 		FGLC_OUTPUT_EXT=ec
-        NCC="esql"
+        NCC=$NCC_IFX
 	fi
 fi
 
@@ -803,9 +805,9 @@ do
    *.ec) 
 	if [ "$A4GL_LEXDIALECT" = POSTGRES ]
 	then
-		NCC="ecpg_wrap"
+		NCC=$NCC_PG
 	else
-		NCC="esql"
+		NCC=$NCC_IFX
 	fi
 
    	COMPCC="$COMPCC $a"
@@ -814,9 +816,9 @@ do
    *.cpc)
 	if [ "$A4GL_LEXDIALECT" = POSTGRES ]
 	then
-		NCC="ecpg_wrap"
+		NCC=$NCC_PG
 	else
-		NCC="esql"
+		NCC=$NCC_IFX
 	fi
 
    	COMPCC="$COMPCC $a"

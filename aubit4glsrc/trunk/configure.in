@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.206 2003-11-05 08:13:32 afalout Exp $
+dnl # $Id: configure.in,v 1.207 2003-11-15 07:39:44 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -368,7 +368,7 @@ AC_SUBST(ECPG_LIBDIR)
 AC_SUBST(ECPG_LFLAGS)
 AC_SUBST(ECPG_IFLAGS)
 AC_SUBST(POSTGRESDIR)
-
+AC_SUBST(HAVE_PGSQL_LIB)
 
 #UnixODBC
 AC_SUBST(HAVE_UNIXODBC)
@@ -1354,7 +1354,7 @@ dnl internationalization macros
 
 #examlpe - USE iT
 #AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
-# $Id: configure.in,v 1.206 2003-11-05 08:13:32 afalout Exp $
+# $Id: configure.in,v 1.207 2003-11-15 07:39:44 afalout Exp $
 
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
@@ -6237,7 +6237,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.206 2003-11-05 08:13:32 afalout Exp $
+| $Id: configure.in,v 1.207 2003-11-15 07:39:44 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

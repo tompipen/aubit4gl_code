@@ -7677,7 +7677,7 @@ ALL_LINGUAS="en"
 
 #examlpe - USE iT
 #AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
-# $Id: configure,v 1.218 2003-11-12 22:22:25 afalout Exp $
+# $Id: configure,v 1.219 2003-11-15 07:39:26 afalout Exp $
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
 
@@ -24096,6 +24096,7 @@ s,@ECPG_LIBDIR@,$ECPG_LIBDIR,;t t
 s,@ECPG_LFLAGS@,$ECPG_LFLAGS,;t t
 s,@ECPG_IFLAGS@,$ECPG_IFLAGS,;t t
 s,@POSTGRESDIR@,$POSTGRESDIR,;t t
+s,@HAVE_PGSQL_LIB@,$HAVE_PGSQL_LIB,;t t
 s,@HAVE_UNIXODBC@,$HAVE_UNIXODBC,;t t
 s,@UNIXODBC_INCLUDE@,$UNIXODBC_INCLUDE,;t t
 s,@UNIXODBC_LFLAGS@,$UNIXODBC_LFLAGS,;t t
@@ -24960,7 +24961,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:24963: creating $ac_file" >&5
+    { echo "$as_me:24964: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -24978,7 +24979,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:24981: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:24982: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -24991,7 +24992,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:24994: error: cannot find input file: $f" >&5
+           { { echo "$as_me:24995: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -25052,7 +25053,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:25055: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:25056: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -25063,7 +25064,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:25066: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:25067: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -25076,7 +25077,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:25079: error: cannot find input file: $f" >&5
+           { { echo "$as_me:25080: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -25193,7 +25194,7 @@ cat >>$CONFIG_STATUS <<\EOF
   rm -f $tmp/in
   if test x"$ac_file" != x-; then
     if cmp -s $ac_file $tmp/config.h 2>/dev/null; then
-      { echo "$as_me:25196: $ac_file is unchanged" >&5
+      { echo "$as_me:25197: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
@@ -25502,7 +25503,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.218 2003-11-12 22:22:25 afalout Exp $
+| $Id: configure,v 1.219 2003-11-15 07:39:26 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
@@ -25534,13 +25535,13 @@ X
 
 fi
 
-echo "$as_me:25537: result: " >&5
+echo "$as_me:25538: result: " >&5
 echo "${ECHO_T}" >&6
-echo "$as_me:25539: result: Thank you for using Aubit 4gl compiler." >&5
+echo "$as_me:25540: result: Thank you for using Aubit 4gl compiler." >&5
 echo "${ECHO_T}Thank you for using Aubit 4gl compiler." >&6
-echo "$as_me:25541: result:               $AUBIT_PUBLISHER" >&5
+echo "$as_me:25542: result:               $AUBIT_PUBLISHER" >&5
 echo "${ECHO_T}              $AUBIT_PUBLISHER" >&6
-echo "$as_me:25543: result: " >&5
+echo "$as_me:25544: result: " >&5
 echo "${ECHO_T}" >&6
 
 #------------------------------ EOF --------------------------------
