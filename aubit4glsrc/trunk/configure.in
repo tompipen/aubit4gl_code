@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.284 2005-03-04 08:04:41 afalout Exp $
+dnl # $Id: configure.in,v 1.285 2005-03-11 08:50:07 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2161,7 +2161,8 @@ ALL_SH="aubit $AMAKE_SH"
 ##       Define permanent list of Includes to build/install
 ## ==================================================================
 
-AMAKE_INCL_FILES="header.mki footer.mki footer-c.mki a4gl.mk q4gl.mk d4gl.mk i4gl.mk"
+AMAKE_INCL_FILES="header.mki footer.mki footer2.mki footer-c.mki a4gl.mk \
+		q4gl.mk d4gl.mk i4gl.mk"
 
 #TODO: check that all of this is reallu needed in bynary installations:
 ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
@@ -5194,6 +5195,11 @@ if test "$withval" != "no"; then
 			if test "$enable_ac_debug" = "yes" ; then
 				echo "Found ecpg_informix.h in $ECPG_INCDIR/pgsql"
 			fi
+		elif test -f "$ECPG_INCDIR/postgresql/ecpg_informix.h"; then
+			#reported on mailing list - Debian's standard PostgresSQL
+			if test "$enable_ac_debug" = "yes" ; then
+				echo "Found ecpg_informix.h in $ECPG_INCDIR/postgresql"
+			fi
 		else
 			AC_MSG_WARN(** cannot find Informix compatibility header (ecpg_informix.h) at )
 			AC_MSG_WARN(** $ECPG_INCDIR/postgresql/informix/esql)
@@ -5203,6 +5209,9 @@ if test "$withval" != "no"; then
 			AC_MSG_WARN(** $ECPG_INCDIR)
 			AC_MSG_WARN(** ...or...)
 			AC_MSG_WARN(** $ECPG_INCDIR/pgsql)
+			AC_MSG_WARN(** ...or...)
+			AC_MSG_WARN(** $ECPG_INCDIR/postgresql)
+			
 		fi
 		
 		#In case we are working from not installed CVS code:
@@ -9022,7 +9031,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.284 2005-03-04 08:04:41 afalout Exp $
+| $Id: configure.in,v 1.285 2005-03-11 08:50:07 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

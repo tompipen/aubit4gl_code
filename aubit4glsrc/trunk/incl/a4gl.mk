@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.55 2005-03-04 08:07:14 afalout Exp $
+#	 $Id: a4gl.mk,v 1.56 2005-03-11 08:50:37 afalout Exp $
 
 ##########################################################################
 #
@@ -279,6 +279,19 @@ A4GL_CLEAN_FLAGS	=$(addprefix *,	$(A4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(A4
 
 # ====================== Rules for compiling A4GL ==========================
 
+#Consider this; there is object in common/x.ao; .4ge rule finds x.ao using 
+#VPATH in common; rule to make .ao references .4gl; 4gl is found in common/
+#Make rebuilds .ao using common.4gl, and puts resulting .ao in current directory
+#(because if it puts it anywhere else, and not target exists at make invocation 
+#linking will fail, because at that stage 
+#prerequisites for .4ae where allready evaluated) then new target will be linked AGAIN
+#with OLD common/x.ao and NOT with just created ./x.ao
+#
+#All targets should go where source file is, but I can't do it because
+#link line prerequisites VPATH will not find them, since they will be made
+#AFTER prereqiosites where searched for... And I cant find a way to force
+#make to evaluate them AFTER...
+
 
 ####################################
 # Rule to compile executable from single 4gl file
@@ -288,7 +301,7 @@ A4GL_CLEAN_FLAGS	=$(addprefix *,	$(A4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(A4
 #with just one (${A4GL_EXE_EXT}.4gl) source file, instead with all the 4gl
 #files needed:
 #.4gl${A4GL_EXE_EXT}:
-%${A4GL_EXE_EXT}: %.4gl
+xxxxx%${A4GL_EXE_EXT}: %.4gl
 	${A4GL_CL} -o$@ $< ${A4GL_CL_LDFLAGS}
 
 
@@ -304,47 +317,55 @@ A4GL_CLEAN_FLAGS	=$(addprefix *,	$(A4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(A4
 #installation in front of any source file paths specified in rule call:
 #Note: we can produce .glb file by specifying --globals and that would be
 #much faster then doing a full compile when all we need is a .glb file
-%${A4GL_OBJ_EXT} %.glb: %.4gl
+#
+#Why was I not placing objects in same place source file is in? Try this:
+#OBJECTS_WITH_SOURCE=1
+#Because makefiles like Amake OneMax ones dont know where source file is;
+#all they know there is x.4gl required, and that it has to result in x.aso
+#to link it in executable. Our rule will use VPATH to find 4gl, but .aso
+#is allready on the link line - WITHOUT THE PATH and so it is expected in
+#current directory... For link rule to find object outside current dir that 
+#we just now created, we would have to restart the link target somehow, to 
+#force make to look for it again.
+#
+%${A4GL_OBJ_EXT} %${A4GL_SOB_EXT} %.glb: %.4gl
 ifeq "${USE_4GLPC}" "1"
 	${FAIL_CMPL_4GL}${A4GL_CC} $< -c -o ${OBJSTORE}$*${A4GL_OBJ_EXT}
 else
 #-I to the directory 4GL file is in is needed for Informix ESQL/C compiler,
 #otherwise .h file created by 4glc will not be found by esql executable
-	${FAIL_CMPL_4GL}@if test "$(<D)" = "" -o "$(<D)" = "."; then \
-		EXEC="${A4GL_CC} $< -c -o ${OBJSTORE}$*${A4GL_OBJ_EXT}"; \
+#$(<D) is directory part of the first prerequisite
+#$(@D) is directory part of the file name of the target
+#$* implicit rule match part
+#@F filename of the target
+
+	${FAIL_CMPL_4GL}@\
+	if test "$(suffix $@)" = "${A4GL_SOB_EXT}" ; then \
+		SO_FLAG="--shared" ; \
+	fi ; \
+	if test "${OBJSTORE}" != "" ; then \
+		OUTPUTPATH="${OBJSTORE}" ; \
 	else \
-		EXEC="${A4GL_CC} -I$(<D) ${CYGWIN_ROOT}$< -c -o ${OBJSTORE}$*${A4GL_OBJ_EXT}"; \
+		if test "$(@D)" != "" -a "$(@D)" != "." ; then \
+			OUTPUTPATH="$(@D)/" ; \
+		else \
+			if test "$(<D)" != "" -a "$(<D)" != "." -a "$(OBJECTS_WITH_SOURCE)" = "1"; then \
+				OUTPUTPATH="$(<D)/" ; \
+			fi ; \
+		fi ; \
+	fi ; \
+	BASENAME="${basename $(@F)}" ; \
+	OUTOBJ="$$OUTPUTPATH$$BASENAME$(suffix $@)" ; \
+	if test "$(<D)" = "" -o "$(<D)" = "."; then \
+		EXEC="${A4GL_CC} $< $$SO_FLAG -c -o $$OUTOBJ" ; \
+	else \
+		EXEC="${A4GL_CC} -I$(<D) ${CYGWIN_ROOT}$< $$SO_FLAG -c -o $$OUTOBJ" ; \
 	fi; \
 	echo $$EXEC; \
 	$$EXEC; RET=$$?; \
 	exit $$RET;
 endif
 #if test -f $*.cpc.err ; then cat $*.cpc.err >> /tmp/cpc_errors.log ; fi; \
-
-SO_FLAG=--shared
-#SO_FLAG=--as-dll
-
-####################################
-# Rule to compile an shared object file from a 4gl file
-# Same as compiling A4GL_OBJ_EXT above but addind --as-dll when invoking 4glc/4glpc
-#if its -shared, that it cant be -c (of GCC will produce static object regardless of -shared)
-%${A4GL_SOB_EXT} %.glb: %.4gl
-#	${FAIL_CMPL_4GL}${A4GL_CC} $< ${SO_FLAG} -o $@
-ifeq "${USE_4GLPC}" "1"
-	${FAIL_CMPL_4GL}${A4GL_CC} $< ${SO_FLAG} -o ${OBJSTORE}$*${A4GL_SOB_EXT}
-else
-#-I to the directory 4GL file is in is needed for Informix ESQL/C compiler,
-#otherwise .h file created by 4glc will not be found by esql executable
-	${FAIL_CMPL_4GL}@if test "$(<D)" = "" -o "$(<D)" = "."; then \
-		EXEC="${A4GL_CC} $< ${SO_FLAG} -o ${OBJSTORE}$*${A4GL_SOB_EXT}"; \
-	else \
-		EXEC="${A4GL_CC} -I$(<D) ${CYGWIN_ROOT}$< ${SO_FLAG} -o ${OBJSTORE}$*${A4GL_SOB_EXT}"; \
-	fi; \
-	echo $$EXEC; \
-	$$EXEC; RET=$$?; \
-	exit $$RET;
-endif
-
 
 ####################################
 # Rule for making a library using .mk make file

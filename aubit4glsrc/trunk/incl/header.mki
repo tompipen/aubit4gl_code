@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: header.mki,v 1.20 2005-02-21 00:52:54 afalout Exp $
+#	 $Id: header.mki,v 1.21 2005-03-11 08:50:37 afalout Exp $
 
 ############################################
 #   Aubit 4gl compiler - amake system
@@ -178,4 +178,22 @@ ifneq "${AMAKE_ADDRULES}" ""
     #See this file for examples of vpath usage: erp/etc/max_rules.mki
 	include ${AMAKE_ADDRULES}
 endif
+
+
+ifeq "${USE_USER_VPATH}" "1"
+vpath %.4gl   ${SET_VPATH_4GL}
+vpath %.glb   ${SET_VPATH_4GL}
+vpath %.mk    ${SET_VPATH_MK}
+vpath %.per   ${SET_VPATH_PER}
+vpath %.msg   ${SET_VPATH_MSG}
+vpath %.sch   ${SCH_DIR}
+vpath %${FRM} ${SET_VPATH_FRM}
+vpath %${OBJ} ${SET_VPATH_OBJ}
+vpath %.aso   ${SET_VPATH_OBJ}
+vpath %${PRG} ${SET_VPATH_PRG}
+vpath %${LIB} ${SET_VPATH_LIB}
+vpath %${HLP} ${SET_VPATH_HLP}
+endif
+
+
 #------------------------ EOF ------------------------------

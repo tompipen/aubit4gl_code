@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.41 2005-03-09 02:22:57 afalout Exp $
+#	 $Id: footer.mki,v 1.42 2005-03-11 08:50:37 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -245,6 +245,12 @@ else
 	AUBIT_LINK_DEPS	=${AUBIT_DEPS}
 endif
 
+AO_ONLY=$(filter %.ao,$(AUBIT_LINK_DEPS))
+ASO_ONLY=$(filter %.aso,$(AUBIT_LINK_DEPS))
+ASHARED-L=$(addprefix -l,${ASO_ONLY:.aso=})
+ASTATIC-L=$(addprefix -l,${AO_ONLY:.ao=})
+AUBIT_LINK-L=$(ASHARED-L) $(ASTATIC-L)
+AUBIT_LINK_4GL=${AO_ONLY:.ao=.4gl} ${ASO_ONLY:.aso=.4gl}
 
 # =======================================================================
 #                 Define files to be cleaned
@@ -321,7 +327,7 @@ all:	aubit querix d4gl-pcode d4gl-ccode i4gl-pcode i4gl-ccode
 #make reaches prgram target, examine dependencies, applies VPATH and hopefully
 #finds them. If this does not help, remove it, since it's redundant:
 #aubit	  :	${FILES.aox} ${PROG.4ae} ${FILES.afr} ${FILES.hlp}
-aubit	  :	${AUBIT_DEPS} 		${PROG.4ae} ${FILES.afr} ${FILES.hlp} ${FILES.4gl:.4gl=.glb} ${GLOB_GLOBALS:.obj=.glb}
+aubit	  :	${AUBIT_DEPS} 		${AUBIT_LINK_DEPS} ${PROG.4ae} ${FILES.afr} ${FILES.hlp} ${FILES.4gl:.4gl=.glb} ${GLOB_GLOBALS:.obj=.glb}
 d4gl-pcode:	${D4GL_PCODE_DEPS} 	${PROG.42r} ${FILES.42f} ${FILES.42h}
 d4gl-ccode:	${D4GL_CCODE_DEPS} 	${PROG.42e} ${FILES.42f} ${FILES.42h}
 i4gl-pcode:	${I4GL_PCODE_DEPS} 	${PROG.4gi} ${FILES.frm} ${FILES.iem}
@@ -355,9 +361,31 @@ endif
 #                            Aubit Targets
 # =======================================================================
 
-#This is an explicit rule - vpath will not be searched - use implicit rule instead?
+#.PHONY: collect.sources.paths
+#collect.sources.paths: ${AUBIT_LINK_4GL}
+#	@echo $^
+#	@x="$^" ; echo $$x
+#	@echo "--------------"
+
+#.LIBPATTERNS=%.aso %.ao lib%.so lib%.a
+#search directories specified by matching vpath search paths and the VPATH search path
+#but WHEN? when prerequisites are expanded - too late!
+#zzzzzz${PROG.4ae}: -ltablefunc
+#zzzzzzxx${PROG.4ae}: ${AUBIT_LINK-L}
+#	@echo "$^"
+#	@echo "--------------"
+
+#This is an explicit rule - vpath will not be searched (??) - use implicit rule instead?
 #${PROG.4ae}:${AUBIT_DEPS}
-${PROG.4ae}:${AUBIT_LINK_DEPS}
+${PROG.4ae}: ${AUBIT_LINK_DEPS}
+ifneq "${AMAKE_STEP_2}" ""
+	@${MAKE} -s -f ${AMAKE_STEP_2} ${PROG.4ae} AUBIT_LINK_DEPS="${AUBIT_LINK_DEPS}" \
+		PROG.4ae="${PROG.4ae}" \
+		AUBIT_DEPS="${AUBIT_DEPS}" \
+		PROGTYPE="$(PROGTYPE)" \
+		FILES.aubit.link="${FILES.aubit.link}"
+else
+#%.4ae:: ${AUBIT_LINK_DEPS}
 ifeq "$(PROGTYPE)" ".lib" 	#------------------- linking library -----------------------
 ifeq "${A4GL_USE_LD}" "yes" #using ld
 #-fPIC will apparently not work on AIX - we should autoconf this file
@@ -407,6 +435,10 @@ else                        #using 4glc
 endif
 endif
 #	@echo CHANGED: $?
+endif
+ifeq "${VERBOSE}" "1"
+	@echo "Linking successful."
+endif
 
 # =======================================================================
 #                            4Js Targets
@@ -675,6 +707,11 @@ show:
 	@echo "PRG=${PRG}"
 	@echo "LIB=${LIB}"
 	@echo "HLP=${HLP}"
+	@echo "AO_ONLY=$(AO_ONLY)"
+	@echo "ASO_ONLY=$(ASO_ONLY)"
+	@echo "ASHARED-L=$(ASHARED-L)"
+	@echo "ASTATIC-L=$(ASTATIC-L)"
+	@echo "AUBIT_LINK-L=$(AUBIT_LINK-L)"
 	
 	
 
