@@ -2,7 +2,7 @@ SQL CONVERSION TOOL
 
 convertsql takes SQL statements and converts them from one dialect
 of SQL into another, according to the conversion rules in
-/opt/aubit4gl/etc/convertsql/
+$AUBITDIR/etc/convertsql/*.cnv
 
 convertsql takes two arguments - the input and output dialects.
 It converts standard input to standard output.
