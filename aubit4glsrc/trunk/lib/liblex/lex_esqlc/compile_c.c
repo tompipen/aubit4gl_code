@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.90 2003-09-01 15:58:19 mikeaubury Exp $
+# $Id: compile_c.c,v 1.91 2003-09-02 21:46:10 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -3386,6 +3386,7 @@ print_report_2 (int pdf, char *repordby)
 
   printc ("if (acl_ctrl==REPORT_SENDDATA) {\n");
   printc ("   int _g,_p;\n");
+  printc ("   A4GL_rep_print(&rep,0,1,0);");
   printc ("   _g=A4GL_chk_params(rbind,%d,_ordbind,%s);\n", cnt, repordby);
   printc
     ("   if (_g>0&&_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",

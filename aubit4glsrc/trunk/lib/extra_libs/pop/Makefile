@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2003-09-01 15:58:18 mikeaubury Exp $
+# $Id: Makefile,v 1.6 2003-09-02 21:45:57 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -62,6 +62,6 @@ test.4ae: test.4gl test.per
 
 clean:
 	${RM} *.out *.c *.${FGLC_OUTPUT_EXT} *.h *${SO_EXT} *.err *.bak *.glb *.h \
-	*.4ae ${LIBROOT}/libA4GL_pop${SO_EXT}
+	*.4ae ${LIBROOT}/liba4gl_pop${SO_EXT}
 
 

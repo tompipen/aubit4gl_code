@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.57 2003-08-24 17:54:14 mikeaubury Exp $
+# $Id: curslib.c,v 1.58 2003-09-02 21:46:10 mikeaubury Exp $
 #*/
 
 /**
@@ -2007,10 +2007,15 @@ static void A4GL_clear_menu (ACL_Menu * menu)
 #endif
 
   del_panel (p);		/* this is causing problems INVESTIGATE */
-A4GL_del_pointer(menu->window_name, PANCODE);
-A4GL_del_pointer(menu->window_name, WINCODE);
-  delwin (w);
+
+  A4GL_del_pointer(menu->window_name, PANCODE);
+  A4GL_del_pointer(menu->window_name, WINCODE);
+
+  delwin (w); // Maybe copy to parent window first....
+		// Informix seems to retain the menu rather than clear it...
+
   /* A4GL_remove_window (menu->window_name); */
+
   A4GL_mja_setcolor (NORMAL_TEXT);
 }
 

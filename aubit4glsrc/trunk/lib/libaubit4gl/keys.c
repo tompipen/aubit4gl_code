@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.25 2003-08-08 15:52:34 mikeaubury Exp $
+# $Id: keys.c,v 1.26 2003-09-02 21:46:10 mikeaubury Exp $
 #
 */
 
@@ -166,6 +166,16 @@ A4GL_key_val2 (char *str)
   if (mja_strcmp ("HELP", str) == 0)
    return std_dbscr.helpkey;
 
+
+
+
+  if (A4GL_isyes(acl_getenv("USEPAGEKEYS"))) {
+  	if (mja_strcmp ("NEXT", str) == 0) return A4GLKEY_PGDN;
+  	if (mja_strcmp ("NEXTPAGE", str) == 0)  return A4GLKEY_PGDN;
+  	if (mja_strcmp ("PREV", str) == 0)  return A4GLKEY_PGUP;
+  	if (mja_strcmp ("PREVPAGE", str) == 0)  return A4GLKEY_PGUP;
+  } else {
+
   if (mja_strcmp ("NEXT", str) == 0)
     return std_dbscr.nextkey;
 
@@ -177,6 +187,11 @@ A4GL_key_val2 (char *str)
 
   if (mja_strcmp ("PREVPAGE", str) == 0)
     return std_dbscr.prevkey;
+
+  }
+
+
+
 
   if (mja_strcmp ("ACCEPT", str) == 0)
     return std_dbscr.acckey;

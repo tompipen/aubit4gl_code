@@ -88,11 +88,6 @@ let nmsg=A4GL_pop::popnum()
 display "You have ", nmsg USING "####&"," Messages" at 4,1
 for i=1 to nmsg
 
-	if i+5>23 then
-		display "Too many.." at 23,1
-		exit for
-	end if
-
 
 		let txt=A4GL_pop::popgethead(i)
 		let subject=txt
@@ -114,8 +109,10 @@ if (ptr) {
 endcode
 
 
-	display i using "####" at i+5,1
-	display " ",subject clipped  at i+5,6
+	if i+5<=23 then
+		display i using "####" at i+5,1
+		display " ",subject clipped  at i+5,6
+	end if
 
 # Do we want to delete this message ?
 
@@ -130,8 +127,10 @@ endcode
 		or subject="Re: Details"
 		or subject="Re: Approved"
  	then
+		if i+5<23 then
 		display "-" at i+5,6 attribute(red,reverse)
 		display subject clipped  at i+5,7 attribute(red)
+		end if
 		message "Deleting :",i
 		set pause mode off
 		set pause mode on

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.33 2003-09-01 15:58:19 mikeaubury Exp $
+# $Id: ops.c,v 1.34 2003-09-02 21:46:10 mikeaubury Exp $
 #
 */
 
@@ -1464,7 +1464,10 @@ strcpy(buff,"-------------------------------------------------------------------
 dig=NUM_DIG(ptr)*2;
 dec=NUM_DEC(ptr);
 buff[dig-dec]=0;
-strcat(buff,"&.");
+
+if  (dec) 	strcat(buff,"&.");
+else 		strcat(buff,"-&");
+
 memset(buff2,'&',255);
 buff2[dec]=0;
 strcat(buff,buff2);

@@ -58,3 +58,29 @@ CASE n
 END CASE
 
 END FUNCTION
+
+
+FUNCTION strstr(a,b)
+define a CHAR(512)
+define b CHAR(512)
+define c integer
+
+code
+if (strstr(a,b)==0) c=0;
+else c=strstr(a,b)-a+1;
+endcode
+return c
+END FUNCTION
+
+
+FUNCTION strchr(a,b)
+define a CHAR(512)
+define b CHAR(1)
+define c integer
+
+code
+if (strchr(a,b[0])==0) c=0;
+else c=strstr(a,b[0])-a+1;
+endcode
+return c
+END FUNCTION

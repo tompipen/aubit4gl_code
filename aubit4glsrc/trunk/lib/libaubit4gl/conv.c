@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.57 2003-08-06 20:27:47 mikeaubury Exp $
+# $Id: conv.c,v 1.58 2003-09-02 21:46:10 mikeaubury Exp $
 #
 */
 
@@ -3559,9 +3559,9 @@ int m;
       buff[m] = '9';
     }
 
-  A4GL_debug("Buff now=%s\n",buff);
+  A4GL_debug("Buff now=%s n=%d\n",buff,n);
   // test for an overflow - we cannot round in that case
-  if (n < 1 && buff[0] == '0') {
+  if (m < 1 && buff[0] == '0') {
 	A4GL_debug("Overflow...");
     return 0;
   }
