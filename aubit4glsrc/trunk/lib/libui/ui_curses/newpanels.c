@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.15 2003-03-03 21:11:07 mikeaubury Exp $
+# $Id: newpanels.c,v 1.16 2003-03-07 09:08:30 mikeaubury Exp $
 #*/
 
 /**
@@ -243,7 +243,7 @@ init_windows (void)
 LIBUSEONLY void *
 create_blank_window (char *name, int x, int y, int w, int h, int border)
 {
-  return create_window (name, x, y, w, h, 1, 1, 1, 1, 1, border, 1, 1, 0xffff);
+  return create_window (name, x, y, w, h, 1, 1, 1, 1, 1, border, 1, 1, 0x0);
 }
 
 /**
@@ -378,7 +378,7 @@ create_window (char *name, int x, int y, int w, int h,
       attrib = attrib + ' ';
       debug ("Set pad char to space");
     }
-  debug ("Setting attribute for window to 0x%x\n", attrib);
+  debug ("Setting attribute for window to 0x%x for %s\n", attrib,name);
 
 
 

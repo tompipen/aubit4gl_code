@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.14 2003-03-03 21:11:06 mikeaubury Exp $
+# $Id: curslib.c,v 1.15 2003-03-07 09:08:29 mikeaubury Exp $
 #*/
 
 /**
@@ -3159,8 +3159,7 @@ menu_setcolor (ACL_Menu * menu, int typ)
   long attr2;
   currwin = menu->menu_win;
   attr = menu->attrib;
-  if (attr & 255)
-    attr = attr - (attr & 255);
+  if (attr & 255) attr = attr - (attr & 255);
   /* wbkgd(menu->menu_win,0); */
   debug ("Window background = %x", attr);
   if (attr == 0)
