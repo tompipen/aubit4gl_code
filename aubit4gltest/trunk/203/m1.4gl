@@ -1,9 +1,5 @@
 # Dynamic memory allocation
 define aa dynamic array of integer
-define lv_dtabnames dynamic array of record
-		ss char(20)
-end record
-define lv_t char(20)
 main
 define a integer
 
@@ -14,10 +10,7 @@ define a integer
 	end if
 
 	allocate array aa [33]
-	allocate array lv_dtabnames [33]
 
-	let lv_t="Hello"
-	display lv_t[2]
 
 	let a=fgl_dynarr_extentsize(aa,1)
 	display "size=",a
