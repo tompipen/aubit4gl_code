@@ -54,6 +54,7 @@ namespace Aubit4glSql_postgresql {
      PgConnection& getCurrentConnection();
      PgConnection getConnectionToDatabase(const char *dbName);
      const char *getConnectionNameToDatabase(const char *dbName);
+     void storeConnection(Connection connection);
  };
 }
 #endif

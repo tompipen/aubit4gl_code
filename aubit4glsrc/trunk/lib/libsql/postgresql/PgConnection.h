@@ -28,18 +28,29 @@ namespace Aubit4glSql_postgresql {
      int statementCount;    /**< The number of statements used */
      char *errorMessage;    /**< Message of last error ocurred */
    public:
-     PgConnection();
+     PgConnection(void);
      PgConnection(const char *_dbName, const char *_connName);
-     ~PgConnection();
+     ~PgConnection(void);
      void setPgConn(PGconn *PGconn);
      const char *getConnectionName(void);
      const char *getDatabaseName(void);
+     void disconnect(void);
      char *getErrorMessage(void);
      int getError(void);
+     char *getLastError(void);
      char *getGlobalStatementName(void);
-     void disconnect(void);
-     PreparedStatement getPreparedStatement(const string& name);
+     PreparedStatement getPreparedStatement(char *name);
      void setPreparedStatement(const string& name,struct s_sid *sid);
+     PreparedStatemement prepareStatement(char *s);
+     ResultSet &getCursor(char *cursorName);
+     void deleteCursor(char *cursorName);
+     void begin(void);
+     void commit(void);
+     void rollback(void);
+     DatabaseMetadata &getMetaData(void);
+     void storeMetaData(DatabaseMetaData &md, ResultSet &rs);
+     ResultSet &getStoredRsMetadata(void);
+     void freeStoredMetadata(void);
   };
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: postgresql.cpp,v 1.10 2003-01-31 10:10:47 mikeaubury Exp $
+# $Id: postgresql.cpp,v 1.11 2003-02-09 17:38:26 saferreira Exp $
 #
 */
 
@@ -90,7 +90,7 @@ extern "C" void debug (char *str);
 #endif
 
 #ifndef lint
-  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.10 2003-01-31 10:10:47 mikeaubury Exp $";
+  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.11 2003-02-09 17:38:26 saferreira Exp $";
 #endif
 
 
@@ -127,7 +127,7 @@ extern "C" int A4GLSQL_get_status(void)
 extern "C" char *A4GLSQL_get_sqlerrm (void)
 {
   Connection connection = driver.getCurrentConnection();
-  connection.getLastError();
+  return connection.getLastError();
 }
 
 /**
@@ -293,7 +293,7 @@ extern "C" char *A4GLSQL_get_curr_conn(void)
   try {
     PgConnection &currentConnection = pgDriver.getCurrentConnection();
   }
-  catch (ConnectionException& e)
+  catch (SQLException& e)
   {
     // @todo Assign status and error message
     return (char *)1;
@@ -313,7 +313,7 @@ extern "C" char *A4GLSQL_get_currdbname()
   try {
     PgConnection &currentConnection = pgDriver.getCurrentConnection();
   }
-  catch (ConnectionException& e)
+  catch (SQLException& e)
   {
     // @todo Assign status and error message
     return NULL;
@@ -368,8 +368,8 @@ static A4glStatement *prepareSqlStatement(
   struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s)
 {
   A4glStatement *sid = newStatement(ibind,ni,obind,no,s);
-  PgConnection & pgConnection = pgDriver.getCurrentConnection();
-  PreparedStatement statement = pgConnection.prepareStatement(s);
+  PgConnection & currentConnection = pgDriver.getCurrentConnection();
+  PreparedStatement statement = currentConnection.prepareStatement(s);
   // @todo : The prepare should have a try catch with some free of sid
   statement.prepare(s);
   sid->statementName = statement.getName();
@@ -468,11 +468,12 @@ static int executeStatement(A4glStatement  *sid)
   int rc = 0;
 
   PreparedStatement &st = *(sid->hstmt);
+  st.setA4glStatement(sid);
   if ( sid-> hasInputBind ) {
-    st.executeQuery(sid);
+    st.executeQuery();
   }
   else {
-    st.executeUpdate(sid);
+    st.executeUpdate();
   }
   return rc;
 }
@@ -660,6 +661,7 @@ extern "C" A4glCursor *A4GLSQL_declare_cursor(
 {
   A4glCursor *cursorIdentification;
 
+  // I need to get the connection inside sid and the use it
   Statement st = driver.createStatement(cursortype, etc);
   setResultsetType()
   st.setCursorName(cursname);
@@ -792,10 +794,10 @@ extern "C" int A4GLSQL_fetch_cursor (char *cursor_name,
       rs.???(sid);
       break;
     case FETCH__RELATIVE:
-      rs.???(sid);
+      rs.relative(sid);
       break;
     case FETCH__ABSOLUTE:
-      rs.???(sid);
+      rs.absolute(sid);
       break;
     otherwise:
       exitwith ("Invalid fetch");
@@ -886,7 +888,7 @@ extern "C" void A4GLSQL_commit_rollback (int mode)
   try {
     PgConnection &currentConnection = pgDriver.getCurrentConnection();
   }
-  catch (ConnectionException& e)
+  catch (SQLException& e)
   {
     // @todo Assign status and error message
     return;
@@ -928,19 +930,18 @@ extern "C" A4glStatement *A4GLSQL_find_prepare (char *pname)
 {
   try {
     PgConnection &currentConnection = pgDriver.getCurrentConnection();
-  } catch (ConnectionException& e) {
+  } catch (SQLException& e) {
     // @todo Assign status and error message
     return (A4glStatement *)0;
   }
 
   try {
-    const string stNm(pname);
-    PreparedStatement &statement currentConnection.gePreparedStatement(stNm);
+    PreparedStatement &statement currentConnection.gePreparedStatement(pname);
   } catch (SQLException e) {
     // @todo Assign status and error message
     return (A4glStatement *)0;
   }
-  return statement.getSSid();
+  return statement.getA4glStatement();
 }
 
 /**
@@ -978,7 +979,9 @@ extern "C" int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
   A4glStatement *sid = newStatement(ibind,ni,obind,no,s);
   
   const string stName(pname);
-  statement = conn.getPreparedStatement(pname);
+  // @todo : What is this ???
+  // @the reference to the prepared statement exists in the connection
+  statement = currentConnection.getPreparedStatement(pname);
   sid->ibind = ibind;
   sid->ni    = ni;
   if ( executeStatement(sid) == 1 )
@@ -1150,9 +1153,9 @@ extern "C" int A4GLSQL_get_datatype (char *db, char *tab, char *col)
 extern "C" int A4GLSQL_close_cursor(char *currname)  
 {
     Connection connection = driver.getCurrentConnection();
-    ResultSet cursor connection.getCursor(currname);
+    ResultSet &cursor = connection.getCursor(currname);
     cursor.close();
-    connection.deleteCursor();
+    connection.deleteCursor(currname);
     return 1;
 }
 
