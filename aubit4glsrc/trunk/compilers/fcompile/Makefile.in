@@ -24,10 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.61 2004-09-28 09:49:11 afalout Exp $
+# $Id: Makefile.in,v 1.62 2004-10-16 01:33:24 afalout Exp $
 #
 
-ROOT        =${AUBITDIR}
+ROOT        =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -125,8 +125,9 @@ ${ROOT}/bin/fshow : fshow.4gl
 #clean.fshow
 #	${FAIL_OK}${SH} ${4GLPC} $^ -o $@
 #	${FAIL_OK}../../bin/4glc -o$@ $<
-	echo "export A4GL_LEXTYPE=C; export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_UI=CONSOLE; ${ROOT}/bin/4glc -o$@ $<" | ${SH}
-
+#	echo "export A4GL_LEXTYPE=C; export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_UI=CONSOLE; ${ROOT}/bin/4glc -o$@ $<" | ${SH}
+	A4GL_LEXTYPE=C; DEBUG=ALL; A4GL_SQLTYPE=nosql; A4GL_UI=CONSOLE; ${ROOT}/bin/4glc -o$@ $<
+	
 fshow.gdb:
 	@echo "set args -ofshow fshow.4gl"
 	(export A4GL_LEXTYPE=C; export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_UI=CONSOLE;  gdb ${ROOT}/bin/4glc )

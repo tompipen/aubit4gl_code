@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.64 2004-10-15 15:00:15 mikeaubury Exp $
+# $Id: compile.c,v 1.65 2004-10-16 01:33:24 afalout Exp $
 #*/
 
 /**
@@ -57,13 +57,6 @@
 #define ANSI_MODE_WARN   1
 #define ANSI_MODE_ERROR  2
 #define yydebug a4gl_yydebug
-
-//#if ( defined(__CYGWIN__) )
-//	char *informix_esql="esql_wrap";
-//#else
-char *informix_esql="esql";
-//#endif
-
 
 /* -------- static --------- */
 static char outputfile[132];		/** The output file name */
@@ -109,7 +102,8 @@ int yydebug;			/* if !-DYYDEBUG, we need to define it here */
 */
 
 static int compile_4gl (int compile_object, char a[128], char incl_path[128],
-			int silent, int verbose, char output_object[128],int win_95_98);
+			int silent, int verbose, char output_object[128],int win_95_98,
+			char informix_esql[128], char pg_esql[128]);
 void printUsage (char *argv[]);
 static void printUsage_help (char *argv[]);
 int initArguments (int argc, char *argv[]);
@@ -217,7 +211,13 @@ initArguments (int argc, char *argv[])
   struct skip_param s_param[128];
   int skip_param_idx = 0;
   int skip_cnt = 0, skipit = 0;
+  char informix_esql[128] = "";
+  char pg_esql[128] = "";  
 
+//Cant use shell scripts on Windows: esql_wrap ecpg_wrap
+	sprintf (informix_esql, "\"%s/bin/esql\"",acl_getenv ("INFORMIXDIR"));
+	sprintf (pg_esql, "\"%s/bin/ecpg\"",acl_getenv ("POSTGRESDIR"));  
+  
 #ifdef DEBUG
   A4GL_debug ("Parsing the comand line arguments\n");
   A4GL_debug ("Arg 0 set to >%s<", A4GL_getarg0 ());
@@ -646,7 +646,7 @@ initArguments (int argc, char *argv[])
 			*/
 		  todo++;
 		  x = compile_4gl (compile_object, a, incl_path, silent, verbose, 
-		  				output_object, win_95_98);
+		  				output_object, win_95_98,informix_esql, pg_esql);
 		  
 		  if (x) {
 	    	  printf ("Exit code is: %d\n", x);
@@ -712,9 +712,10 @@ initArguments (int argc, char *argv[])
 			/* When using Embedded C output, we need to run appropriate ESQL/C
 			compiler to do the linking */
 			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) {
-				sprintf (buff, "ecpg_wrap %s %s -o %s %s %s %s %s ",get_rdynamic(),
-			       all_objects, output_object, l_path, l_libs,
-			       pass_options, extra_ldflags);
+				sprintf (buff, 
+				"%s %s %s -o %s %s %s %s %s -lecpg -lecpg_compat -lpgtypes -lpq -lm -L\"%s/lib\"",
+					gcc_exec, get_rdynamic(),all_objects, output_object, l_path, 
+					l_libs, pass_options, extra_ldflags,acl_getenv ("POSTGRESDIR"));
 		    }
 			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
 			{
@@ -746,9 +747,9 @@ initArguments (int argc, char *argv[])
             /* When using Embedded C output, we need to run appropriate ESQL/C
             compiler to do the linking */
 			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) {
-				sprintf (buff, "ecpg_wrap %s %s -o %s %s %s %s %s ",get_rdynamic(),
-			       all_objects, output_object, l_path, l_libs,
-			       pass_options, extra_ldflags);
+				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
+			       pg_esql, get_rdynamic() all_objects, output_object, l_path, 
+				   l_libs, pass_options, extra_ldflags);
 		    } else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0) {
 				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
 			       acl_getenv ("A4GL_SAPDB_ESQLC"), get_rdynamic(),all_objects, output_object, l_path, l_libs,
@@ -792,9 +793,9 @@ initArguments (int argc, char *argv[])
             compiler to do the linking */
 /*FIXME:*/
 			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) {
-				sprintf (buff, "ecpg_wrap %s %s -o %s %s %s %s %s ",get_rdynamic(),
-			       all_objects, output_object, l_path, l_libs,
-			       pass_options, extra_ldflags);
+				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
+			       pg_esql, get_rdynamic(), all_objects, output_object, l_path, 
+				   l_libs, pass_options, extra_ldflags);
 		    } else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0) {
 				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
 			       acl_getenv ("A4GL_SAPDB_ESQLC"), get_rdynamic(),all_objects, output_object, l_path, l_libs,
@@ -837,9 +838,16 @@ initArguments (int argc, char *argv[])
             compiler to do the linking */
 /*FIXME:*/
 			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) {
-				sprintf (buff, "ecpg_wrap %s %s -o %s %s %s %s %s ",get_rdynamic(),
-			       all_objects, output_object, l_path, l_libs,
-			       pass_options, extra_ldflags);
+				sprintf (buff, 
+				"%s -shared %s %s -o %s %s %s %s %s -lecpg -lecpg_compat -lpgtypes -lpq -lm -L\"%s/lib\"",
+					gcc_exec, get_rdynamic(),all_objects, output_object, l_path, 
+					l_libs, pass_options, extra_ldflags,acl_getenv ("POSTGRESDIR"));
+
+				/*		
+				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
+			       pg_esql, get_rdynamic(), all_objects, output_object, l_path, 
+				   l_libs, pass_options, extra_ldflags);
+				  */
 		    } else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0) {
 				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
 			       acl_getenv ("A4GL_SAPDB_ESQLC"), get_rdynamic(),all_objects, output_object, l_path, l_libs,
@@ -916,8 +924,9 @@ initArguments (int argc, char *argv[])
 				*/
 				A4GL_debug ("%s file size is not zero %d\n", buff, flength);
 				if (verbose) { printf ("%s is non-zero\n", buff); }
-				//something wrong here - doews not show 1 or 0 but large random integer
-				if (verbose) { printf ("shell_is_bash=%d\n",shell_is_bash);}
+
+				//something wrong here - does not show 1 or 0 but large random integer
+				//if (verbose) { printf ("shell_is_bash=%d\n"),shell_is_bash;}
 				if ( ! win_95_98 ) {
 					  sprintf (buff, "%s %s.err %s.warn", mv_cmd,
 						   output_object, output_object);
@@ -985,7 +994,8 @@ initArguments (int argc, char *argv[])
  */
 static int
 compile_4gl (int compile_object, char fgl_basename[128], char incl_path[128],
-	     int silent, int verbose, char output_object[128],int win_95_98)
+		int silent, int verbose, char output_object[128],int win_95_98,
+		char informix_esql[128], char pg_esql[128])
 {
 int need_cc=0, yyparse_ret, ret, flength=0;
 char buff[1028];
@@ -1638,6 +1648,5 @@ get_default_database (void)
 }
 
 
-//TODO - incorporate ecpg_wrap script here as a function
-
 /* ==================================== EOF =============================== */
+

@@ -1,3 +1,4 @@
+dnl # +----------------------------------------------------------------------+
 dnl # | Aubit 4gl Language Compiler Version $.0                              |
 dnl # +----------------------------------------------------------------------+
 dnl # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
@@ -22,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.252 2004-10-12 00:40:16 afalout Exp $
+dnl # $Id: configure.in,v 1.253 2004-10-16 01:32:33 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1949,7 +1950,8 @@ fi
 ## ==================================================================
 
 AMAKE_SH="amake genmake prepmake"
-ALL_SH="aubit ecpg_wrap esql_wrap $AMAKE_SH"
+ALL_SH="aubit $AMAKE_SH"
+#obsolete: ecpg_wrap esql_wrap
 #ALL_SH="4glpc $AMAKE_SH"
 #abug.sh
 
@@ -3966,7 +3968,7 @@ if test "$withval" != "no"; then
 			AC_CHECK_LIB([ecpg], [main])
 
 			#apparently pgtypes and ecpg_compat are present only 
-			#in version 3.x and up. They are specified in bin/ecpg_wrap
+			#in version 3.x and up. They are specified in bin/ecpg_wrap 4glc(compile.c)
 			#lib/extra_lib/esqlc/make_static lib/libesql/Makefile 
 			#lib/libsql/esqlc/Makefile 
 			#So it looks like that eanything in Aubit that uses ecpg needs
@@ -4009,7 +4011,7 @@ if test "$enable_stop_ecpg" = "yes" ; then
 fi
 
 ## ==================================================================
-##   Check all PodtgreSQL components for Aubit/Informix compatibility
+##   Check all PostgreSQL components for Aubit/Informix compatibility
 ## ==================================================================
 
 if test "$POSTMASTER" != "" -a "$PGSQL_LIBS" != "" -a "$HAS_LIB_PQ" != "0" \
@@ -7569,7 +7571,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.252 2004-10-12 00:40:16 afalout Exp $
+| $Id: configure.in,v 1.253 2004-10-16 01:32:33 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

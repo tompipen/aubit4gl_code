@@ -633,7 +633,7 @@ struct s_kw {
 #define ASC 1626
 #define AVG 1627
 #define COLON 1628
-#define COMMA 1629
+#define KW_COMMA 1629
 #define DAY 1630
 #define DBA 1631
 #define DEC 1632

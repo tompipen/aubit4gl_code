@@ -31,7 +31,7 @@
    enum yytokentype {
      NAME = 1729,
      UMINUS = 1730,
-     COMMA = 1629,
+     KW_COMMA = 1629,
      KW_OR = 1669,
      KW_AND = 1624,
      KW_USING = 1561,
@@ -775,7 +775,7 @@
 #endif
 #define NAME 1729
 #define UMINUS 1730
-#define COMMA 1629
+#define KW_COMMA 1629
 #define KW_OR 1669
 #define KW_AND 1624
 #define KW_USING 1561
@@ -1520,7 +1520,7 @@
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 231 "fgl.yacc"
+#line 233 "fgl.yacc"
 typedef union YYSTYPE {
 
 
@@ -1545,9 +1545,10 @@ typedef union YYSTYPE {
 	int 	integer_val;
 	float 	float_val;
 	struct sql_statement *sql_stmt;
+	struct ilist int_list;
 	} YYSTYPE;
 /* Line 1248 of yacc.c.  */
-#line 1550 "y.tab.h"
+#line 1551 "y.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

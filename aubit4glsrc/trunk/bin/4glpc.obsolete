@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc.obsolete,v 1.1 2004-10-04 13:49:58 afalout Exp $
+# $Id: 4glpc.obsolete,v 1.2 2004-10-16 01:33:23 afalout Exp $
 #
 
 ########################################################################
@@ -520,6 +520,9 @@ if test "$SH" = ""; then
 	fi
 fi
 
+
+#The _wrap shell scripts should be obsoleted too. No use on Windows.
+#4glc should handle this correctly now
 NCC_PG="$SH ecpg_wrap"
 #NCC_IFX="esql"
 NCC_IFX="$SH esql_wrap"
