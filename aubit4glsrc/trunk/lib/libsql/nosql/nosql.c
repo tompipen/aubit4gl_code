@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.27 2003-05-16 06:49:33 afalout Exp $
+# $Id: nosql.c,v 1.28 2003-07-01 07:34:29 mikeaubury Exp $
 #*/
 
 /**
@@ -356,7 +356,7 @@ A4GLSQL_put_insert (struct BINDING *ibind, int n)
  * @todo Describe function
  */
 void
-A4GLSQL_unload_data (char *fname, char *delims, char *sql1)
+A4GLSQL_unload_data (char *fname, char *delims, char *sql1,int nbind,struct BINDING *ibind)
 {
   A4GL_local_exitwith ("Could not unload_data - noODBC build");
 }

@@ -856,7 +856,10 @@ char delim_s[256];
 if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { sprintf(delim_s,":%s",delim); }
 
   if (A4GL_isyes(acl_getenv("ESQL_UNLOAD"))) {
-
+	int ni;
+		printc("{");
+  		ni = print_bind ('i');
+  		print_conversions ('i');
 			if (file[0]=='"') { 
 				sprintf(filename,"'%s'",A4GL_strip_quotes(file)); 
 			} else { 
@@ -874,12 +877,34 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
 				printc("}");
 			}
 
-
+		printc("}");
 
   } else {
-  	printc ("A4GLSQL_unload_data(%s,%s, /*1*/ \"%s\" /*2*/);\n", file, delim, sql);
+	int ni;
+	int a;
+	char *ptr;
+        printc("{");
+	ni=print_bind('i');
+	ptr=strdup(sql);
+	for (a=0;a<strlen(ptr);a++) {
+		if (strncmp(&ptr[a],":_vi_",5)==0) {
+			int b;
+			ptr[a]='?';
+			ptr[a+1]=' ';
+			ptr[a+2]=' ';
+			ptr[a+3]=' ';
+			ptr[a+4]=' ';
+			for (b=a+5;b<strlen(ptr);b++) {
+				if (ptr[b]<'0'||ptr[b]>'9') {a=b-1;break;}
+				ptr[b]=' ';
+			}
+		}
+		if (ptr[a]=='\n') ptr[a]=' ';
+	}
+  print_conversions('i');
+  	printc ("A4GLSQL_unload_data(%s,%s, \"%s\",%d,native_binding_i);\n", file, delim,ptr,ni);
+	printc("}");
   }
-  //printc ("/* UNLOAD NOT IMPLEMENTED YET */");
 }
 
 /**

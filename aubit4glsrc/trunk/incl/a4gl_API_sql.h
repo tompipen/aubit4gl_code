@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: a4gl_API_sql.h,v 1.14 2003-05-15 07:10:38 mikeaubury Exp $
+# $Id: a4gl_API_sql.h,v 1.15 2003-07-01 07:34:24 mikeaubury Exp $
 #
 */
 
@@ -106,7 +106,7 @@ extern "C"
   int A4GLSQL_add_prepare (char *pname, struct s_sid *sid);
   int A4GLSQL_open_cursor (int ni, char *s);
   void A4GLSQL_put_insert (struct BINDING *ibind, int n);
-  void A4GLSQL_unload_data (char *fname, char *delims, char *sql1);
+  void A4GLSQL_unload_data (char *fname, char *delims, char *sql1,int nbind,struct BINDING *ibind);
   void A4GLSQL_commit_rollback (int mode);
   void A4GLSQL_flush_cursor (char *cursor);
   char *A4GLSQL_get_currdbname (void);

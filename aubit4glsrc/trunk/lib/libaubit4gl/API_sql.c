@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.35 2003-05-15 07:10:39 mikeaubury Exp $
+# $Id: API_sql.c,v 1.36 2003-07-01 07:34:29 mikeaubury Exp $
 #
 */
 
@@ -785,7 +785,7 @@ A4GLSQL_put_insert (struct BINDING *ibind, int n)
  */
 /* int -- void in sql;.c */
 void
-A4GLSQL_unload_data (char *fname, char *delims, char *sql1)
+A4GLSQL_unload_data (char *fname, char *delims, char *sql1,int nbind,struct BINDING *ibind)
 {
   if (libptr == 0)
     A4GLSQL_initlib ();
@@ -795,7 +795,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sql1)
       A4GL_convert_sql (source_dialect, curr_sess->dbms_dialect, sql1);
     }
   A4GL_func = A4GL_find_func (libptr, "A4GLSQL_unload_data");
-  A4GL_func (fname, delims, sql1);
+  A4GL_func (fname, delims, sql1,nbind,ibind);
 }
 
 

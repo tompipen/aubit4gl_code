@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.60 2003-06-06 09:52:37 mikeaubury Exp $
+# $Id: sql.c,v 1.61 2003-07-01 07:34:29 mikeaubury Exp $
 #
 */
 
@@ -3390,7 +3390,7 @@ A4GLSQL_commit_rollback (int mode)
  * @param sql1 Sql select text to generate the unload data.
  */
 void
-A4GLSQL_unload_data (char *fname, char *delims, char *sql1)
+A4GLSQL_unload_data (char *fname, char *delims, char *sql1,int nbind,struct BINDING *ibind)
 {
   HSTMT hstmt;
   char *sql2;
