@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.65 2004-05-19 15:10:02 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.66 2004-05-24 19:58:26 mikeaubury Exp $
 #
 */
 
@@ -1275,4 +1275,10 @@ struct sigaction ServerSig;
 }
 
 
+
+void A4GL_logsql(int lineno,char *module, char *s) {
+if (s==0) return;
+A4GL_debug("SQL on line %d in %s:%s\n",lineno,module,s);
+
+}
 /* ================================= EOF ============================= */
