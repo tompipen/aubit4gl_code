@@ -546,7 +546,9 @@ table_reference:
 tname: table_name
 	| table_name correlation_name {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
 ;
+
 tname_list : tname | tname_list COMMA tname { sprintf($<str>$," %s,%s ",$<str>1,$<str>3);  }
+;
 
 table_expression:
 	from_clause
