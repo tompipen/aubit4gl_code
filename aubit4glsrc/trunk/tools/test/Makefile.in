@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.in,v 1.4 2001-12-28 19:56:40 saferreira Exp $
+# $Id: Makefile.in,v 1.5 2002-01-02 00:39:15 afalout Exp $
 #
 
 ## ==================================================================
@@ -40,13 +40,10 @@ else
 endif
 
 ifeq "$(ODBC)" "no"
-	4GLPCFLAGS+= -noodbc
-	4GLPCTESTFLAGS+= -noodbc
-endif
-
-ifeq "$(ODBC)" "no"
-	4GLPCFLAGS+= -noodbc
-	4GLPCTESTFLAGS+= -noodbc
+	ifeq "$(ODBC_LINK)" "static"
+		4GLPCFLAGS+= -noodbc
+		4GLPCTESTFLAGS+= -noodbc
+    endif
 endif
 
 

@@ -7,7 +7,7 @@
 #this is main Aubit 4gl compiler .4gl files compiler script
 #You should not need to invoke actual compiler(s) (4glc, fcompile...) directly
 #
-# $Id: 4glpc,v 1.32 2001-12-12 09:37:56 afalout Exp $
+# $Id: 4glpc,v 1.33 2002-01-02 00:39:15 afalout Exp $
 #
 ########################################################################
 
@@ -18,6 +18,15 @@
     #HEAD=head -n 20
     SHOWERRCODE=1
     FGLCEXEC=4glc
+	OVERWRITE_CONFIG=0
+	USE_CONFIGURE=1
+
+#############
+#this internal variable points to default location of Aubit config files
+#Default=/etc/opt/aubit4gl
+AUBITETC=/etc/opt/aubit4gl
+ETC_TARGET=$AUBITETC
+
 #FIXME:
 #uppercase 0, passed to 4glpc as "4gpc -O ..." is causing on CygWin:
 #[: --help: unknown operand
@@ -253,7 +262,26 @@ fi
 
 if [ "$AUBITDIR" = "" ]
 then
-        AUBITDIR=`pwd`
+	echo "Warning: $0 : AUBITDIR was not set"
+
+    AUBITDIR=`dirname $0`
+    if [ "$AUBITDIR" = "." ]
+    then
+		AUBITDIR=`pwd`
+    fi
+
+	#INDIR=`basename $AUBITDIR`
+    #echo $INDIR
+	#AUBITDIR=`echo $AUBITDIR | sed -e "/$INDIR/s/$INDIR//"`
+    AUBITDIR=`dirname $AUBITDIR`
+    export AUBITDIR
+
+    if [ "$AUBITDIR" = "." ]
+    then
+		AUBITDIR=`pwd`
+    fi
+
+	echo "AUBITDIR now set to $AUBITDIR"
 fi
 
 #save some things from environment, so they don't get overwtitten by .a4glrc -
@@ -269,40 +297,39 @@ export NOINCL=0
 
 if [ "$A4GLRC" = "" ]
 then
-	if [ -f /etc/a4glrc ]
+	if [ -f $AUBITETC/a4glrc ]
 	then
-		. /etc/a4glrc
-	    FOUNDRC=1
+	    FOUNDRC=$AUBITETC/a4glrc
 	else
 		if [ -f $AUBITDIR/etc/.a4glrc ]
 		then
-			. $AUBITDIR/etc/.a4glrc
-		    FOUNDRC=1
+		    FOUNDRC=$AUBITDIR/etc/.a4glrc
 		fi
 	fi
 
 	if [ -f $HOME/.a4glrc ]
 	then
-		. $HOME/.a4glrc
-	    FOUNDRC=1
+	    FOUNDRC=$HOME/.a4glrc
 	fi
 
-	if [ "$FOUNDRC" = "0" ]
+	if [ "$FOUNDRC" = "0" ] && [ "$1" != "-configexample" ] && [ "$1" != "-overwrite_config" ]
 	then
-	    echo "Cannot find /etc/a4glrc, $AUBITDIR/etc/.a4glrc or $HOME/.a4glrc"
+	    echo "Cannot find $AUBITETC/a4glrc, $AUBITDIR/etc/.a4glrc or $HOME/.a4glrc"
 	    echo "Stop."
 		if [ "$A4GLVERBOSE" = "yes" ]
 		then
     	    echo "Exiting with code 5"
 	    fi
 		exit 5
+	else
+        . $FOUNDRC
 	fi
 else
 	if [ -f $A4GLRC ]
 	then
-		. $A4GLRC
-	    FOUNDRC=1
-    else
+	    FOUNDRC=$A4GLRC
+		. $FOUNDRC
+	else
 	    echo "Cannot find $A4GLRC"
 	    echo "Stop."
 		if [ "$A4GLVERBOSE" = "yes" ]
@@ -463,21 +490,93 @@ do
         run_next
    ;;
 
+   -overwrite_config)
+		OVERWRITE_CONFIG=1
+   ;;
+
    -configexample)
-        #FIXME: check if $AUBITDIR is set
-        #FIXME: don't overwrite if exist
-		cp $AUBITDIR/etc/aubitenv.example /etc/aubitenv
-        cp $AUBITDIR/etc/a4glrc.example /etc/a4glrc
-        cp $AUBITDIR/etc/aubitbuild.mk.example /etc/aubitbuild.mk
-        #cp $AUBITDIR/etc/aubitbuild-multi.mk.example /etc/aubitbuild-multi.mk
-        chmod +x /etc/aubitenv
-		echo ""
-		echo "Example configuration files placed in /etc:"
-		echo "'aubitenv' 'a4glrc' 'aubitbuild.mk' and 'aubitbuild-multi.mk'"
-        echo "Please edit them to reflect your configuration."
-        echo "Then, execute: '. /etc/aubitenv' to set your environment."
-		echo ""
-		exit 0
+
+        if [ ! -d $ETC_TARGET ]
+        then
+			mkdir $ETC_TARGET
+        fi
+
+
+		if [ "$AUBITDIR" = "" ]
+        then
+            echo "Error: AUBITDIR is not set"
+            exit 14
+        else
+
+			#we will use config files created with "configure" in the future
+            if [ "$USE_CONFIGURE" = "1" ]
+            then
+				cd $AUBITDIR
+	            ./configure
+				AUBITENVSRC=aubitenv
+				AUBITBUILDSRC=aubitbuild.mk
+            else
+				AUBITENVSRC=aubitenv.example
+				AUBITBUILDSRC=aubitbuild.mk.example
+            fi
+
+			#a4glrc is still not generated with "configure"
+			A4GLRCSRC=a4glrc.example
+
+			if [ -f $ETC_TARGET/aubitenv ] && [ "$OVERWRITE_CONFIG" = "0" ]
+            then
+                echo "Error: $ETC_TARGET/aubitenv exists - will not overwrite."
+                exit 14
+            else
+                #Fix AUBITDIR
+				TOREPLACE="^export AUBITDIR"
+                INFILE=$AUBITDIR/etc/$AUBITENVSRC
+				OLDVALUE=$(grep "$TOREPLACE" $INFILE | awk '{print $2}' | sed -e "s/\//\\\\\//g")
+				NEWVALUE=$(echo $AUBITDIR | sed -e "s/\//\\\\\//g")
+                STARTWITH="^export $OLDVALUE"
+				REPLACEWITH="export AUBITDIR=$NEWVALUE"
+				sed -e "/$STARTWITH/s/$STARTWITH/$REPLACEWITH/" $INFILE > $ETC_TARGET/aubitenv
+		        chmod +x $ETC_TARGET/aubitenv
+            fi
+
+            if [ -f $ETC_TARGET/a4glrc ] && [ "$OVERWRITE_CONFIG" = "0" ]
+            then
+                echo "Error: $ETC_TARGET/a4glrc exists - will not overwrite."
+                exit 14
+            else
+				cp $AUBITDIR/etc/$A4GLRCSRC $ETC_TARGET/a4glrc
+            fi
+
+            if [ -f $ETC_TARGET/aubitbuild.mk ] && [ "$OVERWRITE_CONFIG" = "0" ]
+            then
+                echo "Error: $ETC_TARGET/aubitbuild.mk exists - will not overwrite."
+                exit 14
+            else
+		        cp $AUBITDIR/etc/$AUBITBUILDSRC $ETC_TARGET/aubitbuild.mk
+            fi
+
+            #Dynamic linking obsoleted use of aubitbuild-multi.mk
+			#if [ -f $ETC_TARGET/aubitbuild-multi.mk ] && [ "$OVERWRITE_CONFIG" = "0" ]
+            #then
+            #    echo "Error: $ETC_TARGET/aubitbuild-multi.mk exists - will not overwrite."
+            #    exit 14
+            #else
+			#	cp $AUBITDIR/etc/aubitbuild-multi.mk.example $ETC_TARGET/aubitbuild-multi.mk
+            #fi
+
+			echo ""
+			echo "Example configuration files placed in $ETC_TARGET:"
+			echo "'aubitenv' 'a4glrc' 'aubitbuild.mk'" # and 'aubitbuild-multi.mk'"
+	        echo "Please edit them to reflect your configuration."
+	        echo "Then, execute: '. $ETC_TARGET/aubitenv' to set your environment."
+			echo ""
+			
+			#we cannot execute aubitenv from here, because it will not be
+            #propageted to current user's shell, unless this script was invoked
+            #as ". 4glpc" and it probably was not
+
+			exit 0
+        fi
    ;;
 
    *.a) COMPCC="$COMPCC $a"

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2001-12-28 19:56:39 saferreira Exp $
+# $Id: Makefile.in,v 1.6 2002-01-02 00:39:15 afalout Exp $
 #
 
 include ../mkname.mk
@@ -96,8 +96,10 @@ else
 		#LOCALCFLAGS+=-I/opt/unixODBC/include  -DIODBC
 	endif
 	ifeq "$(ODBC)" "no"
-		LOCALCFLAGS	+=-DNOODBC #-Ilocal_odbc_incl
-        4GLPCFLAGS	+=-noodbc
+		ifeq "$(ODBC_LINK)" "static"
+			LOCALCFLAGS	+=-DNOODBC #-Ilocal_odbc_incl
+        	4GLPCFLAGS	+=-noodbc
+        endif
 	endif
 	ifeq "$(PDFBUID)" "yes"
 		LOCALCFLAGS	+= -DUSE_PDF_REPORTS
