@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.74 2002-07-13 05:31:51 afalout Exp $
+# $Id: Makefile.in,v 1.75 2002-07-14 08:09:39 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -162,14 +162,6 @@ TOINCL		=$(SOURCE)/incl/a4gl_incl_4glhdr.h $(SOURCE)/incl/a4gl_incl_4gldef.h \
                 $(SOURCE)/incl/a4gl_API_lex.h $(SOURCE)/incl/a4gl_API_form.h \
 				$(SOURCE)/incl/a4gl_API_menu.h $(SOURCE)/incl/a4gl_API_msg.h \
 				$(SOURCE)/common/dataio/form_x.x.h  $(SOURCE)/common/dataio/form_x.xs.h
-
-#../common/dataio/form_x.x.h: No such file or directory
-#/opt/aubit4gl/incl/a4gl_libaubit4gl.h:1796:30: a4gl_API_sql.h: No such file or directory
-#/opt/aubit4gl/incl/a4gl_libaubit4gl.h:1802:42: ../incl/a4gl_API_lex.h: No such file or directory
-#/opt/aubit4gl/incl/a4gl_libaubit4gl.h:1803:43: ../incl/a4gl_API_form.h: No such file or directory
-#/opt/aubit4gl/incl/a4gl_libaubit4gl.h:1804:43: ../incl/a4gl_API_menu.h: No such file or directory
-#/opt/aubit4gl/incl/a4gl_libaubit4gl.h:1805:42: ../incl/a4gl_API_msg.h: No such file or directory
-
 
 TOIDE       =$(IDEDIR)/*.4gl $(IDEDIR)/*.c $(IDEDIR)/*.sh $(IDEDIR)/*.msg $(IDEDIR)/*.per $(IDEDIR)/${MKFILNAME}
 
@@ -459,12 +451,18 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 	$(MAKE) -C lib/libui/ui_gtk clean
 	$(MAKE) -C lib/extra_libs/file clean
 	$(MAKE) -C lib/extra_libs/string clean
+	$(MAKE) -C lib/libexdata clean
+	$(MAKE) -C lib/libpacker/packed clean
+	$(MAKE) -C lib/libpacker/perl clean
+	$(MAKE) -C lib/libpacker/xdr clean
+	$(MAKE) -C lib/libpacker/xml clean
 	$(MAKE) -C compilers/4glc/rules clean
 	$(MAKE) -C compilers/4glc clean
 	$(MAKE) -C compilers/fcompile clean
 	$(MAKE) -C compilers/menus clean
 	$(MAKE) -C compilers/ace clean
 	$(MAKE) -C compilers/helpcompile clean
+	$(MAKE) -C compilers/xgen clean
 	$(MAKE) -C tools/test clean
 	$(MAKE) -C tools/test/gui clean
 	$(MAKE) -C tools/test/db clean
@@ -474,6 +472,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 	$(MAKE) -C tools/adbaccess clean
 	$(MAKE) -C tools/adbload clean
 	$(MAKE) -C tools/odbctest clean
+	$(MAKE) -C common/dataio clean
 	${RM} lib/swig/lib_wrap.doc
 	@echo Aubit 4gl compiler source tree is now clean
 

@@ -24,11 +24,14 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-07-07 08:46:04 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-07-14 08:09:55 afalout Exp $
 #
 
+ROOT        =../../..
+LIBROOT     =../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 override NOINCL=0
 
 ## ==================================================================
@@ -48,7 +51,7 @@ else
 	ALL         = libLEX_C.so
 endif
 
-CFLAGS			+=-I.. -I. -I../../libincl -I../../../compilers/fcompile -I../../../compilers/4glc/rules -I../../../compilers/4glc
+CFLAGS			+=-I.. -I. -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile -I${ROOT}/compilers/4glc/rules -I${ROOT}/compilers/4glc
 
 ## ==================================================================
 ##                              Targets
@@ -58,7 +61,7 @@ ALL: ${ALL}
 
 libLEX_C.so : ${4GLCOBJ_C}
 	${LD} ${SO_LDFLAGS} -o $@ $^
-	${CP} $@ ../..
+	${CP} $@ ${LIBROOT}
 
 ## ==================================================================
 ##                            Windows Targets
@@ -66,13 +69,13 @@ libLEX_C.so : ${4GLCOBJ_C}
 
 .PHONY : dllLEX_C
 dllLEX_C: exportlib4glcomp ${4GLCOBJ_C}
-	${MAKE} libLEX_C.dll DLLOBJS="${4GLCOBJ_C}" DLL_LDLIBS="${AUBIT_LIB} -lexportlib4glcomp" DLL_LDFLAGS="-L../../lib -L."
+	${MAKE} libLEX_C.dll DLLOBJS="${4GLCOBJ_C}" DLL_LDLIBS="${AUBIT_LIB} -lexportlib4glcomp" DLL_LDFLAGS="-L${ROOT}/lib -L."
 #see mod.c for list of variables that can't be automaticelly exported.
 
 #${RPCLIB_NAME} -lFORM_XDR @CURSES_LIB_NAME@
 # -lPDF_NOPDF
-	${CP} libLEX_C.dll ../..
-	${CP} libLEX_C.dll.a ../..
+	${CP} libLEX_C.dll ${LIBROOT}
+	${CP} libLEX_C.dll.a ${LIBROOT}
 
 ## ==================================================================
 ##                            Sub Targets
@@ -91,6 +94,13 @@ dllLEX_C: exportlib4glcomp ${4GLCOBJ_C}
 #rules/generated/states.c: rules.t
 #mod.o: mod.c ${Y_TAB_C}
 #rules/generated/y.tab.o: ../fcompile/form_x.h
+
+
+compile_c.c: ${ROOT}/compilers/4glc/rules/generated/kw.h ${ROOT}/compilers/4glc/rules/generated/y.tab.h
+
+${ROOT}/compilers/4glc/rules/generated/kw.h ${ROOT}/compilers/4glc/rules/generated/y.tab.h:
+	${MAKE} -C ${ROOT}/compilers/4glc rules.t
+
 
 ## ==================================================================
 ##                            Clean Targets

@@ -1,9 +1,21 @@
-#include <stdio.h>
-#include <stdlib.h>
+
 #include <gmp.h>
-#include "../libincl/a4gl_debug.h"
-#include "../libincl/a4gl_dtypes.h"
-#include "../libincl/a4gl_stack.h"
+
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include "../libincl/a4gl_debug.h"
+	#include "../libincl/a4gl_dtypes.h"
+	#include "../libincl/a4gl_stack.h"
+
+#else
+
+    #define _NO_FORM_X_H_
+    #include "a4gl_libaubit4gl.h"
+
+#endif
+
 #define MPZ_DTYPE_NAME "MPZ"
 
 // Just implement mpz for now (large integers)...

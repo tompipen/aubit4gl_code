@@ -3,8 +3,104 @@
 #include "a4gl_lib_ui_int.h"
 
 
-	#include "a4gl_tui_tui.h"
-	
+	/* #include "a4gl_tui_tui.h" */
+
+
+    /* =========================== from a4gl_tui_tui.h ======================== */
+
+	#define WANTCURSES
+
+	#ifndef _NO_FORM_H_
+		#include <form.h>
+	#endif
+
+	#if (defined(WIN32) && ! defined(__CYGWIN__))
+		#ifndef PAN32
+	    	#define PAN32
+			#include <panel32.h>
+	    #endif
+	#else
+        #ifndef _NO_PANEL_H_
+			#include <panel.h>
+	    #endif
+	#endif
+
+	typedef struct
+	  {
+	    int x1, y1, x2, y2;
+	    char buf[12000];
+	    WINDOW *win_no;
+	  }
+	textarea;
+
+	/* ======================= in colours.c  ======================= */
+	int decode_aubit_attr(int a,char t);
+	void a4glattr_wattrset(WINDOW *w,int a);
+    int decode_colour_attr_aubit(int a);
+	int colour_code (int a);
+
+
+	/* ======================= in curslib.c  ======================= */
+	void error_nobox(char *str);
+	void set_bkg(WINDOW *win,int attr);
+#ifdef OLD_INCL
+	#include "a4gl_prompt.h"	/* struct s_prompt */
+#endif
+	void clear_prompt (struct s_prompt *prmt);
+
+
+	/*  ======================= in ioform.c ======================= */
+#ifdef OLD_INCL
+	#include "a4gl_dbform.h" /* struct s_form_dets */
+#endif
+	void start_form (struct s_form_dets *s);
+    void set_arr_fields (int n, int attr, ...);
+    void disp_arr_fields (int n, int fonly, int attr, ...);
+    int gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a,va_list * ap);
+    void int_form_driver (FORM * form, int a);
+    int copy_field_data (struct s_form_dets * form);
+    void idisp_arr_fields (int n, int fonly, int attr, ...);
+    int get_curr_field_col (FORM * mform);
+	void default_attributes (FIELD * f, int dtype);
+    FIELD * make_field (int, int, int, int);
+    FIELD * make_label (int frow, int fcol, char *label);
+
+
+    /* =======================  in newpanels.c  ======================= */
+    void mja_refresh (void);
+    void mja_wrefresh (WINDOW * w);
+	int getch_win (void);
+	int xwattr_get (WINDOW * w);
+    int iscurrborder (void);
+    int getmessage_line (void);
+    WINDOW * get_currwin (void);
+    int subwin_print (WINDOW * win, char *fmt,...);
+    int subwin_gotoxy (WINDOW * win, int x, int y);
+    int refresh_menu_window (char *name,int top);
+    int getmenu_line (void);
+    int get_curr_print_top (void);
+    int get_curr_left (void);
+    void mja_endwin (void);
+    LIBUSEONLY int init_windows (void);
+    int init_colour_pairs (void);
+    int geterror_line (void);
+    void mja_setcolor (int typ);
+    int screen_width (void);
+    int get_curr_width (void);
+    void remove_window (char *win_name);
+    int find_ptr_debug (void *ptr);
+    int getprompt_line (void);
+	void tui_print (char *fmt,...);
+
+    /* ======================= in array.c  ======================= */
+    void set_array_mode(int type);
+
+
+
+
+
+
+
 	/* =============== from a4gl_tui_attr_list.h ============== */
 
 

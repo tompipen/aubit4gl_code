@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.52 2002-07-13 10:36:16 afalout Exp $
+# $Id: Makefile-common.in,v 1.53 2002-07-14 08:09:55 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -236,7 +236,7 @@ C_DFLAGS			+=-DDEBUG
 
 #This can be ovverriden from command line: "make OLD_INCL=0" to compile
 #with new include files:
-OLD_INCL=1
+OLD_INCL=0
 export OLD_INCL
 
 ifeq "${OLD_INCL}" "1"

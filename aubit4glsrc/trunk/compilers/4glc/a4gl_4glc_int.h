@@ -148,7 +148,66 @@
 	char *	ispdf 				(void);
 	int 	print_push_rec 		(char *s, char *b);
 	void 	expand_obind 		(void);
-	#include "a4gl_4glc_compiledefs.h"	/* struct expr_str */
+	
+	
+	
+	/* #include "a4gl_4glc_compiledefs.h" */	/* struct expr_str */
+
+    /* --------------------- from a4gl_4glc_compiledefs.h --------------------- */
+
+	#define MAXMENU 10
+	#define MAXMENUOPTS 10
+	#define NUMBINDINGS 2048
+
+	struct s_menu_stack
+	{
+
+	  char menu_title[132];
+
+	  char menu_help[132];
+
+	  char menu_key[30];
+	  int menu_helpno;
+	};
+
+	struct s_report_stack
+	{
+	  char why[20];
+	  char whytype;
+	};
+	#define REPORTSTACKSIZE 256
+
+	struct s_report
+	{
+	  char rep_cond[2000];
+	  char rep_expr[2000];
+	  int a;
+	  int t;
+	  int in_b;
+	};
+
+	struct expr_str
+	{
+	  char *expr;
+	  struct expr_str *next;
+	};
+
+	/* warning: struct BINDING defined in a4gl_incl_4gldef.h is DIFFERENT */
+	struct binding
+	{
+	  char varname[132];
+	  int dtype;
+	};
+
+	struct s_constr_buff
+	{
+	  char tab[64];
+	  char col[64];
+	};
+
+    /* ------------------------ end from a4gl_4glc_compiledefs.h ------------------- */
+
+
 	void 	expand_bind 		(struct binding * bind, int btype, int cnt);
 	char *	get_var_name 		(int z);
 	void 	chk_init_var 		(char *s);

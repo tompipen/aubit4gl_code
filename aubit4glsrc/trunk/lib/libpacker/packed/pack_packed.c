@@ -12,7 +12,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "a4gl_debug.h"
+
+#ifdef OLD_INCL
+	#include "a4gl_debug.h"
+#else
+    #define _NO_FORM_X_H_
+	#include "a4gl_libaubit4gl.h"
+#endif
 
 FILE *infile = 0;
 FILE *outfile = 0;
