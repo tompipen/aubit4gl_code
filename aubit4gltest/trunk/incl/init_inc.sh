@@ -451,6 +451,7 @@ for a in $FLAGS; do
 				continue
 			fi
             ;;
+
 		-catalogue) 
 			#create catalogue.txt and .unl file using -info flag
 			rm -f $CURR_DIR/docs/catalogue.unl
@@ -589,8 +590,6 @@ if test "$INFO_TEST" = "1"; then
 	fi
 fi
 
-	#Define list(s) of recognized SQL features
-	define_sql_features
 
 
 

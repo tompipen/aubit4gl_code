@@ -258,16 +258,22 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 			exit 8
 		fi
 	fi
-	PG_VERSION=`echo 'show server_version;' | $PSQL -d $TEST_DB | grep "."`
+	PG_VERSION=`echo 'show server_version;' | $PSQL -d $TEST_DB | grep "\."`
 	if test "$VERBOSE" = "1"; then 
 		echo "INFO: PG server reported version $PG_VERSION"
 	fi
+	#Clip it:
+	PG_VERSION=`echo $PG_VERSION`
+	case $PG_VERSION in 
+		7.4informix*) 	DB_TYPE="PG-IFX-74";;
+		7.4*)			DB_TYPE="PG-74";;
+		8*)				DB_TYPE="PG-80";;
+		*)				DB_TYPE="PG-UNKNOWN";;
+	esac
+	if test "$VERBOSE" = "1"; then 
+		echo "INFO: DB_TYPE set to $DB_TYPE"
+	fi
 	
-	#TODO: determine DB_TYPE from actual version number
-	DB_TYPE="PG-IFX-74"
-	#DB_TYPE="PG-74"
-	#DB_TYPE="PG-80"
-
 	#> You should also initdb with --locale='C' if you want index's to be used
 	#> when comparing an indexed column with a string.
 	#eg. "initdb --locale='C' -D /usr/local/pgsql/data" ?

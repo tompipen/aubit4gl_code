@@ -268,13 +268,6 @@ for a in $FLAGS; do
 	-loop-10)
 		LOOP_TIMES=10
 		;;
-	-disable-sql-features-check) #Do not skip tests with incompatible SQL features
-		DISABLE_SQL_FEATURES_CHECK=1
-		;;
-	-disable-sql-features-skip) #Check, but do not skip incompatible SQL features
-		DISABLE_SQL_FEATURES_SKIP=1
-		;;
-		
 	-loop-100)
 		LOOP_TIMES=100
 		;;
@@ -290,7 +283,6 @@ for a in $FLAGS; do
     -debug)         #set DEBUG=ALL
         export DEBUG=ALL
         ;;
-
     -show-time)     #Show timing results for each test
 		MEASURE_TIME=1
 		SHOW_TIME=1
@@ -298,7 +290,18 @@ for a in $FLAGS; do
     -measure-time)     #time results for each test
 		MEASURE_TIME=1
         ;;
-
+	-db-features-report) #Show support status by db features for current db
+		SHOW_DB_FEATURES_REPORT=1
+		;;
+	-disable-sql-features-check) #Do not skip tests with incompatible SQL features
+		DISABLE_SQL_FEATURES_CHECK=1
+		;;
+	-disable-sql-features-skip) #Check, but do not skip incompatible SQL features
+		DISABLE_SQL_FEATURES_SKIP=1
+		;;
+	-skip-only-impossible)
+		SKIP_ONLY_IMPOSSIBLE=1
+		;;
 	-clean)         #clean and exit
 		CLEAN=1
 		;;
@@ -606,7 +609,6 @@ for a in $FLAGS; do
             fi
             exit 9
         fi
-
 		;;
 
     -informix-new) 	#Create new Informix database from scripts
@@ -1054,6 +1056,10 @@ for a in $FLAGS; do
 		echo " -clean-all  Clean completely to CVS state and exit (SLOW)"		
 		echo " -noclean    Don't clean before running tests"
 		echo " -stop       Stop on error"
+		echo " -stop-after x Stop after running x tests (must be last)"
+		echo " -stop-after-fail x Stop after x tests fail (must be last)"
+		echo " -stop-after-pass x Stop after x tests pass (must be last)"
+		echo " -stop-after-skip x Stop after x tests where skipped (must be last)"		
 		echo " -nospace    Ignore changes in the amount of white space when diff-ing"
 		echo " -nodefaults Do not use platform default settings"
 		echo " -compile-only Do not run any tests, just compile them"
@@ -1128,6 +1134,9 @@ for a in $FLAGS; do
 		echo "             for trans, when cant determine state of trans in current RDBMS"
 		echo " -disable-sql-features-check Do not skip tests with incompatible SQL features"
 		echo " -disable-sql-features-skip Check, but do not skip incompatible SQL features"
+		echo " -db-features-report Show support status by db features for current db"
+		echo " -skip-only-impossible Skip only db/SQL features known to be impossible on "
+		echo "             current db, but NOT the ones that are possible but not working"
 		echo " -sqlite     Use SQLite as database for db tests"
 		echo " -esqli      Use Informix ESQL/C plug-in for db tests"
 		echo " -ec[i|s|p|q] Use Informix/SAP/PG/Querix ESQL/C EC output in for db tests"
@@ -1225,9 +1234,23 @@ for a in $FLAGS; do
 		TEST_RANGE=1
 		;;
 
-
+	-stop-after) #Stop after running x tests
+		STOP_AFTER="RUN"
+		;;
+	-stop-after-fail) #Stop after x tests fail
+		STOP_AFTER="FAIL"
+		;;
+	-stop-after-pass) #Stop after x tests pass
+		STOP_AFTER="PASS"
+		;;
+	-stop-after-skip) #Stop after x tests pass
+		STOP_AFTER="SKIP"
+		;;
+		
 	*)              #everything else should be a test number
-		if test "$TEST_RANGE" = "1"; then
+		if test "$STOP_AFTER" != ""; then
+			STOP_AFTER_NUM=$a
+		elif test "$TEST_RANGE" = "1"; then
 			if test "$TEST_RANGE_FROM" = ""; then 
 				TEST_RANGE_FROM=$a
 			else
@@ -1488,6 +1511,10 @@ if test "$USE_COMP" = "aubit"; then
 	esac
 fi
 
+#Define list(s) of recognized SQL features
+define_sql_features
+
+
 if test "$RETEST_FAIL" = "1"; then
 	ALL_TESTS="$EXPECT_TO_FAIL_TESTS"
 fi
@@ -1620,6 +1647,42 @@ do
 		fi
 	fi
 
+	case $STOP_AFTER in
+		RUN)
+			if test "$STOP_AFTER_NUM" = "$RUN_CNT"; then
+				if test "$VERBOSE" = "1"; then 
+					echo "Exiting after running $STOP_AFTER_NUM tests"
+				fi
+				break
+			fi
+		;;
+		FAIL)
+			if test "$STOP_AFTER_NUM" = "$FAIL_CNT"; then
+				if test "$VERBOSE" = "1"; then 
+					echo "Exiting after $STOP_AFTER_NUM tests failed"
+				fi
+				break
+			fi
+		;;
+		PASS)
+			if test "$STOP_AFTER_NUM" = "$PASS_CNT"; then
+				if test "$VERBOSE" = "1"; then 
+					echo "Exiting after $STOP_AFTER_NUM tests passed"
+				fi
+				break
+			fi
+		;;
+		SKIP)
+			if test "$STOP_AFTER_NUM" = "$SKIP_CNT"; then
+				if test "$VERBOSE" = "1"; then 
+					echo "Exiting after $STOP_AFTER_NUM tests where skipped"
+				fi
+				break
+			fi
+		;;
+		
+	esac
+	
 	if test "$SHOW_CONFIG" = "1"; then
 		$AUBITDIR_UNIX/bin/aubit-config$EXE_EXT -a
 		exit 0
@@ -2232,16 +2295,22 @@ do
 		
 		#Compile list of all failed SQL features:
 		if test "$COMPILE_ONLY" != "1" -a "$SQL_FEATURES_USED" != ""; then
+			#If test is not compile only and has SQL features described...
 #echo 1		
 			for used_feature in $SQL_FEATURES_USED ; do
+				#...for every feature used in this failed test... 
 				ALLREADY_LISTED=0
 				for failed_feature in $SQL_FEATURES_FAIL_LIST ; do
-					if test "$used_feature" = "$failed_feature" ; then 
+					#...look for it in allready recorded failed features list
+					if test "$used_feature" = "$failed_feature" ; then
+						#Found, allreaddy got it listed as failed
 						ALLREADY_LISTED=1
 						break
 					fi
 				done
-				if test "$ALLREADY_LISTED" = "0"; then 
+				if test "$ALLREADY_LISTED" = "0"; then
+					#Did not find it, its a new feied feature, add it to the list
+					#of all features used in failed tests
 					SQL_FEATURES_FAIL_LIST="$SQL_FEATURES_FAIL_LIST $used_feature"
 				fi
 			done
@@ -2416,125 +2485,137 @@ fi
 	$SKIP_NONDB_LIST $SKIP_DB_LIST $SKIP_NOSILENT_LIST $SKIP_NOVERSION_LIST\
 	$SKIP_GRAPHIC_LIST $SKIP_NOMAKEFILE_LIST $SKIP_NOCOMPAT_LIST $SKIP_NO_CRON_LIST \
 	$SKIP_TRANS_LIST $SKIP_NO_SCRDUMP_PDCURSES_LIST $SKIP_BLACKLIST_LIST \
-	$SKIP_DUMP_SCREEN_NOT_XTERM_LIST $SKIP_INCOPAT_SQL_LIST $SKIP_NON_ANSI_LIST"
+	$SKIP_DUMP_SCREEN_NOT_XTERM_LIST $SKIP_INCOMPAT_SQL_LIST $SKIP_NON_ANSI_LIST"
 	#clipp it:
 	SKIP_OTHER_LIST=`echo $SKIP_OTHER_LIST`
-if test "$VERBOSE_RESULTS" = "1"; then
+	
+	VERBOSE_RESULTS_LOG="$CURR_DIR/verbose_results.log"
+	SQLFEATURES_LOGFILE="$CURR_DIR/sql_features.log"
+	rm -f $SQLFEATURES_LOGFILE $VERBOSE_RESULTS_LOG
+	
 	if test "$SKIP_DUMP_SCREEN_NOT_XTERM_LIST" != "" ; then 
-		echo "Skipped DUMP_SCREEN - not xterm: $SKIP_DUMP_SCREEN_NOT_XTERM_LIST" >> $LOGFILE
+		echo "Skipped DUMP_SCREEN - not xterm: $SKIP_DUMP_SCREEN_NOT_XTERM_LIST" >> $VERBOSE_RESULTS_LOG
 	fi
 	if test "$SKIP_NON_ANSI_LIST" != ""; then	
-		echo "Skipped ANSI SQL incompatible: ($SKIP_NON_ANSI_CNT) $SKIP_NON_ANSI_LIST" >> $LOGFILE	
+		echo "Skipped ANSI SQL incompatible: ($SKIP_NON_ANSI_CNT) $SKIP_NON_ANSI_LIST" >> $VERBOSE_RESULTS_LOG	
 	fi
-	if test "$SKIP_INCOPAT_SQL_LIST" != "" ; then 
-		echo "Skipped incompatible SQL: $SKIP_INCOPAT_SQL_LIST" >> $LOGFILE
+	if test "$SKIP_INCOMPAT_SQL_LIST" != "" ; then 
+		#echo "Skipped incompatible SQL: $SKIP_INCOMPAT_SQL_LIST" >> $VERBOSE_RESULTS_LOG
+		echo "Skipped incompatible SQL: $SKIP_INCOMPAT_SQL_LIST_WITH_FEATURES"  >> $VERBOSE_RESULTS_LOG
 	fi
 	if test "$SKIP_PCODE_LIST" != "" ; then 
-		echo "Skipped PCODE: $SKIP_PCODE_LIST" >> $LOGFILE
+		echo "Skipped PCODE: $SKIP_PCODE_LIST" >> $VERBOSE_RESULTS_LOG
 	fi
 	if test "$SKIP_TUI_LIST" != "" ; then 
-		echo "Skipped TUI: $SKIP_TUI_LIST" >> $LOGFILE
+		echo "Skipped TUI: $SKIP_TUI_LIST" >> $VERBOSE_RESULTS_LOG
 	fi 
 	if test "$SKIP_LONG_LIST" != "" ; then 
-		echo "Skipped long: $SKIP_LONG_LIST" >> $LOGFILE
+		echo "Skipped long: $SKIP_LONG_LIST" >> $VERBOSE_RESULTS_LOG
 	fi 
 	if test "$SKIP_CONSOLE_LIST" != "" ; then 
-		echo "Skipped console: $SKIP_CONSOLE_LIST" >> $LOGFILE
+		echo "Skipped console: $SKIP_CONSOLE_LIST" >> $VERBOSE_RESULTS_LOG
 	fi
 	if test "$SKIP_BLACKLIST_LIST" != "" ; then 
-		echo "Skipped black-listed: $SKIP_BLACKLIST_LIST" >> $LOGFILE
+		echo "Skipped black-listed: $SKIP_BLACKLIST_LIST" >> $VERBOSE_RESULTS_LOG
 	fi
 	if test "$SKIP_NO_SCRDUMP_PDCURSES_LIST" != "" ; then 
-		echo "Skipped screen_dump() with PDcurses: $SKIP_NO_SCRDUMP_PDCURSES_LIST" >> $LOGFILE
+		echo "Skipped screen_dump() with PDcurses: $SKIP_NO_SCRDUMP_PDCURSES_LIST" >> $VERBOSE_RESULTS_LOG
 	fi
 	if test "$VERBOSE" = "1"; then
 		#usually very long lists, and not terribly usefull
 		if test "$SKIP_NONDB_LIST" != "" ; then 
-			echo "Skipped NODB: $SKIP_NONDB_LIST" >> $LOGFILE
+			echo "Skipped NODB: $SKIP_NONDB_LIST" >> $VERBOSE_RESULTS_LOG
 		fi 
 		if test "$SKIP_DB_LIST" != "" ; then 
-			echo "Skipped DB: $SKIP_DB_LIST" >> $LOGFILE
+			echo "Skipped DB: $SKIP_DB_LIST" >> $VERBOSE_RESULTS_LOG
 		fi
 	fi
 	if test "$SKIP_NOSILENT_LIST" != "" ; then 
-		echo "Skipped NOSILENT: $SKIP_NOSILENT_LIST" >> $LOGFILE
+		echo "Skipped NOSILENT: $SKIP_NOSILENT_LIST" >> $VERBOSE_RESULTS_LOG
 	fi 
 	if test "$SKIP_NOVERSION_LIST" != "" ; then 
-		echo "Skipped NOVERSION: $SKIP_NOVERSION_LIST" >> $LOGFILE
+		echo "Skipped NOVERSION: $SKIP_NOVERSION_LIST" >> $VERBOSE_RESULTS_LOG
 	fi
 	if test "$SKIP_GRAPHIC_LIST" != "" ; then 
-		echo "Skipped GRAPHIC: $SKIP_GRAPHIC_LIST" >> $LOGFILE
+		echo "Skipped GRAPHIC: $SKIP_GRAPHIC_LIST" >> $VERBOSE_RESULTS_LOG
 	fi 
 	if test "$SKIP_NOMAKEFILE_LIST" != "" ; then 
-		echo "Skipped NOMEAKEFILE: $SKIP_NOMAKEFILE_LIST" >> $LOGFILE
+		echo "Skipped NOMEAKEFILE: $SKIP_NOMAKEFILE_LIST" >> $VERBOSE_RESULTS_LOG
 	fi 
 	if test "$SKIP_NOCOMPAT_LIST" != "" ; then 
-		echo "Skipped NOCOMPAT: $SKIP_NOCOMPAT_LIST" >> $LOGFILE
+		echo "Skipped NOCOMPAT: $SKIP_NOCOMPAT_LIST" >> $VERBOSE_RESULTS_LOG
 	fi
 	if test "$SKIP_NO_CRON_LIST" != "" ; then 
-		echo "Skipped NO_CRON: ($IS_NO_CRON_CNT) $SKIP_NO_CRON_LIST" >> $LOGFILE
+		echo "Skipped NO_CRON: ($IS_NO_CRON_CNT) $SKIP_NO_CRON_LIST" >> $VERBOSE_RESULTS_LOG
 	fi
 	if test "$SKIP_TRANS_LIST" != "" ; then 
-		echo "Skipped 'cant determine trans state' or 'cant swich trans mode': $SKIP_TRANS_LIST" >> $LOGFILE
+		echo "Skipped 'cant determine trans state' or 'cant swich trans mode': $SKIP_TRANS_LIST" >> $VERBOSE_RESULTS_LOG
 	fi 
 	
 	if test "$PASS_FULL_LIST" = "1"; then 
 		if test "$PASS_DB_TESTS" != "" ; then 
-			echo "Pass db: ($PASS_DB_CNT) $PASS_DB_TESTS" >> $LOGFILE
+			echo "Pass db: ($PASS_DB_CNT) $PASS_DB_TESTS" >> $VERBOSE_RESULTS_LOG
 		fi
 		if test "$PASS_NONDB_TESTS" != "" ; then 
-			echo "Pass non-db: ($PASS_NONDB_CNT) $PASS_NONDB_TESTS" >> $LOGFILE
+			echo "Pass non-db: ($PASS_NONDB_CNT) $PASS_NONDB_TESTS" >> $VERBOSE_RESULTS_LOG
 		fi
-	else
-		echo "Pass db: ($PASS_DB_CNT) Pass non-db: ($PASS_NONDB_CNT)" >> $LOGFILE		
+	fi
+	if test "$VERBOSE_RESULTS" = "1"; then
+		echo "Pass db: ($PASS_DB_CNT) Pass non-db: ($PASS_NONDB_CNT)" >> $LOGFILE
 	fi
 	if test "$FAIL_FULL_LIST" = "1"; then	
 		if test "$FAIL_DB_TESTS" != "" ; then 
-			echo "Fail db: ($FAIL_DB_CNT) $FAIL_DB_TESTS" >> $LOGFILE
+			echo "Fail db: ($FAIL_DB_CNT) $FAIL_DB_TESTS" >> $VERBOSE_RESULTS_LOG
 		fi
 		if test "$FAIL_NONDB_TESTS" != "" ; then 
-			echo "Fail non-db: ($FAIL_NONDB_CNT) $FAIL_NONDB_TESTS" >> $LOGFILE
+			echo "Fail non-db: ($FAIL_NONDB_CNT) $FAIL_NONDB_TESTS" >> $VERBOSE_RESULTS_LOG
 		fi
-	else
+	fi
+	if test "$VERBOSE_RESULTS" = "1"; then
 		echo "Fail db: ($FAIL_DB_CNT) Fail non-db: ($FAIL_NONDB_CNT)" >> $LOGFILE
 	fi
 	ALL_FAILED="$FAIL_DB_TESTS $FAIL_NONDB_TESTS"
 	if test "$ALL_FAILED" != " " -a "$SHOW_FAIL_DESC" = "1"; then 
-		echo "------------------------- Failed tests descriptions ---------------------------" >> $LOGFILE
+		echo "------------------------- Failed tests descriptions ---------------------------" >> $VERBOSE_RESULTS_LOG
 		for TEST_NO in $ALL_FAILED; do
 			desc_txt=`$MAKE -s -C $TEST_NO desc 2>/dev/null`
-			echo "#$TEST_NO : $desc_txt" >> $LOGFILE
+			echo "#$TEST_NO : $desc_txt" >> $VERBOSE_RESULTS_LOG
 		done
-		echo "-------------------------------------------------------------------------------" >> $LOGFILE
+		echo "-------------------------------------------------------------------------------" >> $VERBOSE_RESULTS_LOG
 	fi
 
-	if test "$IS_DB_NO_SQL_FEATURES_DESC" != ""; then 
-		echo "DB tests but have no features description : $IS_DB_NO_SQL_FEATURES_DESC" >> $LOGFILE
+	if test "$IS_DB_NO_SQL_FEATURES_DESC" != ""; then
+		#This is bad; DB tests should have SQL/db features used described
+		echo "ERROR: DB tests but have no features description : $IS_DB_NO_SQL_FEATURES_DESC" >> $LOGFILE
 	fi
 	if test "$NOT_ANSI_NO_SQL_FEATURES_DESC" != ""; then 
-		echo "Not ANSI compatible but have no features description : $NOT_ANSI_NO_SQL_FEATURES_DESC" >> $LOGFILE
+		#This is bad; DB tests should have SQL/db features used described	
+		echo "ERROR: Not ANSI compatible but have no features description : $NOT_ANSI_NO_SQL_FEATURES_DESC" >> $LOGFILE
 	fi
-	
-	SQLFEATURES_LOGFILE=$CURR_DIR/sqlfeatures.log
-	rm -f $SQLFEATURES_LOGFILE
 	
 	if test "$PASS_INCOMPAT_SQL" != ""; then
-		echo "" >> $SQLFEATURES_LOGFILE
-		echo "Passed, but SQL features used are listed as incompatible:" >> $SQLFEATURES_LOGFILE
-		echo "$PASS_INCOMPAT_SQL" >> $SQLFEATURES_LOGFILE
-		echo "" >> $SQLFEATURES_LOGFILE
+		#This is certanly wrong; need to change feature status; test cannot\
+		#possibly pass if feature is incompatible
+		echo "" >> $LOGFILE
+		echo "ERROR: Passed, but SQL features used are listed as incompatible:" >> $LOGFILE
+		echo "$PASS_INCOMPAT_SQL" >> $LOGFILE
+		echo "" >> $LOGFILE
 	fi
 	
-	if test "$FAIL_COMPAT_SQL" != ""; then 
+	if test "$FAIL_COMPAT_SQL" != ""; then
+		#This is not nececeraly an error - test can fail for some other reason,
+		#even when sql/db features are compatible
 		echo "" >> $SQLFEATURES_LOGFILE
-		echo "Failed, but SQL features used are listed as compatible:" >> $SQLFEATURES_LOGFILE
+		echo "WARNING: Failed, but SQL features used are listed as compatible:" >> $SQLFEATURES_LOGFILE
 		echo "$FAIL_COMPAT_SQL" >> $SQLFEATURES_LOGFILE
 		echo "" >> $SQLFEATURES_LOGFILE
 	fi	
 	
 	if test "$FEATURE_NOT_EXPECTED" != ""; then
+		#This is an error - correct the feature description in makefile or
+		#in array of feature descriptions
 		echo "" >> $LOGFILE
-		echo "SQL features used not expected by compatiblity check:" >> $LOGFILE
+		echo "ERROR: SQL features used not expected by compatiblity check:" >> $LOGFILE
 		echo "$FEATURE_NOT_EXPECTED" >> $LOGFILE
 		echo "" >> $LOGFILE
 	fi
@@ -2543,20 +2624,24 @@ if test "$VERBOSE_RESULTS" = "1"; then
 	#them must have failed for some other reason, since feature is also
 	#present in test(s) that passed
 	if test "$SQL_FEATURES_PASS_LIST" != ""; then
+		#If pass list is not empty...
 		for failed_feature in $SQL_FEATURES_FAIL_LIST; do
-			#for each feature that failed...
+			#...for every featre found in failed tests...
 			HAS_MATCH=0
 			for working_feature in $SQL_FEATURES_PASS_LIST; do	
 			#...look for that feature in pass list...
 				if test "$working_feature" = "$failed_feature"; then
+					#Found feature from failed test in passed test, so ignore it
 					#echo "feature $working_feature appears on both PASS nad FAIL lists"
 					HAS_MATCH=1
 					break
 				fi
 			done
 			if test "$HAS_MATCH" = "0"; then 
+				#Not found, store it in filteres list
 				FILTERED_SQL_FEATURES_FAIL_LIST="$FILTERED_SQL_FEATURES_FAIL_LIST $failed_feature"
 			else
+				#found, store it in filtered-out list
 				ELIMINATED_SQL_FEATURES_FAIL_LIST="$ELIMINATED_SQL_FEATURES_FAIL_LIST $failed_feature"
 			fi
 		done
@@ -2578,31 +2663,40 @@ if test "$VERBOSE_RESULTS" = "1"; then
 	
 	if test "$SQL_FEATURES_PASS_LIST" != ""; then
 		#This is 100% correct
-		echo "" >> SQLFEATURES_LOGFILE
-		echo "All working SQL features:"  >> $SQLFEATURES_LOGFILE
+		echo "" >> $SQLFEATURES_LOGFILE
+		echo "All working DB features:"  >> $SQLFEATURES_LOGFILE
 		echo "$SQL_FEATURES_PASS_LIST"  >> $SQLFEATURES_LOGFILE		
-		echo "" >> SQLFEATURES_LOGFILE
+		echo "" >> $SQLFEATURES_LOGFILE
 	fi
 	if test "$FILTERED_SQL_FEATURES_FAIL_LIST" != ""; then
 		#This is potentially not 100% correct, since we can have here listed
 		#an feature that did not fail, but the test in which it appeared did 
 		#for some other reason, and the same feature did not appear in any
 		#of the tests that passed, so we could not eliminate it from fail list
-		echo "" >> SQLFEATURES_LOGFILE
-		echo "All (probably) failed SQL features:" >> $SQLFEATURES_LOGFILE
+		echo "" >> $SQLFEATURES_LOGFILE
+		echo "DB features used in failed tests (and possibly/probably not working):" >> $SQLFEATURES_LOGFILE
 		echo "$FILTERED_SQL_FEATURES_FAIL_LIST" >> $SQLFEATURES_LOGFILE		
-		echo "" >> SQLFEATURES_LOGFILE		
+		echo "" >> $SQLFEATURES_LOGFILE		
 	fi
+	
+if test "$VERBOSE_RESULTS" = "1"; then	
+	cat $VERBOSE_RESULTS_LOG  >> $LOGFILE
+else
+	#if test "$SKIP_OTHER_LIST" != "" ; then 
+	#	echo "Other skipped tests: $SKIP_OTHER_LIST" >> $LOGFILE
+	#fi
+	echo ""	 >> $LOGFILE
+	echo "See `basename $VERBOSE_RESULTS_LOG` for details of skipped tests" >> $LOGFILE
+	echo ""	 >> $LOGFILE
+fi 
 	echo ""	 >> $LOGFILE
 	echo "See `basename $SQLFEATURES_LOGFILE` for detailed SQL features analisys" >> $LOGFILE
 	echo ""	 >> $LOGFILE
-else
-	if test "$SKIP_OTHER_LIST" != "" ; then 
-		echo "Other skipped tests: $SKIP_OTHER_LIST" >> $LOGFILE
-	fi
-fi #"$VERBOSE_RESULTS" = "1";
+	
 if test "$NOT_COMPAT_BUT_PASSED" != ""; then 
-	echo "TODO-add compat descriptor to: $NOT_COMPAT_BUT_PASSED" >> $LOGFILE
+	#test is not described as compatible, but even using non-aubit compiler 
+	#it passed, so it should be described as compatible
+	echo "TODO-add non-Aubit compilers compatible descriptor to: $NOT_COMPAT_BUT_PASSED" >> $LOGFILE
 fi
 if test "$PASS_LIST" != "" -a "$SHOW_PASSED" = "1"; then 
 	echo "Passed: $PASS_LIST" >> $LOGFILE
