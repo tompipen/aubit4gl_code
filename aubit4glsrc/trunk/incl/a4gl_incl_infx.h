@@ -26,10 +26,10 @@ extern "C"
   void popvchar (char *x, int y);
   void retdub (double *x);
 
-  void popdec(void *x);
-  void retdec(void *x) ;
-  void popdtime(void *x) ;
-  void retdtime(void *x) ;
+  //void popdec(void *x);
+  //void retdec(void *x) ;
+  //void popdtime(void *x) ;
+  //void retdtime(void *x) ;
   //int rdayofweek(int n);
 
 

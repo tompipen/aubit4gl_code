@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.4 2003-07-28 17:27:37 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.5 2003-07-29 20:34:34 mikeaubury Exp $
 */
 
 /**
@@ -133,10 +133,10 @@ void A4GLSTK_popFunction (void);
 void A4GL_fgl_end_4gl_0 (void);
 void A4GL_fgl_end_4gl_1 (void); // Used on interrupt
 void A4GL_display_at (int n, int a);
- int A4GL_set_line (char *s, long l);
- void A4GL_debug_full (char *fmt, ...);
+int A4GL_set_line (char *s, long l);
+void A4GL_debug_full (char *fmt, ...);
 void A4GL_chk_err (int lineno, char *fname);
-
+char *a4gl_substr (char *s, int dtype, int a, int b, ...);
 
 #define A4GL_FUNCTION
 #define A4GL_INTERNAL_FUNCTION

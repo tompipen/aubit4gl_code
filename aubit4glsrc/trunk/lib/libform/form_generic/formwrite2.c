@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.19 2003-06-18 19:21:07 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.20 2003-07-29 20:34:34 mikeaubury Exp $
 #*/
 
 /**
@@ -747,22 +747,32 @@ A4GL_add_srec_attribute (char *tab, char *col, char *thru)
 
 
       curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len++] = ptr[z];
-      if (curr_rec->dim == 1)
-	curr_rec->dim =
-	  the_form.fields.fields_val[the_form.attributes.
-				     attributes_val[ptr[z]].field_no].metric.
-	  metric_len;
+      if (curr_rec->dim == 1) {
+		//printf(" Fix Dim %d",curr_rec->dim);
+		//curr_rec->dim = the_form.fields.fields_val[the_form.attributes.  attributes_val[ptr[z]].field_no].metric.  metric_len;
 
-      if (the_form.fields.
-	  fields_val[the_form.attributes.attributes_val[ptr[z]].field_no].
+
+		// @ todo - I'm not sure why this was here - so I've probably broken something by removing it...
+
+
+	}
+
+	//printf("A : %p %s %s\n", &the_form.attributes.attributes_val[ptr[z]], the_form.attributes.attributes_val[ptr[z]].tabname, the_form.attributes.attributes_val[ptr[z]].colname);
+
+
+      if (the_form.fields.  fields_val[the_form.attributes.attributes_val[ptr[z]].field_no].
 	  metric.metric_len != curr_rec->dim)
 	{
 	  A4GL_debug ("cnt=%d dim=%d",
 		 the_form.fields.fields_val[the_form.attributes.
 					    attributes_val[ptr[z]].field_no].
 		 metric.metric_len, curr_rec->dim);
-	  A4GL_error_with ("Mismatch in screen record", 0, 0);
+
+	//printf("ABC : %p %s %s\n", &the_form.attributes.attributes_val[ptr[z]], the_form.attributes.attributes_val[ptr[z]].tabname, the_form.attributes.attributes_val[ptr[z]].colname);
+    	if (!A4GL_has_bool_attribute( &the_form.attributes.attributes_val[ptr[z]] , FA_B_WORDWRAP)){
+	  	A4GL_error_with ("Mismatch in screen record\n", 0, 0);
 	  return;
+	}
 	}
     }
 }
@@ -1208,10 +1218,7 @@ translate_form (void)
 
   for (b = 0; b < the_form.attributes.attributes_len; b++)
     {
-      for (a = 0;
-	   a <
-	   the_form.attributes.attributes_val[b].str_attribs.str_attribs_len;
-	   a++)
+      for (a = 0; a < the_form.attributes.attributes_val[b].str_attribs.str_attribs_len; a++)
 	{
 	  if (the_form.attributes.attributes_val[b].str_attribs.
 	      str_attribs_val[a].type == FA_S_COMMENTS)

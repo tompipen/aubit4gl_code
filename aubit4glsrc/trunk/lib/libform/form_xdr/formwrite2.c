@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.28 2003-06-18 19:21:07 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.29 2003-07-29 20:34:35 mikeaubury Exp $
 #*/
 
 /**
@@ -743,11 +743,16 @@ A4GL_add_srec_attribute (char *tab, char *col, char *thru)
 
 
       curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len++] = ptr[z];
-      if (curr_rec->dim == 1)
-	curr_rec->dim =
-	  the_form.fields.fields_val[the_form.attributes.
-				     attributes_val[ptr[z]].field_no].metric.
-	  metric_len;
+      if (curr_rec->dim == 1) {
+	//curr_rec->dim =
+	  //the_form.fields.fields_val[the_form.attributes.
+				     //attributes_val[ptr[z]].field_no].metric.
+	  //metric_len;
+
+		// @todo - check whether this is actually needed....
+	}
+
+
 
       if (the_form.fields.
 	  fields_val[the_form.attributes.attributes_val[ptr[z]].field_no].
@@ -757,7 +762,9 @@ A4GL_add_srec_attribute (char *tab, char *col, char *thru)
 		 the_form.fields.fields_val[the_form.attributes.
 					    attributes_val[ptr[z]].field_no].
 		 metric.metric_len, curr_rec->dim);
+        if (!A4GL_has_bool_attribute( &the_form.attributes.attributes_val[ptr[z]] , FA_B_WORDWRAP)){
 	  A4GL_error_with ("Mismatch in screen record", 0, 0);
+	}
 	  return;
 	}
     }
