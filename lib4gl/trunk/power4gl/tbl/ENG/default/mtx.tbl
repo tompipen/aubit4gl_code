@@ -1,0 +1,35 @@
+delete          |1 |ATT: This record will be deleted from the database.
+locked          |1 |ATT: The data is locked at the moment.
+locked          |3 |Other users or processes have locked data that
+locked          |4 |you are working with. Please try again later.
+maxmenu         |1 |ATT: Too many menus have been opened.
+maxmenu         |3 |The menu level is too deep. You must exit
+maxmenu         |4 |one or more menus and try another menu path.
+maxlist         |1 |ATT: Too many pick-lists have been opened.
+maxlist         |3 |You must exit one or more pick-lists and try
+maxlist         |4 |to access the pick-list another way.
+noprint         |1 |ATT: The report will be closed without being outputted.
+noupdate        |1 |ATT: Data update failed.
+noupdate        |3 |Try again or contact the programmer.
+progerr         |1 |AN ERROR OCCURRED IN THE PROGRAM!
+progerr         |3 |Error messages will be sent to a programmer by
+progerr         |4 |email. Please contact them for more information.
+progerrq        |1 |A CATASTROPHIC ERROR OCCURRED IN THE PROGRAM!
+progerrq        |3 |Error messages will be sent to a programmer by
+progerrq        |4 |email. Please contact them for more information
+progerrq        |5 |about the problem. Unfortunately the program will
+progerrq        |6 |subsequently crash but you can run it again.
+quitsys         |1 |You are now exiting the program.
+referenced      |1 |ATT: The data is referenced by other data.
+referenced      |3 |The requested operation was therefore not
+referenced      |4 |possible to complete.
+repwide         |1 |Note: The report is too wide for the paper.
+repwide         |3 |The rightmost columns may be clipped from
+repwide         |4 |the output.
+welcome         |1 |WELCOME TO THE POWER-4GL DEMO PROGRAM
+welcome         |3 |This program is intended to demonstrate some of
+welcome         |4 |the basic features and logic of the Power-4gl
+welcome         |5 |user interface. It is by no means a serious
+welcome         |6 |program with any practical use.
+welcome         |7 |If there are any problems or questions, please
+welcome         |8 |contact me at 'john@rl.is'.

@@ -1,0 +1,25 @@
+database powdemo
+screen
+{
+
+
+ Account..........[acctcode|acctname                        ]
+
+ Date.............[dat       ]
+
+ Amount...........[amount            ]
+
+ Comments.........[comment                         ]
+
+}
+tables
+  acctran
+attributes
+  acctcode=formonly.acctcode, autonext;
+  acctname=formonly.acctname, autonext;
+  dat=acctran.dat, autonext;
+  amount=acctran.amount, format="---,---,---,--&.&&", autonext;
+  comment=acctran.comment;
+instructions
+  delimiters "  "
+

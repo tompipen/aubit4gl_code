@@ -1,0 +1,33 @@
+database powdemo
+screen
+{
+
+ Name......[name                            ]
+ Pipe......[pipe                                                            ]
+ PRINTER ADJUSTMENTS:
+ Code       String
+[adjcode   |adjstr                                                          ]
+[adjcode   |adjstr                                                          ]
+[adjcode   |adjstr                                                          ]
+[adjcode   |adjstr                                                          ]
+[adjcode   |adjstr                                                          ]
+[adjcode   |adjstr                                                          ]
+[adjcode   |adjstr                                                          ]
+[adjcode   |adjstr                                                          ]
+[adjcode   |adjstr                                                          ]
+[adjcode   |adjstr                                                          ]
+[adjcode   |adjstr                                                          ]
+[adjcode   |adjstr                                                          ]
+[adjcode   |adjstr                                                          ]
+[adjcode   |adjstr                                                          ]
+
+}
+tables
+  prntype,prnadj
+attributes
+  name=prntype.name, autonext;
+  pipe=prntype.pipe, autonext;
+  adjcode=prnadj.adjcode, downshift, autonext;
+  adjstr=prnadj.adjstr, autonext;
+instructions
+  delimiters "  "

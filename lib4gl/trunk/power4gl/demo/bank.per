@@ -1,0 +1,25 @@
+database powdemo
+screen
+{
+
+
+ Name........[name                            ]
+
+ Address.....[address1                ]
+             [address2                ]
+             [address3                ]
+
+ State.......[st|stname              ]
+
+}
+tables
+  bank
+attributes
+  name=bank.name, autonext;
+  address1=bank.address1, autonext;
+  address2=bank.address2, autonext;
+  address3=bank.address3, autonext;
+  st=bank.stcode, upshift, autonext;
+  stname=formonly.stname;
+instructions
+  delimiters "  "

@@ -1,0 +1,40 @@
+badval          |Unacceptable value.
+beyond          |Beyond the last page.
+errornr         |Error nr:
+exists          |Already exists.
+firstpg         |First page.
+fldemp          |The field may not be empty.
+fldnotemp       |The field must be empty in this case.
+goahead         |Go ahead? (j/n)
+keyother        |F5=Other operations.
+keypage         |PgUp=Previous. PgDn=Next.
+keyrepcov       |F6=Show cover sheet.
+keyreport       |F6=Show report.
+keysearch       |F7=Pick-list.
+lastpg          |Last page.
+mailing         |Email being sent...
+menu            |Enter your choice.
+needinfo        |Not enough information.
+nodelete        |The record cannot be deleted!
+nolist          |Nothing found.
+nomenu          |Invalid menu number.
+noscroll        |Cannot scroll in this direction.
+notdate         |Invalid date.
+notdt           |Invalid time.
+notfound        |Not found.
+notnum          |Invalid number.
+notx            |Must be 'x' or blank.
+notyn           |Must be 'y' or 'n'.
+onlypg          |One page.
+opsys           |Operating system commands. ENTER=return to program.
+prany           |Press any key to continue.
+printing        |Printing in progress...
+prnamemsg       |Enter the printer id.
+progloc         |Program location.
+reporting       |Report in progress...
+seeking         |Searching...
+stopped         |Process stopped by user.
+sure            |Are you sure? (y/n)
+working         |Working...
+xyesno          |'x'=Yes. ' '=No.
+xyesnocrit      |'x'=Yes. ' '=No. '*'=All.

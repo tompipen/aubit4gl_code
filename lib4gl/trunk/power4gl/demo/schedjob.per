@@ -1,0 +1,39 @@
+database formonly
+screen
+{
+
+[attitle                         ]
+[attimetxt   |attim]  [atdatetxt   |atdate    ]  [atreptxt    |r]
+
+[prtitle                         ]
+[prnametxt   |prname                          ]
+
+[pftitle                         ]
+[pfiletxt    |pfile                           ]
+
+[pmtitle                         ]
+[maddrtxt    |maddr                                           ]
+[msubjtxt    |msubj                                           ]
+
+}
+attributes
+  attitle=formonly.attitle, noentry;
+  attimetxt=formonly.attimetxt, noentry;
+  attim=formonly.attime, autonext;
+  atdatetxt=formonly.atdatetxt, noentry;
+  atdate=formonly.atdate, autonext;
+  atreptxt=formonly.atreptxt, noentry;
+  r=formonly.atrep, downshift, autonext;
+  prtitle=formonly.prtitle, noentry;
+  prnametxt=formonly.prnametxt, noentry;
+  prname=formonly.prname, autonext;
+  pftitle=formonly.pftitle, noentry;
+  pfiletxt=formonly.pfiletxt, noentry;
+  pfile=formonly.pfile, autonext;
+  pmtitle=formonly.pmtitle, noentry;
+  maddrtxt=formonly.maddrtxt, noentry;
+  maddr=formonly.maddr, autonext;
+  msubjtxt=formonly.msubjtxt, noentry;
+  msubj=formonly.msubj;
+instructions
+  delimiters "  "

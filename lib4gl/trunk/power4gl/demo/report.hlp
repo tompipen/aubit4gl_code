@@ -1,0 +1,22 @@
+\BREPORT HELP\b
+
+Reports can be scrolled vertically and horizontally with
+the cursor movement keys (\Bup\b, \Bdown\b, \Bleft\b, \Bright\b, \Bpageup\b,
+\Bpagedown\b, \Bhome\b, \Bend\b) and the \Btab\b key.
+
+In some cases the \Benter\b key will open a window to view
+more detailed information about the current line. The
+\BF6\b key toggles between viewing the report itself and
+the cover sheet (if one exists).
+
+The report can be exited with the accept key (\BF2\b) in
+which case it is also printed out, while exiting with \BF8\b
+does not. The report can be printed out without exiting
+with \Bctrl-p\b and similarly outputed to a text file with
+\Bctrl-f\b.
+ 
+Other keys include \BF3\b which reassembles the report with
+the latest database information, \BF6\b to edit the criteria
+used to assemble the report and \Balt-p\b to print out the
+visible screen. \BCtrl-z\b and "!" call an operating system
+shell.
