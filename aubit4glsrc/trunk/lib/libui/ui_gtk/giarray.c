@@ -24,17 +24,17 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: giarray.c,v 1.4 2003-10-10 09:50:44 mikeaubury Exp $
+# $Id: giarray.c,v 1.5 2003-10-11 08:41:38 afalout Exp $
 #*/
 
 /**
  * @file
  * Input array implementation
  *
- * @todo Add Doxygen A4GL_comments to file
+ * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*
@@ -87,10 +87,13 @@ int mform=0;
 =====================================================================
 */
 int A4GL_field_name_match_gtk (GtkWidget * f, char *s);
+void field_opts_on(GtkWidget *w,int attr);
+int field_opts(GtkWidget *w);
 
 static void init_arr_line (struct s_inp_arr *sio, int n);
 static int process_control_stack (struct s_inp_arr *arr);
 static int A4GL_has_something_on_control_stack (struct s_inp_arr *sio);
+int A4GL_decode_line_ib (int l);
 
 static void A4GL_add_to_control_stack (struct s_inp_arr *sio, int op,
 				       GtkWidget * f, char *parameter,
@@ -103,9 +106,26 @@ static void A4GL_init_control_stack (struct s_inp_arr *sio, int malloc_data);
 static int A4GL_set_fields_inp_arr (void *vsio, int n);
 void set_current_field(void *ignore,GtkWidget *w) ;
 
-//dll_export 
 int A4GL_req_field_input_array (void *arrv, char type, va_list * ap);
 
+void A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
+		      int scr_line, int blank);
+int A4GL_which_key_aubit(void);
+int A4GL_get_metric_no_curr ( GtkWidget * f);
+int A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m);
+int field_status(GtkWidget *w);
+
+int A4GL_copy_field_data (struct s_form_dets *form);
+int A4GL_getch_win(void);
+void A4GL_int_form_driver(void *ignore,int dosomething);
+int A4GL_getcomment_line (void);
+GtkWidget * current_field (void *ignore);
+void *
+A4GL_get_curr_form_xdr_form(int n);
+void A4GL_comments (struct struct_scr_field *fprop);
+void A4GL_display_field_contents (GtkWidget * field, int d1, int s1, char *ptr1);
+void A4GL_turn_field_on2(GtkWidget *w);
+void A4GL_turn_field_off(GtkWidget *w);
 
 /*
 =====================================================================
@@ -115,19 +135,19 @@ int A4GL_req_field_input_array (void *arrv, char type, va_list * ap);
 
 
 
-
+/* not used
 static void
 do_key_move (char lr, struct s_inp_arr *arr, int a, int has_picture,
 	     char *picture)
 {
   struct s_form_dets *form;
   //FORM *mform;
-  int at_first = 0;
-  int at_last = 0;
+//  int at_first = 0;
+//  int at_last = 0;
 
   form = arr->currform;
   //mform = form->form;
-/*
+
   if (mform->curcol == 0)
     {
       at_first = 1;
@@ -185,11 +205,11 @@ do_key_move (char lr, struct s_inp_arr *arr, int a, int has_picture,
       //do_key_move (lr, arr, a, has_picture, picture);
 	//
     //}
-*/
+
 
 
 }
-
+*/
 
 /**
  *
@@ -203,8 +223,8 @@ insert_line_in_array (struct s_inp_arr *inpa)
   int a;
   char *src_ptr;
   char *dest_ptr;
-  int topline;
-  int scr_line;
+//  int topline;
+//  int scr_line;
 
   A4GL_debug ("insert_line_in_array no_arr=%d arr_size=%d arr_line=%d",
 	      inpa->no_arr, inpa->arr_size, inpa->arr_line);
@@ -1213,7 +1233,7 @@ int c;
   struct struct_scr_field *field;
   //struct struct_scr_field *prop;
   GtkWidget **field_list;
-  GtkWidget *firstfield = 0;
+//  GtkWidget *firstfield = 0;
   int nofields;
   struct s_inp_arr *sio;
   sio = vsio;
@@ -1255,10 +1275,15 @@ c=0;
 
 	//if (field_opts(field_list[a])&O_BLANK) { A4GL_debug("O_BLANK MMMM turning off"); }
 
-      if (A4GL_turn_field_off (formdets->form_fields[a]))
+
+/*  WARNING! A4GL_turn_field_off is an **void** function
+
+	  if (A4GL_turn_field_off (formdets->form_fields[a]))
 	{
 	  firstfield = formdets->form_fields[a];
 	}
+
+*/
 //if (field_opts(field_list[a])&O_BLANK) { A4GL_debug("O_BLANK MMMM turned off"); }
 
     }
@@ -1295,7 +1320,7 @@ c=0;
   		  field_opts_on (sio->field_list[a][b], O_EDIT);
 	} else {
 
-	  A4GL_turn_field_on2 (sio->field_list[a][b], 1);
+	  A4GL_turn_field_on2 (sio->field_list[a][b]);
 	}
 		//if (field_opts(sio->field_list[a][b])&O_BLANK) { A4GL_debug("O_BLANK MMMM %d %d",a,b); }
 	  field =
@@ -2975,12 +3000,12 @@ void *field_userptr(GtkWidget *w) {
  	return gtk_object_get_data (GTK_OBJECT (w), "Attribute");
 }
 
-
+void
 A4GL_turn_field_on2(GtkWidget *w) {
 	A4GL_gui_set_active (w, 1);
 }
 
-
+void
 A4GL_turn_field_off(GtkWidget *w) {
 	A4GL_gui_set_active (w, 0);
 }
@@ -3109,41 +3134,55 @@ A4GL_get_metric_no_curr ( GtkWidget * f)
 }
 
 
-A4GL_mja_set_field_buffer(GtkWidget *w,int n,char *s) {
-A4GL_debug("MJA SET FIELD BUFFER     %p -> %s\n",w,s);
-A4GL_display_generic (w, s);
+void
+A4GL_mja_set_field_buffer(GtkWidget *w,int n,char *s) 
+{
+	A4GL_debug("MJA SET FIELD BUFFER     %p -> %s\n",w,s);
+	A4GL_display_generic (w, s);
 }
 
-field_opts_on(GtkWidget *w,int attr) {
-        if (attr & O_ACTIVE || attr & O_EDIT) {
+void
+field_opts_on(GtkWidget *w,int attr)
+{
+    if (attr & O_ACTIVE || attr & O_EDIT) {
 		A4GL_turn_field_on2(w);
 	}
 }
 
-field_opts_off(GtkWidget *w,int attr) {
+void
+field_opts_off(GtkWidget *w,int attr)
+{
         if (attr & O_ACTIVE || attr & O_EDIT) {
 		A4GL_turn_field_off(w);
 	}
 }
 
-field_opts(GtkWidget *w) {
+int
+field_opts(GtkWidget *w)
+{
 	return 3;
 	A4GL_debug("@fixme - field_opts");
 }
 
 
-void set_current_field(void *ignore,GtkWidget *w) {
+void 
+set_current_field(void *ignore,GtkWidget *w)
+{
 	if (w) gtk_widget_grab_focus (GTK_WIDGET (w));
 }
 
-current_field (void *ignore) {
+
+GtkWidget *
+current_field (void *ignore)
+{
 	A4GL_debug("@fixme current_field");
 	return iarr_current_field;
 }
 
 
 // This is called internally...
-void A4GL_comments (struct struct_scr_field *fprop)
+void
+A4GL_comments (struct struct_scr_field *fprop)
 {
   //char *str;
   int cline;
@@ -3249,7 +3288,9 @@ A4GL_decode_line_ib (int l)
 
 
 
-int A4GL_getch_win(void) {
+int
+A4GL_getch_win(void)
+{
 int action;
 int k=0;
       while (1)
@@ -3268,6 +3309,7 @@ int k=0;
         }
 
 	if (action==1)  {
+		
 		k = A4GL_which_key_aubit ();
 		A4GL_clear_something ();
 		A4GL_debug("KEYPRESS RECORDED : %x",k);
@@ -3282,16 +3324,18 @@ int k=0;
 	return k;
 }
 
-
-A4GL_int_form_driver(void *ignore,int dosomething) {
-A4GL_debug("Do : %d",dosomething);
-
-
+void
+A4GL_int_form_driver(void *ignore,int dosomething)
+{
+	A4GL_debug("Do : %d",dosomething);
 }
 
 
 
-int A4GL_which_key_aubit(int a) {
+int
+A4GL_which_key_aubit(void)
+{
+int a;
 	a=A4GL_which_key();
 	if (a==GDK_Escape) return 27;
 	if (a==GDK_Down) return A4GLKEY_DOWN;
@@ -3316,7 +3360,9 @@ int A4GL_which_key_aubit(int a) {
 }
 
 
-void *A4GL_get_curr_form_dets(int n) {
+void *
+A4GL_get_curr_form_dets(int n)
+{
 	GtkWidget *w;
 	void *fd1;
 	struct s_form_dets *form=0;
@@ -3335,7 +3381,9 @@ void *A4GL_get_curr_form_dets(int n) {
 }
 
 
-void *A4GL_get_curr_form_xdr_form(int n) {
+void *
+A4GL_get_curr_form_xdr_form(int n)
+{
 	GtkWidget *w;
 	void *fd1;
 	struct s_form_dets *form=0;
@@ -3354,8 +3402,9 @@ void *A4GL_get_curr_form_xdr_form(int n) {
 }
 
 
-
-field_status(GtkWidget *w) {
+int
+field_status(GtkWidget *w)
+{
 	return 0;
 }
 
@@ -3401,16 +3450,16 @@ A4GL_copy_field_data (struct s_form_dets *form)
                 A4GL_debug ("stack manip buff2='%s'", buff2);
                 if (strlen (buff2) > 0)
                   {
-#ifdef DEBUG
-                    A4GL_debug ("Pushing param %p");
-#endif
+					#ifdef DEBUG
+                    	A4GL_debug ("Pushing param %p");
+					#endif
                     A4GL_push_param (buff2, DTYPE_CHAR);
                     if (A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield)))
                       {
-#ifdef DEBUG
-                        A4GL_debug ("Pushing param %p %d", buff,
+						#ifdef DEBUG
+                        	A4GL_debug ("Pushing param %p %d", buff,
                                     fprop->datatype);
-#endif
+						#endif
                         A4GL_push_param (buff, fprop->datatype);
                         if (A4GL_has_str_attribute (fprop, FA_S_FORMAT))
                           {
@@ -3428,7 +3477,7 @@ A4GL_copy_field_data (struct s_form_dets *form)
                       {
                         A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
                         A4GL_clr_field (form->currentfield);
-		printf("A1\n");
+						printf("A1\n");
                         set_current_field ( 0,form->currentfield);
                         return 0;
                       }

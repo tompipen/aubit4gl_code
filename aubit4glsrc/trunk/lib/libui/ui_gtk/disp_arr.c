@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: disp_arr.c,v 1.10 2003-10-08 17:09:51 mikeaubury Exp $
+# $Id: disp_arr.c,v 1.11 2003-10-11 08:41:38 afalout Exp $
 #*/
 
 /**
@@ -59,7 +59,7 @@ struct s_disp_arr *curr_arr;
 =====================================================================
 */
 
-struct struct_screen_record *A4GL_get_srec_gtk (char *);
+
 void A4GL_disp_arr_fields (int n, int fonly, int attr, ...);
 void A4GL_idisp_arr_fields (int n, int fonly, int attr, ...);
 void A4GL_set_arr_fields (int n, int attr, ...);
@@ -67,7 +67,7 @@ void A4GL_idraw_arr_all (struct s_inp_arr *disp);
 void A4GL_idraw_arr (struct s_inp_arr *disp, int type, int no);
 void A4GL_iclear_srec_line (struct struct_screen_record *srec, int line);
 
-void A4GL_set_array_mode (int type);
+
 //int A4GL_disp_arr (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib, va_list * ap);
 
 //int A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib, va_list * ap);

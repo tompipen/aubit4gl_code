@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.19 2003-10-10 09:43:46 mikeaubury Exp $
+# $Id: input.c,v 1.20 2003-10-11 08:41:38 afalout Exp $
 #*/
 
 /**
@@ -75,6 +75,7 @@ long inp_current_field = 0;
 =====================================================================
 */
 
+void A4GL_set_field_colour_attr (GtkWidget * field, int r, int attr);
 long A4GL_get_curr_infield (void);
 void A4GL_gui_set_init_value (GtkWidget * f, void *ptr, int dtype);
 static int save_field (struct s_screenio *s, GtkWidget * w);
@@ -1024,7 +1025,7 @@ void
 A4GL_set_field_attr_with_attr_already_determined (GtkWidget * field, int attr, int cmd_type)
 {
   int r;
-  int nattr;
+  //int nattr;
   struct struct_scr_field *f;
   f = (struct struct_scr_field *) (field_userptr (field));
 
@@ -1105,5 +1106,18 @@ A4GL_get_metric_for (struct s_form_dets *form, void* f)
   A4GL_debug ("NO current metric !");
   return -1;
 }
+
+
+void
+A4GL_set_field_colour_attr (GtkWidget * field, int r, int attr)
+{
+
+  A4GL_debug ("**** NOT IMPLEMENTED ****");
+
+
+}
+
+
+
 /* =============================== EOF ============================= */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.96 2003-10-08 17:09:51 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.97 2003-10-11 08:41:38 afalout Exp $
 #
 */
 
@@ -367,8 +367,10 @@
 
   /* ==================== from incl_4glhdr.h ========================= */
 #define A4GL_fglerror(a,b) 		A4GL_fgl_error(__LINE__,__FILE__,a,b)
+/*
 #define AFT_FIELD_CHK(zzz,xxx) 		(_fld_dr==-98&&strcmp(fldname,zzz)==0)
 #define BEF_FIELD_CHK(zzz,xxx) 		(_fld_dr==-97&&strcmp(fldname,zzz)==0)
+*/
 #define DO_BEFORE_DELETE  		(_fld_dr==-12)
 #define DO_AFTER_DELETE  		(_fld_dr==-13)
 #define DO_BEFORE_INSERT  		(_fld_dr==-14)
@@ -1208,6 +1210,11 @@ void A4GL_display_at (int n, int a);
   int A4GL_digittoc (int *a, char *z, char *fmt, int dtype, int size);
 
 
+  /* ========================== attributes.c ============================= */
+	
+	void A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str);
+	int A4GL_get_curr_window_attr (void);
+
   /* =========================== dates.c ================================= */
   long A4GL_gen_dateno (int day, int month, int year);
   int A4GL_get_date (int d, int *day, int *mn, int *yr);
@@ -1226,6 +1233,9 @@ void A4GL_display_at (int n, int a);
   int A4GL_memfile_ungetc (int c, FILE * F);
   int A4GL_memfile_feof (FILE * f);
   int A4GL_memfile_fread (char *ptr, int s, int n, FILE * f);
+	void *A4GL_memdup (void *ptr, int size);
+
+
   /* ============================ dmy.c ================================== */
 
   char *A4GL_using_date (int dn, char *us);

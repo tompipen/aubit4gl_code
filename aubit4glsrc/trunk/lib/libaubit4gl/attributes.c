@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.19 2003-09-01 15:58:19 mikeaubury Exp $
+# $Id: attributes.c,v 1.20 2003-10-11 08:41:38 afalout Exp $
 #*/
 
 /**
@@ -182,7 +182,7 @@ struct s_std_attr *A4GL_determine_attribute_as_std_attr (int cmd_type,
 							 *attrib_curr,
 							 struct s_std_attr
 							 *attrib_field);
-void A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str);
+
 struct s_std_attr *A4GL_determine_attribute_internal (struct s_std_attr
 						      *attrib_curr,
 						      struct s_std_attr
@@ -201,7 +201,7 @@ int A4GL_determine_attribute_as_int (int cmd_type,
 				     struct s_std_attr *attrib_field);
 
 int A4GL_get_curr_form_attr (void);
-int A4GL_get_curr_window_attr (void);
+
 
 
 int

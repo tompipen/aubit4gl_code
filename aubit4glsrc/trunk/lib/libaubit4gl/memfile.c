@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.6 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: memfile.c,v 1.7 2003-10-11 08:41:38 afalout Exp $
 #
 */
 
@@ -56,7 +56,7 @@ long buff_len;
 FILE *in;
 long pos = 0;
 //FILE *A4GL_mja_fopen (char *name, char *mode);
-void *A4GL_memdup (void *ptr, int size);
+
 void A4GL_dump_buffer (char *s, int l);
 FILE *
 A4GL_memfile_fopen_buffer (char *ptr, int len);

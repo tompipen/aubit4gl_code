@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: cr_funcs.c,v 1.11 2003-10-09 13:02:54 afalout Exp $
+# $Id: cr_funcs.c,v 1.12 2003-10-11 08:41:38 afalout Exp $
 #*/
 
 /**
@@ -148,7 +148,7 @@ A4GL_make_pixbuf_gw (char *filename)
   //GdkPixbuf *p;
   //GtkWidget *pixbuf;
   //GtkWidget *window,*hbox, *resized,*widget;
-    GtkWidget *widget, *window, *hbox;
+    GtkWidget *widget;
 	GdkPixbuf *pixbuf, *resized;
 
   //window = gtk_window_new(GTK_WINDOW_TOPLEVEL);

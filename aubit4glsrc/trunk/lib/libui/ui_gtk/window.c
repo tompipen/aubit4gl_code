@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: window.c,v 1.9 2003-05-15 07:10:46 mikeaubury Exp $
+# $Id: window.c,v 1.10 2003-10-11 08:41:38 afalout Exp $
 #*/
 
 /**
@@ -69,8 +69,8 @@ void A4GL_dump_gtkwinstack (void);
 //void A4GL_show_window (char *s);
 //void A4GL_movewin (char *s, int to_by);
 //void A4GL_remove_window (char *s);
-int A4GL_get_curr_border_gtk (void);
-int A4GL_get_curr_height_gtk (void);
+
+
 //void clr_window(char *name);
 void A4GL_dump_object (GtkObject * o);
 

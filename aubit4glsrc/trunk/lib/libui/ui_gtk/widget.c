@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.17 2003-10-10 09:50:44 mikeaubury Exp $
+# $Id: widget.c,v 1.18 2003-10-11 08:41:38 afalout Exp $
 #*/
 
 /**
@@ -138,9 +138,6 @@ char *	A4GL_decode_comments (struct_form * f, int a);
 char *	A4GL_decode_widget 	(struct_form * f, int a);
 int 	A4GL_strnullcmp 	(char *s1, char *s2);
 
-#if GTK_CHECK_VERSION(2,0,0)
-	void A4GL_ChangeWidgetFont(GtkLabel *label,char *font);
-#endif
 
 
 /*
@@ -529,7 +526,9 @@ w=wv;
 
 }
 
-int get_widget_next_size() {
+int
+get_widget_next_size()
+{
         return widget_next_size;
 }
 
@@ -537,7 +536,7 @@ int get_widget_next_size() {
 #if GTK_CHECK_VERSION(2,0,0)
 void A4GL_ChangeWidgetFont(GtkLabel *label,char *font) {
 PangoFontDescription    *pfd;
-int a;
+//int a;
 A4GL_debug("A4GL_ChangeWidgetFont");
 	if (strcmp(font,"FIXED")==0) {
 		font=A4GL_GTK_FONT_FIXED;
@@ -618,6 +617,31 @@ make: *** [../../libUI_GTK.dll] Error 1
 
 
 gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -o ../../libUI_GTK.dll assist.o cr_funcs.o color.o display.o dialog.o d2.o disp_arr.o error.o fields.o frm.o get_fld_val.o gtk_4gl.o giarray.o handler.o input.o menu.o prompt.o params.o signals.o window.o widget.o -LD:/cygwin/usr/lib   -ID:/cygwin/lib/glib-2.0/include -ID:/cygwin/lib/gtk-2.0/include  -LD:/cygwin/lib -L../.. -laubit4gl -lgtk-win32-2.0 -lgdk-win32-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lpangowin32-1.0 -lgdi32 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -lglib-2.0 -lintl-1 -liconv
+
+gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -o ../../libUI_G
+TK.dll assist.o cr_funcs.o color.o display.o dialog.o d2.o disp_arr.o error.o fi
+elds.o frm.o get_fld_val.o gtk_4gl.o giarray.o handler.o input.o menu.o prompt.o
+ params.o signals.o window.o widget.o -LD:/cygwin/usr/lib   -ID:/cygwin/lib/glib
+-2.0/include -ID:/cygwin/lib/gtk-2.0/include  -LD:/cygwin/lib -L../.. -laubit4gl
+ -lgtk-win32-2.0 -lgdk-win32-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lpangowin32-1.0 -lg
+di32 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -lglib-2.0 -lintl-1 -liconv
+Info: resolving _a4gl_status by linking to __imp__a4gl_status (auto-import)
+Info: resolving _ui_mode by linking to __imp__ui_mode (auto-import)
+Info: resolving _a4gl_sqlca by linking to __imp__a4gl_sqlca (auto-import)
+Info: resolving _m_lastkey by linking to __imp__m_lastkey (auto-import)
+Info: resolving _abort_pressed by linking to __imp__abort_pressed (auto-import)
+Info: resolving _int_flag by linking to __imp__int_flag (auto-import)
+Creating library file: TMP.dll.a
+input.o: In function `A4GL_set_field_attr_with_attr':
+D:/cygwin/usr/src/aubit/aubit4glsrc/lib/libui/ui_gtk/input.c:1020: undefined ref
+erence to `A4GL_set_field_colour_attr'
+input.o: In function `A4GL_set_field_attr_with_attr_already_determined':
+D:/cygwin/usr/src/aubit/aubit4glsrc/lib/libui/ui_gtk/input.c:1043: undefined ref
+erence to `A4GL_set_field_colour_attr'
+make: *** [../../libUI_GTK.dll] Error 1
+
+
+
 */
 
 

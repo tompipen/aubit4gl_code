@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.59 2003-09-22 20:57:18 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.60 2003-10-11 08:41:38 afalout Exp $
 */
 
 /**
@@ -66,6 +66,9 @@ extern "C"
 	#include <stdio.h>
 	//int stdioEND________________;
 #endif
+
+#define AFT_FIELD_CHK(zzz,xxx) (_fld_dr==-98&&A4GL_field_name_str_match(fldname,zzz))
+#define BEF_FIELD_CHK(zzz,xxx) (_fld_dr==-97&&A4GL_field_name_str_match(fldname,zzz))
 
 #define fglbyte struct fgl_int_loc
 #define fgltext struct fgl_int_loc

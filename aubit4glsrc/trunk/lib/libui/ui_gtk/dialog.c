@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dialog.c,v 1.7 2003-06-13 18:40:59 mikeaubury Exp $
+# $Id: dialog.c,v 1.8 2003-10-11 08:41:38 afalout Exp $
 #*/
 
 /**
@@ -275,7 +275,7 @@ main (int argc, char *argv[])
 void
 aclfgli_pr_message_internal (int a, int wait,char *s)
 {
-  char *p;
+//  char *p;
 	/** 
 	 * @todo : This should be fixed by including stack.h not cast 
 	 * but the headers needs some clean.

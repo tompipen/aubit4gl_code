@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: amkmessage.c,v 1.7 2003-07-16 08:18:25 afalout Exp $
+# $Id: amkmessage.c,v 1.8 2003-10-11 08:41:37 afalout Exp $
 #*/  
   
 /**
@@ -86,7 +86,7 @@
 -----------------------------------------------------------------------------
 */
 
-#ifdef PORTABLE
+#if defined (PORTABLE) && ! defined (__MINGW32__)
 	#include <netinet/in.h>
 #else
 	#ifndef htonl

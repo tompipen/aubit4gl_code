@@ -56,7 +56,6 @@ int KeySnooper (GtkWidget * grab_widget, GdkEventKey * event,
 char *A4GL_fld_val_generic (GtkWidget * k);
 
 
-
 void A4GL_alloc_colors (void);
 void A4GL_gui_set_field_fore (GtkWidget * w, int attr);
 void A4GL_gui_set_field_back (GtkWidget * w, int attr);
@@ -119,6 +118,12 @@ GtkWindow *cr_window_gtk (char *s,
 
 void A4GL_gui_prompt_style (int a);
 
+    /* disp_arr.c */
+
+void A4GL_set_arr_fields (int n, int attr, ...);
+void A4GL_set_array_mode (int type);
+struct struct_screen_record *A4GL_get_srec_gtk (char *);
+
 	/* signals.c */
 void A4GL_add_signal_grab_focus (GtkWidget * widget, void *funcptr);
 void A4GL_add_signal_clicked (GtkWidget * widget, void *funcptr);
@@ -137,7 +142,9 @@ void A4GL_gui_set_field_pop_attr (GtkWidget * w, int attr);
 int A4GL_gui_proc_key_display_array (int a);
 int A4GL_gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
 			va_list * ap);
-
+void A4GL_clr_field (GtkWidget * f);
+void A4GL_set_field_attr_with_attr (GtkWidget * field, int attr, int cmd_type);
+void A4GL_set_field_attr_with_attr_already_determined (GtkWidget * field, int attr, int cmd_type);
 
 	/* fields.c */
 void A4GL_gui_set_active (GtkWidget * w, int en_dis);
@@ -155,13 +162,18 @@ int A4GL_geterr_line_gtk (void);
 int A4GL_getmsg_line_gtk (void);
 void A4GL_gtkwin_stack (GtkWindow * w, int op);
 int A4GL_getprompt_line_gtk (void);
-
+int A4GL_get_curr_height_gtk (void);
+int A4GL_get_curr_border_gtk (void);
 
 	/* widget.c */
 void A4GL_debug_last_field_created (char *txt);
 /* #include "a4gl_formxw.h" *//* struct struct_form */
 void A4GL_add_widget (int metric_no, struct_form * f,
 		 GtkWidget * panel_to_add_to_window);
+int get_widget_next_size();
+#if GTK_CHECK_VERSION(2,0,0)
+	void A4GL_ChangeWidgetFont(GtkLabel *label,char *font);
+#endif
 
 	/* frm.c */
 void A4GL_make_widgets (struct_form * f, GtkWidget * panel_to_add_to_window);
@@ -173,6 +185,8 @@ void A4GL_set_current_window (void * w);
 int A4GL_decode_colour_attr_aubit (int a);
 void A4GL_console_toggle (void);
 GtkWidget *A4GL_get_window_gtk (int a);
+
+
 
 	/* display.c */
 
@@ -194,6 +208,11 @@ char *field_buffer(GtkWidget *w,int n);
 void *A4GL_find_param (char *name);
 
 
+    /* giarray.c */
+void *field_userptr(GtkWidget *w);
+int A4GL_get_field_width(GtkWidget *w);
+void A4GL_mja_set_field_buffer(GtkWidget *w,int n,char *s);
+
 struct a4gl_frm {
         GtkWidget **widgets;
         GtkFixed *form_fixed;
@@ -208,7 +227,6 @@ struct a4gl_frm {
 #define REQ_PREV_CHAR  6
 #define O_ACTIVE 1
 #define O_EDIT 2
-
 
 #endif
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.22 2003-10-10 08:50:33 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.23 2003-10-11 08:41:38 afalout Exp $
 #*/
 
 /**
@@ -125,6 +125,10 @@ void A4GL_clear_console (char *s);
 /* int A4GL_open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c())); */
 //int A4GL_open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c(int a, int b)));
 struct struct_screen_record *A4GL_get_srec_gtk (char *name);
+
+void A4GL_make_and_display_labels(int x,int y,char *s,int attr,int clr_line);
+void A4GL_make_and_display_label(int x,int y,char c,int attr);
+
 
 /*
 =====================================================================
@@ -973,9 +977,10 @@ A4GL_get_curr_win_gtk (void)
 void
 A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 {
-  GtkFixed *cwin;
-  GtkLabel *lab;
-  char buff[256];
+//  GtkFixed *cwin;
+//  GtkLabel *lab;
+//  char buff[256];
+
   if (x == -1 && y == -1)
     {
       printf ("%s\n", s);
@@ -1032,6 +1037,7 @@ A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 }
 
 
+void
 A4GL_make_and_display_labels(int x,int y,char *s,int attr,int clr_line) {
 int a;
   GtkFixed *cwin;
@@ -1056,7 +1062,7 @@ int a;
 }
 
 
-
+void
 A4GL_make_and_display_label(int x,int y,char c,int attr) {
   GtkFixed *cwin;
   GtkLabel *lab;
@@ -1136,7 +1142,7 @@ A4GL_display_at (int n, int a)
 	{
 	  if (strlen (s))
 	    {
-		GtkStyle *style;
+		//GtkStyle *style;
 	      		A4GL_gui_set_field_fore ((GtkWidget *) lab, A4GL_decode_colour_attr_aubit (a));
 	      		gtk_label_set_text (lab, s);
 #if GTK_CHECK_VERSION(2,0,0)
@@ -1160,7 +1166,7 @@ A4GL_display_at (int n, int a)
 	{
 	  if (strlen (buff))
 	    {
-		GtkStyle *style;
+		//GtkStyle *style;
 	      lab = (GtkLabel *) gtk_label_new (s);
 	      A4GL_gui_set_field_fore ((GtkWidget *) lab,
 				  A4GL_decode_colour_attr_aubit (a));
