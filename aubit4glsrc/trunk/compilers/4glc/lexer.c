@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.68 2003-04-02 18:52:27 mikeaubury Exp $
+# $Id: lexer.c,v 1.69 2003-05-01 09:42:17 mikeaubury Exp $
 #*/
 
 /**
@@ -49,6 +49,7 @@
 */
 
 #include "y.tab.h"
+#include <ctype.h>
 
 //prevent a4gl_4glc_int.h from including windows.h that we don't need here, that would
 //mess up constants defined in y.tab.h generated with new version of Bison
@@ -111,6 +112,10 @@ struct translate_string
   char *identifier;
 };
 
+int is_builtin_func(char *s);
+void set_namespace(char *s) ;
+char *get_namespace(char *s);
+int a4gl_yylex (void *pyylval, int yystate,void *yys1,void *yys2);
 char namespace[256]="aclfgl_";
 
 #define NEWLIST
@@ -286,6 +291,7 @@ isnum (char *s)
 {
   int a;
   int dp = 0;
+  int is_e=0;
 
   for (a = 0; a < strlen (s); a++)
     {
@@ -298,10 +304,62 @@ isnum (char *s)
 	}
       if (s[a] >= '0' && s[a] <= '9')
 	continue;
+      if (s[a]=='e'||s[a]=='E') {
+	is_e++;
+	continue;
+	}
+	
+
       return 0;
     }
-  if (strchr (s, '.'))
-    return 2;
+
+  if (is_e>1) {
+	return 0;
+  }
+
+  if (is_e==1) {
+	char buff[256];
+	char *ptr;
+	long n;
+	double a_d=0;
+	long a_i=0;
+	int a_mode;
+
+	strcpy(buff,s);
+	ptr=strchr(buff,'e');
+	if (ptr==0) ptr=strchr(buff,'E');
+	if (ptr==0) {
+		a4gl_yyerror("Internal error - couldn't locate 'e'..");
+	}
+	*ptr=0;ptr++;
+	
+	sscanf(ptr,"%ld",&n);
+
+ 	if (strchr(buff,'.')) {
+		a_mode=2;
+		sscanf(buff,"%lf",&a_d);
+	} else {
+		a_mode=1;
+		sscanf(buff,"%ld",&a_i);
+
+	}
+	while (n) {
+		if (a_mode==1) a_i=a_i*10;
+
+		else          a_d=a_d*10.0;
+		n--;
+	}
+	if (a_mode==1) {
+		sprintf(s,"%ld",a_i);
+	} else {
+		sprintf(s,"%f",a_d);
+	}
+  }
+
+  if (strchr (s, '.')) {
+		return 2;
+  }
+
   return 1;
 }
 
@@ -902,10 +960,14 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
   strcpy (str, p);
 
   a = isnum (p);
-  if (a == 1)
+  if (a == 1) {
+    strcpy (str, p);
     return INT_VALUE;
-  if (a == 2)
+    }
+  if (a == 2) {
+    strcpy (str, p);
     return NUMBER_VALUE;
+  }
 
   return t;
 }

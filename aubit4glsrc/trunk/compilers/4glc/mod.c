@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.116 2003-04-23 16:35:17 mikeaubury Exp $
+# $Id: mod.c,v 1.117 2003-05-01 09:42:18 mikeaubury Exp $
 #
 */
 
@@ -50,6 +50,7 @@
 
 #include "a4gl_4glc_int.h"
 #include "variables.h"
+#include <ctype.h>
 /*
 =====================================================================
                     Constants definitions
@@ -1803,6 +1804,7 @@ int
 add_bind (char i, char *var)
 {
   long dtype;
+printf("Add_bin %s\n",var);
 
   if (var[0] == '"')
     {
@@ -1826,9 +1828,9 @@ add_bind (char i, char *var)
 	  ibind[ibindcnt].start_char_subscript=0;
 	  ibind[ibindcnt].end_char_subscript=0;
 
-	  if (strlen(current_upd_table)) {
-		push_gen(UPDVAL,"?");
-	  }
+	  //if (strlen(current_upd_table)) {
+		//push_gen(UPDVAL,"?");
+	  //}
 
 	  if (strncmp(var," substr(",8)!=0) {
 	  	strcpy (ibind[ibindcnt].varname, var);
@@ -3636,7 +3638,10 @@ int a;
   //char cdtype[20];
   char buff[1000];
   char *ccol;
+strcpy(big_buff,"");
 
+printf("\nFixupdateexpr - VALUES\n");
+for (a=0;a<gen_stack_cnt[UPDVAL];a++) { printf("UPDVAL : %s\n",gen_stack[UPDVAL][a]); }
 printf("current_upd_table=%s\n",current_upd_table);
 
 if (mode==1) {
@@ -3666,12 +3671,16 @@ if (mode==1) {
     		if (rval == 0 ) break;
     		trim_spaces (colname);
 		push_gen(UPDCOL,colname);
+		printf("colname=%s\n",colname);
   	}
 	A4GLSQL_end_get_columns();
 }
 
 printf("Columns =%d values=%d\n",gen_stack_cnt[UPDCOL],gen_stack_cnt[UPDVAL]) ;
 if (gen_stack_cnt[UPDCOL]!=gen_stack_cnt[UPDVAL]) {
+	int a;
+	for (a=0;a<gen_stack_cnt[UPDCOL];a++) { printf("UPDCOL : %s\n",gen_stack[UPDCOL][a]); }
+	for (a=0;a<gen_stack_cnt[UPDVAL];a++) { printf("UPDVAL : %s\n",gen_stack[UPDVAL][a]); }
 	a4gl_yyerror("Number of columns in update not the same as number of values");
 }
 

@@ -33,7 +33,7 @@ ibind_var_list {
 	print_field_func('I',$<str>3,$<str>6);
    }
    | pdf_functions
-   | FIELD_TOUCHED OPEN_BRACKET field_name CLOSE_BRACKET RETURNING variable { 
+   | FIELD_TOUCHED OPEN_BRACKET field_name_list CLOSE_BRACKET RETURNING variable { 
 	print_field_func('T',$<str>3,$<str>6);
      }
    | variable COLON identifier OPEN_BRACKET   {

@@ -292,16 +292,24 @@ void
 print_execute (char *stmt, int using)
 {
   int ni;
+  
   if (using == 0) {
-    printc ("EXEC SQL %s\n", stmt);
+    printc ("EXEC SQL EXECUTE %s;\n", strip_quotes(stmt));
   print_copy_status();
   }
   else
     {
+	int a;
       printc ("{ /* EXECUTE */\n");
       ni = print_bind ('i');
 print_conversions('i');
-      printc ("EXEC SQL %s; /* Execute */\n", stmt);
+      printc ("EXEC SQL EXECUTE %s USING \n", strip_quotes(stmt));
+        for  (a=0;a<ni;a++) {
+                if (a) printc(",");
+                printc(":_vi_%d\n",a);
+        }
+
+        printc(";");
   print_copy_status();
       printc ("}\n");
     }
@@ -545,6 +553,10 @@ print_init_conn (char *db)
 void
 print_do_select (char *s)
 {
+//int ni;
+  //ni = print_bind ('i');
+  //printc("/* printed bind ni=%d */",ni);
+  //print_conversions('i');
   printc ("EXEC SQL %s;\n/* do_select */", s);
   print_copy_status();
   print_conversions('o');

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.3 2003-04-10 06:52:12 mikeaubury Exp $
+# $Id: memfile.c,v 1.4 2003-05-01 09:42:41 mikeaubury Exp $
 #
 */
 
@@ -48,7 +48,7 @@
 //#include <string.h>
 
 
-#include "memfile.h"  // why is this not in "a4gl_libaubit4gl_int.h" ?
+//#include "memfile.h"  // why is this not in "a4gl_libaubit4gl_int.h" ?
 
 int opened=0;
 char *buff;
@@ -56,7 +56,8 @@ long  buff_len;
 FILE *in;
 long pos=0;
 FILE *mja_fopen(char *name,char *mode);
-
+void *memdup(void *ptr,int size) ;
+void dump_buffer(char *s,int l);
 
 FILE *memfile_fopen(char *f,char *mode) {
 
@@ -123,8 +124,8 @@ FILE *memfile_fopen_buffer(char *ptr,int len) {
 	buff_len=len;
 	buff=memdup(ptr,len);
 	dump_buffer(ptr,30);
-	in=buff;
-	return buff;
+	in=(FILE *)buff;
+	return (FILE *)buff;
 }
 
 
@@ -232,7 +233,7 @@ int memfile_fread(char *ptr,int s,int n,FILE *f) {
 	}
 }
 
-dump_buffer(char *s,int l) {
+void dump_buffer(char *s,int l) {
 	int a;
 	char buff[256];
 	char buffx[256];

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.33 2003-04-26 12:22:16 afalout Exp $
+# $Id: builtin.c,v 1.34 2003-05-01 09:42:40 mikeaubury Exp $
 #
 */
 
@@ -810,7 +810,7 @@ P12.ao(.text+0x3c): undefined reference to `def_quit'
  * @param fieldno
  */
 int
-fgl_fieldtouched(char *fieldname,int fieldno)
+fgl_fieldtouched(char *fieldname,int fieldno,...)
 {
     /* fieldname should be array */
 	exitwith("NIY");

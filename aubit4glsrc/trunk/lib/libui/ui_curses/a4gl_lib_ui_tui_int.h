@@ -69,7 +69,7 @@
     void 		mja_wrefresh 		(WINDOW * w);
 	int 		getch_win 			(void);
 	int 		xwattr_get 			(WINDOW * w);
-    int 		iscurrborder 		(void);
+    //int 		iscurrborder 		(void);
     int 		getmessage_line 	(void);
     WINDOW * 	get_currwin 		(void);
     int 		subwin_print 		(WINDOW * win, char *fmt,...);
@@ -84,7 +84,7 @@
     int 		geterror_line 		(void);
     void 		mja_setcolor 		(int typ);
     int 		screen_width 		(void);
-    int 		get_curr_width 		(void);
+    //int 		get_curr_width 		(void);
     //void 		remove_window 		(char *win_name);
     int 		find_ptr_debug 		(void *ptr);
     int 		getprompt_line 		(void);

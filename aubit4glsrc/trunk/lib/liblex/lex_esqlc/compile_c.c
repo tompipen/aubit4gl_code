@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.32 2003-04-24 13:35:55 mikeaubury Exp $
+# $Id: compile_c.c,v 1.33 2003-05-01 09:42:41 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1631,7 +1631,7 @@ print_field_func (char type, char *name, char *var)
   if (type == 'I')
     printc ("push_int(fgl_infield(%s));", name);
   if (type == 'T')
-    printc ("push_int(fgl_fieldtouched(%s));", name);
+    printc ("push_int(fgl_fieldtouched(%s,0,0));", name);
 
   print_pop_variable (var);
 }
@@ -4205,6 +4205,8 @@ char *set_var_sql(int n)
 {
 	int a;
 	static char buff[8000];
+	extern char *current_upd_table;
+	#define UPDVAL 1
 
 	if (doing_esql()) {
 		int z;
@@ -4218,6 +4220,10 @@ char *set_var_sql(int n)
 			}
 			sprintf(buff_small," :_vi_%d\n",a);
 			strcat(buff,buff_small);
+
+			if (current_upd_table) {
+				push_gen(UPDVAL,buff_small);
+			}
 	        }
 		return buff;
 	} else {
@@ -4226,6 +4232,10 @@ char *set_var_sql(int n)
 		       if (a>0) {
 			       strcat(buff,",");
 		       } 
+			
+			if (current_upd_table) {
+				push_gen(UPDVAL,"?");
+			}
 		       strcat(buff,"?"); 
 	       }
 	       return buff;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.53 2003-04-28 17:39:50 mikeaubury Exp $
+# $Id: esql.ec,v 1.54 2003-05-01 09:42:41 mikeaubury Exp $
 #
 */
 
@@ -133,7 +133,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.53 2003-04-28 17:39:50 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.54 2003-05-01 09:42:41 mikeaubury Exp $";
 #endif
 
 
@@ -2765,7 +2765,7 @@ int A4GLSQL_read_columns(char *tabname,char *colname,int *dtype,int *size)
     int length;
   EXEC SQL END DECLARE SECTION;
 
-  sprintf(strSelect,"select %s from %s",colname,tabname);
+  sprintf(strSelect,"select %s.%s from %s",tabname,colname,tabname);
   EXEC SQL PREPARE stXReadColumns FROM :strSelect;
   if ( isSqlError() )
   {

@@ -33,6 +33,24 @@ void retint(int a) {
 	push_int(a);
 }
 
+void pushshort(short a) {
+	push_int(a&0xffff);
+}
+
+void pushlong(long a) {
+	push_long(a);
+}
+
+void popvchar(char *x,int y) {
+	pop_char(x,y);
+}
+
+void retdub(double x) {
+	push_double(x);
+}
+
+
+
 void retflo(float *a) {
 	float b;
 	b=*a;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.4 2003-02-16 04:25:42 afalout Exp $
+# $Id: sqlconvert.c,v 1.5 2003-05-01 09:42:41 mikeaubury Exp $
 #
 */
 
@@ -54,6 +54,7 @@
                           Definitions
 =====================================================================
 */
+#include <ctype.h>
 
 #define isquote(x) ((x)=='\"'||(x)=='\'')
 #define istabcol(x) (isalnum(x)||(x)=='.'||(x)=='_')

@@ -612,12 +612,12 @@ addmap("Get Field",$<str>3,curr_func,yylineno,infilename);
 | INFIELD OPEN_BRACKET field_name CLOSE_BRACKET {sprintf($<str>$,"push_int(fgl_infield(%s));",$<str>3); 
 	$<ptr>$=new_expr($<str>$);
 }
-| FIELD_TOUCHED OPEN_BRACKET field_name CLOSE_BRACKET 
-	{ sprintf($<str>$,"push_int(fgl_fieldtouched(%s));",$<str>3); 
+| FIELD_TOUCHED OPEN_BRACKET field_name_list CLOSE_BRACKET 
+	{ sprintf($<str>$,"push_int(fgl_fieldtouched(%s,0,0));",$<str>3); 
 	$<ptr>$=new_expr($<str>$);
 }
-| NOT_FIELD_TOUCHED OPEN_BRACKET field_name CLOSE_BRACKET 
-	{ sprintf($<str>$,"push_int(!fgl_fieldtouched(%s));",$<str>3); 
+| NOT_FIELD_TOUCHED OPEN_BRACKET field_name_list CLOSE_BRACKET 
+	{ sprintf($<str>$,"push_int(!fgl_fieldtouched(%s,0,0));",$<str>3); 
 	$<ptr>$=new_expr($<str>$);
 }
 | builtin_funcs
@@ -709,4 +709,8 @@ numeric_time_unit_big:
 ;
 
 
+field_name_list: field_name |
+	field_name_list COMMA field_name {
+	sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+	}
 /* ============================ expr.rule =========================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.19 2003-04-01 07:31:49 mikeaubury Exp $
+# $Id: variables.c,v 1.20 2003-05-01 09:42:18 mikeaubury Exp $
 #
 */
 
@@ -2346,10 +2346,14 @@ print_variable (struct variable *v, char scope, int level)
 	  static_extern_flg += 2;
 	}
 
-      if (v->is_static == 1)
-	{
-	  static_extern_flg += 1;
-	}
+      if (scope=='M') {
+	  static_extern_flg+=1;
+      } else {
+
+      	if (v->is_static == 1) {
+	  	static_extern_flg += 1;
+		}
+      }
     }
 
 

@@ -34,6 +34,7 @@ char *reserved_words_in_c[]={
 	"void",
 	"volatile",
 	"while",
+	"bool",
 #ifdef _cplusplus
 	"catch",
 	"inline",

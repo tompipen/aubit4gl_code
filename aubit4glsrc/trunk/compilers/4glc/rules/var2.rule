@@ -21,7 +21,7 @@ var2 :
 ;
 
 var3:
-        array_r_varid
+        array_r_variable // MJA 010503
 	| identifier
 	| var3  DOT aft_dot {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
 	| CHAR_VALUE DOT var3 DOT aft_dot {sprintf($<str>$,"\\\"%s\\\".%s.%s",strip_quotes($<str>1),$<str>3,$<str>5);}
