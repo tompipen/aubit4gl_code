@@ -560,8 +560,8 @@ print_define char* varstring,int isstatic_extern -> void
 /* void print_start_record (int isstatic_extern, char *varname) */
 print_start_record int isstatic_extern,char* varname -> void
 
-/* void print_end_record (char *vname, int arrsize) */
-print_end_record char* vname,int arrsize -> void
+/* void print_end_record (char *vname, char *arrsize) */
+print_end_record char* vname,char* arrsize -> void
 
 /* char * get_push_literal (char type, char *value) */
 get_push_literal char type,char* value -> char*

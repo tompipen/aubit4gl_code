@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.23 2002-12-16 16:47:53 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.24 2003-01-11 17:05:52 mikeaubury Exp $
 #
 */
 
@@ -3803,7 +3803,7 @@ print_start_record (int isstatic_extern, char *vname)
  * @return
  */
 void
-print_end_record (char *vname, int arrsize)
+print_end_record (char *vname, char *arrsize)
 {
   printing_record--;
   if (arrsize == -1)
@@ -3812,7 +3812,7 @@ print_end_record (char *vname, int arrsize)
     }
   else
     {
-      printc ("} %s[%d];\n", vname, arrsize);
+      printc ("} %s[%s];\n", vname, arrsize);
     }
 
   printc ("my $vname=a4glStruct_%s->new();", vname);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_norpc.c,v 1.4 2002-10-22 06:43:37 afalout Exp $
+# $Id: rpc_norpc.c,v 1.5 2003-01-11 17:05:53 mikeaubury Exp $
 #
 */
 
@@ -76,14 +76,14 @@ enum xdr_op {
 typedef struct {
 	enum xdr_op	x_op;		/* operation; fast additional param */
 	struct xdr_ops {
-		bool_t	(*x_getlong)();	/* get a long from underlying stream */
-		bool_t	(*x_putlong)();	/* put a long to " */
-		bool_t	(*x_getbytes)();/* get some bytes from " */
-		bool_t	(*x_putbytes)();/* put some bytes to " */
-		u_int	(*x_getpostn)();/* returns bytes off from beginning */
-		bool_t  (*x_setpostn)();/* lets you reposition the stream */
-		long *	(*x_inline)();	/* buf quick ptr to buffered data */
-		void	(*x_destroy)();	/* free privates of this xdr_stream */
+		bool_t	(*x_getlong)(void );	/* get a long from underlying stream */
+		bool_t	(*x_putlong)(void );	/* put a long to " */
+		bool_t	(*x_getbytes)(void );/* get some bytes from " */
+		bool_t	(*x_putbytes)(void );/* put some bytes to " */
+		u_int	(*x_getpostn)(void );/* returns bytes off from beginning */
+		bool_t  (*x_setpostn)(void );/* lets you reposition the stream */
+		long *	(*x_inline)(void );	/* buf quick ptr to buffered data */
+		void	(*x_destroy)(void );	/* free privates of this xdr_stream */
 	} *x_ops;
 	caddr_t 	x_public;	/* users' data */
 	caddr_t		x_private;	/* pointer to private data */

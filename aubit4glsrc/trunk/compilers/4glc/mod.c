@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.89 2003-01-06 06:15:30 psterry Exp $
+# $Id: mod.c,v 1.90 2003-01-11 17:05:50 mikeaubury Exp $
 #
 */
 
@@ -506,11 +506,13 @@ print_record(int z, char ff,char *vname)
 
   if (strcmp (vars[z].var_arrsize, EMPTY) == 0)
   {
-    print_end_record (vars[z].var_name, -1);
+    print_end_record (vars[z].var_name, "-1");
   }
   else
   {
-    print_end_record (vars[z].var_name, atoi (vars[z].var_arrsize));
+	debug("print_end_record %s %s",vars[z].var_name, vars[z].var_arrsize);
+
+    print_end_record (vars[z].var_name, vars[z].var_arrsize);
   }
   return a;
 }

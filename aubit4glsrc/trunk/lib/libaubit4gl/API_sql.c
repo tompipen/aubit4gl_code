@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.22 2002-10-27 22:34:11 afalout Exp $
+# $Id: API_sql.c,v 1.23 2003-01-11 17:05:51 mikeaubury Exp $
 #
 */
 
@@ -115,6 +115,8 @@ static int 	(*func)					();
 /* long        A4GLSQL_describe_stmt 	(char *stmt, int colno, int type); */
 /* long        A4GLSQL_initsqllib		(void); */
 char *      global_A4GLSQL_get_sqlerrm (void);
+
+void aclfgli_set_err_flg(void);
 
 /*
 =====================================================================

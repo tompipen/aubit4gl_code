@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.41 2003-01-04 01:58:30 afalout Exp $
+# $Id: compile_c.c,v 1.42 2003-01-11 17:05:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -162,6 +162,7 @@ static void 	real_print_func_call (char *identifier, struct expr_str *args, int 
 static void 	real_print_class_func_call (char *var,char *identifier, struct expr_str *args, int args_cnt);
 static void 	real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
 
+void printh(char* fmt,... );
 
 /*
 =====================================================================
@@ -4379,15 +4380,15 @@ print_start_record (int isstatic_extern, char *varname)
  * @param arrsize The array size if is a record array
  */
 void
-print_end_record (char *vname, int arrsize)
+print_end_record (char *vname, char *arrsize)
 {
-  if (arrsize == -1)
+  if (strcmp(arrsize,"-1")==0)
     {
       printc ("} %s;\n", vname);
     }
   else
     {
-      printc ("} %s[%d];\n", vname, arrsize);
+      printc ("} %s[%s];\n", vname, arrsize);
     }
 }
 
