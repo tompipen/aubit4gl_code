@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.89 2004-06-18 16:52:49 mikeaubury Exp $
+# $Id: newpanels.c,v 1.90 2004-07-01 17:22:48 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.89 2004-06-18 16:52:49 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.90 2004-07-01 17:22:48 mikeaubury Exp $";
 
 /**
  * @file
@@ -1657,12 +1657,14 @@ int a;
  * @todo Describe function
  */
 void
- UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
+ UILIB_A4GL_display_internal (int x, int y, char *s, int attr, int clr_line)
 {
 int nattr;
 WINDOW *wot;
-A4GL_debug("display_internal : %d %d %s %d %d",x,y,s,a,clr_line);
-A4GL_debug("determine_attribute seems to be returning %x\n",a);
+A4GL_debug("display_internal : %d %d %s %d %d",x,y,s,attr,clr_line);
+A4GL_debug("determine_attribute seems to be returning %x\n",attr);
+
+  A4GLSQL_set_status (0, 0);
 
   if (x == -1 && y == -1)
     {
@@ -1678,19 +1680,33 @@ A4GL_debug("determine_attribute seems to be returning %x\n",a);
     {
       int b;
       /* WINDOW *win; */
+        A4GL_debug("DISPLAY @ %d %d %d %d - '%s'",x,y,A4GL_get_curr_width(),A4GL_get_curr_height(),s);
+	if (y<1|| y>A4GL_get_curr_height()) {
+		A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
+		return;
+	}
+	if (x<1|| x>A4GL_get_curr_width()) {
+		A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
+		return;
+	}
+
+
+	if (strlen(s)==0&&clr_line) return;
+
 	A4GL_debug("Check we have CURSES env");
       A4GL_chkwin ();
 	A4GL_debug("Done");
-	nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, a, 0,0);
-	a=nattr;
+	nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, attr, 0,0);
+	attr=nattr;
       b = A4GL_xwattr_get (currwin);
       wot=A4GL_window_on_top_ign_menu ();
 
-      a4glattr_wattrset (wot, a);
-      A4GL_gui_print (a, s);
+      a4glattr_wattrset (wot, attr);
+      A4GL_gui_print (attr, s);
       A4GL_mja_gotoxy (x, y);
-	A4GL_debug("X=%d Y=%d",x,y);
+      A4GL_debug("X=%d Y=%d",x,y);
       A4GL_tui_print ("%s", s);
+
       if (clr_line)
 	{
 	int sl;

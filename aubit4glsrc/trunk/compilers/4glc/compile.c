@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.56 2004-03-22 03:11:16 afalout Exp $
+# $Id: compile.c,v 1.57 2004-07-01 17:22:42 mikeaubury Exp $
 #*/
 
 /**
@@ -114,7 +114,7 @@ void printUsage (char *argv[]);
 static void printUsage_help (char *argv[]);
 int initArguments (int argc, char *argv[]);
 void setGenStackInfo (int _genStackInfo);
-void set_yytext (char *s);
+//void set_yytext (char *s);
 int has_default_database (void);
 char *get_default_database (void);
 

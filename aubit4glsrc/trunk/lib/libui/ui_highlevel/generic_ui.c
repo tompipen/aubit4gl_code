@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.22 2004-06-25 18:25:38 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.23 2004-07-01 17:22:49 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -2739,6 +2739,34 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
       a = nattr;
 
       wot = (void *) A4GL_window_on_top_ign_menu ();
+
+	A4GL_debug("CURR=%d",UILIB_A4GL_get_curr_height());
+
+	if (UILIB_A4GL_iscurrborder ()) {
+        	if (y<1|| y>UILIB_A4GL_get_curr_height()) {
+                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
+                	return;
+        	}
+        	if (x<1|| x>A4GL_get_curr_width()) {
+                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
+                	return;
+        	}
+
+	} else {
+        	if (y<1|| y>UILIB_A4GL_get_curr_height()+10) {
+                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
+                	return;
+        	}
+        	if (x<1|| x>A4GL_get_curr_width()) {
+                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
+                	return;
+        	}
+
+
+	}
+
+      if (strlen(s)==0&&clr_line) return;
+
       A4GL_wprintw(wot,a,x,y,"%s",s);
 
       if (clr_line)

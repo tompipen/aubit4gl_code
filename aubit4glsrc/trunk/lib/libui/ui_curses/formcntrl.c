@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.59 2004-06-25 18:25:37 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.60 2004-07-01 17:22:48 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.59 2004-06-25 18:25:37 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.60 2004-07-01 17:22:48 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -594,7 +594,8 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
       if (sio->fcntrl[a].state == 5)
         {
 
-          if (sio->mode == MODE_CONSTRUCT) {
+		A4GL_debug("abort_pressed=%d last_key_code=%d extent=%d",abort_pressed,last_key_code,sio->fcntrl[a].extent);
+          if (sio->mode == MODE_CONSTRUCT && last_key_code!=A4GLKEY_CANCEL) {
                         struct s_form_dets *form;
                         char rbuff[1024];
                         int w;
@@ -611,14 +612,17 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
                                 //A4GL_error_nobox("CONSTRUCT BY KEY",0);
 				strcpy(m_delims,form->fileform->delim);
                                 k=A4GL_construct_large(rbuff,evt,sio->fcntrl[a].extent,mform->curcol);
+				if (k==A4GLKEY_CANCEL) {
+				A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
+				} else {
                                 fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
                                 if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a) && isalpha (a)) { a = a4gl_tolower (a); }
                                 if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a) && isalpha (a)) { a = a4gl_toupper (a); }
                                 A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS, 0, 0, k);
                                 set_field_buffer (sio->currentfield,0,rbuff);
+				}
                         }
           }
-
           new_state = 2;
           rval = -1;
         }
@@ -1533,8 +1537,11 @@ m_d2[1]=0;
       		A4GL_mja_refresh ();
 		a=A4GL_real_getch_swin (drwin);
       		A4GL_mja_refresh ();
+                if (abort_pressed || a==A4GLKEY_INTERRUPT || a==A4GLKEY_CANCEL) {
+			A4GL_debug("Abort Pressed!");
+			break;
 
-                if (abort_pressed) break;
+		}
                 if (A4GL_has_event_for_keypress(a,evt)) return a;
 
 
