@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.35 2004-11-17 10:40:48 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.36 2004-11-30 12:02:22 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -233,6 +233,7 @@ A4GL_move_bar (ACL_Menu * menu, int a)
   A4GL_debug ("In movebar curropt=%p", menu->curr_option);
 
 
+#ifdef OLD_CODE
   if (a == 0xffff)
     {
       A4GL_debug ("Decoding new option");
@@ -248,6 +249,7 @@ A4GL_move_bar (ACL_Menu * menu, int a)
       dir = 1;
     }
   else
+#endif
     {
 
       if (a == A4GLKEY_UP || a == A4GLKEY_LEFT || a == 8)
@@ -2867,4 +2869,5 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
        }
 
  }
+
 
