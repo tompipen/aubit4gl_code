@@ -596,42 +596,6 @@ words (int cnt, int pos, FILE * f, char *p)
     }
 }
 
-#ifdef OLD
-words (int cnt, int pos, FILE * f, char *p)
-{
-  int f_pos;
-  int z;
-  int t;
-  //if (kwords[cnt].vals[pos]==0) {
-  ////DBG printf("End of list\n");
-  //return 1;
-  //}
-
-  //f_pos=ftell(f);
-
-  //printf("Check word %s against %s\n",p,kwords[cnt].vals[pos]);
-  if (stricmp (p, kwords[cnt].vals[pos]) != 0)
-    {
-      return 0;
-    }
-
-  //printf("Get Next word\n");
-  if (kwords[cnt].vals[pos + 1] == 0)
-    {
-      //DBG printf("End of list\n");
-      return 1;
-    }
-  p = read_word (f, &t);
-
-  z = words (cnt, pos + 1, f, p);
-
-  if (z == 0)
-    {
-      //fseek(f,f_pos,SEEK_SET);
-      return 0;
-    }
-}
-#endif
 
 char *
 mk_word (int c)
