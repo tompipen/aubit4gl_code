@@ -25,6 +25,25 @@
 # This is to pick up compiler errors only!
 #
 
+database maxdev
+
+
+{
+
+Querix will fail to comile this file foro unknown reason - there is nothing called
+Ioa anywhere!
+
+[root@aptiva regression]# make all.querix
+fglc -a -w -D -I -z -Ig regression-test-4gl.4gl
+gcc -c -I/opt/querix/./incl -DQUERIX regression-test-4gl.c -o regression-test-4gl.qo
+regression-test-4gl.4gl: In function `huuuuhhsaaaastilllfaillls':
+regression-test-4gl.4gl:1808: `Ioa' undeclared (first use in this function)
+regression-test-4gl.4gl:1808: (Each undeclared identifier is reported only once
+regression-test-4gl.4gl:1808: for each function it appears in.)
+make: *** [regression-test-4gl.qo] Error 1
+
+}
+
 
 ##############################
 globals
@@ -155,7 +174,13 @@ select * from systables where tabname=user
 #and it will generate error:
 #| The number of columns must match the number of values in the SET clause of an UPDATE statement.
 #| See error number -4464.
-update maxreport set * = f2.*
+{! update maxreport set * = f2.* !}
+#-- update maxreport set * = f2.*
+#ifx: (works with 4Js) f2 is defined in GLOBALS block
+#|
+#|      The variable "f2" has not been defined
+#| LIKE the table "maxreport".
+#| See error number -4425.
 
 menu "m1"
 	command "Test0"
@@ -235,11 +260,11 @@ define
 #      initialize pa_default.* to null
 #      call enter_voucher(cmpy,whom,"","","")
 #         returning pr_voucher.*, pr_vouchpayee.*
-      let intvar = xmenu(intvar, charvar, f2.*,
+      let intvar = xmenu(intvar, charvar, f2.*)
 #|____________________________________^
 #| Error at line 135, character 38
 #| parse error ()
-                                       f2.*,'1')
+                                       #f2.*,'1')
 #      if pr_voucher.vouch_code <= 0 then
 #         exit while
 #      end if
@@ -342,11 +367,15 @@ LOAD FROM "filename" INSERT INTO table
 #| Error at line 585, character 19
 #| parse error ()
 
-
-                return null
+{!                return null !}
+--#                return null
 #|________________________^
 #| Error at line 1276, character 26
 #| parse error ()
+#ifx: (worsk with 4Js):
+#|
+#|      The symbol "null" does not represent a defined variable.
+#| See error number -4369.
 
 
     prepare x2 from " insert into act_desc values (?)"
@@ -397,12 +426,32 @@ LOAD FROM "filename" INSERT INTO table
    input by name charvar
         without defaults
         attribute(cyan)
-      before field dest_print_text
+      before input
+
+--#	  before field dest_print_text
+{! 	  before field dest_print_text !}
          let charvar = 9999
+#QUERIX: (works with 4Js and ifx)
+#|
+#|   The specified field names are not in the input list or field list.
+#|
+#| Check that the field name is specified correctly.
+#|
+#| Check error -4391.
+#|
          display by name charvar
             attribute(cyan)
-      after field dest_print_text
+--#      after field dest_print_text
+{!       after field dest_print_text !}
          select * into charvar from printcodes
+#QUERIX: (works with 4Js and ifx)
+#|
+#|   The specified field names are not in the input list or field list.
+#|
+#| Check that the field name is specified correctly.
+#|
+#| Check error -4391.
+#|
           where 1 = 1
          if status = notfound then
             error" Printer Configuration Not found - Try Window "
@@ -618,7 +667,9 @@ function fails_on_30_08_01 ()
 	start_line,
 	end_line,
     file_tmp1
-        integer
+        integer,
+       pr_invoicehead record like invoicehead.*
+
 
 
       if sqlca.sqlcode = 0 then
@@ -652,9 +703,17 @@ function fails_on_30_08_01 ()
 --
 
  #NOTE: there is a function called UPDATE() in this file.
- call update() returning update
- display update
+--# call update() returning update
+{! call update() returning update !}
+#ifx (works with 4Js):
+#|
+#|      "update" may not be used as both a function (or report) name and a variable name.
+#| See error number -4475.
+ 
 
+#Thsi would cause a syntaxe erorr on next statemwent with Querixl works with i4gl and 4js
+--# display update
+{!  display update !}
 
 ###################################################
 #/data2/maximise/max_4.01.12/main/U1D.err :
@@ -668,15 +727,26 @@ function fails_on_30_08_01 ()
 #this is causing the conflict with reserved word "exists" - which should not be
 #reserved.
 
-               if exists(intvar,
+{!               if exists(intvar, !}
+--#               if exists(intvar,
+#ifx: (works with 4Js)
+#|
+#|      "exists" may not be used as both a function (or report) name and a variable name.
+#| See error number -4475.
 #|______________________^
 #| Error at line 282, character 24
 #| parse error ()
-                         charvar,
-                         intvar) then
+--#                         charvar
+--#                         ) then
+--#                    display "blah"
+--#				end if
+{!                         charvar
+                         ) then
                     display "blah"
-                end if
-            end if
+				end if
+!}
+
+			end if
 
 ##########################################################
 
@@ -756,6 +826,15 @@ LABEL headlab:
 
 
                insert into t_salescomm values(pr_invoicehead.sale_code,
+#Only Querix detected (correctly) when thiis record was not defined !
+#|
+#|   Variable "pr_invoicehead" not defined.
+#|
+#| Check that variable name has been defined correctly, check GLOBALS file for
+#| definition.
+#|
+#| Check error -4369.
+#|
                                               pr_invoicehead.cust_code,
                                               pr_invoicehead.inv_num,
                                               pr_invoicehead.inv_date,
@@ -791,8 +870,14 @@ LABEL headlab:
 #|________________^
 #| Error at line 906, character 18
 #| parse error ()
-
+        display "blah"
     end display
+#ifx: (works with 4Js)
+#|______^
+#|
+#|      A grammatical error has been found on line 821, character 8.
+#| The construct is not understandable in its context.
+#| See error number -4373.
 
 ##########################################################
 
@@ -856,13 +941,6 @@ declare item_curs cursor for
      from colitem, mrwitem, outer( colitemcolid )
 #|________________________________^
 #| Error at line 280, character 34
-#| parse error ()
-##########################################################
-
-
-        call update()
-#|_________________^
-#| Error at line 39, character 19
 #| parse error ()
 ##########################################################
 
@@ -1106,14 +1184,20 @@ pr_voucherpays record
 #| parse error ()
 ##########################################################
 
-      if group sum(intvar) = 0 then
+{!      if group sum(intvar) = 0 then !}
+--#      if group sum(intvar) = 0 then
+#ifx: (works with 4Js):
+#|
+#|      Group aggregates can occur only in AFTER GROUP clauses.
+#| See error number -4361.
          print column 18, "Avg Rate",
                column 39, 0.00;
 #|__________________________^
 #| Error at line 721, character 28
 #| parse error ()
 
-    end if
+--#    end if
+{! end if !}
 
 ##########################################################
 
@@ -1312,7 +1396,12 @@ INSERT INTO cont_trans VALUES (charvar,
          from glparms
          where glparms.cmpy_code = charvar
            and glparms.key_code = "1"
-         for update of next_jour_num
+--#         for update of next_jour_num
+{!         for update of next_jour_num !}
+#ifx: (works with 4js)
+#|
+#|      UPDATEs may not be used with singleton selects.
+#| See error number -4471.
 #|_____________________^
 #| Error at line 319, character 23
 #| parse error ()
@@ -1342,6 +1431,17 @@ INSERT INTO cont_trans VALUES (charvar,
    CALL lock_record(charvar, intvar)
 
     UPDATE mail_disc SET * = (gr_table_rec.mail_code, gr_table_rec.description, USER, TODAY) WHERE CURRENT OF update_curs
+#Querix:
+#|
+#|   The size of the column list cannot be verified at compile time.
+#|
+#| The table mail_disc does not exist at the present time, so this statement
+#| cannot be checked.  This is normal if the statement refers to a TEMP table,
+#| otherwise check for the existence of the table in the database.
+#|
+#| Check error -4706.
+#|
+
 #|___________________________________________________^
 #| Error at line 280, character 53
 #| parse error ()
@@ -1613,10 +1713,16 @@ define
 
 ########################################## (1) /data2/maximise/max_4.01.12/ap/P6A.err :
          print column 10, charvar clipped,
-               column 25,charvar clipped wordwrap right margin x
+               column 25,charvar clipped 
+			   	--#wordwrap right margin x
+			   	{! wordwrap right margin x !}
 #|__________________________________________________________________^
 #| Error at line 489, character 68
 #| parse error ()
+#ifx: (works with 4Js)
+#|
+#|      Wordwrap may not be used within report headers or trailers.
+#| See error number -4534.
 
 
 #######################
@@ -1649,14 +1755,25 @@ define
 end report
 
 ########################################## (2) /data2/maximise/max_4.01.12/winds/invdfunc.err :
-function blah()
+--#function blah()
+#ifx: (works with 4Js)
+#|
+#|      "blah" may not be used as both a function (or report) name and a variable name.
+#| See error number -4475.
 
-   return
-end function
+--#   return
+--#end function
 #|_________^
 #| Error at line 323, character 11
 #| FUNC was not last block command
 # ()
+
+
+{!
+function blah()
+  return
+end function
+!}
 
 
 ########################################
@@ -1757,21 +1874,29 @@ function header()
 #    return 0
 end function
 
-function update()
-#    return 0
-end function
 
 function warning()
 #    return 0
 end function
 
-function xmenu(intvar, charvar, f2,f2,charvar)
+function xmenu(intvar, charvar, f2)
+#function xmenu(intvar, charvar, f2,f2,charvar)
+#IFX & 4Js:
+#|
+#|      The symbol "f2" has already been defined once as a parameter.
+#| See error number -4338.
+#|
+#|      The symbol "charvar" has already been defined once as a parameter.
+#| See error number -4338.
 define
 	f2 record
 		a integer,
 		a1 integer
-	end record
+	end record,
+    intvar integer,
+    charvar char(20)
 
+    return 3
 
 end function
 
@@ -1796,7 +1921,7 @@ define
     return true
 end function
 
-function exists(intvar, charvar, intvar)
+function exists(intvar, charvar)
 define
     intvar
         integer,
@@ -1812,6 +1937,8 @@ end function
 
 FUNCTION update()
   return "HELLO WORLD"
+
+
 END FUNCTION
 
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.38 2003-03-08 04:29:29 afalout Exp $
+# $Id: Makefile.in,v 1.39 2003-03-09 07:06:17 afalout Exp $
 #
 
 ROOT    =../..
@@ -48,7 +48,7 @@ include ${ROOT}/incl/?4gl.mk
 #ONLY FOR A LIGHT DEMO AND TO CONFIRM THAT COMPILER WORKS AND IS INSTALLED
 #CORRECTLY - SO WE DON'T WANT TOO MANY PROGRAMS HERE
 DEFAULT	=hello.4ae hello2.4ae hello_db.4ae testmenu.4ae testmenu.mnu.xml \
-		form.afr.xml helpfile.hlp
+		form.afr.xml helpfile.hlp  file.4ae
 
 
 SUB		=guidemos
@@ -61,7 +61,7 @@ endif
 
 
 #Targets still expected to fail, that need fixing:
-ALL_FAIL=pdf_report.4ae file.4ae
+ALL_FAIL=pdf_report.4ae
 
 #Targets that need database to compile
 ALL_DB  =test_select.4ae
@@ -69,12 +69,14 @@ ALL_DB  =test_select.4ae
 ifneq "${AUBIT_BIN_INSTALL}" "1"
 	#We have this dirs only in source code tree - not in bunary distros:
 	SUB+=langdemos
+	
+	#Both regressiontests and dbtests need a database
 	REGRES=regressiontests dbtests
     #examples we have only in source code tree, but not in binary installations:
 	ALL +=solitaire.4ae
 endif
 
-ALL     +=${SUB} ${REGRES} ${ALL_FAIL}
+ALL     +=${SUB}
 
 
 .PHONY: default all sub test.build test.perl ${SUB} ${REGRES} \
@@ -98,7 +100,7 @@ default: ${DEFAULT}
 
 all: ${ALL}
 	@echo "all targets successfully compiled"
-	@echo "Tests that are expected to fail: ${ALL_FAIL}"
+	@echo "Targets that are expected to fail: ${ALL_FAIL}"
 
 
 solitaire.4ae: sol.4gl random.4gl

@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.32 2003-03-07 04:37:35 afalout Exp $
+#	 $Id: a4gl.mk,v 1.33 2003-03-09 07:06:16 afalout Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.32 2003-03-07 04:37:35 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.33 2003-03-09 07:06:16 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -189,6 +189,8 @@ A4GL_CLEAN_FLAGS	=$(addprefix *,	$(A4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(A4
 #On Windows when using Cygwin tools (that use UNIX paths and Cygwing path mangling) and native
 #Windows 4glc and gcc (that know nothing about this CigWin paths) we need to add path to CygWin
 #installation in front of any source file paths specified in rule call:
+#Note: we can produce .glb file by specifying --globals and that would be
+#much faster then doing a full compile
 #.4gl${A4GL_OBJ_EXT}:
 %${A4GL_OBJ_EXT} %.glb: %.4gl
 ifeq "${USE_4GLPC}" "1"

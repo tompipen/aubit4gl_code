@@ -16,6 +16,7 @@ Please occasionally remove items that are completed from this list.
 	Clean up error handling
 	Replace sqlca & status with acl_sqlca and acl_status -  use as sqlca&status in 4GL code
 		(This will allow other DBs to still have their own sqlca - which may be different).
+	allow "exists" to be used as a function name (remove from reserved words)
 
 
 Enhancements
@@ -63,7 +64,7 @@ SQL Parser
 	add extend() SQL function into parser *********** DONE
 	Separate SQL parser into different YACC file (to allow for multiple SQL dialects)
 	Bind substrings (also used in displays/inputs) ******** PARTIAL (Generates but not coded in library)
-
+	implement grant and revoke
 
 
 SQL plugins

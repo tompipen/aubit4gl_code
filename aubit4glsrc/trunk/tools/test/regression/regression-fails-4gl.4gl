@@ -21,7 +21,7 @@
 # DO NOT ATTEMPT TO RUN THIS!!!
 # This is to pick up compiler errors only!
 #
-database maindb
+database maxdev
 globals "regression-test-4gl.4gl"
 
 
@@ -63,7 +63,8 @@ define
         smallint ,
     a,
     b,
-    c
+    c,
+    ptest
         char(20) ,
       pr_src_prodstatus,
       pr_dst_prodstatus record like prodstatus.*
@@ -73,11 +74,27 @@ define
 
 
 
+{! grant connect to "nobody"; !}
+--#grant connect to "nobody";
+#Querix: (works with 4Js and ifx)
+#|________________^
+#|
+#|   A grammatical error has been found on line 78, character 18.
+#| The construct is not understandable in its context.
+#|
+#| Check error -4373.
+#|
 
-grant connect to "nobody";
-
-
-revoke all on notes from "public";
+{! revoke all on notes from "public"; !}
+--#revoke all on notes from "public";
+#Querix: (works with 4Js and ifx)
+#|___________________^
+#|
+#|   A grammatical error has been found on line 81, character 21.
+#| The construct is not understandable in its context.
+#|
+#| Check error -4373.
+#|
 
 
 create table whics_payments
@@ -122,7 +139,14 @@ create table whics_payments
 #| parse error ()
 
 
-        connect to ptest user "postgres" using "pg"
+     {!  connect to ptest user "postgres" using "pg" !}
+     --#   connect to ptest user "postgres" using "pg"
+#ifx (works with 4Js):
+#|__________________________________________________^
+#|
+#|      A grammatical error has been found on line 126, character 52.
+#| The construct is not understandable in its context.
+#| See error number -4373.
 #|_______________________^
 #| Error at line 173, character 25
 #| parse error ()
@@ -152,7 +176,7 @@ display ' \"'
 #|_________________^
 #| Error at line 396, character 19
 #| parse error ()
-
+        display "blah"
     end display
 
 
