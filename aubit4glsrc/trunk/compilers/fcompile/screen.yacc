@@ -41,10 +41,12 @@ extern int openwith;
 extern char currftag[256];
 extern char *outputfilename;
 extern char *tablist[];
+int A4GL_get_dtype_size(void) ;
+int A4GL_get_attr_from_string (char *s);
 /* extern FILE *yyin; */
 int in_screen_section=0;
 int dtype_size=0;
-
+char *rm_dup_quotes(char *s) ;
 /*
 =====================================================================
                     Functions prototypes
@@ -240,7 +242,7 @@ some_text {
 } 
 
 | ch_list {
-	char buff[256];
+	//char buff[256];
 	A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
 	//printf("colno was %d for '%s'\n",colno,$<str>1);
 	colno+=strlen($<str>1);
@@ -594,7 +596,7 @@ named_or_kw  {
    A4GL_set_dim_srec($<str>1,atoi($<str>3));
 };
 
-
+/*
 field_list : 
 field_list_element {
 	sprintf($<str>$,"%s",$<str>1);
@@ -602,6 +604,7 @@ field_list_element {
 | field_list COMMA field_list_element {
 	sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
 };
+*/
 
 
 srec_field_list : 
