@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.29 2002-04-28 04:43:57 afalout Exp $
+# $Id: Makefile.in,v 1.30 2002-04-29 03:30:01 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -94,7 +94,7 @@ all: ${ALL}
 #4glc: ${4GLCAOBJ} ${LIB_C}
 4glc: ${4GLCAOBJ}
 #	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCAOBJ} ${AUBIT_LIB} ${LIB_C_L}
-	${CC} ${CFLAGS} -L../../lib -o $@ $^ ${AUBIT_LIB}
+	${CC} ${EXE_CFLAGS} -L../../lib -o $@ $^ ${AUBIT_LIB}
 	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
 
 #4glp: ${4GLCAOBJ} ${LIB_PERL}

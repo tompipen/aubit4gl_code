@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.4 2002-04-28 04:43:58 afalout Exp $
+# $Id: compile_c.c,v 1.5 2002-04-29 03:30:01 afalout Exp $
 #
 */
 
@@ -122,6 +122,8 @@ extern int fbindcnt;
 
 extern struct s_constr_buff constr_buff[256];
 extern int constr_cnt;
+
+extern void set_clobber(char *c);
 
 /* The important stuff ! */
 

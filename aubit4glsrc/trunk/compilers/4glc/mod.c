@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.56 2002-04-28 04:43:57 afalout Exp $
+# $Id: mod.c,v 1.57 2002-04-29 03:30:01 afalout Exp $
 #
 */
 
@@ -69,10 +69,12 @@ char upd_using_notpk[5000] = "";
 int upd_using_notpk_cnt = 0;
 int rep_type = 0;
 
+/*
 #ifdef LEXER
 char xwords[256][256];
 int word_cnt = 0;
 #endif
+*/
 
 #define USE_PRINTCOMMENT
 extern int menu_cnt;
@@ -82,11 +84,12 @@ extern char *infilename;
 int db_used = 0;
 int last_var_found = -1;
 int var_hdr_finished;
+/*
 #ifdef LEXER
 int xccode = 0;
 long fpos;
 #endif
-
+*/
 struct s_constants
 {
   char type;
@@ -216,11 +219,13 @@ struct cmds
 } command_stack[200];
 
 /** Command stack counter / index (number of elements in command_stack) */
+/*
 #ifdef LEXER
 int ccnt = 0;
 #else
+*/
 extern int ccnt;  //in lexer.c
-#endif
+//#endif
 
 #define EMPTY "----"
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.4 2002-04-24 07:45:59 afalout Exp $
+# $Id: stack.c,v 1.5 2002-04-29 03:30:01 afalout Exp $
 #
 */
 
@@ -55,11 +55,14 @@ extern int errno;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef WIN32
-#include <unistd.h>
-#include <pwd.h>
-#endif
 #include "a4gl_acl_string.h"
+#ifndef WIN32
+	#include <unistd.h>
+	#include <pwd.h>
+#endif
+
+
+
 
 #ifdef WIN32
 struct passwd

@@ -9,7 +9,7 @@
  */
 
  /*
-  * $Id: fcompile.c,v 1.13 2002-04-28 04:43:57 afalout Exp $
+  * $Id: fcompile.c,v 1.14 2002-04-29 03:30:01 afalout Exp $
   */
 
 //here becaus of struct_form: FIXME - fcompile should not depend on RPCGEN
@@ -116,6 +116,12 @@ int main (int argc, char *argv[])
   char c[128];
   char d[128];
   FILE *fopn;
+
+
+	//load settings from config file(s):
+	build_user_resources();
+
+
 
   strcpy (d, "");
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.28 2002-04-28 04:43:57 afalout Exp $
+# $Id: Makefile.in,v 1.29 2002-04-29 03:30:01 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -40,6 +40,7 @@ override NOINCL=0
 #4GLPCFLAGS		=-make-compile ${LINK_COMPILERS} -verbose -L../../lib
 4GLPC			=../../bin/4glpc
 CFLAGS 			+=-I../../lib/libincl -I. @CURSES_INC_PATH@ @RPCLIB_INCLUDE@
+EXE_CFLAGS      +=-I../../lib/libincl -I.
 
 #FIXME: we should compile dummy executables in any case, so we can use them instead
 #of real ones when installing binary distro on system with missing RPClib:
@@ -96,16 +97,16 @@ all: $(ALL)
 
 fcompile: $(OBJECTS)
 #	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} ${AUBIT_LIB} -lFORM_XDR
-	${CC} ${CFLAGS} -L../../lib -o $@ $^ ${AUBIT_LIB}
+	${CC} ${EXE_CFLAGS} -L../../lib -o $@ $^ ${AUBIT_LIB}
 	${LN} $@${EXE} ../../bin/$@${EXE}
 
 fdecompile-j : ${DECOMPILE} ${DUMP_JAVA}
-	${CC} ${CFLAGS} -L../../lib $^ -o $@ ${AUBIT_LIB}
+	${CC} ${EXE_CFLAGS} -L../../lib $^ -o $@ ${AUBIT_LIB}
 	${CP} $@ ../../bin
 
 fdecompile : ${DECOMPILE} ${DUMP_C}
 #	${CC} ${CFLAGS} -L../../lib $^ -o $@ ${AUBIT_LIB} -lFORM_XDR
-	${CC} ${CFLAGS} -L../../lib $^ -o $@ ${AUBIT_LIB}
+	${CC} ${EXE_CFLAGS} -L../../lib $^ -o $@ ${AUBIT_LIB}
 	${CP} $@ ../../bin
 
 fshow : fshow.4gl

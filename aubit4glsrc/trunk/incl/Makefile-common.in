@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.33 2002-04-23 07:01:04 afalout Exp $
+# $Id: Makefile-common.in,v 1.34 2002-04-29 03:30:01 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -210,8 +210,35 @@ LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 #compiling 4gl programs
 MAKINGAUBIT			=1
 
-#for -fPIC
+
+#  -fPIC  If supported for the target machine, emit position-
+#         independent code,  suitable  for  dynamic  linking,
+#         even if branches need large displacements.
 PIC					=@PIC@
+#-rdynamic is needed when calling functions that are defineds in
+#executable, from shared libraries that are dlopen at run-time,
+#otherwise we get this function calls as undefined symbols. as in:
+#4glc: relocation error: /opt/aubit/aubit4glsrc/lib/libLEX_C.so: undefined symbol: set_clobber
+#-rdynamic basically makes all symbols in a program public to a dlopen() shared lib.
+#thsi is a LINKER, not compiler option, and it's not in GCC documentation.
+#The -rdynamic option seems to have been
+#introduced as a high-level interface to the linker, to (a) force the
+#allocation of a global symbol table in the final executable, even if it's
+#not strictly needed, and (b) cause the inclusion of the global symbols in
+#that symbol table.
+#
+#        o  Under linux, gcc interprets it by setting the
+#           "-export-dynamic" option for ld, which has that effect, according
+#           to the linux ld manpage.
+#
+#        o Under IRIX it's ignored, and the program's happy as a clam.
+#
+#        o Under SunOS-4.1, gcc interprets it by setting the -dc -dp
+#          options for ld, which again forces the allocation of the symbol
+#          table in the code produced (see ld(1) on a Sun).
+RDYNAMIC            =-rdynamic
+
+
 USE_RPCGEN			=@USE_RPCGEN@
 HAVE_RPCLIB			=@HAVE_RPCLIB@
 
@@ -241,8 +268,8 @@ ifdef COMSPEC
 	CPEXE		=cp
     SH			=bash
     LN			=cp
-    SO_LDFLAGS	=-rdynamic ${PIC}
-	SO_GCCFLAGS =-Xlinker -rdynamic
+    SO_LDFLAGS	=${RDYNAMIC} ${PIC}
+	SO_GCCFLAGS =-Xlinker ${RDYNAMIC}
 	DLL_EXPORTLIB_EXT=.dll.a
 	#dll on Windows are loaded by standard Windows loader, that don't
 	#understand CygWin symbolic links:
@@ -253,14 +280,17 @@ ifdef COMSPEC
 	#USE_RPCGEN  =0
 else
     #FIXME: add -g from configure
-	CFLAGS      +=-g
+	#FIXME: verify that we need -fPIC in CFLAGS
+	CFLAGS      +=${PIC}
+    #flags to linker, when making shared libraries:
+	SO_LDFLAGS	=-shared
+    #flags to CC when making and linking executables:
+	EXE_CFLAGS  =${RDYNAMIC}
 	EXEEXT		=
 	SO_EXT      =.so
 	CPEXE		=ln -f
     SH			=sh
     LN			=ln -f
-#    SO_LDFLAGS	=${PIC} -shared
-	SO_LDFLAGS	=-shared
 	LN_S_LIB    =${LN_S}
 endif
 
