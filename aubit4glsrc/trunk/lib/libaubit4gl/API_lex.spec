@@ -314,6 +314,8 @@ print_output_to_report char* repname,char* nvalues -> void
 /* void print_finish_report (char *repname) */
 print_finish_report char* repname -> void
 
+print_terminate_report char* repname -> void
+
 /* void print_format_every_row () */
 print_format_every_row -> void
 

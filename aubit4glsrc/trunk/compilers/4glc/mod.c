@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.117 2003-05-01 09:42:18 mikeaubury Exp $
+# $Id: mod.c,v 1.118 2003-05-01 12:47:07 mikeaubury Exp $
 #
 */
 
@@ -1804,7 +1804,6 @@ int
 add_bind (char i, char *var)
 {
   long dtype;
-printf("Add_bin %s\n",var);
 
   if (var[0] == '"')
     {

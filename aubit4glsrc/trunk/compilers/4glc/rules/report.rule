@@ -56,6 +56,15 @@ print_finish_report($<str>2);
 }
 ;
 
+
+
+term_rep_cmd : TERMINATE_REPORT rep_name
+{
+addmap("Finish Report",$<str>2,curr_func,yylineno,infilename);
+print_terminate_report($<str>2);
+}
+;
+
 report_section: op_output_section op_rep_order_by  { strcpy($<str>$,$<str>2); } ;
 
 format_section: FORMAT EVERY_ROW {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.48 2003-05-01 09:42:40 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.49 2003-05-01 12:47:56 mikeaubury Exp $
 #
 */
 
@@ -942,6 +942,7 @@ extern "C" {
 	#define REPORT_FIRSTPAGEHEADER 	-12
 	#define REPORT_LASTDATA 		-13
 	#define REPORT_PAGETRAILER 		-14
+	#define REPORT_TERMINATE 			-9999
 	#define ERR_BADNOARGS 			1000
 	#define ABORT 					1
 	#define WARN 					2

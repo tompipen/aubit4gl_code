@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.33 2003-05-01 09:42:41 mikeaubury Exp $
+# $Id: compile_c.c,v 1.34 2003-05-01 12:47:57 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2896,6 +2896,21 @@ print_finish_report (char *repname)
   add_function_to_header(repname,2);
   printc ("%s%s(0,REPORT_FINISH);\n", get_namespace(repname),repname);
 }
+
+/**
+ * The parser found the TERMINATE REPORT statement.
+ *
+ * Generate the C implementation.
+ *
+ * @param repname The name of the report.
+ */
+void
+print_terminate_report (char *repname)
+{
+  add_function_to_header(repname,2);
+  printc ("%s%s(0,REPORT_TERMINATE);\n", get_namespace(repname),repname);
+}
+
 
 /**
  * The parser found the ON EVERY ROW instruction from reports.
