@@ -679,6 +679,7 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 {
   char buff[256];
   int a;
+int intprflg=0;
   printc ("/* print_declare a1=%s h1=%d a2=%s h2=%d a3=%s */\n", a1, h1, a2, h2, a3);
   //printc(" /* nibind=%d a2=%s*/\n",get_bind_cnt('i'),a2);
   //printc(" /* nobind=%d a3=%s */\n",get_bind_cnt('o'),a3);
@@ -720,6 +721,11 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
       printc ("     FOR UPDATE");
     }
   printc (";");
+  printc(" /* A2='%s'*/",a2);
+  if (a2[0]=='"') {
+	last_ni=0;
+	last_no=0;
+  }
   print_copy_status ();
   printh("int acli_ni_%s=%d;\n",A4GL_strip_quotes(a3),last_ni);
   printh("int acli_no_%s=%d;\n",A4GL_strip_quotes(a3),last_no);
@@ -753,10 +759,17 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
   printh("acli_nbo_%s=no;\n",A4GL_strip_quotes(a3));
   printh("}\n");
 
-  printc("internal_set_%s(ibind,obind,native_binding_i,native_binding_o);",A4GL_strip_quotes(a3));
-
-
-
+intprflg=0;
+if (last_ni) intprflg++;
+if (last_no) intprflg+=3;
+printc("/* intprflg=%d last_ni=%d last_no=%d */\n",intprflg, last_ni,last_no);
+switch (intprflg) {
+	case 3: printc("internal_set_%s(ibind,obind,native_binding_i,native_binding_o);",A4GL_strip_quotes(a3)); break;
+	case 2: printc("internal_set_%s(0,obind,0,native_binding_o);",A4GL_strip_quotes(a3)); break;
+	case 1: printc("internal_set_%s(ibind,0,native_binding_i,0);",A4GL_strip_quotes(a3)); break;
+	case 0: printc("internal_set_%s(0,0,0,0);",A4GL_strip_quotes(a3)); break;
+	
+}
 
   printc("}\n");
 
@@ -810,6 +823,7 @@ print_select_all (char *buff)
   last_ni=ni;
   no = print_bind ('o');
   last_no=no;
+  printc("/* SETTING last_no=%d */",last_no);
   print_conversions ('i');
   b2 = strdup (buff);
   return b2;
