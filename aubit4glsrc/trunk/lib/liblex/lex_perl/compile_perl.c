@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.14 2002-06-26 06:11:43 afalout Exp $
+# $Id: compile_perl.c,v 1.15 2002-06-26 17:33:43 mikeaubury Exp $
 #
 */
 
@@ -171,12 +171,13 @@ va_list ap;
 
 /* this oen gets called freom API */
 void
-lex_printc(char* fmt,... )
+internal_lex_printc(char* fmt,... )
 {
 va_list ap;
 	debug("via lex_printc (2) in lib");
 	va_start(ap,fmt);
 	real_lex_printc(fmt,&ap);
+        debug("Done....");
 }
 
 
@@ -224,12 +225,14 @@ char buff2[40960];
 			{
 				if (infilename != 0)
                 {
-					fprintf (outfile, "\n#line %d \"%s.4gl\"\n", yylineno,
-					outputfilename);
+					fprintf(outfile,"\n");
+					//fprintf (outfile, "\n#line %d \"%s.4gl\"\n", yylineno,
+					//outputfilename);
                 }
 				else
                 {
-					fprintf (outfile, "\n#line %d \"null\"\n", yylineno);
+					fprintf(outfile,"\n");
+					//fprintf (outfile, "\n#line %d \"null\"\n", yylineno);
 					/*  outputfilename); */
                 }
 			}
@@ -372,8 +375,8 @@ open_outfile (void)
   fprintf (outfile, "#!/usr/bin/perl\n");
   fprintf (outfile, "require aubit4gl;\n");
   fprintf(outfile,"package aubit4gl_pl;\n");
-  if (acl_getenv ("GTKGUI"))
-    fprintf (outfile, "require aubit4gl_gtk\n");
+  if (strcmp(acl_getenv ("AUBITGUI"),"GTK")==0)
+     fprintf (outfile, "require aubit4gl_gtk\n"); 
 /*  fprintf (outfile, "$aubit_compiler_ser=\"%s\";\n", get_serno ()); */
   fprintf (outfile, "$aubit_module_name=\"%s.4gl\";\n", outputfilename);
   hfile = mja_fopen (h, "w");
@@ -427,7 +430,7 @@ print_report_ctrl (void)
   debug
     ("/* ********************************************************** */\n");
   printc ("report%d_ctrl:\n", report_cnt);
-  printc ("debug(\"ctrl=%%d nargs=%%d\",acl_ctrl,nargs);\n");
+  //printc ("debug(\"ctrl=%%d nargs=%%d\",acl_ctrl,nargs);\n");
 /*
    printc("    if (acl_ctrl==REPORT_START) goto start_%d;\n",report_cnt);
    printc("    if (acl_ctrl==REPORT_FINISH) goto finish_%d;\n",report_cnt);
@@ -1717,7 +1720,7 @@ print_construct_2 (char *driver)
   printc ("if (_fld_dr==0) {\n");
   printc ("   _fld_dr=-95;continue;\n}\n");
   add_continue_blockcommand ("CONSTRUCT");
-  printc ("debug(\"form_loop=%%d\",_fld_dr);");
+  //printc ("debug(\"form_loop=%%d\",_fld_dr);");
   printc
     ("\n}\n push_constr(&_inp_io);\n aubit4gl_pl::pop_params(ibind,1);\n }\n");
   pop_blockcommand ("CONSTRUCT");	/* FIXME */

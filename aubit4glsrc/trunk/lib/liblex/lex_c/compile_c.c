@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.23 2002-06-26 06:11:43 afalout Exp $
+# $Id: compile_c.c,v 1.24 2002-06-26 17:33:43 mikeaubury Exp $
 #
 */
 
@@ -1982,7 +1982,7 @@ get_display_str (int type, char *s, char *f)
 void
 print_display (char *fmt, char *expr, char *attr)
 {
-  printc (fmt, expr, attr);
+  printc (fmt, expr, attr); 
 }
 
 /**

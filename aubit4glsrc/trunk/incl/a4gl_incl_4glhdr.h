@@ -163,6 +163,7 @@
 	#define OP_NOT (9|BOOLEAN_OP)
 	#define OP_ISNULL (10|BOOLEAN_OP)
 	#define OP_ISNOTNULL (11|BOOLEAN_OP)
+	/* 12|BOOLEAN reserved for OP_MATH which is used internally */
 
 	#define OP_IN (1|OTHER_OP)
 	#define OP_NOTIN (2|OTHER_OP)

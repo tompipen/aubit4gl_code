@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkyacc,v 1.9 2002-06-01 11:54:59 afalout Exp $
+# $Id: mkyacc,v 1.10 2002-06-26 17:33:43 mikeaubury Exp $
 #
 
 # This script builds "generated/fgl.yacc" files from several files
@@ -45,7 +45,6 @@ echo "all_commands : commands_all | commands_all SEMICOLON ;" >> generated/fgl.y
 echo 'command1	: all_commands  {
 chk4var=0;lex_printcomment("/* [Comm:%s] */\n",$<str>$);
 if (acl_getenv("INCLINES"))
-	lex_printc("{debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
 	prchkerr(lastlineno,infilename);
 	lastlineno=yylineno;
 }
