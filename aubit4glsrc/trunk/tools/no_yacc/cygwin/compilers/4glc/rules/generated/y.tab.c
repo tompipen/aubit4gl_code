@@ -8286,7 +8286,7 @@ A4GL_debug("Set menu line to %s",yyvsp[0].str);
 #line 1282 "fgl.yacc"
     {
 	print_returning();
-	strcpy(yyval.str,yyvsp[-4].str); /* ? */
+	/* strcpy($<str>$,$<str>5); */
    }
     break;
 
@@ -8320,7 +8320,7 @@ A4GL_debug("Set menu line to %s",yyvsp[0].str);
 #line 1303 "fgl.yacc"
     {
 	print_returning();
-	strcpy(yyval.str,yyvsp[-3].str); /* ? */
+	/* strcpy($<str>$,$<str>5);  */
    }
     break;
 
@@ -11635,7 +11635,7 @@ print_gui_do_form(field_name_list_as_char(yyvsp[-2].field_list),yyvsp[0].str,'E'
     {
 		char wt;
 		print_if_end();
-	        wt=get_curr_report_stack_whytype();
+	        wt=get_curr_report_stack_whytype_1();
 		//if (wt=='P'||wt=='p'||wt=='T') {
 		if (wt=='T') {
 			if (if_print_stack[if_print_stack_cnt][0]!=if_print_stack[if_print_stack_cnt][0]) {
@@ -14127,7 +14127,7 @@ print_terminate_report(yyvsp[0].str);
     {
 rep_struct.lines_in_first_header=if_print_stack[0][0];
 pdf_rep_struct.lines_in_first_header=if_print_stack[0][0];
-print_rep_ret(0);
+print_rep_ret(0,1);
 }
     break;
 
@@ -14144,7 +14144,7 @@ if_print_stack[0][1]=0;
     {
 rep_struct.lines_in_trailer=if_print_stack[0][0];
 pdf_rep_struct.lines_in_trailer=if_print_stack[0][0];
-print_rep_ret(0);
+print_rep_ret(0,1);
 }
     break;
 
@@ -14158,7 +14158,7 @@ print_rep_ret(0);
     {
 rep_struct.lines_in_header=if_print_stack[0][0];
 pdf_rep_struct.lines_in_header=if_print_stack[0][0];
-print_rep_ret(0);}
+print_rep_ret(0,1);}
     break;
 
   case 1086:
@@ -14168,7 +14168,7 @@ print_rep_ret(0);}
 
   case 1087:
 #line 5774 "fgl.yacc"
-    {print_rep_ret(0);}
+    {print_rep_ret(0,1);}
     break;
 
   case 1088:
@@ -14178,7 +14178,7 @@ print_rep_ret(0);}
 
   case 1089:
 #line 5777 "fgl.yacc"
-    {print_rep_ret(0);}
+    {print_rep_ret(0,1);}
     break;
 
   case 1090:
@@ -14201,7 +14201,7 @@ set_curr_block(a+1);
 
   case 1091:
 #line 5792 "fgl.yacc"
-    {print_rep_ret(0);}
+    {print_rep_ret(0,1);}
     break;
 
   case 1092:
@@ -14227,7 +14227,7 @@ set_curr_block(a+1);
 
   case 1093:
 #line 5811 "fgl.yacc"
-    {print_rep_ret(0);}
+    {print_rep_ret(0,1);}
     break;
 
   case 1100:
@@ -14268,7 +14268,7 @@ n=atof(yyvsp[-2].str);
 if (buff[0]=='1') {
 	print_skip_lines(n);
 	if (if_print_stack_cnt==0) if_print_section[0]=0;
-	if (get_curr_report_stack_whytype()=='T') {
+	if (get_curr_report_stack_whytype_1()=='T') {
 		if_print_stack[if_print_stack_cnt][if_print_section[if_print_stack_cnt]]+=(int)n;
 	}
 } else {
@@ -14329,7 +14329,7 @@ start_state("KWLINE",0);
     {
 	char wt;
 	print_report_print(0,yyvsp[0].str,0);
-	wt=get_curr_report_stack_whytype();
+	wt=get_curr_report_stack_whytype_1();
 	if (strcmp(yyvsp[0].str,"0")==0) {
 		if (wt=='P'||wt=='p'||wt=='T') { /* Page header or trailer */
 			if (isin_command("WHILE")||isin_command("FOR")) {
@@ -14340,7 +14340,7 @@ start_state("KWLINE",0);
 	}
 	if (strcmp(yyvsp[0].str,"0")==0) {
 			if (if_print_stack_cnt==0) if_print_section[0]=0;
-		if (get_curr_report_stack_whytype()=='T') {
+		if (get_curr_report_stack_whytype_1()=='T') {
 			if_print_stack[if_print_stack_cnt][if_print_section[if_print_stack_cnt]]+=1;
 		}
 	}
