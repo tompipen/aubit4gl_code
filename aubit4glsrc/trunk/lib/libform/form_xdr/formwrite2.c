@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.10 2002-06-06 12:31:27 afalout Exp $
+# $Id: formwrite2.c,v 1.11 2002-06-12 06:58:22 mikeaubury Exp $
 #*/
 
 /**
@@ -927,21 +927,25 @@ struct_form *ptr;
 int
 getdatatype(char *col,char *tab)
 {
-  char tabs[100][32];
+  char *tabs[256];
   char buff[256];
   int a;
   debug("getdatatype\n");
 
   for (a=0;a<the_form.tables.tables_len;a++)
 	{
-    strcpy(tabs[a],the_form.tables.tables_val[a].tabname);
-  }
+    		tabs[a]=strdup(the_form.tables.tables_val[a].tabname);
+        }
 
-  tabs[the_form.tables.tables_len][0]=0;
+  tabs[the_form.tables.tables_len]=0;
 
   debug("Calling get_dtype with %s %s %s",the_form.dbname,tab,col);
   /* int 	get_dtype			(char *tabname, char *colname,char *dbname,char *tablist[]); */
-  a=get_dtype(tab,col,the_form.dbname,(char *)the_form.tables.tables_val);
+  //a=get_dtype(tab,col,the_form.dbname,the_form.tables.tables_val);
+
+  a=get_dtype(tab,col,the_form.dbname,tabs);
+
+
    /*
    warning: passing arg 4 of `get_dtype' from incompatible pointer type
    so we are passing a char ponter to function expecting char array !!
@@ -1197,7 +1201,7 @@ translate_form(void)
 int
 isolated_xdr_struct_form( void* xdrp, void* the_form)
 {
-	real_isolated_xdr_struct_form(xdrp,the_form);
+	return real_isolated_xdr_struct_form(xdrp,the_form);
 }
 static int
 real_isolated_xdr_struct_form( XDR *xdrp, struct struct_form *the_form)
