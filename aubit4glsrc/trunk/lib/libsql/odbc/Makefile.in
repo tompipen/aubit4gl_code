@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.27 2003-01-30 11:54:39 afalout Exp $
+# $Id: Makefile.in,v 1.28 2003-02-14 12:49:31 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -44,7 +44,7 @@ CFLAGS				+=${C_LOCAL_IFLAGS}
 CFLAGS_NOREDUND			=$(CFLAGS:%-Wredundant-decls=%)
 CFLAGS_NOSTRICTPROTO		=$(CFLAGS:%-Wstrict-prototypes=%)
 LCLINT_CFLAGS   		=${C_IFLAGS} ${C_LOCAL_IFLAGS}
-OBJECTS				=sql.o sqlex.o
+OBJECTS				=sql.o sqlex.o array.o
 
 
 #`-rpath dir'
