@@ -82,9 +82,9 @@ run: compile
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
-#	${DEFAULT_RUN}
+	${DEFAULT_RUN}
 #To run program and diff the stdout output against a file, testing for difference:
-	${DEFAULT_DIFF}
+#	${DEFAULT_DIFF}
 #Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
 #program to a file for diff-ing, but expect output file to be created by dumping
 #the screen to file using a function call in the program itself:
@@ -109,7 +109,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Quick test on using foreach on a declare which used variables"
+	@echo "Test for core dump when opening a cursor"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -173,7 +173,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped
@@ -183,7 +183,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test is expeceted to exit with code (return "x" for any not-null exit code)

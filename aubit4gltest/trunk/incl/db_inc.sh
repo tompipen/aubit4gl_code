@@ -117,11 +117,17 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 
 	#Find PostgreSQL data directory of currently running PG engine (PGDATA)
 	if test "$PGDATA" = ""; then
-		#PGDATA=`ps -auxw | grep postmaster | head -1 | awk '{print $14}'`
 		PGDATA=`ps -ef | grep postmaster | head -1 | awk '{print $11}'`
+		if test "$PGDATA" = ""; then
+			PGDATA=`ps -auxw | grep postmaster | head -1 | awk '{print $14}'`
+		fi
 		if test "$PGDATA" = ""; then 
 			echo "WARNING: PostgreSQL not running or started without -D flag"
-			echo "(using PGDATA, but no PGDATA present in environment)"			
+			echo "(using PGDATA, but no PGDATA present in environment)"
+			echo "ps -ef | grep postmaster"
+			ps -ef | grep postmaster
+			echo "ps -auxw | grep postmaster"
+			ps -auxw | grep postmaster
 		else
 			if test ! -d "$PGDATA"; then
 				echo "WARNING: PGDATA obtained from postmaster flags is not a directory ($PGDATA)"
