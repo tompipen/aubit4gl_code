@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.57 2002-04-15 00:22:52 afalout Exp $
+# $Id: Makefile.in,v 1.58 2002-04-15 05:04:27 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -63,7 +63,17 @@ endif
 TOLIBGTK	=$(SOURCE)/lib/libUI_GTK${SO_EXT} $(SOURCE)/lib/libUI_GTK_x${SO_EXT}
 TOLIBCUI	=$(SOURCE)/lib/libaubit4gl${SO_EXT} $(SOURCE)/lib/libEXREPORT_NOPDF${SO_EXT} \
 			$(SOURCE)/lib/libSQL_nosql${SO_EXT} $(SOURCE)/lib/libUI_CONSOLE${SO_EXT} \
-			$(SOURCE)/lib/libRPC_NORPC${SO_EXT} $(SOURCE)/lib/libA4GLLEX_C${SO_EXT}
+			$(SOURCE)/lib/libRPC_NORPC${SO_EXT}
+
+ifneq "$(shell ls $(SOURCE)/lib/libA4GLLEX_C${SO_EXT} 2> /dev/null)" ""
+	TOLIBCUI		+=$(SOURCE)/lib/libA4GLLEX_C${SO_EXT}
+	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libA4GLLEX_C${SOEXP_EXT}
+endif
+
+ifneq "$(shell ls $(SOURCE)/lib/libFORM_XDR${SO_EXT} 2> /dev/null)" ""
+	TOLIBCUI		+=$(SOURCE)/lib/libFORM_XDR${SO_EXT}
+	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libFORM_XDR${SOEXP_EXT}
+endif
 
 
 ifneq "@PERLBUILD@" "no"
@@ -88,7 +98,7 @@ ifneq "${STATICLIB_INST}" "no"
 	TOLIBCUI+=$(SOURCE)/lib/libaubit4gl.a
 endif
 
-TOLIB_EXPORTLIB =$(SOURCE)/lib/libaubit4gl${SOEXP_EXT} \
+TOLIB_EXPORTLIB +=$(SOURCE)/lib/libaubit4gl${SOEXP_EXT} \
             $(SOURCE)/lib/libEXREPORT_NOPDF${SOEXP_EXT} $(SOURCE)/lib/libSQL_nosql${SOEXP_EXT} \
             $(SOURCE)/lib/libUI_CONSOLE${SOEXP_EXT} $(SOURCE)/lib/libRPC_NORPC${SOEXP_EXT}
 

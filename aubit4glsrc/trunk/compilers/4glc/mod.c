@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.51 2002-04-12 18:56:58 saferreira Exp $
+# $Id: mod.c,v 1.52 2002-04-15 05:04:29 afalout Exp $
 #
 */
 
@@ -377,7 +377,7 @@ void inmod (void)
  * the command stack.
  *
  * @param cmd_type The command type
- * @return 
+ * @return
  *   - 0 : We are NOT in command type
  *   - 1 : We are in command type
  */
@@ -632,7 +632,7 @@ static void dump_gvars(void)
  * Tests if a char pointer is null (char *)0
  *
  * @param ptr The variable to be checked
- * @return 
+ * @return
  *   - The parameter pointer if not null
  *   - An empty string otherwise (with just one NULL caracter)
  */
@@ -917,7 +917,7 @@ int getinc(void)
  *
  * @param str The string where to find the caracter
  * @param c The character to be found in a string
- * @return 
+ * @return
  *   - The index of the character if found in the string
  *   - 0 if not found
  */
@@ -939,7 +939,7 @@ static int findex (char *str, char c)
  * @todo organize some defines to the data types.
  *
  * @param s The string where the data type will be scanned
- * @return The data type in numeric code 
+ * @return The data type in numeric code
  */
 static int find_type (char *s)
 {
@@ -3892,6 +3892,55 @@ void tr_glob_fname (char *s)
 	s[a] = '/';
       s[a] = tolower (s[a]);
     }
+}
+
+
+/* folowing functions are to work around problem with exporting struct in Windows dll
+
+#compile_c.o: In function `print_report_ctrl':
+#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:398: variable 'report_stack' can't be auto-imported.
+
+#compile_c.o: In function `pr_report_agg':
+#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:632: variable 'sreports' can't be auto-imported.
+
+#compile_c.o: In function `prchkerr':
+#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:750: variable 'when_code' can't be auto-imported.
+#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:756: variable 'when_to' can'tbe auto-imported.
+
+#compile_c.o: In function `print_bind_pop1':
+#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:927: variable 'ibind' can't be auto-imported.
+
+#compile_c.o: In function `print_bind_pop1':
+#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:936: variable 'obind' can't be auto-imported.
+
+#compile_c.o: In function `print_constr':
+#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:1000: variable 'constr_buff' can't be auto-imported.
+
+#compile_c.o: In function `print_bind':
+#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:1178: variable 'ordbind' can't be auto-imported.
+
+#compile_c.o: In function `print_menu':
+#/usr/aubit/aubit4glsrc/compilers/4glc/compile_c.c:3345: variable 'menu_stack' can't be auto-imported.
+
+
+*/
+
+char
+*get_report_stack_whytype(int a)
+{
+    return report_stack[a].whytype;
+}
+
+char
+*get_report_stack_why(int a)
+{
+	return report_stack[a].why;
+}
+
+struct sreports *
+get_sreports(int z)
+{
+	return (struct sreports *) z;
 }
 
 

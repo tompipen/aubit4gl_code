@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.19 2002-04-06 06:33:40 afalout Exp $
+# $Id: Makefile.in,v 1.20 2002-04-15 05:04:29 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -55,39 +55,35 @@ endif
 
 CFLAGS		   +=-I. @RPCLIB_INCLUDE@
 
-ifdef COMSPEC
-	CYGWIN_FLAGS=${RPCLIB_NAME}
-endif
+## ==================================================================
+##                              Source files
+## ==================================================================
 
-ifeq "@YACC@" "no"
-	Y_TAB_C_DEP=../../tools/no_yacc/cygwin/compilers/menus/y.tab.c
-else
-	Y_TAB_C_DEP=$(SOURCES.yacc) lex.yy.c
-endif
+#FIXME: create -lMENU_XDR from:
+#menu_x_xdr.c decompile.c menuwrite.c ??readmenu.c??
 
-LEX_YY_C        =../../tools/no_yacc/cygwin/compilers/menus/lex.yy.c
 
 SRC_COMMON      =mcompile.c menuwrite.c
+SOURCES.yacc 	=menu.yacc
+SOURCES.lex 	=menu.lex
+TARGETS.c 		=y.tab.c
+MENU_X_XDR		=menu_x_xdr.c
+DECOMPILE		=decompile.c
+OBJECTS 		=$(SOURCES.c:%.c=%.o) $(TARGETS.c:%.c=%.o)
 
-SCRIPT 			=
 ifeq "@HAVE_RPCLIB@" "0"
 	SOURCES.c 	=${SRC_COMMON}
 else
-	SOURCES.c 	=${SRC_COMMON} menu_x_xdr.c
+	SOURCES.c 	=${SRC_COMMON} ${MENU_X_XDR}
 endif
 
-SOURCES.h 		=
-SOURCES.yacc 	=menu.yacc
-SOURCES.lex 	= menu.lex
-
-SOURCES 		= $(SOURCES.h) $(SOURCES.lex) $(SOURCES.yacc) $(SOURCES.c)
-TARGETS.c 		= y.tab.c
-TARGETS 		= $(TARGETS.c)
-OBJECTS 		= $(SOURCES.c:%.c=%.o) $(TARGETS.c:%.c=%.o)
-LINTFILES 		= $(SOURCES.c:%.c=%.ln) $(TARGETS.c:%.c=%.ln)
-
-#this can be libaclshared too, so we wont use it for now:
-#MCOMPILE_DEPS       =../../lib/libaclall.a
+ifeq "@YACC@" "no"
+	LEX_YY_C	=../../tools/no_yacc/cygwin/compilers/menus/lex.yy.c
+	Y_TAB_C_DEP	=../../tools/no_yacc/cygwin/compilers/menus/y.tab.c
+else
+	LEX_YY_C	=lex.yy.c
+	Y_TAB_C_DEP=$(SOURCES.yacc) ${LEX_YY_C}
+endif
 
 
 ## ==================================================================
@@ -95,7 +91,16 @@ LINTFILES 		= $(SOURCES.c:%.c=%.ln) $(TARGETS.c:%.c=%.ln)
 ## ==================================================================
 
 
-all:	 $(ALL)
+all: $(ALL)
+	@echo "Default targets ($(ALL)) successfully compiled"
+
+mcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS)
+	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} ${AUBIT_LIB} ${RPCLIB_NAME}
+	${LN} $@${EXE} ../../bin/$@${EXE}
+
+mdecompile: ${DECOMPILE} ${MENU_X_XDR}
+	${CC} -o $@ ${CFLAGS} $^ -L../../lib ${AUBIT_LIB} ${RPCLIB_NAME}
+	${CP} $@ ../../bin
 
 norpclib:
 #we will make some fake executables, to simplify installation and RPM builds:
@@ -104,23 +109,11 @@ norpclib:
 	${CP} mcompile mdecompile ../../bin
 	@echo "Sun RPClib was not detected - no menu related functionality will be compiled"
 
-mcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS)
-#	${SH} ../../bin/4glpc ${4GLPCFLAGS} -o $@ $(OBJECTS)
-#same as: why are we using 4glpc ?
-	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} ${AUBIT_LIB} 
-#	-lPDF_NOPDF -lRPC_SUNRPC ${RPCLIB_NAME}
-	${LN} mcompile${EXE} ../../bin/mcompile${EXE}
-
-mdecompile: decompile.c menu_x_xdr.c
-	${CC} -o $@ ${CFLAGS} decompile.c menu_x_xdr.c -L../../lib ${AUBIT_LIB} ${CYGWIN_FLAGS}
-#	-lRPC_SUNRPC -lPDF_NOPDF
-	${CP} $@ ../../bin
-
 ## ==================================================================
 ##                             Sub Targets
 ## ==================================================================
 
-menu_x_xdr.c: menu_x.x
+${MENU_X_XDR}: menu_x.x
 	${RPCGEN}
 
 menu_x.h: menu_x.x
@@ -145,7 +138,7 @@ endif
 ## ==================================================================
 
 y.tab.o: lex.yy.c
-rpc: menu_x_xdr.c
+rpc: ${MENU_X_XDR}
 
 ## ==================================================================
 ##                          Clean targets
@@ -153,14 +146,14 @@ rpc: menu_x_xdr.c
 
 clean:
 	$(RM) mcompile mcompile-noodbc $(OBJECTS) $(TARGETS.c) *.BAK *.delta core *~ *.ln \
-	*.output lex.yy.c *.err *.out decompiler menu_x_xdr.c menu_x.h \
-	*.bak *.exe mdecompile
+	*.output lex.yy.c *.err *.out decompiler ${MENU_X_XDR} menu_x.h \
+	*.bak *.exe mdecompile *.o *.dll *.a
 
 ## ==================================================================
 ##                           Other targets
 ## ==================================================================
 
 lint:
-	/usr/5bin/lint -n -lansic $(CPPFLAGS) $(SOURCES.c) $(TARGETS.c)
+	lint -n -lansic $(CPPFLAGS) $(SOURCES.c) $(TARGETS.c)
 
 #---------------------------- EOF -----------------------------------

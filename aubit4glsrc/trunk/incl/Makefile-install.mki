@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.18 2002-04-15 00:22:56 afalout Exp $
+# $Id: Makefile-install.mki,v 1.19 2002-04-15 05:04:29 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -81,6 +81,7 @@ install.links:
 
 install.libs.links: deinstall.libs.links
 	${LN_S_LIB} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
+	${LN_S_LIB} $(INSTALL_DIR)/lib/libFORM_XDR${SO_EXT} ${LIB_INSTALL_LINK}/libFORM_XDR${SO_EXT}
 
 ## ==================================================================
 ##                    deinstall.x
@@ -99,6 +100,7 @@ deinstall.libs.links:
 	${RM} ${LIB_INSTALL_LINK}/libRPC_NORPC${SO_EXT}
 	${RM} ${LIB_INSTALL_LINK}/libRPC_SUNRPC${SO_EXT}
 	${RM} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
+	${RM} ${LIB_INSTALL_LINK}/libFORM_XDR${SO_EXT}
 
 #export libraries on Windows:
 #we keep this only in AUBITDIR, since linking is allways done by 4glpc
@@ -149,7 +151,7 @@ deinstall.all: deinstall.libs.links deinstall.bin.links deinstall.build
 		$(INSTALL_DIR)/lib/libRPC_CONSOLE${SO_EXT} $(INSTALL_DIR)/lib/libUI_CONSOLE${SO_EXT} \
         $(INSTALL_DIR)/lib/libRPC_XDR${SO_EXT} $(INSTALL_DIR)/lib/libEXREPORT_PDF${SO_EXT} \
         $(INSTALL_DIR)/lib/libEXREPORT_NOPDF${SO_EXT} $(INSTALL_DIR)/lib/libA4GLLEX_C${SO_EXT} \
-		$(INSTALL_DIR)/lib/libA4GLLEX_PERL${SO_EXT}
+		$(INSTALL_DIR)/lib/libA4GLLEX_PERL${SO_EXT} $(INSTALL_DIR)/lib/libFORM_XDR${SO_EXT}
 
 #windows dll export libraries:
 ifneq "${COMSPEC}" ""
@@ -161,7 +163,7 @@ ifneq "${COMSPEC}" ""
 	$(INSTALL_DIR)/lib/libRPC_NORPC${SOEXP_EXT} $(INSTALL_DIR)/lib/libRPC_SUNRPC${SOEXP_EXT} \
 	$(INSTALL_DIR)/lib/libRPC_CONSOLE${SOEXP_EXT} $(INSTALL_DIR)/lib/libUI_CONSOLE${SOEXP_EXT} \
 	$(INSTALL_DIR)/lib/libRPC_XDR${SOEXP_EXT} $(INSTALL_DIR)/lib/libEXREPORT_NOPDF${SOEXP_EXT} \
-    $(INSTALL_DIR)/lib/libaubit4gl${SOEXP_EXT}
+    $(INSTALL_DIR)/lib/libaubit4gl${SOEXP_EXT} $(INSTALL_DIR)/lib/libFORM_XDR${SOEXP_EXT}
 endif
 
 #examples:

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.46 2002-04-15 00:22:57 afalout Exp $
+# $Id: Makefile.in,v 1.47 2002-04-15 05:04:29 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -39,9 +39,6 @@ CMODS_PROJECT	=project.c
 GUI_TUI			=gui_tui.o
 GUI_GTK			=gui_gtk.o
 GUI_SRC         =ui.c
-#CMODS_NOSQL	=libsql/odbc/nosql.c
-#CMODS_ODBCSQL  =libsql/odbc/sql.c
-#CMODS_ODBCEX   =libsql/odbc/sqlex.c
 CMODS_DLSQL		=dlsql.c
 CMODS_CONFIG	=aubit-config.c
 CMODS_RESOURCE	=resource.c
@@ -50,34 +47,44 @@ CMODS_RESOURCE	=resource.c
 #				rpc_stack_xdr.c ../compilers/fcompile/form_x_xdr.c
 
 #require XDR frunctions, part of Sun RPClib:
-CMODS_XDR		=../compilers/fcompile/form_x_xdr.c
+CMODS_FORM_XDR		=../compilers/fcompile/form_x_xdr.c readforms.c
+
+CMODS_FORM_NOFORM	=form_noform.c
 
 #In alphabetical order:
 COMMONSRC= \
-	array.c \
-	bogus.c builtin.c builtin_d.c \
-	calldll.c conv.c colours.c curslib.c \
+	 \
+	builtin.c builtin_d.c \
+	calldll.c conv.c \
 	data_if.c dates.c dmy.c debug.c \
-	err.c error.c errfile.c extfile.c extend_rep.c\
+	err.c error.c errfile.c extfile.c extend_rep.c \
 	fglwrap.c funcs_d.c fields.c \
-	gtime.c gtrim.c gui_io.c gui.c \
+	gtime.c gui_io.c gui.c \
 	helper.c \
-	io.c iarray.c interval.c \
+	io.c interval.c \
 	keys.c \
 	load.c \
 	match.c \
-	newpanels.c \
 	others.c \
-	pointers.c prompt.c \
-	rpc.c read_dty.c readform.c readforms.c report.c rexp2.c ${CMODS_RESOURCE} \
+	pointers.c \
+	rpc.c read_dty.c report.c rexp2.c ${CMODS_RESOURCE} \
 	screen.c sleep.c stack.c string.c \
 	translate.c
 
-ifeq "@HAVE_RPCLIB@" "0"
-	CFLAGS 		+=-DNO_XDR
-else
-	COMMONSRC   +=${CMODS_XDR}
-endif
+#obsoleted: gtrim.c
+
+#FIXME: remove rhis files from lib/
+#       curslib.c newpanels.c          colours.c array.c iarray.c prompt.c
+#This is now in libtui/ :
+#ALLOBJ=curslib.o newpanels.o ioform.o colours.o array.o iarray.o prompt.o
+
+
+
+#ifeq "@HAVE_RPCLIB@" "0"
+#	CFLAGS 		+=-DNO_XDR
+#else
+#	COMMONSRC   +=${CMODS_XDR}
+#endif
 
 
 
@@ -92,10 +99,6 @@ endif
 #	endif
 #endif
 
-#CMODS_ODBC			=${CMODS_ODBCSQL} ${CMODS_ODBCEX}
-#OBJS_NOSQL			=${CMODS_NOSQL:.c=.o}
-#OBJS_RPC			=${CMODS_RPC:.c=.o}
-#OBJS_NORPC			=${CMODS_NORPC:.c=.o}
 CMODS 				=${CMODSNOSQL} ${CMODS_DLSQL}
 OBJS				=${CMODS:.c=.o} ${CMODS_PROJECT:.c=.o}
 
@@ -111,10 +114,10 @@ ALL 				=aubit-config libEXREPORT_NOPDF${SO_EXT}
 
 ifdef COMSPEC
 #   LDFLAGS			+=-lc
-	ALL				+=dlllibRPC_NORPC dllaubit4gl libSQL_noodbc${SO_EXT}
+	ALL				+=dlllibRPC_NORPC dllaubit4gl libSQL_noodbc${SO_EXT} dllFORM_NOFORM
 
 	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=dlllibRPC_XDR
+		ALL			+=dlllibRPC_XDR dllFORM_XDR
     endif
 
 	ifneq "@XML_RPC@" "no"
@@ -122,9 +125,9 @@ ifdef COMSPEC
     endif
 
 else
-    ALL				+=libaubit4gl${SO_EXT} libRPC_NORPC${SO_EXT} libSQL_noodbc${SO_EXT}
+    ALL				+=libaubit4gl${SO_EXT} libRPC_NORPC${SO_EXT} libSQL_noodbc${SO_EXT} libFORM_NOFORM${SO_EXT}
 	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=libRPC_XDR${SO_EXT}
+		ALL			+=libRPC_XDR${SO_EXT} libFORM_XDR${SO_EXT}
     endif
 
 	ifneq "@XML_RPC@" "no"
@@ -224,7 +227,8 @@ libaubit4gl.so : $(OBJS) ${GUI_TUI}
 
 .PHONY : dllaubit4gl
 dllaubit4gl : $(OBJS) ${GUI_TUI}
-	${MAKE} libaubit4gl.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_RPCLIBNAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L."
+	${MAKE} libaubit4gl.dll DLLOBJS="$^" 
+#	DLL_LDLIBS="${AUBIT_RPCLIBNAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L."
 #$RPCLIB_NAME
 
 #libaubit4gl.def: $(OBJS) ${GUI_TUI}
@@ -247,6 +251,18 @@ libEXREPORT_NOPDF.dll:
 
 libgtk4gl.dll:
 	${MAKE} -C libgui
+
+
+.PHONY : dllFORM_XDR
+dllFORM_XDR : ${CMODS_FORM_XDR}  ../compilers/fcompile/form_x.h
+	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I../compilers/fcompile -I../incl"
+
+
+
+.PHONY : dllFORM_NOFORM
+dllFORM_NOFORM : ${CMODS_FORM_NOFORM}
+	${MAKE} libFORM_NOFORM.dll DLLOBJS="$^"
+
 
 ## ==================================================================
 ##                             Sub Targets
@@ -274,7 +290,7 @@ generated/project.c:
 generated/tmperrs.h :
 	${SH} bin/mkerrors
 
-../compilers/fcompile/form_x_xdr.c:
+../compilers/fcompile/form_x_xdr.c  ../compilers/fcompile/form_x.h:
 	${MAKE} -C ../compilers/fcompile rpc
 
 ## ==================================================================

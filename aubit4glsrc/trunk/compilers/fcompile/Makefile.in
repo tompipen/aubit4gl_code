@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.24 2002-04-06 06:33:40 afalout Exp $
+# $Id: Makefile.in,v 1.25 2002-04-15 05:04:29 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -37,7 +37,7 @@ override NOINCL=0
 ## ==================================================================
 
 #FIXME: use 4glpc ONLY for 4gl code:
-4GLPCFLAGS		=-make-compile ${LINK_COMPILERS} -verbose -nogtk -L../../lib
+4GLPCFLAGS		=-make-compile ${LINK_COMPILERS} -verbose -L../../lib
 CFLAGS 			+=-I../../lib -I. @CURSES_INC_PATH@ @RPCLIB_INCLUDE@
 
 #FIXME: we should compile dummy executables in any case, so we can use them instead
@@ -48,99 +48,73 @@ else
 	ALL	 		=fcompile fshow fdecompile
 endif
 
-
 ifeq "$(OUTPUTLANG)" "java"
 	ALL		 	+=fdecompile-j
 endif
 
 ifeq "${USE_RPCGEN}" "0"
-	RPCGEN      = cp ../../tools/cygwin/form_x_xdr.c ../../tools/cygwin/form_x.h .
+	RPCGEN      =cp ../../tools/cygwin/form_x_xdr.c ../../tools/cygwin/form_x.h .
 else
-	RPCGEN 		= @RPCGEN@ form_x.x
+	RPCGEN 		=@RPCGEN@ form_x.x
 endif
 
+## ==================================================================
+##                             Source files
+## ==================================================================
 
-ifdef COMSPEC
-#	RPCGEN      = cp ../../tools/cygwin/form_x_xdr.c ../../tools/cygwin/form_x.h .
-#	4GLPCFLAGS	+=${SO_GCCFLAGS}
-	CYGWIN_FLAGS=${RPCLIB_NAME}
-#else
-#	RPCGEN 		= @RPCGEN@ form_x.x
-#	4GLPCFLAGS	+=-rdynamic
-endif
+#This files now make -lFORM_XDR
+#../compilers/fcompile/form_x_xdr.c readforms.c
+#FIXME: add source files that use xdr_ Sun libRPC functions (formwrite2.c and decompile.c)
+#to -lFORM_XDR
 
-SRC_COMMON      =fcompile.c formwrite2.c where.c
-
-SCRIPT 			=
-
-ifeq "@HAVE_RPCLIB@" "0"
-	SOURCES.c 		=${SRC_COMMON}
-else
-	SOURCES.c 		=${SRC_COMMON} form_x_xdr.c
-	ALL            +=fdecompile
-endif
-
-SOURCES.h 		=
+SOURCES.c		=fcompile.c formwrite2.c where.c
 SOURCES.yacc 	=screen.yacc
-SOURCES.lex 	= screen.lex
-
-# Derived parameters.
-SOURCES 		= $(SOURCES.h) $(SOURCES.lex) $(SOURCES.yacc) $(SOURCES.c)
-TARGETS.c 		= y.tab.c
-TARGETS 		= $(TARGETS.c)
-OBJECTS 		= $(SOURCES.c:%.c=%.o) $(TARGETS.c:%.c=%.o)
-LINTFILES 		= $(SOURCES.c:%.c=%.ln) $(TARGETS.c:%.c=%.ln)
+SOURCES.lex 	=screen.lex
+TARGETS.c 		=y.tab.c
+DUMP_C          =dump.c
+#FIXME: dump_java.c was never commited into CVS
+DUMP_JAVA       =dump_java.c
+DECOMPILE       =decompile.c
+OBJECTS 		=$(SOURCES.c:%.c=%.o) $(TARGETS.c:%.c=%.o)
 
 ifeq "@YACC@" "no"
+	LEX_YY_C	=../../tools/no_yacc/cygwin/compilers/fcompile/lex.yy.c
 	Y_TAB_C_DEP	=../../tools/no_yacc/cygwin/compilers/fcompile/y.tab.c
+
 else
-	Y_TAB_C_DEP	=$(SOURCES.yacc) lex.yy.c
+	LEX_YY_C	=lex.yy.c
+	Y_TAB_C_DEP	=$(SOURCES.yacc) ${LEX_YY_C}
 endif
-
-LEX_YY_C        =../../tools/no_yacc/cygwin/compilers/fcompile/lex.yy.c
-
-#this can be libaclshared too, so we wont use it for now:
-#FCOMPILE       =../../lib/libaclall.a
-
 
 ## ==================================================================
 ##                             Targets
 ## ==================================================================
 
-all:	 $(ALL)
+all: $(ALL)
 	@echo "Default targets (${ALL}) successfully compiled."
 
-fcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS)
-#	${SH} ../../bin/4glpc ${4GLPCFLAGS} -o $@ $(OBJECTS)
-#same as: why are we using 4glpc ?
-	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} ${AUBIT_LIB} 
-#	-lPDF_NOPDF -lRPC_SUNRPC ${RPCLIB_NAME}
-#-lm and -ldl are needed on Linux, but not on CygWin
-	${LN} fcompile${EXE} ../../bin/fcompile${EXE}
+fcompile: $(SOURCES.c) $(TARGETS.c) $(OBJECTS)
+	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} ${AUBIT_LIB} -lFORM_XDR
+	${LN} $@${EXE} ../../bin/$@${EXE}
 
-fdecompile-j : decompile.c form_x_xdr.c dump_java.c
-	${CC} ${CFLAGS} decompile.c form_x_xdr.c dump_java.c -o $@
-	cp $@ ../../bin
+fdecompile-j : ${DECOMPILE} ${DUMP_JAVA}
+	${CC} ${CFLAGS} -L../../lib $^ -o $@ -lFORM_XDR
+	${CP} $@ ../../bin
 
-fdecompile : decompile.c form_x_xdr.c dump.c
-ifeq "@HAVE_RPCLIB@" "0"
-#:rpc_norpc.c: undefined reference to `exitwith'
-	${CC} ${CFLAGS} decompile.c -L../../lib -lRPC_NORPC dump.c -o $@ ${CYGWIN_FLAGS}
-else
-	${CC} ${CFLAGS} decompile.c form_x_xdr.c dump.c -o $@ ${CYGWIN_FLAGS}
-endif
-	cp $@ ../../bin
+fdecompile : ${DECOMPILE} ${DUMP_C}
+	${CC} ${CFLAGS} -L../../lib $^ -o $@ -lFORM_XDR
+	${CP} $@ ../../bin
 
 fshow : fshow.4gl
 	${SH} ../../bin/4glpc fshow.4gl -o fshow
-	cp $@ ../../bin
+	${CP} $@ ../../bin
 
 norpclib:
 #we will make some fake executables, to simplify installation and RPM builds:
 	${CC} fnorpclib.c -o fcompile
 	${CC} fnorpclib.c -o fdecompile
 	${CC} fnorpclib.c -o fshow
-	cp fcompile fdecompile fshow ../../bin
+	${CP} fcompile fdecompile fshow ../../bin
 	@echo "Sun RPClib was not detected - no form related functionality will be compiled"
 
 ## ==================================================================
@@ -161,9 +135,6 @@ else
 	nice -20 flex -i $(SOURCES.lex)
 endif
 
-fcompile.h: fcompile.c
-	@touch $@
-
 form_x_xdr.c: form_x.x
 	${RPCGEN}
 
@@ -181,13 +152,6 @@ where.o : 		form_x.h
 
 
 ## ==================================================================
-##                          Install targets
-## ==================================================================
-
-install:
-	install -m 555 fcompile $(SCRIPT) $(AWADI)/db_tools
-
-## ==================================================================
 ##                          Clean Targets
 ## ==================================================================
 
@@ -195,13 +159,14 @@ clean:
 #do NOT remove lex.yy.c and y.tab.c OR...
 	$(RM) fcompile fcompile-noodbc $(OBJECTS) $(TARGETS.c) *.BAK *.delta \
 	core *~ *.ln *.output *.bak *.exe lex.yy.c form_x.h form_x_xdr.c \
-	*.err fdecompile-j fdecompile fshow-gtk fshow fshow.c *.out
+	*.err fdecompile-j fdecompile fshow-gtk fshow fshow.c *.out \
+    *.o *.glb fshow.h
 
 ## ==================================================================
 ##                         Other Targets
 ## ==================================================================
 
 lint:
-	/usr/5bin/lint -n -lansic $(CPPFLAGS) $(SOURCES.c) $(TARGETS.c)
+	lint -n -lansic $(CPPFLAGS) $(SOURCES.c) $(TARGETS.c)
 
 #-----------------------------------------------------------------------

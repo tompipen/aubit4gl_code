@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.30 2002-04-12 18:57:02 saferreira Exp $
+# $Id: Makefile-common.in,v 1.31 2002-04-15 05:04:29 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -482,7 +482,8 @@ xx%.def: $(DLLOBJS)
 #--no-delete
 #	cp $@ $@.bak
 
-
-
+#create export library only
+xx%.dll.a: $(DLLOBJS)
+	dlltool --export-all --output-exp $@ $^
 
 #----------------------------- EOF -----------------------------
