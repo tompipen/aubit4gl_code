@@ -65,19 +65,19 @@
      RESIZE_ARRAY = 1001,
      ALLOCATE_ARRAY = 1002,
      DEALLOCATE_ARRAY = 1003,
-     BEFORE_INSERT = 1004,
-     CONCAT_PIPES = 1005,
-     BEFORE_DELETE = 1006,
-     DROP_TRIGGER = 1007,
-     AFTER_INSERT = 1008,
-     AFTER_DELETE = 1009,
-     EXECUTE_IMMEDIATE = 1010,
-     DELETE_ROW_EQUAL_TRUE = 1011,
-     INSERT_ROW_EQUAL_TRUE = 1012,
-     DELETE_ROW_EQUAL_FALSE = 1013,
-     INSERT_ROW_EQUAL_FALSE = 1014,
-     AFTER_INSERT_DELETE = 1015,
-     BEFORE_INSERT_DELETE = 1016,
+     AFTER_INSERT_DELETE = 1004,
+     BEFORE_INSERT_DELETE = 1005,
+     BEFORE_INSERT = 1006,
+     CONCAT_PIPES = 1007,
+     BEFORE_DELETE = 1008,
+     DROP_TRIGGER = 1009,
+     AFTER_INSERT = 1010,
+     AFTER_DELETE = 1011,
+     EXECUTE_IMMEDIATE = 1012,
+     DELETE_ROW_EQUAL_TRUE = 1013,
+     INSERT_ROW_EQUAL_TRUE = 1014,
+     DELETE_ROW_EQUAL_FALSE = 1015,
+     INSERT_ROW_EQUAL_FALSE = 1016,
      CURRENT_ROW_DISPLAY_EQUAL = 1017,
      MAXCOUNT = 1018,
      ALTER_TABLE = 1019,
@@ -788,19 +788,19 @@
 #define RESIZE_ARRAY 1001
 #define ALLOCATE_ARRAY 1002
 #define DEALLOCATE_ARRAY 1003
-#define BEFORE_INSERT 1004
-#define CONCAT_PIPES 1005
-#define BEFORE_DELETE 1006
-#define DROP_TRIGGER 1007
-#define AFTER_INSERT 1008
-#define AFTER_DELETE 1009
-#define EXECUTE_IMMEDIATE 1010
-#define DELETE_ROW_EQUAL_TRUE 1011
-#define INSERT_ROW_EQUAL_TRUE 1012
-#define DELETE_ROW_EQUAL_FALSE 1013
-#define INSERT_ROW_EQUAL_FALSE 1014
-#define AFTER_INSERT_DELETE 1015
-#define BEFORE_INSERT_DELETE 1016
+#define AFTER_INSERT_DELETE 1004
+#define BEFORE_INSERT_DELETE 1005
+#define BEFORE_INSERT 1006
+#define CONCAT_PIPES 1007
+#define BEFORE_DELETE 1008
+#define DROP_TRIGGER 1009
+#define AFTER_INSERT 1010
+#define AFTER_DELETE 1011
+#define EXECUTE_IMMEDIATE 1012
+#define DELETE_ROW_EQUAL_TRUE 1013
+#define INSERT_ROW_EQUAL_TRUE 1014
+#define DELETE_ROW_EQUAL_FALSE 1015
+#define INSERT_ROW_EQUAL_FALSE 1016
 #define CURRENT_ROW_DISPLAY_EQUAL 1017
 #define MAXCOUNT 1018
 #define ALTER_TABLE 1019
@@ -1478,7 +1478,7 @@
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 213 "fgl.yacc"
+#line 214 "fgl.yacc"
 typedef union YYSTYPE {
 
 
@@ -1497,11 +1497,14 @@ typedef union YYSTYPE {
 	struct generic_entry_ident *ident;
 	struct generic_entry_variable *variable;
 	struct generic_entry_literal *literal;
+	struct variable_usage *var_usg;
+	struct num_list *num_list;
+	struct array_list *array_list;
 	int 	integer_val;
 	float 	float_val;
 	} YYSTYPE;
 /* Line 1248 of yacc.c.  */
-#line 1504 "y.tab.h"
+#line 1507 "y.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
