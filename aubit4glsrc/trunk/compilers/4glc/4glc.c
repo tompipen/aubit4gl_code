@@ -1,6 +1,6 @@
 /**************************************************************/
 /*
-/* $Id: 4glc.c,v 1.4 2001-08-31 18:22:31 mikeaubury Exp $
+/* $Id: 4glc.c,v 1.5 2001-10-23 09:23:18 afalout Exp $
 /**/
 //#include "../libincl/compiler.h"
 #include <stdio.h>
@@ -119,9 +119,24 @@ main (argc, argv)
       printf ("Error opening file : %s\n", c);
       exit (1);
     }
-//printf("Opened : %s\n",c);
+
+	if (yydebug) {
+		printf("Opened : %s\n",c);
+    }
+
   x = yyparse ();
+
+	if (yydebug) {
+		printf("Closing map : %s\n",x);
+    }
+
   closemap ();
+
+	if (yydebug) {
+		printf("Exit\n");
+    }
+
+
   exit (x);
 }
 

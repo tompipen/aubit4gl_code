@@ -82,7 +82,9 @@ int fcall_cnt=0;
 %}
 %start module
 %union	  {
-	char	str[20000];
+// This would core dump in CygWin on call to yyparse in y.tab.c - 3100 in maximum:
+//	char	str[20000];
+	char	str[3100];
 	  }
 
 
