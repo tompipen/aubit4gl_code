@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.52 2005-03-17 15:43:04 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.53 2005-03-18 11:22:55 mikeaubury Exp $
 #
 */
 
@@ -910,8 +910,8 @@ if (!rule || n==0) {
 } else {
 	char *func;
         func=conversion_rules[rule-1].data.from;
-	if (n==1) { sprintf(buff,"%s(%s,%s,%s)",func,colname,l,1); return buff; }  
-	if (n==2) { sprintf(buff,"%s(%s,%s,%s)",func,colname,l,r-l+1); return buff; } 
+	if (n==1) { sprintf(buff,"%s(%s,%s,1)",func,colname,l); return buff; }  
+	if (n==2) { sprintf(buff,"%s(%s,%s,(%s)-(%s)+1)",func,colname,l,r,l); return buff; } 
 }
 A4GL_debug("Shouldn't get to here...");
 return "???";
