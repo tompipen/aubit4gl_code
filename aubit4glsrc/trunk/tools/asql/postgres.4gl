@@ -1236,3 +1236,8 @@ call close_tmpfile()
 end for
 	
 end function
+
+function check_db(dbname) 
+define dbname char(255)
+return dbname
+end function

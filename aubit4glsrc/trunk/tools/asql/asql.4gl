@@ -138,13 +138,15 @@ end main
 
 
 function open_db()
+	define lv_db char(255)
 	whenever error continue
+	call check_db(mv_curr_db) returning lv_db
 	database mv_curr_db
 
 	if sqlca.sqlcode<0 then
 		error "Unable to connect to database ",mv_curr_db
 	else
-		call set_curr_db(mv_curr_db)
+		call set_curr_db(lv_db)
 	end if
 end function
 

@@ -1629,3 +1629,13 @@ function qry_translate()
 error "Can't translate to informix"
 return
 end function
+
+function check_db(dbname)
+define dbname char(255)
+if dbname matches "*@" then
+	return dbname
+else
+	let dbname=dbname clipped,"@",fgl_getenv("INFORMIXSERVER")
+end if
+	return dbname
+end function
