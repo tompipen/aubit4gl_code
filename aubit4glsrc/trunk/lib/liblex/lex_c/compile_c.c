@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.56 2003-02-17 16:47:22 mikeaubury Exp $
+# $Id: compile_c.c,v 1.57 2003-02-17 16:59:10 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2520,7 +2520,6 @@ void print_init_var(char *name,char *prefix,int alvl) {
                 }
                 strcat(prefix2,buffx);
 
-                printf("Looking for %s\n",prefix2);
 
                 x=get_variable_dets (prefix2, &d, &a, &size, &lvl, arr);
 
@@ -2533,7 +2532,6 @@ void print_init_var(char *name,char *prefix,int alvl) {
                         char buff_id[256];
 			printing_arr=1;
                         cnt=split_arrsizes(arr,&arrsizes);
-                        printf("cnt=%d\n",cnt);
                         for (acnt=0;acnt<cnt;acnt++) {
                                 sprintf(buff_id,"_fglcnt_%d",alvl);
                                 printc("{int %s;\n",buff_id);
@@ -2562,7 +2560,6 @@ void print_init_var(char *name,char *prefix,int alvl) {
         if (strlen(prefix2)) { strcat(prefix2,"."); }
         strcat(prefix2,name);
 
-        printf("prefix2=%s prefix=%s name=%s\n",prefix2,prefix,name);
 
 
         x=get_variable_dets (prefix2, &d, &a, &size, &lvl, arr);
@@ -4043,6 +4040,7 @@ print_func_args (int c)
 		c,
     yylineno
 	); 
+print_function_variable_init();
 	printc ("pop_params(fbind,%d);\n", c);
 }
 

@@ -2373,6 +2373,7 @@ int a;
 struct variable **list=0;
 int list_cnt=0;
 
+printf("print_nullify called :%c\n",type);
 
 debug("AUTONULL ?");
 
@@ -2382,7 +2383,6 @@ debug("isyes returns %d ",a);
 
 if (a) {
 debug("AUTONULL must be YES");
-	printf("print_nullify called :%c\n",type);
 	if (type=='M') { list=list_module; list_cnt=list_module_cnt;}
 	if (type=='F') { list=list_local;list_cnt=list_local_cnt; }
 	if(list==0) {
@@ -2391,7 +2391,7 @@ debug("AUTONULL must be YES");
 	start_bind('N',0);
 	
 	for (a=0;a<list_cnt;a++) {
-		printf("Adding : %s\n",list[a]->names.name);
+		//printf("Adding : %s\n",list[a]->names.name);
 		add_bind('N',list[a]->names.name);
 	
 	}
