@@ -1,0 +1,154 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: Makefile.in,v 1.1 2002-02-23 03:22:12 afalout Exp $
+#
+
+#note: I plan to use amake for this; this is just for now
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ../../../incl/Makefile-common
+override NOINCL=0
+
+#override MAKINGAUBIT=0
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+ifneq "${AUBIT_BIN_INSTALL}" "1"
+	FCOMPILE	=../../bin/fcompile
+	MKMESS      =../../bin/mkmess
+	FGLPCEXEC	=${SH} ../../bin/4glpc
+else
+	FCOMPILE	=aubit fcompile
+	MKMESS      =aubit mkmess
+	FGLPCEXEC	=aubit 4glpc
+endif
+
+
+#4GLPCFLAGS		=-verbose -settings
+
+ALL=regression.4gl regression.per
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ALL}
+	@echo default targets successfully compiled
+
+## ==================================================================
+##                    Regression testing targets
+## ==================================================================
+
+regression.all: regression.4gl.all regression.per.all fail.4gl.all fail.per.all tort.4gl.all
+
+##################### Aubit ############ 4JS ############# Querix ########
+regression.4gl.all: regression.4gl 	regression.4gl.4js 	regression.4gl.q
+regression.per.all: regression.per  regression.per.4js  regression.per.q
+fail.4gl.all:       fail.4gl 		fail.4gl.4js 		fail.4gl.q
+fail.per.all:       fail.per 		fail.per.4js        fail.per.q
+tort.4gl.all:		tort.4gl 		tort.4gl.4js 		tort.4gl.q
+
+####### regression-test-4gl ##########
+
+regression.4gl:
+	${FGLPCEXEC} -nogtk regression-test-4gl.4gl -o regression-test-4gl
+
+regression.4gl.4js:
+	fglcomp regression-test-4gl.4gl
+
+regression.4gl.q:
+	fglc regression-test-4gl.4gl
+
+####### regression-test-per ##########
+
+regression.per:
+	${FCOMPILE} regression-test-per.per
+
+regression.per.4js:
+	fglform regression-test-per.per
+
+regression.per.q:
+	fmpc regression-test-per.per
+
+
+####### regression-fails-4gl ##########
+
+fail.4gl:
+	${FGLPCEXEC} -nogtk regression-fails-4gl.4gl -o regression-fails-4gl
+	${FGLPCEXEC} ${4GLPCFLAGS} torturetest4glcomp.4gl -o torturetest4glcomp
+
+fail.4gl.4js:
+	fglcomp regression-fails-4gl.4gl
+	fglcomp torturetest4glcomp.4gl
+
+fail.4gl.q:
+	fglc regression-fails-4gl.4gl
+	fglc torturetest4glcomp.4gl
+
+fail.4gl.ifx:
+	fglpc regression-fails-4gl.4gl
+	fglpc torturetest4glcomp.4gl
+
+
+####### regression-fails-per ##########
+
+fail.per:
+	${FCOMPILE} regression-fails-per.per
+
+fail.per.4js:
+	fglform regression-fails-per.per
+
+fail.per.q:
+	fmpc regression-fails-per.per
+
+## ==================================================================
+##                            Torture test
+## ==================================================================
+
+tort.4gl:
+	${FGLPCEXEC} ${4GLPCFLAGS} torturetest4glcomp.4gl -o torturetest4glcomp
+
+tort.4gl.4js:
+	fglcomp torturetest4glcomp.4gl
+
+tort.4gl.q:
+	fglc torturetest4glcomp.4gl
+
+
+## ==================================================================
+##                           Clean targets
+## ==================================================================
+
+
+clean:
+	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.o *.4ae
+	${RM} hello hello2 hello_db test_build filetest *.hlp *.exe
+	$(RM) *.stackdump *.exe *.err *.c
+	${RM} torturetest4glcomp *.tmp *.42m *.glb regression-test-4gl
+	${RM} *.42r gui/*.err pdf_report rr1.pdf gui/*.glb
+	${RM} *.ao *.log *.4ge *.pl *.pm test_build.c .\#*
