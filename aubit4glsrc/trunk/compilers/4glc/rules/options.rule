@@ -35,8 +35,20 @@ opt_allopts 	: COMMENT_LINE line_no 		{ print_options('C',$<str>2); }
 		| INPUT_NO_WRAP 		{ print_options('W',"0"); }
 		| FOCONSTR 			{ print_options('f',"1"); }
 		| FOUNCONSTR 			{ print_options('f',"0"); }
-		| SQL_INTERRUPT_ON  		{ print_options('S',"1"); }
 		| SQL_INTERRUPT_OFF 		{ print_options('S',"0"); }
+		| SQL_INTERRUPT_ON  		{ print_options('S',"1"); }
+		| RUN option_run_mode 		{ print_options('r',$<str>2); }
+		| PIPE option_pipe_mode 	{ print_options('|',$<str>2); }
+;
+
+option_run_mode :
+	IN_LINE_MODE {strcpy($<str>$,"1");}
+	| IN_FORM_MODE {strcpy($<str>$,"2");}
+;
+
+option_pipe_mode :
+	IN_LINE_MODE {strcpy($<str>$,"1");}
+	| IN_FORM_MODE {strcpy($<str>$,"2");}
 ;
 
 
