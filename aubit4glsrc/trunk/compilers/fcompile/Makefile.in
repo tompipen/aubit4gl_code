@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.52 2003-07-20 06:53:24 afalout Exp $
+# $Id: Makefile.in,v 1.53 2003-08-28 11:29:20 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -42,7 +42,7 @@ CFLAGS 			+=${C_LOCAL_IFLAGS} @CURSES_INC_PATH@ @RPCLIB_INCLUDE@
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 EXE_CFLAGS      +=-I${ROOT}/lib/libincl -I. ${C_IFLAGS}
 
-ALL	 			=${ROOT}/bin/fcompile ${ROOT}/bin/fdecompile ${ROOT}/bin/fshow
+ALL	 			=${ROOT}/bin/fcompile ${ROOT}/bin/fdecompile ${ROOT}/bin/fshow ${ROOT}/bin/default_frm
 
 ifeq "$(OUTPUTLANG)" "java"
 	ALL		 	+=${ROOT}/bin/fdecompile-j
@@ -99,6 +99,9 @@ endif
 
 all: $(ALL)
 	@echo "Default targets (${ALL}) successfully compiled."
+
+${ROOT}/bin/default_frm: create_default.o
+	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
 
 ${ROOT}/bin/fcompile: $(OBJECTS)
 	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
