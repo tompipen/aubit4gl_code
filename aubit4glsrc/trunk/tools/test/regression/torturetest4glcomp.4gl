@@ -110,7 +110,7 @@ Jonathan Leffler (johnl@informix.com) #include <disclaimer.h>
 -- @(#)Torture test for I4GL compilers
 -- @(#)Also a torture test for people reading the C code
 -- @(#)Also a torture test for C code reformatting programs
-
+database test1
 MAIN
 
     CALL f()

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.6 2003-09-14 08:09:12 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.7 2003-09-15 13:07:25 mikeaubury Exp $
 #
 */
 
@@ -147,7 +147,6 @@ char b[65];
 	        dectoasc(infx,b,64,16);
 	        A4GL_push_char(b);
 	        A4GL_pop_var2(a4gl,DTYPE_MONEY,size);
-		A4GL_dump(a4gl);
 	}
 
 }
@@ -218,7 +217,12 @@ dtime_t *infx; struct A4GLSQL_dtime *a4gl;
 			char buff[255];
 			char *ptr;
 			int a;
-
+#ifdef DIALECT_POSTGRES
+#ifdef HAVE_INT64_TIMESTAMP
+#error INT64 timestamp not implemented
+#endif
+if (*infx==0) indicat=-1;
+#endif
 			if (indicat==-1||risnull(CDTIMETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DTIME,(void *)a4gl,size); return;}
 
 			dttoasc(infx,buff);

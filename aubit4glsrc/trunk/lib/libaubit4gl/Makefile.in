@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.57 2003-09-01 00:01:11 afalout Exp $
+# $Id: Makefile.in,v 1.58 2003-09-15 13:07:24 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -57,7 +57,7 @@ COMMONSRC= \
 	attributes.c \
 	builtin.c builtin_d.c \
 	calldll.c conv.c compat.c \
-	data_if.c dates.c dmy.c  datatypes.c dataio.c \
+	data_if.c dates.c dmy.c  datatypes.c dataio.c decimal.c \
 	err.c error.c errfile.c extfile.c eval_field.c \
 	fglwrap.c funcs_d.c function_call_stack.c \
 	gtime.c gui_io.c gui.c \

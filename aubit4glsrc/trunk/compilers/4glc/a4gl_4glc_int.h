@@ -92,7 +92,7 @@ char *get_idents (int a);
 
 	/* =================== Implemented in mod.c ========================== */
 char *get_report_stack_why (int a);
-char *get_report_stack_whytype (int a);
+char get_report_stack_whytype (int a);
 
 struct expr_str
 {

@@ -37,6 +37,7 @@ return buff;
 }
 
 
+
 void
 print_conversions (char i)
 {
@@ -255,7 +256,7 @@ print_sql_type_infx (int a, char ioro)
 	  break;
 
 	case 7:
-	  printc ("int _vi_%d;", a);
+	  printc ("date _vi_%d;", a);
 	  break;
 	case 8:
 	  printc ("money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
@@ -264,7 +265,7 @@ print_sql_type_infx (int a, char ioro)
 	  printc ("Blah _vi_%d;", a);
 	  break;
 	case 10:
-	  printc ("datetime _vi_%d;", a);
+	  printc ("datetime %s _vi_%d;", A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(ibind[a].dtype)),a);
 	  break;
 	case 11:
 	  printc ("interval _vi_%d;", a);
@@ -312,7 +313,7 @@ print_sql_type_infx (int a, char ioro)
 	  printc ("int _vo_%d;", a);
 	  break;
 	case 7:
-	  printc ("int _vo_%d;", a);
+	  printc ("date _vo_%d;", a);
 	  break;
 	case 8:
 	  	printc ("money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
@@ -321,7 +322,7 @@ print_sql_type_infx (int a, char ioro)
 	  printc ("Blah _vo_%d;", a);
 	  break;
 	case 10:
-	  printc ("datetime _vo_%d;", a);
+	  printc ("datetime %s _vo_%d;",  A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(obind[a].dtype)),a);
 	  break;
 	case 11:
 	  printc ("interval _vo_%d;", a);
@@ -384,7 +385,7 @@ static void print_sql_type_postgres (int a, char ioro)
 	  printc ("Blah _vi_%d;", a);
 	  break;
 	case 10:
-	  printc ("datetime _vi_%d;", a);
+	  printc ("datetime _vi_%d;",  a); // Datetimes can't be qualified in ecpg
 	  break;
 	case 11:
 	  printc ("interval _vi_%d;", a);
@@ -441,7 +442,7 @@ static void print_sql_type_postgres (int a, char ioro)
 	  printc ("Blah _vo_%d;", a);
 	  break;
 	case 10:
-	  printc ("datetime _vo_%d;", a);
+	  printc ("datetime _vo_%d;",  a); // Datetimes can't be qualified in ecpg
 	  break;
 	case 11:
 	  printc ("interval _vo_%d;", a);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.33 2003-09-05 15:26:59 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.34 2003-09-15 13:07:25 mikeaubury Exp $
 #*/
 
 /**
@@ -407,9 +407,11 @@ process_control_stack (struct s_screenio *sio)
 
       		fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
 	  	A4GL_debug ("Checking key state.. %d", sio->fcntrl[a].extent);
+          	if (A4GL_has_str_attribute (fprop, FA_S_PICTURE)) { has_picture=1; picture=A4GL_get_str_attribute (fprop, FA_S_PICTURE);}
+			if (sio->mode == MODE_CONSTRUCT) has_picture=0;
 		if (sio->fcntrl[a].extent>=0 && sio->fcntrl[a].extent<=255 && ( (isprint(sio->fcntrl[a].extent) || sio->fcntrl[a].extent==1 || sio->fcntrl[a].extent==4)) ) {
 
-                	if ((fprop->flags & 1)==0)  {
+                	if ((fprop->flags & 1)==0 &&!has_picture)  {
 					switch (sio->vars[sio->curr_attrib].dtype) {
 					case DTYPE_SMINT:
 					case DTYPE_INT:
@@ -417,13 +419,12 @@ process_control_stack (struct s_screenio *sio)
 					case DTYPE_SMFLOAT:
 					case DTYPE_DECIMAL:
 					case DTYPE_MONEY:  A4GL_int_form_driver (sio->currform->form, REQ_CLR_EOF);
+	A4GL_debug("Clear to end of field because of datatype");
 					}
 			}
 			A4GL_debug("SETTING FLAGS ");
                 	fprop->flags|=2; // Set the field status flag
 
-          		if (A4GL_has_str_attribute (fprop, FA_S_PICTURE)) { has_picture=1; picture=A4GL_get_str_attribute (fprop, FA_S_PICTURE);}
-			if (sio->mode == MODE_CONSTRUCT) has_picture=0;
 
 
   			if (has_picture) {
@@ -539,20 +540,22 @@ process_control_stack (struct s_screenio *sio)
 			char *picture=0;
 			int has_picture=0;
           		if (A4GL_has_str_attribute (fprop, FA_S_PICTURE)) { 
-					if ((sio->vars[sio->curr_attrib].dtype&DTYPE_MASK)!=DTYPE_CHAR&& (sio->vars[sio->curr_attrib].dtype&DTYPE_MASK)!=DTYPE_VCHAR) {
-						A4GL_exitwith("Picture applied to a non-char field not implemented yet..");
-					} else {
-						int a;
-						int w;
-						char *ptr;
+				char *ptr;
+				int a;
+				int w;
+
+      				A4GL_set_init_value (sio->currentfield, sio->vars[sio->curr_attrib].ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
+
+				A4GL_debug("Set value to '%s'",field_buffer(sio->currentfield,0));
 						w=A4GL_get_field_width(sio->currentfield);
 						has_picture=1; picture=A4GL_get_str_attribute (fprop, FA_S_PICTURE);
 						ptr=malloc(w+1);
-						strncpy(ptr,sio->vars[sio->curr_attrib].ptr,w);
+
+						strcpy(ptr,field_buffer(sio->currentfield,0));
 						ptr[w]=0;
 					
 						for (a=0;a<strlen(picture);a++) {
-							if (a>sio->vars[sio->curr_attrib].size) break;
+							if (a>w) break;
 
 							if (picture[a]=='A') {
 									if (!isalpha(ptr[a])) ptr[a]=' '; 
@@ -570,8 +573,10 @@ process_control_stack (struct s_screenio *sio)
 
 							ptr[a]=picture[a];
 						}
-      						A4GL_set_init_value (sio->currentfield, ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
-					}
+      					//A4GL_set_init_value (sio->currentfield, ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
+      					A4GL_set_init_value (sio->currentfield, ptr, 0);
+					A4GL_debug("XYX Set field : %s",ptr);
+						free(ptr); // ? @todo....
 			} else {
       				A4GL_set_init_value (sio->currentfield, sio->vars[sio->curr_attrib].ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
 			}
@@ -613,7 +618,7 @@ process_control_stack (struct s_screenio *sio)
       		new_state = 0;
       		fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
 		if (sio->mode != MODE_CONSTRUCT) {
-			int has_picture=0;
+			//int has_picture=0;
 			char *picture;
 			int field_no;
 			char buff[10024];

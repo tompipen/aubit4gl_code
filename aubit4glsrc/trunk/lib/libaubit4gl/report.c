@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.27 2003-09-13 18:58:51 mikeaubury Exp $
+# $Id: report.c,v 1.28 2003-09-15 13:07:25 mikeaubury Exp $
 #
 */
 
@@ -218,7 +218,7 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
     }
 
   A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
-  if (rep->line_no == 0)
+  if (rep->line_no == 0&&!rep->finishing)
     {
       rep->line_no = 1;
       rep->page_no++;
@@ -296,7 +296,11 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
 	    	}
 
 	  	rep->line_no = 0;
-		A4GL_rep_print(rep,0,1,0);
+		if (a==0&&s==5)  {
+			return;
+		} else {
+			A4GL_rep_print(rep,0,1,0);
+		}
 	    }
 	}
     }
@@ -441,10 +445,14 @@ if (n!=1 || rep->page_no) {
 
 //printf("Add %d lines %d %d\n",a,rep->print_section,n);
 
-  for (z=0;z<=a;z++) {
+  for (z=0;z<a;z++) {
       A4GL_rep_print (rep, 0, 0, 0);
     }
-    //A4GL_rep_print (rep, 0, 0, 0);
+
+      A4GL_rep_print (rep, 0, 0, 0);
+
+
+
 //printf("Done skip top %d %d\n",rep->page_no,rep->line_no);
 
 }

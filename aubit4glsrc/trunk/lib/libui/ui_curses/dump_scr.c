@@ -119,27 +119,29 @@ aclfgl_aclfgl_dump_screen (int n)
 
 	  if (mode == 1)
 	    {
-	      if (attr == ACS_VLINE)
+
+
+	      if ((attr&0xff) == (ACS_VLINE&0xff) && (attr&A_ALTCHARSET))
 		{
 		  attr = (int) '|';
 		}
-	      if (attr == ACS_HLINE)
+	      if ((attr&0xff) == (ACS_HLINE&0xff) && (attr&A_ALTCHARSET))
 		{
 		  attr = (int) '-';
 		}
-	      if (attr == ACS_LLCORNER)
+	      if ((attr&0xff) == (ACS_LLCORNER&0xff) && (attr&A_ALTCHARSET))
 		{
 		  attr = (int) '+';
 		}
-	      if (attr == ACS_LRCORNER)
+	      if ((attr&0xff) == (ACS_LRCORNER&0xff) && (attr&A_ALTCHARSET))
 		{
 		  attr = (int) '+';
 		}
-	      if (attr == ACS_URCORNER)
+	      if ((attr&0xff) == (ACS_URCORNER&0xff) && (attr&A_ALTCHARSET))
 		{
 		  attr = (int) '+';
 		}
-	      if (attr == ACS_ULCORNER)
+	      if ((attr&0xff) == (ACS_ULCORNER&0xff) && (attr&A_ALTCHARSET))
 		{
 		  attr = (int) '+';
 		}

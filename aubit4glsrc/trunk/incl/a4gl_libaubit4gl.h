@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.93 2003-09-14 07:47:10 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.94 2003-09-15 13:07:24 mikeaubury Exp $
 #
 */
 
@@ -554,6 +554,7 @@ struct input_array_attribs {
 };
 
 
+
   typedef struct s_int_list
   {
     int code;
@@ -1049,6 +1050,7 @@ void A4GL_display_at (int n, int a);
     int lines_in_trailer;
     int print_section;
     char *header;
+	int finishing;
   };
   struct pdf_rep_structure
   {
@@ -1079,6 +1081,7 @@ void A4GL_display_at (int n, int a);
     int lines_in_trailer;
     int print_section;
     char *header;
+    int finishing;
   };
 
 #endif
@@ -1107,6 +1110,7 @@ void A4GL_display_at (int n, int a);
 #define REPORT_FIRSTPAGEHEADER 	-12
 #define REPORT_LASTDATA 		-13
 #define REPORT_PAGETRAILER 		-14
+#define REPORT_RESTART -15
 #define REPORT_TERMINATE 			-9999
 #define ERR_BADNOARGS 			1000
 #define ABORT 					1
@@ -1536,6 +1540,7 @@ void A4GL_display_at (int n, int a);
     int count;
     int display_attrib;
     int scr_dim;
+    int curr_line_is_new;
   };
 
 
@@ -1708,7 +1713,7 @@ void A4GL_close_errorlog_file (void);
 void A4GL_set_last_outfile (char *s);
 void A4GL_ltrim(char *s) ;
 void A4GL_fgl_die(int n);
-char *A4GL_init_dec (char *s, int len, int d);
+fgldecimal *A4GL_init_dec (fgldecimal *s, int len, int d);
 
 /* 
    used by display routines to convert a datatype 

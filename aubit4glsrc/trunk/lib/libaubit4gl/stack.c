@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.73 2003-09-10 10:36:19 mikeaubury Exp $
+# $Id: stack.c,v 1.74 2003-09-15 13:07:25 mikeaubury Exp $
 #
 */
 
@@ -1335,6 +1335,7 @@ A4GL_debug("51 Have data");
     case OP_DIV:
       if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
+      //printf("push_double (%lf)\n",doubleb/doublea);
       A4GL_push_double (doubleb / doublea);
       break;
 

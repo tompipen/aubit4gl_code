@@ -32,7 +32,7 @@ aclfgl_dump_screen (int n)
 
 //w=find_pointer ("screen", WINCODE);
   w = curscr;
-
+  refresh();
   if (n == 1)
     {
       popquote (buffer, 255);

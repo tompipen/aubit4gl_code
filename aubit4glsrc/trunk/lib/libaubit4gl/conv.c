@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.62 2003-09-10 10:36:18 mikeaubury Exp $
+# $Id: conv.c,v 1.63 2003-09-15 13:07:24 mikeaubury Exp $
 #
 */
 
@@ -74,22 +74,28 @@
 #define OK (void *)1
 
 
+
+#ifdef MOVED
 #define DEC_VAL(x) 		( ((x)&0xf)+ (((x)&0xf0)*10 /16) )
 #define HEX_VAL(x) 		(((x)%10) + ((((x)-((x)%10)) / 10)*16))
 #define SIGNED(x) 		(x[0]&128)
 #define SET_SIGNED(x) 	(x[0]|=128)
 #define SET_UNSIGNED(x) (x[0]=(x[0]>=128)?x[0]:x[0]-128)
+
 #define NUM_DIG(x) 		((x[0])&127 )
 #define NUM_DEC(x) 		((x[1]))
 #define SET_DIG(x,y) 	(x[0]=y)
 #define SET_DEC(x,y) 	(x[1]=y)
 #define OFFSET_DEC(x) 	(2)
 #define NUM_BYTES(x) 	(NUM_DIG(x)+OFFSET_DEC(x))
+#endif
+
+
 #define print_res(x) 	print_res_l(__LINE__,x)
 #define dt_encode(s,e) 	((s*16)+e)
 //#define dt_encode(s,e)        ((s*16)+e)
 
-#define DBL_DIG1 		512
+//#define DBL_DIG1 		512
 #define DT_YEAR 		1
 #define DT_MONTH 		2
 #define DT_DAY 			3
@@ -118,24 +124,25 @@
 int A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *d);
 int A4GL_bname2 (char *str, char *s1, char *s2, char *s3);
 char *A4GL_inv (char *s);
-double A4GL_dec_to_double (void *buf);
-char *A4GL_dec_to_str (char *s, int size);
-char *A4GL_add_dec (char *a, char *b);
-char *A4GL_minus_dec (char *a, char *b);
-char *A4GL_str_to_dec (char *s, char *w);
-//char *A4GL_init_dec (char *s, int len, int d);
-char *A4GL_mult_dec (char *s, char *v);
-char *A4GL_divide_dec (char *s, char *w);
-int A4GL_dec_roundoff (char *s, int n);
-void A4GL_dec_to_dec (char *f, char *t);
+double A4GL_dec_to_double (fgldecimal *buf);
+char *A4GL_dec_to_str (fgldecimal *s, int size);
+char *A4GL_add_dec (fgldecimal *a, fgldecimal *b);
+fgldecimal *A4GL_minus_dec (fgldecimal *a, fgldecimal *b);
+char *A4GL_str_to_dec (char *s, fgldecimal *w);
+//char *A4GL_init_dec (fgldecimal *s, int len, int d);
+fgldecimal *A4GL_mult_dec (fgldecimal *s, fgldecimal *v);
+fgldecimal *A4GL_divide_dec (fgldecimal *s, fgldecimal *w);
+
+int A4GL_dec_roundoff (fgldecimal *s, int n);
+void A4GL_dec_to_dec (fgldecimal *f, fgldecimal *t);
 void A4GL_dump (char *s);
 
 int A4GL_op_ival (struct ival *a, struct ival *b, double double_val, char op,
 	     char param);
 
 
-void A4GL_trim_dec (char *s);
-void A4GL_negate (char *s);
+void A4GL_trim_dec (fgldecimal *s);
+void A4GL_negate (fgldecimal *s);
 void A4GL_pr (char *wrkbf);
 void A4GL_double_to_dec (double arg, char *buf, size_t length, size_t digits);
 //void A4GL_assertion                        (int a, char *s);
@@ -231,9 +238,9 @@ void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 
 int A4GL_mdectod (void *zz, void *aa, int sz_ignore);
 
-static char *dec_math (char *s, char *w, char *r, char op);
-static void match_dec (char *f, char *t, int *a, int *b);
-void A4GL_trim_decimals (char *s, int d);
+static fgldecimal *dec_math (fgldecimal *s, fgldecimal *w, fgldecimal *r, char op);
+static void match_dec (fgldecimal *f, fgldecimal *t, int *a, int *b);
+void A4GL_trim_decimals (fgldecimal *s, int d);
 void A4GL_set_setdtype (int dtype, void *ptr);
 int A4GL_dectod (void *zz, void *aa, int sz_ignore);
 int A4GL_d_to_dt(void *a,void *b,int size) ;
@@ -303,74 +310,7 @@ int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
 =====================================================================
 */
 
-#ifdef TEST
 
-/**
- * Main function for convertion values testing.
- */
-int
-main (void)
-{
-  double rv, value;
-  double rv2;
-  char wrkbf[50];
-  char wrkbf2[50];
-  char wrkbf3[50];
-  int a, b;
-  int rc, x_sub, y_sub, size, len, digits;
-  char *zzz;
-  A4GL_init_dec (wrkbf, 30, 20);
-  A4GL_init_dec (wrkbf2, 20, 6);
-  A4GL_init_dec (wrkbf3, 20, 6);
-  A4GL_str_to_dec ("1.0", wrkbf2);
-  A4GL_str_to_dec ("0.01", wrkbf3);
-  /*
-     print_res(wrkbf2);
-     print_res(wrkbf3);
-     printf("Calculating\n");
-   */
-  dec_math (wrkbf2, wrkbf3, wrkbf, '*');
-  /* printf("-9x-0.9 =%s\n",dec_to_str(wrkbf)); */
-
-#ifdef EXERCISE
-  exercise ();
-  print_res_l (0, '0');
-#endif
-
-
-  A4GL_debug ("0.00003 %s\n", A4GL_dec_to_str (A4GL_inv (A4GL_str_to_dec ("0.00003", 0))));
-  A4GL_debug ("0.0003 %s\n", A4GL_dec_to_str (A4GL_inv (A4GL_str_to_dec ("0.0003", 0))));
-  A4GL_debug ("0.003 %s\n", A4GL_dec_to_str (A4GL_inv (A4GL_str_to_dec ("0.003", 0))));
-  A4GL_debug ("0.03 %s\n", A4GL_dec_to_str (A4GL_inv (A4GL_str_to_dec (".03", 0))));
-  A4GL_debug ("0.3 %s\n", A4GL_dec_to_str (A4GL_inv (A4GL_str_to_dec (".30", 0))));
-  A4GL_debug ("3 %s\n", A4GL_dec_to_str (A4GL_inv (A4GL_str_to_dec ("3.0", 0))));
-  A4GL_debug ("30 %s\n", A4GL_dec_to_str (A4GL_inv (A4GL_str_to_dec ("30.0", 0))));
-  A4GL_debug ("300 %s\n", A4GL_dec_to_str (A4GL_inv (A4GL_str_to_dec ("300.0", 0))));
-  A4GL_debug ("3000 %s\n", A4GL_dec_to_str (A4GL_inv (A4GL_str_to_dec ("3000.0", 0))));
-  A4GL_debug ("30000 %s\n", A4GL_dec_to_str (A4GL_inv (A4GL_str_to_dec ("30000.0", 0))));
-  A4GL_debug ("300000 %s\n", A4GL_dec_to_str (A4GL_inv (A4GL_str_to_dec ("300000.0", 0))));
-  exit (0);
-  A4GL_inv (A4GL_str_to_dec ("1.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("2.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("3.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("4.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("5.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("6.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("7.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("8.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("9.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("10.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("11.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("12.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("13.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("14.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("15.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("16.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("32.0", 0));
-  A4GL_inv (A4GL_str_to_dec ("64.0", 0));
-}
-
-#endif
 
 /**
  * Copy a int value.
@@ -970,18 +910,19 @@ A4GL_ftodec (void *a, void *z, int size)
   ndec = size & 0xff;
   errno = 0;
   A4GL_init_dec (z, ndig, ndec);
-
+A4GL_debug("ftodec... %lf" ,*(double *)a);
   if (ndec >= 0)
     {
-      // set format to the number of digits needed, to force round-off
-      sprintf (fmt, "%%-32.%df", ndec);
+       //set format to the number of digits needed, to force round-off
+      sprintf (fmt, "%%-32.%df", ndec+1);
+	A4GL_debug("Format=%s",fmt);
     }
   else
     {
-      strcpy (fmt, "%-32.16f");
+      strcpy (fmt, "%-32.1f");
     }
   sprintf (buff, fmt, *(double *) a);
-
+	A4GL_debug("buff=%s",buff);
   eptr = A4GL_str_to_dec (buff, z);
 
   if (eptr)
@@ -1051,6 +992,7 @@ A4GL_dectodec (void *a, void *z, int size)
   A4GL_init_dec (z, h, t);
   buff = A4GL_dec_to_str (a, 0);
   eptr = A4GL_str_to_dec (buff, z);
+
   if (eptr)
     return 1;
   else
@@ -1137,10 +1079,10 @@ A4GL_mdectol (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
   long *a;
-  char *z;
+  fgldecimal *z;
   A4GL_debug ("mdectol");
   a = (long *) aa;
-  z = (char *) zz;
+  z = (fgldecimal *) zz;
   strcpy (buff, A4GL_dec_to_str (z, 0));
   return A4GL_stol (buff, a, 0);
 }
@@ -1160,10 +1102,10 @@ A4GL_mdectoi (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
   short *a;
-  char *z;
+  fgldecimal *z;
   A4GL_debug ("mdectoi");
   a = (short *) aa;
-  z = (char *) zz;
+  z = (fgldecimal *) zz;
   strcpy (buff, A4GL_dec_to_str (z, 0));
   return A4GL_stoi (buff, a, 0);
 }
@@ -1183,9 +1125,9 @@ A4GL_mdectod (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
   long *a;
-  char *z;
+  fgldecimal *z;
   a = (long *) aa;
-  z = (char *) zz;
+  z = (fgldecimal *) zz;
   strcpy (buff, A4GL_dec_to_str (z, 0));
   return A4GL_stol (buff, a, 0);
 }
@@ -1204,10 +1146,10 @@ int
 A4GL_mdectof (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
-  char *z;
+  fgldecimal *z;
   double *a;
   a = (double *) aa;
-  z = (char *) zz;
+  z = (fgldecimal *) zz;
 
   strcpy (buff, A4GL_dec_to_str (z, 0));
   return A4GL_stof (buff, a, 0);
@@ -1227,9 +1169,9 @@ int
 A4GL_mdectosf (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
-  char *z;
+  fgldecimal *z;
   float *a;
-  z = (char *) zz;
+  z = (fgldecimal *) zz;
   a = (float *) aa;
   strcpy (buff, A4GL_dec_to_str (z, 0));
   return A4GL_stof (buff, a, 0);
@@ -2674,1306 +2616,6 @@ A4GL_assertion (int a, char *s)
 }
 
 
-/**
- * Convert a decimal value to double.
- *
- * @param The pointer to the decimal value.
- * @return The decimal value converted to double.
- */
-double
-A4GL_dec_to_double (void *buf)
-{
-  size_t len;
-  int digits;
-  double rv = 0.0;
-  char *buffer = (char *) buf;
-  size_t high, low, index, max;
-  digits = NUM_DEC (buffer);
-  len = NUM_BYTES (buffer);
-  max = len - 1;
-  digits = abs (digits);
-  for (index = OFFSET_DEC (buffer); index < max; index++)
-    {
-      low = buffer[index] & 0x0f;
-      high = (buffer[index] & 0xf0) >> 4;
-      rv = ((rv * 10.0 + high) * 10.0 + low);
-    }
-  low = buffer[max] & 0x0f;
-  high = (buffer[max] & 0xf0) >> 4;
-  rv = rv * 10.0 + high + low;
-  rv *= 10;
-  if (digits > 0)
-    rv /= pow ((double) 10, (double) digits);
-  if (buffer[0] & 128)
-    rv = -rv;
-  return rv;
-}
-
-/**
- * Operations over decimal values.
- *
- * @param s 
- * @param w
- * @param r
- * @param op The operator:
- *   - * : Multiply.
- *   - / : Divide.
- *   - + : Adition.
- *   - - : Subtraction.
- * @return
- */
-char *
-dec_math (char *s, char *w, char *r, char op)
-{
-  int sn = 0;
-  int wn = 0;
-  char *z;
-  if (s[0] & 128)
-    sn = 1;
-  if (w[0] & 128)
-    wn = 1;
-
-  A4GL_trim_dec (s);
-  A4GL_trim_dec (w);
-
-  if (sn == wn)
-    {
-
-      if (op == '*')
-	{
-	  if (sn == 1)
-	    {
-	      A4GL_negate (s);
-	      A4GL_negate (w);
-	    }
-	  A4GL_dec_to_dec (A4GL_mult_dec (s, w), r);
-	  return r;
-	}
-
-      if (op == '/')
-	{
-	  if (sn == 1)
-	    {
-	      A4GL_negate (s);
-	      A4GL_negate (w);
-	    }
-	  A4GL_dec_to_dec (A4GL_divide_dec (s, w), r);
-	  return r;
-
-	}
-
-      if (op == '+')
-	{
-
-	  z = A4GL_add_dec (s, w);
-	  A4GL_dec_to_dec (z, r);
-	}
-
-      if (op == '-')
-	{
-	  if (sn)
-	    {
-	      /* -n1 - -n2 = -n1 + n2 = n2 - n1  */
-	      A4GL_negate (w);
-	      A4GL_negate (s);
-	      z = A4GL_minus_dec (w, s);
-	      A4GL_dec_to_dec (z, r);
-	      return r;
-	    }
-	  else
-	    {
-	      z = A4GL_minus_dec (s, w);
-	      A4GL_dec_to_dec (z, r);
-	      return r;
-	    }
-	}
-
-      if (sn == 1)
-	{
-
-	  A4GL_negate (r);
-
-	}
-      return r;
-    }
-
-
-  if (sn)
-    {
-      if (op == '*')
-	{
-
-	  A4GL_negate (s);
-
-	  A4GL_dec_to_dec (A4GL_mult_dec (s, w), r);
-
-	  A4GL_negate (r);
-
-	}
-
-      if (op == '+')
-	{
-
-	  A4GL_dec_to_dec (A4GL_minus_dec (w, s), r);
-
-	}
-      if (op == '-')
-	{
-
-	  A4GL_dec_to_dec (A4GL_add_dec (s, w), r);
-
-	  A4GL_negate (r);
-
-	}
-      return r;
-    }
-  if (wn)
-    {
-      if (op == '*')
-	{
-
-	  A4GL_negate (w);
-
-	  A4GL_dec_to_dec (A4GL_mult_dec (s, w), r);
-
-	  A4GL_negate (r);
-
-	}
-      if (op == '+')
-	{
-
-	  A4GL_dec_to_dec (A4GL_minus_dec (s, w), r);
-
-	}
-      if (op == '-')
-	{
-
-	  A4GL_dec_to_dec (A4GL_add_dec (s, w), r);
-
-	}
-      return r;
-    }
-  return 0;
-}
-
-/**
- * Convert a value from double to decimal.
- *
- * @param  arg  the double value
- * @param  buf  pointer to the decimal
- * @param  length of decimal
- * @param  number of decimal digits
- * @return void
- */
-void
-A4GL_double_to_dec (double arg, char *buf, size_t length, size_t digits)
-{
-  char wrkbuf[DBL_DIG1], format[DBL_DIG1];
-  A4GL_init_dec (buf, length, digits);
-  sprintf (format, "%%-%d.%dlf", length, digits);
-  sprintf (wrkbuf, format, arg);
-  A4GL_str_to_dec (wrkbuf, buf);
-}
-
-
-/**
- * Copy a decimal value, converting where necessary if the source
- * and destination have different lengths and decimal places.
- *
- * @param f pointer to the value to be copied.
- * @param t pointer to the place where to copy the decimal value.
- * @return void
- */
-void
-A4GL_dec_to_dec (char *f, char *t)
-{
-  int l, lt;
-  int d, ld;
-  int x, y, c;
-  char buff[64];
-
-  A4GL_debug ("dec_to_dec");
-  A4GL_dump (f);
-  A4GL_dump (t);
-
-  A4GL_trim_dec (f);
-
-  A4GL_dump (f);
-
-  l = NUM_DIG (f);
-  d = NUM_DEC (f);
-
-  if (t[0] & 128)
-    t[0] = t[0] - 128;
-  lt = NUM_DIG (t);
-  ld = NUM_DEC (t);
-
-  if (ld < d && d > 0)
-    {
-      // target has fewer decimal places - do we need to round off ?
-      // we need only do this if the rounding might be upward on the
-      // last decimal digit, ie. check if the next digit is 5 or more
-      c = 0;
-      x = l + OFFSET_DEC (f) - (d % 2 == 0 ? d / 2 : (d + 1) / 2);
-      if (ld % 2 == 0)
-	{
-	  if ((f[x + (ld / 2)] & 0xf0) >= 0x50)
-	    c = 1;
-	}
-      else
-	{
-	  if ((f[x + (ld - 1) / 2] & 0x0f) >= 0x05)
-	    c = 1;
-	}
-      A4GL_debug ("rounding = %d", c);
-      if (c)
-	{
-	  // use a rounded copy of the source decimal
-	  A4GL_debug("copying %d bytes\n", NUM_BYTES (f));
-	  memcpy (buff, f, NUM_BYTES (f));
-	  A4GL_dec_roundoff (buff, ld);
-	  f = buff;
-	}
-    }
-
-  x = 0;
-  y = 0;
-  x = (l * 2 - lt * 2 - d + ld) / 2;
-
-  if (x < 0)
-    {
-      y = 0 - x;
-      x = 0;
-    }
-
-  c = lt - x;
-  c = lt;
-
-  if (c > l)
-    c = l;
-
-  if (c < 0)
-    {
-      A4GL_debug ("Too small\n");
-      A4GL_pr (f);
-      A4GL_pr (t);
-      exit (0);
-      return;
-    }
-
-  A4GL_debug ("lt=%d c=%d\n", lt, c);
-
-  memset (&t[OFFSET_DEC (t)], 0, lt);
-
-  memcpy (&t[y + OFFSET_DEC (t)], &f[x + OFFSET_DEC (f)], c);
-
-  if (f[0] & 128)
-    A4GL_negate (t);
-
-  A4GL_dump (t);
-}
-
-/**
- * Convert a string to decimal.
- *
- * @param s The string value to be copied.
- * @param w A pointer to the place where to put the decimal value.
- */
-char *
-A4GL_str_to_dec (char *s, char *w)
-{
-  int cnt;
-  char hd[DBL_DIG1];
-  int hdcnt = 0;
-  char tl[DBL_DIG1];
-  int tlcnt = 0;
-  int dp = 0;
-  int neg = 0;
-  char buff[DBL_DIG1];
-  int a;
-
-  memset (hd, 0, DBL_DIG1 - 1);
-  memset (tl, 0, DBL_DIG1 - 1);
-  for (cnt = 0; cnt < strlen (s); cnt++)
-    {
-      if (s[cnt] == '.')
-	{
-
-	  dp++;
-	  if (dp > 1) return 0;
-	  continue;
-	}
-
-      if (s[cnt] == '+' || s[cnt] == ',' || s[cnt] == ')')
-	continue;
-      if (s[cnt] == '-' || s[cnt] == '(')
-	{
-	  neg = 1;
-	  continue;
-	}
-      if (s[cnt] >= '0' && s[cnt] <= '9')
-	{
-
-	  if (dp)
-	    tl[tlcnt++] = s[cnt];
-
-	  else
-	    hd[hdcnt++] = s[cnt];
-	 continue;
-
-	}
-
-	if (s[cnt]==' ') {
-		int a;
-		if (tlcnt==0&&hdcnt==0) continue; // leading space..
-		for (a=cnt+1;a<strlen(s);a++) {
-			if (s[a]!=' ') return 0; // Nope - there is something after it
-		}
-		break; // just trailing spaces
-	}
-
-	// If we've got to here - I've got a character I'm not expecting...
-	A4GL_debug("Can a decimal have a '%c' (%d) in it ?",s[cnt],s[cnt]);
-	return 0;
-    }
-
-
-  if (hdcnt % 2 == 1)
-    {
-      strcpy (buff, "0");
-      strcat (buff, hd);
-      strcpy (hd, buff);
-      hdcnt++;
-    }
-
-  if (tlcnt % 2 == 1)
-    {
-      strcat (tl, "0");
-      tlcnt++;
-    }
-
-  A4GL_debug ("Head : %s (%d) tail %s(%d) \n", hd, hdcnt, tl, tlcnt);
-
-  A4GL_init_dec (buff, (hdcnt + tlcnt), tlcnt);
-  cnt = OFFSET_DEC (buff);
-
-  A4GL_debug ("Cnt = %d\n", cnt);
-
-  for (a = 0; a < hdcnt; a += 2)
-    {
-      buff[cnt] = HEX_VAL ((hd[a] - '0') * 10 + (hd[a + 1] - '0'));
-      cnt++;
-    }
-
-  for (a = 0; a < tlcnt; a += 2)
-    {
-      buff[cnt] = HEX_VAL ((tl[a] - '0') * 10 + (tl[a + 1] - '0'));
-      cnt++;
-    }
-
-  if (w == 0)
-    {
-      w = A4GL_init_dec (w, (hdcnt + tlcnt), tlcnt);
-    }
-
-  A4GL_dec_to_dec (buff, w);
-  if (neg)
-    {
-      A4GL_debug ("NEGATE...");
-      A4GL_negate (w);
-    }
-  return w;
-}
-
-/**
- * For debuging purpose only.
- *
- * Print each element of a string in hexadecimal.
- * 
- * @param wrkbf The buffer with the information to be printed to debug.
- */
-void
-A4GL_pr (char *wrkbf)
-{
-  int rc;
-  int y_sub;
-  rc = NUM_DIG (wrkbf);
-  for (y_sub = 0; y_sub <= rc + 1; y_sub++)
-    A4GL_debug ("%02X ", wrkbf[y_sub] & 0xff);
-  A4GL_debug ("\n");
-}
-
-/**
- * 
- * @param f
- * @param t
- * @param a
- * @param b
- */
-static void
-match_dec (char *f, char *t, int *a, int *b)
-{
-  int l, lt;
-  int d, ld;
-  int x, y, c;
-  int c2;
-  l = NUM_DIG (f);
-  d = NUM_DEC (f);
-  lt = NUM_DIG (t);
-  ld = NUM_DEC (t);
-  x = l * 2 - d;
-  y = lt * 2 - ld;
-  if (x > y)
-    c = x;
-  else
-    c = y;
-  if (d > ld)
-    c2 = d;
-  else
-    c2 = ld;
-  c += c2;
-  *a = c;
-  *b = c2;
-}
-
-/**
- * Add two decimal values.
- *
- * @param a The first part of the sum.
- * @param b The second part of the sum.
- * @return The result of the adition in string mode.
- */
-char *
-A4GL_add_dec (char *a, char *b)
-{
-  static char wrkbuf[3][DBL_DIG1];
-  int xlen, xdig;
-  int cnt;
-  int n1, n2;
-  int carry = 0;
-  int acc;
-  match_dec (a, b, &xlen, &xdig);
-  memset (wrkbuf[0], 0, DBL_DIG1 - 1);
-  memset (wrkbuf[1], 0, DBL_DIG1 - 1);
-  memset (wrkbuf[2], 0, DBL_DIG1 - 1);
-  A4GL_double_to_dec (0, wrkbuf[0], xlen + 2, xdig);
-  A4GL_double_to_dec (0, wrkbuf[1], xlen + 2, xdig);
-  A4GL_double_to_dec (0, wrkbuf[2], xlen + 2, xdig);
-  A4GL_dec_to_dec (a, wrkbuf[0]);
-  A4GL_dec_to_dec (b, wrkbuf[1]);
-  for (cnt = xlen / 2 + 2; cnt >= OFFSET_DEC (wrkbuf[0]); cnt--)
-    {
-      n1 = DEC_VAL (wrkbuf[0][cnt]);
-      n2 = DEC_VAL (wrkbuf[1][cnt]);
-      acc = n1 + n2 + carry;
-
-      if ((acc) >= 100)
-	{
-	  carry = acc;
-	  acc = acc % 100;
-	  carry -= acc;
-	  carry = carry / 100;
-	}
-      else
-	{
-	  carry = 0;
-	}
-      wrkbuf[2][cnt] = HEX_VAL (acc);
-    }
-  return wrkbuf[2];
-}
-
-/**
- * Change the signal of a value in a string.
- *
- * The value is modified directly.
- *
- * @param s The value to be negated.
- */
-void
-A4GL_negate (char *s)
-{
-  if ((s[0] & 128) == 1)
-    s[0] = s[0] - 128;
-  else
-    s[0] = s[0] + 128;
-}
-
-/**
- * Convert a decimal to string.
- *
- * @param s The decimal value
- * @param size
- * @return
- */
-char *
-A4GL_dec_to_str (char *s, int size)
-{
-  int l, d;
-  int c, x, k;
- int a;
-  static char buff[DBL_DIG1];
-//int h,t;
-  int dot_printed = -1;
-  int blank = 0;
-  char buff2[200];
-  int ok;
-
-  if (A4GL_isnull (DTYPE_DECIMAL, s)) {
-	strcpy(buff,"");
-	return buff;
-  }
-  l = NUM_DIG (s);		// length of decimal in bytes
-  d = NUM_DEC (s);		// number of digits to right of decimal point
-  // calculate starting position (bytes) of decimal point
-
-
-/*
-  h = size_of_operand;
-  t = h;
-  h = h / 256;
-  t = t - h * 256;
-  errno = 0;
-  if (h!=l || d!=t) {
-	A4GL_debug("Looks like an uninitialize decimal...");
-  	A4GL_init_dec (s, h, t);
-  	l = NUM_DIG (s);		// length of decimal in bytes
-  	d = NUM_DEC (s);		// number of digits to right of decimal point
-  }
-*/
-
-
-  if (d<0) {
-	char *ptr=0;
-	*ptr=0;
-  }
-  x = l + OFFSET_DEC (s) - (d % 2 == 0 ? d / 2 : (d + 1) / 2);
-
-
-  if (size<=0) size=l+1;
-
-  A4GL_debug ("dec_to_str l=%d d=%d\n", l, d);
-  //dump(s);
-
-  if (l == 0 && d == 0)
-    {
-      l = size & 256;
-      d = size % 256;
-      A4GL_debug ("**** CHECK THIS - IT LOOKS WRONG, l=%d d=%d\n", l, d);
-    }
-
-  memset (buff, 0, DBL_DIG1 - 1);
-  c = 0;
-
-  // a negative decimal has first bit set
-  if (s[0] & 128)
-    {
-      buff[c++] = '-';
-    }
-
-  // skip initial 2-byte 'header' and leading zero bytes before dec. point
-  a = OFFSET_DEC (s);
-  while (s[a] == 0 && a < x)
-    {
-      blank += 2;
-      a++;
-    }
-
-  // scan digits (0-9) of number, packed two per byte/char
-  for (; a <= l + 1; a++)
-    {
-      if (a == x)
-	{
-	  // insert decimal point, and a leading zero if needed
-	  if (c == 0 || buff[c - 1] == '-')
-	    buff[c++] = '0';
-	  dot_printed = c;
-	  buff[c++] = '.';
-	}
-
-      // extract decimal as a 2-digit number ( 00 - 99 ) 
-      k = DEC_VAL (s[a]);
-
-      // append ascii char for left-hand digit, unless
-      // it's an unecessary leading zero
-      buff[c] = ((int) k / 10) + '0';
-      if (buff[c] == '0' && (c == 0 || buff[c - 1] == '-'))
-	{
-	  blank++;
-	  buff[c] = 0;
-	}
-      else
-	c++;
-
-      // similarly for right-hand digit
-      buff[c] = (int) k % 10 + '0';
-      if (buff[c] == '0' && (c == 0 || buff[c - 1] == '-'))
-	{
-	  blank++;
-	  buff[c] = 0;
-	}
-      else
-	c++;
-    }
-
-  if (dot_printed && d % 2 == 1)
-    {
-      buff[dot_printed + d + 1] = 0;
-    }
-  memset (buff2, ' ', 199);
-  buff2[blank] = 0;
-  strcat (buff2, buff);
-  strcpy (buff, buff2);
-  A4GL_debug("99 size=%d blank=%d",size,blank);
-  //if (!dot_printed) {
-	ok=0;
-	for (a=0;a<strlen(buff);a++) {
-		if (buff[a]!=' ') {ok=1;break;}
-	}
-	if (ok==0) {
-		buff[strlen(buff)-1]='0';
-	}
-  //}
-
-  A4GL_debug ("returning: %s - blank=%d\n", buff, blank);
-  return buff;
-}
-
-/**
- * Make a subtraction between two decimal values.
- * 
- * @param a The left value.
- * @param b The right value.
- * @return The result of the subtraction
- */
-char *
-A4GL_minus_dec (char *a, char *b)
-{
-  static char wrkbuf[3][DBL_DIG1];
-  static char cbuff[DBL_DIG1];
-  int xlen, xdig;
-  int cnt;
-  int n1, n2;
-  int carry = 0;
-  int acc;
-  int neg = 0;
-  match_dec (a, b, &xlen, &xdig);
-  memset (wrkbuf[0], 0, DBL_DIG1 - 1);
-  memset (wrkbuf[1], 0, DBL_DIG1 - 1);
-  memset (wrkbuf[2], 0, DBL_DIG1 - 1);
-  A4GL_double_to_dec (0, wrkbuf[0], xlen + 1, xdig);
-  A4GL_double_to_dec (0, wrkbuf[1], xlen + 1, xdig);
-  A4GL_double_to_dec (0, wrkbuf[2], xlen + 1, xdig);
-  A4GL_dec_to_dec (a, wrkbuf[0]);
-  A4GL_dec_to_dec (b, wrkbuf[1]);
-  cnt =
-    memcmp (&wrkbuf[0][OFFSET_DEC (wrkbuf[0])],
-	    &wrkbuf[1][OFFSET_DEC (wrkbuf[1])], NUM_DIG (wrkbuf[0]));
-  if (cnt < 0)
-    {
-      A4GL_dec_to_dec (wrkbuf[0], wrkbuf[2]);
-      A4GL_dec_to_dec (wrkbuf[1], wrkbuf[0]);
-      A4GL_dec_to_dec (wrkbuf[2], wrkbuf[1]);
-      neg = 1;
-    }
-  memset (wrkbuf[2], 0, DBL_DIG1 - 1);
-  A4GL_double_to_dec (0, wrkbuf[2], xlen + 1, xdig);
-  for (cnt = xlen / 2 + 1; cnt >= OFFSET_DEC (wrkbuf[2]); cnt--)
-    {
-      n1 = DEC_VAL (wrkbuf[0][cnt]);
-      n2 = DEC_VAL (wrkbuf[1][cnt]);
-      acc = n1 - n2 - carry;
-      /*
-       */
-
-      if ((acc) < 0)
-	{
-
-	  acc = (100 + acc);
-
-	  carry = 1;
-
-	}
-      else
-	{
-
-	  carry = 0;
-
-	}
-      cbuff[cnt] = carry;
-
-      wrkbuf[2][cnt] = HEX_VAL (acc);
-    }
-  if (neg)
-    A4GL_negate (wrkbuf[2]);
-  return wrkbuf[2];
-}
-
-/**
- *
- * @param s
- * @param len
- * @param d
- * @return A pointer to the value alocated.
- */
-char *
-A4GL_init_dec (char *s, int len, int d)
-{
-  A4GL_debug ("init_dec len=%d,d=%d", len, d);
-  if (len % 2 == 1)
-    len++;			/* This was missing - odd number decimals wouldn't allocate the right space! */
-
-
-  if (s == 0)
-    {
-	A4GL_debug("Alloc some space");
-      s = malloc (len + OFFSET_DEC (s));
-    }
-
-  A4GL_debug("memset - %p 0 %d",s,len+OFFSET_DEC(s));
-
-  memset (s, 0, len + OFFSET_DEC (s));
-  SET_DIG (s, len / 2);
-  SET_DEC (s, d);
-  A4GL_dump (s);
-  return s;
-}
-
-
-
-/**
- * Make a multiplication between two decimal values.
- *
- * @param s The left factor.
- * @param s The rigth factor.
- * @return The result of the multiplication.
- */
-char *
-A4GL_mult_dec (char *s, char *v)
-{
-  int c1, c2;
-  static char buff[DBL_DIG1 * 2 + 1];
-  static char buff2[DBL_DIG1 + 1];
-  static char buff3[DBL_DIG1 + 1];
-  static char sumation[DBL_DIG1 + 1];
-
-  int acc;
-  int carry;
-  int cnt;
-  int md, ml;
-  int loopcnt = 0;
-  md = NUM_DEC (s) + NUM_DEC (v);
-  ml = (NUM_DIG (s) + NUM_DIG (v));
-  A4GL_init_dec (buff2, ml * 2, 0);
-  A4GL_init_dec (sumation, ml * 2, 0);
-  A4GL_str_to_dec ("0", buff2);
-  A4GL_str_to_dec ("0", sumation);
-  SET_DEC (buff2, 0);
-  for (c1 = NUM_DIG (s) - 1; c1 >= 0; c1--)
-    {
-      memset (buff, 0, sizeof (buff));
-      cnt = DBL_DIG1;
-      /* cnt = 0; */
-      carry = 0;
-      for (c2 = NUM_DIG (v) - 1; c2 >= 0; c2--)
-	{
-	  acc =
-	    DEC_VAL (s[c1 + OFFSET_DEC (s)]) *
-	    DEC_VAL (v[c2 + OFFSET_DEC (v)]) + carry;
-
-	  if (acc >= 100)
-	    {
-	      carry = acc;
-	      acc = carry % 100;
-	      carry = (carry - acc) / 100;
-	    }
-	  else
-	    {
-	      carry = 0;
-	    }
-	  buff[cnt] = HEX_VAL (acc);
-	  cnt--;
-	}
-
-      if (carry)
-	buff[cnt--] = HEX_VAL (carry);
-      memset (buff3, 0, sizeof (buff3));
-      memcpy (&buff3[OFFSET_DEC (buff3)], &buff[cnt + 1], DBL_DIG1 - cnt);
-      buff3[0] = (DBL_DIG1 - cnt + loopcnt);
-      loopcnt++;
-
-      SET_DEC (buff3, 0);
-
-      A4GL_init_dec (sumation, ml * 2, 0);
-      dec_math (buff3, buff2, sumation, '+');
-      memcpy (buff2, sumation, NUM_BYTES (sumation));
-    }
-
-  SET_DEC (buff2, md);
-  return buff2;
-}
-
-/*
- * Round a decimal number to a given number of decimal places
- *
- * @param s  pointer to the decimal to be rounded
- * @param n  number of decimal places required
- * @return   1 if rounded ok,  0 if failed (overflow)
-*/
-int
-A4GL_dec_roundoff (char *s, int n)
-{
-  int l, d, i, c, k;
-  char buff[DBL_DIG1];
-int m;
-
-  l = NUM_DIG (s);		// length of decimal in bytes
-  d = NUM_DEC (s);		// number of decimal places
-
-  A4GL_debug("A4GL_dec_roundoff - %d",n);
-  // we can only round off to fewer decimals than we have
-  if (n >= d) {
-    A4GL_debug("Round off lower..");
-    return 0;
-  }
-
-  // copy the decimal digits to a char buffer - ignore sign and dec. point
-  memset (buff, 0, DBL_DIG1 - 1);
-  c = 0;
-  for (i = OFFSET_DEC (s); i <= l + 1; i++)
-    {
-      k = DEC_VAL (s[i]);
-      buff[c++] = ((int) k / 10) + '0';
-      buff[c++] = (int) k % 10 + '0';
-    }
-
-  A4GL_debug("Buff=%s\n",buff);
-
-  // round off number in the char buffer
-  m = l * 2 -d +n;
-  for (k=m+1;k<l*2;k++) {
-	buff[k]=0;
-  }
-
-  A4GL_debug("Total digits : %d decimals %d new decimals %d",m,d,n);
-  A4GL_debug("m=%d l-d+n=%d buff[m]=%c",m,(l*2)-d+n,buff[m]);
-  while (m > 0 && buff[m] >= '5')
-    {
-      buff[m] = '0';
-	m--;
-      if (buff[m] < '9')
-	{
-	  buff[m] += 1;
-	  break;
-	}
-      buff[m] = '9';
-    }
-
-  A4GL_debug("Buff now=%s n=%d\n",buff,n);
-  // test for an overflow - we cannot round in that case
-  if (m < 1 && buff[0] == '0') {
-	A4GL_debug("Overflow...");
-    return 0;
-  }
-
-  // write rounded result back to decimal number
-  i = OFFSET_DEC (s);
-  for (c = 0; c <= strlen (buff); c += 2)
-    {
-      s[i++] = HEX_VAL ((buff[c] - '0') * 10 + (buff[c + 1] - '0'));
-    }
-
-  return 1;
-}
-
-
-#ifdef TEST
-
-/**
- * For testing purpose.
- *
- * Make some examples of decimal expressions.
- */
-static void
-exercise (void)
-{
-  char buffx[DBL_DIG1];
-  char buffy[DBL_DIG1];
-  char buffz[DBL_DIG1];
-  double x;
-  int xi, yi;
-  double y;
-  double z;
-  double z2 = 0;
-  char tb1[20];
-  char tb2[20];
-  A4GL_init_dec (buffx, 20, 6);
-  A4GL_init_dec (buffy, 20, 6);
-  A4GL_init_dec (buffz, 30, 20);
-
-  for (z = 2; z <= 2; z++)
-    {
-      for (xi = -99; xi <= 100; xi += 1)
-	{
-
-	  for (yi = -100; yi <= 100; yi += 1)
-	    {
-
-	      x = (double) xi / (double) 10;
-
-	      y = (double) yi / (double) 10;
-
-	      A4GL_double_to_dec (x, buffx, 20, 8);
-	      A4GL_double_to_dec (y, buffy, 20, 8);
-
-	      /* printf("x=%lf ",x);debug("%s ",dec_to_str(buffx));debug("y=%lf ",y);debug("%s\n",dec_to_str(buffy)); */
-	      if (z == 0)
-		dec_math (buffx, buffy, buffz, '+');
-
-	      if (z == 1)
-		dec_math (buffx, buffy, buffz, '-');
-
-	      if (z == 2)
-		dec_math (buffx, buffy, buffz, '*');
-
-	      if (z == 3)
-		{
-		  if (y == 0)
-		    continue;
-
-		  dec_math (buffx, buffy, buffz, '/');
-		}
-
-	      if (z == 0)
-		{
-
-		  z2 = x + y;
-
-		}
-
-	      if (z == 1)
-		{
-
-		  z2 = x - y;
-
-		}
-
-	      if (z == 2)
-		{
-		  z2 = x * y;
-		}
-
-	      if (z == 3)
-		{
-		  z2 = x / y;
-		}
-
-	      sprintf (tb1, "%10.2f", A4GL_dec_to_double (buffz));
-
-	      sprintf (tb2, "%10.2f", z2);
-
-	      if (strcmp (tb1, "     -0.00") == 0)
-		{
-
-		  sprintf (tb1, "      0.00");
-
-		}
-
-	      if (strcmp (tb2, "     -0.00") == 0)
-		{
-
-		  sprintf (tb2, "      0.00");
-
-		}
-
-	      if (strcmp (tb1, tb2) != 0)
-		{
-
-		  A4GL_debug ("**********************\n x=%lf", x);
-
-		  A4GL_debug (" y=%lf ", y);
-
-		  if (z == 0)
-		    {
-
-		      A4GL_debug ("(+)");
-
-		    }
-
-		  if (z == 1)
-		    {
-
-		      A4GL_debug ("(-)");
-
-		    }
-
-		  if (z == 2)
-		    {
-		      A4GL_debug ("(*)");
-		    }
-		  if (z == 3)
-		    {
-		      A4GL_debug ("(/)");
-		    }
-
-		  A4GL_debug (" fix='%s' float='%s'\n", tb1, tb2);
-
-		}
-
-	      /* pr(buffz); */
-	    }
-
-	}
-    }
-}
-
-#endif /* #ifdef TEST */
-
-/**
- *
- * @param a The decimal value.
- */
-void
-A4GL_trim_dec (char *s)
-{
-  int a;
-  int cnt = 0;
-  int f;
-  char hold[1024];
-  int neg = 0;
-
-  if (SIGNED (s))
-    neg = 1;
-
-  if (NUM_DEC (s) > 0)
-    {
-
-      for (a = 0; a <= NUM_DEC (s) / 2; a++)
-	{
-
-	  f = NUM_DIG (s);
-
-	  f = f + OFFSET_DEC (s);
-
-	  f = f - a - 1;
-
-	  if (s[f] == 0)
-	    {
-	      cnt++;
-	    }
-	  else
-	    {
-	      break;
-	    }
-
-	}
-
-      if (cnt)
-	{
-	  SET_DEC (s, NUM_DEC (s) - cnt * 2);
-	  SET_DIG (s, NUM_DIG (s) - cnt);
-	}
-
-    }
-  cnt = -1;
-  for (a = 0; a <= NUM_DIG (s); a++)
-    {
-      if (s[a + OFFSET_DEC (s)] != 0)
-	break;
-      cnt = a;
-    }
-  if (cnt > 0)
-    {
-      if (cnt >= NUM_DIG (s))
-	cnt = NUM_DIG (s) - 2;
-      a = NUM_BYTES (s) - cnt;
-      memcpy (hold, &s[cnt + 1 + OFFSET_DEC (s)], a);
-      memcpy (&s[OFFSET_DEC (s)], hold, NUM_DIG (s) - cnt - 1);
-      SET_DIG (s, NUM_DIG (s) - 1 - cnt);
-    }
-  if (neg)
-    A4GL_negate (s);
-}
-
-
-/**
- *
- * @todo Describe function
- */
-char *
-A4GL_inv (char *s)
-{
-  char buff[DBL_DIG1];
-  static char buffers[8][DBL_DIG1];
-  char mult_by[512];
-  char mpoint01[512];
-  static char tmpbuff[512];
-  int counter = 0;
-  int d;
-  int a;
-  int flg;
-  double p = 0;
-  memcpy (buff, s, NUM_BYTES (s));
-  A4GL_init_dec (mult_by, 64, 32);
-  A4GL_init_dec (tmpbuff, 64, 32);
-  A4GL_str_to_dec ("1.00", mult_by);
-  A4GL_init_dec (mpoint01, 4, 2);
-  A4GL_str_to_dec ("0.01", mpoint01);
-
-  d = NUM_DEC (buff);
-
-  A4GL_init_dec (tmpbuff, 64, 32);
-  if (NUM_DIG (buff) > NUM_DEC (buff))
-    {
-      SET_DEC (buff, NUM_DIG (buff) * 2 - 2);
-
-      for (a = d; a < NUM_DIG (buff); a++)
-	{
-	  A4GL_init_dec (mpoint01, 4, 2);
-	  A4GL_str_to_dec ("0.01", mpoint01);
-	  A4GL_init_dec (tmpbuff, 64, 32);
-	  dec_math (mult_by, mpoint01, tmpbuff, '*');
-	  A4GL_init_dec (mult_by, 64, 32);
-	  A4GL_dec_to_dec (tmpbuff, mult_by);
-	}
-    }
-
-  A4GL_init_dec (buffers[0], 2, 0);
-  A4GL_init_dec (buffers[1], 64, 32);
-  A4GL_init_dec (buffers[2], 64, 32);
-  A4GL_init_dec (buffers[3], 64, 32);
-  A4GL_init_dec (buffers[4], 64, 32);
-  flg = 0;
-  for (a = 0; a <= NUM_DEC (buff); a++)
-    {
-      p = DEC_VAL (buff[OFFSET_DEC (buff) + a]);
-      if (p != 0)
-	{
-	  p = 1.0 / p;
-	  flg = 1;
-	  break;
-	}
-    }
-  if (flg == 0)
-    {
-      A4GL_debug ("Divide by zero\n");
-      exit (0);
-    }
-  A4GL_double_to_dec (p, buffers[1], 32, 16);
-  A4GL_str_to_dec ("2.0", buffers[0]);
-  A4GL_str_to_dec ("0", buffers[3]);
-
-  for (a = 1; a <= 400; a++)
-    {
-      counter++;
-      A4GL_init_dec (buffers[4], 64, 32);
-
-      dec_math (buffers[1], buff, buffers[4], '*');
-      A4GL_init_dec (buffers[2], 64, 32);
-      A4GL_init_dec (buffers[0], 4, 0);
-      A4GL_str_to_dec ("2.0", buffers[0]);
-      dec_math (buffers[0], buffers[4], buffers[2], '-');
-
-      A4GL_init_dec (buffers[4], 64, 32);
-      dec_math (buffers[2], buffers[1], buffers[4], '*');
-      if (memcmp (buffers[4], buffers[3], NUM_BYTES (buffers[4])) == 0)
-	break;
-      memcpy (buffers[3], buffers[4], NUM_BYTES (buffers[4]));
-      memcpy (buffers[1], buffers[4], NUM_BYTES (buffers[4]));
-    }
-  A4GL_init_dec (buffers[4], 126, 62);
-  A4GL_str_to_dec ("0.00000000000000000000000000000005", buffers[4]);
-  A4GL_init_dec (buffers[1], 126, 62);
-  dec_math (buffers[3], buffers[4], buffers[1], '+');
-  A4GL_init_dec (tmpbuff, 64, 32);
-  dec_math (mult_by, buffers[1], tmpbuff, '*');
-
-  /* A4GL_debug ("Done: %s %d interations\n", A4GL_dec_to_str (tmpbuff), counter); */
-  return tmpbuff;
-}
-
-/**
- * Divide two decimal values.
- *
- * @param s The left decimal.
- * @param w The rigth decimal.
- * @return The result of the division.
- */
-char *
-A4GL_divide_dec (char *s, char *w)
-{
-  return A4GL_mult_dec (s, A4GL_inv (w));
-}
-
-/**
- *
- * @param s
- * @param d
- */
-void
-A4GL_trim_decimals (char *s, int d)
-{
-  int diff;
-  int n;
-  return;
-  diff = NUM_DEC (s) - d;
-  if (SIGNED (s))
-    n = 1;
-  else
-    n = 0;
-  if (diff > 0)
-    {
-      SET_DIG (s, NUM_DIG (s) - diff / 2);
-      SET_DEC (s, d);
-      if (n)
- A4GL_negate (s);
-    }
-}
-
-
-#ifdef TEST
-
-/**
- * Dump a value teling the line in the source where was found.
- *
- * Used for debugging purpose only.
- *
- * @param ln The line in the source code
- * @param s The value to be printed to the debug.
- */
-static void
-print_res_l (int ln, char *s)
-{
-  /* A4GL_debug ("%4d->%s\n", ln, A4GL_dec_to_str (s)); */
-  A4GL_debug ("      ");
-  A4GL_pr (s);
-}
-
-#endif
-
-/**
- * Dump the information in a string in hexadecimal format.
- *
- * Used just for debugging purpose only.
- *
- * @param s The string to be dumped.
- */
-void
-A4GL_dump (char *s)
-{
-  int a;
-  char buff[256] = "";
-  char buff2[256] = "";
-return;
-
-  sprintf (buff, "Dump : %p\n", s);
-  for (a = 0; a <= 7; a++)
-    {
-      sprintf (buff2, "%02x ", s[a] & 0xff);
-      strcat (buff, buff2);
-    }
-  A4GL_debug (buff);
-}
 
 /**
  * Validate if date or date time is valid.

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.135 2003-08-19 08:37:18 mikeaubury Exp $
+# $Id: mod.c,v 1.136 2003-09-15 13:06:58 mikeaubury Exp $
 #
 */
 
@@ -144,6 +144,12 @@ int when_code[8] = { WHEN_STOP,
   WHEN_NOTSET,
   WHEN_NOTSET
 };
+
+int lines_printed=0;
+
+int lines_printed_true=0;
+int lines_printed_false=0;
+
 
 char when_to_tmp[64];
 char when_to[64][8];
@@ -2242,6 +2248,7 @@ push_report_block (char *why, char whytype)
   report_stack[report_stack_cnt].whytype = whytype;
   print_repctrl_block ();
   report_stack_cnt++;
+  lines_printed=0;
 }
 
 
@@ -2277,6 +2284,9 @@ init_report_structure (struct rep_structure *rep)
   rep->line_no = 0;
   rep->col_no = 0;
   rep->output_mode = 'F';
+  rep->lines_in_header=0;
+  rep->lines_in_first_header=0;
+  rep->lines_in_trailer=0;
   strcpy (rep->output_loc, "\"stdout\"");
 }
 
@@ -2301,6 +2311,9 @@ pdf_init_report_structure (struct pdf_rep_structure *rep)
   rep->output_mode = 'F';
   rep->font_size = 10;
   rep->paper_size = 0;
+  rep->lines_in_header=0;
+  rep->lines_in_first_header=0;
+  rep->lines_in_trailer=0;
   strcpy (rep->font_name, "\"Helvetica\"");
   strcpy (rep->output_loc, "\"stdout\"");
 }
@@ -3678,7 +3691,11 @@ tr_glob_fname (char *s)
     }
 }
 
-
+char
+get_curr_report_stack_whytype ()
+{
+  return report_stack[report_stack_cnt-1].whytype;
+}
 /* folowing functions are to work around problem with exporting struct in Windows dll */
 
 /**
@@ -3686,10 +3703,10 @@ tr_glob_fname (char *s)
  *
  * @param
  */
-char *
+char 
 get_report_stack_whytype (int a)
 {
-  return &report_stack[a].whytype;
+  return report_stack[a].whytype;
 }
 
 /**

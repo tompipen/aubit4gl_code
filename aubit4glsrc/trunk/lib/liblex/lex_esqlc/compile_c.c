@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.96 2003-09-13 18:59:11 mikeaubury Exp $
+# $Id: compile_c.c,v 1.97 2003-09-15 13:07:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -627,8 +627,10 @@ print_report_ctrl (void)
     {
       printc ("if (acl_ctrl==REPORT_LASTDATA) {");
       printc ("  if (_useddata) {");
+
       printc ("   %s(0,REPORT_LASTROW);", get_curr_rep_name ());
       printc ("   if (rep.line_no==0&&rep.page_no==0) A4GL_rep_print(&rep,0,0,0);"); // MJA 13092003
+      printc ("   rep.finishing=1;");
       printc ("   A4GL_skip_top_of_page(&rep,1);");
       printc ("}");
       printc ("  _started=0;");
@@ -853,6 +855,7 @@ print_output_rep (struct rep_structure *rep)
   printc ("rep.right_margin=%d;\n", rep->right_margin);
   printc ("rep.page_length=%d;\n", rep->page_length);
   printc ("rep.header=0;\n");
+  printc ("rep.finishing=0;\n");
   printc ("rep.page_no=%d;\n", rep->page_no);
   printc ("rep.printed_page_no=%d;\n", rep->printed_page_no);
   printc ("rep.line_no=%d;\n", rep->line_no);
@@ -889,6 +892,7 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
   printc ("rep.lines_in_trailer=-1;\n");
   printc ("rep.lines_in_first_header=-1;\n");
   printc ("rep.print_section=0;\n");
+  printc ("rep.finishing=0;\n");
 
   printc ("rep.top_margin=A4GL_pdf_size(%f,'l',&rep);\n", rep->top_margin);
   printc ("rep.bottom_margin=A4GL_pdf_size(%f,'l',&rep);\n",
@@ -3437,7 +3441,7 @@ print_report_2 (int pdf, char *repordby)
   printc
     ("   if (_g>0&&_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
      get_curr_rep_name ());
-  for (a=0;a<cnt;a++) { printc("A4GL_setnull(rbind[%d].dtype,rbind[%d].ptr,rbind[%d].size);",a,a,a); }
+  //for (a=0;a<cnt;a++) { printc("A4GL_setnull(rbind[%d].dtype,rbind[%d].ptr,rbind[%d].size);",a,a,a); }
   printc ("   A4GL_pop_params(rbind,%d);\n", cnt);
   printc ("   if (_useddata==0) {_g=1;}\n");
   printc ("   if (_g>0) {");
@@ -3455,7 +3459,7 @@ print_report_2 (int pdf, char *repordby)
   	printc ("        fgl_rep_orderby=-1;\n");
   	printc ("        A4GL_push_char(_rout1);\n");
   	printc ("        A4GL_push_char(_rout2);\n");
-  	printc ("        %s(2,REPORT_START);\n", get_curr_rep_name ());
+  	printc ("        %s(2,REPORT_RESTART);\n", get_curr_rep_name ());
 	
   	//printc ("        A4GL_init_report_table(rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n", cnt);
   	print_report_table(mv_repname,'I',cnt);
@@ -3479,10 +3483,11 @@ print_report_2 (int pdf, char *repordby)
 
 
   printc (" ");
-  printc ("if (acl_ctrl==REPORT_START) {\n");
+  printc ("if (acl_ctrl==REPORT_START||acl_ctrl==REPORT_RESTART) {\n");
   printc ("   A4GL_pop_char(_rout2,254);\n");
   printc ("   A4GL_pop_char(_rout1,254);\n");
   if (last_orderby_type==1) {
+  	printc ("   if (acl_ctrl==REPORT_START) {fgl_rep_orderby=1;}\n");
   	printc ("   if (fgl_rep_orderby==1) {");
   	print_report_table(mv_repname,'M',cnt);
   	printc ("       return;");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.58 2003-09-02 21:46:10 mikeaubury Exp $
+# $Id: curslib.c,v 1.59 2003-09-15 13:07:25 mikeaubury Exp $
 #*/
 
 /**
@@ -650,8 +650,11 @@ infx_to_curses[7]=AUBIT_COLOR_BLACK;
 
 
 
-  x = A4GL_pop_int ();
-  y = A4GL_pop_int ();
+  //x = A4GL_pop_int ()+A4GL_get_curr_left()-2+A4GL_get_curr_border();
+  //y = A4GL_pop_int ()+A4GL_get_curr_top()-3+A4GL_get_curr_border();
+
+  x = A4GL_pop_int ()+A4GL_get_curr_border();
+  y = A4GL_pop_int ()+A4GL_get_curr_border();
   w = A4GL_pop_int ();
   h = A4GL_pop_int ();
   A4GL_debug ("In fgl_drawbox c=%d x=%d y=%d w=%d h=%d",c,x,y,w,h);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.57 2003-09-14 07:47:10 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.58 2003-09-15 13:07:24 mikeaubury Exp $
 */
 
 /**
@@ -107,7 +107,7 @@ extern "C"
 	 */
   typedef struct
   {
-    char data[64];	       /**< The value stored in decimal variable */
+    unsigned char dec_data[64];	       /**< The value stored in decimal variable */
   }
   fgldecimal;
 
@@ -121,7 +121,7 @@ extern "C"
 	 */
   typedef struct
   {
-    char data[64];	       /**< The value stored in money variable */
+    unsigned char dec_data[64];	       /**< The value stored in money variable */
   }
   fglmoney;
 
@@ -434,6 +434,7 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
     int lines_in_trailer;
     int print_section;
 	char *header;
+	int finishing;
   };
 
   struct pdf_rep_structure
@@ -463,6 +464,7 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
     int lines_in_trailer;
     int print_section;
 	char *header;
+	int finishing;
   };
 #endif
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.52 2003-09-03 18:43:36 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.53 2003-09-15 13:07:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1344,8 +1344,8 @@ static char *dt_qual(int a) {
 
 
 
-static char *
-sz (int d, int s)
+char *
+A4GL_dtype_sz (int d, int s)
 {
   static char buff[256];
   switch (d & 15)
@@ -1512,7 +1512,7 @@ if (type=='M') { /* Make the table */
 		l_sz=DECODE_SIZE(fbind[a].dtype);
 		strcat(tmpbuff, nm (l_dt));
 		
-		strcat(tmpbuff, sz (l_dt,l_sz));
+		strcat(tmpbuff, A4GL_dtype_sz (l_dt,l_sz));
 		
       		strcat (buff, tmpbuff);
 		strcat (ins_str,"?");
