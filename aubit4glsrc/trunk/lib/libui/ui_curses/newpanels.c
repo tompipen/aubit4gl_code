@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.87 2004-03-18 09:42:19 mikeaubury Exp $
+# $Id: newpanels.c,v 1.88 2004-05-24 14:28:41 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.87 2004-03-18 09:42:19 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.88 2004-05-24 14:28:41 mikeaubury Exp $";
 
 /**
  * @file
@@ -322,7 +322,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
       if (border == 1)
 	{
 	  win = newwin (h + 2, w + 2, y - 2, x - 2);
-	  if (toupper (name[0]) != name[0])
+	  if (a4gl_toupper (name[0]) != name[0])
 	    A4GL_gui_win (name, h + 2, w + 2, y - 2, x - 2, 1, (long) win);
 	  A4GL_add_pointer (name, WINCODE, win);
 	}
@@ -353,7 +353,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
       if (border == 0)
 	{
 	  win = newwin (h, w, y - 1, x - 1);
-	  if (toupper (name[0]) != name[0])
+	  if (a4gl_toupper (name[0]) != name[0])
 	    A4GL_gui_win (name, h, w, y - 1, x - 1, 0, (long) win);
 	  A4GL_add_pointer (name, WINCODE, win);
 	  A4GL_debug ("Window = %p name=%s", win,name);
@@ -464,7 +464,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
   keypad (win, TRUE);
 
   A4GL_debug ("Deciding what to do... %s\n", name);
-  if (toupper (name[0]) != name[0])
+  if (a4gl_toupper (name[0]) != name[0])
     {
 #ifdef DEBUG
       {
@@ -2508,7 +2508,7 @@ A4GL_find_win (PANEL * p)
       if ((PANEL *) panel_window (windows[a].pan) == p
 	  || (PANEL *) windows[a].pan == p)
 	{
-	  if (toupper (windows[a].name[0]) == windows[a].name[0])
+	  if (a4gl_toupper (windows[a].name[0]) == windows[a].name[0])
 	    {
 #ifdef DEBUG
 	      {

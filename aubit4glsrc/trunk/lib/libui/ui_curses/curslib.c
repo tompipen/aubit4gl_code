@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.92 2004-05-20 16:49:13 mikeaubury Exp $
+# $Id: curslib.c,v 1.93 2004-05-24 14:28:38 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.92 2004-05-20 16:49:13 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.93 2004-05-24 14:28:38 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -895,7 +895,7 @@ A4GL_edit (string, type, length, x, y)
 	{
 	  if (type == 'Y')
 	    {
-	      a = toupper (a);
+	      a = a4gl_toupper (a);
 	    }
 	  string[len] = a;
 	  len = len + 1;
@@ -940,7 +940,7 @@ A4GL_check_type (char c, char type, int flg, int len)
 
   if (type == 'Y')
     {
-      c = toupper (c);
+      c = a4gl_toupper (c);
       return (c == 'Y' || c == 'y' || c == 'N' || c == 'n');
     }
 
@@ -1119,7 +1119,7 @@ A4GL_ask_verify (prompt)	/*  prompt for verification  */
   strcpy (inbuf, "Y");
   A4GL_edit (inbuf, 'Y', 1, 0, 12);
   sscanf (inbuf, "%c", &kch);
-  if (toupper (kch) == 'Y')
+  if (a4gl_toupper (kch) == 'Y')
     i = 1;
   else
     i = 0;

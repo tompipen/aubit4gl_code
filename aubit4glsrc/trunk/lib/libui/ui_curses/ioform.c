@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.97 2004-05-21 13:26:33 mikeaubury Exp $
+# $Id: ioform.c,v 1.98 2004-05-24 14:28:41 mikeaubury Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.97 2004-05-21 13:26:33 mikeaubury Exp $";
+static char *module_id="$Id: ioform.c,v 1.98 2004-05-24 14:28:41 mikeaubury Exp $";
 /**
  * @file
  *
@@ -1519,7 +1519,7 @@ int
       else
 	{
 	  prop = (struct struct_scr_field *) field_userptr (field_list[a]);
-	  if (A4GL_has_str_attribute (prop, FA_S_DEFAULT))
+	  if (A4GL_has_str_attribute (prop, FA_S_DEFAULT) && sio->mode != MODE_CONSTRUCT)
 	    {
 	      A4GL_debug ("99  set_init_value from form");
 	      A4GL_debug ("default from form to '%s'",

@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.80 2004-05-12 08:15:59 mikeaubury Exp $
+# $Id: iarray.c,v 1.81 2004-05-24 14:28:41 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: iarray.c,v 1.80 2004-05-12 08:15:59 mikeaubury Exp $";
+static char *module_id="$Id: iarray.c,v 1.81 2004-05-24 14:28:41 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -675,7 +675,7 @@ iarr_loop (struct s_inp_arr *arr,struct aclfgl_event_list *evt)
 	  if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
 	      && isalpha (a))
 	    {
-	      a = toupper (a);
+	      a = a4gl_toupper (a);
 	    }
 	}
     }
