@@ -144,7 +144,22 @@ int ni;
 ni=print_bind('i');
 sprintf($<str>$,"%d,ibind",ni);
 }
-	;
+;
+
+opt_foreach_into_fetch_part: {
+debug("no into\n");
+sprintf($<str>$,"0,0");
+} | 
+	INTO {
+debug("FETCH INTO  ...");
+start_bind('i',0,-1);
+}
+        ibind_var_list {
+int ni;
+//ni=print_bind('i');
+//sprintf($<str>$,"%d,ibind",ni);
+}
+;
 
 fetch_place : 
 	FIRST {

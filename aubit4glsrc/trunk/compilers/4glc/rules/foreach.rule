@@ -7,7 +7,7 @@ fetch_cursor_name
 print_foreach_start();
 printcomment(" /* foreach */\n");
 }
-opt_into_fetch_part
+opt_foreach_into_fetch_part
 {
 print_foreach_next($<str>3,$<str>5);
 }
