@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.35 2004-03-18 22:47:27 whaslbeck Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.36 2004-03-19 22:44:22 whaslbeck Exp $";
 
 
 #include <gtk/gtk.h>
@@ -148,27 +148,26 @@ void A4GL_getxy_coords(int *x,int *y) {
 
 
 static int get_keypress_from_buffer() {
-int cp[KEY_BUFFER_SIZE-1];
-int k;
-if (keybuffer_cnt==0) {
-	return -1;
-}
-memcpy(&cp[0],&keybuffer[1],sizeof(cp));
-k=keybuffer[0];
-memcpy(&keybuffer[0],&cp[0],sizeof(cp));
-keybuffer_cnt--;
-//printf("Got k as %d\n",k);
-return k;
+  int cp[KEY_BUFFER_SIZE-1];
+  int k;
+  if (keybuffer_cnt==0) {
+    return -1;
+  }
+  memcpy(&cp[0],&keybuffer[1],sizeof(cp));
+  k=keybuffer[0];
+  memcpy(&keybuffer[0],&cp[0],sizeof(cp));
+  keybuffer_cnt--;
+  return k;
 }
 
 
 
 static void add_keypress(int a) {
-if (keybuffer_cnt>=KEY_BUFFER_SIZE) {
-		A4GL_LL_beep();
-		return;
-}
-keybuffer[keybuffer_cnt++]=a;
+  if (keybuffer_cnt>=KEY_BUFFER_SIZE) {
+    A4GL_LL_beep();
+    return;
+  }
+  keybuffer[keybuffer_cnt++]=a;
 }
 
 
@@ -2875,102 +2874,119 @@ printf("Add vbox to fixed..");
 
 
 int A4GL_LL_disp_form_fields_ap(int n,int attr,char* formname,va_list* ap) {
-	        return 0;
+  return 0;
 }
 
 static int menu_response=-1;
 
 int menu_callback (gpointer data) {
-//int nbutton;
-	//A4GL_debug("Widget=%p data=%d\n",widget,data);
-	//nbutton=(int)gtk_object_get_data(GTK_OBJECT(widget),"BUTTON");
-	menu_response=(int)data;
-	return TRUE;
+  //int nbutton;
+  //A4GL_debug("Widget=%p data=%d\n",widget,data);
+  //nbutton=(int)gtk_object_get_data(GTK_OBJECT(widget),"BUTTON");
+  menu_response=(int)data;
+  keybuffer_cnt=0; /* throw away buffered keys when menuoption is selected */
+  return TRUE;
 }
 
 
 int A4GL_LL_hide_h_menu(ACL_Menu *menu) {
-GtkWidget *bb;
-bb=gtk_object_get_data(GTK_OBJECT(win_screen),"BB");
-if (bb==0) return 0;
-gtk_widget_hide(bb);
-return 1;
+  GtkWidget *bb;
+  bb=gtk_object_get_data(GTK_OBJECT(win_screen),"BB");
+  if (bb==0) return 0;
+  gtk_widget_hide(bb);
+  return 1;
 }
 
 int A4GL_LL_disp_h_menu( ACL_Menu *menu) {
-GtkWidget *bb;
-int nbuttons;
-int a;
-char buff[255];
-ACL_Menu_Opts *mo;
-		if (A4GL_isyes(acl_getenv("TRADMENU"))) {
-	        	return 0;
-		}
+  GtkWidget *bb;
+  int nbuttons;
+  int a;
+  char buff[255];
+  ACL_Menu_Opts *mo;
+  
+  if (A4GL_isyes(acl_getenv("TRADMENU")))
+    return 0;
 
-		bb=gtk_object_get_data(GTK_OBJECT(win_screen),"BB");
-		if (bb==0) return 0;
+  bb=gtk_object_get_data(GTK_OBJECT(win_screen),"BB");
+  if (bb==0)
+    return 0;
 
-		gtk_widget_show(bb);
-		nbuttons=(int)gtk_object_get_data(GTK_OBJECT(bb),"NBUTTONS");
+  gtk_widget_show(bb);
+  nbuttons=(int)gtk_object_get_data(GTK_OBJECT(bb),"NBUTTONS");
 
-		while (nbuttons<menu->num_opts) {
-			GtkWidget *b;
-			sprintf(buff,"BUTTON_%d",nbuttons);
-			b=gtk_button_new_with_label(" ");
-  			gtk_signal_connect_object (GTK_OBJECT (b), "clicked", GTK_SIGNAL_FUNC (menu_callback), (void *)nbuttons);
-			gtk_widget_show(b);
-			gtk_object_set_data(GTK_OBJECT(bb),buff,b);
-			gtk_object_set_data(GTK_OBJECT(b),"BUTTON",(void *)nbuttons++);
-			gtk_object_set_data(GTK_OBJECT(b),"OPT",0);
-			gtk_object_set_data(GTK_OBJECT(bb),"NBUTTONS",(void *)nbuttons);
-			gtk_object_set_data(GTK_OBJECT(bb),"NBUTTONS",(void *)nbuttons);
-			gtk_container_add(GTK_CONTAINER(bb),b);
-		}
+  while (nbuttons<menu->num_opts) {
+    GtkWidget *b;
+    sprintf(buff,"BUTTON_%d",nbuttons);
+    b=gtk_button_new_with_label(" ");
+    gtk_signal_connect_object (GTK_OBJECT (b), "clicked", GTK_SIGNAL_FUNC (menu_callback), (void *)nbuttons);
+    gtk_widget_show(b);
+    gtk_object_set_data(GTK_OBJECT(bb),buff,b);
+    gtk_object_set_data(GTK_OBJECT(b),"BUTTON",(void *)nbuttons++);
+    gtk_object_set_data(GTK_OBJECT(b),"OPT",0);
+    gtk_object_set_data(GTK_OBJECT(bb),"NBUTTONS",(void *)nbuttons);
+    gtk_object_set_data(GTK_OBJECT(bb),"NBUTTONS",(void *)nbuttons);
+    gtk_container_add(GTK_CONTAINER(bb),b);
+  }
 
-		mo=menu->first;
+  mo=menu->first;
 
-		for (a=0;a<nbuttons;a++) {
-			GtkWidget *b;
-			sprintf(buff,"BUTTON_%d",a);
-			b=gtk_object_get_data(GTK_OBJECT(bb),buff);
-			
-
-			if (a>=menu->num_opts) {
-				gtk_widget_hide(b);
-			} else {
-				#if GTK_CHECK_VERSION(2,0,0)
-					char *label_utf=g_locale_to_utf8(mo->opt_title, -1, NULL, NULL, NULL);
-					gtk_button_set_label(GTK_BUTTON(b), label_utf);
-					g_free(label_utf);
-				#else
-					A4GL_debug("WARNING: GTK 1.2 has no gtk_button_set_label()");				
-				#endif
-				if (mo->attributes & ACL_MN_HIDE) gtk_widget_hide(b);
-				else gtk_widget_show(b);
-				mo=mo->next_option;
-			}
-		}
-		A4GL_LL_screen_update();
-		return 1;
+  for (a=0;a<nbuttons;a++) {
+    GtkWidget *b;
+    sprintf(buff,"BUTTON_%d",a);
+    b=gtk_object_get_data(GTK_OBJECT(bb),buff);
+    if (a>=menu->num_opts) {
+      gtk_widget_hide(b);
+    } else {
+#if GTK_CHECK_VERSION(2,0,0)
+      char *label_utf=g_locale_to_utf8(mo->opt_title, -1, NULL, NULL, NULL);
+      gtk_button_set_label(GTK_BUTTON(b), label_utf);
+      g_free(label_utf);
+#else
+      A4GL_debug("WARNING: GTK 1.2 has no gtk_button_set_label()");				
+#endif
+      if (mo->attributes & ACL_MN_HIDE)
+        gtk_widget_hide(b);
+      else
+        gtk_widget_show(b);
+      mo=mo->next_option;
+    }
+  }
+  A4GL_LL_screen_update();
+  return 1;
 }
 
 
 
 
 int A4GL_LL_menu_loop(ACL_Menu *menu) {
-	A4GL_LL_disp_h_menu(menu);
 
-	if (A4GL_isyes(acl_getenv("TRADMENU"))) {
-		return -1;
-	}
+  int key;
 
-	menu_response=-1;
+  A4GL_LL_disp_h_menu(menu);
 
-	while (menu_response==-1)  {
-		A4GL_LL_screen_update();
-	}
+  if (A4GL_isyes(acl_getenv("TRADMENU")))
+    return -1;
 
-	A4GL_LL_hide_h_menu(menu);
-	return menu_response;
+  menu_response=-1;
+
+  while (menu_response==-1) {
+    A4GL_LL_screen_update();
+    if((key=get_keypress_from_buffer())>0) {
+      ACL_Menu_Opts *f=menu->first; 
+      //printf("keypress in menu: %d\n", key);
+      int res=0;
+      while(f) {
+        //printf("in loop: checking option '%s' (keys: '%s')\n", f->opt_title, f->optkey);
+        if(f->optkey[0]==key) {
+          menu_response=res;
+          break;
+        }
+        res++;
+        f=f->next_option;
+      }
+    }
+  }
+
+  A4GL_LL_hide_h_menu(menu);
+  return menu_response;
 }
-
