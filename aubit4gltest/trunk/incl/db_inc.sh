@@ -10,8 +10,30 @@ SQLITE_DB="$AUBITDIR_UNIX/tools/$TEST_DB.db"
 
 if test "$USE_SQLITE" = "1" -o "$ODBC_USE_DB" = "SQLITE"; then
  	DB_TYPE="SQLITE"
-	if ! test -f $SQLITE_DB -o "$NEW_SQLITE" = "1"; then
-		rm -f $SQLITE_DB > /dev/null 2>&1
+	
+	TMPTMP=`type sqlite3 2>/dev/null`
+	if test "$TMPTMP" != ""; then 
+		SQLITE_EXE="sqlite3"
+	else
+		TMPTMP=`type sqlite 2>/dev/null`
+		if test "$TMPTMP" != ""; then 
+			SQLITE_EXE="sqlite"
+		else
+			echo "ERROR: cannot find SQLite executable. STOP."
+			exit 5
+		fi
+	fi
+	SQLITE_VERSION=`$SQLITE_EXE -version`
+	if test "$VERBOSE" = "1"; then
+		echo "SQLite version $SQLITE_VERSION"
+	fi
+	
+	if test "$NEW_SQLITE" = "1"; then
+		echo  "Deleting SQLite db in $SQLITE_DB"
+		rm -f $SQLITE_DB > /dev/null 2>&1	
+	fi
+	
+	if ! test -f $SQLITE_DB ; then
 		echo "creating SQLite testing database..."
 		new_testdb sqlite
 	else
@@ -22,15 +44,11 @@ if test "$USE_SQLITE" = "1" -o "$ODBC_USE_DB" = "SQLITE"; then
 	if test "$NEW_SQLITE" = "1"; then
         exit 0
     fi
-	SQLITE_VERSION=`sqlite -version`
-	if test "$VERBOSE" = "1"; then
-		echo "SQLite version $SQLITE_VERSION"
-	fi
 	
 	#remember to account for this scrit cd-ing into test directory
 	#when setting relative DBPATH to database file
 	if test "$PLATFORM" = "MINGW"; then
-		DBPATH="d:/cygwin$AUBITDIR_UNIX"
+		DBPATH="`cygpath -m $AUBITDIR_UNIX`"
 	else
 		DBPATH="$AUBITDIR_UNIX"
     fi

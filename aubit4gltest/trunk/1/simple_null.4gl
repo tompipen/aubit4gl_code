@@ -1,5 +1,6 @@
 DATABASE test1
 MAIN 
+define a record like systables.*
 
 	
 	CREATE TEMP TABLE xtemp ( 

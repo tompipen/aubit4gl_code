@@ -2507,7 +2507,7 @@ AS_USER=$5
 		;;
 		
 	sqlite)
-		cat $SCRIPT | sqlite $SQLITE_DB
+		cat $SCRIPT | $SQLITE_EXE $SQLITE_DB
         RET=$?
 		;;
 	*)

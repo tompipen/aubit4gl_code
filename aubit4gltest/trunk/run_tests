@@ -509,13 +509,33 @@ for a in $FLAGS; do
         ;;
 	
 	-sqlite)        #Use SQLite as database for db tests
-		if ! test -f $LIBS_DIR/libSQL_sqlite$SO_EXT; then
+		unset A4GL_SQLTYPE
+		if test -f $LIBS_DIR/libSQL_sqlite3S$SO_EXT; then
+			export A4GL_SQLTYPE=sqlite3S
+        fi
+		if test "$A4GL_SQLTYPE" = ""; then
+			if test -f $LIBS_DIR/libSQL_sqlite3$SO_EXT; then
+				export A4GL_SQLTYPE=sqlite3
+			fi
+		fi
+		if test "$A4GL_SQLTYPE" = ""; then
+			if test -f $LIBS_DIR/libSQL_sqliteS$SO_EXT; then
+				export A4GL_SQLTYPE=sqliteS
+			fi
+		fi
+		if test "$A4GL_SQLTYPE" = ""; then
+			if test -f $LIBS_DIR/libSQL_sqlite$SO_EXT; then
+				export A4GL_SQLTYPE=sqlite
+			fi
+		fi
+		
+		if test "$A4GL_SQLTYPE" = ""; then 
 			if ! test "$NO_ECHO"; then
 				echo "ERROR: cannot find SQLite plug-in ($LIBS_DIR/libSQL_sqlite$SO_EXT)"
-            fi
-            exit 9
-        fi
-		USE_SQLITE=1; export SKIP_EC_RUN=1; export A4GL_SQLTYPE=sqlite
+			fi
+			exit 9
+		fi
+		USE_SQLITE=1; export SKIP_EC_RUN=1; 
 		export USE_ESQLI=0; export USE_ECI=0;export A4GL_LEXTYPE=C;
         ;;
 
@@ -815,6 +835,7 @@ for a in $FLAGS; do
         fi
 		ODBC_USE_DB=PG
         ;;
+		
     -odbcdb-sqlite)    	#Use SQLite RDBMS for ODBC manager connections
 		ODBC_USE_DB=SQLITE
         ;;
@@ -1391,6 +1412,8 @@ if test "$IS_ODBC_MANAGER" = "1" && test "$ODBC_USE_DB" = ""; then
 	elif test "`$PSQL -V 2>/dev/null`" != ""; then
 		ODBC_USE_DB=PG
 	elif test "`sqlite -version 2>/dev/null`" != ""; then
+	    ODBC_USE_DB=SQLITE
+	elif test "`sqlite3 -version 2>/dev/null`" != ""; then
 	    ODBC_USE_DB=SQLITE
 	elif test "`echo quit | dbmcli -V 2>/dev/null`" != ""; then
 	    ODBC_USE_DB=SAP
