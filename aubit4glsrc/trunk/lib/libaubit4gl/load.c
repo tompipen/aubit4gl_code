@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.22 2004-10-31 13:40:21 mikeaubury Exp $
+# $Id: load.c,v 1.23 2004-11-04 13:15:42 pjfalbe Exp $
 #
 */
 
@@ -405,7 +405,7 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
 		if (cnt==0) {
 			int a;
 			free(sqlstmt);
-			sqlstmt=malloc(strlen(sqlstmt_orig)+ (nfields * 4) + 100);
+			sqlstmt=malloc(strlen(sqlstmt_orig)+ (nfields * 4) + 10000);
 			
 			strcpy(sqlstmt,sqlstmt_orig);
 			A4GL_trim(sqlstmt);

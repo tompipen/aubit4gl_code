@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql_compatible.ec,v 1.12 2004-10-25 12:21:58 mikeaubury Exp $
+# $Id: esql_compatible.ec,v 1.13 2004-11-04 13:16:57 pjfalbe Exp $
 #
 */
 
@@ -75,6 +75,7 @@
 #define _SQLCA_DEFINED_
 
 
+#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__) 
 
 #ifndef __SAP__
 $include sqlca;
@@ -362,7 +363,7 @@ static int processPreStatementBinds(struct s_sid *sid);
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.12 2004-10-25 12:21:58 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.13 2004-11-04 13:16:57 pjfalbe Exp $";
 #endif
 
 

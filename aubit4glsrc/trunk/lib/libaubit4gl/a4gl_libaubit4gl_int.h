@@ -45,7 +45,8 @@ int rgetkey(void);
 
 /* Prototypes from builtin.c */
 int aclfgl_fgl_getkey(int n) ;
-
+char *A4GL_strcpy(char *d,char *s,char *fname,int l);
+#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__)
 
 #endif /* #ifndef _AUBIT_LIB_INCL_INT_ */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.31 2004-09-10 11:25:54 mikeaubury Exp $
+# $Id: debug.c,v 1.32 2004-11-04 13:15:42 pjfalbe Exp $
 #
 */
 
@@ -43,7 +43,9 @@
 
 #include "a4gl_libaubit4gl_int.h"
 extern sqlca_struct a4gl_sqlca;
-
+#ifdef strcpy
+#undef strcpy
+#endif
 /*
 =====================================================================
                     Constants definitions
