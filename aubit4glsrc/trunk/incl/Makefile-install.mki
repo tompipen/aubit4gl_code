@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.53 2003-01-26 02:48:09 afalout Exp $
+# $Id: Makefile-install.mki,v 1.54 2003-01-26 04:53:15 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -506,11 +506,25 @@ install.ifx.esql: ${IFXESQLC_BIN_ZIP}
 
 ######################
 # 10: Install PostgreSQL ODBC libraries:
-install.pg.odbc: ${PGODBC_RPM}
+install.pg.odbc: install.pg.src install.pg.odbc.first
+install.pg.odbc.first: ${PGODBC_RPM}
 	${RPM} -i $^
 	@echo "Package info & manuals: ${PGODBC_INFO}"
 	@echo " "
 	@echo "PostreSQL ODBC libraries installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+#we need the source code to extract iodbc.h and other headers, missing in other PG distributions:
+install.pg.src: {PGODBC_SRC_TGZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+#	cd /tmp/${PGODBC_SRC_SRC}; ${SH} autogen.sh; ./configure; make; make install
+	mkdir -p /usr/include/pgsql/iodbc
+	cp /tmp/${PGODBC_SRC_SRC}/iodbc.h /tmp/${PGODBC_SRC_SRC}/isql.h /tmp/${PGODBC_SRC_SRC}/isqlext.h /usr/include/pgsql/iodbc
+	@echo " "
+	@echo "Package info & manuals: ${PGODBC_INFO}"
+	@echo " "
+	@echo "PostgreSQL ODBC source code extracted, header files installed."
+	@echo "Please re-run 'configure' to detect changes."
 	@echo " "
 
 ######################
@@ -604,15 +618,14 @@ install.sapdb.env: ${SAPDBENV_RPM}
 	@echo "SAP DB Environment installed.  Please re-run 'configure' to detect changes."
 	@echo " "
 
+#########################
 # 21: GTK+ dev packages:
-install.gtk.dev: ${GTK_GTK_DEV_RPM} ${GTK_GDK_DEV_RPM} ${GTK_GLIB_DEV_RPM}
+install.gtk.dev: ${GTK_GTK_DEV_RPM} ${GTK_GDK_DEV_RPM} ${GTK_GLIB_DEV_RPM} ${GTK_PANGO_DEV_RPM} ${GTK_ATK_DEV_RPM} ${XFREE86_DEV_RPM} ${GNOME_LIBS_DEVEL}
 	${RPM} -i $^
 	@echo "Package info & manuals: ${GTK_DEV_INFO}"
 	@echo " "
 	@echo "GTK+ development packages installed.  Please re-run 'configure' to detect changes."
 	@echo " "
-
-
 
 ########################
 #Define how to get installation files:
@@ -661,6 +674,17 @@ ${GTK_GDK_DEV_RPM}:
 	${WGET} ${GTK_DEV_PATH}/${GTK_GDK_DEV_RPM}
 ${GTK_GLIB_DEV_RPM}:
 	${WGET} ${GTK_DEV_PATH}/${GTK_GLIB_DEV_RPM}
+${PGODBC_SRC_TGZ}:
+	${WGET} ${PGODBC_SRC_PATH}/${PGODBC_SRC_TGZ}
+${GTK_PANGO_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${GTK_PANGO_DEV_RPM}
+${GTK_ATK_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${GTK_ATK_DEV_RPM}
+${XFREE86_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${XFREE86_DEV_RPM}
+${GNOME_LIBS_DEVEL}:
+	${WGET} ${GTK_DEV_PATH}/${GNOME_LIBS_DEVEL}
+
 
 
 # ============================== EOF ================================

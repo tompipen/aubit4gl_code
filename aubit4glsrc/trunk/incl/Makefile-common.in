@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.107 2003-01-26 02:48:09 afalout Exp $
+# $Id: Makefile-common.in,v 1.108 2003-01-26 04:53:15 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -1138,7 +1138,7 @@ endif
 
 ##################
 # 10: PGODBC
-PGODBC_INFO         =http://www.postgresql.org
+PGODBC_INFO         =http://gborg.postgresql.org/project/psqlodbc
 PGODBC_PATH         =${RH_RPM_PATH}
 ifeq "${RH_RPM_VER}" "7.3"
 	PGODBC_RPM			=postgresql-odbc-7.2.1-5.i386.rpm
@@ -1146,6 +1146,10 @@ endif
 ifeq "${RH_RPM_VER}" "8.0"
 	PGODBC_RPM			=postgresql-odbc-7.2.2-1.i386.rpm
 endif
+
+PGODBC_SRC_PATH     =ftp://ftp.us.postgresql.org/odbc/versions/src
+PGODBC_SRC_SRC      =psqlodbc-7.2.5
+PGODBC_SRC_TGZ      =${PGODBC_SRC_SRC}.tar.gz
 
 ##################
 # 11: unixODBC DEV headers
@@ -1181,7 +1185,7 @@ MPZ_SRC             =gmp-4.1.2
 MPZ_SRC_TGZ			=${MPZ_SRC}.tar.gz
 
 ##################
-# 14: PG ESQL
+# 14: PG ESQL, also (USED TO) contain ODBC headers
 PGESQLC_INFO        =http://www.postgresql.org
 PGESQLC_PATH        =${RH_RPM_PATH}
 ifeq "${RH_RPM_VER}" "7.3"
@@ -1230,6 +1234,13 @@ ifeq "${RH_RPM_VER}" "8.0"
 	GTK_GTK_DEV_RPM		=gtk2-devel-2.0.6-8.i386.rpm
 	GTK_GDK_DEV_RPM		=gdk-pixbuf-devel-0.18.0-4.i386.rpm
 	GTK_GLIB_DEV_RPM	=glib2-devel-2.0.6-2.i386.rpm
+
+	GTK_PANGO_DEV_RPM   =pango-devel-1.1.1-1.i386.rpm
+	GTK_ATK_DEV_RPM     =atk-devel-1.0.3-1.i386.rpm
+	XFREE86_DEV_RPM     =XFree86-devel-4.2.0-72.i386.rpm
+	GNOME_LIBS_DEVEL    =gnome-libs-devel-1.4.1.2.90-22.i386.rpm
+
+
 endif
 
 
