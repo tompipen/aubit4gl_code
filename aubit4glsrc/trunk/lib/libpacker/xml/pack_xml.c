@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.13 2003-05-22 21:59:08 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.14 2003-05-23 13:05:02 mikeaubury Exp $
 #*/
 
 /**
@@ -649,6 +649,7 @@ input_string (char *name, char **val, int ptr, int isarr)
     return 0;
   buff = A4GL_find_contents (ibuff);
   pptr = malloc ((strlen (buff) / 2) + 2);
+  memset(pptr,0,(strlen(buff)/2)+1);
   buffer[2] = 0;
   b = 0;
   for (a = 0; a < strlen (buff); a += 2)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui_io.c,v 1.11 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: gui_io.c,v 1.12 2003-05-23 13:04:17 mikeaubury Exp $
 #
 */
 
@@ -157,7 +157,7 @@ A4GL_gui_mkfield (int h, int w, int y, int x, void *p)
 void
 A4GL_gui_mklabel (int h, int w, int y, int x, char *s)
 {
-  char buff[256];
+  char buff[1024];
   sprintf (buff, "\"%s\" %d %d %d %lx", s, x, y, w, (long unsigned int) h);
   gui_send ("MKLABEL", buff);
 }

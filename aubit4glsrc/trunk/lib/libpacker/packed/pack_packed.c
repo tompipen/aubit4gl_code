@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.8 2003-05-15 07:10:42 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.9 2003-05-23 13:05:02 mikeaubury Exp $
 #*/
 
 /**
@@ -48,7 +48,6 @@
 */
 
 #include "a4gl_lib_packer_packed_int.h"
-
 /*
 =====================================================================
                     Constants definitions
@@ -530,7 +529,8 @@ input_string (char *name, char **val, int ptr, int isarr)
   if (!input_long ("", &l, 0, -1))
     return 0;
   A4GL_debug ("Got length as %d", l);
-  *val = malloc (l + 1);	/* Extra 1 for the \0 */
+  *val = malloc (l+1);	/* Extra 1 for the \0 */
+  memset(*val,0,l+1);
   a = fread (*val, 1, l, infile);
   if (a == 0 && l == 0)
     return 1;
