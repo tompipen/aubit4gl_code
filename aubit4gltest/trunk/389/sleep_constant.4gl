@@ -1,4 +1,4 @@
 
 MAIN 
-  SLEEP 10
+  SLEEP 3
 END MAIN

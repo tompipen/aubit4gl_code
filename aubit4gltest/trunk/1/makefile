@@ -1,5 +1,6 @@
 
 simple_null.4ae: simple_null.4gl
+	echo "ODBCINI=$(ODBCINI)"
 	$(FGLC) simple_null.4gl -o simple_null.4ae
 
 compile: simple_null.4ae

@@ -11,7 +11,6 @@ MAIN
 	DISPLAY date_time 
 
 	INSERT INTO temp_tbl VALUES (date_time)
-
 	initialize date_time to null
 	
 	select time_stamp into date_Time from temp_tbl

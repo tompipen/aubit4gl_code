@@ -20,7 +20,10 @@
 #Obay $ODBCINI: Informix, iODBC, UnixODBC, SqliteODBC, SAP
 #WARNING: Ignore $ODBCINI: Postgresql
 
-export ODBCINI=$CURR_DIR/etc/odbc.ini
+if [ "$NOKILLODBCINI" = "" -a "$ODBCINI" != "" ] 
+then
+	export ODBCINI=$CURR_DIR/etc/odbc.ini
+fi
 export ODBCINSTINI=$CURR_DIR/etc/odbcinst.ini
 
 if ! test -f "$ODBCINI"; then
