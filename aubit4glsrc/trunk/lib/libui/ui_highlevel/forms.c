@@ -1159,7 +1159,8 @@ UILIB_A4GL_hide_window (char *winname)
 
 #ifdef DEBUG
   {
-    A4GL_debug ("hiding window %s %p", winname, p);
+    //A4GL_debug ("hiding window %s %p", winname, p);
+    A4GL_debug ("hiding window %s", winname);
   }
 #endif
   if (w)

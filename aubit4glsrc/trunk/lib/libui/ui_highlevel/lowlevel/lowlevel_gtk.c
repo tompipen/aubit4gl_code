@@ -454,8 +454,9 @@ return;
   colormap = gdk_colormap_get_system ();
   default_style = gtk_widget_get_default_style ();
 
-
+#if GTK_CHECK_VERSION(2,0,0)
   default_style->font_desc = pango_font_description_from_string ("monospace 8");
+#endif
 
   /* Allocate the colors first... */
   for (a = 0; a < 8; a++)
