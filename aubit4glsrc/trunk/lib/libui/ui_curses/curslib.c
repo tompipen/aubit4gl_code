@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.11 2003-01-21 08:25:56 afalout Exp $
+# $Id: curslib.c,v 1.12 2003-02-07 12:59:10 mikeaubury Exp $
 #*/
 
 /**
@@ -310,9 +310,13 @@ int pos;
 void
 error_nobox (char *str)
 {
+  int a;
   push_char (str);
-  push_int (geterror_line ());
+  a=geterror_line();
+  debug("Error line = %d",a);
+  push_int (a);
   push_int (1);
+
   #ifdef DEBUG
   	debug ("YY REVERSE");
   #endif

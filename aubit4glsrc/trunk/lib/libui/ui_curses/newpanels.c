@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.9 2003-02-06 23:45:16 mikeaubury Exp $
+# $Id: newpanels.c,v 1.10 2003-02-07 12:59:10 mikeaubury Exp $
 #*/
 
 /**
@@ -2254,6 +2254,9 @@ geterror_line (void)
       return decode_line (std_dbscr.error_line);
     }
   debug("Get error line - form : %d",windows[currwinno].form->form_details.error_line);
+  if (currwinno==0) {
+      return decode_line (std_dbscr.error_line);
+  }
   return decode_line (windows[currwinno].form->form_details.error_line);
 }
 

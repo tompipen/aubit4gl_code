@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.36 2003-02-06 13:24:28 mikeaubury Exp $
+# $Id: stack.c,v 1.37 2003-02-07 12:58:52 mikeaubury Exp $
 #
 */
 
@@ -471,7 +471,7 @@ pop_param (void *p, int d, int size)
   int b;
   char *ptr;
   params_cnt--;
-//printf("pop_param....\n");
+////printf("pop_param....\n");
   if (params_cnt<0) {
 	  	debug("Stack got corrupted");
 	  	assertion(1,"Stack got corrupted");
@@ -1209,7 +1209,7 @@ push_user (void)
   a = getuid ();
   p = getpwuid (a);
 #endif
-  printf ("User=%s\n", p->pw_name);
+  //printf ("User=%s\n", p->pw_name);
   push_char (p->pw_name);
 }
 
@@ -2321,8 +2321,8 @@ dif_add_bind_smint (struct bound_list *list, int a)
 void
 dif_add_bind_smint_ptr (struct bound_list *list, int *a)
 {
-  printf ("a=%p", a);
-  printf ("*a=%x\n", *a);
+  //printf ("a=%p", a);
+  //printf ("*a=%x\n", *a);
   dif_add_bind (list, a, DTYPE_SMINT, 0);
 }
 
@@ -2334,8 +2334,8 @@ dif_add_bind_smint_ptr (struct bound_list *list, int *a)
 void
 dif_add_bind_dbl_ptr (struct bound_list *list, double *a)
 {
-  printf ("a=%p", a);
-  printf ("*a=%f\n", *a);
+  //printf ("a=%p", a);
+  //printf ("*a=%f\n", *a);
   dif_add_bind (list, a, DTYPE_SMINT, 0);
   *a = 3.142;
 }
