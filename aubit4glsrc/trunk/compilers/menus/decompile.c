@@ -9,7 +9,7 @@
 
 //here only to satisfy libMENU_XDR, when linked with mdecompile executable.
 //Should be removed once libMENU_ is dlopen() enabled:
-char *outputfilename;
+//char *outputfilename;
 
 
 main(int argc,char *argv[]) {
@@ -32,10 +32,9 @@ int a;
 
 	memset(&the_menus,0,sizeof(menu_list));
 
-	xdrstdio_create(&xdrp,f,XDR_DECODE);
 
+    isolated_xdr_decompile(the_menus,xdrp,f);
 
-	a=xdr_menu_list(&xdrp,&the_menus);
 	if (!a) {
 		printf("Bad format\n");
 	} else {
@@ -43,6 +42,20 @@ int a;
 	}
 }
 
+
+/*  moved to loadmenu.c
+int
+isolated_xdr_decompile(struct menu_list the_menus,XDR xdrp,FILE *f )
+{
+int a;
+
+
+	xdrstdio_create(&xdrp,f,XDR_DECODE);
+	a=xdr_menu_list(&xdrp,&the_menus);
+
+    return a;
+}
+*/
 
 dump_menu(menu_list *m) {
 	int a;

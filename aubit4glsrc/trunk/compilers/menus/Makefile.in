@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.23 2002-04-24 08:12:21 afalout Exp $
+# $Id: Makefile.in,v 1.24 2002-04-28 04:43:57 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,16 +36,16 @@ override NOINCL=0
 ##                              Options
 ## ==================================================================
 
-4GLPCFLAGS		=-make-compile ${LINK_COMPILERS} -verbose -L../../lib
+#4GLPCFLAGS		=-make-compile ${LINK_COMPILERS} -verbose -L../../lib
 #-rdynamic
 
 #FIXME: we should compile dummy executables in any case, so we can use them instead
 #of real ones when installing binary distro on system with missing RPClib:
-ifeq "@HAVE_RPCLIB@" "0"
-	ALL			=norpclib
-else
+#ifeq "@HAVE_RPCLIB@" "0"
+#	ALL			=norpclib
+#else
 	ALL			=mcompile mdecompile
-endif
+#endif
 
 ifeq "${USE_RPCGEN}" "0"
 	RPCGEN      =cp ../../tools/cygwin/menu_x_xdr.c ../../tools/cygwin/menu_x.h .
@@ -53,6 +53,7 @@ else
 	RPCGEN      =@RPCGEN@ menu_x.x
 endif
 
+#FIXME: this compiler should not depend on RPC:
 CFLAGS		   +=-I. -I../../lib/libincl @RPCLIB_INCLUDE@
 
 ## ==================================================================
@@ -73,11 +74,11 @@ TARGETS.c 		=y.tab.c
 DECOMPILE		=decompile.c
 OBJECTS 		=$(SOURCES.c:%.c=%.o) $(TARGETS.c:%.c=%.o)
 
-ifeq "@HAVE_RPCLIB@" "0"
+#ifeq "@HAVE_RPCLIB@" "0"
 	SOURCES.c 	=${SRC_COMMON}
-else
-	SOURCES.c 	=${SRC_COMMON} ${MENU_X_XDR}
-endif
+#else
+#	SOURCES.c 	=${SRC_COMMON} ${MENU_X_XDR}
+#endif
 
 ifeq "@YACC@" "no"
 	LEX_YY_C	=../../tools/no_yacc/cygwin/compilers/menus/lex.yy.c
@@ -96,20 +97,23 @@ endif
 all: $(ALL)
 	@echo "Default targets ($(ALL)) successfully compiled"
 
-mcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS)
-	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} ${AUBIT_LIB} ${RPCLIB_NAME} -lMENU_XDR
+mcompile: $(OBJECTS)
+#	${CC} ${CFLAGS} -L../../lib -o $@ $^ ${AUBIT_LIB} ${RPCLIB_NAME} -lMENU_XDR
+	${CC} ${CFLAGS} -L../../lib -o $@ $^ ${AUBIT_LIB}
 	${LN} $@${EXE} ../../bin/$@${EXE}
 
-mdecompile: ${DECOMPILE} ${MENU_X_XDR}
-	${CC} -o $@ ${CFLAGS} $^ -L../../lib ${AUBIT_LIB} ${RPCLIB_NAME} -lMENU_XDR
+#mdecompile: ${DECOMPILE} ${MENU_X_XDR}
+mdecompile: ${DECOMPILE}
+#	${CC} -o $@ ${CFLAGS} $^ -L../../lib ${AUBIT_LIB} ${RPCLIB_NAME} -lMENU_XDR
+	${CC} -o $@ ${CFLAGS} $^ -L../../lib ${AUBIT_LIB}
 	${CP} $@ ../../bin
 
-norpclib:
+#norpclib:
 #we will make some fake executables, to simplify installation and RPM builds:
-	${CC} mnorpclib.c -o mcompile
-	${CC} mnorpclib.c -o mdecompile
-	${CP} mcompile mdecompile ../../bin
-	@echo "Sun RPClib was not detected - no menu related functionality will be compiled"
+#	${CC} mnorpclib.c -o mcompile
+#	${CC} mnorpclib.c -o mdecompile
+#	${CP} mcompile mdecompile ../../bin
+#	@echo "Sun RPClib was not detected - no menu related functionality will be compiled"
 
 ## ==================================================================
 ##                             Sub Targets
@@ -136,6 +140,9 @@ else
 	nice -20 flex -i $(SOURCES.lex)
 endif
 
+rpc:
+	${RPCGEN}
+
 ## ==================================================================
 ##                             Dependencies
 ## ==================================================================
@@ -143,8 +150,9 @@ endif
 y.tab.o: lex.yy.c
 #rpc: ${MENU_X_XDR}
 #rpc: menu_x_xdr.c
-rpc:
-	${RPCGEN}
+
+#FIXME: mcompile should not depend on rpcgen:
+mcompile.o: menu_x.h
 
 ## ==================================================================
 ##                          Clean targets

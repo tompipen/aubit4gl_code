@@ -478,7 +478,18 @@ make_pixmap (char *filename)
 }
 
 
+// for mdecompile:
+int
+isolated_xdr_decompile(struct menu_list the_menus,XDR xdrp,FILE *f )
+{
+int a;
 
+
+	xdrstdio_create(&xdrp,f,XDR_DECODE);
+	a=xdr_menu_list(&xdrp,&the_menus);
+
+    return a;
+}
 
 
 

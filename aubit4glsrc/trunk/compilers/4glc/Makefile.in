@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.28 2002-04-23 07:01:02 afalout Exp $
+# $Id: Makefile.in,v 1.29 2002-04-28 04:43:57 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -57,14 +57,14 @@ endif
 
 ALL				=rules.t 4glc
 
-ifneq "@PERLBUILD@" "no"
+#ifneq "@PERLBUILD@" "no"
     #FIXME: remove 4glp executable, make libA4GLLEX_xx loaded by dlopen()
     #from 4glc executable depenfing on A4GL_OUTPUTLANG in aubitrc:
-	ALL         +=4glp
-endif
+#	ALL         +=4glp
+#endif
 
 
-ifneq "${COMSPEC}" ""
+#ifneq "${COMSPEC}" ""
 	#FIXME: it should be like this: try this again after Mike enables dlopen on libA4GLLEX_
 	#LIB_PERL	=dllA4GLLEX_PERL
 	#LIB_C		=dllA4GLLEX_C
@@ -73,14 +73,14 @@ ifneq "${COMSPEC}" ""
 	#but it is instead like this:
 	#I cannot compile this as .dll because of problems with automatic exporting of structs. see mod.c
 	#so, we will create monolit 4glc - there is no Perl compiler on Windows at the moment anyway:
-	LIB_C		=
-    4GLCAOBJ	+=${4GLCOBJ_C}
-else
-	LIB_PERL	=../../lib/libA4GLLEX_PERL${SO_EXT}
-	LIB_C		=../../lib/libA4GLLEX_C${SO_EXT}
-	LIB_PERL_L  =-lA4GLLEX_PERL
-	LIB_C_L     =-lA4GLLEX_C
-endif
+#	LIB_C		=
+#    4GLCAOBJ	+=${4GLCOBJ_C}
+#else
+#	LIB_PERL	=../../lib/libA4GLLEX_PERL${SO_EXT}
+#	LIB_C		=../../lib/libA4GLLEX_C${SO_EXT}
+#	LIB_PERL_L  =-lA4GLLEX_PERL
+#	LIB_C_L     =-lA4GLLEX_C
+#endif
 
 CFLAGS			+=-I../../lib -I../../lib/libincl -I../fcompile -Irules @RPCLIB_INCLUDE@ @CURSES_INC_PATH@
 
@@ -91,13 +91,15 @@ CFLAGS			+=-I../../lib -I../../lib/libincl -I../fcompile -Irules @RPCLIB_INCLUDE
 all: ${ALL}
 	@echo "Default targets (${ALL}) successfully compield."
 
-4glc: ${4GLCAOBJ} ${LIB_C}
-	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCAOBJ} ${AUBIT_LIB} ${LIB_C_L}
+#4glc: ${4GLCAOBJ} ${LIB_C}
+4glc: ${4GLCAOBJ}
+#	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCAOBJ} ${AUBIT_LIB} ${LIB_C_L}
+	${CC} ${CFLAGS} -L../../lib -o $@ $^ ${AUBIT_LIB}
 	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
 
-4glp: ${4GLCAOBJ} ${LIB_PERL}
-	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCAOBJ} ${AUBIT_LIB} ${LIB_PERL_L}
-	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
+#4glp: ${4GLCAOBJ} ${LIB_PERL}
+#	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCAOBJ} ${AUBIT_LIB} ${LIB_PERL_L}
+#	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
 
 
 ## ==================================================================

@@ -38,7 +38,6 @@ then
 	exit 0
 fi
 
-
 lib=$2
 env=$3
 
@@ -51,13 +50,22 @@ if grep VARIABLE $1 > /dev/null
 then
 	env=`awk '/^VARIABLE /{print $2}' $1`
 fi
+
+#if you want prefix to be added to API function names, uncomment this:
+#api_prefix="$lib"API_
+#if you want prefix to be added to LIB functions calls, uncomment this:
+#lib_prefix="$lib"LIB_
+
 echo "//Library=$lib env=$env"
 
-awk -v lib="$lib" -v env="$env" '
+
+
+awk -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" '
+
 
 BEGIN {
 FS="[ 	,]"
-print "/** lib=" lib " env=" env
+print "/** lib=" lib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
 print "* @file"
 print "* File definition"
 print "*"
@@ -119,6 +127,12 @@ print ""
 /^\// {print
 	next
 }
+/^extern/ {print
+	next
+}
+/^ \*/ {print
+	next
+}
 /^\*/ {next}
 /^$/ {next}
 /^[ 	]*$/ {next}
@@ -151,17 +165,18 @@ c++;
 }
 
 
-print ""
-print "/**"
-print " * API call function for xyz ."
-print " *"
-print " * @todo : explain ussage and parameters."
-print " * @param xyz Explain me..."
-print " * @return xyz Explain me..."
-print " */"
-print ""
+#THIS SHOULD BE PART OF .spec file
+#print ""
+#print "/**"
+#print " * API call function for xyz ."
+#print " *"
+#print " * @todo : explain ussage and parameters."
+#print " * @param xyz Explain me..."
+#print " * @return xyz Explain me..."
+#print " */"
+#print ""
 
-printf rtype " " lib "API_" fname "("
+printf rtype " " api_prefix fname "("
 va_start=""
 args=""
 for (b=0;b<c;b++) {
@@ -183,7 +198,7 @@ print ") {"
 if (va_start!="") {print "va_list ap;"}
 
 print "   if (libptr==0) A4GL" lib "_initlib();"
-print "   func=find_func(libptr,\"" lib "lib_" fname "\");"
+print "   func=find_func(libptr,\"" lib_prefix fname "\");"
 if (va_start!="") {
 	print "   va_start(ap," va_start ");"
 }

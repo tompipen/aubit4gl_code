@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.1 2002-04-23 06:38:14 afalout Exp $
+# $Id: Makefile.in,v 1.2 2002-04-28 04:45:19 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -44,9 +44,9 @@ override NOINCL=0
 
 
 ifneq "${COMSPEC}" ""
-	ALL         =libA4GLLEX_PERL.so
+	ALL         =libLEX_PERL.so
 else
-	ALL         =libA4GLLEX_PERL.so
+	ALL         =libLEX_PERL.so
 endif
 
 CFLAGS			+=-I.. -I../../libincl -I../../../compilers/fcompile -I../../../compilers/4glc/rules -I../../../compilers/4glc
@@ -55,7 +55,7 @@ CFLAGS			+=-I.. -I../../libincl -I../../../compilers/fcompile -I../../../compile
 ##                              Targets
 ## ==================================================================
 
-libA4GLLEX_PERL.so: ${4GLPERL_OBJ}
+libLEX_PERL.so: ${4GLPERL_OBJ}
 	${LD} ${SO_LDFLAGS} -o $@ $^
 	${CP} $@ ../..
 
@@ -63,15 +63,15 @@ libA4GLLEX_PERL.so: ${4GLPERL_OBJ}
 ##                            Windows Targets
 ## ==================================================================
 
-.PHONY : dllA4GLLEX_PERL
-dllA4GLLEX_C: exportlib4glcomp ${4GLCOBJ_C}
-	${MAKE} libA4GLLEX_C.dll DLLOBJS="${4GLCOBJ_C}" DLL_LDLIBS="${AUBIT_LIB} -lexportlib4glcomp" DLL_LDFLAGS="-L../../lib -L."
+.PHONY : dllLEX_PERL
+dllLEX_C: exportlib4glcomp ${4GLCOBJ_C}
+	${MAKE} libLEX_C.dll DLLOBJS="${4GLCOBJ_C}" DLL_LDLIBS="${AUBIT_LIB} -lexportlib4glcomp" DLL_LDFLAGS="-L../../lib -L."
 #see mod.c for list of variables that can't be automaticelly exported.
 
 #${RPCLIB_NAME} -lFORM_XDR @CURSES_LIB_NAME@
 # -lPDF_NOPDF
-	${CP} libA4GLLEX_C.dll ../..
-	${CP} libA4GLLEX_C.dll.a ../..
+	${CP} libLEX_C.dll ../..
+	${CP} libLEX_C.dll.a ../..
 
 
 ## ==================================================================

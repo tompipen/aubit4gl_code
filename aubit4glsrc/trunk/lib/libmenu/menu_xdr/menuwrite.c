@@ -8,11 +8,15 @@
 #ifdef __CYGWIN__
 #include <rpc/rpc.h>
 #endif
-int as_c=1;
 
-int ignorekw = 0;
-int lineno = 0;
-int colno = 0;
+
+//int as_c=1;
+extern int as_c;
+
+//int ignorekw = 0;
+//int colno = 0;
+
+//int lineno = 0;
 int scr = 0;
 int cmaxcol = 0;
 int cmaxline = 0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.55 2002-04-25 06:32:45 afalout Exp $
+# $Id: mod.c,v 1.56 2002-04-28 04:43:57 afalout Exp $
 #
 */
 
@@ -219,7 +219,7 @@ struct cmds
 #ifdef LEXER
 int ccnt = 0;
 #else
-extern int ccnt;
+extern int ccnt;  //in lexer.c
 #endif
 
 #define EMPTY "----"

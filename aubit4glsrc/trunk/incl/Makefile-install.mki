@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.20 2002-04-23 07:01:04 afalout Exp $
+# $Id: Makefile-install.mki,v 1.21 2002-04-28 04:43:57 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -143,6 +143,7 @@ deinstall.all: deinstall.libs.links deinstall.bin.links deinstall.build
 	${RM} $(INSTALL_DIR)/README.txt $(INSTALL_DIR)/*.tgz $(INSTALL_DIR)/configure $(INSTALL_DIR)/Makefile \
 		$(INSTALL_DIR)/incl/4glhdr.h $(INSTALL_DIR)/incl/acl4glgui.h \
 		$(INSTALL_DIR)/incl/4gldef.h $(INSTALL_DIR)/incl/*.mk \
+		$(INSTALL_DIR)/incl/a4gl_incl_4gldef.h  $(INSTALL_DIR)/incl/a4gl_incl_4glhdr.h  $(INSTALL_DIR)/incl/a4gl_incl_acl4glgui.h \
 		$(INSTALL_DIR)/incl/*.mki $(INSTALL_DIR)/incl/Makefile-common \
 		$(INSTALL_DIR)/lib/libaclall.a $(INSTALL_DIR)/lib/libaubit4gl.a \
 		$(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} $(INSTALL_DIR)/lib/libaclshared${SO_EXT} \

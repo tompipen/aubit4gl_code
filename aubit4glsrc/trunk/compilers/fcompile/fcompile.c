@@ -8,10 +8,12 @@
  * The frm is the file used at run-time by x4gl
  */
 
- /* 
-  * $Id: fcompile.c,v 1.12 2002-04-24 07:45:59 afalout Exp $
+ /*
+  * $Id: fcompile.c,v 1.13 2002-04-28 04:43:57 afalout Exp $
   */
 
+//here becaus of struct_form: FIXME - fcompile should not depend on RPCGEN
+#include "a4gl_formxw.h"
 #include "a4gl_compiler.h"
 #include <stdio.h>
 #include "a4gl_aubit_lib.h"
@@ -44,6 +46,18 @@ char *outputfilename;
 char outputfile[132];
 
 
+int ignorekw = 0;
+int colno = 0;
+int lineno = 0;
+int openwith = 0;
+char currftag[256];
+int fldno;
+int as_c=1;
+int scr = 0;
+int newscreen = 0;
+int fstart;
+struct struct_scr_field *fld;
+struct struct_form the_form;
 
 /**
  *  From a file name takes the basename of the file (the file without extension)

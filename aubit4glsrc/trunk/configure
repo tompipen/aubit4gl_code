@@ -1314,7 +1314,7 @@ A4GL_SQLTYPE=nosql
 A4GL_PDFTYPE=NOPDF
 A4GL_RPCTYPE=NORPC
 AUBITGUI=CONSOLE
-OUTPUTLANG=C
+A4GL_LEXTYPE=C
 A4GL_FORMTYPE=NOFORM
 A4GL_MENUTYPE=NOMENU
 A4GL_MSGTYPE=NATIVE
@@ -12405,10 +12405,10 @@ fi
 
 if test "$default_comp" != ""; then
 	#User can force COMPILER driver default with --default-comp=xxxx switch
-	OUTPUTLANG="$default_comp"
+	A4GL_LEXTYPE="$default_comp"
 #else
 	#if test "$PERLBUILD" != "no"; then
-	#	OUTPUTLANG="PERL"
+	#	A4GL_LEXTYPE="PERL"
     #fi
 fi
 
@@ -12421,7 +12421,7 @@ if test "$default_msg" != ""; then
 	A4GL_MSGTYPE="$default_msg"
 #else
 	#if test "$PERLBUILD" != "no"; then
-	#	OUTPUTLANG="PERL"
+	#	A4GL_LEXTYPE="PERL"
     #fi
 fi
 
@@ -12896,7 +12896,7 @@ s,@A4GL_SQLTYPE@,$A4GL_SQLTYPE,;t t
 s,@A4GL_PDFTYPE@,$A4GL_PDFTYPE,;t t
 s,@A4GL_RPCTYPE@,$A4GL_RPCTYPE,;t t
 s,@AUBITGUI@,$AUBITGUI,;t t
-s,@OUTPUTLANG@,$OUTPUTLANG,;t t
+s,@A4GL_LEXTYPE@,$A4GL_LEXTYPE,;t t
 s,@A4GL_FORMTYPE@,$A4GL_FORMTYPE,;t t
 s,@A4GL_MENUTYPE@,$A4GL_MENUTYPE,;t t
 s,@A4GL_MSGTYPE@,$A4GL_MSGTYPE,;t t

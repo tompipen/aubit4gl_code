@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.27 2002-04-19 03:45:17 afalout Exp $
+# $Id: Makefile.in,v 1.28 2002-04-28 04:43:57 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -37,16 +37,17 @@ override NOINCL=0
 ## ==================================================================
 
 #FIXME: use 4glpc ONLY for 4gl code:
-4GLPCFLAGS		=-make-compile ${LINK_COMPILERS} -verbose -L../../lib
+#4GLPCFLAGS		=-make-compile ${LINK_COMPILERS} -verbose -L../../lib
+4GLPC			=../../bin/4glpc
 CFLAGS 			+=-I../../lib/libincl -I. @CURSES_INC_PATH@ @RPCLIB_INCLUDE@
 
 #FIXME: we should compile dummy executables in any case, so we can use them instead
 #of real ones when installing binary distro on system with missing RPClib:
-ifeq "@HAVE_RPCLIB@" "0"
-	ALL			=norpclib
-else
-	ALL	 		=fcompile fshow fdecompile
-endif
+#ifeq "@HAVE_RPCLIB@" "0"
+#	ALL			=norpclib
+#else
+	ALL	 		=fcompile fdecompile fshow
+#endif
 
 ifeq "$(OUTPUTLANG)" "java"
 	ALL		 	+=fdecompile-j
@@ -63,11 +64,11 @@ endif
 ## ==================================================================
 
 #This files now make -lFORM_XDR
-#../compilers/fcompile/form_x_xdr.c readforms.c
-#FIXME: add source files that use xdr_ Sun libRPC functions (formwrite2.c and decompile.c)
+#../compilers/fcompile/form_x_xdr.c readforms.c formwrite2.c
+#FIXME: add source files that use xdr_ Sun libRPC functions (decompile.c)
 #to -lFORM_XDR
 
-SOURCES.c		=fcompile.c formwrite2.c where.c
+SOURCES.c		=fcompile.c where.c
 SOURCES.yacc 	=screen.yacc
 SOURCES.lex 	=screen.lex
 TARGETS.c 		=y.tab.c
@@ -93,29 +94,31 @@ endif
 all: $(ALL)
 	@echo "Default targets (${ALL}) successfully compiled."
 
-fcompile: $(SOURCES.c) $(TARGETS.c) $(OBJECTS)
-	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} ${AUBIT_LIB} -lFORM_XDR
+fcompile: $(OBJECTS)
+#	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} ${AUBIT_LIB} -lFORM_XDR
+	${CC} ${CFLAGS} -L../../lib -o $@ $^ ${AUBIT_LIB}
 	${LN} $@${EXE} ../../bin/$@${EXE}
 
 fdecompile-j : ${DECOMPILE} ${DUMP_JAVA}
-	${CC} ${CFLAGS} -L../../lib $^ -o $@ ${AUBIT_LIB} -lFORM_XDR
+	${CC} ${CFLAGS} -L../../lib $^ -o $@ ${AUBIT_LIB}
 	${CP} $@ ../../bin
 
 fdecompile : ${DECOMPILE} ${DUMP_C}
-	${CC} ${CFLAGS} -L../../lib $^ -o $@ ${AUBIT_LIB} -lFORM_XDR
+#	${CC} ${CFLAGS} -L../../lib $^ -o $@ ${AUBIT_LIB} -lFORM_XDR
+	${CC} ${CFLAGS} -L../../lib $^ -o $@ ${AUBIT_LIB}
 	${CP} $@ ../../bin
 
 fshow : fshow.4gl
-	${SH} ../../bin/4glpc fshow.4gl -o fshow
+	${SH} ${4GLPC} $^ -o $@
 	${CP} $@ ../../bin
 
-norpclib:
+#norpclib:
 #we will make some fake executables, to simplify installation and RPM builds:
-	${CC} fnorpclib.c -o fcompile
-	${CC} fnorpclib.c -o fdecompile
-	${CC} fnorpclib.c -o fshow
-	${CP} fcompile fdecompile fshow ../../bin
-	@echo "Sun RPClib was not detected - no form related functionality will be compiled"
+#	${CC} fnorpclib.c -o fcompile
+#	${CC} fnorpclib.c -o fdecompile
+#	${CC} fnorpclib.c -o fshow
+#	${CP} fcompile fdecompile fshow ../../bin
+#	@echo "Sun RPClib was not detected - no form related functionality will be compiled"
 
 ## ==================================================================
 ##                          Sub targets

@@ -64,8 +64,8 @@ AUBITGUI=@AUBITGUI@
 ############
 #Default output language driver for 4gl compiler:
 #When used: compie-time only
-#Options: perl, (c)
-OUTPUTLANG=@OUTPUTLANG@
+#Options: PERL, (C)
+A4GL_LEXTYPE=@A4GL_LEXTYPE@
 
 ############
 #Default forms driver to be loaded

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.3 2002-04-25 06:32:46 afalout Exp $
+# $Id: compile_c.c,v 1.4 2002-04-28 04:43:58 afalout Exp $
 #
 */
 
@@ -74,7 +74,7 @@ extern struct rep_structure rep_struct;
 extern struct pdf_rep_structure pdf_rep_struct;
 extern struct form_attr form_attrib;
 extern int menu_cnt;
-extern int ccnt;		// Block counter
+extern int ccnt;		// Block counter - defined in lexer.c
 extern char mmtitle[132][132];
 
 extern struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
@@ -748,7 +748,7 @@ pr_report_agg_clr ()
 }
 
 /**
- * Do not do nothing.
+ * Do not do nothing. - called from /compilers/4glc/mod.c
  */
 void
 print_clr_status ()
@@ -2926,7 +2926,7 @@ print_niy (char *type)
 
 
 /**
- * Not used
+ * Not used? but it is called from /compilers/4glc/fgl.yacc
  */
 void
 print_push_variable (char *s)

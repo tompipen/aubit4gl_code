@@ -14,6 +14,11 @@ VARIABLE A4GL_MSGTYPE
 * Function calls definitions:
 * func-name param-type param-name ... -> returns"
 *
+// Only one function here for now, from lib/libmsg/msg_native/readmsg.c
+// TODO: extract function that creates compiled message file from mkmess
+// executable, and crate lib/libmsg/msg_native/writemsg.c
+//
+//int read_help_f (int no,int *maxwidth)
 read_help_f int no,int *maxwidth -> int
 
 // ------------------------ EOF ------------------------

@@ -46,7 +46,7 @@ int a;
 	xdrstdio_create(&xdrp,f,XDR_DECODE);
 
 
-	a=xdr_struct_form(&xdrp,&the_form);
+	isolated_xdr_struct_form(&xdrp,&the_form); //in lib/libform/form_xdr/formwrite2.c
 
 	if (!a) {
 		printf("Bad format\n");
@@ -62,7 +62,7 @@ int a;
 
 
 	dump_form_desc(&the_form);
-	
+
 }
 
 

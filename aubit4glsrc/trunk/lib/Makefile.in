@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.52 2002-04-23 07:01:04 afalout Exp $
+# $Id: Makefile.in,v 1.53 2002-04-28 04:43:58 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -44,7 +44,7 @@ override NOINCL=0
 
 ALL 	=aubit-config libEXREPORT_NOPDF${SO_EXT} libaubit4gl${SO_EXT} \
 		libRPC_NORPC${SO_EXT} libSQL_noodbc${SO_EXT} libFORM_NOFORM${SO_EXT} \
-		libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} libA4GLLEX_C${SO_EXT}
+		libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} libLEX_C${SO_EXT}
 
 
 ifeq "$(GTKBUILD)" "yes"
@@ -88,7 +88,7 @@ ifeq "$(PDFBUILD)" "yes"
 endif
 
 ifneq "@PERLBUILD@" "no"
-	ALL +=libA4GLLEX_PERL${SO_EXT}
+	ALL +=libLEX_PERL${SO_EXT}
 endif
 
 
@@ -148,10 +148,10 @@ libRPC_XMLRPC.dll:
 ##                       Targets in sub-makefiles
 ## ==================================================================
 
-libA4GLLEX_C.so:
+libLEX_C.so:
 	${MAKE} -C liblex/lex_c
 
-libA4GLLEX_PERL.so:
+libLEX_PERL.so:
 	${MAKE} -C liblex/lex_perl
 
 libMSG_NATIVE.so:

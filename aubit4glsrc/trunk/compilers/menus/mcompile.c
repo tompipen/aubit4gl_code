@@ -1,4 +1,4 @@
-   /* $Id: mcompile.c,v 1.5 2002-04-24 07:45:59 afalout Exp $
+   /* $Id: mcompile.c,v 1.6 2002-04-28 04:43:57 afalout Exp $
    /* */
 
 #include "a4gl_compiler.h"
@@ -32,6 +32,11 @@ extern int lcnt;
 extern int lineno;
 extern FILE *yyin;
 
+
+int ignorekw = 0;
+int colno = 0;
+int as_c=1;
+int lineno = 0;
 
 char *outputfilename;
 
