@@ -1,4 +1,11 @@
-// This is just for compatibility with informix(tm) 4GL
+/**
+ * @file
+ * This is just for compatibility with informix(tm) 4GL.
+ *
+ * @FIXME : This does not work anymore with C compiled using Informix because 
+ * this functions now are macros.
+ *
+ */
 #include "a4gl_libaubit4gl_int.h"
 
 /* Prototypes for functions in here should be added to a4gl_incl_infx.h      */
@@ -8,6 +15,9 @@
 void trim(char *s);
 //void rsetnull(int d,void *ptr);
 
+int fgl_getkey() {
+  return aclfgl_fgl_getkey(-1);
+}
 
 void trim(char *s) {
 	A4GL_trim(s);
@@ -20,6 +30,15 @@ popint (int *s)
   int a;
   a = A4GL_pop_int ();
   *s = (a & 0xffff);
+
+}
+
+void
+popdub (double *s)
+{
+  double a;
+  a = A4GL_pop_double ();
+  *s = a;
 
 }
 
@@ -150,6 +169,10 @@ void
 retstring (char *s)
 {
   A4GL_push_char (s);
+}
+
+int rgetkey() {
+  return A4GL_get_key(-1);
 }
 
 /*
