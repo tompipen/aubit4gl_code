@@ -28,7 +28,7 @@ include ${MAKEFILE_COMMON}
 ################
 #You can add additional files to be cleand with "clean" target to the default
 #ones, by listing them here:
-#ADD_CLEAN=
+ADD_CLEAN=unl1.unl unl2.unl
 
 ################
 #You can specify files NOT to be cleaned, even if they have extension that is 
@@ -84,6 +84,7 @@ compile: progname${TARGET_EXT} ${FORMS} ${HELP}
 ################
 #Run the compiled test
 run: compile
+	chmod a+rw .
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
@@ -114,8 +115,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This is not a test but a Testing template. \
-		Please provide brief description of functionality tested here."
+	@echo "NULL in DATE"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -179,7 +179,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped
@@ -189,7 +189,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test is expeceted to exit with code (return "x" for any not-null exit code)
@@ -225,8 +225,10 @@ transaction:
 #ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM CREATE_TEMP_TABLE etc... 
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo " DDL_DATE CREATE_TEMP_TABLE INSERT_COLUMNLIST_EQ_VALUELIST ANSI_INSERT SQLCA_SQLCODE UNLOAD_TO WHERE_NULL SELECT UPDATE_COLUMN_EQ_VALUE_LIST"
-
+	@echo " DDL_DATE CREATE_TEMP_TABLE INSERT_COLUMNLIST_EQ_VALUELIST \
+	ANSI_INSERT SQLCA_SQLCODE UNLOAD_TO WHERE_NULL ANSI_SELECT ANSI_UPDATE \
+	UPDATE_COLUMNLIST_EQ_VALUELIST"
+ 
 #################
 #If test is ANSI SQL 92 compatible, set to "1", if not to "0"
 #If unknown, leave empty

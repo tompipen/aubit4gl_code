@@ -22,15 +22,7 @@ EXPECT_TO_FAIL_TESTS="240 766 767 962 976 987 "
 #233 failed once, but cant reproduce??
 
 #not reported (please enter bug report at: http://aubit.com/mantis)
-EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS 63 104 244 272 1222 1230 1232"
-#New (all work with -ecp):
-#63 
-#104 
-#244 
-#272 
-#1222 
-#1230 
-#1232
+EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS "
 
 #Tests that may fail for reasons other then Aubit bug (config issues)
 #590 Cannot open EXPLAIN output file. (Works with -ecp because its ignored) 	
@@ -114,7 +106,7 @@ EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX=""
 # --------------------------------------------------------------------------
 
 #Tests that fail on reference point (-cert) but work with -ecp
-WHITELIST_TESTS_ECP="63 104 244 272 376 1222 1230 1232 1206"
+WHITELIST_TESTS_ECP="376 1206"
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
 EXPECT_TO_FAIL_TESTS_ECP="1 76 98 530 535 670 900 903"
@@ -225,7 +217,7 @@ INVALID_TESTS="916 917 919 921 922 923 924 925 927 928 929 930 931 932 933 935\
 #ALL THE ABOVE (try 925) - fail even with -ifx-p (.c files with informix headers)
 
 
-INVALID_TESTS="$INVALID_TESTS 105 375 684 705 707 752 797 920 926 934 956 1240"
+INVALID_TESTS="$INVALID_TESTS 105 375 684 705 707 752 797 920 926 934 956 1240 377"
 #105 - missing database schemma
 #375 - "informix".systables (assumes user "informix" created test database)
 #684 - no test files
@@ -238,6 +230,7 @@ INVALID_TESTS="$INVALID_TESTS 105 375 684 705 707 752 797 920 926 934 956 1240"
 #934 - no test files
 #956 - missing 4gl file
 #1240 - missing out.expected
+#377 - assumes that user "informix" created the test database
 
 ################################### EOF #################################
 

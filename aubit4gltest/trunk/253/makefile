@@ -219,3 +219,14 @@ transaction:
 ansi_sql_compat:
 	@echo "1"
 
+################################
+# When test needs a non-standard Aubit plug-in (the one that depends on
+# local system's depenency, so it may not be always available) list it here.
+# specify only the signigicant part of plug-in name, omminting 'lib' prefix
+# and library extension (eg. for libRPC_XDR.so use only "RPC_XDR".
+# If listing programs, add extension .prg to the full name of Aubit executable
+# (eg. for mcompile, use "mcompile.prg"
+need_plugin:
+	@echo "mcompile.prg"
+
+

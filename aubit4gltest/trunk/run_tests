@@ -101,6 +101,7 @@ done
 ALL_DIRS=[0-9]*
 ALL_TESTS=`echo $ALL_DIRS | tr " " "\n" | $SORT -n |  tr "\n" " "`
 LIBS_DIR="$AUBITDIR_UNIX/lib"
+BINS_DIR="$AUBITDIR_UNIX/bin"
 
 #process comand line parameters:
 ###################
@@ -1889,6 +1890,7 @@ do
 	NEED_RDBMS=""
 	SQL_FEATURES_USED=""
 	SQL_FEATURES_COMPATIBLE=""
+	NEED_PLUGIN=""
 	
     #################################
     #See if we should skip this test:
@@ -2088,6 +2090,9 @@ do
 		NEED_TRANSACTION=""
 		SQL_FEATURES_USED=""
 	fi
+	
+	#This targets can be present in both old and new makefiles:
+	NEED_PLUGIN=`$MAKE -s -C $TEST_NO need_plugin 2>/dev/null`
 	
 	if test "$SH_DBG" = "1"; then 
 		echo "Finished loading test info..."

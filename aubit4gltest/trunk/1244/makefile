@@ -28,7 +28,7 @@ include ${MAKEFILE_COMMON}
 ################
 #You can add additional files to be cleand with "clean" target to the default
 #ones, by listing them here:
-#ADD_CLEAN=
+ADD_CLEAN=w0 w1 w2 w3 w4
 
 ################
 #You can specify files NOT to be cleaned, even if they have extension that is 
@@ -115,8 +115,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This is not a test but a Testing template. \
-		Please provide brief description of functionality tested here."
+	@echo "MESSAGE LINE, PROPMPT LINE and DISPLAY AT positioning"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -169,7 +168,7 @@ console_prompt_test:
 #test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
 #it won't work in CONSOLE mode
 dump_screen_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test takes more then 10 minutes to compile or run
@@ -180,7 +179,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped
@@ -240,7 +239,7 @@ ansi_sql_compat:
 #If it does (in 4GL code, exit status, using diff on created files, etc)
 #then set it to 1. If unknown or unsure, leave empty
 runtime_err_check:
-	@echo ""
+	@echo "1"
 
 #################
 # If test needs a particular RDBMS to compile or run, specify it here

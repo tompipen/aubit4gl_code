@@ -3,6 +3,19 @@
 #							Functions
 ##############################################################################
 
+########################
+#calculate percentage
+function calc_percent () {
+VAR1="$1"
+VAR2="$2"
+
+	if test "$VAR2" != "0"; then
+		RESULT=`perl -e '$X=shift @ARGV;$Y=shift @ARGV;;$Z=int($X*100/($Y));print "$Z";' $VAR1 $VAR2`
+	else
+		RESULT=0
+	fi
+}
+
 ######################################################
 function db_features_doc () {
 	
@@ -1311,157 +1324,6 @@ check_trans_mode () {
 		fi
 }
 
-dont_use_me () {
-
-ALL_DIRS=[0-9]*
-ALL_TESTS=`echo $ALL_DIRS | tr " " "\n" | $SORT -n |  tr "\n" " "`
-LIST=""
-LIST2=""
-LIST3=""
-
-for TEST_NO in $ALL_TESTS; do
-	IS_DB_TEST=0
-	for b in $DB_TESTS; do
-		if test "$b" = "$TEST_NO"; then
-			IS_DB_TEST=1
-		fi
-	done
-	if test "$IS_DB_TEST" = "0"; then 
-		TMP_IS_DB_TEST=`$MAKE -s -C $TEST_NO db_test 2>/dev/null`
-		if test "$TMP_IS_DB_TEST" != ""; then 
-			IS_DB_TEST=$TMP_IS_DB_TEST
-		fi
-	fi
-	if test "$IS_DB_TEST" = "1"; then 
-		IS_MAKE_ANSI_SQL_COMPAT=`$MAKE -s -C $TEST_NO ansi_sql_compat 2>/dev/null`
-		if test "$IS_MAKE_ANSI_SQL_COMPAT" = "0"; then
-			SQL_FEATURES_USED=`$MAKE -s -C $TEST_NO sql_features_used 2>/dev/null`
-			if test "$SQL_FEATURES_USED" != ""; then
-				LIST3="$LIST3 $TEST_NO"			
-			else
-				LIST="$LIST $TEST_NO"
-			fi
-		fi
-	else
-		IS_MAKE_ANSI_SQL_COMPAT=`$MAKE -s -C $TEST_NO ansi_sql_compat 2>/dev/null`
-		if test "$IS_MAKE_ANSI_SQL_COMPAT" = "0"; then
-			LIST2="$LIST2 $TEST_NO"
-		fi
-	fi
-
-done
-
-#Did that:
-echo "List of datbase tests that are not ANSI compatible, " 
-echo "and we need to find out why and list that in sql_features_used target:"
-echo "$LIST"
-
-echo ""
-echo "Non-db tests, but marked not ANSI compatible (???)"
-echo "$LIST2"
-echo ""
-echo "Allready have features described:"
-echo "$LIST3"
-# 91 100 106 234 738 793 794
-
-exit
-
-
-
-	
-#Tests I plan to mark as ANSI compatible:
-#datetime: 
-A="28 47 49 51 60 215 224 265 271 280 947 970 982 993"
-
-#Date : 
-B="69 90 202 211 222 225 229 240 241 247 249 260 262 268 279 479 480 481 497 \
-	946 961 981 992 1001"
-#(Comment: I think it is safe to assume all databases we are interested in 
-#support DATE and DATETIME?)
-
-#Money: 
-C="78 456 966 980 991 1000 24"
-#(Comment: Money is just a decimal, so we can/should deal with this reasonably 
-#easy in any database?) 
-
-#Initialize like : 
-D="372 373"
-#(function of compiler, not database) 
-
-#Create temp table: 
-E="63 99"
-#(We can/should emulate this one reasonably easy on any database) 
-
-#Validate like : 
-F="374 376 377 375"
-#(function of compiler, not database) 
-
-#UPDATE ... SET * = pr.* : 
-G="680 689"
-#(We can/should emulate this one reasonably easy on any database)
-
-#Interval: 
-H="706 707 948 971 983 994 670 671 672 673"
-#(Comment: I think it is safe to assume all databases we are interested in 
-#support INTERVALs this days?)
-
-
-#Varchar: 
-I="801 802 944 945 968 974 984 985 986 987 988 989 990 996 1003"
-#(Comment: I think it is safe to assume all databases we are interested in 
-#support VARCHARs this days?)
-
-#Smallfloat: 
-J="924 925 941 953 963 978 1006"
-#(Comment: I think it is safe to assume all databases we are interested in 
-#support SMALLFLOAT this days?)
-
-#The only 'crime' of following tests is that they use DATABASE without full qualifier:
-K="14 72 96 212 244 258 270  273 274 278 309 327 331 332 333 334 335 352 353 \
-	354 357 358 359 360 361 362 363 364 365 366 367 370 371 476 477 478 513 \
-	514 515 516 517 518 519 520 521 522 523 524 525 526 549 902 913 949 950 257" 
-#Safe to ignore?
-
-LIST="$A $B $C $D $E $F $G $H $I $J $K"
-
-#for TEST_NO in $LIST; do
-#	change_setting ansi_sql_compat 1 $TEST_NO
-#	echo "Test $TEST_NO - set ansi_sql_compat to yes"
-#done
-
-
-#Tests I plan to mark as ANSI INCOMPATIBLE:
-
-#Free cursor: 
-A="587 589"
-
-#Set explain : 
-B="590 591"
-
-#Database exclusive: 
-C="550"
-
-#Tests that use Alter table, Drop table, check, close database, primary key, 
-#distinct, references, create synonym, foreign key, rename column, drop trigger, 
-#set constraint, start database, set log, rollforward database, default, 
-#create/drop database, cluster index, lock table: 
-D="536 537 538 539 540 541 542 543 544 545 546 547 548 556 561 562 571 586 \
-	597 599 607 683 702 796 936 937 531 554 555 558 560 569 572 585 600 797"
-
-LIST="$A $B $C $D"
-	
-#for TEST_NO in $LIST; do
-#	change_setting ansi_sql_compat 0 $TEST_NO
-#	echo "Test $TEST_NO - set ansi_sql_compat to no"
-#done
-
-
-
-
-exit
-
-}
-
 count_rows () {
 tablename=$1
 dbname=$2
@@ -2556,10 +2418,7 @@ X
 tablename="test_run"
 script="$tablename.sql"
 logfile="$tablename.log"
-#16-10-2004_12-49-24|aptiva|root|UNIX|i386-redhat-linux-gnu|
-#Linux aptiva 2.4.7-10 #1 Thu Sep 6 17:21:28 EDT 2001 i586 unknown|
-#-esqli -nospace -described -nolong -err-with-log -defaults -esqli -silent -log-unl -verbose-results|
-#0.48|65||4689|2.96|9.51.UC1|9.21.UC4|3.79.1|2.05.8(1)-release||
+
 cat > $script <<X
 	create table test_run (
 		timestamp char (19),   -- 22-10-2004_01-34-24
@@ -3725,6 +3584,29 @@ function check_skip() {
 			fi
 		fi
 	
+		if test "$NEED_PLUGIN" != ""; then
+			for plugin in $NEED_PLUGIN ; do
+				case $plugin in 
+				*.prg)
+					progbase=`basename $plugin .prg`
+					if ! test -f "$BINS_DIR/$progbase"; then
+						SKIP_REASON="Missing executable $plugin"
+						SKIP_REASON_CODES="$SKIP_REASON_CODES 68"
+						SKIP_PLUGIN_LIST="$SKIP_PLUGIN_LIST ($TEST_NO=$plugin)"
+						break
+					fi
+					;;
+				*)
+					if ! test -f "$LIBS_DIR/lib$plugin$SO_EXT"; then
+						SKIP_REASON="Missing plug-in $plugin"
+						SKIP_REASON_CODES="$SKIP_REASON_CODES 68"
+						SKIP_PLUGIN_LIST="$SKIP_PLUGIN_LIST ($TEST_NO=$plugin)"
+						break
+					fi
+					;;
+				esac
+			done
+		fi
 		if test "$A4GL_FAKELEXTYPE" = "PCODE" -a "$IS_PCODE_ENABLED" = "0"; then
 			SKIP_REASON="not p-code enabled"
 			SKIP_REASON_CODES="$SKIP_REASON_CODES 3"
@@ -3888,11 +3770,7 @@ function check_skip() {
 		echo "exiting function check_skip()"
 	fi
 
-#echo "vncviewer -via mike@212.23.14.59 192.168.2.212:0"
-#exit
-
-
-}	
+}
 
 #Check if makefile is old or new type; sets IS_OLD_MAKEFILE
 check_makefile_type() {
@@ -3986,87 +3864,92 @@ function do_skip() {
 #                           Finalise results & clean-up
 ##############################################################################
 
+#####################
+#Complete results log file(s), show to user
 function show_results () {
 
-cd $CURR_DIR
-
-if test "$LOGFILE" = ""; then
-	LOGFILE=$CURR_DIR/build.log
-fi
-
-########################
-#calculate success percentage
-VAR1=$PASS_CNT
-VAR2=$RUN_CNT
-#VAR2=200
-#VAR1=50
-if test "$RUN_CNT" != "0"; then
-	#RESULT1=`perl -e '$X=shift @ARGV;$Y=shift @ARGV;;$Z=int(100-($X/($Y/100)));print "$Z";' $VAR2 $VAR1`
-	RESULT=`perl -e '$X=shift @ARGV;$Y=shift @ARGV;;$Z=int($X*100/($Y));print "$Z";' $VAR1 $VAR2`
-	#echo "r1=$RESULT1 r2=$RESULT" >> $LOGFILE
-else
-	RESULT=0
-fi
-
-#####################
-#Complete results log file
-
-echo "" >> $LOGFILE
-echo "Skipped: $SKIP_CNT Run: $RUN_CNT Failed: $FAIL_CNT ${T_MD}Success: $RESULT %${T_ME}" >> $LOGFILE
-echo "Passed: (All/NoErrChk/CompOnly) $PASS_CNT/$NO_RUNTIME_ERR_CHECK_CNT/$COMPILE_ONLY_PASS_CNT" >> $LOGFILE
-if test "$KILL_CNT" != "0"; then 
-	echo "Had to kill $KILL_CNT tests: $KILL_LIST" >> $LOGFILE
-fi
-if test "$EXPECTED_TO_FAIL_CNT" != "0"; then 
-	echo "Expected to fail: $EXPECTED_TO_FAIL_LIST ($EXPECTED_TO_FAIL_CNT)"  >> $LOGFILE
-fi
-if test "$NOT_EXPECTED_TO_FAIL_CNT" != "0"; then 
-	echo "NOT expected to fail: $NOT_EXPECTED_TO_FAIL_LIST ($NOT_EXPECTED_TO_FAIL_CNT)" >> $LOGFILE
-fi
-if test "$NOT_CERT_CNT" != "0"; then
-	#if not -cert 1
-	#	WHITELIST_TESTS_ECP
-	#fi
+	cd $CURR_DIR
+	calc_percent "$PASS_CNT" "$RUN_CNT"
+	close_all_log_files
 	
-	#No point in showing what pased and is not certified, unless we are 
-	#testing under -cert conditions
-	if test "$USE_ECI" = "1"; then
-		echo "NOT certified: $NOT_CERT_LIST ($NOT_CERT_CNT)" >> $LOGFILE
+	#####################
+	#Show results to the user
+	if test "$SHORT_SUMMARY" != "1"; then
+		cat $LOGFILE
+	else
+		#SHORT_SUMMARY is 1 
+		if test "$NO_ECHO" != "1"; then
+			echo "Skipped: $SKIP_CNT Passed: $PASS_CNT Failed: $FAIL_CNT"
+			echo "See $LOGFILE for details."
+		fi
 	fi
-fi
-if test "$SKIP_NODESC_LIST" != ""; then 
-	echo "Skipped as not descsribed: $SKIP_NODESC_LIST" >> $LOGFILE
-fi
-if test "$EXPECTED_TO_FAIL_PASSED_CNT" != "0"; then 
-	echo "Expected to fail, but passed: $EXPECTED_TO_FAIL_PASSED_CNT ($EXPECTED_TO_FAIL_PASSED_LIST)" >> $LOGFILE
-fi
+	echo ""
+	cd $CURR_DIR
+
+}
+
+##################################
+# create/complete/close all results log files
+function close_all_log_files () {
+
+	verbose_results
+	log_sqlfeatures
+	log_resources
+	log_results
+	if test "$ALL_DB" = "1"; then
+		log_full_list
+	fi
+	if test "$UNL_LOG" = "1"; then
+		#output summary result to .unl file
+		FINISH_ALL_TIME=`date +%s`
+		test_run_unl
+	fi
+}
+
+#############################
+# log current configuration as seen by Aubit (aubit-config)
+function log_resources () {
+	
+	echo "----------------------------- aubit-config -a ------------------------------" > $RESLOGFILE
+	$AUBITDIR_UNIX/bin/aubit-config$EXE_EXT -a  >> $RESLOGFILE 2>&1
+
+}
+
+#############################################################
+# Is this used when running multiple tests configurations in one loop?
+function log_full_list () {
+
+	#TODO - is this file allready open?
+	echo "Skipped: $SKIP_CNT Passed: $PASS_CNT Failed: $FAIL_CNT" >> $CURR_DIR/alldb.log
+	echo "" >> $CURR_DIR/alldb.log
+	
+	#Load counter from file to variable
+	FAIL_CNT_TOT=`cat $CURR_DIR/fail.cnt`
+	PASS_CNT_TOT=`cat $CURR_DIR/pass.cnt`
+	
+	if test "$FAIL_CNT_TOT" = ""; then
+		FAIL_CNT_TOT=0
+	fi
+	if test "$PASS_CNT_TOT" = ""; then
+		PASS_CNT_TOT=0
+	fi
+	
+	let FAIL_CNT_NEW=FAIL_CNT+FAIL_CNT_TOT
+	let PASS_CNT_NEW=PASS_CNT+PASS_CNT_TOT
+	
+	#Store increased values to same files
+	echo "$FAIL_CNT_NEW" > $CURR_DIR/fail.cnt
+	echo "$PASS_CNT_NEW" > $CURR_DIR/pass.cnt
+
+}
+
+#############################
+# Output verbose results info to verbose results log file 
+function verbose_results () {
 
 	VERBOSE_RESULTS_LOG="$CURR_DIR/verbose_results.log"
-	SQLFEATURES_LOGFILE="$CURR_DIR/sql_features.log"
-	rm -f $SQLFEATURES_LOGFILE $VERBOSE_RESULTS_LOG
+	rm -f $VERBOSE_RESULTS_LOG
 
-
-if test "$SKIP_INVALID_LIST" != "" ; then 
-	echo "Skipped $SKIP_INVALID_CNT tests as invalid (PLEASE FIX OR OBSOLETE): $SKIP_INVALID_LIST" >> $VERBOSE_RESULTS_LOG
-fi
-if test "$SKIP_KEYS_IN_LIST" != ""; then
-	echo "Skipped as use keys.in: $SKIP_KEYS_IN_LIST" >> $LOGFILE
-fi
-if test "$SKIP_OLD_MAKEFILE_LIST" != ""; then 
-	echo "Skipped - has old makefile: $SKIP_OLD_MAKEFILE_LIST" >> $LOGFILE
-fi
-if test "$SKIP_DUMP_SCREEN" != ""; then 
-	echo "Skipped dump_screen tests: $SKIP_DUMP_SCREEN" >> $LOGFILE
-fi
-	SKIP_OTHER_LIST="\
-	$SKIP_PCODE_LIST $SKIP_TUI_LIST $SKIP_LONG_LIST $SKIP_CONSOLE_LIST \
-	$SKIP_NONDB_LIST $SKIP_DB_LIST $SKIP_NOSILENT_LIST $SKIP_NOVERSION_LIST\
-	$SKIP_GRAPHIC_LIST $SKIP_NOMAKEFILE_LIST $SKIP_NOCOMPAT_LIST $SKIP_NO_CRON_LIST \
-	$SKIP_TRANS_LIST $SKIP_NO_SCRDUMP_PDCURSES_LIST $SKIP_BLACKLIST_LIST \
-	$SKIP_DUMP_SCREEN_NOT_XTERM_LIST $SKIP_INCOMPAT_SQL_LIST $SKIP_NON_ANSI_LIST"
-	#clipp it:
-	SKIP_OTHER_LIST=`echo $SKIP_OTHER_LIST`
-	
 	echo "Platform: $PLATFORM" >> $VERBOSE_RESULTS_LOG
 	
 	if test "$SKIP_DUMP_SCREEN_NOT_XTERM_LIST" != "" ; then 
@@ -4075,8 +3958,12 @@ fi
 	if test "$SKIP_NON_ANSI_LIST" != ""; then	
 		echo "Skipped ANSI SQL incompatible: ($SKIP_NON_ANSI_CNT) $SKIP_NON_ANSI_LIST" >> $VERBOSE_RESULTS_LOG	
 	fi
+
+	if test "$SKIP_INVALID_LIST" != "" ; then 
+		echo "Skipped $SKIP_INVALID_CNT tests as invalid (PLEASE FIX OR OBSOLETE): $SKIP_INVALID_LIST" >> $VERBOSE_RESULTS_LOG
+	fi
 	if test "$SKIP_INCOMPAT_SQL_LIST" != "" ; then 
-		echo "Skipped $SKIP_INCOMPAT_SQL_CNT tests with incompatible feature" >> $LOGFILE
+		#echo "Skipped $SKIP_INCOMPAT_SQL_CNT tests with incompatible feature" >> $LOGFILE
 		echo "Skipped incompatible feature: ($SKIP_INCOMPAT_SQL_CNT) $SKIP_INCOMPAT_SQL_LIST_WITH_FEATURES"  >> $VERBOSE_RESULTS_LOG
 	fi
 	if test "$SKIP_PCODE_LIST" != "" ; then 
@@ -4130,8 +4017,9 @@ fi
 	if test "$SKIP_RDBMS_LIST" != ""; then 
 		echo "Skipped tests incompatbile with used RDBMS: $SKIP_RDBMS_LIST" >> $VERBOSE_RESULTS_LOG	
 	fi
-
-	
+	if test "$SKIP_PLUGIN_LIST" != "" ; then
+		echo "Skipped tests that need missing plug-in: $SKIP_PLUGIN_LIST" >> $VERBOSE_RESULTS_LOG	
+	fi
 	if test "$PASS_FULL_LIST" = "1"; then 
 		if test "$PASS_DB_TESTS" != "" ; then 
 			echo "Pass db: ($PASS_DB_CNT) $PASS_DB_TESTS" >> $VERBOSE_RESULTS_LOG
@@ -4164,6 +4052,78 @@ fi
 		echo "-------------------------------------------------------------------------------" >> $VERBOSE_RESULTS_LOG
 	fi
 
+	if test "$NO_RUNTIME_ERR_CHECK_LIST" != ""; then
+		echo "WARNING: PASS tests that perform no run-time error checking ($NO_RUNTIME_ERR_CHECK_CNT): $NO_RUNTIME_ERR_CHECK_LIST"  >> $VERBOSE_RESULTS_LOG
+	fi
+
+	if test "$UNL_LOG" = "1"; then 
+		echo "" >> $VERBOSE_RESULTS_LOG
+		echo "Logging files closed:" >> $VERBOSE_RESULTS_LOG
+		echo "  results_$HOSTNAME$U$date_stamp.unl" >> $VERBOSE_RESULTS_LOG
+		echo "  test_run_$HOSTNAME$U$date_stamp.unl" >> $VERBOSE_RESULTS_LOG
+	fi
+	
+}
+
+#####################################
+# Output standard results to a log file 
+function log_results () {
+	
+	if test "$LOGFILE" = ""; then
+		LOGFILE=$CURR_DIR/build.log
+	fi
+	
+	echo "" >> $LOGFILE
+	echo "Skipped: $SKIP_CNT Run: $RUN_CNT Failed: $FAIL_CNT ${T_MD}Success: $RESULT %${T_ME}" >> $LOGFILE
+	echo "Passed: (All/NoErrChk/CompOnly) $PASS_CNT/$NO_RUNTIME_ERR_CHECK_CNT/$COMPILE_ONLY_PASS_CNT" >> $LOGFILE
+	if test "$KILL_CNT" != "0"; then 
+		echo "Had to kill $KILL_CNT tests: $KILL_LIST" >> $LOGFILE
+	fi
+	if test "$EXPECTED_TO_FAIL_CNT" != "0"; then 
+		echo "Expected to fail: $EXPECTED_TO_FAIL_LIST ($EXPECTED_TO_FAIL_CNT)"  >> $LOGFILE
+	fi
+	if test "$NOT_EXPECTED_TO_FAIL_CNT" != "0"; then 
+		echo "NOT expected to fail: $NOT_EXPECTED_TO_FAIL_LIST ($NOT_EXPECTED_TO_FAIL_CNT)" >> $LOGFILE
+	fi
+	if test "$NOT_CERT_CNT" != "0"; then
+		#if not -cert 1
+		#	WHITELIST_TESTS_ECP
+		#fi
+		
+		#No point in showing what pased and is not certified, unless we are 
+		#testing under -cert conditions
+		if test "$USE_ECI" = "1"; then
+			echo "NOT certified: $NOT_CERT_LIST ($NOT_CERT_CNT)" >> $LOGFILE
+		fi
+	fi
+	if test "$SKIP_NODESC_LIST" != ""; then 
+		echo "Skipped as not descsribed: $SKIP_NODESC_LIST" >> $LOGFILE
+	fi
+	if test "$EXPECTED_TO_FAIL_PASSED_CNT" != "0"; then 
+		echo "Expected to fail, but passed: $EXPECTED_TO_FAIL_PASSED_CNT ($EXPECTED_TO_FAIL_PASSED_LIST)" >> $LOGFILE
+	fi
+	
+	if test "$SKIP_KEYS_IN_LIST" != ""; then
+		echo "Skipped as use keys.in: $SKIP_KEYS_IN_LIST" >> $LOGFILE
+	fi
+	if test "$SKIP_OLD_MAKEFILE_LIST" != ""; then 
+		echo "Skipped - has old makefile: $SKIP_OLD_MAKEFILE_LIST" >> $LOGFILE
+	fi
+	if test "$SKIP_DUMP_SCREEN" != ""; then 
+		echo "Skipped dump_screen tests: $SKIP_DUMP_SCREEN" >> $LOGFILE
+	fi
+	
+	#Prepare list of all tests we skipped, but will not list individually by default:
+	SKIP_OTHER_LIST="\
+	$SKIP_PCODE_LIST $SKIP_TUI_LIST $SKIP_LONG_LIST $SKIP_CONSOLE_LIST \
+	$SKIP_NONDB_LIST $SKIP_DB_LIST $SKIP_NOSILENT_LIST $SKIP_NOVERSION_LIST\
+	$SKIP_GRAPHIC_LIST $SKIP_NOMAKEFILE_LIST $SKIP_NOCOMPAT_LIST $SKIP_NO_CRON_LIST \
+	$SKIP_TRANS_LIST $SKIP_NO_SCRDUMP_PDCURSES_LIST $SKIP_BLACKLIST_LIST \
+	$SKIP_DUMP_SCREEN_NOT_XTERM_LIST $SKIP_INCOMPAT_SQL_LIST $SKIP_NON_ANSI_LIST"
+	#clipp it:
+	SKIP_OTHER_LIST=`echo $SKIP_OTHER_LIST`
+	
+
 	if test "$IS_DB_NO_SQL_FEATURES_DESC" != ""; then
 		#This is bad; DB tests should have SQL/db features used described
 		echo "ERROR: DB tests but have no features description : $IS_DB_NO_SQL_FEATURES_DESC" >> $LOGFILE
@@ -4171,9 +4131,6 @@ fi
 	if test "$NOT_ANSI_NO_SQL_FEATURES_DESC" != ""; then 
 		#This is bad; DB tests should have SQL/db features used described	
 		echo "ERROR: Not ANSI compatible but have no features description : $NOT_ANSI_NO_SQL_FEATURES_DESC" >> $LOGFILE
-	fi
-	if test "$NO_RUNTIME_ERR_CHECK_LIST" != ""; then
-		echo "WARNING: PASS tests that perform no run-time error checking ($NO_RUNTIME_ERR_CHECK_CNT): $NO_RUNTIME_ERR_CHECK_LIST"  >> $VERBOSE_RESULTS_LOG
 	fi
 	if test "$PASS_INCOMPAT_SQL" != ""; then
 		#This is certanly wrong; need to change feature status; test cannot\
@@ -4183,25 +4140,53 @@ fi
 		echo "$PASS_INCOMPAT_SQL" >> $LOGFILE
 		echo "" >> $LOGFILE
 	fi
+	if test "$VERBOSE_RESULTS" = "1"; then
+		echo ""	 >> $LOGFILE
+		cat "$VERBOSE_RESULTS_LOG"  >> $LOGFILE
+		echo ""	 >> $LOGFILE
+	else
+		#if test "$SKIP_OTHER_LIST" != "" ; then 
+		#	echo "Other skipped tests: $SKIP_OTHER_LIST" >> $LOGFILE
+		#fi
+		echo ""	 >> $LOGFILE
+		if test "$VERBOSE_RESULTS_LOG" != ""; then
+			echo "See `basename $VERBOSE_RESULTS_LOG` for details of skipped tests" >> $LOGFILE
+		else
+			echo "VERBOSE_RESULTS_LOG is null"
+		fi
+	fi 
+	if test "$SQLFEATURES_LOGFILE" != ""; then
+		echo "See `basename $SQLFEATURES_LOGFILE` for detailed SQL features analisys" >> $LOGFILE
+	else
+		echo "SQLFEATURES_LOGFILE is null"
+	fi
+	echo ""	 >> $LOGFILE
+		
+	if test "$NOT_COMPAT_BUT_PASSED" != ""; then 
+		#test is not described as compatible, but even using non-aubit compiler 
+		#it passed, so it should be described as compatible
+		echo "TODO-add non-Aubit compilers compatible descriptor to: $NOT_COMPAT_BUT_PASSED" >> $LOGFILE
+	fi
+	if test "$PASS_LIST" != "" -a "$SHOW_PASSED" = "1"; then 
+		echo "Passed: $PASS_LIST" >> $LOGFILE
+	fi
+	if test "$FAIL_CNT" = "$EXPECTED_TO_FAIL_CNT" -o "$FAIL_CNT" -lt "$EXPECTED_TO_FAIL_CNT" ; then
+		echo "RESULT: EXPECTED" >> $LOGFILE
+		RESULT=0
+	else
+		#"$FAIL_CNT" is more then "$EXPECTED_TO_FAIL_CNT"
+		echo "*********** RESULT: UNEXPECTED ******************" >> $LOGFILE
+		RESULT=1
+	fi
+	if test "$VERBOSE" = "1"; then 
+		echo "" >> $LOGFILE
+		if test "$RESLOGFILE" != ""; then
+			echo "see `basename $RESLOGFILE` and $TIME_FILE" >> $LOGFILE
+		else
+			echo "RESLOGFILE is null"
+		fi
+	fi
 	
-	if test "$FAIL_COMPAT_SQL" != ""; then
-		#This is not nececeraly an error - test can fail for some other reason,
-		#even when sql/db features are compatible
-		echo "" >> $SQLFEATURES_LOGFILE
-		echo "WARNING: Failed, but SQL features used are listed as compatible:" >> $SQLFEATURES_LOGFILE
-		echo "$FAIL_COMPAT_SQL" >> $SQLFEATURES_LOGFILE
-		echo "" >> $SQLFEATURES_LOGFILE
-	fi	
-	if test "$LIST_IN_4G_NOT_IN_MK" != ""; then
-		echo "WARNING: features listed by 4glc but not in Makefile:" >> $SQLFEATURES_LOGFILE
-		echo "$LIST_IN_4G_NOT_IN_MK" >> $SQLFEATURES_LOGFILE
-		echo "" >> $SQLFEATURES_LOGFILE		
-	fi
-	if test "$LIST_IN_MK_NOT_IN_4GLC" != ""; then
-		echo "WARNING: features listed in Makefile but not by 4glc:" >> $SQLFEATURES_LOGFILE
-		echo "$LIST_IN_MK_NOT_IN_4GLC" >> $SQLFEATURES_LOGFILE
-		echo "" >> $SQLFEATURES_LOGFILE		
-	fi
 	if test "$FEATURE_NOT_EXPECTED" != ""; then
 		#This is an error - correct the feature description in makefile or
 		#in array of feature descriptions
@@ -4210,6 +4195,21 @@ fi
 		echo "$FEATURE_NOT_EXPECTED" >> $LOGFILE
 		echo "" >> $LOGFILE
 	fi
+	if test "$VERBOSE" = "1"; then
+		echo "" >> $LOGFILE
+		echo "Finished at:" >> $LOGFILE
+		#we want exact time here - do not use $DATE
+		date >> $LOGFILE
+		echo "" >> $LOGFILE
+	fi
+	
+}
+
+######################################
+# Log results related to SQL/DB features used
+function log_sqlfeatures () {
+	SQLFEATURES_LOGFILE="$CURR_DIR/sql_features.log"
+	rm -f $SQLFEATURES_LOGFILE
 
 	#Eliminate working features from failed features list, test that contains
 	#them must have failed for some other reason, since feature is also
@@ -4252,6 +4252,25 @@ fi
 		echo ""
 	fi
 	
+	if test "$FAIL_COMPAT_SQL" != ""; then
+		#This is not nececeraly an error - test can fail for some other reason,
+		#even when sql/db features are compatible
+		echo "" >> $SQLFEATURES_LOGFILE
+		echo "WARNING: Failed, but SQL features used are listed as compatible:" >> $SQLFEATURES_LOGFILE
+		echo "$FAIL_COMPAT_SQL" >> $SQLFEATURES_LOGFILE
+		echo "" >> $SQLFEATURES_LOGFILE
+	fi	
+	if test "$LIST_IN_4G_NOT_IN_MK" != ""; then
+		echo "WARNING: features listed by 4glc but not in Makefile:" >> $SQLFEATURES_LOGFILE
+		echo "$LIST_IN_4G_NOT_IN_MK" >> $SQLFEATURES_LOGFILE
+		echo "" >> $SQLFEATURES_LOGFILE		
+	fi
+	if test "$LIST_IN_MK_NOT_IN_4GLC" != ""; then
+		echo "WARNING: features listed in Makefile but not by 4glc:" >> $SQLFEATURES_LOGFILE
+		echo "$LIST_IN_MK_NOT_IN_4GLC" >> $SQLFEATURES_LOGFILE
+		echo "" >> $SQLFEATURES_LOGFILE		
+	fi
+	
 	if test "$SQL_FEATURES_PASS_LIST" != ""; then
 		#This is 100% correct
 		echo "" >> $SQLFEATURES_LOGFILE
@@ -4270,86 +4289,8 @@ fi
 		echo "" >> $SQLFEATURES_LOGFILE		
 	fi
 	
-if test "$VERBOSE_RESULTS" = "1"; then
-	echo ""	 >> $LOGFILE
-	cat "$VERBOSE_RESULTS_LOG"  >> $LOGFILE
-	echo ""	 >> $LOGFILE
-else
-	#if test "$SKIP_OTHER_LIST" != "" ; then 
-	#	echo "Other skipped tests: $SKIP_OTHER_LIST" >> $LOGFILE
-	#fi
-	echo ""	 >> $LOGFILE
-	echo "See `basename $VERBOSE_RESULTS_LOG` for details of skipped tests" >> $LOGFILE
-fi 
-
-	echo "See `basename $SQLFEATURES_LOGFILE` for detailed SQL features analisys" >> $LOGFILE
-	echo ""	 >> $LOGFILE
-	
-if test "$NOT_COMPAT_BUT_PASSED" != ""; then 
-	#test is not described as compatible, but even using non-aubit compiler 
-	#it passed, so it should be described as compatible
-	echo "TODO-add non-Aubit compilers compatible descriptor to: $NOT_COMPAT_BUT_PASSED" >> $LOGFILE
-fi
-if test "$PASS_LIST" != "" -a "$SHOW_PASSED" = "1"; then 
-	echo "Passed: $PASS_LIST" >> $LOGFILE
-fi
-if test "$FAIL_CNT" = "$EXPECTED_TO_FAIL_CNT" -o "$FAIL_CNT" -lt "$EXPECTED_TO_FAIL_CNT" ; then
-	echo "RESULT: EXPECTED" >> $LOGFILE
-	RESULT=0
-else
-	#"$FAIL_CNT" is more then "$EXPECTED_TO_FAIL_CNT"
-	echo "*********** RESULT: UNEXPECTED ******************" >> $LOGFILE
-	RESULT=1
-fi
-if test "$VERBOSE" = "1"; then 
-	echo "" >> $LOGFILE
-	echo "see `basename $RESLOGFILE` and $TIME_FILE" >> $LOGFILE
-fi	
-echo "----------------------------- aubit-config -a ------------------------------" > $RESLOGFILE
-$AUBITDIR_UNIX/bin/aubit-config$EXE_EXT -a  >> $RESLOGFILE 2>&1
-if test "$VERBOSE" = "1"; then
-	echo "" >> $LOGFILE
-	echo "Finished at:" >> $LOGFILE
-	#we want exact time here - do not use $DATE
-	date >> $LOGFILE
-	echo "" >> $LOGFILE
-fi
-
-#####################
-#Show results to the user
-if test "$SHORT_SUMMARY" != "1"; then
-	cat $LOGFILE
-else
-    if test "$ALL_DB" = "1"; then
-		echo "Skipped: $SKIP_CNT Passed: $PASS_CNT Failed: $FAIL_CNT" >> $CURR_DIR/alldb.log
-		echo "" >> $CURR_DIR/alldb.log
-
-        FAIL_CNT_TOT=`cat $CURR_DIR/fail.cnt`
-        PASS_CNT_TOT=`cat $CURR_DIR/pass.cnt`
-
-		let FAIL_CNT_NEW=FAIL_CNT+FAIL_CNT_TOT
-		let PASS_CNT_NEW=PASS_CNT+PASS_CNT_TOT
-
-		echo "$FAIL_CNT_NEW" > $CURR_DIR/fail.cnt
-        echo "$PASS_CNT_NEW" > $CURR_DIR/pass.cnt
-	fi
-	if test "$NO_ECHO" != "1"; then
-		echo "Skipped: $SKIP_CNT Passed: $PASS_CNT Failed: $FAIL_CNT"
-    	echo "See $LOGFILE for details."
-    fi
-fi
-if test "$UNL_LOG" = "1"; then 
-	FINISH_ALL_TIME=`date +%s`
-	test_run_unl
-	echo "" >> $VERBOSE_RESULTS_LOG
-	echo "Logging files closed:" >> $VERBOSE_RESULTS_LOG
-	echo "  results_$HOSTNAME$U$date_stamp.unl" >> $VERBOSE_RESULTS_LOG
-	echo "  test_run_$HOSTNAME$U$date_stamp.unl" >> $VERBOSE_RESULTS_LOG
-fi
-echo ""
-cd $CURR_DIR
-
 }
+
 
 
 
