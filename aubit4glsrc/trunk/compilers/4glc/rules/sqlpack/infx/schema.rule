@@ -206,7 +206,7 @@ alter_add_clause_ss:
 		$<sql_string>$=make_sql_string_and_free(strdup("ADD "),$<sql_string>2,0);
 	}
 	| ADD OPEN_BRACKET add_column_clauses_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string_and_free(strdup("ADD ("),$<sql_string>3,strdup(")"),0);
+		$<sql_string>$=make_sql_string_and_free(strdup("ADD "),kw_ob,$<sql_string>3,kw_cb,0);
 	}
 ;
 
@@ -255,7 +255,7 @@ alter_modify_clause_ss :
 		$<sql_string>$=make_sql_string_and_free(strdup("MODIFY "),$<sql_string>2,0);
 	}
 	| MODIFY OPEN_BRACKET modify_column_clauses_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string_and_free(strdup("MODIFY ("),$<sql_string>3,strdup(")"),0);
+		$<sql_string>$=make_sql_string_and_free(strdup("MODIFY "),kw_ob,$<sql_string>3,kw_cb,0);
 	}
 ;
 

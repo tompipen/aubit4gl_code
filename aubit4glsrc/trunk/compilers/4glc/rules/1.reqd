@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.54 2004-09-29 09:15:57 mikeaubury Exp $
+# $Id: 1.reqd,v 1.55 2004-09-30 16:11:57 mikeaubury Exp $
 #
 */
 
@@ -202,6 +202,8 @@ int if_print_section[100]={0,0,0,0};
 
 char *kw_comma=",";
 char *kw_space=" ";
+char *kw_ob="(";
+char *kw_cb=")";
 #include "../generic.h"
 #include "../field_handling.h"
 

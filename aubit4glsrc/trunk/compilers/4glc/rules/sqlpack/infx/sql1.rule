@@ -15,7 +15,7 @@ insert_statement_ss:
 	table_name op_insert_column_list ins_2_ss {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>3),kw_space,strdup($<str>4),kw_space,$<sql_string>5,0); }
 ;
 
-ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET { insql=0; $<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup(" ("),$<sql_string>4,strdup(")"),0);}
+ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET { insql=0; $<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup(" ("),$<sql_string>4,kw_cb,0);}
 	| query_specification_ss {$<sql_string>$=$<sql_string>1;}
 ;
 
@@ -233,7 +233,7 @@ op_with_check_option: {strcpy($<str>$,"");}
 
 check_constraint_definition_ss:
 	CHECK OPEN_BRACKET search_condition_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string_and_free(strdup("CHECK("),$<sql_string>3,strdup(")"),0);
+		$<sql_string>$=make_sql_string_and_free(strdup("CHECK("),$<sql_string>3,kw_cb,0);
 	}
 ;
 
@@ -568,13 +568,13 @@ escape_character:
 
 in_predicate_ss:
 	value_expression_ss IN OPEN_BRACKET in_value_list CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" IN ("),strdup($<str>4),strdup(")"),0);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" IN ("),strdup($<str>4),kw_cb,0);
 	}
 	| value_expression_ss IN subquery_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,0);
 	}
 	| value_expression_ss NOT_IN OPEN_BRACKET in_value_list CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" NOT IN ("),strdup($<str>4),strdup(")"),0);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" NOT IN ("),strdup($<str>4),kw_cb,0);
 	}
 	| value_expression_ss NOT_IN subquery_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,0);
@@ -1001,7 +1001,7 @@ query_specification_ss:
 
 subquery_ss:
 	OPEN_BRACKET SELECT op_ad select_list_ss table_expression_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string_and_free(strdup("("),strdup($<str>2),kw_space,strdup($<str>3),kw_space,$<sql_string>4,kw_space,$<sql_string>5,strdup(")"),0);
+		$<sql_string>$=make_sql_string_and_free(strdup("("),strdup($<str>2),kw_space,strdup($<str>3),kw_space,$<sql_string>4,kw_space,$<sql_string>5,kw_cb,0);
 	}
 ;
 
@@ -1079,15 +1079,15 @@ value_expression_complex_ss :
 	| USER {$<sql_string>$=make_sql_string_and_free(strdup("USER"),0);}
 	| MULTIPLY {$<sql_string>$=make_sql_string_and_free(strdup("*"),0);}
 	| COUNT_MULTIPLY {$<sql_string>$=make_sql_string_and_free(strdup("COUNT(*)"),0);}
- 	| AVG OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("AVG("),strdup($<str>3),$<sql_string>4,strdup(")"),0);}
-	| XMAX OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("MAX("),strdup($<str>3),$<sql_string>4,strdup(")"),0);}
-	| XMIN OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("MIN("),strdup($<str>3),$<sql_string>4,strdup(")"),0);}
-	| SUM OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("SUM("),strdup($<str>3),$<sql_string>4,strdup(")"),0);}
-	| COUNT OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("COUNT("),strdup($<str>3),$<sql_string>4,strdup(")"),0);}
-	| identifier OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),"(",$<sql_string>3,strdup(")"),0);}
-	| DATE OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("DATE("),$<sql_string>3,strdup(")"),0);}
-	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("("),$<sql_string>2,strdup(")"),0);}
-	| EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("EXTEND("),$<sql_string>3,strdup(")"),0);}
+ 	| AVG OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("AVG("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
+	| XMAX OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("MAX("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
+	| XMIN OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("MIN("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
+	| SUM OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("SUM("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
+	| COUNT OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("COUNT("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
+	| identifier OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_ob,$<sql_string>3,kw_cb,0);}
+	| DATE OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("DATE("),$<sql_string>3,kw_cb,0);}
+	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("("),$<sql_string>2,kw_cb,0);}
+	| EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("EXTEND("),$<sql_string>3,kw_cb,0);}
 	| datetime_value_qualified { $<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
 	| interval_value_qualified {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
 
@@ -1097,7 +1097,7 @@ value_expression_complex_ss :
 value_expr_list_ss : 
 	value_expression_ss {$<sql_string>$=$<sql_string>1;}
 	| value_expr_list_ss COMMA value_expression_ss {
-	$<sql_string>$=make_sql_string_and_free($<sql_string>1,",",$<sql_string>3,0);
+	$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(","),$<sql_string>3,0);
 }
 	
 ;
