@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.82 2004-10-29 14:09:20 afalout Exp $
+# $Id: resource.c,v 1.83 2004-10-29 19:13:21 mikeaubury Exp $
 #
 */
 
@@ -55,6 +55,7 @@
 #define _NO_FORM_X_H_
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
+#include <stdlib.h>
 
 char *debug=0;
 char *debug_level=0;
@@ -617,7 +618,7 @@ if (ptr)  {
         sprintf (prefixed_string, "A4GL_%s", s);
 
 	ptr_env_A4GL = getenv (prefixed_string); /* in environmet, with A4GL_ prefix */
-	ptr_env = (char *) getenv (s); /* in environment, but without the prefix */
+	ptr_env = getenv (s); /* in environment, but without the prefix */
 
 
 

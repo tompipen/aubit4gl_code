@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.138 2004-10-28 22:04:56 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.139 2004-10-29 19:13:19 mikeaubury Exp $
 #
 */
 
@@ -1335,7 +1335,7 @@ void A4GL_display_at (int n, int a);
   /* ============================ resource.c ============================= */
   struct str_resource
   {
-    char name[40];
+    char name[80];
     char value[1024];		//must be long enough to hold GTK include paths
   };
 

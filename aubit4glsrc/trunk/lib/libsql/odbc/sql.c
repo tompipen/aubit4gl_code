@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.87 2004-10-29 12:05:34 mikeaubury Exp $
+# $Id: sql.c,v 1.88 2004-10-29 19:13:20 mikeaubury Exp $
 #
 */
 
@@ -515,40 +515,48 @@ int
 A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 {
   int a;
-  SWORD nin;
+  SWORD nin=0;
 
   if (b == 0)
     return 0;
+
+
 #ifdef DEBUG
   A4GL_debug ("In proc_bind...");
   A4GL_debug ("   Binding %p n=%d t=%c, stmt=%p", b, n, t, hstmt);
 #endif
+
+
   if (t == 'i')
     {
       rc = SQLNumParams (hstmt, &nin);
       chk_rc (rc, hstmt, "SQLNumParams");
 
-      /* A4GL_set_sqlca (hstmt, "proc_bind, after NumParams",0); */
 #ifdef DEBUG
       A4GL_debug ("Found %d parameters are required...", nin);
 #endif
 
       if (n != nin)
 	{
+
+
 #ifdef DEBUG
-	  A4GL_debug
-	    ("Number of host variables does not A4GL_match %d (given) !=%d (in sql)",
-	     n, nin);
+	  A4GL_debug ("Number of host variables does not A4GL_match %d (given) !=%d (in sql)", n, nin);
 #endif
+
 	  return 0;
 	}
 
 #ifdef DEBUG
       A4GL_debug ("Looks like we have the right number..");
 #endif
+
     }
+
   for (a = 1; a <= n; a++)
     {
+
+
 #ifdef DEBUG
       A4GL_debug ("Binding parameter %d ", a);
 #endif
@@ -1005,10 +1013,10 @@ sid=vsid;
   A4GL_debug (" Bound data ... ni=%d no=%d", sid->ni, sid->no);
 #endif
   a = ODBC_exec_select ((SQLHSTMT)sid->hstmt);
-  if (a)
-    A4GL_post_fetch_proc_bind (sid->obind, sid->no, (SQLHSTMT )&sid->hstmt);
 
+  if (a) A4GL_post_fetch_proc_bind (sid->obind, sid->no, (SQLHSTMT )&sid->hstmt);
   /* free up malloc'ed memory */
+
   SQLFreeStmt ((SQLHSTMT)sid->hstmt, SQL_DROP);
   free (sid->select);
   free (sid);
@@ -1084,8 +1092,7 @@ if (ni) {
   a4gl_status = 0;
   if (ni == 0)
     {				/* No USING on the open.. */
-      A4GL_proc_bind (cid->statement->ibind, cid->statement->ni, 'i',
-		 (SQLHSTMT)cid->statement->hstmt);
+      A4GL_proc_bind (cid->statement->ibind, cid->statement->ni, 'i', (SQLHSTMT)cid->statement->hstmt);
 
     }
   else
@@ -2054,6 +2061,7 @@ A4GL_set_sqlca (SQLHSTMT hstmt, char *s, int reset)
 {
   char s1[81];
   char s2[500];
+  
 /*
 sql.c: In function `set_sqlca':
 sql.c:1788: conflicting types for `_errno'
@@ -2062,13 +2070,15 @@ sql.c:1788: warning: extern declaration of `_errno' doesn't A4GL_match global on
 make[2]: *** [sql.o] Error 1
 */
 #ifndef __MINGW32__
-  SDWORD errno;
+  SDWORD errno=0;
 #endif
-  SWORD errno2;
+  SWORD errno2=0;
   SDWORD rowcount;
   RETCODE rc;
-
+  memset(s1,0,80);
+  memset(s2,0,255);
   strcpy (lasterrorstr, "");
+  strcpy (s1, "00000");
 
   /* chk_rc (rc, hstmt, "SQLRowCount"); */
 #ifdef DEBUG
@@ -2164,6 +2174,8 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 #endif
     }
 
+
+
   if (bind->dtype == DTYPE_BYTE || bind->dtype == DTYPE_TEXT)
     {
       return;
@@ -2197,7 +2209,7 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
   /*review */
 
   int k = 0;
-
+A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
   if (bind->dtype == DTYPE_DATE && A4GL_isyes(acl_getenv("BINDDATEASINT")))
     {
 	A4GL_debug("dtype=7");
@@ -2232,12 +2244,34 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 	ACLDATE *p; //@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
 	void *ptr;
 	int d,m,y;
+	A4GL_debug("Binding Date original pointer=%p",bind->ptr);
 	ptr=bind->ptr;
 	p= (ACLDATE *)A4GL_bind_date ((long *) ptr);
-	A4GL_get_date(*(int *)ptr,&y,&m,&d);
+	A4GL_debug("new pointer to my fake structure = %p - The first portion should be the DATE_STRUCT though (%p)...",p,&p->date);
+	A4GL_get_date(*(int *)ptr,&d,&m,&y);
 	p->date.year=y;
 	p->date.month=m;
 	p->date.day=d;
+        bind->ptr = p;
+
+#ifdef DEBUG
+      A4GL_debug ("Bound date... %d %d %d\n",p->date.year,p->date.month,p->date.day);
+#endif
+    }
+
+
+  if (bind->dtype == DTYPE_DECIMAL)
+    {
+	double *p; //@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
+	void *ptr;
+	int dtype;
+	double d;
+	ptr=bind->ptr;
+	p= malloc(sizeof(double));
+	dtype = bind->dtype + ENCODE_SIZE (bind->size);
+	A4GL_push_variable(bind->ptr, dtype);
+	d=A4GL_pop_double();
+	*p=d;
         bind->ptr = p;
 
 #ifdef DEBUG
@@ -2246,11 +2280,12 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
     }
 
 
-  rc = A4GL_newSQLSetParam ((SQLHSTMT )hstmt, pos,
-		       conv_4gl_to_c[bind->dtype],
-		       conv_4gl_to_c[bind->dtype], size, k, bind->ptr, NULL);
 
 
+
+  rc = A4GL_newSQLSetParam ((SQLHSTMT )hstmt, pos, conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype], size, k, bind->ptr, NULL);
+
+  A4GL_debug("Called newSQLSetParam = %d",rc);
   /* chk_rc (rc, hstmt, "SQLSetParam"); */
 
 }
@@ -2287,6 +2322,9 @@ ODBC_exec_select (SQLHSTMT hstmt)
 #ifdef DEBUG
   A4GL_debug ("SQLNumResultCols returns %d", nresultcols);
 #endif
+   if (nresultcols==0) {
+		return 0;
+	}
   rc = SQLRowCount ((SQLHSTMT )hstmt, &rowcount);
   chk_rc (rc, hstmt, "SQLRowCount");
 
@@ -3451,8 +3489,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 #endif
 	  date1 = use_binding[a].ptr;
 #ifdef DEBUG
-	  A4GL_debug ("Year=%d Month=%d Day=%d", date1->date.year,
-		 date1->date.month, date1->date.day);
+	  A4GL_debug ("Year=%d Month=%d Day=%d", date1->date.year, date1->date.month, date1->date.day);
 #endif
 	  zz = A4GL_gen_dateno (date1->date.day, date1->date.month, date1->date.year);
 	  *((long *) date1->ptr) = zz;
@@ -3462,7 +3499,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 		// We've actually selected into a double...
 		double d;
 		d=*((double *)use_binding[a].ptr);
-		A4GL_debug("d=%lf",d);
+		A4GL_debug("DECIMAL from double on db d=%lf",d);
 		A4GL_push_double(d);
 		A4GL_pop_var2(use_binding[a].ptr,use_binding[a].dtype,use_binding[a].size);
 	}
@@ -3481,10 +3518,12 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 	int dtype;
 
 
-	if (use_binding[a].dtype==DTYPE_CHAR || use_binding[a].dtype==DTYPE_VCHAR || use_binding[a].dtype==DTYPE_DECIMAL )
+	if (use_binding[a].dtype==DTYPE_CHAR || use_binding[a].dtype==DTYPE_VCHAR || use_binding[a].dtype==DTYPE_DECIMAL ) {
+		A4GL_debug("Need to add size to dtype");
 	  dtype = use_binding[a].dtype + ENCODE_SIZE (use_binding[a].size);
-	else
+	} else {
 	  dtype = use_binding[a].dtype;
+	}
 
 
 
@@ -3567,6 +3606,7 @@ A4GLSQL_commit_rollback (int mode)
 
       if (mode == 1)
 	SQLExecDirect (hstmt, "COMMIT WORK", SQL_NTS);
+
       A4GL_set_sqlca (hstmt, "Commit/Rollback", 0);
 
 

@@ -1,7 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.40 2004-10-23 13:36:32 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_sql.c,v 1.41 2004-10-29 19:13:20 mikeaubury Exp $";
 
 void print_report_table(char *repname,char type, int c);
 void printh (char *fmt, ...);
@@ -183,7 +183,7 @@ print_linked_cmd (int type, char *var)
 	}
       if (type == 'S')
 	printc
-	  ("A4GLSQL_execute_implicit_select((void *)A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\"));",
+	  ("A4GLSQL_execute_implicit_select((void *)A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\")); /* 1 */",
 	   ni, no, buff);
       if (type == 'D' || type == 'U')
 	printc
@@ -289,7 +289,7 @@ print_execute (char *stmt, int using)
       no = print_bind_definition ('o');
       print_bind_set_value ('o');
       printc ("A4GLSQL_swap_bind_stmt(%s,'o',&_save_bind_ptr,&_save_bind_cnt,obind,%d);",stmt,no);
-      printc ("A4GLSQL_execute_implicit_select(A4GLSQL_find_prepare(%s));\n", stmt);
+      printc ("A4GLSQL_execute_implicit_select(A4GLSQL_find_prepare(%s)); /* 2 */\n", stmt);
       printc ("A4GLSQL_swap_bind_stmt(%s,'o',0,0,_save_bind_ptr,_save_bind_cnt);",stmt);
       printc ("}\n");
     }
@@ -306,7 +306,7 @@ print_execute (char *stmt, int using)
       print_bind_set_value ('i');
       printc ("A4GLSQL_swap_bind_stmt(%s,'o',&_osave_bind_ptr,&_osave_bind_cnt,obind,%d);",stmt,no);
       printc ("A4GLSQL_swap_bind_stmt(%s,'i',&_isave_bind_ptr,&_isave_bind_cnt,ibind,%d);",stmt,no);
-      printc ("A4GLSQL_execute_implicit_select(A4GLSQL_find_prepare(%s));\n", stmt);
+      printc ("A4GLSQL_execute_implicit_select(A4GLSQL_find_prepare(%s)); /* 3 */\n", stmt);
       printc ("A4GLSQL_swap_bind_stmt(%s,'o',0,0,_osave_bind_ptr,_osave_bind_cnt);",stmt);
       printc ("A4GLSQL_swap_bind_stmt(%s,'i',0,0,_isave_bind_ptr,_isave_bind_cnt);",stmt);
       printc ("}\n");
@@ -425,7 +425,11 @@ print_init_conn (char *db)
 void
 print_do_select (char *s)
 {
-  printc ("A4GLSQL_execute_implicit_select(%s);\n}\n", s);
+if (strstr(s," INTO TEMP ")==0) {
+  printc ("A4GLSQL_execute_implicit_select(%s); /* 0 */\n}\n", s);
+} else {
+  printc ("A4GLSQL_execute_implicit_sql(%s); /* 0 */\n}\n", s);
+}
 }
 
 /**

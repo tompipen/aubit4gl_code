@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.89 2004-10-26 11:56:46 mikeaubury Exp $
+# $Id: conv.c,v 1.90 2004-10-29 19:13:19 mikeaubury Exp $
 #
 */
 
@@ -937,9 +937,9 @@ A4GL_ltodec (void *a, void *z, int size)
 }
 
 /**
- * Convert a float value to decimal.
+ * Convert a C-double value to decimal.
  *
- * @param a The float value.
+ * @param a The double value.
  * @param z A pointer to the place where to put the decimal value.
  * @param size
  * @return
@@ -952,6 +952,7 @@ A4GL_ftodec (void *a, void *z, int size)
   char *eptr;
   int h;
   int t;
+  double da;
   char buff[650];
   char fmt[16];
   h=size;
@@ -959,7 +960,8 @@ A4GL_ftodec (void *a, void *z, int size)
   h = h / 256;
   t = t - h * 256;
   errno = 0;
-  A4GL_debug ("converting %s to a decimal (%x) %d,%d", A4GL_null_as_null(a), size, h, t);
+da=*(double *)a;
+  A4GL_debug ("converting %lf to a decimal (%x) %d,%d", da, size, h, t);
   A4GL_init_dec (z, h, t);
 A4GL_debug("ftodec... %lf" ,*(double *)a);
   if (t >= 0)
