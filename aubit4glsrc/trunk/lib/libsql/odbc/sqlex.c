@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.8 2002-02-16 21:25:03 saferreira Exp $
+# $Id: sqlex.c,v 1.9 2002-02-17 21:10:50 saferreira Exp $
 #
 */
 
@@ -366,8 +366,12 @@ scan_conn (char *s, char *p, HDBC conn)
   return 1;
 }
 
-int
-scan_stmt (char *s, char *p, HSTMT hstmt)
+/**
+ * @param s
+ * @param p
+ * @paramhstmt The statement handle.
+ */
+int scan_stmt (char *s, char *p, HSTMT hstmt)
 {
   UWORD a;
   UDWORD b;

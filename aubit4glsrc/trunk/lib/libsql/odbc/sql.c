@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.17 2002-02-16 21:25:03 saferreira Exp $
+# $Id: sql.c,v 1.18 2002-02-17 21:10:50 saferreira Exp $
 #
 */
 
@@ -188,6 +188,8 @@ static char sess_name[32] = "default";
 #define exitwith exitwith_sql
 
 HENV henv = 0;
+
+/** The database connection handle */
 HDBC hdbc = 0;
 
 #define MAXCURSORS 100
@@ -226,19 +228,6 @@ int do_init_cursors = 1;
 
 int do_init_prepare = 1;
 
-/*
-typedef struct
-  {
-    int sqlcode;
-    char sqlerrm[72];
-    char sqlerrp[9];
-    int sqlerrd[6];
-    char sqlawarn[9];
-    char sqlstate[10];
-  }
-sqlca_struct;
-*/
-
 
 #if (defined(WIN32) && ! defined(__CYWIN__)) // && defined DLL_EXPORT
 
@@ -270,6 +259,20 @@ exit_nicely (void)
   exit (1);
 }
 
+/**
+ * Sets the parameters of an SQL statement.
+ *
+ * This is where the ODBC call to SQLBindParameter() is made.
+ *
+ * @param hstmt Statement information handle.
+ * @param ipar Position of the parameter.
+ * @paramfCType Data type
+ * @param fSqlType Data type
+ * @param cbColDef
+ * @param ibScale
+ * @param rgbValue Pointer to the place wher the informationshould be used.
+ * @param pcbValue
+ */
 RETCODE SQL_API newSQLSetParam (HSTMT hstmt, UWORD ipar, SWORD fCType,
       SWORD fSqlType, UDWORD cbColDef, SWORD ibScale, PTR rgbValue,
       SDWORD FAR * pcbValue) {
@@ -322,6 +325,21 @@ static int count_queries(char *s)
   return cnt;
 }
 
+/**
+ * Process the binding of the variables to the statement.
+ *
+ * After this, the SQL statemen knows where to put or get values.
+ *
+ * @param b A pointer to the varaiable binding structure.
+ * @param n The number of elements in the binding array.
+ * @param t The bind type
+ *   - i :  Input binding.
+ *   - o :  Output binding.
+ * @param hstmt Statement handle.
+ * @return
+ *   - 0 : An error ocurred.
+ *   - 1 : Done.
+ */
 int proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 {
   int a;
@@ -335,10 +353,7 @@ int proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
   }
 #endif
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("   Binding %p n=%d t=%c, stmt=%p", b, n, t, hstmt);
-  }
+/* {DEBUG} */ { debug ("   Binding %p n=%d t=%c, stmt=%p", b, n, t, hstmt); }
 #endif
   if (t == 'i')
     {
@@ -347,10 +362,7 @@ int proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 
       //set_sqlca (hstmt, "proc_bind, after NumParams",0);
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("Found %d parameters are required...", nin);
-      }
+/* {DEBUG} */ { debug ("Found %d parameters are required...", nin); }
 #endif
 
       if (n != nin)
@@ -394,6 +406,11 @@ int proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 return 1;
 }
 
+/**
+ * It seems that this function its not used.
+ *
+ * @todo : Check if its realy not used.
+ */
 char *
 proc_binding (char *s, int n, struct BINDING *b)
 {
@@ -430,6 +447,12 @@ proc_binding (char *s, int n, struct BINDING *b)
   return strdup (p);
 }
 
+/**
+ * Its only called by ptoc_binding.
+ * It seems that its not used.
+ *
+ * @todo : Check if its used.
+ */
 char *
 conv_binding (struct BINDING *b)
 {
@@ -607,7 +630,7 @@ struct s_sid *A4GLSQL_find_prepare (char *pname, int mode)
  *
  * @param pname  The prepared statement name.
  * @param ni
- * @param ibind
+ * @param ibind The input binding used-
  * @return
  */
 int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING * ibind)
@@ -637,6 +660,17 @@ int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING * ibind)
   return ODBC_exec_prepared_sql (sid->hstmt);
 }
 
+/**
+ * Prepare a select statement.
+ *
+ * @todo : Check if the binds passes are arrays and if so put one more *
+ *
+ * @param ibind The input bind array (??).
+ * @param ni The number of elements binded.
+ * @param obind The output bind array (???).
+ * @param no The number of output elements binded.
+ * @param s The text of the select statement.
+ */
 struct s_sid *
 A4GLSQL_prepare_select (
       struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s)
@@ -694,11 +728,11 @@ A4GLSQL_prepare_select (
 }
 
 /**
- * Prepare a global SQL statement.
+ * Prepare a global SQL statement (to be used in cursor).
  *
  * @param s The SQL statement text.
- * @param ni
- * @param ibind
+ * @param ni The number of variables to bind.
+ * @param ibind The input bind
  * @return A pointer to an SQL statement information strucutre.
  */
 struct s_sid *
@@ -812,6 +846,15 @@ A4GLSQL_declare_cursor(int upd_hold,struct s_sid *sid,int scroll,char *cursname)
   return cid;
 }
 
+
+/**
+ * Execute an sql statement where the its execution is implicit in 4gl.
+ *
+ * There are several places where this can ocurr such as a INPUT or
+ * UPDATE, etc.
+ *
+ * @param sid The statement informnation handle.
+ */
 int
 A4GLSQL_execute_implicit_sql (struct s_sid *sid)
 {
@@ -843,6 +886,13 @@ A4GLSQL_execute_implicit_sql (struct s_sid *sid)
   return ODBC_exec_stmt (sid->hstmt);
 }
 
+/**
+ * Execute an implicit select instruction.
+ *
+ * Used when the SELECT is a direct SELECT INTO in 4gl code.
+ *
+ * @param sid The statement information.
+ */
 int
 A4GLSQL_execute_implicit_select (struct s_sid *sid)
 {
@@ -1331,6 +1381,14 @@ char *ret_sql_err ()
   return ret_sql_err ();
 }
 
+/**
+ * Check if a prepared statement exist in thepointer tree.
+ *
+ * @param pname The prepared statement name.
+ * @return
+ *   - 1 : The statement exist.
+ *   - 0 : The statement does not exist.
+ */
 int 
 find_prepare2 (char *pname)
 {
@@ -1362,13 +1420,6 @@ int A4GLSQL_add_prepare (char *pname, struct s_sid * sid)
 }
 
 
-/*
-   #define HDBC long
-   #define HCONV long
- */
-
-
-
 
 #define MAXCOLS 100
 
@@ -1395,12 +1446,23 @@ print_err (HDBC hdbc, HSTMT hstmt)
 
 #define MAX_NUM_PRECISION 15
 
-/* Define max length of char string representation of */
-/* number as: = max(precision) + leading sign + E +   */
-/* exp sign + max exp length                          */
-/* =  15 + 1 + 1 + 1 + 2                              */
-/* =  15 + 5                                          */
+/**
+ * Define max length of char string representation of 
+ * number as: = max(precision) + leading sign + E +
+ * exp sign + max exp length                      
+ * =  15 + 1 + 1 + 1 + 2                         
+ * =  15 + 5                                    
+ */
 #define MAX_NUM_STRING_SIZE (MAX_NUM_PRECISION + 5)
+
+/**
+ * Gets the size of the datatype of a  ???
+ *
+ * @param coltype The data type.
+ * @param collen The length of the column.
+ * @param colname The name of the column.
+ * @return The size calculated.
+ */
 UDWORD
 display_size (SWORD coltype, UDWORD collen, UCHAR * colname)
 {
@@ -1439,7 +1501,16 @@ display_size (SWORD coltype, UDWORD collen, UCHAR * colname)
     }
 }
 
-
+/**
+ * Connects to a database.
+ *
+ * @param server The database server name. 
+ * @param uid_p The user identification.
+ * @param pwd_p The password.
+ * @return 
+ *   - 1 : Connection estabelished.
+ *   - 0 : there was an error connecting to database.
+ */
 int A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
 {
   RETCODE rc;
@@ -1528,9 +1599,12 @@ int A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
   return 1;
 }
 
-
-int
-ODBC_disconnect ()
+/**
+ * Disconnect the current connection from a datasource.
+ *
+ * @return Allways 0.
+ */
+int ODBC_disconnect (void)
 {
   if (hdbc)
     {
@@ -1552,9 +1626,15 @@ ODBC_disconnect ()
 return 0;
 }
 
-
-int
-ODBC_exec_sql (UCHAR * sqlstr)
+/**
+ * Execute an SQL statement trough ODBC.
+ *
+ * @param sqlstr The sql text to be executed.
+ * @return 
+ *   - 1 : The statement was correctly executed.
+ *   - 0 : There was an error.
+ */
+int ODBC_exec_sql (UCHAR * sqlstr)
 {
   HSTMT hstmt;
   int rc;
@@ -1615,6 +1695,14 @@ ODBC_exec_sql (UCHAR * sqlstr)
 return 1;
 }
 
+/**
+ * Execute the sql statement trough ODBC.
+ *
+ * @param hstmt The statement handle.
+ * @return 
+ *   - 1 : The statement was correctly executed.
+ *   - 0 : There was an error.
+ */
 int ODBC_exec_stmt (HSTMT hstmt)
 {
   int rc;
@@ -1652,9 +1740,13 @@ debug("Returns %d\n",rc);
   return 1;
 }
 
-
-
-
+/**
+ * Ask odbc to free the resources allocated to the statement.
+ *
+ * @param rc Not used.
+ * @param h The statement handle.
+ * @return Allways 0.
+ */
 int sqlerrwith (int rc, HSTMT h)
 {
   //set_sqlca (h, "From sqlerrwith", 0);
@@ -1662,6 +1754,13 @@ int sqlerrwith (int rc, HSTMT h)
   return 0;
 }
 
+/**
+ * Assign the values of sqlca acording to the status of the statement.
+ *
+ * @param hstmt The statement handler.
+ * @param s A string to identify who and wy called this.
+ * @param reset Not used.
+ */
 void  set_sqlca (HSTMT hstmt, char *s, int reset)
 {
   char s1[81];
@@ -1752,6 +1851,9 @@ void  set_sqlca (HSTMT hstmt, char *s, int reset)
 
  */
 
+/**
+ * Convertion table between 4gl and  C.
+ */
 int conv_4gl_to_c[] =
 {
   SQL_C_CHAR,
@@ -1771,6 +1873,9 @@ int conv_4gl_to_c[] =
   SQL_C_TIME
 };
 
+/**
+ * Table of 4gl sizes.
+ */
 int fgl_sizes[] =
 {
   -1,
@@ -1798,35 +1903,40 @@ int fgl_sizes[] =
 
 int convpos_sql_to_4gl[15] =
 {
-  9999,				//# 0
-   0,				//# SQL_CHAR
-   3,				//# SQL_NUMERIC
-   5,				//# SQL_DECIMAL
-   2,				//# SQL_INTEGER
-   1,				//# SQL_SMINT
-   3,				//# SQL_FLOAT 
-   4,				//# SQL_REAL
-   3,				//# SQL_DOUBLE  8
-   7,				//# SQL_DATE 9 
-   10,				//# SQL_TIME 10
-   10,				//# SQL_TIMESTAMP 11
-   0				//# SQL_VARCHAR  12
+  9999,				/** 0 */
+   0,				/** SQL_CHAR */
+   3,				/** SQL_NUMERIC */
+   5,				/** SQL_DECIMAL */
+   2,				/** SQL_INTEGER */
+   1,				/** SQL_SMINT */
+   3,				/** SQL_FLOAT  */
+   4,				/** SQL_REAL */
+   3,				/** SQL_DOUBLE  8 */
+   7,				/** SQL_DATE 9  */
+   10,				/** SQL_TIME 10 */
+   10,				/** SQL_TIMESTAMP 11 */
+   0				/** SQL_VARCHAR  12 */
 };
 
 int convneg_sql_to_4gl[15] =
 {
-  9999,				//# 0
-   12,				//# SQL_LONGVARCHAR
-   11,				//# SQL_BINARY
-   11,				//# SQL_VARBINARY
-   11,				//# SQL_LONGVARBINARY
-   2,				//# SQL_BIGINT
-   1,				//# SQL_TINYINT
-   1				//# SQL_BIT
+  9999,				/** 0 */
+   12,				/** SQL_LONGVARCHAR */
+   11,				/** SQL_BINARY */
+   11,				/** SQL_VARBINARY */
+   11,				/** SQL_LONGVARBINARY */
+   2,				/** SQL_BIGINT */
+   1,				/** SQL_TINYINT */
+   1				/** SQL_BIT */
 };
 
-
-
+/**
+ * Do a output bind of variable to the statement.
+ *
+ * @param pos Position / sequence in the bind array.
+ * @param bind Pointer to the bind array.
+ * @param hstmt Statement handle.
+ */
 void obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 {
   static int rc;
@@ -1874,6 +1984,14 @@ void obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 
 }
 
+/**
+ * Do a input bind of variable to the statement.
+ *
+ * @param pos Position/sequence of the parameter.
+ * @param bin  Pointer to the element in the bin array that decribes the
+ * bin to be done.
+ * @param hstmt A pointer to the statement information.
+ */
 void ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 {
   int size;
@@ -1918,8 +2036,14 @@ void ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 
 }
 
-
-
+/**
+ * Ask odbc to execute a select statement allready prepared.
+ *
+ * @param hstmt The statement handle.
+ * @return
+ *   - 1 : Statement executed.
+ *   - 0 : An error ocurred.
+ */
 int ODBC_exec_select (HSTMT hstmt)
 {
   int rc;
@@ -1998,10 +2122,14 @@ int ODBC_exec_select (HSTMT hstmt)
   return 1;
 }
 
-
-
-
-
+/**
+ * Create a statement handle.
+ *
+ * Ask to odbc to give a statement handler.
+ *
+ * @param A pointer to the statement handle structure to be created.
+ * @retutn The statement handler.
+ */
 HSTMT
 new_hstmt (HSTMT * hstmt)
 {
@@ -2019,7 +2147,14 @@ new_hstmt (HSTMT * hstmt)
   return *hstmt;
 }
 
-
+/**
+ * Ask odbc to execute a prepared SQL statement.
+ *
+ * @param hstmt A statement handle.
+ * @return
+ *   - 1 : Statement executed.
+ *   - 0 : An error ocurred.
+ */
 int ODBC_exec_prepared_sql (HSTMT hstmt)
 {
   int rc;
@@ -2063,7 +2198,13 @@ int ODBC_exec_prepared_sql (HSTMT hstmt)
 
 #define IGNOREEXITWITH
 IGNOREEXITWITH
-exitwith2 (char *s)
+
+/**
+ * Exit the program printing a message to the standard output.
+ *
+ * @param s The string to be printed.
+ */
+void exitwith2 (char *s)
 {
   mja_endwin ();
 #ifdef DEBUG
@@ -2080,7 +2221,19 @@ exitwith2 (char *s)
 }
 
 
-int fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr2)
+/**
+ * Not used
+ *
+ * @todo : If not used and not necessary in future remove it.
+ *
+ * @param mx
+ * @param arr1
+ * @param szarr1
+ * @param arr2
+ * @param szarr2
+ * @return
+ */
+int fill_array_databases(int mx, char *arr1, int szarr1, char *arr2,int szarr2)
 {
   char buff1[80];
   char buff2[255];
@@ -2092,10 +2245,7 @@ int fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr2
   a = 0;
   b = 0;
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("arr1=%p", arr1);
-  }
+/* {DEBUG} */ { debug ("arr1=%p", arr1); }
 #endif
   fetch_mode = SQL_FETCH_FIRST;
   cnt = 0;
@@ -2108,10 +2258,7 @@ int fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr2
   while (cnt < mx)
     {
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("Fetch mode=%d", fetch_mode);
-      }
+/* {DEBUG} */ { debug ("Fetch mode=%d", fetch_mode); }
 #endif
       rc = SQLDataSources (henv, fetch_mode, buff1, 79, &a, buff2, 254, &b);
       chk_rc (rc, 0, "SQLDataSources");
@@ -2185,10 +2332,15 @@ int fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr2
 #endif
     }
   return cnt;
-
 }
 
 
+/**
+ * Not used
+ *
+ * @todo : If not used and not necessary in future remove it.
+ *
+ */
 int fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2, int mode)
 {
   HSTMT hstmt;
@@ -2336,8 +2488,12 @@ int fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2, i
   return cnt;
 }
 
-
-
+/**
+ * Not used
+ *
+ * @todo : If not used and not necessary in future remove it.
+ *
+ */
 int fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2, int mode, char *info)
 {
   HSTMT hstmt;
@@ -2538,8 +2694,18 @@ int fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
 }
 */
 
-
-A4GLSQL_get_datatype (char *db, char *tab, char *col)
+/**
+ * Ask the database about the datatype of a column.
+ *
+ *
+ * @param db The database name.
+ * @param tab The table name.
+ * @param col The column name.
+ * @return 
+ *   - -1 : An error ocurred.
+ *   - Otherwise : The datatype code.
+ */
+int A4GLSQL_get_datatype (char *db, char *tab, char *col)
 {
   //HDBC rtype;
   HSTMT hstmt;
@@ -2606,10 +2772,15 @@ A4GLSQL_get_datatype (char *db, char *tab, char *col)
   return conv_sqldtype (coltype, collen[0]);
 }
 
-
-
-
-
+/**
+ * Convert the SQL data type to the 4gl data type.
+ *
+ * Use the table convneg_sql_to_4gl.
+ *
+ * @param sqldtype The sql datatype returned by ODBC.
+ * @param sdim
+ * @return The 4gl data type.
+ */
 int conv_sqldtype (int sqldtype, int sdim)
 {
   int ndtype;
@@ -2632,18 +2803,31 @@ int conv_sqldtype (int sqldtype, int sdim)
   return ndtype;
 }
 
-
+/**
+ * Gets the current database name.
+ *
+ * @return The current database name.
+ */
 char *
-A4GLSQL_get_currdbname ()
+A4GLSQL_get_currdbname(void)
 {
   return OldDBname;
 }
 
-/* describe a column for an existing statement */
-
-
-long 
-describecolumn (HSTMT hstmt, int colno, int type)
+/**
+ * Describe a column for an existing statement 
+ *
+ * @param hstmt The statement handler.
+ * @param colno
+ * @param type The type of the decribing information to return.
+ *   - 0: The column type.
+ *   - 1: The column name.
+ *   - 2: The scale.
+ *   - 3: The column length.
+ *   - 4: Nullable or not
+ *  @return The description wanted  or zero if there was an error.
+ */
+long describecolumn (HSTMT hstmt, int colno, int type)
 {
   static char colname[256];
   SWORD coltype;
@@ -2729,7 +2913,14 @@ describecolumn (HSTMT hstmt, int colno, int type)
 return 0;
 }
 
-
+/**
+ * Describe an sql statement.
+ *
+ * @param stmt The text with the statement to be described.
+ * @param colno
+ * @param type The type of the information wanted.
+ * @return
+ */
 long
 A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 {
@@ -2946,6 +3137,11 @@ int A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
   return 1;
 }
 
+/**
+ * Not used.
+ *
+ * @todo : Understand if this function its not used.
+ */
 execute_sql_from_ptr (char *pname, int ni, char **ibind)
 {
 
@@ -2977,7 +3173,11 @@ execute_sql_from_ptr (char *pname, int ni, char **ibind)
   return ODBC_exec_prepared_sql (sid->hstmt);
 }
 
-
+/**
+ * Not used.
+ *
+ * @todo : Understand if not used 
+ */
 char *
 proc_bind_arr (char **b, int n, char t, HSTMT hstmt)
 {
@@ -3024,7 +3224,11 @@ proc_bind_arr (char **b, int n, char t, HSTMT hstmt)
     }
 }
 
-
+/**
+ * Not used.
+ *
+ * @todo : If not used remove it
+ */
 obind_column_arr (int pos, char *s, HSTMT hstmt)
 {
   int rc;
@@ -3131,13 +3335,22 @@ A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
   return 0;
 }
 
-char *
-A4GLSQL_get_curr_conn ()
+/**
+ * Get the current session name.
+ *
+ * @return 
+ */
+char *A4GLSQL_get_curr_conn (void)
 {
   return sess_name;
 }
 
-
+/**
+ * 
+ * @param cursname The cursor name.
+ * @param opt
+ * @param val
+ */
 set_stmt_options (char *cursname, char *opt, char *val)
 {
   int code;
@@ -3682,7 +3895,12 @@ A4GLSQL_flush_cursor(char *cursor) {
 
 }
 
-A4GLSQL_initsqllib() {
+/**
+ * Initialization of the sql dynamic library.
+ *
+ * Not used.
+ */
+A4GLSQL_initsqllib(void) {
         A4GLSQL_make_connection(0,0,0);  
 	return 1;
 }

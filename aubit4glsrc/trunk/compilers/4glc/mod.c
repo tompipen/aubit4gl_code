@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.45 2002-02-16 21:25:00 saferreira Exp $
+# $Id: mod.c,v 1.46 2002-02-17 21:10:47 saferreira Exp $
 #
 */
 
@@ -46,12 +46,15 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.45 2002-02-16 21:25:00 saferreira Exp $
+* $Id: mod.c,v 1.46 2002-02-17 21:10:47 saferreira Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.45  2002/02/16 21:25:00  saferreira
+*	Doxygen comments added
+*	
 *	Revision 1.44  2002/02/14 22:11:44  saferreira
 *	Code commented
 *	
@@ -389,8 +392,18 @@ struct s_constr_buff constr_buff[256];
 int constr_cnt = 0;
 
 
+/** 
+ * Input bind array.
+ *
+ * Used for instructions like execute using or open using wher we have a list 
+ * of variables that act as input for the statement.
+ */
 struct binding ibind[NUMBINDINGS];
 struct binding nullbind[NUMBINDINGS];
+
+/**
+ * Output bind array.
+ */
 struct binding obind[NUMBINDINGS];
 struct binding fbind[NUMBINDINGS];
 struct binding ordbind[NUMBINDINGS];
@@ -2313,14 +2326,15 @@ int push_bind_rec (char *s, char bindtype)
 }
 
 /**
+ * Add a new bind to the specific aray (acording to the type).
  *
  * @param i The bind type.
- *   - i :
- *   - O  :
- *   - N :
- *   - o  :
+ *   - i : Input bind.
+ *   - O :
+ *   - N : Null bind.
+ *   - o : Output bind.
  *   - F :
- * @param var
+ * @param var The variable name to be binded.
  */
 int add_bind (char i, char *var)
 {
@@ -2421,15 +2435,15 @@ int add_bind (char i, char *var)
 }
 
 /**
- * Initilize the bind arrays.
+ * Initilize the bind arrays and add a variable to it.
  *
  * @param i The bind type:
- *   - i :
- *   - N : 
- *   - o
+ *   - i : Input bind.
+ *   - N : Null bind.
+ *   - o : Output bind.
  *   - O 
  *   - f or F :
- * @param var
+ * @param var The variable name to be binded.
  * @return
  */
 int start_bind (char i, char *var)
@@ -2467,14 +2481,14 @@ int start_bind (char i, char *var)
 }
 
 /**
- * Gets the bind number of elements filled in the array.
+ * Gets the bind array index of a specific type of bind.
  *
  * @param i The bind array type:
- *   - i 
- *   - N 
- *   - o
+ *   - i : Input bind.
+ *   - N : Null bind
+ *   - o : Output bind
  *   - f or F
- * @return The number of elements in thbind array, 0 if invalid type.
+ * @return The counter in the bind array, 0 if invalid type.
  */
 int get_bind_cnt (char i)
 {
@@ -2489,6 +2503,16 @@ int get_bind_cnt (char i)
   return 0;
 }
 
+/**
+ * Gets the number of elements filled in a bind array.
+ *
+ * @param i The bind array type:
+ *   - i : The bind type.
+ *   - N : Null bind.
+ *   - o : Output bind.
+ *   - f or F
+ * @return The number of elements in the bind array, 0 if invalid type.
+ */
 int how_many_in_bind (char i)
 {
   if (i == 'i')

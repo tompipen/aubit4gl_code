@@ -24,8 +24,15 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.8 2002-02-15 11:33:46 afalout Exp $
+# $Id: nosql.c,v 1.9 2002-02-17 21:10:50 saferreira Exp $
 #*/
+
+/**
+ * @file
+ *
+ * Dummy module with empty implementations for sql functions without 
+ * specific SQL dinamic library built.
+ */
 
 #ifdef __CYGWIN__
 	/* fixme remove status and sqlca defined in this file, use
@@ -373,9 +380,13 @@ A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
 	exitwith ("Could not execute_sql - noODBC build");
 }
 
+/**
+ * Initializtion of the sql library.
+ *
+ * Does nothing - it doesn't need to..
+ */
 int A4GLSQL_initsqllib()
 {
-	// Does nothing - it doesn't need to..
 	return 1;
 }
 //---------------------------- EOF ------------------------------
