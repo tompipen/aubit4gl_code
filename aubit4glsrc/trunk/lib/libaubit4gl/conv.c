@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.49 2003-06-27 15:02:09 mikeaubury Exp $
+# $Id: conv.c,v 1.50 2003-06-27 19:59:43 mikeaubury Exp $
 #
 */
 
@@ -2585,7 +2585,8 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
     {
       //char*ptr=0;*ptr=0;
       // we don't know how many decimals are required, 4 should be ok
-      size += 4;
+	A4GL_debug("DTYPE_DECIMAL fix in conv.c...");
+      size += 8;
       if (size > 32)
 	size = 32;
       size = size * 256 + 4;
@@ -2901,7 +2902,7 @@ A4GL_dec_to_dec (char *f, char *t)
       if (c)
 	{
 	  // use a rounded copy of the source decimal
-	  //printf ("copying %d bytes\n", NUM_BYTES (f));
+	  A4GL_debug("copying %d bytes\n", NUM_BYTES (f));
 	  memcpy (buff, f, NUM_BYTES (f));
 	  A4GL_dec_roundoff (buff, ld);
 	  f = buff;
@@ -3479,13 +3480,17 @@ A4GL_dec_roundoff (char *s, int n)
 {
   int l, d, i, c, k;
   char buff[DBL_DIG1];
+int m;
 
   l = NUM_DIG (s);		// length of decimal in bytes
   d = NUM_DEC (s);		// number of decimal places
 
+  A4GL_debug("A4GL_dec_roundoff - %d",n);
   // we can only round off to fewer decimals than we have
-  if (n >= d)
+  if (n >= d) {
+    A4GL_debug("Round off lower..");
     return 0;
+  }
 
   // copy the decimal digits to a char buffer - ignore sign and dec. point
   memset (buff, 0, DBL_DIG1 - 1);
@@ -3497,22 +3502,34 @@ A4GL_dec_roundoff (char *s, int n)
       buff[c++] = (int) k % 10 + '0';
     }
 
+  A4GL_debug("Buff=%s\n",buff);
+
   // round off number in the char buffer
-  n = l * 2 - n;
-  while (n > 0 && buff[n] >= '5')
+  m = l * 2 -d +n;
+  for (k=m+1;k<l*2;k++) {
+	buff[k]=0;
+  }
+
+  A4GL_debug("Total digits : %d decimals %d new decimals %d",m,d,n);
+  A4GL_debug("m=%d l-d+n=%d buff[m]=%c",m,(l*2)-d+n,buff[m]);
+  while (m > 0 && buff[m] >= '5')
     {
-      buff[n--] = '0';
-      if (buff[n] < '9')
+      buff[m] = '0';
+	m--;
+      if (buff[m] < '9')
 	{
-	  buff[n] += 1;
+	  buff[m] += 1;
 	  break;
 	}
-      buff[n] = '9';
+      buff[m] = '9';
     }
 
+  A4GL_debug("Buff now=%s\n",buff);
   // test for an overflow - we cannot round in that case
-  if (n < 1 && buff[0] == '0')
+  if (n < 1 && buff[0] == '0') {
+	A4GL_debug("Overflow...");
     return 0;
+  }
 
   // write rounded result back to decimal number
   i = OFFSET_DEC (s);
