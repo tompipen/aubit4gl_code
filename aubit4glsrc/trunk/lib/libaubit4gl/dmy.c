@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.14 2004-04-21 14:45:58 mikeaubury Exp $
+# $Id: dmy.c,v 1.15 2004-09-20 17:05:24 mikeaubury Exp $
 #
 */
 
@@ -181,7 +181,13 @@ A4GL_using_date (int dn, char *us)
   /* if no format is given, use DBDATE */
   if ((us == 0) || (*us == '\0'))
     {
-      strcpy (buff_using_date, A4GL_dbdate_to_using (""));
+	char *ptr;
+      ptr=A4GL_dbdate_to_using ("");
+	if (ptr) {
+      strcpy (buff_using_date, ptr);
+	} else {
+	return 0;
+	}
     }
   else
     {
@@ -291,7 +297,13 @@ A4GL_dbdate_to_using (char *dbdate)
   /* if no dbdate format given, use the current environment variable */
   if ((dbdate == 0) || (*dbdate == '\0'))
     {
-      strncpy (buff, A4GL_get_dbdate (), 10);
+      char *ptr;
+      ptr=A4GL_get_dbdate ();
+      if (ptr) {
+      		strncpy (buff, A4GL_get_dbdate (), 10);
+	} else {
+		return 0;
+	}
     }
   else
     {
@@ -396,6 +408,7 @@ A4GL_get_dbdate (void)
 
   /* try set the date format from (A4GL_)DBDATE */
   strncpy (dbdate, acl_getenv ("DBDATE"), 10);
+   dbdate[9]=0;
 
   /* if still no date format, use Informix default "mdy4/" */
   if (dbdate[0] == '\0')
@@ -433,8 +446,8 @@ A4GL_get_dbdate (void)
   /* we have an invalid dbdate format - die ... */
   A4GL_set_errm (dbdate);
   A4GL_exitwith ("dmy.c - Invalid DBDATE format: %s");
-  exit (1);
-  return 0;
+      strcpy (dbdate, "MDY4/");
+      return dbdate;
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.95 2004-09-20 16:38:04 mikeaubury Exp $
+# $Id: esql.ec,v 1.96 2004-09-20 17:06:13 mikeaubury Exp $
 #
 */
 
@@ -143,7 +143,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.95 2004-09-20 16:38:04 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.96 2004-09-20 17:06:13 mikeaubury Exp $";
 #endif
 
 
@@ -2666,11 +2666,15 @@ A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr, int nbi
   int colcnt;
   //int coltype;
   EXEC SQL END DECLARE SECTION;
+
   char *fname;
+  int sstatus;
   ibind=vibind;
   A4GL_debug ("Unload data..");
   fname=strdup(fname_o); A4GL_trim(fname);
   unloadFile = (FILE *) A4GL_mja_fopen (fname, "wt");
+  a4gl_status=0;
+
   if (unloadFile == (FILE *) 0)
     {
     /** @todo : Generate some error code compatible with informix 4gl */
@@ -2744,7 +2748,8 @@ A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr, int nbi
   // Get the data
   while (1)
     {
-      A4GL_debug ("Here6");
+      A4GL_debug ("Here6 %d %d %d",a4gl_status,sqlca.sqlcode,a4gl_sqlca.sqlcode);
+	if (a4gl_status<0) break;
       EXEC SQL FETCH crUnload USING SQL DESCRIPTOR 'descUnload';
       if (isSqlError ())
 	{
@@ -2759,7 +2764,7 @@ A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr, int nbi
       cnt++;
       for (colcnt = 1; colcnt <= numberOfColumns; colcnt++)
 	{
-	  if (printField (unloadFile, colcnt, "descUnload") == 1)
+	  if (printField (unloadFile, colcnt, "descUnload") == 1 || a4gl_status<0 || sqlca.sqlcode<0 || a4gl_sqlca.sqlcode<0)
 	    {
 	      rc = 1;
 	      break;
@@ -2774,10 +2779,21 @@ A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr, int nbi
   EXEC SQL FREE stUnload;
   EXEC SQL FREE crUnload;
   A4GL_debug ("Here9");
+  
+  if (a4gl_status<0) {
+	sstatus=a4gl_status;
+  } else {
+	sstatus=0;
+  }
+
+
   EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
-  if (isSqlError ())
-    rc = 1;
-	free(fname);
+  if (isSqlError ()) {rc = 1;}
+  if (sstatus<0) {
+		a4gl_status=sstatus;
+ }
+  free(fname);
+  
   return;			/* return 0; */
 }
 
