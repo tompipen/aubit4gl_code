@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.45 2004-02-22 02:28:59 afalout Exp $
+#	 $Id: a4gl.mk,v 1.46 2004-03-01 00:59:52 afalout Exp $
 
 ##########################################################################
 #
@@ -60,7 +60,8 @@ endif
 #Despite of the use of 2>/dev/null, this will print rubbish (À&@À&@) to stdout when
 #aubit-config is not installed yet. That's why we have to use the 'trick' with 
 #x=`...`; echo $x
-A4GL_CURR_PACKER			:=$(shell x=`${AUBIT_CONFIG} A4GL_PACKER 2> /dev/null`; echo $$x )
+A4GL_CURR_PACKER:=$(shell x=`${AUBIT_CONFIG} A4GL_PACKER 2> /dev/null`; echo $$x )
+FORMTYPE:=$(shell x=`${AUBIT_CONFIG} A4GL_FORMTYPE 2> /dev/null`; echo $$x )
 
 ifeq "${A4GL_CURR_PACKER}" ""
 	A4GL_CURR_PACKER=PACKED
@@ -121,9 +122,11 @@ AUCC_FLAGS			=-g -static -O -I${AUBITDIR}/incl -DAUBIT4GL
 ###########################
 # A4GL C-code Compiler command
 ifeq "${USE_4GLPC}" "1"
-	A4GL_CC_CMD     = ${AUBIT_CMD} ${SH} 4glpc
+	A4GL_FGLC		=4glpc
+	A4GL_CC_CMD     = ${AUBIT_CMD} ${SH} ${A4GL_FGLC}
 else
-	A4GL_CC_CMD     = ${AUBIT_CMD} 4glc ${EXTRA_4GLC}
+	A4GL_FGLC		=4glc
+	A4GL_CC_CMD     = ${AUBIT_CMD} ${A4GL_FGLC} ${EXTRA_4GLC}
 #--clean
 endif
 A4GL_CC_ENV     =
@@ -158,10 +161,35 @@ A4GL_MC         = ${A4GL_MC_CMD} ${A4GL_MC_FLAGS}
 # Define suffixes which are recognised.
 #NOTE: variable names and settings used here are identical to Aubit resource.c
 
-#Executable:
-A4GL_EXE_EXT=.4ae
-#static object:
-A4GL_OBJ_EXT=.ao
+ifeq "${A4GL_FAKELEXTYPE}" "PCODE"
+	#In case of the p-code compilation, we need to add packer extension:
+	#FIXME: currently p-code compiler supports only single module,
+    #so program (TARGET) and object extensions are same
+	A4GL_PCODE_EXT=.4pe
+	ifeq "${A4GL_CURR_PACKER}" "PACKED"
+		A4GL_EXE_EXT=${A4GL_PCODE_EXT}.dat
+		A4GL_OBJ_EXT=${A4GL_PCODE_EXT}.dat
+    endif
+	ifeq "${A4GL_CURR_PACKER}" "XML"
+		A4GL_EXE_EXT=${A4GL_PCODE_EXT}.xml
+    	A4GL_OBJ_EXT=${A4GL_PCODE_EXT}.xml
+    endif
+    #To run P-code you must NOT have packer extension:
+	A4GL_RUN_EXT=${A4GL_PCODE_EXT}
+	
+	DEFAULT_LINK=cp prog${A4GL_OBJ_EXT} progname${A4GL_EXE_EXT}
+else
+	#Executable (compile):
+	A4GL_EXE_EXT=.4ae
+	#Execute extension:
+	A4GL_RUN_EXT=${A4GL_EXE_EXT}	
+	#static object:
+	A4GL_OBJ_EXT=.ao
+
+	#define default linking action
+	DEFAULT_LINK=${A4GL_FGLC} $^ -o $@
+	
+endif
 #shared object:
 A4GL_SOB_EXT=.aso
 #static library:

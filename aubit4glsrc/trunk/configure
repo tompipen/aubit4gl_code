@@ -7701,7 +7701,7 @@ ALL_LINGUAS="en"
 
 #examlpe - USE iT
 #AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
-# $Id: configure,v 1.232 2004-02-22 02:28:55 afalout Exp $
+# $Id: configure,v 1.233 2004-03-01 00:59:30 afalout Exp $
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
 
@@ -26428,7 +26428,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.232 2004-02-22 02:28:55 afalout Exp $
+| $Id: configure,v 1.233 2004-03-01 00:59:30 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

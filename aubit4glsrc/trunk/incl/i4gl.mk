@@ -1,4 +1,4 @@
-#   @(#)$Id: i4gl.mk,v 1.10 2003-03-02 03:29:52 afalout Exp $
+#   @(#)$Id: i4gl.mk,v 1.11 2004-03-01 00:59:52 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -132,6 +132,16 @@ I4GL_SUFFIXES 		=${I4GL_PRG_EXT} ${I4GL_FRM_EXT} ${I4GL_HLP_EXT}
 I4GL_CLEAN_FLAGS	=$(addprefix *,	$(I4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(I4GL_SUFFIXES)) *.bak
 
 #=============================================================================
+
+#ifeq "${A4GL_FAKELEXTYPE}" "PCODE"
+	DEFAULT_LINK=cp prog${A4GL_OBJ_EXT} progname${A4GL_EXE_EXT}
+#else
+#	#define default linking action
+#	DEFAULT_LINK=${A4GL_FGLC} $^ -o $@
+#endif
+
+
+
 
 # Rules for compiling I4GL (assuming 4.12/6.00 or later with -nokeep as default)
 
