@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.50 2003-08-14 16:12:29 mikeaubury Exp $
+# $Id: resource.c,v 1.51 2003-08-23 00:42:59 afalout Exp $
 #
 */
 
@@ -88,9 +88,9 @@ struct str_resource builtin_resource[] = {
 #else
   {"A4GL_SQLTYPE", "nosql"},
 #endif
-  {"A4GL_UI", "TUI"},
+  {"A4GL_UI", "TUI"}, 			//should this be CONSOLE ?
   {"A4GL_FORMTYPE", "GENERIC"},
-  {"A4GL_PACKER", "XML"},
+  {"A4GL_PACKER", "XML"},       //should this be PACKED?
   {"A4GL_PDFTYPE", "NOPDF"},	/* libEXREPORT_xxxx */
   {"A4GL_LEXTYPE", "C"},
   {"A4GL_LEXDIALECT", "INFORMIX"}, // If they set LEXTYPE TO EC - this is the default
@@ -99,7 +99,8 @@ struct str_resource builtin_resource[] = {
   {"A4GL_MSGTYPE", "NATIVE"},
   {"A4GL_HELPTYPE", "std"},
   {"EXDTYPE", ""},
-//  {"AUBITDIR",                        "@aubitdir@  we should try setting AUBITDIR relative to location of invoked executable, if not already set
+//  {"AUBITDIR",                        "@aubitdir@  we should try setting AUBITDIR relative to 
+//location of invoked executable, if not already set
 
   /*
      INCLINES Adds originating line number of each created target language statemtn
@@ -141,8 +142,6 @@ struct str_resource builtin_resource[] = {
 #else
   {"EXTENDED_FETCH", "Y"},	/* This won't always work ! */
 #endif
-//  {"ACLDIR",                  "/usr/acl"},
-//  {"ACLTEMP",                         "tempdsn"},
   {"HELPTEXT", "Help"},
   {"ERROR_MSG", "Press Any Key"},
   {"PAUSE_MSG", "Press Any Key"},
@@ -289,49 +288,38 @@ struct str_resource builtin_resource[] = {
      specified in a4gl.mk, or you can even use aubit-config program to read
      then from aubitrc directly inside a4gl.mk
    */
-  // counterpart source file extensions:
-  {"A4GL_MNU_EXT", ".mnu"},	// .menu
-  {"A4GL_HLP_EXT", ".hlp"},	// .msg
-  {"A4GL_FRM_BASE_EXT", ".afr"},	// .per
+										// counterpart source file extensions:
+  {"A4GL_MNU_BASE_EXT", ".mnu"},				// .menu
+  {"A4GL_HLP_EXT", ".hlp"},				// .msg
 
-  {"A4GL_FRM_XML_EXT", ".xml.afr"},	// .per
-  {"A4GL_XML_EXT", ".xml"},	// .per
+/* form files (source:.per) */
+  {"A4GL_FRM_BASE_EXT", ".afr"},
+  
+/* packer extension (added to form/menu files) */
+  {"A4GL_XML_EXT", ".xml"},
+  {"A4GL_PACKED_EXT", ".dat"},
 
-  {"A4GL_FRM_PACKED_EXT", "afr.dat"},	// .per
-  {"A4GL_PACKED_EXT", ".dat"},	// .per
+/* compiled objects (source:.c/.ec/.4gl) */
+  {"A4GL_OBJ_EXT", ".ao"},			// static object
+  {"A4GL_LIB_EXT", ".aox"},			// static library
+  {"A4GL_SOB_EXT", ".aso"},      	// shared object (pbject compiled with -PIC to be linked in shared library)
+//FIXME: do we need distintion between shared object and shared library?
+  {"A4GL_SOL_EXT", ".asx"},      	// shared library
+  {"A4GL_EXE_EXT", ".4ae"},			// executable
 
-  {"A4GL_OBJ_EXT", ".ao"},	// .c/.4gl
-  {"A4GL_LIB_EXT", ".aox"},	// .c
-  {"A4GL_EXE_EXT", ".4ae"},	// .ao
-/*
+/* This is not needed, since GCC will add .exe/.dll extension automatically on Windows
 #if (defined (__CYGWIN__) || defined (__MINGW32__))
   {"A4GL_EXE_EXT", 		".exe"},
   {"A4GL_DLL_EXT", 		".dll"},
 #else
 */
-  {"A4GL_EXE_EXT", ".4ae"},
-  {"A4GL_DLL_EXT", ".so"},
-//#endif
+
+
+
   /* can't use del on Windows, does not accept forward slash in the path */
   {"A4GL_RM_CMD", "rm -f"},
   {"A4GL_DEBUG_LEVEL", "10"},
-
-
   {"GTK_INC_PATH", ""},		//this ently is to prevent core dumps on Windows when thsi value is not set
-
-
-
-  /* WINDOWS Compilation options */
-/* obsolete
-  {"W32LIBSDIR", 		"-L/acl/lib"},
-  {"W32LIBS", 			"-lpdcurs -lgdi32 -luser32 -lwsock32"},
-  {"W32FGLLIBSDIR", 	"-L/acl/lib"},
-  {"W32FGLLIBS_SHARED", "-laclshared -lm"},
-  {"W32ODBC", 			"-lodbc32 -lodbccp32"},
-  {"W32FGLLIBS", 		"-laclall -lm"},
-  {"W32INCLDIR", 		"-I/acl/incl"},
-  {"W32GCC", 			"gcc -s -O"},
-*/
 
   /* End of definitions */
   {"", "0"}
@@ -500,101 +488,6 @@ find_str_resource (char *s)
       return 0;
     }
 }
-
-/**
- * Get the contents of an resources or environment variable.
- * WARNING - DO NOT USE CALLS TO A4GL_debug() in this function - it will cause endless loop
- * @param s The environment variable name.
- */
-char *
-old_acl_getenv (char *s)
-{
-  char prefixed_string[1024];
-//WHY was this static?
-//static char *ptr;
-  char *ptr;
-
-//WARNING - strings returned by getenv() are linited to 125 charcters!
-//strings defined in aubitrc don't have this limitation.
-
-
-  /* First try in environmet, with a prefix */
-  sprintf (prefixed_string, "A4GL_%s", s);
-  ptr = getenv (prefixed_string);
-
-
-  if (ptr == 0)
-    {
-      /* Not there, try again in environment, but without the prefix */
-      ptr = (char *) getenv (s);
-	}
-
-
-
-#if ( (defined (WIN32) || defined (__MINGW32__)) && ! defined (__CYGWIN__))
-  if (ptr == 0)
-    {
-      /* try in Windows registry */
-      /* why was this static? */
-      //static char buff[1024];
-      char buff[1024];
-      if (get_regkey (s, buff, 1023))
-	{
-	  //ptr = (char *)buff;
-	  ptr = buff;
-	}
-      else
-	{
-	  if (get_regkey (prefixed_string, buff, 1023))
-	    {
-	      //ptr = (char *)buff;
-	      ptr = buff;
-	    }
-	}
-    }
-#endif
-
-
-  if (ptr == 0)
-    {
-      /* Not there, try in resources */
-      ptr = find_str_resource (s);
-    }
-
-  if (strcmp (s, "DBDATE") == 0)
-    {
-      A4GL_chk_dbdate (ptr);
-    }
-
-  if (ptr == 0)
-    {
-#ifdef DEBUG
-      //debug("Could not find value for %s\n",s);
-#endif
-      return "";
-    }
-  else
-    {
-
-#ifdef DEBUG
-      /*
-         if (strcmp (s, "DEBUG") != 0) {
-         debug("returning %s=%s\n",s,ptr);
-         }
-       */
-#endif
-
-      /*
-         FIXME: make sure that things like AUBITDIR are in appropriate format:
-         on Windows, watch out for Cywin relative paths.
-         /cygdrive/c/something is OK, but /usr/bin is not (missing drive letter and CygWin path)!
-
-       */
-
-      return ptr;
-    }
-}
-
 
 /**
  * Get the contents of an resources or environment variable.

@@ -1644,7 +1644,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.24 2003-08-09 09:27:13 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.25 2003-08-23 00:42:58 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3472,12 +3472,14 @@ Typically, in C, that would be:
 
 Inside Amake, for example, Aubit extensions are defined as:
 
-A4GL_PRG_EXT=.4ae
+A4GL_EXE_EXT=.4ae
 A4GL_OBJ_EXT=.ao
-A4GL_FRM_EXT=.afr.xml
+A4GL_FRM_BASE_EXT=.afr
+A4GL_XML_EXT=.xml
+A4GL_PACKED_EXT=.dat
 A4GL_HLP_EXT=.hlp
 A4GL_LIB_EXT=.aox
-A4GL_MNU_EXT=.mnu.xml
+A4GL_MNU_BASE_EXT=.mnu.xml
 
 ...in make include file called a4gl.mk. Same file for other compilers are called i4gl.mk, q4gl.mk and d4gl.mk, and contain equivalents for appropriate 4gl compiler.
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.5 2003-05-15 07:10:42 mikeaubury Exp $
+# $Id: loadmenu.c,v 1.6 2003-08-23 00:42:58 afalout Exp $
 #*/
 
 /**
@@ -429,7 +429,7 @@ A4GL_show_menu (char *menuid, void *handler)
   fname = A4GL_char_pop ();
   p = handler;
 
-  sprintf (buff, "%s%s", fname, acl_getenv ("A4GL_MNU_EXT"));	// .xml is added later in libPACKER_
+  sprintf (buff, "%s%s", fname, acl_getenv ("A4GL_MNU_BASE_EXT"));	// packer extension (xml/dat) is added later in libPACKER_
 
   fname = (char *) buff;
   A4GL_debug ("show_menu >%s<", fname);

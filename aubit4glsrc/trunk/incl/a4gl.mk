@@ -15,13 +15,9 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.39 2003-05-16 03:07:11 afalout Exp $
+#	 $Id: a4gl.mk,v 1.40 2003-08-23 00:42:58 afalout Exp $
 
 ##########################################################################
-#
-#   @(#)$Id: a4gl.mk,v 1.39 2003-05-16 03:07:11 afalout Exp $
-#
-#   @(#)$Product: Aubit 4gl $
 #
 #   Makefile for Aubit 4GL Compilation - based on i4gl.mk by JL
 #
@@ -34,7 +30,7 @@
 ##########################################################################
 
 #FIXME: move this stuff in a common place, since it applies to all compilers:
-
+#maybe create file "common4gl.mki" and include it in all rules files?
 ifndef AMAKE
 	AMAKE=amake
 endif
@@ -133,8 +129,10 @@ A4GL_MC         = ${A4GL_MC_CMD} ${A4GL_MC_FLAGS}
 #######################
 # Define suffixes which are recognised.
 
+#NOTE: variable names and settings used here are identical to Aubit resource.c
+
 #Executable:
-A4GL_PRG_EXT=.4ae
+A4GL_EXE_EXT=.4ae
 
 #static object:
 A4GL_OBJ_EXT=.ao
@@ -145,22 +143,28 @@ A4GL_LIB_EXT=.aox
 #shared library:
 A4GL_SOL_EXT=.asx
 
+A4GL_FRM_BASE_EXT=.afr
+A4GL_MNU_BASE_EXT=.mnu
+A4GL_XML_EXT=.xml
+A4GL_PACKED_EXT=.dat
 
+
+#This to composite variables (A4GL_MNU_EXT and A4GL_FRM_EXT exist only in Amake
 ifeq "${A4GL_CURR_PACKER}" "XML"
 	#Compiled form
 	#FIXME: reverse => xml.afr
-	A4GL_FRM_EXT=.afr.xml
+	A4GL_FRM_EXT=${A4GL_FRM_BASE_EXT}${A4GL_XML_EXT}
 
 	#Compiled menu:
 	#FIXME: reverse => xml.mnu
-	A4GL_MNU_EXT=.mnu.xml
+	A4GL_MNU_EXT=${A4GL_MNU_BASE_EXT}${A4GL_XML_EXT}
 endif
 ifeq "${A4GL_CURR_PACKER}" "PACKED"
 	#Compiled form
-	A4GL_FRM_EXT=.afr.dat
+	A4GL_FRM_EXT=${A4GL_FRM_BASE_EXT}${A4GL_PACKED_EXT}
 
 	#Compiled menu:
-	A4GL_MNU_EXT=.mnu.dat
+	A4GL_MNU_EXT=${A4GL_MNU_BASE_EXT}${A4GL_PACKED_EXT}
 endif
 
 #Compiler help
@@ -175,7 +179,7 @@ A4GL_TMP_SUFFIXES_DELETE=${A4GL_OBJ_EXT} ${A4GL_LIB_EXT} .err .glb
 #All files that compiler created, but are not neded at run-time
 A4GL_TMP_SUFFIXES   = ${A4GL_TMP_SUFFIXES_DELETE} .c .h
 #Files that compiler created, needed at run-time
-A4GL_SUFFIXES 		= ${A4GL_PRG_EXT} ${A4GL_FRM_EXT} ${A4GL_HLP_EXT} ${A4GL_MNU_EXT} ${A4GL_SOB_EXT} ${A4GL_SOL_EXT}
+A4GL_SUFFIXES 		= ${A4GL_EXE_EXT} ${A4GL_FRM_EXT} ${A4GL_HLP_EXT} ${A4GL_MNU_EXT} ${A4GL_SOB_EXT} ${A4GL_SOL_EXT}
 
 #FIXME: verify that this declaration is not overriden if foolowed by another one,
 #since we often include all rules files one after the other...
@@ -193,11 +197,11 @@ A4GL_CLEAN_FLAGS	=$(addprefix *,	$(A4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(A4
 # Rule to compile executable from single 4gl file
 #
 #problem with this rule is, that when there is no explicit rule to
-#build x.${A4GL_PRG_EXT} and we have x.4gl, this rule will be invoked
-#with just one (${A4GL_PRG_EXT}.4gl) source file, instead with all the 4gl
+#build x.${A4GL_EXE_EXT} and we have x.4gl, this rule will be invoked
+#with just one (${A4GL_EXE_EXT}.4gl) source file, instead with all the 4gl
 #files needed:
-#.4gl${A4GL_PRG_EXT}:
-%${A4GL_PRG_EXT}: %.4gl
+#.4gl${A4GL_EXE_EXT}:
+%${A4GL_EXE_EXT}: %.4gl
 	${A4GL_CL} -o$@ $< ${A4GL_CL_LDFLAGS}
 
 

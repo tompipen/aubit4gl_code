@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.12 2003-05-15 07:10:42 mikeaubury Exp $
+# $Id: menuwrite.c,v 1.13 2003-08-23 00:42:58 afalout Exp $
 #*/
 
 /**
@@ -130,7 +130,7 @@ A4GL_write_menu (void)
   menu_list *ptr;
   ptr = &the_menus;
   strcpy (fname, outputfilename);
-  strcat (fname, acl_getenv ("A4GL_MNU_EXT"));
+  strcat (fname, acl_getenv ("A4GL_MNU_BASE_EXT"));
 
   strcpy (fname2, outputfilename);
   strcat (fname2, ".c");

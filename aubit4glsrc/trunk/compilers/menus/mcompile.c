@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.22 2003-05-15 07:10:37 mikeaubury Exp $
+# $Id: mcompile.c,v 1.23 2003-08-23 00:42:58 afalout Exp $
 #*/
 
 /**
@@ -159,7 +159,7 @@ main (int argc, char *argv[])
       strcpy (outputfilename, a);
 
       //extendion will be added later:
-      //strcat (outputfilename, acl_getenv ("A4GL_MNU_EXT"));
+      //strcat (outputfilename, acl_getenv ("A4GL_MNU_BASE_EXT"));
 
       yyin = A4GL_mja_fopen (c, "r");
 

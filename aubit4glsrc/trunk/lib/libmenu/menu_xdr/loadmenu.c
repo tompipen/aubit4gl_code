@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.21 2003-06-06 09:52:36 mikeaubury Exp $
+# $Id: loadmenu.c,v 1.22 2003-08-23 00:42:58 afalout Exp $
 #*/
 
 /**
@@ -359,7 +359,7 @@ real_load_menu (char *fname, char *menu_id, int mode, void *handler)
   GtkWidget *w = 0;
   char buff[256];
 
-  sprintf (buff, "%s%s", fname, acl_getenv ("A4GL_MNU_EXT"));
+  sprintf (buff, "%s%s", fname, acl_getenv ("A4GL_MNU_BASE_EXT"));
   f = A4GL_open_file_dbpath (buff);
 
   if (f == 0)

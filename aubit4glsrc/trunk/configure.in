@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.191 2003-08-20 07:38:54 afalout Exp $
+dnl # $Id: configure.in,v 1.192 2003-08-23 00:42:41 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -100,16 +100,16 @@ if test "$AUBITCONF_FLAG" != "running"; then
 		echo "a=1;" >> order.c
 		echo "ptr=(char *)&a;" >> order.c
 
-		if test "$COMSPEC" = ""; then
-            #echo "-------------------NOT On Windows"
-			echo 'printf("%d%d",ptr\1330\135,ptr\1331\135);' > order.tmp
-		    xx=`cat order.tmp`
-			echo -e "$xx" >> order.c
-        else
+#		if test "$COMSPEC" = ""; then
+#            #echo "-------------------NOT On Windows"
+#			echo 'printf("%d%d",ptr\1330\135,ptr\1331\135);' > order.tmp
+#		    xx=`cat order.tmp`
+#			echo -e "$xx" >> order.c
+#        else
             #echo "-------------------On Windows"
 			#echo 'printf("%d%d",ptr[0],ptr[1]);' > order.tmp
 			echo -e 'printf("%d%d",ptr\1330\135,ptr\1331\135);' >> order.c
-        fi
+#        fi
 
 		echo "}" >> order.c
 		echo "" >> order.c

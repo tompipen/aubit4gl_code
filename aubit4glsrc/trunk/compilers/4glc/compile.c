@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.38 2003-08-18 06:18:33 afalout Exp $
+# $Id: compile.c,v 1.39 2003-08-23 00:42:58 afalout Exp $
 #*/
 
 /**
@@ -541,7 +541,7 @@ initArguments (int argc, char *argv[])
 					strcat (output_object,acl_getenv ("A4GL_EXE_EXT"));
                 }
                 if (compile_so) {
-					strcat (output_object,acl_getenv ("A4GL_DLL_EXT"));
+					strcat (output_object,acl_getenv ("A4GL_DLL_EXT<<-bull!"));
                 }
                 if (compile_lib) {
 					strcat (output_object,acl_getenv ("A4GL_LIB_EXT"));

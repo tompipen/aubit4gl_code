@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.2 2003-03-05 07:27:48 afalout Exp $
+# $Id: Makefile.in,v 1.3 2003-08-23 00:42:59 afalout Exp $
 #
 
 ROOT    =../../..
@@ -40,7 +40,7 @@ include ${ROOT}/incl/?4gl.mk
 
 ACE_SRC=perms
 
-DEFAULT	=${ACE_SRC}${A4GL_ACERC_EXT} ${ACE_SRC}${A4GL_PRG_EXT}
+DEFAULT	=${ACE_SRC}${A4GL_ACERC_EXT} ${ACE_SRC}${A4GL_EXE_EXT}
 
 .PHONY: default all help clean
 

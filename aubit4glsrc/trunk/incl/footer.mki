@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.37 2003-07-10 08:43:40 afalout Exp $
+#	 $Id: footer.mki,v 1.38 2003-08-23 00:42:58 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -80,9 +80,9 @@ ifeq "${I4GL_PRG_EXT}" ""
 	I4GL_CPRG_EXT=.I4GL_CPRG_EXT.${I4GL_PRG_EXT}
 	I4GL_LIB_EXT=${I4GL_PRG_EXT}
 endif
-ifeq "${A4GL_PRG_EXT}" ""
-	A4GL_PRG_EXT=.A4GL_RULES_NOT_INCLUDED
-	A4GL_LIB_EXT=${A4GL_PRG_EXT}
+ifeq "${A4GL_EXE_EXT}" ""
+	A4GL_EXE_EXT=.A4GL_RULES_NOT_INCLUDED
+	A4GL_LIB_EXT=${A4GL_EXE_EXT}
 endif
 ifeq "${Q4GL_PRG_EXT}" ""
 	Q4GL_PRG_EXT=.Q4GL_RULES_NOT_INCLUDED
@@ -125,7 +125,7 @@ else
 	PROG.4ge  = ${ADDEXECSTORE}${PROG}${I4GL_CPRG_EXT}
 	PROG.4gi  = ${ADDEXECSTORE}${PROG}${I4GL_PRG_EXT}
 	PROG.4qe  = ${ADDEXECSTORE}${PROG}${Q4GL_PRG_EXT}
-	PROG.4ae  = ${ADDEXECSTORE}${PROG}${A4GL_PRG_EXT}
+	PROG.4ae  = ${ADDEXECSTORE}${PROG}${A4GL_EXE_EXT}
 endif
 
 # =======================================================================

@@ -4,19 +4,19 @@
 #   When this file have file name "aubitrc.in" - it's intendend for use
 #   with "configure" script, as input file for creation of "aubitrc".
 #   When this file have file name "aubitrc" - it's a configration file,
-#   and you are free to edit it as you wish
+#   and you are free to edit it as you wish.
 #
 #   Read by:
-#			all Aubit compilers and compiler script (4glpc)
+#			all Aubit compilers (4glc,fcomile...) and compiler script (4glpc)
 #           All Aubit compiler make files (via incl/Makefile-common include)
 #           All Aubit compiled 4gl programs
 #
 #   Read from, in this order:
-#			/etc/opt/aubit4glaubitrc
-#			$AUBITDIR/etc/aubitrc
-#			~/.aubit4gl/aubitrc
-#			./.aubitrc
-#			$A4GL_INIFILE environment variable
+#			1: /etc/opt/aubit4gl/aubitrc
+#			2: $AUBITDIR/etc/aubitrc
+#			3: ~/.aubit4gl/aubitrc  (`=$HOME=user's home directory)
+#			4: ./.aubitrc (current directory)
+#			5: $A4GL_INIFILE environment variable
 #
 #   Note: Defaults are in (), dependencies in []
 #
@@ -24,15 +24,30 @@
 # not just ones listed in this file. See output of "aubit-config -a" for list
 # of all defaults and there values.
 #
-# Note that some settings names like A4GL_DBPATH, are cumulated from all 
-# available sources (Environment, Windows registry, aubitrc file(s)) and allow
-# for both Aubit specific version of the name ("A4GL_DBPATH") and the generic name
-# like "DBPATH" to allow for compatibility with third-party product that
-# also use them. Aubit specific ones have priority in the non-cumulative cases,
-# and when setting can be cumulated, Aubit specific ones will appear first in
-# cumulated string.
+# Note that some settings names like A4GL_DBPATH, are cumulated from all
+# available sources (Environment, Windows registry, aubitrc file(s)) and all
+# allow for both Aubit specific version of the name ("A4GL_DBPATH") and the
+# generic name like "DBPATH" to allow for compatibility with third-party product
+# that also use them. Aubit specific ones have priority in the non-cumulative,
+# cases and when setting can be cumulated, Aubit specific ones will appear
+# first in cumulated string.
+#
+# Because this file is used from different tools (make,sh,programs) it is
+# important to use syntax that can be provessed by all. This means:
+#
+#  * Use only # character as the first character in line as comment
+#  * Do not leave any space between variable name and equal (=) sign
+#  * Do not leave any spave between equal sign (=) and value
+#  * Do not enclose value for variables needed by Make in quotes, because
+#   	Make will take them litteraly
+#  * Do not leave spaecs in value without enclosing them in quotes, because
+#       this would cause shell scripts to report error
 #
 ##########################################################################
+
+## ===================================================================
+## 				             Paths
+## ===================================================================
 
 #############
 #this internal variable points to default location of Aubit config files
@@ -43,27 +58,51 @@ AUBITETC=/etc/opt/aubit4gl
 #Defines location where you installed Aubit4gl:
 #Default for source distribution:/opt/aubit/aubit4glsrc
 #Default for binary distribution:/opt/aubit4gl
+#Usually set using --prefix=/path to "configure" script
 AUBITDIR=@aubitdir@
+
+############
+#Full path to CINT C-code interpreter, if installed, othewise "no"
+#used by 4glc compiler to run C compiled code after compilation.
+A4GL_CINT=@CINT@
 
 ############
 #DBPATH variable containls list of directory(es) that will be searched for objects
 #like compiled form, help and menu files, and SQLite databases. Use coloumn (:)
-#as a delimiter between paths you want searched.
+#as a delimiter between paths you want searched, (;) on Windows.
 #Default: tools/ in Aubit source code root directory and tools/ in Aubit binary
 #installation directory
+#As oposed to most Aubit settings that are exclusive and order of there surce
+#(environment, aubitrc, built-in resources) decides which one will prevail,
+#DBPATH and A4GL_DBPATH are cumulated from both variables, and added one to
+#another in order depending on there source. So if you have path 1 in
+#environment variable A4GL_DBPATH path 2 in environment variable DBPATH, path 3
+#in A4GL_DBPATH in aubitrc, path 4 in DBPATH in aubitrc, cumulated value will
+#look like this: 1:2:3:4. Search for the file in DBPATH will then be performed
+#from left to right, and first path found to contain file looked for will be used.
 A4GL_DBPATH=@A4GL_DBPATH@
 
+############
+#CONFIG FILE BASED CONVERSIONS
+#convert_sql() now uses configuration files.  These are by default
+#located in /opt/aubit4gl/etc/convertsql/, but that can be changed
+#with A4GL_SQLCNVPATH.
+#A4GL_SQLCNVPATH=/opt/aubit4gl/etc/convertsql
+
 ## ===================================================================
-## 				Loadable modules/library configurations
+## 		 	Loadable modules (plug-ins) / library configurations
 ## ===================================================================
 
 ############
-#Name of default SQL library to use.
+#Name of default SQL library plug-in to use.
 #When used: run-time and compile-time
-#Options: (nosql) iodbc unixodbc esql ifxodbc pgodbc odbc32 sapodbc
-#	sqlite sqliteS sqliteodbc FILESCHEMA
+#Options: (nosql) 
+#   <ODBC MANAGERS> iodbc unixodbc odbc32 (Windows only)
+#	<DIRECT ODBC> 	ifxodbc pgodbc  sapodbc sqliteodbc
+#   <NATIVE> 		esql esqpPG esqlSAP esqlQ sqlite sqliteS pg
+#	<SPECIAL> 		FILESCHEMA
 #FILESCHEMA is to be used for compiling programs where either the database
-#doesn't exist yet - or you can't get immediate access to it..
+#doesn't exist yet - or you can't get immediate access to it.
 #This takes the 'database' as a filename (with a .schema extension) and uses
 #that to collect the data used by compiler(s)
 #Warning: this setting is ignored when A4GL_LEXTYPE is set to EC
@@ -73,15 +112,17 @@ A4GL_SQLTYPE=@A4GL_SQLTYPE@
 #Default output language driver for 4gl compiler:
 #When used: compile-time only
 #Options: (C), PERL, EC, CS
-#Note: EC (Embedded SQL C) can be Informix ESQL/C, SAP DB pre-compiler or 
-#PostgreSQL ecpg.
+#Note: EC (Embedded SQL C) can be Informix ESQL/C, SAP DB pre-compiler, Querix
+#esqlc or PostgreSQL ecpg.
 #using EC will limit Aubit DB connectivity to that of used EC compiler, ignoring
 #setting of A4GL_SQLTYPE
 #Note: CS is C#
 A4GL_LEXTYPE=@A4GL_LEXTYPE@
 
 ############
-#When A4GL_LEXTYPE=EC, specify type of EC compiler to be used
+#When A4GL_LEXTYPE=EC, specify type of EC compiler to be used. Ignored if
+#A4GL_LEXTYPE is not set to EC
+#When used: compile-time only
 #Options: (INFORMIX), POSTGRES, SAPDB, QUERIX
 A4GL_LEXDIALECT=@A4GL_LEXDIALECT@
 
@@ -92,18 +133,17 @@ A4GL_LEXDIALECT=@A4GL_LEXDIALECT@
 A4GL_PDFTYPE=@A4GL_PDFTYPE@
 
 ############
-#Determine default RPC driver to load
+#Determine default RPC (Remote Procedure Call) driver to load
 #When used: run-time only
 #Options: SUNRPC, (NORPC), XMLRPC
 #Note: XMLRPC is client only at the moment
 A4GL_RPCTYPE=@A4GL_RPCTYPE@
 
 #############
-#Defines default UI (user intertface) driver to load
+#Defines default UI (user intertface) driver plug-in to load
 #When used: run-time only
 #Options: (CONSOLE) [no deps.], TUI [curses], GTK [GTK+].
 A4GL_UI=@A4GL_UI@
-
 
 ############
 #Default forms driver to be loaded
@@ -122,26 +162,25 @@ A4GL_MENUTYPE=@A4GL_MENUTYPE@
 ############
 #Default help message driver to be loaded:
 #When used: run-time only
-#Options: (NATIVE), XML
+#Options: (NATIVE), XML (??? XML? chech this!)
 A4GL_MSGTYPE=@A4GL_MSGTYPE@
 
 ############
 #External data types support to be loaded
-#Currently only MPZ (large integers) are supported here
+#Currently only MPZ (large integers) are supported
 #FIME: not sure if this is needed - looks like this is loaded on request:
 #see example testmpz.4gl into the tools/test directory.
 EXDTYPE=@EXDTYPE@
 
-
 ############
 #You can select which packer to use by setting the variable "A4GL_PACKER"
-# 1) PACKED
+# 1) (PACKED)  - default
 #  This is very similar to XDR in that data is written in a hopefully portable
 # way (optionally non-portable if the required functions aren't available).
 # This will probably give the smalled output files
 # 2) XDR
 #  This is the same as doing it the old way
-# 3) (XML) - default
+# 3) XML
 #  This stores and reads the data in an XML file. The reading is very limited
 # and can basically only read the XML files that it generates - IT IS NOT A
 # FULL BLOWN XML PARSER. It uses some odd constructs and isn't ideal - but
@@ -152,8 +191,7 @@ EXDTYPE=@EXDTYPE@
 # pretty complicated stuff though using hashes for the data representation.
 # What you do with it after you've generated it is up to you, because this is
 # an output only library (ie it can't read back what its written).
-#A4GL_PACKER=XML
-A4GL_PACKER=PACKED
+A4GL_PACKER=@A4GL_PACKER@
 
 ############
 #Procesing of reserved word is experimental. Set this to YES, if you want to
@@ -177,67 +215,56 @@ A4GL_SQLCONVERT=YES
 #A4GL_SQLDIALECT=ORACLE
 
 ############
-#CONFIG FILE BASED CONVERSIONS
-#convert_sql() now uses configuration files.  These are by default
-#located in /opt/aubit4gl/etc/convertsql/, but that can be changed
-#with A4GL_SQLCNVPATH.
-#A4GL_SQLCNVPATH=/opt/aubit4gl/etc/convertsql
-
-############
 #auto initializing module and function local variables. This setting is used at
 #compile-time only. Numeric variables are initializet to 0, everything else to NULL
 #To turn on, set to "Y" (??? or is that YES ???)
 A4GL_AUTONULL=Y
 
-
 ############
-# ansi SQL warning mode.
-#For ANSI_WARN - it will display a warning if it sees anything amiss...
-#For ANSI_ERROR - it will bomb the compile (.err file etc)
-#If neither of these is set - then nothing happens
+#ANSI SQL 92 checking mode:
+#When ANSI_WARN is set to Yes compiler will display a warning if it encounters
+#static SQL statement not confitming to ANSI SQL 92 specification
+#Whn ANSI_ERROR is set to Yes, compiler will abort id non ANSI SQL 92 statemt
+#is found in source code.
+#If neither of these is set no checking is performed.
 A4GL_ANSI_WARN=Yes
 #A4GL_ANSI_ERROR=Yes
 
 ############
-#Full path to CINT C-code interpreter, if installed, othewise "no"
-A4GL_CINT=@CINT@
-
-
-#If not set, DBPATH will be used
-#A4GL_DBPATH
-
-
-#A4GL_PRG_EXT=.4ae
-#A4GL_OBJ_EXT=.ao
-#A4GL_FRM_EXT=.afr.xml
+#Aubit default extensions for compiled resources (forms,menus,help) and objects
+#as used by Amake _AND_ Aubit compiler (see resources.c)
+#Amake does NOT read this file (?-check)
+#note that composite variables A4GL_FRM_EXT and A4GL_MNU_EXT exist only in/for Amake
+#defaults:
+#A4GL_MNU_BASE_EXT=.mnu
 #A4GL_HLP_EXT=.hlp
+#A4GL_FRM_BASE_EXT=.afr
+#A4GL_XML_EXT=.xml
+#A4GL_PACKED_EXT=.dat
+#A4GL_OBJ_EXT=.ao
 #A4GL_LIB_EXT=.aox
-#A4GL_MNU_EXT=.mnu.xml
-
-############
-#where xxxx is a HEX code of a colour attribute - eg 1400 (for 0x1400)
-#for blue and reverse. Applies to all windows created when no attribute is
-#specified (including the main screen)
-#A4GL_BACKGROUND=xxxx
-
-
-############
-#LINES environment variables if they are set (It will use A4GL_COLUMNS
-#and A4GL_LINES in preference if they are defined).
-#This should make it work with a normal (not xterm) terminal session.
-#A4GL_COLUMNS=
-#A4GL_LINES=
-
-
-#############
-#if set to Y then +,|,- will be used to draw graphics characters instead of
-#proper borders (if available)
-#A4GL_SIMPLE_GRAPHICS=Y
-
+#A4GL_SOB_EXT=.aso
+#A4GL_SOL_EXT=.asx
+#A4GL_EXE_EXT=.4ae
+#
+#To emulate Informix p-code extensions (for instance, to re-use legacy make
+#files) you would use this settings; note that doing this is not recomended
+#and that created files will still be in Aubit format, not Informix one:
+#
+#A4GL_MNU_EXT=<no equivalent>
+#A4GL_HLP_EXT=.iem
+#A4GL_FRM_BASE_EXT=.frm
+#A4GL_XML_EXT=""
+#A4GL_PACKED_EXT=""
+#A4GL_OBJ_EXT=.4go
+#A4GL_LIB_EXT=<no (standard) equivalent>
+#A4GL_SOB_EXT=<no equivalent>
+#A4GL_SOL_EXT=<no equivalent>
+#A4GL_EXE_EXT=.4gi
 
 #############
 #If set to Y allows forms to contain the additional graphics characters
-#<,>,^,v, and + to be used for tee's and an  intersection...
+#<,>,^,v, and + to be used for tee's and an intersection.
 #So the following (view with fixed font!):
 #\gp--v--q\g
 #\g|  |  |\g
@@ -245,28 +272,16 @@ A4GL_CINT=@CINT@
 #\g|  |  |\g
 #\gb--^--d\g
 #Will draw a box with an intersecting horizonal and vertical line.
-#Note - you'll need to set EXTENDED_GRAPHICS before you compile the form as
-#well as for the 4gl executable...
+#Note - you'll need to set this before you compile the form as
+#well as when you run program that will use form file compiled this way
 #A4GL_EXTENDED_GRAPHICS=Y
-
 
 ############
 #Aubit used to honouring the size y by x in the form, this has been removed.
 #If you require to specify the size, it can still be used by setting
-#A4GL_USE_FORM_SIZE=Y (using this is an aubit extension - and not default
+#A4GL_USE_FORM_SIZE=Y (using this is an Aubit extension - and not default
 #informix behaviour!)
 #A4GL_USE_FORM_SIZE=Y
-
-############
-#Mechanism for doing some automated testing
-#A4GL_KEYFILE=(some filename in DBPATH)
-#A4GL_KEYDELAY=(time in usec 1000000 = 1 second, defaults to 0.1s)
-#A4GL_KEYFILE=
-#A4GL_KEYDELAY=
-
-## ===================================================================
-##     Run-time settings for Aubit compiled programs
-## ===================================================================
 
 ############
 #When you encouter programs that chrash, use this for debugging - it will
@@ -277,15 +292,11 @@ A4GL_CINT=@CINT@
 #execution considerably. This setting applies to all Aubit compiler
 #executables (includign all compilers) and to all 4gl programs compiled
 #with Aubit compiler.
+#FIXME: we should have separate settings for compilers and compiled programs,
+#like A4GL_DEBUG_COMP and A4GL_DEBUG_PRG
+#FIXME: add note about priority numbers
 #Default=<not set>
-#DEBUG=ALL
-
-############
-#Adds originating line number of each created target language statemtn
-#coresponding to 4gl source code, to created target language source code,
-#which is usefull for debugging. Like:
-#	#line 2 "../tools/test/test_build.4gl"
-#INCLINES=yes
+#A4GL_DEBUG=ALL
 
 ############
 #FIXME: is not odbc.ini supposed to have default login name and password?
@@ -300,6 +311,47 @@ A4GL_CINT=@CINT@
 #SQLPWD=mydbpassword
 
 ## ===================================================================
+##     Run-time settings for Aubit compiled programs
+## ===================================================================
+
+#Following settings apply only when runing 4GL programs compiled using
+#Aubit 4GL compiler. Note that some other settings outside this group
+#also apply only at run-time
+
+############
+#Application windows background colour
+#xxxx is a HEX code of a colour attribute - eg 1400 (for 0x1400)
+#for blue and reverse. Applies to all windows created when no attribute is
+#specified (including the main screen)
+#A4GL_BACKGROUND=xxxx
+
+############
+#Terminal size
+#This should make programs work with a normal (not xterm) terminal session.
+#A4GL_COLUMNS=80
+#A4GL_LINES=24
+
+#############
+#if set to Y then +,|,- will be used to draw graphics characters instead of
+#proper borders (if available)
+#A4GL_SIMPLE_GRAPHICS=Y
+
+############
+#Mechanism for doing automated testing
+#A4GL_KEYFILE=(some filename in DBPATH)
+#A4GL_KEYDELAY=(time in usec 1000000 = 1 second, defaults to 0.1s)
+#A4GL_KEYFILE=/my/key/file.key
+#A4GL_KEYDELAY=1000
+
+############
+#Adds originating line number of each created target language statemtn
+#coresponding to 4gl source code, to created target language source code,
+#which is usefull for debugging. Like:
+#	#line 2 "../tools/test/test_build.4gl"
+#INCLINES=yes
+
+
+## ===================================================================
 ##     Settings used only by 4glpc and/or other scripts
 ## ===================================================================
 
@@ -309,10 +361,16 @@ A4GL_CINT=@CINT@
 #Default: CC="gcc -O"
 CC="@CC@"
 
+##################
+#Full path to 'Awk' executable (awk,gawk,...)
 AWK=@AWK@
 
+##################
+#Full path to GTK+ includes (header) files, used when ...?
+#FIXME: why do we need this?
 GTK_INC_PATH="@GTK_INC_PATH@"
 
+##################
 #full path to SAP-DB ESQL/C pre-compier (does not have to be in the path)
 A4GL_SAPDB_ESQLC=@SAPDB_ESQLC@
 
