@@ -1,0 +1,100 @@
+# This termcap file is especially created for use with Power-4gl based programs.
+# Included are definitions for the Reflection 2 vt220 emulator of varying
+# screen dimensions. Keyboard mapping should be as described in "pow4gl.rcl".
+# Also included are definitions for the DEC vt220 terminal. The function keys
+# in Informix-4gl f1 through f10 correspond to the vt220 keys f6 through f15.
+# 28.03.95  JHF  Initial version.
+
+# Reflection 2 vt220 emulation:
+
+r2|r2w|r2w-24|Reflection 2:\
+	:bs:am:xn:xv:pt:cd=\E[J:ce=2\E[K:cl=45\E[H\E[J:\
+	:cs=%i\E[%d;%dr:cm=%i\E[%d;%dH:co#80:li#24:\
+	:Hi=\E=:Hf=\E>:HI=^|:Po=\E1:Pe=\E2:\
+	:bc=\E[D:do=\E[B:nd=\E[C:sr=\EM:up=\E[A:so=\E[7m:se=\E[m:\
+	:ku=\E[A:kd=\E[B:kr=\E[C:kl=\E[D:kh=\E[H:us=\E[4m:ue=\E[0m:\
+	:k0=\EOP:k1=\EOQ:k2=\EOR:k3=\EOS:k4=\EOT:\
+	:k5=\EOn:k6=\EOs:k7=\EOw:k8=\EOx:k9=\EOy:\
+	:kJ=\EOe:kK=\EOf:kL=\EOg:kM=\EOh:\
+	:KA=\EOu:KU=\EOM:KB=\EOv:KC=\EOt:\
+	:Ki=\EOr:KT=\EOl:KY=\EOS:KZ=\EOq:\
+	:ki=\EOa:kj=\EOb:kf=\EOc:kg=\EOd:\
+	:Kd=\EOm:\
+	:sc=\E7:rc=\E8:\
+	:gs=\E(0:ge=\E(B:gb=lmkjqx:\
+	:ZG#0:ZA=\E[0%?%p1%{0}%>%p1%{4}%<%&%t;1%;%?%p2%t;7%;%?%p3%t;5%;%?%p4%t;4%;m:
+
+# Note: Keys correspond to keyboard mapping file "keyinfmx.rcl".
+#
+# ZG#0:				# no video attribute character required
+# ZA=\E[0			# sgr escape sequence 
+#	%?%p1%{0}%>		# if p1 > 0 and p1 < 4 then
+#	  %p1%{4}%<%&%t;1%;	#    push ";1" for bold 
+#	%?%p2%t;7%;		# push ";7" for reverse video
+#	%?%p3%t;5%;		# push ";5" for blink
+#	%?%p4%t;4%;		# push ";4" for underscore
+#	m			# escape sequence terminator
+
+# Following are variants for other screen dimensions.
+
+r2|r2w-25:li#25:tc=r2w:
+r2|r2w-26:li#26:tc=r2w:
+r2|r2w-28:li#27:tc=r2w:
+r2|r2w-28:li#28:tc=r2w:
+r2|r2w-28:li#29:tc=r2w:
+r2|r2w-30:li#30:tc=r2w:
+r2|r2w-32:li#31:tc=r2w:
+r2|r2w-34:li#32:tc=r2w:
+r2|r2w-33:li#33:tc=r2w:
+r2|r2w-34:li#34:tc=r2w:
+r2|r2w-35:li#35:tc=r2w:
+r2|r2w-36:li#36:tc=r2w:
+r2|r2w-37:li#37:tc=r2w:
+r2|r2w-38:li#38:tc=r2w:
+r2|r2w-39:li#39:tc=r2w:
+r2|r2w-40:li#40:tc=r2w:
+r2|r2w-41:li#41:tc=r2w:
+r2|r2w-42:li#42:tc=r2w:
+r2|r2w-43:li#43:tc=r2w:
+r2|r2w-44:li#44:tc=r2w:
+r2|r2w-45:li#45:tc=r2w:
+r2|r2w-46:li#46:tc=r2w: 
+r2|r2w-47:li#47:tc=r2w:
+r2|r2w-48:li#48:tc=r2w:
+r2|r2w-49:li#49:tc=r2w:
+r2|r2w-50:li#50:tc=r2w:
+r2|r2w-51:li#51:tc=r2w:
+r2|r2w-52:li#52:tc=r2w:
+r2|r2w-53:li#53:tc=r2w:
+r2|r2w-54:li#54:tc=r2w:
+
+# Real DEC vt220 and vt320 terminals (without blink):
+
+v2|vt220|vt320|DEC vt220|DEC vt320:\
+	:bs:am:xn:xv:pt:cd=\E[J:ce=2\E[K:cl=45\E[H\E[J:\
+	:cs=%i\E[%d;%dr:cm=%i\E[%d;%dH:co#80:li#24:\
+	:Hi=\E=:Hf=\E>:HI=^|:Po=\E1:Pe=\E2:\
+	:bc=\E[D:do=\E[B:nd=\E[C:sr=\EM:up=\E[A:so=\E[7m:se=\E[m:\
+	:ku=\233A:kd=\233B:kr=\233C:kl=\233D:kh=\E[H:us=\E[4m:ue=\E[0m:\
+	:k0=\23317~:k1=\23318~:k2=\23319~:k3=\23320~:k4=\23321~:\
+	:k5=\23323~:k6=\23324~:k7=\23325~:k8=\23326~:k9=\23328~:\
+        :kJ=\2332~:kK=\2335~:kL=\EOg:kM=\EOh:\
+	:KA=\EOu:KU=\EOM:KB=\EOv:KC=\EOt:\
+	:Ki=\EOr:KT=\EOl:KY=\EOS:KZ=\EOq:\
+	:ki=\2331~:kj=\2334~:kf=\2336~:kg=\2333~:\
+	:Kd=\EOm:\
+	:sc=\E7:rc=\E8:\
+	:gs=\E(0:ge=\E(B:gb=lmkjqx:\
+	:ZG#0:ZA=\E[0%?%p1%{0}%>%p1%{4}%<%&%t;1%;%?%p2%t;7%;%?%p4%t;4%;m:
+
+# Note: Function keys have been mapped.
+#
+# ZG#0:				# no video attribute character required
+# ZA=\E[0			# sgr escape sequence 
+#	%?%p1%{0}%>		# if p1 > 0 and p1 < 4 then
+#	  %p1%{4}%<%&%t;1%;	#    push ";1" for bold 
+#	%?%p2%t;7%;		# push ";7" for reverse video
+#	%?%p3%t;5%;		# push ";5" for blink (not applied)
+#	%?%p4%t;4%;		# push ";4" for underscore
+#	m			# escape sequence terminator
+

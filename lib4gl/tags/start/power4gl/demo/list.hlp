@@ -1,0 +1,24 @@
+\BPICK-LIST HELP\b
+
+Pick lists can be scrolled with cursor movement keys
+(\Bup\b, \Bdown\b, \Bpageup\b, \Bpagedown\b, \Bhome\b and \Bend\b). The \Benter\b
+key selects the current record for editing or viewing.
+The \Binsert\b key adds a record while the \Bdelete\b key is
+used to remove the current record from the database.
+
+The accept key (\BF2\b) returns the current record to the
+calling function while the exit key (\BF8\b) exits the
+list without returning the record.
+
+Other keys include \BF3\b which refreshes the list with
+the latest database values, \BF4\b which calls up a window
+to edit the search criteria (e.g. filter and sort),
+and \BF6\b which marks/unmarks lines in the list.
+
+The list can be printed out in its entirety with
+\Bctrl-p\b or saved in a text file with \Bctrl-f\b. To print
+the visible screen, use \Balt-p\b.
+
+The "#" key displays a window with the row id of the
+current record along with any specified special keys.
+\BCtrl-z\b and "!" call an operating system shell.

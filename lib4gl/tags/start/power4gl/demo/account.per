@@ -1,0 +1,26 @@
+database powdemo
+screen
+{
+
+
+ Code..........[code    ]
+
+ Name..........[name                            ]
+
+ Acct.group....[grpname                         ]
+
+ Date opened...[datopen   ]
+
+ Date closed...[datclose  ]
+
+}
+tables
+  account
+attributes
+  code=account.code, autonext;
+  name=account.name, autonext;
+  grpname=formonly.grpname, autonext;
+  datopen=account.datopen, autonext;
+  datclose=account.datclose;
+instructions
+  delimiters "  "

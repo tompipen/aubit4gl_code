@@ -1,0 +1,23 @@
+database powdemo
+screen
+{
+
+
+ Code......[code      ]
+
+ Name......[name                            ]
+
+ Type......[prntname                        ]
+
+ Pipe......[pipe                                                            ]
+
+}
+tables
+  printer
+attributes
+  code=printer.code, autonext;
+  name=printer.name, autonext;
+  prntname=formonly.prntname, autonext;
+  pipe=printer.pipe;
+instructions
+  delimiters "  "

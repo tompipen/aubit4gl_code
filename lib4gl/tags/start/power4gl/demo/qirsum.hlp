@@ -1,0 +1,21 @@
+INTEREST RATE SUMMARY
+
+This report shows the average interest rates per month. If the
+interest rate is not constant throughout the month, it is marked
+with an asterix.
+
+The last column shows the average interest rate per year.
+
+This report is 148 characters wide and can be scrolled horizontally
+to view the rightmost portions. Depending on what printer is
+selected on output, the report may be compressed and in landscape
+orientation.
+
+To print out the report press \Bctrl-p\b or the accept key \B(F2)\b. The
+print dialog box will appear where you can specify which printer etc.
+The accept key will subsequently close the report. To save the report
+in a file, press \Bctrl-f\b, which will give you the file dialog box. To
+close the report without printing, press the exit key (\BF8\b).
+
+The refresh key (\BF3\b) will regenerate the report with the latest
+database information.

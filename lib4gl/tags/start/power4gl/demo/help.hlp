@@ -1,0 +1,27 @@
+\BGENERAL HELP\b
+
+F-KEYS:
+\B[F1]\b Help.
+\B[F2]\b Accept.
+\B[F3]\b Refresh.
+\B[F4]\b Search criteria in lists.
+\B[F5]\b Other options.
+\B[F6]\b Toggle.
+\B[F7]\b Pick-list in form fields.
+\B[F8]\b Exit.
+
+OTHER KEYS:
+\B[enter]\b Detail of a list line, or next field in form.
+\B[home]\b First page in lists.
+\B[end]\b Last page in lists.
+\B[insert]\b Insert new record to list.
+\B[delete]\b Delete record from list.
+\B[PageUp]\b Previous page/record.
+\B[PageDown]\b Next page/record.
+\B[ctrl-p]\b Print list.
+\B[ctrl-f]\b Output list to file.
+\B[ctrl-a]\b Toggle between insert and overwrite modes.
+\B[ctrl-d]\b Clear field.
+\B[ctrl-x]\b Delete character in form.
+\B[ctrl-r]\b Redraw the screen.
+\B[alt-p]\b Print screen.

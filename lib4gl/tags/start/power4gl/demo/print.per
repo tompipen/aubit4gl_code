@@ -1,0 +1,21 @@
+database formonly
+screen
+{
+
+
+[prnametxt   |prname                          ]
+
+[wheadtxt    |h]
+
+[copiestxt   |copi]
+
+}
+attributes
+  prnametxt=formonly.prnametxt;
+  prname=formonly.prname, autonext;
+  wheadtxt=formonly.wheadtxt;
+  h=formonly.whead, downshift, autonext;
+  copiestxt=formonly.copiestxt;
+  copi=formonly.copies;
+instructions
+  delimiters "  "
