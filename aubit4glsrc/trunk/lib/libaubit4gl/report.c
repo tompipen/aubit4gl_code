@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.14 2003-03-08 10:22:51 mikeaubury Exp $
+# $Id: report.c,v 1.15 2003-03-11 18:34:32 mikeaubury Exp $
 #
 */
 
@@ -211,7 +211,10 @@ rep_print (struct rep_structure *rep, int a, int s,int right_margin)
 	         fprintf (rep->output,"\n");
           }
 	  rep->line_no = 0;
-	  rep_print (rep, 0, 0,0);
+	   if (rep->page_length!=1) { // Not sure if we need this at all
+				      // but it messes up page length 1 for certain..
+			rep_print (rep, 0, 0,0);
+	   }
         }
     }
   fflush(rep->output);
