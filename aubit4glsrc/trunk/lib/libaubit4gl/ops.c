@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.36 2003-09-05 15:26:58 mikeaubury Exp $
+# $Id: ops.c,v 1.37 2003-09-06 08:22:08 mikeaubury Exp $
 #
 */
 
@@ -156,6 +156,46 @@ A4GL_dt_in_ops (int op)
 }
 
 
+void A4GL_in_date_ops(int op) {
+  struct ival *pi;
+  int x_date;
+  struct A4GLSQL_dtime *pd;
+  int d1;
+  int d2;
+  int s1;
+  int s2;
+  struct A4GLSQL_dtime dt;
+  struct ival in;
+
+  A4GL_get_top_of_stack (2, &d1, &s1, (void **) &x_date);
+  A4GL_get_top_of_stack (1, &d2, &s2, (void **) &pi);
+
+  in.stime = pi->stime;
+  in.ltime = pi->ltime;
+  dt.stime = 1;
+  dt.ltime = 3;
+  A4GL_pop_var2 (&in, DTYPE_INTERVAL, in.stime * 16 + in.ltime);
+  if (A4GL_isnull(DTYPE_INTERVAL,(void *)&in)) {
+		A4GL_debug("INTERVAL IS NULL\n");
+		A4GL_drop_param();
+		A4GL_push_null(DTYPE_CHAR,0);
+		return ;
+  }
+
+  A4GL_pop_param (&dt, DTYPE_DTIME, dt.stime * 16 + dt.ltime);
+  if (A4GL_isnull(DTYPE_DTIME,(void *)&x_date)) {
+		A4GL_debug("DATE IS NULL\n");
+		A4GL_push_null(DTYPE_CHAR,0);
+		return ;
+  }
+A4GL_push_variable(&dt,0x13000a);
+A4GL_push_variable(&in,((in.stime * 16 + in.ltime)<16)+DTYPE_INTERVAL);
+A4GL_debug_print_stack();
+
+// Now do it as a datetime/interval...
+A4GL_in_dt_ops(op);
+
+}
 
 /**
  * Add all the default operations to the system
@@ -654,7 +694,7 @@ A4GL_debug("in_in_ops");
       in.ltime = in1.ltime;
     }
 
-  A4GL_pop_param (&in1, DTYPE_INTERVAL, in1.stime * 16 + in2.ltime);
+  A4GL_pop_param (&in1, DTYPE_INTERVAL, in1.stime * 16 + in1.ltime);
   A4GL_pop_param (&in2, DTYPE_INTERVAL, in1.stime * 16 + in2.ltime);
 
 
@@ -1475,6 +1515,7 @@ DTYPE_SERIAL
   A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_DTIME, OP_MATH, A4GL_dt_in_ops);
 
   A4GL_add_op_function (DTYPE_DTIME, DTYPE_INTERVAL, OP_MATH, A4GL_in_dt_ops);
+  A4GL_add_op_function (DTYPE_DATE, DTYPE_INTERVAL, OP_MATH, A4GL_in_date_ops);
 
   A4GL_add_op_function (DTYPE_DTIME, DTYPE_DTIME, OP_MATH, A4GL_dt_dt_ops);
 
