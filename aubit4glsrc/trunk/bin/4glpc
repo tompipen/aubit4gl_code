@@ -7,7 +7,7 @@
 #this is main Aubit 4gl compiler .4gl files compiler script
 #You should not need to invoke actual compiler(s) (4glc, fcompile...) directly
 #
-# $Id: 4glpc,v 1.25 2001-11-09 08:14:26 afalout Exp $
+# $Id: 4glpc,v 1.26 2001-11-16 11:05:34 mikeaubury Exp $
 #
 ########################################################################
 
@@ -892,7 +892,7 @@ do
 done
 ####
 
-if ! [ "$COMSPEC" = "" ]
+if  [ ! "$COMSPEC" = "" ]
 then
 	#WARNING! on CyGwin ORDER OF LIBS IS IMPORTANT
 	if [  "$GTKGUI" = "Yes" ]

@@ -96,7 +96,7 @@ screens_section :
 		realloc(the_form.snames.snames_val, 
 			(the_form.snames.snames_len)*
 				sizeof(struct screen_name));
-		sprintf(buff,"%s", $<str>3);
+		sprintf(buff,"%s", $<str>2);
 		ptr=buff;
 		ptr++;
 		ptr[strlen(ptr)-1]=0;

@@ -1,12 +1,19 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: map.c,v 1.2 2001-11-11 20:04:08 mikeaubury Exp $
+* $Id: map.c,v 1.3 2001-11-16 11:05:35 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.2  2001/11/11 20:04:08  mikeaubury
+*	Major upgrade - first phase commit.
+*	Includes :
+*	changes to usage of printc & addmap
+*	changes to include some extra AD 4gl constructs (not implemented in the library)
+*	& changes for constant handling (these are now passed in the globals)
+*	
 *	Revision 1.1.1.1  2001/08/20 02:35:33  afalout
 *	Initial import to SF
 *	
@@ -26,34 +33,38 @@
 *******************************************************************************/
 #include <stdio.h>
 #include "../../lib/libincl/debug.h"
-static FILE *mapfile=0;
+static FILE *mapfile = 0;
 
-openmap(char *s) {
-char buff[256];
-debug("openmap...");
-if (strcmp(acl_getenv("MAP4GL"),"Y")==0) {
-debug("Opening map file..%s \n",acl_getenv("MAP4GL"));
-debug("Yep...\n");
-sprintf(buff,"%s.map",s);
-mapfile=fopen(buff,"w");
-
-if (mapfile==0) {
-	debug("Unable to open map file");
-	printf("Unable to open map file\n");
-	exit(1);
-	}
-debug("Mapfile=%p",mapfile);
-}
-}
-
-addmap(char *t,char *s,char *w,int l,char *m) {
-  debug("Adding to map... %p",mapfile);
-  if (mapfile) fprintf(mapfile,"%s|%s|%s|%d|%s|\n", t,s,w,l,m);
-}
-
-closemap()
+openmap (char *s)
 {
-if (mapfile) fclose(mapfile);
-} 
+  char buff[256];
+  debug ("openmap...");
+  if (strcmp (acl_getenv ("MAP4GL"), "Y") == 0)
+    {
+      debug ("Opening map file..%s \n", acl_getenv ("MAP4GL"));
+      debug ("Yep...\n");
+      sprintf (buff, "%s.map", s);
+      mapfile = fopen (buff, "w");
 
+      if (mapfile == 0)
+	{
+	  debug ("Unable to open map file");
+	  printf ("Unable to open map file\n");
+	  exit (1);
+	}
+      debug ("Mapfile=%p", mapfile);
+    }
+}
 
+addmap (char *t, char *s, char *w, int l, char *m)
+{
+  debug ("Adding to map... %p", mapfile);
+  if (mapfile)
+    fprintf (mapfile, "%s|%s|%s|%d|%s|\n", t, s, w, l, m);
+}
+
+closemap ()
+{
+  if (mapfile)
+    fclose (mapfile);
+}

@@ -1,6 +1,6 @@
 /**************************************************************/
 /*
-/* $Id: 4glc.c,v 1.5 2001-10-23 09:23:18 afalout Exp $
+/* $Id: 4glc.c,v 1.6 2001-11-16 11:05:35 mikeaubury Exp $
 /**/
 //#include "../libincl/compiler.h"
 #include <stdio.h>
@@ -25,7 +25,7 @@ char errbuff[1024] = "";
 FILE *mja_fopen (char *, char *);
 #include "../../lib/libincl/pointers.h"
 
-int globals_only=0;
+int globals_only = 0;
 
 int lineno = 1;
 
@@ -62,24 +62,25 @@ main (argc, argv)
   char c[128];
   int x;
   FILE *fopn;
-  int fname_arg_no=1;
+  int fname_arg_no = 1;
   init_states ();
 
-  yydebug=0;
+  yydebug = 0;
 
   if (argc > 1)
     {
 
-      if (strcmp(argv[1],"-G")==0) {
-		globals_only=1;
-		fname_arg_no=2;
-      }
+      if (strcmp (argv[1], "-G") == 0)
+	{
+	  globals_only = 1;
+	  fname_arg_no = 2;
+	}
 
       check_and_show_id ("4GL Compiler", argv[fname_arg_no]);
 
       outputfilename = outputfile;
 
-      if (strcmp(acl_getenv ("YYDEBUG"),"")!=0)
+      if (strcmp (acl_getenv ("YYDEBUG"), "") != 0)
 	{
 	  printf ("Yacc Debugging on\n");
 	  yydebug = 1;
@@ -120,20 +121,23 @@ main (argc, argv)
       exit (1);
     }
 
-	if (yydebug) {
-		printf("Opened : %s\n",c);
+  if (yydebug)
+    {
+      printf ("Opened : %s\n", c);
     }
 
   x = yyparse ();
 
-	if (yydebug) {
-		printf("Closing map : %s\n",x);
+  if (yydebug)
+    {
+      printf ("Closing map : %s\n", x);
     }
 
   closemap ();
 
-	if (yydebug) {
-		printf("Exit\n");
+  if (yydebug)
+    {
+      printf ("Exit\n");
     }
 
 
@@ -246,7 +250,9 @@ adderr (s, p, q)
 }
 
 
-only_doing_globals() {
-	if (globals_only) return 1;
-	return 0;
+only_doing_globals ()
+{
+  if (globals_only)
+    return 1;
+  return 0;
 }
