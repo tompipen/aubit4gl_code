@@ -23,8 +23,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.3 2001-12-12 11:38:12 afalout Exp $
+# $Id: Makefile.in,v 1.4 2001-12-20 04:56:10 afalout Exp $
 #
+
+#if thisn make file is named "Makefile.old", set MKNAME to  "-f Makefile.old"
+#if thisn make file is named "Makefile.in", set MKNAME to  "" (empty) or "-f Makefile"
+MKNAME=
+
 
 #If you are looking here because make could not find "/etc/aubitbuild.mk"
 #then look at $AUBITDIR/etc/aubitbuild.mk.example for instructions
@@ -74,39 +79,39 @@ endif
 
 #C compiler flags for Aubit libraries compilation: you should not
 #need to change this
-LIBCFLAGS=-g -O2 -Ilibincl -I. -DAUTOBANG -DDEBUG
+LIBCFLAGS			=-g -O2 -Ilibincl -I. -DAUTOBANG -DDEBUG
 
-OUTPUTLANG=c
+OUTPUTLANG			=c
 
 
 #On Windows, we have no choice of ODBC pr PDF, so override it in any case:
 ifdef COMSPEC
 	ifneq "$(ODBC)" "no"
-		ODBC=odbc32
-        ODBCMANAGER=${ODBC}
+		ODBC		=odbc32
+        ODBCMANAGER	=${ODBC}
     endif
-	PDFBUILD=no
+	PDFBUILD		=no
 endif
 
 ifeq "$(ODBC)" "unix"
 	#Human readable name, for archinve file name, etc.
-	ODBCMANAGER	=unixODBC
+	ODBCMANAGER		=unixODBC
    	#additional flags for ifdef in C code, needed for this ODBC driver/manager
-	LIBCFLAGS += -DUNIXODBC
+	LIBCFLAGS 		+= -DUNIXODBC
 endif
 ifeq "$(ODBC)" "iodbc"
-	ODBCMANAGER	=iODBC
-	LIBCFLAGS += -DIODBC
+	ODBCMANAGER		=iODBC
+	LIBCFLAGS 		+= -DIODBC
 endif
 ifeq "$(ODBC)" "no"
 	ODBCMANAGER		=noODBC
 	LIBCFLAGS 		+= -DNOODBC
-	LD_LIBRARY_PATH	=${AUBITDIR}/lib:/usr/local/lib
 	ODBCLIBDIR      =
 	ODBC_LIB_DIR    =
 	ODBC_LIB_NAME   = noodbc
 endif
 
+LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 
 ifneq "$(ODBC)" "no"
 	#make sure we will pick up correct ODBC libraries:
@@ -122,37 +127,37 @@ endif
 
 #To let know 4glpc we are in process of making compiler, and not
 #compiling 4gl programs
-MAKINGAUBIT=1
+MAKINGAUBIT			=1
 export MAKINGAUBIT
 
 #if user forgot to set AUBITDIR:
 ifndef AUBITDIR
-    AUBITDIR=${PWD}
+    AUBITDIR		=${PWD}
 endif
 
 #Human readable names for archive file names:
 ifeq "$(GTKBUILD)" "yes"
-	GUITYPE		=GTK
+	GUITYPE			=GTK
 else
-	GUITYPE		=noGTK
+	GUITYPE			=noGTK
 endif
 ifeq "$(PDFBUILD)" "yes"
-	LIBCFLAGS += -DUSE_PDF_REPORTS
-	PDFTYPE		=PDF
+	LIBCFLAGS 		+= -DUSE_PDF_REPORTS
+	PDFTYPE			=PDF
 else
-	PDFTYPE		=noPDF
+	PDFTYPE			=noPDF
 endif
 
 #When we package all binary builds using make allbindist, what we will build
 ALLBINDISTNAMESNOPDF=unixodbc-gtk-nopdf iodbc-gtk-nopdf unixodbc-nogtk-nopdf iodbc-nogtk-nopdf
-ALLBINDISTNAMESPDF=unixodbc-gtk-pdf unixodbc-nogtk-pdf iodbc-gtk-pdf iodbc-nogtk-pdf
-ALLBINDISTNAMES=${ALLBINDISTNAMESNOPDF} ${ALLBINDISTNAMESPDF}
+ALLBINDISTNAMESPDF	=unixodbc-gtk-pdf unixodbc-nogtk-pdf iodbc-gtk-pdf iodbc-nogtk-pdf
+ALLBINDISTNAMES		=${ALLBINDISTNAMESNOPDF} ${ALLBINDISTNAMESPDF}
 
 
 #Lclint C code checker flags:
-LCLINTFLAGS	= -weak
-LCLINTLOG   = lclint.log
-LCLINTLOGCMD= ${LCLINTLOG} 2>&1
+LCLINTFLAGS			= -weak
+LCLINTLOG  			= lclint.log
+LCLINTLOGCMD		= ${LCLINTLOG} 2>&1
 
 ####################
 #commands to use:
@@ -172,6 +177,10 @@ INSTALL_GRP = nobody
 INSTALL_CMD = install
 INSTALL     = ${INSTALL_CMD} -c -o ${INSTALL_USR} -g ${INSTALL_GRP}
 MKPATH      = mkdir -p
+
+
+#RPM setup:
+RPMBUILDROOT=/root/redhat
 
 
 ########################
@@ -240,6 +249,7 @@ AUBITCVSSFNAME=aubit4glsrc
 AUBITCVSSFMANNAME=aubit4gldoc
 CVSROOTSF=':pserver:anonymous@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl'
 
+NAMEVERBLD=${AUBITCVSSFNAME}-${AUBITVERSION}.${AUBITBUILD}
 
 #Download page processing temp file names:
 #Warning: if you change this names, you will need to manually change existing
@@ -286,7 +296,7 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
 
 	#FIXME: where is $(CYSOURCE)/lib/libgtk4gl.so
 	#libgtk4gl is .a only, no .so on CygWin ???
-	CYTOLIBGTK	=$(CYSOURCE)/lib/libaclallgui.a $(CYSOURCE)/lib/libgtk4gl.a 
+	CYTOLIBGTK	=$(CYSOURCE)/lib/libaclallgui.a $(CYSOURCE)/lib/libgtk4gl.a
 	#we still cannot compile this one: $(CYSOURCE)/lib/libgtk4gl_x.so
 	ifneq "$(ODBC)" "no"
 		ifeq "$(ODBC_LINK)" "static"
@@ -423,44 +433,44 @@ all: ${ALL}
 #I'm exporting all variables to shell?
 log:
 	@echo "Logging make process to make.log, please wait..."
-	@${MAKE} ${BUGMAKEFLAGS} > make.log 2>&1
+	@${MAKE} ${MKNAME} ${BUGMAKEFLAGS} > make.log 2>&1
 	@echo "make finished successfuly, see make.log for details."
 
 corecompile: libs
-	$(MAKE) ${BUGMAKEFLAGS} -C compilers/4glc/rules
-	$(MAKE) ${BUGMAKEFLAGS} -C compilers/4glc PDFBUILD=${PDFBUILD} OUTPUTLANG=${OUTPUTLANG} NOINCL=1
-	$(MAKE) ${BUGMAKEFLAGS} -C compilers/fcompile PDFBUILD=${PDFBUILD}
-	$(MAKE) ${BUGMAKEFLAGS} -C compilers/menus PDFBUILD=${PDFBUILD}
-	$(MAKE) ${BUGMAKEFLAGS} -C compilers/helpcompile #PDFBUILD=${PDFBUILD}
-	$(MAKE) ${BUGMAKEFLAGS} loadmap -C lib PDFBUILD=${PDFBUILD} NOINCL=1
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/4glc/rules
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/4glc PDFBUILD=${PDFBUILD} OUTPUTLANG=${OUTPUTLANG} NOINCL=1
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/fcompile PDFBUILD=${PDFBUILD}
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/menus PDFBUILD=${PDFBUILD}
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/helpcompile #PDFBUILD=${PDFBUILD}
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} loadmap -C lib PDFBUILD=${PDFBUILD} NOINCL=1
 	@echo Aubit 4gl compiler core is now compiled
 
 libs:
 #FIXME: check if all this is correvtly exported:
 # ODBC=${ODBC} PDFBUILD=${PDFBUILD} GTKBUILD=${GTKBUILD} JABBERBUILD=${JABBERBUILD}
 #warning! this will override all CFLAGS, etc. in ALL sub-makefiles!
-	$(MAKE) ${BUGMAKEFLAGS} -C lib CFLAGS="$(LIBCFLAGS)" NOINCL=1
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib CFLAGS="$(LIBCFLAGS)" NOINCL=1
 	@echo Aubit 4gl core libraries are now compiled
 
 #make  -C lib CFLAGS="-g -O2 -Ilibincl -I. -DAUTOBANG -DDEBUG -DIODBC -I/opt/unixODBC/include"
 
 gtkgui:
 #WARNING! Thhis will override CFLAGS in sub-makefile:
-	$(MAKE) ${BUGMAKEFLAGS} -C lib all_gui CFLAGS="$(LIBCFLAGS)" NOINCL=1
-	$(MAKE) ${BUGMAKEFLAGS} -C lib/libgui NOINCL=1
-#	$(MAKE) ${BUGMAKEFLAGS} -C lib/libgui libgtk4gl_x.so
-	$(MAKE) ${BUGMAKEFLAGS} -C lib/libgui gtk4gl_x NOINCL=1
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib all_gui CFLAGS="$(LIBCFLAGS)" NOINCL=1
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui NOINCL=1
+#	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui libgtk4gl_x.so
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui gtk4gl_x NOINCL=1
 	@echo Aubit 4gl compiler GTK GUI is now compiled
 
 ide:
-	$(MAKE) -C tools/ide
-	$(MAKE) -C tools/ide install.aubit
+	$(MAKE) ${MKNAME} -C tools/ide
+	$(MAKE) ${MKNAME} -C tools/ide install.aubit
 
 
 perl: perl.compiler perl.lib test.perl
 
 perl.compiler:
-	${MAKE} -C compilers/4glc 4glc_perl PDFBUILD=no NOINCL=1
+	${MAKE} ${MKNAME} -C compilers/4glc 4glc_perl PDFBUILD=no NOINCL=1
 	@echo Aubit 4gl Perl-code generating version compiler created
 
 perl.lib:
@@ -510,8 +520,8 @@ cyrpc:
 
 
 unixrpc:
-	$(MAKE) ${BUGMAKEFLAGS} -C compilers/fcompile rpc
-	$(MAKE) ${BUGMAKEFLAGS} -C compilers/menus rpc
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/fcompile rpc
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/menus rpc
 #FIXME: this cp, if realy needed should go in local makefine, not here!
 #	(cp compilers/fcompile/form_x_xdr.c compilers/fcompile/form_x.h lib)
 #	(cp compilers/menus/menu_x_xdr.c compilers/menus/menu_x.h lib)
@@ -520,21 +530,23 @@ unixrpc:
 ##                       Cleanup Targets
 ## ------------------------------------------------------------------
 
+clean.all: cleanall
+
 #will clean EVERYTHING that is not source file from CVS
 cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install clean.swig clean.project
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
-	$(MAKE) -C lib clean
-	$(MAKE) -C lib/libgui clean
-	$(MAKE) -C compilers/4glc/rules clean
-	$(MAKE) -C compilers/4glc clean
-	$(MAKE) -C compilers/fcompile clean
-	$(MAKE) -C compilers/menus clean
-	$(MAKE) -C compilers/helpcompile clean
-	$(MAKE) -C tools/test clean
-	$(MAKE) -C tools/test/gui clean
-	$(MAKE) -C tools/ide clean
-	$(MAKE) -C tools/html clean
-	$(MAKE) -C tools/jabber clean
+	$(MAKE) ${MKNAME} -C lib clean
+	$(MAKE) ${MKNAME} -C lib/libgui clean
+	$(MAKE) ${MKNAME} -C compilers/4glc/rules clean
+	$(MAKE) ${MKNAME} -C compilers/4glc clean
+	$(MAKE) ${MKNAME} -C compilers/fcompile clean
+	$(MAKE) ${MKNAME} -C compilers/menus clean
+	$(MAKE) ${MKNAME} -C compilers/helpcompile clean
+	$(MAKE) ${MKNAME} -C tools/test clean
+	$(MAKE) ${MKNAME} -C tools/test/gui clean
+	$(MAKE) ${MKNAME} -C tools/ide clean
+	$(MAKE) ${MKNAME} -C tools/html clean
+	$(MAKE) ${MKNAME} -C tools/jabber clean
 	@echo Aubit 4gl compiler source tree is now clean
 
 #will clean intermediate files resulting from compile, but will skip
@@ -573,7 +585,7 @@ clean.install:
 
 clean.swig:
 	@if [ -f lib/swig/?akefile ]; then \
-		$(MAKE) -C lib/swig clean; \
+		$(MAKE) ${MKNAME} -C lib/swig clean; \
     fi
 	(cd lib/swig; ${RM} lib_wrap.c *.old *.bak aubit4gl_pl.pm)
 
@@ -585,33 +597,34 @@ clean.project:
 ## ------------------------------------------------------------------
 #FIXME: this should use ${MKPATH} and ${INSTALL}
 
-installall: installtree install installexample installmanual platform
+installall: install.tree installx installexample installmanual platform etc/aubit-auto.spec
 
 #this is crazy, if I call installx just install, it will do nothing!
-install: installx
+#install: installx
+install: installall
 
 installx:
 	@if [ ! -d $(DEST) ]; then \
 		echo "Aubit 4gl compiler instalation tree does not exists: $(DEST)"; \
-		echo "Create it first, using make installtree"; \
+		echo "Create it first, using make install.tree"; \
 	else \
 		echo "Aubit 4gl compiler instalation tree already exists: $(DEST)"; \
 		echo "Installing over existing files..."; \
-		make install.core; \
+		make ${MKNAME} install.core; \
 	fi
 
-install.core: install.gtk
+install.core: install.tree install.gtk
 	${CP} $(TOBIN) $(DEST)/bin
 	$(CP) $(TOROOT) $(DEST)
 	$(CP) $(TOINCL) $(DEST)/incl
-	$(CP) $(TOLIBGTK) $(DEST)/lib
 	$(CP) $(TOLIBCUI) $(DEST)/lib
 	@echo Aubit 4gl compiler is now installed
 
 install.gtk:
-	@if [ "${GTKBUILD}" = "yes" ]; then \
-		$(CP) $(TOLIBGTK) $(DEST)/lib; \
-    fi
+ifeq "${GTKBUILD}" "yes"
+	$(CP) $(TOLIBGTK) $(DEST)/lib
+endif
+
 
 createcleantar: installdrop installall tarinstall
 	@echo "Aubit 4gl compiler binary disribution is now in $(SOURCE)/$(TARNAME)"
@@ -657,7 +670,7 @@ installmanual:
 	@echo Aubit 4gl compiler manual is now installed
 
 installide:
-	${MAKE} -C tools/ide install.aubit
+	${MAKE} ${MKNAME} -C tools/ide install.aubit
 
 packide:
 	${CP} ${TOIDE} $(DEST)/IDE
@@ -665,7 +678,7 @@ packide:
 installdrop:
 	${RMDIR} $(DEST)
 
-installtree:
+DELETEME.install.tree:
 	@if [ ! -d $(DEST) ]; then \
 		mkdir $(DEST); \
 		cd $(DEST); \
@@ -678,7 +691,9 @@ installtree:
 		echo "Aubit 4gl compiler instalation tree already exists in $(DEST)"; \
 	fi
 
-install.tree.mkpath:
+
+#install.tree.mkpath:
+install.tree:
 	${MKPATH} $(DEST)
 	${MKPATH} $(DEST)/bin
 	${MKPATH} $(DEST)/lib
@@ -721,7 +736,7 @@ source.tar.location:
 	@echo $(SOURCETARNAME) created
 
 source.tar.curr: SRCLOCATION=${AUBITDIR}
-source.tar.curr: cleanall source.tar.location
+source.tar.curr: clean.all source.tar.location
 
 man.tar.sf:
 #use "cvs export" instead "cvs checkout" to get code without CVS directories
@@ -752,11 +767,11 @@ ifeq "$(USELOCALUPLOAD)" "1"
 endif
 	autosfscp $(SOURCETARNAME)
 	@if [ ! -f ${DLTMP1} ]; then \
-		${MAKE} getdlpage; \
+		${MAKE} ${MKNAME} getdlpage; \
 	fi
 	@sed -e "/^$(TEMPLATESRC)/s/$(TEMPLATESRC)/$(SOURCETARBASENAME)/" ${DLTMP1} > ${DLTMP2} ;
 	@mv ${DLTMP2} ${DLTMP1} ;
-	${MAKE} store.tar.dl.names TEMPLATESRC=$(TEMPLATESRC) SOURCETARBASENAME=$(SOURCETARBASENAME)
+	${MAKE} ${MKNAME} store.tar.dl.names TEMPLATESRC=$(TEMPLATESRC) SOURCETARBASENAME=$(SOURCETARBASENAME)
 #	${MAKE} putdlpage
 
 source.zip.2download:
@@ -765,11 +780,11 @@ ifeq "$(USELOCALUPLOAD)" "1"
 endif
 	autosfscp $(SOURCEZIPNAME)
 	@if [ ! -f ${DLTMP1} ]; then \
-		${MAKE} getdlpage; \
+		${MAKE} ${MKNAME} getdlpage; \
 	fi
 	@sed -e "/^$(TEMPLATESRC)/s/$(TEMPLATESRC)/$(SOURCEZIPBASENAME)/" ${DLTMP1} > ${DLTMP2} ;
 	@mv ${DLTMP2} ${DLTMP1} ;
-	${MAKE} store.zip.dl.names TEMPLATESRC=$(TEMPLATESRC) SOURCEZIPBASENAME=$(SOURCEZIPBASENAME)
+	${MAKE} ${MKNAME} store.zip.dl.names TEMPLATESRC=$(TEMPLATESRC) SOURCEZIPBASENAME=$(SOURCEZIPBASENAME)
 #	${MAKE} putdlpage
 
 store.tar.dl.names:
@@ -797,17 +812,17 @@ install.tree.cy:
 	mkdir $(DEST)/extralibs;
 
 pack.cygwin:
-	${MAKE} installdrop DEST=${CYDEST}
-	${MAKE} installtree DEST=${CYDEST}
-	${MAKE} install.tree.cy DEST=${CYDEST}
-	${MAKE} install SOURCE=${CYSOURCE} DEST=${CYDEST} TOBIN="${CYTOBIN}" TOLIBGTK="${CYTOLIBGTK}"
-	${MAKE} installexample SOURCE=${CYSOURCE} DEST=${CYDEST}
+	${MAKE} ${MKNAME} installdrop DEST=${CYDEST}
+	${MAKE} ${MKNAME} install.tree DEST=${CYDEST}
+	${MAKE} ${MKNAME} install.tree.cy DEST=${CYDEST}
+	${MAKE} ${MKNAME} installx SOURCE=${CYSOURCE} DEST=${CYDEST} TOBIN="${CYTOBIN}" TOLIBGTK="${CYTOLIBGTK}"
+	${MAKE} ${MKNAME} installexample SOURCE=${CYSOURCE} DEST=${CYDEST}
 #FIXME: we should pack compiled IDE with binary distro, not sources
-	${MAKE} packide SOURCE=${CYSOURCE} DEST=${CYDEST}
-	${MAKE} install.libs LIBTARGET1=${CYLIBTARGET1}
-	${MAKE} install.dll DLLTARGET=${CYDLLTARGET}
-	${MAKE} cygwin.runtime DEST=${CYDEST}
-	${MAKE} zip.install GUITYPE=GTK $(CYDEST) $(SOURCE)
+	${MAKE} ${MKNAME} packide SOURCE=${CYSOURCE} DEST=${CYDEST}
+	${MAKE} ${MKNAME} install.libs LIBTARGET1=${CYLIBTARGET1}
+	${MAKE} ${MKNAME} install.dll DLLTARGET=${CYDLLTARGET}
+	${MAKE} ${MKNAME} cygwin.runtime DEST=${CYDEST}
+	${MAKE} ${MKNAME} zip.install GUITYPE=GTK $(CYDEST) $(SOURCE)
 
 
 cygwin.runtime.with.demo: cygwin.runtime cygwin.runtime.demo cygwin.zip.runtime
@@ -829,8 +844,8 @@ cygwin.runtime.tree:
 	${MKPATH} $(DEST)/runtime/apps
 
 cygwin.runtime.demo:
-	${MAKE} -C tools/test GTKBUILD=yes
-	${MAKE} -C tools/test/gui GTKBUILD=yes
+	${MAKE} ${MKNAME} -C tools/test GTKBUILD=yes
+	${MAKE} ${MKNAME} -C tools/test/gui GTKBUILD=yes
 	cp ${CYSOURCE}/tools/test/*.exe $(CYDEST)/runtime/apps
 	cp ${CYSOURCE}/tools/test/gui/*.exe $(CYDEST)/runtime/apps
 	${CP} tools/cygwin/*.lnk.hide $(DEST)/runtime
@@ -907,11 +922,11 @@ install.bin.lib: install.run.exe
 #$LD_LIBRARY_PATH to $AUBITDIR/extralibs
 	cp dll/* /bin
 	cp extralibs/* /usr/lib
-	${MAKE} cygwin.install.message
+	${MAKE} ${MKNAME} cygwin.install.message
 
 install.run.exe:
 	${CP} bin/run.exe ${SYSTEMROOT}
-	${MAKE} cygwin.install.message
+	${MAKE} ${MKNAME} cygwin.install.message
 
 deinstall.bin.lib: deinstall.libs deinstall.dll
 	${RM} ${SYSTEMROOT}/run.exe
@@ -1031,7 +1046,7 @@ getdlpage:
 	@if [ -f ${TEMPLATEFILEBASE} ]; then \
 		cp ${TEMPLATEFILEBASE} ${DLTMP1}; \
     else \
-        ${MAKE} getdlpage; \
+        ${MAKE} ${MKNAME} getdlpage; \
     fi
 #NOTE: re-entrant call to getdlpage abowe is because on CygWin
 #autosfscp can fail randomly
@@ -1061,7 +1076,7 @@ fix.dl.page: getdlpage restore.dl.names cy.restore.dl.names restore.src.dl.names
 
 downloadnames:
 	@if [ ! -f ${DLTMP1} ]; then \
-		${MAKE} getdlpage; \
+		${MAKE} ${MKNAME} getdlpage; \
 	else \
 		sed -e "/^$(TEMPLATENAME)/s/$(TEMPLATENAME)/$(TARNAME)/" ${DLTMP1} > ${DLTMP2} ; \
 		sed -e "/^$(TEMPLATENAMEINFO)/s/$(TEMPLATENAMEINFO)/$(PLATFORMINFOFULL)/" ${DLTMP2} > ${DLTMP1} ; \
@@ -1096,7 +1111,7 @@ endif
 
 cy.downloadnames:
 	@if [ ! -f ${DLTMP1} ]; then \
-		${MAKE} getdlpage; \
+		${MAKE} ${MKNAME} getdlpage; \
 	else \
 		sed -e "/^$(TEMPLATENAME)/s/$(TEMPLATENAME)/$(TARNAME)/" ${DLTMP1} > ${DLTMP2} ; \
 		sed -e "/^$(TEMPLATENAMEINFO)/s/$(TEMPLATENAMEINFO)/$(PLATFORMINFOFULL)/" ${DLTMP2} > ${DLTMP1} ; \
@@ -1163,31 +1178,31 @@ endif
 #Binary build targets:
 
 iodbc-gtk-pdf:
-	${MAKE} PDFBUILD=yes 	GTKBUILD=yes 	ODBC=iodbc 	step.two
+	${MAKE} ${MKNAME} PDFBUILD=yes 	GTKBUILD=yes 	ODBC=iodbc 	step.two
 
 iodbc-nogtk-pdf:
-	${MAKE} PDFBUILD=yes 	GTKBUILD=no 	ODBC=iodbc  step.two
+	${MAKE} ${MKNAME} PDFBUILD=yes 	GTKBUILD=no 	ODBC=iodbc  step.two
 
 iodbc-gtk-nopdf:
-	${MAKE} PDFBUILD=no 	GTKBUILD=yes 	ODBC=iodbc  step.two
+	${MAKE} ${MKNAME} PDFBUILD=no 	GTKBUILD=yes 	ODBC=iodbc  step.two
 
 iodbc-nogtk-nopdf:
-	${MAKE} PDFBUILD=no 	GTKBUILD=no 	ODBC=iodbc  step.two
+	${MAKE} ${MKNAME} PDFBUILD=no 	GTKBUILD=no 	ODBC=iodbc  step.two
 
 unixodbc-gtk-pdf:
-	${MAKE} PDFBUILD=yes 	GTKBUILD=yes 	ODBC=unix 	step.two
+	${MAKE} ${MKNAME} PDFBUILD=yes 	GTKBUILD=yes 	ODBC=unix 	step.two
 
 unixodbc-nogtk-pdf:
-	${MAKE} PDFBUILD=yes 	GTKBUILD=no 	ODBC=unix 	step.two
+	${MAKE} ${MKNAME} PDFBUILD=yes 	GTKBUILD=no 	ODBC=unix 	step.two
 
 unixodbc-gtk-nopdf:
-	${MAKE} PDFBUILD=no 	GTKBUILD=yes 	ODBC=unix 	step.two
+	${MAKE} ${MKNAME} PDFBUILD=no 	GTKBUILD=yes 	ODBC=unix 	step.two
 
 unixodbc-nogtk-nopdf:
-	${MAKE} PDFBUILD=no 	GTKBUILD=no 	ODBC=unix 	step.two
+	${MAKE} ${MKNAME} PDFBUILD=no 	GTKBUILD=no 	ODBC=unix 	step.two
 
 cy-odbc32-gtk-nopdf:
-	${MAKE} PDFBUILD=no 	GTKBUILD=yes 	ODBC=odbc32 cy.step.two
+	${MAKE} ${MKNAME} PDFBUILD=no 	GTKBUILD=yes 	ODBC=odbc32 cy.step.two
 
 step.two: \
 	settings \
@@ -1217,33 +1232,55 @@ cy.step.two: \
 ## ------------------------------------------------------------------
 
 #You may need to create the following directories to make a build tree:
-#BUILD is the directory where all building occurs by RPM. You don't have to do your test building anywhere in particular, but this is where RPM will do it's building.
-#SOURCES is the directory where you should put your original source tar files and your patches. This is where RPM will look by default.
-#SPECS is the directory where all spec files should go.
-#RPMS is where RPM will put all binary RPMs when built.
-#SRPMS is where all source RPMs will be put.
+#	BUILD is the directory where all building occurs by RPM. You don't
+#		have to do your test building anywhere in particular, but this is
+#		where RPM will do it's building.
+#	SOURCES is the directory where you should put your original source
+#		tar files and your patches. This is where RPM will look by default.
+#	SPECS is the directory where all spec files should go.
+#	RPMS is where RPM will put all binary RPMs when built.
+#	SRPMS is where all source RPMs will be put.
 
-rpm.autospec:
-	make -n install.core | autospec -i > ${AUBITDIR}/etc/aubit-auto.spec
-	@echo use 'make source.tar.curr' to create source tarball needed by RPM
 
-rpm.build.auto:
-	rpm -ba ${AUBITDIR}/etc/aubit-auto.spec
+rpm.autospec: etc/aubit-auto.spec
+etc/aubit-auto.spec: install.tree aubit4gl.lsm
+#make -n = Print the commands that would be executed, but do not execute them.
+	${MAKE} ${MKNAME} -n install.core | autospec -i -d -n ${NAMEVERBLD} -g Development/Languages > ${AUBITDIR}/etc/aubit-auto.spec
 
-rpm.build: AUBITDIR=/root/redhat/BUILD/aubit4gl-0.20
-rpm.build: PATH=/root/redhat/BUILD/aubit4gl-0.20/bin:${PATH}
+#  -d     Don't look for documentation  files  like  `README'
+#              and  `BUGS' in the current directory to add them to
+#              the spec file list.
+
+rpm.build.auto: etc/aubit-auto.spec
+rpm.build.auto: RPMCONFFILE:=${AUBITDIR}/etc/aubit-auto.spec
+rpm.build.auto: SRCTMP:=/root/redhat/SOURCES/${NAMEVERBLD}.tar.gz
+rpm.build.auto: rpm.build
+
+rpm.build.preset: RPMCONFFILE:=${AUBITDIR}/etc/aubit-0.20-1.spec
+rpm.build.preset: SRCTMP:=${RPMBUILDROOT}/SOURCES/${SOURCETARBASENAME}
+rpm.build.preset: rpm.build
+
+
+#rpm.build: AUBITDIR=${RPMBUILDROOT}/BUILD/aubit4gl-0.20
+#rpm.build: PATH=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}/bin:${PATH}
 rpm.build:
-	@if [ ! -f /root/redhat/SOURCES/aubit4gl-src-0.20-141-06-12-2001.tar.gz ]; then \
-		${MAKE} rpm.make.source.tar; \
+#RPM insists to have source code in ${RPMBUILDROOT}/SOURCES/ before it will
+#build it, and only then make rpm from both of them (src and bin RPM)
+#	echo xxx ${SOURCETARBASENAME} ZZZZ ${SRCTMP} xxx
+	@if [ ! -f ${SRCTMP} ]; then \
+		if [ ! -f ${SOURCETARBASENAME} ]; then \
+			${MAKE} ${MKNAME} clean.all; \
+			${RMDIR} /tmp/${NAMEVERBLD}; \
+			mkdir /tmp/${NAMEVERBLD}; \
+			${LN_S} ${AUBITDIR} /tmp/${NAMEVERBLD}/${NAMEVERBLD}; \
+			(cd /tmp/${NAMEVERBLD}; tar -cvzf $(SOURCETARNAME) ${NAMEVERBLD}/* ); \
+			${MAKE} ${MKNAME} rpm.autospec; \
+		fi; \
+		${CP} ${SOURCETARBASENAME} ${SRCTMP} ; \
 	fi
-	rpm -ba etc/aubit-0.20-1.spec > rpmbuild.log 2>&1
-#	rpm -c ${AUBITDIR}/etc/aubit-0.20-1.spec
+	(export AUBITDIR=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}; export PATH=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}/bin:${PATH}; rpm -ba ${RPMCONFFILE} > rpmbuild.log 2>&1)
+	@echo "See rpmbuild.log for details"
 
-rpm.make.source.tar:
-	@if [ ! -f aubit4gl-src-0.20-141-06-12-2001.tar.gz ]; then \
-		${MAKE} make source.tar.curr; \
-	fi
-	mv aubit4gl-src-0.20-141-06-12-2001.tar.gz /root/redhat/SOURCES/
 
 #p means just run the prep section of the specfile.
 #l is a list check that does some checks on %files.
@@ -1261,12 +1298,31 @@ rpm.make.source.tar:
 #--keep-temps will keep all the temp files and scripts that were made in /tmp. You can actually see what files were created in /tmp using the -v option.
 #--test does not execute any real stages, but does keep-temp.
 
-
-
 build.diff.patch:
 	diff -uNr dirname.orig dirname > ../SOURCES/dirname-linux.patch
 
 
+#Linux Software Map (.lsm) see http://www.execpc.com/lsm/
+aubit4gl.lsm: OUTFILE=aubit4gl.lsm
+aubit4gl.lsm:
+	@echo Begin4 > ${OUTFILE}
+	@echo Title: Aubit 4gl compiler >> ${OUTFILE}
+	@echo Version: ${AUBITVERSION}.${AUBITBUILD} >> ${OUTFILE}
+	@echo Entered-date: ${COMPILEDATE} >> ${OUTFILE}
+	@echo Description: Compiler for x4gl programming language >> ${OUTFILE}
+	@echo Keywords: compiler 4gl database sql gui >> ${OUTFILE}
+	@echo Author: Mike Aubury >> ${OUTFILE}
+	@echo Maintained-by: Aubit development team >> ${OUTFILE}
+	@echo Primary-site: http://aubit4gl.sourceforge.net >> ${OUTFILE}
+	@echo Alternate-site: http://www.falout.com >> ${OUTFILE}
+	@echo Original-site: http://www.aubit.com >> ${OUTFILE}
+	@echo Platforms: POSIX Win32 >> ${OUTFILE}
+	@echo Copying-policy: GNU GPL LGPL >> ${OUTFILE}
+	@echo End >> ${OUTFILE}
+	@echo >> ${OUTFILE}
+	@echo >> ${OUTFILE}
+	@echo Note: >> ${OUTFILE}
+	@echo send this file to 'lsm@execpc.com' with the subject 'add'. >> ${OUTFILE}
 
 
 ## ------------------------------------------------------------------
@@ -1322,11 +1378,11 @@ commit.build.step2:
 	@echo "Build ${BUILDNO} Commit finished. See file './commit.log'"
 
 test:
-	${MAKE} -C tools/test test.build PDFBUILD=${PDFBUILD}
+	${MAKE} ${MKNAME} -C tools/test test.build PDFBUILD=${PDFBUILD}
 	@export NOCURSES=Yes; export AUBITGUI=TUI; tools/test/test_build
 
 demo:
-	${MAKE} -C tools/test
+	${MAKE} ${MKNAME} -C tools/test
 	@echo Aubit 4gl compiler examples are now compiled
 
 
@@ -1354,13 +1410,13 @@ help.targets:
 	@echo "  cleanall - delete ALL compiled object and temp files that where"
 	@echo "          created with make. This will result in clan source code"
 	@echo "          tree, as exported form CVS"
-	@echo "  installall - installtree install installexample installmanual"
+	@echo "  installall - install.tree install installexample installmanual"
 	@echo "  createcleantar - installdrop installall tarinstall"
 	@echo "  install - installs Aubit 4gl compiler in installation tree"
 	@echo "  installexample - installs 4gl examples in installation tree"
 	@echo "  installmanual - installs manual in installation tree"
 	@echo "  installdrop - DELETES installation tree. WARNING: uses ${RMDIR}"
-	@echo "  installtree - creates installation tree"
+	@echo "  install.tree - creates installation tree"
 	@echo "  tarinstall - creates ${ARCHEXT} file from installation tree"
 	@echo "  demo - compile 4gl exampe code in tools/test/ and tools/test/gui/"
 	@echo "  log - log default target make process to ./make.log"
@@ -1474,8 +1530,8 @@ debug.filenames:
 lclint:
 	(echo " " > $(LCLINTLOG))
 #Warning! This will override CFLAGS in lib makefile!!!
-	$(MAKE) -C lib lclint PDF=no CFLAGS="$(LIBCFLAGS) " >> $(LCLINTLOGCMD)
-	$(MAKE) -C compilers/4glc/rules lclint LCLINTFLAGS=$(LCLINTFLAGS) >> $(LCLINTLOGCMD)
+	$(MAKE) ${MKNAME} -C lib lclint PDF=no CFLAGS="$(LIBCFLAGS) " >> $(LCLINTLOGCMD)
+	$(MAKE) ${MKNAME} -C compilers/4glc/rules lclint LCLINTFLAGS=$(LCLINTFLAGS) >> $(LCLINTLOGCMD)
 	@echo "see $(LCLINTLOG) for results"
 
 
@@ -1484,7 +1540,7 @@ lclint:
 	rm -f lib/libgui/assist.c
 	echo ${GTKGUI}
 	echo ${AUBITDIR}
-	make -C lib/libgui assist.c
+	make ${MKNAME} -C lib/libgui assist.c
 	ls lib/libgui/assist.c
 
 2:
@@ -1497,32 +1553,10 @@ showbug: xsettings
 xsettings:
 	@echo "make invoked with flags : xx${MAKEFLAGS}xx"
 
+
+conf:
+	./configure CFLAGS="-L/opt/unixODBC/lib -L/opt/iODBC_3.0.5/libiodbc-3.0.5/iodbc/.libs"
+
+
 ## ---------------------------- EOF ----------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

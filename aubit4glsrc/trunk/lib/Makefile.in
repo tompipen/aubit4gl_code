@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.3 2001-12-12 12:08:05 afalout Exp $
+# $Id: Makefile.in,v 1.4 2001-12-20 04:56:11 afalout Exp $
 #
 
 ifndef NOINCL
@@ -102,7 +102,7 @@ else
     endif
     ALL				+=aclshared.so libaclall.a
     ALL_GUI			=aclsharedgui.so libaclallgui.a
-
+	
 	ifeq "$(ODBC_LINK)" "static"
 		ifneq "$(ODBC)" "no"
 		    ALL			+=aclshared-noodbc.so libaclall-noodbc.a

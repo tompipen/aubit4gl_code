@@ -3,12 +3,12 @@ override CFLAGS+=-I.. -I../../compilers/fcompile
 all: libPDF_PDF.so libPDF_NOPDF.so
 
 libPDF_PDF.so: has_pdf.o
-	ld  -lpdf -fPIC -shared has_pdf.o -o $@
-	cp $@ ..
+	ld  -lpdf -fPIC -shared has_pdf.o -o libPDF_PDF.so
+	cp libPDF_PDF.so ..
 
 libPDF_NOPDF.so: nopdf.o
-	ld  -fPIC -shared nopdf.o -o $@
-	cp $@ ..
+	ld  -fPIC -shared nopdf.o -o libPDF_NOPDF.so
+	cp libPDF_NOPDF.so ..
 
 clean:
 	rm -f *.o *.so *.bak
