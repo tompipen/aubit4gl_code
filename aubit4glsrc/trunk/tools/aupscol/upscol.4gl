@@ -38,7 +38,7 @@ initialize mv_curr_col to null
 let lv_quiet=1
 defer interrupt
 code
-putenv("A4GL_AUTOBANG=Y");
+A4GL_setenv("A4GL_AUTOBANG","Y",1);
 endcode
 
 options message line last

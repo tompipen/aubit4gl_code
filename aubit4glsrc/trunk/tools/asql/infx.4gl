@@ -429,7 +429,7 @@ code
 static char buff[1024];
 A4GL_trim(lv_server);
 sprintf(buff,"INFORMIXSERVER=%s",lv_server);
-putenv(buff);
+A4GL_setenv("INFORMIXSERVER",lv_server,1);
 }
 endcode
 call set_username(lv_username,lv_passwd)

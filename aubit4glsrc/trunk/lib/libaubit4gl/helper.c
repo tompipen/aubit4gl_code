@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.23 2004-03-14 15:59:18 mikeaubury Exp $
+# $Id: helper.c,v 1.24 2004-03-15 16:27:18 mikeaubury Exp $
 #
 */
 
@@ -173,6 +173,7 @@ struct s_windows
   struct s_form_attr winattr;
 };
 
+int A4GL_setenv(char *name, char *value, int overwrite);
 
 static long *ptr;
 
@@ -994,8 +995,21 @@ int
 A4GL_setenv(char *name, char *value, int overwrite)
 {
 //char* buff;
-char buff[1024];
+//char buff[1024];
 int ret;
+char prefixed_name[256];
+sprintf (prefixed_name, "A4GL_%s", name);
+char *ptr;
+/* Clear the current cache if there is one.. */
+ptr=(char *)A4GL_has_pointer (name,STR_RESOURCE_VAL);
+if (ptr) {
+	A4GL_del_pointer(name,STR_RESOURCE_VAL);
+}
+ptr=(char *)A4GL_has_pointer (prefixed_name,STR_RESOURCE_VAL);
+if (ptr) {
+	A4GL_del_pointer(prefixed_name,STR_RESOURCE_VAL);
+}
+
 
 //#ifndef __MINGW32__		//No setenv() on MinGW
 #if HAVE_SETENV

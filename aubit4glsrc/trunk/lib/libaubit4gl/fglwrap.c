@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.56 2004-01-24 19:42:28 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.57 2004-03-15 16:27:17 mikeaubury Exp $
 #
 */
 
@@ -244,32 +244,6 @@ char *p;
   b = 0;
   for (a = 0; a < MAX_ARGS; a++)
     {
-      if (a < nargs)
-	{
-	  if (argv[a])
-	    {
-	      /* FIXME: wha is this used for? */
-	      if (strncmp (argv[a], "GUIPORT", 7) == 0)
-		{
-		#ifdef DEBUG
-		  A4GL_debug ("GUIMODE");
-		#endif
-		  putenv (argv[a]);
-		  continue;
-		}
-
-	      /* FIXME: this is now A4GL_UI=CONSOLE */
-	      if (strncmp (argv[a], "NOCURSES", 8) == 0)
-		{
-		#ifdef DEBUG
-			A4GL_debug ("NOCURSES");
-		#endif
-		  putenv (argv[a]);
-		  continue;
-		}
-	    }
-	}
-
       if (a < nargs)
 	{
 	  p_args[b++] = strdup (argv[a]);

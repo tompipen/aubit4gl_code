@@ -16,7 +16,7 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  putenv ("A4GL_PACKER=PERL");
+  A4GL_setenv ("A4GL_PACKER","PERL",1);
 
   rval = compile_ace_report (argv[1]);
   printf ("Got rval as %d\n", rval);

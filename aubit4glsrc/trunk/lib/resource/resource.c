@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.67 2004-03-14 10:40:58 afalout Exp $
+# $Id: resource.c,v 1.68 2004-03-15 16:27:18 mikeaubury Exp $
 #
 */
 
@@ -545,13 +545,11 @@ if (strcmp(s,"DEBUG_LEVEL")==0 || strcmp(s,"A4GL_DEBUG_LEVEL")==0) {
 } 
 
 
-
-if (A4GL_has_pointer (s,STR_RESOURCE_VAL))  {
-		A4GL_del_pointer(s,STR_RESOURCE_VAL);
+ptr=(char *)A4GL_find_pointer (s,STR_RESOURCE_VAL);
+if (ptr)  {
+	/* A4GL_del_pointer(s,STR_RESOURCE_VAL); */
+	return ptr;
 }
-
-
-
 
 
 
@@ -575,10 +573,13 @@ if (A4GL_has_pointer (s,STR_RESOURCE_VAL))  {
         #endif
     }
 
-    sprintf (prefixed_string, "A4GL_%s", s);
+        sprintf (prefixed_string, "A4GL_%s", s);
 
 	ptr_env_A4GL = getenv (prefixed_string); /* in environmet, with A4GL_ prefix */
 	ptr_env = (char *) getenv (s); /* in environment, but without the prefix */
+
+
+
 	ptr_registry=A4GL_getenv_registry (s,(char *) prefixed_string); /*Windows registry */
 	ptr_resources_A4GL = find_str_resource (prefixed_string); 		/* Try in resources */
 	ptr_resources = find_str_resource (s); 		/* Try in resources */

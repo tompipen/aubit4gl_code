@@ -62,7 +62,7 @@ let lv_echo=0
 
 defer interrupt
 code
-putenv("A4GL_AUTOBANG=Y");
+A4GL_setenv("A4GL_AUTOBANG","Y",1);
 endcode
 
 let lv_cnt=1
@@ -313,8 +313,8 @@ code
 static char buff[256];
 
 		A4GL_trim(sqlcnvpath);
-		sprintf(buff,"SQLCNVPATH=%s",sqlcnvpath);
-		putenv(buff);
+		//sprintf(buff,"SQLCNVPATH=%s",sqlcnvpath);
+		A4GL_setenv("SQLCNVPATH",sqlcnvpath,1);
 }
 endcode
 end if
