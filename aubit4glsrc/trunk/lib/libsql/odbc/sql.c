@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.65 2003-08-26 04:38:44 afalout Exp $
+# $Id: sql.c,v 1.66 2003-08-26 05:27:04 afalout Exp $
 #
 */
 
@@ -72,7 +72,18 @@
 
 
 #define chk_rc(rc,stmt,call) A4GL_chk_rc_full(rc,(void *)stmt,call,__LINE__,__FILE__)
-#define max(a,b) (a>b?a:b)
+
+
+#ifndef __MINGW32__
+	#define max(a,b) (a>b?a:b)
+	/* windef.h:
+
+	#ifndef NOMINMAX
+	#ifndef max
+	#define max(a,b) ((a)>(b)?(a):(b))
+    */
+
+#endif
 
 /**
  * Define max length of char string representation of
@@ -1307,13 +1318,13 @@ A4GLSQL_fetch_cursor (char *cursor_name,
 int
 A4GLSQL_init_connection (char *dbName)
 {
-  char empty[10] = "None";
-  char *u, *p;
-  HDBC *hh = 0;
-  int rc;
+char empty[10] = "None";
+char *u, *p;
+HDBC *hh = 0;
+int rc;
 #ifdef SQLITEODBC
-  char a[128], b[128], tmp[2048];
-  char *FullPathDBname;
+char a[128], b[128], tmp[2048];
+char *FullPathDBname;
 
 
 	A4GL_debug("SQLITE special...");
@@ -1339,10 +1350,11 @@ A4GLSQL_init_connection (char *dbName)
 
 	//Find full path to the SQLite database file, use DBPATH
 	FullPathDBname=A4GL_fullpath_dbpath((char *)tmp);
-
     if (FullPathDBname) {
-        strcpy (tmp,FullPathDBname);
-        dbName=strdup(tmp);
+		strcpy (tmp,FullPathDBname);
+		//this strdup is causing a core dump on MinGW:
+		//dbName=strdup(tmp);
+		sprintf(dbName,"%s",tmp);
 		A4GL_debug("Found SQLite db in '%s'",dbName);
 	} else {
 		/*
@@ -1699,13 +1711,12 @@ A4GL_display_size (SWORD coltype, UDWORD collen, UCHAR * colname)
 int
 A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
 {
-  RETCODE rc;
-  char uid[256] = "";
-  char pwd[256] = "";
+RETCODE rc;
+char uid[256] = "";
+char pwd[256] = "";
 
 #ifdef DEBUG
-  A4GL_debug ("A4GLSQL_make_connection .. server=%s uid_p=%s pwd_p=%s",
-	 server, uid_p, pwd_p);
+  A4GL_debug ("A4GLSQL_make_connection .. server=%s uid_p=%s pwd_p=%s", server, uid_p, pwd_p);
 #endif
 
   /* do nothing if no server, which can happen if fgl_start
@@ -1730,21 +1741,21 @@ A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
   A4GL_trim (uid);
   A4GL_trim (pwd);
   A4GL_trim (server);
-
   /*
      FIXME: we really need more then trim() here - I once had a TAB after
      uid by mistake...
    */
 
-  if (henv == 0)
-    {
-      rc = SQLAllocEnv (&henv);
-      chk_rc (rc, 0, "SQLAllocEnv");
+  if (henv == 0) {
+	  A4GL_debug ("Calling SQLAllocEnv()");
+      //This call core dumps on SQLite/MinGW:
+	  rc = SQLAllocEnv (&henv);
+      //rc = SQLAllocEnv (henv);
+	  chk_rc (rc, 0, "SQLAllocEnv");
 	  #ifdef DEBUG
       	A4GL_debug ("SQLAllocEnv returns %d %p", rc, henv);
 	  #endif
     }
-
   rc = SQLAllocConnect (henv, &hdbc);
   chk_rc (rc, 0, "SQLAllocConnect");
 #ifdef DEBUG
@@ -2010,7 +2021,7 @@ make[2]: *** [sql.o] Error 1
   if (rc != 0 && rc != 100)
     {
       A4GL_debug ("Calling SQLError %p %p %p rc=%d", henv, hdbc, hstmt, rc);
-      rc = SQLError (henv, hdbc, (SQLHSTMT)hstmt, s1, &errno, s2, 500, &errno2);
+      rc = SQLError (henv, hdbc, (SQLHSTMT)hstmt, s1, &errno, s2, 500, &errno2); //warning: passing arg 5 of `SQLError' from incompatible pointer type
       A4GL_debug ("rc=%d\n", rc);
       if (errno > 0 && errno != 100)
 	errno = 0 - errno;

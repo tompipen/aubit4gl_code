@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.192 2003-08-23 00:42:41 afalout Exp $
+dnl # $Id: configure.in,v 1.193 2003-08-26 05:26:56 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -4512,6 +4512,8 @@ fi
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libspopc"
     fi
 
+if test "$cygwin" != "1"; then
+#Don't know how to link this on Windows...
 	if test "$Q_ESQLC" != "no" ; then
 		PLUGIN_YES="$PLUGIN_YES ESQL_QUERIX"
 if test "disabled" = ""; then
@@ -4521,7 +4523,8 @@ fi
 	else
         PLUGIN_NO="$PLUGIN_NO ESQL_QUERIX SQL_esqlQ"
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.querix"
-    fi
+	fi
+fi
 
 	if test "$SAPDB_ESQLC" != "no"; then
 		PLUGIN_YES="$PLUGIN_YES ESQL_SAP"

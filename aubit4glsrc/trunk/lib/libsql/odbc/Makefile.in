@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.34 2003-08-18 06:18:34 afalout Exp $
+# $Id: Makefile.in,v 1.35 2003-08-26 05:27:04 afalout Exp $
 #
 
 ROOT    =../../..
@@ -63,19 +63,21 @@ OBJECTS				=sql.o sqlex.o array.o
 LD_RUN_PATH =${INFORMIXDIR}/lib/esql
 #IFX_RPATH	=-rpath ${INFORMIXDIR}/lib/esql
 
+
+CFLAGS_SQLITE	=-DDONTINCLUDEDATASOURCES -DSQLITEODBC -DHAVE_LIBVERSION=1 -DWITHOUT_DRIVERMGR  \
+				${CFLAGS_NOREDUND} -DHAVE_LOCALECONV=1 \
+				-L@SQLITE_LDPATH@ -I${ROOT}/tools/odbtest/incl -I.
+
 ifeq "${TARGET_OS}" "cygwin"
 	LINKLIBS		=-L${LIBROOT} -laubit4gl
 	#On Windows we renamed .dll/.def files in original distribution (adding 'lib' prefix) and
     #copyed them to /cygwin/lib directory:
 	SQLITE_LINKLIBS	=-LD:/cygwin/lib
+	CFLAGS_SQLITE	+=-DDLL_EXPORT -DPIC -DMEMORY_DEBUG=2
+
+else
+	CFLAGS_SQLITE	+=-DHAVE_USLEEP=1 -L/usr/local/lib -L/usr/lib
 endif
-
-
-CFLAGS_SQLITE		=-DDONTINCLUDEDATASOURCES -DSQLITEODBC -I${ROOT}/tools/odbtest/incl \
-					-DHAVE_LOCALECONV=1 -DHAVE_USLEEP=1 \
-					-DHAVE_LIBVERSION=1 -I. -DWITHOUT_DRIVERMGR -L@SQLITE_LDPATH@ \
-					-L/usr/local/lib -L/usr/lib ${CFLAGS_NOREDUND}
-#-DHAVE_IODBC=1
 
 #ifneq "${GCC_MINGW}" "yes"
 #	CFLAGS_SQLITE	+=-DHAVE_USLEEP=1

@@ -35,17 +35,12 @@ helper_funcs.c:240: `CLONGTYPE' undeclared (first use in this function)
 /* this list was taken from Informix sqltypes.h since this definitions do not 
 exist in Querix or Aubit headers */
 #define CCHARTYPE	100
-#define CSHORTTYPE	101
-#define CINTTYPE	102
 #define CLONGTYPE	103
-#define CFLOATTYPE	104
-#define CDOUBLETYPE	105
 #define CDECIMALTYPE	107
 #define CFIXCHARTYPE	108
 #define CSTRINGTYPE	109
 #define CDATETYPE	110
 #define CMONEYTYPE	111
-#define CDTIMETYPE	112
 #define CLOCATORTYPE    113
 #define CVCHARTYPE	114
 #define CINVTYPE	115
@@ -60,7 +55,13 @@ exist in Querix or Aubit headers */
 #define CLVCHARPTRTYPE  124
 #define CTYPEMAX	25
 
-
+#ifndef __MINGW32__
+	#define CSHORTTYPE	101
+	#define CINTTYPE	102
+	#define CFLOATTYPE	104
+	#define CDOUBLETYPE	105
+	#define CDTIMETYPE	112
+#endif
 
 
   //void A4GL_copy_money (dec_t * infx, fglmoney * a4gl, int indicat,int size, char dir);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.13 2003-08-09 09:27:13 afalout Exp $
+# $Id: io.c,v 1.14 2003-08-26 05:27:04 afalout Exp $
 #
 */
 
@@ -128,48 +128,28 @@ A4GL_write_int (FILE * ofile, int la)
 void
 A4GL_bname (char *str, char *str1, char *str2)
 {
-
-  static char fn[FNAMESIZE];
-
-  int a;
-
-  char *ptr;
+static char fn[FNAMESIZE];
+int a;
+char *ptr;
 
   strcpy (fn, str);
 
-  for (a = strlen (fn); a >= 0; a--)
-    {
-
-      if (fn[a] == '.')
-	{
-
-	  fn[a] = 0;
-
-	  break;
-
-	}
-
-    }
+  for (a = strlen (fn); a >= 0; a--) {
+      if (fn[a] == '.'){
+		fn[a] = 0;
+		break;
+	  }
+  }
 
   ptr = &fn[a];
-
   strcpy (str1, fn);
 
-  if (a > 0)
-    {
-
+  if (a > 0){
       strcpy (str2, ptr + 1);
-
-    }
-  else
-    {
-
+  } else {
       strcpy (str2, fn);
-
       strcpy (str1, "");
-
-    }
-
+  }
 }
 
 
@@ -186,40 +166,39 @@ A4GL_bname (char *str, char *str1, char *str2)
 FILE *
 A4GL_try_to_open (char *path, char *name, int keepopen)
 {
-  char buff[2048];
-  FILE *f;
+char buff[2048];
+FILE *f;
+
+  if (strlen (name) == 0)
+    return 0;
 
   if (strlen (path))
     {
-		#ifndef WIN32
+		//Forward slash should work on Windows just fine...
+		//#ifndef WIN32 - we need __MINGW32__ or __CYGWIN__
 	      sprintf (buff, "%s/%s", path, name);
-		#else
-		  sprintf (buff, "%s\\%s", path, name);
-		#endif
+		//#else
+		//  sprintf (buff, "%s\\%s", path, name);
+		//#endif
     }
   else
     {
       sprintf (buff, name);
     }
-  
-  A4GL_debug ("Opening path '%s'", buff);
 
-  if (strlen (name) == 0)
-    return 0;
+	A4GL_debug ("Opening path '%s'", buff);
 
   /* Does it exist and can we read it ? */
-  f = fopen (buff, "r");
-  if (f == 0) {
-	return (FILE *) 0;
-  }
-  if (!keepopen)
-    {				/* We just wanted to check.. */
-      fclose (f);
-      return (FILE *) 1;
-    }
-
-  A4GL_debug ("opened file %s in path %s", name, path);
-  return f;			/* We want it opened.. */
+	f = fopen (buff, "r");
+	if (f == 0) {
+		return (FILE *) 0;
+	}
+	if (!keepopen) {				/* We just wanted to check.. */
+	  fclose (f);
+	  return (FILE *) 1;
+	}
+	A4GL_debug ("opened file %s in path %s", name, path);
+	return f;			/* We want it opened.. */
 }
 
 /**
@@ -259,6 +238,16 @@ int str_len;
 		#else
 		if (str_path[cnt] == ':') {
 		#endif
+            //if next char is a separator, skip that one too...
+			#ifdef __MINGW32__
+			if (str_path[cnt+1] == ';') {
+            #else
+            if (str_path[cnt+1] == ':') {
+            #endif
+				cnt++;
+				ptr = &str_path[cnt];
+            }
+
 			if ( cnt !=0 ) {
 				str_path[cnt] = 0;
 				if (strlen (ptr)) {
@@ -335,14 +324,14 @@ int str_len;
 				if (strlen (ptr)) {
 					//A4GL_debug ("strlen (ptr) > 0, ptr=%s",ptr);
 	 				if (A4GL_try_to_open (ptr, fname, 0)) {
-				    	ptr2=strdup(ptr);
-						#ifdef __MINGW32__
-							strcat(ptr2,"\\");
-				        #else
+						ptr2=strdup(ptr);
+						//#ifdef __MINGW32__
+						//	strcat(ptr2,"\\");
+				        //#else
 							strcat(ptr2,"/");
-			        	#endif
+			        	//#endif
 						strcat(ptr2,fname);
-					    return ptr2;
+						return ptr2;
 					} else {
 						cnt++;
 						ptr = &str_path[cnt];
@@ -367,13 +356,14 @@ int str_len;
 
 	//catch cases when DBPATH contained only one path and no separator:
 	if (strlen (ptr)) {
+		A4GL_debug ("One last time...");
 		if (A4GL_try_to_open (ptr, fname, 0)) {
 			ptr2=strdup(ptr);
-			#ifdef __MINGW32__
-		  		strcat(ptr2,"\\");
-			#else
+			//#ifdef __MINGW32__
+		  	//	strcat(ptr2,"\\");
+			//#else
 				strcat(ptr2,"/");
-			#endif
+			//#endif
 			strcat(ptr2,fname);
 			return ptr2;
 		}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_perl.c,v 1.7 2003-06-06 09:52:36 mikeaubury Exp $
+# $Id: pack_perl.c,v 1.8 2003-08-26 05:27:04 afalout Exp $
 #*/
 
 /**
@@ -87,43 +87,6 @@ int structs_cnt = 0;
 
 char *A4GL_find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
 char *A4GL_find_contents (char *s);	/* Extract the tag contents from a string */
-
-/*
-int input_int (char *name, int *val, int ptr, int isarr);
-int input_long (char *name, long *val, int ptr, int isarr);
-int input_bool (char *name, int *val, int ptr, int isarr);
-int input_string (char *name, char **val, int ptr, int isarr);
-int input_double (char *name, double *val, int ptr, int isarr);
-int input_start_struct (char *s, char *n, int ptr, int isarr);
-int input_end_struct (char *s, char *n);
-int input_start_union (char *s, char *n, int ptr, int isarr);
-int input_ptr_ok (void);
-int input_end_union (char *s, char *n);
-int input_enum (char *name, int *d);
-
-int output_int (char *name, int val, int ptr, int isarr);
-int output_long (char *name, long val, int ptr, int isarr);
-int output_string (char *name, char *val, int ptr, int isarr);
-int output_double (char *name, double val, int ptr, int isarr);
-int output_start_struct (char *s, char *n, int ptr, int isarr);
-int output_end_struct (char *s, char *n);
-int output_start_union (char *s, char *n, int ptr, int isarr);
-int output_nullptr (char *s);
-int output_okptr (char *s);
-int output_end_union (char *s, char *n);
-int output_enum (char *name, char *s, int d);
-
-int input_start_array (char *s, int type, int *len);
-int input_end_array (char *s, int type);
-int A4GL_open_packer (char *basename, char dir);
-void A4GL_close_packer (char dir);
-int output_start_array (char *s, int type, int len);
-int output_end_array (char *s, int type);
-
-int output_bool (char *name, int val, int ptr, int isarr);
-int can_pack_all(char *name);
-
-*/
 
 char *A4GL_escape_str (char *s, char q, char e);
 void A4GL_pr_nl (void);

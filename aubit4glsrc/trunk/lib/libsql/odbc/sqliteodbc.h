@@ -45,7 +45,7 @@ MODIFICATIONS.
  * @file sqliteodbc.h
  * Header file for SQLite ODBC driver.
  *
- * $Id: sqliteodbc.h,v 1.4 2003-08-18 06:18:34 afalout Exp $
+ * $Id: sqliteodbc.h,v 1.5 2003-08-26 05:27:04 afalout Exp $
  *
  * Copyright (c) 2001-2003 Christian Werner <chw@ch-werner.de>
  *
@@ -64,7 +64,8 @@ MODIFICATIONS.
 
 #if defined (_WIN32)
 	#include <windows.h>
-    #undef _WIN32
+    //#define NULL 0
+	//#undef _WIN32
 #else
 	#include <sys/time.h>
 	#include <sys/types.h>

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.6 2003-08-20 07:39:33 afalout Exp $
+# $Id: Makefile,v 1.7 2003-08-26 05:27:04 afalout Exp $
 #
 
 ROOT    =../..
@@ -42,7 +42,7 @@ include ${ROOT}/incl/Makefile-common
 #detected and linked properly, on some others - you need this to get the link
 #to work...
 #FIXME-in that case, it should be linked in conditionally:
-ifeq "${TARGET_OS}" "theOneThatNeedIt"
+ifeq "${TARGET_OS}" "cygwin"
 	LIBAUBIT4GL=-L${LIBROOT} -laubit4gl
 endif
 
@@ -50,6 +50,15 @@ PGLIBS=-L${ECPG_LIBDIR} ${ECPG_LFLAGS} -lecpg -lecpg_compat -lpgtypes
 
 ALL=${LIBROOT}/libESQL_INFORMIX${SO_EXT} ${LIBROOT}/libESQL_POSTGRES${SO_EXT} \
     ${LIBROOT}/libESQL_SAP${SO_EXT} ${LIBROOT}/libESQL_QUERIX${SO_EXT}
+
+ifneq "${COMSPEC}" ""
+	QUERIX_IFLAGS=-I"${QUERIXDIR}/include"
+	QUERIX_LFLAGS=-L"${QUERIXDIR}/lib"
+else
+	QUERIX_IFLAGS=-I${QUERIXDIR}/incl
+	QUERIX_LFLAGS=-L${QUERIXDIR}/lib
+    STATIC=-static
+endif
 
 ## ==================================================================
 ##                              Targets
@@ -60,21 +69,25 @@ all: ${ALL}
 
 libESQL_INFORMIX${SO_EXT}: ${LIBROOT}/libESQL_INFORMIX${SO_EXT}
 ${LIBROOT}/libESQL_INFORMIX${SO_EXT}: helper_funcs_informix.o
-	${IFMX_ESQLC} -static -g --shared $^ -o $@ ${LIBAUBIT4GL}
+	${IFMX_ESQLC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL}
 
 libESQL_POSTGRES${SO_EXT}: ${LIBROOT}/libESQL_POSTGRES${SO_EXT}
 ${LIBROOT}/libESQL_POSTGRES${SO_EXT}: helper_funcs_postgresql.o
-	${CC} -static -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
+	${CC} ${STATIC} -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
 # -Bstatic
 #gcc: file path prefix "static" never used
 
 libESQL_SAP${SO_EXT}: ${LIBROOT}/libESQL_SAP${SO_EXT}
 ${LIBROOT}/libESQL_SAP${SO_EXT}: helper_funcs_sap.o
-	${CC} -static -g --shared $^ -o $@ ${LIBAUBIT4GL}
+	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL}
 
 libESQL_QUERIX${SO_EXT}: ${LIBROOT}/libESQL_QUERIX${SO_EXT}
 ${LIBROOT}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
-	${CC} -static -g --shared $^ -o $@ ${LIBAUBIT4GL}
+	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${QUERIX_LFLAGS} "${QUERIXDIR}/lib/libesql.lib" \
+	"${QUERIXDIR}/lib/libesql.lib" "${QUERIXDIR}/lib/libfgl.lib"
+#"${QUERIXDIR}/lib/libsqlc.lib"
+#"${QUERIXDIR}/bin/libfgl.dll"
+#-lesql
 
 ## ==================================================================
 ##                              Sub-targets
@@ -95,8 +108,12 @@ helper_funcs_sap.o: helper_funcs.ec
 	rm $^.cpc
 
 helper_funcs_querix.o: helper_funcs.ec
-	${Q_ESQLC} $^
-	${CC} -DDIALECT_QUERIX -g -c -o $@ helper_funcs.c -I${ROOT}/incl -I${QUERIXDIR}/incl
+#must remove .c file or .ec will not get recompiled
+	-rm helper_funcs.c
+#need quotes because of the path on Windows
+	"${Q_ESQLC}" $^
+	${CC} -DDIALECT_QUERIX -g -c -o $@ helper_funcs.c -I${ROOT}/incl ${QUERIX_IFLAGS}
+#-DNEWERA
 	rm helper_funcs.c
 
 ## ==================================================================

@@ -2,7 +2,7 @@
  * @file sqliteodbc.c
  * SQLite ODBC Driver main module.
  *
- * $Id: sqliteodbc.c,v 1.3 2003-08-18 06:18:34 afalout Exp $
+ * $Id: sqliteodbc.c,v 1.4 2003-08-26 05:27:04 afalout Exp $
  *
  * Copyright (c) 2001-2003 Christian Werner <chw@ch-werner.de>
  *
@@ -63,9 +63,9 @@ MODIFICATIONS.
 #endif
 
 #ifdef _WIN32
-#define ODBC_INI "ODBC.INI"
+	#define ODBC_INI "ODBC.INI"
 #else
-#define ODBC_INI ".odbc.ini"
+	#define ODBC_INI ".odbc.ini"
 #endif
 
 #undef min
@@ -99,13 +99,34 @@ MODIFICATIONS.
 static void *
 xmalloc_(int n, char *file, int line)
 {
-    int nn = n + 4 * sizeof (long);
-    long *p;
+int nn = n + 4 * sizeof (long);     //12+(4*4)=28
+long *p;
+/*
+ warning: dereferencing `void *' pointer
+ invalid use of void expression
+void *p;
+*/
+void *voidptr;
 
-    p = malloc(nn);
+	A4GL_debug("in xmalloc_()");
+/*
+	//this one works:
+	voidptr = malloc (1024 * 1024 * 10);
+	A4GL_debug("pass voidptr...");
+	//free() coredumps here:
+	free (voidptr);
+	A4GL_debug("freed voidptr...");
+*/
+
+	A4GL_debug("sizeof (long)=%d",sizeof (long)); //sizeof (long)=4
+	A4GL_debug("malloc nn=%d",nn); //malloc nn=28
+	//core dump on MinGW here:
+	p = malloc(nn);
+	A4GL_debug("malloced %d",nn);
     if (!p) {
 #if (MEMORY_DEBUG > 1)
-	fprintf(stderr, "malloc\t%d\tNULL\t%s:%d\n", n, file, line);
+	//fprintf(stderr, "malloc\t%d\tNULL\t%s:%d\n", n, file, line);
+	A4GL_debug("malloc\t%d\tNULL\t%s:%d\n", n, file, line);
 #endif
 	return NULL;
     }
@@ -114,7 +135,8 @@ xmalloc_(int n, char *file, int line)
     p[1] = n;
     p[nn] = 0xdead5678;
 #if (MEMORY_DEBUG > 1)
-    fprintf(stderr, "malloc\t%d\t%p\t%s:%d\n", n, &p[2], file, line);
+    A4GL_debug("malloc\t%d\t%p\t%s:%d\n", n, &p[2], file, line);
+    //fprintf(stderr, "malloc\t%d\t%p\t%s:%d\n", n, &p[2], file, line);
 #endif
     return (void *) &p[2];
 }
@@ -130,24 +152,28 @@ xrealloc_(void *old, int n, char *file, int line)
     }
     p = &((long *) old)[-2];
     if (p[0] != 0xdead1234) {
-	fprintf(stderr, "*** low end corruption @ %p\n", old);
+	//fprintf(stderr, "*** low end corruption @ %p\n", old);
+    A4GL_debug("*** low end corruption @ %p\n", old);
 	abort();
     }
     nnn = p[1] + 4 * sizeof (long);
     nnn = nnn / sizeof (long) - 1;
     if (p[nnn] != 0xdead5678) {
-	fprintf(stderr, "*** high end corruption @ %p\n", old);
+	//fprintf(stderr, "*** high end corruption @ %p\n", old);
+    A4GL_debug("*** high end corruption @ %p\n", old);
 	abort();
     }
     pp = realloc(p, nn);
     if (!pp) {
 #if (MEMORY_DEBUG > 1)
-	fprintf(stderr, "realloc\t%p,%d\tNULL\t%s:%d\n", old, n, file, line);
+	//fprintf(stderr, "realloc\t%p,%d\tNULL\t%s:%d\n", old, n, file, line);
+    A4GL_debug("realloc\t%p,%d\tNULL\t%s:%d\n", old, n, file, line);
 #endif
 	return NULL;
     }
 #if (MEMORY_DEBUG > 1)
-    fprintf(stderr, "realloc\t%p,%d\t%p\t%s:%d\n", old, n, &pp[2], file, line);
+    //fprintf(stderr, "realloc\t%p,%d\t%p\t%s:%d\n", old, n, &pp[2], file, line);
+    A4GL_debug("realloc\t%p,%d\t%p\t%s:%d\n", old, n, &pp[2], file, line);
 #endif
     p = pp;
     if (n > p[1]) {
@@ -167,17 +193,20 @@ xfree_(void *x, char *file, int line)
 
     p = &((long *) x)[-2];
     if (p[0] != 0xdead1234) {
-	fprintf(stderr, "*** low end corruption @ %p\n", x);
+	//fprintf(stderr, "*** low end corruption @ %p\n", x);
+    A4GL_debug("*** low end corruption @ %p\n", x);
 	abort();
     }
     n = p[1] + 4 * sizeof (long);
     n = n / sizeof (long) - 1;
     if (p[n] != 0xdead5678) {
-	fprintf(stderr, "*** high end corruption @ %p\n", x);
+	//fprintf(stderr, "*** high end corruption @ %p\n", x);
+    A4GL_debug("*** high end corruption @ %p\n", x);
 	abort();
     }
 #if (MEMORY_DEBUG > 1)
-    fprintf(stderr, "free\t%p\t\t%s:%d\n", x, file, line);
+    //fprintf(stderr, "free\t%p\t\t%s:%d\n", x, file, line);
+    A4GL_debug("free\t%p\t\t%s:%d\n", x, file, line);
 #endif
     free(p);
 }
@@ -195,7 +224,8 @@ xstrdup_(char *str, char *file, int line)
 
     if (!str) {
 #if (MEMORY_DEBUG > 1)
-	fprintf(stderr, "strdup\tNULL\tNULL\t%s:%d\n", file, line);
+	//fprintf(stderr, "strdup\tNULL\tNULL\t%s:%d\n", file, line);
+    A4GL_debug("strdup\tNULL\tNULL\t%s:%d\n", file, line);
 #endif
 	return NULL;
     }
@@ -204,7 +234,8 @@ xstrdup_(char *str, char *file, int line)
 	strcpy(p, str);
     }
 #if (MEMORY_DEBUG > 1)
-    fprintf(stderr, "strdup\t%p\t%p\t%s:%d\n", str, p, file, line);
+    //fprintf(stderr, "strdup\t%p\t%p\t%s:%d\n", str, p, file, line);
+    A4GL_debug("strdup\t%p\t%p\t%s:%d\n", str, p, file, line);
 #endif
     return p;
 }
@@ -227,9 +258,9 @@ xstrdup_(char *str, char *file, int line)
 #ifdef _WIN32
 //aubit change: orriginaly: #ifdef _WIN32
 //#if defined (__WIN32) && ! defined (__CYGWIN__)
-#define vsnprintf   _vsnprintf
-#define snprintf    _snprintf
-#define strncasecmp _strnicmp
+	#define vsnprintf   _vsnprintf
+	#define snprintf    _snprintf
+	#define strncasecmp _strnicmp
 #endif
 
 /**
@@ -822,13 +853,13 @@ busy_handler(void *udata, const char *table, int count)
 #ifdef _WIN32
     Sleep(10);
 #else
-#ifdef HAVE_USLEEP
-    usleep(10000);
-#else
-    tv.tv_sec = 0;
-    tv.tv_usec = 10000;
-    select(0, NULL, NULL, NULL, &tv);
-#endif
+	#ifdef HAVE_USLEEP
+	    usleep(10000);
+	#else
+	    tv.tv_sec = 0;
+	    tv.tv_usec = 10000;
+	    select(0, NULL, NULL, NULL, &tv);
+	#endif
 #endif
     ret = 1;
 done:
@@ -4649,7 +4680,7 @@ SQLGetDiagRec(SQLSMALLINT htype, SQLHANDLE handle, SQLSMALLINT recno,
 #ifdef SQLITE_UTF8
 /**
  * Get error message given handle (HENV, HDBC, or HSTMT)
- * (UNICODE version). 
+ * (UNICODE version).
  * @param htype handle type
  * @param handle HENV, HDBC, or HSTMT
  * @param recno
@@ -5864,20 +5895,37 @@ SQLGetFunctions(SQLHDBC dbc, SQLUSMALLINT func,
 static SQLRETURN
 drvallocenv(SQLHENV *env)
 {
-    ENV *e;
+ENV *e;
 
     if (env == NULL) {
-	return SQL_INVALID_HANDLE;
+		return SQL_INVALID_HANDLE;
     }
-    e = (ENV *) xmalloc(sizeof (ENV));
-    if (e == NULL) {
-	*env = SQL_NULL_HENV;
-	return SQL_ERROR;
+
+  if (env == 0) {
+		A4GL_debug ("Passed NULL, but got zero...");
+		return SQL_INVALID_HANDLE;
     }
+
+
+A4GL_debug ("In drvallocenv(): e = (ENV *) xmalloc(sizeof (ENV));");
+A4GL_debug ("sizeof (ENV)=%d",sizeof (ENV)); //sizeof (ENV)=12
+	//We core dump on MinGW here: #define xmalloc(x)    malloc(x)
+    //ENV is struct!
+	e = (ENV *) xmalloc(sizeof (ENV));
+A4GL_debug ("q3a");
+	if (e == NULL) {
+A4GL_debug ("q3b");
+		*env = SQL_NULL_HENV;
+A4GL_debug ("q3c");
+		return SQL_ERROR;
+    }
+
+A4GL_debug ("q4");
+
     e->magic = ENV_MAGIC;
     e->ov3 = 0;
     e->dbcs = NULL;
-    *env = (SQLHENV) e;
+	*env = (SQLHENV) e;
     return SQL_SUCCESS;
 }
 
@@ -5890,7 +5938,7 @@ drvallocenv(SQLHENV *env)
 SQLRETURN SQL_API
 SQLAllocEnv(SQLHENV *env)
 {
-    return drvallocenv(env);
+	return drvallocenv(env);
 }
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.51 2003-08-18 23:31:26 afalout Exp $
+# $Id: fglwrap.c,v 1.52 2003-08-26 05:27:04 afalout Exp $
 #
 */
 
@@ -172,15 +172,16 @@ A4GL_fgl_die(int n)
 void
 A4GL_fgl_start (int nargs, char *argv[])
 {
-  int a;
-  int b = 0;
-  void *ptr;
-  char *p;
+int a, result;
+int b = 0;
+void *ptr;
+char *p;
+
 
   /* 
      This does nothing - but we NEED IT!
-     If builtin is not in the executable then we get link errors 
-     todo: wind out why is this needed
+     If builtin is not in the executable then we get link errors
+     todo: find out why is this needed
    */
   A4GL_include_builtin_in_exe ();
 
@@ -190,7 +191,7 @@ A4GL_fgl_start (int nargs, char *argv[])
   /* load settings from config file(s): */
   A4GL_build_user_resources ();
 
-
+/*
 #ifdef _PRELOAD_SQL_
   if (!A4GLSQL_initlib ())
     {
@@ -200,35 +201,36 @@ A4GL_fgl_start (int nargs, char *argv[])
       exit (1);
     }
 
-#ifdef DEBUG
-  A4GL_debug ("Connecting to database...");
+	#ifdef DEBUG
+	  A4GL_debug ("Connecting to database...");
+	#endif
+	  A4GLSQL_initsqllib ();
 #endif
-  A4GLSQL_initsqllib ();
-#endif
-
-  if (acl_getenv ("A4GL_UI"))
-    {
+*/
+  
+//  if (acl_getenv ("A4GL_UI"))  {     A4GL_UI will always be there, since it's defined in resource.c
       p = acl_getenv ("A4GL_UI");
 
-      //where is CONSOLE?
-      if (A4GL_aubit_strcasecmp (p, "TEXT") == 0)
-	ui_mode = 0;
+      if (A4GL_aubit_strcasecmp (p, "CONSOLE") == 0)
+		ui_mode = 0;
+	  if (A4GL_aubit_strcasecmp (p, "TEXT") == 0)
+		ui_mode = 0;
       if (A4GL_aubit_strcasecmp (p, "CURSES") == 0)
-	ui_mode = 0;
-      if (A4GL_aubit_strcasecmp (p, "GTK") == 0)
-	ui_mode = 1;
+		ui_mode = 0;
+	  if (A4GL_aubit_strcasecmp (p, "GTK") == 0)
+		ui_mode = 1;
       if (A4GL_aubit_strcasecmp (p, "GUI") == 0)
-	ui_mode = 1;
-    }
+		ui_mode = 1;
+//    }
 
   p_numargs = nargs;
   setlocale (LC_ALL, "");
   setlocale (LC_CTYPE, "");
-#ifdef DEBUG
-  {
-    A4GL_debug ("Starting 4gl program - %d arguments argv=%p", nargs, argv);
-  }
-#endif
+	#ifdef DEBUG
+	  {
+	    A4GL_debug ("Starting 4gl program - %d arguments argv=%p", nargs, argv);
+	  }
+	#endif
 
 
   /* FIXME: we already printed something to stdout at this point... */
@@ -244,9 +246,9 @@ A4GL_fgl_start (int nargs, char *argv[])
 	      /* FIXME: wha is this used for? */
 	      if (strncmp (argv[a], "GUIPORT", 7) == 0)
 		{
-#ifdef DEBUG
+		#ifdef DEBUG
 		  A4GL_debug ("GUIMODE");
-#endif
+		#endif
 		  putenv (argv[a]);
 		  continue;
 		}
@@ -254,9 +256,9 @@ A4GL_fgl_start (int nargs, char *argv[])
 	      /* FIXME: this is now A4GL_UI=CONSOLE */
 	      if (strncmp (argv[a], "NOCURSES", 8) == 0)
 		{
-#ifdef DEBUG
-		  A4GL_debug ("NOCURSES");
-#endif
+		#ifdef DEBUG
+			A4GL_debug ("NOCURSES");
+		#endif
 		  putenv (argv[a]);
 		  continue;
 		}
@@ -287,7 +289,7 @@ A4GL_fgl_start (int nargs, char *argv[])
   //Mike, are you sure this is not going to work on MinGW, or where you just guessing,
   //since it's on Windows?
   A4GL_set_core_dump ();
-  initsig_child();
+  result=initsig_child();
 #endif
   /* signal (SIGINT, fgl_end); */
   A4GL_nodef_init ();
@@ -1049,41 +1051,37 @@ aclfgl_a4gl_get_ui_mode (int n)
 }
 
 
-/*
+/**
+
 The DEFER statement prevents 4GL from terminating program execution when
 the user presses the Interrupt key or the Quit key.
 
 DEFER is a method of intercepting asynchronous signals from outside the program.
 
 Unless it includes the DEFER statement, the 4GL application terminates
-whenever the user presses the Interrupt key or the Quit key. The Interrupt 
-key is CONTROL-C, and the Quit key is CONTROL-\. (Here the Quit key 
+whenever the user presses the Interrupt key or the Quit key. The Interrupt
+key is CONTROL-C, and the Quit key is CONTROL-\. (Here the Quit key
 emulates the effect of the Quit key on UNIX systems.)
 
-The DEFER statement tells 4GL to set a built-in global variable to a 
+The DEFER statement tells 4GL to set a built-in global variable to a
 non-zero value, rather than terminate, when the user presses one of these keys:
 
-If the user presses the Interrupt key when DEFER INTERRUPT has been 
+If the user presses the Interrupt key when DEFER INTERRUPT has been
 specified, 4GL sets the built-in global variable int_flag to TRUE.
 
-If the user presses the Quit key when DEFER QUIT has been specified, 
+If the user presses the Quit key when DEFER QUIT has been specified,
 4GL sets the built-in global variable quit_flag to TRUE.
 
-The DEFER INTERRUPT and DEFER QUIT statements can appear only in the 
-MAIN program block, and only once there in any program. Once executed, 
-the DEFER statement remains in effect for the duration of the program; 
+The DEFER INTERRUPT and DEFER QUIT statements can appear only in the
+MAIN program block, and only once there in any program. Once executed,
+the DEFER statement remains in effect for the duration of the program;
 you cannot restore the original function of the Interrupt key or the Quit key.
 
 4GL programs can include code to check whether int_flag or quit_flag
 is TRUE, and if so, to take appropriate action. Be sure also to reset
-int_flag or quit_flag to FALSE (that is, to zero) so that subsequent 
+int_flag or quit_flag to FALSE (that is, to zero) so that subsequent
 tests are valid.
 
-*/
-
-
-
-/**
  * Dummy function for DEFER QUIT
  */
 void
@@ -1170,7 +1168,11 @@ A4GL_fgl_error (int a, char *s, int err, int stat)
 
 
 
-static int 
+/**
+ *
+ * @todo Describe function
+ */
+static int
 initsig_child()
 {
 struct sigaction ServerSig;
@@ -1181,7 +1183,9 @@ struct sigaction ServerSig;
 	fglwrap.c:1144: `SA_NOCLDWAIT' undeclared (first use in this function)
 	fglwrap.c:1146: `SIGCLD' undeclared (first use in this function)
 	*/
-    A4GL_exitwith("SA_NOCLDWAIT on Windows? FIXME!");
+    //exitwith won't exit? just sets status....
+	//A4GL_exitwith("SA_NOCLDWAIT on Windows? FIXME!");
+    A4GL_debug("SA_NOCLDWAIT on Windows? FIXME!");
 #else
 	A4GL_debug("Adding SIGCLD handler to stop defunct processes with informix..");
 	memset(&ServerSig,0,sizeof(struct sigaction));

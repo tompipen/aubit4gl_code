@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.8 2003-05-15 07:10:37 mikeaubury Exp $
+# $Id: main.c,v 1.9 2003-08-26 05:27:03 afalout Exp $
 #*/
 
 /**
@@ -332,29 +332,6 @@ write_genout (void)
   fprintf (hsf, "#include <stdlib.h>\n");
 
   fprintf (hf, "#include \"%s\"\n", hsfile);
-  //fprintf(hf,"int output_int (char *name, int val, int ptr, int isarr);\n");
-  //fprintf(hf,"int output_long (char *name, long val, int ptr, int isarr);\n");
-  //fprintf(hf,"int output_bool (char *name, int val, int ptr, int isarr);\n");
-  //fprintf(hf,"int output_string (char *name, char *val, int ptr, int isarr);\n");
-  //fprintf(hf,"int output_double (char *name, double val, int ptr, int isarr);\n");
-  //fprintf(hf,"int output_start_struct (char *s, char *n, int ptr, int isarr);\n");
-  //fprintf(hf,"int output_end_struct (char *s, char *n);\n");
-  //fprintf(hf,"int output_start_union (char *s, char *n, int ptr, int isarr);\n");
-  //fprintf(hf,"int output_nullptr (char *s);\n");
-  //fprintf(hf,"int output_okptr (char *s);\n");
-  //fprintf(hf,"int output_end_union (char *s, char *n);\n");
-  //fprintf(hf,"int output_enum (char *name, char *s, int d);\n");
-  //fprintf(hf,"int input_int (char *name, int *val, int ptr, int isarr);\n");
-  //fprintf(hf,"int input_long (char *name, long *val, int ptr, int isarr);\n");
-  //fprintf(hf,"int input_bool (char *name, int *val, int ptr, int isarr);\n");
-  //fprintf(hf,"int input_string (char *name, char **val, int ptr, int isarr);\n");
-  //fprintf(hf,"int input_double (char *name, double *val, int ptr, int isarr);\n");
-  //fprintf(hf,"int input_start_struct (char *s, char *n, int ptr, int isarr);\n");
-  //fprintf(hf,"int input_end_struct (char *s, char *n);\n");
-  //fprintf(hf,"int input_start_union (char *s, char *n, int ptr, int isarr);\n");
-  //fprintf(hf,"int input_ptr_ok (void );\n");
-  //fprintf(hf,"int input_end_union (char *s, char *n);\n");
-  //fprintf(hf,"int input_enum (char *name, int *d);\n");
 }
 
 
