@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.46 2002-06-07 05:13:15 afalout Exp $
+# $Id: Makefile-common.in,v 1.47 2002-06-08 06:48:10 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -167,10 +167,31 @@ PATH:=${AUBITDIR}/bin:${PATH}
 MKNAME=
 
 
-#Lclint C code checker flags:
-LCLINTFLAGS			= -weak
-LCLINTLOG  			= lclint.log
-LCLINTLOGCMD		= ${LCLINTLOG} 2>&1
+#See http://www.splint.org/manual/manual.html
+#Lclint (Splint) C code checker flags:
+LCLINTFLAGS			=-weak
+#name for log created for each module:
+LCLINTLOG  			=lclint.log
+#neame for log created in AUBITDIR root:
+LCLINT_GLOBAL_LOG	=lclint.log
+#Command to use for log file creation:
+LCLINTLOGCMD		=2>&1
+#This will soon change to "splint":
+LCLINTEXE           =lclint
+#Should we ignore if lclint checking fails:
+LCLINTERR           =-
+
+#Things wee cannto have on lclint command line:
+#LCLINT_STRIP1       =-Wall
+#LCLINT_STRIP2       =-Wredundantdecls
+#LCLINT_STRIP3       =-Wmissingdecls
+#LCLINT_STRIP4       =-Wmissingprototypes
+#LCLINT_STRIP5       =-Wstrictprototypes
+#LCLINT_STRIP6       =-g
+#LCLINT_STRIP7       =-O2
+#LCLINT_STRIP8       =-vfPIC
+
+
 
 ####################
 #commands to use:
@@ -178,6 +199,7 @@ MAKE				=make
 MKDIR 				=mkdir
 CD 					=cd
 CP 					=cp
+CAT                 =cat
 RM 					=rm -f
 RMDIR				=rm -rf
 SH 					=/bin/sh
@@ -220,8 +242,10 @@ AUTOCONF_CFLAGS     =@CFLAGS@
 NON_PEDANTIC_OK		=1
 #cannot use -pedantic, too much warnings
 CWARN               =-Wall -Wredundant-decls -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
+C_IFLAGS            =-I/usr/local/include -I$(AUBITDIR)/incl
+C_DFLAGS            =-DAUTOBANG -DDEBUG
 
-CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} -DAUTOBANG -DDEBUG -I/usr/local/include -I$(AUBITDIR)/incl
+CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} ${C_DFLAGS} ${C_IFLAGS}
 #we are overriding LD_LIBRARY_PATH that might existed in environment:
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 

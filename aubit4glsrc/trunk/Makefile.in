@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.67 2002-05-24 13:29:54 afalout Exp $
+# $Id: Makefile.in,v 1.68 2002-06-08 06:48:10 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -974,11 +974,9 @@ debug.filenames:
 
 
 lclint:
-	(echo " " > $(LCLINTLOG))
-#Warning! This will override CFLAGS in lib makefile!!!
-	$(MAKE) ${MKNAME} -C lib lclint PDF=no >> $(LCLINTLOGCMD)
-	$(MAKE) ${MKNAME} -C compilers/4glc/rules lclint LCLINTFLAGS=$(LCLINTFLAGS) >> $(LCLINTLOGCMD)
-	@echo "see $(LCLINTLOG) for results"
+	(echo " " > $(LCLINT_GLOBAL_LOG))
+	$(MAKE) -C lib/libaubit4gl lclint
+	@echo "see $(LCLINT_GLOBAL_LOG) for results"
 
 settings.rc:
 	@echo

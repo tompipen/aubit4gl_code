@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.18 2002-06-06 12:31:26 afalout Exp $
+# $Id: Makefile.in,v 1.19 2002-06-08 06:48:10 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -51,18 +51,19 @@ COMMONSRC= \
 	fglwrap.c funcs_d.c function_call_stack.c \
 	gtime.c gui_io.c gui.c \
 	helper.c \
-	io.c interval.c datatypes.c maths.c \
+	io.c interval.c \
 	keys.c \
 	load.c \
-	match.c \
+	match.c maths.c \
 	others.c \
 	pointers.c \
 	read_dty.c report.c rexp2.c ../resource/resource.c \
 	screen.c sleep.c stack.c string.c \
 	translate.c
 
+CMODS               =${COMMONSRC} ../generated/${CMODS_PROJECT} ${CMODS_API}
 OBJS_API			=${CMODS_API:.c=.o}
-OBJS				=${COMMONSRC:.c=.o} ${CMODS_PROJECT:.c=.o} ${OBJS_API}
+OBJS				=${CMODS:.c=.o}
 
 ## ==================================================================
 ##                              Options
@@ -80,7 +81,8 @@ else
 endif
 
 #-D_DEFINE_STATUSVARS_ moved in fglwrap.c
-CFLAGS				+=-I../../compilers/fcompile -I../../compilers/4glc -I${LIBINCL_PATH}
+C_LOCAL_IFLAGS      =-I../../compilers/fcompile -I../../compilers/4glc -I${LIBINCL_PATH}
+CFLAGS				+=${C_LOCAL_IFLAGS}
 
 #we don't want -Wall in CFLAGS when compiling form_x_xdr.c because it would
 #give us bunch of warnings about unised varibles, that we cannot fix
@@ -97,6 +99,8 @@ else
 	CFLAGS_NO_PEDANTIC  =${CFLAGS}
 endif
 
+#LCLINT_CFLAGS :=$($(CFLAGS:%${LCLINT_STRIP1}=%):%${LCLINT_STRIP2}=%)
+LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 
 ## ==================================================================
 ##                              Targets
@@ -188,8 +192,9 @@ clean.generated:
 ## ==================================================================
 
 lclint: $(CMODS)
-	-lclint -weak $(CFLAGS) $(CMODS) > lclint.log 2>&1
-	@echo "see lclint.log for results"
+	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
+	${CAT} ${LCLINTLOG} >> ../../${LCLINT_GLOBAL_LOG}
+	@echo "see ${LCLINTLOG} for results"
 
 api: ${OBJS_API}
 
