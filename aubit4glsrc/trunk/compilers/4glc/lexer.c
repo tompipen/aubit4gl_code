@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.93 2004-08-31 20:45:52 mikeaubury Exp $
+# $Id: lexer.c,v 1.94 2004-09-13 09:34:09 mikeaubury Exp $
 #*/
 
 /**
@@ -1368,7 +1368,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
 
 
-  A4GL_debug ("chk_word returns token=%d, buff=%s state=%d\n", a, buff, yystate);
+  A4GL_debug ("chk_word returns token=%d, buff=%s state=%d sql_mode=%d\n", a, buff, yystate,sql_mode);
 
   /*if (chk4var)*/
   /*a = NAMED_GEN;*/
@@ -1401,8 +1401,9 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
     }
   else
     {
-      if (allow == 0)
-	a = SQL_TEXT;
+	if (!is_sql_kw(a)) {
+		a = SQL_TEXT;
+	}
     }
 
 
@@ -1704,4 +1705,20 @@ could_be=0;
 }
 */
 
+// Anything allowed in here needs to be added to the sqlblock.rule function as a possible sql_block_entry
+// (with the obvious exceptions...)
+int is_sql_kw(int a) {
+	if (a==INTO) return 1;
+	if (a==COMMA) return 1;
+	if (a==OPEN_SQUARE) return 1;
+	if (a==CLOSE_SQUARE) return 1;
+	if (a==OPEN_BRACKET) return 1;
+	if (a==DOLLAR) return 1;
+	if (a==NAMED_GEN) return 1;
+	if (a==END_SQL) return 1;
+	if (a==-1) return 1;
+
+
+return 0;
+}
 /* ================================== EOF ========================= */
