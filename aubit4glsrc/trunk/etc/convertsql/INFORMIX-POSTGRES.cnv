@@ -1,5 +1,9 @@
 # rules for converting Informix SQL to Postgres-compatible syntax
 
+
+#Seems like INFORMIX-POSTGRESQL.cnv is obsolete? 
+
+
 DOUBLE_TO_SINGLE_QUOTES
 MATCHES_TO_REGEX
 TABLE_ALIAS_AS
