@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.25 2002-10-07 11:06:33 afalout Exp $
+# $Id: Makefile.in,v 1.26 2002-11-08 02:03:01 afalout Exp $
 #
 
 ROOT    =../../..
@@ -39,24 +39,25 @@ include ${ROOT}/incl/Makefile-common
 
 #FIXME: why do we need fcompile headers and RPC lib includes here?
 C_LOCAL_IFLAGS  		=-I.. -I${LIBROOT}/compilers/fcompile
-CFLAGS					+=${C_LOCAL_IFLAGS} @RPCLIB_INCLUDE@
+CFLAGS				+=${C_LOCAL_IFLAGS} 
+#@RPCLIB_INCLUDE@
 CFLAGS_NOREDUND			=$(CFLAGS:%-Wredundant-decls=%)
-CFLAGS_NOSTRICTPROTO	=$(CFLAGS:%-Wstrict-prototypes=%)
+CFLAGS_NOSTRICTPROTO		=$(CFLAGS:%-Wstrict-prototypes=%)
 LCLINT_CFLAGS   		=${C_IFLAGS} ${C_LOCAL_IFLAGS}
-OBJECTS					=sql.o sqlex.o
+OBJECTS				=sql.o sqlex.o
 
 
 #`-rpath dir'
 #           Add a directory to the runtime  library  search  path.
 #           This  is  used  when  linking  an  ELF executable with
-#           shared objects.  All `-rpath' arguments  are  concate­
+#           shared objects.  All `-rpath' arguments  are  concateÂ­
 #           nated  and  passed  to  the runtime linker, which uses
 #           them  to  locate  shared  objects  at  runtime.    The
 #           `-rpath'  option  is  also  used  when locating shared
 #           objects which are needed by shared objects  explicitly
 #           included  in  the  link;  see  the  description of the
 #           `-rpath-link' option.  If `-rpath' is  not  used  when
-#           linking  an  ELF executable, the contents of the envi­
+#           linking  an  ELF executable, the contents of the enviÂ­
 #           ronment variable `LD_RUN_PATH' will be used if  it  is
 #           defined.
 LD_RUN_PATH =${INFORMIXDIR}/lib/esql
@@ -110,7 +111,8 @@ ${LIBROOT}/libSQL_iodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ @IODBC_LIBS@ @IODBC_LFLAGS@
 #	${CP} $@ ${LIBROOT}
 
-${LIBROOT}/libSQL_unixodbc${SO_EXT}: CFLAGS:=-DUNIXODBC @UNIXODBC_INCLUDE@ @UNIXODBC_LFLAGS@ ${CFLAGS}
+${LIBROOT}/libSQL_unixodbc${SO_EXT}: CFLAGS:=-DUNIXODBC @UNIXODBC_LFLAGS@ ${CFLAGS}
+#@UNIXODBC_INCLUDE@
 ${LIBROOT}/libSQL_unixodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ @UNIXODBC_LIBS@ @UNIXODBC_LFLAGS@
 #	${CP} $@ ${LIBROOT}

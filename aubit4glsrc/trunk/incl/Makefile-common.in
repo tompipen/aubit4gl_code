@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.96 2002-10-30 01:46:44 afalout Exp $
+# $Id: Makefile-common.in,v 1.97 2002-11-08 02:02:28 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -178,9 +178,14 @@ CYG_AUBITDIR	:=$(subst D:,/cygdrive/d,${CYG_AUBITDIR})
 ##                   Global Makefile variables
 ## ==================================================================
 
-#ifeq "${TARGET_OS}" "cygwin"
-	GCC_VER=@GCC_VERSION_MAJOR@.@GCC_VERSION_MINOR@
-#endif
+
+GCC_VER=@GCC_VERSION_MAJOR@.@GCC_VERSION_MINOR@
+
+#Version of GCC to treat specially:
+
+ifeq "${TARGET_OS}" "cygwin"
+	GCC_VER_SPEC1=3.2
+endif
 
 GCC_MINGW=@GCC_MINGW@
 
@@ -275,7 +280,7 @@ AWK                 =@AWK@
 #          options for ld, which again forces the allocation of the symbol
 #          table in the code produced (see ld(1) on a Sun).
 
-ifneq "${GCC_VER}" "3.2"
+ifneq "${GCC_VER}" "${GCC_VER_SPEC1}"
 	#gcc: unrecognized option `-rdynamic'
 	RDYNAMIC            =-rdynamic
 endif
@@ -350,7 +355,9 @@ endif
 ifeq "${WIN_PATH}" "1"
 	C_IFLAGS            =-I$(AUBITDIR)/incl
 else
-	C_IFLAGS            =-I/usr/local/include -I$(AUBITDIR)/incl
+	C_IFLAGS            =-I$(AUBITDIR)/incl
+	#with GCC 3.2 including system include paths manually generates a warning:
+	#-I/usr/local/include
 endif
 
 
@@ -381,7 +388,7 @@ FAIL_OK             =-
 #         even if branches need large displacements.
 #FIXME: is it OK to have -fPIC when creating executables, not libraries?
 
-ifneq "${GCC_VER}" "3.2"
+ifneq "${GCC_VER}" "${GCC_VER_SPEC1}"
 	#cc1: warning: -fPIC ignored for target (all code is position independent)
 	PIC					=@PIC@
 endif
@@ -471,7 +478,7 @@ ifdef COMSPEC #############Windows platform - CygWin/MinGW related:#############
 
 	#native-struct rewuired by GTK on Windows, but causes cc1: unrecognized option `-fnative-struct'
     #error with GCC 3.2 on CygWin
-	ifneq "${GCC_VER}" "3.2"
+	ifneq "${GCC_VER}" "${GCC_VER_SPEC1}"
 		CFLAGS		+=-fnative-struct
     else
 		CFLAGS		+=-mms-bitfields

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.40 2002-11-05 05:36:14 afalout Exp $
+# $Id: Makefile-install.mki,v 1.41 2002-11-08 02:02:28 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -53,11 +53,13 @@ else
 endif
 ifeq "${AUBITRCFILEEXISTS}" ""
 	${MKPATH} ${AUBITETC}
+#FIXME: following test will fail if performed on the same run when directory is created,
+#since make will evaluate it BEFORE mkdir is executed:
 ifeq "$(shell  if test -w ${AUBITETC} ; then echo 1; fi)" "1"
 	mv /tmp/aubitrc.tmp ${AUBITETC}/aubitrc
 	chmod a+r ${AUBITETC}/aubitrc
 	@echo "Configuration files installed to ${AUBITETC}/aubitrc"
-else
+else 
 	@echo "======== WARNING: ${AUBITETC} is not writable. ==========="
 endif
 else
