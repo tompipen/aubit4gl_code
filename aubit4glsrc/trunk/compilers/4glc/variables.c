@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.20 2003-05-01 09:42:18 mikeaubury Exp $
+# $Id: variables.c,v 1.21 2003-05-10 08:20:17 mikeaubury Exp $
 #
 */
 
@@ -1035,7 +1035,7 @@ find_variable_ptr (char *s)
     }
 
 
-  debug (" variable NOT FOUND\n");
+  debug ("%s -  variable NOT FOUND\n",s);
 
   return 0;
 }
@@ -1688,7 +1688,7 @@ strip_bracket (char *s)
     {
       if (s[a] == '[')
 	f++;
-      if (f == 0)
+      if (f == 0 && s[a]!=' ')
 	buff[c++] = s[a];
       if (s[a] == ']')
 	f--;
