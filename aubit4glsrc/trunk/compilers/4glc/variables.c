@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.49 2004-10-02 08:03:19 mikeaubury Exp $
+# $Id: variables.c,v 1.50 2004-10-03 16:23:20 mikeaubury Exp $
 #
 */
 
@@ -367,8 +367,8 @@ A4GL_debug("scope=%c",scope);
 
 
 
-  A4GL_debug ("variable_action (%d %s %s %s %s)\n", category, name, type, n,
-	      function);
+  A4GL_debug ("variable_action (category=%d name=%s type=%s n=%s function=%s record_cnt=%d)\n", category, name, type, n,
+	      function,record_cnt);
 
 /* Try to determine what we are doing.*/
 /* This comes about from the old way of handling variables and*/
@@ -531,7 +531,7 @@ A4GL_debug("scope=%c",scope);
       record_cnt++;
       curr_v[record_cnt] = malloc (sizeof (struct variable));
       set_arr_subscripts (0, record_cnt);
-      curr_v[record_cnt]->variable_type = VARIABLE_TYPE_ASSOC_INTERNAL;
+      curr_v[record_cnt]->variable_type = VARIABLE_TYPE_SIMPLE;
       curr_v[record_cnt]->names.name = ASSOC_INTERNAL;
       curr_v[record_cnt]->names.next = 0;
       curr_v[record_cnt]->is_static = 0;
@@ -1085,7 +1085,6 @@ find_variable_in (char *s, struct variable **list, int cnt)
       if (v->variable_type == VARIABLE_TYPE_ASSOC)
 	{
 	  char buff[256];
-	printf("ASSOC\n");
 	  /* Associate arrays always have a single record like entry for the*/
 	  /* associated variable - and its always called 'internal'*/
 

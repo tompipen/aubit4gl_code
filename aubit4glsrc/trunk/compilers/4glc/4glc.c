@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.55 2004-08-10 13:40:20 mikeaubury Exp $
+# $Id: 4glc.c,v 1.56 2004-10-03 16:23:19 mikeaubury Exp $
 #
 */
 
@@ -108,7 +108,7 @@ main (int argc, char *argv[])
       printf ("Exit\n");
     }
 
-  /*dump_var_records();*/
+  /* dump_var_records();*/
   A4GL_debug ("Exiting 4glc");
   exit (x);
 }
