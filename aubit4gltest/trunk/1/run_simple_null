@@ -1,5 +1,5 @@
 ./simple_null.4ae > simple_null.out
-if diff simple_null.out simple_null.out.expected
+if diff $DIFF_FLAGS simple_null.out simple_null.out.expected
 then
 	exit 0
 else

@@ -28,7 +28,7 @@ cp test_319.rpt test_319_pec.rpt
 
 for a in test_319_i.rpt test_319_iec.rpt test_319_pec.rpt
 do
-if diff $a test_319.out.expected
+if diff $DIFF_FLAGS $a test_319.out.expected
 then
 	:
 else

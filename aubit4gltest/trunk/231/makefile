@@ -88,11 +88,11 @@ run: compile
 #	export A4GL_KEYFILE=somekeyfile.in; ${DBG} ./anotherprogname${NAMED_[DIFF|RUN]}
 
 	export A4GL_TRIMDUMP=24x80; ./progname.4ae
-	if diff out out.expected  > /dev/null ; then \
+	if diff ${DIFF_FLAGS} out out.expected  > /dev/null ; then \
 		echo "Normal behaviour detected"; \
 		exit 0 ; \
 	else \
-		if diff out out.expected.scroll > /dev/null; then \
+		if diff ${DIFF_FLAGS} out out.expected.scroll > /dev/null; then \
 			echo "SCROLLTOEND behaviour detected" ; \
 			exit 0 ; \
 		else \

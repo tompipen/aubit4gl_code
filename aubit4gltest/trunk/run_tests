@@ -20,7 +20,6 @@ START_TIME=`date +%s`
 #Loop for runing multiple configurations of tests and tests matrix:
 . incl/multiple_test_inc.sh
 
-
 #Make sure we don't have a left-over watcher
 WATCHIT_SH="./watchit.sh"
 WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -1 | awk '{print $2}'`
@@ -84,8 +83,7 @@ done
 #######################
 #Create list of all available tests
 ALL_DIRS=[0-9]*
-ALL_TESTS=`echo $ALL_DIRS | tr " " "\n" | sort -n |  tr "\n" " "`
-
+ALL_TESTS=`echo $ALL_DIRS | tr " " "\n" | $SORT -n |  tr "\n" " "`
 LIBS_DIR="$AUBITDIR_UNIX/lib"
 
 #process comand line parameters:
@@ -233,7 +231,11 @@ for a in $FLAGS; do
         ;;
 
 	-gdb)			#use gdb to run programs with (not 4clc - just compiled programs)
-		export DBG="gdb --args "
+		if test "$COMSPEC" = ""; then 
+			export DBG="gdb --args "
+		else
+			export DBG="gdb "
+		fi
 		;;
 
 	-itemised) 		#Show result for each executed test
@@ -273,6 +275,13 @@ for a in $FLAGS; do
 			echo "** Some tests can't run in silent mode and will be skipped"
 			echo "** "
         fi
+		if test "$COMSPEC" != ""; then 
+			#export A4GL_LINES=24
+			#export A4GL_COLUMNS=80
+			echo "Cant run in silent mode using PDcurses - 'LINES/COLUMNS too small' problem"
+			exit 5
+		fi
+		
 		;;
 	-no-test-output) #silence output of running test - same as -silent?
 		NO_TEST_OUTPUT=1
@@ -315,6 +324,16 @@ for a in $FLAGS; do
         UI=HL_TUIN;	export A4GL_UI=$UI
         ;;
 
+	-tuins)        #use HL_TUINs (statically linked TUIN) UI for tests
+		if ! test -f $LIBS_DIR/libUI_HL_TUINs$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find HL_TUINs plug in"
+            fi
+            exit 9
+        fi
+        UI=HL_TUINs; export A4GL_UI=$UI
+        ;;
+		
 	-hl_tui)        #use HL_TUI UI for tests
 		if ! test -f $LIBS_DIR/libUI_HL_TUI$SO_EXT; then
 			if ! test "$NO_ECHO"; then
@@ -365,7 +384,7 @@ for a in $FLAGS; do
 	-sqlite)        #Use SQLite as database for db tests
 		if ! test -f $LIBS_DIR/libSQL_sqlite$SO_EXT; then
 			if ! test "$NO_ECHO"; then
-				echo "ERROR: cannot find SQLite plug in ($LIBS_DIR/libSQL_sqlite$SO_EXT)"
+				echo "ERROR: cannot find SQLite plug-in ($LIBS_DIR/libSQL_sqlite$SO_EXT)"
             fi
             exit 9
         fi
@@ -376,7 +395,7 @@ for a in $FLAGS; do
 		USE_SQLITE=1; NEW_SQLITE=1
         ;;
 
-    -esqli)         #Use Informix ESQL/C plug in for db tests
+    -esqli)         #Use Informix ESQL/C plug-in for db tests
 		if ! test -f $LIBS_DIR/libSQL_esql$SO_EXT; then
 			if ! test "$NO_ECHO"; then
 				echo "ERROR: cannot find ESQL/C plug in"
@@ -396,10 +415,30 @@ for a in $FLAGS; do
 
 		if ! test -f $LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT; then
 			if ! test "$NO_ECHO"; then
-				echo "ERROR: cannot find plug in $A4GL_SQLTYPE ($LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT)"
+				echo "ERROR: cannot find plug-in $A4GL_SQLTYPE ($LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT)"
             fi
-            exit 9
+			#It seems Cron on Windows runs ./configure in a way that it does not
+			#detect ESQL/C
+			make -C $AUBITDIR_UNIX/lib libSQL_$A4GL_SQLTYPE$SO_EXT
+			if ! test -f $LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT; then
+				echo "Attempt to make it failed. Stop."
+            	exit 9
+			fi
         fi
+		
+		if ! test -f $LIBS_DIR/libESQL_INFORMIX$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find plug-in ESQL_INFORMIX ($LIBS_DIR/libESQL_INFORMIX$SO_EXT)"
+            fi
+			#It seems Cron on Windows runs ./configure in a way that it does not
+			#detect ESQL/C
+			make -C $AUBITDIR_UNIX/lib libESQL_INFORMIX$SO_EXT
+			if ! test -f $LIBS_DIR/libESQL_INFORMIX$SO_EXT; then
+				echo "Attempt to make it failed. Stop."
+            	exit 9
+			fi
+        fi
+		
 		#***must*** make sure that A4GL_ESQL_UNLOAD=N for informix ec generation.
 		export A4GL_ESQL_UNLOAD=N
 
@@ -656,8 +695,7 @@ for a in $FLAGS; do
             export A4GL_PRG=".4pe"
             export DBG="runner_fgl"
 			#RUN_ONE=3
-            #export FGLC="4glpc -verbose"
-			export FGLC="$FGLC -verbose"
+			export FGLC="$FGLC --verbose"
         ;;
 
     -ccode)         #default
@@ -668,12 +706,16 @@ for a in $FLAGS; do
 
         ;;
 
-	-watch)			#kill tests that take more then 100 secconds to run
+	-watch)		#kill tests that take more then 100 secconds to run
 		WATCHIT=1
 		;;
 		
-    -nospace)           #Ignore changes in the amount of white space when diff-ing
-		export DIFF_FLAGS=--ignore-space-change
+    -nospace)	#Ignore changes in the amount of white space when diff-ing
+		export DIFF_FLAGS="$DIFF_FLAGS --ignore-space-change"
+        ;;
+
+    -nodosdiff)	#Ignore changes in DOS/UNIX file format when diff-ing
+		export DIFF_FLAGS="$DIFF_FLAGS --strip-trailing-cr"
         ;;
 
     -nolong)           #Skip tests that take a long time to run
@@ -936,7 +978,7 @@ for a in $FLAGS; do
 		echo "             for trans, when cant determine state of trans in current RDBMS"
 
 		echo " -sqlite     Use SQLite as database for db tests"
-		echo " -esqli      Use Informix ESQL/C plug in for db tests"
+		echo " -esqli      Use Informix ESQL/C plug-in for db tests"
 		echo " -ec[i|s|p|q] Use Informix/SAP/PG/Querix ESQL/C EC output in for db tests"
 		echo " -pg         Use PostgreSQL plug-in for db tests"
 
@@ -1225,7 +1267,7 @@ RESLOGFILE=$CURR_DIR/resources.log
 if test "$DEBUG" != ""; then
 	echo "** "
 	echo "** WARNING:"
-	echo "** DEBUG is on; thigs will run really slow now..."
+	echo "** DEBUG is on; tests will run really slow now..."
 	echo "** "
 fi
 
@@ -1272,8 +1314,8 @@ fi
 echo "" >> $LOGFILE
 #we want exact time here - do not use $DATE
 date >> $LOGFILE
-4glc -v | grep Version >> $LOGFILE
-4glc -v | grep Build >> $LOGFILE
+$AUBITDIR/bin/4glc -v | grep Version >> $LOGFILE
+$AUBITDIR/bin/4glc -v | grep Build >> $LOGFILE
 
 #TODO: show versions of 4Js/Informix/Querix compiler - if used
 
@@ -1842,6 +1884,14 @@ do
 			SKIP_CONSOLE_LIST="$SKIP_CONSOLE_LIST $TEST_NO"
 	        continue
 	    fi
+		if test "$IS_DUMP_SCREEN_TEST" = "1" && (test "$UI" = "HL_TUIN" -o "$UI" = "HL_TUINs") ; then
+			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+			if test "$VERBOSE" = "1"; then
+				echo "Skipping test #$TEST_NO - screen_dump() not implemented in PDcurses." >> $LOGFILE
+			fi
+			SKIP_NO_SCRDUMP_PDCURSES_LIST="$SKIP_NO_SCRDUMP_PDCURSES_LIST $TEST_NO"
+	        continue
+	    fi
 	    if test "$IS_DESCRIBED" != "1" && test "$DESCRIBED_ONLY" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
@@ -1952,6 +2002,7 @@ do
 		###############################################################
 		#Check if we need to swiths transaction logging mode in RDBMS
 		###############################################################
+		if test "$IFX_ENG_REMOTE" != "1"; then 
 		if test "$DB_HAS_TRANSACTION" != "NULL" ; then 
 			if test "$NEED_TRANSACTION" = "1" -a "$DB_HAS_TRANSACTION" != "1" ; then 
 				if test "$USE_ESQLI" = "1" -o "$ODBC_USE_DB" = "IFX"; then		
@@ -2005,7 +2056,20 @@ do
 					echo "WARNING: $TEST_NO explicit preference for transactions, but unable to determine state" >> $LOGFILE				
 				else
 					SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+					SKIP_TRANS_LIST="$SKIP_TRANS_LIST $TEST_NO"
 					echo "Skip $TEST_NO - explicit preference for transactions, but unable to determine state" >> $LOGFILE
+					continue
+				fi
+			fi
+		fi
+		else
+			if test "$NEED_TRANSACTION" = "1" -o "$NEED_TRANSACTION" = "2" ; then		
+				if test "$SKIP_UNKNOWN_TRANS" != "1" ; then
+					echo "WARNING: $TEST_NO explicit preference for transactions, but DB engine is remote" >> $LOGFILE
+				else
+					SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+					SKIP_TRANS_LIST="$SKIP_TRANS_LIST $TEST_NO"					
+					echo "Skip $TEST_NO - explicit preference for transactions, but DB engine is remote" >> $LOGFILE
 					continue
 				fi
 			fi
@@ -2467,7 +2531,8 @@ fi
 	SKIP_OTHER_LIST="\
 	$SKIP_PCODE_LIST $SKIP_TUI_LIST $SKIP_LONG_LIST $SKIP_CONSOLE_LIST \
 	$SKIP_NONDB_LIST $SKIP_DB_LIST $SKIP_NOSILENT_LIST $SKIP_NOVERSION_LIST\
-	$SKIP_GRAPHIC_LIST $SKIP_NOMAKEFILE_LIST $SKIP_NOCOMPAT_LIST $SKIP_NO_CRON_LIST"
+	$SKIP_GRAPHIC_LIST $SKIP_NOMAKEFILE_LIST $SKIP_NOCOMPAT_LIST $SKIP_NO_CRON_LIST \
+	$SKIP_TRANS_LIST $SKIP_NO_SCRDUMP_PDCURSES_LIST $SKIP_BLACKLIST_LIST"
 	#clipp it:
 	SKIP_OTHER_LIST=`echo $SKIP_OTHER_LIST`
 if test "$VERBOSE_RESULTS" = "1"; then 
@@ -2482,6 +2547,12 @@ if test "$VERBOSE_RESULTS" = "1"; then
 	fi 
 	if test "$SKIP_CONSOLE_LIST" != "" ; then 
 		echo "Skipped console: $SKIP_CONSOLE_LIST" >> $LOGFILE
+	fi
+	if test "$SKIP_BLACKLIST_LIST" != "" ; then 
+		echo "Skipped black-listed: $SKIP_BLACKLIST_LIST" >> $LOGFILE
+	fi
+	if test "$SKIP_NO_SCRDUMP_PDCURSES_LIST" != "" ; then 
+		echo "Skipped screen_dump() with PDcurses: $SKIP_NO_SCRDUMP_PDCURSES_LIST" >> $LOGFILE
 	fi
 	if test "$SKIP_NONDB_LIST" != "" ; then 
 		echo "Skipped NODB: $SKIP_NONDB_LIST" >> $LOGFILE
@@ -2507,6 +2578,10 @@ if test "$VERBOSE_RESULTS" = "1"; then
 	if test "$SKIP_NO_CRON_LIST" != "" ; then 
 		echo "Skipped NO_CRON: ($IS_NO_CRON_CNT) $SKIP_NO_CRON_LIST" >> $LOGFILE
 	fi
+	if test "$SKIP_TRANS_LIST" != "" ; then 
+		echo "Skipped NO_TRANS: $SKIP_TRANS_LIST" >> $LOGFILE
+	fi 
+	
 	if test "$PASS_FULL_LIST" = "1"; then 
 		if test "$PASS_DB_TESTS" != "" ; then 
 			echo "Pass db: ($PASS_DB_CNT) $PASS_DB_TESTS" >> $LOGFILE

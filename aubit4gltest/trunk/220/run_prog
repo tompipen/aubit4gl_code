@@ -3,7 +3,7 @@ export A4GL_TRIMDUMP=24x80
 c=1
 for a in a0 a1 a2 a3 a4 a5 a6 a7
 do
-if diff $a $a.expected
+if diff $DIFF_FLAGS $a $a.expected
 then
 	:
 else

@@ -23,6 +23,12 @@ BLACKLIST_TESTS_IFXODBC="107 286 287 681 682 686 687 701 702 703 704"
 #sql.c                2109   (     0,     0) 'S1010' '[Informix][Informix ODBC Driver]Function sequence error.' (-11067 56)
 
 
+######################
+#Tests that should not be run on MinGW, because they go into endless loop 
+#and never exit
+BLACKLIST_TESTS_MINGW="215 "
+
+
 #-unixodbc with -odbcdb-ifx
 EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX=""
 

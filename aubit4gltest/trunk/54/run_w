@@ -1,7 +1,7 @@
 export A4GL_KEYFILE=keys.in
 $DBG ./w.4ae
 grep -v Date w.out > w.out.nodate
-if diff w.out.nodate w.out.expected
+if diff $DIFF_FLAGS w.out.nodate w.out.expected
 then
 	exit 0
 else

@@ -1,7 +1,7 @@
 
 
 prompt.4ae: prompt.4gl prompt.per
-	4glpc prompt.4gl -o prompt.4ae
+	${FGLC} prompt.4gl -o prompt.4ae
 	fcompile prompt.per
 
 

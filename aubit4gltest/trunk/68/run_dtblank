@@ -1,6 +1,6 @@
 ./dtblank.4ae > dtb.out
 
-if diff dtb.out dtb.out.expected
+if diff $DIFF_FLAGS dtb.out dtb.out.expected
 then
 	exit 0
 else
@@ -26,7 +26,7 @@ export A4GL_LEXDIALECT=POSTGRES
 
 for a in dtb_iec.out dtb_pec.out
 do
-if diff $a dtb.out.expected
+if diff $DIFF_FLAGS $a dtb.out.expected
 then
 	:
 else

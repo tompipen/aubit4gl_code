@@ -6,7 +6,7 @@ $DBG ./ui_contrl.4ae
 for a in input.out menu.out menu_bef.out open_window_form.out prompt.out
 do
 echo $a
-if diff $a $a.expected
+if diff $DIFF_FLAGS $a $a.expected
 then
 	:
 else

@@ -7,7 +7,7 @@ else
 fi
 
 grep -v "Date" constr.log > constr.nodate.log
-if diff constr.nodate.log constr.log.expected
+if diff $DIFF_FLAGS constr.nodate.log constr.log.expected
 then
 :
 else

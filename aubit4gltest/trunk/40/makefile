@@ -1,5 +1,5 @@
 test_257.4ae: test_257.4gl
-	4glpc -g test_257.4gl -o test_257.4ae
+	${FGLC} -g test_257.4gl -o test_257.4ae
 	fcompile test_257.per
 
 compile: test_257.4ae

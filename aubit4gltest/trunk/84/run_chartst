@@ -1,5 +1,5 @@
 ./chartst.4ae > chartst.out
-if diff chartst.out chartst.out.expected 
+if diff $DIFF_FLAGS chartst.out chartst.out.expected 
 then
 	exit 0
 else

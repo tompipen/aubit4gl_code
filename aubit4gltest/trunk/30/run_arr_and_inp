@@ -6,7 +6,7 @@ for a in inp.log arr12.log
 do
 cat $a | grep -v Date > $a.tmp
 mv $a.tmp $a
-if diff $a $a.expected
+if diff $DIFF_FLAGS $a $a.expected
 then
 :
 else

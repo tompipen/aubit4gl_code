@@ -1,5 +1,5 @@
 $DBG ./like.4ae > like.out
-if diff like.out like.out.expected
+if diff $DIFF_FLAGS like.out like.out.expected
 then
 exit 0
 else

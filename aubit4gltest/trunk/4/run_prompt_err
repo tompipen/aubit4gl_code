@@ -4,7 +4,7 @@ export A4GL_TRIMDUMP=24x80
 
 $DBG ./prompt_err.4ae
 
-if diff prompt_1.out prompt_1.out.expected
+if diff $DIFF_FLAGS prompt_1.out prompt_1.out.expected
 then
 :
 else
@@ -12,7 +12,7 @@ else
 	exit 1
 fi
 
-if diff prompt_2.out prompt_2.out.expected
+if diff $DIFF_FLAGS prompt_2.out prompt_2.out.expected
 then
 :
 else
@@ -20,7 +20,7 @@ else
 	exit 1
 fi
 
-if diff prompt_3.out prompt_3.out.expected
+if diff $DIFF_FLAGS prompt_3.out prompt_3.out.expected
 then
 :
 else

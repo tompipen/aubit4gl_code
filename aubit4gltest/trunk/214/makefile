@@ -89,7 +89,7 @@ run: compile
 #	export A4GL_KEYFILE=somekeyfile.in; ${DBG} ./anotherprogname${NAMED_[DIFF|RUN]}
 	${DBG} ./progname${TARGET_EXT}
 	grep -v Date output > output.out
-	if diff output.out output.out.expected ; then \
+	if diff ${DIFF_FLAGS} output.out output.out.expected ; then \
 		exit 0; \
 	else \
 		exit 1; \

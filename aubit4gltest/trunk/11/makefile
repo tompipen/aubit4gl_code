@@ -1,6 +1,6 @@
 
 scr.4ae: scr.4gl
-	4glpc scr.4gl -o scr.4ae
+	${FGLC} scr.4gl -o scr.4ae
 	fcompile x.per
 	fcompile y.per
 

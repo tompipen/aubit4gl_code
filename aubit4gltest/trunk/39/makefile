@@ -1,5 +1,5 @@
 zero.4ae: zero.4gl
-	4glpc zero.4gl -o zero.4ae
+	${FGLC} zero.4gl -o zero.4ae
 
 compile: zero.4ae
 

@@ -1,5 +1,5 @@
 ./desc.4ae > desc.out
-if diff desc.out desc.out.expected 
+if diff $DIFF_FLAGS desc.out desc.out.expected 
 then
 	:
 else

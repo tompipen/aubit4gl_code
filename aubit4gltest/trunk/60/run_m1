@@ -1,6 +1,6 @@
 #export A4GL_KEYFILE=keys.in
 $DBG ./m1.4ae > m1.out
-if diff m1.out m1.out.expected
+if diff $DIFF_FLAGS m1.out m1.out.expected
 then
 	exit 0
 else

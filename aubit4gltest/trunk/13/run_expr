@@ -2,7 +2,7 @@ $DBG ./expr.4ae > expr.out
 
 
 
-if diff expr.out expr.out.expected
+if diff $DIFF_FLAGS expr.out expr.out.expected
 then
 :
 else

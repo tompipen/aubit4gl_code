@@ -23,8 +23,10 @@ ERROR_LOG="error.log"
 export MAKEFILE_COMMON="$CURR_DIR/incl/Makefile-common"
 if test "$COMSPEC" != ""; then
 	FIND=/bin/find
+	SORT=/bin/sort
 else
 	FIND=find
+	SORT=sort
 fi
 
 IFX_RUNNER="$CURR_DIR/bin/testfglgo"
@@ -41,8 +43,8 @@ if test "$AUBITDIR" = ""; then
 		export AUBITDIR
 	fi
 fi
-if test -f "$AUBITDIR/bin/4glpc" ; then 
-	chmod a+x $AUBITDIR/bin/4glpc
+if test -f "$AUBITDIR/bin/aubit" ; then 
+	chmod a+x $AUBITDIR/bin/aubit
 else
 	echo "ERROR: invalid AUBITDIR ($AUBITDIR)"
 	exit 4
@@ -51,7 +53,13 @@ fi
 #Even on Windows we have to use UNIX style path in this script. Since when using 
 #MinGW AUBITDIR must be Windows-stile, we must distinguish between them and use
 #only AUBITDIR_UNIX in this script
-AUBITDIR_UNIX="$AUBITDIR"
+if test "$COMSPEC" != ""; then 
+	A4GL_PATH_SEP=":"
+	#convert AUBITDIR to cygwin path so shell can find executables
+	AUBITDIR_UNIX=`echo "$AUBITDIR" | sed -e 's/[cC]\:/\/cygdrive\/c/' -e 's/[dD]\:/\/cygdrive\/d/'`
+else
+	AUBITDIR_UNIX="$AUBITDIR"
+fi
 
 if test "$AUBITDIR_SRC" = ""; then
 	#maybe current aubitdir is aubit source dir?
@@ -124,14 +132,27 @@ TMP=`mingw32-gcc --version 2>/dev/null`
 if test "$TMP" != ""; then
     PLATFORM=MINGW
 	#Aubit programs compiled with MinGW GCC understand only Windows-style paths
-	export AUBITDIR="D:/cygwin$AUBITDIR"
+	#we allready checked AUBITDIR - no longer needed
+	#export AUBITDIR="D:/cygwin$AUBITDIR"
     EXE_EXT=.exe
+	MAKE=make
+	#echo $AUBITDIR_UNIX
+	#echo $AUBITDIR
+	#NOTE: this will get converted back to Windows native paths 
+	#by CygWin shell when incoking native Windows executables
+	export PATH="$PATH:$AUBITDIR_UNIX/lib:$AUBITDIR_UNIX/bin"
+	#echo $PATH
+	#exit
+	
+	BLACKLIST_TESTS="$BLACKLIST_TESTS $BLACKLIST_TESTS_MINGW"
+	
 else
     if test "$COMSPEC" != ""; then
         PLATFORM=CYGWIN
         EXE_EXT=.exe
 		#getopt_long() not working on Cygwin:
 		export FGLC=4glpc
+		MAKE=make
     else
         PLATFORM=UNIX
     fi
@@ -141,6 +162,8 @@ fi
 #Check if we have TUI lib, set AUBITDIR:
 #fixme - we now have UI_TUIN on MinGW (PDcurses)
 if test "$PLATFORM" = "MINGW"; then
+#Not needed any more - use TUIN
+if test "1" = "disabled"; then
 	#MinGw don't have Curses, but we can try using CygWin one:
 	if ! test -f $AUBITDIR_UNIX/lib/libUI_TUI.dll; then
         #this file is placed in /tmp by aubitbuild.sh ONLY, so if you want to update it
@@ -153,27 +176,28 @@ if test "$PLATFORM" = "MINGW"; then
 	    fi
     fi
 fi
+fi
 
 #######################
 #Define platform defaults
 if test "$PLATFORM" = "MINGW"; then
-	DEFAULT_FLAGS="-xml -nodb -nospace -nographic"
-	CERT_DEFAULT_FLAGS="$DEFAULT_FLAGS"
+	#DEFAULT_FLAGS="-xml -nodb -nospace -nographic"
+	DEFAULT_FLAGS="-esqli -nospace -tuins -nodosdiff"
+	CERT_DEFAULT_FLAGS="-eci -nospace -tuins -nodosdiff"
 	SO_EXT=.dll
 fi
 if test "$PLATFORM" = "CYGWIN"; then
-	DEFAULT_FLAGS="-nographic -nodb "
+	DEFAULT_FLAGS="-nographic -nodb -nodosdiff"
 	CERT_DEFAULT_FLAGS="$DEFAULT_FLAGS"
 	SO_EXT=.dll
 fi
 if test "$PLATFORM" = "UNIX"; then
-
 	#it is a bit optimistic to hope we can curently use SQLite to run
     #this tests. It would be nice, since it can be easily provided an all
     #platfoms, but it just does not work in many cases.
-	DEFAULT_FLAGS="-sqlite -nospace"
+	#DEFAULT_FLAGS="-sqlite -nospace"
+	DEFAULT_FLAGS="-esqli -nospace"
 	CERT_DEFAULT_FLAGS="-eci -nospace"
-
 	#Not true for Darwin and HP-UX
 	SO_EXT=.so
 fi
@@ -453,7 +477,7 @@ for a in $FLAGS; do
                 else
 					CVSIGNORE="$a/.cvsignore"
 					#CVSIGNORE_OUT=">> $CVSIGNORE"
-					ADDEXT_LIST=".42m .42r .42f"
+					ADDEXT_LIST=".c_"
 					for ADDEXT in $ADDEXT_LIST; do
 						if ! grep "$ADDEXT" "$CVSIGNORE" > /dev/null ; then 
 							#echo "*$ADDEXT" $CVSIGNORE_OUT

@@ -1,7 +1,7 @@
 export A4GL_KEYFILE=keys.in
 ./t.4ae
 grep -v Date t.out  > t.out.nodate
-if diff t.out.nodate t.out.expected
+if diff $DIFF_FLAGS t.out.nodate t.out.expected
 then
 	exit 0
 else

@@ -1,7 +1,7 @@
 export A4GL_KEYFILE=keys.in
 ./getfld.4ae
 grep -v Date gf.log > gf.log.nodate
-if diff gf.log.nodate gf.log.expected
+if diff $DIFF_FLAGS gf.log.nodate gf.log.expected
 then
 	exit 0
 else

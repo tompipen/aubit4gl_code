@@ -1,5 +1,5 @@
 $DBG ./arith.4ae > arith.out
-if diff  arith.out arith.out.expected
+if diff $DIFF_FLAGS arith.out arith.out.expected
 then
 	exit 0
 else

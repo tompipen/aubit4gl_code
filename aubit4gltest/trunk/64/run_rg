@@ -2,7 +2,7 @@
 bad=0
 for a in *.out
 do
-	if diff $a $a.expected  > /dev/null
+	if diff $DIFF_FLAGS $a $a.expected  > /dev/null
 	then
 		echo "No Differences in $a"
 	else

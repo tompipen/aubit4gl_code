@@ -1,20 +1,20 @@
 export A4GL_TRIMDUMP=24x80
 $DBG ./error.4ae
 
-if diff err1.out err1.out.expected
+if diff $DIFF_FLAGS err1.out err1.out.expected
 then
 :
 else
 	exit 1
 fi
-if diff err2.out err2.out.expected
+if diff $DIFF_FLAGS err2.out err2.out.expected
 then
 :
 else
 	exit 1
 fi
 
-if diff err3.out err3.out.expected
+if diff $DIFF_FLAGS err3.out err3.out.expected
 then
 :
 else

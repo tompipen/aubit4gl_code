@@ -1,5 +1,5 @@
 ./using.4ae > using.out
-if diff using.out using.out.expected 
+if diff $DIFF_FLAGS using.out using.out.expected 
 then
 	:
 else

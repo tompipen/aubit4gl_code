@@ -1,6 +1,6 @@
 ./put.4ae > put.out
 
-if diff put.out put.out.expected
+if diff $DIFF_FLAGS put.out put.out.expected
 then
 	:
 else

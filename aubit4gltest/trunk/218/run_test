@@ -7,14 +7,14 @@ echo "Starting client"
 
 kill $lpid 2> /dev/null 
 
-if diff server.log server.log.expected
+if diff $DIFF_FLAGS server.log server.log.expected
 then
 	:
 else
 	exit 1
 fi
 
-if diff client.log client.log.expected
+if diff $DIFF_FLAGS client.log client.log.expected
 then
 	:
 else

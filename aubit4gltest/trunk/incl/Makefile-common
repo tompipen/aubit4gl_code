@@ -186,7 +186,7 @@ ifneq "${COMPILE_ONLY}" "1"
 
 	DEFAULT_RUN=${RUNNER} ${DBG} ./progname${NAMED_RUN}
 	
-	DIFF_COMMON=if diff ${OUT} ${OUT_EXPECTED}; then \
+	DIFF_COMMON=if diff ${DIFF_FLAGS} ${OUT} ${OUT_EXPECTED}; then \
 			echo "Success";  \
             exit 0; \
 		else \

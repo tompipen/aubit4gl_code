@@ -2,7 +2,7 @@ export DBDATE=dmy4/
 ./progname.4ae
 for a in p1.out p2.out
 do
-if diff $a $a.expected 
+if diff $DIFF_FLAGS $a $a.expected 
 then
 	:
 else

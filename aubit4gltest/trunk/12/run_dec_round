@@ -11,7 +11,7 @@ $DBG ./dec_round6.4ae > dec_round6.out
 
 for a in dec_round.out dec_round2.out dec_round3.out dec_round4.out dec_round5.out dec_round6.out
 do
-if diff $a $a.expected
+if diff $DIFF_FLAGS $a $a.expected
 then
 	:
 else

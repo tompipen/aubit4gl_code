@@ -41,16 +41,41 @@ fi
 
 if test "$USE_ESQLI" = "1" -o "$NEW_IFMX" = "1" -o "$ODBC_USE_DB" = "IFX"; then
 	if test "`dbaccess -V 2>/dev/null`" = ""; then
-        echo "ERROR: dbaccess not found - no Informix engine?"
-        exit 56
+		if test "$VERBOSE" = "1" ; then	
+	    	echo "WARNING: dbaccess not found - Informix engine missing or remote?"
+		fi
+		#CSDK on Windows does not include ANY command line tools :-(
+		if test "`$SH aubit asql_i.4ae -V 2>/dev/null`" = ""; then
+			make -C $AUBITDIR_UNIX/tools/asql asql_i.4ae
+			make -C $AUBITDIR_UNIX/tools/asql install
+			if test "`$SH aubit asql_i.4ae -V 2>/dev/null`" = ""; then
+				echo "Attempt to make asql_i failed. Stop"
+				exit 56
+			else
+				IFX_ENG_REMOTE=1
+				DBACCESS="$SH aubit asql_i.4ae"
+			fi
+		else
+			IFX_ENG_REMOTE=1
+			DBACCESS="$SH aubit asql_i.4ae"
+		fi
+	else
+		IFX_ENG_REMOTE="unknown"
+		DBACCESS=dbaccess	
     fi
 
-	dbaccess $TEST_DB -e > /tmp/tmp.dbaccess 2>&1
+	if test "$DBACCESS" = "$SH aubit asql_i.4ae"; then
+		if test "$A4GL_UI" = "HL_TUIN"; then 
+			echo "Cant use asql with HL_TUIN: Function Not found : UILIB_A4GL_current_window"
+			#exit 3
+		fi
+	fi
+	$DBACCESS $TEST_DB -e > /tmp/tmp.dbaccess 2>&1
    	TEST=`cat /tmp/tmp.dbaccess | sed -e 's/OOPS//g' | grep Databasenotfoundornosystempermission`
 
 	if test "$NEW_IFMX" = "1" -a "$TEST" = ""; then
         echo "Droping Informix database $TEST_DB"
-        dbaccess - - > /tmp/dropdbtmp.log 2>&1 <<!
+        $DBACCESS - - > /tmp/dropdbtmp.log 2>&1 <<!
         drop database '$TEST_DB'
 !
         RET=$?
@@ -64,7 +89,7 @@ if test "$USE_ESQLI" = "1" -o "$NEW_IFMX" = "1" -o "$ODBC_USE_DB" = "IFX"; then
 
     if test "$TEST" != "" || test "$NEW_IFMX" = "1"; then
         echo "Creating Informix database $TEST_DB"
-        dbaccess - - > /tmp/credbtmp.log 2>&1 <<!
+        $DBACCESS - - > /tmp/credbtmp.log 2>&1 <<!
         create database '$TEST_DB' with log
 !
         RET=$?
@@ -87,7 +112,7 @@ if test "$USE_ESQLI" = "1" -o "$NEW_IFMX" = "1" -o "$ODBC_USE_DB" = "IFX"; then
 			echo "Found Informix database $TEST_DB"
         fi
 		SQL="select is_logging from sysdatabases where name = 'test1'"
-        DB_HAS_TRANSACTION=`echo "$SQL" | dbaccess sysmaster 2>/dev/null | grep -v is_logging`
+        DB_HAS_TRANSACTION=`echo "$SQL" | $DBACCESS sysmaster 2>/dev/null | grep -v is_logging`
 		#Trim it:
 		DB_HAS_TRANSACTION=`echo $DB_HAS_TRANSACTION`
 		if test "$VERBOSE" = "1" ; then

@@ -1,5 +1,5 @@
 $DBG ./dt.4ae > dt.out
-if diff dt.out dt.out.expected
+if diff $DIFF_FLAGS dt.out dt.out.expected
 then
 	exit 0
 else

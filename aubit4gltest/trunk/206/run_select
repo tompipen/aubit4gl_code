@@ -1,5 +1,5 @@
 ./select.4ae > select.out
-if diff select.out select.out.expected
+if diff $DIFF_FLAGS select.out select.out.expected
 then
 	exit 0
 else

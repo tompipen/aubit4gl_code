@@ -6,7 +6,7 @@ $DBG ./scr.4ae
 
 for a in start.out dispform1.out close1.out prompt1.out dispform2.out complete.out 
 do
-if diff $a $a.expected
+if diff $DIFF_FLAGS $a $a.expected
 then
         :
 else
