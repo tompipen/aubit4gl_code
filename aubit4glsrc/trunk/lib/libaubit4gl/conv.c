@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.98 2004-12-24 08:51:04 mikeaubury Exp $
+# $Id: conv.c,v 1.99 2005-01-11 15:04:13 mikeaubury Exp $
 #
 */
 
@@ -1944,12 +1944,14 @@ A4GL_dtovc (void *aa, void *zz, int sz_ignore)
 int
 A4GL_dtos (void *aa, void *zz, int size)
 {
-  int *a;
+  long *a;
   char *z;
   char *p;
 
   z = (char *) zz;
-  a = (int *) aa;
+  a = (long *) aa;
+  A4GL_assertion(a==0,"No date pointer");
+  A4GL_assertion(z==0,"No string pointer");
   //memset(z,0,size-1);
   //z[size-1]=0;
 #ifdef DEBUG

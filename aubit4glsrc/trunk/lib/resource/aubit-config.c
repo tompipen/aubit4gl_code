@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.15 2004-12-07 21:59:48 whaslbeck Exp $
+# $Id: aubit-config.c,v 1.16 2005-01-11 15:08:07 mikeaubury Exp $
 #
 */
 
@@ -241,4 +241,7 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l) {
 	return dest;
 }
 
+void A4GL_pause_execution() {
+// Does nothing - only here so the thing will link
+}
 /* -------------------------- EOF ------------------------ */

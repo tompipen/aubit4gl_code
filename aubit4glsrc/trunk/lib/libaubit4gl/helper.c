@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.40 2005-01-07 10:30:23 mikeaubury Exp $
+# $Id: helper.c,v 1.41 2005-01-11 15:04:13 mikeaubury Exp $
 #
 */
 
@@ -1046,17 +1046,18 @@ char *ptr;
 A4GL_debug("A4GL_setenv %s %s %d",name,value,overwrite);
 	sprintf (prefixed_name, "A4GL_%s", name);
 	/* Clear the current cache if there is one.. */
+
+
 	ptr=(char *)A4GL_has_pointer (name,STR_RESOURCE_VAL);
-	if (ptr) {
-		A4GL_del_pointer(name,STR_RESOURCE_VAL);
-	}
+	if (ptr) { A4GL_del_pointer(name,STR_RESOURCE_VAL); }
+
 	ptr=(char *)A4GL_has_pointer (prefixed_name,STR_RESOURCE_VAL);
 	if (ptr) {
 		A4GL_del_pointer(prefixed_name,STR_RESOURCE_VAL);
 	}
 
 #if HAVE_SETENV
-	A4GL_debug("have setenv");
+	A4GL_debug("have setenv - %s %s %d",name,value,overwrite);
 	ret = setenv (name,value,overwrite);
 #else
 	#if HAVE_PUTENV
@@ -1073,7 +1074,7 @@ A4GL_debug("A4GL_setenv %s %s %d",name,value,overwrite);
 		return 1;
 	#endif
 #endif
-
+	A4GL_log_changed_envvar(name,value);
 	return ret;
 }
 

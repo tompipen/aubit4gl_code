@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.72 2004-12-17 13:19:01 mikeaubury Exp $
+# $Id: builtin.c,v 1.73 2005-01-11 15:04:13 mikeaubury Exp $
 #
 */
 
@@ -44,6 +44,7 @@
 */
 
 #include "a4gl_libaubit4gl_int.h"
+#define ACLFGLI_STR_TO_ID         'S'
 void A4GL_generateError (char *str, char *fileName, int lineno);
 /*
 =====================================================================
@@ -977,10 +978,16 @@ char *
 aclfgli_str_to_id (char *name)
 {
   static char buff[1024];
+  char *ptr;
+  if (A4GL_has_pointer(name,ACLFGLI_STR_TO_ID)) {
+	return A4GL_find_pointer(name,ACLFGLI_STR_TO_ID);
+  }
 
   strcpy (buff, name);
   A4GL_trim (buff);
-  return buff;
+  ptr=strdup(buff);
+  A4GL_add_pointer(name,ACLFGLI_STR_TO_ID,ptr);
+  return ptr;
 }
 
 /**

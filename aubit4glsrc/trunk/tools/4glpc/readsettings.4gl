@@ -1,8 +1,24 @@
-
+define mv_settings_dir char(256)
 
 code
 #include <stdio.h>
 endcode
+
+
+function get_settings_dir()
+define lv_str char(256)
+
+if mv_settings_dir is null then
+	let lv_str=fgl_getenv("FGLPCSETTINGSDIR")
+	if lv_str is null or lv_str matches " " then
+		let mv_settings_dir=fgl_getenv("AUBITDIR") clipped,"/tools/4glpc/settings"
+	else
+		let mv_settings_dir=lv_str
+	end if
+end if
+
+return mv_settings_dir
+end function
 
 function read_settings()
 define lv_type  char(256)
@@ -17,7 +33,7 @@ end function
 function has_pack(lv_type)
 define lv_type char(1024)
 define lv_ok integer
-let lv_type=fgl_getenv("AUBITDIR") clipped,"/tools/4glpc/settings/",lv_type clipped
+let lv_type=get_settings_dir() clipped,"/",lv_type clipped
 code
 {
 FILE *fin;
@@ -37,7 +53,7 @@ end function
 function read_pack(lv_type)
 define lv_type char(1024)
 define lv_has_pack integer
-let lv_type=fgl_getenv("AUBITDIR") clipped,"/tools/4glpc/settings/",lv_type clipped
+let lv_type=get_settings_dir() clipped,"/",lv_type clipped
 if isverbose(4) then
 	display "Read pack : ",lv_type clipped
 end if

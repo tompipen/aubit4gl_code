@@ -139,7 +139,7 @@ define lv_pack char(256)
 		#let mv_include=mv_include clipped, " -I\"",fgl_getenv("GTK_INC_PATH"),"\""
 	#END IF
 
-	LET mv_libs=" -laubit4gl"
+	LET mv_libs="-L",fgl_getenv("AUBITDIR") clipped,"/lib  -laubit4gl"
 
 	LET mv_compile_4gl	=fgl_getenv("A4GL_4GLC_COMP")
 	LET mv_compile_4gl_opts	=fgl_getenv("A4GL_4GLC_OPTS")
@@ -966,7 +966,7 @@ if mv_make_globals then
 	let lv_runstr=lv_runstr clipped," -F"
 end if
 
-if mv_verbose>0 then
+if mv_verbose>1 then
 	let lv_runstr=lv_runstr clipped, " -V"
 end if
 
@@ -1107,7 +1107,7 @@ define lv_runstr char(10240)
 define lv_compile_c_opts char(512)
 define lv_status integer
 
-if mv_verbose>=1 then
+if mv_verbose>=2 then
 	DISPLAY "RUN_COMPILE     :",lv_fname clipped," ",lv_new clipped
 end if
 
@@ -1182,12 +1182,20 @@ if mv_makecompile then
         end if
 end if
 
+if mv_verbose>2 then
 DISPLAY "RUN_COMP_ESQL :",lv_fname clipped," ",lv_new clipped
+end if
 
 
 let mv_errfile=lv_base clipped,get_ext("ERR")
 
-let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",mv_include clipped," -o ",lv_new clipped, " -c ",lv_fname clipped," 2> ",mv_errfile
+let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped
+
+if mv_debug then
+	let lv_runstr=lv_runstr clipped," -g "
+end if
+
+let lv_runstr=lv_runstr clipped ," ",mv_include clipped," -o ",lv_new clipped, " -c ",lv_fname clipped," 2> ",mv_errfile
 if mv_verbose>=2 then
         display lv_runstr clipped
 end if
@@ -1232,6 +1240,9 @@ end if
 
 let lv_runstr=lv_runstr clipped, " ",mv_objects clipped, " -o ",lv_output clipped," ",mv_libs clipped," ",mv_link_libs clipped," 2>",mv_errfile clipped
 
+if mv_verbose>=1 then
+	display "Linking ",lv_output  clipped
+end if
 
 if mv_verbose>=2 then
 	display lv_runstr clipped

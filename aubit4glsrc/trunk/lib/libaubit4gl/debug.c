@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.37 2005-01-05 20:04:13 mikeaubury Exp $
+# $Id: debug.c,v 1.38 2005-01-11 15:04:13 mikeaubury Exp $
 #
 */
 
@@ -192,11 +192,11 @@ A4GL_debug_full (char *fmt, ...)
 	else
       		fprintf (debugfile, " %s\n", buff);
 
+#ifdef OLD_DEBUGGING_RUBBISH
       /* fixme: A4GL_UI can also be gui, not only gtk
          Why are we printing this to stderr in any case, it is allready
          written to debug.out ?
        */
-
 
 
       /* This code is so we can A4GL_debug the GTK messages we get */
@@ -213,6 +213,7 @@ A4GL_debug_full (char *fmt, ...)
 	      fflush (stderr);
 	    }
 	}
+#endif
 
       //if (buff[strlen (buff) - 1] != ':') fprintf (debugfile, "LF\n");
       fflush (debugfile);

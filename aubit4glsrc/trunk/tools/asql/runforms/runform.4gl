@@ -79,7 +79,11 @@ define a integer
 	end for
 
 	options message line last-1
+	if num_args()=0 then
 	call runform("cust1")
+	else
+	call runform(arg_val(1))
+	end if
 end main
 
 
@@ -665,11 +669,12 @@ end if
 
 let lv_sql="select ",mv_column_list clipped, " from ",mv_table clipped, " where ",dbi_get_rowid(),"= ?"
 
-call dbi_get_and_display(mv_table_cnt,lv_sql,mv_acurrent_position[mv_table_cnt]) 
+call dbi_fetch(mv_table_cnt,lv_sql,mv_acurrent_position[mv_table_cnt]) 
 
 set pause mode on
 call clr_form()
 for a=1 to  gv_fields
+
 code
 {
 char buff[1024];
@@ -685,7 +690,6 @@ char buff[1024];
 endcode
 end for
 set pause mode off
-
 
 END FUNCTION
 
@@ -798,12 +802,15 @@ code
       if (_exec_block == 2) { 
 		int a;
 		// Before input...
-		for (a=0;a<gv_fields;a++) {
-			if (gv_dtypes[a]==DTYPE_SERIAL) {
-				// Its a serial field
-				*(long *)gv_field_data[a]=0;
-				A4GL_push_char("0");
-				A4GL_disp_fields(1,0x0, list.field_name_list[a].fname,1 ,0);
+
+		if (!lv_isupd) {
+			for (a=0;a<gv_fields;a++) {
+				if (gv_dtypes[a]==DTYPE_SERIAL) {
+					// Its a serial field
+					*(long *)gv_field_data[a]=0;
+					A4GL_push_char("0");
+					A4GL_disp_fields(1,0x0, list.field_name_list[a].fname,1 ,0);
+				}
 			}
 		}
        }
@@ -933,7 +940,11 @@ for (a=0;a<obind_u_cnt;a++) {
 endcode
 
 let sql=sql clipped," WHERE ",dbi_get_unique_where(mv_table_cnt,mv_acurrent_position[mv_table_cnt])
-call dbi_execute_sql_using_obind_u(sql)
+if not dbi_execute_sql_using_obind_u(sql) then
+	# didn't work...
+end if
+
+
 end function
 
 

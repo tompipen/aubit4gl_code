@@ -52,7 +52,7 @@ END FUNCTION
 
 
 ################################################################################
-FUNCTION dbi_get_and_display(lv_tabno,lv_sql,lv_pos)
+FUNCTION dbi_fetch(lv_tabno,lv_sql,lv_pos)
 define lv_tabno integer
 define lv_sql char(5000)
 define lv_pos integer
@@ -61,7 +61,7 @@ define a integer
 define lv_p char(20)
 define lv_c char(20)
 
-let lv_pos=list_get(lv_tabno,lv_pos)
+let lv_id=list_get(lv_tabno,lv_pos)
 
 
 IF lv_pos<0 THEN
@@ -71,6 +71,7 @@ end if
 
 
 LET lv_c="c_get_row",lv_tabno using "<<<<"
+
 
 IF gv_prepared[lv_tabno] IS NULL OR gv_prepared[lv_tabno]=0 THEN 
 		let lv_p="p_get_row",lv_tabno using "<<<<"
@@ -84,14 +85,27 @@ END IF
 OPEN   _variable(lv_c) using lv_id
 
 
+if sqlca.sqlcode<0 then
+	error "Some error opening cursor"
+end if
+
+let sqlca.sqlcode=0
+
 code
         for (a=0;a<gv_fields;a++) {
                 A4GL_setnull(gv_dtypes[a],(void *)gv_field_data[a],gv_dtypesize[a]);
         }
 
 	A4GLSQL_fetch_cursor(lv_c, 2,1,gv_fields,ibind);
-
 endcode
+
+if sqlca.sqlcode<0 then
+	error "Some error fetching cursor"
+end if
+
+if sqlca.sqlcode=100 then
+	error "NOT FOUND ....lv_c=",lv_c clipped," lv_id=",lv_id," sql=",lv_sql clipped  sleep 1
+end if
 
 END FUNCTION
 
@@ -103,7 +117,8 @@ DEFINE lv_str char(256)
 DEFINE lv_id integer
 DEFINE lv_pos integer
 
-let lv_pos=list_get(lv_tabno,lv_pos)
+
+let lv_id=list_get(lv_tabno,lv_pos)
 
 IF lv_pos>=0 THEN
 	LET lv_str=dbi_get_rowid() CLIPPED, " = ",lv_id
@@ -193,8 +208,12 @@ define lv_sql char(10000)
 define lv_thispos integer
 define lv_tabno integer
 
-	call list_remove(lv_tabno,lv_thispos)
 	display "E:",lv_sql clipped
-sleep 2
+
+	execute immediate lv_sql
+
+	call list_remove(lv_tabno,lv_thispos)
+
+
 return 1
 END FUNCTION

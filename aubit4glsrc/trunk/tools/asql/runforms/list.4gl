@@ -18,7 +18,9 @@ end function
 ###############################################################################
 function list_add(lv_tabno,lv_position,lv_id)
 define lv_tabno,lv_position,lv_id integer
-insert into a4gltaperform values(lv_tabno,lv_cnt,lv_id)
+
+insert into a4gltaperform values (lv_tabno,lv_position,lv_id)
+
 END FUNCTION
 
 
@@ -26,7 +28,9 @@ END FUNCTION
 ###############################################################################
 function list_get(lv_tabno,lv_position)
 define lv_tabno,lv_position,lv_id integer
+
 SELECT id INTO lv_id FROM a4gltaperform WHERE pos=lv_position AND tid=lv_tabno
+
 if sqlca.sqlcode!=0 then
 	ERROR "Some error getting unique ID"
 	RETURN -1

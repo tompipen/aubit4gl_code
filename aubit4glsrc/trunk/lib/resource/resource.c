@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.91 2005-01-07 10:32:10 mikeaubury Exp $
+# $Id: resource.c,v 1.92 2005-01-11 15:08:07 mikeaubury Exp $
 #
 */
 
@@ -57,6 +57,12 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+//#define DEBUG_VARIABLE_USAGE
+
+
+#ifdef DEBUG_VARIABLE_USAGE
+FILE *fd1=0;
+#endif
 char *debug=0;
 char *debug_level=0;
 
@@ -510,26 +516,32 @@ static char *
 find_str_resource (char *s)
 {
   char *ptr;
+  int f;
 
 #ifdef DEBUG
 //  debug("Finding resource %s\n",s);
 #endif
-
   /* look in user resources first */
   ptr = chk_str_resource (s, user_resource);
+ 
 
   if (ptr == 0)
     {
+  	f=0;
       /* Check built-in resources next */
       ptr = chk_str_resource (s, builtin_resource);
-    }
+    } else {
+	f=1;
+	}
 
   if (ptr)
     {
-#ifdef DEBUG
-//      debug("Resurce %s has value of: %s\n",s,ptr);
+#ifdef DEBUG_VARIABLE_USAGE
+	if (fd1) fprintf(fd1,"Found resource %s in %s\n",s,f?"user":"builtin");
 #endif
-	//printf("ptr=%s\n",ptr);
+
+
+
       return ptr;
     }
   else
@@ -557,9 +569,6 @@ char * acl_getenv_only (char *s) {
 static char * acl_getenv_internal (char *s,int rcfiles)
 {
 static char prefixed_string[1024];
-#ifdef DEBUG_VARIABLE_USAGE
-	static FILE *fd1=0;
-#endif
 static char *value_not_set="VALUE_NOT_SET";
 char *ptr_env=0, *ptr_env_A4GL=0,*ptr_resources=0, *ptr_resources_A4GL=0, *ptr_registry=0, *ptr=0;
 int cumulate = 0;
@@ -571,7 +580,6 @@ static char cumulated_string_tmp[2048]="";
 		fd1=fopen("/tmp/acl_getenv","w");
 	}
 #endif
-
 
 // We can only use optimization in one case 
 // so we're choosing to do it when we can look in
@@ -618,10 +626,21 @@ if (ptr)  {
         #endif
         }
 
-        sprintf (prefixed_string, "A4GL_%s", s);
+	if (strncmp(s,"A4GL_",5)!=0) { // No point looking for an A4GL_A4GL_...
+        	sprintf (prefixed_string, "A4GL_%s", s);
+		ptr_env_A4GL = getenv (prefixed_string); /* in environmet, with A4GL_ prefix */
+		
+	} else {
+		ptr_env_A4GL = 0;
+	}
 
-	ptr_env_A4GL = getenv (prefixed_string); /* in environmet, with A4GL_ prefix */
 	ptr_env = getenv (s); /* in environment, but without the prefix */
+#ifdef DEBUG_VARIABLE_USAGE
+	if (fd1) fprintf(fd1,"%s - Env lookup = %s %s\n",s,
+	ptr_env_A4GL?ptr_env_A4GL:"No",
+	ptr_env?ptr_env:"No"
+);
+#endif
         ptr_registry=A4GL_getenv_registry (s,(char *) prefixed_string); /*Windows registry */
 
     if (rcfiles) {
@@ -654,11 +673,41 @@ if (ptr)  {
 			ptr=(char *)cumulated_string;
         	}
     } else {
-		if (ptr_env_A4GL != 0) { ptr=ptr_env_A4GL; }
-	    	else if (ptr_env != 0) { ptr=ptr_env; }
-	    	else if (ptr_registry != 0) { ptr=ptr_registry; }
-	    	else if (ptr_resources_A4GL != 0) { ptr=ptr_resources_A4GL; }
-		else if (ptr_resources != 0) { ptr=ptr_resources; }
+
+
+#ifdef DEBUG_VARIABLE_USAGE
+		fprintf(fd1,"%s - %p %p %p %p %p\n",s,ptr_env_A4GL,ptr_env,ptr_registry,ptr_resources_A4GL,ptr_resources);
+#endif
+
+
+
+		ptr=0;
+
+		if (ptr_env_A4GL != 0 && ptr==0) 	{ptr=ptr_env_A4GL; 
+#ifdef DEBUG_VARIABLE_USAGE
+		if (fd1) fprintf(fd1,"%s - Set from A4GL_ prefixed variablen",s);
+#endif
+		}
+		if (ptr_env != 0 && ptr==0) 		{ptr=ptr_env; 
+#ifdef DEBUG_VARIABLE_USAGE
+		if (fd1) fprintf(fd1,"%s - Set from env variable\n",s);
+#endif
+		}
+	    	if (ptr_registry != 0 && ptr==0)  	{ptr=ptr_registry; 
+#ifdef DEBUG_VARIABLE_USAGE
+		if (fd1) fprintf(fd1,"%s - Set from registry\n",s);
+#endif
+		}
+	    	if (ptr_resources_A4GL != 0 && ptr==0)  {ptr=ptr_resources_A4GL; 
+#ifdef DEBUG_VARIABLE_USAGE
+		if (fd1) fprintf(fd1,"%s - Set from resource 1\n",s);
+#endif
+		}
+		if (ptr_resources != 0 && ptr==0)  	{ptr=ptr_resources; 
+#ifdef DEBUG_VARIABLE_USAGE
+		if (fd1) fprintf(fd1,"%s - Set from resource 2\n",s);
+#endif
+		}
 	}
 
 	if (ptr == 0) {
@@ -1225,6 +1274,15 @@ A4GL_dump_all_resource_vars (int export)
     }
 
 }
+
+
+void A4GL_log_changed_envvar(char *name,char *value) {
+#ifdef DEBUG_VARIABLE_USAGE
+		if (fd1) fprintf(fd1,"A4GL_setenv - changes %s to %s\n",name,value);
+#endif
+}
+
+
 
 /**
  *

@@ -16,12 +16,12 @@ VARIABLE A4GL_LEXDIALECT
 LIB_PREFIX ESQLAPI_
 * Name of the header file to be referenced with #include
 * HEADER_FILE API_esql.h
-#ifdef DEBUG_SPEC
-#undef DEBUG_SPEC
-#endif
 
 // This is needed to get the prototypes for the functions
 #include "a4gl_API_esql.h"
+#ifdef DEBUG_SPEC
+#undef DEBUG_SPEC
+#endif
 
 * ======================================================================
 * Function calls definitions:

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.50 2005-01-07 10:30:23 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.51 2005-01-11 15:04:13 mikeaubury Exp $
 #
 */
 
@@ -783,6 +783,13 @@ hr=acl_getenv("EC_EXT");
 if (hr) {
         if (strlen(hr)) return hr;
 }
+
+
+if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "INFORMIX") == 0) { return ".ec"; }
+if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) { return ".cpc"; }
+if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0) { return ".cpc"; }
+if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "INGRES") == 0) { return ".sc"; }
+
 return ".ec";
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.79 2005-01-11 14:37:05 pjfalbe Exp $
+# $Id: fglwrap.c,v 1.80 2005-01-11 15:04:13 mikeaubury Exp $
 #
 */
 
@@ -185,6 +185,7 @@ char *p;
 
   /* load settings from config file(s): */
 
+
 /*
 #ifdef _PRELOAD_SQL_
   if (!A4GLSQL_initlib ())
@@ -265,8 +266,12 @@ char *p;
 #endif
 
 
+  fgl_callback(nargs,argv);
+
+
 #ifdef _PRELOAD_UI_
   /* Initialize the UI library (ie load the dll) */
+  A4GL_debug("PRELOADING UI - %s\n",acl_getenv("A4GL_UI"));
   if (!A4GLUI_initlib ())
     {
       printf ("4gllib: Error opening UI library (A4GL_UI=%s)\n",
@@ -1261,5 +1266,10 @@ A4GL_debug("SQL on line %d in %s:%s\n",lineno,module,s);
 
 char *A4GL_get_running_program(void) {
 	return running_program; // Argv[0]
+}
+
+
+int fgl_callback (int nargs, char *argv[]) {
+	// Does nothing - but required...
 }
 /* ================================= EOF ============================= */

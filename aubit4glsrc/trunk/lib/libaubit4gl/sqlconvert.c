@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.41 2005-01-07 10:30:23 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.42 2005-01-11 15:04:14 mikeaubury Exp $
 #
 */
 
@@ -45,7 +45,7 @@
 #define isoperator(x)  (a_strchr("+-*/%|^[,]",(x)) != NULL)
 static char *get_dollared_sql_var(char *s) ;
 static char * A4GL_cv_next_token (char *p, int *len, int dot);
-static char *space_out (char *s) ;
+static char *A4GL_space_out (char *s) ;
 
 /*
 =====================================================================
@@ -113,6 +113,11 @@ char *cvsql_names[]={
   "CVSQL_SWAP_SQLCA62",
   "CVSQL_NO_ORDBY_INTO_TEMP",
   "CVSQL_ADD_SESSION_TO_TEMP_TABLE",
+  "CVSQL_LIMIT_LINE",
+  "CVSQL_NO_DELCARE_INTO",
+  "CVSQL_NO_FETCH_WITHOUT_INTO",
+  "CVSQL_NO_SELECT_WITHOUT_INTO",
+  "CVSQL_NO_PUT",
   "CVSQL_DTYPE_ALIAS"
 };
 
@@ -183,6 +188,11 @@ enum cvsql_type
   CVSQL_SWAP_SQLCA62,
   CVSQL_NO_ORDBY_INTO_TEMP,
   CVSQL_ADD_SESSION_TO_TEMP_TABLE,
+  CVSQL_LIMIT_LINE,
+  CVSQL_NO_DECLARE_INTO,
+  CVSQL_NO_FETCH_WITHOUT_INTO,
+  CVSQL_NO_SELECT_WITHOUT_INTO,
+  CVSQL_NO_PUT,
   CVSQL_DTYPE_ALIAS
 };
 
@@ -528,7 +538,12 @@ for (b=0;b<conversion_rules_cnt;b++) {
 }
 A4GL_debug("returning\n");
 if (buff) free(buff);
-buff=strdup(ptr);
+
+if (A4GLSQLCV_check_requirement("LIMIT_LINE")) {
+	buff=strdup(A4GL_space_out(ptr));
+} else {
+	buff=strdup(ptr);
+}
 free(ptr);
 return buff;
 }
@@ -676,7 +691,6 @@ return buff;
 int A4GLSQLCV_check_requirement(char *s) {
 int a;
 int b;
-
 if (A4GL_isyes(acl_getenv(s))) {
 	return 1;
 }
@@ -695,6 +709,7 @@ if (a==0) {
 }
 
 if (conversion_rules==0) {
+A4GL_debug("A4GLSQLCV_check_requirement(%s) - No rules",s);
 	//printf("No rules loaded\n");
 	return 0;
 }
@@ -706,6 +721,7 @@ for (b=0;b<conversion_rules_cnt;b++) {
 	}
 }
 
+A4GL_debug("A4GLSQLCV_check_requirement(%s) - no",s);
 return 0;
 }
 
@@ -860,6 +876,11 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "SWAP_SQLCA62", len) == 0) return CVSQL_SWAP_SQLCA62;
   if (strncasecmp (p, "NO_ORDBY_INTO_TEMP", len) == 0) return CVSQL_NO_ORDBY_INTO_TEMP;
   if (strncasecmp (p, "ADD_SESSION_TO_TEMP_TABLE", len) == 0) return CVSQL_ADD_SESSION_TO_TEMP_TABLE;
+  if (strncasecmp (p, "LIMIT_LINE", len) == 0) return CVSQL_LIMIT_LINE;
+  if (strncasecmp (p, "NO_DECLARE_INTO", len) == 0) return CVSQL_NO_DECLARE_INTO;
+  if (strncasecmp (p, "NO_FETCH_WITHOUT_INTO", len) == 0) return CVSQL_NO_FETCH_WITHOUT_INTO;
+  if (strncasecmp (p, "NO_SELECT_WITHOUT_INTO", len) == 0) return CVSQL_NO_SELECT_WITHOUT_INTO;
+  if (strncasecmp (p, "NO_PUT", len) == 0) return CVSQL_NO_PUT;
   if (strncasecmp (p, "DTYPE_ALIAS", len) == 0) return CVSQL_DTYPE_ALIAS;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
@@ -2018,14 +2039,21 @@ return ptr;
 return 0;
 }
 
+
+
+char *A4GLSQLCV_add_temp_table(char *tabname) {
+	if (!A4GL_has_pointer(tabname,LOG_TEMP_TABLE)) { A4GL_add_pointer(tabname,LOG_TEMP_TABLE,(void *)1); }
+}
+
 char *A4GLSQLCV_create_temp_table(char *tabname,char *elements,char *extra,char *oplog) {
 char *ptr;
 ptr=malloc(strlen(tabname)+strlen(elements)+strlen(extra)+strlen(oplog)+1000);
 
 if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 	A4GL_debug("Creating temp table called TABLE : %s",tabname);
+
 	if (!A4GL_has_pointer(tabname,LOG_TEMP_TABLE)) { A4GL_add_pointer(tabname,LOG_TEMP_TABLE,(void *)1); }
-	sprintf(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,space_out(elements));
+	sprintf(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,A4GL_space_out(elements));
 	return ptr;
 } 
 
@@ -2260,13 +2288,34 @@ char *c;
 }
 
 
-static char *space_out (char *s) {
+char *A4GL_space_out (char *s) {
 static char *ptr=0;
 int a;
 int b=0;
+int in_dbl=0;
+int in_single=0;
+
 if (ptr) free(ptr);
+
 ptr=malloc(strlen(s)*2+1);
+
+
 for (a=0;a<strlen(s);a++) {
+	if (in_dbl) {
+		if (s[a]=='\"') in_dbl=0;
+		ptr[b++]=s[a];
+		continue;
+	}
+
+	if (in_single) {
+		if (s[a]=='\'') in_single=0;
+		ptr[b++]=s[a];
+		continue;
+	}
+
+	if (s[a]=='\'') in_single=1;
+	if (s[a]=='"')  in_dbl=1;
+	
 	if (s[a]==',') {
 			ptr[b++]='\n';
 			ptr[b++]=',';
@@ -2274,6 +2323,8 @@ for (a=0;a<strlen(s);a++) {
 			ptr[b++]=s[a];
 	}
 }
+
+
 ptr[b]=0;
 return ptr;
 }
