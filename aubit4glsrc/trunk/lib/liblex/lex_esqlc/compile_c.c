@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.99 2003-09-17 07:05:42 mikeaubury Exp $
+# $Id: compile_c.c,v 1.100 2003-09-17 19:13:40 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -580,6 +580,7 @@ void
 print_repctrl_block (void)
 {
   printc ("rep_ctrl%d_%d:\n", report_cnt, report_stack_cnt);
+  //printc("A4GL_rep_print(&rep,0,1,0);"); // NEW
 }
 
 
@@ -629,9 +630,9 @@ print_report_ctrl (void)
       printc ("  if (_useddata) {");
 
       printc ("   %s(0,REPORT_LASTROW);", get_curr_rep_name ());
-      printc ("   if (rep.line_no==0&&rep.page_no==0) A4GL_rep_print(&rep,0,0,0);"); // MJA 13092003
+      printc ("   if (rep.page_no<=1) {A4GL_rep_print(&rep,0,1,0);A4GL_rep_print(&rep,0,0,0);}"); // MJA 13092003
       printc ("   rep.finishing=1;");
-      printc ("   A4GL_skip_top_of_page(&rep,1);");
+      printc ("   A4GL_skip_top_of_page(&rep,999);");
       printc ("}");
       printc ("  _started=0;");
       printc ("  if (rep.output) {fclose(rep.output);rep.output=0;}");
@@ -3203,6 +3204,8 @@ void
 print_format_every_row (void)
 {
   push_report_block ("EVERY", 'E');
+
+
   printc ("{int _rr;for (_rr=0;_rr<%d;_rr++) {", fbindcnt);
   printc ("A4GL_push_char(rbindvarname[_rr]);\n");
   printc

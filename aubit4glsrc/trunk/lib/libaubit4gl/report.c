@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.29 2003-09-17 07:05:41 mikeaubury Exp $
+# $Id: report.c,v 1.30 2003-09-17 19:14:16 mikeaubury Exp $
 #
 */
 
@@ -91,10 +91,6 @@ extern sqlca_struct a4gl_sqlca;
 #define SECTION_TRAILER 2
 
 
-static int lit(int a) {
-if (a<0) return 0;
-return a;
-}
 
 static report_print(struct rep_structure *rep,char *fmt,...) {
 va_list ap;
@@ -283,7 +279,7 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
 
 
       if (rep->print_section==SECTION_NORMAL) {
-      	if (rep->line_no > rep->page_length - lit(rep->lines_in_trailer)-rep->bottom_margin) {
+      	if (rep->line_no > rep->page_length - rep->lines_in_trailer-rep->bottom_margin) {
 		//printf("Adding trailer..\n");
 		rep->print_section=SECTION_TRAILER;
       		rep->report (0, REPORT_PAGETRAILER);	/* report.c:180: too many arguments to function */
@@ -434,7 +430,16 @@ A4GL_skip_top_of_page (struct rep_structure *rep,int n)
   int z;
   int a;
 
-  a=rep->page_length-rep->line_no-lit(rep->bottom_margin-rep->lines_in_trailer);
+a=rep->page_length-rep->line_no-rep->bottom_margin-rep->lines_in_trailer;
+
+
+//if (n==999 && rep->page_no<=1 && a) {
+		//rep->line_no++;
+		//A4GL_rep_print(rep,0,1,0);
+		//A4GL_rep_print(rep,0,0,0);
+//}
+
+  a=rep->page_length-rep->line_no-rep->bottom_margin-rep->lines_in_trailer;
 
 if (n!=1 || rep->page_no) {
   if (rep->header) return;
@@ -449,12 +454,13 @@ if (n!=1 || rep->page_no) {
 
 //printf("Add %d lines %d %d\n",a,rep->print_section,n);
 
+
   for (z=0;z<a;z++) {
       A4GL_rep_print (rep, 0, 0, 0);
     }
 
-      A4GL_rep_print (rep, 0, 0, 0);
-
+    A4GL_rep_print (rep, 0, 0, 0);
+  //if (n==999&&rep->finishing&&rep->page_no==1) { A4GL_rep_print(rep,0,0,0);  }
 
 
 //printf("Done skip top %d %d\n",rep->page_no,rep->line_no);

@@ -379,7 +379,15 @@ static void print_sql_type_postgres (int a, char ioro)
 	  printc ("date _vi_%d;", a);
 	  break;
 	case 8:
-	  printc ("money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  if (A4GL_isyes(acl_getenv("MONEY_AS_MONEY"))) {
+	  	printc ("money _vi_%d;", a);
+	  } else {
+	  	if (A4GL_isyes(acl_getenv("MONEY_AS_DECIMAL"))) {
+	  		printc ("decimal(%s) _vi_%d;", decode_decimal_size_as_string(obind[a].dtype), a);
+		} else {
+	  		printc ("money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+		}
+	  }
 	  break;
 	case 9:
 	  printc ("Blah _vi_%d;", a);
@@ -436,7 +444,15 @@ static void print_sql_type_postgres (int a, char ioro)
 	  printc ("date _vo_%d;", a);
 	  break;
 	case 8:
-	  	printc ("money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  if (A4GL_isyes(acl_getenv("MONEY_AS_MONEY"))) {
+	  	printc ("money _vo_%d;", a);
+	  } else {
+	  	if (A4GL_isyes(acl_getenv("MONEY_AS_DECIMAL"))) {
+	  		printc ("decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype), a);
+		} else {
+	  		printc ("money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+		}
+	   }
 	  	break;
 	case 9:
 	  printc ("Blah _vo_%d;", a);
