@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.11 2002-05-21 10:03:44 mikeaubury Exp $
+# $Id: stack.c,v 1.12 2002-05-21 14:18:06 mikeaubury Exp $
 #
 */
 
@@ -120,7 +120,7 @@ extern long status;
 
 extern int errno;
 
-int nset[15][9] = {
+int nset[MAX_DTYPE][9] = {
   {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},
   {0x0, 0x80, IGN, IGN, IGN, IGN, IGN, IGN, IGN},
   {0x0, 0x0, 0x0, 0x80, IGN, IGN, IGN, IGN, IGN},
@@ -431,6 +431,7 @@ char_pop (void)
       if (has_datatype_function_i (f, ">STRING"))
 	{
 	  char *(*function) (void *, char *, int);
+	debug("Calling >STRING for datatype");
 	  function = get_datatype_function_i (f, ">STRING");
 	  s = function (params[params_cnt - 1].ptr, 0, 0);
 	}
@@ -590,6 +591,8 @@ push_param (void *p, int d)
   int s2;
   int ptr1;
   int ptr2 = 0;
+  int dtype_1=-1;
+  int dtype_2=-1;
   size = DECODE_SIZE (d);
   d = d & 0xffff;
 
@@ -665,6 +668,7 @@ push_param (void *p, int d)
   debug ("params_cnt=%d\n", params_cnt);
   if (params_cnt > 0)
     {
+      dtype_1=params[params_cnt - 1].dtype;
       if (isnull (params[params_cnt - 1].dtype, params[params_cnt - 1].ptr))
 	{
 
@@ -696,6 +700,7 @@ push_param (void *p, int d)
   debug ("Checking 2nd");
   if (params_cnt > 1)
     {
+      dtype_2=params[params_cnt - 1].dtype;
       if (isnull (params[params_cnt - 2].dtype, params[params_cnt - 2].ptr))
 	{
 	  debug ("MJA2");
@@ -714,6 +719,26 @@ push_param (void *p, int d)
     }
 
   debug ("Checked %d %d", n1, n2);
+
+
+
+// Have a look see if this condition
+// is specifically handled
+  if (dtype_2==-1) dtype_2=dtype_1;
+
+  if (dtype_1!=-1) {
+	void (*function) (void);
+	debug("Calling OP function");
+	function=find_op_function(dtype_1,dtype_2,d);
+
+	if (function) {
+		debug("Calling specified function for %d %d, %d",dtype_1,dtype_2,d);
+		function();
+		return;
+	}
+  }
+
+
 
   if ((d) == (OP_ISNULL))
     {
@@ -767,13 +792,11 @@ push_param (void *p, int d)
 	  a--;
 	}
       debug ("MJA Setting ok=%d\n", ok);
-      debug_print_stack ();
       drop_param ();		// Get rid of the base...
       if (d == OP_IN)
 	push_int (ok);
       else
 	push_int (!ok);
-      debug_print_stack ();
       return;
     }
 
@@ -834,7 +857,6 @@ push_param (void *p, int d)
 	push_int (ok);
       else
 	push_int (!ok);
-      debug_print_stack ();
       return;
     }
 
@@ -970,7 +992,6 @@ push_param (void *p, int d)
       if (chknull (2, n1, n2))
 	return;
       debug ("OP_OR");
-      debug_print_stack ();
       i1 = pop_int ();
       i2 = pop_int ();
 
@@ -1409,7 +1430,7 @@ debug_print_stack (void)
 {
   int a;
   char *buff;
-
+return;
   buff = new_string (20);
 
 #ifdef DEBUG
@@ -1425,7 +1446,7 @@ debug_print_stack (void)
     {
       conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, 20);
 #ifdef DEBUG
-      /* {DEBUG} */ debug (" %d Dtype (%d) %s %d\n", a,
+      /* {DEBUG} */ debug (" %d Dtype (%d)='%s' size=%d\n", a,
 			   params[a].dtype & DTYPE_MASK, buff,
 			   params[a].size);
 #endif
@@ -1507,7 +1528,6 @@ params_on_stack (char *_paramnames[], int n)
   if (n == 0)
     return 0;
 
-  debug_print_stack ();
   debug ("Generating parameter list n=%d", n);
 
   for (a = 0; a < n; a++)
@@ -1738,6 +1758,7 @@ setnull (int type, char *buff, int size)
   if (has_datatype_function_i (type, "INIT"))
     {
       void (*function) (char *);
+	debug("Calling INIT for datatype");
       function = get_datatype_function_i (type, "INIT");
       function (buff);
       return;
@@ -1806,11 +1827,12 @@ isnull (int type, char *buff)
   int a;
   type = type & DTYPE_MASK;
 
-  debug ("ISNULL - %d %p\n", type, buff);
+  //debug ("ISNULL - %d %p\n", type, buff);
 
   if (has_datatype_function_i (type, "ISNULL"))
     {
       int (*function) (char *);
+	debug("Calling ISNULL for datatype");
       function = get_datatype_function_i (type, "ISNULL");
       return function (buff);
     }
@@ -1940,7 +1962,6 @@ push_null (void)
   if (a == 0)
     setnull (2, (char *) &a, 0);
   push_long (a);
-  debug_print_stack ();
 }
 
 

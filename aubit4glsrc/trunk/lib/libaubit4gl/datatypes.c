@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.1 2002-05-20 22:07:44 mikeaubury Exp $
+# $Id: datatypes.c,v 1.2 2002-05-21 14:18:06 mikeaubury Exp $
 #
 */
 
@@ -99,7 +99,6 @@ int A4GLEXDATA_initlib (char *f)
     }
 
   func = find_func_allow_missing (libptr, "EXDTYPE_initlib");
-
   if (func)
     return func ();
   else
@@ -295,7 +294,7 @@ void add_conversion (char *from,char *to,void *func) {
 int a;
 int b;
 if (!inited) init_datatypes();
-debug("In Adding conversions...");
+debug("In Adding conversions... with %p",func);
 a=find_datatype(from);
 b=find_datatype(to);
 
@@ -331,32 +330,20 @@ void add_default_datatypes() {
 
 
 
-void add_datatype_set(char *n) {
-
-
-}
-
-
 
 
 
 
 
 int aclfgl_load_datatype (int nargs){
-static char _functionName[] = "load_datatype";
-   char s [256+1];
-   struct BINDING fbind[]={ /* print_param */
-   {&s,0,256}
-   }; /* end of binding */
-   char *_paramnames[]={
-   "s"
-   };
-   A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
-   if (nargs!=1) {status=-30174;pop_args(nargs);return 0;}
-   pop_params(fbind,1);
-   trim(s);
-   A4GLEXDATA_initlib(s);
+   	char *s;
+
+	s=char_pop();
+   	trim(s);
+
+   	A4GLEXDATA_initlib(s);
+
+	free(s);
    /* End of code */
-   A4GLSTK_popFunction();
-   return 0;
+   	return 0;
 }

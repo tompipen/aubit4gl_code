@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.12 2002-05-20 20:17:37 mikeaubury Exp $
+# $Id: Makefile.in,v 1.13 2002-05-21 14:18:06 mikeaubury Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -51,7 +51,7 @@ COMMONSRC= \
 	fglwrap.c funcs_d.c function_call_stack.c \
 	gtime.c gui_io.c gui.c datatype.c \
 	helper.c \
-	io.c interval.c datatypes.c \
+	io.c interval.c datatypes.c maths.c \
 	keys.c \
 	load.c \
 	match.c \

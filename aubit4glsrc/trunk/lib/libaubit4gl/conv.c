@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.5 2002-05-20 20:17:37 mikeaubury Exp $
+# $Id: conv.c,v 1.6 2002-05-21 14:18:06 mikeaubury Exp $
 #
 */
 
@@ -265,7 +265,7 @@ typedef struct
 extern int errno;
 int lastsize;
 
-void (*setdtype[15]) (void *ptr1) =
+void (*setdtype[MAX_DTYPE]) (void *ptr1) =
 {
   setc, seti, setl, setf,
     setsf, setf, setl, setno, setf, setno, setno, setno, setno, setno, setno
@@ -275,7 +275,7 @@ void (*setdtype[15]) (void *ptr1) =
 /**
  * Convertion table.
  */
-int (*convmatrix[15][15]) (void *ptr1, void *ptr2, int size) =
+int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
 {
   {
     ctoc, stoi, stol, stof, stosf, stodec, stol, stod, stof, NO, ctodt, NO,
@@ -2374,7 +2374,10 @@ conv (int dtype1, void *p1, int dtype2, void *p2, int size)
 #ifdef DEBUG
   {    debug ("conv (%ld %ld)", *(long *) p1, *(long *) p2);  }
 #endif
+  debug("Convmatrix %d %d",dtype1&DTYPE_MASK,dtype2&DTYPE_MASK);
+
   rval = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK] (p1, p2, size);
+
   debug ("rval=%d\n", rval);
   return rval;
 }
@@ -4081,11 +4084,14 @@ debug("buff=%s\n",buff);
 * This function sets up the conversion matrix
 * for a new datatype
 **/
-set_convmatrix(int dtype1,int dtype2,void *ptr) {
+void set_convmatrix(int dtype1,int dtype2,void *ptr) {
+
+	debug("Setting convmatrix %d %d to %p",dtype1,dtype2,ptr);
+
         convmatrix[dtype1][dtype2]=ptr;
 }
 
-set_setdtype(int dtype, void *ptr) {
+void set_setdtype(int dtype, void *ptr) {
         setdtype[dtype]=ptr;
 }
 
