@@ -7,8 +7,10 @@
 #include "lowlevel.h"
 #include "formdriver.h"
 #include "low_gtk.h"
+#include "hl_proto.h"
+#include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.20 2004-02-09 08:07:53 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.21 2004-02-10 10:21:31 mikeaubury Exp $";
 
 
 #include <gtk/gtk.h>
@@ -17,10 +19,45 @@ static char *module_id="$Id: lowlevel_gtk.c,v 1.20 2004-02-09 08:07:53 mikeaubur
 #define A4GL_GTK_FONT_FIXED "Fixed 10"
 int gui_yheight=20; // 25
 int gui_xwidth=9;
-
+void A4GL_gui_prompt_style (int a);
+void *A4GL_get_currwin (void);
+int A4GLHLUI_initlib(void);
+void tstamp(char *s) ;
+int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) ;
+int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos) ;
+int A4GL_LL_fieldnametoid(char* f,char* s,int n) ;
+void A4GL_win_stack (struct s_windows *w, int op);
+int A4GL_display_generic(GtkWidget *k, char *s);
+int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
+GtkWidget *A4GL_make_widget(char *widget, char *config, int w);
+void A4GL_clear_prompt(struct s_prompt *prmt) ;
 void A4GL_getxy_coords(int *x,int *y) ;
 void A4GL_show_console (void);
 void A4GL_hide_console (void);
+int A4GL_getx_coords(int x) ;
+int A4GL_gety_coords(int x) ;
+void A4GL_console_toggle (void);
+void A4GL_add_to_console (char *s);
+void A4GL_clear_console (char *s);
+void A4GL_create_console (void);
+//void A4GL_logkey(long a);
+int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis, char *msg);
+int KeySnooper (GtkWidget * grab_widget, GdkEventKey * event, gpointer func_data);
+int A4GL_which_key_aubit(int gdk_key);
+char * A4GL_decode_str_fprop (struct_scr_field * fprop, int type);
+void MyStyleSetItemColor (GdkColor color,       /* The allocated color to be added to the style */
+                          char item,    /* the item to which the color is to be applied */
+                          /* 'f' = foreground; 'b' = background; */
+                          /* 'l' = light;      'd' = dark; */
+                          /* 'm' = mid;        't' = text; */
+                          /* 's' = base. */
+                          GtkStyle * style      /* The old style - changes made to a copy */
+  );
+void A4GL_alloc_colors (void);
+void A4GL_gui_set_active (GtkWidget * w, int en_dis);
+
 
 int window_frame_type=0;
 char *A4GL_fld_val_generic (GtkWidget * k);
@@ -154,14 +191,14 @@ A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
 
   add_keypress(keypressed);
   actionfield = widget;
+  return keypressed;
 }
 
 
 
 
 
-void
-A4GL_console_toggle (void)
+void A4GL_console_toggle (void)
 {
   static int shown = 0;
   shown = 1 - shown;
@@ -192,8 +229,7 @@ void A4GL_hide_console (void)
 /**
  * Append a string to the console list widget.
  */
-void
-A4GL_add_to_console (char *s)
+void A4GL_add_to_console (char *s)
 {
   gtk_clist_append (GTK_CLIST (console_list), &s);
 }
@@ -201,8 +237,7 @@ A4GL_add_to_console (char *s)
 /**
  * Clear the data showed n the console.
  */
-void
-A4GL_clear_console (char *s)
+void A4GL_clear_console (char *s)
 {
   gtk_clist_clear (GTK_CLIST (console_list));
 }
@@ -238,8 +273,7 @@ return FALSE;
  *
  * @todo : Define what is the console widget.
  */
-void
-A4GL_create_console (void)
+void A4GL_create_console (void)
 {
   GtkWidget *scroll;
 
@@ -328,9 +362,7 @@ add_button (GtkDialog * win, int but_code)
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->action_area), (GtkWidget *) but);
   gtk_signal_connect_object (GTK_OBJECT (but), "clicked", GTK_SIGNAL_FUNC (dialog_callback), GTK_OBJECT (win));
 }
-int
-A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
-           char *msg)
+int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis, char *msg)
 {
   int rval;
   GtkDialog *win;
@@ -403,8 +435,7 @@ A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
 
 
 
-int
-KeySnooper (GtkWidget * grab_widget, GdkEventKey * event, gpointer func_data)
+int KeySnooper (GtkWidget * grab_widget, GdkEventKey * event, gpointer func_data)
 {
   A4GL_debug ("Key Snooper... %p %p %p\n", grab_widget, event, func_data);
   A4GL_debug ("Key Pressed! %x %x (%s)\n", event->keyval, event->state,
@@ -438,6 +469,7 @@ void MyStyleSetItemColor (GdkColor color,       /* The allocated color to be add
                           /* 's' = base. */
                           GtkStyle * style      /* The old style - changes made to a copy */
   )
+
 {
   int i;
   switch (item)
@@ -529,7 +561,7 @@ void* A4GL_LL_create_window(int h,int w,int y,int x,int border) {
   GtkWidget *win=0;              
   GtkFrame *frame = 0;
   GtkWidget *wxx = 0;
-  int isscreenwin = 0;
+  //int isscreenwin = 0;
 
 
 if (x==0&&y==0&&h==0&&w==0) {
@@ -733,8 +765,7 @@ set_intr_win32 (DWORD type)
 }
 #endif
 
-int
-A4GL_which_key_aubit(int gdk_key)
+int A4GL_which_key_aubit(int gdk_key)
 {
 int a;
 a=gdk_key;
@@ -831,10 +862,10 @@ void A4GL_run_gtkrc(void) {
 
 
 void A4GL_LL_initialize_display(void ) {
-  char *argvv[]={};
-  char *gtkrc;
-  char buff[255];
-  char buff2[255];
+  //char *argvv[]={};
+  //char *gtkrc;
+  //char buff[255];
+  //char buff2[255];
   gtk_init (0, 0);
   if (acl_getenv("CELL_HEIGHT")) { if (strlen(acl_getenv("CELL_HEIGHT"))) gui_yheight=atoi(acl_getenv("CELL_HEIGHT")); }
   if (acl_getenv("CELL_WIDTH"))  { if (strlen(acl_getenv("CELL_WIDTH"))) gui_xwidth=atoi(acl_getenv("CELL_WIDTH")); }
@@ -1044,6 +1075,7 @@ int A4GL_LL_set_field_opts(void* field,int oopt) {
     } else {
 		A4GL_gui_set_active (field, 0);
     }
+   return 1;
 }
 
 void A4GL_LL_show_window(void* w) {
@@ -1064,7 +1096,7 @@ int b;
     }
 }
 
-A4GLHLUI_initlib() {}
+int A4GLHLUI_initlib(void) { return 0;}
 
 void A4GL_LL_switch_to_line_mode(void ) {
 	A4GL_show_console();
@@ -1264,6 +1296,7 @@ void A4GL_LL_set_max_field(void* f,int n) {
 int A4GL_LL_set_new_page(void* field,int n) {
 	printf("SET NEW PAGE %p %d\n",field,n);
   	gtk_object_set_data (GTK_OBJECT (field), "NEWPAGE",(void *)1);
+	return 1;
 }
 
 /******************************************************************************
@@ -1385,7 +1418,7 @@ int
   struct s_prompt *prompt;
   //void *sarr[3];
   void *p;
-  void *d;
+  //void *d;
   void *cw;
   struct s_form_dets fd;
   struct s_a4gl_gtk_form *f;
@@ -1687,8 +1720,7 @@ int
  *
  * @param a The prompt style
  */
-void
-A4GL_gui_prompt_style (int a)
+void A4GL_gui_prompt_style (int a)
 {
   if (a >= 0 && a <= 3)
     prompt_style = a;
@@ -1729,7 +1761,7 @@ void* A4GL_LL_display_form(void * fd,int attrib) {
 int b;
   char buff[80];
   int a;
-  int nattr;
+  //int nattr;
   GtkWidget *w;
   GtkWidget *drwin;
   GtkFixed *cwin;
@@ -1931,7 +1963,7 @@ for (a=0;a<form->nwidgets;a++) {
 
 
 int A4GL_LL_form_page(void* vform) {
-struct s_a4gl_gtk_form *form;
+//struct s_a4gl_gtk_form *form;
 	return 1;
 }
 
@@ -2025,7 +2057,7 @@ A4GL_display_generic (field, str);
 }
 
 void A4GL_LL_set_form_page(void* vform,int page) {
-struct s_a4gl_gtk_form *form;
+//struct s_a4gl_gtk_form *form;
 }
 
 void* A4GL_LL_new_form(void* vfd) {
@@ -2057,14 +2089,14 @@ form->widgets=0;
 form->notebook=0;
 form->userptr=0;
 
-printf("fd->form_Fields[0]=%d\n",fd->form_fields[0]);
-printf("fd->form_Fields[1]=%d\n",fd->form_fields[1]);
+//printf("fd->form_Fields[0]=%d\n",fd->form_fields[0]);
+//printf("fd->form_Fields[1]=%d\n",fd->form_fields[1]);
 
 for (a=0;fd->form_fields[a];a++)  {
 	if (gtk_object_get_data(GTK_OBJECT(fd->form_fields[a]),"NEWPAGE")) form->npages++;
 }
 
-printf("%d widgets detected on %d pages\n",a,form->npages);
+//printf("%d widgets detected on %d pages\n",a,form->npages);
 
 form->nwidgets=a;
 form->widgets=malloc(sizeof(void *)*a);
@@ -2122,7 +2154,7 @@ if (mode<=255 && isprint(mode) && mode >=' ') {
 		case AUBIT_REQ_END_FIELD:
 				{	
 				char *x;
-				x=strdup(gtk_entry_get_text(GTK_EDITABLE(cwidget)));
+				x=strdup(gtk_entry_get_text(GTK_ENTRY(cwidget)));
 				A4GL_trim(x);
 				form->curcol=strlen(x); 
 				free(x);
@@ -2196,6 +2228,7 @@ if (mode<=255 && isprint(mode) && mode >=' ') {
 	{char *ptr=0; *ptr=0;}
 	}
 }
+return 0;
 }
 
 
@@ -2322,7 +2355,7 @@ ap=vap;
   A4GL_debug ("Formdets = %p\n", formdets);
 
   nofields =
-    A4GL_gen_field_list (&field_list, (GtkWindow *) formdets, 9999, ap);
+    A4GL_gen_field_list ((void *)&field_list, (void*) formdets, 9999, ap);
   A4GL_debug ("nofields=%d\n", nofields);
 
   for (a = 0; a <= nofields; a++)
@@ -2342,7 +2375,7 @@ int A4GL_LL_open_gui_form (char *name_orig, int absolute, int nat, char *like, i
   //GtkFixed *form;
   char name[256];
   char formname[256];
-  struct struct_form *the_form;
+  //struct struct_form *the_form;
   struct s_form_dets *form_dets;
    struct s_window *w;
  struct s_a4gl_gtk_form *gtk_f;
@@ -2388,7 +2421,7 @@ int A4GL_LL_open_gui_form (char *name_orig, int absolute, int nat, char *like, i
   form_dets = A4GL_read_form (formname, "uhmmm");
 
   w=(struct s_window *)A4GL_add_window(0,0,0,0,formname,form_dets, win);
-  A4GL_win_stack(w,'+');
+  A4GL_win_stack((void *)w,'+');
   if (form_dets == 0)
     {
       A4GL_exitwith ("Unable to open form");
@@ -2601,7 +2634,7 @@ int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) {
 */
 int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos) {
         static char rbuff[1024];
-        static char rbuff2[1024];
+        //static char rbuff2[1024];
 	struct s_form_dets fd;
         void  *cwin;
         GtkWidget *drwin;

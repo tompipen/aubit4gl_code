@@ -1,6 +1,8 @@
 /* input_array.h */
 
-struct s_movement;
+
+/*
+
 static void A4GL_add_to_control_stack (struct s_inp_arr *sio, int op,void *f, char *parameter, int extent);
 static void insert_line_in_array (struct s_inp_arr *inpa);
 static void delete_line_in_array (struct s_inp_arr *inpa);
@@ -49,3 +51,4 @@ extern void A4GL_LL_set_current_field(void *form,void *field) ;
 extern int A4GL_LL_field_status(void *field) ;
 extern void A4GL_LL_set_field_attr ( void *field) ;
 
+*/

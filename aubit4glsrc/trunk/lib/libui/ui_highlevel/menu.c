@@ -1,14 +1,19 @@
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_lib_ui_int.h"
-#include "a4gl_API_ui.h"
-#include "menu.h"
-static char *module_id="$Id: menu.c,v 1.3 2004-01-17 11:13:34 mikeaubury Exp $";
+#include "a4gl_API_ui_lib.h"
+#include "a4gl_API_lowlevel.h"
+#include "hl_proto.h"
+#include <ctype.h>
+static char *module_id="$Id: menu.c,v 1.4 2004-02-10 10:21:31 mikeaubury Exp $";
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
 void A4GL_h_disp_title (ACL_Menu * menu, char *str);
-void A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y, int type);
-void A4GL_clr_menu_disp (ACL_Menu * menu);
+//void A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y, int type);
+//void A4GL_clr_menu_disp (ACL_Menu * menu);
 static int A4GL_menu_getkey (ACL_Menu * menu);
+void A4GL_size_menu (ACL_Menu * menu);
+void *A4GL_get_currwin (void);
+int aclfgli_show_help(int n);
 
 
 void
@@ -19,7 +24,7 @@ UILIB_A4GL_disp_h_menu (void *menuv)
   int disp_cnt2;
   int row;
   int cl, cpt, mnln, cw;
-  char *parent_window;
+  //char *parent_window;
   long attrib = 0;
 
   ACL_Menu *menu;
@@ -131,7 +136,7 @@ A4GL_display_menu (ACL_Menu * menu)
   ACL_Menu_Opts *prev_opt = 0;
   int disp_cnt2 = 0;
   char disp_str[80];
-  char buff[256];
+  //char buff[256];
   int disp_cnt;
   int have_displayed = 0;
 
@@ -226,7 +231,7 @@ static void
 A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos)
 {
   A4GL_debug ("MORE MARKERS : Displaying ... at %d %d", pos + offset, 1);
-  A4GL_wprintw (A4GL_get_currwin (), 0, pos + offset, menu->gw_y, " ...");
+  A4GL_wprintw ((void *)A4GL_get_currwin (), 0, pos + offset, menu->gw_y, " ...");
 
 }
 
@@ -234,7 +239,7 @@ A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos)
 void
 A4GL_h_disp_title (ACL_Menu * menu, char *str)
 {
-  A4GL_wprintw (A4GL_get_currwin (), 0, 1, menu->gw_y, "%s", str);
+  A4GL_wprintw ((void *)A4GL_get_currwin (), 0, 1, menu->gw_y, "%s", str);
 }
 
 
@@ -244,7 +249,7 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
 {
   int xx = 0;
   int yx = 0;
-  int col;
+  //int col;
   A4GL_debug ("h_disp_opt");
 
   if (opt1->page != menu->curr_page)
@@ -282,7 +287,7 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
       if (type == INVERT)
 	{
 	  A4GL_debug ("xx=%d yx=%d", xx, yx);
-	  A4GL_wprintw (A4GL_get_currwin (), 0, xx, yx + 1, "%s",
+	  A4GL_wprintw ((void *)A4GL_get_currwin (), 0, xx, yx + 1, "%s",
 			A4GL_string_width (opt1->shorthelp));
 	}
 
@@ -293,10 +298,10 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
 
 
       if (type == INVERT)
-	A4GL_wprintw (A4GL_get_currwin (), AUBIT_ATTR_REVERSE, xx, menu->gw_y,
+	A4GL_wprintw ((void *)A4GL_get_currwin (), AUBIT_ATTR_REVERSE, xx, menu->gw_y,
 		      "%s", opt1->opt_title);
       else
-	A4GL_wprintw (A4GL_get_currwin (), 0, xx, menu->gw_y, "%s",
+	A4GL_wprintw ((void *)A4GL_get_currwin (), 0, xx, menu->gw_y, "%s",
 		      opt1->opt_title);
 
 
@@ -317,7 +322,7 @@ A4GL_clr_menu_disp (ACL_Menu * menu)
   memset (buff, ' ', 1024);
   A4GL_debug ("Clearing menu clr_menu_disp");
   buff[UILIB_A4GL_get_curr_width () - menu->menu_offset + 1] = 0;
-  A4GL_wprintw (A4GL_get_currwin (), 0, menu->menu_offset - 1, menu->gw_y,
+  A4GL_wprintw ((void *)A4GL_get_currwin (), 0, menu->menu_offset - 1, menu->gw_y,
 		buff);
 }
 
@@ -425,7 +430,7 @@ A4GL_highlevel_menu_loop (void *menuv)
 static int
 A4GL_menu_getkey (ACL_Menu * menu)
 {
-  char cmd[60] = "";
+  //char cmd[60] = "";
   char buff[80];
   int a;
   A4GL_debug ("Getting character for menu from window %p", menu->menu_win);

@@ -1,13 +1,15 @@
-static char *module_id="$Id: widget_gtk.c,v 1.4 2004-02-09 08:07:54 mikeaubury Exp $";
-#include "../API_lowlevel.h"
+static char *module_id="$Id: widget_gtk.c,v 1.5 2004-02-10 10:21:31 mikeaubury Exp $";
+#include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
-
 #include "lowlevel.h"
 #include "formdriver.h"
 #include "low_gtk.h"
+#include "../API_lowlevel.h"
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>     /* GDK_Down */
+#include <ctype.h>
+
 void A4GL_func (GtkWidget * w, char *mode);
 void A4GL_add_signal_clicked (GtkWidget * widget, void *funcptr);
 void A4GL_add_signal_grab_focus (GtkWidget * widget, void *funcptr);
@@ -28,6 +30,32 @@ static GtkWidget *A4GL_cr_radio (void);
 static GtkWidget *A4GL_cr_list (void);
 static GtkWidget *A4GL_cr_calendar (void);
 static GtkWidget *A4GL_cr_scrollbar (void);
+
+
+void A4GL_dump_mem(char *ptr);
+void A4GL_split_config(char *str);
+void *A4GL_find_param(char *name);
+GtkWidget *A4GL_make_widget(char *widget, char *config, int w);
+char *A4GL_fld_val_generic(GtkWidget *k);
+void A4GL_gui_set_active(GtkWidget *w, int en_dis);
+//void A4GL_size_widget(GtkWidget *w, int width);
+void *UILIB_A4GL_make_pixmap_gw(char *filename);
+void *A4GL_make_pixbuf_gw(char *filename);
+//GtkWidget *A4GL_make_pixmap_from_mem(char *img);
+//void A4GL_clicked_handler(GtkWidget *w, gpointer user_data);
+//void A4GL_changed_handler(GtkWidget *w, gpointer user_data);
+void A4GL_select_row_handler(GtkWidget *w, gint row, gint column, GdkEventButton *event, gpointer user_data);
+void A4GL_grab_focus_handler(GtkWidget *w, gpointer user_data);
+//void A4GL_add_signal_clicked(GtkWidget *widget, void *funcptr);
+//void A4GL_add_signal_grab_focus(GtkWidget *widget, void *funcptr);
+//void A4GL_add_signal_changed(GtkWidget *widget, void *funcptr);
+//void A4GL_add_signal_select_row(GtkWidget *widget, void *funcptr);
+//void A4GL_func(GtkWidget *w, char *mode);
+int A4GL_display_generic(GtkWidget *k, char *s);
+
+char * A4GL_decode_config (struct_form * f, int a);
+
+
 
 void A4GL_size_widget (GtkWidget * w, int width);
 
@@ -294,8 +322,7 @@ A4GL_make_widget (char *widget, char *config, int w)
  * @param a The field / attribute number sequence.
  * @return The config value
  */
-char *
-A4GL_decode_config (struct_form * f, int a)
+char * A4GL_decode_config (struct_form * f, int a)
 {
   int b;
   for (b = 0; b < f->attributes.attributes_val[a].str_attribs.str_attribs_len;

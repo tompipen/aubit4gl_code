@@ -174,3 +174,10 @@ A4GL_LL_start_prompt void* vprompt int ap int c int h int af -> int
 A4GL_LL_set_chars_normal int* n -> int
 
 A4GL_LL_endis_fields_ap int n void* ap -> int
+
+A4GL_LL_disp_form_fields_ap int n int attr char* formname va_list* ap -> int
+A4GL_LL_open_gui_form char* name_orig  int absolute  int nat  char* like  int disable  void* handler_e void* phandler_c -> int
+
+A4GL_LL_set_window_title int nargs -> int
+A4GL_LL_widget_name_match void* w char* name -> int
+A4GL_LL_clr_form_fields int to_defaults char* defs  -> void

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.11 2004-01-28 21:47:17 mikeaubury Exp $
+# $Id: compile_c_gtk.c,v 1.12 2004-02-10 10:21:31 mikeaubury Exp $
 #
 */
 
-static char *module_id="$Id: compile_c_gtk.c,v 1.11 2004-01-28 21:47:17 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_gtk.c,v 1.12 2004-02-10 10:21:31 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules, that interface with GTK+ GUI libraries functions
@@ -98,6 +98,7 @@ char lname[256];
 */
 
 
+void          A4GL_lex_printh (char *fmt, ...);
 extern void printc (char *fmt, ...);	/* in API_lex.c */
 extern void printh (char *fmt, ...);	/* in API_lex.c */
 

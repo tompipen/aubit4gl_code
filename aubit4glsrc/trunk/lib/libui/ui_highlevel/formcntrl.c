@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.6 2004-02-09 08:07:52 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.7 2004-02-10 10:21:31 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.6 2004-02-09 08:07:52 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.7 2004-02-10 10:21:31 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -39,18 +39,25 @@ static char *module_id="$Id: formcntrl.c,v 1.6 2004-02-09 08:07:52 mikeaubury Ex
 =====================================================================
 */
 #include "a4gl_libaubit4gl.h"
-#include "a4gl_libaubit4gl.h"
 #include "a4gl_lib_ui_int.h"
-#include "a4gl_API_ui.h"
+#include "a4gl_API_ui_lib.h"
 #include "a4gl_incl_4gldef.h"
+#include "a4gl_API_lowlevel.h"
 #include "formdriver.h"
 #include "formcntrl.h"
-
+#include "hl_proto.h"
+#include <string.h>
 #include <ctype.h>
+int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
+int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos);
+int A4GL_conversion_ok(int);
 
 extern int m_lastkey;
 #define CONTROL_STACK_LENGTH 10
 
+/*
 static int process_control_stack (struct s_screenio *arr, struct aclfgl_event_list *evt);
 static int A4GL_has_something_on_control_stack (struct s_screenio *sio);
 static void A4GL_add_to_control_stack (struct s_screenio *sio, int op,
@@ -58,8 +65,9 @@ static void A4GL_add_to_control_stack (struct s_screenio *sio, int op,
 static void A4GL_newMovement (struct s_screenio *arr, int attrib);
 static void A4GL_init_control_stack (struct s_screenio *sio, int malloc_data);
 static int A4GL_proc_key_input (int a, void *mform, struct s_screenio *s);
-static void do_key_move (char lr, struct s_screenio *s, int a,
-			 int has_picture, char *picture);
+*/
+
+static void do_key_move (char lr, struct s_screenio *s, int a, int has_picture, char *picture);
 long inp_current_field = 0;
 
 
@@ -964,8 +972,7 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
 }
 
 
-int
-UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
+int UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
 {
   struct s_screenio *s;
 /* fieldname + = next - = previous */
@@ -1517,7 +1524,6 @@ A4GL_set_init_value (void *f, void *ptr, int dtype)
 void
 A4GL_mja_set_current_field (void *form, void *field)
 {
-  int a;
   A4GL_set_curr_infield ((long) field);
   A4GL_LL_set_current_field (form, field);
   A4GL_LL_set_carat (form);

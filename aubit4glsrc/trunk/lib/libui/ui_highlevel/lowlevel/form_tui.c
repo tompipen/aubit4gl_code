@@ -474,7 +474,7 @@ A4GL_form_new_field (int height, int width, int toprow, int leftcol,
 
   for (a = 0; a < nbuffers + 1; a++)
     {
-      char *cptr;
+      //char *cptr;
       ptr[a] = malloc (width * height + 1);
       A4GL_form_set_field_buffer (f, a, "");
     }

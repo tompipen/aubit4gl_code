@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.134 2004-02-09 19:44:02 mikeaubury Exp $
+# $Id: compile_c.c,v 1.135 2004-02-10 10:21:30 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.134 2004-02-09 19:44:02 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.135 2004-02-10 10:21:30 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -85,10 +85,21 @@ static void order_by_report_stack();
 extern void expand_bind (struct binding_comp *bind, int btype, int cnt);
 */
 
+//char get_curr_report_stack_whytype(void);
 
 
+char **get_field_codes(char *fields) ;
+char *get_curr_report_stack_why(void);
+struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val);
+void A4GL_get_event(int n,int *i,char **s) ;
+int A4GL_get_nevents(void) ;
+void print_event_list (void);
+int *get_key_codes(char *keys) ;
 int rep_print_entry=0;
 int doing_cs (void);
+int get_validate_list_cnt(void) ;
+void set_yytext (char *s);
+char *A4GL_get_important_from_clobber(char *s);
 /*
 =====================================================================
 		                    Includes
@@ -209,7 +220,7 @@ void add_function_to_header (char *identifier, int parms);
 char *get_namespace (char *s);
 void print_init_var (char *name, char *prefix, int alvl);
 void printcomment (char *fmt, ...);
-int is_builtin_func (char *s);
+//int is_builtin_func (char *s);
 
 
 /*
@@ -3963,8 +3974,8 @@ void
 print_open_form (char *fmt, char *a1, char *a2)
 {
 if (strncmp(fmt,"A4GL_open_gui_form",strlen("A4GL_open_gui_form") )==0) {
-	char buff[256];
-	char *ptr;
+	//char buff[256];
+	//char *ptr;
 
 
 	/*printf("get_clobber1=%s\n",A4GL_get_important_from_clobber(a1));*/
@@ -5463,7 +5474,7 @@ int b;
 int event_id;
 char *event_dets;
 int *keys;
-char comma=' ';
+//char comma=' ';
 char **fields;
 
 n=A4GL_get_nevents();
@@ -5531,7 +5542,7 @@ if (x) {free(x);x=0;}
 }
 
 
-int *get_field_codes(char *fields) {
+char **get_field_codes(char *fields) {
 char s[10240];
 char *k;
 char *k1;

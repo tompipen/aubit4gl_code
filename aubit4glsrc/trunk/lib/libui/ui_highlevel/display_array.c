@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.6 2004-01-28 17:53:10 mikeaubury Exp $
+# $Id: display_array.c,v 1.7 2004-02-10 10:21:31 mikeaubury Exp $
 #*/
-static char *module_id="$Id: display_array.c,v 1.6 2004-01-28 17:53:10 mikeaubury Exp $";
+static char *module_id="$Id: display_array.c,v 1.7 2004-02-10 10:21:31 mikeaubury Exp $";
 /**
  * @file
  * Implementation of Display Array
@@ -41,12 +41,15 @@ static char *module_id="$Id: display_array.c,v 1.6 2004-01-28 17:53:10 mikeaubur
 */
 
 #include "a4gl_libaubit4gl.h"
-#include "a4gl_libaubit4gl.h"
 #include "a4gl_lib_ui_int.h"
-#include "a4gl_API_ui.h"
+#include "a4gl_API_ui_lib.h"
 #include "display_array.h"
-#include "ui_highlevel.h"
+//#include "ui_highlevel.h"
+#include "hl_proto.h"
 #include "formdriver.h"
+#include "a4gl_API_lowlevel.h"
+int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
 /*
 =====================================================================
                     Functions prototypes
@@ -603,10 +606,12 @@ return rval;
  * @param attrib The attributes
  */
 int
-UILIB_A4GL_disp_arr_v2 (void *dispv, void *ptr, char *srecname, int attrib,int scrollf,int scrollw, struct aclfgl_event_list *evt)
+UILIB_A4GL_disp_arr_v2 (void *dispv, void *ptr, char *srecname, int attrib,int scrollf,int scrollw, void *vevt)
 {
   int a;
   struct s_disp_arr *disp;
+  struct aclfgl_event_list *evt;
+  evt=vevt;
   disp = dispv;
   A4GL_chkwin ();
   curr_arr_disp = disp;

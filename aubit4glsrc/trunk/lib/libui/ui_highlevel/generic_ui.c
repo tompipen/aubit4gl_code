@@ -1,10 +1,11 @@
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_lib_ui_int.h"
-#include "a4gl_API_ui.h"
+#include "a4gl_API_ui_lib.h"
 #include "a4gl_API_lowlevel.h"
 #include "formdriver.h"
+#include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.7 2004-02-09 08:07:52 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.8 2004-02-10 10:21:31 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 
@@ -12,6 +13,14 @@ static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
 static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap);
 static void A4GL_move_bar (ACL_Menu * menu, int a);
 static int started = -1;
+int
+A4GL_find_attrib_from_metric (struct_form * f, int metric_no);
+int
+A4GL_find_fields_no_metric (struct_form * f, int metric_no);
+int
+A4GL_find_attrib_from_field (struct_form * f, int field_no);
+int UILIB_A4GLUI_initlib (void);
+int A4GL_conversion_ok(int);
 
 #define COLOR_BLACK     0
 #define COLOR_RED       1
@@ -994,8 +1003,7 @@ UILIB_A4GLUI_ui_init (int argc, char *argv[])
 }
 
 
-int
-UILIB_A4GLUI_initlib ()
+int UILIB_A4GLUI_initlib (void)
 {
   return 1;
 }
@@ -1066,7 +1074,7 @@ UILIB_A4GL_gotolinemode ()
 
 
 
-int
+void
 UILIB_A4GL_sleep_i (void)
 {
   int a;
@@ -1079,7 +1087,8 @@ UILIB_A4GL_sleep_i (void)
 int
 UILIB_A4GL_menu_loop_v2 (void *menuv,void *evt)
 {
-  A4GL_highlevel_menu_loop (menuv);
+  return A4GL_highlevel_menu_loop (menuv);
+  
 }
 
 
@@ -1794,7 +1803,7 @@ A4GL_error_nobox (char *str, int attr)
 void
 A4GL_clr_error_nobox (char *dbg_fromwhere)
 {
-  int a;
+  //int a;
   A4GL_chkwin ();
   A4GL_debug ("MJA clr_error_nobox called from %s", dbg_fromwhere);
 
@@ -2490,7 +2499,7 @@ A4GL_do_after_field (void *f, struct s_screenio *sio)
   if (a == -1)
     {
       A4GL_exitwith ("after field : field number not found!");
-      return;
+      return 0;
       //A4GL_bomb_out ();
     }
 
@@ -2501,6 +2510,7 @@ A4GL_do_after_field (void *f, struct s_screenio *sio)
 	A4GL_debug ("   Field buffer = %s", A4GL_LL_field_buffer (f, 0));
       }
 #endif
+  fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
       A4GL_push_char ( A4GL_fld_data_ignore_format(fprop, A4GL_LL_field_buffer (f, 0)));
 #ifdef DEBUG
       {
@@ -2590,11 +2600,11 @@ A4GL_find_field_no (void *f, struct s_screenio *sio)
 
 
 int UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout,void *evt) {
-	A4GL_LL_prompt_loop(vprompt,timeout,evt);
+	return A4GL_LL_prompt_loop(vprompt,timeout,evt);
 }
 
 int UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af) {
-	A4GL_LL_start_prompt(vprompt,ap,c,h,af);
+	return A4GL_LL_start_prompt(vprompt,ap,c,h,af);
 }
 
 int UILIB_A4GL_get_key(int timeout) {

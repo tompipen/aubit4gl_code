@@ -3,10 +3,12 @@ static int A4GL_curses_to_aubit (int a);
 static int A4GL_curses_to_aubit_int (int a);
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_incl_4gldef.h"
-#include "a4gl_API_lowlevel.h"
 #include "a4gl_API_ui_lib.h"
+#include "hl_proto.h"
 #include "lowlevel.h"
+#include "a4gl_API_lowlevel.h"
 #include <curses.h>
+#include <ctype.h>
 
 
 #ifndef NO_CURSES_FORM
@@ -18,12 +20,23 @@ static int A4GL_curses_to_aubit_int (int a);
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.12 2004-02-09 19:51:17 mikeaubury Exp $";
-
+static char *module_id="$Id: lowlevel_tui.c,v 1.13 2004-02-10 10:21:31 mikeaubury Exp $";
 int inprompt = 0;
-
+void *A4GL_get_currwin (void);
+void try_to_stop_alternate_view(void) ;
+int A4GLHLUI_initlib(void) ;
+int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
+int A4GL_LL_decode_colour_attr_aubit(int a) ;
+int A4GL_LL_get_field_width_dynamic (void *f);
+int A4GL_LL_fieldnametoid(char* f,char* s,int n) ;
+int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) ;
+static void
+A4GL_debug_print_field_opts (FIELD * a);
 int chars_normal[6];
 int have_default_colors = 0;
+int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos) ;
 
 static void A4GL_clear_prompt (struct s_prompt *prmt);
 //void A4GL_LL_screen_update (void);
@@ -134,7 +147,7 @@ static int A4GL_init_colour_pairs (void)
   return 0;
 }
 
-static void A4GL_do_pause (void)
+void A4GL_do_pause (void)
 {
   WINDOW *x;
   int w;
@@ -378,7 +391,7 @@ A4GL_debug("CURSES : refresh");
 int
 A4GL_LL_colour_code (int a)
 {
-  int z, b;
+  int z;
   static int ismono=-1;
   static int isclassic=-1;
   z = 1;
@@ -440,7 +453,7 @@ void
 A4GL_LL_error_box (char *str, int attr)
 {
   int a, pos;
-  int nattr;
+  //int nattr;
   WINDOW *x;
 
   A4GL_chkwin ();
@@ -1068,7 +1081,7 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
 int
 A4GL_LL_set_new_page (void *field, int n)
 {
-  A4GL_form_set_new_page (field, n);
+  return A4GL_form_set_new_page (field, n);
 }
 
 
@@ -1347,7 +1360,7 @@ A4GL_LL_set_form_page (void *form, int page)
 int
 A4GL_LL_form_page (void *form)
 {
-  A4GL_form_form_page (form);
+  return A4GL_form_form_page (form);
 }
 
 
@@ -1564,7 +1577,7 @@ A4GL_LL_dump_screen (int n)
 int
 A4GL_LL_set_field_status (void *f, int stat)
 {
-  A4GL_form_set_field_status (f, stat);
+  return A4GL_form_set_field_status (f, stat);
 }
 
 
@@ -1776,7 +1789,7 @@ int rblock;
       			prompt->mode = 2;
       			A4GL_form_unpost_form (prompt->f);
       			A4GL_clear_prompt (prompt);
-			return rblock;
+			return 0;
 		}
 	}
 
@@ -2022,8 +2035,7 @@ A4GL_LL_scale_form (void *vf, int *y, int *x)
   A4GL_debug ("y=%d x=%x", y, x);
 }
 
-int
-A4GL_LL_get_field_width_dynamic (void *f)
+int A4GL_LL_get_field_width_dynamic (void *f)
 {
   int x, y, a;
   A4GL_form_dynamic_field_info (f, &y, &x, &a);
@@ -2033,12 +2045,12 @@ A4GL_LL_get_field_width_dynamic (void *f)
 int
 A4GL_LL_get_field_width (void *f)
 {
-  int x, y, a;
+  //int x, y, a;
 	int w;
   struct s_form_dets *formdets;
   struct s_scr_field *fprop;
-  fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
-  formdets = A4GL_get_curr_form (0); 
+  fprop = (struct s_scr_field *) (A4GL_LL_get_field_userptr (f));
+  formdets = (struct s_form_dets *)A4GL_get_curr_form (0); 
   if (formdets==0||fprop==0) {
 	return A4GL_LL_get_field_width_dynamic(f);
   }
@@ -2093,8 +2105,8 @@ A4GL_debug_print_field_opts (FIELD * a)
   A4GL_debug ("Field %p attribs= %s:", a, str);
 }
 
-A4GLHLUI_initlib() {
-	
+int A4GLHLUI_initlib(void) {
+	return 0;
 }
 
 
@@ -2105,8 +2117,9 @@ return 0;
 }
 
 
-A4GL_LL_open_gui_form (char *name_orig, int absolute, int nat, char *like, int disable, void *handler_e, void *phandler_c) {
+int A4GL_LL_open_gui_form (char *name_orig, int absolute, int nat, char *like, int disable, void *handler_e, void *phandler_c) {
 // Not in TUI mode you don't....
+return 0;
 }
 
 
@@ -2149,7 +2162,7 @@ return ;
 */
 int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos) {
 	static char rbuff[1024];
-	static char rbuff2[1024];
+	//static char rbuff2[1024];
 	FIELD *buff[4];
 	PANEL *cwin;
 	WINDOW *drwin;
@@ -2250,7 +2263,7 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
 
 	A4GL_debug("Unpost and delete...");
         A4GL_form_unpost_form(f);
-	delwin(derwin);
+	delwin(drwin);
 	A4GL_LL_screen_update();
 	A4GL_comments(0);
 	return a;

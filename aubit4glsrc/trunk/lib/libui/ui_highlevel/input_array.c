@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.5 2004-01-23 10:11:08 mikeaubury Exp $
+# $Id: input_array.c,v 1.6 2004-02-10 10:21:31 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.5 2004-01-23 10:11:08 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.6 2004-02-10 10:21:31 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -47,16 +47,24 @@ static char *module_id="$Id: input_array.c,v 1.5 2004-01-23 10:11:08 mikeaubury 
 
 
 #include "a4gl_lib_ui_int.h"
+#include "a4gl_API_ui_lib.h"
 #include "formdriver.h"
-#include "ui_highlevel.h"
+//#include "ui_highlevel.h"
 #include "input_array.h"
+#include "a4gl_API_lowlevel.h"
+#include "hl_proto.h"
 
 #include <ctype.h>
 
+int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
+int A4GL_conversion_ok(int);
+
 //void A4GL_set_field_attr_with_attr (void * field, int attr, int cmd_type);
 static void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
-void A4GL_set_curr_infield (long a);
-void debug_print_flags (void *sv, char *txt);
+//void A4GL_set_curr_infield (long a);
+//void debug_print_flags (void *sv, char *txt);
 int A4GL_get_attr_from_string (char *s);
 
 #define CONTROL_STACK_LENGTH 10
@@ -86,7 +94,7 @@ struct s_movement
                     Functions prototypes
 =====================================================================
 */
-int A4GL_field_name_match (void *f, char *s);
+//int A4GL_field_name_match (void *f, char *s);
 
 static void init_arr_line (struct s_inp_arr *sio, int n);
 static int process_control_stack (struct s_inp_arr *arr,struct aclfgl_event_list *evt);
@@ -99,7 +107,7 @@ static void A4GL_newMovement (struct s_inp_arr *arr, int scr_line,
 			      int arr_line, int attrib);
 static void A4GL_init_control_stack (struct s_inp_arr *sio, int malloc_data);
 
-static int A4GL_set_fields_inp_arr (void *vsio, int n);
+//static int A4GL_set_fields_inp_arr (void *vsio, int n);
 /*
 =====================================================================
                     Functions definitions
@@ -197,8 +205,8 @@ insert_line_in_array (struct s_inp_arr *inpa)
   int a;
   char *src_ptr;
   char *dest_ptr;
-  int topline;
-  int scr_line;
+  //int topline;
+  //int scr_line;
 
   A4GL_debug ("insert_line_in_array no_arr=%d arr_size=%d arr_line=%d",
 	      inpa->no_arr, inpa->arr_size, inpa->arr_line);
@@ -3319,7 +3327,7 @@ A4GL_set_field_attr_with_attr_already_determined (void *field, int attr,
 						  int cmd_type)
 {
   int r;
-  int nattr;
+  //int nattr;
   struct struct_scr_field *f;
   f = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (field));
 

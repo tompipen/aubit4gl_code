@@ -14,7 +14,6 @@ void A4GL_screen_update(void) ;
 int A4GL_colour_code(int c) ;
 void A4GL_initialize_screen_mode(void) ;
 void A4GL_switch_to_scr_mode(void) ;
-void A4GL_error_box(char *str,int attr) ;
 void *A4GL_display_form(void *f,int attr) ;
 void A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y, int type) ;
 void A4GL_clr_menu_disp (ACL_Menu * menu) ;

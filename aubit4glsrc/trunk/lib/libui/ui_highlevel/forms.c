@@ -1,9 +1,11 @@
-static char *module_id="$Id: forms.c,v 1.8 2004-01-25 13:00:23 mikeaubury Exp $";
+static char *module_id="$Id: forms.c,v 1.9 2004-02-10 10:21:31 mikeaubury Exp $";
 
 #include "forms.h"
+#include "hl_proto.h"
 #include "a4gl_API_ui_lib.h"
 #include "a4gl_API_lowlevel.h"
 
+/*
 void *A4GL_create_window (char *name, int x, int y, int w, int h,
 			  int iswindow,
 			  int form_line,
@@ -12,15 +14,14 @@ void *A4GL_create_window (char *name, int x, int y, int w, int h,
 			  int menu_line,
 			  int border, int comment_line, int message_line,
 			  int attrib);
-
+*/
 
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_API_ui.h"
-#include "forms.h"
-int A4GL_decode_line_ib (int l);
-void A4GL_dump_winstack (void);
-void * A4GL_window_on_top (void);
-void * A4GL_window_on_top_ign_menu (void);
+//int A4GL_decode_line_ib (int l);
+//void A4GL_dump_winstack (void);
+//void * A4GL_window_on_top (void);
+//void * A4GL_window_on_top_ign_menu (void);
 
 #define MAXWIN 200
 #define MAXPOINTERS 2000
@@ -169,7 +170,7 @@ UILIB_A4GL_cr_window_form (char *namet,
 int
 UILIB_A4GL_open_form (char *name)
 {
-  int w, h;
+  //int w, h;
   char *s;
   char buff[256];
   struct s_form_dets *form;
@@ -243,7 +244,7 @@ UILIB_A4GL_disp_form (char *name, int attr)
 {
   struct s_form_dets *f;
   void *w;
-  char buff[80];
+  //char buff[80];
   A4GL_chkwin ();
   A4GL_debug (" IN UILIB_A4GL_disp_form  %d\n", attr);
   //attr = A4GL_decode_aubit_attr (attr, 'w');
@@ -1142,7 +1143,7 @@ A4GL_find_form_for_win (void *w)
 int
 UILIB_A4GL_current_window (char *win_name)
 {
-  int a = 0;
+  //int a = 0;
   void *w;
 A4GL_debug("Current window : %s",win_name);
   A4GL_chkwin ();
@@ -1178,7 +1179,7 @@ LIBEXPORT void
 UILIB_A4GL_hide_window (char *winname)
 {
   void *w;
-  int a=0;
+  //int a=0;
   A4GL_chkwin();
   w = A4GL_find_pointer (winname, WINCODE);
 
@@ -1480,6 +1481,7 @@ void * A4GL_window_on_top_ign_menu (void)
 	continue;
       return win_stack[win_stack_cnt - 1]->win;
     }
+return 0;
 }
 
 
@@ -1490,7 +1492,7 @@ A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
   char buff2[8024];
   int a;
   int b;
-  int errno;
+  //int errno;
   int width;
   b = A4GL_get_field_width (field);
   strcpy (buff2, buff);
@@ -1761,7 +1763,7 @@ for (a=0;a<MAXWIN;a++) {
 
 
 
-A4GL_add_window(int x,int y,int w,int h,char *name,void *fd, void *win) {
+void* A4GL_add_window(int x,int y,int w,int h,char *name,void *fd, void *win) {
 int a;
 void *ww=0;
 

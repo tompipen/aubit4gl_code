@@ -1,76 +1,28 @@
-#include "ui_highlevel.h"
 
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_lib_ui_int.h"
 #include "a4gl_API_lowlevel.h"
 #include "a4gl_API_ui_lib.h"
-#include "a4gl_API_ui.h"
+#include "hl_proto.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.9 2004-02-09 08:07:52 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.10 2004-02-10 10:21:31 mikeaubury Exp $";
 
-void *UILIB_A4GL_get_curr_form (int n);
+//void *UILIB_A4GL_get_curr_form (int n);
 
 int initialized_screen_mode = 0;
 #include "formdriver.h"
-// GTK Stuff
-//UILIB_A4GL_clr_form_fields
-//UILIB_A4GL_disp_form_fields_ap
-//UILIB_A4GL_endis_fields_ap
-//UILIB_A4GL_fgl_fieldnametoid
-//UILIB_A4GL_get_curr_win_gtk      <-------
-//UILIB_A4GL_make_pixmap_gw <-----------------
-//UILIB_A4GL_init_color <-----------------
-//UILIB_A4GL_open_gui_form_internal
-//UILIB_A4GL_widget_name_match
-//UILIB_aclfgl_set_window_title
-//UILIB_aclfgl_a4gl_run_gui
 
+//void chk_for_picture (void *f, char *buff);
+//void A4GL_default_attributes (void *f, int dtype);
 
+//int A4GL_field_opts_off (void *v, int n);
+//int A4GL_field_opts_on (void *v, int n);
 
-// here...
-//UILIB_A4GL_fgl_fieldtouched_input_ap
-//UILIB_A4GL_fgl_fieldtouched_input_array_ap
-//UILIB_A4GL_fgl_getfldbuf_ap
-//UILIB_A4GL_fgl_getfldbuf_ia_ap
-//UILIB_A4GL_fgl_infield_ap
-//UILIB_A4GL_fgl_infield_ia_ap
-//UILIB_A4GL_hide_window
-//UILIB_A4GL_gen_field_chars_ap
+int A4GL_LL_fieldnametoid(char* f,char* s,int n);
+void *A4GL_get_currwin (void);
 
-
-
-
-
-
-
-
-
-
-
-
-
-//UILIB_A4GL_movewin
-//UILIB_A4GL_push_constr
-//UILIB_A4GL_set_fields
-//UILIB_aclfgli_pr_message_internal
-//UILIB_A4GL_show_window
-//UILIB_aclfgl_aclfgl_dump_screen
-
-
-
-
-
-
-//UILIB_aclfgl_a4gl_get_page
-
-//UILIB_aclfgl_set_page
-
-void chk_for_picture (void *f, char *buff);
-void A4GL_default_attributes (void *f, int dtype);
-
-int A4GL_field_opts_off (void *v, int n);
-int A4GL_field_opts_on (void *v, int n);
-
+void A4GL_clear_menu (ACL_Menu * menu);
+int aclfgl_a4gl_show_help(int n);
 
 int
 UILIB_aclfgl_a4gl_get_page (int n)
@@ -847,14 +799,14 @@ void
 UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
 {
   char p[2048];
-  long w;
+  //long w;
   int ml;
   int width;
   //char *s;
   //char *ptr_pop;
   void *cw;
   char buff[512];
-  static void *mw;
+  //static void *mw;
   A4GL_chkwin ();
   A4GL_debug ("In message...");
   cw = (void *) A4GL_get_currwin ();
@@ -1075,8 +1027,7 @@ A4GL_default_attributes (void *f, int dtype)
 }
 
 
-void
-A4GL_clear_menu (ACL_Menu * menu)
+void A4GL_clear_menu (ACL_Menu * menu)
 {
   void *w;
 
@@ -1114,8 +1065,7 @@ A4GL_field_opts_on (void *v, int n)
 {
   //A4GL_debug ("LL_field_opts_on");
 
-  if (A4GL_LL_field_opts (v) & n)
-    return;
+  if (A4GL_LL_field_opts (v) & n) return 1;
   A4GL_LL_set_field_opts (v, A4GL_LL_field_opts (v) + n);
   return 1;
 }
@@ -1323,7 +1273,8 @@ return 0;
 int
  UILIB_A4GL_endis_fields_ap (int en_dis, va_list * ap)
 {
- A4GL_LL_endis_fields_ap(en_dis,ap);
+ return A4GL_LL_endis_fields_ap(en_dis,ap);
+
 }
 
 
@@ -1350,7 +1301,8 @@ void UILIB_A4GL_init_color(int n,int r,int g,int b) { }
 
 int UILIB_A4GL_disp_form_fields_ap(int n,int attr,char* formname,va_list* ap) {
 	A4GL_chkwin();
-	A4GL_LL_disp_form_field_ap(n,attr,formname,ap);
+	return A4GL_LL_disp_form_fields_ap(n,attr,formname,ap);
+
 }
 
 
@@ -1370,11 +1322,12 @@ int UILIB_A4GL_widget_name_match(void* w,char* name) {
 
 int UILIB_aclfgl_a4gl_run_gui(int nargs) {
 	while (1) A4GL_LL_screen_update();
+	return 1;
 }
 
 
 int UILIB_A4GL_fgl_fieldnametoid(char* f,char* s,int n) {
-	A4GL_LL_fieldnametoid(f,s,n);
+	return A4GL_LL_fieldnametoid(f,s,n);
 }
 
 
