@@ -458,13 +458,11 @@ NAMED  OPEN_SQUARE expr COMMA expr CLOSE_SQUARE
 op_order_by_clause_read: {strcpy($<str>$,"");} | order_by_clause_read;
 
 order_by_clause_read:
-	ORDER_BY {
-		ordbycnt=0;
-	} sort_specification_list
-	{
-	sprintf($<str>$,"ORDER BY %s",$<str>4);}
+	ORDER_BY { ordbycnt=0; } sort_specification_list {
+	printf("speclist : %s ",$<str>3);
+	sprintf($<str>$,"ORDER BY %s",$<str>3);}
 	| ORDER_EXTERNAL_BY sort_specification_list
-	{sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+	{sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
 	;
 
 
@@ -497,7 +495,7 @@ order_by_clause:
 		ordbycnt=0;
 	}
 		sort_specification_list {
-		sprintf($<str>$,"ORDER BY %s",$<str>4);
+		sprintf($<str>$,"ORDER BY %s",$<str>3);
 		
 	}
 	;
