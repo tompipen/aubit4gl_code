@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.2 2002-06-29 10:49:36 afalout Exp $
+# $Id: dump.c,v 1.3 2002-07-21 06:41:48 afalout Exp $
 #*/
 
 /**
@@ -475,6 +475,16 @@ decode_expr (struct expr *e)
 	case EXPRTYPE_SIMPLE: decode_simple(e->expr_u.sexpr);break;
 	case EXPRTYPE_LIST: decode_list(e->expr_u.lexpr);break;
 	case EXPRTYPE_FCALL: decode_fcall(e->expr_u.fcall);break;
+
+    /*
+    dump.c:478: warning: enumeration value `EXPRTYPE_NULL' not handled in switch
+	dump.c:478: warning: enumeration value `EXPRTYPE_AGG' not handled in switch
+    */
+
+   	case EXPRTYPE_NULL: break;
+	case EXPRTYPE_AGG: break;
+
+
   }
 
 }

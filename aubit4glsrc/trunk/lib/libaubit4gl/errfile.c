@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.7 2002-06-25 03:22:30 afalout Exp $
+# $Id: errfile.c,v 1.8 2002-07-21 06:41:48 afalout Exp $
 #
 */
 
@@ -82,12 +82,11 @@ int errline;
 #ifdef OLD_INCL
 	FILE *		mja_fopen		(char *name, char *mode);
 	FILE * 		write_errfile	(FILE *f,char *fname,long as,int lineno);
+	void 		write_cont		(FILE *f);
 #endif
 
 void 		find_nl			(FILE *f,long fp,long *s,long *e);
 void 		prerrmark		(FILE *f,int a);
-void 		write_cont		(FILE *f);
-
 
 /*
 =====================================================================
@@ -123,7 +122,9 @@ write_errfile(FILE *f,char *fname,long as,int lineno)
 		as-=2;
 		find_nl(f,as,&s2,&e);
   }
-  debug("s2=%d e=%d",s2,e);
+  #ifdef DEBUG
+	  debug("s2=%d e=%d",s2,e);
+  #endif
   s=e+1;
   errline=lineno;
   rewind(f);

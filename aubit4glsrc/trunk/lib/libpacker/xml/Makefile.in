@@ -1,4 +1,3 @@
-/*
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
@@ -24,110 +23,47 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: output.c,v 1.4 2002-07-21 06:41:48 afalout Exp $
-#*/
+# $Id: Makefile.in,v 1.1 2002-07-21 06:41:49 afalout Exp $
+#
 
-/**
- * @file
- *
- *
- *
- *
- * @todo Doxygen comments to add to functions
- */
+ROOT        =../../..
+LIBROOT     =../..
 
-/*
-=====================================================================
-		                    Includes
-=====================================================================
-*/
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
 
+## ==================================================================
+##                    		Settings
+## ==================================================================
 
-#ifdef OLD_INCL
+CMODS   =pack_xml.c
+ALL 	=libPACKER_XML${SO_EXT}
 
-	#include "report.h"
-	#include <stdio.h>
+## ==================================================================
+##                          Targets
+## ==================================================================
 
-#else
+ALL: ${ALL}
 
-    #include "a4gl_ace_int.h"
+libPACKER_XML${SO_EXT}: ${CMODS}
+	${CC} ${CFLAGS} ${SO_LDFLAGS} -o $@ $^
+	${CP} $@ ${LIBROOT}
 
-#endif
+## ==================================================================
+##                          Clean
+## ==================================================================
 
+clean:
+	${RM} *${SO_EXT} *.bak *.o
+## ==================================================================
+##                         Other Targets
+## ==================================================================
 
-/*
-=====================================================================
-                    Variables definitions
-=====================================================================
-*/
+splint: lclint
+lclint: $(CMODS)
+	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
+	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
+	@echo "see ${LCLINTLOG} for results"
 
-extern struct report this_report;
-extern char *outputfilename;
+#=============================== EOF ================================
 
-FILE *fxx;
-
-/*
-=====================================================================
-                    Functions definitions
-=====================================================================
-*/
-
-
-/**
- *
- * @todo Describe function
- */
-void
-write_report (void)
-{
-  char fname[132];
-  char fname2[132];
-  char base[132];
-  char ext[132];
-
-  int a;
-  /* XDR xdrp; */
-  struct report *ptr;
-
-  ptr = &this_report;
-
-  strcpy(fname, outputfilename);
-
-  /* ace_bname(outputfilename, ext, base); */
-  bname(outputfilename, ext, base);
-
-  if (ext[0] == 0)
-  {
-          strcat(fname, ".aarc");
-  }
-
-  strcpy(fname2, outputfilename);
-  strcat(fname2, ".c");
-
-
-  a = write_data_to_file ("report", ptr, fname);
-
-
-
-  //fxx = fopen(fname,"wb");
-
-  //if (fxx == 0)
-  //{
-    //printf("Couldnt open file for write (%s)\n", fname);
-  //}
-  //xdrstdio_create(&xdrp, fxx, XDR_ENCODE);
-  //a=xdr_report(&xdrp,ptr);
-
-
-  if (!a)
-        {
-           debug("*** Write FAILED ***\n");
-                printf("Unable to write data\n");
-  }
-
-  //xdr_destroy(&xdrp);
-  //fclose(fxx);
-}
-
-
-/* ================================== EOF =========================== */

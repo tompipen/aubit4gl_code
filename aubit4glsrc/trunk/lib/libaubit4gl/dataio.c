@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dataio.c,v 1.1 2002-07-11 09:22:04 mikeaubury Exp $
+# $Id: dataio.c,v 1.2 2002-07-21 06:41:48 afalout Exp $
 #
 */
 
 /**
  * @file
- * This handles just two functions 
+ * This handles just two functions
  *
  * 1) Reading a file
  * 2) Writing a file
@@ -42,12 +42,20 @@
  *
  * At the top level we have the functions in the file
  *  These call the relevant 'read' functions from a shared library
- *  These then call (via API_packer) the actual routines to do the reading and writing
- *  
+ *  These then call (via API_packer) the actual routines to do the reading and 
+ *  writing
+ *
  *
  *
  * @todo Doxygen comments to add to functions
  */
+
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
 
 #ifdef OLD_INCL
 
@@ -75,18 +83,42 @@
 
 #endif
 
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 static void *libptr=0;
-static int (*func)();
+static int (*func)();/*FIXME-warning: function declaration isn't a prototype */
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
 
-int read_data_from_file(char *datatype, void *ptr, char *filename) ;
-int write_data_to_file(char *datatype, void *ptr, char *filename) ;
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
-
-
-int read_data_from_file(char *datatype, void *ptr, char *filename) {
+/**
+ *
+ *
+ * @param
+ * @param
+ * @param
+ */
+int
+read_data_from_file(char *datatype, void *ptr, char *filename)
+{
 char buff[256];
-debug("Read_data_from_file : %s %p %s",datatype,ptr,filename);
+	#ifdef DEBUG
+		debug("Read_data_from_file : %s %p %s",datatype,ptr,filename);
+    #endif
 	libptr=(void *)dl_openlibrary("DATA",datatype);
 	if (libptr==0) {
 		exitwith("Unable to open library");
@@ -99,12 +131,21 @@ debug("Read_data_from_file : %s %p %s",datatype,ptr,filename);
 }
 
 
-
-int write_data_to_file(char *datatype, void *ptr, char *filename) {
+/**
+ *
+ *
+ * @param
+ * @param
+ * @param
+ */
+int
+write_data_to_file(char *datatype, void *ptr, char *filename)
+{
 char buff[256];
-
-debug("Write data to file : datatype=%s ptr=%p file=%s\n",datatype,ptr,filename);
-
+	#ifdef DEBUG
+		debug("Write data to file : datatype=%s ptr=%p file=%s\n",
+			datatype,ptr,filename);
+    #endif
 	libptr=(void *)dl_openlibrary("DATA",datatype);
 	if (libptr==0) {
 		exitwith("Unable to open library");
@@ -113,9 +154,15 @@ debug("Write data to file : datatype=%s ptr=%p file=%s\n",datatype,ptr,filename)
 
 	sprintf(buff,"write_%s",datatype);
 
-	debug("Looking for function : %s",buff);
+	#ifdef DEBUG
+		debug("Looking for function : %s",buff);
+    #endif
 
 	func=find_func(libptr,buff);
-	debug("Calling %s(ptr=%p,filename=%s)",buff,ptr,filename);
+	#ifdef DEBUG
+		debug("Calling %s(ptr=%p,filename=%s)",buff,ptr,filename);
+    #endif
 	return func(ptr,filename);
 }
+
+/* ================================ EOF =================================== */

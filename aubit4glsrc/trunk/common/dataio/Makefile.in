@@ -23,126 +23,115 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.8 2002-07-21 06:41:48 afalout Exp $
+# $Id: Makefile.in,v 1.1 2002-07-21 06:41:48 afalout Exp $
 #
 
 ROOT        =../..
 LIBROOT     =${ROOT}/lib
 
+
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
 
 ## ==================================================================
-##                    Source code
+##                    		Settings
 ## ==================================================================
 
-CMODS_XDR   =report_xdr.c
-CMODS       =${CMODS_XDR} y.tab.c main.c data.c output.c tables.c
-CMODS_DECOMP=${CMODS_XDR} dump.c
-#Mike's holding dump_4gl.c back for now - not in CVS
-CMODS_4GL    =${CMODS_XDR} dump_4gl.c
+#we don't want -Wall in CFLAGS when compiling rpcgen generated code because it would
+#give us bunch of warnings about unused varibles, that we cannot fix:
+CFLAGS_RPCGEN	=$(CFLAGS:%-Wall=%)
+SHARED			=-shared
 
-REPORT_H    =report.h
+RPC		=libXDRPACKER_struct_form${SO_EXT} libXDRPACKER_menu_list${SO_EXT} libXDRPACKER_report${SO_EXT}
+XGEN	=libDATA_struct_form${SO_EXT} libDATA_menu_list${SO_EXT} libDATA_report${SO_EXT}
+ANY		=pack_any${SO_EXT}
 
-OBJS_XDR    =${CMODS_XDR:.c=.o}
-OBJS		=${CMODS:.c=.o}
-OBJS_DECOMP =${CMODS_DECOMP:.c=.o}
-OBJS_4GL    =${CMODS_4GL:.c=.o}
+ALL 	=${XGEN} ${ANY}
+
+#we don't need rpclib to do any of this, do we?
+#ifdef COMSPEC
+#	ifneq "@HAVE_RPCLIB@" "0"
+#		ALL			+=xxxtodoxxx
+#    endif
+#else
+#	ifneq "@HAVE_RPCLIB@" "0"
+#		ALL			+=${RPC}
+#    endif
+#endif
+
+#...but we do need rpcgen:
+ifeq "${USE_RPCGEN}" "0"
+	#FIXME: update this:
+	RPCGEN      =${CP} ${ROOT}/tools/cygwin/form_x_xdr.c ${ROOT}/tools/cygwin/form_x.h .
+	#ALL			+=${RPC}
+else
+	RPCGEN 		=@RPCGEN@
+	ALL			+=${RPC}
+endif
+
+XGENEXE    		=${ROOT}/compilers/xgen/xgen
 
 ## ==================================================================
-##                    Settings
-## ==================================================================
-
-4GLPC       =${SH} ${ROOT}/bin/4glpc
-
-CFLAGS      +=-I.
-
-#we don't want -Wall in CFLAGS when compiling rpcgen created c code because it 
-#would give us bunch of warnings about unused varibles, that we cannot fix
-CFLAGS_REPORT_XDR_C		=$(CFLAGS:%-Wall=%)
-
-ALL 		=aace adecompile
-#aace_4gl
-#generate_aace
-
-## ==================================================================
-##                    Targets
+##                          Targets
 ## ==================================================================
 
 all: ${ALL}
-	@echo "Default targets (${ALL}) successfully compiled."
+	@echo "Default targets (${ALL}) built successfully."
 
-aace: ${OBJS}
-	${4GLPC} $(CFLAGS) $^ -o $@
-	${CP} $@ ${ROOT}/bin
+libDATA_struct_form${SO_EXT}: 		form_x.xo.c
+	${CC} $(CFLAGS) ${SHARED} -o $@ $^ form_x.xi.c form_x.xio.c
+	${CP} $@ ${LIBROOT}
 
-adecompile: ${REPORT_H} ${OBJS_DECOMP}
-	${CC} $(CFLAGS) ${OBJS_DECOMP} -o $@
-	${CP} $@ ${ROOT}/bin
+libDATA_menu_list${SO_EXT}: 		menu_x.xo.c
+	${CC} $(CFLAGS) ${SHARED} -o $@ $^ menu_x.xi.c menu_x.xio.c
+	${CP} $@ ${LIBROOT}
 
-#Cannot compile because dump_4gl.c is missing from CVS
-aace_4gl : ${REPORT_H} ${OBJS_4GL}
-	${4GLPC} $(CFLAGS) ${OBJS_4GL} -o $@
+libDATA_report${SO_EXT}: 			report.xo.c
+	${CC} $(CFLAGS) ${SHARED} -o $@ $^ report.xi.c report.xio.c
+	${CP} $@ ${LIBROOT}
 
+libXDRPACKER_struct_form${SO_EXT}:	form_x_xdr.c
+	${CC} $(CFLAGS_RPCGEN) ${SHARED} -o $@ $^
+	${CP} $@ ${LIBROOT}
 
-## ==================================================================
-##                    Sub-Targets
-## ==================================================================
+libXDRPACKER_menu_list${SO_EXT}: 	menu_x_xdr.c
+	${CC} $(CFLAGS_RPCGEN) ${SHARED} -o $@ $^
+	${CP} $@ ${LIBROOT}
 
-y.tab.c: ace.yacc
-	${YACC} -v $^
+libXDRPACKER_report${SO_EXT}:  		report_xdr.c
+	${CC} $(CFLAGS_RPCGEN) ${SHARED} -o $@ $^
+	${CP} $@ ${LIBROOT}
 
-lex.yy.c: ace.lex
-	${LEX} -i $^
-
-y.tab.o: y.tab.c lex.yy.c ${REPORT_H}
-	${CC} $(CFLAGS) -c y.tab.c -o $@
-
-data.o: ${REPORT_H} data.c
-	${CC} $(CFLAGS) -c data.c -o $@
-
-report_xdr.o: report_xdr.c
-	${CC} ${CFLAGS_REPORT_XDR_C} -c -o $@ $^
-
-
-${REPORT_H} report_xdr.c: report.x
-	@RPCGEN@ $^
-
+#FIXME: needs renaming, or is it obsolete?
+pack_any${SO_EXT}:
+	${CC} $(CFLAGS) ${SHARED} -o $@ menu_x.xio.c form_x.xio.c report.xio.c
+#no copy to lib here?
 
 ## ==================================================================
-##                    Testing
+##                          Sub-targets
 ## ==================================================================
 
-#test that depends on database name
-generate_aace : generate.4gl
-	${4GLPC} $^ -o $@
-	./$@ mips_3_3 systables
+form_x_xdr.c menu_x_xdr.c report_xdr.c:
+	${RPCGEN} form_x.x
+	${RPCGEN} menu_x.x
+	${RPCGEN} report.x
 
+form_x.xo.c menu_x.xo.c report.xo.c:
+#"xgen form_x.x" will create:
+#form_x.x.h   form_x.xio.c  form_x.xs.h form_x.xi.c  form_x.xo.c
+	${XGENEXE} form_x.x struct_form
+	${XGENEXE} menu_x.x menu_list
+	${XGENEXE} report.x report
 
-test: aace_4gl aace
-	aace m1.ace
-	touch t1.4gl t1.err
-	${RM} t1.4gl t1.err
-	aace_4gl m1.aarc > t1.4gl
-	4glc t1.4gl
-	${4GLPC} -g t1.c -o t1
-
-
-test2: generate_aace aace_4gl
-	./generate_aace mips_3_3 systables
-	./aace systables.aace
-	./aace_4gl systables.aarc > systables.4gl
-	4glc systables.4gl
-	${4GLPC} -g systables.c -o systables
+${XGENEXE}:
+	${MAKE} -C ${ROOT}/compilers/xgen
 
 ## ==================================================================
-##                    Clean
+##                          Clean
 ## ==================================================================
 
 clean:
-	${RM} *.bak lex.yy.c y.tab.c report_xdr.c ${REPORT_H} y.output *.o \
-	*.a *.so *.err aace adecompile debug.out
-
+	${RM} *.c *${SO_EXT} *.h *.bak
 
 ## ==================================================================
 ##                         Other Targets
@@ -155,5 +144,4 @@ lclint: $(CMODS)
 	@echo "see ${LCLINTLOG} for results"
 
 #=============================== EOF ================================
-
 

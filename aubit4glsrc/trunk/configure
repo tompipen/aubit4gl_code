@@ -12617,7 +12617,7 @@ LIB_PREFIX=$prefix/aubit4gl/lib
 
 if test "$AUBIT_SOURCE" = "1" ; then
 
-	ac_config_files="$ac_config_files Makefile etc/aubitrc etc/aubit-rpm.spec incl/Makefile-common compilers/4glc/Makefile compilers/4glc/rules/Makefile compilers/fcompile/Makefile compilers/helpcompile/Makefile compilers/menus/Makefile compilers/ace/Makefile lib/libaubit4gl/Makefile lib/libform/form_xdr/Makefile lib/libform/noform/Makefile lib/libmenu/menu_xdr/Makefile lib/libmenu/menu_nomenu/Makefile lib/libmsg/msg_native/Makefile lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile lib/libpdf/Makefile lib/libui/ui_console/Makefile lib/libui/ui_curses/Makefile lib/libui/ui_gtk/Makefile lib/resource/Makefile lib/libsql/nosql/Makefile lib/libsql/odbc/Makefile lib/libsql/esqlc/Makefile lib/librpc/no_rpc/Makefile lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile lib/extra_libs/file/Makefile lib/extra_libs/string/Makefile lib/Makefile tools/adbaccess/Makefile tools/loadmap/Makefile tools/adbload/Makefile tools/html/Makefile tools/ide/Makefile tools/jabber/Makefile tools/odbctest/Makefile tools/test/gui/Makefile tools/test/regression/Makefile tools/test/lang/Makefile tools/test/db/Makefile tools/test/Makefile docs/doxy/Doxyfile"
+	ac_config_files="$ac_config_files Makefile etc/aubitrc etc/aubit-rpm.spec incl/Makefile-common common/dataio/Makefile compilers/4glc/Makefile compilers/4glc/rules/Makefile compilers/fcompile/Makefile compilers/helpcompile/Makefile compilers/menus/Makefile compilers/ace/Makefile lib/libaubit4gl/Makefile lib/libform/form_xdr/Makefile lib/libform/noform/Makefile lib/libmenu/menu_xdr/Makefile lib/libmenu/menu_nomenu/Makefile lib/libmsg/msg_native/Makefile lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile lib/libpdf/Makefile lib/libui/ui_console/Makefile lib/libui/ui_curses/Makefile lib/libui/ui_gtk/Makefile lib/resource/Makefile lib/libsql/nosql/Makefile lib/libsql/odbc/Makefile lib/libsql/esqlc/Makefile lib/librpc/no_rpc/Makefile lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile lib/extra_libs/file/Makefile lib/extra_libs/string/Makefile lib/libpacker/packed/Makefile lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile lib/libpacker/xml/Makefile lib/Makefile tools/adbaccess/Makefile tools/loadmap/Makefile tools/adbload/Makefile tools/html/Makefile tools/ide/Makefile tools/jabber/Makefile tools/odbctest/Makefile tools/test/gui/Makefile tools/test/regression/Makefile tools/test/lang/Makefile tools/test/db/Makefile tools/test/Makefile docs/doxy/Doxyfile"
 
 else
 
@@ -12935,6 +12935,7 @@ do
   "etc/aubitrc" ) CONFIG_FILES="$CONFIG_FILES etc/aubitrc" ;;
   "etc/aubit-rpm.spec" ) CONFIG_FILES="$CONFIG_FILES etc/aubit-rpm.spec" ;;
   "incl/Makefile-common" ) CONFIG_FILES="$CONFIG_FILES incl/Makefile-common" ;;
+  "common/dataio/Makefile" ) CONFIG_FILES="$CONFIG_FILES common/dataio/Makefile" ;;
   "compilers/4glc/Makefile" ) CONFIG_FILES="$CONFIG_FILES compilers/4glc/Makefile" ;;
   "compilers/4glc/rules/Makefile" ) CONFIG_FILES="$CONFIG_FILES compilers/4glc/rules/Makefile" ;;
   "compilers/fcompile/Makefile" ) CONFIG_FILES="$CONFIG_FILES compilers/fcompile/Makefile" ;;
@@ -12962,6 +12963,10 @@ do
   "lib/librpc/xml_rpc/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/librpc/xml_rpc/Makefile" ;;
   "lib/extra_libs/file/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/extra_libs/file/Makefile" ;;
   "lib/extra_libs/string/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/extra_libs/string/Makefile" ;;
+  "lib/libpacker/packed/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libpacker/packed/Makefile" ;;
+  "lib/libpacker/perl/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libpacker/perl/Makefile" ;;
+  "lib/libpacker/xdr/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libpacker/xdr/Makefile" ;;
+  "lib/libpacker/xml/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libpacker/xml/Makefile" ;;
   "lib/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/Makefile" ;;
   "tools/adbaccess/Makefile" ) CONFIG_FILES="$CONFIG_FILES tools/adbaccess/Makefile" ;;
   "tools/loadmap/Makefile" ) CONFIG_FILES="$CONFIG_FILES tools/loadmap/Makefile" ;;
@@ -12978,7 +12983,7 @@ do
   "docs/doxy/Doxyfile" ) CONFIG_FILES="$CONFIG_FILES docs/doxy/Doxyfile" ;;
   "etc/aubitrc-bin" ) CONFIG_FILES="$CONFIG_FILES etc/aubitrc-bin" ;;
   "incl/a4gl_incl_config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS incl/a4gl_incl_config.h" ;;
-  *) { { echo "$as_me:12981: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:12986: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -13338,7 +13343,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:13341: creating $ac_file" >&5
+    { echo "$as_me:13346: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -13356,7 +13361,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:13359: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:13364: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -13369,7 +13374,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:13372: error: cannot find input file: $f" >&5
+           { { echo "$as_me:13377: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -13430,7 +13435,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:13433: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:13438: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -13441,7 +13446,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:13444: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:13449: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -13454,7 +13459,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:13457: error: cannot find input file: $f" >&5
+           { { echo "$as_me:13462: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -13571,7 +13576,7 @@ cat >>$CONFIG_STATUS <<\EOF
   rm -f $tmp/in
   if test x"$ac_file" != x-; then
     if cmp -s $ac_file $tmp/config.h 2>/dev/null; then
-      { echo "$as_me:13574: $ac_file is unchanged" >&5
+      { echo "$as_me:13579: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \

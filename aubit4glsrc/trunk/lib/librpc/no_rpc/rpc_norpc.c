@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_norpc.c,v 1.1 2002-06-29 13:12:02 afalout Exp $
+# $Id: rpc_norpc.c,v 1.2 2002-07-21 06:41:49 afalout Exp $
 #
 */
 
@@ -48,7 +48,7 @@
 
 	#include <stdio.h>
 
-	/* FIXME: how come this two where not needed on ISTATION, but are on ARMADA : */
+	/* FIXME: how come this two where not needed on ISTATION, but is ARMADA:*/
 	#include <rpc/types.h>  	/* needed for xdr.h */
 	#include <rpc/xdr.h> 		/* defines XDR, etc... */
 
@@ -105,6 +105,9 @@ typedef struct menu_list menu_list;
 
 static void local_exitwith (char *s);
 bool_t xdr_menu_list(XDR * xdrs,menu_list * objp);
+bool_t xdr_struct_form(XDR *xdrs, struct_form *objp);
+
+
 /*
 =====================================================================
                     Functions definitions
@@ -159,9 +162,12 @@ xdrstdio_create(xdrs, file, op)
  * @todo Describe function
  */
 bool_t
+/*
 xdr_struct_form(xdrs, objp)
 	XDR *xdrs;
 	struct_form *objp;
+*/
+xdr_struct_form(XDR *xdrs, struct_form *objp)
 {
 	local_exitwith ("Could not xdr_struct_form - noRPC build");
 	return 0;

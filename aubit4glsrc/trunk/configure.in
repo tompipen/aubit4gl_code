@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.70 2002-06-29 13:11:49 afalout Exp $
+# $Id: configure.in,v 1.71 2002-07-21 06:41:40 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -2304,6 +2304,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 etc/aubitrc
                 etc/aubit-rpm.spec
                 incl/Makefile-common
+				common/dataio/Makefile
 				compilers/4glc/Makefile
                 compilers/4glc/rules/Makefile
                 compilers/fcompile/Makefile
@@ -2331,6 +2332,10 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 lib/librpc/xml_rpc/Makefile
 				lib/extra_libs/file/Makefile
 				lib/extra_libs/string/Makefile
+				lib/libpacker/packed/Makefile
+				lib/libpacker/perl/Makefile
+				lib/libpacker/xdr/Makefile
+				lib/libpacker/xml/Makefile
                 lib/Makefile
                 tools/adbaccess/Makefile
                 tools/loadmap/Makefile

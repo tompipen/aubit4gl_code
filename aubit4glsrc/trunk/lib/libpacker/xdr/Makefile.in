@@ -23,127 +23,51 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.8 2002-07-21 06:41:48 afalout Exp $
+# $Id: Makefile.in,v 1.1 2002-07-21 06:41:48 afalout Exp $
 #
 
-ROOT        =../..
-LIBROOT     =${ROOT}/lib
+ROOT        =../../..
+LIBROOT     =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
 
 ## ==================================================================
-##                    Source code
+##                    		Settings
 ## ==================================================================
 
-CMODS_XDR   =report_xdr.c
-CMODS       =${CMODS_XDR} y.tab.c main.c data.c output.c tables.c
-CMODS_DECOMP=${CMODS_XDR} dump.c
-#Mike's holding dump_4gl.c back for now - not in CVS
-CMODS_4GL    =${CMODS_XDR} dump_4gl.c
+DATAIODIR	=${ROOT}/common/dataio
+XDR_CMODS   =${DATAIODIR}/form_x_xdr.c ${DATAIODIR}/menu_x_xdr.c ${DATAIODIR}/report_xdr.c
+CMODS   	=pack_xdr.c ${XDR_CMODS}
+ALL 		=libPACKER_XDR${SO_EXT}
 
-REPORT_H    =report.h
-
-OBJS_XDR    =${CMODS_XDR:.c=.o}
-OBJS		=${CMODS:.c=.o}
-OBJS_DECOMP =${CMODS_DECOMP:.c=.o}
-OBJS_4GL    =${CMODS_4GL:.c=.o}
+#we don't want -Wall in CFLAGS when compiling rpcgen generated c code because
+#it would #give us bunch of warnings about unused varibles, that we cannot fix
+CFLAGS_RPCGEN	=$(CFLAGS:%-Wall=%)
 
 ## ==================================================================
-##                    Settings
+##                          Targets
 ## ==================================================================
 
-4GLPC       =${SH} ${ROOT}/bin/4glpc
+ALL: ${ALL}
 
-CFLAGS      +=-I.
+libPACKER_XDR${SO_EXT}: ${XDR_CMODS} pack_xdr.o
+	${CC} ${CFLAGS_RPCGEN} ${SO_LDFLAGS} $^ -o $@
+	${CP} $@ ${LIBROOT}
 
-#we don't want -Wall in CFLAGS when compiling rpcgen created c code because it 
-#would give us bunch of warnings about unused varibles, that we cannot fix
-CFLAGS_REPORT_XDR_C		=$(CFLAGS:%-Wall=%)
+${XDR_CMODS}:
+	${MAKE} -C ${ROOT}/common/dataio
 
-ALL 		=aace adecompile
-#aace_4gl
-#generate_aace
-
-## ==================================================================
-##                    Targets
-## ==================================================================
-
-all: ${ALL}
-	@echo "Default targets (${ALL}) successfully compiled."
-
-aace: ${OBJS}
-	${4GLPC} $(CFLAGS) $^ -o $@
-	${CP} $@ ${ROOT}/bin
-
-adecompile: ${REPORT_H} ${OBJS_DECOMP}
-	${CC} $(CFLAGS) ${OBJS_DECOMP} -o $@
-	${CP} $@ ${ROOT}/bin
-
-#Cannot compile because dump_4gl.c is missing from CVS
-aace_4gl : ${REPORT_H} ${OBJS_4GL}
-	${4GLPC} $(CFLAGS) ${OBJS_4GL} -o $@
-
+#only source we can use full CFLAGS on:
+pack_xdr.o: pack_xdr.c
+	${CC} ${CFLAGS} -c $^ -o $@
 
 ## ==================================================================
-##                    Sub-Targets
-## ==================================================================
-
-y.tab.c: ace.yacc
-	${YACC} -v $^
-
-lex.yy.c: ace.lex
-	${LEX} -i $^
-
-y.tab.o: y.tab.c lex.yy.c ${REPORT_H}
-	${CC} $(CFLAGS) -c y.tab.c -o $@
-
-data.o: ${REPORT_H} data.c
-	${CC} $(CFLAGS) -c data.c -o $@
-
-report_xdr.o: report_xdr.c
-	${CC} ${CFLAGS_REPORT_XDR_C} -c -o $@ $^
-
-
-${REPORT_H} report_xdr.c: report.x
-	@RPCGEN@ $^
-
-
-## ==================================================================
-##                    Testing
-## ==================================================================
-
-#test that depends on database name
-generate_aace : generate.4gl
-	${4GLPC} $^ -o $@
-	./$@ mips_3_3 systables
-
-
-test: aace_4gl aace
-	aace m1.ace
-	touch t1.4gl t1.err
-	${RM} t1.4gl t1.err
-	aace_4gl m1.aarc > t1.4gl
-	4glc t1.4gl
-	${4GLPC} -g t1.c -o t1
-
-
-test2: generate_aace aace_4gl
-	./generate_aace mips_3_3 systables
-	./aace systables.aace
-	./aace_4gl systables.aarc > systables.4gl
-	4glc systables.4gl
-	${4GLPC} -g systables.c -o systables
-
-## ==================================================================
-##                    Clean
+##                          Clean
 ## ==================================================================
 
 clean:
-	${RM} *.bak lex.yy.c y.tab.c report_xdr.c ${REPORT_H} y.output *.o \
-	*.a *.so *.err aace adecompile debug.out
-
-
+	${RM} *${SO_EXT} *.bak *.o
 ## ==================================================================
 ##                         Other Targets
 ## ==================================================================
@@ -155,5 +79,4 @@ lclint: $(CMODS)
 	@echo "see ${LCLINTLOG} for results"
 
 #=============================== EOF ================================
-
 

@@ -16,7 +16,7 @@
 #else
 
     #define _NO_YYPARSE_PROTO_
-//    #define _NO_YYLEX_PROTO_
+	/* #define _NO_YYLEX_PROTO_ */
     #include "a4gl_ace_int.h"
 
 #endif
@@ -558,7 +558,7 @@ table_reference:
 tname: table_name
 	| table_name correlation_name {
 		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
-		add_table($<str>1,$<str>2);
+		ace_add_table($<str>1,$<str>2);
 		}
 ;
 

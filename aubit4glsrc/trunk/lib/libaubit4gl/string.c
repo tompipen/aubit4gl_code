@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.7 2002-06-25 03:22:31 afalout Exp $
+# $Id: string.c,v 1.8 2002-07-21 06:41:48 afalout Exp $
 #
 */
 
@@ -86,7 +86,9 @@ extern int errno;
 =====================================================================
 */
 
-void modify_size(char *z,int a);
+#ifdef OLD_INCL
+	void modify_size(char *z,int a);
+ #endif
 
 
 /*
@@ -141,7 +143,7 @@ new_string_set(int a,char *b)
 	ptr=new_string(a);
 	string_set(ptr,b,a);
 	#ifdef DEBUG
-		{        debug("added : '%s' ",ptr);}
+		{debug("added : '%s' ",ptr);}
 	#endif
 	return ptr;
 }
@@ -156,7 +158,7 @@ modify_size(char *z,int a)
 {
 char *zzz;
 	#ifdef DEBUG
-	/* {DEBUG} */ {debug("Modify size has been called !");
+		{debug("Modify size has been called !");
 	}
 	#endif
 	zzz=z-sizeof(int);
@@ -178,7 +180,9 @@ char *zzz;
  *   - 0 : The strings are equal.
  *   - Otherwise : They are not equal.
  */
-strncasecmp(char *a,char *b,int c) {
+int
+strncasecmp(char *a,char *b,int c)
+{
 	return strnicmp(a,b,c);
 }
 #endif
@@ -202,7 +206,7 @@ mja_strncmp (char *str1, char *str2, int n)
   else
     b = len2;
   if (b > n && n != 0)
-    b = n;                      /* compare only the first n, except where n=0 */
+    b = n;                   /* compare only the first n, except where n=0 */
   for (a = 0; a < b; a++)
     {
       c1 = toupper (str1[a]);

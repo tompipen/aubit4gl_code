@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.4 2002-07-17 17:04:48 mikeaubury Exp $
+# $Id: data.c,v 1.5 2002-07-21 06:41:48 afalout Exp $
 #*/
 
 /**
@@ -77,6 +77,10 @@ extern int ordbycnt;
 void dif_add_bind_int (void *list, long a);
 #ifdef OLD_INCL
 	int A4GLSQL_next_column (char *colname, int *dtype, int *size);
+	void add_variable (char *name, char *dstring, int category, int pno, int dtype, int dim);
+	void init_report (void);
+	int find_variable (char *name);
+    void add_function (char *name);
 #endif
 char *decode_datatype (int dtype, int dim);
 void yyerror_sql(char *s);
@@ -84,13 +88,9 @@ void print_variables(char *s);
 char * add_zero_rows_where (struct select_stmts *ptr);
 int find_sql_var (int colno);
 void add_fmt (int cat, char *col, struct commands commands);
-void add_variable (char *name, char *dstring, int category, int pno, int dtype, int dim);
-void init_report (void);
 
-int find_variable (char *name);
-void
-add_function (char *name);
-int add_agg(struct agg_val agg) ;
+
+
 
 /*
 =====================================================================

@@ -27,7 +27,7 @@ void add_select (char *sql, char *temptabname);
 void execute_selects (void);
 void print_lexpr(struct expr_list *l);
 int find_variable (char *name);
-
+int add_agg(struct agg_val agg) ;
 
 /* ================= from output.c =========================== */
 
@@ -45,4 +45,21 @@ void yyerror (char *s);
 	/* int yyparse (void *); */
 	int yyparse (void);
 #endif
+
+
+/* =================== from tables.c ====================== */
+
+void reset_sql_stuff(void);
+void add_select_column(char *colname,char *alias);
+void check_sql_columns(void);
+// /opt/aubit/aubit4glsrc/incl/a4gl_API_form.h:129: warning: previous declaration of `add_table'
+//had to rename function:
+int ace_add_table (char *tabname, char *alias);
+
+
+
+
+
+
+/* ============================== EOF =================================== */
 

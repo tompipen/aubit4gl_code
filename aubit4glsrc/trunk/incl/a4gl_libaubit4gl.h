@@ -1714,6 +1714,11 @@ So it will be included only in gui.c
 
 
 
+    /* =========================== dataio.c =============================*/
+
+	int read_data_from_file(char *datatype, void *ptr, char *filename) ;
+	int write_data_to_file(char *datatype, void *ptr, char *filename) ;
+
 
 /*
 =======================================================================

@@ -1,5 +1,55 @@
-extern int status;
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: tables.c,v 1.2 2002-07-21 06:41:48 afalout Exp $
+#*/
 
+/**
+ * @file
+ *
+ *
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ */
+
+/*
+=====================================================================
+                    Includes
+=====================================================================
+*/
+
+#include "a4gl_ace_int.h"
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+/* extern int status; */
 
 struct select_columns {
 	char *table;
@@ -31,15 +81,39 @@ struct table *last_table = 0;
 struct select_columns *sel_col_start=0;
 
 
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
-reset_sql_stuff() {
+int add_columns (char *tabname, struct table *table);
+void add_column (struct table * table, char *colname, int size, int dtype);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+/**
+ *
+ */
+void
+reset_sql_stuff(void)
+{
 	printf("Resetting\n");
 	tables=0;
 	last_table=0;
 	sel_col_start=0;
 }
 
-check_sql_columns() {
+/**
+ *
+ */
+void
+check_sql_columns(void) 
+{
 struct select_columns *ptr_last;
 printf("Printing columns used in last select : \n");
 	ptr_last=sel_col_start;
@@ -50,31 +124,39 @@ printf("Printing columns used in last select : \n");
 }
 
 
-add_select_column(char *colname,char *alias) {
+/**
+ *
+ */
+void
+add_select_column(char *colname,char *alias) 
+{
 struct select_columns *ptr;
 struct select_columns *ptr_last;
-char buff1[256];
+/*char buff1[256];
 char buff2[256];
-char buff3[256];
-printf("Adding  %s %s\n",colname,alias);
-ptr=malloc(sizeof(struct select_columns));
-ptr->table=0;
-ptr->column=strdup(colname);
-ptr->alias=strdup(alias);
-ptr->next=0;
-if (sel_col_start==0) {
-		printf("Add start\n");
-		sel_col_start=ptr;
-} else {
-	ptr_last=sel_col_start;
-	printf("Append\n");
-	while (ptr_last->next!=0) {
-		ptr_last=ptr_last->next;
+char buff3[256];*/
+	printf("Adding  %s %s\n",colname,alias);
+	ptr=malloc(sizeof(struct select_columns));
+	ptr->table=0;
+	ptr->column=strdup(colname);
+	ptr->alias=strdup(alias);
+	ptr->next=0;
+	if (sel_col_start==0) {
+			printf("Add start\n");
+			sel_col_start=ptr;
+	} else {
+		ptr_last=sel_col_start;
+		printf("Append\n");
+		while (ptr_last->next!=0) {
+			ptr_last=ptr_last->next;
+		}
+		ptr_last->next=ptr;
 	}
-	ptr_last->next=ptr;
-}
 }
 
+/**
+ *
+ */
 int
 add_columns (char *tabname, struct table *table)
 {
@@ -94,18 +176,23 @@ add_columns (char *tabname, struct table *table)
 
   while (1)
     {
-      rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+      /* 	int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
+	  rval = A4GLSQL_next_column ((char **)ccol, &idtype, &isize);
 
       if (rval == 0)
 	break;
       strcpy (colname, ccol);
-//free(ccol);
+	  /* free(ccol); */
       add_column (table, colname, isize, idtype);
     }
   A4GLSQL_end_get_columns ();
   return 1;
 }
 
+/**
+ *
+ */
+void
 add_column (struct table * table, char *colname, int size, int dtype)
 {
   struct column *col;
@@ -134,8 +221,13 @@ add_column (struct table * table, char *colname, int size, int dtype)
 
 }
 
+/**
+ *
+ */
+// /opt/aubit/aubit4glsrc/incl/a4gl_API_form.h:129: warning: previous declaration of `add_table'
+//had to rename function:
 int
-add_table (char *tabname, char *alias)
+ace_add_table (char *tabname, char *alias)
 {
   struct table *ptr;
   ptr = malloc (sizeof (struct table));
@@ -156,3 +248,6 @@ add_table (char *tabname, char *alias)
     }
   return add_columns (tabname, ptr);
 }
+
+
+/* ============================= EOF ================================ */
