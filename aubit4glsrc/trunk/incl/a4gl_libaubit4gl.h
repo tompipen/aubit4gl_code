@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.78 2003-07-27 17:28:19 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.79 2003-07-28 07:03:34 mikeaubury Exp $
 #
 */
 
@@ -961,7 +961,7 @@ enum cmd_types {
   long A4GL_pop_long (void);
   long A4GL_pop_date (void);
   float A4GL_pop_float (void);
-  //double A4GL_pop_double (void);
+  double A4GL_pop_double (void);
   int A4GL_pop_var (void *p, int d);
   int A4GL_pop_var2 (void *p, int d, int s);
   double A4GL_ret_var (void *p, int d);
@@ -1781,7 +1781,11 @@ void A4GL_lex_printcomment(char* fmt,... );
 #include "a4gl_API_rpc.h"	/* created manually */
 
 
-
+#ifndef ALLOW_BOTH_LIB_AND_CALL
+#ifdef FGLINCLDEF_INCL
+#error a4gl_4gl_callable.h and a4gl_libaubit4gl.h should not be included together
+#endif
+#endif
 
 #ifdef __cplusplus
 }

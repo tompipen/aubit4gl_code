@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.47 2003-07-18 16:17:31 mikeaubury Exp $
+# $Id: curslib.c,v 1.48 2003-07-28 07:04:14 mikeaubury Exp $
 #*/
 
 /**
@@ -1598,9 +1598,11 @@ A4GL_set_option (ACL_Menu * menu, int opt)
  * @todo Describe function
  */
 int
-A4GL_free_menu (ACL_Menu * menu)
+A4GL_free_menu (void * menuv)
 {
+ ACL_Menu *menu;
   ACL_Menu_Opts *opt1, *opt2;
+ menu=menuv;
 #ifdef DEBUG
   {
     A4GL_debug ("Freeing menu");
@@ -1635,7 +1637,7 @@ return 1;
  * @todo Describe function
  */
 void
-A4GL_disp_h_menu (ACL_Menu * menu)
+A4GL_disp_h_menu (void* menuv)
 {
   char disp_str[80];
   int disp_cnt;
@@ -1643,7 +1645,9 @@ A4GL_disp_h_menu (ACL_Menu * menu)
   int row;
   int cl, cpt, mnln, cw;
   char *parent_window;
-  long attrib = 0;
+  long attrib = 0; 
+  ACL_Menu *menu;
+  menu=menuv;
 
 #ifdef DEBUG
   A4GL_debug ("Adding window for menu");
@@ -1756,11 +1760,13 @@ A4GL_disp_h_menu (ACL_Menu * menu)
  * @todo Describe function
  */
 int
-A4GL_menu_loop (ACL_Menu * menu)
+A4GL_menu_loop (void* menuv)
 {
   ACL_Menu_Opts *old_option;
   int a;
   int key_pressed;
+ACL_Menu *menu;
+menu=menuv;
 
 
 /*

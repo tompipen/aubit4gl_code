@@ -9,7 +9,7 @@ VARIABLE A4GL_UI
 * Name of the header file to be referenced with #include
 *HEADER_FILE API_ui.h
 
-#include "a4gl_libaubit4gl.h"
+/* #include "a4gl_libaubit4gl.h" */
 #include <stdarg.h>
 
 
@@ -33,26 +33,26 @@ A4GL_current_window char* win_name -> int
 aclfgl_fgl_drawbox int n -> int
 /* void* A4GL_new_menu_create (char* title, int x, int y, int mn_type, int help_no)*/
 A4GL_new_menu_create char* title int x int y int mn_type int help_no -> void*
-/* void A4GL_add_menu_option (ACL_Menu* menu, char* txt, char* keys, char* desc, int helpno, int attr)*/
-A4GL_add_menu_option ACL_Menu* menu char* txt char* keys char* desc int helpno int attr -> void
-/* void A4GL_finish_create_menu (ACL_Menu* menu)*/
-A4GL_finish_create_menu ACL_Menu* menu -> void
-/* void  A4GL_disp_h_menu (ACL_Menu* menu)*/
-A4GL_disp_h_menu ACL_Menu* menu -> void
-/* int A4GL_menu_loop (ACL_Menu* menu)*/
-A4GL_menu_loop ACL_Menu* menu -> int
+/* void A4GL_add_menu_option (voi* menu, char* txt, char* keys, char* desc, int helpno, int attr)*/
+A4GL_add_menu_option void* menu char* txt char* keys char* desc int helpno int attr -> void
+/* void A4GL_finish_create_menu (void* menu)*/
+A4GL_finish_create_menu void* menu -> void
+/* void  A4GL_disp_h_menu (void* menu)*/
+A4GL_disp_h_menu void* menu -> void
+/* int A4GL_menu_loop (void* menu)*/
+A4GL_menu_loop void* menu -> int
 /* void A4GL_next_option (void* menu, char* nextopt)*/
 A4GL_next_option void* menu char* nextopt -> void
-/* int A4GL_free_menu (ACL_Menu* menu)*/
-A4GL_free_menu ACL_Menu* menu -> int
+/* int A4GL_free_menu (void* menu)*/
+A4GL_free_menu void* menu -> int
 /* int A4GL_req_field_input (void* s, char type, va_list* ap)*/
 A4GL_req_field_input void* s char type va_list* ap -> int
 /* int A4GL_req_field_input_array (void* s, char type, va_list* ap)*/
 A4GL_req_field_input_array void* s char type va_list* ap -> int
-/* int A4GL_menu_hide_ap (ACL_Menu* menu, va_list* ap)*/
-A4GL_menu_hide_ap ACL_Menu* menu va_list* ap -> int
-/* int A4GL_menu_show_ap (ACL_Menu* menu, va_list* ap)*/
-A4GL_menu_show_ap ACL_Menu* menu va_list* ap -> int
+/* int A4GL_menu_hide_ap (void* menu, va_list* ap)*/
+A4GL_menu_hide_ap void* menu va_list* ap -> int
+/* int A4GL_menu_show_ap (void* menu, va_list* ap)*/
+A4GL_menu_show_ap void* menu va_list* ap -> int
 /* void aclfgli_pr_message_internal (int attr, int wait,char* s)*/
 aclfgli_pr_message_internal int attr int wait char* s -> void
 /* void A4GL_display_error (int attr, int wait)*/

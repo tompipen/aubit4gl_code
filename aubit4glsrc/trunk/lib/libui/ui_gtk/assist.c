@@ -13,6 +13,7 @@ If you need to change something, edit assist.4gl, and NOT assist.c
 		                    Includes
 =====================================================================
 */
+#define ALLOW_BOTH_LIB_AND_CALL
 #include "a4gl_lib_ui_gtk_int.h"
 /*
 =====================================================================
@@ -58,14 +59,10 @@ void *w;
 	return w;
 }
 /* End of code */
-extern 
-long int_flag;
-extern 
-long quit_flag;
-extern 
-long a4gl_status;
-extern 
-struct {
+extern long int_flag;
+extern long quit_flag;
+extern long a4gl_status;
+extern struct {
 long sqlcode;
 char sqlerrm [72+1];
 char sqlerrp [8+1];
@@ -73,32 +70,19 @@ long sqlerrd[6];
 char sqlawarn [8+1];
 char sqlstate [9+1];
 } a4gl_sqlca;
-extern 
-fgldate today;
-extern 
-char user [8+1];
-extern 
-long pageno;
-extern 
-long lineno;
-extern 
-long usrtime;
-extern 
-long curr_hwnd;
-extern 
-long curr_form;
-extern 
-char err_file_name [32+1];
-extern 
-long err_file_no;
-extern 
-char curr_file_name [32+1];
-extern 
-long curr_line_no;
-extern 
-long err_status;
-extern 
-long aiplib_status;
+extern fgldate today;
+extern char user [8+1];
+extern long pageno;
+extern long lineno;
+extern long usrtime;
+extern long curr_hwnd;
+extern long curr_form;
+extern char err_file_name [32+1];
+extern long err_file_no;
+extern char curr_file_name [32+1];
+extern long curr_line_no;
+extern long err_status;
+extern long aiplib_status;
 static int _done_init_module_variables=1;
 static void init_module_variables() {
 if (_done_init_module_variables==0) return;
@@ -363,12 +347,12 @@ static char _functionName[] = "get_filename";
    A4GLSTK_popFunction();
    return 1;
    /* End command */
-   {A4GL_debug("Line 257 assist.4gl:");}
+   {A4GL_debug("Line 259 assist.4gl:");}
    if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || 0)) {
    /* SQLERROR */
-      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(257,_module_name);
+      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(259,_module_name);
    /* ERROR */
-      if (a4gl_status<0) A4GL_chk_err(257,_module_name);
+      if (a4gl_status<0) A4GL_chk_err(259,_module_name);
    }
    A4GLSTK_popFunction();
    return 0;
@@ -395,12 +379,12 @@ static char _functionName[] = "app_top_get";
    A4GLSTK_popFunction();
    return 1;
    /* End command */
-   {A4GL_debug("Line 313 assist.4gl:");}
+   {A4GL_debug("Line 315 assist.4gl:");}
    if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || 0)) {
    /* SQLERROR */
-      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(313,_module_name);
+      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(315,_module_name);
    /* ERROR */
-      if (a4gl_status<0) A4GL_chk_err(313,_module_name);
+      if (a4gl_status<0) A4GL_chk_err(315,_module_name);
    }
    A4GLSTK_popFunction();
    return 0;
@@ -968,12 +952,12 @@ static char _functionName[] = "splat_with_image";
    A4GL_push_long(100);
    A4GL_pop_var2(&w,2,0x0);
    /* End command */
-   {A4GL_debug("Line 616 assist.4gl:");}
+   {A4GL_debug("Line 618 assist.4gl:");}
    if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || 0)) {
    /* SQLERROR */
-      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(616,_module_name);
+      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(618,_module_name);
    /* ERROR */
-      if (a4gl_status<0) A4GL_chk_err(616,_module_name);
+      if (a4gl_status<0) A4GL_chk_err(618,_module_name);
    }
    aclfgli_clr_err_flg();
    A4GL_push_char("filename='");
@@ -990,12 +974,12 @@ static char _functionName[] = "splat_with_image";
    A4GL_pushop(OP_CONCAT);
    A4GL_pop_var2(&lv_config,0,0x200);
    /* End command */
-   {A4GL_debug("Line 617 assist.4gl:");}
+   {A4GL_debug("Line 619 assist.4gl:");}
    if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || 0)) {
    /* SQLERROR */
-      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(617,_module_name);
+      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(619,_module_name);
    /* ERROR */
-      if (a4gl_status<0) A4GL_chk_err(617,_module_name);
+      if (a4gl_status<0) A4GL_chk_err(619,_module_name);
    }
    aclfgli_clr_err_flg();
    CHK_UI
@@ -1011,12 +995,12 @@ static char _functionName[] = "splat_with_image";
    }
    /* End of code */
    /* End command */
-   {A4GL_debug("Line 619 assist.4gl:");}
+   {A4GL_debug("Line 621 assist.4gl:");}
    if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || 0)) {
    /* SQLERROR */
-      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(619,_module_name);
+      if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode) A4GL_chk_err(621,_module_name);
    /* ERROR */
-      if (a4gl_status<0) A4GL_chk_err(619,_module_name);
+      if (a4gl_status<0) A4GL_chk_err(621,_module_name);
    }
    A4GLSTK_popFunction();
    return 0;

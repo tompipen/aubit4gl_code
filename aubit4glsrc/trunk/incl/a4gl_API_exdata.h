@@ -1,3 +1,5 @@
+#ifndef A4GL_EXDATA_H
+#define A4GL_EXDATA_H
 #ifdef __cplusplus
 extern "C"
 {
@@ -20,4 +22,5 @@ extern "C"
 
 #ifdef __cplusplus
 }
+#endif
 #endif

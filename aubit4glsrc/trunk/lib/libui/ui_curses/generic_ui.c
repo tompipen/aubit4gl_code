@@ -361,8 +361,10 @@ A4GL_next_option (void *vmenu, char *nextopt)
 
 
 int
-A4GL_menu_hide_ap (ACL_Menu * menu, va_list * ap)
+A4GL_menu_hide_ap (void * menuv, va_list * ap)
 {
+ ACL_Menu *menu;
+  menu=menuv;
   A4GL_debug ("Menu hide\n");
   A4GL_menu_attrib (menu, 0, ap);
 return 1;
@@ -373,8 +375,10 @@ return 1;
  * @todo Describe function
  */
 int 
-A4GL_menu_show_ap (ACL_Menu * menu, va_list * ap)
+A4GL_menu_show_ap (void * menuv, va_list * ap)
 {
+ ACL_Menu *menu;
+  menu=menuv;
   A4GL_debug ("Show");
   A4GL_menu_attrib (menu, 1, ap);
   A4GL_find_shown (menu, 0, 1);
@@ -677,13 +681,15 @@ A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
 }
 
 void
-A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
+A4GL_add_menu_option (void* menuv, char *txt, char *keys, char *desc,
                  int helpno, int attr)
 {
   ACL_Menu_Opts *opt1;
   ACL_Menu_Opts *opt2;
+  ACL_Menu *menu;
   char op1[256];
   int nopts;
+   menu=menuv;
   opt1 = nalloc (ACL_Menu_Opts);
   A4GL_debug ("MJAMJA helpno=%d", helpno);
 
@@ -747,8 +753,10 @@ A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
 }
 
 void
-A4GL_finish_create_menu (ACL_Menu * menu)
+A4GL_finish_create_menu (void* menuv)
 {
+ ACL_Menu *menu;
+ menu=menuv;
   (ACL_Menu_Opts *) menu->curr_option = (ACL_Menu_Opts *) menu->first;
 
   while (menu->curr_option->attributes & ACL_MN_HIDE)

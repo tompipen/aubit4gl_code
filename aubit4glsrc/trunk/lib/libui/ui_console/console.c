@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.10 2003-07-18 16:17:31 mikeaubury Exp $
+# $Id: console.c,v 1.11 2003-07-28 07:04:14 mikeaubury Exp $
 #*/
 
 /**
@@ -66,7 +66,7 @@
 =====================================================================
 */
 
-void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list ap);
+static void A4GL_menu_attrib (void* menu, int attr, va_list ap);
 
 void A4GL_ui_init (int argc, char *argv[]);
 //void aclfgli_pr_message (int attr,int wait);
@@ -75,7 +75,7 @@ void A4GL_ui_init (int argc, char *argv[]);
 //void A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc, int help_no, int attr);
 //void A4GL_finish_create_menu (ACL_Menu * menu);
 //char *A4GL_disp_h_menu (ACL_Menu * menu);
-void A4GL_redisplay_menu (ACL_Menu * menu);
+static void A4GL_redisplay_menu (ACL_Menu * menu);
 //int A4GL_menu_loop (ACL_Menu * menu);
 //void A4GL_free_menu (ACL_Menu * menu);
 //void sleep_i(void);
@@ -183,13 +183,15 @@ A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
  * @todo Describe function
  */
 void
-A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
+A4GL_add_menu_option (void * menuv, char *txt, char *keys, char *desc,
 		 int help_no, int attr)
 {
   ACL_Menu_Opts *opt1;
   ACL_Menu_Opts *opt2;
+  ACL_Menu *menu;
   char op1[256];
   int nopts;
+  menu=menuv;
   opt1 = nalloc (ACL_Menu_Opts);
 
   opt1->next_option = 0;
@@ -248,8 +250,10 @@ A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
  * @todo Describe function
  */
 void
-A4GL_finish_create_menu (ACL_Menu * menu)
+A4GL_finish_create_menu (void * menuv)
 {
+ACL_Menu *menu;
+menu=menuv;
   (ACL_Menu_Opts *) menu->curr_option = (ACL_Menu_Opts *) menu->first;
 
   while (menu->curr_option->attributes & ACL_MN_HIDE)
@@ -270,8 +274,10 @@ A4GL_finish_create_menu (ACL_Menu * menu)
  * @todo Describe function
  */
 void
-A4GL_disp_h_menu (ACL_Menu * menu)
+A4GL_disp_h_menu (void *menuv) 
 {
+ACL_Menu * menu;
+menu=menuv;
 /* Does nothing */
 }
 
@@ -323,12 +329,14 @@ A4GL_redisplay_menu (ACL_Menu * menu)
  * @todo Describe function
  */
 int
-A4GL_menu_loop (ACL_Menu * menu)
+A4GL_menu_loop (void * menuv)
 {
   char buff[21];
   int a;
   int r;
   ACL_Menu_Opts *opt1;
+  ACL_Menu *menu;
+menu=menuv;
 
   A4GL_redisplay_menu (menu);
   fgets (buff, 20, stdin);
@@ -359,9 +367,11 @@ A4GL_menu_loop (ACL_Menu * menu)
  * @todo Describe function
  */
 int
-A4GL_free_menu (ACL_Menu * menu)
+A4GL_free_menu (void * menuv)
 {
   ACL_Menu_Opts *opt1, *opt2;
+  ACL_Menu *menu;
+menu=menuv;
   opt1 = (ACL_Menu_Opts *) menu->first;
   while (opt1 != 0)
     {
@@ -406,7 +416,7 @@ but we need dummy finction to satisfy API_ui
  * @todo Describe function
  */
 int
-A4GL_menu_hide_ap (ACL_Menu * menu, va_list * ap)
+A4GL_menu_hide_ap (void * menu, va_list * ap)
 {
   A4GL_menu_attrib (menu, 0, *ap);
 return 1;
@@ -417,7 +427,7 @@ return 1;
  * @todo Describe function
  */
 int
-A4GL_menu_show_ap (ACL_Menu * menu, va_list * ap)
+A4GL_menu_show_ap (void * menu, va_list * ap)
 {
   A4GL_menu_attrib (menu, 1, *ap);
 return 1;
@@ -428,13 +438,15 @@ return 1;
  * @todo Describe function
  */
 void
-A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list ap)
+A4GL_menu_attrib (void* menuv, int attr, va_list ap)
 {
   int a;
+  ACL_Menu *menu;
   ACL_Menu_Opts *option;
   char *argp;
   char s[256];
   int flg;
+   menu=menuv;
 
   A4GL_debug ("Menu attrib %d\n", attr);
   while ((argp = (va_arg (ap, char *))))

@@ -226,7 +226,7 @@ print_put (char *cname)
   int n;
   printc ("{\n");
   n = print_bind ('i');
-  printc ("A4GLSQL_put_insert(&ibind,%d);\n", n);
+  printc ("A4GLSQL_put_insert(ibind,%d);\n", n);
   printc ("}\n");
 }
 
@@ -576,7 +576,7 @@ return s;
 void print_report_table(char *repname,char type, int c) {
 /* We don't need repname here - but the ESQL/C version does.. */
 if (type=='R')
-  printc ("A4GL_add_row_report_table (&rbind,%d);",c);
+  printc ("A4GL_add_row_report_table (rbind,%d);",c);
 
 if (type=='F') 
   printc ("        while (A4GL_report_table_fetch(reread,%d,rbind)) {",c);

@@ -12,7 +12,7 @@
 */
 
 
-#include "a4gl_incl_4glhdr.h"
+//#include "a4gl_incl_4glhdr.h"
 #define GETENV_OK
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.2 2003-07-27 17:28:19 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.3 2003-07-28 07:03:34 mikeaubury Exp $
 */
 
 /**
@@ -50,15 +50,23 @@ extern "C"
 {
 #endif
 
-#include "a4gl_API_esql.h"
+
+#ifndef ALLOW_BOTH_LIB_AND_CALL
+#ifdef _AUBIT_LIB_INCL_EXT_
+#error a4gl_4gl_callable.h and a4gl_libaubit4gl.h should not be included together
+#endif
+#endif
+
+
+//#include "a4gl_API_esql.h"
 #include "a4gl_API_exdata.h"
 #include "a4gl_API_exreport.h"
 #include "a4gl_API_form.h"
 #include "a4gl_API_help.h"
-#include "a4gl_API_lex.h"
+//#include "a4gl_API_lex.h"
 #include "a4gl_API_menu.h"
 #include "a4gl_API_msg.h"
-#include "a4gl_API_packer.h"
+//#include "a4gl_API_packer.h"
 #include "a4gl_API_rpc.h"
 #include "a4gl_API_sql.h"
 #include "a4gl_API_ui.h"
@@ -73,7 +81,6 @@ void A4GL_need_lines (struct rep_structure *rep);
 int A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no);
 void A4GL_def_int (void);
 void A4GL_def_quit (void);
-void A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread);
 void A4GL_make_report_table (struct BINDING *b, int n);
 int A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, struct BINDING **reread);
 void A4GL_rep_file_print (struct rep_structure *rep, char *fname, int opt_semi);
@@ -96,10 +103,10 @@ int A4GL_pop_param (void *p, int d, int size);
 void A4GL_pop_params (struct BINDING *b, int n);
 void A4GL_pop_args (int a);
 
-void A4GL_push_disp_bind (void *b, int n);
-void A4GL_push_time (void);
-void A4GL_push_current (int a, int b);        /* stack.c */
-void A4GL_push_ascii (void);  /* stack.c */
+//void A4GL_push_disp_bind (void *b, int n);
+//void A4GL_push_time (void);
+//void A4GL_push_current (int a, int b);        /* stack.c */
+//void A4GL_push_ascii (void);  /* stack.c */
 void A4GL_push_param (void *p, int d);
 void A4GL_push_params (struct BINDING *b, int n);
 void A4GL_push_user (void);
