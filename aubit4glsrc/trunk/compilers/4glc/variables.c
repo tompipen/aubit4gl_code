@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.51 2004-10-23 13:36:27 mikeaubury Exp $
+# $Id: variables.c,v 1.52 2005-01-25 08:35:08 mikeaubury Exp $
 #
 */
 
@@ -2482,7 +2482,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 
 	  return list;
 	}
-      /*printf ("S=%s\n", s);*/
+
       a4gl_yyerror ("ERROR: Variable is not a record!\n");
       return 0;
     }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.103 2005-01-23 19:55:57 mikeaubury Exp $
+# $Id: sql.c,v 1.104 2005-01-25 08:35:40 mikeaubury Exp $
 #
 */
 
@@ -3156,9 +3156,22 @@ NULL, 0,                                     // owner
       if (rc != SQL_SUCCESS)
 	{
 #ifdef DEBUG
-	  A4GL_debug ("Some problem with SQLColumns");
+	  A4GL_debug ("Some problem with SQLColumns rc=%d",rc);
 #endif
 	}
+
+
+      if (rc == 100)
+	{
+#ifdef DEBUG
+	  A4GL_debug ("SQLColumns failed for table '%s'\n", tabname);
+#endif
+	  A4GL_set_sqlca (hstmtGetColumns, "get_columns", 0);
+	  A4GL_exitwith ("Table does not exist\n");
+	  return 0;
+	}
+
+
 
       if (rc == SQL_ERROR)
 	{
@@ -3169,6 +3182,8 @@ NULL, 0,                                     // owner
 	  A4GL_exitwith ("Error getting column info\n");
 	  return 0;
 	}
+
+
 #ifdef DEBUG
       A4GL_debug ("rc=%d\n", rc);
 #endif
