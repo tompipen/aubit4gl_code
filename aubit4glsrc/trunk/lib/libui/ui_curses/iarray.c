@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.44 2003-08-24 17:54:15 mikeaubury Exp $
+# $Id: iarray.c,v 1.45 2003-08-27 15:28:35 mikeaubury Exp $
 #*/
 
 /**
@@ -127,7 +127,7 @@ insert_line_in_array (struct s_inp_arr *inpa)
       memcpy (dest_ptr, src_ptr, inpa->arr_elemsize);
     }
   inpa->no_arr++;
-
+   A4GL_set_arr_count (inpa->no_arr);
 
   init_arr_line (inpa, inpa->arr_line);
   A4GL_idraw_arr_all (inpa);
@@ -152,12 +152,14 @@ delete_line_in_array (struct s_inp_arr *inpa)
 	}
       init_arr_line (inpa, inpa->no_arr);
       inpa->no_arr--;
+	  A4GL_set_arr_count (inpa->no_arr);
     }
   else
     {
       init_arr_line (inpa, 1);
       inpa->no_arr = 1;
       inpa->arr_line = 1;
+	  A4GL_set_arr_count (inpa->no_arr);
     }
 
 

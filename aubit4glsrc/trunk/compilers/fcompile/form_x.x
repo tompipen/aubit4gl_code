@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.8 2003-08-25 19:15:49 mikeaubury Exp $
+# $Id: form_x.x,v 1.9 2003-08-27 15:28:35 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  * that results in compiler warnings for unused variable
  */
 
-const FCOMILE_XDR_VERSION = 104;
+const FCOMILE_XDR_VERSION = 105;
 const FCOMILE_XDR_MAGIC = 0xa4fc1234;
 
 struct struct_metrics
@@ -122,6 +122,7 @@ struct struct_scr_field
     string tabname<>;
     int subscripts[3];
     int datatype;
+    int not_null;
     int dtype_size;
     int dynamic;
     int do_reverse;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.70 2003-08-25 19:06:37 mikeaubury Exp $
+# $Id: ioform.c,v 1.71 2003-08-27 15:28:35 mikeaubury Exp $
 #*/
 
 /**
@@ -2647,6 +2647,13 @@ A4GL_fgl_infield_ap (void *inp, va_list * ap)
   char *colname;
   int field_no;
 
+  if (A4GL_get_curr_form(0)==0) {
+	return 0;
+  }
+
+
+
+
   while (1)
     {
       colname = va_arg (*ap, char *);	/* This is suspect.... */
@@ -2700,6 +2707,9 @@ A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
   char *colname;
   int field_no;
   s = inp;
+  if (A4GL_get_curr_form(0)==0) {
+	return 0;
+  }
 
   while (1)
     {

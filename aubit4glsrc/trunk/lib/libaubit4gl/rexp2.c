@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.16 2003-08-04 09:51:16 mikeaubury Exp $
+# $Id: rexp2.c,v 1.17 2003-08-27 15:28:35 mikeaubury Exp $
 #
 */
 
@@ -512,7 +512,7 @@ A4GL_doconstruct (char *s, char *whereclause)
 	appendchr (buffer[t], s[a]);
     }
   if (strlen (whereclause) == 0)
-    strcpy (whereclause, "1=1");
+    strcpy (whereclause, " 1=1");
 }
 #endif
 

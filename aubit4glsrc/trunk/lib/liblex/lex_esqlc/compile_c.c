@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.88 2003-08-22 22:35:00 mikeaubury Exp $
+# $Id: compile_c.c,v 1.89 2003-08-27 15:28:35 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2630,7 +2630,7 @@ print_init_var (char *name, char *prefix, int alvl)
 	    {
 	      sprintf (buff_id, "_fglcnt_%d", alvl);
 	      printc ("{int %s;\n", buff_id);
-	      printc ("for (%s=0;%s<%d;%s++) {", buff_id, buff_id, a,
+	      printc ("for (%s=0;%s<%d;%s++) { /* 1 */", buff_id, buff_id, arrsizes[acnt],
 		      buff_id);
 	      strcat (prefix2, "[");
 	      strcat (prefix2, buff_id);
@@ -2681,7 +2681,7 @@ print_init_var (char *name, char *prefix, int alvl)
 	{
 	  sprintf (buff_id, "_fglcnt_%d", alvl);
 	  printc ("{int %s;\n", buff_id);
-	  printc ("for (%s=0;%s<%d;%s++) {", buff_id, buff_id, a, buff_id);
+	  printc ("for (%s=0;%s<%d;%s++) { /* 2 */", buff_id, buff_id, arrsizes[acnt], buff_id);
 	  strcat (prefix2, "[");
 	  strcat (prefix2, buff_id);
 	  strcat (prefix2, "]");

@@ -391,16 +391,21 @@ field_datatype : {strcpy($<str>$,"0");}
 field_type : FORMONLY DOT field_name field_datatype_null {
 	fld->tabname=strdup("formonly");
 	fld->colname=strdup($<str>3);
-        fld->datatype=atoi($<str>4);
+        fld->datatype=atoi($<str>4)&0xff;
+	if (atoi($<str>4)&256) fld->not_null=1;
+	else fld->not_null=0;
+        fld->datatype=atoi($<str>4)&0xff;
         fld->dtype_size=dtype_size;
 }
 | named_or_kw DOT named_or_kw {
 	fld->tabname=strdup($<str>1); 
 	fld->colname=strdup($<str>3);
+	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
 }
 | named_or_kw {
 	fld->colname=strdup($<str>1);
+	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
 };
 
