@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.195 2003-09-10 10:32:37 afalout Exp $
+dnl # $Id: configure.in,v 1.196 2003-09-11 23:05:41 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -128,15 +128,19 @@ if test "$CONFIGURE_COMMAND" != ""; then
 cat<<X
 +--------------------------------------------------------------------+
 |                        *** WARNING ***                             |
-| You provided command line options to 'configure'. They will        |
-| be ingored, and ones provided in 'aubitconf' used instead. Use     |
-| --with-aubitconf=no to disable this behaviour.                     |
+| You provided command line options to 'configure'. They will be     |
+| added to parameters specified in 'aubitconf' only if 'aubitconf'   |
+| provides this functionality. Please verify your 'aubitconf' script |
 +--------------------------------------------------------------------+
 X
 fi
+#| ingored, and ones provided in 'aubitconf' used instead. Use        |
+#| --with-aubitconf=no to disable this behaviour.                     |
+
+
 			#so we don't enter the loop:
 			export AUBITCONF_FLAG=running
-			aubitconf
+			aubitconf $CONFIGURE_COMMAND
 			err_code=$?
 			#prevent errors when exiting first instance, that did not egt chance
 	        #to create this files, but expects them:
@@ -1484,73 +1488,93 @@ if test "$SAPDBROOT" = ""; then
 fi
 
 PHP_CONFIGURE_PART(Checking for SAP DB ESQL/C support:)
-
+SAPDB_ESQLC="no"
 AC_ARG_WITH(sapdb,
 [  --with-sapdb[=DIR]        Include SAP DB ESQL/C support.  DIR is the Sap DB base
                           install directory, defaults to ${SAPDBROOT:-nothing}.],
 [
+
 	if test "$withval" != "no"; then
 		if test "$SAPDBROOT" = ""; then
 			SAPDB_WARNING=1
 			AC_MSG_RESULT(no)
 		else
-			if test "$withval" = "yes"; then
-				SAPDB_INCDIR="-I$SAPDBROOT/depend/incl -I$SAPDBROOT/interfaces/precompiler/incl"
-				SAPDB_LIBDIR="-L$SAPDBROOT/depend/lib -L$SAPDBROOT/interfaces/precompiler/lib"
-			else
-				#user specified custom withval
-				WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SAPESQLC"
-				WARN_LD_LIBRARY_PATH=1
-				SAPDB_INCDIR="-I$withval/depend/incl -I$withval/interfaces/precompiler/incl"
-				SAPDB_LIBDIR="-L$withval/depend/lib -L$withval/interfaces/precompiler/lib"
-				if test "$withval" != "$SAPDBROOT"; then
-					SAPDB_WARNING=2
-				fi
-    		fi
-
-			if test "$withval" != "yes"; then
-	            ADD_LD_LIBRARY_PATH="$withval/depend/lib:$ADD_LD_LIBRARY_PATH"
+			if ! test -d "$SAPDBROOT"; then
+				AC_MSG_RESULT(no - directory specified with SAPDBROOT is invalid)
             else
-	            ADD_LD_LIBRARY_PATH="$SAPDBROOT/depend/lib:$ADD_LD_LIBRARY_PATH"
-			fi
+				if test "$withval" = "yes"; then
+					SAPDB_INCDIR="-I$SAPDBROOT/depend/incl -I$SAPDBROOT/interfaces/precompiler/incl"
+					SAPDB_LIBDIR="-L$SAPDBROOT/depend/lib -L$SAPDBROOT/interfaces/precompiler/lib"
+				else
+					#user specified custom withval
+					WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SAPESQLC"
+					WARN_LD_LIBRARY_PATH=1
+					SAPDB_INCDIR="-I$withval/depend/incl -I$withval/interfaces/precompiler/incl"
+					SAPDB_LIBDIR="-L$withval/depend/lib -L$withval/interfaces/precompiler/lib"
+					if test "$withval" != "$SAPDBROOT"; then
+						SAPDB_WARNING=2
+					fi
+	    		fi
 
-            old_PATH="$PATH"
-            PATH="$SAPDBROOT/interfaces/precompiler/bin:$PATH"
-
-			#First check if we have cpc installed at all:
-			AC_PATH_PROG(SAPDB_ESQLC, cpc, no, $PATH $SAPDBDIR/interfaces/precompiler/bin /opt/sapdb/interfaces/precompiler/bin)
-
-			#any C (gcc) compiler is OK fro SAP (?)
-			SAPDBESQLCC_OK="OK"
-
-			if test "$SAPDB_ESQLC" != "no"; then
-				AC_MSG_CHECKING(if we can use cpc)
-				if test "$SAPDB_ESQLC" != "no" && test "$SAPDBESQLCC_OK" = "OK"; then
-					SAPDB_INCLUDE=$SAPDB_INCDIR
-					SAPDB_LFLAGS=$SAPDB_LIBDIR
-
-	                old_CFLAGS="$CFLAGS"
-	                old_LDFLAGS="$LDFLAGS"
-
-					CFLAGS="$CFLAGS $SAPDB_INCLUDE $SAPDB_CFLAGS"
-					LDFLAGS="$LDFLAGS $SAPDB_LDFLAGS"
-
-					AC_DEFINE(HAVE_SAPDB)
-					AC_MSG_RESULT(Yes)
-
-					CFLAGS="$old_CFLAGS"
-	                LDFLAGS="$old_LDFLAGS"
-
+				if test "$withval" != "yes"; then
+		            ADD_LD_LIBRARY_PATH="$withval/depend/lib:$ADD_LD_LIBRARY_PATH"
 	            else
-					AC_MSG_RESULT(cpc not working or no compatible C compiler)
-	            fi
-            else
-				AC_MSG_RESULT(cpc not in path)
-            fi
+		            ADD_LD_LIBRARY_PATH="$SAPDBROOT/depend/lib:$ADD_LD_LIBRARY_PATH"
+				fi
 
-            PATH="$old_PATH"
+	            old_PATH="$PATH"
+	            PATH="$SAPDBROOT/interfaces/precompiler/bin:$PATH"
+
+				#First check if we have cpc installed at all:
+				AC_PATH_PROG(SAPDB_ESQLC, cpc, no, $PATH $SAPDBDIR/interfaces/precompiler/bin /opt/sapdb/interfaces/precompiler/bin)
+
+				#any C (gcc) compiler is OK fro SAP (?)
+				SAPDBESQLCC_OK="OK"
+
+				if test "$SAPDB_ESQLC" != "no"; then
+					if test "$SAPDB_ESQLC" != "no" && test "$SAPDBESQLCC_OK" = "OK"; then
+						SAPDB_INCLUDE="$SAPDB_INCDIR"
+						SAPDB_LFLAGS="$SAPDB_LIBDIR"
+
+		                old_CFLAGS="$CFLAGS"
+		                old_LDFLAGS="$LDFLAGS"
+                        old_CPPFLAGS="$CPPFLAGS"
+
+						CFLAGS="$CFLAGS $SAPDB_INCLUDE $SAPDB_CFLAGS"
+						LDFLAGS="$LDFLAGS $SAPDB_LDFLAGS"
+                        CPPFLAGS="$CPPFLAGS $SAPDB_INCLUDE"
+
+						AC_CHECK_HEADERS([ cpc.h ])
+
+						AC_MSG_CHECKING(if we can use cpc)
+						if test "$ac_cv_header_cpc_h" = "yes" ; then
+							AC_DEFINE(HAVE_SAPDB)
+							AC_MSG_RESULT(Yes)
+					    else
+							AC_MSG_RESULT(No - missing header cpc.h)
+				            SAPDB_ESQLC="no"
+					    fi
+
+						CFLAGS="$old_CFLAGS"
+		                LDFLAGS="$old_LDFLAGS"
+                        CPPFLAGS="$old_CPPFLAGS"
+
+		            else
+						AC_MSG_CHECKING(if we can use cpc)
+						AC_MSG_RESULT(cpc not working or no compatible C compiler)
+			            SAPDB_ESQLC="no"
+		            fi
+	            else
+					AC_MSG_CHECKING(if we can use cpc)
+					AC_MSG_RESULT(cpc not in path)
+		            SAPDB_ESQLC="no"
+	            fi
+
+	            PATH="$old_PATH"
+            fi
 		fi
 	else
+        SAPDB_ESQLC="no"
 		SAPDBDIR=
 		AC_MSG_RESULT(no)
 	fi
@@ -3965,7 +3989,9 @@ esac
 
         *)
 			AC_MSG_RESULT(Invalid byte order result: >>$ORDER<<)
-            exit 5
+            #must not exit here untill I find a way for this to work on
+            #CygWin without re-runing autoconf
+			#exit 5
 	        ;;
     esac
 
@@ -4945,6 +4971,9 @@ cat<<X
 |                                                                    |
 | Aubit plug-ins the will not be built:                              |
 | $PLUGIN_NO
+|                                                                    |
+| (DEBUG) configure invoked with flags:                              |
+| CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 +--------------------------------------------------------------------+
 X
