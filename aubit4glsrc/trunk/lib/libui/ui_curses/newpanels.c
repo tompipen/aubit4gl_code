@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.44 2003-06-15 12:20:23 mikeaubury Exp $
+# $Id: newpanels.c,v 1.45 2003-06-16 20:56:54 mikeaubury Exp $
 #*/
 
 /**
@@ -1592,11 +1592,14 @@ A4GL_debug("display_internal : %d %d %s %d %d",x,y,s,a,clr_line);
       A4GL_tui_print ("%s", s);
       if (clr_line)
 	{
-	// Known bug - if you clear to the end of the line
-	// in a window which has a border - this will also remove
-	// the border!
+	int sl;
+	char buff[256];
+	memset(buff,' ',255);
+	sl=strlen(s);
+	sl=A4GL_get_curr_width()-sl;
+	buff[sl]=0;
+  	waddstr (currwin, buff);
 	  A4GL_debug ("Clearing line...");
-	  wclrtoeol (A4GL_window_on_top ());
 	}
 
       A4GL_debug (">> printed %s", s);

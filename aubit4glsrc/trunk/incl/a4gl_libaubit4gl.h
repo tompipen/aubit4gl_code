@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.62 2003-06-16 17:13:55 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.63 2003-06-16 20:56:53 mikeaubury Exp $
 #
 */
 
@@ -1619,7 +1619,7 @@ void
 A4GL_in_in_ops (int op);
 int
 A4GL_get_escape_chr (void);
-int A4GL_determine_attribute(int cmd_type, int attrib_curr_int, struct struct_scr_field *fprop);
+int A4GL_determine_attribute(int cmd_type, int attrib_curr_int, void *fprop);
 int
 A4GL_get_curr_width_gtk (void);
 int aclfgli_libhelp_showhelp(int helpno);

@@ -52,6 +52,7 @@
         return (CH);
 }
 
+"like"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(LIKE);}
 "database"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(DATABASE);}
 "instructions"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(INSTRUCTIONS);}
 "attributes"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); buffpos();return(ATTRIBUTES);}
@@ -59,7 +60,6 @@
 "title"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(TITLE);}
 screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_SCREEN_TITLE);}
 "type"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(TYPE);}
-"like" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LIKE;}
 
 "year" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return YEAR;}
 "month" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MONTH;}
@@ -104,7 +104,6 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 ">=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 "<=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 "MATCHES" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
-"LIKE" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 "where" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWWHERE;}
 "AND" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWAND;}
 "OR" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWOR;}

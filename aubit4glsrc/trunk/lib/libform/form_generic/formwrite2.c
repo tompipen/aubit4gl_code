@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.16 2003-06-06 09:52:36 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.17 2003-06-16 20:56:54 mikeaubury Exp $
 #*/
 
 /**
@@ -899,7 +899,7 @@ A4GL_write_form (void)
       int a;
       int len;
       A4GL_debug ("Asc...\n");
-      fxx = fopen (A4GL_get_last_outfile (), "r");
+      fxx = fopen ((char *)A4GL_get_last_outfile (), "r");
       if (fxx == 0)
 	{
 	  A4GL_error_with ("Unable to open output file(%s)\n", fname, 0);
@@ -964,12 +964,21 @@ A4GL_getdatatype (char *col, char *tab)
   char *tabs[256];
   char buff[256];
   int a;
+  int c=0;
   A4GL_debug ("getdatatype\n");
 
   for (a = 0; a < the_form.tables.tables_len; a++)
     {
-      tabs[a] = strdup (the_form.tables.tables_val[a].tabname);
+         if (strcasecmp(the_form.tables.tables_val[a].tabname,tab)==0) {
+                tab=the_form.tables.tables_val[a].alias;
+      		tabs[c++] = strdup (the_form.tables.tables_val[a].alias);
+        }
+      else {
+		tabs[c++] = strdup (the_form.tables.tables_val[a].tabname);
+	}
     }
+
+
 
   tabs[the_form.tables.tables_len] = 0;
 
@@ -992,7 +1001,7 @@ A4GL_getdatatype (char *col, char *tab)
   if (a == -1)
     {
       A4GL_debug ("get_dtype failed\n");
-      sprintf (buff, "%s.%s not found in database", tab, col);
+      sprintf (buff, "%s.%s not found in database\n", tab, col);
       //yyerror (buff);
       A4GL_error_with (buff, "", "");
     }
