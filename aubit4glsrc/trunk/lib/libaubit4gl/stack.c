@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.5 2002-04-29 03:30:01 afalout Exp $
+# $Id: stack.c,v 1.6 2002-05-11 10:49:50 mikeaubury Exp $
 #
 */
 
@@ -94,6 +94,7 @@ struct passwd
 #include <time.h>
 void push_param (void *p, int d);
 int pop_param (void *p, int d, int s);
+char *lrtrim(char *z) ;
 #define IGN 0xee
 #define UC (unsigned char)
 
@@ -331,6 +332,16 @@ pop_char (char *z, int size)
 }
 
 
+
+
+int dtype_alloc_char_size[] = {
+    /*datatypes
+       0 1  2  3 4 5  6  7  8  9 10 11 12 13 14 15 */
+    0, 6, 11, 14, 14, 16, 12, 10, 16, 0, 20, 20, 20, 20, 20, 20
+};
+
+
+
 /**
  * create a perfectly sized string to hold the info 
  */ 
@@ -340,11 +351,6 @@ char_pop (void)
   int a;
   char *s;
   int f;
-  int dtype_alloc_char_size[] = {
-    /*datatypes
-       0 1  2  3 4 5  6  7  8  9 10 11 12 13 14 15 */
-    0, 6, 11, 14, 14, 16, 12, 10, 16, 0, 20, 20, 20, 20, 20, 20
-  };
 
 
 #ifdef DEBUG
@@ -1264,6 +1270,83 @@ print_stack ()
 }
 
 
+static char *add_to_z(char *z,char *s) {
+char *ptr;
+int l;
+      if (z==0) {
+	z=strdup("");
+      }
+
+        debug("Adding '%s' to '%s'",s,z);
+	ptr=strdup(z);
+
+        l=strlen(z)+strlen(s)+1;
+
+	debug("New size=%d",l);
+
+        z=(char *)realloc(z,l);
+	strcpy(z,ptr);
+        strcat(z,s);
+
+	free(ptr);
+	debug("z=%s",z);
+
+return z;
+}
+
+char *params_on_stack (char *_paramnames[],int n)
+{
+  int a;
+  char *buff;
+  char *buff2;
+  char *z=0;
+  int sz;
+
+  if (n==0) return 0;
+debug_print_stack();
+  debug("Generating parameter list n=%d",n);
+
+  for (a = 0; a < n; a++)
+    {
+ 
+    if ((params[a].dtype & DTYPE_MASK)!=0)  {
+		sz=20;
+		debug("not char - sz=30");
+    }
+    else {
+		sz=params[a].size;
+		debug("char - sz=%d",sz);
+    }
+
+      buff=malloc(sz+1);
+      debug("Calling conv...");
+
+      conv (params[a].dtype & DTYPE_MASK,params[a].ptr, 0, buff,sz);
+
+
+      debug("Conv gives us '%s'",buff);
+
+	buff2=buff;
+        buff2=lrtrim(buff);
+
+      if (a) {
+		z=add_to_z(z,",");
+	}
+
+      debug("1. z=%s",z);
+      z=add_to_z(z,_paramnames[a]);
+
+      debug("2. z=%s",z);
+      z=add_to_z(z,"=");
+      debug("3. z=%s",z);
+      z=add_to_z(z,buff2);
+      debug("4. z=%s",z);
+
+      free(buff);
+    }
+   debug("Generated : %s",z);
+   return z;
+}
 
 int
 push_bind (struct BINDING *b, int n, int no, int elemsize)
@@ -1871,3 +1954,21 @@ int dif_pop_bind_money(struct bound_list *list)
 	return (int)list->ptr[list->popped].ptr;
 }
 
+
+
+
+char *lrtrim(char *z) {
+static char rstr[2000];
+int a;
+strcpy(rstr,"");
+debug("COpied");
+
+for (a=0;a<strlen(z);a++) {
+	if (z[a]!=' ') {strcpy(rstr,&z[a]);break;}
+}
+debug("Searched..");
+
+trim(rstr);
+debug("lrtrim : All done - returning '%s'",rstr);
+return rstr;
+}

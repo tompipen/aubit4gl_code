@@ -23,6 +23,7 @@ typedef struct FunctionCall {
   const char *moduleName;   /**< Module where function was called */
   int  lineNumber;          /**< Line in the 4gl where function was called */
   const char *functionName; /**< The name of the function called */
+  const char *params;       /**< a list of parameters passed to the function */
 } FunctionCall;
 
 /** The current function call stack */
@@ -85,6 +86,7 @@ int a;
   functionCallStack[functionCallPointer].functionName = functionName;
   functionCallStack[functionCallPointer].moduleName   = currentModuleName;
   functionCallStack[functionCallPointer].lineNumber   = currentFglLineNumber;
+  functionCallStack[functionCallPointer].params       = params_on_stack(params,n);
   functionCallPointer++;
 }
 
@@ -93,6 +95,7 @@ int a;
  */
 void A4GLSTK_popFunction()
 {
+  if (functionCallStack[functionCallPointer-1].params) free(functionCallStack[functionCallPointer-1].params);
   functionCallPointer--;
   if ( functionCallPointer < 0 )
     functionCallPointer = 0;
@@ -107,6 +110,7 @@ char *A4GLSTK_getStackTrace(void)
 {
   static char stackTrace[640];
   static char tmpStackTrace[640];
+  char *ptr;
   int i;
 
   strcpy(stackTrace,"4gl function call stack :\n");
@@ -127,7 +131,9 @@ char *A4GLSTK_getStackTrace(void)
 
     // Don't put the brackets on for a MAIN
     if (strcmp(functionCallStack[i].functionName,"MAIN")!=0) {
-    	strcat(stackTrace,"()");
+    	strcat(stackTrace,"(");
+	if (functionCallStack[i].params) strcat(stackTrace,functionCallStack[i].params);
+    	strcat(stackTrace,")");
        }
     strcat(stackTrace,"\n");
 
@@ -147,3 +153,5 @@ int A4GLSTK_isStackInfo(void)
 {
   return stackInfoInitialized;
 }
+
+
