@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.39 2004-12-23 16:42:44 mikeaubury Exp $
+# $Id: helper.c,v 1.40 2005-01-07 10:30:23 mikeaubury Exp $
 #
 */
 
@@ -126,6 +126,7 @@ LIBPRIVATE char *a_get_info_form[] = {
   "FieldType%", 
   "FieldSize%", //15
   "FieldBytes%",
+  "FieldDets%",
   0
 };
 
@@ -356,6 +357,14 @@ int_get_info_form (char *ptr, char *info)
       break;
 
 
+    case 18: // FIELDDETS
+	if (used_value<p->fileform->attributes.attributes_len) {
+		A4GL_push_long((long)&p->fileform->attributes.attributes_val[used_value]);
+	} else {
+      		A4GL_push_int(0);
+	}
+      break;
+
 
 
     case 7: // ATTRIBUTECOUNT
@@ -379,10 +388,7 @@ int_get_info_form (char *ptr, char *info)
       break;
 
     case 11: // Field
-      A4GL_push_int (p->fileform->metrics.
-		metrics_val[p->fileform->fields.fields_val[used_value].metric.
-			    metric_val[0]].field);
-
+      A4GL_push_long (p->fileform->metrics.  metrics_val[p->fileform->fields.fields_val[used_value].metric.  metric_val[0]].field);
       break;
 
     case 13: // Table name

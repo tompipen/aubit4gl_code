@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.40 2004-12-24 08:51:05 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.41 2005-01-07 10:30:23 mikeaubury Exp $
 #
 */
 
@@ -45,6 +45,7 @@
 #define isoperator(x)  (a_strchr("+-*/%|^[,]",(x)) != NULL)
 static char *get_dollared_sql_var(char *s) ;
 static char * A4GL_cv_next_token (char *p, int *len, int dot);
+static char *space_out (char *s) ;
 
 /*
 =====================================================================
@@ -679,6 +680,7 @@ int b;
 if (A4GL_isyes(acl_getenv(s))) {
 	return 1;
 }
+
 if (A4GL_isno(acl_getenv(s))) {
 	return 0;
 }
@@ -2023,7 +2025,7 @@ ptr=malloc(strlen(tabname)+strlen(elements)+strlen(extra)+strlen(oplog)+1000);
 if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 	A4GL_debug("Creating temp table called TABLE : %s",tabname);
 	if (!A4GL_has_pointer(tabname,LOG_TEMP_TABLE)) { A4GL_add_pointer(tabname,LOG_TEMP_TABLE,(void *)1); }
-	sprintf(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,elements);
+	sprintf(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,space_out(elements));
 	return ptr;
 } 
 
@@ -2255,4 +2257,23 @@ char *c;
 
 	strcpy(buff,s);
 	return s;
+}
+
+
+static char *space_out (char *s) {
+static char *ptr=0;
+int a;
+int b=0;
+if (ptr) free(ptr);
+ptr=malloc(strlen(s)*2+1);
+for (a=0;a<strlen(s);a++) {
+	if (s[a]==',') {
+			ptr[b++]='\n';
+			ptr[b++]=',';
+	} else {
+			ptr[b++]=s[a];
+	}
+}
+ptr[b]=0;
+return ptr;
 }

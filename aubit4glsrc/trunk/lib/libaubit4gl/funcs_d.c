@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.49 2004-12-29 11:42:13 afalout Exp $
+# $Id: funcs_d.c,v 1.50 2005-01-07 10:30:23 mikeaubury Exp $
 #
 */
 
@@ -772,6 +772,20 @@ void A4GL_strmaxcpy(char *dest,char *src,int max) {
 	strncpy(dest,src,max);
 	dest[max]=0;
 }
+
+
+char *A4GL_get_esql_ext(void) {
+static char buff[256];
+char *hr;
+
+hr=acl_getenv("EC_EXT");
+
+if (hr) {
+        if (strlen(hr)) return hr;
+}
+return ".ec";
+}
+
 
 
 /* ============================== EOF ========================== */
