@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.10 2004-01-27 10:10:59 mikeaubury Exp $
+# $Id: compile_c_gtk.c,v 1.11 2004-01-28 21:47:17 mikeaubury Exp $
 #
 */
 
-static char *module_id="$Id: compile_c_gtk.c,v 1.10 2004-01-27 10:10:59 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_gtk.c,v 1.11 2004-01-28 21:47:17 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules, that interface with GTK+ GUI libraries functions
@@ -99,7 +99,6 @@ char lname[256];
 
 
 extern void printc (char *fmt, ...);	/* in API_lex.c */
-//extern void A4GL_lex_printh (char *fmt, ...);	/* in API_lex.c */
 extern void printh (char *fmt, ...);	/* in API_lex.c */
 
 /*
@@ -119,9 +118,9 @@ print_formhandler (char *name)
 {
   if (printed_gtk == 0)
     {
-      //#ifdef OBSOLETE *** __NOT__ obsolete!
-      //printh ("#include <gtk/gtk.h>\n");
-      //#endif
+      /*#ifdef OBSOLETE *** __NOT__ obsolete!*/
+      /*printh ("#include <gtk/gtk.h>\n");*/
+      /*#endif*/
       printh
 	("#define ON_FIELD(x) (A4GL_widget_name_match(widget,x)&&event==0&&(A4GL_strnullcmp(data,\"on\")==0||A4GL_strnullcmp(data,\"clicked\")==0))\n");
       printh ("#define BEFORE_OPEN_FORM  (event==0&&widget==0&&data==0)\n");
@@ -301,4 +300,5 @@ print_gtk_menuhandler_end (void)
 }
 
 
+/* ================================= EOF ============================== */
 /* ================================= EOF ============================== */

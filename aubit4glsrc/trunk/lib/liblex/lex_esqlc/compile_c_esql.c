@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.65 2004-01-28 16:23:03 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.66 2004-01-28 21:47:16 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.65 2004-01-28 16:23:03 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.66 2004-01-28 21:47:16 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -203,9 +203,8 @@ print_foreach_next (char *cursorname, char *using, char *into)
 
   print_open_cursor(cursorname,using);
 
-  //printc("internal_recopy_%s_i_Dir();",A4GL_strip_quotes(cursorname));
-  //printc ("\nEXEC SQL OPEN  %s; /* into=%s */\n", A4GL_strip_quotes (cursorname), into);
-  //print_copy_status ();
+  /*printc("internal_recopy_%s_i_Dir();",A4GL_strip_quotes(cursorname));*/
+  /*print_copy_status ();*/
 
 
   printc ("if (a4gl_sqlca.sqlcode==0) {\n");
@@ -577,7 +576,7 @@ print_open_cursor (char *cname, char *using)
     {
       printc("internal_recopy_%s_i_Dir();",A4GL_strip_quotes(cname));
       printc ("\nEXEC SQL OPEN  %s; /* No using */\n", A4GL_strip_quotes (cname));
-	//printc("A4GL_char_pop();");
+	/*printc("A4GL_char_pop();");*/
     }
   print_copy_status ();
 }
@@ -626,9 +625,7 @@ print_fetch_3 (char *ftp, char *into)
   char buff[256];
   int no;
   char cname[256];
-  //printf("/* ftp=%s into=%s */\n",ftp,into);
   sscanf (into, "%d,", &no);
-  //printf("no=%d\n",no);
   printc ("EXEC SQL BEGIN DECLARE SECTION;");
   printc ("int _fp;");
   printc ("EXEC SQL END DECLARE SECTION;");
@@ -693,7 +690,7 @@ print_fetch_3 (char *ftp, char *into)
   if (poped == 0)
     {
       if (fp1 == 1)
-	{			// FETCH ABSOLUTE
+	{			/* FETCH ABSOLUTE*/
 	  switch (fp2)
 	    {
 	    case 1:
@@ -707,7 +704,7 @@ print_fetch_3 (char *ftp, char *into)
 	    }
 	}
       else
-	{			// FETCH RELATIVE
+	{			/* FETCH RELATIVE*/
 	  if (fp2 != 1)
 	    {
 	      sprintf (buff, "EXEC SQL FETCH RELATIVE %d %s ", fp2,
@@ -722,7 +719,7 @@ print_fetch_3 (char *ftp, char *into)
   else
     {
       if (fp1 == 1)
-	{			// FETCH ABSOLUTE
+	{			/* FETCH ABSOLUTE*/
 	  sprintf (buff, "EXEC SQL FETCH ABSOLUTE :_fp %s",
 		   A4GL_strip_quotes (cname));
 	}
@@ -775,11 +772,11 @@ if (A4GL_isyes(acl_getenv("USE_DATABASE_STMT"))) {
       printc ("char setdb[256];");
       printc ("EXEC SQL END DECLARE SECTION;\n");
       printc ("s=A4GL_char_pop();A4GL_trim(s);");
-	//printc("sprintf(setbuf,\"DATABASE %%s\");\n");
+	/*printc("sprintf(setbuf,\"DATABASE %%s\");\n");*/
 	
 
-      //printc ("EXEC SQL PREPARE acl_p_set_db FROM $setdb;");
-      //printc ("EXEC SQL EXECUTE acl_p_set_db;\n");	
+      /*printc ("EXEC SQL PREPARE acl_p_set_db FROM $setdb;");*/
+      /*printc ("EXEC SQL EXECUTE acl_p_set_db;\n");	*/
 	printc("EXEC SQL DATABASE $s;\n");
 
       printc ("}");
@@ -809,7 +806,7 @@ if (A4GL_isyes(acl_getenv("USE_DATABASE_STMT"))) {
     {
 	printc("if (A4GL_esql_db_open(-1)) {");
 	print_close('D',"");
-      		//printc ("EXEC SQL DISCONNECT 'default';\n");
+      		/*printc ("EXEC SQL DISCONNECT 'default';\n");*/
 	printc("}");
       switch (esql_type ())
 	{
@@ -839,10 +836,7 @@ if (A4GL_isyes(acl_getenv("USE_DATABASE_STMT"))) {
 void
 print_do_select (char *s)
 {
-//int ni;
-  //ni = print_bind ('i');
-  //printc("/* printed bind ni=%d */",ni);
-  //print_conversions('i');
+/*int ni;*/
   printc ("EXEC SQL %s;\n/* do_select */", s);
   print_copy_status ();
   print_conversions ('o');
@@ -905,12 +899,12 @@ int intprflg=0;
   }
 
 
-  //if (strstr (a2, "INTO $") != 0)
-    //{
-      //a4gl_yyerror
-	//("ESQL lexer cannot handle DECLARE .. INTO at present, put the INTO on the FETCH/FOREACH instead...");
-      //return;
-    //}
+  /*if (strstr (a2, "INTO $") != 0)*/
+    /*{*/
+      /*a4gl_yyerror*/
+	/*("ESQL lexer cannot handle DECLARE .. INTO at present, put the INTO on the FETCH/FOREACH instead...");*/
+      /*return;*/
+    /*}*/
 
 
   if (strlen (a1) && h2)
@@ -925,22 +919,21 @@ int intprflg=0;
       strcat (buff, " SCROLL");
     }
   strcat (buff, " CURSOR");
-  if (h1 || esql_type ()==2) // All postgres cursors should be with hold
+  if (h1 || esql_type ()==2) /* All postgres cursors should be with hold*/
     {
       strcat (buff, " WITH HOLD");
     }
 
   printc ("%s FOR", buff);
   printc ("     %s ", A4GL_strip_quotes (a2));
-  //if (strlen (a1))
-    //{
-      //printc ("     FOR UPDATE");
-	//if (a1[0]!=' ') {
-		//printc(" OF %s",a1);
-	//}
-    //}
+  /*if (strlen (a1))*/
+    /*{*/
+      /*printc ("     FOR UPDATE");*/
+	/*if (a1[0]!=' ') {*/
+		/*printc(" OF %s",a1);*/
+	/*}*/
+    /*}*/
   printc (";");
-  //printc(" /* A2='%s'*/",a2);
   print_copy_status ();
   printh("static int acli_ni_%s=%d;\n",A4GL_strip_quotes(a3),last_ni);
   printh("static int acli_no_%s=%d;\n",A4GL_strip_quotes(a3),last_no);
@@ -949,9 +942,9 @@ int intprflg=0;
   printh("static struct BINDING *acli_nbi_%s=0;\n",A4GL_strip_quotes(a3));
   printh("static struct BINDING *acli_nbo_%s=0;\n",A4GL_strip_quotes(a3));
   printh("static struct BINDING *acli_nboi_%s=0;\n",A4GL_strip_quotes(a3));
-  //printh("#undef ibind\n#undef obind\n");
-  //printh("#define ibind acli_bi_%s\n",A4GL_strip_quotes(a3));
-  //printh("#define obind acli_bo_%s\n",A4GL_strip_quotes(a3));
+  /*printh("#undef ibind\n#undef obind\n");*/
+  /*printh("#define ibind acli_bi_%s\n",A4GL_strip_quotes(a3));*/
+  /*printh("#define obind acli_bo_%s\n",A4GL_strip_quotes(a3));*/
 
   printh("\n\nstatic void internal_recopy_%s_i_Dir(void) {\n",A4GL_strip_quotes(a3));
   printh("struct BINDING *ibind;\n");
@@ -1229,7 +1222,6 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
   } else {
   	printc ("A4GLSQL_load_data(%s,%s,\"%s\",%s);\n", file, delim, tab, list);
   }
-  //printc ("/* LOAD NOT IMPLEMENTED YET */");
 }
 
 /**
@@ -1256,9 +1248,9 @@ print_load_str (char *file, char *delim, char *str)
 void
 print_use_session (char *sess)
 {
-  //printc ("{char _sav_cur_conn[32];\n");
-  //printc ("strcpy(_sav_cur_conn,A4GLSQL_get_curr_conn());\n");
-  //printc ("A4GLSQL_set_conn(%s);\n", sess);
+  /*printc ("{char _sav_cur_conn[32];\n");*/
+  /*printc ("strcpy(_sav_cur_conn,A4GLSQL_get_curr_conn());\n");*/
+  /*printc ("A4GLSQL_set_conn(%s);\n", sess);*/
   printc ("/* USE NOT IMPLEMENTED FOR ESQL/C */");
 }
 
@@ -1275,7 +1267,7 @@ print_use_session (char *sess)
 char *
 A4GL_get_undo_use (void)
 {
-  //return "A4GLSQL_set_conn(_sav_cur_conn);}";
+  /*return "A4GLSQL_set_conn(_sav_cur_conn);}";*/
   return "";
 }
 
@@ -1331,7 +1323,7 @@ print_foreach_end (char *cname)
   printc ("}");
   printcomment ("/* end of foreach while loop */\n");
   printc ("}\n");
-  //print_close('C', cname);
+  /*print_close('C', cname);*/
 }
 
 
@@ -1352,16 +1344,16 @@ int n,m;
 int l;
 if (strchr(s,'[')==0) return s;
 
-//printf("TRANSFORM %s\n",s);
+/*printf("TRANSFORM %s\n",s);*/
       switch (esql_type ())
 	{
 	case 1:
-		//printf("Informix\n");
-		return s; // Informix style
+		/*printf("Informix\n");*/
+		return s; /* Informix style*/
 	  break;
 
 	case 2:
-		//printf("Postgres\n");
+		/*printf("Postgres\n");*/
 		strcpy(buff,s);
 		ptr1=strchr(buff,'[');
 		*ptr1=0;
@@ -1379,7 +1371,7 @@ if (strchr(s,'[')==0) return s;
 		}
 		n=atoi(ptr1);
 		m=atoi(ptr2);
-		//printf("N=%d m=%d s=%s\n",n,m,s);
+		/*printf("N=%d m=%d s=%s\n",n,m,s);*/
 		sprintf(buff2,"substr(%s,%d,%d)",buff,n,(m-n)+1);
 		return buff2;
 	  break;
@@ -1431,11 +1423,11 @@ nm (int n)
 void print_report_table(char *repname,char type, int c) {
 
 dll_import struct binding_comp fbind[];
-//extern struct binding_comp fbind[];
+/*extern struct binding_comp fbind[];*/
 dll_import struct binding_comp ibind[];
-//extern struct binding_comp ibind[];
+/*extern struct binding_comp ibind[];*/
 dll_import struct binding_comp obind[];
-//extern struct binding_comp obind[];
+/*extern struct binding_comp obind[];*/
 
 
 static char iname[256];
@@ -1450,11 +1442,11 @@ int l_dt;
 int l_sz;
 
 sprintf(reptab,"aclfgl_%d%s",rcnt,repname);
-reptab[18]=0; // Make sure its short enough...
+reptab[18]=0; /* Make sure its short enough...*/
 
 if (type=='R') {
-	// print_execute needs an ibind - we have an fbind - so we need
-	// to copy it across...
+	/* print_execute needs an ibind - we have an fbind - so we need*/
+	/* to copy it across...*/
 	extern int ibindcnt;
 	extern int fbindcnt;
 	memcpy(ibind,fbind,sizeof(struct binding_comp)*c+1);
@@ -1492,10 +1484,10 @@ if (type=='I') {
 	int a;
 	int b;
 	char *p;
-	// We need to
-	//    1.  Generate the SQL including our order by
-	//    2.  declare a cursor for it
-	//    3.  open that cursor
+	/* We need to*/
+	/*    1.  Generate the SQL including our order by*/
+	/*    2.  declare a cursor for it*/
+	/*    3.  open that cursor*/
 		sprintf(cname,"acl_c%s",reptab);
 		cname[18]=0;
 
@@ -1522,9 +1514,8 @@ if (type=='I') {
 
 		start_bind('i',0);
 		start_bind('o',0);
-		//printc("{ /* RT0 */");
 		p=print_select_all(sql);
-		//printf("p=%s",p);
+		/*printf("p=%s",p);*/
 		print_declare("0",p,cname,0,0);
 		print_open_cursor(cname,"0");
 
@@ -1644,5 +1635,6 @@ extern char buff_in[];
 }
 
 /* ================================== EOF =============================== */
+
 
 

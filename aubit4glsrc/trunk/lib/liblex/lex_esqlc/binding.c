@@ -1,5 +1,5 @@
 #include "a4gl_lib_lex_esqlc_int.h"
-static char *module_id="$Id: binding.c,v 1.27 2004-01-18 12:55:12 mikeaubury Exp $";
+static char *module_id="$Id: binding.c,v 1.28 2004-01-28 21:47:16 mikeaubury Exp $";
 
 extern int ibindcnt;
 extern int obindcnt;
@@ -84,13 +84,13 @@ print_conversions (char i)
 }
 
 
-// This function converts the SQL into
-// SQL INTO etc and converts the place holders back to variables...
-//
-//
-//          printc ("{&%s,%d,%d}", ibind[a].varname,
-//                            (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
-//
+/* This function converts the SQL into*/
+/* SQL INTO etc and converts the place holders back to variables...*/
+/**/
+/**/
+/*          printc ("{&%s,%d,%d}", ibind[a].varname,*/
+/*                            (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);*/
+/**/
 void
 make_sql_bind (char *sql, char *type)
 {
@@ -110,7 +110,7 @@ make_sql_bind (char *sql, char *type)
 		if ((ibind[a].dtype & 0xffff)==0) {
 		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d,%d,%d);\n",
 			   ibind[a].dtype & 0xffff, 
-					//ibind[a].varname, 
+					/*ibind[a].varname, */
 					a,
 					
 				a,
@@ -121,7 +121,7 @@ make_sql_bind (char *sql, char *type)
 		} else {
 		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d);\n",
 			   ibind[a].dtype & 0xffff, 
-					//ibind[a].varname, 
+					/*ibind[a].varname, */
 					a,
 					
 				a,
@@ -131,7 +131,6 @@ make_sql_bind (char *sql, char *type)
 		}
 		  strcat (buff_in, buff_small);
 		}
-	      //printc ("/* %s */", buff_in);
 	    }
 	}
 
@@ -156,7 +155,7 @@ make_sql_bind (char *sql, char *type)
 		if ((obind[a].dtype & 0xffff)==0) {
 		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%s,%d,%d,%d);\n",
 			   obind[a].dtype & 0xffff, 
-				//obind[a].varname, 
+				/*obind[a].varname, */
 				a,
 				a,
 				indicat,
@@ -167,7 +166,7 @@ make_sql_bind (char *sql, char *type)
 		} else {
 		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%s,%d);\n",
 			   obind[a].dtype & 0xffff, 
-				//obind[a].varname, 
+				/*obind[a].varname, */
 				a,
 				a,
 				indicat,
@@ -276,7 +275,7 @@ make_sql_bind_expr (char *sql, char *type)
 		if ((ibind[a].dtype & 0xffff)==0) {
 		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d,%d,%d); /*E*/\n",
 			   ibind[a].dtype & 0xffff, 
-					//ibind[a].varname, 
+					/*ibind[a].varname, */
 					a,
 					
 				a,
@@ -287,7 +286,7 @@ make_sql_bind_expr (char *sql, char *type)
 		} else {
 		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d); /*E*/\n",
 			   ibind[a].dtype & 0xffff, 
-					//ibind[a].varname, 
+					/*ibind[a].varname, */
 					a,
 					
 				a,
@@ -297,7 +296,6 @@ make_sql_bind_expr (char *sql, char *type)
 		}
 		  strcat (buff_in, buff_small);
 		}
-	      //printc ("/* %s */", buff_in);
 	    }
 	}
 
@@ -323,7 +321,7 @@ make_sql_bind_expr (char *sql, char *type)
 		if ((obind[a].dtype & 0xffff)==0) {
 		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%s,%d,%d,%d);\n",
 			   obind[a].dtype & 0xffff, 
-				//obind[a].varname, 
+				/*obind[a].varname, */
 				a,
 				a,
 				indicat,
@@ -334,7 +332,7 @@ make_sql_bind_expr (char *sql, char *type)
 		} else {
 		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%s,%d);\n",
 			   obind[a].dtype & 0xffff, 
-				//obind[a].varname, 
+				/*obind[a].varname, */
 				a,
 				a,
 				indicat,
@@ -402,7 +400,7 @@ make_sql_bind_expr (char *sql, char *type)
 char *
 get_sql_type (int a, char ioro)
 {
-  // Need to do some check to determine which ESQL/C to use...
+  /* Need to do some check to determine which ESQL/C to use...*/
   if (esql_type()==1) {
   	return get_sql_type_infx (a, ioro);
   }
@@ -589,7 +587,7 @@ static char buff_ind[255];
 	  sprintf (buff,"Blah _vi_%d;", a);
 	  break;
 	case 10:
-	  sprintf (buff,"datetime _vi_%d;",  a); // Datetimes can't be qualified in ecpg
+	  sprintf (buff,"datetime _vi_%d;",  a); /* Datetimes can't be qualified in ecpg*/
 	  break;
 	case 11:
 	  sprintf (buff,"interval _vi_%d;", a);
@@ -656,7 +654,7 @@ static char buff_ind[255];
 	  sprintf (buff,"Blah _vo_%d;", a);
 	  break;
 	case 10:
-	  sprintf (buff,"datetime _vo_%d;",  a); // Datetimes can't be qualified in ecpg
+	  sprintf (buff,"datetime _vo_%d;",  a); /* Datetimes can't be qualified in ecpg*/
 	  break;
 	case 11:
 	  sprintf (buff,"interval _vo_%d;", a);
@@ -724,4 +722,5 @@ A4GL_dtype_sz (int d, int s)
     }
   return "";
 }
+
 

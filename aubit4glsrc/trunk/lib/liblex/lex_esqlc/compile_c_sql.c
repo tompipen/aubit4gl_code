@@ -1,7 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.28 2004-01-28 16:23:03 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_sql.c,v 1.29 2004-01-28 21:47:17 mikeaubury Exp $";
 
 void print_report_table(char *repname,char type, int c);
 
@@ -75,7 +75,7 @@ print_foreach_next (char *cursorname, char *using, char *into)
   int ni;
   printc ("A4GLSQL_set_sqlca_sqlcode(0);\n");
   print_open_cursor(cursorname,using);
-  //printc ("A4GLSQL_open_cursor(0,%s);\n", cursorname);
+  /*printc ("A4GLSQL_open_cursor(0,%s);\n", cursorname);*/
   printc ("if (a4gl_sqlca.sqlcode==0) {\n");
   printc ("while (1) {\n");
   ni = print_bind ('o');
@@ -98,7 +98,7 @@ print_free_cursor (char *s)
 {
   printc ("/* FREE CURSOR .. FIXME */\n");
 
-//struct s_cid * A4GLSQL_free_cursor (char *cname)
+/*struct s_cid * A4GLSQL_free_cursor (char *cname)*/
 
 }
 
@@ -441,7 +441,7 @@ print_curr_spec (int type, char *s)
 
 	extern int obindcnt,ibindcnt;
   printc ("{\n");
-	//printf("obindcnt=%d ibindcnt=%d s=%s\n",obindcnt,ibindcnt,s);
+	/*printf("obindcnt=%d ibindcnt=%d s=%s\n",obindcnt,ibindcnt,s);*/
   if (type == 1) {
 		bt=0;
 		ni=ibindcnt;
