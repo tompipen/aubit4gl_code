@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.140 2004-03-03 13:18:05 mikeaubury Exp $
+# $Id: compile_c.c,v 1.141 2004-03-04 17:45:15 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.140 2004-03-03 13:18:05 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.141 2004-03-04 17:45:15 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -3309,7 +3309,9 @@ print_let_manyvars (char *nexprs)
   A4GL_debug ("1");
   A4GL_debug ("In print_let_manyvars : %s\n", nexprs);
   printc ("{");
-  to_vars = print_bind ('o');
+  to_vars = print_bind_definition ('o');
+  print_bind_set_value ('o');
+
   from_exprs = atoi (nexprs);
 
   if (to_vars != from_exprs)
