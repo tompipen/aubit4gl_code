@@ -1,18 +1,14 @@
 define
-
 	a_receive array [8] of record
         line char (60)
     end record,
     a_receive_size, a_receive_full smallint,
-
 	IM_LOG, IM_USER, IM_PASS char (60),
 	IM_DEBUG smallint
-
 
 ####
 main
 ####
-
 	let IM_LOG 		= "mylogfile.log"
 	let IM_DEBUG 	= true
 	let a_receive_size = 8
@@ -40,43 +36,29 @@ define
     rcv_from char (40)
 
 	let a_receive_full = 0
-
 	open window w_chat at 1,1 with form "test_im"
-
     display by name msg_to
-
 	call legend()
 
     ##################
 	input by name send
     ##################
-
         before input
-
 			call legend()
-
         ################
 		after field send #send and receive after ENTER
         ################
-
             call GET_FLDBUF(send) returning send
             call send_it(send,msg_to,timeout,do_receive)
-
         ###################
         on key(F6) #to be able to check foe waiting message, without sending one:
         ###################
-
-
             call GET_FLDBUF(send) returning send
             call send_it(send,msg_to,timeout,do_receive)
-
     #########
 	end input
     #########
-
     close window w_chat
-
-
 end function
 
 ################################################

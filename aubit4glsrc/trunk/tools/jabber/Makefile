@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.12 2004-12-13 01:55:35 afalout Exp $
+# $Id: Makefile,v 1.1 2004-12-14 02:46:07 afalout Exp $
 #
 
 ROOT        =../..
@@ -41,13 +41,14 @@ AMAKE		=../../bin/amake
 AMAKE_FLAGS	=${VERBOSE_FLAG} A4GL_CC_LDFLAGS+=-liksemel USESTORE=0 MOVETARGETTOSTORE=0
 #AMAKE_FLAGS+=A4GL_CC_LDFLAGS+=A4GL_CC_LDFLAGS+=-noodbc A4GL_CC_LDFLAGS+=-nopdf
 
-ifneq "@JABBERBUILD@" "no"
+ifneq "${JABBERBUILD}" "no"
     ALL 	=test_im
 else
     ALL 	=no_libs
 endif
 
-CFLAGS		+=@IKSEMEL_I_FLAGS@
+CFLAGS		+=${IKSEMEL_I_FLAGS}
+
 
 ## ==================================================================
 ##                              Targets
@@ -63,7 +64,7 @@ test_im:
 
 libIM_JABBER${SO_EXT}: ${LIBROOT}/libIM_JABBER${SO_EXT}
 ${LIBROOT}/libIM_JABBER${SO_EXT}: lib4glim.o
-	${LD} ${SO_LDFLAGS} -o $@ $^ -liksemel @IKSEMEL_L_FLAGS@
+	${LD} ${SO_LDFLAGS} -o $@ $^ -liksemel ${IKSEMEL_L_FLAGS}
 ifeq "${SO_EXT}" ".dll"
 	${MV} TMP${SOEXP_EXT} ${LIBROOT}/$@.a
 endif
@@ -89,20 +90,18 @@ exec4glim: lib4glim.c
 #	PASS mypassword
 test: exec4glim
 	echo "This is my message to you" | exec4glim
-
 	
 show:
 	@echo "CFLAGS=${CFLAGS}"
-	@echo "IKSEMEL_I_FLAGS=@IKSEMEL_I_FLAGS@"
-	
-	
+	@echo "IKSEMEL_I_FLAGS=${IKSEMEL_I_FLAGS}"
 	
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
 
 clean: clean.test
-	${RM} *.o core *.core *.bak *.4ae *.err *.glb *.h exec4glim *.afr *.frm *.log *${SO_EXT} *.dll
+	${RM} *.o core *.core *.bak *.4ae *.err *.glb *.h exec4glim *.afr \
+		*.frm *.log *${SO_EXT} *.dll
 
 clean.test:
 	${SH} ${AMAKE} test_im clean
