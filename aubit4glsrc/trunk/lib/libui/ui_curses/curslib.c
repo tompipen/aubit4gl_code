@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.63 2003-10-26 19:12:02 mikeaubury Exp $
+# $Id: curslib.c,v 1.64 2003-11-12 17:35:03 mikeaubury Exp $
 #*/
 
 /**
@@ -46,6 +46,7 @@
 =====================================================================
 */
 
+#include <stdio.h>
 #include "a4gl_lib_ui_tui_int.h"
 #include <ctype.h>
 
@@ -1057,12 +1058,41 @@ A4GL_ask_char (char *prompt, char *s, int a)	/*  prompt for an integer from user
   strcpy (s, inbuf);
 }
 
+
+void A4GL_ask_cmdline(char *prompt,char *s,int a) {
+   char lv_cmd [100+1];
+   int x;
+   int y;
+   int_flag=0;
+   A4GL_push_long(A4GL_get_curr_height());
+   A4GL_push_long(1);
+   A4GL_push_long(1);
+   A4GL_push_long(A4GL_get_curr_width());
+   A4GL_cr_window("aclfgl_promptwin", 1,255,255,1,255,0,255,255,(0x0));
+   A4GL_push_char("!");
+   START_BLOCK_1:
+      {char _p[36];int _fld_dr;
+      A4GL_start_prompt(&_p,0,0,0,0);
+      while ((int)GET("s_prompt",_p,"mode")!=2) {_fld_dr=A4GL_prompt_loop(&_p,0);
+      CONTINUE_BLOCK_1:    ;   /* add_continue */
+      }
+      A4GL_pop_var(&lv_cmd,6553600);
+      }
+   END_BLOCK_1: ;
+   aclfgli_clr_err_flg();
+   if (int_flag) strcpy(lv_cmd,"");
+   A4GL_trim(lv_cmd);
+   lv_cmd[a]=0;
+   strcpy(s,lv_cmd);
+   A4GL_remove_window("aclfgl_promptwin");
+}
+
 /**
  *
  * @todo Describe function
  */
 void
-A4GL_ask_cmdline (char *prompt, char *s, int a)	/*  prompt for an integer from user  */
+A4GL_ask_cmdline_old (char *prompt, char *s, int a)	/*  prompt for an integer from user  */
 {
   char inbuf[80] = "";
   textarea area2;
@@ -2725,14 +2755,21 @@ A4GL_getkey (void)
 	    {
 	      inprompt = 1;
 	      A4GL_ask_cmdline ("Enter Command", cmd, 60);
-	      if (!abort_pressed)
+	
+	      if (!abort_pressed && strlen(cmd))
 		{
 		  A4GL_mja_endwin ();
 		  system (cmd);
-		  sleep (1);
+
+
+		  printf("\n\nPress return to continue\n"); fflush(stdout);
+		  while (getc(stdin)!='\n') ;
+
+		  clearok(curscr,1);
 		  A4GL_mja_refresh ();
 		}
 	      inprompt = 0;
+		//return -1;
 	      continue;
 	    }
 	}
@@ -3433,7 +3470,7 @@ static int A4GL_menu_getkey (ACL_Menu * menu)
      /* a = A4GL_getch_swin (menu->menu_win); */
 
   A4GL_debug("wprintw - %s",menu->menu_title);
-
+  A4GL_subwin_gotoxy (menu->menu_win, 1, 1,A4GL_get_curr_border());
       //wprintw (menu->menu_win, "%s", menu->menu_title);
 	
 
@@ -3494,16 +3531,21 @@ static int A4GL_menu_getkey (ACL_Menu * menu)
 	{
 	  if (a == '!' && !inprompt)
 	    {
-	      inprompt = 1;
-	      A4GL_debug ("asking for cmdline");
-	      A4GL_ask_cmdline ("Enter Command", cmd, 60);
-	      if (!abort_pressed)
-		{
-		  A4GL_mja_endwin ();
-		  system (cmd);
-		  sleep (1);
-		  A4GL_mja_refresh ();
-		}
+              inprompt = 1;
+              A4GL_ask_cmdline ("Enter Command", cmd, 60);
+
+              if (!abort_pressed && strlen(cmd))
+                {
+                  A4GL_mja_endwin ();
+                  system (cmd);
+
+
+                  printf("\n\nPress return to continue\n"); fflush(stdout);
+                  while (getc(stdin)!='\n') ;
+
+                  clearok(curscr,1);
+                  A4GL_mja_refresh ();
+                }
 	      inprompt = 0;
 	      continue;
 	    }

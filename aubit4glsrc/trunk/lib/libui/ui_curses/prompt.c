@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.30 2003-10-26 19:12:03 mikeaubury Exp $
+# $Id: prompt.c,v 1.31 2003-11-12 17:35:03 mikeaubury Exp $
 #*/
 
 /**
@@ -142,14 +142,19 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
 
   if (ap)
     {
+	A4GL_debug("AP...");
       if (strlen(promptstr)) {
       		set_field_fore (sarr[0], A4GL_decode_aubit_attr (ap, 'f'));
       		set_field_back (sarr[0], A4GL_decode_aubit_attr (ap, 'b')); // maybe need 'B' for whole field..
 	}
     }
 
+  set_field_back (prompt->field, A4GL_colour_code (0));
+  set_field_fore (prompt->field, A4GL_colour_code (0)|A_NORMAL);
+
   if (af)
     {
+	A4GL_debug("AF...");
       set_field_back (prompt->field, A4GL_decode_aubit_attr (af, 'f'));
       set_field_fore (prompt->field, A4GL_decode_aubit_attr (af, 'b')); // maybe need 'B' for whole field..
       if (af&AUBIT_ATTR_INVISIBLE) {
@@ -184,6 +189,9 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   A4GL_debug ("Set form win");
   a = post_form (f);
   A4GL_debug ("Posted form=%d", a);
+
+
+
   A4GL_int_form_driver (f, REQ_FIRST_FIELD);
   A4GL_int_form_driver (f, REQ_OVL_MODE);
   //wrefresh (p);
@@ -211,7 +219,6 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
 
   f = current_field (mform);
 
-  A4GL_set_last_key (a);
 
   A4GL_debug ("In proc_key_prompt.... for %d", a);
   switch (a)
@@ -302,6 +309,7 @@ A4GL_prompt_loop (void *vprompt,int timeout)
 {
   int a;
   WINDOW *p;
+int was_aborted=0;
   FORM *mform;
 
   //int kpress;
@@ -344,23 +352,55 @@ A4GL_prompt_loop (void *vprompt,int timeout)
   if (prompt->mode > 0)
     return 0;
 
-  pos_form_cursor (mform);
 
-  if (prompt_last_key!=0) {
+  if (prompt_last_key==0) {
+  	pos_form_cursor (mform);
+	abort_pressed=0;
+	was_aborted=0;
+  	A4GL_reset_processed_onkey();
+  	a=A4GL_real_getch_swin (p);
+  	A4GL_clr_error_nobox("prompt");
+	prompt_last_key=a;
+  	A4GL_set_last_key (a);
+  	prompt->lastkey = A4GL_get_lastkey ();
+	if (abort_pressed ) prompt_last_key=-1;
+
+	if (abort_pressed) {
+		//A4GL_error_nobox("ABORT!!!",0);
+		was_aborted=1;
+	} else {
+		was_aborted=0;
+	}
+	return -90;
+  } else {
+	if (was_aborted) {
+		abort_pressed=1;
+		//A4GL_error_nobox("ABORT 2",0);
+	}
+	if (!A4GL_has_processed_onkey()) {
+		a=prompt_last_key;
+	} else {
 		prompt_last_key=0;
-		return -90;
+		return -1000; // Ignored...
+	}
+	if (was_aborted) {
+		abort_pressed=1;
+		//A4GL_error_nobox("ABORT 1",0);
+	}
+	prompt_last_key=0;
   }
 
-  a=A4GL_real_getch_swin (p);
-  A4GL_reset_processed_onkey();
-
-  A4GL_clr_error_nobox("prompt");
 
 
   a = A4GL_proc_key_prompt (a, mform, prompt);
-  prompt->lastkey = A4GL_get_lastkey ();
-  prompt_last_key=prompt->lastkey;
+  if (was_aborted) abort_pressed=1;
+
+
+  //prompt_last_key=prompt->lastkey;
+
   if (abort_pressed) {
+		//A4GL_error_nobox("ABORT - process",0);
+
       A4GL_push_null (DTYPE_CHAR,1);
       prompt->mode = 2;
       A4GL_gui_endprompt ((long) prompt);       /* void    A4GL_gui_endprompt            (long ld); */
@@ -394,6 +434,7 @@ A4GL_prompt_loop (void *vprompt,int timeout)
     {
 	prompt_last_key=0;
       A4GL_int_form_driver (mform, REQ_VALIDATION);
+	A4GL_zrefresh();
       wrefresh (p);
       A4GL_debug ("Return pressed");
       prompt->mode = 1;
@@ -406,20 +447,26 @@ A4GL_prompt_loop (void *vprompt,int timeout)
   	A4GL_debug ("Called int_form_driver");
   	A4GL_int_form_driver (mform, REQ_VALIDATION);
   }
-  A4GL_debug ("Called formdriver(validation)");
+
+
+
   wrefresh (p);
-  A4GL_debug ("Refreshed screen");
 #ifdef DEBUG
   {
+  A4GL_debug ("Refreshed screen");
     A4GL_debug (">>>Buffer='%s'", field_buffer (prompt->field, 0));
   }
 #endif
+
   if (prompt->charmode)
     {
       A4GL_push_char (field_buffer (prompt->field, 0));
     }
-  prompt_last_key=0; // we'll do it now 
-  return -90;
+
+
+  //prompt_last_key=0; // we'll do it now 
+  //return -90;
+  return -1000;
 }
 
 /**
