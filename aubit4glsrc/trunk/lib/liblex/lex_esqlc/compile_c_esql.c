@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.43 2003-07-23 14:41:04 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.44 2003-07-23 19:03:40 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1334,7 +1334,7 @@ sz (int d, int s)
       return "";
 
     case 10:
-      return "YEAR TO FRACTION(5)";
+      return " YEAR TO FRACTION(5)";
 
     case 8:
     case 5:                     /* decimal */
@@ -1346,7 +1346,7 @@ sz (int d, int s)
       return buff;
 
     case 14:
-      sprintf (buff, "year to second(5)");
+      sprintf (buff, " year to second(5)");
       return buff;
     }
   return "";

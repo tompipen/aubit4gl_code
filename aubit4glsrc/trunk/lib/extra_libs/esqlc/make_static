@@ -10,6 +10,8 @@ echo "GCC COMPILE"
 
 gcc -DDIALECT_POSTGRES -g -c -o helper_funcs_p.o helper_funcs.c -I$POSTGRESDIR/include -I/home/aubit4gl/sourceforge/aubit4glsrc/incl 
 
-gcc --shared -o libesqlhelper_funcs_p.so helper_funcs_p.o -L/home/aubit4gl/sourceforge/aubit4glsrc/lib -L$POSTGRESDIR/lib -lpgtypes -laubit4gl
+rm libesqlhelper_funcs_p.so
+ld -L$AUBITDIR/lib -L$POSTGRESDIR/lib -laubit4gl --shared -o libesqlhelper_funcs_p.so -Bstatic helper_funcs_p.o 
+#-lpq -lecpg_compat -lpgtypes -lecpg -lpgtypes -lecpg_compat -lecpg -lpgtypes -lecpg_compat -lecpg -lpq -lecpg
 
 cp libesqlhelper_funcs_p.so ../..

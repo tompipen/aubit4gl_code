@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.72 2003-07-23 14:41:04 mikeaubury Exp $
+# $Id: compile_c.c,v 1.73 2003-07-23 19:03:40 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -78,6 +78,7 @@ char *get_namespace (char *s);
 void print_init_var (char *name, char *prefix, int alvl);
 void printcomment (char *fmt, ...);
 int is_builtin_func (char *s);
+
 */
 int doing_cs(void );
 /*
@@ -88,6 +89,7 @@ int doing_cs(void );
 
 #include "a4gl_lib_lex_esqlc_int.h"
 
+int last_orderby_type=-1;
 void print_report_table(char *repname,char type, int c);
 /*
 =====================================================================
@@ -3270,6 +3272,7 @@ A4GL_get_default_scaling (void)
 void
 print_order_by_type (int type)
 {
+  last_orderby_type=type;
   printc ("static int fgl_rep_orderby=%d;\n", type);
 }
 
@@ -3337,13 +3340,14 @@ print_report_2 (int pdf, char *repordby)
     ("   if (_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=1;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
      get_curr_rep_name ());
   printc ("}\n");
-  printc ("if (acl_ctrl==REPORT_SENDDATA&&fgl_rep_orderby==1) {");
-  printc ("A4GL_pop_params(rbind,%d);",cnt);
 
-  print_report_table(mv_repname,'R',cnt);
-  //printc ("A4GL_add_row_report_table (&rbind,%d);",cnt);
+  if (last_orderby_type==1) {
+  	printc ("if (acl_ctrl==REPORT_SENDDATA&&fgl_rep_orderby==1) {");
+  	printc ("A4GL_pop_params(rbind,%d);",cnt);
+  	print_report_table(mv_repname,'R',cnt);
+  	printc ("return;}");
+  }
 
-  printc ("return;}");
   printc ("if (acl_ctrl==REPORT_SENDDATA) {\n");
   printc ("   int _g,_p;\n");
   printc ("   _g=A4GL_chk_params(&rbind,%d,&_ordbind,%s);\n", cnt, repordby);
@@ -3361,40 +3365,44 @@ print_report_2 (int pdf, char *repordby)
   print_rep_ret (report_cnt);
   printc ("}\n\n");
   printc ("if (acl_ctrl==REPORT_FINISH) {\n");
-  printc ("    if (fgl_rep_orderby==1) {\n");
-  printc ("        struct BINDING *reread;\n");
-  printc ("        fgl_rep_orderby=-1;\n");
-  printc ("        A4GL_push_char(_rout1);\n");
-  printc ("        A4GL_push_char(_rout2);\n");
-  printc ("        %s(2,REPORT_START);\n", get_curr_rep_name ());
+  if (last_orderby_type==1) {
+  	printc ("    if (fgl_rep_orderby==1) {\n");
+  	printc ("        struct BINDING *reread;\n");
+  	printc ("        fgl_rep_orderby=-1;\n");
+  	printc ("        A4GL_push_char(_rout1);\n");
+  	printc ("        A4GL_push_char(_rout2);\n");
+  	printc ("        %s(2,REPORT_START);\n", get_curr_rep_name ());
+	
+  	//printc ("        A4GL_init_report_table(&rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n", cnt);
+  	print_report_table(mv_repname,'I',cnt);
+	
+  	//printc ("        while (A4GL_report_table_fetch(reread,%d,&rbind))",cnt);
+  	print_report_table(mv_repname,'F',cnt);
+	
+  	printc ("                    %s(%d,REPORT_SENDDATA);\n", get_curr_rep_name (), cnt);
+  	printc (" }");
+  	printc ("        %s(0,REPORT_FINISH);\n", get_curr_rep_name ());
+	
+  	//printc ("        A4GL_end_report_table(&rbind,%d,reread);",cnt);
+  	print_report_table(mv_repname,'E',cnt);
+	
+  	printc ("        return;");
+  	printc ("    }\n");
+  }
 
-  //printc ("        A4GL_init_report_table(&rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n", cnt);
-  print_report_table(mv_repname,'I',cnt);
-
-  //printc ("        while (A4GL_report_table_fetch(reread,%d,&rbind))",cnt);
-  print_report_table(mv_repname,'F',cnt);
-
-  printc ("                    %s(%d,REPORT_SENDDATA);\n", get_curr_rep_name (), cnt);
-  printc (" }");
-  printc ("        %s(0,REPORT_FINISH);\n", get_curr_rep_name ());
-
-  //printc ("        A4GL_end_report_table(&rbind,%d,reread);",cnt);
-  print_report_table(mv_repname,'E',cnt);
-
-  printc ("        return;");
-  printc ("    }\n");
   printc ("}\n");
   printc (" ");
   printc ("if (acl_ctrl==REPORT_START) {\n");
   printc ("   A4GL_pop_char(_rout2,254);\n");
   printc ("   A4GL_pop_char(_rout1,254);\n");
-  printc ("   if (fgl_rep_orderby==1) {");
+  if (last_orderby_type==1) {
+  	printc ("   if (fgl_rep_orderby==1) {");
+  	print_report_table(mv_repname,'M',cnt);
+  	printc ("       return;");
+  	printc ("   }\n");
+  }
 
-  //printc ("       A4GL_make_report_table(&rbind,%d);",cnt);
-  print_report_table(mv_repname,'M',cnt);
 
-  printc ("       return;");
-  printc ("   }\n", cnt);
   printc ("   _useddata=0;\n");
   printc ("   _started=1;\n");
   printc ("goto output_%d;\n", report_cnt);

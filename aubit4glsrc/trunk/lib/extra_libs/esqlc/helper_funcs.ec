@@ -171,6 +171,7 @@ A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y) 
 A4GL_copy_date(long *infx,long *a4gl,int indicat,int size,int mode) {
 short  mdy[3];
 int mdy_i[3];
+long orig_date;
 	if (mode=='i') {
 		if (A4GL_isnull(DTYPE_DATE,(void *)a4gl)) {rsetnull(CDATETYPE,(void *)infx);return;}
 		A4GL_get_date(*a4gl,&mdy_i[1],&mdy_i[0],&mdy_i[2]);
@@ -184,8 +185,14 @@ int mdy_i[3];
 	if (mode=='o') {
 		if (indicat==-1||risnull(CDATETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DATE,(void *)a4gl,size); return;}
 		A4GL_debug("Got date as : '%d' %x",*infx,*infx);
-		rjulmdy(*infx,mdy); 				// Get the MDY from informix
-		//printf("%d %d %d\n",mdy[1],mdy[0],mdy[2]);
+		orig_date=*infx;
+		rjulmdy(orig_date,mdy); 				// Get the MDY from informix
+		if (mdy[2]>3000||mdy[2]<1000 || mdy[0]<1||mdy[0]>12||mdy[1]<1||mdy[1]>31) {
+			// Suspect date ?
+			A4GL_debug("SUSPECT DATE DETECTED..... : %d %d %d %d",orig_date,mdy[0],mdy[1],mdy[2]);
+			*a4gl=0;
+			return;
+		}
 		A4GL_debug("copy_date : mode=o - %d %d %d",mdy[0],mdy[1],mdy[2]);
 		*a4gl=A4GL_gen_dateno(mdy[1],mdy[0],mdy[2]); 	// And use it to generate an aubit.
 	}
