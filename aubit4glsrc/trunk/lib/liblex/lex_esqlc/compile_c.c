@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.4 2003-02-08 17:40:52 mikeaubury Exp $
+# $Id: compile_c.c,v 1.5 2003-02-10 19:54:10 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -349,8 +349,6 @@ int a;
 	    else
 	    {
 	      fprintf (outfile, "%c", buff[a]);
-
-	      fflush (outfile);
 	    }
 	  }
   }
@@ -365,8 +363,8 @@ int a;
 		}
   }
 
-	/* Having this will really slow it down... */
-	fflush(outfile);
+	/* Having this will really slow it down - only enable it if we are debugging... */
+	if (strcmp(acl_getenv("DEBUG"),"ALL")==0) fflush(outfile);
 }
 
 
