@@ -5,7 +5,7 @@
 #include "a4gl_API_ui_lib.h"
 #include "hl_proto.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.15 2004-04-05 10:09:41 saferreira Exp $";
+static char *module_id="$Id: misc.c,v 1.16 2004-04-13 09:05:05 mikeaubury Exp $";
 
 //void *UILIB_A4GL_get_curr_form (int n);
 
@@ -579,8 +579,15 @@ UILIB_A4GL_push_constr (void *vs)
 	    (char *) A4GL_construct (s->constr[a].tabname,
 				     s->constr[a].colname,
 				     A4GL_LL_field_buffer (f, 0),
-				     ((fprop->datatype & 0xffff) == 0)
-				     || ((fprop->datatype & 0xffff) == 8));
+                                     (
+(fprop->datatype & 0xff) == DTYPE_CHAR || (fprop->datatype & 0xff) == DTYPE_DATE ||(fprop->datatype & 0xff) == DTYPE_VCHAR
+
+// Don't know if this is really needed - think it was a mistake - and I meant DTYPE_DATE but put == 8 (which is really money!)
+||(fprop->datatype & 0xff) == DTYPE_MONEY  
+
+)
+
+);
 
 
  	  A4GL_assertion(ptr==0,"Pointer returned from A4GL_construct is null");

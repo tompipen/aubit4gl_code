@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.94 2004-03-18 09:42:19 mikeaubury Exp $
+# $Id: ioform.c,v 1.95 2004-04-13 09:02:29 mikeaubury Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.94 2004-03-18 09:42:19 mikeaubury Exp $";
+static char *module_id="$Id: ioform.c,v 1.95 2004-04-13 09:02:29 mikeaubury Exp $";
 /**
  * @file
  *
@@ -2724,8 +2724,10 @@ int
 	    (char *) A4GL_construct (s->constr[a].tabname,
 				     s->constr[a].colname, field_buffer (f,
 									 0),
-				     ((fprop->datatype & 0xffff) == 0)
-				     || ((fprop->datatype & 0xffff) == 8));
+				     (
+(fprop->datatype & 0xff) == DTYPE_CHAR || (fprop->datatype & 0xff) == DTYPE_DATE ||(fprop->datatype & 0xff) == DTYPE_VCHAR 
+)
+);
 	  if (strlen (ptr) > 0)
 	    {
 	      A4GL_debug ("ptr=%s\n", ptr);

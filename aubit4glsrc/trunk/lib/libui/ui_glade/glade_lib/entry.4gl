@@ -197,4 +197,20 @@ endcode
 return ""
 end function
 
+function entry_text_set(lv_form,lv_field,lv_str)
+define lv_form INTEGER
+define lv_field INTEGER
+define lv_widget INTEGER
+define lv_str char(255)
+let lv_widget=get_widget_for(lv_form,lv_field)
+if lv_widget=0 then return ""  end if
+code
+{
+A4GL_trim(lv_str);
+gtk_entry_set_text(lv_widget,lv_str);
+}
+endcode
+return 
+end function
+
 
