@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: a4gl_API_sql.h,v 1.10 2003-01-17 23:22:39 psterry Exp $
+# $Id: a4gl_API_sql.h,v 1.11 2003-01-28 23:44:54 saferreira Exp $
 #
 */
 
@@ -56,31 +56,32 @@ extern "C" {
 	 * An SQL statement identification structure.
 	 */
 	struct s_sid {
-		struct BINDING *ibind; 	/**< The input bind array */
-		struct BINDING *obind; 	/**< The output bind array */
-		int ni;                	/**< Number of elements in the input bind array*/
-		int no;               	/**< Number of elements in the output bind array*/
-		char *inputDescriptorName; 	/**< Name of input descriptor */
-		char *outputDescriptorName; /**< Name of output descriptor */
-		char *select;         	/**< The SQL statement content */
-
-	/* it looks like Andrej (me) messed up this while working on CygWin port
-	not sure why I changed this to int, but it's causing lot of warnings
-	on Linux in sql.c:
-		int hstmt;
-    */
-		void *hstmt;
-		char *statementName; 	/**< The name of the SQL statement */
+		struct BINDING *ibind; 	    /**< The input bind array */
+		struct BINDING *obind; 	    /**< The output bind array */
+		int ni;                	    /**< Number of elements in the input bind array*/
+		int no;               	    /**< Number of elements in the output bind array*/
+		char *inputDescriptorName;  /**< Name of input descriptor (ESQL) */
+		char *outputDescriptorName; /**< Name of output descriptor (ESQL) */
+		char *select;         	    /**< The SQL statement content */
+		void *hstmt;                /**< A pointer to the statement handle */
+		char *statementName;        /**< The name of the SQL statement */
 	};
+        
+        /** A better name to the statement descriptor structure */
+        typedef struct s_sid A4glStatememnt;
+        
 
 	/**
 	 * The cursor identification structure.
 	 */
 	struct s_cid {
 	  struct s_sid *statement;  /**< The statement used to declare the cursor */
-	  int mode;	            	/**< The cursor mode */
-	  void *hstmt;
+	  int mode;	            /**< The cursor mode */
+	  void *hstmt;              /**< A pointer to the satetement handle */
 	};
+        
+        /** A better name to the cursor descriptor */
+        typedef struct s_cid A4glCursor;
 
 	int 	A4GLSQL_initlib 		(void);
 	int 	A4GLSQL_initsqllib		(void); 			/* << from sql.c */

@@ -30,6 +30,8 @@ namespace Aubit4glSql_postgresql {
      void beforeFirst();
      void close();
      void first();
+
+     // @todo : I just need getPointer function.
      Blob getBlob(int columnIndex);
      Byte getByte(int columnIndex);
      Decimal getDecimal(int columnIndex);

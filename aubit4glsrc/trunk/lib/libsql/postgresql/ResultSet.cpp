@@ -102,6 +102,15 @@ string ResultSet::getString(int columnIndex) {
 Time ResultSet::getTime(int columnIndex) {
 }
 
+/**
+ * Return a pointer to the value received from the database.
+ *
+ * The cast to the corresponding type is responssbility of who uses 
+ * the function.
+ */
+void *getPointer(int columnIndex) {
+}
+
 SQLWarning ResultSet::getWarnings() {
 }
 
