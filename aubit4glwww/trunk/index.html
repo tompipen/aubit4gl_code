@@ -10,7 +10,8 @@
 
 <body bgcolor="#000000" text="#FFFFFF" link="#00FFFF" vlink="#0000FF">
 
-<p align="center"><font size="6" color="#00FF00"><a name="Top of page - Aubit 4GL GPL/GNU compiler project home page">Aubit 4GL GPL/GNU compiler project home page</a></font></p>
+<p align="center"><font size="6" color="#00FF00"><a name="Top of page - Aubit 4GL GPL/GNU compiler project home page">Aubit 4GL GPL/GNU compiler
+home page</a></font></p>
 <hr>
 
 <h3><font color="#00FF00">Quick links for impatient (yes, you!):</font>
@@ -24,21 +25,32 @@
   <li>Aubit 4gl <a href="http://www.falout.com/projects/Aubit4GL/download/aubitdownload.htm" target="_blank">download page</a>
     (on old site, this
     will gradually migrate to standard SourceForge &quot;released files&quot;
-    page)</li>
+    page - PLEASE use CVS to get source code!)</li>
   <li>Aubit 4gl <a href="aubit4gldoc/index.html">Online Manuals</a> (Manual and
     Language Reference - always current)</li>
   <li> <a href="http://www.falout.com/aubit" target="_blank">Old web site</a>
     (will gradually disappear)
   </li>
-  <li> <a href="pages/hy4gldoc.html">Hy4GL</a> documents
+  <li> <a href="pages/hy4gldoc.html">Hy4GL</a> documents (Hy4gl is GPL x4gl
+    compiler for PostgreSQL database - source is in Aubit4gl CVS)
   </li>
 </ul>
 
 
-<P><span style="background-color: #FF0000">NEWSFLASH!</span> See <a href="pages/aubit_4gl_gui.htm">GUI
-for Aubit 4GL</a>  in action!&nbsp;See <a href="pages/Aubit4GLgenerated.pdf">Aubit 4gl
-generated PDF report</a>!&nbsp;
+<P><span style="background-color: #FF0000">NEWSFLASH!</span> &nbsp;
 </P>
+
+
+<ul>
+  <li>16/09/2001: Aubit 4gl successfully compiled CSI's <a href="http://www.maximise.co.nz" target="_blank">Maximise</a>
+    ERP applications !</li>
+  <li>01/09/2001: David Prieto, author of Hy4gl, joined Aubit 4gl development
+    team</li>
+  <li> See <a href="pages/aubit_4gl_gui.htm">GUI
+for Aubit 4GL</a>  in action!&nbsp;</li>
+  <li>See <a href="pages/Aubit4GLgenerated.pdf">Aubit 4gl
+generated PDF report</a>!&nbsp;</li>
+</ul>
 
 
 <P><i><u>On this page:</u></i>
@@ -62,7 +74,8 @@ generated PDF report</a>!&nbsp;
 
 <h3 align="left"><font color="#00FF00"><a name="What is it?">What is it?</a></font></h3>
 
-<p align="left">Long time ago, Informix made a Fourth Generation Language (4GL),
+<p align="left">Long time ago, <a href="http://www.informix.com" target="_blank"> Informix</a>
+(TM) made a Fourth Generation Language (4GL),
 called Informix 4GL. It was intended to be nice language for making business process,
 database oriented programming easy and productive. Some people agreed with this,
 and started making applications in that language. And over the time, they made a
@@ -94,17 +107,19 @@ to top</a></p>
 <h3 align="left"><font color="#00FF00"><a name="Why is it?">Why is it?</a></font></h3>
 
 <p align="left">It is, because despite increasing number of commercial I-4GL compiler
-makers, Informix professionals was increasingly frustrated by lack of mainly professional
+makers, Informix professionals where increasingly frustrated mainly by lack of
+true professional
 and timely support from most of commercial vendors.&nbsp;</p>
 
 <p align="left">It is, because we discovered advantages of OpenSource model
 development using other OpenSource software needed to make things work in our daily
-work, and the disadvantages in getting our job done, when having to literally
+jobs, and the disadvantages in getting our job done, when having to literally
 beg on our knees for anything that we need from commercial companies.&nbsp;</p>
 
 <p align="left">It is, because Internet enabled us to share not only knowledge,
 but provide a way for us to work together over it, using version control tools
-like CVS, change control tools like Keystone, and discussion tools like Phorum.</p>
+like CVS, change control tools, discussion tools, and other Internet enabled
+development and sharing tools.</p>
 
 <p align="left">It it, because we believe in it, since trough all this years, we
 have yet to discover more productive ways to make database oriented business
@@ -118,11 +133,12 @@ to top</a></p>
 <p align="left"> The Aubit compiler is mostly
 complete, but needs a little more work before it will be able to serve as
 drop-in replacement for current
-commercial solutions with simple recompile, particularly around reserved words
-syntaxes and keywords. If you are prepared to manually resolve few issues here
+commercial solutions with simple recompile, particularly around reserved keywords. If you are prepared to manually resolve few issues here
 and there (or just report them to us so we can fix them),&nbsp; you can compile
 and run most existing 4gl code with it. You can also learn 4gl language with it, and if you have
-the skills and will, help us develop it.</p>
+the skills and will, help us develop it. Given the fast pace of development in
+last year, we believe it is just a matter of time before Aubit 4gl will start
+replacing commercial x4gl products in production environments.</p>
 
 <p align="left"> <a href="#Top of page - Aubit 4GL GPL/GNU compiler project home page">Back
 to top</a></p>
@@ -131,7 +147,10 @@ to top</a></p>
 
 <p align="left">You can do a lot. You can participate in discussing the
 development directions, share your needs and views, and if you have 4gl and C
-skills, or maybe Java, TCL/TK, GTK++ or similar skills for GUI interface development, you can join the development process. You can also help with documentation.
+skills, SQL/ODBC skills, or maybe Java, TCL/TK, GTK++ or similar skills for GUI interface development, you can join the development process.
+We are also looking for 4GL programmers, that are willing to donate/develop 4GL
+applications and / or libraries. You can also help with documentation and web
+site.
 Good starting point is to join out email discussion list.</p>
 
 <p align="left"><a href="#Top of page - Aubit 4GL GPL/GNU compiler project home page">Back
@@ -142,7 +161,8 @@ to top</a></p>
 <p align="left">Original author of Aubit 4GL is Mike Aubury, of <a href="http://www.aubit.com">Aubit
 Computing Ltd</a>. Original authors of 4GL language are unknown to me, but
 Informix was the company to release initial compiler. According to Jonathan
-Leffler, the name Roy Harrington is one of responsible.</p>
+Leffler, the name Roy Harrington is one of &quot;responsible&quot;. Thank you,
+Roy - we really love this language!</p>
 
 <p align="left"><a href="#Top of page - Aubit 4GL GPL/GNU compiler project home page">Back
 to top</a></p>
@@ -191,7 +211,7 @@ to top</a></p>
 <ul>
   <li>
     <p align="left"><a href="http://www.informix.com">Informix</a>, original maker
-of 4GL, and maker of THE database&nbsp;</li>
+of 4GL, and maker of THE database&nbsp;(now owned by IBM)</li>
   <li>
     <p align="left"><a href="http://www.4js.com" target="_blank">4Js</a>, French
 maker of several implementations of commercial 4GL, and source of Informix D4GL</li>
@@ -279,11 +299,12 @@ to top</a></p>
 <h3 align="left"><a name="Find home for your 4GL code - donate it to OpenSource!">Find
 home for your 4GL code - donate it to OpenSource!</a></h3>
 <p align="left">To have OpenSource, GPL 4gl compiler is great, but compiler will
-not make programs by itself. So why not add few 4GL applications to this
+not make programs by itself. So why not add few 4GL applications and / or 4gl
+code libraries to this
 project?</p>
 <p align="left">I will be adding my POS app soon, as first in line.&nbsp;</p>
 <p align="left">Let us know if you have some 4gl code that you would like to see
-under GPL in out CVS.</p>
+under GPL in our CVS.</p>
 <p align="left">&nbsp;</p>
 <p align="left"><a href="#Top of page - Aubit 4GL GPL/GNU compiler project home page">Back
 to top</a></p>
