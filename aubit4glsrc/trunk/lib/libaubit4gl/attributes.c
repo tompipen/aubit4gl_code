@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.24 2004-02-10 13:50:20 mikeaubury Exp $
+# $Id: attributes.c,v 1.25 2004-03-09 10:04:59 mikeaubury Exp $
 #*/
 
 /**
@@ -774,7 +774,7 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop,
     attr += AUBIT_ATTR_DIM;
   if (r->invisible)
     attr += AUBIT_ATTR_INVISIBLE;
-  A4GL_debug (" Returning Attribute : %d\n", attr);
+  A4GL_debug (" Returning Attribute : %d (%x)\n", attr,attr);
 
   return attr;
 }
