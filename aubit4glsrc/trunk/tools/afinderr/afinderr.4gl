@@ -1,11 +1,9 @@
 {---------------------------------------------------------------------
-help.4gl	Aubit4GL help routines (work with Informix .iem files)
 
 2003-4-2	John O'Gorman john.ogorman@zombie.co.nz +64 (9) 521-0336
 
-		First working version
+Note: Uses inline C code for I/O
 
-		Note: Uses inline C code for I/O 
 }
 code
 	#include <errno.h>
@@ -23,16 +21,18 @@ endcode
 define constant HELPMAXLEN 78
 ---------   Module (static) Vars  ------------------------------------
 #define no integer	-- message no we are seeking
-define msgno smallint	-- message no found (while looping thru index)
-define len integer	-- length of full message (while looping)
-define msglen integer	-- length of full message (when found)
-define msgcount integer -- count of messages in helpfile
-define charcount integer --current count of chars read from message
-define filenotfound integer
-define msgline char(HELPMAXLEN)
-
-define msgerror array[17] of record errline char(HELPMAXLEN) end record
-define msgerrcnt integer
+define 
+	msgno smallint,	-- message no found (while looping thru index)
+	len integer,	-- length of full message (while looping)
+	msglen integer,	-- length of full message (when found)
+	msgcount integer, -- count of messages in helpfile
+	charcount integer, --current count of chars read from message
+	filenotfound integer,
+	msgline char(HELPMAXLEN),
+	msgerror array[17] of record 
+		errline char(HELPMAXLEN) 
+	end record,
+	msgerrcnt integer
 
 
 main
@@ -52,70 +52,76 @@ char buff[256];
 char buff2[256];
 struct dirent *de;
 strcpy(buff,(char *)acl_getenv("AUBITDIR"));
-strcat(buff,"/help");
+strcat(buff,"/etc");
 d=(DIR *)opendir(buff);
 
-if (d!=0) {
-	while (1) {
-		de=readdir(d);
-		if (!de) break;
-	
-		if (!strstr(de->d_name,".iem") && ! strstr(de->d_name,".hlp") && !  strstr(de->d_name,acl_getenv("A4GL_HLP_EXT"))) {
-			continue;
-		}
-		strcpy(buff2,buff);
-		strcat(buff2,"/");
-		strcat(buff2,de->d_name);
-		if (strlen(de->d_name)) {
-		A4GL_push_char(buff2);
-		A4GL_push_long(n);
-		aclfgl_newshowhelp(2);
-		} else {
-			printf("Can't readdir\n");
-			exit(2);
+	if (d!=0) {
+		while (1) {
+			de=readdir(d);
+			if (!de) break;
+		
+			if (!strstr(de->d_name,".iem") 
+				&& ! strstr(de->d_name,".hlp") 
+				&& ! strstr(de->d_name,acl_getenv("A4GL_HLP_EXT")))	
+			{
+				continue;
+			}
+			strcpy(buff2,buff);
+			strcat(buff2,"/");
+			strcat(buff2,de->d_name);
+			if (strlen(de->d_name)) {
+				A4GL_push_char(buff2);
+				A4GL_push_long(n);
+				aclfgl_newshowhelp(2);
+			} else {
+				printf("Can't readdir\n");
+				exit(2);
+			}
 		}
 	}
-}
 }
 endcode
 end main
 
 
+{*
+ * 
+ *	
+ *
+ *}
 function newshowhelp(filename,n)
-define filename char(128)
-define n integer
-define lv_char integer
-define lv_msgline char(256)
+define 
+	filename char(128),
+	n, lv_char integer,
+	lv_msgline char(256)
 
-call aclfgl_openiem(filename,n) returning lv_char,lv_msgline
-
-if lv_char then
-	display filename clipped,":"
-	display lv_msgline
-
-	while lv_char!=0
-		call aclfgl_fetchiem() returning lv_char,lv_msgline
-		if lv_char!=0 then
-			display lv_char," ",lv_msgline
-		end if
+	call aclfgl_openiem(filename,n) returning lv_char,lv_msgline
 	
-	end while
-end if
+	if lv_char then
+		display filename clipped,":"
+		display lv_msgline
+	
+		while lv_char!=0
+			call aclfgl_fetchiem() returning lv_char,lv_msgline
+			if lv_char!=0 then
+				display lv_char," ",lv_msgline
+			end if
+		
+		end while
+	end if
 
 end function
 
-
-
-
-{-------------------------------------------------------------------------
-
-	myshowerrors()	display errors (if any) in lines of help form
-
-}
-
+{*
+ * 
+ *	Display errors (if any) in lines of help form
+ *
+ *}
 local function myshowerrors()
-	define i integer
-	define l_msg char(36)
+define 
+	i integer,
+	l_msg char(36)
+	
 	#clear form
 	
 	let i = 0
@@ -133,44 +139,35 @@ local function myshowerrors()
 		let i = i + 1
 	end while
 end function
-{-------------------------------------------------------------------}
 
 code
 
+/*
+ *
+ *
+ */
 static void
 fileerror(FILE *f, char *s)
 {
-	int e;
+int e;
 
 	myseterr( s );
+	
 	if( f == NULL )
 		myseterr( strerror(errno));
-	else if( (e = ferror(f)) != 0)
-	{
+	else if( (e = ferror(f)) != 0) {
 		myseterr( strerror(e));
 	}
 }
 
-/******************************************************************
- *
- *	myseterr(s)  insert string s into msgerror array and
- *			increment msgerrcnt (which servers as a
- *			stackpointer)
- *
- */
 static void
 myseterr( char *s)
 {
-	int e;
-	char *t;
+int e;
+char *t;
 
 	fprintf(stderr, "%s\n", s );
-	//s[HELPMAXLEN]=0;
-	//t=msgerror[msgerrcnt].errline;
-	//strncpy( t,s,HELPMAXLEN);
-	//++msgerrcnt;
 }
-
 
 endcode
 

@@ -417,8 +417,8 @@ A4GL_NOCLOBBER COMPILE Turn off window names clobbering
 	Each time you use a window/form etc - t is automatically preprended with the name of the module to form a unique name across the program.
 	This means that you can safely use window 'w1' in a module without worrying if you are using window w1 in another module..
 	If you want to turn this off (so thatt it works the same way as Informix) - try setting A4GL_NOCLOBBER=Y
+	NOCLOBBER defaults to 'Y' since Jan 2005, for Informix-4GL compatibility
 	See also: A4GL_ALWAYSCLOBBER
-	
 A4GL_NO_INVIS_ATTR UI/TUI Disable usage of A_INVIS in curses - attempt alternative method for concealment
 =YES|NO
 A4GL_PAGER

@@ -1,4 +1,4 @@
-	/*
+/*
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.28 2005-02-13 15:18:44 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.29 2005-02-15 01:29:31 afalout Exp $
 #
 */
 
@@ -34,37 +34,29 @@
  *
  */
 
-
-//#include "a4gl_incl_4glhdr.h"
-
-//needed for DTYPE_MONEY DTYPE_DECIMAL DTYPE_DTIME DTYPE_DATE ...
-
 #ifdef DIALECT_QUERIX
 	//avoid redeclaration of int_flag, quit_flag, UCHAR
 	#define _NO_INT_QUIT_FLAG_
     #if (defined(__MINGW32__) || defined (__CYGWIN__))
 		//Avoid conflict of DATE in qxdefs.h with MinGW wtypes.h:
-		//#define NEWERA
 		#define _NO_WINDOWS_H_
     #endif
-    //#define __UCHAR_DEFINED__
 
-/*
-in Querix libesql.lib:
-
-erence to `rsetnull'
-erence to `deccvasc'
-erence to `risnull'
-erence to `dectoasc'
-ference to `dtcvasc'
-ference to `dttoasc'
-ference to `rmdyjul'
-ference to `rjulmdy'
-
-But them missing DtimeToChar and fammily - where are they?
-
-*/
-
+	/*
+	in Querix libesql.lib:
+	
+	erence to `rsetnull'
+	erence to `deccvasc'
+	erence to `risnull'
+	erence to `dectoasc'
+	ference to `dtcvasc'
+	ference to `dttoasc'
+	ference to `rmdyjul'
+	ference to `rjulmdy'
+	
+	But them missing DtimeToChar and fammily - where are they?
+	
+	*/
 #endif
 
 #include "a4gl_libaubit4gl.h"
@@ -111,11 +103,11 @@ void
 ESQLAPI_A4GL_copy_decimal(void *infxv,void *a4glv,short *p_indicat,int size,char mode) 
 {
 #ifdef DIALECT_POSTGRES
-EXEC SQL BEGIN DECLARE SECTION;
-decimal *infx;
-EXEC SQL END DECLARE SECTION;
+	EXEC SQL BEGIN DECLARE SECTION;
+	decimal *infx;
+	EXEC SQL END DECLARE SECTION;
 #else
-dec_t *infx;
+	dec_t *infx;
 #endif
 fgldecimal *a4gl;
 char b[255];
@@ -307,10 +299,10 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 			int a;
 if (p_indicat) indicat=*p_indicat;
 #ifdef DIALECT_POSTGRES
-#ifdef HAVE_INT64_TIMESTAMP
-#error INT64 timestamp not implemented
-#endif
-if (*infx==0) indicat=-1;
+	#ifdef HAVE_INT64_TIMESTAMP
+		#error INT64 timestamp not implemented
+	#endif
+	if (*infx==0) indicat=-1;
 #endif
 			if (indicat==-1||risnull(CDTIMETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DTIME,(void *)a4gl,size); return;}
 
@@ -392,10 +384,10 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 			int a;
 			if (p_indicat) indicat=*p_indicat;
 #ifdef DIALECT_POSTGRES
-#ifdef HAVE_INT64_TIMESTAMP
-#error INT64 timestamp not implemented
-#endif
-//if (*infx==0) indicat=-1;
+	#ifdef HAVE_INT64_TIMESTAMP
+	#error INT64 timestamp not implemented
+	#endif
+	//if (*infx==0) indicat=-1;
 #endif
 			if (indicat==-1||risnull(CINVTYPE,(void*)infx)) { A4GL_setnull(DTYPE_INTERVAL,(void *)a4gl,size); return;}
 
@@ -503,7 +495,7 @@ long orig_date;
 	if (mode=='o') {
 		if (p_indicat) indicat=*p_indicat;
 #ifdef DIALECT_POSTGRES
-if (*infx==0) indicat=-1;
+	if (*infx==0) indicat=-1;
 #endif
 		if (indicat==-1||risnull(CDATETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DATE,(void *)a4gl,size); return;}
 		A4GL_debug("Got date as : '%d' %x",*infx,*infx);
@@ -625,9 +617,9 @@ void
 popdec(void *vx)
 {
 #ifdef DIALECT_POSTGRES
-EXEC SQL BEGIN DECLARE SECTION;
-	decimal *x;
-EXEC SQL END DECLARE SECTION;
+	EXEC SQL BEGIN DECLARE SECTION;
+		decimal *x;
+	EXEC SQL END DECLARE SECTION;
 #else
 	dec_t *x;
 #endif

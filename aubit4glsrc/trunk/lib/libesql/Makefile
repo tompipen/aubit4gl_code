@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.26 2005-02-03 07:47:32 afalout Exp $
+# $Id: Makefile,v 1.27 2005-02-15 01:29:31 afalout Exp $
 #
 
 ROOT    =../..
@@ -180,7 +180,12 @@ helper_funcs_postgresql.o: helper_funcs.ec
 helper_funcs_sap.o: helper_funcs.ec
 #cpc will allways add .cpc extension to any source files
 	cp $^ $^.cpc
-	${SAPDB_ESQLC} $^ -I${ROOT}/incl -o $@ -DDIALECT_SAP -I/opt/sapdb/interfaces/precompiler/incl
+#Had to disable syntax check of EXEC SQL statements, because SAP EC pre-compiler
+#does not take in account #ifdef's, and then fail on syntax specific to
+#another ESQL/C
+#check nocheck   ::  -H nocheck              (default: -H check)
+#      syntax    ::  -H syntax
+	${SAPDB_ESQLC} -H nocheck $^ -I${ROOT}/incl -o $@ -DDIALECT_SAP -I/opt/sapdb/interfaces/precompiler/incl
 	rm $^.cpc
 
 ###################
