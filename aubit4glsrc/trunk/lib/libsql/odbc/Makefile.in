@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-01-18 03:09:10 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-01-23 09:06:18 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -84,6 +84,14 @@ iodbc: 		clean show libSQL_iodbc.so
 unixodbc: 	clean show libSQL_unixodbc.so
 	@echo "unixODBC target compiled successfully"
 
+ifxodbc: 	clean show libSQL_ifxodbc.so
+	@echo "Informix ODBC target compiled successfully"
+
+pgodbc: 	clean show libSQL_pgodbc.so
+	@echo "PostgreSQL ODBC target compiled successfully"
+
+
+
 #	    IODBC_INCLUDE=-I$withval/include
 #	    IODBC_LFLAGS=-L$withval/lib
 #	    IODBC_LIBS=-liodbc
@@ -92,19 +100,38 @@ unixodbc: 	clean show libSQL_unixodbc.so
 libSQL_iodbc.so: CFLAGS+=-DIODBC @IODBC_INCLUDE@ @IODBC_LFLAGS@ ${LOCAL_CFLAGS}
 libSQL_iodbc.so: ${OBJECTS}
 #	ld  -fPIC -shared $^ -o $@ -liodbc ${IODBC_LFLAGS} @IODBC_INCLUDE@ @IODBC_LFLAGS@ @IODBC_LIBS@
-	@echo LOCAL_CFLAGS = ${LOCAL_CFLAGS}
-	@echo CFLAGS = ${CFLAGS}
+#	@echo LOCAL_CFLAGS = ${LOCAL_CFLAGS}
+#	@echo CFLAGS = ${CFLAGS}
 	ld  -fPIC -shared $^ -o $@ @IODBC_LIBS@ @IODBC_LFLAGS@
 	cp $@ ../..
 
 #libSQL_unixodbc.so: CFLAGS+=-DUNIXODBC ${TMP_CFGLAGS} ${LOCAL_CFLAGS}
 libSQL_unixodbc.so: CFLAGS+=-DUNIXODBC @UNIXODBC_INCLUDE@ @UNIXODBC_LFLAGS@ ${LOCAL_CFLAGS}
 libSQL_unixodbc.so: ${OBJECTS}
-	@echo LOCAL_CFLAGS = ${LOCAL_CFLAGS}
-	@echo CFLAGS = ${CFLAGS}
+#	@echo LOCAL_CFLAGS = ${LOCAL_CFLAGS}
+#	@echo CFLAGS = ${CFLAGS}
 #	ld  -fPIC -shared $^ -o $@ -lodbc ${UNIXODBC_LFLAGS}
 	ld  -fPIC -shared $^ -o $@ @UNIXODBC_LIBS@ @UNIXODBC_LFLAGS@
 	cp $@ ../..
+
+
+#libSQL_ifxodbc.so: CFLAGS+=-DIFXODBC -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/cli -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql -Xlinker -rpath -Xlinker ${INFORMIXDIR}/lib/esql ${LOCAL_CFLAGS}
+libSQL_ifxodbc.so: CFLAGS+=-DIFXODBC -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/cli -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql ${LOCAL_CFLAGS}
+libSQL_ifxodbc.so: ${OBJECTS}
+#	@echo LOCAL_CFLAGS = ${LOCAL_CFLAGS}
+#	@echo CFLAGS = ${CFLAGS}
+#	ld  -fPIC -shared $^ -o $@ -lodbc ${UNIXODBC_LFLAGS}
+	ld  -fPIC -shared $^ -o $@ -lifcli -rpath ${INFORMIXDIR}/lib/esql -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql
+	cp $@ ../..
+
+libSQL_pgodbc.so: CFLAGS+=-DPGODBC ${LOCAL_CFLAGS}
+libSQL_pgodbc.so: ${OBJECTS}
+	@echo LOCAL_CFLAGS = ${LOCAL_CFLAGS}
+	@echo CFLAGS = ${CFLAGS}
+#	ld  -fPIC -shared $^ -o $@ -lodbc ${UNIXODBC_LFLAGS}
+	ld  -fPIC -shared $^ -o $@ -lpsqlodbc
+	cp $@ ../..
+
 
 .PHONY : show
 show:

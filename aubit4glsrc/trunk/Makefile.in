@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.21 2002-01-20 10:04:33 afalout Exp $
+# $Id: Makefile.in,v 1.22 2002-01-23 09:06:16 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -180,6 +180,20 @@ endif
 ifeq "${HAVE_IODBC}" "yes"
 	TOLIBCUI	+=$(SOURCE)/lib/libSQL_iodbc.so
 endif
+
+ifneq "@IFMX_ESQLC@" "no"
+	TOLIBCUI	+=$(SOURCE)/lib/libSQL_esql.so
+endif
+
+ifneq "@HAVE_IFXODBC@" "no"
+    ALL				+=libSQL_ifxodbc.so
+	TOLIBCUI	+=$(SOURCE)/lib/libSQL_ifxodbc.so
+endif
+
+ifneq "@HAVE_PGODBC@" "no"
+	TOLIBCUI	+=$(SOURCE)/lib/libSQL_pgodbc.so
+endif
+
 
 
 MKFILNAME	=Makefile
@@ -731,6 +745,13 @@ source.tar:
 	${MKPATH} $(INSTALL_DIR)
 	(cd $(INSTALL_DIR); autocvspasswd; cvs -z3 checkout $(AUBITCVSNAME))
 	(cd $(INSTALL_DIR)/$(AUBITCVSNAME); tar -cvzf $(SOURCETARNAME) * )
+
+tar: clean.all
+#COMPILE_DATE=20-01-2002
+#TARGET=i586-pc-linux-gnu
+	${RM} aubit4gl-src-${AUBIT_VERSION}.${AUBIT_BUILD}.tgz
+	tar -cvzf aubit4gl-src-${AUBIT_VERSION}.${AUBIT_BUILD}.tgz *
+	@echo "Aubit source tarball created"
 
 source.tar.sf:
 	${RMDIR} $(INSTALL_DIR)

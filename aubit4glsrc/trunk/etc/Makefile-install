@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install,v 1.1 2002-01-20 10:04:36 afalout Exp $
+# $Id: Makefile-install,v 1.2 2002-01-23 09:06:18 afalout Exp $
 #
 
 #This file gets installed to root of binary installation, under name "Makefile"
@@ -34,8 +34,8 @@
 #All stuff common to more then one Aubit compiler make file is there:
 include incl/Makefile-common
 
-install: config install.links install.aubitrc install.libs.links test \
-		remove.aubitrc
+install: config install.links install.aubitrc install.libs.links remove.aubitrc \
+		test
 
 #install.libs.conf
 	@echo Aubit compiler binary disrtibution installed.

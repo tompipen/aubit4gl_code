@@ -24,9 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.6 2002-01-18 03:09:10 afalout Exp $
+# $Id: sqlex.c,v 1.7 2002-01-23 09:06:18 afalout Exp $
 #
 */
+
+#include <stdio.h>
+#include <stdarg.h>
+#include "libincl/dtypes.h"
 
 //#ifdef WIN32
 #ifdef __CYGWIN__
@@ -39,7 +43,9 @@
 		#include <sql.h>
 		#include <sqlext.h>
 		#include <odbcinst.h>
-	#else
+	#endif
+
+	#ifdef IODBC
 		#ifdef OLDIODBC
 			#include <iodbc.h>
 			#include <isql.h>
@@ -50,11 +56,20 @@
             #include <sqltypes.h>
         #endif
 	#endif
-#endif
 
-#include <stdio.h>
-#include <stdarg.h>
-#include "libincl/dtypes.h"
+	#ifdef IFXODBC
+		#include <incl/cli/infxcli.h>
+		#include <incl/cli/infxsql.h>
+		#include <incl/cli/sqlucode.h>
+	#endif
+
+	#ifdef PGODBC
+			#include <pgsql/iodbc/iodbc.h>
+			#include <pgsql/iodbc/isql.h>
+			#include <pgsql/iodbc/isqlext.h>
+	#endif
+
+#endif
 
 // stack.h will eventually include stdlib.h, which uses getenv(), so
 // we need to set GETENV_OK and only then include debug.h

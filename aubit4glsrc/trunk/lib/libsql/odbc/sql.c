@@ -33,7 +33,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.10 2002-01-23 00:01:04 mikeaubury Exp $
+# $Id: sql.c,v 1.11 2002-01-23 09:06:18 afalout Exp $
 #
 */
 
@@ -66,8 +66,10 @@
 		#include <sql.h>
 		#include <sqlext.h>
 		#include <odbcinst.h>
-	#else
-		#ifdef OLD_IODBC
+	#endif
+
+	#ifdef IODBC
+		#ifdef OLDIODBC
 			#include <iodbc.h>
 			#include <isql.h>
 			#include <isqlext.h>
@@ -76,8 +78,27 @@
             #include <sqlext.h>
             #include <sqltypes.h>
         #endif
-    #endif
+	#endif
+
+	#ifdef IFXODBC
+		#include <incl/cli/infxcli.h>
+		#include <incl/cli/infxsql.h>
+		#include <incl/cli/sqlucode.h>
+	#endif
+
+	#ifdef PGODBC
+			#include <pgsql/iodbc/iodbc.h>
+			#include <pgsql/iodbc/isql.h>
+			#include <pgsql/iodbc/isqlext.h>
+	#endif
+
 #endif
+
+
+//usr/include/sqltypes.h:172: redefinition of `SQLHWND'
+//opt/informix/incl/cli/infxsql.h:175: `SQLHWND' previously declared here
+
+
 
 #define DTYPE_DATE 7
 char *decode_rc(int a);

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2002-01-18 03:09:10 afalout Exp $
+# $Id: Makefile.in,v 1.16 2002-01-23 09:06:18 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -156,6 +156,18 @@ ifeq "$(PDFBUILD)" "yes"
 	ALL 			+=libPDF_PDF.so
 endif
 
+ifneq "@IFMX_ESQLC@" "no"
+	ALL 			+=libSQL_esql.so
+endif
+
+ifneq "@HAVE_IFXODBC@" "no"
+    ALL				+=libSQL_ifxodbc.so
+endif
+
+ifneq "@HAVE_PGODBC@" "no"
+	ALL				+=libSQL_pgodbc.so
+endif
+
 
 OBJS				=${CMODS:.c=.o} project.o
 OBJSNOSQL			+=${CMODSNOSQL:.c=.o} project.o
@@ -193,9 +205,17 @@ libSQL_unixodbc.so:
 	${MAKE} $(MKNAME) -C libsql/odbc unixodbc
 	cp libsql/odbc/*.so .
 
-#libSQL_esqlc.so
-#	${MAKE} $(MKNAME) -C libsql/esqlc
+libSQL_esql.so:
+	${MAKE} $(MKNAME) -C libsql/esqlc
 #	cp libsql/libsqlc/*.so .
+
+
+libSQL_ifxodbc.so:
+	${MAKE} $(MKNAME) -C libsql/odbc ifxodbc
+
+libSQL_pgodbc.so:
+	${MAKE} $(MKNAME) -C libsql/odbc pgodbc
+
 
 #----------------- with ODBC, if ODBC != no ----------------------
 
@@ -346,7 +366,7 @@ clean.libincl:
 clean.libsql:
 	${MAKE} $(MKNAME) -C libsql/nosql clean
 	${MAKE} $(MKNAME) -C libsql/odbc clean
-#	${MAKE} $(MKNAME) -C libsql/esqlc
+	${MAKE} $(MKNAME) -C libsql/esqlc clean
 
 clean.libpdf:
 	${MAKE} $(MKNAME) -C libpdf clean

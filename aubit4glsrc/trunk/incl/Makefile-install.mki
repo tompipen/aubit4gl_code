@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.1 2002-01-20 10:04:36 afalout Exp $
+# $Id: Makefile-install.mki,v 1.2 2002-01-23 09:06:18 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -104,7 +104,7 @@ deinstall.all: deinstall.libs.links deinstall.bin.links
 		$(INSTALL_DIR)/bin/genmake $(INSTALL_DIR)/bin/mdecompile $(INSTALL_DIR)/bin/prepmake \
 		$(INSTALL_DIR)/bin/fdecompile $(INSTALL_DIR)/bin/fshow $(INSTALL_DIR)/bin/fshow-gtk
 
-	${RM} $(INSTALL_DIR)/README.txt
+	${RM} $(INSTALL_DIR)/README.txt $(INSTALL_DIR)/*.tgz $(INSTALL_DIR)/configure $(INSTALL_DIR)/Makefile
 	${RM} $(INSTALL_DIR)/incl/4glhdr.h $(INSTALL_DIR)/incl/acl4glgui.h $(INSTALL_DIR)/incl/*.mk \
 		$(INSTALL_DIR)/incl/*.mki $(INSTALL_DIR)/incl/Makefile-common
 	${RM} $(INSTALL_DIR)/lib/libaclall.a $(INSTALL_DIR)/lib/libaclshared.so \
@@ -112,7 +112,9 @@ deinstall.all: deinstall.libs.links deinstall.bin.links
     	$(INSTALL_DIR)/lib/libaclsharedgui.so $(INSTALL_DIR)/lib/libgtk4gl.so \
 		$(INSTALL_DIR)/lib/libgtk4gl_x.so $(INSTALL_DIR)/lib/libaclallgui.a  \
 		$(INSTALL_DIR)/lib/libgtk4gl_x.a  $(INSTALL_DIR)/lib/libSQL_unixodbc.so \
-        $(INSTALL_DIR)/lib/libSQL_iodbc.so
+        $(INSTALL_DIR)/lib/libSQL_iodbc.so $(INSTALL_DIR)/lib/libSQL_esql.so  \
+		$(INSTALL_DIR)/lib/libSQL_ifxodbc.so  $(INSTALL_DIR)/lib/libSQL_pgodbc.so
+
 
 #examples:
 	${RM} $(INSTALL_DIR)/tools/test/*.4gl $(INSTALL_DIR)/tools/test/*.per \
@@ -123,7 +125,8 @@ deinstall.all: deinstall.libs.links deinstall.bin.links
 	${RM} $(INSTALL_DIR)/docs/changelog.txt $(INSTALL_DIR)/docs/COPYING $(INSTALL_DIR)/docs/CREDITS \
 		$(INSTALL_DIR)/docs/LICENSE
 #config examples
-	${RM} $(INSTALL_DIR)/etc/odbc.ini.example
+	${RM} $(INSTALL_DIR)/etc/odbc.ini.example $(INSTALL_DIR)/etc/aubitrc.in
+	rm -rf $(INSTALL_DIR)/etc/config
 
 #delete this directories only if they are now empty:
 	-rmdir $(INSTALL_DIR)/bin

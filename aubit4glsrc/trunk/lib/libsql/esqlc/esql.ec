@@ -2,9 +2,9 @@
 #include "incl/esql/sqlca.h"
 #include <stdio.h>
 #include <string.h>
-#include "libincl/debug.h"
+//#include "libincl/debug.h"
 #include "libincl/database.h"
-#include "libincl/stack.h"
+//#include "libincl/stack.h"
 #include "libincl/pointers.h"
 #include "libincl/dtypes.h"
 #include <stdlib.h>
@@ -15,6 +15,16 @@ long pcnt=0;
 
 #include <stdarg.h>
 #include "libincl/dtypes.h"
+
+
+// stack.h will eventually include stdlib.h, which uses getenv(), so
+// we need to set GETENV_OK and only then include debug.h
+#include "libincl/stack.h"
+#define GETENV_OK
+#include "libincl/debug.h"
+
+
+
 
 //extern sqlca_struct sqlca;
 //extern long status;
@@ -151,7 +161,7 @@ struct sqlvar_struct *col;
       return 0;
     }
 
-  strcpy(stmt,get_uniqname_1(sid->hstmt);
+  strcpy(stmt,get_uniqname_1(sid->hstmt));
 
   EXEC SQL describe  $stmt into udesc;
 

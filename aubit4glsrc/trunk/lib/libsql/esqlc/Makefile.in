@@ -1,0 +1,16 @@
+override CFLAGS+=-I../.. -I../../../compilers/fcompile -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql
+
+libSQL_esql.so: esql.o
+#libSQL_esql.so: esql.c
+	ld  -fPIC -shared esql.o -o libSQL_esql.so
+	cp libSQL_esql.so ../..
+
+esql.o: esql.c
+
+esql.c:
+#	${ESQL_EC} -e $<
+	esql -c esql.ec -I${INFORMIXDIR} -I../.. -I../../../compilers/fcompile
+
+
+clean:
+	rm -f *.o *.so *.bak *.c
