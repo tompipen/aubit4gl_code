@@ -168,6 +168,7 @@ do
 	then
 		$mkscript $file >tmp.$$
 		mv tmp.$$ $link
+		#echo "installing to $FGLBLDBIN $instfile $link"
 		$instfile $link $FGLBLDBIN $owner $group $perms
 	else
 		$instfile $file $FGLBLDDIR $owner $group $perms

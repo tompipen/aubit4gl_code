@@ -1092,7 +1092,7 @@ else
 		AUBIT_SOURCE=1
 	else
 		#no switch, detect if we are in source code tree
-		if test -f "dlist.c"; then
+		if test -f "source/dlist.c"; then
 			AUBIT_SOURCE=1
 	    else
 			AUBIT_SOURCE=0
@@ -6722,7 +6722,7 @@ LIB_PREFIX=$prefix/aubit4gl/lib
 
 if test "$AUBIT_SOURCE" = "1" ; then
 
-	ac_config_files="$ac_config_files Makefile etc/fglbldrc include/informix.mk"
+	ac_config_files="$ac_config_files Makefile ./source/Makefile etc/fglbldrc include/informix.mk"
 
 else
 
@@ -7037,11 +7037,12 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+  "./source/Makefile" ) CONFIG_FILES="$CONFIG_FILES ./source/Makefile" ;;
   "etc/fglbldrc" ) CONFIG_FILES="$CONFIG_FILES etc/fglbldrc" ;;
   "include/informix.mk" ) CONFIG_FILES="$CONFIG_FILES include/informix.mk" ;;
   "etc/fglbldrc-bin" ) CONFIG_FILES="$CONFIG_FILES etc/fglbldrc-bin" ;;
   "include/fglbld_config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS include/fglbld_config.h" ;;
-  *) { { echo "$as_me:7044: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:7045: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -7337,7 +7338,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:7340: creating $ac_file" >&5
+    { echo "$as_me:7341: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -7355,7 +7356,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:7358: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:7359: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -7368,7 +7369,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:7371: error: cannot find input file: $f" >&5
+           { { echo "$as_me:7372: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -7429,7 +7430,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:7432: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:7433: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -7440,7 +7441,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:7443: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:7444: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -7453,7 +7454,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:7456: error: cannot find input file: $f" >&5
+           { { echo "$as_me:7457: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -7570,7 +7571,7 @@ cat >>$CONFIG_STATUS <<\EOF
   rm -f $tmp/in
   if test x"$ac_file" != x-; then
     if cmp -s $ac_file $tmp/config.h 2>/dev/null; then
-      { echo "$as_me:7573: $ac_file is unchanged" >&5
+      { echo "$as_me:7574: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \

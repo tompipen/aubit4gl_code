@@ -1,23 +1,25 @@
-#	@(#)$Id: Makefile.in,v 1.3 2002-06-20 09:10:41 afalout Exp $
+#	@(#)$Id: Makefile.in,v 1.1 2002-06-20 09:10:42 afalout Exp $
 #
-#	Makefile for FGLBLD program
-#	Works with standard Xenix make and RMK
+#This makefile should make only 2 targets:
+#
+#	fglgo (custom P-code runner) and fgldb (debuger P-code runner - optional)
+#   fglbld.4gi (FGLBLD program itself)
+#
+#
+#	libdlist.a  and fgiusr.o that are used to make fglgo
+#
+########################################################################
 
-#############################################################################
-# Recognised targets:
-#	all:			Compiles complete system (default target)
-#	rds:			Compiles I4GL-RDS version of complete system
-#	c4gl:			Compiles I4GL (compile) version of complete system
-#	shar:			Creates shell archive of source
-#	cpio:			Creates cpio archive of compiled code
-#	distribution:	Creates a distribution directory
-#	cleanup:		Remove everything
-#############################################################################
 
-include etc/fglbldrc
+#TODO: delete all thinks not nececery in this file
+
+
+ROOT=../
+
+include ${ROOT}etc/fglbldrc
 
 # Rules for compiling Informix
-include include/informix.mk
+include ${ROOT}include/informix.mk
 
 # Directive for RMK -- does not affect MAKE
 .AUGMENTED_MAKE:
@@ -27,15 +29,16 @@ include include/informix.mk
 #############################################################################
 #	General Definitions
 #############################################################################
-INCL_DIR=include
+INCL_DIR=${ROOT}include
 #PER_EXT=4pr
 PER_EXT=per
-PER_DIR=./per/
+PER_DIR=${ROOT}per/
 FRM_DIR=${PER_DIR}
-MANDIR=./man/
-DOCDIR=./doc/
-ETCDIR=./etc/
-SRCDIR=./source/
+MANDIR=${ROOT}man/
+DOCDIR=${ROOT}doc/
+ETCDIR=${ROOT}etc/
+#SRCDIR=./source/
+SRCDIR=./
 
 FGLBLDDIR=.
 IFLAGS=-I${INFORMIXDIR}/incl -I${INFORMIXDIR}/incl/tools -I${INFORMIXDIR}/incl/esql -I${INCL_DIR}
@@ -77,8 +80,8 @@ ETCFILES=\
 	${SRCDIR}checkint.4gl\
 	${SRCDIR}interr.4gl\
 	${SRCDIR}nxtfield.4gl\
-	perform.mk\
-	perform.msg\
+	${ROOT}perform.mk\
+	${ROOT}perform.msg\
 	${SRCDIR}performc.4gl\
 	${SRCDIR}performg.4gl\
 	${SRCDIR}performm.4gl\
@@ -217,7 +220,7 @@ FILES.4go=${GLOBFILES.4go} ${OTHERFILES.4go}
 RDS.PROGRAM=\
 	fglbld.4gi
 
-RDS.RUNTIME=\
+oldRDS.RUNTIME=\
 	${ALTFILES}\
 	${DOCFILES}\
 	${ETCFILES}\
@@ -228,6 +231,21 @@ RDS.RUNTIME=\
 	${SRC.DLIST}\
 	${INCL_DIR}/informix.mk\
 	Manifest
+
+RDS.RUNTIME=\
+	${ETCFILES}\
+    ${RDS.PROGRAM}
+
+#	\
+#	${FILES.install}\
+#	${FRMFILES}\
+#	${IEMFILES}\
+#
+#	${SRC.DLIST}\
+#	${INCL_DIR}/informix.mk\
+#	Manifest
+
+
 
 INTERPRETER.o=\
 	${SRCDIR}fgiusr.o
@@ -284,14 +302,10 @@ rds:	source\
 		interpreter\
 		${RDS.RUNTIME}
 
-interpreter:	${I4GL.rds} #fglgo and fgldb
+interpreter:	${I4GL.rds}
 
-oldfglbld.4gi:	${FILES.4go}
+fglbld.4gi:	${FILES.4go}
 		${RDS.LINKER} ${FILES.4go} >$@
-
-fglbld.4gi:
-	make -C source ${FGLTYPE}
-	cp source/$@ .
 
 source:	.FORCE	./mksource	./mkversion ./${ETCDIR}fglbld-SRC.lst
 	./mksource
@@ -326,16 +340,12 @@ cpio:	${RUNTIME.FILES} makefile
 # Rules for building fglgo, fgldb
 #############################################################################
 
-#fglgo and fgldb:
-${I4GL.rds}:
-	make -C source ${FGLTYPE}
-	cp source/$@ .
-
-old${I4GL.rds}:	${INTERPRETER.o} ${LIBRARY}
+${I4GL.rds}:	${INTERPRETER.o} ${LIBRARY}
 	rm -f o.${@F}
 	if [ -f ${@F} ] ; then mv ${@F} o.${@F} ; rm -f o.${@F} ; fi
 #cfglgo -o fglgo fgiusr.o ./libdlist.a -s
 	c${@F} -o ${@F} ${INTERPRETER.o} ${LDFLAGS}
+	@echo "Successfuly compiled target ${I4GL.rds} (Interpreter)"
 
 ${SRCDIR}redraw.o  ${LIBRARY}(${SRCDIR}redraw.o):		${INCL_DIR}/rdscurses.h
 ${SRCDIR}scrdump.o ${LIBRARY}(${SRCDIR}scrdump.o):	${INCL_DIR}/rdscurses.h
@@ -346,35 +356,11 @@ clean:
     security.sql sqltype.ec times.sql jobs.sql instfile fglgo \
     fglbld.notes clients.sql ./install a.out \
 	fglbld.RDS fglbld.4GL make.log *.frm *.err
-	(cd per; rm -f *.frm *.bak)
-	(cd doc; rm -f *.bak)
-	(cd include; rm -f *.bak)
-	make -C source clean
-	@echo "FGLBLD source code tree now clean"
+	@echo "FGLBLD source code now clean"
 
 clean.all: clean
-	rm -f config.log config.status Makefile
-	rm -rf Distribution
-	(cd etc; rm -f *.bak fglbldrc)
-	(cd include; rm -f fglbld_config.h informix.mk)
-	make -C source clean.all
-	@echo "FGLBLD source code tree now in CVS state"
-
-run:
-	./fglgo fglbld.4gi
-
-#cannot have install target at all because of install/install.sh scripts
-#install:
-#	@echo "please use install-fglbld (conflict with file name)"
-
-install-fglbld:
-	(cd Distribution; ./install)
-	@echo "FGLBLD installed"
-
-deinstall:
-	rm -rf /opt/fglbld
-	rm -f /usr/bin/defluff /usr/bin/mkfglgo /usr/bin/fglbld /usr/bin/fgldb
-	@echo "FGLBLD de-installed"
+	rm -f Makefile
+	@echo "FGLBLD source code now in CVS state"
 
 # ============================= EOF ================================
 

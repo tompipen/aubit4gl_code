@@ -7,8 +7,12 @@
 case $# in
 5)	if [ ! -f $1 ]
 	then
-		echo "$0: $1 not found"
-		exit 1
+		#we may not have debugger allways present:
+		if [ "$1" != "bin/fgldb" ]
+        then
+			echo "$0: $1 not found"
+        fi
+        exit 1
 	fi
 	if [ ! -d $2 ]
 	then

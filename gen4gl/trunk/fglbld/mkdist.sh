@@ -12,12 +12,20 @@
 DISTRIBUTION=$FGLBLDDIR/Distribution
 
 case "$1" in
--c)	check=yes
-	mkchk=-n;;
-"")	check=no;;
-*)	echo "Usage: $0 [-c]" >&2
-	exit 1;;
+	-c)	
+		check=yes
+		mkchk=-n
+		;;
+	"")	
+		check=no
+		;;
+	*)	
+		echo "Usage: $0 [-c]" >&2
+		exit 1
+		;;
 esac
+
+errstop="no"
 
 # Remove the existing distribution directory
 if [ $check = no ]
@@ -143,13 +151,20 @@ do
 							source="./include/`basename $file`"
 							if [ ! -r $source ]
 							then
-								echo "$0: $file ($source) not found - check your build success" >&2
-								if [ $check = no ]
+								source="./source/`basename $file`"
+								if [ ! -r $source ]
 								then
-									exit 1
-								else
-									continue
-								fi
+									echo "$0: $file ($source) not found - check your build success" >&2
+									if [ "$check" == "no" ]
+									then
+										#this exit is not working, and I don't know why:
+										echo "Stop."
+										errstop="yes"
+										exit 13
+									else
+										continue
+									fi
+                                fi
                             fi
                         fi
                     fi
@@ -168,16 +183,31 @@ do
 
 done
 
+if [ "$errstop" == "yes" ]
+then
+    #this exit is not working, and I don't know why:
+	echo "Stop."
+    exit 13
+else
+	echo $errstop
+	echo "Distribution directory successfuly created. To install:"
+	echo ""
+	echo "1.  Type: make install-fglbld"
+    echo ""
+    echo "To install from Distribution package:"
+    echo ""
+	echo "1.  Change into the distribution directory."
+	echo "    Type: cd Distribution"
+	echo "2.  Set and export the variables FGLBLDDIR, FGLBLDBIN, FGLUSR, FGLGRP"
+	echo "    unless the default is acceptable."
+	echo "3.  Run install script."
+	echo "    Type: ./install"
+	echo "4.  Exit from superuser."
+	echo "    Type: exit"
+	echo ""
+    exit 0
+fi
 
-echo "Distribution directory successfuly created. To install:"
-echo ""
-echo "1.  Change into the distribution directory."
-echo "    Type: cd Distribution"
-echo "2.  Set and export the variables FGLBLDDIR, FGLBLDBIN, FGLUSR, FGLGRP"
-echo "    unless the default is acceptable."
-echo "3.  Run install script."
-echo "    Type: ./install"
-echo "4.  Exit from superuser."
-echo "    Type: exit"
-echo ""
+
+
 
