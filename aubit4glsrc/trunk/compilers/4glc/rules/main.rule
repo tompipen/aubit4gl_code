@@ -96,7 +96,7 @@ func_def	: ldeffunction
 }
 identifier  OPEN_BRACKET  
 { 
-if (is_builtin_func($<str>3)) {
+if (is_builtin_func($<str>3)&&!compiling_system_4gl) {
 	a4gl_yyerror("You can't use this name - this is the name of a builtin Aubit4GL function");
 }
 

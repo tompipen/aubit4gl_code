@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.20 2003-04-05 07:55:29 mikeaubury Exp $
+# $Id: compile.c,v 1.21 2003-04-09 07:12:58 mikeaubury Exp $
 #*/
 
 /**
@@ -70,6 +70,7 @@ extern long fpos;				/** current file position for direct fseek */
 extern int yylineno;
 
 /* -------- unknown --------- */
+int compiling_system_4gl=0;
 char gcc_exec[128];
 char pass_options[1024] = "";
 int clean_aftercomp = 0;	/* clean intermediate files after compilation */
@@ -168,6 +169,7 @@ char extra_ldflags[1024] = "";
     {"keep", 0, 0, 'k'},
     {"clean", 0, 0, 'K'},
     {"database", 1, 0, 'd'},
+    {"system4gl", 0, 0, '4'},
     {0, 0, 0, 0},
   };
 
@@ -187,7 +189,7 @@ char extra_ldflags[1024] = "";
   if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0 || strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
     {
       //strcpy(opt_list,"Gs:co::d::l::?hSVvft");
-      strcpy (opt_list, "Gs:N:kKco::l::L::?hSVvftd:");
+      strcpy (opt_list, "G4s:N:kKco::l::L::?hSVvftd:");
 		#ifdef DEBUG
 			debug ("Compiling to C code\n");
 		#endif
@@ -195,7 +197,7 @@ char extra_ldflags[1024] = "";
 
   if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0)
     {
-      strcpy (opt_list, "Gs:N:?hSVvftd:");
+      strcpy (opt_list, "G4s:N:?hSVvftd:");
 		#ifdef DEBUG
 			debug ("Compiling to Perl code\n");
 		#endif
@@ -311,6 +313,9 @@ char extra_ldflags[1024] = "";
 
 	  break;
 
+	case '4': 
+	  	compiling_system_4gl=1;
+		break;
 	case 'l':		// Extra libraries to link with
 		#ifdef DEBUG
 			  debug ("Pass trough option: %s\n", optarg);
