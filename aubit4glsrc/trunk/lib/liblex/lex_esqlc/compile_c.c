@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.166 2004-05-24 12:49:06 mikeaubury Exp $
+# $Id: compile_c.c,v 1.167 2004-05-24 13:36:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.166 2004-05-24 12:49:06 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.167 2004-05-24 13:36:13 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -2190,6 +2190,7 @@ int sio_id;
   printc("{");
   print_event_list();
   printc ("_exec_block = %s;_forminit=0;\n", driver);
+  printc("if (_exec_block>0) _fld_dr=_sio_evt[_exec_block-1].event_type; else _fld_dr= -1;");
   printc("}");
 
 
