@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.30 2002-02-05 06:41:56 afalout Exp $
+# $Id: configure.in,v 1.31 2002-02-05 06:58:50 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -1546,7 +1546,7 @@ AC_ARG_WITH(rpc,
 		AC_CHECK_LIB([rpclib], [main])
 		AC_CHECK_LIB([rpcsvc], [main])
 
-		if test "$ac_cv_lib_rpcscv_main" = "yes"; then
+		if test "$ac_cv_lib_rpcsvc_main" = "yes"; then
 			#seems rpc library is rpcsvc on aix and sparc-sun-solaris2.7
 			#which defines a bunch of symbols starting 'xdr_'
 			AC_CHECK_LIB(rpcsvc, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
@@ -1609,6 +1609,13 @@ AC_ARG_WITH(rpc,
 	AC_MSG_RESULT(--with-rpc not specified)
 ])
 
+
+#I't probably ok to link it even if we don' tneed it, but if RPC functions
+#are already in standard libraryes (Linux), we really don't need to:
+if test "$RPC_FUNC_INTERNAL" = "1"; then
+	#FIXME: we have "-l" added in aubitrc !!!
+	RPCLIB_NAME=
+fi
 
 ## ==================================================================
 ##            Check for Perl generating compiler support
