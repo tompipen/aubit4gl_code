@@ -185,6 +185,7 @@ has_structparam:
 
 param_semi : param ';' {$<define_var>$=$<define_var>1;}
 
+;
 
 param : dtype   id_list 			{$<define_var>$=$<define_var>1; $<define_var>$->name_id=add_id($<str>2); }
 	| dtype id_list '[' dtype_int_val ']' 	{
@@ -242,8 +243,8 @@ id_list : IDENTIFIER
                 $<clist>$.ptr[$<clist>$.char_len-1]=strdup($<str>3);
 
 	}
-*/
 ;
+*/
 
 define: {end_define();}
 	| has_define {end_define();}
@@ -352,10 +353,10 @@ opd_define_entry:
 
 func_def_entry:
 /* Function prototypes - we'll just ignore all of these.... */
-	 IDENTIFIER '(' fparm  ')' ';'
-	| IDENTIFIER '(' VOID  ')' ';'
-	| dtype IDENTIFIER '('  fparm  ')' ';'
-	| dtype IDENTIFIER '(' VOID  ')' ';'
+	 IDENTIFIER '(' fparm  ')' ';' {strcpy($<str>$,"");}
+	| IDENTIFIER '(' VOID  ')' ';' {strcpy($<str>$,"");}
+	| dtype IDENTIFIER '('  fparm  ')' ';' {strcpy($<str>$,"");}
+	| dtype IDENTIFIER '(' VOID  ')' ';' {strcpy($<str>$,"");}
 ;
 
 
@@ -407,6 +408,9 @@ func_block :
 	define 
 	op_cmds 
 '}'
+
+;
+
 
 block : '{' { add_block(); set_pc_vstack_curr(); }
 	define op_cmds '}' {end_block();}

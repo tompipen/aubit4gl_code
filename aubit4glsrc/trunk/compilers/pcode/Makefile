@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.9 2003-09-23 05:26:00 afalout Exp $
+# $Id: Makefile,v 1.10 2003-10-02 14:27:35 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -175,7 +175,7 @@ npcode.h : npcode.x
 y.tab.o : simple.yacc npcode.h
 #bison -y -r all -d -v $^
 # add -t for yacc debugging...
-	yacc  -t -d -v $<
+	bison  -y -t -d -v $<
 	$(CC) ${CFLAGS} -g -c y.tab.c
 
 lex.yy.c: simple.lex
