@@ -2,6 +2,8 @@
 #
 #   4gltree
 #
+# produces a function map for 4GL source (AWK)
+#
 #   Contributed by Sadru Fidai <SFidai@aol.com>
 #
 

@@ -1629,7 +1629,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.1 2003-01-09 00:42:11 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.2 2003-01-09 02:03:55 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -2942,6 +2942,42 @@ Mike:
 You could try - but you need something to convert this into the internal
 format (which may be difficult to do).
 
+--------------------------------------------------
+
+There can be more - the A4GL_FORMTYPE & A4GL_PACKER variables are used to
+select which format is used.
+The normal mode is the standard .frm, but this uses XDR for storing the data
+(which is portable), this isn't easily readable from some other languages,
+and is also hard to get hold of the libraries for on Win32.
+For that reason - we plonked all the output routines into shared libraries so
+you can pick and choose.
+
+The A4GL_PACKER can be one of :
+
+	PACKED *
+	XML *
+	PERL *
+	XDR
+
+This determines the library used to generate the output data.
+
+The A4GL_FORMTYPE determines which of the master data output routines will be
+used, this is either XDR or GENERIC.
+Using XDR will just call the old routines, GENERIC will pick up the
+PACKED,XML,PERL or XDR as set by the A4GL_PACKER.
+
+To this extent - A4GL_FORMTYPE=XDR should probably be depreciated...
+(This is from memory so I hope its right!)
+
+
+I'll take a look at the escaping in XML - at the moment its just a set of C
+code in libpacker/xml/pack_xml.c
+
+> As a side effect of the generic - there is that strange looking PERL format.
+>
+> This outputs as a PERL variable (have a look at the PERL ace runner code stuff
+> for an example).
+>
 
 
 ------------------------

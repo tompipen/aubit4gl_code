@@ -1,0 +1,7 @@
+
+%.4go : %.4gl
+	fglpc $?
+
+Example4glUnit.4gi :  Example4glUnit.4go 4glUnit.4go
+	cat $+ > $@
+

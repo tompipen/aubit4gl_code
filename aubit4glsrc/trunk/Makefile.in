@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.104 2003-01-04 01:58:03 afalout Exp $
+# $Id: Makefile.in,v 1.105 2003-01-09 02:03:07 afalout Exp $
 #
 
 ## ==================================================================
@@ -194,6 +194,25 @@ doxy.install.search:
 	${CP} docs/doxy/html/doxysearch.cgi @CGI_DIR@
 #run docs/doxy/html/installdox to replace any dummy links:
 	@docs/doxy/html/installdox
+
+
+## ==================================================================
+##                              Strip
+## ==================================================================
+
+#cuts size by more then 50%, but it makes it difficult to debug the core dumps 
+#if the debugging info has been stripped out.
+
+# It should be optional, at most.  The increased size does not impact the
+# runtime performance or memory usage; it only affects the amount of disk
+# space used to store the programs (and the amount of time taken to
+# distribute a binary distribution over a network).
+
+#It should be implemented in the make file that created the executable
+
+strip:
+	cd bin; strip 4glc fcompile
+	cd lib; strip *.so
 
 
 ## ==================================================================
