@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.102 2004-03-14 10:40:57 afalout Exp $
+# $Id: Makefile.in,v 1.103 2004-03-25 10:38:58 afalout Exp $
 #
 
 ROOT    =..
@@ -70,7 +70,6 @@ LIBSTRING_PATH		=extra_libs/string
 LIBESQLCHELPER_PATH	=libesql
 LIBHTML_PATH        =${ROOT}/tools/html
 LIBSQLESQL_PATH     =libsql/esqlc
-LIBUIGTK_PATH       =libui/ui_gtk
 LIBUIHL_PATH       =libui/ui_highlevel
 LIBUICURSES_PATH	=libui/ui_curses
 LIBUICONSOLE_PATH	=libui/ui_console
@@ -216,9 +215,6 @@ libLEX_C${SO_EXT} libLEX_EC${SO_EXT}: ${LIBLEXEC_DEPS}
 
 ##############
 #libUI_
-
-libUI_GTK${SO_EXT}: ${LIBUIGTK_DEPS}
-	$(MAKE) -C ${LIBUIGTK_PATH}
 
 libUI_TUI${SO_EXT}: ${LIBUICURSES_DEPS}
 	$(MAKE) -C ${LIBUICURSES_PATH}
@@ -485,7 +481,6 @@ clean.generated:
 	generated/project.c generated/.*.bak
 
 clean.libui:
-	${MAKE} -C ${LIBUIGTK_PATH} clean
 	${MAKE} -C ${LIBUIHL_PATH} clean
 	${MAKE} -C ${LIBUICONSOLE_PATH} clean
 	${MAKE} -C ${LIBUICURSES_PATH} clean
