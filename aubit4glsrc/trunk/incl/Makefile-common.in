@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.62 2002-09-17 08:12:52 afalout Exp $
+# $Id: Makefile-common.in,v 1.63 2002-09-21 08:37:31 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -217,6 +217,8 @@ MKPATH      		=mkdir -p
 CPPFLAGS 			=
 #LDFLAGS 			=-s
 LDFLAGS_SHARED		=@LDFLAGS_SHARED@
+AWK                 =@AWK@
+
 
 #FIXME: use gcc to do linking, not ld directly.  Instead of 'ld -shared',
 #use 'gcc -shared'.  If you MUST pass linker specific options to ld, use 

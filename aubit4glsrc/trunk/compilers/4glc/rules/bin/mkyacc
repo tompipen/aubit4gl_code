@@ -25,12 +25,15 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkyacc,v 1.10 2002-06-26 17:33:43 mikeaubury Exp $
+# $Id: mkyacc,v 1.11 2002-09-21 08:37:31 afalout Exp $
 #
 
 # This script builds "generated/fgl.yacc" files from several files
 # A Bison parser, will use fgl.yacc to create y.tab.c from it
 
+#Get settings
+#. ../../../../etc/aubitrc
+. ../../../etc/aubitrc
 
 if [ ! -w generated/fgl.yacc ] &&  [ -f generated/fgl.yacc ]
 then
@@ -59,7 +62,7 @@ lastlineno=yylineno;
 echo "
 commands_all :  commands_all1 ;
 commands_all1 	:" >> generated/fgl.yacc
-grep -h "^[^ ]*_cmd.*:" *.rule  | awk '
+grep -h "^[^ ]*_cmd.*:" *.rule  | $AWK '
 (NR==1) {print " 		" $1 >> "generated/fgl.yacc"}
 (NR!=1) {print "	|	" $1 >> "generated/fgl.yacc"}'
 

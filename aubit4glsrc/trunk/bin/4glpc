@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.84 2002-09-20 10:05:32 mikeaubury Exp $
+# $Id: 4glpc,v 1.85 2002-09-21 08:37:30 afalout Exp $
 #
 
 ########################################################################
@@ -826,7 +826,7 @@ do
             fi
         else
             #is this a 0 length file?
-			FGLFILESIZE=$(ls -al $fname3 | awk '{print $5}')
+			FGLFILESIZE=$(ls -al $fname3 | $AWK '{print $5}')
 
 			if [ "$FGLFILESIZE" = "0" ]
             then

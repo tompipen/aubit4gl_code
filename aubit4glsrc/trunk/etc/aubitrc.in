@@ -158,6 +158,8 @@ A4GL_PACKER=XML
 #Default: CC="gcc -O"
 CC="@CC@"
 
+AWK=@AWK@
+
 #################
 #Depending on installed 4gl compilers, amake can compile same definition
 #of the 4gl programs with differnt 4gl compilers. Here you can specify

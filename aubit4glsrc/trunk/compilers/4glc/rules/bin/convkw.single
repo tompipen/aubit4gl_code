@@ -6,8 +6,11 @@
 #
 ######################### NOT WORKING !!!!! #########################
 
+#Get settings
+#. ../../../../etc/aubitrc
+. ../../../etc/aubitrc
 
-awk  '
+$AWK  '
 /^#/ {next}
 /FKEY/ {next}
 /SINGLE_KEY/ {next}

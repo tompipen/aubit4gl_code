@@ -1,5 +1,11 @@
 #!/bin/sh
-awk '
+
+#Get settings
+#. ../../../../etc/aubitrc
+. ../../../etc/aubitrc
+
+
+$AWK '
 {
 kw=$1
 if (def[kw]) next

@@ -9,6 +9,10 @@
 #
 ####################################################################
 
+#Get settings
+. ../../etc/aubitrc
+
+
 CURRDIR=$PWD
 
 if [ "$AUBITDIR" = "" ]
@@ -129,8 +133,7 @@ internal_version(void)
 #cd $CURRDIR/../../lib/libaubit4gl
 cd $AUBITDIR/lib/libaubit4gl
 
-#grep "\$Id" *.c | nawk '
-grep "\$Id" *.c | awk '
+grep "\$Id" *.c | $AWK '
 BEGIN {
 print "struct s_ver_modules { char module[32]; char id[132];} internal_versions[]={"
 }

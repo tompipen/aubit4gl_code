@@ -12,6 +12,9 @@
 #
 ##########################################################################
 
+#Get settings
+. ../../etc/aubitrc
+
 
 if [ $# -lt 1 -o "$1" = "--help" ]
 then
@@ -58,30 +61,30 @@ api_prefix=
 
 if grep LIBRARY $specfile > /dev/null
 then
-	lib=`awk '/^LIBRARY /{print $2}' $specfile`
+	lib=`$AWK '/^LIBRARY /{print $2}' $specfile`
 fi
 
 if grep VARIABLE $specfile > /dev/null
 then
-	env=`awk '/^VARIABLE /{print $2}' $specfile`
+	env=`$AWK '/^VARIABLE /{print $2}' $specfile`
 fi
 
 #if you want prefix to be added to API function names
 if grep API_PREFIX $specfile > /dev/null
 then
-	api_prefix=`awk '/^API_PREFIX /{print $2}' $specfile`
+	api_prefix=`$AWK '/^API_PREFIX /{print $2}' $specfile`
 fi
 
 #if you want prefix to be added to LIB functions calls
 if grep LIB_PREFIX $specfile > /dev/null
 then
-	lib_prefix=`awk '/^LIB_PREFIX /{print $2}' $specfile`
+	lib_prefix=`$AWK '/^LIB_PREFIX /{print $2}' $specfile`
 fi
 
 #name of the headers file to be refgerenced with #include
 if grep HEADER_FILE $specfile > /dev/null
 then
-	HEADER_FILE=`awk '/^HEADER_FILE /{print $2}' $specfile`
+	HEADER_FILE=`$AWK '/^HEADER_FILE /{print $2}' $specfile`
 fi
 
 
@@ -90,7 +93,7 @@ fi
 
 if [ "$MAKE_HEADER" == "1" ]
 then
-	awk -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" '
+	$AWK -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" '
 	BEGIN {
 		FS="[ 	,]"
 		print ""
@@ -222,7 +225,7 @@ then
 fi
 
 
-awk -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" '
+$AWK -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" '
 BEGIN {
 FS="[ 	,]"
 print "/*"

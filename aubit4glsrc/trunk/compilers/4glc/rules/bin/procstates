@@ -4,7 +4,11 @@
 # This script creates states.c from data/defstates file
 #
 
-awk '
+#Get settings
+#. ../../../../etc/aubitrc
+. ../../../etc/aubitrc
+
+$AWK '
 BEGIN {
 	cnt=1;
 }

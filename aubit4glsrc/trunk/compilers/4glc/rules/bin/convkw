@@ -8,13 +8,35 @@
 #NOTE: convkw.single script is disabled, therefore generated/single_words file
 #will be empty!
 #
+#       The getline command returns 0 on end of file and -1 on  an
+#       error.   Upon an error, ERRNO contains a string describing
+#       the problem.
+#
+#       NOTE: If using a pipe or co-process to  getline,  or  from
+#       print  or  printf  within  a loop, you must use close() to
+#       create new instances of the command.  AWK does  not  auto­
+#       matically  close  pipes  or  co-processes when they return
+#       EOF.
+#
+#
+#     close(file [, how])   Close file, pipe or co-process.  The
+#                             optional  how  should  only  be used
+#                             when closing one end  of  a  two-way
+#                             pipe  to a co-process.  It must be a
+#                             string value, either "to" or "from".
+#
+#
 ###############################################################
+
+#Get settings
+#. ../../../../etc/aubitrc
+. ../../../etc/aubitrc
 
 MODE=$1
 
 if test "$MODE" = "test" ; then
 echo "MODE=test"
-awk '
+$AWK '
 BEGIN {
 doverbose="0"
 while (getline < "generated/single_words") {
@@ -31,7 +53,7 @@ while (getline < "generated/single_words") {
 exit
 fi
 
-awk '
+$AWK '
 BEGIN {
 doverbose="0"
 while (getline < "generated/single_words") {
@@ -39,7 +61,8 @@ while (getline < "generated/single_words") {
 		single_words[$1]=1
 		print "Defined " $1 " as single word"
     } else {
-        exit
+		print "Input line: " $1 " was empty. Stop."
+		exit
     }
 }
 
