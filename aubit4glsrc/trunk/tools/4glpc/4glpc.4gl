@@ -32,15 +32,16 @@ define
 	mv_namespace 		char(256),
 	mv_output 		char(256),
 
-	mv_compile_4gl		char(256),
+	mv_compile_4gl		char(256), # 4gl -> c/ec
 	mv_compile_4gl_opts	char(256),
 
-	mv_compile_c 		char(256),
-	mv_compile_c_opts 	char(256),
+	mv_compile_c 		char(256), # C-> OBJ
+	mv_compile_c_opts 	char(256), 
 	mv_compile_c_debug 	char(256),
 
-	mv_compile_pec 		char(256),
-	mv_compile_pec_opts 	char(256),
+	mv_compile_pec 		char(256), # EC -> C
+	mv_compile_pec_opts 	char(256),  
+ 
 
 	mv_preprocess 		char(256),
 	mv_preprocess_opts	char(256),
@@ -197,11 +198,11 @@ define lv_pack char(256)
 	end if
 
 	if mv_compile_pec is null or mv_compile_pec matches " " then
-		let mv_compile_pec	="esql -e "
+		let mv_compile_pec	="NO"
 	end if
 
 	if mv_preprocess is null or mv_preprocess matches " " then
-		let mv_preprocess	="esql -E"
+		let mv_preprocess	="NO"
 	end if
 
 	if mv_compile_c_opts is null then let mv_compile_c_opts=" " end if
@@ -217,13 +218,6 @@ define lv_pack char(256)
 			IF mv_lexdialect is null or mv_lexdialect matches " " then
 				LET mv_lexdialect="INFORMIX"
 			END IF
-
-
-			# This should be somewhere else...
-			if mv_lexdialect="INFORMIX" then
-				LET mv_compile_c="esql"
-				LET mv_link="esql"
-			end if
 		end if
 	end if
 

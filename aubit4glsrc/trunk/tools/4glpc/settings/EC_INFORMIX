@@ -1,0 +1,6 @@
+A4GL_EC_EXT=.ec
+A4GL_C_COMP=esql  -c 
+A4GL_C_OPTS=-I$INFORMIXDIR/incl
+A4GL_EC_COMP=esql -e
+A4GL_PREC_COMP=esql -E
+A4GL_LINK=esql
