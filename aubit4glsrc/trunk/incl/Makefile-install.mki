@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.84 2004-10-29 14:09:20 afalout Exp $
+# $Id: Makefile-install.mki,v 1.85 2004-12-06 23:47:42 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -231,7 +231,11 @@ tt:
 #test: tt
 test:
 	${MAKE} -C tools/test test.build
-	@echo in Makefile: LD_LIBRARY_PATH = ${LD_LIBRARY_PATH}
+ifeq "${COMSPEC}" ""
+	@echo "in Makefile-install.mki: LD_LIBRARY_PATH = '${LD_LIBRARY_PATH}'"
+else
+	@echo "in Makefile-install.mki: PATH = '${PATH}'"
+endif
 	@echo "+------------------ Runing Aubit compiled program: ------------------+"
 	A4GL_UI=CONSOLE; export A4GL_UI; DEBUG=ALL; export DEBUG; tools/test/test_build
 	@echo "+--------------------------------------------------------------------+"
