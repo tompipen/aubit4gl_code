@@ -12,30 +12,73 @@ DBASE.sch = ${FGLDBPATH}/${DBASE}.sch
 PROGTYPE  = $(suffix ${PROG})
 
 ifeq "$(PROGTYPE)" "lib"
-	PROG.42r  = ${PROG}.42x #D4GL/4Js p-code
-	PROG.42e  = ${PROG}.42o #D4GL/4Js c-code
-	PROG.4ge  = ${PROG}.4gx #I4GL c-code
-	PROG.4gi  = ${PROG}.4go #I4GL p-code
-	PROG.4ae  = ${PROG}.aox #aubit
+	ifeq "$(xxLIBSTORE)" ""
+		PROG.42r  = ${PROG}.42x #D4GL/4Js p-code
+		PROG.42e  = ${PROG}.42o #D4GL/4Js c-code
+		PROG.4ge  = ${PROG}.4gx #I4GL c-code
+		PROG.4gi  = ${PROG}.4go #I4GL p-code
+		PROG.4ae  = ${PROG}.aox #aubit
+    else
+		PROG.42r  = ${LIBSTORE}${PROG}.42x #D4GL/4Js p-code
+		PROG.42e  = ${LIBSTORE}${PROG}.42o #D4GL/4Js c-code
+		PROG.4ge  = ${LIBSTORE}${PROG}.4gx #I4GL c-code
+		PROG.4gi  = ${LIBSTORE}${PROG}.4go #I4GL p-code
+		PROG.4ae  = ${LIBSTORE}${PROG}.aox #aubit
+    endif
 else
-	PROG.42r  = ${PROG}.42r #D4GL/4Js p-code
-	PROG.42e  = ${PROG}.42e #D4GL/4Js c-code
-	PROG.4ge  = ${PROG}.4ge #I4GL c-code
-	PROG.4gi  = ${PROG}.4gi #I4GL p-code
-	PROG.4ae  = ${PROG}.4ae #aubit
+	ifneq "$(xxEXECSTORE)" ""
+		PROG.42r  = ${PROG}.42r #D4GL/4Js p-code
+		PROG.42e  = ${PROG}.42e #D4GL/4Js c-code
+		PROG.4ge  = ${PROG}.4ge #I4GL c-code
+		PROG.4gi  = ${PROG}.4gi #I4GL p-code
+		PROG.4ae  = ${PROG}.4ae #aubit
+    else
+		PROG.42r  = ${EXECSTORE}${PROG}.42r #D4GL/4Js p-code
+		PROG.42e  = ${EXECSTORE}${PROG}.42e #D4GL/4Js c-code
+		PROG.4ge  = ${EXECSTORE}${PROG}.4ge #I4GL c-code
+		PROG.4gi  = ${EXECSTORE}${PROG}.4gi #I4GL p-code
+		PROG.4ae  = ${EXECSTORE}${PROG}.4ae #aubit
+    endif
 endif
 
+
+
+#4Js:
 FILES.42m = ${FILES.4gl:.4gl=.42m}
 FILES.42f = ${FILES.per:.per=.42f}
 FILES.42h = ${FILES.msg:.msg=.42h}
 
+#Informix:
 FILES.4go = ${FILES.4gl:.4gl=.4go}
 FILES.frm = ${FILES.per:.per=.frm}
 FILES.iem = ${FILES.msg:.msg=.iem}
 
+#Aubit:
 FILES.ao = ${FILES.4gl:.4gl=.ao}
 FILES.afr = ${FILES.per:.per=.afr}
 FILES.hlp = ${FILES.msg:.msg=.hlp}
+
+
+#$(addprefix prefix,names...)
+#Prepend prefix to each word in names.
+#$(addprefix src/,foo bar)
+
+
+ifneq "$(xxOBJSTORE)" ""
+	FILES.42m = $(addprefix ${OBJSTORE}, ${FILES.4gl:.4gl=.42m})
+	FILES.4go = $(addprefix ${OBJSTORE}, ${FILES.4gl:.4gl=.4go})
+	FILES.ao  = $(addprefix ${OBJSTORE}, ${FILES.4gl:.4gl=.ao})
+endif
+ifneq "$(xxxFORMSTORE)" ""
+	FILES.42f = $(addprefix ${FORMSTORE}, ${FILES.per:.per=.42f})
+	FILES.frm = $(addprefix ${FORMSTORE}, ${FILES.per:.per=.frm})
+	FILES.afr = $(addprefix ${FORMSTORE}, ${FILES.per:.per=.afr})
+endif
+ifneq "$(xxHELPSTORE)" ""
+	FILES.42h = $(addprefix ${HELPSTORE}, ${FILES.msg:.msg=.42h})
+	FILES.iem = $(addprefix ${HELPSTORE}, ${FILES.msg:.msg=.iem})
+	FILES.hlp = $(addprefix ${HELPSTORE}, ${FILES.msg:.msg=.hlp})
+endif
 
 
 DEBRIS.prog = ${PROG.42r} ${PROG.42e} ${PROG.4ge} ${PROG.4gi} ${PROG.4ae}
@@ -43,7 +86,12 @@ DEBRIS.d4gl = ${FILES.42m} ${FILES.42f} ${FILES.42h}
 DEBRIS.i4gl = ${FILES.4go} ${FILES.frm} ${FILES.iem}
 DEBRIS.aubit = 	${FILES.ao} ${FILES.afr} ${FILES.hlp} ${FILES.4gl:.4gl=.c} \
 				${FILES.4gl:.4gl=.h} ${FILES.per:.per=.c} \
-				${GLOBALS.4gl:.4gl=.glb}
+				${GLOBALS.4gl:.4gl=.glb} \
+				$(addprefix ${FORMSTORE}, ${FILES.afr})
+
+#				${OBJSTORE}${PROG.4ae} \
+#                $(addprefix ${OBJSTORE}, ${FILES.ao}) \
+
 
 default:	${DEFAULT}
 
@@ -71,6 +119,7 @@ ${PROG.42r}:	${DBASE.sch} ${FILES.42m}
 
 #${PROG.4ae}:	debug ${FILES.ao} enddebug
 ${PROG.4ae}:	${FILES.ao}
+#	echo ***DEBUG 1:*** ${FILES.ao}
 	${A4GL_CC} -o $@ $^ ${A4GL_CC_LDFLAGS}
 
 ${PROG.42e}:	${DBASE.sch} ${FILES.42o}

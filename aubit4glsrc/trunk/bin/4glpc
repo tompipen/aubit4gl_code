@@ -24,8 +24,8 @@ then
 	echo Aubit 4gl main compiler script: $0
     echo
     echo Usage:
-    echo '  4glpc sourcefile.type [...] [options] executablename.4ge'
-    echo '  4glpc sourcefile.4gl -c -o objectname.o'
+    echo '  4glpc sourcefile.type [...] [options] executablename.4ae'
+    echo '  4glpc sourcefile.4gl -c -o objectname.ao'
     echo
     echo ' For details, try: '
     echo ' 4glpc --help-options	- for command line options'
@@ -151,6 +151,33 @@ then
     fi
 	exit 6
 fi
+
+
+########################
+function showerror {
+########################
+
+    if [ -f $errfname ]
+    then
+		if test $SHOWERRCODE = "1"
+		then
+			ERRLINES=`cat $errfname | grep -c $ERRCHAR`
+		    if [ "$ERRLINES" != "0" ]
+		    then
+				echo "============ FIRST ERROR: =============="
+				cat $errfname | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR
+		    else
+				echo "============ FIRST ERROR: =============="
+				$HEAD $errfname
+		    fi
+		    echo "========================================"
+		fi
+	    echo "see $errfname"
+    fi
+
+}
+
+
 
 if [ "$GTKGUI" = "" ]
 then
@@ -347,19 +374,7 @@ do
 		  then
             if [ -f $errfname ]
             then
-                if test $SHOWERRCODE = "1"
-				then
-					ERRLINES=`cat $errfname | grep -c $ERRCHAR`
-                    if [ "$ERRLINES" != "0" ]
-                    then
-						echo "============ FIRST ERROR: =============="
-						cat $errfname | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR
-                    else
-						echo "============ FIRST ERROR: =============="
-						$HEAD $errfname
-                    fi
-                    echo "========================================"
-                fi
+				showerror
 				$output "Error compiling $a, see $errfname"
 			else
 				$output "Error compiling $a - error file NOT created."
@@ -439,24 +454,12 @@ do
           then
 		  	if [ -f $errfname ]
             then
-                if test $SHOWERRCODE = "1"
-				then
-					ERRLINES=`cat $errfname | grep -c $ERRCHAR`
-                    if [ "$ERRLINES" != "0" ]
-                    then
-						echo "============ FIRST ERROR: =============="
-						cat $errfname | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR
-                    else
-						echo "============ FIRST ERROR: =============="
-						$HEAD $errfname
-                    fi
-                    echo "========================================"
-                fi
-				 $output "Error compiling $a - see $errfname"
+				showerror
+				$output "Error compiling $a - see $errfname"
 			else
-				 $output "Error compiling $a - error file NOT created"
+				$output "Error compiling $a - error file NOT created"
             fi
-			
+
 			if [ "$A4GLVERBOSE" = "yes" ]
 			then
             	$output err_msg is: $err_msg
@@ -494,12 +497,43 @@ do
             fi
           fi
 
-          if [ "$PRETTYC" != "" ]
-          then
-            $PRETTYC $fname.c
-          fi
+			if [ "$PRETTYC" != "" ]
+			then
+            	$PRETTYC $fname.c
+			fi
 
-			COMPCC="$COMPCC $fname.c"
+			if [ "$LINKIT" = "1" ]
+			then
+                #we got this .4gl in linking command, we need to make .ao
+                #for linking to succedde:
+				if [ "$COMSPEC" = "" ]
+				then
+					EXEC="$DOIT $GCC $fname.c -c -o $fname.ao $INCLDIR 2> $fname.err"
+				else
+					EXEC="$DOIT $GCC $fname.c -o $fname.ao -c $INCLDIR 2> $fname.err"
+				fi
+                # cc -O  ./P12.c -c -o  P12.ao -I/usr/aubit/aubit4glsrc/incl
+
+				if [ "$A4GLVERBOSE" = "yes" ]
+				then
+					$output "executing (1) : $EXEC"
+				fi
+
+				eval $EXEC
+				err_code=$?
+
+				if [ "$err_code" != "0" ]
+				then
+                    #linking will fail anyway, we cannot continue:
+					showerror
+					echo "error compiling $fname.c. STOP."
+					exit 17
+                fi
+
+				COMPCC="$COMPCC $fname.ao"
+            else
+				COMPCC="$COMPCC $fname.c"
+            fi
         else
             #is this a 0 length file?
 			FGLFILESIZE=$(ls -al $fname3 | awk '{print $5}')
@@ -524,21 +558,8 @@ do
 				then
 				  	if [ -f $errfname ]
 	    	        then
-	                    if test $SHOWERRCODE = "1"
-						then
-							ERRLINES=`cat $errfname | grep -c $ERRCHAR`
-		                    if [ "$ERRLINES" != "0" ]
-		                    then
-								echo "============ FIRST ERROR: =============="
-								cat $errfname | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR
-		                    else
-								echo "============ FIRST ERROR: =============="
-								$HEAD $errfname
-		                    fi
-		                    echo "========================================"
-						fi
-	                    echo "see $errfname"
-	                else
+                        showerror
+					else
 						echo "Error file NOT created"
 	                fi
 
@@ -648,6 +669,7 @@ do
    #suppress final linking stage to executable?
    -o) COMPCC="$COMPCC -o "
        ISMAKE=-1
+       LINKIT=1
 
        LAST="2> $fname.err"
        ERRFILE="$fname.err"
@@ -803,21 +825,7 @@ then
 		if [ "$LAST" != "" ]
 		then
 			errfname=`expr "$LAST" : "..\(.*\)"`
-
-          	if test $SHOWERRCODE = "1"
-			then
-				ERRLINES=`cat $errfname | grep -c $ERRCHAR`
-                if [ "$ERRLINES" != "0" ]
-                then
-					echo "============ FIRST ERROR: =============="
-					cat $errfname | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR
-                else
-					echo "============ FIRST ERROR: =============="
-					$HEAD $errfname
-                fi
-                echo "========================================"
-            fi
-
+			showerror
 			$output "Error compiling... check $errfname"
       else
 		  $output "Error compiling."
@@ -834,7 +842,7 @@ else
 
    if [ "$A4GLVERBOSE" = "yes" ]
    then
-	   $output "executing (2) : $DOIT $GCC $COMPCC  $INCLDIR  $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $LAST"
+	   echo "executing (2) : $DOIT $GCC $COMPCC  $INCLDIR  $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $LAST"
    fi
 	eval $DOIT $GCC $COMPCC  $INCLDIR  $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $LAST
 	err_code=$?
@@ -844,21 +852,8 @@ else
 		if [ "$LAST" != "" ]
 		then
 			errfname=`expr "$LAST" : "..\(.*\)"`
-
-            if test $SHOWERRCODE = "1"
-			then
-				ERRLINES=`cat $errfname | grep -c $ERRCHAR`
-                if [ "$ERRLINES" != "0" ]
-                then
-					echo "============ FIRST ERROR: =============="
-					cat $errfname | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR
-                else
-					echo "============ FIRST ERROR: =============="
-					$HEAD $errfname
-                fi
-                echo "========================================"
-            fi
-			$output "Error compiling... check $errfname"
+			showerror
+			echo "Error compiling... check $errfname"
 
 	  else
 		  $output "Error compiling."

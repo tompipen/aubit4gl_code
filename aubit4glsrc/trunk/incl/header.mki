@@ -26,20 +26,28 @@ vpath %.42m ${MAXDIR}/gprog:${MAXDIR}/winds:${MAXDIR}/main
 vpath %.42f ${MAXDIR}/gform:${MAXDIR}/gform/ENG
 vpath %.42x ${MAXDIR}/gprog
 vpath %.4ae ${MAXDIR}/aprog
-vpath %.ao ${MAXDIR}/aprog
+vpath %.ao  ${MAXDIR}/aprog
+#vpath %.ao  ../aprog
+GPATH = ${MAXDIR}/aprog:${MAXDIR}/aform
 vpath %.afr ${MAXDIR}/aform
 
 #all files in /help, should be named as *.msg, but are not:
 #ap.txt eo.txt gl.txt jm.txt main.txt pos.txt qe.txt ss.txt
 #ar.txt fa.txt in.txt lc.txt pu.txt re.txt wo.txt
 
-FILES.msg 	= ap.txt
+#FILES.msg 	= ap.txt
 #this needs to generate A_ENG.msg
 
 ALLFORMS.currdir = *.per
 ALLFORMS.ENG= ./ENG/*.per
 ALLFORMS.per= $(wildcard *.per) $(wildcard ./ENG/*.per)
 
-DBASE     = maindb
+DBASE     	= maindb
+
+#LIBSTORE    =${MAXDIR}/aprog/
+OBJSTORE    =${MAXDIR}/aprog/
+EXECSTORE   =${MAXDIR}/aprog/
+FORMSTORE	=${MAXDIR}/aform/
+#HELPSTORE	=${MAXDIR}/aprog/
 
 #------------------------ EOF ------------------------------

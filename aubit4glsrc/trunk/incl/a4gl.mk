@@ -1,4 +1,4 @@
-#   @(#)$Id: a4gl.mk,v 1.3 2001-09-11 08:43:19 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.4 2001-09-12 13:22:28 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -25,7 +25,7 @@ AUCC_FLAGS=-g -O2 -static -O -I${AUBITDIR}/incl -DAUBIT4GL
 A4GL_CC_CMD     = 4glpc
 A4GL_CC_ENV     =
 #-g -O2 -gtk -static -O -I${AUBITDIR}/incl -DAUBIT4GL
-A4GL_CC_FLAGS   =
+A4GL_CC_FLAGS   = #-verbose
 
 # A4GL C-code Linker
 A4GL_CL_CMD     = ${A4GL_CC_CMD}
@@ -63,14 +63,33 @@ A4GL_SUFFIXES = .ao .4gl .c .4ae .afr .per .iem .msg .hlp
 #.4gl:
 #	${A4GL_CL} -o $@ $< ${A4GL_CL_LDFLAGS}
 
-#.4gl.4ge:
-.4gl.4ae:
-	${A4GL_CL} -o $@ $< ${A4GL_CL_LDFLAGS}
+
+#.4gl.4ae:
+#.4ae:
+#	${A4GL_CL} -o $@ $< ${A4GL_CL_LDFLAGS}
+#using VPATH:
+#	echo $^
+#	${A4GL_CL} -o $@ $^ ${A4GL_CL_LDFLAGS}
 
 
-#.4gl.o:
+#$(FILES.ao): %.ao: %.4gl
+#${OBJSTORE}%.ao: %.4gl
+#	${A4GL_CC} $< -c -o $@
+
+
+#.4gl.ao:
 .4gl.ao:
-	${A4GL_CC} $< -c -o $*.ao
+	${A4GL_CC} $< -c -o ${OBJSTORE}$@
+#	${A4GL_CC} $< -c -o $@
+#using VPATH:
+#	echo $^
+#	echo $@
+#	${A4GL_CC} $^ -c -o $@
+
+#.ao:
+#	${A4GL_CC} $*.4gl -c -o $*.ao
+
+
 #	mv $*.o $@
 
 
@@ -80,9 +99,10 @@ A4GL_SUFFIXES = .ao .4gl .c .4ae .afr .per .iem .msg .hlp
 .per.afr:
 #	${A4GL_FC} $*
 #using VPATH:
-	${A4GL_FC} $^ > /dev/null
-#	${A4GL_FC} $^
-#if I do this, programs eill not be able to find forms; this need to be
+#	${A4GL_FC} $^ > /dev/null
+	${A4GL_FC} $^ ${FORMSTORE}$@
+	ln ${FORMSTORE}$@ ${FORMSTORE}$*.frm
+#if I do this, programs will not be able to find forms; this need to be
 #changed in form compiler and aubit compiler. Untill we do, make will always
 #recompile forms, since it will not be able to find .afr files
 #	-mv $*.frm $@
