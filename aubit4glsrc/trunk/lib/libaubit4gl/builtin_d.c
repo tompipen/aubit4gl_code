@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.46 2004-09-10 11:25:54 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.47 2004-09-19 16:12:09 mikeaubury Exp $
 #
 */
 
@@ -268,6 +268,13 @@ A4GL_push_dec (char *p, int ismoney,int size)
     }
 }
 
+
+void A4GL_push_double_str(char *p) {
+  double *ptr;
+  ptr = (double *) acl_malloc (sizeof (double), "push_double");
+  *ptr = atof(p);
+  A4GL_push_param (ptr, DTYPE_FLOAT + DTYPE_MALLOCED);
+}
 
 /**
  * Called at run-time by the generated C code.

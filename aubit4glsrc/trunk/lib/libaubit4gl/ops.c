@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.60 2004-09-14 14:31:35 mikeaubury Exp $
+# $Id: ops.c,v 1.61 2004-09-19 16:12:09 mikeaubury Exp $
 #
 */
 
@@ -184,6 +184,299 @@ A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
 }
 
 
+
+/**
+ *
+ *
+ * @return
+ */
+void
+A4GL_smfloat_smfloat_ops (int op)
+{
+  float a;
+  float b;
+  float c;
+  float d;
+
+  b = A4GL_pop_float ();
+  a = A4GL_pop_float ();
+A4GL_debug("smfloat smfloat\n");
+A4GL_debug("%f %f\n",a,b);
+  if (A4GL_isnull (DTYPE_SMFLOAT, (void *) &a)
+      || A4GL_isnull (DTYPE_SMFLOAT, (void *) &b))
+    {
+      A4GL_debug ("int_int - one is null");
+      A4GL_push_null (DTYPE_SMFLOAT, 0);
+      return;
+    }
+  else
+    {
+      A4GL_debug ("OK - neither is null");
+    }
+
+#ifdef DEBUG
+  A4GL_debug ("int_int_ops : %d %d %d", a, b, op);
+#endif
+
+  switch (op)
+    {
+    case OP_ADD:
+      A4GL_push_float (a + b);
+      return;
+    case OP_SUB:
+      A4GL_push_float ((a - b));
+      return;
+    case OP_MULT:
+      A4GL_push_double ((double)(a * b));
+      return;
+
+
+    case OP_DIV:
+	  A4GL_push_double ((double) a / (double) b);
+
+    case OP_MOD:
+      A4GL_push_long ((int)a % (int)b);
+      return;
+
+    case OP_POWER:
+      if (b == 0)
+	{
+	  A4GL_push_long (1);
+	  return;
+	}
+      if (b == 1)
+	{
+	  A4GL_push_float (a);
+	  return;
+	}
+
+      c = a;
+
+      for (d = 1; d < b; d++)
+	c *= a;
+      A4GL_push_float (c);
+      return;
+
+    case OP_LESS_THAN:
+      A4GL_push_int (a < b);
+      return;
+    case OP_GREATER_THAN:
+      A4GL_push_int (a > b);
+      return;
+    case OP_LESS_THAN_EQ:
+      A4GL_push_int (a <= b);
+      return;
+    case OP_GREATER_THAN_EQ:
+      A4GL_push_int (a >= b);
+      return;
+    case OP_EQUAL:
+      A4GL_push_int (a == b);
+      return;
+    case OP_NOT_EQUAL:
+      A4GL_push_int (a != b);
+      return;
+    }
+
+  A4GL_exitwith ("Unknown operation");
+  A4GL_push_int (0);
+  return;
+}
+
+/**
+ *
+ *
+ * @return
+ */
+void
+A4GL_float_smfloat_ops (int op)
+{
+  double a;
+  float b;
+  float c;
+  float d;
+
+  b = A4GL_pop_float ();
+  a = A4GL_pop_double ();
+A4GL_debug("float smfloat\n");
+A4GL_debug("%f %f\n",a,b);
+  if (A4GL_isnull (DTYPE_SMFLOAT, (void *) &a)
+      || A4GL_isnull (DTYPE_SMFLOAT, (void *) &b))
+    {
+      A4GL_debug ("int_int - one is null");
+      A4GL_push_null (DTYPE_SMFLOAT, 0);
+      return;
+    }
+  else
+    {
+      A4GL_debug ("OK - neither is null");
+    }
+
+#ifdef DEBUG
+  A4GL_debug ("int_int_ops : %d %d %d", a, b, op);
+#endif
+
+  switch (op)
+    {
+    case OP_ADD:
+      A4GL_push_double (a + b);
+      return;
+    case OP_SUB:
+      A4GL_push_double ((a - b));
+      return;
+    case OP_MULT:
+      A4GL_push_double ((double)(a * b));
+      return;
+
+
+    case OP_DIV:
+	  A4GL_push_double ((double) a / (double) b);
+
+    case OP_MOD:
+      A4GL_push_long ((int)a % (int)b);
+      return;
+
+    case OP_POWER:
+      if (b == 0)
+	{
+	  A4GL_push_long (1);
+	  return;
+	}
+      if (b == 1)
+	{
+	  A4GL_push_double (a);
+	  return;
+	}
+
+      c = a;
+
+      for (d = 1; d < b; d++)
+	c *= a;
+      A4GL_push_double (c);
+      return;
+
+    case OP_LESS_THAN:
+      A4GL_push_int ((float)a < (float)b);
+      return;
+    case OP_GREATER_THAN:
+      A4GL_push_int ((float)a > (float)b);
+      return;
+    case OP_LESS_THAN_EQ:
+      A4GL_push_int ((float)a <= (float)b);
+      return;
+    case OP_GREATER_THAN_EQ:
+      A4GL_push_int ((float)a >= (float)b);
+      return;
+    case OP_EQUAL:
+      A4GL_push_int ((float)a == (float)b);
+      return;
+    case OP_NOT_EQUAL:
+      A4GL_push_int ((float)a != (float)b);
+      return;
+    }
+
+  A4GL_exitwith ("Unknown operation");
+  A4GL_push_int (0);
+  return;
+}
+
+/**
+ *
+ *
+ * @return
+ */
+void
+A4GL_smfloat_float_ops (int op)
+{
+  float a;
+  double b;
+  float c;
+  float d;
+
+  b = A4GL_pop_double ();
+  a = A4GL_pop_float ();
+A4GL_debug("smfloat float\n");
+A4GL_debug("%f %f\n",a,b);
+  if (A4GL_isnull (DTYPE_SMFLOAT, (void *) &a)
+      || A4GL_isnull (DTYPE_SMFLOAT, (void *) &b))
+    {
+      A4GL_debug ("int_int - one is null");
+      A4GL_push_null (DTYPE_SMFLOAT, 0);
+      return;
+    }
+  else
+    {
+      A4GL_debug ("OK - neither is null");
+    }
+
+#ifdef DEBUG
+  A4GL_debug ("int_int_ops : %d %d %d", a, b, op);
+#endif
+
+  switch (op)
+    {
+    case OP_ADD:
+      A4GL_push_double (a + b);
+      return;
+    case OP_SUB:
+      A4GL_push_double ((a - b));
+      return;
+    case OP_MULT:
+      A4GL_push_double ((double)(a * b));
+      return;
+
+
+    case OP_DIV:
+	  A4GL_push_double ((double) a / (double) b);
+
+    case OP_MOD:
+      A4GL_push_long ((int)a % (int)b);
+      return;
+
+    case OP_POWER:
+      if (b == 0)
+	{
+	  A4GL_push_long (1);
+	  return;
+	}
+      if (b == 1)
+	{
+	  A4GL_push_double (a);
+	  return;
+	}
+
+      c = a;
+
+      for (d = 1; d < b; d++)
+	c *= a;
+      A4GL_push_double (c);
+      return;
+
+    case OP_LESS_THAN:
+      A4GL_push_int ((float)a < (float)b);
+      return;
+    case OP_GREATER_THAN:
+      A4GL_push_int ((float)a > (float)b);
+      return;
+    case OP_LESS_THAN_EQ:
+      A4GL_push_int ((float)a <= (float)b);
+      return;
+    case OP_GREATER_THAN_EQ:
+      A4GL_push_int ((float)a >= (float)b);
+      return;
+    case OP_EQUAL:
+      A4GL_push_int ((float)a == (float)b);
+      return;
+    case OP_NOT_EQUAL:
+      A4GL_push_int ((float)a != (float)b);
+      return;
+    }
+
+  A4GL_exitwith ("Unknown operation");
+  A4GL_push_int (0);
+  return;
+}
+
+/* ========================== EOF ========================== */
 
 
 
@@ -2465,6 +2758,9 @@ DTYPE_SERIAL
 //void *ptr;
 
   A4GL_add_op_function (DTYPE_INT, DTYPE_INT, OP_MATH,  A4GL_int_int_ops);
+  A4GL_add_op_function (DTYPE_SMFLOAT, DTYPE_SMFLOAT, OP_MATH,  A4GL_smfloat_smfloat_ops);
+  A4GL_add_op_function (DTYPE_SMFLOAT, DTYPE_FLOAT, OP_MATH,  A4GL_smfloat_float_ops);
+  A4GL_add_op_function (DTYPE_FLOAT, DTYPE_SMFLOAT, OP_MATH,  A4GL_float_smfloat_ops);
   A4GL_add_op_function (DTYPE_SMINT, DTYPE_SMINT, OP_MATH, A4GL_int_int_ops);
   A4GL_add_op_function (DTYPE_INT, DTYPE_SMINT, OP_MATH, A4GL_int_int_ops);
   A4GL_add_op_function (DTYPE_SMINT, DTYPE_INT, OP_MATH, A4GL_int_int_ops);
@@ -2685,5 +2981,3 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
   buff_sz[c--] = '&';
   return buff_sz;
 }
-
-/* ========================== EOF ========================== */
