@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.51 2003-06-18 10:30:23 mikeaubury Exp $
+# $Id: Makefile.in,v 1.52 2003-07-18 08:31:36 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -55,8 +55,8 @@ COMMONSRC= \
 	gtime.c gui_io.c gui.c \
 	helper.c \
 	io.c interval.c \
-	keys.c \
-	load.c \
+	keys.c  \
+	lex.c load.c \
 	match.c maths.c memfile.c \
 	others.c ops.c \
 	pointers.c \
