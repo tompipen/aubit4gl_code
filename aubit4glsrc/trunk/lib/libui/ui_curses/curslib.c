@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.50 2003-08-01 01:03:26 mikeaubury Exp $
+# $Id: curslib.c,v 1.51 2003-08-01 07:29:57 mikeaubury Exp $
 #*/
 
 /**
@@ -3993,6 +3993,7 @@ void A4GL_comments (struct struct_scr_field *fprop)
   //char *str;
   int cline;
   char buff[256];
+  int attr;
   if (!fprop) return;
   A4GL_debug ("Has property");
 
@@ -4011,9 +4012,16 @@ void A4GL_comments (struct struct_scr_field *fprop)
 		cline=A4GL_get_curr_height();
   }
 
-  A4GL_display_internal (1, cline, buff,
+  attr=A4GL_get_curr_window_attr();
+
+  if (!attr) {
+	attr=A4GL_determine_attribute(FGL_CMD_COMMENT, 0,0);
+  }
+	
+  A4GL_display_internal (1, cline, buff,attr,1);
+
 	// AUBIT_COLOR_WHITE
-      A4GL_determine_attribute(FGL_CMD_COMMENT, 0,0) , 1); // COMMENTS seem to take on the Window border style...
+      //A4GL_determine_attribute(FGL_CMD_COMMENT, 0,0) , 1); // COMMENTS seem to take on the Window border style...
   A4GL_zrefresh();
 
 
