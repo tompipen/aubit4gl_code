@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.1 2003-01-14 06:27:08 psterry Exp $
+# $Id: sqlconvert.c,v 1.2 2003-01-17 23:32:54 psterry Exp $
 #
 */
 
@@ -34,12 +34,10 @@
  *
  * The only function that should be called here is:
  *
- *     convert_sql( dbms_type, sql_statement ) 
+ *     convert_sql( source_dialect, target_dialect, sql_statement ) 
  *
- * This will (attempt to) convert the Informix/A4GL style
- * SQL statement into a form that the DBMS can handle.
- *
- * The dbms_type codes are defined in ../../incl/a4gl_API_sql.h
+ * This will (attempt to) convert the SQL statement from the program
+ * into a form that the DBMS can handle.
  *
  */
 
@@ -91,33 +89,38 @@ char * cv_unqstrstr( char *str, char *word );
  * Converts an Informix/A4GL style SQL string
  * to one acceptable to the target DBMS
  * 
- * @param  dbms   identifier for database server
- * @param  sql    SQL command string
- * @param  size   max. length of string buffer (0 = null-terminated)
+ * @param  source   SQL dialect statement is written in
+ * @param  target   SQL dialect understood by the DBMS
+ * @param  sql      SQL command string
 */
 void
-convert_sql( int dbms, char *sql )
+convert_sql( char *source_dialect, char *target_dialect, char *sql )
 {
 
-debug("convert_sql: dbms=%d, sql=%s", dbms, sql);
+debug("convert_sql: source=%s, target=%s, sql=%s",
+		source_dialect, target_dialect, sql);
 
- switch (dbms)
- { 
-   case DBMS_INFORMIX:
-   case DBMS_OTHER:
-   	return;
-   case DBMS_POSTGRESQL:
-	cvsql_double_to_single( sql );
-	cvsql_matches( sql, "~" );
-	cvsql_substring( sql, "substr" );
-	cvsql_rowid( sql, "oid" );
-	//cvsql_outer_to_left( sql );
-	break;
-   case DBMS_ORACLE:
-	cvsql_matches( sql, "like" );
-	cvsql_rowid( sql, "oid" );
-	//cvsql_outer_to_star( sql );
-	break;
+ if ( (source_dialect == NULL) || (target_dialect == NULL) ||  
+      (strcmp(source_dialect,target_dialect)==0) )
+ {
+   return;
+ }
+
+ if ( strncmp(target_dialect,"POSTGRES",8)==0 )
+ {
+    cvsql_double_to_single( sql );
+    cvsql_matches( sql, "~" );
+    cvsql_substring( sql, "substr" );
+    cvsql_rowid( sql, "oid" );
+    return;
+ }
+
+ if ( strncmp(target_dialect,"ORACLE",6)==0 )
+ {
+    cvsql_double_to_single( sql );
+    cvsql_matches( sql, "like" );
+    cvsql_rowid( sql, "oid" );
+    return;
  }
 
  debug("  convert_sql returns %s", sql);
@@ -283,7 +286,7 @@ cvsql_matches( char *sql, char *typ ) {
 }
 
 /*
- * Converts col[a,b] style column subscripts to substr(col,a,b)
+ * Converts col[a,b] style column subscripts to substr(col,a,b-a+1)
  *
  * @param  sql   SQL statement string
  * @param  func  name of substring function
@@ -318,8 +321,16 @@ cvsql_substring( char *sql, char *func ) {
        */
       *t = ')';
       /* assume [a,1] if we have [a] instead of [a,b] */
-      if ( (p=index(t_left,',')) == NULL || p > t )
+      if ( (p=index(t_left,',')) == NULL || p > t ) {
 	      cv_replacestr( t, 0, ",1");
+      }
+      else {
+	      cv_replacestr( t, 0, "+1");
+	      *p = '\0';
+	      cv_replacestr( t, 0, &t_left[1]);
+	      *p = ',';
+	      cv_replacestr( t, 0, "-");
+      }
       *t_left = ',';
       cv_inschstr( t_col, '(');
       cv_replacestr( t_col, 0, func );

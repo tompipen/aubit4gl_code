@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.24 2003-01-15 22:29:15 saferreira Exp $
+# $Id: calldll.c,v 1.25 2003-01-17 23:32:53 psterry Exp $
 #
 */
 
@@ -75,7 +75,7 @@ char tempbuff[1024];
 */
 
 static void 	badfunc 		(void);
-static int 		nullfunc		(void);
+int 		nullfunc		(void);
 int 			call_4gl_dll 	(char *filename, char *function, int args);
 void *          find_func_double (void *dllhandle, char *func);
 
@@ -259,7 +259,7 @@ badfunc (void)
  *
  * @todo Describe function
  */
-static int
+int
 nullfunc(void)
 {
 	debug("Calling DLL where no function defined (Allowed)");

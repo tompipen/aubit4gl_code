@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.25 2003-01-15 22:29:15 saferreira Exp $
+# $Id: API_sql.c,v 1.26 2003-01-17 23:32:52 psterry Exp $
 #
 */
 
@@ -56,6 +56,26 @@
 
 static void *libptr=0;
 /* typedef unsigned char UCHAR; in a4gl_dlsql.h */
+
+/* list of open sessions - the current session is always first
+ */
+struct sess {
+    char sessname[64];
+    char dbms_dialect[64];
+    struct sess *next;
+};
+struct sess *curr_sess = NULL;
+
+/* dialect of SQL currently being used in the 4GL program */
+static char source_dialect[64] = "INFORMIX";
+
+/* 'must_convert' tells us if we must try syntax conversion.
+ * It is set if SQLCONVERT and the DBMS' dialect
+ * differs from the 4GL source dialect.
+ * */
+static int must_convert = 0;
+
+
 
 /*
 =====================================================================
@@ -116,6 +136,14 @@ char *      global_A4GLSQL_get_sqlerrm (void);
 
 extern void aclfgli_set_err_flg(void);
 
+char *		apisql_strdup		( char *sql );
+void		apisql_add_sess		( char *sessname );
+void 		apisql_set_sess		( char *sessname );
+void		apisql_drop_sess	( char *sessname );
+char *		apisql_dflt_dialect	( void );
+void		apisql_must_convert	( void );
+extern int 	nullfunc		(void);
+
 /*
 =====================================================================
                     Functions definitions
@@ -140,6 +168,8 @@ A4GLSQL_initlib (void)
   ptr=acl_getenv("A4GL_SQLTYPE");
   if (A4GLSQL_loadConnector(ptr) == 0)
     return 0;
+
+  debug("A4GLSQL_initlib : ptr = %s", ptr );
 
   func=find_func_allow_missing(libptr,"A4GLSQL_initlib");
 
@@ -206,6 +236,7 @@ A4GLSQL_xset_status(int a)
 
 /**
  * Initialize a connection to the database.
+ * This is the same as init_session("default", ... )
  *
  * Called by the generated C code to implement the DATABASE 4gl statement.
  *
@@ -215,11 +246,14 @@ A4GLSQL_xset_status(int a)
 int
 A4GLSQL_init_connection   (char *dbName)
 {
+  int rc;
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_init_connection");
-  return func(dbName);
+  rc = func(dbName);
+  debug ( "init_connection got rc = %d \n", rc );
+  if ( rc==0 ) apisql_add_sess("default");
+  return rc;
 }
-
 
 /**
  * Get the value of the 4gl status variable.
@@ -397,9 +431,12 @@ A4GLSQL_get_datatype   (char *db, char *tab, char *col)
 int
 A4GLSQL_init_session   (char *sessname, char *dsn, char *usr, char *pwd)
 {
+  int rc;
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_init_session");
-  return func(sessname,dsn,usr,pwd);
+  rc = func(sessname,dsn,usr,pwd);
+  if ( rc==0 ) apisql_add_sess(sessname);
+  return rc;
 }
 
 /**
@@ -410,9 +447,12 @@ A4GLSQL_init_session   (char *sessname, char *dsn, char *usr, char *pwd)
 int
 A4GLSQL_set_conn   (char *sessname)
 {
+  int rc;
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_set_conn");
-  return func(sessname);
+  rc = func(sessname);
+  if ( rc ) apisql_set_sess(sessname);
+  return rc;
 }
 
 
@@ -429,6 +469,10 @@ struct s_sid *
 A4GLSQL_prepare_glob_sql   (char *s, int ni, struct BINDING *ibind)
 {
   if (libptr==0) A4GLSQL_initlib();
+  if ( must_convert ) {
+      s = apisql_strdup(s);
+      convert_sql( source_dialect, curr_sess->dbms_dialect, s );
+  }
   func=find_func(libptr,"A4GLSQL_prepare_glob_sql");
   return (struct s_sid *)func(s,ni,ibind);
 }
@@ -462,9 +506,12 @@ A4GLSQL_execute_implicit_sql   (struct s_sid *sid)
 int
 A4GLSQL_close_session   (char *sessname)
 {
+  int rc;
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_close_session");
-  return func(sessname);
+  rc = func(sessname);
+  if ( rc ) apisql_drop_sess(sessname);
+  return rc;
 }
 
 /**
@@ -509,6 +556,10 @@ struct s_sid *
 A4GLSQL_prepare_sql   (char *s)
 {
   if (libptr==0) A4GLSQL_initlib();
+  if ( must_convert ) {
+      s = apisql_strdup(s);
+      convert_sql( source_dialect, curr_sess->dbms_dialect, s );
+  }
   func=find_func(libptr,"A4GLSQL_prepare_sql");
   return (struct s_sid *)func(s);
 }
@@ -582,6 +633,10 @@ struct s_sid *
 A4GLSQL_prepare_select       (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s    )
 {
   if (libptr==0) A4GLSQL_initlib();
+  if ( must_convert ) {
+      s = apisql_strdup(s);
+      convert_sql( source_dialect, curr_sess->dbms_dialect, s );
+  }
   func=find_func(libptr,"A4GLSQL_prepare_select");
   return (struct s_sid *)func(ibind,ni,obind,no,s);
 }
@@ -688,6 +743,10 @@ void
 A4GLSQL_unload_data   (char *fname, char *delims, char *sql1)
 {
   if (libptr==0) A4GLSQL_initlib();
+  if ( must_convert ) {
+      sql1 = apisql_strdup(sql1);
+      convert_sql( source_dialect, curr_sess->dbms_dialect, sql1 );
+  }
   func=find_func(libptr,"A4GLSQL_unload_data");
   func(fname,delims,sql1);
 }
@@ -844,16 +903,20 @@ A4GLSQL_close_connection(void)
 }
 
 /**
- * Returns the type of the currently connected DBMS.
+ * Returns the dialect of SQL spoken by the currently
+ * connected DBMS.
  *
- * @return  type identifier (DBMS_SAPDB, DBMS_INFORMIX, etc.)
+ * @return  a char string, eg. "INFORMIX", "ORACLE", "SAPDB"
  */
-int
-A4GLSQL_dbms_type( void )
+char *
+A4GLSQL_dbms_dialect( void )
 {
   if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_dbms_type");
-  return func();
+
+  func=find_func_allow_missing(libptr,"A4GLSQL_dbms_dialect");
+
+  if (func == nullfunc ) return "";
+  return (char *) func();
 }
 
 /**
@@ -871,5 +934,160 @@ A4GLSQL_dbms_name( void )
   return (char *) func();
 }
 
+/**
+ * Set the dialect of SQL being used in the 4GL program,
+ *
+ * @param	char string, eg. "INFORMIX", "ORACLE", "SAPDB"
+ */
+void
+A4GLSQL_set_dialect( char *dialect )
+{
+  if ( dialect && (*dialect>0) ) {
+     strcpy( source_dialect, dialect );
+  }
+  else {
+     strcpy( source_dialect, apisql_dflt_dialect() );
+  }
+  apisql_must_convert();
+}
+
+/*======================= (private functions) ========================*/
+
+/**
+ * Make a copy of a SQL statement string, but with extra space
+ * in case of any syntax conversions.  Somewhat like strdup().
+ * The copy is malloc'ed and padded with spaces to its new length.
+ * 
+ * @param	pointer to original sql
+ * @return	pointer to copy
+ */
+char *
+apisql_strdup( char *sql )
+{
+ char *p = NULL;
+ int n1, n2;
+
+  /* the copy is about 1.5 times the length of the original */
+  n1 = strlen(sql);
+  n2 = 20 + (n1 * 3 / 2);
+
+  /* malloc space for the new string, copy it and pad with spaces */
+  if ( ( p = malloc(n2+1) ) )
+  {
+      p = memcpy(memset(p,' ',n2), sql, n1);
+      p[n2] = '\0';
+  }
+  return p;
+}
+
+/**
+ * Add the named session to the sessions list and make it current
+ * 
+ * @param	session name
+ */
+void
+apisql_add_sess( char *sessname )
+{
+ struct sess *next;
+ next = curr_sess;
+ curr_sess = (struct sess *) malloc( sizeof(struct sess) );
+ strcpy( curr_sess->sessname, sessname );
+ strcpy( curr_sess->dbms_dialect, A4GLSQL_dbms_dialect() );
+ curr_sess->next = next;
+ apisql_must_convert();
+}
+
+/**
+ * Moves the named session to the front of the sessions list
+ * 
+ * @param	session name
+ */
+void
+apisql_set_sess( char *sessname )
+{
+ struct sess *p;
+ struct sess *p2 = NULL;
+ p2 = NULL;
+ p = curr_sess;
+ while ( p != NULL ) {
+   if (strcmp(p->sessname,sessname)!=0) {
+	p2 = p;
+	p = p->next;
+	continue;
+   }
+   p2->next = p->next;
+   p->next = curr_sess;
+   curr_sess = p;
+   apisql_must_convert();
+   break;
+ }
+}
+
+/**
+ * Drop the named session from the sessions list
+ * 
+ * @param	session name
+ */
+void
+apisql_drop_sess( char *sessname )
+{
+ struct sess *p;
+ struct sess *p2 = NULL;
+ p = curr_sess;
+ while ( p != NULL ) {
+   if (strcmp(p->sessname,sessname)!=0) {
+	p2 = p;
+	p = p->next;
+	continue;
+   }
+   if (p2 == NULL) { curr_sess = p->next;
+   }
+   else { p2->next = p->next;
+   }
+   free(p);
+   break;
+ }
+}
+
+/**
+ * Returns the default SQL dialect expected from the program,
+ * which is either set from $SQLDIALECT, or is "INFORMIX"
+ * 
+ * @param	session name
+ */
+char *
+apisql_dflt_dialect( void )
+{
+ char *p;
+  p = acl_getenv("SQLDIALECT");
+  if (p && *p>0) return p;
+  return "INFORMIX";
+}
+
+/**
+ * Checks source and DBMS SQL dialects and determines
+ * if we must convert
+ * 
+ * @param	session name
+ */
+void
+apisql_must_convert( void )
+{
+  /* if no source dialect is set, use the default */
+  if ( *source_dialect == '\0') {
+       strcpy( source_dialect, apisql_dflt_dialect() );
+  }
+  /* SQLCONVERT=YES must be set, and source/DBMS dialects must differ
+   */
+  must_convert = 0;
+  if ( (strcmp(acl_getenv("SQLCONVERT"),"YES")==0)
+        && (source_dialect[0] > '\0') &&
+        (curr_sess->dbms_dialect[0] > '\0') &&
+     (strcmp(curr_sess->dbms_dialect,source_dialect)!=0) )
+  {
+        must_convert = 1;
+  }
+}
 
 /* =============================== EOF ============================== */
+
