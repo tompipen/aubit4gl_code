@@ -1,12 +1,16 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.23 2001-11-16 11:05:35 mikeaubury Exp $
+* $Id: mod.c,v 1.24 2001-11-19 10:31:13 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.23  2001/11/16 11:05:35  mikeaubury
+*	Phase 2.1 of printc changes
+*	Also fixed small bug in GTK stuff - still lots to do on GUI side though....
+*	
 *	Revision 1.22  2001/11/14 07:45:33  mikeaubury
 *	phase 1.1
 *	
@@ -247,7 +251,7 @@ struct s_report sreports[1024];
 int sreports_cnt = 0;
 
 static int print_variable (int z, char ff);
-int print_record (int z, char ff);
+int print_record (int z, char ff,char *v);
 //int printcomment (char *fmt, ...);
 //int printh (char *fmt, ...);
 //int printc (char *fmt, ...);
@@ -661,7 +665,7 @@ print_variable (int z, char ff)
   if (strcmp (vars[z].var_type, "_RECORD") == 0)
     {
       setinc (1);
-      print_record (z, ff);
+      print_record (z, ff,vars[z].var_name);
       setinc (-1);
 
       return;
@@ -731,32 +735,33 @@ print_variable (int z, char ff)
 
 }
 
-print_record (int z, char ff)
+print_record (int z, char ff,char *vname)
 {
 
   int a;
 
   int lvl = 1;
+debug("Print record %s\n",vname);
 
   if (isin_command ("REPORT"))
     {
       if (ff != '-')
 	{
-	  print_start_record (1);
+	  print_start_record (1,vname);
 	}
       else
 	{
-	  print_start_record (0);
+	  print_start_record (0,vname);
 	}
 
     }
   else
     {
       if (ff != 'G')
-	print_start_record (0);
+	print_start_record (0,vname);
 
       if (ff == 'G')
-	print_start_record (2);
+	print_start_record (2,vname);
     }
 
   for (a = z + 1; a < varcnt; a++)
@@ -766,7 +771,7 @@ print_record (int z, char ff)
 	{
 
 	  if (vars[a].level > vars[z].level)
-	    a = print_record (a, '-');
+	    a = print_record (a, '-',vars[a].var_name);
 
 	  continue;
 
@@ -4105,11 +4110,12 @@ void *
 new_expr (char *value)
 {
   struct expr_str *ptr;
-  debug ("new_expr");
+  debug ("new_expr - %s",value);
   ptr = malloc (sizeof (struct expr_str));
   ptr->next = 0;
   ptr->expr = strdup (value);
   debug ("newexpr : %s -> %p\n", value, ptr);
+  dump_expr(ptr);
   return ptr;
 }
 
@@ -4130,7 +4136,22 @@ append_expr (struct expr_str *orig_ptr, char *value)
     }
   orig_ptr->next = ptr;
   debug ("Appended expr");
+  dump_expr(start);
   return start;
+}
+
+void dump_expr (struct expr_str *orig_ptr)
+{
+  struct expr_str *ptr;
+  struct expr_str *start;
+  start = orig_ptr;
+
+debug("DUMP EXPR : ");
+      while (orig_ptr) {
+	debug ("     %s",orig_ptr->expr);
+	orig_ptr = orig_ptr->next;
+    }
+debug("---------------------------------------------------");
 }
 
 void *
@@ -4146,6 +4167,7 @@ append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
 	orig_ptr = orig_ptr->next;
     }
   orig_ptr->next = second_ptr;
+ dump_expr(start);
   return start;
 }
 
@@ -4178,3 +4200,5 @@ tr_glob_fname (char *s)
       s[a] = tolower (s[a]);
     }
 }
+
+

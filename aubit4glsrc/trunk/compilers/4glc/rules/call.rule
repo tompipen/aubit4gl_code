@@ -32,15 +32,19 @@ ibind_var_list {
    opt_func_call_args 
    {
 	debug("Got args");
-   sprintf($<str>$,"%d",get_counter_val());drop_counter();
-	}
+   }
    CLOSE_BRACKET 
    {
-  print_func_call($<str>1,$<str>4,atoi($<str>5));
+	int a;
+	dump_expr($<ptr>4);
+	a=get_counter_val();
+	drop_counter();
+  	print_func_call($<str>1,$<ptr>4,a);
    }
    opt_return 
    {
 	print_returning();
+	strcpy($<str>$,$<str>5);
 	}
    | SHARED char_or_var IN char_or_var OPEN_BRACKET {
 	set_status(0);
@@ -103,18 +107,19 @@ opt_return_remote 	: {start_bind('i',0);strcpy($<str>$,"0");}
 
 opt_func_call_args : 
 		/*empty*/ {
-		$<ptr>$=new_expr("");
-	}
+			$<ptr>$=new_expr("");
+		}
 		| func_call_args  {
-		$<ptr>$=$<ptr>1;
+			$<ptr>$=$<ptr>1;
 		}
 ;
 
 func_call_args	: func_arg
-		{$<ptr>$=$<ptr>1; }
+		{
+	$<ptr>$=$<ptr>1;
+}
 		| func_call_args COMMA func_arg {
 		$<ptr>$=append_expr_expr($<ptr>1,$<ptr>3);
-//sprintf($<str>$,"%s %s",$<str>1,$<str>3);
 }
 
 ;
