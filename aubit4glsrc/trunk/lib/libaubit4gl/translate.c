@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.8 2002-06-25 03:22:31 afalout Exp $
+# $Id: translate.c,v 1.9 2002-10-13 11:44:39 afalout Exp $
 #
 */
 
@@ -230,7 +230,7 @@ int a;
  * @return
  */
 void
-add_translate(int mode,char * from,char * to, int quote) 
+add_translate(int mode,char * from,char * to, int quote)
 {
 char buff[2048];
 
@@ -252,9 +252,10 @@ char buff[2048];
         } else {
 			if (quote==0) {
 				/* formwrite2.c: */
-				sprintf(buff,"get_translated_id:%s",to);
+				//ORIGINAL: sprintf(buff,"get_translated_id:%s",to);
+				sprintf(buff,"\"get_translated_id:%s\"",to);
             } else {
-				/* lexer.c: */
+				/* lexer.c: NO LONGER THERE !!?? */
 				sprintf(buff,"get_translated_id(\"%s\")",to);
             }
 

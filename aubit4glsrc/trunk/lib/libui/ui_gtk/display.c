@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: display.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
 #*/
 
 /**
@@ -47,25 +47,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-	#include <string.h>
-	#include <stdio.h>
-	#include <gtk/gtk.h>
-
-	#include "a4gl_dlsql.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_runtime_tui.h"
-
-	/* a4gl_runtime_tui.h will include stdlib.h */
-	#define GETENV_OK
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_ui_gtk_int.h"
-
-#endif
+#include "a4gl_lib_ui_gtk_int.h"
 
 /*
 =====================================================================

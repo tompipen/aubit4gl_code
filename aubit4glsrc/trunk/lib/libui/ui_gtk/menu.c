@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu.c,v 1.2 2002-09-20 10:06:05 mikeaubury Exp $
+# $Id: menu.c,v 1.3 2002-10-13 11:44:40 afalout Exp $
 #*/
 
 /**
@@ -39,22 +39,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-	#include <unistd.h> 			/* usleep() */
-	#include <string.h> 			/* strlen() */
-	#include <gtk/gtk.h>
-
-	#include "a4gl_gtk_dims.h"
-	#include "a4gl_gtk_gtk_4gl.h"	/* get_curr_width_gtk() */
-	#include "a4gl_aubit_lib.h"		/* trim() */
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_ui_gtk_int.h"
-
-#endif
+#include "a4gl_lib_ui_gtk_int.h"
 
 /*
 =====================================================================

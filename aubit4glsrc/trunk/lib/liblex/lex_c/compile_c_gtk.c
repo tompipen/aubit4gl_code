@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.9 2002-10-07 16:11:23 mikeaubury Exp $
+# $Id: compile_c_gtk.c,v 1.10 2002-10-13 11:44:39 afalout Exp $
 #
 */
 
@@ -117,7 +117,9 @@ void
 print_formhandler (char *name)
 {
 if (printed_gtk==0) {
-        printh ( "#include <gtk/gtk.h>\n");
+        //#ifdef OBSOLETE *** __NOT__ obsolete!
+		printh ( "#include <gtk/gtk.h>\n");
+        //#endif
         printh ( "#define ON_FIELD(x) (widget_name_match(widget,x)&&event==0&&(strnullcmp(data,\"on\")==0||strnullcmp(data,\"clicked\")==0))\n");
         printh ( "#define BEFORE_OPEN_FORM  (event==0&&widget==0&&data==0)\n");
         printh ( "#define BEFORE_CLOSE_FORM  (isevent==1&&(event->type==GDK_DELETE|| event->type==GDK_DESTROY))\n");

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 #   Based on "INFORMIX D4GL Programmer's Environment Version 2.00.UC2"
 #
-# $Id: Makefile.in,v 1.5 2002-03-31 07:05:32 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-10-13 11:44:40 afalout Exp $
 #
 
 #This make file uses "Amake" - NO TARGETS are defined here !
@@ -33,7 +33,7 @@
 #This is needed when making IDE as part of Aubit compiler build from
 #source code, before Aubit is installed :
 include ../../incl/Makefile-common
-override NOINCL=0
+#override NOINCL=0
 
 ## ==================================================================
 ##                              Header Includes

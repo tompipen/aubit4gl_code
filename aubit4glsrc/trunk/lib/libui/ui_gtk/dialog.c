@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dialog.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: dialog.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
 #*/
 
 /**
@@ -42,23 +42,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-	#include <unistd.h> 			/* usleep() */
-	#include <stdlib.h>		 		/* free() */
-	#include <string.h>
-
-	#include <gtk/gtk.h>
-
-	#include "a4gl_gtk_gtk_4gl.h" 	/* msg_window_gtk() */
-	#include "a4gl_stack.h" 		/* char_pop() */
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_ui_gtk_int.h"
-
-#endif
+#include "a4gl_lib_ui_gtk_int.h"
 
 /*
 =====================================================================

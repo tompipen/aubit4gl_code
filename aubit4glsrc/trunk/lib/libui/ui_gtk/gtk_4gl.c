@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.4 2002-10-07 16:11:23 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.5 2002-10-13 11:44:40 afalout Exp $
 #*/
 
 /**
@@ -49,41 +49,7 @@
 =====================================================================
 */
 
-
-
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <gtk/gtk.h>
-	#include <glib.h>
-	/*#include <pthread.h>        	 If ever we add threading support... */
-	#include <unistd.h> 			/* usleep() */
-
-	#include "a4gl_io.h"			/* open_file_dbpath() */
-	#include "a4gl_pointers.h"
-	#include "a4gl_formxw.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_aubit_lib.h" 	/* screen_mode() */
-	#include "a4gl_gtk_d2.h"
-	#include "a4gl_gtk_handler.h"
-	#include "a4gl_gtk_widget_prot.h"
-	#include "a4gl_gtk_dims.h"
-	#include "a4gl_gtk_color.h" 	/* gui_set_field_fore() */
-	#include "a4gl_gtk_gtk_4gl.h" 	/* debug_last_field_created() */
-	#include "a4gl_debug.h"
-
-	/*
-	#ifdef __CYGWIN__
-		#include <rpc/rpc.h>
-	#endif
-	*/
-
-#else
-
-    #include "a4gl_lib_ui_gtk_int.h"
-
-#endif
-
+#include "a4gl_lib_ui_gtk_int.h"
 
 /*
 =====================================================================

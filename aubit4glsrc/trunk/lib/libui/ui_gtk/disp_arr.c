@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: disp_arr.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: disp_arr.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
 #*/
 
 /**
@@ -41,29 +41,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-	#include <gtk/gtk.h>
-	#include <gdk/gdkkeysyms.h>         /* GDK_Down */
-	#include <unistd.h> 				/* usleep() */
-
-	#include "a4gl_dbform.h"
-	#include "a4gl_constats.h"
-	#include "a4gl_gtk_gtk_4gl.h"
-	#include "a4gl_gtk_display.h"
-	#include "a4gl_gtk_handler.h"
-	#include "a4gl_gtk_get_fld_val.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_runtime_tui.h"		/* push_char() */
-	#include "a4gl_stack.h" 			/* push_bind() */
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_ui_gtk_int.h"
-
-#endif
-
+#include "a4gl_lib_ui_gtk_int.h"
 
 /*
 =====================================================================

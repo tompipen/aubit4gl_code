@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.96 2002-10-13 01:40:26 afalout Exp $
+# $Id: Makefile.in,v 1.97 2002-10-13 11:44:22 afalout Exp $
 #
 
 ## ==================================================================
@@ -38,10 +38,10 @@ include incl/Makefile-common
 ## ==================================================================
 
 ALL					=settings corecompile test
-ALL_EXTRA  			=libfile libstring ide odbctest libhtml
+ALL_EXTRA  			=libfile libstring ide odbctest libhtml adbaccess
 
 #FIXME: All stuff that should be in ALL_EXTRA, but does not compile:
-ALL_EXTRA_BROKEN	=adbaccess adbload
+ALL_EXTRA_BROKEN	=adbload
 
 ifneq "${PERLBUILD}" "no"
 	ALL_EXTRA_BROKEN+=perl
@@ -72,6 +72,7 @@ default: ${ALL}
 	@echo "+--------------------------------------------------------------------+"
 	@echo " "
 	@echo "Thank you for using Aubit 4gl compiler"
+	@echo " "
 
 all: default extra install
 
@@ -109,7 +110,7 @@ extra_msg:
 
 ide:
 	$(MAKE) -C tools/ide
-	$(MAKE) -C tools/ide install.aubit
+#	$(MAKE) -C tools/ide install.aubit
 
 libfile:
 	$(MAKE) -C lib/extra_libs/file

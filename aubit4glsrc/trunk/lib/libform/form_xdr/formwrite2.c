@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.16 2002-09-08 09:41:06 afalout Exp $
+# $Id: formwrite2.c,v 1.17 2002-10-13 11:44:39 afalout Exp $
 #*/
 
 /**
@@ -1129,27 +1129,6 @@ real_add_bool_attr(struct struct_scr_field *f,int type)
   }
 }
 
-/* moved to translate.c, because needed by both compilers/4glc/lexer.c and trnaslate.c
-
-add_translate(int mode,char * from,char * to) {
-        char buff[2048];
-
-        translate_list_cnt++;
-        translate_list=(struct translate_string *)realloc(translate_list,sizeof( struct translate_string)*translate_list_cnt);
-        translate_list[translate_list_cnt-1].from=strdup(from);
-        debug("Adding %s -> %s mode %d",from,to,mode);
-        if (mode==1) {
-                sprintf(buff,"%s",to);
-                translate_list[translate_list_cnt-1].to        =strdup(buff);
-                translate_list[translate_list_cnt-1].identifier=0;
-        } else {
-                sprintf(buff,"get_translated_id:%s",to);
-                translate_list[translate_list_cnt-1].identifier=strdup(buff);
-                translate_list[translate_list_cnt-1].to        =0;
-        }
-}
-
-*/
 
 /**
  *

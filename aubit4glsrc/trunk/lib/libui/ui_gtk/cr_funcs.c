@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: cr_funcs.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: cr_funcs.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
 #*/
 
 /**
@@ -46,23 +46,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <gtk/gtk.h>
-	#include <string.h>
-
-	#include "a4gl_gtk_dims.h"
-	#include "a4gl_gtk_params.h"
-	#include "a4gl_gtk_gtk_4gl.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_ui_gtk_int.h"
-
-#endif
+#include "a4gl_lib_ui_gtk_int.h"
 
 /*
 =====================================================================

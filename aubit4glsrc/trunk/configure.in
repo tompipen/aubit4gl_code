@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.115 2002-10-13 01:40:27 afalout Exp $
+dnl # $Id: configure.in,v 1.116 2002-10-13 11:44:24 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -614,6 +614,16 @@ fi
 #target_cpu
 #target_vendor
 #target_os
+
+
+#Usage: uname [OPTION]...
+#  -a, --all        print all information
+#  -m, --machine    print the machine (hardware) type
+#  -n, --nodename   print the machine's network node hostname
+#  -r, --release    print the operating system release
+#  -s, --sysname    print the operating system name
+#  -p, --processor  print the host processor type
+#  -v               print the operating system version
 
 #This will return just 2.4
 #KERNEL=`kernelversion`
@@ -1745,6 +1755,7 @@ AC_ARG_WITH(gtk,
 	                    #this will get assigned in makefile iteself
 						AC_MSG_CHECKING(using gtk-config in Makefile)
 						AC_MSG_RESULT(Yes)
+						GTK_INC_PATH=`$GTK_CONFIG --cflags`
 					else
 						if test "$PKG_CONFIG" != "no"; then
 		                    #this will get assigned in makefile iteself, but
@@ -2994,13 +3005,11 @@ fi
 if test "$INFORMIXODBC_WARNING" = "1"; then
 cat<<X
 +--------------------------------------------------------------------+
-|                        *** WARNING ***                             |
-| ODBC library directory (\$INFORMIXDIR/lib/cli) must be in your      |
-| LD_LIBRARY_PATH environment variable value.                        |
+|                        *** NOTE ***                                |
+#| ODBC library directory (\$INFORMIXDIR/lib/cli) must be in your      |
+#| LD_LIBRARY_PATH environment variable value.                        |
 | Configuration files used by Informix ODBC driver:                  |
-| \$INFORMIXDIR/etc/odbc.ini                                          |
-| \$INFORMIXDIR/etc/odbcinst.ini                                      |
-| \$INFORMIXDIR/etc/setup.odbc                                        |
+| \$INFORMIXDIR/etc/odbc.ini odbcinst.ini setup.odbc                  |
 X
 fi
 if test "$WARN_LD_LIBRARY_PATH" != ""; then
@@ -3016,6 +3025,7 @@ cat<<X
 | specified package in non-standard place. We will try to do this    |
 | automatically for you:                                             |
 WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON"
+CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 X
 
 	if test "$ADD_LD_LIBRARY_PATH" != ""; then

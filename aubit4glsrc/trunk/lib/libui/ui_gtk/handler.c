@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: handler.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: handler.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
 #*/
 
 /**
@@ -41,29 +41,14 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include <ctype.h>
-	#include <gtk/gtk.h>
-
+/*
 	#ifdef __CYGWIN__
 		#include <gdk/gdk.h>
 		#include <glib.h>
 		#include <stdio.h>
 	#endif
-
-	#include "a4gl_gtk_buttons.h"
-	#include "a4gl_formxw.h"
-	#include "a4gl_aubit_lib.h"			/* set_last_key() */
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_ui_gtk_int.h"
-
-#endif
-
+*/
+#include "a4gl_lib_ui_gtk_int.h"
 
 /*
 =====================================================================

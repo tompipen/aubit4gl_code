@@ -160,6 +160,8 @@ CC="@CC@"
 
 AWK=@AWK@
 
+GTK_INC_PATH="@GTK_INC_PATH@"
+
 #################
 #Depending on installed 4gl compilers, amake can compile same definition
 #of the 4gl programs with differnt 4gl compilers. Here you can specify

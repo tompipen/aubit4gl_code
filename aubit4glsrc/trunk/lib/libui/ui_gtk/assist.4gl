@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: assist.4gl,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: assist.4gl,v 1.2 2002-10-13 11:44:40 afalout Exp $
 
 # ASSIST.4gl
 #
@@ -47,38 +47,7 @@ If you need to change something, edit assist.4gl, and NOT assist.c
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-	
-	#include <unistd.h> //usleep()
-	#include <string.h> //strcpy()
-
-	#include <gdk/gdk.h>
-	#include <gtk/gtk.h>
-	#include <glib.h>
-
-	#include "a4gl_pointers.h"
-	#include "a4gl_gtk_gtk_4gl.h" //get_curr_win_gtk()
-	#include "a4gl_aubit_lib.h" //get_curr_win_gtk()
-	#include "a4gl_gtk_cr_funcs.h" //make_pixmap()
-	#include "a4gl_gtk_params.h" //find_param()
-	#include "a4gl_runtime_tui.h" //push_variable()
-
-	/*
-	a4gl_runtime_tui.h will eventually include stdlib.h, which uses getenv(), so
-	we need to set GETENV_OK and only then include debug.h
-	*/
-
-	#define GETENV_OK
-	#include "a4gl_debug.h"
-
-
-
-#else
-
-    #include "a4gl_lib_ui_gtk_int.h"
-
-#endif
+#include "a4gl_lib_ui_gtk_int.h"
 
 /*
 =====================================================================
@@ -110,7 +79,7 @@ extern GtkWidget *currwindow;
 void * find_curr_window(void);
 void store_filename(GtkFileSelection *selector, gpointer user_data);
 
-/* This protorypes should be created by 4glc, in assis.h, but they are not:
+/* This prototypes should be created by 4glc, in assist.h, but they are not:
 
 assist.c:70: warning: no previous declaration for `aclfgl_set_window_title'
 assist.c:92: warning: no previous declaration for `aclfgl_get_window_title'

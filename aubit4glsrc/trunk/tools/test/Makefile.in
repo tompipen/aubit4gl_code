@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.24 2002-10-13 01:40:35 afalout Exp $
+# $Id: Makefile.in,v 1.25 2002-10-13 11:44:40 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -49,11 +49,17 @@ endif
 
 DEFAULT=other 4gldemo
 
-SUB=guidemos langdemos
+SUB=guidemos
 
-REGRES=regressiontests dbtests
+ifneq "${AUBIT_BIN_INSTALL}" "1"
+	#We hav this dirs only in source tree:
+	SUB+=langdemos
+	REGRES=regressiontests dbtests
+endif
 
-ALL=${DEFAULT} assoc pdf_report file test_select testmenu testmpz ${SUB} ${REGRES}
+ALL_FAIL=test_select
+
+ALL=${DEFAULT} assoc pdf_report file testmenu testmpz ${SUB} ${REGRES} ${ALL_FAIL}
 
 ## ==================================================================
 ##                              Targets
@@ -72,7 +78,8 @@ default: ${DEFAULT}
 	@echo " "
 
 all: ${ALL}
-	@echo all targets successfully compiled
+	@echo "all targets successfully compiled"
+	@echo "Tests that are expected to fail: ${ALL_FAIL}"
 
 sub: ${SUB}
 	@echo targets in sub directories successfully compiled

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.3 2002-10-07 16:11:24 mikeaubury Exp $
+# $Id: widget.c,v 1.4 2002-10-13 11:44:40 afalout Exp $
 #*/
 
 /**
@@ -42,32 +42,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-	#include <string.h>
-	#include <gtk/gtk.h>
-
-	#ifdef __CYGWIN__
-		#include <stdio.h>
-	#endif
-
-	#include "a4gl_formxw.h"
-	#include "a4gl_dbform.h" 			/* get_curr_form() */
-	#include "a4gl_gtk_widget.h"
-	#include "a4gl_gtk_dims.h"
-	#include "a4gl_gtk_params.h"
-	#include "a4gl_gtk_frm.h"
-	#include "a4gl_gtk_gtk_4gl.h"
-	#include "a4gl_gtk_handler.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_ui_gtk_int.h"
-
-#endif
-
+#include "a4gl_lib_ui_gtk_int.h"
 
 /*
 =====================================================================

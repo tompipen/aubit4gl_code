@@ -1,4 +1,4 @@
-#   @(#)$Id: a4gl.mk,v 1.14 2002-04-24 08:12:21 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.15 2002-10-13 11:44:39 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -98,10 +98,28 @@ A4GL_SUFFIXES = .ao .4gl .c .4ae .afr .per .iem .msg .hlp
 #using VPATH:
 #	${A4GL_FC} $^ > /dev/null
 	${A4GL_FC} $^ ${FORMSTORE}$@
+#FIXME: change form compiler and aubit compiler to recognise .afr, and
+#remove this "ln" line(s)
+	XX=$(shell  if test -f ${FORMSTORE}$*.afr.xml ; then echo 1; fi)
+	@echo XX=${XX}
+	@echo xx$(shell  if test -f ${FORMSTORE}$*.afr.xml ; then echo 1; fi)xx
+ifeq "$(shell  if test -f ${FORMSTORE}$*.afr.xml ; then echo 1; fi)" "1"
+	@echo exist: ${FORMSTORE}$*.afr.xml
+	ln ${FORMSTORE}$*.afr.xml ${FORMSTORE}$*.xml.frm
+else
+	@echo No file: ${FORMSTORE}$*.afr.xml
+#ifeq "$(shell  if test -f ${FORMSTORE}$@ ; then echo 1; fi)" "1"
+ifeq "$(shell  if test -f ${FORMSTORE}$*.afr ; then echo 1; fi)" "1"
+#	@echo exist: ${FORMSTORE}$@
+	@echo exist: ${FORMSTORE}$*.afr
 	rm -f ${FORMSTORE}$*.frm
 	ln ${FORMSTORE}$@ ${FORMSTORE}$*.frm
-#FIXME: change form compiler and aubit compiler to recognise .afr, and
-#remove this "ln" line
+else
+	@echo No file: ${FORMSTORE}$*.afr
+endif
+endif
+#Form compiled to XML format:
+
 
 #I always want to go from 4gl to c, so I will disable this:
 .xx-c.xx-ao:

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.3 2002-09-25 05:42:16 afalout Exp $
+# $Id: Makefile.in,v 1.4 2002-10-13 11:44:40 afalout Exp $
 #
 
 LIBROOT=../..
@@ -75,11 +75,11 @@ endif
 
 CFLAGS+=-I.. -I. -I${LIBROOT}/libincl -I${ROOT}/incl ${GLIB_CFLAGS} @GTK_INC_PATH@ @GTK_LIB_PATH@ -I${ROOT}/compilers/menus -I${ROOT}/compilers/fcompile
 
-ifdef COMSPEC
-    ALL				+=dlllibUI_GTK
-else
-    ALL				+=libUI_GTK${SO_EXT}
-endif
+#ifdef COMSPEC
+#    ALL				+=dlllibUI_GTK
+#else
+    ALL				+=${LIBROOT}/libUI_GTK${SO_EXT}
+#endif
 
 #we don't want -Wall in CFLAGS when compiling form_x_xdr.c because it would
 #give us bunch of warnings about unised varibles, that we cannot fix
@@ -142,7 +142,7 @@ ALLOBJ= \
 all : ${ALL}
 	@echo "Default targets (${ALL}) successfully compiled."
 
-libUI_GTK${SO_EXT}: ${ALLOBJ}
+${LIBROOT}/libUI_GTK${SO_EXT}: ${ALLOBJ}
 #FIXME: we still need to link RPC lib here, because of one call in gtk_4gl.c
 #to xdr_struct_form() - this needs to be moved into XDR specific lib
 #like libFORM_XDR, or better, removed alltogether. I trued creating
@@ -150,18 +150,18 @@ libUI_GTK${SO_EXT}: ${ALLOBJ}
 #not work for to me unknown reason.
 #	${LD} ${SO_LDFLAGS} @GTK_LIB_PATH@ @GTKLIBS@ ${GTKLIBS} ${RPCLIB_NAME} -o $@ $^
 	${LD} ${SO_LDFLAGS} @GTK_LIB_PATH@ @GTKLIBS@ ${GTKLIBS} -o $@ $^
-	${CP} $@ ${LIBROOT}
+#	${CP} $@ ${LIBROOT}
 
 ## ==================================================================
 ##                              Windows dll targets
 ## ==================================================================
 
-.PHONY : dlllibUI_GTK
-dlllibUI_GTK: ${ALLOBJ}
-	${MAKE} libUI_GTK.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_LIB} -lFORM_XDR @GTKLIBS@" DLL_LDFLAGS="-L${LIBROOT} @GTK_LIB_PATH@"
+#.PHONY : dlllibUI_GTK
+#dlllibUI_GTK: ${ALLOBJ}
+#	${MAKE} libUI_GTK.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_LIB} -lFORM_XDR @GTKLIBS@" DLL_LDFLAGS="-L${LIBROOT} @GTK_LIB_PATH@"
 #@CURSES_LIB_NAME@ -lPDF_NOPDF -lRPC_NORPC
-	${CP} libUI_GTK.dll ${LIBROOT}
-	${CP} libUI_GTK${DLL_EXPORTLIB_EXT} ${LIBROOT}
+#	${CP} libUI_GTK.dll ${LIBROOT}
+#	${CP} libUI_GTK${DLL_EXPORTLIB_EXT} ${LIBROOT}
 
 ## ==================================================================
 ##                              Sub Targets

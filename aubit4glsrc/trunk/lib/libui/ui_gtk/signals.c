@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: signals.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: signals.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
 #*/
 
 /**
@@ -42,20 +42,7 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-	#include <gtk/gtk.h>
-
-	#include "a4gl_formxw.h"
-	#include "a4gl_debug.h"
-	#include "a4gl_gtk_handler.h"
-
-#else
-
-    #include "a4gl_lib_ui_gtk_int.h"
-
-#endif
-
+#include "a4gl_lib_ui_gtk_int.h"
 
 /*
 =====================================================================

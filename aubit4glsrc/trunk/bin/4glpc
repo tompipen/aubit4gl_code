@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.85 2002-09-21 08:37:30 afalout Exp $
+# $Id: 4glpc,v 1.86 2002-10-13 11:44:39 afalout Exp $
 #
 
 ########################################################################
@@ -415,7 +415,7 @@ fi
 
 
 LAST=""
-INCLDIR="-I$AUBITDIR/incl"
+INCLDIR="-I$AUBITDIR/incl $GTK_INC_PATH"
 
 #CC is set via aubitrc config file:
 CC="$CC -O2 -g"
@@ -686,7 +686,7 @@ do
               $output "Executing (3) : $FGLCEXEC $a"
           fi
 
-	   echo $FGLCEXEC $a
+	   #echo $FGLCEXEC $a
 
           err_msg=`"$FGLCEXEC" "$a"`
           err_code=$?
