@@ -1,0 +1,14 @@
+<FILES refreshwww.php3>
+	AuthType basic
+	AuthName "Web site refresh"
+	AuthUserFile forums.inf
+	<Limit GET POST>
+	  require user afalout maubury
+	</Limit>
+</FILES>
+
+<Files forums.inf>
+	Order Deny,Allow
+	Deny From All
+</Files>
+
