@@ -74,19 +74,19 @@ define
                     end if
 }
 #                    call ifx_DATABASE(DSN_informix)
-					 call ifx_SESSION(DSN_informix)
+					 call ifx_SESSION("maindb")
 
 #                end if
 
             command "PostgreSQL"
 
                     #call pg_DATABASE(DSN_postgres)
-                    call pg_SESSION(DSN_postgres)
+                    call pg_SESSION("ptest")
 
 
             command "PostgreSQL scrool"
 
-					call pg_SESSION_scroll(DSN_postgres)
+					call pg_SESSION_scroll("ptest")
 
 
 			command "Exit"
@@ -134,15 +134,15 @@ function ifx_SESSION(DSN_informix)
 define
     DSN_informix,
     p_tabname
-        char (40)
+        char (40),
+    cnt
+        integer
 
                 message "Connectiong to DSN maindb"#, DSN_informix clipped
                 sleep 2
 
 
 #				database _variable(DSN_informix)
-
-        let DSN_informix = "maindb"
 
 		if
 			not ifx_sess
@@ -157,13 +157,16 @@ define
 
 				declare c4 cursor for select tabname from systables
 
+                let cnt=0
+
 		        foreach c4 into p_tabname
-		            display p_tabname
+		            let cnt=cnt+1
+					display cnt, " ",p_tabname
 		        end foreach
 
 #                CLOSE SESSION s_ifmx
 
-				sleep 1
+				sleep 3
 
                 message ""
 
@@ -180,7 +183,7 @@ define
         char (40)
 
 
-                message "Connectiong to DSN ptest"#, DSN_postgres clipped
+                message "Connectiong to DSN ", DSN_postgres clipped
                 sleep 2
 
 				database ptest #DSN_postgres
@@ -210,7 +213,6 @@ define
         if
 			not pg_sess
         then
-				let DSN_postgres = "ptest"
 
                 message "Connectiong to DSN ", DSN_postgres clipped, " using db name in variable"
                 sleep 2
@@ -255,7 +257,7 @@ define
     p_tabname
         char (40)
 
-                message "Connectiong to DSN ptest"#, DSN_postgres clipped
+                message "Connectiong to DSN ", DSN_postgres clipped
                 sleep 2
 
         if

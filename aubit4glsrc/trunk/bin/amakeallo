@@ -9,8 +9,8 @@
 #log of all compiles, and copy all problematic files in separate
 #directory, including err and c files.
 #
-#
-#
+#n/amakeallo: [: too many arguments    - only with 4js
+#try qyerix
 ######################################################################
 
 ############################
@@ -18,13 +18,15 @@ function stats {
 ############################
 
 	let TOTALFAILED=COMPFAIL4GL+COMPFAILCCOMP+COMPFAILCORE+COMPFAILUNKNOWN+FAILCOMPATIBLE
+    echo " "
+attempted to compile total of
 
 	echo "$COMPSUCCESS successfully compiled, $COMPFAIL4GL failed in 4gl, $COMPBEFORE already compiled."
     echo "$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason."
     echo "$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK."
     echo "$CCOMPWARNING produced warnings from C compiler, but compiled. Ignored $ZEROFILESIZE Files with no code."
 	echo "$NOGLBFILE glb files not found, $OKNOGLBFILE compiled on the fly, $NO4GLNOGLBFILE 4gl's for making glb not found."
-    echo "$TESTCONTINUESKIP skipped since they failed in previous run"
+    echo "$TESTCONTINUESKIP skipped since they failed in previous run, $FAILDEFLIKE failed on missing DEFINELIKE and ignored."
 	date
 
     echo " " >> $ERRORLOG
@@ -33,7 +35,7 @@ function stats {
     echo "$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK." >> $ERRORLOG
     echo "$CCOMPWARNING produced warnings from C compiler, but compiled. Ignored $ZEROFILESIZE Files with no code." >> $ERRORLOG
 	echo "$NOGLBFILE glb files not found, $OKNOGLBFILE compiled on the fly, $NO4GLNOGLBFILE 4gl's for making glb not found." >> $ERRORLOG
-    echo "$TESTCONTINUESKIP skipped since they failed in previous run" >> $ERRORLOG
+    echo "$TESTCONTINUESKIP skipped since they failed in previous run, $FAILDEFLIKE failed on missing DEFINELIKE and ignored." >> $ERRORLOG
 	echo "See also:" >> $ERRORLOG
 	echo "All zero length files		:$ZEROLOG" >> $ERRORLOG
 	echo "All 4gl compiler errors	:$FGLLOG" >> $ERRORLOG
@@ -70,7 +72,7 @@ function stats {
 ############################
 function shortstats {
 ############################
-	echo "OK=$COMPSUCCESS 4gl=$COMPFAIL4GL skip=$COMPBEFORE c=$COMPFAILCCOMP core=$COMPFAILCORE ?=$COMPFAILUNKNOWN compat=$FAILCOMPATIBLE glb=$OKNOGLBFILE/$NOGLBFILE/$NO4GLNOGLBFILE cw=$CCOMPWARNING 0=$ZEROFILESIZE &=$TESTCONTINUESKIP"
+	echo "OK=$COMPSUCCESS 4gl=$COMPFAIL4GL skip=$COMPBEFORE c=$COMPFAILCCOMP core=$COMPFAILCORE ?=$COMPFAILUNKNOWN compat=$FAILCOMPATIBLE glb=$OKNOGLBFILE/$NOGLBFILE/$NO4GLNOGLBFILE cw=$CCOMPWARNING 0=$ZEROFILESIZE &=$TESTCONTINUESKIP L=$FAILDEFLIKE"
 
 }
 
@@ -275,7 +277,7 @@ function clean {
     	then
 			echo Removing core
         fi
-		FIXME: on CygWin remove *.stackdump
+		#FIXME: on CygWin remove *.stackdump
 		rm core
 	fi
 
@@ -697,6 +699,29 @@ function compileit {
             fi
 		fi
 
+
+        ######################################################
+        #is this "does not exist in the database ()" error ?
+        ######################################################
+
+		ERRLINES=`cat $ERR | grep -c "does not exist in the database ()"`
+		if [ "$SCRIPTDEBUG" = "1" ]
+	    then
+    			echo "'does not exist in the database ()' found in $ERR = $ERRLINES"
+        fi
+		if test $ERRLINES != "0"
+		then
+	        let FAILDEFLIKE=FAILDEFLIKE+1
+		    if [ "$VERBOSE" = "1" ]
+		    then
+				echo "Ignoring error - fails DEFINE LIKE not in database."
+            fi
+		    #FIXME: log filename to $DEFINELIKELIST
+            #FIXME: extract error lines to $DEFINELIKEERROR
+			return
+        fi
+
+
         ##############################################################
         #It does not fail with other compiler, so we do have an error:
         ##############################################################
@@ -1010,6 +1035,7 @@ function doit {
     NO4GLNOGLBFILE=0
 	ZEROFILESIZE=0
 	TESTCONTINUESKIP=0
+    FAILDEFLIKE=0
 
 	############
 	for a in $@
@@ -1216,6 +1242,7 @@ function doit {
 				ALLSUBDIRS="winds main ar gl ap"
             else
 				ALLSUBDIRS="winds csimods main ar eo fa gl in jm lc qe re ss ap pu wo cm contr dvfund lawmods"
+                #FIXME: add gw mn
             fi
 
             SKIPDIRS="aform aprog forms prog gform gprog qform qprog"

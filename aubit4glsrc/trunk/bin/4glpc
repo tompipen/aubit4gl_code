@@ -26,7 +26,8 @@ then
     echo Usage:
     echo '  4glpc sourcefile.type [...] [options] executablename.4ae'
     echo '  4glpc sourcefile.4gl -c -o objectname.ao'
-    echo
+    echo '  4glpc sourcefile.4gl -o executablename.4ae'
+	echo
     echo ' For details, try: '
     echo ' 4glpc --help-options	- for command line options'
     echo ' 4glpc --help-env	- for environment variables recognised'
@@ -497,9 +498,11 @@ do
             fi
           fi
 
-			if [ "$PRETTYC" != "" ]
+			#GCC=${GCC:-"cc -O -g "}
+			PRETTYC=${PRETTYC:-"indent"}
+			if [ "$AUTOINDENT" = "Y" ]
 			then
-            	$PRETTYC $fname.c
+			 	$PRETTYC $fname.c
 			fi
 
 			if [ "$LINKIT" = "1" ]

@@ -1,4 +1,4 @@
-   /* $Id: fcompile.c,v 1.2 2001-09-12 13:19:59 afalout Exp $
+   /* $Id: fcompile.c,v 1.3 2001-09-14 01:40:38 afalout Exp $
    /* */
 
 #include "../../lib/libincl/compiler.h"
@@ -126,9 +126,6 @@ main (argc, argv)
         strcat (c, ".per");
 		}
 
-//		bname (c, a, b);
-
-//		strcpy (outputfilename, a);
 
 	    if (strcmp(d,"")==0)  {
 	      strcpy (outputfilename, a);
@@ -146,7 +143,7 @@ main (argc, argv)
   else
     {
 
-      printf ("Usage\n   %s filename[.per]\n", argv[0]);
+      printf ("Usage\n   %s [-c] filename[.per] [path/compiledform.ext]\n", argv[0]);
 
       exit (0);
 
