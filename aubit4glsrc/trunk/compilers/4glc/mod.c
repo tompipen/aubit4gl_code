@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.119 2003-05-04 08:48:59 mikeaubury Exp $
+# $Id: mod.c,v 1.120 2003-05-05 13:17:31 mikeaubury Exp $
 #
 */
 
@@ -107,6 +107,10 @@ long fpos;
 #endif
 */
 
+void dump_updvals(void) ;
+char *pop_gen (int a);
+int gen_cnt(int a) ;
+void copy_gen(int a,int b);
 extern int 	menu_cnt; 		/** The count of menus found */
 extern int 	yylineno; 		/** The source file line number */
 extern char *infilename;    /** The input (4gl file name */
@@ -1699,6 +1703,7 @@ void
 push_gen (int a, char *s)
 {
   debug ("Push %d %s - %d\n", a, s,gen_stack_cnt[a]);
+  //printf ("Push %d %s - %d\n", a, s,gen_stack_cnt[a]);
   if (gen_stack_cnt[a] >= GEN_STACK_SIZE)
     {
       printf ("Out of stack!\n");
@@ -1716,6 +1721,15 @@ int gen_cnt(int a) {
 
 void copy_gen(int a,int b) {
 	int c;
+
+
+//dump_updvals();
+	if (gen_stack_cnt[a]&&gen_stack[a][gen_stack_cnt[a]-1][0]=='(') {
+		printf("POP\n");
+		pop_gen(a);
+	}
+
+
 	for (c=0;c<gen_stack_cnt[b];c++) {
 		push_gen(a,gen_stack[b][c]);
 	}
@@ -1726,9 +1740,10 @@ char *pop_gen (int a)
 {
   printf("Popgen called\n");
   printf("UPDVAL2 cnt = %d\n",  gen_stack_cnt[UPDVAL2]);
-	dump_updvals();
+	//dump_updvals();
   gen_stack_cnt[a]--;
-  gen_stack[a][gen_stack_cnt[a]];
+  return gen_stack[a][gen_stack_cnt[a]];
+
 }
 
 
@@ -3647,14 +3662,8 @@ int a;
   //char cdtype[20];
   char buff[1000];
   char *ccol;
-strcpy(big_buff,"");
+strcpy(big_buff,"SET ");
 
-printf("\nFixupdateexpr - VALUES\n\n");
-dump_updvals() ;
-
-
-
-printf("current_upd_table=%s\n",current_upd_table);
 
 if (mode==1) {
 	// It will only be a '*' anyway....
@@ -3683,16 +3692,11 @@ if (mode==1) {
     		if (rval == 0 ) break;
     		trim_spaces (colname);
 		push_gen(UPDCOL,colname);
-		printf("colname=%s\n",colname);
   	}
 	A4GLSQL_end_get_columns();
 }
 
-printf("Columns =%d values=%d\n",gen_stack_cnt[UPDCOL],gen_stack_cnt[UPDVAL]) ;
 if (gen_stack_cnt[UPDCOL]!=gen_stack_cnt[UPDVAL]) {
-	int a;
-	for (a=0;a<gen_stack_cnt[UPDCOL];a++) { printf("UPDCOL : %s\n",gen_stack[UPDCOL][a]); }
-	for (a=0;a<gen_stack_cnt[UPDVAL];a++) { printf("UPDVAL : %s\n",gen_stack[UPDVAL][a]); }
 	a4gl_yyerror("Number of columns in update not the same as number of values");
 }
 
@@ -3702,7 +3706,6 @@ for (a=0;a<gen_stack_cnt[UPDCOL];a++) {
   strcat(big_buff,buff);
 }
 
-//printf("---> %s\n",big_buff);
 return big_buff;
 }
 
@@ -3733,10 +3736,10 @@ n=0;
 }
 
 
-dump_updvals() {
+void dump_updvals() {
 int a;
-printf("\n");
-for (a=0;a<gen_stack_cnt[UPDCOL];a++)  { printf("UPDCOL : %s\n",gen_stack[UPDCOL][a]); }
+for (a=0;a<gen_stack_cnt[UPDCOL];a++)  { printf("UPDCOL[%d] : %s\n",a,gen_stack[UPDCOL][a]); }
+
 for (a=0;a<gen_stack_cnt[UPDVAL];a++)  { printf("UPDVAL : %s\n",gen_stack[UPDVAL][a]); }
 for (a=0;a<gen_stack_cnt[UPDVAL2];a++) { printf("UPDVAL2: %s\n",gen_stack[UPDVAL2][a]); }
 }
