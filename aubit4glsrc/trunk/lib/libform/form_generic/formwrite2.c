@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.17 2003-06-16 20:56:54 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.18 2003-06-17 22:55:07 mikeaubury Exp $
 #*/
 
 /**
@@ -969,7 +969,7 @@ A4GL_getdatatype (char *col, char *tab)
 
   for (a = 0; a < the_form.tables.tables_len; a++)
     {
-         if (strcasecmp(the_form.tables.tables_val[a].tabname,tab)==0) {
+         if (strcasecmp(the_form.tables.tables_val[a].tabname,tab)==0&&strlen(the_form.tables.tables_val[a].alias)) {
                 tab=the_form.tables.tables_val[a].alias;
       		tabs[c++] = strdup (the_form.tables.tables_val[a].alias);
         }
@@ -1159,7 +1159,7 @@ real_add_bool_attr (struct struct_scr_field *f, int type)
     "WORDWRAP",
     "COMPRESS",
     "UPSHIFT",
-    "DOWNSHIFT" "REQUIRED"
+    "DOWNSHIFT","REQUIRED"
   };
 
   A4GL_debug ("add_bool_attr\n");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.44 2003-06-16 17:14:04 mikeaubury Exp $
+# $Id: conv.c,v 1.45 2003-06-17 22:55:07 mikeaubury Exp $
 #
 */
 
@@ -63,6 +63,7 @@
 #define A4GL_dtodec 		A4GL_ltodec
 #define A4GL_dtomdec 	A4GL_ltodec
 #define A4GL_ltomdec 	A4GL_ltodec
+#define A4GL_stomdec 	A4GL_stodec
 
 #define A4GL_ftomdec 	A4GL_ftodec
 #define A4GL_sftomdec 	A4GL_sftodec
@@ -223,6 +224,7 @@ int A4GL_sftosf (void *aa, void *bb, int c);
 int A4GL_sftodec (void *a, void *z, int size);
 int A4GL_stol (void *aa, void *zi, int sz_ignore);
 int A4GL_stodec (void *a, void *z, int size);
+//int A4GL_stomdec (void *a, void *z, int size);
 int A4GL_stosf (void *aa, void *zz, int sz_ignore);
 int A4GL_stoi (void *aa, void *zi, int sz_ignore);
 void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
@@ -244,6 +246,7 @@ static void print_res_l (int ln, char *s);
 /* extern int 		errno; */
 int lastsize;
 
+int size_of_operand=0;
 
 /*
 =====================================================================
@@ -274,7 +277,7 @@ A4GL_setc, A4GL_seti, A4GL_setl, A4GL_setf,
 int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
 {
   {
-  A4GL_ctoc, A4GL_stoi, A4GL_stol, A4GL_stof, A4GL_stosf, A4GL_stodec, A4GL_stol, A4GL_stod, A4GL_stof, NO, A4GL_ctodt, NO,
+  A4GL_ctoc, A4GL_stoi, A4GL_stol, A4GL_stof, A4GL_stosf, A4GL_stodec, A4GL_stol, A4GL_stod, A4GL_stomdec, NO, A4GL_ctodt, NO,
       NO, OK, A4GL_ctoint}
   ,
   {
@@ -1080,6 +1083,8 @@ A4GL_stodec (void *a, void *z, int size)
   return 0;
 }
 
+
+
 /**
  * Convert a decimal to string.
  *
@@ -1092,14 +1097,16 @@ int
 A4GL_mdectos (void *z, void *w, int size)
 {
   char *buff;
-  char buff2[256];
-  buff = A4GL_dec_to_str (z, 0);
+  char buff2[200];
+  buff = A4GL_dec_to_str (z, size);
   A4GL_debug ("dec_to_str -> '%s'\n", buff);
-  strcpy(buff2,buff);
-  A4GL_ltrim(buff);
-  A4GL_string_set (w, buff2, size);
-  A4GL_debug ("w = %s\n", buff);
 
+  strcpy(buff2,buff);
+  A4GL_ltrim(buff2);
+
+  A4GL_string_set (w, buff2, size);
+
+  A4GL_debug ("w = %s\n", w);
   return 1;
 }
 
@@ -1232,7 +1239,7 @@ A4GL_dectos (void *z, void *w, int size)
 {
   char *buff;
   char buff2[200];
-  buff = A4GL_dec_to_str (z, 0);
+  buff = A4GL_dec_to_str (z, size);
   A4GL_debug ("dec_to_str -> '%s'\n", buff);
   strcpy(buff2,buff);
   A4GL_ltrim(buff2);
@@ -1774,9 +1781,10 @@ A4GL_dtos (void *aa, void *zz, int size)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    A4GL_debug ("dtos date=%d", *a);
+    A4GL_debug ("dtos date=%d %x", *a,*a);
   }
 #endif
+  
 
   /* without a format string, using_date() will refer to DBDATE */
   p = A4GL_using_date (*a, "");
@@ -2531,8 +2539,12 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
   A4GL_assertion (p1 == 0, "Pointer 1 is zero");
   A4GL_assertion (p2 == 0, "Pointer 2 is zero");
 
+
+
+
   /* A4GL_debug ("Dtype1=%d p1=%p (%ld) ", dtype1, p1, *(int *) p1); */
-  if (A4GL_isnull (dtype1, p1))
+
+  if (A4GL_isnull (dtype1&DTYPE_MASK, p1))
     {
       A4GL_debug ("First is null");
       A4GL_setnull (dtype2, p2, size);
@@ -2553,7 +2565,8 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
    * just a length for decimals, instead of length + decimal places.
    * This is a temporary measure - such bugs will be located & fixed.
    */
-  if (dtype2 == DTYPE_DECIMAL && (size < 256))
+
+  if ((dtype2&DTYPE_MASK) == DTYPE_DECIMAL && (size < 256))
     {
       // we don't know how many decimals are required, 4 should be ok
       size += 4;
@@ -2563,6 +2576,8 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
       A4GL_debug ("conv: changing invalid decimal size to %d", size);
     }
 
+
+  size_of_operand=DECODE_SIZE(dtype1);
 #ifdef DEBUG
   {				/* A4GL_debug ("convert %d %p %d %p\n", dtype1, p1, dtype2, p2); */
   }
@@ -3137,16 +3152,46 @@ char *
 A4GL_dec_to_str (char *s, int size)
 {
   int l, d;
-  int c, x, a, k;
+  int c, x, k;
+ int a;
   static char buff[DBL_DIG1];
+int h,t;
   int dot_printed = -1;
   int blank = 0;
   char buff2[200];
 
+  if (A4GL_isnull (DTYPE_DECIMAL, s)) {
+	strcpy(buff,"");
+	return buff;
+  }
   l = NUM_DIG (s);		// length of decimal in bytes
   d = NUM_DEC (s);		// number of digits to right of decimal point
   // calculate starting position (bytes) of decimal point
+
+
+/*
+  h = size_of_operand;
+  t = h;
+  h = h / 256;
+  t = t - h * 256;
+  errno = 0;
+  if (h!=l || d!=t) {
+	A4GL_debug("Looks like an uninitialize decimal...");
+  	A4GL_init_dec (s, h, t);
+  	l = NUM_DIG (s);		// length of decimal in bytes
+  	d = NUM_DEC (s);		// number of digits to right of decimal point
+  }
+*/
+
+
+  if (d<0) {
+	char *ptr=0;
+	*ptr=0;
+  }
   x = l + OFFSET_DEC (s) - (d % 2 == 0 ? d / 2 : (d + 1) / 2);
+
+
+  if (size<=0) size=l+1;
 
   A4GL_debug ("dec_to_str l=%d d=%d\n", l, d);
   //dump(s);

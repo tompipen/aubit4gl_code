@@ -32,38 +32,39 @@ extern "C"
 void A4GL_copy_decimal (struct decimal *infx, fgldecimal * a4gl, int size,
 		     char dir);
 
-#define COPY_DATA_IN_0(a4gl,infx,size,n,m) strcpy((char *)(infx),(char *)(a4gl))
-#define COPY_DATA_IN_1(a4gl,infx,size) *((short *)(infx))=*((short *)(a4gl))
-#define COPY_DATA_IN_2(a4gl,infx,size) *((int *)(infx))=*((int *)(a4gl))
-#define COPY_DATA_IN_3(a4gl,infx,size) *((double *)(infx))=*((double *)(a4gl))
-#define COPY_DATA_IN_4(a4gl,infx,size) *((float *)(infx))=*((float *)(a4gl))
+#define COPY_DATA_IN_0(a4gl,infx,size,x,y) A4GL_copy_char(infx,a4gl,size,'i',x,y)
+#define COPY_DATA_IN_1(a4gl,infx,size) A4GL_copy_smint(infx,a4gl,size,'i')
+#define COPY_DATA_IN_2(a4gl,infx,size) A4GL_copy_int(infx,a4gl,size,'i')
+#define COPY_DATA_IN_3(a4gl,infx,size) A4GL_copy_double(infx,a4gl,size,'i')
+#define COPY_DATA_IN_4(a4gl,infx,size) A4GL_copy_float(infx,a4gl,size,'i')
 #define COPY_DATA_IN_5(a4gl,infx,size) A4GL_copy_decimal(infx,a4gl,size,'i')
-#define COPY_DATA_IN_6(a4gl,infx,size) *((int *)(infx))=*((int *)(a4gl))
-#define COPY_DATA_IN_7(a4gl,infx,size) *((int *)(infx))=*((int *)(a4gl))
+#define COPY_DATA_IN_6(a4gl,infx,size) A4GL_copy_int(infx,a4gl,size,'i')
+#define COPY_DATA_IN_7(a4gl,infx,size) A4GL_copy_int(infx,a4gl,size,'i')
 #define COPY_DATA_IN_8(a4gl,infx,size) A4GL_copy_money(infx,a4gl,size,'i')
-#define COPY_DATA_IN_9(a4gl,infx,size) *((int *)(infx))=*((int *)(a4gl))
+#define COPY_DATA_IN_9(a4gl,infx,size) A4GL_copy_int(infx,a4gl,size,'i')
 #define COPY_DATA_IN_10(a4gl,infx,size) A4GL_copy_datetime(infx,a4gl,size,'i')
 #define COPY_DATA_IN_11(a4gl,infx,size) A4GL_copy_blob_byte(infx,a4gl,size,'i')
 #define COPY_DATA_IN_12(a4gl,infx,size) A4GL_copy_blob_text(infx,a4gl,size,'i')
-#define COPY_DATA_IN_13(a4gl,infx,size) strcpy(*(infx),*(a4gl))
+#define COPY_DATA_IN_13(a4gl,infx,size) A4GL_copy_char(infx,a4gl,size,'i')
 #define COPY_DATA_IN_14(a4gl,infx,size) A4GL_copy_interval(infx,a4gl,size,'i')
 
-
-#define COPY_DATA_OUT_0(a4gl,infx,size,n,m) strcpy((char *)(a4gl),(char *)(infx))
-#define COPY_DATA_OUT_1(a4gl,infx,size) *((short *)(a4gl))=*((short *)(infx))
-#define COPY_DATA_OUT_2(a4gl,infx,size) *((int *)(a4gl))=*((int *)(infx))
-#define COPY_DATA_OUT_3(a4gl,infx,size) *((double *)(a4gl))=*((int *)(infx))
-#define COPY_DATA_OUT_4(a4gl,infx,size) *((float *)(a4gl))=*((int *)(infx))
+#define COPY_DATA_OUT_0(a4gl,infx,size,x,y) A4GL_copy_char(infx,a4gl,size,'o',x,y)
+#define COPY_DATA_OUT_1(a4gl,infx,size) A4GL_copy_smint(infx,a4gl,size,'o')
+#define COPY_DATA_OUT_2(a4gl,infx,size) A4GL_copy_int(infx,a4gl,size,'o')
+#define COPY_DATA_OUT_3(a4gl,infx,size) A4GL_copy_double(infx,a4gl,size,'o')
+#define COPY_DATA_OUT_4(a4gl,infx,size) A4GL_copy_float(infx,a4gl,size,'o')
 #define COPY_DATA_OUT_5(a4gl,infx,size) A4GL_copy_decimal(infx,a4gl,size,'o')
-#define COPY_DATA_OUT_6(a4gl,infx,size) *((int *)(a4gl))=*((int *)(infx))
-#define COPY_DATA_OUT_7(a4gl,infx,size) *((int *)(a4gl))=*((int *)(infx))
+#define COPY_DATA_OUT_6(a4gl,infx,size) A4GL_copy_int(infx,a4gl,size,'o')
+#define COPY_DATA_OUT_7(a4gl,infx,size) A4GL_copy_int(infx,a4gl,size,'o')
 #define COPY_DATA_OUT_8(a4gl,infx,size) A4GL_copy_money(infx,a4gl,size,'o')
-#define COPY_DATA_OUT_9(a4gl,infx,size) *((int *)(a4gl))=*((int *)(infx))
+#define COPY_DATA_OUT_9(a4gl,infx,size) A4GL_copy_int(infx,a4gl,size,'o')
 #define COPY_DATA_OUT_10(a4gl,infx,size) A4GL_copy_datetime(infx,a4gl,size,'o')
 #define COPY_DATA_OUT_11(a4gl,infx,size) A4GL_copy_blob_byte(infx,a4gl,size,'o')
 #define COPY_DATA_OUT_12(a4gl,infx,size) A4GL_copy_blob_text(infx,a4gl,size,'o')
-#define COPY_DATA_OUT_13(a4gl,infx,size) *strcpy(*(a4gl),*(infx))
+#define COPY_DATA_OUT_13(a4gl,infx,size) A4GL_copy_char(infx,a4gl,size,'o')
 #define COPY_DATA_OUT_14(a4gl,infx,size) A4GL_copy_interval(infx,a4gl,size,'o')
+
+
 
 
 #define COPY_SQLCA

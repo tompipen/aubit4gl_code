@@ -54,7 +54,7 @@
 
 #define copy_sqlca
 
-#define dtime_t datetime
+//#define dtime_t datetime
 
 
 #define popdec(x) {char *s;s=A4GL_char_pop();printf("%s\n",s);deccvasc(s,strlen(s),x); }

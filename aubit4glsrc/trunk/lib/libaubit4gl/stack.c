@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.58 2003-06-16 09:26:57 mikeaubury Exp $
+# $Id: stack.c,v 1.59 2003-06-17 22:55:07 mikeaubury Exp $
 #
 */
 
@@ -88,21 +88,21 @@ void A4GL_process_stack_op_other (int d);
 //extern int errno;
 
 int nset[MAX_DTYPE][9] = {
-  {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},
-  {0x0, 0x80, IGN, IGN, IGN, IGN, IGN, IGN, IGN},
-  {0x0, 0x0, 0x0, 0x80, IGN, IGN, IGN, IGN, IGN},
-  {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, IGN},
-  {0xff, 0xff, 0xff, 0xff, IGN, IGN, IGN, IGN, IGN},
-  {0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN, IGN, IGN},
-  {0x0, 0x0, 0x0, 0x80, 0xff, 0xff, 0xff, 0xff, IGN},
-  {0x0, 0x0, 0x0, 0x80, 0xff, 0xff, 0xff, 0xff, IGN},
-  {0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN, IGN, IGN},
-  {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},
-  {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN},
-  {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},
-  {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},
-  {0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},
-  {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN}
+  {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN}, 	// CHAR
+  {0x0, 0x80, IGN, IGN, IGN, IGN, IGN, IGN, IGN}, 	// SMINT
+  {0x0, 0x0, 0x0, 0x80, IGN, IGN, IGN, IGN, IGN}, 	// INT
+  {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, IGN},// FLOAT
+  {0xff, 0xff, 0xff, 0xff, IGN, IGN, IGN, IGN, IGN}, 	// SMFLOAT
+  {0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN, IGN, IGN}, 	// DECIMAL
+  {0x0, 0x0, 0x0, 0x80, IGN, IGN, IGN, IGN, IGN}, 	// SERIAL
+  {0x0, 0x0, 0x0, 0x80, IGN, IGN, IGN, IGN, IGN}, 	// DATE
+  {0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN, IGN, IGN}, 	// MONEY
+  {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},  	// EMPTY
+  {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN}, 	// DTIME
+  {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN}, 	// BYTE
+  {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN}, 	// TEXT
+  {0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN}, 	// VCHAR
+  {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN} 	// INTERVAL
 };
 
 /**
@@ -479,17 +479,12 @@ A4GL_pop_param (void *p, int d, int size)
   int b;
   char *ptr;
   params_cnt--;
-////printf("pop_param....\n");
   if (params_cnt < 0)
     {
       A4GL_debug ("Stack got corrupted");
       A4GL_assertion (1, "Stack got corrupted");
       exit (0);
     }
-  //debug ("pop_param... %d %d %d", params[params_cnt].dtype & DTYPE_MASK,
-  //d & DTYPE_MASK, size);
-  //debug ("             %p %p ", params[params_cnt].ptr, p);
-
 
   b = A4GL_conv (params[params_cnt].dtype & DTYPE_MASK,
 	    params[params_cnt].ptr, d & DTYPE_MASK, p, size);
@@ -497,8 +492,6 @@ A4GL_pop_param (void *p, int d, int size)
 
   if (params[params_cnt].dtype & DTYPE_MALLOCED)
     {
-      //A4GL_debug ("Malloced ");
-      /*printf("Datatype=%d\n",params[params_cnt].dtype&DTYPE_MASK); */
       if ((params[params_cnt].dtype & DTYPE_MASK) != 0)
 	{
 	  A4GL_debug ("Not Char.. %p", params[params_cnt].ptr);
@@ -511,7 +504,6 @@ A4GL_pop_param (void *p, int d, int size)
 	  acl_free (ptr);
 	}
     }
-  //A4GL_debug ("Returning %d\n", b);
   return b;
 }
 
@@ -789,6 +781,8 @@ A4GL_push_param (void *p, int d)
       A4GL_debug ("d=%d OP_ISNULL=%d", d, OP_ISNULL);
       A4GL_debug ("Checking ISNULL");
       A4GL_drop_param ();
+      A4GL_debug ("Dropped param");
+
       if (n1)
 	{
 	  A4GL_debug ("Yep");
@@ -1635,7 +1629,11 @@ A4GL_debug_print_stack (void)
 {
   int a;
   char *buff;
+return;
   buff = A4GL_new_string (2000);
+
+
+
 #ifdef DEBUG
   A4GL_debug ("\n");
 #endif
@@ -1647,12 +1645,25 @@ A4GL_debug_print_stack (void)
 #endif
   for (a = 0; a < params_cnt; a++)
     {
-      A4GL_conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, 40);
-#ifdef DEBUG
-      /* {DEBUG} */ A4GL_debug (" %d Dtype (%d)='%s' size=%d:", a,
-			   params[a].dtype & DTYPE_MASK, buff,
-			   params[a].size);
-#endif
+	strcpy(buff,"Not displayable");
+
+	if (A4GL_isnull((params[a].dtype&DTYPE_MASK),params[a].ptr)) {
+		strcpy(buff,"NULL");
+	} else {
+		A4GL_debug("Not null");
+ 	
+	switch(params[a].dtype&DTYPE_MASK) {
+		case DTYPE_CHAR:
+		case DTYPE_SMINT:
+		case DTYPE_INT:
+		case DTYPE_FLOAT:
+		case DTYPE_SMFLOAT:
+		case DTYPE_DATE:
+      			A4GL_conv (params[a].dtype, params[a].ptr, DTYPE_CHAR, buff, 40);
+			break;
+	}
+	}
+	A4GL_debug("*    %d %p %s",params[a].dtype&DTYPE_MASK,params[a].ptr,buff);
     }
 #ifdef DEBUG
   A4GL_debug ("**************************************************************");
@@ -2077,7 +2088,6 @@ A4GL_isnull (int type, char *buff)
 {
   int a;
   type = type & DTYPE_MASK;
-
   //debug ("ISNULL - %d %p\n", type, buff);
 
   if (A4GL_has_datatype_function_i (type, "ISNULL"))
@@ -2257,8 +2267,28 @@ A4GL_chknull (int n, int n1, int n2)
 void
 A4GL_drop_param (void)
 {
-  char buff[80];
-  A4GL_pop_char (buff, 1);
+  char *ptr;
+  params_cnt--;
+  if (params_cnt < 0)
+    {
+      A4GL_debug ("Stack got corrupted");
+      A4GL_assertion (1, "Stack got corrupted");
+      exit (0);
+    }
+
+  if (params[params_cnt].dtype & DTYPE_MALLOCED)
+    {
+      if ((params[params_cnt].dtype & DTYPE_MASK) != 0)
+        {
+          acl_free (params[params_cnt].ptr);
+        }
+      else
+        {
+          ptr = params[params_cnt].ptr;
+          A4GL_debug ("Not Char..%p", ptr);
+          acl_free (ptr);
+        }
+    }
 }
 
 

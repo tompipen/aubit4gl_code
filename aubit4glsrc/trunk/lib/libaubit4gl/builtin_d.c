@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.26 2003-05-18 11:05:49 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.27 2003-06-17 22:55:07 mikeaubury Exp $
 #
 */
 
@@ -222,20 +222,42 @@ A4GL_push_float (float p)
  *   - Otherwise : Its money
  */
 void
-A4GL_push_dec (char *p, int ismoney)
+A4GL_push_dec (char *p, int ismoney,int size)
 {
   char *ptr;
-  int plen = (p[0] & 127) + 2;
+  int l;
+  int d;
+  int plen ;
+  A4GL_debug("push_dec with size=%x\n",size);
+  l=size>>8;
+  d=size&255;
 
+#define NUM_DIG(x)               ((x[0])&127 )
+#define NUM_DEC(x)               ((x[1]))
+#define NUM_BYTES(x)     (NUM_DIG(x)+OFFSET_DEC(x))
+
+
+  if (NUM_DIG(p)!=l&&NUM_DEC(p)!=d) {
+  	A4GL_init_dec(p,l,d);
+	A4GL_push_null();return;
+	A4GL_setnull(DTYPE_DECIMAL,p,size);
+  }
+
+  if (NUM_DIG(p)!=l&&NUM_DEC(p)!=d) {
+	A4GL_debug("Failed to set to null");
+  }
+
+  plen= (p[0] & 127) + 2;
+  
   ptr = (char *) acl_malloc (plen, "push dec");
   memcpy (ptr, p, plen);
   if (ismoney)
     {
-      A4GL_push_param (ptr, DTYPE_MONEY + DTYPE_MALLOCED);
+      A4GL_push_param (ptr, DTYPE_MONEY + DTYPE_MALLOCED+ENCODE_SIZE(size));
     }
   else
     {
-      A4GL_push_param (ptr, DTYPE_DECIMAL + DTYPE_MALLOCED);
+      A4GL_push_param (ptr, DTYPE_DECIMAL + DTYPE_MALLOCED+ENCODE_SIZE(size));
     }
 }
 
@@ -771,7 +793,14 @@ void
 A4GL_push_variable (void *ptr, int dtype)
 {
 
+  if (A4GL_isnull(dtype&DTYPE_MASK,ptr)) {
+		A4GL_debug("Variable was null dtype=%d %x",dtype&DTYPE_MASK,dtype);
+		A4GL_push_null();
+		return;
+  }
+
   A4GL_debug ("In push variable dtype = %d (%x)", dtype, dtype);
+
   if ((dtype & 0xff) == 0)
     {
       A4GL_debug ("Value = %s\n", ptr);
@@ -836,13 +865,13 @@ A4GL_push_variable (void *ptr, int dtype)
       return;
       break;
     case 5:
-      A4GL_debug ("DECIMAL");
-      A4GL_push_dec (ptr, 0);
+      	A4GL_debug ("DECIMAL");
+      	A4GL_push_dec (ptr, 0,dtype>>16);
       return;
       break;
     case 8:
       A4GL_debug ("MONEY");
-      A4GL_push_dec (ptr, 1);
+      A4GL_push_dec (ptr, 1,dtype>>16);
       return;
       break;
     case 4:

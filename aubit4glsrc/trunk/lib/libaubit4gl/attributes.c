@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.7 2003-06-16 17:14:04 mikeaubury Exp $
+# $Id: attributes.c,v 1.8 2003-06-17 22:55:07 mikeaubury Exp $
 #*/
 
 /**
@@ -434,15 +434,18 @@ return attr;
 
 
 /* This is our main calling point ! */
-int A4GL_determine_attribute(int cmd_type, int attrib_curr_int, struct struct_scr_field *fprop) {
+int A4GL_determine_attribute(int cmd_type, int attrib_curr_int, void *vfprop) {
 struct s_std_attr *r;
 struct s_std_attr attrib_curr;
 struct s_std_attr attrib_field;
 struct s_std_attr *ptr_attrib_curr=0;
 struct s_std_attr *ptr_attrib_field=0;
+struct struct_scr_field *fprop;
+
 
 int attr;
 
+fprop=vfprop;
 /* Decode our current attribute */
 
 if (attrib_curr_int) {

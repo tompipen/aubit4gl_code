@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.17 2003-06-16 17:14:04 mikeaubury Exp $
+# $Id: ops.c,v 1.18 2003-06-17 22:55:07 mikeaubury Exp $
 #
 */
 
@@ -104,6 +104,10 @@ char *A4GL_display_byte (void *ptr, int size, int size_c,
 char *A4GL_display_text (void *ptr, int size, int size_c,
 		    struct struct_scr_field *field_details, int display_type);
 
+static char *make_using(char *ptr) ;
+
+#define NUM_DIG(x)               ((x[0])&127 )
+#define NUM_DEC(x)               ((x[1]))
 /*
 =====================================================================
                     Functions definitions
@@ -1025,24 +1029,33 @@ static char s[256];
 
   //if (size_c==-1) { return 0; }
 
-
   if (display_type == DISPLAY_TYPE_DISPLAY) {
-	A4GL_push_dec(ptr,1);
-	
-	if (size_c==-1) {
-		char *ptr;
-		ptr=A4GL_char_pop();
-		strcpy(s,ptr);
-		free(ptr);
-	}
-	else {
-		A4GL_pop_char(s,size_c);
-	}
-	return s;
+        A4GL_push_dec(ptr,1,size);
+
+
+        if (size_c==-1) {
+                char *ptr2;
+                int n,l;
+                char buff[256];
+                char buff2[256];
+                ptr2=ptr;
+                n=NUM_DIG(ptr2);
+                l=NUM_DEC(ptr2);
+                n=n-l+1;
+                size_c=n+1;
+        }
+
+        A4GL_push_char(make_using(ptr));
+        A4GL_pushop(OP_USING);
+        ptr=A4GL_char_pop();
+        strcpy(s,ptr);
+	free(ptr);
+        return s;
   }
 
+
   if (display_type== DISPLAY_TYPE_DISPLAY_AT) {
-	A4GL_push_dec(ptr,1);
+	A4GL_push_dec(ptr,1,size);
 	if (size_c==-1) {
 		char *ptr;
 		ptr=A4GL_char_pop();
@@ -1052,6 +1065,7 @@ static char s[256];
 		A4GL_pop_char(s,size_c);
 	}
 
+	A4GL_trim(s);
   	A4GL_ltrim(s);
 	return s;
   }
@@ -1065,36 +1079,51 @@ A4GL_display_money (void *ptr, int size, int size_c,
 {
 static char s[256];
 
+  //if (size_c==-1) { return 0; }
+
 
   if (display_type == DISPLAY_TYPE_DISPLAY) {
-	A4GL_push_dec(ptr,1);
-	if (size_c==0) {
-	char *ptr;
-		ptr=A4GL_char_pop();
-		strcpy(s,ptr);
-		free(ptr);
-	} else {
-		A4GL_pop_char(s,size_c);
-	}
-	return s;
+        A4GL_push_dec(ptr,1,size);
+
+
+        if (size_c==-1) {
+                char *ptr2;
+                int n,l;
+                char buff[256];
+                char buff2[256];
+                ptr2=ptr;
+                n=NUM_DIG(ptr2);
+                l=NUM_DEC(ptr2);
+                n=n-l+1;
+                size_c=n+1;
+        }
+
+	A4GL_push_char(make_using(ptr));
+	A4GL_pushop(OP_USING);	
+	ptr=A4GL_char_pop();
+	strcpy(s,ptr);
+	free(ptr);
+        return s;
   }
 
   if (display_type== DISPLAY_TYPE_DISPLAY_AT) {
-	A4GL_push_dec(ptr,1);
-	if (size_c==-1) {
-		char *ptr;
-		ptr=A4GL_char_pop();
-		strcpy(s,ptr);
-		free(ptr);
-	} else {
-		A4GL_pop_char(s,size_c);
-	}
+        A4GL_push_dec(ptr,1,size);
+        if (size_c==-1) {
+                char *ptr;
+                ptr=A4GL_char_pop();
+                strcpy(s,ptr);
+                free(ptr);
+        } else {
+                A4GL_pop_char(s,size_c);
+        }
 
-  	A4GL_ltrim(s);
-	return s;
+        A4GL_ltrim(s);
+	A4GL_trim(s);
+        return s;
   }
 
-return 0;
+  return 0;
+
 }
 
 char *
@@ -1209,4 +1238,17 @@ strcpy(s,ptr);
 free(buff);
 }
 
+
+
+static char *make_using(char *ptr) {
+static char buff[256];
+char buff2[256];
+strcpy(buff,"-------------------------------------------------------------------------------------------------------------------");
+buff[NUM_DIG(ptr)*2-NUM_DEC(ptr)]=0;
+strcat(buff,"&.");
+memset(buff2,'&',255);
+buff2[(int)NUM_DEC(ptr)]=0;
+strcat(buff,buff2);
+return buff;
+}
 /* ========================== EOF ========================== */
