@@ -617,12 +617,9 @@ pdf_expr : fgl_expr_c POINTS  {
 }
 ;
 
-variable_or_current: variable COMMA s_curr_v TO e_curr_v {
-		sprintf($<str>$,"aclfgli_extend(%s,%s,%s);",$<str>1,$<str>3,$<str>5);
-	}
-	| CURRENT s_curr_v TO e_curr_v {
-			sprintf($<str>$,"aclfgli_current(%s,%s);",$<str>2,$<str>4);
-				
-		}
+variable_or_current: 
+	CURRENT COMMA s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_current(%s,%s);",$<str>3,$<str>5); }
+	| variable COMMA s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_extend(%s,%s,%s);",$<str>1,$<str>3,$<str>5); }
+	| CURRENT s_curr_v TO e_curr_v { sprintf($<str>$,"aclfgli_current(%s,%s);",$<str>2,$<str>4); }
 ;
 /* ============================ expr.rule =========================== */

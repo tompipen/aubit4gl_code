@@ -872,8 +872,24 @@ cur_v_part: {strcpy($<str>$,"");}
 {sprintf($<str>$," %s ,%s",$<str>1,$<str>3);}
 ;
 
-s_curr_v: YEAR {strcpy($<str>$,"0");} | MONTH  {strcpy($<str>$,"5");}| DAY  {strcpy($<str>$,"8");}| HOUR  {strcpy($<str>$,"11");}| MINUTE  {strcpy($<str>$,"14");}| SECOND  {strcpy($<str>$,"17");}| FRACTION {strcpy($<str>$,"23");};
-e_curr_v: YEAR {strcpy($<str>$,"4");} | MONTH  {strcpy($<str>$,"7");}| DAY  {strcpy($<str>$,"10");}| HOUR  {strcpy($<str>$,"13");}| MINUTE  {strcpy($<str>$,"16");}| SECOND  {strcpy($<str>$,"19");}| FRACTION {strcpy($<str>$,"25");};
+s_curr_v: YEAR {strcpy($<str>$,"0");} | MONTH  {strcpy($<str>$,"5");}| DAY  {strcpy($<str>$,"8");}| HOUR  {strcpy($<str>$,"11");}| MINUTE  {strcpy($<str>$,"14");}| SECOND  {strcpy($<str>$,"17");}| 
+FRACTION {
+strcpy($<str>$,"23");
+}
+| FRACTION OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+strcpy($<str>$,"23");
+}
+;
+
+e_curr_v: YEAR {strcpy($<str>$,"4");} | MONTH  {strcpy($<str>$,"7");}| DAY  {strcpy($<str>$,"10");}| HOUR  {strcpy($<str>$,"13");}| MINUTE  {strcpy($<str>$,"16");}| SECOND  {strcpy($<str>$,"19");} 
+| 
+FRACTION {
+strcpy($<str>$,"25");
+} 
+| FRACTION OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+strcpy($<str>$,"25");
+}
+;
 
 
 s_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
