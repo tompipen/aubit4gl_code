@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.14 2002-06-02 06:52:38 afalout Exp $
+# $Id: readforms.c,v 1.15 2002-06-11 12:58:38 afalout Exp $
 #*/
 
 /**
@@ -606,7 +606,7 @@ int
 has_bool_attribute (void* f, int bool)
 {
 	debug("via has_bool_attribute in lib");
-	has_bool_attribute(f,bool);
+	real_has_bool_attribute(f,bool);
 }
 static int
 real_has_bool_attribute (struct struct_scr_field *f, int bool)
