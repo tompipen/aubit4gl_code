@@ -1,9 +1,9 @@
 
 
-#cvs update -d 
-#make cleanall
-#./configure --with-efence=/usr/lib
-#make log
+cvs update -d 
+make cleanall
+./configure --with-efence=/usr/lib
+make log
 cd /home/aubit4gl/sourceforge/aubit4glsrc
 cd lib/libui/ui_curses
 sh make_static

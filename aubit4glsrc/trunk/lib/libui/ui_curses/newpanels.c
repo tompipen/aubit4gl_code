@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.42 2003-06-12 17:40:23 mikeaubury Exp $
+# $Id: newpanels.c,v 1.43 2003-06-14 17:05:09 mikeaubury Exp $
 #*/
 
 /**
@@ -908,6 +908,7 @@ A4GL_display_form (struct s_form_dets *f)
 
   if (rows - windows[currwinno].winattr.border > windows[currwinno].h + 1)
     {
+	A4GL_debug("%d - %d > %d + 1",rows,windows[currwinno].winattr.border , windows[currwinno].h );
       A4GL_exitwith ("Window is too small to display this form (too high)");
       return 0;
     }

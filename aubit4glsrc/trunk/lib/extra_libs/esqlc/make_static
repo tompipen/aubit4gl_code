@@ -7,6 +7,6 @@ export PATH=$PATH:/usr/local/pgsql/bin
 ecpg helper_funcs.ec
 gcc -DDIALECT_POSTGRES -g -c -o helper_funcs_p.o helper_funcs.c -I$POSTGRESDIR/include -I/home/aubit4gl/sourceforge/aubit4glsrc/incl 
 
-gcc --shared -o libesqlhelper_funcs_p.so -L/home/aubit4gl/sourceforge/aubit4glsrc/lib -L$POSTGRESDIR/lib -lpgtypes -laubit4gl
+gcc --shared -o libesqlhelper_funcs_p.so helper_funcs_p.o -L/home/aubit4gl/sourceforge/aubit4glsrc/lib -L$POSTGRESDIR/lib -lpgtypes -laubit4gl
 
 cp libesqlhelper_funcs_p.so ../..
