@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.77 2004-01-02 21:02:47 mikeaubury Exp $
+# $Id: curslib.c,v 1.78 2004-01-03 18:43:43 mikeaubury Exp $
 #*/
 
 /**
@@ -3053,7 +3053,9 @@ A4GL_flatten_menu (ACL_Menu * menu)
   if (menu->gw_b)
     {
       px -= 1;
-      py -= 1;
+      //py -= 1;
+      //px -= 0;
+      //py -= 0;
     }
   else
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.41 2004-01-02 15:17:45 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.42 2004-01-03 18:43:43 mikeaubury Exp $
 #*/
 
 /**
@@ -952,11 +952,16 @@ UILIB_A4GL_form_loop (void *vs, int init)
   A4GL_debug ("form_loop0..  currentfield=%p status = %d", form->currentfield,
 	      field_status (form->currentfield));
 
-  if (form != UILIB_A4GL_get_curr_form (1))
+  if (form != UILIB_A4GL_get_curr_form (0))
     {
-      A4GL_debug ("form=%p curr_form=%p", form, UILIB_A4GL_get_curr_form (1));
-      A4GL_exitwith ("Input form is not current");
-      return 0;
+
+        A4GL_make_window_with_this_form_current(form);
+    }
+
+  if (form != UILIB_A4GL_get_curr_form (0))
+    {
+        A4GL_exitwith ("Input form is not the current form!");
+        return 0;
     }
 
   mform = form->form;

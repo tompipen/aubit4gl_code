@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.63 2004-01-03 11:07:20 mikeaubury Exp $
+# $Id: iarray.c,v 1.64 2004-01-03 18:43:43 mikeaubury Exp $
 #*/
 
 /**
@@ -555,10 +555,16 @@ iarr_loop (struct s_inp_arr *arr)
     A4GL_debug ("Currform=%p (s_form_dets)", form);
   }
 #endif
-  if (form != UILIB_A4GL_get_curr_form (1))
+  if (form != UILIB_A4GL_get_curr_form (0))
     {
-      A4GL_exitwith ("Input form is not the current form!");
-      exit (0);
+
+	A4GL_make_window_with_this_form_current(form);
+    }
+
+  if (form != UILIB_A4GL_get_curr_form (0))
+    {
+        A4GL_exitwith ("Input form is not the current form!");
+	return 0;
     }
   mform = form->form;
 

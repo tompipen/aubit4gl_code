@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.81 2004-01-02 15:17:45 mikeaubury Exp $
+# $Id: newpanels.c,v 1.82 2004-01-03 18:43:43 mikeaubury Exp $
 #*/
 
 /**
@@ -3075,6 +3075,16 @@ void
 }
 
 
+void A4GL_make_window_with_this_form_current(void *form) {
+int a;
+for (a=0;a<MAXWIN;a++) {
+	if (windows[a].form==form) {
+		A4GL_debug("Found it... @ %d",a);
+  		UILIB_A4GL_current_window (windows[a].name);
+		return;
+	}
+}
 
+}
 
 /* =============================== EOF =============================== */
