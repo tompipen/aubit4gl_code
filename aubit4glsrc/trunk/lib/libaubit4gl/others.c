@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.39 2004-04-21 14:46:58 mikeaubury Exp $
+# $Id: others.c,v 1.40 2004-06-06 13:55:12 mikeaubury Exp $
 #
 */
 
@@ -677,5 +677,58 @@ char buff[2];
 
 }
 */
+
+
+
+/* 
+// Added with permission :
+//___| read_pipe.c |______________________________________________________
+*/
+/*
+    Run a Unix command and return the first line of output to 4GL
+    Usage: CALL read_pipe(command) RETURNING string
+    Doug Lawry, 19/12/91
+
+	Modified for Aubit MJA - June 2004
+*/
+
+#define MAX_STRING 512
+
+int aclfgl_aclfgl_read_pipe(int nargs)
+{
+    FILE *pp;                                /* pipe pointer          */
+    char *cmd_orig;                    /* command to be run     */
+    char *cmd;                    /* command to be run     */
+    char data[MAX_STRING];                   /* return from command   */
+    int  bytes = 0;                          /* number of bytes read  */
+
+    cmd_orig=A4GL_char_pop();               /* get the command       */
+    A4GL_trim(cmd_orig);                   /* strip trailing spaces */
+    cmd=malloc(strlen(cmd_orig)+20);
+    strcpy(cmd,cmd_orig);
+    free(cmd_orig);
+    strcat(cmd, " 2>/dev/null");             /* ignore error output   */
+
+    A4GL_set_a4gl_status(0);
+
+    if ((pp = popen(cmd, "r")) == NULL) {
+        A4GL_set_a4gl_status(100);                   /* set error status      */
+	} else {
+        for (bytes = 0; bytes < MAX_STRING - 1; bytes++)
+            if ((data[bytes] = getc(pp)) == EOF || data[bytes] == '\n')
+                break;
+
+        pclose(pp);                          /* close the pipe        */
+    }
+
+    data[bytes] = NULL;                      /* terminate string      */
+
+    free(cmd);
+    retquote(data);                          /* return command output */
+    return(1);                               /* returning 1 parameter */
+}
+
+/* End of inclusion */
+
 
 /* ============================== EOF ========================== */
