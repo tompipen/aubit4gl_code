@@ -323,8 +323,12 @@ A4GL_EXTENDED_GRAPHICS FORMS/UI/TUI enable the use of extended graphics from for
 	well as when you run program that will use form file compiled this way
 
 A4GL_FAKELEXTYPE PCODE/COMPILE Compile C code resulting from 4gl compilation to P-code
-A4GL_FAKE_IMMEDIATE COMPILE Affects EXECUTE IMMEDIATE, not sure how
+A4GL_FAKE_IMMEDIATE COMPILE Affects EXECUTE IMMEDIATE
 =YES|NO
+	This option instructs the compiler to generate a prepare/execute pair for esql/c generation
+	rather than use the native ESQL/C EXECUTE IMMEDIATE statement. This option is therefore most
+	useful where the native ESQL/C compiler does not support the EXECUTE IMMEDIATE statement 
+	(Postgres ecpg for example)
 	For example, to use:
 		EXECUTE IMMEDIATE "set enable_seqscan to on" 
 	with PostgreSQL RDBMS, you'd have to have A4GL_FAKE_IMMEDIATE set
@@ -480,10 +484,6 @@ A4GL_SQLUID SQL/COMPILE/RUNTIME Database access user name
 	IN THE VALUE OF THIS VARIABLES !!!!!!!!!!
 
 A4GL_SQL_CURRENT_FUNCTION SQL PostgreSQL ecpg Informix compatibility
-A4GL_SYSTEM
-A4GL_SYSTEMDIR
-A4GL_SYSUSER
-A4GL_TEMPDIR
 A4GL_TRANSLATEFILE COMPILE Specifies the location of a translation file
 	This is used for transforming 4GL strings via a message file (see DUMPSTRINGS)
 A4GL_TRANSMODE RUNTIME/SQL Set transactions behaviour (PodtgreSQL EC mode only??)
@@ -562,7 +562,7 @@ A4GL_NO_ORDBY_INTO_TEMP COMPILE Remove any 'ORDER BY' clause when selecting into
 RM_COMMENTS_FIRST COMPILE remove any comments before compiling the 4GL code
 =YES|NO
 	This defaults to Yes, if you have problems with compilation - it may be
-	that this code is getting confused. Try setting to N, or setting DUMP_LAST
+	that this code is getting confused. Try setting to N, or setting A4GL_DUMP_LAST
 GDB_ATTACH RUNTIME Attach GDB to the process when a Segmentation Fault occurs
 =YES|NO
 	This is useful for tracing back problems during runtime execution
@@ -585,10 +585,11 @@ NO_ALT_SCR RUNTIME/TUI Try to disable the alternate screen (for xterm and consol
 	when the application finishes (or otherwise enters line mode), the original screen will 
 	be redisplayed. Setting this option attempts to disable this screen swapping so that the
 	original screen is used for the 4GL display.
-DUMP_LAST COMPILE output the results of the last remove comments
+A4GL_DUMP_LAST DEBUG/COMPILE output the results of the last remove comments
 =YES|NO
 	This will produce a file 'last' which contains the file with the comments
-	removed. This is used to check the operation of the RM_COMMENTS_FIRST code
+	removed. This is used to check the operation of the RM_COMMENTS_FIRST code. 
+	The file written will always be called last
 
 A4GL_CONSTRUCT_NO_MATCHES RUNTIME/SQL/UI Disable generation of MATCHES keywords
 =YES|NO
@@ -619,7 +620,6 @@ A4GL_USE_PANGO_ML UI Allow markup for GUI widgets labels
 SWAP_SQLCA62 SQL Enable sqlca.sqlerrd[6] (ROWID/OID of last inserted record) translation 
 =Y|N
 	This is apparently needed only with PostgreSQL (with IFX compatibility patches)
-A4GL_SYSCOL_VAL UNKNOWN a4gl_syscolval
 A4GL_SYSCOL_VAL SQL the name of the 'syscolval' table 
 A4GL_SYSCOL_ATT SQL the name of the 'syscolatt' table
 A4GL_CLASSPATH UNKNOWN Path to search for import packages
@@ -627,20 +627,35 @@ RESTARTLOG RUNTIME Restart the error log
 	This causes the CALL startlog("...") to restart with an empty log file
 	each time the program is run. The default is to append to the end of the
 	current log
-A4GL_DUMP_LAST  UNKNOWN UNKNOWN
 A4GL_EC_LOGSQL  UNKNOWN UNKNOWN
 A4GL_UPSCOL_VAL UNKNOWN UNKNOWN
 ALWAYS_CONVERT  UNKNOWN UNKNOWN
 BEEP_BADMENUKEY UNKNOWN UNKNOWN
 BINDDATEASINT UNKNOWN UNKNOWN
 COMSPEC UNKNOWN UNKNOWN
-CORE_ON_ASSERT UNKNOWN UNKNOWN
-DATE_AS_CHAR UNKNOWN UNKNOWN
-DBL2DEC_USING UNKNOWN UNKNOWN
-DEBUGFILE UNKNOWN UNKNOWN
-DTIME_AS_CHAR UNKNOWN UNKNOWN
-DUMP4GL UNKNOWN UNKNOWN
-EC_EXT UNKNOWN UNKNOWN
+CORE_ON_ASSERT RUNTIME/DEBUG Force a core dump when encountering an assert
+	Aubit4GL uses a series of assertions to check data being used internally.
+	When one of these assertion fails - it generally indicates something has gone
+	wrong internally. Setting this option will force a Core dump (Seg Fault) which
+	should allow any attached debugger to check exactly where the assertion failed 
+	and investigate why it failed.
+DATE_AS_CHAR SQL/ODBC Use character strings for dates
+=YES|NO
+	This specifies that when communicating with the ODBC driver, dates should
+	always be refered to as strings. Some ODBC do not correctly handle dates using
+	the proper ODBC SQL_DATE datatype - when this situation occurs, specifying 
+	DATE_AS_CHAR may help
+DTIME_AS_CHAR SQL/ODBC Use character strings for datetimes
+=YES|NO
+	This specifies that when communicating with the ODBC driver, datetimes should
+	always be refered to as strings. Some ODBC do not correctly handle datetimes using
+	the proper ODBC SQL_C_DATETIME/SQL_TIMESTAMP etc.W hen this situation occurs, specifying 
+	DTIME_AS_CHAR may help
+DUMP4GL DEBUG generates a file /tmp/file.out 
+=YES|NO
+	This generates a file /tmp/file.out which gets written to as the 4glc compiler
+	compiles 4GL code. This can be useful in debugging the 4glc compiler
+EC_EXT COMPILE Specify the extension for an ESQL/C file
 EMAIL_RECIPIENT UNKNOWN UNKNOWN
 FGLFRMCOMPILE UNKNOWN UNKNOWN
 FIRSTCOL_ONERR_INCL UNKNOWN UNKNOWN
@@ -669,4 +684,6 @@ START_ALLOC UNKNOWN UNKNOWN
 TRACEDLL UNKNOWN UNKNOWN
 TRACE_AS_TEXT UNKNOWN UNKNOWN
 WAIT_FOR_GDB_ATTACH UNKNOWN UNKNOWN
+DBL2DEC_USING UNKNOWN UNKNOWN
+DEBUGFILE UNKNOWN UNKNOWN
 
