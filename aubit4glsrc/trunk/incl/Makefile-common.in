@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.155 2004-03-22 00:15:53 afalout Exp $
+# $Id: Makefile-common.in,v 1.156 2004-03-26 08:18:21 mikeaubury Exp $
 #
 
 
@@ -36,7 +36,7 @@ LIBS=
 
 #MUST be here - it will be used by make "shell" commands
 SH					=@SH@
-SHELL				=${SH}
+SHELL				:=${SH}
 
 #Workarounf for Informix installers messing up libphtread:
 LD_LIBRARY_PATH				:=/lib:${LD_LIBRARY_PATH}
@@ -694,7 +694,7 @@ ifneq "${AUBIT_BIN_INSTALL}" "1"
 	FCOMPILE	=${AUBIT_SRC_ROOT}/bin/fcompile
 	#MKMESS      =${AUBIT_SRC_ROOT}/bin/mkmess
     MKMESS      =${AUBIT_SRC_ROOT}/bin/amkmessage
-	FGLPCEXEC	=${SH} ${AUBIT_SRC_ROOT}/bin/4glpc
+	FGLPCEXEC	:=${SH} ${AUBIT_SRC_ROOT}/bin/4glpc
 	MCOMPILE	=${AUBIT_SRC_ROOT}/bin/mcompile
 else
 	FCOMPILE	=aubit fcompile
