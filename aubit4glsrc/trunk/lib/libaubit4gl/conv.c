@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.82 2004-07-16 16:37:55 mikeaubury Exp $
+# $Id: conv.c,v 1.83 2004-08-03 17:16:05 mikeaubury Exp $
 #
 */
 
@@ -450,8 +450,9 @@ A4GL_inttoc (void *a1, void *b, int size)
     {
 
 
-      if (strlen (buff))
-	strcat (buff, pre[cnt - 1]);
+      if (strlen (buff)) strcat (buff, pre[cnt - 1]);
+
+
       if (cnt == 7)
 	{
 	  sprintf (buff2, "%05d", data[cnt - 1]);
@@ -459,8 +460,13 @@ A4GL_inttoc (void *a1, void *b, int size)
 	}
       else
 	{
-	  sprintf (buff2, "%02d", data[cnt - 1]);
+		if (cnt==s2) {
+	  		sprintf (buff2, "%*d", s1+1,data[cnt - 1]); 
+		} else {
+	  		sprintf (buff2, "%02d", data[cnt - 1]);
+		}
 	}
+
 
       strcat (buff, buff2);
 
