@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.7 2002-07-26 14:36:39 mikeaubury Exp $
+# $Id: data.c,v 1.8 2002-07-26 20:34:23 mikeaubury Exp $
 #*/
 
 /**
@@ -106,7 +106,7 @@ init_report (void)
   this_report.output.bottom_margin = 3;
   this_report.output.left_margin = 5;
   this_report.output.right_margin = 132;
-  this_report.output.top_of_page = "";
+  this_report.output.top_of_page = "";
   this_report.output.page_length = 66;
   this_report.output.report_to_where = 0;
   this_report.output.report_to_filename = "";
@@ -129,8 +129,8 @@ init_report (void)
   this_report.aggs.aggs_val = 0;
 
   add_variable("pageno","integer",CAT_BUILTIN,0,2,0);
-  add_variable("lineno","integer",CAT_BUILTIN,0,2,0);
-  add_variable("today","date",CAT_BUILTIN,0,2,0);
+  add_variable("lineno","smallint",CAT_BUILTIN,0,1,0);
+  add_variable("today","date",CAT_BUILTIN,0,7,0);
 }
 
 
