@@ -8,7 +8,7 @@
 %option yylineno
 /*%option interactive*/
 %%
-[\n] 	{lineno++;colno=0;graphics_mode=0;REJECT;}
+[\n] 	{lineno++;colno=0;graphics_mode=0;REJECT}
 [ ]	{ colno++;}
 [	]	{colno+=3;}
 [	 \n]	;
@@ -21,9 +21,10 @@
 		else graphics_mode=1;
 	}
 
---! 	; 
+--! 	{if (in_screen_section) REJECT; }
 	
---[^!].*$ 	{if (in_screen_section) REJECT;}
+--[^!].* 	{if (in_screen_section) REJECT; 
+}
 
 [pdqb]  { 
 	if (ignorekw==0) REJECT; 
@@ -48,11 +49,18 @@
 "]"		{ strcpy(yylval.str, yytext); colno++;return(CLOSE_SQUARE);}
 [0-9]+|[0-9]*\.[0-9]+  	{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(NUMBER_VALUE);}
 
-\"[^\"]+\" { strcpy(yylval.str,yytext); return CHAR_VALUE;}
-\"\" { strcpy(yylval.str,yytext); return CHAR_VALUE;}
-\'[^\']+\' { strcpy(yylval.str,yytext); return CHAR_VALUE;}
-\'\' { strcpy(yylval.str,yytext); return CHAR_VALUE;}
+"\"" { if (in_screen_section==0) REJECT ; strcpy(yylval.str,yytext);  return CH; }
+"\'" { if (in_screen_section==0) REJECT; strcpy(yylval.str,yytext); 
+return CH; }
+
+\"[^\"]+\" { if (in_screen_section==1) REJECT; strcpy(yylval.str,yytext); return CHAR_VALUE;}
+\"\" {  if (in_screen_section==1) REJECT;strcpy(yylval.str,yytext); return CHAR_VALUE;}
+\'[^\']+\' {  if (in_screen_section==1) REJECT;strcpy(yylval.str,yytext); return CHAR_VALUE;}
+
+\'\' { if (in_screen_section==1) REJECT; strcpy(yylval.str,yytext); return CHAR_VALUE;}
+
 [	 \n]	;
+
 "{" 		{ if(in_screen_section!=0) {strcpy(yylval.str,yytext); return OPEN_BRACE; } else {	BEGIN comment; yymore(); } }
 "}" 		{strcpy(yylval.str,yytext); return CLOSE_BRACE;}
 "@" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ATSIGN;}
@@ -89,6 +97,7 @@
 "smallfloat" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SMALLFLOAT;}
 "smallint" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SMALLINT;}
 "decimal" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_DECIMAL;}
+"dec" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_DECIMAL;}
 "money" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MONEY;}
 "widget" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return WIDGET;}
 "config" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return CONFIG;}
@@ -131,7 +140,7 @@
 "as"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return AS;}
 "noupdate"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SQLONLY;}
 "zerofill"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SQLONLY;}
-"left"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SQLONLY;}
+"left"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LEFT;}
 "right"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SQLONLY;}
 
 
@@ -140,11 +149,17 @@
 "button"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return BUTTON;}
 "panel"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_PANEL;}
 [a-zA-Z]+[a-zA-Z\_0-9]*	{
-	if (ignorekw) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext); return(NAMED);
+	if (ignorekw) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext);
+	debug("NAMED : %s\n",yytext);
+ return(NAMED);
 }
 [a-zA-Z\_0-9]+[a-zA-Z\_0-9]*	{
-if (ignorekw!=1) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext); return(NAMED);}
-.		{strcpy(yylval.str,yytext);colno++;return CH;}
+if (ignorekw!=1) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext); 
+ debug("NAMED : %s\n",yytext); 
+return(NAMED);}
+.		{strcpy(yylval.str,yytext);colno++;
+ debug("CH : %s\n",yytext);  
+return CH;}
 %%
 
 buffpos() {

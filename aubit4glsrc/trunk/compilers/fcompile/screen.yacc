@@ -216,7 +216,11 @@ table_def
 | table_def_list COMMA table_def
 ;
 
-table_def : named_or_kw opequal { add_table($<str>2,$<str>1); } 
+table_def : named_or_kw opequal { 
+make_downshift($<str>1);
+make_downshift($<str>2);
+add_table($<str>2,$<str>1); 
+} 
 ;
 
 opequal :  {strcpy($<str>$,"");}
@@ -259,6 +263,9 @@ EQUAL {
 init_fld();
 } 
 field_type op_att {
+	make_downshift(fld->tabname);
+	make_downshift(fld->colname);
+
 	fld->colour=FA_C_WHITE;
 	debug("add color %d\n",FA_C_WHITE);
 }
@@ -351,7 +358,8 @@ AUTONEXT {
 	add_str_attr(fld,FA_S_FORMAT,$<str>3);
 }
 | INCLUDE EQUAL OPEN_BRACKET incl_list CLOSE_BRACKET {
-	add_str_attr(fld,FA_S_INCLUDE,$<str>4);
+	sprintf($<str>$,"\n%s",$<str>4);
+	add_str_attr(fld,FA_S_INCLUDE,$<str>$);
 }
 | WIDGET EQUAL CHAR_VALUE {
 	add_str_attr(fld,FA_S_WIDGET,$<str>3);
@@ -501,11 +509,11 @@ named_or_kw
 | named_or_kw DOT named_or_kw	 
 {add_srec_attribute($<str>1,$<str>3,""); }
 | FORMONLY DOT named_or_kw	 
-{add_srec_attribute($<str>1,$<str>3,""); }
+{add_srec_attribute("formonly",$<str>3,""); }
 | named_or_kw DOT STAR 
 {add_srec_attribute($<str>1,"*",""); }
 | FORMONLY DOT STAR 
-{add_srec_attribute($<str>1,"*",""); }
+{add_srec_attribute("formonly","*",""); }
 ;
 
 field_list_element :
@@ -569,16 +577,15 @@ KW_CHAR {
 ;
 
 
-incl_list : 
-incl_entry | incl_list COMMA incl_entry {
+incl_list : incl_entry | incl_list COMMA incl_entry {
 	sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
 };
 
 
 incl_entry : 
-CHAR_VALUE   {
-	sprintf($<str>$,char_val($<str>1));
-}
+CHAR_VALUE   { strcpy($<str>$,char_val($<str>1)); }
+| NAMED   {strcpy($<str>$,$<str>1); }
+| CH   {strcpy($<str>$,$<str>1);}
 | NUMBER_VALUE 
 | NUMBER_VALUE TO NUMBER_VALUE {
 	sprintf($<str>$,"%s\t%s",$<str>1,$<str>3);
