@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.39 2004-12-09 07:26:47 mikeaubury Exp $
+# $Id: readforms.c,v 1.40 2004-12-16 10:15:13 mikeaubury Exp $
 #*/
 
 /**
@@ -266,6 +266,8 @@ real_read_form (char *fname, char *formname)
 
   if (!a)
     {
+	free(formdets->fileform);
+	free(formdets);
       A4GL_exitwith ("Unable to read form");
       return 0;
     }

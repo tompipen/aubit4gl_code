@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.23 2004-12-09 07:26:47 mikeaubury Exp $
+# $Id: readforms.c,v 1.24 2004-12-16 10:13:00 mikeaubury Exp $
 #*/
 
 /**
@@ -104,7 +104,7 @@ char *read_string_dup (FILE * ofile);
 char *A4GL_string_width (char *a);
 int set_fields2 (int nv, struct BINDING *vars, int d, int n, ...);
 
-static void real_comments (struct struct_scr_field *fprop);
+//static void real_comments (struct struct_scr_field *fprop);
 static struct s_form_dets *real_read_form (char *fname, char *formname);
 static void real_set_default_form (struct s_form_attr *form);
 static void real_dump_srec (struct s_form_dets *fd);
@@ -143,24 +143,27 @@ real_read_form (char *fname, char *formname)
 {
   int a;
   struct s_form_dets *formdets;
-  char buff[512];
+  //char buff[512];
 
   A4GL_trim (fname);
   A4GL_trim (formname);
 
   A4GL_debug ("in A4GL_read_form fname=%s formname=%s", fname, formname);
-  strcpy (buff, fname);
-  buff[strlen (buff) - 4] = 0;
+  //strcpy (buff, fname);
+  //buff[strlen (buff) - 4] = 0;
 
 
 #ifdef DEBUG
-  A4GL_debug ("fname=%s formname=%s", fname, formname);
+  A4GL_debug ("fname=%s formname=%s %s ", fname, formname);
 #endif
 
   //A4GL_gui_startform (formname);
   formdets =
     (struct s_form_dets *) acl_malloc (sizeof (struct s_form_dets),
 				       "Readform");
+
+   memset(formdets,0,sizeof (struct s_form_dets));
+
   formdets->fileform =
     (struct_form *) acl_malloc (sizeof (struct_form), "Readform");
 
@@ -174,36 +177,39 @@ real_read_form (char *fname, char *formname)
 
   a = A4GL_read_data_from_file ("struct_form", formdets->fileform, fname);
 
-  if (!a)
+  if (a==0)
     {
-      A4GL_exitwith ("Unable to read form");
-      return 0;
-    }
+		free(formdets->fileform);
+		free(formdets);
+      		A4GL_exitwith ("Unable to read form");
+      		return 0;
+    }  else {
 
-  if (formdets->fileform->fcompile_version != FCOMILE_XDR_VERSION)
-    {
-      A4GL_debug ("Form version %d - my version %d",
-	     formdets->fileform->fcompile_version, FCOMILE_XDR_VERSION);
-      A4GL_exitwith ("This form has a version number that I can't handle");
-      return 0;
-    }
+  		if (formdets->fileform->fcompile_version != FCOMILE_XDR_VERSION)
+    		{
+      		A4GL_debug ("Form version %d - my version %d",
+	     		formdets->fileform->fcompile_version, FCOMILE_XDR_VERSION);
+      		A4GL_exitwith ("This form has a version number that I can't handle");
+      		return 0;
+    		}
+		
+  		do_translate_form (formdets->fileform);
+  		formdets->currentfield = 0;
+  		A4GL_debug ("formdets=%p", formdets);
+  		read_attributes (formdets);
+  		A4GL_debug ("formdets=%p", formdets);
+  		A4GL_read_metrics (formdets);
+  		A4GL_debug ("formdets=%p", formdets);
+  		A4GL_read_fields (formdets);
+  		A4GL_debug ("formdets=%p", formdets);
+  		A4GL_debug ("Loaded form...");
+  		//A4GL_gui_endform ();
+  		A4GL_debug ("Ended loading forms (%d, %d)", formdets->fileform->maxcol,
+	 		formdets->fileform->maxline);
+  		return formdets;
+   }
 
-
-  do_translate_form (formdets->fileform);
-
-  formdets->currentfield = 0;
-  A4GL_debug ("formdets=%p", formdets);
-  read_attributes (formdets);
-  A4GL_debug ("formdets=%p", formdets);
-  A4GL_read_metrics (formdets);
-  A4GL_debug ("formdets=%p", formdets);
-  A4GL_read_fields (formdets);
-  A4GL_debug ("formdets=%p", formdets);
-  A4GL_debug ("Loaded form...");
-  //A4GL_gui_endform ();
-  A4GL_debug ("Ended loading forms (%d, %d)", formdets->fileform->maxcol,
-	 formdets->fileform->maxline);
-  return formdets;
+return 0; // Should never get here...
 }
 
 
