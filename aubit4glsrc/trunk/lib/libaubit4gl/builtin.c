@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.21 2003-02-22 15:46:12 mikeaubury Exp $
+# $Id: builtin.c,v 1.22 2003-02-24 19:02:50 mikeaubury Exp $
 #
 */
 
@@ -793,12 +793,25 @@ char *ptr;
   	c.ltime = n&16;
   	c.stime = n/16;
 	ctoint(s,&c,n);
-	//push_char(s);
-	//pop_var2(&c,DTYPE_INTERVAL,n);
 	debug("acli_interval - pop'd c - n=%x",n);
 	push_interval(&c);
 
 }
+
+void acli_datetime(char *s,int n) {
+struct_dtime c;
+char *ptr;
+	debug("acli_datetime s=%s n=%d\n",s,n);
+  	c.ltime = n&16;
+  	c.stime = n/16;
+	ctodt(s,&c,n);
+	debug("acli_dtime - pop'd c - n=%x",n);
+	push_dtime(&c);
+
+}
+
+
+
 
 char *aclfgli_str_to_id(char *name) 
 {
@@ -813,5 +826,23 @@ int aclfgl_ascii(int n) {
 		push_ascii();
 		return 1;
 }
+
+
+/**
+ * @todo - implement aclfgl_fgl_drawbox
+ *
+**/
+int aclfgl_fgl_drawbox(int n) {
+	exitwith("fgl_drawbox not implemented yet");
+}
+
+/**
+ * @todo - implement acli_scroll
+ *
+**/
+int acli_scroll(void *s,int n) {
+	exitwith("acli_scroll not implemented");
+}
+
 /* ================================== EOF ============================= */
 

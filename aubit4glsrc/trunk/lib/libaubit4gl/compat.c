@@ -5,6 +5,11 @@
 /* Any C programs using these functions should also include a4gl_incl_infx.h */
 #include "a4gl_incl_infx.h"
 
+
+void popint(short *s) {
+	*s=pop_int()&0xffff;
+}
+
 void popquote(char *s,int size) {
 	pop_char(s,size);
 }
@@ -28,4 +33,13 @@ void retflo(float *a) {
 
 void rsetnull(int d,void *ptr) {
 	setnull(d,ptr,0);
+}
+
+
+void retlong(long a) {
+	push_long(a);
+}
+
+void strip(char *s) {
+	trim(s);
 }

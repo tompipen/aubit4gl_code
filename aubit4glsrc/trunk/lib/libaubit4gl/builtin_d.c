@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.16 2003-02-05 00:24:51 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.17 2003-02-24 19:02:51 mikeaubury Exp $
 #
 */
 
@@ -371,25 +371,6 @@ func_mod(void)
 	push_long(res);
 }
 
-/**
- * Used for 4GL MOD function.
- *
- * Not implemented.
- *
- * @todo Understand if not used and if not remove it
- */
-void
-func_pow(void)
-{
-	exitwith("Pow not implemented");
-/*
-	double p,p2,res;
-	p=pop_double();
-	p2=pop_double();
-	res=pow(p2,p);
-	push_double(res);
-*/
-}
 
 /**
  *
@@ -402,7 +383,7 @@ aclfgl_root(int n)
 	double p,p2,res;
 	p=pop_double();
 	p2=pop_double();
-	p=1/p;
+	p=1.0/p;
 	res=pow(p2,p);
 	push_double(res);
 return 1;
@@ -417,10 +398,13 @@ int
 aclfgl_sqrt(int n)
 {
 	double p,p2,res;
+	debug("SQRT\n");
 	p2=pop_double();
-	p=1/2;
+	debug("p2=%f\n",p2);
+	p=(double)1.0/(double)2.0;
 	res=pow(p2,p);
 	push_double(res);
+	debug("--->%f\n",res);
 	return 1;
 }
 

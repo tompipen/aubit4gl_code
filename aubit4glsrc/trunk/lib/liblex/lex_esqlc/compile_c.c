@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.14 2003-02-22 15:46:12 mikeaubury Exp $
+# $Id: compile_c.c,v 1.15 2003-02-24 19:02:56 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -137,6 +137,7 @@ dll_import char     when_to[64][8];
 int doing_esql(void) ;
 void make_sql_bind (char *sql, char *type);
 long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level, char *arr);
+int split_arrsizes(char *s,int *arrsizes) ;
 
 /*
 =====================================================================
@@ -2742,7 +2743,7 @@ get_formloop_str (int type)
 void
 print_scroll (char *flds, char *updown)
 {
-  printc ("scroll(gen_field_chars(%s),%s,%s);\n", flds, updown);
+  printc ("acli_scroll(gen_field_chars(%s),%s);\n", flds, updown);
 }
 
 

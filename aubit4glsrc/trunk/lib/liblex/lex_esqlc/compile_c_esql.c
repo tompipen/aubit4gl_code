@@ -53,11 +53,11 @@ print_close (char type, char *name)
       printc ("close_database();\n");
       break;
     case 'S':
-      printc ("EXEC SQL CLOSE SESSION %s;\n", name);
+      printc ("EXEC SQL CLOSE SESSION %s;\n", strip_quotes(name));
   print_copy_status();
       break;
     case 'C':
-      printc ("EXEC SQL CLOSE CURSOR %s;\n", name);
+      printc ("EXEC SQL CLOSE %s;\n", strip_quotes(name));
   print_copy_status();
       break;
     }
@@ -234,13 +234,22 @@ print_set_conn (char *conn)
  * insert cursors.
  */
 void
-print_put (void)
+print_put (char *cname)
 {
   int n;
+int a;
   printc ("{\n");
   n = print_bind ('i');
   print_conversions('i');
-  printc ("EXEC SQL PUT /*FIXME - cursorname ? */\n", n);
+  printc ("EXEC SQL PUT %s \n", strip_quotes(cname));
+  if (n) {
+	printc("FROM ");
+	for (a=0;a<n;a++) {
+		if (a) printc(",");
+		printc("   $_vi_%d",a);
+	}
+  }
+  printc(";");
   print_copy_status();
   printc ("}\n");
 }
@@ -345,11 +354,11 @@ int a;
 
   n=atoi(using);
   if (n) {
-	printc("{\nEXEC SQL BEGIN DECLARE SECTION");
+	printc("{\nEXEC SQL BEGIN DECLARE SECTION;");
         for  (a=n-1;a>=0;a--) {
-		printc("EXEC SQL char *_using_%d;",a);
+		printc("char *_using_%d;",a);
 	}
-	printc("EXEC SQL END DECLARE SECTION");
+	printc("EXEC SQL END DECLARE SECTION;");
 
         for  (a=n-1;a>=0;a--) {
 		printc("_using_%d=char_pop();\n",a);
@@ -358,7 +367,7 @@ int a;
   	printc ("\nEXEC SQL OPEN  %s USING /* %d variables */",  strip_quotes(cname),n);
         for  (a=0;a<n;a++) {
 		if (a) printc(",");
-		printc("_using_%d\n",a);
+		printc("$_using_%d\n",a);
 	}
 
 	printc(";");
@@ -401,9 +410,90 @@ print_sql_commit (int t)
 void
 print_fetch_3 (char *ftp, char *into)
 {
-  printc("/* ftp=%s into=%s */\n",ftp,into);
-  printc ("\nEXEC SQL FETCH  %s INTO %s; /*fetch3*/\n", strip_quotes(ftp), into);
+  int fp1=0;
+  int fp2=0;
+  int poped=0;
+  char buff[256];
+  int no;
+  char cname[256];
+  //printf("/* ftp=%s into=%s */\n",ftp,into);
+  sscanf(into,"%d,",&no);
+  //printf("no=%d\n",no);
+  printc("EXEC SQL BEGIN DECLARE SECTION;");
+  printc("int _fp;");
+  printc("EXEC SQL END DECLARE SECTION;");
+
+  if (strstr(ftp,"pop_int")==0) {
+	char *ptr;
+	char *ptr2;
+  	char sbuff[256];
+	strcpy(sbuff,ftp);
+	ptr=strchr(sbuff,',');
+	if (ptr==0) { yyerror("Internal Error FETCH1"); return; }
+	*ptr=0;
+	strcpy(cname,sbuff);
+	ptr++;
+
+	ptr2=strchr(ptr,',');
+	if (ptr==0) { yyerror("Internal Error FETCH2"); return; }
+	*ptr2=0;
+	fp1=atoi(ptr);
+	ptr2++;
+	fp2=atoi(ptr2);
+	printc("_fp=%d;\n",fp2);
+  } else {
+	char *ptr;
+	char *ptr2;
+  	char sbuff[256];
+	strcpy(sbuff,ftp);
+	ptr=strchr(sbuff,',');
+	if (ptr==0) { yyerror("Internal Error FETCH3"); return; }
+	*ptr=0;
+	strcpy(cname,sbuff);
+	ptr++;
+	ptr2=strchr(ptr,',');
+	if (ptr==0) { yyerror("Internal Error FETCH4"); return; }
+	*ptr2=0;
+	fp1=atoi(ptr);
+	poped=1;
+	printc("_fp=pop_int();");
+  }
+ 
+  strcpy(buff,"EMPTY");
+
+  if (poped==0) {
+	if (fp1==1) { // FETCH ABSOLUTE
+		switch (fp2) {
+		case 1: sprintf(buff,"EXEC SQL FETCH FIRST %s ", strip_quotes(cname));break;
+		case -1: sprintf(buff,"EXEC SQL FETCH LAST %s ", strip_quotes(cname));break;
+
+		} 
+	} else {// FETCH RELATIVE
+		if (fp2!=1) {
+  			sprintf(buff,"EXEC SQL FETCH RELATIVE %d %s ", fp2,strip_quotes(cname));
+		} else {
+  			sprintf(buff,"EXEC SQL FETCH %s", strip_quotes(cname));
+		}
+	}
+  } else {
+	if (fp1==1) { // FETCH ABSOLUTE
+		sprintf(buff,"EXEC SQL FETCH ABSOLUTE $_fp %s", strip_quotes(cname));
+	} else {
+		sprintf(buff,"EXEC SQL FETCH RELATIVE $_fp %s", strip_quotes(cname));
+	}
+  }
+
+  if (strcmp(buff,"EMPTY")==0) {
+	yyerror("error calculating fetch instruction");
+	return;
+  }
+
+
+  printc("%s %s ;",buff,get_into_part(no));
   print_copy_status();
+  print_conversions('o');
+  printc("}");
+  printc("}");
 }
 
 /**
@@ -423,9 +513,13 @@ print_init_conn (char *db)
 {
 
   if (db == 0) {
-    printc ("{EXEC SQL BEGIN DECLARE SECTION;\n");
-    printc ("char *s;s=char_pop();\n");
-    printc ("EXEC SQL CONNECT TO :s AS 'default';\n");
+    printc ("{");
+    printc("EXEC SQL BEGIN DECLARE SECTION;\n");
+    printc ("char *s;");
+    printc("EXEC SQL END DECLARE SECTION;\n");
+    printc("s=char_pop();\n");
+    printc ("EXEC SQL CONNECT TO $s AS 'default';\n");
+    printc("}");
   }
   else
     printc ("EXEC SQL CONNECT TO \"%s\" AS 'default';\n",db);
@@ -497,9 +591,11 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 	  	yyerror("ESQL lexer cannot handle DECLARE .. INTO at present, put the INTO on the FETCH/FOREACH instead...");
 		return;
   }
+
   if (a2[0]=='"') {
 	  	printc("{");
-}
+  }
+
   printc ("EXEC SQL DECLARE %s",strip_quotes(a3));
   printc(" CURSOR FOR %s;\n",strip_quotes(a2));
 
@@ -523,13 +619,9 @@ char *
 print_curr_spec (int type, char *s)
 {
   static char buff[3000];
-
-  if (type == 1)
-    sprintf (buff, "%s", s);
-
-  if (type == 2)
-    sprintf (buff, "%s", s);
-
+  strcpy(buff,"");
+  if (type == 1) sprintf (buff, "%s", s);
+  if (type == 2) sprintf (buff, "%s", s);
   return buff;
 }
 
@@ -552,12 +644,12 @@ char *
 print_select_all (char *buff)
 {
   int ni, no;
-  static char b2[2000];
+  static char *b2;
   printc ("{ /* print_select_all */\n");
   ni = print_bind ('i');
   no = print_bind ('o');
   print_conversions('i');
-  sprintf (b2, "%s ",  buff);
+  b2=strdup(buff);
   return b2;
 }
 

@@ -22,6 +22,27 @@ if (dir=='o') {
 
 }
 
+void copy_money(dec_t *infx,fgldecimal *a4gl,int size,char dir) {
+debug("Aubit size : %d %d\n",size & 15, size>>4);
+if (dir=='i') {
+	char *ptr;
+	push_dec(a4gl,0);
+	ptr=char_pop();
+	debug("Ptr=%s\n",ptr);
+}
+
+if (dir=='o') {
+	char *ptr;
+	debug("Ptr=dec_t=%p\n",infx);
+	debug("dec_t.dec_exp=%d\n",infx->dec_exp);
+	debug("dec_t.dec_pos=%d\n",infx->dec_pos);
+	debug("dec_t.dec_ndgts=%d\n",infx->dec_ndgts);
+}
+
+
+}
+
+
 
 
 // A4GL datetimes scales range from 0->107
@@ -89,4 +110,9 @@ void copy_datetime(dtime_t *infx, struct a4gl_dtime *a4gl,int size,int mode) {
 
 
 
+}
+
+
+copy_interval() {
+	printf("copy_interval not implemented yet");
 }
