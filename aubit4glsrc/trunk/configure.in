@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.162 2003-02-27 22:12:26 afalout Exp $
+dnl # $Id: configure.in,v 1.163 2003-02-28 06:33:49 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -583,25 +583,25 @@ LIB_PREFIX=$prefix/$SHORTNAME/lib
 
 #List of libraries that we allways make. Here so we don't have to maintain it
 #separately for RPM config file, install/deinstall and lib Makefile:
-LIBFILE_1=$LIB_PREFIX/libEXREPORT_NOPDF${SO_EXT}
-LIBFILE_2=$LIB_PREFIX/libaubit4gl${SO_EXT_LINKABLE}
-LIBFILE_3=$LIB_PREFIX/libRPC_NORPC${SO_EXT}
-LIBFILE_4=$LIB_PREFIX/libFORM_NOFORM${SO_EXT}
-LIBFILE_5=$LIB_PREFIX/libSQL_nosql${SO_EXT}
-LIBFILE_6=$LIB_PREFIX/libMENU_NOMENU${SO_EXT}
-LIBFILE_7=$LIB_PREFIX/libMSG_NATIVE${SO_EXT}
-LIBFILE_8=$LIB_PREFIX/libLEX_C${SO_EXT}
-LIBFILE_9=$LIB_PREFIX/libUI_CONSOLE${SO_EXT}
-LIBFILE_10=$LIB_PREFIX/libPACKER_PACKED${SO_EXT}
-LIBFILE_11=$LIB_PREFIX/libPACKER_PERL${SO_EXT}
-LIBFILE_12=$LIB_PREFIX/libPACKER_XML${SO_EXT}
-LIBFILE_13=$LIB_PREFIX/libLEX_PERL${SO_EXT}
-LIBFILE_14=$LIB_PREFIX/libFORM_GENERIC${SO_EXT}
-LIBFILE_15=$LIB_PREFIX/libDATA_menu_list${SO_EXT}
-LIBFILE_16=$LIB_PREFIX/libDATA_report${SO_EXT}
-LIBFILE_17=$LIB_PREFIX/libDATA_struct_form${SO_EXT}
+LIBFILE_1=$LIB_PREFIX/libEXREPORT_NOPDF$SO_EXT
+LIBFILE_2=$LIB_PREFIX/libaubit4gl$SO_EXT_LINKABLE
+LIBFILE_3=$LIB_PREFIX/libRPC_NORPC$SO_EXT
+LIBFILE_4=$LIB_PREFIX/libFORM_NOFORM$SO_EXT
+LIBFILE_5=$LIB_PREFIX/libSQL_nosql$SO_EXT
+LIBFILE_6=$LIB_PREFIX/libMENU_NOMENU$SO_EXT
+LIBFILE_7=$LIB_PREFIX/libMSG_NATIVE$SO_EXT
+LIBFILE_8=$LIB_PREFIX/libLEX_C$SO_EXT
+LIBFILE_9=$LIB_PREFIX/libUI_CONSOLE$SO_EXT
+LIBFILE_10=$LIB_PREFIX/libPACKER_PACKED$SO_EXT
+LIBFILE_11=$LIB_PREFIX/libPACKER_PERL$SO_EXT
+LIBFILE_12=$LIB_PREFIX/libPACKER_XML$SO_EXT
+LIBFILE_13=$LIB_PREFIX/libLEX_PERL$SO_EXT
+LIBFILE_14=$LIB_PREFIX/libFORM_GENERIC$SO_EXT
+LIBFILE_15=$LIB_PREFIX/libDATA_menu_list$SO_EXT
+LIBFILE_16=$LIB_PREFIX/libDATA_report$SO_EXT
+LIBFILE_17=$LIB_PREFIX/libDATA_struct_form$SO_EXT
 LIBFILE_18=
-LIBFILE_19=$LIB_PREFIX/libLEX_EC${SO_EXT}
+LIBFILE_19=$LIB_PREFIX/libLEX_EC$SO_EXT
 LIBFILE_20=
 LIBFILE_21=
 LIBFILE_22=
@@ -995,8 +995,11 @@ AC_PATH_PROG(WGET, wget, no)
 
 AC_PATH_PROG(SH, bash, no)
 if test "$SH" = "no"; then
-	AC_PATH_PROG(SH, sh, /bin/sh)
-	AC_MSG_WARN(Aubit compiler need bash, sh will probably fail.)
+	AC_MSG_WARN(Aubit compiler need bash, sh/ksh will probably fail.)
+	AC_PATH_PROG(SH, ksh, no)
+	if test "$SH" = "no"; then
+		AC_PATH_PROG(SH, sh, /bin/sh)
+    fi
 fi
 
 AC_PATH_PROG(LDD, ldd, no)
@@ -2857,10 +2860,22 @@ PHP_CONFIGURE_PART(Checking for standard libraries:)
 				AC_MSG_CHECKING(libdl)
 				AC_MSG_RESULT(Cygwin DLL contains emulation of libdl functions.)
 		    ;;
+
+		*alpha* )
+			#DEC Alpha ES40 (uname -a gives: OSF1 maxdev V5.1 732 alpha)
+				AC_MSG_CHECKING(libdl)
+				AC_MSG_RESULT(DEC Alpha has dlopen in standard libraries.)
+            ;;
+
 		*)
 
 			# FIXME: Replace `main' with a function in `-ldl' - but don't forget to
 			#clear AC cache for next test!
+			
+            #FIXME: not not check this in a particular library, check for dlopen() 
+			#function as such in standard libraries first.
+
+
 			AC_CHECK_LIB([dl], [main])
 
 			if test "$ac_cv_lib_dl_main" != "yes"; then
@@ -3477,7 +3492,7 @@ fi
     #so it needs to be AFTER all other plug-ins needed by 4glc, like SQL plug-ins:
 	if test "$GTKBUILD" != "no"; then
 		RPMFILE_25=$LIB_PREFIX/libUI_GTK$SO_EXT
-		RMPFILE_1=$LIB_PREFIX/libMENU_GENERIC${SO_EXT}
+		RPMFILE_1=$LIB_PREFIX/libMENU_GENERIC$SO_EXT
 		PLUGIN_YES="$PLUGIN_YES GTK MENU_GENERIC"
 	else
         PLUGIN_NO="$PLUGIN_NO GTK MENU_GENERIC"

@@ -1,22 +1,3 @@
-====================================================================
-
-[root@aptiva erp]# make runmenu
-(cd build;export A4GL_UI=TUI; erpmenu.4ae)
-Err:Program stopped at 'secufunc.4gl', line number 85.
-Error status number -30067.
-Error in conversion.
-
-4gl function call stack :
-    erpmenu.4gl (Line 94) calls security(pr_menu_code=TOPMENUR)
-    MAIN
-make: *** [runmenu] Error 1
-
-
-		let glob_time_last_checked = current - 1 units minute
-
-
-====================================================================
-
 
 ===========================================================================
 CREATE TABLE fails:
@@ -157,14 +138,10 @@ works OK from dbaccess
 ===========================================================================
 
 
-load from .. select into core dumps using esql/c plug-in
-
-see erpmenu.4gl line 126:
-
    load from MAXVER insert into t_maxver
 
 
-Same stmt using A4GL_SQLTYPE=unixodbc, ifxodbc  and iodbc:
+using A4GL_SQLTYPE=unixodbc, ifxodbc  and iodbc:
 
 	[root@aptiva erp]# make runmenu
 	(cd build;export A4GL_UI=TUI; erpmenu.4ae)
@@ -201,13 +178,7 @@ Same file compiled OK with A4GL_SQLTYPE=esql
 
 ===========================================================================
 
-mkmess should exept putput file parameter
+Windows installer does not have Ace files
 
-if outpu file was not specified, currently output file is created in
-same path source file is in - it should be created in the curent directory instead,
-as all other 4gl help compilers do that
-
-
-==========================================================================
-
+============================================================================
 

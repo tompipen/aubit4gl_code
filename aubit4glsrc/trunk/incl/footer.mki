@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.27 2003-02-24 07:53:06 afalout Exp $
+#	 $Id: footer.mki,v 1.28 2003-02-28 06:34:10 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -32,6 +32,11 @@
 #Set name for 4Js database definition file to be created/used
 ifneq "$(DBASE)" ""
 	DBASE.sch = ${DBASE}.sch
+endif
+
+
+ifeq "${PROG}" ""
+	PROG=no-name-specified.lib
 endif
 
 #######################
@@ -322,14 +327,15 @@ else                        #using 4glc
             allf="$$allf $$afile" ; \
         fi ; \
     done; \
-	echo "${A4GL_CC} -shared $$allf -o${xxEXECSTORE}$@ ${FILES.aubit.link}"; \
-	${A4GL_CC} -shared $$allf -o${xxEXECSTORE}$@  ${FILES.aubit.link} ; \
-	exit $$?;
+	EXEC="${A4GL_CC} -shared $$allf -o ${xxEXECSTORE}$@ ${FILES.aubit.link}"; \
+    echo $$EXEC; \
+	$$EXEC; \
+    exit $$?;
 endif
 else 						#------------------ linking executable ---------------------
-ifeq "${USE_4GLPC}" "1"
+ifeq "${USE_4GLPC}" "1"     #using 4glpc
 	${FAIL_LINK}${A4GL_CC} $^ -o ${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS}
-else
+else                        #using 4glc
 	@${FAIL_LINK}for afile in $^ ; do \
         x=`dirname $$afile`; \
         if test "$$x" != "."; then \
@@ -338,8 +344,9 @@ else
             allf="$$allf $$afile" ; \
         fi ; \
     done; \
-	echo "${A4GL_CC} $$allf -o${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS}" ;\
-    ${A4GL_CC} $$allf -o${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS}; \
+	EXEC="${A4GL_CC} $$allf -o ${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS}" ;\
+    echo $$EXEC; \
+	$$EXEC; \
 	exit $$?;
 endif
 endif
@@ -421,14 +428,21 @@ endif
 #                          Define dependencies
 # =======================================================================
 
-#is this causing everything to recompile when GLOBALS file is changed?
-#No, something else...
+#this dependency declaration was defined to cause file(s) declared as GLOBALS
+#to be compiled first, but is also causing everything to recompile when
+#GLOBALS file is changed - which is a pain. DO we really need this kind of
+#behaviour?
+#NOTE: fiels declared in GLOBALS.4gl are already included in FILES.4gl in
+#.mk file
+
 # Object file dependencies
-${FILES.42m}:	${GLOBALS.4gl} ${DBASE.sch}
-${FILES.42o}:	${GLOBALS.4gl} ${DBASE.sch}
-${FILES.4go}:	${GLOBALS.4gl}
-${FILES.o}:		${GLOBALS.4gl}
-${FILES.ao}:	${GLOBALS.4gl}
+#${FILES.42m}:	${GLOBALS.4gl} ${DBASE.sch}
+${FILES.42m}:	${DBASE.sch}
+#${FILES.42o}:	${GLOBALS.4gl} ${DBASE.sch}
+${FILES.42o}:	${DBASE.sch}
+#${FILES.4go}:	${GLOBALS.4gl}
+#${FILES.o}:	${GLOBALS.4gl}
+#${FILES.ao}:	${GLOBALS.4gl}
 
 # =======================================================================
 #                          Install Targets

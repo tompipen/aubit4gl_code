@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.18 2003-02-23 03:14:34 afalout Exp $
+# $Id: Makefile.in,v 1.19 2003-02-28 06:34:10 afalout Exp $
 #
 
 ROOT		=../../..
@@ -124,7 +124,7 @@ ${LIBROOT}/libSQL_esql${SO_EXT}: ${OBJS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) $^ ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 
 ${OBJS}: $(SRC)
-	@IFMX_ESQLC@ -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
+	INFORMIXC=${CC}; @IFMX_ESQLC@ -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
 
 ## ==================================================================
 ##                              Windows Targets
