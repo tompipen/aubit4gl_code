@@ -1,31 +1,38 @@
-prepare_cmd : opt_use PREPARE stmt_id FROM var_or_char {
-print_prepare($<str>3,$<str>5);
+/*
+=====================================================================
+                        Source: prepare.rule
+=====================================================================
+*/
 
-addmap("Prepare",$<str>3,curr_func,yylineno,infilename);
-print_undo_use($<str>1);
+
+prepare_cmd : opt_use PREPARE stmt_id FROM var_or_char 
+{
+	print_prepare($<str>3,$<str>5);
+	addmap("Prepare",$<str>3,curr_func,yylineno,infilename);
+	print_undo_use($<str>1);
 }
 ;
 
 var_or_char: variable | CHAR_VALUE;
 
-execute_cmd : EXECUTE stmt_id 
-{ 
+execute_cmd : EXECUTE stmt_id
+{
 
 print_execute($<str>2,0);
 
 addmap("Execute",$<str>2,curr_func,yylineno,infilename);
 }
             | EXECUTE stmt_id USING ibind_var_list
-{ 
-int ni;
-addmap("Execute",$<str>2,curr_func,yylineno,infilename);
-print_execute($<str>2,1);
+{
+//int ni;
+	addmap("Execute",$<str>2,curr_func,yylineno,infilename);
+	print_execute($<str>2,1);
 }
 ;
 
 stmt_id : ident_or_var ;
 
 
-
+/* ========================== prepare.rule ========================= */
 
 

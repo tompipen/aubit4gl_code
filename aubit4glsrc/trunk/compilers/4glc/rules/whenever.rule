@@ -1,4 +1,11 @@
-whenever_cmd 	:  WHENEVER_NOT_FOUND when_do 
+/*
+=====================================================================
+                        Source: whenever.rule
+=====================================================================
+*/
+
+
+whenever_cmd 	:  WHENEVER_NOT_FOUND when_do
 {set_whenever(WHEN_NOTFOUND|atoi($<str>2),0);}
 		|  WHENEVER_SQLERROR when_do
 {set_whenever(WHEN_SQLERROR|atoi($<str>2),0);}
@@ -57,4 +64,4 @@ label_goto	:	identifier
 function_name_when:	identifier
 		;
 
-
+/* =============================== whenever.rule ==================== */

@@ -1,3 +1,10 @@
+/*
+=====================================================================
+                        Source: attributes.rule
+=====================================================================
+*/
+
+
 opt_attributes:	/*empty*/ {
 		debug("Using default attribute of WHITE");
 		sprintf($<str>$,"%d",attr_code("WHITE"));}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.6 2002-05-20 20:17:37 mikeaubury Exp $
+# $Id: calldll.c,v 1.7 2002-05-23 09:29:35 afalout Exp $
 #
 */
 
@@ -43,8 +43,6 @@
 */
 
 #include <string.h> // strcpy() strcat()
-#include "a4gl_debug.h"
-#include "a4gl_aubit_lib.h"
 
 /************************************************************************/
 /* Under Cygwin, we can use the dl family of calls, but we need to jump */
@@ -59,6 +57,9 @@
 #if defined(__CYGWIN__)
 	#include <cygwin/cygwin_dll.h>
 #endif
+
+#include "a4gl_aubit_lib.h"
+#include "a4gl_debug.h"
 
 /*
 =====================================================================

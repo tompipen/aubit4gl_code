@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_exreport.c,v 1.6 2002-05-20 11:41:12 afalout Exp $
+# $Id: API_exreport.c,v 1.7 2002-05-23 09:29:34 afalout Exp $
 #
 */
 
@@ -70,7 +70,6 @@ static int (*func)();
 static double (*func_d)();
 void *find_func(void *p,char *s);
 void *find_func_allow_missing(void *p,char *s);
-double pdf_size(double f, char c,void  *p) ;
 void pdf_skip_by(void *rep,double a) ;
 double pdf_metric(int a,char  c,void *rep);
 void pdf_aclfgli_skip_lines(void *rep);
@@ -89,7 +88,8 @@ extern void *find_func_double (void *dllhandle, char *func); //in calldll.c
  *
  * @todo Describe function
  */
-int
+//int - actuall function retuns void
+void
 A4GLREPORT_initlib (void)
 {
 
@@ -100,15 +100,20 @@ A4GLREPORT_initlib (void)
 
         if (libptr==0) {
                 exitwith("Unable to open EXREPORT library.");
-                return 0;
+                //return 0;
+                return;
         }
 
         func=find_func_allow_missing(libptr,"A4GLREPORT_initlib");
 
-        if (func)
+        /*
+		if (func)
                 return func();
         else
                 return 1;
+        */
+
+        func();
 }
 
 
@@ -116,8 +121,8 @@ A4GLREPORT_initlib (void)
  *
  * @todo Describe function
  */
-void 
-pdf_rep_print (void *rep, int a, int s,int right_margin) 
+void
+pdf_rep_print (void *rep, int a, int s,int right_margin)
 {
   if (libptr==0) A4GLREPORT_initlib();
   func=find_func(libptr,"pdf_rep_print");
@@ -268,7 +273,8 @@ pdf_rep_close(void *p)
  * @todo Describe function
  */
 double 
-pdf_size(double f, char c,void *p) 
+//pdf_size(double f, char c,void *p)
+pdf_size(double f, char c,struct pdf_rep_structure *p)
 {
 double d;
 	debug("Trying to find pdf_size - libptr=%p",libptr);

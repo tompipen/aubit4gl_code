@@ -1,4 +1,11 @@
-for_cmd	:	FOR variable EQUAL fgl_expr TO fgl_expr for_step 
+/*
+=====================================================================
+                        Source: for.rule
+=====================================================================
+*/
+
+
+for_cmd	:	FOR variable EQUAL fgl_expr TO fgl_expr for_step
 {
 print_for_start($<str>2);
 push_blockcommand("FOR");

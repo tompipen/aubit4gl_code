@@ -1,4 +1,11 @@
-op_template : 
+/*
+=====================================================================
+                        Source: template.rule
+=====================================================================
+*/
+
+
+op_template :
 	| template_m
 ;
 
@@ -44,7 +51,11 @@ template_value :
 	|	template_value MINUS template_value {
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_set_minus(a,$<str>1,$<str>3);}
 	|	template_value IN template_value {
-		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_in(a,$<str>1,$<str>3);}
+		char *a; a=(char *)new_id(); strcpy($<str>$,a); 
+		//list_in(a,$<str>1,$<str>3);
+		//void list_in(void);
+		list_in();
+	}
 	| 	OPEN_BRACKET template_value CLOSE_BRACKET {
 			strcpy($<str>$,$<str>2);
 	}
@@ -54,8 +65,12 @@ template_value :
 	|	PREPEND template_single_value TO template_value  {
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_append(a,$<str>4,$<str>2);}
 	| 	USE template_value WITH template_single_value ON template_value  {
-		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_append($<str>2,$<str>6,$<str>4,a);}
+		char *a; a=(char *)new_id(); strcpy($<str>$,a); 
+		//list_append($<str>2,$<str>6,$<str>4,a);
+		//void list_append (char *id, char *id2, char *str);
+        list_append($<str>2,$<str>6,$<str>4);
+	}
 ;
 
-
+/* ============================ template.rule =======================*/
 

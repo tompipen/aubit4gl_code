@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.14 2002-05-20 11:41:13 afalout Exp $
+# $Id: nosql.c,v 1.15 2002-05-23 09:29:36 afalout Exp $
 #*/
 
 /**
@@ -46,12 +46,12 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "a4gl_debug.h"
 #include "a4gl_database.h"
 #include "a4gl_stack.h"
 #include "a4gl_pointers.h"
 #include "a4gl_dtypes.h"
-
+#include "a4gl_aubit_lib.h"
+#include "a4gl_debug.h"
 /*
 =====================================================================
                     Variables definitions

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.13 2002-05-07 22:52:24 saferreira Exp $
+# $Id: esql.ec,v 1.14 2002-05-23 09:29:36 afalout Exp $
 #
 */
 
@@ -58,7 +58,7 @@
  */
 
 #ifndef lint
-static const char rcs[] = "@(#)$Id: esql.ec,v 1.13 2002-05-07 22:52:24 saferreira Exp $";
+static const char rcs[] = "@(#)$Id: esql.ec,v 1.14 2002-05-23 09:29:36 afalout Exp $";
 #endif
 
 #define DEFINE_SQLCA
@@ -80,6 +80,9 @@ static const char rcs[] = "@(#)$Id: esql.ec,v 1.13 2002-05-07 22:52:24 saferreir
 #endif
 
 #include "a4gl_constats.h"
+
+#define _SQLCA_DEFINED_
+#include "a4gl_incl_4glhdr.h"
 
 EXEC SQL include sqlca;
 
@@ -488,7 +491,7 @@ static char *initPassword(const char *passwd)
  *
  * If the user identification was not set gets the values fromthe environment.
  *
- * @param sessname The name to be tied to the session. This is the name of 
+ * @param sessname The name to be tied to the session. This is the name of
  *   the connection
  * @param dsn The database name.
  * @param usr The user name to establish the connection.
@@ -598,7 +601,7 @@ char *A4GLSQL_get_curr_conn(void)
  * @return The current database name.
  *    - NULL if no current connection.
  */
-char *A4GLSQL_get_currdbname(char *cursor)  
+char *A4GLSQL_get_currdbname(char *cursor)
 {
   DbConnection *currConnection;
 
@@ -2400,7 +2403,7 @@ static int getDataType(char *connName, char *tabname,char *colname,
  * @param dtype A pointer to the variable where to put the data type.
  * @param size A pointer to the variable where to put the size of the column
  *  returned by the database.
- * @return 
+ * @return
  *   - 1 : Information readed.
  *   - 0 : Error ocurred.
  */
@@ -2457,7 +2460,7 @@ int A4GLSQL_read_columns(char *tabname,char *colname,int *dtype,int *size)
  * @param db The database name.
  * @param tab The table name.
  * @param col The column name.
- * @return 
+ * @return
  *   - -1 : An error ocurred.
  *   - Otherwise : The datatype code.
  */

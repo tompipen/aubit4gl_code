@@ -1,3 +1,9 @@
+/*
+=====================================================================
+                        Source: comment.rule
+=====================================================================
+*/
+
 comment_cmd : COMMENT {
 /* This aint used - its filtered by the lexer first... */
 	lex_printc("FIXME : Comment : %s\n");

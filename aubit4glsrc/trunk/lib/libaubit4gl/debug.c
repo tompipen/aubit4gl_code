@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.5 2002-05-18 11:56:47 afalout Exp $
+# $Id: debug.c,v 1.6 2002-05-23 09:29:35 afalout Exp $
 #
 */
 
@@ -44,12 +44,15 @@
 
 #include "a4gl_dbform.h"
 #include "a4gl_stack.h"
-#include "a4gl_debug.h"
 #include "a4gl_pointers.h"
+
 
 #ifdef __CYGWIN__
 	#include "a4gl_sqlca.h"
 #endif
+
+#include "a4gl_aubit_lib.h"
+#include "a4gl_debug.h"
 
 /*
 =====================================================================

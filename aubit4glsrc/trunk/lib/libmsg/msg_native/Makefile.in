@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.2 2002-05-20 11:41:13 afalout Exp $
+# $Id: Makefile.in,v 1.3 2002-05-23 09:29:35 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -44,7 +44,7 @@ OBJS				=${CMODS:.c=.o}
 ##                              Options
 ## ==================================================================
 
-CFLAGS				+=-I../../libincl
+CFLAGS				+=-I../../libincl -I../../../compilers/fcompile
 ALL 				=libMSG_NATIVE.so
 
 ## ==================================================================
@@ -77,6 +77,13 @@ ci: $(CMODS)
 ## ==================================================================
 ##                        Dependencies
 ## ==================================================================
+
+
+readmsg.o: ../../../compilers/fcompile/form_x.h
+
+../../../compilers/fcompile/form_x.h:
+	${MAKE} -C ../../../compilers/fcompile rpc
+
 
 ## ==================================================================
 ##                        Clean Targets

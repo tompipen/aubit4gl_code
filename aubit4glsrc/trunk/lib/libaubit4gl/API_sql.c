@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.7 2002-05-20 11:41:12 afalout Exp $
+# $Id: API_sql.c,v 1.8 2002-05-23 09:29:35 afalout Exp $
 #
 */
 
@@ -52,8 +52,8 @@
 #include <dlfcn.h>
 #include "a4gl_sqlca.h"
 #include "a4gl_database.h"
-#include "a4gl_debug.h"
 #include "a4gl_aubit_lib.h"
+#include "a4gl_debug.h"
 
 /*
 =====================================================================
@@ -62,7 +62,7 @@
 */
 
 sqlca_struct sqlca;
-long status;
+//long status;
 static void *libptr=0;
 typedef unsigned char UCHAR;
 

@@ -1,14 +1,54 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: form_x.x,v 1.3 2002-05-23 09:29:34 afalout Exp $
+#*/
+
+/**
+ * @file
+ * this file is processed by SUN rpcgen to create form_x_xdr.c and form_x.h
+ *
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ * @todo Doxygen comments to add to functions
+ * @todo Find a way to get rid of "register int32_t *buf;" in created code
+ * that results in compiler warnings for unused variable
+ */
+
 const FCOMILE_XDR_VERSION = 102;
 const FCOMILE_XDR_MAGIC = 0xa4fc1234;
 
 struct struct_metrics
   {
-    	int x;
+	int x;
 	int  y;
 	int  w;
 	int  scr;
 	int  delim_code;
-    	string label<>;
+	string label<>;
 	int pos_code;
 	int dlm1;
 	int dlm2;
@@ -67,7 +107,7 @@ struct struct_field_attr_string {
 
 struct colours {
 	enum FA_COLOUR colour;
-        struct u_expression *whereexpr;
+	struct u_expression *whereexpr;
 };
 
 
@@ -106,8 +146,8 @@ struct struct_screen_record
 
 struct struct_labels
   {
-    	string label_content<>;
-    	int x;
+	string label_content<>;
+	int x;
 	int  y;
 	int  w;
 	int  scr;
@@ -123,7 +163,7 @@ struct struct_form
 	string delim<>;
 	int maxcol;
 	int maxline;
-    	struct screen_name snames<>;
+	struct screen_name snames<>;
 	struct struct_scr_field attributes<>;
 	struct struct_metrics metrics<>;
 	struct struct_form_field fields<>;
@@ -172,3 +212,5 @@ union u_expression switch (int itemtype) {
 typedef struct s_complex_expr t_complex_expr; 
 typedef union u_expression t_expression; 
 
+
+/* =============================== EOF =============================== */

@@ -14,11 +14,13 @@
 *******************************************************************************/
 #include <stdio.h>
 
+#include "pdflib.h"
+
 #include "a4gl_dbform.h"
 #include "a4gl_report.h"
-#include "a4gl_debug.h"
 #include "a4gl_stack.h"
-#include "pdflib.h"
+#include "a4gl_aubit_lib.h"
+#include "a4gl_debug.h"
 
 double pdf_size(double f, char c,struct pdf_rep_structure *p) ;
 void pdf_skip_by(struct pdf_rep_structure *rep,double a) ;
@@ -383,7 +385,8 @@ debug("Scaling by %f %f",sx,sy);
 	debug("Image handle=%d\n",n);
 
 	if (n<0) {
-		exitwith("Unable to open file %s %s",type,blob->filename);
+		//exitwith("Unable to open file %s %s",type,blob->filename);
+        exitwith("Unable to open file.");
 		return 0;
 	}
 		
@@ -413,7 +416,9 @@ debug("Scaling by %f %f",sx,sy);
 }
 
 
-void A4GLREPORT_initlib () {
+void 
+A4GLREPORT_initlib (void)
+{
 	debug("Calling PDF_boot");
 	PDF_boot();
 }

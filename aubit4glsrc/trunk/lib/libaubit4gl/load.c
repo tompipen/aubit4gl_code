@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.5 2002-05-18 11:56:47 afalout Exp $
+# $Id: load.c,v 1.6 2002-05-23 09:29:35 afalout Exp $
 #
 */
 
@@ -71,7 +71,7 @@
 */
 
 
-extern int status;
+//extern int status;
 
 /// Buffer that contains the current line being loaded
 char loadbuff[LOADBUFFSIZE];

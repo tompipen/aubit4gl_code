@@ -1,3 +1,32 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: rpc_server.c,v 1.4 2002-05-23 09:29:36 afalout Exp $
+#*/
+
 /**
  * @file
  *
@@ -10,20 +39,48 @@
  * @todo Doxygen comments to add to functions
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include "a4gl_pointers.h"
 #include "a4gl_xdr_rpc_stack.h"
+#include "a4gl_aubit_lib.h"
+#include "a4gl_incl_4glhdr.h"
+#include "a4gl_runtime_tui.h"
 #include "a4gl_debug.h"
 
-double pop_double();
-int push_double(double a);
-float pop_float();
-int push_float(float a);
 
-void *find_pointer(char *c,char a);
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
-extern int status;
+double pop_double(void);
+//int push_double(double a);
+float pop_float(void);
+//int push_float(float a);
+//void *find_pointer(char *c,char a);
+static int call_func(char *s,int a);
 
-return_values * 
+
+
+//extern int status;
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+/**
+ *
+ * @todo Describe function
+ */
+return_values *
 call_remote_func_1_svc(call arg,  struct svc_req *rqstp)
 {
 int a;
@@ -33,15 +90,15 @@ call *arg1;
 void *p;
 int async=0;
 char func_name[64];
-
-	static return_values result={0,0};
-	object_data	 *ptr;
+static return_values result={0,0};
+object_data	 *ptr;
 arg1=&arg;
-strcpy(func_name,arg1->function_name);
-if (func_name[0]=='!') {
-         strcpy(func_name,&arg1->function_name[1]);
-	 async=1;
-}
+	
+	strcpy(func_name,arg1->function_name);
+	if (func_name[0]=='!') {
+	         strcpy(func_name,&arg1->function_name[1]);
+		 async=1;
+	}
 
 	debug("%s\n",arg1->function_name);
 	debug("%d arguments\n", arg1->parameters.parameters_len);
@@ -56,9 +113,9 @@ if (func_name[0]=='!') {
 		case 7:
 		case 8:	push_long(ptr[a].single_dtype_u.longval); break;
 		case 3:	
-debug("RPC Double:%lf",ptr[a].single_dtype_u.floatval);
-push_double(ptr[a].single_dtype_u.floatval);
- break;
+			debug("RPC Double:%lf",ptr[a].single_dtype_u.floatval);
+			push_double(ptr[a].single_dtype_u.floatval);
+			 break;
 		case 4:	push_float(ptr[a].single_dtype_u.smfltval); break;
 		default:  exitwith("Unprintable datatype");return 0;
 		}
@@ -68,17 +125,18 @@ push_double(ptr[a].single_dtype_u.floatval);
 	if (async==1) {
 		result.return_values_len=1;
 		result.return_values_val=malloc(sizeof(object_data)*1);
-		result.return_values_val[0].dtype=2;	
+		result.return_values_val[0].dtype=2;
 		result.return_values_val[0].single_dtype_u.longval=0;
-	        fgl_rpc_reply(&result);
+	        fgl_rpc_reply(&result); // warning: passing arg 1 of `fgl_rpc_reply' from incompatible pointer type
+             //void fgl_rpc_reply(char *result);
 	}
 
 
-/************************************************************/
+	/************************************************************/
 
 	z=call_func(func_name,arg1->parameters.parameters_len);
 
-/************************************************************/
+	/************************************************************/
 
 	debug("Function returns %d values",z);
 	result.return_values_len=z;
@@ -101,7 +159,7 @@ push_double(ptr[a].single_dtype_u.floatval);
 			case 1: ptr[a-1].single_dtype_u.shortval=pop_int();break;
 			case 6:
 			case 7:
-			case 8:	
+			case 8:
 			case 2: ptr[a-1].single_dtype_u.longval=pop_long();break;
 
 			case 3:	ptr[a-1].single_dtype_u.floatval=pop_double();break;
@@ -128,8 +186,10 @@ push_double(ptr[a].single_dtype_u.floatval);
  * @return 
  *   - 1 : The function was not registered.
  */
-call_func(char *s,int a) {
-void *ptr;
+static int
+call_func(char *s,int a)
+{
+//void *ptr;
 int z;
 int (*func)(int a);
 	debug("In call_func");
@@ -144,4 +204,4 @@ int (*func)(int a);
 	}
 }
 
-
+// ============================ EOF =================================

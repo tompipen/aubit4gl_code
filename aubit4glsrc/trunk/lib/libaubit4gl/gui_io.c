@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui_io.c,v 1.4 2002-05-18 11:56:47 afalout Exp $
+# $Id: gui_io.c,v 1.5 2002-05-23 09:29:35 afalout Exp $
 #
 */
 
@@ -53,9 +53,9 @@
 #include <stdio.h>
 #include <string.h> //strcpy()
 
-#include "a4gl_debug.h"
-#include "a4gl_aubit_lib.h"
 
+#include "a4gl_aubit_lib.h"
+#include "a4gl_debug.h"
 
 /*
 =====================================================================

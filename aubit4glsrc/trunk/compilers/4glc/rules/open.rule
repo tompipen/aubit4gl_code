@@ -1,3 +1,9 @@
+/*
+=====================================================================
+                        Source: open.rule
+=====================================================================
+*/
+
 open_window_cmd :
 	OPEN_WINDOW open_win_name AT coords WITH window_type win_attributes  {
 form_attrib.iswindow=1;
@@ -107,3 +113,6 @@ con_user_details :
         | USER char_or_var USING char_or_var
               {sprintf($<str>$,"%s, %s",$<str>2,$<str>4);}
 ;
+
+/* ======================= open.rule =========================== */
+

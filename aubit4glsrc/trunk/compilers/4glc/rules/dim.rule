@@ -1,4 +1,11 @@
-dim_section : 
+/*
+=====================================================================
+                        Source: dim.rule
+=====================================================================
+*/
+
+
+dim_section :
               DEFINE_TYPE identifier {
               	dim_set_name($<str>2);
               }
@@ -77,8 +84,8 @@ dim_push_associate($<str>4,$<str>8);
 dim_push_type(0,0,$<str>8);
 }
 OF dim_dtype  {
-dim_pop_associate();
-
+	//void dim_pop_associate (char *a);
+	dim_pop_associate(0);
 }
 ;
 
@@ -104,7 +111,10 @@ dim_var_def_list	: dim_var_def_name
 	| dim_var_def_list COMMA dim_var_def_name 
 	;
 
-dim_var_def_name	:	identifier { dim_push_name($<str>$); } ;
+
+//void dim_push_name (char *a, char *b);
+dim_var_def_name	:	identifier { dim_push_name($<str>$,0); } ;
 
 
+/* =============================== dim.rule ======================= */
 

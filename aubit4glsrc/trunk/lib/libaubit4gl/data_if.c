@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.4 2002-05-20 11:41:12 afalout Exp $
+# $Id: data_if.c,v 1.5 2002-05-23 09:29:35 afalout Exp $
 #
 */
 
@@ -35,7 +35,7 @@
 /*******************************************************/
 
 
-/*
+/* This file _IS_ used, if not :
 
 sh ../../bin/4glpc fshow.4gl -o fshow
 ============ FIRST ERROR: ==============
@@ -62,6 +62,9 @@ collect2: ld returned 1 exit status
 		                    Includes
 =====================================================================
 */
+
+#include <string.h>
+#include <stdlib.h> //free()
 
 #include "a4gl_data_if.h"
 #include "a4gl_debug.h"
@@ -99,7 +102,7 @@ struct s_s_screenio_1 *val;
 	debug("screenio - %p mode=%d name=%s var=%x", ptr,mode,name,var);
 	 if (mode==GETSETNEW){return (void *)malloc(sizeof(struct s_s_screenio_1));}
 
-	 if (mode==GETSETRM) {free(ptr);return;}
+	 if (mode==GETSETRM) {free(ptr);return 0;}
 
 	 val=(struct s_s_screenio_1 *)ptr;
 
@@ -210,12 +213,11 @@ int  curr_attrib;
 struct s_s_inp_arr_1 *val;
 
 
-	debug("mode = %d ptr=%x  name=%s val=%d size=%d",mode,ptr,name,val,
-	sizeof(struct s_s_inp_arr_1)
+	debug("mode = %d ptr=%x  name=%s size=%d",mode,ptr,name,sizeof(struct s_s_inp_arr_1)
 	);
 	 if (mode==GETSETNEW){return (void *)malloc(sizeof(struct s_s_inp_arr_1));}
 
-	 if (mode==GETSETRM) {free(ptr);return;}
+	 if (mode==GETSETRM) {free(ptr);return 0;}
 
 	 val=(struct s_s_inp_arr_1 *)ptr;
 
@@ -389,11 +391,11 @@ int  h;
 };
 
 struct s_s_prompt_1 *val;
- 
+
 
 	 if (mode==GETSETNEW){return (void *)malloc(sizeof(struct s_s_prompt_1));}
 
-	 if (mode==GETSETRM) {free(ptr);return;}
+	 if (mode==GETSETRM) {free(ptr);return 0;}
 
 	 val=(struct s_s_prompt_1 *)ptr;
 
@@ -487,7 +489,7 @@ struct s_rep_structure_1 *val;
  
 	 if (mode==GETSETNEW){return (void *)malloc(sizeof(struct s_rep_structure_1));}
 
-	 if (mode==GETSETRM) {free(ptr);return;}
+	 if (mode==GETSETRM) {free(ptr);return 0;}
 
 	 val=(struct s_rep_structure_1 *)ptr;
 
@@ -623,10 +625,10 @@ int  cntrl;
 };
 
 struct s_s_disp_arr_1 *val;
- 
+
 	 if (mode==GETSETNEW){return (void *)malloc(sizeof(struct s_s_disp_arr_1));}
 
-	 if (mode==GETSETRM) {free(ptr);return;}
+	 if (mode==GETSETRM) {free(ptr);return 0;}
 
 	 val=(struct s_s_disp_arr_1 *)ptr;
 

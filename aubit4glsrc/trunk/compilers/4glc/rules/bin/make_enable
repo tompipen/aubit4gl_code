@@ -9,11 +9,14 @@ print  kw " : KWS_" kw ";"
 }
 
 END {
+printf("\n /* ================ from make_enable ================= */\n\n");
+
 printf("NAMED : NAMED_GEN\n");
 for (a in def) {
 	printf(" | KWS_%s\n",a);
 }
 printf(";\n")
+printf("\n /* ================ end make_enable ================= */\n\n");
 }
 ' < generated/single_words > generated/single_words.rule
 

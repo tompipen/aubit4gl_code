@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.5 2002-05-20 11:41:12 afalout Exp $
+# $Id: rexp2.c,v 1.6 2002-05-23 09:29:35 afalout Exp $
 #
 */
 
@@ -114,7 +114,6 @@ int     constr_size;
 */
 
 
-char *construct(char *colname, char *val, int inc_quotes);
 void doconstruct(char *s,char *whereclause);
 int mja_matchcmp(char *a,char *s_match);
 static int isop(char *str, int i);

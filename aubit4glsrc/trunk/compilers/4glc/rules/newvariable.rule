@@ -1,3 +1,9 @@
+/*
+=====================================================================
+                        Source: newvariable.rule
+=====================================================================
+*/
+
 variable: var_int
 {
 char buff[256];
@@ -10,9 +16,9 @@ convlower(buff);
 }
 strcpy($<str>$,buff);
 debug("Checking variable '%s'",buff);
-if (scan_variable (buff) == -1&&buff[0]!=' ') { 
+if (scan_variable (buff) == -1&&buff[0]!=' ') {
            sprintf(buff2,"'%s' does not represent a defined variable (1)",buff);
-           yyerror(buff2); 
+           yyerror(buff2);
            exit (0);
   }
   fflush (stdout);
@@ -42,7 +48,7 @@ var:
          sprintf(buff,"%s.%s",$<str>1,$<str>4);
          if (scan_variable(buff)==-1) {
            sprintf(buff2,"'%s' does not represent a defined variable (2)",buff);
-           yyerror(buff2); 
+           yyerror(buff2);
            YYERROR;
          }
 
@@ -59,8 +65,8 @@ var:
          else
          {
              debug ("Is string...");
-             sprintf ($<str>$, " substr(%s,%d,%s,0)", buff, 
-                      scan_variable (buff), $<str>6);
+             sprintf ($<str>$, " substr(%s,%d,%s,0)", buff,
+                      (int)scan_variable (buff), $<str>6);
 
              addmap("Use Variable",buff,curr_func,yylineno,infilename);
              printcomment ("/*character variable %s*/\n", $<str>$);
@@ -114,7 +120,7 @@ array_r_variable:
 identifier arr_subscripts
 {
   int type,arrsize,size,level;
-  char buff[256];
+//  char buff[256];
   char buff2[256];
   char arrbuff[256];
   printcomment("/*array variable nnn */");
@@ -140,10 +146,10 @@ identifier arr_subscripts
 	ptr=strchr(lbuff,':');
 	*ptr=0;
         sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
-        sprintf ($<str>$, " substr(%s,%d,%s,0)", tmpbuff, scan_variable (tmpbuff), rbuff);
+        sprintf ($<str>$, " substr(%s,%d,%s,0)", tmpbuff, (int)scan_variable (tmpbuff), rbuff);
   } else {
  
-  if (type & 0xffff != 0 || arrsize>0)
+  if ((type & (0xffff != 0)) || (arrsize>0))
     {
       printcomment("/* changing optbase for array: %s */\n",$<str>2);
       sprintf ($<str>$, "%s[%s]", $<str>1, change_arr_elem($<str>2));
@@ -151,7 +157,7 @@ identifier arr_subscripts
     }
   else
     {
-      sprintf ($<str>$, " substr(%s,%d,%s,0)", $<str>1, scan_variable ($<str>1), $<str>2);
+      sprintf ($<str>$, " substr(%s,%d,%s,0)", $<str>1, (int)scan_variable ($<str>1), $<str>2);
              addmap("Use Variable",$<str>1,curr_func,yylineno,infilename);
       printcomment ("/*character variable %s*/\n", $<str>$);
     }
@@ -305,7 +311,7 @@ identifier arr_subscripts
 /*OPEN_SQUARE num_list CLOSE_SQUARE*/
   int a;
   int b;
-  char buff[256];
+//  char buff[256];
   char buff2[256];
   printcomment("/*.let. array variable */");
 
@@ -320,7 +326,7 @@ identifier arr_subscripts
 	ptr=strchr(lbuff,':');
 	*ptr=0;
         sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
-        sprintf ($<str>$, " let_substr(%s,%d,%s,0)", tmpbuff, scan_variable (tmpbuff), rbuff);
+        sprintf ($<str>$, " let_substr(%s,%d,%s,0)", tmpbuff, (int)scan_variable (tmpbuff), rbuff);
   } else {
   	b = isarrvariable ($<str>1);
   	a = scan_variable ($<str>1);
@@ -341,7 +347,8 @@ identifier arr_subscripts
     }
   else
     {
-      sprintf ($<str>$, " let_substr(%s,%d,%s,0)", $<str>1, scan_variable ($<str>1), $<str>2);
+      sprintf ($<str>$, " let_substr(%s,%d,%s,0)", $<str>1, (int)scan_variable ($<str>1), $<str>2); // warning: int format, long int arg (arg 4)
+
       addmap("Let Variable",$<str>1,curr_func,yylineno,infilename);
       debug ("/*character variable %s*/\n", $<str>$);
     }
@@ -393,13 +400,13 @@ ibind_var_list:	ibind_var {
 printcomment("/*STarted bind %s*/\n",$<str>1);
 start_bind('i',$<str>1);
 printcomment("/*STarted bind 2*/\n");
-sprintf($<str>$,"");
+strcpy($<str>$,"");
 }
 	|	
 ibind_var_list COMMA ibind_var {
 printcomment("/* Added */\n");
 add_bind('i',$<str>3);
-sprintf($<str>$,""); 
+strcpy($<str>$,"");
 }
 ;
 
@@ -422,7 +429,7 @@ start_bind('o',$<str>1);
 } 
 	|	obind_var_list COMMA obind_var {
 add_bind('o',$<str>3);
-sprintf($<str>$,""); 
+strcpy($<str>$,"");
 }
 ;
 
@@ -439,7 +446,7 @@ start_bind('o',$<str>1);
 	|	obind_var_let_list COMMA obind_let_var {
 printcomment("/* add to obind %s */\n",$<str>3);
 add_bind('o',$<str>3);
-sprintf($<str>$,""); 
+strcpy($<str>$,"");
 }
 ;
 
@@ -460,7 +467,7 @@ start_bind('O',$<str>1);
 } 
 	| obind_var_list_ord COMMA obind_var_ord {
                add_bind('O',$<str>3);
-               sprintf($<str>$,""); 
+               strcpy($<str>$,"");
 }
 ;
 
@@ -473,8 +480,8 @@ array_r_varid:
 identifier OPEN_SQUARE num_list CLOSE_SQUARE
 {
   int type,arrsize,size,level;
-  char buff[256];
-  char buff2[256];
+//  char buff[256];
+//  char buff2[256];
   char arrbuff[256];
   printcomment("/*..array_r_varid..*/");
 
@@ -487,13 +494,13 @@ init_bind_var_list:	init_bind_var {
 printcomment("/*STarted bind %s*/\n",$<str>1);
 start_bind('N',$<str>1);
 printcomment("/*STarted bind 2*/\n");
-sprintf($<str>$,"");
+strcpy($<str>$,"");
 }
 	|	
 init_bind_var_list COMMA init_bind_var {
 printcomment("/* Added */\n");
 add_bind('N',$<str>3);
-sprintf($<str>$,""); 
+strcpy($<str>$,"");
 }
 ;
 
@@ -504,3 +511,6 @@ init_bind_var : variable  {
 			sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
 		}
 ;
+
+/* ========================= newvariable.rule ======================= */
+

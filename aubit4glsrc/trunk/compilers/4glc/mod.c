@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.63 2002-05-20 20:17:37 mikeaubury Exp $
+# $Id: mod.c,v 1.64 2002-05-23 09:29:34 afalout Exp $
 #
 */
 
@@ -2303,7 +2303,7 @@ push_bind_rec (char *s, char bindtype)
  *   - F :
  * @param var The variable name to be binded.
  */
-int 
+int
 add_bind (char i, char *var)
 {
   long dtype;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.7 2002-05-20 20:17:37 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.8 2002-05-23 09:29:35 afalout Exp $
 #
 */
 
@@ -108,7 +108,7 @@ extern int errno;
 
 extern int start_gui();
 void nodef_init();
-void set_abort (int a);
+
 
 /*
 =====================================================================

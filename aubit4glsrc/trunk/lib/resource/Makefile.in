@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.3 2002-05-20 11:41:13 afalout Exp $
+# $Id: Makefile.in,v 1.4 2002-05-23 09:29:36 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -44,7 +44,7 @@ OBJS      		=${CMODS:.c=.o}
 
 #CFLAGS			+= -I../compilers/fcompile -Ilibincl ${CFLAGS}
 EXE_CFLAGS      +=-I../libincl
-CFLAGS          +=-I../libincl
+CFLAGS          +=-I../libincl -I../../compilers/fcompile
 
 ## ==================================================================
 ##                              Targets
@@ -53,6 +53,16 @@ CFLAGS          +=-I../libincl
 aubit-config: ${OBJS}
 	${CC} ${EXE_CFLAGS} -I../libincl -o $@ $^
 	${CP} $@ ../../bin
+
+
+## ==================================================================
+##                           Dependencies
+## ==================================================================
+
+resource.o: ../../compilers/fcompile/form_x.h
+
+../../compilers/fcompile/form_x.h:
+	${MAKE} -C ../../compilers/fcompile rpc
 
 
 ## ==================================================================

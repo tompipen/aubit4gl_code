@@ -1,4 +1,11 @@
-arr_expr : 
+/*
+=====================================================================
+                        Source: arr_expr.rule
+=====================================================================
+*/
+
+
+arr_expr :
 OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
 | arr_expr arr_next {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
 | INT_VALUE {sprintf($<str>$,"%s",$<str>1);}

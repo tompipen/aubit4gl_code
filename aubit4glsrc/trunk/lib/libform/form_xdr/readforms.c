@@ -1,3 +1,32 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: readforms.c,v 1.9 2002-05-23 09:29:35 afalout Exp $
+#*/
+
 /**
  * @file
  * Read form from file and (or) memory.
@@ -7,11 +36,18 @@
  * @todo Doxygen comments to add to functions
  */
 
+ /*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <signal.h>
 #include <ctype.h>
 #include <assert.h>
+
 #ifdef __CYGWIN__
-#include <rpc/rpc.h>
+	#include <rpc/rpc.h>
 #endif
 
 #include "a4gl_dbform.h"
@@ -19,7 +55,15 @@
 #include "a4gl_dtypes.h"
 #include "a4gl_stack.h"
 #include "a4gl_pointers.h"
+#include "a4gl_aubit_lib.h"
 #include "a4gl_debug.h"
+
+
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
 
 
 #define POS_FIRST 1
@@ -29,8 +73,24 @@
 #define INC_EACH "\n"
 #define INC_RANGE '\t'
 
+/* SYSTEM Defines - dont change! */
+
+#define DEFAULT -1
+#define YES 1
+#define YES_COMPRESS 2
+#define CASEON 1
+#define CASEOFF 0
+#define OPTIONS long
+
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 #ifdef __CYGWIN__
-extern int status;
+	extern int status;
 #endif
 
 /*xdr_struct_form is not part of RPC_[NO]RPC
@@ -46,10 +106,27 @@ int srec_cnt = 0;
 //int maxline = 0;
 //int maxcol = 0;
 
+
+extern int errno;
+char delimiters[4];
+
+int lastc = 0;
+int nline;
+int fline;
+int ncol;
+char dbname[64];
+
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
 /** @todo Take this prototype definition for a header file */
 //void default_attributes (FIELD * f, int dtype);
 //int comments (struct struct_scr_field *fprop);
-static void comments (struct struct_scr_field *fprop);
+void comments (struct struct_scr_field *fprop);
 static void do_translate_form(struct_form *the_form);
 static void read_attributes (struct s_form_dets *f);
 static int include_range_check (char *ss, char *ptr, int dtype);
@@ -58,8 +135,6 @@ static int include_range_check (char *ss, char *ptr, int dtype);
 //void *get_curr_form ();
 //char *strip_quotes (char *s);
 
-
-extern int errno;
 
 char *read_string_dup (FILE * ofile);
 //struct s_form_dets *getfromform (FORM * f);
@@ -75,23 +150,11 @@ int set_fields2 (int nv, struct BINDING *vars, int d, int n, ...);
 //int display_fields (FORM * mform, int n, ...);
 
 
-/* SYSTEM Defines - dont change! */
-
-#define DEFAULT -1
-#define YES 1
-#define YES_COMPRESS 2
-#define CASEON 1
-#define CASEOFF 0
-
-char delimiters[4];
-
-int lastc = 0;
-int nline;
-int fline;
-int ncol;
-char dbname[64];
-
-#define OPTIONS long
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /* not used in libFORM_ so moved into libaubit4gl in screen.c
 char *
@@ -114,8 +177,9 @@ find_attribute (struct s_form_dets *f, int field_no)
 */
 
 /**
- *
+ * Not called from anywhere
  */
+/*
 static char *
 ret_string (char *str)
 {
@@ -125,7 +189,7 @@ ret_string (char *str)
   else
     return retword;
 }
-
+*/
 
 
 /**
@@ -136,9 +200,9 @@ read_form (char *fname, char *formname)
 {
   FILE *ofile;
   int a;
-  struct s_form_attr *form;
+//  struct s_form_attr *form;
   struct s_form_dets *formdets;
-  FILE *f;
+//  FILE *f;
   char buff[80];
   char *ptr = 0;
   XDR xdrp;
@@ -254,9 +318,9 @@ read_form (char *fname, char *formname)
 
 
 /**
- *
+ * Called from lib/libtui/newpanels.c so it should be in API_form
  */
-static void
+void
 set_default_form (struct s_form_attr *form)
 {
   form->mode = -1;
@@ -295,9 +359,9 @@ read_attributes (struct s_form_dets *f)
 
 
 /**
- *
+ * Called from lib/libtui/ioform.c so should be in API_form
  */
-static void
+void
 comments (struct struct_scr_field * fprop)
 {
   if (fprop)
@@ -350,7 +414,7 @@ struct struct_screen_record *
 get_srec (char *name)
 {
   int a;
-  int b;
+//  int b;
   struct s_form_dets *form;
   debug ("Get_srec");
   form = get_curr_form ();
@@ -376,9 +440,9 @@ get_srec (char *name)
 }
 
 /**
- *
+ * called from lib/libtui/ioform.c so it should be in API_form
  */
-static int
+int
 check_field_for_include (char *s, char *inc, int dtype)
 {
   static char buff[1024];
@@ -544,8 +608,9 @@ has_bool_attribute (struct struct_scr_field *f, int bool)
 }
 
 /**
- *
+ * Not called anywhere
  */
+/*
 static int
 set_bool_attribute (struct struct_scr_field * f, int bool, int value)
 {
@@ -559,7 +624,7 @@ set_bool_attribute (struct struct_scr_field * f, int bool, int value)
 
   return 0;
 }
-
+*/
 
 /**
  *
@@ -601,8 +666,9 @@ char *ptr;
 
 
 /**
- *
+ *  not called anywhere
  */
+/*
 static int
 chk_iskey (char *keys)
 {
@@ -629,7 +695,7 @@ chk_iskey (char *keys)
     }
   return 0;
 }
-
+*/
 
 /* moved to lib/libaubit4gl/others.c because it is used by other modules too, not just forms
 
@@ -752,11 +818,6 @@ has_str_attribute (struct struct_scr_field * f, int str)
     }
   return 0;
 }
-
-
-
-
-
 
 
 */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.28 2002-05-14 09:27:27 afalout Exp $
+# $Id: lexer.c,v 1.29 2002-05-23 09:29:34 afalout Exp $
 #*/
 
 /**
@@ -51,10 +51,11 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "a4gl_debug.h"
+
 #include "a4gl_aubit_lib.h" // acl_getenv()
 #include "rules/generated/kw.h"
 #include "rules/generated/y.tab.h"
+#include "a4gl_debug.h"
 
 /*
 =====================================================================

@@ -1,3 +1,10 @@
+/*
+=====================================================================
+                        Source: init.rule
+=====================================================================
+*/
+
+
 init_cmd : INITIALIZE init_bind_var_list {debug("init to\n");} TO KW_NULL
  {
 	print_init();
@@ -8,7 +15,7 @@ init_cmd : INITIALIZE init_bind_var_list {debug("init to\n");} TO KW_NULL
 ;
 
 
-init_tab_list : init_tab | init_tab_list COMMA init_tab {sprintf($<str>$,"%s,$s",$<str>1,$<str>3);
+init_tab_list : init_tab | init_tab_list COMMA init_tab {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
 }
 ;
 
@@ -17,4 +24,4 @@ init_tab : tab_name DOT column_name {setrecord($<str>$,$<str>1,$<str>3);}
 ;
 
 
-
+/* =============================== init.rule ======================== */

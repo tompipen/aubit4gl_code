@@ -1,13 +1,18 @@
+/*
+=====================================================================
+                        Source: main.rule
+=====================================================================
+*/
 
-module	:	op_code op_import op_code op_template globals_section op_code 
+module	:	op_code op_import op_code op_template globals_section op_code
 {
-int a;
-modlevel=-1;
-//read_glob_var = 1; 
-print_variables(1);
-//read_glob_var = 0; 
-set_mod_level(varcnt);set_4gl_vars();set_mod_level(0);
-strcpy(curr_func,"[Module]");
+//int a;
+	modlevel=-1;
+	//read_glob_var = 1;
+	print_variables(1);
+	//read_glob_var = 0;
+	set_mod_level(varcnt);set_4gl_vars();set_mod_level(0);
+	strcpy(curr_func,"[Module]");
 } define_section op_code {inmod();} func_main_def
 	;
 
@@ -176,24 +181,25 @@ debug("end of globals\n");
 lastlineno=yylineno;
 }
 | file_name {
-int a;
+//int a;
 char b[256];
-lastlineno=yylineno;
 
-strcpy(b,$<str>1);
+	lastlineno=yylineno;
 
-tr_glob_fname(b);
+	strcpy(b,$<str>1);
 
-debug("Reading globals file %s\n",b);
-rm_quote(b);
-read_glob(b);
-/*
-if (glob_only==0) {
-         debug("Opening globals file\n");
-         a=read_globals($<str>1);
-         debug("Done globals file\n");
-         }
-*/
+	tr_glob_fname(b);
+
+	debug("Reading globals file %s\n",b);
+	rm_quote(b);
+	read_glob(b);
+	/*
+	if (glob_only==0) {
+	         debug("Opening globals file\n");
+	         a=read_globals($<str>1);
+	         debug("Done globals file\n");
+	         }
+	*/
 }
 ;
 
@@ -224,5 +230,5 @@ define_section
 op_code commands end_func_command;
 
 
-
+/* ========================== main.rule ============================= */
 

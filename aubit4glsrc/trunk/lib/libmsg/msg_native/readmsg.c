@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readmsg.c,v 1.3 2002-05-20 11:41:13 afalout Exp $
+# $Id: readmsg.c,v 1.4 2002-05-23 09:29:36 afalout Exp $
 #*/
 
 /**
@@ -47,8 +47,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "a4gl_debug.h"
 #include "a4gl_aubit_lib.h"
+#include "a4gl_debug.h"
 
 /*
 =====================================================================

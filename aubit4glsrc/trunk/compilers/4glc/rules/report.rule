@@ -1,4 +1,11 @@
-start_cmd : START_REPORT rep_name TO_PRINTER 
+/*
+=====================================================================
+                        Source: report.rule
+=====================================================================
+*/
+
+
+start_cmd : START_REPORT rep_name TO_PRINTER
 {
 addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 print_start_report("P","\"lp\"",$<str>2);
@@ -415,7 +422,7 @@ print_report_end() ;
 
 
 
-rep_where :  { sprintf($<str>$,"");}
+rep_where :  { strcpy($<str>$,"");}
 | WHERE fgl_expr_c {
 sprintf($<str>$,"%s", $<str>2);
 }
@@ -466,8 +473,8 @@ define_section
 pdf_report_section 
 {
 resize_paper(&pdf_rep_struct);
-print_report_2(1,$<str>10);
-rordcnt=atoi($<str>10);
+	print_report_2(1,$<str>10);
+	rordcnt=atoi($<str>10);
 }
 format_section 
 {
@@ -506,3 +513,6 @@ op_wordwrap:
 	| WORDWRAP RIGHT_MARGIN INT_VALUE { sprintf($<str>$,"%s",$<str>3); }
 	| WORDWRAP RIGHT_MARGIN variable { sprintf($<str>$,"%s",$<str>3); }
 ;
+
+/* ============================ report.rule ========================== */
+

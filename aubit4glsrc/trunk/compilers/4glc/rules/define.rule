@@ -1,6 +1,13 @@
+/*
+=====================================================================
+                        Source: define.rule
+=====================================================================
+*/
 
-define_section	:	 {strcpy($<str>$,"");if (modlevel>=0) print_variables();}
-	|	define_multiple {strcpy($<str>$,"");if (modlevel>=0) print_variables();lastlineno=yylineno;};
+
+
+define_section	:	 {strcpy($<str>$,"");if (modlevel>=0) print_variables(0);}
+	|	define_multiple {strcpy($<str>$,"");if (modlevel>=0) print_variables(0);lastlineno=yylineno;};
 
 	
 define_multiple	:
@@ -47,7 +54,7 @@ addmap("Constant",$<str>1,curr_func,yylineno,infilename);
 
 constant_value : 
 	INT_VALUE | CHAR_VALUE | real_number | MINUS INT_VALUE {
-		sprintf($<str>$,"-%d",$<str>2);}
+		sprintf($<str>$,"-%p",$<str>2);}
 ;
 
 var_def_name	:	define_ident {
@@ -78,7 +85,8 @@ push_associate($<str>4,$<str>8);
 push_type(0,0,$<str>8);
 }
 OF dtype_ident  {
-pop_associate();
+    //void pop_associate (char *a);
+	pop_associate(0);
 
 }
 ;
@@ -138,9 +146,9 @@ dtype	:
 		|	record_variable 
 		|	CHAR {push_type("char","1",0);}
 		|	CHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
-char buff[80];
+//char buff[80];
 if (atoi($<str>3)==4) {
-	addmap("size=4","----",curr_func,yylineno,infilename); 
+	addmap("size=4","----",curr_func,yylineno,infilename);
 }
 push_type("char",$<str>3,0);
 }
@@ -207,7 +215,8 @@ push_type("struct_dtime ",$<str>2,0);
 					debug("Pushed type : %s\n",function());
 				}
 			} else {
-				yyerror("Unknown datatype : %s",$<str>1);
+				//yyerror("Unknown datatype : %s",$<str>1);
+                yyerror("Unknown datatype.");
 			}
 		}
 
@@ -298,3 +307,5 @@ int_end : int_start_unit;
 op_equal : | EQUAL 
 ;
 
+
+/* ======================== define.rule ========================== */

@@ -1,7 +1,13 @@
-line_no		:	
+/*
+=====================================================================
+                        Source: general.rule
+=====================================================================
+*/
+
+line_no		:
 	LAST MINUS INT_VALUE {sprintf($<str>$,"%d",-1-(atoi($<str>3)));}
 	| LAST {sprintf($<str>$,"-1");}
-	| FIRST PLUS INT_VALUE {sprintf($<str>$,"%d",atoi($<str>3))+1;}
+	| FIRST PLUS INT_VALUE {sprintf ($<str>$,"%d",atoi($<str>3)+1);}
 	| FIRST {sprintf($<str>$,"1");}
 	| INT_VALUE {sprintf($<str>$,$<str>1);}
 	| variable {sprintf($<str>$,$<str>1);}

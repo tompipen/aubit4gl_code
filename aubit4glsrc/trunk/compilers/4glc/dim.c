@@ -52,7 +52,8 @@ int dimalloc = 0;
  * @param s2
  * @param s3
  */
-static void dim_add (int a, char *s1, char *s2, char *s3)
+static void 
+dim_add (int a, char *s1, char *s2, char *s3)
 {
   char *ptr1;
   char *ptr2;
@@ -148,7 +149,8 @@ static void dim_add (int a, char *s1, char *s2, char *s3)
  * @param a The name to be pushed
  * @param b
  */
-void dim_push_name (char *a, char *b)
+void
+dim_push_name (char *a, char *b)
 {
   dim_add (PUSH_NAME, a, b, 0);
 }
@@ -160,7 +162,8 @@ void dim_push_name (char *a, char *b)
  *
  * @param a The pair table.column 
  */
-void dim_push_like (char *a)
+void
+dim_push_like (char *a)
 {
   dim_add (PUSH_LIKE, a, 0, 0);
 }
@@ -171,7 +174,8 @@ void dim_push_like (char *a)
  * Dont store any information. Just allocate the memory needed and waits
  * until the parser found the rest of the information.
  */
-void dim_push_record (void)
+void
+dim_push_record (void)
 {
   dim_add (PUSH_RECORD, 0, 0, 0);
 }
@@ -184,7 +188,8 @@ void dim_push_record (void)
  *
  * @param a The table name
  */
-void dim_push_rectab (char *a)
+void 
+dim_push_rectab (char *a)
 {
   dim_add (PUSH_RECTAB, a, 0, 0);
 }
@@ -197,7 +202,8 @@ void dim_push_rectab (char *a)
  * @param sz The size of the data type if a sizeable one (decimal, etc).
  * @param arrsz The size of the type if its an array
  */
-void dim_push_type (char *type, char *sz, char *arrsz)
+void 
+dim_push_type (char *type, char *sz, char *arrsz)
 {
   dim_add (PUSH_TYPE, type, sz, arrsz);
 }
@@ -208,7 +214,8 @@ void dim_push_type (char *type, char *sz, char *arrsz)
  * Executed when the parser finishes the parsing of the record (found end record
  * or like tablename.*
  */
-void dim_pop_record (void)
+void 
+dim_pop_record (void)
 {
   dim_add (POP_RECORD, 0, 0, 0);
 }
@@ -222,7 +229,8 @@ void dim_pop_record (void)
  * @param a 
  * @param b
  */
-void dim_push_associate (char *a, char *b)
+void 
+dim_push_associate (char *a, char *b)
 {
   dim_add (PUSH_ASSOCIATE, a, b, 0);
 }
@@ -233,12 +241,14 @@ void dim_push_associate (char *a, char *b)
  *
  * @param a 
  */
-void dim_pop_associate (char *a)
+void 
+dim_pop_associate (char *a)
 {
   dim_add (POP_ASSOCIATE, a, 0, 0);
 }
 
-void dim_set_name (char *a)
+void 
+dim_set_name (char *a)
 {
   dim_add (SETNAME, a, 0, 0);
 }
@@ -282,6 +292,7 @@ static void push_dim_records (int cnt)
   }
 }
 
+void
 push_dim (char *a)
 {
   int cnt;

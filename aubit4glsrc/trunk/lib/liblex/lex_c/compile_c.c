@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.14 2002-05-20 20:17:38 mikeaubury Exp $
+# $Id: compile_c.c,v 1.15 2002-05-23 09:29:35 afalout Exp $
 #
 */
 
@@ -50,13 +50,13 @@
 #include "a4gl_report.h"
 #include "a4gl_oform.h"
 #include "a4gl_attributes.h"
-#include "a4gl_debug.h"
 #include "a4gl_errors.h"
 #include "a4gl_constats.h"
 #include "a4gl_prompt.h"
+#include "a4gl_aubit_lib.h"
 #include "a4gl_lex_print_protos_c.h"
 #include "a4gl_4glc_4glc.h"
-#include "a4gl_aubit_lib.h"
+#include "a4gl_debug.h"
 
 //included here because of dll separation. Make sure this is OK
 //defines things like struct s_report_stack that are used here
@@ -148,6 +148,19 @@ extern void set_clobber(char *c);
 static void printc(char* fmt,... );
 void lex_printc(char *fmt, va_list *ap);
 void real_lex_printc(char *fmt, va_list *ap);
+
+
+static void print_output_rep (struct rep_structure *rep);
+static void print_form_attrib (struct form_attr *form_attrib);
+static int print_field_bind (int ccc);
+static int print_arr_bind (char i);
+static int print_constr ();
+static int print_field_bind_constr ();
+static int pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to);
+static void pr_report_agg (void);
+static void pr_report_agg_clr (void);
+static void print_menu (int mn);
+
 
 /*
 =====================================================================

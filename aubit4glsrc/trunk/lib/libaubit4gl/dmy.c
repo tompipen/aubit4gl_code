@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.3 2002-05-18 11:56:47 afalout Exp $
+# $Id: dmy.c,v 1.4 2002-05-23 09:29:35 afalout Exp $
 #
 */
 
@@ -44,8 +44,8 @@
 */
 
 #include <string.h>
-#include "a4gl_debug.h"
 #include "a4gl_aubit_lib.h"
+#include "a4gl_debug.h"
 
 /*
 =====================================================================

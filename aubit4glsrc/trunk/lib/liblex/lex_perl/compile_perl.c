@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.7 2002-05-20 11:41:13 afalout Exp $
+# $Id: compile_perl.c,v 1.8 2002-05-23 09:29:35 afalout Exp $
 #
 */
 
@@ -48,14 +48,15 @@
 #include "a4gl_report.h"
 #include "a4gl_oform.h"
 #include "a4gl_attributes.h"
-#include "a4gl_debug.h"
 #include "a4gl_errors.h"
 #include "a4gl_constats.h"
 #include "a4gl_prompt.h"
+#include "a4gl_aubit_lib.h"
 
 //#ifdef IS_THIS_RIGHT_OR_WE_NEED_print_protos_perl.h
 	#include "../lex_c/a4gl_lex_print_protos_c.h"
 //#endif
+#include "a4gl_debug.h"
 
 /*
 =====================================================================
@@ -119,6 +120,19 @@ int printing_record = 0;
 
 static void print_space (void);
 void open_outfile (void);
+
+
+static void print_output_rep (struct rep_structure *rep);
+static void print_form_attrib (struct form_attr *form_attrib);
+static int print_field_bind (int ccc);
+static int print_arr_bind (char i);
+static int print_constr ();
+static int print_field_bind_constr ();
+static int pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to);
+static void pr_report_agg (void);
+static void pr_report_agg_clr (void);
+static void print_menu (int mn);
+
 
 /*
 =====================================================================

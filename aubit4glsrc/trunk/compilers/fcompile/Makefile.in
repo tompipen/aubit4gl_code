@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.30 2002-05-06 07:21:15 afalout Exp $
+# $Id: Makefile.in,v 1.31 2002-05-23 09:29:34 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -59,6 +59,8 @@ ifeq "${USE_RPCGEN}" "0"
 else
 	RPCGEN 		=@RPCGEN@ form_x.x
 endif
+
+TOREPLACE=register int32_t *buf;
 
 ## ==================================================================
 ##                             Source files
@@ -139,16 +141,33 @@ else
 	${NICE} ${LEX} $(SOURCES.lex)
 endif
 
-form_x_xdr.c: form_x.x
+rpc: form_x_xdr.c
+form_x.h form_x_xdr.c: form_x.x
 	${RPCGEN}
+#must not do this, buff variable is used in some functions:
+#	@echo "Removing ${TOREPLACE} from generated code..."
+#	sed -e "s%${TOREPLACE}%%g" form_x_xdr.c > newform_x_xdr.c
+#	mv newform_x_xdr.c form_x_xdr.c
+
+
+
+#       -Wunused-variable
+#              Warn whenever  a  local  variable  or  non-constant
+#              static  variable  is unused aside from its declara­
+#              tion
+#              To suppress this warning use the unused  attribute.
+
+#Does anyone know what kind of "attribute" this reffers to?
+
+#form_x_xdr.o: form_x_xdr.c
+#	${CC} ${CFLAGS} -Wunused-variable=unused $^ -o $@
+#	${CC} ${CFLAGS} -unused $^ -o $@
+#	${CC} ${CFLAGS} $^ -o $@
 
 ## ==================================================================
 ##                          Dependencies
 ## ==================================================================
 
-#form_x_xdr.c: rpc
-form_x.h: 		rpc
-rpc: 			form_x_xdr.c
 y.tab.o: 		lex.yy.c
 formwrite2.o :  form_x.h
 fcompile.o :  	form_x.h

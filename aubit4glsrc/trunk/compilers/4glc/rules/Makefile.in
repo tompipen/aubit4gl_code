@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-03-16 03:19:21 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-05-23 09:29:34 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -69,9 +69,8 @@ generated/states.c: data/kwords
 generated/single_words.rule:generated/single_words
 	${SH} bin/make_enable
 
-generated/fgl.yacc: *.rule generated/single_words.rule *.reqd
+generated/fgl.yacc: *.rule *.reqd generated/kw.yh generated/single_words.rule
 	${SH} bin/mkyacc
-
 
 
 # 4glc/rules/bin/mkyacc script builds "generated/fgl.yacc" files from several files

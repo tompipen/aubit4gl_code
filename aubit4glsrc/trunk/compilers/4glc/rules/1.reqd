@@ -1,30 +1,65 @@
-// =======================
-// Source: 1.reqd
-// =======================
+/*
+
+file generated/fgl.yacc is created from:
+		rules/ *.rule
+        rules/ *.reqd
+		rules/generated/single_words.rule
+        rules/generated/kw.yh
+
+using mkyacc shell script. It is then processed by yacc tool
+to make generated/y.tab.c
+
+generated/single_words.rule is created from file generated/single_words
+using shell script make_enable
+
+generated/single_words is created from data/kwords file using
+shell script convkw.single
+
+
+*/
+
+/*
+=====================================================================
+                        Source: 1.reqd
+=====================================================================
+*/
 
 %{
-//#include "../libincl/compiler.h"
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 
-void *new_expr(char *value) ;
-void *append_expr(void *orig_ptr,char *value);
-void *append_expr_expr(void *orig_ptr,void *second_ptr);
-
-int in_define=0;
+#include "a4gl_aubit_lib.h"
 #include "a4gl_dbform.h"
 #include "a4gl_report.h"
 #include "a4gl_oform.h"
 #include "a4gl_attributes.h"
-#include "a4gl_debug.h"
 #include "a4gl_errors.h"
-//#include "a4gl_screen.h"
 #include "a4gl_constats.h"
 #include "a4gl_prompt.h"
 #include "../a4gl_4glc_print_protos.h"
+#include "a4gl_4glc_4glc.h"
+#include "a4gl_debug.h"
+
+//#include "../libincl/compiler.h"
+//#include "a4gl_screen.h"
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+int in_define=0;
 extern int lineno;
 extern int read_glob_var;
 extern int modlevel;
@@ -33,8 +68,6 @@ extern int last_var_found;
 extern int varcnt;
 int rordcnt;
 char menuhandler[256];
-char *downshift(char *);
-char *convstrsql(char *);
 char last_var [256];
 char larr[4096]="";
 char larr2[4096]="";
@@ -56,9 +89,7 @@ char varstring[100];
 char infilename[132]="";
 int lcnt;
 int vcnt;
-
 struct form_attr form_attrib;
-
 extern int yylineno;
 int rcnt;
 int lastlineno=0;
@@ -72,6 +103,17 @@ int chk4var=0;
 int menu_cmd_cnt[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int in_sql=0;
 char hdr_dbname[64]="";
+int continue_cmd[]={0,1,1,1,1,1,1,1,1,0};
+int in_cmd[]={0,0,0,0,0,0,0,0,0,0};
+int fcall_cnt=0;
+
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
+
+
 #define INCASE 0
 #define INCONSTRUCT 1
 #define INDISPLAY 2
@@ -86,9 +128,21 @@ char hdr_dbname[64]="";
 #define UPDVAL 1
 #define SELINTO 2
 #define PUTVAL 3
-int continue_cmd[]={0,1,1,1,1,1,1,1,1,0};
-int in_cmd[]={0,0,0,0,0,0,0,0,0,0};
-int fcall_cnt=0;
+
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+char *downshift(char *);
+char *convstrsql(char *);
+void *new_expr(char *value) ;
+//void *append_expr(void *orig_ptr,char *value);
+//void *append_expr_expr(void *orig_ptr,void *second_ptr);
+
 
 %}
 %start module

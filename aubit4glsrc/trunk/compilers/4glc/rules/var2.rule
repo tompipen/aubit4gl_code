@@ -1,10 +1,18 @@
-var_ident :  var2  {
-if (scan_variable($<str>1)!=-1)
+/*
+=====================================================================
+                        Source: var2.rule
+=====================================================================
+*/
+
+
+var_ident :  var2  
 {
-print_push_variable($<str>1);
-strcpy($<str>$,"?");
-}
-fflush(stdout);
+	if (scan_variable($<str>1)!=-1)
+	{
+		print_push_variable($<str>1);
+		strcpy($<str>$,"?");
+	}
+	fflush(stdout);
 }
 ;
 
@@ -13,9 +21,9 @@ var2 :
 	'@'  var3 {strcpy($<str>$,$<str>2);} | var3
 ;
 
-var3: 	
+var3:
         array_r_varid
-	| identifier  
+	| identifier
 	| var3  DOT aft_dot {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
 	| CHAR_VALUE DOT var3 DOT aft_dot {sprintf($<str>$,"\\\"%s\\\".%s.%s",strip_quotes($<str>1),$<str>3,$<str>5);}
 ;
@@ -26,23 +34,29 @@ aft_dot :
 	| identifier
 ;
 
-var_ident_ibind :  var2  {
-if (scan_variable($<str>1)!=-1&&(!system_var($<str>1)))
+var_ident_ibind :  var2  
 {
-int z,a;
-a=get_bind_cnt('i');
-z=add_bind('i',$<str>1,scan_variable($<str>1));
-z-=a;
-strcpy($<str>$,"");
-for (a=0;a<z;a++)  {
-if (a>0) {strcat($<str>$,",");}
-         strcat($<str>$,"?");
-}
+	if (scan_variable($<str>1)!=-1&&(!system_var($<str>1)))
+	{
+		int z = 0,a = 0;
+		a=get_bind_cnt('i');
+		//z=add_bind('i',$<str>1,scan_variable($<str>1)); //int add_bind (char i, char *var);
+		z=add_bind('i',$<str>1);
 
-}
-fflush(stdout);
+		z-=a;
+		strcpy($<str>$,"");
+
+		for (a=0;a<z;a++)
+		{
+			if (a>0) {strcat($<str>$,",");}
+			strcat($<str>$,"?");
+		}
+
+	}
+	fflush(stdout);
 };
-| var2 THRU var2 {
+| var2 THRU var2 
+{
 char r1[256];
 char r2[256];
 char buff[256];
@@ -50,9 +64,9 @@ char kp[40000];
 char *ptr1;
 char *ptr2;
 int v1;
-int v2;
+int v2 = 0;
 int aa;
-int z,a;
+int z = 0,a = 0;
 
  
         strcpy(r1,$<str>1);
@@ -62,23 +76,23 @@ int z,a;
         }
         *ptr1=0;
         ptr1++;
- 
+
         strcpy(r2,$<str>3);
         debug("r2=%s",r2);
- 
+
         ptr2=strrchr(r2,'.');
 
         if (ptr2==0) {
                 yyerror("Must have a . in a thru");YYERROR;
         }
         *ptr2=0;
- 
+
         debug("Checking portions %s %s\n",r1,r2);
- 
+
         if (strcmp(r1,r2)!=0) {
                 yyerror("Records for thru look different...");YYERROR;
         }
- 
+
         debug("Checking variables");
         v1=scan_variable($<str>1);
 
@@ -88,7 +102,7 @@ int z,a;
         }
         v1=last_var_found;
         debug("v1=%d",v1);
- 
+
         v2=scan_variable($<str>3);
         if (v2==-1) {
                 debug("Variable not found..");
@@ -96,7 +110,7 @@ int z,a;
         }
         v2=last_var_found;
         debug("v2=%d",v2);
- 
+
         strcpy($<str>$,"");
         for (aa=v1;aa<=v2;aa++) {
                 strcpy(kp,$<str>$);
@@ -118,4 +132,4 @@ int z,a;
 
 ;
 
-
+/* ================================ var2.rule ===================== */

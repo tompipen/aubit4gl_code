@@ -1,10 +1,16 @@
+/*
+=====================================================================
+                        Source: expr.rule
+=====================================================================
+*/
+
 fgl_expr_c :
 initial_expr
 | boolean_expr
 | report_only_expr
 | function_call_expr
 | fgl_expr_c fgl_next {
-	dec_counter(); 
+	dec_counter();
 	$<ptr>$=append_expr_expr($<ptr>1,$<ptr>2);
 }
 | builtin_expr
@@ -18,7 +24,7 @@ initial_expr
 	$<ptr>$=append_expr($<ptr>$,"pushop(OP_SUB);");
 }
 | PLUS fgl_expr_c {
-$<ptr>$=$<ptr>2;
+	$<ptr>$=$<ptr>2;
 }
 ;
 
@@ -46,28 +52,28 @@ fgl_expr_ret : fgl_expr | KW_NULL {$<ptr>$=new_expr("push_null()");}
 
 fgl_expr_ret_list 	: fgl_expr_ret
 {
-/*set_counter(0);*/
-sprintf($<str>$,"%d",get_counter_val());
-printcomment("/*L1 %s*/\n",$<str>$);
+	/*set_counter(0);*/
+	sprintf($<str>$,"%d",get_counter_val());
+	printcomment("/*L1 %s*/\n",$<str>$);
 }
 		| 	fgl_expr_ret_list COMMA fgl_expr_ret
 {
-sprintf($<str>$,"%d",get_counter_val());
-printcomment("/*L2 %s*/\n",$<str>$);
+	sprintf($<str>$,"%d",get_counter_val());
+	printcomment("/*L2 %s*/\n",$<str>$);
 }
 ;
 
 
-fgl_expr_list 	: fgl_expr 
+fgl_expr_list 	: fgl_expr
 {
-/*set_counter(0);*/
-sprintf($<str>$,"%d",get_counter_val());
-printcomment("/*L1 %s*/\n",$<str>$);
+	/*set_counter(0);*/
+	sprintf($<str>$,"%d",get_counter_val());
+	printcomment("/*L1 %s*/\n",$<str>$);
 }
-		| 	fgl_expr_list COMMA fgl_expr 
+		| 	fgl_expr_list COMMA fgl_expr
 {
-sprintf($<str>$,"%d",get_counter_val());
-printcomment("/*L2 %s*/\n",$<str>$);
+	sprintf($<str>$,"%d",get_counter_val());
+	printcomment("/*L2 %s*/\n",$<str>$);
 }
 ;
 
@@ -85,28 +91,28 @@ fgl_expr {debug("L1\n");set_counter(1);sprintf($<str>$,"1");}
 fgl_expr_concat	: 	fgl_expr {sprintf($<str>$,"%d",get_counter_val());}
 		| 	fgl_expr_concat COMMA fgl_expr
 {
-print_op("OP_CONCAT");
-dec_counter();sprintf($<str>$,"%d",get_counter_val());
+	print_op("OP_CONCAT");
+	dec_counter();sprintf($<str>$,"%d",get_counter_val());
 }
 ;
 
 
 fgl_expr: fgl_expr_c {
-debug("Print expr (2)");
-print_expr($<ptr>1);
+	debug("Print expr (2)");
+	print_expr($<ptr>1);
 }
 ;
 
 op_int_sign : {strcpy($<str>$,"");} | int_sign
 ;
 
-int_sign	: PLUS 
+int_sign	: PLUS
 {
-strcpy($<str>$,"+");
+	strcpy($<str>$,"+");
 }
-		| MINUS 
+		| MINUS
 {
-strcpy($<str>$,"-");
+	strcpy($<str>$,"-");
 }
 ;
 
@@ -159,7 +165,7 @@ initial_expr:
 int_sign real_number 
 {
 	debug("init expr %s %s",$<str>1,$<str>2);
-	sprintf($<str>$,"%s%d",$<str>1,$<str>2);
+	sprintf($<str>$,"%s%p",$<str>1,$<str>2);
 	sprintf($<str>$,get_push_literal('D',$<str>$));
         //sprintf($<str>$,"push_double((double)%s%s)",$<str>1,$<str>2);
 	$<ptr>$=new_expr($<str>$);
@@ -168,7 +174,7 @@ int_sign real_number
 | int_sign INT_VALUE 
 {
 	debug("init expr int %s %d",$<str>1,atoi($<str>2));
-	sprintf($<str>$,"%s%d",$<str>1,$<str>2);
+	sprintf($<str>$,"%s%p",$<str>1,$<str>2);
 	sprintf($<str>$,get_push_literal('L',$<str>$));
 	$<ptr>$=new_expr($<str>$);
 	inc_counter();
@@ -184,58 +190,41 @@ ASCII INT_VALUE { sprintf($<str>$,"push_ascii(%d);",atoi($<str>2));inc_counter()
 }
 |
 CHAR_VALUE  {
-/*
-Remove this crap :
-    
-	char* dummybuff;
-	debug("expr.rule: Type is S - string");
-
-	debug("expr.rule: calling xxtest_char:");
-	xxtest_char("X");
-
-
-	debug("Testing single call:");
-	//print_protos_c.h: char *get_push_literal(char type,char *value);
-	dummybuff = get_push_literal('S',$<str>1);
-	debug("OK Testing single call, now for real:");
-*/
-
-
-
 	sprintf($<str>$,get_push_literal('S',$<str>1));
 	//sprintf($<str>$,"push_char(%s);",$<str>1);
 	$<ptr>$=new_expr($<str>$);
 	inc_counter();
 }
-| real_number 
+| real_number
 {
 	sprintf($<str>$,get_push_literal('D',$<str>1));
 	//sprintf($<str>$,"push_double((double)%s);",$<str>1);
 	$<ptr>$=new_expr($<str>$);
 	inc_counter();
 }
-| INT_VALUE 
+| INT_VALUE
 {
 	sprintf($<str>$,get_push_literal('L',$<str>1));
 	//sprintf($<str>$,"push_long((long)%d);/*2*/",atoi($<str>1));
 	$<ptr>$=new_expr($<str>$);
 	inc_counter();
 }
-| variable THRU variable {
+| variable THRU variable 
+{
 char r1[256];
 char r2[256];
 char buff[256];
-char kp[40000];
+//char kp[40000];
 char *ptr1;
 char *ptr2;
 void *p1;
 int v1;
-int v2;
+int v2 = 0;
 int a;
 
-debug("Got a thru...");
+		debug("Got a thru...");
         strcpy(r1,$<str>1);
-debug("r1=%s",r1);
+		debug("r1=%s",r1);
         ptr1=strrchr(r1,'.');
 	if (ptr1==0) {
 		yyerror("Must have a . in a thru");YYERROR;
@@ -280,11 +269,12 @@ debug("r1=%s",r1);
         for (a=v1;a<=v2;a++) {
 	char bbz[256];
                 sprintf(buff,"%s.%s",r1,get_var_name(a));
-		sprintf(bbz,"push_variable(%s,0x%x);",buff,scan_variable(buff));
+		sprintf(bbz,"push_variable(%s,0x%x);",buff,(int)scan_variable(buff));
 		append_expr(p1,bbz);
         }
 }
-| variable  {
+| variable  
+{
    int a;
    int incvcnt;
    int flg=0;
@@ -302,32 +292,37 @@ debug("r1=%s",r1);
 
           if (aubit_strcasecmp($<str>1,"pageno")==0) {
                flg=1;
-               sprintf($<str>$,"push_variable(&rep.page_no,2);",$<str>1,scan_variable($<str>1));
-          }
+               //sprintf($<str>$,"push_variable(&rep.page_no,2);",$<str>1,scan_variable($<str>1)); //warning: too many arguments for format
+               sprintf($<str>$,"push_variable(&rep.page_no,2);");
+		  }
           if (aubit_strcasecmp($<str>1,"lineno")==0) {
                flg=1;
-               sprintf($<str>$,"push_variable(&rep.line_no,2);",$<str>1,scan_variable($<str>1));
+               //sprintf($<str>$,"push_variable(&rep.line_no,2);",$<str>1,scan_variable($<str>1)); //warning: too many arguments for format
+               sprintf($<str>$,"push_variable(&rep.line_no,2);");
           }
          if (flg==0) {
-         sprintf($<str>$,"push_variable(&%s,0x%x);",$<str>1,scan_variable($<str>1));
+         sprintf($<str>$,"push_variable(&%s,0x%x);",$<str>1,(int)scan_variable($<str>1)); // warning: unsigned int format, long unsigned int arg (arg 4)
          }
    inc_counter();
    }
 
-if (a==-1) { sprintf($<str>$,"push_char(%s);",$<str>1);inc_counter();
- }
+	if (a==-1) 
+	{ 
+		sprintf($<str>$,"push_char(%s);",$<str>1);inc_counter();
+	}
 
-if (a==-2) {
-        char b[40000];
-        printcomment("/* print_push_rec... %s */",$<str>1);
-        incvcnt=print_push_rec($<str>1,b); 
-        inc_counter_by(incvcnt);
-	debug("Copy");
-        strcpy($<str>$,b);
-        }
+	if (a==-2) 
+	{
+	        char b[40000];
+	        printcomment("/* print_push_rec... %s */",$<str>1);
+	        incvcnt=print_push_rec($<str>1,b);
+	        inc_counter_by(incvcnt);
+			debug("Copy");
+	        strcpy($<str>$,b);
+	}
 
 
-$<ptr>$=new_expr($<str>$);
+	$<ptr>$=new_expr($<str>$);
 }
 
 ;
@@ -373,8 +368,8 @@ AND fgl_expr_c
 }
 | OR fgl_expr_c 
 {
-//sprintf($<str>$,"%s pushop(OP_OR);",$<str>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_OR);");
+	//sprintf($<str>$,"%s pushop(OP_OR);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_OR);");
 }
 ;
 
@@ -428,120 +423,128 @@ in_expr:
 null_expr:
 IS_NULL  
 { 
-sprintf($<str>$,"pushop(OP_ISNULL);"); 
+	sprintf($<str>$,"pushop(OP_ISNULL);");
 	$<ptr>$=new_expr($<str>$);
 }
-| IS_NOT_NULL 
-{ 
-sprintf($<str>$,"pushop(OP_ISNOTNULL);"); 
-$<ptr>$=new_expr($<str>$);
+| IS_NOT_NULL
+{
+	sprintf($<str>$,"pushop(OP_ISNOTNULL);");
+	$<ptr>$=new_expr($<str>$);
 }
 ;
 
 string_match_expr:
- MATCHES fgl_expr_c 
+ MATCHES fgl_expr_c
 {
-//sprintf($<str>$,"%s pushop(OP_MATCHES);",$<str>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_MATCHES);");
+	//sprintf($<str>$,"%s pushop(OP_MATCHES);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_MATCHES);");
 }
-| NOT_MATCHES fgl_expr_c 
-{ 
-//sprintf($<str>$,"%s pushop(OP_MATCHES);pushop(OP_NOT);",$<str>2); 
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_MATCHES);pushop(OP_NOT);");
+| NOT_MATCHES fgl_expr_c
+{
+	//sprintf($<str>$,"%s pushop(OP_MATCHES);pushop(OP_NOT);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_MATCHES);pushop(OP_NOT);");
 }
-| LIKE fgl_expr_c 
+| LIKE fgl_expr_c
 {
-//sprintf($<str>$," %s pushop(OP_LIKE);",$<str>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_LIKE);");
-} 
-| NOT_LIKE fgl_expr_c 
+	//sprintf($<str>$," %s pushop(OP_LIKE);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_LIKE);");
+}
+| NOT_LIKE fgl_expr_c
 {
-//sprintf($<str>$,"pushop(OP_LIKE);pushop(OP_NOT);",$<str>2); 
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_LIKE);pushop(OP_NOT);");
+	//sprintf($<str>$,"pushop(OP_LIKE);pushop(OP_NOT);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_LIKE);pushop(OP_NOT);");
 }
 ;
 
 clip_expr: 
-CLIPPED {
-sprintf($<str>$,"pushop(OP_CLIP);");
-$<ptr>$=new_expr($<str>$);
-inc_counter();
+CLIPPED 
+{
+	sprintf($<str>$,"pushop(OP_CLIP);");
+	$<ptr>$=new_expr($<str>$);
+	inc_counter();
 }
 ;
 using_expr:
-USING fgl_expr_c {
-sprintf($<str>$,"%s pushop(OP_USING);",$<str>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_USING);");
+USING fgl_expr_c 
+{
+	sprintf($<str>$,"%s pushop(OP_USING);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_USING);");
 }
 ;
 
 math_expr:
-PLUS fgl_expr_c {
-//sprintf($<str>$,"%s pushop(OP_ADD);",$<str>2);
-debug("PLUS in math_expr $<ptr>2 = %p",$<ptr>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_ADD);");
+PLUS fgl_expr_c 
+{
+	//sprintf($<str>$,"%s pushop(OP_ADD);",$<str>2);
+	debug("PLUS in math_expr $<ptr>2 = %p",$<ptr>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_ADD);");
 }
-| MINUS fgl_expr_c {
-//sprintf($<str>$,"%s pushop(OP_SUB);",$<str>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_SUB);");
+| MINUS fgl_expr_c
+{
+	//sprintf($<str>$,"%s pushop(OP_SUB);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_SUB);");
 }
-| MULTIPLY fgl_expr_c {
+| MULTIPLY fgl_expr_c 
+{
       sprintf($<str>$,"%s pushop(OP_MULT);",$<str>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_MULT);");
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_MULT);");
 }
-| DIVIDE  fgl_expr_c {
-//sprintf($<str>$,"%s pushop(OP_DIV);",$<str>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_DIV);");
+| DIVIDE  fgl_expr_c 
+{
+	//sprintf($<str>$,"%s pushop(OP_DIV);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_DIV);");
 }
-| MOD fgl_expr_c {
-//sprintf($<str>$,"%s pushop(OP_MOD);",$<str>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_MOD);");
+| MOD fgl_expr_c 
+{
+	//sprintf($<str>$,"%s pushop(OP_MOD);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_MOD);");
 }
-| POWER fgl_expr_c {
-//sprintf($<str>$,"%s pushop(OP_POWER);",$<str>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_POWER);");
+| POWER fgl_expr_c 
+{
+	//sprintf($<str>$,"%s pushop(OP_POWER);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_POWER);");
 }
 ;
 
-comparison_expr: 
-EQUAL           fgl_expr_c { 
-//sprintf($<str>$,"%s pushop(OP_EQUAL);",$<str>2); 
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_EQUAL);");
+comparison_expr:
+EQUAL           fgl_expr_c {
+	//sprintf($<str>$,"%s pushop(OP_EQUAL);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_EQUAL);");
 }
-| EQUAL_EQUAL   fgl_expr_c { 
-sprintf($<str>$,"%s pushop(OP_EQUAL);",$<str>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_EQUAL);");
+| EQUAL_EQUAL   fgl_expr_c {
+	sprintf($<str>$,"%s pushop(OP_EQUAL);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_EQUAL);");
 }
-| LESS_THAN       fgl_expr_c 
+| LESS_THAN       fgl_expr_c
 {
-//sprintf($<str>$,"%s pushop(OP_LESS_THAN);",$<str>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_LESS_THAN);");
+	//sprintf($<str>$,"%s pushop(OP_LESS_THAN);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_LESS_THAN);");
 }
-| GREATER_THAN    fgl_expr_c 
+| GREATER_THAN    fgl_expr_c
 {
-//sprintf($<str>$,"%s pushop(OP_GREATER_THAN);",$<str>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_GREATER_THAN);");
+	//sprintf($<str>$,"%s pushop(OP_GREATER_THAN);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_GREATER_THAN);");
 }
-| NOT_EQUAL       fgl_expr_c 
+| NOT_EQUAL       fgl_expr_c
 {
-//sprintf($<str>$,"%s pushop(OP_NOT_EQUAL);",$<str>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_NOT_EQUAL);");
+	//sprintf($<str>$,"%s pushop(OP_NOT_EQUAL);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_NOT_EQUAL);");
 }
-| LESS_THAN_EQ    fgl_expr_c 
+| LESS_THAN_EQ    fgl_expr_c
 {
-//sprintf($<str>$,"%s pushop(OP_LESS_THAN_EQ);",$<str>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_LESS_THAN_EQ);");
+	//sprintf($<str>$,"%s pushop(OP_LESS_THAN_EQ);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_LESS_THAN_EQ);");
 }
-| GREATER_THAN_EQ fgl_expr_c 
+| GREATER_THAN_EQ fgl_expr_c
 {
-//sprintf($<str>$,"%s pushop(OP_GREATER_THAN_EQ);",$<str>2);
-$<ptr>$=append_expr($<ptr>2,"pushop(OP_GREATER_THAN_EQ);");
+	//sprintf($<str>$,"%s pushop(OP_GREATER_THAN_EQ);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_GREATER_THAN_EQ);");
 }
 ;
 
 
 reset_cnt : {
-reset_counter();
+	reset_counter();
 }
 ;
 
@@ -566,14 +569,14 @@ function_call_expr2:
 		cnt=1;
 		debug("Print expr (1)");
 		//print_expr($<ptr>4);
-		sprintf($<str>$,"{int _retvars;\n_retvars=aclfgl_%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001);chk_err(%d,\"%s\");}\n}\n}\n", $<str>1,$<str>5, lastlineno,infilename);
+		sprintf($<str>$,"{int _retvars;\n_retvars=aclfgl_%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);chk_err(%d,\"%s\");}\n}\n}\n", $<str>1,$<str>5, lastlineno,infilename);
 		$<ptr>$=append_expr($<ptr>4,$<str>$);
 		inc_counter();
 		}
 | NEWFORMATSHARED OPEN_BRACKET {
         sprintf($<str>$,"\"%s\",\"%s\"",get_idents(0),get_idents(1));
 	debug("NEWFORMAT : %s\n",$<str>$);
-        A4GLSQL_set_status(0);
+        A4GLSQL_set_status(0,0);
         new_counter();
 } opt_func_call_args {
 	sprintf($<str>$,"%d",get_counter_val());  
@@ -585,7 +588,7 @@ function_call_expr2:
         ptr=strchr(buff,',');
         *ptr=0;
         ptr++;
-	sprintf($<str>$,"{int _retvars;\n_retvars=call_4gl_dll(%s,%s,%d); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001);chk_err(%d,\"%s\");pop_args(_retvars);push_null();}\n}\n}\n", buff,ptr,atoi($<str>5), lastlineno,infilename);
+	sprintf($<str>$,"{int _retvars;\n_retvars=call_4gl_dll(%s,%s,%d); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);chk_err(%d,\"%s\");pop_args(_retvars);push_null();}\n}\n}\n", buff,ptr,atoi($<str>5), lastlineno,infilename);
 	$<ptr>$=append_expr($<ptr>4,$<str>$);
 }
 
@@ -613,9 +616,9 @@ inc_counter();}
 
 function_call_expr:
 function_callb
-| GET_FLDBUF OPEN_BRACKET fld_list CLOSE_BRACKET { 
-int cnt; 
-sprintf($<str>$,"{int _retvars;\n_retvars=fgl_getfldbuf(%s);\nif (_retvars != 1 ) {A4GLSQL_set_status(-3001);chk_err(%d,\"%s\");}\n}\n", 
+| GET_FLDBUF OPEN_BRACKET fld_list CLOSE_BRACKET {
+//int cnt;
+sprintf($<str>$,"{int _retvars;\n_retvars=fgl_getfldbuf(%s);\nif (_retvars != 1 ) {A4GLSQL_set_status(-3001,0);chk_err(%d,\"%s\");}\n}\n",
 	$<str>3, lastlineno,infilename); 
 	$<ptr>$=new_expr($<str>$);
 
@@ -667,16 +670,18 @@ builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
 ;
 
 pdf_expr : fgl_expr_c POINTS  {
-//sprintf($<str>$,"%s push_double(-1);pushop(OP_MULT)",$<str>1);
+	//sprintf($<str>$,"%s push_double(-1);pushop(OP_MULT)",$<str>1);
 	$<ptr>$=append_expr($<ptr>1,"push_double(-1);pushop(OP_MULT);");
 }
         |  fgl_expr_c  MM     {
-//sprintf($<str>$,"%s push_double(-28.3465);pushop(OP_MULT);",$<str>1);
+	//sprintf($<str>$,"%s push_double(-28.3465);pushop(OP_MULT);",$<str>1);
 	$<ptr>$=append_expr($<ptr>1,"push_double(-28.3465);pushop(OP_MULT);");
 }
         |  fgl_expr_c INCHES     {
-//sprintf($<str>$,"%s push_double(-72.0);pushop(OP_MULT);",$<str>1);
+	//sprintf($<str>$,"%s push_double(-72.0);pushop(OP_MULT);",$<str>1);
 	$<ptr>$=append_expr($<ptr>1,"push_double(-72.0);pushop(OP_MULT);");
 }
 ;
 
+
+/* ============================ expr.rule =========================== */

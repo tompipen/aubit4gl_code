@@ -1,3 +1,10 @@
+/*
+=====================================================================
+                        Source: call.rule
+=====================================================================
+*/
+
+
 call_cmd	: FCALL call_ext {strcpy($<str>$,"CALL");}
 ;
 
@@ -16,8 +23,8 @@ ibind_var_list {
    | FORM_IS_COMPILED OPEN_BRACKET identifier CLOSE_BRACKET {
 	print_form_is_compiled($<str>3);
 	}
-   | INFIELD OPEN_BRACKET field_name CLOSE_BRACKET RETURNING variable 
-   { 
+   | INFIELD OPEN_BRACKET field_name CLOSE_BRACKET RETURNING variable
+   {
 	print_field_func('I',$<str>3,$<str>6);
    }
    | pdf_functions 
@@ -47,7 +54,7 @@ ibind_var_list {
 	strcpy($<str>$,$<str>5);
 	}
    | SHARED char_or_var IN char_or_var OPEN_BRACKET {
-	A4GLSQL_set_status(0);
+	A4GLSQL_set_status(0,0);
 	new_counter();
 	}
 opt_func_call_args {
@@ -61,7 +68,7 @@ CLOSE_BRACKET opt_return {
 }
    | NEWFORMATSHARED  OPEN_BRACKET {
 	sprintf($<str>$,"\"%s\",\"%s\"",get_idents(0),get_idents(1));
-	A4GLSQL_set_status(0);
+	A4GLSQL_set_status(0,0);
 	new_counter();
 	}
 	opt_func_call_args {
@@ -86,7 +93,7 @@ CLOSE_BRACKET opt_return {
    {
    char buff[256];
    new_counter();
-   sprintf(buff,"%s:%s(%d)",$<str>2,$<str>4,$<str>6);
+   sprintf(buff,"%s:%s(%p)",$<str>2,$<str>4,$<str>6);
    addmap("External",buff,curr_func,yylineno,infilename);
    } 
    opt_func_call_args 
@@ -98,7 +105,8 @@ CLOSE_BRACKET opt_return {
 	 debug("print_expr (6)");print_expr($<ptr>10);
    }
    opt_return_remote
-   { int cnt;
+   { 
+   	//int cnt;
 	char fname[64];
 	
    if (strcmp($<str>14,"WITHOUT WAITING")==0) {	
@@ -175,4 +183,4 @@ sprintf($<str>$,"\"%s\"",$<str>1);
 ;
 
 
-
+/* ============================= call.rule ========================== */

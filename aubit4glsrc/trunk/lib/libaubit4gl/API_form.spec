@@ -35,6 +35,9 @@ read_form char* fname,char* formname -> void*
 //has_bool_attribute (struct struct_scr_field *f, int bool)
 has_bool_attribute void* f,int bool -> void
 
+//int check_field_for_include (char *s, char *inc, int dtype)
+check_field_for_include char* s,char* inc,int dtype -> int
+
 //
 // -------- Function calls from formwrite2.c ------------------------
 //

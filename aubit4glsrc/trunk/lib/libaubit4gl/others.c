@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.8 2002-05-20 11:41:12 afalout Exp $
+# $Id: others.c,v 1.9 2002-05-23 09:29:35 afalout Exp $
 #
 */
 
@@ -75,14 +75,12 @@ int m_lastkey = 0;
 */
 
 
-char *strip_quotes (char *s);
+
 char *replace_sql_var (char *s);
-int attr_name_match (struct struct_scr_field *field, char *s);
-char *get_str_attribute (struct struct_scr_field *f, int str);
 int get_lastkey (void);
 int fgl_keyval(int _np);
-void convlower(char *s);
-int has_str_attribute (struct struct_scr_field * f, int str);
+
+
 
 
 /*

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_stack_xdr.c,v 1.3 2002-05-17 07:08:34 afalout Exp $
+# $Id: rpc_stack_xdr.c,v 1.4 2002-05-23 09:29:36 afalout Exp $
 #*/
 
 /**
@@ -90,7 +90,7 @@ bool_t
 xdr_single_dtype(XDR *xdrs, single_dtype *objp)
 {
 
-	 register long *buf;
+//	 register long *buf;
 
 	 if (!xdr_int(xdrs, &objp->dtype)) {
 		 return (FALSE);
@@ -145,7 +145,7 @@ bool_t
 xdr_object_data(XDR *xdrs, object_data *objp)
 {
 
-	 register long *buf;
+//	 register long *buf;
 
 	 if (!xdr_single_dtype(xdrs, objp)) {
 		 return (FALSE);
@@ -162,7 +162,7 @@ bool_t
 xdr_return_values(XDR *xdrs, return_values *objp)
 {
 
-	 register long *buf;
+//	 register long *buf;
 
 	 if (!xdr_array(xdrs, (char **)&objp->return_values_val, (u_int *)&objp->return_values_len, ~0, sizeof(object_data), (xdrproc_t)xdr_object_data)) {
 		 return (FALSE);
@@ -175,11 +175,11 @@ xdr_return_values(XDR *xdrs, return_values *objp)
  *
  * @return
  */
-bool_t 
+bool_t
 xdr_call(XDR *xdrs, call *objp)
 {
 
-	 register long *buf;
+//	 register long *buf;
 
 	 if (!xdr_string(xdrs, &objp->function_name, ~0)) {
 		 return (FALSE);
@@ -192,6 +192,7 @@ xdr_call(XDR *xdrs, call *objp)
 	 }
 	return (TRUE);
 }
+
 
 
 // ============================== EOF ==================================

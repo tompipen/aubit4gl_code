@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.30 2002-05-18 11:56:47 afalout Exp $
+# $Id: sql.c,v 1.31 2002-05-23 09:29:36 afalout Exp $
 #
 */
 
@@ -52,6 +52,7 @@
 #include "a4gl_stack.h"
 #define GETENV_OK
 #include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h"
 #include "a4gl_pointers.h"
 #include "a4gl_dtypes.h"
 
