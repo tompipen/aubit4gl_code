@@ -1644,7 +1644,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.23 2003-08-04 00:49:45 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.24 2003-08-09 09:27:13 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -4617,4 +4617,51 @@ be more trouble to them than it's worth.
 
 
 ==========================================================================
+
+A4GL_PRINTSCRKEY=...
+This specifies a key to be used to trigger the automatic screen dump, an
+example might be
+
+export A4GL_PRINTSCRKEY=CONTROL-P
+export A4GL_PRINTSCRKEY=F10
+
+
+A4GL_PRINTSCRFILE=...
+
+	This specifies the filename to output the screen dump to.
+	This file will be overwritten by each subsequent screen dump operation
+(perhaps this should be appended to - but for now - its overwritten)
+
+	If this filename begins with a pipe character '|' - its pipe'd to a command
+rather than a file.
+
+Examples
+	export A4GL_PRINTSCRFILE=mja1.out
+		# print to a file called mja1.out
+
+	export A4GL_PRINTSCRFILE=/tmp/abc123
+		# print to a file called /tmp/abc123
+
+	export A4GL_PRINTSCRFILE="|lp -s"
+		# print to a 'lp' so it arrives on the printer (-s for silent mode)
+
+
+The PRINTSCRFILE will also be used when calling aclfgl_dump_screen with no
+parameters...
+
+
+
+main
+	display "Hello World" at 1,1
+	CALL aclfgl_dump_screen()
+end main
+
+
+if no PRINTSCRFILE is specified and aclfgl_dump_screen is called the call will
+be ignored.
+
+You can't set PRINTSCRKEY and not specify PRINTSCRFILE !
+
+
+=============================================================================
 

@@ -21,8 +21,16 @@
 #   Note: Defaults are in (), dependencies in []
 #
 # You can override any and all settings defaults as defined in Aubit compilers,
-# not just ones listed in this file. See output of "aubit-config -a" for list 
+# not just ones listed in this file. See output of "aubit-config -a" for list
 # of all defaults and there values.
+#
+# Note that some settings names like A4GL_DBPATH, are cumulated from all 
+# available sources (Environment, Windows registry, aubitrc file(s)) and allow
+# for both Aubit specific version of the name ("A4GL_DBPATH") and the generic name
+# like "DBPATH" to allow for compatibility with third-party product that
+# also use them. Aubit specific ones have priority in the non-cumulative cases,
+# and when setting can be cumulated, Aubit specific ones will appear first in
+# cumulated string.
 #
 ##########################################################################
 
@@ -36,6 +44,14 @@ AUBITETC=/etc/opt/aubit4gl
 #Default for source distribution:/opt/aubit/aubit4glsrc
 #Default for binary distribution:/opt/aubit4gl
 AUBITDIR=@aubitdir@
+
+############
+#DBPATH variable containls list of directory(es) that will be searched for objects
+#like compiled form, help and menu files, and SQLite databases. Use coloumn (:)
+#as a delimiter between paths you want searched.
+#Default: tools/ in Aubit source code root directory and tools/ in Aubit binary
+#installation directory
+A4GL_DBPATH=@A4GL_DBPATH@
 
 ## ===================================================================
 ## 				Loadable modules/library configurations

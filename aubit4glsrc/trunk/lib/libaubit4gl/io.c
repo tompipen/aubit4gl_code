@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.12 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: io.c,v 1.13 2003-08-09 09:27:13 afalout Exp $
 #
 */
 
@@ -112,165 +112,6 @@ A4GL_write_int (FILE * ofile, int la)
   fwrite (&locala, sizeo, 1, ofile);
 }
 
-/**
- * @todo : Remove if not used.
- * @deprecated Not used anywhere.
- */
-/*
-int
-form_out_open(char *fname)
-{
-	oufile=mja_fopen(fname,"wb");
-	if (oufile==0) return 0;
-	else return 1;
-}
-*/
-
-/**
- * @todo : Remove if not used.
- * @deprecated Not used anywhere.
- */
-/*
-FILE *
-form_out_file()
-{
-	return oufile;
-}
-*/
-
-/**
- * @todo : Remove if not used.
- * @deprecated Not used anywhere.
- */
-/*
-void
-form_out_close()
-{
-	fclose(oufile);
-}
-*/
-
-/**
- * @todo : Remove if not used.
- * @deprecated Not used anywhere.
- */
-/*
-read_hasmore (FILE * ofile)
-{
-  if (ofile==0) ofile=oufile;
-    return A4GL_read_int (ofile);
-
-}
-*/
-
-/**
- * @todo : Remove if not used.
- * @deprecated Not used anywhere.
- */
-/*
-write_hasmore (FILE * ofile)
-{
-  if (ofile==0) ofile=oufile;
-    A4GL_write_int (ofile, 255);
-
-}
-*/
-
-/**
- * @todo : Remove if not used.
- * @deprecated Not used anywhere.
- */
-/*
-write_nomore (FILE * ofile)
-{
-  if (ofile==0) ofile=oufile;
-    A4GL_write_int (ofile, 0);
-
-}
-*/
-
-/**
- * @todo : Remove if not used.
- * @deprecated Not used anywhere.
- */
-/*
-char *
-read_string_dup (FILE * ofile)
-{
-    int c;
-
-    char *a;
-  if (ofile==0) ofile=oufile;
-    c = A4GL_read_int (ofile);
-
-    if (c == 0)
-    {
-	a = 0;
-
-	return 0;
-    }
-
-    a = (char *) acl_malloc (c + 1,"Read string dup");
-    fread (a, 1, c, ofile);
-    return a;
-}
-*/
-
-/**
- * @todo : Remove if not used.
- * @deprecated Not used anywhere.
- */
-/*
-read_string (FILE * ofile, char *a)
-{
-
-    int c;
-  if (ofile==0) ofile=oufile;
-    c = A4GL_read_int (ofile);
-
-    if (c == 0)
-    {
-
-	a[0] = 0;
-
-	return;
-
-    }
-
-    fread (a, 1, c, ofile);
-
-}
-*/
-
-/**
- * @todo : Remove if not used.
- * @deprecated Not used anywhere.
- */
-/*
-write_string (FILE * ofile, char *a)
-{
-
-    int c;
-if (ofile==0) ofile=oufile;
-
-    if (a == 0 || a[0] == 0)
-    {
-
- A4GL_write_int (ofile, 0);
-
-	return;
-
-    }
-
-    c = strlen (a) + 1;		//include 0x0
-
-    A4GL_write_int (ofile, c);	//store length first
-
-  //fwrite(&c,1,1,ofile);
-    fwrite (a, 1, strlen (a) + 1, ofile);
-
-}
-*/
 
 /**
  * Breaks the file name to take the file name without extension and dir name
@@ -350,30 +191,33 @@ A4GL_try_to_open (char *path, char *name, int keepopen)
 
   if (strlen (path))
     {
-#ifndef WIN32
-      sprintf (buff, "%s/%s", path, name);
-#else
-      sprintf (buff, "%s\\%s", path, name);
-#endif
+		#ifndef WIN32
+	      sprintf (buff, "%s/%s", path, name);
+		#else
+		  sprintf (buff, "%s\\%s", path, name);
+		#endif
     }
   else
     {
       sprintf (buff, name);
     }
+  
   A4GL_debug ("Opening path '%s'", buff);
+
   if (strlen (name) == 0)
     return 0;
 
   /* Does it exist and can we read it ? */
   f = fopen (buff, "r");
-  if (f == 0)
-    return (FILE *) 0;
-
+  if (f == 0) {
+	return (FILE *) 0;
+  }
   if (!keepopen)
     {				/* We just wanted to check.. */
       fclose (f);
       return (FILE *) 1;
     }
+
   A4GL_debug ("opened file %s in path %s", name, path);
   return f;			/* We want it opened.. */
 }
@@ -387,65 +231,155 @@ A4GL_try_to_open (char *path, char *name, int keepopen)
 FILE *
 A4GL_open_file_dbpath (char *fname)
 {
-  char str_path[2048];
-  int cnt;
-  char *ptr;
-  int str_len;
+char str_path[2048];
+int cnt;
+char *ptr;
+int str_len;
 
-  memset (str_path, 0, 2048);
+	memset (str_path, 0, 2048);
 
-  if (A4GL_try_to_open ("", fname, 0))
-    {
-      return A4GL_try_to_open ("", fname, 1);
+	if (A4GL_try_to_open ("", fname, 0)) {
+		return A4GL_try_to_open ("", fname, 1);
     }
 
-  if (A4GL_try_to_open (".", fname, 0))
-    {
-      return A4GL_try_to_open (".", fname, 1);
-    }
-
-  if (strlen (acl_getenv ("DBPATH")))
-    {
-      strcpy (str_path, acl_getenv ("DBPATH"));
-    }
-
-  str_len = strlen (str_path);
-  ptr = str_path;
-
-  for (cnt = 0; cnt < str_len; cnt++)
-    {
-#ifdef __MINGW32__
-      if (str_path[cnt] == ';')
-	{
-#else
-      if (str_path[cnt] == ':')
-	{
-#endif
-	  str_path[cnt] = 0;
-	  if (strlen (ptr))
-	    {
-	      if (A4GL_try_to_open (ptr, fname, 0))
-		{
-		  return A4GL_try_to_open (ptr, fname, 1);
-		}
-	      else
-		{
-		  cnt++;
-		  ptr = &str_path[cnt];
-		}
-	    }
+	if (A4GL_try_to_open (".", fname, 0)) {
+		return A4GL_try_to_open (".", fname, 1);
 	}
+
+	if (strlen (acl_getenv ("DBPATH"))) {
+		strcpy (str_path, acl_getenv ("DBPATH"));
     }
 
-  if (strlen (ptr))
-    {
-      if (A4GL_try_to_open (ptr, fname, 0))
-	{
-	  return A4GL_try_to_open (ptr, fname, 1);
+	str_len = strlen (str_path);
+	ptr = str_path;
+
+	for (cnt = 0; cnt < str_len; cnt++) {
+		#ifdef __MINGW32__
+		if (str_path[cnt] == ';') {
+		#else
+		if (str_path[cnt] == ':') {
+		#endif
+			if ( cnt !=0 ) {
+				str_path[cnt] = 0;
+				if (strlen (ptr)) {
+					if (A4GL_try_to_open (ptr, fname, 0)) {
+						return A4GL_try_to_open (ptr, fname, 1);
+	                } else {
+						cnt++;
+						ptr = &str_path[cnt];
+	                }
+				}
+			} else {
+				//skip over separator if found as first character:
+				cnt++;
+				ptr = &str_path[cnt];
+			}
+        }
 	}
+
+	if (strlen (ptr)) {
+		if (A4GL_try_to_open (ptr, fname, 0)) {
+			return A4GL_try_to_open (ptr, fname, 1);
+        }
+	}
+
+	return (FILE *) 0;
+}
+
+/**
+ * Find a full path to file in DBPATH, or current directory
+ *
+ * @param fname The pointer to the name of the file to searched for.
+ * @return The pointer to the full path including the file name and extension
+ *         to file found in DBPATH. 0 otherwise.
+ */
+char *
+A4GL_fullpath_dbpath (char *fname)
+{
+char str_path[2048];
+int cnt;
+char *ptr=0;
+char *ptr2=0;
+int str_len;
+
+	memset (str_path, 0, 2048);
+
+	if (A4GL_try_to_open ("", fname, 0) ) {
+		return fname;
     }
 
-  return (FILE *) 0;
+	if (A4GL_try_to_open (".", fname, 0)) {
+		strcpy(ptr2,"./");
+		strcat(ptr2,fname);
+		return ptr2;
+    }
+
+	if (strlen (acl_getenv ("DBPATH"))) {
+		strcpy (str_path, acl_getenv ("DBPATH"));
+    }
+
+	str_len = strlen (str_path);
+	ptr = str_path;
+
+	A4GL_debug ("ptr DBPATH='%s'",ptr);
+
+	for (cnt = 0; cnt < str_len; cnt++) {
+		#ifdef __MINGW32__
+	    if (str_path[cnt] == ';') {
+		#else
+	    if (str_path[cnt] == ':') {
+		#endif
+			//A4GL_debug ("Found : at %d",cnt);
+			if ( cnt !=0 ) {
+				str_path[cnt] = 0;
+				if (strlen (ptr)) {
+					//A4GL_debug ("strlen (ptr) > 0, ptr=%s",ptr);
+	 				if (A4GL_try_to_open (ptr, fname, 0)) {
+				    	ptr2=strdup(ptr);
+						#ifdef __MINGW32__
+							strcat(ptr2,"\\");
+				        #else
+							strcat(ptr2,"/");
+			        	#endif
+						strcat(ptr2,fname);
+					    return ptr2;
+					} else {
+						cnt++;
+						ptr = &str_path[cnt];
+					}
+/*				} else {
+					A4GL_debug ("strlen (ptr) = 0");
+*/
+				}
+			} else {
+				//skip over separator if found as first character:
+				cnt++;
+				ptr = &str_path[cnt];
+			}
+/*		} else {
+			A4GL_debug ("cnt=%d Char='%c'",cnt,str_path[cnt]);
+			A4GL_debug ("ptr='%s'",ptr);
+			A4GL_debug ("str_path='%s'",str_path);
+*/
+        }
+
+	}
+
+	//catch cases when DBPATH contained only one path and no separator:
+	if (strlen (ptr)) {
+		if (A4GL_try_to_open (ptr, fname, 0)) {
+			ptr2=strdup(ptr);
+			#ifdef __MINGW32__
+		  		strcat(ptr2,"\\");
+			#else
+				strcat(ptr2,"/");
+			#endif
+			strcat(ptr2,fname);
+			return ptr2;
+		}
+    }
+
+	return (char *) 0;
 }
 
 

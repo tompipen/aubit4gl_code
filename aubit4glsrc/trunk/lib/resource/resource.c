@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.48 2003-08-04 09:51:16 mikeaubury Exp $
+# $Id: resource.c,v 1.49 2003-08-09 09:27:14 afalout Exp $
 #
 */
 
@@ -357,6 +357,9 @@ static char *find_str_resource (char *s);
 int A4GL_replace_str_resource (char *s, char *neww);
 void A4GL_dump_all_resource_vars (int export);
 
+char * A4GL_getenv_registry (char *s,char *prefixed_string);
+
+
 #if (defined(WIN32) && ! defined(__CYGWIN__))
 
 long get_regkey (char *key, char *data, int n);
@@ -500,20 +503,20 @@ find_str_resource (char *s)
 
 /**
  * Get the contents of an resources or environment variable.
- * WARNING - DO NOT USE CALLS TO debug() in this function - it will cause endless loop
+ * WARNING - DO NOT USE CALLS TO A4GL_debug() in this function - it will cause endless loop
  * @param s The environment variable name.
  */
 char *
-acl_getenv (char *s)
+old_acl_getenv (char *s)
 {
   char prefixed_string[1024];
-//char *prefixed_string;
 //WHY was this static?
 //static char *ptr;
   char *ptr;
 
 //WARNING - strings returned by getenv() are linited to 125 charcters!
 //strings defined in aubitrc don't have this limitation.
+
 
   /* First try in environmet, with a prefix */
   sprintf (prefixed_string, "A4GL_%s", s);
@@ -524,7 +527,7 @@ acl_getenv (char *s)
     {
       /* Not there, try again in environment, but without the prefix */
       ptr = (char *) getenv (s);
-    }
+	}
 
 
 
@@ -590,6 +593,116 @@ acl_getenv (char *s)
 
       return ptr;
     }
+}
+
+
+/**
+ * Get the contents of an resources or environment variable.
+ * WARNING - DO NOT USE CALLS TO A4GL_debug() in this function - it will cause endless loop
+ * @param s The environment variable name.
+ */
+char *
+acl_getenv (char *s)
+{
+char prefixed_string[1024];
+//WHY was this static?
+//static char *ptr;
+char *ptr_env=0, *ptr_env_A4GL=0,*ptr_resources=0, *ptr_resources_A4GL=0, *ptr_registry=0, *ptr=0;
+int cumulate = 0;
+char cumulate_char=0;
+char cumulated_string[2048];
+
+//WARNING - strings returned by getenv() are linited to 125 charcters!
+//strings defined in aubitrc don't have this limitation.
+
+	cumulated_string[0] = 0;
+
+	if ((strcmp (s, "DBPATH") == 0) || (strcmp (s, "A4GL_DBPATH") == 0) ) {
+        /* some variables, like DBPATH need to be cumulated from all available
+		sources, otherwise value of higher priority source will overwrite the
+        value of lower priority one
+        */
+        cumulate = 1;
+		#if ( (defined (WIN32) || defined (__MINGW32__)) && ! defined (__CYGWIN__))
+			cumulate_char=';';
+        #else
+			cumulate_char=':';
+        #endif
+    }
+
+    sprintf (prefixed_string, "A4GL_%s", s);
+
+	ptr_env_A4GL = getenv (prefixed_string); /* in environmet, with a prefix */
+	ptr_env = (char *) getenv (s); /* in environment, but without the prefix */
+	ptr_registry=A4GL_getenv_registry (s,(char *) prefixed_string); /*Windows registry */
+	ptr_resources_A4GL = find_str_resource (prefixed_string); 		/* Try in resources */
+	ptr_resources = find_str_resource (s); 		/* Try in resources */
+
+    if (cumulate) {
+		if (ptr_env_A4GL != 0) {
+			sprintf(cumulated_string,"%s",ptr_env_A4GL);
+		}
+	    if (ptr_env != 0) {
+			sprintf(cumulated_string,"%s%c%s",cumulated_string,cumulate_char,ptr_env);
+		}
+	    if (ptr_registry != 0) {
+			sprintf(cumulated_string,"%s%c%s",cumulated_string,cumulate_char,ptr_registry);
+		}
+	    if (ptr_resources_A4GL != 0) {
+			sprintf(cumulated_string,"%s%c%s",cumulated_string,cumulate_char,ptr_resources_A4GL);
+		}
+		if (ptr_resources != 0) {
+			sprintf(cumulated_string,"%s%c%s",cumulated_string,cumulate_char,ptr_resources);
+		}
+		if (strlen (cumulated_string) != 0 ){
+			ptr=(char *)cumulated_string;
+        }
+    } else {
+		if (ptr_env_A4GL != 0) { ptr=ptr_env_A4GL; }
+	    else if (ptr_env != 0) { ptr=ptr_env; }
+	    else if (ptr_registry != 0) { ptr=ptr_registry; }
+	    else if (ptr_resources_A4GL != 0) { ptr=ptr_resources_A4GL; }
+		else if (ptr_resources != 0) { ptr=ptr_resources; }
+	}
+
+	if (ptr == 0) {
+		return "";
+	} else {
+
+    	/* FIXME: make sure that things like AUBITDIR are in appropriate format:
+         on Windows, watch out for Cywin relative paths.
+         /cygdrive/c/something is OK, but /usr/bin is not (missing drive
+		 letter and CygWin path)!
+		*/
+		if (strcmp (s, "DBDATE") == 0) {
+			A4GL_chk_dbdate (ptr);
+		}
+
+		return ptr;
+    }
+}
+
+char *
+A4GL_getenv_registry (char *s,char *prefixed_string)
+{
+char *ptr=0;
+	#if ( (defined (WIN32) || defined (__MINGW32__)) && ! defined (__CYGWIN__))
+      /* try in Windows registry */
+      /* why was this static? */
+      //static char buff[1024];
+      char buff[1024];
+		if (get_regkey (s, buff, 1023)) {
+			//ptr = (char *)buff;
+			ptr = buff;
+        } else {
+			if (get_regkey (prefixed_string, buff, 1023)) {
+				//ptr = (char *)buff;
+				ptr = buff;
+			}
+        }
+	#endif
+
+	return ptr;
 }
 
 /**

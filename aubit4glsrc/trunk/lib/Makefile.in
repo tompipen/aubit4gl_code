@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.94 2003-08-02 13:07:56 afalout Exp $
+# $Id: Makefile.in,v 1.95 2003-08-09 09:27:13 afalout Exp $
 #
 
 ROOT    =..
@@ -333,6 +333,8 @@ libESQL_INFORMIX${SO_EXT}: ${LIBESQL_DEPS}
 
 libESQL_POSTGRES${SO_EXT}: ${LIBESQL_DEPS}
 	${MAKE} -C ${LIBESQL_PATH} $@
+
+
 ##############
 #libEXDTYPE_
 
@@ -364,12 +366,6 @@ libA4GL_string${SO_EXT}: ${4GLC} ${LIBSTRING_DEPS}
 
 libA4GL_pop${SO_EXT}: ${4GLC} ${LIBPOP_DEPS}
 	$(MAKE) -C ${LIBPOP_PATH}
-
-libESQL_POSTGRES${SO_EXT}: ${LIBESQLCHELPER_DEPS}
-	$(MAKE) -C ${LIBESQLCHELPER_PATH} $@
-
-libESQL_INFORMIX${SO_EXT}: ${LIBESQLCHELPER_DEPS}
-	$(MAKE) -C ${LIBESQLCHELPER_PATH} $@
 
 libA4GL_HTML${SO_EXT_LINKABLE}: ${4GLC} ${LIBHTML_DEPS}
 	$(MAKE) -C ${LIBHTML_PATH} $@
@@ -448,7 +444,6 @@ clean.other:
 	${MAKE} -C ${LIBHELP_STD_PATH} clean
 	${MAKE} -C ${AUBITCONFIG_PATH} clean
 	${MAKE} -C ${LOADMAP_PATH} clean
-#	${MAKE} -C ${LIBLEXC_PATH} clean
 	${MAKE} -C ${LIBLEXEC_PATH} clean
 	${MAKE} -C ${LIBLEXPERL_PATH} clean
 	${MAKE} -C ${LIBEXDATA_PATH} clean

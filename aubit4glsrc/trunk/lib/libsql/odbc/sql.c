@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.61 2003-07-01 07:34:29 mikeaubury Exp $
+# $Id: sql.c,v 1.62 2003-08-09 09:27:13 afalout Exp $
 #
 */
 
@@ -153,7 +153,9 @@ extern char lasterrorstr[1024];
 
 /* static: */
 static char sess_name[32] = "default";
-static char OldDBname[64] = "";
+//must be long enough to hold full path for SQLlite database file
+//static char OldDBname[64] = "";
+static char OldDBname[2048] = "";
 static char dbms_name[64] = "";
 static char dbms_dialect[64] = "";
 static HSTMT hstmtGetColumns = 0;	/** Statement used to iterate getting column information */
@@ -1306,9 +1308,59 @@ int
 A4GLSQL_init_connection (char *dbName)
 {
   char empty[10] = "None";
-  char *u, *p;
+  char *u, *p, *FullPathDBname;
   HDBC *hh = 0;
   int rc;
+  char a[128], b[128], tmp[2048];
+
+#ifdef SQLITEODBC
+
+	A4GL_debug("SQLITE special...");
+
+    /* NOTE:
+
+        When using SQLite, user can use the following DATABASE statement parameters:
+
+        DATABASE example    - will use DBPATH to find SQLite db file, adding .db extension first
+        DATABASE "example"  - same
+        DATABASE "example.db" - will use DBPATH to find SQLite db file
+        DATABASE "/full/path/to/dbfile/example" - will add .db extension, and check for file in specified path
+        DATABASE "/full/path/to/dbfile/example.db" - will check for file in specified path
+    */
+
+
+	//See if user specified extension in his DATABASE statement:
+	A4GL_bname (dbName, a, b);
+    if (a[0] == 0) {
+        sprintf(tmp,"%s.db",dbName);
+		A4GL_debug("Added .db file name extension, dbName=%s",tmp);
+	}
+
+	//Find full path to the SQLite database file, use DBPATH
+	FullPathDBname=A4GL_fullpath_dbpath((char *)tmp);
+
+    if (FullPathDBname) {
+        strcpy (tmp,FullPathDBname);
+        dbName=strdup(tmp);
+		A4GL_debug("Found SQLite db in '%s'",dbName);
+	} else {
+		/*
+            NOTE: SQLite by default will automatically create a new empty
+            database file when an attempt to access non-existing database is
+            made. This will in most cases result in complete confusion, since
+            DATABASE statement will never fail, but then all SQL statements
+			expecting tables and/or data will fail. But user will think he is
+            successfully conncted to the database...
+
+            So even if automatic creation of new database on first access
+            sounds like a cool feature, I beleive we better exit here if we
+            cannot find a specified SQLite database file in DBPATH.
+
+        */
+		A4GL_debug ("SQLite database file not found in DBPATH='%s'",acl_getenv("DBPATH"));
+		A4GL_exitwith ("SQLite database file not found in DBPATH");
+    }
+#endif
 
 #ifdef DEBUG
   A4GL_debug ("A4GLSQL_init_connection(dbName='%s')", dbName);
@@ -1350,10 +1402,9 @@ A4GLSQL_init_connection (char *dbName)
      and use it instead getlogin()
    */
 #else
-#ifdef DEBUG
-  A4GL_debug ("avoided getlogin() call");
-#endif
-
+	#ifdef DEBUG
+	  A4GL_debug ("avoided getlogin() call");
+	#endif
 #endif
 
   /* FIXME: what is LOGNAME ? */
@@ -1658,9 +1709,9 @@ A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
    * has no default compile-time database  */
   if ((server == 0) || (strlen (server) == 0))
     {
-#ifdef DEBUG
+	#ifdef DEBUG
       A4GL_debug (" no server - no connection.");
-#endif
+	#endif
       return 1;
     }
 
@@ -1686,9 +1737,9 @@ A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
     {
       rc = SQLAllocEnv (&henv);
       chk_rc (rc, 0, "SQLAllocEnv");
-#ifdef DEBUG
-      A4GL_debug ("SQLAllocEnv returns %d %p", rc, henv);
-#endif
+	  #ifdef DEBUG
+      	A4GL_debug ("SQLAllocEnv returns %d %p", rc, henv);
+	  #endif
     }
 
   rc = SQLAllocConnect (henv, &hdbc);
@@ -3177,6 +3228,16 @@ A4GLSQL_close_session (char *sessname)
 #ifdef DEBUG
   A4GL_debug ("Trying to close session %s, pr=%p", sessname, ptr);
 #endif
+
+#ifdef SQLITEODBC
+	//SQLite needs all transactions closed before connection can be ended
+    //FIXME: is there a bettr way? SQL_AUTOCOMMIT ? What should we really
+    //do if program wants to exit after an error or by reaching EXIT PROGARAM?
+	A4GL_debug("commitiing all transactions on SQLite...");
+	A4GLSQL_commit_rollback (1);
+#endif
+
+
 
   if (ptr == 0)
     {

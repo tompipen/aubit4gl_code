@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.36 2003-08-02 13:07:56 afalout Exp $
+# $Id: compile.c,v 1.37 2003-08-09 09:27:12 afalout Exp $
 #*/
 
 /**
@@ -51,6 +51,12 @@
                     Variables definitions
 =====================================================================
 */
+
+
+#define ANSI_MODE_IGNORE 0
+#define ANSI_MODE_WARN   1
+#define ANSI_MODE_ERROR  2
+
 
 /* -------- static --------- */
 static char outputfile[132];		/** The output file name */
@@ -185,24 +191,19 @@ initArguments (int argc, char *argv[])
 #ifdef DEBUG
   A4GL_debug ("Parsing the comand line arguments\n");
   A4GL_debug ("Arg 0 set to >%s<", A4GL_getarg0 ());
+  A4GL_debug ("Compiling to %s code\n",acl_getenv ("A4GL_LEXTYPE"));
 #endif
 
+
+  // set valid options for getopt_long depending on putput language
   if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0
-      || strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
-    {
+      || strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0) {
       //strcpy(opt_list,"Gs:co::d::l::?hSVvft");
       strcpy (opt_list, "G4s:N:kKco::l::L::?hSVvftd:");
-#ifdef DEBUG
-      A4GL_debug ("Compiling to C code\n");
-#endif
-    }
-
-  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0)
-    {
+    } else if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0) {
       strcpy (opt_list, "G4s:N:?hSVvftd:");
-#ifdef DEBUG
-      A4GL_debug ("Compiling to Perl code\n");
-#endif
+    } else { // all other A4GL_LEXTYPE types
+      strcpy (opt_list, "G4s:N:kKco::l::L::?hSVvftd:");
     }
 
   /* this call will intercept -v and -vfull arguments, that can be only
@@ -224,35 +225,47 @@ initArguments (int argc, char *argv[])
     {
       switch (i)
 	{
+/* TODO = add options:
 
+    * override language output set by A4GL_LEXTYPE
+    * override db connectivity set by A4GL_SQLTYPE
+    * Compile to C only
+	* Run copiled C code with CINT
+
+*/
+
+
+    /************************/
 	case 'c':		/* Compile resulting C file(s) to object */
-	  /* this is more or less meaningless, and is here for compatibility with
-	     C compiler style flags, because we decite linking tipe based on extension of the target object.
+		/* this is more or less meaningless, and is here for compatibility with
+	     C compiler style flags, because we decide linking tipe based on
+		 extension of the target object.
 	   */
-
-#ifdef DEBUG
-	  A4GL_debug ("Got -c\n");
-#endif
+		#ifdef DEBUG
+		  A4GL_debug ("Got -c\n");
+		#endif
 
 	  compile_object = 1;
 	  break;
 
+    /************************/
 	case 'h':		/* Link resulting object(s) to shared library */
 	  /* this is more or less meaningless, and is here for compatibility with
-	     C compiler style flags, because we decite linking tipe based on extension of the target object.
+	     C compiler style flags, because we decite linking tipe based on
+		 extension of the target object.
 	   */
 
 	  compile_so = 1;
 	  break;;
 
+    /************************/
 	case 'o':		/* compile and optionally Link resulting object(s) */
-#ifdef DEBUG
-	  A4GL_debug ("Got -o flag\n");
-#endif
+		#ifdef DEBUG
+		  A4GL_debug ("Got -o flag\n");
+		#endif
 
 	  sprintf (output_object, "%s", (NULL == optarg) ? "" : optarg);
-	  if (strcmp (output_object, "") == 0)
-	    {
+	  if (strcmp (output_object, "") == 0) {
 	      /* if required parameter to the -o flag was not immediately
 	         nex to the flag, and returned in optarg, maybe it was spcified as
 	         next parameter, separated from -o flag with space(s):
@@ -260,99 +273,91 @@ initArguments (int argc, char *argv[])
 	      sprintf (output_object, "%s",
 		       (NULL == argv[optind]) ? "" : argv[optind]);
 
-	      if (strcmp (output_object, "") != 0)
-		{
-		  sprintf (s_param[skip_param_idx].param, "%s",
-			   output_object);
-		  skip_param_idx++;
-		}
-	    }
+	      if (strcmp (output_object, "") != 0) {
+			  sprintf (s_param[skip_param_idx].param, "%s",
+				   output_object);
+			  skip_param_idx++;
+		  }
+	  }
 
-	  if (strcmp (output_object, "") != 0)
-	    {
+	  if (strcmp (output_object, "") != 0) {
 
 	      A4GL_bname (output_object, a, b);
 	      strcpy (ext, ".");
 	      strcat (ext, b);
 	      //A4GL_debug ("%s %s %s", b, acl_getenv ("A4GL_EXE_EXT"), ext);
 
-	      if (strcmp (ext, acl_getenv ("A4GL_OBJ_EXT")) == 0)
-		{
-		  compile_object = 1;
-		}
-	      else
-		{
-		  if (strcmp (ext, acl_getenv ("A4GL_EXE_EXT")) == 0)
-		    {
+	      if (strcmp (ext, acl_getenv ("A4GL_OBJ_EXT")) == 0) {
+			  compile_object = 1;
+		  } else {
+		    if (strcmp (ext, acl_getenv ("A4GL_EXE_EXT")) == 0) {
 		      compile_object = 1;
 		      compile_exec = 1;
-		    }
-		  else
-		    {
+		    } else {
+		      if (strcmp (ext, acl_getenv ("A4GL_LIB_EXT")) == 0) {
+			  	compile_object = 1;
+				  compile_lib = 1;
+			  } else {
+				  //FIXME: and what about shared library?
+				  /*
+				     printf("Invalid output file=%s\n", output_object);
+				     printf("ERROR: extension not specified or invalid\n");
+				     exit (1);
+				   */
 
-		      if (strcmp (ext, acl_getenv ("A4GL_LIB_EXT")) == 0)
-			{
-			  compile_object = 1;
-			  compile_lib = 1;
-			}
-		      else
-			{
-			  //FIXME: and what about shared library?
-			  /*
-			     printf("Invalid output file=%s\n", output_object);
-			     printf("ERROR: extension not specified or invalid\n");
-			     exit (1);
-			   */
-
-			  /* we will have to assume executable when there is no 
-			     textension, as this is a common practioce on UNIX */
-			  A4GL_debug
-			    ("assuming executable, there was no extension on -o parameter");
-			  compile_object = 1;
-			  compile_exec = 1;
-			}
+				  /* we will have to assume executable when there is no
+				     textension, as this is a common practioce on UNIX */
+				  A4GL_debug
+				    ("assuming executable, there was no extension on -o parameter");
+				  compile_object = 1;
+				  compile_exec = 1;
+			  }
 		    }
 		}
 
-	    }
-	  else
-	    {
+	  } else {
 	      printf ("Error: -o flag specified with no parameter\n");
 	      printf ("optind=%s\n", argv[optind]);
 	      printf ("option_index=%s\n", argv[option_index]);
 	      exit (5);
-	    }
+	  }
 
 	  break;
 
-	case '4':
+    /************************/
+	case '4':       // FIXME: what is this?
 	  compiling_system_4gl = 1;
 	  break;
 
-	case 'l':		// Extra libraries to link with
-#ifdef DEBUG
-	  A4GL_debug ("Pass trough option: %s\n", optarg);
-#endif
+    /************************/
+	case 'l':		// Extra libraries to link with; -l flag
+		#ifdef DEBUG
+	  	A4GL_debug ("Pass trough option: %s\n", optarg);
+		#endif
 	  strcat (extra_ldflags, "-l");
 	  strcat (extra_ldflags, optarg);
 	  strcat (extra_ldflags, " ");
 	  break;
 
+    /************************/
 	case 'L':		// LD -L flags for linking extra libraries
-#ifdef DEBUG
-	  A4GL_debug ("Pass trough option: %s\n", optarg);
-#endif
+		#ifdef DEBUG
+		  A4GL_debug ("Pass trough option: %s\n", optarg);
+		#endif
 	  strcat (extra_ldflags, "-L");
 	  strcat (extra_ldflags, optarg);
 	  strcat (extra_ldflags, " ");
 	  break;
 
-	case 'd':		// Name of the database to compile against - DEFINE ... LIKE ... (?)
+    /************************/
+	case 'd':		// Name of the database to compile against - for things
+					// like DEFINE ... LIKE ...
 	  printf ("\n\nDB=%s\n\n", optarg);
 	  default_database = strdup (optarg);
 	  break;
 
 
+    /************************/
 	case 'N':		// User specified namespace prefix
 	  if (optarg == 0)
 	    optarg = "";
@@ -360,10 +365,12 @@ initArguments (int argc, char *argv[])
 	  set_namespace (optarg);
 	  break;
 
+    /************************/
 	case 'G':		/* generate Globals file only */
 	  globals_only = 1;
 	  break;
 
+    /************************/
 	case 's':		/* Stack information inclusion */
 	  si = atoi (optarg);
 	  if (si != 0 && si != 1)
@@ -374,44 +381,51 @@ initArguments (int argc, char *argv[])
 	  setGenStackInfo (si);
 	  break;
 
+    /************************/
 	case '?':		/* Help */
 	  printUsage_help (argv);
 	  exit (0);
 
+    /************************/
 	case 'k':		/* do not clean intermedate files (--keep) */
 	  clean_aftercomp = 0;
 	  break;
 
+    /************************/
 	case 'K':		/* clean intermedate files when done (--clean) */
 
-#ifdef DEBUG
-	  A4GL_debug ("Got --clean\n");
-#endif
+		#ifdef DEBUG
+		  A4GL_debug ("Got --clean\n");
+		#endif
 	  clean_aftercomp = 1;
 	  break;
 
-
+    /************************/
 	case 'S':		/* Silent */
 	  silent = 1;
 	  verbose = 0;
 	  break;
 
+    /************************/
 	case 'V':		/* Verbose */
 	  verbose = 1;
 	  silent = 0;
-#ifdef DEBUG
-	  A4GL_debug ("Turned on verbose mode\n");
-#endif
+		#ifdef DEBUG
+		  A4GL_debug ("Turned on verbose mode\n");
+		#endif
 	  break;
 
+    /************************/
 	case 'v':		/* Show version - needed for long opts */
 	  A4GL_check_and_show_id ("4GL Compiler", "-v");
 	  exit (0);
 
+    /************************/
 	case 'f':		/* Show version - needed for long opts */
 	  A4GL_check_and_show_id ("4GL Compiler", "-vfull");
 	  exit (0);
 
+    /************************/
 	default:		/* Everything else we did not define - should
 				   never happen since getopt_long() should reject
 				   all flags not defined in opt_list
@@ -430,21 +444,21 @@ initArguments (int argc, char *argv[])
     }
 
 #if YYDEBUG != 0
-#ifdef DEBUG
-  A4GL_debug ("YYDEBUG was set while compiling\n");
-#endif
-#ifdef YYPRINT
-#ifdef DEBUG
-  A4GL_debug ("YYPRINT was set while compiling\n");
-#endif
-#endif
+	#ifdef DEBUG
+	  A4GL_debug ("YYDEBUG was set while compiling\n");
+	#endif
+	#ifdef YYPRINT
+		#ifdef DEBUG
+		  A4GL_debug ("YYPRINT was set while compiling\n");
+		#endif
+	#endif
 #endif
 
   if (strcmp (acl_getenv ("YYDEBUG"), "") != 0)
     {
-#ifdef DEBUG
-      A4GL_debug ("Yacc Debugging on\n");
-#endif
+		#ifdef DEBUG
+	      A4GL_debug ("Yacc Debugging on\n");
+		#endif
       yydebug = 1;
     }
   else
@@ -453,13 +467,6 @@ initArguments (int argc, char *argv[])
     }
 
   A4GL_init_datatypes ();
-
-  //if (!A4GLSQL_initlib ())
-   // {
-    //  printf ("4glc: Error opening SQL Library (A4GL_SQLTYPE=%s)\n",
-//	      acl_getenv ("A4GL_SQLTYPE"));
- //     exit (1);
-  //  }
 
   /* prepare CC flags */
   strcpy (incl_path, "-I");
@@ -614,42 +621,65 @@ initArguments (int argc, char *argv[])
 				sprintf (buff, "ecpg_wrap -rdynamic %s -o %s %s %s %s %s ",
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
-
 		    }
 			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
 			{
 				sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",
 			       acl_getenv ("A4GL_SAPDB_ESQLC"), all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
-
 			}
 			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "QUERIX") == 0)
 			{
 				  sprintf (buff, "esqlc -rdynamic %s -o %s %s %s %s %s ",
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
-
 			}
-			else
+			else //"A4GL_LEXDIALECT"="INFORMIX" - default
 			{
-				//"A4GL_LEXDIALECT"="INFORMIX" - default
 				  sprintf (buff, "esql -rdynamic %s -o %s %s %s %s %s ",
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
             }
-
-
 	    } else { /* Pure C compiler output */
 		  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s",
 		       gcc_exec, all_objects, output_object, l_path, l_libs,
 		       pass_options, extra_ldflags);
         }
 	#else
-	      //We are on Windows
+		  //We are on Windows
+		if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0){
+            /* When using Embedded C output, we need to run appropriate ESQL/C
+            compiler to do the linking */
+			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
+		  	{
+				sprintf (buff, "ecpg_wrap -rdynamic %s -o %s %s %s %s %s ",
+			       all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+		    }
+			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
+			{
+				sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",
+			       acl_getenv ("A4GL_SAPDB_ESQLC"), all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+			}
+			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "QUERIX") == 0)
+			{
+				  sprintf (buff, "esqlc -rdynamic %s -o %s %s %s %s %s ",
+			       all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+			}
+			else //"A4GL_LEXDIALECT"="INFORMIX" - default
+			{
+				  sprintf (buff, "esql -rdynamic %s -o %s %s %s %s %s ",
+			       all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+            }
+	    } else { /* Pure C compiler output */
 	      //WARNING: libs must be at the end
 	      sprintf (buff, "%s %s -o %s %s %s %s %s",
 		       gcc_exec, all_objects, output_object, l_path, pass_options,
 		       l_libs, extra_ldflags);
+        }
 	#endif
     }
 
@@ -660,10 +690,41 @@ initArguments (int argc, char *argv[])
 	}
 	#ifndef __MINGW32__
 	      A4GL_debug ("Linking static library\n");
+		if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0){
+            /* When using Embedded C output, we need to run appropriate ESQL/C
+            compiler to do the linking */
+//FIXME:
+			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
+		  	{
+				sprintf (buff, "ecpg_wrap -rdynamic %s -o %s %s %s %s %s ",
+			       all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+		    }
+			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
+			{
+				sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",
+			       acl_getenv ("A4GL_SAPDB_ESQLC"), all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+			}
+			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "QUERIX") == 0)
+			{
+				  sprintf (buff, "esqlc -rdynamic %s -o %s %s %s %s %s ",
+			       all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+			}
+			else //"A4GL_LEXDIALECT"="INFORMIX" - default
+			{
+				  sprintf (buff, "esql -rdynamic %s -o %s %s %s %s %s ",
+			       all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+            }
+//FIXME ENDS
+	    } else { /* Pure C compiler output */
 
 	      sprintf (buff, "%s -static %s -o %s %s %s -shared %s %s",
 		       gcc_exec, all_objects, output_object, pass_options, l_path,
 		       l_libs, extra_ldflags);
+        }
 	#else
 	      /* On Windows, there can be no unresolved dependencies at link time - so we allways must
 	         link with libaubit4gl - but we do not make any static Aubit libraries any more, so we
@@ -683,13 +744,43 @@ initArguments (int argc, char *argv[])
 	}
       A4GL_debug ("Linking shared library\n");
 	#ifndef __MINGW32__
-	      sprintf (buff, "%s -shared %s -o %s %s %s %s %s %s",
+		if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0){
+            /* When using Embedded C output, we need to run appropriate ESQL/C
+            compiler to do the linking */
+//FIXME:
+			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
+		  	{
+				sprintf (buff, "ecpg_wrap -rdynamic %s -o %s %s %s %s %s ",
+			       all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+		    }
+			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
+			{
+				sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",
+			       acl_getenv ("A4GL_SAPDB_ESQLC"), all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+			}
+			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "QUERIX") == 0)
+			{
+				  sprintf (buff, "esqlc -rdynamic %s -o %s %s %s %s %s ",
+			       all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+			}
+			else //"A4GL_LEXDIALECT"="INFORMIX" - default
+			{
+				  sprintf (buff, "esql -rdynamic %s -o %s %s %s %s %s ",
+			       all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+            }
+//FIXME ENDS
+	    } else { /* Pure C compiler output */
+		  sprintf (buff, "%s -shared %s -o %s %s %s %s %s %s",
 		       gcc_exec, all_objects, output_object, l_path, l_libs,
 		       pass_options, extra_ldflags, incl_path);
 	      //FIXME: add incl_path only if there are .c files in all_objects
 
 	//gcc -shared  -o  -L/usr/src/aubit/aubit4glsrc/lib -laubit4gl helplib.c a4gl_xxhelp.afr.c -o ../libHELP_std.dll   -I/usr/src/aubit/aubit4glsrc/incl -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
-
+        }
 	#else
 	      /*
 	         NOTE: we are acutally making a Window dll here.
@@ -702,9 +793,6 @@ initArguments (int argc, char *argv[])
 		       "%s -L. -shared -Wl,--out-implib=%s.a -Wl,--export-all-symbols %s -o %s %s %s %s %s %s",
 		       gcc_exec, output_object, all_objects, output_object,
 		       pass_options, l_path, l_libs, extra_ldflags, incl_path);
-
-
-
 
 	#endif
     }
@@ -899,9 +987,9 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 	    {
 	      printf ("Preparing globals file for: %s\n", c);
 	    }
-#ifdef DEBUG
-	  A4GL_debug ("Preparing globals file for: %s\n", c);
-#endif
+		#ifdef DEBUG
+		  A4GL_debug ("Preparing globals file for: %s\n", c);
+		#endif
 	}
       else
 	{
@@ -910,9 +998,9 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 	      printf ("Translating to %s: %s\n", acl_getenv ("A4GL_LEXTYPE"),
 		      c);
 	    }
-#ifdef DEBUG
-	  A4GL_debug ("Translating to %s: %s\n", acl_getenv ("A4GL_LEXTYPE"), c);
-#endif
+		#ifdef DEBUG
+		  A4GL_debug ("Translating to %s: %s\n", acl_getenv ("A4GL_LEXTYPE"), c);
+		#endif
 	}
     }
 
@@ -996,34 +1084,31 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 			from that
             */
 
-
 		  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
 		    {
        			  sprintf (buff, "ecpg_wrap %s.cpc -c -o %s %s %s",
 				   aa, single_output_object, incl_path,
 				   pass_options);
-
-
-		    } else {
-			  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
-              {
-
+		    }
+			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
+            {
 				/* /opt/sapdb/interfaces/precompiler/bin/cpc hello <<- no .cpc extension ! */
 
        			  sprintf (buff, "%s %s -c -o %s %s %s",
 				   acl_getenv ("A4GL_SAPDB_ESQLC"), aa, single_output_object, incl_path,
 				   pass_options);
-
-
-              } else {
-
-				//"A4GL_LEXDIALECT"="INFORMIX" - default
-				//  esql  ./hello.ec -c -o ./hello.ao -I/opt/aubit4gl/incl  2> ./hello.ec.err
-
+		    }
+			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "QUERIX") == 0)
+            {
+       			  sprintf (buff, "esqlc %s.ec -c -o %s %s %s",
+				   aa, single_output_object, incl_path,
+				   pass_options);
+            }
+			else //"A4GL_LEXDIALECT"="INFORMIX" - default
+			{
        			  sprintf (buff, "esql %s.ec -c -o %s %s %s",
 				   aa, single_output_object, incl_path,
 				   pass_options);
-              }
 		    }
 	    } else { /* Pure C compiler output */
 
@@ -1101,14 +1186,14 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 
 		   */
 
-#ifdef DEBUG
-		  A4GL_debug ("%s file size is not zero %d\n", buff, flength);
-#endif
+		  #ifdef DEBUG
+		  	A4GL_debug ("%s file size is not zero %d\n", buff, flength);
+		  #endif
 		  sprintf (buff, "%s %s.c.err %s.c.warn",
 			   acl_getenv ("A4GL_MV_CMD"), aa, aa);
-#ifdef DEBUG
-		  A4GL_debug ("Runnung %s", buff);
-#endif
+		  #ifdef DEBUG
+		  	A4GL_debug ("Runnung %s", buff);
+		  #endif
 		  ret = system (buff);
           if (ret)
             {
@@ -1128,9 +1213,9 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 		  //is it smart to delete .glb files?
 		  sprintf (buff, "%s %s.err %s.c.err %s.h %s.c ",	//%s.glb
 			   acl_getenv ("A4GL_RM_CMD"), aa, aa, aa, aa);	//,aa
-#ifdef DEBUG
-		  A4GL_debug ("Runnung %s", buff);
-#endif
+		  #ifdef DEBUG
+		  	A4GL_debug ("Runnung %s", buff);
+		  #endif
 		  ret = system (buff);
 		  if (ret)
 		    {
@@ -1225,21 +1310,21 @@ printUsage_help (char *argv[])
 
 
   printf ("Compiled with platform settings:\n");
-#if ( defined(__MINGW32__) )
-  printf ("__MINGW32__ ");
-#endif
+  #if ( defined(__MINGW32__) )
+  	printf ("__MINGW32__ ");
+  #endif
 
-#if ( defined (_WIN32) )
-  printf ("_WIN32 ");
-#endif
+  #if ( defined (_WIN32) )
+  	printf ("_WIN32 ");
+  #endif
 
-#if ( defined(WIN32) )
-  printf ("WIN32 ");
-#endif
+  #if ( defined(WIN32) )
+  	printf ("WIN32 ");
+  #endif
 
-#if ( defined(__CYGWIN__) )
-  printf ("__CYGWIN__ ");
-#endif
+  #if ( defined(__CYGWIN__) )
+  	printf ("__CYGWIN__ ");
+  #endif
 
   printf ("\n");
   printf ("\n");
@@ -1367,12 +1452,11 @@ set_yytext (char *s)
   strcpy (yytext, s);
 }
 
-
-#define ANSI_MODE_IGNORE 0
-#define ANSI_MODE_WARN   1
-#define ANSI_MODE_ERROR  2
-
-
+/**
+ *
+ *
+ *
+ */
 static int
 get_ansi_mode (void)
 {
@@ -1437,6 +1521,11 @@ ansi_violation (char *s, int severity)
 
 
 
+/**
+ *
+ *
+ *
+ */
 int
 has_default_database (void)
 {
@@ -1445,6 +1534,11 @@ has_default_database (void)
   return 0;
 }
 
+/**
+ *
+ *
+ *
+ */
 char *
 get_default_database (void)
 {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.83 2003-08-06 20:28:38 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.84 2003-08-09 09:27:13 afalout Exp $
 #
 */
 
@@ -1291,6 +1291,7 @@ void A4GL_display_at (int n, int a);
   /* =========================== from a4gl_io.h ================ */
 
   FILE *A4GL_open_file_dbpath (char *fname);
+  char *A4GL_fullpath_dbpath (char *fname);
 
   /* ========================== match.c ================================== */
   int A4GL_aubit_strcasecmp (char *a, char *b);

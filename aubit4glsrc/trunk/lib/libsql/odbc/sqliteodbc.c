@@ -2,7 +2,7 @@
  * @file sqliteodbc.c
  * SQLite ODBC Driver main module.
  *
- * $Id: sqliteodbc.c,v 1.1 2003-07-26 04:47:16 afalout Exp $
+ * $Id: sqliteodbc.c,v 1.2 2003-08-09 09:27:13 afalout Exp $
  *
  * Copyright (c) 2001-2003 Christian Werner <chw@ch-werner.de>
  *
@@ -46,10 +46,14 @@ MODIFICATIONS.
 #undef  HAVE_CONFIG_H
 
 #ifndef NODEBUG
-#define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
+	#define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
 #else
-#define A4GL_debug null_func
+	#define A4GL_debug null_func
 #endif
+
+  int A4GL_set_line (char *s, long l);
+  void A4GL_debug_full (char *fmt, ...);
+
 /* Added for Aubit - END */
 
 #include "sqliteodbc.h"
@@ -589,6 +593,9 @@ setstatd(DBC *d, char *msg, char *st, ...)
     }
     strncpy(d->sqlstate, st, 5);
     d->sqlstate[5] = '\0';
+
+    A4GL_debug("SQLITE(d): %s",msg);
+
 }
 
 /**
@@ -622,6 +629,8 @@ setstat(STMT *s, char *msg, char *st, ...)
     }
     strncpy(s->sqlstate, st, 5);
     s->sqlstate[5] = '\0';
+
+    A4GL_debug("SQLITE: %s",msg);
 }
 
 /**
@@ -6695,6 +6704,8 @@ SQLRETURN SQL_API
 SQLDisconnect(SQLHDBC dbc)
 {
     DBC *d;
+
+A4GL_debug("disconecting...");
 
     if (dbc == SQL_NULL_HDBC) {
 	return SQL_INVALID_HANDLE;
