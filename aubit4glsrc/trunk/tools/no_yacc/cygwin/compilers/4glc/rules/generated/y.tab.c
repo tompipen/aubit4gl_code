@@ -7821,7 +7821,7 @@ yyreduce:
     {
 	print_remote_func(yyvsp[0].str);
 	sprintf(yyval.str,
-		"unregister_func(\"%s\",%s%s);\n",
+		"A4GL_unregister_func(\"%s\",%s%s);\n",
 			yyvsp[0].str,
 			(char *)get_namespace(yyvsp[0].str),
 			yyvsp[0].str
