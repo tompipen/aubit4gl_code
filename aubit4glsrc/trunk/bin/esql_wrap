@@ -140,7 +140,8 @@ else
 	GCC_INFX="-mms-bitfields"
 fi
 
-LFLAGS="-L$AUBITDIR/lib -laubit4gl -lESQL_INFORMIX"
+#DO NOT link in -lESQL_INFORMIX - it is dlopen()ed
+LFLAGS="-L$AUBITDIR/lib -laubit4gl"
 
 GCC_RUN="gcc $ofiles $other_args $GCC_INFX $LFLAGS $output"
 echo $GCC_RUN

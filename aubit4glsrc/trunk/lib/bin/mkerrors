@@ -1,15 +1,22 @@
 #This script is invoked from lib/libaubit4gl/Makefile
 #It creates lib/generated/tmperrs.h file used by lib/libaubit4gl/error.c
 #WARNIG: errno renamed to a4gl_errno because of the conflict in errno.h
+#exitwith renamed to A4GL_exitwith - do we need to change it here?
 
 #Get settings
 . ../../etc/aubitrc
 
-a="*.c ../libsql/odbc/*.c ../libsql/esqlc/*.ec ../libsql/nosql/nosql.c"
-b="../libform/form_xdr/*.c ../libui/ui_gtk/*.c ../libmenu/menu_xdr/*.c ../libmsg/msg_native/*.c"
-c="../libpdf/*.c ../librpc/sun_rpc/*.c ../librpc/xml_rpc/*.c ../libui/ui_console/*.c ../libui/ui_curses/*.c"
+#Why not use find here?
+#a="*.c ../libsql/odbc/*.c ../libsql/esqlc/*.ec ../libsql/nosql/nosql.c"
+#b="../libform/form_xdr/*.c ../libui/ui_gtk/*.c ../libmenu/menu_xdr/*.c ../libmsg/msg_native/*.c"
+#c="../libpdf/*.c ../librpc/sun_rpc/*.c ../librpc/xml_rpc/*.c ../libui/ui_console/*.c ../libui/ui_curses/*.c"
+#SOURCES="$a $b $c"
 
-SOURCES="$a $b $c"
+if test "$COMSPEC" != ""; then 
+	SOURCES=`/bin/find ../.. -name "*.c"`
+else
+	SOURCES=`find ../.. -name "*.c"`
+fi
 
 $AWK '
 BEGIN {
@@ -45,6 +52,7 @@ b=substr($0,index($0,":")-1)
 a=substr($0,index($0,"exitwith")+9)
 a=substr(a,index(a,"\"")+1)
 a=substr(a,1,index(a,"\"")-1)
+a=substr(a,1,index(a,"\\")-1)
 a4gl_errno=errors[a]
 if (a4gl_errno==0&&done[a]==0) a4gl_errno=errcnt++
 if (done[a]==0) {

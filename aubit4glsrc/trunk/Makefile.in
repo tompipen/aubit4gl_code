@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.147 2004-03-22 00:15:03 afalout Exp $
+# $Id: Makefile.in,v 1.148 2004-03-22 03:10:34 afalout Exp $
 #
 
 ## ==================================================================
@@ -333,7 +333,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C lib clean
 	$(MAKE) -C lib/libui/ui_console clean
 	$(MAKE) -C lib/libui/ui_curses clean
-	$(MAKE) -C lib/libui/ui_gtk clean
+#	$(MAKE) -C lib/libui/ui_gtk clean
 	$(MAKE) -C lib/extra_libs/file clean
 	$(MAKE) -C lib/extra_libs/string clean
 	$(MAKE) -C lib/libexdata clean
@@ -432,7 +432,7 @@ clean.makefiles:
 	lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile \
 	lib/resource/Makefile tools/loadmap/Makefile lib/libaubit4gl/Makefile \
 	lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile \
-	lib/libui/ui_gtk/Makefile lib/liblex/lex_esqlc/Makefile \
+	lib/liblex/lex_esqlc/Makefile \
 	lib/libexdata/Makefile lib/libsql/postgresql/Makefile \
     lib/libform/form_generic/Makefile lib/libmenu/menu_generic/Makefile \
 	lib/libsql/sapdb/Makefile tools/4glunit/Makefile \

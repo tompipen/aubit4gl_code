@@ -8,7 +8,12 @@ dump for aubit and Informix)
 
 #include <stdio.h>
 #include <curses.h>
-#include "fglsys.h"
+
+#ifdef C4GL
+	#this header is apprently only present in Infomix-4GL C compiler - not in 
+	#RDS (p-code) version of 4gl
+	#include "fglsys.h"
+#endif
 
 FILE *f;
 
