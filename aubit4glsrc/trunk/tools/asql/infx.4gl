@@ -1604,3 +1604,9 @@ asql_explain(struct element *e) {
 // Not implemented - use set explain on/set explain off instead...
 }
 endcode
+
+
+function qry_translate()
+error "Can't translate to informix"
+return
+end function

@@ -39,6 +39,7 @@ define lv_echo integer
 main
 define lv_a integer
 define lv_cnt integer
+define lv_dummy char(255)
 initialize mv_curr_db to null
 call edit_init()
 
@@ -67,6 +68,7 @@ if num_args() then
 		end if
 
 		if arg_val(lv_a)="-q" then
+			call  get_version() returning lv_dummy
 			let lv_quiet=1
 			continue for
 		end if
@@ -264,6 +266,7 @@ strcpy(lv_dialect,"INFX ESQL/C");
 
 #ifdef DIALECT_POSTGRES
 strcpy(lv_dialect,"POSTGRES");
+aclfgl_set_translations(0);
 #endif
 endcode
 
@@ -284,4 +287,23 @@ display middle("Development sponsored by Cassens Transport Company") at 16,1
 display middle("http://www.cassens.com") at 17,1
 sleep 4
 clear screen
+end function
+
+function set_translations()
+define a char(255)
+define sqlcnvpath char(255)
+let sqlcnvpath=fgl_getenv("SQLCNVPATH")
+if sqlcnvpath is null or sqlcnvpath matches " " THEN
+	let sqlcnvpath=fgl_getenv("AUBITDIR")
+	let sqlcnvpath=sqlcnvpath clipped,"/etc/convertsql"
+code
+{
+static char buff[256];
+
+		A4GL_trim(sqlcnvpath);
+		sprintf(buff,"SQLCNVPATH=%s",sqlcnvpath);
+		putenv(buff);
+}
+endcode
+end if
 end function

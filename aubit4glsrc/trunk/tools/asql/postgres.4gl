@@ -24,6 +24,7 @@
 # +----------------------------------------------------------------------+
 code
 #undef UCHAR
+#include "simple.h"
 //EXEC SQL include sqltypes;
 EXEC sql include sql3types;
 EXEC sql include sqlca;
@@ -1184,4 +1185,45 @@ database lv_dbname
 end function
 
 
+function qry_translate()
+define a integer
+define b integer
+define n integer
+call open_tmpfile("r");
+code
+{
+extern FILE *yyin;
+extern struct element *list;
+extern int list_cnt;
 
+
+yyin=(FILE *)get_curr_mvfin();
+clr_stmt();
+a=yyparse();
+a=list_cnt;
+endcode
+call close_tmpfile()
+
+call open_tmpfile("w")
+code
+n=(FILE *)get_curr_mvfin();
+endcode
+
+for b=0 to a-1
+code 
+{
+char *s;
+s = A4GL_apisql_strdup (list[b].stmt);
+A4GL_debug("s=%s",s);
+A4GL_convert_sql("INFORMIX","POSTGRESQL",s);
+A4GL_debug("s=%s",s);
+A4GL_trim(s);
+if (n) fprintf((FILE *)n,"%s;\n\n",s);
+free(s);
+}
+}
+endcode
+call close_tmpfile()
+end for
+	
+end function

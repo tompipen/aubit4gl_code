@@ -48,6 +48,10 @@ while true
 
 	menu "SQL"
 		before menu 
+			if fgl_getenv("SQLCNVPATH") is null or fgl_getenv("SQLCNVPATH") = " " then
+				hide option "Translate"
+			end if
+
 			if lv_runnext then
 				next option "Run"
 			end if
@@ -89,6 +93,10 @@ while true
 		command "Drop" "Drop an SQL file"
 			let lv_action=9  exit menu
 
+
+		command "Translate" "Translate SQL into a different dialect"
+			let lv_action=11 exit menu
+			
 
 		command "Exit" "Return to ADBACCESS menu" 
 			let lv_action=10
@@ -146,6 +154,9 @@ while true
 			call display_tmp_file()
 
 		when 10 exit while
+		when 11
+			call qry_translate()
+			call display_tmp_file()
 	end case
 end while
 

@@ -225,7 +225,7 @@ if (c==KEY_DC) c=24;
 if (c==KEY_ENTER)  c=13;
 c_as_char[0]=c;
 endcode
-	if c>=32 and c<=127 then
+	if c>=32 and c<127 then
 		let tmp_x=x+leftcol-1
 		let tmp_y=y+topline-1
 		let tmp_line=lines[tmp_y]
@@ -256,7 +256,7 @@ endcode
 		let c=key_down
 	end if
 
-	if c=key_bs then
+	if c=key_bs or c=127 then
 		let c=key_left
 	end if
 		
