@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.8 2003-09-11 10:42:26 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.9 2003-09-14 07:47:10 mikeaubury Exp $
 */
 
 /**
@@ -73,7 +73,7 @@ extern "C"
 
 int A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...);
 void A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread);
-void A4GL_skip_top_of_page (struct rep_structure *rep);
+void A4GL_skip_top_of_page (struct rep_structure *rep,int rep_end);
 void A4GL_aclfgli_skip_lines (struct rep_structure *rep);
 void A4GL_add_spaces (void);
 void A4GL_add_row_report_table (struct BINDING *b, int n);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.56 2003-09-10 10:32:50 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.57 2003-09-14 07:47:10 mikeaubury Exp $
 */
 
 /**
@@ -429,6 +429,11 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
     int line_no;
     int col_no;
     int (*report) (int a, int b);
+    int lines_in_header;
+    int lines_in_first_header;
+    int lines_in_trailer;
+    int print_section;
+	char *header;
   };
 
   struct pdf_rep_structure
@@ -453,6 +458,11 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
     int paper_size;
     void *pdf_ptr;
     int font;
+    int lines_in_header;
+    int lines_in_first_header;
+    int lines_in_trailer;
+    int print_section;
+	char *header;
   };
 #endif
 

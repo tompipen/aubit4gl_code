@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.92 2003-09-10 10:32:50 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.93 2003-09-14 07:47:10 mikeaubury Exp $
 #
 */
 
@@ -1044,6 +1044,11 @@ void A4GL_display_at (int n, int a);
     /* was      int (*report)(); */
 /* int (*report)(void); *//* report.c:180: too many arguments to function */
     int (*report) (int a, int b);
+    int lines_in_header;
+    int lines_in_first_header;
+    int lines_in_trailer;
+    int print_section;
+    char *header;
   };
   struct pdf_rep_structure
   {
@@ -1069,6 +1074,11 @@ void A4GL_display_at (int n, int a);
     int paper_size;
     void *pdf_ptr;
     int font;
+    int lines_in_header;
+    int lines_in_first_header;
+    int lines_in_trailer;
+    int print_section;
+    char *header;
   };
 
 #endif
