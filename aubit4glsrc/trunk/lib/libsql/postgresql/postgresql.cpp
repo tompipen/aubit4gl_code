@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: postgresql.cpp,v 1.2 2002-06-29 13:12:03 afalout Exp $
+# $Id: postgresql.cpp,v 1.3 2003-01-10 23:12:22 saferreira Exp $
 #
 */
 
@@ -32,17 +32,10 @@
  * @file
  *
  * Implementation of the direct connection of aubit 4gl to postgresql database
- * using 
- *
- * This the OO part of the driver.
- *
- * The C functions that make the interface with aubit are in PgAubit.c
+ * using the libpq postgresql access library.
  *
  *
  */
-
-/** Informix ESQL/C database connector type */
-/* #define ESQL_CONNECTOR   0 */
 
 #define DEFINE_SQLCA
 
@@ -82,8 +75,6 @@
 
 	#include "constats.h"
 
-	/* EXEC SQL include sqlca; */
-
 	#ifndef WIN32
 		#include <stdarg.h>
 	#endif
@@ -100,10 +91,21 @@
 
 #else
 
-    #include "a4gl_lib_sql_pg_int.h"
+    //#include "a4gl_lib_sql_pg_int.h"
+  #include <stdio.h>
+  #include "a4gl_incl_4gldef.h"
+  #include <postgresql/libpq-fe.h>
+  #include "PgConnection.h"
+  #include "ConnectionException.h"
+  #include "PgDriver.h"
+  #include "PreparedStatement.h"
 
 #endif
 
+using namespace Aubit4glSql_postgresql;
+
+/** The postgres driver object */
+static PgDriver pgDriver;
 
 /*
 =====================================================================
@@ -116,7 +118,7 @@
 #endif
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.2 2002-06-29 13:12:03 afalout Exp $";
+  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.3 2003-01-10 23:12:22 saferreira Exp $";
 #endif
 
 
@@ -124,6 +126,7 @@ typedef unsigned char UCHAR;
 char lasterrorstr[1024] = "";
 
 /** The global (not named) statement count, to generate unique names */
+// @todo : This should be at the driver if necessary
 static int statementCount = 0;
 
 /** Indicate if an error as ocurred in order to return error codes */
@@ -154,20 +157,6 @@ static int getColumnsOrder = 0;
 /** The number of columns when getting datatypes */
 static int getColumnsMax = 0;
 
-// Create a connection collection (with a template or something like that 
-// The connection type should be PGDatabase objects
-//
-// Instead of having static functions we should have a class to handle this and
-// then C wrapper functions to work with.
-//
-// All C functions should be declared with extern "C". They could have a 
-// C++ object instantiation.
-//
-// Classes to define:
-//   - Aubit4gl postgres connector
-//   - Aubit4gl database connection manager
-
-static AubitConnectionManager *manager;
 
 
 /*
@@ -177,10 +166,12 @@ static AubitConnectionManager *manager;
 */
 
 
+/*
 extern "C" void setConnectionManager(AubitConnectionManager _connManager)
 {
   connectionManager = connManager;
 }
+*/
 
 /**
  * Check if there was an sql error. Uses ESQL/C XOpen global variable SQLSTATE.
@@ -221,13 +212,13 @@ extern "C" int A4GLSQL_get_status(void)
 }
 
 /**
- * Get the current SQL error message.
+ * Get the current SQL error message of the current default connection.
  *
- * @return The contents of sqlca.sqlerrm.
+ * @return The error message of the last error ocurred in the connection.
  */
 extern "C" char *A4GLSQL_get_sqlerrm (void)
 {
-  return msg;
+  return pgDriver.getCurrentConnection().getErrorMessage();
 }
 
 /**
@@ -254,71 +245,42 @@ static char *getGlobalStatementName(void)
   return statementName;
 }
 
-/*   Connection manager */
-
 /**
- * Create a new DbConnection object.
+ * Init a new connection to the database and associate with an explicit 
+ * session name.
  *
- * @return A pointer to the connecion allocated.
+ * If the user identification was not set gets the values fromthe environment.
+ *
+ * @param sessname The name to be tied to the session. This is the name of 
+ *   the connection
+ * @param dsn The database name.
+ * @param usr The user name to establish the connection.
+ * @param pwd The password of the user to set the connection.
  */
-static DbConnection *NewDbConnection()
+extern "C" int A4GLSQL_init_session (const char *sessname, const char *dsn, 
+const char *usr, const char *pwd)
 {
-  DbConnection *connection;
-
-  connection = (DbConnection *)malloc(sizeof(DbConnection));
-  return connection;
-}
-
-/**
- * Initialize the default connection to the database.
- *
- * @todo : Merge the functions in only one that connects calling from
- *         others.
- *
- * @param dbName The database name.
- * @return
- *  - 1 : An error ocurred.
- *  - 0 : Connection estabilished.
- */
-extern "C" int A4GLSQL_init_connection (char *dbName)
-{
-  return A4GLSQL_make_connection (dbName,(UCHAR *)0,(UCHAR *)0);
-}
-
-/**
- * Close a named connection.
- *
- * @param sessname The session/connection name.
- * @return
- *  - 0 : Connection closed.
- *  - 1 : Connection does not exist or error ocurred.
- */
-extern "C" int A4GLSQL_close_session (char *sessname)
-{
-  AubitConnection connection;
-  connection = manager.getConnection(sessname);
-  if ( connection == (AubitConnection *)0 )
+  char *conninfo;
+  
+  if ( pgDriver.existConnection(sessname) == true )
   {
-    // Error - Connection with that name does not exist
+    // Error - Connection allready maded : setStatus
+    // set the message with PQErrorMessage()
+    // @todo : Set the message
     return 1;
   }
-  PQfinish(connection.getPointer());
+
+  try {
+    PgConnection &pgConnection = pgDriver.connect(sessname,dsn,usr,pwd);
+  }
+  catch (ConnectionException& e) {
+    // Error - Error connecting to the database : setStatus
+    // @todo : Set the message
+    return 1;
+  }
   return 0;
 }
 
-
-/**
- * Close the default connection.
- *
- * @param sessname The session/connection name.
- * @return
- *  - 0 : Connection closed.
- *  - 1 : Connection does not exist or error ocurred.
- */
-extern "C" int A4GLSQL_close_connection(void)
-{
-  return A4GLSQL_close_session("default");
-}
 
 /**
  * Connects to a database.
@@ -337,9 +299,58 @@ extern "C" int A4GLSQL_close_connection(void)
  *   - 0 : there was an error connecting to database.
  */
 extern "C" int A4GLSQL_make_connection (
-  const UCHAR *server,const UCHAR *uid_p,const UCHAR *pwd_p)
+  const char *server,const char *uid_p,const char *pwd_p)
 {
   return A4GLSQL_init_session ("default", server, uid_p, pwd_p);
+}
+
+/**
+ * Initialize the default connection to the database.
+ *
+ * @todo : Merge the functions in only one that connects calling from
+ *         others.
+ *
+ * @param dbName The database name.
+ * @return
+ *  - 1 : An error ocurred.
+ *  - 0 : Connection estabilished.
+ */
+extern "C" int A4GLSQL_init_connection (char *dbName)
+{
+  return A4GLSQL_make_connection (dbName,(char *)0,(char *)0);
+}
+
+/**
+ * Close a named connection.
+ *
+ * @param sessname The session/connection name.
+ * @return
+ *  - 0 : Connection closed.
+ *  - 1 : Connection does not exist or error ocurred.
+ */
+extern "C" int A4GLSQL_close_session (char *sessname)
+{
+  if ( !pgDriver.existConnection(sessname) )
+  {
+    // Error - Connection with that name does not exist
+    return 1;
+  }
+  pgDriver.disconnect(sessname);
+  return 0;
+}
+
+
+/**
+ * Close the default connection.
+ *
+ * @param sessname The session/connection name.
+ * @return
+ *  - 0 : Connection closed.
+ *  - 1 : Connection does not exist or error ocurred.
+ */
+extern "C" int A4GLSQL_close_connection(void)
+{
+  return A4GLSQL_close_session("default");
 }
 
 /**
@@ -370,62 +381,6 @@ static char *initConninfo(const char *dbname,const char *userName,
 }
 
 /**
- * Init a new connection to the database and associate with an explicit 
- * session name.
- *
- * If the user identification was not set gets the values fromthe environment.
- *
- * @param sessname The name to be tied to the session. This is the name of 
- *   the connection
- * @param dsn The database name.
- * @param usr The user name to establish the connection.
- * @param pwd The password of the user to set the connection.
- */
-extern "C" int A4GLSQL_init_session (char *sessname, char *dsn, 
-char *usr, char *pwd)
-{
-  char *conninfo;
-  PGconn pgConnection;
-  AubitConnection connection();
-
-  conninfo[0] = '\0';
-  connection.initUser(usr);
-  connection.initPassword(usr);
-  conninfo = initPgConninfo(
-    dsn,
-    connection.getUser(),
-    connection.getpassword(),
-  );
-  
-  if ( manager.isConnection(sessname) == true )
-  {
-    // Error - Connection allready maded : setStatus
-    // set the message with PQErrorMessage()
-    return 1;
-  }
-  pgConnection = PQconnectdb(conninfo);
-  if ( pgConnection == (PGconn *)0 )
-  {
-    // Error - Error connecting to the database : setStatus
-    return 1;
-  }
-  if (PQstatus(pgConnection) != CONNECTION_OK )
-  {
-    PQfinish(pgConnection);
-    // Error - Error connecting to the database : setStatus
-    return 1;
-  }
-
-  // Register the connection estabilished at the manager
-  connection.setPointer(connection);
-  manager.setName(sessname);
-  manager.setDatabasename(dbname);
-  manager.addConnection(connection);
-  return 0;
-}
-
-
-/**
  * Put a connection with a name as current connection.
  * 
  * @param sessname The session / connection name.
@@ -437,11 +392,13 @@ extern "C" int A4GLSQL_set_conn (char *sessname)
 {
   int retval = 0;
   try {
-    manager.setCurrentConnection(sessname);
+    pgDriver.setCurrentConnection(sessname);
   }
-  catch (Exception)
+  catch (ConnectionException &e)
   {
     // Erro : Conexão inexistente - Afectar status e error message
+    // @todo Assign status and error message because the connection does not
+    // exist.
     return 1;
   }
   return 0;
@@ -456,17 +413,20 @@ extern "C" int A4GLSQL_set_conn (char *sessname)
  */
 extern "C" char *A4GLSQL_get_curr_conn(void)  
 {
-  char *currConnName;
-  AubitConnection connection;
-  currConnName = manager.getCurrentConnection();
-  connection = manager.getConnection(currConnName);
-  if ( connection.getType() != LIBPQ )
-  {
-    // This is not a libpq connection
-    // Assign status and error message
-    return 1;
+  char *name;
+
+  /*
+  try {
+    PgConnection &currentConnection = pgDriver.getCurrentConnection();
   }
-  return 0;
+  catch (ConnectionException& e)
+  {
+    // @todo Assign status and error message
+    return (char *)1;
+  }
+  name =  currentConnection.getConnectionName();
+  */
+  return name;
 }
 
 /**
@@ -476,21 +436,23 @@ extern "C" char *A4GLSQL_get_curr_conn(void)
  *
  * We need to store the current connection somewhere.
  *
+ * @param cursor Understand wats the idea of the cursor.
  * @return The current database name.
  *    - NULL if no current connection.
  */
-extern "C" char *A4GLSQL_get_currdbname(char *cursor)  
+extern "C" const char *A4GLSQL_get_currdbname(char *cursor)  
 {
   char *currConnName;
-  AubitConnection connection;
-  currConnName = manager.getCurrentConnection();
-  connection = manager.getConnection(currConnName);
-  if ( connection.getType() != LIBPQ )
+  PgConnection connection;
+  try {
+    connection = pgDriver.getCurrentConnection();
+  } 
+  catch (ConnectionException& e)
   {
-    // This is not a libpq connection
-    // Assign status and error message
+    // @todo Assign the status and the error message
     return NULL;
   }
+
   return connection.getDatabaseName();
 }
 
@@ -502,21 +464,34 @@ extern "C" char *A4GLSQL_get_currdbname(char *cursor)
  * This connection manager is for now local to ESQL but should be expanded
  * for all connectors at some time.
  *
- * @todo : Implement the connection mechanism.
  *
  * @param databaseName The name of the database.
  * @return 
  *   - The connection name
- *   - NULL : If no connection for that specific database opened
+ *   - NULL : If no connection for that specific database opened or an error 
+ *            ocurred.
  */
 static char *getConnectionForDatabase(char *databaseName)
 {
   register int i;
+
+  try {
+    PgConnection& connection = pgDriver.getConnectionToDatabase(databaseName);
+  }
+  catch (ConnectionException e)
+  {
+    // @todo Set the status and error message
+    return NULL;
+  }
+  // @todo : Finish this
 }
 
 
 /**
  * Create an sql statement structure.
+ *
+ * The structure s_sid is necesary because the compiler generate code that work
+ * with it.
  *
  * @param ibind The input bind array.
  * @param ni Number of elements in the input bind array.
@@ -559,7 +534,7 @@ static struct s_sid *prepareSqlStatement(
   struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s)
 {
   struct s_sid *sid = newStatement(ibind,ni,obind,no,s);
-  PreparedStatement statement();
+  PreparedStatement statement;
   statement.prepare(s);
   return sid;
 }
@@ -863,7 +838,7 @@ static int processPosStatementBinds(struct s_sid *sid)
  */
 int A4GLSQL_execute_implicit_select (struct s_sid *sid)
 {
-  debug("ESQL : execute_implicit_select");
+  debug("PG : execute_implicit_select");
   if (sid == 0)
     return -1;
 
