@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0044)http://heilabrot.itn.is/pow4gl/pow4glm7.html -->
+<HTML><HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<TITLE>POWER-4GL Reference Manual - String handling functions</TITLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+<H1><a href="index.htm"><IMG alt="Main page" 
+src="images/pow4gl.gif" 
+align=bottom border=1 width="216" height="65"></a> Reference Manual</H1><EM>Extending Informix-4gl</EM> 
+<HR SIZE=3>
+
+<H1>String handling functions</H1>
+<H3><A name=Addwild>Addwild</A></H3>
+<P>Concatenates an asterix "*" to the end of a string if not already present. 
+The string is then ready to be used with the "matches" keyword where an asterix 
+represents any characters.</P>
+<P>1 parameters:<BR><STRONG>String</STRONG>: The source string which an asterix 
+is to be concatenated to.</P>
+<P>1 return value:<BR><STRONG>Result</STRONG>: The string with an asterix at the 
+end.</P>
+<H3><A name=Left>Left</A></H3>
+<P>Left justifies a string, stripping leading spaces.</P>
+<P>1 parameters:<BR><STRONG>String</STRONG>: The source string to be left 
+justified.</P>
+<P>1 return value:<BR><STRONG>Result</STRONG>: The left justified string.</P>
+<H3><A name=Right>Right</A></H3>
+<P>Right justifies a string, adding leading spaces.</P>
+<P>2 parameters:<BR><STRONG>String</STRONG>: The source string to be right 
+justified.<BR>Length: The rightmost position of the resulting string.</P>
+<P>1 return value:<BR><STRONG>Result</STRONG>: The right justified string.</P>
+<H3><A name=Center>Center</A></H3>
+<P>Centers a string based on a space of given length.</P>
+<P>2 parameters:<BR><STRONG>String</STRONG>: The source string to be right 
+justified.<BR>Length: The length of the space which the string is to be centered 
+in.</P>
+<P>1 return value:<BR><STRONG>Result</STRONG>: The centered string.</P>
+<H3><A name=Checkpath>Checkpath</A></H3>
+<P>Concatenates a slash "/" to the end of a string if not already present. The 
+string is then ready to be used as the name of a file directory.</P>
+<P>1 parameters:<BR><STRONG>String</STRONG>: The source string which a slash is 
+to be concatenated to.</P>
+<P>1 return value:<BR><STRONG>Result</STRONG>: The string with a slash at the 
+end. If the string was null, then the result is a slash.</P>
+<H3><A name=Firstword>Firstword</A></H3>
+<P>Returns the first word of a string, typically a name.</P>
+<P>1 parameters:<BR><STRONG>String</STRONG>: The source string.</P>
+<P>1 return value:<BR><STRONG>Word</STRONG>: The first word of the string.</P>
+<H3><A name=Lastword>Lastword</A></H3>
+<P>Returns the last word of a string, typically a name.</P>
+<P>1 parameter:<BR><STRONG>String</STRONG>: The source string.</P>
+<P>1 return value:<BR><STRONG>Word</STRONG>: The last word of the string.</P>
+<H3><A name=Strpos>Strpos</A></H3>
+<P>Returns the position of the first occurrence substring within a string. If 
+the substring is not contained in the string, then zero is returned.</P>
+<P>2 parameters:<BR><STRONG>String</STRONG>: The full string.<BR>Substring: The 
+substring.</P>
+<P>1 return value:<BR>Position: The starting position of the substring within 
+the string.</P>
+<H3><A name=Strrep>Strrep</A></H3>
+<P>Replaces all occurrences of a substring within a string with another 
+string.</P>
+<P>3 parameters:<BR><STRONG>String</STRONG>: The full string.<BR>Substring: The 
+substring to be replaced.<BR>Replacement: The string which will replace the 
+substring.</P>
+<P>1 return value:<BR>Result: The full string after the replacement of any 
+occurrences of the substring.</P>
+<HR SIZE=3>
+
+<a href="index.htm">Power-4gl manual main 
+page</a> </BODY></HTML>

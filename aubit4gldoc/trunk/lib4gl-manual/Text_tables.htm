@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0044)http://heilabrot.itn.is/pow4gl/pow4glm9.html -->
+<HTML><HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<TITLE>POWER-4GL Reference Manual - Text tables</TITLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+<H1><a href="index.htm"><IMG alt="Main page" 
+src="images/pow4gl.gif" align=bottom 
+border=1 width="216" height="65"></a> Reference Manual</H1><EM>Extending Informix-4gl</EM> 
+<HR SIZE=3>
+
+<H1>Text tables</H1>
+<P>These are flat text files that contain the language dependent aspects of 
+Power-4gl in the form of lookup tables. The Power-4gl user interface functions 
+make extensive use of these text tables such that the same compiled code can be 
+used simultaneously by different users using different languages or language 
+preferences. Another purpose of using text tables is to minimize redundancy and 
+maintenance of text. The fields in a text table are of fixed width for easy 
+editing. Text tables, which all have the extension ".tbl", are accessed by 
+corresponding Power-4gl functions of the same name that load them compactly into 
+memory for fast retrieval.</P>
+<H3><A name=Label>Label</A></H3>
+<P>Menu item labels.</P>
+<P>3 fields:<BR><STRONG>Type</STRONG>: Single character. The type "m" indicates 
+a submenu.<BR><STRONG>Code</STRONG>: A 16 character descriptive code , e.g. 
+"syssetup".<BR><STRONG>Label</STRONG>: The corresponding label, e.g. in English 
+"System setup".</P>
+<H3><A name=Title>Title</A></H3>
+<P>Window titles or header information.</P>
+<P>4 fields:<BR><STRONG>Type</STRONG>: Single character. The type "m" indicates 
+a menu.<BR><STRONG>Code</STRONG>: A 16 character descriptive code , e.g. 
+"syssetup".<BR><STRONG>Line</STRONG>: A 2 character number indicating the title 
+line number, e.g. "1".<BR><STRONG>Title</STRONG>: The corresponding title line, 
+e.g. in English "SYSTEM SETUP".</P>
+<H3><A name=Word>Word</A></H3>
+<P>Single words or word combinations.</P>
+<P>2 fields:<BR><STRONG>Code</STRONG>: A 16 character descriptive code , e.g. 
+"filename".<BR><STRONG>Word</STRONG>: The corresponding word or word 
+combination, e.g. in English "file name".</P>
+<H3><A name=Stx>Stx</A></H3>
+<P>Single line messages. Typically used for error messages, prompts and window 
+messages.</P>
+<P>2 fields:<BR><STRONG>Code</STRONG>: A 16 character descriptive code , e.g. 
+"badval".<BR><STRONG>Message</STRONG>: The corresponding message, e.g. in 
+English "Invalid entry".</P>
+<H3><A name=Mtx>Mtx</A></H3>
+<P>Multiple line messages. Typically used in dialog boxes (prompt boxes and 
+message boxes).</P>
+<P>3 fields:<BR><STRONG>Code</STRONG>: A 16 character descriptive code , e.g. 
+"locked".<BR><STRONG>Line</STRONG>: A 2 character number indicating the message 
+line number, e.g. "1".<BR><STRONG>Message</STRONG>: The corresponding message 
+line.</P>
+<HR SIZE=3>
+
+<a href="index.htm">Power-4gl manual main 
+page</a> </BODY></HTML>

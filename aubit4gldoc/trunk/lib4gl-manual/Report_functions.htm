@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0044)http://heilabrot.itn.is/pow4gl/pow4glm3.html -->
+<HTML><HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<TITLE>POWER-4GL Reference Manual - Report functions</TITLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+<H1><a href="index.htm"><IMG alt="Main page" 
+src="images/pow4gl.gif" 
+align=bottom border=1 width="216" height="65"></a> Reference Manual</H1><EM>Extending Informix-4gl</EM> 
+<HR SIZE=3>
+
+<H1>Report functions</H1>
+<P>Functions to produce reports are contained in the report.4gl module. The 
+following example shows a typical program stub to produce a basic report:</P>
+<UL><TT>call reportopen('myreport','')<BR>call reportinit('')<BR>foreach ...
+  <UL>let rline=item1,column 12,item2,column 50,item3<BR>call 
+  reportput(rline)</UL>end foreach<BR>call reportsetup('')<BR>while true
+  <UL>call reportman() returning action, rowid<BR>case action<BR>when 'exit' 
+    exit while<BR>end case</UL>end while<BR>call reportclose()</TT></UL>
+<P>The report object is initialized with 'reportopen' which supplies the report 
+title and opens a full-screen window. A message box containing a 'reporting' 
+message is opened with 'reportinit' which also prepares the report internally so 
+that report lines can be entered with 'reportput'. When all the report lines 
+have been entered, 'reportsetup' closes the message box and displays the first 
+screen of the report.</P>
+<P>User responses are handled by 'reportman', which returns some of them for the 
+calling program to handle, along with the current rowid (in the internal report 
+temporary table).</P>
+<P>Finally, the report object is removed with 'reportclose'.</P>
+<P>Following are more detailed descriptions of the functions in the pick-list 
+system (ordered by approximate importance):</P>
+<H3><A name=Reportopen>Reportopen</A></H3>
+<P>Initializes a report object with a title and opens a full-screen window.</P>
+<P>2 parameters:<BR><STRONG>Title</STRONG>: A title string or a key into the 
+title text file. More than one title line can be defined in the title text 
+file.<BR><STRONG>Width</STRONG>: The report width. If not specified, the report 
+width is set to at least the widest title line.</P>
+<H3><A name=Reportinit>Reportinit</A></H3>
+<P>Sets up a message box which remains open while the report is being assembled. 
+An internal temporary table is created to house the report lines.</P>
+<P>1 parameter:<BR><STRONG>Message</STRONG>: A message string or a key into the 
+message text file. The message is displayed in the message box. The default 
+value is 'reporting'.</P>
+<H3><A name=Reportput>Reportput</A></H3>
+<P>Adds a simple report line of text to the report.</P>
+<P>1 parameter:<BR><STRONG>Text</STRONG>: The report line text.</P>
+<H3><A name=Reportfputrow>Reportfputrow</A></H3>
+<P>Adds a report line of text to the report, with options.</P>
+<P>4 parameters:<BR><STRONG>Format</STRONG>: Character formatting string to 
+produce combinations of bold, italic and underline enhancements to parts or all 
+of a line.<BR><STRONG>Text</STRONG>: The report line 
+text.<BR><STRONG>Skip</STRONG>: The number of lines to skip before printing the 
+text line. Skipped lines do not appear on the screen version of the report in 
+order to save space.<BR><STRONG>Need</STRONG>: The number of available lines 
+needed to print the text line on that page. Otherwise the text line is printed 
+on the next page.</P>
+<P>1 return value:<BR><STRONG>Rowid</STRONG>: The rowid in the report temporary 
+table associated with the text line. This can be remembered by the calling 
+program if it intends to update the text line later in the report assembly.</P>
+<P>The character formatting string is a combination of numbers representing 
+lengths of text to be enhanced, and enhancement codes, which can be:<BR>B = Bold 
+on.<BR>b = Bold off.<BR>I = Italics on.<BR>i = Italics off.<BR>U = Underline 
+on.<BR>u = Underline off.<BR>For example: If the format string is 
+'20BI30iU40biu' then the first 20 characters will be normal, the next 30 
+characters will be bold and italic, the next 40 lines will be bold and 
+underlined, and the characters beyond that will be normal.</P>
+<H3><A name=Reportline>Reportline</A></H3>
+<P>Adds a full width line of repeated characters to the report. This is 
+typically used to insert line breaks in reports.</P>
+<P>5 parameters:<BR><STRONG>Format</STRONG>: Character formatting string to 
+produce combinations of bold, italic and underline enhancements to parts or all 
+of a line.<BR><STRONG>Text</STRONG>: The text which is to be 
+repeated.<BR><STRONG>Length</STRONG>: The length of text to be 
+repeated.<BR><STRONG>Skip</STRONG>: The number of lines to skip before printing 
+the text line. Skipped lines do not appear on the screen version of the report 
+in order to save space.<BR><STRONG>Need</STRONG>: The number of available lines 
+needed to print the text line on that page. Otherwise the text line is printed 
+on the next page.</P>
+<H3><A name=Reportupd>Reportupd</A></H3>
+<P>Modifies the text of a report line.</P>
+<P>2 parameters:<BR><STRONG>Rowid</STRONG>: The rowid of the line to be updated 
+in the report temporary table.<BR><STRONG>Text</STRONG>: The modified text of 
+the line to be updated.</P>
+<H3><A name=Reportsetup>Reportsetup</A></H3>
+<P>Indicates the end of the report assembly. The message box is closed and the 
+first page of the report is displayed on the screen.</P>
+<P>1 parameter:<BR><STRONG>Print flag</STRONG>: Indicates whether the user 
+should be warned upon attempted exit from the report without having printed out 
+the report. The default value is false (the user is not warned).</P>
+<H3><A name=Reportman>Reportman</A></H3>
+<P>Handles user responses to an on-screen report.</P>
+<P>2 return values:<BR><STRONG>Action</STRONG>: A string containing a logical 
+user response that the calling program can act on. Possible responses are and 
+typical uses are as follows:<BR>'enter' = Vew more details of a report line in a 
+window.<BR>'refresh' = Reassemble the report (with the latest database 
+values).<BR>'exit' = Exit the report function.<BR>'filter' = Edit the report 
+selection criteria (followed by report reassembly).<BR>'other' = Other 
+operations, perhaps a menu offering some possibilities.<BR>'prevset' = 
+Regenerate the report with the previous logical set of data.<BR>'nextset' = 
+Regenerate the report with the next logical set of 
+data.<BR><STRONG>Rowid</STRONG>: The current line number.</P>
+<P>Other user responses like 'help', 'print', 'opsys', 'file', cursor movement 
+keys and more are handled automatically within 'reportman'.</P>
+<H3><A name=Reportclose>Reportclose</A></H3>
+<P>Removes the report object, closing the report window and all database 
+cursors.</P>
+<H3><A name=Reporthead>Reporthead</A></H3>
+<P>Displays title text dynamically. This function can be called after a report 
+has been opened to change title lines.</P>
+<P>2 parameters:<BR><STRONG>Text</STRONG>: The new title text to be 
+displayed.<BR><STRONG>Line</STRONG>: The title line number affected.</P>
+<H3><A name=Reportprinter>Reportprinter</A></H3>
+<P>Sets up the name of the default printer to be used in the report. This name 
+will then appear in the print dialogue box when the user presses the logical key 
+'print'.</P>
+<P>1 parameter:<BR><STRONG>Name</STRONG>: The name of the default printer.</P>
+<H3><A name=Reportcovput>Reportcovput</A></H3>
+<P>Adds a simple line of text to the cover sheet.</P>
+<P>2 parameters:<BR><STRONG>Format</STRONG>: Character formatting string to 
+produce combinations of bold, italic and underline enhancements to parts or all 
+of a line.<BR><STRONG>Text</STRONG>: The report cover line text.</P>
+<H3><A name=Reportcovtime>Reportcovtime</A></H3>
+<P>Adds timing information to the cover sheet. Included are start and finish 
+times, the real time interval from start to finish, and the CPU time.</P>
+<H3><A name=Reportcovtext>Reportcovtext</A></H3>
+<P>Adds the contents of a flat file to the cover sheet. This is typically used 
+to include help information about the report, such as explanations of 
+abbreviations used etc.</P>
+<P>3 parameters:<BR><STRONG>Filename</STRONG>: Character formatting string to 
+produce combinations of bold, italic and underline enhancements to parts or all 
+of a line.<BR><STRONG>Begin</STRONG>: The starting paragraph to be included, 
+which defaults to the first paragraph.<BR><STRONG>End</STRONG>: The ending 
+paragraph to be included, which defaults to the last paragraph.</P>
+<P>Paragraphs are delimited by blank lines. By specifying paragraph numbers, 
+lines can be added to a paragraph without having to alter the accessing 
+program.</P>
+<H3><A name=Reportget>Reportget</A></H3>
+<P>Retrieves the text from a report line. This is typically used if a viewing 
+window is to be opened, in which case key information may need to be retrieved 
+from the selected line.</P>
+<P>1 parameters:<BR><STRONG>Line</STRONG>: The report line number.</P>
+<P>1 return value:<BR><STRONG>Text</STRONG>: The report line text.</P>
+<H3><A name=Reportview>Reportview</A></H3>
+<P>Handles a viewing window that has been created. This is typically used when 
+the user has pressed the logical key 'enter' to view a selected line of a report 
+in more detail. After the calling program opens the window and displays the 
+data, it can call this function to handle standard user inputs. An example of 
+this follows:</P>
+<UL><TT>... {open form/window}<BR>while not done
+  <UL>let text=reportget(rline)<BR>... {retrieve and display additional 
+    information}<BR>while true
+    <UL>call reportview('form',rline,'') returning action,rowid<BR>case 
+      action<BR>when 'refresh' exit while<BR>when 'exit'
+      <UL>let done=true<BR>exit while</UL>end case</UL>end while</UL>end 
+  while<BR>... {close form/window}</TT></UL>
+<P>The 'reportview' function handles most user responses. The user can page 
+through the report lines in the viewing window.</P>
+<P>3 parameters:<BR><STRONG>Name</STRONG>: A string value which is used to 
+display a title in the viewing window and to select the appropriate help 
+text.<BR><STRONG>Line</STRONG>: The current report line 
+number.<BR><STRONG>Text</STRONG>: Message that appears in the viewing 
+window.</P>
+<P>2 return values:<BR><STRONG>Action</STRONG>: A string containing a logical 
+user response that the calling program can act on. Possible responses are and 
+typical uses are as follows:<BR>'exit' = Exit the pick-list function without 
+returning the row.<BR>'other' = Other operations, perhaps a menu offering some 
+possibilities.<BR>'refresh' = Refresh the viewing window (possibly the 
+next/previous row).<BR><STRONG>Line</STRONG>: The number of the report line to 
+be viewed next.</P>
+<HR SIZE=3>
+
+<a href="index.htm">Power-4gl manual main 
+page</a> </BODY></HTML>

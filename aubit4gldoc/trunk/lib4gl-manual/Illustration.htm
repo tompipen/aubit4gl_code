@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0043)http://heilabrot.itn.is/pow4gl/pow4gli.html -->
+<HTML><HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<TITLE>POWER-4GL Illustration</TITLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+<H1><a href="index.htm"><IMG alt="Main page" 
+src="images/pow4gl.gif" align=bottom border=1 width="216" height="65"></a> Illustration</H1><EM>Extending
+x-4gl</EM> 
+<HR SIZE=3>
+
+<H1>Contents:</H1>
+<UL>
+  <LI><a href="#Introduction">Introduction</a>
+  <LI>Compiling the Power-4gl demo application 
+
+  <LI><a href="#The user interface">The user 
+  interface</a> 
+  <UL>
+    <LI><a href="#Menu example">Menu 
+    example</a> 
+    <LI><a href="#Pick-list example">Pick-list 
+    example</a> 
+    <LI><a href="#Report example">Report 
+    example</a> 
+    <LI><a href="#Help window example">Help 
+    window example</a> </LI></UL></LI></UL>
+<HR SIZE=3>
+
+<H1><A name=Introduction>Introduction</A></H1>
+<P>Power-4gl is a set of integrated functions that greatly enhance the x-4gl development environment, offering an advanced user interface as 
+well as assorted general purpose functions and utilities.</P>
+<P>The user interface tools adhere to a certain consistent methodology or style 
+that is based on presenting information or choices as lists in titled windows. 
+The lists can be menus, pick lists, help text or full fledged reports.</P>
+<P>The package is organized into several 4gl and c modules as well as a few text 
+tables that can be included into any x-4gl system, independent of its 
+particular usage and and national language. Their purpose is to complement the 
+4gl environment, fortifying its weaknesses while not changing what it does 
+satisfactorily.</P>
+<HR SIZE=3>
+
+<H1><A name="The user interface">The user interface</A></H1>
+<P>As previously mentioned, the user interface tools adhere to a consistent 
+methodology. User keyboard responses, for example, have consistent meaning. The 
+programmer maps a set of logical keyboard values used by the interface to 
+physical keyboard keys. The logical keyboard values have descriptive names such 
+as "help", "accept", "print", "refresh" and "exit" instead of "f3" or 
+"ctrl-p".</P>
+<P>Display attributes are also standardized. The programmer maps a set of 
+logical display types such as "title", "message", "data", "list", "listcurr" to 
+actual 4gl display attributes or colors.</P>
+<P>Another underlying method is the use of text tables to communicate messages 
+and window titles. Instead of using a numerical value like "1014" as a key to a 
+text value, which might represent a message like "Are you sure?", the interface 
+uses descriptive values like "sure" which is easier to remember and makes code 
+more readable. Text tables enable a system to be fully language independent.</P>
+<P>Finally, The user interface includes a powerful printing facility that 
+enables the user or programmer to set up descriptions of various printers and 
+paper sizes. When output is directed to a described printer, the printing 
+facility can automatically adjust the output to fit the page. Wide reports for 
+example can be compressed or printed in landscape orientation and the number of 
+lines per page is also adjusted automatically to maximize paper usage. In 
+addition, the printer descriptions include the printer commands to produce bold, 
+italic and underlined lettering. Help lists, pick-lists and reports all utilize 
+this underlying printing facility.</P>
+<P>By using these tools the programmer can save a lot of time and energy to 
+produce a consistent and sophisticated program system. The net result is end 
+user satisfaction with large savings in program development and maintenance.</P>
+<P>The following examples of menus, pick-lists, reports and help windows do not 
+describe the full power and flexibility of the package, but give an idea of some 
+of the major features involved.</P>
+<HR SIZE=3>
+
+<H2><A name="Menu example">Menu example</A></H2>
+<P><IMG src="images/menu.gif" border=0 width="574" height="369"></P>
+<P>The above screen shows a typical menu driven system. The "cascading" menus 
+show how the user has traveled to a third menu level.</P>
+<P>A menu item is selected either by moving the cursor up or down and pressing 
+the logical key "enter", or by directly pressing the associated number. Menu 
+items can be made to be inactive in particular circumstances in which case they 
+cannot be selected and the cursor jumps over them. Inactive menu items can be 
+made to appear in a different shade. Other logical keys include "home", "end", 
+"help", "opsys", "prtscr" and "exit" that are self descriptive.</P>
+<P>Note that menus can be called from within other program elements such as 
+within an input form, pick-list or report.</P>
+<HR SIZE=3>
+
+<H2><A name="Pick-list example">Pick-list example</A></H2>
+<P><IMG src="images/list.gif" border=0 width="574" height="369"></P>
+<P>The above screen shows a typical pick-list which in this case was called from 
+a menu. The user can browse and page through the list (if more than one page). 
+The last line informs the user of the total number of lines and which line he is 
+currently on. Pick-lists can also be set up to show totals, averages and other 
+aggregate values below the list.</P>
+<P>Pick-lists handle a number of user reactions. Cursor movement keys include 
+"home", "end", "up", "down", "nextpage" and "prevpage". Other logical keys 
+include "help", "refresh", "prtscr" and "exit" that are self explanatory. The 
+"print" and "file" keys make hard copies of the complete list to a printer pipe 
+or file. The "opsys" key calls the operating system shell so that the user can 
+give operating system commands. Other keys can be set up such as "accept" which 
+might exit the pick-list returning the rowid of the current line. The "enter" 
+key can be set up to edit the row in an input form, while "delete" and "insert" 
+keys might delete a row or insert a new row. The "filter" key can be set up to 
+edit the search criteria of the pick lists.</P>
+<P>Pick-lists are recursive so that multiple pick-lists can be open at once. If 
+a user enters an input form from a pick-list, he can open another pick-list from 
+within the input form to search and retrieve a value.</P>
+<HR SIZE=3>
+
+<H2><A name="Report example">Report example</A></H2>
+<P><IMG src="images/report.gif" border=0 width="574" height="372"></P>
+<P>This screen shows a simple report that is presented on screen before actually 
+being directed to a printer. The report facility can thus be regarded as an 
+on-screen query tool. This report is wider than the screen so it can be browsed 
+horizontally. Cursor movement keys include "up", "down", "right", "left", 
+"nextpage", "prevpage", "home" and "end".</P>
+<P>Reports can also contain cover sheets which are viewed by pressing the 
+"toggle" key. The cover sheet can contain information such as selection 
+criteria, descriptions of abbreviations used in the report and the time the 
+report took to complete. Tools are supplied to facilitate the generation of this 
+kind of information.</P>
+<P>The "accept" key prints out the report and exits while the "print" and "file" 
+keys merely print out the report to a printer or file, remaining in the report. 
+Thus, the report can be easily printed out to more than one printer without 
+having to regenerate it. The "exit" key exits the report without printing it. 
+Other keys include "help", "prtscr" and "opsys" and "refresh".</P>
+<P>The appearance of reports when printed out may be somewhat different from the 
+screen version. Print-outs may include character enhancement (bold, italic, 
+underline) and header and trailer information.</P>
+<HR SIZE=3>
+
+<H2><A name="Help window example">Help window example</A></H2>
+<P><IMG src="images/help.gif" border=0 width="574" height="372"></P>
+<P>The above screen shows a help window that was called from a report. Help text 
+is displayed from one or more text files. The user can browse through the help 
+text with the standard cursor movement keys "up", "down", "home", "end", 
+"nextpage" and "prevpage". In addition the text can be printed out to a printer 
+or file with the "print" and "file" keys and operating system commands can be 
+executed by the "opsys" key. The "prtscr" prints the screen and "exit" logically 
+returns the user to the calling window.</P>
+<P>Help text files are simply flat files that can be edited by any standard 
+editor. </P>
+<HR SIZE=3>
+
+<a href="index.htm">Power-4gl page page</a> 
+</BODY></HTML>

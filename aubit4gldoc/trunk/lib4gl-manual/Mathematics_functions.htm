@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0044)http://heilabrot.itn.is/pow4gl/pow4glm6.html -->
+<HTML><HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<TITLE>POWER-4GL Reference Manual - Mathematics functions</TITLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+<H1><a href="index.htm"><IMG alt="Main page" 
+src="images/pow4gl.gif" 
+align=bottom border=1 width="216" height="65"></a> Reference Manual</H1><EM>Extending Informix-4gl</EM> 
+<HR SIZE=3>
+
+<H1>Mathematics functions</H1>
+<P>These are some of the more essential mathematical routines in Power-4gl.</P>
+<H3><A name=Similar>Similar</A></H3>
+<P>Determines whether two numbers are close to each other by a factor or a 
+difference.</P>
+<P>4 parameters:<BR><STRONG>Value1</STRONG>: The first value to be 
+compared.<BR><STRONG>Value2</STRONG>: The second value to be 
+compared.<BR><STRONG>Difference</STRONG>: If the values differ by this amount or 
+less, then they are considered similar. This is an optional 
+parameter.<BR><STRONG>Factor</STRONG>: If the values differ by this factor or 
+less, then they are considered similar. This is an optional parameter.</P>
+<P>1 return value:<BR><STRONG>Verdict</STRONG>: True if the values are 
+considered similar, otherwise false.</P>
+<H3><A name=Abs>Abs</A></H3>
+<P>Returns the absolute value of a number.</P>
+<P>1 parameters:<BR><STRONG>Value</STRONG>: The number to be evaluated.</P>
+<P>1 return value:<BR><STRONG>Result</STRONG>: The absolute value of the 
+number.</P>
+<H3><A name=Round>Round</A></H3>
+<P>Rounding of a decimal number (up or down) to a given decimal place.</P>
+<P>2 parameters:<BR><STRONG>Value</STRONG>: The number to be 
+rounded.<BR><STRONG>Place</STRONG>: The decimal place to be rounded to. Zero 
+means rounding to an whole number. A positive value moves the decimal place to 
+the left, thus rounding to higher orders of magnitude. A negative value moves 
+the decimal place to the right.</P>
+<P>1 return value:<BR><STRONG>Result</STRONG>: The rounded number.</P>
+<H3><A name=Power>Power</A></H3>
+<P>Exponentiation, with the capability of using fractions in the exponent (the 
+built in exponentiation operator in 4gl allows only integer exponents).</P>
+<P>2 parameters:<BR><STRONG>Value</STRONG>: The number to be 
+exponentiated.<BR><STRONG>Exponent</STRONG>: The number (can be a fraction) to 
+use as an exponent.</P>
+<P>1 return value:<BR><STRONG>Result</STRONG>: The exponentiated value.</P>
+<HR SIZE=3>
+
+<a href="index.htm">Power-4gl manual main 
+page</a> </BODY></HTML>

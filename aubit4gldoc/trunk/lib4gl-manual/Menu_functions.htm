@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0044)http://heilabrot.itn.is/pow4gl/pow4glm1.html -->
+<HTML><HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<TITLE>POWER-4GL Reference Manual</TITLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+<H1><a href="index.htm"><IMG alt="Main page" 
+src="images/pow4gl.gif" align=bottom 
+border=1 width="216" height="65"></a> Reference Manual</H1><EM>Extending x-4gl</EM> 
+<HR SIZE=3>
+
+<H1>Menu functions</H1>
+<P>Functions to produce vertical menus are contained in the menu.4gl module. The 
+following example shows a typical program stub to produce a menu:</P>
+<P><TT>
+<UL>call menuopen('mainmenu','','')<BR>call menuline('submenu','','m')<BR>call 
+  menuline('picklist1','f')<BR>call menuline('report1','f')<BR>call 
+  menusetup()<BR>while true
+  <UL>case menuman()<BR>when 0 exit while<BR>when 1 call submenu()<BR>when 2 
+    call picklist1()<BR>when 3 call report1()<BR>end case</UL>end while<BR>call 
+  menuclose()</TT></UL>
+<P></P>
+<P>The menu object is initialized with 'menuopen' which supplies the menu title. 
+Menu items are then set up with 'menuline' which supply the label text. The menu 
+is then generated and displayed on the screen with 'menusetup'.</P>
+<P>User responses are handled by 'menuman'. The only user responses that are 
+handled by the calling program are exit requests and legal menu item numbers. 
+The calling program can act on these responses by testing the return value from 
+'menuman'. Other user responses, such as requests for help, print-screen, 
+operating system commands, cursor movement and illegal menu item numbers are 
+handled automatically within 'menuman'.</P>
+<P>Finally, the menu object is removed with 'menuclose'.</P>
+<P>Following are more detailed descriptions of the functions in the menu 
+system:</P>
+<H3><A name=Menuopen>Menuopen</A></H3>
+<P>Initializes a menu object with a title and screen position.</P>
+<P>2 parameters:<BR><STRONG>Title</STRONG>: A title string or a key into the 
+title text file. More than one title line can be defined in the title text 
+file.<BR><STRONG>Row</STRONG>: Optional row position of the menu 
+window.<BR><STRONG>Column</STRONG>: Optional column position of the menu 
+window.</P>
+<P>If the row and column parameters are not specified, then the menu will be 
+positioned two rows down and one column farther right than the previous menu, 
+producing a cascading effect. If no previous menus are active, the menu will be 
+positioned in the top left corner of the screen.</P>
+<H3><A name=Menuline>Menuline</A></H3>
+<P>Sets up one simple menu item.</P>
+<P>2 parameters:<BR><STRONG>Label</STRONG>: A label string or a key into the 
+label text file.<BR><STRONG>Type</STRONG>: Character value used as part of the 
+key into the label text file. 'm' indicates a sub-menu and the label is followed 
+by '...'.</P>
+<H3><A name=Menufline>Menufline</A></H3>
+<P>Sets up one menu item with options.</P>
+<P>3 parameters:<BR><STRONG>Label</STRONG>: A label string or a key into the 
+label text file.<BR><STRONG>Type</STRONG>: Character value used as part of the 
+key into the label text file. 'm' indicates a sub-menu and the label is followed 
+by '...'.<BR><STRONG>Active flag</STRONG>: Logical value indicating whether the 
+menu item should be active (true) or inactive. Inactive menu items appear in a 
+different shade and are not accessible by the user.</P>
+<H3><A name=Menusetup>Menusetup</A></H3>
+<P>Displays the menu object, which has been defined with 'menuopen' and 
+'menuline/menufline', in a bordered window. The size of the menu is 
+automatically determined from the size of the titles and labels, and the number 
+of menu items.</P>
+<H3><A name=Menuman>Menuman</A></H3>
+<P>Handles user responses to a menu object, returning either a selected legal 
+menu item number or an exit request.</P>
+<P>1 return value:<BR><STRONG>Item</STRONG>: An item number or the number zero, 
+which indicates a request to exit the menu.</P>
+<H3><A name=Menuclose>Menuclose</A></H3>
+<P>Closes the menu object, removing it from the screen.</P>
+<HR SIZE=3>
+
+<a href="index.htm">Power-4gl manual main 
+page</a> </BODY></HTML>

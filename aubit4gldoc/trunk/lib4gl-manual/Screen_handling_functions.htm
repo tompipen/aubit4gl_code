@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0044)http://heilabrot.itn.is/pow4gl/pow4glm4.html -->
+<HTML><HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<TITLE>POWER-4GL Reference Manual - Screen handling functions</TITLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+<H1><a href="index.htm"><IMG alt="Main page" 
+src="images/pow4gl.gif" 
+align=bottom border=1 width="216" height="65"></a> Reference Manual</H1><EM>Extending Informix-4gl</EM> 
+<HR SIZE=3>
+
+<H1>Screen handling functions</H1>
+<P>These are some of the more essential functions in Power-4gl that handle 
+various screen operations.</P>
+<H3><A name=Helpman>Helpman</A></H3>
+<P>Opens and handles a scrollable help window. This function can be called from 
+any Power-4gl user interface window with the "help" logical key. The help text 
+to be browsed is a concatenation of 3 flat text files, the first two being 
+specified by parameters and the third is the "help.hlp" file containing general 
+help information pertaining to the system as a whole, like standardized function 
+keys and such. If any of the files do not exist, they are simply ignored. 
+However, by supplying "help.hlp", all windows will at least have some help text. 
+The help window appears at the top left corner of the screen and is as narrow 
+and short as the help text permits.</P>
+<P>2 parameters:<BR><STRONG>File1</STRONG>: The name of the first help text 
+file. Typically, this file contains the most specific information about the 
+current function.<BR><STRONG>File2</STRONG>: The name of the second help text 
+file.</P>
+<H3><A name=Disptitle>Disptitle</A></H3>
+<P>Displays a title line to the current window. This function is used by other 
+Power-4gl user interface functions but may also be used in any window, for 
+example, with input forms so that the window title is displayed with special 
+attributes or colors.</P>
+<P>2 parameters:<BR><STRONG>Name</STRONG>: The title name. This can be the title 
+text itself or a key value to the title text table.<BR><STRONG>Type</STRONG>: 
+The window type. This is used in conjunction with the name as part of the key 
+value to the title text table. If an entry exists in the title table for the 
+given name and type, then the corresponding title text is used which can be more 
+than one line of text. Otherwise the name is used as the title text.</P>
+<H3><A name=Winform>Winform</A></H3>
+<P>Opens a bordered window with a form at a given position. If the window cannot 
+be opened at the given position, the window is adjusted in an attempt to solve 
+the problem.</P>
+<P>3 parameters:<BR><STRONG>Name</STRONG>: The form 
+name.<BR><STRONG>Row</STRONG>: The screen row position. If the row is 1 then a 
+full screen window is assumed.<BR><STRONG>Column</STRONG>: The screen column 
+position. If the row is 1 then a full screen window is assumed.</P>
+<H3><A name=Winopen>Winopen</A></H3>
+<P>Opens a bordered window of a given size at a given position. If the window 
+cannot be opened at the given position, the window is adjusted in an attempt to 
+solve the problem.</P>
+<P>5 parameters:<BR><STRONG>Name</STRONG>: The window name 
+(optional).<BR><STRONG>Row</STRONG>: The screen row position. If the row is 1 
+then a full screen window is assumed.<BR><STRONG>Column</STRONG>: The screen 
+column position. If the row is 1 then a full screen window is 
+assumed.<BR><STRONG>Rows</STRONG>: The number of screen 
+rows.<BR><STRONG>Columns</STRONG>: The number of screen columns.</P>
+<H3><A name=Winclear>Winclear</A></H3>
+<P>Clears a window opened by Winform or Winopen.</P>
+<H3><A name=Winclose>Winclose</A></H3>
+<P>Clears a window opened by Winform or Winopen.</P>
+<H3><A name=Msgopen>Msgopen</A></H3>
+<P>Opens a message window with text which remains open until closed by Msgclose. 
+This is typically used while the user waits for a lengthy process to 
+complete.</P>
+<P>1 parameter:<BR><STRONG>Code</STRONG>: Text code. This can be the message 
+text itself or a key into the single line message table which contains the 
+message text.</P>
+<H3><A name=Msgadd>Msgadd</A></H3>
+<P>Adds a message to an already opened message window. This is typically used to 
+report to the user the progress of a lengthy process. The added message appears 
+below the main message text overwriting any previously added message.</P>
+<P>1 parameter:<BR><STRONG>Text</STRONG>: Text code. This can be the message 
+text itself or a key into the single line message table which contains the 
+message text.</P>
+<H3><A name=Msgclose>Msgclose</A></H3>
+<P>Closes a message window, indicating the end of a length process.</P>
+<H3><A name=Pscreen>Pscreen</A></H3>
+<P>Opens a window prompting the user for the name of a printer and prints the 
+screen contents to that printer.</P>
+<H3><A name=Pause>Pause</A></H3>
+<P>Opens a message box with text and waits for the user to press any key at 
+which point the message box is closed and processing continues.</P>
+<P>3 parameters:<BR><STRONG>Code</STRONG>: Text code. This can be the message 
+text itself or a key into the multiple line message table which contains the 
+message text.<BR><STRONG>Row</STRONG>: The screen row 
+position.<BR><STRONG>Column</STRONG>: The screen column position.</P>
+<H3><A name=Getyn>Getyn</A></H3>
+<P>Opens a message box with given text and prompt line and waits for the user to 
+respond with a yes or no signal. The logical "accept" key is interpreted as a 
+yes while the "exit" key means no. The user can also press the language 
+dependent "y" or "n" keys.</P>
+<P>4 parameters:<BR><STRONG>Tcode</STRONG>: Message text code. This can be the 
+message text itself or a key into the multiple line message table which contains 
+the message text.<BR><STRONG>Pcode</STRONG>: Prompt text code. This can be the 
+prompt text itself or a key into the single line message table which contains 
+the prompt text.<BR><STRONG>Row</STRONG>: The screen row 
+position.<BR><STRONG>Column</STRONG>: The screen column position.</P>
+<H3><A name=Goahead>Goahead</A></H3>
+<P>Opens a message box with text and waits for the user to respond with a yes or 
+no signal. The logical "accept" key is interpreted as a yes while the "exit" key 
+means no. The user can also press the language dependent "y" or "n" keys. This 
+function is similar to the Getyn function except that the prompt text code is 
+"goahead".</P>
+<P>3 parameters:<BR><STRONG>Tcode</STRONG>: Message text code. This can be the 
+message text itself or a key into the multiple line message table which contains 
+the message text.<BR><STRONG>Row</STRONG>: The screen row 
+position.<BR><STRONG>Column</STRONG>: The screen column position.</P>
+<H3><A name=Sure>Sure</A></H3>
+<P>Opens a message box with text and waits for the user to respond with a yes or 
+no signal. The logical "accept" key is interpreted as a yes while the "exit" key 
+means no. The user can also press the language dependent "y" or "n" keys. This 
+function is similar to the Getyn function except that the prompt text code is 
+"sure". Here's a short example of usage:</P>
+<UL><TT>if sure("delete",8,16) then
+  <UL>-- delete something...</UL>end if</TT></UL>
+<P>3 parameters:<BR><STRONG>Tcode</STRONG>: Message text code. This can be the 
+message text itself or a key into the multiple line message table which contains 
+the message text.<BR><STRONG>Pcode</STRONG>: Prompt text code. This can be the 
+prompt text itself or a key into the single line message table which contains 
+the prompt text.<BR><STRONG>Row</STRONG>: The screen row 
+position.<BR><STRONG>Column</STRONG>: The screen column position.</P>
+<H3><A name=Bang>Bang</A></H3>
+<P>Opens a window where the user can execute operating system commands. This 
+function can be called from any Power-4gl user interface window with the "opsys" 
+logical key.</P>
+<H3><A name=Checknum>Checknum</A></H3>
+<P>Checks a character string as a valid number. An error message is displayed if 
+the character string cannot be recognized as a valid number. Typical usage is as 
+follows:</P>
+<UL></UL><TT>after field mystring
+<UL>if not checknum(mystring) then
+  <UL>next field mystring</UL>end if</TT></UL>
+<UL></UL>
+<P>1 parameter:<BR><STRONG>String</STRONG>: The character string to be checked 
+as a number.</P>
+<P>1 return value:<BR><STRONG>Verdict</STRONG>: True if the character string is 
+a valid number, otherwise false.</P>
+<P>Similar functions exist for datetime and date values.</P>
+<H3><A name=Checkx>Checkx</A></H3>
+<P>Checks a character as a check-box value which can have the values "x" or 
+null. An error message is displayed if the character is an invalid check-box 
+value. Typical usage is as follows:</P>
+<UL><TT>after field mychar
+  <UL>if not checkx(mychar) then
+    <UL>next field mychar</UL>end if</TT></UL></UL>
+<P>1 parameter:<BR><STRONG>Char</STRONG>: The character to be validated.</P>
+<P>1 return value:<BR><STRONG>Verdict</STRONG>: True if the character is a valid 
+check-box value, otherwise false.</P>
+<P>A similar functions exists for the native language "y" or "n" characters.</P>
+<HR SIZE=3>
+
+<a href="index.htm">Power-4gl manual main 
+page</a> </BODY></HTML>

@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0044)http://heilabrot.itn.is/pow4gl/pow4glm8.html -->
+<HTML><HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<TITLE>POWER-4GL Reference Manual</TITLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+<H1><a href="index.htm"><IMG alt="Main page" 
+src="images/pow4gl.gif" 
+align=bottom border=1 width="216" height="65"></a> Reference Manual</H1><EM>Extending x-4gl</EM> 
+<HR SIZE=3>
+
+<H1>Interface functions</H1>
+<P>These functions control the look and feel of the user interface objects of 
+Power-4gl, and are expected to be modified by the programmer to integrate 
+Power-4gl with the individual system. These functions must be present in the 
+system, typically in a module called "interf.4gl". A default set of interface 
+functions is supplied which the programmer can alter to fit his/her particular 
+needs.</P>
+<H3><A name=Keymap>Keymap</A></H3>
+<P>Converts an integer keyboard key code to a logical name, as used in 
+Power-4gl. Keyboard mapping is thus contained in one function which the 
+programmer can easily modify by assigning appropriate keyboard values (i.e. 
+"f8") to logical values (i.e. "exit").</P>
+<P>1 parameters:<BR><STRONG>Keycode</STRONG>: An integer value representing a 
+keyboard key code (as produced by fgl_lastkey).</P>
+<P>1 return value:<BR><STRONG>Logical value</STRONG>: A string containing a 
+logical keyboard name. The logical values used by Power-4gl functions, and their 
+standard purposes are as follows:<BR>'exit' = Exit without change or 
+action.<BR>'accept' = Perform operation and exit.<BR>'enter' = Enter into a list 
+item or next field in an input form.<BR>'help' = Open the appropriate help 
+window.<BR>'insert' = Insert a new pick-list row.<BR>'delete' = Delete a 
+pick-list row.<BR>'filter' = Edit the search criteria for a pick-list or 
+report.<BR>'refresh' = Refresh the current window data.<BR>'toggle' = View 
+report list/coversheet. Mark/unmark pick-list rows.<BR>'search' = In an input 
+field, open an appropriate pick-list.<BR>'other' = Other operations, perhaps a 
+menu offering some possibilities.<BR>'tab' = Move far left.<BR>'sh-tab' = Move 
+far right.<BR>'up' = Move up.<BR>'down' = Move down.<BR>'left' = Move 
+left.<BR>'right' = Move right.<BR>'prevpage' = Page upward.<BR>'nextpage' = Page 
+downward.<BR>'home' = First page of a list.<BR>'end' = Last page of a 
+list.<BR>'print' = Output the current list to a printer (pipe).<BR>'file' = 
+Output the current list to a file.<BR>'prtscr' = Print screen to a 
+pipe.<BR>'opsys' = Call up an operating system shell.</P>
+<H3><A name=Disp>Disp</A></H3>
+<P>Display text of a logical type with an appropriate attribute. Power-4gl uses 
+these definitions to display text of types such as titles, listings and 
+messages. Display attributes are thus contained in one function which the 
+programmer can easily modify by assigning appropriate display attributes (i.e. 
+"bold") to logical display types (i.e. "title").</P>
+<P>4 parameters:<BR><STRONG>Text</STRONG>: The text to be 
+displayed.<BR><STRONG>Type</STRONG>: The logical display type of the text. The 
+logical types used by Power-4gl functions, and their standard purposes are as 
+follows:<BR>'list' = Normal list line (pick-list lines, menu items, report lines 
+etc.)<BR>'listcurr' = The current list line, i.e. the cursor.<BR>'listmark' = A 
+marked list line (used in pick-lists).<BR>'listcurrmark' = The current list line 
+which has also been marked.<BR>'listinact' = An inactive list line (used in 
+menus).<BR>'titlefirst' = The first title line of a window, i.e. the window 
+label.<BR>'title' = A middle title line or header.<BR>'titlelast' = The last 
+title line or header (usually underlined).<BR>'message' = Messages or 
+prompts.<BR>'error' = Error messages.<BR><STRONG>Row</STRONG>: The window row 
+which the text is to be displayed at.<BR><STRONG>Column</STRONG>: The window 
+column which the text is to be displayed at.</P>
+<H3><A name=Transl>Transl</A></H3>
+<P>Converts a value using a specified translation method, reducing translations 
+and conversions to a single function.</P>
+<P>2 parameters:<BR><STRONG>Method</STRONG>: Character string identifying the 
+translation or conversion method.<BR><STRONG>Value</STRONG>: The value to be 
+converted.</P>
+<P>1 return value:<BR><STRONG>Value</STRONG>: The converted value.</P>
+<H3><A name=Getdefprinter>Getdefprinter</A></H3>
+<P>Obtain the name of the default printer.</P>
+<P>1 return value:<BR><STRONG>Printer name</STRONG>: A string containing the 
+logical name of the default printer.</P>
+<H3><A name=Getprinter>Getprinter</A></H3>
+<P>Search for a printer. This function typically calls a pick-list containing a 
+selection of available printers and returns a selected printer along with 
+configuration values.</P>
+<P>2 parameters:<BR><STRONG>Printer name</STRONG>: The currently selected 
+printer name (if any).<BR><STRONG>Output width</STRONG>: The expected width of 
+the printed output (number of characters).</P>
+<P>12 return value:<BR><STRONG>Printer name</STRONG>: The newly selected printer 
+name.<BR><STRONG>Pipe</STRONG>: String containing the output pipe 
+description.<BR><STRONG>Page length</STRONG>: The page length of the appropriate 
+page setup (number of lines).<BR><STRONG>Page width</STRONG>: The page width of 
+the appropriate page setup (number of characters).<BR><STRONG>Setup</STRONG>: 
+The page setup escape sequence.<BR><STRONG>Reset</STRONG>: Character sequence 
+between pages.<BR><STRONG>Bold</STRONG>: Sequence that produces bold 
+output.<BR><STRONG>Nonbold</STRONG>: Sequence that ends bold 
+output.<BR><STRONG>Underline</STRONG>: Sequence that produces underlined 
+output.<BR><STRONG>Nonunderline</STRONG>: Sequence that ends underlined 
+output.<BR><STRONG>Italic</STRONG>: Sequence that produces italic 
+output.<BR><STRONG>Nonitalic</STRONG>: Sequence that ends underlined output.</P>
+<H3><A name=Checkprinter>Checkprinter</A></H3>
+<P>Validate a printer name and return configuration values.</P>
+<P>2 parameters:<BR><STRONG>Printer name</STRONG>: The currently selected 
+printer name (if any).<BR><STRONG>Output width</STRONG>: The expected width of 
+the printed output (number of characters).</P>
+<P>13 return value:<BR><STRONG>Printer name</STRONG>: The newly selected printer 
+name.<BR><STRONG>Pipe</STRONG>: String containing the output pipe 
+description.<BR><STRONG>Page length</STRONG>: The page length of the appropriate 
+page setup (number of lines).<BR><STRONG>Page width</STRONG>: The page width of 
+the appropriate page setup (number of characters).<BR><STRONG>Setup</STRONG>: 
+The page setup escape sequence.<BR><STRONG>Reset</STRONG>: Character sequence 
+between pages.<BR><STRONG>Bold</STRONG>: Sequence that produces bold 
+output.<BR><STRONG>Nonbold</STRONG>: Sequence that ends bold 
+output.<BR><STRONG>Underline</STRONG>: Sequence that produces underlined 
+output.<BR><STRONG>Nonunderline</STRONG>: Sequence that ends underlined 
+output.<BR><STRONG>Italic</STRONG>: Sequence that produces italic 
+output.<BR><STRONG>Nonitalic</STRONG>: Sequence that ends underlined 
+output.<BR><STRONG>Valid</STRONG>: True if the printer is valid, otherwise 
+false.</P>
+<H3><A name=Progerr>Progerr</A></H3>
+<P>Handle a program error without program termination. Typically, the function 
+displays error information, possibly notifying the system administrator via 
+email, before continuing.</P>
+<P>3 parameters:<BR><STRONG>Location</STRONG>: Character string identifying 
+where in the program the error occurred.<BR><STRONG>Status</STRONG>: An integer 
+status code, e.g. sqlca.sqlcode.<BR><STRONG>Message</STRONG>: Additional 
+comments or messages.</P>
+<H3><A name=Progerrq>Progerrq</A></H3>
+<P>Handle a program error and terminate the program. Typically, the function 
+notifies the system administrator via email before terminating the program as 
+gracefully as possible.</P>
+<P>3 parameters:<BR><STRONG>Location</STRONG>: Character string identifying 
+where in the program the error occurred.<BR><STRONG>Status</STRONG>: An integer 
+status code, e.g. sqlca.sqlcode.<BR><STRONG>Message</STRONG>: Additional 
+comments or messages.</P>
+<HR SIZE=3>
+
+<a href="index.htm">Power-4gl manual main 
+page</a> </BODY></HTML>

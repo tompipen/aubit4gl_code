@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0044)http://heilabrot.itn.is/pow4gl/pow4glm5.html -->
+<HTML><HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<TITLE>POWER-4GL Reference Manual</TITLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+<H1><a href="index.htm"><IMG alt="Main page" 
+src="images/pow4gl.gif" 
+align=bottom border=1 width="216" height="65"></a> Reference Manual</H1><EM>Extending x-4gl</EM> 
+<HR SIZE=3>
+
+<H1>Conversion functions</H1>
+<P>These are some of the more essential conversion routines in Power-4gl.</P>
+<H3><A name=Word>Word</A></H3>
+<P>Converts a word code to a corresponding word or short phrase in a native 
+language. The actual words are contained in a dictionary which is in the form of 
+a flat text file called "word.tbl". If the word is not found in the dictionary, 
+the word code is used. Deviations from this routine are "Upfword" which upshifts 
+the first letter of the word and "Upshword" which upshifts the whole word.</P>
+<P>1 parameters:<BR><STRONG>Code</STRONG>: Word code. Normally this would be in 
+English (possibly abbreviated).</P>
+<P>1 return value:<BR><STRONG>Word</STRONG>: The corresponding word or short 
+phrase in the native language.</P>
+<H3><A name=Stx>Stx</A></H3>
+<P>Converts a message code to a corresponding message or sentence (single line 
+text) in a native language. The actual messages are contained in a flat text 
+file called "stx.tbl". If the message is not found in the text file then the 
+code is used as the message.</P>
+<P>1 parameters:<BR><STRONG>Code</STRONG>: Message code. Normally this would be 
+in English (possibly abbreviated).</P>
+<P>1 return value:<BR><STRONG>Message</STRONG>: The corresponding single line 
+message in the native language.</P>
+<H3><A name=Mtx>Mtx</A></H3>
+<P>Converts a message code to a corresponding message paragraph (multiple line 
+text) in a native language. The actual messages are contained in a flat text 
+file called "mtx.tbl". If the message is not found in the text file then the 
+code is used as the message.</P>
+<P>1 parameters:<BR><STRONG>Code</STRONG>: Message code. Normally this would be 
+in English (possibly abbreviated).</P>
+<P>1 return value:<BR><STRONG>Message</STRONG>: The corresponding multiple line 
+message in the native language.</P>
+<H3><A name=Hourtime>Hourtime</A></H3>
+<P>Converts an interval time value to it's corresponding equivalent in decimal 
+hours.</P>
+<P>1 parameter:<BR><STRONG>Interval</STRONG>: The interval time value.</P>
+<P>1 return value:<BR><STRONG>Hours</STRONG>: The corresponding decimal value in 
+hours.</P>
+<H3><A name=Sectime>Sectime</A></H3>
+<P>Converts an interval time value to it's corresponding equivalent in decimal 
+seconds.</P>
+<P>1 parameter:<BR><STRONG>Interval</STRONG>: The interval time value.</P>
+<P>1 return value:<BR><STRONG>Hours</STRONG>: The corresponding decimal value in 
+seconds.</P>
+<H3><A name=Secinterv>Secinterv</A></H3>
+<P>Converts a decimal time value in seconds to it's corresponding equivalent 
+interval value.</P>
+<P>1 parameter:<BR><STRONG>Interval</STRONG>: The decimal time value in 
+seconds.</P>
+<P>1 return value:<BR><STRONG>Hours</STRONG>: The corresponding interval time 
+value.</P>
+<H3><A name=Strctrlrep>Strctrlrep</A></H3>
+<P>Converts control character markers (i.e. "^") in a string to their 
+corresponding control character values. In many cases, it is convenient to store 
+strings containing control characters in a viewable and editable format. A 
+standard method is to precede a letter with a caret to represent a control 
+character, e.g. "^L".</P>
+<P>1 parameter:<BR><STRONG>Marked string</STRONG>: A string containing control 
+character markers.</P>
+<P>1 return value:<BR><STRONG>Control string</STRONG>: The corresponding string 
+containing real control characters.</P>
+<H3><A name=Formatnum>Formatnum</A></H3>
+<P>Formats a decimal number to a character string of specified length, with 
+specified decimal places. The number is right justified in the string with 
+optional thousands indicators.</P>
+<P>4 parameters:<BR><STRONG>Number</STRONG>: The number to be 
+formatted.<BR><STRONG>Length</STRONG>: The resulting string length.<BR>Decimal 
+places: The desired number of decimal places (must be less than the 
+length).<BR>Thousands: True or false as to whether thousands indicators should 
+be included.</P>
+<P>1 return value:<BR><STRONG>String</STRONG>: The formatted number.</P>
+<HR SIZE=3>
+
+<a href="index.htm">Power-4gl manual main 
+page</a> </BODY></HTML>
