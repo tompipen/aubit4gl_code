@@ -2,6 +2,8 @@ main
 
 #display "Aubit 4gl compiler is working - compiler build was successfull."
 error "Aubit 4gl compiler is working - compiler build was successfull."
+
+
 #message "Aubit 4gl compiler is working - compiler build was successfull."
 
 
