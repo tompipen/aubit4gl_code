@@ -10,7 +10,7 @@ static int A4GL_curses_to_aubit_int (int a);
 #include <form.h>
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.8 2004-01-25 13:08:05 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.9 2004-01-31 13:42:24 mikeaubury Exp $";
 
 int inprompt = 0;
 
@@ -1620,6 +1620,8 @@ A4GL_LL_initialize_display ()
 {
   A4GL_debug ("LL_initialize_display *************************");
   initscr ();
+  
+  try_to_stop_alternate_view();
 
   if (has_colors () == FALSE);
   else
@@ -2228,6 +2230,40 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
 	return a;
 }
 
+#ifdef NCURSES_VERSION
+#include <term.h>
+#define isprivate(s) ((s) != 0 && strstr(s, "\033[?") != 0)
+#endif
 
+void try_to_stop_alternate_view() {
+#ifdef NCURSES_VERSION
+    /*
+     * Cancel xterm's alternate-screen mode.
+     */
+        if ( isprivate(enter_ca_mode) && isprivate(exit_ca_mode)) {
+        /*
+         * initscr() or newterm() already did putp(enter_ca_mode) as a side
+         * effect of initializing the screen.  It would be nice to not even
+         * do that, but we do not really have access to the correct copy of
+         * the terminfo description until those functions have been invoked.
+         */
+        (void) putp(exit_ca_mode);
+        (void) putp(clear_screen);
+        /*
+         * Prevent ncurses from switching "back" to the normal screen when
+         * exiting from dialog.  That would move the cursor to the original
+         * location saved in xterm.  Normally curses sets the cursor position
+         * to the first line after the display, but the alternate screen
+         * switching is done after that point.
+         *
+         * Cancelling the strings altogether also works around the buggy
+         * implementation of alternate-screen in rxvt, etc., which clear
+         * more of the display than they should.
+         */
+        enter_ca_mode = 0;
+        exit_ca_mode = 0;
+    }
+#endif
+}
 
 
