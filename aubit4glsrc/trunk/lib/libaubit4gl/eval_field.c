@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: eval_field.c,v 1.1 2003-08-25 09:14:34 mikeaubury Exp $
+# $Id: eval_field.c,v 1.2 2003-08-25 19:15:50 mikeaubury Exp $
 #
 */
 
@@ -51,8 +51,9 @@ int a;
 
 A4GL_debug("CHECKING FOR A FIELD EXPRESSION MATCH");
 if (fprop->colours.colours_len==0||field_contents==0) {
-A4GL_debug("CHECKING FOR A FIELD EXPRESSION MATCH : %d",fprop->colour);
-	return fprop->colour;
+//A4GL_debug("CHECKING FOR A FIELD EXPRESSION MATCH : %d",fprop->colour);
+	return -1;
+	//return fprop->colour;
 }
 
 A4GL_debug("CHECKING FOR A FIELD EXPRESSION MATCH ...");
@@ -63,7 +64,8 @@ for (a=0;a<fprop->colours.colours_len;a++) {
 	}
 }
 
-return fprop->colour;
+return -1;
+//fprop->colour;
 }
 
 

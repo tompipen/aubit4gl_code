@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.17 2003-08-24 17:54:14 mikeaubury Exp $
+# $Id: attributes.c,v 1.18 2003-08-25 19:15:50 mikeaubury Exp $
 #*/
 
 /**
@@ -518,8 +518,9 @@ A4GL_debug("30 determined Attribute setting attrib_curr =  %x %d %d %d %d %d %d 
 }
 
 if (fprop) {
+	int a;
 
-	A4GL_debug("30 fprop->colour=%d",fprop->colour);
+	//A4GL_debug("30 fprop->colour=%d",fprop->colour);
 
   	attrib_field.colour=0;
   	attrib_field.reverse=0;
@@ -530,8 +531,12 @@ if (fprop) {
   	attrib_field.dim=0;
   	attrib_field.normal=0;
 
-	A4GL_attr_int_to_std( A4GL_evaluate_field_colour(val_for_field,fprop)<<8
-,&attrib_field);
+	a=A4GL_evaluate_field_colour(val_for_field,fprop);
+
+	if (a==-1) {
+		attr=0;
+	} else {
+	A4GL_attr_int_to_std( a <<8 ,&attrib_field);
 	A4GL_debug("30 attrib_field.colour=%d\n",attrib_field.colour);
 
 	if (A4GL_has_bool_attribute(fprop,FA_B_REVERSE)) { attrib_field.reverse=1; }
@@ -561,8 +566,9 @@ if (fprop) {
 
 
 	A4GL_debug("Form attribute = %x\n",attr);
+	}
 
-	if (attr==0||attr==FA_C_WHITE<<8) {
+	if (attr==0) {
 		ptr_attrib_field=0;
 	} else {
 		ptr_attrib_field=&attrib_field;

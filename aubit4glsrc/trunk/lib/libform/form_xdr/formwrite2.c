@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.31 2003-08-07 18:31:15 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.32 2003-08-25 19:15:50 mikeaubury Exp $
 #*/
 
 /**
@@ -164,7 +164,7 @@ A4GL_init_fld (void)
   xxfield.subscripts[0] = 0;
   xxfield.subscripts[1] = 0;
   xxfield.subscripts[2] = 0;
-  xxfield.colour = -1;
+  //xxfield.colour = -1;
   xxfield.dynamic = 0;
   xxfield.datatype = 0;
   xxfield.dtype_size = 0;

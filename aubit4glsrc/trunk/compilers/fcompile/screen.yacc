@@ -339,7 +339,7 @@ field_type op_att
 	A4GL_make_downshift(fld->tabname);
 	A4GL_make_downshift(fld->colname);
 
-	fld->colour=FA_C_WHITE;
+	//fld->colour=FA_C_WHITE;
 	fld->colours.colours_len=0;
 	fld->colours.colours_val=0;
 	A4GL_debug("add color %d\n",FA_C_WHITE);
@@ -415,15 +415,23 @@ desc | op_desc_list COMMA desc;
 desc :  
 AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | COLOR EQUAL colors  op_where {
-		if ($<expr>4==0) 
-			fld->colour=atoi($<str>3); 
-		else  {
+		if ($<expr>4==0)  {
+			int a;
+			struct  u_expression *e_true;
+  			e_true=create_int_expr(1);
+			fld->colours.colours_len++;
+			a=fld->colours.colours_len;
+			fld->colours.colours_val=realloc(fld->colours.colours_val,a*sizeof(struct colours ) );
+			fld->colours.colours_val[a-1].colour=atoi($<str>3);
+			fld->colours.colours_val[a-1].whereexpr=e_true;
+		} else  {
 			int a;
 			fld->colours.colours_len++;
 			a=fld->colours.colours_len;
 			fld->colours.colours_val=realloc(fld->colours.colours_val,a*sizeof(struct colours ) );
 			fld->colours.colours_val[a-1].colour=atoi($<str>3);
 			fld->colours.colours_val[a-1].whereexpr=$<expr>4;
+
 		}
 } 
 | COMMENTS EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_COMMENTS,$<str>3); }

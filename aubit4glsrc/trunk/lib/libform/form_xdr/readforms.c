@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.33 2003-08-22 22:35:00 mikeaubury Exp $
+# $Id: readforms.c,v 1.34 2003-08-25 19:15:50 mikeaubury Exp $
 #*/
 
 /**
@@ -329,10 +329,8 @@ read_attributes (struct s_form_dets *f)
   A4GL_debug ("read_attributes %d", f->fileform->attributes.attributes_len);
   for (a = 0; a < f->fileform->attributes.attributes_len; a++)
     {
-      A4GL_debug ("a=%d colour=%d", a,
-	     f->fileform->attributes.attributes_val[a].colour);
-      if (f->fileform->attributes.attributes_val[a].colour == -1)
-	f->fileform->attributes.attributes_val[a].colour = 7;
+      //A4GL_debug ("a=%d colour=%d", a, f->fileform->attributes.attributes_val[a].colour);
+      //if (f->fileform->attributes.attributes_val[a].colour == -1) f->fileform->attributes.attributes_val[a].colour = 7;
       if (real_has_bool_attribute	/* see a4gl_aubit_lib.h for declaration */
 	  (&f->fileform->attributes.attributes_val[a], FA_B_REVERSE))
 	f->fileform->attributes.attributes_val[a].do_reverse = 1;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.17 2003-08-22 22:35:00 mikeaubury Exp $
+# $Id: readforms.c,v 1.18 2003-08-25 19:15:50 mikeaubury Exp $
 #*/
 
 /**
@@ -239,10 +239,10 @@ read_attributes (struct s_form_dets *f)
   A4GL_debug ("read_attributes %d", f->fileform->attributes.attributes_len);
   for (a = 0; a < f->fileform->attributes.attributes_len; a++)
     {
-      A4GL_debug ("a=%d colour=%d", a,
-	     f->fileform->attributes.attributes_val[a].colour);
-      if (f->fileform->attributes.attributes_val[a].colour == -1)
-	f->fileform->attributes.attributes_val[a].colour = 7;
+      //A4GL_debug ("a=%d colour=%d", a, f->fileform->attributes.attributes_val[a].colour);
+      //if (f->fileform->attributes.attributes_val[a].colour == -1) f->fileform->attributes.attributes_val[a].colour = 7;
+
+
       if (real_has_bool_attribute	/* see a4gl_aubit_lib.h for declaration */
 	  (&f->fileform->attributes.attributes_val[a], FA_B_REVERSE))
 	f->fileform->attributes.attributes_val[a].do_reverse = 1;
@@ -367,8 +367,8 @@ include_range_check (char *ss, char *ptr, int dtype)
   static char buff[2048];	/* what we're checking */
   static char buff2[2048];	/* what we're checking against */
   static char buff3[2048];	/* used if its a range */
-  char *ptr1;
-  char *ptr2;
+  char *ptr1=0;
+  char *ptr2=0;
   char *ptr3;
   char *s;
 

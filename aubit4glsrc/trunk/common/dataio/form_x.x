@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.5 2003-07-30 10:32:38 mikeaubury Exp $
+# $Id: form_x.x,v 1.6 2003-08-25 19:15:45 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  * that results in compiler warnings for unused variable
  */
 
-const FCOMILE_XDR_VERSION = 103;
+const FCOMILE_XDR_VERSION = 104;
 const FCOMILE_XDR_MAGIC = 0xa4fc1234;
 
 struct struct_metrics
@@ -127,7 +127,7 @@ struct struct_scr_field
     int do_reverse;
     struct struct_field_attr_string str_attribs<>;
     enum FIELD_ATTRIBUTES_BOOL bool_attribs<>;
-    enum FA_COLOUR colour;
+    /* enum FA_COLOUR colour; */
     struct colours colours<>;
     int general_ptr;
     int flags;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.14 2003-08-24 17:54:10 mikeaubury Exp $
+# $Id: dump.c,v 1.15 2003-08-25 19:15:49 mikeaubury Exp $
 #*/
 
 /**
@@ -190,11 +190,11 @@ dump_attributes (struct_form * f)
 		  desc_bool[f->attributes.attributes_val[a].bool_attribs.
 			    bool_attribs_val[b]]);
 	}
-      printf ("   colour : %d\n", f->attributes.attributes_val[a].colour);
+      //printf ("   colour : %d\n", f->attributes.attributes_val[a].colour);
       if (f->attributes.attributes_val[a].colours.colours_len)
 	{
 	  int b;
-	  printf ("   Additional colours (%d)\n",
+	  printf ("   Specified colours (%d)\n",
 		  f->attributes.attributes_val[a].colours.colours_len);
 	  for (b = 0; b < f->attributes.attributes_val[a].colours.colours_len;
 	       b++)
