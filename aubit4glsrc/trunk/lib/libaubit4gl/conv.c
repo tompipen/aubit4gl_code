@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.91 2004-11-03 14:34:28 pjfalbe Exp $
+# $Id: conv.c,v 1.92 2004-11-12 13:30:19 mikeaubury Exp $
 #
 */
 
@@ -151,6 +151,17 @@ void A4GL_double_to_dec (double arg, char *buf, size_t length, size_t digits);
 
 
 static int A4GL_valid_dt (char *s, int *data,int size);
+
+
+int A4GL_itoint(void *a_short, void *b_int, int size_b) ;
+
+int A4GL_ltoint(void *a_long, void *b_int, int size_b) ;
+
+int A4GL_ftoint(void *a_f, void *b_int, int size_b) ;
+
+int A4GL_sftoint(void *a_sf, void *b_int, int size_b) ;
+
+int A4GL_dectoint(void *a_dec, void *b_int, int size_b) ;
 
 int A4GL_ctoc (void *a, void *b, int size);
 //int A4GL_ctodt             (void *a, void *b, int size);
@@ -308,12 +319,12 @@ A4GL_setc, A4GL_seti, A4GL_setl, A4GL_setf,
 int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
 {
   { A4GL_ctoc, A4GL_stoi, A4GL_stol, A4GL_stof, A4GL_stosf, A4GL_stodec, A4GL_stol, A4GL_stod, A4GL_stomdec, NO, A4GL_ctodt, NO, NO, A4GL_ctovc, A4GL_ctoint} ,
-  { A4GL_itoc, A4GL_itoi, A4GL_itol, A4GL_itof, A4GL_itosf, A4GL_itodec, A4GL_itol, A4GL_itod, A4GL_itomdec, NO, NO, NO, NO, A4GL_itovc, NO} ,
-  { A4GL_ltoc, A4GL_ltoi, A4GL_ltol, A4GL_ltof, A4GL_ltosf, A4GL_ltodec, A4GL_ltol, A4GL_ltod, A4GL_ltomdec, NO, NO, NO, NO, A4GL_ltovc, NO} ,
-  { A4GL_ftoc, A4GL_ftoi, A4GL_ftol, A4GL_ftof, A4GL_ftosf, A4GL_ftodec, A4GL_ftol, A4GL_ftod, A4GL_ftomdec, NO, NO, NO, NO, A4GL_ftovc, NO} ,
-  { A4GL_sftoc, A4GL_sftoi, A4GL_sftol, A4GL_sftof, A4GL_sftosf, A4GL_sftodec, A4GL_sftol, A4GL_sftod, A4GL_sftomdec, NO, NO, NO, NO, A4GL_sftovc, NO} ,
-  { A4GL_dectos, A4GL_dectoi, A4GL_dectol, A4GL_dectof, A4GL_dectosf, A4GL_dectodec, A4GL_dectol, NO, A4GL_dectomdec, NO, NO, NO, NO, A4GL_dectovc, NO} ,
-  { A4GL_ltoc, A4GL_ltoi, A4GL_ltol, A4GL_ltof, A4GL_ltosf, A4GL_ltodec, A4GL_ltol, A4GL_ltod, A4GL_ltomdec, NO, NO, NO, NO, A4GL_ltovc, NO} , 
+  { A4GL_itoc, A4GL_itoi, A4GL_itol, A4GL_itof, A4GL_itosf, A4GL_itodec, A4GL_itol, A4GL_itod, A4GL_itomdec, NO, NO, NO, NO, A4GL_itovc, A4GL_itoint} ,
+  { A4GL_ltoc, A4GL_ltoi, A4GL_ltol, A4GL_ltof, A4GL_ltosf, A4GL_ltodec, A4GL_ltol, A4GL_ltod, A4GL_ltomdec, NO, NO, NO, NO, A4GL_ltovc, A4GL_ltoint} ,
+  { A4GL_ftoc, A4GL_ftoi, A4GL_ftol, A4GL_ftof, A4GL_ftosf, A4GL_ftodec, A4GL_ftol, A4GL_ftod, A4GL_ftomdec, NO, NO, NO, NO, A4GL_ftovc, A4GL_ftoint} ,
+  { A4GL_sftoc, A4GL_sftoi, A4GL_sftol, A4GL_sftof, A4GL_sftosf, A4GL_sftodec, A4GL_sftol, A4GL_sftod, A4GL_sftomdec, NO, NO, NO, NO, A4GL_sftovc, A4GL_sftoint} ,
+  { A4GL_dectos, A4GL_dectoi, A4GL_dectol, A4GL_dectof, A4GL_dectosf, A4GL_dectodec, A4GL_dectol, NO, A4GL_dectomdec, NO, NO, NO, NO, A4GL_dectovc, A4GL_dectoint} ,
+  { A4GL_ltoc, A4GL_ltoi, A4GL_ltol, A4GL_ltof, A4GL_ltosf, A4GL_ltodec, A4GL_ltol, A4GL_ltod, A4GL_ltomdec, NO, NO, NO, NO, A4GL_ltovc, A4GL_ltoint} , 
   { A4GL_dtos, A4GL_dtoi, A4GL_dtol, A4GL_dtof, A4GL_dtosf, A4GL_dtodec, A4GL_dtof, A4GL_ltol, A4GL_dtomdec, NO, A4GL_d_to_dt, NO, NO, A4GL_dtovc, NO} ,
   { A4GL_mdectos, A4GL_mdectoi, A4GL_mdectol, A4GL_mdectof, A4GL_mdectosf, A4GL_mdectodec, A4GL_mdectol, NO, A4GL_mdectomdec, NO, NO, NO, NO, A4GL_mdectovc, NO} ,
   { NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO} ,
@@ -420,6 +431,16 @@ A4GL_inttoc (void *a1, void *b, int size)
   //int spc[] = { 0, 4, 2, 2, 2, 2, 2, 5 };
   a = a1;
 
+data[0]=0;
+data[1]=0;
+data[2]=0;
+data[3]=0;
+data[4]=0;
+data[5]=0;
+data[6]=0;
+data[7]=0;
+data[8]=0;
+data[9]=0;
 
   A4GL_decode_interval (a, data);
 
@@ -475,6 +496,38 @@ A4GL_inttoc (void *a1, void *b, int size)
   A4GL_ctoc (buff, b, size);
   return 1;
 }
+
+
+int A4GL_itoint(void *a_short, void *b_int, int size_b) {
+	char buff[256];
+	sprintf(buff,"%d",*(short *)a_short);
+	return  A4GL_ctoint(buff,b_int,size_b);
+}
+
+int A4GL_ltoint(void *a_long, void *b_int, int size_b) {
+	char buff[256];
+	sprintf(buff,"%d",*(short *)a_long);
+	return  A4GL_ctoint(buff,b_int,size_b);
+}
+
+int A4GL_ftoint(void *a_f, void *b_int, int size_b) {
+	char buff[256];
+	sprintf(buff,"%lf",*(double*)a_f);
+	return  A4GL_ctoint(buff,b_int,size_b);
+}
+
+int A4GL_sftoint(void *a_sf, void *b_int, int size_b) {
+	char buff[256];
+	sprintf(buff,"%f",*(float *)a_sf);
+	return  A4GL_ctoint(buff,b_int,size_b);
+}
+
+int A4GL_dectoint(void *a_dec, void *b_int, int size_b) {
+	char buff[256];
+	A4GL_dectos (a_dec, buff, 64);
+	return  A4GL_ctoint(buff,b_int,size_b);
+}
+
 
 /**
  *

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.62 2004-09-20 13:31:52 mikeaubury Exp $
+# $Id: ops.c,v 1.63 2004-11-12 13:30:20 mikeaubury Exp $
 #
 */
 
@@ -50,11 +50,16 @@
 
 #include "a4gl_libaubit4gl_int.h"
 
-static char *make_using (char *ptr);
+//static char *make_using (char *ptr);
 void A4GL_date_date_ops (int op);
 void A4GL_date_int_ops (int op);
 void A4GL_int_date_ops (int op);
 double trunc(double f);
+void A4GL_smfloat_float_ops (int op);
+void A4GL_float_smfloat_ops (int op);
+void A4GL_smfloat_smfloat_ops (int op);
+void
+A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
 
 /*
 =====================================================================
@@ -190,8 +195,7 @@ A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
  *
  * @return
  */
-void
-A4GL_smfloat_smfloat_ops (int op)
+void A4GL_smfloat_smfloat_ops (int op)
 {
   float a;
   float b;
@@ -287,8 +291,7 @@ A4GL_debug("%f %f\n",a,b);
  *
  * @return
  */
-void
-A4GL_float_smfloat_ops (int op)
+void A4GL_float_smfloat_ops (int op)
 {
   double a;
   float b;
@@ -384,8 +387,7 @@ A4GL_debug("%f %f\n",a,b);
  *
  * @return
  */
-void
-A4GL_smfloat_float_ops (int op)
+void A4GL_smfloat_float_ops (int op)
 {
   float a;
   double b;
@@ -585,7 +587,7 @@ A4GL_in_dt_ops (int op)
   long dt_days;
   double dt_seconds;
   long in_months;
-  long in_days;
+  //long in_days;
   double in_seconds;
 
 
@@ -1565,6 +1567,11 @@ A4GL_in_in_ops (int op)
   int se2;
   double d_i1;
   double d_i2;
+  int a;
+  for (a=0;a<10;a++) {
+		ival_data1[a]=0;
+		ival_data2[a]=0;
+	}
 
   A4GL_debug ("in_in_ops - op=%d", op);
 // d2 op d1
@@ -1618,12 +1625,14 @@ A4GL_in_in_ops (int op)
       in.ltime = in1.ltime;
     }
 
+  A4GL_debug("in_in.....");
+  A4GL_debug_print_stack();
   A4GL_pop_param (&in1, DTYPE_INTERVAL, in1.stime * 16 + in1.ltime);
   A4GL_pop_param (&in2, DTYPE_INTERVAL, in1.stime * 16 + in2.ltime);
 
 
-  A4GL_decode_interval (&in1, &ival_data1[0]);
-  A4GL_decode_interval (&in2, &ival_data2[0]);
+  A4GL_decode_interval (&in1, ival_data1);
+  A4GL_decode_interval (&in2, ival_data2);
 
   if (se1 == 2)
     {
@@ -1761,7 +1770,7 @@ A4GL_dt_dt_ops (int op)
   //double d_d1;
   //double d_d2;
 
-
+  memset(&in,0,sizeof(in));
   if (op != (OP_SUB) && op != (OP_EQUAL) && op != (OP_NOT_EQUAL)
       && op != (OP_LESS_THAN) && op != (OP_GREATER_THAN)
       && op != (OP_LESS_THAN_EQ) && op != (OP_GREATER_THAN_EQ))
@@ -1873,8 +1882,42 @@ A4GL_dt_dt_ops (int op)
   if (op == (OP_SUB) || op == (OP_LESS_THAN) || op == (OP_GREATER_THAN)
       || op == (OP_LESS_THAN_EQ) || op == (OP_GREATER_THAN_EQ))
     {
+	int s1;
+	int s2;
+
+	s1=-1;
+	s2=-1;
+
+	if (dtime_data1[0]&&s1==-1) s1=0;
+	if (dtime_data1[1]&&s1==-1) s1=1;
+	if (dtime_data1[2]&&s1==-1) s1=2;
+	if (dtime_data1[3]&&s1==-1) s1=3;
+	if (dtime_data1[4]&&s1==-1) s1=4;
+	if (dtime_data1[5]&&s1==-1) s1=5;
+	if (dtime_data1[6]&&s1==-1) s1=6;
+
+	if (dtime_data2[0]&&s2==-1) s2=0;
+	if (dtime_data2[1]&&s2==-1) s2=1;
+	if (dtime_data2[2]&&s2==-1) s2=2;
+	if (dtime_data2[3]&&s2==-1) s2=3;
+	if (dtime_data2[4]&&s2==-1) s2=4;
+	if (dtime_data2[5]&&s2==-1) s2=5;
+	if (dtime_data2[6]&&s2==-1) s2=6;
+
+/* We need to make sure we're comparing like for like... */
+	if (s1>0||s2>0) { dtime_data1[0]=0; dtime_data2[0]=0; }
+	if (s1>1||s2>1) { dtime_data1[1]=0; dtime_data2[1]=0; }
+	if (s1>2||s2>2) { dtime_data1[2]=0; dtime_data2[2]=0; }
+	if (s1>3||s2>3) { dtime_data1[3]=0; dtime_data2[3]=0; }
+	if (s1>4||s2>4) { dtime_data1[4]=0; dtime_data2[4]=0; }
+	if (s1>5||s2>5) { dtime_data1[5]=0; dtime_data2[5]=0; }
+	if (s1>6||s2>6) { dtime_data1[6]=0; dtime_data2[6]=0; }
+
+
+
       A4GL_debug ("Op LT : %d (-%d <%d >%d", op, OP_SUB, OP_LESS_THAN,
 		  OP_GREATER_THAN);
+
       dtime_data2[0] -= dtime_data1[0];	// Y
       dtime_data2[1] -= dtime_data1[1];	//
       dtime_data2[2] -= dtime_data1[2];
@@ -1940,7 +1983,7 @@ A4GL_dt_dt_ops (int op)
 
       if (op == (OP_SUB))
 	{
-	  if (dtime_data2[0] || dtime_data2[1])
+	  if (dtime_data2[0] || dtime_data2[1] )
 	    {
 	      // YEAR TO MONTH interval
 	      sprintf (buff_7, "%4d-%02d", dtime_data2[0], dtime_data2[1]);
@@ -2855,6 +2898,7 @@ free(buff);
 
 
 
+#ifdef OLD
 static char *
 make_using (char *ptr)
 {
@@ -2881,6 +2925,9 @@ make_using (char *ptr)
   strcat (buff, buff2);
   return buff;
 }
+#endif
+
+
 
 static char *
 make_using_tostring (char *ptr, int d, int n)

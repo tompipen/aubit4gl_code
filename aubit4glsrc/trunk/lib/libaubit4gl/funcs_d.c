@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.37 2004-11-04 13:15:42 pjfalbe Exp $
+# $Id: funcs_d.c,v 1.38 2004-11-12 13:30:19 mikeaubury Exp $
 #
 */
 
@@ -790,18 +790,30 @@ return 0;
 #endif
 char *A4GL_strcpy(char *dest,char *src,char *f,int l) {
 	int a;
+
 	strcpy(dest,src);
 
+
+#ifdef DEBUG
+// This just adds some debugging stuff - but this 
+// isn't applicable when called from the routines in dmy.c 
+// as they put some funny characters in the string as placeholders
+//
 	if (strcmp(f,"dmy.c")==0) return dest;
-	//printf("Copy '%s' @ %s %d\n",src,f,l);
+
+
+// Quick - is it big ?
 	if (strlen(src)>255) {
 		A4GL_debug("Long string : %s\n",src);
 	}
+
+// Does it look Good ?
 	for (a=0;a<strlen(src);a++) {
 		if (!isprint(src[a])) {
 			A4GL_debug("bad char @%d for string '%s' (%d)\n",a,src,strlen(src));
 		}
 	}
+#endif
 	
 	return dest;
 }

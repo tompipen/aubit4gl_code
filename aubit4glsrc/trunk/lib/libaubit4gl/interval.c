@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.14 2003-08-06 20:27:47 mikeaubury Exp $
+# $Id: interval.c,v 1.15 2004-11-12 13:30:19 mikeaubury Exp $
 #
 */
 
@@ -512,7 +512,13 @@ A4GL_decode_interval (struct ival *ival, int *data)
   s1 = ival->stime % 16;
   s2 = ival->stime / 16;
   A4GL_debug ("s1=%d s2=%d", s1, s2);
+  memset(buff,0,sizeof(buff));
 
+  memcpy(buff,ival->data,24);
+
+
+
+/*
   sprintf (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
 	   ival->data[0], ival->data[1], ival->data[2], ival->data[3],
 	   ival->data[4], ival->data[5],
@@ -524,6 +530,7 @@ A4GL_decode_interval (struct ival *ival, int *data)
 	   ival->data[16], ival->data[17], ival->data[18],
 	   ival->data[19], ival->data[20], ival->data[21],
 	   ival->data[22], ival->data[23]);
+*/
 
   A4GL_debug ("buff=%s\n", buff);
 
