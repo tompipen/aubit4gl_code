@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.30 2002-02-15 11:33:41 afalout Exp $
+# $Id: Makefile.in,v 1.31 2002-02-15 12:09:07 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -200,7 +200,6 @@ ifneq "@IFMX_ESQLC@" "no"
 endif
 
 ifneq "@HAVE_IFXODBC@" "no"
-    ALL				+=libSQL_ifxodbc${SO_EXT}
 	TOLIBCUI	+=$(SOURCE)/lib/libSQL_ifxodbc${SO_EXT}
 endif
 
@@ -442,25 +441,15 @@ ALL +=test
 ##                              Targets
 ## ==================================================================
 
-#default target:
 all: ${ALL}
 	@echo "Aubit 4gl compiler default targets (${ALL}) compiled successfully."
 	@echo "You MUST install it before you can use it - execute 'make install'"
 	@echo "Thank you for using Aubit 4gl compiler"
 
-#FIXME: Do I need to pass ${MAKEFLAGS}, since
-#I'm exporting all variables to shell?
 log:
 	@echo "Logging make process to make.log, please wait..."
 	@${MAKE} ${MKNAME} ${BUGMAKEFLAGS} > make.log 2>&1
 	@echo "make finished successfuly, see make.log for details."
-
-
-#dll.exp.libs:
-#	$(MAKE) ${MKNAME} -C lib exp_aclshared
-#	$(MAKE) ${MKNAME} -C compilers/4glc exp_4glc
-
-
 
 corecompile: libs
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/4glc/rules
@@ -472,16 +461,10 @@ corecompile: libs
 	@echo Aubit 4gl compiler core is now compiled
 
 libs:
-#FIXME: check if all this is correvtly exported:
-# ODBC=${ODBC} PDFBUILD=${PDFBUILD} GTKBUILD=${GTKBUILD} JABBERBUILD=${JABBERBUILD}
-#warning! this will override all CFLAGS, etc. in ALL sub-makefiles!
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib #CFLAGS="$(LIBCFLAGS)" ${NOINCL_PARAM}
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib
 	@echo Aubit 4gl core libraries are now compiled
 
-#make  -C lib CFLAGS="-g -O2 -Ilibincl -I. -DAUTOBANG -DDEBUG -DIODBC -I/opt/unixODBC/include"
-
 gtkgui:
-#WARNING! Thhis will override CFLAGS in sub-makefile:
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib all_gui
 #	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui

@@ -30,7 +30,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.48 2002-02-15 11:33:46 afalout Exp $
+# $Id: 4glpc,v 1.49 2002-02-15 12:09:09 afalout Exp $
 #
 
 ########################################################################
@@ -1245,7 +1245,7 @@ then
             GTKLIBS="-lgtk4gl -lgtk4gl_x $GTKLIBS"
         fi
     fi
-else
+else  #UNIX
 	if [  "$GTKGUI" = "Yes" ]
     then
 		GTKLIBS="-lgdk -lgtk -lglib"

@@ -33,7 +33,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.15 2002-02-15 11:33:47 afalout Exp $
+# $Id: sql.c,v 1.16 2002-02-15 12:09:10 afalout Exp $
 #
 */
 
@@ -87,8 +87,8 @@ extern SQLRETURN SQL_API SQLBindParameter (
 
 */
 
-#define DEFINE_SQLCA
-#define DEFINE_STATUS
+//#define DEFINE_SQLCA
+//#define DEFINE_STATUS
 #define FETCH_ABSOLUTE 1
 #define FETCH_RELATIVE 2
 #include <stdio.h>
@@ -239,7 +239,7 @@ sqlca_struct;
 */
 
 
-#if (defined(WIN32) && notdefined(__CYWIN__)) // && defined DLL_EXPORT
+#if (defined(WIN32) && ! defined(__CYWIN__)) // && defined DLL_EXPORT
 
 	dll_export sqlca_struct sqlca;
 	dll_export int status;
