@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.29 2004-03-04 16:27:47 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.30 2004-03-09 22:34:38 mikeaubury Exp $
 #
 */
 
@@ -497,10 +497,12 @@ a4gl_using (char *str, int s, char *fmt, double num)
 	  d_cnt++;
 	a++;
       }
+	A4GL_debug("ptr1=%s b=%d",ptr1,b);
     // count the digits in the integer part of the number
-    for (a = b; (a > 0 && ptr1[a] > '0'); a--)
+    for (a = b; (a > 0 && ptr1[a] != ' '); a--)
       n_cnt++;
 
+A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
     if (f_cnt < n_cnt)
       {
  A4GL_debug ("overflow, f_cnt=%d,d_cnt=%d,n_cnt=%d", f_cnt, d_cnt, n_cnt);
