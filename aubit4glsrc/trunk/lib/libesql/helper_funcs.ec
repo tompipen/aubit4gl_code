@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.13 2004-08-11 18:06:10 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.14 2004-08-16 13:48:29 mikeaubury Exp $
 #
 */
 
@@ -173,7 +173,17 @@ char b[65];
 
 	if (dir=='o') {
 	        char *ptr;
-		if (indicat==-1||risnull(CMONEYTYPE,(void*)infx)) { A4GL_setnull(DTYPE_MONEY,(void *)a4gl,size); return;}
+		int xisnull;
+
+#ifdef DIALECT_POSTGRES
+                xisnull=risnull(CDECIMALTYPE,(void *)infx);
+#else
+                xisnull=risnull(CMONEYTYPE,(void *)infx);
+#endif
+		if (indicat==-1||xisnull) { 
+				A4GL_setnull(DTYPE_MONEY,(void *)a4gl,size); return;
+		}
+
 	        memset(b,0,65);
 	        dectoasc(infx,b,64,16);
 	        A4GL_push_char(b);
