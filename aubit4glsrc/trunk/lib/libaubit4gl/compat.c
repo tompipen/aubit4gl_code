@@ -13,6 +13,8 @@
 #include "a4gl_incl_infx.h"
 
 void trim(char *s);
+void popflo (float *s);
+void retdec_aubit (fgldecimal *x);
 //void rsetnull(int d,void *ptr);
 
 int fgl_getkey() {

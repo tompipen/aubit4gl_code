@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.14 2004-11-05 00:37:28 afalout Exp $
+# $Id: aubit-config.c,v 1.15 2004-12-07 21:59:48 whaslbeck Exp $
 #
 */
 
@@ -49,6 +49,7 @@
 #include <stdio.h>
 #include <string.h>		/* strcmp() */
 #include <stdlib.h>		/* exit() */
+#include <ctype.h>		/* isprint() */
 
 
 /*
@@ -65,6 +66,12 @@ extern char *acl_getenv (char *s);
 void A4GL_trim_nl (char *p);
 void A4GL_debug_full (char *fmt, ...);
 void A4GL_set_line (void);
+char *A4GL_strip_quotes (char *s);
+void *A4GL_find_pointer(char *s,char c);
+int A4GL_has_pointer(char *s,char c);
+int A4GL_del_pointer(char *s,char c);
+int A4GL_add_pointer(char *s,char c,void *x);
+char *A4GL_strcpy(char *dest,char *src,char *f,int l);
 
 //char * DEBUG_CFG;
 

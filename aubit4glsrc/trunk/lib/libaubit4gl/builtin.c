@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.70 2004-12-02 09:33:21 mikeaubury Exp $
+# $Id: builtin.c,v 1.71 2004-12-07 21:57:39 whaslbeck Exp $
 #
 */
 
@@ -85,6 +85,7 @@ int 	aclfgl_winexecwait 				(char *exec_string);
 int 	aclfgl_winexec 					(char *exec_string);
 int 	aclfgli_show_help 				(int a);
 int 	aclfgl_fgl_scr_size 			(int n);
+void	A4GL_log_error(int lineno, char *fname, int mstatus);
 
 /*
 =====================================================================
