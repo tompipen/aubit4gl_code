@@ -4,9 +4,11 @@
 
 #include "menu_x.x.h"
 
-#include "a4gl_lib_ui_gtk_int.h"	/* A4GL_make_pixmap_gw */
+//#include "a4gl_lib_ui_gtk_int.h"	/* A4GL_make_pixmap_gw */
 
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
+#define XWIDTH 10
+#define YHEIGHT 10
 
 #endif
