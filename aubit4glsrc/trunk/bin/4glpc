@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.70 2002-04-15 05:04:29 afalout Exp $
+# $Id: 4glpc,v 1.71 2002-04-16 06:59:28 afalout Exp $
 #
 
 ########################################################################
@@ -1124,11 +1124,11 @@ then
     fi
 fi
 
-FGLLIBS_COMMON="-laubit4gl"	# -lFORM_XDR"
+FGLLIBS_COMMON="-laubit4gl"
 
 if [ "$COMSPEC" = "" ]
 then
-	FGLLIBS_COMMON="$FGLLIBS_COMMON" # -ldl"
+	FGLLIBS_COMMON="$FGLLIBS_COMMON -lFORM_XDR" # -ldl"
 else
 	FGLLIBS_COMMON="$FGLLIBS_COMMON -L/lib/w32api -L/usr/local/lib" #$RPCLIB_NAME
 fi
