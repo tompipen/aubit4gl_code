@@ -1552,12 +1552,12 @@ share_or_exclusive :
 
 
 units_qual:
-	UNITS_YEAR {strcpy($<str>$,"UNITS YEAR");}
-	| UNITS_MONTH {strcpy($<str>$,"UNITS MONTH"); }
-	| UNITS_DAY {strcpy($<str>$,"UNITS DAY"); }
-	| UNITS_HOUR {strcpy($<str>$,"UNITS HOUR"); }
-	| UNITS_MINUTE {strcpy($<str>$,"UNITS MINUTE"); }
-	| UNITS_SECOND {strcpy($<str>$,"UNITS SECOND"); }
+	UNITS_YEAR {strcpy($<str>$," UNITS YEAR");}
+	| UNITS_MONTH {strcpy($<str>$," UNITS MONTH"); }
+	| UNITS_DAY {strcpy($<str>$," UNITS DAY"); }
+	| UNITS_HOUR {strcpy($<str>$," UNITS HOUR"); }
+	| UNITS_MINUTE {strcpy($<str>$," UNITS MINUTE"); }
+	| UNITS_SECOND {strcpy($<str>$," UNITS SECOND"); }
 ;
 
 extend_qual_ss:
