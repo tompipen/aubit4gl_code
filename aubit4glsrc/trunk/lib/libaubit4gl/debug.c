@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.32 2004-11-04 13:15:42 pjfalbe Exp $
+# $Id: debug.c,v 1.33 2004-11-17 10:40:12 mikeaubury Exp $
 #
 */
 
@@ -162,7 +162,11 @@ A4GL_debug_full (char *fmt, ...)
   	}
   }
 
-
+  if (strncmp(g_fname,"API",3)==0) {
+		char buff2[512];
+		sprintf(buff2,"API %s\n",buff);
+		A4GL_monitor_puts_int(buff2);
+  }
 
   if (strcmp ("ALL", acl_getenv ("DEBUG")) == 0
       || strcmp (g_fname, acl_getenv ("DEBUG")) == 0)

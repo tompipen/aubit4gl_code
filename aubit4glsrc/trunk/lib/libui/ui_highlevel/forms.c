@@ -1,4 +1,4 @@
-static char *module_id="$Id: forms.c,v 1.14 2004-08-31 20:46:55 mikeaubury Exp $";
+static char *module_id="$Id: forms.c,v 1.15 2004-11-17 10:40:48 mikeaubury Exp $";
 
 #include "hl_forms.h"
 #include "hl_proto.h"
@@ -516,15 +516,10 @@ UILIB_A4GL_display_error (int a, int wait)
   A4GL_debug ("ZZ2 going to print an error : %s", s);
   A4GL_trim (s);
   A4GL_debug ("trimmed -> %s", s);
-  if (A4GL_isgui ())
-    A4GL_gui_error (s, A4GL_geterror_line ());
-  else
-    {
       if (wait)
 	A4GL_LL_error_box (s, a);
       else
 	A4GL_error_nobox (s, a);
-    }
   A4GL_debug ("error_box done");
   acl_free (s);
   a4gl_status = 0;
@@ -901,7 +896,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
 				   f->form_details.message_line,
 				   f->form_details.colour);
 
-  A4GL_gui_dispform (name, A4GL_getform_line ());
+  //A4GL_gui_dispform (name, A4GL_getform_line ());
 
 
   windows[A4GL_get_currwinno ()].form = f;

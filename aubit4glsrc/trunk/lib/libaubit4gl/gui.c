@@ -1,55 +1,25 @@
-/*
-# +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0                              |
-# +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
-# +----------------------------------------------------------------------+
-# | This program is free software; you can redistribute it and/or modify |
-# | it under the terms of one of the following licenses:                 |
-# |                                                                      |
-# |  A) the GNU General Public License as published by the Free Software |
-# |     Foundation; either version 2 of the License, or (at your option) |
-# |     any later version.                                               |
-# |                                                                      |
-# |  B) the Aubit License as published by the Aubit Development Team and |
-# |     included in the distribution in the file: LICENSE                |
-# |                                                                      |
-# | This program is distributed in the hope that it will be useful,      |
-# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
-# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
-# | GNU General Public License for more details.                         |
-# |                                                                      |
-# | You should have received a copy of both licenses referred to here.   |
-# | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
-# +----------------------------------------------------------------------+
-#
-# $Id: gui.c,v 1.20 2003-07-04 09:43:38 mikeaubury Exp $
-#
-*/
 
-/**
- * @file
- * GUI interface implementations
- *
- * The user interface functions pass allways from here.
- *
- * There is work to be done in this module in order to change it to work
- * like SQL library with several interfaces:
- *   - Curses
- *   - GTK
- *   - Thin client using TCP
- *
- * @todo Take the prototypes here declared. See if the functions are static
- * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
- */
+#include "a4gl_libaubit4gl_int.h"
+#ifdef htons
+#undef htons
+#endif
+#ifdef htonl
+#undef htonl
+#endif
 
- /*
-    =====================================================================
-    Constants definitions
-    =====================================================================
-  */
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/wait.h>
+#include <signal.h>
+#include <netdb.h>
+
 
 #if (defined(WIN32) && ! defined(__CYGWIN__))
 #define USE_WINSOCK
@@ -65,13 +35,6 @@
 #endif
 #endif
 
-/*
-#ifdef USE_GTK
-	#define HAS_GTK 1
-	#define START_HAS_GTK if (ui_mode==UI_MODE_GTK) {
-	#define END_HAS_GTK }
-#endif
-*/
 
 /*
 =====================================================================
@@ -80,213 +43,63 @@
 */
 
 
-#include "a4gl_libaubit4gl_int.h"
-
-/*
-builtin_d.c:89: warning: function declaration isn't a prototype
-builtin_d.c:89: warning: redundant redeclaration of `__errno_location' in same scope
-/usr/include/bits/errno.h:39: warning: previous declaration of `__errno_location'
-
-we cannot use /usr/include/bits/errno.h since it includes definition of
-#   define errno (*__errno_location ())
-This is in confluct with definitions of errno in several places in Aubit code,
-like in ../generated/tmperrs.h :
-
-int errno;
-
-OTOH, if we don't include it, then we get :
 
 
-gui.c:414: `EINTR' undeclared (first use in this function)
-gui.c:414: (Each undeclared identifier is reported only once
-
-So it will be included only in gui.c:
-
-oh, and in a4gl_libaubit4gl_int.h!!!!!!! Can we remove this one?
-
-*/
 #include <errno.h>		/* EINTR */
 
-
-/*
-=====================================================================
-                    Functions prototypes
-=====================================================================
-*/
-
-void A4GL_init_wsock (void);
-void A4GL_proc_format (char *s, int a);
-int A4GL_proc_gui_in (char *buff);
-void A4GL_gui_kpress (void);
-void A4GL_gui_click (void);
-int A4GL_last_error (void);
-
-void A4GL_start_gui (void);
-void A4GL_gui_close (void);
-static int find_str_in (char *s);
-char *A4GL_read_clicked (void);
-void *A4GL_decode_clicked (void);
-
-
-/*
-=====================================================================
-                    Variables definitions
-=====================================================================
-*/
-
-int use_gui = 0;
 SOCKET sock = 0;
-int m_retval = 0;
-char m_cretval[64] = "";
-static char params[20][800];
-int listensock = -1;		/* So that we can close sockets on ctrl-c */
-SOCKET connectsock = -1;
-int connected = 1;
+int connected=0;
+int listensock = -1;
+void A4GL_init_wsock (void);
 
-struct s_in
-{
-  char name[10];
-  char format[20];
-  void (*func) (void);
+#ifdef TEST
+main() {
+	A4GL_start_monitor();
+}
+#endif
+
+
+int A4GL_has_monitor() {
+	return connected;
 }
 
-defs[] =
+void A4GL_start_monitor (void)
 {
-  {
-  "KeyPress", "IIII", A4GL_gui_kpress}
-  ,
-  {
-  "Click", "IIII", A4GL_gui_click}
-  ,
-  {
-  "0", "0", 0}
-};
-
-/*
-=====================================================================
-                    Functions definitions
-=====================================================================
-*/
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_proc_it (char *buff)
-{
-  int a;
-  //A4GL_debug ("Use gui=%d sock=%d", use_gui, sock);
-  if (use_gui > 0 && sock)
-    {
-      //A4GL_debug ("Sending %s to front end", buff);
-      a = write (sock, buff, strlen (buff));
-      if (a <= 0)
-	connected = 0;
-    }
-
-}
-
-/**
- * Start the user interface. LOOKS OBSOLETE
- *
- * If the environment variable GUIPORT is set, act as a server in the port
- * defined.
- *
- * @return Nothing.
- */
-void
-A4GL_start_gui (void)
-{
-#ifdef __OBSOLETE_CODE__
   char *p;
   int port = -1;
-
-
-  A4GL_debug ("Start gui...");
-  p = acl_getenv ("GUIPORT");
+  
+  p = acl_getenv ("MONITORPORT");
+  if (p==0) p="";
   A4GL_init_wsock ();
-
-  if (p)
-    {
-      if (strcmp (p, "") == 0)
-	p = 0;
-    }
-
+  if (p) { if (strcmp (p, "") == 0) p = 0; }
   if (p == 0)
     {
-      A4GL_debug ("No Port");
-      use_gui = -1;
+      connected=0;
+	A4GL_debug("No monitoring");
       return;
     }
 
-
   port = atoport (p, "tcp");
 
-  A4GL_debug ("GUI PORT %d %s", port, p);
   if (port == -1)
     {
-      A4GL_debug ("Unable to find service: %s\n", p);
       A4GL_exitwith ("Unable to start TCP session");
     }
 
+  printf("Waiting on port : %d for monitor\n",port);
   sock = A4GL_get_connection (SOCK_STREAM, port, &listensock);
-  A4GL_debug ("Socket %d", sock);
-  connectsock = sock;
-  if (A4GL_sock_puts (sock, "STARTGUI\n"))
-    use_gui = 1;
-  else
-    connected = 0;
-#endif
-
+  printf("Got connection\n");
+  if (A4GL_sock_puts (sock, "INIT\n")) connected = 1;
+  else connected=0;
+  printf("Connected=%d\n",connected); sleep (1);
 }
 
-/**
- * @todo : Understand if not used and if not remove it.
- */
-/*
-int
-read_gui (void)
-{
-  static char buffer[1024];
-  fd_set rfds;
-  struct timeval tv;
-  int retval;
-  FD_ZERO (&rfds);
-  FD_SET (sock, &rfds);
-  tv.tv_sec = 1;
-  tv.tv_usec = 0;
-
-  retval = select (10, &rfds, 0, 0, &tv);
-
-//proc_it("KEEPALIVE");
-  if (retval == 0)
-    return 0;
-  if (A4GL_sock_read (sock, buffer, 1024) < 0)
-    {
-      connected = 0;
-      A4GL_exitwith ("Front end closed unexpectedly");
-      return 0;
-    }
-  A4GL_stripnl (buffer);
-  A4GL_debug ("Got %s over network", buffer);
-  if (strncmp (buffer, "GotKey", 6) == 0)
-    {
-      return A4GL_net_keyval (&buffer[7]);
-    }
-
-  return 0;
-}
-*/
-
-/**
- * Close the socket to the client.
- */
 void
-A4GL_gui_close (void)
+A4GL_monitor_close (void)
 {
   close (sock);
 }
+
 
 /**
  * Gets a port from where to act as a server using TCP.
@@ -297,7 +110,7 @@ A4GL_gui_close (void)
  * @param service The service name to found in /etc/services.
  * @param proto Protocol (normaly TCP).
  */
-/*
+
 int
 atoport (char *service,char *proto)
 {
@@ -308,8 +121,7 @@ atoport (char *service,char *proto)
 
   // First try to read it from /etc/services
   serv = getservbyname (service, proto);
-  if (serv != NULL)
-    port = serv->s_port;
+  if (serv != NULL) port = serv->s_port;
   else
     {				// Not in services, maybe a number?
       lport = strtol (service, &errpos, 0);
@@ -319,7 +131,7 @@ atoport (char *service,char *proto)
     }
   return port;
 }
-*/
+
 
 
 /**
@@ -381,7 +193,6 @@ atoaddr (char *address)
 int
 A4GL_get_connection (int socket_type, u_short port, int *listener)
 {
-#ifdef __OBSOLETE_CODE__
 
   struct sockaddr_in address;
   int listening_socket;
@@ -389,10 +200,9 @@ A4GL_get_connection (int socket_type, u_short port, int *listener)
   int new_process;
   int reuse_addr = 1;
 
-  /* Setup internet address information.
-     This is used with the bind() call */
   memset ((char *) &address, 0, sizeof (address));
   address.sin_family = AF_INET;
+	printf("Port now : %d\n",port);
   address.sin_port = port;
   address.sin_addr.s_addr = htonl (INADDR_ANY);
 
@@ -419,7 +229,7 @@ A4GL_get_connection (int socket_type, u_short port, int *listener)
 
   if (socket_type == SOCK_STREAM)
     {
-      listen (listening_socket, 5);
+      listen (listening_socket, 1);
       /* Queue up to five connections before
          having them automatically rejected. */
 
@@ -442,38 +252,13 @@ A4GL_get_connection (int socket_type, u_short port, int *listener)
 		}
 	    }
 
-	  /* new_process = fork(); */
-	  new_process = 0;
-	  if (new_process < 0)
-	    {
-	      perror ("fork");
-	      close (connected_socket);
-	      connected_socket = -1;
-	    }
-	  else
-	    {			/* We have a new process... */
-	      if (new_process == 0)
-		{
-		  /* This is the new process. */
-		  close (listening_socket);	/* Close our copy of this socket */
-		  if (listener != NULL)
-		    *listener = -1;	/* Closed in this process.  We are not
-					   responsible for it. */
-		}
-	      else
-		{
-		  /* This is the main loop.  Close copy of connected socket, and
-		     continue loop. */
-		  close (connected_socket);
-		  connected_socket = -1;
-		}
-	    }
+	  close (listening_socket);	/* Close our copy of this socket */
+	  if (listener != NULL) *listener = -1;	/* Closed in this process.  We are not responsible for it. */
 	}
       return connected_socket;
     }
   else
     return listening_socket;
-#endif
 
   return 0;
 
@@ -576,6 +361,12 @@ A4GL_sock_read (int sockfd, char *buf, size_t count)
   return count;
 }
 
+int
+A4GL_sock_write_int (char *buf, size_t count)
+{
+	if (sock) return A4GL_sock_write(sock,buf,count);
+	return 1;
+}
 /**
  * This is just like the write() system call, accept that it will
  * make sure that all data is transmitted.
@@ -593,11 +384,11 @@ A4GL_sock_write (int sockfd, char *buf, size_t count)
 
   while (bytes_sent < count)
     {
-      do
-	this_write = write (sockfd, buf, count - bytes_sent);
+      do this_write = write (sockfd, buf, count - bytes_sent);
       while ((this_write < 0) && (A4GL_last_error () == EINTR));
-      if (this_write <= 0)
-	return this_write;
+      if (this_write <= 0) {
+			return this_write;
+	}
       bytes_sent += this_write;
       buf += this_write;
     }
@@ -622,7 +413,6 @@ int
 A4GL_sock_gets (int sockfd, char *str, size_t count)
 {
 
-#ifdef __OBSOLETE_CODE__
 
   int bytes_read;
   int total_count = 0;
@@ -633,7 +423,6 @@ A4GL_sock_gets (int sockfd, char *str, size_t count)
   int retval;
 
 
-  A4GL_debug ("Waiting for a string...");
   current_position = str;
 
   while (last_read != 10)
@@ -656,20 +445,18 @@ A4GL_sock_gets (int sockfd, char *str, size_t count)
 	    bytes_read = recv (sockfd, &last_read, 1, 0);
 	  else
 	    {
-	      A4GL_proc_it ("KEEPALIVE\n");
 	      if (connected == 0)
 		break;
 	      continue;
 	    }
+
 	  if (bytes_read < 0 || retval < 0 || connected == 0)
 	    {
 	      /* The other side may have closed unexpectedly */
-	      A4GL_debug ("Its gone down !");
-	      A4GL_exitwith ("Connection Dropped");
-	      A4GL_gotolinemode ();
-	      exit (0);
-	      return -1;	/* Is this effective on other platforms than linux? */
+		connected=0;
+		return;
 	    }
+
 	  if (bytes_read)
 	    break;
 
@@ -683,13 +470,16 @@ A4GL_sock_gets (int sockfd, char *str, size_t count)
     }
   if (count > 0)
     current_position[0] = 0;
-  A4GL_debug ("Got %s\n", str);
   return total_count;
-
-#endif
-
   return 0;
+}
 
+
+int
+A4GL_monitor_puts_int (char *str)
+{
+  if (connected) return A4GL_sock_puts (sock, str);
+  else return 1;
 }
 
 /**
@@ -705,188 +495,10 @@ A4GL_sock_puts (int sockfd, char *str)
 
 
 /**
- * This ignores the SIGPIPE signal.  This is usually a good idea, since
- * the default behaviour is to terminate the application.  SIGPIPE is
- * sent when you try to write to an unconnected socket.
- * You should check your return codes to make sure you catch this 
- * error!
- */
-int
-A4GL_isgui (void)
-{
-  if (use_gui > 0 && sock)
-    return 1;
-  return 0;
-}
-
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_get_gui_char (void)
-{
-  static char buff[256];
-  A4GL_debug ("Waiting for char...");
-  A4GL_sock_gets (sock, buff, 255);
-  A4GL_debug ("Got %s\n", buff);
-  strcpy (params[0], "");
-  m_retval = 0;
-  strcpy (m_cretval, "");
-  return A4GL_proc_gui_in (buff);
-}
-
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_gui_kpress (void)
-{
-  A4GL_debug ("Getting key val for %s from net_netval", params[0]);
-  m_retval = A4GL_net_keyval (params[0]);
-  A4GL_debug ("Key value=%d", m_retval);
-}
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_gui_click (void)
-{
-  A4GL_debug ("In gui_click...");
-  strcpy (m_cretval, params[0]);
-  A4GL_debug ("Params[0]=%s", params[0]);
-  A4GL_debug ("m_cretval=%s", m_cretval);
-  m_retval = 0xffff;
-}
-
-/**
- * Find a function name in a string.
- *
- * The function name is in the definitions array.
- *
- * @param s The string where to do the search.
- * @return 
- *   - The position in the array of the string found.
- *   - -1 : The string wanted was not found.
- */
-static int
-find_str_in (char *s)
-{
-  int a;
-  for (a = 0; defs[a].func; a++)
-    {
-      if (strncasecmp (defs[a].name, s, strlen (defs[a].name)) == 0)
-	{
-	  return a;
-	}
-    }
-  return -1;
-}
-
-
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_proc_gui_in (char *buff)
-{
-  int a;
-  A4GL_debug ("Processing (proc_gui_in) %s", buff);
-  a = find_str_in (buff);
-  A4GL_debug ("a=%d", a);
-  if (a < 0)
-    return 0;
-  A4GL_debug ("Found...%d", a);
-  A4GL_proc_format (buff, a);
-  A4GL_debug ("Calling..");
-  defs[a].func ();
-  A4GL_debug ("Returning %d", m_retval);
-  return m_retval;
-}
-
-/**
- *
- * @todo Describe function
- */
-char *
-A4GL_read_clicked (void)
-{
-  return m_cretval;
-}
-
-/**
- *
- * @todo Describe function
- */
-void *
-A4GL_decode_clicked (void)
-{
-  void *ptr = 0;
-  char buff[40];
-  A4GL_debug ("In decode_clicked");
-  A4GL_debug ("m_retval=%s", m_cretval);
-  sprintf (buff, "0x%s", m_cretval);
-  A4GL_debug ("Buff set to %s", buff);
-/*  sscanf (buff, "%lx", (long unsigned int) &ptr); // waring: format argument is not a pointer (arg 3) */
-  sscanf (buff, "%px", &ptr);
-  A4GL_debug ("Ptr set to %p", ptr);
-  return ptr;
-}
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_proc_format (char *s, int a)
-{
-  int slen = 0;
-  int b;
-  int eptr;
-  int sptr;
-  int pcnt = 0;
-  char buff[256];
-  char buff2[256];
-  slen = strlen (defs[a].name);
-  strcpy (buff, &s[slen + 1]);
-  sptr = 0;
-  A4GL_debug ("In proc_format...");
-  for (b = 0; b <= strlen (buff); b++)
-    {
-      if (buff[b] == '"')
-	{
-	  sptr++;
-	  b++;
-	  while (buff[b] != '"' || (buff[b] == '"' && buff[b - 1] == '\\'))
-	    b++;
-	}
-
-      if (buff[b] == ' ' || buff[b] == 0)
-	{
-	  eptr = b;
-	  if (buff[eptr - 1] == '"')
-	    eptr--;
-	  strcpy (buff2, &buff[sptr]);
-	  buff2[eptr - sptr] = 0;
-	  sptr = b + 1;
-	  A4GL_debug ("Param %d = %s", pcnt, buff2);
-	  strcpy (params[pcnt++], buff2);
-	}
-    }
-}
-
-/**
  * Initialize windows sockets.
  */
-void
-A4GL_init_wsock (void)
+void A4GL_init_wsock (void)
 {
-#ifdef __OBSOLETE_CODE__
 #ifdef USE_WINSOCK
   WSADATA wsaData;
   static int started = 0;
@@ -896,14 +508,12 @@ A4GL_init_wsock (void)
       err = WSAStartup (MAKEWORD (1, 1), &wsaData);
       if (err)
 	{
-	  A4GL_debug ("Error starting wsock");
 	  A4GL_exitwith ("Error Starting Winsock");
 	  A4GL_mja_endwin ();
 	  exit (0);
 	}
     }
   started = 1;
-#endif
 #endif
 }
 

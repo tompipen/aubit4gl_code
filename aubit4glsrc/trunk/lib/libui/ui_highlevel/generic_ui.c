@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.34 2004-11-16 14:44:02 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.35 2004-11-17 10:40:48 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -302,7 +302,7 @@ A4GL_move_bar (ACL_Menu * menu, int a)
 	  *ptr = 0;
 	}
     }
-  A4GL_gui_setfocus ((int) menu->curr_option);
+  //A4GL_gui_setfocus ((int) menu->curr_option);
   return;
 }
 
@@ -397,7 +397,7 @@ UILIB_A4GL_next_option (void *vmenu, char *nextopt)
       char *ptr = 0;
       *ptr = 0;
     }
-  A4GL_gui_setfocus ((int) menu->curr_option);
+  //A4GL_gui_setfocus ((int) menu->curr_option);
 
   A4GL_display_menu (menu);
   if (menu->gw_x < 0)
@@ -590,7 +590,7 @@ A4GL_find_shown (ACL_Menu * menu, int chk, int dir)
 	    }
 	  else
 	    {
-	      A4GL_gui_setfocus ((int) menu->curr_option);
+	      //A4GL_gui_setfocus ((int) menu->curr_option);
 	      A4GL_debug ("Return!");
 	      return 1;
 	    }
@@ -600,7 +600,7 @@ A4GL_find_shown (ACL_Menu * menu, int chk, int dir)
   A4GL_debug ("A7");
 
 
-  A4GL_gui_setfocus ((int) menu->curr_option);
+  //A4GL_gui_setfocus ((int) menu->curr_option);
   return 0;
 }
 
@@ -764,7 +764,7 @@ UILIB_A4GL_new_menu_create (char *title, int x, int y, int mn_type,
   menu->mn_offset = 0;
   menu->first = 0;
   menu->num_opts = 0;
-  A4GL_gui_startmenu (title, (long) menu);
+  //A4GL_gui_startmenu (title, (long) menu);
   return (void *) menu;
 }
 
@@ -858,8 +858,8 @@ UILIB_A4GL_finish_create_menu (void *menuv)
 	(ACL_Menu_Opts *) menu->curr_option->next_option;
     }
 
-  A4GL_gui_setfocus ((int) menu->curr_option);
-  A4GL_gui_endmenu ((int) menu);
+  //A4GL_gui_setfocus ((int) menu->curr_option);
+  //A4GL_gui_endmenu ((int) menu);
   A4GL_debug ("Current option=%p", menu->curr_option);
   A4GL_debug ("Current option help=%d", menu->curr_option->help_no);
   return;
@@ -903,7 +903,7 @@ A4GL_new_menu (char *title,
   menu->first = (ACL_Menu_Opts *) opt1;
   opt1->prev_option = 0;
   A4GL_debug ("Menu=%p &Menu=%p", menu, &menu);
-  A4GL_gui_startmenu (title, (long) menu);
+  //A4GL_gui_startmenu (title, (long) menu);
   for (ret = 0; ret < nopts; ret++)
     {
       if (ret != 0)
@@ -921,7 +921,7 @@ A4GL_new_menu (char *title,
 	{
 	  strcpy (opt1->opt_title, " ");
 	  strcpy (op1, argp_c);
-	  A4GL_gui_menuopt (argp_c, (int) opt1);
+	  //A4GL_gui_menuopt (argp_c, (int) opt1);
 	  A4GL_trim (op1);
 	  strcat (opt1->opt_title, op1);
 	  strcat (opt1->opt_title, " ");
@@ -963,9 +963,9 @@ A4GL_new_menu (char *title,
     }
 
 
-  A4GL_gui_setfocus ((int) menu->curr_option);
+  //A4GL_gui_setfocus ((int) menu->curr_option);
   menu->num_opts = nopts;
-  A4GL_gui_endmenu ((int) menu);
+  //A4GL_gui_endmenu ((int) menu);
   return menu;
 }
 

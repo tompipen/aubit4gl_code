@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.104 2004-11-14 19:52:47 mikeaubury Exp $
+# $Id: ioform.c,v 1.105 2004-11-17 10:40:47 mikeaubury Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.104 2004-11-14 19:52:47 mikeaubury Exp $";
+static char *module_id="$Id: ioform.c,v 1.105 2004-11-17 10:40:47 mikeaubury Exp $";
 /**
  * @file
  *
@@ -316,7 +316,7 @@ A4GL_make_label (int frow, int fcol, char *label)
     }
 
 
-  A4GL_gui_mklabel (1, strlen (label), frow, fcol, label);
+  ////A4GL_gui_mklabel (1, strlen (label), frow, fcol, label);
 
   if (f)
     {
@@ -891,7 +891,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
     {
       /*
          A4GL_debug ("Setting focus");
-         A4GL_gui_setfocus (current_field (mform));
+         //A4GL_gui_setfocus (current_field (mform));
        */
       A4GL_debug ("Is different");
       fprop = 0;
@@ -2101,7 +2101,7 @@ A4GL_do_before_field (FIELD * f, struct s_screenio *sio)
   int a;
   char *ptr;
   A4GL_debug ("Before field....");
-  A4GL_gui_setfocus ((long) f);
+  //A4GL_gui_setfocus ((long) f);
   a = A4GL_find_field_no (f, sio);
   if (a == -1)
     {
@@ -2174,7 +2174,7 @@ A4GL_make_field (int frow, int fcol, int rows, int cols)
 
   if (f)
     {
-      A4GL_gui_mkfield (rows, cols, frow, fcol, f);
+      //A4GL_gui_mkfield (rows, cols, frow, fcol, f);
       A4GL_debug ("Field created - setting attributes");
       /*A4GL_set_field_attr (f); */
 		A4GL_debug("ZZZZ - SET OPTS");
@@ -2630,7 +2630,7 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
   b = A4GL_get_field_width_w (field);
   A4GL_debug ("mja_set_field_buffer buff='%s' buff2='%s' (%d,%d) ", buff,
 	      buff2, a, b);
-  A4GL_gui_setbuff (field, buff);
+  //A4GL_gui_setbuff (field, buff);
   if (a < A4GL_get_field_width_w (field))
     {
       A4GL_debug ("Adding padding");
@@ -3420,19 +3420,19 @@ A4GL_int_form_driver (FORM * form, int a)
     {
       A4GL_debug ("Resetting focus");
       f = current_field (form);
-      A4GL_gui_setfocus ((long) f);
+      //A4GL_gui_setfocus ((long) f);
     }
 
   if (field_pos != A4GL_get_curr_field_col (form))
     {
       A4GL_debug ("Resetting position");
       field_pos = A4GL_get_curr_field_col (form);
-      A4GL_gui_setposition (field_pos);
+      //A4GL_gui_setposition (field_pos);
     }
 
   if (strcmp (buff, buff2) != 0)
     {
-      A4GL_gui_setbuff (f, buff2);
+      //A4GL_gui_setbuff (f, buff2);
     }
   A4GL_debug ("Buff2 now = %s", buff2);
   if (a != REQ_VALIDATION)
@@ -3970,7 +3970,7 @@ int pprval;
     {
       /*
          A4GL_debug ("Setting focus");
-         A4GL_gui_setfocus (current_field (mform));
+         //A4GL_gui_setfocus (current_field (mform));
        */
       A4GL_debug ("Is different");
       fprop = 0;

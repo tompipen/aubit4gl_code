@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.45 2004-08-16 10:19:14 mikeaubury Exp $
+# $Id: prompt.c,v 1.46 2004-11-17 10:40:48 mikeaubury Exp $
 #*/
-static char *module_id="$Id: prompt.c,v 1.45 2004-08-16 10:19:14 mikeaubury Exp $";
+static char *module_id="$Id: prompt.c,v 1.46 2004-11-17 10:40:48 mikeaubury Exp $";
 
 /**
  * @file
@@ -194,8 +194,8 @@ int
   A4GL_debug ("Initialized form");
   A4GLSQL_set_status (0, 0);
 
-  A4GL_gui_startprompt ((long) prompt);
-  A4GL_gui_setfocus ((long) prompt->field);
+  ////A4GL_gui_startprompt ((long) prompt);
+  //A4GL_gui_setfocus ((long) prompt->field);
   //wrefresh (p);
   A4GL_mja_refresh ();
   A4GL_zrefresh();
@@ -343,7 +343,7 @@ int was_aborted=0;
 
       A4GL_push_char (buff);
       prompt->mode = 2;
-      A4GL_gui_endprompt ((long) prompt);	/* void    A4GL_gui_endprompt            (long ld); */
+      //A4GL_gui_endprompt ((long) prompt);	/* void    A4GL_gui_endprompt            (long ld); */
       unpost_form (prompt->f);
       A4GL_debug("Calling clear_prmpt");
       A4GL_clear_prompt (prompt);
@@ -372,7 +372,7 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
 	if (A4GL_has_event_for_keypress(a,evt)|| abort_pressed) {
       		A4GL_push_null (DTYPE_CHAR,1);
       		prompt->mode = 2;
-      		A4GL_gui_endprompt ((long) prompt);       /* void    A4GL_gui_endprompt            (long ld); */
+      		//A4GL_gui_endprompt ((long) prompt);       /* void    A4GL_gui_endprompt            (long ld); */
       		unpost_form (prompt->f);
       		A4GL_debug("Calling clear_prmpt");
       		A4GL_clear_prompt (prompt);

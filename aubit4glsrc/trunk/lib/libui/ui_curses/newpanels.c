@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.98 2004-11-16 14:44:01 mikeaubury Exp $
+# $Id: newpanels.c,v 1.99 2004-11-17 10:40:47 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.98 2004-11-16 14:44:01 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.99 2004-11-17 10:40:47 mikeaubury Exp $";
 
 /**
  * @file
@@ -88,6 +88,7 @@ int currattr = 0;
 int
 A4GL_decode_line_scr (int l);
 PANEL *get_below_panel(PANEL *p) ;
+void A4GL_monitor_screen(void) ;
 
 
 /*
@@ -286,7 +287,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
       A4GL_debug ("h=%d", h);
       A4GL_debug ("Calling screen width");
       A4GL_debug ("w=%d", w);
-      A4GL_gui_win (name, A4GL_screen_height (), A4GL_screen_width (), 1, 1, 0, (long) win);
+      ////A4GL_gui_win (name, A4GL_screen_height (), A4GL_screen_width (), 1, 1, 0, (long) win);
       A4GL_add_pointer (name, WINCODE, win);
     }
   else
@@ -296,7 +297,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 	{
 	  win = newwin (h + 2, w + 2, y - 2, x - 2);
 	  if (a4gl_toupper (name[0]) != name[0])
-	    A4GL_gui_win (name, h + 2, w + 2, y - 2, x - 2, 1, (long) win);
+	    ////A4GL_gui_win (name, h + 2, w + 2, y - 2, x - 2, 1, (long) win);
 	  A4GL_add_pointer (name, WINCODE, win);
 	}
 
@@ -327,7 +328,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 	{
 	  win = newwin (h, w, y - 1, x - 1);
 	  if (a4gl_toupper (name[0]) != name[0])
-	    A4GL_gui_win (name, h, w, y - 1, x - 1, 0, (long) win);
+	    //A4GL_gui_win (name, h, w, y - 1, x - 1, 0, (long) win);
 	  A4GL_add_pointer (name, WINCODE, win);
 	  A4GL_debug ("Window = %p name=%s", win,name);
 	}
@@ -534,7 +535,7 @@ void
   PANEL *panel = 0;
   A4GL_chkwin ();
 #ifdef DEBUG
-  A4GL_gui_closewin (win_name);
+  //A4GL_gui_closewin (win_name);
   {
     A4GL_debug ("Remove Window : %s", win_name);
   }
@@ -706,7 +707,9 @@ int
 void
  UILIB_A4GL_zrefresh (void)
 {
-  A4GL_gui_refresh ();
+static char tmpbuf[256]="";
+
+  //A4GL_gui_refresh ();
   if (A4GL_screen_mode (-1))
     {
       A4GL_chkwin ();
@@ -716,8 +719,7 @@ void
       update_panels ();
       doupdate ();
 
-      /* A4GL_mja_wrefresh (currwin); */
-      //A4GL_mja_refresh ();  // REMOVED MJA 12/12/2003
+      A4GL_monitor_screen();
     }
 }
 
@@ -732,7 +734,7 @@ A4GL_mja_gotoxy (int x, int y)
   A4GL_chkwin ();
 
   A4GL_debug ("In move - %d %d current window=%p", x, y, A4GL_window_on_top ());
-  A4GL_gui_move (x, y);
+  //A4GL_gui_move (x, y);
   A4GL_debug ("In move - %d %d", x, y);
   if (windows[currwinno].winattr.border)
     {
@@ -992,7 +994,7 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
 
   A4GL_mja_wrefresh (w);
   A4GL_clr_form(0);
-  A4GL_zrefresh();
+  UILIB_A4GL_zrefresh();
   A4GL_debug ("And return");
   return w;
 }
@@ -1050,7 +1052,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y,int 
 		     f->form_details.comment_line,
 		     f->form_details.message_line, f->form_details.colour);
 
-  A4GL_gui_dispform (name, A4GL_getform_line ());
+  //A4GL_gui_dispform (name, A4GL_getform_line ());
   if (A4GL_display_form (f,attr))
     return w;
   else
@@ -1074,7 +1076,7 @@ A4GL_display_form_win (WINDOW * w, char *name, struct s_form_dets * f)
   set_form_win (f->form, w);
   set_form_sub (f->form, derwin (w, 8, 58, 1, 1));
   keypad (w, TRUE);
-  A4GL_gui_dispform (name, A4GL_getform_line ());
+  //A4GL_gui_dispform (name, A4GL_getform_line ());
   post_form (f->form);
   A4GL_start_form (f->form);
   return w;
@@ -1212,7 +1214,7 @@ A4GL_get_curr_border (void)
 void
 A4GL_mja_setcolor (int typ)
 {
-  A4GL_gui_setcolor (typ);
+  //A4GL_gui_setcolor (typ);
   A4GL_debug ("Set color.");
   if (has_colors ())
     {
@@ -1307,10 +1309,7 @@ int
 A4GL_getch_swin (WINDOW * window_ptr)
 {
   int a;
-  if (A4GL_isgui ())
-    {
-      return A4GL_get_gui_char ();
-    }
+  //if (A4GL_isgui ()) { return A4GL_get_gui_char (); }
   //A4GL_reset_processed_onkey();
   A4GL_debug ("Reading from keyboard on window %p", window_ptr);
   A4GL_set_abort (0);
@@ -1343,6 +1342,7 @@ A4GL_getch_swin (WINDOW * window_ptr)
 	  A4GL_debug ("MJAC Key Pressed %d", a);
 	  break;
 	}
+		A4GL_monitor_key_pressed(a);
 
     }
   cbreak ();
@@ -1362,10 +1362,7 @@ int
 A4GL_real_getch_swin (WINDOW * window_ptr)
 {
   int a;
-  if (A4GL_isgui ())
-    {
-      return A4GL_get_gui_char ();
-    }
+  //if (A4GL_isgui ()) { return A4GL_get_gui_char (); }
 
   A4GL_debug ("Reading from keyboard on window %p", window_ptr);
   A4GL_set_abort (0);
@@ -1403,6 +1400,7 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
           a = KEY_CANCEL;
           break;
         }
+		A4GL_monitor_key_pressed(a);
 
       if (a != -1)
         {
@@ -1685,7 +1683,7 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
       }
 
       a4glattr_wattrset (wot, attr);
-      A4GL_gui_print (attr, s);
+      //A4GL_gui_print (attr, s);
       A4GL_mja_gotoxy (x, y);
       A4GL_debug("X=%d Y=%d",x,y);
       A4GL_tui_print ("%s", s);
@@ -1730,15 +1728,10 @@ void
   A4GL_debug ("ZZ2 going to print an error : %s", s);
   A4GL_trim (s);
   A4GL_debug ("trimmed -> %s", s);
-  if (A4GL_isgui ())
-    A4GL_gui_error (s, A4GL_geterror_line ());
-  else
-    {
       if (wait)
  		A4GL_error_box (s,a);
       else
  		A4GL_error_nobox (s,a);
-    }
   A4GL_debug ("error_box done");
   acl_free (s);
   a4gl_status = 0;
@@ -1791,7 +1784,7 @@ A4GL_chkwin (void)
 		if (has_colors()) {
 			A4GL_debug("init_col_refresh2_0 - init_colour_pairs");
 			A4GL_init_colour_pairs ();
-			A4GL_zrefresh();
+			UILIB_A4GL_zrefresh();
 			if (!A4GL_isyes(acl_getenv("NO_INIT_COL_CLR"))) {
 				clearok(curscr,1);
 			}
@@ -1800,7 +1793,7 @@ A4GL_chkwin (void)
 	}
 
 
-	A4GL_zrefresh();
+	UILIB_A4GL_zrefresh();
       	A4GL_mja_refresh ();
 
 
@@ -2056,7 +2049,7 @@ int
   sprintf (buff, "currwinno=%d f=%p", currwinno, f);
   /*error_box(buff); */
   A4GL_mja_wrefresh (currwin);
-  A4GL_gui_dispform (name, A4GL_getform_line ());
+  //A4GL_gui_dispform (name, A4GL_getform_line ());
   A4GL_debug ("Diplay form");
   A4GL_mja_refresh ();
   return 0;
@@ -2423,7 +2416,7 @@ A4GL_mja_wrefresh (WINDOW * w)
       A4GL_refresh_error_window();
 
     }
-  A4GL_gui_wrefresh (w);
+  //A4GL_gui_wrefresh (w);
 }
 
 /**
@@ -2439,7 +2432,7 @@ A4GL_mja_refresh (void)
       doupdate ();
       refresh ();
     }
-  A4GL_gui_refresh ();
+  //A4GL_gui_refresh ();
 }
 
 /**
@@ -2454,7 +2447,7 @@ A4GL_change_currwin (WINDOW * a, char *s)
     A4GL_debug ("Changing currwin to %p (%s)", a, s);
   }
 #endif
-  A4GL_gui_currwin ((long) a);
+  //A4GL_gui_currwin ((long) a);
   currwin = a;
 
 }
@@ -3134,4 +3127,70 @@ for (a=0;a<MAXWIN;a++) {
 
 }
 
+
+void A4GL_monitor_screen(void) {
+int x;
+int y;
+int attr;
+char buff[256];
+char buff2[512];
+int sw;
+int sh;
+WINDOW *w;
+w=curscr;
+sw= A4GL_screen_width ();
+sh=A4GL_screen_height ();
+  sprintf(buff,"SCR %d %d\n", sh, sw);
+  A4GL_monitor_puts_int(buff);
+
+  for (y = 0; y < sh; y++)
+    {
+      for (x = 0; x < sw; x++)
+        {
+
+          attr = mvwinch (w, y, x);
+
+              if ((attr&0xff) == (ACS_VLINE&0xff) && (attr&A_ALTCHARSET))
+                {
+                  attr = (int) '|';
+                }
+              if ((attr&0xff) == (ACS_HLINE&0xff) && (attr&A_ALTCHARSET))
+                {
+                  attr = (int) '-';
+                }
+              if ((attr&0xff) == (ACS_LLCORNER&0xff) && (attr&A_ALTCHARSET))
+                {
+                  attr = (int) '+';
+                }
+              if ((attr&0xff) == (ACS_LRCORNER&0xff) && (attr&A_ALTCHARSET))
+                {
+                  attr = (int) '+';
+                }
+              if ((attr&0xff) == (ACS_URCORNER&0xff) && (attr&A_ALTCHARSET))
+                {
+                  attr = (int) '+';
+                }
+              if ((attr&0xff) == (ACS_ULCORNER&0xff) && (attr&A_ALTCHARSET))
+                {
+                  attr = (int) '+';
+                }
+		buff[x]=attr&0xff;
+        }
+	buff[x]=0;
+	if (strlen(buff)>500) {A4GL_assertion(1,"Screen too wide");}
+	sprintf(buff2,"LIN %3d %s\n",y,buff);
+        A4GL_monitor_puts_int(buff2);
+    }
+        A4GL_monitor_puts_int("EOS\n");
+
+}
+
+
+A4GL_monitor_key_pressed(int a) {
+char buff[255];
+if (a!=-1) {
+	sprintf(buff,"KYP %d\n",a);
+	A4GL_monitor_puts_int(buff);
+}
+}
 /* =============================== EOF =============================== */

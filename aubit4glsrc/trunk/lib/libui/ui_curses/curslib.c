@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.98 2004-11-16 14:44:01 mikeaubury Exp $
+# $Id: curslib.c,v 1.99 2004-11-17 10:40:45 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.98 2004-11-16 14:44:01 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.99 2004-11-17 10:40:45 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -1487,7 +1487,6 @@ int
 #ifdef DEBUG
   A4GL_debug ("Menu=%p &Menu=%p", menu, &menu);
 #endif
-  A4GL_gui_rmmenu ((int) menu);
 #ifdef DEBUG
   A4GL_debug ("Deleted window");
 #endif
@@ -1588,7 +1587,7 @@ int
   menu = menuv;
   A4GL_chkwin ();
   A4GL_menu_setcolor (menu, NORMAL_TEXT);
-  A4GL_gui_actmenu ((int) menu);
+  //A4GL_gui_actmenu ((int) menu);
   A4GL_current_window(menu->parent_window_name);
 
   //A4GL_refresh_menu_window (menu->window_name, 1);
@@ -1596,7 +1595,7 @@ int
   A4GL_debug ("Refreshed window - going into while loop");
   while (1 == 1)
     {
-      A4GL_gui_setfocus ((int) menu->curr_option);
+      //A4GL_gui_setfocus ((int) menu->curr_option);
       old_option = (ACL_Menu_Opts *) menu->curr_option;
       abort_pressed = FALSE;
       A4GL_h_disp_opt (menu, menu->curr_option, menu->menu_offset, menu->mn_offset, INVERT);
@@ -2530,7 +2529,7 @@ void
       wrefresh (cw);
     }
   A4GL_mja_refresh ();
-  A4GL_gui_message (p, A4GL_getmessage_line ());
+  //A4GL_gui_message (p, A4GL_getmessage_line ());
 }
 
 
@@ -2825,7 +2824,7 @@ A4GL_new_menu_tui_oldway (char *title,
   opt1->prev_option = 0;
   /* va_start (ap, nopts); */
   A4GL_debug ("Menu=%p &Menu=%p", menu, &menu);
-  A4GL_gui_startmenu (title, (long) menu);
+  //A4GL_gui_startmenu (title, (long) menu);
   for (ret = 0; ret < nopts; ret++)
     {
       if (ret != 0)
@@ -2841,7 +2840,7 @@ A4GL_new_menu_tui_oldway (char *title,
 	{
 	  strcpy (opt1->opt_title, " ");
 	  strcpy (op1, argp_c);
-	  A4GL_gui_menuopt (argp_c, (int) opt1);
+	  //A4GL_gui_menuopt (argp_c, (int) opt1);
 	  A4GL_trim (op1);
 	  strcat (opt1->opt_title, op1);
 	  strcat (opt1->opt_title, " ");
@@ -2883,9 +2882,9 @@ A4GL_new_menu_tui_oldway (char *title,
     }
 
 
-  A4GL_gui_setfocus ((int) menu->curr_option);
+  //A4GL_gui_setfocus ((int) menu->curr_option);
   menu->num_opts = nopts;
-  A4GL_gui_endmenu ((int) menu);
+  //A4GL_gui_endmenu ((int) menu);
   return menu;
 }
 #endif

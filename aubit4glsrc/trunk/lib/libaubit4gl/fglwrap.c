@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.73 2004-11-10 16:00:39 pjfalbe Exp $
+# $Id: fglwrap.c,v 1.74 2004-11-17 10:40:12 mikeaubury Exp $
 #
 */
 
@@ -93,7 +93,6 @@ char *p_args[MAX_ARGS];
 =====================================================================
 */
 
-extern int A4GL_start_gui (void);
 void A4GL_nodef_init (void);
 //void A4GL_fgl_end (void);
 //void A4GL_fgl_start (int nargs, char *argv[]);
@@ -289,12 +288,11 @@ char *p;
 #ifdef DEBUG
   A4GL_debug ("Copied Arguments\n");
 #endif
-  A4GL_start_gui ();
 
 #ifdef _PRELOAD_REPORT_
   //A4GLREPORT_initlib ();
 #endif
-  
+  A4GL_start_monitor();
 #if (! defined(WIN32) && ! defined(__MINGW32__))
   //Mike, are you sure this is not going to work on MinGW, or where you just guessing,
   //since it's on Windows?
@@ -471,23 +469,12 @@ A4GL_isyes (char *s)
 void
 A4GL_generateError (char *str, char *fileName, int lineno)
 {
-  if (A4GL_isgui ())
-    {
-      sprintf (str, "Error in '%s'@%d\rErr=%d.\r%s.",
-	       fileName,
-	       lineno,
-	       (int) a4gl_status,
-	       A4GL_err_print (a4gl_status, a4gl_sqlca.sqlerrm));
-    }
-  else
-    {
       sprintf (str,
 	       "Program stopped at '%s', line number %d.\nError status number %d.\n%s.\n",
 	       fileName,
 	       lineno,
 	       (int) a4gl_status,
 	       A4GL_err_print (a4gl_status, a4gl_sqlca.sqlerrm));
-    }
   if (A4GLSTK_isStackInfo ())
     sprintf (str, "%s\n%s", str, A4GLSTK_getStackTrace ());
 }
@@ -519,17 +506,6 @@ A4GL_chk_err (int lineno, char *fname)
   A4GL_debug ("Error...");
 #endif
   A4GL_generateError (s, fname, lineno);
-  if (A4GL_isgui ())
-    {
-#ifdef DEBUG
-      A4GL_debug ("About to send to front end");
-#endif
-      sleep (1);
-      A4GL_gui_error (s, 1);
-      A4GL_gui_error ("Quitting...", 1);
-    }
-  else
-    {
 #ifdef DEBUG
       A4GL_debug ("Write error to screen...");
 #endif
@@ -540,7 +516,6 @@ A4GL_chk_err (int lineno, char *fname)
 	}
       A4GL_debug ("%s",s);
       printf ("Err:%s", s);
-    }
   exit (1);
 }
 

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.87 2004-11-15 03:36:32 afalout Exp $
+# $Id: iarray.c,v 1.88 2004-11-17 10:40:47 mikeaubury Exp $
 #*/
 
 static char *module_id =
-  "$Id: iarray.c,v 1.87 2004-11-15 03:36:32 afalout Exp $";
+  "$Id: iarray.c,v 1.88 2004-11-17 10:40:47 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -75,6 +75,7 @@ struct s_inp_arr *curr_arr_inp = 0;
 //void A4GL_mja_set_current_field (FORM * form, FIELD * field);
 //int A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m);
 //int UILIB_A4GL_req_field_input_array (struct s_inp_arr *arr,char typpe, va_list *ap) ;
+char *debug_get_fcntrl(int n) ;
 
 struct s_movement
 {
@@ -1016,19 +1017,23 @@ gen_srec_field_list (char *s, struct s_form_dets *form, int a, int d)
       A4GL_debug (">>>> fc=%d fld_list[lc]=%p", fc, fld_list[lc]);
     }
 
-  A4GL_debug ("Field lists (gen_srec_field_list)");
 
-  for (lc = 0; lc < d; lc++)
-    {
-      A4GL_debug ("Srec line : %d %p", lc, fld_list[lc]);
-      for (fc = 0; fc < a; fc++)
-	{
-	  A4GL_debug ("Line %d Col %d Field %p:", lc, fc, fld_list[lc][fc]);
-	}
-    }
-  A4GL_debug ("End of list");
   return fld_list;
 }
+
+int
+UILIB_A4GL_inp_arr_v2 (void *vinpa, int defs, char *srecname, int attrib,
+		       int init, void *vevt) {
+while (1) {
+	int a;
+	a=UILIB_A4GL_inp_arr_v2_i(vinpa,defs,srecname,attrib,init,vevt);
+	if (a!=-1) return a;
+}
+
+}
+
+
+
 
 /**
  * Implementation of input array.
@@ -1043,7 +1048,7 @@ gen_srec_field_list (char *s, struct s_form_dets *form, int a, int d)
  * @return
  */
 int
-UILIB_A4GL_inp_arr_v2 (void *vinpa, int defs, char *srecname, int attrib,
+UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib,
 		       int init, void *vevt)
 {
   FIELD ***fld_list;
@@ -1170,7 +1175,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinpa, int defs, char *srecname, int attrib,
 
       A4GL_idraw_arr (inpa, 1, inpa->arr_line);
 
-      A4GL_gui_scroll (inpa->no_arr);
+      //A4GL_gui_scroll (inpa->no_arr);
       inpa->last_scr_line = -1;
       inpa->last_arr_line = -1;
       //set_arr_curr (inpa->arr_line);
@@ -1310,19 +1315,23 @@ A4GL_set_fields_inp_arr (void *vsio, int n)
 
       if (field == 0)
 	continue;
+/*
       if (field_opts (field_list[a]) & O_BLANK)
 	{
 	  A4GL_debug ("O_BLANK MMMM turning off");
 	}
+*/
 
       if (A4GL_turn_field_off (formdets->form_fields[a]))
 	{
 	  firstfield = formdets->form_fields[a];
 	}
+/*
       if (field_opts (field_list[a]) & O_BLANK)
 	{
 	  A4GL_debug ("O_BLANK MMMM turned off");
 	}
+*/
 
     }
 
@@ -1352,7 +1361,6 @@ A4GL_set_fields_inp_arr (void *vsio, int n)
     {
       for (b = 0; b < sio->srec->attribs.attribs_len; b++)
 	{
-	  A4GL_debug ("MJAMJA Turn on field : %p", sio->field_list[a][b]);
 	  if (n == 1)
 	    {
 	      field_opts_on (sio->field_list[a][b], O_ACTIVE);
@@ -1363,14 +1371,15 @@ A4GL_set_fields_inp_arr (void *vsio, int n)
 
 	      A4GL_turn_field_on2 (sio->field_list[a][b], 1);
 	    }
-	  if (field_opts (sio->field_list[a][b]) & O_BLANK)
+	  /* if (field_opts (sio->field_list[a][b]) & O_BLANK)
 	    {
 	      A4GL_debug ("O_BLANK MMMM %d %d", a, b);
 	    }
+	*/
 	  field =
 	    (struct struct_scr_field
 	     *) (field_userptr (sio->field_list[a][b]));
-	  A4GL_debug ("Settings flags to 0 for %d %d", a, b);
+	  /* A4GL_debug ("Settings flags to 0 for %d %d", a, b); */
 
 	  if (n == 2)
 	    field->flags = 0;
@@ -1467,7 +1476,6 @@ A4GL_add_to_control_stack (struct s_inp_arr *sio, int op, FIELD * f,
   char *field_name;
   int a;
   struct struct_scr_field *attr;
-
   A4GL_debug ("add to control stack called with op=%d field=%p extent=%d", op,
 	      f, extent);
 
@@ -1838,18 +1846,13 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
       if (last_field)
 	{
 
-	  if (arr->curr_line_is_new) {
-	    A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT,
-				       last_field, 0, 0);
-	  }
+	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, last_field, 0, 0);
+	  if (arr->curr_line_is_new) { A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT, last_field, 0, 0); }
 	  arr->curr_line_is_new = 0;
 
 
-	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, last_field,
-				     0, 0);
 	  A4GL_debug ("Adding AFTER FIELD..");
-	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, last_field,
-				     0, 0);
+	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, last_field, 0, 0);
 
 	}
     }
@@ -1873,7 +1876,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
       if (ptr.scr_line==scr_line&& ptr.arr_line==arr_line && ptr.attrib_no== attrib) {
 		A4GL_debug("Moving to the same place ?");
       } 
-      A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_FIELD, next_field, ptr_x,0);
+      A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_FIELD, next_field, (void *)ptr_x,0);
 
 
 
@@ -1956,10 +1959,8 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	{
 	  if (arr->currentfield)
 	    {
-	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW,
-					 arr->currentfield, 0, 0);
-	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD,
-					 arr->currentfield, 0, 0);
+	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, arr->currentfield, 0, 0);
+	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, arr->currentfield, 0, 0);
 	    }
 	  new_state = 50;
 	  rval = -1;
@@ -2037,8 +2038,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 
       if (arr->fcntrl[a].state == 50)
 	{
-	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW,
-				     arr->currentfield, 0, 0);
+	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, arr->currentfield, 0, 0);
 	  new_state = 25;
 	  rval = -99;
 	}
@@ -2091,22 +2091,25 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	{
 	  ptr_movement = (struct s_movement *) arr->fcntrl[a].parameter;
 
+		A4GL_debug("ptr->movement->arr_line=%d no_arr=%d",ptr_movement->arr_line , arr->no_arr);
 	  if (ptr_movement->arr_line > arr->no_arr)
 	    {
 	      A4GL_set_arr_count (ptr_movement->arr_line);	// No new lines ...
 	      init_arr_line (arr, ptr_movement->arr_line);
 	      arr->curr_line_is_new = 1;
 	      arr->no_arr++;
+		A4GL_debug("BEFORE INSERT");
+		A4GL_debug("curr line is new");
 	    }
 	  else
 	    {
 	      arr->curr_line_is_new = 0;
+		A4GL_debug("curr line is not new");
 	    }
 
 	  if (arr->curr_line_is_new)
 	    {
-	      A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT, 0, 0,
-					 0);
+	      A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT, 0, 0, 0);
 	    }
 
 	  arr->scr_line = ptr_movement->scr_line;
@@ -2149,18 +2152,20 @@ process_control_stack_internal (struct s_inp_arr *arr)
 
   if (arr->fcntrl[a].op == FORMCONTROL_BEFORE_INSERT)
     {
-
+	A4GL_debug("Before insert state=%d",arr->fcntrl[a].state);
       if (arr->fcntrl[a].state == 99)
 	{
 	  // We want to do the actual insert here...
 	  FIELD *f;
 	  f = arr->field_list[arr->scr_line - 1][arr->curr_attrib];
+/*
 	  if (f && arr->currentfield)
 	    {
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, f, 0, 0);
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, f, 0,
 					 0);
 	    }
+*/
 	  new_state = 80;
 	  rval = -99;
 	}
@@ -2758,7 +2763,8 @@ process_control_stack_internal (struct s_inp_arr *arr)
     }
   else
     {
-      A4GL_debug ("Popping type %d off control stack @ %d", arr->fcntrl[a].op,
+      A4GL_debug ("Popping type %d (%s) off control stack @ %d", arr->fcntrl[a].op,
+		debug_get_fcntrl(arr->fcntrl[a].op),
 		  a);
       arr->fcntrl_cnt--;
       if (arr->fcntrl[a].parameter)
@@ -3096,4 +3102,25 @@ debug_print_flags (void *sv, char *txt)
 		      f, fprop);
 	}
     }
+}
+
+
+char *debug_get_fcntrl(int n) {
+
+switch(n) {
+case FORMCONTROL_BEFORE_FIELD    : return "FORMCONTROL_BEFORE_FIELD";
+case FORMCONTROL_AFTER_FIELD     : return "FORMCONTROL_AFTER_FIELD";
+case FORMCONTROL_BEFORE_INPUT    : return "FORMCONTROL_BEFORE_INPUT";
+case FORMCONTROL_AFTER_INPUT     : return "FORMCONTROL_AFTER_INPUT";
+case FORMCONTROL_EXIT_INPUT_OK   : return "FORMCONTROL_EXIT_INPUT_OK";
+case FORMCONTROL_EXIT_INPUT_ABORT: return "FORMCONTROL_EXIT_INPUT_ABORT";
+case FORMCONTROL_KEY_PRESS       : return "FORMCONTROL_KEY_PRESS";
+case FORMCONTROL_BEFORE_INSERT   : return "FORMCONTROL_BEFORE_INSERT";
+case FORMCONTROL_BEFORE_DELETE   : return "FORMCONTROL_BEFORE_DELETE";
+case FORMCONTROL_AFTER_INSERT    : return "FORMCONTROL_AFTER_INSERT";
+case FORMCONTROL_AFTER_DELETE    : return "FORMCONTROL_AFTER_DELETE";
+case FORMCONTROL_BEFORE_ROW      : return "FORMCONTROL_BEFORE_ROW";
+case FORMCONTROL_AFTER_ROW       : return "FORMCONTROL_AFTER_ROW";
+}
+return "Unknown FORMCONTROL";
 }

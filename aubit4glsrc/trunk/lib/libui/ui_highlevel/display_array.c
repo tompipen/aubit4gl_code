@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.13 2004-06-25 18:25:37 mikeaubury Exp $
+# $Id: display_array.c,v 1.14 2004-11-17 10:40:48 mikeaubury Exp $
 #*/
-static char *module_id="$Id: display_array.c,v 1.13 2004-06-25 18:25:37 mikeaubury Exp $";
+static char *module_id="$Id: display_array.c,v 1.14 2004-11-17 10:40:48 mikeaubury Exp $";
 /**
  * @file
  * Implementation of Display Array
@@ -731,7 +731,7 @@ UILIB_A4GL_disp_arr_v2 (void *dispv, void *ptr, char *srecname, int attrib,int s
 	A4GL_debug ("after draw_arr (2)");
       }
 #endif
-      A4GL_gui_scroll (disp->no_arr);
+      //A4GL_gui_scroll (disp->no_arr);
       A4GL_set_arr_curr (disp->arr_line);
       A4GL_set_scr_line (disp->scr_line);
       A4GL_LL_screen_update ();

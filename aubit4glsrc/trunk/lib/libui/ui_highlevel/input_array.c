@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.21 2004-11-10 13:40:19 mikeaubury Exp $
+# $Id: input_array.c,v 1.22 2004-11-17 10:40:48 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.21 2004-11-10 13:40:19 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.22 2004-11-17 10:40:48 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -1111,7 +1111,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinpa, int defs, char *srecname, int attrib,
 
       A4GL_idraw_arr (inpa, 1, inpa->arr_line);
 
-      A4GL_gui_scroll (inpa->no_arr);
+      //A4GL_gui_scroll (inpa->no_arr);
       inpa->last_scr_line = -1;
       inpa->last_arr_line = -1;
       //set_arr_curr (inpa->arr_line);
@@ -1650,14 +1650,11 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
       if (last_field)
 	{
 
-	  if (arr->curr_line_is_new)
-	    A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT,
-				       last_field, 0, 0);
-	  arr->curr_line_is_new = 0;
-
 
 	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, last_field,
 				     0, 0);
+	  if (arr->curr_line_is_new) A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT, last_field, 0, 0);
+	  arr->curr_line_is_new = 0;
 	  A4GL_debug ("Adding AFTER FIELD..");
 
 	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, last_field,

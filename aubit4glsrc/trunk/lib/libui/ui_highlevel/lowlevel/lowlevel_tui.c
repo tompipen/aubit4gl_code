@@ -31,7 +31,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.35 2004-11-05 14:22:12 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.36 2004-11-17 10:40:48 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -66,7 +66,7 @@ Looks like it was removed in Curses 5.3???!
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.35 2004-11-05 14:22:12 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.36 2004-11-17 10:40:48 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -996,7 +996,7 @@ A4GL_LL_make_field (void *prop,int frow, int fcol, int rows, int cols)
 
   if (f)
     {
-      A4GL_gui_mkfield (rows, cols, frow, fcol, f);
+      //A4GL_gui_mkfield (rows, cols, frow, fcol, f);
       A4GL_debug ("Field created - setting attributes");
       /*A4GL_set_field_attr (f); */
       A4GL_debug ("ZZZZ - SET OPTS");
@@ -1167,7 +1167,7 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
     }
 
 
-  A4GL_gui_mklabel (1, strlen (label), frow, fcol, label);
+  //A4GL_gui_mklabel (1, strlen (label), frow, fcol, label);
 
   if (f)
     {
@@ -1393,10 +1393,7 @@ int
 A4GL_LL_getch_swin (void *window_ptr)
 {
   int a;
-  if (A4GL_isgui ())
-    {
-      return A4GL_get_gui_char ();
-    }
+  //if (A4GL_isgui ()) { return A4GL_get_gui_char (); }
   //A4GL_reset_processed_onkey();
   A4GL_debug ("Reading from keyboard on window %p", window_ptr);
   A4GL_set_abort (0);

@@ -4,7 +4,7 @@
 #include "a4gl_API_lowlevel.h"
 #include "hl_proto.h"
 #include <ctype.h>
-static char *module_id="$Id: menu.c,v 1.12 2004-09-27 18:58:38 mikeaubury Exp $";
+static char *module_id="$Id: menu.c,v 1.13 2004-11-17 10:40:48 mikeaubury Exp $";
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
 void A4GL_h_disp_title (ACL_Menu * menu, char *str);
@@ -379,7 +379,7 @@ A4GL_highlevel_menu_loop (void *menuv)
    owin=get_curr_win();
  */
 
-  A4GL_gui_actmenu ((int) menu);
+  //A4GL_gui_actmenu ((int) menu);
 
   A4GL_display_menu (menu);
 

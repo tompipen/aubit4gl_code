@@ -24,12 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.35 2004-06-25 18:25:37 mikeaubury Exp $
+# $Id: array.c,v 1.36 2004-11-17 10:40:45 mikeaubury Exp $
 #*/
 
 
 
-static char *module_id="$Id: array.c,v 1.35 2004-06-25 18:25:37 mikeaubury Exp $";
+static char *module_id="$Id: array.c,v 1.36 2004-11-17 10:40:45 mikeaubury Exp $";
 
 
 
@@ -725,7 +725,7 @@ evt=vevt;
  A4GL_debug ("after draw_arr (2)");
       }
 #endif
-      A4GL_gui_scroll (disp->no_arr);
+      //A4GL_gui_scroll (disp->no_arr);
       A4GL_set_arr_curr (disp->arr_line);
       A4GL_set_scr_line (disp->scr_line);
       A4GL_mja_wrefresh (currwin);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.37 2004-10-28 22:04:59 mikeaubury Exp $
+# $Id: readforms.c,v 1.38 2004-11-17 10:40:44 mikeaubury Exp $
 #*/
 
 /**
@@ -239,7 +239,7 @@ real_read_form (char *fname, char *formname)
   }
 #endif
 
-  A4GL_gui_startform (formname);
+  //A4GL_gui_startform (formname);
   formdets =
     (struct s_form_dets *) acl_malloc (sizeof (struct s_form_dets),
 				       "Readform");
@@ -289,7 +289,7 @@ real_read_form (char *fname, char *formname)
   A4GL_read_fields (formdets);
   A4GL_debug ("formdets=%p", formdets);
   A4GL_debug ("Loaded form...");
-  A4GL_gui_endform ();
+  //A4GL_gui_endform ();
   A4GL_debug ("Ended loading forms (%d, %d)", formdets->fileform->maxcol,
 	 formdets->fileform->maxline);
   return formdets;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.110 2004-11-16 14:44:01 mikeaubury Exp $
+# $Id: esql.ec,v 1.111 2004-11-17 10:40:45 mikeaubury Exp $
 #
 */
 
@@ -156,7 +156,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.110 2004-11-16 14:44:01 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.111 2004-11-17 10:40:45 mikeaubury Exp $";
 #endif
 
 
@@ -2384,6 +2384,12 @@ A4GLSQL_fetch_cursor (char *cursor_name,
 	obind=vobind;
 
   cid = (struct s_cid *) A4GL_find_pointer_val (cursorName, PRECODE);
+  if (cid==0) {
+	if (sqlca.sqlcode==0) {// Fetch attempted on unknown cursor and no error..
+		sqlca.sqlcode=-1;
+	}
+	return 0;
+  }
   sid = (struct s_sid *) cid->statement;
   if (sid == (struct s_sid *) 0)
     {

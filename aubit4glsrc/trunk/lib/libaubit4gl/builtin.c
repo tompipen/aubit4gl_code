@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.68 2004-11-03 14:34:28 pjfalbe Exp $
+# $Id: builtin.c,v 1.69 2004-11-17 10:40:12 mikeaubury Exp $
 #
 */
 
@@ -459,7 +459,6 @@ void
 A4GL_set_arr_curr (int a)
 {
   m_arr_curr = a;
-  A4GL_gui_scrollpos (a);
 }
 
 /**
@@ -471,7 +470,6 @@ void
 A4GL_set_arr_count (int a)
 {
   m_arr_count = a;
-  A4GL_gui_scroll (a);
 }
 
 /**
