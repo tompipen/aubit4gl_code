@@ -216,8 +216,14 @@ some_text {
 }
 | field  
 | KW_TAB {
-	colno++;
-	while ((colno%8)!=0) {colno++;}
+	if (colno==0) colno=4; 
+	else {
+		if (colno==4) {colno=16;}
+		else {
+			colno++;
+			while ((colno%8)!=0) {colno++;}
+		}
+	}
 }
 | GRAPH_CH {
 	char buff[256];
@@ -651,7 +657,16 @@ field_name : named_or_kw {
 op_ws : | ws
 ;
 
-ws: KW_WS {colno++;} | ws KW_WS {colno++;}
+ws: ws_elem | ws ws_elem
+;
+
+ws_elem:
+ KW_WS {colno++;}
+|  KW_TAB {
+       	colno++;
+       	while ((colno%8)!=0) {colno++;}
+	colno--;
+}
 ;
 
 

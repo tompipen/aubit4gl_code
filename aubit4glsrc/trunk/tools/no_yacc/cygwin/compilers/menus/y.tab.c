@@ -1155,7 +1155,7 @@ yyreduce:
     {
         case 2:
 #line 118 "menu.yacc"
-    {A4GL_write_menu();}
+    {A4GL_write_menu(&the_menus);}
     break;
 
   case 5:

@@ -41,8 +41,8 @@ Fax:  215.653.0829
 #include <curses.h>
 
 #ifdef C4GL
-	#this header is apprently only present in Infomix-4GL C compiler - not in 
-	#RDS (p-code) version of 4gl
+	//This header is apprently only present in Infomix-4GL C compiler - not in 
+	//RDS (p-code) version of 4gl
 	#include "fglsys.h"
 //#else
 //	#include "fgicfunc.h"
