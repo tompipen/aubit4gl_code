@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.86 2004-03-24 17:19:35 mikeaubury Exp $
+# $Id: stack.c,v 1.87 2004-03-24 17:24:54 mikeaubury Exp $
 #
 */
 
@@ -396,7 +396,7 @@ A4GL_pop_var2 (void *p, int d, int s)
 	  A4GL_debug ("8 pop_var2: error in conversion %d d=0 s=%d\n", z, s);
 #endif
 	}
-      A4GL_debug ("9 Copying string '%s' to p", pl);
+      A4GL_debug ("9 Copying string '%s' to p", A4GL_null_as_null(pl));
       strcpy ((char *) p, pl);
       pl = (char *) p;
       pl[s] = 0;		/* changed from s+1 to s */
@@ -441,7 +441,7 @@ A4GL_pop_char (char *z, int size)
   memset(z,0,size);
   a = A4GL_pop_param (z, DTYPE_CHAR, size);
 #ifdef DEBUG
-  /* {DEBUG} */ A4GL_debug ("8 pop_char returns char ='%s'", z);
+  /* {DEBUG} */ A4GL_debug ("8 pop_char returns char ='%s'", A4GL_null_as_null(z));
 #endif
   return a;
 }
@@ -496,7 +496,7 @@ A4GL_debug_print_stack();
 	}
 
       //trim (s);
-      A4GL_debug ("8 char_pop - pushing char : '%s'", s);
+      A4GL_debug ("8 char_pop - pushing char : '%s'", A4GL_null_as_null(s));
       A4GL_push_char (s);
       params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
     }				/* if last entry is not a character string make it one */
@@ -743,7 +743,7 @@ A4GL_debug("51 Have data");
       if ((d & DTYPE_MASK) == 0)
 	{
 #ifdef DEBUG
-	  A4GL_debug ("7 Adding string '%s' size %d", p, size);
+	  A4GL_debug ("7 Adding string '%s' size %d", A4GL_null_as_null(p), size);
 #endif
 	}
 
@@ -1013,7 +1013,7 @@ A4GL_debug("51 Have data");
       dbind = A4GL_pop_binding (&n);
       A4GL_debug ("poped dbind - Poping Sql");
       s = A4GL_char_pop ();
-      A4GL_debug ("s=%s\n", s);
+      A4GL_debug ("s=%s\n", A4GL_null_as_null(s));
       A4GLSQL_set_sqlca_sqlcode (0);
       A4GL_debug ("Prepare seelct...");
       prep = A4GLSQL_prepare_select (dbind, n, obind, 0, s);
@@ -1090,7 +1090,7 @@ A4GL_debug("51 Have data");
       c1 = A4GL_char_pop ();
 	
 #ifdef DEBUG
-	A4GL_debug("c1=%s c2=%s",c1,c2);
+	A4GL_debug("c1=%s c2=%s",A4GL_null_as_null(c1),A4GL_null_as_null(c2));
 #endif
       r = A4GL_mja_match (c1, c2, 'M');
       A4GL_debug ("mja_match returns %d\n", r);
@@ -1579,7 +1579,7 @@ A4GL_push_current (int a, int b)
   //printf("--2>%s\n",buff);
   buff[27] = 0;
   //printf("--3>%s\n",buff);
-  A4GL_debug ("Time is %s", buff);
+  A4GL_debug ("Time is %s", A4GL_null_as_null(buff));
   //debug ("a=%d b=%d ",a,b);
   pstart = ptrs2[b] + 1;
   //debug("pstart=%d buff=%s\n",pstart,buff);
@@ -1609,7 +1609,7 @@ char buff[50];
   (void) time (&now);
   local_time = localtime (&now);
   sprintf (buff, "%d",local_time->tm_sec);
-  A4GL_debug ("Time is %s", buff);
+  A4GL_debug ("Time is %s", A4GL_null_as_null(buff));
 	return local_time->tm_sec;
 }
 */
@@ -1635,7 +1635,7 @@ A4GL_push_time (void)
   A4GL_debug ("Got local time");
   sprintf (buff, "%02d:%02d:%02d",
 	   local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
-  A4GL_debug ("Time is %s", buff);
+  A4GL_debug ("Time is %s", A4GL_null_as_null(buff));
   A4GL_push_char (buff);
 }
 
@@ -1701,7 +1701,7 @@ int first;
 	  z2 = A4GL_char_pop ();
 	  A4GL_trim (z2);
 #ifdef DEBUG
-	  /* {DEBUG} */ A4GL_debug ("String Compare : '%s' and '%s'", z1, z2);
+	  /* {DEBUG} */ A4GL_debug ("String Compare : '%s' and '%s'", A4GL_null_as_null(z1),A4GL_null_as_null( z2));
 	  /* {DEBUG} */ A4GL_debug (" = %d\n", strcmp (z1, z2));
 #endif
 	  cmp = strcmp (z1, z2) * -1;
@@ -1752,7 +1752,7 @@ int first;
 	if (A4GL_stof (z1, &a, 0)) {
 		//A4GL_debug("OK as a float");
 	} else {
-		A4GL_debug("Doesn't look much like a float to me (%s)",z1);
+		A4GL_debug("Doesn't look much like a float to me (%s)",A4GL_null_as_null(z1));
 		return -2;
 	}
       //b = strtod (z1,&ptr);
@@ -1768,7 +1768,7 @@ int first;
 	if (A4GL_stof (z1, &b, 0)) {
 		//A4GL_debug("OK as a float..");
 	} else {
-		A4GL_debug("Doesn't look much like a float to me (%s)",z1);
+		A4GL_debug("Doesn't look much like a float to me (%s)",A4GL_null_as_null(z1));
 		return -2;
 	}
       //A4GL_debug ("2 --> %s %lf", z1, a);
@@ -1870,7 +1870,7 @@ return;
 			break;
 	}
 	}
-	A4GL_debug("*    %d %p %s",params[a].dtype&DTYPE_MASK,params[a].ptr,buff);
+	A4GL_debug("*    %d %p %s",params[a].dtype&DTYPE_MASK,params[a].ptr,A4GL_null_as_null(buff));
     }
 
 #ifdef DEBUG
@@ -1893,8 +1893,8 @@ printf("* Stack has : %d entries --- %s\n",params_cnt,msg);
 	}
 
 
-	A4GL_debug("*    %d %p %s",params[a].dtype&DTYPE_MASK,params[a].ptr,buff);
-	printf("*    %d %p %s\n",params[a].dtype&DTYPE_MASK,params[a].ptr,buff);
+	A4GL_debug("*    %d %p %s",params[a].dtype&DTYPE_MASK,params[a].ptr,A4GL_null_as_null(buff));
+	printf("*    %d %p %s\n",params[a].dtype&DTYPE_MASK,params[a].ptr,A4GL_null_as_null(buff));
 
     }
 
@@ -1938,7 +1938,7 @@ add_to_z (char *z, char *s)
       z = strdup ("");
     }
 
-  A4GL_debug ("Adding '%s' to '%s'", s, z);
+  A4GL_debug ("Adding '%s' to '%s'", A4GL_null_as_null(s), A4GL_null_as_null(z));
   ptr = strdup (z);
 
   l = strlen (z) + strlen (s) + 1;
@@ -1950,7 +1950,7 @@ add_to_z (char *z, char *s)
   strcat (z, s);
 
   free (ptr);
-  A4GL_debug ("z=%s", z);
+  A4GL_debug ("z=%s", A4GL_null_as_null(z));
 
   return z;
 }
@@ -2631,7 +2631,7 @@ A4GL_conv_to_interval (int a)
   A4GL_debug ("11 a=%d %d %d %d\n", a, OP_YEAR, OP_MONTH, OP_HOUR);
 
 
- A4GL_debug("Buff = %s",buff);
+ A4GL_debug("Buff = %s",A4GL_null_as_null(buff));
   // d will now be a number of years or a number of seconds.
   if ((a == (OP_YEAR)) || (a == (OP_MONTH)))
     {
@@ -3007,7 +3007,7 @@ A4GL_lrtrim (char *z)
   A4GL_debug ("11 Searched..");
 
   A4GL_trim (rstr);
-  A4GL_debug ("10 lrtrim : All done - returning '%s'", rstr);
+  A4GL_debug ("10 lrtrim : All done - returning '%s'", A4GL_null_as_null(rstr));
   return rstr;
 }
 
