@@ -105,7 +105,8 @@ $AUBITDIR/lib/libMSG_?.so
 
 A4GL_MV_CMD COMPILE Command to ise to move files on the file system
 A4GL_OBJ_EXT COMPILE extension to use when compiling 4GL modules to objects
-A4GL_OMIT_NO_LOG
+A4GL_OMIT_NO_LOG SQL Any CREATE TEMP TABLE .. WITH NO LOG will have the 'WITH NO LOG' silently removed
+=YES|NO
 A4GL_PACKED_EXT COMPILE/RUNTIME Determine file extension for packing
 A4GL_PACKER MENU/FORMS/HELP/COMPILE/RUNTIME Determine library for packing forms/menus/help etc
 $AUBITDIR/lib/libPACKER_?.so
@@ -167,8 +168,9 @@ $AUBITDIR/lib/libUI_?.so
 	When used: run-time only
 	Options: (CONSOLE) [no deps.], TUI [curses], GTK [GTK+].
 
-A4GL_USE_ALIAS_AS
+A4GL_USE_ALIAS_AS SQL The keyword 'AS' is included when using an alias on a select column
 =YES|NO
+	Used for EC output only
 A4GL_XML_EXT COMPILE/RUNTIME extension to use with XML packer
 	Used when when creating output (forms,menus) or opening resource files using XML packer
 	Default:
@@ -221,7 +223,9 @@ A4GL_CLASSIC_I4GL_MONO UI/TUI Inhibit mapping of colours to attributes (like red
 =YES|NO
 A4GL_COLOR_TUI_BKG UI/TUI specify the default background color
 A4GL_COLOR_TUI_BKG_DEF UI/TUI specify the default background color
-
+=1|2|3|4|5|6|7|8
+	Example:
+	4 = Set the background colour of the Application to blue
 
 A4GL_COLOR_TUI_BLACK UI/TUI Remap black screen color to alternative
 A4GL_COLOR_TUI_BLUE UI/TUI Remap blue screen color to alternative
@@ -300,6 +304,7 @@ A4GL_DUMP_CORE DEBUG/RUNTIME Action to perform when aubit/4gl programs crash
 A4GL_ERROR_MSG
 A4GL_ESQL_UNLOAD ESQL/RUNTIME PostgreSQL ecpg Informix compatibility
 =YES|NO
+	When needed use the ecpg UNLOAD statement rather than the aubit code
 A4GL_EXTENDED_ERRORLOG  DEBUG/RUNTIME Error log handling
 	Add module and line when writing to the error log from CALL errorlog(..)
 A4GL_EXTENDED_GRAPHICS FORMS/UI/TUI enable the use of extended graphics from form files (+<>^v for cross and tee's)
@@ -322,7 +327,7 @@ A4GL_FIELD_ERROR_MSG UI/TUI/LANG Message to display when a fields value is inval
 A4GL_FIELD_INCL_MSG UI/TUI/LANG Message to display when a value in a field is not in the include list
 A4GL_FIELD_PICTURE_MSG UI/TUI/LANG Message to display when a pressed which is invalid for picture fields
 A4GL_FIELD_REQD_MSG UI/TUI/LANG Message to display when a field requires a value to be entered
-A4GL_FIXUPDATE
+A4GL_FIXUPDATE SQL All updates will be transformed to Ansi syntax. Applies only to EC output
 =YES|NO
 A4GL_FORMAT_OVERFLOW RUNTIME Determines what happens when a decimal number is too large to fit  [ROUND,REFORMAT]
 =ROUND|REFORMAT

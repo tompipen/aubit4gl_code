@@ -14,6 +14,23 @@
  * Really all it does is set up the file name and the temporary 
  * redirection of standard output for the user-prompted redraw.
  *  
+
+In 4gl:
+
+LET lv_out = " | lp -s -c "             # Send to printer
+
+            LET lv_status = fgl_swapio(TRUE)
+             IF lv_status != 0 THEN
+                 LET mv_lang_str = "Error Capturing Screen!"
+                ERROR mv_lang_str
+                 SLEEP 2
+             ELSE
+                 PROMPT " " FOR CHAR lv_resp
+                 LET lv_status = fgl_swapio(FALSE)
+                 CALL fgl_prtscr(lv_out)
+                 SLEEP 2
+
+
  * 
  *	Code donated by ICANON Associates Incorporated http://www.icanon.com 
  *  by Joe Lewinski <lewinski@icanon.com>

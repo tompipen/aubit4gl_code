@@ -344,14 +344,31 @@ SQLUID=@SQLUID@
 SQLPWD=@SQLPWD@
 
 
-
+####################
 #temp fix for a known 'thing' with xterm and curses - it uses an alternate 
 #screen. I'll leave this as defaulting to "N" for now in case it breaks something 
 #else
 A4GL_NO_ALT_SCR=Y
 
+####################
+#All updates will be transformed to Ansi syntax. Applies only to EC output
+A4GL_FIXUPDATE=Y
 
+####################
+# The keyword 'AS' is included when using an alias on a select column
+A4GL_USE_ALIAS_AS=Y
 
+####################
+# Any CREATE TEMP TABLE .. WITH NO LOG will have the 'WITH NO LOG' silently removed
+A4GL_OMIT_NO_LOG=Y
+
+####################
+# No indicator variables
+A4GL_USE_INDICATOR=N
+
+####################
+# When needed use the ecpg UNLOAD statement rather than the aubit code
+A4GL_ESQL_UNLOAD=Y
 
 ## ===================================================================
 ##     Run-time settings for Aubit compiled programs

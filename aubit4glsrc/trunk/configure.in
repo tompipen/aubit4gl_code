@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.225 2004-03-22 03:10:39 afalout Exp $
+dnl # $Id: configure.in,v 1.226 2004-03-28 07:56:28 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -3107,6 +3107,12 @@ AC_ARG_WITH(informix,
 ##                 Checks for PostgreSQL lib support
 ## ==================================================================
 
+#> > On Friday 12 March 2004 14:45, Dave Cramer wrote:
+#> > > ./configure --with-pgsql=/home/davec/pginfx7.4_1.5/
+#> > > --with-ecpg=/home/davec/pginfx7.4_1.5/ --prefix=/home/davec/aubit4gl
+#> > > and it says it can't find my postgres lib's or ecpg libs
+#> > >
+#> > > they are in /home/davec/pginfx7.4_1.5/lib
 
 
 PHP_CONFIGURE_PART(Checking for PostgresSQL library support:)
@@ -6626,7 +6632,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.225 2004-03-22 03:10:39 afalout Exp $
+| $Id: configure.in,v 1.226 2004-03-28 07:56:28 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
