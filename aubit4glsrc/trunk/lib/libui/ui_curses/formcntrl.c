@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.56 2004-05-24 14:28:40 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.57 2004-05-24 15:10:12 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.56 2004-05-24 14:28:40 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.57 2004-05-24 15:10:12 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -418,7 +418,11 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
       		rval = -1;
       		new_state = 10;
 	}
+
 	if (sio->fcntrl[a].state==10) {
+		if (sio->mode==MODE_CONSTRUCT) {
+			sio->processed_onkey=A4GLKEY_INTERRUPT;
+		}
 		new_state=0;
 	}
     }

@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.98 2004-05-24 14:28:41 mikeaubury Exp $
+# $Id: ioform.c,v 1.99 2004-05-24 15:10:13 mikeaubury Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.98 2004-05-24 14:28:41 mikeaubury Exp $";
+static char *module_id="$Id: ioform.c,v 1.99 2004-05-24 15:10:13 mikeaubury Exp $";
 /**
  * @file
  *
@@ -2691,6 +2691,12 @@ int
   int flg = 0;
   struct s_screenio *s;
   s = vs;
+
+  if (s->processed_onkey==A4GLKEY_INTERRUPT) {
+		A4GL_push_char(s->vars[0].ptr);
+		return 0;
+  }
+  
   if (s->nfields < 0)
     {
       A4GL_debug ("NO CONSTRUCT - No fields\n");
