@@ -421,7 +421,7 @@ AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 			int a;
 			fld->colours.colours_len++;
 			a=fld->colours.colours_len;
-			fld->colours.colours_val=realloc(fld->colours.colours_val,a);
+			fld->colours.colours_val=realloc(fld->colours.colours_val,a*sizeof(struct colours ) );
 			fld->colours.colours_val[a-1].colour=atoi($<str>3);
 			fld->colours.colours_val[a-1].whereexpr=$<expr>4;
 		}
@@ -821,10 +821,20 @@ clause:
 	}
 ;
 
-value : fieldidentifier  {$<expr>$=create_field_expr($<str>1);}
-| NUMBER_VALUE  {$<expr>$=create_int_expr(atoi($<str>1));}
+value : fieldidentifier  {
+$<expr>$=create_field_expr($<str>1);
+if (strcasecmp(currftag,$<str>1)!=0) {
+	yyerror("Cannot make colour conditional upon a different field tag");
+	
+}
+}
+| NUMBER_VALUE  {$<expr>$=create_int_expr(atoi($<str>1));
+printf("NUMBER VALUE : %s\n",$<str>1);
+}
 | CHAR_VALUE    {$<expr>$=create_char_expr($<str>1);}
-| XVAL          {$<expr>$=create_special_expr($<str>1);}
+| XVAL          {
+	$<expr>$=create_special_expr($<str>1);
+}
 ;
 
 fieldidentifier : NAMED 

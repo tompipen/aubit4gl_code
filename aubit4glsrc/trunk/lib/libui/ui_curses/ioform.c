@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.68 2003-08-22 22:35:01 mikeaubury Exp $
+# $Id: ioform.c,v 1.69 2003-08-24 17:54:15 mikeaubury Exp $
 #*/
 
 /**
@@ -607,7 +607,7 @@ A4GL_set_field_attr_with_attr (FIELD * field, int attr, int cmd_type)
   struct struct_scr_field *f;
   f = (struct struct_scr_field *) (field_userptr (field));
 
-  nattr = A4GL_determine_attribute (cmd_type, attr, f);
+  nattr = A4GL_determine_attribute (cmd_type, attr, f,0);
   A4GL_debug ("Passed in attribute: %x, determined attribute should be %x",
 	      attr, nattr);
   attr = nattr;
@@ -1382,7 +1382,7 @@ A4GL_set_fields (void *vsio)
 
       prop = (struct struct_scr_field *) field_userptr (field_list[a]);
 
-      attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, prop);
+      attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, prop,0);
 
       if (attr != 0)
 	A4GL_set_field_attr_with_attr (field_list[a], attr, FGL_CMD_INPUT);
@@ -2053,15 +2053,21 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
 
 
 
+  A4GL_display_field_contents (field, d1, s1, ptr1);
+
+
+
 
   A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
   oopt = field_opts (field);
   A4GL_set_field_attr (field);
+  A4GL_debug("Determining attribute - field_buffer=%s",field_buffer(field,0));
+  attr = A4GL_determine_attribute (cmd_type, attr, f,field_buffer(field,0));
 
-  attr = A4GL_determine_attribute (cmd_type, attr, f);
-
-  if (attr != 0)
-    A4GL_set_field_attr_with_attr (field, attr, cmd_type);
+  if (attr != 0) {
+	A4GL_debug("calling set_field_attr_with_attr : %x",attr);
+    	A4GL_set_field_attr_with_attr (field, attr, cmd_type);
+  }
 
 
   A4GL_debug ("set field attr");
@@ -2073,7 +2079,8 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
   A4GL_debug ("done ");
   set_field_opts (field, oopt);
   A4GL_debug ("Calling display_field_contents");
-  A4GL_display_field_contents (field, d1, s1, ptr1);
+
+
 
 
 }

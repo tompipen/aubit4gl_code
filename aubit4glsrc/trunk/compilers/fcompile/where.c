@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: where.c,v 1.10 2003-07-16 19:25:55 mikeaubury Exp $
+# $Id: where.c,v 1.11 2003-08-24 17:54:10 mikeaubury Exp $
 #
 */
 
@@ -129,7 +129,9 @@ create_char_expr (char *charval)
   t_expression *ptr;
   ptr = malloc (sizeof (t_expression));
   ptr->itemtype = ITEMTYPE_CHAR;
-  ptr->u_expression_u.charval = charval;
+
+  ptr->u_expression_u.charval = strdup(&charval[1]);
+  ptr->u_expression_u.charval[strlen(ptr->u_expression_u.charval)-1]=0;
   return ptr;
 }
 
@@ -151,11 +153,13 @@ create_special_expr (char *charval)
 {
   t_expression *ptr;
   int a;
+  charval=strdup(charval);
   for (a = 0; a < strlen (charval); a++)
     charval[a] = toupper (charval[a]);
   ptr = malloc (sizeof (t_expression));
   ptr->itemtype = ITEMTYPE_SPECIAL;
   ptr->u_expression_u.special = charval;
+printf("CREATED SPECIAL : %s\n",charval);
   return ptr;
 }
 

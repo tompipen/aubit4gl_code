@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.14 2003-08-22 22:35:01 mikeaubury Exp $
+# $Id: array.c,v 1.15 2003-08-24 17:54:14 mikeaubury Exp $
 #*/
 
 /**
@@ -388,6 +388,12 @@ draw_arr (arr, -1, arr->arr_line);
 
   switch (a)
     {
+
+    case 18:
+        clearok(curscr,1);
+        A4GL_mja_refresh ();break;
+
+
     case A4GLKEY_PGUP :
       if (arr->arr_line > arr->srec->dim || (arr->arr_line>1&&A4GL_isyes(acl_getenv("SCROLLBACKTO1")))) {
 		arr->cntrl=0-A4GLKEY_PGUP;
@@ -778,18 +784,9 @@ int orig_set=0;
 	int nattr;
   	f = (struct struct_scr_field *) (field_userptr (field_list[a]));
 	A4GL_debug("f=%p",f);
-  	nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, disp->attribute, f);
-	A4GL_debug("XXXX3 nattr=%d",nattr);
-
-	if (attr&AUBIT_ATTR_REVERSE) {
-		if (nattr&AUBIT_ATTR_REVERSE) 	nattr=nattr-AUBIT_ATTR_REVERSE;
-		else 				nattr=nattr+AUBIT_ATTR_REVERSE;
-	}
 
 
-	A4GL_debug("XXXX3 nattr now =%d (reverse=%d)",nattr,attr&AUBIT_ATTR_REVERSE);
-	A4GL_debug("Attr=%d",attr);
-  	if (nattr != 0) A4GL_set_field_attr_with_attr (field_list[a], nattr,FGL_CMD_DISPLAY_CMD);
+
 
   	if (!blank) {
 			A4GL_debug("Displaying something..");
@@ -805,6 +802,19 @@ int orig_set=0;
 
 
   	A4GL_display_field_contents(field_list[a],disp->binding[a].dtype,disp->binding[a].size,cptr);
+
+  	nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, disp->attribute, f,field_buffer(field_list[a],0));
+	A4GL_debug("XXXX3 nattr=%d",nattr);
+
+	if (attr&AUBIT_ATTR_REVERSE) {
+		if (nattr&AUBIT_ATTR_REVERSE) 	nattr=nattr-AUBIT_ATTR_REVERSE;
+		else 				nattr=nattr+AUBIT_ATTR_REVERSE;
+	}
+
+	A4GL_debug("XXXX3 nattr now =%d (reverse=%d)",nattr,attr&AUBIT_ATTR_REVERSE);
+	A4GL_debug("Attr=%d",attr);
+  	if (nattr != 0) A4GL_set_field_attr_with_attr (field_list[a], nattr,FGL_CMD_DISPLAY_CMD);
+
 
 	if (first_only) {
 		//int was_disabled=0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.28 2003-08-22 22:35:01 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.29 2003-08-24 17:54:15 mikeaubury Exp $
 #*/
 
 /**
@@ -482,7 +482,7 @@ process_control_stack (struct s_screenio *sio)
 		A4GL_debug("Processed after users 'BEFORE FIELD'");
       		pos_form_cursor (sio->currform->form);
       		fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-      		attr=A4GL_determine_attribute(FGL_CMD_INPUT,sio->attrib, fprop);
+      		attr=A4GL_determine_attribute(FGL_CMD_INPUT,sio->attrib, fprop,field_buffer(sio->currentfield,0));
       		if (attr != 0) A4GL_set_field_attr_with_attr (sio->currentfield,attr, FGL_CMD_INPUT);
 		if (sio->mode != MODE_CONSTRUCT) {
       			A4GL_set_init_value (sio->currentfield, sio->vars[sio->curr_attrib].ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
@@ -504,6 +504,8 @@ process_control_stack (struct s_screenio *sio)
     {
 
 	int ffc_rval;
+      struct struct_scr_field *fprop;
+	int attr;
   	if (sio->mode != MODE_CONSTRUCT)
     		ffc_rval=A4GL_form_field_chk (sio, -1);
   	else
@@ -535,15 +537,24 @@ process_control_stack (struct s_screenio *sio)
 			A4GL_debug("Calling display_field_contents");
 			A4GL_display_field_contents(sio->currentfield,sio->vars[field_no].dtype+ENCODE_SIZE(sio->vars[field_no].size) ,sio->vars[field_no].size,sio->vars[field_no].ptr) ; // MJA 2306
 
+      		fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+      		attr=A4GL_determine_attribute(FGL_CMD_INPUT,sio->attrib, fprop,field_buffer(sio->currentfield,0));
+      		if (attr != 0) A4GL_set_field_attr_with_attr (sio->currentfield,attr, FGL_CMD_INPUT);
+
 	}
       		A4GL_push_long ((long) sio->currentfield);
       		A4GL_push_char (sio->fcntrl[a].field_name);
+
+
+
       	rval = -198;
 	} else {
 		A4GL_init_control_stack (sio,0);
 		return -1;
 	}
     }
+
+
 
   if (new_state != 0 && sio->fcntrl[a].op!=0)
     {
@@ -795,10 +806,23 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
   switch (a)
     {
     case 18:
-      A4GL_mja_wrefresh (stdscr);
-      A4GL_mja_wrefresh (currwin);
-      A4GL_mja_refresh ();
+      //A4GL_mja_wrefresh (stdscr);
+      //A4GL_mja_wrefresh (currwin);
+
+	clearok(curscr,1);
+        A4GL_mja_refresh ();
+
       break;
+/*
+
+A little experiment....
+
+    case 2: A4GL_debug("CONTROL - B %d",s->currentfield); 
+A4GL_set_field_attr_with_attr(s->currentfield,0x100,0);
+	  		A4GL_int_form_driver (s->currform->form, REQ_VALIDATION);
+A4GL_mja_refresh();
+break;
+*/
 
 
     case -1:

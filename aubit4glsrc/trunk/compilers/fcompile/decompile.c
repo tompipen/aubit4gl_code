@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.15 2003-05-15 07:10:37 mikeaubury Exp $
+# $Id: decompile.c,v 1.16 2003-08-24 17:54:10 mikeaubury Exp $
 #
 */
 
@@ -89,7 +89,7 @@ main (int argc, char *argv[])
 
   if (!a)
     {
-      printf ("Bad format\n");
+      printf ("Bad format or file not found\n");
       exit (1);
     }
 

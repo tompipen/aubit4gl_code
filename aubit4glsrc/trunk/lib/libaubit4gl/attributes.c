@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.16 2003-07-22 19:32:55 mikeaubury Exp $
+# $Id: attributes.c,v 1.17 2003-08-24 17:54:14 mikeaubury Exp $
 #*/
 
 /**
@@ -494,7 +494,7 @@ return attr;
 
 
 /* This is our main calling point ! */
-int A4GL_determine_attribute(int cmd_type, int attrib_curr_int, void *vfprop) {
+int A4GL_determine_attribute(int cmd_type, int attrib_curr_int, void *vfprop,char *val_for_field) {
 struct s_std_attr *r;
 struct s_std_attr attrib_curr;
 struct s_std_attr attrib_field;
@@ -530,7 +530,8 @@ if (fprop) {
   	attrib_field.dim=0;
   	attrib_field.normal=0;
 
-	A4GL_attr_int_to_std(fprop->colour<<8,&attrib_field);
+	A4GL_attr_int_to_std( A4GL_evaluate_field_colour(val_for_field,fprop)<<8
+,&attrib_field);
 	A4GL_debug("30 attrib_field.colour=%d\n",attrib_field.colour);
 
 	if (A4GL_has_bool_attribute(fprop,FA_B_REVERSE)) { attrib_field.reverse=1; }
@@ -544,7 +545,12 @@ if (fprop) {
 
 
 	attr=0;
-	attr=attr+attrib_field.colour;
+
+	//attr=attr+attrib_field.colour;
+	attr=attrib_field.colour;
+	
+
+	
 	if (attrib_field.normal) attr+=AUBIT_ATTR_NORMAL;
 	if (attrib_field.reverse) attr+=AUBIT_ATTR_REVERSE;
 	if (attrib_field.underline) attr+=AUBIT_ATTR_UNDERLINE;
@@ -554,13 +560,13 @@ if (fprop) {
 	if (attrib_field.invisible) attr+=AUBIT_ATTR_INVISIBLE;
 
 
-	A4GL_debug("30 Form attribute = %x\n",attr);
+	A4GL_debug("Form attribute = %x\n",attr);
 
 	if (attr==0||attr==FA_C_WHITE<<8) {
 		ptr_attrib_field=0;
 	} else {
 		ptr_attrib_field=&attrib_field;
-A4GL_debug("30 determined Attribute setting attrib_field =  %x %d %d %d %d %d %d", ptr_attrib_field->colour, ptr_attrib_field->normal, ptr_attrib_field->reverse, ptr_attrib_field->underline, ptr_attrib_field->bold, ptr_attrib_field->blink, ptr_attrib_field->dim);
+A4GL_debug(" determined Attribute setting attrib_field =  %x %d %d %d %d %d %d", ptr_attrib_field->colour, ptr_attrib_field->normal, ptr_attrib_field->reverse, ptr_attrib_field->underline, ptr_attrib_field->bold, ptr_attrib_field->blink, ptr_attrib_field->dim);
 	}
 
 }
@@ -575,7 +581,7 @@ if (r==0) {
 }
 
 
-A4GL_debug("30 MJAMJAMJA determined Attribute : %x %d %d %d %d %d %d", r->colour, r->normal, r->reverse, r->underline, r->bold, r->blink, r->dim);
+A4GL_debug(" MJAMJAMJA determined Attribute : %x %d %d %d %d %d %d", r->colour, r->normal, r->reverse, r->underline, r->bold, r->blink, r->dim);
 attr=0;
 A4GL_debug("30 Have Attribute..");
 attr=attr+r->colour;
@@ -586,7 +592,7 @@ if (r->bold) attr+=AUBIT_ATTR_BOLD;
 if (r->blink) attr+=AUBIT_ATTR_BLINK;
 if (r->dim) attr+=AUBIT_ATTR_DIM;
 if (r->invisible) attr+=AUBIT_ATTR_INVISIBLE;
-A4GL_debug("30 Returning Attribute : %d\n",attr);
+A4GL_debug(" Returning Attribute : %d\n",attr);
 
 return attr;
 }

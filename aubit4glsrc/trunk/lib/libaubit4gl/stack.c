@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.69 2003-08-14 16:12:29 mikeaubury Exp $
+# $Id: stack.c,v 1.70 2003-08-24 17:54:14 mikeaubury Exp $
 #
 */
 
@@ -1036,8 +1036,9 @@ A4GL_debug("51 Have data");
 	return;
       c2 = A4GL_char_pop ();
       c1 = A4GL_char_pop ();
-
+	
 #ifdef DEBUG
+	A4GL_debug("c1=%s c2=%s",c1,c2);
 #endif
       r = A4GL_mja_match (c1, c2, 'M');
       A4GL_debug ("mja_match returns %d\n", r);

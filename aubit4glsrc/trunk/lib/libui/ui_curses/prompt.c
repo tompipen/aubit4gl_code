@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.25 2003-08-15 18:36:11 mikeaubury Exp $
+# $Id: prompt.c,v 1.26 2003-08-24 17:54:15 mikeaubury Exp $
 #*/
 
 /**
@@ -137,8 +137,8 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   field_opts_off (prompt->field, O_STATIC);
 
   A4GL_debug ("ap=%d(%x) af=%d(%x)", ap, ap, af, af);
-  ap=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD , ap,0);
-  af=A4GL_determine_attribute(FGL_CMD_INPUT, af,0);
+  ap=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD , ap,0,0);
+  af=A4GL_determine_attribute(FGL_CMD_INPUT, af,0,0);
 
   if (ap)
     {
@@ -217,7 +217,8 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
   switch (a)
     {
     case 18:
-      A4GL_zrefresh ();
+        clearok(curscr,1);
+        A4GL_mja_refresh ();
       break;
     case -1:
 

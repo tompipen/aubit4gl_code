@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.56 2003-08-15 18:36:11 mikeaubury Exp $
+# $Id: curslib.c,v 1.57 2003-08-24 17:54:14 mikeaubury Exp $
 #*/
 
 /**
@@ -1691,7 +1691,7 @@ A4GL_disp_h_menu (void* menuv)
 	
       attrib=attrib-(attrib&0x20);
 
-      menu->attrib=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, attrib,0);
+      menu->attrib=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, attrib,0,0);
 	
       //menu->attrib = attrib;
 #ifdef DEBUG
@@ -4019,16 +4019,16 @@ void A4GL_comments (struct struct_scr_field *fprop)
   attr=A4GL_get_curr_window_attr();
 
   if (!attr)  {
-	attr=A4GL_determine_attribute(FGL_CMD_INPUT, 0,0);
+	attr=A4GL_determine_attribute(FGL_CMD_INPUT, 0,0,0);
   }
 
 
   if (A4GL_isyes(acl_getenv("COMMENT_LIKE_INPUT"))) {
-	attr=A4GL_determine_attribute(FGL_CMD_INPUT, 0,0);
+	attr=A4GL_determine_attribute(FGL_CMD_INPUT, 0,0,0);
   }
 
   if (A4GL_isyes(acl_getenv("COMMENT_LIKE_DISPLAY"))) {
-	attr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, 0,0);
+	attr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, 0,0,0);
   }
 	
   //A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, 0,0) , 1); 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.70 2003-08-15 18:36:11 mikeaubury Exp $
+# $Id: newpanels.c,v 1.71 2003-08-24 17:54:15 mikeaubury Exp $
 #*/
 
 /**
@@ -1733,7 +1733,7 @@ A4GL_debug("determine_attribute seems to be returning %x\n",a);
 	A4GL_debug("Check we have CURSES env");
       A4GL_chkwin ();
 	A4GL_debug("Done");
-	nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, a, 0);
+	nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, a, 0,0);
 	a=nattr;
       b = A4GL_xwattr_get (currwin);
       wot=A4GL_window_on_top_ign_menu ();

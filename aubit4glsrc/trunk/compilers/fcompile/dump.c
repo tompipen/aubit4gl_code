@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.13 2003-07-30 10:32:38 mikeaubury Exp $
+# $Id: dump.c,v 1.14 2003-08-24 17:54:10 mikeaubury Exp $
 #*/
 
 /**
@@ -305,6 +305,7 @@ dump_expr (t_expression * expr, int lvl)
   t_complex_expr *ptr2;
   int a;
 
+
   if (expr->itemtype == ITEMTYPE_INT)
     {
       print_lvl (lvl);
@@ -314,7 +315,7 @@ dump_expr (t_expression * expr, int lvl)
   if (expr->itemtype == ITEMTYPE_SPECIAL)
     {
       print_lvl (lvl);
-      printf ("*%p", expr->u_expression_u.special);
+      printf ("*%s", expr->u_expression_u.special);
     }
 
   if (expr->itemtype == ITEMTYPE_LIST)

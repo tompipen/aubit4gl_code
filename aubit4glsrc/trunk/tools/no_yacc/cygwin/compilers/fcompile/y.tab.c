@@ -698,15 +698,15 @@ static const unsigned short yyrline[] =
      721,   722,   728,   730,   731,   734,   737,   741,   742,   743,
      744,   745,   746,   747,   753,   755,   762,   762,   768,   774,
      775,   778,   784,   787,   790,   793,   798,   803,   807,   813,
-     816,   819,   824,   825,   826,   827,   830,   833,   837,   845,
-     846,   847,   848,   849,   850,   851,   852,   853,   854,   855,
+     816,   819,   824,   831,   834,   835,   840,   843,   847,   855,
      856,   857,   858,   859,   860,   861,   862,   863,   864,   865,
      866,   867,   868,   869,   870,   871,   872,   873,   874,   875,
      876,   877,   878,   879,   880,   881,   882,   883,   884,   885,
      886,   887,   888,   889,   890,   891,   892,   893,   894,   895,
      896,   897,   898,   899,   900,   901,   902,   903,   904,   905,
      906,   907,   908,   909,   910,   911,   912,   913,   914,   915,
-     916,   917,   918,   919,   920,   921,   922,   923,   924
+     916,   917,   918,   919,   920,   921,   922,   923,   924,   925,
+     926,   927,   928,   929,   930,   931,   932,   933,   934
 };
 #endif
 
@@ -2300,7 +2300,7 @@ A4GL_init_fld();
 			int a;
 			fld->colours.colours_len++;
 			a=fld->colours.colours_len;
-			fld->colours.colours_val=realloc(fld->colours.colours_val,a);
+			fld->colours.colours_val=realloc(fld->colours.colours_val,a*sizeof(struct colours ) );
 			fld->colours.colours_val[a-1].colour=atoi(yyvsp[-1].str);
 			fld->colours.colours_val[a-1].whereexpr=yyvsp[0].expr;
 		}
@@ -3084,26 +3084,36 @@ yyval.expr=yyvsp[0].expr;
 
   case 222:
 #line 824 "screen.yacc"
-    {yyval.expr=create_field_expr(yyvsp[0].str);}
+    {
+yyval.expr=create_field_expr(yyvsp[0].str);
+if (strcasecmp(currftag,yyvsp[0].str)!=0) {
+	yyerror("Cannot make colour conditional upon a different field tag");
+	
+}
+}
     break;
 
   case 223:
-#line 825 "screen.yacc"
-    {yyval.expr=create_int_expr(atoi(yyvsp[0].str));}
+#line 831 "screen.yacc"
+    {yyval.expr=create_int_expr(atoi(yyvsp[0].str));
+printf("NUMBER VALUE : %s\n",yyvsp[0].str);
+}
     break;
 
   case 224:
-#line 826 "screen.yacc"
+#line 834 "screen.yacc"
     {yyval.expr=create_char_expr(yyvsp[0].str);}
     break;
 
   case 225:
-#line 827 "screen.yacc"
-    {yyval.expr=create_special_expr(yyvsp[0].str);}
+#line 835 "screen.yacc"
+    {
+	yyval.expr=create_special_expr(yyvsp[0].str);
+}
     break;
 
   case 227:
-#line 833 "screen.yacc"
+#line 843 "screen.yacc"
     {
 		yyval.expr=create_list_expr();
 		add_list_expr(yyval.expr,yyvsp[0].expr);
@@ -3111,7 +3121,7 @@ yyval.expr=yyvsp[0].expr;
     break;
 
   case 228:
-#line 837 "screen.yacc"
+#line 847 "screen.yacc"
     {
 		add_list_expr(yyvsp[-2].expr,yyvsp[0].expr);
 		yyval.expr=yyvsp[-2].expr;
@@ -3122,7 +3132,7 @@ yyval.expr=yyvsp[0].expr;
     }
 
 /* Line 991 of yacc.c.  */
-#line 3125 "y.tab.c"
+#line 3135 "y.tab.c"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -3331,7 +3341,7 @@ yyreturn:
 }
 
 
-#line 927 "screen.yacc"
+#line 937 "screen.yacc"
 
 
 

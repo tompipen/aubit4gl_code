@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.43 2003-08-22 22:35:01 mikeaubury Exp $
+# $Id: iarray.c,v 1.44 2003-08-24 17:54:15 mikeaubury Exp $
 #*/
 
 /**
@@ -625,6 +625,10 @@ process_key_press (struct s_inp_arr *arr, int a)
     case A4GLKEY_BACKSPACE:
       A4GL_int_form_driver (mform, REQ_DEL_PREV);
       break;
+
+	case 18:
+        clearok(curscr,1);
+        A4GL_mja_refresh ();break;
 
     case 4:			// Control - D
       A4GL_int_form_driver (mform, REQ_CLR_EOF);
@@ -1849,7 +1853,7 @@ process_control_stack (struct s_inp_arr *arr)
 	    (struct struct_scr_field *) (field_userptr (arr->currentfield));
 	  attr =
 	    A4GL_determine_attribute (FGL_CMD_INPUT, arr->display_attrib,
-				      fprop);
+				      fprop,0);
 
 
 
@@ -1963,7 +1967,7 @@ process_control_stack (struct s_inp_arr *arr)
 	    (struct struct_scr_field *) (field_userptr (arr->currentfield));
 	  attr =
 	    A4GL_determine_attribute (FGL_CMD_INPUT, arr->display_attrib,
-				      fprop);
+				      fprop,0);
 
 
 	  if (arr->highlight)
@@ -2072,12 +2076,12 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int attr, int arr_line,
       fprop =
 	(struct struct_scr_field
 	 *) (field_userptr (arr->field_list[scr_line - 1][a]));
-      attr = A4GL_determine_attribute (FGL_CMD_INPUT, attr, fprop);
+      attr = A4GL_determine_attribute (FGL_CMD_INPUT, attr, fprop,0);
       da = attr;
 
       if (arr_line == arr->arr_line)
 	{
-	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, attr, fprop);
+	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, attr, fprop,0);
 	  da = attr;
 	  if (arr->highlight)
 	    {
