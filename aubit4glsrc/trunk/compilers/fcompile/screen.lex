@@ -76,6 +76,8 @@ screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_S
 "(" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return OPEN_BRACKET;}
 ")" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return CLOSE_BRACKET;}
 "*" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return STAR;}
+"+" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return PLUS;}
+"-" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MINUS;}
 "," 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMMA;}
 "thru" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return THROUGH;}
 "through" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return THROUGH;}

@@ -183,7 +183,7 @@ img_types :
 
 blob_var :  variable {
 	int vtype;
-	vtype=scan_variable($<str>2);
+	vtype=scan_variable($<str>1);
 	if (vtype!=11&&vtype!=12) {
 	yyerror("Only Blobs may be printed...");
 	YYERROR;
@@ -321,7 +321,7 @@ printc("/* no order by  - assume all parameters in order*/");
 a=print_bind('O');
 printc("static int fgl_rep_orderby=2;\n");
 sprintf($<str>$,"%d",a);
-printc("/* end of var_list %s */\n",$<str>2);
+printc("/* end of var_list */\n");
 }
 | ORDER BY obind_var_list_ord
 {

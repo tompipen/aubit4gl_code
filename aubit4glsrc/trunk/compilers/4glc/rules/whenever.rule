@@ -10,7 +10,7 @@ whenever_cmd 	:  WHENEVER_NOT_FOUND when_do
 }
 		|  WHENEVER_ERROR when_do
 {
-debug("Whenever error...%s %d %d",$<str>3,WHEN_ERROR,atoi($<str>2));
+debug("Whenever error...%d %d",WHEN_ERROR,atoi($<str>2));
 set_whenever(WHEN_ERROR+atoi($<str>2),0);
 }
 		|  WHENEVER_SQLWARNING when_do

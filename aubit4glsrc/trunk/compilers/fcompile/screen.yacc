@@ -40,7 +40,7 @@ int add_field (char *s, int x, int y, int wid, int scr, int delim,char *label);
 FORMONLY COMMENT
 %token DYNAMIC COLON ATSIGN DOT WITHOUT KW_NULL INPUT TABLES PIPE EQUAL CHAR_VALUE
 %token SEMICOLON
-%token OPEN_BRACKET CLOSE_BRACKET STAR RECORD COMMA THROUGH LIKE TYPE NOT DELIMITERS
+%token OPEN_BRACKET CLOSE_BRACKET STAR PLUS MINUS RECORD COMMA THROUGH LIKE TYPE NOT DELIMITERS
 %token KW_CHAR KW_INT KW_DATE KW_FLOAT SMALLFLOAT SMALLINT KW_DECIMAL MONEY DATETIME INTERVAL
 %token BLACK BLUE GREEN CYAN RED MAGENTA WHITE YELLOW REVERSE LEFT BLINK UNDERLINE
 %token   AUTONEXT COLOR COMMENTS DEFAULT DISPLAY DISPLAY DOWNSHIFT UPSHIFT FORMAT INCLUDE INVISIBLE NOENTRY PICTURE PROGRAM
@@ -602,12 +602,16 @@ incl_list : incl_entry | incl_list COMMA incl_entry {
 };
 
 
+number_value : NUMBER_VALUE | PLUS NUMBER_VALUE | MINUS NUMBER_VALUE {sprintf($<str>$,"-%s",$<str>2);}
+;
+
+
 incl_entry : 
 CHAR_VALUE   { strcpy($<str>$,char_val($<str>1)); }
 | NAMED   {strcpy($<str>$,$<str>1); }
 | CH   {strcpy($<str>$,$<str>1);}
-| NUMBER_VALUE 
-| NUMBER_VALUE TO NUMBER_VALUE {
+| number_value 
+| number_value TO number_value {
 	sprintf($<str>$,"%s\t%s",$<str>1,$<str>3);
 }
 | CHAR_VALUE TO CHAR_VALUE {

@@ -1,6 +1,6 @@
 dim_section : 
               DEFINE_TYPE identifier {
-              	dim_set_name($<str>3);
+              	dim_set_name($<str>2);
               }
                               AS dim_dtype
 ;

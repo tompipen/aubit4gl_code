@@ -10,12 +10,17 @@ op_to_defs :
 clear_cmd	:	CLEARSCR
 { printc("clr_window(\"screen\");\n"); }
 		|	CLEARWIN win_name
-{ printc("clr_window(%s);\n",$<str>3); }
-		|	CLEARFORM
+{ printc("clr_window(%s);\n",$<str>2); }
+		|	CLEARFORM {
+	printc("**** NOT IMPLEMENTED YET *****\n");
+}
 		|	CLEARFORM form_name op_clr_fields  op_to_defs {
+	printc("**** NOT IMPLEMENTED YET *****\n");
 debug("FIXME");
 }
-		|	CLEAR fld_list op_to_defs
+		|	CLEAR fld_list op_to_defs {
+	printc("**** NOT IMPLEMENTED YET *****\n");
+}
 ;
 
 fld_list	:	field_name  {sprintf($<str>$,"%s",$<str>1);}

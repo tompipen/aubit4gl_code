@@ -280,7 +280,7 @@ let_var: let_array_r_variable
   else
     {
       sprintf(buff,"%s.%s",$<str>1,$<str>4);
-      sprintf ($<str>$, " let_substr(%s,%d,%d,0)", buff, a, atoi($<str>6));
+      sprintf ($<str>$, " let_substr(%s,%d,%s,0)", buff, a, $<str>6);
       addmap('L',buff,curr_func,yylineno,infilename);
       printcomment ("/*character variable %s*/\n", $<str>$);
     }
@@ -325,7 +325,7 @@ identifier OPEN_SQUARE num_list CLOSE_SQUARE
     }
   else
     {
-      sprintf ($<str>$, " let_substr(%s,%d,%d,0)", $<str>1, scan_variable ($<str>1), atoi($<str>3));
+      sprintf ($<str>$, " let_substr(%s,%d,%s,0)", $<str>1, scan_variable ($<str>1), $<str>3);
       addmap('L',$<str>1,curr_func,yylineno,infilename);
       debug ("/*character variable %s*/\n", $<str>$);
     }

@@ -320,7 +320,7 @@ op_with_grant_option: {strcpy($<str>$,"");}
 
 privileges:
 	ALL_PRIVILEGES
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+{sprintf($<str>$," %s ",$<str>1);}
 	| action_list
 	;
 
@@ -389,7 +389,7 @@ check_constraint_definition:
 
 referential_constraint_definition:
 	FOREIGN_KEY OPEN_BRACKET references_columns CLOSE_BRACKET references_specification
-{sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
+{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 	;
 
 references_specification:
@@ -459,9 +459,9 @@ op_column_constraint_list: {strcpy($<str>$,"");}
 
 column_constraint:
 	  NOT_NULL
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+{sprintf($<str>$," %s ",$<str>1);}
 	| NOT_NULL_UNIQUE
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+{sprintf($<str>$," %s ",$<str>1);}
 	| references_specification
 	| CHECK OPEN_BRACKET search_condition CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
@@ -991,7 +991,7 @@ sel_p2 : {strcpy($<str>$,"");}
        }
 | order_by_clause 
 | INTO_TEMP tmp_tabname op_no_log {
-       sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);
+       sprintf($<str>$,"%s %s %s ",$<str>1,$<str>2,$<str>3);
 } ;
 
 
@@ -999,7 +999,7 @@ tmp_tabname: identifier;
 
 op_into_temp :
 {strcpy($<str>$,"");} | INTO_TEMP tmp_tabname op_no_log
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
 opt_into_sel :  { start_bind('o',0);sprintf($<str>$,""); }
@@ -1014,7 +1014,7 @@ select_target_list:
 
 query_specification:
 	SELECT setident op_ad select_list table_expression
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>6);}
+{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>5);}
 	;
 
 subquery:
@@ -1046,7 +1046,7 @@ value_expression:
 	value_expression DIVIDE value_expression
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| value_expression units_qual
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2);}
+{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 	| value_expression MULTIPLY value_expression
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| value_expression PLUS value_expression

@@ -89,7 +89,7 @@ connect_cmd :
 ;
 
 op_connect_as :
-        {strcpy($<str>$,$<str>1);}
+        {strcpy($<str>$,"");}
         | AS var_ident {strcpy($<str>$,$<str>2);}
 
 ;
