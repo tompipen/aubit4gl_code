@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.71 2004-09-26 01:47:14 afalout Exp $
+# $Id: Makefile.in,v 1.72 2004-10-02 04:45:50 afalout Exp $
 #
 
 ROOT    	=../..
@@ -311,6 +311,11 @@ clean.api:
 	${RM} $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=.h}) ${API_SPEC:.spec=.c} \
 	${OBJS_API} $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=_lib.h})
 
+#? incl/a4gl_API_exreport.h
+#? incl/a4gl_API_exreport_lib.h
+#? lib/libaubit4gl/API_rpc.c
+
+	
 #----------------------------------- EOF -------------------------------
 
 

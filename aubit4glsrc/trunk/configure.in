@@ -22,7 +22,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.247 2004-10-01 10:42:51 afalout Exp $
+dnl # $Id: configure.in,v 1.248 2004-10-02 04:45:00 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -3698,9 +3698,15 @@ if test "$withval" != "no"; then
 		fi	
 		if test -f "$ECPG_INCDIR/postgresql/informix/esql/ecpg_informix.h"; then
 			ECPG_IFLAGS="$ECPG_IFLAGS -I$ECPG_INCDIR/postgresql/informix/esql"
+			if test "$enable_ac_debug" = "yes" ; then
+				echo "Found ecpg_informix.h in $ECPG_INCDIR/postgresql/informix/esql"
+			fi
 		else
 			if test -f "$ECPG_INCDIR/pgsql/informix/esql/ecpg_informix.h"; then
 				ECPG_IFLAGS="$ECPG_IFLAGS -I$ECPG_INCDIR/pgsql/informix/esql"
+				if test "$enable_ac_debug" = "yes" ; then
+					echo "Found ecpg_informix.h in $ECPG_INCDIR/pgsql/informix/esql"
+				fi
 			else
 				#In Dave's patched tarball they are now in incl/
 				#/usr2/pg-ifx/install/include/ecpg_informix.h
@@ -3709,12 +3715,21 @@ if test "$withval" != "no"; then
 						echo "Found ecpg_informix.h in $ECPG_INCDIR"
 					fi
 				else
-					AC_MSG_WARN(** cannot find Informix compatibility header (ecpg_informix.h) at )
-					AC_MSG_WARN(** $ECPG_INCDIR/postgresql/informix/esql)
-					AC_MSG_WARN(** ...or...)
-					AC_MSG_WARN(** $ECPG_INCDIR/pgsql/informix/esql)
-					AC_MSG_WARN(** ...or...)
-					AC_MSG_WARN(** $ECPG_INCDIR)
+					if test -f "$ECPG_INCDIR/pgsql/ecpg_informix.h"; then
+						#SuSE RPMs
+						if test "$enable_ac_debug" = "yes" ; then
+							echo "Found ecpg_informix.h in $ECPG_INCDIR/pgsql"
+						fi
+					else
+						AC_MSG_WARN(** cannot find Informix compatibility header (ecpg_informix.h) at )
+						AC_MSG_WARN(** $ECPG_INCDIR/postgresql/informix/esql)
+						AC_MSG_WARN(** ...or...)
+						AC_MSG_WARN(** $ECPG_INCDIR/pgsql/informix/esql)
+						AC_MSG_WARN(** ...or...)
+						AC_MSG_WARN(** $ECPG_INCDIR)
+						AC_MSG_WARN(** ...or...)
+						AC_MSG_WARN(** $ECPG_INCDIR/pgsql)
+					fi
 				fi
 			fi
 		fi
@@ -7373,7 +7388,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.247 2004-10-01 10:42:51 afalout Exp $
+| $Id: configure.in,v 1.248 2004-10-02 04:45:00 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
