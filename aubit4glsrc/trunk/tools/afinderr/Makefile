@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.2 2003-10-16 09:46:25 afalout Exp $
+# $Id: Makefile,v 1.3 2004-02-02 09:38:13 afalout Exp $
 #
 
 ROOT=../..
@@ -38,7 +38,7 @@ include ${ROOT}/incl/Makefile-common
 ALL=${ROOT}/bin/afinderr${EXE}
 
 ${ALL}: afinderr.4gl
-	${ROOT}/bin/4glpc $^ -o $@
+	${SH} ${ROOT}/bin/4glpc $^ -o $@
 #	${ROOT}/bin/4glc afinderr.4gl -o afinderr
 #	cp ./afinderr${EXE} ${ROOT}/bin
 

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.215 2004-02-01 03:16:36 afalout Exp $
+dnl # $Id: configure.in,v 1.216 2004-02-02 09:37:37 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1439,7 +1439,7 @@ dnl internationalization macros
 
 #examlpe - USE iT
 #AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
-# $Id: configure.in,v 1.215 2004-02-01 03:16:36 afalout Exp $
+# $Id: configure.in,v 1.216 2004-02-02 09:37:37 afalout Exp $
 
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
@@ -2246,7 +2246,8 @@ if test "$AUBIT_SOURCE" = "1" ; then
 		    AC_MSG_RESULT($1.$2)
 
 			if test "$1" = "1" -a "$2" -lt "875"; then
-		        AC_MSG_WARN(You will need Bison 1.875 if you'd want to regenerate the Aubit parsers)
+		        AC_MSG_WARN(** You will need Bison >= 1.875 if you'd)
+		        AC_MSG_WARN(** want to regenerate the Aubit parsers)
 				#Will use preconfigured y.tab.c from /tools/no_yacc
 				#YACC=no
                 BISON=no
@@ -2745,14 +2746,32 @@ AC_ARG_WITH(sapdb,
 	if test "$withval" != "no"; then
 		if test "$SAPDBROOT" = ""; then
 			SAPDB_WARNING=1
-			AC_MSG_RESULT(no)
+			if test "$withval" = "yes"; then
+				#try default
+				SAPDBROOT="/opt/sapdb"
+			else
+				SAPDBROOT="$withval"
+			fi
+		fi
+		
+		if test "$SAPDBROOT" = ""; then
+			SAPDB_WARNING=1
+			AC_MSG_RESULT(no-SAPDBROOT not set and --with-sapdb did not specify path)
 		else
 			if ! test -d "$SAPDBROOT"; then
 				AC_MSG_RESULT(no - directory specified with SAPDBROOT is invalid)
             else
 				if test "$withval" = "yes"; then
-					SAPDB_INCDIR="-I$SAPDBROOT/depend/incl -I$SAPDBROOT/interfaces/precompiler/incl"
-					SAPDB_LIBDIR="-L$SAPDBROOT/depend/lib -L$SAPDBROOT/interfaces/precompiler/lib"
+					#At least default SuSE 9 RPM's use /interfaces/precompiler/sdk/7403/incl
+					#probably anticipating that cpc compielr will take care of 
+					#finding includes like cpc.h This may force us to try to compile
+					# a simple hello.cpc instead of looking for headers/libraries
+					#if we see more of this version numbering in the paths in the future.
+					SAPDB_INCDIR="-I$SAPDBROOT/depend/incl \
+						-I$SAPDBROOT/interfaces/precompiler/incl \
+						-I$SAPDBROOT/interfaces/precompiler/sdk/7403/incl"
+					SAPDB_LIBDIR="-L$SAPDBROOT/depend/lib \
+						-L$SAPDBROOT/interfaces/precompiler/lib"
 				else
 					#user specified custom withval
 					WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SAPESQLC"
@@ -2782,6 +2801,9 @@ AC_ARG_WITH(sapdb,
 				if test "$SAPDB_ESQLC" != "no"; then
 					if test "$SAPDB_ESQLC" != "no" && test "$SAPDBESQLCC_OK" = "OK"; then
 						SAPDB_INCLUDE="$SAPDB_INCDIR"
+						
+						
+						
 						SAPDB_LFLAGS="$SAPDB_LIBDIR"
 
 		                old_CFLAGS="$CFLAGS"
@@ -2956,8 +2978,8 @@ AC_ARG_WITH(informix,
 					IFX_LIBS=`esql -libs | sed -e 's/-lm$//'`
 					dnl  -lm twice otherwise?
 					IFX_LIBS=`echo $IFX_LIBS | sed -e 's/Libraries to be used://g' -e 's/esql: error -55923: No source or object file\.//g'`
-					dnl Seems to get rid of newlines.
-					dnl According to Perl's DBD-Informix, might contain these strings.
+					#dnl Seems to get rid of newlines.
+					#dnl According to Perl's DBD-Informix, might contain these strings.
 				else
 					dnl Allow override to use static and/or threaded libs
 					IFX_LIBS="$IFX_LIBS"
@@ -3091,18 +3113,20 @@ AC_ARG_WITH(pgsql,
 
     #needed by native PG connector:
 	AC_CHECK_HEADERS([ pgsql/libpq-fe.h postgresql/libpq-fe.h libpq-fe.h ])
-    #FIXME: if we did not find this header; disable compilation of PG native
-    #connector
 
-	if test "$ac_cv_header_pgsql_libpq_fe_h" = "yes" -o "$ac_cv_header_postgresql_libpq_fe_h" = "yes" -o "$ac_cv_header_libpq_fe_h" = "yes" ; then
-		HAVE_PG_ESQL_HEADERS=yes
+	if test "$ac_cv_header_pgsql_libpq_fe_h" = "yes" \
+		-o "$ac_cv_header_postgresql_libpq_fe_h" = "yes" \
+		-o "$ac_cv_header_libpq_fe_h" = "yes" ; \
+	then
+		#Note: this is NOT same as HAVE_PG_ESQL_HEADERS test in ecpg section
+		HAVE_PG_ESQL_HEADERS_LIB=yes
     else
-        HAVE_PG_ESQL_HEADERS=no
+        HAVE_PG_ESQL_HEADERS_LIB=no
     fi
 
 	AC_MSG_CHECKING(PG ESQL connector support)
 	if test "$ac_cv_lib_pq_main" = "yes" ; then
-		if test "$HAVE_PG_ESQL_HEADERS" = "yes"; then
+		if test "$HAVE_PG_ESQL_HEADERS_LIB" = "yes"; then
 			AC_DEFINE(HAVE_PGSQL)
     	    HAVE_PGSQL_LIB=yes
 	    	AC_MSG_RESULT(Yes)
@@ -3184,7 +3208,10 @@ fi
 			PG_ESQLC_IFXCOMPAT=no
         fi
 
-        if test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
+        #if test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
+		#why not test anyway? we at least need to know if we have headers
+		#for compiling things like SQL_c_ecpg that do not need IFX compatibility
+		
             #check PostgreSQL db engine version - we need 7.4, and NOT beta
 			AC_PATH_PROG(POSTMASTER, postmaster, no, $PATH)
 
@@ -3245,16 +3272,29 @@ fi
 
             #reset:
 			unset ac_cv_header_libpq_fe_h
-			#This hader is NOT part of ecpg, it's part of libpq
-			AC_CHECK_HEADERS([ libpq-fe.h ])
+			unset ac_cv_header_pgsql_libpq_fe_h
+			unset ac_cv_header_postgresql_libpq_fe_h
 
+			#This hader is NOT part of ecpg, it's part of libpq
+			AC_CHECK_HEADERS([ pgsql/libpq-fe.h postgresql/libpq-fe.h libpq-fe.h ])
+		
+			if test "$ac_cv_header_pgsql_libpq_fe_h" = "yes" \
+				-o "$ac_cv_header_postgresql_libpq_fe_h" = "yes" \
+				-o "$ac_cv_header_libpq_fe_h" = "yes" ; \
+			then
+				#Note: this is NOT same as HAVE_PG_ESQL_HEADERS test in ecpg section
+				HAVE_PG_ESQL_HEADERS_LIB=yes
+			else
+				HAVE_PG_ESQL_HEADERS_LIB=no
+			fi
+			
 			if test "$ac_cv_header_libpq_fe_h" = "yes" \
 				&& test "$ac_cv_header_ecpgtype_h" = "yes" \
 				&& test "$ac_cv_header_ecpglib_h" = "yes" \
 				&& test "$ac_cv_header_ecpgerrno_h" = "yes" \
 				&& test "$ac_cv_header_sqlca_h" = "yes" \
 				&& test "$ac_cv_header_sql3types_h" = "yes" \
-				&& test "$ac_cv_header_libpq_fe_h" = "yes";
+				&& test "$HAVE_PG_ESQL_HEADERS_LIB" = "yes";
 			then
 				HAVE_PG_ESQL_HEADERS=yes
             else
@@ -3268,6 +3308,14 @@ fi
 				#FIXME: how do we check for libraries versions?
 				#also check versions of:
 				AC_CHECK_LIB([ecpg], [main])
+
+				#apparently pgtypes and ecpg_compat are present only 
+				#in version 3.x and up. They are specified in bin/ecpg_wrap
+				#lib/extra_lib/esqlc/make_static lib/libesql/Makefile 
+				#lib/libsql/esqlc/Makefile 
+				#So it looks like that eanything in Aubit that uses ecpg needs
+				#both of them - CHECK THIS
+				
 				AC_CHECK_LIB([pgtypes], [main])
 				AC_CHECK_LIB([ecpg_compat], [main])
 
@@ -3289,7 +3337,7 @@ fi
 
 			CFLAGS=$old_CFLAGS; LDFLAGS=$old_LDFLAGS; LIBS=$old_LIBS; CPPFLAGS="$old_CPPFLAGS"
 
-		fi
+		#fi  #if "$PG_ESQLC_IFXCOMPAT" = "yes"
     fi
   else
     AC_MSG_RESULT(disabled)
@@ -3626,6 +3674,7 @@ AC_ARG_WITH(sapodbc,
 	if test "$withval" != "no"; then
 		if test "$withval" = "yes"; then
 	    	withval=/opt/sapdb #$SAPDBROOT
+			SAPDBROOT="$withval"
 		else
 			#user specified custom withval
 			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SAPODBC"
@@ -3637,7 +3686,15 @@ AC_ARG_WITH(sapodbc,
 		old_LDFLAGS="$LDFLAGS"
         old_CPPFLAGS="$CPPFLAGS"
 		TMP_SAPODBC_INCLUDE="-I$withval/interfaces/odbc/incl -I$withval"
-		TMP_SAPODBC_LFLAGS="-L$withval/interfaces/odbc/lib -L$withval/indep_prog/runtime/7300/lib"
+
+		#libpcr (needed by libsqlod) is at least in SuSE 9 default RPM's
+		#in path that includes version nubering (/7403/) 
+
+		TMP_SAPODBC_LFLAGS="-L$withval/interfaces/odbc/lib \
+			-L$withval/indep_prog/runtime/7300/lib \
+			-L$withval/interfaces/precompiler/runtime/7403/lib \
+			-L$withval/indep_prog/runtime/7403/lib/libpcr.so"
+			
         LIBS="-lsqlrte -lpcr -lpthread -lm"
 
         #libpcr: WARNING: NOT part of the SAP DB ODBC RPM!!!
@@ -3649,9 +3706,20 @@ AC_ARG_WITH(sapodbc,
 
 		CPPFLAGS="$CPPFLAGS $TMP_SAPODBC_INCLUDE"
 		LDFLAGS="$LDFLAGS $TMP_SAPODBC_LFLAGS $TMP_SAPODBC_INCLUDE"
+
+		#Apparently needed by sqlod - but I don;t see it when I do ldd on libsqlod
+		#version 7.403 which is strange? maybe no longer neded?
+		AC_CHECK_LIB([pcr], [main])
+
 		# FIXME: Replace `main' with a function in `-lsqlod':
 		AC_CHECK_LIB([sqlod], [main])
 		if test $ac_cv_lib_sqlod_main = yes; then
+			
+		
+		#Note: On SuSE 9 sqltypes failed to compile with: 
+		#/opt/sapdb/interfaces/odbc/incl/sqltypes.h:296: error: parse error before "DWORD"
+		#Don't know why - needs investigating
+		
 			AC_CHECK_HEADERS([interfaces/odbc/incl/sql.h \
 								interfaces/odbc/incl/sqlext.h \
 								interfaces/odbc/incl/sqltypes.h \
@@ -3720,8 +3788,12 @@ AC_ARG_WITH(pgodbc,
 		old_LDFLAGS="$LDFLAGS"
         old_CPPFLAGS="$CPPFLAGS"
 		TMP_PGODBC_INCLUDE="-I$withval/include -I$withval/include/pgsql/iodbc"
-		TMP_PGODBC_LFLAGS="-L$withval/lib"
+		TMP_PGODBC_LFLAGS="-L$withval/lib -L/usr/lib/unixODBC"
 
+		#QT libs also have something that looks like PG ODBC driver:
+		#/usr/lib/qt3/plugins/sqldrivers/libqsqlpsql.so
+		#/usr/lib/qt3/plugins/sqldrivers/libtudopsql.so
+		
 		CPPFLAGS="$CPPFLAGS $TMP_PGODBC_INCLUDE"
 		LDFLAGS="$LDFLAGS $TMP_PGODBC_LFLAGS $TMP_PGODBC_INCLUDE"
 		# FIXME: Replace `main' with a function in `-lpsqlodbc':
@@ -3759,7 +3831,16 @@ AC_ARG_WITH(pgodbc,
 			if test "$ac_cv_header_pgsql_iodbc_iodbc_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isql_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isqlext_h" = "yes" ; then
                 HAVE_PG_HEADERS=yes
             else
-                HAVE_PG_HEADERS=no
+				#TODO - we can often find PG ODBC driver, but no headers. Maybe we should
+				#add this headers to Aubit CVS (they are supposed to be standard
+				#anyway, so we might be even able to use odbc.h sql.h and sqlext.h
+				#if we find them on the system ?)
+
+				#This checks are for debugging only:
+				AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])				
+				AC_CHECK_HEADERS([ odbc.h sql.h sqlext.h ])				
+				
+				HAVE_PG_HEADERS=no
             fi
 
         fi
@@ -3824,22 +3905,36 @@ AC_ARG_WITH(iodbc,
 
 		old_LIBS=$LIBS
 		old_LDFLAGS=$LDFLAGS
-		LDFLAGS="$LDFLAGS -L$withval/lib"
+
+	    IODBC_INCLUDE="-I$withval/include"
+	    IODBC_LFLAGS="-L$withval/lib -L/usr/lib"
+
+		LDFLAGS="$LDFLAGS $IODBC_LFLAGS"
 		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
 		# FIXME: Replace `main' with a function in `-liodbc':
 		AC_CHECK_LIB([iodbc], [main])
+		
+		#On SuSE 9 this is all we have : /usr/lib/libiodbc.so.2
+		#Not sure if this check will work, because of .so.2 part
+		#DOES NOT WORK
+		#AC_CHECK_LIB([iodbc.so.2], [main])
+		
 		LIBS=$old_LIBS
 		LDFLAGS=$old_LDFLAGS
 
 		if test $ac_cv_lib_iodbc_main = yes; then
+
+			#do we need to check for headers ?
+			#This two tests are for debugging only:
+			AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])			
+			AC_CHECK_HEADERS([ odbc.h sql.h sqlext.h ])
+			
 			ODBC_LIB_NAME=iodbc
 			HAVE_IODBC=yes
 
 			#PHP_ADD_LIBRARY_WITH_PATH(iodbc, $withval/lib)
 		    #PHP_ADD_INCLUDE($withval/include, 1)
 		    ODBC_TYPE=iodbc
-		    IODBC_INCLUDE=-I$withval/include
-		    IODBC_LFLAGS=-L$withval/lib
 		    IODBC_LIBS=-liodbc
 		    AC_DEFINE(HAVE_IODBC,1,[ ])
 		    #AC_MSG_RESULT(yes)
@@ -4507,7 +4602,7 @@ if test "$FORCE_RPC" = "1"; then
 		#This happened on ia64-unknown-linux-gnu
 		case $host in
 		*linux*)
-			AC_MSG_WARN(Ooops-you don't have RPC function in GLIBC, but you are on Linux?)
+			AC_MSG_WARN(Ooops-you dont have RPC function in GLIBC, but you are on Linux?)
 			;;
 		esac
 
@@ -5913,8 +6008,11 @@ PLUGIN_NO_LINKABLE=
         #an simple PG plug-in with limited functionality (by Mike)
 		PLUGIN_YES="$PLUGIN_YES SQL_pg"
 
-		if test "$PG_ESQLC" != "no" ; then
+		if test "$PG_ESQLC" != "no" -a "$HAVE_PG_ESQL_HEADERS" = "yes" ; then
 			#ESQL based PG plug-in based on 'simple' template using ecpg in no-Informix mode
+			#does NOT need IFX compatibility in ecpg or PG engine - it is used
+			#only to resolve variables defined as LIKE when compiling 4gl 
+			#code using EC dialect POSTGRES
 			PLUGIN_YES="$PLUGIN_YES SQL_c_ecpg"
         else
 			PLUGIN_NO="$PLUGIN_NO SQL_c_ecpg"
@@ -6430,7 +6528,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.215 2004-02-01 03:16:36 afalout Exp $
+| $Id: configure.in,v 1.216 2004-02-02 09:37:37 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

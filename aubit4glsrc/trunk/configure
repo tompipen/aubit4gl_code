@@ -9320,7 +9320,7 @@ ALL_LINGUAS="en"
 
 #examlpe - USE iT
 #AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
-# $Id: configure,v 1.227 2004-02-01 03:16:17 afalout Exp $
+# $Id: configure,v 1.228 2004-02-02 09:37:34 afalout Exp $
 
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
@@ -10335,8 +10335,10 @@ echo $ECHO_N "checking Bison version... $ECHO_C" >&6
 echo "${ECHO_T}$1.$2" >&6
 
 			if test "$1" = "1" -a "$2" -lt "875"; then
-		        { echo "$as_me:$LINENO: WARNING: You will need Bison 1.875 if you'd want to regenerate the Aubit parsers" >&5
-echo "$as_me: WARNING: You will need Bison 1.875 if you'd want to regenerate the Aubit parsers" >&2;}
+		        { echo "$as_me:$LINENO: WARNING: ** You will need Bison >= 1.875 if you'd" >&5
+echo "$as_me: WARNING: ** You will need Bison >= 1.875 if you'd" >&2;}
+		        { echo "$as_me:$LINENO: WARNING: ** want to regenerate the Aubit parsers" >&5
+echo "$as_me: WARNING: ** want to regenerate the Aubit parsers" >&2;}
 				#Will use preconfigured y.tab.c from /tools/no_yacc
 				#YACC=no
                 BISON=no
@@ -13242,16 +13244,34 @@ if test "${with_sapdb+set}" = set; then
 	if test "$withval" != "no"; then
 		if test "$SAPDBROOT" = ""; then
 			SAPDB_WARNING=1
-			echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
+			if test "$withval" = "yes"; then
+				#try default
+				SAPDBROOT="/opt/sapdb"
+			else
+				SAPDBROOT="$withval"
+			fi
+		fi
+
+		if test "$SAPDBROOT" = ""; then
+			SAPDB_WARNING=1
+			echo "$as_me:$LINENO: result: no-SAPDBROOT not set and --with-sapdb did not specify path" >&5
+echo "${ECHO_T}no-SAPDBROOT not set and --with-sapdb did not specify path" >&6
 		else
 			if ! test -d "$SAPDBROOT"; then
 				echo "$as_me:$LINENO: result: no - directory specified with SAPDBROOT is invalid" >&5
 echo "${ECHO_T}no - directory specified with SAPDBROOT is invalid" >&6
             else
 				if test "$withval" = "yes"; then
-					SAPDB_INCDIR="-I$SAPDBROOT/depend/incl -I$SAPDBROOT/interfaces/precompiler/incl"
-					SAPDB_LIBDIR="-L$SAPDBROOT/depend/lib -L$SAPDBROOT/interfaces/precompiler/lib"
+					#At least default SuSE 9 RPM's use /interfaces/precompiler/sdk/7403/incl
+					#probably anticipating that cpc compielr will take care of
+					#finding includes like cpc.h This may force us to try to compile
+					# a simple hello.cpc instead of looking for headers/libraries
+					#if we see more of this version numbering in the paths in the future.
+					SAPDB_INCDIR="-I$SAPDBROOT/depend/incl \
+						-I$SAPDBROOT/interfaces/precompiler/incl \
+						-I$SAPDBROOT/interfaces/precompiler/sdk/7403/incl"
+					SAPDB_LIBDIR="-L$SAPDBROOT/depend/lib \
+						-L$SAPDBROOT/interfaces/precompiler/lib"
 				else
 					#user specified custom withval
 					WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SAPESQLC"
@@ -13320,6 +13340,9 @@ fi
 				if test "$SAPDB_ESQLC" != "no"; then
 					if test "$SAPDB_ESQLC" != "no" && test "$SAPDBESQLCC_OK" = "OK"; then
 						SAPDB_INCLUDE="$SAPDB_INCDIR"
+
+
+
 						SAPDB_LFLAGS="$SAPDB_LIBDIR"
 
 		                old_CFLAGS="$CFLAGS"
@@ -13901,7 +13924,9 @@ fi
 				if test -z "$IFX_LIBS"; then
 					IFX_LIBS=`esql -libs | sed -e 's/-lm$//'`
 										IFX_LIBS=`echo $IFX_LIBS | sed -e 's/Libraries to be used://g' -e 's/esql: error -55923: No source or object file\.//g'`
-														else
+					#dnl Seems to get rid of newlines.
+					#dnl According to Perl's DBD-Informix, might contain these strings.
+				else
 										IFX_LIBS="$IFX_LIBS"
 				fi
 
@@ -14511,19 +14536,21 @@ fi
 
 done
 
-    #FIXME: if we did not find this header; disable compilation of PG native
-    #connector
 
-	if test "$ac_cv_header_pgsql_libpq_fe_h" = "yes" -o "$ac_cv_header_postgresql_libpq_fe_h" = "yes" -o "$ac_cv_header_libpq_fe_h" = "yes" ; then
-		HAVE_PG_ESQL_HEADERS=yes
+	if test "$ac_cv_header_pgsql_libpq_fe_h" = "yes" \
+		-o "$ac_cv_header_postgresql_libpq_fe_h" = "yes" \
+		-o "$ac_cv_header_libpq_fe_h" = "yes" ; \
+	then
+		#Note: this is NOT same as HAVE_PG_ESQL_HEADERS test in ecpg section
+		HAVE_PG_ESQL_HEADERS_LIB=yes
     else
-        HAVE_PG_ESQL_HEADERS=no
+        HAVE_PG_ESQL_HEADERS_LIB=no
     fi
 
 	echo "$as_me:$LINENO: checking PG ESQL connector support" >&5
 echo $ECHO_N "checking PG ESQL connector support... $ECHO_C" >&6
 	if test "$ac_cv_lib_pq_main" = "yes" ; then
-		if test "$HAVE_PG_ESQL_HEADERS" = "yes"; then
+		if test "$HAVE_PG_ESQL_HEADERS_LIB" = "yes"; then
 			cat >>confdefs.h <<\_ACEOF
 #define HAVE_PGSQL 1
 _ACEOF
@@ -14745,7 +14772,10 @@ echo "${ECHO_T}No-Cannot read version number" >&6
 			PG_ESQLC_IFXCOMPAT=no
         fi
 
-        if test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
+        #if test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
+		#why not test anyway? we at least need to know if we have headers
+		#for compiling things like SQL_c_ecpg that do not need IFX compatibility
+
             #check PostgreSQL db engine version - we need 7.4, and NOT beta
 			# Extract the first word of "postmaster", so it can be a program name with args.
 set dummy postmaster; ac_word=$2
@@ -14997,9 +15027,14 @@ done
 
             #reset:
 			unset ac_cv_header_libpq_fe_h
+			unset ac_cv_header_pgsql_libpq_fe_h
+			unset ac_cv_header_postgresql_libpq_fe_h
+
 			#This hader is NOT part of ecpg, it's part of libpq
 
-for ac_header in  libpq-fe.h
+
+
+for ac_header in  pgsql/libpq-fe.h postgresql/libpq-fe.h libpq-fe.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
 if eval "test \"\${$as_ac_Header+set}\" = set"; then
@@ -15141,13 +15176,23 @@ fi
 done
 
 
+			if test "$ac_cv_header_pgsql_libpq_fe_h" = "yes" \
+				-o "$ac_cv_header_postgresql_libpq_fe_h" = "yes" \
+				-o "$ac_cv_header_libpq_fe_h" = "yes" ; \
+			then
+				#Note: this is NOT same as HAVE_PG_ESQL_HEADERS test in ecpg section
+				HAVE_PG_ESQL_HEADERS_LIB=yes
+			else
+				HAVE_PG_ESQL_HEADERS_LIB=no
+			fi
+
 			if test "$ac_cv_header_libpq_fe_h" = "yes" \
 				&& test "$ac_cv_header_ecpgtype_h" = "yes" \
 				&& test "$ac_cv_header_ecpglib_h" = "yes" \
 				&& test "$ac_cv_header_ecpgerrno_h" = "yes" \
 				&& test "$ac_cv_header_sqlca_h" = "yes" \
 				&& test "$ac_cv_header_sql3types_h" = "yes" \
-				&& test "$ac_cv_header_libpq_fe_h" = "yes";
+				&& test "$HAVE_PG_ESQL_HEADERS_LIB" = "yes";
 			then
 				HAVE_PG_ESQL_HEADERS=yes
             else
@@ -15217,6 +15262,14 @@ _ACEOF
   LIBS="-lecpg $LIBS"
 
 fi
+
+
+				#apparently pgtypes and ecpg_compat are present only
+				#in version 3.x and up. They are specified in bin/ecpg_wrap
+				#lib/extra_lib/esqlc/make_static lib/libesql/Makefile
+				#lib/libsql/esqlc/Makefile
+				#So it looks like that eanything in Aubit that uses ecpg needs
+				#both of them - CHECK THIS
 
 
 echo "$as_me:$LINENO: checking for main in -lpgtypes" >&5
@@ -15357,7 +15410,7 @@ echo "$as_me: WARNING: Disabled ecpg - no headers" >&2;}
 
 			CFLAGS=$old_CFLAGS; LDFLAGS=$old_LDFLAGS; LIBS=$old_LIBS; CPPFLAGS="$old_CPPFLAGS"
 
-		fi
+		#fi  #if "$PG_ESQLC_IFXCOMPAT" = "yes"
     fi
   else
     echo "$as_me:$LINENO: result: disabled" >&5
@@ -16328,6 +16381,7 @@ if test "${with_sapodbc+set}" = set; then
 	if test "$withval" != "no"; then
 		if test "$withval" = "yes"; then
 	    	withval=/opt/sapdb #$SAPDBROOT
+			SAPDBROOT="$withval"
 		else
 			#user specified custom withval
 			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SAPODBC"
@@ -16339,7 +16393,15 @@ if test "${with_sapodbc+set}" = set; then
 		old_LDFLAGS="$LDFLAGS"
         old_CPPFLAGS="$CPPFLAGS"
 		TMP_SAPODBC_INCLUDE="-I$withval/interfaces/odbc/incl -I$withval"
-		TMP_SAPODBC_LFLAGS="-L$withval/interfaces/odbc/lib -L$withval/indep_prog/runtime/7300/lib"
+
+		#libpcr (needed by libsqlod) is at least in SuSE 9 default RPM's
+		#in path that includes version nubering (/7403/)
+
+		TMP_SAPODBC_LFLAGS="-L$withval/interfaces/odbc/lib \
+			-L$withval/indep_prog/runtime/7300/lib \
+			-L$withval/interfaces/precompiler/runtime/7403/lib \
+			-L$withval/indep_prog/runtime/7403/lib/libpcr.so"
+
         LIBS="-lsqlrte -lpcr -lpthread -lm"
 
         #libpcr: WARNING: NOT part of the SAP DB ODBC RPM!!!
@@ -16351,6 +16413,68 @@ if test "${with_sapodbc+set}" = set; then
 
 		CPPFLAGS="$CPPFLAGS $TMP_SAPODBC_INCLUDE"
 		LDFLAGS="$LDFLAGS $TMP_SAPODBC_LFLAGS $TMP_SAPODBC_INCLUDE"
+
+		#Apparently needed by sqlod - but I don;t see it when I do ldd on libsqlod
+		#version 7.403 which is strange? maybe no longer neded?
+
+echo "$as_me:$LINENO: checking for main in -lpcr" >&5
+echo $ECHO_N "checking for main in -lpcr... $ECHO_C" >&6
+if test "${ac_cv_lib_pcr_main+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lpcr  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+main ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_pcr_main=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_pcr_main=no
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_pcr_main" >&5
+echo "${ECHO_T}$ac_cv_lib_pcr_main" >&6
+if test $ac_cv_lib_pcr_main = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBPCR 1
+_ACEOF
+
+  LIBS="-lpcr $LIBS"
+
+fi
+
+
 		# FIXME: Replace `main' with a function in `-lsqlod':
 
 echo "$as_me:$LINENO: checking for main in -lsqlod" >&5
@@ -16411,6 +16535,12 @@ _ACEOF
 fi
 
 		if test $ac_cv_lib_sqlod_main = yes; then
+
+
+		#Note: On SuSE 9 sqltypes failed to compile with:
+		#/opt/sapdb/interfaces/odbc/incl/sqltypes.h:296: error: parse error before "DWORD"
+		#Don't know why - needs investigating
+
 
 
 
@@ -16649,7 +16779,11 @@ if test "${with_pgodbc+set}" = set; then
 		old_LDFLAGS="$LDFLAGS"
         old_CPPFLAGS="$CPPFLAGS"
 		TMP_PGODBC_INCLUDE="-I$withval/include -I$withval/include/pgsql/iodbc"
-		TMP_PGODBC_LFLAGS="-L$withval/lib"
+		TMP_PGODBC_LFLAGS="-L$withval/lib -L/usr/lib/unixODBC"
+
+		#QT libs also have something that looks like PG ODBC driver:
+		#/usr/lib/qt3/plugins/sqldrivers/libqsqlpsql.so
+		#/usr/lib/qt3/plugins/sqldrivers/libtudopsql.so
 
 		CPPFLAGS="$CPPFLAGS $TMP_PGODBC_INCLUDE"
 		LDFLAGS="$LDFLAGS $TMP_PGODBC_LFLAGS $TMP_PGODBC_INCLUDE"
@@ -16945,7 +17079,302 @@ done
 			if test "$ac_cv_header_pgsql_iodbc_iodbc_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isql_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isqlext_h" = "yes" ; then
                 HAVE_PG_HEADERS=yes
             else
-                HAVE_PG_HEADERS=no
+				#TODO - we can often find PG ODBC driver, but no headers. Maybe we should
+				#add this headers to Aubit CVS (they are supposed to be standard
+				#anyway, so we might be even able to use odbc.h sql.h and sqlext.h
+				#if we find them on the system ?)
+
+				#This checks are for debugging only:
+
+
+
+for ac_header in  iodbc.h isql.h isqlext.h
+do
+as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+else
+  # Is the header compilable?
+echo "$as_me:$LINENO: checking $ac_header usability" >&5
+echo $ECHO_N "checking $ac_header usability... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <$ac_header>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_header_compiler=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_header_compiler=no
+fi
+rm -f conftest.$ac_objext conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+echo "${ECHO_T}$ac_header_compiler" >&6
+
+# Is the header present?
+echo "$as_me:$LINENO: checking $ac_header presence" >&5
+echo $ECHO_N "checking $ac_header presence... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <$ac_header>
+_ACEOF
+if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
+  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null; then
+  if test -s conftest.err; then
+    ac_cpp_err=$ac_c_preproc_warn_flag
+  else
+    ac_cpp_err=
+  fi
+else
+  ac_cpp_err=yes
+fi
+if test -z "$ac_cpp_err"; then
+  ac_header_preproc=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+rm -f conftest.err conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+echo "${ECHO_T}$ac_header_preproc" >&6
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc in
+  yes:no )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
+    (
+      cat <<\_ASBOX
+## ------------------------------------ ##
+## Report this to bug-autoconf@gnu.org. ##
+## ------------------------------------ ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+  no:yes )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: present but cannot be compiled" >&5
+echo "$as_me: WARNING: $ac_header: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: $ac_header: check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
+    (
+      cat <<\_ASBOX
+## ------------------------------------ ##
+## Report this to bug-autoconf@gnu.org. ##
+## ------------------------------------ ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  eval "$as_ac_Header=$ac_header_preproc"
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+
+fi
+if test `eval echo '${'$as_ac_Header'}'` = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define `echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+
+
+
+for ac_header in  odbc.h sql.h sqlext.h
+do
+as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+else
+  # Is the header compilable?
+echo "$as_me:$LINENO: checking $ac_header usability" >&5
+echo $ECHO_N "checking $ac_header usability... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <$ac_header>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_header_compiler=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_header_compiler=no
+fi
+rm -f conftest.$ac_objext conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+echo "${ECHO_T}$ac_header_compiler" >&6
+
+# Is the header present?
+echo "$as_me:$LINENO: checking $ac_header presence" >&5
+echo $ECHO_N "checking $ac_header presence... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <$ac_header>
+_ACEOF
+if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
+  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null; then
+  if test -s conftest.err; then
+    ac_cpp_err=$ac_c_preproc_warn_flag
+  else
+    ac_cpp_err=
+  fi
+else
+  ac_cpp_err=yes
+fi
+if test -z "$ac_cpp_err"; then
+  ac_header_preproc=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+rm -f conftest.err conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+echo "${ECHO_T}$ac_header_preproc" >&6
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc in
+  yes:no )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
+    (
+      cat <<\_ASBOX
+## ------------------------------------ ##
+## Report this to bug-autoconf@gnu.org. ##
+## ------------------------------------ ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+  no:yes )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: present but cannot be compiled" >&5
+echo "$as_me: WARNING: $ac_header: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: $ac_header: check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
+    (
+      cat <<\_ASBOX
+## ------------------------------------ ##
+## Report this to bug-autoconf@gnu.org. ##
+## ------------------------------------ ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  eval "$as_ac_Header=$ac_header_preproc"
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+
+fi
+if test `eval echo '${'$as_ac_Header'}'` = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define `echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+
+				HAVE_PG_HEADERS=no
             fi
 
         fi
@@ -17037,7 +17466,11 @@ if test "${with_iodbc+set}" = set; then
 
 		old_LIBS=$LIBS
 		old_LDFLAGS=$LDFLAGS
-		LDFLAGS="$LDFLAGS -L$withval/lib"
+
+	    IODBC_INCLUDE="-I$withval/include"
+	    IODBC_LFLAGS="-L$withval/lib -L/usr/lib"
+
+		LDFLAGS="$LDFLAGS $IODBC_LFLAGS"
 		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
 		# FIXME: Replace `main' with a function in `-liodbc':
 
@@ -17098,18 +17531,313 @@ _ACEOF
 
 fi
 
+
+		#On SuSE 9 this is all we have : /usr/lib/libiodbc.so.2
+		#Not sure if this check will work, because of .so.2 part
+		#DOES NOT WORK
+		#AC_CHECK_LIB([iodbc.so.2], [main])
+
 		LIBS=$old_LIBS
 		LDFLAGS=$old_LDFLAGS
 
 		if test $ac_cv_lib_iodbc_main = yes; then
+
+			#do we need to check for headers ?
+
+
+
+for ac_header in  iodbc.h isql.h isqlext.h
+do
+as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+else
+  # Is the header compilable?
+echo "$as_me:$LINENO: checking $ac_header usability" >&5
+echo $ECHO_N "checking $ac_header usability... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <$ac_header>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_header_compiler=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_header_compiler=no
+fi
+rm -f conftest.$ac_objext conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+echo "${ECHO_T}$ac_header_compiler" >&6
+
+# Is the header present?
+echo "$as_me:$LINENO: checking $ac_header presence" >&5
+echo $ECHO_N "checking $ac_header presence... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <$ac_header>
+_ACEOF
+if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
+  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null; then
+  if test -s conftest.err; then
+    ac_cpp_err=$ac_c_preproc_warn_flag
+  else
+    ac_cpp_err=
+  fi
+else
+  ac_cpp_err=yes
+fi
+if test -z "$ac_cpp_err"; then
+  ac_header_preproc=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+rm -f conftest.err conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+echo "${ECHO_T}$ac_header_preproc" >&6
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc in
+  yes:no )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
+    (
+      cat <<\_ASBOX
+## ------------------------------------ ##
+## Report this to bug-autoconf@gnu.org. ##
+## ------------------------------------ ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+  no:yes )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: present but cannot be compiled" >&5
+echo "$as_me: WARNING: $ac_header: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: $ac_header: check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
+    (
+      cat <<\_ASBOX
+## ------------------------------------ ##
+## Report this to bug-autoconf@gnu.org. ##
+## ------------------------------------ ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  eval "$as_ac_Header=$ac_header_preproc"
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+
+fi
+if test `eval echo '${'$as_ac_Header'}'` = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define `echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+
+
+
+for ac_header in  odbc.h sql.h sqlext.h
+do
+as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+else
+  # Is the header compilable?
+echo "$as_me:$LINENO: checking $ac_header usability" >&5
+echo $ECHO_N "checking $ac_header usability... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <$ac_header>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_header_compiler=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_header_compiler=no
+fi
+rm -f conftest.$ac_objext conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+echo "${ECHO_T}$ac_header_compiler" >&6
+
+# Is the header present?
+echo "$as_me:$LINENO: checking $ac_header presence" >&5
+echo $ECHO_N "checking $ac_header presence... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <$ac_header>
+_ACEOF
+if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
+  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null; then
+  if test -s conftest.err; then
+    ac_cpp_err=$ac_c_preproc_warn_flag
+  else
+    ac_cpp_err=
+  fi
+else
+  ac_cpp_err=yes
+fi
+if test -z "$ac_cpp_err"; then
+  ac_header_preproc=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+rm -f conftest.err conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+echo "${ECHO_T}$ac_header_preproc" >&6
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc in
+  yes:no )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
+    (
+      cat <<\_ASBOX
+## ------------------------------------ ##
+## Report this to bug-autoconf@gnu.org. ##
+## ------------------------------------ ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+  no:yes )
+    { echo "$as_me:$LINENO: WARNING: $ac_header: present but cannot be compiled" >&5
+echo "$as_me: WARNING: $ac_header: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: $ac_header: check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
+    (
+      cat <<\_ASBOX
+## ------------------------------------ ##
+## Report this to bug-autoconf@gnu.org. ##
+## ------------------------------------ ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+echo "$as_me:$LINENO: checking for $ac_header" >&5
+echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
+if eval "test \"\${$as_ac_Header+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  eval "$as_ac_Header=$ac_header_preproc"
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+
+fi
+if test `eval echo '${'$as_ac_Header'}'` = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define `echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+
 			ODBC_LIB_NAME=iodbc
 			HAVE_IODBC=yes
 
 			#PHP_ADD_LIBRARY_WITH_PATH(iodbc, $withval/lib)
 		    #PHP_ADD_INCLUDE($withval/include, 1)
 		    ODBC_TYPE=iodbc
-		    IODBC_INCLUDE=-I$withval/include
-		    IODBC_LFLAGS=-L$withval/lib
 		    IODBC_LIBS=-liodbc
 
 cat >>confdefs.h <<\_ACEOF
@@ -19484,8 +20212,8 @@ done
 		#This happened on ia64-unknown-linux-gnu
 		case $host in
 		*linux*)
-			{ echo "$as_me:$LINENO: WARNING: Ooops-you don't have RPC function in GLIBC" >&5
-echo "$as_me: WARNING: Ooops-you don't have RPC function in GLIBC" >&2;}
+			{ echo "$as_me:$LINENO: WARNING: Ooops-you dont have RPC function in GLIBC" >&5
+echo "$as_me: WARNING: Ooops-you dont have RPC function in GLIBC" >&2;}
 			;;
 		esac
 
@@ -25568,7 +26296,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 25571 "configure"' > conftest.$ac_ext
+  echo '#line 26299 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -26048,7 +26776,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 26051 "configure"
+#line 26779 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -26146,7 +26874,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 26149 "configure"
+#line 26877 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -28138,8 +28866,11 @@ PLUGIN_NO_LINKABLE=
         #an simple PG plug-in with limited functionality (by Mike)
 		PLUGIN_YES="$PLUGIN_YES SQL_pg"
 
-		if test "$PG_ESQLC" != "no" ; then
+		if test "$PG_ESQLC" != "no" -a "$HAVE_PG_ESQL_HEADERS" = "yes" ; then
 			#ESQL based PG plug-in based on 'simple' template using ecpg in no-Informix mode
+			#does NOT need IFX compatibility in ecpg or PG engine - it is used
+			#only to resolve variables defined as LIKE when compiling 4gl
+			#code using EC dialect POSTGRES
 			PLUGIN_YES="$PLUGIN_YES SQL_c_ecpg"
         else
 			PLUGIN_NO="$PLUGIN_NO SQL_c_ecpg"
@@ -30698,7 +31429,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.227 2004-02-01 03:16:17 afalout Exp $
+| $Id: configure,v 1.228 2004-02-02 09:37:34 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

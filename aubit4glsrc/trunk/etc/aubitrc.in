@@ -339,6 +339,16 @@ A4GL_ANSI_WARN=Yes
 #SQLUID=mydbusername
 #SQLPWD=mydbpassword
 
+
+
+#temp fix for a known 'thing' with xterm and curses - it uses an alternate 
+#screen. I'll leave this as defaulting to "N" for now in case it breaks something 
+#else
+A4GL_NO_ALT_SCR=Y
+
+
+
+
 ## ===================================================================
 ##     Run-time settings for Aubit compiled programs
 ## ===================================================================

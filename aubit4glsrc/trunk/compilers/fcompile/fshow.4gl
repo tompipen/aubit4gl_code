@@ -1,8 +1,14 @@
 code
+{
 #ifdef GTK
 #define fgl_start(x,y) setenv("A4GL_UI","gtk",1);fgl_start(x,y)
 #endif
+}
+
 endcode
+
+
+
 MAIN
 DEFINE lv_formname CHAR(256)
 	IF num_args()=0 THEN
