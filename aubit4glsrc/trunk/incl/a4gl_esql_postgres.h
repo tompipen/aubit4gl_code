@@ -271,7 +271,7 @@ extern "C"
 #define COPY_DATA_IN_10(a4gl,pgres,i,size) A4GL_copy_datetime(pgres,a4gl,i,size,'i')
 #define COPY_DATA_IN_11(a4gl,pgres,i,size) A4GL_copy_blob_byte(pgres,a4gl,i,size,'i')
 #define COPY_DATA_IN_12(a4gl,pgres,i,size) A4GL_copy_blob_text(pgres,a4gl,i,size,'i')
-#define COPY_DATA_IN_13(a4gl,pgres,i,size) A4GL_copy_char(pgres,a4gl,i,size,'i')
+#define COPY_DATA_IN_13(a4gl,pgres,i,size,x,y) A4GL_copy_char(pgres,a4gl,i,size,'i',x,y)
 
 /*
 // wrong? 
