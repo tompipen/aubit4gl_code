@@ -555,7 +555,7 @@ if (indicator!=-1) {
 void open_display_file_c() {
 int cnt;
 fetchFirst=1;
-strcpy(outfname,"out.txt");
+sprintf(outfname,"/tmp/out%d.txt",getpid());
 
 if (out) {
 	fclose(out);

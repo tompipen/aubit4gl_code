@@ -21,8 +21,13 @@ end if
 
 if lv_args_cnt then
 	let mv_curr_db=get_next_arg()
+	whenever error continue
 	database mv_curr_db
-	call set_curr_db(mv_curr_db)
+	if sqlca.sqlcode<0 then
+		error "Unable to connect to database ",mv_curr_db
+	else
+		call set_curr_db(mv_curr_db)
+	end if
 end if
 
 
@@ -122,8 +127,12 @@ sprintf(lv_err2,lv_err1,sqlca.sqlerrm);
 A4GL_trim(lv_err2);
 endcode
 
-error lv_err2
-sleep 1
+if get_exec_mode()=0 then
+	error lv_err2
+	sleep 1
+#else
+	#display lv_err2
+end if
 return 1
 end function
 
