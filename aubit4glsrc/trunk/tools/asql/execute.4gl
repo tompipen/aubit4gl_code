@@ -117,7 +117,18 @@ int ec_check_and_report_error() {
 		//return 0;
 	//}
 }
+
+
+void set_display_lines() {
+	if (exec_mode==EXEC_MODE_INTERACTIVE) {
+	if (display_lines==-1) {
+        	display_lines=A4GL_get_curr_height()-8;
+	}
+	}
+}
 endcode
+
+
 
 
 function execute_queries(ofile)
@@ -132,9 +143,7 @@ let msg=""
 options message line last
 code
 first_open=1;
-if (display_lines==-1) {
-	display_lines=A4GL_get_curr_height()-8;
-}
+set_display_lines();
 
 A4GL_debug("%d SQL statements",list_cnt);
 
@@ -334,6 +343,7 @@ int get_exec_mode_c() {
 void open_display_file_c() {
 int cnt;
 fetchFirst=1;
+
 sprintf(outfname,"/tmp/out%d.txt",getpid());
 
 if (out) {
@@ -351,6 +361,8 @@ if (out==0) {
 	}
 	A4GL_assertion(out==0,"Unable to open output file (4)");
 }
+
+A4GL_debug("open_display_file_c succeeded - %s",outfname);
 
 
 

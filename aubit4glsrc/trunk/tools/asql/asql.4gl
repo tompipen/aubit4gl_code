@@ -60,7 +60,7 @@ end main
 ################################################################################
 function set_curr_db(p_dbname) 
 define p_dbname char(255)
-if p_dbname is null or length(p_dbname=0) then
+if p_dbname is null or length(p_dbname)=0 then
 	initialize mv_curr_db to null
 else
 	let mv_curr_db=p_dbname

@@ -19,24 +19,31 @@ define lv_action integer
 
 let lv_cnt=0
 
-#set pause mode on
+set pause mode on
 call clear_screen_portion()
+call set_exec_mode(0)
 code
 {
 FILE *in;
 FILE *out2;
+set_display_lines();
 if (out) {
 	fclose(out);
 	out=0;
 }
 in=fopen(outfname,"r");
+A4GL_debug("READING IN %s...",outfname);
 lv_cnt=0;
 rewind(in);
 while (1) {
 	strcpy(buff,"");
-	if (feof(in)) break;
+	if (feof(in)) {
+		A4GL_debug("END OF FILE");
+		break;
+	}
 	if (lv_cnt>=display_lines) break;
 	fgets(buff,sizeof(buff),in);
+
 	A4GL_debug("PAGINATE : %s",buff);
 	strcpy(lines[lv_cnt],buff);
 	lv_cnt++;
@@ -49,6 +56,7 @@ code
 if (outlines<0) outlines=0;
 if (lv_cnt==0) outlines=0;
 endcode
+set pause mode off
 code
 	if (lv_cnt>=display_lines) {
 		aclfgl_display_menu(0);
