@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.14 2004-03-24 19:03:04 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.15 2004-03-28 15:34:55 whaslbeck Exp $";
 //#include "generic_ui.h"
 
 
@@ -1084,7 +1084,7 @@ A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
 {
   va_list args;
   int a;
-  char buff[2048];
+  unsigned char buff[2048];
   A4GL_chkwin ();
   va_start (args, fmt);
   vsprintf (buff, fmt, args);
