@@ -7,8 +7,8 @@ rem set PATH=..\..\bin;..\..\lib;%PATH%
 echo fcompile form.per
 fcompile form.per
 
-echo amkmessage helpfile
-amkmessage helpfile
+echo amkmessage helpfile.msg helpfile.hlp
+amkmessage helpfile.msg helpfile.hlp
 
 echo 4glc -o hello.exe hello.4gl
 4glc -o hello.exe hello.4gl
