@@ -85,6 +85,7 @@ menu "Hello test"
 	command key(f2)
 		error "F2 pressed"
 end menu
+		sleep 1
 
 #message "Exiting.."
 end main

@@ -1,4 +1,4 @@
-static char *module_id="$Id: widget_gtk.c,v 1.6 2004-02-12 11:04:13 afalout Exp $";
+static char *module_id="$Id: widget_gtk.c,v 1.7 2004-02-13 10:28:20 mikeaubury Exp $";
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
 #include "lowlevel.h"
@@ -1251,7 +1251,7 @@ void
 A4GL_func (GtkWidget * w, char *mode)
 {
 
-  printf ("MJAMJA (func)- widget=%p\n", w);
+  //printf ("MJAMJA (func)- widget=%p\n", w);
   if (gtk_object_get_data (GTK_OBJECT (w), "HANDLER") != 0)
     {
       /* void (*hand)(); */
@@ -1264,8 +1264,8 @@ A4GL_func (GtkWidget * w, char *mode)
     }
 
   A4GL_debug ("in func");
-  printf ("!**** A4GL_func ---%p '%s' (%s:%s)\n", w, mode, widgettype, field);
-  fflush (stdout);
+  //printf ("!**** A4GL_func ---%p '%s' (%s:%s)\n", w, mode, widgettype, field);
+  //fflush (stdout);
   A4GL_debug ("**** A4GL_func ---%p '%s' (%s:%s)\n", w, mode, widgettype, field);
 
   if (strcasecmp (mode, "grab_focus") == 0)
