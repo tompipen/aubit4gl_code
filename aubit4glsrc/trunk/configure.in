@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.222 2004-03-10 09:14:13 afalout Exp $
+dnl # $Id: configure.in,v 1.223 2004-03-14 10:40:52 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -5458,7 +5458,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	#4glc (mod.c)
 	#AC_CHECK_FUNC(setenv,AC_MSG_RESULT(Yes),AC_MSG_ERROR(Cannot compile Aubit without 'setenv'. Stop.))
     #AC_CHECK_FUNC(setenv,,AC_MSG_ERROR(Cannot compile Aubit without 'setenv'. Stop.))
-	AC_CHECK_FUNCS([setenv])
+	AC_CHECK_FUNCS([setenv putenv])
 
 	AC_CHECK_FUNCS([htons nstoh ntohs])
 
@@ -6625,7 +6625,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.222 2004-03-10 09:14:13 afalout Exp $
+| $Id: configure.in,v 1.223 2004-03-14 10:40:52 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

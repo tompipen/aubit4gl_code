@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.101 2004-02-03 04:55:07 afalout Exp $
+# $Id: Makefile.in,v 1.102 2004-03-14 10:40:57 afalout Exp $
 #
 
 ROOT    =..
@@ -123,7 +123,7 @@ FILESCHEMA_DEPS     =$(wildcard ${FILESCHEMA_PATH}/*.c) \
 LIBHELP_STD_DEPS	=$(wildcard ${LIBHELP_STD_PATH}/*.per) $(wildcard ${LIBHELP_STD_PATH}/*.4gl) \
 					$(wildcard ${LIBHELP_STD_PATH}/Makefile) ${ALL_H}
 LIBSQLPG_DEPS		=$(wildcard ${LIBSQLPG_PATH}/*.cpp) $(wildcard ${LIBSQLPG_PATH}/*.h) \
-					$(wildcard ${LIBSQLPG_PATH}/Makefile) ${ALL_H}
+					$(wildcard ${LIBSQLPG_PATH}/*.c) $(wildcard ${LIBSQLPG_PATH}/Makefile) ${ALL_H}
 LIBSQLODBC_DEPS     =$(wildcard ${LIBSQLODBC_PATH}/*.c) $(wildcard ${LIBSQLODBC_PATH}/*.h) \
 					$(wildcard ${LIBSQLODBC_PATH}/Makefile) ${ALL_H}
 LIBMENUXDR_DEPS		=$(wildcard ${LIBMENUXDR_PATH}/*.c) $(wildcard ${LIBMENUXDR_PATH}/*.h) \

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.150 2004-03-09 07:12:34 afalout Exp $
+# $Id: Makefile-common.in,v 1.151 2004-03-14 10:40:57 afalout Exp $
 #
 
 
@@ -34,6 +34,8 @@
 CFLAGS=
 LIBS=
 
+#MUST be here - it will be used by make "shell" commands
+SH					=@SH@
 
 #Workarounf for Informix installers messing up libphtread:
 LD_LIBRARY_PATH				:=/lib:${LD_LIBRARY_PATH}
@@ -291,7 +293,6 @@ MV                  =mv
 CAT                 =cat
 RM 					=rm -f
 RMDIR				=rm -rf
-SH					=@SH@
 #CC	 				=c++
 CC 					=@CC@
 #/bin/sh /usr/local/src/php/php-4.2.3/libtool --silent --mode=compile gcc
@@ -360,13 +361,31 @@ endif
 
 ifeq "${TARGET_OS}" "solaris"
 	#On Solaris: gcc: unrecognized option `-rdynamic'
-	RDYNAMIC		=
+	#RDYNAMIC		=
+	
+	#Requested by Phillip Heller:
+	RDYNAMIC		=-export-dynamic
+
+	#Solaris 8 (??!!)
+	#-export-dynamic worked.  The compiler complaining about the existence of
+	# libaubit4gl.so seems to be related to the use of the -Xlinker directive.
+ 	
 	#Solaris ld:
 	#   In static mode, -dn, relocatable object files given as argu-
 	#     ments are combined to produce an executable object file.  If
 	#     the  -r  option  is  specified, relocatable object files are
 	#     combined to produce one relocatable object file
-	#
+		
+	#On Solaris:
+	#ld -shared nopdf.o -o libEXREPORT_NOPDF.so
+	#ld: fatal: option -h and building a dynamic executable are incompatible
+	#ld: fatal: Flags processing errors
+	
+	#Solaris:
+	#ld -shared nopdf.o -o libEXREPORT_NOPDF.so
+	#ld: fatal: option -h and building a dynamic executable are incompatible
+	#ld: fatal: Flags processing errors
+	
 endif
 ifeq "${TARGET_OS}" "darwin"
 	#On Darwin:
@@ -386,16 +405,6 @@ endif
 #automatically pick up the w32api libraries, even if they are installed.
 #command line.
 #even better, use libtool (once it is working on CygWin)
-
-#On Solaris:
-#ld -shared nopdf.o -o libEXREPORT_NOPDF.so
-#ld: fatal: option -h and building a dynamic executable are incompatible
-#ld: fatal: Flags processing errors
-
-#Solaris:
-#ld -shared nopdf.o -o libEXREPORT_NOPDF.so
-#ld: fatal: option -h and building a dynamic executable are incompatible
-#ld: fatal: Flags processing errors
 
 #LD Command to use for linking libraries:
 ifeq "${TARGET_OS}" "darwin"

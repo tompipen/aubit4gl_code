@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.66 2004-03-12 17:03:20 whaslbeck Exp $
+# $Id: resource.c,v 1.67 2004-03-14 10:40:58 afalout Exp $
 #
 */
 
@@ -128,7 +128,7 @@ struct str_resource builtin_resource[] = {
 #endif
   {"A4GL_RESERVEWORDS", "NO"},
   {"DBDATE", "MDY4/"},
-  {"DBANSIWARN", "N"},
+  {"DBANSIWARN", "N"},  // obsolete? we are using A4GL_ANSI_ERROR and A4GL_ANSI_WARN
   {"DBBLOBBUF", "64"},
   {"DBCENTURY", "C"},
   {"DBDELIMITER", "|"},

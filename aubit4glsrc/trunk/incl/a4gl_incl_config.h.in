@@ -68,6 +68,7 @@
 	#define HAVE_REGCOMP 0
 	#define HAVE_SELECT 0
 	#define HAVE_SETENV 0
+	#define HAVE_PUTENV 0	
 	#define HAVE_SETLOCALE 0
 	#define HAVE_SOCKET 0
 	#define HAVE_STRCASECMP 0

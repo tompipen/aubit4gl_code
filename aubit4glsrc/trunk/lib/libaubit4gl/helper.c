@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.21 2004-02-21 11:14:35 mikeaubury Exp $
+# $Id: helper.c,v 1.22 2004-03-14 10:40:58 afalout Exp $
 #
 */
 
@@ -926,11 +926,8 @@ A4GL_read_form (char *s, char *p)
       A4GL_debug ("Saved old packer=%s formtype=%s", old_packer, old_formtype);
       A4GLFORM_clrlibptr ();
       A4GLPACKER_clrlibptr ();
-
-#ifndef __MINGW32__		//No setenv() on MinGW
-      setenv ("A4GL_FORMTYPE", A4GL_find_pointer_val (s, COMPILED_FORM_FORMTYPE), 1);
-      setenv ("A4GL_PACKER", A4GL_find_pointer_val (s, COMPILED_FORM_PACKER), 1);
-#endif
+      A4GL_setenv ("A4GL_FORMTYPE", A4GL_find_pointer_val (s, COMPILED_FORM_FORMTYPE), 1);
+      A4GL_setenv ("A4GL_PACKER", A4GL_find_pointer_val (s, COMPILED_FORM_PACKER), 1);
     }
   strcpy (buff, s);
   strcat (buff, acl_getenv ("A4GL_FRM_BASE_EXT"));
@@ -939,16 +936,85 @@ A4GL_read_form (char *s, char *p)
   if (A4GL_has_pointer (s, COMPILED_FORM))
     {
       A4GL_debug ("Restoring old packer & formtype");
-
-#ifndef __MINGW32__		//No setenv() on MinGW
-      setenv ("A4GL_PACKER", old_packer, 1);
-      setenv ("A4GL_FORMTYPE", old_formtype, 1);
-#endif
-
+      A4GL_setenv ("A4GL_PACKER", old_packer, 1);
+      A4GL_setenv ("A4GL_FORMTYPE", old_formtype, 1);
       A4GLFORM_clrlibptr ();
       A4GLPACKER_clrlibptr ();
     }
   return ptr;
 }
 
+
+
+/* -------------------------------------------------------------------------- */
+/* fgl_setenv()                                                               */
+/*                                                                            */
+/* This function allows to set or reset the value of environment variables.   */
+/* It expects one parameter : a string like VARIABLE=value with maximum 1024  */
+/* characters.  If the environment variable does not exists, it is created.   */
+/*                                                                            */
+/* Example : call fgl_setenv("DBPATH=/usr/app/appx")                          */
+/*
+	Writen by: (posted on 4Js mailing list)
+	Dragan Kovac
+	Centric Bussiness Solusions
+	Dragan.Kovac@kramers.nl
+	010-217-03-54
+	010-217-04-00
+
+   On some machines (e.g. SCO Unix) putenv(C) makes the argument string
+   part of the environment, so if you change the string ,
+   the environment changes.
+   Therefore we must malloc a new string for each call of fgl_setenv.
+	
+*/
+
+/* -------------------------------------------------------------------------- */
+/*
+int 
+fgl_setenv(int noarg)
+{
+char *putvar ;
+
+  putvar=(char *)malloc(1025);
+
+  popquote(i_s,sizeof(i_s));
+  clip(i_s);
+  if (putenv(i_s))
+    {
+    fprintf(stderr,"\nFGL_SETENV(%s) : Failed.\n",i_s);
+    _efemode();
+    exit(1);
+    }
+  return(0);
+  }
+*/
+  
+int
+A4GL_setenv(char *name, char *value, int overwrite)
+{
+//char* buff;
+char buff[1024];
+int ret;
+
+//#ifndef __MINGW32__		//No setenv() on MinGW
+#if HAVE_SETENV
+	//int setenv(const char *name, const char *value, int overwrite);
+	ret = setenv (name,value,overwrite);
+#else
+	#if HAVE_PUTENV
+		sprintf (buff,"%s=%s",name,value);
+		//int putenv(char *string);
+		//ret = putenv(buff);
+		ret = putenv(strdup(buff));
+	#else
+		A4GL_debug ("No setenv() or putenv() - cannot set environmant variable %s", name);
+		return 1;
+	#endif
+#endif
+
+	return ret;
+}
+  
+  
 /* =================================== EOF ============================= */

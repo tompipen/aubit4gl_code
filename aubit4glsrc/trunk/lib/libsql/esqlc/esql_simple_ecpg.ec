@@ -712,30 +712,30 @@ return ptr;
 }
 
 
-void *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
+void *
+A4GLSQL_get_validation_expr(char *tabname,char *colname) 
+{
 EXEC SQL BEGIN DECLARE SECTION;
 char buff[300];
 char val[65];
 char *ptr=0;
 EXEC SQL END DECLARE SECTION;
 int cnt;
-sprintf(buff,"select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",acl_getenv("A4GL_UPSCOL_VAL"),tabname,colname);
-EXEC SQL PREPARE p_get_val FROM :buff;
-if (sqlca.sqlcode!=0) return 0;
-EXEC SQL DECLARE c_get_val CURSOR FOR p_get_val;
-if (sqlca.sqlcode!=0) return 0;
-EXEC SQL OPEN c_get_val ;
-if (sqlca.sqlcode!=0) return 0;
+	sprintf(buff,"select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",acl_getenv("A4GL_UPSCOL_VAL"),tabname,colname);
+	EXEC SQL PREPARE p_get_val FROM :buff;
+	if (sqlca.sqlcode!=0) return 0;
+	EXEC SQL DECLARE c_get_val CURSOR FOR p_get_val;
+	if (sqlca.sqlcode!=0) return 0;
+	EXEC SQL OPEN c_get_val ;
+	if (sqlca.sqlcode!=0) return 0;
 
-
-while (1) {
-        EXEC SQL FETCH c_get_val INTO  :val;
-        if (sqlca.sqlcode!=0) break;
-        ptr=A4GL_add_validation_elements_to_expr(ptr,val);
-        // Process it...
-}
-return ptr;
-
+	while (1) {
+		EXEC SQL FETCH c_get_val INTO  :val;
+		if (sqlca.sqlcode!=0) break;
+		ptr=A4GL_add_validation_elements_to_expr(ptr,val);
+		// Process it...
+	}
+	return ptr;
 }
 
 /* ================================= EOF ============================== */

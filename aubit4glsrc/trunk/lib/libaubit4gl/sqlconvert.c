@@ -24,13 +24,15 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.10 2004-03-08 02:43:41 afalout Exp $
+# $Id: sqlconvert.c,v 1.11 2004-03-14 10:40:58 afalout Exp $
 #
 */
 
 /**
  * @file
  * SQL syntax conversion functions.
+ *
+ * Written by Philip Sterry <psterry@wananchi.com>
  *
  * The only function that should be called here is:
  *
@@ -39,6 +41,12 @@
  * This will (attempt to) convert the SQL statement from the program
  * into a form that the DBMS can handle.
  *
+ * To test SQL for ANSI SQL 92 99 and 2003 compatibiolity, see:
+ * http://developer.mimer.com/validator
+ * http://www.vembu.com
+ * http://ldbc.sf.net (Java)
+ * http://www.crossdb.com (Java)
+ * Four Js ODI manuals 
  */
 
 /*

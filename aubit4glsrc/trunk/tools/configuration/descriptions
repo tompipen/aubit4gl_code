@@ -558,5 +558,17 @@ DUMP_LAST COMPILE output the results of the last remove comments
 =YES|NO
 	This will produce a file 'last' which contains the file with the comments
 	removed. This is used to check the operation of the RM_COMMENTS_FIRST code
+A4GL_DIALOG_OK LANG Text to display on OK button
+A4GL_DIALOG_CANCEL LANG Text to display on CANCEL button
+A4GL_DIALOG_ABORT  LANG Text to display on ABORT button
+A4GL_DIALOG_RETRY LANG Text to display on RETRY button
+A4GL_DIALOG_IGNORE LANG Text to display on IGNORE button
+A4GL_DIALOG_YES LANG Text to display on YES button
+A4GL_DIALOG_NO LANG Text to display on NO button
+A4GL_DIALOG_ERROR LANG Text to display for ERROR window
+A4GL_USE_PANGO_ML UI Allow markup for GUI widgets labels 
+=YES|NO
+	When set to Yes, any form label can use the pango-markup-language:
+	(e.g.: DISPLAY "<span background='blue'>Blue BG</span>" to my_label)
 
 
