@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.23 2003-01-11 17:05:51 mikeaubury Exp $
+# $Id: API_sql.c,v 1.24 2003-01-14 06:27:06 psterry Exp $
 #
 */
 
@@ -116,15 +116,13 @@ static int 	(*func)					();
 /* long        A4GLSQL_initsqllib		(void); */
 char *      global_A4GLSQL_get_sqlerrm (void);
 
-void aclfgli_set_err_flg(void);
+extern void aclfgli_set_err_flg(void);
 
 /*
 =====================================================================
                     Functions definitions
 =====================================================================
 */
-
-
 
 /**
  * Loads SQL library from .so file.
@@ -818,7 +816,6 @@ global_A4GLSQL_get_sqlerrm (void)
 	return sqlca.sqlerrm;
 }
 
-
 /**
  * Used only in Informix esql/c plug-in
  *
@@ -832,6 +829,33 @@ A4GLSQL_close_connection(void)
   return func();
 }
 
+/**
+ * Returns the type of the currently connected DBMS.
+ *
+ * @return  type identifier (DBMS_SAPDB, DBMS_INFORMIX, etc.)
+ */
+int
+A4GLSQL_dbms_type( void )
+{
+  if (libptr==0) A4GLSQL_initlib();
+  func=find_func(libptr,"A4GLSQL_dbms_type");
+  return func();
+}
+
+/**
+ * Returns name/description of the currently connected DBMS.
+ * The format depends on the driver and is assumed to be
+ * displayable human readable text.
+ *
+ * @return  pointer to name
+ */
+char *
+A4GLSQL_dbms_name( void )
+{
+  if (libptr==0) A4GLSQL_initlib();
+  func=find_func(libptr,"A4GLSQL_dbms_name");
+  return (char *) func();
+}
 
 
 /* =============================== EOF ============================== */
