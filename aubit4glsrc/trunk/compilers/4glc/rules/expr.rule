@@ -874,6 +874,7 @@ numeric_time_unit_small :
 
 	| INT_VALUE COLON NUMBER_VALUE			{sprintf($<str>$,"%s:%s",$<str>1,$<str>3);}	/* MM SS.FFFF*/
 	| NUMBER_VALUE					{sprintf($<str>$,"%s",$<str>1);}		/* SS.FFFF*/
+	| DOT INT_VALUE {sprintf($<str>$,"0.%s",$<str>2);}
 ;
 
 numeric_time_unit_big:
