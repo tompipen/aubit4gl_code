@@ -1,5 +1,8 @@
 A4GL_LEXTYPE=C
 export A4GL_LEXTYPE
+unset A4GL_LEXDIALECT
+
+unset DEBUG
 
 if [ "$1" != "" ] 
 then

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.43 2003-09-09 19:01:21 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.44 2003-09-15 16:42:01 mikeaubury Exp $
 #
 */
 
@@ -2735,8 +2735,9 @@ print_need_lines (void)
  * @return
  */
 void
-print_skip_lines (void)
+print_skip_lines (double d)
 {
+  printc("A4GL_push_int(%d)",(int)d);
   printc ("%saclfgli_skip_lines(&rep);\n", ispdf ());
 }
 
@@ -2757,9 +2758,9 @@ print_skip_top (void)
  * @return
  */
 void
-print_skip_by (char *nval)
+print_skip_by (double nval)
 {
-  printc ("pdf_skip_by(&rep,%s);\n", nval);
+  printc ("pdf_skip_by(&rep,%d);\n", (int)nval);
 }
 
 /**
