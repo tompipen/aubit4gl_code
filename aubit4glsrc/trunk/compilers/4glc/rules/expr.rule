@@ -55,7 +55,7 @@ strcpy($<str>$,$<str>2);}
 ;
 
 
-fgl_expr_ret : fgl_expr | KW_NULL {$<ptr>$=A4GL_new_expr("A4GL_push_null(2,0);");}
+fgl_expr_ret : fgl_expr | KW_NULL {$<ptr>$=A4GL_new_expr("A4GL_push_null(2,0);"); inc_counter();}
 ;
 
 fgl_expr_ret_list 	: fgl_expr_ret

@@ -208,7 +208,7 @@ func_call_args	: func_arg
 
 
 func_arg 	:	fgl_expr_c 
-	| KW_NULL {$<ptr>$=A4GL_new_expr("A4GL_push_null(2,0);");}
+	| KW_NULL {$<ptr>$=A4GL_new_expr("A4GL_push_null(2,0);");inc_counter();}
 ;
 
 remote_host_name : CHAR_VALUE | identifier
