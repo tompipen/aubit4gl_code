@@ -46,7 +46,9 @@ BEGIN {
 
 /^\t/ {
 	print substr($0,2) > "helpfile.msg"
-	print "   let lv_txt[" cnt "]=\"" substr($0,2) "\"" 
+					this_option=substr($0,2)
+					gsub("\"","\\\"",this_option)
+	print "   let lv_txt[" cnt "]=     \"" this_option "\"" 
 	if (length(substr($0,2))>80) {
 		print "#*** TOO LONG"
 	}
