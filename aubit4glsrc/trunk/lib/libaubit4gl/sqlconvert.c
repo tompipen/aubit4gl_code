@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.53 2005-03-18 11:22:55 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.54 2005-03-20 18:24:26 mikeaubury Exp $
 #
 */
 
@@ -125,6 +125,7 @@ char *cvsql_names[]={
   "CVSQL_EMULATE_INSERT_CURSOR",
   "CVSQL_ESQL_UNLOAD_STRING",
   "CVSQL_ESQL_UNLOAD_LIB_FALLBACK",
+  "CVSQL_CLOSE_CURSOR_BEFORE_OPEN",
   
   "CVSQL_DTYPE_ALIAS"
 };
@@ -208,6 +209,7 @@ enum cvsql_type
   CVSQL_EMULATE_INSERT_CURSOR,
   CVSQL_ESQL_UNLOAD_STRING,
   CVSQL_ESQL_UNLOAD_LIB_FALLBACK,
+  CVSQL_CLOSE_CURSOR_BEFORE_OPEN,
   CVSQL_DTYPE_ALIAS
 };
 
@@ -1020,6 +1022,7 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "ESQL_UNLOAD_STRING", len) == 0) return CVSQL_ESQL_UNLOAD_STRING;
   if (strncasecmp (p, "ESQL_UNLOAD_LIB_FALLBACK", len) == 0) return CVSQL_ESQL_UNLOAD_LIB_FALLBACK;
   if (strncasecmp (p, "DTYPE_ALIAS", len) == 0) return CVSQL_DTYPE_ALIAS;
+  if (strncasecmp (p, "CLOSE_CURSOR_BEFORE_OPEN", len) == 0) return CVSQL_CLOSE_CURSOR_BEFORE_OPEN;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
 

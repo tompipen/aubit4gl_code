@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.116 2005-03-20 12:07:48 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.117 2005-03-20 18:24:27 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.116 2005-03-20 12:07:48 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.117 2005-03-20 18:24:27 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -1270,6 +1270,7 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 
 			print_prepare (buff, sstr);
 			A4GL_insert_cursor_prep(a3,buff);
+		printc("}");
 		}
 
 		return; /* We don't really declare a cursor - remember - we're pretending :-) */
