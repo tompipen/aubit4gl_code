@@ -41,6 +41,9 @@ fgl_next:
 | clip_expr 
 | using_expr 
 | math_expr
+| CONCAT_PIPES fgl_expr_c {
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_CONCAT);");
+}
 ;
 
 

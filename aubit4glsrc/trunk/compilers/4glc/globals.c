@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.15 2003-05-15 07:10:19 mikeaubury Exp $
+# $Id: globals.c,v 1.16 2003-06-06 07:30:46 mikeaubury Exp $
 #
 */
 
@@ -236,23 +236,33 @@ write_variable_header (FILE * f, struct variable *v)
   if (v->variable_type == VARIABLE_TYPE_SIMPLE)
     {
       write_variable_simple (f, v);
+	return ;
     }
 
   if (v->variable_type == VARIABLE_TYPE_RECORD)
     {
       write_variable_record (f, v);
+	return;
     }
 
   if (v->variable_type == VARIABLE_TYPE_ASSOC)
     {
       write_variable_assoc (f, v);
+	return;
     }
 
   if (v->variable_type == VARIABLE_TYPE_CONSTANT)
     {
       write_variable_constant (f, v);
+	return;
     }
 
+  if (v->variable_type == VARIABLE_TYPE_FUNCTION_DECLARE)
+    {
+      write_variable_function (f, v);
+	return;
+    }
+  printf("Warning - unknown variable type : %d\n",v->variable_type);
 }
 
 
@@ -387,6 +397,13 @@ write_variable_constant (FILE * f, struct variable *v)
     {
       write_global_float (f, "CONSTANT_VALUE", v->data.v_const.data.data_f);
     }
+
+}
+
+static void
+write_variable_function (FILE * f, struct variable *v)
+{
+
 
 }
 
@@ -715,6 +732,11 @@ read_variable_header (FILE * f, struct variable *v)
       read_variable_constant (f, v);
     }
 
+  if (v->variable_type ==  VARIABLE_TYPE_FUNCTION_DECLARE)
+    {
+      read_variable_function (f, v);
+    }
+
 }
 
 /**
@@ -806,6 +828,13 @@ read_variable_assoc (FILE * f, struct variable *v)
   ptr = v->data.v_assoc.variables[0];
   read_variable_header (f, ptr);
 }
+
+static void
+read_variable_function (FILE * f, struct variable *v) {
+// Does nothing - reserved for future use...
+}
+
+
 
 /**
  *

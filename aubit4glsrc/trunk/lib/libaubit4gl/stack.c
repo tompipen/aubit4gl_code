@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.55 2003-05-22 08:04:51 mikeaubury Exp $
+# $Id: stack.c,v 1.56 2003-06-06 07:30:47 mikeaubury Exp $
 #
 */
 
@@ -530,6 +530,7 @@ A4GL_pop_params (struct BINDING *b, int n)
   int a;
   for (a = n - 1; a >= 0; a--)
     {
+	//printf("pop : %d %p %x %d\n",a,b[a].ptr,b[a].dtype,b[a].size);
       A4GL_pop_param (b[a].ptr, b[a].dtype, b[a].size);
     }
 }

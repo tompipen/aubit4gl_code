@@ -16,7 +16,7 @@ Enhancements
 	SQL / END SQL blocks
 
 	EXECUTE IMMEDIATE
-	The concatenation operator <string-expr> || <string-expr>
+	The concatenation operator <string-expr> || <string-expr>  ** DONE
 	
 	as an fix for hard-coded DATABASE directive in .4gl and .per files,
 	make an option on the compiler (every compiler that might need to access

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_cint_4gldef.h,v 1.1 2003-06-01 15:44:18 mikeaubury Exp $
+# $Id: a4gl_cint_4gldef.h,v 1.2 2003-06-06 07:30:46 mikeaubury Exp $
 */
 
 /**
@@ -336,7 +336,7 @@ be used in applications which link to the library).
   void A4GL_next_option (void *menu, char *nextopt);
   int  A4GL_open_form (char *name);
   int  A4GL_pop_bool (void);
-  void A4GL_pop_params (void *b, int n);
+  void A4GL_pop_params (fgl_binding *b, int n);
   int  A4GL_pop_var (void *p, int d);
   int  A4GL_pop_var2 (void *p, int d, int s);
   int  A4GL_prompt_loop (void *prompt);
@@ -409,6 +409,23 @@ be used in applications which link to the library).
   void aclfgli_pr_message (int attr, int wait);
   void acli_datetime (char *s, int n);
   void acli_interval (char *s, int n);
+  char *a4gl_let_substr (char *ca, int dtype, int a, int b, ...);
+  char *a4gl_substr (char *s, int dtype, int a, int b, ...);
+  void A4GLSTK_popFunction (void);
+  short A4GL_pop_int (void);
+int A4GL_pop_bool (void);
+  short A4GL_pop_int (void);
+long A4GL_pop_long (void);
+long A4GL_pop_date (void);
+float A4GL_pop_float (void);
+double A4GL_pop_double (void);
+int A4GL_pop_var (void *p, int d);
+int A4GL_pop_var2 (void *p, int d, int s);
+int A4GL_pop_char (char *z, int size);
+int A4GL_pop_param (void *p, int d, int size);
+void A4GL_pop_args (int a);
+void A4GLSTK_popFunction (void);
+
 
 #ifdef __cplusplus
 }

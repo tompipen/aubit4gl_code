@@ -37,6 +37,7 @@ function init()
 
 define
   l_char                                        char(1)
+define k integer
 
 call seed()
 
@@ -50,15 +51,17 @@ for i = 1 to 4
         when j = 13 let l_char = "K"
         otherwise let l_char = j using "&" clipped
         end case
-        let g_newdeck[((i-1)*13)+j].val = l_char
+	if ((i-1)*13+j) <=52 then
+        	let g_newdeck[((i-1)*13)+j].val = l_char
 
-        case
-        when i = 1 let l_char = "S"
-        when i = 2 let l_char = "D"
-        when i = 3 let l_char = "C"
-        when i = 4 let l_char = "H"
-        end case
-        let g_newdeck[((i-1)*13)+j].suit = l_char
+        	case
+        	when i = 1 let l_char = "S"
+        	when i = 2 let l_char = "D"
+        	when i = 3 let l_char = "C"
+        	when i = 4 let l_char = "H"
+        	end case
+        	let g_newdeck[((i-1)*13)+j].suit = l_char
+	end if
   end for
 end for
 

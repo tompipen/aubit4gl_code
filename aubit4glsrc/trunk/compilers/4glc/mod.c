@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.128 2003-06-01 14:02:01 mikeaubury Exp $
+# $Id: mod.c,v 1.129 2003-06-06 07:30:46 mikeaubury Exp $
 #
 */
 
@@ -3860,14 +3860,16 @@ char b1[256];
 	}
 
 
-	if (strlen(buff_orig)<=20) {
+	printf("%s %d\n",buff_orig,strlen(buff_orig));
+
+	if (strlen(buff_orig)<=20) { // Extra 2 for the quotes...
 		clob_arr[clob_arr_cnt-1].orig=strdup(buff_orig);
 		clob_arr[clob_arr_cnt-1].new=strdup(buff_new);
 		return buff_orig;
 	}
 
 	strcpy(b1,important);
-	b1[10]=0;
+	b1[9]=0;
 	sprintf(buff_new,"\"a4gl_%03d_%s\"",p++,b1);
 	clob_arr[clob_arr_cnt-1].orig=strdup(buff_orig);
 	clob_arr[clob_arr_cnt-1].new=strdup(buff_new);

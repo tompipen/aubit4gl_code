@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.55 2003-05-22 12:14:46 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.56 2003-06-06 07:30:46 mikeaubury Exp $
 #
 */
 
@@ -463,6 +463,20 @@ extern "C"
 #include <locale.h>		/* setlocale() */
 #include <unistd.h>		/* sleep() close() write() usleep() */
 #include <signal.h>		/* SIGINT */
+
+
+#ifdef USE_ZZIPLIB
+
+//#define FILE ZZIP_FILE
+#define fopen zzip_fopen
+#define fread zzip_fread
+#define fwrite zzip_fwrite
+#define fclose zzip_fclose
+#define frewind zzip_frewind
+#define fseek zzip_fseek
+#define ftell zzip_ftell
+#include "zzip.h"
+#endif
 
 
   /*
@@ -1478,7 +1492,6 @@ extern "C"
 #define DISPLAY_TYPE_DISPLAY 	1
 #define DISPLAY_TYPE_DISPLAY_AT 2
 #define DISPLAY_TYPE_DISPLAY_TO 3
-
 
 #ifdef __cplusplus
 }
