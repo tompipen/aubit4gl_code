@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.76 2004-03-16 18:45:50 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.77 2004-03-17 15:14:32 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.76 2004-03-16 18:45:50 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.77 2004-03-17 15:14:32 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -1577,25 +1577,40 @@ if (type=='R') {
 	iname[18]=0;
 	print_execute(iname,1);
 }
+if (type=='E') {
+	extern int fbindcnt;
+	printc("A4GL_free_duplicate_binding(obind,%d);",fbindcnt);
+	printc("}");
+	
+}
 
 if (type=='F') {
 	extern int obindcnt;
 	extern int fbindcnt;
 	char buff[256];
         char buff2[256];
+
 	memcpy(obind,fbind,sizeof(struct binding_comp)*c+1);
 	obindcnt=fbindcnt;
+	printc("{");
+	printc("struct BINDING *obind;");
+	printc("obind=A4GL_duplicate_binding(_rbind,%d);",fbindcnt);
 	printc ("        while (1) {");
+	printc("{");
 	print_fetch_1();
-	print_fetch_2();
+
+	//print_fetch_2();
+          make_sql_bind (0, "o");
+
+
 	printc("/* MJAMJA - printing obind */");
-	//print_bind_definition('o');
-	//print_bind_set_value('o');
+
+
 	sprintf(buff,"\"%s\",FETCH_RELATIVE,1",cname);
 	sprintf(buff2,"%d,_rbind",c);
 	print_fetch_3(buff,buff2);
 	printc("if (sqlca.sqlcode!=0) break;");
-        printc("A4GL_push_params (_rbind, %d);",c);
+        printc("A4GL_push_params (obind, %d);",c);
 
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.36 2004-02-10 13:50:20 mikeaubury Exp $
+# $Id: report.c,v 1.37 2004-03-17 15:12:42 mikeaubury Exp $
 #
 */
 
@@ -72,8 +72,8 @@ static void report_write_why(struct rep_structure *rep,char where,char *why) ;
 void A4GL_aclfgli_skip_lines (struct rep_structure *rep);
 void A4GL_fputmanyc (struct rep_structure *rep, int c, int cnt);
 void A4GL_set_column (struct rep_structure *rep);
-static void A4GL_free_duplicate_binding (struct BINDING *b, int n);
-static struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
+void A4GL_free_duplicate_binding (struct BINDING *b, int n);
+struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
 void A4GL_skip_top_of_page (struct rep_structure *rep,int n);
 int A4GL_push_report_section(struct rep_structure *rep,char *mod,char *repname,int lineno,char where,char *why,int rb) ;
 
@@ -795,7 +795,7 @@ A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread)
  *
  * @todo Describe function
  */
-static struct BINDING *
+struct BINDING *
 A4GL_duplicate_binding (struct BINDING *b, int n)
 {
   struct BINDING *rbind;
@@ -857,7 +857,7 @@ A4GL_duplicate_binding (struct BINDING *b, int n)
  *
  * @todo Describe function
  */
-static void
+void
 A4GL_free_duplicate_binding (struct BINDING *b, int n)
 {
   int a;
