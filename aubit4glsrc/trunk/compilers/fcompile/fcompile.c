@@ -1,4 +1,4 @@
-   /* $Id: fcompile.c,v 1.1.1.1 2001-08-20 02:35:50 afalout Exp $
+   /* $Id: fcompile.c,v 1.2 2001-09-12 13:19:59 afalout Exp $
    /* */
 
 #include "../../lib/libincl/compiler.h"
@@ -79,7 +79,7 @@ main (argc, argv)
 
      char *argv[];
 
-	 {  
+	 {
 
   char a[128];
 
@@ -87,40 +87,59 @@ main (argc, argv)
 
   char c[128];
 
+  char d[128];
+
   FILE *fopn;
+
+  strcpy (d, "");
 
   if (argc > 1)
     {
-      check_and_show_id("4GL Form Compiler",argv[1]);
+      	check_and_show_id("4GL Form Compiler",argv[1]);
 
-      outputfilename = outputfile;
+      	outputfilename = outputfile;
 
-      if (strcmp(argv[1],"-c")==0)  {
-		as_c=1;
+      	if (strcmp(argv[1],"-c")==0)
+		{
+			as_c=1;
       		strcpy (c, argv[2]);
-	}
-	else  {
-		as_c=0;
+			if (argc > 3)
+		    {
+				strcpy (d, argv[3]);
+            }
+        }
+		else
+		{
+			as_c=0;
       		strcpy (c, argv[1]);
-	}
+			if (argc > 2)
+		    {
+				strcpy (d, argv[2]);
+            }
+		}
 
 
-      bname (c, a, b);
+     	bname (c, a, b);
 
+      	if (b[0] == 0)
+		{
+        strcat (c, ".per");
+		}
 
-      if (b[0] == 0)
-	{
+//		bname (c, a, b);
 
-	  strcat (c, ".per");
+//		strcpy (outputfilename, a);
 
-	}
+	    if (strcmp(d,"")==0)  {
+	      strcpy (outputfilename, a);
+		}
+	    else {
+	      strcpy (outputfilename, d);
+	    }
 
+//		printf ("Output to %s \n", outputfilename);
 
-      bname (c, a, b);
-
-      strcpy (outputfilename, a);
- 
-      yyin = mja_fopen (c, "r");
+      	yyin = mja_fopen (c, "r");
 
     }
 
