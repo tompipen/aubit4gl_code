@@ -67,7 +67,7 @@ for a in $FLAGS; do
 
 		-help-all | --help-all)			
 			FLAGS="-help -help-general -help-utility -help-test -help-debug \
-				-help-db -help-other -help-results -help-examples"
+				-help-db -help-other -help-results -help-short -help-examples "
 			HELP_ALL=1
 			;;
 			
@@ -1025,6 +1025,7 @@ for a in $FLAGS; do
 		echo " -help-results   Output of test results"		
 		echo " -help-other     Misc options" 
 		echo " -help-examples  Examples of flags and options"
+		echo " -help-short     Shortcuts (flags that expand to multiple flags)"
 		echo " -help-all       Show ALL help sections at once"
 		echo " -help           This help summary page"
 		echo ""
@@ -1041,16 +1042,27 @@ for a in $FLAGS; do
 		echo " -stop       Stop on error"
 		echo " -nospace    Ignore changes in the amount of white space when diff-ing"
 		echo " -nodefaults Do not use platform default settings"
-		echo " -defaults   Use platform default settings. Currently:"
-		echo "        $DEFAULT_FLAGS"
-		echo "             NOTE: additional flags on command line take priority."
-		echo " -cert       Use settings expected by certified tests"
 		echo " -compile-only Do not run any tests, just compile them"
 		echo " -ifx-p      Use Informix P-code compiler instead of Aubit compiler"
 		echo " -4js-p      Use FourJs P-code compiler instead of Aubit compiler"
 		echo " -querix     Use Querix compiler instead of Aubit compiler"
-		echo " -aubitrc-test Use aubitrc in aubit4gltest directory to override local installation settings"		
+		echo " -aubitrc-test Use testing specific aubitrc to override local Aubit"
+		echo "             settings settings"
 		echo ""
+		if test "$HELP_ALL" != "1"; then		
+			exit 0
+		fi
+        ;;
+
+	-help-short)
+		echo "SHORTCUTS:"
+		echo " -cert       Use settings expected by certified tests. Currently:"
+		echo "   $CERT_DEFAULT_FLAGS"
+		echo " -defaults   Use platform default settings. Currently:"
+		echo "   $DEFAULT_FLAGS"
+		echo "             NOTE: additional flags on command line take priority."
+		echo " -cert-loop  Short for: '-cert -silent -verbose-results -log-unl'"
+		echo ""		
 		if test "$HELP_ALL" != "1"; then		
 			exit 0
 		fi
@@ -1058,13 +1070,11 @@ for a in $FLAGS; do
 		
 	-help-debug)
 		echo "DEBUGGING:"
-		echo " -memdbg     Use 'valgrind' to perform memory checking ar run-time"
-		echo " -gdb        use gdb to run programs with (not 4clc - just compiled programs)"
-		echo " -show-config Don't run any tests - just show configuration under which they would be executed"
-		echo " -show-make  Dont run 'run' target in makefile - run 'show' target instead"
-		echo " -shdbg      Turn on additional output for debugging of run_tests shell script"		
-		
-		echo ""
+		echo " -debug     Turn on DEBUG=ALL to produce debug.out"
+		echo " -memdbg    Use 'valgrind' to perform memory checking ar run-time"
+		echo " -gdb       Use gdb to run compiled programs with (not compiler)"
+		echo " -shdbg     run_tests shell script debugging"
+		echo ""		
 		if test "$HELP_ALL" != "1"; then		
 			exit 0
 		fi
@@ -1131,8 +1141,8 @@ for a in $FLAGS; do
 	-help-results)
 		echo "RESULTS DISPLAY OPTIONS:"	
 		echo " -noprogress Do not show testing progress counter"		
-		echo " -fail-full  Show full list of tests that failed, db/nondb (need -verbose-results)"
-		echo " -pass-full  Show full list of tests that passed, db/nondb (need -verbose-results)"
+		echo " -fail-full  Show full list of failed tests, db/nodb (need -verbose-results)"
+		echo " -pass-full  Show full list of passed tests, db/nodb (need -verbose-results)"
         echo " -verbose-results Show more information about results"
 		echo " -err-with-log Send stderr to same destination that logs stdout"
 		echo " -short      Show only short summary"
@@ -1190,7 +1200,8 @@ for a in $FLAGS; do
 		echo " -info 45"
 		echo "   Show information about test 45"
 		echo " -cert -short -silent"
-		echo "   Set defaults as for testing ceritfied results, hort summary, don't show programs execution"
+		echo "   Set defaults as for testing ceritfied results, short summary, don't "
+		echo "   show programs execution"
 		echo ""		
         exit 0
         ;;
