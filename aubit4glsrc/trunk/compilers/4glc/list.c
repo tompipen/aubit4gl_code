@@ -83,6 +83,23 @@ void list_set_single (char *id, char *s)
   list_cnt++;
 }
 
+static int list_find_id (char *id)
+{
+  int a;
+  char buff[256];
+
+  for (a = 0; a < list_cnt; a++)
+    {
+      if (strcmp (lists[a].list_id, id) == 0)
+	{
+	  return a;
+	}
+    }
+
+  sprintf (buff, "ID %s is unknown to the template", id);
+  yyerror (buff);
+  exit (0);
+}
 
 static void list_prepend (char *id, char *id2, char *str)
 {
@@ -133,27 +150,6 @@ void list_copy (char *id, char *id2)
     }
   list_cnt++;
 
-}
-
-
-
-
-static int list_find_id (char *id)
-{
-  int a;
-  char buff[256];
-
-  for (a = 0; a < list_cnt; a++)
-    {
-      if (strcmp (lists[a].list_id, id) == 0)
-	{
-	  return a;
-	}
-    }
-
-  sprintf (buff, "ID %s is unknown to the template", id);
-  yyerror (buff);
-  exit (0);
 }
 
 static list_use (char *id1, char *id2, char *str, char *idnew)

@@ -9,12 +9,15 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.30 2001-11-28 23:12:14 saferreira Exp $
+* $Id: mod.c,v 1.31 2001-11-29 22:26:57 saferreira Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.30  2001/11/28 23:12:14  saferreira
+*	Small modifications for warning fix (Prototypes)
+*	
 *	Revision 1.29  2001/11/27 23:50:52  saferreira
 *	Some more warning fixes, documentation added and prototypes declared
 *	
@@ -262,12 +265,6 @@ int max_menu_no = 0;
 
 struct s_report sreports[1024];
 int sreports_cnt = 0;
-
-//int printcomment (char *fmt, ...);
-//int printh (char *fmt, ...);
-//int printc (char *fmt, ...);
-int add_arr_bind (char i, char *nvar);
-static bname (char *str, char *str1, char *str2);
 
 char mmtitle[132][132];
 extern char *outputfilename;
@@ -1491,6 +1488,19 @@ static char *rettype (char *s)
 
   return rs;
 }
+
+static void trim_spaces (char *s)
+{
+  int l;
+  for (l = strlen (s) - 1; l >= 0; l--)
+    {
+      if (s[l] == ' ')
+	s[l] = 0;
+      else
+	break;
+    }
+}
+
 static int push_like2 (char *t2)
 {
   char buff[300];
@@ -1641,6 +1651,23 @@ void add_continue_blockcommand (char *cmd_type)
 
 }
 
+static int iscontinuecmd (char *s)
+{
+
+  if (strcmp (s, "FOR") == 0)
+    return 1;
+  //if (strcmp(s,"FOREACH")==0) return 1;
+  if (strcmp (s, "WHILE") == 0)
+    return 1;
+  if (strcmp (s, "CASE") == 0)
+    return 1;
+  //if (strcmp(s,"CONSTRUCT")==0) return 1;
+  //if (strcmp(s,"DISPLAY")==0) return 1;
+  //if (strcmp(s,"PROMPT")==0) return 1;
+
+  return 0;
+}
+
 void pop_blockcommand (char *cmd_type)
 {
   int z;
@@ -1773,6 +1800,31 @@ static yyerrorf (char *fmt, ...)
   vsprintf (buff, fmt, args);
   yyerror (buff);
 }
+
+static int is_pk (char *s)
+{
+  int a;
+  int cnt;
+  char buff[256];
+  debug ("Checking if %s is a pk in %s", s, pklist);
+  a = linked_split (pklist, 0, 0);
+  for (cnt = 1; cnt <= a; cnt++)
+    {
+      linked_split (pklist, cnt, buff);
+      if (strcasecmp (s, buff) == 0)
+	{
+	  debug ("Yes");
+	  return 1;
+	}
+    }
+  if (strlen (upd_using_notpk) > 0)
+    strcat (upd_using_notpk, ",");
+  strcat (upd_using_notpk, s);
+  upd_using_notpk_cnt++;
+  debug ("No");
+  return 0;
+}
+
 
 int push_bind_rec (char *s, char bindtype)
 {
@@ -2157,6 +2209,10 @@ void exit_loop (char *cmd_type)
     }
 }
 
+void set_curr_block (int a)
+{
+  curr_rep_block = a;
+}
 
 void push_report_block (char *why, char whytype)
 {
@@ -2172,7 +2228,6 @@ static get_curr_rep ()
 {
   return report_cnt;
 }
-
 
 void init_report_structure (struct rep_structure * rep)
 {
@@ -2413,53 +2468,29 @@ int dec_counter (void)
   return --counters[count_counters];
 }
 
-// Fiquei aqui
-reset_counter ()
+void reset_counter (void)
 {
   counters[count_counters] = 0;
 }
 
-set_counter (int a)
+void set_counter (int a)
 {
   counters[count_counters] = a;
 }
 
-inc_counter_by (int a)
+void inc_counter_by (int a)
 {
   counters[count_counters] += a;
   debug ("/* inc_by =  %d counter number %d*/\n",
 	 counters[count_counters], count_counters);
 }
 
-dec_counter_by (int a)
+static void dec_counter_by (int a)
 {
   counters[count_counters] -= a;
 }
 
-
-start_arr_bind (char i, char *var)
-{
-  if (i == 'i')
-    {
-      ibindcnt = 0;
-    }
-  if (i == 'N')
-    {
-      nullbindcnt = 0;
-    }
-  if (i == 'o')
-    {
-      obindcnt = 0;
-    }
-  if (i == 'f' || i == 'F')
-    {
-      fbindcnt = 0;
-    }
-  if (var != 0)
-    add_arr_bind (i, var);
-}
-
-add_arr_bind (char i, char *nvar)
+static add_arr_bind (char i, char *nvar)
 {
   long dtype;
   char var[256];
@@ -2527,7 +2558,31 @@ add_arr_bind (char i, char *nvar)
 }
 
 
-push_construct (char *a, char *b)
+void start_arr_bind (char i, char *var)
+{
+  if (i == 'i')
+    {
+      ibindcnt = 0;
+    }
+  if (i == 'N')
+    {
+      nullbindcnt = 0;
+    }
+  if (i == 'o')
+    {
+      obindcnt = 0;
+    }
+  if (i == 'f' || i == 'F')
+    {
+      fbindcnt = 0;
+    }
+  if (var != 0)
+    add_arr_bind (i, var);
+}
+
+
+
+void push_construct (char *a, char *b)
 {
   strcpy (constr_buff[constr_cnt].tab, a);
   strcpy (constr_buff[constr_cnt].col, b);
@@ -2535,7 +2590,7 @@ push_construct (char *a, char *b)
 }
 
 
-reset_constr ()
+void reset_constr (void)
 {
   constr_cnt = 0;
 }
@@ -2574,8 +2629,41 @@ char *convstrsql (char *s)
 }
 
 
+static void generate_globals_for (char *s)
+{
+  char buff[1024];
+  char dirname[1024];
+  char fname[1024];
+  char *ptr;
+  char nocfile[256];
+  strcpy (buff, s);
 
-read_glob (char *s)
+  if (strchr (buff, '/'))
+    {
+      strcpy (dirname, buff);
+      ptr = strrchr (dirname, '/');
+      *ptr = 0;
+      ptr++;
+      strcpy (fname, ptr);
+    }
+  else
+    {
+      strcpy (dirname, ".");
+      strcpy (fname, buff);
+    }
+
+  strcpy (nocfile, acl_getenv ("NOCFILE"));
+  setenv ("NOCFILE", "Yes", 1);
+  ptr = strchr (fname, '.');
+  *ptr = 0;
+  debug ("Trying to compile globals file %s\n", fname);
+  sprintf (buff, "cd %s; 4glc -G %s", dirname, fname);
+  system (buff);
+  setenv ("NOCFILE", nocfile, 1);
+}
+
+
+void read_glob (char *s)
 {
 
   FILE *f;
@@ -2694,8 +2782,12 @@ char *downshift (char *a)
   return buff;
 }
 
+static int get_curr_block (void)
+{
+  return curr_rep_block;
+}
 
-add_report_agg (char t, char *s1, char *s2, int a)
+int add_report_agg (char t, char *s1, char *s2, int a)
 {
   if (use_group)
     {
@@ -2753,41 +2845,30 @@ add_report_agg (char t, char *s1, char *s2, int a)
 }
 
 
-set_curr_rep_name (char *s)
+void set_curr_rep_name (char *s)
 {
   strcpy (curr_rep_name, "acl_fglr_");
   strcat (curr_rep_name, s);
 }
 
-char *
-get_curr_rep_name ()
+char *get_curr_rep_name (void)
 {
   return curr_rep_name;
 }
 
-set_curr_block (int a)
-{
-  curr_rep_block = a;
-}
-
-get_curr_block ()
-{
-  return curr_rep_block;
-}
-
-set_ingroup ()
+void set_ingroup (void)
 {
   use_group = 1;
 }
 
 
-set_whento (char *p)
+void set_whento (char *p)
 {
   debug ("whento = %p", p);
   strcpy (when_to_tmp, p);
 }
 
-set_whenever (int c, char *p)
+void set_whenever (int c, char *p)
 {
   int code;
   int oldcode;
@@ -2852,13 +2933,13 @@ set_whenever (int c, char *p)
 }
 
 
-pcopy (char *s)
+static void pcopy (char *s)
 {
   if (ferr)
     fprintf (ferr, "%s\n", s);
 }
 
-clr_function_constants ()
+void clr_function_constants (void)
 {
   int a;
   int lcnt = 0;
@@ -2877,7 +2958,7 @@ clr_function_constants ()
 
 }
 
-check_for_constant (char *name, char *buff)
+int check_for_constant (char *name, char *buff)
 {
   int x;
 
@@ -2907,7 +2988,7 @@ check_for_constant (char *name, char *buff)
 }
 
 
-npush_menu ()
+int npush_menu (void)
 {
   max_menu_no++;
   cmenu++;
@@ -2916,7 +2997,7 @@ npush_menu ()
   return max_menu_no;
 }
 
-pop_menu ()
+void pop_menu (void)
 {
   cmenu--;
   if (cmenu >= 0)
@@ -2930,12 +3011,12 @@ pop_menu ()
     }
 }
 
-setrecord (char *s, char *t, char *c)
+int setrecord (char *s, char *t, char *c)
 {
   return 0;
 }
 
-swapstring (char *d, char *s)
+static void swapstring (char *d, char *s)
 {
   int b = 0;
   int a;
@@ -2968,7 +3049,7 @@ swapstring (char *d, char *s)
   debug ("Converted : %s to %s", s, d);
 }
 
-num_arr_elem (char *s)
+int num_arr_elem (char *s)
 {
   int a;
   int c = 0;
@@ -2980,8 +3061,7 @@ num_arr_elem (char *s)
   return c;
 }
 
-char *
-change_arr_elem (char *s)
+char *change_arr_elem (char *s)
 {
   static char buff[1024];
   int a;
@@ -3007,24 +3087,12 @@ change_arr_elem (char *s)
   return buff;
 }
 
-trim_spaces (char *s)
-{
-  int l;
-  for (l = strlen (s) - 1; l >= 0; l--)
-    {
-      if (s[l] == ' ')
-	s[l] = 0;
-      else
-	break;
-    }
-}
-
 yywrap ()
 {
   return 1;
 }
 
-system_var (char *s)
+int system_var (char *s)
 {
   if (aubit_strcasecmp (s, "today") == 0)
     return 1;
@@ -3037,15 +3105,14 @@ system_var (char *s)
   return 0;
 }
 
-inc_report_cnt ()
+void inc_report_cnt (void)
 {
   sreports_cnt = 0;
   report_cnt++;
   report_stack_cnt = 0;
 }
 
-char *
-trans_quote (char *s)
+static char *trans_quote (char *s)
 {
   static char buff[1024];
   int c;
@@ -3065,7 +3132,7 @@ trans_quote (char *s)
 
 
 
-last_var_is_linked (char *tabname, char *pklist)
+int last_var_is_linked (char *tabname, char *pklist)
 {
   strcpy (pklist, "");
   strcpy (tabname, "");
@@ -3084,13 +3151,17 @@ last_var_is_linked (char *tabname, char *pklist)
     return 1;
 }
 
-/* 
-split a string into peices, 
-	if a=0 return the number of pieces
-	if a=1 then return the first into buffetc...
-*/
-int
-linked_split (char *s, int a, char *buff)
+/**
+ * split a string into peices, 
+ *
+ * @param s
+ * @param a
+ * @param buff
+ * @return 
+ *   - if a=0 return the number of pieces
+ *   - if a=1 then return the first into buffetc...
+ */
+int linked_split (char *s, int a, char *buff)
 {
   char *p;
   int z;
@@ -3136,7 +3207,7 @@ linked_split (char *s, int a, char *buff)
   return 0;
 }
 
-set_pklist (char *s)
+void set_pklist (char *s)
 {
   debug ("pklist set to %s\n", s);
   strcpy (pklist, s);
@@ -3144,40 +3215,14 @@ set_pklist (char *s)
   upd_using_notpk_cnt = 0;
 }
 
-is_pk (char *s)
-{
-  int a;
-  int cnt;
-  char buff[256];
-  debug ("Checking if %s is a pk in %s", s, pklist);
-  a = linked_split (pklist, 0, 0);
-  for (cnt = 1; cnt <= a; cnt++)
-    {
-      linked_split (pklist, cnt, buff);
-      if (strcasecmp (s, buff) == 0)
-	{
-	  debug ("Yes");
-	  return 1;
-	}
-    }
-  if (strlen (upd_using_notpk) > 0)
-    strcat (upd_using_notpk, ",");
-  strcat (upd_using_notpk, s);
-  upd_using_notpk_cnt++;
-  debug ("No");
-  return 0;
-}
-
-char *
-get_upd_using_notpk ()
+char *get_upd_using_notpk (void)
 {
   debug ("get_upd_using_notpk");
   debug ("Returning %s", upd_using_notpk);
   return upd_using_notpk;
 }
 
-char *
-get_upd_using_queries ()
+char *get_upd_using_queries (void)
 {
   static char buff[2000];
   int a;
@@ -3195,67 +3240,13 @@ get_upd_using_queries ()
 
 }
 
-char *
-ispdf ()
+char *ispdf (void)
 {
   if (rep_type == REP_TYPE_NORMAL)
     return "";
   else
     return "pdf_";
 }
-
-int
-iscontinuecmd (char *s)
-{
-
-  if (strcmp (s, "FOR") == 0)
-    return 1;
-  //if (strcmp(s,"FOREACH")==0) return 1;
-  if (strcmp (s, "WHILE") == 0)
-    return 1;
-  if (strcmp (s, "CASE") == 0)
-    return 1;
-  //if (strcmp(s,"CONSTRUCT")==0) return 1;
-  //if (strcmp(s,"DISPLAY")==0) return 1;
-  //if (strcmp(s,"PROMPT")==0) return 1;
-
-  return 0;
-}
-
-generate_globals_for (char *s)
-{
-  char buff[1024];
-  char dirname[1024];
-  char fname[1024];
-  char *ptr;
-  char nocfile[256];
-  strcpy (buff, s);
-
-  if (strchr (buff, '/'))
-    {
-      strcpy (dirname, buff);
-      ptr = strrchr (dirname, '/');
-      *ptr = 0;
-      ptr++;
-      strcpy (fname, ptr);
-    }
-  else
-    {
-      strcpy (dirname, ".");
-      strcpy (fname, buff);
-    }
-
-  strcpy (nocfile, acl_getenv ("NOCFILE"));
-  setenv ("NOCFILE", "Yes", 1);
-  ptr = strchr (fname, '.');
-  *ptr = 0;
-  debug ("Trying to compile globals file %s\n", fname);
-  sprintf (buff, "cd %s; 4glc -G %s", dirname, fname);
-  system (buff);
-  setenv ("NOCFILE", nocfile, 1);
-
-}
-
 
 int print_push_rec (char *s, char *b)
 {
@@ -3354,21 +3345,19 @@ int print_push_rec (char *s, char *b)
   return -1;
 }
 
-expand_obind ()
-{
-  expand_bind (&obind, 'o', obindcnt);
-}
-
-// *************************************************************************
-//
-// When you've got a function definition which includes a record
-// You don't know when adding to the binding the structures involved
-// This copies the original binding and reapplies them.
-// This should be called after the structure is known - ie. just before you 
-// want to print it !
-//
-// *************************************************************************
-expand_bind (struct binding * bind, int btype, int cnt)
+/**
+ *
+ * When you've got a function definition which includes a record
+ * You don't know when adding to the binding the structures involved
+ * This copies the original binding and reapplies them.
+ * This should be called after the structure is known - ie. just before you 
+ * want to print it !
+ *
+ * @param bind
+ * @param btype
+ * @param cnt
+ */
+void expand_bind (struct binding * bind, int btype, int cnt)
 {
   struct binding save_bind[NUMBINDINGS];
   char buff[256];
@@ -3394,6 +3383,11 @@ expand_bind (struct binding * bind, int btype, int cnt)
 
 }
 
+void expand_obind (void)
+{
+  expand_bind (obind, 'o', obindcnt);
+}
+
 
 char *get_var_name (int z)
 {
@@ -3402,7 +3396,7 @@ char *get_var_name (int z)
 
 
 
-chk_init_var (char *s)
+void chk_init_var (char *s)
 {
   char buff[1024];
   char *ptr;
@@ -3468,8 +3462,7 @@ debug("DUMP EXPR : ");
 debug("---------------------------------------------------");
 }
 
-void *
-new_expr (char *value)
+void *new_expr (char *value)
 {
   struct expr_str *ptr;
   debug ("new_expr - %s",value);
@@ -3481,8 +3474,7 @@ new_expr (char *value)
   return ptr;
 }
 
-void *
-append_expr (struct expr_str *orig_ptr, char *value)
+void *append_expr (struct expr_str *orig_ptr, char *value)
 {
   struct expr_str *ptr;
   struct expr_str *start;
@@ -3502,8 +3494,7 @@ append_expr (struct expr_str *orig_ptr, char *value)
   return start;
 }
 
-void *
-append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
+void *append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
 {
   struct expr_str *ptr;
   struct expr_str *start;
@@ -3520,7 +3511,7 @@ append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
 }
 
 
-length_expr (struct expr_str * ptr)
+int length_expr (struct expr_str * ptr)
 {
   void *optr;
   int c = 0;
@@ -3534,10 +3525,10 @@ length_expr (struct expr_str * ptr)
 }
 
 
-/* 
-This is something internal for MikeA
-*/
-tr_glob_fname (char *s)
+/** 
+ * This is something internal for MikeA
+ */
+void tr_glob_fname (char *s)
 {
   char buff[256];
   int a;
