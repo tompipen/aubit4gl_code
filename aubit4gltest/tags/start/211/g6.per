@@ -1,0 +1,20 @@
+DATABASE FORMONLY
+
+SCREEN
+{
+
+ Input Date [d           ] 
+ Input Int  [i           ] 
+ Input Dec  [f           ] 
+ Input Dt   [dt        ] 
+}
+
+ATTRIBUTES
+d = FORMONLY.dt type date;
+i = FORMONLY.i type int;
+f = FORMONLY.f type decimal(6,3);
+dt = FORMONLY.xxdt type datetime year to day;
+END
+
+INSTRUCTIONS
+DELIMITERS "[]"

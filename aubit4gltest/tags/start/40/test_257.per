@@ -1,0 +1,23 @@
+database formonly
+
+screen
+{
+
+          Field 1[f001 ] (Enter 'a' will next field to Field 2,
+	                 (Enter 'b' will continue input, causes endless loop)
+	  Field 2[f002 ]
+	  Field 3[f003 ] (Position here and press F12 to accept)
+
+ F1=Quit   F12=Accept
+}
+end
+
+attributes
+	f001 =	formonly.f001, comments = " Enter Field 1";
+	f002 =	formonly.f002, comments = " Enter Field 2";
+	f003 =	formonly.f003, comments = " Enter Field 3";
+end
+
+instructions
+	delimiters " "
+end

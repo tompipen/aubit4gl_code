@@ -1,0 +1,28 @@
+
+DATABASE test1
+
+MAIN
+  DEFINE r RECORD
+	  firstColumn SMALLINT,
+	  secondColumn CHAR(10)
+	END RECORD
+
+	WHENEVER ERROR CONTINUE
+	DROP TABLE xpto
+	DROP TABLE xpta
+	WHENEVER ERROR STOP
+	CREATE TABLE xpto (
+	  firstColumn SMALLINT,
+	  secondColumn CHAR(10)
+	)
+	CREATE TABLE xpta (
+	  firstColumn SMALLINT,
+	  secondColumn CHAR(10)
+	)
+  INSERT INTO xpta VALUES (1,"XPTO")
+	INSERT INTO xpto SELECT * FROM xpta
+	SELECT * INTO r.* FROM xpta
+	DISPLAY r.*
+	DROP TABLE xpta
+	DROP TABLE xpto
+END MAIN

@@ -1,0 +1,8 @@
+$DBG ./dt.4ae > dt.out
+if diff dt.out dt.out.expected
+then
+	exit 0
+else
+	exit 1
+fi
+

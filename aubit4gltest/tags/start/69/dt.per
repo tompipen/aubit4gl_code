@@ -1,0 +1,17 @@
+database formonly
+screen
+{
+
+  [phone_num   ] [d         ]
+
+___F1=Quit
+}
+end
+
+attributes
+phone_num	= formonly.phone_num type char, picture = "###/###/####"
+{, include = (null,"100-100-0000" TO "999-999-9999")}
+;
+d	= formonly.dt type date, picture = "##/##/####"
+;
+end

@@ -1,0 +1,10 @@
+
+MAIN
+  DEFINE i INTEGER
+
+  CASE i
+		WHEN 1
+	  OTHERWISE
+		  Display "Otherwise"
+	END CASE
+END MAIN

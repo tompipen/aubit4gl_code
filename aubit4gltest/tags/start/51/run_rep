@@ -1,0 +1,9 @@
+$DBG ./rep.4ae > rep_a.out
+
+if diff rep_a.out rep_a.out.expected
+then
+exit 0
+else
+exit 1
+fi
+

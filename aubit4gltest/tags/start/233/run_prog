@@ -1,0 +1,9 @@
+./progname.4ae
+if [ $? != 99 ]
+then
+	echo "Failed.."
+	exit 1
+else
+	echo "Success"
+	exit 0
+fi

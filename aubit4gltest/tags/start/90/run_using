@@ -1,0 +1,7 @@
+./using.4ae > using.out
+if diff using.out using.out.expected 
+then
+	:
+else
+	exit 1
+fi

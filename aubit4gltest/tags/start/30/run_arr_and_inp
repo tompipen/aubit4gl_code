@@ -1,0 +1,17 @@
+export A4GL_KEYFILE=keys.arr12.in
+$DBG ./arr12.4ae
+export A4GL_KEYFILE=keys.inp.in
+$DBG ./inp.4ae
+for a in inp.log arr12.log
+do
+cat $a | grep -v Date > $a.tmp
+mv $a.tmp $a
+if diff $a $a.expected
+then
+:
+else
+exit 1
+fi
+done
+exit 0
+

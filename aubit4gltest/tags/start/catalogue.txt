@@ -1,0 +1,4453 @@
+This output was created using command 'run_tests -info'
+Mo Mär 15 19:14:24 CET 2004
+ 
+ ------------------- Info for test 1 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Test needs database
+
+ ------------------- Info for test 3 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test is P-CODE testing enabled
+Test waits for user's input in CONSOLE mode, because automated testing
+was not implemented there, so we must skip them untill this is implemented
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 4 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 6 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test that use graphic characters in forms that may be platform dependent
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 8 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 9 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 10 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 11 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test contains REPORT block
+Test will fail if not running on screen (curses)
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 12 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 13 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 14 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test contains REPORT block
+Test needs database
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 15 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 21 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test contains REPORT block
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 22 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 23 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 24 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 25 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test contains REPORT block
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 26 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 27 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 28 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 29 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 30 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 31 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 32 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test contains REPORT block
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 33 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 34 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 35 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 36 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test needs database
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 37 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 38 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 39 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test contains REPORT block
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 40 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 41 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 42 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 47 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 48 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test contains REPORT block
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 49 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 50 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 51 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test contains REPORT block
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 52 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 53 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 54 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 56 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 57 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 58 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses .per form files
+test is superceeded or obsoleted and should be silently skipped
+
+ ------------------- Info for test 59 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 60 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 61 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 62 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 63 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test needs database
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 64 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test contains REPORT block
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 65 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+test is superceeded or obsoleted and should be silently skipped
+
+ ------------------- Info for test 66 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test takes more then 10 minutes to compile or run
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 67 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 68 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 69 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 70 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 71 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test contains REPORT block
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 72 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test contains REPORT block
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 73 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 74 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Test that use graphic characters in forms that may be platform dependent
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 75 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test contains REPORT block
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 76 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 77 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 78 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 79 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 80 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test needs database
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 82 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test contains REPORT block
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+
+ ------------------- Info for test 84 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 86 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 90 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 91 -----------------------
+
+Old test makefile
+
+Database MUST NOT have transactions enabled for this test.
+
+ ------------------- Info for test 92 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Database MUST NOT have transactions enabled for this test.
+
+ ------------------- Info for test 93 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test contains REPORT block
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Database MUST NOT have transactions enabled for this test.
+
+ ------------------- Info for test 94 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Database MUST NOT have transactions enabled for this test.
+
+ ------------------- Info for test 95 -----------------------
+
+Old makefile
+
+Database MUST NOT have transactions enabled for this test.
+
+ ------------------- Info for test 96 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Database MUST NOT have transactions enabled for this test.
+
+ ------------------- Info for test 97 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Database MUST NOT have transactions enabled for this test.
+
+ ------------------- Info for test 98 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Database MUST NOT have transactions enabled for this test.
+
+ ------------------- Info for test 99 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Database MUST NOT have transactions enabled for this test.
+
+ ------------------- Info for test 100 -----------------------
+
+Old makefile
+
+Database MUST NOT have transactions enabled for this test.
+
+ ------------------- Info for test 101 -----------------------
+
+Tests for NOTFOUND status code after select statement executed on empty temporary table.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 102 -----------------------
+
+Test for star-masked display when displaying numerical value To field too short to show all numbers..
+
+Test uses .per form files
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 103 -----------------------
+
+Geraman characters (umlauts) test. Needs explicit LANG setting (provided by makefile).
+
+Test uses .per form files
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 104 -----------------------
+
+CONSTRUCT BY NAME without FROM clause.
+
+Test will fail if not running on screen (curses)
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 105 -----------------------
+WARNING: test still contains template comment in makefile
+*** Test not described ***
+**** TEST MARKED INVALID IN run_tests ******
+
+ ------------------- Info for test 202 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 203 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 204 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 205 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 206 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 207 -----------------------
+
+This test checks the validity of date/datetime comparisons Its more for the SQL side than 4GL..
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 208 -----------------------
+
+This program checks for the validity of the null test for integers This was known to be wrong for one platform and has been changed - This is to pick it up if it happens again..
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 209 -----------------------
+
+This test checks that the return key moves down in a display array
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 210 -----------------------
+
+this test detects whether the prompt statement properly handles non-ascii keypresses when 'for char' is used
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 211 -----------------------
+
+this tests the field validation processing for a few datatypes
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 212 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 213 -----------------------
+
+This test checks that a format of ####,### works correctly MID:407
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 214 -----------------------
+
+Check last record when a row is inserted into an input array (MID408)
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 215 -----------------------
+
+This checks the field validation processing for Input Array
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 216 -----------------------
+
+Tests an empty report can be compiled - don't need to check the output...
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 217 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 218 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 219 -----------------------
+
+Test for screen flickering when RUN'ing many sequential shell statements
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 220 -----------------------
+
+This is a test of menu flattening
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 221 -----------------------
+
+This tests the scroll command
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 222 -----------------------
+
+This is a check for datatypes within a form (MID 410)
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 223 -----------------------
+
+This test exercises the 'scroll' command
+
+
+ ------------------- Info for test 224 -----------------------
+
+This tests that a date + integer = datetime works properly (MID 425)
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 225 -----------------------
+
+This tests the return type for some date/integer arithmetic
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 226 -----------------------
+
+This tests embedded ^L (FF) in the 4gl code
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 227 -----------------------
+
+This is a test to check some bug fixes reported by Art Kagel
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 228 -----------------------
+
+This is a short test for the associative arrays
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 229 -----------------------
+
+This test checks that the comments are removed after an input/input array
+
+
+ ------------------- Info for test 230 -----------------------
+
+This is a test to ensure that the message line and prompt lines are calculated correctly
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 231 -----------------------
+
+This tests the functionality of PgDn within a display array This can be modified by setting A4GL_SCROLLTOEND=Y (in which case the test will fail)
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 232 -----------------------
+
+This is a test of resetting the current window within an input statement
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 233 -----------------------
+
+This is a test to ensure the current window is set within an Input Array/Display Array
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 234 -----------------------
+
+This is a test of basic Insert Cursor/PUT functionality
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+Database MUST NOT have transactions enabled for this test.
+
+ ------------------- Info for test 235 -----------------------
+
+Tests input by name ... without defaults
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 236 -----------------------
+
+This is a test of the CLEAR SCREEN statement - to ensure it does a current window is screen first
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 237 -----------------------
+
+Tests variable manupulation within report
+
+Test contains REPORT block
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 238 -----------------------
+
+Tests before field, after field, on key and errorlog
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 239 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 240 -----------------------
+
+This is a test of the USING keyword
+
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 241 -----------------------
+
+This is a of some after field datatype validation
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 242 -----------------------
+
+This is a simple test for some UI elements
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 244 -----------------------
+
+This is a test to check for before/after fields in a construct MID 459
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 245 -----------------------
+
+Tests skipping over a display only field in an input array MID 471
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 246 -----------------------
+
+This tests the RETURN and TAB keys when pressed on the last editable field - with a noentry field after it in an input array
+
+Test will fail if not running on screen (curses)
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 247 -----------------------
+
+Check that a prompt line is removed correctly during input
+
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
+it won't work in CONSOLE mode
+
+ ------------------- Info for test 248 -----------------------
+
+DECIMAL assignments test
+
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 249 -----------------------
+
+No idea what this is testing Contains explicit GUI directive in run_prog script
+
+**** TEST MARKED INVALID IN run_tests ******
+Test uses .per form files
+
+ ------------------- Info for test 250 -----------------------
+Please migrate folowing test info from 'run_tests' script to makefile:
+
+test is superceeded or obsoleted and should be silently skipped
+
+ ------------------- Info for test 300 -----------------------
+
+A simple Hello World program
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 301 -----------------------
+
+A program with database, a globals file and globals define
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 302 -----------------------
+
+A database definition, a globals include file, modulars variables and a function.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 303 -----------------------
+
+A database definition and modular defines
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 304 -----------------------
+
+An empty 4gl file
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 305 -----------------------
+
+Empty main and empty function
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 306 -----------------------
+
+Global includes and global defines mixed
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 307 -----------------------
+
+A global include, global define, modular and function
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 308 -----------------------
+
+Modular defines and a simple function
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 309 -----------------------
+
+Just a database statement
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 310 -----------------------
+
+With just a simple function
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 311 -----------------------
+
+Just a globals include
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 312 -----------------------
+
+Just a global define
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 313 -----------------------
+
+Just a simple main function
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 314 -----------------------
+
+Just modular variables
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 315 -----------------------
+
+Just three global includes
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 316 -----------------------
+
+Two simple modular variables with reserved name identifier
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 317 -----------------------
+
+A simple call of a function without parameters or return values
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 318 -----------------------
+
+Call with one parameter
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 319 -----------------------
+
+Call with several parameters
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 320 -----------------------
+
+Call with let and one return value
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 321 -----------------------
+
+Call with several return values
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 322 -----------------------
+
+A call with several parameters and return values
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 323 -----------------------
+
+A simple case with values on WHEN
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 324 -----------------------
+
+An empty case
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 325 -----------------------
+
+A case with expressions on WHEN
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 326 -----------------------
+
+A case with otherwise
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 327 -----------------------
+
+Database inside function
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 328 -----------------------
+
+Simple for loop
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 329 -----------------------
+
+For loop with step
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 330 -----------------------
+
+For loop with exit for
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 331 -----------------------
+
+For loop with exit for
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 332 -----------------------
+
+Foreach loop with into one var
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 333 -----------------------
+
+Foreach loop with into two var(s)
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 334 -----------------------
+
+Foreach loop with CONTINUE FOREACH
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 335 -----------------------
+
+Foreach loop with CONTINUE FOREACH
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 336 -----------------------
+
+Empty foreach loop
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 337 -----------------------
+
+Label and Goto
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 338 -----------------------
+
+Simple while
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 339 -----------------------
+
+Empty WHILE loop No run-time error checking implemented
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 340 -----------------------
+
+WHILE loop with EXIT WHILE No run-time error checking implemented
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 341 -----------------------
+
+WHILE loop with CONTINUE No run-time error checking implemented
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 342 -----------------------
+
+Simple IF No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 343 -----------------------
+
+Empty IF statement. No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 344 -----------------------
+
+IF...ELSE statement No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 345 -----------------------
+
+IF statement with empty ELSE. No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 346 -----------------------
+
+Nested IF. No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 347 -----------------------
+
+Empty MAIN block - NOT SURE WHAT IS REPORT DOING THEN.... No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 348 -----------------------
+
+Report with FORMAT EVERY ROW No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 349 -----------------------
+
+All combinations of START REPORT No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 350 -----------------------
+
+REPORT with one parameter No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 351 -----------------------
+
+REPORT with 2 parameters No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 352 -----------------------
+
+DATABASE statement inside of the FUNCTION block No run-time checking
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 353 -----------------------
+
+DATABASE as global declaration and in function block No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 354 -----------------------
+
+DATABASE in MAIN block. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 355 -----------------------
+
+DEFER INTERRUPT in MAIN block. No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 356 -----------------------
+
+DEFER QUIT in MAIN block. No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 357 -----------------------
+
+WHENEVER ERROR STOP in function, but not called from MAIN - FIXME? No run-time checking.
+
+Test is expected to exit with non-zero code
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 358 -----------------------
+
+WHENEVER ERROR CALL test - not called from main - FIXME No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 359 -----------------------
+
+WHENEVER ERROR GOTO- not called from MAIN - FIXME No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 360 -----------------------
+
+WHENEVER WARNING STOP - not called from MAIN - FIXME No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 361 -----------------------
+
+WHENEVER WARNING CALL - not called from MAIN - FIXME No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 362 -----------------------
+
+WHENEVER WARNING GOTO - not called from MAIN No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 363 -----------------------
+
+WHENEVER ANY ERROR - not called from MAIN - FIXME No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 364 -----------------------
+
+WHENEVER SQLWARNING - not called from MAIN - fixme No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 365 -----------------------
+
+WHENEVER SQLERROR - not called from main. No run-time error checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 366 -----------------------
+
+WHENEVER NOT FOUND - not called from MAIN - FIXME No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 367 -----------------------
+
+WHENEVER ERROR CONTINUE - not called from MAIN - FIXME No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 368 -----------------------
+
+simple INITIALIZE No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 369 -----------------------
+
+INITIALIZE list No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 370 -----------------------
+
+INITIALIZE record No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 371 -----------------------
+
+Simple INITIALIZE ... LIKE ... No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 372 -----------------------
+
+List Initialize like with table
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 373 -----------------------
+
+List Initialize like with dot-star notation
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 374 -----------------------
+
+Simple validate
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 375 -----------------------
+
+Validate list - TEST IS INVALID (see source code)
+
+**** TEST MARKED INVALID IN run_tests ******
+Test needs database
+
+ ------------------- Info for test 376 -----------------------
+
+Validate with 'star' notation
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 377 -----------------------
+
+Validate with table qualifier - TEST IS INVALID (see source code)
+
+**** TEST MARKED INVALID IN run_tests ******
+Test needs database
+
+ ------------------- Info for test 378 -----------------------
+
+Simple locate in memory
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 379 -----------------------
+
+Simple locate in file
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 380 -----------------------
+
+List locate in memory
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 381 -----------------------
+
+List locate in file
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 382 -----------------------
+
+Simple open window dimensioned
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 383 -----------------------
+
+Open window dimensioned with attributes
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 384 -----------------------
+
+Simple open window with form
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 385 -----------------------
+
+Open window with form and attributes
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 386 -----------------------
+
+Open form
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 387 -----------------------
+
+Close window
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 388 -----------------------
+
+Close form
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 389 -----------------------
+
+Simple sleep from constant
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 390 -----------------------
+
+Sleep from variable
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 391 -----------------------
+
+Sleep from integer expression
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 392 -----------------------
+
+Current window is window
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 393 -----------------------
+
+Current window is screen
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 394 -----------------------
+
+Clear window with name
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 395 -----------------------
+
+clear screen
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 396 -----------------------
+
+Clear form!
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 397 -----------------------
+
+Clear single field
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 398 -----------------------
+
+Clear several fields
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 399 -----------------------
+
+Error single string
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 400 -----------------------
+
+Error with variable
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 401 -----------------------
+
+Error with list
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 402 -----------------------
+
+Error with all attributes
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 403 -----------------------
+
+Simple display form
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 404 -----------------------
+
+Display form with attributes
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 405 -----------------------
+
+Message with string
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 406 -----------------------
+
+Message with variable
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 407 -----------------------
+
+Message with comma separated list
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 408 -----------------------
+
+Message with attributes
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 409 -----------------------
+
+Single comment line OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 410 -----------------------
+
+Single Error line OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 411 -----------------------
+
+Form line OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 412 -----------------------
+
+MENU LINE OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 413 -----------------------
+
+MESSAGE LINE OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 414 -----------------------
+
+PROMPT LINE OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 415 -----------------------
+
+ACCEPT KEY OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 416 -----------------------
+
+DELETE KEY OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 417 -----------------------
+
+INSERT KEY OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 418 -----------------------
+
+NEXT KEY OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 419 -----------------------
+
+PREVIOUS KEY OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 420 -----------------------
+
+HELP KEY OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 421 -----------------------
+
+DISPLAY ATTRIBUTE OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 422 -----------------------
+
+INPUT ATTRIBUTE OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 423 -----------------------
+
+INPUT WRAP OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 424 -----------------------
+
+INPUT NOWRAP OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 425 -----------------------
+
+FIELD ORDER UNCONSTRAINED OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 426 -----------------------
+
+FIELD ORDER CONSTRAINED OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 427 -----------------------
+
+SQL INTERRUPT ON OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 428 -----------------------
+
+SQL INTERRUPT OFF OPTION
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 429 -----------------------
+
+Simple propmpt
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 430 -----------------------
+
+Prompt with string
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 431 -----------------------
+
+Prompt with variable
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 440 -----------------------
+
+MENU with title in a varible. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 441 -----------------------
+
+MENU with NEXT OPTION No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 442 -----------------------
+
+MENU with SHOW/HIDE OPTION No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 443 -----------------------
+
+No test files - FIXME Please provide brief description of functionality tested here.
+
+test is superceeded or obsoleted and should be silently skipped
+
+ ------------------- Info for test 444 -----------------------
+
+FIXME - no test files Please provide brief description of functionality tested here.
+
+test is superceeded or obsoleted and should be silently skipped
+
+ ------------------- Info for test 445 -----------------------
+
+MENU with CONTINUE No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 446 -----------------------
+
+FIXME - no test files Please provide brief description of functionality tested here.
+
+test is superceeded or obsoleted and should be silently skipped
+
+ ------------------- Info for test 447 -----------------------
+
+MENU with COMMAND KEY. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 448 -----------------------
+
+MENU with HELP. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 449 -----------------------
+
+MENU without COMMAND descriptions No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 450 -----------------------
+
+MENU with empty COMMAND. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 451 -----------------------
+
+MENU with BEFORE MENU. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 452 -----------------------
+
+Complex MENU statement. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 453 -----------------------
+
+MENU with HIDE/SHOW ALL. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 454 -----------------------
+
+Simple DISPLAY without AT. No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 455 -----------------------
+
+DISPLAY with char variable No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 456 -----------------------
+
+DISPLAY without AT - all variable types. No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 457 -----------------------
+
+DISPLAY with COLUMN No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 458 -----------------------
+
+Simple DISPLAY AT with PROMPT No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 459 -----------------------
+
+DIAPLAY AT with variable and PROMPT. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 460 -----------------------
+
+DISPLAY AT coordinate based on expresion. No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 461 -----------------------
+
+DISPLAY AT with all ATTRIBUTEs. No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 462 -----------------------
+
+DISPLAY with CLIPPED. No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 463 -----------------------
+
+DISPLAY with USING. No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 464 -----------------------
+
+DISPLAY with ASCII No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 465 -----------------------
+
+Simple DISPLAY to a form field. No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 466 -----------------------
+
+DISPLAY with BY NAME and one variable. No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 467 -----------------------
+
+DISPLAY BY NAME with list of variables. No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 468 -----------------------
+
+INPUT BY NAME with WITHOUT DEFAULTS. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 469 -----------------------
+
+DISPLAY TO on form with list. No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 470 -----------------------
+
+DISPLAY TO form fields with all ATTRIBUTES. No run-tiem checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 471 -----------------------
+
+DISPLAY BY NAME with all ATTRIBUTES. No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 472 -----------------------
+
+Simple DISPLAY ARRAY with OPTIONS and set_count(). No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 473 -----------------------
+
+DISPLAY ARRAY with all ATTRIBUTES. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 474 -----------------------
+
+DISPLAY ARRAY with ON KEY. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses curses and/or screeen dump and may fail when TERM!=xterm
+Anything that uses a screen dump may have specific attributes set which may
+fail if TERM!=xterm
+This core dumps on MinGW and messes up the terminal completely.
+On Cygwin they don't core dump, but this tests fail
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 475 -----------------------
+
+Complex DISPLAY ARRAY No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 476 -----------------------
+
+DEFINE LIKE - all combinations No run-tme checking.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 477 -----------------------
+
+DEFINE LIKE with dot-star notation No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 478 -----------------------
+
+DEFINE RECORD LIKE with qualifier - all combinations. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 479 -----------------------
+
+DEFINE - all combinations of simple data types. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 480 -----------------------
+
+DEFINE ARRAY - simple types. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 481 -----------------------
+
+DEFINE ARRAY ... OF RECORD No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 482 -----------------------
+
+DEFINE ARRAY with TEXT/BYTE LOB's No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 483 -----------------------
+
+DEFINE RECORD with one variable. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 484 -----------------------
+
+FIXME - missing test files Please provide brief description of functionality tested here.
+
+test is superceeded or obsoleted and should be silently skipped
+
+ ------------------- Info for test 485 -----------------------
+
+DEFINE RECORD of records (nested). No run-time checking.
+
+Test is compile only, no execution will be attempted
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 486 -----------------------
+
+SCROLL down one field in DISPLAY ARRAY. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 487 -----------------------
+
+SCROLL DOWN in DISPLAY ARRAY with fiels list. No run-time checking.
+
+Test is compile only, no execution will be attempted
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Test uses .per form files
+
+ ------------------- Info for test 488 -----------------------
+
+SCROLL UP in DISPLAY ARRAY with field list Please provide brief description of functionality tested here.
+
+Test is compile only, no execution will be attempted
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Test uses .per form files
+
+ ------------------- Info for test 489 -----------------------
+
+SCROLL in DISPLAY ARRAY several lines UP/DOWN No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 490 -----------------------
+
+SCROLL in DISPLAY ARRAY by variable number of lines UP/DOWN. No run-time checking.
+
+Test is compile only, no execution will be attempted
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Test uses .per form files
+
+ ------------------- Info for test 491 -----------------------
+
+FIXME-missing test files. Please provide brief description of functionality tested here.
+
+test is superceeded or obsoleted and should be silently skipped
+
+ ------------------- Info for test 492 -----------------------
+
+Simple RUN. No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 493 -----------------------
+
+RUN with variable. No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 494 -----------------------
+
+RUN with return variable. No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 495 -----------------------
+
+RUN WITHOUT WAITING - not called from MAIN. No run-time checking.
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 496 -----------------------
+
+INPUT ARRAY with AFTER INPUT and BEFORE ROW. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 497 -----------------------
+
+FIXME - no test files Please provide brief description of functionality tested here.
+
+test is superceeded or obsoleted and should be silently skipped
+
+ ------------------- Info for test 498 -----------------------
+
+FIXME - no test files. Please provide brief description of functionality tested here.
+
+test is superceeded or obsoleted and should be silently skipped
+
+ ------------------- Info for test 499 -----------------------
+
+FIXME - no test files. Please provide brief description of functionality tested here.
+
+test is superceeded or obsoleted and should be silently skipped
+
+ ------------------- Info for test 500 -----------------------
+
+INPUT BY NAME - one field. No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 501 -----------------------
+
+INPUT BY NAME with list. No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 502 -----------------------
+
+INPUT WITHOUT DEFAULTS ... FROM. No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 503 -----------------------
+
+INPUT BY NAME WITHOUT DEFAULTS. No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 504 -----------------------
+
+INPUT BY NAME WTIHOUT DEFAULTS and all ATTRIBUTES. No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 505 -----------------------
+
+INPUT BY NAME with HELP number. No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 506 -----------------------
+
+INPUT BY NAME with AFTER INPUT. No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 507 -----------------------
+
+INPUT BY NAME ... WITHOUT DEFAULTS No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 508 -----------------------
+
+INPUT BY NAME with BEFORE FIELD. No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 509 -----------------------
+
+INPUT BY NAME with BEFORE FIELD. No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 510 -----------------------
+
+INPUT BY NAME with BEFORE INPUT. No run-time checking.
+
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 511 -----------------------
+
+FIXME - nothing in MAIN block Please provide brief description of functionality tested here.
+
+test is superceeded or obsoleted and should be silently skipped
+
+ ------------------- Info for test 512 -----------------------
+
+Complex INPUT block. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 513 -----------------------
+
+Simple CONSTRUCT. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 514 -----------------------
+
+CONDSTRUCT on one field. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 515 -----------------------
+
+CONSTRUCT on field list. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 516 -----------------------
+
+CONSTRUCT BY NAME with all attributes. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 517 -----------------------
+
+CONSTRUCT BY NAME with HELP No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 518 -----------------------
+
+CONSTRUCT with dot-star notation No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 519 -----------------------
+
+CONSTRUCT with BEFORE CONSTRUCT. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 520 -----------------------
+
+CONSTRUCT with AFTER CONSTRUCT. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 521 -----------------------
+
+CONSTRUCT with BEFORE FIELD. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 522 -----------------------
+
+CONSTRUCT with BEFORE FIELD list No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 523 -----------------------
+
+CONSTRUCT with AFTER FIELD. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 524 -----------------------
+
+CONSTRUCT with AFTER FIELD list. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 525 -----------------------
+
+CONSTRUCT with ON KEY. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 526 -----------------------
+
+CONSTRUCT with flow control (NEXT FIELD,CONTINUE...). No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test uses .per form files
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 527 -----------------------
+
+FIXME-missing test files. Please provide brief description of functionality tested here.
+
+test is superceeded or obsoleted and should be silently skipped
+
+ ------------------- Info for test 528 -----------------------
+
+Simple CREATE and DROP table. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 529 -----------------------
+
+FIXME - duplicate of test 528 Please provide brief description of functionality tested here.
+
+test is superceeded or obsoleted and should be silently skipped
+
+ ------------------- Info for test 530 -----------------------
+
+CREATE TABLE with database.owner specified. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 531 -----------------------
+
+CREATE TABLE with all (Informix) data types. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 532 -----------------------
+
+CREATE TABLE with NOT NULL. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 533 -----------------------
+
+CREATE TEMP TABLE. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 534 -----------------------
+
+CREATE TABLE ... WITH NO LOG No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 535 -----------------------
+
+CREATE TABLE with storage information. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 536 -----------------------
+
+CREATE TABLE with PRIMARY KEY clause. No run-time checking. NOTE: fails with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 537 -----------------------
+
+CREATE TABLE with 2 columns and PRIMARY KEY. No run-time checking. NOTE: fails with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 538 -----------------------
+
+CREATE TABLE with UNIQUE clause. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 539 -----------------------
+
+CREATE TABLE with 2 columns and UNIQUE/DISTINCT clause. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 540 -----------------------
+
+CREATE TABLE with FOREIGN key. No run-time checking. NOTE: fails with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 541 -----------------------
+
+CREATE TABLE with two columns and FOREIGN KEY with REFERENCES clause. No run-time checking. NOTE: fails with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 542 -----------------------
+
+CREATE TABLE with CHECK clause. No run-time checking. NOTE: fails with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 543 -----------------------
+
+CREATE TABLE with DEFAULT clause. No run-time checking. NOTE: fails with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 544 -----------------------
+
+CREATE TABLE with DISTINCT/UNIQUE clause. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 545 -----------------------
+
+CREATE/DROP DATABASE. Test is invalid - Aubit refuses to compile DROP DATABASE statement.
+
+Test needs database
+test is superceeded or obsoleted and should be silently skipped
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 546 -----------------------
+
+DROP DATABASE - test is invalid - see test #545
+
+Test needs database
+test is superceeded or obsoleted and should be silently skipped
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 547 -----------------------
+
+CREATE/DROP DATABASE with Informix On-Line specific sintax. Test is invalid - see test #545.
+
+Test needs database
+test is superceeded or obsoleted and should be silently skipped
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 548 -----------------------
+
+CREATE/DROP DATABASE with Informix SE specific syntax. Test is invalid - see test #545.
+
+Test needs database
+test is superceeded or obsoleted and should be silently skipped
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 549 -----------------------
+
+DATABSE statement with complex names. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 550 -----------------------
+
+Open DATABASE with EXCLUSIVE clause. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 551 -----------------------
+
+Simple ALTER TABLE. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 552 -----------------------
+
+ALTER TABLE with ADD clause. No run-time ckecking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 553 -----------------------
+
+ALTER TABLE with DROP clause. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 554 -----------------------
+
+ALTER TABLE with ADD CONSTRAINT clause. No run-time checking. NOTE: fails to compile with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 555 -----------------------
+
+ALTER TABLE with DROP CONSTRAINT clause. No run-time ckecking. NOTE: fails to compile with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 556 -----------------------
+
+ALTER TABLE with NEXT SIZE clause. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 557 -----------------------
+
+ALTER TABLE with LOCK MODE clause. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 558 -----------------------
+
+ALTER TABLE ... ADD with all (Informix) types. No run-time checking. NOTE: fails to compile with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 559 -----------------------
+
+ALTER TABLE ADD with BEFORE clause. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 560 -----------------------
+
+ALTER TABLE with MODIFY (all Informix types). No run-time checking. NOTE: fails to compile with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 561 -----------------------
+
+ALTER TABLE ... MODIFY with column CONSTRAINT clause. No run-time checking. NOTE: fails to compile with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 562 -----------------------
+
+ALTER TABLE ... ADD with column CONSTRAINT clause. No run-time checking. NOTE: fails to compile with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 563 -----------------------
+
+Simple CREATE INDEX. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 564 -----------------------
+
+CREATE INDEX on several columns. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 565 -----------------------
+
+CREATE UNIQUE INDEX. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 566 -----------------------
+
+CREATE CLUSTER INDEX. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 567 -----------------------
+
+CREATE INDEX with ASC clause. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 568 -----------------------
+
+CREATE INDEX with DESC clause. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 569 -----------------------
+
+Complex CREATE INDEX. No run-time checking. NOTE: fails to compile with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 570 -----------------------
+
+CREATE SYNONYM statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 571 -----------------------
+
+CREATE PUBLIC SYNONYM database statement. No run-time checking. NOTE: fails to compile with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 572 -----------------------
+
+CREATE PRIVATE SYNONYM database statement. No run-time checking. NOTE: fails to compile with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 573 -----------------------
+
+CREATE SYNONYM with full name.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 574 -----------------------
+
+DROP INDEX database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 575 -----------------------
+
+DROP INDEX with full name.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 576 -----------------------
+
+DROP SYNONYM database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 577 -----------------------
+
+DROP SYNONYM with full name.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 578 -----------------------
+
+DROP TABLE database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 579 -----------------------
+
+DROP TABLE with full names.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 580 -----------------------
+
+DROP INDEX database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 581 -----------------------
+
+DROP INDEX with full name.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 582 -----------------------
+
+PREPARE database statement from variable. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 583 -----------------------
+
+PREPARE database statement from string. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 584 -----------------------
+
+EXECUTE prepared stabase statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 585 -----------------------
+
+EXECUTE with USING clause. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 586 -----------------------
+
+EXECUTE INTO with USING clause. No run-time checking. NOTE: compiles, but Aubit library code missing.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 587 -----------------------
+
+FREE prepared and executed statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 588 -----------------------
+
+FREE a cursor. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 589 -----------------------
+
+FREE defined LOB (TEXT/BYTE). No run-time checking..
+
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 590 -----------------------
+
+SET EXPLAIN ON database statement. No run-time checking. NOTE: fails at run-time with -ifx-p.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+
+ ------------------- Info for test 591 -----------------------
+
+SET EXPLAIN OFF database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 592 -----------------------
+
+CREATE VIEW database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 593 -----------------------
+
+CREATE VIEW with full names.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 594 -----------------------
+
+Simple UPDATE STATISTICS. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 595 -----------------------
+
+LOCK TABLE with SHARED MODE. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+Database MUST have transactions enabled for this test.
+
+ ------------------- Info for test 596 -----------------------
+
+LOCK TABLE with EXCLUSIVE MODE. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+Database MUST have transactions enabled for this test.
+
+ ------------------- Info for test 597 -----------------------
+
+LOCK TABLE with full names.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 598 -----------------------
+
+UNLOCK TABLE database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+Database MUST have transactions enabled for this test.
+
+ ------------------- Info for test 599 -----------------------
+
+UNLOCK TABLE with full names.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 600 -----------------------
+
+DROP TRIGGER database statement. Does not compile even with -ifx-p so probably invalid.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 602 -----------------------
+
+DROP VIEW database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 603 -----------------------
+
+DROP VIEW with full names.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 605 -----------------------
+
+RENAME TABLE database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 606 -----------------------
+
+RENAME COLUMN database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 607 -----------------------
+
+RENAME COLUMN with full names.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 609 -----------------------
+
+CREATE VIEW ... AS SELECT database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 610 -----------------------
+
+CREATE VIEW ... AS SELECT with named columns. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 611 -----------------------
+
+CREATE VIEW with CHECK OPTION. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 612 -----------------------
+
+Complex CREATE VIEW database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 613 -----------------------
+
+Simple INSERT. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 614 -----------------------
+
+INSERT without naming columns. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 615 -----------------------
+
+INSERT INTO ... SELECT FROM database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 616 -----------------------
+
+INSERT from procedure (Informix specific) No run-time checking. SEE NOTE IN THE CODE.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 618 -----------------------
+
+Simple DELETE database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 619 -----------------------
+
+DELETE with WHERE clause. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 620 -----------------------
+
+DELETE with WHERE CURRENT OF clause. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+Database MUST have transactions enabled for this test.
+
+ ------------------- Info for test 621 -----------------------
+
+DELETE with sub-query No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 622 -----------------------
+
+DELETE with EXISTS sub-query. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 623 -----------------------
+
+DELETE ... WHERE ALL/SOME/ANY. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 624 -----------------------
+
+DELETE with IS NOT NULL. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 625 -----------------------
+
+Complex DELETE database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 626 -----------------------
+
+LOAD FROM ... INSERT INTO statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 627 -----------------------
+
+LOAD FROM ... INSERT INTO with file name in variable. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 628 -----------------------
+
+LOAD FROM with DELIMITER clause. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 629 -----------------------
+
+LOAD FROM with INSERT statement in variable. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 630 -----------------------
+
+LOAD FROM ... INSERT INTO with one column. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 631 -----------------------
+
+LOAD FROM ... INSERT INTO with several columns. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 632 -----------------------
+
+Simple UNLOAD TO statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 633 -----------------------
+
+UNLOAD TO with file name in variable. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 634 -----------------------
+
+UNLOAD with specified DELIMITER. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 635 -----------------------
+
+UNLOAD TO with query string in variable. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 636 -----------------------
+
+Complex UNLOAD statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 637 -----------------------
+
+Simple UPDATE database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 638 -----------------------
+
+SET LOCK MODE TO WAIT directive. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 639 -----------------------
+
+SET LOCK MODE TO WAIT with seconds specified. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 640 -----------------------
+
+SET LOCK MODE TO NOT WAIT directive. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 642 -----------------------
+
+SET ISOLATION TO DIRTY READ directive. No run-time checking. NOTE: requires transaction support.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+Database MUST have transactions enabled for this test.
+
+ ------------------- Info for test 643 -----------------------
+
+SET ISOLATION TO CURSOR STABILITY directive. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+Database MUST have transactions enabled for this test.
+
+ ------------------- Info for test 644 -----------------------
+
+SET ISOLATION TO REPEATABLE READ directive. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+Database MUST have transactions enabled for this test.
+
+ ------------------- Info for test 645 -----------------------
+
+GRANT TO ... PUBLIC database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 646 -----------------------
+
+GRANT ... TO user database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 647 -----------------------
+
+GRANT table privileges with TO PUBLIC clause. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 648 -----------------------
+
+GRANT on table to user list. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 649 -----------------------
+
+GRANT INSERT on table to user. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 650 -----------------------
+
+GRANT DELETE on table to user list. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 651 -----------------------
+
+GRANT UPDATE on table to user list. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 652 -----------------------
+
+GRANT INDEX on table to user list. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 653 -----------------------
+
+GRANT ALTER on table to user list. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 654 -----------------------
+
+GRANT on table will full name.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 655 -----------------------
+
+Complex GRANT on table. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 656 -----------------------
+
+REVOKE ... FROM PUBLIC database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 657 -----------------------
+
+REVOKE ... from user list. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 658 -----------------------
+
+REVOKE on table from PUBLIC database statement. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 659 -----------------------
+
+REVOKE on table from user list. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 660 -----------------------
+
+REVOKE INSERT on table. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 661 -----------------------
+
+REVOKE DELETE on table. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 662 -----------------------
+
+REVOKE SELECT on table. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 663 -----------------------
+
+REVOKE UPDATE on table. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 664 -----------------------
+
+REVOKE INDEX on table. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 665 -----------------------
+
+REVOKE ALTER on table. No run-time checking.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 666 -----------------------
+
+GRANT SELECT in all variants. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 667 -----------------------
+
+GRANT on table with GRANT OPTION. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 668 -----------------------
+
+GRANT on table AS GRANTOR No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 669 -----------------------
+
+REVOKE on table with full names.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 670 -----------------------
+
+INSERT with all (Informix) data types. No run-time checking. Need minimum version 7.31 of Ifx to work with -ifx-p
+
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Test needs database
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 671 -----------------------
+
+UPDATE with all (Informix) database data types. No run-time checking. TEST IS INVALID (?)
+
+Test needs database
+test is superceeded or obsoleted and should be silently skipped
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 672 -----------------------
+
+DELETE with all (Informix) data types. No run-time checking. TEST IS INVALID (?)
+
+Test needs database
+test is superceeded or obsoleted and should be silently skipped
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 673 -----------------------
+
+SELECT with (Informix) data types. No run-time checking. TEST IS INVALID (?)
+
+Test needs database
+test is superceeded or obsoleted and should be silently skipped
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 674 -----------------------
+
+MIssing test files
+
+test is superceeded or obsoleted and should be silently skipped
+
+ ------------------- Info for test 675 -----------------------
+
+UPDATE SYNONYM No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 676 -----------------------
+
+UPDATE on VIEW No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 677 -----------------------
+
+UPDATE on multi-table VIEW. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 678 -----------------------
+
+UPDATE with Informic-style SET syntax (column=value) No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 679 -----------------------
+
+UPDATE with Informix-style SET syntax (multiple columns/values) No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 680 -----------------------
+
+UPDATE with dot-star notation (Informix syntax) No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 681 -----------------------
+
+UPDATE with constants in SET clause (Informix syntax) No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 682 -----------------------
+
+UPDATE with expresion in SET and column list (Informix syntax) No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 683 -----------------------
+
+UPDATE with function calls in expresion (Informix syntax) No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 684 -----------------------
+
+Missing test files - test invalid Please provide brief description of functionality tested here.
+
+**** TEST MARKED INVALID IN run_tests ******
+
+ ------------------- Info for test 685 -----------------------
+
+UPDATE with variables in SET clause (Informix syntax). No run-tiem checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 686 -----------------------
+
+UPDATE with SET sub-expression (Informix syntax) No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 687 -----------------------
+
+UPDATE ... SET with UNITS. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 689 -----------------------
+
+UPDATE VIEW with Informix-style SET. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 690 -----------------------
+
+UPDATE ... SET one column (ANSI SQL 92 standard syntax). No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 691 -----------------------
+
+UPDATE SET columns (ANSI SQL 92 syntax). No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 692 -----------------------
+
+UPDATE standard SET with SQL expression. No run-time checking.
+
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Test needs database
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 693 -----------------------
+
+UPDATE SET with SELECT (std ANSI SQL 92 syntax) No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 694 -----------------------
+
+UPDATE SET with variable (std ANSI SQL 92 syntax) No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 695 -----------------------
+
+UPDATE SET WHERE CURRENT OF (std. syntax) No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+Database MUST NOT have transactions enabled for this test.
+
+ ------------------- Info for test 696 -----------------------
+
+UPDATE with THRU syntax. No run-time checking.
+
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Test needs database
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 697 -----------------------
+
+Complex UPDATE. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 698 -----------------------
+
+INSERT into VIEW. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 699 -----------------------
+
+INSERT on multi-table view. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 700 -----------------------
+
+INSERT on synonym. NO run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 701 -----------------------
+
+UPDATE SET with sub-expression (std syntax). No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 702 -----------------------
+
+UPDATE SET with function call in expression (std syntax). No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 703 -----------------------
+
+UPDATE SET with variable (std syntax) No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 704 -----------------------
+
+UPDATE SET with sub-expression (std syntax). No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 705 -----------------------
+
+UPDATE SET units (std syntax). No run-time checking.
+
+**** TEST MARKED INVALID IN run_tests ******
+Test needs database
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 710 -----------------------
+
+INSERT witl fully qualified table names.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 711 -----------------------
+
+DELETE from view. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 712 -----------------------
+
+DELETE on multi-table view. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 713 -----------------------
+
+DELETE on synonym. No run-time checking.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 714 -----------------------
+
+DELETE with fully qualified table names.
+
+Test is compile only, no execution will be attempted
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 715 -----------------------
+
+Simple SELECT test.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 716 -----------------------
+
+SELECT several columns.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 717 -----------------------
+
+SELECT ALL.
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 718 -----------------------
+
+SELECT DISTINCT
+
+Test needs database
+Tests is certified to run (with -eci) If it fails, something was probably broken
+in current code.
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 719 -----------------------
+
+SELECT AS
+
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Test needs database
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 720 -----------------------
+
+SELECT with quoted strings.
+
+**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******
+Test needs database
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 800 -----------------------
+
+This test tests if the compiler accepts the EXECUTE IMMEDIATE keyword.
+
+Test is compile only, no execution will be attempted
+Test can be run using any 4GL compatible compiler, not just Aubit
+
+ ------------------- Info for test 801 -----------------------
+
+This test checks if VARCHAR is handled OK
+
+
+--------------------------------------------------------------
+Total tests: 539
+Still has template comment: 1 ( 105)
+Old makefile: 88 ( 1 3 4 6 8 9 10 11 12 13 14 15 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 47 48 49 50 51 52 53 54 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 82 84 86 90 92 93 94 96 97 98 99 202 203 204 205 206 212 217 218 239 250)
+Not described: 1 ( 105)
+Invalid: 6 ( 105 249 375 377 684 705)
+Expected to fail (because of Aubit bug): 11 ( 1 82 240 487 488 490 670 692 696 719 720)
+Obsolete: 22 ( 58 65 250 443 444 446 484 491 497 498 499 511 527 529 545 546 547 548 671 672 673 674)
+ 
+Has description text: 450
+Expect non-zero exit status: 1
+Test is compile only: 73
+P-code enabled: 1
+Needs database: 223
+EC only test: 0
+Cannot run silent: 3
+Uses TUI UI: 33
+Uses forms: 85
+Uses graphic characterts: 2
+Expects manual input: 1
+Uses dump screen function: 10
+Long running: 1
+Certified: 491
+x4GL compatible: 185
+Uses REPORT block: 15
+All other unsorted tests: 0
+ 
+End of -info (all) output

@@ -1,0 +1,29 @@
+
+DATABASE test1
+
+MAIN
+  DEFINE dtt DATETIME HOUR TO HOUR
+
+  WHENEVER ERROR CONTINUE
+  DROP TABLE xpto
+  WHENEVER ERROR STOP
+
+  CREATE TABLE xpto (
+    keyColumn SMALLINT,
+    aDateTime DATETIME HOUR TO HOUR
+  )
+
+  INSERT INTO xpto (keyColumn) VALUES (1)
+
+  UPDATE xpto 
+    SET aDatetime = 23 UNITS HOUR
+    WHERE keyColumn = 1
+
+  DECLARE cr CURSOR FOR 
+    SELECT aDateTime
+      FROM xpto
+  FOREACH cr 
+    DISPLAY "XX"
+  END FOREACH
+  DROP TABLE xpto
+END MAIN

@@ -1,0 +1,20 @@
+export A4GL_KEYFILE=keys.in
+if ./constru.4ae 
+then
+:
+else
+	exit 1
+fi
+
+grep -v "Date" constr.log > constr.nodate.log
+if diff constr.nodate.log constr.log.expected
+then
+:
+else
+	echo "Diff"
+	exit 1
+fi
+
+exit 0
+
+

@@ -1,0 +1,7 @@
+
+MAIN
+  DEFINE i SMALLINT
+
+	LET i = 4
+	SLEEP i
+END MAIN

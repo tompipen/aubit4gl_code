@@ -1,0 +1,2 @@
+export A4GL_KEYFILE=keys.in
+$DBG ./test_267.4ae

@@ -1,0 +1,15 @@
+rm rep.out 2> /dev/null
+$DBG ./rep.4ae 
+
+
+
+if diff $DIFF_FLAGS rep.out rep.out.expected
+then
+:
+else
+	echo "DIFF 1"
+	exit 1
+fi
+
+
+exit 0

@@ -1,0 +1,37 @@
+{* Revision Level: 0.0 Tue Mar 26 09:23:43 CST 1991 *}
+{*
+  02/15/93      rs      Checked for Phase 2 Standards
+*}
+DATABASE formonly
+SCREEN
+{
+        Rev. REVLEVEL
+ REVDATE
+
+
+
+
+
+ P l e a s e   E n t e r   L o g - O n   N u m b e r   A n d   P a s s w o r d  
+
+
+
+
+
+
+
+
+
+ Enter Log-On Number  [f002      ]  Password  [f003       ]  [f004    ]
+}
+END
+
+
+ATTRIBUTES
+f002 = FORMONLY.logon_num TYPE INTEGER;
+f003 = FORMONLY.scrnpasswd TYPE INTEGER, INVISIBLE;
+f004 = FORMONLY.errmsg1;
+END
+
+INSTRUCTIONS
+    DELIMITERS "  "

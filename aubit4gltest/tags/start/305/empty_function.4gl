@@ -1,0 +1,7 @@
+
+MAIN
+END MAIN
+
+FUNCTION xpto()
+END FUNCTION
+

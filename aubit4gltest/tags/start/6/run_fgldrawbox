@@ -1,0 +1,9 @@
+export A4GL_TRIMDUMP=24x80
+$DBG ./fgldrawbox.4ae
+if diff fgldrawbox.out fgldrawbox.out.expected
+then
+:
+else
+	exit 1
+fi
+exit 0

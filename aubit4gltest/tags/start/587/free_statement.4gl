@@ -1,0 +1,6 @@
+
+MAIN
+	PREPARE st FROM "DATABASE test1"
+	EXECUTE st
+	FREE st
+END MAIN

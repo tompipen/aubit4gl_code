@@ -1,0 +1,66 @@
+
+
+
+               1 systables
+               2 syscolumns
+               4 systabauth
+               5 syscolauth
+               6 sysviews
+               7 sysusers
+               8 sysdepend
+               9 syssynonyms
+              10 syssyntable
+              11 sysconstraints
+              12 sysreferences
+              13 syschecks
+              14 sysdefaults
+              15 syscoldepend
+              16 sysprocedures
+              17 sysprocbody
+              18 sysprocplan
+              19 sysprocauth
+              20 sysblobs
+              21 sysopclstr
+              22 systriggers
+              23 systrigbody
+              24 sysdistrib
+              25 sysfragments
+              26 sysobjstate
+              27 sysviolations
+              28 sysfragauth
+              29 sysroleauth
+              90  GL_COLLATE
+              91  GL_CTYPE
+              99  VERSION
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

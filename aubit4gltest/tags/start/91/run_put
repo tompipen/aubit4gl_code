@@ -1,0 +1,8 @@
+./put.4ae > put.out
+
+if diff put.out put.out.expected
+then
+	:
+else
+	exit 1
+fi

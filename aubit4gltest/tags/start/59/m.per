@@ -1,0 +1,47 @@
+
+DATABASE FORMONLY
+
+SCREEN
+{
+
+
+  [al]
+   Media           Expected    Qty        Pickups          Loans
+\g--------------------------------------------------------------------------------
+  [des      ] [exp         ] [cnt ] [pu          ] [ln          ]
+  [des      ] [exp         ] [cnt ] [pu          ] [ln          ]
+  [des      ] [exp         ] [cnt ] [pu          ] [ln          ]
+
+
+
+
+
+
+\g--------------------------------------------------------------------------------
+
+
+
+
+}
+
+ATTRIBUTES
+al = FORMONLY.al type char;
+des = FORMONLY.description type char, include =(0 to 4);
+exp = FORMONLY.bal_amount TYPE INTEGER, include = (null, 0 to 29) ;
+cnt = FORMONLY.bal_units  TYPE INTEGER, FORMAT = "---&" ;
+pu = FORMONLY.price type decimal(7,0),required,
+    include  = (null,0000001 TO 9999999),
+        comments = " Invoice Number";
+ln = FORMONLY.loan TYPE INTEGER;
+END
+
+INSTRUCTIONS
+DELIMITERS "[]"
+SCREEN RECORD ftlbal[3]
+(
+	FORMONLY.description,
+	FORMONLY.bal_amount,
+	FORMONLY.bal_units,
+	FORMONLY.price,
+	FORMONLY.loan
+)

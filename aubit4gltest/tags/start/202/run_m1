@@ -1,0 +1,11 @@
+export A4GL_KEYFILE=keys.in
+./m1.4ae 
+grep -v "Date" m1.out > m1.out.nodate
+if diff m1.out.nodate m1.out.expected 
+then
+	exit 0
+else
+	exit 1
+fi
+
+

@@ -1,0 +1,18 @@
+export A4GL_TRIMDUMP=24x80
+export A4GL_KEYFILE=keys.in
+export A4GL_KEYDELAY=1000
+$DBG ./prompt.4ae 
+
+
+for a in close4.out err2.out inp3.out prompt1.out inpc.out
+do
+if diff $a $a.expected
+then
+:
+else
+	echo "DIFF 1 $a"
+	exit 1
+fi
+
+done
+exit 0

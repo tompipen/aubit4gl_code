@@ -1,0 +1,64 @@
+./testna.4ae I11a.4gl \
+conv_curr.4gl dangwind.4gl itemwind.4gl msegfunc.4gl pcatwind.4gl \
+pclswind.4gl pflexwin.4gl pgrpwind.4gl pinfowind.4gl psepwind.4gl \
+ref_wind.4gl secufunc.4gl taxwind.4gl uomwind.4gl validstr.4gl  \
+vendwind.4gl \
+warewind.4gl   I100.per I101.per I102.per I103.per I104.per  \
+I105a.per \
+I105.per I106.per I107.per I108.per I109.per I110.per I111.per  \
+I112.per \
+I113.per I114.per I115.per I116.per I117.per I119a.per I119.per  \
+I120.per \
+I121.per I122.per I123.per I124.per I125.per I126.per I127.per  \
+I128.per \
+I129.per I130.per I131.per I132a.per I132b.per I132c.per I132.per  \
+I133.per \
+I134.per I135.per I136.per I137.per I138.per I139.per I140.per  \
+I141.per \
+I142.per I143.per I145.per I146.per I147.per I148.per I149.per  \
+I150a.per \
+I150.per I151.per I152.per I153.per I154.per I155.per I156.per  \
+I157.per \
+I158.per I159.per I160.per I161.per I162a.per I162.per I163.per  \
+I164.per \
+I165.per I166.per I167.per I168.per I169a.per I169.per I170a.per  \
+I170.per \
+I171.per I172.per I173.per I174.per I175.per I176.per I177.per  \
+I178.per \
+I179.per I180.per I181.per I182.per I183.per I184.per I185.per  \
+I186.per \
+I187.per I188.per I189.per I200.per I201.per I202.per I203.per  \
+I204.per \
+I205.per I206.per I207.per I208.per I209.per I210H.per I210.per  \
+I211.per \
+I212.per I213.per I214.per I215.per I216.per I217.per I220.per  \
+I221.per \
+I222.per I223.per I224.per I225.per I226.per I254.per I256.per  \
+I257.per \
+I258.per I259.per I260.per I261.per I400.per I500.per I510H.per  \
+I600.per \
+I601.per I602.per I603.per I604.per I605.per I606.per I607.per  \
+I608.per \
+I609.per I610.per I611.per I612.per I613.per I614.per I615.per  \
+I616.per \
+I617.per I618.per I619.per I620.per I621.per I622.per I623.per  \
+I624.per \
+I625.per I626a.per I626.per I627.per I628.per I629.per I630.per  \
+I631.per \
+I632.per I633.per I634.per I635.per I636.per I637.per I638.per  \
+I639.per \
+I640.per I643.per I644.per I645.per I646.per I647.per I648.per  \
+I649.per \
+I650.per I651.per I652.per I653.per I654.per I655.per I656.per  \
+I657.per \
+I658.per I660.per I661.per I662.per I663.per I664.per I668.per  \
+I669.per \
+I670.per I671.per I672.per I673.per I674.per I675.per I676.per  \
+I677.per \
+I678.per I679.per I680.per I681.per I682.per I683.per I684.per  \
+I685.per \
+I687.per I688.per I689.per I693.per I701.per I702.per I703.per  \
+I704.per \
+I705.per I706.per I707.per  ap.msg ar.msg contact.msg eo.msg fa.msg  \
+gl.msg \
+in.msg jm.msg lc.msg pu.msg qe.msg re.msg ss.msg utility.msg wo.msg 

@@ -1,0 +1,13 @@
+export DBDATE=dmy4/
+./progname.4ae
+for a in p1.out p2.out
+do
+if diff $a $a.expected 
+then
+	:
+else
+	echo "DIFF in $a"
+	exit 1
+fi
+done
+exit 0

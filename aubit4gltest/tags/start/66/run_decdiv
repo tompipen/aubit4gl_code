@@ -1,0 +1,21 @@
+./decdiv.4ae > decdiv.out
+./t1.4ae > t1.out
+
+if diff decdiv.out decdiv.out.expected
+then
+:
+else
+	echo "Diff (decdiv)"
+	exit 1
+fi
+
+if diff t1.out t1.out.expected
+then
+:
+else
+	echo "Diff (t1)"
+	exit 1
+fi
+
+
+exit 0

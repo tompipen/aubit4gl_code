@@ -1,0 +1,8 @@
+export A4GL_KEYFILE=keys.in
+export A4GL_KEYDELAY=10000
+echo $DBG ./menu1$A4GL_PRG
+$DBG ./menu1$A4GL_PRG
+a=$?
+echo $a
+exit $a
+

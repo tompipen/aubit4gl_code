@@ -1,0 +1,4 @@
+
+MAIN
+  RUN "ls"
+END MAIN

@@ -1,0 +1,32 @@
+database formonly
+screen
+{
+
+  [d         ]
+
+  [a] [b] [c]
+  [a] [b] [c]
+  [a] [b] [c]
+  [a] [b] [c]
+  [a] [b] [c]
+
+[m                          ]
+}
+end
+
+attributes
+d	= formonly.sdt1,
+comments = " comment for date 1"
+;
+a		= formonly.f1 type char,
+comments = " comment for array"
+;
+b		= formonly.f2 type char , reverse  ;
+c		= formonly.f3 type char ;
+m	= formonly.msg;
+end
+
+instructions
+	delimiters " "
+	screen record parm_scr[5] (f1 thru f3)
+end

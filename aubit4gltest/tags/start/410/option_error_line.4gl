@@ -1,0 +1,5 @@
+
+MAIN
+  OPTIONS 
+	   ERROR LINE 4
+END MAIN

@@ -1,0 +1,7 @@
+
+MAIN
+  DEFINE str CHAR(20)
+
+	LET str = "DATABASE test1"
+	PREPARE st FROM str
+END MAIN

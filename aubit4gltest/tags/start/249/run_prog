@@ -1,0 +1,4 @@
+export A4GL_UI=HL_GTK
+export DISPLAY=:0
+export A4GL_KEYFILE=keys.in
+./progname.4ae

@@ -1,0 +1,38 @@
+
+DATABASE FORMONLY
+
+SCREEN
+{
+
+   ifld  [ify   ]
+   cfld  [cfy   ]
+   mfld  [mfy       ]
+
+     ifld   cfld    mfld
+\g--------------------------------------------------------------------------------
+  [ifx   ] [cfx  ] [mfx      ]
+  [ifx   ] [cfx  ] [mfx      ]
+  [ifx   ] [cfx  ] [mfx      ]
+
+
+\g--------------------------------------------------------------------------------
+
+}
+
+ATTRIBUTES
+ify = FORMONLY.ifldy TYPE INTEGER;
+cfy = FORMONLY.cfldy TYPE CHAR;
+mfy = FORMONLY.mfldy TYPE MONEY(9,2);
+ifx = FORMONLY.ifldx TYPE INTEGER;
+cfx = FORMONLY.cfldx TYPE CHAR;
+mfx = FORMONLY.mfldx TYPE MONEY(9,2);
+END
+
+INSTRUCTIONS
+DELIMITERS "[]"
+SCREEN RECORD ftl[3]
+(
+	FORMONLY.ifldx,
+	FORMONLY.cfldx,
+	FORMONLY.mfldx
+)

@@ -1,0 +1,12 @@
+$DBG ./xrpt.4ae
+for a in xjunk xok
+do
+if diff $DIFF_FLAGS $a $a.expected
+then
+:
+else
+exit 1
+fi
+done
+exit 0
+

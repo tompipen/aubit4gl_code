@@ -1,0 +1,254 @@
+
+#This make file used as include from ALL make files in build_tests tree
+
+
+## ======================================================================
+##                  Common Setings
+## ======================================================================
+
+#Root directory of our current Aubit source tree:
+ROOT=../../../..
+
+#############
+#While compiling source code, force priority of 'aubitrc' present in this 
+#source code tree. Also applies to aubit-config calls made from makefles 
+A4GL_INIFILE				=${ROOT}/etc/aubitrc
+
+
+#Make sure we will be using programs and libraries in our current source tree
+#and NOT something elese, like installed compiler
+AUBITDIR=${ROOT}
+
+#Include ALL Amake compilers rules 
+include ${ROOT}/incl/?4gl.mk
+
+ifeq "${USE_COMP}" ""
+	USE_COMP=aubit
+endif
+
+ifeq "${USE_COMP}" "aubit"
+
+	#Map extensions from compiler specific to general:
+	RUN_EXT			=${A4GL_RUN_EXT}
+
+	#Used in Makefiles so must be here:
+	A4GL_FORMEXT	=${A4GL_FRM_EXT}
+	OBJ_EXT			=${A4GL_OBJ_EXT}
+	TARGET_EXT		=${A4GL_EXE_EXT}
+	
+
+	#Force Aubit UI to TUI: (unless specified on make command line)
+	A4GL_UI=HL_TUI
+
+	ifeq "${A4GL_KEYLOG}" ""
+		#if A4GL_KEYLOG is set, it means we are to record, not playback keystrokes
+		#Set defaults for scripted execution
+		A4GL_KEYFILE=$(wildcard *keys.in)
+		A4GL_KEYDELAY=10000
+		A4GL_TRIMDUMP=24x80
+
+		#Export needed variables to environment
+		export A4GL_PRG A4GL_UI A4GL_TRIMDUMP
+	endif
+	
+	ifeq "${A4GL_FAKELEXTYPE}" "PCODE"
+		DEFAULT_LINK=cp prog${A4GL_OBJ_EXT} progname${A4GL_EXE_EXT}
+	else
+	#define default linking action
+		DEFAULT_LINK=${A4GL_FGLC} $^ -o $@
+	endif
+
+	RUNNER=
+	
+endif
+
+
+ifeq "${USE_COMP}" "ifx-p"
+	#Map extensions from compiler specific to general:
+	RUN_EXT			=${I4GL_PRG_EXT}
+
+	#Used in Makefiles so must be here:
+	A4GL_FORMEXT	=${I4GL_FRM_EXT}
+	OBJ_EXT			=${I4GL_OBJ_EXT}
+	TARGET_EXT		=${I4GL_PRG_EXT}
+
+	DEFAULT_LINK=\
+		${I4GL_PL} $^ > $@; \
+		if test "$$?" != "0"; then \
+			echo "CAT failed, removing progname.4gi"; \
+			rm progname.4gi; \
+			exit 1; \
+		fi
+	
+	RUNNER=fglgo
+	
+endif
+
+ifeq "${USE_COMP}" "4js-p"
+	#Map extensions from compiler specific to general:
+	RUN_EXT			=${D4GL_PRG_EXT}
+
+	#Used in Makefiles so must be here:
+	A4GL_FORMEXT	=${D4GL_FRM_EXT}
+	OBJ_EXT			=${D4GL_OBJ_EXT}
+	TARGET_EXT		=${D4GL_PRG_EXT}
+
+	DEFAULT_LINK	=${D4GL_PC} -o $@ $(subst .42r,.42m,$(notdir $^))
+	RUNNER			=fglrun
+	
+endif
+
+ifeq "${USE_COMP}" "querix"
+	#Map extensions from compiler specific to general:
+	RUN_EXT			=${Q4GL_PRG_EXT}
+
+	#Used in Makefiles so must be here:
+	A4GL_FORMEXT	=${Q4GL_FRM_EXT}
+	OBJ_EXT			=${Q4GL_OBJ_EXT}
+	TARGET_EXT		=${Q4GL_PRG_EXT}
+
+	#DEFAULT_LINK	=${Q4GL_PL} $^ > $@;
+	DEFAULT_LINK	=${FAIL_LINK}${Q4GL_CL} -o $@ $(subst ${Q4GL_PRG_EXT},${Q4GL_OBJ_EXT},$(notdir $^)) ${Q4GL_CL_LDFLAGS} ${QXI_LIBS} 	
+	RUNNER			=
+	
+endif
+
+################
+#Default list of all form files that need to be compiled. All .per files
+#in test's directory will be automatically listed. User can overide it in
+#test specific makefile.
+PER=$(wildcard *.per)
+
+################
+#List of all 4GL modules that need to be compiled to objects.  All .4gl files
+#in test's directory will be automatically listed. User can overide it in
+#test specific makefile.
+FGL=$(wildcard *.4gl)
+
+################
+#Default list of all help files that need to be compiled. All .msg files
+#in test's directory will be automatically listed. User can overide it in
+#test specific makefile.
+MSG=$(wildcard *.msg)
+
+
+################
+#All targets in this make file are "phony" targets - they do not create files
+.PHONY: compile run desc clean db_test ec_test nosilent_test tui_test \
+	form_test report_test graphic_test console_prompt_test dump_screen_test \
+	long_test cert_test obsolete_test unknown_test
+
+################
+
+DEFAULT_RUN2=123
+
+ifneq "${COMPILE_ONLY}" "1"
+
+#Define default run action
+
+#NOTE: should never exit with returned code here - make will not exit with
+# it anyway, so we must expect 0 for success in run_test script
+	
+	NAMED_RUN=${RUN_EXT}; \
+		RET=$$?; \
+		if test "$$RET" = "${EXPECT_CODE}"; then \
+			echo "Success ($$RET)"; \
+			exit 0; \
+		else \
+			if test "$$RET" != "0" -a "${EXPECT_CODE}" = "x"; then \
+				echo "Success ($$RET)"; \
+				exit 0; \
+			else \
+				echo "Fail ($$RET but expecting ${EXPECT_CODE})"; \
+				exit 1; \
+			fi \
+		fi
+
+	DEFAULT_RUN=${RUNNER} ${DBG} ./progname${NAMED_RUN}
+	
+	DIFF_COMMON=if diff out out.expected; then \
+			echo "Success";  \
+            exit 0; \
+		else \
+			exit 1; \
+		fi
+
+	NAMED_DUMP_DIFF=${RUN_EXT}; ${DIFF_COMMON}
+	NAMED_DIFF=${RUN_EXT} > out; ${DIFF_COMMON}
+	
+	DEFAULT_DUMP_DIFF=${RUNNER} ${DBG} ./progname${NAMED_DUMP_DIFF}	
+	DEFAULT_DIFF=${RUNNER} ${DBG} ./progname${NAMED_DIFF}
+
+else
+	NAMED_RUN=@echo "** NOTE: Test is compile-time only, execution will not be attempted"
+	DEFAULT_RUN=${NAMED_RUN}
+	NAMED_DIFF=${NAMED_RUN}
+	DEFAULT_DIFF=${NAMED_RUN}
+	NAMED_DUMP_DIFF=${NAMED_RUN}
+	DEFAULT_DUMP_DIFF=${NAMED_RUN}	
+endif
+
+CLEAN_FILES=*.bak *.o *.4ae *.ao *.ec *.cpc *.h *.glb \
+    ${MODULES} ${FORMS} *.4pe.dat *.4pe.xml ${ADD_CLEAN} *.c out *.err  \
+    pcode.run *.tmp
+
+ifneq "${TARGET_EXT}" ""
+	CLEAN_FILES+=*${TARGET_EXT}
+endif
+ifneq "${OBJ_EXT}" ""
+	CLEAN_FILES+=*${OBJ_EXT}
+endif
+	
+## ======================================================================
+##                  Common targets and rules
+## ======================================================================
+
+#remove all 3 - now using rules in Amake
+
+################
+#Rule to compile form file:
+#%${A4GL_FORMEXT}: %.per
+#	fcompile $<
+
+################
+#Rule to complie 4gl module to object
+#%${OBJ_EXT}: %.4gl
+#	${FGLC} $< -c -o $@
+
+#%${A4GL_HLP_EXT}: %.msg
+#	amkmessage $^ $@
+	
+	
+################
+#Clean everything created by compiling and running the test
+#since this is the will be first target listed in makefile when this make file is
+#included this becomes the default target (when user types just "make" without
+#specifying the target)
+clean:
+	rm -f ${CLEAN_FILES}
+
+	
+show:
+	@echo "PER=${PER}"
+	@echo "FGL=${FGL}"	
+	@echo "MSG=${MSG}"
+	@echo "COMPILE_ONLY=${COMPILE_ONLY}"
+	@echo "RUN_EXT=${RUN_EXT}"
+	@echo "EXPECT_CODE=${EXPECT_CODE}"	
+	@echo "CLEAN_FILES=${CLEAN_FILES}"
+	@echo "USE_COMP=${USE_COMP}"
+	@echo "A4GL_FORMEXT=${A4GL_FORMEXT}"
+	@echo "OBJ_EXT=${OBJ_EXT}"
+	@echo "TARGET_EXT=${TARGET_EXT}"
+	@echo "A4GL_UI=${A4GL_UI}"
+	@echo "A4GL_KEYFILE=${A4GL_KEYFILE}"
+	@echo "A4GL_KEYDELAY=${A4GL_KEYDELAY}"
+	@echo "DEFAULT_RUN2=${DEFAULT_RUN2}"
+	@echo 'DEFAULT_RUN=${DEFAULT_RUN}'
+	@echo 'NAMED_RUN=${NAMED_RUN}'
+	@echo 'DEFAULT_DIFF=${DEFAULT_DIFF}'
+	@echo 'NAMED_DIFF=${NAMED_DIFF}'	
+	
+	
+
+# ============================= EOF ================================

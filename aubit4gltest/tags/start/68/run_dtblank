@@ -1,0 +1,37 @@
+./dtblank.4ae > dtb.out
+
+if diff dtb.out dtb.out.expected
+then
+	exit 0
+else
+	echo "Difference in $a"
+	exit 1
+fi
+
+
+
+
+
+#old stuff -- remove it
+
+# Need to investigate why dtblank_i doesn't work
+
+#./dtblank_i.4ae > dtb_i.out
+
+export A4GL_LEXDIALECT=INFORMIX
+./dtblank_iec.4ae > dtb_iec.out
+
+export A4GL_LEXDIALECT=POSTGRES
+./dtblank_pec.4ae > dtb_pec.out
+
+for a in dtb_iec.out dtb_pec.out
+do
+if diff $a dtb.out.expected
+then
+	:
+else
+	echo "Difference in $a"
+	exit 1
+fi
+done
+exit 0

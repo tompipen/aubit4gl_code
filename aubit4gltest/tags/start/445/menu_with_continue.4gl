@@ -1,0 +1,10 @@
+MAIN
+   MENU "Menu"
+		 COMMAND "Hello"
+		   ERROR "Hello"
+			 CONTINUE MENU
+			 EXIT MENU
+	   COMMAND "Exit"
+		   EXIT MENU
+	 END MENU
+END MAIN

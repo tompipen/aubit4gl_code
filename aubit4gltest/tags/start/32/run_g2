@@ -1,0 +1,2 @@
+$DBG ./g2.4ae
+exit $?

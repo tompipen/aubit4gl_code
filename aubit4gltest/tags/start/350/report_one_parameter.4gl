@@ -1,0 +1,11 @@
+
+MAIN
+  START REPORT simpleReport
+	OUTPUT TO REPORT simpleReport(1)
+	FINISH REPORT simpleReport
+END MAIN
+
+REPORT simpleReport(I)
+	DEFINE i INTEGER
+  FORMAT EVERY ROW 
+END REPORT

@@ -1,0 +1,8 @@
+
+DATABASE test1
+
+GLOBALS "globals.4gl"
+
+GLOBALS
+  DEFINE i SMALLINT
+END GLOBALS

@@ -1,0 +1,12 @@
+
+
+MAIN
+  DEFINE i SMALLINT
+
+	LET i = 1
+	IF I = 1 THEN
+	  DISPLAY "I is ONE"
+	ELSE
+	  DISPLAY "I is NOT ONE"
+	END IF
+END MAIN

@@ -1,0 +1,14 @@
+#temp_ec.4ae: temp.4gl 
+#	A4GL_LEXTYPE=EC $(FGLC) temp.4gl -o temp_ec.4ae
+temp.4ae: temp.4gl 
+	$(FGLC) $< -o $@
+
+#temp_c.4ae: temp.4gl 
+#	A4GL_LEXTYPE=C $(FGLC) temp.4gl -o temp_c.4ae
+	
+#compile: temp_ec.4ae  temp_c.4ae
+compile: temp.4ae
+	
+#run: temp_ec.4ae temp_c.4ae
+run: temp.4ae
+	sh ./run_temp

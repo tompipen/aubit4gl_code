@@ -1,0 +1,10 @@
+export A4GL_KEYFILE=keys.in
+./m2.4ae > m2.out
+if grep "help text" m2.out > /dev/null
+then
+	exit 0
+else
+	exit 1
+fi
+
+

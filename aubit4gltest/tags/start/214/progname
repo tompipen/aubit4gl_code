@@ -1,0 +1,8 @@
+./progname.4ae
+grep -v Date output > output.out
+if diff output.out output.out.expected
+then
+	exit 0
+else
+	exit 1
+fi
