@@ -1,7 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.34 2004-03-04 16:27:48 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_sql.c,v 1.35 2004-03-25 18:07:51 mikeaubury Exp $";
 
 void print_report_table(char *repname,char type, int c);
 void printh (char *fmt, ...);
@@ -523,14 +523,19 @@ char *
 print_select_all (char *buff)
 {
   int ni, no;
-  static char b2[2000];
+  static char b2[20000];
+  int os;
   printc ("{\n");
   ni = print_bind_definition ('i');
   no = print_bind_definition ('o');
   print_bind_set_value ('i');
   print_bind_set_value ('o');
-  sprintf (b2, "A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\")", ni, no,
-	   buff);
+  os=snprintf (b2, sizeof(b2),"A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\")", ni, no, buff);
+  if (os>=sizeof(b2)) {
+		A4GL_debug("print_select_all failed");
+		a4gl_yyerror("Internal error - string too long\n");
+		exit(2);
+	}
   return b2;
 }
 
@@ -682,7 +687,7 @@ if (s[0]=='\'') {
 
 
 void *get_in_exists_sql(char *sql, char type) {
-char buff[256];
+char buff[2048];
 int n;
 void *ptr;
 char *x;

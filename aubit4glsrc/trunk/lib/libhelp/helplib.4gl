@@ -43,6 +43,7 @@ code
 
 	static void myseterr( char *s);
 	static void fileerror(FILE *f, char *s);
+void A4GLHELP_initlib(void) ;
 endcode
 
 define constant HELPMAXLEN 78
@@ -59,7 +60,7 @@ define msgline char(HELPMAXLEN)
 define msgerror array[17] of record errline char(HELPMAXLEN) end record
 define msgerrcnt integer
 code
-void A4GLHELP_initlib() {
+void A4GLHELP_initlib(void) {
 // Does nothing...
 }
 endcode
@@ -85,66 +86,93 @@ main
 	end while
 end main
 }
+
+
+
+
 {---------------------------------------------------------------------
 
-	myshowhelp(f, n)  use this to implement 4GL showhelp(n)
+	fetchiem()	Read next line from .iem message
+		returns charcount, msgline
+	Side effects static vars: 
+		charcount: No of chars read from message
+		msgerrcnt: Incremented if error
+		msgerror:  Error message if error
+		msgline:   The line read
+
+	Assumes the file has already been opened (by openiem) and the
+	file pointer is somewhere within the message.
+	Each call to fetchiem increases the static var charcount by the
+	length of the line read from the message.
+}
+local function fetchiem()
+	define ok integer
+	
+	let ok = true
+	if charcount >= msglen then
+		return 0, "End of help message"
+	end if
+code
+{
+	/*char *s = 0; */
+
+	if(msglen < 1 || charcount >= msglen) ok = 0;
+	if(infile == NULL) ok = 0;
+	if(ok && feof(infile) ) ok = 0;
+	if(ok && (charcount < msglen) ) 
+	{
+		fgets(msgline, HELPMAXLEN, infile); 
+		msgline[HELPMAXLEN] = 0;
+	}
+	if(ok && ferror(infile)) ok = -1;
+	if( ok > 0)
+	{
+		charcount += strlen(msgline);
+		//fprintf(stderr,"fetchiem()%s:\n",msgline );
+	}
+	else
+	{
+		//fprintf(stderr,"fetchiem()file error:\n");
+	}
+}
+endcode
+	if not ok then let charcount = 0 end if
+	let msgline = msgline clipped
+	return charcount, msgline
+end function {fetchiem}
+
+
+{-------------------------------------------------------------------------
+
+	myshowerrors()	display errors (if any) in lines of help form
 
 }
 
-
-function libhelp_showhelp(filename, n)
-	define filename char(128)
-	define n integer
-
-	define l_count integer
-	define l_msg char(HELPMAXLEN)
+local function myshowerrors()
 	define i integer
-	#define c char(1)
-
-	let msgerrcnt = 0
-	let filename = filename clipped
-code
-A4GL_debug("filename=%s",filename);
-	trim(filename);
-	A4GL_debug("compiled_form_a4gl_xxhelp=%p",&compiled_form_a4gl_xxhelp);
-endcode
-
-	call form_is_compiled(a4gl_xxhelp,"MEMPACKED","GENERIC");
-
-	open window w1 at 1,1 with form "a4gl_xxhelp"
-
-	call openiem(filename, n ) returning l_count, l_msg
-
-	if filenotfound or msgerrcnt > 0 then
-		call myshowerrors()
-	else
-		call mynextpage(l_count, l_msg)
-		if msgerrcnt > 0 then
-			call myshowerrors()
-		end if
-	end if
-
-	menu "Help"
-			
-		command "Screen" "Displays next page of help"
-			if charcount >= msglen then
-				next option "Resume"
-				continue menu
-			else
-				call mynextpage(l_count, l_msg)
-			end if
-			if msgerrcnt > 0 then
-				call myshowerrors()
-				next option "Resume"
-			end if
-			if charcount >= msglen then
-				next option "Resume"
-			end if
-		command "Resume" "Ends this help session"
-			exit menu
-	end menu
-	close window w1
+	define l_msg char(36)
+	#clear form
+	
+	let i = 0
+		let msgerror[1].errline = msgerror[1].errline clipped
+		display msgerror[1].errline to s_help[1].helpline
+	while true
+		let i = i + 1
+		if i > msgerrcnt then exit while end if
+		if i > 16 then exit while end if
+		let msgerror[i].errline = msgerror[i].errline clipped
+		display msgerror[i].errline to s_help[i].helpline
+	end while
+	while i <= 17
+		display " " to s_help[i].helpline
+		let i = i + 1
+	end while
 end function
+
+
+
+
+
 {----------------------------------------------------------
 
 
@@ -186,6 +214,9 @@ local function mynextpage(l_count, l_msg)
 	end if
 end function
 
+
+
+
 {---------------------------------------------------------------
 
 	openiem(filename, n) Open an iem (Informix error msg) file
@@ -225,7 +256,7 @@ code
 	char errmsg[HELPMAXLEN];
 
 	ok = 1;
-	trim(filename);
+	A4GL_trim(filename);
 		
 	if (strlen(filename)) {
 		infile = fopen( filename, "rb" );  
@@ -247,7 +278,7 @@ code
 		if((len = fread(header,1,4, infile))< 4)
 		{
 			ok = 0;
-			sprintf(errmsg, "Cannot read header %d bytes only\n", len);
+			sprintf(errmsg, "Cannot read header %ld bytes only\n", len);
 			myseterr( errmsg );
 		}
 		else
@@ -329,7 +360,7 @@ indexrec[7]);
 			+ indexrec[6] * 256
 			+ indexrec[7];
 		/*
-		fprintf(stderr, "%d: msglen %d offset:%08X\n",
+		fprintf(stderr, "%d: msglen %d offset:%08lX\n",
 				msgno, msglen, offset);
 		 */
 	}
@@ -337,7 +368,7 @@ indexrec[7]);
 	if(ok && ( infile == 0 || ferror(infile)))
 	{
 		ok = 0;
-		sprintf(errmsg, "Seek failed %d: msglen %d offset:%08X\n",
+		sprintf(errmsg, "Seek failed %d: msglen %ld offset:%08lX\n",
 				msgno, msglen, offset);
 		fileerror(infile, errmsg);
 	}
@@ -361,6 +392,71 @@ endcode
 	return charcount, msgline
 end function {openiem}
 
+
+
+
+
+
+
+{---------------------------------------------------------------------
+
+	myshowhelp(f, n)  use this to implement 4GL showhelp(n)
+
+}
+
+function libhelp_showhelp(filename, n)
+	define filename char(128)
+	define n integer
+
+	define l_count integer
+	define l_msg char(HELPMAXLEN)
+	define i integer
+	#define c char(1)
+
+	let msgerrcnt = 0
+	let filename = filename clipped
+code
+A4GL_debug("filename=%s",filename);
+	A4GL_trim(filename);
+	A4GL_debug("compiled_form_a4gl_xxhelp=%p",&compiled_form_a4gl_xxhelp);
+endcode
+
+	call form_is_compiled(a4gl_xxhelp,"MEMPACKED","GENERIC");
+
+	open window w1 at 1,1 with form "a4gl_xxhelp"
+
+	call openiem(filename, n ) returning l_count, l_msg
+
+	if filenotfound or msgerrcnt > 0 then
+		call myshowerrors()
+	else
+		call mynextpage(l_count, l_msg)
+		if msgerrcnt > 0 then
+			call myshowerrors()
+		end if
+	end if
+
+	menu "Help"
+			
+		command "Screen" "Displays next page of help"
+			if charcount >= msglen then
+				next option "Resume"
+				continue menu
+			else
+				call mynextpage(l_count, l_msg)
+			end if
+			if msgerrcnt > 0 then
+				call myshowerrors()
+				next option "Resume"
+			end if
+			if charcount >= msglen then
+				next option "Resume"
+			end if
+		command "Resume" "Ends this help session"
+			exit menu
+	end menu
+	close window w1
+end function
 local function closeiem()
 	let msgno = 0
 	let msgcount = 0
@@ -373,84 +469,6 @@ endcode
 	return 0
 end function {closeiem}
 
-
-{---------------------------------------------------------------------
-
-	fetchiem()	Read next line from .iem message
-		returns charcount, msgline
-	Side effects static vars: 
-		charcount: No of chars read from message
-		msgerrcnt: Incremented if error
-		msgerror:  Error message if error
-		msgline:   The line read
-
-	Assumes the file has already been opened (by openiem) and the
-	file pointer is somewhere within the message.
-	Each call to fetchiem increases the static var charcount by the
-	length of the line read from the message.
-}
-local function fetchiem()
-	define ok integer
-	
-	let ok = true
-	if charcount >= msglen then
-		return 0, "End of help message"
-	end if
-code
-{
-	char *s = 0;
-
-	if(msglen < 1 || charcount >= msglen) ok = 0;
-	if(infile == NULL) ok = 0;
-	if(ok && feof(infile) ) ok = 0;
-	if(ok && (charcount < msglen) ) 
-	{
-		fgets(msgline, HELPMAXLEN, infile); 
-		msgline[HELPMAXLEN] = 0;
-	}
-	if(ok && ferror(infile)) ok = -1;
-	if( ok > 0)
-	{
-		charcount += strlen(msgline);
-		//fprintf(stderr,"fetchiem()%s:\n",msgline );
-	}
-	else
-	{
-		//fprintf(stderr,"fetchiem()file error:\n");
-	}
-}
-endcode
-	if not ok then let charcount = 0 end if
-	let msgline = msgline clipped
-	return charcount, msgline
-end function {fetchiem}
-
-{-------------------------------------------------------------------------
-
-	myshowerrors()	display errors (if any) in lines of help form
-
-}
-
-local function myshowerrors()
-	define i integer
-	define l_msg char(36)
-	#clear form
-	
-	let i = 0
-		let msgerror[1].errline = msgerror[1].errline clipped
-		display msgerror[1].errline to s_help[1].helpline
-	while true
-		let i = i + 1
-		if i > msgerrcnt then exit while end if
-		if i > 16 then exit while end if
-		let msgerror[i].errline = msgerror[i].errline clipped
-		display msgerror[i].errline to s_help[i].helpline
-	end while
-	while i <= 17
-		display " " to s_help[i].helpline
-		let i = i + 1
-	end while
-end function
 {-------------------------------------------------------------------}
 
 code
@@ -458,7 +476,7 @@ code
 static void
 fileerror(FILE *f, char *s)
 {
-	int e;
+	int e; 
 
 	myseterr( s );
 	if( f == NULL )
@@ -479,7 +497,7 @@ fileerror(FILE *f, char *s)
 static void
 myseterr( char *s)
 {
-	int e;
+	/* int e; */
 	char *t;
 
 	s[HELPMAXLEN]=0;

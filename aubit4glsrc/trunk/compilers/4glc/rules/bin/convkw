@@ -74,6 +74,7 @@ a=1000
 	print "    int id;" > "generated/kw.h"
 	print "	   int mode;" > "generated/kw.h"
 	print "    char *vals[20];" > "generated/kw.h"
+	print "    char *name;" > "generated/kw.h"
 	print "};" > "generated/kw.h"
 	print "struct s_kw kwords[]={" > "generated/kw.c"
 }
@@ -105,6 +106,7 @@ for (z=s;z<=NF;z++) {
 	printf "\"" $z "\"," > "generated/kw.c"
 }
 printf "0}" > "generated/kw.c"
+printf "\"" kw "\"}" > "generated/kw.c"
 print "}," > "generated/kw.c"
 }
 END {

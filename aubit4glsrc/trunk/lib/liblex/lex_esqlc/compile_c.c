@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.152 2004-03-24 16:15:07 mikeaubury Exp $
+# $Id: compile_c.c,v 1.153 2004-03-25 18:07:51 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.152 2004-03-24 16:15:07 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.153 2004-03-25 18:07:51 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -123,7 +123,6 @@ static int gen_ord (char *s);
 =====================================================================
 */
 
-
 char mv_repname[256];
 int cs_ticker = 0;
 int current_ordbindcnt = 0;
@@ -216,7 +215,7 @@ static void real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
 
 void printh (char *fmt, ...);
 
-void add_function_to_header (char *identifier, int parms);
+void add_function_to_header (char *identifier, int parms,char *is_static);
 char *get_namespace (char *s);
 void print_init_var (char *name, char *prefix, int alvl);
 void printcomment (char *fmt, ...);
@@ -236,7 +235,7 @@ void printcomment (char *fmt, ...);
 static void
 print_space (void)
 {
-  char buff[256];
+  static char buff[256];
   memset (buff, ' ', 255);
   buff[ccnt * 3] = 0;
   fprintf (outfile, "%s", buff);
@@ -442,9 +441,10 @@ A4GL_internal_lex_printc (char *fmt, va_list * ap)
 {
 /* va_list args; */
   static char buff[40960] = "ERROR-empty init";
-  static char buff2[40960];
+  //static char buff2[40960];
   char *ptr;
   int a;
+int os;
 
   /*A4GL_debug("in real_lex_printc");*/
 
@@ -459,11 +459,14 @@ A4GL_internal_lex_printc (char *fmt, va_list * ap)
   /*A4GL_debug("fmt = %p\n",fmt);*/
 
   /* va_start (args, fmt); */
-  vsprintf (buff, fmt, *ap);
+  os=vsnprintf (buff, sizeof(buff),fmt, *ap);
+if (os>=sizeof(buff)) {
+	a4gl_yyerror("Internal error - string too big\n");
+	exit(0);
+} 
 
   /*A4GL_debug("buff in lib=%s\n",buff);*/
-  strcpy (buff2, fmt);
-  /*A4GL_debug("fmt in lib=%s\n",buff2);*/
+  //strcpy (buff2, fmt);
 
 
   if (A4GL_isyes (acl_getenv ("INCLINES")))
@@ -501,8 +504,9 @@ A4GL_internal_lex_printc (char *fmt, va_list * ap)
     }
 
   /* Having this will really slow it down - only enable it if we are debugging... */
-  if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
+  if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0) {
     fflush (outfile);
+  }
 }
 
 
@@ -1252,7 +1256,7 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 	strcpy(buff,when_to);	
 	A4GL_convlower(buff);
       printc ("%s %s%s(0); /* CALL */\n", when_str, get_namespace (when_to), buff);
-      add_function_to_header (when_to, 1);
+      add_function_to_header (when_to, 1,"");
       printcomment ("/* WHENCALL */");
     }
 
@@ -1831,7 +1835,7 @@ void
 print_remote_func (char *identifier)
 {
   /*printh ("int %s%s(int np);\n", get_namespace(identifier),identifier);*/
-  add_function_to_header (identifier, 1);
+  add_function_to_header (identifier, 1,"");
   printc
     ("a4gl_status=0;A4GL_register_func(\"%s\",%s%s);if (a4gl_status<0) A4GL_chk_err(%d,_module_name);\n",
      identifier, get_namespace (identifier), identifier,yylineno);
@@ -1976,7 +1980,7 @@ real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
 {
   real_print_expr (args);
   printc ("/* done print expr */");
-  add_function_to_header (identifier, 1);
+  add_function_to_header (identifier, 1,"");
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
   printc ("_retvars=%s%s(%d);\n", get_namespace (identifier), identifier,
@@ -2905,7 +2909,6 @@ print_init_var (char *name, char *prefix, int alvl)
 
   x = get_variable_dets (prefix2, &d, &a, &size, &lvl, arr);
 
-      //printf("prefix2=%s\n",prefix2);
   if (x < 0)
     {
       a4gl_yyerror ("Couldn't find variable to null it...[1]");
@@ -3385,7 +3388,7 @@ print_push_null (void)
 void
 print_start_report (char *where, char *out, char *repname)
 {
-  add_function_to_header (repname, 2);
+  add_function_to_header (repname, 2,"");
   printc ("A4GL_push_char(\"%s\");\n", where);
   printc ("A4GL_push_char(%s);\n", out);
   printc ("%s%s(2,REPORT_START);", get_namespace (repname), repname);
@@ -3402,7 +3405,7 @@ print_start_report (char *where, char *out, char *repname)
 void
 print_output_to_report (char *repname, char *nvalues)
 {
-  add_function_to_header (repname, 2);
+  add_function_to_header (repname, 2,"");
   printc ("%s%s(%s,REPORT_SENDDATA);\n", get_namespace (repname), repname,
 	  nvalues);
 }
@@ -3417,7 +3420,7 @@ print_output_to_report (char *repname, char *nvalues)
 void
 print_finish_report (char *repname)
 {
-  add_function_to_header (repname, 2);
+  add_function_to_header (repname, 2,"");
   printc ("%s%s(0,REPORT_FINISH);\n", get_namespace (repname), repname);
 }
 
@@ -3431,7 +3434,7 @@ print_finish_report (char *repname)
 void
 print_terminate_report (char *repname)
 {
-  add_function_to_header (repname, 2);
+  add_function_to_header (repname, 2,"");
   printc ("%s%s(0,REPORT_TERMINATE);\n", get_namespace (repname), repname);
 }
 
@@ -3625,7 +3628,7 @@ void
 print_report_1 (char *name)
 {
   strcpy (mv_repname, name);
-  add_function_to_header (name, 2);
+  add_function_to_header (name, 2,"");
   printc ("A4GL_REPORT void %s%s (int _nargs,int acl_ctrl) {\n", get_namespace (name), name, name);
   printc("static char *_reportName=\"%s\";\n",name);
   rep_print_code=0;
@@ -4189,7 +4192,7 @@ print_move_window (char *n, int rel)
 void
 print_menu_1 (int n)
 {
-  printc ("{void *m_%d;\n\nint cmd_no_%d= -1; /* n=%d */\n", n, n, n);
+  printc ("{void *m_%d=0;\n\nint cmd_no_%d= -1; /* n=%d */\n", n, n, n);
   printc ("MENU_START_%d: ;", n);
   printc ("while (cmd_no_%d!= -3) {\n", n);
 
@@ -4423,11 +4426,11 @@ print_func_start (char *isstatic, char *fname, int type)
   printc (" \n");
   if (type == 0) {
     printc ("\n A4GL_FUNCTION %sint %s%s (int _nargs){ /* Funtion Start */\n", isstatic, get_namespace (fname), fname);
-	add_function_to_header(fname,1);
+	add_function_to_header(fname,1,isstatic);
   }
   if (type == 1) {
     printc ("\n A4GL_REPORT %sint %s%s (int _nargs){ /* Funtion Start */\n", isstatic, get_namespace (fname), fname);
-	add_function_to_header(fname,2);
+	add_function_to_header(fname,2,isstatic);
   }
 }
 
@@ -5156,7 +5159,7 @@ print_import_legacy (char *s)
 
 
 void
-add_function_to_header (char *identifier, int params)
+add_function_to_header (char *identifier, int params,char* is_static)
 {
   if (is_builtin_func (identifier))
     return;
@@ -5164,7 +5167,7 @@ add_function_to_header (char *identifier, int params)
     {
       A4GL_add_pointer (identifier, 'X', (void *) 1);
       if (params == 1)		/* Normal Function*/
-	printh ("A4GL_FUNCTION int %s%s (int n);\n",
+	printh ("A4GL_FUNCTION %s int %s%s (int n);\n",is_static,
 		get_namespace (identifier), identifier);
       if (params == 2)		/* Report...*/
 	printh ("A4GL_REPORT void %s%s (int n,int a);\n",
@@ -5188,7 +5191,7 @@ A4GL_expr_for_call (char *ident, char *params, int line, char *file)
 	       "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n}\n",
 	       get_namespace (ident), ident, params, line, file);
     }
-  add_function_to_header (ident, 1);
+  add_function_to_header (ident, 1,"");
   return buff;
 }
 

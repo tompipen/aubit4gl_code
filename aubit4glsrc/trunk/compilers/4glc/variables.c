@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.39 2004-03-15 20:16:54 mikeaubury Exp $
+# $Id: variables.c,v 1.40 2004-03-25 18:07:44 mikeaubury Exp $
 #
 */
 
@@ -165,7 +165,7 @@ set_arr_subscripts (char *s_orig, int record_cnt)
 {
   int a;
   char *ptr;
-  char s[512];
+  char s[512]="            ";
 
   /*printf("s_orig=%s\n",s_orig);*/
 

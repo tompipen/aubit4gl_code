@@ -1,3 +1,30 @@
+DATETIME_VALUE DATETIME ( <char_value> )
+DATETIME_VALUE DATETIME ( <num> )
+DATETIME_VALUE DATETIME ( <int_num> - <int_num> )
+DATETIME_VALUE DATETIME ( <int_num> - <int_num> - <int_num> )
+DATETIME_VALUE DATETIME ( <int_num> - <int_num> - <int_num> <int_num> )
+DATETIME_VALUE DATETIME ( <int_num> - <int_num> - <int_num> <int_num> : <int_num>  )
+DATETIME_VALUE DATETIME ( <int_num> - <int_num> - <int_num> <int_num> : <int_num> : <num> )
+DATETIME_VALUE DATETIME ( <int_num> - <int_num> <int_num> )
+DATETIME_VALUE DATETIME ( <int_num> - <int_num> <int_num> : <int_num>  )
+DATETIME_VALUE DATETIME ( <int_num> - <int_num> <int_num> : <int_num> : <num> )
+DATETIME_VALUE DATETIME ( <int_num> <int_num> )
+DATETIME_VALUE DATETIME ( <int_num> <int_num> : <int_num>  )
+DATETIME_VALUE DATETIME ( <int_num> <int_num> : <int_num> : <num> )
+DATETIME_VALUE DATETIME ( <int_num> : <int_num>  )
+DATETIME_VALUE DATETIME ( <int_num> : <int_num> : <num> )
+DATETIME_VALUE DATETIME ( <int_num> : <num> )
+INTERVAL_VALUE INTERVAL ( <char_value> )
+INTERVAL_VALUE INTERVAL ( <num> )
+INTERVAL_VALUE INTERVAL ( <int_num> - <int_num> )
+INTERVAL_VALUE INTERVAL ( <int_num> <int_num> )
+INTERVAL_VALUE INTERVAL ( <int_num> <int_num> : <int_num>  )
+INTERVAL_VALUE INTERVAL ( <int_num> <int_num> : <int_num> : <num> )
+INTERVAL_VALUE INTERVAL ( <int_num> : <int_num>  )
+INTERVAL_VALUE INTERVAL ( <int_num> : <int_num> : <num> )
+INTERVAL_VALUE INTERVAL ( <int_num> : <num> )
+
+
 DYNAMIC_ARRAY DYNAMIC ARRAY
 RESIZE_ARRAY RESIZE ARRAY
 ALLOCATE_ARRAY ALLOCATE ARRAY
@@ -947,4 +974,3 @@ ILIKE ILIKE
 FGL_ISDYNARR_ALLOCATED fgl_isdynarr_allocated
 FGL_DYNARR_EXTENTSIZE fgl_dynarr_extentsize
 FILLFACTOR FILLFACTOR
-

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.10 2004-03-23 13:10:22 mikeaubury Exp $
+# $Id: simple.c,v 1.11 2004-03-25 18:07:51 mikeaubury Exp $
 #*/
 
 
@@ -260,7 +260,9 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
   strcpy (cname, colptr);
   *colname = cname;
   colptr = PQgetvalue (res, curr_colno, 1);
+
   fixtype (colptr, dtype, size);
+//printf("dtype=%d size=%d\n",*dtype,*size);
 
   curr_colno++;
   return 1;
@@ -298,8 +300,10 @@ fixtype (char *type, int *d, int *s)
   //char *typname;
   //char *typinput;
   //char *typoutput;
+  
   char *l1 = "";
   char *l2 = "";
+  *s=0;
   strcpy (buff, type);
 
   if (strchr (buff, '('))

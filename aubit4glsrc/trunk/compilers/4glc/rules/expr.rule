@@ -5,8 +5,10 @@
 */
 
 fgl_expr_c :
+/*
 initial_expr
-| boolean_expr
+*/
+ boolean_expr
 | report_only_expr
 | function_call_expr
 | fgl_expr_c fgl_next {
@@ -101,7 +103,7 @@ fgl_expr:  fgl_expr_c {
 }
 ;
 
-
+/*
 int_sign	: PLUS
 {
 	strcpy($<str>$,"+");
@@ -111,7 +113,7 @@ int_sign	: PLUS
 	strcpy($<str>$,"-");
 }
 ;
-
+*/
 
 /****************************************************************/
 
@@ -140,24 +142,15 @@ NOT fgl_expr_c {
 }
 ;	
 
-initial_expr: 
-int_sign real_number 
-{
-	A4GL_debug("init expr %s %s",$<str>1,$<str>2);
-	sprintf($<str>$,"%s%p",$<str>1,$<str>2);
-	sprintf($<str>$,"%s",A4GL_get_push_literal('D',$<str>$));
-	$<ptr>$=A4GL_new_expr($<str>$);
-        inc_counter();
-}
-| int_sign INT_VALUE 
-{
-	A4GL_debug("init expr int %s %d",$<str>1,atoi($<str>2));
-	sprintf($<str>$,"%s%p",$<str>1,$<str>2);
-	sprintf($<str>$,"%s",A4GL_get_push_literal('L',$<str>$));
-	$<ptr>$=A4GL_new_expr($<str>$);
-	inc_counter();
-}
+
+
+/*
+initial_expr:  
+	real_number { sprintf($<str>$,"%p",$<str>1); sprintf($<str>$,"%s",A4GL_get_push_literal('D',$<str>$));}
+	| INT_VALUE { sprintf($<str>$,"%p",$<str>1); sprintf($<str>$,"%s",A4GL_get_push_literal('L',$<str>$));}
+
 ;
+*/
 
 literal_expr: 
 /*ASCII fgl_expr_c { $<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_push_ascii()"); }
@@ -565,12 +558,72 @@ DATE OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
 	$<ptr>$=A4GL_new_expr(buff);
 	inc_counter();
 }
+| DATETIME OPEN_BRACKET NUMBER_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s\",%s);",$<str>3,$<str>5);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+
 | DATETIME OPEN_BRACKET INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
 	char buff[256];
 	sprintf(buff,"acli_datetime(\"%s:%s\",%s);",$<str>3,$<str>5,$<str>7);
 	$<ptr>$=A4GL_new_expr(buff);
 	inc_counter();
 }
+| DATETIME OPEN_BRACKET INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s:%s\",%s);",$<str>3,$<str>5,$<str>7);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+
+| DATETIME OPEN_BRACKET INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s:%s:%s\",%s);",$<str>3,$<str>5,$<str>7,$<str>9);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s:%s:%s\",%s);",$<str>3,$<str>5,$<str>7,$<str>9);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+
+
+| DATETIME OPEN_BRACKET INT_VALUE INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s %s\",%s);",$<str>3,$<str>4,$<str>6);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s %s:%s\",%s);",$<str>3,$<str>4,$<str>6,$<str>8);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+| DATETIME OPEN_BRACKET INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s %s:%s%s\",%s);",$<str>3,$<str>4,$<str>6,$<str>8,$<str>10);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+| DATETIME OPEN_BRACKET INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s %s:%s%s\",%s);",$<str>3,$<str>4,$<str>6,$<str>8,$<str>10);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+
+
 | DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE CLOSE_BRACKET op_extend_d {
 	char buff[256];
 	sprintf(buff,"acli_datetime(\"%s-%s\",%s);",$<str>3,$<str>5,$<str>7);
@@ -583,6 +636,60 @@ DATE OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
 	$<ptr>$=A4GL_new_expr(buff);
 	inc_counter();
 }
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE  INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s %s\",%s);",$<str>3,$<str>5,$<str>6,$<str>8);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s-%s %s\",%s);",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s-%s %s:%s\",%s);",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10,$<str>12);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s-%s %s:%s:%s\",%s);",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10,$<str>12,$<str>14);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s-%s %s:%s:%s\",%s);",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10,$<str>12,$<str>14);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s %s:%s\",%s);",$<str>3,$<str>5,$<str>6,$<str>8,$<str>10);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s %s:%s:%s\",%s);",$<str>3,$<str>5,$<str>6,$<str>8,$<str>10,$<str>12);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s %s:%s:%s\",%s);",$<str>3,$<str>5,$<str>6,$<str>8,$<str>10,$<str>12);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+
+
 
 
 

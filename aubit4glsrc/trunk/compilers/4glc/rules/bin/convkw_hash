@@ -74,6 +74,7 @@ a=1000
 	print "    int id;" > "generated/kw.h"
 	print "	   int mode;" > "generated/kw.h"
 	print "    char *vals[20];" > "generated/kw.h"
+	print "    char *name;" > "generated/kw.h"
 	print "};" > "generated/kw.h"
 
 }
@@ -128,6 +129,7 @@ for (a=0;a<=26;a++) {
 		printf "   {" class_kw[a,b] ",1,{" > "generated/kw.c"
 		printf "         " lines[a,b]  > "generated/kw.c"
 	printf " 0} " > "generated/kw.c"
+	printf ",\"" class_kw[a,b] "\" " > "generated/kw.c"
 	printf "},\n" > "generated/kw.c"
 	}
 	

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.86 2004-03-12 14:52:35 mikeaubury Exp $
+# $Id: lexer.c,v 1.87 2004-03-25 18:07:43 mikeaubury Exp $
 #*/
 
 /**
@@ -296,8 +296,7 @@ isnum (char *s)
 
   for (a = 0; a < strlen (s); a++)
     {
-      if (a == 0 && (s[a] == '-' || s[a] == '+'))
-	continue;
+      if (a == 0 && (s[a] == '-' || s[a] == '+')) continue;
       if (s[a] == '.' && dp == 0)
 	{
 	  dp++;
@@ -310,6 +309,7 @@ isnum (char *s)
       if (a&&(s[a] == 'e' || s[a] == 'E'))
 
 	{
+	  if (s[a+1]=='+' || s[a+1]=='-') {a++;}
 	  is_e++;
 	  continue;
 	}
@@ -327,7 +327,8 @@ isnum (char *s)
     {
       char buff[256];
       char *ptr;
-      long n;
+      long n=0;
+	long inv=0;
       double a_d = 0;
       long a_i = 0;
       int a_mode;
@@ -342,8 +343,9 @@ isnum (char *s)
 	}
       *ptr = 0;
       ptr++;
-
+      if (ptr==0) {n=0;} else {
       sscanf (ptr, "%ld", &n);
+	}
 
       if (strchr (buff, '.'))
 	{
@@ -356,6 +358,8 @@ isnum (char *s)
 	  sscanf (buff, "%ld", &a_i);
 
 	}
+
+	if (n<0) {n=0-n;inv=1;}
       while (n)
 	{
 	  if (a_mode == 1)
@@ -363,15 +367,20 @@ isnum (char *s)
 
 	  else
 	    a_d = a_d * 10.0;
+
+
 	  n--;
 	}
+
       if (a_mode == 1)
 	{
-	  sprintf (s, "%ld", a_i);
+		if (inv) sprintf (s, "%ld", 1/a_i);
+		else     sprintf (s, "%ld", a_i);
 	}
       else
 	{
-	  sprintf (s, "%f", a_d);
+	if (inv) sprintf (s, "%f", 1.0/a_d);
+	else sprintf (s, "%f", a_d);
 	}
     }
 
@@ -485,6 +494,7 @@ read_word2 (FILE * f, int *t)
 
 	}
 
+#ifdef COMMENTS_ARE_NOW_REMOVED_BEFORE_LEXING
       if (a == '-' && instrs == 0 && instrd == 0 && xccode == 0)
 	{
 	  int z;
@@ -552,6 +562,7 @@ read_word2 (FILE * f, int *t)
 	  *t = KWS_COMMENT;
 	  return word;
 	}
+#endif
 
       if ((a == '\n' || a == '\r') && escp == 0)
 	{
@@ -579,11 +590,28 @@ read_word2 (FILE * f, int *t)
 
       if (ispunct (a) && a != '.' && a != '_' && instrs == 0 && instrd == 0)
 	{
+		char *ptr;
+		
+	  /*printf("Word : %s\n",word); */
+	  if ((a=='+' || a=='-') && strlen(word)>2 && toupper(word[strlen(word)-1])=='E') {
+		char *ptr;
+		ptr=strdup(word);
+		ptr[strlen(ptr)-1]=0;
+		if (isnum(ptr))  {
+				free(ptr);
+      				ccat (word, a, instrs || instrd);
+				continue;
+		}
+		free(ptr);
+	}
+	else {
+
 	  if (strlen (word) > 0)
 	    {
 	      mja_ungetc (a, f);
 	      return word;
 	    }
+	}
 	}
 
       if (instrs == 0 && instrd == 0 && (ispunct (a)) && a != '"' && a != '\''
@@ -719,6 +747,45 @@ read_word (FILE * f, int *t)
 }
 
 
+int always_allow(int id,char *name) {
+switch (id)  {
+case WHENEVER_ANY_ERROR_CALL:
+case WHENEVER_ANY_ERROR_CONTINUE:
+case WHENEVER_ANY_ERROR_GOTO:
+case WHENEVER_ANY_ERROR_STOP:
+case WHENEVER_ERROR_CALL:
+case WHENEVER_ERROR_CONTINUE:
+case WHENEVER_ERROR_GOTO:
+case WHENEVER_ERROR_STOP:
+case WHENEVER_NOT_FOUND_CALL:
+case WHENEVER_NOT_FOUND_CONTINUE:
+case WHENEVER_NOT_FOUND_GOTO:
+case WHENEVER_NOT_FOUND_STOP:
+case WHENEVER_SQLERROR_CALL:
+case WHENEVER_SQLERROR_CONTINUE:
+case WHENEVER_SQLERROR_GOTO:
+case WHENEVER_SQLERROR_STOP:
+case WHENEVER_SQLSUCCESS_CALL:
+case WHENEVER_SQLSUCCESS_CONTINUE:
+case WHENEVER_SQLSUCCESS_GOTO:
+case WHENEVER_SQLSUCCESS_STOP:
+case WHENEVER_SQLWARNING_CALL:
+case WHENEVER_SQLWARNING_CONTINUE:
+case WHENEVER_SQLWARNING_GOTO:
+case WHENEVER_SQLWARNING_STOP:
+case WHENEVER_SUCCESS_CALL:
+case WHENEVER_SUCCESS_CONTINUE:
+case WHENEVER_SUCCESS_GOTO:
+case WHENEVER_SUCCESS_STOP:
+case WHENEVER_WARNING_CALL:
+case WHENEVER_WARNING_CONTINUE:
+case WHENEVER_WARNING_GOTO:
+case WHENEVER_WARNING_STOP: return 1;
+}
+
+return 0;
+}
+
 /**
  *
  * @param cnt
@@ -728,14 +795,23 @@ read_word (FILE * f, int *t)
  * @return
  */
 static int
-words (int cnt, int pos, FILE * f, char *p)
+words (int cnt, int pos, FILE * f, char *p, int t_last)
 {
   int z;
   int t;
   char buff[132];
   int states = -1;
+  int proc=0;
+  if (cnt>10000|| cnt <0) {	char *ptr=0;*ptr=0; } /* Sanity check */
+  if (!always_allow(kwords[cnt].id,kwords[cnt].name)) {
+  	if(!allow_token_state (current_yylex_state, kwords[cnt].id)) { return 0; }
+	A4GL_debug("Allowing : %d %s\n",kwords[cnt].id,kwords[cnt].name);
+  }
+
 
   strcpy (buff, kwords[cnt].vals[pos]);
+
+  //printf("words : %s - %d buff=%s\n",p,t_last,buff);
 
   if (buff[0] == '*' && strlen (buff) > 1)
     {
@@ -743,16 +819,47 @@ words (int cnt, int pos, FILE * f, char *p)
       states = 1;
     }
 
-  if (stricmp (buff, "<ident>") == 0)
+  if (proc==0&&stricmp (buff, "<ident>") == 0)
     {
 
       /* printf("check %s\n",p); */
-      if (isident (p) == 0)
-	return 0;
-      strcpy (idents[idents_cnt++], p);
+      if (isident (p) == 0) return 0;
+        strcpy (idents[idents_cnt++], p);
+	proc=1;
 
     }
-  else
+
+
+  if (proc==0&&stricmp (buff, "<num>") == 0) {
+	int a;
+  	a = isnum (p);
+	if (a==0) return 0;
+        strcpy (idents[idents_cnt++], p);
+	proc=1;
+  }
+
+  if (proc==0&&stricmp (buff, "<int_num>") == 0) {
+	int a;
+  	a = isnum (p);
+	if (a!=1) return 0;
+        strcpy (idents[idents_cnt++], p);
+	proc=1;
+  }
+
+
+  if (proc==0&&stricmp (buff, "<char_value>") == 0) {
+	int a;
+	if (t_last==CHAR_VALUE) {
+        	strcpy (idents[idents_cnt++], p);
+		proc=1;
+	} else {
+		return 0;
+	}
+  }
+
+
+
+  if (proc==0)
     {
       if (stricmp (p, buff) != 0)
 	{
@@ -763,17 +870,23 @@ words (int cnt, int pos, FILE * f, char *p)
   if (states != -1)
     start_state (buff, states);
 
+	
+  if (cnt>10000|| cnt <0) {	char *ptr=0;*ptr=0; } /* Sanity check */
   if (kwords[cnt].vals[pos + 1] == 0)
     {
+	int a;
+  if (cnt>10000|| cnt <0) {	char *ptr=0;*ptr=0; } /* Sanity check */
+  	A4GL_debug("token = %d %s \n",kwords[cnt].id,kwords[cnt].name);
       return 1;
     }
 
   p = read_word (f, &t);
 
-  z = words (cnt, pos + 1, f, p);
+  z = words (cnt, pos + 1, f, p,t);
 
   if (z == 0)
     {
+	//printf("No match\n");
       return 0;
     }
   return 1;
@@ -790,18 +903,38 @@ mk_word (int c)
   static char buff[256];
   int a;
   int icnt = 0;
+  int proc=0;
   strcpy (buff, "");
+
   for (a = 0; kwords[c].vals[a]; a++)
     {
-      if (a > 0)
-	strcat (buff, " ");
+      if (a > 0)  {
 
-      if (stricmp (kwords[c].vals[a], "<ident>") == 0)
-	{
-	  strcat (buff, idents[icnt++]);
+		if ((kwords[c].id==DATETIME_VALUE || kwords[c].id==INTERVAL_VALUE))  {
+			if (strlen(buff)!=0) {
+				char *nstr;
+				nstr=kwords[c].vals[a];
+				if (stricmp(nstr, "<ident>") == 0) nstr=idents[icnt];
+				if (stricmp(nstr, "<char_value>") == 0) nstr=idents[icnt];
+				if (stricmp(nstr, "<int_num>") == 0) nstr=idents[icnt];
+				if (stricmp(nstr, "<num>") == 0)     nstr=idents[icnt];
+			
+				if (!ispunct(buff[strlen(buff)-1]) && !isspace(buff[strlen(buff)-1])) {
+					if (!ispunct(nstr[0]) && !isspace(nstr[0])) {
+						strcat (buff, " ");
+					} 
+				} 
+			}
+		} else {
+			strcat (buff, " ");
+		}
 	}
-      else
-	{
+      proc=0;
+      if (stricmp (kwords[c].vals[a], "<ident>") == 0) { strcat (buff, idents[icnt++]); proc=1; }
+      if (stricmp (kwords[c].vals[a], "<num>") == 0) { strcat (buff, idents[icnt++]); proc=1; }
+      if (stricmp (kwords[c].vals[a], "<int_num>") == 0) { strcat (buff, idents[icnt++]); proc=1; }
+      if (stricmp (kwords[c].vals[a], "<char_value>") == 0) { strcat (buff, idents[icnt++]); proc=1; }
+      if (proc==0) {
 	  strcat (buff, kwords[c].vals[a]);
 	}
     }
@@ -830,6 +963,12 @@ chk_word (FILE * f, char *str)
   /* read the next word from the 4GL source file */
   p = read_word (f, &t);
   set_yytext(p);
+
+
+  //printf("Setting yytext to %s\n",p);
+
+
+
   A4GL_debug ("chk_word: read_word returns %s\n", p);
 
   /* C/SQL code can be embedded in 4GL inside code/endcode blocks.
@@ -865,7 +1004,6 @@ chk_word (FILE * f, char *str)
 		 || A4GL_aubit_strcasecmp (p, "--!end code") == 0
 		 || A4GL_aubit_strcasecmp (p, "end code") == 0))
     {
-      A4GL_lex_printc ("/* End of code */");
       xccode = 0;
       return KW_CEND;
     }
@@ -1001,7 +1139,7 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
       if (kwords[cnt].mode >= 1)
 	{
 	  idents_cnt = 0;
-	  if (words (cnt, 0, f, p))
+	  if (words (cnt, 0, f, p,t))
 	    {
 	      strcpy (str, mk_word (cnt));
 	      return kwords[cnt].id;

@@ -603,27 +603,23 @@ obind_var_ord : variable optional_asc_desc;
 
 optional_asc_desc: | ASC | DESC;
 
-
+/*
 array_r_varid:
 identifier OPEN_SQUARE num_list CLOSE_SQUARE
 {
   int type,arrsize,size,level;
   char arrbuff[256];
-  A4GL_lex_printcomment("/*..array_r_varid..*/");
+  A4GL_lex_printcomment("//..array_r_varid..");
 
 printf("Got array %s %s\n",$<str>1,$<str>3);
 if (get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff)>=0) {
-	// Its a variable
-	//printf("gvd = true\n");
   sprintf($<str>$,"%s[%s]",$<str>1,subtract_one($<str>3));
 } else {
-	// Its an sql identifier or similar
-	//printf("gvd = false\n");
   sprintf($<str>$,"%s[%s]",$<str>1,$<str>3);
 }
-//printf("All done - ARRAY (array_r_varid) : %s\n",$<str>$);
 }
 ;
+*/
 
 init_bind_var_list:	init_bind_var {
 A4GL_lex_printcomment("/*STarted bind %s*/\n",$<str>1);

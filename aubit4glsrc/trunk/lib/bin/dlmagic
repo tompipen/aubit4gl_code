@@ -458,6 +458,9 @@ for (b=0;b<c;b++) {
 	if (b) printf(",")
 	printf("%s ",xxtype) 
 }
+if (c==0) {
+	printf("void");
+}
 print ");"
 
 print "#ifdef DEBUG"

@@ -73,7 +73,7 @@ return rval;
 
 int A4GLSQL_close_connection() {
 int rval;
-static int (*func_2)();
+static int (*func_2)(void);
 #ifdef DEBUG
 A4GL_debug("Call to int A4GLSQL_close_connection()\n");
 #endif
@@ -131,7 +131,7 @@ A4GL_debug("Call to void A4GLSQL_commit_rollback(%d)\n",mode);
 
 char* A4GLSQL_dbms_dialect() {
 char* rval;
-static char* (*func_6)();
+static char* (*func_6)(void);
 #ifdef DEBUG
 A4GL_debug("Call to char* A4GLSQL_dbms_dialect()\n");
 #endif
@@ -147,7 +147,7 @@ return rval;
 
 char* A4GLSQL_dbms_name() {
 char* rval;
-static char* (*func_7)();
+static char* (*func_7)(void);
 #ifdef DEBUG
 A4GL_debug("Call to char* A4GLSQL_dbms_name()\n");
 #endif
@@ -195,7 +195,7 @@ return rval;
 
 int A4GLSQL_end_get_columns() {
 int rval;
-static int (*func_10)();
+static int (*func_10)(void);
 #ifdef DEBUG
 A4GL_debug("Call to int A4GLSQL_end_get_columns()\n");
 #endif
@@ -349,7 +349,7 @@ return rval;
 
 char* A4GLSQL_get_curr_conn() {
 char* rval;
-static char* (*func_20)();
+static char* (*func_20)(void);
 #ifdef DEBUG
 A4GL_debug("Call to char* A4GLSQL_get_curr_conn()\n");
 #endif
@@ -365,7 +365,7 @@ return rval;
 
 char* A4GLSQL_get_currdbname() {
 char* rval;
-static char* (*func_21)();
+static char* (*func_21)(void);
 #ifdef DEBUG
 A4GL_debug("Call to char* A4GLSQL_get_currdbname()\n");
 #endif
@@ -397,7 +397,7 @@ return rval;
 
 char* A4GLSQL_get_sqlerrm() {
 char* rval;
-static char* (*func_23)();
+static char* (*func_23)(void);
 #ifdef DEBUG
 A4GL_debug("Call to char* A4GLSQL_get_sqlerrm()\n");
 #endif

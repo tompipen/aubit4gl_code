@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.169 2004-03-24 11:45:12 mikeaubury Exp $
+# $Id: mod.c,v 1.170 2004-03-25 18:07:43 mikeaubury Exp $
 #
 */
 
@@ -3212,8 +3212,6 @@ add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a)
   sreports[sreports_cnt].a = a;
 
   sreports[sreports_cnt].t = t;
-
-  A4GL_debug ("sreports[%d].a=%d", sreports_cnt, a);
 
   sreports_cnt++;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.11 2004-02-09 08:07:33 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.12 2004-03-25 18:07:50 mikeaubury Exp $
 */
 
 /**
@@ -136,6 +136,8 @@ void A4GLSTK_popFunction (void);
 void A4GL_fgl_end_4gl_0 (void);
 void A4GL_fgl_end_4gl_1 (void); // Used on interrupt
 void A4GL_display_at (int n, int a);
+int A4GL_add_compiled_form (char *s, char *packer, char *formtype, char *frm);
+void A4GLSQL_set_status (int a, int sql);
 int A4GL_key_val(char *s);
 double A4GL_pdf_size(double u,char x,void *ptr);
 
