@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_svc.c,v 1.12 2004-04-21 21:26:33 mikeaubury Exp $
+# $Id: rpc_svc.c,v 1.13 2004-05-25 17:54:08 mikeaubury Exp $
 #*/
 
 /**
@@ -41,6 +41,9 @@
 		                    Includes
 =====================================================================
 */
+#ifdef __hpux__
+#define PORTMAP
+#endif
 
 #include "a4gl_lib_rpc_xdr_int.h"
 

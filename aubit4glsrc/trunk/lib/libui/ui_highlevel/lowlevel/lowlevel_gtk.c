@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.40 2004-04-12 10:01:42 whaslbeck Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.41 2004-05-25 17:53:00 mikeaubury Exp $";
 
 
 #include <gtk/gtk.h>
@@ -180,8 +180,8 @@ A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
 
   if (event->state & 4)
     {                           /*  Control key held down... */
-      if (tolower (event->keyval) >= 'a' && tolower (event->keyval) <= 'z')
-        keypressed = tolower (event->keyval) - 'a' + 1;
+      if (a4gl_tolower (event->keyval) >= 'a' && a4gl_tolower (event->keyval) <= 'z')
+        keypressed = a4gl_tolower (event->keyval) - 'a' + 1;
       else
         keypressed = -1;
     }
@@ -3003,7 +3003,7 @@ int A4GL_LL_menu_loop(ACL_Menu *menu) {
         /* set a to the first non-space char in opt_title */
         for(i=0; i<sizeof(f->opt_title); i++)
           if(f->opt_title[i]>' ') {
-            a=tolower(f->opt_title[i]);
+            a=a4gl_tolower(f->opt_title[i]);
             break;
           }
         if(a==key) {
