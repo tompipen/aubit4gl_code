@@ -553,7 +553,7 @@ A4GL_size_menu (ACL_Menu * menu)
           A4GL_debug ("disp=%d width=%d %d %s", disp_cnt2, menu->w,
                  menu->menu_offset, opt1->opt_title);
 
-          if (disp_cnt2 + menu->menu_offset + s_length + 2 >= menu->w)
+          if (disp_cnt2 + menu->menu_offset + s_length  > menu->w)
             {
 #ifdef DEBUG
               {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.11 2003-07-04 09:43:39 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.12 2003-07-04 19:13:21 mikeaubury Exp $
 #*/
 
 /**
@@ -385,8 +385,20 @@ process_control_stack (struct s_screenio *sio)
 	{
 	  new_state = 0;
 	  A4GL_debug ("Checking key state.. %d", sio->fcntrl[a].extent);
-		if (sio->fcntrl[a].extent>=0 && sio->fcntrl[a].extent<=255) {A4GL_int_form_driver (sio->currform->form, sio->fcntrl[a].extent);
-	  A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
+		if (sio->fcntrl[a].extent>=0 && sio->fcntrl[a].extent<=255) {
+			A4GL_int_form_driver (sio->currform->form, sio->fcntrl[a].extent);
+	  		A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
+			//if (field_status(current_field(sio->currentfield))) {
+			if (isprint(sio->fcntrl[a].extent)) {
+				switch (sio->vars[sio->curr_attrib].dtype) {
+				case DTYPE_SMINT:
+				case DTYPE_INT:
+				case DTYPE_FLOAT:
+				case DTYPE_SMFLOAT:
+				case DTYPE_DECIMAL:
+				case DTYPE_MONEY:  A4GL_int_form_driver (sio->currform->form, REQ_CLR_EOF);
+				}
+			}
 		}
 	rval=-90;
 	  //mja_wrefresh(currwin);
@@ -415,7 +427,7 @@ process_control_stack (struct s_screenio *sio)
 
 
 
-      A4GL_set_init_value (sio->currentfield, sio->vars[sio->curr_attrib].ptr, sio->vars[sio->curr_attrib].dtype);
+      A4GL_set_init_value (sio->currentfield, sio->vars[sio->curr_attrib].ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
 
 
 
@@ -462,10 +474,10 @@ process_control_stack (struct s_screenio *sio)
 		}
 
 
-		A4GL_debug("Calling A4GL_pop_var2 : %p %d %d", sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
+		A4GL_debug("Calling A4GL_pop_var2 : %p dtype=%d size=%d", sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
           	A4GL_pop_var2 (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
 	
-		A4GL_display_field_contents(sio->currentfield,sio->vars[field_no].dtype,sio->vars[field_no].size,sio->vars[field_no].ptr) ; // MJA 2306
+		A4GL_display_field_contents(sio->currentfield,sio->vars[field_no].dtype+ENCODE_SIZE(sio->vars[field_no].size) ,sio->vars[field_no].size,sio->vars[field_no].ptr) ; // MJA 2306
 
       		A4GL_push_long ((long) sio->currentfield);
       		A4GL_push_char (sio->fcntrl[a].field_name);
@@ -769,10 +781,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	}
     }
 
-  //if (a > 0 && a < 255)
-    //{
-      A4GL_add_to_control_stack (s, FORMCONTROL_KEY_PRESS, 0, 0, a);
-    //}
+    A4GL_add_to_control_stack (s, FORMCONTROL_KEY_PRESS, 0, 0, a);
 
   A4GL_mja_refresh ();
   return -1;

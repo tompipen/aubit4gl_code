@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.55 2003-07-04 09:43:39 mikeaubury Exp $
+# $Id: newpanels.c,v 1.56 2003-07-04 19:13:21 mikeaubury Exp $
 #*/
 
 /**
@@ -276,11 +276,15 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
   PANEL *pan;
   int a;
   A4GL_chkwin ();
-
+ 
 #ifdef DEBUG
   A4GL_debug ("Creating window %s (%d %d %d %d) border=%d attrib=0x%x - error line=%d", name, x, y,
 	 w, h, border, attrib,error_line);
 #endif
+
+ if (attrib!=0xffff) { // Strangely - informix resets the 'options' when you open a new window
+		A4GL_set_option_value('d',0);
+ }
 
 /*
   if (form_line == 0xff)
@@ -437,7 +441,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
       //wbkgdset (win, 0);
       A4GL_mja_wrefresh (win);
     }
-
+  A4GL_debug("new_panel %p",win);
   pan = new_panel (win);
   A4GL_debug("New panel %p for window %p name %s",pan,win,name);
   set_panel_userptr (pan, strdup (name));
@@ -1653,14 +1657,14 @@ A4GL_getmenu_line (void)
 {
 int a;
   if (windows[currwinno].winattr.menu_line!=0xff) {
-	a=A4GL_decode_line (windows[currwinno].winattr.menu_line);
-	if (a<0) return 1;
-	while (a+1>=A4GL_get_curr_height()) a--;
+	a=A4GL_decode_line_ib (windows[currwinno].winattr.menu_line);
+	if (a<=0) return 1;
+	while (a>=A4GL_get_curr_height()) a--;
 	return a;
   }
-  a=A4GL_decode_line (std_dbscr.menu_line);
-	if (a<0) return 1;
-	while (a+1>=A4GL_get_curr_height()) a--;
+  a=A4GL_decode_line_ib (std_dbscr.menu_line);
+	if (a<=0) return 1;
+	while (a>=A4GL_get_curr_height()) a--;
 	return a;
 }
 
@@ -2664,11 +2668,23 @@ A4GL_getprompt_line (void)
 int a;
   A4GL_debug ("getprompt_line - %d", windows[currwinno].winattr.prompt_line);
   if (windows[currwinno].winattr.prompt_line!=0xff) {
-	return A4GL_decode_line (windows[currwinno].winattr.prompt_line);
+	a=A4GL_decode_line (windows[currwinno].winattr.prompt_line);
+  } else {
+  	a=A4GL_decode_line (std_dbscr.prompt_line); // MJAMJA 
   }
-  a=A4GL_decode_line (std_dbscr.prompt_line); // MJAMJA 
-  a--;
-  if (A4GL_iscurrborder()) a++;
+
+  A4GL_debug("Thinking prompt should be %d - window height=%d",a,A4GL_get_curr_height());
+
+  if (A4GL_iscurrborder()) {
+		A4GL_debug("Prompt - has border...");
+		a++;
+	}
+
+  while (a>=A4GL_get_curr_height()+A4GL_iscurrborder()) {
+		A4GL_debug("prompt line - Too far down screen - moving up");
+		a--;
+  }
+  if (a<=0) a=1;
  
   A4GL_debug("Prompt line %d",a);
 return a;

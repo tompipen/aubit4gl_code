@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.43 2003-07-04 09:43:39 mikeaubury Exp $
+# $Id: ioform.c,v 1.44 2003-07-04 19:13:21 mikeaubury Exp $
 #*/
 
 /**
@@ -975,6 +975,7 @@ A4GL_set_init_value (FIELD * f, void *ptr, int dtype)
   char *ff;
   int a;
 
+A4GL_debug("A4GL_set_init_value %p %x",ptr,dtype);
 if (ptr) {
         A4GL_push_param (ptr, dtype);
 	A4GL_display_field_contents(f,dtype&DTYPE_MASK,DECODE_SIZE(dtype),ptr);
@@ -1522,7 +1523,7 @@ A4GL_set_fields (void *vsio)
 
       if (wid)
 	{
-	  A4GL_set_init_value (field_list[a], sio->vars[a].ptr, sio->vars[a].dtype);
+	  A4GL_set_init_value (field_list[a], sio->vars[a].ptr, sio->vars[a].dtype+ENCODE_SIZE(sio->vars[a].size));
 
 
 
@@ -2099,7 +2100,7 @@ A4GL_do_before_field (FIELD * f, struct s_screenio *sio)
     }
   if (sio->mode != MODE_CONSTRUCT)
     {
-      A4GL_push_param (sio->vars[a].ptr, sio->vars[a].dtype);
+      A4GL_push_param (sio->vars[a].ptr, sio->vars[a].dtype+ENCODE_SIZE(sio->vars[a].size));
       ptr = A4GL_char_pop ();
       A4GL_mja_set_field_buffer (f, 0, ptr);
       acl_free (ptr);
@@ -2303,7 +2304,7 @@ A4GL_debug("In display_field_contents");
 	A4GL_debug("check for specific display routine");
         	function = A4GL_get_datatype_function_i (d1 & DTYPE_MASK, "DISPLAY");
 		if (function) {
-		A4GL_debug("Has a function - calling");
+		A4GL_debug("Has a function - calling XXXX - size=%d decode_size=%d",s1,DECODE_SIZE(d1));
         	ptr = function (ptr1, s1, field_width,f,DISPLAY_TYPE_DISPLAY_TO);
 		A4GL_debug("Returns %p\n",ptr);
 		} else {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.20 2003-07-04 09:43:39 mikeaubury Exp $
+# $Id: pointers.c,v 1.21 2003-07-04 19:13:09 mikeaubury Exp $
 #
 */
 
@@ -338,12 +338,12 @@ A4GL_del_pointer (char *pname, char t)
   buff->name[0] = t;
   buff->name[1] = 0;
   strcat (buff->name, pname);
-  A4GL_debug ("Buff=%p\n", buff);
+  A4GL_debug ("Buff=%p pname=%s buff->name=%s\n", buff,pname,buff->name);
   a = FIND (buff);
   if (a)
     {
       node = *(struct s_node **) a;
-      sprintf (ptrchar, ">%p", buff->ptr);
+      sprintf (ptrchar, ">%p", node->ptr); // Was buff
       strcpy (buff2.name, ptrchar);
       a = FIND (&buff2);
       if (a)

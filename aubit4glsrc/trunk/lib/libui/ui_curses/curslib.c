@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.44 2003-07-04 09:43:39 mikeaubury Exp $
+# $Id: curslib.c,v 1.45 2003-07-04 19:13:21 mikeaubury Exp $
 #*/
 
 /**
@@ -285,6 +285,7 @@ A4GL_error_nobox (char *str,int attr)
 		A4GL_exitwith("Internal error - couldn't create error window");
 		return;
 	}
+  A4GL_debug("new_panel %p",w);
   p=new_panel(w);
   o=panel_below(0);
   top_panel(p);
@@ -1644,7 +1645,9 @@ A4GL_disp_h_menu (ACL_Menu * menu)
       cw = A4GL_get_curr_width ();
       cpt = A4GL_get_curr_print_top ();
       mnln = A4GL_getmenu_line () - 1;
+	A4GL_debug("Current window : %s",A4GL_get_currwin_name ());
       attrib = (long) A4GL_find_pointer (A4GL_get_currwin_name (), ATTRIBUTE);
+	A4GL_debug("Current window attrib = %d",attrib);
       parent_window = A4GL_find_pointer (A4GL_get_currwin_name (), WINCODE);
 #ifdef DEBUG
       {
@@ -1694,7 +1697,7 @@ A4GL_disp_h_menu (ACL_Menu * menu)
     attrib = attrib + 32;	/* -(attrib&0xff); */
 
   if (attrib)
-    A4GL_set_bkg (menu->menu_win, attrib);
+    A4GL_set_bkg (menu->menu_win, A4GL_decode_aubit_attr (attrib, 'w'));
 
 
   if (menu->menu_type == ACL_MN_HORIZ_BOXED)
@@ -1964,11 +1967,13 @@ A4GL_clear_menu (ACL_Menu * menu)
   w = A4GL_find_pointer (menu->window_name, WINCODE);
 
 #ifdef DEBUG
-    A4GL_debug ("Clearing Window..%p", w);
-    A4GL_debug ("Clearing Panel %p", p);
+    A4GL_debug ("Deleting Window..%p", w);
+    A4GL_debug ("Deleting Panel %p", p);
 #endif
 
   del_panel (p);		/* this is causing problems INVESTIGATE */
+A4GL_del_pointer(menu->window_name, PANCODE);
+A4GL_del_pointer(menu->window_name, WINCODE);
   delwin (w);
   /* A4GL_remove_window (menu->window_name); */
   A4GL_mja_setcolor (NORMAL_TEXT);

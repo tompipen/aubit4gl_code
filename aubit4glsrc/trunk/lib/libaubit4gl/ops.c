@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.22 2003-07-04 09:43:39 mikeaubury Exp $
+# $Id: ops.c,v 1.23 2003-07-04 19:13:09 mikeaubury Exp $
 #
 */
 
@@ -1111,7 +1111,7 @@ A4GL_display_decimal (void *ptr, int size, int size_c,
 static char s[256];
 static char buff[256];
 
-A4GL_debug("Display_decimal");
+A4GL_debug("Display_decimal size=%d",size);
   //if (size_c==-1) { return 0; }
 
   if (display_type == DISPLAY_TYPE_DISPLAY|| display_type==DISPLAY_TYPE_PRINT) {

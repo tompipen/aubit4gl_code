@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.59 2003-06-27 15:02:10 mikeaubury Exp $
+# $Id: compile_c.c,v 1.60 2003-07-04 19:13:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2798,8 +2798,7 @@ void
 print_input (int byname, char *defs, char *helpno, char *fldlist,int attr)
 {
   int ccc;
-  printc ("{int _fld_dr= -100;char *fldname;char _inp_io[%d];",
-	  sizeof (struct s_screenio));
+  printc ("{int _fld_dr= -100;char *fldname;char _inp_io[%d];", sizeof (struct s_screenio));
   printc ("int _forminit=1;\n");
   printc ("while(_fld_dr!=0){\n");
   printc ("if (_fld_dr== -100) {\n");
@@ -2861,7 +2860,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc ("*/");
   printcomment ("/* input */\n");
   printc ("{int _fld_dr= -100;\nchar *fldname;\nint _forminit=1;");
-  printc ("char _inp_io[%d];\n", sizeof (struct s_inp_arr) + 10);
+  printc ("char _inp_io[%d];\n", sizeof (struct s_inp_arr) );
   cnt = print_arr_bind ('o');
   printc ("while (_fld_dr!=0) {\n");
   printc ("if (_fld_dr== -100) {\n");
