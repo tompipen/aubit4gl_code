@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.3 2002-05-17 07:08:33 afalout Exp $
+# $Id: builtin_d.c,v 1.4 2002-05-20 20:17:37 mikeaubury Exp $
 #
 */
 
@@ -746,7 +746,7 @@ push_interval(struct ival *p)
 void 
 push_variable(void *ptr,int dtype)
 {
-  debug("In push variable");
+  debug("In push variable x");
   if (isnull(dtype,ptr)) 
   {
     debug("In push variable... ptr is null");
@@ -760,6 +760,17 @@ push_variable(void *ptr,int dtype)
 		{debug("Pushing variable %p dtype %d   %d",ptr,dtype&DTYPE_MASK,dtype); }
 	#endif
 
+
+
+
+   if (has_datatype_function_i(dtype,"COPY")) {
+                void *(*function) ();
+                void *nptr;
+                function=get_datatype_function_i(dtype,"COPY");
+                nptr=function(ptr);
+                push_param (nptr, dtype+DTYPE_MALLOCED);
+                return;
+   }
 	switch (dtype&DTYPE_MASK) 
 	{
 		case 0: push_chars(ptr,dtype,DECODE_SIZE(dtype));return;break;

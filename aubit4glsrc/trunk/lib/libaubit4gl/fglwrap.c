@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.6 2002-05-20 11:41:12 afalout Exp $
+# $Id: fglwrap.c,v 1.7 2002-05-20 20:17:37 mikeaubury Exp $
 #
 */
 
@@ -154,7 +154,7 @@ fgl_start(int nargs,char *argv[])
 
 	include_builtin_in_exe(); // This does nothing - but we NEED IT!
 			// If builtin is not in the executable then we get link errors
-
+        init_datatypes();
 	//load settings from config file(s):
 	build_user_resources();
 

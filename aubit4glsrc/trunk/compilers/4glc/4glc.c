@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.24 2002-05-14 09:27:27 afalout Exp $
+# $Id: 4glc.c,v 1.25 2002-05-20 20:17:37 mikeaubury Exp $
 #
 */
 
@@ -311,6 +311,8 @@ main(int argc, char *argv[])
 //    printf ("A4GL_SQLTYPE=%s\n", acl_getenv("A4GL_SQLTYPE"));
 	exit(1);
   }
+
+  init_datatypes();
   x = yyparse ();
 
 

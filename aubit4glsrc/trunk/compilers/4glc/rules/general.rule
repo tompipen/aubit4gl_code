@@ -146,8 +146,6 @@ reserved_word :
 	|HEADER
 	|DBA
 	|DBYNAME
-	|DEC
-	|DECIMAL
 	|AUDIT
 	|KWLINE
 	|MODE
@@ -171,8 +169,6 @@ reserved_word :
 	|SPACES
 	|RESOURCE
 	|COMMENT
-	|DATE
-	|TEXT
 	|DELETE
 	|VALIDATE
 	|ESCAPE

@@ -4,5 +4,9 @@ import_m : IMPORT_FUNCTION identifier OPEN_BRACKET INT_VALUE CLOSE_BRACKET
 }
 ;
 
-
+op_import: |
+	IMPORT_DATATYPE identifier {
+		add_ex_dtype($<str>3);
+	} 
+;
 

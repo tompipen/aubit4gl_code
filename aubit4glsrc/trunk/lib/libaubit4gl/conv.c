@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.4 2002-05-20 11:41:12 afalout Exp $
+# $Id: conv.c,v 1.5 2002-05-20 20:17:37 mikeaubury Exp $
 #
 */
 
@@ -4077,6 +4077,17 @@ debug("buff=%s\n",buff);
   }
 }
 
+/**
+* This function sets up the conversion matrix
+* for a new datatype
+**/
+set_convmatrix(int dtype1,int dtype2,void *ptr) {
+        convmatrix[dtype1][dtype2]=ptr;
+}
+
+set_setdtype(int dtype, void *ptr) {
+        setdtype[dtype]=ptr;
+}
 
 // ============================= EOF ================================
 

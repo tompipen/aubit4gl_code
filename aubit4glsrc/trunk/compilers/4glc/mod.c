@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.62 2002-05-20 11:41:03 afalout Exp $
+# $Id: mod.c,v 1.63 2002-05-20 20:17:37 mikeaubury Exp $
 #
 */
 
@@ -1007,6 +1007,14 @@ static int
 find_type (char *s)
 {
   char errbuff[80];
+
+  debug("Looking for type '%s'",s);
+  if (find_datatype_out(s)!=-1) {
+		debug("Found it...");
+		return find_datatype_out(s);
+  }
+
+  debug("Not found - keep looking");
   debug ("find_type %s\n", s);
   if (strcmp ("char", s) == 0)
     return 0;
@@ -1585,7 +1593,21 @@ static char *
 rettype (char *s)
 {
   static char rs[20] = "long";
-  debug ("In rettype : %s", s);
+	int a;
+  debug ("In rettype : %s", s );
+
+  a=atoi(s);
+
+debug("In rettype");
+  if (has_datatype_function_i(a,"OUTPUT")) {
+	char *(*function) ();
+	debug("In datatype");
+	function=get_datatype_function_i(a,"OUTPUT");
+	debug("Copy");
+	strcpy(rs,function());
+	debug("Returning %s\n",rs);
+	return  rs;
+  }
 
   if (strcmp (s, "0") == 0)
     strcpy (rs, "char");
@@ -4494,5 +4516,32 @@ get_sreports(int z)
 }
 
 
+
+add_ex_dtype(char *sx) {
+	char s[256];
+	char ss[256];
+	int a;
+	strcpy(s,sx);
+	trim(s);
+	strcpy(s,downshift(s));
+	debug("Initializing datatype : %s\n");
+
+	A4GLEXDATA_initlib(s);
+
+	debug("Checking if we need an extra include...");
+
+	if (has_datatype_function_n(s,"INCLUDE")) {
+        	char *(*function) ();
+		debug("yep");
+
+        	function=get_datatype_function_n(s,"INCLUDE");
+
+		debug("function=%s\n",function);
+
+		strcpy(ss,function());
+		print_include(ss);
+	}
+}
 // ================================= EOF =============================
+
 

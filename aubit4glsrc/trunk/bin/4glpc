@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.77 2002-05-18 11:56:38 afalout Exp $
+# $Id: 4glpc,v 1.78 2002-05-20 20:17:21 mikeaubury Exp $
 #
 
 ########################################################################
@@ -682,14 +682,18 @@ do
               $output "Executing (3) : $FGLCEXEC $a"
           fi
 
+	   echo $FGLCEXEC $a
+
           err_msg=`"$FGLCEXEC" "$a"`
           err_code=$?
+		#echo "err_code = $err_code err_msg=$err_msg"
 
           if [ "$err_code" != "0" ]
           then
 			if [ "$err_code" = "139" ]
 	        then
 	        	echo "$FGLCEXEC core dump"
+			env
 	            exit 139
 			fi
 

@@ -1,5 +1,5 @@
 
-module	:	op_code op_template globals_section op_code 
+module	:	op_code op_import op_code op_template globals_section op_code 
 {
 int a;
 modlevel=-1;

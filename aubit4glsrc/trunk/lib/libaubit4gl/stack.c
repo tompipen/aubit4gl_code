@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.9 2002-05-20 11:41:12 afalout Exp $
+# $Id: stack.c,v 1.10 2002-05-20 20:17:37 mikeaubury Exp $
 #
 */
 
@@ -425,9 +425,20 @@ char_pop (void)
 /* {DEBUG} */ debug ("Need to convert to string");
 #endif
       f = params[params_cnt - 1].dtype & DTYPE_MASK;
-      s = new_string (dtype_alloc_char_size[f]);
-      pop_char (s, dtype_alloc_char_size[f]);
-      /* char_pop(); */
+
+
+      if (has_datatype_function_i (f, ">STRING"))
+        {
+          char *(*function) (void *, char *, int);
+          function = get_datatype_function_i (f, ">STRING");
+          s = function (params[params_cnt- 1]. ptr, 0, 0);
+        }
+      else
+        {
+          s = new_string (dtype_alloc_char_size[f]);
+          pop_char (s, dtype_alloc_char_size[f]);
+        }
+
       trim (s);
 #ifdef DEBUG
 /* {DEBUG} */ debug ("Converted to string '%s'", s);
@@ -1677,6 +1688,15 @@ setnull (int type, char *buff, int size)
   int a;
   char c;
   debug ("Set null");
+
+  if (has_datatype_function_i (type, "INIT"))
+    {
+      void (*function) (char *);
+      function = get_datatype_function_i (type, "INIT");
+      function (buff);
+      return;
+    }
+
   if (type == DTYPE_BYTE || type == DTYPE_TEXT)
     {
       struct fgl_int_loc *ptr;
@@ -1741,6 +1761,14 @@ isnull (int type, char *buff)
   type = type & DTYPE_MASK;
 
   debug("ISNULL - %d %p\n",type,buff);
+
+  if (has_datatype_function_i (type, "ISNULL"))
+    {
+      int (*function) (char *);
+      function = get_datatype_function_i (type, "ISNULL");
+      return function (buff);
+    }
+
 
   if (type == DTYPE_BYTE || type == DTYPE_TEXT)
     {

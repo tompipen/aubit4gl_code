@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.13 2002-05-20 11:41:13 afalout Exp $
+# $Id: compile_c.c,v 1.14 2002-05-20 20:17:38 mikeaubury Exp $
 #
 */
 
@@ -336,6 +336,13 @@ real_lex_printc(char *fmt, va_list *ap)
 		  ptr = strtok (0, "\n");
 		}
   }
+
+
+
+// Having this will really slow it down...
+fflush(outfile);
+
+
 }
 
 /**
@@ -433,6 +440,9 @@ print_repctrl_block (void)
 }
 
 
+print_include(char *s) {
+	printc("#include <%s.h>\n",s);
+}
 /**
  * Print the C implementation of the current report control block
  */
@@ -4283,6 +4293,5 @@ strcpy(buff,"(");
 	strcat(buff,")-1");
 	return buff;
 }
-
 
 // =========================== EOF ================================

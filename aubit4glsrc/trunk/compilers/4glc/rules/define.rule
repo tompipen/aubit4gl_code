@@ -188,7 +188,28 @@ push_type("struct_dtime ",$<str>2,0);
 }
 		| 	INTERVAL interval_qual {push_type("struct_ival ",$<str>2,0);}
 		|  like_var {push_like($<str>1);fflush(stdout);printcomment("/*added(XXXXX)\n */");} 
+		|  identifier {
+			char buff[256];
+			strcpy(buff,$<str>1);
+			debug("Got a rogue datatype");
 
+			if (find_datatype(upshift(buff))) {
+				char *(*function) ();
+				debug("Checking ...");
+				function=get_datatype_function_n(upshift(buff),"OUTPUT");
+				debug("Got function as %p",function);
+
+				if (function!=-1) {
+					debug("call returns %s\n",function());
+					strcpy(buff,function());
+					debug("Set up buff as %s");
+					push_type(function(),0,0);
+					debug("Pushed type : %s\n",function());
+				}
+			} else {
+				yyerror("Unknown datatype : %s",$<str>1);
+			}
+		}
 
 	;
 

@@ -65,8 +65,8 @@ extern sqlca_struct sqlca;
 #endif
 
 
-#define OP_MASK 256|512|1024
-#define OP_MASK_BASE 256
+#define OP_MASK 512|1024
+#define OP_MASK_BASE 512
 
 #define NUMERIC_OP_2  1*OP_MASK_BASE
 #define STRING_OP_S1 2*OP_MASK_BASE
