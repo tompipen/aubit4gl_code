@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.23 2003-04-23 16:37:24 mikeaubury Exp $
+# $Id: curslib.c,v 1.24 2003-05-07 06:47:31 mikeaubury Exp $
 #*/
 
 /**
@@ -2953,6 +2953,7 @@ aclfgli_pr_message (int attr, int wait)
   debug ("In message...");
   cw = (WINDOW *) get_currwin ();
   ml = getmessage_line ();
+	debug("MJA - Got message line as %d\n",ml);
   width = get_curr_width ();
   pop_char (p, get_curr_width ());
 
@@ -2980,7 +2981,7 @@ aclfgli_pr_message (int attr, int wait)
       display_at (1, attr);
     }
 
-  return;			/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+  return;		/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
   debug (" NW PTR");
   sprintf (buff, "MS%p", cw);

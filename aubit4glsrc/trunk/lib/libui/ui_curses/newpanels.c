@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.29 2003-04-28 13:38:45 mikeaubury Exp $
+# $Id: newpanels.c,v 1.30 2003-05-07 06:47:31 mikeaubury Exp $
 #*/
 
 /**
@@ -277,6 +277,7 @@ create_window (char *name, int x, int y, int w, int h,
 	if (form_line==0xff) { form_line=std_dbscr.form_line; }
 	if (menu_line==0xff) { menu_line=std_dbscr.menu_line; }
 	if (comment_line==0xff) { comment_line=std_dbscr.comment_line; }
+	if (message_line==0xff) { message_line=std_dbscr.comment_line; }
 	if (error_line==0xff) { error_line=std_dbscr.error_line; }
 	if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
 
@@ -791,6 +792,7 @@ display_form (struct s_form_dets *f)
   int rows, cols;
   char buff[80];
   int a;
+  int informix_behaviour=1;
   WINDOW *w;
   WINDOW *drwin;
 	/*  FIELD **p; */
@@ -835,6 +837,11 @@ display_form (struct s_form_dets *f)
 
 	/* fix - not sure whats going on here bit form_details.border is set to 1 for the screen! */
 
+
+ if (informix_behaviour) {
+	rows=windows[currwinno].h-fl;
+	cols=windows[currwinno].w;
+ }
 
   f->form_details.border = windows[currwinno].winattr.border;
 
@@ -2227,11 +2234,15 @@ geterror_line (void)
 int
 getmessage_line (void)
 {
+debug("getmessage_line - %d",windows[currwinno].winattr.message_line);
   if (windows[currwinno].form == 0)
     {				/* use screen default */
+	debug("getmessage_line - std_dbscr...");
       return decode_line (std_dbscr.message_line);
     }
-  return decode_line (windows[currwinno].form->form_details.message_line);
+	debug("getmessage_line - window...");
+return windows[currwinno].winattr.message_line;
+  //return decode_line (windows[currwinno].form->form_details.message_line);
 }
 
 
