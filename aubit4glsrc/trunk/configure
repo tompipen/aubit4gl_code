@@ -12299,14 +12299,6 @@ if test "$default_odbc" != ""; then
 	#User can force SQL driver default with --default-odbc=xxxx switch
 	A4GL_SQLTYPE="$default_odbc"
 else
-    ############# native ####################
-	#non existant:
-	#if test "$HAVE_PGSQL_LIB" = "yes" ; then
-	#	A4GL_SQLTYPE=pgsql
-    #fi
-	if test "$IFMX_ESQLC" != "no" ; then
-		A4GL_SQLTYPE=esql
-	fi
 	############# ODBC drivers ##############
 	if test "$HAVE_PGODBC" = "yes" ; then
 		A4GL_SQLTYPE=pgodbc
@@ -12314,14 +12306,27 @@ else
 	if test "$HAVE_IFXODBC" = "yes" ; then
 		A4GL_SQLTYPE=ifxodbc
 	fi
-	############# ODBC managers #############
-	if test "$HAVE_IODBC" = "yes" ; then
-		A4GL_SQLTYPE=iodbc
+
+	############# native ####################
+	#non existant:
+	#if test "$HAVE_PGSQL_LIB" = "yes" ; then
+	#	A4GL_SQLTYPE=pgsql
+    #fi
+	if test "$IFMX_ESQLC" != "no" ; then
+		A4GL_SQLTYPE=esql
 	fi
+
+	############# ODBC managers #############
 	if test "$HAVE_UNIXODBC" = "yes" ; then
 		A4GL_SQLTYPE=unixodbc
 	fi
+	if test "$HAVE_IODBC" = "yes" ; then
+		#we want iodbc to have highest priority, when we have a choice,
+        #sine we still have problems with unixODBC
+		A4GL_SQLTYPE=iodbc
+	fi
 	if test "$cygwin" = "1"; then
+		#if we are on windows, we will ALLWAYS use native odbc32 manager
 		A4GL_SQLTYPE=odbc32
 
         #echo "WARNING: SQL on Windows temporaraly disabled"
@@ -12403,14 +12408,14 @@ else
     fi
 
 	if test "$AUBITGUI" = "CONSOLE" ; then
-		{ echo "$as_me:12406: WARNING: No curses or GTK detected - your only screen UI will be CONSOLE" >&5
+		{ echo "$as_me:12411: WARNING: No curses or GTK detected - your only screen UI will be CONSOLE" >&5
 echo "$as_me: WARNING: No curses or GTK detected - your only screen UI will be CONSOLE" >&2;}
 		#AC_MSG_WARN(No curses detected - your default UI will be GTK GUI)
-		{ echo "$as_me:12409: WARNING: IN CONSOLE MODE YOU WILL NOT BE ABLE TO USE FORMS" >&5
+		{ echo "$as_me:12414: WARNING: IN CONSOLE MODE YOU WILL NOT BE ABLE TO USE FORMS" >&5
 echo "$as_me: WARNING: IN CONSOLE MODE YOU WILL NOT BE ABLE TO USE FORMS" >&2;}
-		{ echo "$as_me:12411: WARNING: ONLY DISPLAY ERROR MESSAGE MENU & PROMPT WILL WORK!" >&5
+		{ echo "$as_me:12416: WARNING: ONLY DISPLAY ERROR MESSAGE MENU & PROMPT WILL WORK!" >&5
 echo "$as_me: WARNING: ONLY DISPLAY ERROR MESSAGE MENU & PROMPT WILL WORK!" >&2;}
-		{ echo "$as_me:12413: WARNING: Considder installing 'curses' libraries" >&5
+		{ echo "$as_me:12418: WARNING: Considder installing 'curses' libraries" >&5
 echo "$as_me: WARNING: Considder installing 'curses' libraries" >&2;}
     fi
 fi
@@ -12605,7 +12610,7 @@ DEFS=-DHAVE_CONFIG_H
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files $CONFIG_STATUS"
-{ echo "$as_me:12608: creating $CONFIG_STATUS" >&5
+{ echo "$as_me:12613: creating $CONFIG_STATUS" >&5
 echo "$as_me: creating $CONFIG_STATUS" >&6;}
 cat >$CONFIG_STATUS <<_ACEOF
 #! $SHELL
@@ -12778,7 +12783,7 @@ cat >>$CONFIG_STATUS <<\EOF
     echo "$ac_cs_version"; exit 0 ;;
   --he | --h)
     # Conflict between --help and --header
-    { { echo "$as_me:12781: error: ambiguous option: $1
+    { { echo "$as_me:12786: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -12797,7 +12802,7 @@ Try \`$0 --help' for more information." >&2;}
     ac_need_defaults=false;;
 
   # This is an error.
-  -*) { { echo "$as_me:12800: error: unrecognized option: $1
+  -*) { { echo "$as_me:12805: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -12874,7 +12879,7 @@ do
   "docs/doxy/Doxyfile" ) CONFIG_FILES="$CONFIG_FILES docs/doxy/Doxyfile" ;;
   "etc/aubitrc-bin" ) CONFIG_FILES="$CONFIG_FILES etc/aubitrc-bin" ;;
   "incl/a4gl_incl_config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS incl/a4gl_incl_config.h" ;;
-  *) { { echo "$as_me:12877: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:12882: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -13233,7 +13238,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:13236: creating $ac_file" >&5
+    { echo "$as_me:13241: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -13251,7 +13256,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:13254: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:13259: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -13264,7 +13269,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:13267: error: cannot find input file: $f" >&5
+           { { echo "$as_me:13272: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -13325,7 +13330,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:13328: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:13333: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -13336,7 +13341,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:13339: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:13344: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -13349,7 +13354,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:13352: error: cannot find input file: $f" >&5
+           { { echo "$as_me:13357: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -13466,7 +13471,7 @@ cat >>$CONFIG_STATUS <<\EOF
   rm -f $tmp/in
   if test x"$ac_file" != x-; then
     if cmp -s $ac_file $tmp/config.h 2>/dev/null; then
-      { echo "$as_me:13469: $ac_file is unchanged" >&5
+      { echo "$as_me:13474: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \

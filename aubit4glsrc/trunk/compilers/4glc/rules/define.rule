@@ -6,8 +6,8 @@
 
 
 
-define_section	:	 {strcpy($<str>$,"");if (modlevel>=0) print_variables(0);}
-	|	define_multiple {strcpy($<str>$,"");if (modlevel>=0) print_variables(0);lastlineno=yylineno;};
+define_section	:	 {strcpy($<str>$,"");if (modlevel>=0) print_variables();}
+	|	define_multiple {strcpy($<str>$,"");if (modlevel>=0) print_variables();lastlineno=yylineno;};
 
 	
 define_multiple	:
