@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.26 2003-08-14 16:12:29 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.27 2003-08-19 08:37:42 mikeaubury Exp $
 #*/
 
 /**
@@ -594,6 +594,14 @@ s=sv;
 			A4GL_newMovement(s,s->curr_attrib-1);
 			return 1;
   }
+
+  if (type=='0') { // Next field 'current' - used internally
+			A4GL_init_control_stack (s,0);
+			//s->currform->currentfield=0;
+			//A4GL_newMovement(s,s->curr_attrib-1);
+			return 1;
+  }
+
 
   A4GL_debug ("req_field");
 

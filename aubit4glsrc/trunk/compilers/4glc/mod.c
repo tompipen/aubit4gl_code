@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.134 2003-08-06 07:34:42 mikeaubury Exp $
+# $Id: mod.c,v 1.135 2003-08-19 08:37:18 mikeaubury Exp $
 #
 */
 
@@ -2119,11 +2119,27 @@ continue_loop (char *cmd_type)
 {
   int a;
   int g = 0;
+  char *internal_cmd_type;
+
+
+
+// We have to do some messing around here...
+// If we want to 'continue input' - we call continue_input("INPUT")
+// if we want a next field ... that does the next field bit - then calls continue_input("INPUTREQ")
+// Here - we will always be looking for "INPUT" - but pass on the INPUT/INPUTREQ to the print stage...
+// Same goes for construct
+
+
+  internal_cmd_type=strdup(cmd_type);
+
+  if (strcmp(cmd_type,"INPUTREQ")==0) strcpy(internal_cmd_type,"INPUT");
+  if (strcmp(cmd_type,"CONSTRUCTREQ")==0) strcpy(internal_cmd_type,"CONSTRUCT");
+
   for (a = ccnt - 1; a >= 0; a--)
     {
-      A4GL_debug ("continue_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
+      A4GL_debug ("continue_loop:%s %s %s\n", command_stack[a].cmd_type, cmd_type,internal_cmd_type);
 
-      if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
+      if (strcmp (command_stack[a].cmd_type, internal_cmd_type) == 0)
 	{
 	  g = 1;
 	  break;

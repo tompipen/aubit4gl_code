@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.41 2003-08-19 07:57:57 mikeaubury Exp $
+# $Id: iarray.c,v 1.42 2003-08-19 08:37:42 mikeaubury Exp $
 #*/
 
 /**
@@ -2135,6 +2135,9 @@ A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
   int a;
   FIELD **ptr;
   char *colname;
+
+
+A4GL_debug("req_field_input_array - %c",type);
   arr = arrv;
 
   if (type == '+')
@@ -2156,6 +2159,16 @@ A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
 			arr->curr_attrib - 1);
       return 1;
     }
+
+  if (type == '0')
+    {				// Next field 'current' (used internall)
+      A4GL_debug ("Init control stack");
+      A4GL_init_control_stack (arr, 0);
+      //arr->currform->currentfield = 0;
+      //A4GL_newMovement (arr, arr->scr_line, arr->arr_line, arr->curr_attrib );
+      return 1;
+    }
+
 
 
   A4GL_debug ("req_field");
