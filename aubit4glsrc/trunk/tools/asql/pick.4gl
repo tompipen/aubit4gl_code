@@ -182,10 +182,11 @@ if mv_cnt >=1 then
 	let int_flag=false
 
 		let lv_counter=0
-	while true
-		let lv_counter=lv_counter+1
 		#let lv_txt2=lv_txt clipped ,lv_Counter using "<<<<<<"
 		let lv_txt2=lv_txt
+		display lv_txt2 clipped ,"" at 1,1
+	while true
+		let lv_counter=lv_counter+1
 		call show_pick()
 		let int_flag=false
 		prompt lv_txt2 clipped for lv_value #attribute(normal)
