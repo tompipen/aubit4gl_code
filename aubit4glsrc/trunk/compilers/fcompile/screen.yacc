@@ -50,6 +50,7 @@ REQUIRED REVERSE VERIFY WORDWRAP COMPRESS NONCOMPRESS TO  AS
 
 /* extensions */
 %token LISTBOX BUTTON KW_PANEL
+
 %%
 
 /* rules */
@@ -63,8 +64,13 @@ DATABASE FORMONLY {the_form.dbname=strdup("formonly");}
 | DATABASE dbname {the_form.dbname=strdup($<str>2);}
 ;
 
+named_or_kw :
+	NAMED 
+	| any_kword
+;
+
 dbname : 
-NAMED | NAMED ATSIGN NAMED {sprintf($<str>$,"%s@%s",$<str>1,$<str>3);}
+named_or_kw | named_or_kw ATSIGN named_or_kw {sprintf($<str>$,"%s@%s",$<str>1,$<str>3);}
 ;
 
 screen_section : screens_section | screen_section screens_section ;
@@ -76,8 +82,8 @@ the_form.snames.snames_len++;the_form.snames.snames_val=realloc(the_form.snames.
 } op_title op_size { ignorekw=1; lineno=0; scr++; if (scr>1) newscreen=1; } 
 OPEN_BRACE { lineno=0; } 
 screen_layout 
-CLOSE_BRACE { ignorekw=0; if (lineno>the_form.maxline) the_form.maxline=lineno;} 
-op_end {in_screen_section=0;}
+CLOSE_BRACE { ignorekw=0; if (lineno>the_form.maxline) the_form.maxline=lineno;in_screen_section=0;} 
+op_end 
 ;
 
 op_title : {
@@ -118,7 +124,7 @@ screen_element
 | screen_layout screen_element
 ;
 
-some_text: NAMED {
+some_text: named_or_kw {
 	int a;
 	static char buff[256];
 	strcpy(buff,$<str>1);
@@ -135,11 +141,19 @@ some_text {
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	add_field("_label",1+colno-strlen($<str>1),lineno,strlen($<str>1),scr,0,$<str>1);
 } 
-| field  | CH {
+| field  
+| CH {
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	add_field("_label",1+colno-strlen($<str>1),lineno,1,scr,0,$<str>1);
 }
+| PIPE {
+	if (colno>the_form.maxcol) the_form.maxcol=colno; 
+	if (lineno>the_form.maxline) the_form.maxline=lineno;
+	add_field("_label",1+colno-strlen($<str>1),lineno,1,scr,0,$<str>1);
+}
+
+
 | CHAR_VALUE {
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
@@ -202,22 +216,22 @@ table_def
 | table_def_list COMMA table_def
 ;
 
-table_def : NAMED opequal { add_table($<str>2,$<str>1); } 
+table_def : named_or_kw opequal { add_table($<str>2,$<str>1); } 
 ;
 
 opequal :  {strcpy($<str>$,"");}
 | EQUAL table_qualifier  {sprintf($<str>$,"%s",$<str>2);}
 
-table_qualifier : NAMED {sprintf($<str>$,"%s", $<str>1);}
-| NAMED COLON NAMED {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
-| NAMED ATSIGN NAMED 
+table_qualifier : named_or_kw {sprintf($<str>$,"%s", $<str>1);}
+| named_or_kw COLON named_or_kw {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
+| named_or_kw ATSIGN named_or_kw 
         {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
-| NAMED ATSIGN NAMED COLON NAMED
-        {sprintf($<str>$,"%s%s%s%s%s", $<str>1, $<str>2, $<str>3,$<str>4,$<str>5);}
+| named_or_kw ATSIGN named_or_kw COLON named_or_kw {sprintf($<str>$,"%s%s%s%s%s", $<str>1, $<str>2, $<str>3,$<str>4,$<str>5);}
+| named_or_kw DOT named_or_kw {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
 ;
 
 opowner : {strcpy($<str>$,"");}
-| NAMED DOT {sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
+| named_or_kw DOT {sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
 | CHAR_VALUE DOT {sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
 ;
 
@@ -284,21 +298,21 @@ FORMONLY DOT field_name {
 	fld->colname=strdup($<str>3);
 	fld->datatype=atoi($<str>5)+256;
 }
-| FORMONLY DOT field_name TYPE LIKE NAMED {
+| FORMONLY DOT field_name TYPE LIKE named_or_kw {
 	fld->tabname=strdup("formonly");
 	fld->colname=strdup($<str>3);
 }
-| FORMONLY DOT field_name TYPE LIKE NAMED DOT NAMED {
+| FORMONLY DOT field_name TYPE LIKE named_or_kw DOT named_or_kw {
 	fld->tabname=strdup("formonly");
 	fld->colname=strdup($<str>3);
 	exitwith("NEEDS FIXING");
 }
-| NAMED DOT NAMED {
+| named_or_kw DOT named_or_kw {
 	fld->tabname=strdup($<str>1); 
 	fld->colname=strdup($<str>3);
         fld->datatype=getdatatype(fld->colname,fld->tabname);
 }
-| NAMED {
+| named_or_kw {
 	fld->colname=strdup($<str>1);
         fld->datatype=getdatatype(fld->colname,fld->tabname);
 };
@@ -324,8 +338,8 @@ AUTONEXT {
 | DEFAULT EQUAL def_val {
 	add_str_attr(fld,FA_S_DEFAULT,$<str>3);
 }
-| DISPLAY LIKE NAMED
-| DISPLAY LIKE NAMED DOT NAMED
+| DISPLAY LIKE named_or_kw
+| DISPLAY LIKE named_or_kw DOT named_or_kw
 | DOWNSHIFT {
 	add_bool_attr(fld,FA_B_DOWNSHIFT);
 }
@@ -438,13 +452,20 @@ op_instruction_section :
 instruct_opts op_end;
 
 instruct_opts :  
-instruct_op_1 | instruct_opts  instruct_op_1 ;
+	instruct_op_1 | instruct_opts  instruct_op_1 ;
 
 instruct_op_1 : instruct_op | instruct_op SEMICOLON;
 
 instruct_op :
 DELIMITERS CHAR_VALUE {
-	the_form.delim=strdup(char_val($<str>2));
+	char buff[4];
+	strcpy(buff,char_val($<str>2));
+	if (strlen(buff)==1) {
+		buff[1]=buff[0];
+		buff[2]=buff[0];
+		buff[3]=0;
+	}
+	the_form.delim=strdup(buff);
 }
 | KW_SCREEN RECORD {
 add_srec();
@@ -457,10 +478,10 @@ op_ltype : | AS LISTBOX;
 op_semi: | SEMICOLON;
 
 srec_dim : 
-NAMED  {
+named_or_kw  {
    set_dim_srec($<str>1,1);
 }
-| NAMED OPEN_SQUARE NUMBER_VALUE CLOSE_SQUARE {
+| named_or_kw OPEN_SQUARE NUMBER_VALUE CLOSE_SQUARE {
    set_dim_srec($<str>1,atoi($<str>3));
 };
 
@@ -474,13 +495,13 @@ field_list_element {
 };
 
 field_list_item :
-NAMED	
+named_or_kw	
 {add_srec_attribute("",$<str>1,""); }
-| NAMED DOT NAMED	 
+| named_or_kw DOT named_or_kw	 
 {add_srec_attribute($<str>1,$<str>3,""); }
-| FORMONLY DOT NAMED	 
+| FORMONLY DOT named_or_kw	 
 {add_srec_attribute($<str>1,$<str>3,""); }
-| NAMED DOT STAR 
+| named_or_kw DOT STAR 
 {add_srec_attribute($<str>1,"*",""); }
 | FORMONLY DOT STAR 
 {add_srec_attribute($<str>1,"*",""); }
@@ -492,10 +513,10 @@ field_list_item  | field_list_item THROUGH field_list_item {add_srec_attribute("
 
 
 field_name : 
-NAMED;
+named_or_kw;
 
 field_tag_name : 
-NAMED;
+named_or_kw;
 
 datatype : 
 KW_CHAR {
@@ -570,6 +591,81 @@ opt_dec_ext : {strcpy($<str>$,"");}
 	| OPEN_BRACKET NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_BRACKET {sprintf($<str>$,"%d.%d",atoi($<str>2),atoi($<str>4));}
 ;
 
+
+any_kword : 
+ AS
+| AUTONEXT
+| BLACK
+| BLINK
+| BLUE
+| BUTTON
+| BY
+| COLOR
+| COMMENT
+| COMMENTS
+| COMPRESS 
+| CONFIG
+| CYAN
+| DATABASE
+| DATETIME
+| DEFAULT
+| DELIMITERS
+| DISPLAY
+| DOWNSHIFT
+| DYNAMIC 
+| FORMAT
+| FORMONLY 
+| GREEN
+| INCLUDE
+| INPUT
+| INTERVAL
+| INVISIBLE
+| KW_BYTE 
+| KW_CHAR
+| KW_DATE
+| KW_DECIMAL
+| KW_FLOAT
+| KW_INT
+| KW_NULL
+| KW_PANEL
+| KW_SCREEN
+| KW_SIZE 
+| KW_TEXT 
+| LEFT
+| LIKE 
+| LISTBOX
+| MAGENTA
+| MONEY
+| NOENTRY
+| NONCOMPRESS 
+| NOT 
+| PICTURE
+| PROGRAM
+| RECORD 
+| RED
+| REQUIRED
+| REVERSE
+| SERIAL 
+| SMALLFLOAT
+| SMALLINT
+| SQLONLY  
+| SQL_VAR
+| TABLES 
+| THROUGH 
+| TITLE
+| TO  
+| TYPE 
+| UNDERLINE
+| UPSHIFT
+| VARCHAR 
+| VERIFY 
+| WHITE
+| WIDGET 
+| WITHOUT
+| WORDWRAP 
+| YELLOW
+
+;
 %%
 #include "lex.yy.c"
 
