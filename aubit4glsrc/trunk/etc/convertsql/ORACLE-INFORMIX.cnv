@@ -1,0 +1,6 @@
+# rules for converting Oracle SQL to Informix-compatible syntax
+
+CONSTRAINT_NAME_AFTER
+REPLACE oid = rowid
+REPLACE trunc(sysdate) = today
+REPLACE sysdate = current year to second
