@@ -1,3 +1,32 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: lexer.c,v 1.28 2002-05-14 09:27:27 afalout Exp $
+#*/
+
 /**
  * @file
  * Lexical analisys.
@@ -13,49 +42,84 @@
  * This one is implemented only in C.
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+
 #include <stdio.h>
 #include <string.h>
 #include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h" // acl_getenv()
 #include "rules/generated/kw.h"
 #include "rules/generated/y.tab.h"
+
+/*
+=====================================================================
+					Constants definitions
+=====================================================================
+*/
+
 #ifndef KWS_COMMENT
-#define KWS_COMMENT COMMENT
+	#define KWS_COMMENT COMMENT
 #endif
+
+#define stricmp strcasecmp
+#define TYPE_EOF  -1
+#define TYPE_USTRING  -2	/* unterminated string */
+#define TYPE_NUM 3
+#define DBG			//
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 /// Extern reserved words table
 extern struct s_kw kwords[];
-
 char idents[256][256];
 int idents_cnt = 0;
 extern char curr_func[];
 extern char infilename[];
-char *translate(char *s);
-/// Pointer to the source file openen being parsed
-FILE *yyin = 0;
-
-/// Current line number
-int yylineno = 1;
-
+FILE *yyin = 0; /// Pointer to the source file openen being parsed
+int yylineno = 1; /// Current line number
 extern int chk4var;
 char *lastword;
 int lastlex = -2;
 extern int yyin_len;
-
 extern int in_define;
-
 int xccode = 0;
 int ccnt = 0;
 char xwords[256][256];
 int word_cnt = 0;
-
 long fpos;
-#define stricmp strcasecmp
 
-#define TYPE_EOF  -1
-#define TYPE_USTRING  -2	/* unterminated string */
-#define TYPE_NUM 3
+struct translate_string {
+	char *from;
+	char *to;
+	char *identifier;
+};
 
-#define DBG			//
+extern struct translate_string *translate_list;
+extern int translate_list_cnt;
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+char *translate(char *s);
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 
 /**
@@ -64,7 +128,8 @@ long fpos;
  * @param f The file pointer to the file where the parsing is made
  * @return 
  */
-int mja_fgetc (FILE * f)
+int 
+mja_fgetc (FILE * f)
 {
   int a;
   a = fgetc (f);
@@ -81,7 +146,8 @@ int mja_fgetc (FILE * f)
  * @param a The Character to be ungeted
  * @param f The file pointer of file being read
  */
-static void mja_ungetc (int a, FILE * f)
+static void 
+mja_ungetc (int a, FILE * f)
 {
   ungetc (a, f);
   if (a == '\n')
@@ -99,7 +165,8 @@ static void mja_ungetc (int a, FILE * f)
  *   - 0 : Its NOT an identifier
  *   - 1 : Its an identifier
  */
-static int isident (char *p)
+static int 
+isident (char *p)
 {
   int a;
   for (a = 0; a < strlen (p); a++)
@@ -116,7 +183,8 @@ static int isident (char *p)
  * @param a
  * @param instr
  */
-static void ccat (char *s, char a, int instr)
+static void 
+ccat (char *s, char a, int instr)
 {
   char buff[3];
   if (instr == 0 || (a != '\n' && a != '\r' && a != '\t'))
@@ -148,7 +216,8 @@ static void ccat (char *s, char a, int instr)
  *   - 1 : Its a number with just decimal part
  *   - 2 : Its a number with fractionary part
  */
-static int isnum(char *s)
+static int
+isnum(char *s)
 {
   int a;
   int dp = 0;
@@ -182,7 +251,8 @@ static int isnum(char *s)
  * @param t
  * @return A pointer to a static buffer that contains the token readed
  */
-static char *read_word2 (FILE * f, int *t)
+static char *
+read_word2 (FILE * f, int *t)
 {
   static char word[1024] = "";
   int escp = 0;
@@ -445,7 +515,8 @@ static char *read_word2 (FILE * f, int *t)
  * @param t
  * @return A pointer to a static buffer that contains the token readed
  */
-static char *read_word (FILE * f, int *t)
+static char *
+read_word (FILE * f, int *t)
 {
   char *ptr;
   char *s=0;
@@ -476,7 +547,8 @@ char *s2;
  * @param p
  * @return 
  */
-static int words (int cnt, int pos, FILE * f, char *p)
+static int 
+words (int cnt, int pos, FILE * f, char *p)
 {
   int f_pos;
   int z;
@@ -531,7 +603,8 @@ static int words (int cnt, int pos, FILE * f, char *p)
  * @param c
  * @return
  */
-static char *mk_word (int c)
+static char *
+mk_word (int c)
 {
   static char buff[256];
   int a;
@@ -565,7 +638,8 @@ static char *mk_word (int c)
  * @param str
  * @return The keyword integer identifier (please use the defines)
  */
-static int chk_word (FILE * f, char *str)
+static int 
+chk_word (FILE * f, char *str)
 {
   long a;
   int cnt;
@@ -578,17 +652,17 @@ static int chk_word (FILE * f, char *str)
 
   p = read_word (f, &t);
 
-debug("p=%s\n",p);
+	debug("p=%s\n",p);
   if (strcmp (p, "sql_code") == 0 && xccode == 0)
     {
       xccode = 2;
       return KW_CSTART;
     }
 
-  if ( (strcasecmp (p, "--!code") == 0 
-|| strcasecmp (p, "code") == 0 
-)
- && xccode == 0)
+  if ( (strcasecmp (p, "--!code") == 0
+	|| strcasecmp (p, "code") == 0
+	)
+	 && xccode == 0)
     {
       xccode = 1;
       return KW_CSTART;
@@ -599,12 +673,12 @@ debug("p=%s\n",p);
 	exit(0);
   }
 
-  if ( (strcasecmp (p, "endcode") == 0 
-|| strcasecmp (p, "--!endcode") == 0 
-|| strcasecmp (p, "--!end code") == 0 
-|| strcasecmp (p, "end code") == 0 
-)
-&& xccode)
+  if ( (strcasecmp (p, "endcode") == 0
+	|| strcasecmp (p, "--!endcode") == 0
+	|| strcasecmp (p, "--!end code") == 0
+	|| strcasecmp (p, "end code") == 0
+	)
+	&& xccode)
     {
       lex_printc ("/* End of code */");
       xccode = 0;
@@ -641,7 +715,7 @@ debug("p=%s\n",p);
       return -1;
     }
 
-//printf("Read word %s\n",p);
+	//printf("Read word %s\n",p);
 
   while (kwords[cnt].id > 0)
     {
@@ -677,7 +751,8 @@ debug("p=%s\n",p);
  *
  * @param c The string to be lowered
  */
-static void to_lower_str (char *s)
+static void 
+to_lower_str (char *s)
 {
   int a;
   for (a = 0; a < strlen (s); a++)
@@ -690,7 +765,8 @@ static void to_lower_str (char *s)
  *
  * @param s The string being fixed
  */
-static void fix_bad_strings (char *s)
+static void 
+fix_bad_strings (char *s)
 {
   char buff[10000];
   int c;
@@ -738,7 +814,8 @@ static void fix_bad_strings (char *s)
  *  The purpose is give tokens to the syntatic parser (made in yacc/bison).
  *
  */
-yylex ()
+int
+yylex (void)
 {
   int a;
   char buff[1024];
@@ -813,7 +890,8 @@ yylex ()
  *
  * @lc 
  */
-static int relex (int lc)
+static int 
+relex (int lc)
 {
   int a;
   fprintf (stderr, ">>>> %d %s (%d)\n", lastlex, lastword, lc);
@@ -845,7 +923,8 @@ static int relex (int lc)
  * @param kw
  * @param v
  */
-void turn_state (int kw, int v)
+void
+turn_state (int kw, int v)
 {
   int a;
 //debug("State changes %d to %d\n",kw,v);
@@ -865,154 +944,15 @@ void turn_state (int kw, int v)
 }
 
 
-char *get_idents(int a) {
+/**
+ *
+ * @param a
+ */
+char *
+get_idents(int a)
+{
 	return idents[a];
 }
 
 
-
-struct translate_string {
-	char *from;
-	char *to;
-	char *identifier;
-};
-
-extern struct translate_string *translate_list;
-extern int translate_list_cnt;
-
-/* duplicate from formwrite2.c
-
-add_translate(int mode,char * from,char * to) {
-	char buff[2048];
-
-	translate_list_cnt++;
-	translate_list=(struct translate_string *)realloc(translate_list,sizeof( struct translate_string)*translate_list_cnt);
-	translate_list[translate_list_cnt-1].from=strdup(from);
-	debug("Adding %s -> %s mode %d",from,to,mode);
-	if (mode==1) {
-		sprintf(buff,"\"%s\"",to);
-		translate_list[translate_list_cnt-1].to        =strdup(buff);
-		translate_list[translate_list_cnt-1].identifier=0;
-	} else {
-		sprintf(buff,"get_translated_id(\"%s\")",to);
-		translate_list[translate_list_cnt-1].identifier=strdup(buff);
-		translate_list[translate_list_cnt-1].to        =0;
-	}
-}
-*/
-
-
-#ifdef MOVED_TO_LIB_SLASH_TRANSLATE_DOT_C
-/***************************/
-/* Translation definitions */
-/***************************/
-struct translate_string {
-	char *from;
-	char *to;
-	char *identifier;
-};
-
-struct translate_string *translate_list=(void *)-1;
-int translate_list_cnt=0;
-
-
-char *translate(char *s) {
-int a;
-make_trans_list();
-for (a=0;a<translate_list_cnt;a++) {
-		if (strcmp(translate_list[a].from,s)==0) {
-			debug("TRANSLATION FOUND for %s",s);
-
-			if (translate_list[a].to!=0)         {
-				debug("->%s\n",translate_list[a].to);
-				return translate_list[a].to;
-			}
-
-			if (translate_list[a].identifier!=0) {
-					return translate_list[a].identifier;
-			}
-			debug("Shouldn't happen");
-		}
-}
-//
-return 0;
-}
-
-#define TRANSLINESIZE 2048
-
-make_trans_list() {
-char *filename;
-FILE *file;
-char buff[TRANSLINESIZE];
-
- if (translate_list!=(void *)-1) return;
- translate_list=0;
- filename=(char *)acl_getenv("TRANSLATEFILE");
-
- if (filename==0) return;
- if (strlen(filename)==0) return;
- file=(FILE *)open_file_dbpath(filename);
-
- if (file==0) {
-		yyerror("Unable to locate translation file");
-		return;
- }
-
-
- while (1) {
-	int a;
-	char *ptr;
-	char *ptr2;
-
-	fgets(buff,TRANSLINESIZE,file);
-	if (feof(file)) break;
-	stripnl(buff);
-	if (buff[0]=='#') continue;
-	
-	for (a=1;a<strlen(buff)-1;a++) {
-		if (buff[a]==':'&&buff[a+1]=='='&&buff[a-1]!='/') {
-			ptr2=&buff[a+2];
-			buff[a]=0;
-			add_translate(1,buff,ptr2,1);
-		}
-
-		if (buff[a]==':'&&buff[a+1]=='>'&&buff[a-1]!='/') {
-			ptr2=&buff[a+2];
-			buff[a]=0;
-			add_translate(2,buff,ptr2,1);
-		}
-
-
-	}
- }
-}
-
-char **list_of_strings=0;
-int list_of_strings_len=0;
-
-dumpstring(char *s,long n,char *fname) {
-static FILE *f;
-static int ident=0;
-int a;
-	if (strlen(acl_getenv("DUMPSTRINGS"))) {
-		if (f==0) {
-			f=fopen("strings.lang","w");
-		}
-		if (f==0) return;
-
-		for (a=0;a<list_of_strings_len;a++) {
-			if (strcmp(list_of_strings[a],s)==0) return;
-		}
-
-		list_of_strings_len++;
-		list_of_strings=(char **)realloc(list_of_strings,list_of_strings_len*sizeof(char *));
-		list_of_strings[list_of_strings_len-1]=s;
-
-		if (stricmp((char *)acl_getenv("DUMPSTRINGS"),"ident")==0) {
-			fprintf(f,"%s:>%d\n",s,ident++);
-		} else {
-			fprintf(f,"%s:=\n",s);
-		}
-	}
-}
-#endif
+// ================================== EOF =========================

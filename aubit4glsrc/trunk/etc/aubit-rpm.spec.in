@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.5 2002-03-31 07:05:31 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.6 2002-05-14 09:27:27 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
@@ -117,24 +117,47 @@ make install
 %dir /opt/aubit4gl/tools
 %dir /opt/aubit4gl/docs
 
-#FIXME: this files should be set from configure, only if coresponding
-#libraries are present on system making RPM:
-/opt/aubit4gl/lib/libUI_GTK.so
-/opt/aubit4gl/lib/libPDF_PDF.so
-/opt/aubit4gl/lib/libSQL_unixodbc.so
-/opt/aubit4gl/lib/libSQL_iodbc.so
-/opt/aubit4gl/lib/libSQL_esql.so
-/opt/aubit4gl/lib/libSQL_ifxodbc.so
-/opt/aubit4gl/lib/libSQL_pgodbc.so
-
-#now obsolete:
-#/opt/aubit4gl/lib/libaclallgui.a
-#/opt/aubit4gl/lib/libgtk4gl_x.a
-#/opt/aubit4gl/lib/libgtk4gl.so
-#/opt/aubit4gl/lib/libaclsharedgui.so
-#/opt/aubit4gl/lib/libgtk4gl_x.so
+#Files that will be created depending on system confuguration, defined
+#from configure:
+@RPMFILE_1@
+@RPMFILE_2@
+@RPMFILE_3@
+@RPMFILE_4@
+@RPMFILE_5@
+@RPMFILE_6@
+@RPMFILE_7@
+@RPMFILE_8@
+@RPMFILE_9@
+@RPMFILE_10@
+@RPMFILE_11@
+@RPMFILE_12@
+@RPMFILE_13@
+@RPMFILE_14@
+@RPMFILE_15@
+@RPMFILE_16@
+@RPMFILE_17@
+@RPMFILE_18@
+@RPMFILE_19@
+@RPMFILE_20@
 
 #Below are only files that should be created by make in any case:
+
+## ==================================================================
+##               Files that are allways created
+## ==================================================================
+
+#Shared libraries:
+/opt/aubit4gl/lib/libaubit4gl.so
+/opt/aubit4gl/lib/libEXREPORT_NOPDF.so
+/opt/aubit4gl/lib/libRPC_NORPC.so
+/opt/aubit4gl/lib/libFORM_NOFORM.so
+/opt/aubit4gl/lib/libMENU_NOMENU.so
+/opt/aubit4gl/lib/libSQL_nosql.so
+/opt/aubit4gl/lib/libUI_CONSOLE.so
+/opt/aubit4gl/lib/libMSG_NATIVE.so
+/opt/aubit4gl/lib/libLEX_C.so
+/opt/aubit4gl/lib/libLEX_PERL.so
+
 
 #Executables:
 /opt/aubit4gl/bin/4glc
@@ -158,20 +181,10 @@ make install
 #"/opt/aubit4gl/bin/*"
 
 #Include files:
-/opt/aubit4gl/incl/4glhdr.h
-/opt/aubit4gl/incl/acl4glgui.h
+/opt/aubit4gl/incl/a4gl_incl_4glhdr.h
+/opt/aubit4gl/incl/a4gl_incl_acl4glgui.h
 "/opt/aubit4gl/incl/*.mk"
 "/opt/aubit4gl/incl/*.mki"
-
-
-#FIXME: remove static libraries from future distros:
-#/opt/aubit4gl/lib/libaclall.a
-
-#Shared libraries:
-/opt/aubit4gl/lib/libaclshared.so
-/opt/aubit4gl/lib/libPDF_NOPDF.so
-/opt/aubit4gl/lib/libSQL_nosql.so
-/opt/aubit4gl/lib/libUI_TUI.so
 
 #Examples:
 "/opt/aubit4gl/tools/test/*.4gl"

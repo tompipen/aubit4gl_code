@@ -24,10 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.60 2002-05-11 05:51:19 afalout Exp $
+# $Id: mod.c,v 1.61 2002-05-14 09:27:27 afalout Exp $
 #
 */
-
 
 /**
  * @file
@@ -43,19 +42,22 @@
  * @todo -pedantic
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 //#include "../libincl/compiler.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 
-
-extern int in_define;
-
-
 #include "rules/generated/y.tab.h"
-#include "a4gl_report.h"
 #include "rules/generated/kw.h"
+
+#include "a4gl_report.h"
 #include "a4gl_oform.h"
 #include "a4gl_tunable.h"
 #include "a4gl_debug.h"
@@ -63,13 +65,32 @@ extern int in_define;
 #include "a4gl_4glc_compiledefs.h"
 #include "a4gl_aubit_lib.h"
 
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
+
+#define USE_PRINTCOMMENT
+#define GEN_STACKS 10
+#define MAXVARS 2000
+#define EMPTY "----"
+#define MAXMENU 10
+#define MAXMENUOPTS 10
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+
+extern int in_define;
 static int inc = 0;
 static char pklist[2048] = "";
 static char upd_using_notpk[5000] = "";
 static int upd_using_notpk_cnt = 0;
-
-/** The report type */
-int rep_type = 0;
+int rep_type = 0; /** The report type */
 
 /*
 #ifdef LEXER
@@ -80,29 +101,14 @@ long fpos;
 #endif
 */
 
-#define USE_PRINTCOMMENT
-
-/** The count of menus found */
-extern int menu_cnt;
-
-/** The source file line number */
-extern int yylineno;
-
-/** The input (4gl file name */
-extern char *infilename;
-
-/** Flag that indicate that a database is being used */
-static int db_used = 0;
+extern int menu_cnt; 		/** The count of menus found */
+extern int yylineno; 		/** The source file line number */
+extern char *infilename;    /** The input (4gl file name */
+static int db_used = 0;     /** Flag that indicate that a database is being used */
 int last_var_found = -1;
 int var_hdr_finished;
-/*
-#ifdef LEXER
-int xccode = 0;
-long fpos;
-#endif
-*/
-/** Array of constants defined in some scope */
-struct s_constants
+
+struct s_constants 			/** Array of constants defined in some scope */
 {
   char type;     /**< The constant type */
   void *ptr;     /**< A pointer to the value of the constant */
@@ -125,48 +131,30 @@ int when_code[8] = { WHEN_STOP,
   WHEN_NOTSET
 };
 char when_to_tmp[64];
-
 char when_to[64][8];
-
 int menu_nos[100];
 int cmenu = 0;
-
 int use_group = 0;
 char curr_rep_name[256];
 int curr_rep_block;
-
 int max_menu_no = 0;
-
 struct s_report sreports[1024];
 int sreports_cnt = 0;
-
-/** Menu titles */
-char mmtitle[132][132];
-
-/** Variables dump output file name */
-extern char *outputfilename;
-
+char mmtitle[132][132];         /** Menu titles */
+extern char *outputfilename;    /** Variables dump output file name */
 int read_glob_var = 0;
 int counters[256];
 int count_counters = 0;
-
 struct s_report_stack report_stack[REPORTSTACKSIZE];
-
 int report_stack_cnt = 0;
 int report_cnt = 1;
-
 int nblock_no = 1;
-
-#define GEN_STACKS 10
 char gen_stack[GEN_STACKS][100][80];
 int gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
 struct s_constr_buff constr_buff[256];
-
 int constr_cnt = 0;
 
-
-/** 
+/**
  * Input bind array.
  *
  * Used for instructions like execute using or open using wher we have a list 
@@ -183,21 +171,14 @@ struct binding fbind[NUMBINDINGS];
 struct binding ordbind[NUMBINDINGS];
 
 int ordbindcnt = 0;
-
-/** Number of elements in ibind array */
-int ibindcnt = 0;
+int ibindcnt = 0;           /** Number of elements in ibind array */
 int nullbindcnt = 0;
 int obindcnt = 0;
-
 int fbindcnt = 0;
-
-#define MAXVARS 2000
-
 
 /** Array of variables found. The level gives us the scope variable */
 struct variables
 {
-
   char var_name[65];     /**< The name of the variable */
   char var_type[20];     /**< The data type of the variable */
   char var_size[20];     /**< The size in bytes of the variables */
@@ -238,19 +219,25 @@ int ccnt = 0;
 extern int ccnt;  //in lexer.c
 //#endif
 
-#define EMPTY "----"
 
 /** Array index to the last variable filled in the variables array  */
 int varcnt = 0;
-
 int in_record = 0;
-
-#define MAXMENU 10
-#define MAXMENUOPTS 10
+struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS]; /** The menu stack array */
 
 
-/** The menu stack array */
-struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
  * Not Used
@@ -260,6 +247,7 @@ struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
  * @param z
  * @return
  */
+/*
 static char *print (char *z)
 {
   static char c[10] = "(null)";
@@ -271,13 +259,15 @@ static char *print (char *z)
 
   return z;
 }
+*/
 
 /**
  * Strip square brackets "[]" from a string.
  * 
  * @param s The string to be stripped
  */
-static void strip_bracket (char *s)
+static void 
+strip_bracket (char *s)
 {
   char buff[256];
   int a;
@@ -303,7 +293,8 @@ static void strip_bracket (char *s)
  * @param buff The original string to be stripped
  * @return static buffer with string stripped
  */
-static char *with_strip_bracket (const char *buff)
+static char *
+with_strip_bracket (const char *buff)
 {
   static char bff[256];
   debug ("with_strip_bracket\n");
@@ -319,7 +310,8 @@ static char *with_strip_bracket (const char *buff)
  * @param type The data type of the variable
  * @paran n
  */
-static void add_variable (char *name, char *type, char *n)
+static void 
+add_variable (char *name, char *type, char *n)
 {
 
   debug ("In mod.c : add_variable (name = %s type = %s n = %d varcnt = %d)\n",
@@ -374,7 +366,8 @@ static void add_variable (char *name, char *type, char *n)
 /**
  * Clear the variable stack by setting the counter to zero.
  */
-void clr_variable (void)
+void 
+clr_variable (void)
 {
   varcnt = modlevel;
 }
@@ -382,7 +375,8 @@ void clr_variable (void)
 /**
  *
  */
-void inmod (void)
+void 
+inmod (void)
 {
   modlevel = varcnt;
 }
@@ -400,7 +394,8 @@ void inmod (void)
  *   - 0 : We are NOT in command type
  *   - 1 : We are in command type
  */
-static int isin_command (char *cmd_type)
+static int
+isin_command (char *cmd_type)
 {
   int z;
   if (ccnt == 0)
@@ -431,7 +426,8 @@ static int isin_command (char *cmd_type)
  *   - G
  * @param vname The record variable name
  */
-static int print_record(int z, char ff,char *vname)
+static int 
+print_record(int z, char ff,char *vname)
 {
   int a;
   // It should be declared here because the two function are tighly coupled
@@ -495,7 +491,8 @@ static int print_record(int z, char ff,char *vname)
  *
  * @param a The increment.
  */
-void setinc (a)
+void 
+setinc (a)
 {
   inc += a;
 }
@@ -514,7 +511,8 @@ void setinc (a)
  *   - n
  *   - M : The variable is with modular scope
  */
-static void print_variable (int z, char ff)
+static void 
+print_variable (int z, char ff)
 {
   char tmpbuff[80];
 
@@ -612,7 +610,8 @@ static void print_variable (int z, char ff)
 /**
  * Dumps the global variables to a file named <target_file>.glb
  */
-static void dump_gvars(void)
+static void 
+dump_gvars(void)
 {
 
   FILE *f;
@@ -660,7 +659,8 @@ static void dump_gvars(void)
  *   - The parameter pointer if not null
  *   - An empty string otherwise (with just one NULL caracter)
  */
-static char *ignull (char *ptr)
+static char *
+ignull (char *ptr)
 {
   static char *empty = "";
   if (ptr)
@@ -677,7 +677,8 @@ static char *ignull (char *ptr)
  * It is mainly used to debug the code generation
  *
  */
-void dump_vars (void)
+void 
+dump_vars (void)
 {
 
   FILE *f;
@@ -711,7 +712,8 @@ void dump_vars (void)
  * The scope level is defined by the global modlevel
  *
  */
-void print_variables (void)
+void 
+print_variables (void)
 {
 
   int a;
@@ -784,7 +786,8 @@ void print_variables (void)
  * @param a The variable name
  * @param n
  */
-void push_name (char *a, char *n)
+void 
+push_name (char *a, char *n)
 {
   debug ("In mod.c : push_name  a = %s n = %d \n", a, n);
   add_variable (a, 0, n);
@@ -805,7 +808,8 @@ void push_name (char *a, char *n)
  * @param as If it is recognizing an array or associate is the number of 
  *           elements
  */
-void push_type (char *a, char *n, char *as)
+void 
+push_type (char *a, char *n, char *as)
 {
   int z;
 
@@ -860,7 +864,8 @@ void push_type (char *a, char *n, char *as)
 /**
  * The parser found the starting of a new record.
  */
-void push_record (void)
+void 
+push_record (void)
 {
   //in_record++;
   push_type ("_RECORD", 0, 0);
@@ -872,7 +877,8 @@ void push_record (void)
  * @param a The size of the string used in the key.
  * @param b Number of elements of the hash (array).
  */
-void push_associate (char *a, char *b)
+void 
+push_associate (char *a, char *b)
 {
   push_type ("_ASSOCIATE", a, b);
 }
@@ -880,7 +886,8 @@ void push_associate (char *a, char *b)
 /**
  * Does nothing
  */
-void pop_associate (char *a)
+void 
+pop_associate (char *a)
 {
   /*add_variable (0,"_ENDASSOC", 0); */
 }
@@ -890,7 +897,8 @@ void pop_associate (char *a)
  * @param tab
  * @param pkey
  */
-void add_link_to (char *tab, char *pkey)
+void 
+add_link_to (char *tab, char *pkey)
 {
   char *pt;
   char *pk;
@@ -913,7 +921,8 @@ void add_link_to (char *tab, char *pkey)
 /**
  *
  */
-void pop_record (void)
+void 
+pop_record (void)
 {
 
   //in_record--;
@@ -932,7 +941,8 @@ void pop_record (void)
  * @param c
  * @param hlp
  */
-void push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
+void 
+push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
 {
   strcpy (menu_stack[mn][mnopt - 1].menu_title, b);
   strcpy (menu_stack[mn][mnopt - 1].menu_help, c);
@@ -952,7 +962,8 @@ void push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
  *
  * @return The content of the inc variable.
  */
-int getinc(void)
+int 
+getinc(void)
 {
   return inc;
 }
@@ -966,7 +977,8 @@ int getinc(void)
  *   - The index of the character if found in the string
  *   - 0 if not found
  */
-static int findex (char *str, char c)
+static int 
+findex (char *str, char c)
 {
   int a;
   for (a = 0; a < strlen (str); a++)
@@ -986,7 +998,8 @@ static int findex (char *str, char c)
  * @param s The string where the data type will be scanned
  * @return The data type in numeric code
  */
-static int find_type (char *s)
+static int 
+find_type (char *s)
 {
   char errbuff[80];
   debug ("find_type %s\n", s);
@@ -1069,7 +1082,8 @@ static int find_type (char *s)
  *   - -2 Is a variable thru variable
  *   - A numeric code number identifiing the data type (@see find_type())
  */
-static long scan_variables (char *s, int mode)
+static long 
+scan_variables (char *s, int mode)
 {
   int a;
   long z;
@@ -1213,7 +1227,8 @@ static long scan_variables (char *s, int mode)
  * @param s The string eventualy containing the variable
  * @return The data type in numeric code
  */
-long scan_variable (char *s)
+long 
+scan_variable (char *s)
 {
   char buff[256];
   int a;
@@ -1240,7 +1255,8 @@ long scan_variable (char *s)
  *   - 1
  *   - 
  */
-static long isvartype (char *s, int mode)
+static long 
+isvartype (char *s, int mode)
 {
   int a;
   long z;
@@ -1313,7 +1329,8 @@ static long isvartype (char *s, int mode)
  *   - 0 
  *   - 1
  */
-long isarrvariable (char *s)
+long 
+isarrvariable (char *s)
 {
   long a;
   a = isvartype (s, 1);
@@ -1332,7 +1349,8 @@ long isarrvariable (char *s)
  *   - 0
  *   - 1
  */
-static long isrecvariable (char *s)
+static long 
+isrecvariable (char *s)
 {
   return isvartype (s, 2);
 }
@@ -1342,7 +1360,8 @@ static long isrecvariable (char *s)
  *
  * @todo : Undertstand if this function is old code and if so remove-it
  */
-static int scan_arr_variable (char *s)
+static int 
+scan_arr_variable (char *s)
 {
 
   int a;
@@ -1397,7 +1416,8 @@ static int scan_arr_variable (char *s)
  * @param as The size of the array if the variable is of that type
  * @param lvl Scope level (Global, Modular or Local)
  */
-static void set_variable (char *name, char *type, char *n, char *as, int lvl)
+static void 
+set_variable (char *name, char *type, char *n, char *as, int lvl)
 {
 
   vars[varcnt].level = lvl;
@@ -1425,7 +1445,8 @@ static void set_variable (char *name, char *type, char *n, char *as, int lvl)
  * @param ptr
  * @param name
  */
-int add_constant (char t, char *ptr, char *name)
+int 
+add_constant (char t, char *ptr, char *name)
 {
   char scope = 'm';
   int x;
@@ -1475,7 +1496,8 @@ int add_constant (char t, char *ptr, char *name)
 /**
  * Set the internal 4gl variables in the array.
  */
-void set_4gl_vars(void)
+void 
+set_4gl_vars(void)
 {
 
   set_variable ("int_flag", "long", "0", "----", 0);
@@ -1526,11 +1548,12 @@ void set_4gl_vars(void)
  *
  * @param s The database name
  */
-void open_db (char *s)
+void 
+open_db (char *s)
 {
+char db[132];
+char buff[256];
 
-  char db[132];
-  char buff[256];
   strcpy (db, s);
   A4GLSQL_set_status (0, 1);
   A4GLSQL_init_connection (db);
@@ -1550,7 +1573,8 @@ void open_db (char *s)
  * @param s A string with the numeric 4gl data type (@see find_type()) 
  * @return The string (static) with the C declaration
  */
-static char *rettype (char *s)
+static char *
+rettype (char *s)
 {
   static char rs[20] = "long";
   debug ("In rettype : %s", s);
@@ -1597,7 +1621,8 @@ static char *rettype (char *s)
  *
  * @param s The string to be trimmed
  */
-static void trim_spaces (char *s)
+static void 
+trim_spaces (char *s)
 {
   int l;
   for (l = strlen (s) - 1; l >= 0; l--)
@@ -1620,7 +1645,8 @@ static void trim_spaces (char *s)
  *   - 0 : Column does not exist or an error ocurred.
  *   - 1 : Type readed.
  */
-static int pushLikeTableColumn(char *tableName,char *columnName)
+static int 
+pushLikeTableColumn(char *tableName,char *columnName)
 {
   int rval;
   int idtype;
@@ -1650,7 +1676,8 @@ static int pushLikeTableColumn(char *tableName,char *columnName)
  *
  * @param tableName The name of the table
  */
-static int pushLikeAllTableColumns(char *tableName)
+static int 
+pushLikeAllTableColumns(char *tableName)
 {
   int rval;
   int isize;
@@ -1699,7 +1726,8 @@ static int pushLikeAllTableColumns(char *tableName)
  *
  * @param t2 The table and column (table.column format)
  */
-static void push_like2 (char *t2)
+static void 
+push_like2 (char *t2)
 {
   char buff[300];
   char buffer[300];
@@ -1741,7 +1769,8 @@ static void push_like2 (char *t2)
  *
  * @param t The table and column (table.column format)
  */
-void push_like (char *t)
+void
+push_like (char *t)
 {
 
   debug (">>>>>> %s\n", t);
@@ -1754,7 +1783,8 @@ void push_like (char *t)
  *
  * @param t The table name
  */
-void push_rectab (char *t)
+void
+push_rectab (char *t)
 {
   push_like (t);
 }
@@ -1766,7 +1796,8 @@ void push_rectab (char *t)
  *
  * @param s The title of the menu
  */
-void push_menu_title (char *s)
+void 
+push_menu_title (char *s)
 {
   strcpy (mmtitle[menu_cnt], s);
 }
@@ -1780,7 +1811,8 @@ void push_menu_title (char *s)
  *
  * @param cmd_type The type of the command found:
  */
-void push_blockcommand (char *cmd_type)
+void 
+push_blockcommand (char *cmd_type)
 {
 
   debug ("START BLOCK %s", cmd_type);
@@ -1811,13 +1843,15 @@ void push_blockcommand (char *cmd_type)
  * @param cmd_type The type of continue found (the keyword found after 
  * the CONTINUE token).
  */
-void add_continue_blockcommand (char *cmd_type)
+void 
+add_continue_blockcommand (char *cmd_type)
 {
   int z;
   int a;
 
   char err[80];
-/* more checks here ! */
+	
+	/* more checks here ! */
 
   for (a = ccnt - 1; a > 0; a--)
     {
@@ -1839,7 +1873,8 @@ void add_continue_blockcommand (char *cmd_type)
  *   - 1 : Is a continue command.
  *   - 0 : Otherwise.
  */
-static int iscontinuecmd (char *s)
+static int 
+iscontinuecmd (char *s)
 {
 
   if (strcmp (s, "FOR") == 0)
@@ -1864,14 +1899,17 @@ static int iscontinuecmd (char *s)
  *
  * @param cmd_type The type of the block that was ended.
  */
-void pop_blockcommand (char *cmd_type)
+void 
+pop_blockcommand (char *cmd_type)
 {
   int z;
   int a;
 
   char err[80];
   debug ("END BLOCK %s", cmd_type);
-/* more checks here ! */
+
+	/* more checks here ! */
+
   ccnt--;
   if (command_stack[ccnt].block_no > 0)
     {
@@ -1911,7 +1949,8 @@ void pop_blockcommand (char *cmd_type)
  *
  * @param cmd_type
  */
-int in_command (char *cmd_type)
+int 
+in_command (char *cmd_type)
 {
 
   int z;
@@ -1954,7 +1993,8 @@ int in_command (char *cmd_type)
  * 
  * @param s The string to be trimmed
  */
-static void trim(char *s)
+static void
+trim(char *s)
 {
   if (s[strlen (s) - 1] == '\n')
     s[strlen (s) - 1] = 0;
@@ -1965,7 +2005,8 @@ static void trim(char *s)
  * @param a 
  * @param s
  */
-void push_gen (int a, char *s)
+void 
+push_gen (int a, char *s)
 {
   debug ("Push %d %s\n", a, s);
   if (gen_stack_cnt[a] >= 90)
@@ -1995,7 +2036,8 @@ static char *pop_gen (int a)
  * @param a
  * @param s
  */
-void pop_all_gen (int a, char *s)
+void 
+pop_all_gen (int a, char *s)
 {
   int z;
   for (z = 0; z < gen_stack_cnt[a]; z++)
@@ -2029,7 +2071,8 @@ static yyerrorf (char *fmt, ...)
  *   - 1 : The column is part of PK 
  *   - 0 : The column is not part of PK 
  */
-static int is_pk (char *s)
+static int 
+is_pk (char *s)
 {
   int a;
   int cnt;
@@ -2057,12 +2100,13 @@ static int is_pk (char *s)
 /**
  * @param s
  * @param bindtype
- *   - u : 
+ *   - u :
  * @return 
  *   - -1 :
  *   - 0 :
  */
-int push_bind_rec (char *s, char bindtype)
+int 
+push_bind_rec (char *s, char bindtype)
 {
   int a;
   long z;
@@ -2229,7 +2273,8 @@ int push_bind_rec (char *s, char bindtype)
  *   - F :
  * @param var The variable name to be binded.
  */
-int add_bind (char i, char *var)
+int 
+add_bind (char i, char *var)
 {
   long dtype;
 
@@ -2339,7 +2384,8 @@ int add_bind (char i, char *var)
  * @param var The variable name to be binded.
  * @return
  */
-int start_bind (char i, char *var)
+int
+start_bind (char i, char *var)
 {
   debug ("start_bind %c -  %s", i, var);
 
@@ -2383,7 +2429,8 @@ int start_bind (char i, char *var)
  *   - f or F
  * @return The counter in the bind array, 0 if invalid type.
  */
-int get_bind_cnt (char i)
+int
+get_bind_cnt (char i)
 {
   if (i == 'i')
     return ibindcnt;
@@ -2406,7 +2453,8 @@ int get_bind_cnt (char i)
  *   - f or F
  * @return The number of elements in the bind array, 0 if invalid type.
  */
-int how_many_in_bind (char i)
+int
+how_many_in_bind (char i)
 {
   if (i == 'i')
     return ibindcnt - 1;
@@ -2438,7 +2486,8 @@ int how_many_in_bind (char i)
  *
  * @param cmd_type The string containing the type name of the loop used
  */
-void continue_loop (char *cmd_type)
+void 
+continue_loop (char *cmd_type)
 {
   int a;
   int g = 0;
@@ -2480,7 +2529,8 @@ void continue_loop (char *cmd_type)
  *
  * @param cmd_type The string containing the type name of the loop used
  */
-void exit_loop (char *cmd_type)
+void 
+exit_loop (char *cmd_type)
 {
   int a;
   int g = 0;
@@ -2521,7 +2571,13 @@ void exit_loop (char *cmd_type)
   }
 }
 
-void set_curr_block (int a)
+/**
+ *
+ *
+ * @param
+ */
+void
+set_curr_block (int a)
 {
   curr_rep_block = a;
 }
@@ -2534,7 +2590,8 @@ void set_curr_block (int a)
  * @param why
  * @param whytype
  */
-void push_report_block (char *why, char whytype)
+void
+push_report_block (char *why, char whytype)
 {
   set_curr_block (0);
   strcpy (report_stack[report_stack_cnt].why, why);
@@ -2544,7 +2601,13 @@ void push_report_block (char *why, char whytype)
 }
 
 
-static get_curr_rep ()
+/**
+ *
+ *
+ * @param
+ */
+static
+get_curr_rep ()
 {
   return report_cnt;
 }
@@ -2555,7 +2618,8 @@ static get_curr_rep ()
  *
  * @param rep The report structure pointer
  */
-void init_report_structure (struct rep_structure *rep)
+void
+init_report_structure (struct rep_structure *rep)
 {
   rep->top_margin = 3;
   rep->bottom_margin = 3;
@@ -2570,8 +2634,9 @@ void init_report_structure (struct rep_structure *rep)
   strcpy (rep->output_loc, "\"stdout\"");
 }
 
-  
-void pdf_init_report_structure (struct pdf_rep_structure *rep)
+
+void 
+pdf_init_report_structure (struct pdf_rep_structure *rep)
 {
 debug("ZZ1 init structure...");
   rep->top_margin = -36.0;
@@ -2619,56 +2684,73 @@ debug("ZZ1 init structure...");
 #define p11x17_width     (float) 792.0
 #define p11x17_height    (float) 1224.0
 
-resize_paper(struct pdf_rep_structure *pdf_rep_struct) {
+/**
+ *
+ *
+ * @param
+ */
+void
+resize_paper(struct pdf_rep_structure *pdf_rep_struct)
+{
 int portrait=1;
 float a;
 
-debug("ZZ1 Fixing paper size.....");
+	debug("ZZ1 Fixing paper size.....");
 
-if (pdf_rep_struct->paper_size!=0) {
+	if (pdf_rep_struct->paper_size!=0) 
+	{
 
-if (pdf_rep_struct->paper_size<0) {
-		portrait=0;
-		pdf_rep_struct->paper_size=0-pdf_rep_struct->paper_size;
-}
+		if (pdf_rep_struct->paper_size<0)
+		{
+				portrait=0;
+				pdf_rep_struct->paper_size=0-pdf_rep_struct->paper_size;
+		}
 
-	switch (pdf_rep_struct->paper_size) {
-	case 1: 
-		pdf_rep_struct->page_length=0-a4_height;
-		pdf_rep_struct->page_width=0-a4_width;
-		break;
-	case 2: 
-		pdf_rep_struct->page_length=0-letter_height;
-		pdf_rep_struct->page_width=0-letter_width;
-		break;
-	case 3: 
-		pdf_rep_struct->page_length=0-legal_height;
-		pdf_rep_struct->page_width=0-legal_width;
-		break;
+		switch (pdf_rep_struct->paper_size)
+		{
+		case 1:
+			pdf_rep_struct->page_length=0-a4_height;
+			pdf_rep_struct->page_width=0-a4_width;
+			break;
+		case 2:
+			pdf_rep_struct->page_length=0-letter_height;
+			pdf_rep_struct->page_width=0-letter_width;
+			break;
+		case 3:
+			pdf_rep_struct->page_length=0-legal_height;
+			pdf_rep_struct->page_width=0-legal_width;
+			break;
 
-	case 4:  // Not used....
-		pdf_rep_struct->page_length=0-a4_height;
-		pdf_rep_struct->page_width=0-a4_width;
-		break;
+		case 4:  // Not used....
+			pdf_rep_struct->page_length=0-a4_height;
+			pdf_rep_struct->page_width=0-a4_width;
+			break;
 
-	case 5: 
-		pdf_rep_struct->page_length=0-a5_height;
-		pdf_rep_struct->page_width=0-a5_width;
-		break;
+		case 5:
+			pdf_rep_struct->page_length=0-a5_height;
+			pdf_rep_struct->page_width=0-a5_width;
+			break;
 
+		}
 	}
+
+
+	if (portrait==0)  // Its landscape - swap it around....
+    {
+		a=pdf_rep_struct->page_length;
+		pdf_rep_struct->page_length=pdf_rep_struct->page_width;
+		pdf_rep_struct->page_width=a;
+	}
+
 }
 
-
-if (portrait==0) { // Its landscape - swap it around....
-	a=pdf_rep_struct->page_length;
-	pdf_rep_struct->page_length=pdf_rep_struct->page_width;
-	pdf_rep_struct->page_width=a;
-}
-
-}
-
-int scan_orderby (char *varname, int cnt)
+/**
+ *
+ *
+ * @param
+ */
+int
+scan_orderby (char *varname, int cnt)
 {
   int a;
   debug ("Scanning order by for %s %d", varname, ordbindcnt);
@@ -2681,7 +2763,13 @@ int scan_orderby (char *varname, int cnt)
   return -1;
 }
 
-void reset_attrib (struct form_attr * form_attrib)
+/**
+ *
+ *
+ * @param
+ */
+void
+reset_attrib (struct form_attr * form_attrib)
 {
   debug ("Reseting attributes\n");
   form_attrib->iswindow = 0;
@@ -2696,22 +2784,34 @@ void reset_attrib (struct form_attr * form_attrib)
 }
 
 #ifdef NOLONGERUSED
-static int colour_code (int a)
-{
-  int z, b;
-  z = 1;
+	/**
+	 *
+	 *
+	 * @param
+	 */
+	static int
+	colour_code (int a)
+	{
+	  int z, b;
+	  z = 1;
 
-  return a;
+	  return a;
 
-#ifdef WIN32
-  return COLOR_PAIR (a + 1);
-#else
-  return COLOR_PAIR (a + 1);
+	#ifdef WIN32
+	  return COLOR_PAIR (a + 1);
+	#else
+	  return COLOR_PAIR (a + 1);
+	#endif
+	}
 #endif
-}
-#endif
 
-int attr_code (char *s)
+/**
+ *
+ *
+ * @param
+ */
+int 
+attr_code (char *s)
 {
  
  debug ("Decoding colour %s\n", s);
@@ -2764,7 +2864,8 @@ int attr_code (char *s)
  * @param str1 A pointer to the place where to return the left part.
  * @param str2 A pointer to the place where to return the right part.
  */
-static bname (char *str, char *str1, char *str2)
+static 
+bname (char *str, char *str1, char *str2)
 {
   char fn[132];
   int a;
@@ -2789,19 +2890,32 @@ static bname (char *str, char *str1, char *str2)
 /**
  * Not Used
  */
-static get_single_key (char *s)
+static 
+get_single_key (char *s)
 {
   char buff[2];
   s[0] = s[1];
   s[1] = 0;
 }
 
-void set_mod_level (int a)
+/**
+ *
+ *
+ * @param
+ */
+void
+set_mod_level (int a)
 {
   modlevel = a;
 }
 
-static matoi (char *s)
+/**
+ *
+ *
+ * @param
+ */
+static
+matoi (char *s)
 {
   int a;
   if (s == 0)
@@ -2810,7 +2924,13 @@ static matoi (char *s)
   return a;
 }
 
-long get_variable_dets (char *s, int *type, int *arrsize, 
+/**
+ *
+ *
+ * @param
+ */
+long
+get_variable_dets (char *s, int *type, int *arrsize,
 		   int *size, int *level, char *arr)
 {
   int a;
@@ -2861,57 +2981,117 @@ long get_variable_dets (char *s, int *type, int *arrsize,
 
 
 
-void drop_counter(void)
+/**
+ *
+ *
+ * @param
+ */
+void
+drop_counter(void)
 {
   count_counters--;
 }
 
-void new_counter (void)
+/**
+ *
+ *
+ * @param
+ */
+void
+new_counter (void)
 {
   count_counters++;
   counters[count_counters] = 0;
 }
 
-int get_counter_val (void)
+/**
+ *
+ *
+ * @param
+ */
+int 
+get_counter_val (void)
 {
   debug ("/* get_counter_val =  %d counter number %d*/\n",
 	 counters[count_counters], count_counters);
   return counters[count_counters];
 }
 
-int inc_counter (void)
+/**
+ *
+ *
+ * @param
+ */
+int 
+inc_counter (void)
 {
   return ++counters[count_counters];
 }
 
-int dec_counter (void)
+/**
+ *
+ *
+ * @param
+ */
+int 
+dec_counter (void)
 {
   return --counters[count_counters];
 }
 
-void reset_counter (void)
+/**
+ *
+ *
+ * @param
+ */
+void 
+reset_counter (void)
 {
   counters[count_counters] = 0;
 }
 
-void set_counter (int a)
+/**
+ *
+ *
+ * @param
+ */
+void 
+set_counter (int a)
 {
   counters[count_counters] = a;
 }
 
-void inc_counter_by (int a)
+/**
+ *
+ *
+ * @param
+ */
+void 
+inc_counter_by (int a)
 {
   counters[count_counters] += a;
   debug ("/* inc_by =  %d counter number %d*/\n",
 	 counters[count_counters], count_counters);
 }
 
-static void dec_counter_by (int a)
+/**
+ *
+ *
+ * @param
+ */
+static void 
+dec_counter_by (int a)
 {
   counters[count_counters] -= a;
 }
 
-static add_arr_bind (char i, char *nvar)
+/**
+ *
+ *
+ * @param
+ */
+static 
+add_arr_bind (char i, char *nvar)
 {
   long dtype;
   char var[256];
@@ -2979,7 +3159,13 @@ static add_arr_bind (char i, char *nvar)
 }
 
 
-void start_arr_bind (char i, char *var)
+/**
+ *
+ *
+ * @param
+ */
+void 
+start_arr_bind (char i, char *var)
 {
   if (i == 'i')
     {
@@ -3003,7 +3189,13 @@ void start_arr_bind (char i, char *var)
 
 
 
-void push_construct (char *a, char *b)
+/**
+ *
+ *
+ * @param
+ */
+void 
+push_construct (char *a, char *b)
 {
   strcpy (constr_buff[constr_cnt].tab, a);
   strcpy (constr_buff[constr_cnt].col, b);
@@ -3011,13 +3203,25 @@ void push_construct (char *a, char *b)
 }
 
 
-void reset_constr (void)
+/**
+ *
+ *
+ * @param
+ */
+void 
+reset_constr (void)
 {
   constr_cnt = 0;
 }
 
 
-char *convstrsql (char *s)
+/**
+ *
+ *
+ * @param
+ */
+char *
+convstrsql (char *s)
 {
   static char buff[1024];
   int a;
@@ -3056,7 +3260,8 @@ char *convstrsql (char *s)
  *
  * @param s The 4gl file name (without extension).
  */
-static void generate_globals_for (char *s)
+static void 
+generate_globals_for (char *s)
 {
   char buff[1024];
   char dirname[1024];
@@ -3094,7 +3299,8 @@ static void generate_globals_for (char *s)
  *
  * @param s The file name (without .glb extension).
  */
-void read_glob (char *s)
+void 
+read_glob (char *s)
 {
   FILE *f;
   int a;
@@ -3194,7 +3400,8 @@ void read_glob (char *s)
  * @param a The string to be upshifted.
  * @return A static buffer with a copy of the string upshifted.
  */
-char *upshift (char *a)
+char *
+upshift (char *a)
 {
   int i;
   static char buff[256];
@@ -3212,7 +3419,8 @@ char *upshift (char *a)
  * @param a The string to be downshifted.
  * @return A pointer to a staic buffer where the string downshifted is putted.
  */
-char *downshift (char *a)
+char *
+downshift (char *a)
 {
   int i;
   static char buff[256];
@@ -3229,7 +3437,8 @@ char *downshift (char *a)
  *
  * @return The current block.
  */
-static int get_curr_block (void)
+static int 
+get_curr_block (void)
 {
   return curr_rep_block;
 }
@@ -3244,7 +3453,8 @@ static int get_curr_block (void)
  *
  * @return
  */
-int add_report_agg (char t, char *s1, char *s2, int a)
+int 
+add_report_agg (char t, char *s1, char *s2, int a)
 {
   if (use_group)
     {
@@ -3309,7 +3519,8 @@ int add_report_agg (char t, char *s1, char *s2, int a)
  *
  * @param s The name of the report in the 4gl source
  */
-void set_curr_rep_name (char *s)
+void
+set_curr_rep_name (char *s)
 {
   strcpy (curr_rep_name, "acl_fglr_");
   strcat (curr_rep_name, s);
@@ -3320,7 +3531,8 @@ void set_curr_rep_name (char *s)
  *
  * @return The name of the report.
  */
-char *get_curr_rep_name (void)
+char *
+get_curr_rep_name (void)
 {
   return curr_rep_name;
 }
@@ -3328,7 +3540,8 @@ char *get_curr_rep_name (void)
 /**
  * Assigns the flag that tells that we are inside a group.
  */
-void set_ingroup (void)
+void 
+set_ingroup (void)
 {
   use_group = 1;
 }
@@ -3336,7 +3549,8 @@ void set_ingroup (void)
 /**
  *
  */
-void set_whento (char *p)
+void
+set_whento (char *p)
 {
   debug ("whento = %p", p);
   strcpy (when_to_tmp, p);
@@ -3356,7 +3570,8 @@ void set_whento (char *p)
  *  - WHEN_SQLSUCCESS:
  * @param p The action to execute.
  */
-void set_whenever (int c, char *p)
+void
+set_whenever (int c, char *p)
 {
   int code;
   int oldcode;
@@ -3426,7 +3641,8 @@ void set_whenever (int c, char *p)
 /**
  * Clear all constants.
  */
-void clr_function_constants (void)
+void 
+clr_function_constants (void)
 {
   int a;
   int lcnt = 0;
@@ -3445,7 +3661,13 @@ void clr_function_constants (void)
 
 }
 
-int check_for_constant (char *name, char *buff)
+/**
+ *
+ *
+ * @param
+ */
+int
+check_for_constant (char *name, char *buff)
 {
   int x;
 
@@ -3475,7 +3697,13 @@ int check_for_constant (char *name, char *buff)
 }
 
 
-int npush_menu (void)
+/**
+ *
+ *
+ * @param
+ */
+int
+npush_menu (void)
 {
   max_menu_no++;
   cmenu++;
@@ -3484,7 +3712,13 @@ int npush_menu (void)
   return max_menu_no;
 }
 
-void pop_menu (void)
+/**
+ *
+ *
+ * @param
+ */
+void 
+pop_menu (void)
 {
   cmenu--;
   if (cmenu >= 0)
@@ -3498,7 +3732,13 @@ void pop_menu (void)
     }
 }
 
-int setrecord (char *s, char *t, char *c)
+/**
+ *
+ *
+ * @param
+ */
+int
+setrecord (char *s, char *t, char *c)
 {
   return 0;
 }
@@ -3511,7 +3751,8 @@ int setrecord (char *s, char *t, char *c)
  * @param d A pointer to he destination string
  * @param s A pointer to the origin string.
  */
-static void swapstring (char *d, char *s)
+static void 
+swapstring (char *d, char *s)
 {
   int b = 0;
   int a;
@@ -3550,7 +3791,8 @@ static void swapstring (char *d, char *s)
  * @param s A pointer to the string with array declaration.
  * @return The number of dimentions.
  */
-int num_arr_elem (char *s)
+int 
+num_arr_elem (char *s)
 {
   int a;
   int c = 0;
@@ -3562,7 +3804,13 @@ int num_arr_elem (char *s)
   return c;
 }
 
-char *change_arr_elem (char *s)
+/**
+ *
+ *
+ * @param
+ */
+char *
+change_arr_elem (char *s)
 {
   static char buff[1024];
   int a;
@@ -3591,7 +3839,8 @@ char *change_arr_elem (char *s)
 /**
  * Executed at the end of the parsing process by bison.
  */
-yywrap ()
+int
+yywrap (void)
 {
   return 1;
 }
@@ -3604,7 +3853,8 @@ yywrap ()
  *   - 1 : Is an internal variable.
  *   - 0 : Otherwise
  */
-int system_var (char *s)
+int 
+system_var (char *s)
 {
   if (aubit_strcasecmp (s, "today") == 0)
     return 1;
@@ -3620,7 +3870,8 @@ int system_var (char *s)
 /**
  * Increment the number of reports declared.
  */
-void inc_report_cnt (void)
+void 
+inc_report_cnt (void)
 {
   sreports_cnt = 0;
   report_cnt++;
@@ -3633,7 +3884,8 @@ void inc_report_cnt (void)
  * @param s The string to be checked.
  * @return A pointer to a static buffer with the escaped string.
  */
-static char *trans_quote (char *s)
+static char *
+trans_quote (char *s)
 {
   static char buff[1024];
   int c;
@@ -3657,7 +3909,8 @@ static char *trans_quote (char *s)
  * @param pklist
  * @return
  */
-int last_var_is_linked (char *tabname, char *pklist)
+int 
+last_var_is_linked (char *tabname, char *pklist)
 {
   strcpy (pklist, "");
   strcpy (tabname, "");
@@ -3686,7 +3939,8 @@ int last_var_is_linked (char *tabname, char *pklist)
  *   - if a=0 return the number of pieces
  *   - if a=1 then return the first into buffetc...
  */
-int linked_split (char *s, int a, char *buff)
+int 
+linked_split (char *s, int a, char *buff)
 {
   char *p;
   int z;
@@ -3737,7 +3991,8 @@ int linked_split (char *s, int a, char *buff)
  *
  * @param s The string to be copied.
  */
-void set_pklist (char *s)
+void 
+set_pklist (char *s)
 {
   debug ("pklist set to %s\n", s);
   strcpy (pklist, s);
@@ -3745,14 +4000,26 @@ void set_pklist (char *s)
   upd_using_notpk_cnt = 0;
 }
 
-char *get_upd_using_notpk (void)
+/**
+ *
+ *
+ * @param
+ */
+char *
+get_upd_using_notpk (void)
 {
   debug ("get_upd_using_notpk");
   debug ("Returning %s", upd_using_notpk);
   return upd_using_notpk;
 }
 
-char *get_upd_using_queries (void)
+/**
+ *
+ *
+ * @param
+ */
+char *
+get_upd_using_queries (void)
 {
   static char buff[2000];
   int a;
@@ -3779,7 +4046,8 @@ char *get_upd_using_queries (void)
  *   - An empty string if is a normal report 
  *   - pdf_ Otherwise
  */
-char *ispdf (void)
+char *
+ispdf (void)
 {
   if (rep_type == REP_TYPE_NORMAL)
     return "";
@@ -3787,7 +4055,13 @@ char *ispdf (void)
     return "pdf_";
 }
 
-int print_push_rec (char *s, char *b)
+/**
+ *
+ *
+ * @param
+ */
+int
+print_push_rec (char *s, char *b)
 {
   int a;
   long z;
@@ -3901,7 +4175,8 @@ int print_push_rec (char *s, char *b)
  *   - f or F :
  * @param cnt The number of elements in the bind array.
  */
-void expand_bind (struct binding * bind, int btype, int cnt)
+void 
+expand_bind (struct binding * bind, int btype, int cnt)
 {
   struct binding save_bind[NUMBINDINGS];
   char buff[256];
@@ -3930,7 +4205,8 @@ void expand_bind (struct binding * bind, int btype, int cnt)
 /**
  * Expandthe output bind
  */
-void expand_obind (void)
+void 
+expand_obind (void)
 {
   expand_bind (obind, 'o', obindcnt);
 }
@@ -3941,7 +4217,8 @@ void expand_obind (void)
  * @param z The position where to find the variable.
  * @return A pointer to the variable found.
  */
-char *get_var_name (int z)
+char *
+get_var_name (int z)
 {
   return vars[z].var_name;
 }
@@ -3950,7 +4227,8 @@ char *get_var_name (int z)
  *
  * @param s
  */
-void chk_init_var (char *s)
+void 
+chk_init_var (char *s)
 {
   char buff[1024];
   char *ptr;
@@ -4007,18 +4285,19 @@ void chk_init_var (char *s)
  *
  * @param orig_ptr A pointer to the expression list
  */
-void dump_expr (struct expr_str *orig_ptr)
+void 
+dump_expr (struct expr_str *orig_ptr)
 {
   struct expr_str *ptr;
   struct expr_str *start;
   start = orig_ptr;
 
-debug("DUMP EXPR : ");
+	debug("DUMP EXPR : ");
       while (orig_ptr) {
 	debug ("     %s",orig_ptr->expr);
 	orig_ptr = orig_ptr->next;
     }
-debug("---------------------------------------------------");
+	debug("---------------------------------------------------");
 }
 
 /**
@@ -4027,7 +4306,8 @@ debug("---------------------------------------------------");
  * @param value The value to be added to the expression.
  * @return A pointer to the allocated expression.
  */
-void *new_expr (char *value)
+void *
+new_expr (char *value)
 {
   struct expr_str *ptr;
   debug ("new_expr - %s",value);
@@ -4046,7 +4326,8 @@ void *new_expr (char *value)
  * @param value 
  * @return 
  */
-void *append_expr (struct expr_str *orig_ptr, char *value)
+void *
+append_expr (struct expr_str *orig_ptr, char *value)
 {
   struct expr_str *ptr;
   struct expr_str *start;
@@ -4072,7 +4353,8 @@ void *append_expr (struct expr_str *orig_ptr, char *value)
  * @param orig_ptr The expression to be appended.
  * @param second_ptr The expression to append.
  */
-void *append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
+void *
+append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
 {
   struct expr_str *ptr;
   struct expr_str *start;
@@ -4094,7 +4376,8 @@ void *append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
  * @param ptr 
  * @return The number of operands in an expression
  */
-int length_expr (struct expr_str * ptr)
+int 
+length_expr (struct expr_str * ptr)
 {
   void *optr;
   int c = 0;
@@ -4109,11 +4392,12 @@ int length_expr (struct expr_str * ptr)
 
 
 /** 
- * This is something internal for MikeA
+ * This is something internal for Mike?
  *
  * @param s
  */
-void tr_glob_fname (char *s)
+void 
+tr_glob_fname (char *s)
 {
   char buff[256];
   int a;
@@ -4156,22 +4440,39 @@ void tr_glob_fname (char *s)
 
 */
 
+/**
+ *
+ *
+ * @param
+ */
 char
 *get_report_stack_whytype(int a)
 {
-    return report_stack[a].whytype;
+    return &report_stack[a].whytype; //warning: return makes pointer from integer without a cast
 }
 
+/**
+ *
+ *
+ * @param
+ */
 char
 *get_report_stack_why(int a)
 {
 	return report_stack[a].why;
 }
 
+/**
+ *
+ *
+ * @param
+ */
 struct sreports *
 get_sreports(int z)
 {
 	return (struct sreports *) z;
 }
 
+
+// ================================= EOF =============================
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: funcs_d.c,v 1.3 2002-05-14 09:27:27 afalout Exp $
 #
 */
 
@@ -57,6 +57,9 @@ extern int errno;
 #include <time.h>
 
 
+void trim(char *p);
+void bnamexxx(char *str,char *str1,char *str2);
+
 
 /**
  * Another implementation of basename.
@@ -66,6 +69,7 @@ extern int errno;
  * @param str2
  * @param str3
  */
+int
 bname2(char *str,char *str1,char *str2,char *str3)
 {
 char ss[256];
@@ -73,75 +77,61 @@ char b1[10];
 char b2[10];
 char b3[10];
 
-if (!strchr(str,'/')) {
+	if (!strchr(str,'/')) {
 	return 0;
-}
+	}
 
 #ifdef DEBUG
-/* {DEBUG} */ {debug("%p %p %p %p",str,str1,str2,str3);
-}
+	/* {DEBUG} */ {debug("%p %p %p %p",str,str1,str2,str3);}
 #endif
 #ifdef DEBUG
-/* {DEBUG} */ {debug("(1)%s %s %s",str1,str2,str3);
-}
+	/* {DEBUG} */ {debug("(1)%s %s %s",str1,str2,str3);}
 #endif
-strcpy(ss,str);
+	strcpy(ss,str);
 #ifdef DEBUG
-/* {DEBUG} */ {debug("(1.1)%s %s %s",str1,str2,str3);
-}
+	/* {DEBUG} */ {debug("(1.1)%s %s %s",str1,str2,str3);}
 #endif
 #ifdef DEBUG
-/* {DEBUG} */ {        debug("In bname2 %s");
-}
+	/* {DEBUG} */ {debug("In bname2 %s");}
 #endif
-trim(ss);
+	trim(ss);
 #ifdef DEBUG
-/* {DEBUG} */ {debug("(2)%s %s %s",str1,str2,str3);
-}
+	/* {DEBUG} */ {debug("(2)%s %s %s",str1,str2,str3);}
 #endif
 	bnamexxx(ss,b2,b3);
 #ifdef DEBUG
-/* {DEBUG} */ {        debug("(1) Splits to %s %s",b2,b3);
-}
+	/* {DEBUG} */ {debug("(1) Splits to %s %s",b2,b3);}
 #endif
 #ifdef DEBUG
-/* {DEBUG} */ {debug("(3)%s %s %s",str1,str2,str3);
-}
+	/* {DEBUG} */ {debug("(3)%s %s %s",str1,str2,str3);}
 #endif
-strcpy(ss,b2);
+	strcpy(ss,b2);
 	bnamexxx(ss,b1,b2);
 #ifdef DEBUG
-/* {DEBUG} */ {debug("(2) Splits to '%s' '%s'",b1,b2);
-}
+	/* {DEBUG} */ {debug("(2) Splits to '%s' '%s'",b1,b2);}
 #endif
 #ifdef DEBUG
-/* {DEBUG} */ {debug("(4)%s %s %s",str1,str2,str3);
-}
+	/* {DEBUG} */ {debug("(4)%s %s %s",str1,str2,str3);}
 #endif
 #ifdef DEBUG
-/* {DEBUG} */ {debug("'%s' '%s' '%s'",b1,b2,b3);
-}
+	/* {DEBUG} */ {debug("'%s' '%s' '%s'",b1,b2,b3);}
 #endif
 #ifdef DEBUG
-/* {DEBUG} */ {debug("%s %s %s",str1,str2,str3);
-}
+	/* {DEBUG} */ {debug("%s %s %s",str1,str2,str3);}
 #endif
-strcpy(str1,b1);
+	strcpy(str1,b1);
 #ifdef DEBUG
-/* {DEBUG} */ {debug("1");
-}
+	/* {DEBUG} */ {debug("1");}
 #endif
-strcpy(str2,b2);
+	strcpy(str2,b2);
 #ifdef DEBUG
-/* {DEBUG} */ {debug("1");
-}
+	/* {DEBUG} */ {debug("1");}
 #endif
-strcpy(str3,b3);
+	strcpy(str3,b3);
 #ifdef DEBUG
-/* {DEBUG} */ {debug("Copied...");
-}
+	/* {DEBUG} */ {debug("Copied...");}
 #endif
-return 1;
+	return 1;
 }
 
 
@@ -157,14 +147,17 @@ return 1;
  * @pram line The source file line number where memory being alocated
  * @return A pointer for the memory alocated
  */
-void *acl_malloc_full(int size,char *why,char *f,long line) 
+void*
+acl_malloc_full(int size,char *why,char *f,long line)
 {
   void *p;
   p=malloc(size);
   return p;
 }
 
-acl_free_full(void *ptr,char *f,long line) {
+void
+acl_free_full(void *ptr,char *f,long line) 
+{
   free(ptr);
 }
 
@@ -173,10 +166,11 @@ acl_free_full(void *ptr,char *f,long line) {
  *
  * @param p The string to be trimmed.
  */
-void trim(char *p) 
+void 
+trim(char *p)
 {
   int a;
-  for (a=strlen(p)-1;a>=0;a--) 
+  for (a=strlen(p)-1;a>=0;a--)
   {
     if (p[a]!=' ')  break;
     p[a]=0;
@@ -188,10 +182,11 @@ void trim(char *p)
  *
  * @param p The string to be trimmed.
  */
-void trim_nl(char *p) 
+void 
+trim_nl(char *p)
 {
   int a;
-  for (a=strlen(p)-1;a>=0;a--) 
+  for (a=strlen(p)-1;a>=0;a--)
   {
     if (p[a]!=' '&&p[a]!='\n'&&p[a]!='\r')  break;
     p[a]=0;
@@ -206,45 +201,41 @@ void trim_nl(char *p)
  * @param str1
  * @param str2
  */
+void
 bnamexxx(char *str,char *str1,char *str2)
 {
 static char fn[132];
 	int a;
 	char *ptr;
+
 	strcpy(fn,str);
 #ifdef DEBUG
-/* {DEBUG} */ {debug("In bnamexxx - splitting %s",str);
-}
+	/* {DEBUG} */ {debug("In bnamexxx - splitting %s",str);}
 #endif
 	for (a=strlen(fn);a>=0;a--) {
 		if (date_sep(fn[a])) {
 #ifdef DEBUG
-/* {DEBUG} */ {			debug("separator found at %d",a);
-}
+	/* {DEBUG} */ {debug("separator found at %d",a);}
 #endif
 			fn[a]=0;
 			break;
 		}
 	}
 #ifdef DEBUG
-/* {DEBUG} */ {        debug("a=%d",a);
-}
+	/* {DEBUG} */ {debug("a=%d",a);}
 #endif
 	ptr=&fn[a];
 #ifdef DEBUG
-/* {DEBUG} */ {        debug("ptr=%p",ptr);
-}
+	/* {DEBUG} */ {debug("ptr=%p",ptr);}
 #endif
 	strcpy(str1,fn);
 #ifdef DEBUG
-/* {DEBUG} */ {        debug("Str1 now = '%s'",str1);
-}
+	/* {DEBUG} */ {debug("Str1 now = '%s'",str1);}
 #endif
 	if (a>=0) strcpy(str2,ptr+1);
 	else str2[0]=0;
 #ifdef DEBUG
-/* {DEBUG} */ {        debug("Str2='%s'",str2);
-}
+	/* {DEBUG} */ {debug("Str2='%s'",str2);}
 #endif
 }
 
@@ -254,7 +245,9 @@ static char fn[132];
  * @param ptr A pointer to the string being padded.
  * @param The size of the string.
  */
-void pad_string(char *ptr,int size) {
+void 
+pad_string(char *ptr,int size) 
+{
 	int a;
 	for (a=strlen(ptr);a<size;a++) {
 		ptr[a]=' ';
@@ -274,14 +267,16 @@ void pad_string(char *ptr,int size) {
  * @param buff
  * @return Allways 1.
  */
-int digittoc(int *a,char *z,char *fmt,int dtype,int size)    {
+int 
+digittoc(int *a,char *z,char *fmt,int dtype,int size)    
+{
 	static char buff[100];
 #ifdef DEBUG
-/* {DEBUG} */ {debug("digittoc"); }
+	/* {DEBUG} */ {debug("digittoc"); }
 #endif
 	sprintf(buff,fmt,*a);
 #ifdef DEBUG
-/* {DEBUG} */ {debug("digittoc: %s",buff); }
+	/* {DEBUG} */ {debug("digittoc: %s",buff); }
 #endif
 	if (strlen(buff)>size) {
 		memset(z,'*',size);
@@ -295,13 +290,11 @@ int digittoc(int *a,char *z,char *fmt,int dtype,int size)    {
 	sprintf(buff,"%%%d%s",size,fmt);
 #endif
 #ifdef DEBUG
-/* {DEBUG} */ {debug("digittoc: buff set to %s",buff);
-}
+	/* {DEBUG} */ {debug("digittoc: buff set to %s",buff);}
 #endif
 	strcpy(fmt,buff);
 #ifdef DEBUG
-/* {DEBUG} */ {debug("digittoc: returns");
-}
+	/* {DEBUG} */ {debug("digittoc: returns");}
 #endif
 	return 1;
 }
@@ -314,6 +307,7 @@ int digittoc(int *a,char *z,char *fmt,int dtype,int size)    {
  * @param fmt The string that contains the format pattern.
  * @param num The number to be formated.
  */
+void
 using(char *str,int s,char *fmt,double num)
 {
 int dig[MAXDIG];
@@ -336,44 +330,46 @@ int a,b;
 int isprnt=0;
 double ad;
 int k;
-debug("In using...");
-for (a=0;a<MAXPNT;a++) {pnt[a]=0;}
-for (a=0;a<MAXDIG;a++) {dig[a]=0;}
 
-ptr1=&number[0];
-ptr2=&number[32];
+	debug("In using...");
+	for (a=0;a<MAXPNT;a++) {pnt[a]=0;}
+	for (a=0;a<MAXDIG;a++) {dig[a]=0;}
 
-if (num<0) {
-    isneg=1;
-    num=0.0-num;
-}
+	ptr1=&number[0];
+	ptr2=&number[32];
 
-if (index(fmt,'.')) {
-    strcpy(fm1,fmt);
-    p=(char *)index(fm1,'.');
-    p[0]=0;
-    strcpy(fm2,index(fmt,'.')+1);
-}
-else {
-  strcpy(fm1,fmt);
-  strcpy(fm2,"");
-}
-ad=0.5;
-trim(fm2);
+	if (num<0) {
+	    isneg=1;
+	    num=0.0-num;
+	}
 
-for (a=1;a<=strlen(fm2);a++) {
-   ad=ad/10;
-}
-num+=ad;
-sprintf(number,"%64.32lf",num);
-number[31]=0;
-debug("Number=%s",number);
-debug("Format=%s",fmt);
-strcpy(str,fmt);
-b=30;
-isprnt=1;
+	if (index(fmt,'.')) {
+	    strcpy(fm1,fmt);
+	    p=(char *)index(fm1,'.');
+	    p[0]=0;
+	    strcpy(fm2,index(fmt,'.')+1);
+	}
+	else {
+	  strcpy(fm1,fmt);
+	  strcpy(fm2,"");
+	}
+	ad=0.5;
+	trim(fm2);
 
-for (a=strlen(fm1)-1;a>=0;a--) {
+	for (a=1;a<=strlen(fm2);a++) {
+	   ad=ad/10;
+	}
+	num+=ad;
+	sprintf(number,"%64.32lf",num);
+	number[31]=0;
+	debug("Number=%s",number);
+	debug("Format=%s",fmt);
+	strcpy(str,fmt);
+	b=30;
+	isprnt=1;
+
+	for (a=strlen(fm1)-1;a>=0;a--) 
+	{
     if (strchr(rep_digit,fm1[a])) {
           if (((ptr1[b]=='0'&&ptr1[b-1]==' ')||ptr1[b]==' ')&&isprnt==1) isprnt=0;
           str[a]=ptr1[b--];
@@ -398,46 +394,60 @@ for (a=strlen(fm1)-1;a>=0;a--) {
               else {str[a]=' ';continue;}
               str[a]=fm1[a]; 
           } 
-          }
-    else {
+    }
+    else 
+	{
           if (isprnt) {
-              str[a]=fm1[a]; 
-          } 
+              str[a]=fm1[a];
+          }
           else
           {
             if (fm1[a]==',') {str[a]=' ';continue;}
-            str[a]=fm1[a]; 
-             
+            str[a]=fm1[a];
+
           }
          }
-}
-b=0;
+	}
+	b=0;
 
-for (a=0;a<strlen(fm2);a++) {
-    if (strchr(rep_digit,fm2[a])) {
-          if (fm2[a]==')') {
-                     if (isneg) {str[a+strlen(fm1)+1]=')';continue;}
-                     else {str[a+strlen(fm1)+1]=' ';continue;}
+	for (a=0;a<strlen(fm2);a++) 
+	{
+	    if (strchr(rep_digit,fm2[a])) 
+		{
+	    	if (fm2[a]==')')
+			{
+	        	if (isneg) 
+				{
+					str[a+strlen(fm1)+1]=')';continue;
+				}
+		        else
+				{
+					str[a+strlen(fm1)+1]=' ';continue;
+				}
+			}
+
+        	str[a+strlen(fm1)+1]=ptr2[b++];
+		}
+    	else
+		{
+    		str[a+strlen(fm1)+1]=fm2[a];
+		}
+	}
+
+	ptr=(char *)rindex(str,'<');
+	if (ptr) 
+	{
+	   b=0;
+	   for (a=0;a<strlen(str);a++) 
+	   {
+	    if (str[a]=='<') continue;
+	    buff[b++]=str[a];
+	   }
+	   buff[b]=0;
+	   strcpy(str,buff);
+	}
+	debug("str=%s",str);
 }
 
-          str[a+strlen(fm1)+1]=ptr2[b++];
-          }
-    else {
-          str[a+strlen(fm1)+1]=fm2[a];
-         }
-}
-
-ptr=(char *)rindex(str,'<');
-if (ptr) {
-   b=0;
-   for (a=0;a<strlen(str);a++) {
-    if (str[a]=='<') continue;
-    buff[b++]=str[a];
-   }
-   buff[b]=0;
-   strcpy(str,buff);
-}
-debug("str=%s",str);
-}
-
+// ============================== EOF ==========================
 

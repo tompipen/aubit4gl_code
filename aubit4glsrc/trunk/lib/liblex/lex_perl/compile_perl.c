@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.5 2002-05-11 05:51:19 afalout Exp $
+# $Id: compile_perl.c,v 1.6 2002-05-14 09:27:27 afalout Exp $
 #
 */
 
@@ -36,6 +36,12 @@
  *
  *
  */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
 
 #include <stdio.h>
 #include "a4gl_dbform.h"
@@ -50,6 +56,12 @@
 //#ifdef IS_THIS_RIGHT_OR_WE_NEED_print_protos_perl.h
 	#include "../lex_c/a4gl_lex_print_protos_c.h"
 //#endif
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 FILE *outfile = 0;
 FILE *hfile = 0;
@@ -95,16 +107,31 @@ extern int fbindcnt;
 
 extern struct s_constr_buff constr_buff[256];
 extern int constr_cnt;
-/* The important stuff ! */
-
 char unwind[256][256];
 int unwindcnt = 0;
-
-
-
-
 int printing_record = 0;
 
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+static void print_space (void);
+void open_outfile (void);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+/**
+ *
+ * @param
+ * @return
+ */
+void
 printc (char *fmt, ...)
 {
   va_list args;
@@ -163,6 +190,11 @@ printc (char *fmt, ...)
     }
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 static void
 print_space (void)
 {
@@ -172,6 +204,12 @@ print_space (void)
   fprintf (outfile, "%s", buff);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
+void
 printh (char *fmt, ...)
 {
   va_list args;
@@ -187,6 +225,12 @@ printh (char *fmt, ...)
 }
 
 #ifdef USE_PRINTCOMMENT
+/**
+ *
+ * @param
+ * @return
+ */
+void
 printcomment (char *fmt,...)
 {
   va_list args;
@@ -205,6 +249,11 @@ printcomment (char *fmt,...)
     }
 }
 #else
+/**
+ *
+ * @param
+ * @return
+ */
 void
 printcomment (char *fmt,...)
 {
@@ -212,7 +261,14 @@ printcomment (char *fmt,...)
 }
 #endif
 
-open_outfile ()
+
+/**
+ *
+ * @param
+ * @return
+ */
+void
+open_outfile (void)
 {
   char h[132];
   char c[132];
@@ -268,8 +324,13 @@ open_outfile ()
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-incprint ()
+incprint (void)
 {
 
   int a;
@@ -282,15 +343,25 @@ incprint ()
     }
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_repctrl_block ()
+print_repctrl_block (void)
 {
   printc ("rep_ctrl%d_%d:\n", report_cnt, report_stack_cnt);
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_report_ctrl ()
+print_report_ctrl (void)
 {
   int a;
   debug
@@ -380,12 +451,22 @@ print_report_ctrl ()
 
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_range_check (char *var, char *size)
 {
   printc ("range_chk(%s,%d);\n", var, atoi (size));
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_start_block (int n)
 {
@@ -393,6 +474,11 @@ print_start_block (int n)
   printc ("START_BLOCK_%d:\n", n);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_continue_block (int n, int brace)
 {
@@ -402,12 +488,22 @@ print_continue_block (int n, int brace)
     printc ("}\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_end_block (int n)
 {
   printc ("END_BLOCK_%d: ;\n\n", n);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_continue_loop (int n)
 {
@@ -415,6 +511,11 @@ print_continue_loop (int n)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_exit_loop (int type, int n)
 {
@@ -433,12 +534,22 @@ print_exit_loop (int type, int n)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_rep_ret ()
+print_rep_ret (void)
 {
   printc ("goto report%d_ctrl;\n\n", report_cnt);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 static void
 print_output_rep (struct rep_structure *rep)
 {
@@ -460,9 +571,15 @@ print_output_rep (struct rep_structure *rep)
   printc ("else rep.output_mode=_rout1[0];\n");
   printc ("rep.report=&%s;\n", get_curr_rep_name ());
   printc ("trim(rep.output_loc);");
-  print_rep_ret (report_cnt);
+  //print_rep_ret (report_cnt);
+  print_rep_ret ();
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 static void
 pdf_print_output_rep (struct pdf_rep_structure *rep)
 {
@@ -492,9 +609,15 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
   printc ("else rep.output_mode=_rout1[0];\n");
   printc ("rep.report=&%s;\n", get_curr_rep_name ());
   printc ("trim(rep.output_loc);");
-  print_rep_ret (report_cnt);
+//  print_rep_ret (report_cnt);
+  print_rep_ret ();
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 static void
 pr_report_agg (void)
 {
@@ -552,6 +675,11 @@ pr_report_agg (void)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 static void
 pr_report_agg_clr (void)
 {
@@ -591,12 +719,24 @@ pr_report_agg_clr (void)
     }
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_clr_status ()
+print_clr_status (void)
 {
   printc ("xset_status(0);\n");
 }
 
+
+/**
+ *
+ * @param
+ * @return
+ */
+void
 prchkerr (int l, char *f)
 {
   int a;
@@ -651,6 +791,11 @@ prchkerr (int l, char *f)
   printc ("}\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 static int
 pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 {
@@ -680,6 +825,11 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_expr (struct expr_str *ptr)
 {
@@ -697,6 +847,11 @@ print_expr (struct expr_str *ptr)
     }
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 static void
 print_form_attrib (struct form_attr *form_attrib)
 {
@@ -717,6 +872,11 @@ print_form_attrib (struct form_attr *form_attrib)
 	 form_attrib->message_line, form_attrib->attrib);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 static int
 print_field_bind (int ccc)
 {
@@ -737,6 +897,11 @@ print_field_bind (int ccc)
   return a;
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_bind_pop1 (char i)
 {
@@ -764,6 +929,11 @@ print_bind_pop1 (char i)
 
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 static int
 print_arr_bind (char i)
 {
@@ -804,8 +974,13 @@ print_arr_bind (char i)
 
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 static int
-print_constr ()
+print_constr (void)
 {
   int a;
   printc
@@ -820,8 +995,13 @@ print_constr ()
   return a;
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 static int
-print_field_bind_constr ()
+print_field_bind_constr (void)
 {
   char tabname[40];
   char colname[40];
@@ -842,6 +1022,11 @@ print_field_bind_constr ()
 
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 int
 print_param (char i)
 {
@@ -872,6 +1057,11 @@ print_param (char i)
 
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 int
 print_bind (char i)
 {
@@ -1044,13 +1234,25 @@ print_bind (char i)
 
 }
 
-int dump_unwind() {
+/**
+ *
+ * @param
+ * @return
+ */
+int 
+dump_unwind(void)
+{
 int a;
 	for (a=unwindcnt-1;a>=0;a--) {
 		printc("%s",unwind[a]);
 	}
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 int
 print_bind_expr (void *ptr, char i)
 {
@@ -1084,16 +1286,24 @@ print_bind_expr (void *ptr, char i)
 
 
 
-
-/************************************************************************/
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_screen_mode (int n)
 {
   printc ("screen_mode(%d);", n);
 }
 
-/************************************************************************/
-void print_start_server (char * port, char *funclist)
+/**
+ *
+ * @param
+ * @return
+ */
+void 
+print_start_server (char * port, char *funclist)
 //void print_start_server (int port, char *funclist)
 {
   printc ("server_run(%s+0x2000000);", port);
@@ -1101,14 +1311,24 @@ void print_start_server (char * port, char *funclist)
   printc ("%s\n", funclist);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_stop_external ()
+print_stop_external (void)
 {
   printc ("stop_serving();");
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_remote_func (char *identifier)
 {
@@ -1119,13 +1339,23 @@ print_remote_func (char *identifier)
 }
 
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_exec_sql (char *s)
 {
   printc ("execute_implicit_sql(prepare_glob_sql(\"%s\",0,0));\n", s);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_exec_sql_bound (char *s)
 {
@@ -1136,7 +1366,12 @@ print_exec_sql_bound (char *s)
   printc ("}\n");
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_pop_variable (char *s)
 {
@@ -1144,7 +1379,12 @@ print_pop_variable (char *s)
 }
 
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_getfldbuf (char *fields)
 {
@@ -1153,9 +1393,14 @@ print_getfldbuf (char *fields)
   start_bind ('i', 0);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_returning ()
+print_returning (void)
 {
   int cnt;
   printc ("{\n");
@@ -1171,7 +1416,12 @@ print_returning ()
 }
 
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_form_is_compiled (char *s)
 {
@@ -1179,7 +1429,12 @@ print_form_is_compiled (char *s)
   printh ("extern char compiled_form_%s[];\n", s);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_field_func (char type, char *name, char *var)
 {
@@ -1220,7 +1475,12 @@ void print_pdf_call (char *a1, struct expr_str *a2, char *a3)
   printc ("_retvars=aclpdf(&rep,%s,%s);\n", a1, a3);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_call_shared (char *libfile, char *funcname, int nargs)
 {
@@ -1229,13 +1489,23 @@ print_call_shared (char *libfile, char *funcname, int nargs)
 	  libfile, funcname, nargs);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_end_call_shared ()
+print_end_call_shared (void)
 {
   printc ("}\n");
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_call_external (char *host, char *func, char *port, int nargs)
 {
@@ -1243,13 +1513,23 @@ print_call_external (char *host, char *func, char *port, int nargs)
   printc ("_retvars=remote_func_call(%s,%s,%s,%s);\n", host, func,
 	  port, nargs);}
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_end_call_external ()
+print_end_call_external (void)
 {
   printc ("}\n");
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_case (int has_expr)
 {
@@ -1260,7 +1540,12 @@ print_case (int has_expr)
 }
 
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_after_when (int endofblock)
 {
@@ -1272,7 +1557,12 @@ print_after_when (int endofblock)
 }
 
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_when (int has_expr)
 {
@@ -1285,7 +1575,12 @@ print_when (int has_expr)
 }
 
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_close (char type, char *name)
 {
@@ -1309,16 +1604,26 @@ print_close (char type, char *name)
     }
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_construct_1 ()
+print_construct_1 (void)
 {
   printc ("} # end of initialization \n");
 }
 
 
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_construct_2 (char *driver)
 {
@@ -1338,7 +1643,12 @@ print_construct_2 (char *driver)
   pop_blockcommand ("CONSTRUCT");	/* FIXME */
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_construct_3 (int byname, char *constr_str, char *attr)
 {
@@ -1378,41 +1688,72 @@ print_construct_3 (int byname, char *constr_str, char *attr)
 }
 
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_befaft_field_1 (char *fieldexpr)
 {
   printc ("if (%s) {", fieldexpr);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_befaft_field_2 ()
+print_befaft_field_2 (void)
 {
   printc ("}\n");
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_onkey_1 (char *key_list_str)
 {
   printc ("ON_KEY(\"%s\") {\n", key_list_str);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_onkey_2 ()
+print_onkey_2 (void)
 {
   printc ("}\n");
 }
 
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_onkey_2_prompt ()
+print_onkey_2_prompt (void)
 {
   printc ("continue;}\n");
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_defer (int quit)
 {
@@ -1423,15 +1764,26 @@ print_defer (int quit)
 }
 
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_display_line ()
+print_display_line (void)
 {
   printc ("aubit4gl_pl::push_int(-1);aubit4gl_pl::push_int(-1);\n");
 }
 
-/************************************************************************/
-void print_display_by_name (char * attr)
+
+/**
+ *
+ * @param
+ * @return
+ */
+void 
+print_display_by_name (char * attr)
 //void print_display_by_name (int attr)
 {
   int a;
@@ -1445,6 +1797,11 @@ void print_display_by_name (char * attr)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 char *
 get_display_str (int type, char *s, char *f)
 {
@@ -1464,20 +1821,35 @@ get_display_str (int type, char *s, char *f)
   return buff;
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_display (char *fmt, char *expr, char *attr)
 {
   printc (fmt, expr, attr);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_display_form (char *s, char *a)
 {
   printc ("disp_form(%s,%s);\n", s, a);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void print_display_array_p1 (char *arrvar, char *srec, char *scrollfield,char *attr)
 //void print_display_array_p1 (char *arrvar, char *srec, char *attr)
 {
@@ -1497,9 +1869,14 @@ void print_display_array_p1 (char *arrvar, char *srec, char *scrollfield,char *a
   printc ("_fld_dr=disp_arr(&_dispio,%s,\"%s\",%s);\n", arrvar, srec, attr);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_display_array_p2 ()
+print_display_array_p2 (void)
 {
   printc ("}\n}\n");
   printcomment ("/* end display */\n");
@@ -1507,14 +1884,24 @@ print_display_array_p2 ()
   pop_blockcommand ("DISPLAY");
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_error (char *s, int wait)
 {
   printc ("display_error(%s,%d);\n", s, wait);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_exit_program (int has_expr)
 {
@@ -1525,7 +1912,12 @@ print_exit_program (int has_expr)
 }
 
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_for_start (char *var)
 {
@@ -1536,28 +1928,48 @@ print_for_start (char *var)
      var, var, var, var);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_for_end ()
+print_for_end (void)
 {
   printc ("}\n");
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_for_default_step ()
+print_for_default_step (void)
 {
   printc ("aubit4gl_pl::push_int(1);\n");
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_foreach_start ()
+print_foreach_start (void)
 {
   printc ("{");
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_foreach_next (char *cursorname, char *into)
 {
@@ -1569,9 +1981,14 @@ print_foreach_next (char *cursorname, char *into)
     ("if ($aubit4gl_pl::sqlca_sqlcode<0||$aubit4gl_pl::sqlca_sqlcode==100) break;\n");
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_foreach_end ()
+print_foreach_end (void)
 {
   printc ("}");
   printcomment ("# end of foreach while loop \n");
@@ -1579,28 +1996,48 @@ print_foreach_end ()
   printc ("}\n");
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 static void
 print_free_cursor (char *s)
 {
   printc ("/* FREE CUROSR .. FIXME */\n");
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_pushchar (char *s)
 {
   printc ("aubit4gl_pl::push_char(%s);\n", s);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_goto (char *label)
 {
   printc ("goto %s;\n", label);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_gui_do_menuitems (char *list, int mode)
 {
@@ -1614,7 +2051,12 @@ print_gui_do_menuitems (char *list, int mode)
     printc ("aubit4gl_pl::endis_menuitems(1,%s,0);\n", list);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_gui_do_fields (char *list, int mode)
 {
@@ -1624,7 +2066,12 @@ print_gui_do_fields (char *list, int mode)
     printc ("aubit4gl_pl::endis_fields(1,%s,0);\n", list);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_gui_do_form (char *name, char *list, int mode)
 {
@@ -1634,26 +2081,46 @@ print_gui_do_form (char *name, char *list, int mode)
     printc ("aubit4gl_pl::endis_form(1,%s,%s,0);\n", name, list);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_if_start ()
+print_if_start (void)
 {
   printc ("if (aubit4gl_pl::pop_bool()) {\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_if_else ()
+print_if_else (void)
 {
   printc ("} else {\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_if_end ()
+print_if_end (void)
 {
   printc ("}");
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_import (char *func, int nargs)
 {
@@ -1683,9 +2150,14 @@ print_import (char *func, int nargs)
   printc (buff);
 }
 
-/************************************************************************/
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_init ()
+print_init (void)
 {
   int cnt;
   printc ("{\n");
@@ -1694,6 +2166,11 @@ print_init ()
   printc ("}\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_init_table (char *s)
 {
@@ -1704,14 +2181,24 @@ print_init_table (char *s)
   printc ("}\n");
 }
 
-/************************************************************************/
 
+
+/**
+ *
+ * @param
+ * @return
+ */
 void
 generate_or (char *out, char *in1, char *in2)
 {
   sprintf (out, "%s||%s", in1, in2);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_next_field (char *s)
 {
@@ -1722,12 +2209,22 @@ print_next_field (char *s)
 /* INPUT */
 /************************************************************************/
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_input_1 ()
+print_input_1 (void)
 {
   printc ("} # /* end of initialization */\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_input_2 (char *s)
 {
@@ -1747,6 +2244,11 @@ print_input_2 (char *s)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_input (int byname, char *defs, char *helpno, char *fldlist)
 {
@@ -1790,6 +2292,11 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
   printc ("_fld_dr=-99;\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 char *
 print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
 		   char *attr)
@@ -1831,6 +2338,11 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   return buff2;
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 char *
 get_formloop_str (int type)
 {
@@ -1839,6 +2351,11 @@ get_formloop_str (int type)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_scroll (char *flds, char *updown)
 {
@@ -1847,12 +2364,22 @@ print_scroll (char *flds, char *updown)
 
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_label (char *s)
 {
   printc ("%s:\n", s);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 int
 print_let_manyvars (char *nexprs)
 {
@@ -1870,6 +2397,11 @@ print_let_manyvars (char *nexprs)
   return 1;
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_push_null ()
 {
@@ -1879,6 +2411,11 @@ print_push_null ()
 /* Linked stuff */
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 int
 print_linked_cmd (int type, char *var)
 {
@@ -1958,6 +2495,11 @@ print_linked_cmd (int type, char *var)
 
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_locate (char where, char *var, char *fname)
 {
@@ -1967,6 +2509,11 @@ print_locate (char where, char *var, char *fname)
 
 /**************************** REPORT **********************/
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_start_report (char *repname, char *where, char *out)
 {
@@ -1976,6 +2523,11 @@ print_start_report (char *repname, char *where, char *out)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_output_to_report (char *repname, char *nvalues)
 {
@@ -1983,48 +2535,88 @@ print_output_to_report (char *repname, char *nvalues)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_finish_report (char *repname)
 {
   printc ("acl_fglr_%s(0,REPORT_FINISH);\n", repname);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_format_every_row ()
+print_format_every_row (void)
 {
   printc ("#error FORMAT EVERY ROW not implemented yet");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_need_lines ()
+print_need_lines (void)
 {
   printc ("%sneed_lines(&rep);\n", ispdf ());
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_skip_lines ()
+print_skip_lines (void)
 {
   printc ("%saclfgli_skip_lines(&rep);\n", ispdf ());
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_skip_top ()
+print_skip_top (void)
 {
   printc ("%sskip_top_of_page(&rep);\n", ispdf ());
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_skip_by (char *nval)
 {
   printc ("pdf_skip_by(&rep,%s);\n", nval);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_skip_to (char *nval)
 {
   printc ("pdf_skip_to(&rep,%s);\n", nval);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_report_print (int type, char *semi, char *wordwrap)
 {
@@ -2036,25 +2628,45 @@ print_report_print (int type, char *semi, char *wordwrap)
     printc ("%srep_print(&rep,1,1,%s);\n", ispdf (), wordwrap);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_report_print_file (char *fname, char *semi)
 {
   printc ("%srep_file_print(&rep,%s,%s);\n", ispdf (), fname, semi);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_report_print_img (char *scaling, char *blob, char *type, char *semi)
 {
   printc ("%s pdf_blob_print(&rep,&%s,\"%s\",%s);\n", scaling,
 	  blob, type, semi);}
 
+/**
+ *
+ * @param
+ * @return
+ */
 char *
-get_default_scaling ()
+get_default_scaling (void)
 {
   return "push_double(1.0);push_double(1.0);";
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_order_by_type (int type)
 {
@@ -2062,14 +2674,24 @@ print_order_by_type (int type)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_report_1 (char *name)
 {
   printc ("int acl_fglr_%s (int nargs,int acl_ctrl) {\n", name, name);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_report_end ()
+print_report_end (void)
 {
   printc ("\n} # /* end of report */\n");
 }
@@ -2147,6 +2769,11 @@ print_report_2 (int pdf, char *repordby)
     print_output_rep (&rep_struct);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_pause (char *msg)
 {
@@ -2155,6 +2782,11 @@ print_pause (char *msg)
 
 /* MISC */
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_sleep (void)
 {
@@ -2164,6 +2796,11 @@ print_sleep (void)
 
 /* EXPRESSIONS */
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_op (char *type)
 {
@@ -2172,6 +2809,11 @@ print_op (char *type)
 
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_niy (char *type)
 {
@@ -2179,12 +2821,22 @@ print_niy (char *type)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_push_variable (char *s)
 {
   printc ("aubit4gl_pl::push_param(&%s,0x%x);\n", s, scan_variable (s));
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_message (int type, char *attr, int wait)
 {
@@ -2194,6 +2846,11 @@ print_message (int type, char *attr, int wait)
     printc ("aubit4gl_pl::aclfgli_pr_message_cap(%d,%d);\n", attr, wait);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_system_run (int type, char *rvar)
 {
@@ -2204,38 +2861,68 @@ print_system_run (int type, char *rvar)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_set_conn (char *conn)
 {
   printc ("aubit4gl_pl::set_conn(%s);\n", conn);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_set_options (char *type, char *id, char *var, char *val)
 {
   printc ("aubit4gl_pl::set_%s_options(%s,%s,%s);\n", type, id, var, val);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_while_1 ()
+print_while_1 (void)
 {
   printc ("while (1==1) {\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_while_2 ()
+print_while_2 (void)
 {
   printc ("if (!(aubit4gl_pl::pop_bool())) break;\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_while_3 ()
+print_while_3 (void)
 {
   /* for future enhancement! */
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_put ()
+print_put (void)
 {
   int n;
   printc ("{\n");
@@ -2245,6 +2932,11 @@ print_put ()
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_prepare (char *stmt, char *sqlvar)
 {
@@ -2253,12 +2945,22 @@ print_prepare (char *stmt, char *sqlvar)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_undo_use (char *s)
 {
   printc (s);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_execute (char *stmt, int using)
 {
@@ -2276,6 +2978,11 @@ print_execute (char *stmt, int using)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_prompt_1 (char *a1, char *a2, char *a3, char *a4)
 {
@@ -2285,12 +2992,22 @@ print_prompt_1 (char *a1, char *a2, char *a3, char *a4)
     ("while (GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=aubit4gl_pl::prompt_loop(&_p);\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_prompt_forchar ()
+print_prompt_forchar (void)
 {
   printc ("if (_fld_dr) break;\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_prompt_end (char *s)
 {
@@ -2299,6 +3016,11 @@ print_prompt_end (char *s)
   printc ("}\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_open_window (char *name, char *type)
 {
@@ -2307,6 +3029,11 @@ print_open_window (char *name, char *type)
   printc (");\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_open_form (char *fmt, char *a1, char *a2)
 {
@@ -2314,6 +3041,11 @@ print_open_form (char *fmt, char *a1, char *a2)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_open_session (char *s, char *v, char *user)
 {
@@ -2328,6 +3060,11 @@ print_open_session (char *s, char *v, char *user)
     }
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_open_cursor (char *cname, char *using)
 {
@@ -2335,42 +3072,77 @@ print_open_cursor (char *cname, char *using)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_clr_window (char *s)
 {
   printc ("aubit4gl_pl::clr_window(%s);\n", s);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_clr_form (char *formname, char *clr, char *defs)
 {
   print_niy ("Clear Form");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_clr_fields (char *flds, char *defs)
 {
   print_niy ("Clear Fields");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_current_window (char *s)
 {
   printc ("aubit4gl_pl::current_window(%s);\n", s);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_show_window (char *s)
 {
   printc ("aubit4gl_pl::show_window(%s);\n", s);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_hide_window (char *s)
 {
   printc ("aubit4gl_pl::hide_window(%s);\n", s);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_show_menu (char *mname, char *mhand)
 {
@@ -2378,12 +3150,22 @@ print_show_menu (char *mname, char *mhand)
   printc ("aubit4gl_pl::show_menu(\"%s\",aclfglmn_%s);\n", mname, mhand);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_def_mn_file ()
+print_def_mn_file (void)
 {
   printc ("aubit4gl_pl::push_char(\"menu\"); /* default menu file */\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_move_window (char *n, int rel)
 {
@@ -2395,23 +3177,38 @@ print_move_window (char *n, int rel)
 
 /*********** MENU *********/
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_menu_1 ()
+print_menu_1 (void)
 {
   printc ("{my ($m);\n\nmy ($cmd_no);\n$cmd_no=-1;\n");
   printc ("while ($cmd_no!=-3) {\nMENU_WHILE_LABEL:\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_end_menu_1 ()
+print_end_menu_1 (void)
 {
   printc ("if ($cmd_no==-1) {\n");
   print_menu (menu_cnt);
   printc ("}\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_end_menu_2 ()
+print_end_menu_2 (void)
 {
   printc
     ("$cmd_no=aubit4gl_pl::menu_loop($m);\n}\naubit4gl_pl::free_menu($m);\n");
@@ -2420,18 +3217,33 @@ print_end_menu_2 ()
   printc ("}\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_menu_block (int n)
 {
   printc (" if ($cmd_no==%d) {\n", n);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_menu_block_end ()
+print_menu_block_end (void)
 {
   printc ("}\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_option_op (int type, char *n)
 {
@@ -2443,12 +3255,22 @@ print_option_op (int type, char *n)
     printc ("aubit4gl_pl::menu_show(m,%s,0);\n", n);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_at_termination (char *f)
 {
   print_niy ("AT TERMINATION");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_func_start (char *isstatic, char *fname, int type)
 {
@@ -2461,6 +3283,11 @@ print_func_start (char *isstatic, char *fname, int type)
     printc ("\nsub aclfglm_%s () { my $nargs=$_[0];\n", fname);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_func_args (int c)
 {
@@ -2470,24 +3297,44 @@ print_func_args (int c)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_func_defret0 ()
+print_func_defret0 (void)
 {
   printc ("return 0;\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_func_end ()
+print_func_end (void)
 {
   printc ("}\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_main_1 ()
+print_main_1 (void)
 {
   printc ("\n\nsub a4gl_main() {\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_fgllib_start (char *db)
 {
@@ -2501,55 +3348,100 @@ print_fgllib_start (char *db)
     }
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_main_end ()
+print_main_end (void)
 {
   printc ("aubit4gl_pl::fgl_end();\n}");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_return (int n)
 {
   printc ("return %d;", n);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_options (char n, char *s)
 {
   printc ("set_option_value('%c',%s);\n", n, s);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_set_helpfile (char *s)
 {
   printc ("set_help_file(%s);\n", s);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_sql_commit (int t)
 {
   printc ("commit_rollback(%d);\n", t);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_fetch_1 ()
+print_fetch_1 (void)
 {
   printc ("{");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
-print_fetch_2 ()
+print_fetch_2 (void)
 {
   printc ("{");
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_fetch_3 (char *ftp, char *into)
 {
   printc ("fetch_cursor(%s,%s);}\n}\n", ftp, into);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_init_conn (char *db)
 {
@@ -2560,24 +3452,44 @@ print_init_conn (char *db)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_do_select (char *s)
 {
   printc ("execute_implicit_select(%s);\n}\n", s);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_flush_cursor (char *s)
 {
   printc ("flush_cursor(%s);\n\n", s);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 {
   printc ("declare_cursor(%s+%d,%s,%d,%s);\n}\n", a1, h1, a2, h2, a3);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 char *
 print_curr_spec (int type, char *s)
 {
@@ -2592,6 +3504,11 @@ print_curr_spec (int type, char *s)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 char *
 print_select_all (char *buff)
 {
@@ -2606,18 +3523,33 @@ print_select_all (char *buff)
 
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_unload (char *file, char *delim, char *sql)
 {
   printc ("unload_data(%s,%s, /*1*/ \"%s\" /*2*/);\n", file, delim, sql);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_load (char *file, char *delim, char *tab, char *list)
 {
   printc ("load_data(%s,%s,\"%s\",%s);\n", file, delim, tab, list);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_use_session (char *sess)
 {
@@ -2627,13 +3559,23 @@ print_use_session (char *sess)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 char *
-get_undo_use ()
+get_undo_use (void)
 {
   return "set_conn(_sav_cur_conn);}";
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_next_form_field (char *form, char *field)
 {
@@ -2644,6 +3586,11 @@ print_next_form_field (char *form, char *field)
 /*                                     Ex mod.c stuff                   */
 /************************************************************************/
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_declare_associate_1 (char *variable, char *size, char *n)
 {
@@ -2654,6 +3601,11 @@ print_declare_associate_1 (char *variable, char *size, char *n)
      n, size, downshift (variable));
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_declare_associate_2 (char *variable, char *size, char *n)
 {
@@ -2665,6 +3617,11 @@ print_declare_associate_2 (char *variable, char *size, char *n)
 
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_define_char (char *var, int size, int isstatic_extern)
 {
@@ -2683,6 +3640,11 @@ print_define_char (char *var, int size, int isstatic_extern)
 
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_define (char *varstring, int isstatic_extern)
 {
@@ -2700,6 +3662,11 @@ print_define (char *varstring, int isstatic_extern)
     printc ("%s => '$',\n", vname);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_start_record (int isstatic_extern, char *vname)
 {
@@ -2711,6 +3678,11 @@ print_start_record (int isstatic_extern, char *vname)
   printh ("struct a4glStruct_%s => {\n", vname);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 void
 print_end_record (char *vname, int arrsize)
 {
@@ -2729,6 +3701,11 @@ print_end_record (char *vname, int arrsize)
 
 
 
+/**
+ *
+ * @param
+ * @return
+ */
 static void
 print_menu (int mn)
 {
@@ -2760,6 +3737,11 @@ print_menu (int mn)
     ("aubit4gl_pl::finish_create_menu($m);\naubit4gl_pl::disp_h_menu($m);$cmd_no=-2;goto MENU_WHILE_LABEL;\n");
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
 char *
 get_push_literal (char type, char *value)
 {
@@ -2786,7 +3768,9 @@ get_push_literal (char type, char *value)
  *
  * @param s
  */
-char *decode_array_string(char *s) {
+char*
+decode_array_string(char *s)
+{
 /*
 static char buff[2000]="";
 int a;
@@ -2824,4 +3808,4 @@ print_set_langfile (char *s)
     exitwith ("print_set_langfile not implemented");
 }
 
-
+// ================================ EOF ==============================

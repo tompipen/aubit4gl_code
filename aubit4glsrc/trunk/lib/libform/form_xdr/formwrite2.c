@@ -1,3 +1,31 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: formwrite2.c,v 1.4 2002-05-14 09:27:27 afalout Exp $
+#*/
 
 /**
  * @file
@@ -6,7 +34,16 @@
  *
  */
 
-//#include "form_x.h"
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
 #include "a4gl_formxw.h"
 #ifdef __CYGWIN__
 	#include <rpc/rpc.h>
@@ -14,14 +51,16 @@
 
 #include "a4gl_fcomp_fcompile.h"
 #include "a4gl_compiler.h"
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
 #include "a4gl_dbform.h"
 #include "a4gl_debug.h"
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 extern int as_c;
-
-
 
 //extern int scr;
 int cmaxcol = 0;
@@ -31,22 +70,47 @@ int maxline;
 
 struct struct_screen_record *curr_rec;
 char buff_xdr[30000];
-
 extern char *outputfilename;
-
 extern struct struct_form the_form;
 extern struct struct_scr_field *fld;
+
+
+struct translate_string {
+        char *from;
+        char *to;
+        char *identifier;
+};
+
+
+extern struct translate_string *translate_list;
+extern int translate_list_cnt;
+
 
 /** File pointer to .frm object file */
 FILE *fxx;
 FILE *fyy;
 
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+static void translate_form(void);
+extern int* translate(char *s); //translate.c
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
  * Alocate memory to a new attribute structure and initializes the values
  * of each properties
  */
-static new_attribute(void) 
+static void
+new_attribute(void)
 {
   debug("new_attribute\n");
   the_form.attributes.attributes_len++;
@@ -73,7 +137,8 @@ static new_attribute(void)
  * It leaves the global field description pointer pointing to the new array
  * element.
  */
-void init_fld (void)
+void 
+init_fld (void)
 {
   int cnt;
   debug("init_fld\n");
@@ -110,7 +175,8 @@ void init_fld (void)
  * @param s Alias name
  * @return The table found name or the alias name
  */
-static char *chk_alias (char *s)
+static char*
+chk_alias (char *s)
 {
   int a;
   debug("chk_alias\n");
@@ -129,7 +195,8 @@ static char *chk_alias (char *s)
  * @param s field tag name
  * @return -1 if not found, the index in the array otherwise
  */
-int find_field (char *s)
+int 
+find_field (char *s)
 {
   int a;
   debug("Looking for tag '%s'\n",s);
@@ -152,7 +219,8 @@ int find_field (char *s)
  * @param a First parameter of formated string
  * @param b Second parameter of formated string
  */
-static error_with (char *s, char *a, char *b)
+static void
+error_with (char *s, char *a, char *b)
 {
   static char z[2];
   z[0] = 0;
@@ -170,7 +238,8 @@ static error_with (char *s, char *a, char *b)
  * Alocate memory to a struct of structs_creen_record type and start to 
  * insert as new record of the record array.
  */
-static new_records(void) 
+static int
+new_records(void)
 {
   int cnt;
   debug("new_records\n");
@@ -191,7 +260,8 @@ static new_records(void)
 /**
  * Add / Initialize a new screen array
  */
-void add_srec(void)
+void 
+add_srec(void)
 {
   debug("add_srec\n");
   new_records();
@@ -207,7 +277,8 @@ void add_srec(void)
  *  @param s The screen array name
  *  @param a The array size
  */
-void set_dim_srec (char *s, int a)
+void 
+set_dim_srec (char *s, int a)
 {
   debug("set_dim_srec\n");
   curr_rec->dim = a;
@@ -219,7 +290,8 @@ void set_dim_srec (char *s, int a)
  *
  * @param s The string to be lowered
  */
-void make_downshift(char *s) 
+void
+make_downshift(char *s)
 {
   int a;
   for (a=0;a<strlen(s);a++) 
@@ -233,7 +305,8 @@ void make_downshift(char *s)
  * @param tab The table name
  * @param a The position in the attributes array where to add
  */
-static add_srec_direct (char *tab, int a)
+static void
+add_srec_direct (char *tab, int a)
 {
   int z;
   make_downshift(tab);
@@ -269,7 +342,8 @@ static add_srec_direct (char *tab, int a)
  * section )
  * @param f The field attributes filled in a struct (struct_scr_field)
  */
-void set_field (char *s, struct struct_scr_field *f)
+void 
+set_field (char *s, struct struct_scr_field *f)
 {
   int a;
   char *ptr;
@@ -323,11 +397,12 @@ void set_field (char *s, struct struct_scr_field *f)
 /**
  * It takes the first and last character from a string (normaly "") and
  * convert the tabs to spaces.
- *
+ * Called from screen.lex, so is not static
  *  @param s The origin string
  *  @return A pointer to a static transformated string
  */
-char *char_val (char *s)
+char*
+char_val (char *s)
 {
   static char str[80];
   int a;
@@ -355,7 +430,8 @@ char *char_val (char *s)
  * @param label The label (if the element is a field) of the element
  * @return The index of metrics array
  */
-static int new_metric(int x, int y, int wid, int scr, int delim,char *label)
+static int 
+new_metric(int x, int y, int wid, int scr, int delim,char *label)
 {
   debug("new_metric\n");
   the_form.metrics.metrics_len++;
@@ -387,7 +463,8 @@ static int new_metric(int x, int y, int wid, int scr, int delim,char *label)
  *
  * @return The fields array index
  */
-static add_new_field(void) 
+static int
+add_new_field(void)
 {
   debug("add_new_field\n");
   the_form.fields.fields_len++;
@@ -408,7 +485,8 @@ static add_new_field(void)
  * @param cnt The position of the array where to insert the form metric
  * @return The new index of form meetric array
  */
-static int new_form_metric(int cnt) 
+static int 
+new_form_metric(int cnt)
 {
   debug("new form metric\n");
   if (cnt==-1) cnt=the_form.fields.fields_len-1;
@@ -436,6 +514,7 @@ static int new_form_metric(int cnt)
  * @param delim
  * @param label The screen label
  */
+int
 add_field(char *s, int x, int y, int wid, int scr, int delim,char *label)
 {
   int a;
@@ -443,23 +522,26 @@ add_field(char *s, int x, int y, int wid, int scr, int delim,char *label)
   int xx,yy;
   char *ptr;
   a=the_form.metrics.metrics_len-1;
-  if (a>=0) {
-  	if (the_form.metrics.metrics_val[a].y==y-1) {
-		if (the_form.metrics.metrics_val[a].x+the_form.metrics.metrics_val[a].w==x-1) {
-
+  if (a>=0)
+  {
+  	if (the_form.metrics.metrics_val[a].y==y-1)
+	{
+		if (the_form.metrics.metrics_val[a].x+the_form.metrics.metrics_val[a].w==x-1)
+		{
 			ptr=malloc(the_form.metrics.metrics_val[a].w+wid+1);
 			sprintf(ptr,"%s%s",the_form.metrics.metrics_val[a].label,label);
 			free(the_form.metrics.metrics_val[a].label);
 			the_form.metrics.metrics_val[a].label=ptr;
 			the_form.metrics.metrics_val[a].w+=wid;
-		
+
 			debug("Straight Continuation: '%s' and '%s' = '%s'\n",
 				 the_form.metrics.metrics_val[a].label,
 					label,ptr);
-			return;
+			return 0;
 		}
 
-		if (the_form.metrics.metrics_val[a].x+the_form.metrics.metrics_val[a].w==x-2) {
+		if (the_form.metrics.metrics_val[a].x+the_form.metrics.metrics_val[a].w==x-2)
+		{
 			debug("Alloc %d bytes",the_form.metrics.metrics_val[a].w+wid+1);
 			ptr=malloc(the_form.metrics.metrics_val[a].w+wid+2);
 			sprintf(ptr,"%s %s",the_form.metrics.metrics_val[a].label,label);
@@ -469,18 +551,14 @@ add_field(char *s, int x, int y, int wid, int scr, int delim,char *label)
 			debug("Freed");
 			the_form.metrics.metrics_val[a].label=ptr;
 			the_form.metrics.metrics_val[a].w+=wid+1;
-		
+
 			debug("Single Spaced Continuation: '%s' and '%s' = '%s'\n",
 				 the_form.metrics.metrics_val[a].label,
 					label,ptr);
-			return;
+			return 0;
 		}
-
-
-
   	}
-
-}
+  }
 
   debug("add_field %s %d %d %d %d %d\n",s,x,y,wid,scr,label);
   f=new_metric(x,y,wid,scr,delim,label);
@@ -513,7 +591,8 @@ add_field(char *s, int x, int y, int wid, int scr, int delim,char *label)
  * @param s table name
  * @param a table alias
  */
-void add_table (char *s, char *a)
+void 
+add_table (char *s, char *a)
 {
   char z[3];
   z[0] = 0;
@@ -544,7 +623,8 @@ void add_table (char *s, char *a)
  * @param colname The column name
  * @return The index of the attribute in the array
  */
-static int find_attribs (int **ptr, char *tab, char *colname)
+static int 
+find_attribs (int **ptr, char *tab, char *colname)
 {
   static int attrib_list[256];
   int a;
@@ -581,7 +661,8 @@ static int find_attribs (int **ptr, char *tab, char *colname)
  * Process the through of fields in the screen record
  * Expands the field attributes of a through in the screen record
  */
-static proc_thru (void)
+static void
+proc_thru (void)
 {
   int a;
   int b;
@@ -606,7 +687,8 @@ static proc_thru (void)
  * @param col The column name or '*'
  * @param thru 
  */
-void add_srec_attribute (char *tab, char *col, char *thru)
+void 
+add_srec_attribute (char *tab, char *col, char *thru)
 {
   int *ptr;
   int a;
@@ -667,7 +749,8 @@ void add_srec_attribute (char *tab, char *col, char *thru)
  * @param fno The field number wanted
  * @return The index of the array of field number wanted
  */
-static int find_field_attr(int fno) 
+static int 
+find_field_attr(int fno)
 {
   int a;
   debug("find_field_attr\n");
@@ -689,7 +772,8 @@ static int find_field_attr(int fno)
  * It seems not used
  * @todo Understand if its or not used and if so remove it
  */
-static void chk_for_wordwrap(void) 
+static void 
+chk_for_wordwrap(void)
 {
   int a,b;
   int w,w1;
@@ -745,7 +829,8 @@ static void chk_for_wordwrap(void)
 /**
  * Write the frm file with the information parsed from the .per to memory
  */
-void write_form (void)
+void
+write_form (void)
 {
   char fname[132];
   char fname2[132];
@@ -823,7 +908,8 @@ void write_form (void)
  * @col The column name
  * @tab The table name
  */
-int getdatatype(char *col,char *tab) 
+int 
+getdatatype(char *col,char *tab)
 {
   char tabs[100][32];
   char buff[256];
@@ -856,7 +942,8 @@ int getdatatype(char *col,char *tab)
  * Intialize the memory needed to compile a 4gl screen form in order to
  * the lexical and sintatic parser to load the information found
  */
-void init_form(void) 
+void 
+init_form(void)
 {
   debug("init_form\n");
   the_form.dbname=strdup("");
@@ -893,7 +980,8 @@ void init_form(void)
  * It seems that its not used
  * @toto Confirm if its used and if not remove it
  */
-static void new_field_bool_attribute(void) 
+static void 
+new_field_bool_attribute(void)
 {
   int cnt;
   
@@ -913,10 +1001,12 @@ static void new_field_bool_attribute(void)
  *
  * @todo Confirm if its used and if not remove it
  */
-static new_field_str_attribute(void) {
+static void
+new_field_str_attribute(void) 
+{
 	int cnt;
 
-debug("new_field_str_attr\n");
+	debug("new_field_str_attr\n");
 	cnt= the_form.attributes.attributes_len-1;
 
 	the_form.attributes.attributes_val[cnt].str_attribs.str_attribs_len++;
@@ -936,7 +1026,8 @@ debug("new_field_str_attr\n");
  * @param type The attribute type
  * @param str The attribute to add
  */
-void add_str_attr(struct struct_scr_field *f,int type,char *str) 
+void 
+add_str_attr(struct struct_scr_field *f,int type,char *str)
 {
   debug("add_str_attr %d - '%s'\n",type,str);
   if (str[0]!='\n') 
@@ -955,7 +1046,7 @@ void add_str_attr(struct struct_scr_field *f,int type,char *str)
     f->str_attribs.str_attribs_val[f->str_attribs.str_attribs_len-1].value=
       strdup(str);
   }
-  else 
+  else
   {
     error_with("Attribute already used  new value '%s'\n",str,0);
   }
@@ -969,7 +1060,8 @@ void add_str_attr(struct struct_scr_field *f,int type,char *str)
  * @param type The type of the boolean attribute:
  *   
  */
-void add_bool_attr(struct struct_scr_field *f,int type) 
+void 
+add_bool_attr(struct struct_scr_field *f,int type)
 {
   char *attrs[]={
         "AUTONEXT",
@@ -1008,16 +1100,6 @@ void add_bool_attr(struct struct_scr_field *f,int type)
   }
 }
 
-
-struct translate_string {
-        char *from;
-        char *to;
-        char *identifier;
-};
-
-extern struct translate_string *translate_list;
-extern int translate_list_cnt;
-
 /* moved to translate.c, because needed by both compilers/4glc/lexer.c and trnaslate.c
 
 add_translate(int mode,char * from,char * to) {
@@ -1040,42 +1122,50 @@ add_translate(int mode,char * from,char * to) {
 
 */
 
-void translate_form() {
+/**
+ *
+ */
+static void
+translate_form(void)
+{
 	int a;
 	int b;
-        char *ptr;
-	for (a=0;a<the_form.metrics.metrics_len;a++) {
+	char *ptr;
+	
+	for (a=0;a<the_form.metrics.metrics_len;a++) 
+	{
   		dumpstring(the_form.metrics.metrics_val[a].label,0,"");
-
-		ptr=translate(the_form.metrics.metrics_val[a].label);
-		if (ptr) 
+		ptr=translate(the_form.metrics.metrics_val[a].label); //warning: assignment makes pointer from integer without a cast
+		if (ptr)
 			the_form.metrics.metrics_val[a].label=strdup(ptr);
 	}
 
-	for (b=0;b< the_form.attributes.attributes_len;b++) {
-		for (a=0;a<the_form.attributes.attributes_val[b].str_attribs.str_attribs_len;a++) {
-	if (the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].type==FA_S_COMMENTS) {
-		dumpstring(the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].value,0,"");
-		ptr=translate(the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].value);
-		if (ptr) 
-			the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].value=strdup(ptr);
+	for (b=0;b< the_form.attributes.attributes_len;b++)
+	{
+		for (a=0;a<the_form.attributes.attributes_val[b].str_attribs.str_attribs_len;a++)
+		{
+			if (the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].type==FA_S_COMMENTS)
+			{
+				dumpstring(the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].value,0,"");
+				ptr=translate(the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].value);
+				if (ptr)
+					the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].value=strdup(ptr);
+			}
+		}
 	}
-}
-}
 }
 
 
 //============== from decompile.c =====================
-
+/*   did not work, but still needed for fdecompile */
 int
 isolated_xdr_struct_form( XDR *xdrp, struct struct_form *the_form)
 {
 int a;
-debug("In isolated xdr_struct_form..");
+	debug("In isolated xdr_struct_form..");
 	a=xdr_struct_form(xdrp,the_form);
-debug("DOne");
+	debug("DOne");
     return a;
-
 }
 
-
+// =============================== EOF ==========================

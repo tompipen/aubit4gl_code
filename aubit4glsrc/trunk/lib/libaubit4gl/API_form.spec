@@ -21,22 +21,6 @@ VARIABLE A4GL_FORMTYPE
 * func-name param-type param-name ... -> returns"
 *
 
-// Apparently not called from outside - declare as static:
-//char * find_attribute (struct s_form_dets *f, int field_no)
-//void set_default_form (struct s_form_attr *form)
-//read_attributes (struct s_form_dets *f)
-//comments (struct struct_scr_field * fprop)
-//struct struct_screen_record * get_srec (char *name)
-//int check_field_for_include (char *s, char *inc, int dtype)
-//include_range_check (char *ss, char *ptr, int dtype)
-//set_bool_attribute (struct struct_scr_field * f, int bool, int value)
-//do_translate_form(struct_form *the_form)
-//int chk_iskey (char *keys)
-
-
-//char *char_val (char *s)
-//void translate_form()
-
 //
 // ------ Function calls from lib/libform/form_xdr/readforms.c ------
 //
@@ -193,6 +177,7 @@ add_bool_attr void* f,int type -> void
 
 // ------------- for decompile.c and gtk_4gl.c ------------------------
 
+* did not work, but still needed for fdecompile:
 //int isolated_xdr_struct_form( XDR xdrp, struct struct_form the_form)
 isolated_xdr_struct_form void* xdrp,void* the_form -> int
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: errfile.c,v 1.3 2002-05-14 09:27:27 afalout Exp $
 #
 */
 
@@ -50,6 +50,9 @@ FILE *fout=0;
 long le;
 int errline;
 FILE *mja_fopen(char *name, char *mode);
+void find_nl(FILE *f,long fp,long *s,long *e);
+void prerrmark(FILE *f,int a);
+
 
 /**
  * Write to error file.
@@ -62,26 +65,31 @@ FILE *mja_fopen(char *name, char *mode);
  * @param as Position in the file
  * @param lineno Line number on the source file.
  */
-FILE *write_errfile(FILE *f,char *fname,long as,int lineno) {
+FILE*
+write_errfile(FILE *f,char *fname,long as,int lineno) 
+{
   int a;
   int b;
   long s2,e;
   long s;
   int errorno;
+
   fout=mja_fopen(fname,"w");
   errorno=ferror(f);
   /* find the nearest NL */
   find_nl(f,as,&s2,&e);
-  if ((as-s2)<=0)  {
-       as-=2;
-    find_nl(f,as,&s2,&e);
+  if ((as-s2)<=0)
+  {
+		as-=2;
+		find_nl(f,as,&s2,&e);
   }
   debug("s2=%d e=%d",s2,e);
   s=e+1;
   errline=lineno;
   rewind(f);
   a=2048;
-  while (s>0) {
+  while (s>0)
+  {
    if (a>s) a=s;
    fread(buff,a,1,f);
    fwrite(buff,a,1,fout);
@@ -97,7 +105,9 @@ FILE *write_errfile(FILE *f,char *fname,long as,int lineno) {
  *
  * @param f A pointer to the input source file.
  */
-void write_cont(FILE *f) {
+void 
+write_cont(FILE *f) 
+{
   int a,s=1;
   a=2048;
   fprintf(fout,"\n");
@@ -120,7 +130,8 @@ void write_cont(FILE *f) {
  * @param e A pointer to the place where to return the position of the new line
  *   after.
  */
-void find_nl(FILE *f,long fp,long *s,long *e) 
+void
+find_nl(FILE *f,long fp,long *s,long *e)
 {
   int a;
   char buff[10];
@@ -141,10 +152,12 @@ void find_nl(FILE *f,long fp,long *s,long *e)
   *e=fp-1;
 }
 
-prerrmark(FILE *f,int a) {
+void
+prerrmark(FILE *f,int a)
+{
 int b;
-fprintf(f,"|"); for (b=1;b<a-1;b++) { fprintf(f,"_"); } fprintf(f,"^\n");
-fprintf(f,"| Error at line %d, character %d\n",errline,le);
+	fprintf(f,"|"); for (b=1;b<a-1;b++) { fprintf(f,"_"); } fprintf(f,"^\n");
+	fprintf(f,"| Error at line %d, character %d\n",errline,le);
 }
 
 /*
@@ -164,7 +177,9 @@ write_cont(f);
  * @param mode The mode for passing directy to mode.
  * @return The pointer to the opened file.
  */
-FILE *mja_fopen(char *name, char *mode) {
+FILE*
+mja_fopen(char *name, char *mode) 
+{
 	return fopen(name,mode);
 }
 

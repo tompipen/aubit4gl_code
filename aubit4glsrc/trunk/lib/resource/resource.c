@@ -1,6 +1,6 @@
 /*
 # +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0   root makefile              |
+# | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
 # +----------------------------------------------------------------------+
@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.4 2002-05-11 15:27:25 mikeaubury Exp $
+# $Id: resource.c,v 1.5 2002-05-14 09:27:28 afalout Exp $
 #
 */
 
@@ -37,7 +37,12 @@
  * @todo Doxygen comments to add to functions
  */
 
-#define RES_MAX 2000
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,6 +56,19 @@ we will define this two variables:
 #define WGETENV_OK
 #include "a4gl_debug.h"
 
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
+
+#define RES_MAX 2000
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 struct str_resource
   {
@@ -59,13 +77,9 @@ struct str_resource
   };
 
 struct str_resource *user_resource = 0;
-
 int loaded_resources=0;
 struct str_resource *build_resource=0;
 int build_resource_cnt=0;
-static int has_resource(char *s) ;
-static void add_resources_in(FILE *resourcefile) ;
-static int next_resource();
 
 struct str_resource builtin_resource[] =
 {
@@ -210,22 +224,44 @@ struct str_resource builtin_resource[] =
   {"W32FGLLIBS", "-laclall -lm"},
   {"W32INCLDIR", "-I/acl/incl"},
   {"W32GCC", "gcc -s -O"},
- 
+
 /* End of definitions */
   {"", 0}
-};  
+};
 
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
+static int has_resource(char *s) ;
+static void add_resources_in(FILE *resourcefile) ;
+static int next_resource(void);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+/**
+ *
+ *
+ *
+ *
+ * @param
+ */
 char *
 chk_str_resource (char *s, struct str_resource *res)
 {
   register int a;
- 
+
   if (res == 0)
     {
       return 0;
     }
- 
+
   for (a = 0; strlen (res[a].name) != 0; a++)
     {
       if (strcmp (res[a].name, s) == 0)
@@ -237,6 +273,13 @@ chk_str_resource (char *s, struct str_resource *res)
   return 0;
 }
 
+/**
+ *
+ *
+ *
+ *
+ * @param
+ */
 int
 add_userptr (void *ptr)
 {
@@ -265,7 +308,15 @@ static char *wgetenv (char *s)
 
 
 
-char *find_str_resource_int (char *search, int a)
+/**
+ *
+ *
+ *
+ *
+ * @param
+ */
+char *
+find_str_resource_int (char *search, int a)
 {
   char *ptr;
   char s[256];
@@ -280,8 +331,16 @@ char *find_str_resource_int (char *search, int a)
     return ptr;
   return 0;
 }
- 
-char *find_str_resource (char *s)
+
+/**
+ *
+ *
+ *
+ *
+ * @param
+ */
+char *
+find_str_resource (char *s)
 {
   char *ptr;
   /* look in user resources first */
@@ -302,7 +361,8 @@ char *find_str_resource (char *s)
  *
  * @param s The environment variable name.
  */
-char *acl_getenv (char *s)
+char *
+acl_getenv (char *s)
 {
   static char undef[] = "Undefined";
   char prefixed_string[256];
@@ -334,6 +394,7 @@ char *acl_getenv (char *s)
  *
  * @param p The DBDATE variable string.
  */
+int
 chk_dbdate (char *p)
 {
   int d, m, y, del, ysize;
@@ -375,6 +436,13 @@ chk_dbdate (char *p)
     }
 }
 
+/**
+ *
+ *
+ *
+ *
+ * @param
+ */
 int
 replace_str_resource (char *s, char *neww)
 {
@@ -393,15 +461,18 @@ replace_str_resource (char *s, char *neww)
 #ifdef WIN32
 #ifndef __CYGWIN__
 
-
-/************************************************************************/
-/* set a value in the registry
-	   Eg.
-	   set_regkey("User","maubu");
-	   set_regkey("Password","password");
-	   set_regkey("Host","sisco");                                      */
-/************************************************************************/
-
+/**
+ *  set a value in the registry
+ *	   Eg.
+ *	   set_regkey("User","maubu");
+ *	   set_regkey("Password","password");
+ *	   set_regkey("Host","sisco");
+ *
+ *
+ *
+ *
+ * @param
+ */
 int
 set_regkey (char *key, char *data)
 {
@@ -413,9 +484,13 @@ set_regkey (char *key, char *data)
 }
 
 
-/***********************************************************************/
-/* get a value from the registry                                       */
-/***********************************************************************/
+/**
+ * get a value from the registry
+ *
+ *
+ *
+ * @param
+ */
 int
 get_regkey (char *key, char *data, int n)
 {
@@ -428,11 +503,15 @@ get_regkey (char *key, char *data, int n)
   return (a == 0);
 }
 
-/***********************************************************************/
-/* helper program to generate the registry key                         */
-/***********************************************************************/
+/**
+ * helper program to generate the registry key
+ *
+ *
+ *
+ * @param
+ */
 void
-createkey ()
+createkey (void)
 {
   LONG a;
   DWORD disp;
@@ -441,9 +520,13 @@ createkey ()
 }
 
 
-/***********************************************************************/
-/* get any key value from registry                                     */
-/***********************************************************************/
+/**
+ * get any key value from registry
+ *
+ *
+ *
+ * @param
+ */
 void
 get_anykey (HKEY whence, char *key, char *key2, char *data, int n)
 {
@@ -463,11 +546,15 @@ get_anykey (HKEY whence, char *key, char *key2, char *data, int n)
 
 
 
-/************************************************************************/
-/* get the NT logon username                                            */
-/************************************************************************/
+/**
+ * get the NT logon username
+ *
+ *
+ *
+ * @param
+ */
 char *
-get_login ()
+get_login (void)
 {
   static char buff[255] = "";
   get_anykey (HKEY_LOCAL_MACHINE, "Network\\Logon", "username", buff, 255);
@@ -477,12 +564,13 @@ get_login ()
 #endif // WIN32
 
 
-
 /**
  * Finds config fire(s) with user resources (configuration settings)
  * and invokes parser/loader
  */
-struct str_resource *build_user_resources() {
+struct str_resource *
+build_user_resources(void)
+{
 	char buff[512];
 	int a;
 	FILE *resourcefile=0;
@@ -492,7 +580,7 @@ struct str_resource *build_user_resources() {
 	if (loaded_resources) return build_resource;
 	if (build_resource) free(build_resource);
 
-// from /etc/opt/aubit4gl/aubitrc
+	// from /etc/opt/aubit4gl/aubitrc
 
 	debug("From /etc/opt/aubit4gl/aubitrc");
 
@@ -501,7 +589,7 @@ struct str_resource *build_user_resources() {
 
 	if (resourcefile!=0) { add_resources_in(resourcefile); fclose(resourcefile); }
 
-// from $AUBITDIR/etc/aubitrc
+	// from $AUBITDIR/etc/aubitrc
 
 	debug("Finding aubitdir from environment");
 
@@ -513,7 +601,7 @@ struct str_resource *build_user_resources() {
 
 	if (resourcefile!=0) { add_resources_in(resourcefile); fclose(resourcefile); }
 
-// from ~/.aubit4gl/aubitrc
+	// from ~/.aubit4gl/aubitrc
 
 	debug("From ~/.aubit4gl/aubitrc");
 
@@ -522,8 +610,7 @@ struct str_resource *build_user_resources() {
 
 	if (resourcefile!=0) { add_resources_in(resourcefile); fclose(resourcefile); }
 
-
-// from ./.aubtirc
+	// from ./.aubtirc
 
 	sprintf(buff,"./%s",".aubitrc");
 
@@ -532,12 +619,13 @@ struct str_resource *build_user_resources() {
 	resourcefile=fopen(buff,"r");
 	if (resourcefile!=0) { add_resources_in(resourcefile); fclose(resourcefile); }
 
-// from $A4GL_INIFILE
+	// from $A4GL_INIFILE
 
 	debug("Finding INIfile from env");
 
 	sprintf(buff,"%s",acl_getenv("A4GL_INIFILE"));
-	if (strlen(buff)) {
+	if (strlen(buff)) 
+	{
 
 		debug("From $A4GL_INIFILE %s",buff);
 
@@ -545,20 +633,31 @@ struct str_resource *build_user_resources() {
 		if (resourcefile!=0) { add_resources_in(resourcefile); fclose(resourcefile); }
 	}
 
-	if (build_resource_cnt) {
+	if (build_resource_cnt) 
+	{
 		debug("User resources\n --------------");
-	for (a=0;a<build_resource_cnt;a++) {
-		debug("%d. %s = %s",a, build_resource[a].name, build_resource[a].value);
+		
+		for (a=0;a<build_resource_cnt;a++) 
+		{
+			debug("%d. %s = %s",a, build_resource[a].name, build_resource[a].value);
+    	}
+
 	}
 
-}
-
-add_userptr (build_resource);
+	add_userptr (build_resource);
 	return build_resource;
 }
 
-// parse config (rc) file and load values into user resources
-static void add_resources_in(FILE *resourcefile) {
+/**
+ * parse config (rc) file and load values into user resources
+ *
+ *
+ *
+ * @param
+ */
+static void
+add_resources_in(FILE *resourcefile)
+{
 char buff[512];
 char *ptr;
 int a;
@@ -590,7 +689,16 @@ int a;
 }
 
  
-static int next_resource() {
+/**
+ *
+ *
+ *
+ *
+ * @param
+ */
+static int 
+next_resource(void)
+{
 	build_resource_cnt++;
 	build_resource=realloc(build_resource,(build_resource_cnt+1)*sizeof(struct str_resource) );
 	build_resource[build_resource_cnt].name[0]=0;
@@ -599,7 +707,16 @@ static int next_resource() {
 	return build_resource_cnt-1;
 }
 
-static int has_resource(char *s) {
+/**
+ *
+ *
+ *
+ *
+ * @param
+ */
+static int 
+has_resource(char *s) 
+{
 int a;
 	if (build_resource_cnt) {
 		for (a=0;a<build_resource_cnt;a++) {
@@ -612,29 +729,50 @@ int a;
 }
 
 
-dump_all_resource_vars() {
+/**
+ *
+ *
+ *
+ *
+ * @param
+ */
+void
+dump_all_resource_vars(void)
+{
 struct str_resource *res;
 int a;
 
-res=builtin_resource;
-printf("Built-in resources:\n");
-  for (a = 0; strlen (res[a].name) != 0; a++) {
-	printf("  %s=%s\n",res[a].name,res[a].value);
+	res=builtin_resource;
+	printf("Built-in resources:\n");
+	  for (a = 0; strlen (res[a].name) != 0; a++) 
+		{
+		printf("  %s=%s\n",res[a].name,res[a].value);
+		}
+
+	res=user_resource;
+	if (res) 
+	{
+		printf("User resources :\n");
+		  for (a = 0; strlen (res[a].name) != 0; a++) 
+		  {
+			printf("  %s=%s\n",res[a].name,res[a].value);
+		  }
+	}
+
 }
 
-res=user_resource;
-if (res) {
-printf("User resources :\n");
-  for (a = 0; strlen (res[a].name) != 0; a++) {
-	printf("  %s=%s\n",res[a].name,res[a].value);
-}
-}
-
-}
 
 
-
-env_option_set(char *s) {
+/**
+ *
+ *
+ *
+ *
+ * @param
+ */
+int
+env_option_set(char *s) 
+{
 char *a;
 	a=acl_getenv(s);
 	if (a==0) a="";

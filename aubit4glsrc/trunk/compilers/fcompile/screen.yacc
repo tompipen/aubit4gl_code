@@ -1,16 +1,31 @@
 %{
-//#include "form_x.h"
 
-#include "a4gl_formxw.h"
+/*
+	y.tab.c was generated from screen.yacc using yacc
+*/
 
-#include "a4gl_fcomp_fcompile.h"
-#include "a4gl_compiler.h"
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdio.h>
 #include <string.h>
-//#include <curses.h>
+#include "a4gl_formxw.h"
+#include "a4gl_fcomp_fcompile.h"
+#include "a4gl_compiler.h"
 #include "a4gl_dbform.h"
 #include "a4gl_debug.h"
 #include "a4gl_fcomp_where.h"
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 extern struct struct_scr_field *fld;
 int graphics_mode=0;
 extern int ignorekw;
@@ -28,11 +43,25 @@ extern int fstart;
 extern int openwith;
 extern char currftag[256];
 extern char *outputfilename;
-char *chk_alias(char *s);
-char *char_val(char*s);
 extern char *tablist[];
 extern FILE *yyin;
 int in_screen_section=0;
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+char *chk_alias(char *s);
+extern char *char_val(char*s);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 
 %}
 %start form_def
@@ -87,7 +116,7 @@ screens_section :
 	char buff[256];
 	sprintf(buff,"Screen %d", the_form.snames.snames_len);
 		the_form.snames.snames_len++;the_form.snames.snames_val=
-			realloc(the_form.snames.snames_val, 
+			realloc(the_form.snames.snames_val,
 				(the_form.snames.snames_len)*
 					sizeof(struct screen_name));
 
@@ -362,7 +391,7 @@ desc | op_desc_list COMMA desc;
 
 desc :  
 AUTONEXT { add_bool_attr(fld,FA_B_AUTONEXT); }
-| COLOR EQUAL colors  op_where { 
+| COLOR EQUAL colors  op_where {
 		if ($<expr>4==0) 
 			fld->colour=atoi($<str>3); 
 		else  {
@@ -414,7 +443,7 @@ debug("fld->dynamic=%d",fld->dynamic); }
 
 
 def_val : 
-CHAR_VALUE 
+CHAR_VALUE
 | NUMBER_VALUE 
 | SQL_VAR {sprintf($<str>$,"\n%s",$<str>1);}
 ;
@@ -527,7 +556,7 @@ field_list_item  | field_list_item THROUGH field_list_item {add_srec_attribute("
 ;
 
 
-field_name : 
+field_name :
 named_or_kw;
 
 field_tag_name : 
@@ -692,7 +721,7 @@ any_kword :
 | COLOR
 | COMMENT
 | COMMENTS
-| COMPRESS 
+| COMPRESS
 | CONFIG
 | CYAN
 | DATABASE
@@ -747,7 +776,7 @@ any_kword :
 | TYPE 
 | UNDERLINE
 | UPSHIFT
-| VARCHAR 
+| VARCHAR
 | VERIFY 
 | WHITE
 | WIDGET 

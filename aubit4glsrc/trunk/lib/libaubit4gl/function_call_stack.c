@@ -1,6 +1,5 @@
-
 /**
- * @file 
+ * @file
  * Functions to imlement the mechanism of registering the function call
  * stack during a 4gl program execution and to suport the ability of doing
  * a printStackTrace like Java
@@ -15,6 +14,9 @@
 #include "a4gl_debug.h"
 
 #define MAX_FUNCTION_CALL_STACK 1000
+
+
+extern char *params_on_stack (char *_paramnames[],int n);
 
 /**
  * The type definition of a function call 

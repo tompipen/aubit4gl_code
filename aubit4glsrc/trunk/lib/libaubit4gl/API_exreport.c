@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_exreport.c,v 1.3 2002-05-06 07:21:15 afalout Exp $
+# $Id: API_exreport.c,v 1.4 2002-05-14 09:27:27 afalout Exp $
 #
 */
 
@@ -63,7 +63,7 @@ void pdf_aclfgli_skip_lines(void *rep);
 void pdf_fputmanyc(FILE *f,int c,int cnt);
 void pdf_set_column(void *rep);
 
-
+extern void *find_func_double (void *dllhandle, char *func); //in calldll.c
 
 int A4GLREPORT_initlib (void) {
 

@@ -1,3 +1,32 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: loadmenu.c,v 1.6 2002-05-14 09:27:27 afalout Exp $
+#*/
+
 /**
  * @file
  * aubit 4gl compiled menus load in GTK mode, from Sun RPC XDR fromated file.
@@ -6,38 +35,65 @@
  * or to be externally seen
  * @todo Doxygen comments to add to functions
  */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <strings.h>
 
-/** Tooltip widget */
-//extern GtkWidget *tooltips;
-GtkWidget *tooltips = 0;
-#define DECLARE_DIMENSIONS
 #include "a4gl_gtk_dims.h"
-
-//extern GtkWindow *get_curr_win_gtk (void);
-
-
-//#include "menu_x.h"
 #include "a4gl_menuxw.h"
 #include "a4gl_io.h"
 // 4glhdr.h will eventually include stdlib.h, which uses getenv(), so
 // we need to set GETENV_OK and only then include debug.h
 #ifdef __CYGWIN__
 	#define GETENV_OK
+	#include <rpc/rpc.h>
 #endif
 #include "a4gl_debug.h"
 #include "a4gl_incl_4glhdr.h"
-
 #include "a4gl_gtk_cr_funcs.h"
+
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+/** Tooltip widget */
+//extern GtkWidget *tooltips;
+GtkWidget *tooltips = 0;
+
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
+
+
+#define DECLARE_DIMENSIONS
 #define ACL4GLGTK
 
-#ifdef __CYGWIN__
-#include <rpc/rpc.h>
-#endif
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
+extern GtkWindow *get_curr_win_gtk (void);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
  * Get the caption part of the menu definition.
@@ -47,7 +103,8 @@ GtkWidget *tooltips = 0;
  * @param s The string with the menu definition.
  * @return The caption part.
  */
-char *mn_caption(char *s)
+char*
+mn_caption(char *s)
 {
   static  char buff[256];
   char *ptr;
@@ -66,7 +123,8 @@ char *mn_caption(char *s)
  * @param s The string where to get the help part.
  * @return A pointer to the string wanted.
  */
-char *mn_help(char *s) 
+char*
+mn_help(char *s)
 {
   static  char buff[256];
   char *ptr;
@@ -230,10 +288,10 @@ create_menu (menu_list *m, char *id, int mode, void *handler)
   GtkWindow *cwin;
   GtkWidget *w;
 
-// Get the vbox associated with the current window..
+	// Get the vbox associated with the current window..
   cwin = GTK_WINDOW(get_curr_win_gtk ());
 
-// Is there a menu bar there already ?
+	// Is there a menu bar there already ?
   menubar = gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
 
   if (menubar)
@@ -241,14 +299,14 @@ create_menu (menu_list *m, char *id, int mode, void *handler)
       gtk_container_remove (GTK_CONTAINER(cwin), menubar);
     }
 
-// Create a new menubar
+	// Create a new menubar
   menubar = gtk_menu_bar_new ();
 
  gtk_widget_set_usize (GTK_WIDGET (menubar),get_curr_width_gtk()*XWIDTH , YHEIGHT);
 
 
-// I don't think this one is required when reading from menu files
-// But it won't hurt
+	// I don't think this one is required when reading from menu files
+	// But it won't hurt
   gtk_object_ref (GTK_OBJECT(menubar));
 
 
@@ -327,10 +385,12 @@ mn_itemexists (void)
  * @param menuid The menu name.
  * @param handler The menu handler name.
  */
+void
 show_menu (char *menuid, void *handler)
 {
   char *fname;
   void (*p)(char *);
+
   fname = char_pop ();
   p=handler;
   load_menu (fname, menuid, 0, handler);
@@ -399,10 +459,11 @@ endis_menuitems (int en_dis, ...)
 
 //==================================================================
 
+#ifdef DUPLICATED_FUNCTIONS
 
 //------------------duplicate from gtk_4gl.c:
 
-/** The 4gl current window */
+// The 4gl current window
 GtkWindow *currwindow = 0;
 
 /**
@@ -492,4 +553,7 @@ int a;
 }
 
 
+#endif
 
+
+// =================================== EOF =============================

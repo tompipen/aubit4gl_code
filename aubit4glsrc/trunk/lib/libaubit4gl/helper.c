@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.4 2002-04-24 07:45:59 afalout Exp $
+# $Id: helper.c,v 1.5 2002-05-14 09:27:27 afalout Exp $
 #
 */
 
@@ -37,11 +37,37 @@
  * @todo Doxygen comments to add to functions
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdarg.h>
 #include "a4gl_dbform.h"
 #include "a4gl_pointers.h"
 #include "a4gl_debug.h"
 #include "a4gl_runtime_tui.h"
+
+//don't include a4gl_dlsql.h here, since it need UCHAR defined, and this is
+// SQL driver dependent
+//#include "a4gl_dlsql.h" //A4GLSQL_get_currdbname()
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+extern char *A4GLSQL_get_currdbname(void);
+void strip_pc(char *s,char*d);
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 LIBPRIVATE char last_info[256]="";
 LIBPRIVATE char last_type[256]="";
@@ -141,6 +167,24 @@ LIBPRIVATE char *a_get_info_connection[]= {
 };
 
 
+struct s_windows
+  {
+    int x, y, w, h;
+    void *pan;
+    void *win;
+    char name[20];
+    struct s_form_dets *form;
+    struct s_form_attr winattr;
+  };
+
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 
 /**
  *
@@ -148,7 +192,8 @@ LIBPRIVATE char *a_get_info_connection[]= {
  * @param arr
  * @return
  */
-LIBPRIVATE str_inarray(char *str,char **arr) 
+LIBPRIVATE int
+str_inarray(char *str,char **arr)
 {
   int a;
   char buff[128];
@@ -192,7 +237,8 @@ LIBPRIVATE str_inarray(char *str,char **arr)
  * @param info
  * @return 
  */
-LIBPRIVATE int_get_info_form(char *ptr,char *info)  
+LIBPRIVATE int
+int_get_info_form(char *ptr,char *info)
 {
   struct s_form_dets *p;
   int params;
@@ -265,8 +311,13 @@ LIBPRIVATE int_get_info_form(char *ptr,char *info)
 }
 
 
-
-LIBPRIVATE int_get_info_connection(char *ptr,char *info)  
+/**
+ *
+ * @param
+ * @return
+ */
+LIBPRIVATE int
+int_get_info_connection(char *ptr,char *info)
 {
   struct s_form_dets *p;
   int params;
@@ -284,7 +335,7 @@ LIBPRIVATE int_get_info_connection(char *ptr,char *info)
   switch (a) 
   {
     case 1: 
-      push_char(A4GLSQL_get_currdbname(""));
+      push_char(A4GLSQL_get_currdbname());  // warning: passing arg 1 of `push_char' makes pointer from integer without a cast
       break;
     case 0:
       exitwith("Invalid Window info request");
@@ -292,113 +343,124 @@ LIBPRIVATE int_get_info_connection(char *ptr,char *info)
   }
 }
 
-LIBPRIVATE int_get_info_statement(char *ptr,char *info) { 
+/**
+ *
+ * @param
+ * @return
+ */
+LIBPRIVATE int
+int_get_info_statement(char *ptr,char *info) 
+{
 int params;
 int a;
 char *p;
-params=1;
-a=str_inarray(info,a_get_info_statement);
-#ifdef DEBUG
-/* {DEBUG} */ {debug("info statement a=%d\n",a);
-}
-#endif
-switch (a) {
-  case 1: push_int(A4GLSQL_describe_stmt(ptr,0,5));break;
-  case 2: push_int(A4GLSQL_describe_stmt(ptr,0,6));break;
-  case 3: {
-#ifdef DEBUG
-/* {DEBUG} */ {debug("Column name for column %d",used_value);
-}
-#endif
-p=(char*)A4GLSQL_describe_stmt(ptr,used_value,1);
-#ifdef DEBUG
-/* {DEBUG} */ {debug("Got p as %p",p);
-}
-#endif
-#ifdef DEBUG
-/* {DEBUG} */ {debug("Pushing onto stack");
-}
-#endif
-if (p!=0)
-push_char(p);
-else 
-push_char("");
-#ifdef DEBUG
-/* {DEBUG} */ {debug("Pushed onto stack");
-}
-#endif
-break;
-}
-  case 4: push_int(A4GLSQL_describe_stmt(ptr,used_value,0));break;
-  case 5: push_int(A4GLSQL_describe_stmt(ptr,used_value,2));break;
-  case 6: push_int(A4GLSQL_describe_stmt(ptr,used_value,4));break;
-  case 7: push_int(A4GLSQL_describe_stmt(ptr,used_value,3));break;
-  case 0: exitwith("Invalid statement info request");
-          return 0;
-}
-return params;
+
+	params=1;
+	a=str_inarray(info,a_get_info_statement);
+	#ifdef DEBUG
+	/* {DEBUG} */ {debug("info statement a=%d\n",a);
+	}
+	#endif
+	switch (a) {
+	  case 1: push_int(A4GLSQL_describe_stmt(ptr,0,5));break;
+	  case 2: push_int(A4GLSQL_describe_stmt(ptr,0,6));break;
+	  case 3: {
+	#ifdef DEBUG
+	/* {DEBUG} */ {debug("Column name for column %d",used_value);
+	}
+	#endif
+	p=(char*)A4GLSQL_describe_stmt(ptr,used_value,1);
+	#ifdef DEBUG
+	/* {DEBUG} */ {debug("Got p as %p",p);
+	}
+	#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ {debug("Pushing onto stack");
+	}
+	#endif
+	if (p!=0)
+	push_char(p);
+	else
+	push_char("");
+	#ifdef DEBUG
+	/* {DEBUG} */ {debug("Pushed onto stack");
+	}
+	#endif
+	break;
+	}
+	  case 4: push_int(A4GLSQL_describe_stmt(ptr,used_value,0));break;
+	  case 5: push_int(A4GLSQL_describe_stmt(ptr,used_value,2));break;
+	  case 6: push_int(A4GLSQL_describe_stmt(ptr,used_value,4));break;
+	  case 7: push_int(A4GLSQL_describe_stmt(ptr,used_value,3));break;
+	  case 0: exitwith("Invalid statement info request");
+	          return 0;
+	}
+	return params;
 }
 
-LIBPRIVATE int_get_info_cursor() { return 0; }
+/**
+ *
+ * @param
+ * @return
+ */
+LIBPRIVATE int
+int_get_info_cursor(void)
+{
+	return 0;
+}
 
-/********************************************/
-/*                                          */
-/********************************************/
-
-
-
-struct s_windows
-  {
-    int x, y, w, h;
-    void *pan;
-    void *win;
-    char name[20];
-    struct s_form_dets *form;
-    struct s_form_attr winattr;
-  };
-
-
-LIBPRIVATE int_get_info_window(char *ptr,char *info)  {
+/**
+ *
+ * @param
+ * @return
+ */
+LIBPRIVATE int 
+int_get_info_window(char *ptr,char *info)
+{
 struct s_windows *p;
 int params;
 int a;
-#ifdef DEBUG
-/* {DEBUG} */ {debug("In get_info_window %s %s",ptr,info);
-}
-#endif
-p=(struct s_windows *)find_pointer(ptr,S_WINDOWSCODE);
-#ifdef DEBUG
-/* {DEBUG} */ {debug("P=%p",p);
-}
-#endif
-if (p==0) {
-#ifdef DEBUG
-/* {DEBUG} */ {    debug("Window was not found... %s",ptr);
-}
-#endif
-    exitwith("Window was not found");
-    return 0;
-}
-params=1;
-a=str_inarray(info,a_get_info_window);
-#ifdef DEBUG
-/* {DEBUG} */ {debug("a=%d\n",a);
-}
-#endif
-switch (a) {
-case 1: push_int(p->h);break;
-  case 2: push_int(p->w);break;
-  case 3: push_int(p->x);break;
-  case 4: push_int(p->y);break;
-  case 5: push_int(p->winattr.border);break;
-  case 6: push_int(p->x); push_int(p->y); push_int(p->w); push_int(p->h); params=4;break;
-case 0: exitwith("Invalid Window info request");
-        return 0;
-}
+
+	#ifdef DEBUG
+		{debug("In get_info_window %s %s",ptr,info);}
+	#endif
+	p=(struct s_windows *)find_pointer(ptr,S_WINDOWSCODE);
+	#ifdef DEBUG
+		{debug("P=%p",p);}
+	#endif
+	if (p==0) {
+	#ifdef DEBUG
+		{debug("Window was not found... %s",ptr);}
+	#endif
+	    exitwith("Window was not found");
+	    return 0;
+	}
+	params=1;
+	a=str_inarray(info,a_get_info_window);
+	#ifdef DEBUG
+		{debug("a=%d\n",a);	}
+	#endif
+	switch (a) 
+	{
+		case 1: push_int(p->h);break;
+	  	case 2: push_int(p->w);break;
+	  	case 3: push_int(p->x);break;
+	  	case 4: push_int(p->y);break;
+	  	case 5: push_int(p->winattr.border);break;
+	  	case 6: push_int(p->x); push_int(p->y); push_int(p->w); push_int(p->h); params=4;break;
+		case 0: exitwith("Invalid Window info request");
+	        return 0;
+	}
 
 }
 
-LIBPRIVATE int int_get_info(char *type,char *ptr,char *info) 
+/**
+ *
+ * @param
+ * @return
+ */
+LIBPRIVATE int 
+int_get_info(char *type,char *ptr,char *info)
 {
   int a;
   #ifdef DEBUG
@@ -419,7 +481,8 @@ LIBPRIVATE int int_get_info(char *type,char *ptr,char *info)
     case 2 : return int_get_info_form(ptr,info);
     case 3 : return int_get_info_connection(ptr,info);
     case 4 : return int_get_info_statement(ptr,info);
-    case 5 : return int_get_info_cursor(ptr,info);
+    //case 5 : return int_get_info_cursor(ptr,info);
+    case 5 : return int_get_info_cursor();
   }
 }
 
@@ -427,7 +490,8 @@ LIBPRIVATE int int_get_info(char *type,char *ptr,char *info)
  * @todo Understand why this functions is not called and if not 
  * remove it and all the tree of functions not used
  */
-LIBEXPORT aclfgl_get_info(int np) 
+LIBEXPORT int
+aclfgl_get_info(int np)
 {
   char *d,*p,*i;
   int a;
@@ -453,79 +517,96 @@ LIBEXPORT aclfgl_get_info(int np)
 }
 
 
-LIBPRIVATE set_val(char *str,char *buff) {
+/**
+ *
+ * @param
+ * @return
+ */
+LIBPRIVATE void 
+set_val(char *str,char *buff)
+{
 int a;
-strcpy(buff,str);
-for (a=0;a<=strlen(str);a++) {
-if (buff[a]=='%') buff[a]=0;
-}
+	strcpy(buff,str);
+	for (a=0;a<=strlen(str);a++) {
+	if (buff[a]=='%') buff[a]=0;
+	}
 }
 
-extract_numeral(char *s) {
+/**
+ *
+ * @param
+ * @return
+ */
+int
+extract_numeral(char *s)
+{
 char *p=0;
 int a;
-#ifdef DEBUG
-/* {DEBUG} */ {debug("Extracting numerals from %s",s);
-}
-#endif
 
-for (a=strlen(s)-1;a>=0;a--) {
-   if (s[a]>='0'&&s[a]<='9') {
-#ifdef DEBUG
-/* {DEBUG} */ {        debug("digit at %d",a);
-}
-#endif
-        continue;
-   }
-#ifdef DEBUG
-/* {DEBUG} */ {   debug("Last non-numeric=%d",a);
-}
-#endif
-   p=&s[a+1];
-#ifdef DEBUG
-/* {DEBUG} */ {   debug("Numeric=%s",p);
-}
-#endif
-   break;
+	#ifdef DEBUG
+	/* {DEBUG} */ {debug("Extracting numerals from %s",s);
+	}
+	#endif
+
+	for (a=strlen(s)-1;a>=0;a--) {
+	   if (s[a]>='0'&&s[a]<='9') {
+	#ifdef DEBUG
+	/* {DEBUG} */ {        debug("digit at %d",a);
+	}
+	#endif
+	        continue;
+	   }
+	#ifdef DEBUG
+	/* {DEBUG} */ {   debug("Last non-numeric=%d",a);
+	}
+	#endif
+	   p=&s[a+1];
+	#ifdef DEBUG
+	/* {DEBUG} */ {   debug("Numeric=%s",p);
+	}
+	#endif
+	   break;
+	}
+
+	if (p) {
+	    a=atoi(p);
+	#ifdef DEBUG
+	/* {DEBUG} */ {    debug("Setting number to %d",a);
+	}
+	#endif
+	    *p=0;
+	#ifdef DEBUG
+	/* {DEBUG} */ {    debug("Setting string to %s",s);
+	}
+	#endif
+	} else {
+	#ifdef DEBUG
+	/* {DEBUG} */ {    debug("No numbers found");
+	}
+	#endif
+	  a=0;
+	}
+	return a;
 }
 
-if (p) { 
-    a=atoi(p);
-#ifdef DEBUG
-/* {DEBUG} */ {    debug("Setting number to %d",a);
-}
-#endif
-    *p=0;
-#ifdef DEBUG
-/* {DEBUG} */ {    debug("Setting string to %s",s);
-}
-#endif
-} else {
-#ifdef DEBUG
-/* {DEBUG} */ {    debug("No numbers found");
-}
-#endif
-  a=0;
-}
-return a;
-}
 
-
-
-strip_pc(char *s,char*d) {
+/**
+ *
+ * @param
+ * @return
+ */
+void
+strip_pc(char *s,char*d)
+{
 int a;
-strcpy(d,s);
-for (a=0;a<strlen(d);a++) {
-   if (d[a]=='%') {
-       d[a]=0;
-       break;
-   }
+	strcpy(d,s);
+	for (a=0;a<strlen(d);a++) {
+	   if (d[a]=='%') {
+	       d[a]=0;
+	       break;
+	   }
+	}
 }
-}
-
-
-
-
 
 
 /*
@@ -555,6 +636,12 @@ for (a=0;a<strlen(d);a++) {
 
 static long	*ptr;
 
+/**
+ *
+ * @param
+ * @return
+ */
+int
 aclfgl_i_rowid_s(int arg)
 {
 	if ((ptr = (long *)malloc(sizeof(long))) != NULL)
@@ -566,6 +653,12 @@ aclfgl_i_rowid_s(int arg)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
+int
 aclfgl_m_rowid_s(int arg)
 {
 	int	i, q_cur, q_cnt;
@@ -580,6 +673,12 @@ aclfgl_m_rowid_s(int arg)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
+int
 aclfgl_r_rowid_s(int arg)
 {
 	int	pos;
@@ -590,6 +689,12 @@ aclfgl_r_rowid_s(int arg)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
+int
 aclfgl_s_rowid_s(int arg)
 {
 	int	size;
@@ -603,6 +708,12 @@ aclfgl_s_rowid_s(int arg)
 }
 
 
+/**
+ *
+ * @param
+ * @return
+ */
+int
 aclfgl_w_rowid_s(int arg)
 {
 	int	pos, value;
@@ -613,6 +724,14 @@ aclfgl_w_rowid_s(int arg)
 	return(0);
 }
 
+/**
+ *
+ * @param
+ * @return
+ */
+int
 aclfgl_fgl_prtscr(int n) {
-return 0;
+	return 0;
 }
+
+// =================================== EOF ==============================

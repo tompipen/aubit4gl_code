@@ -26,6 +26,8 @@
 #define POS_VERY_FIRST 2
 #define POS_VERY_LAST 4
 #define POS_LAST 8
+#define INC_EACH "\n"
+#define INC_RANGE '\t'
 
 #ifdef __CYGWIN__
 extern int status;
@@ -38,7 +40,6 @@ xdr_struct_form(xdrs, objp)
 	struct_form *objp;
 */
 
-
 //int m_lastkey = 0;
 int tab_cnt = 0;
 int srec_cnt = 0;
@@ -48,8 +49,10 @@ int srec_cnt = 0;
 /** @todo Take this prototype definition for a header file */
 //void default_attributes (FIELD * f, int dtype);
 //int comments (struct struct_scr_field *fprop);
-void comments (struct struct_scr_field *fprop);
-void do_translate_form(struct_form *the_form);
+static void comments (struct struct_scr_field *fprop);
+static void do_translate_form(struct_form *the_form);
+static void read_attributes (struct s_form_dets *f);
+static int include_range_check (char *ss, char *ptr, int dtype);
 
 //char *strip_quotes (char *s);
 void *get_curr_form ();
@@ -110,6 +113,9 @@ find_attribute (struct s_form_dets *f, int field_no)
 }
 */
 
+/**
+ *
+ */
 static char *
 ret_string (char *str)
 {
@@ -122,6 +128,9 @@ ret_string (char *str)
 
 
 
+/**
+ *
+ */
 struct s_form_dets *
 read_form (char *fname, char *formname)
 {
@@ -181,10 +190,7 @@ read_form (char *fname, char *formname)
 
 
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("fname=%s formname=%s", fname, formname);
-  }
+	/* {DEBUG} */ {debug ("fname=%s formname=%s", fname, formname); }
 #endif
 
   gui_startform (formname);
@@ -208,12 +214,8 @@ read_form (char *fname, char *formname)
 		     XDR_DECODE);
     }
 
-#ifndef NO_XDR
 	a = xdr_struct_form (&xdrp, formdets->fileform);
-#else
-	exitwith ("Compiled with NO_XDR - cannot open forms");
-#endif
-
+  
   if (!a)
     {
       exitwith ("Unable to read form");
@@ -251,7 +253,10 @@ read_form (char *fname, char *formname)
 
 
 
-void
+/**
+ *
+ */
+static void
 set_default_form (struct s_form_attr *form)
 {
   form->mode = -1;
@@ -264,7 +269,10 @@ set_default_form (struct s_form_attr *form)
   form->prompt_line = 4;
 }
 
-void
+/**
+ *
+ */
+static void
 read_attributes (struct s_form_dets *f)
 {
   int a;
@@ -286,9 +294,10 @@ read_attributes (struct s_form_dets *f)
 }
 
 
-/***********************************************************************/
-
-void
+/**
+ *
+ */
+static void
 comments (struct struct_scr_field * fprop)
 {
   if (fprop)
@@ -305,6 +314,9 @@ comments (struct struct_scr_field * fprop)
 //looks like this is not used because it has return at the top?
 //but there is a call to it from libUI_TUI that needs to be removed
 //if the is the case - and from API_form.spec too
+/**
+ *
+ */
 void
 dump_srec (struct s_form_dets * fd)
 {
@@ -331,6 +343,9 @@ dump_srec (struct s_form_dets * fd)
 
 
 //*** This should be moved to lib tui
+/**
+ *
+ */
 struct struct_screen_record *
 get_srec (char *name)
 {
@@ -360,12 +375,10 @@ get_srec (char *name)
       records_val[a];
 }
 
-/*********************************************************/
-
-#define INC_EACH "\n"
-#define INC_RANGE '\t'
-
-int
+/**
+ *
+ */
+static int
 check_field_for_include (char *s, char *inc, int dtype)
 {
   static char buff[1024];
@@ -393,7 +406,10 @@ check_field_for_include (char *s, char *inc, int dtype)
   return FALSE;
 }
 
-int
+/**
+ *
+ */
+static int
 include_range_check (char *ss, char *ptr, int dtype)
 {
   static char buff[2048];	/* what we're checking */
@@ -509,6 +525,9 @@ strip_quotes (char *s)
 
 */
 
+/**
+ *
+ */
 int
 has_bool_attribute (struct struct_scr_field *f, int bool)
 {
@@ -524,7 +543,10 @@ has_bool_attribute (struct struct_scr_field *f, int bool)
   return 0;
 }
 
-int
+/**
+ *
+ */
+static int
 set_bool_attribute (struct struct_scr_field * f, int bool, int value)
 {
   int a;
@@ -539,7 +561,10 @@ set_bool_attribute (struct struct_scr_field * f, int bool, int value)
 }
 
 
-void
+/**
+ *
+ */
+static void
 do_translate_form(struct_form *the_form)
 {
 int a;
@@ -575,7 +600,10 @@ char *ptr;
 }
 
 
-int
+/**
+ *
+ */
+static int
 chk_iskey (char *keys)
 {
   char *k;
@@ -733,4 +761,6 @@ has_str_attribute (struct struct_scr_field * f, int str)
 
 */
 
+
+// ============================ EOF ==============================
 

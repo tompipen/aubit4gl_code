@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.65 2002-05-11 10:37:15 afalout Exp $
+# $Id: Makefile.in,v 1.66 2002-05-14 09:27:10 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -197,11 +197,6 @@ endif
 
 #stuff made by doxy make no sense in binary distro
 
-#broken: libA4GL_html.so, adbaccess files, adbload, perl compiler
-
-
-
-
 ##################################################
 #definitions of names for bynary distro file name:
 #FIXME: thi is set in makefile-common by configure:
@@ -258,8 +253,8 @@ SOURCETARNAME	=$(SOURCE)/$(SOURCETARBASENAME)
 ##                    Define default target
 ## ==================================================================
 
-#ALL				+=Makefile settings rpc corecompile
-ALL					=settings rpc corecompile
+#ALL				+=Makefile settings corecompile
+ALL					=settings corecompile
 
 #ifeq "$(GTKBUILD)" "yes"
 #	ALL += gtkgui
@@ -283,6 +278,8 @@ endif
 ifneq "@DOXYGEN@" "no"
 	ALL_EXTRA  		+=doxy
 endif
+
+#FIXME: libhtml adbaccess adbload perl.
 
 ## ==================================================================
 ##                              Targets
@@ -318,11 +315,15 @@ corecompile:
 ##                              Extra
 ## ==================================================================
 
-extra: ${ALL_EXTRA}
+extra: extra_msg ${ALL_EXTRA}
 	@echo " "
 	@echo "Successfully compiled aditional Aubit components :"
 	@echo "${ALL_EXTRA}."
-	@echo "FIXME: ${ALL_EXTRA_BROKEN}."
+	@echo "FIXME: still broken targets:"
+	@echo "${ALL_EXTRA_BROKEN}."
+
+extra_msg:
+	@echo "Will make: ${ALL_EXTRA}"
 
 ide:
 	$(MAKE) -C tools/ide
@@ -335,7 +336,7 @@ libstring:
 	$(MAKE) -C lib/extra_libs/string
 
 libhtml:
-	$(MAKE) -C tools/html libA4GL_html.so
+	$(MAKE) -C tools/html libA4GL_HTML.so
 
 adbaccess:
 	$(MAKE) -C tools/adbaccess amake
@@ -347,6 +348,8 @@ odbctest:
 jabber:
 	$(MAKE) -C tools/jabber libIM_JABBER.so
 
+adbload:
+	$(MAKE) -C tools/adbload
 
 ## ==================================================================
 ##                              Perl compiler
@@ -356,7 +359,6 @@ perl: perl.compiler perl.lib test.perl
 
 perl.compiler:
 	${MAKE} -C lib/liblex/lex_perl
-#	${MAKE} -C compilers/4glc 4glp
 	@echo Aubit 4gl Perl-code generating version LEX library created
 
 perl.lib:
@@ -364,15 +366,63 @@ perl.lib:
 	@echo Aubit 4gl Perl-code libraries installed
 
 test.perl:
-	cd tools/test; 4glp test_build.4gl
+	cd tools/test; export A4GL_LEX=perl; 4glc test_build.4gl
 	cd tools/test; perl test_build.pl
+
+
+## ------------------------------------------------------------------
+##            DoxyGen doccumentation creation
+## ------------------------------------------------------------------
+
+#create Doxy documentation
+doxy: docs/doxy/html/index.html
+
+docs/doxy/html/index.html:
+ifneq "@DOXYGEN@" "no"
+	${MAKE} doxy.make
+ifneq "@WWW_DOCUMENT_ROOT@" ""
+	${MAKE} doxy.install.www
+endif
+ifneq "@CGI_DIR@" ""
+	${MAKE} doxy.install.search
+endif
+	@echo To use it, open file 'docs/doxy/html/index.html' in your web browser
+else
+	@echo "Sorry DOXYGEN not installed"
+endif
+
+doxy.make:
+	rm -rf docs/doxy/html
+	doxygen docs/doxy/Doxyfile
+#Now copy the file
+#
+#     /opt/aubit/aubit4glsrc/docs/doxy/html/doxysearch.cgi
+#
+#to the directory where the CGI binaries are located and don't forget to run
+#
+#     /opt/aubit/aubit4glsrc/docs/doxy/html/installdox
+#
+#to replace any dummy links.
+	@echo DoxyGen doccumentation created and placed in docs/doxy/html
+
+doxy.install.www:
+	rm -rf @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html
+	cp -r docs/doxy/html @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html
+	cd @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html; doxytag -s search.idx
+	@echo DoxyGen doccumentation installed in web server path :
+	@echo @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html
+	@echo Point your web browser to @WWW_HOST_NAME@/projects/Aubit4GL/doxy/html/index.html
+
+doxy.install.search:
+	cp docs/doxy/html/doxysearch.cgi @CGI_DIR@
+
 
 ## ==================================================================
 ##                              Make RPC
 ## ==================================================================
 
 #this should happen in local make flies, as needed:
-rpc:
+#rpc:
 #	$(MAKE) -C compilers/fcompile rpc
 #	$(MAKE) -C compilers/menus rpc
 
@@ -722,7 +772,7 @@ endif
 	fi
 #	(export AUBITDIR=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}; export PATH=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}/bin:${PATH}; rpm -ba ${RPMCONFFILE} > rpmbuild.log 2>&1)
 	rpm -ba ${RPMCONFFILE} > rpmbuild.log 2>&1
-	@echo "See rpmbuild.log for details"
+	@echo "'make rpm' successfull, see rpmbuild.log for details"
 
 rpm.1: RPMCONFFILE:=${AUBITDIR}/etc/aubit-auto.spec
 #rpm.1: LOGFILE=> rpmbuild.log 2>&1
@@ -758,51 +808,6 @@ aubit4gl.lsm:
 	@echo >> ${OUTFILE}
 	@echo Note: >> ${OUTFILE}
 	@echo send this file to 'lsm@execpc.com' with the subject 'add'. >> ${OUTFILE}
-
-
-## ------------------------------------------------------------------
-##            DoxyGen doccumentation creation
-## ------------------------------------------------------------------
-
-#create Doxy documentation
-doxy:
-ifneq "@DOXYGEN@" "no"
-	${MAKE} doxy.make
-ifneq "@WWW_DOCUMENT_ROOT@" ""
-	${MAKE} doxy.install.www
-endif
-ifneq "@CGI_DIR@" ""
-	${MAKE} doxy.install.search
-endif
-	@echo To use it, open file 'docs/doxy/html/index.html' in your web browser
-else
-	@echo "Sorry DOXYGEN not installed"
-endif
-
-doxy.make:
-	rm -rf docs/doxy/html
-	doxygen docs/doxy/Doxyfile
-#Now copy the file
-#
-#     /opt/aubit/aubit4glsrc/docs/doxy/html/doxysearch.cgi
-#
-#to the directory where the CGI binaries are located and don't forget to run
-#
-#     /opt/aubit/aubit4glsrc/docs/doxy/html/installdox
-#
-#to replace any dummy links.
-	@echo DoxyGen doccumentation created and placed in docs/doxy/html
-
-doxy.install.www:
-	rm -rf @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html
-	cp -r docs/doxy/html @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html
-	cd @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html; doxytag -s search.idx
-	@echo DoxyGen doccumentation installed in web server path :
-	@echo @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html
-	@echo Point your web browser to @WWW_HOST_NAME@/projects/Aubit4GL/doxy/html/index.html
-
-doxy.install.search:
-	cp docs/doxy/html/doxysearch.cgi @CGI_DIR@
 
 ## ------------------------------------------------------------------
 ##                       Other Targets

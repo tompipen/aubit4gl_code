@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.12 2002-04-24 07:46:00 afalout Exp $
+# $Id: nosql.c,v 1.13 2002-05-14 09:27:27 afalout Exp $
 #*/
 
 /**
@@ -34,114 +34,51 @@
  * specific SQL dinamic library built.
  */
 
-#ifdef __CYGWIN__
-	/* fixme remove status and sqlca defined in this file, use
-	   already included dbform.h (indirect)
-	nosql.c:138: conflicting types for `status'
-	../../libincl/../libincl/dbform.h:189: previous declaration of `status' */
-	//#define DEFINE_SQLCA
-	//#define DEFINE_STATUS
-
-/*
-undefined reference to `libaclshared_dll_a_iname'
-undefined reference to `libaclshared_dll_a_iname'
-undefined reference to `libaclshared_dll_a_iname'
-undefined reference to `libaclshared_dll_a_iname'
-undefined reference to `libaclshared_dll_a_iname'
-undefined reference to `_nm__status'
-undefined reference to `_nm__sqlca'
-
-#define libaclshared_dll_a_iname
-#define _nm__status
-#define _nm__sqlca
-
-#define libaclshared_dll_a_iname __declspec(dllexport)
-#define _nm__status __declspec(dllexport)
-#define _nm__sqlca __declspec(dllexport)
-
-#define libaclshared_dll_a_iname __declspec(dllimport)
-#define _nm__status __declspec(dllimport)
-#define _nm__sqlca __declspec(dllimport)
-
-extern char *libaclshared_dll_a_iname;
-extern long _nm__status;
-extern long _nm__sqlca;
-
+ /*
+=====================================================================
+		                    Includes
+=====================================================================
 */
 
-
-//#else
-//	extern long status;
-#endif
 
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
 #include "a4gl_debug.h"
 #include "a4gl_database.h"
 #include "a4gl_stack.h"
 #include "a4gl_pointers.h"
 #include "a4gl_dtypes.h"
 
-//extern void exitwith(char *s);
-
-//=====================================================================
 /*
-	#ifndef SQLCA_INCL
-	#define SQLCA_INCL
-	typedef volatile struct {
-	//typedef struct {
-	int sqlcode;
-	char sqlerrm[73];
-	char sqlerrp[9];
-	int sqlerrd[6];
-	char sqlawarn[9];
-	char sqlstate[10];
-	} sqlca_struct;
-	#endif
+=====================================================================
+                    Variables definitions
+=====================================================================
 */
 
-//orig: extern sqlca_struct sqlca;
-//extern sqlca_struct sqlca;
-
-
-/*
-        extern struct s extern_struct;
-        extern_struct.field -->
-           { volatile struct s *t=&extern_struct; t->field }
-
-or
-
-        extern long long extern_ll;
-        extern_ll -->
-          { volatile long long * local_ll=&extern_ll; *local_ll }
-
-*/
-
-
-//extern struct sqlca sqlca_struct;
-//sqlca_struct.sqlcode -->
-//	{ volatile struct sqlca *t=&sqlca_struct; t->sqlcode }
-
-
-
-//===================================================================
-
-char *find_str_resource (char *s);
 typedef unsigned char UCHAR;
-
-struct s_sid *find_prepare (char *pname, int mode);
-void A4GLSQL_set_status (int a, int sql);
 char lasterrorstr[1024] = "";
 
 /*
-void
-A4GLSQL_initlib ()
-{
-  // Does nothing
-}
+=====================================================================
+                    Functions prototypes
+=====================================================================
 */
+
+void local_exitwith (char *s);
+char *find_str_resource (char *s);
+struct s_sid *find_prepare (char *pname, int mode);
+void A4GLSQL_set_status (int a, int sql);
+extern char * global_A4GLSQL_get_sqlerrm (void); //in API_sql.c
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 void
 A4GLSQL_xset_status (int a)
 {
@@ -153,8 +90,6 @@ A4GLSQL_set_status (int a, int sql)
 {
   status = a;
   if (sql)
-
-
 	sqlca.sqlcode = a;
   debug ("Status set to %d", a);
 }
@@ -167,112 +102,15 @@ A4GLSQL_init_connection (char *dbName)
 }
 
 int
-A4GLSQL_get_status ()
+A4GLSQL_get_status (void)
 {
   return sqlca.sqlcode;
 }
 
-
-//function moved to lib/dlsql.c:
 char *
-A4GLSQL_get_sqlerrm ()
+A4GLSQL_get_sqlerrm (void)
 {
-/*
-///////////////////////////////////////////////////////////////////////////////////////////
-For  structs (and most other multiword data types) the
-only option is to make the struct itself (or the  long
-long, or the ...) variable:
-
-        extern struct s extern_struct;
-        extern_struct.field -->
-           { volatile struct s *t=&extern_struct; t->field }
-///////////////////////////////////////////////////////////////////////////////////////////
-
-Original:
-     --foo.h    extern  int  arr[];
-     --foo.c
-	 			#include "foo.h"
-				void main(int argc,  char  **argv)
-				{
-					printf("%d\n",arr[1]);
-				}
-
-Solution  1:
-	 --foo.h    extern int arr[];
-     --foo.c
-	 			#include "foo.h"
-				void  main(int argc,  char  **argv)
-				{
-					// This workaround is for win32 and cygwin; do not "optimize"
-					volatile int *parr = arr;
-					printf("%d\n",parr[1]);
-				}
-*/
-
-    /*
-	extern volatile struct s sqlca_struct;
-	volatile struct s *t=&sqlca_struct;
-	//t->sqlerrm;
-	return t; // warniong: return from incompatible pointer type
-	//return t.sqlerrm; // request for member `sqlerrm' in something not a structure or union
-    */
-
-
-/*
-  #redefine it:
-  long long * local_ll_var = &dll_global_ll_var;
-
-  #assign it:
-  dll_global_ll_var = -31;
-  *local_ll_var = -31;
-
-  #use it:
-  printf ("  directly                  : %lld\n", dll_global_ll_var);
-  printf ("  directly(sortof)          : %lld\n", *local_ll_var);
-
-*/
-
-
-/*
-        extern struct s extern_struct;
-        extern_struct.field -->
-           { volatile struct s *t=&extern_struct; t->field }
-
-or
-
-        extern long long extern_ll;
-        extern_ll -->
-          { volatile long long * local_ll=&extern_ll; *local_ll }
-
-*/
-
-
-#ifdef __CYGWIN__
-
-	//	extern sqlca_struct sqlca;
-	//sqlca_struct * local_sqlca = &sqlca;
-	//sqlca_struct * local_sqlca = &sqlca;
-
-//    struct local_sqlca * sqlca = &sqlca;
-//	return local_sqlca.sqlerrm;
-
-	//char * local_sqlerrm[73] = &sqlca.sqlerrm;
-
-	//char * local_sqlerrm = &sqlca.sqlerrm;
-	//return local_sqlerrm;
-
-#else
-	//Original function:
-	//return sqlca.sqlerrm;
-
-#endif
-
-	return global_A4GLSQL_get_sqlerrm ();
-
-
-
-//	return 0;
-
+	return global_A4GLSQL_get_sqlerrm (); // warning: return makes pointer from integer without a cast
 }
 
 int
@@ -294,7 +132,8 @@ A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
   return 0;
 }
 
-int A4GLSQL_get_datatype (char *db, char *tab, char *col)
+int 
+A4GLSQL_get_datatype (char *db, char *tab, char *col)
 {
 	local_exitwith ("Could not get_datatype - noODBC build");
 }
@@ -305,12 +144,14 @@ functions required to create executable from 4gl code that uses SQL
 ===================================================================
 */
 
-int A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
+int 
+A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
 {
   local_exitwith ("Could not init_session - noODBC build");
 }
 
-int A4GLSQL_set_conn (char *sessname)
+int 
+A4GLSQL_set_conn (char *sessname)
 {
   local_exitwith ("Could not set_session - noODBC build");
 }
@@ -327,7 +168,8 @@ A4GLSQL_execute_implicit_sql (struct s_sid *sid)
   local_exitwith ("Could not execute_implicit_sql - noODBC build");
 }
 
-int A4GLSQL_close_session (char *sessname)
+int 
+A4GLSQL_close_session (char *sessname)
 {
   local_exitwith ("Could not close_session - noODBC build");
 }
@@ -351,7 +193,8 @@ A4GLSQL_add_prepare (char *pname, struct s_sid *sid)
   local_exitwith ("Could not add_prepare - noODBC build");
 }
 
-int A4GLSQL_execute_sql_from_ptr (char *pname, int ni, char **ibind)
+int 
+A4GLSQL_execute_sql_from_ptr (char *pname, int ni, char **ibind)
 {
   local_exitwith ("Could not execute_sql_from_ptr - noODBC build");
 }
@@ -376,7 +219,8 @@ A4GLSQL_declare_cursor (int upd_hold, struct s_sid *sid, int scroll,
   local_exitwith ("Could not declare_cursor - noODBC build");
 }
 
-int A4GLSQL_set_sqlca_sqlcode (int a)
+int 
+A4GLSQL_set_sqlca_sqlcode (int a)
 {
   status = a;
   sqlca.sqlcode = a;
@@ -396,17 +240,20 @@ A4GLSQL_fetch_cursor (char *cursor_name,
   local_exitwith ("Could not fetch_cursor - noODBC build");
 }
 
-int A4GLSQL_put_insert (struct BINDING *ibind, int n)
+int 
+A4GLSQL_put_insert (struct BINDING *ibind, int n)
 {
   local_exitwith ("Could not put_insert - noODBC build");
 }
 
-int A4GLSQL_unload_data (char *fname, char *delims, char *sql1)
+int 
+A4GLSQL_unload_data (char *fname, char *delims, char *sql1)
 {
   local_exitwith ("Could not unload_data - noODBC build");
 }
 
-int A4GLSQL_commit_rollback (int mode)
+int 
+A4GLSQL_commit_rollback (int mode)
 {
   local_exitwith ("Could not commit_rollback - noODBC build");
 }
@@ -417,7 +264,8 @@ A4GLSQL_find_prepare (char *pname, int mode)
 	local_exitwith ("Could not find_prepare - noODBC build");
 }
 
-int A4GLSQL_flush_cursor (char *cursor)
+int
+A4GLSQL_flush_cursor (char *cursor)
 {
 	local_exitwith ("Could not flush_cursor - noODBC build");
 }
@@ -428,44 +276,22 @@ A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
 	local_exitwith ("Could not execute_sql - noODBC build");
 }
 
-/**
- * Initializtion of the sql library.
- *
- * Does nothing - it doesn't need to..
- */
-int A4GLSQL_initsqllib()
+int
+A4GLSQL_initsqllib(void)
 {
 	return 1;
 }
 
-
-/**
- * Exit the program printing a message to the standard output.
- *
- * @param s The string to be printed.
- *
- * we cannot use "exitwith" directly, because this will create circular dependency on Windows .dll
- * libaclall -> sql_nosql -> libaclall
- */
-void local_exitwith (char *s)
+void
+local_exitwith (char *s)
 {
-  //mja_endwin ();
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("ending because : %s", s);
-  }
+	/* {DEBUG} */  {debug ("ending because : %s", s);  }
 #endif
   printf ("\n\n\n");
-//  printf (s, sqlca.sqlerrm);
-//  printf ("\n");
   exit (1);
-//  fgl_end ();
+
 }
-
-
-
-
 
 //---------------------------- EOF ------------------------------
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.6 2002-05-11 10:49:50 mikeaubury Exp $
+# $Id: stack.c,v 1.7 2002-05-14 09:27:27 afalout Exp $
 #
 */
 
@@ -60,8 +60,6 @@ extern int errno;
 	#include <unistd.h>
 	#include <pwd.h>
 #endif
-
-
 
 
 #ifdef WIN32

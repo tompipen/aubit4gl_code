@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.63 2002-05-06 07:21:15 afalout Exp $
+# $Id: configure.in,v 1.64 2002-05-14 09:27:10 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -267,6 +267,31 @@ AC_SUBST(CURSES_LIB_NAME)
 AC_SUBST(DEBUG_BISON)
 AC_SUBST(YYDEBUG)
 AC_SUBST(INCLINES)
+
+
+
+#files to be packaged into RPM:
+AC_SUBST(RPMFILE_1)
+AC_SUBST(RPMFILE_2)
+AC_SUBST(RPMFILE_3)
+AC_SUBST(RPMFILE_4)
+AC_SUBST(RPMFILE_5)
+AC_SUBST(RPMFILE_6)
+AC_SUBST(RPMFILE_7)
+AC_SUBST(RPMFILE_8)
+AC_SUBST(RPMFILE_9)
+AC_SUBST(RPMFILE_10)
+AC_SUBST(RPMFILE_11)
+AC_SUBST(RPMFILE_12)
+AC_SUBST(RPMFILE_13)
+AC_SUBST(RPMFILE_14)
+AC_SUBST(RPMFILE_15)
+AC_SUBST(RPMFILE_16)
+AC_SUBST(RPMFILE_17)
+AC_SUBST(RPMFILE_18)
+AC_SUBST(RPMFILE_19)
+AC_SUBST(RPMFILE_20)
+
 
 ## ==================================================================
 ##                             Defaults
@@ -2165,6 +2190,74 @@ if test "$default_msg" != ""; then
 	#	A4GL_LEXTYPE="PERL"
     #fi
 fi
+
+
+## ==================================================================
+##            Decide on files to be included in RPM
+## ==================================================================
+
+PREFIX=/opt/aubit4gl
+LIB_PREFIX=$PREFIX/lib
+
+	if test "$GTKBUILD" != "no"; then
+		RPMFILE_1=$LIB_PREFIX/libUI_GTK.so
+    fi
+
+	if test "$HAVE_CURSES" = "1"; then
+        RPMFILE_2=$LIB_PREFIX/libUI_TUI.so
+    fi
+
+	if test "$PDFBUILD" != "no"; then
+		RPMFILE_3=$LIB_PREFIX/libEXREPORT_PDF.so
+    fi
+
+	if test "$IFMX_ESQLC" != "no" ; then
+		RPMFILE_4=$LIB_PREFIX/libSQL_esql.so
+	fi
+
+	if test "$HAVE_PGODBC" = "yes" ; then
+		RPMFILE_5=$LIB_PREFIX/libSQL_pgodbc.so
+	fi
+
+	if test "$HAVE_IFXODBC" = "yes" ; then
+		RPMFILE_6=$LIB_PREFIX/libSQL_ifxodbc.so
+	fi
+
+	if test "$HAVE_IODBC" = "yes" ; then
+		RPMFILE_7=$LIB_PREFIX/libSQL_iodbc.so
+	fi
+
+	if test "$HAVE_UNIXODBC" = "yes" ; then
+		RPMFILE_8=$LIB_PREFIX/libSQL_unixodbc.so
+	fi
+
+	if test "$cygwin" = "1"; then
+		RPMFILE_9=$LIB_PREFIX/libSQL_odbc32.dll
+	fi
+
+	if test "$XML_RPC" != "no"; then
+		RPMFILE_10=$LIB_PREFIX/libRPC_XMLRPC.so
+    fi
+
+	if test "$HAVE_RPCLIB" != "no"; then
+		RPMFILE_11=$LIB_PREFIX/libMENU_XDR.so
+		RPMFILE_12=$LIB_PREFIX/libRPC_XDR.so
+		RPMFILE_13=$LIB_PREFIX/libFORM_XDR.so
+	fi
+
+    #this are made by 'make extra'
+
+	#if test "$JABBERBUILD" != "no"; then
+	#	RPMFILE_14=$LIB_PREFIX/libIM_JABBER.so
+    #fi
+
+	#RPMFILE_15=$LIB_PREFIX/libA4GL_file.so
+	#RPMFILE_16=$LIB_PREFIX/libA4GL_string.so
+	#RPMFILE_17=$LIB_PREFIX/libA4GL_HTML.so
+	#RPMFILE_18=$LIB_PREFIX/
+	#RPMFILE_19=$LIB_PREFIX/
+	#RPMFILE_20=$LIB_PREFIX/
+
 
 
 ## ==================================================================

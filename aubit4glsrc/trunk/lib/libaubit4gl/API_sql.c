@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.3 2002-05-06 07:21:16 afalout Exp $
+# $Id: API_sql.c,v 1.4 2002-05-14 09:27:27 afalout Exp $
 #
 */
 
@@ -57,7 +57,7 @@ static int (*func)();
 
 void *find_func(void *p,char *s);
 typedef unsigned char UCHAR;
-
+extern void *find_func_allow_missing (void *dllhandle, char *func); //in calldll.c
 
 /**
  * Loads SQL library from .so file.
@@ -78,7 +78,7 @@ int A4GLSQL_initlib (void)
 		exitwith("Unable to open SQL library.");
 		return 0;
 	}
-	func=find_func_allow_missing(libptr,"A4GLSQL_initlib");
+	func=find_func_allow_missing(libptr,"A4GLSQL_initlib"); //warning: assignment makes pointer from integer without a cast
 
 	if (func) 
 		return func();

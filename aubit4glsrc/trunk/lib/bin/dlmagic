@@ -5,6 +5,22 @@
 #This script is used to create API C source file for Aubit libraraies
 #to be loaded at run-time using dlopen() function call.
 #
+#
+#warning: return makes pointer from integer without a cast:
+#
+#char* get_display_str(int type,char* s,char* f) {
+#   if (libptr==0) A4GLLEX_initlib();
+#   func=find_func(libptr,"get_display_str");
+#   return func(type,s,f);
+#}
+#
+#should be:
+#
+#  return (char*)func(type,s,f)
+#
+#
+#
+#
 ##########################################################################
 
 
@@ -210,11 +226,11 @@ if (va_start!="") {
 	print "   va_start(ap," va_start ");"
 }
 
-if (rtype=="void") 
+if (rtype=="void")
 	print "   func(" args ");"
 else
-	print "   return func(" args ");"
-
+#	print "   return func(" args ");"
+	printf "   return (" rtype ")func(" args ");"
 
 print "}"
 print ""

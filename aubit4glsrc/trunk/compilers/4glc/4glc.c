@@ -1,6 +1,6 @@
 /*
 # +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0   root makefile              |
+# | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
 # +----------------------------------------------------------------------+
@@ -24,27 +24,38 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.23 2002-05-11 05:51:19 afalout Exp $
+# $Id: 4glc.c,v 1.24 2002-05-14 09:27:27 afalout Exp $
 #
 */
 
 /**
  * @file
- * The main module for the x4gl compiler.
+ * The main module for the 4gl compiler.
  */
 
 /*
- *
- * $Id: 4glc.c,v 1.23 2002-05-11 05:51:19 afalout Exp $
- */
+=====================================================================
+		                    Includes
+=====================================================================
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include "a4gl_aubit_lib.h"
+#include "a4gl_pointers.h"
+
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 #ifdef YYDEBUG
-extern int yydebug;
+	extern int yydebug;
 #else
-int yydebug;
+	int yydebug;
 #endif
 extern FILE *ferr;
 extern int yylineno;
@@ -56,23 +67,33 @@ extern FILE *yyin;
 int yyin_len;
 extern int glob_only;
 char *outputfilename;
-
-/** The output file name */
-static char outputfile[132];
-
+static char outputfile[132]; /** The output file name */
 extern char infilename[132];
 char errbuff[1024] = "";
-
-#include "a4gl_aubit_lib.h"
-#include "a4gl_pointers.h"
-
 int globals_only = 0;
 
 /**
- * Flag that identifies if the compiler should generate function call stack 
+ * Flag that identifies if the compiler should generate function call stack
  * actualization.
  */
 static int genStackInfo = 1;
+
+extern long fpos; /** The current file position for direct fseek */
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+void setGenStackInfo(int _genStackInfo);
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
  * Breaks the file name to take the file name without extension and dir name
@@ -83,7 +104,8 @@ static int genStackInfo = 1;
  * @param str1 A pointer to the place where to return the left part.
  * @param str2 A pointer to the place where to return the right part.
  */
-static void bname (char *str, char *str1, char *str2)
+static void
+bname (char *str, char *str1, char *str2)
 {
   char fn[132];
   int a;
@@ -108,7 +130,8 @@ static void bname (char *str, char *str1, char *str2)
 /**
  * Print the usage message when executing the 4gl compiler.
  */
-static void printUsage(char *argv[])
+static void 
+printUsage(char *argv[])
 {
   printf("Usage %s [options] filename[.4gl]\n", argv[0]);
   printf("Options:\n");
@@ -127,7 +150,8 @@ static void printUsage(char *argv[])
  * @param argc The argument count
  * @param argv The argument values
  */
-static void initArguments(int argc, char *argv[])
+static void 
+initArguments(int argc, char *argv[])
 {
   int i;
   extern char *optarg;
@@ -205,6 +229,7 @@ static void initArguments(int argc, char *argv[])
  * @param argc The argument count
  * @param argv The argument values
  */
+int
 main(int argc, char *argv[])
 {
   char a[128];
@@ -310,7 +335,8 @@ main(int argc, char *argv[])
  *
  * @param s The string to be unquoted
  */
-void rm_quote (char *s)
+void 
+rm_quote (char *s)
 {
   char buff[256];
   int a;
@@ -338,7 +364,8 @@ void rm_quote (char *s)
  *
  * @param fname The globals file name
  */
-int read_globals (char *fname)
+int 
+read_globals (char *fname)
 {
   char a[128];
   char b[128];
@@ -368,14 +395,13 @@ int read_globals (char *fname)
   return 0;
 }
 
-
-
 /**
  * Remove the quotes from a quoted string.
  *
  * @param s The string to be unquoted
  */
-void rm_quotes (char *s)
+void
+rm_quotes (char *s)
 {
   char buff[256];
   int a;
@@ -390,9 +416,6 @@ void rm_quotes (char *s)
   strcpy (s, buff);
 }
 
-/** The current file position for direct fseek */
-extern long fpos;
-
 /**
  * Treatment of an error ocurred in the parsing.
  *
@@ -400,6 +423,7 @@ extern long fpos;
  *
  * @param s The string that contains the error
  */
+void
 yyerror (char *s)
 {
   char errfile[256];
@@ -428,7 +452,8 @@ yyerror (char *s)
  * @param p The second parameter
  * @param q The tird parameter
  */
-void adderr (char *s, char *p, char *q)
+void 
+adderr (char *s, char *p, char *q)
 {
   sprintf (errbuff, s, p, q);
 }
@@ -441,7 +466,8 @@ void adderr (char *s, char *p, char *q)
  *   - 1 : if we are just doing globals
  *   - 0 : otherwise
  */
-int only_doing_globals (void)
+int 
+only_doing_globals (void)
 {
   if (globals_only)
     return 1;
@@ -454,7 +480,8 @@ int only_doing_globals (void)
  *
  * @param _genStackInfo The vlaue to assign to the flag
  */
-void setGenStackInfo(int _genStackInfo)
+void
+setGenStackInfo(int _genStackInfo)
 {
   genStackInfo = _genStackInfo;
 }
@@ -465,7 +492,11 @@ void setGenStackInfo(int _genStackInfo)
  *
  * @param _genStackInfo The vlaue to assign to the flag
  */
-int isGenStackInfo(void)
+int 
+isGenStackInfo(void)
 {
   return genStackInfo;
 }
+
+// ============================== EOF ===============================
+
