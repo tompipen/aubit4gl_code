@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.70 2005-02-09 18:51:34 mikeaubury Exp $
+# $Id: ops.c,v 1.71 2005-02-10 16:02:52 pjfalbe Exp $
 #
 */
 
@@ -598,7 +598,7 @@ A4GL_in_dt_ops (int op)
   int start;
   char *ptr;
 
-  A4GL_debug ("in_dt_ops ");
+  A4GL_debug ("in_dt_ops op=%d",op);
   A4GL_get_top_of_stack (2, &d1, &s1, (void *) &pd);
   A4GL_get_top_of_stack (1, &d2, &s2, (void *) &pi);
 
