@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.57 2004-05-24 15:10:12 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.58 2004-05-28 13:18:08 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.57 2004-05-24 15:10:12 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.58 2004-05-28 13:18:08 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -43,7 +43,7 @@ static char *module_id="$Id: formcntrl.c,v 1.57 2004-05-24 15:10:12 mikeaubury E
 
 #include "a4gl_lib_ui_tui_int.h"
 #include <ctype.h>
-extern int m_lastkey;
+//extern int m_lastkey;
 #define CONTROL_STACK_LENGTH 10
 
 //static int process_control_stack (struct s_screenio *arr);
@@ -1141,8 +1141,10 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
   a = A4GL_getch_win ();
   if (abort_pressed) a = A4GLKEY_INTERRUPT;
   s->processed_onkey = a;
-  m_lastkey = a;
+  A4GL_set_last_key(a);
+  A4GL_debug("setting last key : %d",a);
   A4GL_set_last_key (a);
+  A4GL_debug("set : %d",a);
   A4GL_clr_error_nobox ("A4GL_form_loop");
 
 
@@ -1152,6 +1154,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
 // Process the key..
 
 
+  A4GL_debug("process");
   if (fprop != 0)
     {
       A4GL_debug ("Downshift?");

@@ -24,12 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.33 2004-05-13 12:45:59 mikeaubury Exp $
+# $Id: array.c,v 1.34 2004-05-28 13:18:08 mikeaubury Exp $
 #*/
 
 
 
-static char *module_id="$Id: array.c,v 1.33 2004-05-13 12:45:59 mikeaubury Exp $";
+static char *module_id="$Id: array.c,v 1.34 2004-05-28 13:18:08 mikeaubury Exp $";
 
 
 
@@ -63,7 +63,7 @@ static char *module_id="$Id: array.c,v 1.33 2004-05-13 12:45:59 mikeaubury Exp $
 =====================================================================
 */
 
-extern int m_lastkey;
+//extern int m_lastkey;
 extern WINDOW *currwin;
 struct s_disp_arr *curr_arr_disp;
 int cmode = 0;
@@ -330,7 +330,7 @@ disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
   A4GL_chkwin();
   curr_arr_disp = arr;
   form = arr->currform;
-  m_lastkey = 0;
+  A4GL_set_last_key(0);
   A4GL_set_array_mode ('D');
   abort_pressed=0;
 
@@ -413,7 +413,7 @@ draw_arr (arr, -1, arr->arr_line);
 	}
 
 	arr->processed_onkey=a;
-        m_lastkey = a;
+  	A4GL_set_last_key(a);
 
         if (A4GL_has_event_for_keypress(a,evt)) {
 		A4GL_debug("has event...");

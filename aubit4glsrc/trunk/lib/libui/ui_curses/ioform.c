@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.99 2004-05-24 15:10:13 mikeaubury Exp $
+# $Id: ioform.c,v 1.100 2004-05-28 13:18:08 mikeaubury Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.99 2004-05-24 15:10:13 mikeaubury Exp $";
+static char *module_id="$Id: ioform.c,v 1.100 2004-05-28 13:18:08 mikeaubury Exp $";
 /**
  * @file
  *
@@ -75,7 +75,7 @@ int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
 */
 
 extern WINDOW *currwin;
-int m_lastkey = 0;
+//int m_lastkey = 0;
 int tab_cnt = 0;
 int srec_cnt = 0;
 extern int errno;
