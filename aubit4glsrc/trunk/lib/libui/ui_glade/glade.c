@@ -14,6 +14,7 @@ int keypressed;
 void A4GL_func (GtkWidget * w, char *mode);
 char currwin[256];
 static int top_level_window(GtkWidget *lv_form) ;
+void A4GL_decode_gui_winname (char *name);
 
 
 char *UILIB_A4GL_get_currwin_name () {

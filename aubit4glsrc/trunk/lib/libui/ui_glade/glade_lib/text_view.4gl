@@ -18,6 +18,10 @@ static gchar *current_filename = NULL;
 static gboolean file_changed = FALSE;
 #define BUFFER_SIZE 8192
 
+static void new_file (GtkWidget *text,int reset);
+static void real_open_file (GtkWidget *text, const gchar *filename);
+static void real_save_file (GtkWidget *text, const gchar *filename);
+
 endcode
 
 
