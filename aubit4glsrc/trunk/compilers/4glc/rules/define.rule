@@ -92,10 +92,10 @@ assoc_close_bracket: CLOSE_BRACKET | CLOSE_SHEV ;
 number_arr_assoc: INT_VALUE;
 
 number_arr_list	:number_value_arr COMMA number_value_arr COMMA number_value_arr 
-	 {sprintf($<str>$,"%s][%s][%s",$<str>1,$<str>3,$<str>5);}
+	 {sprintf($<str>$,"%s][%s][%s",$<str>1,$<str>3,$<str>5); debug("Triplet");}
 		| number_value_arr COMMA number_value_arr 
-	 {sprintf($<str>$,"%s][%s",$<str>1,$<str>3);}
-		| number_value_arr
+	 {sprintf($<str>$,"%s][%s",$<str>1,$<str>3); debug("double");}
+		| number_value_arr {debug("Single");}
 	;
 
 number_value_arr: INT_VALUE 

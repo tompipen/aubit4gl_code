@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.38 2002-01-13 09:40:46 afalout Exp $
+# $Id: mod.c,v 1.39 2002-01-13 10:58:57 mikeaubury Exp $
 #
 */
 
@@ -46,12 +46,15 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.38 2002-01-13 09:40:46 afalout Exp $
+* $Id: mod.c,v 1.39 2002-01-13 10:58:57 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.38  2002/01/13 09:40:46  afalout
+*	Make install and autoconf for GTK
+*	
 *	Revision 1.37  2002/01/06 11:24:46  afalout
 *	Configuration work
 *	
@@ -704,8 +707,8 @@ static void print_variable (int z, char ff)
     }
   else
     {
-      sprintf (tmpbuff, "%s %s[%d]", vars[z].var_type,
-	       vars[z].var_name, atoi (vars[z].var_arrsize));
+      sprintf (tmpbuff, "%s %s[%s]", vars[z].var_type,
+	       vars[z].var_name,  (vars[z].var_arrsize));
     }
 
   if (isin_command ("REPORT")||isin_command("FORMHANDLER")||isin_command("MENUHANDLER"))
@@ -843,7 +846,7 @@ void dump_vars (void)
   for (a = 0; a < varcnt; a++)
     {
 
-      fprintf (f, " %d - %s,%s,%s,%s,%d,%s,%s\n", a,
+      fprintf (f, " %d - %s;%s;%s;%s;%d;%s;%s\n", a,
 	       ignull (vars[a].var_name),
 	       ignull (vars[a].var_type),
 	       ignull (vars[a].var_size),
