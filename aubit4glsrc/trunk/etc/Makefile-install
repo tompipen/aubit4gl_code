@@ -1,0 +1,91 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   binary distro makefile     |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: Makefile-install,v 1.1 2002-01-20 10:04:36 afalout Exp $
+#
+
+#This file gets installed to root of binary installation, under name "Makefile"
+#It's purpose is to create aubitrc for binary installation, and install
+#it to appropriate place, and create links to binary files and libraries.
+
+
+#All stuff common to more then one Aubit compiler make file is there:
+include incl/Makefile-common
+
+install: config install.links install.aubitrc install.libs.links test \
+		remove.aubitrc
+
+#install.libs.conf
+	@echo Aubit compiler binary disrtibution installed.
+
+config:
+	./configure ${CPARAM}
+
+include incl/Makefile-install.mki
+
+#we have to remove aubitrc created by configure, so it don't override
+#the one installed in /etc/opt/aubit4gl/aubitrc.
+remove.aubitrc:
+	mv etc/aubitrc etc/aubitrc.original
+
+tar: clean
+#COMPILE_DATE=20-01-2002
+#TARGET=i586-pc-linux-gnu
+	${RM} aubit4gl-bin-${TARGET}-${AUBIT_VERSION}.${AUBIT_BUILD}.tgz
+	tar -cvzf aubit4gl-bin-${TARGET}-${AUBIT_VERSION}.${AUBIT_BUILD}.tgz *
+	@echo "Aubit binary installation tarball created"
+
+clean:
+	${RM} config.status config.log etc/aubitrc.original
+	make -C tools/test clean
+	make -C tools/test/gui clean
+	@echo "Aubit binary installation now clean"
+
+deinstall: deinstall.libs.links deinstall.bin.links
+	@echo "All Aubit related links/files outside this tree removed."
+	@echo "If you wish to deinstall completely, just remove this directory"
+	@echo "Note that /etc/opt/aubit4g;/aubitrc configuration file WAS NOT removed"
+	@echo "You can also use 'deinstall.all' to remove all files from"
+	@echo "Aubit installation tree selectively, as they where installed, but "
+	@echo "preserve all files created after installation."
+
+help:
+	@echo "This is Aubit binary installation mkae file"
+	@echo "execute 'make' to install Aubit compiler on your system."
+	@echo "You can specify flags to 'configure' using, for example: "
+	@echo "    make CPARAM=--with-iodbc[=<path>]"
+	@echo "Options:"
+	@echo ""
+	@echo "install - install binary distribuiton on your system (same as just 'make')"
+	@echo "clean - clean Aubit binary distribution installation tree"
+	@echo "tar - create tar archive of Aubit binary distribution installation tree"
+	@echo "zip - create zip archive of Aubit binary distribution installation tree"
+	@echo "config - scan the system for installed options, create aubitrc configuration file"
+	@echo "         (same as typing 'configure')"
+	@echo "deinstall - remove all links/files outside Aubit installation tree"
+	@echo ""
+	@echo "    Thank you for using Aubit 4gl compiler."
+
+#--------------------------- EOF ------------------------------

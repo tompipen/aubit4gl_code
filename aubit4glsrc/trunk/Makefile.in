@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.20 2002-01-20 04:18:40 afalout Exp $
+# $Id: Makefile.in,v 1.21 2002-01-20 10:04:33 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -109,26 +109,6 @@ ALLBINDISTNAMES		=${ALLBINDISTNAMESNOPDF} ${ALLBINDISTNAMESPDF}
 ## ==================================================================
 ##                    Install Settings
 ## ==================================================================
-
-#install location:
-PREFIX=/opt
-INSTALL_DIR=${PREFIX}/aubit4gl
-
-
-#FSH and RPM rules say we should install binaries (links) in
-#${PREFIX}/aubit4gl and libraries (links) in ${PREFIX}/lib. But this will
-#in our case be /opt, and on 99% of the systems we will not have /opt/bin
-#already in the path, and /opt/lib will not be in libraries search path.
-#This conflicts with RPM rule that say that installed programs "must be
-#operational" after RPM install is finished. Therefore, we have to use
-#/usr/lib and /usr/bin:
-
-#/usr/local/lib is not in default lib load path on RedHat, so we MUST use
-#/usr/lib to get things working immediately after installation, without the
-#need to edit system files manualy
-LIB_INSTALL_LINK=/usr/lib
-BIN_INSTALL_LINK=/usr/bin
-
 
 #RPM setup:
 RPMBUILDROOT=/root/redhat
@@ -216,25 +196,11 @@ TOINCL		=$(SOURCE)/incl/4glhdr.h $(SOURCE)/incl/acl4glgui.h \
 				$(SOURCE)/incl/*.mk $(SOURCE)/incl/*.mki $(SOURCE)/incl/Makefile-common
 TOIDE       =$(IDEDIR)/*.4gl $(IDEDIR)/*.c $(IDEDIR)/*.sh $(IDEDIR)/*.msg $(IDEDIR)/*.per $(IDEDIR)/${MKFILNAME}
 
-
-#Set AUBITDIR in aubitrc settings:
-	TOREPLACE=^AUBITDIR
-	INFILE=etc/aubitrc
-	OLDVALUE:=$(shell grep "${TOREPLACE}" ${INFILE} | awk '{print $1}' | sed -e "s/\//\\\\\//g")
-	NEWVALUE:=$(shell echo "AUBITDIR=$(INSTALL_DIR)" | sed -e "s/\//\\\\\//g")
-	STARTWITH=^${OLDVALUE}
-	REPLACEWITH=${NEWVALUE}
-	AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
-
 ##################################################
 #definitions of names for bynary distro file name:
 AUBITVERSION:=$(shell cat $(SOURCE)/tools/project/version)
 AUBITBUILD	:=$(shell cat $(SOURCE)/tools/project/build)
 COMPILEDATE	:=$(shell date +%d-%m-%Y)
-
-LD_SO_CONF=/etc/ld.so.conf
-GREP_LD_SO_CONF:=$(shell grep ${INSTALL_DIR}/lib ${LD_SO_CONF})
-GREP_LD_SO_CONF_REMOVE:=$(shell echo "${GREP_LD_SO_CONF}" | sed -e "s/\//\\\\\//g")
 
 ## ==================================================================
 ##                    CVS Settings
@@ -652,7 +618,8 @@ clean.project:
 #make icons for KDE and GNOME: to IDE, to manual
 
 install: install.core install.example install.manual install.config \
-		install.links install.aubitrc install.libs.links
+		install.links install.aubitrc install.libs.links \
+		install.makefile-install
 #install.libs.conf
 	@echo Aubit compiler installed to $(INSTALL_DIR)
 #platform
@@ -695,20 +662,6 @@ installide:
 	${MAKE} ${MKNAME} -C tools/ide install.aubit
 	@echo Aubit 4gl compiler IDE is now installed
 
-install.aubitrc:
-#	@echo STARTWITH = ${STARTWITH}
-#	@echo REPLACEWITH = ${REPLACEWITH}
-	sed -e "/${STARTWITH}/s/${STARTWITH}/${REPLACEWITH}/" ${INFILE} > /tmp/aubitrc.tmp
-ifeq "${AUBITRCFILEEXISTS}" ""
-	${MKPATH} ${AUBITETC}
-	mv /tmp/aubitrc.tmp ${AUBITETC}/aubitrc
-	chmod a+r ${AUBITETC}/aubitrc
-	@echo "Configuration files installed to ${AUBITETC}/aubitrc"
-else
-	@echo "WARNING: Configuration file aubitrc exists in ${AUBITETC}/aubitrc - WILL NOT OVERWRITE"
-endif
-
-
 packide:
 	${CP} ${TOIDE} $(INSTALL_DIR)/IDE
 
@@ -736,102 +689,21 @@ install.links.source:
 	${LN_S} ${AUBITDIR}/bin/aubit-config ${BIN_INSTALL_LINK}/aubit-config
 	${LN_S} ${AUBITDIR}/bin/aubit ${BIN_INSTALL_LINK}/aubit
 
-install.links:
-#This links bin programs to location of Aubit bynary installation:
-	${MKPATH} ${BIN_INSTALL_LINK}
-	${RM} ${BIN_INSTALL_LINK}/aubit-config ${BIN_INSTALL_LINK}/aubit
-	${LN_S} $(INSTALL_DIR)/bin/aubit-config ${BIN_INSTALL_LINK}/aubit-config
-	${LN_S} $(INSTALL_DIR)/bin/aubit ${BIN_INSTALL_LINK}/aubit
-	@echo "Links to Aubit compiler installed to ${BIN_INSTALL_LINK}/ "
+install.makefile-install:
+	${CP} etc/Makefile-install $(INSTALL_DIR)/Makefile
+	${CP} incl/Makefile-install.mki $(INSTALL_DIR)/incl
+	${CP} -r etc/config/ $(INSTALL_DIR)/etc
+	${CP} etc/aubitrc.in $(INSTALL_DIR)/etc
+	(cd etc; autoconf)
+	${CP} etc/configure $(INSTALL_DIR)
 
-#This will work only on Linux, and Aubit loads from $AUBITDIR.lib anyway:
-install.libs.conf:
-ifeq "${GREP_LD_SO_CONF}" ""
-	echo "$(INSTALL_DIR)/lib" >> ${LD_SO_CONF}
-	@echo "Added $(INSTALL_DIR)/lib entry to ${LD_SO_CONF}."
-	ldconfig
-	@echo "Refreshed ldconfig cache."
-else
-	@echo "${GREP_LD_SO_CONF} entry in ${LD_SO_CONF} already exists."
-endif
+#all targets common to installing compiled source code, AND installing
+#binary distributions are in here:
+###################################
+include incl/Makefile-install.mki
+###################################
 
-install.libs.links: deinstall.libs.links
-ifeq "${GTKBUILD}" "yes"
-	${LN_S} $(INSTALL_DIR)/lib/libaclsharedgui.so ${LIB_INSTALL_LINK}/libaclsharedgui.so
-	${LN_S} $(INSTALL_DIR)/lib/libgtk4gl.so ${LIB_INSTALL_LINK}/libgtk4gl.so
-	${LN_S} $(INSTALL_DIR)/lib/libgtk4gl_x.so ${LIB_INSTALL_LINK}/libgtk4gl_x.so
-endif
-	${LN_S} $(INSTALL_DIR)/lib/libPDF_NOPDF.so ${LIB_INSTALL_LINK}/libPDF_NOPDF.so
-	${LN_S} $(INSTALL_DIR)/lib/libaclshared.so ${LIB_INSTALL_LINK}/libaclshared.so
-
-deinstall.libs.links:
-#remove links to libraries:
-	${RM} ${LIB_INSTALL_LINK}/libaclsharedgui.so
-	${RM} ${LIB_INSTALL_LINK}/libgtk4gl.so
-	${RM} ${LIB_INSTALL_LINK}/libgtk4gl_x.so
-	${RM} ${LIB_INSTALL_LINK}/libPDF_NOPDF.so
-	${RM} ${LIB_INSTALL_LINK}/libaclshared.so
-
-deinstall: deinstall.libs.links
-#deinstall: installdrop
-#we could just trop the whole $(INSTALL_DIR) tree, but this is not very safe;
-#in the case user placed some files there (stupido!) he will hate us nevertheless
-	-${MAKE} -C $(INSTALL_DIR)/tools/test clean
-	-${MAKE} -C $(INSTALL_DIR)/tools/test/gui clean
-#Core compiler files:
-	${RM} $(INSTALL_DIR)/bin/4glc $(INSTALL_DIR)/bin/4glpc $(INSTALL_DIR)/bin/fcompile \
-		$(INSTALL_DIR)/bin/mcompile $(INSTALL_DIR)/bin/mkmess $(INSTALL_DIR)/bin/amake \
-		$(INSTALL_DIR)/bin/amakeallo $(INSTALL_DIR)/bin/amakeallf \
-		$(INSTALL_DIR)/bin/loadmap $(INSTALL_DIR)/bin/aubit $(INSTALL_DIR)/bin/aubit-config \
-		$(INSTALL_DIR)/bin/genmake $(INSTALL_DIR)/bin/mdecompile $(INSTALL_DIR)/bin/prepmake \
-		$(INSTALL_DIR)/bin/fdecompile $(INSTALL_DIR)/bin/fshow $(INSTALL_DIR)/bin/fshow-gtk
-
-	${RM} $(INSTALL_DIR)/README.txt
-	${RM} $(INSTALL_DIR)/incl/4glhdr.h $(INSTALL_DIR)/incl/acl4glgui.h $(INSTALL_DIR)/incl/*.mk \
-		$(INSTALL_DIR)/incl/*.mki $(INSTALL_DIR)/incl/Makefile-common
-	${RM} $(INSTALL_DIR)/lib/libaclall.a $(INSTALL_DIR)/lib/libaclshared.so \
-		$(INSTALL_DIR)/lib/libPDF_NOPDF.so $(INSTALL_DIR)/lib/libSQL_nosql.so \
-    	$(INSTALL_DIR)/lib/libaclsharedgui.so $(INSTALL_DIR)/lib/libgtk4gl.so \
-		$(INSTALL_DIR)/lib/libgtk4gl_x.so $(INSTALL_DIR)/lib/libaclallgui.a  \
-		$(INSTALL_DIR)/lib/libgtk4gl_x.a  $(INSTALL_DIR)/lib/libSQL_unixodbc.so \
-        $(INSTALL_DIR)/lib/libSQL_iodbc.so
-
-#examples:
-	${RM} $(INSTALL_DIR)/tools/test/*.4gl $(INSTALL_DIR)/tools/test/*.per \
-		$(INSTALL_DIR)/tools/test/Makefile $(INSTALL_DIR)/tools/test/*.msg
-	${RM} $(INSTALL_DIR)/tools/test/gui/*.4gl $(INSTALL_DIR)/tools/test/gui/*.per \
-		$(INSTALL_DIR)/tools/test/gui/Makefile
-#manual
-	${RM} $(INSTALL_DIR)/docs/changelog.txt $(INSTALL_DIR)/docs/COPYING $(INSTALL_DIR)/docs/CREDITS \
-		$(INSTALL_DIR)/docs/LICENSE
-#config examples
-	${RM} $(INSTALL_DIR)/etc/odbc.ini.example
-
-#delete this directories only if they are now empty:
-	-rmdir $(INSTALL_DIR)/bin
-	-rmdir $(INSTALL_DIR)/lib
-	-rmdir $(INSTALL_DIR)/etc
-	-rmdir $(INSTALL_DIR)/incl
-	-rmdir $(INSTALL_DIR)/tools/test/gui
-	-rmdir $(INSTALL_DIR)/tools/test
-	-rmdir $(INSTALL_DIR)/tools
-	-rmdir $(INSTALL_DIR)/docs
-	-rmdir $(INSTALL_DIR)
-#remove entry from library path config file:
-ifeq "${GREP_LD_SO_CONF}" ""
-	@echo "$(INSTALL_DIR)/lib entry in ${LD_SO_CONF} does not exist."
-else
-	sed -e "/${GREP_LD_SO_CONF_REMOVE}/s/${GREP_LD_SO_CONF_REMOVE}//" ${LD_SO_CONF} > /tmp/ld_so_conf.tmp
-	mv /tmp/ld_so_conf.tmp ${LD_SO_CONF}
-	@echo "Removed ${GREP_LD_SO_CONF} entry from ${LD_SO_CONF}."
-	ldconfig
-	@echo "Refreshed ldconfig cache."
-endif
-	
-#remove links to binaries:
-	${RM} ${BIN_INSTALL_LINK}/aubit-config ${BIN_INSTALL_LINK}/aubit
-	@echo "Aubit compiler de-installed. Config file in ${AUBITETC} "
-	@echo "where not deleted."
+deinstall: deinstall.all
 
 tarinstall: platform
 #FIXME: check if it exists first
@@ -1524,11 +1396,6 @@ commit.build.step2:
 	@cvs commit -m "commit.build ${BULDNO}" > commit.log
 	@echo "Build ${BUILDNO} Commit finished. See file './commit.log'"
 
-test:
-	${MAKE} ${MKNAME} -C tools/test test.build PDFBUILD=${PDFBUILD}
-	@echo in Makefile: LD_LIBRARY_PATH = ${LD_LIBRARY_PATH}
-	@export NOCURSES=Yes; export AUBITGUI=TUI; tools/test/test_build
-
 demo:
 	${MAKE} ${MKNAME} -C tools/test
 	@echo Aubit 4gl compiler examples are now compiled
@@ -1702,12 +1569,11 @@ xsettings:
 	@echo "make invoked with flags : xx${MAKEFLAGS}xx"
 
 
-Makefile: configure
-	./configure CFLAGS="-L/opt/unixODBC/lib -L/opt/iODBC_3.0.5/libiodbc-3.0.5/iodbc/.libs"
+#Makefile: configure
+#	./configure CFLAGS="-L/opt/unixODBC/lib -L/opt/iODBC_3.0.5/libiodbc-3.0.5/iodbc/.libs"
 
-
-configure:
-	autoconf
+#configure:
+#s	autoconf
 
 old.2.in:
 	${CP} Makefile.old Makefile.in

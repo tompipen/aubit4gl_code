@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.14 2002-01-20 04:18:41 afalout Exp $
+# $Id: configure.in,v 1.15 2002-01-20 10:04:33 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -90,6 +90,9 @@ AC_SUBST(JABBERBUILD)
 AC_SUBST(PERL)
 AC_SUBST(PERLBUILD)
 
+AC_SUBST(target)
+
+
 ## ==================================================================
 ##                             Defaults
 ## ==================================================================
@@ -143,6 +146,26 @@ if test "$enable_debug" = "no" ; then
 	AUBIT_DEBUG=0
 fi
 
+
+## ==================================================================
+##                              Platform
+## ==================================================================
+
+#build
+#build_cpu
+#build_vendor
+#build_os
+
+#host
+#host_cpu
+#host_vendor
+#host_os
+
+#target
+#target_cpu
+#target_vendor
+#target_os
+
 ## ==================================================================
 ##                  Checks for standard programs
 ## ==================================================================
@@ -175,6 +198,7 @@ AC_PATH_PROG(SH, sh, /bin/sh)
 AC_PATH_PROG(DOXYGEN, doxygen, no)
 AC_PATH_PROG(CVS_CLIENT, cvs, no)
 AC_PATH_PROG(LDD, ldd, no)
+AC_PATH_PROG(LDCONFIG, ldconfig, no)
 
 #FIXME: stop if rpcgen is not found on any platform other then Windows
 AC_PATH_PROG(RPCGEN, rpcgen, no)
@@ -513,7 +537,7 @@ fi
 
 #FIXME:
 #also check for headers, since they are not in PG ODBC RPM, they are
-#in postgresql-devel, including /usr/lib/libpsqlodbc.a (so we don't need 
+#in postgresql-devel, including /usr/lib/libpsqlodbc.a (so we don't need
 #PGSQLODBC RPM installed at all, unless we are using ODBC manager):
 #/usr/include/pgsql/iodbc: iodbc.h isql.h isqlext.h
 
@@ -911,7 +935,7 @@ fi
 echo ""
 echo "Aubit 4gl compiler source code is now configured."
 echo "Execute 'make' to compile it."
-echo "Thank you for using Aubit 4gl." s
+echo "Thank you for using Aubit 4gl."
 echo ""
 
 #------------------------------ EOF --------------------------------
