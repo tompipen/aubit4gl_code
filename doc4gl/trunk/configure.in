@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.7 2003-01-14 07:28:31 afalout Exp $
+dnl # $Id: configure.in,v 1.8 2003-01-21 03:05:01 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -329,6 +329,8 @@ AC_SUBST(DOC4GL_SERVICE)
 AC_SUBST(DOC4GL_HOSTNAME)
 AC_SUBST(DOC4GL_SGDBURL)
 AC_SUBST(DOC4GL_CONNECTIONTYPE)
+AC_SUBST(TOMCAT_USER)
+AC_SUBST(TOMCAT_PASSWORD)
 
 ## ==================================================================
 ##                             Defaults
@@ -378,6 +380,8 @@ DOC4GL_SERVICE=1530
 DOC4GL_HOSTNAME="localhost"
 DOC4GL_SGDBURL="informix-sqli"
 DOC4GL_CONNECTIONTYPE="jdbc"
+TOMCAT_USER=admin
+TOMCAT_PASSWORD=tomcat
 
 
 #defaults for doc4glrc:
@@ -457,6 +461,12 @@ if test "$with_ifx_sgdburl" != "" ; then
 fi
 if test "$with_browser_conntype" != "" ; then
 	DOC4GL_CONNECTIONTYPE=$with_browser_conntype
+fi
+if test "$with_tomcat_user" != "" ; then
+	TOMCAT_USER=$with_tomcat_user
+fi
+if test "$with_tomcat_password" != "" ; then
+	TOMCAT_PASSWORD=$with_tomcat_password
 fi
 
 ## ==================================================================

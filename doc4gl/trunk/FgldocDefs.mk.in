@@ -3,7 +3,7 @@
 #
 #  It was developed by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: FgldocDefs.mk.in,v 1.8 2003-01-14 07:28:31 afalout Exp $
+#  $Id: FgldocDefs.mk.in,v 1.9 2003-01-21 03:05:01 afalout Exp $
 #
 #  ==========================================================================
 
@@ -28,9 +28,8 @@ YFLAGS			=-d
 CFLAGS			=@CFLAGS@
 
 #user name/password used to invoke TomCat administration commnds from and/build.xml
-#FIXME: set this from autoconf
-TOMCAT_USER     =admin
-TOMCAT_PASSWORD =tomcat
+TOMCAT_USER     =@TOMCAT_USER@
+TOMCAT_PASSWORD =@TOMCAT_PASSWORD@
 
 ANT_FLAGS       =-Dmanager.username=${TOMCAT_USER} -Dmanager.password=${TOMCAT_PASSWORD}
 

@@ -4,7 +4,7 @@
 #
 #  Developed by Sergio Ferreira, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.8 2003-01-14 07:28:31 afalout Exp $
+#  $Id: Makefile.in,v 1.9 2003-01-21 03:05:01 afalout Exp $
 #
 #  ==========================================================================
 
@@ -296,7 +296,8 @@ install.informix_jdbc: ${IFX_JDBC_PKG}
 	unzip ${IFX_JDBC_PKG} -d /tmp/ifxjdbc
 	${JAVA} -cp /tmp/ifxjdbc/setup.jar run -silent -P product.installLocation=${INFORMIXDIR}/jdbc
 	cp ${INFORMIXDIR}/jdbc/lib/ifxjdbc.jar ${JAVA_SHARED}
-#FIXME: do we have to copy this under Tomcat? any config files to edit? (server.xml?)
+	cp ${INFORMIXDIR}/jdbc/lib/ifxjdbc.jar ${TOMCAT_DIR}/shared/lib
+#FIXME: any TomCat config files to edit? (server.xml?) to make this JDBC jar work?
 	@@echo "add the following line to your profile:"
 	@echo 'export CLASSPATH=$INFORMIXDIR/jdbc/lib/ifxjdbc.jar:$CLASSPATH'
 #ALTERNATIVE:
