@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.55 2003-01-26 06:09:58 afalout Exp $
+# $Id: Makefile-install.mki,v 1.56 2003-01-26 07:05:48 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -623,7 +623,8 @@ install.sapdb.env: ${SAPDBENV_RPM}
 install.gtk.dev: ${GTK_GTK_DEV_RPM} ${GTK_GDK_DEV_RPM} ${GTK_GLIB_DEV_RPM} \
 	${GTK_PANGO_DEV_RPM} ${GTK_ATK_DEV_RPM} ${XFREE86_DEV_RPM} ${GNOME_LIBS_DEVEL} \
 	${FREETYPE_DEV_RPM} ${FONTCONFIG_DEV_RPM} ${XFT_DEV_RPM} ${GTKPLUS_DEV_RPM} \
-	${ORBIT_DEV_RPM} ${IMLIB_DEV_RPM} ${ESOUND_DEV_RPM}
+	${ORBIT_DEV_RPM} ${IMLIB_DEV_RPM} ${ESOUND_DEV_RPM} ${GLIB_DEV_RPM} \
+	${LIBTIFF_DEV_RPM} ${LIBJPEG_DEV_RPM} ${LIBUNGIF_DEV_RPM} ${AUDIOFILE_DEV_RPM}
 	${RPM} -i $^
 	@echo "Package info & manuals: ${GTK_DEV_INFO}"
 	@echo " "
@@ -704,7 +705,19 @@ ${ORBIT_DEV_RPM}:
 ${IMLIB_DEV_RPM}:
 	${WGET} ${GTK_DEV_PATH}/${IMLIB_DEV_RPM}
 ${ESOUND_DEV_RPM}:
-	${WGET} ${GTK_DEV_PATH}/${ESOUND_DEV_RPM}
+	${WGET} ${GTK_DEV_PATH}/$@
+
+${GLIB_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/$@
+${LIBTIFF_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/$@
+${LIBJPEG_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/$@
+${LIBUNGIF_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/$@
+${AUDIOFILE_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/$@
+
 
 
 

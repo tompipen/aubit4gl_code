@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.109 2003-01-26 06:09:58 afalout Exp $
+# $Id: Makefile-common.in,v 1.110 2003-01-26 07:05:48 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -1020,7 +1020,8 @@ TIME                =$(shell date +%H-%M-%S)
 #RH_RPM_PATH         =ftp://rpmfind.net/linux/redhat/7.3/en/os/i386/RedHat/RPMS
 
 #RH_RPM_VER          =7.3
-RH_RPM_VER          =8.0
+#RH_RPM_VER          =8.0
+RH_RPM_VER			=@REDHAT_VER@
 
 RH_RPM_PATH			=ftp://ftp.redhat.com/pub/redhat/linux/${RH_RPM_VER}/en/os/i386/RedHat/RPMS/
 
@@ -1242,7 +1243,11 @@ ifeq "${RH_RPM_VER}" "8.0"
 	IMLIB_DEV_RPM		=imlib-devel-1.9.13-9.i386.rpm
 	ESOUND_DEV_RPM      =esound-devel-0.2.28-1.i386.rpm
 
-
+	GLIB_DEV_RPM		=glib-devel-1.2.10-8.i386.rpm
+	LIBTIFF_DEV_RPM		=libtiff-devel-3.5.7-7.i386.rpm
+	LIBJPEG_DEV_RPM		=libjpeg-devel-6b-21.i386.rpm
+	LIBUNGIF_DEV_RPM	=libungif-devel-4.1.0-13.i386.rpm
+	AUDIOFILE_DEV_RPM	=audiofile-devel-0.2.3-3.i386.rpm
 
 endif
 

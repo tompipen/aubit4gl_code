@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.147 2003-01-26 06:09:54 afalout Exp $
+dnl # $Id: configure.in,v 1.148 2003-01-26 07:05:26 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -339,6 +339,8 @@ AC_SUBST(GCC_VERSION_MINOR)
 AC_SUBST(GCC_MINGW)
 AC_SUBST(HAS_CHECK)
 AC_SUBST(WGET)
+AC_SUBST(REDHAT_VER)
+AC_SUBST(REDHAT_NAME)
 
 #Inno Setup:
 AC_SUBST(IS_SOURCE)
@@ -486,6 +488,14 @@ case $host in
 	*linux*)
         #rpclib is part of clib on Linux
 		test_rpclib="0"
+
+		if test -f /etc/redhat-release ; then
+			AC_MSG_CHECKING(RedHat version)
+			REDHAT_NAME=`cat /etc/redhat-release`
+			REDHAT_VER=`echo $REDHAT_NAME | awk '{print $5}'`
+			AC_MSG_RESULT($REDHAT_NAME ($REDHAT_VER))
+		fi
+
 		;;
 
     #  *-*-cygwin*/gcc*-mno-cygwin*|*-*-mingw*)
@@ -1914,6 +1924,16 @@ AC_ARG_WITH(gtk,
 		old_LDFLAGS=$LDFLAGS
 		LDFLAGS="$LDFLAGS -L$withval/lib -L/usr/lib"
 
+        ###########################################
+        #
+        #All this tests fro a single library will in most cases fail anyway,
+        #because of inter-depenencies between GTK libraries - we need to find out
+        #which are needed using pkg-config or gtk-config first anyway, so should
+        #I remove this, or move it AFTER I read config fron gtk-config?
+        #
+        ###########################################
+
+
 		# FIXME: Replace `main' with a function in `-lgdk':
 		AC_CHECK_LIB([gdk], [main])
 		# FIXME: Replace `main' with a function in `-lglib':
@@ -2439,7 +2459,7 @@ old_CFLAGS="$CFLAGS"
 old_LIBS="$LIBS"
 
 #This will test for both w3c-libwww and xmlrpc-c, since all this depends on each other
-CLIENT_LIBS="-L/usr/local/lib -lxmlrpc_client -lwwwxml -lxmltok -lxmlparse -lwwwinit -lwwwapp -lwwwhtml -lwwwtelnet -lwwwnews -lwwwhttp -lwwwmime -lwwwgopher -lwwwftp -lwwwfile -lwwwdir -lwwwcache -lwwwstream -lwwwmux -lwwwtrans -lwwwcore -lwwwutils -lmd5 -ldl -lxmlrpc -lxmlrpc_xmlparse -lxmlrpc_xmltok -lwwwzip"
+CLIENT_LIBS="-L/usr/local/lib -L/usr/lib -lxmlrpc_client -lwwwxml -lxmltok -lxmlparse -lwwwinit -lwwwapp -lwwwhtml -lwwwtelnet -lwwwnews -lwwwhttp -lwwwmime -lwwwgopher -lwwwftp -lwwwfile -lwwwdir -lwwwcache -lwwwstream -lwwwmux -lwwwtrans -lwwwcore -lwwwutils -lmd5 -ldl -lxmlrpc -lxmlrpc_xmlparse -lxmlrpc_xmltok -lwwwzip"
 CFLAGS="$CFLAGS $CLIENT_LIBS"
 AC_CHECK_LIB([xmlrpc], [main])
 
@@ -3345,15 +3365,14 @@ fi
 	RPMFILE_23=$LIB_PREFIX/libA4GL_HTML$SO_EXT_LINKABLE
 	PLUGIN_YES="$PLUGIN_YES FILE STRING HTML"
 
-    #temp disabled
-    if test "$HAVE_PGSQL_LIB" = "xxyes"; then
-		RPMFILE_24=$LIB_PREFIX/libSQL_pg$SO_EXT
-        PLUGIN_YES="$PLUGIN_YES PG_NATIVE"
-	else
-        PLUGIN_NO="$PLUGIN_NO PG_NATIVE"
-		#temp disabled
-		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
-	fi
+    #temp disabled:
+    #if test "$HAVE_PGSQL_LIB" = "yes"; then
+	#	RPMFILE_24=$LIB_PREFIX/libSQL_pg$SO_EXT
+    #    PLUGIN_YES="$PLUGIN_YES PG_NATIVE"
+	#else
+	#	PLUGIN_NO="$PLUGIN_NO PG_NATIVE"
+	#	INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
+	#fi
 
 	if test "$DOTTOOL" = "no"; then
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.dot"
@@ -3634,10 +3653,10 @@ X
 if test "$enable_ac_debug" = "yes" ; then
 cat<<X
 |                                                                    |
-| Reason for LD_LIBRARY_PATH warning:                                |
+| (DEBUG) Reason for LD_LIBRARY_PATH warning:                        |
 | "$WARN_LD_LIBRARY_REASON"
 |                                                                    |
-| configure invoked with flags:                                      |
+| (DEBUG) configure invoked with flags:                              |
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 X
@@ -3655,7 +3674,7 @@ fi
     fi
 
 fi
-if test "$PLUGIN_NO" != " PG_NATIVE"; then
+if test "$PLUGIN_NO" != ""; then
 cat<<X
 +--------------------------------------------------------------------+
 |                        ***   NOTE  ***                             |
@@ -3686,7 +3705,7 @@ fi
 if test "$enable_ac_debug" = "yes" ; then
 cat<<X
 +--------------------------------------------------------------------+
-|                        ***  NOTE   ***                             |
+|                     ***  DEBUG NOTE   ***                          |
 |                                                                    |
 | Aubit plug-ins to build:                                           |
 | $PLUGIN_YES
