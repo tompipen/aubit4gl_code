@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.14 2002-10-27 22:34:10 afalout Exp $
+# $Id: map.c,v 1.15 2002-10-30 23:44:44 afalout Exp $
 #*/
 
 /**
@@ -82,6 +82,7 @@ int 		yyin_len;
 */
 
 void 		setGenStackInfo		(int _genStackInfo);
+static int compile_4gl(void);
 
 /*
 =====================================================================
@@ -381,6 +382,7 @@ int compile_object = 0;
 int compile_exec = 0;
 int si;
 int x;
+int ret;
 char a[128];
 char b[128];
 char c[128];
@@ -485,8 +487,6 @@ static struct option long_options[] =
 
 	  strcpy (l_libs,"-laubit4gl");
 
-      int ret;
-
 	if (compile_object) {
 	    //gcc hello.c -c -o hello.o -I../../incl
 		sprintf (buff, "gcc %s.c -c -o %s.o %s",a,a,incl_path);
@@ -528,7 +528,7 @@ static struct option long_options[] =
  * @param
  * @param
  */
-int
+static int
 compile_4gl(void)
 {
 int x;

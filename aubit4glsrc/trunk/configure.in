@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.125 2002-10-30 01:46:34 afalout Exp $
+dnl # $Id: configure.in,v 1.126 2002-10-30 23:44:33 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -990,9 +990,10 @@ fi
 		AC_MSG_CHECKING(Web server paths)
 		grep ScriptAlias $APACHE_CONF > /tmp/tmp_config_.tmp
 		CGI_DIR=`grep -v \# /tmp/tmp_config_.tmp | grep cgi-bin | awk '{print $3}' | sed -e 's/"//g'`
-		WWW_DOCUMENT_ROOT=`grep ^DocumentRoot $APACHE_CONF | awk '{print $2}' | sed -e 's/"//g'`
+		WWW_DOCUMENT_ROOT=`grep ^DocumentRoot $APACHE_CONF | head -1 | awk '{print $2}' | sed -e 's/"//g'`
 		AC_MSG_RESULT(OK ($WWW_DOCUMENT_ROOT)($CGI_DIR))
     fi
+
 
 	if test "$with_www_name" != "" ; then
 		WWW_HOST_NAME=$with_www_name
