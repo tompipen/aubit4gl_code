@@ -1,0 +1,51 @@
+ECPG_EXT=cpc
+
+while [ "$1" != "" ]
+do
+	a=$1
+
+
+	if [ "$a" = -t ]
+	then 
+		ecpg_args="$ecpg_args $a"
+		shift
+		continue
+	fi
+
+	if [ "$a" = "-C" -o "$a" = "-D" -o "$a" = "-I" ]
+	then 
+		ecpg_args="$ecpg_args $a"
+		shift
+		a=$1
+		ecpg_args="$ecpg_args $a"
+		shift
+		continue
+	fi
+
+	c=`basename "$a" `
+	b=`basename "$c" ".$ECPG_EXT"`
+
+	if [ $b.$ECPG_EXT = $a ]
+
+	then
+		srcs="$srcs $a"
+		shift	
+		continue
+	fi
+	
+	other_args="$other_args $a"
+
+	shift
+done
+
+for a in $srcs
+do
+	echo ecpg $ecpg_args $a
+	ecpg $ecpg_args $a
+	out=`basename $a ".$ECPG_EXT"`
+	cfiles="$cfiles $out.c"
+done
+
+echo gcc $other_args $cfiles
+gcc $other_args $cfiles
+		
