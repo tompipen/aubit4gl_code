@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.67 2002-06-11 08:42:21 afalout Exp $
+# $Id: configure.in,v 1.68 2002-06-22 08:36:51 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -2309,6 +2309,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 compilers/fcompile/Makefile
                 compilers/helpcompile/Makefile
                 compilers/menus/Makefile
+                compilers/ace/Makefile
                 lib/libaubit4gl/Makefile
                 lib/libform/form_xdr/Makefile
                 lib/libmenu/menu_xdr/Makefile
