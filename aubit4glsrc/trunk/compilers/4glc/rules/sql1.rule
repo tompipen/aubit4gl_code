@@ -386,8 +386,13 @@ references_column_list:
 
 
 unique_constraint_definition:
-	  UNIQUE OPEN_BRACKET unique_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
-	  | DISTINCT OPEN_BRACKET unique_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+	  UNIQUE OPEN_BRACKET unique_column_list CLOSE_BRACKET {
+		sprintf($<str>$," UNIQUE %s %s %s",$<str>2,$<str>3,$<str>4);
+	}
+	  | DISTINCT OPEN_BRACKET unique_column_list CLOSE_BRACKET {
+		ansi_violation("Use UNIQUE not DISTINCT",0);
+		sprintf($<str>$," UNIQUE %s %s %s",$<str>2,$<str>3,$<str>4);
+	}
 	| PRIMARY_KEY OPEN_BRACKET unique_column_list CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	;
@@ -470,15 +475,16 @@ column_constraint_ss_1:
 		$<sql_string>$=strdup($<str>$);
 	}
 	| NOT_NULL_UNIQUE {
-		sprintf($<str>$," %s ",$<str>1);
+		sprintf($<str>$," NOT NULL UNIQUE ");
 		$<sql_string>$=strdup($<str>$);
 	}
 	| UNIQUE {
-		sprintf($<str>$," %s ",$<str>1);
+		sprintf($<str>$," UNIQUE ");
 		$<sql_string>$=strdup($<str>$);
 	}
 	| DISTINCT {
-		sprintf($<str>$," %s ",$<str>1);
+		ansi_violation("Use UNIQUE not DISTINCT",0);
+		sprintf($<str>$," UNIQUE ");
 		$<sql_string>$=strdup($<str>$);
 	}
 	| references_specification {
@@ -1364,9 +1370,11 @@ value_expression_ss:
 
 value_expression_initial_ss :
 	value_expression_complex_ss {
+			/*
 			if (strlen(current_upd_table)) {
 				push_gen(UPDVAL,$<sql_string>1);
 			}
+			*/
 		$<sql_string>$=$<sql_string>1;
 	}
 	| var_ident_ibind_ss 	{

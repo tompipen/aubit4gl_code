@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.153 2004-03-25 18:07:51 mikeaubury Exp $
+# $Id: compile_c.c,v 1.154 2004-03-29 09:11:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.153 2004-03-25 18:07:51 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.154 2004-03-29 09:11:25 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -3657,7 +3657,7 @@ print_report_2 (int pdf, char *repordby)
 {
   int cnt;
   int a;
-printf("in print_report_2 - ordbincnt=%d\n",ordbindcnt);
+//printf("in print_report_2 - ordbincnt=%d\n",ordbindcnt);
   if (pdf)
     printc ("static struct pdf_rep_structure _rep;\n");
   else

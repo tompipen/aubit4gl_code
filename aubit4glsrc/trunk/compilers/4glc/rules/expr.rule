@@ -712,7 +712,7 @@ DATE OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
 
 
 
-op_extend_d: {strcpy($<str>$,"-1");} | s_curr_v TO e_curr_v
+op_extend_d: {strcpy($<str>$,"-1");} | dtime_val TO dtime_val
 	{sprintf($<str>$,"%d",atoi($<str>1)*16+atoi($<str>3));}
 ;
 

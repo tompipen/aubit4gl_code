@@ -5,7 +5,7 @@
 #include <panel.h>
 
 int print_using = -1;
-
+void A4GL_LL_screen_refresh();
 
 
 /* A lot of this is copied from ncurses libform and hacked...
@@ -225,11 +225,10 @@ redraw_field (FIELD * f)
 			memset(clr_buff,' ',f->cols * f->rows);
 	  		clr_buff[f->cols * f->rows]=0;
 	  		mvwprintw (w, y, x, "%s", clr_buff);
-			update_panels();
-			doupdate();
+			A4GL_LL_screen_refresh();
 		}
-
 	  	mvwprintw (w, y, x, "%s", buff);
+		A4GL_LL_screen_refresh();
 	}
 
       	if (print_using == 1) {
@@ -237,10 +236,10 @@ redraw_field (FIELD * f)
 			memset(clr_buff,' ',strlen(buff));
 	  		clr_buff[strlen(buff)]=0;
 	  		mvwaddstr (w, y, x, buff);
-			update_panels();
-			doupdate();
+			A4GL_LL_screen_refresh();
 		}
 	  	mvwaddstr (w, y, x, buff);
+		A4GL_LL_screen_refresh();
 	}
 
         if (print_using == 2) {
@@ -249,8 +248,7 @@ redraw_field (FIELD * f)
 			memset(clr_buff,' ',f->cols * f->rows);
 	  		clr_buff[f->cols * f->rows]=0;
 	  		mvwprintw (w, y, x, "%s", clr_buff);
-			update_panels();
-			doupdate();
+			A4GL_LL_screen_refresh();
 		}
 
 		for (ccc=0;ccc<strlen(buff);ccc++) {
@@ -258,9 +256,8 @@ redraw_field (FIELD * f)
  				mvwaddch (w, y, x+ccc, attr + ' ');
 			}
  			mvwaddch (w, y, x+ccc, attr + buff[ccc]);
-			update_panels();
-			doupdate();
 		}
+		A4GL_LL_screen_refresh();
 	}
     }
 
@@ -629,7 +626,11 @@ A4GL_debug("post_form");
   form->status |= 1;
 
   redraw_current_field (form);
-  wrefresh(formwin);
+  if (A4GL_isyes(acl_getenv("OLDREFRESH"))) {
+  	wrefresh(formwin); /* @ */
+  } else {
+  	A4GL_LL_screen_refresh();
+  }
   return E_OK;
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.38 2004-03-23 13:10:21 mikeaubury Exp $
+# $Id: report.c,v 1.39 2004-03-29 09:11:24 mikeaubury Exp $
 #
 */
 
@@ -245,6 +245,7 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,int en
 	}
       else
 	{
+	 A4GL_debug("popen '%s'",rep->output_loc);
 	  rep->output = popen (rep->output_loc, "w");
 	  if (rep->output == 0)
 	    {

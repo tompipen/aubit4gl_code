@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.73 2004-03-24 11:45:48 mikeaubury Exp $
+# $Id: conv.c,v 1.74 2004-03-29 09:11:24 mikeaubury Exp $
 #
 */
 
@@ -351,7 +351,7 @@ A4GL_inttoint (void *a, void *b, int size)
   struct ival *d;
   struct ival *e;
   char buff[256];
-  A4GL_debug ("inttoint\n");
+  A4GL_debug ("inttoint size=%d\n",size);
   d = b;
   e = a;
   A4GL_debug ("e->stime=0x%x e->ltime=0x%x", e->stime, e->ltime);
@@ -696,13 +696,13 @@ A4GL_dttoc (void *a, void *b, int size)
 
   A4GL_debug ("d->stime=%d d->ltime=%d\n", d->stime, d->ltime);
 
-  if (d->stime >= 1 && d->stime <= 11);
+  if (d->stime >= 1 && d->stime <= 15);
   else
     {
       A4GL_assertion (1, "Start Time invalid on datetime");
     }
 
-  if (d->ltime >= 1 && d->ltime <= 11);
+  if (d->ltime >= 1 && d->ltime <= 15);
   else
     {
       A4GL_assertion (1, "End Time invalid on datetime");

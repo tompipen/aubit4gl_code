@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.87 2004-03-24 17:24:54 mikeaubury Exp $
+# $Id: stack.c,v 1.88 2004-03-29 09:11:24 mikeaubury Exp $
 #
 */
 
@@ -677,9 +677,10 @@ A4GL_push_param (void *p, int d)
   A4GL_debug("50 push_param %p %d size=%d",p,d,size);
   if (params == 0)
     {
-      A4GL_debug ("20 Assign stack");
-      params = (struct param *) acl_malloc (sizeof (struct param) * NUM_PARAM,
-					    "Assign stack");
+	int nbytes=0;
+	nbytes=sizeof (struct param) * NUM_PARAM,
+      A4GL_debug ("20 Assign stack : %d bytes",nbytes);
+      params = (struct param *) acl_malloc (nbytes, "Assign stack");
       alloc_params_cnt = NUM_PARAM;
     }
 
@@ -1683,6 +1684,7 @@ A4GL_opboolean (void)
   char *z1 = 0;
   char *z2 = 0;
   double a, b;
+  double diff;
   int cmp;
   int adate;
 int first;
@@ -1720,9 +1722,16 @@ int first;
 	{
 	  a = A4GL_pop_double ();
 	  b = A4GL_pop_double ();
+	  diff=b-a;
+	  if (diff<0) diff=0.0-diff;
 #ifdef DEBUG
-	  A4GL_debug ("check %lf %lf", a, b);
+	  A4GL_debug ("check %.8lf %.8lf %.8lf ", a, b,diff);
 #endif
+	
+	if (diff<0.00000001 && a!=b) {
+		A4GL_debug("Near as dammit equal..");
+		return 0;
+	}
 	  if (b > a)
 	    {
 	      return 1;

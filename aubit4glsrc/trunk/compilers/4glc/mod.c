@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.170 2004-03-25 18:07:43 mikeaubury Exp $
+# $Id: mod.c,v 1.171 2004-03-29 09:11:22 mikeaubury Exp $
 #
 */
 
@@ -1987,7 +1987,6 @@ copy_gen (int a, int b)
   int c;
 
 
-/*dump_updvals();*/
   if (gen_stack_cnt[a] && gen_stack[a][gen_stack_cnt[a] - 1][0] == '(')
     {
       /*printf ("POP\n");*/
@@ -4190,6 +4189,7 @@ fix_update_expr (int mode)
 
   if (gen_stack_cnt[UPDCOL] != gen_stack_cnt[UPDVAL])
     {
+dump_updvals();
       a4gl_yyerror
 	("Number of columns in update not the same as number of values");
     }
@@ -4247,11 +4247,11 @@ dump_updvals ()
 
   for (a = 0; a < gen_stack_cnt[UPDVAL]; a++)
     {
-      printf ("UPDVAL : %s\n", gen_stack[UPDVAL][a]);
+      printf ("UPDVAL[%d] : %s\n", a,gen_stack[UPDVAL][a]);
     }
   for (a = 0; a < gen_stack_cnt[UPDVAL2]; a++)
     {
-      printf ("UPDVAL2: %s\n", gen_stack[UPDVAL2][a]);
+      printf ("UPDVAL2[%d]: %s\n", a,gen_stack[UPDVAL2][a]);
     }
 }
 

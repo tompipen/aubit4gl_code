@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.46 2004-03-17 13:33:55 mikeaubury Exp $
+# $Id: ops.c,v 1.47 2004-03-29 09:11:24 mikeaubury Exp $
 #
 */
 
@@ -916,7 +916,7 @@ A4GL_in_in_ops (int op)
   double d_i1;
   double d_i2;
 
-A4GL_debug("in_in_ops");
+A4GL_debug("in_in_ops - op=%d",op);
 // d2 op d1
   A4GL_get_top_of_stack (2, &d2, &s2, (void *) &pi2);
   A4GL_get_top_of_stack (1, &d1, &s1, (void *) &pi1);
@@ -947,7 +947,7 @@ A4GL_debug("in_in_ops");
       return;
     }
 
-
+   A4GL_debug("se1=%d\n",se1);
   if (se1 == 2)
     {
       in1.stime = 0x82;		// MONTH(8)
