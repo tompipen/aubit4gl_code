@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: postgresql.cpp,v 1.6 2003-01-15 22:29:15 saferreira Exp $
+# $Id: postgresql.cpp,v 1.7 2003-01-19 21:26:09 saferreira Exp $
 #
 */
 
@@ -58,6 +58,8 @@
 
 
   #include <stdio.h>
+  #include <string.h>
+  #include <stdlib.h>
   #include "a4gl_incl_4gldef.h"
   #include "a4gl_API_sql.h"
 
@@ -71,17 +73,6 @@
 	#endif
 #endif
 
-
-  #include "ConnectionException.h"
-  #include "PgConnection.h"
-  #include "PgDriver.h"
-  #include "PreparedStatement.h"
-
-
-using namespace Aubit4glSql_postgresql;
-
-/** The postgres driver object */
-static PgDriver pgDriver;
 
 extern "C" void exitwith(char *str);
 extern "C" void set_errm (char *str);
@@ -98,7 +89,7 @@ extern "C" void debug (char *str);
 #endif
 
 #ifndef lint
-  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.6 2003-01-15 22:29:15 saferreira Exp $";
+  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.7 2003-01-19 21:26:09 saferreira Exp $";
 #endif
 
 
@@ -172,7 +163,7 @@ extern "C" int A4GLSQL_get_status(void)
  */
 extern "C" char *A4GLSQL_get_sqlerrm (void)
 {
-  return pgDriver.getCurrentConnection().getErrorMessage();
+  return "XX";
 }
 
 /**
@@ -201,21 +192,6 @@ char *usr, char *pwd)
 {
   char *conninfo;
   
-  if ( pgDriver.existConnection(sessname) == true )
-  {
-    // set the message with PQErrorMessage()
-    // @todo : Set the message
-    return 1;
-  }
-
-  try {
-    PgConnection &pgConnection = pgDriver.connect(sessname,dsn,usr,pwd);
-  }
-  catch (ConnectionException& e) {
-    printf("=========== Connection exception",e.getMessage());
-    // @todo : Set the message
-    return 1;
-  }
   return 0;
 }
 
@@ -272,13 +248,6 @@ extern "C" int A4GLSQL_init_connection (char *dbName)
  */
 extern "C" int A4GLSQL_close_session (char *sessname)
 {
-  if ( pgDriver.existConnection(sessname) == false)
-  {
-    // Error - Connection with that name does not exist
-    // @todo : Set the status, sqlca and error code.
-    return 1;
-  }
-  pgDriver.disconnect(sessname);
   return 0;
 }
 
@@ -335,18 +304,11 @@ static char *initConninfo(const char *dbname,const char *userName,
  */
 extern "C" int A4GLSQL_set_conn (char *sessname)
 {
-  int retval = 0;
-  try {
-    pgDriver.setCurrentConnection(sessname);
-  }
-  catch (ConnectionException &e)
-  {
-    // Erro : Conexão inexistente - Afectar status e error message
-    // @todo Assign status and error message because the connection does not
-    // exist.
-    return 1;
-  }
-  return 0;
+  const string strConn(sessname);
+  
+  if ( pgDriver.setCurrentConnection(strConn) )
+    return 0;
+  return 1;
 }
 
 /**
@@ -360,7 +322,6 @@ extern "C" char *A4GLSQL_get_curr_conn(void)
 {
   char *name;
 
-  /* @todo : Finish it
   try {
     PgConnection &currentConnection = pgDriver.getCurrentConnection();
   }
@@ -370,7 +331,6 @@ extern "C" char *A4GLSQL_get_curr_conn(void)
     return (char *)1;
   }
   name =  currentConnection.getConnectionName();
-  */
   return name;
 }
 
@@ -382,19 +342,15 @@ extern "C" char *A4GLSQL_get_curr_conn(void)
  */
 extern "C" char *A4GLSQL_get_currdbname()  
 {
-  char *currConnName;
-  PgConnection connection;
   try {
-    connection = pgDriver.getCurrentConnection();
-  } 
+    PgConnection &currentConnection = pgDriver.getCurrentConnection();
+  }
   catch (ConnectionException& e)
   {
-    // @todo Assign the status, sqlca and the error message
+    // @todo Assign status and error message
     return NULL;
   }
-
-  // @todo : Possible memory leak here
-  return strdup(connection.getDatabaseName());
+  return currentConnection.getDatabaseName();
 }
 
 /**
@@ -437,6 +393,8 @@ static struct s_sid *newStatement(
  *
  * Note that if the statement have some syntax error it is only detected by
  * the backend when it is executed.
+ *
+ * @todo preparedStatement should be assigne inside s_sid
  *
  * @param ibind The input bind array.
  * @param ni Number of elements in the input bind array.
@@ -550,25 +508,6 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
 }
 
 /**
- * Allocate the output descriptors because they must exist before the 
- * execution of the statement.
- *
- * @todo : I think that this is not necessary here
- *
- * @param descName The name for using as a global descriptor.
- * @param bCount The number of values to bind.
- * @param bind A pointer to the bind array.
- * @return
- *  - 0 : Statement executed.
- *  - 1 : An error as ocurred.
- */
-static int allocateOutputDescriptor(char *descName,
-  int bCount,struct BINDING *bind)
-{
-  return 0;
-}
- 
-/**
  * Makes the bind of the input variables to pass to the statement to a 
  * global ESQL descriptor area.
  *
@@ -584,24 +523,6 @@ static int allocateOutputDescriptor(char *descName,
 static int processOutputBind(char *descName,int bCount,struct BINDING *bind)
 {
   return 0;
-}
-
-/**
- * Generate the descriptor name.
- *
- * @todo : I think that this is not necessary here
- *
- * @param statementName The name of the statement to build descriptor name.
- * @param type The descriptor type:
- *   - I : Descriptor for input bind.
- *   - O : Descriptor for output bind.
- * @return The descriptor name.
- */
-char *getDescriptorName(char *statementName,char bindType)
-{
-  char *descriptorName = (char *)malloc(sizeof(statementName+6));
-  sprintf(descriptorName,"%s_%cbind",statementName,bindType);
-  return descriptorName;
 }
 
 #define INPUT_OUTPUT_BIND 0
@@ -642,6 +563,12 @@ static int getStatementBindType(struct s_sid *sid)
 static int executeStatement(struct s_sid *sid)
 {
   int rc = 0;
+
+  preparedStatement *st = sid->???;
+  if ( sid-> hasInputBind
+    ResultSet rs = st->executeQuery()
+  else
+    ResultSet rs = st->executeUpdate()
   return rc;
 }
 
@@ -669,6 +596,7 @@ extern "C" struct s_sid *A4GLSQL_prepare_sql (char *s)
  */
 extern "C" int A4GLSQL_add_prepare (char *pname, struct s_sid *sid)
 {
+  currConn.setPreparedStatement(stName,sid);
 	/*
   if (sid)
   {
@@ -696,39 +624,6 @@ extern "C" int A4GLSQL_execute_sql_from_ptr(char *pname, int ni, char **ibind)
 }
 
 /**
- * Process the binds of a statement before the execution.
- *
- * the structure s_sid is expanded to have the descriptor names.
- *
- * @todo This is not necessary here.
- * 
- * @param sid A pointer to the statement identification structure.
- * @return
- *  - 0 : Binds made.
- *  - 1 : Error making binds
- */
-static int processPreStatementBinds(struct s_sid *sid)
-{
-  return 0;
-}
-
-/**
- * Dealocate the descriptors used in a statement.
- *
- * @todo : This should be made in the prepared statement desctruction.
- *
- * @param sid The statement information.
- * @return
- *  - 0 : Connection closed.
- *  - 1 : Connection does not exist or error ocurred.
- */
-static int deallocateDescriptors(struct s_sid *sid)
-{
-  int rc = 0;
-  return rc;
-}
-
-/**
  * Process the binds of a statement after the execution.
  *
  * @todo : Even if it is necessary should be made in the statement class
@@ -747,8 +642,6 @@ static int processPosStatementBinds(struct s_sid *sid)
     if ( processOutputBind(sid->outputDescriptorName,sid->no,sid->obind) == 1)
       return 1;
   }
-  if ( deallocateDescriptors(sid) == 1 )
-    return 1;
   return 0;
 }
 
@@ -772,12 +665,10 @@ int A4GLSQL_execute_implicit_select (struct s_sid *sid)
   if (sid == 0)
     return -1;
 
-  if ( processPreStatementBinds(sid) == 1 )
-    return 1;
-  if ( executeStatement(sid) == 1 )
-    return 1;
-  if ( processPosStatementBinds(sid) == 1 )
-    return 1;
+  ResultSet rs = statement->executeQuery();
+
+  rs.getInt(1,???);
+  ...
   return 0;
 }
 
@@ -804,8 +695,8 @@ extern "C" int A4GLSQL_execute_implicit_sql (struct s_sid *sid)
     return 1;
   }
 
-  if ( processPreStatementBinds(sid) == 1 )
-    return 1;
+  ResultSet rs = statement->executeUpdate();
+  
   if ( executeStatement(sid) == 1 )
     return 1;
   if ( processPosStatementBinds(sid) == 1 )
@@ -895,9 +786,13 @@ static int getCursorType(int upd_hold,int scroll)
 extern "C" struct s_cid *A4GLSQL_declare_cursor(
   int upd_hold,struct s_sid *sid,int scroll,char *cursname)
 {
-  int retval = 0;
   struct s_cid *cursorIdentification;
 
+  Statement st = driver.createStatement(cursortype, etc);
+  setResultsetType()
+  st.setCursorName(cursname);
+  st.setSCid(cursorIdentification);
+  cursorIdentification.??? = st;
   return cursorIdentification;
 }
 
@@ -1063,6 +958,10 @@ extern "C" void A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
 {
 }
 
+#define BEGIN_WORK   -1
+#define ROLLBACK_WORK 0
+#define COMMIT_WORK   1
+
 /**
  * Implementationin ODBC of the transaction statements (BEGIN WORK, 
  * COMMIT WORK, ROLLBACK WORK).
@@ -1080,6 +979,31 @@ extern "C" void A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
  */
 extern "C" void A4GLSQL_commit_rollback (int mode)
 {
+  try {
+    PgConnection &currentConnection = pgDriver.getCurrentConnection();
+  }
+  catch (ConnectionException& e)
+  {
+    // @todo Assign status and error message
+    return;
+  }
+  try {
+    switch (mode)
+    {
+      case BEGIN_WORK:
+        currentConnection.begin();
+	break;
+      case COMMIT_WORK:
+        currentConnection.commit();
+	break;
+      case ROLLBACK_WORK:
+        currentConnection.rollback();
+	break;
+    }
+  }
+  catch (SqlException e) {
+    // @todo Assign status and error message
+  }
 }
 
 /**
@@ -1098,7 +1022,21 @@ extern "C" void A4GLSQL_commit_rollback (int mode)
  */
 extern "C" struct s_sid *A4GLSQL_find_prepare (char *pname)
 {
-  return (struct s_sid *)0;
+  try {
+    PgConnection &currentConnection = pgDriver.getCurrentConnection();
+  } catch (ConnectionException& e) {
+    // @todo Assign status and error message
+    return (struct s_sid *)0;
+  }
+
+  try {
+    const string stNm(pname);
+    PreparedStatement &statement currentConnection.gePreparedStatement(stNm);
+  } catch (SQLException e) {
+    // @todo Assign status and error message
+    return (struct s_sid *)0;
+  }
+  return statement.getSSid();
 }
 
 /**
@@ -1133,11 +1071,11 @@ extern "C" int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
 
   debug("ESQL : A4GLSQL_execute_sql");
   /** @todo : Fix the mode that is not used now */
-  sid = A4GLSQL_find_prepare (pname);
+
+  const string stName(pname);
+  statement = conn.getPreparedStatement(pname);
   sid->ibind = ibind;
   sid->ni    = ni;
-  if ( processPreStatementBinds(sid) == 1 )
-    return 1;
   if ( executeStatement(sid) == 1 )
     return 1;
   if ( processPosStatementBinds(sid) == 1 )

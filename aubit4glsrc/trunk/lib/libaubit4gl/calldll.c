@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.25 2003-01-17 23:32:53 psterry Exp $
+# $Id: calldll.c,v 1.26 2003-01-19 21:26:09 saferreira Exp $
 #
 */
 
@@ -353,6 +353,7 @@ dl_openlibrary (char *type, char *p)
   if (dllhandle==0) {
 
 		/* Sometimes dlerror() returns empty string? */
+		printf("Error: can't open DLL %s - %s - STOP",buff,dlerror());
 		debug("Error: can't open DLL %s - %s - STOP",buff,dlerror());
 		exitwith("Error: can't open DLL - STOP. See debug.out");
 

@@ -16,7 +16,7 @@ namespace Aubit4glSql_postgresql {
 
  class PgDriver {
    private:
-     typedef std::map<const string,PgConnection> Connections;
+     typedef map<const string,PgConnection> Connections;
 
      /** A list of the active connections */
      Connections connectionList;
@@ -53,7 +53,7 @@ namespace Aubit4glSql_postgresql {
      bool setCurrentConnection(const string& connectionName);
      PgConnection& getCurrentConnection();
      PgConnection getConnectionToDatabase(const char *dbName);
-     const char *PgDriver::getConnectionNameToDatabase(const char *dbName);
+     const char *getConnectionNameToDatabase(const char *dbName);
  };
 }
 #endif

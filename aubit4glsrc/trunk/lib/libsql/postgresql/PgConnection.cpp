@@ -45,7 +45,7 @@ PgConnection::PgConnection(const char *_dbName, const char *_connName)
 }
 
 /**
- * Assign the pointer to the native connection.
+ * Assign the pointer to the native postgresql connection.
  *
  * @param _pgConn The pointer to the connection
  */
@@ -105,6 +105,51 @@ char *PgConnection::getGlobalStatementName(void)
 
   sprintf(statementName,"st_%d",statementCount);
   return statementName;
+}
+
+/**
+ * Start a new transaction over the database.
+ */
+void PgConnection::begin() 
+{
+  PGResult res;
+  res = PQexec(pgConn,"BEGIN");
+  if ( !res || PQresultStatus(res) != PGRES_COMMAND_OK)
+  {
+    PQclear(res);
+    throw SQLException("Error starting a transaction");
+  }
+}
+
+/**
+ * Makes all changes since the previous begin work permanent and releases
+ * any database locks currently held by this connection object.
+ */
+void PGConnection::commit() 
+{
+  PGResult res;
+  res = PQexec(pgConn,"COMMIT");
+  if ( !res || PQresultStatus(res) != PGRES_COMMAND_OK)
+  {
+    PQclear(res);
+    throw SQLException("Error starting a transaction");
+  }
+}
+
+
+/**
+ * Undoes all changes made in the current transaction and releases any 
+ * database locks currently held by this Connection object. 
+ */
+void PgConnection::rollback()
+{
+  PGResult res;
+  res = PQexec(pgConn,"ROLLBACK");
+  if ( !res || PQresultStatus(res) != PGRES_COMMAND_OK)
+  {
+    PQclear(res);
+    throw SQLException("Error starting a transaction");
+  }
 }
 
 /**

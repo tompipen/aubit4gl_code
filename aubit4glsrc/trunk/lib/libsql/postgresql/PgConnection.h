@@ -8,10 +8,18 @@
 #ifndef PGCONNECTION_INCL
 #define PGCONNECTION_INCL
 
+using namespace std;
+
 namespace Aubit4glSql_postgresql {
 
  class PgConnection {
    private:
+     /** The map of prepared statememnts, indexed by the statement name */
+     typedef map<const string,PreparedStatement> Statements;
+
+     /** The list of statements */
+     Statements statements;
+
      char *connectionName;  /**< The name of the connection */
      char *databaseName;    /**< The database name where is connected to */
      char *userName;        /**< User name used to connect */
@@ -30,6 +38,8 @@ namespace Aubit4glSql_postgresql {
      int getError(void);
      char *getGlobalStatementName(void);
      void disconnect(void);
+     PreparedStatement getPreparedStatement(const string& name);
+     void setPreparedStatement(const string& name,struct s_sid *sid);
   };
 }
 

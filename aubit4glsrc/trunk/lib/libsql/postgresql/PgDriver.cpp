@@ -27,6 +27,7 @@
 #include "PgDriver.h"
 #include "ConnectionException.h"
 
+using namespace std;
 using namespace Aubit4glSql_postgresql;
 
 /**

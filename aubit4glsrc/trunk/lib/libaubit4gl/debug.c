@@ -24,14 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.13 2002-12-24 08:57:36 mikeaubury Exp $
+# $Id: debug.c,v 1.14 2003-01-19 21:26:09 saferreira Exp $
 #
 */
 
 /**
  * @file
  *
- * @todo Add Doxygen comments to file
+ * The debug utility functions.
  */
 
 /*
@@ -81,6 +81,7 @@ static void open_debugfile (void);
 
 
 /**
+ * Open the debug file.
  *
  * @todo Describe function
  */
@@ -95,8 +96,10 @@ open_debugfile (void)
 }
 
 /**
+ * The debug function.
+ * The function is used because it exist a define that calls
+ * it, if debug is set.
  *
- * @todo Describe function
  */
 void
 debug_full (char *fmt,...)
@@ -151,7 +154,7 @@ debug_full (char *fmt,...)
 
 
 /**
- *
+ * 
  * @todo Describe function
  */
 int
