@@ -273,16 +273,16 @@ static void insertFunctionProcess(int idxFunction)
     return;
 
   StatDesc = "insert p4gl_fun_process";
-  //P4glDebug("%s\n",StatDesc);
+  P4glDebug("%s\n",StatDesc);
 
   idPackage    = P4glCb.package;
   moduleName   = P4glCb.module;
   functionName = FUNCAO(idxFunction).name;
   for ( i = 0 ; i < FUNCAO(idxFunction).parsedDoc->processIdx ; i++ )
   {
+	P4glDebug("i=-%d-\n",i);
 	idProcess = FUNCAO(idxFunction).parsedDoc->processCode[i];
     RClipp(idProcess);
-  P4glDebug("idProcess -%s-\n",idProcess);
 	if ( isValidProcess(idProcess) != 0 )
     {
       if ( !P4glCb.insertProcess )
@@ -294,12 +294,15 @@ static void insertFunctionProcess(int idxFunction)
       insertProcess(idProcess);
     }
 
-    exec sql insert into p4gl_fun_process (
-      id_process,
+	P4glDebug("Inserting idProcess -%s- for function _%s_\n",idProcess,functionName);
+
+	exec sql insert into p4gl_fun_process
+	( id_process,
       id_package,module_name,
       function_name
-    )
-     values (:idProcess,:idPackage,:moduleName,:functionName);
+    ) values (
+	 :idProcess,:idPackage,:moduleName,:functionName
+	);
   }
 }
 
@@ -512,7 +515,6 @@ static void insertFunctionTablesUsageComments(int idxFunction)
 }
 */
 
-
 /**
  * Insert all table usage (database tables referenced in this function).
  * The table(s) usage in a function could be extracted by the parser (in
@@ -529,13 +531,13 @@ static void insertTablesUsage(int idxFunction)
     char *functionName;
     char operation;
     char *tableName;
-//    char *currpath;
 	char *p_id_process;
 	char owner[129];
 	char tabtype[1];
     char id_process[129];
     int numTables;
     int NumRows;
+    int NumRows2;
   exec sql end declare section;
   FUNCTION *function;
   register int i;
@@ -545,21 +547,22 @@ static void insertTablesUsage(int idxFunction)
   function = getFunction(idxFunction);
   functionName = function->name;
 
-	P4glVerbose("Inserting table usage for function %s\n",functionName);
+	P4glVerbose("Inserting table usage for function -%s-%d-\n",functionName,getFunctionTableUsageIdx(function));
 	StatDesc = "Inserting ussage of the database table";
 
   for ( i = 0 ; i < getFunctionTableUsageIdx(function) ; i++)
   {
-    TableUsage *tableUsage;
-    tableUsage = getFunctionTableUsage(function,i);
-    tableName = tableUsage->tableName;
+	TableUsage *tableUsage;
 
-	//P4glDebug("table -%s-\n",tableName);
-
+//P4glDebug("loop -%d-\n",i);
+	tableUsage = getFunctionTableUsage(function,i);
+//P4glDebug("A\n");
+	tableName = tableUsage->tableName;
+//P4glDebug("1table -%s-\n",tableName);
     RClipp(tableName);
-    LClipp(tableName);
-
-	//P4glDebug("table -%s-\n",tableName);
+//P4glDebug("2table -%s-\n",tableName);
+	LClipp(tableName);
+//P4glDebug("table -%s-\n",tableName);
 
     switch (tableUsage->operation)
     {
@@ -578,6 +581,9 @@ static void insertTablesUsage(int idxFunction)
       default:
         operation = 'S';
     }
+//P4glDebug("T=-%d-\n",IsTerminated(tableName));
+//P4glDebug("NumRows=-%d-\n",NumRows);
+//P4glDebug("table -%s-\n",tableName);
 
 	exec sql select count(*) into :NumRows
         from systables
@@ -585,11 +591,11 @@ static void insertTablesUsage(int idxFunction)
 
 	if ( NumRows == 0 )
     {
+		//P4glDebug("NOTFOUND\n");
 		//P4glError(ERROR_EXIT,"Table -%s- does not exist in this database\n",tableName);
         /* This is not nececeraly an error; maybe it's a temp table, or maybe
         it's a DDL (create table) statement.
 		*/
-
         strcpy(tabtype,"U"); //Doc4GL table types are T=table V=view U=undefined E=tEmporary
         strcpy(owner,"unknown");
 
@@ -602,14 +608,13 @@ static void insertTablesUsage(int idxFunction)
 	    RClipp(owner);
 		P4glDebug("Owner of table %s is %s\n",tableName,owner);
     }
-
 	// check if we have this table
+	numTables = 0;
 	exec sql select count(*)
 	    into :numTables
 			from systableext
 			    where tabname = :tableName
 				and owner = :owner;
-
 	if ( numTables == 0 )
     {
 		//add table
@@ -624,10 +629,6 @@ static void insertTablesUsage(int idxFunction)
     */
 
 	P4glDebug("New table usage -%s-%s-%s-%s-%s-%s-%c-\n",idPackage,moduleName,functionName,tableName,owner,tableName,operation);
-
-//DEBUG: New table usage -.-PC8.4gl-err_list-err_vpays-process
-//-err_vpays-D-
-
 
 	exec sql
       insert into p4gl_table_usage (
@@ -644,8 +645,8 @@ static void insertTablesUsage(int idxFunction)
 
 	WARNING - check - is it already stored in database from comment? 
 		- YES, in function insertFunctionProcess
-	
-	WATNING - function can have multiple processes associated with it and
+
+	WARNING - function can have multiple processes associated with it and
     here we expect only one row!
 
 	*/
@@ -656,10 +657,17 @@ static void insertTablesUsage(int idxFunction)
             and id_package = :idPackage
             and module_name = :moduleName;
 
-	//P4glDebug("Got process for function %s as %s\n",functionName,id_process);
-
-    RClipp(id_process);
-
+	if (strcmp (SQLSTATE, "02000") == 0)
+    {
+		P4glDebug("NOTFOUND\n");
+		strcpy(id_process,"");
+    } else {
+		//strcpy(p_id_process,id_process);   <<<<<< valgrind !!!!
+		p_id_process=strdup(id_process);
+		RClipp(p_id_process);
+		sprintf(id_process,"%s",p_id_process);
+		P4glDebug("Got process for function -%s- as -%s-\n",functionName,id_process);
+    }
 
 	if (IsEmpty (id_process))
     {
@@ -692,23 +700,27 @@ static void insertTablesUsage(int idxFunction)
 
 		//assign it to global array
 
-		FUNCAO(idxFunction).parsedDoc->processIdx=0;
-		FUNCAO(idxFunction).parsedDoc->processCode[0]=strdup(p_id_process);
+		P4glDebug("curr index =-%d-\n",FUNCAO(idxFunction).parsedDoc->processIdx);
+
+		FUNCAO(idxFunction).parsedDoc->processCode[FUNCAO(idxFunction).parsedDoc->processIdx]=strdup(p_id_process);
+		FUNCAO(idxFunction).parsedDoc->processIdx=FUNCAO(idxFunction).parsedDoc->processIdx++;
 		insertFunctionProcess(idxFunction);
     }
 
     /* now that we know process for this function, we can apply same process to
     this table */
-
+//P4glDebug("Checking for table/process relationship -%s-%s-%s-\n",id_process,owner,tableName);
     /* check if we already have this table in the context of this process */
-	exec sql
-		select count (*) into :NumRows
+
+	exec sql select count(*) into :NumRows2
         from p4gl_table_process
         where owner = :owner
         and tabname = :tableName
-        and id_process = :id_process;
+        and id_process = :id_process
+		;
 
-	if (NumRows == 0)
+//P4glDebug("GOT %d\n",NumRows2);
+	if (NumRows2 == 0)
     {
 		P4glDebug("New table/process relationship -%s-%s-%s-\n",id_process,owner,tableName);
 		// Insert table/process relationship
@@ -718,7 +730,12 @@ static void insertTablesUsage(int idxFunction)
         values
             (:id_process,:owner, :tableName);
     }
+//P4glDebug("end for\n");
+
   } // end for loop
+
+//P4glDebug("Exit function\n");
+
 }
 
 /**
@@ -1010,8 +1027,6 @@ static void insertFunctionCalls()
     char *moduleName;
     int NumRows;
     int Line;
-//	char ProgramName[129];
-//	char ThisProgramName[129];
 	char FunctionCalling[129];
  	char FunctionCalled[129];
   exec sql end declare section;
@@ -1115,6 +1130,11 @@ exec sql end declare section;
  */
 void insertP4glRep(void)
 {
+/*
+$int nrows;
+$char tabname[18];
+int a;
+*/
   exec sql whenever sqlerror call SqlErrors;
   if ( ! connectDb() )
     return;

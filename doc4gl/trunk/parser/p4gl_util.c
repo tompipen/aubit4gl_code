@@ -16,8 +16,8 @@
  * Moredata - Lisboa, PORTUGAL
  *
  * $Author: afalout $
- * $Revision: 1.5 $
- * $Date: 2003-11-20 10:51:49 $
+ * $Revision: 1.6 $
+ * $Date: 2003-11-21 10:48:49 $
  *
  */
 
@@ -222,12 +222,34 @@ LClipp(char *str)
         }
     }
 
-	//P4glDebug("first = -%d-%d-\n",firstChar,len);
-	str2 = substr(str, firstChar, len);
-	//P4glDebug("got -%s-\n",str2);
-    //str=strdup(str2);
-    strcpy(str,str2);
+//	P4glDebug("first = -%d-%d-\n",firstChar,len);
+
+    if (firstChar == 0)
+	{
+        //nothing to do - characters already start at the first possition
+    } else {
+		str2 = substr(str, firstChar, len);
+		P4glDebug("got -%s-\n",str2);
+	    //str=strdup(str2);
+    	strcpy(str,str2);
+    }
 }
+
+int
+IsTerminated(char *str)
+{
+int len;
+
+	len = strlen(str);
+
+	if ( str[len] == '\0' )
+    {
+		return (1);
+	}
+
+	return (0);
+}
+
 
 /**
  * Upshift the characters of a string.
@@ -434,9 +456,13 @@ substr(char *str, short start, short finish)
 
 	if ( start > finish)
 		return (char *)0;
-	retstr = (char *)malloc(finish-start+2);
 
+//P4glDebug("A1\n");
+	retstr = (char *)malloc(finish-start+2); //core dumps here when start = 0
+//P4glDebug("A2\n");
 	strncpy(retstr,str+start,finish-start+1);
+//P4glDebug("A3\n");
+
 	return retstr;
 }
 

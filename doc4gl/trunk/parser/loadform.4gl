@@ -977,7 +977,7 @@ and tabid > 100                                             348-11=337
 
 		#let run_string= "find /opt/aubit/apps/erp/src -name '*.per' -exec grep -l -i -w ",
 		#	p_systableext.tabname clipped," ",oc," \\; > tmp.unl"
-
+#what about ...type like prodsurcharge.x
 		#look for table.column notation
 		let run_string= "find /opt/aubit/apps/erp/src -name '*.per' -exec grep -l -i '",
 			p_systableext.tabname clipped,"\\.' ",oc," \\; > tmp.unl"
@@ -2436,9 +2436,6 @@ function drop_obsolete_tables()
 	drop table  appeal                           ;
 	drop table  appeal_cost                      ;
 	drop table  ar1384head                       ;
-#	drop table  asp_activate                     ;
-#	drop table  asp_connect                      ;
-#	drop table  asp_pref                         ;
 	drop table  badacnum                         ;
 	drop table  badccnum                         ;
 	drop table  bankdraft                        ;
@@ -2600,15 +2597,42 @@ function drop_obsolete_tables()
 	drop table  work_center                      ;
 	drop table  work_ctr_rate                    ;
 	drop table  wwwparms                         ;
-	
-	
+
+
 	#find this buggers:
 	drop table  version                          ;
 	drop table  source                           ;
 	drop table  confirm                          ;
-	drop table  batch                            ;
 	drop table  action                           ;
+
+    #found to be obsolete by manual check:
+
+    drop table  assets;
+    drop table  budget ;
+    drop table  cartage ;
+    drop table  deposit  ;
+    drop table  disp_stats;
+    drop table  faperiod   ;
+    drop table  labour      ;
+    drop table  maxmenu      ;
+    drop table  menupath      ;
+    drop table  postcode       ;
+    drop table  postdebit       ;
+    drop table  prochead         ;
+    drop table  rates             ;
+    drop table  region             ;
+    drop table  relationship        ;
+    drop table  uom_convert          ;
+
+
+    #Definitely NOT obsolete:
+#    drop table  backup;     #U111.per
+#	drop table  batch                            ;  #P24.4gl
+#	drop table  asp_activate                     ;
+#	drop table  asp_connect                      ;
+#	drop table  asp_pref                         ;
 
 end function
 
 #---------------------------- EOF --------------------------------
+

@@ -4,7 +4,7 @@
 #  AUTHOR : Sergio Ferreira
 #           Moredata, Lda - Lisbon, Portugal
 #
-# $Id: Makefile.in,v 1.9 2003-11-20 10:51:49 afalout Exp $
+# $Id: Makefile.in,v 1.10 2003-11-21 10:48:49 afalout Exp $
 #
 #  DESCRIPTION : Makefile for fgldoc 4gl parser compilation
 #
@@ -35,20 +35,8 @@ A4GL_LEXTYPE=C
 A4GL_LEXDIALECT=INFORMIX
 export A4GL_SQLTYPE A4GL_LEXTYPE A4GL_LEXDIALECT
 
-.PRECIOUS : %.sch maxdev.sch p4gl_synt.c
-
-#  ============================================================================
-#  Compilation of all programs
-#  ============================================================================
-all: ${ALL}
-	@echo ""
-	@echo "+--------------------------------------------------------------------+"
-	@echo "| Doc4gl parser targets:                                             |"
-	@echo "|     ${ALL}"
-	@echo "| successfully compiled.                                             |"
-	@echo "+--------------------------------------------------------------------+"
-	@echo ""
-
+#.PRECIOUS : %.sch maxdev.sch p4gl_synt.c
+.PRECIOUS : %.sch maxdev.sch
 .PHONY:install clean deinstall tags test
 
 #  ============================================================================
@@ -60,24 +48,40 @@ P4GLOBJ= p4gl_synt.o p4gl_ld_st.o p4gl_lex.o p4gl_parse.o  \
 	ReadComments.o CommentsManagement.o Comment.o P4glLexFuncs.o P4glInit.o \
 	TableUsage.o P4glAbstractTree.o p4gl_ins_rep.o
 
+P4GLPPOBJ= p4pp_lex.o m_p4glpp.o
+
+#  ============================================================================
+#  Compilation of all programs
+#  ============================================================================
+
+all: ${ALL}
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Doc4gl parser targets:                                             |"
+	@echo "|     ${ALL}"
+	@echo "| successfully compiled.                                             |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
 p4gl : $(P4GLOBJ) m_p4gl.o
 	$(ESQL) $(CFLAGS) -o $@ $(P4GLOBJ) m_p4gl.o
 
 # Compilation of esql/c API for inserting in the repository
 p4gl_ins_rep.o: p4gl_ins_rep.ec
-	$(ESQL) $(CFLAGS) -c p4gl_ins_rep.ec $(CFLAGS)
+	$(ESQL) $(CFLAGS) -c $< $(CFLAGS)
 	${RM} p4gl_ins_rep.c
 
 # TODO - Fazer regra genérica
 # Compilation of esql/c API for inserting in the repository
 InsertP4glRep.o: InsertP4glRep.ec
-	$(ESQL) $(CFLAGS) -c InsertP4glRep.ec
+	$(ESQL) $(CFLAGS) -c $<
 
 #  ============================================================================
 #  Geração do lexer para os comentários
 #  ============================================================================
 CommentLexer.o: CommentLexer.l
-	$(LEX) -PyyComment -oCommentLexer.c CommentLexer.l
+	$(LEX) -PyyComment -oCommentLexer.c $<
 	$(CC) $(CFLAGS) -c CommentLexer.c
 
 
@@ -85,10 +89,17 @@ CommentLexer.o: CommentLexer.l
 #  Esta regra tem de ser bem vista.
 #  Sera que o GNU make mudou as regras ?
 #  ==========================================================================
-p4gl_lex.o : p4gl_lex.l m_p4gl.c
-	${LEX} -t p4gl_lex.l > p4gl_lex.c
+p4gl_lex.o : p4gl_lex.l m_p4gl.c y.tab.h
+#       -t     instructs flex to write the scanner it generates to
+#              standard output instead of lex.yy.c.
+	${LEX} -t $< > p4gl_lex.c
 	$(CC) -c p4gl_lex.c
 	${RM} p4gl_lex.c
+
+
+y.tab.h: p4gl_synt.o
+#This is already done my make automatically:
+#p4gl_synt.o: p4gl_synt.y
 
 p4pp_lex.o : p4pp_lex.l m_p4glpp.c
 	${LEX} -t p4pp_lex.l > p4pp_lex.c
@@ -100,7 +111,6 @@ p4pp_lex.o : p4pp_lex.l m_p4glpp.c
 #    It resolve all the inclusions of globals (globals "file.4gl") and
 #    generates a temporary file.
 #  ==========================================================================
-P4GLPPOBJ= p4pp_lex.o m_p4glpp.o
 
 p4glpp: $(P4GLPPOBJ)
 	$(ESQL) -o $@ $(P4GLPPOBJ)
@@ -205,6 +215,9 @@ clean:
 	${RM} *.o ${ALL} lex.yy.c y.tab.h a.out core y.output sqexplain.out \
 	*.4go *.4gi *.4ge *.a  InsertP4glRep.c \
 	*.bak *.42m *.42r *.4gi *.4ae *.4qe loadform.h *.warn *.glb\
-    loadform.c *.qo  *.sch *.err *.ao mkf.c mkf.h
+    loadform.c *.qo  *.sch *.err *.ao mkf.c mkf.h p4gl_lex.c p4pp_lex.c \
+    CommentLexer.c *.html p4gl_synt.c
+
+
 
 
