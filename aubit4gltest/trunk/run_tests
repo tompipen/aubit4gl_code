@@ -439,10 +439,11 @@ LOGFILE=/tmp/testdb.log
 new_test() {
 dir=$1
 nothing_done="1"
-  echo "DIR $dir"
-  if ! test -d $dir; then
+  echo "Adding new test $dir"
+if ! test -d $dir; then
     mkdir $dir
-    cp template/prog.4gl template/.cvsignore $dir
+	cp template/makefile template/prog.4gl template/.cvsignore $dir
+	
     if ! test "$NO_CVS" = "1"; then
       cvs add $dir
       cvs add $dir/makefile $dir/prog.4gl $dir/.cvsignore
@@ -453,19 +454,25 @@ nothing_done="1"
     echo " 3) perform 'cvs add' on additional files test needs, if any"
     echo " 4) perform 'cvs commit'"
     nothing_done=0
-  fi
-
-  if ! test -f $dir/makefile; then
-    cp template/makefile $dir
-    echo "makefile added from template"
-    nothing_done="0"
-  fi
-  if ! test -f $dir/.cvsignore; then
-    cp template/.cvsignore $dir
-    echo ".cvsignore added from template"
-    nothing_done="0"
-  fi
-
+else
+	#add mandatory files to allready existing directory if they are missing
+	CVS_ADD=""
+	if ! test -f $dir/makefile && ! test -f $dir/Makefile ; then
+		cp template/makefile $dir
+		CVS_ADD="$dir/makefile"
+		echo "makefile added from template"
+		nothing_done="0"
+	fi
+	if ! test -f $dir/.cvsignore; then
+		cp template/.cvsignore $dir
+		CVS_ADD="$CVS_ADD $dir/.cvsignore"
+		echo ".cvsignore added from template"
+		nothing_done="0"
+	fi
+    if ! test "$NO_CVS" = "1" && test "$CVS_ADD" != ""; then
+      cvs add $CVS_ADD
+    fi
+fi
   if test $nothing_done = "1"; then
     echo "ERROR: test $a already exists with makefile and .cvsignore"
   fi

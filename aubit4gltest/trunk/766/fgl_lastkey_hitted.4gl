@@ -10,7 +10,7 @@ DEFINE tLine SMALLINT
 DEFINE retVal SMALLINT
 
 MAIN
-	LET retVal = TRUE
+	LET retVal = FALSE
 	CALL myGetKey("TAB",9) 
 	CALL myGetKey("RETURN",13) 
 	CALL myGetKey("CONTROL-W",23) 
@@ -61,6 +61,9 @@ FUNCTION myGetKey(keyName,keyVal)
 	LET ans = fgl_getkey()
 	IF ans != keyVal THEN
 		ERROR "Key ", keyName CLIPPED, " was ", ans, " and not ", keyVal
-	  LET retVal = FALSE
+	  LET retVal = TRUE
 	END IF
 END FUNCTION
+
+
+

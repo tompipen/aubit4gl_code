@@ -10,7 +10,7 @@ DEFINE tLine SMALLINT
 DEFINE retVal SMALLINT
 
 MAIN
-	LET retVal = TRUE
+	LET retVal = FALSE
 	CALL checkLastKey("TAB",9) 
 	CALL checkLastKey("RETURN",13) 
 	--CALL checkLastKey("ENTER",13) 
@@ -102,13 +102,16 @@ FUNCTION checkLastKey(keyName,keyVal)
 	LET ans = fgl_keyval(keyName)
 	IF ans IS NULL THEN
 	  DISPLAY "Invalid key ", keyName CLIPPED
-	  LET retVal = FALSE
+	  LET retVal = TRUE
 		RETURN
 	END IF
 	IF ans != keyVal THEN
 		DISPLAY "Key ", keyName CLIPPED, " was ", ans, " and not ", keyVal
-	  LET retVal = FALSE
+	  LET retVal = TRUE
 	ELSE
 		DISPLAY "Key ", keyName CLIPPED, " have the value ", ans
 	END IF
 END FUNCTION
+
+
+
