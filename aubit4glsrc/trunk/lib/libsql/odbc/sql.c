@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.102 2005-01-13 07:17:13 mikeaubury Exp $
+# $Id: sql.c,v 1.103 2005-01-23 19:55:57 mikeaubury Exp $
 #
 */
 
@@ -50,28 +50,28 @@
 #endif
 
 
-#ifdef PGODBC 
+#ifdef PGODBC
 #define DTIME_AS_CHAR
 #define DATE_AS_CHAR
 #endif
 
-#ifdef IFXODBC
 #define DTIME_AS_CHAR
-#define DATE_AS_CHAR
-#endif
-
-
-
-#define DTIME_AS_CHAR
-
 
 
 
 #ifdef DATE_AS_CHAR
-	int date_as_char=1;
+int date_as_char=1;
 #else
-	int date_as_char=0;
+int date_as_char=0;
 #endif
+
+
+#ifdef DTIME_AS_CHAR
+int dtime_as_char=1;
+#else
+int dtime_as_char=0;
+#endif
+
 
 
 /*
@@ -94,38 +94,37 @@ int A4GLSQL_get_datatype (char *db, char *tab, char *col);
 int A4GL_dttoc (void *a, void *b, int size);
 
 
-void * A4GLSQL_prepare_sql_internal (char *s);
+void *A4GLSQL_prepare_sql_internal (char *s);
 //void * A4GLSQL_find_prepare (char *pname);
-//int A4GLSQL_execute_sql (char *pname, int ni, void *vibind) ;
-void * A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind);
-int A4GLSQL_make_connection (char * server, char * uid_p, char * pwd_p);
-void * A4GL_bind_datetime (void *ptr_to_dtime_var);
+int A4GLSQL_execute_sql (char *pname, int ni, void *vibind);
+void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind);
+int A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p);
+void *A4GL_bind_datetime (void *ptr_to_dtime_var);
 void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 #define FETCH_ABSOLUTE 		1
 #define FETCH_RELATIVE 		2
 #define DTYPE_DATE 			7
-//#define A4GL_exitwith 			A4GL_exitwith_sql
+//#define A4GL_exitwith                         A4GL_exitwith_sql
 #define MAXCURSORS 			100
 #define MAXPREPARE 			100
 #define MAXCOLS 			100
 #define MAX_NUM_PRECISION 	15
 #define MAX_NUM_STRING_SIZE (MAX_NUM_PRECISION + 5)
 
-int in_transaction=0;
+int in_transaction = 0;
 
-void A4GLSQL_commit_rollback_internal (int mode,int force) ;
 
 #define chk_rc(rc,stmt,call) A4GL_chk_rc_full(rc,(void *)stmt,call,__LINE__,__FILE__)
 
 
 #ifndef __MINGW32__
-	#define max(a,b) (a>b?a:b)
+#define max(a,b) (a>b?a:b)
 	/* windef.h:
 
-	#ifndef NOMINMAX
-	#ifndef max
-	#define max(a,b) ((a)>(b)?(a):(b))
-    */
+	   #ifndef NOMINMAX
+	   #ifndef max
+	   #define max(a,b) ((a)>(b)?(a):(b))
+	 */
 
 #endif
 
@@ -141,9 +140,9 @@ void A4GLSQL_commit_rollback_internal (int mode,int force) ;
 #define fgl_size(a,b) (fgl_sizes[a]==-1?b+1:fgl_sizes[a])
 
 #ifdef _WIN32
-	#define ODBC_INI "ODBC.INI"
+#define ODBC_INI "ODBC.INI"
 #else
-	#define ODBC_INI ".odbc.ini"
+#define ODBC_INI ".odbc.ini"
 #endif
 
 #undef min
@@ -163,9 +162,10 @@ void A4GLSQL_commit_rollback_internal (int mode,int force) ;
 //truct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname) ;
 struct s_cid *A4GLSQL_find_cursor (char *cname);
 struct s_cid *A4GLSQL_free_cursor (char *cname);
-struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) ;
-void * A4GL_new_expr (char *value);
-void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
+struct expr_str *A4GL_add_validation_elements_to_expr (struct expr_str *ptr,
+						       char *val);
+void *A4GL_new_expr (char *value);
+void *A4GL_append_expr (struct expr_str *orig_ptr, char *value);
 char *A4GL_conv_date (char *s);
 int A4GL_find_prepare2 (char *pname);
 struct s_sid *find_prepare (char *pname);
@@ -176,7 +176,7 @@ void *A4GL_bind_date (long *ptr_to_date_var);
 void A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt);
 void A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt);
 void A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
-			   HSTMT hstmt);
+				HSTMT hstmt);
 void A4GL_add_cursor (struct s_cid *cid, char *cname);
 int ODBC_exec_prepared_sql (SQLHSTMT hstmt);
 int ODBC_exec_stmt (SQLHSTMT hstmt);
@@ -190,9 +190,9 @@ int A4GL_chk_getenv (char *s, int a);
 static int conv_sqldtype (int sqldtype, int sdim);
 char *A4GL_decode_rc (int a);
 RETCODE SQL_API A4GL_newSQLSetParam (SQLHSTMT hstmt, UWORD ipar, SWORD fCType,
-				SWORD fSqlType, UDWORD cbColDef,
-				SWORD ibScale, PTR rgbValue,
-				SDWORD FAR * pcbValue);
+				     SWORD fSqlType, UDWORD cbColDef,
+				     SWORD ibScale, PTR rgbValue,
+				     SDWORD FAR * pcbValue);
 char *A4GL_ret_sql_err (void);
 int print_err (HDBC hdbc, HSTMT hstmt);
 long A4GL_describecolumn (SQLHSTMT hstmt, int colno, int type);
@@ -210,7 +210,8 @@ RETCODE SQL_API SQLDataSources (HENV henv, UWORD fDirection,
 
 /* in sqlex.c */
 extern int A4GL_set_blob_data (SQLHSTMT hstmt);
-extern int A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno);
+extern int A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt,
+			       int colno);
 
 /*
 =====================================================================
@@ -256,16 +257,17 @@ struct stmts
   struct s_sid *sid;
   char *pname;
 }
-;
+ ;
 
  /**
  * Definition of a date
  */
 typedef struct tagACLDATE
 {
-  union {
- 	char date_c[24];
-  	DATE_STRUCT date_ds;
+  union
+  {
+    char date_c[24];
+    DATE_STRUCT date_ds;
   } uDate;
   long *ptr;
 }
@@ -273,11 +275,10 @@ ACLDATE;
 
 typedef struct tagACLDTIME
 {
-#ifdef DTIME_AS_CHAR
-  char dtime[65];
-#else
-  TIMESTAMP_STRUCT dtime;
-#endif
+  union {
+  	char dtime_c[65];
+  	TIMESTAMP_STRUCT dtime_t;
+  } dtime_u;
   struct A4GLSQL_dtime *ptr;
 }
 ACLDTIME;
@@ -294,27 +295,17 @@ int conv_4gl_to_c[] = {
   SQL_C_FLOAT,
   SQL_C_DOUBLE,			/* decimal != double  need to change this */
   SQL_C_LONG,
-#ifdef DATE_AS_CHAR
-  SQL_C_CHAR,
-#else
-  SQL_C_DATE,
-#endif
+  -1,
   SQL_C_DOUBLE,			/* as for decimal,  money != double */
   9999,
-#ifdef DTIME_AS_CHAR
-  SQL_C_CHAR,
-#else
-#ifdef SQL_C_DATETIME
-  SQL_C_DATETIME,     // Was timestamp
-#else
-  SQL_C_TIMESTAMP,     // Was timestamp
-#endif
-#endif
+  -1,
   SQL_C_BINARY,
   SQL_C_BINARY,
   SQL_C_CHAR,
   SQL_C_TIME
 };
+
+
 
 /**
  * Table of 4gl sizes.
@@ -327,18 +318,10 @@ int fgl_sizes[] = {
   sizeof (float),
   sizeof (double),
   sizeof (long),
-#ifdef DATE_AS_CHAR
-  12,
-#else
-  sizeof (long),
-#endif
+  0,
   sizeof (double),
   0,
-#ifdef DTIME_AS_CHAR
-  30,
-#else
-  0,
-#endif
+  -1,
   0,
   0,
   -1,
@@ -397,6 +380,11 @@ libSQL_odbc32_init (HANDLE h, DWORD reason, void *foo)
   return 1;
 }
 
+
+
+
+
+
 char
 libSQL_odbc32_is_dll (void)
 {
@@ -408,11 +396,41 @@ libSQL_odbc32_is_dll (void)
 dll_import sqlca_struct a4gl_sqlca;
 
 
+
+
 /*
 =====================================================================
                     Functions definitions
 =====================================================================
 */
+
+
+
+static void set_conv_4gl_to_c(void) {
+if (date_as_char) {
+	conv_4gl_to_c[7]=SQL_C_CHAR;
+  	fgl_sizes[7]=12;
+} else {
+	conv_4gl_to_c[7]=SQL_C_DATE;
+  	fgl_sizes[7]=sizeof (long);
+}
+
+
+if (dtime_as_char) {
+  conv_4gl_to_c[10]=SQL_C_CHAR;
+  	fgl_sizes[10]=30;
+} else {
+#ifdef SQL_C_DATETIME
+  conv_4gl_to_c[10]=SQL_C_DATETIME;		// Was timestamp
+  	fgl_sizes[10]=0;
+#else
+  conv_4gl_to_c[10]=SQL_C_TIMESTAMP;		// Was timestamp
+  	fgl_sizes[10]=0;
+#endif
+}
+}
+
+
 
 /**
  * Assign a value to the status global variable.
@@ -432,7 +450,11 @@ A4GLSQL_set_status (int a, int sql)
   A4GL_debug ("Status set to %d", a);
 }
 
-char* A4GLSQL_get_errmsg(int a) { return 0; }
+char *
+A4GLSQL_get_errmsg (int a)
+{
+  return 0;
+}
 
 /**
  * Check if there was an error and set sqlca.
@@ -447,11 +469,10 @@ void
 A4GL_chk_rc_full (int rc, void *hstmt, char *c, int line, char *file)
 {
   A4GL_debug ("Chk_rc_full : rc=%d (%s) stmt=%p c=%s line=%d file=%s", rc,
-	 A4GL_decode_rc (rc), hstmt, c, line, file);
+	      A4GL_decode_rc (rc), hstmt, c, line, file);
 
-  if (rc == SQL_SUCCESS || rc==SQL_SUCCESS_WITH_INFO)
+  if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO)
     {
-	A4GL_debug("Calling set_status");
       A4GLSQL_set_status (0, 1);
       return;
     }
@@ -462,12 +483,11 @@ A4GL_chk_rc_full (int rc, void *hstmt, char *c, int line, char *file)
       if (rc == SQL_NO_DATA_FOUND)
 	{
 	  A4GLSQL_set_sqlca_sqlcode (100);
-/* A4GL_set_sqlca (hstmt, c, 0,0 ); *//* no error */
-	A4GL_debug("Calling set_status");
+	  /* A4GL_set_sqlca (hstmt, c, 0,0 ); *//* no error */
 	  A4GLSQL_set_status (100, 1);
 	  return;
 	}
-      A4GL_set_sqlca ((SQLHSTMT)hstmt, c, 0);
+      A4GL_set_sqlca ((SQLHSTMT) hstmt, c, 0);
     }
 }
 
@@ -487,14 +507,14 @@ A4GL_chk_rc_full (int rc, void *hstmt, char *c, int line, char *file)
  */
 RETCODE SQL_API
 A4GL_newSQLSetParam (SQLHSTMT hstmt, UWORD ipar, SWORD fCType,
-		SWORD fSqlType, UDWORD cbColDef, SWORD ibScale, PTR rgbValue,
-		SDWORD FAR * pcbValue)
+		     SWORD fSqlType, UDWORD cbColDef, SWORD ibScale,
+		     PTR rgbValue, SDWORD FAR * pcbValue)
 {
   int rc;
   static SDWORD cbval;
 
   A4GL_debug ("Setting parameter %d to type %d (%d) %d (%d)", ipar, fSqlType,
-	 SQL_C_BINARY, fCType, SQL_PARAM_INPUT);
+	      SQL_C_BINARY, fCType, SQL_PARAM_INPUT);
 
   if (fCType == SQL_C_BINARY)
     {
@@ -528,7 +548,8 @@ A4GL_newSQLSetParam (SQLHSTMT hstmt, UWORD ipar, SWORD fCType,
  * @param s A string with the query.
  * @return The number of ? found in the query.
  */
-static int count_queries (char *s)
+static int
+count_queries (char *s)
 {
   char *ptr;
   int cnt = 0;
@@ -593,7 +614,7 @@ int
 A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 {
   int a;
-  SWORD nin=0;
+  SWORD nin = 0;
 
   if (b == 0)
     return 0;
@@ -619,7 +640,9 @@ A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 
 
 #ifdef DEBUG
-	  A4GL_debug ("Number of host variables does not A4GL_match %d (given) !=%d (in sql)", n, nin);
+	  A4GL_debug
+	    ("Number of host variables does not A4GL_match %d (given) !=%d (in sql)",
+	     n, nin);
 #endif
 
 	  return 0;
@@ -699,7 +722,8 @@ A4GL_find_cursor_for_decl (char *cname)
  * @param s A string with the sql statement to be prepared.
  * @return A pointer to the statement information structure.
  */
-void * A4GLSQL_prepare_sql_internal (char *s)
+void *
+A4GLSQL_prepare_sql_internal (char *s)
 {
   struct s_sid *sid;
   int rc;
@@ -724,12 +748,12 @@ void * A4GLSQL_prepare_sql_internal (char *s)
   A4GL_debug ("Before alloc sid->hstmt=%p", sid->hstmt);
 #endif
 
-  if (A4GL_new_hstmt ((SQLHSTMT *)&sid->hstmt))	/* warning: passing arg 1 of `new_hstmt' from incompatible pointer type */
+  if (A4GL_new_hstmt ((SQLHSTMT *) & sid->hstmt))	/* warning: passing arg 1 of `new_hstmt' from incompatible pointer type */
     {
 #ifdef DEBUG
       A4GL_debug ("after alloc sid->hstmt=%p", sid->hstmt);
 #endif
-      rc = SQLPrepare ((SQLHSTMT )sid->hstmt, sid->select, SQL_NTS);
+      rc = SQLPrepare ((SQLHSTMT) sid->hstmt, sid->select, SQL_NTS);
       chk_rc (rc, sid->hstmt, "SQLPrepare");
 
 #ifdef DEBUG
@@ -741,7 +765,6 @@ void * A4GLSQL_prepare_sql_internal (char *s)
   else
     {
       /* A4GL_set_sqlca (sid->hstmt, "Prepare_sql : after SQLPrepare", 0); */
-	A4GL_debug("Calling set_status");
       A4GLSQL_set_status (0, 1);
       return 0;
     }
@@ -756,7 +779,8 @@ void * A4GLSQL_prepare_sql_internal (char *s)
  * @param mode Not used.
  * @return A pointer to the statement strucuture, 0 otherwise.
  */
-void * A4GLSQL_find_prepare (char *pname)
+void *
+A4GLSQL_find_prepare (char *pname)
 {
   struct s_sid *ptr;
 
@@ -778,11 +802,12 @@ void * A4GLSQL_find_prepare (char *pname)
  * @param ibind The input binding array used.
  * @return
  */
-int A4GLSQL_execute_sql (char *pname, int ni, void *vibind) 
+int
+A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
 {
   struct s_sid *sid;
-struct BINDING *ibind;
-ibind=vibind;
+  struct BINDING *ibind;
+  ibind = vibind;
 
 #ifdef DEBUG
   A4GL_debug ("execute_sql");
@@ -799,11 +824,11 @@ ibind=vibind;
   A4GL_debug (" prepare statement - Sid=%p ", sid);
   A4GL_debug ("Binding any data... ni=%d hstmt=%p", ni, sid->hstmt);
 #endif
-  A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT)sid->hstmt);
+  A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT) sid->hstmt);
 #ifdef DEBUG
   A4GL_debug ("Bound any data... ni=%d", ni);
 #endif
-  return ODBC_exec_prepared_sql ((SQLHSTMT)sid->hstmt);
+  return ODBC_exec_prepared_sql ((SQLHSTMT) sid->hstmt);
 }
 
 /**
@@ -817,14 +842,15 @@ ibind=vibind;
  * @param no The number of output elements binded.
  * @param s The text of the select statement.
  */
-void * A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int no, char *s) /* mja */
+void *
+A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int no, char *s)	/* mja */
 {
   struct s_sid *sid;
   int rc;
   struct BINDING *ibind;
   struct BINDING *obind;
-  ibind=vibind;
-  obind=vobind;
+  ibind = vibind;
+  obind = vobind;
 
   sid = malloc (sizeof (struct s_sid));
   sid->select = strdup (s);
@@ -835,16 +861,15 @@ void * A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int 
   sid->no = no;
 
 
-	A4GL_debug("Calling set_status");
   A4GLSQL_set_status (0, 1);
 
-  if (A4GL_new_hstmt ((SQLHSTMT *)&sid->hstmt))
+  if (A4GL_new_hstmt ((SQLHSTMT *) & sid->hstmt))
     {
 #ifdef DEBUG
       A4GL_debug ("after alloc sid->hstmt=%p", sid->hstmt);
       A4GL_debug ("statement = %s", sid->select);
 #endif
-      rc = SQLPrepare ((SQLHSTMT)sid->hstmt, sid->select, SQL_NTS);
+      rc = SQLPrepare ((SQLHSTMT) sid->hstmt, sid->select, SQL_NTS);
       chk_rc (rc, sid->hstmt, "SQLPrepare");
       /* A4GL_set_sqlca (sid->hstmt, "Prepare_select : After Prepare", 0); */
 #ifdef DEBUG
@@ -855,7 +880,7 @@ void * A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int 
 #ifdef DEBUG
 	  A4GL_debug ("Returning 0");
 #endif
-	  sid->hstmt=0;
+	  sid->hstmt = 0;
 	  return 0;
 	}
 #ifdef DEBUG
@@ -867,7 +892,7 @@ void * A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int 
     {
       /* not an sql error */
       if (a4gl_status == 0)
- A4GL_exitwith ("Memory Allocation Error");
+	A4GL_exitwith ("Memory Allocation Error");
 #ifdef DEBUG
       A4GL_debug ("Some error generating hstmt");
 #endif
@@ -886,11 +911,12 @@ void * A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int 
  * @param ibind The input bind
  * @return A pointer to an SQL statement information strucutre.
  */
-void * A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind) /* mja */
+void *
+A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind)	/* mja */
 {
   struct s_sid *sid;
   struct BINDING *ibind;
-  ibind=vibind;
+  ibind = vibind;
   A4GL_debug ("prepare_glob_sql '%s' %p %d", s, ibind, ni);
   sid = malloc (sizeof (struct s_sid));
   sid->select = strdup (s);
@@ -908,13 +934,13 @@ void * A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind) /* mja 
   A4GL_debug ("Hdbc=%p ni=%d", hdbc, sid->ni);
 #endif
 
-  if (A4GL_new_hstmt ((SQLHSTMT *)&sid->hstmt))
+  if (A4GL_new_hstmt ((SQLHSTMT *) & sid->hstmt))
     {
 #ifdef DEBUG
       A4GL_debug ("after alloc sid->hstmt=%p", sid->hstmt);
       A4GL_debug ("Preparing %p %s\n", sid->hstmt, sid->select);
 #endif
-      rc = SQLPrepare ((SQLHSTMT)sid->hstmt, sid->select, SQL_NTS);
+      rc = SQLPrepare ((SQLHSTMT) sid->hstmt, sid->select, SQL_NTS);
       chk_rc (rc, sid->hstmt, "SQLPrepare");
       /* A4GL_set_sqlca (sid->hstmt, "Prepare_glob_sql : After Prepare", 0); */
       if (a4gl_sqlca.sqlcode >= 0)
@@ -953,7 +979,7 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *cursname)
   struct s_sid *nsid;
   struct s_cid *cid;
   struct s_sid *sid;
-  sid=vsid;
+  sid = vsid;
 
   if (sid == 0)
     {
@@ -962,8 +988,8 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *cursname)
     }
 #ifdef DEBUG
   A4GL_debug ("Declaring cursor");
-  A4GL_debug ("upd_hold=%d sid=%p scroll=%d cursname=%s", upd_hold, sid, scroll,
-	 cursname);
+  A4GL_debug ("upd_hold=%d sid=%p scroll=%d cursname=%s", upd_hold, sid,
+	      scroll, cursname);
 #endif
 
   cid = malloc (sizeof (struct s_cid));
@@ -995,7 +1021,7 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *cursname)
   A4GL_debug ("cid->statement=%p", cid->statement);
   A4GL_debug ("cid->statement->ibind=%p", cid->statement->ibind);
 #endif
-  A4GL_new_hstmt ((SQLHSTMT *)&nsid->hstmt);
+  A4GL_new_hstmt ((SQLHSTMT *) & nsid->hstmt);
 #ifdef DEBUG
   A4GL_debug ("Got statement");
 #endif
@@ -1005,15 +1031,17 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *cursname)
       A4GL_debug ("Setting dynamic cursor");
 #endif
       rc =
-	SQLSetStmtOption ((SQLHSTMT )nsid->hstmt, SQL_CURSOR_TYPE, SQL_CURSOR_STATIC);
-      if (rc==1) rc=0;
+	SQLSetStmtOption ((SQLHSTMT) nsid->hstmt, SQL_CURSOR_TYPE,
+			  SQL_CURSOR_STATIC);
+      if (rc == 1)
+	rc = 0;
       chk_rc (rc, nsid->hstmt, "SQLSetScrollOption SCROLL_STATIC");
       A4GL_debug (" rc = %d\n", rc);
     }
 #ifdef DEBUG
   A4GL_debug ("Returning %p", cid);
 #endif
-  SQLSetCursorName(nsid->hstmt,cursname,SQL_NTS);
+  SQLSetCursorName (nsid->hstmt, cursname, SQL_NTS);
   return cid;
 }
 
@@ -1027,12 +1055,12 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *cursname)
  * @param sid The statement informnation handle.
  */
 int
-A4GLSQL_execute_implicit_sql (void *vsid,int singleton)
+A4GLSQL_execute_implicit_sql (void *vsid, int singleton)
 {
-struct s_sid *sid;
-  
+  struct s_sid *sid;
+
   int rc = 0;
-sid=vsid;
+  sid = vsid;
   if (sid == 0)
     {
 #ifdef DEBUG
@@ -1041,29 +1069,31 @@ sid=vsid;
       return 0;
     }
 #ifdef DEBUG
-  A4GL_debug ("A4GLSQL_execute_implicit_sql: no=%d ni=%d sql=%s", sid->no, sid->ni, sid->select);
+  A4GL_debug ("A4GLSQL_execute_implicit_sql: no=%d ni=%d sql=%s", sid->no,
+	      sid->ni, sid->select);
   A4GL_debug ("Calling proc_bind()");
 #endif
 
-  A4GL_proc_bind (sid->obind, sid->no, 'o', (SQLHSTMT)sid->hstmt);
-  A4GL_proc_bind (sid->ibind, sid->ni, 'i', (SQLHSTMT)sid->hstmt);
+  A4GL_proc_bind (sid->obind, sid->no, 'o', (SQLHSTMT) sid->hstmt);
+  A4GL_proc_bind (sid->ibind, sid->ni, 'i', (SQLHSTMT) sid->hstmt);
 
 #ifdef DEBUG
   A4GL_debug ("Calling ODBC_exec_stmt()");
 #endif
 
-  rc = ODBC_exec_stmt ((SQLHSTMT)sid->hstmt);
-  A4GL_debug("Got rc as %d\n",rc);
+  rc = ODBC_exec_stmt ((SQLHSTMT) sid->hstmt);
+  A4GL_debug ("Got rc as %d\n", rc);
 
 #ifdef FREE
-  if (rc) {
-  	/* free up malloc'ed memory */
-  	SQLFreeStmt ((SQLHSTMT)sid->hstmt, SQL_DROP);
-  }
-  sid->hstmt=0;
+  if (rc)
+    {
+      /* free up malloc'ed memory */
+      SQLFreeStmt ((SQLHSTMT) sid->hstmt, SQL_DROP);
+    }
+  sid->hstmt = 0;
 
   free (sid->select);
-  sid->select=0;
+  sid->select = 0;
   free (sid);
 #endif
   return (rc);
@@ -1081,37 +1111,42 @@ sid=vsid;
  * @param sid The statement information.
  */
 int
-A4GLSQL_execute_implicit_select (void *vsid,int singleton)
+A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 {
   int a;
-struct s_sid *sid;
-sid=vsid;
+  struct s_sid *sid;
+  sid = vsid;
 
   if (sid == 0)
     {
 #ifdef DEBUG
-      A4GL_debug ("A4GLSQL_execute_implicit_select got sid == 0, returning -1");
+      A4GL_debug
+	("A4GLSQL_execute_implicit_select got sid == 0, returning -1");
 #endif
       return -1;
     }
 #ifdef DEBUG
   A4GL_debug ("Executing immediate : %s", sid->select);
 #endif
-  A4GL_proc_bind (sid->obind, sid->no, 'o', (SQLHSTMT)sid->hstmt);
-  A4GL_proc_bind (sid->ibind, sid->ni, 'i', (SQLHSTMT)sid->hstmt);
+  A4GL_proc_bind (sid->obind, sid->no, 'o', (SQLHSTMT) sid->hstmt);
+  A4GL_proc_bind (sid->ibind, sid->ni, 'i', (SQLHSTMT) sid->hstmt);
 #ifdef DEBUG
   A4GL_debug (" Bound data ... ni=%d no=%d", sid->ni, sid->no);
 #endif
-  a = ODBC_exec_select ((SQLHSTMT)sid->hstmt);
+  a = ODBC_exec_select ((SQLHSTMT) sid->hstmt);
 
 
-  if (a) {
-	A4GL_post_fetch_proc_bind (sid->obind, sid->no, (SQLHSTMT )&sid->hstmt);
-  	SQLFreeStmt ((SQLHSTMT)sid->hstmt, SQL_DROP);
-	sid->hstmt=0;
-  } else {
-	A4GL_debug("a not set");
-  }
+  if (a)
+    {
+      A4GL_post_fetch_proc_bind (sid->obind, sid->no,
+				 (SQLHSTMT) & sid->hstmt);
+      SQLFreeStmt ((SQLHSTMT) sid->hstmt, SQL_DROP);
+      sid->hstmt = 0;
+    }
+  else
+    {
+      A4GL_debug ("a not set");
+    }
   free (sid->select);
   free (sid);
 
@@ -1126,14 +1161,14 @@ sid=vsid;
  * @return
  */
 int
-A4GLSQL_open_cursor (char *s,int ni,void *ibind)
+A4GLSQL_open_cursor (char *s, int ni, void *ibind)
 {
   struct s_cid *cid;
   char *curs;
   SQLINTEGER rowcount;
-  int save_ni=-1;
+  int save_ni = -1;
   struct s_sid *sid;
-  struct BINDING *save_ibind=0;
+  struct BINDING *save_ibind = 0;
   int rc;
 
 
@@ -1156,25 +1191,32 @@ A4GLSQL_open_cursor (char *s,int ni,void *ibind)
 
   sid = cid->statement;
 
-  A4GL_debug("Select ='%s'",sid->select);
-  if (strncasecmp(sid->select,"INSERT",6)==0 || strncasecmp(sid->select," INSERT",7)==0) {
-  	rc = SQLPrepare ((SQLHSTMT )cid->statement->hstmt, cid->statement->select, SQL_NTS);
-  	chk_rc (rc, cid->statement->hstmt, "SQLPrepare");
-	return 0;
-  }
+  A4GL_debug ("Select ='%s'", sid->select);
+  if (strncasecmp (sid->select, "INSERT", 6) == 0
+      || strncasecmp (sid->select, " INSERT", 7) == 0)
+    {
+      rc =
+	SQLPrepare ((SQLHSTMT) cid->statement->hstmt, cid->statement->select,
+		    SQL_NTS);
+      chk_rc (rc, cid->statement->hstmt, "SQLPrepare");
+      return 0;
+    }
 
 
-  if (ni) {
-        // They've used a value on the OPEN
-        save_ni=cid->statement->ni;
-        save_ibind=cid->statement->ibind;
-        cid->statement->ni=ni;
-        cid->statement->ibind=(struct BINDING *)ibind;
-  }
+  if (ni)
+    {
+      // They've used a value on the OPEN
+      save_ni = cid->statement->ni;
+      save_ibind = cid->statement->ibind;
+      cid->statement->ni = ni;
+      cid->statement->ibind = (struct BINDING *) ibind;
+    }
 
 
 
-  rc = SQLPrepare ((SQLHSTMT )cid->statement->hstmt, cid->statement->select, SQL_NTS);
+  rc =
+    SQLPrepare ((SQLHSTMT) cid->statement->hstmt, cid->statement->select,
+		SQL_NTS);
   chk_rc (rc, cid->statement->hstmt, "SQLPrepare");
 #ifdef DEBUG
   A4GL_debug ("cid=%p %s", cid, s);
@@ -1186,13 +1228,14 @@ A4GLSQL_open_cursor (char *s,int ni,void *ibind)
   if (((cid->statement->ni) != ni) && ni > 0)
     {
 #ifdef DEBUG
-      A4GL_debug ("Too many or too few host variables ni=%d no expected=%d", ni,
-	     cid->statement->ni);
+      A4GL_debug ("Too many or too few host variables ni=%d no expected=%d",
+		  ni, cid->statement->ni);
 #endif
-        if (save_ni!=-1) {
-                cid->statement->ni=save_ni;
-                cid->statement->ibind=save_ibind;
-        }
+      if (save_ni != -1)
+	{
+	  cid->statement->ni = save_ni;
+	  cid->statement->ibind = save_ibind;
+	}
 
       A4GL_exitwith ("Too many or too few host variables");
       return 0;
@@ -1206,7 +1249,8 @@ A4GLSQL_open_cursor (char *s,int ni,void *ibind)
   a4gl_status = 0;
   if (ni == 0)
     {				/* No USING on the open.. */
-      A4GL_proc_bind (cid->statement->ibind, cid->statement->ni, 'i', (SQLHSTMT)cid->statement->hstmt);
+      A4GL_proc_bind (cid->statement->ibind, cid->statement->ni, 'i',
+		      (SQLHSTMT) cid->statement->hstmt);
 
     }
   else
@@ -1238,17 +1282,18 @@ A4GLSQL_open_cursor (char *s,int ni,void *ibind)
 #endif
 	}
 
-      A4GL_proc_bind (b, ni, 'i', (SQLHSTMT)cid->statement->hstmt);
+      A4GL_proc_bind (b, ni, 'i', (SQLHSTMT) cid->statement->hstmt);
 
     }
 
 
   if (a4gl_status != 0)
     {
-        if (save_ni!=-1) {
-                cid->statement->ni=save_ni;
-                cid->statement->ibind=save_ibind;
-        }
+      if (save_ni != -1)
+	{
+	  cid->statement->ni = save_ni;
+	  cid->statement->ibind = save_ibind;
+	}
 
       return 0;
     }
@@ -1260,10 +1305,11 @@ A4GLSQL_open_cursor (char *s,int ni,void *ibind)
 
   if (cid->hstmt != 0)
     {
-        if (save_ni!=-1) {
-                cid->statement->ni=save_ni;
-                cid->statement->ibind=save_ibind;
-        }
+      if (save_ni != -1)
+	{
+	  cid->statement->ni = save_ni;
+	  cid->statement->ibind = save_ibind;
+	}
 
       A4GL_exitwith ("Cursor already open");
       return 0;
@@ -1279,8 +1325,8 @@ A4GLSQL_open_cursor (char *s,int ni,void *ibind)
   A4GL_debug ("Opening cursor %p", cid->statement->hstmt);
 #endif
 
-  rc = SQLExecute ((SQLHSTMT )cid->statement->hstmt);
-  rc = A4GL_chk_need_blob (rc, (SQLHSTMT)&cid->statement->hstmt);
+  rc = SQLExecute ((SQLHSTMT) cid->statement->hstmt);
+  rc = A4GL_chk_need_blob (rc, (SQLHSTMT) & cid->statement->hstmt);
   chk_rc (rc, cid->statement->hstmt, "SQLExecute");
 
 #ifdef DEBUG
@@ -1289,7 +1335,7 @@ A4GLSQL_open_cursor (char *s,int ni,void *ibind)
   A4GL_debug ("OBind...");
 #endif
   A4GL_proc_bind (cid->statement->obind, cid->statement->no, 'o',
-	     (SQLHSTMT)cid->statement->hstmt);
+		  (SQLHSTMT) cid->statement->hstmt);
 #ifdef DEBUG
   A4GL_debug ("IBind...");
   A4GL_debug ("After open cursor");
@@ -1298,26 +1344,27 @@ A4GLSQL_open_cursor (char *s,int ni,void *ibind)
   /* A4GL_set_sqlca (cid->statement->hstmt, "Open Cursor", 1); */
   if (rc != SQL_SUCCESS)
     {
-	int a;
-	a=A4GL_sqlerrwith (rc, (SQLHSTMT)&cid->statement->hstmt);
-		cid->statement->hstmt=0;
-        if (save_ni!=-1) {
-                cid->statement->ni=save_ni;
-                cid->statement->ibind=save_ibind;
-        }
+      int a;
+      a = A4GL_sqlerrwith (rc, (SQLHSTMT) & cid->statement->hstmt);
+      cid->statement->hstmt = 0;
+      if (save_ni != -1)
+	{
+	  cid->statement->ni = save_ni;
+	  cid->statement->ibind = save_ibind;
+	}
 
-      	return a;
+      return a;
     }
-	A4GL_debug("Calling set_status");
   A4GLSQL_set_status (0, 1);
-  rc = SQLRowCount (cid->statement->hstmt,  &rowcount);
+  rc = SQLRowCount (cid->statement->hstmt, &rowcount);
 
   /* chk_rc (rc, cid->statement->hstmt, "SQLRowCount"); */
   a4gl_sqlca.sqlerrd[1] = rowcount;
-        if (save_ni!=-1) {
-                cid->statement->ni=save_ni;
-                cid->statement->ibind=save_ibind;
-        }
+  if (save_ni != -1)
+    {
+      cid->statement->ni = save_ni;
+      cid->statement->ibind = save_ibind;
+    }
 
   return 0;
 }
@@ -1338,7 +1385,8 @@ A4GLSQL_open_cursor (char *s,int ni,void *ibind)
  */
 int
 A4GLSQL_fetch_cursor (char *cursor_name,
-		      int fetch_mode, int fetch_when, int nibind, void *vibind)
+		      int fetch_mode, int fetch_when, int nibind,
+		      void *vibind)
 {
   struct s_cid *cid;
   int nfields;
@@ -1351,11 +1399,11 @@ A4GLSQL_fetch_cursor (char *cursor_name,
   struct BINDING *ibind;
 
 
-  ibind=vibind;
+  ibind = vibind;
 
 #ifdef DEBUG
   A4GL_debug ("In fetch_cursor (%s,%d,%d,%d,%p)", cursor_name, fetch_mode,
-	 fetch_when, nibind, ibind);
+	      fetch_when, nibind, ibind);
   A4GL_debug ("before find cursor");
 #endif
 
@@ -1383,7 +1431,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
 #endif
       use_binding = ibind;
       use_nbind = nibind;
-      A4GL_proc_bind (ibind, nibind, 'o', (SQLHSTMT)cid->statement->hstmt);
+      A4GL_proc_bind (ibind, nibind, 'o', (SQLHSTMT) cid->statement->hstmt);
     }
 
   switch (fetch_mode)
@@ -1442,20 +1490,22 @@ A4GLSQL_fetch_cursor (char *cursor_name,
   A4GL_debug ("Before Extended fetch...");
 #endif
 
-  if (A4GL_isyes(acl_getenv ("EXTENDED_FETCH")))
+  if (A4GL_chk_getenv ("EXTENDED_FETCH", TRUE))
     {
 
 #ifdef DEBUG
-      A4GL_debug ("Calling SQLextended fetch with %p %d %d", cid->statement->hstmt,
-	     mode, fetch_when);
+      A4GL_debug ("Calling SQLextended fetch with %p %d %d",
+		  cid->statement->hstmt, mode, fetch_when);
 #endif
       nr = 1;
-      rc = SQLExtendedFetch ((SQLHSTMT )cid->statement->hstmt, mode, fetch_when, &nr, &nrs[0]);
+      rc =
+	SQLExtendedFetch ((SQLHSTMT) cid->statement->hstmt, mode, fetch_when,
+			  &nr, &nrs[0]);
       chk_rc (rc, cid->statement->hstmt, "SQLExtendedFetch");
     }
   else
     {
-      rc = SQLFetch ((SQLHSTMT )cid->statement->hstmt);
+      rc = SQLFetch ((SQLHSTMT) cid->statement->hstmt);
       chk_rc (rc, cid->statement->hstmt, "SQLFetch");
     }
 #ifdef DEBUG
@@ -1464,7 +1514,6 @@ A4GLSQL_fetch_cursor (char *cursor_name,
 #endif
   if (rc == SQL_NO_DATA_FOUND)
     {
-	A4GL_debug("Calling set_status");
       A4GLSQL_set_status (100, 1);
       return 0;
     }
@@ -1478,8 +1527,9 @@ A4GLSQL_fetch_cursor (char *cursor_name,
 
 /*  res = PQexec (conn, cmd); exec */
 
-  A4GL_debug("use_binding...");
-  A4GL_post_fetch_proc_bind (use_binding, use_nbind, (SQLHSTMT)&cid->statement->hstmt);
+  A4GL_debug ("use_binding...");
+  A4GL_post_fetch_proc_bind (use_binding, use_nbind,
+			     (SQLHSTMT) & cid->statement->hstmt);
   nfields = 1;			/* number of fields returned */
 #ifdef DEBUG
   A4GL_debug ("nfields=%d\n", nfields);
@@ -1503,95 +1553,104 @@ A4GLSQL_fetch_cursor (char *cursor_name,
 int
 A4GLSQL_init_connection_internal (char *dbName_f)
 {
-char empty[10] = "None";
-char dbName[2048];
-char *u, *p;
-HDBC *hh = 0;
-int rc=0;
+  char empty[10] = "None";
+  char dbName[2048];
+  char *u, *p;
+  HDBC *hh = 0;
+  int rc = 0;
 
 
-strcpy(dbName,dbName_f);
-A4GL_trim(dbName);
+  strcpy (dbName, dbName_f);
+  A4GL_trim (dbName);
 
 /* This section does not apply to "real" SQLite odbc driver since it will use odbc.ini
  settings to look for SQLite database file
 #ifdef SQLITEODBC
 */
 #ifdef SQLITE_DIRECT
-{
-char a[128], b[128], tmp[2048];
-char *FullPathDBname;
-char DATABASE[128];
-	A4GL_debug("SQLITE special...");
+  {
+    char a[128], b[128], tmp[2048];
+    char *FullPathDBname;
+    char DATABASE[128];
+    A4GL_debug ("SQLITE special...");
 
     /* NOTE:
 
-        When using SQLite, user can use the following DATABASE statement parameters:
+       When using SQLite, user can use the following DATABASE statement parameters:
 
-        DATABASE example    - will use DBPATH to find SQLite db file, adding .db extension first
-        DATABASE "example"  - same
-        DATABASE "example.db" - will use DBPATH to find SQLite db file
-        DATABASE "/full/path/to/dbfile/example" - will add .db extension, and check for file in specified path
-        DATABASE "/full/path/to/dbfile/example.db" - will check for file in specified path
-    */
+       DATABASE example    - will use DBPATH to find SQLite db file, adding .db extension first
+       DATABASE "example"  - same
+       DATABASE "example.db" - will use DBPATH to find SQLite db file
+       DATABASE "/full/path/to/dbfile/example" - will add .db extension, and check for file in specified path
+       DATABASE "/full/path/to/dbfile/example.db" - will check for file in specified path
+     */
 
 
-	//See if user specified extension in his DATABASE statement:
-	A4GL_bname (dbName, a, b);
-    if (a[0] == 0) {
-       	sprintf(tmp,"%s.db",dbName);
-		A4GL_debug("Added .db file name extension, dbName=%s",tmp);
-	} else {
-        //sprintf(tmp,"%s",dbName);
-		strcpy(tmp,dbName);
-	}
-	//store DB file name as per DATABASE statement
-    sprintf(DATABASE,"%s",tmp);
-	//Find full path to the SQLite database file, use DBPATH
-	FullPathDBname=A4GL_fullpath_dbpath((char *)tmp);
+    //See if user specified extension in his DATABASE statement:
+    A4GL_bname (dbName, a, b);
+    if (a[0] == 0)
+      {
+	sprintf (tmp, "%s.db", dbName);
+	A4GL_debug ("Added .db file name extension, dbName=%s", tmp);
+      }
+    else
+      {
+	//sprintf(tmp,"%s",dbName);
+	strcpy (tmp, dbName);
+      }
+    //store DB file name as per DATABASE statement
+    sprintf (DATABASE, "%s", tmp);
+    //Find full path to the SQLite database file, use DBPATH
+    FullPathDBname = A4GL_fullpath_dbpath ((char *) tmp);
 
-	if (FullPathDBname) {
-		strcpy (tmp,FullPathDBname);
-		//strcpy (dbName,tmp);
+    if (FullPathDBname)
+      {
+	strcpy (tmp, FullPathDBname);
+	//strcpy (dbName,tmp);
 
-		//add db file name as per DATABASE statement to discovered path
-		sprintf(dbName,"%s",tmp);
-		A4GL_debug("Found SQLite db in '%s'",dbName);
-	} else {
-		/*
-            NOTE: SQLite by default will automatically create a new empty
-            database file when an attempt to access non-existing database is
-            made. This will in most casesI though result in complete confusion, since
-            DATABASE statement will never fail, but then all SQL statements
-			expecting tables and/or data will fail. But user will think he is
-            successfully conncted to the database...
+	//add db file name as per DATABASE statement to discovered path
+	sprintf (dbName, "%s", tmp);
+	A4GL_debug ("Found SQLite db in '%s'", dbName);
+      }
+    else
+      {
+	/*
+	   NOTE: SQLite by default will automatically create a new empty
+	   database file when an attempt to access non-existing database is
+	   made. This will in most casesI though result in complete confusion, since
+	   DATABASE statement will never fail, but then all SQL statements
+	   expecting tables and/or data will fail. But user will think he is
+	   successfully conncted to the database...
 
-            So even if automatic creation of new database on first access
-            sounds like a cool feature, I beleive we better exit here if we
-            cannot find a specified SQLite database file in DBPATH.
+	   So even if automatic creation of new database on first access
+	   sounds like a cool feature, I beleive we better exit here if we
+	   cannot find a specified SQLite database file in DBPATH.
 
-        */
-		A4GL_debug ("SQLite database file not found in DBPATH='%s'",acl_getenv("DBPATH"));
-		A4GL_exitwith ("SQLite database file not found in DBPATH");
-    }
-}
+	 */
+	A4GL_debug ("SQLite database file not found in DBPATH='%s'",
+		    acl_getenv ("DBPATH"));
+	A4GL_exitwith ("SQLite database file not found in DBPATH");
+      }
+  }
 #endif
 
 #ifdef DEBUG
   A4GL_debug ("A4GLSQL_init_connection(dbName='%s')", dbName);
 #endif
 
-	if (strcmp (dbName, OldDBname) == 0) {
-		#ifdef DEBUG
-			A4GL_debug ("Already connected - ignored.");
-		#endif
-		return 0;
+  if (strcmp (dbName, OldDBname) == 0)
+    {
+#ifdef DEBUG
+      A4GL_debug ("Already connected - ignored.");
+#endif
+      return 0;
     }
 
   /* free up the current default connection, if there is one */
-  if (A4GL_has_pointer ("default", SESSCODE)) {
+  if (A4GL_has_pointer ("default", SESSCODE))
+    {
       hh = A4GL_find_pointer_val ("default", SESSCODE);
-      rc = SQLFreeConnect ((SQLHSTMT )*hh);
+      rc = SQLFreeConnect ((SQLHSTMT) * hh);
       chk_rc (rc, 0, "SQLFreeConnect");
     }
 
@@ -1615,9 +1674,9 @@ char DATABASE[128];
      and use it instead getlogin()
    */
 #else
-	#ifdef DEBUG
-	  A4GL_debug ("avoided getlogin() call");
-	#endif
+#ifdef DEBUG
+  A4GL_debug ("avoided getlogin() call");
+#endif
 #endif
 
   /* FIXME: what is LOGNAME ? */
@@ -1651,13 +1710,10 @@ char DATABASE[128];
 
 
 
-
-	//
-	// This turns OFF autocommit mode...
-	//
-	if (A4GL_isyes(acl_getenv("AUTOCOMMIT"))) {
-		A4GL_debug("Turning off AUTOCOMMIT");
-      		rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF);
+      // Do we actually need this ?
+      if (A4GL_isyes (acl_getenv ("AUTOCOMMIT")))
+	{
+	  rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, 0);
 	}
 
 
@@ -1686,7 +1742,6 @@ char DATABASE[128];
 void
 A4GLSQL_xset_status (int a)
 {
-	A4GL_debug("Calling set_status");
   A4GLSQL_set_status (a, 0);
 }
 
@@ -1733,14 +1788,13 @@ A4GLSQL_free_cursor (char *cname)
     }
   if (ptr->hstmt)
     {
-      SQLFreeStmt ((SQLHSTMT )ptr->hstmt, SQL_DROP);
-	ptr->hstmt=0;
+      SQLFreeStmt ((SQLHSTMT) ptr->hstmt, SQL_DROP);
+      ptr->hstmt = 0;
       chk_rc (rc, 0, "SQLFreeStmt");
     }
   free (ptr->statement->select);
   free (ptr->statement);
   A4GL_del_pointer (cname, CURCODE);
-	A4GL_debug("Calling set_status");
   A4GLSQL_set_status (0, 1);
   return 0;
 }
@@ -1776,8 +1830,8 @@ A4GLSQL_close_cursor (char *cname)
 
   if (ptr->hstmt)
     {
-      SQLFreeStmt ((SQLHSTMT )ptr->hstmt, SQL_CLOSE);
-	ptr->hstmt=0;
+      SQLFreeStmt ((SQLHSTMT) ptr->hstmt, SQL_CLOSE);
+      ptr->hstmt = 0;
       chk_rc (rc, ptr->hstmt, "SQLFreeStmt");
     }
 
@@ -1838,10 +1892,10 @@ A4GL_find_prepare2 (char *pname)
  * @param sid A pointer to the statement information.
  */
 int
-A4GLSQL_add_prepare (char *pname, void *vsid) 
+A4GLSQL_add_prepare (char *pname, void *vsid)
 {
-struct s_sid *sid;
-sid=vsid;
+  struct s_sid *sid;
+  sid = vsid;
   if (sid)
     {
       A4GL_add_pointer (pname, PRECODE, sid);
@@ -1912,7 +1966,7 @@ A4GL_display_size (SWORD coltype, UDWORD collen, UCHAR * colname)
       return 26;		/* yyyy-mm-dd hh:mm:ss.ffffff */
 
     case 91:
-	return 12; /* date */
+      return 12;		/* date */
     default:
       printf ("Unknown datatype, %d\n", coltype);
       return (0);
@@ -1929,23 +1983,25 @@ A4GL_display_size (SWORD coltype, UDWORD collen, UCHAR * colname)
  *   - 1 : Connection estabilished.
  *   - 0 : there was an error connecting to database.
  */
-int A4GLSQL_make_connection (char * server, char * uid_p, char * pwd_p)
+int
+A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p)
 {
-RETCODE rc;
-char uid[256] = "";
-char pwd[256] = "";
+  RETCODE rc;
+  char uid[256] = "";
+  char pwd[256] = "";
 
 #ifdef DEBUG
-  A4GL_debug ("A4GLSQL_make_connection .. server=%s uid_p=%s pwd_p=%s", server, uid_p, pwd_p);
+  A4GL_debug ("A4GLSQL_make_connection .. server=%s uid_p=%s pwd_p=%s",
+	      server, uid_p, pwd_p);
 #endif
 
   /* do nothing if no server, which can happen if fgl_start
    * has no default compile-time database  */
   if ((server == 0) || (strlen (server) == 0))
     {
-	#ifdef DEBUG
+#ifdef DEBUG
       A4GL_debug (" no server - no connection.");
-	#endif
+#endif
       return 1;
     }
 
@@ -1966,15 +2022,16 @@ char pwd[256] = "";
      uid by mistake...
    */
 
-  if (henv == 0) {
-	  A4GL_debug ("Calling SQLAllocEnv()");
+  if (henv == 0)
+    {
+      A4GL_debug ("Calling SQLAllocEnv()");
       //This call core dumps on SQLite/MinGW:
-	  rc = SQLAllocEnv (&henv);
+      rc = SQLAllocEnv (&henv);
       //rc = SQLAllocEnv (henv);
-	  chk_rc (rc, 0, "SQLAllocEnv");
-	  #ifdef DEBUG
-      	A4GL_debug ("SQLAllocEnv returns %d %p", rc, henv);
-	  #endif
+      chk_rc (rc, 0, "SQLAllocEnv");
+#ifdef DEBUG
+      A4GL_debug ("SQLAllocEnv returns %d %p", rc, henv);
+#endif
     }
   rc = SQLAllocConnect (henv, &hdbc);
   chk_rc (rc, 0, "SQLAllocConnect");
@@ -1997,12 +2054,10 @@ char pwd[256] = "";
       return 0;
     }
 
-	A4GL_debug("Calling set_status");
   A4GLSQL_set_status (0, 1);
   ODBC_set_dbms_info ();
 
   rc = SQLSetConnectOption (hdbc, SQL_ASYNC_ENABLE, 0);
-	A4GL_debug("Calling set_status");
   A4GLSQL_set_status (0, 1);
 
   return 1;
@@ -2048,53 +2103,53 @@ ODBC_set_dbms_info (void)
   short len;
 
   rc = SQLGetInfo (hdbc, SQL_DBMS_NAME, dbms_name, (short) 64, &len);
-  A4GL_debug("DIALECT : %s\n",dbms_name);
+  A4GL_debug ("DIALECT : %s\n", dbms_name);
   strcpy (dbms_dialect, "");
 
   if (strncasecmp (dbms_name, "informix", 8) == 0)
     {
       strcpy (dbms_dialect, "INFORMIX");
-	return;
+      return;
     }
 
   if (strncasecmp (dbms_name, "sapdb", 5) == 0)
     {
       strcpy (dbms_dialect, "SAPDB");
-	return;
+      return;
     }
 
   if (strncasecmp (dbms_name, "postgr", 6) == 0)
     {
       strcpy (dbms_dialect, "POSTGRESQL");
-	return;
+      return;
     }
   if (strncasecmp (dbms_name, "POSTGRESQL", 6) == 0)
     {
       strcpy (dbms_dialect, "POSTGRESQL");
-	return;
+      return;
     }
 
   if (strncasecmp (dbms_name, "oracl", 5) == 0)
     {
       strcpy (dbms_dialect, "ORACLE");
-	return;
+      return;
     }
 
   if (strncasecmp (dbms_name, "mysql", 5) == 0)
     {
       strcpy (dbms_dialect, "MYSQL");
-	return;
+      return;
     }
 
   if (strncasecmp (dbms_name, "SQLite", 6) == 0)
     {
       strcpy (dbms_dialect, "SQLITE");
-	return;
+      return;
     }
   if (strncasecmp (dbms_name, "INGRES", 6) == 0)
     {
       strcpy (dbms_dialect, "INGRES");
-	return;
+      return;
     }
 
 
@@ -2151,23 +2206,23 @@ ODBC_exec_sql (UCHAR * sqlstr)
   A4GL_debug ("ODBC_exec_sql: %s", sqlstr);
 #endif
 
-  if (A4GL_new_hstmt ((SQLHSTMT *)&hstmt))
+  if (A4GL_new_hstmt ((SQLHSTMT *) & hstmt))
     {
-      rc = SQLExecDirect ((SQLHSTMT )hstmt, sqlstr, SQL_NTS);
+      rc = SQLExecDirect ((SQLHSTMT) hstmt, sqlstr, SQL_NTS);
       chk_rc (rc, 0, "SQLExecDirect");
 #ifdef DEBUG
       A4GL_debug ("SQLExecDirect returns %d", rc);
 #endif
       if (rc != SQL_SUCCESS)
 	{
-	int a;
-		a=A4GL_sqlerrwith (rc, hstmt);
-		hstmt=0;
-	  	return a;
+	  int a;
+	  a = A4GL_sqlerrwith (rc, hstmt);
+	  hstmt = 0;
+	  return a;
 	}
 
-      rc = SQLFreeStmt ((SQLHSTMT )hstmt, SQL_DROP);
-		hstmt=0;
+      rc = SQLFreeStmt ((SQLHSTMT) hstmt, SQL_DROP);
+      hstmt = 0;
       chk_rc (rc, 0, "SQLFreeStmt");
       return 1;
     }
@@ -2192,21 +2247,34 @@ int
 ODBC_exec_stmt (SQLHSTMT hstmt)
 {
   int rc;
-	int fake_tr=0;
+  int fake_tr = 0;
   SQLINTEGER rowcount;
 #ifdef DEBUG
-  A4GL_debug ("In ODBC_exec_stmt %p",hstmt);
+  A4GL_debug ("In ODBC_exec_stmt %p", hstmt);
 #endif
 
 
-  if (hstmt==0) { return 0; }
+  if (hstmt == 0)
+    {
+      return 0;
+    }
 
 // if we're not already in a transaction - start one
-  if(!in_transaction) { fake_tr=1;A4GL_debug("S1");A4GLSQL_commit_rollback_internal (-1,0); }
-  rc = SQLExecute ((SQLHSTMT )hstmt);
+  if (!in_transaction)
+    {
+      fake_tr = 1;
+      A4GLSQL_commit_rollback (-1);
+    }
+  rc = SQLExecute ((SQLHSTMT) hstmt);
 
 // And finish it
-if(fake_tr) { if (rc==SQL_SUCCESS||rc==SQL_SUCCESS_WITH_INFO) {A4GL_debug("S3");A4GLSQL_commit_rollback_internal (1,0);} else  {A4GL_debug("S3");A4GLSQL_commit_rollback_internal (0,0); }}
+  if (fake_tr)
+    {
+      if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO)
+	A4GLSQL_commit_rollback (1);
+      else
+	A4GLSQL_commit_rollback (0);
+    }
 
 
 
@@ -2228,14 +2296,16 @@ if(fake_tr) { if (rc==SQL_SUCCESS||rc==SQL_SUCCESS_WITH_INFO) {A4GL_debug("S3");
 
   if (rc != SQL_SUCCESS)
     {
-	int a;
-	a=A4GL_sqlerrwith (rc, hstmt);
-      	return a;
+      int a;
+      a = A4GL_sqlerrwith (rc, hstmt);
+      return a;
 
     }
- if (SQLRowCount ((SQLHSTMT )hstmt, &rowcount)==SQL_SUCCESS) { a4gl_sqlca.sqlerrd[2]=rowcount; }
+  if (SQLRowCount ((SQLHSTMT) hstmt, &rowcount) == SQL_SUCCESS)
+    {
+      a4gl_sqlca.sqlerrd[2] = rowcount;
+    }
 
-	A4GL_debug("Calling set_status");
   A4GLSQL_set_status (0, 1);
   return 1;
 }
@@ -2251,8 +2321,8 @@ int
 A4GL_sqlerrwith (int rc, HSTMT h)
 {
   /* A4GL_set_sqlca (h, "From sqlerrwith", 0); */
-  	SQLFreeStmt ((SQLHSTMT)h, SQL_DROP);
-	h=0;
+  SQLFreeStmt ((SQLHSTMT) h, SQL_DROP);
+  h = 0;
   return 0;
 }
 
@@ -2268,7 +2338,7 @@ A4GL_set_sqlca (SQLHSTMT hstmt, char *s, int reset)
 {
   char s1[81];
   char s2[500];
-  
+
 /*
 sql.c: In function `set_sqlca':
 sql.c:1788: conflicting types for `_errno'
@@ -2280,12 +2350,12 @@ sql.c:1788: warning: extern declaration of `_errno' doesn't A4GL_match global on
 
 make[2]: *** [sql.o] Error 1
 */
-  SDWORD xerrno=0;
-  SWORD xerrno2=0;
+  SDWORD xerrno = 0;
+  SWORD xerrno2 = 0;
   SDWORD rowcount;
   RETCODE rc;
-  memset(s1,0,80);
-  memset(s2,0,255);
+  memset (s1, 0, 80);
+  memset (s2, 0, 255);
   strcpy (lasterrorstr, "");
   strcpy (s1, "00000");
 
@@ -2298,8 +2368,8 @@ make[2]: *** [sql.o] Error 1
 
   if (rc != 0 && rc != 100)
     {
-      A4GL_debug ("Calling SQLError %p %p %p ", henv, hdbc, hstmt);
-      rc = SQLError (henv, hdbc, (SQLHSTMT)hstmt, s1, &xerrno, s2, 500, &xerrno2); //warning: passing arg 5 of `SQLError' from incompatible pointer type
+      A4GL_debug ("Calling SQLError %p %p %p rc=%d", henv, hdbc, hstmt, rc);
+      rc = SQLError (henv, hdbc, (SQLHSTMT) hstmt, s1, &xerrno, s2, 500, &xerrno2);	//warning: passing arg 5 of `SQLError' from incompatible pointer type
       A4GL_debug ("rc=%d\n", rc);
       if (xerrno > 0 && xerrno != 100)
 	xerrno = 0 - xerrno;
@@ -2334,24 +2404,28 @@ make[2]: *** [sql.o] Error 1
       A4GL_debug ("'%s' '%s' (%d %d)", s1, s2, xerrno, xerrno2);
 #endif
       strncpy (a4gl_sqlca.sqlerrm, s2, 72);
-	A4GL_debug("Calling set_status");
       A4GLSQL_set_status (xerrno, 1);
 #ifdef DEBUG
       A4GL_debug ("Setting lasterrorstr to '%s'", s2);
 #endif
       strcpy (lasterrorstr, s2);
     }
-  if (rc==0 || rc==100 ) {
-	if (rc==100) rowcount=0;
-	else {
+  if (rc == 0 || rc == 100)
+    {
+      if (rc == 100)
+	rowcount = 0;
+      else
+	{
 #ifndef PGODBC
-  		rc = SQLRowCount ((SQLHSTMT )hstmt, &rowcount);
+	  rc = SQLRowCount ((SQLHSTMT) hstmt, &rowcount);
 #endif
 	}
-  a4gl_sqlca.sqlerrd[1] = rowcount;
-  } else {
-  	a4gl_sqlca.sqlerrd[1] =0;
-  }
+      a4gl_sqlca.sqlerrd[1] = rowcount;
+    }
+  else
+    {
+      a4gl_sqlca.sqlerrd[1] = 0;
+    }
 }
 
 /**
@@ -2368,22 +2442,26 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 
 #ifdef DEBUG
   A4GL_debug ("OBIND Binding %d=(%d %d %p)", pos, bind->dtype, bind->size,
-	 bind->ptr);
+	      bind->ptr);
 
   //if (bind->dtype==0) {
-		//A4GL_debug("Binding : %s\n",bind->ptr);
+  //A4GL_debug("Binding : %s\n",bind->ptr);
   //}
+  
+  set_conv_4gl_to_c();
+  A4GL_debug ("SQLBindCol(hstmt=%p, pos=%d,\n     bind->dtype=%d conv_4gl_to_c[bind->dtype]=%d, bind->ptr=%p,\n     fgl_size(bind->dtype,bind->size)=%d, SQL_NULL_DATA);", hstmt, pos, bind->dtype, conv_4gl_to_c[bind->dtype], bind->ptr, fgl_size (bind->dtype, bind->size), SQL_NULL_DATA);
 
-  A4GL_debug
-    ("SQLBindCol(hstmt=%p, pos=%d,\n     bind->dtype=%d conv_4gl_to_c[bind->dtype]=%d, bind->ptr=%p,\n     fgl_size(bind->dtype,bind->size)=%d, SQL_NULL_DATA);",
-     hstmt, pos, bind->dtype,conv_4gl_to_c[bind->dtype], bind->ptr, fgl_size (bind->dtype,
-								  bind->size),
-     SQL_NULL_DATA);
   A4GL_debug ("SQLBindCol");
 #endif
 
-  if (bind->dtype == DTYPE_DATE)  { bind->ptr = A4GL_bind_date ((long *) bind->ptr); }
-  if (bind->dtype == DTYPE_DTIME) { bind->ptr = A4GL_bind_datetime ((void *) bind->ptr); }
+  if (bind->dtype == DTYPE_DATE)
+    {
+      bind->ptr = A4GL_bind_date ((long *) bind->ptr);
+    }
+  if (bind->dtype == DTYPE_DTIME)
+    {
+      bind->ptr = A4GL_bind_datetime ((void *) bind->ptr);
+    }
 
 
 
@@ -2393,7 +2471,7 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
     }
 
   rc =
-    SQLBindCol ((SQLHSTMT )hstmt, pos, conv_4gl_to_c[bind->dtype], bind->ptr,
+    SQLBindCol ((SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], bind->ptr,
 		fgl_size (bind->dtype, bind->size), &outlen[pos]);
 
   chk_rc (rc, hstmt, "SQLBindCol");
@@ -2420,18 +2498,22 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
   /*review */
 
   int k = 0;
-A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
-  if (bind->dtype == DTYPE_DATE && A4GL_isyes(acl_getenv("BINDDATEASINT")))
+  A4GL_debug ("ibind_column %d", bind->dtype, DTYPE_DECIMAL);
+  if (bind->dtype == DTYPE_DATE && A4GL_isyes (acl_getenv ("BINDDATEASINT")))
     {
-      	rc = A4GL_newSQLSetParam ((SQLHSTMT )hstmt, pos, SQL_INTEGER, SQL_INTEGER, 0, 0, bind->ptr, NULL);
-	return;
+      rc =
+	A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos, SQL_INTEGER, SQL_INTEGER,
+			     0, 0, bind->ptr, NULL);
+      return;
     }
 
 #ifdef DEBUG
-  A4GL_debug ("Binding %d=(%d %d %p)", pos, bind->dtype, bind->size, bind->ptr);
-  if (bind->dtype==0) {
-	A4GL_debug(" is a string : %s",bind->ptr);
-  }
+  A4GL_debug ("Binding %d=(%d %d %p)", pos, bind->dtype, bind->size,
+	      bind->ptr);
+  if (bind->dtype == 0)
+    {
+      A4GL_debug (" is a string : %s", bind->ptr);
+    }
 #endif
 
   if (bind->dtype != 0)
@@ -2440,89 +2522,91 @@ A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
     size = bind->size;
 
 #ifdef DEBUG
-  if (bind->dtype==0) {
-  A4GL_debug(" Binding : %s ",bind->ptr);
-  }
-  A4GL_debug ("Call SQLSetParam h=%p p=%d dt=%d dt=%d size=%d k=%d ptr=%p", hstmt, pos, conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype], size, k, bind->ptr);
+  if (bind->dtype == 0)
+    {
+      A4GL_debug (" Binding : %s ", bind->ptr);
+    }
+  set_conv_4gl_to_c ();
+  A4GL_debug ("Call SQLSetParam h=%p p=%d dt=%d dt=%d size=%d k=%d ptr=%p",
+	      hstmt, pos, conv_4gl_to_c[bind->dtype],
+	      conv_4gl_to_c[bind->dtype], size, k, bind->ptr);
 #endif
 
   if (bind->dtype == DTYPE_DATE)
     {
-	ACLDATE *p; //@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
-	void *ptr;
-	int d,m,y;
-	A4GL_debug("Binding Date original pointer=%p",bind->ptr);
-	ptr=bind->ptr;
-	p= (ACLDATE *)A4GL_bind_date ((long *) ptr);
+      ACLDATE *p;		//@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
+      void *ptr;
+      int d, m, y;
+      A4GL_debug ("Binding Date original pointer=%p", bind->ptr);
+      ptr = bind->ptr;
+      p = (ACLDATE *) A4GL_bind_date ((long *) ptr);
+      A4GL_get_date (*(int *) ptr, &d, &m, &y);
 
-#ifdef DATE_AS_CHAR
-#ifdef IFXODBC
-	{char *x;
-	A4GL_push_date(*(long *)ptr);
-	x=A4GL_char_pop();
-	sprintf(p->uDate.date_c,"%s",x);
-	free(x);
+
+      if (date_as_char)
+	{
+	  sprintf (p->uDate.date_c, "%04d-%02d-%02d", y, m, d);
+	  size = strlen (p->uDate.date_c);
 	}
-#else 
-	A4GL_get_date(*(int *)ptr,&d,&m,&y);
-	sprintf(p->uDate.date_c,"%04d-%02d-%02d",y,m,d);
-#endif
-	size=strlen(p->uDate.date_c);
-#else
-	p->uDate.date_ds.year=y;
-	p->uDate.date_ds.month=m;
-	p->uDate.date_ds.day=d;
-#endif
-        bind->ptr = p;
+      else
+	{
+	  p->uDate.date_ds.year = y;
+	  p->uDate.date_ds.month = m;
+	  p->uDate.date_ds.day = d;
+	}
+
+
+      bind->ptr = p;
     }
 
 
   if (bind->dtype == DTYPE_DTIME)
     {
-	ACLDTIME *p; //@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
-	//int arr[10];
-	void *ptr;
-	//int d,m,y;
-	A4GL_debug("Binding Datetime original pointer=%p",bind->ptr);
-	
-	ptr=bind->ptr;
-	p= (ACLDTIME *)A4GL_bind_datetime (ptr);
-#ifdef DTIME_AS_CHAR 
-	{
-	char buff[50];
-	A4GL_dttoc(ptr,buff,bind->size);
-	A4GL_trim(buff);
-	strcpy(p->dtime,buff);
-	size=strlen(buff);
-	}
-#else
-	A4GL_decode_datetime((struct A4GLSQL_dtime*)ptr,&arr[0]);
-	p->dtime.year=arr[0];
-	p->dtime.month=arr[1];
-	p->dtime.day=arr[2];
-	p->dtime.hour=arr[3];
-	p->dtime.minute=arr[4];
-	p->dtime.second=arr[5];
-	p->dtime.fraction=arr[6];
+      ACLDTIME *p;		//@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
+      void *ptr;
+      //int d,m,y;
+      A4GL_debug ("Binding Datetime original pointer=%p", bind->ptr);
 
-#endif
-        bind->ptr = p;
+      ptr = bind->ptr;
+      p = (ACLDTIME *) A4GL_bind_datetime (ptr);
+      if (dtime_as_char)
+	{
+	  char buff[50];
+	  A4GL_dttoc (ptr, buff, bind->size);
+	  A4GL_trim (buff);
+	  strcpy (p->dtime_u.dtime_c, buff);
+	  size = strlen (buff);
+	}
+      else
+	{
+ 	  int arr[10];
+	  A4GL_decode_datetime ((struct A4GLSQL_dtime *) ptr, &arr[0]);
+	  p->dtime_u.dtime_t.year = arr[0];
+	  p->dtime_u.dtime_t.month = arr[1];
+	  p->dtime_u.dtime_t.day = arr[2];
+	  p->dtime_u.dtime_t.hour = arr[3];
+	  p->dtime_u.dtime_t.minute = arr[4];
+	  p->dtime_u.dtime_t.second = arr[5];
+	  p->dtime_u.dtime_t.fraction = arr[6];
+
+	}
+      bind->ptr = p;
     }
 
 
   if (bind->dtype == DTYPE_DECIMAL)
     {
-	double *p; //@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
-	void *ptr;
-	int dtype;
-	double d;
-	ptr=bind->ptr;
-	p= malloc(sizeof(double));
-	dtype = bind->dtype + ENCODE_SIZE (bind->size);
-	A4GL_push_variable(bind->ptr, dtype);
-	d=A4GL_pop_double();
-	*p=d;
-        bind->ptr = p;
+      double *p;		//@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
+      void *ptr;
+      int dtype;
+      double d;
+      ptr = bind->ptr;
+      p = malloc (sizeof (double));
+      dtype = bind->dtype + ENCODE_SIZE (bind->size);
+      A4GL_push_variable (bind->ptr, dtype);
+      d = A4GL_pop_double ();
+      *p = d;
+      bind->ptr = p;
 
 #ifdef DEBUG
       A4GL_debug ("Bound date...\n");
@@ -2532,16 +2616,20 @@ A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
 
 
 
+  set_conv_4gl_to_c ();
 
-  A4GL_debug("DTYPE %d DTYPE %d SIZE %d",conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype], size );
+  A4GL_debug ("DTYPE %d DTYPE %d SIZE %d", conv_4gl_to_c[bind->dtype],
+	      conv_4gl_to_c[bind->dtype], size);
 
-  rc = A4GL_newSQLSetParam ((SQLHSTMT )hstmt, pos, conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype], size, k, bind->ptr, NULL);
+  rc =
+    A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype],
+			 conv_4gl_to_c[bind->dtype], size, k, bind->ptr,
+			 NULL);
 
-  A4GL_debug("Called newSQLSetParam = %d",rc);
+  A4GL_debug ("Called newSQLSetParam = %d", rc);
   /* chk_rc (rc, hstmt, "SQLSetParam"); */
 
 }
-
 /**
  * Ask odbc to execute a select statement allready prepared.
  *
@@ -2557,16 +2645,24 @@ ODBC_exec_select (SQLHSTMT hstmt)
   SWORD nresultcols;
   SDWORD rowcount;
 
-a4gl_sqlca.sqlerrd[0]=0;
+  a4gl_sqlca.sqlerrd[0] = 0;
 #ifdef DEBUG
   A4GL_debug ("Before Execute hstmt=%p", hstmt);
 #endif
   rc = SQLExecute (hstmt);
   chk_rc (rc, hstmt, "SQLExecute3");
-  if (rc != 0) { A4GL_debug("ODBC_exec_select returns 0 - no chk_need_block"); return 0; }
+  if (rc != 0)
+    {
+      A4GL_debug ("ODBC_exec_select returns 0 - no chk_need_block");
+      return 0;
+    }
 
   rc = A4GL_chk_need_blob (rc, hstmt);
-  if (rc != 0) { A4GL_debug("ODBC_exec_select returns 0 - no chk_need_block"); return 0; }
+  if (rc != 0)
+    {
+      A4GL_debug ("ODBC_exec_select returns 0 - no chk_need_block");
+      return 0;
+    }
 
   /* A4GL_set_sqlca (hstmt, "ODBC_exec_select : After SQLExecute", 0); */
   if (rc != 0)
@@ -2576,29 +2672,30 @@ a4gl_sqlca.sqlerrd[0]=0;
 #ifdef DEBUG
   A4GL_debug ("SQLNumResultCols returns %d", nresultcols);
 #endif
-   if (nresultcols==0) {
-		A4GL_debug("ODBC_exec_select returns no rows - return 0");
-		a4gl_sqlca.sqlerrd[0]=0;
-		return 0;
-	}
-  
+  if (nresultcols == 0)
+    {
+      A4GL_debug ("ODBC_exec_select returns no rows - return 0");
+      a4gl_sqlca.sqlerrd[0] = 0;
+      return 0;
+    }
+  rc = SQLRowCount ((SQLHSTMT) hstmt, &rowcount);
+  chk_rc (rc, hstmt, "SQLRowCount");
+
 
 #ifdef DEBUG
+  A4GL_debug ("SQLRowCount=%d", rowcount);
   A4GL_debug ("Before Fetch");
 #endif
 
-  if (rc == 100)  {
-	A4GL_debug("NOT Found");
-		A4GL_debug("ODBC_exec_select returns NOT FOUND - return 0");
-    a4gl_sqlca.sqlerrd[0]=1;
-    return 0;
-  }
+  if (rc == 100)
+    {
+      A4GL_debug ("NOT Found");
+      A4GL_debug ("ODBC_exec_select returns NOT FOUND - return 0");
+      a4gl_sqlca.sqlerrd[0] = 1;
+      return 0;
+    }
 
-  rc = SQLRowCount ((SQLHSTMT )hstmt, &rowcount);
-  chk_rc (rc, hstmt, "SQLRowCount");
-  A4GL_debug ("SQLRowCount=%d", rowcount);
-
-  rc = SQLFetch ((SQLHSTMT )hstmt);
+  rc = SQLFetch ((SQLHSTMT) hstmt);
   chk_rc (rc, hstmt, "SQLFetch");
 
   /* A4GL_set_sqlca (hstmt, "ODBC_exec_select : After SQLFetch", 0); */
@@ -2607,59 +2704,66 @@ a4gl_sqlca.sqlerrd[0]=0;
   A4GL_debug ("Result=%d", rc);
 #endif
 
-  if (rc == 100)  {
-	A4GL_debug("NOT Found");
-    a4gl_sqlca.sqlerrd[0]=1;
-	return 1;
-  }
+  if (rc == 100)
+    {
+      A4GL_debug ("NOT Found");
+      a4gl_sqlca.sqlerrd[0] = 1;
+      return 1;
+    }
 
   /* Execute the SQL statement. */
-  if (rc != SQL_SUCCESS && rc!=SQL_SUCCESS_WITH_INFO)
+  if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
     {
-	int a;
+      int a;
 #ifdef DEBUG
       A4GL_debug ("Oh dear.... %d", rc);
 #endif
-	A4GL_debug("ODBC_exec_select returns ERROR - return something - rc=%d",rc);
-	a4gl_sqlca.sqlerrd[0]=0;
-	a=A4GL_sqlerrwith (rc, hstmt);
-	A4GL_debug("ODBC_exec_select returns ERROR - return something - a=%d",a);
-      return  a;
+      A4GL_debug ("ODBC_exec_select returns ERROR - return something - rc=%d",
+		  rc);
+      a4gl_sqlca.sqlerrd[0] = 0;
+      a = A4GL_sqlerrwith (rc, hstmt);
+      A4GL_debug ("ODBC_exec_select returns ERROR - return something - a=%d",
+		  a);
+      return a;
 
     }
 
-  if (rc==SQL_SUCCESS_WITH_INFO) {
-	A4GL_debug("ODBC driver wants to tell be something");
+  if (rc == SQL_SUCCESS_WITH_INFO)
+    {
+      A4GL_debug ("ODBC driver wants to tell be something");
 #ifdef USE_DIAG_REC
-	SQLCHAR       SqlState[6], SQLStmt[100], Msg[SQL_MAX_MESSAGE_LENGTH];
-	SQLINTEGER    NativeError;
-	SQLSMALLINT   i, MsgLen;
-	SQLRETURN     rc1, rc2;
-   i = 1;
-   while ((rc2 = SQLGetDiagRec(SQL_HANDLE_STMT, hstmt, i, SqlState, &NativeError,
-            Msg, sizeof(Msg), &MsgLen)) != SQL_NO_DATA) {
-      printf("%s%s%d\n",SqlState,NativeError,Msg,MsgLen);
-      i++;
-   }
+      SQLCHAR SqlState[6], SQLStmt[100], Msg[SQL_MAX_MESSAGE_LENGTH];
+      SQLINTEGER NativeError;
+      SQLSMALLINT i, MsgLen;
+      SQLRETURN rc1, rc2;
+      i = 1;
+      while ((rc2 =
+	      SQLGetDiagRec (SQL_HANDLE_STMT, hstmt, i, SqlState,
+			     &NativeError, Msg, sizeof (Msg),
+			     &MsgLen)) != SQL_NO_DATA)
+	{
+	  printf ("%s%s%d\n", SqlState, NativeError, Msg, MsgLen);
+	  i++;
+	}
 #else
-   {
-  char s1[81];
-  char s2[500]; 
-  SDWORD xerrno=0;
-  SWORD xerrno2=0;
+      {
+	char s1[81];
+	char s2[500];
+	SDWORD xerrno = 0;
+	SWORD xerrno2 = 0;
 
-	
-      	rc = SQLError (henv, hdbc, (SQLHSTMT)hstmt, s1, &xerrno, s2, 500, &xerrno2); //warning: passing arg 5 of `SQLError' from incompatible pointer type
-		printf("%s %s\n",s1,s2);
-   }
+
+	rc = SQLError (henv, hdbc, (SQLHSTMT) hstmt, s1, &xerrno, s2, 500, &xerrno2);	//warning: passing arg 5 of `SQLError' from incompatible pointer type
+	printf ("%s %s\n", s1, s2);
+      }
 #endif
-  }
+    }
 
-a4gl_sqlca.sqlerrd[0]=1;
+  a4gl_sqlca.sqlerrd[0] = 1;
 #ifdef DEBUG
   A4GL_debug ("Yipee!");
 #endif
-		A4GL_debug("ODBC_exec_select returns 1");
+  A4GL_debug ("ODBC_exec_select returns 1");
   return 1;
 }
 
@@ -2691,7 +2795,7 @@ A4GL_new_hstmt (SQLHSTMT * hstmt)
 #ifdef DEBUG
   A4GL_debug ("allocate statement returns rc=%d", rc);
 #endif
-  return (HSTMT *)*hstmt;
+  return (HSTMT *) * hstmt;
 }
 
 /**
@@ -2725,7 +2829,7 @@ ODBC_exec_prepared_sql (SQLHSTMT hstmt)
   /* Execute the SQL statement. */
   if (rc != SQL_SUCCESS)
     {
-	//int a;
+      //int a;
 #ifdef DEBUG
       A4GL_debug ("Oh dear.... %d", rc);
 #endif
@@ -2755,7 +2859,8 @@ IGNOREEXITWITH
  *   - -1 : An error ocurred.
  *   - Otherwise : The datatype code.
  */
-int A4GLSQL_get_datatype (char *db, char *tab, char *col)
+  int
+A4GLSQL_get_datatype (char *db, char *tab, char *col)
 {
   HSTMT hstmt;
   char sql1[256];
@@ -2770,7 +2875,7 @@ int A4GLSQL_get_datatype (char *db, char *tab, char *col)
 #ifdef DEBUG
   A4GL_debug ("Getting datatype for %s %s %s", db, tab, col);
 #endif
-  A4GL_new_hstmt ((SQLHSTMT *)&hstmt);
+  A4GL_new_hstmt ((SQLHSTMT *) & hstmt);
 #ifdef DEBUG
   A4GL_debug ("Allocated .. %p %p %p", henv, hdbc, hstmt);
 #endif
@@ -2798,7 +2903,7 @@ int A4GLSQL_get_datatype (char *db, char *tab, char *col)
   A4GL_debug ("SQL DATATYPE : Got %s %d %d", colname, coltype, collen[0]);
 #endif
   SQLFreeStmt (hstmt, SQL_DROP);
-	hstmt=0;
+  hstmt = 0;
   SQLFreeConnect (hdbc);
   return conv_sqldtype (coltype, collen[0]);
 }
@@ -2815,31 +2920,32 @@ int A4GLSQL_get_datatype (char *db, char *tab, char *col)
 static int
 conv_sqldtype (int sqldtype, int sdim)
 {
-int ndtype;
+  int ndtype;
 
 //#if (ODBCVER >= 0x0300)
-	#ifdef SQL_TYPE_DATE
-	if (sqldtype==SQL_TYPE_DATE) return DTYPE_DATE;
-	#endif
+#ifdef SQL_TYPE_DATE
+  if (sqldtype == SQL_TYPE_DATE)
+    return DTYPE_DATE;
+#endif
 
 
-	if (sqldtype >= 0)
-    	ndtype = convpos_sql_to_4gl[sqldtype];
-	else
-	    ndtype = convneg_sql_to_4gl[sqldtype * -1];
+  if (sqldtype >= 0)
+    ndtype = convpos_sql_to_4gl[sqldtype];
+  else
+    ndtype = convneg_sql_to_4gl[sqldtype * -1];
 
-	if (ndtype == 0)
+  if (ndtype == 0)
     {
-	#ifdef DEBUG
+#ifdef DEBUG
       A4GL_debug ("Encoding string size : %d", sdim);
-	#endif
+#endif
       ndtype = ENCODE_SIZE (sdim);
     }
 
-	#ifdef DEBUG
-	A4GL_debug ("Datatype (%d,%d) is 0x%x ", sqldtype, sdim, ndtype);
-	#endif
-	return ndtype;
+#ifdef DEBUG
+  A4GL_debug ("Datatype (%d,%d) is 0x%x ", sqldtype, sdim, ndtype);
+#endif
+  return ndtype;
 }
 
 /**
@@ -2972,7 +3078,7 @@ A4GLSQL_describe_stmt (char *stmt, int colno, int type)
     }
   else
     {
-      hstmt = (SQLHSTMT *)&sid->hstmt;
+      hstmt = (SQLHSTMT *) & sid->hstmt;
     }
 
 
@@ -2981,7 +3087,7 @@ A4GLSQL_describe_stmt (char *stmt, int colno, int type)
       A4GL_exitwith ("Statement could not be found");
     }
 
-  z = A4GL_describecolumn ((SQLHSTMT)hstmt, colno, type);
+  z = A4GL_describecolumn ((SQLHSTMT) hstmt, colno, type);
   return z;
 }
 
@@ -3025,7 +3131,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 #ifdef DEBUG
       A4GL_debug ("Creating new statement");
 #endif
-      A4GL_new_hstmt ((SQLHSTMT *)&hstmtGetColumns);
+      A4GL_new_hstmt ((SQLHSTMT *) & hstmtGetColumns);
     }
 
   if (tabname != 0)
@@ -3177,7 +3283,7 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
   if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
     {
       SQLFreeStmt (hstmtGetColumns, SQL_DROP);
-	hstmtGetColumns=0;
+      hstmtGetColumns = 0;
       return 0;
     }
   *colname = cn;
@@ -3248,7 +3354,7 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 #ifdef DEBUG
       A4GL_debug ("Creating new statement");
 #endif
-      A4GL_new_hstmt ((SQLHSTMT *)&hstmt);
+      A4GL_new_hstmt ((SQLHSTMT *) & hstmt);
     }
 
   if (tabname != 0)
@@ -3256,7 +3362,7 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 #ifdef DEBUG
       A4GL_debug ("New search");
 #endif
-      A4GL_new_hstmt ((SQLHSTMT *)&hstmt);
+      A4GL_new_hstmt ((SQLHSTMT *) & hstmt);
 #ifdef DEBUG
       A4GL_debug ("Got Statement");
 #endif
@@ -3391,8 +3497,8 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 #ifdef DEBUG
   A4GL_debug ("column -> %s Dtype=%x len=%x rc=%d", cn, dt, len, rc);
   A4GL_debug ("column tq=%s to=%s tn=%s cn=%s", tq, to, tn, cn);
-  A4GL_debug ("XXX       %x %s prec=%x %d\n %x %x %x '%s'", dt, dtname, prec, len,
-	 scale, radix, nullable, remarks);
+  A4GL_debug ("XXX       %x %s prec=%x %d\n %x %x %x '%s'", dt, dtname, prec,
+	      len, scale, radix, nullable, remarks);
 #endif
   colsize = A4GL_display_size (dt, prec, "");
   sprintf (szcolsize, "%d", colsize);
@@ -3403,7 +3509,7 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
       A4GL_debug ("Some error getting data....");
 #endif
       SQLFreeStmt (hstmt, SQL_DROP);
-	hstmt=0;
+      hstmt = 0;
       return 0;
     }
   strcpy (colname, cn);
@@ -3429,8 +3535,9 @@ A4GL_ibind_column_arr (int pos, char *s, HSTMT hstmt)
 
   size = strlen (s);
 
+  set_conv_4gl_to_c();
   A4GL_newSQLSetParam (hstmt, pos,
-		  conv_4gl_to_c[0], conv_4gl_to_c[0], size, 0, s, NULL);
+		       conv_4gl_to_c[0], conv_4gl_to_c[0], size, 0, s, NULL);
 }
 
 /**
@@ -3445,7 +3552,8 @@ A4GL_ibind_column_arr (int pos, char *s, HSTMT hstmt)
  * @param pwd The password of the user to set the connection.
  */
 int
-A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, char *pwd)
+A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr,
+			       char *pwd)
 {
   char empty[10] = "None";
   char *u, *p = 0;
@@ -3615,7 +3723,7 @@ aclfgl_hstmt_get (int np)
       A4GL_debug ("Is prepare statement");
 #endif
       ptr_sid = (struct s_sid *) A4GL_find_pointer (cursname, PRECODE);
-      stmt = (SQLHSTMT )&ptr_sid->hstmt;
+      stmt = (SQLHSTMT) & ptr_sid->hstmt;
     }
   else
     {
@@ -3623,7 +3731,7 @@ aclfgl_hstmt_get (int np)
       A4GL_debug ("Is cursor statement");
 #endif
       ptr_cid = (struct s_cid *) A4GL_find_pointer (cursname, CURCODE);
-      stmt = (SQLHSTMT )&ptr_cid->statement->hstmt;
+      stmt = (SQLHSTMT) & ptr_cid->statement->hstmt;
     }
 
   A4GL_push_long ((int) stmt);
@@ -3688,18 +3796,17 @@ A4GLSQL_close_session_internal (char *sessname)
 #endif
 
 #if ( defined (SQLITEODBC) || defined (SQLITE_DIRECT) )
-	//SQLite needs all transactions closed before connection can be ended
-    //FIXME: is there a bettr way? SQL_AUTOCOMMIT ? What should we really
-    //do if program wants to exit after an error or by reaching EXIT PROGARAM?
-	A4GL_debug("commiting all transactions on SQLite...");
-A4GL_debug("S4");
-	A4GLSQL_commit_rollback_internal (1,0);
+  //SQLite needs all transactions closed before connection can be ended
+  //FIXME: is there a bettr way? SQL_AUTOCOMMIT ? What should we really
+  //do if program wants to exit after an error or by reaching EXIT PROGARAM?
+  A4GL_debug ("commiting all transactions on SQLite...");
+  A4GLSQL_commit_rollback (1);
 #endif
 
-if (A4GL_isyes(acl_getenv("FORCE_ROLLBACK_AT_EXIT"))) {
-A4GL_debug("S4");
-	A4GLSQL_commit_rollback_internal (1,0);
-}
+  if (A4GL_isyes (acl_getenv ("FORCE_ROLLBACK_AT_EXIT")))
+    {
+      A4GLSQL_commit_rollback (1);
+    }
 
 
 
@@ -3714,7 +3821,6 @@ A4GL_debug("S4");
 
   if (rc == 0)
     {
-	A4GL_debug("Calling set_status");
       A4GLSQL_set_status (0, 1);
       free (ptr);
       if (strcmp (sessname, "default") != 0)
@@ -3744,38 +3850,38 @@ A4GL_bind_date (long *ptr_to_date_var)
   A4GL_debug ("Binding date for %p", ptr_to_date_var);
 #endif
   ptr->ptr = ptr_to_date_var;
-#ifdef DATE_AS_CHAR
-  strcpy(ptr->uDate.date_c,"0000-00-00");
-#else
-  ptr->uDate.date_ds.year=-1;
-  ptr->uDate.date_ds.month=-1;
-  ptr->uDate.date_ds.day=-1;
-#endif
+if (date_as_char) {
+  strcpy (ptr->uDate.date_c, "0000-00-00");
+} else {
+  ptr->uDate.date_ds.year = -1;
+  ptr->uDate.date_ds.month = -1;
+  ptr->uDate.date_ds.day = -1;
+}
   return (void *) ptr;
 }
 
-void * A4GL_bind_datetime (void *ptr_to_dtime_var)
+void *
+A4GL_bind_datetime (void *ptr_to_dtime_var)
 {
   ACLDTIME *ptr;
 
   ptr = malloc (sizeof (ACLDTIME));
-  
-#ifdef DTIME_AS_CHAR
-	strcpy(ptr->dtime,"");
-#else
-	ptr->dtime.year=-1;
-	ptr->dtime.month=-1;
-	ptr->dtime.day=-1;
-	ptr->dtime.hour=-1;
-	ptr->dtime.minute=-1;
-	ptr->dtime.second=-1;
-#endif
+
+if (dtime_as_char) {
+  strcpy (ptr->dtime_u.dtime_c, "");
+} else {
+  ptr->dtime_u.dtime_t.year = -1;
+  ptr->dtime_u.dtime_t.month = -1;
+  ptr->dtime_u.dtime_t.day = -1;
+  ptr->dtime_u.dtime_t.hour = -1;
+  ptr->dtime_u.dtime_t.minute = -1;
+  ptr->dtime_u.dtime_t.second = -1;
+}
 
 
   ptr->ptr = ptr_to_dtime_var;
   return (void *) ptr;
 }
-
 
 /**
  * Binding processing after fetch.
@@ -3852,7 +3958,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 
 	  date1 = use_binding[bind_counter].ptr;
 
-	if (date_as_char) {
+if (date_as_char) {
 	  {
 	    int y, d, m;
 	    int nscanned;
@@ -3890,45 +3996,24 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 	      }
 	  }
 } else {
+	  A4GL_assertion (date1->uDate.date_ds.month < 1
+			  || date1->uDate.date_ds.month > 12,
+			  "Invalid month retrieved from db");
+	  A4GL_assertion (date1->uDate.date_ds.day < 1
+			  || date1->uDate.date_ds.day > 31,
+			  "Invalid day retrieved from db");
 #ifdef DEBUG
-	  A4GL_debug ("mdy=%d %d %d", date1->uDate.date_ds.month,
-		      date1->uDate.date_ds.day, date1->uDate.date_ds.year);
+	  A4GL_debug ("Year=%d Month=%d Day=%d", date1->uDate.date_ds.year,
+		      date1->uDate.date_ds.month, date1->uDate.date_ds.day);
 #endif
 
-
-	  if (date1->uDate.date_ds.month == 0 && date1->uDate.date_ds.day == 0
-	      && date1->uDate.date_ds.year == 0)
-	    {			// Looks pretty null...
-	      A4GL_setnull (DTYPE_DATE, date1->ptr, 0);
-	    }
-	  else
-	    {
-
-	      A4GL_assertion (date1->uDate.date_ds.month < 1
-			      || date1->uDate.date_ds.month > 12,
-			      "Invalid month retrieved from db");
-	      A4GL_assertion (date1->uDate.date_ds.day < 1
-			      || date1->uDate.date_ds.day > 31,
-			      "Invalid day retrieved from db");
-#ifdef DEBUG
-	      A4GL_debug ("Year=%d Month=%d Day=%d",
-			  date1->uDate.date_ds.year,
-			  date1->uDate.date_ds.month,
-			  date1->uDate.date_ds.day);
+	  A4GL_debug ("Calling gen_dateno");
+	  zz =
+	    A4GL_gen_dateno (date1->uDate.date_ds.day,
+			     date1->uDate.date_ds.month,
+			     date1->uDate.date_ds.year);
 }
-	      A4GL_debug ("Calling gen_dateno");
-	      zz =
-		A4GL_gen_dateno (date1->uDate.date_ds.day,
-				 date1->uDate.date_ds.month,
-				 date1->uDate.date_ds.year);
-#endif
-
-
-
-
-
-	      *((long *) date1->ptr) = zz;
-	    }
+	  *((long *) date1->ptr) = zz;
 	  continue;
 
 	}
@@ -3938,63 +4023,60 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 	{
 
 	  char buff[256];
-	  //char buff2[256];
-	  //int s;int e;
 	  dt1 = use_binding[bind_counter].ptr;
-
-#ifdef DTIME_AS_CHAR
-	  strcpy (buff, dt1->dtime);
-#else
+	if (dtime_as_char) {
+	  strcpy (buff, dt1->dtime_u.dtime_c);
+} else {
+	  char buff2[256];
+	  int s;int e;
 	  strcpy (buff, "");
 	  s = use_binding[bind_counter].size >> 4;
 	  e = use_binding[bind_counter].size & 0xf;
 
 	  if (s > 1)
-	    dt1->dtime.yearindent: Standard input:223: Warning:old style assignment ambiguity in "=*".  Assuming "= *"
-
- = 0;
+	    dt1->dtime_u.dtime_t.year = 0;
 	  if (s > 2)
-	    dt1->dtime.month = 0;
+	    dt1->dtime_u.dtime_t.month = 0;
 	  if (s > 3)
-	    dt1->dtime.day = 0;
+	    dt1->dtime_u.dtime_t.day = 0;
 	  if (s > 4)
-	    dt1->dtime.hour = 0;
+	    dt1->dtime_u.dtime_t.hour = 0;
 	  if (s > 5)
-	    dt1->dtime.minute = 0;
+	    dt1->dtime_u.dtime_t.minute = 0;
 	  if (s > 6)
-	    dt1->dtime.second = 0;
+	    dt1->dtime_u.dtime_t.second = 0;
 
-	  if (strlen (buff) || dt1->dtime.year)
+	  if (strlen (buff) || dt1->dtime_u.dtime_t.year)
 	    {
-	      sprintf (buff2, "%04d", dt1->dtime.year);
+	      sprintf (buff2, "%04d", dt1->dtime_u.dtime_t.year);
 	      strcat (buff, buff2);
 	    }
 
-	  if (strlen (buff) || dt1->dtime.month)
+	  if (strlen (buff) || dt1->dtime_u.dtime_t.month)
 	    {
 	      if (e >= 2)
 		{
-		  sprintf (buff2, "%02d", dt1->dtime.month);
+		  sprintf (buff2, "%02d", dt1->dtime_u.dtime_t.month);
 		  if (strlen (buff))
 		    strcat (buff, "-");
 		  strcat (buff, buff2);
 		}
 	    }
-	  if (strlen (buff) || dt1->dtime.day)
+	  if (strlen (buff) || dt1->dtime_u.dtime_t.day)
 	    {
 	      if (e >= 3)
 		{
-		  sprintf (buff2, "%02d", dt1->dtime.day);
+		  sprintf (buff2, "%02d", dt1->dtime_u.dtime_t.day);
 		  if (strlen (buff))
 		    strcat (buff, "-");
 		  strcat (buff, buff2);
 		}
 	    }
-	  if (strlen (buff) || dt1->dtime.hour)
+	  if (strlen (buff) || dt1->dtime_u.dtime_t.hour)
 	    {
 	      if (e >= 4)
 		{
-		  sprintf (buff2, "%02d", dt1->dtime.hour);
+		  sprintf (buff2, "%02d", dt1->dtime_u.dtime_t.hour);
 		  if (strlen (buff))
 		    strcat (buff, " ");
 		  strcat (buff, buff2);
@@ -4002,27 +4084,28 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 	    }
 
 
-	  if (strlen (buff) || dt1->dtime.minute)
+	  if (strlen (buff) || dt1->dtime_u.dtime_t.minute)
 	    {
 	      if (e >= 5)
 		{
-		  sprintf (buff2, "%02d", dt1->dtime.minute);
+		  sprintf (buff2, "%02d", dt1->dtime_u.dtime_t.minute);
 		  if (strlen (buff))
 		    strcat (buff, ":");
 		  strcat (buff, buff2);
 		}
 	    }
-	  if (strlen (buff) || dt1->dtime.second)
+	  if (strlen (buff) || dt1->dtime_u.dtime_t.second)
 	    {
 	      if (e >= 6)
 		{
-		  sprintf (buff2, "%02d", dt1->dtime.second);
+		  sprintf (buff2, "%02d", dt1->dtime_u.dtime_t.second);
 		  if (strlen (buff))
 		    strcat (buff, ":");
 		  strcat (buff, buff2);
 		}
 	    }
-#endif
+
+}
 	  A4GL_push_char (buff);
 	  A4GL_setnull (DTYPE_DTIME, dt1->ptr,
 			use_binding[bind_counter].size);
@@ -4105,6 +4188,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 
 
 }
+
 /**
  * Implementationin ODBC of the transaction statements (BEGIN WORK,
  * COMMIT WORK, ROLLBACK WORK).
@@ -4117,23 +4201,14 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 void
 A4GLSQL_commit_rollback (int mode)
 {
-A4GLSQL_commit_rollback_internal(mode,1);
-}
-
-
-
-void A4GLSQL_commit_rollback_internal (int mode,int force) {
   HSTMT hstmt = 0;
   char *ptr;
   int tmode;
 
-
 #ifdef DEBUG
-  A4GL_debug ("TRANS In commit_rollback %d %d",mode,force);
+  A4GL_debug ("In commit_rollback");
 #endif
-
   ptr = acl_getenv ("TRANSMODE");
-
   if (strlen (ptr))
     {
       tmode = atoi (ptr);
@@ -4144,75 +4219,58 @@ void A4GLSQL_commit_rollback_internal (int mode,int force) {
     }
 
 
-
-
-if (tmode==-1) {
-	A4GL_debug("TRANS Ignore all transaction stuff");
-	return;
-}
-
+  if (tmode == -1)
+    return;
 
 
   if (tmode == 0)
     {
-	rc=0;
 #ifdef DEBUG
-      A4GL_debug ("TRANS ODBC Transaction Mode:%d (0=rollback 1=commit -1=begin ", mode);
+      A4GL_debug ("ODBC Transaction Mode:%d ", mode);
 #endif
-      if (mode == 1) {
-		A4GL_debug("TRANS Commit");
-		in_transaction=0;
-		rc=SQLTransact (henv, hdbc, SQL_COMMIT);
-  		chk_rc (rc, 0, "COMMIT");
-      //A4GL_set_sqlca (SQL_NULL_HSTMT, "Commit/Rollback", 0);
+      if (mode == 1)
+	{
+	  in_transaction = 0;
+	  SQLTransact (henv, hdbc, SQL_COMMIT);
 	}
 
-      if (mode == 0) {
-		A4GL_debug("TRANS Rollback");
-		in_transaction=0;
-		rc=SQLTransact (henv, hdbc, SQL_ROLLBACK);
-  		chk_rc (rc, 0, "ROLLBACK");
-      //A4GL_set_sqlca (SQL_NULL_HSTMT, "Commit/Rollback", 0);
+      if (mode == 0)
+	{
+	  in_transaction = 0;
+	  SQLTransact (henv, hdbc, SQL_ROLLBACK);
 	}
 
+      A4GL_set_sqlca (SQL_NULL_HSTMT, "Commit/Rollback", 0);
     }
   else
     {
-
-	if (force==0) {
-		A4GL_debug("TRANS Faking...");
-		return; /* not explicit  - ignore */
-	}
 #ifdef DEBUG
-      A4GL_debug ("TRANS Native Transaction Mode:%d", mode);
+      A4GL_debug ("Native Transaction Mode:%d", mode);
 #endif
-
-     A4GL_new_hstmt ((SQLHSTMT *)&hstmt);
-      if (mode == -1) {
-		in_transaction=1;
-		A4GL_debug("TRANS BEGIN WORK");
-		rc=SQLExecDirect (hstmt, "BEGIN WORK", SQL_NTS);
-  		chk_rc (rc, hstmt, "begin");
-      }
-
-      if (mode == 0) {
-		in_transaction=0;
-		A4GL_debug("TRANS ROLLBACK WORK");
-		rc=SQLExecDirect (hstmt, "ROLLBACK WORK", SQL_NTS);
-  		chk_rc (rc, hstmt, "rollback");
+      A4GL_new_hstmt ((SQLHSTMT *) & hstmt);
+      if (mode == -1)
+	{
+	  in_transaction = 1;
+	  SQLExecDirect (hstmt, "BEGIN WORK", SQL_NTS);
 	}
 
-      if (mode == 1) {
-	in_transaction=0;
-		A4GL_debug("TRANS COMMIT WORK");
-		rc=SQLExecDirect (hstmt, "COMMIT WORK", SQL_NTS);
-  		chk_rc (rc, hstmt, "commit");
+      if (mode == 0)
+	{
+	  in_transaction = 0;
+	  SQLExecDirect (hstmt, "ROLLBACK WORK", SQL_NTS);
 	}
 
+      if (mode == 1)
+	{
+	  in_transaction = 0;
+	  SQLExecDirect (hstmt, "COMMIT WORK", SQL_NTS);
+	}
+
+      A4GL_set_sqlca (hstmt, "Commit/Rollback", 0);
 
 
       SQLFreeStmt (hstmt, SQL_DROP);
-	hstmt=0;
+      hstmt = 0;
     }
 
 }
@@ -4225,7 +4283,8 @@ if (tmode==-1) {
  * @param sql1 Sql select text to generate the unload data.
  */
 void
-A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,int nbind, void *vibind)
+A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,
+			      int nbind, void *vibind)
 {
   HSTMT hstmt;
   char *sql2;
@@ -4242,7 +4301,7 @@ A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,int nbind, v
   SWORD scale;
   SWORD nullable;
   FILE *fout;
-  ibind=vibind;
+  ibind = vibind;
   fout = A4GL_mja_fopen (fname, "wt");
 
   if (fout == 0)
@@ -4256,25 +4315,27 @@ A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,int nbind, v
       A4GL_exitwith ("Not connected to database");
       return;
     }
-  A4GL_new_hstmt ((SQLHSTMT *)&hstmt);
+  A4GL_new_hstmt ((SQLHSTMT *) & hstmt);
 
   sql2 = strdup (sql1);
 
-  SQLPrepare ((SQLHSTMT)hstmt, sql2, SQL_NTS);
-  A4GL_proc_bind (ibind, nbind, 'i', (SQLHSTMT)hstmt);
-  rc = SQLExecute(hstmt);
+  SQLPrepare ((SQLHSTMT) hstmt, sql2, SQL_NTS);
+  A4GL_proc_bind (ibind, nbind, 'i', (SQLHSTMT) hstmt);
+  rc = SQLExecute (hstmt);
   chk_rc (rc, hstmt, "unload_data");
-  if (a4gl_sqlca.sqlcode<0) return;
+  if (a4gl_sqlca.sqlcode < 0)
+    return;
 
 #ifdef DEBUG
   A4GL_debug ("Executed %s %d", sql2, rc);
 #endif
 
   rc = SQLNumResultCols (hstmt, &ncols);
-	A4GL_debug("Calling chk_Rc %d\n",rc);
+  A4GL_debug ("Calling chk_Rc %d\n", rc);
   chk_rc (rc, hstmt, "unload_data");
-  if (a4gl_sqlca.sqlcode<0) return;
-	A4GL_debug("Done Calling chk_Rc %d status=%d \n",rc,a4gl_sqlca.sqlcode);
+  if (a4gl_sqlca.sqlcode < 0)
+    return;
+  A4GL_debug ("Done Calling chk_Rc %d status=%d \n", rc, a4gl_sqlca.sqlcode);
 
 
   for (colcnt = 1; colcnt <= ncols; colcnt++)
@@ -4300,8 +4361,8 @@ A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,int nbind, v
 	{
 
 	  rc =
-	    SQLGetData (hstmt,  colcnt, SQL_CHAR, databuf,
-			sizeof (databuf),  &ind);
+	    SQLGetData (hstmt, colcnt, SQL_CHAR, databuf,
+			sizeof (databuf), &ind);
 	  /*
 	     warning: passing arg 6 of `SQLGetData' from incompatible pointer type
 	     unsigned long ind;
@@ -4330,7 +4391,7 @@ A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,int nbind, v
 	      A4GL_trim (databuf);
 #ifdef DEBUG
 	      A4GL_debug ("Not null %s    datatype : %d", databuf,
-		     coltype[colcnt]);
+			  coltype[colcnt]);
 #endif
 
 	      if (strlen (databuf) == 0)
@@ -4354,7 +4415,7 @@ A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,int nbind, v
 #endif
   free (sql2);
   rc = SQLFreeStmt (hstmt, SQL_DROP);
-	hstmt=0;
+  hstmt = 0;
   fclose (fout);
   chk_rc (rc, hstmt, "SQLFreeStmt");
   a4gl_sqlca.sqlerrd[1] = cnt;
@@ -4532,31 +4593,36 @@ A4GL_chk_getenv (char *s, int a)
  * @param n 
  */
 void
-A4GLSQL_put_insert ( void *vibind, int n)
+A4GLSQL_put_insert (void *vibind, int n)
 {
-struct BINDING *ibind;
-char *cursorName;
+  struct BINDING *ibind;
+  char *cursorName;
   struct s_cid *cid;
   struct s_sid *sid;
-int ni;
-ibind=vibind;
+  int ni;
+  ibind = vibind;
 
 
   cursorName = A4GL_char_pop ();
   cid = A4GLSQL_find_cursor (cursorName);
-	free(cursorName);
-  if (cid==0) return;
-	A4GL_debug("Which Bind ? %p %d, %p %d",vibind,n,cid->statement->ibind,cid->statement->ni);
-  if (n) {
-	ibind=vibind;
-	ni=n;
-  } else {
-        ni=cid->statement->ni;
-        ibind=cid->statement->ibind;
-  }
-  sid=cid->statement;
-  A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT)sid->hstmt);
-  ODBC_exec_prepared_sql ((SQLHSTMT)sid->hstmt);
+  free (cursorName);
+  if (cid == 0)
+    return;
+  A4GL_debug ("Which Bind ? %p %d, %p %d", vibind, n, cid->statement->ibind,
+	      cid->statement->ni);
+  if (n)
+    {
+      ibind = vibind;
+      ni = n;
+    }
+  else
+    {
+      ni = cid->statement->ni;
+      ibind = cid->statement->ibind;
+    }
+  sid = cid->statement;
+  A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT) sid->hstmt);
+  ODBC_exec_prepared_sql ((SQLHSTMT) sid->hstmt);
 
 }
 
@@ -4581,46 +4647,63 @@ A4GLSQL_flush_cursor (char *cursor)
  * Used to initialise SQL library, ater loading it with dlopen,
  * called from fglwrap.c
  */
-int A4GLSQL_initsqllib (void)
+int
+A4GLSQL_initsqllib (void)
 {
   A4GLSQL_make_connection (0, 0, 0);
   return 1;
 }
 
-char *A4GLSQL_syscolval_expr(char *tabname,char *colname,char *typ) {
-	return 0;
+char *
+A4GLSQL_syscolval_expr (char *tabname, char *colname, char *typ)
+{
+  return 0;
 }
 
-struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) {
-char *ptr2;
-char *ptrn;
-char buff[256];
-A4GL_trim(val);
-ptr2=val;
-while (1) {
-        ptrn=strtok(ptr2,",");
-        if (ptrn==0) break;
-        if (ptr2) {ptr2=0;}
+struct expr_str *
+A4GL_add_validation_elements_to_expr (struct expr_str *ptr, char *val)
+{
+  char *ptr2;
+  char *ptrn;
+  char buff[256];
+  A4GL_trim (val);
+  ptr2 = val;
+  while (1)
+    {
+      ptrn = strtok (ptr2, ",");
+      if (ptrn == 0)
+	break;
+      if (ptr2)
+	{
+	  ptr2 = 0;
+	}
 
-        sprintf(buff,"A4GL_push_char(\"%s\");",ptrn);
+      sprintf (buff, "A4GL_push_char(\"%s\");", ptrn);
 
-        if (ptr==0) {
-                ptr=A4GL_new_expr(buff);
-        } else {
-                A4GL_append_expr(ptr,buff);
-        }
+      if (ptr == 0)
+	{
+	  ptr = A4GL_new_expr (buff);
+	}
+      else
+	{
+	  A4GL_append_expr (ptr, buff);
+	}
 
+    }
+  return ptr;
 }
-return ptr;
-}
 
 
-void *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
-char buff[300];
-sprintf(buff, "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'", acl_getenv("A4GL_SYSCOL_VAL"),tabname,colname);
+void *
+A4GLSQL_get_validation_expr (char *tabname, char *colname)
+{
+  char buff[300];
+  sprintf (buff,
+	   "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",
+	   acl_getenv ("A4GL_SYSCOL_VAL"), tabname, colname);
 
-printf("Warning Validation feature not implemented in ODBC SQL Driver\n");
-return 0;
+  printf ("Warning Validation feature not implemented in ODBC SQL Driver\n");
+  return 0;
 }
 
 
@@ -4650,40 +4733,46 @@ return 0;
  */
 
 static int
-A4GL_getdsnattr(char *dsn, char *attr, char *out, int outLen)
+A4GL_getdsnattr (char *dsn, char *attr, char *out, int outLen)
 {
-char *str = dsn, *start;
-int len = strlen(attr);
+  char *str = dsn, *start;
+  int len = strlen (attr);
 
-    while (*str) {
-		while (*str && *str == ';') {
-		    ++str;
-		}
-		start = str;
-		if ((str = strchr(str, '=')) == NULL) {
-		    return 0;
-		}
-		if (str - start == len &&
-			#ifdef _WIN32
-		    _strnicmp(start, attr, len) == 0
-			#else
-		    strncasecmp(start, attr, len) == 0
-			#endif
-		   ) {
-		    start = ++str;
-		    while (*str && *str != ';') {
-				++str;
-		    }
-		    len = min(outLen - 1, str - start);
-		    strncpy(out, start, len);
-		    out[len] = '\0';
-		    return 1;
-		}
-		while (*str && *str != ';') {
-		    ++str;
-		}
+  while (*str)
+    {
+      while (*str && *str == ';')
+	{
+	  ++str;
+	}
+      start = str;
+      if ((str = strchr (str, '=')) == NULL)
+	{
+	  return 0;
+	}
+      if (str - start == len &&
+#ifdef _WIN32
+	  _strnicmp (start, attr, len) == 0
+#else
+	  strncasecmp (start, attr, len) == 0
+#endif
+	)
+	{
+	  start = ++str;
+	  while (*str && *str != ';')
+	    {
+	      ++str;
+	    }
+	  len = min (outLen - 1, str - start);
+	  strncpy (out, start, len);
+	  out[len] = '\0';
+	  return 1;
+	}
+      while (*str && *str != ';')
+	{
+	  ++str;
+	}
     }
-    return 0;
+  return 0;
 }
 #endif
 
@@ -4695,40 +4784,45 @@ int len = strlen(attr);
  */
 
 static void
-GetAttributes(SETUPDLG *setupdlg)
+GetAttributes (SETUPDLG * setupdlg)
 {
-    char *dsn = setupdlg->attr[KEY_DSN].attr;
+  char *dsn = setupdlg->attr[KEY_DSN].attr;
 
-    if (!setupdlg->attr[KEY_DESC].supplied) {
-	SQLGetPrivateProfileString(dsn, "Description", "",
-				   setupdlg->attr[KEY_DESC].attr,
-				   sizeof (setupdlg->attr[KEY_DESC].attr),
-				   ODBC_INI);
+  if (!setupdlg->attr[KEY_DESC].supplied)
+    {
+      SQLGetPrivateProfileString (dsn, "Description", "",
+				  setupdlg->attr[KEY_DESC].attr,
+				  sizeof (setupdlg->attr[KEY_DESC].attr),
+				  ODBC_INI);
     }
-    if (!setupdlg->attr[KEY_DBNAME].supplied) {
-	SQLGetPrivateProfileString(dsn, "Database", "",
-				   setupdlg->attr[KEY_DBNAME].attr,
-				   sizeof (setupdlg->attr[KEY_DBNAME].attr),
-				   ODBC_INI);
+  if (!setupdlg->attr[KEY_DBNAME].supplied)
+    {
+      SQLGetPrivateProfileString (dsn, "Database", "",
+				  setupdlg->attr[KEY_DBNAME].attr,
+				  sizeof (setupdlg->attr[KEY_DBNAME].attr),
+				  ODBC_INI);
     }
-    if (!setupdlg->attr[KEY_BUSY].supplied) {
-	SQLGetPrivateProfileString(dsn, "Timeout", "1000",
-				   setupdlg->attr[KEY_BUSY].attr,
-				   sizeof (setupdlg->attr[KEY_BUSY].attr),
-				   ODBC_INI);
+  if (!setupdlg->attr[KEY_BUSY].supplied)
+    {
+      SQLGetPrivateProfileString (dsn, "Timeout", "1000",
+				  setupdlg->attr[KEY_BUSY].attr,
+				  sizeof (setupdlg->attr[KEY_BUSY].attr),
+				  ODBC_INI);
     }
-    if (!setupdlg->attr[KEY_NOWCHAR].supplied) {
-	SQLGetPrivateProfileString(dsn, "NoWCHAR", "",
-				   setupdlg->attr[KEY_NOWCHAR].attr,
-				   sizeof (setupdlg->attr[KEY_NOWCHAR].attr),
-				   ODBC_INI);
+  if (!setupdlg->attr[KEY_NOWCHAR].supplied)
+    {
+      SQLGetPrivateProfileString (dsn, "NoWCHAR", "",
+				  setupdlg->attr[KEY_NOWCHAR].attr,
+				  sizeof (setupdlg->attr[KEY_NOWCHAR].attr),
+				  ODBC_INI);
     }
 #ifdef ASYNC
-    if (!setupdlg->attr[KEY_THR].supplied) {
-	SQLGetPrivateProfileString(dsn, "Threaded", "1",
-				   setupdlg->attr[KEY_THR].attr,
-				   sizeof (setupdlg->attr[KEY_THR].attr),
-				   ODBC_INI);
+  if (!setupdlg->attr[KEY_THR].supplied)
+    {
+      SQLGetPrivateProfileString (dsn, "Threaded", "1",
+				  setupdlg->attr[KEY_THR].attr,
+				  sizeof (setupdlg->attr[KEY_THR].attr),
+				  ODBC_INI);
     }
 #endif
 }
@@ -4744,74 +4838,83 @@ GetAttributes(SETUPDLG *setupdlg)
  */
 
 static SQLRETURN
-example_drvconnect(SQLHDBC dbc, SQLCHAR *dsn, SQLSMALLINT dsnLen)
+example_drvconnect (SQLHDBC dbc, SQLCHAR * dsn, SQLSMALLINT dsnLen)
 {
-DBC *d;
-int len;
-char buf[SQL_MAX_MESSAGE_LENGTH], dbname[SQL_MAX_MESSAGE_LENGTH / 4];
-char busy[SQL_MAX_MESSAGE_LENGTH / 4];
-char tflag[32], nwflag[32];
+  DBC *d;
+  int len;
+  char buf[SQL_MAX_MESSAGE_LENGTH], dbname[SQL_MAX_MESSAGE_LENGTH / 4];
+  char busy[SQL_MAX_MESSAGE_LENGTH / 4];
+  char tflag[32], nwflag[32];
 
 
 //Test parameters we got:
-	if (dbc == SQL_NULL_HDBC) {
-		return SQL_INVALID_HANDLE;
+  if (dbc == SQL_NULL_HDBC)
+    {
+      return SQL_INVALID_HANDLE;
     }
-    d = (DBC *) dbc;
-    if (d->magic != DBC_MAGIC) {
-		return SQL_INVALID_HANDLE;
+  d = (DBC *) dbc;
+  if (d->magic != DBC_MAGIC)
+    {
+      return SQL_INVALID_HANDLE;
     }
-    if (d->sqlite != NULL) {
-		setstatd(d, "connection already established", "08002");
-		return SQL_ERROR;
+  if (d->sqlite != NULL)
+    {
+      setstatd (d, "connection already established", "08002");
+      return SQL_ERROR;
     }
-    buf[0] = '\0';
-    if (dsnLen == SQL_NTS) {
-		len = sizeof (buf) - 1;
-    } else {
-		len = min(sizeof (buf) - 1, dsnLen);
+  buf[0] = '\0';
+  if (dsnLen == SQL_NTS)
+    {
+      len = sizeof (buf) - 1;
     }
-    if (dsn != NULL) {
-		strncpy(buf, dsn, len);
+  else
+    {
+      len = min (sizeof (buf) - 1, dsnLen);
     }
-    buf[len] = '\0';
-    if (buf[0] == '\0') {
-		setstatd(d, "invalid DSN", "S1090");
-		return SQL_ERROR;
+  if (dsn != NULL)
+    {
+      strncpy (buf, dsn, len);
     }
-    busy[0] = '\0';
-    dbname[0] = '\0';
+  buf[len] = '\0';
+  if (buf[0] == '\0')
+    {
+      setstatd (d, "invalid DSN", "S1090");
+      return SQL_ERROR;
+    }
+  busy[0] = '\0';
+  dbname[0] = '\0';
 #ifdef WITHOUT_DRIVERMGR
 //get info from odbc.ini using our own read function
-	A4GL_getdsnattr(buf, "database", dbname, sizeof (dbname));
-    if (dbname[0] == '\0') {
-		strncpy(dbname, buf, sizeof (dbname));
-		dbname[sizeof (dbname) - 1] = '\0';
+  A4GL_getdsnattr (buf, "database", dbname, sizeof (dbname));
+  if (dbname[0] == '\0')
+    {
+      strncpy (dbname, buf, sizeof (dbname));
+      dbname[sizeof (dbname) - 1] = '\0';
     }
-    A4GL_getdsnattr(buf, "timeout", busy, sizeof (busy));
-    tflag[0] = '\0';
-    nwflag[0] = '\0';
-	#ifdef ASYNC
-	    A4GL_getdsnattr(buf, "threaded", tflag, sizeof (tflag));
-	#endif
-    A4GL_getdsnattr(buf, "nowchar", nwflag, sizeof (nwflag));
+  A4GL_getdsnattr (buf, "timeout", busy, sizeof (busy));
+  tflag[0] = '\0';
+  nwflag[0] = '\0';
+#ifdef ASYNC
+  A4GL_getdsnattr (buf, "threaded", tflag, sizeof (tflag));
+#endif
+  A4GL_getdsnattr (buf, "nowchar", nwflag, sizeof (nwflag));
 #else
 //get info from odbc.ini using driver manager function calls:
-	SQLGetPrivateProfileString(buf, "timeout", "1000",
-			       busy, sizeof (busy), ODBC_INI);
-    SQLGetPrivateProfileString(buf, "database", "",
-			       dbname, sizeof (dbname), ODBC_INI);
-	#ifdef ASYNC
-	    SQLGetPrivateProfileString(buf, "threaded", "",
-				       tflag, sizeof (tflag), ODBC_INI);
-	#endif
-    SQLGetPrivateProfileString(buf, "nowchar", "",
-			       nwflag, sizeof (nwflag), ODBC_INI);
+  SQLGetPrivateProfileString (buf, "timeout", "1000",
+			      busy, sizeof (busy), ODBC_INI);
+  SQLGetPrivateProfileString (buf, "database", "",
+			      dbname, sizeof (dbname), ODBC_INI);
+#ifdef ASYNC
+  SQLGetPrivateProfileString (buf, "threaded", "",
+			      tflag, sizeof (tflag), ODBC_INI);
+#endif
+  SQLGetPrivateProfileString (buf, "nowchar", "",
+			      nwflag, sizeof (nwflag), ODBC_INI);
 #endif
 
-	//Now we can connect:
-	//d->nowchar = getbool(nwflag);
-    //return dbopen(d, dbname, dsn, tflag, busy);
+  //Now we can connect:
+  //d->nowchar = getbool(nwflag);
+  //return dbopen(d, dbname, dsn, tflag, busy);
 }
 
 
