@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.14 2004-01-18 12:57:39 mikeaubury Exp $
+# $Id: ui.c,v 1.15 2004-01-18 18:13:27 mikeaubury Exp $
 #
 */
 
@@ -262,6 +262,7 @@ void A4GL_display_at (int n, int a)
   void *tos_ptr;
   int clr_end_of_line = 0;
   int display_type;
+  int line_length;
 
   x = 0;
   y = 0;
@@ -294,7 +295,6 @@ void A4GL_display_at (int n, int a)
     }
   else
     {
-      int line_length;
 
       if (A4GL_iscurrborder ())
 	{
@@ -501,7 +501,7 @@ int ls;
           function =
             A4GL_get_datatype_function_i (tos_dtype & DTYPE_MASK, "DISPLAY");
 
-              ptr =
+              ptr = 
                 function (tos_ptr, tos_size, -1,
                           (struct struct_scr_field *) 0,display_type);
 
@@ -514,12 +514,15 @@ int ls;
       if (ptr == 0)
         {
           ptr = A4GL_char_pop ();
-        }
+        } else {
+	ptr=strdup(ptr);
+	}
 
       buff = realloc (buff, strlen (s) + strlen (ptr) + 1);
 	ls= strlen (s) + strlen (ptr) + 1;
       s = realloc (s, ls);
       sprintf (buff, "%s%s", ptr, s);
+      free(ptr);
       strcpy (s, buff);
       A4GL_debug ("s='%s' %p %d %d\n", s, s,strlen(s),ls);
     }

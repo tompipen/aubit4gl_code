@@ -114,8 +114,6 @@ A4GL_fgl_getfldbuf_ia_ap void* inp va_list* ap -> int
 A4GL_zrefresh -> void
 /* void A4GL_gotolinemode (void)*/
 A4GL_gotolinemode -> void
-/* int  A4GL_get_curr_width_gtk (void)*/
-/* A4GL_get_curr_width_gtk -> int */
 /* char*  A4GL_get_currwin_name (void)*/
 A4GL_get_currwin_name -> char*
 /* void A4GL_gui_run_til_no_more (void)*/
@@ -141,8 +139,6 @@ A4GL_fgl_fieldnametoid char* f char* s int n -> int
 aclfgl_set_window_title int nargs -> int
 
 
-/* void*  A4GL_get_curr_win_gtk (void)*/
-A4GL_get_curr_win_gtk -> void*
 
 
 /* void*  A4GL_make_pixmap_gw (char* filename)*/
