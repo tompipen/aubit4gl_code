@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.58 2004-10-28 22:01:11 mikeaubury Exp $
+# $Id: 4glc.c,v 1.59 2004-12-10 19:03:00 mikeaubury Exp $
 #
 */
 
@@ -90,6 +90,7 @@ main (int argc, char *argv[])
   A4GL_setarg0 (argv[0]);
   A4GL_debug ("Initializing 4glc\n");
   memset(infilename,0,sizeof(infilename));
+   init_blk();
   //init_states ();
   a4gl_yydebug = 1;
 

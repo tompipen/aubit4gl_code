@@ -1041,6 +1041,10 @@ sel_p2_ss : { $<sql_string>$=strdup(""); }
 ;
 
 
+sel_finish_unload: {$<sql_string>$=strdup("");}
+	| order_by_clause {  $<sql_string>$=make_sql_string_and_free(kw_space,strdup($<str>1),0); }
+;
+
 
 sel_finish: {$<sql_string>$=strdup("");}
 	| order_by_clause  {  $<sql_string>$=strdup($<str>1); }
@@ -1200,7 +1204,15 @@ value_specification:
 	 literal
 ;
 
-unload_cmd :  opt_use UNLOAD_TO ufile opt_delim select_statement2_ss {
+
+select_statement_unload : select_statement2_ss sel_finish_unload {
+	$<sql_string>$=make_sql_string_and_free($<sql_string>1,$<sql_string>2,0);
+}
+;
+
+
+
+unload_cmd :  opt_use UNLOAD_TO ufile opt_delim select_statement_unload {
 print_unload($<str>3,$<str>4,$<sql_string>5);
 print_undo_use($<str>1);
 }

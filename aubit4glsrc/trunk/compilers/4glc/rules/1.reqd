@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.58 2004-11-25 15:45:48 mikeaubury Exp $
+# $Id: 1.reqd,v 1.59 2004-12-10 19:05:59 mikeaubury Exp $
 #
 */
 
@@ -176,8 +176,8 @@ int 		iskey=0;
 int 		insql=0;
 int 		menu_cnt=0;
 int 		chk4var=0;
-int 		menu_cmd_cnt[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-int 		menu_blk[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int 		menu_cmd_cnt[MAXMENUOPTS] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int 		menu_blk[MAXMENU]         ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int 		in_sql=0;
 int 		continue_cmd[]={0,1,1,1,1,1,1,1,1,0};
 int 		in_cmd[]={0,0,0,0,0,0,0,0,0,0};
