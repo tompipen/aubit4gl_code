@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readmsg.c,v 1.6 2002-06-26 06:11:43 afalout Exp $
+# $Id: readmsg.c,v 1.7 2002-09-17 09:38:02 afalout Exp $
 #*/
 
 /**
@@ -103,13 +103,13 @@ read_help_f (int no,int *maxwidth)
 
       if (pos == -1 || pos > no) {
          debug("Out of range 1");
-         exitwith("Help message not found");
+         exitwith ("Help message not found");
         break;
       }
 
       if (feof (helpfile)) {
          debug("End of file");
-         exitwith("Help message not found");
+         exitwith ("Help message not found");
         return 0;
         break;
       }
@@ -149,7 +149,7 @@ read_help_f (int no,int *maxwidth)
            return cnt;
       }
     }
-  exitwith("Could not read help message");
+  exitwith ("Could not read help message");
   return 0;
 
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.11 2002-08-29 09:10:31 afalout Exp $
+# $Id: error.c,v 1.12 2002-09-17 09:38:01 afalout Exp $
 #
 */
 
@@ -68,7 +68,9 @@
 =====================================================================
 */
 
-/* this would prevent exitwith call from exiting program. If you need it
+/* 
+DO NOT USE e-x-i-t-w-i-t-h as word - it will confuse mkerrors script@
+this would prevent exit-with call from exiting program. If you need it
 please use -DIGNOREEXITWITH on compile line, do not hard-code it! */
 /* #define IGNOREEXITWITH */
 
@@ -97,15 +99,18 @@ char * get_errm(int z);
 =====================================================================
 */
 
+
+
 /**
  *
  * @todo Describe function
  */
 void
-// IGNOREEXITWITH exitwith(char *s)
+// IGNOREEXITWITH exit-with(char *s)
 exitwith(char *s)
 {
 int a;
+
 	#ifdef DEBUG
 		{debug("Error... %s",s);}
 	#endif
@@ -137,7 +142,6 @@ int a;
     #endif
 }
 
-
 /**
  *
  * @todo Describe function
@@ -147,6 +151,7 @@ void
 exitwith_sql(char *s)
 {
 int a;
+
 	#ifdef DEBUG
 		{debug("Error... %s",s); }
 	#endif

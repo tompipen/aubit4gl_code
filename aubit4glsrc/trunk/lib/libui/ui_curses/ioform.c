@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.2 2002-08-31 06:20:00 afalout Exp $
+# $Id: ioform.c,v 1.3 2002-09-17 09:38:02 afalout Exp $
 #*/
 
 /**
@@ -1274,8 +1274,7 @@ set_fields (struct s_screenio *sio)
       debug
         ("Number of fields (%d) is not the same as the number of vars (%d)",
          nofields + 1, nv);
-      exitwith
-        ("Number of fields is not the same as the number of variables");
+      exitwith ("Number of fields is not the same as the number of variables");
       return 0;
     }
 
@@ -1385,8 +1384,7 @@ set_fields2 (int nv, struct BINDING * vars, int d, int n,...)
       sprintf (errbuff,
                "Number of fields (%d) is not the same as the number of vars (%d)",
                nofields, nv);
-      exitwith
-        ("Number of fields is not the same as the number of variables");
+      exitwith ("Number of fields is not the same as the number of variables");
     }
 
   for (a = 0; a <= nofields; a++)

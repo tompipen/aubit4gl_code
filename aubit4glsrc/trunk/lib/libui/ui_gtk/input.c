@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: input.c,v 1.2 2002-09-17 09:38:03 afalout Exp $
 #*/
 
 /**
@@ -561,8 +561,7 @@ set_fields (struct s_screenio * sio)
       debug
 	("Number of fields (%d) is not the same as the number of vars (%d)",
 	 nofields + 1, nv);
-      exitwith
-	("Number of fields is not the same as the number of variables");
+      exitwith ("Number of fields is not the same as the number of variables");
       return 0;
     }
 

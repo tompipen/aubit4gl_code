@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.8 2002-06-25 03:22:30 afalout Exp $
+# $Id: dates.c,v 1.9 2002-09-17 09:38:01 afalout Exp $
 #
 */
 
@@ -225,7 +225,7 @@ gen_dateno(int day,int month,int year)
 {
 	int z;
 	#ifdef DEBUG
-	/* {DEBUG} */ {        debug("In gen_dateno %d %d %d",day,month,year);}
+		{debug("In gen_dateno %d %d %d",day,month,year);}
 	#endif
 	z=gen_dateno2(day,month,year);
 	if (z==DATE_INVALID) {

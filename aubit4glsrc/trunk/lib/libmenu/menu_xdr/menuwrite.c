@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.7 2002-06-29 13:12:02 afalout Exp $
+# $Id: menuwrite.c,v 1.8 2002-09-17 09:38:02 afalout Exp $
 #*/
 
 /**
@@ -114,7 +114,7 @@ void error_with (char *s, char *a, char *b);
 */
 
 /**
- * is this not the same as exitwith() ?
+ * is this not the same as e-x-i-t-w-i-t-h-() ?
  *
  * @todo Describe function
  */
