@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.9 2002-06-01 11:54:59 afalout Exp $
+# $Id: gui.c,v 1.10 2002-06-05 07:04:55 afalout Exp $
 #
 */
 
@@ -80,9 +80,7 @@
 =====================================================================
 */
 
-//obsolete #include <arpa/inet.h> //for inet_addr()
-
-#include <unistd.h> //close() write()
+#include <unistd.h> 			/* close() write() */
 
 #ifndef WIN32
 	#include <sys/time.h>
@@ -118,6 +116,7 @@ static int 	find_str_in 	(char *s);
 char * 		read_clicked 	(void);
 void * 		decode_clicked 	(void);
 
+
 /*
 =====================================================================
                     Variables definitions
@@ -137,7 +136,7 @@ struct s_in
 {
   char name[10];
   char format[20];
-  void (*func) ();
+  void (*func) (void);
 }
 
 defs[] =
@@ -146,10 +145,6 @@ defs[] =
   { "Click", "IIII", gui_click},
   { "0", "0", 0}
 };
-
-//gui.c:148: warning: missing braces around initializer
-//gui.c:148: warning: (near initialization for `defs[2].name')
-
 
 /*
 =====================================================================
@@ -187,8 +182,6 @@ proc_it (char *buff)
 void
 start_gui (void)
 {
-//  char buffer[1024];
-//  char *current_character;
   char *p;
   int port = -1;
 
@@ -359,10 +352,7 @@ atoaddr (char *address)
  *   - otherwise :
  */
 int
-get_connection (socket_type, port, listener)
-     int socket_type;
-     u_short port;
-     int *listener;
+get_connection (int socket_type,u_short port,int *listener)
 {
   struct sockaddr_in address;
   int listening_socket;
@@ -423,7 +413,7 @@ get_connection (socket_type, port, listener)
 		}
 	    }
 
-	  //new_process = fork();
+	  /* new_process = fork(); */
 	  new_process = 0;
 	  if (new_process < 0)
 	    {
@@ -619,7 +609,7 @@ sock_gets (int sockfd, char *str, size_t count)
       while (1)
 	{
 
-	  //retval=select(10,&rfds,0,0,&tv);
+	  /* retval=select(10,&rfds,0,0,&tv); */
 	  retval = 1;
 
 
@@ -664,9 +654,7 @@ sock_gets (int sockfd, char *str, size_t count)
  * @return -1 if the connection is closed while it is trying to write.
  */
 int
-sock_puts (sockfd, str)
-     int sockfd;
-     char *str;
+sock_puts (int sockfd,char *str)
 {
   return sock_write (sockfd, str, strlen (str));
 }
@@ -800,7 +788,7 @@ decode_clicked (void)
   debug ("m_retval=%s", m_cretval);
   sprintf (buff, "0x%s", m_cretval);
   debug ("Buff set to %s", buff);
-//  sscanf (buff, "%lx", (long unsigned int) &ptr); // waring: format argument is not a pointer (arg 3)
+/*  sscanf (buff, "%lx", (long unsigned int) &ptr); // waring: format argument is not a pointer (arg 3) */
     sscanf (buff, "%px", &ptr);
   debug ("Ptr set to %p", ptr);
   return ptr;
@@ -881,9 +869,9 @@ int
 last_error (void)
 {
   return errno;
-//return WSAGetLastError();
+/* return WSAGetLastError(); */
 }
 
 
-// ================================ EOF ================================
+/* ================================ EOF ================================ */
 

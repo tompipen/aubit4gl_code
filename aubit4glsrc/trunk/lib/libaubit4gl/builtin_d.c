@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.5 2002-06-01 11:54:59 afalout Exp $
+# $Id: builtin_d.c,v 1.6 2002-06-05 07:04:55 afalout Exp $
 #
 */
 
@@ -61,9 +61,6 @@
 #include <string.h>
 #include <locale.h>
 #include <time.h>
-//#include <unistd.h>
-//#include <pwd.h>
-
 
 #include "a4gl_dbform.h"
 #include "a4gl_dates.h"
@@ -88,7 +85,7 @@ extern int errno;
  */
 struct s_funcs {
 	char *fname;    /**< The function name */
-	void (*func)(); /**< Pointer to the function too execute */
+	void (*func)(void); /**< Pointer to the function too execute */ /*warning: function declaration isn't a prototype*/
 	int nin;        /**< Number of input parameters */
 	int nout;       /**< NUmber of values returned */
 };
@@ -209,9 +206,11 @@ push_date(long p)
 void
 push_byte(void *ptr)
 {
-	//void *p2;
-	//p2=acl_malloc(sizeof(struct fgl_int_loc),"push_byte");
-	//memcpy(p2,ptr,sizeof(struct fgl_int_loc));
+	/*
+	void *p2;
+	p2=acl_malloc(sizeof(struct fgl_int_loc),"push_byte");
+	memcpy(p2,ptr,sizeof(struct fgl_int_loc));
+    */
 	push_param(ptr,DTYPE_BYTE+ENCODE_SIZE(sizeof(struct fgl_int_loc)));
 }
 	
@@ -340,7 +339,7 @@ aclfgl_hex(void)
   long z;
   char buff[100];
   z=pop_long();
-  sprintf(buff,"0x%x",(int)z);  // warning: unsigned int format, long unsigned int arg (arg 3)
+  sprintf(buff,"0x%x",(int)z);
   push_char(buff);
 }
 
@@ -366,7 +365,6 @@ aclfgl_abs(void)
  * Used for 4GL MOD function.
  *
  */
-//static void  // warning: `func_mod' defined but not used
 void
 func_mod(void)
 
@@ -438,7 +436,6 @@ aclfgl_sqrt(void)
  *
  * @todo Describe function
  */
-//static void
 void
 func_trunc(void)
 {
@@ -450,7 +447,6 @@ func_trunc(void)
  *
  * @todo Describe function
  */
-//static void
 void
 func_round(void)
 {
@@ -462,7 +458,6 @@ func_round(void)
  *
  * @todo Describe function
  */
-//static void
 void
 func_exp(void)
 {
@@ -485,7 +480,6 @@ func_logn(void)
  *
  * @todo Describe function
  */
-//static void
 void
 func_log10(void)
 {
@@ -497,7 +491,6 @@ func_log10(void)
  *
  * @todo Describe function
  */
-//static void
 void
 func_length(void)
 {
@@ -775,18 +768,17 @@ push_variable(void *ptr,int dtype)
 		{debug("Pushing variable %p dtype %d   %d",ptr,dtype&DTYPE_MASK,dtype); }
 	#endif
 
-
-
-
-   if (has_datatype_function_i(dtype,"COPY")) {
-                void *(*function) ();
+   if (has_datatype_function_i(dtype,"COPY")) 
+   {
+                void *(*function) (void *);
                 void *nptr;
                 function=get_datatype_function_i(dtype,"COPY");
                 nptr=function(ptr);
                 push_param (nptr, dtype+DTYPE_MALLOCED);
                 return;
    }
-	switch (dtype&DTYPE_MASK) 
+
+	switch (dtype&DTYPE_MASK)
 	{
 		case 0: push_chars(ptr,dtype,DECODE_SIZE(dtype));return;break;
 		case 1: push_int(*(int *)ptr);return;break;
@@ -823,12 +815,12 @@ push_variable(void *ptr,int dtype)
 	}
 
 	debug("Couldnt process datatype %x",dtype);
-	//exitwith("Internal Error : Couldnt process datatype %x\n",dtype);  too many arguments to function `exitwith'
+	/* exitwith("Internal Error : Couldnt process datatype %x\n",dtype);  too many arguments to function `exitwith' */
     exitwith("Internal Error : Couldnt process datatype \n");
 
 
 }
 
 
-// ============================== EOF ===============================
+/* ============================== EOF =============================== */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_exreport.c,v 1.9 2002-06-01 11:54:59 afalout Exp $
+# $Id: API_exreport.c,v 1.10 2002-06-05 07:04:55 afalout Exp $
 #
 */
 
@@ -68,7 +68,11 @@ static void *libptr=0;
 
 
 static int 		(*func)				();
-static double 	(*func_d)			();
+
+/* static double 	(*func_d)			(); */
+static double 	(*func_d)			(double f, char c,struct pdf_rep_structure *p);
+
+
 void *			find_func			(void *p,char *s);
 extern void *	find_func_double 	(void *dllhandle, char *func); //in calldll.c
 void 			pdf_skip_by			(void *rep,double a);

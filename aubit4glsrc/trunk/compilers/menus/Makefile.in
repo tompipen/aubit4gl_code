@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.26 2002-05-28 10:32:08 afalout Exp $
+# $Id: Makefile.in,v 1.27 2002-06-05 07:04:54 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -46,6 +46,11 @@ endif
 
 #FIXME: this compiler should not depend on RPC:
 CFLAGS		   +=-I. -I../../lib/libincl -I../fcompile @RPCLIB_INCLUDE@
+
+#we cannot compile GTK code with  -Wstrict-prototypes because
+#GTK+ supplied libraries have many functions declared without parameters
+#CFLAGS_GTK_C =$(CFLAGS:%-Wstrict-prototypes=%)
+
 
 ## ==================================================================
 ##                              Source files
@@ -114,6 +119,10 @@ endif
 
 rpc:
 	${RPCGEN}
+
+#%.o: %.c
+#	${CC} ${CFLAGS_GTK_C} -c -o $@ $^
+
 
 ## ==================================================================
 ##                             Dependencies

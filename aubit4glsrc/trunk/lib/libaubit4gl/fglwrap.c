@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.10 2002-06-01 11:54:59 afalout Exp $
+# $Id: fglwrap.c,v 1.11 2002-06-05 07:04:55 afalout Exp $
 #
 */
 
@@ -166,26 +166,34 @@ fgl_end(void)
 void
 fgl_start(int nargs,char *argv[])
 {
-  int a;
-  int b=0;
-  void *ptr;
-//  void *ptr_win;
-//  int mcode;
-  char *p;
+int a;
+int b=0;
+void *ptr;
+char *p;
 
-	include_builtin_in_exe(); // This does nothing - but we NEED IT!
-			// If builtin is not in the executable then we get link errors
-        init_datatypes();
-	//load settings from config file(s):
+	/* This does nothing - but we NEED IT!
+	If builtin is not in the executable then we get link errors */
+	include_builtin_in_exe();
+        
+	init_datatypes();
+	
+	/* load settings from config file(s): */
 	build_user_resources();
 
+    /* no need to pre-load this
 	if (!A4GLSQL_initlib())
 	{
-		printf("4gllib: Error opening SQL Library - check A4GL_SQLTYPE is set correctly (A4GL_SQLTYPE=%s)\n", 
+		printf("4gllib: Error opening SQL Library - check A4GL_SQLTYPE is set correctly (A4GL_SQLTYPE=%s)\n",
 		  acl_getenv("A4GL_SQLTYPE")
 		);
 		exit(1);
 	}
+    
+	debug("Connecting...");
+	A4GLSQL_initsqllib();
+
+
+	*/
 
 	if (acl_getenv("AUBITGUI")) {
 		p=acl_getenv("AUBITGUI");
@@ -200,19 +208,19 @@ fgl_start(int nargs,char *argv[])
 	setlocale(LC_ALL,"");
 	setlocale(LC_CTYPE,"");
 	#ifdef DEBUG
-	/*{DEBUG}*/ {debug("Starting program - %d arguments argv=%p",nargs,argv);}
+		{debug("Starting 4gl program - %d arguments argv=%p",nargs,argv);}
 	#endif
 
 	b=0;
 	for (a=0;a<256;a++) 
 	{
-		//debug("a=%d\n",a);
+		/* debug("a=%d\n",a); */
 		if (a<nargs)
 		if (argv[a]) 
 		{
 
-		  //FIXME: we already printed something to stdout at this point...
-		  //printf("Check..");
+		/* FIXME: we already printed something to stdout at this point... */
+		/* printf("Check.."); */
   
 	    if (strncmp(argv[a],"GUIPORT",7)==0) {
 	       debug("GUIMODE");
@@ -220,28 +228,32 @@ fgl_start(int nargs,char *argv[])
 	       continue;
 	    }
   
-	    if (strncmp(argv[a],"NOCURSES",8)==0) {     //FIXME: this is now AUBITGUI=CONSOLE
+	    if (strncmp(argv[a],"NOCURSES",8)==0) {     /* FIXME: this is now AUBITGUI=CONSOLE */
 	       debug("NOCURSES");
 	       putenv(argv[a]);
 	       continue;
 	    }
 
 	  }
-    //debug("Copy");
 
-    if (a<nargs) p_args[b++]=strdup(argv[a]);
-    else p_args[b++]=0;
+	    if (a<nargs) p_args[b++]=strdup(argv[a]);
+    		else p_args[b++]=0;
 	}
+
 	debug("Copied Arguments\n");
 
 	start_gui();
+	
+    /* no need to pre-load this
 	A4GLREPORT_initlib();
+    */
 
-	//signal (SIGINT, fgl_end);
+	/* signal (SIGINT, fgl_end); */
 	nodef_init();
 	debug("Init");
 
 
+    /* no need to pre-load this
 	// Initialize the UI library (ie load the dll)
 	if (!A4GLUI_initlib()) {
 		printf("4gllib: Error opening UI library (AUBITGUI=%s)\n",acl_getenv("AUBITGUI"));
@@ -250,14 +262,12 @@ fgl_start(int nargs,char *argv[])
 
 	// Do any startup required by the library
 	A4GLUI_ui_init(nargs,argv);
+    */
 
 	/*
     FIXME: programs should do make connection call only when they
     encounter DATABSE, CONNECT, etc - since we now have no-ODBC build
 	*/
-
-	debug("Connecting...");
-	A4GLSQL_initsqllib();
 
 	debug("Allocating rack loads of space.... saves time later");
 
@@ -267,9 +277,9 @@ fgl_start(int nargs,char *argv[])
 
 	/*endwin();*/ /* switch straight back to terminal mode */
 	#ifdef WIN32
-	#ifndef __CYGWIN__
-	  rpc_nt_init();
-	#endif
+		#ifndef __CYGWIN__
+		  rpc_nt_init();
+		#endif
 	#endif
 
 	debug("All done");

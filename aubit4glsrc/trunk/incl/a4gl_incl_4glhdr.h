@@ -176,12 +176,12 @@
 
 	/* Prototpes for functions that should be seen */
 	char *	new_string(int a);
-	int 	pop_bool();
+	int 	pop_bool(void);
 	int 	pop_int(void);
-	long 	pop_long();
-	long 	pop_date();
-	float 	pop_float();
-	double 	pop_double();
+	long 	pop_long(void);
+	long 	pop_date(void);
+	float 	pop_float(void);
+	double 	pop_double(void);
 	int 	pop_var(void *p,int d) ;
 	int 	pop_var2(void *p,int d,int s) ;
 	double 	ret_var(void *p,int d) ;
@@ -194,12 +194,12 @@
 	void 	push_param		(void *p,int d);
 	void 	push_params 	(struct BINDING *b, int n);
 
-	void 	push_user();
-	void 	push_today();
-	int 	opboolean();
+	void 	push_user(void);
+	void 	push_today(void);
+	int 	opboolean(void);
 	void 	pop_args(int a) ;
 	void 	debug_print_stack(void) ;
-	void 	print_stack() ;
+	void 	print_stack(void) ;
 
 
 	void 	locate_var(struct fgl_int_loc *p,char where,char *filename);
@@ -243,7 +243,9 @@
 	    int printed_page_no;
 	    int line_no;
 	    int col_no;
-	    int (*report)();
+		/* was 	    int (*report)(); */
+		/* int (*report)(void); */ /* report.c:180: too many arguments to function */
+        int (*report)(int a, int b);
 	};
 	struct pdf_rep_structure {
 	    double top_margin,bottom_margin,left_margin,right_margin;
@@ -260,8 +262,10 @@
 	    int printed_page_no;
 	    double line_no;
 	    double col_no;
-	    int (*report)();
-	    char font_name[256];
+		/* was 	    int (*report)(); */
+		/* int (*report)(void); */ /* report.c:180: too many arguments to function */
+        int (*report)(int a, int b);
+		char font_name[256];
 	    double font_size;
 	    int paper_size;
 	    void *pdf_ptr;

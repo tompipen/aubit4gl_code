@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.9 2002-06-01 11:54:59 afalout Exp $
+# $Id: calldll.c,v 1.10 2002-06-05 07:04:55 afalout Exp $
 #
 */
 
@@ -190,7 +190,8 @@ dl_openlibrary (char *type, char *name)
 void *
 find_func (void *dllhandle, char *func)
 {
-  int (*func_ptr) ();
+int (*func_ptr) (void);
+
   debug("find_func: Finding pointer to DLL function %s\n",func);
 
  sprintf (tempbuff, "%s",func);
@@ -226,7 +227,7 @@ find_func (void *dllhandle, char *func)
 void *
 find_func_double (void *dllhandle, char *func)
 {
-  double (*func_ptr) ();
+  double (*func_ptr) (void);
   debug("find_func_double: Finding pointer to DLL function %s which returns a double\n",func);
 
  sprintf (tempbuff, "%s",func);
@@ -255,7 +256,7 @@ find_func_double (void *dllhandle, char *func)
 void *
 find_func_allow_missing (void *dllhandle, char *func)
 {
-  int (*func_ptr) ();
+  int (*func_ptr) (void);
   debug("find_func_allow_missing: Finding pointer to DLL function %s\n",func);
   
  sprintf (tempbuff, "%s",func);

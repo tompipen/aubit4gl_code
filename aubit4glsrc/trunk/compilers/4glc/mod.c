@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.69 2002-06-02 06:52:32 afalout Exp $
+# $Id: mod.c,v 1.70 2002-06-05 07:04:42 afalout Exp $
 #
 */
 
@@ -1459,7 +1459,7 @@ scan_arr_variable (char *s)
  * @param as The size of the array if the variable is of that type
  * @param lvl Scope level (Global, Modular or Local)
  */
-static void 
+static void
 set_variable (char *name, char *type, char *n, char *as, int lvl)
 {
 
@@ -1626,7 +1626,8 @@ rettype (char *s)
 
 debug("In rettype");
   if (has_datatype_function_i(a,"OUTPUT")) {
-	char *(*function) ();
+	/* char *(*function) (); */
+    char *(*function) (void);
 	debug("In datatype");
 	function=get_datatype_function_i(a,"OUTPUT");
 	debug("Copy");
@@ -4457,8 +4458,10 @@ add_ex_dtype(char *sx)
 
 	debug("Checking if we need an extra include...");
 
-	if (has_datatype_function_n(s,"INCLUDE")) {
-        	char *(*function) ();
+	if (has_datatype_function_n(s,"INCLUDE")) 
+	{
+       	/* char *(*function) (); */
+        char *(*function) (void);
 		debug("yep");
 
         function=get_datatype_function_n(s,"INCLUDE");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.11 2002-06-02 06:52:38 afalout Exp $
+# $Id: compile_perl.c,v 1.12 2002-06-05 07:04:56 afalout Exp $
 #
 */
 
@@ -126,8 +126,8 @@ static void print_output_rep (struct rep_structure *rep);
 static void print_form_attrib (struct form_attr *form_attrib);
 static int print_field_bind (int ccc);
 static int print_arr_bind (char i);
-static int print_constr ();
-static int print_field_bind_constr ();
+static int print_constr (void);
+static int print_field_bind_constr (void);
 static int pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to);
 static void pr_report_agg (void);
 static void pr_report_agg_clr (void);
@@ -584,7 +584,8 @@ print_exit_loop (int type, int n)
  * @return
  */
 void
-print_rep_ret (void)
+//print_rep_ret (void)
+print_rep_ret (int report_cnt)
 {
   printc ("goto report%d_ctrl;\n\n", report_cnt);
 }
@@ -615,8 +616,8 @@ print_output_rep (struct rep_structure *rep)
   printc ("else rep.output_mode=_rout1[0];\n");
   printc ("rep.report=&%s;\n", get_curr_rep_name ());
   printc ("trim(rep.output_loc);");
-  //print_rep_ret (report_cnt);
-  print_rep_ret ();
+  print_rep_ret (report_cnt);
+
 }
 
 /**
@@ -653,8 +654,7 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
   printc ("else rep.output_mode=_rout1[0];\n");
   printc ("rep.report=&%s;\n", get_curr_rep_name ());
   printc ("trim(rep.output_loc);");
-//  print_rep_ret (report_cnt);
-  print_rep_ret ();
+  print_rep_ret (report_cnt);
 }
 
 /**
@@ -2811,7 +2811,7 @@ print_report_2 (int pdf, char *repordby)
     ("   if (_g>0) { _useddata=1;for (_p=_g;_p<=(sizeof(_ordbind)/sizeof(struct BINDING));_p++) %s(_p,REPORT_BEFOREGROUP);}\n",
      get_curr_rep_name ());
   printc ("   _useddata=1;\n");
-  print_rep_ret ();
+  print_rep_ret (report_cnt);
   printc ("}\n\n");
   printc ("if (acl_ctrl==REPORT_FINISH) {\n");
   printc ("    if (fgl_rep_orderby==1) {\n");
@@ -2839,7 +2839,7 @@ print_report_2 (int pdf, char *repordby)
   printc ("   _started=1;\n");
   printc ("goto output_%d;\n", report_cnt);
   printc ("}\n\n");
-  print_rep_ret ();
+  print_rep_ret (report_cnt);
   if (pdf)
     pdf_print_output_rep (&pdf_rep_struct);
   else

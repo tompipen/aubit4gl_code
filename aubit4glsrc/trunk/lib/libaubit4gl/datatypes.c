@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.4 2002-06-01 11:54:59 afalout Exp $
+# $Id: datatypes.c,v 1.5 2002-06-05 07:04:55 afalout Exp $
 #
 */
 
@@ -268,8 +268,9 @@ find_datatype_out(char *name)
 
 		if (dtypes[a].name==0) continue;
 
-		if (has_datatype_function_i(a,"OUTPUT")) {
-			char *(*function) ();
+		if (has_datatype_function_i(a,"OUTPUT")) 
+		{
+			char *(*function) (void);
 			function=get_datatype_function_i(a,"OUTPUT");
 			debug("Got function as %p - comparing %s and %s",function,function(),name);
 			if (strcasecmp(function(),name)==0) return a;
@@ -454,4 +455,4 @@ aclfgl_load_datatype (int nargs)
    	return 0;
 }
 
-// =============================== EOF ================================
+/* =============================== EOF ================================ */

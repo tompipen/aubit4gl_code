@@ -50,9 +50,9 @@ struct menu *m;
 =====================================================================
 */
 
-menu *nmenu();
+menu *nmenu(void);
 menu_option_item *new_option(menu *m);
-void *get_menu();
+void *get_menu(void);
 char *char_val (char *s);
 
 /* from mcompile.c */

@@ -77,8 +77,8 @@ print_continue_loop int n -> void
 //void print_exit_loop (int type, int n)
 print_exit_loop int type,int n -> void
 
-//void print_rep_ret ()
-print_rep_ret -> void
+//void print_rep_ret (int report_cnt)
+print_rep_ret int report_cnt -> void
 
 //prchkerr (int l, char *f)
 prchkerr int l,char* f -> void

@@ -103,36 +103,36 @@ if [ "$MAKE_HEADER" == "1" ]
 then
 	awk -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" '
 	BEGIN {
-	FS="[ 	,]"
-	print ""
-	print "/*"
-	print " * lib=" lib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
-	print " * @file"
-	print " * Function prototypes"
-	print " *"
-	print " * This file was created from .spec file of same name, using dlmagic script"
-	print " * - if you need to edit it, edit .spec file instad, and use [make filename.h]"
-	print " * to re-create it."
-	print " *"
-	print " * @todo See if the functions are static"
-	print " * or to be externally seen"
-	print " */"
-	print ""
-	print "/*******************************************************************"
-	print "* (c) 1997-2002 Aubit Computing Ltd."
-	print "*"
-	print "*"
-	print "********************************************************************/"
-	print ""
-	print "/*"
-	print "====================================================================="
-	print "                    Functions prototypes"
-	print "====================================================================="
-	print "*/"
-	print ""
-	print "#ifndef __" lib "_H__"
-	print "#define __" lib "_H__"
-	print ""
+		FS="[ 	,]"
+		print ""
+		print "/*"
+		print " * lib=" lib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
+		print " * @file"
+		print " * Function prototypes"
+		print " *"
+		print " * This file was created from .spec file of same name, using dlmagic script"
+		print " * - if you need to edit it, edit .spec file instad, and use [make filename.h]"
+		print " * to re-create it."
+		print " *"
+		print " * @todo See if the functions are static"
+		print " * or to be externally seen"
+		print " */"
+		print ""
+		print "/*******************************************************************"
+		print "* (c) 1997-2002 Aubit Computing Ltd."
+		print "*"
+		print "*"
+		print "********************************************************************/"
+		print ""
+		print "/*"
+		print "====================================================================="
+		print "                    Functions prototypes"
+		print "====================================================================="
+		print "*/"
+		print ""
+		print "#ifndef __" lib "_H__"
+		print "#define __" lib "_H__"
+		print ""
 	}
 	/^LIBRARY / {next}
 	/^VARIABLE / {next}
@@ -157,54 +157,71 @@ then
 	rtype="void"
 
 	c=0
-	for (a=2;a<=NF;a++) {
-	param_type[c]=$a
-	if (param_type[c]=="->") {
-		param_type[c]=""
+	for (a=2;a<=NF;a++) 
+	{
+		param_type[c]=$a
+		if (param_type[c]=="->")
+		{
+			param_type[c]=""
+			a++
+			rtype=$a
+			break
+		}
+
+		if (param_type[c]=="...")
+		{
+			param_name[c]=""
+			a++
+			c++
+			break
+		}
+
+
 		a++
-		rtype=$a
-		break
+		param_name[c]=$a
+		c++;
 	}
 
-	if (param_type[c]=="...") {
+    if (c==0)
+    {
 		param_name[c]=""
-		a++
-		c++
-		break
-	}
+		param_type[c]="void"
+        c++
+    }
 
-
-	a++
-	param_name[c]=$a
-	c++;
-	}
 
 	printf rtype " " api_prefix fname "("
 	va_start=""
 	args=""
-	for (b=0;b<c;b++) {
+	for (b=0;b<c;b++)
+	{
 		printf("%s %s",param_type[b],param_name[b]);
-		if (param_type[b]=="...") {
+		
+		if (param_type[b]=="...")
+		{
 			va_start=last;
 			args=args ",&ap"
 		}
-		else {
+		else
+		{
 			args=args "," param_name[b]
 		}
+
 		last=param_name[b]
-		if (b<c-1) {
+		
+		if (b<c-1)
+		{
 			printf(",");
 		}
 	}
 	args=substr(args,2)
 	print ");"
 	print ""
-	print "#endif  /* #ifdef __" lib "_H__  */"
-	print ""
-
-	}' < $specfile
-
-
+	}
+	' < $specfile
+	
+	echo "#endif  /* #ifdef __" lib "_H__  */"
+	echo ""
 
     exit 0
 fi

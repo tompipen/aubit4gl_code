@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.6 2002-06-01 11:54:59 afalout Exp $
+# $Id: data_if.c,v 1.7 2002-06-05 07:04:55 afalout Exp $
 #
 */
 
@@ -475,23 +475,23 @@ static void *
 get_set_rep_structure(void *ptr,int mode,char *name,long var)
 {
 struct s_rep_structure_1 {
-int  top_margin;
-int  bottom_margin;
-int  left_margin;
-int  right_margin;
-int  page_length;
-int  has_first_page;
-char * next_page;
-char * rep_table;
-void * group_data;
-char  output_mode;
-char  output_loc[256];
-void * output;
-int  page_no;
-int  printed_page_no;
-int  line_no;
-int  col_no;
-void * report;
+	int  top_margin;
+	int  bottom_margin;
+	int  left_margin;
+	int  right_margin;
+	int  page_length;
+	int  has_first_page;
+	char * next_page;
+	char * rep_table;
+	void * group_data;
+	char  output_mode;
+	char  output_loc[256];
+	void * output;
+	int  page_no;
+	int  printed_page_no;
+	int  line_no;
+	int  col_no;
+	void * report;
 };
 
 struct s_rep_structure_1 *val;

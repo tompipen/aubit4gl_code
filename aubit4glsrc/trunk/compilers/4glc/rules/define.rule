@@ -201,14 +201,16 @@ push_type("struct_dtime ",$<str>2,0);
 			strcpy(buff,$<str>1);
 			debug("Got a rogue datatype");
 
-			if (find_datatype(upshift(buff))) {
-				char *(*function) ();
+			if (find_datatype(upshift(buff))) 
+			{
+				char *(*function) (void);
 				debug("Checking ...");
 				function=get_datatype_function_n(upshift(buff),"OUTPUT");
 				debug("Got function as %p",function);
 
                 /*  warning: comparison between pointer and integer */
-				if ((int)function != -1) {
+				if ((int)function != -1) 
+				{
 					debug("call returns %s\n",function());
 					strcpy(buff,function());
 					debug("Set up buff as %s");

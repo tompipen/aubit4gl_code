@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.19 2002-06-01 11:55:00 afalout Exp $
+# $Id: compile_c.c,v 1.20 2002-06-05 07:04:55 afalout Exp $
 #
 */
 
@@ -44,8 +44,6 @@
 =====================================================================
 */
 
-//#include <stdio.h>
-//#include <string.h>
 #include "a4gl_dbform.h"
 #include "a4gl_report.h"
 #include "a4gl_oform.h"
@@ -57,10 +55,6 @@
 #include "a4gl_lex_print_protos_c.h"
 #include "a4gl_4glc_4glc.h"
 #include "a4gl_debug.h"
-
-//included here because of dll separation. Make sure this is OK
-//defines things like struct s_report_stack that are used here
-//#include "compiledefs.h"
 
 
 /*
@@ -91,12 +85,7 @@ extern struct form_attr form_attrib;
 extern int menu_cnt;
 extern int ccnt;		/**< Block counter - defined in lexer.c */
 extern char mmtitle[132][132];
-
 extern struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
-
-//Replaced with function call interface
-//extern struct s_report_stack report_stack[REPORTSTACKSIZE];
-
 extern int report_stack_cnt;
 extern int report_cnt;
 extern int rep_type;
@@ -142,17 +131,13 @@ extern int constr_cnt;
 =====================================================================
 */
 
-//extern void set_clobber(char *c);
-
-//function prototypes that must be here, not in header file:
 static void printc(char* fmt,... );
-//void lex_printc(char *fmt, va_list *ap);
 static void print_output_rep (struct rep_structure *rep);
 static void print_form_attrib (struct form_attr *form_attrib);
 static int print_field_bind (int ccc);
 static int print_arr_bind (char i);
-static int print_constr ();
-static int print_field_bind_constr ();
+static int print_constr (void);
+static int print_field_bind_constr (void);
 static int pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to);
 static void pr_report_agg (void);
 static void pr_report_agg_clr (void);
@@ -162,8 +147,6 @@ void internal_lex_printc(char *fmt, va_list *ap);
 void internal_lex_printcomment(char *fmt, va_list *ap);
 void internal_lex_printh(char *fmt, va_list *ap);
 
-
-//static void real_lex_printc(char *fmt, va_list *ap);
 static void real_print_expr (struct expr_str *ptr);
 static void real_print_func_call (char *identifier, struct expr_str *args, int args_cnt);
 static void real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
@@ -243,11 +226,12 @@ open_outfile(void)
   	fprintf (outfile, "#include \"%s\"\n", strrchr(h,'/')+1);
   else
   	fprintf (outfile, "#include \"%s\"\n", h);
-  //if (acl_getenv ("GTKGUI"))
-    //fprintf (outfile, "#include <acl4glgui.h>\n");
-  
-  //we no longer need this:
-  //fprintf (outfile, "static char _compiler_ser[]=\"%s\";\n", get_serno ()); //warning: format argument is not a pointer (arg 3)
+  /* if (acl_getenv ("GTKGUI"))
+    fprintf (outfile, "#include <acl4glgui.h>\n");
+
+  we no longer need this:
+  fprintf (outfile, "static char _compiler_ser[]=\"%s\";\n", get_serno ());
+  */
 
   fprintf (outfile, "static char _module_name[]=\"%s.4gl\";\n",
 	   outputfilename);
@@ -282,7 +266,7 @@ va_list ap;
 void
 internal_lex_printc(char *fmt, va_list *ap)
 {
-//va_list args;
+/* va_list args; */
 char buff[40960]="ERROR-empty init";
 char buff2[40960];
 char *ptr;
@@ -300,7 +284,7 @@ int a;
 	debug("ap = %p\n",ap);
 	debug("fmt = %p\n",fmt);
 
-	//va_start (args, fmt);
+	/* va_start (args, fmt); */
 	vsprintf (buff, fmt, *ap);
 
 	debug("buff in lib=%s\n",buff);
@@ -323,7 +307,7 @@ int a;
 	      else
 		    {
 		      fprintf (outfile, "\n#line %d \"null\"\n", yylineno);
-			     //outputfilename);
+			     /* outputfilename); */
 		    }
 	    }
 	    else
@@ -366,18 +350,19 @@ va_list ap;
 	internal_lex_printh(fmt,&ap);
 }
 void
-//printh (char *fmt, ...)
+/* printh (char *fmt, ...) */
 internal_lex_printh(char *fmt, va_list *ap)
 {
-//va_list args;
+/* va_list args; */
   if (outfile == 0)
     {
       open_outfile ();
     }
   if (outfile == 0)
     return;
-  //va_start (args, fmt);
-  //vfprintf (hfile, fmt, args);
+  /* va_start (args, fmt);
+  vfprintf (hfile, fmt, args);
+  */
   vfprintf (hfile, fmt, ap);
 }
 
@@ -397,11 +382,11 @@ va_list ap;
 	internal_lex_printcomment(fmt,&ap);
 }
 void
-//internal_printcomment (char *fmt,...)
+/* internal_printcomment (char *fmt,...) */
 internal_lex_printcomment(char *fmt, va_list *ap)
 {
 #ifdef USE_PRINTCOMMENT
-//  va_list args;
+/*  va_list args; */
   if (outfile == 0)
     {
       open_outfile ();
@@ -412,8 +397,10 @@ internal_lex_printcomment(char *fmt, va_list *ap)
 
   if (acl_getenv ("COMMENTS"))
     {
-      //va_start (args, fmt);
-      //vfprintf (outfile, fmt, args);
+      /*
+	  va_start (args, fmt);
+      vfprintf (outfile, fmt, args);
+      */
       vfprintf (outfile, fmt, ap);
     }
 #else
@@ -520,48 +507,48 @@ print_report_ctrl(void)
   for (a = 0; a < report_stack_cnt; a++)
     {
 	/* on last row */
-		//if (report_stack[a].whytype == 'L')
+		/* if (report_stack[a].whytype == 'L') */
 		if (*get_report_stack_whytype(a) == 'L')
 	printc
 	  ("if (acl_ctrl==REPORT_LASTROW) { acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
 	/* on every row */
-		//if (report_stack[a].whytype == 'E')
+		/* if (report_stack[a].whytype == 'E') */
 		if (*get_report_stack_whytype(a) == 'E')
 	printc
 	  ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_AFTERDATA;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
 	/* before group of */
-		//      if (report_stack[a].whytype == 'B')
+		/*      if (report_stack[a].whytype == 'B') */
 		if (*get_report_stack_whytype(a) == 'B')
 	printc
 	  ("if (acl_ctrl==REPORT_BEFOREGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
-		//	   report_stack[a].why, report_cnt, a);
+		/*	   report_stack[a].why, report_cnt, a); */
 	   get_report_stack_why(a), report_cnt, a);
 
 	/* after group of */
-		//      if (report_stack[a].whytype == 'A')
+		/*       if (report_stack[a].whytype == 'A') */
 		if (*get_report_stack_whytype(a) == 'A')
 	printc
 	  ("if (acl_ctrl==REPORT_AFTERGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
-		//	   report_stack[a].why, report_cnt, a);
+		/* 	   report_stack[a].why, report_cnt, a); */
 	   get_report_stack_why(a), report_cnt, a);
 
-		//      if (report_stack[a].whytype == 'T')
+		/*      if (report_stack[a].whytype == 'T') */
 		if (*get_report_stack_whytype(a) == 'T')
 	printc
 	  ("if (acl_ctrl==REPORT_PAGETRAILER) {acl_ctrl=REPORT_PAGEHEADER;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
-		//      if (report_stack[a].whytype == 'P')
+		/*      if (report_stack[a].whytype == 'P')   */
 		if (*get_report_stack_whytype(a) == 'P')
 	printc
 	  ("if (acl_ctrl==REPORT_PAGEHEADER&&rep.page_no==1) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
-		//      if (report_stack[a].whytype == 'p')
+		/*      if (report_stack[a].whytype == 'p') */
 		if (*get_report_stack_whytype(a) == 'p')
 	printc
 	  ("if (acl_ctrl==REPORT_PAGEHEADER&&(rep.page_no!=1||(rep.page_no==1&&rep.has_first_page==0))) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
@@ -674,7 +661,7 @@ print_exit_loop (int type, int n)
  *  a report.
  */
 void
-//print_rep_ret (void)
+/* print_rep_ret (void) */
 print_rep_ret (int report_cnt)
 {
   printc ("goto report%d_ctrl;\n\n", report_cnt);
@@ -861,9 +848,9 @@ pr_report_agg_clr (void)
 void
 print_clr_status (void)
 {
-//  printc ("set_status(0);\n");
+/*  printc ("set_status(0);\n"); */
 
-  //printc ("A4GLSQL_set_status(0);\n");
+  /* printc ("A4GLSQL_set_status(0);\n"); */
 }
 
 /**
@@ -978,11 +965,10 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 
 /**
  * Print the generated C code with the implementation of an expression.
- *
+ * called from API
  * @param ptr A pointer to an expr_str expression (structure that describes
  * an expression).
  */
-//this one gets called from API
 void
 print_expr(void* ptr)
 {
@@ -1101,9 +1087,8 @@ static int
 print_arr_bind (char i)
 {
   int a;
-//  int dtype;
   debug ("/* %c */\n", i);
-  //dump_vars ();
+  /* dump_vars (); */
   if (i == 'i')
     {
       printc ("\n");
@@ -1164,8 +1149,6 @@ print_constr (void)
 static int
 print_field_bind_constr (void)
 {
-//  char tabname[40];
-//  char colname[40];
   int a;
   for (a = 0; a < constr_cnt; a++)
     {
@@ -1196,10 +1179,9 @@ print_param (char i)
 {
   int a;
   int b;
-//  char buff[256];
   char *ptr;
   debug ("Expanding binding.. - was %d entries", fbindcnt);
-  expand_bind (&fbind[0], 'F', fbindcnt); // warning: passing arg 1 of `expand_bind' from incompatible pointer type
+  expand_bind (&fbind[0], 'F', fbindcnt);
   debug ("Expanded - now %d entries", fbindcnt);
   if (i == 'r')
     {
@@ -1230,7 +1212,7 @@ print_param (char i)
 	  if (ptr == 0)
 	    ptr = fbind[b].varname;
 	  else
-	    ptr++;		// Skip over the '.'
+	    ptr++;		/* Skip over the '.' */
 
 	  if (b)
 	    printc (",");
@@ -1266,7 +1248,6 @@ int
 print_bind (char i)
 {
   int a;
-//  int dtype;
   debug ("/* %c */\n", i);
   if (i == 'i')
     {
@@ -1290,7 +1271,7 @@ print_bind (char i)
 
   if (i == 'N')
     {
-      expand_bind (&nullbind[0], 'N', nullbindcnt); // warning: passing arg 1 of `expand_bind' from incompatible pointer type
+      expand_bind (&nullbind[0], 'N', nullbindcnt);
       printc ("\n");
       printc ("struct BINDING nullbind[]={\n /* nullbind %d*/", nullbindcnt);
       if (nullbindcnt == 0)
@@ -1572,8 +1553,6 @@ print_field_func (char type, char *name, char *var)
  * @param args The arguments
  * @param args_cnt The number of arguments
  */
-//print_func_call char* identifier,void* args,int args_cnt -> void
-
 void
 print_func_call(char *identifier, void* args, int args_cnt)
 {
@@ -1637,7 +1616,7 @@ print_call_shared (char *libfile, char *funcname, int nargs)
 void
 print_end_call_shared (void)
 {
-  //printc ("}\n");
+  /* printc ("}\n"); */
 }
 
 /**
@@ -2180,7 +2159,7 @@ print_foreach_end (void)
 void
 print_free_cursor (char *s)
 {
-  printc ("// FREE CUROSR .. FIXME \n");
+  printc ("/* FREE CUROSR .. FIXME */\n");
 }
 
 /**
@@ -2511,8 +2490,6 @@ char *
 print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
 		   char *attr)
 {
-//  int ccc;
-//  char buff[132];
   static char buff2[256];
   int cnt;
   printc ("/*");
@@ -2645,7 +2622,6 @@ print_linked_cmd (int type, char *var)
 {
   char tabname[64];
   char pklist[256];
-//  int no;
   int ni;
   if (last_var_is_linked (tabname, pklist))
     {
@@ -2804,8 +2780,8 @@ print_format_every_row (void)
   printc ("}");
   printc ("push_char(\" \");rep_print(&rep,1,1,0); rep_print(&rep,0,0,0);");
   printc ("}");
-  //printc ("#error FORMAT EVERY ROW not implemented yet");
-//  print_rep_ret ();
+  /* printc ("#error FORMAT EVERY ROW not implemented yet");
+  print_rep_ret (); */
 	print_rep_ret (report_cnt);
 
 }
@@ -3017,7 +2993,7 @@ print_report_2 (int pdf, char *repordby)
     ("   if (_g>0) { _useddata=1;for (_p=_g;_p<=(sizeof(_ordbind)/sizeof(struct BINDING));_p++) %s(_p,REPORT_BEFOREGROUP);}\n",
      get_curr_rep_name ());
   printc ("   _useddata=1;\n");
-//  print_rep_ret ();
+/*  print_rep_ret (); */
 	print_rep_ret (report_cnt);
   printc ("}\n\n");
   printc ("if (acl_ctrl==REPORT_FINISH) {\n");
@@ -3046,7 +3022,7 @@ print_report_2 (int pdf, char *repordby)
   printc ("   _started=1;\n");
   printc ("goto output_%d;\n", report_cnt);
   printc ("}\n\n");
-//  print_rep_ret ();
+/*  print_rep_ret (); */
 	print_rep_ret (report_cnt);
   if (pdf)
     pdf_print_output_rep (&pdf_rep_struct);
@@ -4294,7 +4270,7 @@ print_end_record (char *vname, int arrsize)
  * @param value The value of the literal
  */
 char *
-//char
+/* char */
 get_push_literal (char type, char *value)
 {
   static char buff[80];
@@ -4313,7 +4289,7 @@ get_push_literal (char type, char *value)
       sprintf (buff, "push_char(%s);\n", value);
     }
 
-  //FIXME: and if it's not D, L or S?
+  /* FIXME: and if it's not D, L or S? */
 
   return buff;
 }
@@ -4327,7 +4303,7 @@ char *
 decode_array_string(char *s) {
 static char buff[2000]="";
 int a;
-char tmp[2]="X"; // Just to get a terminator on it
+char tmp[2]="X"; /*  Just to get a terminator on it */
 strcpy(buff,"(");
 
 	for (a=0;a<strlen(s);a++) {
@@ -4342,4 +4318,4 @@ strcpy(buff,"(");
 	return buff;
 }
 
-// =========================== EOF ================================
+/* =========================== EOF ================================ */

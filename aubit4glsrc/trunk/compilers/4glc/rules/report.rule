@@ -79,19 +79,19 @@ format_actions : format_action | format_actions format_action;
 format_action :
 	 FIRST_PAGE_HEADER 
 { push_report_block("FIRST",'P');}
-commands {print_rep_ret();}
-	| PAGE_TRAILER 
+commands {print_rep_ret(0);}
+	| PAGE_TRAILER
 { push_report_block("TRAILER",'T');}
-commands {print_rep_ret();}
+commands {print_rep_ret(0);}
 	| PAGE_HEADER 
 { push_report_block("HEADER",'p');}
-commands {print_rep_ret();}
+commands {print_rep_ret(0);}
 	| ON_EVERY_ROW 
 { push_report_block("EVERY",'E');}
-commands {print_rep_ret();}
+commands {print_rep_ret(0);}
 	| ON_LAST_ROW 
 { push_report_block("LAST",'L');}
-commands {print_rep_ret();}
+commands {print_rep_ret(0);}
 	| BEFGROUP variable  {
 int a;
 char buff[80];
@@ -106,7 +106,7 @@ sprintf(buff,"%d",a+1);
 push_report_block(buff,'B');
 set_curr_block(a+1);
 }
-commands {print_rep_ret();}
+commands {print_rep_ret(0);}
 	| AFTGROUP variable 
 { 
 int a;
@@ -124,7 +124,7 @@ push_report_block(buff,'A');
 set_curr_block(a+1);
 
 }
-commands {print_rep_ret();}
+commands {print_rep_ret(0);}
 ;
 
 report_cmd : print_command 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-04-16 06:59:28 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-06-05 07:04:56 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -74,6 +74,11 @@ endif
 #conflicting paths:
 CFLAGS				:=-I../../../compilers/fcompile -I../../libincl ${CFLAGS} ${CLIENT_CFLAGS}
 
+#we cannot compile XMLRPC code with  -Wstrict-prototypes because
+#XML-RPC lib supplied libraries have many functions declared without parameters
+CFLAGS_XMLRPC_C =$(CFLAGS:%-Wstrict-prototypes=%)
+
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -105,6 +110,9 @@ clean :
 ## ==================================================================
 ##                         Other Targets
 ## ==================================================================
+
+xmlrpc_client.o: xmlrpc_client.c
+	${CC} ${CFLAGS_XMLRPC_C} -c -o $@ $^
 
 lclint: $(CMODS)
 	-lclint -weak $(CFLAGS) $(CMODS) > lclint.log 2>&1

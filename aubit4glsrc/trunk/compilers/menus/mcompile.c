@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.10 2002-06-02 06:52:38 afalout Exp $
+# $Id: mcompile.c,v 1.11 2002-06-05 07:04:54 afalout Exp $
 #*/
 
 /**
@@ -179,11 +179,8 @@ bname (char *str, char *str1, char *str2)
  * @todo Describe function
  */
 int
-main (argc, argv)
-     int argc;
-     char *argv[];
-
-	 {
+main (int argc, char* argv[])
+{
   char a[128];
   char b[128];
   char c[128];

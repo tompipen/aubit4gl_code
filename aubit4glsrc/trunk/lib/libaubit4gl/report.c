@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.4 2002-06-01 11:54:59 afalout Exp $
+# $Id: report.c,v 1.5 2002-06-05 07:04:55 afalout Exp $
 #
 */
 
@@ -177,7 +177,7 @@ rep_print (struct rep_structure *rep, int a, int s,int right_margin)
 			exit(10);
 	}
   debug ("In rep_print rep=%p rep->report=%p",rep,rep->report);
-      rep->report (0, REPORT_PAGEHEADER);
+      rep->report (0, REPORT_PAGEHEADER); /* report.c:180: too many arguments to function */
   debug ("In rep_print rep=%p rep->report=%p",rep,rep->report);
 	debug("Done page header");
     }
