@@ -6,6 +6,7 @@
 #         func-name param-type param-name ... -> returns
 # Any line beginning with a * is a comment
 # Any line beginning with a # is included in the output...
+# Eg #define, #include etc.
 
 lib=$2
 env=$3
@@ -152,6 +153,6 @@ Example File :
 LIBRARY TEST
 VARIABLE VTEST
 #include <stdio.h>
-* This is a comment
+* This is a comment - Note - there are no spaces for void* int* etc.
 pdf_rep_print void* rep,int a,int s,int right_margin -> int*
 disp_fields int n int attr ... -> int
