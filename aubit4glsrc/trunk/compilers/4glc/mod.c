@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.158 2004-02-10 13:50:19 mikeaubury Exp $
+# $Id: mod.c,v 1.159 2004-02-15 10:20:09 mikeaubury Exp $
 #
 */
 
@@ -1267,7 +1267,7 @@ set_4gl_vars (void)
 void
 open_db (char *s)
 {
-  char db[132];
+  char db[2048];
   char buff[256];
 
   A4GL_debug ("open_db %s", s);

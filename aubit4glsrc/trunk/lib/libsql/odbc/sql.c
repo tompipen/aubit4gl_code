@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.75 2004-02-15 09:45:03 mikeaubury Exp $
+# $Id: sql.c,v 1.76 2004-02-15 10:21:29 mikeaubury Exp $
 #
 */
 
@@ -1343,12 +1343,12 @@ char dbName[2048];
 char *u, *p;
 HDBC *hh = 0;
 int rc;
+strcpy(dbName,dbName_f);
+A4GL_trim(dbName);
 //#ifdef SQLITEODBC
 #ifdef SQLITE_DIRECT
 char a[128], b[128], tmp[2048];
 char *FullPathDBname;
-strcpy(dbName,dbName_f);
-A4GL_trim(dbName);
 
 	A4GL_debug("SQLITE special...");
 
@@ -1369,6 +1369,8 @@ A4GL_trim(dbName);
     	if (a[0] == 0) {
         	sprintf(tmp,"%s.db",dbName);
 		A4GL_debug("Added .db file name extension, dbName=%s",tmp);
+	} else {
+		strcpy(tmp,dbName);
 	}
 
 	//Find full path to the SQLite database file, use DBPATH
