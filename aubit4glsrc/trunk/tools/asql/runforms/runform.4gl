@@ -62,7 +62,7 @@ endcode
 
 main 
 define a integer
-	#defer interrupt
+	defer interrupt
 
 	options message line last-1
 	let mv_field_list_for=""
@@ -194,6 +194,7 @@ while lv_next_option!="ALLDONE"
 
 		command "Query" mv_taglines[1]	
 			let mv_table_code=0
+			let int_flag=false
 			call do_query()
 
 		command "Next" mv_taglines[2]	
@@ -210,10 +211,12 @@ while lv_next_option!="ALLDONE"
 	
 		command "Add" mv_taglines[5]
 			let mv_table_code=0
+			let int_flag=false
 			call do_add(0)
 	
 		command "Update" mv_taglines[6]
 			let mv_table_code=0
+			let int_flag=false
 			if mv_acurrent_position[mv_table_cnt]=0 then
 				error "You must do a query first"
 			else
@@ -224,6 +227,7 @@ while lv_next_option!="ALLDONE"
 			
 			let mv_table_code=0
 			
+			let int_flag=false
 			if mv_acurrent_position[mv_table_cnt]=0 then
 				error "You must do a query first"
 			else
@@ -478,6 +482,7 @@ if not get_field_list() then
 	initialize lv_where_clause to null
 	return lv_where_clause
 end if
+let int_flag=false
 
 
 code
