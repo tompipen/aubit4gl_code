@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.32 2003-08-01 01:03:26 mikeaubury Exp $
+# $Id: iarray.c,v 1.33 2003-08-01 14:34:29 mikeaubury Exp $
 #*/
 
 /**
@@ -1249,7 +1249,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
     {
       // Attempt to move off the top program array...
 	if (arr->last_scr_line>0) {
-		A4GL_error_nobox (" There are no more rows in the direction you are going 1", 0);
+		A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
       	} 
       A4GL_newMovement (arr, scr_line, 1, attrib);
       return;
@@ -1601,7 +1601,7 @@ int cnt;
   if (arr->fcntrl[a].op == FORMCONTROL_KEY_PRESS)
     {
 
-			debug_print_flags(arr,"kp");
+			//debug_print_flags(arr,"kp");
       if (arr->fcntrl[a].state == 99)
 	{
 	  new_state = 50;
@@ -1637,7 +1637,7 @@ int cnt;
                 fprop = (struct struct_scr_field *) (field_userptr (arr->currentfield));
                 if (arr->fcntrl[a].extent>=0 && arr->fcntrl[a].extent<=255 && ( (isprint(arr->fcntrl[a].extent) || arr->fcntrl[a].extent==1 || arr->fcntrl[a].extent==4)) ) {
 
-			debug_print_flags(arr,"testing flags for currentfield");
+			//debug_print_flags(arr,"testing flags for currentfield");
                         if ((fprop->flags & 1)==0)  {
                                         switch (arr->binding[arr->curr_attrib].dtype) {
                                         case DTYPE_SMINT:
@@ -1648,13 +1648,13 @@ int cnt;
                                         case DTYPE_MONEY:  A4GL_int_form_driver (arr->currform->form, REQ_CLR_EOF);
                                         }
                         }
-			debug_print_flags(arr,"bs");
+			//debug_print_flags(arr,"bs");
                         A4GL_debug("SETTING FLAGS IA for currentfield");
                         fprop->flags|=2; // Set the field status flag
                 }
 		A4GL_int_form_driver (arr->currform->form, arr->fcntrl[a].extent);
 		A4GL_int_form_driver (arr->currform->form, REQ_VALIDATION);
-			debug_print_flags(arr,"bf");
+			//debug_print_flags(arr,"bf");
 		A4GL_debug("Setting BF flag for current field");
                 fprop->flags|=1; // Clear the before field flag
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.51 2003-08-01 07:29:57 mikeaubury Exp $
+# $Id: curslib.c,v 1.52 2003-08-01 14:34:29 mikeaubury Exp $
 #*/
 
 /**
@@ -4014,14 +4014,25 @@ void A4GL_comments (struct struct_scr_field *fprop)
 
   attr=A4GL_get_curr_window_attr();
 
-  if (!attr) {
-	attr=A4GL_determine_attribute(FGL_CMD_COMMENT, 0,0);
+  if (!attr)  {
+	attr=A4GL_determine_attribute(FGL_CMD_INPUT, 0,0);
+  }
+
+
+  if (A4GL_isyes(acl_getenv("COMMENT_LIKE_INPUT"))) {
+	attr=A4GL_determine_attribute(FGL_CMD_INPUT, 0,0);
+  }
+
+  if (A4GL_isyes(acl_getenv("COMMENT_LIKE_DISPLAY"))) {
+	attr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, 0,0);
   }
 	
+  //A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, 0,0) , 1); 
+
+
   A4GL_display_internal (1, cline, buff,attr,1);
 
 	// AUBIT_COLOR_WHITE
-      //A4GL_determine_attribute(FGL_CMD_COMMENT, 0,0) , 1); // COMMENTS seem to take on the Window border style...
   A4GL_zrefresh();
 
 

@@ -135,8 +135,8 @@ print_next_form_field($<str>2,$<str>4);
 }
 ;
 
-next_field	:	NEXT {sprintf($<str>$,"\"+\",0");}
-		| 	PREVIOUS {sprintf($<str>$,"\"-\",0");}
+next_field	:	NEXT {sprintf($<str>$,"\"+\"");}
+		| 	PREVIOUS {sprintf($<str>$,"\"-\"");}
 		| 	field_name 
 ;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.12 2003-07-25 22:04:54 mikeaubury Exp $
+# $Id: array.c,v 1.13 2003-08-01 14:34:29 mikeaubury Exp $
 #*/
 
 /**
@@ -393,7 +393,7 @@ draw_arr (arr, -1, arr->arr_line);
 		arr->cntrl=0-A4GLKEY_PGUP;
 		return -11;
 	} else {
-		 A4GL_error_nobox (" There are no more rows in the direction you are going ", 0);
+		A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
 	}
 	break;
 
@@ -436,7 +436,7 @@ draw_arr (arr, -1, arr->arr_line);
 		arr->cntrl=0-A4GLKEY_PGDN;
 		return -11;
 	} else {
-		 A4GL_error_nobox (" There are no more rows in the direction you are going ", 0);
+		A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
         }
 	break;
 
@@ -450,7 +450,7 @@ draw_arr (arr, -1, arr->arr_line);
 	  arr->cntrl = 0 - A4GLKEY_DOWN;
 	  return -11;
 	} else {
-		 A4GL_error_nobox (" There are no more rows in the direction you are going ", 0);
+		A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
         }
       break;
 
@@ -484,7 +484,7 @@ draw_arr (arr, -1, arr->arr_line);
 	  arr->cntrl = 0 - A4GLKEY_UP;
 	  return -11;
 	} else {
-		 A4GL_error_nobox (" There are no more rows in the direction you are going ", 0);
+		A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
         }
       break;
 
