@@ -16,7 +16,7 @@ themselves; we need more of them. We want to get to the point where every
 This is also a fastes and 100% guaranteed way to report and resolve any
 bugs - if you create a test that fails, but should work, it will be a
 matter of days (if not hours) before it's fixed. You have my personal
-guaranty ;-)
+guarantee ;-)
 
 Description
 -----------

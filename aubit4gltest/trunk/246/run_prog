@@ -1,0 +1,1 @@
+./progname.4ae | grep "here are no more rows in the direction you are going" > /dev/null
