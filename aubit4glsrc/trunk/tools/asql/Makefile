@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.31 2004-10-08 02:47:21 afalout Exp $
+# $Id: Makefile,v 1.32 2004-12-01 07:21:09 afalout Exp $
 #
 
 ROOT    		=../..
@@ -240,6 +240,12 @@ run.i:
 run.p:
 	@LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${ROOT}/lib";A4GL_FORMTYPE=GENERIC; \
 	A4GL_PACKER=PACKED;./asql_p${A4GL_EXE_EXT}
+
+	
+show:
+	aubit-config POSTGRESDIR
+
+
 
 ## ==================================================================
 ##                              clean

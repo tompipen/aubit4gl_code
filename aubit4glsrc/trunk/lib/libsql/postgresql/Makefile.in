@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2004-10-01 14:46:44 afalout Exp $
+# $Id: Makefile.in,v 1.10 2004-12-01 07:21:09 afalout Exp $
 #
 
 ROOT    =../../..
@@ -37,6 +37,17 @@ include ../../../incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
+ifneq "${COMSPEC}" ""
+	PGSQL_INCLUDE=$(shell echo "@PGSQL_INCLUDE@" | tr '\\' '/')
+	PGSQL_LFLAGS=$(shell echo "@PGSQL_LFLAGS@" | tr '\\' '/')
+	LINKLIBS=-laubit4gl -L${LIBROOT}
+else
+	PGSQL_INCLUDE=@PGSQL_INCLUDE@
+	PGSQL_LFLAGS=@PGSQL_LFLAGS@ 
+endif
+
+PGSQL_LIBS=@PGSQL_LIBS@
+	
 CPPSRC	=ConnectionException.cpp PreparedStatement.cpp \
 		postgresql.cpp PgConnection.cpp PgDriver.cpp
 
@@ -44,8 +55,7 @@ SRC		=simple.c
 
 OBJS	=${SRC:.c=.o}
 CPPOBJS	=${CPPSRC:.cpp=.o}
-CFLAGS	+=-I.. @PGSQL_INCLUDE@ 
-#-I/usr/include/pgsql/libpq++ -I/usr/include/pgsql
+CFLAGS	+=-I.. ${PGSQL_INCLUDE} 
 CXXFLAGS=$(CFLAGS)
 
 ALL		=${LIBROOT}/libSQL_pg${SO_EXT}
@@ -59,21 +69,20 @@ ALL: ${ALL}
 #This "simple" PG plug-in with limited functionality was written by Mike
 libSQL_pg${SO_EXT}: ${LIBROOT}/libSQL_pg${SO_EXT}
 ${LIBROOT}/libSQL_pg${SO_EXT}: $(OBJS)
-#	${LD} ${SO_LDFLAGS} $^ @PGSQL_LIBS@ -o $@ -L/usr/local/pgsql/lib
-	${LD} ${SO_LDFLAGS} $^ @PGSQL_LFLAGS@ @PGSQL_LIBS@ -o $@
+	${LD} ${SO_LDFLAGS} $^ ${PGSQL_LFLAGS} ${PGSQL_LIBS} -o $@ ${LINKLIBS}
 
 #This "real" fully functional driver written in C++ was never 
 #finished by Sergio... :-(
 libSQL_pgDEVEL${SO_EXT}:${LIBROOT}/libSQL_pgDEVEL${SO_EXT}
 ${LIBROOT}/libSQL_pgDEVEL${SO_EXT}: $(CPPOBJS)
-	${LD} ${SO_LDFLAGS} $^ @PGSQL_LFLAGS@ @PGSQL_LIBS@ -o $@
+	${LD} ${SO_LDFLAGS} $^ ${PGSQL_LFLAGS} ${PGSQL_LIBS} -o $@
 
 	
 show:
 	@echo "LD=${LD}" 
 	@echo "SO_LDFLAGS=${SO_LDFLAGS}"
-	@echo "PGSQL_LFLAGS=@PGSQL_LFLAGS@" 
-	@echo "PGSQL_LIBS=@PGSQL_LIBS@"
+	@echo "PGSQL_LFLAGS=${PGSQL_LFLAGS}" 
+	@echo "PGSQL_LIBS=${PGSQL_LIBS}"
 	@echo "CFLAGS=${CFLAGS}"
 
 ## ==================================================================
@@ -82,6 +91,6 @@ show:
 
 
 clean:
-	${RM} *.o *${SO_EXT} *.bak *.base *.dll *.def *.exp *.a
+	${RM} *.o *${SO_EXT} *.bak *.base *.dll *.def *.exp *.a ${ALL}
 
 #-------------------------------- EOF -------------------------------

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.258 2004-11-29 07:25:07 afalout Exp $
+dnl # $Id: configure.in,v 1.259 2004-12-01 07:19:19 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2469,7 +2469,8 @@ if test "$AUBIT_SOURCE" = "1" ; then
 				#So a quick fix is setting LANG to C (or unset LANG, which is the
 				#same) "by hand" before ./configure. A better fix is to change
 				#the Makefile (replace "bison" with "LANG=C bison" or something)
-				BISON="LANG=C; nice -20 $BISON -y"
+				BISON="LANG=C LC_ALL=C; nice -n -20 $BISON -y"
+				#('nice -n' for future compatibility)
 			fi
 		else
 			BISON=no
@@ -3529,9 +3530,19 @@ AC_ARG_WITH(pgsqleng,
 					#remote one
 					
 				    ;;
-				*.*.*) #7.4.0 and up
+				7.*.*) #7.4.0 and up to 8
 			    	AC_MSG_RESULT($POSTMASTER_VER)
 					PG_ENGINE_IFXCOMPAT=maybe
+		            ;;
+					
+				*.*.*) #8 and up
+			    	AC_MSG_RESULT($POSTMASTER_VER)
+					if test "$GCC_MINGW" = "yes"; then
+						AC_MSG_WARN(V8 on Windows - probably not, but will allow it)
+						PG_ENGINE_IFXCOMPAT=yes
+					else
+						PG_ENGINE_IFXCOMPAT=maybe
+					fi
 		            ;;
 				*)
 			    	AC_MSG_WARN(Invalid version number format-$POSTMASTER_VER)
@@ -3625,9 +3636,21 @@ AC_ARG_WITH(pgsql,
 	if test "$PGSQL_LIBDIR" = "" ; then 
 		AC_MSG_WARN(cannot determine library path)
 	fi
-	
-    PGSQL_INCLUDE="-I$PGSQL_INCDIR"
-    PGSQL_LFLAGS="-L$PGSQL_LIBDIR"
+
+	if test "$GCC_MINGW" = "yes"; then
+		#MinGW GCC knows nothing about CygWin paths, need to convert back to
+		#native Windows paths
+		PGSQL_INCLUDE="-I`cygpath -w $PGSQL_INCDIR`"
+		PGSQL_LFLAGS="-L`cygpath -w $PGSQL_LIBDIR`"
+		
+		#GCC has problems locating headers files when paths use backslash, 
+		#so we need to convert them too (proably CygWin trying to be 'smart')
+		#PGSQL_INCLUDE=`echo $PGSQL_INCLUDE | tr '\\' '/'`
+		#PGSQL_LFLAGS=`echo $PGSQL_LFLAGS | tr '\\' '/'`
+	else
+		PGSQL_INCLUDE="-I$PGSQL_INCDIR"
+		PGSQL_LFLAGS="-L$PGSQL_LIBDIR"
+	fi
     PGSQL_LIBS=-lpq
 #configure.fin:309: error: possibly undefined macro: AC_ADD_LIBRARY_WITH_PATH
 #configure.in:310: error: possibly undefined macro: AC_ADD_INCLUDE
@@ -3652,6 +3675,17 @@ AC_ARG_WITH(pgsql,
 		echo "CPPFLAGS=$CPPFLAGS"
 		echo "LDFLAGS=$LDFLAGS"
 		echo "LIBS=$LIBS"
+	fi
+	
+	if test "$GCC_MINGW" = "yes"; then
+		#On Windows there is no LD_LIBRARY_PATH, and dll's are searched 
+		#for in PATH.
+		#CygWin will do the conversion of PATH to native format automatically
+		export PATH="$PGSQL_LIBDIR:$PATH"
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "PATH set to:"
+			echo "$PATH"
+		fi
 	fi
 	
 	# FIXME: Replace `main' with a function in `-lc':
@@ -3783,20 +3817,30 @@ if test "$withval" != "no"; then
 					PG_ESQLC_IFXCOMPAT=yes
 		            ;;
 				*)
-			    	AC_MSG_RESULT(No-'informix' identifier not found-$PG_ESQLC_VERSION $PG_ESQLC_VERSION2)
-					PG_ESQLC_IFXCOMPAT=no
+					if test "$GCC_MINGW" != "yes"; then
+				    	AC_MSG_RESULT(No-'informix' identifier not found-$PG_ESQLC_VERSION $PG_ESQLC_VERSION2)
+						PG_ESQLC_IFXCOMPAT=no
+					else
+				    	AC_MSG_RESULT(No-'informix' identifier not found-$PG_ESQLC_VERSION $PG_ESQLC_VERSION2)
+						AC_MSG_RESULT(On Windows (PG8) so will allow it anyway)
+						PG_ESQLC_IFXCOMPAT=yes
+					fi
 				    ;;
 	        esac
         else
 	    	AC_MSG_RESULT(No-Cannot read version number)
 			PG_ESQLC_IFXCOMPAT=no
         fi
-		
-		
+
 		#Check paths
 		if test -d "$withval/include"; then 
 			ECPG_INCDIR="$withval/include"
-			ECPG_IFLAGS="-I$ECPG_INCDIR"
+			if test "$GCC_MINGW" = "yes"; then
+				ECPG_IFLAGS="-I`cygpath -w $ECPG_INCDIR`"
+				#ECPG_IFLAGS=`echo $ECPG_IFLAGS | tr '\\' '/'`
+			else
+				ECPG_IFLAGS="-I$ECPG_INCDIR"
+			fi
 		else 
 			AC_MSG_WARN(cannot determine include path under $withval)
 		fi	
@@ -3805,42 +3849,37 @@ if test "$withval" != "no"; then
 		else 
 			AC_MSG_WARN(cannot determine library path under $withval)
 		fi	
+		
 		if test -f "$ECPG_INCDIR/postgresql/informix/esql/ecpg_informix.h"; then
 			ECPG_IFLAGS="$ECPG_IFLAGS -I$ECPG_INCDIR/postgresql/informix/esql"
 			if test "$enable_ac_debug" = "yes" ; then
 				echo "Found ecpg_informix.h in $ECPG_INCDIR/postgresql/informix/esql"
 			fi
-		else
-			if test -f "$ECPG_INCDIR/pgsql/informix/esql/ecpg_informix.h"; then
-				ECPG_IFLAGS="$ECPG_IFLAGS -I$ECPG_INCDIR/pgsql/informix/esql"
-				if test "$enable_ac_debug" = "yes" ; then
-					echo "Found ecpg_informix.h in $ECPG_INCDIR/pgsql/informix/esql"
-				fi
-			else
-				#In Dave's patched tarball they are now in incl/
-				#/usr2/pg-ifx/install/include/ecpg_informix.h
-				if test -f "$ECPG_INCDIR/ecpg_informix.h"; then
-					if test "$enable_ac_debug" = "yes" ; then
-						echo "Found ecpg_informix.h in $ECPG_INCDIR"
-					fi
-				else
-					if test -f "$ECPG_INCDIR/pgsql/ecpg_informix.h"; then
-						#SuSE RPMs
-						if test "$enable_ac_debug" = "yes" ; then
-							echo "Found ecpg_informix.h in $ECPG_INCDIR/pgsql"
-						fi
-					else
-						AC_MSG_WARN(** cannot find Informix compatibility header (ecpg_informix.h) at )
-						AC_MSG_WARN(** $ECPG_INCDIR/postgresql/informix/esql)
-						AC_MSG_WARN(** ...or...)
-						AC_MSG_WARN(** $ECPG_INCDIR/pgsql/informix/esql)
-						AC_MSG_WARN(** ...or...)
-						AC_MSG_WARN(** $ECPG_INCDIR)
-						AC_MSG_WARN(** ...or...)
-						AC_MSG_WARN(** $ECPG_INCDIR/pgsql)
-					fi
-				fi
+		elif test -f "$ECPG_INCDIR/pgsql/informix/esql/ecpg_informix.h"; then
+			ECPG_IFLAGS="$ECPG_IFLAGS -I$ECPG_INCDIR/pgsql/informix/esql"
+			if test "$enable_ac_debug" = "yes" ; then
+				echo "Found ecpg_informix.h in $ECPG_INCDIR/pgsql/informix/esql"
 			fi
+		elif test -f "$ECPG_INCDIR/ecpg_informix.h"; then
+			#In Dave's patched tarball they are now in incl/
+			#/usr2/pg-ifx/install/include/ecpg_informix.h
+			if test "$enable_ac_debug" = "yes" ; then
+				echo "Found ecpg_informix.h in $ECPG_INCDIR"
+			fi
+		elif test -f "$ECPG_INCDIR/pgsql/ecpg_informix.h"; then
+			#SuSE RPMs
+			if test "$enable_ac_debug" = "yes" ; then
+				echo "Found ecpg_informix.h in $ECPG_INCDIR/pgsql"
+			fi
+		else
+			AC_MSG_WARN(** cannot find Informix compatibility header (ecpg_informix.h) at )
+			AC_MSG_WARN(** $ECPG_INCDIR/postgresql/informix/esql)
+			AC_MSG_WARN(** ...or...)
+			AC_MSG_WARN(** $ECPG_INCDIR/pgsql/informix/esql)
+			AC_MSG_WARN(** ...or...)
+			AC_MSG_WARN(** $ECPG_INCDIR)
+			AC_MSG_WARN(** ...or...)
+			AC_MSG_WARN(** $ECPG_INCDIR/pgsql)
 		fi
 		
 		#In case we are working from not installed CVS code:
@@ -3871,10 +3910,21 @@ if test "$withval" != "no"; then
 
 	    old_CFLAGS="$CFLAGS"; old_LDFLAGS="$LDFLAGS"; old_LIBS="$LIBS"; old_CPPFLAGS="$CPPFLAGS"
 	    #WARNING: PG paths need to be at beginig
-		CFLAGS="-I$PGSQL_INCDIR $ECPG_IFLAGS $CFLAGS"
-		CPPFLAGS="-I$PGSQL_INCDIR $ECPG_IFLAGS $CPPFLAGS"
+		
+		if test "$GCC_MINGW" = "yes"; then
+			PGSQL_IFLAGS="-I`cygpath -w $PGSQL_INCDIR`"
+			ECPG_LFLAGS="-L`cygpath -w $ECPG_LIBDIR`"
+			#PGSQL_IFLAGS=`echo $PGSQL_IFLAGS | tr '\\' '/'`
+			#ECPG_LFLAGS=`echo $ECPG_LFLAGS | tr '\\' '/'`
+		else
+			PGSQL_IFLAGS="-I$PGSQL_INCDIR"
+			ECPG_LFLAGS="-L$ECPG_LIBDIR"
+		fi
+
+		CFLAGS="$PGSQL_IFLAGS $ECPG_IFLAGS $CFLAGS"
+		CPPFLAGS="$PGSQL_IFLAGS $ECPG_IFLAGS $CPPFLAGS"
 		#LDFLAGS="$PGSQL_LFLAGS $LDFLAGS"
-		LDFLAGS="-L$ECPG_LIBDIR $LDFLAGS"
+		LDFLAGS="$ECPG_LFLAGS $LDFLAGS"
 		LIBS="$LIBS $PGSQL_LIBS";
 
 		export CFLAGS LDFLAGS LIBS CPPFLAGS
@@ -3947,6 +3997,14 @@ if test "$withval" != "no"; then
 				AC_MSG_WARN(decimal.h found - but not sure where)
 			fi
 		fi
+		
+		if test "$GCC_MINGW" = "yes"; then
+			#On Windows (ecpg 3.2.0) there is no decimal.h - seems to be in ecpg_informix.h now		
+			HAVE_PG_ESQL_DECIMAL_H=yes
+			if test "$enable_ac_debug" = "yes" ; then
+				echo "On Windows - ignoring missing decimal.h - using ecpg_informix.h instead"
+			fi
+		fi
 
 		if test "$ac_cv_header_ecpgtype_h" = "yes" \
 				-a "$ac_cv_header_ecpglib_h" = "yes" \
@@ -4015,7 +4073,11 @@ if test "$withval" != "no"; then
 					-a "$ac_cv_lib_ecpg_compat_main" = "yes"; then
 					AC_MSG_RESULT(OK)
                     #POSTGRESDIR is really a ecpg installation dir, but...
-					POSTGRESDIR=$withval
+					if test "$GCC_MINGW" = "yes"; then
+						POSTGRESDIR="`cygpath -w $withval`"
+					else
+						POSTGRESDIR=$withval
+					fi
             else
 	                PG_ESQLC_IFXCOMPAT=no
 	                PG_ESQLC=no
@@ -7603,7 +7665,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.258 2004-11-29 07:25:07 afalout Exp $
+| $Id: configure.in,v 1.259 2004-12-01 07:19:19 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

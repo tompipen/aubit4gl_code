@@ -1,10 +1,15 @@
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
 
 #include "a4gl_libaubit4gl_int.h"
 #ifdef htons
-#undef htons
+	#undef htons
 #endif
 #ifdef htonl
-#undef htonl
+	#undef htonl
 #endif
 
 #include <stdio.h>
@@ -13,44 +18,47 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/wait.h>
+// in a4gl_libaubit4gl.h    #include <sys/socket.h>
+// in a4gl_libaubit4gl.h    #include <netinet/in.h>
+// what is this for: (not on Windows) #include <arpa/inet.h>
+// what is this for: (not on Windows) #include <sys/wait.h>
 #include <signal.h>
-#include <netdb.h>
+// in a4gl_libaubit4gl.h    #include <netdb.h>
 
 
 #if (defined(WIN32) && ! defined(__CYGWIN__))
-#define USE_WINSOCK
+	#define USE_WINSOCK
 #endif
 
 #ifndef USE_WINSOCK
-#define SOCKET int
+	#define SOCKET int
 #endif
 
 #ifdef USE_WINSOCK
-#ifndef EINTR
-#define EINTR WSAEINTR
-#endif
+	#ifndef EINTR
+		#define EINTR WSAEINTR
+	#endif
 #endif
 
+#include <errno.h>		/* EINTR */
 
 /*
 =====================================================================
-		                    Includes
+		                    Module Variables
 =====================================================================
 */
-
-
-
-
-#include <errno.h>		/* EINTR */
 
 SOCKET sock = 0;
 int connected=0;
 int listensock = -1;
 void A4GL_init_wsock (void);
+
+/*
+=====================================================================
+		                    
+=====================================================================
+*/
+
 
 #ifdef TEST
 main() {

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.166 2004-10-08 02:47:20 afalout Exp $
+# $Id: Makefile-common.in,v 1.167 2004-12-01 07:21:08 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -224,7 +224,9 @@ ifneq "${ENVOVERRIDE}" "NO"
 	ifneq "${ENV_A4GL_LEXDIALECT}" ""
 		A4GL_LEXDIALECT=${ENV_A4GL_LEXDIALECT}
     endif
-    export A4GL_SQLTYPE A4GL_LEXTYPE A4GL_LEXDIALECT
+	
+	A4GL_UI=CONSOLE
+    export A4GL_SQLTYPE A4GL_LEXTYPE A4GL_LEXDIALECT A4GL_UI
 
 endif
 

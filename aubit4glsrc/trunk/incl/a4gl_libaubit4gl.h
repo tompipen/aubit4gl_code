@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.143 2004-11-29 22:32:51 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.144 2004-12-01 07:21:08 afalout Exp $
 #
 */
 
@@ -1905,7 +1905,10 @@ void A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect) ;
 char *A4GLSQLCV_check_sql(char *s ) ;
 char *A4GLSQLCV_dtype_alias(char *s ) ;
 char *A4GLSQLCV_check_expr(char *s ) ;
-char *A4GLSQLCV_sql_func(char *f,char *p);
+
+//conflicts with definition in sqlconvert.c:
+//char *A4GLSQLCV_sql_func(char *f,char *p);
+
 void A4GL_add_feature(char *s);
 char *A4GLSQLCV_get_sqlconst(char *cval);
 char *A4GLSQLCV_generate_current(char *from,char *to) ;

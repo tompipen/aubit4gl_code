@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.71 2004-11-19 13:30:15 mikeaubury Exp $
+# $Id: compile.c,v 1.72 2004-12-01 07:21:07 afalout Exp $
 #*/
 
 /**
@@ -212,7 +212,8 @@ initArguments (int argc, char *argv[])
   int skip_param_idx = 0;
   int skip_cnt = 0, skipit = 0;
   char informix_esql[128] = "";
-  char pg_esql[128] = "";  
+  char pg_esql[128] = "";
+  char pg_esql_libs[128] = "";  
 
 //Cant use shell scripts on Windows: esql_wrap ecpg_wrap
 //Cant use INFORMIXDIR to locate esqlc because of the CSDK subdir nonsense
@@ -226,6 +227,9 @@ initArguments (int argc, char *argv[])
 	#endif
 	sprintf (pg_esql, "\"%s/bin/ecpg\"",acl_getenv ("POSTGRESDIR"));  
 
+	sprintf (pg_esql_libs, "-L\"%s/lib\" -lecpg -lecpg_compat -lpgtypes -lpq -lm",
+		acl_getenv ("POSTGRESDIR"));	
+                            	
 #ifdef DEBUG
   A4GL_debug ("Parsing the comand line arguments\n");
   A4GL_debug ("Arg 0 set to >%s<", A4GL_getarg0 ());
@@ -702,9 +706,10 @@ initArguments (int argc, char *argv[])
 			compiler to do the linking */
 			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) {
 				sprintf (buff, 
-				"%s %s %s -o %s %s %s %s %s -lecpg -lecpg_compat -lpgtypes -lpq -lm -L\"%s/lib\"",
+				"%s %s %s -o %s %s %s %s %s %s -L\"%s/lib\"",
 					gcc_exec, get_rdynamic(),all_objects, output_object, l_path, 
-					l_libs, pass_options, extra_ldflags,acl_getenv ("POSTGRESDIR"));
+					l_libs, pass_options, extra_ldflags,pg_esql_libs,
+					acl_getenv ("POSTGRESDIR"));
 		    }
 			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
 			{
@@ -736,9 +741,10 @@ initArguments (int argc, char *argv[])
             /* When using Embedded C output, we need to run appropriate ESQL/C
             compiler to do the linking */
 			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) {
-				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
-			       pg_esql, get_rdynamic(), all_objects, output_object, l_path, 
-				   l_libs, pass_options, extra_ldflags);
+				//WARNING: link libs must be at the end
+				sprintf (buff, "%s %s %s -o %s %s %s %s %s %s",
+			       gcc_exec, get_rdynamic(), all_objects, output_object, l_path, 
+				   pass_options, extra_ldflags, l_libs,pg_esql_libs);
 		    } else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0) {
 				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
 			       acl_getenv ("A4GL_SAPDB_ESQLC"), get_rdynamic(),all_objects, output_object, l_path, l_libs,
@@ -750,7 +756,7 @@ initArguments (int argc, char *argv[])
 			} else /*"A4GL_LEXDIALECT"="INFORMIX" - default*/ {
 				/* cant use esql on Windows for linking, since it will try 
 					to use MSVC C compiler and not MinGW GCC we want
-					WARNING: libs must be at the end
+					WARNING: link libs must be at the end
 					WARNING: when using GCC on Windows we need to link with 
 					.dll's in /bin - NOT with .lib's in /lib (as 'esql -libs' 
 					will return)
@@ -844,9 +850,10 @@ initArguments (int argc, char *argv[])
 /*FIXME:*/
 			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) {
 				sprintf (buff, 
-				"%s -shared %s %s -o %s %s %s %s %s -lecpg -lecpg_compat -lpgtypes -lpq -lm -L\"%s/lib\"",
+				"%s -shared %s %s -o %s %s %s %s %s %s -L\"%s/lib\"",
 					gcc_exec, get_rdynamic(),all_objects, output_object, l_path, 
-					l_libs, pass_options, extra_ldflags,acl_getenv ("POSTGRESDIR"));
+					l_libs, pass_options, extra_ldflags,pg_esql_libs,
+					acl_getenv ("POSTGRESDIR"));
 
 				/*		
 				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
@@ -1160,7 +1167,8 @@ char ext[8];
 						if (verbose) { printf ("PG EC compilation of the object successfull.\n");}
 						need_cc=1;
 						//WARNING: ORDER IS IMPORTANT! think about /usr/include!
-						sprintf (incl_path, "%s -I\"%s/include/postgresql/informix/esql\" -I\"/usr/include/pgsql\" -I\"%s/include\" ",
+						//why did I have hasd-codes -I\"/usr/include/pgsql\" in here?
+						sprintf (incl_path, "%s -I\"%s/include/postgresql/informix/esql\" -I\"%s/include\" ",
 							  incl_path, acl_getenv ("POSTGRESDIR"),acl_getenv ("POSTGRESDIR"));
 						/* FIXME: this can be in different places - see ./configure
 						/opt/ecpg-cvs/include/postgresql/informix/esql/decimal.h

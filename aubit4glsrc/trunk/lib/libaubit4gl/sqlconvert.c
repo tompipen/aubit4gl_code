@@ -1,4 +1,3 @@
-
 /*
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
@@ -25,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.32 2004-11-30 08:55:57 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.33 2004-12-01 07:21:08 afalout Exp $
 #
 */
 
@@ -1041,6 +1040,7 @@ A4GL_cvsql_matches_regex (char *sql, char *args)
 char *CV_matches(char *type,char *string,char *esc) {
 static char buff[1024];
 int a;
+
 	if (string[0]!='\'') {
 		// Can't change a string we cant see....
 		// maybe if we call a stored procedure or
@@ -1058,30 +1058,30 @@ int a;
 	}
 
 	for (a=1;a<strlen(string);a++) {
-		char small[20];
-
-		if (string[a]=='?') {
-			if (type[0]=='~') strcpy(small,".");
-			else strcpy(small,"_");
-			strcat(buff,small);
-			continue;
+		{
+			char smallvar[20];
+	
+			if (string[a]=='?') {
+				if (type[0]=='~') strcpy(smallvar,".");
+				else strcpy(smallvar,"_");
+				strcat(buff,smallvar);
+				continue;
+			}
+	
+			if (string[a]=='*') {
+				if (type[0]=='~') strcpy(smallvar,".*");
+				else strcpy(smallvar,"%");
+				strcat(buff,smallvar);
+				continue;
+			}
+	
+			if (type[0]=='~'&&(string[a]=='*'||string[a]=='.')) { strcat(buff,"\\"); }
+			if (type[0]!='~'&&(string[a]=='%'||string[a]=='_')) { strcat(buff,"\\"); }
+	
+			smallvar[0]=string[a];
+			smallvar[1]=0;
+			strcat(buff,smallvar);
 		}
-
-		if (string[a]=='*') {
-			if (type[0]=='~') strcpy(small,".*");
-			else strcpy(small,"%");
-			strcat(buff,small);
-			continue;
-		}
-
-		if (type[0]=='~'&&(string[a]=='*'||string[a]=='.')) { strcat(buff,"\\"); }
-		if (type[0]!='~'&&(string[a]=='%'||string[a]=='_')) { strcat(buff,"\\"); }
-
-		small[0]=string[a];
-		small[1]=0;
-		strcat(buff,small);
-
-
 	}
 return buff;
 }

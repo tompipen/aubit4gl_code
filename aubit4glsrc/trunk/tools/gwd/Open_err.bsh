@@ -3,7 +3,19 @@
  * 
  * Swaps .4gl or .per file with coresponding .err file and vice versa.
  *
- 
+ * Put it in global or user's JEdit macro directory:
+
+	On UNIX:	
+	/usr/lib/jedit/macros (NOT?)
+	/usr/local/share/jedit/4.2pre8/macros/4GL/Open_err.bsh
+	/home/<USERNAME>/.jedit/macros
+
+	On Windows:
+	/Program Files/jEdit/macros
+	/WINNT/Profiles/<USERNAME>/.jedit/macros
+
+
+
  - If the current buffer is .4gl or .per file:
  	- looks for coresponding .err file in same directory, and checks for
 	  possible existance of both per and 4gl with same basename
@@ -36,7 +48,7 @@
  * along with the jEdit program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Id: Open_err.bsh,v 1.1 2004-10-31 08:17:36 afalout Exp $
+ * $Id: Open_err.bsh,v 1.2 2004-12-01 07:21:09 afalout Exp $
  *
  * Checked for jEdit 4.0 API
  *

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.38 2004-10-08 02:47:20 afalout Exp $
+# $Id: Makefile.in,v 1.39 2004-12-01 07:21:08 afalout Exp $
 #
 
 ROOT		=../../..
@@ -197,6 +197,14 @@ ifdef COMSPEC
 
 endif
 
+ifneq "${COMSPEC}" ""
+	ECPG_INCDIR			:=$(shell echo "${ECPG_INCDIR}" | tr '\\' '/')
+	LIBPQ_FE_H_IFLAGS	:=$(shell echo "${LIBPQ_FE_H_IFLAGS}" | tr '\\' '/')
+	ECPG_IFLAGS			:=$(shell echo "${ECPG_IFLAGS}" | tr '\\' '/')
+	PGLIBS				:=$(shell echo "${PGLIBS}" | tr '\\' '/')
+endif	
+	
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -284,11 +292,9 @@ ${LIBROOT}/libSQL_esqlPG${SO_EXT}: esql_compatible.ec
 #Simple Informix ESQL/C plug-in, based on 'simple' template
 #FIXME: does not compile
 #FIXME: Not sure what is this good for, when we already have working one?
-libSQL_c_esql.so: ${LIBROOT}/libSQL_c_esql.so
-${LIBROOT}/libSQL_c_esql.so: esql_simple_infx.ec
-# -I/opt/informix/v7.30 -I.. -I../.. -I../../../compilers/fcompile -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H
+libSQL_c_esql${SO_EXT}: ${LIBROOT}/libSQL_c_esql${SO_EXT}
+${LIBROOT}/libSQL_c_esql${SO_EXT}: esql_simple_infx.ec
 	export INFORMIXC=@INFORMIXC@; @IFMX_ESQLC@ -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
-#gcc -L/opt/informix/v7.30/lib -L /opt/informix/v7.30/lib/esql -L/opt/informix/v7.30/lib/cli -shared esql_simple_infx.o -lifsql -lifasf -lifgen -lifos -lifgls -lc -ldl -lcrypt /opt/informix/v7.30/lib/esql/checkapi.o -lifglx -o ../../libSQL_esql_simple_infx.so
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) $(basename $<).o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 
 
@@ -297,8 +303,8 @@ ${LIBROOT}/libSQL_c_esql.so: esql_simple_infx.ec
 #Used only for 4glc to resolve variables define as LIKE when compiling to 
 #EC with POSTGRES dialect - DOES NOT HAVE IMPLEMENTED FULL FUNCTIONALITY OF
 #DRIVER NEEDED TO RUN PROGRAMS.
-libSQL_c_ecpg.so: ${LIBROOT}/libSQL_c_ecpg.so
-${LIBROOT}/libSQL_c_ecpg.so: esql_simple_ecpg.ec
+libSQL_c_ecpg${SO_EXT}: ${LIBROOT}/libSQL_c_ecpg${SO_EXT}
+${LIBROOT}/libSQL_c_ecpg${SO_EXT}: esql_simple_ecpg.ec
 #	LD_RUN_PATH=${LD_RUN_PATH}:${POSTGRESDIR}/lib; export LD_RUN_PATH
 	${PG_ESQLC} -ct $^
 	${CC} -c -I. -I.. -I${ROOT}/incl -I$(ECPG_INCDIR) ${LIBPQ_FE_H_IFLAGS} \
@@ -351,7 +357,7 @@ clean:
 	${RM} *.o *${SO_EXT} *.bak *.c *.obj *.c_ *.a *.dll *.lnk *.map *.exp \
 	*.lib .\#* ifx_* pg_* sap_* q_* ${LIBROOT}/libSQL_esql${SO_EXT} \
     ${LIBROOT}/libSQL_esqlPG${SO_EXT} ${LIBROOT}/libSQL_esqlSAP${SO_EXT} \
-	*.pcl *.lst *.so *~
+	*.pcl *.lst *.so *.dll *~ ${ALL}
 
 #------------------------------- EOF -------------------------------
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.75 2004-11-26 03:57:53 afalout Exp $
+# $Id: Makefile.in,v 1.76 2004-12-01 07:21:08 afalout Exp $
 #
 
 ROOT    	=../..
@@ -131,6 +131,8 @@ ifeq "${GCC_MINGW}" "yes"
 	#LINK_LIBS		+=-lgcc
 	#strcasecmp():
 	LINK_LIBS		+=-lmoldname
+	#getservbyname():
+	LINK_LIBS		+=-lwsock32
 endif
 
 ifeq "${TARGET_OS}" "darwin"

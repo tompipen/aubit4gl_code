@@ -24,8 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 
+rm -rf /tmp/aubit4glsrc-*
+rm -f /usr/src/redhat/SOURCES/aubit4glsrc-*.tgz
+
 #
-# $Id: aubitbuild.sh.in,v 1.46 2004-10-30 04:36:21 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.47 2004-12-01 07:21:07 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -344,9 +347,9 @@ LOCAL_FILE=$2
 	FILESIZE_SF=`$WGET_SIZE $HTTP_FILE > $WGET_LOG 2>&1;`
 	FILESIZE_SF=`cat $WGET_LOG | grep Content-Length: | sed -e 's/7 Content-Length://'`
 	rm -f $WGET_LOG
-echo 1	
+echo "Trying to ls: .$LOCAL_FILE."
 	FILESIZE_LOCAL=`ls -al "$LOCAL_FILE" | awk '{print $5}';`
-echo 2	
+echo "xx"	
 	if test "$FILESIZE_LOCAL" != "$FILESIZE_SF"; then 
 		echo "ERROR: $LOCAL_FILE filesize of local and uploaded file are different"
 		echo "Filesize on SF is $FILESIZE_SF, local file is $FILESIZE_LOCAL"
@@ -372,11 +375,8 @@ DOWN_FILE=$2
 		RET=$?
 		if test $RET != "0"; then
 			#echo "Error: /tmp/$UP_FILE and $DOWN_FILE are different"
-			echo 3
 			ls -al "/tmp/$UP_FILE"
-			echo 4
 			ls -al "$DOWN_FILE"
-			echo 5
 			if [ "$VERBOSE" = "1" ]; then
 				echo "Failed cmd was: $EXEC"
 			fi
@@ -765,9 +765,7 @@ done
 #get file names of created archives:
 if [ -f $AUBITSRCDIR/$SRCSHORTNAME-*.$ARCHEXT ]; then
 	#WARNING: Must _NOT_ be quoted:
-	echo 6
     SOURCETARNAME=`ls $AUBITSRCDIR/$SRCSHORTNAME-*.$ARCHEXT`
-	echo 7
     SOURCETARBASENAME=`basename $SOURCETARNAME`
 else
 	if test "$MAKE" = "1"; then

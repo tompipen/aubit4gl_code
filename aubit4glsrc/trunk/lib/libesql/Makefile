@@ -1,3 +1,4 @@
+# +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
@@ -23,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.22 2004-11-23 13:40:22 mikeaubury Exp $
+# $Id: Makefile,v 1.23 2004-12-01 07:21:08 afalout Exp $
 #
 
 ROOT    =../..
@@ -83,13 +84,20 @@ ifdef COMSPEC
     #export PWD
 
 #from Mikes Makefile.cygwin:
-	CFLAGS		=-g   -D_REENTRANT -DIFX_THREAD -I${ROOT}/incl
+	CFLAGS		:=-g -D_REENTRANT -DIFX_THREAD -I${ROOT}/incl ${CFLAGS}
 	ESQL		=esql
 	ESQL_FLAGS	=-thread
 	LDFLAGS		=
 	INFORMIXDIR	=E:/Program files/W2000/Informix/CSDK
 	XXX="${INFORMIXDIR}\bin\isqlt09a.dll"  "${INFORMIXDIR}\bin\igl4n304.dll" \
 		"${INFORMIXDIR}\bin\iglxn304.dll"  "${INFORMIXDIR}\bin\igo4n304.dll"
+endif
+
+ifneq "${COMSPEC}" ""
+	PGLIBS				:=$(shell echo "${PGLIBS}" | tr '\\' '/')
+	ECPG_INCDIR			:=$(shell echo "${ECPG_INCDIR}" | tr '\\' '/')
+	ECPG_IFLAGS			:=$(shell echo "${ECPG_IFLAGS}" | tr '\\' '/')
+	LIBPQ_FE_H_IFLAGS	:=$(shell echo "${LIBPQ_FE_H_IFLAGS}" | tr '\\' '/')
 endif
 
 ## ==================================================================
