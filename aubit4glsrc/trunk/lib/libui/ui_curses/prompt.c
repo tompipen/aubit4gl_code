@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.26 2003-08-24 17:54:15 mikeaubury Exp $
+# $Id: prompt.c,v 1.27 2003-08-25 19:03:07 mikeaubury Exp $
 #*/
 
 /**
@@ -46,6 +46,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #include <ctype.h>
 
+static int prompt_last_key=0;
 
 /*
 =====================================================================
@@ -88,7 +89,7 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   A4GL_chkwin();
   prompt = vprompt;
   A4GL_debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, af);
-
+  prompt_last_key=0;
   memset (buff, ' ', 255);
   promptline = A4GL_getprompt_line ();
   A4GL_debug ("promptline=%d", promptline);
@@ -299,7 +300,6 @@ A4GL_prompt_loop (void *vprompt)
   int a;
   WINDOW *p;
   FORM *mform;
-  static int last_key=0;
 
   //int kpress;
   struct s_prompt *prompt;
@@ -339,8 +339,8 @@ A4GL_prompt_loop (void *vprompt)
 
   pos_form_cursor (mform);
 
-  if (last_key!=0) {
-		last_key=0;
+  if (prompt_last_key!=0) {
+		prompt_last_key=0;
 		return -90;
   }
 
@@ -352,7 +352,7 @@ A4GL_prompt_loop (void *vprompt)
 
   a = A4GL_proc_key_prompt (a, mform, prompt);
   prompt->lastkey = A4GL_get_lastkey ();
-  last_key=prompt->lastkey;
+  prompt_last_key=prompt->lastkey;
 
   if (a == 0)
     {
@@ -376,6 +376,7 @@ A4GL_prompt_loop (void *vprompt)
   //if (prompt->lastkey == 10 || prompt->lastkey == 13)
   if (a == 10 || a == 13)
     {
+	prompt_last_key=0;
       A4GL_int_form_driver (mform, REQ_VALIDATION);
       wrefresh (p);
       A4GL_debug ("Return pressed");
@@ -401,7 +402,7 @@ A4GL_prompt_loop (void *vprompt)
     {
       A4GL_push_char (field_buffer (prompt->field, 0));
     }
-  last_key=0; // we'll do it now 
+  prompt_last_key=0; // we'll do it now 
   return -90;
 }
 
