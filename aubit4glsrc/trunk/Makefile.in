@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.68 2002-06-08 06:48:10 afalout Exp $
+# $Id: Makefile.in,v 1.69 2002-06-11 08:42:20 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -297,7 +297,7 @@ all: default extra install
 
 log:
 	@echo "Logging make process to make.log, please wait..."
-	@${MAKE} ${MKNAME} ${BUGMAKEFLAGS} > make.log 2>&1
+	@${MAKE} > make.log 2>&1
 	@echo "make finished successfuly, see make.log for details."
 #	WARNLINES=`grep -c "warning:" make.log`
 #	@echo "Toatal compiler warnings: ${WARNLINES}"
@@ -307,8 +307,8 @@ log:
 
 corecompile:
 	$(MAKE) -C lib
-	$(MAKE) -C lib/libtui
-	$(MAKE) -C compilers/4glc/rules
+#	$(MAKE) -C lib/libtui
+#	$(MAKE) -C compilers/4glc/rules
 	$(MAKE) -C compilers/4glc
 	$(MAKE) -C compilers/fcompile
 	$(MAKE) -C compilers/menus
@@ -972,11 +972,21 @@ debug.filenames:
 
 # ------------------------------ testing ----------------------------
 
-
+splint: lclint
 lclint:
-	(echo " " > $(LCLINT_GLOBAL_LOG))
-	$(MAKE) -C lib/libaubit4gl lclint
-	@echo "see $(LCLINT_GLOBAL_LOG) for results"
+	@echo "Cleaning old $(LCLINT_GLOBAL_LOG)..."
+	@(echo " " > $(LCLINT_GLOBAL_LOG))
+	$(MAKE) -C lib/libaubit4gl splint
+	$(MAKE) -C compilers/4glc splint
+	$(MAKE) -C compilers/fcompile splint
+	$(MAKE) -C compilers/menus splint
+	$(MAKE) -C compilers/helpcompile splint
+	@echo "See <module_dir>$(LCLINT_GLOBAL_LOG) for cumulative results of all modules tested"
+	@echo "See ./$(LCLINTLOG) in each module directory tested"
+	@echo "All SPLint warnings: "
+	@echo "                          Reported  Suppressed"
+	@echo "`grep "^Total" lclint.log`"
+
 
 settings.rc:
 	@echo

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.9 2002-06-06 12:31:26 afalout Exp $
+# $Id: decompile.c,v 1.10 2002-06-11 08:42:26 afalout Exp $
 #
 */
 
@@ -43,9 +43,11 @@
 
 #include "a4gl_formxw.h"
 
+/* already included via a4gl_formxw.h that will include form_x.h
 #ifdef __CYGWIN__
 	#include <rpc/rpc.h>
 #endif
+*/
 
 /*
 =====================================================================

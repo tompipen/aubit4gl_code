@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.3 2002-05-06 07:21:15 afalout Exp $
+# $Id: Makefile.in,v 1.4 2002-06-11 08:42:26 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -35,8 +35,11 @@ override NOINCL=0
 ##                    Options
 ## ==================================================================
 
-CFLAGS		+=-I../../lib/libincl
-EXE_CFLAGS	+=-L../../lib -I../../lib/libincl
+C_LOCAL_IFLAGS  =-I../../lib/libincl
+CFLAGS			+=${C_LOCAL_IFLAGS}
+EXE_CFLAGS		+=-L../../lib -I../../lib/libincl
+LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
+CMODS           =mkmess.c
 
 ## ==================================================================
 ##                    Targets
@@ -44,7 +47,7 @@ EXE_CFLAGS	+=-L../../lib -I../../lib/libincl
 
 all: mkmess
 
-mkmess: mkmess.c
+mkmess: ${CMODS}
 	${CC} ${EXE_CFLAGS} $^ -o $@ ${AUBIT_LIB}
 	${LN} $@${EXE} ../../bin/$@${EXE}
 
@@ -54,4 +57,12 @@ mkmess: mkmess.c
 
 clean:
 	${RM} *.o mkmess.err mkmess mkmess.a *.bak *.exe
+
+splint: lclint
+lclint: $(CMODS)
+	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
+	${CAT} ${LCLINTLOG} >> ../../${LCLINT_GLOBAL_LOG}
+	@echo "see ${LCLINTLOG} for results"
+
+# ========================== EOF ================================
 

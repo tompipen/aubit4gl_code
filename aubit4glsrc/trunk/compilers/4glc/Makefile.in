@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.34 2002-05-28 10:32:04 afalout Exp $
+# $Id: Makefile.in,v 1.35 2002-06-11 08:42:26 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -42,14 +42,17 @@ else
 	Y_TAB_C		=rules/generated/y.tab.c
 endif
 
-4GLCAOBJ		= \
-				4glc.o \
-				dim.o \
-				list.o lexer.o \
-				mod.o map.o \
-				rules/generated/states.o \
-				rules/generated/kw.o \
-				rules/generated/y.tab.o
+CMODS           = \
+				4glc.c \
+				dim.c \
+				list.c lexer.c \
+				mod.c map.c \
+				rules/generated/states.c \
+				rules/generated/kw.c \
+                ${Y_TAB_C}
+
+4GLCAOBJ		=${CMODS:.c=.o}
+
 
 ## ==================================================================
 ##                    Options
@@ -57,7 +60,9 @@ endif
 
 ALL				=rules.t 4glc
 
-CFLAGS			+=-I../../lib -I../../lib/libincl -I../../lib/liblex/lex_c -I. -I../fcompile -Irules @RPCLIB_INCLUDE@ @CURSES_INC_PATH@
+C_LOCAL_IFLAGS  =-I../../lib -I../../lib/libincl -I../../lib/liblex/lex_c -I. -I../fcompile -Irules
+CFLAGS			+=${C_LOCAL_IFLAGS} @RPCLIB_INCLUDE@ @CURSES_INC_PATH@
+LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 
 ## ==================================================================
 ##                              Targets
@@ -118,6 +123,14 @@ rules/generated/y.tab.o: 			../fcompile/form_x.h
 lexer.o: 							rules/generated/kw.h
 lexer.o: 							rules/generated/y.tab.h
 
+
+
+
+splint: lclint
+lclint: $(CMODS)
+	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
+	${CAT} ${LCLINTLOG} >> ../../${LCLINT_GLOBAL_LOG}
+	@echo "see ${LCLINTLOG} for results"
 
 ## ==================================================================
 ##                            Clean Targets

@@ -6,17 +6,6 @@
 #to be loaded at run-time using dlopen() function call.
 #
 #
-#warning: return makes pointer from integer without a cast:
-#
-#char* get_display_str(int type,char* s,char* f) {
-#   if (libptr==0) A4GLLEX_initlib();
-#   func=find_func(libptr,"get_display_str");
-#   return func(type,s,f);
-#}
-#
-#should be:
-#
-#  return (char*)func(type,s,f)
 #
 #
 #
@@ -269,7 +258,7 @@ print ""
 print "static void *libptr=0;"
 print "static int (*func)();"
 #print "static double (*func_d)();"
-print "void *find_func(void *p,char *s);"
+#print "void *find_func(void *p,char *s);"
 print "int A4GL" lib "_initlib (void);"
 print ""
 print "/**"

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.19 2002-06-05 07:04:56 afalout Exp $
+# $Id: Makefile.in,v 1.20 2002-06-11 08:42:27 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,13 +36,12 @@ include ../../../incl/Makefile-common
 ## ==================================================================
 
 #FIXME: why do we need fcompile headers and RPC lib includes here?
-CFLAGS	+=-I../../libincl -I../../../compilers/fcompile -I.. @RPCLIB_INCLUDE@
-
-#ifdef ODBCLIBDIR
-#	CFLAGS	+= -I$(ODBCLIBDIR)
-#endif
-
-OBJECTS=sql.o sqlex.o
+C_LOCAL_IFLAGS  		=-I../../libincl -I../../../compilers/fcompile -I..
+CFLAGS					+=${C_LOCAL_IFLAGS} @RPCLIB_INCLUDE@
+CFLAGS_NOREDUND			=$(CFLAGS:%-Wredundant-decls=%)
+CFLAGS_NOSTRICTPROTO	=$(CFLAGS:%-Wstrict-prototypes=%)
+LCLINT_CFLAGS   		=${C_IFLAGS} ${C_LOCAL_IFLAGS}
+OBJECTS					=sql.o sqlex.o
 
 ## ==================================================================
 ##                              Targets
@@ -51,6 +50,9 @@ OBJECTS=sql.o sqlex.o
 all :
 	@echo "Must specify target (because clean is not working...)"
 	@echo "Targets: iodbc unixodbc ifxodbc pgodbc odbc32"
+
+
+odbc: iodbc unixodbc ifxodbc pgodbc
 
 #we MUST always clean first, because we don't know for which libs where
 #current object compiled, if they exists.
@@ -72,7 +74,7 @@ odbc32: 	clean ${OBJECTS}
 	cp libSQL_odbc32.dll.a ../..
 	@echo "Windows ODBC target compiled successfully"
 
-libSQL_iodbc.so: CFLAGS:=-DIODBC @IODBC_INCLUDE@ @IODBC_LFLAGS@ ${CFLAGS}
+libSQL_iodbc.so: CFLAGS:=-DIODBC @IODBC_INCLUDE@ @IODBC_LFLAGS@ ${CFLAGS_NOREDUND}
 libSQL_iodbc.so: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ @IODBC_LIBS@ @IODBC_LFLAGS@
 	cp $@ ../..
@@ -82,16 +84,15 @@ libSQL_unixodbc.so: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ @UNIXODBC_LIBS@ @UNIXODBC_LFLAGS@
 	cp $@ ../..
 
-libSQL_ifxodbc.so: CFLAGS:=-DIFXODBC -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/cli -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql ${CFLAGS}
+libSQL_ifxodbc.so: CFLAGS:=-DIFXODBC -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/cli -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql ${CFLAGS_NOSTRICTPROTO}
 libSQL_ifxodbc.so: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lifcli -rpath ${INFORMIXDIR}/lib/esql -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql
 	cp $@ ../..
 
-libSQL_pgodbc.so: CFLAGS:=-DPGODBC @PGODBC_INCLUDE@ @PGODBC_LFLAGS@ ${CFLAGS}
+libSQL_pgodbc.so: CFLAGS:=-DPGODBC @PGODBC_INCLUDE@ @PGODBC_LFLAGS@ ${CFLAGS_NOREDUND}
 libSQL_pgodbc.so: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lpsqlodbc @PGODBC_LFLAGS@
 	cp $@ ../..
-
 
 ## ==================================================================
 ##                              Clean

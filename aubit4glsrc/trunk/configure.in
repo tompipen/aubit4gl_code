@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.66 2002-06-01 11:54:53 afalout Exp $
+# $Id: configure.in,v 1.67 2002-06-11 08:42:21 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -257,6 +257,7 @@ AC_SUBST(LDFLAGS_SHARED)
 AC_SUBST(YACC)
 AC_SUBST(LEX)
 #AC_SUBST(PREFIX)
+AC_SUBST(LCLINTEXE)
 
 #curses:
 AC_SUBST(CURSES_LIB_PATH)
@@ -324,6 +325,7 @@ PERLBUILD=no
 JABBERBUILD=no
 AUBIT_DEBUG=1
 IFMX_ESQLC=no
+LCLINTEXE=no
 cygwin=0
 
 #defaults for aubitrc:
@@ -549,6 +551,13 @@ AC_PATH_PROG(PERL, perl, no)
 AC_PATH_PROG(SWIG, swig, no)
 AC_PATH_PROG(SH, sh, /bin/sh)
 AC_PATH_PROG(LDD, ldd, no)
+
+AC_PATH_PROG(LCLINTEXE,lclint,no)
+	
+	if test "$LCLINTEXE" = "no"; then
+		AC_PATH_PROG(LCLINTEXE,splint,no)
+    fi
+
 
 #cygcheck can be used instead of ldd that is missing on CygWin:
 AC_PATH_PROG(CYGCHECK, cygcheck, no)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.6 2002-06-06 12:31:26 afalout Exp $
+# $Id: interval.c,v 1.7 2002-06-11 08:42:27 afalout Exp $
 #
 */
 
@@ -77,7 +77,7 @@ double rval_double;				/* 2 */
 =====================================================================
 */
 
-int 			valid_int 		(char *s, int *data,int size);
+/* int 			valid_int 		(char *s, int *data,int size); */ /* in conv.c */
 int 			mk_int_size		(int s,int l);
 
 double 			get_rval_double	(void);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.11 2002-06-06 12:31:26 afalout Exp $
+# $Id: calldll.c,v 1.12 2002-06-11 08:42:27 afalout Exp $
 #
 */
 
@@ -80,7 +80,7 @@ char tempbuff[1024];
 static void 	badfunc 		(void);
 static int 		nullfunc		(void);
 int 			call_4gl_dll 	(char *filename, char *function, int args);
-void *          find_func 		(void *dllhandle, char *func);
+/* extern void * 	find_func 		(void *dllhandle, char *func); */
 void *          find_func_double (void *dllhandle, char *func);
 
 

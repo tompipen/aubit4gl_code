@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.32 2002-05-28 10:32:08 afalout Exp $
+# $Id: Makefile.in,v 1.33 2002-06-11 08:42:26 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -37,7 +37,9 @@ override NOINCL=0
 ## ==================================================================
 
 4GLPC			=../../bin/4glpc
-CFLAGS 			+=-I../../lib/libincl -I. @CURSES_INC_PATH@ @RPCLIB_INCLUDE@
+C_LOCAL_IFLAGS  =-I../../lib/libincl -I.
+CFLAGS 			+=${C_LOCAL_IFLAGS} @CURSES_INC_PATH@ @RPCLIB_INCLUDE@
+LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 EXE_CFLAGS      +=-I../../lib/libincl -I.
 
 ALL	 			=fcompile fdecompile fshow
@@ -52,8 +54,6 @@ ifeq "${USE_RPCGEN}" "0"
 else
 	RPCGEN 		=@RPCGEN@ form_x.x
 endif
-
-TOREPLACE=register int32_t *buf;
 
 #we don't want -Wall in CFLAGS when compiling form_x_xdr.c because it would
 #give us bunch of warnings about unised varibles, that we cannot fix
@@ -78,7 +78,9 @@ DUMP_C          =dump.c
 #FIXME: dump_java.c was never commited into CVS
 DUMP_JAVA       =dump_java.c
 DECOMPILE       =decompile.c
-OBJECTS 		=$(SOURCES.c:%.c=%.o) $(TARGETS.c:%.c=%.o)
+
+CMODS           =$(SOURCES.c) $(TARGETS.c)
+OBJECTS 		=$(CMODS:%.c=%.o)
 
 ifeq "@YACC@" "no"
 	LEX_YY_C	=../../tools/no_yacc/cygwin/compilers/fcompile/lex.yy.c
@@ -133,25 +135,8 @@ endif
 rpc: form_x_xdr.c
 form_x.h form_x_xdr.c: form_x.x
 	${RPCGEN}
-#must not do this, buff variable is used in some functions:
-#	@echo "Removing ${TOREPLACE} from generated code..."
-#	sed -e "s%${TOREPLACE}%%g" form_x_xdr.c > newform_x_xdr.c
-#	mv newform_x_xdr.c form_x_xdr.c
-
-
-
-#       -Wunused-variable
-#              Warn whenever  a  local  variable  or  non-constant
-#              static  variable  is unused aside from its declara­
-#              tion
-#              To suppress this warning use the unused  attribute.
-
-#Does anyone know what kind of "attribute" this reffers to?
 
 form_x_xdr.o: form_x_xdr.c
-#	${CC} ${CFLAGS} -Wunused-variable=unused $^ -o $@
-#	${CC} ${CFLAGS} -unused $^ -o $@
-#	${CC} ${CFLAGS} $^ -o $@
 	${CC} ${CFLAGS_FORM_X_XDR_C} -c -o $@ $^
 
 ## ==================================================================
@@ -179,7 +164,10 @@ clean:
 ##                         Other Targets
 ## ==================================================================
 
-lint:
-	lint -n -lansic $(CPPFLAGS) $(SOURCES.c) $(TARGETS.c)
+splint: lclint
+lclint: $(CMODS)
+	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
+	${CAT} ${LCLINTLOG} >> ../../${LCLINT_GLOBAL_LOG}
+	@echo "see ${LCLINTLOG} for results"
 
 #-----------------------------------------------------------------------

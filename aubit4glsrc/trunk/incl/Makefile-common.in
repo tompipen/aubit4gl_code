@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.47 2002-06-08 06:48:10 afalout Exp $
+# $Id: Makefile-common.in,v 1.48 2002-06-11 08:42:26 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -160,38 +160,25 @@ PATH:=${AUBITDIR}/bin:${PATH}
 ##                   Global Makefile variables
 ## ==================================================================
 
-
-#if this make file is named "Makefile.old", set MKNAME to  "-f Makefile.old"
-#if this make file is named "Makefile.in", set MKNAME to  "" (empty) or "-f Makefile"
-#if this make file is named "Makefile", DO NOT edit it!
-MKNAME=
-
-
-#See http://www.splint.org/manual/manual.html
+#######################################
 #Lclint (Splint) C code checker flags:
-LCLINTFLAGS			=-weak
+#See http://www.splint.org/manual/manual.html
+
+#LCLINTFLAGS		=-weak +posixlib
+#When using -skipansiheaders:
+#stddef.h needs -I/usr/include/linux
+#stdarg.h needs -I/usr/lib/gcc-lib/i386-glibc21-linux/egcs-2.91.66/include
+LCLINTFLAGS			=-f .splintrc -I/usr/include/linux -I/usr/lib/gcc-lib/i386-glibc21-linux/egcs-2.91.66/include
 #name for log created for each module:
 LCLINTLOG  			=lclint.log
-#neame for log created in AUBITDIR root:
+#name for cumulative log created in AUBITDIR root:
 LCLINT_GLOBAL_LOG	=lclint.log
 #Command to use for log file creation:
 LCLINTLOGCMD		=2>&1
 #This will soon change to "splint":
-LCLINTEXE           =lclint
-#Should we ignore if lclint checking fails:
+LCLINTEXE           =@LCLINTEXE@
+#Should we ignore if lclint checking fails, or stop:
 LCLINTERR           =-
-
-#Things wee cannto have on lclint command line:
-#LCLINT_STRIP1       =-Wall
-#LCLINT_STRIP2       =-Wredundantdecls
-#LCLINT_STRIP3       =-Wmissingdecls
-#LCLINT_STRIP4       =-Wmissingprototypes
-#LCLINT_STRIP5       =-Wstrictprototypes
-#LCLINT_STRIP6       =-g
-#LCLINT_STRIP7       =-O2
-#LCLINT_STRIP8       =-vfPIC
-
-
 
 ####################
 #commands to use:

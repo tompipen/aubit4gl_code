@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.54 2002-05-06 07:21:15 afalout Exp $
+# $Id: Makefile.in,v 1.55 2002-06-11 08:42:26 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -44,7 +44,8 @@ override NOINCL=0
 
 ALL 	=aubit-config libEXREPORT_NOPDF${SO_EXT} libaubit4gl${SO_EXT} \
 		libRPC_NORPC${SO_EXT} libSQL_noodbc${SO_EXT} libFORM_NOFORM${SO_EXT} \
-		libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} libLEX_C${SO_EXT}
+		libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} libLEX_C${SO_EXT} \
+		libUI_CONSOLE${SO_EXT}
 
 
 ifeq "$(GTKBUILD)" "yes"
@@ -119,6 +120,9 @@ libEXREPORT_NOPDF.dll:
 libUI_GTK.dll:
 	${MAKE} -C libgui
 
+libUI_TUI.dll libUI_CONSOLE.dll:
+	$(MAKE) -C libtui
+
 libaubit4gl.dll :
 	${MAKE} -C libaubit4gl $@
 
@@ -148,6 +152,7 @@ libRPC_XMLRPC.dll:
 ##                       Targets in sub-makefiles
 ## ==================================================================
 
+
 libLEX_C.so:
 	${MAKE} -C liblex/lex_c
 
@@ -159,6 +164,9 @@ libMSG_NATIVE.so:
 
 libUI_GTK.so:
 	$(MAKE) -C libgui
+
+libUI_TUI.so libUI_CONSOLE.so:
+	$(MAKE) -C libtui
 
 aubit-config:
 	${MAKE} -C resource
