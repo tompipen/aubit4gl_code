@@ -998,7 +998,8 @@ strcpy($<str>$,"25");
 
 
 s_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
-e_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
+e_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION | FRACTION OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"FRACTION(%s)",$<str>3);}
+;
 
 dbase_name	:	identifier {strcpy($<str>$,$<str>1);}
 		|       identifier ATSIGN identifier {sprintf($<str>$,"%s@%s",$<str>1,$<str>3);}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.140 2003-12-10 20:45:08 mikeaubury Exp $
+# $Id: mod.c,v 1.141 2003-12-30 11:38:08 mikeaubury Exp $
 #
 */
 
@@ -1995,7 +1995,7 @@ add_bind (char i, char *var_i)
   long dtype;
 char c;
 char var[2048]="";
-
+//printf("add_bind: %c %s\n",i,var_i);
 strcpy(var,var_i);
 
   if (var_i[0] == '"')
@@ -3603,6 +3603,10 @@ expand_bind (struct binding_comp *bind, int btype, int cnt)
   struct binding_comp save_bind[NUMBINDINGS];
   char buff[256];
   int a;
+  int b1;
+  int b2;
+  int b3;
+int dim;
   for (a = 0; a < cnt; a++)
     {
       strcpy (save_bind[a].varname, bind[a].varname);
@@ -3615,12 +3619,30 @@ expand_bind (struct binding_comp *bind, int btype, int cnt)
     {
       strcpy (buff, save_bind[a].varname);
 
-      if (scan_variable (buff) == -2)
-	{
-	  strcat (buff, ".*");
+
+
+
+      if (A4GL_isyes(acl_getenv("NO_ARRAY_EXPAND"))) dim=0; else dim=1;
+
+
+      if (isarrvariable (buff)&&buff[strlen(buff)-1]!=']'&&buff[strlen(buff)-2]!=']' && dim==1) { 
+         int type,arrsize,size,level;
+         char buff2[256];
+         char arrbuff[256];
+
+
+	printf("Warning: Using an array at this point may not be supported (%s) @ line %d\n",buff,yylineno); 
+
+        get_variable_dets (buff,&type,&arrsize,&size,&level,arrbuff);
+	for (b1=0;b1<arrsize;b1++) {
+		sprintf(buff2,"%s[%d]",buff,b1);
+      		if (scan_variable (buff2) == -2) { strcat (buff2, ".*"); }
+      		add_bind (btype, buff2);
 	}
+	continue;
+      }
 
-
+      if (scan_variable (buff) == -2) { strcat (buff, ".*"); }
       add_bind (btype, buff);
     }
 

@@ -620,11 +620,13 @@ obind_var : variable   {
 
 obind_var_let_list:	obind_let_var  {
 A4GL_lex_printcomment("/* start obind with  %s*/\n",$<str>1);
+A4GL_debug("obind_var_let_list ---> %s\n",$<str>1);
 start_bind('o',$<str>1);
 } 
 	|	obind_var_let_list COMMA obind_let_var {
 A4GL_lex_printcomment("/* add to obind %s */\n",$<str>3);
 add_bind('o',$<str>3);
+A4GL_debug("obind_var_let_list ---> %s\n",$<str>3);
 strcpy($<str>$,"");
 }
 ;

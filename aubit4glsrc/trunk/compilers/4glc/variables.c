@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.31 2003-12-09 11:23:40 mikeaubury Exp $
+# $Id: variables.c,v 1.32 2003-12-30 11:38:08 mikeaubury Exp $
 #
 */
 
@@ -1896,7 +1896,7 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
   struct record_list_entry *e;
   struct record_list *list;
 
-
+//printf("Add to record_list\n");
 
   if (v->is_array)
     {
@@ -1914,31 +1914,200 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 
   if (v->variable_type == VARIABLE_TYPE_SIMPLE)
     {
-      list->list = realloc (list->list,
-			    (list->records_cnt +
-			     1) * sizeof (struct record_list_entry *));
-      e = malloc (sizeof (struct record_list_entry));
-      sprintf (buff, "%s.%s", prefix_buff, v->names.name);
-      e->variable = v;
-      e->name = strdup (buff);
+        int b0;
+        int b1;
+        int b2;
+        int b3;
+        int b4;
+        int dim;
+        char subscript[255];
+        char fmt[255];
+      // We've got another bl**dy record - expand this one too...
+      //printf ("IS ARRAY  : %d\n", v->is_array);
+      //printf ("Add next level...\n");
 
-      list->list[list->records_cnt] = e;
-      list->records_cnt++;
+        strcpy(subscript,"");
+        strcpy(fmt,"");
+        dim=0;
+        if (v->arr_subscripts[0]) {strcat(fmt,"[%d]");dim=1;}
+        if (v->arr_subscripts[1]) {strcat(fmt,"[%d]");dim=2;}
+        if (v->arr_subscripts[2]) {strcat(fmt,"[%d]");dim=3;}
+        if (v->arr_subscripts[3]) {strcat(fmt,"[%d]");dim=4;}
+        if (v->arr_subscripts[4]) {strcat(fmt,"[%d]");dim=5;}
 
-      *list_ptr = list;
+	if (A4GL_isyes(acl_getenv("NO_ARRAY_EXPAND"))) { dim=0; }
+	//if (v->is_array) { printf("v->isarray && simple %d %d %d %d %d\n", v->arr_subscripts[0], v->arr_subscripts[1], v->arr_subscripts[2], v->arr_subscripts[3], v->arr_subscripts[4]); }
+
+
+
+
+
+      if (dim==0) {
+      		sprintf (buff, "%s.%s", prefix_buff, v->names.name);
+      		list->list = realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = malloc (sizeof (struct record_list_entry)); e->variable = v; e->name = strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
+      }
+
+        if (dim==1)  {
+                for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
+                                                        sprintf(subscript,fmt,b0);
+      							sprintf (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
+      							list->list = realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = malloc (sizeof (struct record_list_entry)); e->variable = v; e->name = strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
+                }
+        }
+
+
+        if (dim==2)  {
+                for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
+                        for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
+                                                        sprintf(subscript,fmt,b0,b1);
+      							sprintf (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
+      							list->list = realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = malloc (sizeof (struct record_list_entry)); e->variable = v; e->name = strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
+                        }
+                }
+        }
+
+        if (dim==3)  {
+                for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
+                        for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
+                                for (b2 = 0; b2 < v->arr_subscripts[2]; b2++) {
+                                                        sprintf(subscript,fmt,b0,b1,b2);
+      							sprintf (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
+      							list->list = realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = malloc (sizeof (struct record_list_entry)); e->variable = v; e->name = strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
+                                }
+                        }
+                }
+        }
+
+        if (dim==4)  {
+                for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
+                        for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
+                                for (b2 = 0; b2 < v->arr_subscripts[2]; b2++) {
+                                        for (b3 = 0; b3 < v->arr_subscripts[3]; b3++) {
+                                                        sprintf(subscript,fmt,b0,b1,b2,b3);
+      							sprintf (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
+      							list->list = realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = malloc (sizeof (struct record_list_entry)); e->variable = v; e->name = strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
+                                        }
+                                }
+                        }
+                }
+        }
+
+        if (dim==5)  {
+                for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
+                        for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
+                                for (b2 = 0; b2 < v->arr_subscripts[2]; b2++) {
+                                        for (b3 = 0; b3 < v->arr_subscripts[3]; b3++) {
+                                                for (b4 = 0; b4 < v->arr_subscripts[4]; b4++) {
+                                                        sprintf(subscript,fmt,b0,b1,b2,b3,b4);
+      							sprintf (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
+      							list->list = realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = malloc (sizeof (struct record_list_entry)); e->variable = v; e->name = strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
+                                                }
+                                        }
+                                }
+                        }
+                }
+        }
+
+
       return list;
     }
 
   if (v->variable_type == VARIABLE_TYPE_RECORD)
     {
+	int b0;
+	int b1;
+	int b2;
+	int b3;
+	int b4;
+	int dim;
+	char subscript[255];
+	char fmt[255];
+	//if (v->is_array) { printf("v->isarray && record %d %d %d %d %d\n", v->arr_subscripts[0], v->arr_subscripts[1], v->arr_subscripts[2], v->arr_subscripts[3], v->arr_subscripts[4]); }
+
       // We've got another bl**dy record - expand this one too...
       //printf ("IS ARRAY  : %d\n", v->is_array);
       //printf ("Add next level...\n");
-      sprintf (buff, "%s.%s.*", prefix_buff, v->names.name);
-      return split_record_list (buff, buff, list);
-      *list_ptr = list;
-    }
 
+      	strcpy(subscript,"");
+	strcpy(fmt,"");
+	dim=0;
+	if (v->arr_subscripts[0]) {strcat(fmt,"[%d]");dim=1;}
+	if (v->arr_subscripts[1]) {strcat(fmt,"[%d]");dim=2;}
+	if (v->arr_subscripts[2]) {strcat(fmt,"[%d]");dim=3;}
+	if (v->arr_subscripts[3]) {strcat(fmt,"[%d]");dim=4;}
+	if (v->arr_subscripts[4]) {strcat(fmt,"[%d]");dim=5;}
+	if (A4GL_isyes(acl_getenv("NO_ARRAY_EXPAND"))) { dim=0; }
+
+
+	if (dim==0) {
+      		sprintf (buff, "%s.%s.*", prefix_buff, v->names.name);
+      		return split_record_list (buff, buff, list);
+	}
+
+	if (dim==1)  {
+		for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
+							sprintf(subscript,fmt,b0);
+      							sprintf (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
+      							split_record_list (buff, buff, list);
+		}
+	}
+
+
+	if (dim==2)  {
+		for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
+    			for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
+							sprintf(subscript,fmt,b0,b1);
+      							sprintf (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
+      							split_record_list (buff, buff, list);
+  			}
+		}
+	}
+
+	if (dim==3)  {
+		for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
+    			for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
+				for (b2 = 0; b2 < v->arr_subscripts[2]; b2++) {
+							sprintf(subscript,fmt,b0,b1,b2);
+	      			}
+  			}
+		}
+	}
+
+	if (dim==4)  {
+		for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
+    			for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
+				for (b2 = 0; b2 < v->arr_subscripts[2]; b2++) {
+	    				for (b3 = 0; b3 < v->arr_subscripts[3]; b3++) {
+							sprintf(subscript,fmt,b0,b1,b2,b3);
+      							sprintf (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
+      							split_record_list (buff, buff, list);
+		  			}
+	      			}
+  			}
+		}
+	}
+
+	if (dim==5)  {
+		for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
+    			for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
+				for (b2 = 0; b2 < v->arr_subscripts[2]; b2++) {
+	    				for (b3 = 0; b3 < v->arr_subscripts[3]; b3++) {
+						for (b4 = 0; b4 < v->arr_subscripts[4]; b4++) {
+							sprintf(subscript,fmt,b0,b1,b2,b3,b4);
+      							sprintf (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
+      							split_record_list (buff, buff, list);
+						}
+		  			}
+	      			}
+  			}
+		}
+	}
+
+
+
+	return list;
+
+    }
   //printf ("Reached end of add_to_Record_list... bugger...\n");
   return 0;
 }
