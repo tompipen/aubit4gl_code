@@ -7,7 +7,7 @@
 #this is main Aubit 4gl compiler .4gl files compiler script
 #You should not need to invoke actual compiler(s) (4glc, fcompile...) directly
 #
-# $Id: 4glpc,v 1.31 2001-12-10 20:17:28 mikeaubury Exp $
+# $Id: 4glpc,v 1.32 2001-12-12 09:37:56 afalout Exp $
 #
 ########################################################################
 
@@ -980,7 +980,7 @@ else
     fi
 
 fi
-if [ "$A4GL_PDFTYPE" = "PDF" ]
+if [ "$A4GL_PDFTYPE" = "PDF" ] && [ "$USE_PDF" = "yes" ]
 then
 	FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_PDF"
 	FGLLIBS_STATIC="$FGLLIBS_SHARED -lPDF_PDF"

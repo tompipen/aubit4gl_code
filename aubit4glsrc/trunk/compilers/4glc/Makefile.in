@@ -1,6 +1,6 @@
 ##########################################################
 #
-# $Id: Makefile.in,v 1.1 2001-12-10 20:04:50 saferreira Exp $
+# $Id: Makefile.in,v 1.2 2001-12-12 09:37:56 afalout Exp $
 #
 ##########################################################
 
@@ -63,6 +63,8 @@ endif
 
 ifeq "$(PDFBUILD)" "yes"
 	4GLPCFLAGS	+=-lpdf
+else
+	4GLPCFLAGS	+=-nopdf
 endif
 
 4GLPC			=${SH} ../../bin/4glpc -verbose -rdynamic
