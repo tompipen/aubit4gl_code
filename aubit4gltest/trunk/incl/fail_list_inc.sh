@@ -54,7 +54,7 @@ EXPECT_TO_FAIL_TESTS_IFXODBC="1 68 108 212 234 270 582 583 584 585 587 706 904 \
 ######################
 #Tests that should not be run with -ifxodbc, because they go into endless loop 
 #and never exit
-BLACKLIST_TESTS_IFXODBC="107 286 287 681 682 686 687 701 702 703 704"
+BLACKLIST_TESTS_IFXODBC="107 286 287"
 #107: goes into loop:
 #sql.c                2082   (     0,     0) After SQL Error -11067 S1010 [Informix][Informix ODBC Driver]Function sequence error.
 #sql.c                2109   (     0,     0) 'S1010' '[Informix][Informix ODBC Driver]Function sequence error.' (-11067 56)

@@ -95,6 +95,7 @@ for a in $FLAGS; do
 
    -sqlt)
    #test of SQL translation using SQLFairy
+   #http://sqlfairy.sourceforge.net/
    	# Parsers:
 		# DBI DBI-MySQL DBI-PostgreSQL DBI-SQLite DBI-Sybase
 		# Excel MySQL Oracle PostgreSQL SQLite Storable Sybase
@@ -1692,6 +1693,16 @@ do
 	#Make sure we are in tests root
 	cd $CURR_DIR
 
+	if test -f $CURR_DIR/$OUTPUT_LOG ; then 
+		fsize=`ls -l $CURR_DIR/$OUTPUT_LOG | awk '{ print $5 }'`
+		if test "$fsize" -gt "1000000"; then #1MB 
+			echo "Error: log file size exceded the size limit"
+			ls -lh $CURR_DIR/$OUTPUT_LOG | awk '{ print $5 }'
+			exit 5
+		fi
+	fi
+	
+	
 	if test "$TEST_RANGE" = "1"; then 
 		if test "$TEST_NO" -lt "$TEST_RANGE_FROM"; then 
 			continue

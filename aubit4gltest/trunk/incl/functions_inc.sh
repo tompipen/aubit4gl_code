@@ -35,6 +35,17 @@ if test "$DISABLE_SQL_FEATURES_CHECK" = "1"; then
 	return 
 fi
 
+if test "$DB_TYPE" = ""; then
+	#We must know db type to work with db features
+	DISABLE_SQL_FEATURES_CHECK=1
+	#if test "$VERBOSE" = "1"; then 	
+		echo "WARNING: DB_TYPE is empty. Indicate which db to use - see -help-db."
+		echo "WARNING: Disabled SQL features checking."
+	#fi
+	return
+fi
+
+
 if test "$SH_DBG" = "1"; then 
 	echo "Loading SQL features list...."
 fi
@@ -43,11 +54,6 @@ fi
 #	@echo ""
 
 		SQL_FEATURES_NON_ANSI=`cat $CURR_DIR/etc/db_features.conf | grep -v "^#"`
-
-		if test "$DB_TYPE" = ""; then
-			#We must know db type to work with db features
-			echo "ERROR: DB_TYPE is empty. Indicate which db to use - see -help-db."; exit 5
-		fi
 
 		#Determine which feature status applies to this db
 		if test "$DB_TYPE" != "PG-IFX-74" -a "$DB_TYPE" != "PG-74" \

@@ -30,12 +30,12 @@ define
 		whenever error stop
 #display "AA", filename clipped		
 		create temp table tmp_tmp ( text_line char(180) )
-display "AB", filename clipped
+#display "AB", filename clipped
 		#Informix 4GL has a problem with this:
 		#load from filename delimiter "\n" insert into tmp_tmp
 		#Invalid delimiter. Do not use '\\' or hex digits (0-9, A-F, a-f).
 		load from filename delimiter "" insert into tmp_tmp
-display "AC", filename clipped		
+#display "AC", filename clipped		
 		select count(*) into cnt from tmp_tmp
 		
 		#must be 1 since there is only one 4gl file in this directory

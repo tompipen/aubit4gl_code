@@ -1,7 +1,7 @@
 #Please do not remove or change this line - it is used in this test
 {**
  * @file
- * Decribe the test here
+ * Testing 4js-style chane; functions for readin and writing files and pipe
  * @process TEST_GENERAL
  *}
  
@@ -34,6 +34,8 @@ DEFINE
 		exit program 
 	end if
 
+	call mike()
+	
 	#Test reading from pipe channel
 	let handle = "pipe_ls"
 	let result = test_reading(handle,"pipe")
@@ -272,4 +274,137 @@ define
 	end if
 
 end function
+
+
+
+function mike()
+define lv_rec record
+        uname char(8),
+        passwd char(20),
+        uid integer,
+        gid integer,
+        udesc char(50),
+        uhome char(50),
+        ushell char(50)
+	end record
+define lv_a char(10)
+define b integer
+define tmp_string char (180)
+
+	let lv_a="fin"
+	call channel::open_file("fin","/etc/passwd","r")
+	call channel::set_delimiter("fin",":")
+	
+	call channel::open_file("fout","./tmp.out","w")
+{	
+	while channel::read(lv_a,[lv_Rec.*])
+			display "Uname=",lv_rec.uname," uid=",lv_rec.uid 
+	end while
+}	
+
+	while channel::read(lv_a,[lv_Rec.*])
+		let tmp_string=
+			lv_rec.uname clipped,":",
+			lv_rec.passwd clipped,":",
+			lv_rec.uid  ,":",
+			lv_rec.gid ,":",
+			lv_rec.udesc clipped,":",
+			lv_rec.uhome clipped,":",
+			lv_rec.ushell clipped,":"
+		
+			{
+			channel::write ( handle, buffer-list )
+			Handle CHAR(n) - Channel identifier
+			buffer-list - Variable List of variables. Use [ ] square braces when
+						more than one variable is used.
+			Returns  - None
+			}
+{
+	This works in Aubit, but not in 4Js which does not return anything:
+		if not channel::write("fout", tmp_string) then
+        #if not channel::write("fout",[lv_Rec.*]) then
+                display "Error writing"
+        end if
+}
+		#call channel::write("fout", tmp_string)
+		call channel::write("fout",[lv_Rec.*])
+
+        display "Uname=",lv_rec.uname," uid=",lv_rec.uid
+	end while
+
+	CALL channel::CLOSE(lv_a)    	
+	CALL channel::CLOSE("fout")
+	
+#Do I get something like :
+#root    :x                   :0          :0          :root                                              :/root                                             :/bin/bash
+	
+#exit program
+	
+end function
+
+
+
+
+{
+If you've got A4GL_LEXTYPE=EC and A4GL:_LEXDIALECT=POSTGRES you should get the 
+first couple of SQL's translated in the .cpc - something like :
+
+   EXEC SQL SELECT tabname INTO
+        :_vo_0 INDICATOR :_voi_0
+    FROM  systables  WHERE substr(tabname,1,3) = 'sys' AND tabid = 1  ;
+
+For the remaining ones - if you run the program as soon as it hits test 3 - it 
+should fire up the translation module at runtime as still work :
+
+}
+function sqlconvert()
+
+define lv_s char(20)
+define lv_str char(200)
+
+
+        display "Test 1 - plain SQL"
+        select tabname into lv_s from systables where tabname[1,3]="sys" and tabid=1
+
+        display " "
+        display "Test 2 - declare for plain SQL"
+        declare c0 cursor for select tabname From systables b where tabname[1,3]="sys"
+
+        foreach c0 into lv_s
+                display lv_s
+        END FOREACH
+
+        display " "
+        display "Test 3 - declare for prepared SQL"
+        prepare p1 from "select tabname From systables b where tabname[1,3]=\"sys\" "
+        declare c1 cursor for p1
+
+        foreach c1 into lv_s
+                display lv_s
+        END FOREACH
+
+
+        display " "
+        display "Test 4 - another declare for prepared SQL"
+        let lv_str="select tabname From systables b where tabname[1,3]!=\"sys\" "
+        prepare p2 from lv_str
+        declare c2 cursor for p2
+
+        foreach c2 into lv_s
+                display lv_s
+        END FOREACH
+
+        display " "
+        display "Test 5 - another declare for prepared SQL with matches"
+        let lv_str="select tabname From systables b where tabname matches \"syst*\" "
+        prepare p3 from lv_str
+        declare c3 cursor for p3
+
+        foreach c3 into lv_s
+                display lv_s
+        END FOREACH
+
+
+end function
+
 

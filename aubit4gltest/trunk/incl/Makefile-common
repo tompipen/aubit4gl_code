@@ -43,10 +43,26 @@ ifeq "${USE_COMP}" ""
 	USE_COMP=aubit
 endif
 
+#This should be obsolete - we use lists now, not a single file diff
+OUT_CREATED=out
 OUT_EXPECTED=out.expected
 
-OUT_EXPECTED_LIST=$(wildcard *.expected)
-OUT_LIST=$(subst .expected,,$(OUT_EXPECTED_LIST))
+#First look for type-specific .expected files
+#ifeq "${USE_ECP}" "1"
+#ifeq "${A4GL_LEXTYPE}" "EC"
+#ifeq "${A4GL_LEXDIALECT}" "POSTGRES"
+ifeq "${USE_PG}" "1"
+	EXPECTED_EXT=.expected.pg
+	OUT_EXPECTED_LIST=$(wildcard *${EXPECTED_EXT})	
+endif
+
+#If no type-specific .expected files whre found, try default extension
+ifeq "${OUT_EXPECTED_LIST}" ""
+	EXPECTED_EXT=.expected
+	OUT_EXPECTED_LIST=$(wildcard *${EXPECTED_EXT})	
+endif
+
+OUT_LIST=$(subst ${EXPECTED_EXT},,$(OUT_EXPECTED_LIST))
 
 ifeq "${USE_COMP}" "aubit"
 
@@ -81,7 +97,7 @@ ifeq "${USE_COMP}" "aubit"
 	#define default linking action
 		DEFAULT_LINK=${A4GL_FGLC} ${A4GL_OTHERS} $^ -o $@
 	endif
-	OUT=out
+	OUT_EXT=
 	RUNNER=
 	
 endif
@@ -106,7 +122,7 @@ ifeq "${USE_COMP}" "ifx-p"
 	ifeq "${RUNNER}" ""	
 		RUNNER=fglgo
 	endif
-	OUT=out.infx
+	OUT_EXT=.infx
 	
 endif
 
@@ -123,7 +139,7 @@ ifeq "${USE_COMP}" "4js-p"
 	ifeq "${RUNNER}" ""
 		RUNNER			=fglrun
 	endif
-	OUT=out.4js
+	OUT_EXT=.4js
 	
 endif
 
@@ -139,7 +155,7 @@ ifeq "${USE_COMP}" "querix"
 	#DEFAULT_LINK	=${Q4GL_PL} $^ > $@;
 	DEFAULT_LINK	=${FAIL_LINK}${Q4GL_CL} -o $@ $(subst ${Q4GL_PRG_EXT},${Q4GL_OBJ_EXT},$(notdir $^)) ${Q4GL_CL_LDFLAGS} ${QXI_LIBS} ${SRC_CUSTOM} 	
 	RUNNER			=
-	OUT=out.querix
+	OUT_EXT=.querix
 endif
 
 ################
@@ -213,11 +229,11 @@ ifneq "${COMPILE_ONLY}" "1"
 		fi
 		
 	#Snippet for use in NAMED_DIFF and therefore in DEFAULT_DIFF 
-	REDIRECT_RUN=${RUN_EXT} > ${OUT}; ${TEST_RUN}
+	REDIRECT_RUN=${RUN_EXT} > ${OUT_CREATED}${OUT_EXT}; ${TEST_RUN}
 
 	#Snipped for use in NAMED_DIFF and therefore in DEFAULT_DIFF
 	DIFF_COMMON=\
-		if diff ${DIFF_FLAGS} ${OUT} ${OUT_EXPECTED}; then \
+		if diff ${DIFF_FLAGS} ${OUT_CREATED}${OUT_EXT} ${OUT_EXPECTED}; then \
 			echo "Success";  \
             exit 0; \
 		else \
@@ -227,10 +243,10 @@ ifneq "${COMPILE_ONLY}" "1"
 	#Snippet to be used in NAMED_DUMP_DIFF and therefore in DEFAULT_DUMP_DIFF
 	DIFF_MULTI=\
 		for outfile in $(OUT_LIST); do \
-			if diff ${DIFF_FLAGS} $$outfile $$outfile.expected ; then \
-				echo "OK: $$outfile and $$outfile.expected"; \
+			if diff ${DIFF_FLAGS} $$outfile $$outfile${EXPECTED_EXT} ; then \
+				echo "OK: $$outfile and $$outfile${EXPECTED_EXT}"; \
 			else \
-				echo "ERROR: $$outfile and $$outfile.expected are DIFFERENT";  \
+				echo "ERROR: $$outfile and $$outfile${EXPECTED_EXT} are DIFFERENT";  \
 				exit 1; \
 			fi; \
 		done; \
