@@ -1953,7 +1953,7 @@ CLEAN_FIND_FILES='"(" -name "*.4ae" -o -name "*.afr" -o -name "*.afr.*"
 		-o -name "*.so" -o -name "*.dll" -o -name "*.iem"  -o -name "*.42f"
 		-o -name "*.log" -o -name "*.4qe" -o -name "*.qo" -o -name "*.42r"
 		-o -name "*.42m" -o -name "*.frm" -o -name "*.hlp" -o -name "*.pic"
-		-o -name "*.4js" -o -name "*.infx" -o -name "*.querix"
+		-o -name "*.4js" -o -name "*.querix"
 		")"'
 
 #######################
