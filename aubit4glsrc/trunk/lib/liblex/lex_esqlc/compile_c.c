@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.11 2003-02-19 08:46:39 mikeaubury Exp $
+# $Id: compile_c.c,v 1.12 2003-02-19 22:28:40 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -192,10 +192,11 @@ print_space(void)
 static void 
 open_outfile(void)
 {
-  char h[132];
-  char c[132];
-  char err[132];
-  char *ptr;
+char h[132];
+char c[132];
+char err[132];
+char *ptr;
+  
   if (outputfilename == 0)
     {
       debug ("NO output file name");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.28 2003-02-19 11:46:34 mikeaubury Exp $
+# $Id: calldll.c,v 1.29 2003-02-19 22:28:38 afalout Exp $
 #
 */
 
@@ -330,6 +330,8 @@ static char tmpbuff[1024];
 
         #else
 			#if defined(__MINGW32__)
+
+//printf("Mingwin mode %s\n",acl_getenv("AUBITDIR"));
 				//printf("dl_openlibrary received %s %s\n",type, plugin_name);
 			//printf("1 plugin_name = %s\n",plugin_name);
 				char *aubitdirptr;
@@ -349,7 +351,9 @@ static char tmpbuff[1024];
         #endif
 	#endif
 
-  debug("Attempting to open shared library : '%s'",buff);
+  #ifdef DEBUG
+	  debug("Attempting to open shared library : '%s'",buff);
+  #endif
 
   dllhandle = dlopen (buff, RTLD_LAZY);
   if (dllhandle==0) {

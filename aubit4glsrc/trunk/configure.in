@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.157 2003-02-17 05:06:37 afalout Exp $
+dnl # $Id: configure.in,v 1.158 2003-02-19 22:27:13 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -653,15 +653,13 @@ fi
 
 AC_MSG_CHECKING(Executables stripping)
 if test "$enable_strip" != "no" ; then
+    AC_MSG_RESULT(enabled)
 	AC_PATH_PROG(STRIP, strip, no)
     if test "$STRIP" != "no"; then
 		STRIP_EXECUTABLES=yes
-	    AC_MSG_RESULT(yes)
-	else
-	    AC_MSG_RESULT(no - canot find strip)
 	fi
 else
-    AC_MSG_RESULT(no)
+    AC_MSG_RESULT(disabled)
 fi
 
 AC_MSG_CHECKING(YY Debugging)
@@ -1419,7 +1417,11 @@ if test "$cygwin" = "1"; then
 		#IVIF7912.DLL      INTERSOLV Informix ODBC driver - WIN
         #this should be in WINDOWSDIR/system32 - but it's DLL !!!!
 		AC_CHECK_LIB([ivif7912], [main])
+		
 
+		#only two dll's in csdk280_tc1 - none have lib prefix
+		AC_CHECK_LIB([clidll], [main])
+		AC_CHECK_LIB([iclit09b], [main])
 else
 		#Shared drivers for use with ODBC managers (?)
 		#[INFORMIX 2.8 32-BIT]
@@ -1673,15 +1675,16 @@ AC_ARG_WITH(pgodbc,
 ##                 Checks for iODBC ODBC manager support
 ## ==================================================================
 
-#if test -z "$ODBC_TYPE"; then
-PHP_CONFIGURE_PART(Checking for iODBC support:)
+
+if test "$cygwin" = "0"; then
 
 #force this check even if not specified on command line:
 if test "$with_iodbc" = ""; then
-	if test "$cygwin" = "0"; then
-		with_iodbc=yes
-    fi
+	with_iodbc=yes
 fi
+
+PHP_CONFIGURE_PART(Checking for iODBC support:)
+
 
 AC_ARG_WITH(iodbc,
 [  --with-iodbc[=DIR]      Include iODBC/Openlink support.  DIR is the iODBC base
@@ -1727,21 +1730,23 @@ AC_ARG_WITH(iodbc,
 		AC_MSG_RESULT(disabled)
 	fi
 ],[
-	AC_MSG_RESULT(--with-iodbc not specified)
+    AC_MSG_RESULT(--with-iodbc not specified)
 ])
+
+fi
 
 
 ## ==================================================================
 ##            Checks for unixODBC ODBC manager support
 ## ==================================================================
 
+if test "$cygwin" = "0"; then
+
 PHP_CONFIGURE_PART(Checking for unixODBC support:)
 
 #force this check even if not specified on command line:
 if test "$with_unixodbc" = ""; then
-	if test "$cygwin" = "0"; then
-		with_unixodbc=yes
-    fi
+	with_unixodbc=yes
 fi
 
 AC_ARG_WITH(unixodbc,
@@ -1815,9 +1820,13 @@ AC_ARG_WITH(unixodbc,
 	AC_MSG_RESULT(--with-unixodbc not specified)
 ])
 
+fi
+
 ## ==================================================================
 ##            Checks for Easysoft ODBC-ODBC Bridge support
 ## ==================================================================
+
+if test "$cygwin" = "0"; then
 
 #Do this check only if we did not find any ODBC manager support already:
 if test -z "$ODBC_TYPE"; then
@@ -1857,9 +1866,13 @@ AC_ARG_WITH(esoob,
 ])
 fi
 
+fi
+
 ## ==================================================================
 ##            Checks for custom ODBC support
 ## ==================================================================
+
+if test "$cygwin" = "0"; then
 
 #Do this check only if we did not find any ODBC manager support already:
 if test -z "$ODBC_TYPE"; then
@@ -1902,6 +1915,8 @@ AC_ARG_WITH(custom-odbc,
 ],[
   AC_MSG_RESULT(--with-custom-odbc not specified)
 ])
+fi
+
 fi
 
 #</This block was copied from PHP 4.x ext/odbc/config.m4 ---------------->
@@ -2720,21 +2735,24 @@ if test "$WITH_JAVA" != "no" ; then
         if test "$JAVAPACKAGE" != ""; then
             dirs="$JAVAPACKAGE $dirs"
 		fi
-echo "dirs = $dirs"
+#echo "dirs = $dirs"
         # now try to find jni.h
         for i in "$dirs" ; do
-echo "i=$i"
-			if test -r $i/jni.h; then
+#echo "i=$i"
+echo "1"
+			if test -r $i/jni.h ; then
                 JAVAINCLUDE="$i"
 echo "yes1"
 				break
-            elif test -r $i/include/jni.h; then
+            elif test -r $i/include/jni.h ; then
 echo "yes2"
 				JAVAINCLUDE="$i/include"
                 break
             fi
         done
     ])
+
+echo "manual"
 
 #so here we go the "manual" way - it will not actually test if jni.h is usable,
 #but at least it will find it:
@@ -2839,7 +2857,7 @@ AC_CHECK_LIB([c], [main])
 
 #unit test sw for C code, used in tools/test/db
 AC_CHECK_LIB([check], [suite_create])
-if test "$ac_cv_lib_check_suite_create" == "yes"; then
+if test "$ac_cv_lib_check_suite_create" = "yes" ; then
 	HAS_CHECK=1
 fi
 
@@ -3302,21 +3320,23 @@ fi
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.ifx.odbc"
 	fi
 
-	if test "$HAVE_IODBC" = "yes" ; then
-		RPMFILE_7=$LIB_PREFIX/libSQL_iodbc$SO_EXT
-        PLUGIN_YES="$PLUGIN_YES iODBC"
-	else
-        PLUGIN_NO="$PLUGIN_NO iODBC"
-		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.iodbc"
-	fi
+	if test "$cygwin" != "1" ; then
+		if test "$HAVE_IODBC" = "yes" ; then
+			RPMFILE_7=$LIB_PREFIX/libSQL_iodbc$SO_EXT
+	        PLUGIN_YES="$PLUGIN_YES iODBC"
+		else
+	        PLUGIN_NO="$PLUGIN_NO iODBC"
+			INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.iodbc"
+		fi
 
-	if test "$HAVE_UNIXODBC" = "yes" ; then
-		RPMFILE_8=$LIB_PREFIX/libSQL_unixodbc$SO_EXT
-        PLUGIN_YES="$PLUGIN_YES unixODBC"
-	else
-        PLUGIN_NO="$PLUGIN_NO unixODBC"
-		#INSTALL_MISSING_OPTIONAL is set in unixODBC tests, because it can have two variants
-	fi
+		if test "$HAVE_UNIXODBC" = "yes" ; then
+			RPMFILE_8=$LIB_PREFIX/libSQL_unixodbc$SO_EXT
+	        PLUGIN_YES="$PLUGIN_YES unixODBC"
+		else
+	        PLUGIN_NO="$PLUGIN_NO unixODBC"
+			#INSTALL_MISSING_OPTIONAL is set in unixODBC tests, because it can have two variants
+		fi
+    fi
 
 	if test "$cygwin" = "1"; then
 		RPMFILE_9=$LIB_PREFIX/libSQL_odbc32$SO_EXT
@@ -3567,8 +3587,10 @@ AC_OUTPUT
 
 
 if test "$AUBIT_SOURCE" = "1" ; then
-	echo "Running configure for FglDoc..."
-	cd tools/fgldoc; configure; cd -
+	if test "$INFORMIXDIR" != "" ; then
+		echo "Running configure for FglDoc..."
+		cd tools/fgldoc; configure; cd -
+    fi
 fi
 
 

@@ -29,13 +29,23 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.102 2003-02-16 23:38:38 mikeaubury Exp $
+# $Id: 4glpc,v 1.103 2003-02-19 22:28:16 afalout Exp $
 #
 
 ########################################################################
 #this is main Aubit 4gl compiler .4gl files compiler script
 #You should not need to invoke actual compiler(s) (4glc, fcompile...) directly
 ########################################################################
+
+if [ "$COMSPEC" != "" ]; then
+    #TMP=`type gcc | grep -i mingw`
+	TMP=`gcc -v 2>&1 | grep -i mingw`
+
+    if [ "$TMP" != "" ]; then
+        MINGW=1
+        CYG_ROOT="D:/cygwin"
+    fi
+fi
 
     ERRCHAR=^\|
 	GOBACKLINES=10
@@ -188,7 +198,6 @@ then
     echo '  4glpc -static -echo file.4gl -o file.4ge'
     echo '  4glpc -debug file.4gl -o file.debug'
     echo '  4glpc -map -echo file.4gl'
-	echo '  4glpc -gtk file.4gl -o'
     echo
 	if [ "$A4GLVERBOSE" = "yes" ]
 	then
@@ -397,22 +406,10 @@ if [ "$CURRDIR" != "$AUBITDIR" ]; then
 	FGLLIBSDIR="$FGLLIBSDIR -L$CURRDIR/lib"
 fi
 
-
-if [ -d $AUBITDIR/extralibs ]
-then
-	FGLLIBSDIR="$FGLLIBSDIR -L$AUBITDIR/extralibs"
+if [ "$MINGW" = "1" ]; then
+	FGLLIBSDIR="$FGLLIBSDIR -L$CYG_ROOT$AUBITDIR/lib"
 fi
 
-
-if [ "$NCURSES_LIB_DIR"  != "" ]
-then
-        LIBSDIR="-L$NCURSES_LIB_DIR"
-fi
-
-if [ "$NCURSES_INCL_DIR"  != "" ]
-then
-        LIBSDIR="-L$NCURSES_INCL_DIR"
-fi
 
 
 if [ "$COMPILE_QUIET" != "" ]
@@ -434,7 +431,14 @@ then
 fi
 
 LAST=""
+#GTK_INC_PATH is set in aubitrc
 INCLDIR="-I$AUBITDIR/incl $GTK_INC_PATH"
+
+if [ "$MINGW" = "1" ]; then
+	INCLDIR="$INCLDIR -I$CYG_ROOT$AUBITDIR/incl"
+fi
+
+
 
 #CC is set via aubitrc config file:
 NCC="$CC " # -O2

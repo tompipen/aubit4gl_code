@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.17 2003-02-16 04:25:21 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.18 2003-02-19 22:28:17 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -532,11 +532,11 @@ if test "$MAKE" = "1"; then
 		#usage: expect [-div] [-c cmds] [[-f] cmdfile] [args]
 		#auto_cvs commit -m 'commit.build by aubitbuild.sh' failed with code 1
 		#	EXEC="$AUTO_CVS commit -m 'commit.build by aubitbuild.sh'"; runexec
+		EXEC="make log"; runexec
 		if [ "$VERBOSE" = "1" ]
 		then
 			echo "See `pwd`/make.log for details."
         fi
-		EXEC="make log"; runexec
 
 		if [ "$COMSPEC" != "" ]; then
 			#Check that what we built is dependent on Cygwin:
@@ -667,10 +667,10 @@ if test "$WINSETUP" = "1"; then
 
         echo "Re-enabled MinGW in the PATH"
     else
-        #ther was no M-i-n-G-W in the path
+        echo "--------------------------there was no M-i-n-G-W in the path"
 		TMP=`echo $PATH | grep MinGW`
-        if test "$TMP" != ""; then
-            #there is no MinGW in the path at all, add it:
+        if test "$TMP" = ""; then
+        echo "--------------------------there is no MinGW in the path at all, add it:"
 			NEWPATH="D:/MinGW/bin:$PATH"
             echo "Added MinGW to the PATH"
 		fi

@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.25 2003-02-12 05:53:53 afalout Exp $
+#	 $Id: a4gl.mk,v 1.26 2003-02-19 22:28:38 afalout Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.25 2003-02-12 05:53:53 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.26 2003-02-19 22:28:38 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -61,6 +61,8 @@ endif
 
 AUBIT_CMD   =${SH} ${AUBIT_WRAPER}
 
+#do we want to use 4glpc shell script, or will we invoke 4glc directly
+USE_4GLPC           =0
 
 ###########################
 #If this compilers needs objects ar run-time, set to 'yes':
@@ -81,7 +83,11 @@ AUCC_FLAGS			=-g -O2 -static -O -I${AUBITDIR}/incl -DAUBIT4GL
 ###########################
 # A4GL C-code Compiler
 #should I use 4glc instead 4glpc here?
-A4GL_CC_CMD     = ${AUBIT_CMD} ${SH} 4glpc #-shared
+ifeq "${USE_4GLPC}" "1"
+	A4GL_CC_CMD     = ${AUBIT_CMD} ${SH} 4glpc
+else
+	A4GL_CC_CMD     = ${AUBIT_CMD} 4glc
+endif
 A4GL_CC_ENV     =
 A4GL_CC_FLAGS   = #-verbose
 
@@ -114,7 +120,13 @@ A4GL_MC         = ${A4GL_MC_CMD} ${A4GL_MC_FLAGS}
 # Define suffixes which are recognised.
 
 #Executable:
-A4GL_PRG_EXT=.4ae
+#ifneq "${COMSPEC}" ""
+#	A4GL_PRG_EXT=.4ae.exe
+#	#A4GL_PRG_EXT=.exe
+#else
+	A4GL_PRG_EXT=.4ae
+#endif
+
 #static object:
 A4GL_OBJ_EXT=.ao
 #shared object:
@@ -160,7 +172,7 @@ A4GL_CLEAN_FLAGS	=$(addprefix *,	$(A4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(A4
 #files needed:
 #.4gl${A4GL_PRG_EXT}:
 %${A4GL_PRG_EXT}: %.4gl
-	${A4GL_CL} -o $@ $< ${A4GL_CL_LDFLAGS}
+	${A4GL_CL} -o$@ $< ${A4GL_CL_LDFLAGS}
 
 
 ####################################
@@ -172,7 +184,38 @@ A4GL_CLEAN_FLAGS	=$(addprefix *,	$(A4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(A4
 #respect to the c file, and ignore possible change in 4gl file
 #.4gl${A4GL_OBJ_EXT}:
 %${A4GL_OBJ_EXT} : %.4gl
+	@${FAIL_CMPL_4GL}if test "$(^D)" = "" -o "$(^D)" = "."; then \
+		echo "${A4GL_CC} $< -c -o ${OBJSTORE}$@"; \
+		${A4GL_CC} $< -c -o ${OBJSTORE}$@; \
+	else \
+		echo "${A4GL_CC} ${CYGWIN_ROOT}$< -c -o ${OBJSTORE}$@"; \
+		${A4GL_CC} ${CYGWIN_ROOT}$< -c -o ${OBJSTORE}$@; \
+	fi
+
+dddddd%${A4GL_OBJ_EXT} : %.4gl
+	@echo "1 $(<D)"
+	@echo "2 $(*D)"
+	@echo "3 $(%D)"
+	@echo "4 $(^D)"
+ifneq "$(^D)" ""
+ifneq "$(^D)" "."
+#On Windows when using Cygwin tools (that use UNIX paths and Cygwing path mangling) and native
+#Windows 4glc and gcc (that know nothing about this CigWin paths) we need to add path to CygWin
+#installation in front of any source file paths specified in rule call:
+	@echo "Adding path..."
+	${FAIL_CMPL_4GL}${A4GL_CC} ${CYGWIN_ROOT}$< -c -o ${OBJSTORE}$@
+endif
+endif
+ifeq "$(^D)" ""
+	@echo "1 NOT Adding path... >>$(^D)<<"
 	${FAIL_CMPL_4GL}${A4GL_CC} $< -c -o ${OBJSTORE}$@
+endif
+ifeq "$(^D)" "."
+	@echo "2 NOT Adding path...>>$(^D)<<"
+	${FAIL_CMPL_4GL}${A4GL_CC} $< -c -o ${OBJSTORE}$@
+endif
+
+
 #FIXME: instead of above, invoke 4glc first, an then gcc directly, to maximize controll:
 #	aubit 4glc -c hello.4gl
 #	${FAIL_CMPL_C}${AUCC} ${AUCC_FLAGS} -c $*.c -o $*.ao

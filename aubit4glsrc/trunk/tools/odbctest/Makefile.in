@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-11-12 21:34:08 afalout Exp $
+# $Id: Makefile.in,v 1.7 2003-02-19 22:28:40 afalout Exp $
 #
 
 ROOT=../..
@@ -32,7 +32,6 @@ ROOT=../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-override NOINCL=0
 
 ## ==================================================================
 ##                              Options
@@ -73,6 +72,11 @@ ifneq "@HAVE_IODBC@" "no"
     endif
 endif
 
+ifneq "${COMSPEC}" ""
+	ALL +=${ROOT}/bin/odbctest-odbc32
+endif
+
+
 SOURCE		=odbctest.c
 
 #to avoid missing __fpclassify for SAP DB ODBC driver, link with
@@ -104,6 +108,10 @@ ${ROOT}/bin/odbctest-iodbc2: odbctest2.o
 
 ${ROOT}/bin/odbctest-unixODBC: odbctest4.o
 	${CC} ${CFLAGS} -o $@ $^ @UNIXODBC_LFLAGS@ @UNIXODBC_LIBS@ ${ADDLIBS}
+
+${ROOT}/bin/odbctest-odbc32: odbctest4.o
+	${CC} ${CFLAGS} -o $@ $^ -lodbc32 ${ADDLIBS}
+
 
 ## ==================================================================
 ##                              Sub Targets

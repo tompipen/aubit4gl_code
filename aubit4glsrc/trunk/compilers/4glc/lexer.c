@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.56 2003-02-19 08:54:32 mikeaubury Exp $
+# $Id: lexer.c,v 1.57 2003-02-19 22:28:36 afalout Exp $
 #*/
 
 /**
@@ -49,7 +49,14 @@
 */
 
 #include "y.tab.h"
+
+//prevent a4gl_4glc_int.h from including windows.h that we don't need here, that would
+//mess up constants defined in y.tab.h generated with new version of Bison
+// To Mike: please resist the urge to name constants like "CHAR" "STRING" "COMMA" etc.
+// please use A4GL_ namespace.
+#define _NO_WINDOWS_H_
 #include "a4gl_4glc_int.h"
+
 #include "memfile.h"
 
 
@@ -60,7 +67,7 @@
 */
 
 #ifndef KWS_COMMENT
-#define KWS_COMMENT COMMENT
+	#define KWS_COMMENT COMMENT
 #endif
 
 #define stricmp 		aubit_strcasecmp
@@ -973,13 +980,13 @@ int
 //yylex (void)
 yylex (void *pyylval, int yystate,void *yys1,void *yys2)
 {
-  int a;
-  char buff[1024];
-  char buffval[20480];
+int a;
+char buff[1024];
+char buffval[20480];
 int allow;
-  static int last_pc = 0;
-  int r;
-  short *stack_cnt;
+static int last_pc = 0;
+int r;
+short *stack_cnt;
 
 
   debug("In yylex ... yystate=%d\n", yystate);

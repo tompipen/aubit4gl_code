@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.30 2003-02-17 05:07:14 afalout Exp $
+# $Id: resource.c,v 1.31 2003-02-19 22:28:40 afalout Exp $
 #
 */
 
@@ -108,6 +108,7 @@ struct str_resource builtin_resource[] =
 	*/
   {"INCLINES",			"no"},   ///"yes" or "no"
 #if (defined (__MINGW32__))
+//FIXME: do not hard-code D:/cygwin
   {"AUBITETC",			"D:/cygwin/etc/opt/aubit4gl"}, /* points to default location of Aubit config files */
 #else
   {"AUBITETC",			"/etc/opt/aubit4gl"}, /* points to default location of Aubit config files */
@@ -135,8 +136,8 @@ struct str_resource builtin_resource[] =
 #else
   {"EXTENDED_FETCH", 	"Y"}, /* This won't always work ! */
 #endif
-  {"ACLDIR", 			"/usr/acl"},
-  {"ACLTEMP", 			"tempdsn"},
+//  {"ACLDIR", 			"/usr/acl"},
+//  {"ACLTEMP", 			"tempdsn"},
   {"HELPTEXT", 			"Help"},
   {"ERROR_MSG", 		"Press Any Key"},
   {"PAUSE_MSG", 		"Press Any Key"},
@@ -307,11 +308,11 @@ void dump_all_resource_vars(int export);
 
 #if (defined(WIN32) && ! defined(__CYGWIN__))
 
-long get_regkey (char *key, char *data, int n);
-int set_regkey (char *key, char *data);
-void createkey (void);
-void get_anykey (HKEY whence, char *key, char *key2, char *data, int n);
-char * get_login (void);
+	long get_regkey (char *key, char *data, int n);
+	int set_regkey (char *key, char *data);
+	void createkey (void);
+	void get_anykey (HKEY whence, char *key, char *key2, char *data, int n);
+	char * get_login (void);
 
 #endif
 
@@ -466,7 +467,7 @@ char *ptr;
 	ptr = (char *)getenv (s);
   }
 
-#if ( defined (WIN32) && ! defined (__CYGWIN__))
+#if ( (defined (WIN32) || defined (__MINGW32__)) && ! defined (__CYGWIN__))
   if ( ptr == 0 ) {
 	/* try in Windows registry */
     /* why was this static? */
@@ -509,6 +510,13 @@ char *ptr;
     }
     */
     #endif
+
+    /*
+	FIXME: make sure that things like AUBITDIR are in appropriate format:
+        on Windows, watch out for Cywin relative paths.
+        /cygdrive/c/something is OK, but /usr/bin is not (missing drive letter and CygWin path)!
+
+    */
 
 	return ptr;
   }

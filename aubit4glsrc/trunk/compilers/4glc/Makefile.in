@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.60 2003-02-17 12:03:11 mikeaubury Exp $
+# $Id: Makefile.in,v 1.61 2003-02-19 22:28:36 afalout Exp $
 #
 
 ROOT		=../..
@@ -181,6 +181,8 @@ rules/generated/states.c rules/generated/kw.h rules/generated/y.tab.h:
 
 4glc.o: 				rules/generated/kw.h rules/generated/y.tab.h
 dim.o: 					rules/generated/kw.h rules/generated/y.tab.h
+compile.o: 				rules/generated/kw.h rules/generated/y.tab.h
+
 mod.o: 					mod.c ${Y_TAB_C}
 ${GENRULES}/y.tab.o: 	../fcompile/form_x.h
 lexer.o: 				${GENRULES}/kw.h

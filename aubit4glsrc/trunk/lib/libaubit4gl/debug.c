@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.17 2003-01-29 14:35:06 mikeaubury Exp $
+# $Id: debug.c,v 1.18 2003-02-19 22:28:39 afalout Exp $
 #
 */
 
@@ -53,6 +53,7 @@ extern sqlca_struct sqlca;
 #define DEBUG_NOTREQUIRED 	2
 #define DEBUG_REQUIRED 		1
 #define DEBUG_DONTKNOW 		0
+
 
 /*
 =====================================================================
@@ -186,35 +187,67 @@ void
 setarg0(const char *argv0)
 {
 const char *cp;
+char a[128];
+char b[128];
+char c[128];
+
         size_t nbytes = sizeof(arg0) - 1;
 
-        if ((cp = strrchr(argv0, '/')) != (char *)0 && *(cp + 1) == '\0')
+
+#if ( defined (__MINGW32__) )
+
+		if (((cp = strrchr(argv0, '/')) != (char *)0 && *(cp + 1) == '\0') || ((cp = strrchr(argv0, '\\')) != (char *)0 && *(cp + 1) == '\0'))
 	    {
-        /* Skip backwards over trailing slashes */
-                const char *ep = cp;
-        while (ep > argv0 && *ep == '/')
-            ep--;
-        /* Skip backwards over non-slashes */
-                cp = ep;
-        while (cp > argv0 && *cp != '/')
-            cp--;
-                cp++;
-                nbytes = ep - cp + 1;
-                if (nbytes > sizeof(arg0) - 1)
-                        nbytes = sizeof(arg0) - 1;
+	        /* Skip backwards over trailing slashes */
+            const char *ep = cp;
+	        while (ep > argv0 && ((*ep == '/') || (*ep == '\\') ))
+    	        ep--;
+        	/* Skip backwards over non-slashes */
+            cp = ep;
+    	    while (cp > argv0 && ((*cp != '/') && (*cp != '\\')) )
+
+#else
+		if ((cp = strrchr(argv0, '/')) != (char *)0 && *(cp + 1) == '\0')
+	    {
+	        /* Skip backwards over trailing slashes */
+            const char *ep = cp;
+	        while (ep > argv0 && *ep == '/')
+    	        ep--;
+        	/* Skip backwards over non-slashes */
+            cp = ep;
+    	    while (cp > argv0 && *cp != '/')
+#endif
+
+				cp--;
+            cp++;
+            nbytes = ep - cp + 1;
+            if (nbytes > sizeof(arg0) - 1)
+            	nbytes = sizeof(arg0) - 1;
     	}
         else if (cp != (char *)0)
         {
-                /* Regular pathname containing slashes */
-                cp++;
+        	/* Regular pathname containing slashes */
+            cp++;
         }
         else
         {
-                /* Basename of file only */
-                cp = argv0;
+            /* Basename of file only */
+            cp = argv0;
         }
         strncpy(arg0, cp, nbytes);
         arg0[nbytes] = '\0';
+
+#if ( defined (__MINGW32__) )
+    /* strip .exe extension */
+
+
+	strcpy (c, arg0);
+	bname (c, a, b);
+	strcpy (arg0,a);
+
+#endif
+
+
 }
 
 /**

@@ -1,3 +1,48 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: variables.c,v 1.14 2003-02-19 22:28:37 afalout Exp $
+#
+*/
+
+/**
+ * @file
+ *
+ *
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+
 #include "a4gl_4glc_int.h"
 #include "variables.h"
 
@@ -2373,6 +2418,8 @@ int a;
 struct variable **list=0;
 int list_cnt=0;
 
+
+debug("print_nullify called :%c\n",type);
 
 debug("AUTONULL ?");
 

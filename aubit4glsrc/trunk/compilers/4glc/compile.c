@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.3 2003-02-19 09:35:51 mikeaubury Exp $
+# $Id: compile.c,v 1.4 2003-02-19 22:28:36 afalout Exp $
 #*/
 
 /**
@@ -136,6 +136,7 @@ char opt_list[40];
 char a[128];
 char b[128];
 char c[128];
+char ext[128];
 char incl_path[128];
 char l_path[128];
 char l_libs[128];
@@ -169,7 +170,6 @@ static struct option long_options[] =
 		debug("Arg 0 set to >%s<",getarg0());
     #endif
 
-
   if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0)
   {
     strcpy(opt_list,"Gs:co::d::l::?hSVvft");
@@ -198,7 +198,7 @@ static struct option long_options[] =
     {
       case 'c':              /* Compile resulting C file(s) to object */
 		if (compile_lib) 	{printf("Cannot specify -l and -c together.\n"); exit(7);}
-		if (compile_exec) 	{printf("Cannot specify -o and -c together.\n"); exit(7);}
+		//if (compile_exec) 	{printf("Cannot specify -o and -c together.\n"); exit(7);}
 		if (compile_so) 	{printf("Cannot specify -d and -c together.\n"); exit(7);}
 
 		compile_object = 1;
@@ -207,20 +207,52 @@ static struct option long_options[] =
 		break;
 
       case 'o':              /* Link resulting object(s) into executable */
-		if (compile_object) {printf("Cannot specify -c and -o together.\n"); exit(7);}
-		if (compile_so) 	{printf("Cannot specify -d and -o together.\n"); exit(7);}
-		if (compile_lib) 	{printf("Cannot specify -l and -o together.\n"); exit(7);}
+		//if (compile_object) {printf("Cannot specify -c and -o together.\n"); exit(7);}
+		//if (compile_so) 	{printf("Cannot specify -d and -o together.\n"); exit(7);}
+		//if (compile_lib) 	{printf("Cannot specify -l and -o together.\n"); exit(7);}
 
-		compile_exec = 1;
-		compile_object = 1;
+		//compile_exec = 1;
+		//compile_object = 1;
 
 		sprintf (output_object,"%s",(NULL == optarg) ? "" : optarg);
 		//sprintf (output_object,"%s",optarg);
+
+		bname (output_object, a, b);
+
+		/* FIXME: we should no longer assume anything about parameters on command
+        line, if we want to be able to pass flags to CC */
+		/*
+		if (b[0] == 0)
+		{
+			strcat (c, ".4gl"); 	// assume 4gl file name
+			bname (c, a, b);
+		}
+        */
+
+		// Add dot because bname returns extension without dot, and we define extensions in
+        // resource.c with the dot:
+		//sprintf (b,".%s",b);
+        strcpy (ext,".");
+		strcat (ext,b);
+        debug ("%s %s %s",b, acl_getenv ("A4GL_EXE_EXT"),ext);
+
+		if (strcmp (ext, acl_getenv ("A4GL_OBJ_EXT")) == 0) {
+			compile_object = 1;
+        }
+
+		if (strcmp (ext, acl_getenv ("A4GL_EXE_EXT")) == 0) {
+            compile_exec = 1;
+        }
+
+		if (strcmp (ext, acl_getenv ("A4GL_LIB_EXT")) == 0) {
+            compile_lib = 1;
+        }
+
 		break;
 
       case 'd':              /* Link resulting object(s) into shared library */
 		if (compile_object) {printf("Cannot specify -c and -d together.\n"); exit(7);}
-		if (compile_exec) 	{printf("Cannot specify -o and -d together.\n"); exit(7);}
+		//if (compile_exec) 	{printf("Cannot specify -o and -d together.\n"); exit(7);}
 		if (compile_lib) 	{printf("Cannot specify -l and -d together.\n"); exit(7);}
 
 		compile_so = 1;
@@ -230,7 +262,7 @@ static struct option long_options[] =
 
       case 'l':              /* Link resulting object(s) into static library */
 		if (compile_object) {printf("Cannot specify -c and -l together.\n"); exit(7);}
-		if (compile_exec) 	{printf("Cannot specify -o and -l together.\n"); exit(7);}
+		//if (compile_exec) 	{printf("Cannot specify -o and -l together.\n"); exit(7);}
 		if (compile_so) 	{printf("Cannot specify -d and -l together.\n"); exit(7);}
 
 		compile_lib = 1;
@@ -413,25 +445,33 @@ static struct option long_options[] =
 
     if (! todo) {
 		if (! silent) {
-			printf ("Warning: no 4gl input files - nothing to do.\n");
+			//printf ("Warning: no 4gl input files - nothing to do.\n");
 	    }
-	    exit (1);
+	    //exit (1);
+        debug ("Linking only - no 4gl input files.\n");
 	}
 
 
 
     if (compile_exec)
 	{
-		sprintf (buff,"%s -rdynamic %s -o %s %s %s %s",gcc_exec,all_objects,output_object,l_path,l_libs,pass_options);
+        debug ("Linking exec\n");
+		#ifndef __MINGW32__
+			sprintf (buff,"%s -rdynamic %s -o %s %s %s %s",gcc_exec,all_objects,output_object,l_path,l_libs,pass_options);
+        #else
+			sprintf (buff,"%s %s -o %s %s %s %s",gcc_exec,all_objects,output_object,l_path,l_libs,pass_options);
+        #endif
 	}
 
     if (compile_so)
 	{
+        debug ("Linking shared library\n");
 		sprintf (buff,"%s -shared %s -o %s %s %s %s",gcc_exec,all_objects,output_object,l_path,l_libs,pass_options);
 	}
 
     if (compile_lib)
 	{
+        debug ("Linking static library\n");
 		sprintf (buff,"%s -static %s -o %s %s %s %s",gcc_exec,all_objects,output_object,l_path,l_libs,pass_options);
 	}
 
@@ -464,7 +504,11 @@ static struct option long_options[] =
 
 
         }
-    }
+    } else {
+	    if (! todo) {
+    	    debug ("Somethig wrong here - no 4gl input files and no linking.\n");
+		}
+	}
 
   return x;
 }
@@ -621,19 +665,31 @@ char *ptr;
 static void
 printUsage(char *argv[])
 {
-  printf("Aubit 4GL compiler usage: %s [options] file.4gl [file.4gl ...]\n", argv[0]);
-  printf("Options:\n");
-  printf("\n");
-
   /* FIXME: make sure we don't have conflict with GCC options - for pass-trough */
-
   /* FIXME: verify we have all options of 4glpc script here */
 
+
+  printf("Aubit 4GL compiler usage: %s [options] file.ext [file.ext ...]\n", argv[0]);
+  printf("\n");
+  printf("Extensions (.ext):\n");
+  printf("  In files list, all .4gl files will be compield to C, other files passed to linker.\n");
+  printf("  In -o flag, extendion will decide type of linking:\n");
+  printf("    ao=object aox=static library aso=shared lib 4ae=executable.\n");
+  printf("\n");
+
+
+
+  printf("Options:\n");
+  printf("\n");
   printf("When A4GL_LEXTYPE=C :\n");
+  printf("  -o[outfile] name outpout file\n");
+/*
   printf("  -c compile to object(s), do not link\n");
   printf("  -o[outfile] compile to object(s), link into executable\n");
-  printf("  -d[outfile] compile to object(s), link into shared library\n");
-  printf("  -l[outfile] compile to object(s), link into static library\n");
+  printf("  -d compile to object(s), link into shared library\n");
+  printf("  -l compile to object(s), link into static library\n");
+*/
+
   printf("  (no flags) compile to C only\n");
   printf("\n");
 
@@ -654,6 +710,24 @@ printUsage(char *argv[])
   printf("If 'outfile' was not specified, it is generated from first 4gl file name\n");
   printf("specified. All options that are not recognised, are passed to C compiler,\n");
   printf("if -c -o -d or -l was specified.\n");
+  printf("\n");
+
+#if ( defined(__MINGW32__) )
+  printf("__MINGW32__ ");
+#endif
+
+#if ( defined (_WIN32) )
+  printf("_WIN32 ");
+#endif
+
+#if ( defined(WIN32) )
+  printf("WIN32 ");
+#endif
+
+#if ( defined(__CYGWIN__) )
+  printf("__CYGWIN__ ");
+#endif
+
   printf("\n");
 
 }
