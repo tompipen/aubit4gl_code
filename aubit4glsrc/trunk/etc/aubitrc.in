@@ -1,4 +1,16 @@
 ##########################################################################
+#
+# To change this file, it is recomended to use "configurator" program. This
+# program also provides detailed description of each option.
+#
+# Descriptions found in this file are for convenience only, are no longer
+# maintained, and possibly out of date. They will be removed in the next version.
+#
+# To get information about current settings that apply, use "aubit-config" program
+#
+#
+#
+##########################################################################
 # 			Aubit 4gl configuration file.
 #
 #   When this file have file name "aubitrc.in" - it's intendend for use
@@ -370,15 +382,17 @@ AWK=@AWK@
 ##################
 #Full path to GTK+ includes (header) files, used when ...?
 #FIXME: why do we need this?
+#Affects: 4glc/4glpc only
 GTK_INC_PATH="@GTK_INC_PATH@"
 
 ##################
-#full path to SAP-DB ESQL/C pre-compier (does not have to be in the path)
+#full path to SAP-DB ESQL/C pre-compiler (does not have to be in the path)
+#Affects: 4glc only
 A4GL_SAPDB_ESQLC=@SAPDB_ESQLC@
 
 #################
 #Depending on installed 4gl compilers, amake can compile same definition
-#of the 4gl programs with differnt 4gl compilers. Here you can specify
+#of the 4gl programs with different 4gl compilers. Here you can specify
 #which make rules will be included by default:
 #Affects: amake only
 #Default: <not set>

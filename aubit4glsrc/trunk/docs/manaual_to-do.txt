@@ -1644,7 +1644,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.27 2003-10-09 13:02:53 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.28 2003-12-14 05:29:57 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -4820,5 +4820,61 @@ On Monday 06 October 2003 5:28 am, Andrej Falout wrote:
 > Works with Informix, 4Js and Querix
 >
 >===========================================================================
+
+
+> > I like my SELECT .. USING
+>
+> What is that?
+
+database test1
+define lv_systables linked to  systables primary key (tabid)
+
+main
+let lv_systables.tabid=1
+select using lv_systables
+display "Hello World : ",lv_systables.tabname
+end main
+
+
+Linking a table to a record (something you don't normally do in 4GL).
+Here lv_systables is LINKED to the systables tabid - which has a primart key
+of tabid (there should be support for multiple columns for the primary key -
+but I'm not sure if thats implemented).
+
+
+Anyway - using that you have
+
+	INSERT USING lv_systables
+	SELECT USING lv_systables
+	UPDATE USING lv_systables
+and
+	DELETE USING lv_systables
+
+
+(I'm not sure if the INSERT is implemented - but it can be if its not)
+
+Basically - the compiler knows that tabid is the primary key - so that needs
+to be set before a SELECT, UPDATE or DELETE,  it just generates the
+appropriate WHERE x=y automatically...
+
+eg
+SELECT USING lv_systables == SELECT * into lv_systables.* from systables where
+lv_systables.tabid=tabid
+
+
+Further enhancements would be something like:
+INSERT OR UPDATE USING lv_systables
+
+where it would check to see if the row exists first, and then either insert it
+or update a current entry
+
+I'd like to extend this to linking records to other records too later on.
+
+
+===============================================================================
+
+
+TODO: write about ASSOCIATE stuff introduced in I-4gl 7.31
+
 
 

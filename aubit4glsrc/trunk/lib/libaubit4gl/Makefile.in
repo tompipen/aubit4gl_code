@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.60 2003-11-26 11:46:20 mikeaubury Exp $
+# $Id: Makefile.in,v 1.61 2003-12-14 05:29:58 afalout Exp $
 #
 
 ROOT    	=../..
@@ -271,6 +271,9 @@ API_%.c: API_%.spec ${INCL_PATH}/a4gl_API_%.h
 #Rule to make API header from .spec file:
 ${INCL_PATH}/a4gl_API_%.h: API_%.spec
 	${SH} ${DLMAGIC} $^ -h > $@
+	${SH} ${DLMAGIC} $^ -H > ${@:.h=_lib.h}
+#The former is needed for the API_ui.c in lib/libaubit4gl the latter for the libui/* stuff
+
 
 ################
 #Rule to make API objects
@@ -301,7 +304,7 @@ clean.generated:
 #for all API's
 clean.api:
 	${RM} $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=.h}) ${API_SPEC:.spec=.c} \
-	${OBJS_API}
+	${OBJS_API} $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=_lib.h})
 
 #----------------------------------- EOF -------------------------------
 
