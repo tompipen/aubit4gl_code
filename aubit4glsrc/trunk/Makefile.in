@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.148 2004-03-22 03:10:34 afalout Exp $
+# $Id: Makefile.in,v 1.149 2004-03-23 23:24:00 afalout Exp $
 #
 
 ## ==================================================================
@@ -928,7 +928,9 @@ update:
 ####################
 #Commit all changes to CVS repository
 commit: refresh.all build
-	cvs commit
+#Note: cvs commit command cannot be redirected to file because of the need
+#to edit commit message
+	cvs -q commit
 	
 ## ------------------------------------------------------------------
 ##       Maintainance of pre-assembled and pre-compiled files
