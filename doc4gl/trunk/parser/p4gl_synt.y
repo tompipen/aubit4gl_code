@@ -159,10 +159,12 @@ extern int lineno;             /* 4GL Source current line */
 %type       <y_sym>              literal
 %type       <y_sym>              var_name
 %type       <y_sym>              named_value
+%type       <y_sym>              report_name
 %type       <y_sym>              string_or_var
 %type       <y_cursor_type>      cursor_type
 %type       <y_sym>              cursor_name
 %type       <y_name_list>        named_value_list
+%type       <y_name_list>        using_value_list
 %type       <y_name_list>        table_reference_list
 %type       <y_name_list>        op_argument_list       
 %type       <y_name_list>        variable_list_declaration       
@@ -700,7 +702,7 @@ flow_control
 	| case
 	| database
 	| exit_program
-	| FINISH REPORT IDENTIFIER
+	| FINISH REPORT report_name
 															 { StInsertFunctionCall($3,lineno+1);
 												StUpdFCUsage("FINISH REPORT"); }
 	| for
@@ -719,7 +721,7 @@ flow_control
 	| goto
 	| if
 	| LABEL IDENTIFIER ':'
-	| OUTPUT TO REPORT IDENTIFIER '(' op_call_parameters ')'
+	| OUTPUT TO REPORT report_name '(' op_call_parameters ')'
 															 { StInsertFunctionCall($4,lineno+1);
 												StUpdFCUsage("OUTPUT TO REPORT"); }
 	| RETURN fgl_return_list
@@ -872,9 +874,16 @@ goto
 	;
 
 start_report
-	: START REPORT IDENTIFIER op_to_report
+	: START REPORT report_name op_to_report
 															 { StInsertFunctionCall($3,lineno+1); 
 												StUpdFCUsage("START TO REPORT"); }
+	;
+
+report_name
+  : IDENTIFIER
+    { strcpy($$,$1); }
+	| AUDIT
+    { CpStr($$,"AUDIT"); }
 	;
 
 op_to_report
@@ -1329,7 +1338,7 @@ op_format_qualifier
 named_value_list
   : named_value_list ',' named_value 
     { InsertNameList(&$$,$1,$3,lineno+1);    }
-  | named_value THRU named_value     
+  | named_value_list THRU named_value     
     { InsertNameList(&$$,(NAME_LIST *)0,$1,lineno+1); }
   | named_value THROUGH named_value  
     { InsertNameList(&$$,(NAME_LIST *)0,$1,lineno+1); }
@@ -1370,6 +1379,7 @@ var_name
   | CURRENT       { strcpy($$,"CURRENT");}
   | DATE                                       { strcpy($$,"DATE");}
   | DEC           { strcpy($$,"DECIMAL");}
+  | DELETE        { strcpy($$,"DELETE");}
   | DESC  complete_array_usage        { strcpy($$,"DESC");}
   | DIM           { strcpy($$,"DIM");}
 	// TODO - It does not alow exists as variable name now
@@ -1586,7 +1596,7 @@ report
   report_def
 
 report_def:
-  IDENTIFIER '(' op_argument_list ')' 
+  report_name '(' op_argument_list ')' 
       op_local_variables
       output_section
       order_by_section
@@ -2357,8 +2367,20 @@ delete_statement_position:
 
 execute_statement
   : EXECUTE IDENTIFIER 
-  | EXECUTE IDENTIFIER  USING named_value_list
+  | EXECUTE IDENTIFIER USING using_value_list
     { StInsertVariableListUsage($4,READ_VAR); }
+  ;
+
+using_value_list
+  : using_value_list ',' named_value 
+    { InsertNameList(&$$,$1,$3,lineno+1);    }
+  | using_value_list ',' STRING
+    { InsertNameList(&$$,$1,$3,lineno+1);    }
+  | named_value                      
+    { InsertNameList(&$$,(NAME_LIST *)0,$1,lineno+1); }
+  | STRING                      
+    { InsertNameList(&$$,(NAME_LIST *)0,$1,lineno+1); }
+	;
 
 /*------------------------- <Declare Cursor> -----------------------------*/
 
@@ -2533,6 +2555,8 @@ set_isolation
 /* TODO - Este statement não está completo */
 update_statistics
   : UPDATE STATISTICS FOR TABLE table_name
+  | UPDATE STATISTICS 
+	;
 
 /*---------------------- 6.10 <privilege definition> ------------------------*/
 

@@ -97,7 +97,6 @@ char 		where_having[1024];
 char		menu[2048];
 char 		varstring[100];
 char 		infilename[132]="";
-char 		hdr_dbname[64]="";
 char 		current_upd_table[64]="";
 
 int 		is_schema=0;
@@ -1288,29 +1287,51 @@ close_cmd
 
 /* <EMBEDDED_C_CODE> */
 
+/**
+ * Embedded C language code.
+ * 4gl example code:
+ *    START C
+ *     ... C Code...
+ *    END C
+ */
 code_cmd 
   : KW_CSTART emb_code KW_CEND
   ;
 
+/**
+ * Possible types of embedded code: SQL or C code
+ */
 emb_code 
   : sql_code 
 	| c_code
 	;
 
+/**
+ * List of embedded SQL code lines
+ */
 sql_code 
   : sql_code_part 
 	| sql_code sql_code_part
   ;
 
+/**
+ * SQL Code line
+ */
 sql_code_part
   : SQLLINE 
   ;
 
+/**
+ * List of embedded C code lines
+ */
 c_code 
   : c_code_part 
 	| c_code c_code_part
   ;
 
+/**
+ * Embedded C code line
+ */
 c_code_part  
   : CLINE 
   ;
@@ -1334,6 +1355,10 @@ comment_cmd
 
 /**
  * The construct statement.
+ * 4gl example code:
+ *   CONSTRUCT BY NAME pr.* ON str
+ *    ... construct events ...
+ *   END CONSTRUCT
  */
 construct_cmd	
   :	CONSTRUCT constr_rest end_constr 
@@ -1342,6 +1367,10 @@ construct_cmd
 
 /**
  * The main part of construct between CONSTRUCT and END CONSTRUCT
+ * 4gl example code:
+ *    BY NAME pr.* ON str
+ *    AFTER FIELD xpto
+ *       ... 4gl code ...
  */
 constr_rest
   : BY_NAME variable ON constr_col_list opt_defs op_help opt_attributes
@@ -1359,6 +1388,8 @@ end_constr
 
 /**
  * The construct column list
+ * 4gl code example:
+ *    xpto.a, xpto.b, x
  */
 constr_col_list 
   : constr_col 
@@ -1367,6 +1398,10 @@ constr_col_list
 
 /**
  * A construct column
+ * 4gl code examples:
+ *    xpto.*
+ *    xpto.a
+ *    y
  */
 constr_col 
   : identifier 
@@ -1384,6 +1419,17 @@ constr_extra_commands
 
 /**
  * Construct possible event statements.
+ * 4gl code examples:
+ *    BEFORE FIELD xpto
+ *      ... 4gl statements ...
+ *    AFTER FIELD xpto
+ *      ... 4gl statements ...
+ *    ON KEY (CONTROL-A)
+ *      ... 4gl statements ...
+ *    AFTER CONSTRUCT
+ *      ... 4gl statements ...
+ *    BEFORE CONSTRUCT
+ *      ... 4gl statements ...
  */
 constr_extra_command 
   : BEFFIELD bef_c_field_list commands 
@@ -1395,6 +1441,8 @@ constr_extra_command
 
 /**
  * The before field construct list
+ * 4gl code example:
+ *    first_field, second_field
  */
 bef_c_field_list 
   : field_name2 
@@ -1403,6 +1451,8 @@ bef_c_field_list
 
 /**
  * The after field construct list 
+ * 4gl code example:
+ *    first_field, second_field
  */
 aft_c_field_list 
   : field_name2 
@@ -1645,28 +1695,46 @@ record_variable
 	  OPEN_BRACKET link_to_pk_list CLOSE_BRACKET
   ;
 
+/**
+ *
+ */
 link_to_pk_list 
   : link_to_pk 
 	| link_to_pk_list COMMA link_to_pk 
   ;
 
+/**
+ *
+ */
 link_to_pk 
   : define_ident
   ;
 
+/**
+ * A datatype identifier
+ */
 dtype_ident 
   : dtype2 
 	;
 
-op_as_static
+/**
+ * Optional static qualifier.
+ */
+op_as_static 
   : 
 	| AS_STATIC
   ;
 
+/**
+ * Possible datatypes with optional static qualifier.
+ */
 dtype2
   : dtype op_as_static
   ;
 
+/**
+ * Possible 4gl data types.
+ */
 dtype	
   : array_variable 
 	|	record_variable 
@@ -1698,14 +1766,23 @@ dtype
 	| USER_DTYPE 
 	;
 
+/**
+ * A variable declared as table.column
+ */
 like_var 	
   : LIKE tab_name DOT col_name  
   ;
 
+/**
+ * A database table name.
+ */
 tab_name 
   : define_ident 
 	;
 
+/**
+ * A database column name.
+ */
 col_name 
   : define_ident 
 	;
@@ -1718,14 +1795,23 @@ datetime_qual
 	| dtime_start TO dtime_end 
   ;
 
+/**
+ * Interval datatype precision qualifier.
+ */
 interval_qual 
   : int_start TO int_end  
   ;
 
+/**
+ * Datetime start precision.
+ */
 dtime_start 
   : dtime_val 
   ;
 
+/**
+ * Datatime value.
+ */
 dtime_val 
   : YEAR
   | MONTH
@@ -1736,6 +1822,9 @@ dtime_val
   | FRACTION opt_frac
   ;
 
+/**
+ * Datetime end precision.
+ */
 dtime_end 
   : dtime_val 
   ;
@@ -1748,21 +1837,32 @@ opt_frac
   | OPEN_BRACKET dtfrac CLOSE_BRACKET 
   ;
 
+/**
+ * The size of the the interval units ???
+ */
 opt_unit_size
   : 
   | OPEN_BRACKET INT_VALUE CLOSE_BRACKET 
   ;
 
-
+/**
+ *
+ */
 dtfrac
   : INT_VALUE 
   ;
 
+/**
+ * Interval start precision
+ */
 int_start 
   : 
 	int_start_unit opt_unit_size 
   ;
 
+/**
+ * Interval starting unit.
+ */
 int_start_unit 
   : YEAR 
   | MONTH
@@ -1773,11 +1873,16 @@ int_start_unit
   | FRACTION opt_frac
   ;
 
+/**
+ * Interval end unit.
+ */
 int_end 
   : int_start_unit
 	;
 
-
+/**
+ * Optional equal sign
+ */
 op_equal 
   : 
 	| EQUAL 
@@ -1788,10 +1893,16 @@ op_equal
 
 /* <DIM_STATEMENT> */
 
+/**
+ *
+ */
 dim_section 
   : DEFINE_TYPE identifier AS dim_dtype
   ;
 
+/**
+ *
+ */
 dim_dtype
   : dim_array_variable 
   | dim_record_variable 
@@ -1817,35 +1928,56 @@ dim_dtype
   | dim_like_var
   ;
 
+/**
+ *
+ */
 dim_like_var
   : LIKE tab_name  DOT col_name  
   ;
 
+/**
+ *
+ */
 dim_array_variable
   : ARRAY OPEN_SQUARE number_arr_list CLOSE_SQUARE OF dim_dtype
   | ASSOCIATE op_char assoc_open_bracket INT_VALUE assoc_close_bracket
     WITH_ARRAY OPEN_SQUARE number_arr_assoc CLOSE_SQUARE OF dim_dtype  
   ;
 
+/**
+ *
+ */
 dim_record_variable
   : RECORD dim_def_part END_RECORD
   | RECORD_LIKE identifier DOT MULTIPLY
   ;
 
+/**
+ *
+ */
 dim_def_part 
   : dim_def_part2 
 	| dim_def_part COMMA dim_def_part2
   ;
 
+/**
+ *
+ */
 dim_def_part2 
   : dim_var_def_list dim_dtype
   ;
 
+/**
+ *
+ */
 dim_var_def_list	
   : dim_var_def_name
 	| dim_var_def_list COMMA dim_var_def_name 
 	;
 
+/**
+ *
+ */
 dim_var_def_name	
   :	identifier 
 	;
@@ -1855,6 +1987,12 @@ dim_var_def_name
 
 /* <DISPLAY_STATEMENT> */
 
+/**
+ * Optional AT used on the DISPLAY statement.
+ * 4gl code examples:
+ *   AT 3, 5
+ * @todo : More examples.
+ */
 opt_at 
   : 
 	| AT display_coords 
@@ -1866,43 +2004,90 @@ opt_at
 	| TO_STATUSBOX identifier 
   ;
 
+/**
+ * The display by name statement definition.
+ * 4gl code example:
+ *   DISPLAY BY NAME a, b ATTRIBUTE(BORDER)
+ */
 display_b_n_cmd 
-  : DISPLAY_BY_NAME reset_cnt ibind_var_list display_attr 
+  : DISPLAY_BY_NAME ibind_var_list display_attr 
   ;
 
 
-display_cmd : DISPLAY reset_cnt fgl_expr_list opt_at display_attr 
+/**
+ * The display statement.
+ * 4gl code example:
+ *   DISPLAY a, " XPTO ", 4 ATTRIBUTE(REVERSE)
+ */
+display_cmd 
+  : DISPLAY fgl_expr_list opt_at display_attr 
   ;
 
+/**
+ * The display form statement.
+ * 4gl code example:
+ *   DISPLAY FORM "form_name" ATTRIBUTE(REVERSE)
+ */
 display_form_cmd 
   : DISPLAY_FORM form_name display_attr 
   ;
 
+/**
+ * The display array statement.
+ * 4gl code example:
+ *   DISPLAY ARRAY array_var TO xpto.* ATTRIBUTES(REVERSE)
+ *     ... EVENTS ...
+ *   END DISPLAY
+ */
 display_array_cmd 
   : DISPLAY_ARRAY use_arr_var TO identifier DOT MULTIPLY opt_scroll 
 	  opt_attributes disp_rest 
   ;
 
+/**
+ * Optional scroll to display array statement.
+ * 4gl code example:
+ *   SCROLL USING a
+ * @todo : Understand what is this. I think that is an extension to standard 4gl
+ */
 opt_scroll
   : 
   | SCROLL_USING field_name 
   ;
 
+/**
+ * Attributes used on the DISPLAY statements.
+ */
 display_attr	
   :	opt_attributes 
 	;
 
+/**
+ * The optional part (events and end display) of DISPLAY ARRAY statement.
+ */
 disp_rest 
   : 
 	| disp_field_commands END_DISPLAY
 	;
 
-
+/**
+ * Event handlers list for DISPLAY ARRAY statement.
+ */
 disp_field_commands 
   : disp_field_command 
 	| disp_field_commands disp_field_command
 	;
 
+/**
+ * The specific DISPLAY ARRAY events
+ * 4gl code examples:
+ *    AFTER ROW
+ *      ... 4gl code ...
+ *    BEFORE ROW
+ *      ... 4gl code ...
+ *    ON KEY (CONTROL-P)
+ *      ... 4gl code ...
+ */
 disp_field_command 
   : AFTROW commands 
 	| BEFROW commands 
@@ -1913,9 +2098,14 @@ disp_field_command
 
 /* <ERROR_STATEMENT> */
 
+/**
+ * Error statement
+ * 4gl code example:
+ *   ERROR "This is an error number : ", status ATTRIBUTE(REVERSE)
+ */
 error_cmd	
-  : ERROR reset_cnt fgl_expr_concat opt_attributes 
-	| ERROR reset_cnt fgl_expr_concat opt_attributes  WAIT_FOR_KEY 
+  : ERROR fgl_expr_concat opt_attributes 
+	| ERROR fgl_expr_concat opt_attributes  WAIT_FOR_KEY 
   ;
 
 /* </ERROR_STATEMENT> */
@@ -1923,6 +2113,9 @@ error_cmd
 
 /* <EXIT_STATEMENT> */
 
+/**
+ * All possible EXIT statements.
+ */
 ext_cmd 
   : EXIT_WHILE
 	| EXIT_INPUT
@@ -1939,6 +2132,9 @@ ext_cmd
 
 /* <CONTINUE_STATEMENT> */
 
+/**
+ * All possible continue statements.
+ */
 continue_cmd 
   : CONTINUE_WHILE 
 	| CONTINUE_INPUT
@@ -1955,6 +2151,9 @@ continue_cmd
 
 /* <EXIT_PROGRAM_STATEMENT> */
 
+/**
+ * Exit program statement
+ */
 exit_prog_cmd 
   : EXIT_PROGRAM 
   | EXIT_PROGRAM fgl_expr 
@@ -1965,6 +2164,12 @@ exit_prog_cmd
 
 /* <EXPRESSION_RULE> */
 
+/**
+ * The 4gl expression definition.
+ * This is diferent of fgl_expr.
+ *
+ * @todo : Understand the diference
+ */
 fgl_expr_c 
   : initial_expr
   | boolean_expr
@@ -1978,6 +2183,9 @@ fgl_expr_c
   | PLUS fgl_expr_c 
   ;
 
+/**
+ * Some formating of expressions
+ */
 fgl_next
   : and_or_expr
   | comparison_expr
@@ -1992,40 +2200,65 @@ fgl_next
   | CONCAT_PIPES fgl_expr_c 
   ;
 
+/**
+ * Optional 4gl ???ret??? expression.
+ */
 op_fgl_expr_ret_list
-  : reset_cnt
-	| reset_cnt fgl_expr_ret_list
+  : 
+	| fgl_expr_ret_list
   ;
 
+/**
+ * 4gl ???ret??? expression.
+ */
 fgl_expr_ret 
   : fgl_expr 
 	| KW_NULL
   ;
 
+/**
+ * Comma separated 4gl ??? ret ??? list
+ */
 fgl_expr_ret_list 	
   : fgl_expr_ret
 	| fgl_expr_ret_list COMMA fgl_expr_ret
   ;
 
+/**
+ * Comma separated 4gl expression list.
+ */
 fgl_expr_list 	
   : fgl_expr
 	| fgl_expr_list COMMA fgl_expr
   ;
 
+/**
+ * Comma separated 4gl expressions concatenation.
+ * @todo : See why this rule is equal to fgl_expr_list
+ */
 fgl_expr_concat	
   :	fgl_expr
 	| fgl_expr_concat COMMA fgl_expr
   ;
 
+/**
+ * 4gl expressions 
+ */
 fgl_expr
   : fgl_expr_c 
   ;
 
+/**
+ * Integer signals
+ */
 int_sign	
   : PLUS
 	| MINUS
   ;
 
+/**
+ * Boolean expressions
+ */
 boolean_expr
   : NOT fgl_expr_c 
   | KW_TRUE  
@@ -2035,11 +2268,18 @@ boolean_expr
   | NOT_EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET 
   ;	
 
+/**
+ * Initial expression.
+ * @todo : Describe better this expression.
+ */
 initial_expr
   : int_sign real_number 
   | int_sign INT_VALUE 
   ;
 
+/**
+ * Literal (???) expression.
+ */
 literal_expr
   : CHAR_VALUE  
   | real_number
@@ -2047,15 +2287,25 @@ literal_expr
   | variable_entry
   ;
 
+/**
+ * Variable used in expressions
+ */
 variable_entry_2 
   : variable
 	| variable THRU variable
   ;
 
+/**
+ * Variable entry.
+ * @todo : Understand why cannot use variable_entry_2 directly
+ */
 variable_entry 
   : variable_entry_2 
   ;
 
+/**
+ * 4gl Expressions that are used only inside reports
+ */
 report_only_expr
   : COLUMN fgl_expr_c 
   | COLUMNS fgl_expr_c 
@@ -2063,18 +2313,29 @@ report_only_expr
   | GROUP rep_agg
   ;
 
+/**
+ * AND/OR expressions
+ */
 and_or_expr
   : KW_AND fgl_expr_c 
   | KW_OR fgl_expr_c 
   ;
 
-
+/**
+ * A comma separated expression list.
+ */
 inexpr_list 
   : fgl_expr_c  
 	| inexpr_list COMMA fgl_expr_c
   ;
 
-
+/**
+ * IN expression to use in intervals.
+ * 4gl code example:
+ *   IN (SELECT x FROM y)
+ *   IN (1,2,3)
+ *   NOT IN (1,2,3)
+ */
 in_expr
   : IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET 
   | NOT_IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET 
@@ -2082,11 +2343,20 @@ in_expr
   | NOT_IN OPEN_BRACKET reset_cnt inexpr_list CLOSE_BRACKET 
   ;
 
+/**
+ * NULL expressions.
+ * 4gl code examples:
+ *    IS NULL
+ *    IS NOT NULL
+ */ 
 null_expr
   : IS_NULL  
   | IS_NOT_NULL
   ;
 
+/**
+ * Matches expressions to find patterns in strings.
+ */
 string_match_expr
   : MATCHES fgl_expr_c 
   | NOT_MATCHES fgl_expr_c 
@@ -2098,14 +2368,24 @@ string_match_expr
   | NOT_LIKE fgl_expr_c ESCAPE CHAR_VALUE 
   ;
 
+/**
+ * Clipped expression.
+ * @todo : Understand why this rule is needed because just have a TOKEN.
+ */
 clip_expr
   : CLIPPED 
   ;
 
+/**
+ * The using number formating to be used in expressions.
+ */ 
 using_expr
   : KW_USING fgl_expr_c 
   ;
 
+/**
+ * The matematical expressions.
+ */
 math_expr
   : PLUS fgl_expr_c 
   | MINUS fgl_expr_c
@@ -2115,6 +2395,9 @@ math_expr
   | POWER fgl_expr_c 
   ;
 
+/**
+ * Comparison expressions
+ */
 comparison_expr
   : EQUAL fgl_expr_c 
   | EQUAL_EQUAL fgl_expr_c 
@@ -2125,11 +2408,17 @@ comparison_expr
   | GREATER_THAN_EQ fgl_expr_c
   ;
 
+/**
+ * To remove.
+ */
 reset_cnt : {
 	reset_counter();
 }
 ;
 
+/**
+ * A call of a function inside an expression.
+ */
 function_call_expr2
   : identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET 
   | identifier DOUBLE_COLON identifier 
@@ -2137,7 +2426,7 @@ function_call_expr2
   ;
 
 /**
- * @todo : I supose that the parset does not work without some consumed code.
+ * @todo : I supose that the parser does not work without some consumed code.
  */
 function_callb
   : DATE OPEN_BRACKET fgl_expr_c CLOSE_BRACKET 
@@ -2152,17 +2441,24 @@ function_callb
   | FGL_DYNARR_EXTENTSIZE OPEN_BRACKET variable COMMA INT_VALUE CLOSE_BRACKET 
   ;
 
-
-
+/**
+ * Optional 
+ */
 op_extend_d
   : 
 	| s_curr_v TO e_curr_v
   ;
 
+/**
+ * @todo : This is not optional
+ */
 op_extend_i
   : interval_qual
   ;
 
+/**
+ * A function call inside an expression.
+ */
 function_call_expr
   : function_callb
   | GET_FLDBUF OPEN_BRACKET fld_list CLOSE_BRACKET 
@@ -2175,11 +2471,17 @@ function_call_expr
   | function_call_expr2
   ;
 
+/**
+ * A builtin expression.
+ */
 builtin_expr 
   : curr_v_clause 
   | DATE  
   ;
 
+/**
+ * Language built in functions.
+ */
 builtin_funcs 
   : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET 
   | DOWNSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
@@ -2187,23 +2489,37 @@ builtin_funcs
   | EXTEND extend_parameters
   ;
 
+/**
+ * PDF report generation special expressions.
+ * This is an extension to standard Informix 4gl.
+ */
 pdf_expr 
   : fgl_expr_c POINTS  
   | fgl_expr_c MM 
   | fgl_expr_c INCHES
   ;
 
+/**
+ * The parameters of the INTERVAL function.
+ * 4gl code example:
+ */
 interval_func_params 
   : CHAR_VALUE 
   | numeric_time_interval 
   ;
 
+/**
+ * Constant / literal interval values.
+ */
 numeric_time_interval
   : MINUS numeric_time_interval 
 	| numeric_time_unit_big	
 	| numeric_time_unit_small	
   ;
 
+/**
+ * Constant time values.
+ */
 numeric_time_unit_small 
   : INT_VALUE 								                   /* DD or HH or MM or SS */
 	| INT_VALUE INT_VALUE 			                   /* DD HH */
@@ -2218,11 +2534,18 @@ numeric_time_unit_small
 	| NUMBER_VALUE					                       /* SS.FFFF*/
   ;
 
+/**
+ * Constant time values. 
+ */
 numeric_time_unit_big
   : INT_VALUE
 	| INT_VALUE MINUS INT_VALUE 
   ;
 
+/**
+ * A comma separated list of form field names.
+ * Used on field_touched function
+ */
 field_name_list
   : field_name 
 	| field_name_list COMMA field_name 
@@ -2232,11 +2555,23 @@ field_name_list
 
 /* <FOR_RULE> */
 
+/**
+ * The FOR loop statement.
+ * 4gl code examples:
+ *   FOR i = 1 TO 10 STEP 2
+ *      ... 4gl statements ...
+ *   END FOR
+ */
 for_cmd	
-  : FOR variable EQUAL fgl_expr TO fgl_expr for_step commands END_FOR 
+  : FOR variable EQUAL fgl_expr TO fgl_expr op_for_step commands END_FOR 
   ;
 
-for_step 
+/**
+ * The optional step in the FOR loop.
+ * 4gl code example:
+ *   STEP -1
+ */
+op_for_step 
   :	
 	|	STEP fgl_expr
   ;
@@ -2245,90 +2580,150 @@ for_step
 
 
 /* <FOREACH_RULE> */
+
+/**
+ * The 4gl FOREACH statement.
+ * 4gl code examples:
+ *    FOREACH crXppto INTO rec.a, rec.b
+ *      ...4gl statements...
+ *    END FOREACH
+ */
 foreach_cmd	
   :	FOREACH fetch_cursor_name opt_foreach_using_part
     opt_foreach_into_fetch_part commands END_FOREACH 
   ;
 
+/**
+ * The optional foreach loop USING sub statement.
+ * 4gl code example:
+ *    USING a,b,2
+ */
 opt_foreach_using_part
   : 
 	| KW_USING reset_cnt fgl_expr_list 
 	;
+
 /* </FOREACH_RULE> */
 
 
 /* <FORM_HANDLER_RULE> */
 
+/**
+ * @todo : Understand what is this rule. I think that is an extension to 
+ * standard informix 4gl.
+ */
 formhandler_def 
   : FORMHANDLER identifier define_section  op_code op_bef_ev_list
     op_input_section op_aft_ev_list END_FORMHANDLER 
   ;
 
+/**
+ * Optional input section of the FORMHANDLER.
+ */
 op_input_section 
   : 
 	| input_section
 	;
 
+/**
+ * Optional list of Before events.
+ */
 op_bef_ev_list 
   :
 	| bef_ev_list
   ;
 
+/**
+ * List of before events.
+ */
 bef_ev_list 
   : bef_ev 
 	| bef_ev_list bef_ev
   ;
 
+/**
+ * A specific before event of FORM HANDLER.
+ */
 bef_ev 
   : BEFORE_EVENT commands 
   | BEFORE_OPEN_FORM commands 
   ;
 
+/**
+ * Optional list of after events
+ */
 op_aft_ev_list 
   :
   | aft_ev_list
   ;
 
+/**
+ * List of after events of FORM HANDLER.
+ */
 aft_ev_list 
   : aft_ev 
 	| aft_ev_list aft_ev
   ;
 
+/**
+ * A specific AFTER event to use in FORM HANDLER.
+ */
 aft_ev 
   : AFTER_EVENT commands 
   | BEFORE_CLOSE_FORM commands 
   ;
 
-input_section 
+/**
+ * The input section of FORM HANDLER.
+ */
+input_section  
   : input_sub_section field_ops END_INPUT
   ;
 
+/**
+ * The input sub section of FORM HANDLER.
+ */
 input_sub_section 
   : FORMHANDLER_INPUT
   | FORMHANDLER_INPUT in_variable_list FROM in_id_list
   | FORMHANDLER_INPUT BY_NAME in_bn_variable_list
   ;
 
+/**
+ *
+ */
 in_variable_list 
   : variable 
 	| in_variable_list COMMA variable
   ;
 
+/**
+ *
+ */
 in_id_list 
   : identifier 
 	| in_id_list COMMA identifier
   ;
 
+/**
+ *
+ */
 in_bn_variable_list 
   : variable 
 	| in_bn_variable_list COMMA variable
   ;
 
+/**
+ *
+ */
 field_ops 
   : field_op 
 	| field_ops field_op
   ;
 
+/**
+ *
+ */
 field_op 
   : BEFORE_ANY commands 
   | AFTER_ANY commands 
@@ -2342,6 +2737,11 @@ field_op
 
 /* <FREE_STATEMENT> */
 
+/**
+ * FREE cursor statement
+ * 4gl code example:
+ *    FREE crXpto
+ */
 free_cmd 
   : FREE cursor_name
   ;
@@ -2980,8 +3380,8 @@ return_cmd
   ;
 
 op_fgl_expr_list 
-  : reset_cnt 
-	| reset_cnt fgl_expr_list 
+  : 
+	| fgl_expr_list 
   ;
 
 db_section	
@@ -3140,2381 +3540,1143 @@ msg_wait
   : WAIT_FOR_KEY 
   ;
 
-/*
-=====================================================================
-                        Source: newvariable.rule
-=====================================================================
-*/
 
-
-variable_no_scope: variable {
-char buff[256];
-char buff2[256];
-strcpy(buff,$<str>1);
-
-if (buff[0]>='A'&&buff[0]<='Z'&&buff[1]=='_') {
-	strcpy(buff2,&buff[2]);
-} else {
-	strcpy(buff2,buff);
-}
-
-strcpy($<str>$,buff2);
-}
-
-;
-
-
-variable: var_int
-{
-char buff[256];
-char buff2[256];
-char c;
-int n;
-
-if (strcmp($<str>1,"status")==0) { strcpy($<str>1,"a4gl_status"); }
-if (strncmp($<str>1,"sqlca.",6)==0) { 
-	char xbuff[256];
-	char xbuff2[256];
-	strcpy(xbuff,"a4gl_sqlca.");
-	strcpy(xbuff2,$<str>1);
-	strcat(xbuff,&xbuff2[6]);
-	strcpy($<str>1,xbuff);
-}
-strcpy(buff,$<str>1);
-A4GL_lex_printcomment("/* .. var %s*/",buff);
-if (buff[0]!=' ') addmap("Use Variable",buff,curr_func,yylineno,infilename);
-
-if (strncmp(buff," ASSOCIATE_",11)!=0) {
- A4GL_convlower(buff);
-}
-
-strcpy($<str>$,buff);
-A4GL_debug("Checking variable '%s'",buff);
-strcpy(buff2,buff);
-n=scan_variable(buff2);
-
-  A4GL_debug("scan variable returns -> %d\n",n);
-
-  if (n == -1&&buff[0]!=' ') {
-           sprintf(buff2,"'%s' does not represent a defined variable (1)",buff);
-           a4gl_yyerror(buff2);
-           exit (0);
-  }
-
-  strcpy(buff2,$<str>1);
-
-
-  if (strstr(buff,".*") && n!=-2) {
-		char *ptr;
-		strcpy(buff,$<str>1);
-		printf("WARNING : Using a .* on a non-record - %s\n",$<str>1);
-		ptr=strstr(buff,".*");
-		*ptr=0;
-                
-		sprintf($<str>$,"%s",fgl_add_scope(buff,0));
-  } else {
-                	sprintf($<str>$,"%s",fgl_add_scope($<str>1,0));
-  }
-
- 
-  mcnt = 0;
-}
-;
-
-
-var_int :
-	var | DOLLAR var {strcpy($<str>$,$<str>2);}
-;
-
-varsetidentdot : var DOT
-;
-
-var: 
- varsetidentdot dot_part_var { 
-         sprintf ($<str>$, "%s.%s", $<str>1, $<str>2); 
-         A4GL_lex_printcomment("/* record building -> %s */\n",$<str>$);
-         }
-| varsetidentdot identifier OPEN_SQUARE num_list CLOSE_SQUARE {
-
-         int type,arrsize,size,level;
-         char buff[256];
-         char buff2[256];
-         char arrbuff[256];
-
-         A4GL_lex_printcomment("/* OPEN_SQUARE.. */\n");
-
-	if (strcmp($<str>1,"sqlca")==0) {
-		strcpy($<str>1,"a4gl_sqlca");
-	}
-         sprintf(buff,"%s.%s",$<str>1,$<str>2);
-         if (scan_variable(buff)==-1) {
-	
-           sprintf(buff2,"'%s' does not represent a defined variable (2)",buff);
-           a4gl_yyerror(buff2);
-           YYERROR;
-         }
-
-         A4GL_lex_printcomment("/*variable with [...]*/");
-         get_variable_dets (buff,&type,&arrsize,&size,&level,arrbuff);
-         A4GL_lex_printcomment("/* Arrsize = %d size = %d*/",arrsize,size);
-	 
-         if (arrsize>0)
-         {
-             A4GL_debug("Is array...");
-             sprintf ($<str>$, "%s[%s]", buff, change_arr_elem($<str>4));
-             A4GL_lex_printcomment ("/* array variable %s num_arr_elem=%d arrbuff=%d*/\n", $<str>$,num_arr_elem($<str>4),num_arr_elem(arrbuff));
-         }
-         else
-         {
-             A4GL_debug ("Is string...");
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", fgl_add_scope(buff,0), (int)scan_variable (buff), $<str>4);
-      		dec_counter();
-
-             addmap("Use Variable",buff,curr_func,yylineno,infilename);
-             A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
-         }
-
-         mcnt++;
-}
-
-| varsetidentdot identifier OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE {
-
-         int type,arrsize,size,level;
-         char buff[256];
-         char buff2[256];
-         char arrbuff[256];
-
-         A4GL_lex_printcomment("/* OPEN_SQUARE.. */\n");
-
-	if (strcmp($<str>1,"sqlca")==0) {
-		strcpy($<str>1,"a4gl_sqlca");
-	}
-         sprintf(buff,"%s.%s",$<str>1,$<str>2);
-         if (scan_variable(buff)==-1) {
-           sprintf(buff2,"'%s' does not represent a defined variable (2)",buff);
-           a4gl_yyerror(buff2);
-           YYERROR;
-         }
-
-         A4GL_lex_printcomment("/*variable with [...]*/");
-         get_variable_dets (buff,&type,&arrsize,&size,&level,arrbuff);
-         A4GL_lex_printcomment("/* Arrsize = %d size = %d*/",arrsize,size);
-	 
-         if (arrsize>0)
-         {
-		char buff2[256];
-             A4GL_debug("Is array...");
-             sprintf (buff2, "%s[%s]", buff, change_arr_elem($<str>4));
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", fgl_add_scope(buff2,0), (int)scan_variable (buff2), $<str>4);
-             A4GL_lex_printcomment ("/* array variable %s num_arr_elem=%d arrbuff=%d*/\n", $<str>$,num_arr_elem($<str>4),num_arr_elem(arrbuff));
-      	dec_counter();
-         }
-         else
-         {
-		a4gl_yyerror("Expecting an array of chars...");
-		YYERROR;
-
-         }
-
-         mcnt++;
-}
-
-| array_r_variable
-| identifier
-| assoc_var_read
-;
-
-assoc_var_read  : identifier OPEN_SHEV assoc_sub CLOSE_SHEV
-{
-char buff2[256];
-         if (scan_variable($<str>1)==-1) {
-           sprintf(buff2,"'%s' does not represent a defined variable (3)",$<str>1);
-           a4gl_yyerror(buff2); 
-           YYERROR;
-         }
-
-A4GL_lex_printcomment("/*Associative Variable : %s*/\n",$<str>3);
-sprintf($<str>$," ASSOCIATE_%s(%s,1)",upshift($<str>1),$<str>3);
-};
-
-
-assoc_var_write  : identifier OPEN_SHEV assoc_sub CLOSE_SHEV
-{
-char buff2[256];
-         if (scan_variable($<str>1)==-1) {
-           sprintf(buff2,"'%s' does not represent a defined variable (4)",$<str>1);
-           a4gl_yyerror(buff2); 
-           YYERROR;
-         }
-A4GL_lex_printcomment("/*Associative Variable : %s*/\n",$<str>3);
-sprintf($<str>$," ASSOCIATE_%s(%s,0)",upshift($<str>1),$<str>3);
-};
-
-assoc_sub : variable | CHAR_VALUE
-;
-
-
-dot_part_var:
- MULTIPLY | 
- identifier 
-;
-
-
-
-array_r_variable:
-identifier arr_subscripts
-{
-int type,arrsize,size,level;
-char buff2[256];
-char arrbuff[256];
-
-  A4GL_debug("ARRAY (array_r_variable) : %s %s",$<str>1,$<str>2);
-  //printf("ARRAY (array_r_variable) : %s %s",$<str>1,$<str>2);
-  A4GL_lex_printcomment("/*array variable nnn */");
-  get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff);
-  A4GL_lex_printcomment("/*here %s %x */",$<str>1,type);
-  if (scan_variable($<str>1)==-1) {
-           sprintf(buff2,"'%s' does not represent a defined variable (7)",$<str>1);
-           a4gl_yyerror(buff2); 
-           YYERROR;
-
-	}
-
-
-  A4GL_debug("Type=%d (%d) arrsize=%d",type,type&0xffff,arrsize);
-
-  if (strchr($<str>2,':'))  {
-	char lbuff[256];
-	char rbuff[256];
-	char tmpbuff[256];
-	char *ptr;
-	strcpy(lbuff,$<str>2);
-	strcpy(rbuff,strchr($<str>2,':')+1);
-	ptr=strchr(lbuff,':');
-	*ptr=0;
-        sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
-        sprintf ($<str>$, " a4gl_substr(%s , 0x%x , %s , 0 ) /*1.1*/", fgl_add_scope(tmpbuff,0), (int)scan_variable (tmpbuff), rbuff);
-      	dec_counter();
-  } else {
- 
-  if (((type & 0xffff) != 0) || (arrsize>0))
-    {
-		A4GL_debug("MJA Path 1");
-      A4GL_lex_printcomment("/* changing optbase for array: %s */\n",$<str>2);
-      sprintf ($<str>$, "%s[%s]", $<str>1, change_arr_elem($<str>2));
-      A4GL_lex_printcomment ("/* array variable %s*/\n", $<str>$);
-    }
-  else
-    {
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.2*/", fgl_add_scope($<str>1,0), (int)scan_variable ($<str>1), $<str>2);
-             addmap("Use Variable",$<str>1,curr_func,yylineno,infilename);
-      A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
-      	dec_counter();
-      	mcnt--;
-    }
-}
-
-  mcnt++;
-}
-;
-
-
-
-
-array_r_variable_or_ident:
-identifier arr_subscripts
-{
-  int type,arrsize,size,level;
-  //char buff2[256];
-  char arrbuff[256];
-//printf("ARRAY (array_r_variable) : %s %s",$<str>1,$<str>2);
-  A4GL_lex_printcomment("/*array variable nnn */");
-  get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff);
-  A4GL_lex_printcomment("/*here %s %x */",$<str>1,type);
-  if (scan_variable($<str>1)==-1) {
-	sprintf($<str>$,"%s[%s]",$<str>1,$<str>2);
-  } else {
-
-
-  A4GL_debug("Type=%d (%d) arrsize=%d",type,type&0xffff,arrsize);
-
-  if (strchr($<str>2,':'))  {
-	char lbuff[256];
-	char rbuff[256];
-	char tmpbuff[256];
-	char *ptr;
-	strcpy(lbuff,$<str>2);
-	strcpy(rbuff,strchr($<str>2,':')+1);
-	ptr=strchr(lbuff,':');
-	*ptr=0;
-        sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.3*/", fgl_add_scope(tmpbuff,0), (int)scan_variable (tmpbuff), rbuff);
-      	dec_counter();
-  } else {
- 
-  if (((type & 0xffff) != 0) || (arrsize>0))
-    {
-      A4GL_lex_printcomment("/* changing optbase for array: %s */\n",$<str>2);
-      sprintf ($<str>$, "%s[%s]", $<str>1, change_arr_elem($<str>2));
-      A4GL_lex_printcomment ("/* array variable %s*/\n", $<str>$);
-    }
-  else
-    {
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.4*/", fgl_add_scope($<str>1,0), (int)scan_variable ($<str>1), $<str>2);
-             addmap("Use Variable",$<str>1,curr_func,yylineno,infilename);
-      A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
-      	dec_counter();
-      	mcnt--;
-    }
-  }
-}
-
-  mcnt++;
-}
-;
-
-
-
-
-
-
-arr_subscripts : 
-	OPEN_SQUARE num_list CLOSE_SQUARE {
-	 A4GL_debug("---> Subscript or substring");
-		strcpy($<str>$,$<str>2);
-	}
-|
-	OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE {
-	 A4GL_debug("---> Subscript & substring");
-		sprintf($<str>$,"%s:%s",$<str>2,$<str>5);
-	}
-;
-
-
-num_list: num_list_element
-{
-A4GL_debug("List element");
-  sprintf ($<str>$, "%s", $<str>1);
-}
-|num_list COMMA num_list_element
-{
-A4GL_debug("List element continues");
-  sprintf ($<str>$, "%s,%s", $<str>1, $<str>3); 
-}
-
-;
-
-num_list_element: arr_expr
-{
-  sprintf ($<str>$, "%s", $<str>1);
-};
-
-
-let_variable: let_var
-{
-char buff[256];
-char c;
-if (strcmp($<str>1,"status")==0) { strcpy($<str>1,"a4gl_status"); }
-if (strncmp($<str>1,"sqlca.",6)==0) {
-        char xbuff[256];
-        char xbuff2[256];
-        strcpy(xbuff,"a4gl_sqlca.");
-        strcpy(xbuff2,$<str>1);
-        strcat(xbuff,&xbuff2[6]);
-        strcpy($<str>1,xbuff);
-}
-strcpy(buff,$<str>1);
-addmap("Let Variable",buff,curr_func,yylineno,infilename);
-if (strncmp(buff," ASSOCIATE_",11)!=0) {
-A4GL_convlower(buff);
-}
-strcpy($<str>$,buff);
-A4GL_lex_printcomment("/* %s */\n",$<str>1);
-
-
-  if (scan_variable (buff) == -1&&buff[0]!=' ')
-    {
-      A4GL_lex_printcomment ("/*NOt a variable*/");
-      sprintf(buff,"%s is not a variable",$<str>1);
-      a4gl_yyerror(buff);
-    }
-
-
-  sprintf($<str>$,"%s",fgl_add_scope($<str>1,0));
-  mcnt = 0;
-};
-
-let_var: let_array_r_variable {
-	 A4GL_debug("Array..");
-}
-| let_var DOT let_var_dot { sprintf ($<str>$, "%s.%s", $<str>1, $<str>3); }
-| let_var DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE
-{
-  int a;
-  int b;
-  char buff[256];
-  char buff2[256];
-  A4GL_lex_printcomment("/*array variable .let. */");
-  if (strcmp($<str>1,"status")==0) { strcpy($<str>1,"a4gl_status"); }
-  if (strcmp($<str>1,"sqlca")==0) {
-        strcpy($<str>1,"a4gl_sqlca");
-  }
-  sprintf($<str>$,"%s.%s",$<str>1,$<str>3);
-
-         if (scan_variable($<str>$)==-1) {
-           sprintf(buff2,"'%s' does not represent a defined variable (5)",$<str>$);
-           a4gl_yyerror(buff2); 
-           YYERROR;
-         }
-
-  A4GL_debug("?1arrvar=%s",$<str>$);
-  b = isarrvariable ($<str>$);
-  a = scan_variable ($<str>$);
-
-  A4GL_lex_printcomment("/*a=%x b=%x */\n",a,b);
-
-  if (b != 0)
-    {
-      sprintf ($<str>$, "%s.%s[%s-1] ", $<str>1, $<str>3,$<str>5);
-      A4GL_lex_printcomment ("/* array variable %s*/\n", $<str>$);
-    }
-  else
-    {
-      sprintf(buff,"%s.%s",$<str>1,$<str>3);
-      sprintf ($<str>$, " a4gl_let_substr(%s,%d,%s,0) /* M4 */", fgl_add_scope(buff,0), a, $<str>5);
-      addmap("Let Variable",buff,curr_func,yylineno,infilename);
-      A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
-    }
-
-  mcnt++;
-
-}
-| let_var DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE
-{
-  int a;
-  int b;
-  char buff[256];
-  char buff2[256];
-  A4GL_lex_printcomment("/*array variable .let. */");
-  if (strcmp($<str>1,"status")==0) { strcpy($<str>1,"a4gl_status"); }
-  if (strcmp($<str>1,"sqlca")==0) {
-        strcpy($<str>1,"a4gl_sqlca");
-  }
-  sprintf($<str>$,"%s.%s",$<str>1,$<str>3);
-
-         if (scan_variable($<str>$)==-1) {
-           sprintf(buff2,"'%s' does not represent a defined variable (5)",$<str>$);
-           a4gl_yyerror(buff2); 
-           YYERROR;
-         }
-
-  A4GL_debug("?1arrvar=%s",$<str>$);
-  b = isarrvariable ($<str>$);
-  a = scan_variable ($<str>$);
-
-  A4GL_lex_printcomment("/*a=%x b=%x */\n",a,b);
-
-  if (b != 0)
-    {
-      sprintf (buff, "%s.%s[%s-1] ", $<str>1, $<str>3,$<str>5);
-      sprintf ($<str>$, " a4gl_let_substr(%s,%x,%s,0) /* M1 */", fgl_add_scope(buff,0), a, $<str>8);
-      A4GL_lex_printcomment ("/* subscript on array variable %s*/\n", $<str>$);
-    }
-  else
-    {
-		a4gl_yyerror("I was really hoping for an array");
-		YYERROR;
-
-    }
-
-  mcnt++;
-
-}
-
-
-| identifier
-| assoc_var_write
-;
-
-let_var_dot :
-MULTIPLY 
-| identifier 
-;
-
-let_array_r_variable:
-identifier arr_subscripts
-{
-/*OPEN_SQUARE num_list CLOSE_SQUARE*/
-  int a;
-  int b;
-  char buff2[256];
-  A4GL_lex_printcomment("/*.let. array variable */");
-
-  A4GL_debug("?2 arrvar=%s",$<str>1);
-  if (strchr($<str>2,':'))  {
-	char lbuff[256];
-	char rbuff[256];
-	char tmpbuff[256];
-	char *ptr;
-	strcpy(lbuff,$<str>2);
-	strcpy(rbuff,strchr($<str>2,':')+1);
-	ptr=strchr(lbuff,':');
-	*ptr=0;
-        sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
-        sprintf ($<str>$, " a4gl_let_substr(%s,%d,%s,0) /* M2 */", fgl_add_scope(tmpbuff,0), (int)scan_variable (tmpbuff), rbuff);
-  } else {
-  	b = isarrvariable ($<str>1);
-  	a = scan_variable ($<str>1);
-
-         if (a==-1) {
-           sprintf(buff2,"'%s' does not represent a defined variable (6)",$<str>1);
-           a4gl_yyerror(buff2); 
-           YYERROR;
-         }
-
-
-  A4GL_debug("/*a=%d b=%d*/\n",a,b);
-
-  if (b != 0)
-    {
-      sprintf ($<str>$, "%s[%s]", $<str>1, A4GL_decode_array_string($<str>2));
-      A4GL_debug ("/* array variable %s*/\n", $<str>$);
-    }
-  else
-    {
-      sprintf ($<str>$, " a4gl_let_substr(%s,%d,%s,0) /* M3 */", fgl_add_scope($<str>1,0), (int)scan_variable ($<str>1), $<str>2);
-
-      addmap("Let Variable",$<str>1,curr_func,yylineno,infilename);
-      A4GL_debug ("/*character variable %s*/\n", $<str>$);
-    }
- }
-  mcnt++;
-
-}
-;
-
-
-
-op_param_var_list: {
-start_bind('f',0);
-start_bind('O',0);
-strcpy($<str>$,"0");}
-| fparam_var_list;
-
-
-fparam_var_list:	func_def_var {
-start_bind('f',$<str>1);
-start_bind('O',$<str>1);
-sprintf($<str>$,"1");
-}
-	|	
-fparam_var_list COMMA func_def_var {
-int c;
-c=add_bind('f',$<str>3);
-c=add_bind('O',$<str>3);
-sprintf($<str>$,"%d",c); 
-}
-;
-
-
-
-
-ibind_var_list:	ibind_var {
-A4GL_lex_printcomment("/*STarted bind %s*/\n",$<str>1);
-start_bind('i',$<str>1);
-A4GL_lex_printcomment("/*STarted bind 2*/\n");
-strcpy($<str>$,"");
-}
-	|	
-ibind_var_list COMMA ibind_var {
-A4GL_lex_printcomment("/* Added */\n");
-add_bind('i',$<str>3);
-strcpy($<str>$,"");
-}
-;
-
-
-func_def_var : identifier | identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>2);}
-;
-
-ibind_var : variable  {A4GL_lex_printcomment("/* Variable */\n");}
-	| variable THRU variable { A4GL_debug("Got an ibind thru..."); sprintf($<str>$,"%s\n%s",$<str>1,$<str>3); }
+/* <NEWVARIABLE_RULE> */
+
+variable_no_scope
+  : variable 
+  ;
+
+
+variable
+  : var_int
+  ;
+
+
+var_int 
+  : var 
+	| DOLLAR var 
+  ;
+
+varsetidentdot 
+  : var DOT
+  ;
+
+var
+  : varsetidentdot dot_part_var
+  | varsetidentdot identifier OPEN_SQUARE num_list CLOSE_SQUARE 
+  | varsetidentdot identifier 
+	  OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE 
+  | array_r_variable
+  | identifier
+  | assoc_var_read
+  ;
+
+assoc_var_read  
+  : identifier OPEN_SHEV assoc_sub CLOSE_SHEV
+  ;
+
+
+assoc_var_write  
+  : identifier OPEN_SHEV assoc_sub CLOSE_SHEV
+  ;
+
+assoc_sub 
+  : variable 
+	| CHAR_VALUE
+  ;
+
+dot_part_var
+  : MULTIPLY 
+	| identifier 
+  ;
+
+array_r_variable
+  : identifier arr_subscripts
+  ;
+
+array_r_variable_or_ident
+  : identifier arr_subscripts
+  ;
+
+arr_subscripts 
+  : OPEN_SQUARE num_list CLOSE_SQUARE 
+  | OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE 
+  ;
+
+
+num_list
+  : num_list_element
+  | num_list COMMA num_list_element
+  ;
+
+num_list_element
+  : arr_expr
+  ;
+
+let_variable
+  : let_var
+  ;
+
+let_var
+  : let_array_r_variable 
+  | let_var DOT let_var_dot 
+  | let_var DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE
+  | let_var DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE 
+	  OPEN_SQUARE num_list CLOSE_SQUARE
+  | identifier
+  | assoc_var_write
+  ;
+
+let_var_dot 
+  : MULTIPLY 
+  | identifier 
+  ;
+
+let_array_r_variable
+  : identifier arr_subscripts
+  ;
+
+op_param_var_list
+  : 
+  | fparam_var_list
+	;
+
+fparam_var_list
+  :	func_def_var 
+	|	fparam_var_list COMMA func_def_var 
+  ;
+
+ibind_var_list
+  :	ibind_var 
+	|	ibind_var_list COMMA ibind_var 
+  ;
+
+
+func_def_var 
+  : identifier 
+	| identifier DOT identifier 
+  ;
+
+ibind_var 
+  : variable  
+	| variable THRU variable 
 	| CHAR_VALUE 
-	| real_number {sprintf($<str>$,"\"%s\"",$<str>1);}
-	| INT_VALUE {sprintf($<str>$,"\"%s\"",$<str>1);}
-;
+	| real_number 
+	| INT_VALUE 
+  ;
 
-obind_var_list:	obind_var  {
-start_bind('o',$<str>1);
-} 
-	|	obind_var_list COMMA obind_var {
-add_bind('o',$<str>3);
-strcpy($<str>$,"");
-}
-;
+obind_var_list
+  :	obind_var  
+	|	obind_var_list COMMA obind_var 
+  ;
 
-obind_var : variable   {
-	addmap("OBIND",$<str>1,curr_func,yylineno,infilename);
-	}
-	| variable THRU variable { A4GL_debug("Got an obind thru..."); sprintf($<str>$,"%s\n%s",$<str>1,$<str>3); }
-;
+obind_var 
+  : variable
+	| variable THRU variable 
+  ;
+
+obind_var_let_list
+  :	obind_let_var  
+	|	obind_var_let_list COMMA obind_let_var 
+  ;
+
+obind_let_var 
+  : let_variable
+  ;
+
+use_arr_var 
+  : variable 
+  ;
+
+obind_var_list_ord
+  :	obind_var_ord
+	| obind_var_list_ord COMMA obind_var_ord
+  ;
+
+obind_var_ord 
+  : variable optional_asc_desc
+	;
+
+optional_asc_desc
+  : 
+	| ASC 
+	| DESC
+	;
+
+array_r_varid
+  : identifier OPEN_SQUARE num_list CLOSE_SQUARE
+  ;
+
+init_bind_var_list
+  :	init_bind_var 
+	|	init_bind_var_list COMMA init_bind_var 
+  ;
+
+init_bind_var 
+  : variable  
+	| variable THRU variable 
+  ;
+
+/* </NEWVARIABLE_RULE> */
 
 
-obind_var_let_list:	obind_let_var  {
-A4GL_lex_printcomment("/* start obind with  %s*/\n",$<str>1);
-start_bind('o',$<str>1);
-} 
-	|	obind_var_let_list COMMA obind_let_var {
-A4GL_lex_printcomment("/* add to obind %s */\n",$<str>3);
-add_bind('o',$<str>3);
-strcpy($<str>$,"");
-}
-;
+/* <OPEN_STATEMENTS> */
 
-obind_let_var : let_variable   {
-A4GL_lex_printcomment("/* Read variable %s*/\n",$<str>1);
-}
-;
+open_window_cmd 
+  : OPEN_WINDOW open_win_name AT coords WITH window_type win_attributes  
+  ;
 
-use_arr_var : variable {
-    A4GL_lex_printcomment("/* use_arr_var */\n");
-    start_arr_bind('o',$<str>1);
-    A4GL_lex_printcomment("/* use_arr_var complete */\n");
-}
-;
-
-obind_var_list_ord:	obind_var_ord  {
-start_bind('O',$<str>1);
-} 
-	| obind_var_list_ord COMMA obind_var_ord {
-               add_bind('O',$<str>3);
-               strcpy($<str>$,"");
-}
-;
-
-obind_var_ord : variable optional_asc_desc;
-
-optional_asc_desc: | ASC | DESC;
-
-
-array_r_varid:
-identifier OPEN_SQUARE num_list CLOSE_SQUARE
-{
-  int type,arrsize,size,level;
-  char arrbuff[256];
-  A4GL_lex_printcomment("/*..array_r_varid..*/");
-
-//printf("Got array %s %s\n",$<str>1,$<str>3);
-if (get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff)>=0) {
-	// Its a variable
-	//printf("gvd = true\n");
-  sprintf($<str>$,"%s[%s]",$<str>1,subtract_one($<str>3));
-} else {
-	// Its an sql identifier or similar
-	//printf("gvd = false\n");
-  sprintf($<str>$,"%s[%s]",$<str>1,$<str>3);
-}
-//printf("All done - ARRAY (array_r_varid) : %s\n",$<str>$);
-}
-;
-
-init_bind_var_list:	init_bind_var {
-A4GL_lex_printcomment("/*STarted bind %s*/\n",$<str>1);
-start_bind('N',$<str>1);
-A4GL_lex_printcomment("/*STarted bind 2*/\n");
-strcpy($<str>$,"");
-}
-	|	
-init_bind_var_list COMMA init_bind_var {
-A4GL_lex_printcomment("/* Added */\n");
-add_bind('N',$<str>3);
-strcpy($<str>$,"");
-}
-;
-
-init_bind_var : variable  {
-		strcpy($<str>$,$<str>1);
-	}
-	| variable THRU variable {
-			sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
-		}
-;
-
-/* ========================= newvariable.rule ======================= */
-
-/*
-=====================================================================
-                        Source: open.rule
-=====================================================================
-*/
-
-open_window_cmd :
-	OPEN_WINDOW open_win_name AT coords WITH window_type win_attributes  {
-form_attrib.iswindow=1;
-print_open_window($<str>2,$<str>6);
-sprintf($<str>$,"open window");
-}
-;
-
-op_at_statusbox : 
+op_at_statusbox 
+  : 
 	| AT OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET op_size_statusbox
-;
+  ;
 
-op_size_statusbox : 
+op_size_statusbox 
+  : 
 	| SIZE OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET
-;
+  ;
 
-open_statusbox_cmd :
-	OPEN_STATUSBOX identifier op_at_statusbox
-{
-	print_niy("OPEN_STATUSBOX");
-}
-;
+open_statusbox_cmd 
+  : OPEN_STATUSBOX identifier op_at_statusbox
+  ;
 
-formhandler_name:identifier {
-addmap("Call Formhandler",$<str>1,curr_func,yylineno,infilename); 
-}
-;
-open_form_cmd :
-	OPEN_FORM open_form_name  open_form_rest
-		{
-		print_open_form($<str>3,$<str>2,$<str>2);
-		}
-;
+formhandler_name
+  : identifier 
+  ;
 
-open_form_rest: open_form_gui
+open_form_cmd 
+  : OPEN_FORM open_form_name  open_form_rest
+  ;
+
+open_form_rest
+  : open_form_gui
 	| FROM fgl_expr 
-	{ form_attrib.iswindow=0;strcpy($<str>$,"A4GL_open_form(%s);"); }
+  ;
 
-;
+open_form_gui
+  :  op_at_gui op_like_gui op_disable KW_USING formhandler_name
+  ;
 
-open_form_gui:  op_at_gui op_like_gui op_disable KW_USING formhandler_name
-	{sprintf($<str>$,"A4GL_open_gui_form(%%s,%s,%s,%s,hnd_e_%s,hnd_c_%s);",$<str>1,$<str>2,$<str>3,$<str>5,$<str>5);}
-;
+op_at_gui
+  :
+	| AT op_absolute OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET 
+  ;
 
-op_at_gui:{strcpy($<str>$,"0,0");} | AT op_absolute OPEN_BRACKET fgl_expr COMMA fgl_expr CLOSE_BRACKET 
-	{sprintf($<str>$,"%s,2",$<str>2);}
-;
+op_like_gui
+  : 
+	| LIKE ident_or_var
+  ;
 
-op_like_gui: {strcpy($<str>$,"\"\"");} |
-	LIKE ident_or_var {strcpy($<str>$,$<str>2);}
-;
+op_absolute
+  : 
+	| ABSOLUTE 
+  ;
 
-op_absolute: {strcpy($<str>$,"0");}
-	| ABSOLUTE {strcpy($<str>$,"1");}
-;
+open_session_cmd 
+  : OPEN_SESSION conn_id TO_DATABASE var_ident user_details
+  ;
 
-open_session_cmd : 
- OPEN_SESSION conn_id TO_DATABASE var_ident user_details
- {
-print_open_session($<str>2,$<str>4,$<str>5);
+open_cursor_cmd 
+  : OPEN cursor_name 
+	| OPEN cursor_name KW_USING reset_cnt fgl_expr_list 
+  ;
 
-}
-
-;
-open_cursor_cmd :
-	OPEN cursor_name {
-	print_open_cursor($<str>2,"0");
-}
-	| OPEN cursor_name KW_USING reset_cnt fgl_expr_list {
-	print_open_cursor($<str>2,$<str>5); /* CHANGED from $<str>4 */
-}
-;
-
-
-user_details :  {sprintf($<str>$,"0,0");}
+user_details 
+  :
 	| AS USER char_or_var PASSWORD char_or_var
-              {sprintf($<str>$,"%s, %s",$<str>3,$<str>5);}
 	| AS USER char_or_var COMMA PASSWORD char_or_var
-              {sprintf($<str>$,"%s, %s",$<str>3,$<str>6);}
 	| AS char_or_var COMMA char_or_var
-              {sprintf($<str>$,"%s, %s",$<str>2,$<str>4);}
-;
-
-op_disable : {strcpy($<str>$,"0");} | DISABLE_PROGRAM {strcpy($<str>$,"1");}
-| DISABLE_ALL {strcpy($<str>$,"2");}
-;
-
-
-connect_cmd :
-CONNECT_TO var_ident op_connect_as con_user_details {
-	print_open_session($<str>3,$<str>2,$<str>4);
-}
-;
-
-
-
-op_connect_as :
-        {strcpy($<str>$,"\"default_conn\"");}
-        | AS var_ident {strcpy($<str>$,$<str>2);}
-
-;
-
-con_user_details :
-        {sprintf($<str>$,"0,0");}
-        | AS USER char_or_var KW_USING char_or_var
-              {sprintf($<str>$,"%s, %s",$<str>3,$<str>5);}
-        | USER char_or_var KW_USING char_or_var
-              {sprintf($<str>$,"%s, %s",$<str>2,$<str>4);}
-;
-
-/* ======================= open.rule =========================== */
-
-/*
-=====================================================================
-                        Source: options.rule
-=====================================================================
-*/
-
-
-options_cmd : OPTIONS opt_options;
-
-opt_options : opt_allopts
-	| opt_options COMMA opt_allopts;
-
-opt_allopts 	: COMMENT_LINE line_no {
-print_options('C',$<str>2);
-}
-		| ERROR_LINE line_no {
-print_options('E',$<str>2);
-}
-		| FORM_LINE line_no {
-print_options('F',$<str>2);
-}
-		| MENU_LINE line_no {
-//A4GL_lex_printc("A4GL_set_option_value('M',%s);\n",$<str>2);
-print_options('M',$<str>2);
-}
-		| MSG_LINE line_no {
-print_options('m',$<str>2);
-}
-		| PROMPT_LINE line_no {
-print_options('P',$<str>2);
-}
-		| accept_key {
-print_options('A',$<str>1);
-iskey=0;
-}
-		| DELETE single_key_val {
-print_options('D',$<str>2);
-iskey=0;
-}
-		| INSERT single_key_val {
-print_options('I',$<str>2);
-iskey=0;
-}
-		| NEXT single_key_val {
-print_options('N',$<str>2);
-}
-		| PREVIOUS single_key_val {
-print_options('p',$<str>2);
-iskey=0;
-}
-		| HELP single_key_val {
-print_options('H',$<str>2);
-}
-		| HELP_FILE file_name { print_set_helpfile($<str>2); }
-		| LANG_FILE file_name { print_set_langfile($<str>2); }
-		| DISPLAY attributes_def {
-print_options('d',$<str>2);
-}
-		| INPUT attributes_def {
-print_options('i',$<str>2);
-}
-		| INPUT_WRAP {
-print_options('W',"1");
-}
-		| INPUT_NO_WRAP {
-print_options('W',"0");
-}
-		| FOCONSTR {
-print_options('f',"1");
-}
-		| FOUNCONSTR {
-print_options('f',"0");
-}
-		| SQL_INTERRUPT_ON  {
-print_options('S',"1");
-}
-		| SQL_INTERRUPT_OFF {
-print_options('S',"0");
-}
-;
-
-
-/* =========================== options.rule =========================== */
+  ;
+
+op_disable 
+  : 
+	| DISABLE_PROGRAM 
+  | DISABLE_ALL 
+  ;
+
+connect_cmd 
+  : CONNECT_TO var_ident op_connect_as con_user_details 
+  ;
+
+op_connect_as 
+  :
+  | AS var_ident 
+  ;
+
+con_user_details 
+  :
+  | AS USER char_or_var KW_USING char_or_var
+  | USER char_or_var KW_USING char_or_var
+  ;
+
+/* </OPEN_STATEMENTS> */
+
+
+/* <OPTIONS_STATEMENT> */
+
+options_cmd 
+  : OPTIONS opt_options
+	;
+
+opt_options 
+  : opt_allopts
+	| opt_options COMMA opt_allopts
+	;
+
+opt_allopts 	
+  : COMMENT_LINE line_no 
+	| ERROR_LINE line_no 
+	| FORM_LINE line_no 
+	| MENU_LINE line_no 
+	| MSG_LINE line_no 
+	| PROMPT_LINE line_no 
+	| accept_key 
+	| DELETE single_key_val 
+	| INSERT single_key_val 
+	| NEXT single_key_val 
+	| PREVIOUS single_key_val 
+	| HELP single_key_val 
+	| HELP_FILE file_name
+	| LANG_FILE file_name
+	| DISPLAY attributes_def
+	| INPUT attributes_def 
+	| INPUT_WRAP 
+	| INPUT_NO_WRAP 
+	| FOCONSTR 
+	| FOUNCONSTR 
+	| SQL_INTERRUPT_ON  
+	| SQL_INTERRUPT_OFF 
+  ;
+
+/* </OPTIONS_STATEMENT> */
+
+
+
+/* <PREPARE_STATEMENT> */
+
+prepare_cmd 
+  : opt_use PREPARE stmt_id FROM var_or_char 
+  ;
+
+var_or_char
+  : variable 
+	| CHAR_VALUE
+	;
+
+execute_cmd 
+  : EXECUTE stmt_id
+  | EXECUTE stmt_id KW_USING ibind_var_list 
+	| EXECUTE_IMMEDIATE var_or_char 
+  ;
+
+stmt_id 
+  : ident_or_var 
+	;
+
+/* </PREPARE_STATEMENT> */
+
+
+/* <PROMPT_STATEMENT> */
+
+prompt_cmd	
+  : PROMPT prompt_title opt_attributes FOR opt_char
+    variable opt_timeout opt_help_no opt_attributes 
+    prompt_key_sec 
+  ;
+
+opt_timeout
+  :
+  | TIMEOUT INT_VALUE 
+  ;
 
-
-/*
-=====================================================================
-                        Source: prepare.rule
-=====================================================================
-*/
-
-
-prepare_cmd : opt_use PREPARE stmt_id FROM var_or_char 
-{
-	print_prepare($<str>3,$<str>5);
-	addmap("Prepare",$<str>3,curr_func,yylineno,infilename);
-	print_undo_use($<str>1);
-}
-;
-
-var_or_char: variable | CHAR_VALUE;
-
-execute_cmd : EXECUTE stmt_id
-{
-
-print_execute($<str>2,0);
-
-addmap("Execute",$<str>2,curr_func,yylineno,infilename);
-}
-            | EXECUTE stmt_id KW_USING ibind_var_list {
-	addmap("Execute",$<str>2,curr_func,yylineno,infilename);
-	print_execute($<str>2,1);
-	}
-	| EXECUTE_IMMEDIATE var_or_char {
-		print_execute_immediate($<str>2);
-	}
-;
-
-stmt_id : ident_or_var ;
-
-
-/* ========================== prepare.rule ========================= */
-
-
-/*
-=====================================================================
-                        Source: prompt.rule
-=====================================================================
-*/
-
-prompt_cmd	:
-	PROMPT prompt_title opt_attributes FOR opt_char
-        variable opt_timeout opt_help_no
-        opt_attributes {
-                push_blockcommand("PROMPT");
-
-	print_prompt_1($<str>3,$<str>5,$<str>8,$<str>9,atoi($<str>7)) ;
-}
-        prompt_key_sec {
-		if (strcmp($<str>5,"1")==0) {
-			print_prompt_forchar();
-                }
-		add_continue_blockcommand ("PROMPT");
-		print_prompt_end($<str>6);
-                pop_blockcommand("PROMPT");
-                A4GL_lex_printcomment("/* END OF PROMPT */");
-                }
-
-;
-
-opt_timeout:  {sprintf($<str>$,"0");}
-| TIMEOUT INT_VALUE {sprintf($<str>$,$<str>2);}
-;
-
-gui_prompt_cmd :
-	PROMPT prompt_title opt_attributes  RETURNING variable {
-		print_niy("GUI PROMPT");
-	}
-;
-
-opt_char : /* empty */ {strcpy($<str>$,"0");}
-| CHAR {strcpy($<str>$,"1");}
-;
-
-
-prompt_key_sec :  /* empty */ {strcpy($<str>$,"");}
-	| prompt_key_clause END_PROMPT;
-
-prompt_key_clause : on_key_command_prompt
-	| prompt_key_clause on_key_command_prompt ;
-
-on_key_command_prompt : on_key_command {
-	print_onkey_1($<str>1);
-} commands {
-	print_onkey_2_prompt();
-}
-;
-
-
-prompt_title : fgl_expr_concat;
-
-
-
-/* ========================= prompt.rule ============================ */
-
-
-
-put_cmd :
-        PUT cursor_name  {
-		start_bind('i',0);
-		}
-		put_from
-		{
-		print_put($<str>2,$<str>4);
-	}
-;
-
-put_from:
-	{strcpy($<str>$,"");} 
-| FROM put_val_list { strcpy($<str>$,$<str>2);
-A4GL_debug("putlist = %s\n",$<str>$);
-}
-;
-
-put_val_list  : put_val {push_gen(PUTVAL,$<str>1);} | 
-                put_val_list COMMA put_val {push_gen(PUTVAL,$<str>3); sprintf($<str>$,"%s,%s",$<str>1,$<str>3);} 
-;
-
-put_val : value_expression_ss {
-	char buff[256];	
-	strcpy(buff,$<sql_string>1);
-	A4GL_debug("put buff=%s\n",buff);
-	if (buff[0]!='\''&&strncmp(buff,"?",1)!=0&&strncmp(buff," :",2)!=0) {
-		A4GL_debug("Got : %s - expecting '..', : or ?",buff);
- 		a4gl_yyerror("Put values must be variables, strings or 'NULL'");
-		YYERROR;
-	}
-
-	A4GL_add_put_string(buff);
-	strcpy($<str>$,buff);
-
-} | KW_NULL 
-
-
-;
-
-
-
-/*
-=====================================================================
-                        Source: report.rule
-=====================================================================
-*/
-
-
-start_cmd : START_REPORT rep_name TO_PRINTER
-{
-addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-print_start_report("P","acl_getenv(\"DBPRINT\")",$<str>2);
-}
-	    | START_REPORT rep_name TO rout
-{
-addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-print_start_report("F",$<str>4,$<str>2);
-}
-	    | START_REPORT rep_name TO_PIPE rout
-{
-addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-print_start_report("P",$<str>4,$<str>2);
-}
-	    | START_REPORT rep_name
-{
-addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
-print_start_report("","\"\"",$<str>2);
-}
-;
-
-
-
-
-rout : CHAR_VALUE | cvariable;
-
-
-
-rep_name : identifier;
-
-
-op_values : | VALUES ;
-
-output_cmd : OUTPUT_TO_REPORT rep_name op_values  OPEN_BRACKET 
-reset_cnt 
-op_fgl_expr_list 
-CLOSE_BRACKET
-{
-addmap("Output to report",$<str>2,curr_func,yylineno,infilename);
-print_output_to_report($<str>2,$<str>6); 
-}
-;
-
-finish_cmd : FINISH_REPORT rep_name
-{
-addmap("Finish Report",$<str>2,curr_func,yylineno,infilename);
-print_finish_report($<str>2);
-}
-;
-
-
-
-term_rep_cmd : TERMINATE_REPORT rep_name
-{
-addmap("Finish Report",$<str>2,curr_func,yylineno,infilename);
-print_terminate_report($<str>2);
-}
-;
-
-report_section: op_output_section op_rep_order_by  { strcpy($<str>$,$<str>2); } ;
-
-format_section: FORMAT EVERY_ROW {
-	print_format_every_row();
-}
-| 
-FORMAT format_actions
-;
-
-format_actions : format_action | format_actions format_action;
-
-format_action :
-	 FIRST_PAGE_HEADER 
-{ push_report_block("FIRST",'P');}
-commands {
-rep_struct.lines_in_first_header=if_print_stack[0][0];
-pdf_rep_struct.lines_in_first_header=if_print_stack[0][0];
-print_rep_ret(0);
-}
-	| PAGE_TRAILER
-{ push_report_block("TRAILER",'T');
-if_print_stack[0][0]=0;
-if_print_stack[0][1]=0;
-}
-commands {
-rep_struct.lines_in_trailer=if_print_stack[0][0];
-pdf_rep_struct.lines_in_trailer=if_print_stack[0][0];
-print_rep_ret(0);
-}
-	| PAGE_HEADER 
-{ push_report_block("HEADER",'p');}
-commands {
-rep_struct.lines_in_header=if_print_stack[0][0];
-pdf_rep_struct.lines_in_header=if_print_stack[0][0];
-print_rep_ret(0);}
-	| ON_EVERY_ROW 
-{ push_report_block("EVERY",'E');}
-commands {print_rep_ret(0);}
-	| ON_LAST_ROW 
-{ push_report_block("LAST",'L');}
-commands {print_rep_ret(0);}
-	| BEFGROUP variable  {
-int a;
-char buff[80];
-A4GL_debug("rordcnt=%d",rordcnt);
-a=scan_orderby($<str>2,rordcnt);
-if (a<0) {
-   sprintf(buff,"%s is not in the order by list",$<str>2);
-   a4gl_yyerror(buff);
-	YYERROR;
-}
-sprintf(buff,"%d",a+1);
-push_report_block(buff,'B');
-set_curr_block(a+1);
-}
-commands {print_rep_ret(0);}
-	| AFTGROUP variable
-{ 
-int a;
-char buff[80];
-
-A4GL_debug("rordcnt=%d",rordcnt);
-a=scan_orderby($<str>2,rordcnt);
-if (a<0) {
-   sprintf(buff,"%s is not in the order by list",$<str>2);
-   a4gl_yyerror(buff);
-	YYERROR;
-}
-
-sprintf(buff,"%d",a+1);
-push_report_block(buff,'A');
-set_curr_block(a+1);
-
-}
-commands {print_rep_ret(0);}
-;
-
-report_cmd : 
-	print_command 
+gui_prompt_cmd 
+  : PROMPT prompt_title opt_attributes  RETURNING variable 
+  ;
+
+opt_char 
+  : /* empty */ 
+  | CHAR 
+  ;
+
+prompt_key_sec 
+  :  /* empty */ 
+	| prompt_key_clause END_PROMPT
+	;
+
+prompt_key_clause 
+  : on_key_command_prompt
+	| prompt_key_clause on_key_command_prompt 
+	;
+
+on_key_command_prompt 
+  : on_key_command commands 
+  ;
+
+prompt_title 
+  : fgl_expr_concat
+	;
+
+/* </PROMPT_STATEMENT> */
+
+
+/* <PUT_STATEMENT> */
+
+put_cmd 
+  : PUT cursor_name  put_from
+  ;
+
+put_from
+  :
+  | FROM put_val_list 
+  ;
+
+put_val_list  
+  : put_val 
+	| put_val_list COMMA put_val 
+  ;
+
+put_val 
+  : value_expression_ss 
+  | KW_NULL 
+  ;
+
+/* </PUT_STATEMENT> */
+
+
+/* <REPORT_RULE> */
+
+start_cmd 
+  : START_REPORT rep_name TO_PRINTER
+	| START_REPORT rep_name TO rout
+	| START_REPORT rep_name TO_PIPE rout
+	| START_REPORT rep_name
+  ;
+
+rout 
+  : CHAR_VALUE 
+	| cvariable
+	;
+
+rep_name 
+  : identifier
+	;
+
+op_values 
+  : 
+	| VALUES 
+	;
+
+output_cmd 
+  : OUTPUT_TO_REPORT rep_name op_values OPEN_BRACKET 
+    op_fgl_expr_list CLOSE_BRACKET
+  ;
+
+finish_cmd 
+  : FINISH_REPORT rep_name
+  ;
+
+term_rep_cmd 
+  : TERMINATE_REPORT rep_name
+  ;
+
+report_section
+  : op_output_section op_rep_order_by  
+	;
+
+format_section
+  : FORMAT EVERY_ROW 
+  | FORMAT format_actions
+  ;
+
+format_actions 
+  : format_action 
+	| format_actions format_action
+	;
+
+format_action 
+  : FIRST_PAGE_HEADER commands 
+	| PAGE_TRAILER commands 
+	| PAGE_HEADER commands 
+	| ON_EVERY_ROW commands 
+	| ON_LAST_ROW commands 
+	| BEFGROUP variable  commands 
+	| AFTGROUP variable commands 
+  ;
+
+report_cmd 
+  : print_command 
 	| print_img_command
 	| print_file_command
 	| need_command
 	| pause_command
 	| skip_command
-;
+  ;
 
-need_command : NEED fgl_expr {start_state("skip",1);} KWLINE {
-	print_need_lines();
-	start_state("skip",0);
-}
-;
+need_command 
+  : NEED fgl_expr KWLINE 
+  ;
 
-op_lines : {strcpy($<str>$,"0");} | KWLINE {strcpy($<str>$,"1");}
-;
+op_lines 
+  : 
+	| KWLINE 
+  ;
 
-skip_command : SKIP INT_VALUE {start_state("KWLINE",1);} op_lines {
-double n;
-char buff[256];
-strcpy(buff,$<str>4);
-n=atof($<str>2);
-if (buff[0]=='1') {
-	print_skip_lines(n);
-	if (if_print_stack_cnt==0) if_print_section[0]=0;
-	if (get_curr_report_stack_whytype()=='T') {
-		if_print_stack[if_print_stack_cnt][if_print_section[if_print_stack_cnt]]+=(int)n;
-	}
-} else {
-	if (rep_type!=REP_TYPE_PDF) { a4gl_yyerror("SKIP BY is only in PDF reports"); YYERROR; } print_skip_by(n);
-}
-start_state("KWLINE",0); 
-}
-	| SKIP_TO_TOP { print_skip_top(); }
-	| FONT_SIZE nval { print_niy("FONT SIZE"); }
-	| SKIP_BY nval {
-		double n;
-			n=atof($<str>2);
-			if (rep_type!=REP_TYPE_PDF) {
-				a4gl_yyerror("SKIP BY is only in PDF reports");
-				YYERROR;
-			}
-			print_skip_by(n);
-		}
-	| SKIP_TO nval {
-			if (rep_type!=REP_TYPE_PDF) {
-				a4gl_yyerror("SKIP TO is only in PDF reports");
-				YYERROR;
-			}
-			print_skip_to($<str>2);
-		}
+skip_command 
+  : SKIP INT_VALUE op_lines 
+	| SKIP_TO_TOP 
+	| FONT_SIZE nval 
+	| SKIP_BY nval 
+	| SKIP_TO nval 
+  ;
 
-
-;
-
-
-opt_rep_expr_list : {strcpy($<str>$,"");}
+opt_rep_expr_list  
+  : 
 	| xrep_expr_list
-;
+  ;
 
-xrep_expr_list: xxrep_expr_list
+xrep_expr_list
+  : xxrep_expr_list
 	| xrep_expr_list xxrep_expr_list
-;
+  ;
 
-xxrep_expr_list : rep_expr_list opt_print_at 
-;
+xxrep_expr_list 
+  : rep_expr_list opt_print_at 
+  ;
 
-opt_print_at : | AT nval {
-	print_niy("PRINT AT...");
-}
-;
+opt_print_at 
+  : 
+	| AT nval 
+  ;
 
-print_command : PRINT opt_rep_expr_list opt_semi {
-	char wt;
-	print_report_print(0,$<str>3,0);
-	wt=get_curr_report_stack_whytype();
-	if (strcmp($<str>3,"0")==0) {
-		if (wt=='P'||wt=='p'||wt=='T') { /* Page header or trailer */
-			if (isin_command("WHILE")||isin_command("FOR")) {
-				a4gl_yyerror("You can't print within a loop in a PAGE HEADER or PAGE TRAILER");
-				YYERROR;
-			}
-		}
-	}
-	if (strcmp($<str>3,"0")==0) {
-			if (if_print_stack_cnt==0) if_print_section[0]=0;
-		if (get_curr_report_stack_whytype()=='T') {
-			if_print_stack[if_print_stack_cnt][if_print_section[if_print_stack_cnt]]+=1;
-		}
-	}
-} ;
+print_command 
+  : PRINT opt_rep_expr_list opt_semi 
+  ;
 
-print_file_command : PRINT_FILE char_or_var opt_semi { 
-	print_report_print_file($<str>2,$<str>3);
-} ;
+print_file_command 
+  : PRINT_FILE char_or_var opt_semi 
+  ;
 
 
-print_img_command : PRINT_IMAGE blob_var img_types opt_scaling opt_semi { 
-	print_report_print_img($<str>4,$<str>2,$<str>3,$<str>5);
-} 
-;
+print_img_command 
+  : PRINT_IMAGE blob_var img_types opt_scaling opt_semi 
+  ;
 
-opt_scaling :
-	{ strcpy($<str>$,A4GL_get_default_scaling());}
-	| SCALED_BY fgl_expr_c { strcpy($<str>$,$<str>2); strcat($<str>$,$<str>2); }
-	| SCALED_BY fgl_expr_c COMMA fgl_expr_c {sprintf($<str>$,"%s %s",$<str>2,$<str>4);}
-;
+opt_scaling 
+  :
+	| SCALED_BY fgl_expr_c 
+	| SCALED_BY fgl_expr_c COMMA fgl_expr_c 
+  ;
 
-img_types : 	
-	AS_TIFF {strcpy($<str>$,"tiff");}
-	| AS_GIF {strcpy($<str>$,"gif");}
-	| AS_PNG {strcpy($<str>$,"png");}
-	| AS_JPEG {strcpy($<str>$,"jpeg");}
-;
+img_types 
+  :	AS_TIFF 
+	| AS_GIF 
+	| AS_PNG
+	| AS_JPEG
+  ;
 
+blob_var 
+  :  variable 
+  ;
 
-blob_var :  variable {
-	int vtype;
-	vtype=scan_variable($<str>1);
-	if (vtype!=11&&vtype!=12) {
-	a4gl_yyerror("Only Blobs may be printed...");
-	YYERROR;
-	}
-}
-;
+opt_semi 
+  : 
+  | SEMICOLON 
+  ;
 
-opt_semi : {
-strcpy($<str>$,"0");
-} | SEMICOLON {
-strcpy($<str>$,"1");
-};
+rep_expr_list 
+  : rep_expr 
+  | rep_expr_list COMMA rep_expr 
+  ;
 
-rep_expr_list : 
-	rep_expr {
-	print_report_print(1,0,$<str>1);
-	} 
-| rep_expr_list COMMA rep_expr {
-	print_report_print(1,0,$<str>3); /* changed from $<str>1 */
-}
-;
+rep_expr 
+  : fgl_expr op_wordwrap 
+  ;
 
-rep_expr : fgl_expr op_wordwrap {
-	strcpy($<str>$,$<str>2); 
-	}
-;
+rep_agg 
+  : SUM OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+  | COUNT_MULTIPLY rep_where
+  | COUNT OPEN_BRACKET MULTIPLY CLOSE_BRACKET rep_where
+  | PERCENT   OPEN_BRACKET MULTIPLY CLOSE_BRACKET  rep_where
+  | AVERAGE   OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+  | AVG       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+  | XMIN       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+  | XMAX       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+  ;
 
-rep_agg : 
-SUM OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
-{
-int a;
-a=add_report_agg('S',$<ptr>3,$<ptr>5,racnt);
-sprintf($<str>$,"A4GL_push_double(_g%d);\n",racnt);
-racnt+=a;
-}
-| COUNT_MULTIPLY rep_where
-{
-int a;
-a=add_report_agg('C',0,$<ptr>2,racnt);
-sprintf($<str>$,"A4GL_push_int(_g%d);\n",racnt);
-racnt+=a;
-}
-| COUNT OPEN_BRACKET MULTIPLY CLOSE_BRACKET rep_where
-{
-int a;
-a=add_report_agg('C',0,$<ptr>5,racnt);
-sprintf($<str>$,"A4GL_push_int(_g%d);\n",racnt);
-racnt+=a;
-}
-
-
-| PERCENT   OPEN_BRACKET MULTIPLY CLOSE_BRACKET  rep_where
-{
-int a;
-a=add_report_agg('P',$<ptr>3,$<ptr>5,racnt);
-sprintf($<str>$,"A4GL_push_double((double)_g%d/(double)_g%d);\n",racnt,racnt+1);
-racnt+=a;
-}
-| AVERAGE   OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
-{
-int a;
-a=add_report_agg('A',$<ptr>3,$<ptr>5,racnt);
-sprintf($<str>$,"A4GL_push_double(_g%d/(double)_g%d);\n",racnt,racnt+1);
-racnt+=a;
-}
-| AVG       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
-{
-int a;
-a=add_report_agg('A',$<ptr>3,$<ptr>5,racnt);
-sprintf($<str>$,"A4GL_push_double(_g%d/_g%d);\n",racnt,racnt+1);
-racnt+=a;
-}
-| XMIN       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
-{
-int a;
-a=add_report_agg('N',$<ptr>3,$<ptr>5,racnt);
-sprintf($<str>$,"A4GL_push_double(_g%d);\n",racnt);
-racnt+=a;
-}
-| XMAX       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
-{
-int a;
-a=add_report_agg('X',$<ptr>3,$<ptr>5,racnt);
-sprintf($<str>$,"A4GL_push_double(_g%d);\n",racnt);
-racnt+=a;
-}
-;
-
-op_output_section : | OUTPUT output_commands ;
-
-output_commands : output_command | output_commands output_command;
-
-output_command : 
-  LEFT_MARGIN INT_VALUE {rep_struct.left_margin=atoi($<str>2);}
-| RIGHT_MARGIN INT_VALUE {rep_struct.right_margin=atoi($<str>2);}
-| TOP_MARGIN INT_VALUE {rep_struct.top_margin=atoi($<str>2);}
-| BOTTOM_MARGIN INT_VALUE {rep_struct.bottom_margin=atoi($<str>2);}
-| PAGE_LENGTH INT_VALUE {rep_struct.page_length=atoi($<str>2);}
-| REPORT_TO_PRINTER  { rep_struct.output_mode='P';strcpy(rep_struct.output_loc,"acl_getenv(\"DBPRINT\")");}
-| REPORT_TO CHAR_VALUE {rep_struct.output_mode='F';strcpy(rep_struct.output_loc,$<str>2);}
-| REPORT_TO variable {rep_struct.output_mode='F';strcpy(rep_struct.output_loc,$<str>2);}
-| REPORT_TO_PIPE CHAR_VALUE {rep_struct.output_mode='P';strcpy(rep_struct.output_loc,$<str>2);}
-| TOP_OF_PAGE CHAR_VALUE {strcpy(rep_struct.top_of_page,$<str>2);}
-;
-
-pdf_output_commands : pdf_output_command | pdf_output_commands pdf_output_command;
-
-
-nval: nval_number POINTS {sprintf($<str>$,"-%f",atof($<str>1));}
-	| nval_number INCHES {sprintf($<str>$,"-%f",atof($<str>1)*72.0); }
-	| nval_number MM     {sprintf($<str>$,"-%f",atof($<str>1)*2.83465);}
-	| nval_number        {sprintf($<str>$,"%f",atof($<str>1));} 
-;
-
-nval_number: real_number | INT_VALUE
-;
-
-pdf_op_output_section : | OUTPUT pdf_output_commands ;
-
-pdf_output_command : 
-  LEFT_MARGIN nval {pdf_rep_struct.left_margin=atof($<str>2);A4GL_debug("Left margin=%s\n",$<str>2);}
-| RIGHT_MARGIN nval {pdf_rep_struct.right_margin=atof($<str>2);}
-| TOP_MARGIN nval {pdf_rep_struct.top_margin=atof($<str>2);}
-| BOTTOM_MARGIN nval {pdf_rep_struct.bottom_margin=atof($<str>2);}
-| PAGE_LENGTH nval {pdf_rep_struct.page_length=atof($<str>2);}
-| PAGE_WIDTH nval {pdf_rep_struct.page_width=atof($<str>2);}
-| FONT_NAME CHAR_VALUE {strcpy(pdf_rep_struct.font_name,$<str>2);}
-| FONT_SIZE nval {pdf_rep_struct.font_size=atof($<str>2);}
-
-| PAPER_SIZE_IS_A4  {pdf_rep_struct.paper_size=1;}
-| PAPER_SIZE_IS_LETTER  {pdf_rep_struct.paper_size=2;}
-| PAPER_SIZE_IS_LEGAL  {pdf_rep_struct.paper_size=3;}
-| PAPER_SIZE_IS_A5  {pdf_rep_struct.paper_size=5;}
-
-| PAPER_SIZE_IS_A4_L  {pdf_rep_struct.paper_size=-1;}
-| PAPER_SIZE_IS_LETTER_L  {pdf_rep_struct.paper_size=-2;}
-| PAPER_SIZE_IS_LEGAL_L  {pdf_rep_struct.paper_size=-3;}
-| PAPER_SIZE_IS_A5_L  {pdf_rep_struct.paper_size=-5;}
-
-| PAGE_TRAILER_SIZE nval 
-| PAGE_HEADER_SIZE nval 
-| FIRST_PAGE_HEADER_SIZE nval 
-| REPORT_TO CHAR_VALUE {pdf_rep_struct.output_mode='F';strcpy(pdf_rep_struct.output_loc,$<str>2);}
-| REPORT_TO_PIPE CHAR_VALUE {pdf_rep_struct.output_mode='P';strcpy(pdf_rep_struct.output_loc,$<str>2);}
-| DEFAULT
-| ASCII_HEIGHT_ALL
-| ASCII_WIDTH_ALL
-;
-
-
-op_rep_order_by : {
-int a;
-set_rep_no_orderby(1);
-a=print_bind('O');
-print_order_by_type(2,-1);
-sprintf($<str>$,"%d",a);
-}
-| ORDER BY obind_var_list_ord
-{
-int a;
-set_rep_no_orderby(0);
-a=print_bind('O');
-print_order_by_type(1,a);
-sprintf($<str>$,"%d",a);
-A4GL_debug("Order by Gives :%d\n",a);
-}
-| ORDER_EXTERNAL_BY obind_var_list_ord {
-int a;
-set_rep_no_orderby(0);
-a=print_bind('O');
-print_order_by_type(2,a);
-sprintf($<str>$,"%d",a);
-A4GL_debug("Order by Gives :%d\n",a);
-}
-;
-
-
-report_def : REPORT 
-	{ 
-		rep_type=REP_TYPE_NORMAL; 
-		clr_function_constants (); 
-		clr_variable(); 
-		lastlineno=yylineno; 
-		init_report_structure(&rep_struct); 
-		}
-	identifier 
-	OPEN_BRACKET
-	{
-		inc_report_cnt();
-		sprintf(curr_func,"%s",$<str>3);
-		addmap("Define Report",curr_func,"MODULE",yylineno,infilename);
-		variable_action(-1,$<str>3,"","","add_function");
-		set_curr_rep_name($<str>3);
-		print_report_1($<str>3);
-		push_blockcommand("REPORT");
-		}
-	op_param_var_list 
-	CLOSE_BRACKET 
-	{
-		lastlineno=yylineno;
-		}
-	define_section 
-	{
-		print_variables();
-		}
-	report_section 
-	{
-		print_report_2(0,$<str>11);
-		rordcnt=atoi($<str>11);
-	 A4GL_debug("SET rordcnt=%d %s",rordcnt,$<str>11);
-		}
-	format_section 
-	{
-		print_report_ctrl();
-		}
-
-	END_REPORT 
-	{
-		pop_blockcommand("REPORT");
-		print_report_end() ;
-		}
-;
-
-
-
-rep_where :  { strcpy($<str>$,"");
-	$<ptr>$=0;
-}
-| WHERE fgl_expr_c {
-	$<ptr>$=$<ptr>2;
-//sprintf($<str>$,"%s", $<str>2);
-}
-;
-
-
-
-pause_command: PAUSE pause_msg
-{
-if (!in_command("REPORT")) {
-	a4gl_yyerror("PAUSE can only be used in reportes");
-	YYERROR;
-        }
-
-print_pause($<str>2) ;
-}
-
-;
-
-pause_msg : {strcpy($<str>$,"\"\"");}
-	|
-	var_or_char 
-;
-
-pdf_report_def : 
-PDF_REPORT 
-{
-rep_type=REP_TYPE_PDF;
-clr_function_constants();
-clr_variable(); 
-lastlineno=yylineno; 
-pdf_init_report_structure(&pdf_rep_struct);
-}
-identifier OPEN_BRACKET
-{
-inc_report_cnt();
-variable_action(-1,$<str>3,"","","add_function");
-sprintf(curr_func,"%s",$<str>3);
-addmap("Define PDF Report",curr_func,"MODULE",yylineno,infilename);
-set_curr_rep_name($<str>3);
-print_report_1($<str>3);
-push_blockcommand("REPORT");
-}
-op_param_var_list CLOSE_BRACKET 
-{
-lastlineno=yylineno;
-}
-define_section  {
-	print_variables();
-}
-pdf_report_section 
-{
-//print_variables();
-resize_paper(&pdf_rep_struct);
-	print_report_2(1,$<str>11);
-A4GL_debug("SET rordcnt=%d (%s)",rordcnt,$<str>11);
-	rordcnt=atoi($<str>11);
-}
-format_section 
-{
-print_report_ctrl();
-}
-END_REPORT {
-	pop_blockcommand("REPORT");
-	print_report_end();
-}
-;
-
-pdf_report_section: pdf_op_output_section op_rep_order_by  { strcpy($<str>$,$<str>2); } ;
-
-
-pdf_functions :
-	PDF_FUNCTION OPEN_BRACKET CHAR_VALUE COMMA {new_counter();
-   		addmap("CALL",$<str>3,curr_func,yylineno,infilename);
-   		}
-   		opt_func_call_args
-   		{
-		sprintf($<str>$,"%d",get_counter_val());drop_counter();
-		}
-   		CLOSE_BRACKET
-   		{
-		print_pdf_call($<str>3,$<ptr>6,$<str>7);
-   		}
-   		opt_return
-   		{
-	print_returning();
-   }
-;
-
-op_wordwrap:
-	{strcpy($<str>$,"0");}
- 	| WORDWRAP { strcpy($<str>$,"rep.right_margin"); }
-	| WORDWRAP RIGHT_MARGIN INT_VALUE { sprintf($<str>$,"%s",$<str>3); }
-	| WORDWRAP RIGHT_MARGIN variable { sprintf($<str>$,"%s",$<str>3); }
-;
-
-/* ============================ report.rule ========================== */
-
-run_cmd : RUN fgl_expr {
-print_system_run(0,0);
-} | RUN fgl_expr RETURNING variable {
-print_system_run(1,$<str>4);
-} | 
-RUN fgl_expr WITHOUT_WAITING {
-print_system_run(2,0);
-}
-|
-RUN fgl_expr WAIT {
-print_system_run(0,0);
-}
-| RUN fgl_expr EXIT {
-print_system_run(0,0);
-/* FIXME */
-}
-;
-
-
-drops_cmd : drops_c {
-	print_exec_sql($<str>1);
-}
-;
-
-drops_c : DROP_TABLE  {sprintf($<str>$, "%s",$<str>1);}
-	| DROP_VIEW  {sprintf($<str>$,  "%s",$<str>1);}
-	| DROP_INDEX  {sprintf($<str>$,"%s",$<str>1);}
-;
-
-
-create_cmd : 
-	create_c_1 { print_exec_sql($<str>1); }
-	| create_c_2_ss { print_exec_sql($<sql_string>1); 
-	free($<sql_string>1);
-}
-;
-
-create_c_2_ss  : 
-	CREATE_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string($<str>1," ",$<str>3," ",$<str>4,$<sql_string>6,$<str>7,0);
-		free($<sql_string>6);
-	} 
-
-	| CREATE_TEMP_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list_ss CLOSE_BRACKET op_no_log {
-		$<sql_string>$=make_sql_string($<str>1," ",$<str>3," ",$<str>4,$<sql_string>6,$<str>7, " ",$<str>8,0);
-		free($<sql_string>6);
-
-}
-
-;
-
-
-
-create_c_1  : 
-	CREATE_IDX idx_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);} 
-	| CREATE_DATABASE ident_or_var {
-		a4gl_yyerror("You cannot create a database from within Aubit4gl....");
-	}
+op_output_section 
+  : 
+	| OUTPUT output_commands 
 	;
 
-op_no_log : 
-{strcpy($<str>$,"");} 
-| WITH_NO_LOG
-{
-if (A4GL_isyes(acl_getenv("A4GL_OMIT_NO_LOG"))) {
-	strcpy($<str>$,"");
-} else {
-	sprintf($<str>$," %s ",$<str>1);
-}
-}
-;
-
-
-idx_column_list : 
-idx_column | 
-idx_column_list COMMA idx_column 
-{sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
-;
-
-idx_column : 
- identifier ASC {sprintf($<str>$,"%s ASC",$<str>1);}
-| identifier DESC {sprintf($<str>$,"%s DESC",$<str>1);}
-| identifier;
-
-
-table_element_list_ss:
-  	table_element_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| table_element_list_ss COMMA table_element_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
-	}
-;
-	
-table_element_ss:
-	  ct_column_definiton_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| table_constraint_definition_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
+output_commands 
+  : output_command 
+	| output_commands output_command
 	;
+
+output_command 
+  : LEFT_MARGIN INT_VALUE 
+  | RIGHT_MARGIN INT_VALUE 
+  | TOP_MARGIN INT_VALUE 
+  | BOTTOM_MARGIN INT_VALUE 
+  | PAGE_LENGTH INT_VALUE 
+  | REPORT_TO_PRINTER  
+  | REPORT_TO CHAR_VALUE 
+  | REPORT_TO variable 
+  | REPORT_TO_PIPE CHAR_VALUE 
+  | TOP_OF_PAGE CHAR_VALUE 
+  ;
+
+pdf_output_commands 
+  : pdf_output_command 
+	| pdf_output_commands pdf_output_command
+	;
+
+nval
+  : nval_number POINTS 
+	| nval_number INCHES 
+	| nval_number MM     
+	| nval_number       
+  ;
+
+nval_number
+  : real_number 
+	| INT_VALUE
+  ;
+
+pdf_op_output_section 
+  : 
+	| OUTPUT pdf_output_commands 
+	;
+
+pdf_output_command 
+  : LEFT_MARGIN nval 
+  | RIGHT_MARGIN nval 
+  | TOP_MARGIN nval 
+  | BOTTOM_MARGIN nval 
+  | PAGE_LENGTH nval 
+  | PAGE_WIDTH nval 
+  | FONT_NAME CHAR_VALUE 
+  | FONT_SIZE nval 
+  | PAPER_SIZE_IS_A4  
+  | PAPER_SIZE_IS_LETTER
+  | PAPER_SIZE_IS_LEGAL 
+  | PAPER_SIZE_IS_A5 
+  | PAPER_SIZE_IS_A4_L 
+  | PAPER_SIZE_IS_LETTER_L 
+  | PAPER_SIZE_IS_LEGAL_L
+  | PAPER_SIZE_IS_A5_L 
+  | PAGE_TRAILER_SIZE nval 
+  | PAGE_HEADER_SIZE nval 
+  | FIRST_PAGE_HEADER_SIZE nval 
+  | REPORT_TO CHAR_VALUE 
+  | REPORT_TO_PIPE CHAR_VALUE 
+  | DEFAULT
+  | ASCII_HEIGHT_ALL
+  | ASCII_WIDTH_ALL
+  ;
+
+op_rep_order_by 
+  : 
+  | ORDER BY obind_var_list_ord
+  | ORDER_EXTERNAL_BY obind_var_list_ord 
+  ;
+
+report_def 
+  : REPORT identifier OPEN_BRACKET op_param_var_list CLOSE_BRACKET 
+	  define_section report_section format_section END_REPORT 
+  ;
+
+rep_where 
+  :  
+  | WHERE fgl_expr_c 
+  ;
+
+pause_command
+  : PAUSE pause_msg
+  ;
+
+pause_msg 
+  : 
+	| var_or_char 
+  ;
+
+pdf_report_def 
+  : PDF_REPORT identifier OPEN_BRACKET op_param_var_list CLOSE_BRACKET 
+    define_section  pdf_report_section format_section END_REPORT 
+  ;
+
+pdf_report_section
+  : pdf_op_output_section op_rep_order_by  
+	;
+
+pdf_functions 
+  : PDF_FUNCTION OPEN_BRACKET CHAR_VALUE COMMA 
+   	opt_func_call_args CLOSE_BRACKET opt_return
+  ;
+
+op_wordwrap
+  :
+ 	| WORDWRAP 
+	| WORDWRAP RIGHT_MARGIN INT_VALUE 
+	| WORDWRAP RIGHT_MARGIN variable 
+  ;
+
+/* </REPORT_RULE> */
+
+
+/* <RUN_STATEMENT> */
+
+run_cmd 
+  : RUN fgl_expr 
+  | RUN fgl_expr RETURNING variable 
+  | RUN fgl_expr WITHOUT_WAITING 
+  | RUN fgl_expr WAIT 
+  | RUN fgl_expr EXIT 
+  ;
+
+/* </RUN_STATEMENT> */
+
+drops_cmd 
+  : drops_c 
+  ;
+
+drops_c 
+  : DROP_TABLE  
+	| DROP_VIEW  
+	| DROP_INDEX  
+  ;
+
+create_cmd 
+  : create_c_1 
+	| create_c_2_ss 
+  ;
+
+create_c_2_ss  
+  : CREATE_TABLE table_name OPEN_BRACKET table_element_list_ss CLOSE_BRACKET 
+	| CREATE_TEMP_TABLE table_name 
+	  OPEN_BRACKET table_element_list_ss CLOSE_BRACKET op_no_log 
+  ;
+
+create_c_1  
+  : CREATE_IDX idx_column_list CLOSE_BRACKET 
+	| CREATE_DATABASE ident_or_var 
+	;
+
+op_no_log 
+  : 
+  | WITH_NO_LOG
+  ;
+
+
+idx_column_list 
+  : idx_column 
+	| idx_column_list COMMA idx_column 
+  ;
+
+idx_column 
+  : identifier ASC 
+  | identifier DESC 
+  | identifier
+	;
+
+table_element_list_ss
+  : table_element_ss 
+	| table_element_list_ss COMMA table_element_ss 
+  ;
 	
+table_element_ss
+  : ct_column_definiton_ss 
+	| table_constraint_definition_ss 
+	; 
 
-
-upd_stats_cmd : 
-	UPDATESTATS_T	identifier {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+upd_stats_cmd 
+  : UPDATESTATS_T	identifier 
 	| UPDATESTATS	
-;
+  ;
 
+alter_cmd 
+  : ALTER_TABLE identifier alter_clauses_ss 
+  ;
 
+alter_clauses_ss
+  : alter_clause_ss 
+	| alter_clauses_ss COMMA alter_clause_ss 
+  ;
 
+alter_clause_ss
+  : alter_add_clause_ss 
+	| alter_drop_clause 
+	| alter_modify_clause 
+	| alter_add_constraint_clause 
+	| alter_drop_contraint_clause 
+	| alter_modify_next 
+	| alter_lock_mode 
+  ;
 
-alter_cmd : ALTER_TABLE identifier alter_clauses_ss {
-	$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<sql_string>3,0);
-	print_exec_sql($<sql_string>$); 
-}
-;
+alter_add_clause_ss
+  : ADD add_column_clause_ss  
+	| ADD OPEN_BRACKET add_column_clauses_ss CLOSE_BRACKET 
+  ;
 
-alter_clauses_ss:
-	alter_clause_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| alter_clauses_ss COMMA alter_clause_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
-	}
+add_column_clause_ss
+  : table_element_ss 
+	| table_element_ss BEFORE identifier 
+  ;
 
+add_column_clauses_ss
+  : add_column_clause_ss 
+	| add_column_clauses_ss COMMA add_column_clause_ss 
+  ;
 
-;
+alter_drop_clause
+  : DROP drop_column 
+	| DROP OPEN_BRACKET drop_column_list CLOSE_BRACKET 
+  ;
 
+drop_column_list
+  : drop_column 
+	| drop_column_list COMMA drop_column 
+  ;
 
-alter_clause_ss:
-	alter_add_clause_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| alter_drop_clause {
-		$<sql_string>$=strdup($<str>1);
-	}
-	| alter_modify_clause {
-		$<sql_string>$=strdup($<str>1);
-	}
-	| alter_add_constraint_clause {
-		$<sql_string>$=strdup($<str>1);
-	}
-	| alter_drop_contraint_clause {
-		$<sql_string>$=strdup($<str>1);
-	}
-	| alter_modify_next {
-		$<sql_string>$=strdup($<str>1);
-	}
-	| alter_lock_mode {
-		$<sql_string>$=strdup($<str>1);
-	}
-;
+drop_column 
+  : identifier
+  ;
 
+alter_modify_clause 
+  : MODIFY modify_column_clause_ss 
+	| MODIFY OPEN_BRACKET modify_column_clauses_ss CLOSE_BRACKET 
+  ;
 
-alter_add_clause_ss:
-	ADD add_column_clause_ss  {
-		$<sql_string>$=make_sql_string("ADD ",$<sql_string>2,0);
-	}
-	| ADD OPEN_BRACKET add_column_clauses_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string("ADD (",$<sql_string>3,")",0);
-	}
-;
+modify_column_clauses_ss 
+  : modify_column_clause_ss 
+	| modify_column_clauses_ss COMMA modify_column_clause_ss 
+  ;
 
+modify_column_clause_ss 
+  : table_element_ss 
+  ;
 
-add_column_clause_ss:
-	table_element_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| table_element_ss BEFORE identifier {
-		$<sql_string>$=make_sql_string($<sql_string>1," BEFORE ",$<str>3,0);
-	}
-;
+alter_lock_mode 
+  : LOCK_MODE_PAGE 
+	| LOCK_MODE_ROW 
+  ;
 
-add_column_clauses_ss:
-	add_column_clause_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| add_column_clauses_ss COMMA add_column_clause_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
-	}
-;
+alter_modify_next 
+  : MODIFY_NEXT_SIZE INT_VALUE 
+  ;
 
+alter_add_constraint_clause
+  : ADD_CONSTRAINT column_constraint_ss 
+	| ADD_CONSTRAINT OPEN_BRACKET column_constraints_ss CLOSE_BRACKET 
+  ;
 
-alter_drop_clause:
-	DROP drop_column {
-		sprintf($<str>$,"DROP %s",$<str>2);
-	}
-	| DROP OPEN_BRACKET drop_column_list CLOSE_BRACKET {
-		sprintf($<str>$,"DROP (%s)",$<str>3);
-	}
-;
+alter_drop_contraint_clause
+  : DROP_CONSTRAINT constraint_name
+	| DROP_CONSTRAINT OPEN_BRACKET column_constraints_ss CLOSE_BRACKET 
+  ;
 
+column_constraints_ss
+  : column_constraint_ss 
+	| column_constraints_ss COMMA column_constraint_ss 
+  ;
 
-drop_column_list:
-	drop_column 
-	| drop_column_list COMMA drop_column {
-		sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
-	}
-;
+constraint_name
+  : identifier
+  ;
 
-drop_column : identifier
-;
+/* <SET_STATEMENT> */
 
-alter_modify_clause :
-	MODIFY modify_column_clause_ss {
-		sprintf($<str>$,"MODIFY %s",$<sql_string>2);
-	}
-	| MODIFY OPEN_BRACKET modify_column_clauses_ss CLOSE_BRACKET {
-		sprintf($<str>$,"MODIFY (%s)",$<sql_string>3);
-	}
-;
+set_cmd 
+  : SQLSEON
+  | SQLSEOFF
+  | SQLSLMW op_fgl_expr 
+  | SQLSLMNW 
+  | SQLSIDR
+  | SQLSIRR
+  | SQLSICS
+  | SQLSICR
+  | SET_SESSION_TO conn_id 
+  | SET_SESSION op_conn_id OPTION char_or_var TO char_or_var 
+  | SET_CURSOR cursor_name OPTION char_or_var TO char_or_var 
+  ;
 
-modify_column_clauses_ss :
-	modify_column_clause_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| modify_column_clauses_ss COMMA modify_column_clause_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
-	}
-;
+op_conn_id 
+  : 
+	| conn_id;
 
-modify_column_clause_ss :
-	table_element_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-;
-
-
-alter_lock_mode :
-	LOCK_MODE_PAGE {strcpy($<str>$,"LOCK MODE PAGE");}
-	| LOCK_MODE_ROW {strcpy($<str>$,"LOCK MODE ROW");}
-;
-
-alter_modify_next :
-	MODIFY_NEXT_SIZE INT_VALUE {
-		sprintf($<str>$,"MODIFT NEXT SIZE %d",atoi($<str>2));
-	}
-;
-
-alter_add_constraint_clause:
-	ADD_CONSTRAINT column_constraint_ss {
-		sprintf($<str>$,"ADD CONSTRAINT %s",$<sql_string>2);
-	}
-	| ADD_CONSTRAINT OPEN_BRACKET column_constraints_ss CLOSE_BRACKET {
-		sprintf($<str>$,"ADD CONSTRAINT (%s)",$<sql_string>3);
-	}
-;
-
-
-alter_drop_contraint_clause:
-	DROP_CONSTRAINT constraint_name
-	| DROP_CONSTRAINT OPEN_BRACKET column_constraints_ss CLOSE_BRACKET {
-		sprintf($<str>$,"ADD CONSTRAINT (%s)",$<sql_string>3);
-	}
-;
-
-
-column_constraints_ss:
-	column_constraint_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| column_constraints_ss COMMA column_constraint_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
-	}
-;
-
-constraint_name: identifier
-;
-
-/*
-=====================================================================
-                        Source: set.rule
-=====================================================================
-*/
-
-
-set_cmd :
-SQLSEON
-| SQLSEOFF
-| SQLSLMW op_fgl_expr {sprintf($<str>$,"%s %s /*FIXME */",$<str>1,$<str>2);}
-| SQLSLMNW 
-| SQLSIDR
-| SQLSIRR
-| SQLSICS
-| SQLSICR
-| SET_SESSION_TO conn_id { 
-	print_set_conn($<str>2);
-}
-| SET_SESSION op_conn_id OPTION char_or_var TO char_or_var {
-	print_set_options("conn",$<str>2,$<str>4,$<str>6);
-}
-| SET_CURSOR cursor_name OPTION char_or_var TO char_or_var {
-	print_set_options("stmt",$<str>2,$<str>4,$<str>6);
-}
-;
-
-op_conn_id : 
-{strcpy($<str>$,"\"default\"");} | conn_id;
-
-
-
-
-op_fgl_expr :
-{strcpy($<str>$,"");} | fgl_expr;
-
-
-/* ================================================================ */
-
-/*
-=====================================================================
-                        Source: sleep.rule
-=====================================================================
-*/
-
-sleep_cmd : SLEEP fgl_expr {
-		print_sleep();
-	}
-;
-
-
-/*
-=====================================================================
-                        Source: sql1.rule
-=====================================================================
-*/
-
-rollback_statement:
-	ROLLBACK_W 
-		{
-		print_sql_commit(0);
-		}
+op_fgl_expr 
+  :
+  | fgl_expr
 	;
 
+/* </SET_STATEMENT> */
 
 
+/* <SLEEP_STATEMENT> */
 
-insert_statement_ss:
-INSERT_INTO { insql=1;start_bind('i',0);} table_name op_insert_column_list ins_2_ss {
-	$<sql_string>$=make_sql_string($<str>1," ",$<str>3," ",$<str>4," ",$<sql_string>5,0);
-}
-;
+sleep_cmd 
+  : SLEEP fgl_expr 
+  ;
 
-ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET {
-insql=0;
-	//printf("Value = %s\n",$<sql_string>4);
-$<sql_string>$=make_sql_string($<str>1," (",$<sql_string>4,")",0);}
+/* </SLEEP_STATEMENT> */
+
+
+/* <SQL1_RULE> */
+
+rollback_statement
+  : ROLLBACK_W 
+	;
+
+insert_statement_ss
+  : INSERT_INTO table_name op_insert_column_list ins_2_ss 
+  ;
+
+ins_2_ss 
+  : VALUES OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET 
 	| query_specification_ss
-		{$<sql_string>$=$<sql_string>1;}
 	;
 
-op_insert_column_list: {strcpy($<str>$,"");}
+op_insert_column_list
+  : 
 	| OPEN_BRACKET insert_column_list CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
-
-insert_column_list:
-	column_name
+insert_column_list
+  : column_name
 	| insert_column_list COMMA column_name
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-;
+  ;
 
-insert_value_list_ss:
-	insert_value_ss {
-		$<sql_string>$=$<sql_string>1;
-	//printf(" 1. Value = %s\n",$<sql_string>$);
-	}
-	| insert_value_list_ss COMMA insert_value_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1,",", $<sql_string>3,0);
-	//printf(" 2. Value = %s\n",$<sql_string>$);
-	}
-;
+insert_value_list_ss
+  : insert_value_ss 
+	| insert_value_list_ss COMMA insert_value_ss 
+  ;
 
-insert_value_ss:
-	value_expression_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| KW_NULL {
-		$<sql_string>$=strdup("NULL");
-	}
+insert_value_ss
+  : value_expression_ss 
+	| KW_NULL 
 	;
 
-fetch_statement:
-	FETCH 
-    {
-      print_fetch_1();
-    } 
-  fetch_part 
-    {
-      print_fetch_2();
-    } 
-	opt_into_fetch_part
-    {
-      print_fetch_3($<str>3,$<str>5);
-    }
-;
+fetch_statement
+  : FETCH fetch_part opt_into_fetch_part
+  ;
 
-declare_cursor_name  :       ident_or_var {sprintf($<str>$,"%s",$<str>1);doing_declare=1;}
-;
+declare_cursor_name  
+  : ident_or_var 
+  ;
 
-fetch_part: 
-	fetch_place  fetch_cursor_name
-{sprintf($<str>$,"%s, %s",$<str>2,$<str>1);
-addmap("Fetch Cursor",$<str>2,curr_func,yylineno,infilename);
-}
-        | fetch_cursor_name
-{sprintf($<str>$,"%s, %d, 1",$<str>1,FETCH_RELATIVE);
+fetch_part
+  : fetch_place fetch_cursor_name
+  | fetch_cursor_name
+  ;
 
-addmap("Fetch Cursor",$<str>1,curr_func,yylineno,infilename);
-}
-;
+opt_into_fetch_part
+  :
+  | INTO obind_var_list 
+  ;
 
-opt_into_fetch_part: {
-A4GL_debug("no into\n");
-strcpy($<str>$,"0,0");
-} | 
-	INTO {
- A4GL_debug("FETCH INTO  ...");
-	/* start_bind('i',0,-1); */
-    start_bind('o',0);
-}
-    obind_var_list 
-{
-	int no;
-	no=print_bind('o');
-	sprintf($<str>$,"%d,obind",no);
-}
-;
+opt_foreach_into_fetch_part
+  :
+  | INTO obind_var_list 
+  ;
 
-opt_foreach_into_fetch_part: {
-A4GL_debug("no into\n");
-strcpy($<str>$,"0,0");
-} | 
-	INTO {
- A4GL_debug("FETCH INTO  ...");
-	/* start_bind('i',0,-1); */
-    start_bind('o',0);
-}
-        obind_var_list {
-/*
-int ni;
-ni=print_bind('i');
-sprintf($<str>$,"%d,ibind",ni);
-*/
-}
-;
-
-fetch_place : 
-	FIRST {
-		sprintf($<str>$,"%d,1",FETCH_ABSOLUTE);}
+fetch_place 
+  : FIRST 
 	| LAST
-		{sprintf($<str>$,"%d,-1",FETCH_ABSOLUTE);}
 	| NEXT
-		{sprintf($<str>$,"%d,1",FETCH_RELATIVE);}
 	| PREVIOUS
-		{sprintf($<str>$,"%d,-1",FETCH_RELATIVE);}
 	| PRIOR
-		{sprintf($<str>$,"%d,-1",FETCH_RELATIVE);}
 	| CURRENT
-		{sprintf($<str>$,"%d,0",FETCH_RELATIVE);}
 	| RELATIVE fgl_expr
-		{sprintf($<str>$,"%d,A4GL_pop_int()",FETCH_RELATIVE);}
 	| ABSOLUTE fgl_expr
-		{sprintf($<str>$,"%d,A4GL_pop_int()",FETCH_ABSOLUTE);}
-;
+  ;
 
-
-delete_statement_position:
-	DELETE_FROM table_name WHERE_CURRENT_OF fetch_cursor_name
-{
- 
-rm_quotes($<str>4);
-sprintf($<str>$," %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4
-);}
+delete_statement_position
+  : DELETE_FROM table_name WHERE_CURRENT_OF fetch_cursor_name
 	;
 
-
-delete_statement_search_ss:
-	DELETE_FROM table_name op_where_clause_ss
-              {
-		$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<sql_string>3,0);
-		}
+delete_statement_search_ss
+  : DELETE_FROM table_name op_where_clause_ss
 	;
 
-order_by_clause:
-	ORDER BY sort_specification_list
-	{sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);}
+order_by_clause
+  : ORDER BY sort_specification_list
 	;
 
-sort_specification_list:
-	sort_specification
+sort_specification_list
+  : sort_specification
 	| sort_specification_list COMMA sort_specification
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
+sort_specification
+  : sort_spec op_asc_desc 
+  ;
 
-sort_specification: sort_spec op_asc_desc {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
-;
-
-sort_spec: INT_VALUE 
+sort_spec
+  : INT_VALUE 
 	| column_name 
 	;
 
-op_asc_desc: {strcpy($<str>$,"");}
+op_asc_desc
+  : 
 	| ASC 
 	| DESC
 	;
 
-begin_statement: BEGIN_WORK {
-print_sql_commit(-1);
-};
+begin_statement
+  : BEGIN_WORK 
+  ;
 
-commit_statement:
-	COMMIT_W {
-		print_sql_commit(1);
-	}
+commit_statement
+  : COMMIT_W 
 	;
 
+op_exclusive 
+  :
+	|	EXCLUSIVE 
+  ;
 
-op_exclusive :
-		{strcpy($<str>$,"");}
-	|	EXCLUSIVE {
-		strcpy($<str>$,"EXCLUSIVE");
-	}
-;
-
-set_database_cmd : 
-       DATABASE var_ident_qchar op_exclusive
-{
-if (strcmp($<str>2,"?")==0) {
-	print_init_conn(0);
-} else {
-	print_init_conn($<str>2);
-}
-}
-
-;
+set_database_cmd 
+  : DATABASE var_ident_qchar op_exclusive
+  ;
 
 
-var_ident_qchar: var_ident {strcpy($<str>$,$<str>1);}
-	| CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
-;
+var_ident_qchar
+  : var_ident 
+	| CHAR_VALUE 
+  ;
 
-sql_cmd : opt_use {insql=1;} sql_commands {
-print_undo_use($<str>1);
-insql=0;strcpy($<str>$,$<str>3);}
-;
+sql_cmd 
+  : opt_use sql_commands 
+  ;
 
-sql_commands :  schema_ss {
-		 A4GL_lex_printcomment("/*  schema */\n");
-			print_exec_sql($<sql_string>1);
-			strcpy($<str>$,"Schema");
-	} 
-	| schema_element_ss {
-	 A4GL_lex_printcomment("/*  schema  2*/\n");
-		print_exec_sql($<sql_string>1);
-		strcpy($<str>$,"Schema Element");
-	} 
+sql_commands 
+  :  schema_ss 
+	| schema_element_ss 
 	| commit_statement 
-	| misc_sql {
-		print_exec_sql($<str>1);
- 	}
+	| misc_sql 
 	| begin_statement 
-	| delete_statement_position {
-	 A4GL_lex_printcomment("/*  delete 1 */\n");
-		print_exec_sql_bound($<str>1);
-		strcpy($<str>$,"Delete where current...");
-	} 
-	| delete_statement_search_ss {
-	 A4GL_lex_printcomment("/*  delete 2 */\n");
-		print_exec_sql_bound($<sql_string>1);
-		strcpy($<str>$,"Delete where ...");
-	} 
-	| fetch_statement {
-		strcpy($<str>$,"Fetch");
-	 A4GL_lex_printcomment("/*  fetch */\n");
-	} 
-	| insert_statement_ss {
-	 A4GL_lex_printcomment("/*  insert */\n");
-		print_exec_sql_bound($<sql_string>1);
-		strcpy($<str>$,"insert");
-	} 
+	| delete_statement_position 
+	| delete_statement_search_ss 
+	| fetch_statement 
+	| insert_statement_ss 
 	| rollback_statement 
-	| select_statement_full_ss {
-		print_do_select($<sql_string>1);
-		strcpy($<str>$,"select");
-	} 
-	| update_statement_ss {
-		print_exec_sql_bound($<sql_string>1);
-		strcpy($<str>$,"update");
-	} 
+	| select_statement_full_ss 
+	| update_statement_ss 
 	;
 
-privilege_definition:
-	GRANT privileges ON table_name TO grantee_list op_with_grant_option
-{sprintf($<str>$," %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
+privilege_definition
+  : GRANT privileges ON table_name TO grantee_list op_with_grant_option
 	;
 
-op_with_grant_option: {strcpy($<str>$,"");}
+op_with_grant_option
+  : 
 	| WITH_GRANT_OPTION
-{sprintf($<str>$," %s ",$<str>1);}
 	;
 
-privileges:
-	ALL_PRIVILEGES
-{sprintf($<str>$," %s ",$<str>1);}
+privileges
+  : ALL_PRIVILEGES
 	| action_list
 	;
 
-action_list:
-	action
+action_list
+  : action
 	| action_list COMMA action
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
-action: SELECT
+action
+  : SELECT
 	| INSERT
 	| DELETE
 	| UPDATE op_grant_column_list
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 	;
 
-op_grant_column_list: {strcpy($<str>$,"");}
+op_grant_column_list
+  : 
 	| OPEN_BRACKET grant_column_list CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
-grant_column_list:
-	  column_name
+grant_column_list
+  : column_name
 	| grant_column_list COMMA column_name
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
-grantee_list:
-	  grantee
+grantee_list
+  : grantee
 	| grantee_list COMMA grantee
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
-grantee:
-	PUBLIC
+grantee
+  : PUBLIC
 	| authorization_identifier
 	;
 
+view_definition_ss
+  : CREATE_VIEW table_name op_view_column_list AS query_specification_ss 
+	  op_with_check_option 
+  ;
 
-view_definition_ss:
-	CREATE_VIEW table_name op_view_column_list AS query_specification_ss op_with_check_option {
-$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<str>3," ",$<str>4," ",$<sql_string>5," ",$<str>6,0);
-}
-;
-
-op_view_column_list: {strcpy($<str>$,"");}
+op_view_column_list
+  : 
 	| OPEN_BRACKET view_column_list CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
-view_column_list:
-	column_name
+view_column_list
+  : column_name
 	| view_column_list COMMA column_name
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
-op_with_check_option: {strcpy($<str>$,"");}
+op_with_check_option
+  : 
 	| WITH_CHECK_OPTION
 	;
 
-
-check_constraint_definition_ss:
-	CHECK OPEN_BRACKET search_condition_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string("CHECK(",$<sql_string>3,")",0);
-	}
+check_constraint_definition_ss
+  : CHECK OPEN_BRACKET search_condition_ss CLOSE_BRACKET 
 	;
 
-
-referential_constraint_definition:
-	FOREIGN_KEY OPEN_BRACKET references_columns CLOSE_BRACKET references_specification
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+referential_constraint_definition
+  : FOREIGN_KEY OPEN_BRACKET references_columns CLOSE_BRACKET 
+	  references_specification
 	;
 
-references_specification:
-	REFERENCES referenced_table_and_columns
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+references_specification
+  : REFERENCES referenced_table_and_columns
 	;
 
-references_columns:
-	references_column_list
+references_columns
+  : references_column_list
 	;
 
-referenced_table_and_columns:
-	  table_name
+referenced_table_and_columns
+  : table_name
 	| table_name OPEN_BRACKET references_column_list CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	;
 
-references_column_list:
-	  column_name
+references_column_list
+  : column_name
 	| references_column_list COMMA column_name
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
-
-unique_constraint_definition:
-	  UNIQUE OPEN_BRACKET unique_column_list CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+unique_constraint_definition
+  : UNIQUE OPEN_BRACKET unique_column_list CLOSE_BRACKET
 	| PRIMARY_KEY OPEN_BRACKET unique_column_list CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	;
 
-unique_column_list:
-	  column_name
+unique_column_list
+  : column_name
 	| unique_column_list COMMA column_name
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 	
-
-table_constraint_definition_ss:
-	unique_constraint_definition {
-		$<sql_string>$=strdup($<str>1);
-	}
-	| referential_constraint_definition {
-		$<sql_string>$=strdup($<str>1);
-	}
-	| check_constraint_definition_ss  {
-		$<sql_string>$=$<sql_string>1;
-	}
+table_constraint_definition_ss
+  : unique_constraint_definition 
+	| referential_constraint_definition 
+	| check_constraint_definition_ss  
 	;
 
-
-default_clause:
-	  DEFAULT literal
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+default_clause
+  : DEFAULT literal
 	| DEFAULT_NULL
-{sprintf($<str>$," %s",$<str>1);}
 	;
-
 
 /*
 column_definiton_ss:
@@ -5524,334 +4686,202 @@ column_definiton_ss:
 	;
 */
 
-ct_column_definiton_ss:
-	identifier data_type op_default_clause op_column_constraint_list_ss {
-		$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<str>3," ",$<sql_string>4,0);
-	}
-;
+ct_column_definiton_ss
+  : identifier data_type op_default_clause op_column_constraint_list_ss 
+  ;
 
-op_default_clause: {strcpy($<str>$,"");}
-	|default_clause
-;
+op_default_clause
+  : 
+	| default_clause
+  ;
 
-op_column_constraint_list_ss: {
-		$<sql_string>$=strdup("");
-	} | column_constraint_list_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-;
+op_column_constraint_list_ss
+  : 
+  | column_constraint_list_ss 
+  ;
 
+column_constraint_list_ss 
+  : column_constraint_ss 
+	| column_constraint_list_ss column_constraint_ss 
+  ;
 
-column_constraint_list_ss :
-	column_constraint_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| column_constraint_list_ss column_constraint_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1,$<sql_string>2,0);
-	}
-;
-
-column_constraint_ss:
-	  NOT_NULL {
-		sprintf($<str>$," %s ",$<str>1);
-		$<sql_string>$=strdup($<str>$);
-	}
-	| NOT_NULL_UNIQUE {
-		sprintf($<str>$," %s ",$<str>1);
-		$<sql_string>$=strdup($<str>$);
-	}
-	| UNIQUE {
-		sprintf($<str>$," %s ",$<str>1);
-		$<sql_string>$=strdup($<str>$);
-	}
-	| references_specification {
-		$<sql_string>$=strdup($<str>1);
-	}
-	| CHECK OPEN_BRACKET search_condition_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<sql_string>3," ",$<str>4,0);
-	}
+column_constraint_ss
+  : NOT_NULL 
+	| NOT_NULL_UNIQUE 
+	| UNIQUE 
+	| references_specification 
+	| CHECK OPEN_BRACKET search_condition_ss CLOSE_BRACKET 
 	;
 
-
-schema_ss:
-	CREATE_SCHEMA schema_authorization_clause schema_element_list_ss
-{
-$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<str>3,0);
-}
+schema_ss
+  : CREATE_SCHEMA schema_authorization_clause schema_element_list_ss
 	;
 
-schema_authorization_clause:
-	schema_authorization_identifier
-{sprintf($<str>$," %s",$<str>1);}
+schema_authorization_clause
+  : schema_authorization_identifier
 	;
 
-schema_authorization_identifier:
-	authorization_identifier
+schema_authorization_identifier
+  : authorization_identifier
 	;
 
-schema_element_list_ss:
-	  schema_element_ss
-	| schema_element_list_ss schema_element_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<sql_string>2,0);
-	}
+schema_element_list_ss
+  : schema_element_ss
+	| schema_element_list_ss schema_element_ss 
 	;
 
-schema_element_ss:
-	view_definition_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| privilege_definition {
-		$<sql_string>$=strdup($<str>1);
-	}
+schema_element_ss
+  : view_definition_ss 
+	| privilege_definition 
 	;
 
+having_clause_ss
+  : HAVING search_condition_ss 
+  ;
 
+group_by_clause_ss
+  : GROUP_BY column_specification_list_ss 
+  ;
 
+column_specification_list_ss
+  : column_specification_ss 
+	| column_specification_list_ss COMMA column_specification_ss 
+  ;
 
+where_clause_ss
+  : WHERE search_condition_ss 
+  ;
 
+from_clause
+  : FROM table_reference_list 
+  ;
 
-having_clause_ss:
-	HAVING search_condition_ss {
-		$<sql_string>$=make_sql_string($<str>1," ",$<sql_string>2,0);
-	}
-;
-
-
-group_by_clause_ss:
-	GROUP_BY column_specification_list_ss {
-		$<sql_string>$=make_sql_string("GROUP BY ",$<sql_string>2,0);
-	}
-;
-
-column_specification_list_ss:
-	  column_specification_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| column_specification_list_ss COMMA column_specification_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
-	}
-;
-
-
-where_clause_ss:
-	WHERE search_condition_ss {
-		$<sql_string>$=make_sql_string("WHERE ",$<sql_string>2,0);
-	}
-;
-
-
-from_clause:
-	FROM table_reference_list {
-		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
-	}
-;
-
-table_reference_list:
-	  table_reference
-	| table_reference_list COMMA table_reference {
-		sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
-	}
+table_reference_list
+  : table_reference
+	| table_reference_list COMMA table_reference 
 	;
 
-table_reference:
-	  tname {sprintf($<str>$," %s ", $<str>1);}
-	| OUTER tname {sprintf($<str>$," %s %s ",$<str>1,$<str>2);}
-	| OUTER OPEN_BRACKET tname_list  CLOSE_BRACKET {sprintf($<str>$," %s (%s) ",$<str>1,$<str>3);}
+table_reference
+  : tname 
+	| OUTER tname 
+	| OUTER OPEN_BRACKET tname_list  CLOSE_BRACKET 
 	;
 
-tname: table_name
-	| table_name correlation_name {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
-;
-
+tname
+  : table_name
+	| table_name correlation_name 
+  ;
 
 /* Was tname instead of table_reference */
-tname_list : table_reference | tname_list COMMA table_reference { sprintf($<str>$," %s,%s ",$<str>1,$<str>3);  }
-;
+tname_list 
+  : table_reference 
+	| tname_list COMMA table_reference 
+  ;
 
-table_expression_ss:
-	from_clause  
-	op_where_clause_ss
-	op_group_by_clause_ss
-	op_having_clause_ss {
-		$<sql_string>$=make_sql_string($<str>1," ",$<sql_string>2," ",$<sql_string>3," ",$<sql_string>4,0);
-	}
+table_expression_ss
+  : from_clause  op_where_clause_ss op_group_by_clause_ss op_having_clause_ss 
 	;
 
-op_where_clause_ss: /* empty */ { $<sql_string>$=strdup("");}
-	| where_clause_ss {$<sql_string>$=$<sql_string>1;}
+op_where_clause_ss
+  : /* empty */ 
+	| where_clause_ss 
 	;
 
-op_group_by_clause_ss: /*empty */ {
-	$<sql_string>$=strdup("");
-}
-	| group_by_clause_ss {
-		$<sql_string>$=$<sql_string>1;
-}
+op_group_by_clause_ss
+  : /*empty */ 
+	| group_by_clause_ss 
 	;
 
-op_having_clause_ss: {$<sql_string>$=strdup("");}
-	| having_clause_ss {$<sql_string>$=$<sql_string>1;}
+op_having_clause_ss
+  : 
+	| having_clause_ss 
 	;
 
-
-search_condition_ss:
-	boolean_term_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| search_condition_ss KW_OR boolean_term_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1," OR ",$<sql_string>3,0);
-	}
+search_condition_ss
+  : boolean_term_ss 
+	| search_condition_ss KW_OR boolean_term_ss 
 	;
 
-boolean_term_ss:
-	boolean_factor_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| boolean_term_ss KW_AND boolean_factor_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1," AND ",$<sql_string>3,0);
-	}
+boolean_term_ss
+  : boolean_factor_ss 
+	| boolean_term_ss KW_AND boolean_factor_ss 
 	;
 
-boolean_factor_ss:
-	boolean_primary_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| NOT boolean_primary_ss {
-		$<sql_string>$=make_sql_string($<str>1," ",$<sql_string>2,0);
-	}
-;
+boolean_factor_ss
+  : boolean_primary_ss 
+	| NOT boolean_primary_ss 
+  ;
 
-boolean_primary_ss:
-	  predicate_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| OPEN_BRACKET search_condition_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string($<str>1,$<sql_string>2,$<str>3,0);
-	}
-;
+boolean_primary_ss
+  : predicate_ss 
+	| OPEN_BRACKET search_condition_ss CLOSE_BRACKET 
+  ;
 
-
-exists_predicate_ss:
-	EXISTS subquery_ss 		{$<sql_string>$=make_sql_string($<str>1," ",$<sql_string>2,0);}
-	| NOT_EXISTS subquery_ss 	{$<sql_string>$=make_sql_string($<str>1," ",$<sql_string>2,0);}
+exists_predicate_ss
+  : EXISTS subquery_ss 		
+	| NOT_EXISTS subquery_ss 	
 	;
 
-
-//quantified_predicate_ss:
-	//value_expression comp_op quantifier subquery_ss
-//{$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<str>3," ",$<sql_string>4,0);}
-	//| subquery_ss comp_op value_expression {$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<str>3,0);}
-	//;
-/*
-quantifier:
-	{strcpy($<str>$," ALL ");}
-	| all
-	| some
-	;
-all:
-	ALL
-	;
-
-some:
-	  SOME
-	| ANY
-	;
-*/
-
-
-
-
-op_escape:
-		{strcpy($<str>$,"");}
+op_escape
+  :
 	| ESCAPE escape_character
-	{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 	;
 
-pattern_ss:
-	value_expression_initial_ss {$<sql_string>$=$<sql_string>1;}
+pattern_ss
+  : value_expression_initial_ss 
 /*
 	  value_specification {$<sql_string>$=make_sql_string($<str>1);}
 	| var_ident_ibind_ss {$<sql_string>$=$<sql_string>1;}
 */
 	;
 
-escape_character:
-	  value_specification
+escape_character
+  : value_specification
 	;
 
+in_predicate_ss
+  : value_expression_ss IN OPEN_BRACKET in_value_list CLOSE_BRACKET 
+	| value_expression_ss IN subquery_ss 
+	| value_expression_ss NOT_IN OPEN_BRACKET in_value_list CLOSE_BRACKET 
+	| value_expression_ss NOT_IN subquery_ss 
+  ;
 
-in_predicate_ss:
-	value_expression_ss IN OPEN_BRACKET in_value_list CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string($<sql_string>1," IN (",$<str>4,")",0);
-	}
-	| value_expression_ss IN subquery_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,0);
-	}
-	| value_expression_ss NOT_IN OPEN_BRACKET in_value_list CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string($<sql_string>1," NOT IN (",$<str>4,")",0);
-	}
-	| value_expression_ss NOT_IN subquery_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,0);
-	}
-;
-
-in_value_list:
-	  in_value_specification
+in_value_list
+  : in_value_specification
 	| in_value_list COMMA in_value_specification
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
-in_value_specification : var_ident_ibind_ss {
-		strcpy($<str>$,$<sql_string>1);
-	}
-	 | literal
-;
+in_value_specification 
+  : var_ident_ibind_ss 
+	| literal
+  ;
 
-op_not: {strcpy($<str>$,"");}
+op_not
+  : 
 	| NOT
 	;
 
-
-comparison_predicate_ss:
-	value_expression_ss op_not IS_NULL {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," IS NULL",0);
-	}
-	| value_expression_ss op_not IS_NOT_NULL {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," IS NOT NULL",0);
-	}
-	| value_expression_ss comp_op value_expression_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,0);
-	}
-	| value_expression_ss op_not BETWEEN value_expression_ss KW_AND value_expression_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," BETWEEN ",$<sql_string>4," AND ",$<sql_string>6,0);
-	}
-	| value_expression_ss LIKE pattern_ss op_escape {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,$<str>4,0);
-	}
-	| value_expression_ss NOT_LIKE pattern_ss op_escape {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,$<str>4,0);
-	}
-	| value_expression_ss ILIKE pattern_ss op_escape {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,$<str>4,0);
-	}
-	| value_expression_ss NOT_ILIKE pattern_ss op_escape {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,$<str>4,0);
-	}
-
-
-	| value_expression_ss op_not MATCHES pattern_ss op_escape {
-		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," MATCHES ",$<sql_string>4,$<str>5,0);
-	}
+comparison_predicate_ss
+  : value_expression_ss op_not IS_NULL 
+	| value_expression_ss op_not IS_NOT_NULL 
+	| value_expression_ss comp_op value_expression_ss 
+	| value_expression_ss op_not BETWEEN value_expression_ss KW_AND 
+	  value_expression_ss 
+	| value_expression_ss LIKE pattern_ss op_escape 
+	| value_expression_ss NOT_LIKE pattern_ss op_escape 
+	| value_expression_ss ILIKE pattern_ss op_escape 
+	| value_expression_ss NOT_ILIKE pattern_ss op_escape 
+	| value_expression_ss op_not MATCHES pattern_ss op_escape 
 	;
 
-comp_op:
-	  EQUAL
-	| NOT_EQUAL {strcpy($<str>$,"!=");}
+comp_op
+  : EQUAL
+	| NOT_EQUAL 
 	| LESS_THAN
 	| GREATER_THAN 
-        | NOT_MATCHES
-        //| NOT_LIKE
-	| MATCHES
+  | NOT_MATCHES
+  //| NOT_LIKE
+  | MATCHES
 	| TILDE
 	//| LIKE {strcpy($<str>$,"likE");}
 	| LESS_THAN_EQ {strcpy($<str>$,"<=");}
@@ -5859,167 +4889,112 @@ comp_op:
 	;
 
 
-predicate_ss:
-	  comparison_predicate_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| in_predicate_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	//| quantified_predicate_ss { $<sql_string>$=$<sql_string>1; }
-	| exists_predicate_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
+predicate_ss
+  : comparison_predicate_ss 
+	| in_predicate_ss 
+	//| quantified_predicate_ss 
+	| exists_predicate_ss 
 	;
 
 
-op_all: {strcpy($<str>$,"");}
-	| ALL {strcpy($<str>$," ALL ");}
-	| DISTINCT {strcpy($<str>$," DISTINCT ");}
-	| UNIQUE {
-		ansi_violation("Use DISTINCT not UNIQUE",0);
-		strcpy($<str>$," DISTINCT ");
-	}
+op_all
+  : 
+	| ALL 
+	| DISTINCT 
+	| UNIQUE 
 	;
 
-
-
-
-
-
-data_type:
-	  char_string_type
+data_type
+  : char_string_type
 	| exact_numeric_type
 	| approx_numeric_type
 	;
 
-char_string_type:
-	  CHAR
+char_string_type
+  : CHAR
 	| CHAR OPEN_BRACKET length CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	;
 
-exact_numeric_type:
-	NUMERIC OPEN_BRACKET precision op_scale CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-	| SERIAL  {strcpy($<str>$,"SERIAL");}
+exact_numeric_type
+  : NUMERIC OPEN_BRACKET precision op_scale CLOSE_BRACKET
+	| SERIAL  
 	| DECIMAL OPEN_BRACKET precision op_scale CLOSE_BRACKET
 	| MONEY OPEN_BRACKET precision op_scale CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-        | DATE
+  | DATE
 	| INTEGER
 	| SMALLINT
 	| DATETIME s_curr TO e_curr
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	| DATETIME 
 	| INTERVAL s_curr TO e_curr
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	| INTERVAL
 	| INTERVAL s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET TO e_curr
-{sprintf($<str>$," %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
 	| TEXT
 	| BYTE
 	| VARCHAR
 	| VARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	| VARCHAR OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
 	;
 
-op_scale: {strcpy($<str>$,"");}
-	| COMMA scale {
-		sprintf($<str>$,",%s",$<str>2);
-}
+op_scale
+  : 
+	| COMMA scale 
 	;
 
-approx_numeric_type:
-	FLOAT OPEN_BRACKET precision CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+approx_numeric_type
+  : FLOAT OPEN_BRACKET precision CLOSE_BRACKET
 	| REAL
 	| SMALLFLOAT
 	| FLOAT
 	| DOUBLE_PRECISION
-{sprintf($<str>$," %s",$<str>1);}
 	;
 
-length:
-	INT_VALUE
+length
+  : INT_VALUE
 	;
 
-precision:
-	INT_VALUE
+precision
+  : INT_VALUE
 	;
 
-scale:
-	INT_VALUE
+scale
+  : INT_VALUE
 	;
 
-table_name:
-	 CHAR_VALUE DOT identifier { sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
-	| CHAR_VALUE {
-		sprintf($<str>$," %s", A4GL_strip_quotes ($<str>1));
-		addmap("Use Table",$<str>$,curr_func,yylineno,infilename);
-	}
-	| identifier {strcpy($<str>$,$<str>1); addmap("Use Table",$<str>1,curr_func,yylineno,infilename); }
-	| identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
-/*
-	| identifier DOT identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
-*/
-
+table_name
+  : CHAR_VALUE DOT identifier 
+	| CHAR_VALUE 
+	| identifier 
+	| identifier COLON identifier 
 	;
 
-//db_name : identifier;
-
-authorization_identifier:
-	identifier
+authorization_identifier
+  : identifier
 	;
 
-/*table_identifier:
-	identifier {strcpy($<str>$,$<str>1);}
-	;
-*/
+col_arr 
+  : 
+	| OPEN_SQUARE INT_VALUE CLOSE_SQUARE 
+	| OPEN_SQUARE INT_VALUE COMMA INT_VALUE CLOSE_SQUARE 
+  ;
 
+column_name 
+  : column_name_specific 
+	| ATSIGN column_name_specific 
+  ;
 
-col_arr : {strcpy($<str>$,"");} 
-	| OPEN_SQUARE INT_VALUE CLOSE_SQUARE {sprintf($<str>$,"[%s]",$<str>2);}
-	| OPEN_SQUARE INT_VALUE COMMA INT_VALUE CLOSE_SQUARE {sprintf($<str>$,"[%s,%s]",$<str>2,$<str>4);}
-;
-
-column_name : 
-	column_name_specific {
-		strcpy($<str>$,$<str>1);
-	}
-	| ATSIGN column_name_specific {
-		strcpy($<str>$,$<str>2);
-	}
-;
-
-column_name_specific: identifier col_arr
-{ 
-addmap("Use Column",$<str>1,curr_func,yylineno,infilename);
-sprintf($<str>$,"%s%s",$<str>1,$<str>2);
-}
+column_name_specific
+  : identifier col_arr
 	| table_name DOT identifier col_arr
-{
-sprintf($<str>$,"%s.%s%s",$<str>1,$<str>3,$<str>4);
-addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
-}
 	| table_name  DOT MULTIPLY
- {
-sprintf($<str>$,"%s.%s",$<str>1,$<str>3);
-addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
-}
 	;
 
-correlation_name:
-	identifier
+correlation_name
+  : identifier
 	;
 
 
-literal: CHAR_VALUE {
-	strcpy($<str>$,convstrsql($<str>1));
- A4GL_debug("Set $<str>$ to %s\n",$<str>$);
-}
+literal
+  : CHAR_VALUE 
 	| NUMERIC
 	| real_number
 	| INT_VALUE
@@ -6027,864 +5002,671 @@ literal: CHAR_VALUE {
 	//| PLUS INT_VALUE {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 	//| MINUS real_number {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 	//| MINUS INT_VALUE {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-        | curr_clause
+  | curr_clause
 	;
 
-curr_v_clause : CURRENT  cur_v_part 
-{strcpy($<str>$,$<str>2);}
-;
-curr_clause : CURRENT  cur_part 
-{
-char *ptr;
-ptr=acl_getenv("SQL_CURRENT_FUNCTION");
-if (ptr!=0) { if (strlen(ptr)==0) ptr=0; }
+curr_v_clause 
+  : CURRENT  cur_v_part 
+  ;
 
-if (ptr) {
-	sprintf($<str>$," %s(%s) ",ptr,$<str>2);
-} else {
-	sprintf($<str>$," %s %s ",$<str>1,$<str>2);
-}
-}
-;
+curr_clause 
+  : CURRENT  cur_part 
+  ;
 
-cur_part: {
-//char *ptr;
+cur_part
+  : 
+  | s_curr TO e_curr
+  ;
 
-//ptr=acl_getenv("SQL_CURRENT_FUNCTION");
+cur_v_part
+  : 
+  | s_curr_v TO s_curr_v
+  ;
 
-//if (ptr!=0) { if (strlen(ptr)==0) ptr=0; }
+s_curr_v
+  : YEAR
+	| MONTH
+	| DAY
+	| HOUR
+	| MINUTE
+	| SECOND
+	| FRACTION
+  | FRACTION OPEN_BRACKET INT_VALUE CLOSE_BRACKET 
+  ;
 
-//if (ptr) {
-	sprintf($<str>$,"'%s','%s'","YEAR","SECOND");
-//} else {
-	strcpy($<str>$," YEAR TO SECOND ");
-//}
-	strcpy($<str>$,"");
-}
-| s_curr TO e_curr
-{
-char *ptr;
-ptr=acl_getenv("SQL_CURRENT_FUNCTION");
-if (ptr!=0) { if (strlen(ptr)==0) ptr=0; }
-if (ptr) {
-	sprintf($<str>$,"'%s','%s'",$<str>1,$<str>3);
-} else {
-	sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
-}
-}
-;
-
-cur_v_part: {strcpy($<str>$,"1,10");}
-| s_curr_v TO s_curr_v
-{sprintf($<str>$," %s ,%s",$<str>1,$<str>3);}
-;
-
-s_curr_v: YEAR {strcpy($<str>$,"1");} | MONTH  {strcpy($<str>$,"2");}| DAY  {strcpy($<str>$,"3");}| HOUR  {strcpy($<str>$,"4");}| MINUTE  {strcpy($<str>$,"5");}| SECOND  {strcpy($<str>$,"6");}| 
-FRACTION {
-sprintf($<str>$,"%d",6+2);
-}
-| FRACTION OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
-sprintf($<str>$,"%d",atoi($<str>3)+6);
-}
-;
-
-e_curr_v: YEAR {strcpy($<str>$,"4");} | MONTH  {strcpy($<str>$,"7");}| DAY  {strcpy($<str>$,"10");}| HOUR  {strcpy($<str>$,"13");}| MINUTE  {strcpy($<str>$,"16");}| SECOND  {strcpy($<str>$,"19");} 
-| 
-FRACTION {
-strcpy($<str>$,"25");
-} 
-| FRACTION OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
-strcpy($<str>$,"25");
-}
-;
+e_curr_v
+  : YEAR 
+	| MONTH
+	| DAY
+	| HOUR
+	| MINUTE 
+	| SECOND
+  | FRACTION
+  | FRACTION OPEN_BRACKET INT_VALUE CLOSE_BRACKET 
+  ;
 
 
-s_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
-e_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
+s_curr
+  : YEAR 
+	| MONTH 
+	| DAY 
+	| HOUR 
+	| MINUTE 
+	| SECOND 
+	| FRACTION
+	;
 
-dbase_name	:	identifier {strcpy($<str>$,$<str>1);}
-		|	CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
-		;
+e_curr
+  : YEAR 
+	| MONTH 
+	| DAY 
+	| HOUR 
+	| MINUTE 
+	| SECOND 
+	| FRACTION
+	;
 
-flush_cmd : opt_use
-	FLUSH fetch_cursor_name  {
-	print_flush_cursor($<str>3);
-		addmap("Flush Cursor",$<str>3,curr_func,yylineno,infilename);
-print_undo_use($<str>1);
-		}
+dbase_name	
+  :	identifier 
+  |	CHAR_VALUE 
+	;
 
-;
+flush_cmd 
+  : opt_use FLUSH fetch_cursor_name  
+  ;
 
-declare_cmd : opt_use DECLARE declare_cursor_name CURSOR FOR cursor_specification_all_ss {insql=0;chk4var=0;}  {
-		print_declare("",$<sql_string>6,$<str>3,0,0);
-		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
-		print_undo_use($<str>1);
-		doing_declare=0;
-	}
-	| opt_use DECLARE declare_cursor_name CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
-		print_declare("",$<sql_string>7,$<str>3,2,0); 
-		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
-		print_undo_use($<str>1);
-		doing_declare=0;
-	}
-
-        | opt_use DECLARE declare_cursor_name SCROLL_CURSOR_FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
-		print_declare("",$<sql_string>5,$<str>3,0,1); 
-		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
-		print_undo_use($<str>1);
-		doing_declare=0;
-	}
-       	| opt_use DECLARE declare_cursor_name SCROLL_CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
-		print_declare("",$<sql_string>7,$<str>3,2,1); 
-		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
-		print_undo_use($<str>1);
-		doing_declare=0;
-	}
-;
+declare_cmd 
+  : opt_use DECLARE declare_cursor_name CURSOR FOR cursor_specification_all_ss 
+	| opt_use DECLARE declare_cursor_name CURSOR WITH_HOLD FOR 
+	  cursor_specification_sel_ss 
+  | opt_use DECLARE declare_cursor_name SCROLL_CURSOR_FOR 
+	  cursor_specification_sel_ss 
+  | opt_use DECLARE declare_cursor_name SCROLL_CURSOR WITH_HOLD FOR 
+	  cursor_specification_sel_ss 
+  ;
  
-curs_forupdate : {strcpy($<str>$,"");} 
-		| FOR_UPDATE {strcpy($<str>$," FOR UPDATE");} 
-		| FOR_UPDATE_OF cur_update_list {sprintf($<str>$," FOR UPDATE OF %s",$<str>2);} 
-		;
-
-cur_update_list : colident {strcpy($<str>$,$<str>1);} | cur_update_list COMMA colident {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
-;
-
-colident: identifier
-	| identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
-	| CHAR_VALUE DOT identifier DOT identifier {sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);}
-;
-	
-
-cursor_specification_all_ss:
-	cursor_specification_sel_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| insert_statement_ss { 
-		$<sql_string>$=make_sql_string(print_curr_spec(1,$<sql_string>1),0);
-	}
-;
-
-cursor_specification_sel_ss:
-	 stmt_id {
-		start_bind('i',0);
-		start_bind('o',0);
-		$<sql_string>$=make_sql_string(print_curr_spec(2,$<str>1) ,0);
-	}
-	| select_statement_ss  {
-		$<sql_string>$=$<sql_string>1;
-	}
-;
-
-
-
-select_statement_full_ss : select_statement_ss 
-	{
-	$<sql_string>$=$<sql_string>1;
-	if (strstr($<str>1,"FOR UPDATE")) {
-		printf("Warning SELECT ... FOR UPDATE when not declaring a cursor currently has no locking effect\n");
-	}
-}
-// FIX USAGE
-;
-
-select_statement_ss:
-	SELECT 
-	op_ad 
-	{ start_bind('i',0); }
-	select_list_ss {A4GL_debug("Got select list...\n");}
-        opt_into_sel_ss 
-	table_expression_ss
-        sel_p2_ss curs_forupdate {
-		char *ptr;
-                ptr=make_sql_string("SELECT ",$<str>2, $<sql_string>4," ", $<sql_string>6, " ",$<sql_string>7," ",$<sql_string>8,$<str>9,0);
-
-		$<sql_string>$=strdup(print_select_all(ptr));
-		free(ptr);
-		free($<sql_string>4);
-		free($<sql_string>6);
-		free($<sql_string>7);
-		free($<sql_string>8);
-}
-;
-
-
-in_select_statement_ss:
-	SELECT op_ad select_list_ss table_expression_ss sel_p2_ss {
-		$<sql_string>$=make_sql_string("A4GL_push_char(\"", $<str>1, " ",$<str>2," ", $<sql_string>3, " ",$<sql_string>4, " ",$<sql_string>5, "\");",0);
-	free($<sql_string>3);
-	free($<sql_string>4);
-	free($<sql_string>5);
-}
-
-;
-
-select_statement2_ss:
-	select_statement21_ss {
-		$<sql_string>$=$<sql_string>1;
-	 }
-	| char_or_var {
-		$<sql_string>$=strdup($<str>1);
-	};
-
-select_statement21_ss:
-	SELECT  op_ad select_list_ss
-        opt_into_sel_ss
-	table_expression_ss
-        sel_p2_ss {
-	$<sql_string>$=make_sql_string($<str>1, " ",$<str>2," ",$<sql_string>3," ", $<sql_string>4," ", $<sql_string>5, " ",$<sql_string>6,0);
-	free($<sql_string>3);
-	free($<sql_string>5);
-	free($<sql_string>6);
-}
-;
-
-
-sel_p2_ss : {
-		$<sql_string>$=strdup("");
-		}
-| UNION op_all select_statement2_ss {
-       A4GL_lex_printcomment("/* UNION */");
-	$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<sql_string>3,0);
-       }
-| order_by_clause  {
-	$<sql_string>$=strdup($<str>1);
-}
-| INTO_TEMP tmp_tabname op_no_log { $<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<str>3,0); } 
-| order_by_clause INTO_TEMP tmp_tabname op_no_log { 
-	$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<str>3," ",$<str>4,0);
-}
-;
-
-
-tmp_tabname: identifier;
-
-
-opt_into_sel_ss :  { start_bind('o',0);$<sql_string>$=make_sql_string("",0); }
-	| INTO  obind_var_list { 
-		$<sql_string>$=make_sql_string(A4GL_get_into_part(doing_declare,get_bind_cnt('o')),0 ); 
-
-	}
-;
-
-
-
-query_specification_ss:
-	SELECT op_ad select_list_ss table_expression_ss {
-		$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ", $<sql_string>3," ",$<sql_string>4,0);
-		free($<sql_string>3);
-		//free($<sql_string>4);
-
-	}
-;
-
-subquery_ss:
-	OPEN_BRACKET SELECT op_ad select_list_ss table_expression_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string("(",$<str>2," ",$<str>3," ",$<sql_string>4," ",$<sql_string>5,")",0);
-	}
-;
-
-op_ad: {strcpy($<str>$,"");}
-	| ALL {strcpy($<str>$,"ALL ");}
-	| DISTINCT {strcpy($<str>$," DISTINCT ");}
-	| UNIQUE {strcpy($<str>$," DISTINCT ");
-		ansi_violation("Use DISTINCT not UNIQUE",0);
-		strcpy($<str>$," DISTINCT ");
-}
+curs_forupdate 
+  : 
+	| FOR_UPDATE 
+	| FOR_UPDATE_OF cur_update_list 
 	;
 
-select_list_ss: 
-	value_expression_pls_ss  {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| select_list_ss COMMA value_expression_pls_ss { 
-		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
-	}
-;
+cur_update_list 
+  : colident 
+	| cur_update_list COMMA colident 
+  ;
 
-value_expression_pls_ss : 
-	value_expression_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| value_expression_ss  identifier {
-		if (A4GL_isyes(acl_getenv("A4GL_USE_ALIAS_AS"))) {
-			$<sql_string>$=make_sql_string($<sql_string>1," AS ",$<str>2,0);
-		} else {
-			$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2,0);
-		}
-	}
-;
+colident
+  : identifier
+	| identifier DOT identifier 
+	| CHAR_VALUE DOT identifier DOT identifier 
+  ;
+	
+cursor_specification_all_ss
+  : cursor_specification_sel_ss 
+	| insert_statement_ss 
+  ;
+
+cursor_specification_sel_ss
+  : stmt_id 
+	| select_statement_ss  
+  ;
+
+select_statement_full_ss 
+  : select_statement_ss 
+  ;
+
+select_statement_ss
+  : SELECT op_ad select_list_ss opt_into_sel_ss table_expression_ss
+    sel_p2_ss curs_forupdate 
+  ;
 
 
-column_specification_ss : value_expression_ss {
-	$<sql_string>$=$<sql_string>1;
-}
+in_select_statement_ss
+  : SELECT op_ad select_list_ss table_expression_ss sel_p2_ss 
+  ;
 
-;
+select_statement2_ss
+  : select_statement21_ss 
+	| char_or_var 
+	;
 
+select_statement21_ss
+  : SELECT  op_ad select_list_ss opt_into_sel_ss table_expression_ss sel_p2_ss 
+  ;
 
+sel_p2_ss 
+  : 
+  | UNION op_all select_statement2_ss 
+  | order_by_clause  
+  | INTO_TEMP tmp_tabname op_no_log 
+  | order_by_clause INTO_TEMP tmp_tabname op_no_log 
+  ;
 
-value_expression_ss:
-	value_expression_initial_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| MINUS value_expression_initial_ss {
-		$<sql_string>$=make_sql_string("-",$<sql_string>2,0);
-	}
-	| PLUS value_expression_initial_ss {
-		$<sql_string>$=make_sql_string("+",$<sql_string>2,0);
-	}
-;
+tmp_tabname
+  : identifier
+	;
 
-value_expression_initial_ss :
-	value_expression_complex_ss {
-			if (strlen(current_upd_table)) {
-				push_gen(UPDVAL,$<sql_string>1);
-			}
-		$<sql_string>$=$<sql_string>1;
-	}
-	| var_ident_ibind_ss 	{
-		$<sql_string>$=$<sql_string>1;
-	}
-	| subquery_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| ATSIGN identifier {
-		$<sql_string>$=strdup($<str>2);
-	}
-	| ATSIGN identifier DOT identifier {
-		$<sql_string>$=make_sql_string($<str>2,".",$<str>4);
-	}
-;
+opt_into_sel_ss 
+  :  
+	| INTO  obind_var_list 
+  ;
 
-value_expression_complex_ss :
-	value_expression_initial_ss DIVIDE value_expression_ss
-		{$<sql_string>$=make_sql_string($<sql_string>1,"/",$<sql_string>3,0);}
+query_specification_ss
+  : SELECT op_ad select_list_ss table_expression_ss 
+  ;
+
+subquery_ss
+  : OPEN_BRACKET SELECT op_ad select_list_ss table_expression_ss CLOSE_BRACKET 
+  ;
+
+op_ad 
+  : 
+	| ALL 
+	| DISTINCT 
+	| UNIQUE 
+	;
+
+select_list_ss
+  : value_expression_pls_ss  
+	| select_list_ss COMMA value_expression_pls_ss 
+  ;
+
+value_expression_pls_ss 
+  : value_expression_ss 
+	| value_expression_ss  identifier 
+  ;
+
+column_specification_ss 
+  : value_expression_ss 
+  ;
+
+value_expression_ss
+  : value_expression_initial_ss 
+	| MINUS value_expression_initial_ss 
+	| PLUS value_expression_initial_ss 
+  ;
+
+value_expression_initial_ss 
+  : value_expression_complex_ss 
+	| var_ident_ibind_ss 	
+	| subquery_ss 
+	| ATSIGN identifier 
+	| ATSIGN identifier DOT identifier 
+  ;
+
+value_expression_complex_ss 
+  : value_expression_initial_ss DIVIDE value_expression_ss
 	| value_expression_initial_ss units_qual
-		{$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2,0);}
 	| value_expression_initial_ss MULTIPLY value_expression_ss
-		{$<sql_string>$=make_sql_string($<sql_string>1,"*",$<sql_string>3,0);}
 	| value_expression_initial_ss PLUS value_expression_ss
-		{$<sql_string>$=make_sql_string($<sql_string>1,"+",$<sql_string>3,0);}
 	| value_expression_initial_ss MINUS value_expression_ss
-		{$<sql_string>$=make_sql_string($<sql_string>1,"-",$<sql_string>3,0);}
-	| literal {$<sql_string>$=make_sql_string($<str>1,0);}
-	| KW_TRUE {$<sql_string>$=make_sql_string("1",0);}
-	| KW_FALSE {$<sql_string>$=make_sql_string("0",0);}
-	| USER {$<sql_string>$=make_sql_string("USER",0);}
-	| MULTIPLY {$<sql_string>$=make_sql_string("*",0);}
-	| COUNT_MULTIPLY {$<sql_string>$=make_sql_string("COUNT(*)",0);}
+	| literal 
+	| KW_TRUE 
+	| KW_FALSE 
+	| USER 
+	| MULTIPLY 
+	| COUNT_MULTIPLY 
  	| AVG OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET
-{$<sql_string>$=make_sql_string("AVG(",$<str>3,$<sql_string>4,")",0);}
 	| XMAX OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET
-{$<sql_string>$=make_sql_string("MAX(",$<str>3,$<sql_string>4,")",0);}
 	| XMIN OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET
-{$<sql_string>$=make_sql_string("MIN(",$<str>3,$<sql_string>4,")",0);}
 	| SUM OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET
-{$<sql_string>$=make_sql_string("SUM(",$<str>3,$<sql_string>4,")",0);}
 	| COUNT OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET
-{$<sql_string>$=make_sql_string("COUNT(",$<str>3,$<sql_string>4,")",0);}
 	| identifier OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET
-{$<sql_string>$=make_sql_string($<str>1,"(",$<sql_string>3,")",0);}
 	| DATE OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET
-{$<sql_string>$=make_sql_string("DATE(",$<sql_string>3,")",0);}
-	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("(",$<sql_string>2,")",0);}
+	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET 
 	| EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET
-{$<sql_string>$=make_sql_string("EXTEND(",$<sql_string>3,")",0);}
-;
+  ;
 
-value_expr_list_ss : 
-	value_expression_ss {$<sql_string>$=$<sql_string>1;}
-	| value_expr_list_ss COMMA value_expression_ss {
-	$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
-}
-	
-;
+value_expr_list_ss 
+  : value_expression_ss 
+	| value_expr_list_ss COMMA value_expression_ss 
+  ;
 
-value_specification:
-	 literal
+value_specification
+  : literal
 	;
 
-unload_cmd :  opt_use UNLOAD_TO ufile opt_delim select_statement2_ss {
+unload_cmd 
+  : opt_use UNLOAD_TO ufile opt_delim select_statement2_ss 
+  ;
 
-print_unload($<str>3,$<str>4,$<sql_string>5);
-print_undo_use($<str>1);
-}
-;
+load_cmd 
+  :  opt_use LOAD_FROM ufile opt_delim INSERT_INTO table_name opt_col_list 
+  | opt_use LOAD_FROM ufile opt_delim variable 
+  ;
 
+opt_delim 
+  : 
+	| DELIMITER char_or_var 
+  ;
 
-load_cmd :  
-opt_use LOAD_FROM ufile opt_delim INSERT_INTO table_name opt_col_list {
-print_load($<str>3,$<str>4,$<str>6,$<str>7);
-print_undo_use($<str>1);
-}
-| opt_use LOAD_FROM ufile opt_delim variable {
-print_load_str($<str>3,$<str>4,$<str>5);
-print_undo_use($<str>1);
-}
+char_or_var 
+  : CHAR_VALUE 
+	| variable 
+  ;
 
-;
+opt_col_list
+  : 
+	| OPEN_BRACKET col_list CLOSE_BRACKET 
 
-opt_delim : {strcpy($<str>$,"\"|\"");} | DELIMITER char_or_var {
-strcpy($<str>$,$<str>2);
-};
+col_list 
+  : simple_column_name 
+	| col_list COMMA simple_column_name 
+  ;
 
-char_or_var : CHAR_VALUE | variable {
-if ((scan_variable($<str>1)&15)!=0) {a4gl_yyerror("Variable must be of type char for a delimiter..");YYERROR;}
-}
-;
+simple_column_name 
+  : identifier 
+  ;
 
-opt_col_list: {strcpy($<str>$,"0");} | OPEN_BRACKET col_list CLOSE_BRACKET {
-sprintf($<str>$,"%s,0",$<str>2);
-};
+ufile 
+  : CHAR_VALUE 
+	| variable
+	;
 
-col_list : simple_column_name | col_list COMMA simple_column_name {
-    sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
-};
+opt_use 
+  : 
+	| USE_SESSION conn_id FOR 
+  ;
 
-simple_column_name : identifier {
-     sprintf($<str>$,"\"%s\"",$<str>1);
-}
-;
+conn_id 
+  : ident_or_var
+	;
 
-
-ufile : CHAR_VALUE | variable;
-
-
-opt_use : {strcpy($<str>$,"");} | USE_SESSION conn_id FOR {
-print_use_session($<str>3);
-strcpy($<str>$,A4GL_get_undo_use());
-}
-;
-
-conn_id : ident_or_var;
-
-
-
-
-
-misc_sql :
-	lock_stmt
+misc_sql 
+  : lock_stmt
 	| unlock_stmt
 	| rename_stmt
-;
+  ;
 
-rename_stmt :
-	RENTAB rentabname TO rentabname { sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); }
-	| RENCOL rentabname DOT rencolname TO rencolname { sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); }
-;
+rename_stmt 
+  : RENTAB rentabname TO rentabname 
+	| RENCOL rentabname DOT rencolname TO rencolname 
+  ;
 
-rentabname : identifier;
-rencolname : identifier;
-
-unlock_stmt:
-
-	UNLOCK_TABLE tab_name {
-		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
-	}
-;
-
-lock_stmt :
-	LOCK_TABLE tab_name share_or_exclusive  {
-		sprintf($<str>$,"%s %s %s",
-					$<str>1,
-					$<str>2,
-					$<str>3
-					);
-		}
-;
-
-share_or_exclusive :
-	INSHARE
-	| INEXCLUSIVE
-;
-
-
-
-
-
-units_qual:
-	UNITS_YEAR {strcpy($<str>$,"UNITS YEAR");}
-	| UNITS_MONTH {strcpy($<str>$,"UNITS MONTH"); }
-	| UNITS_DAY {strcpy($<str>$,"UNITS DAY"); }
-	| UNITS_HOUR {strcpy($<str>$,"UNITS HOUR"); }
-	| UNITS_MINUTE {strcpy($<str>$,"UNITS MINUTE"); }
-	| UNITS_SECOND {strcpy($<str>$,"UNITS SECOND"); }
-;
-
-extend_qual_ss:
-        CURRENT COMMA s_curr TO e_curr {$<sql_string>$=make_sql_string($<str>1,$<str>2,$<str>3," ",$<str>4," ",$<str>5,0);}
-        | var_ident_ibind_ss COMMA s_curr TO e_curr {$<sql_string>$=make_sql_string($<sql_string>1,$<str>2,$<str>3," ",$<str>4," ",$<str>5,0);}
-        | CURRENT s_curr TO e_curr {$<sql_string>$=make_sql_string($<str>1,$<str>2," ",$<str>3," ",$<str>4,0);}
-;
-
-/* ========================= sql1.rule ================================ */
-sql_block_cmd : SQL {
-		sql_mode=1;
-		start_bind('i',0);
-		start_bind('o',0);
-	} sql_block END_SQL {
-			sql_mode=0;
-			print_sql_block_cmd($<str>3);
-	}
-;
-
-
-sql_block :
-	sql_block_entry 
-	| sql_block sql_block_entry  {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
-;
-
-sql_block_entry:
-	SQL_TEXT 
-	| in_var {strcpy($<str>$,$<str>1);}
-	| sql_block_into {strcpy($<str>$,$<str>1);}
-| ABSOLUTE
-| ACCEPT
-| ACL_BUILTIN
-| ADD
-| AFTER
-| ALL
-| ALTER
-| ANSI
-| ANY
-| APPEND
-| ARRAY
-| AS
-| ASC
-| ASCENDING
-| ASCII
-| ASSOCIATE
-| AT
-| ATSIGN
-| ATTRIBUTES
-| AUDIT
-| AUTHORIZATION
-| AVERAGE
-| AVG
-| BEFORE
-| BETWEEN
-| BLACK
-| BLINK
-| BLUE
-| BOLD
-| BORDER
-| BOTTOM
-| BUFFERED
-| BUTTONS
-| BY
-| BYTE
-| CAPTION
-| CASE
-| CCODE
-| CHAR
-| CHARACTER
-| CHECK
-| CLEAR
-| CLIPPED
-| CLOSE
-| CLOSE_BRACKET
-| CLOSE_SQUARE
-| CODE_C
-| COLON
-| COLUMN
-| COLUMNS
-| COMMA
-| COMMAND
-| COMMENT
-| COMMIT
-| CONNECT
-| CONST
-| CONSTANT
-| CONSTRUCT
-| CONTINUE
-| COUNT
-| CREATE
-| CURRENT
-| CURSOR
-| CYAN
-| DATABASE
-| DATE
-| DATETIME
-| DAY
-| DBA
-| DBYNAME
-| DEC
-| DECIMAL
-| DECLARE
-| DEFAULT
-| DEFAULTS
-| DEFER
-| DEFINE
-| DELETE
-| DELIMITER
-| DESC
-| DESCENDING
-| DIM
-| DISABLE
-| DISPLAY
-| DISTINCT
-| DIVIDE
-| DOT
-| DOUBLE
-| DOWNSHIFT
-| DROP
-| ELIF
-| ELSE
-| ENABLE
-| ENDCODE
-| EQUAL
-| ERROR
-| ESCAPE
-| EVERY
-| EXCLUSIVE
-| EXEC
-| EXECUTE
-| EXISTS
-| EXIT
-| EXTEND
-| EXTENT
-| EXTERNAL
-| FCALL
-| FETCH
-| FIELDTOWIDGET
-| FIELD_TOUCHED
-| FINISH
-| FIRST
-| FKEY
-| FLOAT
-| FLUSH
-| FOR
-| FOREACH
-| FOREIGN
-| FORMAT
-| FORMHANDLER
-| FORMHANDLER_INPUT
-| FORM_IS_COMPILED
-| FOUND
-| FRACTION
-| FREE
-| FROM
-| FUNCTION
-| GET_FLDBUF
-| GLOBALS
-| GO
-| GOTO
-| GRANT
-| GREATER_THAN
-| GREEN
-| GROUP
-| HAVING
-| HEADER
-| HELP
-| HIDE
-| HOUR
-| ICON
-| ID_TO_INT
-| IF
-| IN
-| INCHES
-| INDEX
-| INFIELD
-| INITIALIZE
-| INPUT
-| INSERT
-| INTEGER
-| INTERRUPT
-| INTERVAL
-| INT_TO_ID
-| INVISIBLE
-| KEY
-| KWDOWN
-| KWFIELD
-| KWFORM
-| KWLINE
-| KWMESSAGE
-| KWNO
-| KWUP
-| KWWINDOW
-| KW_AND
-| KW_FALSE
-| KW_IS
-| KW_NULL
-| KW_OR
-| KW_TRUE
-| KW_USING
-| LAST
-| LEFT
-| LESS_THAN
-| LET
-| LIKE
-| LOCAL
-| LOCATE
-| LOG
-| MAGENTA
-| MAIN
-| MARGIN
-| MATCHES
-| MAXCOUNT
-| MEMORY
-| MENU
-| MENUHANDLER
-| MESSAGEBOX
-| MINUS
-| MINUTE
-| MM
-| MOD
-| MODE
-| MODIFY
-| MONEY
-| MONTH
-| MULTIPLY
-| NEED
-| NEXT
-| NEXTPAGE
-| NOCR
-| NORMAL
-| NOT
-| NUMERIC
-| OF
-| OFF
-| ON
-| OPEN
-| OPEN_BRACKET
-| OPEN_SQUARE
-| OPTION
-| OPTIONS
-| ORDER
-| OTHERWISE
-| OUTER
-| OUTPUT
-| PAD
-| PASSWORD
-| PAUSE
-| PDF_FUNCTION
-| PDF_REPORT
-| PERCENT
-| PLUS
-| POINTS
-| PRECISION
-| PREPARE
-| PREPEND
-| PREVIOUS
-| PREVPAGE
-| PRINT
-| PRIOR
-| PROCEDURE
-| PROGRAM
-| PROMPT
-| PUBLIC
-| PUT
-| QUIT
-| READONLY
-| REAL
-| RECORD
-| RECOVER
-| RED
-| REFERENCES
-| REGISTER
-| RELATIVE
-| REPORT
-| RESOURCE
-| RETURN
-| RETURNING
-| REVERSE
-| REVOKE
-| RIGHT
-| ROLLFORWARD
-| ROW
-| ROWS
-| RUN
-| SCHEMA
-| SCROLL
-| SECOND
-| SECTION
-| SELECT
-| SEMICOLON
-| SERIAL
-| SESSION
-| SHARED
-| SHOW
-| SINGLE_KEY
-| SIZE
-| SKIP
-| SLEEP
-| SMALLFLOAT
-| SMALLINT
-| SOME
-| SPACES
-| SQL
-| SQLSUCCESS
-| STATUSBOX
-| STEP
-| STOP
-| SUM
-| SYNONYM
-| TAB
-| TEMP
-| TEMPLATE
-| TEXT
-| THEN
-| THRU
-| TIMEOUT
-| TO
-| TOP
-| TRAILER
-| TUPLE
-| UNCONSTRAINED
-| UNDERLINE
-| UNION
-| UNIQUE
-| UNLOCK
-| UPDATE
-| UPSHIFT
-| USE
-| USER
-| VALIDATE
-| VALUES
-| VARCHAR
-| VARIABLE
-| WAIT
-| WAITING
-| WHEN
-| WHENEVER
-| WHERE
-| WHILE
-| WHITE
-| WITH
-| WORDWRAP
-| WORK
-| XMAX
-| XMIN
-| XSET
-| YEAR
-| YELLOW
-
-
-
-
+rentabname 
+  : identifier
 	;
 
-in_var :
-	DOLLAR {sql_mode=0;} var_ident_ibind_ss {
-		strcpy($<str>$,$<sql_string>3);
-		sql_mode=1;
-	}
-;
+rencolname 
+  : identifier
+	;
 
-sql_block_into: 
-	INTO {sql_mode=0;} obind_var_list {
- 		strcpy($<str>$,A4GL_get_into_part(doing_declare,get_bind_cnt('o')));
-		sql_mode=1;
-	}
-;
+unlock_stmt
+  : UNLOCK_TABLE tab_name 
+  ;
+
+lock_stmt 
+  : LOCK_TABLE tab_name share_or_exclusive  
+  ;
+
+share_or_exclusive 
+  : INSHARE
+	| INEXCLUSIVE
+  ;
+
+units_qual
+  : UNITS_YEAR 
+	| UNITS_MONTH
+	| UNITS_DAY
+	| UNITS_HOUR
+	| UNITS_MINUTE
+	| UNITS_SECOND
+  ;
+
+extend_qual_ss
+  : CURRENT COMMA s_curr TO e_curr 
+  | var_ident_ibind_ss COMMA s_curr TO e_curr 
+  | CURRENT s_curr TO e_curr 
+  ;
+
+/* </SQL1_RULE> */
+
+sql_block_cmd 
+  : SQL sql_block END_SQL 
+  ;
 
 
-/*
-=====================================================================
-                        Source: template.rule
-=====================================================================
-*/
+sql_block 
+  : sql_block_entry 
+	| sql_block sql_block_entry  
+  ;
+
+sql_block_entry
+  : SQL_TEXT 
+	| in_var 
+	| sql_block_into 
+  | ABSOLUTE
+  | ACCEPT
+  | ACL_BUILTIN
+  | ADD
+  | AFTER
+  | ALL
+  | ALTER
+  | ANSI
+  | ANY
+  | APPEND
+  | ARRAY
+  | AS
+  | ASC
+  | ASCENDING
+  | ASCII
+  | ASSOCIATE
+  | AT
+  | ATSIGN
+  | ATTRIBUTES
+  | AUDIT
+  | AUTHORIZATION
+  | AVERAGE
+  | AVG
+  | BEFORE
+  | BETWEEN
+  | BLACK
+  | BLINK
+  | BLUE
+  | BOLD
+  | BORDER
+  | BOTTOM
+  | BUFFERED
+  | BUTTONS
+  | BY
+  | BYTE
+  | CAPTION
+  | CASE
+  | CCODE
+  | CHAR
+  | CHARACTER
+  | CHECK
+  | CLEAR
+  | CLIPPED
+  | CLOSE
+  | CLOSE_BRACKET
+  | CLOSE_SQUARE
+  | CODE_C
+  | COLON
+  | COLUMN
+  | COLUMNS
+  | COMMA
+  | COMMAND
+  | COMMENT
+  | COMMIT
+  | CONNECT
+  | CONST
+  | CONSTANT
+  | CONSTRUCT
+  | CONTINUE
+  | COUNT
+  | CREATE
+  | CURRENT
+  | CURSOR
+  | CYAN
+  | DATABASE
+  | DATE
+  | DATETIME
+  | DAY
+  | DBA
+  | DBYNAME
+  | DEC
+  | DECIMAL
+  | DECLARE
+  | DEFAULT
+  | DEFAULTS
+  | DEFER
+  | DEFINE
+  | DELETE
+  | DELIMITER
+  | DESC
+  | DESCENDING
+  | DIM
+  | DISABLE
+  | DISPLAY
+  | DISTINCT
+  | DIVIDE
+  | DOT
+  | DOUBLE
+  | DOWNSHIFT
+  | DROP
+  | ELIF
+  | ELSE
+  | ENABLE
+  | ENDCODE
+  | EQUAL
+  | ERROR
+  | ESCAPE
+  | EVERY
+  | EXCLUSIVE
+  | EXEC
+  | EXECUTE
+  | EXISTS
+  | EXIT
+  | EXTEND
+  | EXTENT
+  | EXTERNAL
+  | FCALL
+  | FETCH
+  | FIELDTOWIDGET
+  | FIELD_TOUCHED
+  | FINISH
+  | FIRST
+  | FKEY
+  | FLOAT
+  | FLUSH
+  | FOR
+  | FOREACH
+  | FOREIGN
+  | FORMAT
+  | FORMHANDLER
+  | FORMHANDLER_INPUT
+  | FORM_IS_COMPILED
+  | FOUND
+  | FRACTION
+  | FREE
+  | FROM
+  | FUNCTION
+  | GET_FLDBUF
+  | GLOBALS
+  | GO
+  | GOTO
+  | GRANT
+  | GREATER_THAN
+  | GREEN
+  | GROUP
+  | HAVING
+  | HEADER
+  | HELP
+  | HIDE
+  | HOUR
+  | ICON
+  | ID_TO_INT
+  | IF
+  | IN
+  | INCHES
+  | INDEX
+  | INFIELD
+  | INITIALIZE
+  | INPUT
+  | INSERT
+  | INTEGER
+  | INTERRUPT
+  | INTERVAL
+  | INT_TO_ID
+  | INVISIBLE
+  | KEY
+  | KWDOWN
+  | KWFIELD
+  | KWFORM
+  | KWLINE
+  | KWMESSAGE
+  | KWNO
+  | KWUP
+  | KWWINDOW
+  | KW_AND
+  | KW_FALSE
+  | KW_IS
+  | KW_NULL
+  | KW_OR
+  | KW_TRUE
+  | KW_USING
+  | LAST
+  | LEFT
+  | LESS_THAN
+  | LET
+  | LIKE
+  | LOCAL
+  | LOCATE
+  | LOG
+  | MAGENTA
+  | MAIN
+  | MARGIN
+  | MATCHES
+  | MAXCOUNT
+  | MEMORY
+  | MENU
+  | MENUHANDLER
+  | MESSAGEBOX
+  | MINUS
+  | MINUTE
+  | MM
+  | MOD
+  | MODE
+  | MODIFY
+  | MONEY
+  | MONTH
+  | MULTIPLY
+  | NEED
+  | NEXT
+  | NEXTPAGE
+  | NOCR
+  | NORMAL
+  | NOT
+  | NUMERIC
+  | OF
+  | OFF
+  | ON
+  | OPEN
+  | OPEN_BRACKET
+  | OPEN_SQUARE
+  | OPTION
+  | OPTIONS
+  | ORDER
+  | OTHERWISE
+  | OUTER
+  | OUTPUT
+  | PAD
+  | PASSWORD
+  | PAUSE
+  | PDF_FUNCTION
+  | PDF_REPORT
+  | PERCENT
+  | PLUS
+  | POINTS
+  | PRECISION
+  | PREPARE
+  | PREPEND
+  | PREVIOUS
+  | PREVPAGE
+  | PRINT
+  | PRIOR
+  | PROCEDURE
+  | PROGRAM
+  | PROMPT
+  | PUBLIC
+  | PUT
+  | QUIT
+  | READONLY
+  | REAL
+  | RECORD
+  | RECOVER
+  | RED
+  | REFERENCES
+  | REGISTER
+  | RELATIVE
+  | REPORT
+  | RESOURCE
+  | RETURN
+  | RETURNING
+  | REVERSE
+  | REVOKE
+  | RIGHT
+  | ROLLFORWARD
+  | ROW
+  | ROWS
+  | RUN
+  | SCHEMA
+  | SCROLL
+  | SECOND
+  | SECTION
+  | SELECT
+  | SEMICOLON
+  | SERIAL
+  | SESSION
+  | SHARED
+  | SHOW
+  | SINGLE_KEY
+  | SIZE
+  | SKIP
+  | SLEEP
+  | SMALLFLOAT
+  | SMALLINT
+  | SOME
+  | SPACES
+  | SQL
+  | SQLSUCCESS
+  | STATUSBOX
+  | STEP
+  | STOP
+  | SUM
+  | SYNONYM
+  | TAB
+  | TEMP
+  | TEMPLATE
+  | TEXT
+  | THEN
+  | THRU
+  | TIMEOUT
+  | TO
+  | TOP
+  | TRAILER
+  | TUPLE
+  | UNCONSTRAINED
+  | UNDERLINE
+  | UNION
+  | UNIQUE
+  | UNLOCK
+  | UPDATE
+  | UPSHIFT
+  | USE
+  | USER
+  | VALIDATE
+  | VALUES
+  | VARCHAR
+  | VARIABLE
+  | WAIT
+  | WAITING
+  | WHEN
+  | WHENEVER
+  | WHERE
+  | WHILE
+  | WHITE
+  | WITH
+  | WORDWRAP
+  | WORK
+  | XMAX
+  | XMIN
+  | XSET
+  | YEAR
+  | YELLOW
+	;
+
+in_var 
+  : DOLLAR var_ident_ibind_ss 
+  ;
+
+sql_block_into
+  : INTO obind_var_list 
+  ;
+
+
 
 
 /*
@@ -6960,558 +5742,249 @@ template_value :
 */
 
 
-update_statement_ss:
-	UPDATE table_name {
-		strcpy(current_upd_table,$<str>2);
-		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); pop_all_gen(UPDVAL2,"!");
-		$<sql_string>$=strdup("");
-	} set_clause_list_ss  {
-		strcpy(current_upd_table,"");
-	} where_upd_ss {
-		$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<sql_string>4," ",$<sql_string>6,0);
-	}
-;
+/* <UPDATE_RULE> */
 
+update_statement_ss
+  : UPDATE table_name set_clause_list_ss  where_upd_ss 
+  ;
 
-
-where_upd_ss : {
-		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); pop_all_gen(UPDVAL2,"!");
-		$<sql_string>$=strdup("");
-	}
-	| WHERE_CURRENT_OF fetch_cursor_name { 
-		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); pop_all_gen(UPDVAL2,"!");
-		rm_quotes($<str>2);
-		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
-		$<sql_string>$=make_sql_string($<str>$,0);
-	}
-	| WHERE search_condition_ss {
-		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); pop_all_gen(UPDVAL2,"!");
-		$<sql_string>$=make_sql_string("WHERE ",$<sql_string>2,0);
-	}
+where_upd_ss 
+  : 
+	| WHERE_CURRENT_OF fetch_cursor_name 
+	| WHERE search_condition_ss 
 	;
 
+set_clause_list_ss
+  : XSET_OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL 
+	  OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET 
+  | XSET_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET 
+  | XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET 
+  | XSET upd_columns_ss  
+  | XSET_MULTIPLY_EQUAL upd_val_list_ss  
+  | XSET_ident_DOT_MULTIPLY_EQUAL upd_val_list_ss  
+  ;
 
-set_clause_list_ss: 
-    XSET_OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string("SET (",$<str>2,")=(",$<sql_string>6,")",0);
-
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))) { 
-			$<sql_string>$=strdup(fix_update_expr(0)); 
-			ansi_violation("Update (..)=(..)",0);
-		}  else {
-			ansi_violation("Update (..)=(..)",1);
-		}
-    }
-    | XSET_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {	
-		$<sql_string>$=make_sql_string("SET *=(",$<sql_string>2,")",0);
-		push_gen(UPDCOL,"*");
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||1) { 
-			$<sql_string>$=strdup(fix_update_expr(1));
-			ansi_violation("Update (..)=(..)",0);
-		} else {
-			ansi_violation("Update (..)=(..)",1);
-		}
-    }
-    | XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {	
-		$<sql_string>$=make_sql_string("SET *=(",$<sql_string>2,")",0);
-		push_gen(UPDCOL,"*");
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||1) { 
-			$<sql_string>$=strdup(fix_update_expr(1));
-			ansi_violation("Update (..)=(..)",0);
-		} else {
-			ansi_violation("Update (..)=(..)",1);
-		}
-    }
+upd_columns_ss 
+  : col_1_ss  
+	| upd_columns_ss COMMA col_1_ss 
+  ;
 
 
-    | XSET upd_columns_ss  {
-		$<sql_string>$=make_sql_string("SET ",$<sql_string>2,0);
-    }
-    | XSET_MULTIPLY_EQUAL upd_val_list_ss  {
-		char *ptr;
+upd_column_name 
+  : column_name  
+	;
 
-		ptr=$<sql_string>2;
-		push_gen(UPDCOL,"*");
+col_1_ss 
+  : upd_column_name EQUAL upd_val_ss 
+  ;
 
-		if (ptr[0]=='(') {
-			$<sql_string>$=make_sql_string("SET *= ",$<sql_string>2,0);
-		} else {
-			$<sql_string>$=make_sql_string("SET *=(",$<sql_string>2,")",0);
-		}
+upd_col_list  
+  : upd_column_name	
+	| upd_col_list COMMA upd_column_name 
+  ;
 
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||1) { 
-			$<sql_string>$=strdup(fix_update_expr(1));
-			ansi_violation("Update (..)=(..)",0);
-		} else {
-			ansi_violation("Update (..)=(..)",1);
-		}
-	}
-    | XSET_ident_DOT_MULTIPLY_EQUAL upd_val_list_ss  {
-		char *ptr;
+upd_val_list_ss  
+  : upd_val_ss 
+	| upd_val_list_ss COMMA upd_val_ss 
+  ;
 
-		ptr=$<sql_string>2;
-		push_gen(UPDCOL,"*");
+upd_val_ss 
+  : KW_NULL 
+	| upd_value_expression_ss  
+  ;
 
-		if (ptr[0]=='(') {
-			$<sql_string>$=make_sql_string("SET *= ",$<sql_string>2,0);
-		} else {
-			$<sql_string>$=make_sql_string("SET *=(",$<sql_string>2,")",0);
-		}
+upd_value_expression_ss
+  : upd_value_expression_initial_ss 
+  | MINUS upd_value_expression_initial_ss 
+  | PLUS upd_value_expression_initial_ss 
+  ;
 
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||1) { 
-			$<sql_string>$=strdup(fix_update_expr(1));
-			ansi_violation("Update (..)=(..)",0);
-		} else {
-			ansi_violation("Update (..)=(..)",1);
-		}
-	}
+upd_value_expression_initial_ss 
+  : upd_var_ident_ibind_ss    
+  | subquery_ss 
+  | ATSIGN identifier 
+  | ATSIGN identifier DOT identifier 
+  | upd_value_expression_complex_ss 
+  | literal
+  | KW_TRUE
+  | KW_FALSE
+  | USER
+  | COUNT_MULTIPLY
+  //| MULTIPLY {$<sql_string>$=make_sql_string("*",0);}
+  ;
 
-
-
-
-;
-
-upd_columns_ss : 
-	col_1_ss  {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| upd_columns_ss COMMA col_1_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
-	}
-;
-
-
-upd_column_name : column_name  ;
-
-col_1_ss : 
-	upd_column_name EQUAL upd_val_ss {
-		$<sql_string>$=make_sql_string($<str>1,"=",$<sql_string>3,0);
-	}
-;
-
-upd_col_list  : upd_column_name	{
-			push_gen(UPDCOL,$<str>1); strcpy($<str>$,$<str>1);
-		} 
-		| upd_col_list COMMA upd_column_name {
-			push_gen(UPDCOL,$<str>3); sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
-		}
-
-;
+upd_value_expression_complex_ss 
+  : upd_value_expression_initial_ss DIVIDE upd_value_expression_ss 
+  | upd_value_expression_initial_ss units_qual 
+  | upd_value_expression_initial_ss MULTIPLY upd_value_expression_ss 
+  | upd_value_expression_initial_ss PLUS upd_value_expression_ss 
+  | upd_value_expression_initial_ss MINUS upd_value_expression_ss 
+  | AVG OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 
+  | XMAX OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 
+  | XMIN OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 
+  | SUM OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 
+  | COUNT OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 
+  | identifier OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET 
+  | DATE OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET 
+  | OPEN_BRACKET upd_value_expression_ss CLOSE_BRACKET 
+  | EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET 
+  ;
 
 
-upd_val_list_ss  : 
-	upd_val_ss { 
-		$<sql_string>$=$<sql_string>1; 
-		if (gen_cnt(UPDVAL2)) {
-			copy_gen(UPDVAL,UPDVAL2);
-		} else {
-                	push_gen(UPDVAL,$<sql_string>1);
-		}
-	}
-	| upd_val_list_ss COMMA upd_val_ss { 
-		if (gen_cnt(UPDVAL2)) {
-			copy_gen(UPDVAL,UPDVAL2);
-		} else {
-                	push_gen(UPDVAL,$<sql_string>3);
-		}
-		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0); 
-	} 
-;
+upd_var_ident_ibind_ss
+  : var_ident_ibind_ss 
+  ;
+
+upd_value_expr_list_ss 
+  : upd_value_expression_ss 
+  | upd_value_expr_list_ss COMMA upd_value_expression_ss 
+  ;
+
+/* </UPDATE_RULE> */
 
 
+/* <VAR_RULE> */
 
-upd_val_ss : 
-	KW_NULL {
-		$<sql_string>$=strdup($<str>1);
-	}
-	| upd_value_expression_ss  {
-		$<sql_string>$=$<sql_string>1;
-	}
-;
+var_ident 
+  :  var2  
+  ;
 
 
+var2 
+  : DOLLAR var3 
+	| var3
+  ;
 
-upd_value_expression_ss:
-        upd_value_expression_initial_ss {
-                $<sql_string>$=$<sql_string>1;
-        }
-        | MINUS upd_value_expression_initial_ss {
-                $<sql_string>$=make_sql_string("-",$<sql_string>2,0);
-        }
-        | PLUS upd_value_expression_initial_ss {
-                $<sql_string>$=make_sql_string("+",$<sql_string>2,0);
-        }
-;
-
-
-
-upd_value_expression_initial_ss :
-        upd_var_ident_ibind_ss    {
-                $<sql_string>$=$<sql_string>1;
-
-        }
-        | subquery_ss {
-                $<sql_string>$=$<sql_string>1;
-        }
-        | ATSIGN identifier {
-                $<sql_string>$=strdup($<str>2);
-        }
-        | ATSIGN identifier DOT identifier {
-                $<sql_string>$=make_sql_string($<str>2,".",$<str>4);
-        }
-        | upd_value_expression_complex_ss { 
-		$<sql_string>$=$<sql_string>1; 
-		pop_all_gen(UPDVAL2,"!");
-	}
-        | literal {$<sql_string>$=make_sql_string($<str>1,0);}
-        | KW_TRUE {$<sql_string>$=make_sql_string("TRUE",0);}
-        | KW_FALSE {$<sql_string>$=make_sql_string("FALSE",0);}
-        | USER {$<sql_string>$=make_sql_string("USER",0);}
-        | COUNT_MULTIPLY {$<sql_string>$=make_sql_string("COUNT(*)",0);}
-        //| MULTIPLY {$<sql_string>$=make_sql_string("*",0);}
-;
-
-
-upd_value_expression_complex_ss :
-        upd_value_expression_initial_ss DIVIDE upd_value_expression_ss {$<sql_string>$=make_sql_string($<sql_string>1,"/",$<sql_string>3,0);}
-        | upd_value_expression_initial_ss units_qual {$<sql_string>$=make_sql_string($<sql_string>1,$<str>2,0);}
-        | upd_value_expression_initial_ss MULTIPLY upd_value_expression_ss {$<sql_string>$=make_sql_string($<sql_string>1,"*",$<sql_string>3,0);}
-        | upd_value_expression_initial_ss PLUS upd_value_expression_ss {$<sql_string>$=make_sql_string($<sql_string>1,"+",$<sql_string>3,0);}
-        | upd_value_expression_initial_ss MINUS upd_value_expression_ss {$<sql_string>$=make_sql_string($<sql_string>1,"-",$<sql_string>3,0);}
-        | AVG OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("AVERAGE(",$<str>3,$<sql_string>4,")",0);}
-        | XMAX OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("MAX(",$<str>3,$<sql_string>4,")",0);}
-        | XMIN OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("MIN(",$<str>3,$<sql_string>4,")",0);}
-        | SUM OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("SUM(",$<str>3,$<sql_string>4,")",0);}
-        | COUNT OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("COUNT(",$<str>3,$<sql_string>4,")",0);}
-        | identifier OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string($<str>1,"(",$<sql_string>3,")",0);}
-        | DATE OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("DATE(",$<sql_string>3,")",0);}
-        | OPEN_BRACKET upd_value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("(",$<sql_string>2,")",0);}
-        | EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("EXTEND(",$<sql_string>3,")",0);}
-;
-
-
-upd_var_ident_ibind_ss:  var_ident_ibind_ss {
-		$<sql_string>$=$<sql_string>1;
-}
-;
-
-upd_value_expr_list_ss :
-        upd_value_expression_ss {$<sql_string>$=$<sql_string>1;}
-        | upd_value_expr_list_ss COMMA upd_value_expression_ss {
-        $<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
-}
-
-;
-/*
-=====================================================================
-                        Source: var2.rule
-=====================================================================
-*/
-
-
-var_ident :  var2  
-{
-	if (scan_variable($<str>1)!=-1)
-	{
-		char c;
-		char buff[1024];
-			sprintf(buff,"%s",fgl_add_scope($<str>1,0));
-
-		print_push_variable(buff);
-
-		strcpy($<str>$,"?");
-
-	} else {
-		strcpy($<str>$,$<str>1);
-	}
-
-}
-;
-
-
-var2 :
-	DOLLAR  var3 {strcpy($<str>$,$<str>2);} | var3
-;
-
-var3:
-        array_r_variable_or_ident // MJA 010503
+var3
+  : array_r_variable_or_ident 
 	| identifier
-	| var3  DOT aft_dot {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
-	| CHAR_VALUE DOT var3 DOT aft_dot {sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);}
-;
+	| var3  DOT aft_dot 
+	| CHAR_VALUE DOT var3 DOT aft_dot 
+  ;
 
-aft_dot :
-	MULTIPLY
+aft_dot 
+  : MULTIPLY
 	| array_r_varid
 	| identifier
-;
+  ;
+
+var_ident_ibind_ss 
+  : var2  
+  | var2 THRU var2 
+  ;
+
+/* </VAR_RULE> */
 
 
+/* <WHENEVER_STATEMENTS> */
 
-var_ident_ibind_ss :  var2  
-{
-	int sv_val;
-	//printf("var_ident_ibind_ss : %s\n",$<str>1);
-	sv_val=scan_variable($<str>1);
+whenever_cmd 	
+  :  WHENEVER_NOT_FOUND when_do
+	|  WHENEVER_SQLERROR when_do
+	|  WHENEVER_ANY_ERROR when_do
+	|  WHENEVER_ERROR_CONTINUE 
+	|  WHENEVER_ERROR when_do
+	|  WHENEVER_SQLWARNING when_do
+	|  WHENEVER_WARNING_CONTINUE 
+	|  WHENEVER_WARNING when_do
+	|  WHENEVER_SUCCESS when_do
+	|  WHENEVER_SQLSUCCESS when_do
+	;
 
-	if (strncmp($<str>1," a4gl_sub",9)==0) {
-		// Its a substring of a variable
-		sv_val=1;
-	}
+when_do		
+  :	CONTINUE 
+	|	GO TO label_goto
+	|	GOTO label_goto
+	|	STOP
+	|	FCALL function_name_when
+	;
 
-	if (sv_val!=-1&&(!system_var($<str>1)))
-	{
-		// Its a variable
-		int z = 0,a = 0;
-		//printf("add as bind\n");
-		a=get_bind_cnt('i');
-		z=add_bind('i',$<str>1);
-		z-=a;
-		$<sql_string>$=strdup(A4GL_set_var_sql(doing_declare,z));
+label_goto	
+  :	identifier
+  |	COLON identifier
+	;
 
-	} else { 
-		// Its a column
-		$<sql_string>$=strdup(get_column_transform($<str>1));
-	}
-}
-| var2 THRU var2 
-{
-char r1[256];
-//char r2[256];
-char buff[256];
-char was_str[40000];
-//char *ptr1;
-//char *ptr2;
-//int aa;
-int z = 0,a = 0;
-struct variable *v_r;
-struct variable *v_1;
-struct variable *v_2;
-struct variable *v_loop;
-strcpy(was_str,"");
-printf("THRU : %s %s\n",$<str>1,$<str>3);
+function_name_when
+  :	identifier
+	;
 
-A4GL_debug("Starting THRU");
-
-sprintf(buff,"%s\n%s",$<str>1,$<str>3);
-a=get_bind_cnt('i');
-printf("get_bind_cnt=%d\n",a);
-z=add_bind('i',buff);
-z-=a;
-for (a=0;a<z;a++)  {
-         if (strlen(was_str)) {strcat(was_str,",");}
-         strcat(was_str,"?");
-}
+/* </WHENEVER_STATEMENTS> */
 
 
-	/* split_record(buff,&v_r,&v_1,&v_2);
+/* <WHILE_STATEMENT> */
 
-	v_loop=v_1;
+while_cmd 
+  : WHILE fgl_expr commands END_WHILE 
+  ;
 
-	while (1) {
-                //strcpy(kp,was_str);
-                sprintf(buff,"%s.%s",r1,v_loop->names.name);
-
-		if (scan_variable(buff)!=-1&&(!system_var(buff))) {
-			a=get_bind_cnt('i');
-			z=add_bind('i',buff);
-			z-=a;
-        	}
-
-		for (a=0;a<z;a++)  {
-			if (strlen(was_str)) {strcat(was_str,",");}
-         		strcat(was_str,"?");
-		}
-		v_loop=get_next_variable(v_r,v_loop,v_2);
-	}
-*/
-	$<sql_string>$=strdup(was_str);
-}
-;
+/* </WHILE_STATEMENT> */
 
 
+/* <WINDOW_STATEMENTS> */
 
-/* ================================ var2.rule ===================== */
-/*
-=====================================================================
-                        Source: whenever.rule
-=====================================================================
-*/
+op_clr_fields 
+  : 
+	| KWFIELD fld_list
+  ;
 
+op_to_defs 
+  : 
+  | TO_DEFAULTS 
+  ;
 
-whenever_cmd 	:  WHENEVER_NOT_FOUND when_do
-{set_whenever(WHEN_NOTFOUND|atoi($<str>2),0);}
-		|  WHENEVER_SQLERROR when_do
-{set_whenever(WHEN_SQLERROR|atoi($<str>2),0);}
-		|  WHENEVER_ANY_ERROR when_do
-{set_whenever(WHEN_ANYERROR|atoi($<str>2),0);}
-		|  WHENEVER_ERROR_CONTINUE {
- 		set_whento("");
-		set_whenever(WHEN_ERROR+WHEN_CONTINUE,0);
-}
-		|  WHENEVER_ERROR when_do
-{
-A4GL_debug("Whenever error...%d %d",WHEN_ERROR,atoi($<str>2));
-set_whenever(WHEN_ERROR+atoi($<str>2),0);
-}
-		|  WHENEVER_SQLWARNING when_do
-{set_whenever(WHEN_SQLWARNING|atoi($<str>2),0);}
-		|  WHENEVER_WARNING_CONTINUE {
-set_whenever(WHEN_WARNING+WHEN_CONTINUE,0);
-}
-		|  WHENEVER_WARNING when_do
-{set_whenever(WHEN_WARNING|atoi($<str>2),0);}
-		|  WHENEVER_SUCCESS when_do
-{set_whenever(WHEN_SUCCESS|atoi($<str>2),0);}
-		|  WHENEVER_SQLSUCCESS when_do
-{set_whenever(WHEN_SQLSUCCESS|atoi($<str>2),0);}
-		;
+clear_cmd	
+  :	CLEARSCR 
+	|	CLEARWIN win_name 
+	|	CLEARSTAT win_name 
+	|	CLEARFORM 
+	|	CLEARFORMTODEFAULTS 
+	|	CLEAR_X_FORM form_name op_clr_fields  op_to_defs 
+	|	CLEAR fld_list op_to_defs 
+  ;
 
-when_do		:	CONTINUE {
- set_whento("");
-			sprintf($<str>$,"%d",WHEN_CONTINUE); }
-		|	GO TO label_goto
-{
-set_whento($<str>3);
-sprintf($<str>$,"%d",WHEN_GOTO);
- }
-		|	GOTO label_goto
-{
-set_whento($<str>2); 
-sprintf($<str>$,"%d",WHEN_GOTO);
-}
-		|	STOP
-{ set_whento(""); 
-sprintf($<str>$,"%d",WHEN_STOP);
-}
-		|	FCALL function_name_when
-{
-set_whento($<str>2);
-sprintf($<str>$,"%d",WHEN_CALL);
-}
-		;
+fld_list	
+  :	field_name  
+	|	fld_list COMMA field_name 
+  ;
 
+current_win_cmd	
+  :	CWIS 
+	|	CURRENT_WINDOW_IS win_name 
+  ;
 
+window_type	
+  :	fgl_expr ROWS COMMA fgl_expr COLUMNS 
+	|	KWFORM fgl_expr 
+  ;
 
-label_goto	:	identifier
-		|	COLON identifier
-{sprintf($<str>$,"%s",$<str>2);}
-		;
+show_cmd 
+  : SHOW_WINDOW win_name 
+  | SHOW_MENU menu_name KW_USING menu_handler op_mnfile 
+  ;
 
-function_name_when:	identifier
-		;
+op_mnfile 
+  : 
+  | FROM fgl_expr
+  ;
 
-/* =============================== whenever.rule ==================== */
-/*
-=====================================================================
-                        Source: while.rule
-=====================================================================
-*/
+menu_name
+  : identifier
+  ;
 
+menu_handler
+  : identifier
+	;
 
-while_cmd : WHILE
-{
-print_while_1();
-push_blockcommand("WHILE");
-} fgl_expr {
-print_while_2();
-}
-            commands
-END_WHILE {
-print_while_3();
-pop_blockcommand("WHILE");
-}
-;
+hide_cmd 
+  : HIDE_WINDOW win_name 
+  ;
 
-/* ========================= while.rule ========================= */
+move_cmd 
+  : MOVE_WINDOW win_name TO fgl_expr COMMA fgl_expr 
+  |  MOVE_WINDOW win_name BY fgl_expr COMMA fgl_expr
+  ;
 
-/*
-=====================================================================
-                        Source: window.rule
-=====================================================================
-*/
-
-
-op_clr_fields : | KWFIELD fld_list
-;
-
-op_to_defs : 
-{ strcpy($<str>$,"0"); }
-| TO_DEFAULTS { strcpy($<str>$,"1"); }
-;
-
-clear_cmd	:	CLEARSCR { print_clr_window("\"screen\""); }
-		|	CLEARWIN win_name { print_clr_window($<str>2); }
-		|	CLEARSTAT win_name { print_clr_window($<str>2); }
-		|	CLEARFORM { print_clr_form(0,0,"0"); }
-		|	CLEARFORMTODEFAULTS { print_clr_form(0,0,"1"); }
-		|	CLEAR_X_FORM form_name op_clr_fields  op_to_defs { print_clr_form($<str>2,$<str>3,$<str>4); }
-		|	CLEAR fld_list op_to_defs {
-	print_clr_fields($<str>2,$<str>3);
-}
-;
-
-fld_list	:	field_name  {sprintf($<str>$,"%s",$<str>1);}
-		|	fld_list COMMA field_name {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
-;
-
-
-current_win_cmd	:	CWIS {
-	print_current_window("\"screen\"");
-}
-		|	CURRENT_WINDOW_IS win_name 
-{
-	print_current_window($<str>2);
-};
-
-window_type	:	fgl_expr ROWS COMMA fgl_expr COLUMNS {
-sprintf($<str>$,"A4GL_cr_window");
-reset_attrib(&form_attrib);
-}
-		|	KWFORM fgl_expr {
-sprintf($<str>$,"A4GL_cr_window_form");
-reset_attrib(&form_attrib);
-};
-
-show_cmd : SHOW_WINDOW win_name {
-	print_show_window($<str>2);
-	addmap("Show Window",$<str>2,curr_func,yylineno,infilename); 
-}
-| SHOW_MENU menu_name KW_USING menu_handler op_mnfile {
-	print_show_menu($<str>2,$<str>4);
-	addmap("Call Menuhandler",$<str>4,curr_func,yylineno,infilename); 
-}
-;
-op_mnfile : {
-
-print_def_mn_file();
-
-} | FROM fgl_expr
-;
-
-menu_name: identifier
-{addmap("Use Menu",$<str>1,curr_func,yylineno,infilename); }
-;
-
-menu_handler: identifier;
-
-
-hide_cmd : HIDE_WINDOW win_name {
-	print_hide_window($<str>2);
-}
-;
-
-move_cmd : MOVE_WINDOW win_name TO fgl_expr COMMA fgl_expr 
-{
-print_move_window($<str>2,0);
-}
-          |  MOVE_WINDOW win_name BY fgl_expr COMMA fgl_expr
-{
-print_move_window($<str>2,1);
-}
-;
-
-/* ========================== window.rule ========================= */
+/* </WINDOW_STATEMENTS> */
 
 
  /* ================ from make_enable ================= */
@@ -7522,27 +5995,26 @@ NAMED : NAMED_GEN
  /* ================ end make_enable ================= */
 
 /* ========================== from mkyacc =========================== */
-commands : | command1 ;
-all_commands : commands_all opt_semi ;
-command1	: all_commands  {
-chk4var=0;A4GL_lex_printcomment("/* [Comm:%s] */\n",$<str>$);
-if (A4GL_isyes(acl_getenv("INCLINES")))
-A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
-	A4GL_prchkerr(lastlineno,infilename);
-	lastlineno=yylineno;
-}
-| command1  all_commands {
-A4GL_lex_printcomment("/* [COMM:%s] */\n",$<str>2);chk4var=0;
-if (A4GL_isyes(acl_getenv("INCLINES")))
-A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
-if (A4GL_aubit_strcasecmp($<str>$,"whenever")!=0) A4GL_prchkerr(lastlineno,infilename);
-lastlineno=yylineno;
-}
-;
 
-commands_all :  {print_cmd_start();} commands_all1 {print_cmd_end();};
-commands_all1 	:
- 		pause_screen_on_cmd
+commands 
+  : 
+  | command1 
+	;
+
+all_commands 
+  : commands_all opt_semi 
+	;
+
+command1	
+  : all_commands  
+  | command1  all_commands 
+  ;
+
+commands_all 
+  :  {print_cmd_start();} commands_all1 {print_cmd_end();};
+
+commands_all1 	
+  : pause_screen_on_cmd
 	|	pause_screen_off_cmd
 	|	start_rpc_cmd
 	|	stop_rpc_cmd
@@ -7627,65 +6099,11 @@ commands_all1 	:
 	|	show_cmd
 	|	hide_cmd
 	|	move_cmd
+
 /* ========================== end from mkyacc =========================== */
-/*
-=====================================================================
-                        Source: last.reqd
-=====================================================================
-*/
 
 ;
 %%
-/* programmer routines */
-/*
-# include "lex.yy.c"
-# include "lexify.c"
-*/
-
-void
-set_clobber(char *c)
-{
-	char *ptr;
-	//char *ptr2;
-	ptr=strrchr(c,'/');
-	if (ptr) { strcpy(clobber,ptr+1); return; }
-
-/* Do dos mode ? */
-	ptr=strrchr(c,'\\');
-	if (ptr) { strcpy(clobber,ptr+1); return; }
-
-	strcpy(clobber,c);
-}
-
-char *
-get_hdrdbname(void)
-{
-	return hdr_dbname;
-}
-
-void
-set_hdrdbname(char *s)
-{
-	strcpy(hdr_dbname,s);
-}
-
-//use this set_str() if YYPURE and YYLEX_PARAM are not set
-//void
-//set_str(char *s)
-//	strcpy(yylval.str,s);
-//}
-
-//use this set_str() if YYPURE and YYLEX_PARAM are set
-void
-set_str(void *p, char *s)
-{
-	YYSTYPE *y;
-	y = (YYSTYPE *) p;
-	strcpy( y->str, s );
-}
-
-
-/* ====================== last.reqd =============================== */
 
 
 /* ===================== EOF (fgl.yacc) =========================== */
