@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.18 2002-10-07 11:06:33 afalout Exp $
+# $Id: sqlex.c,v 1.19 2002-10-27 22:34:11 afalout Exp $
 #
 */
 
@@ -125,11 +125,11 @@ int 	set_blob_data	(HSTMT hstmt);
 
 #ifdef __CYGWIN__
 	int 	need_logon 	(void);
-	int 	set_regkey 	(char *key, char *data);
-	int 	get_regkey 	(char *key, char *data, int n);
+//	int 	set_regkey 	(char *key, char *data);
+//	int 	get_regkey 	(char *key, char *data, int n);
 	void 	createkey 	(void);
-	HKEY 	newkey = 0;
-	void 	get_anykey 	(HKEY whence, char *key, char *key2, char *data, int n);
+//	HKEY 	newkey = 0;
+//	void 	get_anykey 	(HKEY whence, char *key, char *key2, char *data, int n);
 	void 	MBox 		(char *s, char *fmt,...);
 	void 	set_default_logon (void);
 	/*

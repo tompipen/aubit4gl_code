@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.21 2002-10-22 08:57:05 afalout Exp $
+# $Id: resource.c,v 1.22 2002-10-27 22:34:11 afalout Exp $
 #
 */
 
@@ -85,7 +85,11 @@ struct str_resource builtin_resource[] =
 /* defaults for environment */
   {"A4GL_UI",    "TUI"},
   {"ACL_MOUSE",   "N"},
+#ifdef __MINGW32__
+  {"A4GL_SQLTYPE", "odbc32"},
+#else
   {"A4GL_SQLTYPE", "nosql"},
+#endif
   {"A4GL_FORMTYPE", "GENERIC"},
   {"A4GL_PACKER", "XML"},
   {"CONSOLE", "N"},            /* FIXME: NOCURSES is now A4GL_UI=CONSOLE */
@@ -375,32 +379,45 @@ char *ptr;
 
 /**
  * Get the contents of an resources or environment variable.
- *
+ * WARNING - DO NOT USE CALLS TO debug() in this function - it will cause endless loop
  * @param s The environment variable name.
  */
 char *
 acl_getenv (char *s)
 {
 char prefixed_string[256];
-char *ptr;
-
-
+//char *prefixed_string;
+static char *ptr;
 
   /* First try in environmet, with a prefix */
   sprintf(prefixed_string,"A4GL_%s",s);
-//  debug("Try %s in environment\n",prefixed_string);
   ptr = getenv (prefixed_string);
 
 
   if ( ptr == 0 ) {
   	/* Not there, try again in environment, but without the prefix */
-//	debug("Try %s in environment\n",s);
 	ptr = (char *)getenv (s);
   }
 
+#ifdef __MINGW32__
+  if ( ptr == 0 ) {
+	/* try in Windows registry */
+    static char buff[256];
+    if (get_regkey(s,buff,255)) {
+        //ptr = (char *)buff;
+        ptr = buff;
+    } else {
+	    if (get_regkey(prefixed_string,buff,255)) {
+	        //ptr = (char *)buff;
+            ptr = buff;
+	    }
+    }
+  }
+#endif
+
+
   if ( ptr == 0 ) {
     /* Not there, try in resources */
-//	debug("%s NOT in environment - trying resources...\n",s);
 		ptr = find_str_resource (s);
   }
 
@@ -412,6 +429,9 @@ char *ptr;
   {
   	return "";
   } else {
+	if (strcmp (s, "DEBUG") != 0) {
+		//printf("returning %s=%s\n",s,ptr);
+    }
 	return ptr;
   }
 }
@@ -475,8 +495,8 @@ chk_dbdate (char *p)
 int
 replace_str_resource (char *s, char *neww)
 {
-  void *ptr;
-/* use with care ! */
+void *ptr;
+  /* use with care ! */
   ptr = chk_str_resource (s, builtin_resource);
   if (ptr)
     strcpy (ptr, neww);
@@ -514,19 +534,23 @@ set_regkey (char *key, char *data)
 
 /**
  * get a value from the registry
- *
- *
+ * key : name of the value to query
+ * data: Pointer to a buffer that receives the value's data
+ * n: Pointer to a variable that specifies the size of the buffer pointed to by the Data parameter, in bytes
  *
  * @param
  */
-int
+long
 get_regkey (char *key, char *data, int n)
 {
   LONG a;
   DWORD l;
-  l = REG_SZ;
-  if (newkey == 0)
-    createkey ();
+  l = REG_SZ; //type of registry data - string
+  if (newkey == 0) {
+	createkey ();
+  }
+  // The RegQueryValueEx function retrieves the type and data for a specified value name
+  // associated with an open registry key.
   a = RegQueryValueEx (newkey, key, 0, &l, data, &n);
   return (a == 0);
 }
@@ -543,14 +567,25 @@ createkey (void)
 {
   LONG a;
   DWORD disp;
+  //printf("In createkey\n");
   a = RegCreateKeyEx (
-		       HKEY_LOCAL_MACHINE, "Software\\Aubit Computing Ltd.\\A4GL", 0, "AclClass", REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &newkey, &disp);
+		       HKEY_LOCAL_MACHINE, 
+			   /* user will need Administrator privilege to write in HKLM, maybe we should
+               use HKCU instead ? */
+               "Software\\Aubit project\\Aubit 4GL compiler",
+			   0,
+			   "AclClass",
+			   REG_OPTION_NON_VOLATILE,
+			   KEY_ALL_ACCESS,
+			   NULL,
+			   &newkey,
+			   &disp);
 }
 
 
 /**
  * get any key value from registry
- *
+ * See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/sysinfo/base/regqueryvalueex.asp
  *
  *
  * @param

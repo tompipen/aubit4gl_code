@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.123 2002-10-22 06:43:19 afalout Exp $
+dnl # $Id: configure.in,v 1.124 2002-10-27 22:33:31 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -109,8 +109,6 @@ fi
 	else
 PHP_CONFIGURE_PART(Invoked from 'aubitconf'-use 'make settings' to see flags:)
 fi
-
-
 
 #This script will be used for configuring binary distributions
 #when --with-bin switch is on command line
@@ -565,7 +563,14 @@ PHP_CONFIGURE_PART(Configuring Debugging options)
 PHP_HELP_SEPARATOR([Debugging options:])
 
 
-AC_MSG_CHECKING(programs debugging)
+
+AC_MSG_CHECKING(Autoconf debugging)
+if test "$enable_ac_debug" = "yes" ; then
+	AC_MSG_RESULT(yes)
+else
+	AC_MSG_RESULT(no)
+fi
+AC_MSG_CHECKING(Aubit programs debugging)
 if test "$enable_debug" = "no" ; then
     # FIXME: strip executables
     CFLAGS="$CFLAGS -DNODEBUG"
@@ -785,7 +790,13 @@ if test "$CC" = "gcc"; then
 				GCC_VERSION_MINOR=$2
                 if test "$3" = "mingw"; then
 					GCC_MINGW=yes
-					aubitdir="D:/cygwin/$aubitdir"
+					#should not really need drive letter?
+                    #also, if adding drive letter with : , it then we add AUBITDIR to PATH, : will be
+                    #interperted as separator (when using CygWin tools), and make PATH invalid
+					aubitdir="$HOMEDRIVE/cygwin$aubitdir"
+                    #BUT-then CygWin things there is a directory called /cygwin in HIS root!
+                    #but how to get a directory name CygWin was installed in, if different then default?
+					#aubitdir="/cygwin$aubitdir"
 					AC_MSG_WARN(Using MinGW GCC. $CFLAGS)
 					old_CFLAGS="$CFLAGS"
 					old_CPPFLAGS="$CPPFLAGS"
@@ -2453,6 +2464,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 
 
 	AC_CHECK_HEADERS([dlfcn.h])
+
 	if test `eval echo '${'$as_ac_Header'}'` != yes; then
 
 		#libdl: Aubit loads plugins using the dlopen() interface (except on HP-UX).
@@ -2465,7 +2477,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 
         old_CPPFLAGS="$CPPFLAGS"
 		#old_CLFAGS="$CFLAGS"
-        
+
 		case $host in
 			*-apple-darwin*)
 				#only on Darwin:
@@ -2481,15 +2493,17 @@ if test "$AUBIT_SOURCE" = "1" ; then
 			AC_CHECK_HEADERS([dlfcn.h])
         fi
 
-		if test `eval echo '${'$as_ac_Header'}'` != yes; then
-			if test "$GCC_MINGW" = "yes"; then
-				AC_MSG_WARN(No dlfcn.h found)
-            else
-				AC_MSG_ERROR(No dlfcn.h found - please install dl library. Stop.)
+		TMP=`eval echo '${'$as_ac_Header'}'`
+		#if test `eval echo '${'$as_ac_Header'}'` != "yes"; then
+        if test "$TMP" != "yes"; then
+			if test "$GCC_MINGW" != "yes"; then
+				AC_MSG_ERROR(No dlfcn.h found, please install dl library. Stop.)
             fi
-        else
+		else
+
 			CFLAGS="$CFLAGS $TMP_IFLAGS"
         fi
+
 		CPPFLAGS="$old_CPPFLAGS"
     fi
 fi
@@ -3163,8 +3177,6 @@ if test "$INFORMIXODBC_WARNING" = "1"; then
 cat<<X
 +--------------------------------------------------------------------+
 |                        *** NOTE ***                                |
-#| ODBC library directory (\$INFORMIXDIR/lib/cli) must be in your      |
-#| LD_LIBRARY_PATH environment variable value.                        |
 | Configuration files used by Informix ODBC driver:                  |
 | \$INFORMIXDIR/etc/odbc.ini odbcinst.ini setup.odbc                  |
 X
@@ -3181,9 +3193,13 @@ cat<<X
 | to find nedded programs and/or libraries that belong to this way   |
 | specified package in non-standard place. We will try to do this    |
 | automatically for you:                                             |
+X
+if test "$enable_ac_debug" = "yes" ; then
+cat<<X
 WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON"
 CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 X
+fi
 
 	if test "$ADD_LD_LIBRARY_PATH" != ""; then
 		#FIXME: make this call only if make is detected (this can happen with binary distro)
@@ -3210,11 +3226,17 @@ X
 cat<<X
 +--------------------------------------------------------------------+
 |                        ***  NOTE   ***                             |
+X
+if test "$enable_ac_debug" = "yes" ; then
+cat<<X
+|
 | Aubit plug-ins to build:
 | $PLUGIN_YES
 | Aubit plug-ins the will not be built:                              |
 | $PLUGIN_NO
+|
 X
+fi
 if test "$AUBIT_SOURCE" = "1" ; then
 cat<<X
 |                          *** NOTE ***                              |

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.21 2002-10-22 06:43:36 afalout Exp $
+# $Id: calldll.c,v 1.22 2002-10-27 22:34:11 afalout Exp $
 #
 */
 
@@ -259,18 +259,24 @@ nullfunc(void)
  * @return A pointer to the dynamic library handle.
  */
 void *
-dl_openlibrary (char *type, char *name)
+dl_openlibrary (char *type, char *p)
 {
   void *dllhandle;
-  char buff[1024];
+  static char buff[1024];
+  static char tmpbuff[1024];
 
-//  debug ("AUBITDIR=%s\n", acl_getenv ("AUBITDIR"));
+  char *plugin_name;
+
+  //need to hide this pointer, something in the way we read registry is messing it up!
+  sprintf (tmpbuff, "%s",p);
+  plugin_name = tmpbuff;
+
 
 	#ifdef __CYGWIN__
-	  sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, name);
+	  sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, plugin_name);
 	#else
 		#if defined(__DARWIN__)
-		  sprintf (buff, "%s/lib/lib%s_%s.bundle", acl_getenv ("AUBITDIR"), type, name);
+		  sprintf (buff, "%s/lib/lib%s_%s.bundle", acl_getenv ("AUBITDIR"), type, plugin_name);
 
           /*
 	        void *handle;
@@ -291,10 +297,22 @@ dl_openlibrary (char *type, char *name)
 
         #else
 			#if defined(__MINGW32__)
-				sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, name);
+				//printf("dl_openlibrary received %s %s\n",type, plugin_name);
+			//printf("1 plugin_name = %s\n",plugin_name);
+				char *aubitdirptr;
+                char buff2[1024];
+			//printf("2 plugin_name = %s\n",plugin_name);
+				aubitdirptr=acl_getenv("AUBITDIR");
+				//sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, plugin_name);
+			//printf("3 plugin_name = %s\n",plugin_name); // <<<<<<< FUCKED!!!!
+				sprintf (buff2, "%s/lib/lib%s", aubitdirptr, type);
+				//printf("buff2 = %s\n",buff2);
+			//printf("4 plugin_name = %s\n",plugin_name);
+				sprintf (buff, "%s_%s.dll", buff2, plugin_name);
+				//printf("buff = %s\n",buff);
 			#else
 				/* all other platforms: */
-				sprintf (buff, "%s/lib/lib%s_%s.so", acl_getenv ("AUBITDIR"), type, name);
+				sprintf (buff, "%s/lib/lib%s_%s.so", acl_getenv ("AUBITDIR"), type, plugin_name);
             #endif
         #endif
 	#endif

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.94 2002-10-22 08:57:02 afalout Exp $
+# $Id: Makefile-common.in,v 1.95 2002-10-27 22:34:10 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -170,6 +170,10 @@ ifneq "${AUBIT_BIN_INSTALL}" "1"
 	AUBITDIR=${AUBIT_SRC_ROOT}
 endif
 
+CYG_AUBITDIR	:=$(subst C:,/cygdrive/c,${AUBITDIR})
+CYG_AUBITDIR	:=$(subst D:,/cygdrive/d,${CYG_AUBITDIR})
+
+
 ## ==================================================================
 ##                   Global Makefile variables
 ## ==================================================================
@@ -182,8 +186,9 @@ GCC_MINGW=@GCC_MINGW@
 
 ifeq "${GCC_MINGW}" "yes"
     WIN_PATH	=1
+	#Needed for fixing include paths in UI_GTK:
 	WIN_CYGPATH	=D:/cygwin
-    AUBITDIR	:=${WIN_CYGPATH}${AUBITDIR}
+    #AUBITDIR	:=${WIN_CYGPATH}${AUBITDIR}
 	#this would incalidate all LINK_LIBS+=-laubit4gl that we need:
 	#TARGET_OS	=mingw
 endif
@@ -343,8 +348,6 @@ else
 endif
 
 ifeq "${WIN_PATH}" "1"
-	#"-ID:/cygwin/usr/include"
-	#C_IFLAGS            =-I${WIN_CYGPATH}/usr/local/include -I$(AUBITDIR)/incl -I${WIN_CYGPATH}/usr/include
 	C_IFLAGS            =-I$(AUBITDIR)/incl
 else
 	C_IFLAGS            =-I/usr/local/include -I$(AUBITDIR)/incl
@@ -463,18 +466,8 @@ ifdef COMSPEC #############Windows platform - CygWin/MinGW related:#############
 	GTKCONFIGCMD	=echo ${LIBVER}
     LDDCMD          =cygcheck
     #we need makefile for aubit binary build on CygWin to install dll/ and extralibs/
-
-#    ifeq "${WIN_PATH}" "1"
-		#WIN_CYGPATH	=D:/cygwin
-		#PATH		:=${AUBITDIR}/lib:/usr/local/lib:${PATH}
-#	else
-		PATH		:=${AUBITDIR}/lib:/usr/local/lib:${PATH}
-#    endif
-
-#PATH = D:/cygwin/usr/src/aubit/aubit4glsrc/lib:
-#/usr/src/aubit/aubit4glsrc/bin:
-
-
+	
+	PATH		:=${CYG_AUBITDIR}/lib:${CYG_AUBITDIR}/bin:${AUBITDIR}/lib:/usr/local/lib:${PATH}
 
 	#native-struct rewuired by GTK on Windows, but causes cc1: unrecognized option `-fnative-struct'
     #error with GCC 3.2 on CygWin
@@ -1070,6 +1063,9 @@ TEST_STD= \
 		assoc2.4gl  form.per    hello_db.4gl  pdf_report.4gl  testmpz.4gl \
 		hello2.4gl  helpfile.msg  test_build.4gl  test_select.4gl \
 		file.4gl    hello.4gl   Makefile      testmenu.4gl testmenu.menu
+ifneq "${COMSPEC}" ""
+	TEST_STD+=make.bat
+endif
 
 TEST_GUI= \
 		calc.4gl  form-gui.per  gui.per        Makefile   radio.per \

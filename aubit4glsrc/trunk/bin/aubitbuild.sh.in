@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.1 2002-10-01 09:50:30 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.2 2002-10-27 22:34:02 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -181,7 +181,11 @@ else
 
 	#####################
 	#Local paths
-	AUBITSRCDIR=/usr/aubit/aubit4glsrc
+    #Directory where Aubit source code can be found:
+	#AUBITSRCDIR=/usr/aubit/aubit4glsrc
+	AUBITSRCDIR=/usr/src/aubit/aubit4glsrc
+	#Directory where compiled binaries will be installed by 'make install'. This should be passed
+    # to configure and/or make when installing:
 	AUBITBINDIR=/usr/local/aubit4gl
 
 	#####################
@@ -359,7 +363,9 @@ if test "$MAKE" = "1"; then
 
 		if ! [ -f "$AUBITSRCDIR/?akefile" ];
         then
-			EXEC="$AUBITSRCDIR/configure"; runexec
+			#pasing parameters to configure from here will only work if aubitconf script is
+            #not in the path
+			EXEC="$AUBITSRCDIR/configure --prefix=$AUBITBINDIR"; runexec
         fi
 
 		EXEC="make clean.all"; runexec
@@ -384,7 +390,9 @@ if test "$MAKE" = "1"; then
 		EXEC="autoconf"; runexec
 		EXEC="make build"; runexec
 		#configure will use aubitconf if it exists to provide switches:
-		EXEC="./configure"; runexec
+		#pasing parameters to configure from here will only work if aubitconf script is
+        #not in the path
+		EXEC="./configure  --prefix=$AUBITBINDIR"; runexec
 		#cannot do this, if I do, there won't be a makefile left to do "make tar"
 		#EXEC="make clean.configure"; runexec #to remove makefiles before tar
 		#must use 'tar' target in makefile, since I don't have versions and platform info
@@ -423,7 +431,7 @@ if test "$MAKE" = "1"; then
 
 		################## install compiler ###############
 		EXEC="make deinstall"; runexec
-		EXEC="make install"; runexec
+		EXEC="make install prefix=$AUBITBINDIR"; runexec
 		EXEC="cd $AUBITBINDIR"; runexec
 	    EXEC="make clean"; runexec
 		EXEC="make tar.bin"; runexec

@@ -24,11 +24,14 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2002-10-13 01:40:35 afalout Exp $
+# $Id: Makefile.in,v 1.9 2002-10-27 22:34:11 afalout Exp $
 #
 
+ROOT    =../..
+LIBROOT =..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 override NOINCL=0
 
 ## ==================================================================
@@ -43,26 +46,26 @@ OBJS      		=${CMODS:.c=.o}
 ## ==================================================================
 
 #CFLAGS			+= -I../compilers/fcompile -Ilibincl ${CFLAGS}
-EXE_CFLAGS      +=-I../libincl
-CFLAGS          +=-I../libincl -I../../compilers/fcompile -I../libaubit4gl
+#EXE_CFLAGS      +=-I../libincl
+CFLAGS          +=-I${ROOT}/compilers/fcompile -I${LIBROOT}/libaubit4gl
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-aubit-config: ${OBJS}
+${ROOT}/bin/aubit-config: ${OBJS}
 	${CC} ${EXE_CFLAGS} -I../libincl -o $@ $^
-	${CP} $@ ../../bin
+#	${CP} $@ ../../bin
 
 
 ## ==================================================================
 ##                           Dependencies
 ## ==================================================================
 
-resource.o: ../../compilers/fcompile/form_x.h
+resource.o: ${ROOT}/compilers/fcompile/form_x.h
 
-../../compilers/fcompile/form_x.h:
-	${MAKE} -C ../../compilers/fcompile rpc
+${ROOT}/compilers/fcompile/form_x.h:
+	${MAKE} -C ${ROOT}/compilers/fcompile rpc
 
 
 ## ==================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.21 2002-10-03 14:50:16 mikeaubury Exp $
+# $Id: API_sql.c,v 1.22 2002-10-27 22:34:11 afalout Exp $
 #
 */
 
@@ -137,7 +137,13 @@ char *      global_A4GLSQL_get_sqlerrm (void);
 int
 A4GLSQL_initlib (void)
 {
-	libptr=(void *)dl_openlibrary("SQL",acl_getenv("A4GL_SQLTYPE"));
+char *ptr;
+
+	ptr=acl_getenv("A4GL_SQLTYPE");
+	//printf("calling dl_openlibrary with %s\n",ptr);
+
+	//libptr=(void *)dl_openlibrary("SQL",acl_getenv("A4GL_SQLTYPE"));
+    libptr=(void *)dl_openlibrary("SQL",ptr);
 	debug("libptr=%p\n",libptr);
 	if (libptr==0) {
 		exitwith("Unable to open SQL library.");

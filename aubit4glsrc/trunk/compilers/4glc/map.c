@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.13 2002-10-18 01:56:33 afalout Exp $
+# $Id: map.c,v 1.14 2002-10-27 22:34:10 afalout Exp $
 #*/
 
 /**
@@ -354,10 +354,11 @@ printUsage(char *argv[])
   printf("Usage %s [options] filename[.4gl]\n", argv[0]);
   printf("Options:\n");
   printf("  -G     | --globals         : Generate the globals map file\n");
-  printf("  -s 0|1 | --stack_trace 0|1 : ");
-  printf("Instruct the stack trace inclusion in file:\n");
-  printf("     0 - No generate\n");
+  printf("  -s 0|1 | --stack_trace 0|1 : Instruct the stack trace inclusion in file:\n");
+  printf("     0 - Don't generate\n");
   printf("     1 - Generate(Default)\n");
+  printf("  -c compile to object\n");
+  printf("  -o compile to object and link to executable\n");
 }
 
 
@@ -369,30 +370,41 @@ printUsage(char *argv[])
  * @param argv The argument values
  */
 //static
-void
+int
 initArguments(int argc, char *argv[])
 {
 int i;
 /* extern char *optarg; in /usr/include/getopt.h */
 /*  int this_option_optind = optind ? optind : 1; */
 int option_index = 0;
+int compile_object = 0;
+int compile_exec = 0;
 int si;
+int x;
 char a[128];
 char b[128];
 char c[128];
+char incl_path[128];
+char l_path[128];
+char l_libs[128];
+char buff[456];
 static struct option long_options[] =
   {
     {"globals",     0, 0, 'G'},
     {"stack_trace", 1, 0, 's'},
-    {"help", 0, 0, '?'},
+    {"help", 		0, 0, '?'},
     {0, 0, 0, 0},
   };
+
+//    {"object", 		0, 0, 'c'},
+//    {"exec", 		0, 0, 'o'},
+
 
 	debug ("Parsing the comand line arguments\n");
 
  /* see http://www.gnu.org/software/gengetopt for inspiration */
 
-  while ( ( i = getopt_long (argc, argv, "Gs:?h",
+  while ( ( i = getopt_long (argc, argv, "Gs:co?h",
                         long_options, &option_index) ) != -1)
   {
     switch(i)
@@ -410,6 +422,15 @@ static struct option long_options[] =
 		}
         setGenStackInfo(si);
         break;
+
+      case 'c':              /* Compile resulting C file to object */
+		compile_object = 1;
+		break;
+
+      case 'o':              /* Compile resulting C file to executable */
+		compile_exec = 1;
+		break;
+
 
       case '?':
       case 'h':
@@ -447,8 +468,115 @@ static struct option long_options[] =
   yyin = fopen (c, "r");
 
   strcpy (infilename, c);
+
+  x = compile_4gl();
+
+  debug("after compile_4gl()");
+
+  if ( x == 0 ) {
+
+	  strcpy (incl_path,"-I");
+	  strcat (incl_path,acl_getenv ("AUBITDIR"));
+	  strcat (incl_path,"/incl");
+
+	  strcpy (l_path,"-L");
+	  strcat (l_path,acl_getenv ("AUBITDIR"));
+	  strcat (l_path,"/lib");
+
+	  strcpy (l_libs,"-laubit4gl");
+
+      int ret;
+
+	if (compile_object) {
+	    //gcc hello.c -c -o hello.o -I../../incl
+		sprintf (buff, "gcc %s.c -c -o %s.o %s",a,a,incl_path);
+		printf ("%s\n",buff);
+		sprintf (buff,"%s > %s.err 2>&1",buff,a);
+		debug("Runnung $s",buff);
+		ret=system (buff);
+        //see function system_run() in fglwrap.c
+		if (ret) {
+			printf ("Error compiling %s.c - check %s.err\n",a,a);
+			//fixme: show err file
+        }
+	}
+
+
+    if (compile_exec) {
+		sprintf (buff,"gcc %s.c -o %s %s %s %s",a,a,incl_path,l_path,l_libs);
+		printf ("%s\n",buff);
+		sprintf (buff,"%s > %s.err 2>&1",buff,a);
+		//printf ("%s\n",buff);
+		debug("Runnung $s",buff);
+		ret=system (buff);
+		if (ret) {
+			printf ("Error compiling %s.c - check %s.err\n",a,a);
+			//fixme: show err file
+        }
+
+	}
+  }
+
+  return x;
 }
 
+
+/**
+ * Compile one 4gl file to output language
+ *
+ *
+ * @param
+ * @param
+ */
+int
+compile_4gl(void)
+{
+int x;
+
+  if (yyin == 0)
+  {
+    printf ("Error opening file : %s\n", infilename);
+    exit (1);
+  }
+
+	#if YYDEBUG != 0
+    	printf ("YYDEBUG was set while compiling\n");
+		#ifdef YYPRINT
+    		printf ("YYPRINT was set while compiling\n");
+		#endif
+	#endif
+
+  fseek(yyin,0,SEEK_END);
+  yyin_len=ftell(yyin);
+  rewind(yyin);
+
+  if (yydebug)
+    {
+      printf ("Opened : %s\n", infilename); //c);
+    }
+
+  openmap(outputfilename);
+  if (!A4GLSQL_initlib()) {
+	printf("4glc: Error opening SQL Library (A4GL_SQLTYPE=%s)\n", acl_getenv("A4GL_SQLTYPE"));
+	exit(1);
+  }
+
+  init_datatypes();
+  debug("after init_datatypes\n");
+  x = yyparse (); /* we core dump here on Darwin */
+  debug("after yyparse\n");
+
+  if (yydebug)
+    {
+      printf ("Closing map : %d\n", x);
+    }
+
+  closemap ();
+  debug("after closemap");
+
+  return x;
+
+}
 
 
 /* ================================ EOF ============================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.5 2002-06-06 12:31:29 afalout Exp $
+# $Id: aubit-config.c,v 1.6 2002-10-27 22:34:11 afalout Exp $
 #
 */
 
@@ -127,7 +127,7 @@ debug_full (char *fmt,...)
   static char buff[4096];
 
   /* Problem here is that when DEBUG is set, this will dump ALL settings
-  to stdout. But when we aer debuggung, for instance, 4glc, ans set DEBUG,
+  to stdout. But when we are debugging, for instance, 4glc, and set DEBUG,
   we need aubit-config to return us things like AUBITDIR.
 
   As temporary sollution, I renamed DEBUG here to DEBUG_CFG.
