@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.107 2005-02-11 16:52:37 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.108 2005-02-25 13:25:38 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.107 2005-02-11 16:52:37 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.108 2005-02-25 13:25:38 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -1159,7 +1159,6 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
   char *cname2 = 0;
   char *cname3 =0;
 
-
   if (cname) free (cname);
   set_suppress_lines ();
   cname = strdup (A4GL_strip_quotes (a3));
@@ -1452,9 +1451,10 @@ print_unload (char *file, char *delim, char *sql)
 {
 char filename[256];
 char delim_s[256];
+
 if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { sprintf(delim_s,":%s",delim); }
 
-  if (A4GLSQLCV_check_requirement("ESQL_UNLOAD")) {
+  if (A4GLSQLCV_check_requirement("ESQL_UNLOAD") && strncasecmp(sql,"SELECT",7)==0) {
 	int ni;
 		printc("{");
   		ni = print_bind_definition ('i');
@@ -1462,12 +1462,14 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
   		print_conversions ('i');
 			sprintf(filename,":_unlfname"); 
 			printc("{");
-	set_suppress_lines();
+			set_suppress_lines();
 			printc("\nEXEC SQL BEGIN DECLARE SECTION;/*4*/");
 			printc("char _unlfname[512];");
+			printc("char _delim[512];");
 			printc("\nEXEC SQL END DECLARE SECTION;");
-	clr_suppress_lines();
+			clr_suppress_lines();
 			printc("strcpy(_unlfname,%s);",file);
+			printc("strcpy(_delim,%s);",delim);
 			printc("A4GL_trim(_unlfname);");
 
 			if (A4GLSQLCV_check_requirement("ESQL_UNLOAD_FULL_PATH")) {
@@ -1475,7 +1477,7 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
 			}
 
 			A4GL_save_sql("UNLOAD : %s",sql);
-  			printc ("\nEXEC SQL UNLOAD TO %s DELIMITER %s %s ;",filename,delim_s,sql);
+  			printc ("\nEXEC SQL UNLOAD TO %s DELIMITER :_delim %s ;",filename,sql);
 
 			printc("}");
 

@@ -90,7 +90,7 @@ if (need_cursor_free) {
 		execute_select_free();
 }
 	
-	EXEC SQL declare crExec CURSOR FOR stExec;cp_sqlca();
+	EXEC SQL declare crExec CURSOR WITH HOLD FOR stExec;cp_sqlca();
        	if (sqlca.sqlcode<0) {A4GL_debug("Err3"); return 0;}
 
 	need_cursor_free=1;
@@ -251,7 +251,7 @@ endcode
    prepare p_qli2 from lv_query
 
 
-   DECLARE info_curs CURSOR FOR p_qli2
+   DECLARE info_curs CURSOR WITH HOLD FOR p_qli2
 
 
    LET i = 0
@@ -930,7 +930,7 @@ EXEC SQL END DECLARE SECTION;
 
 EXEC SQL CONNECT TO template1 AS 'default';
 if (sqlca.sqlcode!=0) goto here;
-EXEC SQL DECLARE c_getdbs CURSOR FOR select datname from pg_catalog.pg_database order by datname;
+EXEC SQL DECLARE c_getdbs CURSOR WITH HOLD FOR select datname from pg_catalog.pg_database order by datname;
 if (sqlca.sqlcode!=0) goto here;
 EXEC SQL  open c_getdbs;
 if (sqlca.sqlcode!=0) goto here;
