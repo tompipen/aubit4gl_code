@@ -9,8 +9,8 @@ define a_dt datetime year to day
 	select '' into a_date from aa
 	display a_date
 	
-	#select '01/01/2003' into a_date from aa
-	#display a_date
+	select '01/01/2003' into a_date from aa
+	display a_date
 	
 	select '' into a_dt from aa
 	display a_dt

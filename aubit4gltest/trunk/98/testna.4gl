@@ -16,6 +16,7 @@ define a,exit_code,tmp integer
 	let a=sqlca.sqlerrd[2]
 
 	if a!=1 then
+		display "BAD 1"
 		let exit_code = 1
 	end if
 	
@@ -29,7 +30,8 @@ define a,exit_code,tmp integer
 	let a=sqlca.sqlerrd[2]
 
 	if a!=2 then
-		let exit_code = 1
+		display "BAD 2"
+		let exit_code = 2
 	end if
 
 	display ".............. Inserting 4... (next serial shoud be 4)"
@@ -42,7 +44,8 @@ define a,exit_code,tmp integer
 	let a=sqlca.sqlerrd[2]
 
 	if a!=4 then
-		let exit_code = 1
+		display "BAD 3"
+		let exit_code = 3
 	end if
 
 	display ".............. Inserting 0... (next serial shoud be 5)"
@@ -55,7 +58,8 @@ define a,exit_code,tmp integer
 	let a=sqlca.sqlerrd[2]
 
 	if a!=5 then
-		let exit_code = 1
+		display "BAD 4"
+		let exit_code = 4
 	end if
 
 	display ".............. Inserting 0... (next serial shoud be 6)"
@@ -68,7 +72,8 @@ define a,exit_code,tmp integer
 	let a=sqlca.sqlerrd[2]
 
 	if a!=6 then
-		let exit_code = 1
+		display "BAD 5"
+		let exit_code = 5
 	end if
 
 	display ".............. Inserting 0... (next serial shoud be 7)"
@@ -81,7 +86,8 @@ define a,exit_code,tmp integer
 	let a=sqlca.sqlerrd[2]
 
 	if a!=7 then
-		let exit_code = 1
+		display "BAD 6"
+		let exit_code = 6
 	end if
 	
 	
@@ -92,6 +98,7 @@ define a,exit_code,tmp integer
 		display tmp
 	end foreach
 	
+	display "Exit program : ",exit_code
 	exit program exit_code
 	
 end main

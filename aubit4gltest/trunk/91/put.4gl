@@ -16,7 +16,11 @@ If transaction logging is off - it will work (and obviously outside of a transac
 
 }
 
+
+{! PRAGMA EMULATE INSERT CURSOR FOR c_ins !}
 database test1
+
+
 define abc record
 	a integer,
 	b char(20)
