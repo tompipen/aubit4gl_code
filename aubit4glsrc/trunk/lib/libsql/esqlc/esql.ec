@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.4 2002-02-19 09:18:34 afalout Exp $
+# $Id: esql.ec,v 1.5 2002-03-01 17:03:49 mikeaubury Exp $
 #
 */
 
@@ -360,7 +360,7 @@ $char *sql;
   A4GLSQL_set_status (0, 1);
   
     #ifndef WIN32
-		strcpy(b,get_uname());
+		strcpy(b,get_uniqname());
     #else
 		exitwith ("Could not get_uname - where is this defined? See esql.ec");
     #endif
