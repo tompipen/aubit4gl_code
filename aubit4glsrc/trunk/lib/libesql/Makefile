@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.12 2004-03-25 06:20:04 afalout Exp $
+# $Id: Makefile,v 1.13 2004-03-25 09:00:04 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -46,6 +46,10 @@ ifeq "${TARGET_OS}" "cygwin"
 	LIBAUBIT4GL=-L${LIBROOT} -laubit4gl
 endif
 
+ifeq "${TARGET_OS}" "solaris"
+	LIBAUBIT4GL=-L${LIBROOT} -laubit4gl
+endif
+
 PGLIBS=-L${ECPG_LIBDIR} ${ECPG_LFLAGS} -lecpg -lecpg_compat -lpgtypes
 
 ALL=${LIBROOT}/libESQL_INFORMIX${SO_EXT} ${LIBROOT}/libESQL_POSTGRES${SO_EXT} \
@@ -63,6 +67,9 @@ else
 	QUERIX_LFLAGS=-L${QUERIXDIR}/lib
     STATIC=-static
     QUERIX_LIBS=-lesql
+endif
+ifeq "${TARGET_OS}" "solaris"
+	STATIC=
 endif
 
 ## ==================================================================
