@@ -24,15 +24,54 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.3 2003-02-16 04:25:42 afalout Exp $
+# $Id: array.c,v 1.4 2003-02-17 00:03:21 afalout Exp $
 #
 */
 
 /**
  * @file
  * ODBC Sql array functions for LOAD FROM ... INSERT INTO
+
+The fill_array are supposed to populate an array with information on
+databases, tables or columns.
+
+The returns are into an char[szarr], so arr1 should really be something like
+	char arr1[mx][szarr1] (if you see what I mean)...
+
+The main interface is via fill_array where 'service' points to one of
+the other functions (DATABASES, TABLES or COLUMNS)...
+
+The 'mode' specifies what data to load into the arrays
+the 'info' passes some extra details into the functions (like table names etc)
+
+DATABASES
+	Mode  - not used
+	Info - not used
+	Arr1 = DBName
+	Arr2 = Description ?
+
+TABLES
+	Mode =1 Exclude system tables
+		otherwise include them
+
+	arr1 = Table name
+	arr2 = Table description
+
+COLUMNS
+	Mode= 0 - Fill arr2 with colsize
+		     1 - Fill arr2 with datatype name
+		Otherwise - fill it with the table name
+	Info - Table name we're looking at
+	arr1 = Column name
+
+
+
+In all cases if the pointer the the array (arr1 or arr2) is 0 (or C-NULL) then
+don't bother to fill it :-)
+
+
+
  *
- * @todo Doxygen comments to add to functions
  */
 
 
@@ -42,8 +81,6 @@
 =====================================================================
 */
 
-//#include <stdio.h>
-//#include <string.h>
 #include "a4gl_lib_sql_odbc_int.h"
 
 /*
@@ -69,8 +106,6 @@ SDWORD			outlen[512];
 int fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr2);
 int fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2, int mode);
 int fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2, int mode, char *info);
-//int A4GLSQL_fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
-//	    char *service, int mode, char *info);
 
 
 /*
