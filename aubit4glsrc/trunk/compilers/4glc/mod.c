@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.79 2002-09-20 10:06:04 mikeaubury Exp $
+# $Id: mod.c,v 1.80 2002-09-21 23:56:35 afalout Exp $
 #
 */
 
@@ -3282,13 +3282,24 @@ generate_globals_for (char *s)
     }
 
   strcpy (nocfile, acl_getenv ("NOCFILE"));
-  setenv ("NOCFILE", "Yes", 1);
+	#ifndef __sun__
+		#ifndef __sparc__
+            //no setenv on Solaris
+			setenv ("NOCFILE", "Yes", 1);
+        #endif
+    #endif
   ptr = strchr (fname, '.');
   *ptr = 0;
   debug ("Trying to compile globals file %s\n", fname);
   sprintf (buff, "cd %s; 4glc -G %s", dirname, fname);
   system (buff);
-  setenv ("NOCFILE", nocfile, 1);
+	#ifndef __sun__
+		#ifndef __sparc__
+            //no setenv on Solaris
+			setenv ("NOCFILE", nocfile, 1);
+        #endif
+    #endif
+
 }
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.30 2002-06-29 13:12:01 afalout Exp $
+# $Id: 4glc.c,v 1.31 2002-09-21 23:56:35 afalout Exp $
 #
 */
 
@@ -183,31 +183,37 @@ initArguments(int argc, char *argv[])
     {0, 0, 0, 0},
   };
 
+#ifndef __sun__
+	#ifndef __sparc__
+	//no getopt_long on Solaris
   while ( ( i = getopt_long (argc, argv, "Gs:?h",
                         long_options, &option_index) ) != -1)
   {
     switch(i)
     {
       case 'G':              /* Global generate only */
-        globals_only = 1;
+		globals_only = 1;
         break;
 
       case 's':              /* Stack information inclusion */
-	si = atoi(optarg);
+		si = atoi(optarg);
         if ( si != 0 && si != 1 )
-	{
-	  printUsage(argv);
-	  exit(1);
-	}
+		{
+		  printUsage(argv);
+		  exit(1);
+		}
         setGenStackInfo(si);
         break;
 
       case '?':
       case 'h':
-	printUsage(argv);
+		printUsage(argv);
         exit(0);
     }
   }
+
+    #endif
+#endif
 
   if ( optind >= argc )
   {

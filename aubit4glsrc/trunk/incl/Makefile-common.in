@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.64 2002-09-21 12:02:18 afalout Exp $
+# $Id: Makefile-common.in,v 1.65 2002-09-21 23:56:35 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -313,6 +313,9 @@ LINK_COMPILERS      =-dynamic
 #AUBIT_LIB			=-laclall
 #AUBIT_LIB			=-laclshared
 AUBIT_LIB			=-laubit4gl
+ifeq "${TARGET_OS}" "solaris"
+	AUBIT_LIB			+=-lc
+endif
 
 #do not install static libraries on CygWin:
 #we no longer compile static libs on any platform - remove this
