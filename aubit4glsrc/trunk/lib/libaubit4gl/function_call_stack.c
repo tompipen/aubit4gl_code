@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.10 2002-06-25 03:22:30 afalout Exp $
+# $Id: function_call_stack.c,v 1.11 2002-09-23 11:39:30 afalout Exp $
 #*/
 
 /**
@@ -133,12 +133,19 @@ static int stackInfoInitialized = 0;
 void
 A4GLSTK_initFunctionCallStack(void)
 {
+	#ifdef DEBUG
+		debug("Initializing Function Call Stack");
+    #endif
+
   functionCallStack = (FunctionCall *)calloc(
     sizeof(FunctionCall),
     MAX_FUNCTION_CALL_STACK
   );
   functionCallPointer = 0;
   stackInfoInitialized = 1;
+	#ifdef DEBUG
+		debug("Done Initializing Function Call Stack");
+    #endif
 }
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.18 2002-09-08 10:38:19 afalout Exp $
+# $Id: fglwrap.c,v 1.19 2002-09-23 11:39:30 afalout Exp $
 #
 */
 
@@ -140,7 +140,7 @@ char * 			clob				(char *s,char *p);
 void
 fgl_end(void)
 {
-  if (isscrmode ()) 
+  if (isscrmode ())
   {
 	#ifdef DEBUG
 	  debug("In screen mode - ending curses...");
@@ -148,6 +148,7 @@ fgl_end(void)
 	  gotolinemode();
   }
   close_database();
+  debug("End of program - exit(0).");
   exit (0);
 }
 
@@ -304,7 +305,7 @@ char *p;
 	#endif
 
 	#ifdef DEBUG
-		debug("All done");
+		debug("fgl_start done");
     #endif
 }
 
@@ -313,10 +314,10 @@ char *p;
  *
  * The system command is popped from the stack.
  *
- * @param a The mode : 
+ * @param a The mode :
  *   - 1 Receive and push the exit value of command executed to stack.
  *   - 2 In background mode.
- *   
+ *
  */
 void
 system_run(int a)
