@@ -1,0 +1,386 @@
+#! /bin/ksh
+#	4glWorks runner building script
+#
+#	The 4glWorks application framework
+#	Copyright 1992-2002 Marco Greco (marco@4glworks.com)
+#
+#	Initial release: May 99
+#	Current release: Jan 02
+#
+#	This library is free software; you can redistribute it and/or
+#	modify it under the terms of the GNU Lesser General Public
+#	License as published by the Free Software Foundation; either
+#	version 2.1 of the License, or (at your option) any later version.
+#
+#	This library is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#	Lesser General Public License for more details.
+#
+#	You should have received a copy of the GNU Lesser General Public
+#	License along with this library; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+#
+#  some useful functions
+#  true if $1 exists and newer than $2
+#
+if [ -z "`[ a -ot b] 2>&1`" ]
+then
+todate()
+{
+     test $1 -nt $2
+}
+else
+todate()
+{
+    test "`/bin/ls -tm $1 $2 2>&-`" = "$1, $2"
+}
+fi
+
+#
+#  compilation scripts
+#
+
+ccompiley()
+{
+    if [ -n "`which bison`" ]
+    then
+        bison -b $2 -p $2 -o $tmpdir/$2.c $1
+    else
+        yacc $1
+        mv y.tab.c $tmpdir/$2.c
+    fi
+    $CFGLGO $cinclist -c $tmpdir/$2.c -o $3
+    rm $tmpdir/$2.c
+}
+
+ccompilec()
+{
+    $CFGLGO $cinclist -c $1 -o $3
+}
+
+ccompileec()
+{
+    $EC $1
+    $CFGLGO -c $2.c -o $3
+}   
+
+#
+# true sh echoing?
+#
+if [ `echo 'a\c'` = 'a\c' ]
+then
+    ECHO='echo -e'
+else
+    ECHO='echo'
+fi
+
+#
+#  some vars
+#
+rebuild=false
+relink=false
+
+#
+# get cached settings
+#
+if [ -r .cbuildrc ]
+then
+    for v in AWK INFORMIXC INFORMIXDIR
+    do
+        if [ "x`eval $ECHO \\$$v`" = x ]
+        then
+            eval `fgrep -e "$v=" .cbuildrc | tail -1`
+        fi
+    done
+    eval `egrep -e '(framepath|lang|sourcepath)=' .cbuildrc`
+fi
+
+#
+#  put all our temp stuff here
+#
+tmpdir=/tmp/mkfgwgo$$
+mkdir $tmpdir 2>&-
+
+#
+# get parms
+#
+while [ $# -gt 0 ]
+do
+    case $1 in
+    -e) 
+        rebuild=true
+        ;;
+    -f) 
+	shift
+        framepath=$1
+        ;;
+    -l*)
+	LIBS="$LIBS $1"
+	;;
+    -r)
+	relink=true
+	;;
+    -s) 
+	shift
+        sourcepath=$1
+        ;;
+    -*)
+	$ECHO "invalid parms...\n"
+        exit 1
+        ;;
+    *)
+	break
+	;;
+    esac
+    shift
+done
+
+#
+# setup defaults
+#
+framepath=${framepath:-4glworks}
+lang=${lang:-eng}
+INFORMIXDIR=${INFORMIXDIR:-/usr/informix}
+INFORMIXC=${INFORMIXC:-$CC}
+
+#
+#  set rds specific env vars
+#
+compile=ccompile
+objdir=pcode
+objext=o
+srcext='y c ec'
+srcdirs='source rds'
+funcfile=fgiusr.c
+mkrunner=cfglgo
+destpath=$INFORMIXDIR/bin
+runner=fgwgo
+
+#
+#  adjust path
+#
+if ! echo $PATH | grep $INFORMIXDIR 1>&- 2>&-
+then
+    PATH=$INFORMIXDIR/bin:$PATH
+fi
+export INFORMIXC INFORMIXDIR PATH
+
+#
+#  determine which awk to use
+#
+if [ -z "$AWK" ]
+then
+    s=$IFS
+    IFS=:
+    for f in gawk nawk awk
+    do
+	for d in $PATH
+	do
+	    if [ -x $d/$f ]
+	    then
+		AWK=$d/$f
+		break 2
+	    fi
+	done
+    done
+    IFS=$s
+    $ECHO "AWK=$AWK" >> .cbuildrc
+fi
+
+#
+#  determine cc & esql -e command line
+#
+CFGLGO=`$mkrunner -n -api| sed 's/[^ ]*\.a//g
+         s/[^ ]*fgiusr[^ ]*//g
+	 s/-l[^ ]*//g'`
+EC=`$mkrunner -n dummy.ec|$AWK '{ print $1; exit }'`
+
+$ECHO `basename $0`" started on \c"
+date
+
+if [ -n "$sourcepath" ]
+then
+    sourcepath=$sourcepath/
+fi
+
+#
+#  nothing to rebuild if relink only
+#
+if [ $relink != true ]
+then
+    modlist="$@ $framepath"
+fi
+#
+#  set up object modules function, link list & libraries
+#
+linklist=
+funclist=
+for sd in $framepath "$@"
+do
+    linklist="$linklist $sourcepath$sd/$objdir/*.$objext"
+#
+#  quick & dirty hack, we look for the definition of LIBS in buildfiles, if any
+#
+    LIBS=
+    eval `egrep '^[ \t]*LIBS=' $sourcepath$sd/buildfile 2>&-`
+    libs="$libs $LIBS"
+    for sl in $srcdirs
+    do
+	if [ -f $sd/$sl/cfuncs ]
+	then
+	    funclist="$funclist $sourcepath$sd/$sl/cfuncs"
+	fi
+    done
+done
+
+#
+#  build function list file
+#
+$AWK '
+
+#strip comments
+/#.*/		{
+		    sub("#.*", "")
+
+#skip entirely commented out lines, so that they dont interfere
+#with continued lines
+		    if (!length) next
+		}
+
+#prepend a continued line
+(length(pl))	{
+		    $0=pl " " $0
+		    pl=""
+		}
+
+#line continues - store & skip to next line
+($NF~/\\\\$/)	{
+		    sub(".$", "", $NF)
+		    pl=$0
+		    next
+		}
+
+#skip empty lines
+(!NF)		{ next }
+
+#good function?
+(NF!=2)		{ exit 1 }
+
+#definition?
+		{ funcs[$1]=$2 }
+
+END		{
+		    print "#include \"fgicfunc.h\""
+		    for (f in funcs)
+			print "extern int " f "();"
+		    print "cfunc_t usrcfuncs[] ="
+		    print "{"
+		    for (f in funcs)
+			print "\"" f "\", " f ", " funcs[f] ","
+		    print "0, 0, 0"
+		    print "};"
+		}
+' $funclist > $tmpdir/$funcfile
+#
+#  quit if could't create function file
+#
+if [ $? -ne 0 ]
+then
+    $ECHO "don't know how to build $runner"
+    exit 1
+fi
+
+#
+#  build include directories list
+#
+cinclist=
+for sd in $modlist
+do
+    for sl in $srcdirs
+    do
+	cinclist=$cinclist" -I"$sd/$sl
+    done
+done
+#
+#  make directories
+#
+for sd in $modlist
+do
+    if [ ! -d $sd/$objdir ]
+    then
+	mkdir $sd/$objdir
+	if [ $? -ne 0 ]
+	then
+	    exit 1
+	fi
+    fi
+done
+
+#
+#  remove obsolete modules
+#
+if [ $rebuild = true ]
+then
+    for sd in $modlist
+    do
+	rm $sourcepath$sd/$objdir/*.$objext
+    done
+elif [ $relink = false ]
+then
+#
+#  test for to date object modules in afw & source paths
+#
+    for sd in $modlist
+    do
+	for sf in $sourcepath$sd/$objdir/*.$objext
+	do
+	    tf=`basename $sf .$objext`
+	    for sl in $srcdirs
+	    do
+		for se in $srcext
+		do
+		    if todate $sf $sourcepath$sd/$sl/$tf.$se
+		    then
+			continue 3
+		    fi
+		done
+	    done
+	    rm $sf
+	done
+    done
+fi
+#
+#  make object code
+#
+errs=0
+for sd in $modlist
+do
+    for sl in $srcdirs
+    do 
+	for se in $srcext
+	do
+	    for sf in $sourcepath$sd/$sl/*.$se
+	    do
+		sfb=`basename $sf .$se`
+		df=$sourcepath$sd/$objdir/$sfb.$objext
+		if [ "$sfb" = "*" ]
+		then
+		    continue
+		elif [ ! -f $df ]
+		then
+		    $ECHO $sfb:
+		    $compile$se $sf $sfb $df
+		    errs=`expr $errs + $?`
+		fi
+	    done
+	done
+    done
+done
+
+$mkrunner $linklist $tmpdir/$funcfile $LIBS -o $destpath/$runner
+rm -r `basename $funcfile .c`.o $tmpdir 2>&-
+
+$ECHO "\nall done!    \c"
+date

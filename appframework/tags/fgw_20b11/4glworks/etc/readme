@@ -1,0 +1,242 @@
+4glWorks 2.0b11 release notes                                 Dec, 26 2001
+
+1) Roadmap
+An appropriate directory structure and naming scheme for files, functions,
+tables and columns can ease a great deal the management of a project. This
+section illustrates convention used to organize 4glWorks code.
+
+1.1) File naming scheme.
+The name of files included in 4glWorks distribution adhere to the
+following format:
+
+[a]mdl[t].ext
+
+where a, an application qualifier, is
+
+i	for modules pertaining to interactive apps
+o				  batch apps
+c				  both
+
+the application qualifier is only used in 4gl c and text files, since
+form and help files are only used in interactive apps
+
+mdl is a three letter code identifying the module, for instance
+
+	afi	application framework initialization
+	dtb	many to many table scroller
+	err	error logging routines
+	frm	form table maintenance
+	log	error log viewer
+	mdl	printer model table maintenance
+	mnh	horizontal menus
+	mnv	vertical menus
+	pan	multiple pane support
+	ptr	printer functions
+	shl	OS related functions
+	sql	sql interpreter / viewer
+	stb	single table maintenance scroller
+	str	string manipulation
+	ted	text editor
+	txt	text related routines
+	usr	user interaction
+
+and t identifies the module type. for code it migth be something like
+
+	m	for menus
+	s	for scrollers
+	v	for viewers
+	h	help pick lists
+	i	for user input modules
+	r	for reports
+	l	for 4gl libraries
+	c	for c libraries
+
+while forms use
+
+	f	for screen forms
+	w	for window forms
+
+optionally followed by another letter to distinguish otherwise equal file names.
+Text and help files have no type qualifier.
+
+1.2) Extensions
+I've tried to stick to traditional Informix exts. except that
+there's no agreed upon convention for help source and cooked
+help files. I've used msg and hlp.
+Any ext ending with h (except sh!) indicates a include file of some
+kind.
+
+1.3) Directory structure
+4glworks source has been divided into two directories, the first, named
+4glworks, containing the application framework, the second, named 4gwapps/4gwdemo,
+containing a demo minimal working application. Each is organized as follows:
+
+<dirname>/source	source code
+<dirname>/c4gl		compiled 4gl specific source code
+<dirname>/rds		rds specific source code
+<dirname>/<language>	with <language> being eng, ita, etc.
+			forms, text and help files in a particular language
+<dirname>/objcode	.o files
+<dirname>/pcode		.4go files, and .o files for the runner
+<dirname>/etc		shell scripts, release notes, sql files, etc
+
+The only exception is ierrl.4gh, a 4gl include file that contains
+text constants related to error handling (I've preferred to
+string error handling related text to the application, rather
+than put it in a file loaded at run time, to be sure the user
+gets meaningful info should text files be unavailable), which
+is put (correctly) in the appropriate 4glworks/<language>/ directories.
+
+1.4) Function names
+Function names mostly follow a mdl_methodname format for public functions
+and methodname_mdl for private ones. I've tried to confine private functions
+to the bottom of each file, but this is not always possible, due to
+language limitations (eg cursor or prepared statements, which must be defined
+before they can be used)
+I've tried, with a varying degree of success (I've quickly run out
+of names!) to use meaningful and consistent names for methods.
+
+1.5) Table and column names
+The naming style used for printer definition tables is "code_<tablename>"
+for primary keys, "desc_<tablename>" for descriptive fields, and
+"link_<linkedtable>" for foreign keys.
+Single and multiple selection pick lists (i???h.4gl), as well as the single
+table maintenance scroller (istbs.4gl) have been written to take advantage
+of my own naming style, but they can be fed with any select statement.
+
+2) Tools
+
+2.1) fglpp
+Fglpp is a cpp stile preprocessor for Informix-4gl originally written to
+ease message definition management within 4glworks.
+More info on fglpp can be found in 4glworks/etc/fglpp.txt
+
+2.2) cbuild
+This is the tool used to build 4glworks applications. Essentially, it is a
+sh+awk based replacement for make, originally written because AT&T SVR3 make
+doesn't do file name expansion.
+
+2.2.1) Usage
+cbuild [-r|-e][-l lang][-f framepath][-s sourcepath][-d destpath] project
+
+where	project is the name of the project to be remade
+	lang is the language to be used for forms, etc (default eng)
+	framepath is the directory where 4glworks resides (default 4glworks)
+	sourcepath is the directory where the modules making up the project
+	reside (default .)
+	destpath is the directory where executables, forms, etc will be
+	installed (default is /usr/local/<project>)
+
+Cbuild makes use of a file named .cbuildrc to store user preferences.
+this is a list of def=value entries, in which def could be any of
+
+AWK		the location of awk
+INFORMIXC	self explanatory
+INFORMIXDIR	self explanatory
+destbase	base directory for cbuild output
+framepath	see above
+lang		see above
+sourcepath	see above
+
+All of the defs in uppercase can be overriden by defining a correspondently
+named environmental variable; those in lowercase by command line options.
+
+Linked to cbuild are pbuild, ctest and ptest.
+Depending on the name with which it has been invoked, cbuild will
+
+- make 4ge (cbuild, ctest) or 4gi (pbuild, ptest) files
+- fire <destpath>/.profile upon successful compilation (ctest, ptest)
+
+cbuild expects to find a script named buildfile in <sourcepath>/<project>.
+Buildfile is used to
+
+- determine the list of directories (whose structure *must* be that
+described in 1.3) above) containing code and forms to be compiled
+invoked without arguments)
+
+- determine wheter there are .o/.4go files newer than a give 4ge/4gi executable
+
+- instruct cbuild as to which .o/.4go file are needed to link which
+executable
+
+As of beta 6, buildfile is no longer a shell script, but a makefile-style
+dependency specification file, the main differences with makefiles being that
+
+- all rules are scanned, and not the first one only
+- rules don't fire other rules
+- there are no implicit / pattern / static pattern rules
+
+(the above sums up to the fact that you have to name each and every
+target application)
+
+- rules have a target and dependencies, but no commands - everything is handled
+  internally by cbuild
+
+On the other hand, unlike make, it's perfectly fine to exploit pathname
+or brace expansion when specifying dependencies.
+Note that pathname expansion support comes from the shell being used,
+so please specify dependencies sensibly.
+
+Cbuild also supports the use of include files, variables, some automatic
+variables ($@ and $*, target name and stem respectively) as well as
+predefined variables $(FW) and $(TM) which respectively expand to the path
+of the application framework and the path of the package being compiled,
+as specified from the command line.
+Note that you don't have to specify source / target / pcode /object code
+directories, nor object or target file extensions, as this is handled by
+cbuild.
+
+2.3) mkfgwgo
+Use to build a custom runner for 4glworks applications. The command line syntax
+is:
+
+mkfgwgo -[f framepath] -[s sourcepath] [-llib...] [project list]
+
+where	project list is  a space separated list of 4glworks modules with c
+	functions
+	framepath is the directory where 4glworks resides (default 4glworks)
+	sourcepath is a base directory for all the modules to be linked 
+	(default is .)
+	lib is any extra library required to build the runner
+
+Mkfgwgo will need a function definition file for each of the modules to be
+linked in the runner to build an appropriate fgiusr.c file. This file is named
+'cfuncs' and can either be located in <modulename>/source or <modulename>/rds.
+The format is simply a line with the function name and the number of parameters
+accepted for each of the functions added to the runner.
+Mkfgwgo will also access buildfile files in each module directory to determine
+whether any library should be linked. At present this is done by searching for
+definitions of a variable named LIBS.
+The runner produced is installed in $INFORMIXDIR/bin/fgwgo. Name and output
+directory are not configurable.
+
+2.4) configure.sh
+A simple shell script to set a few bits and pieces in the source to match
+your tool (c4gl/rds) and version.
+
+3) Current Issues
+
+3.1) RDS
+Printing support has been tested with RDS 1.10.03 and is known to work
+with it. Code for 4.0 & above has been written, but never tested. 4gl 4.1
+introduced a change in report behaviour that requires you to either do some
+detective work or use one of two possible workarounds. Complete description
+of the problem in 4glworks/rds/cptrc.c commentary.
+As of 4.13 (I think) first page header handling has changed *again*, and the
+report fd is being blanked out even while processing the first page header.
+While a 4gl-C workaround is pretty easy, it requires fiddling with the c
+code generated by i4gl4, and as such it can't be used with RDS.
+Suggestions are most welcome.
+
+3.2) Engines and tools
+4glWorks requires 4gl 4.1+ and a 5+ engine. The only change needed to use it
+against a 4.x engine is the removal of referential integrity statements in 
+4glworks/etc/4glworks.sql.
+
+3.3) Miscellanea
+The text editor is at an embryonal stage. There is not yet an intended final
+version for it.
+
+Compilations scripts are not final.
+
+Marco Greco <marco@4glworks.com>

@@ -1,0 +1,122 @@
+#	cfunc - c function definitions for mkfgwgo
+#
+#	The 4glWorks application framework
+#	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
+#
+#	Initial release: May 99
+#	Current release: Jan 02
+#
+#	This library is free software; you can redistribute it and/or
+#	modify it under the terms of the GNU Lesser General Public
+#	License as published by the Free Software Foundation; either
+#	version 2.1 of the License, or (at your option) any later version.
+#
+#	This library is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#	Lesser General Public License for more details.
+#
+#	You should have received a copy of the GNU Lesser General Public
+#	License along with this library; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+asc_addline		3
+asc_addstring		3
+asc_changeline		3
+asc_changestring	4
+asc_copy		2
+asc_dropline		2
+asc_dropstring		3
+asc_free		1
+asc_initialize		1
+asc_length		1
+asc_linelength		2
+asc_linepos		2
+asc_lines		1
+asc_locate		1
+asc_retrieveline	2
+asc_retrievestring	3
+
+char2int		1
+str2int			1
+
+fd_1stlineheader	2
+fd_2ndlineheader	2
+fd_blobread		2
+fd_blobwrite		2
+fd_close		1
+fd_crnl			2
+fd_droptoeol		1
+fd_eof			1
+fd_eol			1
+fd_linelen		2
+fd_postwordsep 		2
+fd_prewordsep 		2
+fd_read 		1
+fd_write 		2
+fd_writeln 		2
+file_lock 		2
+file_open 		2
+file_seek 		2
+file_tell 		1
+file_unlock 		1
+pipe_open 		2
+stdfd_open 		1
+
+maxint 			2
+minint 			2
+bwand			2
+bwor			2
+bwneg			1
+xor			2
+
+get_rand 		1
+get_seed 		0
+say_seed 		0
+start_rand 		1
+
+hst_drop		2
+hst_enter		3
+hst_enterint		3
+hst_enterfloat		3
+hst_member		2
+hst_retrieve		2
+hst_scan		2
+hst_start		2
+
+executable 		1
+get_login		0
+get_process 		0
+shell 			1
+
+sql_execute		6
+sql_getvar              3
+sql_getstring           3
+
+mnu_clear 		0
+mnu_enable 		4
+mnu_mask 		3
+mnu_record 		3
+mnu_test 		2
+
+get_token 		1
+pos 			2
+posbrk 			2
+poschr 			2
+posnbrk 		2
+postoken 		2
+str_rightmargin		2
+str_compare		2
+
+get_time 		0
+usr_testhelp 		0
+readkey 		0
+tim_alarmstate 		0
+tim_setalarm 		1
+
+file_put 		1
+page_adjmargins		2
+page_len 		1
+ptr_put 		1
+
+readchar 		0

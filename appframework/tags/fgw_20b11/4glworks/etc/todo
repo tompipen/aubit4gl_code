@@ -1,0 +1,84 @@
+syntax extensions:
+
+INPUT|PIPE FROM <expr>
+    PATTERN <expr>|DELIMITED
+    [REJECT WHEN <expr> [[TO <expr>|STOP]]...]
+    [TRANSFORM <exprandassignlist>]
+    [[INTO <varlist>] [FORMAT <formatcl>]| INSERT INTO TABLE]
+($0....$n, $R, $F, support for $. assignment? - eg reevaluation a la awk)
+
+SPLIT <expr> PATTERN <expr>|DELIMITED INTO <varlist>
+
+FOREACH [<cursor> FOR] [SELECT|EXECUTE PROCEDURE]
+FOREACH [INPUT|PIPE]
+
+CONNECT TO <expr>...
+SET CONNECTION...
+DISCONNECT...
+
+FORMAT DELIMITED
+
+functions errno, sqlcode, sqerrd1, sqerrd2?
+
+hashes
+
+PREPARE, EXECUTE, FREE? (performance reasons only, PREPARE will have USING & INTO
+clauses, so that multiple executes can be done without rebinding)
+
+functions, signals, sockets, input (or alternative io?) - huge leap, is there
+really a need for this?
+
+commit interval?
+
+quick redirects? (OUTPUT|APPEND|PIPE TO expr SELECT|EXECUTE PROCEDURE|INPUT|PIPE)
+or stdio like ops? (popen, fopen, close, WRITE TO <expr> SELECT|EXECUTE PROCEDURE|
+INPUT|PIPE, READ FROM <expr> ...)
+
+construct to switch HTML output on & off (could be used to switch to other
+formats too)
+
+construct to change autowrap
+
+Various:
+- WHENEVER ERROR applies to the INPUT and PIPE commands too, except that
+  dbinfo("errno") needs to be used. the return code of the child process
+  is returned by dbinfo("$?")
+- decide how to change the stack structure: read format delimited can be nicely
+  taken from rds dynamic sql driver (sic) with minor modifications (use cfio
+  rather than stdio, pass delimiter & escape), however that returns sqlvars,
+  and we need a stack structure to filter and transform, but need an
+  sqlvar to assign and display
+- convert the whole expression parser and fuctions to use the expression stack
+  rather than the parser stack
+- break yylex into  yylex & yylex1 to implement dynamic sql hacks
+- HTML output needs context to change not only with FOREACH's, but with OUTPUT
+  (etc) too, and with HTML switch (see above) as well
+- children do not output to default, or the child default is null, or...
+  document this
+- have variable wrapping limits (and hrz scrollbars in iunis! available keys?)
+  and possibly construct to set limit
+- need to have functions to read & write text & byte vars (could use stream id
+  from cfioc, wouldn't need to define fopen, popen, fclose)
+- 4gwmenus & 4gwed to take advantage of above funct + sql_execute2
+- will need to implement byte delimited format, could it by an idea to have a
+  %t & %b PATTERN? - might as well display <BYTE value>
+- 4gl v4 hack:
+  fix 4gl4/csqdc.c on sco,
+  fix indivinv on 4.x
+  fix placeholders & fork in 4.x
+- unify heap, tss & conversion routines
+- hashes handle blob vars, and/or allow for nested hashes
+
+- pick lists could use captions
+- complete or rewrite editor! text based, rather than array of char?
+- remove viewers & scrollers calls from iafil
+- ipanl & scrollers handle pane (dis)abilitation
+- print blobs for rds
+
+- mkfgwgo & cbuild need to recursively expand variables and expansion (infinite
+  loop checks!)
+- fglpp, mkfgwgo, cbuild have if(n)defs, elif(n)defs, else, endif
+- fglpp, mkfgwgo, cbuild have a mechanism to pass defines (-D) and/or
+  evaluate environmental variables
+- fglpp to avoid changing definitions inside strings (performance hit?) -
+  forget about comments...

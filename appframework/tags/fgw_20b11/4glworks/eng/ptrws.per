@@ -1,0 +1,53 @@
+{
+	PRTWS.per  -  Report destination selection window, eng
+
+	The 4glWorks application framework
+	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
+
+	Initial release: Oct 92
+	Current release: Jan 02
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License as published by the Free Software Foundation; either
+	version 2.1 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Lesser General Public License for more details.
+
+	You should have received a copy of the GNU Lesser General Public
+	License along with this library; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+}
+database formonly
+
+screen
+{
+
+
+ Printer[f000 ][f001                                   ]
+ Form   [f010 ][f011                                   ]
+
+ Copies:[a]
+
+          ESC to begin printing, DEL to quit
+}
+
+attributes
+
+f000 = formonly.code_ptr type smallint not null, autonext, reverse,
+       comments = " Insert required code, or hit Ctrl-b for help";
+f001 = formonly.desc_ptr type smallint not null, noentry;
+f010 = formonly.code_frm, autonext, reverse,
+       comments = " Insert required code, or hit Ctrl-b for help";
+f011 = formonly.desc_frm, noentry;
+a    = formonly.copies type smallint, autonext, reverse, include = (1 to 9),
+       comments = " Number of copies (1-9)";
+
+instructions
+
+delimiters "  ";
+
+end
