@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.5 2002-09-24 04:40:02 afalout Exp $
+# $Id: curslib.c,v 1.6 2002-09-26 02:54:37 afalout Exp $
 #*/
 
 /**
@@ -111,6 +111,8 @@ char lastspeccnt = 0;
 char lastspec[20][2][80];
 char selected[1024];
 
+char formdetails[MAXFORM][2048];
+
 /*
 =====================================================================
                     Functions prototypes
@@ -177,7 +179,7 @@ void free_menu (ACL_Menu * menu);
 void disp_h_menu (ACL_Menu * menu);
 int menu_loop (ACL_Menu * menu);
 int seldir (char *filespec, char *filename);
-void err (char *str);
+//void curs_err (char *str);
 int load_form (char *fname2, int fno1, int fno);
 void stripbracket (char *str);
 void clrscr (void);
@@ -2191,22 +2193,18 @@ seldir (char *filespec, char *filename)
 
 
 /**
- *
+ * Renamed from err to curs_err (conflict on Datwin in -lSystem
  * @todo Describe function
  */
+/*
 void
-err (char *str)
+curs_err (char *str)
 {
   gotoxy (1, 23);
   printw ("%s", str);
   mja_refresh ();
 }
-
-
-
-
-char formdetails[MAXFORM][2048];
-
+*/
 
 /**
  *
