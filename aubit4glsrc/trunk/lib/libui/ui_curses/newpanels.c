@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.103 2004-12-23 16:42:46 mikeaubury Exp $
+# $Id: newpanels.c,v 1.104 2005-01-24 10:35:15 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.103 2004-12-23 16:42:46 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.104 2005-01-24 10:35:15 mikeaubury Exp $";
 
 /**
  * @file
@@ -585,6 +585,7 @@ void
 	  }
 #endif
 	  windows[a].name[0] = 0;
+	  windows[a].pan = 0;
 	  break;
 	}
     }
@@ -2528,16 +2529,6 @@ A4GL_find_win (PANEL * p)
   if (p == 0) {
 	A4GL_debug("find_win for panel_below(0)");
 	p=get_below_panel(0);
-
-
-/*
-	p=panel_below(0);
-	if (p==curr_error_panel) p=panel_below(p);
-*/
-
-
-
-
         return A4GL_find_win (p);
   }
 #ifdef DEBUG
@@ -3214,7 +3205,7 @@ sh=A4GL_screen_height ();
 }
 
 
-A4GL_monitor_key_pressed(int a) {
+void A4GL_monitor_key_pressed(int a) {
 char buff[255];
 if (a!=-1) {
 	sprintf(buff,"KYP %d\n",a);

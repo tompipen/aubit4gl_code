@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.18 2004-12-17 13:19:06 mikeaubury Exp $
+# $Id: console.c,v 1.19 2005-01-24 10:35:14 mikeaubury Exp $
 #*/
 
 /**
@@ -573,6 +573,7 @@ int
 }
 
 void UILIB_A4GL_zrefresh(void) {
+	/* REQUIRED - BUT DOES NOTHING */
 }
 
 /* ========================== EOF =============================== */

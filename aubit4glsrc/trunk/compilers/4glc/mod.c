@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.192 2005-01-12 11:15:10 mikeaubury Exp $
+# $Id: mod.c,v 1.193 2005-01-24 10:34:55 mikeaubury Exp $
 #
 */
 
@@ -3299,6 +3299,7 @@ add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a)
 
   if (t == 'S')
     {
+      A4GL_lex_printh ("static int _g%dused=0;\n", a);
       A4GL_lex_printh ("static double _g%d=0;\n", a);
       return 1;
     }

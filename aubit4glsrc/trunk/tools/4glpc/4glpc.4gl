@@ -963,7 +963,7 @@ if mv_stacktrace is not null then
 end if
 
 if mv_make_globals then
-	let lv_runstr=lv_runstr clipped," -F"
+	let lv_runstr=lv_runstr clipped," -G"
 end if
 
 if mv_verbose>1 then

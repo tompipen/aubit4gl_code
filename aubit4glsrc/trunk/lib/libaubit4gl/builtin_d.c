@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.57 2004-12-17 13:19:01 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.58 2005-01-24 10:34:59 mikeaubury Exp $
 #
 */
 
@@ -359,7 +359,7 @@ A4GL_push_char (char *p)
 {
   char *ptr;
   last_was_empty=0;
-
+  A4GL_assertion(p==0,"pointer was 0 in A4GL_push_char");
   if (p[0] == 0 && p[1] != 0)
     {
       ptr = (char *) A4GL_new_string_set (strlen (p) + 1, p);

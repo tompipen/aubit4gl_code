@@ -120,8 +120,12 @@ ident_p2 : NAMED {
 	strcpy(last_var,downshift($<str>1));
 } | VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET
 	{
-		sprintf($<str>$,"aclfgli_str_to_id(%s)",$<str>3);
-		sprintf(last_var,"->%s",$<str>3);
+		if (strcmp(acl_getenv("A4GL_LEXTYPE"),"EC")==0) {
+			sprintf($<str>$,"%s",aclfgli_str_to_id($<str>3));
+		} else {
+			sprintf($<str>$,"aclfgli_str_to_id(%s)",$<str>3);
+			sprintf(last_var,"->%s",$<str>3);
+		}
 	}
 ;
 

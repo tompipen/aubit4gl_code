@@ -11,7 +11,7 @@ then
 		cvs  update -dP
 	fi
 	make cleanall
-	./configure  --with-pgsqleng=/usr/local/pgsql --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb  --prefix=/home/aubit4gl/aubit4gl  --with-gtk=/opt/gnome --with-pgodbc=/usr/local
+	./configure  --with-unixodbc=/usr/local/unixODBC/lib --with-pgsqleng=/usr/local/pgsql --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb  --prefix=/home/aubit4gl/aubit4gl  --with-gtk=/opt/gnome --with-pgodbc=/usr/local
 
 
 #--with-curses=/usr/local/widec
@@ -63,9 +63,13 @@ cp /home/aubit4gl/aubit4glsrc/help/* /home/aubit4gl/aubit4gl/help
 
 cd /home/aubit4gl/aubit4gltest
 
-
-sh rerun ALL
+if [ "$2" = "" ]
+then
 echo "No testing..."
+exit
+fi
+
+sh rerun $2
 
 
 
