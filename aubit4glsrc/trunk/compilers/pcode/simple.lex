@@ -25,6 +25,7 @@ IS			(u|U|l|L)*
 #include "y.tab.h"
 
 void count();
+void linecomment (void );
 %}
 
 %%
