@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.97 2002-10-13 11:44:22 afalout Exp $
+# $Id: Makefile.in,v 1.98 2002-10-22 06:52:17 afalout Exp $
 #
 
 ## ==================================================================
@@ -663,8 +663,9 @@ refresh.noyacc:
 	${CP} compilers/menus/y.tab.c tools/no_yacc/cygwin/compilers/menus
 	${CP} compilers/xgen/y.tab.c tools/no_yacc/cygwin/compilers/xgen
 	${CP} compilers/xgen/lex.yy.c tools/no_yacc/cygwin/compilers/xgen
-	${CP} compilers/ace/y.tab.c tools/no_yacc/cygwin/compilers/ace
-	${CP} compilers/ace/lex.yy.c tools/no_yacc/cygwin/compilers/ace
+#Check if this two exist first, they will not be there is we have no RPC:
+#	${CP} compilers/ace/y.tab.c tools/no_yacc/cygwin/compilers/ace
+#	${CP} compilers/ace/lex.yy.c tools/no_yacc/cygwin/compilers/ace
 
 
 refresh.norpcgen:
@@ -673,13 +674,15 @@ ifeq "${TARGET_OS}" "cygwin"
 	${CP} compilers/fcompile/form_x_xdr.c tools/cygwin
 	${CP} compilers/menus/menu_x.h tools/cygwin
 	${CP} compilers/menus/menu_x_xdr.c tools/cygwin
-	${CP} compilers/ace/report.h tools/cygwin
-	${CP} compilers/ace/report_xdr.c tools/cygwin
+#Check if this two exist first, they will not be there is we have no RPC:
+#	${CP} compilers/ace/report.h tools/cygwin
+#	${CP} compilers/ace/report_xdr.c tools/cygwin
 else
 	@echo "Not on CygWin - skipping."
 endif
 
 refresh.norpclib:
+ifeq "${CONFIRM}" "IknowWhatImDoing"
 ifeq "${TARGET_OS}" "cygwin"
 	${CP} ${RPC_INCL_DIR}/auth_unix.h tools/no_rpc/cygwin/rpc
 	${CP} ${RPC_INCL_DIR}/auth.h tools/no_rpc/cygwin/rpc
@@ -696,6 +699,8 @@ ifeq "${TARGET_OS}" "cygwin"
 	${CP} ${RPC_INCL_DIR}/xdr.h tools/no_rpc/cygwin/rpc
 else
 	@echo "Not on CygWin - skipping."
+endif
+	@echo "CONFIRM != IknowWhatImDoing"
 endif
 
 #Find c files with same names

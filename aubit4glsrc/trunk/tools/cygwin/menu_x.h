@@ -44,7 +44,16 @@ bool_t xdr_menu_list();
 #ifndef _MENU_X_H_RPCGEN
 #define _MENU_X_H_RPCGEN
 
-#include <rpc/rpc.h>
+
+#ifdef __MINGW32__
+	#include <rpc.h>
+
+	typedef	char *	caddr_t;
+	#include "../../tools/no_rpc/cygwin/rpc/xdr.h"
+
+#else
+	#include <rpc/rpc.h>
+#endif
 
 
 #ifdef __cplusplus
@@ -102,3 +111,4 @@ extern bool_t xdr_menu_list ();
 #endif /* !_MENU_X_H_RPCGEN */
 
 #endif
+
