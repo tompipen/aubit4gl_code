@@ -1,8 +1,21 @@
+
 -- ============================================================================
--- Repositório de sobre informação de programas de 4gl
+-- Repositório de sobre informação de programas de 4gl 
 -- Formato p4gl (desenvolvido na Despodata)
--- See p4gl_rep_drop.sql script that drops all tables created here
 -- ============================================================================
+
+drop table p4gl_package;
+drop table p4gl_program;
+drop table p4gl_module;
+drop table p4gl_module_prog;
+drop table p4gl_function;
+drop table p4gl_process;
+drop table p4gl_fun_process;
+drop table p4gl_fun_parameter;
+drop table p4gl_fun_return;
+drop table p4gl_fun_todo;
+drop table p4gl_table_usage;
+drop table p4gl_excel;
 
 -- ============================================================================
 -- Identifica um package que tipicamente corresponde a uma directoria
@@ -53,6 +66,8 @@ create table p4gl_function (
 	function_name  char(50) not null,
 	function_type  char(1) default 'F' 
 	  not null check (function_type in ('F','R')),
+	deprecated     char(1) default 'N' 
+	    not null check (deprecated in ('Y','N')),
 	comments       varchar(255),
 	foreign key (id_package,module_name) references 
 	  p4gl_module (id_package,module_name),
@@ -128,24 +143,24 @@ create table p4gl_fun_todo (
 	  references p4gl_function (id_package,module_name,function_name)
 );
 
--- ============================================================================
--- Utilizações de tabelas
--- ============================================================================
+/**
+ * Utilizações de tabelas
+ */
 create table p4gl_table_usage (
 	id_table_usage serial not null primary key,
 	id_package    char(64) not null,
 	module_name   char(64) not null,
 	function_name char(50) not null,
 	table_name    char(50) not null,
-  operation char(1) not null
+  operation char(1) not null 
     check (operation IN ('I' ,'U' ,'D' ,'S' )),
 	foreign key (id_package,module_name,function_name)
 	  references p4gl_function (id_package,module_name,function_name)
 );
 
--- ============================================================================
--- Dados desnormalizados carregados directamente de uma folha de cálculo
--- ============================================================================
+/**
+ * Dados desnormalizados carregados directamente de uma folha de cálculo
+ */
 create table p4gl_excel (
   module_name   char(64) not null,
   id_process    char(10),
