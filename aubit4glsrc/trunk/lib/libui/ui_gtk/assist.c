@@ -13,21 +13,28 @@ If you need to change something, edit assist.4gl, and NOT assist.c
 		                    Includes
 =====================================================================
 */
-#include <unistd.h> //usleep()
-#include <string.h> //strcpy()
-#include <gdk/gdk.h>
-#include <gtk/gtk.h>
-#include <glib.h>
-#include "a4gl_pointers.h"
-#include "a4gl_gtk_gtk_4gl.h" //get_curr_win_gtk()
-#include "a4gl_aubit_lib.h" //get_curr_win_gtk()
-#include "a4gl_gtk_cr_funcs.h" //make_pixmap()
-#include "a4gl_gtk_params.h" //find_param()
-#include "a4gl_runtime_tui.h" //push_variable()
-// a4gl_runtime_tui.h will eventually include stdlib.h, which uses getenv(), so
-// we need to set GETENV_OK and only then include debug.h
-#define GETENV_OK
-#include "a4gl_debug.h"
+#ifdef OLD_INCL
+	
+	#include <unistd.h> //usleep()
+	#include <string.h> //strcpy()
+	#include <gdk/gdk.h>
+	#include <gtk/gtk.h>
+	#include <glib.h>
+	#include "a4gl_pointers.h"
+	#include "a4gl_gtk_gtk_4gl.h" //get_curr_win_gtk()
+	#include "a4gl_aubit_lib.h" //get_curr_win_gtk()
+	#include "a4gl_gtk_cr_funcs.h" //make_pixmap()
+	#include "a4gl_gtk_params.h" //find_param()
+	#include "a4gl_runtime_tui.h" //push_variable()
+	/*
+	a4gl_runtime_tui.h will eventually include stdlib.h, which uses getenv(), so
+	we need to set GETENV_OK and only then include debug.h
+	*/
+	#define GETENV_OK
+	#include "a4gl_debug.h"
+#else
+    #include "a4gl_lib_ui_gtk_int.h"
+#endif
 /*
 =====================================================================
                     Variables definitions
@@ -349,12 +356,11 @@ static char _functionName[] = "get_filename";
    push_variable(&fname,0x1000000);
    A4GLSTK_popFunction();
    return 1;
-   {debug("Line 310 assist.4gl:");}
    if (sqlca.sqlcode !=0 || status !=0 || 0) {
    /* SQLERROR */
-      if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(310,_module_name);
+      if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(324,_module_name);
    /* ERROR */
-      if (status<0) chk_err(310,_module_name);
+      if (status<0) chk_err(324,_module_name);
    }
    A4GLSTK_popFunction();
    return 0;
@@ -378,12 +384,11 @@ static char _functionName[] = "app_top_get";
    push_variable(&a,0x2);
    A4GLSTK_popFunction();
    return 1;
-   {debug("Line 362 assist.4gl:");}
    if (sqlca.sqlcode !=0 || status !=0 || 0) {
    /* SQLERROR */
-      if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(362,_module_name);
+      if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(376,_module_name);
    /* ERROR */
-      if (status<0) chk_err(362,_module_name);
+      if (status<0) chk_err(376,_module_name);
    }
    A4GLSTK_popFunction();
    return 0;
