@@ -24,8 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2001-12-20 04:56:11 afalout Exp $
+# $Id: Makefile.in,v 1.5 2001-12-28 19:56:39 saferreira Exp $
 #
+
+include ../mkname.mk
 
 ifndef NOINCL
     NOINCL=0
@@ -191,19 +193,19 @@ all_gui: ${ALL_GUI}
 libsqlso: ${LIBSQL}
 
 libSQL_noodbc.so:
-	${MAKE} -f Makefile.old -C libsql/nosql
+	${MAKE} $(MKNAME) -C libsql/nosql
 	cp libsql/nosql/*.so .
 
 libSQL_iodbc.so:
-	${MAKE} -f Makefile.old -C libsql/odbc iodbc
+	${MAKE} $(MKNAME) -C libsql/odbc iodbc
 	cp libsql/odbc/*.so .
 
 libSQL_unixodbc.so:
-	${MAKE} -f Makefile.old -C libsql/odbc unixodbc
+	${MAKE} $(MKNAME) -C libsql/odbc unixodbc
 	cp libsql/odbc/*.so .
 
 #libSQL_esqlc.so
-#	${MAKE} -f Makefile.old -C libsql/esqlc
+#	${MAKE} $(MKNAME) -C libsql/esqlc
 #	cp libsql/libsqlc/*.so .
 
 #----------------- with ODBC, if ODBC != no ----------------------
@@ -259,10 +261,10 @@ aclsharedgui-noodbc.so: $(OBJSNOSQL) gui_gtk.o
 ## ==================================================================
 
 libPDF_PDF.so:
-	${MAKE} -C libpdf -f Makefile.old libPDF_PDF.so
+	${MAKE} -C libpdf $(MKNAME) libPDF_PDF.so
 
 libPDF_NOPDF.so:
-	${MAKE} -C libpdf -f Makefile.old libPDF_NOPDF.so
+	${MAKE} -C libpdf $(MKNAME) libPDF_NOPDF.so
 
 
 gui_tui.o: gui.c
@@ -347,15 +349,15 @@ clean.generated:
 	${RM} generated/project.c generated/project.o
 
 clean.all: clean
-	${MAKE} -f Makefile.old -C libgui clean
+	${MAKE} $(MKNAME) -C libgui clean
 
 clean.libsql:
-	${MAKE} -f Makefile.old -C libsql/nosql clean
-	${MAKE} -f Makefile.old -C libsql/odbc clean
-#	${MAKE} -f Makefile.old -C libsql/esqlc
+	${MAKE} $(MKNAME) -C libsql/nosql clean
+	${MAKE} $(MKNAME) -C libsql/odbc clean
+#	${MAKE} $(MKNAME) -C libsql/esqlc
 
 clean.libpdf:
-	${MAKE} -f Makefile.old -C libpdf clean
+	${MAKE} $(MKNAME) -C libpdf clean
 
 
 ## ==================================================================

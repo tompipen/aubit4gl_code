@@ -1,7 +1,24 @@
 # Process this file with autoconf to produce a configure script.
+
+AC_PREREQ(2.50)
+
 AC_INIT([Aubit4gl],[0.2],[aubit4gl-discuss@lists.sourceforge.net])
+AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_SRCDIR([compilers/4glc/4glc.c])
 AC_CONFIG_HEADER([incl/config.h])
+
+AC_CANONICAL_SYSTEM
+case "$target_os" in
+  linux-gnu)
+    echo "Linux gnu";;
+  cygwin)
+    ODBC=odbc32;
+    ODBCMANAGER=$ODBC;
+    PDFBUILD=no	
+esac
+
+AC_SUBST(aubitdir)dnl
+aubitdir=`pwd`
 
 # Checks for programs.
 AC_PROG_YACC
@@ -11,6 +28,15 @@ AC_PROG_LEX
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
+
+
+AC_PATH_PROG(PERL, perl, no)
+AC_SUBST(PERL)dnl
+#if test "$PERL" != no; then
+  #AC_MSG_WARN([perl found])
+#else
+  #AC_MSG_WARN([perl is not found])
+#fi
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lc':
@@ -65,6 +91,8 @@ AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp select setenv setlocale socket strcasecmp strchr strdup strncasecmp strrchr strstr strtol])
 
 AC_CONFIG_FILES([Makefile
+                 etc/aubitenv
+                 etc/aubitbuild.mk
                  compilers/4glc/Makefile
                  compilers/4glc/rules/Makefile
                  compilers/fcompile/Makefile

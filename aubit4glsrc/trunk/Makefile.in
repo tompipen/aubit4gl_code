@@ -23,13 +23,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.5 2001-12-21 04:14:38 afalout Exp $
+# $Id: Makefile.in,v 1.6 2001-12-28 19:56:37 saferreira Exp $
 #
 
-#if this make file is named "Makefile.old", set MKNAME to  "-f Makefile.old"
-#if this make file is named "Makefile.in", set MKNAME to  "" (empty) or "-f Makefile"
-#if this make file is named "Makefile", DO NOT edit it!
-MKNAME=
+include mkname.mk
 
 #PREFIX=${AUBITDIR}/install
 PREFIX=/opt/aubit4gl
