@@ -51,10 +51,6 @@ fi
 
 if [ "$2" = "-upd" ]
 then
-    
-#Writing to files from PHP also don't work
-#   echo "XXX" > test.tmp
-#	cvs update > cvsupdate.log 2>&1
 	cvs update 2>&1
 	RET=$?
 	if test "$RET" != "0"
@@ -64,6 +60,9 @@ then
     fi
 
 	echo "Aubit web site updated from CVS"
+
+    #FIXME: what about aubit4gldoc and hy4gl ?
+
 
     exit
 fi

@@ -10,20 +10,31 @@
 
 <body bgcolor="#000000" text="#FFFFFF" link="#00FFFF" vlink="#0000FF">
 
-<h1 align="center"><a name="Top of page - Aubit 4gl download page">Aubit 4gl
-download page</a></h1>
+<div align="left">
+  <table border="0" width="100%">
+    <tr>
+      <td>
+        <h1><a name="Top of page - Aubit 4gl download page"><font color="#00FF00">Aubit 4gl
+        automatic nightly builds
+download page</font></a></h1>
+      </td>
+      <td align="right"><a href="../index.html"><img border="0" src="../images/AubitLogoOnBlack.jpg" width="263" height="142"></a></td>
+    </tr>
+  </table>
+</div>
 <hr>
 <div align="left">
   <table border="1">
     <tr>
       <td bgcolor="#C0C0C0">
-<p><font color="#000000">This server is on ADSL line (meaning it's slow), and is
-here primarily for nightly automatic binary builds; on top of that, it contains
-completely untested code, whatever is in CVS that night, will end up here.</font></p>
-<p><font color="#000000">Your preferred option should be to download RELEASED
-files from SourceForge <a href="http://sourceforge.net/projects/aubit4gl" target="_blank"><span style="background-color: #000000">Aubit4gl
-project page</span></a>, and/or to get source code from <a href="http://cvs.sourcefoge.net/cgi-bin/viewcvs.cgi/aubit4gl" target="_blank"><span style="background-color: #000000">Aubit
-CVS</span></a> on SourceForge.</font></p>
+<p><font color="#000000">This page is
+here primarily for nightly automatic binary builds; it contains
+completely untested code, whatever is in CVS that night, will end up here. In
+short, stuff here is for people that like to live on bleeding edge.</font></p>
+<p><font color="#000000">Regular user's preferred option should be to download RELEASED
+files from <a href="http://sourceforge.net/projects/aubit4gl" target="_blank"><span style="background-color: #808080">Aubit
+project page</span></a><span style="background-color: #C0C0C0">,</span> and/or to get source code from <a href="http://cvs.sourcefoge.net/cgi-bin/viewcvs.cgi/aubit4gl" target="_blank"><span style="background-color: #808080">Aubit
+CVS</span></a>  .</font></p>
       </td>
     </tr>
   </table>
@@ -40,9 +51,9 @@ CVS</span></a> on SourceForge.</font></p>
   <li> Files that don't have HTML links are not yet available</li>
   <li> Files that have word &quot;template&quot; in there URL, failed to compile
     on last nightly build, and are not available today. Maybe tomorrow they will
-    compile, and be available...</li>
-  <li>Downloading directly from CVS using download manager &quot;GetRight&quot; does not work, reason
-    unknown. Use your browser to download.</li>
+    compile, and be available. We keep builds from previous days available, so
+    you can <a href="/files/">click here</a> to see if you may find what you
+    want. Tip: look for full file names in your browser's status bar.</li>
   <li>Some browsers will show empty page if you try to view
     compile-platform-info-*.txt files, reason unknown. They are included in
     compressed archives too.</li>
@@ -56,7 +67,8 @@ me know</a> if you have problems with any link on this page</li>
 
 <p>Note: Aubit 4gl is intensive development, and changes are made almost every
 day. Therefore, it is highly recommended that you get source code directly from
-CVS.
+CVS, to be able to update then using CVS client, instead downloading everything
+over and over again. See instruction on Aubit CVS page.
 </p>
 
 
@@ -99,7 +111,7 @@ packaging, so please forgive us if it's not all it should be. <a href="mailto:af
 me know</a> if you have problems, but also please let me know in which
 configurations you found it to work OK. They are automatically built every
  night, so they should always be at most a day old. If they are not, let me
- know. We do not plan official releases until V 0.2
+ know.&nbsp;
 </P>
 
 
@@ -111,8 +123,8 @@ configurations you found it to work OK. They are automatically built every
 <ul>
   <li>
  Binary packages compressed archives:&nbsp;<br>
-    aubit4gl-bin-[OS|kernel]-[iODBC/unixODBC/noODBC]-[GTK/noGTK]-[PDF/noPDF]-[version]-[build]-[build
- date].[tar.gz|rpm]</li>
+ aubit4gl-bin-[OS|kernel]-[iODBC|unixODBC|odbc32|noODBC]-[GTK|noGTK]-[PDF|noPDF]-[version]-[build]-[build
+ date].[tar.gz|rpm|zip]</li>
   <li>
  Compile platform info text files:&nbsp;<br>
  compile-platform-info-[full binary package name].txt</li>
@@ -125,9 +137,19 @@ configurations you found it to work OK. They are automatically built every
 </ul>
 <p>Please note:</p>
 <ul>
-  <li>No dependencies build DOES NOT include ODBC functionality, therefore
+  <li>Every build includes &quot;noODBC&quot; versions of compilers and
+    libraries (together with ODBC one), that does not require any ODBC manager
+    and/or drivers to be installed on your computer.&nbsp;</li>
+  <li>All other dependencies for each build are valid for &quot;noODBC&quot;
+    versions too, so if you download build with GTK dependencies, your &quot;noODBC'
+    compiler will still need GTK libraries.&nbsp;</li>
+  <li>&quot;noODBC&quot; versions of compilers and libraries DOES NOT include ODBC functionality, therefore
 you CAN NOT execute any database oriented (SQL) commands!</li>
-  <li>Typical size of tar.gz packages is between 2 and 3 MB</li>
+  <li>If you download &quot;no GTK, no PDF&quot; build, and use it with &quot;-noodbc&quot;
+    switch, you will in effect have &quot;no dependencies&quot; Aubit 4gl
+    compiler - meaning that you will in most cases not need to have any
+    additional libraries installed on your host system.</li>
+  <li>Typical size of tar.gz packages is between 2 and 5 MB</li>
 </ul>
 <p><u><i><font color="#000000"><span style="background-color: #00FF00">Linux </span></font><a name="tar.gz tarball precompiled binary packages:"><span style="background-color: #00FF00"><font color="#000000">tar.gz
 tarball and RPM precompiled binary packages:</font></span></a></i></u></p>
@@ -275,11 +297,11 @@ compile-platform-info-aubit4gl-bin-RH6-unixODBC-GTK-PDF---txttemplate--.tar.gz.t
     </tr>
     <tr>
       <td width="205" bgcolor="#C0C0C0"><font color="#000000">No dependencies</font></td>
-      <td width="182" colspan="4" align="left">
-        <p align="left">&nbsp;</p>
+      <td colspan="4" align="left">
+        <p align="center">Download &quot;no GTK, no PDF&quot;</p>
       </td>
-      <td width="180" colspan="4">
-        <p align="left">&nbsp;</p>
+      <td colspan="4">
+        <p align="center">Download &quot;no GTK, no PDF&quot;</p>
       </td>
     </tr>
   </table>
@@ -295,7 +317,7 @@ Windows</a></i></u></font></span></p>
       <td>OS</td>
       <td bgcolor="#C0C0C0">
         <p align="center"><font color="#000000">Win32 - CygWin</font></td>
-      <td bgcolor="#C0C0C0"><font color="#000000">Win32 - standalone (-mno-cygwin)</font></td>
+      <td bgcolor="#C0C0C0"><font color="#000000">Win32 - standalone run-time</font></td>
     </tr>
     <tr>
       <td>ODBC manager</td>
@@ -348,6 +370,7 @@ platforms, and consider contributing binary packages.</p>
   <li>&nbsp;&nbsp;&nbsp; FIXME: provide downloadable manual in state used to compile binary
     builds</li>
   <li>&nbsp;&nbsp;&nbsp; FIXME: GWD::4gl files</li>
+  <li>&nbsp;&nbsp;&nbsp; FIXME: amake files</li>
 </ul>
 
 
@@ -369,6 +392,12 @@ you have choice of operating systems, this is our recommended platform.</p>
 way to check for existing dependencies is to query that system. Of course, if
 dependencies where installed using them...</p>
 <h4><i><span style="background-color: #00FF00"><font color="#000000">ODBC</font></span></i></h4>
+<p><i>When will you need it:</i></p>
+<blockquote>
+  <p>Unless you will compile Aubit from sources with ODBC=no, or use &quot;-noodbc&quot;
+  versions of compilers an libraries (available in every binary build), you will need either ODBC manager, ODBC driver for your
+  database(s), or both.</p>
+</blockquote>
 <p><i>How to check if you have it:</i></p>
 <blockquote>
 <p>UNIX: Safest bet is to look for file &quot;odbc.ini&quot; - all ODBC managers
@@ -384,7 +413,7 @@ BEFORE you start screaming &quot;Aubit is not working&quot;! Thank you.</p>
 <p><i>Download and install it if you don't:&nbsp;</i></p>
 <ul>
   <li> <a href="http://www.unixodbc.org/" target="_blank">unixODBC</a>
-    (recommended)</li>
+    (recommended - GPL license)</li>
   <li> <a href="http://www.openlink.co.uk/" target="_blank">OpenLink</a> (Commercial
     product - uses custom version of iODBC manager)</li>
   <li> <a href="http://www.iodbc.org" target="_blank">iODBC</a>
@@ -395,6 +424,11 @@ BEFORE you start screaming &quot;Aubit is not working&quot;! Thank you.</p>
 If you will be linking Aubit against ODBC manager, you will of course need both
 the manager, AND the ODBC driver(s) for your database(s) of choice. YMMW.</p>
 <h4><span style="background-color: #00FF00"><i><font color="#000000">PDF</font></i></span></h4>
+<p><i>When will you need it:</i></p>
+<blockquote>
+  <p>You will need it to compile Aubit from sources with PDFBUILD=yes, and to
+  use binary build with -PDF- in it's file name.</p>
+</blockquote>
 <p><i>How to check if you have it:</i></p>
 <blockquote>
   <p>UNIX: Look for file &quot;pdflib.h&quot; - Without it, you will be unable to
@@ -409,6 +443,10 @@ the manager, AND the ODBC driver(s) for your database(s) of choice. YMMW.</p>
 <p>NOTE: This is commercial product - OpenSource, but you will need to pay fee
 if you use it. See license agreement on the site.&nbsp;</p>
 <h4><i><span style="background-color: #00FF00"><font color="#000000">NCURSES</font></span></i></h4>
+<p><i>When will you need it:</i></p>
+<blockquote>
+<p>Always needed.</p>
+</blockquote>
 <p><i>How to check if you have it:</i> at least version 5.0 or higher</p>
 <blockquote>
   <p>UNIX: Look for &quot;ncurses.h&quot;, probably in /usr/include. It should contain
@@ -423,10 +461,17 @@ home page</a> </li>
 FTP site</a></li>
 </ul>
 <h4><i><span style="background-color: #00FF00"><font color="#000000">GTK</font></span></i></h4>
+<p><i>When will you need it:</i></p>
+<blockquote>
+<p>To compile Aubit from sources with &quot;GTKBUILD=yes&quot; and to run binary
+build with -GTK- in it's name.</p>
+</blockquote>
 <p><i>How to check if you have it:</i></p>
 <blockquote>
 <p>UNIX: Try &quot;gtk-config --version&quot;</p>
-<p>Windows: try same as for UNIX, inside CygWin shell - see Aubit manual</p>
+<p>Windows: try same as for UNIX, inside CygWin shell - see Aubit manual.
+Windows binary build includes GTK libraries, and so does runtime package for
+Windows.</p>
 </blockquote>
 <p><i>Download and install it if you don't:&nbsp;</i></p>
 <ul>
@@ -436,10 +481,14 @@ FTP site</a></li>
 </ul>
 <h4><i><span style="background-color: #00FF00"><font color="#000000">IksEmEl -
 Jabber and XML</font></span></i></h4>
-<p>(Needed only to compile PROGRAMS that will use XML/Jabber calls)</p>
+<p><i>When will you need it:</i></p>
+<blockquote>
+<p>Needed only to compile 4GL PROGRAMS that will use XML/Jabber calls</p>
+</blockquote>
 <p><i>How to check if you have it:</i></p>
 <blockquote>
   <p>UNIX: Look for file libiksemel.so</p>
+  <p>Windows: FIXME: is iksemel available on CygWin?</p>
 </blockquote>
 <p><i>Download and install it if you don't:&nbsp;</i></p>
 <blockquote>
@@ -447,14 +496,17 @@ Jabber and XML</font></span></i></h4>
 </blockquote>
 <p>&nbsp;</p>
 <h4><span style="background-color: #00FF00"><font color="#000000">RPCgen</font></span></h4>
-<p>(Needed only when compiling Aubit 4gl compiler from source code)</p>
+<p><i>When will you need it:</i></p>
+<blockquote>
+<p>Needed only when compiling Aubit 4gl compiler from source code</p>
+</blockquote>
 <p><i>How to check if you have it:</i></p>
 <blockquote>
   <p>Windows/CygWin: Currently, you don't need RPCgen, since we are distributing
   Aubit code with special customized (read: hacked) versions of files that are
   on UNIX created by RPCgen. Reason for this is that most versions we found,
   where broken in one way or the other.</p>
-  <p>UNIX:</p>
+  <p>UNIX: Look for executable called &quot;rpcgen&quot;&nbsp;</p>
 </blockquote>
 <p><i>Download and install it if you don't:&nbsp;</i></p>
 <ul>
@@ -468,54 +520,10 @@ Jabber and XML</font></span></i></h4>
   <li>Please let me know if you have better link for RPC download</li>
 </ul>
 <p><a href="#Top of page - Aubit 4gl download page">Back to top</a></p>
-<hr>
-<p><i><u>Obsolete links to CVS on falout.com:</u></i></p>
-<p><span style="background-color: #00FF00"><font color="#000000">CVS on falout.com is obsolete, and
-available only for reference.&nbsp;</font></span></p>
-
-
-<ul>
-  <li>NOTE: it is advisable to <a href="/servlets/JCVSlet/update/Aubit4gl/Aubit4gl/bin" target="_blank">update
-    jCVS --OLD-- Aubit 4gl repository</a> before you download or browse source files.
-    (NB: I know this link looks wrong, /bin, but because of bug in jCVS, it
-    updates one directory up from specified)</li>
-	  <li>Download ZIP from <a href="/servlets/JCVSlet/zip/Aubit4gl/Aubit4gl/Aubit4gl.zip">--OLD--
-        CVS</a> (includes complete CVS, including manual, examples and IDE)</li>
-
-
-		  <li><a href="AubitSourceTarball.x">Make yourself a tarball</a> from
-            --OLD-- CVS (for people that don't like ZIP files created with jCVS
-            servlet)</li>
-
-
-		  <li>
-
-
-
-Browse <a href="../../../cvsweb/cvs_source_access.htm">--OLD-- Version control system</a>
-options (CVS), or go directly to <a href="/servlets/JCVSlet/list/Aubit4gl/Aubit4gl">--OLD--
-Aubit
-4gl CVS root</a>.&nbsp;
-
-  </li>
-
-
-		  <li>
-
-
-<P>Download manual from <a href="/servlets/JCVSlet/zip/Aubit4gl/Aubit4gl/docs/docs.zip">--OLD--
-CVS</a>
-</P>
-
-
-  </li>
-		</ul>
 
 
 <hr>
-<p align="center"><a href="http://aubit4gl.sourceforge.net/" target="_blank">Aubit
-4gl on SourceForge</a>&nbsp; <a href="../index.htm">--OLD-- Aubit 4GL compiler project home page</a>
-<a href="../../../index1.html">Falout Online Home</a></p>
+<p align="center"><a href="../index.html">Aubit 4GL compiler home page</a></p>
 
 </body>
 
