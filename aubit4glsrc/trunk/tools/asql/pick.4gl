@@ -167,6 +167,22 @@ let mv_curr_option=1
 end function
 
 
+function set_picked_option_cnt(lv_cnt)
+define lv_cnt integer
+let mv_curr_option=lv_cnt
+end function
+
+
+function set_picked_option(lv_value)
+define lv_value char(255)
+define lv_cnt integer
+for lv_cnt=1 to mv_cnt
+	if lv_value=mv_arr[lv_cnt] then
+		let mv_curr_option=lv_cnt
+		exit for
+	end if
+end for
+end function
 
 function prompt_pick(lv_txt,lv_value)
 define lv_txt2,lv_txt char(80)

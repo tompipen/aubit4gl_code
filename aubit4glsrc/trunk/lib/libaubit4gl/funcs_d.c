@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.53 2005-01-27 09:15:15 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.54 2005-02-02 10:35:26 mikeaubury Exp $
 #
 */
 
@@ -380,7 +380,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
   int dig[MAXDIG];
   int pnt[MAXPNT];
   char number[65];
-  char fm1[64], fm2[64];
+  char fm1[128], fm2[128];
   char *ptr1, *ptr;
   char *ptr2;
   int has_money;

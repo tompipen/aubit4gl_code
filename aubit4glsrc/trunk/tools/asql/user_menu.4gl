@@ -1,9 +1,22 @@
+define mv_db char(255)
 function user_menu()
+
+	if not has_db() then
+	call select_db()
+	end if
+
+	let mv_db=get_db()
+
+	if mv_db is null or mv_db matches " " then
+		return
+	end if
+
+
 	menu "User Menu"
-		command "Run"
+		command "Run" "Run a user menu"
 			call run_user_menu()
 
-		command "Modify"
+		command "Modify" "Modify a user menu"
 			call modify_user_menu()
 
 		command "Exit"
@@ -65,7 +78,8 @@ if bad then
 	execute p_cr_umi
 end if
 
+
+# Tables should have been created by here
+
 end function
-
-
 

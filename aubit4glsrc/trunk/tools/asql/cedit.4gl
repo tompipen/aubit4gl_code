@@ -560,3 +560,22 @@ return err
 end function
 
 
+
+function file_exists(lv_fname)
+define lv_fname char(512)
+define lv_rval integer
+let lv_rval=0
+code
+{
+FILE *f;
+A4GL_trim(lv_fname);
+f=fopen(lv_fname,"r");
+if (f!=0) {lv_rval=1; fclose(f);}
+}
+endcode
+return lv_rval
+end function
+
+
+
+

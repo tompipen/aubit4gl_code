@@ -1432,3 +1432,9 @@ int lineno=0;
 
 
 endcode
+
+
+function set_current_db(lv_name)
+define lv_name char(200)
+return lv_name
+end function

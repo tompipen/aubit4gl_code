@@ -1691,13 +1691,24 @@ define dbname char(255)
 if dbname matches "*@*" then
 	return dbname
 else
-	let dbname=dbname clipped,"@",fgl_getenv("INFORMIXSERVER")
+	let dbname=dbname 
 end if
 	return dbname
 end function
 
 
 
+function set_current_db(lv_name)
+define lv_name char(255)
+define lv_sn char(255)
+if lv_name matches "*@*" then
+	return lv_name
+else
+	select dbservername into lv_sn from systables where tabid=1
+	let lv_name=lv_name clipped,"@",lv_sn
+end if
+return lv_name
+end function
 
 code
 

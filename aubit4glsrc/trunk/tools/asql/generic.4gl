@@ -298,3 +298,10 @@ function prepareit(p)
 define p char(20000)
    PREPARE stExec from p
 end function
+
+
+function set_current_db(lv_name)
+define lv_name char(200)
+return lv_name
+end function
+

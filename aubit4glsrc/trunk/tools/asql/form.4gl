@@ -20,6 +20,10 @@ define mv_lastform char(255)
 define mv_editor char(255)
 define mv_db char(255)
 
+define mv_lastused char(255)
+
+
+################################################################################
 function form_menu()
 
 	if mv_editor is null then
@@ -31,7 +35,7 @@ function form_menu()
 
 	menu "FORM"
 		command "Run" "Run a form"
-			call run_form()
+			call run_form("")
 	
 		command "Modify" "Modify a form"
 			if modify_form("") then
@@ -41,17 +45,27 @@ function form_menu()
 			end if
 		
 		command "Generate" "Generate a form"
-        		if not has_db() then call select_db() end if let mv_db=get_db()
-			if generate_form() then
-				message ""
+        		if not has_db() then 
+				call select_db() 
+			end if 
+			
+			let mv_db=get_db()
+
+			if mv_db is null or mv_db matches " " then
+			else
+				if generate_form() then
+					message ""
+					next option "Run"
+				end if
 			end if
-	
+
+
 		command "New" "Create a new form"
 			call new_form()
 	
 		command "Compile" "Compile a form"
 			if compile_form("") then
-				# ...
+				# Good..
 			end if
 
 	
@@ -66,14 +80,69 @@ end function
 
 
 
-function run_form()
-	error "Not implemented run_form"
+################################################################################
+function run_form(lv_ofname)
+define lv_ofname char(255)
+define lv_fname char(255)
+define lv_runstr char(512)
+define a integer
+define lv_ext char(255)
+
+let lv_ext=work_out_ext()
+
+display "Choose a file to run","" at 2,1
+
+code
+{
+        char **dir;
+	A4GL_trim(lv_ext);
+        dir=read_directory(".",lv_ext);
+        if (dir) {
+                for (a=0;dir[a];a++) {
+                        strcpy(lv_fname,dir[a]);
+endcode
+                        call set_pick(a+1,lv_fname);
+code
+                }
+                free_directory(dir);
+        }
+}
+endcode
+
+call set_pick_cnt(a);
+
+if lv_ofname is null or lv_ofname matches " " then
+	error "SET PICK 1:",mv_lastused
+	call set_picked_option(mv_lastused)
+else
+	error "SET PICK 2:",lv_ofname
+	call set_picked_option(lv_ofname)
+end if
+sleep 1
+
+call prompt_pick("RUN >> ","") returning lv_fname
+
+
+if lv_fname is not null then
+	let lv_runstr=fgl_getenv("RUNFORMS")
+	if lv_runstr is null or lv_runstr matches " " then
+		LET lv_runstr=fgl_getenv("AUBITDIR") clipped,"/bin/runforms"
+	end if
+	LET lv_runstr=lv_runstr clipped," ",lv_fname
+
+	let mv_lastused=lv_fname
+
+	run lv_runstr clipped
+
+end if
+
 end function
 
 
 
 
 
+################################################################################
 function modify_form(lv_fname)
 define lv_fname char(255)
 define a integer
@@ -134,6 +203,7 @@ if lv_fname is not null then
 	end if
 
 
+	let mv_lastused=lv_fname
 	menu "Modify Form"
 
 		command "Compile" "Compile the form"
@@ -156,6 +226,7 @@ return 0
 end function
 
 
+################################################################################
 function compile_form(lv_fname)
 define lv_fname char(255)
 define a integer
@@ -183,11 +254,17 @@ code
 }
 endcode
 
-call set_pick_cnt(a);
-call prompt_pick("CHOOSE >> ","") returning lv_fname
+	call set_pick_cnt(a);
+	call prompt_pick("CHOOSE >> ","") returning lv_fname
 end if
 
+if lv_fname is null or lv_fname matches " " then
+	return 0
+end if
+
+
 if lv_fname is not null then
+	let mv_lastused=lv_fname
 	let lv_backup=get_tmp_fname("PER")
 	call copy_file(lv_fname,lv_backup,".per")
 
@@ -202,17 +279,17 @@ if lv_fname is not null then
 
 	if a=0 then
 		display "The screen form specification was successfully compiled." at 24,1 attribute(reverse)
+		return 1
 	else
 		menu "COMPILE FORM"
 			command "Correct"
 				return modify_form(lv_fname)
 				exit menu
 			command "Exit"
-				exit menu
 				return 0
+				exit menu
 		end menu
 	end if
-
 end if
 return 0
 end function
@@ -220,15 +297,22 @@ end function
 
 
 
+################################################################################
 function generate_form()
 define lv_form char(255)
 define lv_tables array[20] of char(255)
 define lv_cnt integer
+define lv_tabname char(200)
 	let int_flag=false
 
 	prompt "Generate Form > " for lv_form
 
 	if int_flag then
+		return false
+	end if
+
+	if file_exists(lv_form clipped||".per") then
+		error "A form with that name already exists"
 		return false
 	end if
 
@@ -238,9 +322,12 @@ define lv_cnt integer
 		let int_flag=false
 		let lv_cnt=lv_cnt+1
 
+                call table_select("SELECT TABLE >>") returning lv_tabname
 
-		prompt "Choose Table > " for lv_tables[lv_cnt]
-
+                if lv_tabname is not null and lv_tabname not matches " " THEN
+                else
+                       let int_flag=true
+                end if
 
 		if int_flag then
 			if lv_cnt=1 then
@@ -249,6 +336,8 @@ define lv_cnt integer
 				exit while
 			end if
 		end if
+
+		let lv_tables[lv_cnt]=lv_tabname
 
 		menu "Generate" 
 			command "Table selection complete" 	exit while
@@ -270,24 +359,74 @@ code
 	}
 endcode
 
+let mv_lastused=lv_form
+return true
 end function
 
 
 
+################################################################################
 function new_form()
 define lv_fname char(255)
 	let int_flag=false
 	prompt "Form name >>" for lv_fname
+
 	if int_flag=true or lv_fname is null or lv_fname matches " " then
 		return
 	else
 		call modify_form(lv_fname)
 	end if
+
 end function
 
 
+################################################################################
 function drop_form()
-	error "Not implemented drop_form"
+define lv_fname char(255)
+define lv_fname_frm char(255)
+define lv_fname_per char(255)
+define a integer
+display "Choose a file to drop","" at 2,1
+code
+{
+        char **dir;
+        dir=read_directory(".",".per");
+        if (dir) {
+                for (a=0;dir[a];a++) {
+                        strcpy(lv_fname,dir[a]);
+endcode
+                        call set_pick(a+1,lv_fname);
+code
+                }
+                free_directory(dir);
+        }
+}
+endcode
+
+call set_pick_cnt(a);
+
+call prompt_pick("DROP >> ","") returning lv_fname
+
+
+if lv_fname is not null then
+        let lv_fname_per=lv_fname clipped,".per"
+        let lv_fname_frm=lv_fname clipped,work_out_ext()
+
+menu "CONFIRM"
+        command "No" "No - I don't want to drop it"
+                exit menu
+        command "Yes" "Yes - I do want to drop it"
+
+code
+        A4GL_trim(lv_fname_per);
+        A4GL_trim(lv_fname_frm);
+        unlink(lv_fname_per);
+        unlink(lv_fname_frm);
+endcode
+        exit menu
+end menu
+end if
+
 end function
 
 
@@ -470,9 +609,42 @@ for (a=0;a<attribs_cnt;a++) {
         fprintf(out,"%s\n",attribs[a]);
 }
 fprintf(out,"end\n");
-if (strlen(outfile)) { fclose(out); }
+if (strlen(outfile)) { fclose(out); A4GL_push_char(outfile); aclfgl_compile_form(1);}
 return 0;
 }
 
 
 endcode
+
+
+
+function work_out_ext()
+define lv_formtype char(255)
+define lv_packer char(255)
+define lv_ext char(255)
+
+let lv_ext=".frm"
+
+let lv_formtype=fgl_getenv("A4GL_FORMTYPE")
+
+if lv_formtype is null or lv_formtype matches " " then
+	let lv_formtype=fgl_getenv("FORMTYPE")
+end if
+
+if lv_formtype="GENERIC" THEN
+	let lv_packer=fgl_getenv("A4GL_PACKER")
+	if lv_packer is null or lv_packer matches " " then
+		let lv_packer=fgl_getenv("PACKER")
+	end if
+	case lv_packer
+		when "PACKED" 		let lv_ext=fgl_getenv("A4GL_FRM_BASE_EXT") clipped,fgl_getenv("A4GL_PACKED_EXT")
+		when "GZPACKED" 	let lv_ext=fgl_getenv("A4GL_FRM_BASE_EXT") clipped,fgl_getenv("A4GL_PACKED_EXT")
+		when "XML" 		let lv_ext=fgl_getenv("A4GL_FRM_BASE_EXT") clipped,fgl_getenv("A4GL_XML_EXT")
+	end case
+else
+	# Assume XDR or compatible
+	let lv_ext=fgl_getenv("A4GL_FRM_BASE_EXT")
+end if
+
+return lv_ext clipped
+end function
