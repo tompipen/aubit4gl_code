@@ -271,43 +271,36 @@ char *find_default_filter(char *rtype) {
 
  
 	if (!found && running_program) {
-	  sprintf (default_filter, "%s/etc/%s_%s_%s_%s.lrf", acl_getenv ("AUBITDIR"), 
-lf_program,lf_modname,report->repName,rtype);
+	  sprintf (default_filter, "%s/etc/%s_%s_%s_%s.lrf", acl_getenv ("AUBITDIR"), lf_program,lf_modname,report->repName,rtype);
 	  if (do_we_have(default_filter)) found=1;
 	}
 
      if (!found && running_program ) {
-	  sprintf (default_filter, "%s/etc/%s_%s_%s.lrf", acl_getenv ("AUBITDIR"), 
-		lf_program,report->repName,rtype);
+	  sprintf (default_filter, "%s/etc/%s_%s_%s.lrf", acl_getenv ("AUBITDIR"), lf_program,report->repName,rtype);
 	  if (do_we_have(default_filter)) found=1;
      }
 
      if (!found && running_program) {
-	  sprintf (default_filter, "%s/etc/%s_%s_%s.lrf", acl_getenv ("AUBITDIR"), 
-lf_program,lf_modname,rtype);
+	  sprintf (default_filter, "%s/etc/%s_%s_%s.lrf", acl_getenv ("AUBITDIR"), lf_program,lf_modname,rtype);
 	  if (do_we_have(default_filter)) found=1;
      }
 
      if (!found) {
-	  sprintf (default_filter, "%s/etc/%s_%s_%s.lrf", acl_getenv ("AUBITDIR"), 
-lf_modname,report->repName,rtype);
+	  sprintf (default_filter, "%s/etc/%s_%s_%s.lrf", acl_getenv ("AUBITDIR"), lf_modname,report->repName,rtype);
 	  if (do_we_have(default_filter)) found=1;
      }
      if (!found) {
-	  sprintf (default_filter, "%s/etc/%s_%s.lrf", acl_getenv ("AUBITDIR"), 
-report->repName,rtype);
+	  sprintf (default_filter, "%s/etc/%s_%s.lrf", acl_getenv ("AUBITDIR"), report->repName,rtype);
 	  if (do_we_have(default_filter)) found=1;
 	}
 
      if (!found) {
-	  sprintf (default_filter, "%s/etc/%s_%s.lrf", acl_getenv ("AUBITDIR"), 
-lf_modname,rtype);
+	  sprintf (default_filter, "%s/etc/%s_%s.lrf", acl_getenv ("AUBITDIR"), lf_modname,rtype);
 	  if (do_we_have(default_filter)) found=1;
      }
 
      if (!found && running_program) {
-	  sprintf (default_filter, "%s/etc/%s_%s.lrf", acl_getenv ("AUBITDIR"), 
-lf_program,rtype);
+	  sprintf (default_filter, "%s/etc/%s_%s.lrf", acl_getenv ("AUBITDIR"), lf_program,rtype);
 	  if (do_we_have(default_filter)) found=1;
 	}
 
