@@ -267,7 +267,7 @@ code
 	{
 		ok = 0;
 		filenotfound = 1;
-		snprintf(errmsg, HELPMAXLEN,"Cannot open %s \n", filename);
+		snprintf(errmsg, HELPMAXLEN-1,"Cannot open %s \n", filename);
 		myseterr(errmsg);
 		
 	}
@@ -278,7 +278,7 @@ code
 		if((len = fread(header,1,4, infile))< 4)
 		{
 			ok = 0;
-			sprintf(errmsg, "Cannot read header %ld bytes only\n", len);
+			snprintf(errmsg, HELPMAXLEN-1,"Cannot read header %ld bytes only\n", len);
 			myseterr( errmsg );
 		}
 		else
@@ -291,7 +291,7 @@ code
 	{ 
 		if(header[0] != (unsigned char)'\xFE' || header[1] != '\x68')
 		{
-			sprintf(errmsg, 
+			snprintf(errmsg, HELPMAXLEN-1,
 				"%s:Bad magic: %02X %02X Should be FE 68\n",
 				filename, 
 				header[0], 
@@ -381,7 +381,7 @@ indexrec[7]);
 	else if( msgnotfound )
 	{
 		charcount = 0;
-		sprintf(errmsg, "Error: Message %d not found in '%s'",
+		snprintf(errmsg, HELPMAXLEN-1, "Error: Message %d not found in '%s'",
 				 n,filename);
 		myseterr(errmsg);
 	}
