@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.7 2003-02-23 02:32:38 afalout Exp $
+# $Id: compile.c,v 1.8 2003-02-23 08:04:37 afalout Exp $
 #*/
 
 /**
@@ -71,7 +71,6 @@ extern int 	yylineno;
 char 		gcc_exec[128];
 char 		pass_options[1024]="";
 int         clean_aftercomp = 1; /* clean intermediate files after compilation */
-//char 		rm_cmd[10];
 char 		currinfile_dirname[1024]="";   //path to 4gl file we are currently compiling - used when compiling global files
 char 		errbuff[1024] = "";
 char 		yytext[1024] = "";
@@ -92,9 +91,8 @@ int 		yyin_len;
 =====================================================================
 */
 
-//static int  compile_4gl		(char c[128],int compile_object, char a[128],char incl_path[128],int silent, int verbose);
 static int  compile_4gl		(int compile_object, char a[128],char incl_path[128],int silent, int verbose,char output_object[128]);
-static void printUsage		(char *argv[]);
+void 		printUsage		(char *argv[]);
 static void printUsage_help	(char *argv[]);
 int         initArguments	(int argc, char *argv[]);
 void 		setGenStackInfo	(int _genStackInfo);
@@ -110,6 +108,11 @@ void        set_yytext		(char *s);
 /**
  * Parse the comand line arguments and acording to the passed values
  * set(s) the properties.
+ *
+ * see
+ *		http://www.gnu.org/software/gengetopt
+ *		http://www.gnu.org/manual/glibc-2.2.3/html_node/libc_516.html
+ *        for inspiration.
  *
  * @param argc The argument count
  * @param argv The argument values
@@ -142,8 +145,8 @@ char incl_path[128];
 char l_path[128];
 char l_libs[128];
 char buff[1028];
-char all_objects[456];
-char output_object[128];
+char all_objects[456]="";
+static char output_object[128]="";
 static struct option long_options[] =
   {
     {"globals",     	0, 0, 'G'},
@@ -159,15 +162,6 @@ static struct option long_options[] =
 
 	#ifdef DEBUG
 		debug ("Parsing the comand line arguments\n");
-    #endif
-
-	/* see
-		http://www.gnu.org/software/gengetopt
-		http://www.gnu.org/manual/glibc-2.2.3/html_node/libc_516.html
-        for inspiration.
-	*/
-
-	#ifdef DEBUG
 		debug("Arg 0 set to >%s<",getarg0());
     #endif
 
@@ -191,8 +185,6 @@ static struct option long_options[] =
     exit(0);
   }
 
-  strcpy (output_object,"");
-
   while ( ( i = getopt_long (argc, argv, opt_list,
                         long_options, &option_index) ) != -1)
   {
@@ -200,42 +192,15 @@ static struct option long_options[] =
     {
 
 	  case 'c':              // Compile resulting C file(s) to object
-		//if (compile_lib) 	{printf("Cannot specify -l and -c together.\n"); exit(7);}
-		//if (compile_exec) 	{printf("Cannot specify -o and -c together.\n"); exit(7);}
-		//if (compile_so) 	{printf("Cannot specify -d and -c together.\n"); exit(7);}
-
-        /* this is more or less meaningless, and is here for compatibility with C compiler
-        style flags */
+        /* this is more or less meaningless, and is here for compatibility with 
+		C compiler style flags */
 
 		compile_object = 1;
 		break;
 
       case 'o':              /* compile and optionally Link resulting object(s) */
-		//if (compile_object) {printf("Cannot specify -c and -o together.\n"); exit(7);}
-		//if (compile_so) 	{printf("Cannot specify -d and -o together.\n"); exit(7);}
-		//if (compile_lib) 	{printf("Cannot specify -l and -o together.\n"); exit(7);}
-
-		//compile_exec = 1;
-		//compile_object = 1;
-
 		sprintf (output_object,"%s",(NULL == optarg) ? "" : optarg);
-		//sprintf (output_object,"%s",optarg);
-
 		bname (output_object, a, b);
-
-		/* FIXME: we should no longer assume anything about parameters on command
-        line, if we want to be able to pass flags to CC */
-		/*
-		if (b[0] == 0)
-		{
-			strcat (c, ".4gl"); 	// assume 4gl file name
-			bname (c, a, b);
-		}
-        */
-
-		// Add dot because bname returns extension without dot, and we define extensions in
-        // resource.c with the dot:
-		//sprintf (b,".%s",b);
         strcpy (ext,".");
 		strcat (ext,b);
         debug ("%s %s %s",b, acl_getenv ("A4GL_EXE_EXT"),ext);
@@ -254,42 +219,20 @@ static struct option long_options[] =
 			compile_lib = 1;
         }
 
-		break;
-/*
-      case 'd':              // Link resulting object(s) into shared library
-		if (compile_object) {printf("Cannot specify -c and -d together.\n"); exit(7);}
-		//if (compile_exec) 	{printf("Cannot specify -o and -d together.\n"); exit(7);}
-		if (compile_lib) 	{printf("Cannot specify -l and -d together.\n"); exit(7);}
+        //FIXME: and what about shared library, or when extension is not Aubit one?
 
-		compile_so = 1;
-		compile_object = 1;
-		sprintf (output_object,"%s",(NULL == optarg) ? "" : optarg);
 		break;
 
-      case 'l':              // Link resulting object(s) into static library
-		if (compile_object) {printf("Cannot specify -c and -l together.\n"); exit(7);}
-		//if (compile_exec) 	{printf("Cannot specify -o and -l together.\n"); exit(7);}
-		if (compile_so) 	{printf("Cannot specify -d and -l together.\n"); exit(7);}
-
-		compile_lib = 1;
-		compile_object = 1;
-		sprintf (output_object,"%s",(NULL == optarg) ? "" : optarg);
-		break;
-*/
-      
       case 'l':              // Extra libraries to link with
 		#ifdef DEBUG
 			debug("Pass trough option: %s\n",optarg);
         #endif
-
-		//sprintf (output_object,"%s",(NULL == optarg) ? "" : optarg);
 		strcat (pass_options,"-l");
 		strcat (pass_options,optarg);
 		strcat (pass_options," ");
 		break;
 
 	  case 'G':              /* generate Globals file only */
-		/* call from mod.c:   sprintf (buff, "cd %s; 4glc -G %s", dirname, fname); */
 		globals_only = 1;
         break;
 
@@ -330,7 +273,7 @@ static struct option long_options[] =
 		check_and_show_id ("4GL Compiler", "-vfull");
         exit (0);
 
-       default : 			/* Catch all.  */
+       default : 			/* Everything else we did not define  */
 		printf("Invalid option=%s\n", argv[optind]);
 		printf("Invalid option=%s\n", argv[option_index]);
 		exit (1);
@@ -386,35 +329,12 @@ static struct option long_options[] =
 	strcpy (l_libs,acl_getenv ("A4GL_LINK_LIBS"));
     strcpy (gcc_exec,acl_getenv ("A4GL_C_COMP"));
 
-	//FIXME: move to resource.c
-/*
-	#ifdef WIN32
-		sprintf (rm_cmd,"%s","del");
-	#else
-		sprintf (rm_cmd,"%s","rm");
-    #endif
-*/
-	strcpy (all_objects,"");
-//	strcpy (pass_options,"");
-
 	for (index = optind; index < argc; index++)
     {
-    	//printf ("Non-option argument %s\n", argv[index]);
-
 		outputfilename = outputfile; /* set where ? */
 
 		strcpy (c, argv[index]);
 		bname (c, a, b);
-
-		/* FIXME: we should no longer assume anything about parameters on command
-        line, if we want to be able to pass flags to CC */
-		/*
-		if (b[0] == 0)
-		{
-			strcat (c, ".4gl"); 	// assume 4gl file name
-			bname (c, a, b);
-		}
-        */
 
 		if (strcmp (b, "4gl") == 0) {
 			strcpy (outputfilename, a);
@@ -426,11 +346,13 @@ static struct option long_options[] =
 				debug ("Compiling %s\n", infilename);
             #endif
 
+/* nonsense
 			if (strcmp (output_object, "") == 0) {
-            /* If user did not name output file explicityl,
-            set output file name based on file naem of the first 4gl file
-            found on the command line, and set it's extension base on compilation type
-            */
+             If user did not name output file explicityl,
+            set output file name based on file name of the first 4gl file
+            found on the command line, and set it's extension base on
+			compilation type
+
 				strcpy (output_object,a);
 
                 if (compile_exec) {
@@ -445,9 +367,8 @@ static struct option long_options[] =
                 }
 
             }
-
+*/
             todo++;
-		printf("Compiling: %s\n",c);
             x = compile_4gl(compile_object,a,incl_path,silent,verbose,output_object);
 			if ( x )
 	        {
@@ -463,29 +384,25 @@ static struct option long_options[] =
 			strcat (pass_options,c);
 			strcat (pass_options," ");
         }
-
-
-
 	}
 
     if (! todo) {
-		if (! silent) {
-			//printf ("Warning: no 4gl input files - nothing to do.\n");
+		if (verbose) {
+			printf ("Linking only - no 4gl input files.\n");
 	    }
-	    //exit (1);
         debug ("Linking only - no 4gl input files.\n");
 	}
-
-
 
     if (compile_exec)
 	{
         debug ("Linking exec\n");
 		#ifndef __MINGW32__
-			sprintf (buff,"%s -rdynamic %s -o %s %s %s %s",gcc_exec,all_objects,output_object,l_path,l_libs,pass_options);
+			sprintf (buff,"%s -rdynamic %s -o %s %s %s %s",
+				gcc_exec,all_objects,output_object,l_path,l_libs,pass_options);
         #else
 			//WARNING: libs must be at the end
-			sprintf (buff,"%s %s -o %s %s %s %s",gcc_exec,all_objects,output_object,l_path,pass_options,l_libs);
+			sprintf (buff,"%s %s -o %s %s %s %s",
+				gcc_exec,all_objects,output_object,l_path,pass_options,l_libs);
         #endif
 	}
 
@@ -493,7 +410,9 @@ static struct option long_options[] =
 	{
    		#ifndef __MINGW32__
 			debug ("Linking static library\n");
-			sprintf (buff,"%s -static %s -o %s %s %s %s",gcc_exec,all_objects,output_object,l_path,l_libs,pass_options);
+
+			sprintf (buff,"%s -static %s -o %s %s %s -shared %s",
+				gcc_exec,all_objects,output_object,pass_options,l_path,l_libs);
         #else
             /* On Windows, there can be no unresolved dependencies at link time - so we allways must
             link with libaubit4gl - but we do not make any static Aubit libraries any more, so we
@@ -509,16 +428,14 @@ static struct option long_options[] =
 	{
 		debug ("Linking shared library\n");
 		#ifndef __MINGW32__
-			sprintf (buff,"%s -shared %s -o %s %s %s %s",gcc_exec,all_objects,output_object,l_path,l_libs,pass_options);
+			sprintf (buff,"%s -shared %s -o %s %s %s %s",
+				gcc_exec,all_objects,output_object,l_path,l_libs,pass_options);
         #else
-
-/*
-gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -o ../../lib/lib4glc.dll compile.o dim.o
-gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols  -o invwind.aox cacdwind.ao cashwind.ao centwind.ao creddetl.ao credfunc.ao crhdwind.ao dispgpfunc.ao ientwind.ao inhdwind.ao instwind.ao invdfunc.ao invowind.ao invqwind.ao ishpwind.ao orddfunc.ao orstfunc.ao unapp_pay.ao D:/cygwin/usr/src/aubit/apps/erp/src/utility/glob_GLOBALS.ao  -LD:/cygwin/usr/local/aubit4gl/lib -laubit4gl
-*/
-			//NOTE: we are acutally making a Window dll here.
-			//WARNING: libs must be at the end
-			//WARNING: without -L ld on Windows won't find it's own ass!!!! Not even in curren directory!!!
+			/* 
+			NOTE: we are acutally making a Window dll here.
+			WARNING: libs must be at the end
+			WARNING: without -L ld on Windows won't find it's own ass!!!! Not even in curren directory!!!
+            */
 			sprintf (buff,"%s -L. -shared -Wl,--out-implib=%s.a -Wl,--export-all-symbols %s -o %s %s %s %s",
 					gcc_exec,output_object,all_objects,output_object,pass_options,l_path,l_libs);
 		#endif
@@ -537,7 +454,7 @@ gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols  -o invwind.aox 
 		ret=system (buff);
 		if (ret) {
 			printf ("Error compiling %s - check %s.err\n",output_object,output_object);
-			printf ("Command was: %s\n",buff);
+			printf ("Failed command was: %s\n",buff);
 			//fixme: show err file
             return ret;
 	    }
@@ -552,7 +469,7 @@ gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols  -o invwind.aox 
 				ret=system (buff);
 				if (ret) {
 					printf ("Clean of %s intermediate objects failed\n",a);
-                    printf ("Command was: %s\n",buff);
+                    printf ("Failed command was: %s\n",buff);
 	            }
             }
 
@@ -560,7 +477,7 @@ gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols  -o invwind.aox 
         }
     } else {
 	    if (! todo) {
-    	    debug ("Somethig wrong here - no 4gl input files and no linking.\n");
+    	    debug ("Error in parameters to 4glc - no 4gl input files and no linking.\n");
 		}
 	}
 
@@ -574,15 +491,20 @@ gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols  -o invwind.aox 
  * Compile one 4gl file to output language, and optionally to object
  *
  *
- * @param
- * @param
+ * @param compile_object
+ * @param a
+ * @param incl_path
+ * @param silent
+ * @param verbose
+ * @param output_object -- not really needed - remove it
  */
 static int
 compile_4gl(int compile_object,char a[128],char incl_path[128],int silent,int verbose,char output_object[128])
 {
 int x, ret;
 char buff[1028];
-char c[128];
+char single_output_object[128]="";
+char c[128]; //The 4gl file
 char *ptr;
 
   /* store the directory part of file name, if any, so we can use it for GLOBALS
@@ -590,6 +512,7 @@ char *ptr;
 
   sprintf(c,"%s%s",a,".4gl");
   strcpy (buff, c);
+  debug("Compiling: %s\n",c);
 
   if (strchr (buff, '/'))
     {
@@ -677,25 +600,26 @@ char *ptr;
 
   if ( x == 0 )
   {
+	if (verbose) {
+    	printf ("4GL module compiled successfuly.\n");
+	}
+
 	if (compile_object)
 	{
-        if (verbose) {
-            printf ("4GL module compiled successfuly.\n");
 
-        }
-
-/*
-
-gcc  -g -O2 -Wall -mms-bitfields  -c -o compile.o compile.c
-gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -o ../../lib/lib4glc.dll compile.o dim.o  -L../../lib -laubit4gl
-
-*/
+        //FIXME: we can compile shared or static here
+            
+		//Ouptout name of the single file object allways must be same as
+        //the 4gl file we are compiling, regardless of waht might be set
+        //on command line with -o
+		sprintf (single_output_object,"%s%s",a,acl_getenv ("A4GL_OBJ_EXT"));
 
    		#ifndef __MINGW32__
-			//sprintf (buff, "%s %s.c -c -o %s%s %s %s",gcc_exec,a,a,acl_getenv ("A4GL_OBJ_EXT"),incl_path,pass_options);
-			sprintf (buff, "%s %s.c -c -o %s %s %s",gcc_exec,a,output_object,incl_path,pass_options);
+			sprintf (buff, "%s %s.c -c -o %s %s %s",
+				gcc_exec,a,single_output_object,incl_path,pass_options);
         #else
-			sprintf (buff, "%s -mms-bitfields %s.c -c -o %s %s %s",gcc_exec,a,output_object,incl_path,pass_options);
+			sprintf (buff, "%s -mms-bitfields %s.c -c -o %s %s %s",
+				gcc_exec,a,single_output_object,incl_path,pass_options);
         #endif
 		if (verbose) {
 			printf ("%s\n",buff);
@@ -708,7 +632,7 @@ gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -o ../../lib/lib
         //see function system_run() in fglwrap.c
 		if (ret) {
 			printf ("Error compiling %s.c - check %s.err\n",a,a);
-			printf ("Command was: %s\n",buff);
+			printf ("Failed command was: %s\n",buff);
 			//fixme: show err file
             return ret;
         }
@@ -716,7 +640,9 @@ gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -o ../../lib/lib
 		{
 			if (clean_aftercomp)
 			{
-				sprintf (buff,"%s %s.err %s.c.err %s.h %s.c %s.glb",acl_getenv("A4GL_RM_CMD"),a,a,a,a,a);
+				//is it smart to delete .glb files?
+				sprintf (buff,"%s %s.err %s.c.err %s.h %s.c ", //%s.glb
+					acl_getenv("A4GL_RM_CMD"),a,a,a,a);     //,a
 				#ifdef DEBUG
 					debug("Runnung %s",buff);
 		        #endif
@@ -736,14 +662,15 @@ gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -o ../../lib/lib
 
 /**
  * Print the usage message when executing the 4gl compiler.
- * Invoked autometically from inside getopt_long() when invalis option is encountered.
+ * Invoked autometically from inside getopt_long() when invalis option
+ * is encountered.
  */
-static void
+void
 printUsage(char *argv[])
 {
   printf("\n");
   printf("Aubit 4GL compiler usage: %s [options] -oOutFile.ext file.ext [file.ext ...]\n", argv[0]);
-  printf("  Try -help for more.\n", argv[0]);
+  printf("  Try -help for more.\n");
   printf("\n");
 }
 
@@ -765,19 +692,10 @@ printUsage_help(char *argv[])
   printf("    ao=object, aox=static library, aso=shared lib, 4ae=executable.\n");
   printf("\n");
 
-
-
   printf("Options:\n");
   printf("\n");
   printf("When A4GL_LEXTYPE=C :\n");
   printf("  -o[outfile] name outpout file\n");
-/*
-  printf("  -c compile to object(s), do not link\n");
-  printf("  -o[outfile] compile to object(s), link into executable\n");
-  printf("  -d compile to object(s), link into shared library\n");
-  printf("  -l compile to object(s), link into static library\n");
-*/
-
   printf("  (no flags) compile to C only\n");
   printf("\n");
 
@@ -802,6 +720,8 @@ printUsage_help(char *argv[])
 
 //FIXME: move this to -vfull
 
+
+  printf("Compiled with platform settings:\n");
 #if ( defined(__MINGW32__) )
   printf("__MINGW32__ ");
 #endif

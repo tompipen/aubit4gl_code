@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.105 2003-02-22 15:46:12 mikeaubury Exp $
+# $Id: mod.c,v 1.106 2003-02-23 08:04:37 afalout Exp $
 #
 */
 
@@ -1673,7 +1673,7 @@ trim(char *s)
 void 
 push_gen (int a, char *s)
 {
-  printf ("Push %d %s - %d\n", a, s,gen_stack_cnt[a]);
+  debug ("Push %d %s - %d\n", a, s,gen_stack_cnt[a]);
   if (gen_stack_cnt[a] >= GEN_STACK_SIZE)
     {
       printf ("Out of stack!\n");

@@ -49,6 +49,8 @@
 
 /* ==================== from a4gl_4glc_4glc.h ===================== */
 
+    /* ========================= in globals.c =========================== */
+	void 		dump_gvars (void);
 
 	/* =========================== Implemented in 4glc.c ================= */
 	void 	rm_quote			(char *s);
@@ -178,7 +180,11 @@
 	int 	print_push_rec 		(char *s, void **b);
 	void 	expand_obind 		(void);
 	char *subtract_one(char *s);
-	
+
+    /* ---------------------- from compile.c -----------------------------*/
+	void ansi_violation(char *s,int severity);
+
+
     /* --------------------- from a4gl_4glc_compiledefs.h --------------------- */
 
 	#define MAXMENU 		10

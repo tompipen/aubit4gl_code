@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.11 2003-02-22 15:46:12 mikeaubury Exp $
+# $Id: globals.c,v 1.12 2003-02-23 08:04:37 afalout Exp $
 #
 */
 
@@ -78,7 +78,7 @@ extern char currinfile_dirname[1024];   //path to 4gl file we are currently comp
 
 
 /* Externally callable (non-static) functions */
-void 		dump_gvars (void);
+
 
 
 /* static functions declared here */

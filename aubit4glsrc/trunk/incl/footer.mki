@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.25 2003-02-23 02:32:38 afalout Exp $
+#	 $Id: footer.mki,v 1.26 2003-02-23 08:04:45 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -293,6 +293,9 @@ plexus:
 #                            Aubit Targets
 # =======================================================================
 
+#############################
+#FIXME: this shell stuff is preventin make form setecting when error occured!
+############################
 
 #This is an explicit rule - vpath will not be searched - use implicit rule instead?
 #${PROG.4ae}:${AUBIT_DEPS}
