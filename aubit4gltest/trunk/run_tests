@@ -20,6 +20,8 @@ EXPECT_TO_FAIL_TESTS_ECP="36 76 98 207 212 227 530 531 534 535"
 #227 (syntax error)
 #530 (syntax+531,534,535)
 
+#218 - waits wth -ecp
+
 #Not reported:
 EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
 	536 537 538 539 540 541 543 544 551 552 553 554 555 556 557 558 \
@@ -785,7 +787,7 @@ sleep 1;
                 else
 					CVSIGNORE="$a/.cvsignore"
 					#CVSIGNORE_OUT=">> $CVSIGNORE"
-					#ADDEXT_LIST=".pic"
+					ADDEXT_LIST=".42m .42r .42f"
 					for ADDEXT in $ADDEXT_LIST; do
 						if ! grep "$ADDEXT" "$CVSIGNORE" > /dev/null ; then 
 							#echo "*$ADDEXT" $CVSIGNORE_OUT
