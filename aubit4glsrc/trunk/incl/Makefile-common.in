@@ -25,8 +25,15 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.124 2003-02-27 22:13:38 afalout Exp $
+# $Id: Makefile-common.in,v 1.125 2003-03-02 03:29:51 afalout Exp $
 #
+
+
+#Make sure we are not picking things from environment that make uses 
+#automatcally:
+CFLAGS=
+LIBS=
+
 
 #Workarounf for Informix installers messing up libphtread:
 LD_LIBRARY_PATH				:=/lib:${LD_LIBRARY_PATH}
@@ -347,20 +354,27 @@ endif
 #LD Command to use for linking libraries:
 ifeq "${TARGET_OS}" "darwin"
 	#LD                  =ld
-	LD                  =${CC}
+	LD              =${CC}
 else
-	LD                  =${CC}
+	LD              =${CC}
 endif
 
 #LD Command to use for linking executables:
 LD_EXE              =${CC} ${RDYNAMIC}
+
 ifeq "${TARGET_OS}" "solaris"
-	#LD_EXE              =ld
-	LD_EXE              =${CC} ${RDYNAMIC}
+	#LD_EXE         =ld
+	LD_EXE			=${CC} ${RDYNAMIC}
 endif
 ifeq "${TARGET_OS}" "darwin"
-	LD_EXE              =${CC} ${LDFLAGS} -ldl ${RDYNAMIC}
+	LD_EXE          =${CC} ${LDFLAGS} -ldl ${RDYNAMIC}
 endif
+
+ifeq "@EFENCE@" "yes"
+#enable memeory debugging with Electric Fence
+	LD_EXE          +=-lefence
+endif
+
 
 ALL_LIBS			=@LIBS@
 AUTOCONF_CFLAGS     =@CFLAGS@
@@ -650,8 +664,9 @@ INSTALL_DIR=${PREFIX}/${AUBITNAME}
     endif
 
 	ifeq "${AUBITRCFILEEXISTS}" ""
+		#create path
 		DUMMY:=$(shell ${MKPATH} ${AUBITETC})
-		AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
+		#AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
 	endif
 
 LDCONFIG=@LDCONFIG@
@@ -1321,10 +1336,14 @@ endif
 
 
 #################
-# 23:
-#Lclint (Splint) C code checker:
+# 23: Lclint (Splint) C code checker:
 #See http://www.splint.org
 
+
+##################
+# 24: Electric Fence
+#info: http://perens.com/FreeSoftware/ and http://freshmeat.net/projects/efence/?topic_id=47
+#ftp://ftp.perens.com/pub/ElectricFence/
 
 #=================================== EOF ================================
 

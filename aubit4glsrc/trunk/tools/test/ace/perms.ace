@@ -1,0 +1,369 @@
+{
+#
+#From j.leffler@acm.org Thu Jan  1 00:00:00 1970
+#Date: Wed, 7 Aug 1996 06:23:19 -0700
+#From: johnl@informix.com (Jonathan Leffler)
+#Subject: Database privileges (from Lester Knutsen)
+#
+#From: uunet!access.digex.net!lester (Lester Knutsen)
+#Subject: Database privileges
+#Date: 15 Jun 1993 00:04:03 -0400
+#X-Informix-List-Id: <news.3573>
+#
+#I am testing a security product that works with  Informix database
+#privileges.  In testing, I developed the following ace report and thought it
+#might be useful to others. I also would like to make sure I have covered
+#all possible situtions. (Currently I am not reporting on column level
+#privileges or reference privileges)
+#
+#I need to know all the users that can access a database and what their
+#privileges (or lack of) will be for each table.  The "info privileges for
+#tablename" does not show who cannot access a table or who can access it because
+#of public privileges or table ownership.  I have created the following
+#ace report to show all users and their privileges ( or lack of) for
+#all tables.  It can be a long report if you have a lot of tables or users.
+#I am using Informix 4.0 and 5.0, SE and Online.
+#
+#Please let me know if you see anything I may have left out or have any
+#suggestions.  Thanks
+#############################################################################
+#         Lester Knutsen                        lester@access.digex.net     #
+#         Advanced DataTools Corporation        Voice: 703-256-0267         #
+#############################################################################
+#---------Cut Here-Begin------------------------------------------------------
+}
+
+{
+:############################################################################
+:
+: Module:	@(#)privileg.ace	1.4	Date: 93/06/05
+: Author: 	Lester B. Knutsen
+:
+: Discription:	This is an Informix ace report that will print all known
+:		users in a database and their permissions for each table.
+:		The program first creates a temp table of all users,
+:		owners, grantors and grantees from sysusers,systables and
+:		systabauth.  Then the report creates a temp table of public
+:		privileges for each table in the database. Finally, it joins
+:		all the users with all the tables to show the permissions.
+:		The permissions for each table are: Select,  Update,
+:		Columns, Insert, Delete, Index, and Alter. For each
+:		privilege the following is shown:
+:
+:		Y - the user has been granted this privilege
+:		N - the user has not been granted this privilege
+:		O - the user is the table owner and has this privilege
+:		P - the user has this privilege because public has this
+:			privilege
+:
+:		If a user has been granted different privileges by different
+:		people, both privileges will print.
+:
+:		To compile this program type:
+:			saceprep privilege
+:
+:		The database section of the report points to the stores
+:		database, you may need to change this to get it to compile.
+:
+:		To run this type:
+:			sacego -d database privilege
+:
+:			where "database" is the name of the database to
+:			report on.
+:
+:		Please leave me a message or give me a call if you
+:		have any questions.
+:
+:			Lester Knutsen
+:			Advanced DataTools Corporation
+:			4510 Maxfield Drive
+:			Annandale, VA 22003
+:			703-256-0267
+:			lester@access.digex.net
+:############################################################################
+:let copyright="Copyright 1993 Advanced DataTools Corporation"
+:let version = "@(#)privileg.ace	1.4"
+}
+
+database stores_demo end
+
+define
+	variable last_tabid	integer
+	variable last_grantor	char(8)
+	variable last_tabauth	char(8)
+end
+
+output
+	left margin 0
+	right margin 80
+	top margin 3
+	bottom margin 3
+	page length 66
+	report to "privilege.rpt"
+{	report to pipe "more"}
+end
+
+{############################################################################}
+{ Select all users, table owners and anyone with any table permissions }
+select 	unique username
+from 	sysusers
+union
+select 	unique owner
+from 	systables
+where  	systables.tabid > 99  { skip systems tables }
+union
+select 	unique grantor
+from 	systabauth
+union
+select 	unique grantee
+from 	systabauth
+into temp users1;
+
+{ Select a unique list of users from the above select }
+select 	unique users1.username,
+	sysusers.usertype
+from 	users1, outer sysusers
+where 	users1.username = sysusers.username
+and 	users1.username != "informix"
+into temp users;
+
+{############################################################################}
+{ Select public permissions }
+select 	systabauth.tabid,
+	systabauth.tabauth 	pub_tabauth,
+	systabauth.grantor 	pub_grantor,
+	sysusers.usertype 	pub_type
+from 	systabauth, outer sysusers
+where 	systabauth.grantee = "public"
+and 	systabauth.grantee = username
+into temp pub;
+
+{############################################################################}
+{ Join the users with all tables in the database, their table  }
+{ permissions, and public permissions  }
+select 	users.username,
+	users.usertype,
+	systables.tabname,
+	systables.owner,
+	systables.tabid,
+	systabauth.grantor,
+	systabauth.grantee,
+	systabauth.tabauth,
+	pub.pub_tabauth,
+	pub.pub_grantor,
+	pub.pub_type
+from 	users, systables, outer systabauth, outer pub
+where 	systables.tabid = systabauth.tabid
+and	users.username = systabauth.grantee
+and	systables.tabid = pub.tabid
+and     systables.tabid > 99 { Skip system tables }
+and     tabname not in
+         ("sysmenus","sysmenuitems","syscolatt","syscolval",
+           "dtgroup", "dttabauth", "dtuser" )
+order by username, tabname, grantor
+end
+
+{############################################################################}
+format
+page header
+
+print	column 1, "Date: ", today using "MM/DD/YY",
+	column 26, "DataTools - User Privileges",
+	column 70, "Page:", pageno using "####"
+print 	column 1, "----------------------------------------",
+		"----------------------------------------"
+skip 1 line
+
+{############################################################################}
+page trailer
+skip 1 line
+print 	column 1, "----------------------------------------",
+		"----------------------------------------"
+print
+"Y-Privilege granted    N-No privilege    O-Table Owner    P-Public privilege"
+
+{############################################################################}
+on last row
+need 10 lines
+skip 5 line
+print 	column 1, "----------------------------------------",
+		"----------------------------------------"
+print
+"Privilege.ace by Lester Knutsen, Advanced DataTools Corporation 703-256-0267"
+
+print 	column 1, "----------------------------------------",
+		"----------------------------------------"
+
+{############################################################################}
+before group of username
+need 7 lines
+let last_tabid = 0
+let last_grantor = "        "
+let last_tabauth = "        "
+
+print 	column 1, "User login: ", username,
+	column 22,"DB Access : ";
+if ( usertype = "C" ) then print "Connect"
+else if ( usertype = "R" ) then print "Resource"
+else if ( usertype = "D" ) then print "DBA"
+else if ( pub_type = "C" ) then print "Connect (Public)"
+else if ( pub_type = "R" ) then print "Resource (Public)"
+else if ( pub_type = "D" ) then print "DBA (Public)"
+else print "None"
+
+skip 1 line
+
+print	column 8, "Table",
+	column 22, "Grantor",
+	column 32, "Select",
+	column 39, "Update",
+	column 46, "Column",
+	column 53, "Insert",
+	column 60, "Delete",
+	column 67, "Index",
+	column 74, "Alter"
+print	column 1,  "------------------",
+	column 22, "--------",
+	column 32, "------",
+	column 39, "------",
+	column 46, "------",
+	column 53, "------",
+	column 60, "------",
+	column 67, "------",
+	column 74, "------"
+
+{############################################################################}
+after group of username
+print 	column 1, "----------------------------------------",
+		"----------------------------------------"
+skip 1 line
+
+{############################################################################}
+on every row
+{ duplicate rows are created by the join with pub for tables where
+  more then one grantor has granted public rights - so we need to filter
+  the dups out
+}
+if ( last_tabid = tabid and last_grantor = grantor and last_tabauth = tabauth )
+	then
+	begin
+		{ duplicate row - do not do anything }
+		let last_tabid = tabid
+		let last_grantor = grantor
+		let last_tabauth = tabauth
+	end
+else if ( last_tabid = tabid and username = owner )
+	then
+	begin
+		{ duplicate row - do not do anything }
+		let last_tabid = tabid
+		let last_grantor = grantor
+		let last_tabauth = tabauth
+	end
+else
+	{########################################################}
+begin
+	let last_tabid = tabid
+	let last_grantor = grantor
+	let last_tabauth = tabauth
+
+	print 	column 1,  tabname;
+	{ There are 4 possible sources of privileges for every row
+	1. the user is the table owner and has all privileges over the table
+	2. the user has been granted privileges by one or more other users
+	3. the user has not been granted privileges, or they have been revoked
+		but public has been granted privileges.  All users
+		get public privileges.
+	4. the user has no privileges and public has no privileges
+	}
+	{########################################################}
+	{ Check if the user is the table owner }
+	if ( username = owner ) then
+	begin
+		print	column 22, username,
+			column 34, "O",
+			column 41, "O",
+			column 48, "O",
+			column 55, "O",
+			column 62, "O",
+			column 69, "O",
+			column 76, "O"
+	end
+	{########################################################}
+	{ Check if the user has privileges ( systabauth.tabauth is not null )
+		and print user prvivileges
+	  or
+	  public does not have privileges  ( systabauth.tabauth is null
+	  	where grantee = public)
+		and print all "N"s
+	}
+	else if ( tabauth is not null or pub_tabauth is null ) then
+	begin
+		print	column 22, grantor;
+		if (( tabauth[1] = "s" ) or ( tabauth[1]  = "S"  )) then
+			print column 34,  "Y";
+		else 	print column 34,  "N";
+
+		if (( tabauth[2] = "u" ) or ( tabauth[2]  = "U"  )) then
+			print column 41,  "Y";
+		else	print column 41,  "N";
+
+		if (( tabauth[3] = "*" ) or ( tabauth[3]  = "*"  )) then
+			print column 48,  "Y";
+		else	print column 48,  "N";
+
+		if (( tabauth[4] = "i" ) or ( tabauth[4]  = "I"  )) then
+			print column 55,  "Y";
+		else	print column 55,  "N";
+
+		if (( tabauth[5] = "d" ) or ( tabauth[5]  = "D"  )) then
+			print column 62,  "Y";
+		else	print column 62,  "N";
+
+		if (( tabauth[6] = "x" ) or ( tabauth[6]  = "X"  )) then
+			print column 69, "Y";
+		else	print column 69, "N";
+
+		if (( tabauth[7] = "a" ) or ( tabauth[7]  = "A"  )) then
+			print column 76, "Y"
+		else	print column 76, "N"
+
+	end
+	else
+	{########################################################}
+	{ user has no privileges but public does so print them }
+	begin
+		print	column 22, pub_grantor;
+		if (( pub_tabauth[1] = "s" ) or ( pub_tabauth[1]  = "S"  )) then
+			print column 34,  "P";
+		else 	print column 34,  "N";
+
+		if (( pub_tabauth[2] = "u" ) or ( pub_tabauth[2]  = "U"  )) then
+			print column 41,  "P";
+		else	print column 41,  "N";
+
+		if (( pub_tabauth[3] = "*" ) or ( pub_tabauth[3]  = "*"  )) then
+			print column 48,  "P";
+		else	print column 48,  "N";
+
+		if (( pub_tabauth[4] = "i" ) or ( pub_tabauth[4]  = "I"  )) then
+			print column 55,  "P";
+		else	print column 55,  "N";
+
+		if (( pub_tabauth[5] = "d" ) or ( pub_tabauth[5]  = "D"  )) then
+			print column 62,  "P";
+		else	print column 62,  "N";
+
+		if (( pub_tabauth[6] = "x" ) or ( pub_tabauth[6]  = "X"  )) then
+			print column 69, "P";
+		else	print column 69, "N";
+
+		if (( pub_tabauth[7] = "a" ) or ( pub_tabauth[7]  = "A"  )) then
+			print column 76, "P"
+		else	print column 76, "N"
+
+	end
+end
+{##################################### EOF ##################################}
+
+

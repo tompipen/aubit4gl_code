@@ -1,4 +1,4 @@
-#   @(#)$Id: d4gl.mk,v 1.9 2003-02-11 03:43:13 afalout Exp $
+#   @(#)$Id: d4gl.mk,v 1.10 2003-03-02 03:29:51 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -8,6 +8,9 @@
 # compilation rules and macros.
 #--------------------------------------------------------------------------
 
+ifndef AMAKE
+	AMAKE		=amake
+endif
 
 # D4GL P-code Compiler
 D4GL_PC_CMD     = fgl2p
@@ -173,8 +176,10 @@ eerr%.42x:
 
 
 %.42x:  %.mk
-	@echo "Making library $*.42x using $^"
+#	@echo "Making library $*.42x using $^"
+	@echo "Making library $@ using $^"
+	${AMAKE} $<
 #FIXME: it can be pcode and ccode:
 #	${MAKE} -f $^ ${MAKEFLAGS}
 #	${MAKE} -f $^ ${MKTARGET}
-	${MAKE} -f $^ d4gl-pcode
+#	${MAKE} -f $^ d4gl-pcode

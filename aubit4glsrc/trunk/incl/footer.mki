@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.28 2003-02-28 06:34:10 afalout Exp $
+#	 $Id: footer.mki,v 1.29 2003-03-02 03:29:51 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -378,11 +378,18 @@ ${PROG.42e}: ${D4GL_CCODE_DEPS}
 #because ${FILES.4gx} file names will not include path, since VPATH was
 #already examined. On the second run, ti will work OK.
 ${PROG.4gi}: ${I4GL_PCODE_DEPS}
-#	${I4GL_PL} -o $@ ${FILES.4go} ${I4GL_PL_LDFLAGS}
-	@echo "${I4GL_PL} $^ > $@"
-	@${I4GL_PL} $^ > $@; if test "$$?" != "0"; then echo "CAT failed, removing $@"; rm $@; fi
-#cat can fail because of missing files in link line, but it will still
-#create a file
+#%.4gi: ${I4GL_PCODE_DEPS}
+	@X="${I4GL_PL} $^ > $@" ; \
+	echo $$X; \
+	eval $$X; \
+	RET=$$?; \
+	if test "$$RET" != "0"; then \
+		echo "CAT failed, removing $@"; \
+		rm $@; \
+		exit $$RET; \
+	fi
+
+
 
 ########################
 #Build C-code program
@@ -603,7 +610,7 @@ show:
 	@echo SET_VPATH_PRG   =${SET_VPATH_PRG}
 	@echo SET_VPATH_LIB   =${SET_VPATH_LIB}
 	@echo SET_VPATH_HLP   =${SET_VPATH_HLP}
-	@echo EXTENSIONS: ${FRM} ${OBJ} ${PRG} ${LIB} ${HLP}
+	@echo "EXTENSIONS (FRM, OBJ, PRG, LIB, HLP): ${FRM} ${OBJ} ${PRG} ${LIB} ${HLP}"
 	@echo CORE_PROGDIR = ${CORE_PROGDIR}
 	@echo CORE_LANGDIR = ${CORE_LANGDIR}
 

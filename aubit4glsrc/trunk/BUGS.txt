@@ -1,159 +1,39 @@
 
 ===========================================================================
-CREATE TABLE fails:
 
-TABLE mbparms row size = 730 number of columns = 115 index size = 9
-Err:Program stopped at 'base.4gl', line number 11533.
+error:
+
+Err:Program stopped at 'base.4gl', line number 40.
 Error status number -201.
+.
 
 4gl function call stack :
-max_db.4gl (Line 124) calls create_init_tables()
-MAIN
+    max_db.4gl (Line 125) calls create_init_view()
+    MAIN
 make: *** [db] Error 1
 
-NOTE: TABLE mbparms row size = 730 number of columns = 115 index size = 9
+tested with dbaccess
 
 
-create table mbparms
-  (
-    cmpy_code char(2),
-    cred_limit_amt decimal(16,2),
-    term_code char(3),
-    tax_code char(3),
-    currency_code char(3),
-    stmnt_ind char(1),
-    dun_code char(3),
-    hold_code char(3),
-    inv_level_ind char(1),
-    pay_ind char(1),
-    invoice_to_ind char(1),
-    price_high_per decimal(6,3),
-    price_low_per decimal(6,3),
-    cart_high_per decimal(6,3),
-    cart_low_per decimal(6,3),
-    other_high_per decimal(6,3),
-    other_low_per decimal(6,3),
-    price_auth_ind char(1),
-    exp_git_acct_code char(18),
-    ref1_text char(20),
-    ref1_ind char(1),
-    ref2_text char(20),
-    ref2_ind char(1),
-    ref3_text char(20),
-    ref3_ind char(1),
-    ref4_text char(20),
-    ref4_ind char(1),
-    ref5_text char(20),
-    ref5_ind char(1),
-    ref6_text char(20),
-    ref6_ind char(1),
-    ref7_text char(20),
-    ref7_ind char(1),
-    ref8_text char(20),
-    ref8_ind char(1),
-    pallet_part_code char(15),
-    cart_acct_code char(18),
-    flag1_text char(20),
-    flag1_ind char(1),
-    flag1_dd_ind char(1),
-    flag1_dd_text char(6),
-    flag2_text char(20),
-    flag2_ind char(1),
-    flag2_dd_ind char(1),
-    flag2_dd_text char(6),
-    flag3_text char(20),
-    flag3_ind char(1),
-    flag3_dd_ind char(1),
-    flag3_dd_text char(6),
-    flag4_text char(20),
-    flag4_ind char(1),
-    flag4_dd_ind char(1),
-    flag4_dd_text char(6),
-    flag5_text char(20),
-    flag5_ind char(1),
-    flag5_dd_ind char(1),
-    flag5_dd_text char(6),
-    flag6_text char(20),
-    flag6_ind char(1),
-    flag6_dd_ind char(1),
-    flag6_dd_text char(6),
-    flag7_text char(20),
-    flag7_ind char(1),
-    flag7_dd_ind char(1),
-    flag7_dd_text char(6),
-    flag8_text char(20),
-    flag8_ind char(1),
-    flag8_dd_ind char(1),
-    flag8_dd_text char(6),
-    auto_transp_flag char(1),
-    vend_code char(8),
-    ref_acct_code char(18),
-    labour_acct_code char(18),
-    head_info_flag char(1),
-    wip_acct_code char(18),
-    rev_susp_acct char(18),
-    slcost_acct_code char(18),
-    int_custtype_code char(3),
-    intrev_acct_code char(18),
-    cust_type char(3),
-    def_cash_flag char(1),
-    inv_reqd_flag char(1),
-    cred_reqd_flag char(1),
-    mail_reqd_flag char(1),
-    inv_format_ind char(1),
-    cred_format_ind char(1),
-    int_comm_per decimal(6,3),
-    accrual_date date,
-    accr_year_num smallint,
-    accr_period_num smallint,
-    accr_signon_code char(8),
-    revaccr_acct_code char(18),
-    expaccr_acct_code char(18),
-    cts_mask_ind char(1),
-    trans_mask_ind char(1),
-    intclear_acct_code char(18),
-    pal_move_ind char(1),
-    prod_move_ind char(1),
-    flag1_inst_ind char(1),
-    flag2_inst_ind char(1),
-    flag3_inst_ind char(1),
-    flag4_inst_ind char(1),
-    flag5_inst_ind char(1),
-    flag6_inst_ind char(1),
-    flag7_inst_ind char(1),
-    flag8_inst_ind char(1),
-    oe_sitecont_ind char(1),
-    oe_siteph_ind char(1),
-    oe_xstreet_ind char(1),
-    cfwd_sitecont_ind char(1),
-    cfwd_siteph_ind char(1),
-    cfwd_xstreet_ind char(1),
-    update_dwell_ind char(1),
-    update_gstat_ind char(1),
-    cart_charge_ind char(1)
-  );
+statement:
 
-works OK from dbaccess
-
-===========================================================================
-
-
-   load from MAXVER insert into t_maxver
-
-
-using A4GL_SQLTYPE=unixodbc, ifxodbc  and iodbc:
-
-	[root@aptiva erp]# make runmenu
-	(cd build;export A4GL_UI=TUI; erpmenu.4ae)
-	Err:Program stopped at 'erpmenu.4gl', line number 126.
-	Error status number -30058.
-	Error in getting number of columns for load.
-
-	4gl function call stack :
-	    MAIN
-	make: *** [runmenu] Error 1
-	[root@aptiva erp]#
-
+create view v_salstatarea (cmpy_code,ware_code,area_code,territory_code,
+job_territory,job_area,ord_ind,cust_code,cust_type,year_num,type_code,int_num,
+gross_amt,net_amt,cost_amt,prod_amt,net_prod_amt,order_qty,return_qty,
+return_amt,return_net_amt,return_cost_amt,return_prod_amt,return_nprod_amt,
+inv_line_num,cred_line_num) as
+  select x0.cmpy_code ,x0.ware_code ,x0.area_code ,x0.territory_code
+    ,x0.job_territory ,x0.job_area ,x0.ord_ind ,x0.cust_code
+    ,x0.cust_type ,x0.year_num ,x0.type_code ,x0.int_num ,sum(x0.gross_amt
+    ) ,sum(x0.net_amt ) ,sum(x0.cost_amt ) ,sum(x0.prod_amt )
+    ,sum(x0.net_prod_amt ) ,sum(x0.order_qty ) ,sum(x0.return_qty
+    ) ,sum(x0.return_amt ) ,sum(x0.return_net_amt ) ,sum(x0.return_cost_amt
+    ) ,sum(x0.return_prod_amt ) ,sum(x0.return_nprod_amt ) ,sum(x0.inv_line_num
+    ) ,sum(x0.cred_line_num ) from salesstat x0 where
+    ((x0.rept_code = '0' ) AND (x0.rept_code_num = 0 ) ) group
+    by x0.cmpy_code ,x0.ware_code ,x0.area_code ,x0.territory_code
+    ,x0.job_territory ,x0.job_area ,x0.ord_ind ,x0.cust_code
+    ,x0.cust_type ,x0.year_num ,x0.type_code ,x0.int_num ;
 
 
 
@@ -181,4 +61,135 @@ Same file compiled OK with A4GL_SQLTYPE=esql
 Windows installer does not have Ace files
 
 ============================================================================
+
+
+hello.c: In function `main':
+hello.c:145: warning: deprecated use of label at end of compound statement
+
+hello.c attached.
+
+Does it mean anything to you? Can it be avoided?
+
+=========================================================================
+
+
+Hi Mike,
+
+please see attached;
+
+1) form is displayed 1 line too high in the window
+2) window's borders are erased when using DISPLAY with string longer
+then window width
+3) window is one line too long
+4) programs won't run in default size terminal window
+
+Note that erpmenu.4gl contains the following:
+
+   options form line 1
+
+First, the line below the menu title:
+
+	 ASP DVELOPMENT - MAIN MENU
+
+is missing.
+
+That line is actually part of the form definition (U100.per)
+
+screen
+{
+
+\g-------------------------------------------------\g
+[a|b|c                                      ]
+[a|b|c                                      ]
+[a|b|c                                      ]
+[a|b|c                                      ]
+[a|b|c                                      ]
+[a|b|c                                      ]
+[a|b|c                                      ]
+[a|b|c                                      ]
+[a|b|c                                      ]
+[a|b|c                                      |d  ]
+}
+end
+
+It looks like the whole form is placed one line above where it should be, 
+and then the text
+
+	 ASP DVELOPMENT - MAIN MENU
+
+prints over this line.
+
+If I add "clipped" to the display statement of the title, screen looks like this:
+
+            ASP DVELOPMENT - MAIN MENU-------------     MaxERP
+     A Accounts Receivable                                     .00.12
+     B Members
+
+confirming this theory (see untitled2.gif).
+
+Also note that adding "CLIPPED" prevented corruption of the array window borders.
+
+Second, the window itself is one line too long, so it's boder obscures the
+first instance of text:
+
+     Using Aubit compiler
+
+message.
+
+Finally, as you can see from untitled3.gif, Aubit fails to start erpmenu 
+program in default size of GNOME terminal - you can see 4Js running in the 
+same size terminal to the left.
+
+[root@aptiva erp]# make erpmenu.run
+Running /opt/aubit/apps/erp/src/utility/erpmenu.4ae
+(export A4GL_UI=TUI; /opt/aubit/apps/erp/src/utility/erpmenu.4ae)
+aa ><
+Err:Program stopped at 'erpmenu.4gl', line number 160.
+Error status number -30188.
+Error displaying form in window.
+
+4gl function call stack :
+    MAIN
+make: *** [erpmenu.run] Error 1
+
+==========================================================================
+
+
+using esql plugin
+
+4Js:
+
+[root@aptiva test]# make callme.42r
+fgl2p  callme.4gl
+fgl2p  -o callme.42r callme.42m
+[root@aptiva test]# fglrun callme.42r
+aa >    4.01<
+
+Aubit:
+
+[root@aptiva test]# make callme.4ae
+aubit 4glc --clean  -ocallme.4ae callme.4gl
+[root@aptiva test]# callme.4ae
+aa >->41340201340>37<
+
+
+Code;
+
+database maindb
+main
+   define
+           pr_maxinfo record like maxinfo.*
+
+   declare c_maxinfo cursor for
+      select * from maxinfo
+   open c_maxinfo
+   fetch c_maxinfo into pr_maxinfo.*
+   close c_maxinfo
+
+display "aa >",pr_maxinfo.version_num clipped ,"<"
+
+
+end main
+
+===========================================================================
 

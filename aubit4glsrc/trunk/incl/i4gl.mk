@@ -1,4 +1,4 @@
-#   @(#)$Id: i4gl.mk,v 1.9 2003-02-16 04:25:42 afalout Exp $
+#   @(#)$Id: i4gl.mk,v 1.10 2003-03-02 03:29:52 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -127,31 +127,33 @@ I4GL_TMP_SUFFIXES   =${I4GL_TMP_SUFFIXES_DELETE}
 #Files that compiler created, needed at run-time
 I4GL_SUFFIXES 		=${I4GL_PRG_EXT} ${I4GL_FRM_EXT} ${I4GL_HLP_EXT}
 #Make directive to recognize as sufixes:
-.SUFFIXES:	${I4GL_SUFFIXES} ${4GL_SRC_SUFFIXES} ${I4GL_TMP_SUFFIXES}
+.SUFFIXES:	${I4GL_SUFFIXES} ${4GL_SRC_SUFFIXES} ${I4GL_TMP_SUFFIXES} .mk
 #Files we need to delete, to clean everything compiler creates
 I4GL_CLEAN_FLAGS	=$(addprefix *,	$(I4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(I4GL_SUFFIXES)) *.bak
 
 #=============================================================================
 
 # Rules for compiling I4GL (assuming 4.12/6.00 or later with -nokeep as default)
-#is this rule needed?
-#> In a4gl.mk, you ask about the null-suffix rule ".4gl:"; it is probably
-#> not needed.  In any case, in a multi-compiler system, it is ambiguous;
-#> is that supposed to be a Querix, Aubit, Informix, 4J's 4GL executable?
-#.4gl:
-#	${I4GL_CL} -o $@ $< ${I4GL_CL_LDFLAGS}
-.4gl.4ge:
+
+#########################
+# Rule to make C code executable from single 4gl file
+.4gl${I4GL_CPRG_EXT}:
 	@echo here3
 	${I4GL_CL} -o $@ $< ${I4GL_CL_LDFLAGS}
 
-.4gl.o:
+#########################
+# Rule to make C code object
+.4gl${I4GL_COBJ_EXT}o:
 	@echo here4
 	${I4GL_CC} -c $<
 
+#########################
+# Rule to translate 4gl to ESQL/C
 .4gl.ec:
 #	@echo --- debug 2 --- $< $@
 	${I4GL_CC} -e $<
 
+#########################
 # Rules for compiling ESQL/C
 .ec:
 	@echo here6
@@ -163,7 +165,7 @@ I4GL_CLEAN_FLAGS	=$(addprefix *,	$(I4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(I4
 .ec.c:
 	${ESQL_EC} -e $<
 
-####################################
+#########################
 # Rule for making a library using .mk make file
 #We have a problem here:
 #we do make a library successfully, but if it's out of the current directory,
@@ -175,21 +177,27 @@ I4GL_CLEAN_FLAGS	=$(addprefix *,	$(I4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(I4
 #so what to we do?
 #If user just re-issues make command, VPATH will find the created library,
 #and all will lin (cat) just fine...
-%${I4GL_LIB_EXT}:  %.mk
-	@echo "Making library $*${I4GL_LIB_EXT} using $^"
+#%${I4GL_LIB_EXT}:  %.mk
+.mk${I4GL_LIB_EXT}: 
+#---- gives "*** No rule to make target `invwind.4gx'" unless .mk is added to .SUFFIXES
+#	@echo "Making library $*${I4GL_LIB_EXT} using $^"
+	@echo "Making library $@ using $^"
 	${AMAKE} $<
 
-# Rules for compiling I4GL form files
-.per.frm:
+#########################
+# Rule for compiling form files
+.per${I4GL_FRM_EXT}:
 	${I4GL_FC} $<
 #	${I4GL_FC} $*
 
-# Rules for compiling message files
-.msg.iem:
+#########################
+# Rule for compiling message files
+.msg${I4GL_HLP_EXT}:
 	${I4GL_MC} $< $@
 
+#########################
 # I4GL RDS compiling
-.4gl.4go:
+.4gl${I4GL_OBJ_EXT}:
 #%.4go : %.4gl
 #%.4go:
 #	@echo here2
@@ -202,25 +210,19 @@ I4GL_CLEAN_FLAGS	=$(addprefix *,	$(I4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(I4
 #	${A4GL_CC} $< -c -o $@
 
 
-#.4gl.4gi:
-#	${I4GL_PC} $<
-#	#${I4GL_PL} $@ $*.4go ${I4GL_PL_LDFLAGS}
-#	${I4GL_PL} $*.4go > $@
-#	${RM} $*.4go
-
-#No need for this rule
-#.4go.4gi:
-##	#${I4GL_PL} $@ $*.4go ${I4GL_PL_LDFLAGS}
-#	@echo here ${I4GL_PL}
-#	${I4GL_PL} $*.4go > $@
-##	${RM} $*.4go
-
-
+#########################
 #Make executable from single 4gl file:
+#.xxx4gl.xxxx4gi:
 .4gl.4gi:
 	${I4GL_PC} -p $(<D) $<
 	@echo "${I4GL_PL} $*.4go > $@"
-	@${I4GL_PL} $*.4go > $@; if test "$$?" != "0"; then echo "CAT failed, removing $@"; rm $@; fi
+	@${I4GL_PL} $*.4go > $@; \
+	if test "$$?" != "0"; then \
+		echo "CAT failed, removing $@"; \
+		rm $@; \
+		exit 1; \
+	fi
 
 
 # ================================= EOF =================================
+
