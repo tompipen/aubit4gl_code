@@ -51,7 +51,7 @@ fi
 
 if [ "$2" = "-upd" ]
 then
-    cvs upadte
+    cvs upadte > cvsupdate.log 2>&1
 	RET=$?
 	if test "$RET" != "0"
 	then
