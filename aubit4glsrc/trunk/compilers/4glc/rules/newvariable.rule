@@ -212,7 +212,7 @@ identifier arr_subscripts
   int type,arrsize,size,level;
   char buff2[256];
   char arrbuff[256];
-printf("ARRAY (array_r_variable) : %s %s",$<str>1,$<str>2);
+//printf("ARRAY (array_r_variable) : %s %s",$<str>1,$<str>2);
   lex_printcomment("/*array variable nnn */");
   get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff);
   lex_printcomment("/*here %s %x */",$<str>1,type);
@@ -543,11 +543,11 @@ identifier OPEN_SQUARE num_list CLOSE_SQUARE
 printf("Got array %s %s\n",$<str>1,$<str>3);
 if (get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff)>=0) {
 	// Its a variable
-	printf("gvd = true\n");
+	//printf("gvd = true\n");
   sprintf($<str>$,"%s[%s]",$<str>1,subtract_one($<str>3));
 } else {
 	// Its an sql identifier or similar
-	printf("gvd = false\n");
+	//printf("gvd = false\n");
   sprintf($<str>$,"%s[%s]",$<str>1,$<str>3);
 }
 printf("All done - ARRAY (array_r_varid) : %s\n",$<str>$);

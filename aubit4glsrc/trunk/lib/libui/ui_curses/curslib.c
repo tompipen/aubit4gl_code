@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.26 2003-05-07 07:15:24 mikeaubury Exp $
+# $Id: curslib.c,v 1.27 2003-05-10 12:39:41 mikeaubury Exp $
 #*/
 
 /**
@@ -113,6 +113,7 @@ char lastspec[20][2][80];
 char selected[1024];
 
 char formdetails[MAXFORM][2048];
+int init_curses_mode=0;
 
 /*
 =====================================================================
@@ -1285,7 +1286,17 @@ puttext (int x1, int y1, int x2, int y2, char *buf)
 void
 A4GLUI_ui_init (int argc, char *argv[])
 {
+ set_scrmode('L');
+ init_curses_mode=0;
+}
+
+
+void A4GL_init_curses_stuff() {
 #define BLANK ' '
+
+// Have we already done it ?
+if (init_curses_mode) return;
+		init_curses_mode=1;
 
 	#ifdef DEBUG
 		debug ("Initializing curses environment");
@@ -1308,12 +1319,13 @@ A4GLUI_ui_init (int argc, char *argv[])
 		keypad (stdscr, TRUE);
 
 		start_color ();
-			init_colour_pairs ();
+		init_colour_pairs ();
 		init_windows ();
 
 		mja_gotoxy (1, 1);
 		tui_print ("                                 ");
 		zrefresh ();
+
 
 		#ifdef NCURSES_MOUSE_VERSION
 		#ifdef DEBUG

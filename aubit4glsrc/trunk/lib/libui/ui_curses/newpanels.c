@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.31 2003-05-07 07:35:24 mikeaubury Exp $
+# $Id: newpanels.c,v 1.32 2003-05-10 12:39:41 mikeaubury Exp $
 #*/
 
 /**
@@ -1084,6 +1084,7 @@ get_curr_top (void)
 int
 get_curr_width (void)
 {
+  chkwin();
   debug ("get curr width, currwinno=%d windows name =%s %d", currwinno,
 	 windows[currwinno].name,
 	 windows[currwinno].w);
@@ -1494,6 +1495,7 @@ chkwin (void)
 
   if (islinemode ())
     {
+      A4GL_init_curses_stuff();
       set_scrmode('S');
       mja_refresh ();
     }

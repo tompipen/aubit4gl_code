@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.37 2003-05-07 07:34:25 mikeaubury Exp $
+# $Id: compile_c.c,v 1.38 2003-05-10 12:39:41 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -282,6 +282,11 @@ char *ptr;
 
 
   hfile = mja_fopen (h, "w");
+  if (hfile == 0)
+    {
+      printf ("Unable to open file %s (Check permissions)\n", h);
+      exit (3);
+    }
 
 #ifdef OBSOLETE_CODE
   if (strncmp(acl_getenv ("GTKGUI"),"Y",1)==0)  {
