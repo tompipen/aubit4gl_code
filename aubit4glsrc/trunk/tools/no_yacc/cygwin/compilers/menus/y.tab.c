@@ -45,6 +45,15 @@
 /* Using locations.  */
 #define YYLSP_NEEDED 0
 
+/* If NAME_PREFIX is specified substitute the variables and functions
+   names.  */
+#define yyparse a4gl_menu_yyparse
+#define yylex   a4gl_menu_yylex
+#define yyerror a4gl_menu_yyerror
+#define yylval  a4gl_menu_yylval
+#define yychar  a4gl_menu_yychar
+#define yydebug a4gl_menu_yydebug
+#define yynerrs a4gl_menu_yynerrs
 
 
 /* Tokens.  */
@@ -219,12 +228,12 @@ int buffpos(void);
 #endif
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 72 "menu.yacc"
+#line 74 "menu.yacc"
 typedef union YYSTYPE {
 	char	str[1024];
 } YYSTYPE;
 /* Line 191 of yacc.c.  */
-#line 227 "y.tab.c"
+#line 236 "y.tab.c"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
@@ -236,7 +245,7 @@ typedef union YYSTYPE {
 
 
 /* Line 214 of yacc.c.  */
-#line 239 "y.tab.c"
+#line 248 "y.tab.c"
 
 #if ! defined (yyoverflow) || YYERROR_VERBOSE
 
@@ -415,9 +424,9 @@ static const yysigned_char yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned char yyrline[] =
 {
-       0,   116,   116,   120,   120,   124,   124,   132,   132,   135,
-     139,   149,   160,   160,   178,   179,   180,   183,   183,   187,
-     191,   191,   196,   196,   201,   203,   205
+       0,   118,   118,   122,   122,   126,   126,   134,   134,   137,
+     141,   151,   162,   162,   180,   181,   182,   185,   185,   189,
+     193,   193,   198,   198,   203,   205,   207
 };
 #endif
 
@@ -1145,12 +1154,12 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 116 "menu.yacc"
+#line 118 "menu.yacc"
     {write_menu();}
     break;
 
   case 5:
-#line 124 "menu.yacc"
+#line 126 "menu.yacc"
     {
 		m=nmenu();
 		m->id=strdup(yyvsp[0].str);
@@ -1159,12 +1168,12 @@ yyreduce:
     break;
 
   case 6:
-#line 128 "menu.yacc"
+#line 130 "menu.yacc"
     {pop_menu();}
     break;
 
   case 10:
-#line 139 "menu.yacc"
+#line 141 "menu.yacc"
     {
 		menu_option_item *o;
 		debug("New option %s for menu %p\n",yyvsp[-4].str,get_menu());
@@ -1178,7 +1187,7 @@ yyreduce:
     break;
 
   case 11:
-#line 149 "menu.yacc"
+#line 151 "menu.yacc"
     {
 		menu_option_item *o;
 		debug("Submenu with use\n");
@@ -1193,7 +1202,7 @@ yyreduce:
     break;
 
   case 12:
-#line 160 "menu.yacc"
+#line 162 "menu.yacc"
     {
 		menu_option_item *o;
 		debug("Submenu without use\n");
@@ -1213,55 +1222,55 @@ yyreduce:
     break;
 
   case 13:
-#line 175 "menu.yacc"
+#line 177 "menu.yacc"
     {pop_menu();}
     break;
 
   case 14:
-#line 178 "menu.yacc"
+#line 180 "menu.yacc"
     {strcpy(yyval.str,"");}
     break;
 
   case 15:
-#line 179 "menu.yacc"
+#line 181 "menu.yacc"
     { strcpy(yyval.str,char_val(yyvsp[0].str));}
     break;
 
   case 16:
-#line 180 "menu.yacc"
+#line 182 "menu.yacc"
     { sprintf(yyval.str,"%s\n%s",strdup(char_val(yyvsp[-1].str)),strdup(char_val(yyvsp[0].str)));}
     break;
 
   case 17:
-#line 183 "menu.yacc"
+#line 185 "menu.yacc"
     {strcpy(yyval.str,"");}
     break;
 
   case 19:
-#line 187 "menu.yacc"
+#line 189 "menu.yacc"
     {
 	strcpy(yyval.str,char_val(yyvsp[0].str));}
     break;
 
   case 20:
-#line 191 "menu.yacc"
+#line 193 "menu.yacc"
     {strcpy(yyval.str,"");}
     break;
 
   case 21:
-#line 192 "menu.yacc"
+#line 194 "menu.yacc"
     {strcpy(yyval.str,yyvsp[-1].str);}
     break;
 
   case 25:
-#line 203 "menu.yacc"
+#line 205 "menu.yacc"
     {
 		img_val="";
 	}
     break;
 
   case 26:
-#line 205 "menu.yacc"
+#line 207 "menu.yacc"
     {
 		img_val=strdup(char_val(yyvsp[0].str));
 	}
@@ -1271,7 +1280,7 @@ yyreduce:
     }
 
 /* Line 991 of yacc.c.  */
-#line 1274 "y.tab.c"
+#line 1283 "y.tab.c"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1480,7 +1489,7 @@ yyreturn:
 }
 
 
-#line 209 "menu.yacc"
+#line 211 "menu.yacc"
 
 #include "lex.yy.c"
 

@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.31 2003-03-12 23:52:12 afalout Exp $
+#	 $Id: footer.mki,v 1.32 2003-03-13 01:57:06 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -447,7 +447,7 @@ ifeq "$(PROGTYPE)" ".lib"
 #and so does this:
 #	qxcc ${CFLAGS} -o $@ $^ $(LDLIBS)
 else
-	${FAIL_LINK}${Q4GL_CL} ${Q4GL_CL_LDFLAGS_APPSPEC} -rdynamic -o $@ $^ ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
+	${FAIL_LINK}${Q4GL_CL} ${Q4GL_CL_LDFLAGS_APPSPEC} -rdynamic ${QXI_LIBS} -o $@ $^ ${Q4GL_CL_LDFLAGS}
 #cannt do this (WHY?):
 #	${FAIL_LINK}ld -rpath ${SCWORK}/common $^ -o ${xxEXECSTORE}$@ ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
 endif
