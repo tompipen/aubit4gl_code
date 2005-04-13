@@ -51,11 +51,12 @@ compile_only:			; @echo "1"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo ""
+sql_features_used:		; @echo "CREATE_TEMP_TABLE ANSI_SELECT INSERT_CURSOR META_TRANSACTION "
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""
 need_plugin:			; @echo ""
-	
+obsolete_test:			; @echo ""
+
 # ============================= EOF ================================
 

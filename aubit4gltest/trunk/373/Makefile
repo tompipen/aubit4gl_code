@@ -189,3 +189,15 @@ ansi_sql_compat:
 sql_features_used:
 	@echo "DEFINE_LIKE INITIALIZE_LIKE IFX_SYSTABLES"
 
+
+expect_code:			; @echo ""
+
+
+compile_only:			; @echo ""
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
+

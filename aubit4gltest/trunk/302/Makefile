@@ -99,8 +99,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "A database definition, a globals include file, modulars variables and "
-	@echo "a function."
+	@echo "A database definition, a globals include file, modulars variables and \
+		a function."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -186,4 +186,19 @@ unknown_test:
 
 ansi_sql_compat:
 	@echo "1"
+
+
+expect_code:			; @echo ""
+
+
+compile_only:			; @echo ""
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
+
+
+sql_features_used:			; @echo ""
 

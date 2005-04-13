@@ -104,8 +104,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "GRANT ALTER on table to user list."
-	@echo "No run-time checking."
+	@echo "GRANT ALTER on table to user list. No run-time checking."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -197,4 +196,16 @@ sql_features_used:
 
 runtime_err_check:
 	@echo "0"
+
+
+expect_code:			; @echo ""
+
+
+compile_only:			; @echo ""
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
 

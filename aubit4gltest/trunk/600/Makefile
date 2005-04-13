@@ -104,8 +104,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "DROP TRIGGER database statement."
-	@echo "Does not compile even with -ifx-p so probably invalid."
+	@echo "DROP TRIGGER database statement. \
+		Does not compile even with -ifx-p so probably invalid."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -205,4 +205,10 @@ ansi_sql_compat:
 
 sql_features_used:
 	@echo "DROP_TRIGGER"
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
 

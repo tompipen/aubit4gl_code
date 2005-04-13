@@ -223,3 +223,6 @@ ansi_sql_compat:
 runtime_err_check:
 	@echo "0"
 
+
+sql_features_used:			; @echo ""
+

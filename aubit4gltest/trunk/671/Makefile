@@ -104,8 +104,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "UPDATE with all (Informix) database data types."
-	@echo "No run-time checking. TEST IS INVALID (?)"
+	@echo "UPDATE with all (Informix) database data types. \
+		No run-time checking. TEST IS INVALID (?)"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -198,4 +198,16 @@ sql_features_used:
 
 runtime_err_check:
 	@echo "0"
+
+
+expect_code:			; @echo ""
+
+
+compile_only:			; @echo ""
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
 

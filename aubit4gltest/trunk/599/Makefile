@@ -105,7 +105,6 @@ run: compile
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
 	@echo "UNLOCK TABLE with full names."
-	@echo ""
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -205,4 +204,10 @@ ansi_sql_compat:
 sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE TABLENAME_DB_SERVER_USER_TABLE LOCK_TABLE UNLOCK_TABLE"
 
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
 

@@ -43,11 +43,14 @@ compile_only:			; @echo "1"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo ""
+sql_features_used:		; @echo "INSERT_CURSOR"
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""
 need_plugin:			; @echo ""
 	
 # ============================= EOF ================================
+
+
+obsolete_test:			; @echo ""
 

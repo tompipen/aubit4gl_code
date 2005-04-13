@@ -105,7 +105,6 @@ run: compile
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
 	@echo "DROP VIEW with full names."
-	@echo ""
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -204,4 +203,10 @@ ansi_sql_compat:
 sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE_QUALIFIED_PATH CREATE_VIEW \
 		DROP_VIEW_QUALIFIED_PATH CREATE_VIEW_QUALIFIED_PATH"
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
 

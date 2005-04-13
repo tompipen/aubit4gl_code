@@ -115,8 +115,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Geraman characters (umlauts) test."
-	@echo "Needs explicit LANG setting (provided by makefile)."
+	@echo "Geraman characters (umlauts) test. \
+		Needs explicit LANG setting (provided by makefile)."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -217,4 +217,10 @@ need_ifx_version:
 
 ansi_sql_compat:
 	@echo "1"
+
+
+transaction:			; @echo ""
+
+
+sql_features_used:			; @echo ""
 

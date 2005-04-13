@@ -105,8 +105,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "UPDATE with variables in SET clause (Informix syntax)."
-	@echo "No run-tiem checking."
+	@echo "UPDATE with variables in SET clause (Informix syntax). \
+		No run-tiem checking."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -211,4 +211,7 @@ ansi_sql_compat:
 sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST \
 		UPDATE_COLUMNLIST_EQ_VALUELIST CURSOR_SELECT"
+
+
+transaction:			; @echo ""
 

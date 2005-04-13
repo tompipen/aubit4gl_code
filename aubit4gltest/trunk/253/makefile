@@ -230,3 +230,6 @@ need_plugin:
 	@echo "mcompile.prg"
 
 
+
+sql_features_used:			; @echo ""
+

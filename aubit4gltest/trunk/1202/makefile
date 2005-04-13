@@ -214,3 +214,9 @@ transaction:
 	@echo "0"
 	
 # ============================= EOF ================================
+
+sql_features_used:			; @echo ""
+
+
+ansi_sql_compat:			; @echo ""
+

@@ -176,3 +176,18 @@ unknown_test:
 ansi_sql_compat:
 	@echo "1"
 
+
+expect_code:			; @echo ""
+
+
+compile_only:			; @echo ""
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
+
+
+sql_features_used:			; @echo ""
+

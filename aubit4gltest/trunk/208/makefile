@@ -90,9 +90,9 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This program checks for the validity of the null test for integers"
-	@echo "This was known to be wrong for one platform and has been changed - "
-	@echo "This is to pick it up if it happens again.."
+	@echo "This program checks for the validity of the null test for integers \
+	This was known to be wrong for one platform and has been changed - \
+	This is to pick it up if it happens again.."
 
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
@@ -178,4 +178,19 @@ unknown_test:
 
 ansi_sql_compat:
 	@echo "1"
+
+
+expect_code:			; @echo ""
+
+
+compile_only:			; @echo ""
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
+
+
+sql_features_used:			; @echo ""
 

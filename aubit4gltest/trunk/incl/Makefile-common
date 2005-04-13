@@ -179,16 +179,20 @@ MSG=$(wildcard *.msg)
 
 ################
 #All targets in this make file are "phony" targets - they do not create files
-.PHONY: compile run desc clean db_test ec_test nosilent_test tui_test \
-	form_test report_test graphic_test console_prompt_test dump_screen_test \
-	long_test cert_test obsolete_test unknown_test 
+.PHONY: compile run clean 
+	
+#When targets are listed as phony, and are missing, make just say "nothing to 
+#be done" But we need to know when any of the settings targets are missing, so
+#they must NOT be listed as phony:
+#	obsolete_test desc ec_test nosilent_test tui_test db_test 
+#	form_test report_test graphic_test console_prompt_test dump_screen_test 
+#	long_test cert_test unknown_test
 
 ################
 
 DEFAULT_RUN2=123
 
 ifneq "${COMPILE_ONLY}" "1"
-
 
 	ifeq "${SHOW_CONFIG_IN_MAKE}" "1"
 		#Do not run; just show configuration as the programs 
@@ -375,6 +379,65 @@ show:
 	@echo "OUT_EXPECTED_LIST=$(OUT_EXPECTED_LIST)"
 	@echo "OUT_LIST=$(OUT_LIST)"
 	
-	
+#######################################
+#create dummy setting output to preserve the order
+dummy_timestamp: 			; @echo ""
+dummy_test_no: 				; @echo ""
+dummy_invalid: 				; @echo ""
+dummy_is_described: 		; @echo ""
+dummy_se_required: 			; @echo ""
+dummy_no_prefix: 			; @echo ""
+dummy_need_compat: 			; @echo ""
+dummy_old_makefile: 		; @echo ""
+dummy_is_pcode_enabled: 	; @echo ""
+dummy_is_no_cron: 			; @echo ""
+dummy_scripted: 			; @echo ""
+dummy_is_window: 			; @echo ""
+dummy_test_ver: 			; @echo ""
+dummy_run_tests_ver: 		; @echo ""
+dummy_last_update: 			; @echo ""
+dummy_expect_fail_cert: 	; @echo ""
+dummy_expect_fail_esqli: 	; @echo ""
+dummy_expect_fail_ecp: 		; @echo ""
+dummy_expect_fail_ifx_p: 	; @echo ""
+dummy_expect_fail_4js: 		; @echo ""
+dummy_expect_fail_querix: 	; @echo ""
 
+	
+#######################################
+#ordered as per order we have in catalogue.unl
+all_desc: dummy_timestamp dummy_test_no dummy_invalid \
+	db_test ec_test nosilent_test \
+	tui_test form_test report_test \
+	graphic_test console_prompt_test dump_screen_test \
+	long_test unknown_test cert_test \
+	obsolete_test dummy_is_described desc \
+    compat_test expect_code dummy_se_required \
+	compile_only need_ifx_version transaction \
+	dummy_no_prefix dummy_need_compat dummy_old_makefile \
+	dummy_is_pcode_enabled dummy_is_no_cron dummy_scripted \
+	dummy_is_window dummy_test_ver dummy_run_tests_ver \
+	dummy_last_update dummy_expect_fail_cert dummy_expect_fail_esqli \
+	dummy_expect_fail_ecp dummy_expect_fail_ifx_p dummy_expect_fail_4js \
+	dummy_expect_fail_querix sql_features_used ansi_sql_compat
+	
+#NOT USED: runtime_err_check need_rdbms need_plugin 
+
+#Note: features that use dummy target are marked with "*"
+#1)timestamp*			2)test_no* 				3)invalid*
+#4)is_db			  	5)is_ec					6)is_nosilent
+#7)is_tui   			8)is_form				9)is_report
+#10)is_graphics 		11)is_prompt			12)is_dump_screen
+#13)is_long 			14)is_unknown			15)is_cert
+#16)is_obsolete			17)is_described*		18)test_desc_txt
+#19)test_compat_test	20)expect_code			21)se_required*
+#22)compile_only		23)need_ifx_ver			24)need_trans
+#25)no_prefix*			26)need_compat*			27)old_makefile*
+#28)is_pcode_enabled*	29)is_no_cron*			30)scripted*
+#31)is_window* 			32)test_ver*			33)run_tests_ver*
+#34)last_update*		35)expect_fail_cert*	36)expect_fail_esqli*
+#37)expect_fail_ecp*	38)expect_fail_ifx_p*	39)expect_fail_4js*
+#40)expect_fail_querix*	41)sql_features_used	42)ansi_sql
+	
+	
 # ============================= EOF ================================

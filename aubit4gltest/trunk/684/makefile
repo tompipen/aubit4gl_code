@@ -105,8 +105,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Missing test files - test invalid"
-	@echo "Please provide brief description of functionality tested here."
+	@echo "Missing test files - test invalid \
+		Please provide brief description of functionality tested here."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -207,4 +207,10 @@ need_ifx_version:
 
 ansi_sql_compat:
 	@echo "1"
+
+
+transaction:			; @echo ""
+
+
+sql_features_used:			; @echo ""
 

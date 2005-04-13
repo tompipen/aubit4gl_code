@@ -104,8 +104,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "INSERT with all (Informix) data types."
-	@echo "No run-time checking. Need minimum version 7.31 of Ifx to work with -ifx-p"
+	@echo "INSERT with all (Informix) data types. \
+		No run-time checking. Need minimum version 7.31 of Ifx to work with -ifx-p"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -221,4 +221,7 @@ sql_features_used:
 
 runtime_err_check:
 	@echo "0"
+
+
+transaction:			; @echo ""
 

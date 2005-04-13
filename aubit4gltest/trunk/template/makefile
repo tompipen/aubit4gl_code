@@ -23,9 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc:
-	@echo "This is not a test but a Testing template. \
-		Please provide brief description of functionality tested here."
+desc: ; @echo "This is not a test but a Testing template. Please describe here."
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
@@ -50,6 +48,7 @@ ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""
 need_plugin:			; @echo ""
-	
+
+
 # ============================= EOF ================================
 

@@ -100,8 +100,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Complex MENU statement."
-	@echo "No run-time checking."
+	@echo "Complex MENU statement. No run-time checking."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -201,4 +200,13 @@ ansi_sql_compat:
 
 runtime_err_check:
 	@echo "0"
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
+
+
+sql_features_used:			; @echo ""
 

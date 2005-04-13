@@ -207,3 +207,12 @@ sql_features_used:
 ansi_sql_compat:
 	@echo "0"
 
+
+expect_code:			; @echo ""
+
+
+compile_only:			; @echo ""
+
+
+need_ifx_version:			; @echo ""
+

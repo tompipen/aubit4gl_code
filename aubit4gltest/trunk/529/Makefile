@@ -105,7 +105,6 @@ run: compile
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
 	@echo "FIXME - duplicate of test 528"
-	@echo "Please provide brief description of functionality tested here."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -195,3 +194,15 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE"
 	
 	
+
+expect_code:			; @echo ""
+
+
+compile_only:			; @echo ""
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
+

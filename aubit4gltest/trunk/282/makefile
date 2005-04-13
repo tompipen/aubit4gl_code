@@ -109,9 +109,9 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This is a test to see if a page header is run at the correct point in time."
-	@echo "At the time of submitting this test - the declare isn't performed until something is printed in another block"
-	@echo "and hence isn't available in the on every row. Workaround is to print \"\";  as the first thing in the 'on every row' to force the page header..."
+	@echo "This is a test to see if a page header is run at the correct point in time.\
+	At the time of submitting this test - the declare isn't performed until something is printed in another block \
+	and hence isn't available in the on every row. Workaround is to print \"\";  as the first thing in the 'on every row' to force the page header..."
 
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)

@@ -109,8 +109,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "SELECT with expresion."
-	@echo "Informix SQL dialect (?)."
+	@echo "SELECT with expresion. Informix SQL dialect (?)."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 

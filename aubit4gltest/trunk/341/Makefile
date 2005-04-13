@@ -99,8 +99,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "WHILE loop with CONTINUE"
-	@echo "No run-time error checking implemented"
+	@echo "WHILE loop with CONTINUE. No run-time error checking implemented"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -189,4 +188,19 @@ ansi_sql_compat:
 
 runtime_err_check:
 	@echo "0"
+
+
+expect_code:			; @echo ""
+
+
+compile_only:			; @echo ""
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
+
+
+sql_features_used:			; @echo ""
 

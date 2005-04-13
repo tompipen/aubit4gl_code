@@ -344,7 +344,7 @@ for a in $FLAGS; do
 	-db-features-report) #Show support status by db features for current db
 		SHOW_DB_FEATURES_REPORT=1
 		;;
-	-disable-sql-features-check) #Do not skip tests with incompatible SQL features
+	-disable-sql-features-check) #Do not test for incompatible SQL features
 		DISABLE_SQL_FEATURES_CHECK=1
 		;;
 	-disable-sql-features-skip) #Check, but do not skip incompatible SQL features
@@ -1215,7 +1215,8 @@ for a in $FLAGS; do
 		echo " -ignore-compat Skip testing for test compatibility with non-aubit compilers"
 		echo " -ignore-conf-error Ignore configuration errors and continue"
 		echo " -skip-expectfail Skip tests expected to fail"
-		echo " -use-cache  Use cached test descriptions to loop faster"	
+		echo " -use-cache  Use cached test descriptions to loop faster"
+		echo " -loop-[10|100] Loop same test 10 or 100 times"
 		echo ""
 		if test "$HELP_ALL" != "1"; then
 			exit 0
@@ -1403,7 +1404,19 @@ if test "$A4GL_UI" = "CONSOLE" -a "$UI" != "CONSOLE"; then
 	echo "WARNING: A4GL_UI is set to CONSOLE in environment"
 fi
 
-
+#Check if we can/should use load tests info from .unl file or not
+if test -f "docs/catalogue.unl"; then
+	LINES_IN_CATALOGUE_UNL=`cat docs/catalogue.unl | wc -l`
+else
+	LINES_IN_CATALOGUE_UNL=0
+fi
+if test "$LINES_IN_CATALOGUE_UNL" -lt "600" -o "$CATALOGUE_UNL" = "1"; then
+	#too few lines in the file, file obvieosly not complete, or user specified
+	#-catalogue on command line explicitly.
+	#Have to load test info from makefiles and/or strings:
+	DISABLE_CAT_INFO=1
+	verbose "Loading of test info from cataloguie.unl disabled"
+fi
 
 if test "$A4GL_FORMTYPE" = "GENERIC" -a "$A4GL_PACKER" = "PACKED" -a "$PLATFORM" = "MINGW"; then
 	EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_MINGW_PACKED"
@@ -1414,7 +1427,7 @@ if test "$LOOP_TIMES" != ""; then
 		ALL_TESTS=""
 		CNT=0
 		while [ "1" = "1" ] ; do
-			let CNT=CNT + 1
+			let CNT=CNT+1
 			ALL_TESTS="$ALL_TESTS $RUN_ONE"
 			if test "$CNT" = "$LOOP_TIMES"; then 
 				break
@@ -1610,141 +1623,38 @@ fi
 #                           Finalise settings
 ##############################################################################
 
-######################
-#define which tests are expected to fail based on database/Aubit options used
-if test "$USE_COMP" = "aubit"; then 
-	#Must be after flags processing to prevent cummulation when overriding switches
-	case $DB_TYPE in
-		#IFX-SE)
-		IFX-OL)
-			if test "$USE_ESQLI" = "1" -a "$USE_ECI" = "0"; then
-				EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_ESQLI"
-			fi
-			if test "$USE_IFXODBC" = "1"; then		
-				EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_IFXODBC"
-			fi
-			#EXPECT_TO_FAIL_TESTS are actually EXPECT_TO_FAIL_TESTS_ECI, since 
-			#-eci is part of -cert
-			;;
-		PG-IFX-74)
-			if test "$USE_ECP" = "1"; then
-				filter_out_white_listed "$EXPECT_TO_FAIL_TESTS_ECP" "$WHITELIST_TESTS_ECP"
-			#else
-				#must be ODBC? (did that in ODBC section?)
-			fi
-			;;
-		#PG-74)
-		#PG-80)
-		#*)	#Any other database back-end
-	esac
-fi
+define_expect_fail_list
 
-#Define list(s) of recognized SQL features
-define_sql_features
+#Define list(s) of recognized SQL features, when running multiple tests
+#(when running one test, features are loaded after test info is loaded, to 
+#avoid loading db features for non-db tests)
+if test "$RUN_ONE" = ""; then
+	if test "$TIME_SCRIPT" = "1"; then
+		BEFORE_FEATURES_LOAD_TIME=`date +%s`
+	fi
+	define_sql_features
+	if test "$TIME_SCRIPT" = "1"; then
+		AFTER_FEATURES_LOAD_TIME=`date +%s`
+	fi
+fi
 
 
 if test "$RETEST_FAIL" = "1"; then
 	ALL_TESTS="$EXPECT_TO_FAIL_TESTS"
 fi
 
-
-#######################
-#initialise counters
-COUNTER=0
-FAIL_CNT=0
-PASS_CNT=0
-SKIP_CNT=0
-SKIP_INVALID_CNT=0
-SKIP_NON_ANSI_CNT=0
-RUN_CNT=0
-EXPECTED_TO_FAIL_CNT=0
-NOT_EXPECTED_TO_FAIL_CNT=0
-NOT_CERT_CNT=0
-
-#######################
-#Initialise results log file
-echo "" > $LOGFILE
-echo "============================== Test results ===============================" >> $LOGFILE
-echo "" >> $LOGFILE
-echo "Flags (expanded): $FLAGS" >> $LOGFILE
-
-if test "$ALL_DB" = "1"; then
-	#remove irelevant flags, keep -sqlite -nospace -defaults -esqli
-	#also remove ONE -sqlite, since it's a default added by -default switch
-    #so we don't confuse the user:
-	DISP_FLAGS=`echo $FLAGS | sed -e 's/-short//' -e 's/-silent//' -e 's/-alldbrun//' -e 's/-sqlite//' -e 's/-defaults//' -e 's/-cert//' -e 's/-described//' -e 's/-nospace//' -e 's/-noecho//'`
-	echo "Flags: $DISP_FLAGS" >> $CURR_DIR/alldb.log
-fi
-if test "$VERBOSE" = "1"; then 
-	echo "" >> $LOGFILE
-	echo "Started at" >> $LOGFILE
-	#we want exact time here - do not use $DATE
-	date >> $LOGFILE
-	echo "Aubit version/build:" >> $LOGFILE	
-	$AUBITDIR/bin/4glc -v | grep Version >> $LOGFILE
-	$AUBITDIR/bin/4glc -v | grep Build >> $LOGFILE
-	#TODO: show versions of 4Js/Informix/Querix compiler - if used
-fi
-
-if test "$RUN_ONE" != ""; then
-	#echo "" >> $LOGFILE
-	echo "Running test: $RUN_ONE" >> $LOGFILE
-	ALL_TESTS=$RUN_ONE
-	#echo "" >> $LOGFILE
-#else
-#	if test "$NO_ECHO" != "1"; then
-#		#echo "Running tests: $ALL_TESTS" >> $LOGFILE
-#		#To get $ALL_TESTS expanded on Windows, must not have quotes:
-#		echo "Running tests: $ALL_TESTS" >> $LOGFILE
-#   fi
-fi
-
-rm -f $CURR_DIR/$TIME_FILE
-rm -f $CURR_DIR/$OUTPUT_LOG
-rm -f $CURR_DIR/$ERROR_LOG
+init_result_logs
 
 ##############################################################################
 #							Run test(s)
 ##############################################################################
 
-	TEMPLATE_COMMENT_CNT=0
-	UNKNOWN_TEST_CNT=0			
-	MIGRATE_DESC_CNT=0			
-	HAS_DESC_TXT_CNT=0
-	IS_REPORT_TEST_CNT=0
-	NON_ZERO_EXIT_CNT=0
-	COMPILE_ONLY_CNT=0
-	IS_PCODE_ENABLED_CNT=0
-	NOT_DESCRIBED_CNT=0
-	IS_INVALID_CNT=0
-	EXPECT_FAIL_CNT=0
-	IS_DB_TEST_CNT=0
-	IS_EC_TEST_CNT=0
-	IS_NOSILENT_CNT=0
-	IS_TUI_TEST_CNT=0
-	IS_FORM_TEST_CNT=0
-	IS_GRAPHIC_TEST_CNT=0
-	IS_CONSOLE_PROMPT_CNT=0
-	IS_DUMP_SCREEN_CNT=0
-	IS_LONG_CNT=0
-	NO_RUNTIME_ERR_CHECK_CNT=0
-	COMPILE_ONLY_PASS_CNT=0
-	IS_CERT_CNT=0
-	IS_NO_CRON_CNT=0
-	IS_OBSOLETE_CNT=0
-	IS_COMPAT_CNT=0
-	IS_UNKNOWN_CNT=0
-	EXPECTED_TO_FAIL_PASSED_CNT=0
-	IS_SE_REQUIRED_CNT=0
-	FAIL_DB_CNT=0
-	FAIL_NONDB_CNT=0
-	PASS_DB_CNT=0
-	PASS_NONDB_CNT=0
-	KILL_CNT=0
-	SKIP_INCOMPAT_SQL_CNT=0
+	init_vars_before_loop
+	
 #reset cache files:
-if test "$USE_CACHE" != "1" -a "$RUN_ONE" = "" -a "$TEST_RANGE" != "1"; then
-	#-a "$ONLY_DB" != "1" -a "$ONLY_TUI" != "1"; then
+if test "$USE_CACHE" != "1" -a "$RUN_ONE" = "" -a "$TEST_RANGE" != "1" \
+		-a "$LOOP_TIMES" = "" -a "$TIME_SCRIPT" != "1"; then
+		#-a "$ONLY_DB" != "1" -a "$ONLY_TUI" != "1"; then
 	#Full loop means we are going to loop troug ALL tests and read 
 	#actuall descriptions for ALL tests, which will allow us to create 
 	#new cache files.
@@ -1752,20 +1662,21 @@ if test "$USE_CACHE" != "1" -a "$RUN_ONE" = "" -a "$TEST_RANGE" != "1"; then
 	rm -f $CURR_DIR/etc/cache_IS_DB_TEST.txt
 fi
 
-if test "$FULL_LOOP" = "1" 	-a "$ONLY_DB" != "1" -a "$ONLY_TUI" != "1"; then
-#Activate loging of results to unl, creation of unl catalogue
-	activate_log_unl
-	#Cannot activate catalogue to .txt because that uses redirection of output
-	#of this script to a file, but can still create new .unl catalogue
-	rm -f $CURR_DIR/docs/catalogue.unl
-	export CATALOGUE_UNL=1
-	date_stamp=`date +%d-%m-%Y_%H-%M-%S`
-	if test "$VERBOSE" = "1"; then
-		echo "Creating tests catalogue file (docs/catalogue.unl)"
+if test "$CATALOGUE_UNL" != "1" ; then 
+	#When CATALOGUE_UNL is allready 1, it means that user passed -catalogue
+	#flag explicitly.
+	if test "$FULL_LOOP" = "1" 	-a "$ONLY_DB" != "1" -a "$ONLY_TUI" != "1"; then
+		#Activate loging of results to unl, creation of unl catalogue
+		activate_log_unl
+		#Cannot activate catalogue to .txt because that uses redirection of output
+		#of this script to a file, but can still create new .unl catalogue
+		rm -f $CURR_DIR/docs/catalogue.unl
+		export CATALOGUE_UNL=1
+		date_stamp=`date +%d-%m-%Y_%H-%M-%S`
+		verbose "Creating tests catalogue file (docs/catalogue.unl)"
+		#$SH run_tests -info  > $CURR_DIR/docs/catalogue.txt
 	fi
-	#$SH run_tests -info  > $CURR_DIR/docs/catalogue.txt
 fi
-
 
 
 if test "$SILENT" = "1" -a "$NO_ECHO" != "1"; then
@@ -1846,66 +1757,11 @@ do
 	esac
 	
 	if test "$SHOW_CONFIG" = "1"; then
-		echo "A4GL_INIFILE=$A4GL_INIFILE"
-		$AUBITDIR_UNIX/bin/aubit-config$EXE_EXT -a
-		
-		echo "aubit-config A4GL_AUBITRC returns :`aubit-config A4GL_AUBITRC`"
-		echo "aubit-config DBMONEY returns      :`aubit-config DBMONEY`"
-		echo "in environment: DBMONEY=$DBMONEY"
-		
-		unset A4GL_INIFILE
-		echo "A4GL_INIFILE=$A4GL_INIFILE"
-		
-		echo "aubit-config A4GL_AUBITRC returns :`aubit-config A4GL_AUBITRC`"
-		echo "aubit-config DBMONEY returns      :`aubit-config DBMONEY`"
-		echo "in environment: DBMONEY=$DBMONEYc"
-		
-		aubit-config A4GL_LEXTYPE
-		aubit-config A4GL_LEXDIALECT
-		aubit-config A4GL_SQLTYPE
-		note "Above config is at point of makefile incovation in run_tests"
-		note "and NOT in test makefil itself"
+		show_config_in_loop
 		exit 0
 	fi
 	
-    #################################
-	#Initialise counters and variables:
-	let COUNTER=COUNTER+1
-	IS_DB_TEST=0
-	ec_test=0
-	IS_NOSILENT_TEST=0
-    IS_TUI_TEST=0
-    IS_GRAPHIC_TEST=0
-    IS_DESCRIBED=0
-	IS_CONSOLE_PROMPT_TEST=0
-	IS_DUMP_SCREEN_TEST=0
-	IS_FORM_TEST=0
-	IS_BLACKLIST_TEST=0
-    IS_LONG_TEST=0
-	IS_MAKE_ANSI_SQL_COMPAT=""
-    IS_CERT_TEST=0
-    IS_OBSOLETE_TEST=0
-    IS_INVALID_TEST=0
-    IS_PCODE_ENABLED=0
-	IS_UNKNOWN_TEST=0
-	IS_NO_CRON_TEST=0	
-	TEMPLATE_COMMENT=0
-	NEED_TRANSACTION=0
-	IS_REPORT_TEST=0
-	EXPECT_CODE=0
-	COMPILE_ONLY=0
-	IS_EXPECT_TO_FAIL_TEST=0
-	compat_test=0
-	NEED_IFX_VERSION=""
-	SE_REQUIRED=0
-	SKIP_REASON=""
-	SKIP_REASON_CODES=""
-	IS_MAKE_ANSI_SQL_COMPAT=""
-	NEED_TRANSACTION=""
-	NEED_RDBMS=""
-	SQL_FEATURES_USED=""
-	SQL_FEATURES_COMPATIBLE=""
-	NEED_PLUGIN=""
+	init_vars_in_loop
 	
     #################################
     #See if we should skip this test:
@@ -1927,234 +1783,48 @@ do
 			continue
 		fi
 	fi
-	
-	##################################
-	#Colect information about this test
-	###################################
-	
-	#Check if makefile is old or new type; sets IS_OLD_MAKEFILE
-	check_makefile_type
-	
-	#see if Makefile contains description
-	#sets desc_txt TEMPLATE_COMMENT IS_DESCRIBED ALL_DESCRIBED_TESTS
-	check_desc_txt
-
-	if test "$SH_DBG" = "1"; then 
-		echo "Loading test info..."
+	if test "$TIME_SCRIPT" = "1"; then
+		BEFORE_TEST_INFO_TIME=`date +%s`
+	fi
+	collect_test_info
+	if test "$TIME_SCRIPT" = "1"; then
+		AFTER_TEST_INFO_TIME=`date +%s`
 	fi
 
-	if test "$IS_OLD_MAKEFILE" = "0" ; then
-		##############
-		#get info about the test from makefile
-		IS_DB_TEST=`$MAKE -s -C $TEST_NO db_test 2>/dev/null`
-		if test "$IS_DB_TEST" = "1"; then
-			#We are intereste in this features only if test is a db test,
-			SE_REQUIRED=`$MAKE -s -C $TEST_NO se_required 2>/dev/null`
-			NEED_IFX_VERSION=`$MAKE -s -C $TEST_NO need_ifx_version 2>/dev/null`
-			NEED_RDBMS=`$MAKE -s -C $TEST_NO need_rdbms 2>/dev/null`
-		else
-			SE_REQUIRED=
-			NEED_IFX_VERSION=
-		fi
-		ec_test=`$MAKE -s -C $TEST_NO ec_test 2>/dev/null`
-		IS_NOSILENT_TEST=`$MAKE -s -C $TEST_NO nosilent_test 2>/dev/null`
-		IS_TUI_TEST=`$MAKE -s -C $TEST_NO tui_test 2>/dev/null`
-		IS_FORM_TEST=`$MAKE -s -C $TEST_NO form_test 2>/dev/null`
-		IS_REPORT_TEST=`$MAKE -s -C $TEST_NO report_test 2>/dev/null`
-		IS_GRAPHIC_TEST=`$MAKE -s -C $TEST_NO graphic_test 2>/dev/null`
-		IS_CONSOLE_PROMPT_TEST=`$MAKE -s -C $TEST_NO console_prompt_test 2>/dev/null`
-		IS_DUMP_SCREEN_TEST=`$MAKE -s -C $TEST_NO dump_screen_test 2>/dev/null`
-		IS_LONG_TEST=`$MAKE -s -C $TEST_NO long_test 2>/dev/null`
-		IS_CERT_TEST=`$MAKE -s -C $TEST_NO cert_test 2>/dev/null`
-		IS_OBSOLETE_TEST=`$MAKE -s -C $TEST_NO obsolete_test 2>/dev/null`
-		compat_test=`$MAKE -s -C $TEST_NO compat_test 2>/dev/null`
-		IS_UNKNOWN_TEST=`$MAKE -s -C $TEST_NO unknown_test 2>/dev/null`
-		EXPECT_CODE=`$MAKE -s -C $TEST_NO expect_code 2>/dev/null`
-		RUNTIME_ERR_CHECK=`$MAKE -s -C $TEST_NO runtime_err_check 2>/dev/null`
-		if test "$EXPECT_CODE" = "" ; then
-			EXPECT_CODE=0
-		fi
-		COMPILE_ONLY=`$MAKE -s -C $TEST_NO compile_only 2>/dev/null`
-		NOPREFIX=`$MAKE -s -C $TEST_NO noprefix 2>/dev/null`
-		if test "$NOPREFIX" = "1" ; then
-			export A4GL_NAMESPACE=" "
-		else
-			unset A4GL_NAMESPACE
-		fi
-
-		NEED_COMPAT=`$MAKE -s -C $TEST_NO need_compat 2>/dev/null`
-
-		if test "$NEED_COMPAT" = "1" ; then
-			#test needs Aubit Informix compatibility support and headers
-			export A4GL_COMPAT_MODE="Y"
-			export CFLAGS="-I$AUBITDIR/incl -I$AUBITDIR/incl/compat "
-		else
-			unset A4GL_COMPAT_MODE
-		fi
-
-	else #old makefile - no descriptions in makefile
-	
-			#get info from this scripts variables (set in 
-			#incl/legacy_descriptions_inc.sh) when test has 
-			#old-style makefile
-			
-			#Do not have equivalent in script descriptions:
-			#ec_test - DOES! EC_TESTS but it's not used 
-			#compat_test
-
-			for b in $REPORT_TESTS; do
-				if test "$b" = "$TEST_NO"; then
-					IS_REPORT_TEST=1
-				fi
-			done
-
-			for b in $UNKNOWN_TESTS; do
-				if test "$b" = "$TEST_NO"; then
-					IS_UNKNOWN_TEST=1
-				fi
-			done
-			for b in $DB_TESTS; do
-				if test "$b" = "$TEST_NO"; then
-					IS_DB_TEST=1
-				fi
-			done
-			
-			for b in $NOSILENT_TESTS; do
-				if test "$b" = "$TEST_NO"; then
-					IS_NOSILENT_TEST=1
-				fi
-			done
-			
-			for b in $TUI_TESTS; do
-				if test "$b" = "$TEST_NO"; then
-					IS_TUI_TEST=1
-				fi
-			done
-			
-			for b in $GRAPHIC_TESTS; do
-				if test "$b" = "$TEST_NO"; then
-					IS_GRAPHIC_TEST=1
-				fi
-			done
-			
-			for b in $ALL_DESCRIBED_TESTS; do
-				if test "$b" = "$TEST_NO"; then
-					IS_DESCRIBED=1
-				fi
-			done
-			for b in $CONSOLE_PROMPT_TESTS; do
-				if test "$b" = "$TEST_NO"; then
-					IS_CONSOLE_PROMPT_TEST=1
-				fi
-			done
-			for b in $DUMP_SCREEN_TESTS; do
-				if test "$b" = "$TEST_NO"; then
-					IS_DUMP_SCREEN_TEST=1
-				fi
-			done
-			for b in $FORM_TESTS; do
-				if test "$b" = "$TEST_NO"; then
-					IS_FORM_TEST=1
-				fi
-			done
-			for b in $LONG_TESTS; do
-				if test "$b" = "$TEST_NO"; then
-					IS_LONG_TEST=1
-				fi
-			done
-			for b in $CERT_TESTS; do
-				if test "$b" = "$TEST_NO"; then
-					IS_CERT_TEST=1
-				fi
-			done
-			for b in $OBSOLETE_TESTS; do
-				if test "$b" = "$TEST_NO"; then
-					IS_OBSOLETE_TEST=1
-				fi
-			done
-			for b in $PCODE_ENABLED; do
-				if test "$b" = "$TEST_NO"; then
-					IS_PCODE_ENABLED=1
-				fi
-			done
-			for b in $NO_CRON_TESTS; do
-				if test "$b" = "$TEST_NO"; then
-					IS_NO_CRON_TEST=1
-				fi
-			done
-	fi #IS_OLD_MAKEILE
-	
-	#Both old and new makefiles may contain this targets, but they are 
-	#relevant only for db tests
-	if test "$IS_DB_TEST" = "1"; then 
-		IS_MAKE_ANSI_SQL_COMPAT=`$MAKE -s -C $TEST_NO ansi_sql_compat 2>/dev/null`
-		NEED_TRANSACTION=`$MAKE -s -C $TEST_NO transaction 2>/dev/null`
-		SQL_FEATURES_USED=`$MAKE -s -C $TEST_NO sql_features_used 2>/dev/null`
-
-		if test "$IS_MAKE_ANSI_SQL_COMPAT" = "0" -a "$SQL_FEATURES_USED" = ""; then 
-			#echo "WARNING: #$TEST_NO is not compatible with ANSI SQL, but has no SQL features used description"
-			NOT_ANSI_NO_SQL_FEATURES_DESC="$NOT_ANSI_NO_SQL_FEATURES_DESC $TEST_NO"
-		else
-			if test "$SQL_FEATURES_USED" = ""; then
-				#echo "WARNING: #$TEST_NO is db test, but has no SQL features used description"			
-				IS_DB_NO_SQL_FEATURES_DESC="$IS_DB_NO_SQL_FEATURES_DESC $TEST_NO"
-			fi
-		fi
-	else
-		IS_MAKE_ANSI_SQL_COMPAT=""
-		NEED_TRANSACTION=""
-		SQL_FEATURES_USED=""
-	fi
-	
-	#This targets can be present in both old and new makefiles:
-	NEED_PLUGIN=`$MAKE -s -C $TEST_NO need_plugin 2>/dev/null`
-	
-	if test "$SH_DBG" = "1"; then 
-		echo "Finished loading test info..."
-	fi
-
-	
-		#################
-		#Proces test information that is allways held only in this script, 
-		#and NEVER in makefiles	
-		for b in $EXPECT_TO_FAIL_TESTS; do
-			if test "$b" = "$TEST_NO"; then
-				IS_EXPECT_TO_FAIL_TEST=1
-			fi
-		done
-		for b in $INVALID_TESTS; do
-			if test "$b" = "$TEST_NO"; then
-				IS_INVALID_TEST=1
-			fi
-		done
-		for b in $BLACKLIST_TESTS; do
-			if test "$b" = "$TEST_NO"; then
-				IS_BLACKLIST_TEST=1
-			fi
-		done
+	if test "$RUN_ONE" != ""; then
+		#When runnig only one test we can load only features support status
+		#for features actually used by this test to speed up, but then we
+		#need to know which features test uses
+		if test "$IS_DB_TEST" = "1" -a "$SQL_FEATURES_USED" != ""; then
 		
-		if test "$FULL_LOOP" = "1"; then
-			#create test descriptions cache files, but only when 
-			#running full test loop
-			if test "$IS_DB_TEST" = "1"; then 
-				echo " $TEST_NO" >> $CURR_DIR/etc/cache_IS_DB_TEST.txt
+			if test "$TIME_SCRIPT" = "1"; then
+				BEFORE_FEATURES_LOAD_TIME=`date +%s`
+			fi
+			define_sql_features
+			if test "$TIME_SCRIPT" = "1"; then
+				AFTER_FEATURES_LOAD_TIME=`date +%s`
 			fi
 		fi
+	fi
+	
+	
+	if test "$FULL_LOOP" = "1"; then
+		#create test descriptions cache files, but only when 
+		#running full test loop
+		if test "$IS_DB_TEST" = "1"; then 
+			echo " $TEST_NO" >> $CURR_DIR/etc/cache_IS_DB_TEST.txt
+		fi
+	fi
 		
-		if test "$INFO_TEST" = "1" -o "$RUN_AND_INFO" = "1"; then
-			#Show test info
-			show_test_info
+	if test "$INFO_TEST" = "1" -o "$RUN_AND_INFO" = "1"; then
+		show_test_info
+	fi
+	
+	if test "$CATALOGUE_UNL" = "1"; then 
+		catalogue_unl
+		if test "$INFO_TEST" = "1"; then
+			continue
 		fi
-		if test "$CATALOGUE_UNL" = "1"; then 
-			catalogue_unl
-		fi
-
-		if test "$CATALOGUE_UNL_DBG" = "1"; then 
-			catalogue_unl
-		fi
-
-	if test "$SH_DBG" = "1"; then 
-		echo "Determining if we can/should run test $TEST_NO"
 	fi
 	
 	#See if we can/should run this test
@@ -2195,8 +1865,13 @@ do
 	if test "$ALL_COMPILE_ONLY" = "1"; then 
 		COMPILE_ONLY=1
 	fi
-	
+#echo "COMPILE_ONLY=$COMPILE_ONLY"
+#exit
+
 	#we will need that in make file
+	if test "$EXPECT_CODE" = ""; then
+		EXPECT_CODE=0
+	fi
 	export EXPECT_CODE
 	export COMPILE_ONLY
 	export USE_COMP
@@ -2319,8 +1994,23 @@ do
 	fi
 	if test "$TIME_SCRIPT" = "1"; then
 		EXIT_TIME=`date +%s`
-		let TOOK_TIME=EXIT_TIME - START_TIME
-		echo "Took $TOOK_TIME seconds from start of run_tests to execution point"
+		let TOOK_TIME=EXIT_TIME-START_TIME
+		echo "From start of run_tests to execution point=$TOOK_TIME"
+		
+		let TEST_INFO_TOOK_TIME=AFTER_TEST_INFO_TIME-BEFORE_TEST_INFO_TIME
+		let TO_INFO_LOAD=BEFORE_TEST_INFO_TIME-START_TIME
+		echo "To load of test info=$TO_INFO_LOAD"
+		echo "Loading test info=$TEST_INFO_TOOK_TIME"
+		
+		if test "$BEFORE_FEATURES_LOAD_TIME" != ""; then
+			let FEATURES_LOAD_TOOK_TIME=AFTER_FEATURES_LOAD_TIME-BEFORE_FEATURES_LOAD_TIME
+			let TO_FEATURES_LOAD=BEFORE_FEATURES_LOAD_TIME-START_TIME
+			echo "To load of db features=$TO_FEATURES_LOAD"
+			echo "Loading db features=$FEATURES_LOAD_TOOK_TIME"
+		else
+			echo "DB featurs not loaded"
+		fi
+		
 		if test "$TIME_LOOP" != "1"; then
 			exit 0
 		else

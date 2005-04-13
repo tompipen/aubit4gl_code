@@ -105,7 +105,6 @@ run: compile
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
 	@echo "DROP DATABASE - test is invalid - see test #545"
-	@echo ""
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -194,4 +193,16 @@ ansi_sql_compat:
 	
 sql_features_used:
 	@echo "DROP_DATABASE CREATE_DATABASE CLOSE_DATABASE"
+
+
+expect_code:			; @echo ""
+
+
+compile_only:			; @echo ""
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
 

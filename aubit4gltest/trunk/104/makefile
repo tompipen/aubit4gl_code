@@ -110,7 +110,6 @@ run: compile
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
 	@echo "CONSTRUCT BY NAME without FROM clause."
-	@echo ""
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -212,4 +211,10 @@ need_ifx_version:
 
 ansi_sql_compat:
 	@echo "1"
+
+
+transaction:			; @echo ""
+
+
+sql_features_used:			; @echo ""
 

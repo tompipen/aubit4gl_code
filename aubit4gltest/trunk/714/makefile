@@ -110,7 +110,6 @@ run: compile
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
 	@echo "DELETE with fully qualified table names."
-	@echo ""
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -216,4 +215,7 @@ sql_features_used:
 	@echo "DROP_TABLE DROP_TABLE_QUALIFIED_PATH CREATE_TABLE \
 		CREATE_TABLE_QUALIFIED_PATH \
 		INSERT_COLUMNLIST_EQ_VALUELIST_QUALIFIED_PATH DELETE_QUALIFIED_PATH "
+
+
+transaction:			; @echo ""
 

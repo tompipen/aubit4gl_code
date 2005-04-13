@@ -203,3 +203,12 @@ unknown_test:
 ansi_sql_compat:
 	@echo "1"
 
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
+
+
+sql_features_used:			; @echo ""
+

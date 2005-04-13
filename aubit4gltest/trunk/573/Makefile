@@ -105,7 +105,6 @@ run: compile
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
 	@echo "CREATE SYNONYM with full name."
-	@echo ""
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -203,4 +202,10 @@ ansi_sql_compat:
 
 sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE CREATE_SYNONYM_QUALIFIED_PATH"
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
 

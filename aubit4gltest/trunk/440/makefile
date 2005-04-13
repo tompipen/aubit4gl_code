@@ -77,6 +77,9 @@ run: compile
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
+#	@echo "COMPILE_ONLY====${COMPILE_ONLY}"
+#	@echo ${DEFAULT_RUN}
+#	exit 3
 	${DEFAULT_RUN}
 #To run program and diff the stdout output against a file, testing for difference:
 #	${DEFAULT_DIFF}
@@ -100,8 +103,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "MENU with title in a varible."
-	@echo "No run-time checking."
+	@echo "MENU with title in a varible. No run-time checking."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -192,13 +194,13 @@ compile_only:
 unknown_test:
 	@echo "0"
 
-	
-# ============================= EOF ================================
-
 ansi_sql_compat:
 	@echo "1"
 
-
 runtime_err_check:
 	@echo "0"
+	
+need_ifx_version:			; @echo ""
+transaction:			; @echo ""
+sql_features_used:			; @echo ""
 

@@ -106,8 +106,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "No idea what this is testing"
-	@echo "Maybe GUI related. No run-time checking"
+	@echo "No idea what this is testing \
+		Maybe GUI related. No run-time checking"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -207,4 +207,13 @@ ansi_sql_compat:
 
 runtime_err_check:
 	@echo "0"
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
+
+
+sql_features_used:			; @echo ""
 

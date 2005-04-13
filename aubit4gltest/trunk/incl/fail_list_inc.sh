@@ -12,14 +12,14 @@
 #using -eci will not work with any other Aubit configuration
 #NOTE: <*> = OK with -esqli
 #      <P> = OK with -ecp
-EXPECT_TO_FAIL_TESTS="240 766 767 962 976 987 "
+EXPECT_TO_FAIL_TESTS="240 766 767 962 976 987"
 #240 (numeric formating) http://aubit.com/mantis/bug_view_page.php?bug_id=0000495
 #766 (Key CONTROL-H was 49 and not 8) http://aubit.com/mantis/bug_view_page.php?bug_id=0000596
 #767 (wrong codes returned) http://aubit.com/mantis/bug_view_page.php?bug_id=0000597
 #962 <P> (Error on near zero decimal comparison) http://aubit.com/mantis/bug_view_page.php?bug_id=0000601
 #976 <P> (Error in conversion.) http://aubit.com/mantis/bug_view_page.php?bug_id=0000603
 #987 <P> same ?
-#233 failed once, but cant reproduce??
+
 
 #not reported (please enter bug report at: http://aubit.com/mantis)
 EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS "
@@ -29,16 +29,18 @@ EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS "
 #218 RPC client server test
 
 # --------------------------------------------------------------------------
-#							-esql
+#							-esqli
 # --------------------------------------------------------------------------
 
 ######################
 #Tests that currently fail with -esqli (but work with -cert)
-EXPECT_TO_FAIL_TESTS_ESQLI="80 685 694 703"
+EXPECT_TO_FAIL_TESTS_ESQLI="80 685 694 703 1009"
 #80 (Decimal or money value exceeds maximum precision) http://aubit.com/mantis/bug_view_page.php?bug_id=0000605 # Can you double check - 80 works on mine
 #685 same
 #694 same
 #703 same
+#1009 Cursor not open. (same cursor declared twice)
+
 
 # --------------------------------------------------------------------------
 #							-ifxodbc
@@ -109,40 +111,22 @@ EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX=""
 WHITELIST_TESTS_ECP="376 1206"
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
-EXPECT_TO_FAIL_TESTS_ECP="1 76 98 530 535 670 900 903"
+EXPECT_TO_FAIL_TESTS_ECP="1 76 98 530 535 670 900 903 1009 207 286 287 551 552 553 558 \
+	559 560 620 1240 645 646 652 653 654 655 667 668"
 #1 'xdt is null' BUT SHOULD BE 'xdt is 12:01:02' http://aubit.com/mantis/view.php?id=687 AND http://aubit.com/mantis/view.php?id=517
 #76 (datetime-ecpg issue) http://aubit.com/mantis/bug_view_page.php?bug_id=0000479
 #98 serial insert ignores non-zero value http://aubit.com/mantis/view.php?id=604
-#CLOSED 110 COPY delimiter must be a single character http://aubit.com/mantis/view.php?id=693
 #530 (TABLENAME_DB_USER_TABLE),535 (CREATE_TABLE_IN)  (syntax) http://aubit.com/mantis/bug_view_page.php?bug_id=0000485
-#CLOSED 584 587 prepared DATABASE stmt fails with -220 http://aubit.com/mantis/view.php?id=694
 #670 error in ecpg generated C code http://www.aubit.com/mantis/view.php?id=696
-#CLOSED 739 A row was deleted from a temp table with no log http://aubit.com/mantis/view.php?id=692
 #900 A wrong select give a zero sqlca http://aubit.com/mantis/view.php?id=690
 #903 Wrong sqlca it as not assigned sqlcode http://aubit.com/mantis/view.php?id=691
-#CLOSED 913 An warning was not issued with a DB with transactions http://aubit.com/mantis/view.php?id=689
-#CLOSED 1208 1228 UNLOAD TO SELECT FROM cant open file http://www.aubit.com/mantis/view.php?id=697
-#CLOSED 1220 select one more filed then it exsist in the table http://www.aubit.com/mantis/view.php?id=698
-
-#1) No issue:			1 76 670 739 1208
-#2) beyond scope:		98 110 530 584 903 913 240 766 767 962 976
-#3) That's a problem: 	900
-
-#New, after changing some features status (LCL):
-EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP 207 286 287 551 552 553 558 \
-	559 560 620 1240"
+#1009 Database error ('current transaction is aborted, commands ignored until end of transa). (same cursor declared twice)
 #207 function dt_extend(character, "unknown", "unknown") does not exist
 #286 287 < 2|2|2|02/13/1970|2|   ---  > 2|2.0|2.0|13/02/1970|2|
 #551 552 553 558 559 560 (ALL of them):
 #ecpg error simple_alter_table.cpc:89: ERROR: syntax error at or near "("
 #   line 89:	   EXEC SQL ALTER TABLE xpto ADD (third_column SMALLINT  ); /* exec_sql */
- 
 #620 delete where current of - Database error ('(null)' in line 246.).
-
-
-
-#New, after changing some features status (SW):
-EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP 645 646 652 653 654 655 667 668"
 #645 ecpg syntax error with GRANT CONNECT TO PUBLIC http://aubit.com/mantis/view.php?id=703
 #646 ecpg syntax error with GRANT CONNECT TO informix (same Mantis case as above)
 #652 ecpg syntax error on GRANT INDEX ON xpto TO PUBLIC http://aubit.com/mantis/view.php?id=704

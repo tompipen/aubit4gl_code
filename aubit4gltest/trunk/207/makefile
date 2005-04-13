@@ -90,8 +90,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This test checks the validity of date/datetime comparisons"
-	@echo "Its more for the SQL side than 4GL.."
+	@echo "This test checks the validity of date/datetime comparisons \
+		Its more for the SQL side than 4GL.."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -179,4 +179,16 @@ ansi_sql_compat:
 
 sql_features_used:
 	@echo "CREATE_TEMP_TABLE DDL_DATETIME DDL_DATE FUNC_EXTEND"
+
+
+expect_code:			; @echo ""
+
+
+compile_only:			; @echo ""
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
 

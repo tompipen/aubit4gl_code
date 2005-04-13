@@ -483,10 +483,7 @@ for a in $FLAGS; do
 			exit
 		;;
 		-certify)
-			echo "FIXME-broken"
-			exit 0
-			
-			#flage the test as certified in the makefile
+			#flag the test as certified in the makefile
 			CERT_TEST=1
 			continue
 			;;
@@ -498,6 +495,11 @@ for a in $FLAGS; do
 			continue
 			;;
 
+		-migrate-old-makefiles)
+			migrate_old_makefiles
+			exit
+			;;
+			
 		-se)
 			#test if current running Informix db is SE or not
 			DB=test1
@@ -556,15 +558,16 @@ for a in $FLAGS; do
 			exit 0
 			;;
 			
-        -info) #Show information about the test
+        -info) #Show information about the one or all tests
 			date_stamp=`date +%d-%m-%Y_%H-%M-%S`
 			if [ $# -gt 2 ]; then
-				#More flags on cmd line, process everything, but 
+				#More then 2 flags on cmd line, process everything/run test, but
 				#also show info
 				RUN_AND_INFO=1
 			else
-				#Only 2 flags on command line, one of which is -info, so
-				#just show the info
+				#2 or less flags on command line, one of which is -info, so
+				#just show the info for test (if specified) or output info 
+				#for all tests if test not specified
 				INFO_TEST=1
 				continue
 			fi

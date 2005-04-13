@@ -121,8 +121,8 @@ zz:
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This tests the RETURN and TAB keys when pressed on the last editable field -" 
-	@echo "with a noentry field after it in an input array"
+	@echo "This tests the RETURN and TAB keys when pressed on the last editable field - \
+		with a noentry field after it in an input array"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -219,4 +219,13 @@ unknown_test:
 
 ansi_sql_compat:
 	@echo "1"
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
+
+
+sql_features_used:			; @echo ""
 

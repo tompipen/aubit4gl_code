@@ -104,8 +104,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "CREATE/DROP DATABASE with Informix SE specific syntax."
-	@echo "Test is invalid - see test #545."
+	@echo "CREATE/DROP DATABASE with Informix SE specific syntax. \
+		Test is invalid - see test #545."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -194,4 +194,16 @@ ansi_sql_compat:
 	
 sql_features_used:
 	@echo "DROP_DATABASE CREATE_DATABASE_WITH_LOG CREATE_DATABASE_MODE_ANSI CLOSE_DATABASE"
+
+
+expect_code:			; @echo ""
+
+
+compile_only:			; @echo ""
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
 

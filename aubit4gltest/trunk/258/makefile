@@ -109,8 +109,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Tests mantis bug 516 (private bug)"
-	@echo "ecpg crashed on declare cursor for select statement - the select statement has an 'into clause' of 3 members of a structure. It works fine when the number is less than 3. "
+	@echo "Tests mantis bug 516 (private bug) \
+		ecpg crashed on declare cursor for select statement - the select statement has an 'into clause' of 3 members of a structure. It works fine when the number is less than 3. "
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 

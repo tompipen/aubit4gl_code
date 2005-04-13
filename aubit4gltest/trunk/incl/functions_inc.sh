@@ -60,6 +60,7 @@ VAR2="$2"
 }
 
 ######################################################
+# Prepare catalogue of db features and there support status for one RDBMS
 function db_features_doc () {
 	
 	echo "Preparing catalogue of db features, please wait..."
@@ -804,11 +805,21 @@ CATALOGUE_UNL_FILE="$3"
 
 
 function activate_use_cache () {
-		if test -f $CURR_DIR/etc/cache_IS_DB_TEST.txt ; then
-			USE_CACHE=1
-			IS_DB_TEST_CACHE="`cat $CURR_DIR/etc/cache_IS_DB_TEST.txt`"
+DB_TESTS_CACHE_FILE="$CURR_DIR/etc/cache_IS_DB_TEST.txt"
+
+	if test -f $DB_TESTS_CACHE_FILE ; then
+			count=`cat $DB_TESTS_CACHE_FILE | wc -w`
+			if test "$count" -lt "100"; then
+				warning "DB tests cache file ($DB_TESTS_CACHE_FILE) seems corrupt"
+				warning "Cache file removed. Will not use cache."
+				rm -f $DB_TESTS_CACHE_FILE
+				USE_CACHE=0
+			else
+				USE_CACHE=1
+				IS_DB_TEST_CACHE="`cat $DB_TESTS_CACHE_FILE`"
+			fi
 		else
-			echo "You need to create a cache file first to use -use-cache"
+			verbose "You need to create a cache file first to use -use-cache"
 		fi
 }
 
@@ -856,56 +867,53 @@ function test_cntpp () {
 
 
 ##########################################
-#Define list(s) of recognized SQL features
+#Define (load from .conf file) list(s) of recognized SQL features
 define_sql_features () {
+LOAD_ONLY_USED_FEATURES=1
+LOAD_ONLY_CURR_DB=1
 
-if test "$DISABLE_SQL_FEATURES_CHECK" = "1"; then
-	return 
-fi
-
-if test "$DB_TYPE" = ""; then
-	#We must know db type to work with db features
-	DISABLE_SQL_FEATURES_CHECK=1
-	#if test "$VERBOSE" = "1"; then 	
-		echo "WARNING: DB_TYPE is empty. Indicate which db to use - see -help-db."
-		echo "WARNING: Disabled SQL features checking."
-	#fi
-	return
-fi
-
-
-if test "$SH_DBG" = "1"; then 
-	echo "Loading SQL features list...."
-fi
-
-#sql_features_used:
-#	@echo ""
-
-		SQL_FEATURES_NON_ANSI=`cat $CURR_DIR/etc/db_features.conf | grep -v "^#"`
-
-		#Determine which feature status applies to this db
-		if test "$DB_TYPE" != "PG-IFX-74" -a "$DB_TYPE" != "PG-74" \
-			-a "$DB_TYPE" != "IFX-OL" -a "$DB_TYPE" != "IFX-SE" \
-			-a "$DB_TYPE" != "SQLITE" -a "$DB_TYPE" != "PG-80" ; then 
-			#DB we have no info stored for, treat it as ANSI
-			#TODO: determine if we have .cnv file for that db
-			if test "1" = "1"; then 
-				echo "WARNING: treating DB features as ANSI db without conversion ($DB_TYPE)"
-				FEATURE_DB_TYPE="ANSI"
-			else
-				echo "WARNING: treating DB features as ANSI db with conversion ($DB_TYPE)"
-				FEATURE_DB_TYPE="ANSI-CNV"
-			fi
-		else
-			if test "$DB_TYPE" = "PG-80"; then 
-				FEATURE_DB_TYPE="PG-74"
-			else
-				FEATURE_DB_TYPE="$DB_TYPE"
-			fi
+	if test "$DISABLE_SQL_FEATURES_CHECK" = "1"; then
+		return 
+	fi
+	
+	if test "$DB_TYPE" = ""; then
+		#We must know db type to work with db features
+		DISABLE_SQL_FEATURES_CHECK=1
+		if test "$INFO_TEST" != "1"; then
+			#If we are just showing test info, it is OK not to have DB_TYPE
+			warning "DB_TYPE is empty. Indicate which db to use - see -help-db."
+			warning "Disabled SQL features checking."
 		fi
-		
-		#Determine which field of features array contains status for this db
-		case $FEATURE_DB_TYPE in 
+		return
+	fi
+	
+	if test "$SH_DBG" = "1"; then 
+		echo "Loading SQL features list...."
+	fi
+	
+	#Determine which feature status applies to this db
+	if test "$DB_TYPE" != "PG-IFX-74" -a "$DB_TYPE" != "PG-74" \
+		-a "$DB_TYPE" != "IFX-OL" -a "$DB_TYPE" != "IFX-SE" \
+		-a "$DB_TYPE" != "SQLITE" -a "$DB_TYPE" != "PG-80" ; then 
+		#DB we have no info stored for, treat it as ANSI
+		#TODO: determine if we have .cnv file for that db
+		if test "1" = "1"; then 
+			warning "treating DB features as ANSI db without conversion ($DB_TYPE)"
+			FEATURE_DB_TYPE="ANSI"
+		else
+			warning "treating DB features as ANSI db with conversion ($DB_TYPE)"
+			FEATURE_DB_TYPE="ANSI-CNV"
+		fi
+	else
+		if test "$DB_TYPE" = "PG-80"; then 
+			FEATURE_DB_TYPE="PG-74"
+		else
+			FEATURE_DB_TYPE="$DB_TYPE"
+		fi
+	fi
+	
+	#Determine which field of features array contains status for this db
+	case $FEATURE_DB_TYPE in 
 			ANSI-CNV) 	STAT_FIELD=1 ;;
 			ANSI) 		STAT_FIELD=2 ;;
 			IFX-OL) 	STAT_FIELD=3 ;;
@@ -926,7 +934,36 @@ fi
 			xx2) 		STAT_FIELD=18 ;;
 			xx3) 		STAT_FIELD=19 ;;
 			*)	echo "ERROR: FEATURE_DB_TYPE=$FEATURE_DB_TYPE"; exit 5 ;;
-		esac
+	esac
+
+	if test "$RUN_ONE" != "" -a "$LOAD_ONLY_USED_FEATURES" = "1"; then
+		#load only features used by this test
+		USED_FEATURES_GREP=""
+		fcnt=0
+		for used_f in $SQL_FEATURES_USED ; do
+			let fcnt=fcnt+1
+			if test "$fcnt" = "1"; then
+				USED_FEATURES_GREP="$used_f"
+			else
+				USED_FEATURES_GREP="$USED_FEATURES_GREP\|$used_f"
+			fi
+		done
+		if test "$LOAD_ONLY_CURR_DB" = "1"; then
+			SQL_FEATURES_NON_ANSI=`grep -w "$USED_FEATURES_GREP" "$CURR_DIR/etc/db_features.conf" | grep -v "^#" | cut --fields=$STAT_FIELD,20,21 --delimiter=" "`
+		else
+			SQL_FEATURES_NON_ANSI=`grep -w "$USED_FEATURES_GREP" "$CURR_DIR/etc/db_features.conf" | grep -v "^#"`
+		fi
+	else
+		#load all features
+		if test "$LOAD_ONLY_CURR_DB" = "1"; then
+			SQL_FEATURES_NON_ANSI=`cat $CURR_DIR/etc/db_features.conf | grep -v "^#" | cut --fields=$STAT_FIELD,20,21 --delimiter=' '`
+		else
+			SQL_FEATURES_NON_ANSI=`cat $CURR_DIR/etc/db_features.conf | grep -v "^#"`
+		fi
+	fi
+#echo $SQL_FEATURES_NON_ANSI
+#echo $RDBMS_FILTER
+#exit
 		
 		#Initialise counters:
 		CNT=0 ;	FIELD_CNT=0; ROW_CNT=0; DOTS_CNT=0
@@ -939,6 +976,19 @@ fi
 		P_P_CNT=0; P_S_CNT=0; P_I_CNT=0; P_D_CNT=0
 		F_P_CNT=0; F_S_CNT=0; F_I_CNT=0; F_D_CNT=0
 		X_P_CNT=0; X_S_CNT=0; X_I_CNT=0; X_D_CNT=0
+
+		#determine significant fields
+		if test "$LOAD_ONLY_CURR_DB" = "1"; then
+			#we loaded only relevant fields allready
+			STAT_FIELD=1
+			TYPE_FIELD=2
+			LABEL_FIELD=3
+		else
+			#all fields are loaded
+			#STAT_FIELD=$STAT_FIELD
+			TYPE_FIELD=20
+			LABEL_FIELD=21
+		fi
 		
 		##############################################################
 		#Chop up the big list into separate lists depending on status
@@ -949,7 +999,7 @@ fi
 			if test "$FIELD_CNT" = "$STAT_FIELD"; then #Feature status
 				FEATURE_STATUS="$field"
 			####################################
-			elif test "$FIELD_CNT" = "20"; then #Feature type
+			elif test "$FIELD_CNT" = "$TYPE_FIELD"; then #Feature type
 				FEATURE_TYPE="$field"
 				case $FEATURE_TYPE in
 				D) #DDL 
@@ -1005,7 +1055,7 @@ fi
 					;;
 				esac
 			######################################
-			elif test "$FIELD_CNT" = "21"; then #Feature name
+			elif test "$FIELD_CNT" = "$LABEL_FIELD"; then #Feature name
 				FEATURE_NAME="$field"
 				case $FEATURE_STATUS in 
 				P) SQL_FEATURES_NON_ANSI_POSIBLE="$SQL_FEATURES_NON_ANSI_POSIBLE $FEATURE_NAME"
@@ -1095,14 +1145,14 @@ fi
 			exit
 		fi
 								
-if test "$SH_DBG" = "1"; then 
-	echo "Loaded SQL features list."
-	#exit
-fi
+	if test "$SH_DBG" = "1"; then 
+		echo "Loaded SQL features list."
+		#exit
+	fi
 
 }
 
-
+####################################################################
 #Check for incompatible SQL dialect features (tests 234 256 etc...)
 function chech_sql_features () {
 	
@@ -1545,7 +1595,7 @@ check_postgresql () {
 	#Find PostgreSQL data directory of currently running PG engine (PGDATA)
 	if test "$PGDATA" = ""; then
 		if test "$COMSPEC" = ""; then #On UNIX 
-			#su -l postgres -s /bin/sh -c "$POSTGRES_BIN/pg_ctl -D $PG_DATA status"
+			#su -l postgres -s /bin/sh -c "$POSTGRES_BIN/pg_ctl -D $PGDATA status"
 			#We need wide output to get full command line:
 			PGDATA=`ps -auxw | grep postmaster | head -1 | awk '{print $14}'`
 			#Sometimes retrns clipped path, so test it:
@@ -1560,6 +1610,11 @@ check_postgresql () {
 				fi
 				PGDATA=`ps -efw | grep postmaster | head -1 | awk '{print $11}'`
 			fi
+			if test "$PGDATA" = ""; then
+				#This apparently works in PG8, but not in 7.4				
+				PGDATA=`$PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -3 | grep -v row`
+			fi
+			
 			if test "$PGDATA" = ""; then 
 				echo "WARNING: PostgreSQL not running or started without -D flag"
 				echo "(using PGDATA, but no PGDATA present in environment)"
@@ -1670,11 +1725,10 @@ check_postgresql () {
 				verbose "PG_CONF set to '$PG_CONF'"
 			fi
 		fi
-	else
-		if test ! -d "$PGDATA"; then
-			echo "WARNING: specified PGDATA ($PGDATA) is not a directory"
-			unset PGDATA
-		fi
+	fi
+	if test ! -d "$PGDATA"; then
+		echo "WARNING: specified PGDATA ($PGDATA) is not a directory"
+		unset PGDATA
 	fi
 	
 	#Find current PostgreSQL configuration file in use by currently running
@@ -1684,20 +1738,16 @@ check_postgresql () {
 			PG_CONF="$PGDATA/postgresql.conf"
 		else
 			#This apparently works in PG8, but not in 7.4				
-			PG_CONF=`$PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -3 | grep -v row`	
-			PGDATA=`$PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -3 | grep -v row`
-			
+			PG_CONF=`$PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -3 | grep -v row`
 			if ! test -f "$PG_CONF"; then		
 				#seems like engine does not keep config file name (tried psql 'SHOW ALL;')
 				#So only source of config file location is environment where postmaster
 				#command was executed
-				warning "failed to determine PG config file location (PGDATA=$PGDATA)"
-				ls -al $PGDATA *.conf
+				warning "failed to determine PG config file location (PG_CONF=$PG_CONF)"
+				if test "$PGDATA" != ""; then
+					ls -al $PGDATA/*.conf
+				fi
 				PG_CONF="unknown"
-			fi
-			if ! test -d "$PGDATA"; then
-				warning "failed to determine PG data directory (PGDATA=$PGDATA)"
-				PGDATA=""
 			fi
 		fi
 	fi
@@ -2510,7 +2560,7 @@ X
 
 
 #Load all .unl data
-load_unl_tables () {
+function load_unl_tables () {
 dl="|"
 #ALL_RESULTS="aptiva_16-10-2004_12-49-24"
 ALL_RESULTS=results_*.unl
@@ -2596,7 +2646,7 @@ dl=$5
 # Log test descriptiont into Informix-style .unl file
 #
 ##
-catalogue_unl() {
+function catalogue_unl() {
 time=$date_stamp
 test_no=$TEST_NO
 invalid=$IS_INVALID_TEST
@@ -2628,7 +2678,7 @@ need_trans=$NEED_TRANSACTION
 #???? t:noprefix
 no_prefix=$NOPREFIX
 need_compat=$NEED_COMPAT
-old_makefile=$OLD_DESC
+old_makefile=$IS_OLD_MAKEFILE
 sql_features_used="$SQL_FEATURES_USED"
 ansi_sql=$IS_MAKE_ANSI_SQL_COMPAT
 
@@ -2963,56 +3013,73 @@ compare_settings() {
 }
 
 ##
-# Change setting in makefile
+# Change setting in makefile. Add new one if it does not exist allready
 #
 ##
 function change_setting() {
 look_for="$1:"
 change_to=$2
 test_no=$3
-makefile=`ls $CURR_DIR/$test_no/?akefile`
-if test "$makefile" = ""; then
-	echo "ERROR: can't get makefile name"
-	pwd
-	echo "$CURR_DIR/$test_no/?akefile"
-	exit 5
+if test "$CHG_SETTING_MAKEFILE" = ""; then
+	makefile=`ls $CURR_DIR/$test_no/?akefile`
+else
+	makefile="$CHG_SETTING_MAKEFILE"
 fi
 tmp_out="$makefile.tmp"
 
+	if test "$makefile" = ""; then
+		echo "ERROR: can't get makefile name"
+		pwd
+		echo "$CURR_DIR/$test_no/?akefile"
+		exit 5
+	fi
 	TMP_TMP=`cat $makefile | grep $look_for`
 	if test "$TMP_TMP" = ""; then 
-		if test "$VERBOSE" = "1" ; then
-			echo "Adding new setting $look_for as $change_to in $makefile..."
-		fi
+		verbose "Adding new setting $look_for as $change_to in $makefile..."
 		echo "" >> $makefile
-		echo "$look_for" >> $makefile
-		echo "	@echo \"$change_to\""  >> $makefile
-		echo "" >> $makefile		
+		#echo "$look_for" >> $makefile
+		#echo "	@echo \"$change_to\""  >> $makefile
+		echo "$look_for			; @echo \"$change_to\"" >> $makefile
+		echo "" >> $makefile
 	else
+		verbose "Changing value of $look_for to $change_to in $makefile..."
 
-		if test "$VERBOSE" = "1" ; then
-			echo "Changing value of $look_for to $change_to in $makefile..."
+		#Determine if the existing setting is one-line or two-line type
+		TMP2=`echo "$TMP_TMP" | grep ";"`
+		if test "$TMP2" != ""; then
+			IS_TWO_LINE=0
+			#echo "One line"
+		else
+			IS_TWO_LINE=1
+			#echo "two line"
 		fi
-	
-		awk -v look_for="$look_for" -v change_to="$change_to" '
-		BEGIN {
-		}
-		{
-			if (skip_next==1) {
-				skip_next=0
-				next
-			} else {
-				if (look_for==$1) {
-					print
-					print "	@echo \"" change_to "\""
-					skip_next=1
+		
+		if test "$IS_TWO_LINE" = "1"; then
+			awk -v look_for="$look_for" -v change_to="$change_to" '
+			BEGIN {
+			}
+			{
+				if (skip_next==1) {
+					skip_next=0
+					next
 				} else {
-					print
+					if (look_for==$1) {
+						print
+						print "	@echo \"" change_to "\""
+						skip_next=1
+					} else {
+						print
+					}
 				}
 			}
-		}
-		' < $makefile > $tmp_out
-		
+			' < $makefile > $tmp_out
+		else
+			SUBST_STR="$look_for		; @echo \"$change_to\""
+			cat $makefile | sed "s/$TMP_TMP/$SUBST_STR/" > $tmp_out
+		fi
+#echo $TMP_TMP
+#grep "$look_for" "$tmp_out"
+#exit
 		if test "$VERBOSE" = "1" ; then
 			diff $makefile $tmp_out
 			RET=$?
@@ -3021,13 +3088,9 @@ tmp_out="$makefile.tmp"
 			RET=$?
 		fi
 		if test "$RET" = "0"; then 
-			if test "$VERBOSE" = "1" ; then
-				echo "Nothing changed"
-			fi
+			verbose "Nothing changed"
 		else
-			if test "$VERBOSE" = "1" ; then
-				echo "Changed."
-			fi
+			verbose "Changed."
 			mv $tmp_out $makefile
 		fi
 	fi
@@ -3462,7 +3525,7 @@ fi
 #
 # @param 
 ##
-show_test_info() {
+function show_test_info() {
 			
 			echo " ------------------- Info for test $TEST_NO -----------------------"		
 
@@ -3614,17 +3677,18 @@ show_test_info() {
 				echo ""
 			fi
 			echo ""
-			if test "$INFO_TEST" = "1"; then
-				#now called from main look, to enable creation of
+			#if test "$INFO_TEST" = "1"; then
+				#now called from main loop, to enable creation of
 				#unl catalogue at the same time when running tests (FULL_LOOP)
 				#if test "$CATALOGUE_UNL" = "1"; then 
 				#	catalogue_unl
 				#fi
-				continue
-			fi
+				#continue
+			#fi
 }
 
-
+###############################
+#
 function check_skip_non_db() {
 	
 		if test "$IS_DB_TEST" != "1" -a "$ONLY_DB" = "1"; then
@@ -3641,6 +3705,10 @@ function check_skip_non_db() {
 # @param 
 ##
 function check_skip() {
+	
+	if test "$SH_DBG" = "1"; then 
+		echo "Determining if we can/should run test $TEST_NO"
+	fi
 	
 	if test "$IS_OBSOLETE_TEST" = "1"; then
 		if test "$VERBOSE" = "1"; then
@@ -3751,7 +3819,9 @@ function check_skip() {
 #			SKIP_REASON_CODES="$SKIP_REASON_CODES 9"
 #			SKIP_NO_SCRDUMP_PDCURSES_LIST="$SKIP_NO_SCRDUMP_PDCURSES_LIST $TEST_NO"
 #	    fi
-	    if test "$IS_DESCRIBED" != "1" -a "$DESCRIBED_ONLY" = "1"; then
+
+	    if test "$IS_DESCRIBED" != "1" -a "$DESCRIBED_ONLY" = "1" \
+			-a "$IS_OLD_MAKEFILE" != "1"; then
 			SKIP_REASON="not described"
 			SKIP_REASON_CODES="$SKIP_REASON_CODES 10"
 			SKIP_NODESC_LIST="$SKIP_NODESC_LIST $TEST_NO"
@@ -3876,8 +3946,8 @@ function check_skip() {
 }
 
 #Check if makefile is old or new type; sets IS_OLD_MAKEFILE
-check_makefile_type() {
-	
+function check_makefile_type() {
+#DBG_check_makefile_type=1
 	#We can no longer use description target itself to find out if test uses new or old 
 	#makefiles, since Mike started adding desc target to old makefiles, so we 
 	#now have OLD makefiles that DO have text description (desc target) but
@@ -3886,23 +3956,35 @@ check_makefile_type() {
 	#or new makefile, we will use form_test target... ATM, no makefile below
 	#100 has it.
 	
-	IS_FORM_TEST=`$MAKE -s -C $TEST_NO form_test 2>/dev/null`
-	if test "$IS_FORM_TEST" = ""; then
-		#echo "old makefile"	
-		IS_OLD_MAKEFILE=1
-	else
-		#echo "new makefile"	
+	#IS_FORM_TEST=`$MAKE -s -C $TEST_NO form_test 2>/dev/null`
+	#if test "$IS_FORM_TEST" = ""; then
+	#pwd
+	#ls $TEST_NO/?akefile
+	#Note: missing [m|M]akefile is treated as OLD makefile
+	if grep "^include" $TEST_NO/?akefile > /dev/null 2>&1 ; then
+		if test "$DBG_check_makefile_type" = "1"; then
+			echo "new makefile"
+		fi
 		IS_OLD_MAKEFILE=0
+	else
+		if test "$DBG_check_makefile_type" = "1"; then
+			echo "old makefile"
+		fi
+		IS_OLD_MAKEFILE=1
 	fi
-
+	if test "$DBG_check_makefile_type" = "1"; then
+		exit
+	fi
 }
 
 #see if Makefile contains description. Both old and new makefiles
 #may contain description now, but new ones may contain a template text
 #instead of actuall description text
-check_desc_txt() {
+function check_desc_txt() {
 	
-	desc_txt=`$MAKE -s -C $TEST_NO desc 2>/dev/null`
+	if test "$desc_txt" = "" ; then
+		desc_txt=`$MAKE -s -C $TEST_NO desc 2>/dev/null`
+	fi
 
 	if test "$desc_txt" != "" ; then
 		#see if this description is unchanged from template, which 
@@ -4394,6 +4476,780 @@ function log_sqlfeatures () {
 	
 }
 
+##############
+#get info about the test from makefile
+function load_info_from_makefile () {
+	
+		IS_DB_TEST=`$MAKE -s -C $TEST_NO db_test 2>/dev/null`
+		if test "$IS_DB_TEST" = "1"; then
+			#We are intereste in this features only if test is a db test,
+			SE_REQUIRED=`$MAKE -s -C $TEST_NO se_required 2>/dev/null`
+			NEED_IFX_VERSION=`$MAKE -s -C $TEST_NO need_ifx_version 2>/dev/null`
+			NEED_RDBMS=`$MAKE -s -C $TEST_NO need_rdbms 2>/dev/null`
+		else
+			SE_REQUIRED=
+			NEED_IFX_VERSION=
+		fi
+		ec_test=`$MAKE -s -C $TEST_NO ec_test 2>/dev/null`
+		IS_NOSILENT_TEST=`$MAKE -s -C $TEST_NO nosilent_test 2>/dev/null`
+		IS_TUI_TEST=`$MAKE -s -C $TEST_NO tui_test 2>/dev/null`
+		IS_FORM_TEST=`$MAKE -s -C $TEST_NO form_test 2>/dev/null`
+		IS_REPORT_TEST=`$MAKE -s -C $TEST_NO report_test 2>/dev/null`
+		IS_GRAPHIC_TEST=`$MAKE -s -C $TEST_NO graphic_test 2>/dev/null`
+		IS_CONSOLE_PROMPT_TEST=`$MAKE -s -C $TEST_NO console_prompt_test 2>/dev/null`
+		IS_DUMP_SCREEN_TEST=`$MAKE -s -C $TEST_NO dump_screen_test 2>/dev/null`
+		IS_LONG_TEST=`$MAKE -s -C $TEST_NO long_test 2>/dev/null`
+		IS_CERT_TEST=`$MAKE -s -C $TEST_NO cert_test 2>/dev/null`
+		IS_OBSOLETE_TEST=`$MAKE -s -C $TEST_NO obsolete_test 2>/dev/null`
+		compat_test=`$MAKE -s -C $TEST_NO compat_test 2>/dev/null`
+		IS_UNKNOWN_TEST=`$MAKE -s -C $TEST_NO unknown_test 2>/dev/null`
+		EXPECT_CODE=`$MAKE -s -C $TEST_NO expect_code 2>/dev/null`
+		RUNTIME_ERR_CHECK=`$MAKE -s -C $TEST_NO runtime_err_check 2>/dev/null`
+		if test "$EXPECT_CODE" = "" ; then
+			EXPECT_CODE=0
+		fi
+		COMPILE_ONLY=`$MAKE -s -C $TEST_NO compile_only 2>/dev/null`
+		NOPREFIX=`$MAKE -s -C $TEST_NO noprefix 2>/dev/null`
+		if test "$NOPREFIX" = "1" ; then
+			export A4GL_NAMESPACE=" "
+		else
+			unset A4GL_NAMESPACE
+		fi
+
+		NEED_COMPAT=`$MAKE -s -C $TEST_NO need_compat 2>/dev/null`
+
+		if test "$NEED_COMPAT" = "1" ; then
+			#test needs Aubit Informix compatibility support and headers
+			export A4GL_COMPAT_MODE="Y"
+			export CFLAGS="-I$AUBITDIR/incl -I$AUBITDIR/incl/compat "
+		else
+			unset A4GL_COMPAT_MODE
+		fi
+}
+
+######################################
+#get info from this scripts variables (set in incl/legacy_descriptions_inc.sh) 
+#when test has old-style makefile
+function load_info_from_strings () {
+			
+			#Do not have equivalent in script descriptions:
+			#ec_test - DOES! EC_TESTS but it's not used 
+			#compat_test
+
+			for b in $REPORT_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_REPORT_TEST=1
+				fi
+			done
+
+			for b in $UNKNOWN_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_UNKNOWN_TEST=1
+				fi
+			done
+			for b in $DB_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_DB_TEST=1
+				fi
+			done
+			
+			for b in $NOSILENT_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_NOSILENT_TEST=1
+				fi
+			done
+			
+			for b in $TUI_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_TUI_TEST=1
+				fi
+			done
+			
+			for b in $GRAPHIC_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_GRAPHIC_TEST=1
+				fi
+			done
+			
+			for b in $ALL_DESCRIBED_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_DESCRIBED=1
+				fi
+			done
+			for b in $CONSOLE_PROMPT_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_CONSOLE_PROMPT_TEST=1
+				fi
+			done
+			for b in $DUMP_SCREEN_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_DUMP_SCREEN_TEST=1
+				fi
+			done
+			for b in $FORM_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_FORM_TEST=1
+				fi
+			done
+			for b in $LONG_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_LONG_TEST=1
+				fi
+			done
+			for b in $CERT_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_CERT_TEST=1
+				fi
+			done
+			for b in $OBSOLETE_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_OBSOLETE_TEST=1
+				fi
+			done
+			for b in $PCODE_ENABLED; do
+				if test "$b" = "$TEST_NO"; then
+					IS_PCODE_ENABLED=1
+				fi
+			done
+			for b in $NO_CRON_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_NO_CRON_TEST=1
+				fi
+			done
+}
+
+###################
+#Load info that is allways in makefile, and only in makefile
+function load_info_makefile_only () {
+
+	#Both old and new makefiles may contain this targets, but they are 
+	#relevant only for db tests
+	if test "$IS_DB_TEST" = "1"; then 
+		IS_MAKE_ANSI_SQL_COMPAT=`$MAKE -s -C $TEST_NO ansi_sql_compat 2>/dev/null`
+		NEED_TRANSACTION=`$MAKE -s -C $TEST_NO transaction 2>/dev/null`
+		SQL_FEATURES_USED=`$MAKE -s -C $TEST_NO sql_features_used 2>/dev/null`
+
+		if test "$IS_MAKE_ANSI_SQL_COMPAT" = "0" -a "$SQL_FEATURES_USED" = ""; then 
+			#echo "WARNING: #$TEST_NO is not compatible with ANSI SQL, but has no SQL features used description"
+			NOT_ANSI_NO_SQL_FEATURES_DESC="$NOT_ANSI_NO_SQL_FEATURES_DESC $TEST_NO"
+		else
+			if test "$SQL_FEATURES_USED" = ""; then
+				#echo "WARNING: #$TEST_NO is db test, but has no SQL features used description"			
+				IS_DB_NO_SQL_FEATURES_DESC="$IS_DB_NO_SQL_FEATURES_DESC $TEST_NO"
+			fi
+		fi
+	else
+		IS_MAKE_ANSI_SQL_COMPAT=""
+		NEED_TRANSACTION=""
+		SQL_FEATURES_USED=""
+	fi
+	
+	#This targets can be present in both old and new makefiles:
+	NEED_PLUGIN=`$MAKE -s -C $TEST_NO need_plugin 2>/dev/null`
+	
+}
+
+###################
+#Load info that is allways in script strings, and never in makefile
+function load_info_script_only () {
+
+		#################
+		#Proces test information that is allways held only in this script, 
+		#and NEVER in makefiles	
+		for b in $EXPECT_TO_FAIL_TESTS; do
+			if test "$b" = "$TEST_NO"; then
+				IS_EXPECT_TO_FAIL_TEST=1
+			fi
+		done
+		for b in $INVALID_TESTS; do
+			if test "$b" = "$TEST_NO"; then
+				IS_INVALID_TEST=1
+			fi
+		done
+		for b in $BLACKLIST_TESTS; do
+			if test "$b" = "$TEST_NO"; then
+				IS_BLACKLIST_TEST=1
+			fi
+		done
+}
+
+#################################
+#Initialise counters and variables INSIDE testing loop, before running each test
+function init_vars_in_loop () {
+	
+	desc_txt=""
+	let COUNTER=COUNTER+1
+	IS_DB_TEST=0
+	ec_test=0
+	IS_NOSILENT_TEST=0
+    IS_TUI_TEST=0
+    IS_GRAPHIC_TEST=0
+    IS_DESCRIBED=0
+	IS_CONSOLE_PROMPT_TEST=0
+	IS_DUMP_SCREEN_TEST=0
+	IS_FORM_TEST=0
+	IS_BLACKLIST_TEST=0
+    IS_LONG_TEST=0
+	IS_MAKE_ANSI_SQL_COMPAT=""
+    IS_CERT_TEST=0
+    IS_OBSOLETE_TEST=0
+    IS_INVALID_TEST=0
+    IS_PCODE_ENABLED=0
+	IS_UNKNOWN_TEST=0
+	IS_NO_CRON_TEST=0	
+	TEMPLATE_COMMENT=0
+	NEED_TRANSACTION=0
+	IS_REPORT_TEST=0
+	EXPECT_CODE=0
+	COMPILE_ONLY=0
+	IS_EXPECT_TO_FAIL_TEST=0
+	compat_test=0
+	NEED_IFX_VERSION=""
+	SE_REQUIRED=0
+	SKIP_REASON=""
+	SKIP_REASON_CODES=""
+	IS_MAKE_ANSI_SQL_COMPAT=""
+	NEED_TRANSACTION=""
+	NEED_RDBMS=""
+	SQL_FEATURES_USED=""
+	SQL_FEATURES_COMPATIBLE=""
+	NEED_PLUGIN=""
+}
+
+#################################
+#Initialise counters and variables BEFORE entering testing loop
+function init_vars_before_loop () {
+	COUNTER=0
+	FAIL_CNT=0
+	PASS_CNT=0
+	SKIP_CNT=0
+	SKIP_INVALID_CNT=0
+	SKIP_NON_ANSI_CNT=0
+	RUN_CNT=0
+	EXPECTED_TO_FAIL_CNT=0
+	NOT_EXPECTED_TO_FAIL_CNT=0
+	NOT_CERT_CNT=0
+	TEMPLATE_COMMENT_CNT=0
+	UNKNOWN_TEST_CNT=0			
+	MIGRATE_DESC_CNT=0			
+	HAS_DESC_TXT_CNT=0
+	IS_REPORT_TEST_CNT=0
+	NON_ZERO_EXIT_CNT=0
+	COMPILE_ONLY_CNT=0
+	IS_PCODE_ENABLED_CNT=0
+	NOT_DESCRIBED_CNT=0
+	IS_INVALID_CNT=0
+	EXPECT_FAIL_CNT=0
+	IS_DB_TEST_CNT=0
+	IS_EC_TEST_CNT=0
+	IS_NOSILENT_CNT=0
+	IS_TUI_TEST_CNT=0
+	IS_FORM_TEST_CNT=0
+	IS_GRAPHIC_TEST_CNT=0
+	IS_CONSOLE_PROMPT_CNT=0
+	IS_DUMP_SCREEN_CNT=0
+	IS_LONG_CNT=0
+	NO_RUNTIME_ERR_CHECK_CNT=0
+	COMPILE_ONLY_PASS_CNT=0
+	IS_CERT_CNT=0
+	IS_NO_CRON_CNT=0
+	IS_OBSOLETE_CNT=0
+	IS_COMPAT_CNT=0
+	IS_UNKNOWN_CNT=0
+	EXPECTED_TO_FAIL_PASSED_CNT=0
+	IS_SE_REQUIRED_CNT=0
+	FAIL_DB_CNT=0
+	FAIL_NONDB_CNT=0
+	PASS_DB_CNT=0
+	PASS_NONDB_CNT=0
+	KILL_CNT=0
+	SKIP_INCOMPAT_SQL_CNT=0
+}
 
 
+######################
+#define which tests are expected to fail based on database/Aubit options used
+function define_expect_fail_list () {
+	if test "$USE_COMP" = "aubit"; then 
+		#Must be after flags processing to prevent cummulation when overriding switches
+		case $DB_TYPE in
+			#IFX-SE)
+			IFX-OL)
+				if test "$USE_ESQLI" = "1" -a "$USE_ECI" = "0"; then
+					EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_ESQLI"
+				fi
+				if test "$USE_IFXODBC" = "1"; then		
+					EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_IFXODBC"
+				fi
+				#EXPECT_TO_FAIL_TESTS are actually EXPECT_TO_FAIL_TESTS_ECI, since 
+				#-eci is part of -cert
+				;;
+			PG-IFX-74)
+				if test "$USE_ECP" = "1"; then
+					filter_out_white_listed "$EXPECT_TO_FAIL_TESTS_ECP" "$WHITELIST_TESTS_ECP"
+				#else
+					#must be ODBC? (did that in ODBC section?)
+				fi
+				;;
+			#PG-74)
+			#PG-80)
+			#*)	#Any other database back-end
+		esac
+	fi
+}
+
+
+
+#######################
+#Initialise results log files before entering test loop
+function init_result_logs () {
+	echo "" > $LOGFILE
+	echo "============================== Test results ===============================" >> $LOGFILE
+	echo "" >> $LOGFILE
+	echo "Flags (expanded): $FLAGS" >> $LOGFILE
+	
+	if test "$ALL_DB" = "1"; then
+		#remove irelevant flags, keep -sqlite -nospace -defaults -esqli
+		#also remove ONE -sqlite, since it's a default added by -default switch
+		#so we don't confuse the user:
+		DISP_FLAGS=`echo $FLAGS | sed -e 's/-short//' -e 's/-silent//' -e 's/-alldbrun//' -e 's/-sqlite//' -e 's/-defaults//' -e 's/-cert//' -e 's/-described//' -e 's/-nospace//' -e 's/-noecho//'`
+		echo "Flags: $DISP_FLAGS" >> $CURR_DIR/alldb.log
+	fi
+	if test "$VERBOSE" = "1"; then 
+		echo "" >> $LOGFILE
+		echo "Started at" >> $LOGFILE
+		#we want exact time here - do not use $DATE
+		date >> $LOGFILE
+		echo "Aubit version/build:" >> $LOGFILE	
+		$AUBITDIR/bin/4glc -v | grep Version >> $LOGFILE
+		$AUBITDIR/bin/4glc -v | grep Build >> $LOGFILE
+		#TODO: show versions of 4Js/Informix/Querix compiler - if used
+	fi
+	
+	if test "$RUN_ONE" != ""; then
+		#echo "" >> $LOGFILE
+		echo "Running test: $RUN_ONE" >> $LOGFILE
+		ALL_TESTS=$RUN_ONE
+		#echo "" >> $LOGFILE
+	#else
+	#	if test "$NO_ECHO" != "1"; then
+	#		#echo "Running tests: $ALL_TESTS" >> $LOGFILE
+	#		#To get $ALL_TESTS expanded on Windows, must not have quotes:
+	#		echo "Running tests: $ALL_TESTS" >> $LOGFILE
+	#   fi
+	fi
+	
+	rm -f $CURR_DIR/$TIME_FILE
+	rm -f $CURR_DIR/$OUTPUT_LOG
+	rm -f $CURR_DIR/$ERROR_LOG
+}
+
+##########################
+#
+function show_config_in_loop () {
+		echo "A4GL_INIFILE=$A4GL_INIFILE"
+		$AUBITDIR_UNIX/bin/aubit-config$EXE_EXT -a
+		
+		echo "aubit-config A4GL_AUBITRC returns :`aubit-config A4GL_AUBITRC`"
+		echo "aubit-config DBMONEY returns      :`aubit-config DBMONEY`"
+		echo "in environment: DBMONEY=$DBMONEY"
+		
+		unset A4GL_INIFILE
+		echo "A4GL_INIFILE=$A4GL_INIFILE"
+		
+		echo "aubit-config A4GL_AUBITRC returns :`aubit-config A4GL_AUBITRC`"
+		echo "aubit-config DBMONEY returns      :`aubit-config DBMONEY`"
+		echo "in environment: DBMONEY=$DBMONEYc"
+		
+		aubit-config A4GL_LEXTYPE
+		aubit-config A4GL_LEXDIALECT
+		aubit-config A4GL_SQLTYPE
+		note "Above config is at point of makefile incovation in run_tests"
+		note "and NOT in test makefile itself"
+}
+
+##################################
+#Colect information about this test
+function collect_test_info () {
+#DBG_collect_test_info=1
+#DISABLE_CAT_INFO=1
+load_in_one_go=1
+CAT_FILE="docs/catalogue.unl"
+
+	if test "$SH_DBG" = "1"; then 
+		debug "Loading test info..."
+	fi
+	
+	if test "$DISABLE_CAT_INFO" != "1"; then
+		if test "$CATALOGUE_UNL" != "1" -a "$INFO_TEST" != "1"; then
+			#Cant get info from catalogue when Im creating new catalogue
+			TRY_CAT=1
+		fi
+	fi
+	
+	if test "$TRY_CAT" = "1"; then
+		THIS_MAKEFILE=`ls $CURR_DIR/$TEST_NO/?akefile`
+		if test "$THIS_MAKEFILE" = ""; then
+			warning "Cant get makefile name"
+			TRY_CAT=0
+		else
+			if test "$CAT_FILE" -ot "$THIS_MAKEFILE"; then
+				#True if file1 is older than file2.
+				#Makefile was changed AFTER the catalogue was created, therefore
+				#if we use catalogue, we may be getting out-of-date info
+				warning "Makefile for test $TEST_NO changed since catalogue.unl was"
+				warning "created. Disabled loading of test info from catalogue."
+				TRY_CAT=0
+			fi
+		fi
+	fi
+	if test "$TRY_CAT" = "1"; then
+		load_info_from_catalogue
+	fi
+	
+	if test "$GOT_INFO_FROM_CAT" != "1"; then
+		if test "$TRY_CAT" = "1"; then	
+			warning "Failed to get test info from catalogue, reading makefile and/or strings"
+		fi
+	
+		#Check if makefile is old or new type; sets IS_OLD_MAKEFILE
+		check_makefile_type
+		
+		if test "$IS_OLD_MAKEFILE" = "0" ; then
+			if test "$load_in_one_go" = "1"; then 
+				load_info_in_one_go
+				if test "$DBG_collect_test_info" = "1"; then
+					note "Got info from makefile (one go)"
+				fi
+			else
+				load_info_from_makefile
+				if test "$DBG_collect_test_info" = "1"; then
+					note "Got info from makefile (one-by-one)"
+				fi
+			fi
+			
+		else #old makefile - no descriptions in makefile
+			load_info_from_strings
+			if test "$DBG_collect_test_info" = "1"; then
+				note "Got info from strings (old makefile)"
+			fi
+		fi
+
+		#see if Makefile contains description
+		#sets desc_txt TEMPLATE_COMMENT IS_DESCRIBED ALL_DESCRIBED_TESTS
+		check_desc_txt
+		
+		#can we skip this one when loading in one go?
+		load_info_makefile_only
+		
+		#This one has to be called even when loading in one go:
+		load_info_script_only
+	else
+		if test "$DBG_collect_test_info" = "1"; then
+			note "Got info from catalogue"
+		fi
+	fi
+	
+	if test "$SH_DBG" = "1"; then 
+		debug "Finished loading test info..."
+	fi
+	if test "$DBG_collect_test_info" = "1"; then
+		show_test_info_vars
+		exit
+	fi
+
+}
+
+#################################
+#Load test info from makefile using single make target instead of readin
+#one-by-one setting, to save time. If any setting is missing, add it to 
+#the makefile (one-by-one:6-7 sec one-go:3-4 sec, from catalogue:1 sec )
+function load_info_in_one_go () {
+#DBG_load_info_in_one_go=1
+NEED_COLS=43
+
+#$MAKE -C $TEST_NO all_desc
+#$MAKE -C $TEST_NO obsolete_test
+#exit
+	ALL_DESC=`$MAKE -k -s -C $TEST_NO all_desc 2>/tmp/make.tmp | tr "\n" "|"`
+	MISSING_TARGETS=`cat /tmp/make.tmp | grep "No rule to make target" | cut --field=8 --delimiter=" " | sed -e 's/\`//' | cut --field=1 --delimiter="'" | tr "\n" " "`
+	
+	if test "$MISSING_TARGETS" != ""; then
+		for missing_target in $MISSING_TARGETS; do
+			note "Adding missing setting $missing_target for test $TEST_NO ..."
+			change_setting "$missing_target" "" "$TEST_NO"
+		done
+		#re-check
+		ALL_DESC=`$MAKE -k -s -C $TEST_NO all_desc 2>/tmp/make.tmp | tr "\n" "|"`
+		MISSING_TARGETS=`cat /tmp/make.tmp | grep "No rule to make target" | cut --field=8 --delimiter=" " | sed -e 's/\`//' | cut --field=1 --delimiter="'" | tr "\n" " "`
+		if test "$MISSING_TARGETS" != ""; then
+			error "Still missing targets:$MISSING_TARGETS" "3"
+		fi
+	fi
+	
+	#Check number of fields: (Note: LF is a char)
+	delim_cnt=`echo $ALL_DESC | sed -e "s/[a-zA-Z0-9 _!~@#$%^&(()+*-=<,>.?{}\']//g" -e 's/\[//g' -e 's/\]//g' -e 's/\"//g' | wc -m`
+	delim_cnt=`echo $delim_cnt`
+
+	if test "$DBG_load_info_in_one_go" = "1" -o "$delim_cnt" != "$NEED_COLS"; then
+		stripped=`echo $ALL_DESC | sed -e "s/[a-zA-Z0-9 _!~@#$%^&(()+*-=<,>.?{}\']//g" -e 's/\[//g' -e 's/\]//g' -e 's/\"//g'`
+		echo ">$ALL_DESC<"
+		echo ">$stripped<"
+		echo "Expecting $NEED_COLS, got $delim_cnt"
+		#if test "$delim_cnt" = "$NEED_COLS" ; then
+		#	exit
+		#fi
+	fi
+	if test "$delim_cnt" != "$NEED_COLS" ; then
+		error "Loading descriptions from makefile in one go returned $delim_cnt"
+		error "fields instead of expected $NEED_COLS for test $TEST_NO" "1"
+	fi
+	info_line_to_var "$ALL_DESC"
+	
+	if test "$DBG_load_info_in_one_go" = "1"; then
+		echo "$ALL_DESC"
+		echo "-----------------------------------------------------------------------"
+		show_test_info_vars
+		exit
+	fi
+	
+}
+
+###############################
+#Load all test info from catalogue .unl file
+function load_info_from_catalogue () {
+CAT_FILE="docs/catalogue.unl"
+GOT_INFO_FROM_CAT=0
+#DBG_load_info_from_catalogue=1
+
+	if test "$CATALOGUE_TIMESTAMP" = ""; then 
+		CATALOGUE_TIMESTAMP=`head -1 $CAT_FILE | cut --field=1 --delimiter="|"`
+	fi
+	
+	line=`grep "$CATALOGUE_TIMESTAMP|$TEST_NO|" docs/catalogue.unl`
+	if test "$line" = ""; then
+		verbose "Test not in $CAT_FILE"
+		return
+	fi
+	info_line_to_var "$line"
+	if test "$DBG_load_info_from_catalogue" = "1"; then 
+		show_test_info_vars
+		exit
+	fi
+	GOT_INFO_FROM_CAT=1
+}
+
+###################################
+#break delimited test info line into variables
+function info_line_to_var () {
+line="$1"
+
+	this_cnt=0
+	while test "$this_cnt" -lt "43" ; do
+		let this_cnt=this_cnt+1
+		#while test did not work:
+		if test "$this_cnt" = "43"; then
+			break
+		fi
+		
+		field=`echo $line | cut --field=$this_cnt --delimiter="|"`
+		#echo "$this_cnt = |$field|"
+
+		case $this_cnt in
+			1) ;;
+			2) ;;
+			3)  #$invalid
+				IS_INVALID_TEST="$field";;
+			4)  #$is_db
+				IS_DB_TEST="$field";;
+			5)  #$is_ec
+				ec_test="$field";;
+			6)  #$is_nosilent
+				IS_NOSILENT_TEST="$field";;
+			7)  #$is_tui
+				IS_TUI_TEST="$field";;
+			8)  #$is_form
+				IS_FORM_TEST="$field";;
+			9)  #$is_report
+				IS_REPORT_TEST="$field";;
+			10) #$is_graphics
+				IS_GRAPHIC_TEST="$field";;
+			11) #$is_prompt
+				IS_CONSOLE_PROMPT_TEST="$field";;
+			12) #$is_dump_screen
+				IS_DUMP_SCREEN_TEST="$field";;
+			13) #$is_long
+				IS_LONG_TEST="$field";;
+			14) #$is_unknown
+				IS_UNKNOWN_TEST="$field";;
+			15) #$is_cert
+				IS_CERT_TEST="$field";;
+			16) #$is_obsolete
+				IS_OBSOLETE_TEST="$field";;
+			17) #$is_described
+				IS_DESCRIBED="$field";;
+			18) #$test_desc_txt
+				desc_txt="$field";;
+			19) #$test_compat_test
+				compat_test="$field";;
+			20) #$expect_code
+				EXPECT_CODE="$field";;
+			21) #$se_required
+				SE_REQUIRED="$field";;
+			22) #$compile_only
+				COMPILE_ONLY="$field";;
+			23) #$need_ifx_ver
+				NEED_IFX_VERSION="$field";;
+			24) #$need_trans
+				NEED_TRANSACTION="$field";;
+			25) #$no_prefix
+				NOPREFIX="$field";;
+			26) #$need_compat
+				NEED_COMPAT="$field";;
+			27) #$old_makefile
+				IS_OLD_MAKEFILE="$field";;
+			28) ;; #$dl$is_pcode_enabled$dl"	NO var
+			29) ;; #$dl$is_no_cron$dl"			NO var
+			30) ;; #$dl$scripted$dl"			NO var
+			31) ;; #$dl$is_window$dl"			NO var
+			32) ;; #$dl$test_ver$dl"			NO var
+			33) ;; #$dl$run_tests_ver$dl"		NO var
+			34) ;; #$dl$last_update$dl"			NO var
+			35) ;; #$dl$expect_fail_cert$dl" 	NO var
+			36) ;; #$dl$expect_fail_esqli$dl" 	NO var
+			37) ;; #$dl$expect_fail_ecp$dl" 	NO var
+			38) ;; #$dl$expect_fail_ifx_p$dl"	NO var
+			39) ;; #$dl$expect_fail_4js$dl" 	NO var
+			40) ;; #$dl$expect_fail_querix$dl" 	NO var
+			41) #$sql_features_used
+				SQL_FEATURES_USED="$field";;
+			42) #$ansi_sql
+				IS_MAKE_ANSI_SQL_COMPAT="$field";;
+			*) error "this_cnt=$this_cnt" "2"
+		esac
+	done
+}
+
+##############################
+# Show state of all variables that can be stored in catalogui.unl file
+function show_test_info_vars () {
+	
+	echo "IS_INVALID_TEST=$IS_INVALID_TEST"
+	echo "IS_DB_TEST=$IS_DB_TEST"
+	echo "ec_test=$ec_test"
+	echo "IS_NOSILENT_TEST=$IS_NOSILENT_TEST"
+	echo "IS_TUI_TEST=$IS_TUI_TEST"
+	echo "IS_FORM_TEST=$IS_FORM_TEST"
+	echo "IS_REPORT_TEST=$IS_REPORT_TEST"
+	echo "IS_GRAPHIC_TEST=$IS_GRAPHIC_TEST"
+	echo "IS_CONSOLE_PROMPT_TEST=$IS_CONSOLE_PROMPT_TEST"
+	echo "IS_DUMP_SCREEN_TEST=$IS_DUMP_SCREEN_TEST"
+	echo "IS_LONG_TEST=$IS_LONG_TEST"
+	echo "IS_UNKNOWN_TEST=$IS_UNKNOWN_TEST"
+	echo "IS_CERT_TEST=$IS_CERT_TEST"
+	echo "IS_OBSOLETE_TEST=$IS_OBSOLETE_TEST"
+	echo "IS_DESCRIBED=$IS_DESCRIBED"
+	echo "desc_txt=$desc_txt"
+	echo "compat_test=$compat_test"
+	echo "EXPECT_CODE=$EXPECT_CODE"
+	echo "SE_REQUIRED=$SE_REQUIRED"
+	echo "COMPILE_ONLY=$COMPILE_ONLY"
+	echo "NEED_IFX_VERSION=$NEED_IFX_VERSION"
+	echo "NEED_TRANSACTION=$NEED_TRANSACTION"
+	echo "NOPREFIX=$NOPREFIX"
+	echo "NEED_COMPAT=$NEED_COMPAT"
+	echo "IS_OLD_MAKEFILE=$IS_OLD_MAKEFILE"
+	echo "SQL_FEATURES_USED=$SQL_FEATURES_USED"
+	echo "IS_MAKE_ANSI_SQL_COMPAT=$IS_MAKE_ANSI_SQL_COMPAT"
+	
+}
+
+function migrate_old_makefiles () {
+#DBG_migrate_old_makefiles=1
+
+	ALL_OLD=`cat docs/catalogue.unl | cut --fields=2,27 --delimiter="|" | tr "|" " "`
+	#echo $ALL_OLD
+	#exit
+	cnt=0
+	for field in $ALL_OLD; do
+		let cnt=cnt+1
+		if test "$cnt" = "1"; then
+			test_no="$field"
+		else
+			old_make="$field"
+			cnt=0
+			if test "$old_make" = "1"; then
+				#echo "Test $test_no has OLD makefile"
+				OLD_LIST="$OLD_LIST $test_no"
+			#else
+			#	echo "Test $test_no has new makefile"
+			fi
+		fi
+	done
+
+	#echo "OLD_LIST=$OLD_LIST"
+	
+	for TEST_NO in $OLD_LIST; do
+		#load test settings into variables
+		load_info_from_catalogue
+		if test "$GOT_INFO_FROM_CAT" != "1" ; then
+			error "Failed to get test info"
+		fi
+		if test "$DBG_migrate_old_makefiles" = "1"; then 
+			show_test_info_vars
+			exit
+		fi
+
+		#create new makefile from template using current state of test
+		#info in varibles
+		make_new_makefile
+		
+	done
+	
+}
+
+function make_new_makefile () {
+CHG_SETTING_MAKEFILE="$TEST_NO/makefile-new"
+	
+	
+	echo "Creating new makefile for test $TEST_NO"
+	cp template/makefile $CHG_SETTING_MAKEFILE
+	CVS_ADD_FILES="$CVS_ADD_FILES $CHG_SETTING_MAKEFILE" 
+	
+	change_setting db_test "$IS_DB_TEST" $TEST_NO
+	change_setting desc "$desc_txt" $TEST_NO
+	change_setting ec_test "$ec_test" $TEST_NO
+	change_setting nosilent_test "$IS_NOSILENT_TEST" $TEST_NO
+	change_setting tui_test "$IS_TUI_TEST" $TEST_NO
+	change_setting form_test "$IS_FORM_TEST" $TEST_NO
+	change_setting report_test "$IS_REPORT_TEST" $TEST_NO
+	change_setting graphic_test "$IS_GRAPHIC_TEST" $TEST_NO
+	change_setting console_prompt_test "$IS_CONSOLE_PROMPT_TEST" $TEST_NO
+	change_setting dump_screen_test "$IS_DUMP_SCREEN_TEST" $TEST_NO
+	change_setting long_test "$IS_LONG_TEST" $TEST_NO
+	change_setting cert_test "$IS_CERT_TEST" $TEST_NO
+	change_setting obsolete_test "$IS_OBSOLETE_TEST" $TEST_NO
+	change_setting compat_test "$compat_test" $TEST_NO
+	change_setting expect_code "$EXPECT_CODE" $TEST_NO
+	change_setting compile_only "$COMPILE_ONLY" $TEST_NO
+	change_setting unknown_test "$IS_UNKNOWN_TEST" $TEST_NO
+	change_setting need_ifx_version "$NEED_IFX_VERSION" $TEST_NO
+	change_setting transaction "$NEED_TRANSACTION" $TEST_NO
+	change_setting sql_features_used "$SQL_FEATURES_USED" $TEST_NO
+	change_setting ansi_sql_compat "$IS_MAKE_ANSI_SQL_COMPAT" $TEST_NO
+#	change_setting runtime_err_check "$XXX" $TEST_NO
+#	change_setting need_rdbms "$XXX" $TEST_NO
+#	change_setting need_plugin "$XXX" $TEST_NO
+
+#	echo "IS_DESCRIBED=$IS_DESCRIBED"
+#	echo "SE_REQUIRED=$SE_REQUIRED"
+#	echo "NOPREFIX=$NOPREFIX"
+#	echo "NEED_COMPAT=$NEED_COMPAT"
+#	echo "IS_OLD_MAKEFILE=$IS_OLD_MAKEFILE"
+
+	
+	echo "Adding to CVS: $CVS_ADD_FILES"
+	exit
+
+}
 

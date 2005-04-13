@@ -100,8 +100,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "DEFINE LIKE - all combinations"
-	@echo "No run-tme checking."
+	@echo "DEFINE LIKE - all combinations. No run-tme checking."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -201,3 +200,9 @@ ansi_sql_compat:
 sql_features_used:
 	@echo "DEFINE_LIKE"
 	
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
+

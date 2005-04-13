@@ -190,3 +190,15 @@ sql_features_used:
 	@echo "DATABASE"
 
 
+
+expect_code:			; @echo ""
+
+
+compile_only:			; @echo ""
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
+

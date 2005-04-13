@@ -109,10 +109,10 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Datetime arithmetic problems mantis bug 566 (private)"
-	@echo "There are 2 problems with datetime arithmetic: "
-	@echo "1. In doing substraction on a datetime variable which is the 1st day of a month, the result is always a null. "
-	@echo "2. In doing addition or subtraction on a datetime variable, the result may be an invalid date, such as 2004-08-31. "
+	@echo "Datetime arithmetic problems mantis bug 566 (private) \
+	There are 2 problems with datetime arithmetic: \
+	1. In doing substraction on a datetime variable which is the 1st day of a month, the result is always a null. \
+	2. In doing addition or subtraction on a datetime variable, the result may be an invalid date, such as 2004-08-31. "
 
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
@@ -221,4 +221,7 @@ transaction:
 
 ansi_sql_compat:
 	@echo "1"
+
+
+sql_features_used:			; @echo ""
 

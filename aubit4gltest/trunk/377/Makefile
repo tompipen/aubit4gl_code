@@ -189,3 +189,15 @@ ansi_sql_compat:
 sql_features_used:
 	@echo "VALIDATE_LIKE"
 
+
+expect_code:			; @echo ""
+
+
+compile_only:			; @echo ""
+
+
+need_ifx_version:			; @echo ""
+
+
+transaction:			; @echo ""
+
