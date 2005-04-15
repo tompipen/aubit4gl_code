@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.17 2005-03-31 13:35:46 afalout Exp $
+# $Id: dmy.c,v 1.18 2005-04-15 19:38:34 mikeaubury Exp $
 #
 */
 
@@ -170,8 +170,7 @@ A4GL_using_date (int dn, char *us)
     "DDDD", "DDD", "DD", "MMMM", "MMM", "MM", "YYYY", "YY", "TH", "D", "M", ""
   };
   char *rusing_strs[] = {
-    "\nA", "\nB", "\nC", "\nD", "\nE", "\nF", "\nG", "\nH", "\nI", "\nJ",
-      "\nK", ""
+    "\nA",  "\nB",  "\nC", "\nL","\nE", "\nF","\nG",  "\nH","\nI","\nJ","\nK", ""
   };
 
   char rep_strs[20][20];
@@ -229,8 +228,8 @@ A4GL_using_date (int dn, char *us)
         strcpy (buff_using_date, buff2);
         strcpy (buff2, A4GL_dategsub (buff_using_date, UCusing_strs[a], rusing_strs[a]));
         strcpy (buff_using_date, buff2);
+	
     }
-
   /* now replace these with what the user wants - this gets around d
      being replaced in wed etc */
 

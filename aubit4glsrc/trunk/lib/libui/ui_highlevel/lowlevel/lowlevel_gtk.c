@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_gtk.c,v 1.58 2005-03-31 16:45:17 mikeaubury Exp $";
+		"$Id: lowlevel_gtk.c,v 1.59 2005-04-15 19:38:52 mikeaubury Exp $";
 #endif
 
 
@@ -196,7 +196,11 @@ static int cancel_callback (gpointer data) {
 }
 
 static void setup_ok_cancel(GtkWidget *ok_cancel) {
-//GtkWidget *l;
+
+#if GTK_CHECK_VERSION(2,0,0)
+#else
+GtkWidget *l;
+#endif
 GtkWidget *b;
 //printf("Setting up ok cancel\n");
 

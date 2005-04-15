@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.129 2005-03-31 13:35:58 afalout Exp $
+# $Id: esql.ec,v 1.130 2005-04-15 19:38:51 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.129 2005-03-31 13:35:58 afalout Exp $";
+  "@(#)$Id: esql.ec,v 1.130 2005-04-15 19:38:51 mikeaubury Exp $";
 #endif
 
 
@@ -3555,6 +3555,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   sprintf (strSelect, "select * from %s\n", tabname);
   A4GL_debug ("strSelect : %s\n", strSelect);
   EXEC SQL PREPARE stReadAllColumns FROM:strSelect;
+  A4GL_debug("sqlca.sqlcode=%d\n",sqlca.sqlcode);
   if (isSqlError ())
     {
 #ifdef DEBUG
