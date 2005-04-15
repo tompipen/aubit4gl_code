@@ -36,7 +36,8 @@ function use_cursor()
     aString CHAR(20)
   end record
 
-  declare cr_update cursor for select xpto.an_int, xpto.a_string from xpto for update
+  prepare px from "select xpto.an_int, xpto.a_string from xpto for update"
+  declare cr_update cursor for  px
 
   begin work
   open cr_update
@@ -46,7 +47,6 @@ function use_cursor()
   update xpto set a_string = "The One" where current of cr_update
 
   close cr_update
-
   commit work
 end function
 

@@ -179,6 +179,7 @@ for a in $FLAGS; do
 		ALL_TESTS=`echo $ALL_DIRS | tr " " "\n" | $SORT -n |  tr "\n" " "`
 		for TEST_NO in $ALL_TESTS
 		do
+			export RUNNING_TEST=$TEST_NO
 			IN_MAKE=0
 			IN_STRING=0
 			IS_DUMP_SCREEN_TEST=0
@@ -301,6 +302,7 @@ for a in $FLAGS; do
 		;;
 	-log-text*) #custom text to log to unl file
 		LOG_TEXT=`echo $a | sed -e 's/-log-text=//' | tr "_" " "`
+		export LOG_TEXT
 		;;
 		
 	-loop-10)
@@ -1691,6 +1693,7 @@ do
 	#if test "$SH_DBG" = "1"; then
 	#	echo "Loop start: test $TEST_NO"
 	#fi
+	export RUNNING_TEST=$TEST_NO
 
 	if test "$TIME_LOOP" = "1"; then 
 		LOOP_START_TIME=`date +%s`
