@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.23 2005-03-25 12:48:32 afalout Exp $
+# $Id: memfile.c,v 1.24 2005-04-15 06:59:28 mikeaubury Exp $
 #
 */
 
@@ -192,7 +192,7 @@ A4GL_memfile_getc (FILE * f)
   else
     {
       if (pos>buff_len) {
-		printf("XXX");
+		//printf("XXX");
 		return 0;
 	}
       a = buff[pos];

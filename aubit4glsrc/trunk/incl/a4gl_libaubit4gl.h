@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.164 2005-03-31 13:35:37 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.165 2005-04-15 06:59:27 mikeaubury Exp $
 #
 */
 
@@ -315,6 +315,7 @@
 #define CHANNEL_PIPE		'P'
 #define GOTO_USED		'Z'
 #define FEATURE_USED		'X'
+#define IS_SERIAL		'V'
 
 #define ACLFGLI_STR_TO_ID		'S'
 
@@ -2054,7 +2055,8 @@ int A4GLSQL_execute_sql (char *pname, int ni, void *vibind);
 int A4GLSQL_add_prepare (char *pname, void *vsid);
 
 
-char *A4GLSQLCV_insert_alias(char *t,char *c,char *v);
+char *A4GLSQLCV_insert_alias_column(char *t,char *c,char *v,int dtype);
+char *A4GLSQLCV_insert_alias_value(char *t,char *c,char *v,int dtype);
 void A4GLSQLCV_add_temp_table(char *tabname);
 
   /* API prototypes - now all generated from .spec files by dlmagic */

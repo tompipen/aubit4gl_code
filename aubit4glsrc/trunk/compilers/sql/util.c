@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.17 2005-03-31 13:35:36 afalout Exp $
+# $Id: util.c,v 1.18 2005-04-15 06:59:26 mikeaubury Exp $
 #
 */
 
@@ -41,6 +41,8 @@
 
 #include "a4gl_libaubit4gl.h"
 
+
+#include "../4glc/fix_insert.c"
 /*
 =====================================================================
 		                    Variables
@@ -64,7 +66,6 @@ char last_conversion[256];
 */
 
 //extern int yydebug; //y.tab.c:3742: warning: previous declaration of `sqlparse_yydebug'
-static void dump_insvals (void);
 static void add_sql(int n,char *s) ;
 
 /*
@@ -83,22 +84,6 @@ void * dummy;
 
 }
 
-
-/**
- *
- * @todo Describe function
- */
-static void
-trim_spaces (char *s) {
-  int l;
-  for (l = strlen (s) - 1; l >= 0; l--)
-    {
-      if (s[l] == ' ')
-        s[l] = 0;
-      else
-        break;
-    }
-}
 
 /**
  *
@@ -423,88 +408,6 @@ static void mark_sql_start(void) {
 }
 
 
-/**
- *
- * @todo Describe function
- */
-static char *
-fix_insert_expr (int mode)
-{
-  static char big_buff[20000];
-  int a;
-  int rval;
-  int isize = 0;
-  int idtype = 0;
-  char colname[256] = "";
-  /*char csize[20];*/
-  /*char cdtype[20];*/
-  char buff[1000];
-  char *ccol;
-  strcpy (big_buff, "");
-
-
-  if (mode == 1)
-    {
-      if (db_used == 0)
-        {
-          sprintf (buff, "You cannot use insert int this table without specifying a database");
-          a4gl_yyerror (buff);
-          return 0;
-        }
-
-      /* It will only be a '*' anyway....*/
-      gen_stack_cnt[INSCOL] = 0;
-      strcpy (colname, "");
-      rval = A4GLSQL_get_columns (current_ins_table, colname, &idtype, &isize);
-      if (rval == 0)
-        {
-          a4gl_yyerror ("Table is not in the database");
-          return 0;
-        }
-      while (1)
-        {
-          colname[0] = 0;
-          rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
-          strcpy (colname, ccol);
-          if (rval == 0)
-            break;
-          trim_spaces (colname);
-          push_gen (INSCOL, colname);
-        }
-      A4GLSQL_end_get_columns ();
-    }
-
-  if (gen_stack_cnt[INSCOL] != gen_stack_cnt[INSVAL])
-    {
-        dump_insvals();
-      a4gl_yyerror
-        ("Number of columns in update not the same as number of values");
-    }
-
-  strcpy(big_buff,"(");
-
-  for (a = 0; a < gen_stack_cnt[INSCOL]; a++)
-    {
-      if (a) strcat (big_buff, ",");
-      sprintf (buff, "%s", gen_stack[INSCOL][a]);
-      strcat (big_buff, buff);
-    }
-
-
-
-
-  strcat(big_buff,") VALUES (");
-  for (a = 0; a < gen_stack_cnt[INSVAL]; a++)
-    {
-      if (a) strcat (big_buff, ",");
-      sprintf (buff, "%s", A4GLSQLCV_insert_alias(current_ins_table, gen_stack[INSCOL][a],gen_stack[INSVAL][a]));
-      //sprintf (buff, "%s", A4GLSQLCV_insert_alias(current_ins_table, gen_stack[INSCOL][a],0));
-      strcat (big_buff, buff);
-    }
-   strcat(big_buff,")");
-
-  return big_buff;
-}
 
 
 /**
@@ -1035,24 +938,17 @@ A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
 }
 
 
-/**
- *
- * @todo Describe function
- */
-static void 
-dump_insvals ()
-{
-  int a;
-  for (a = 0; a < gen_stack_cnt[INSCOL]; a++)
-    {
-      printf ("INSCOL[%d] : %s\n", a, gen_stack[INSCOL][a]);
-    }
 
-  for (a = 0; a < gen_stack_cnt[INSVAL]; a++)
-    {
-      printf ("INSVAL[%d] : %s\n", a,gen_stack[INSVAL][a]);
-    }
+
+
+
+int A4GL_db_used(void) {
+return 1;
 }
 
+
+void do_yyerror(char *s) {
+          sqlparse_yyerror (s);
+}
 /* ====================================== EOF ============================ */
 

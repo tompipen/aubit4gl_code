@@ -30,16 +30,19 @@ int table_cnt=0;
 char* curr_func="";
 char *infilename="";
 int doing_declare=0;
-#define UPDCOL 0
-#define UPDVAL 1
-#define UPDVAL2 4
-#define INSCOL 5
-#define INSVAL 6
+//#define UPDCOL 0
+//#define UPDVAL 1
+//#define UPDVAL2 4
+//#define INSCOL 5
+//#define INSVAL 6
+//#define TCOL 6
 #define YY_NEVER_INTERACTIVE 1
 
 static char *convstrsql(char *s) ;
 char current_upd_table[256];
+#define DEFINED_INS_TABLE
 char current_ins_table[256];
+
 #define a4gl_yyerror sqlparse_yyerror
 /*
 char *A4GLSQLCV_check_colname(char *tabname,char *colname) ;
@@ -62,7 +65,7 @@ char *A4GLSQLCV_sqlfunc(char *s,char *p);
 int A4GLSQLCV_check_requirement(char *s) ;
 */
 
-static void push_gen (int a, char *s);
+//static void push_gen (int a, char *s);
 static void copy_gen (int a, int b);
 static void pop_all_gen (int a, char *s);
 static char * convstr_dbl_to_single (char *s);
@@ -113,14 +116,20 @@ static int scan_variable (char *s);
 #include <stdarg.h>
 #include <stdlib.h>
 #include "y.tab.h"
-#define GEN_STACKS              10
-#define GEN_STACK_SIZE 10000
-#define UPDCOL 0
-#define UPDVAL 1
-#define UPDVAL2 4
 
-char gen_stack[GEN_STACKS][GEN_STACK_SIZE][80];
-int gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+#define GEN_STACK_HERE
+#include "../4glc/gen_stack.h"
+//#define GEN_STACKS              10
+//#define GEN_STACK_SIZE 10000
+//#define UPDCOL 0
+//#define UPDVAL 1
+//#define UPDVAL2 4
+
+//char gen_stack[GEN_STACKS][GEN_STACK_SIZE][80];
+//int gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+
+
 int sql_string_cnt=0;
 int this_sql_start=0;
 char *Sql=0;

@@ -11,6 +11,7 @@
 
 void popdate (long *x);
 void retdate (long x);
+
 void popdec_aubit (fgldecimal *x) ;
 //fgldecimal * A4GL_str_to_dec (char *str, fgldecimal *dec) ;
 
@@ -240,10 +241,10 @@ void popdec_aubit (fgldecimal *x) {
 */
 
 #include "a4gl_API_esql.h"
-void popdtime(void* vx);
-void retdtime(void* vx);
-void retdec(void* vx);
-void popdec(void* vx);
+//void popdtime(void* vx);
+//void retdtime(void* vx);
+//void retdec(void* vx);
+//void popdec(void* vx);
 
 void popdtime(void* vx) { popdtime_native(vx); }
 void retdtime(void* vx) { retdtime_native(vx); }

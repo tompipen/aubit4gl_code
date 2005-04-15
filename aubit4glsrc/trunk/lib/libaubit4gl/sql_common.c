@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.3 2005-03-09 15:14:41 mikeaubury Exp $
+# $Id: sql_common.c,v 1.4 2005-04-15 06:59:28 mikeaubury Exp $
 #
 */
 
@@ -531,10 +531,15 @@ A4GL_apisql_must_convert (void)
   must_convert = 0;
 	A4GL_debug("SQLCONVERT=%s source_dialect='%s' dbms_dialect='%s'",acl_getenv ("SQLCONVERT"),source_dialect,curr_sess->dbms_dialect);
   if (A4GL_isyes(acl_getenv ("SQLCONVERT")) && (source_dialect[0] > '\0') && (curr_sess->dbms_dialect[0] > '\0') &&
-      (strcmp (curr_sess->dbms_dialect, source_dialect) != 0))
+      ((strcmp (curr_sess->dbms_dialect, source_dialect) != 0) || A4GL_isyes(acl_getenv ("ALWAYS_CONVERT")))
+)
     {
 	A4GL_debug("Setting Must convert");
-      must_convert = 1;
+	if (A4GL_isyes(acl_getenv ("NEVER_CONVERT"))) {
+      	must_convert = 0;
+	} else {
+      	must_convert = 1;
+	}
     } else {
 	A4GL_debug("Not setting must convert");
     }

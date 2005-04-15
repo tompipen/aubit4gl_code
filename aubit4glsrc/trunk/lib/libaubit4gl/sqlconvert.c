@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.55 2005-03-31 16:45:03 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.56 2005-04-15 06:59:28 mikeaubury Exp $
 #
 */
 
@@ -119,7 +119,9 @@ char *cvsql_names[]={
   "CVSQL_NO_SELECT_WITHOUT_INTO",
   "CVSQL_NO_PUT",
   "CVSQL_FULL_INSERT",
-  "CVSQL_INSERT_ALIAS",
+  "CVSQL_INSERT_ALIAS_VALUE",
+  "CVSQL_INSERT_ALIAS_COLUMN",
+  "CVSQL_OMIT_SERIAL_COL_FROM_INSERT",
   "CVSQL_OMIT_UPDATE_TABLE",
   "CVSQL_NO_INSERT_CURSOR",
   "CVSQL_EMULATE_INSERT_CURSOR",
@@ -203,7 +205,9 @@ enum cvsql_type
   CVSQL_NO_SELECT_WITHOUT_INTO,
   CVSQL_NO_PUT,
   CVSQL_FULL_INSERT,
-  CVSQL_INSERT_ALIAS,
+  CVSQL_INSERT_ALIAS_VALUE,
+  CVSQL_INSERT_ALIAS_COLUMN,
+  CVSQL_OMIT_SERIAL_COL_FROM_INSERT,
   CVSQL_OMIT_UPDATE_TABLE,
   CVSQL_NO_INSERT_CURSOR,
   CVSQL_EMULATE_INSERT_CURSOR,
@@ -591,7 +595,8 @@ return buff;
 
 
 
-char *A4GLSQLCV_insert_alias(char *t,char *c,char *v) {
+
+char *A4GLSQLCV_insert_alias_column(char *t,char *c,char *v,int dtype) {
 int b;
 char s[256];
 char sv[512];
@@ -600,8 +605,15 @@ snprintf(sv,512,"%s.%s.%s",t,c,v);
 sv[511]=0;
 A4GL_debug("Alias : '%s'\n",s);
 
+printf("Alias ? %s %s %s %x\n",t,c,v,dtype);
+
+if (A4GLSQLCV_check_requirement("OMIT_SERIAL_COL_FROM_INSERT") && dtype==DTYPE_SERIAL) {
+	return "";
+}
+
+
 for (b=0;b<conversion_rules_cnt;b++) {
-	if (conversion_rules[b].type==CVSQL_INSERT_ALIAS) {
+	if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_COLUMN) {
 		if (A4GL_strwscmp(sv,conversion_rules[b].data.from)==0) {
 			A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
 			return conversion_rules[b].data.to;
@@ -620,7 +632,7 @@ if (strchr(sv,'(')) {
 	*ptr2=0;
 	ptr2++;
 	for (b=0;b<conversion_rules_cnt;b++) {
-		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS) {
+		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_COLUMN) {
 			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
 				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
 				sprintf(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
@@ -632,7 +644,7 @@ if (strchr(sv,'(')) {
 
 
 for (b=0;b<conversion_rules_cnt;b++) {
-	if (conversion_rules[b].type==CVSQL_INSERT_ALIAS) {
+	if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_COLUMN) {
 		if (A4GL_strwscmp(s,conversion_rules[b].data.from)==0) {
 			A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
 			return conversion_rules[b].data.to;
@@ -651,7 +663,87 @@ if (strchr(s,'(')) {
 	*ptr2=0;
 	ptr2++;
 	for (b=0;b<conversion_rules_cnt;b++) {
-		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS) {
+		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_COLUMN) {
+			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
+				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
+				sprintf(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
+				return buff;
+			}
+		}
+	}
+}
+
+
+A4GL_debug("No substitute for '%s'\n",s);
+return c;
+}
+
+
+
+
+char *A4GLSQLCV_insert_alias_value(char *t,char *c,char *v,int dtype) {
+int b;
+char s[256];
+char sv[512];
+sprintf(s,"%s.%s",t,c);
+snprintf(sv,512,"%s.%s.%s",t,c,v);
+sv[511]=0;
+A4GL_debug("Alias : '%s'\n",s);
+
+printf("Alias ? %s %s %s %x\n",t,c,v,dtype);
+
+for (b=0;b<conversion_rules_cnt;b++) {
+	if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_VALUE) {
+		if (A4GL_strwscmp(sv,conversion_rules[b].data.from)==0) {
+			A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
+			return conversion_rules[b].data.to;
+		}
+	}
+}
+
+
+if (strchr(sv,'(')) {
+	static char buff[256];
+	static char *ptr=0;
+	char *ptr2;
+	if (ptr) free(ptr);
+	ptr=strdup(sv);
+	ptr2=strchr(ptr,'(');
+	*ptr2=0;
+	ptr2++;
+	for (b=0;b<conversion_rules_cnt;b++) {
+		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_VALUE) {
+			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
+				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
+				sprintf(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
+				return buff;
+			}
+		}
+	}
+}
+
+
+for (b=0;b<conversion_rules_cnt;b++) {
+	if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_VALUE) {
+		if (A4GL_strwscmp(s,conversion_rules[b].data.from)==0) {
+			A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
+			return conversion_rules[b].data.to;
+		}
+	}
+}
+
+
+if (strchr(s,'(')) {
+	static char buff[256];
+	static char *ptr=0;
+	char *ptr2;
+	if (ptr) free(ptr);
+	ptr=strdup(s);
+	ptr2=strchr(ptr,'(');
+	*ptr2=0;
+	ptr2++;
+	for (b=0;b<conversion_rules_cnt;b++) {
+		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_VALUE) {
 			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
 				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
 				sprintf(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
@@ -1015,7 +1107,9 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "NO_SELECT_WITHOUT_INTO", len) == 0) return CVSQL_NO_SELECT_WITHOUT_INTO;
   if (strncasecmp (p, "NO_PUT", len) == 0) return CVSQL_NO_PUT;
   if (strncasecmp (p, "FULL_INSERT", len) == 0) return CVSQL_FULL_INSERT;
-  if (strncasecmp (p, "INSERT_ALIAS", len) == 0) return CVSQL_INSERT_ALIAS;
+  if (strncasecmp (p, "INSERT_ALIAS_VALUE", len) == 0) return CVSQL_INSERT_ALIAS_VALUE;
+  if (strncasecmp (p, "INSERT_ALIAS_COLUMN", len) == 0) return CVSQL_INSERT_ALIAS_COLUMN;
+  if (strncasecmp (p, "OMIT_SERIAL_COL_FROM_INSERT", len) == 0) return CVSQL_OMIT_SERIAL_COL_FROM_INSERT;
   if (strncasecmp (p, "OMIT_UPDATE_TABLE", len) == 0) return CVSQL_OMIT_UPDATE_TABLE;
   if (strncasecmp (p, "NO_INSERT_CURSOR", len) == 0) return CVSQL_NO_INSERT_CURSOR;
   if (strncasecmp (p, "EMULATE_INSERT_CURSOR", len) == 0) return CVSQL_EMULATE_INSERT_CURSOR;
@@ -1650,7 +1744,7 @@ sprintf(buff,"%s(%s)",f,param);
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE_SQLFUNC) {
 		if (strcasecmp(f,conversion_rules[b].data.from)==0) {
-			printf("Here...\n");
+			//printf("Here...\n");
 			sprintf(buff,conversion_rules[b].data.to,param);
 			break;
 		}
@@ -1843,3 +1937,4 @@ for (a=0;a<strlen(s);a++) {
 ptr[b]=0;
 return ptr;
 }
+

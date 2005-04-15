@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.41 2005-03-31 13:36:27 afalout Exp $
+# $Id: makefile,v 1.42 2005-04-15 06:59:28 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -276,6 +276,9 @@ width_wide.o: width.c
 	${CC} -DWIDEC $^ ${CFLAGS} -c -o $@
 
 lowlevel_tui.o: lowlevel/lowlevel_tui.c
+	${CC} ${CFLAGS} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
+
+lowlevel_thin.o: lowlevel/lowlevel_thin.c
 	${CC} ${CFLAGS} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
 
 lowlevel_tui_noform.o: lowlevel/lowlevel_tui.c

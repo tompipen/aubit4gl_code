@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.210 2005-03-31 16:42:16 mikeaubury Exp $
+# $Id: mod.c,v 1.211 2005-04-15 06:58:36 mikeaubury Exp $
 #
 */
 
@@ -52,6 +52,8 @@
 #include "variables.h"
 #include <ctype.h>
 #include <errno.h>
+#define GEN_STACK_HERE
+#include "gen_stack.h"
 #define FEATURE_USED            'X'
 
 /*
@@ -72,6 +74,7 @@
 #define UPDVAL2 4
 #define INSCOL 5
 #define INSVAL 6
+#define TCOL 7
 
 #define a0_width         (float) 2380.0
 #define a0_height        (float) 3368.0
@@ -140,7 +143,7 @@ long fpos;
 */
 
 void dump_updvals (void);
-void dump_insvals (void);
+//void dump_insvals (void);
 char *pop_gen (int a);
 /*int gen_cnt (int a);*/
 void copy_gen (int a, int b);
@@ -155,7 +158,7 @@ static char pklist[2048] = "";
 static char upd_using_notpk[5000] = "";
 static int upd_using_notpk_cnt = 0;
 extern char current_upd_table[64];
-extern char current_ins_table[64];
+extern char current_ins_table[256];
 /*static int    const_cnt = 0;*/
 
 int rep_type = 0;	      /** The report type */
@@ -209,8 +212,11 @@ int nblock_no = 1;
 /*#define GEN_STACK_SIZE 5000*/
 #define GEN_STACK_SIZE 10000
 
-char gen_stack[GEN_STACKS][GEN_STACK_SIZE][800];
-int gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+//char gen_stack[GEN_STACKS][GEN_STACK_SIZE][800];
+//int gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+
+
 struct s_constr_buff constr_buff[256];
 int constr_cnt = 0;
 
@@ -4280,20 +4286,32 @@ dump_updvals();
 }
 
 
+
+
+#ifdef MOVED
 char *
 fix_insert_expr (int mode)
 {
   static char big_buff[20000];
   int a;
+  int b;
   int rval;
   int isize = 0;
   int idtype = 0;
+  int found;
   char colname[256] = "";
+  static int *idtypes=0;
+  static int *idtypes_t=0;
   /*char csize[20]; */
   /*char cdtype[20]; */
   char buff[1000];
   char *ccol;
+  int copy_ids=0;
   strcpy (big_buff, "");
+
+  if (idtypes) { free(idtypes); idtypes=0; }
+  if (idtypes_t) { free(idtypes_t); idtypes_t=0; }
+
 
 
   if (mode == 1)
@@ -4301,44 +4319,118 @@ fix_insert_expr (int mode)
       if (db_used == 0)
 	{
 	  sprintf (buff,
-		   "You cannot use insert int this table without specifying a database");
+		   "You cannot use insert into this table without specifying a database");
 	  a4gl_yyerror (buff);
 	  return 0;
 	}
 
-      /* It will only be a '*' anyway.... */
-      gen_stack_cnt[INSCOL] = 0;
-      strcpy (colname, "");
-      rval =
-	A4GLSQL_get_columns (current_ins_table, colname, &idtype, &isize);
-      if (rval == 0)
-	{
-	  a4gl_yyerror ("Table is not in the database");
-	  return 0;
-	}
+	printf("gen_stack_cnt[INSCOL]=%d\n",gen_stack_cnt[INSCOL]);
+
+	if (gen_stack_cnt[INSCOL]==1 && strcmp(gen_stack[INSCOL][0],"*")==0) {
+      		/* It will only be a '*' anyway.... */
+      		gen_stack_cnt[INSCOL] = 0;
+      		strcpy (colname, "");
+      		rval = A4GLSQL_get_columns (current_ins_table, colname, &idtype, &isize);
+      		if (rval == 0) {
+	  		a4gl_yyerror ("Table is not in the database");
+	  		return 0;
+		}
 
 
-      while (1)
-	{
-	  colname[0] = 0;
-	  rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
-	  strcpy (colname, ccol);
-	  if (rval == 0)
-	    break;
-	  trim_spaces (colname);
-	  push_gen (INSCOL, colname);
+      		while (1) {
+	  		colname[0] = 0;
+	  		rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+	  		strcpy (colname, ccol);
+	  		if (rval == 0)
+	    		break;
+	  		trim_spaces (colname);
+	  		push_gen (INSCOL, colname);
+			idtypes=realloc(idtypes,sizeof(int)*gen_stack_cnt[INSCOL]);
+			idtypes[gen_stack_cnt[INSCOL]-1]=idtype;
+		}
+      		A4GLSQL_end_get_columns ();
+
+    	} else {
+      		gen_stack_cnt[TCOL] = 0;
+      		strcpy (colname, "");
+      		rval = A4GLSQL_get_columns (current_ins_table, colname, &idtype, &isize);
+      		if (rval == 0) {
+	  		a4gl_yyerror ("Table is not in the database");
+	  		return 0;
+		}
+
+
+      		while (1) {
+	  		colname[0] = 0;
+	  		rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+	  		strcpy (colname, ccol);
+	  		if (rval == 0)
+	    		break;
+	  		trim_spaces (colname);
+	  		push_gen (TCOL, colname);
+			idtypes_t=realloc(idtypes,sizeof(int)*gen_stack_cnt[INSCOL]);
+			idtypes_t[gen_stack_cnt[TCOL]-1]=idtype;
+		}
+      		A4GLSQL_end_get_columns ();
 	}
-      A4GLSQL_end_get_columns ();
-    }
+
+  }
+
+
 
   if (gen_stack_cnt[INSCOL] != gen_stack_cnt[INSVAL])
     {
       dump_insvals ();
       a4gl_yyerror
-	("Number of columns in update not the same as number of values");
+	("Number of columns in insert not the same as number of values");
     }
-
   strcpy (big_buff, "(");
+
+
+  // Lets do a quick check that our table names exist
+
+  if (gen_stack_cnt[TCOL]) {
+	printf("INSCOL=%d TCOL=%d\n",gen_stack_cnt[INSCOL],gen_stack_cnt[TCOL]);
+	for (b=0;b<gen_stack_cnt[INSCOL];b++) {
+		found=0;
+  		for (a=0;a<gen_stack_cnt[TCOL];a++) {
+			if (strcasecmp(gen_stack[INSCOL][b],gen_stack[TCOL][a])==0) {
+				found++;
+				break;
+			}
+		}
+	
+			if (!found) {
+			printf("Warning : Table %s Column %s not found for insert\n",current_ins_table,gen_stack[INSCOL][b]);
+		}
+  	}
+
+
+	copy_ids=0;
+	if (idtypes_t && idtypes==0) {
+		copy_ids=1;
+		idtypes=realloc(idtypes,sizeof(int)*gen_stack_cnt[INSCOL]);
+		idtypes[gen_stack_cnt[INSCOL]-1]=idtype;
+	}
+
+  	// As we're doing a full insert - lets add any missing columns along with 
+  	// their value (which is a null)
+  	for (a=0;a<gen_stack_cnt[TCOL];a++) {
+		found=0;
+		for (b=0;b<gen_stack_cnt[INSCOL];b++) {
+			if (strcmp(gen_stack[INSCOL][b],gen_stack[TCOL][a])==0) {
+				found++;
+				break;
+			}
+		}
+	
+		if (!found) {
+	  			push_gen (INSCOL, gen_stack[TCOL][a]);
+	  			push_gen (INSVAL, "NULL");
+		}
+  	}
+  }
+
 
   for (a = 0; a < gen_stack_cnt[INSCOL]; a++)
     {
@@ -4357,17 +4449,19 @@ fix_insert_expr (int mode)
     {
       if (a)
 	strcat (big_buff, ",");
-      sprintf (buff, "%s",
-	       A4GLSQLCV_insert_alias (current_ins_table,
-				       gen_stack[INSCOL][a],
-				       gen_stack[INSVAL][a]));
-      //sprintf (buff, "%s", A4GLSQLCV_insert_alias(current_ins_table, gen_stack[INSCOL][a],0));
+
+      sprintf (buff, "%s", A4GLSQLCV_insert_alias (current_ins_table, gen_stack[INSCOL][a], gen_stack[INSVAL][a],0));
       strcat (big_buff, buff);
     }
   strcat (big_buff, ")");
 
   return big_buff;
 }
+
+#endif
+
+
+
 
 char *
 make_sql_string_and_free (char *first, ...)
@@ -4481,6 +4575,7 @@ dump_updvals ()
 }
 
 
+#ifdef MOVED
 void
 dump_insvals ()
 {
@@ -4495,6 +4590,7 @@ dump_insvals ()
       PRINTF ("INSVAL[%d] : %s\n", a,gen_stack[INSVAL][a]);
     }
 }
+#endif
 
 
 
@@ -4987,4 +5083,13 @@ void emulate_insert(char *s) {
 	A4GL_cursor_defined(buff,'I');
 }
 
+
+void add_serial_column(char *t,char *c) {
+	// Doesn't do anything just yet....
+}
+
+
+void do_yyerror(char *s)  {
+	a4gl_yyerror(s);
+}
 /* ================================= EOF ============================= */

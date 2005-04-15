@@ -12,7 +12,7 @@ rollback_statement:
 
 insert_statement_ss:
 	INSERT_INTO { insql=1;start_bind('i',0);} 
-	table_name  { strcpy(current_ins_table,$<str>3);}
+	table_name  { strcpy(current_ins_table,$<str>3);pop_all_gen(INSCOL,"!"); pop_all_gen(INSVAL,"!");}
 	op_insert_column_list 
 	ins_2_ss {
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1), kw_space,strdup($<str>3),kw_space,strdup($<str>5),kw_space,$<sql_string>6,0); 
