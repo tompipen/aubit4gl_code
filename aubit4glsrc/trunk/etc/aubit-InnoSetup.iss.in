@@ -1,7 +1,7 @@
 ; +----------------------------------------------------------------------+
 ; | Aubit 4gl Language Compiler Version $.0                              |
 ; +----------------------------------------------------------------------+
-; | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+; | Copyright (c) 2000-5 Aubit Development Team (See Credits file)       |
 ; +----------------------------------------------------------------------+
 ; | This program is free software; you can redistribute it and/or modify |
 ; | it under the terms of one of the following licenses:                 |
@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.21 2004-12-25 07:42:32 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.22 2005-04-17 01:05:59 afalout Exp $
 ;
 
 
@@ -31,19 +31,20 @@
 ; * @file
 ; *
 ; * Script for creating "Inno Setup" Windows Wizzard install program for Aubit 4gl.
-; * To compile it, you will need "My Inno Setup Extensions" with support for Pascal scripting.
+; * To compile it, you will need "My Inno Setup Extensions" with support for 
+; * Pascal scripting.
 ; * See http://www.wintax.nl/isx/ and http://www.jrsoftware.org/isinfo.php
 ; *
 ; * @todo Resolve environment update on W2K
-; * @todo Verify if user has admin privilege before writing to HKLM (added noerror - enough?)
-; * @todo Make SQLite default if installed
+; * @todo Verify if user has admin privilege before writing to HKLM (added 
+; *       noerror - enough?)
 ; * @todo Add Manual
-; * @todo Verify that there is no non-MinGW gcc in path before MinGW one, hiding it (or use mingw-gcc.exe in 4glc.exe instead of gcc.exe).
-; * @todo Update readme
+; * @todo Verify that there is no non-MinGW gcc in path before MinGW one, hiding it 
+; *       (or use mingw-gcc.exe in 4glc.exe instead of gcc.exe).
+; * @todo Update readme, convert it to DOS format or HTML
 ; * @todo shortcut to hello.exe via run.exe not working any more?
-; * @todo Dont require MinGW is installing only run-time
+; * @todo Dont require MinGW if installing only run-time
 ; * @todo Find out why installer takes forever to create shortcuts in start menu
-; * @todo Convert readme to DOS format or HTML
 ; * @todo Check if SQLite ODBC drivers are installed first, before offering to install them
 ; *
 ; * Maybe-todo:
@@ -56,11 +57,8 @@
 
 ;usefull:
 ;function IsAdminLoggedOn: Boolean;
-;function IsAdminLoggedOn: Boolean;
-
 ;procedure StringChange(var S: String; const FromStr, ToStr: String);
 ;Description: Change all occurances in S of FromStr to ToStr.
-
 
 ;============================================================================================
 ;                                   GENERAL SETUP SETTINGS
@@ -75,8 +73,6 @@ AppSupportURL=http://@AUBIT_WEBSITE@
 AppUpdatesURL=http://@AUBIT_WEBSITE@
 AppVersion=@AUBIT_VERSION@.@AUBIT_BUILD@
 AppCopyright=Copyright (C) 2003 Aubit development team
-
-;DefaultDirName={sd}\@SHORTNAME@
 DefaultDirName={pf}\@SHORTNAME@
 DefaultGroupName=@FULLNAME@
 AllowNoIcons=true
@@ -198,27 +194,35 @@ Name: "{userdesktop}\Aubit"; Filename: "http://www.aubit4gl.sf.net"; Tasks: desk
 ;=============================================================================================
 
 [Registry]
+; Note: we will set defaults to plugins we know we will alway have:
+; * For SQL, use SQL_sqlite3S (statically linked SQLite). We could also use 
+;   odbc32, but that will require that user a) installs some database and  
+;   b) create an DSN
+; * For UI, use UI_HL_TUINs (statically linked PDcurses)
+; This way, Aubit will be usable immediately after it is installed
 ;=========================
 ;For current user:
 Root: HKCU; Subkey: Software\Aubit project; Flags: uninsdeletekeyifempty
 Root: HKCU; Subkey: Software\Aubit project\Aubit 4GL compiler; Flags: uninsdeletekey
 Root: HKCU; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: AUBITDIR; ValueData: {app}
-Root: HKCU; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: A4GL_UI; ValueData: GTK
+Root: HKCU; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: A4GL_UI; ValueData: UI_HL_TUINs
 Root: HKCU; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: Version; ValueData: @AUBIT_VERSION@.@AUBIT_BUILD@; Flags: uninsdeletekey
-Root: HKCU; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: A4GL_SQLTYPE; ValueData: sqlite; Components: SQLITE; Flags: uninsdeletekey
+Root: HKCU; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: A4GL_SQLTYPE; ValueData: SQL_sqlite3S; Flags: uninsdeletekey
+;Components: SQLITE;
 
 ;=========================
-;All again for HKLM
+;All again for HKLM (all users)
 Root: HKLM; Subkey: Software\Aubit project; Flags: uninsdeletekeyifempty noerror
 Root: HKLM; Subkey: Software\Aubit project\Aubit 4GL compiler; Flags: uninsdeletekey noerror
 Root: HKLM; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: AUBITDIR; ValueData: {app}; Flags: noerror
-Root: HKLM; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: A4GL_UI; ValueData: GTK; Flags: noerror
+Root: HKLM; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: A4GL_UI; ValueData: UI_HL_TUINs; Flags: noerror
 Root: HKLM; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: Version; ValueData: @AUBIT_VERSION@.@AUBIT_BUILD@; Flags: uninsdeletekey noerror
-Root: HKLM; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: A4GL_SQLTYPE; ValueData: sqlite; Components: SQLITE; Flags: uninsdeletekey noerror
+Root: HKLM; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string; ValueName: A4GL_SQLTYPE; ValueData: SQL_sqlite3S; Flags: uninsdeletekey noerror
+;Components: SQLITE;
 
 ;=========================
 ;Environment:
-;On Windows 95/98/Me, you'll need to modify AUTOEXEC.BAT to set environment variables.
+;On Windows 95/98/Me, youll need to modify AUTOEXEC.BAT to set environment variables.
 ;Inno Setup does not include any built-in feature for that, however you could write a
 ;small program to do that and execute it via the [Run] section.
 
@@ -278,7 +282,8 @@ Type: files; Name: {app}\tools\test\*.warn
 
 [Files]
 
-; download dll needed by example code showing how to call DLL functions at runtime from a [Code] section.
+; download dll needed by example code showing how to call DLL functions at 
+; runtime from a [Code] section.
 Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontcopy
 
 
@@ -436,7 +441,6 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISLIBFILE_48@
 @ISLIBFILE_49@
 @ISLIBFILE_50@
-
 ; ---- end of listISLIBFILE_ ----
 
 ;=========================
@@ -562,7 +566,6 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 ;=========================
 ; Shell files (useless without bash!):
 ;FIXME: create executables of amake and aubit, so we can use Amake without Bash:
-
 @ISSHFILE_1@
 @ISSHFILE_2@
 @ISSHFILE_3@
@@ -632,6 +635,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISCONVFILE_19@
 @ISCONVFILE_20@
 ; ---- end of list ----
+
 ; Import files:
 @ISIMPORTFILE_1@
 @ISIMPORTFILE_2@
@@ -654,6 +658,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISIMPORTFILE_19@
 @ISIMPORTFILE_20@
 ; ---- end of list ----
+
 ;Amake files:
 @ISAMAKEFILE_1@
 @ISAMAKEFILE_2@
@@ -676,6 +681,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISAMAKEFILE_19@
 @ISAMAKEFILE_20@
 ; ---- end of list ----
+
 ;=========================
 ;Config files (to etc/ )
 @ISCONFFILE_1@
@@ -712,6 +718,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISHELPFILE_9@
 @ISHELPFILE_10@
 ; ---- end of list ----
+
 ;Form files
 @ISFORMFILE_1@
 @ISFORMFILE_2@
@@ -790,6 +797,7 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @IS_THIRDPARTY_49@
 @IS_THIRDPARTY_50@
 ; ---- end of list ----
+
 ;=========================
 ;SQLite database
 Source: @IS_SOURCE@\tools\aubit.db; DestDir: {app}\tools; Components: SQLITE
@@ -818,9 +826,6 @@ Source: @SYSDRIVE@\tmp\sqliteodbc\README; DestDir: {app}\bin; Components: SQLITE
 Source: @SYSDRIVE@\tmp\sqliteodbc\sqliteodbc.dll; DestDir: {app}\bin; Components: SQLITEODBC
 Source: @SYSDRIVE@\tmp\sqliteodbc\sqliteodbcu.dll; DestDir: {app}\bin; Components: SQLITEODBC
 
-
-
-
 ;=========================
 ; Curses UI
 ; no longer needed - we have UI_TUIN using PDcurses now
@@ -833,8 +838,6 @@ Source: @SYSDRIVE@\tmp\sqliteodbc\sqliteodbcu.dll; DestDir: {app}\bin; Component
 ;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygncurses7.dll; DestDir: {app}\bin; Components: TUI
 ;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygform7.dll; DestDir: {app}\bin; Components: TUI
 ;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygpanel7.dll; DestDir: {app}\bin; Components: TUI
-
-
 
 ;=========================
 ; CygWin support
@@ -950,7 +953,7 @@ function GetGWDInstalled (): Boolean;
 begin
 {HKEY_CLASSES_ROOT\Applications\gte.exe\shell\open\comand - path with .exe}
 {HCU\Software\GWD\GWD Text Editor\... no path here }
-{ HKLM, 'Software\GWD, '3.0', GWDPath - only version number there, as key not value }
+{ HKLM, 'Software\GWD', '3.0', GWDPath - only version number there, as key not value }
     Exists := RegQueryStringValue (HKLM, 'Software\Microsoft\Windows\CurrentVersion\App Paths\gte.exe', 'Path', GWDPath);
    Result := Exists
 end;
@@ -1038,7 +1041,7 @@ begin
 end;
 
 {=========================}
-{ Get current user's PATH}
+{ Get current users PATH}
 function GetUserPath(S: String): String;
 var
   	CurrentPath: String;
@@ -1093,14 +1096,14 @@ begin
 		MsgBox ('Invoked EnvUpdate().',mbInformation,MB_OK);
 	end;
 
-
-
     Result := '';
 
 end;
 
 {=========================}
-{ Perform checks when initialising setup. This is invoked automatically }
+{ Perform checks when initialising setup. This is invoked automatically 
+	and serves as MAIN entry point to other functions
+}
 function InitializeSetup(): Boolean;
 var
 	CurrSYSpath: String;
@@ -1110,13 +1113,14 @@ var
 	PathExists: Integer;
 begin
 
-{
-function ParamStr(Index: Integer): String;
-Returns the Index-th command line parameter passed to Setup.
-
-function ParamCount: Integer;
-Returns the number of command line parameters passed to Setup.
-}
+	{Usefull:
+	function ParamStr(Index: Integer): String;
+	Returns the Index-th command line parameter passed to Setup.
+	
+	function ParamCount: Integer;
+	Returns the number of command line parameters passed to Setup.
+	}
+	
     Test :=ExpandConstant('{param:help|no}'); 	//Help option ( /help )
 	if Test = 'yes' then begin
 		MsgBox ('/DebugPaths=yes' #13 '''' +
@@ -1124,7 +1128,6 @@ Returns the number of command line parameters passed to Setup.
 				'/help', mbInformation, MB_OK);
         //FIXME: exit installation here...
 	end;
-
 
 	DebugPaths := False;
     Test :=ExpandConstant('{param:DebugPaths|no}');
@@ -1160,19 +1163,29 @@ Returns the number of command line parameters passed to Setup.
 //	end;
 
 
-  Result := GetMinGWInstalled ();
-  if not Result then begin
-    MsgBox ('Please install the MinGW before installing Aubit 4GL. You can obtain MinGW from http://www.mingw.org.', mbError, MB_OK);
-  end;
+//TODO: check for JEdit and recomend it; mention "4GL IDE HOW-TO" document
 
-  Result := GetGtkInstalled ();
-  if not Result then begin
-    MsgBox ('Please install the GTK+ 2.0 Runtime Environment before installing Aubit 4GL.  You can obtain GTK+ from http://www.dropline.net/gtk.', mbError, MB_OK);
-  end;
+  	Result := GetMinGWInstalled ();
+	if not Result then begin
+		MsgBox ('Please install the MinGW GCC compiler before installing Aubit 4GL. You can obtain MinGW from http://mingw.org/download.shtml.', mbError, MB_OK);
+	end;
 
-  if Abort = True then begin
-	  Result := False;
-  end;
+	Result := GetGtkInstalled ();
+	if not Result then begin
+		//Note: http://www.dropline.net/gtk is no longer maintained
+		MsgBox 
+		('It is recomended to install the GTK+ 2.x Runtime Environment before' #13 '''' +
+		'installing Aubit 4GL. You can obtain GTK+ from http://gladewin32.sourceforge.net.' #13 '''' +
+		'If you do not install it, only user interface available to your 4GL programs ' #13 '''' +
+		'will be TUI (character) console UI',
+			mbInformation, MB_OK);
+			//mbError, MB_OK);
+		//MsgBox ('Please install the GTK+ 2.0 Runtime Environment before installing Aubit 4GL.  You can obtain GTK+ from  http://gladewin32.sourceforge.net.', mbError, MB_OK);
+	end;
+
+	if Abort = True then begin
+		Result := False;
+	end;
 
 	if Result = True then begin
         //We got all we need, so prepare string to add to path
@@ -1181,9 +1194,12 @@ Returns the number of command line parameters passed to Setup.
 		CurrUSERpath := GetUserPath ('');
 
         {=================================================== MinGW path}
+		{Shoud no longer be needed - MinGW installer should set this
 		//app constant does not exixt at initialization time:
 		//CheckPath := AddBackslash(ExpandConstant('{app}')) + 'bin';
 		CheckPath := AddBackslash(GetMinGWPath('')) + 'bin';
+		
+		//--SYStem path:
 		PathExists := Pos(Uppercase(CheckPath), Uppercase(CurrSYSpath));
 		if PathExists = 0 then begin
 			if DebugPaths = True then begin
@@ -1197,6 +1213,7 @@ Returns the number of command line parameters passed to Setup.
             end;
         end;
 
+		//--User path:
 		PathExists := Pos(Uppercase(CheckPath), Uppercase(CurrUSERpath));
 		if PathExists = 0 then begin
 			if DebugPaths = True then begin
@@ -1208,8 +1225,11 @@ Returns the number of command line parameters passed to Setup.
 				MsgBox ('Found Path: ' #13#13 '''' + CheckPath + '''.',mbInformation,MB_OK);
             end;
         end;
-
+		}
+		
         {=================================================== GTK bin path}
+		{
+		Dont think we need this any more, gladewin32 installer will do this
 		CheckPath := AddBackslash(GetGtkPath('')) + 'bin';
 		PathExists := Pos(Uppercase(CheckPath), Uppercase(CurrSYSpath));
 		if PathExists = 0 then begin
@@ -1223,7 +1243,6 @@ Returns the number of command line parameters passed to Setup.
             end;
         end
 
-
 		PathExists := Pos(Uppercase(CheckPath), Uppercase(CurrUSERpath));
 		if PathExists = 0 then begin
 			if DebugPaths = True then begin
@@ -1235,8 +1254,10 @@ Returns the number of command line parameters passed to Setup.
 				MsgBox ('Found Path: ' #13#13 '''' + CheckPath + '''.',mbInformation,MB_OK);
             end;
         end;
-
+		}
         {=================================================== GTK lib path}
+		{
+		Dont think we need this any more, gladewin32 installer will do this
 		CheckPath := AddBackslash(GetGtkPath('')) + 'lib';
 		PathExists := Pos(Uppercase(CheckPath), Uppercase(CurrSYSpath));
 		if PathExists = 0 then begin
@@ -1261,7 +1282,7 @@ Returns the number of command line parameters passed to Setup.
 				MsgBox ('Found Path: ' #13#13 '''' + CheckPath + '''.',mbInformation,MB_OK);
             end;
         end;
-
+		}
         {=================================================== debug}
 		if DebugPaths = True then begin
 			if ToAddToUSERpath = '' then begin
@@ -1274,14 +1295,10 @@ Returns the number of command line parameters passed to Setup.
         	end else
 				MsgBox ('Will add to SYS path: ' #13#13 '''' + ToAddToSYSpath + '''.',mbInformation,MB_OK);
         end;
-
     end;
 
-
-  {if value of variable 'Result' is FALSE at this point, installation will abort}
+	{if value of variable 'Result' is FALSE at this point, installation will abort}
 end;
-
-
 
 {=========================}
 { Prepare all paths we need to add to SYS path }

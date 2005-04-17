@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.289 2005-03-27 13:13:01 afalout Exp $
+dnl # $Id: configure.in,v 1.290 2005-04-17 01:03:21 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -526,6 +526,10 @@ AC_SUBST(MPZ_IFLAGS)
 
 
 #other
+
+AC_SUBST(POP_INC_PATH)
+AC_SUBST(POP_LIB_PATH)
+
 AC_SUBST(INSTALL_MISSING_OPTIONAL)
 AC_SUBST(PERL)
 AC_SUBST(PERLBUILD)
@@ -9030,7 +9034,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.289 2005-03-27 13:13:01 afalout Exp $
+| $Id: configure.in,v 1.290 2005-04-17 01:03:21 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
