@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.290 2005-04-17 01:03:21 afalout Exp $
+dnl # $Id: configure.in,v 1.291 2005-04-20 13:02:52 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -202,11 +202,10 @@ X
 			export AUBITCONF_FLAG=running
 
             #Got to strip single quote arroung it added apprently by autoconf itself...
-			TMP_PARAMS=`echo $CONFIGURE_COMMAND |  tr -d "[' ]"`
-
+			TMP_PARAMS=`echo $CONFIGURE_COMMAND |  tr -d "[']"`
 			aubitconf $TMP_PARAMS
 			err_code=$?
-			#prevent errors when exiting first instance, that did not egt chance
+			#prevent errors when exiting first instance, that did not get the chance
 	        #to create this files, but expects them:
 			touch conftest.log
 			touch confdefs.h
@@ -4828,7 +4827,11 @@ AC_ARG_WITH(pgsqleng,
 		echo "withval=$withval"
 	fi
         #check PostgreSQL db engine version
-		AC_PATH_PROG(POSTMASTER, postmaster, no, $withval/bin:$PATH)
+		export PATH="$withval/bin:$PATH"
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "PATH=$PATH"
+		fi
+		AC_PATH_PROG(POSTMASTER, postmaster, no, $PATH)
         if test "$POSTMASTER" != "no"; then
 			AC_MSG_CHECKING(PG engine version)
 			POSTMASTER_VER=`$POSTMASTER --version 2>&1 | head -1 | sed -e 's/postmaster (PostgreSQL) //'`
@@ -4905,6 +4908,10 @@ AC_ARG_WITH(pgsqleng,
 ],[
   AC_MSG_RESULT(--with-pgsqleng not specified)
 ])
+
+if test "$enable_stop_pgsqleng" = "yes" ; then
+	exit
+fi
 
 if test "$LIBS" != ""; then 
 	echo "WARNING: (2) LIBS contains $LIBS"
@@ -5074,6 +5081,10 @@ AC_ARG_WITH(pgsql,
   AC_MSG_RESULT(--with-pgsql not specified)
 ])
 
+if test "$enable_stop_pgsql" = "yes" ; then
+	exit
+fi
+
 ## ==================================================================
 ##                 Checks for PostgreSQL ESQL/C pre-compiler
 ## ==================================================================
@@ -5101,6 +5112,7 @@ if test "$withval" != "no"; then
 		fi
     fi
 
+	export PATH="$withval/bin:$PATH"
 	AC_PATH_PROG(PG_ESQLC, ecpg, no, $withval/bin:$PATH)
 
 	if test "$PG_ESQLC" != "no"; then
@@ -5334,7 +5346,13 @@ if test "$withval" != "no"; then
 			AC_CHECK_HEADERS([ decimal.h ])
 			if test "$ac_cv_header_decimal_h" = "yes" ; then
 				HAVE_PG_ESQL_DECIMAL_H=yes
-				AC_MSG_WARN(decimal.h found - but not sure where)
+				if test -f "$withval/include/decimal.h" ; then
+					#Should be OK as long as -I$withval/include is in front
+					#of all others
+					AC_MSG_WARN(decimal.h found in $withval/include)
+				else
+					AC_MSG_WARN(decimal.h found - but not sure where)
+				fi
 			fi
 		fi
 		
@@ -7137,14 +7155,24 @@ fi
 			#withval is 'yes', assign default
 			withval=/usr
 		fi
-		
-		echo "withval=$withval"
+
+		old_LIBS="$LIBS"
+		old_LDFLAGS="$LDFLAGS"
+		old_CFLAGS="$CFLAGS"
+		old_CPPFLAGS="$CPPFLAGS"
+
+		CFLAGS="-I$withval/include $CFLAGS"
+		CPPFLAGS="-I$withval/include $CPPFLAGS"
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "withval=$withval"
+		fi
 		#cr** - how do this paths work anyway?
 		#AC_PATH_PROG(XCURSES_CONFIG, xcurses-config, no, "$withval/bin" $PATH )
 		export PATH="$withval/bin:$PATH"
 		AC_PATH_PROG(XCURSES_CONFIG, xcurses-config, no )
+		AC_CHECK_HEADERS([ xpanel.h ])
 		AC_MSG_CHECKING(Xcurses)
-		if test "$XCURSES_CONFIG" != "no"; then
+		if test "$XCURSES_CONFIG" != "no" -a "$ac_cv_header_xpanel_h" = "yes"; then
 			if test "$COMSPEC" = ""; then 
 				XCURSES_CFLAGS=`$XCURSES_CONFIG --cflags`
 				XCURSES_LIBS=`$XCURSES_CONFIG --libs`
@@ -7157,8 +7185,7 @@ fi
 		else
 			AC_MSG_RESULT(no)
 		fi
-
-		
+	
 		if test -d "$withval"; then
 			if test -f "$withval/curses.dll"; then 
 				PD_CURSES_LIB_PATH="-L$withval"
@@ -7176,13 +7203,13 @@ fi
 				#On windows everything is in one directory
 				PD_CURSES_INC_PATH="-I$withval"
 			fi
-			
+			AC_MSG_CHECKING(PDcurses)
 			if test "$HAVE_PDCURSES" = "1"; then 
 				AC_DEFINE(HAVE_PDCURSES,1,[ ])
 				AC_MSG_RESULT(yes)
 			else
 				AC_DEFINE(HAVE_PDCURSES,0,[ ])
-				AC_MSG_RESULT(no - missing curses library (.so or .dll))
+				AC_MSG_RESULT(no - missing curses library (curses.so or .dll))
 			fi
 			
 			#Note: pre-compiled binaries of PDcurses for Windows are currently
@@ -7241,6 +7268,13 @@ fi
 			fi
 			PD_CURSES_CYGDRIVE="/cygdrive/$PD_CURSES_DRIVE"
 		fi
+		
+		LIBS="$old_LIBS"
+		LDFLAGS="$old_LDFLAGS"
+		CFLAGS="$old_CFLAGS"
+		CPPFLAGS="$old_CPPFLAGS"
+		
+		
 	  else
 		AC_MSG_RESULT(disabled)
 	  fi
@@ -9034,7 +9068,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.290 2005-04-17 01:03:21 afalout Exp $
+| $Id: configure.in,v 1.291 2005-04-20 13:02:52 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.14 2005-04-17 01:06:00 afalout Exp $
+# $Id: Makefile,v 1.15 2005-04-20 13:06:21 afalout Exp $
 #
 
 ROOT    =../../..
@@ -49,6 +49,13 @@ ifdef COMSPEC
 	LINKLIBS=-lwsock32
 endif
 
+ifneq "${POP_LIB_PATH}" ""
+	POP_LIB_FLAGS=-L"${POP_LIB_PATH}"
+endif
+ifneq "${POP_INC_PATH}" ""
+	POP_INC_FLAGS=-I"${POP_INC_PATH}"
+endif
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -61,12 +68,13 @@ all : ${ALL}
 #Note: On Windows, only static spopc library is compiled (libspopc.a) when 
 #compiling source code, so libA4GL_pop will be statically linked with it
 ${LIBROOT}/libA4GL_pop${SO_EXT}: pop.o
-	${LD} -L"${POP_LIB_PATH}" ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl -lspopc ${LINKLIBS}
+	${LD} ${POP_LIB_FLAGS} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib \
+		-laubit4gl -lspopc ${LINKLIBS}
 	@echo "POP library sucesfully compiled."
 
 pop.o: pop.4gl
 	export A4GL_OBJ_EXT=.o; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; \
-		${4GLC} -I"${POP_INC_PATH}" -c ${VERBOSE_FLAG} $^
+		${4GLC} ${POP_INC_FLAGS} -c ${VERBOSE_FLAG} $^
 
 #Move this test in tools/test/build_test
 test.4ae: test.4gl test.per
