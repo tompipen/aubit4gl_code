@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_gtk.c,v 1.60 2005-04-20 13:06:22 afalout Exp $";
+		"$Id: lowlevel_gtk.c,v 1.61 2005-04-22 12:09:25 mikeaubury Exp $";
 #endif
 
 
@@ -2636,6 +2636,7 @@ void A4GL_LL_set_field_attr(void* field) {
       A4GL_field_opts_on (field, AUBIT_O_STATIC);
     }
 
+/*
   if (A4GL_has_bool_attribute (f, FA_B_NOENTRY))
     {
       A4GL_debug ("No entry");
@@ -2643,6 +2644,7 @@ void A4GL_LL_set_field_attr(void* field) {
       A4GL_field_opts_off (field, AUBIT_O_ACTIVE);
       A4GL_field_opts_off (field, AUBIT_O_EDIT);
     }
+*/
   if (A4GL_has_bool_attribute (f, FA_B_REQUIRED))
     {
       A4GL_debug ("ZZZZ - SET OPTS");

@@ -1,6 +1,6 @@
 #ifndef lint
 	static char const module_id[] =
-		"$Id: forms.c,v 1.20 2005-03-25 12:48:34 afalout Exp $";
+		"$Id: forms.c,v 1.21 2005-04-22 12:07:19 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -1258,8 +1258,8 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 	  return 0;
 	}
 
-      h = A4GL_LL_screen_height () - 1;
-      w = A4GL_LL_screen_width () - 1;
+      h = A4GL_LL_screen_height () ; //- 1;
+      w = A4GL_LL_screen_width () ; //- 1;
 
       A4GL_debug ("Creating win..");
       win = (void *) A4GL_LL_create_window (0, 0, 0, 0, 0);
@@ -1300,6 +1300,7 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
     {
       if (windows[a].name[0] == 0)
 	{
+		A4GL_debug("Adding window %s @ %d",name,a);
 	  strcpy (windows[a].name, name);
 	  A4GL_add_pointer (name, S_WINDOWSCODE, &windows[a]);
 	  windows[a].form = 0;
@@ -1312,6 +1313,7 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 	  windows[a].winattr.error_line = error_line;
 	  windows[a].winattr.border = border;
 	  windows[a].winattr.colour = attrib;
+		A4GL_debug("DIMS %d %d %d %d",x,y,w,h);
 	  windows[a].x = x;
 	  windows[a].y = y;
 	  windows[a].w = w;

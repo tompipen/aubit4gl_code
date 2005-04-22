@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: misc.c,v 1.25 2005-04-22 06:06:17 mikeaubury Exp $";
+		"$Id: misc.c,v 1.26 2005-04-22 12:07:19 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -548,6 +548,15 @@ UILIB_A4GL_push_constr (void *vs)
   int flg = 0;
   struct s_screenio *s;
   s = vs;
+
+  if (s->processed_onkey == A4GLKEY_INTERRUPT)
+    {
+      A4GL_push_char (s->vars[0].ptr);
+      return 0;
+    }
+
+
+
   if (s->nfields < 0)
     {
       A4GL_debug ("NO CONSTRUCT - No fields\n");
@@ -585,16 +594,7 @@ UILIB_A4GL_push_constr (void *vs)
 	  ptr =
 	    (char *) A4GL_construct (s->constr[a].tabname,
 				     s->constr[a].colname,
-				     A4GL_LL_field_buffer (f, 0),
-                                     (
-(fprop->datatype & 0xff) == DTYPE_CHAR || (fprop->datatype & 0xff) == DTYPE_DATE ||(fprop->datatype & 0xff) == DTYPE_VCHAR
-
-// Don't know if this is really needed - think it was a mistake - and I meant DTYPE_DATE but put == 8 (which is really money!)
-||(fprop->datatype & 0xff) == DTYPE_MONEY  
-
-)
-
-);
+				     A4GL_LL_field_buffer (f, 0), A4GL_UI_int_get_inc_quotes(fprop->datatype));
 
 
  	  A4GL_assertion(ptr==0,"Pointer returned from A4GL_construct is null");
@@ -736,7 +736,7 @@ UILIB_A4GL_set_fields (void *vsio)
       else
 	{
 	  prop = (struct struct_scr_field *) A4GL_LL_get_field_userptr (field_list[a]);
-	  if (A4GL_has_str_attribute (prop, FA_S_DEFAULT))
+	  if (A4GL_has_str_attribute (prop, FA_S_DEFAULT) && sio->mode != MODE_CONSTRUCT)
 	    {
 	      A4GL_debug ("99  set_init_value from form");
 	      A4GL_debug ("default from form to '%s'",

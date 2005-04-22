@@ -8,7 +8,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.43 2005-04-22 06:06:17 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.44 2005-04-22 12:07:19 mikeaubury Exp $";
 #endif
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -491,7 +491,7 @@ A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap)
 		  A4GL_debug ("Attemp to turn on %d %d %d",
 			      option->attributes, ACL_MN_HIDE,
 			      option->attributes & ACL_MN_HIDE);
-		  if (option->attributes & ACL_MN_HIDE)
+		  if ((option->attributes & ACL_MN_HIDE) && (option->optlength))
 		    {
 		      A4GL_debug ("Turn on");
 		      option->attributes = option->attributes - ACL_MN_HIDE;
@@ -1476,7 +1476,7 @@ A4GL_gen_field_list_from_slist_internal (void ***field_list, struct s_form_dets 
   char tabname[40];
   void *flist[1024];
   char *s;
-  int f;
+  int fmetric;
   struct struct_metrics *k;
   int attr_no;
   int srec_no;
@@ -1501,13 +1501,15 @@ A4GL_gen_field_list_from_slist_internal (void ***field_list, struct s_form_dets 
                 break;
         }
 
-      f = list->field_name_list[z1].fpos;
-      A4GL_debug (" got field number as %d ", f);
+      fmetric = list->field_name_list[z1].fpos;
+      A4GL_debug (" got field number as %d ", fmetric);
 
 
       ff = 0;
 
       /* get screen record/table name */
+      memset (tabname, 0, sizeof (tabname));
+      memset (colname, 0, sizeof (colname));
 
       A4GL_bname (s, tabname, colname);
       srec_no = A4GL_find_srec (formdets->fileform, tabname);
@@ -1557,8 +1559,8 @@ A4GL_gen_field_list_from_slist_internal (void ***field_list, struct s_form_dets 
 		    }
 		  metric_no =
 		    formdets->fileform->fields.fields_val[fno].metric.
-		    metric_val[f];
-		  A4GL_debug ("fno=%d f=%d mno=%d metric_no=%d\n", fno, f,
+		    metric_val[fmetric];
+		  A4GL_debug ("fno=%d f=%d mno=%d metric_no=%d\n", fno, fmetric,
 			      mno, metric_no);
 		  k = &formdets->fileform->metrics.metrics_val[metric_no];
 #ifdef DEBUG
@@ -1602,16 +1604,16 @@ A4GL_gen_field_list_from_slist_internal (void ***field_list, struct s_form_dets 
 		    field_no;
 		  A4GL_debug ("Matched to field no %d - len=%d f=%d", fno,
 			      formdets->fileform->fields.fields_val[fno].
-			      metric.metric_len, f);
+			      metric.metric_len, fmetric);
 		  if (formdets->fileform->fields.fields_val[fno].metric.
-		      metric_len <= f || f < 0)
+		      metric_len <= fmetric || fmetric < 0)
 		    {
 		      A4GL_exitwith ("Field subscript out of bounds");
 		      return -1;
 		    }
 		  metric_no =
 		    formdets->fileform->fields.fields_val[fno].metric.
-		    metric_val[f];
+		    metric_val[fmetric];
 		  k = &formdets->fileform->metrics.metrics_val[metric_no];
 #ifdef DEBUG
 		  {
@@ -1628,6 +1630,11 @@ A4GL_gen_field_list_from_slist_internal (void ***field_list, struct s_form_dets 
 		  A4GL_debug ("Setting flist[%d] to %p", cnt, k);
 		  flist[cnt++] = (void *) k->field;
 		  A4GL_debug ("aa");
+                        if (fmetric==0&&strlen(tabname)==0) {
+                                A4GL_debug("Are you Test 278...?");
+                                z=formdets->fileform->attributes.attributes_len+1;
+                        }
+
 		  ff = 1;
 		}
 	      A4GL_debug ("aa");
@@ -2539,9 +2546,7 @@ A4GL_do_after_field (void *f, struct s_screenio *sio)
 	      ptr =
 		(char *) A4GL_construct (sio->constr[a].tabname,
 					 sio->constr[a].colname,
-					 A4GL_LL_field_buffer (f, 0),
-					 (fprop->datatype == 0)
-					 || (fprop->datatype == 8));
+					 A4GL_LL_field_buffer (f, 0), A4GL_UI_int_get_inc_quotes(fprop->datatype));
 	      A4GL_debug ("ptr=%s", ptr);
 	      if (ptr == 0) {
 		A4GL_error_nobox (acl_getenv ("FIELD_CONSTR_EXPR"), 0);
@@ -2788,8 +2793,10 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
     {
         int w;
         int h;
-        w=A4GL_get_curr_width();
-        h=A4GL_get_curr_height();
+        w=UILIB_A4GL_get_curr_width();
+        h=UILIB_A4GL_get_curr_height();
+	A4GL_debug("got w=%d want %d",w,x);
+	A4GL_debug("got y=%d want %d",h,y);
 
         if (y<1|| y>h) {
                 A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal 1");
@@ -2810,6 +2817,7 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 
 	A4GL_debug("CURR=%d",UILIB_A4GL_get_curr_height());
 
+/*
 	if (UILIB_A4GL_iscurrborder ()) {
         	if (y<1|| y>UILIB_A4GL_get_curr_height()) {
                 	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal 3");
@@ -2832,7 +2840,7 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 
 
 	}
-
+*/
       //if (strlen(s)==0&&clr_line) return;
 
       A4GL_wprintw(wot,a,x,y,"%s",s);
@@ -2884,4 +2892,11 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
  }
 
 
+
+
+int A4GL_UI_int_get_inc_quotes(int a) {
+     if ((a & 0xff) == DTYPE_CHAR || (a &0xff) == DTYPE_VCHAR) return 1;
+        if ((a & 0xff) == DTYPE_DATE) return 2;
+        return 0;
+}
 

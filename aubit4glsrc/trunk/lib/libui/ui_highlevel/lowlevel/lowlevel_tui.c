@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.52 2005-03-31 16:45:17 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.53 2005-04-22 12:09:25 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,7 +85,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_tui.c,v 1.52 2005-03-31 16:45:17 mikeaubury Exp $";
+		"$Id: lowlevel_tui.c,v 1.53 2005-04-22 12:09:25 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 void *A4GL_get_currwin (void);
@@ -932,11 +932,15 @@ A4GL_LL_screen_width (void)
   if (scr_width == -1)
     {
 
+	A4GL_debug("Getting values");
       getmaxyx (stdscr, scr_height, scr_width);
+	A4GL_debug("%d %d\n",scr_height,scr_width);
       if (atoi (acl_getenv ("COLUMNS")))
 	{
+	A4GL_debug("Got COLUMNS ");
 	  scr_width = atoi (acl_getenv ("COLUMNS"));
 	  scr_height = atoi (acl_getenv ("LINES"));
+	A4GL_debug("Got COLUMNS (%s %s)",acl_getenv ("COLUMNS"),acl_getenv ("LINES"));
 	}
     }
   A4GL_debug ("screen_width returning %d", scr_width);
@@ -954,7 +958,10 @@ A4GL_LL_screen_height (void)
 {
   if (scr_width == -1)
     {
+	A4GL_debug("Getting values");
       getmaxyx (stdscr, scr_height, scr_width);
+	A4GL_debug("%d %d\n",scr_height,scr_width);
+	
       if (atoi (acl_getenv ("COLUMNS")))
 	{
 	  scr_width = atoi (acl_getenv ("COLUMNS"));
@@ -962,6 +969,7 @@ A4GL_LL_screen_height (void)
 	}
 
     }
+
   A4GL_debug ("screen_height returning %d", scr_height);
   return scr_height;
 }
@@ -1437,7 +1445,7 @@ A4GL_LL_set_field_attr (void *field)
       A4GL_form_set_max_field (field, A4GL_get_field_width(field));
       //field_opts_on (field, O_STATIC);
     }
-
+/*
   if (A4GL_has_bool_attribute (f, FA_B_NOENTRY))
     {
       A4GL_debug ("No entry");
@@ -1445,6 +1453,8 @@ A4GL_LL_set_field_attr (void *field)
       A4GL_form_field_opts_off (field, O_ACTIVE);
       A4GL_form_field_opts_off (field, O_EDIT);
     }
+*/
+
   if (A4GL_has_bool_attribute (f, FA_B_REQUIRED))
     {
       A4GL_debug ("ZZZZ - SET OPTS");

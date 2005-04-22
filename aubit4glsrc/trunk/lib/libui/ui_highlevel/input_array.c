@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.28 2005-03-31 13:36:27 afalout Exp $
+# $Id: input_array.c,v 1.29 2005-04-22 12:07:19 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: input_array.c,v 1.28 2005-03-31 13:36:27 afalout Exp $";
+		"$Id: input_array.c,v 1.29 2005-04-22 12:07:19 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -878,10 +878,17 @@ A4GL_debug("process_key_press inp_arr %d",a);
 
 
     case A4GLKEY_INS:
-      //A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT, arr->currentfield, 0, 0);
 
-      A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT,
-				 arr->currentfield, 0, 0);
+
+      A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT, arr->currentfield, 0, 0);
+        {
+          void *f;
+          f = arr->field_list[arr->scr_line - 1][arr->curr_attrib];
+              A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, f, 0, 0);
+              A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, f, 0, 0);
+        }
+
+
       break;
 
     case A4GLKEY_DEL:
@@ -2577,7 +2584,7 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
 	(struct struct_scr_field
 	 *) (A4GL_LL_get_field_userptr (arr->field_list[scr_line - 1][a]));
 
-      attr = A4GL_determine_attribute (FGL_CMD_INPUT, dattr, fprop, 0);
+      attr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, dattr, fprop, 0);
       da = attr;
 
       if (arr_line == arr->arr_line)
