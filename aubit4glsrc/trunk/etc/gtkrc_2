@@ -202,12 +202,12 @@ style "AppWindow" {
 
 
 
-  	font_name = "monospace 10"
+  	font_name = "monospace 8"
 }
 
 
 style "FormLabel" {
-  	font_name = "monospace 10"
+  	font_name = "monospace 8"
         bg[NORMAL]       = "#000000"
         bg[ACTIVE]       = "#ffffff"
         fg[NORMAL]       = "#000000"
@@ -218,7 +218,7 @@ style "FormLabel" {
 style "MenuButtons" {
 	base[NORMAL]="#000000"
 	#base[NORMAL]     = "#ffffff"
-  	font_name = "monospace 10"
+  	font_name = "monospace 8"
 }
 
 
@@ -263,6 +263,7 @@ widget "*.Error" style "Error"
 widget "*.FormLabel" style "FormLabel"
 widget "*.MenuButtons" style "MenuButtons"
 widget "*.AppWindow" style "AppWindow"
+widget "GtkButton.*" style "AppWindow"
 widget "*.0" style "0"
 widget "*.1" style "1"
 widget "*.2" style "2"

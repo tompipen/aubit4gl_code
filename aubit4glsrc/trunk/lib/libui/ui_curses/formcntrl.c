@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.77 2005-03-31 16:45:06 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.78 2005-04-22 19:37:39 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.77 2005-03-31 16:45:06 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.78 2005-04-22 19:37:39 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -271,8 +271,7 @@ A4GL_debug("field=%d %p\n",attrib,sio->field_list);
   next_field = sio->field_list[attrib];
   f = (struct struct_scr_field *) (field_userptr (next_field));
 
-  if ( A4GL_field_is_noentry((sio->mode == MODE_CONSTRUCT),f) || (f->datatype == DTYPE_SERIAL && sio->mode != MODE_CONSTRUCT))
-    {
+  if ( A4GL_field_is_noentry((sio->mode == MODE_CONSTRUCT),f) || (f->datatype == DTYPE_SERIAL && sio->mode != MODE_CONSTRUCT)) {
       int dir = 0;
       A4GL_debug("Looking across ");
       while (1)
@@ -592,9 +591,6 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 		  if (current_field (curses_form) != sio->currentfield)
 		    {
-
-
-
 	  		if (std_dbscr.input_wrapmode == 0 && A4GL_curr_metric_is_used_last_s_screenio (sio, sio->currentfield)) {
 	      			A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_OK, 0, 0, 0);
 			} else {
@@ -1670,11 +1666,14 @@ void UILIB_A4GL_reset_state_for(void *sio, char *siotype) {
 
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f) {
-	A4GL_debug("A4GL_field_is_noentry");
+	A4GL_debug("A4GL_field_is_noentry %d %p",doing_construct,f);
 
 	if (A4GL_has_bool_attribute (f, FA_B_NOENTRY) ) {
-		if (doing_construct) { return 0;}
-		A4GL_debug("noentry");
+		if (doing_construct) { 
+			A4GL_debug("A4GL_field_is_noentry returns 0");
+			return 0;
+		}
+		A4GL_debug("A4GL_field_is_noentry returns 1");
 		return 1;
 	}
 
@@ -1682,13 +1681,15 @@ int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f) {
 // It would appear that the NOUPDATE allows entry to a field on a 'construct' but not
 // an input...
 	if (doing_construct) {
-		A4GL_debug("OK - its construct");
+		A4GL_debug("A4GL_field_is_noentry returns 0");
 		return 0;
 	}
 	if (A4GL_has_bool_attribute (f, FA_B_NOUPDATE)) {
 		A4GL_debug("No UPDATE");
+		A4GL_debug("A4GL_field_is_noentry returns 1");
 		return 1;
 	}
 	A4GL_debug("OK");
+	A4GL_debug("A4GL_field_is_noentry returns 0");
 	return 0;
 }
