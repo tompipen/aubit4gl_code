@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.14 2005-03-31 13:35:46 afalout Exp $
+# $Id: errfile.c,v 1.15 2005-04-22 06:06:17 mikeaubury Exp $
 #
 */
 
@@ -96,7 +96,7 @@ A4GL_write_errfile (FILE * f, char *fname, long as, int lineno)
   int a;
   long s2, e;
   long s;
-  int errorno;
+  //int errorno;
 
   fout = A4GL_mja_fopen (fname, "w");
   if (fout == 0)
@@ -104,7 +104,10 @@ A4GL_write_errfile (FILE * f, char *fname, long as, int lineno)
       printf ("Unable to open %s\n", fname);
       exit (2);
     }
-  errorno = ferror (f);
+  //errorno = ferror (f);
+
+
+
   /* find the nearest NL */
   A4GL_find_nl (f, as, &s2, &e);
   if ((as - s2) <= 0)
@@ -227,6 +230,40 @@ FILE *
 A4GL_mja_fopen (char *name, char *mode)
 {
   return fopen (name, mode);
+}
+
+
+
+void A4GL_write_errfile_many_errors(char *errfile,FILE *fin,struct s_module_error *e,int cnt) {
+FILE *fout;
+int a;
+char lnbuff[20000];
+int ln;
+int maxed=0;
+  fout = A4GL_mja_fopen (errfile, "w");
+  if (fout == 0)
+    {
+      printf ("Unable to open %s\n", errfile);
+      exit (2);
+    }
+    rewind(fin);
+    ln=0;
+    if (cnt>21)  {cnt=21; maxed=1;}
+
+    while (fgets(lnbuff,sizeof(lnbuff),fin)) {
+	ln++;
+	fprintf(fout,"%s",lnbuff);
+	for (a=0;a<cnt;a++) {
+		if (e[a].lineno==ln) {
+			fprintf(fout,"|\n");
+			fprintf(fout,"|%s\n",e[a].err_str);
+			if (a==20 && maxed) {
+				fprintf(fout,"| ****  Too many errors - further errors ignored ****\n");
+			}
+		}
+	}
+    }
+    fclose(fout);
 }
 
 /* ================================== EOF ============================= */

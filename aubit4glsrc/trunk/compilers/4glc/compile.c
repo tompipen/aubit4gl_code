@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.81 2005-03-31 16:42:13 mikeaubury Exp $
+# $Id: compile.c,v 1.82 2005-04-22 06:03:23 mikeaubury Exp $
 #*/
 
 /**
@@ -116,6 +116,7 @@ void setGenStackInfo (int _genStackInfo);
 int has_default_database (void);
 char *get_default_database (void);
 int A4GL_db_used(void );
+static void add_module_error(int n,char *s) ;
 
 
 
@@ -127,6 +128,11 @@ if (strlen(ptr)==0) return "-rdynamic";
 
 return ptr;
 }
+
+
+struct s_module_error *module_errors=0;
+int module_errors_cnt=0;
+
 
 
 /*
@@ -1218,6 +1224,19 @@ static char local_pass_options[1024] = "";
 		A4GL_debug ("after closemap");
 	#endif
 
+	if (module_errors_cnt) {
+		char errfile[1024];
+		yyparse_ret=-1;
+		sprintf (errfile, "%s.err", outputfile);
+		rewind(yyin);
+		A4GL_write_errfile_many_errors(errfile,yyin,module_errors,module_errors_cnt);
+		fclose(yyin);
+	        printf ("Error compiling %s.4gl - check %s.err\n", outputfile, outputfile);
+ 		exit (2);
+
+	}
+
+
 	if (yyparse_ret == 0) {
 		if (verbose) { printf ("4GL module compiled successfuly.\n"); }
 		if (compile_object) {
@@ -1630,6 +1649,30 @@ a4gl_yyerror (char *s)
   FILE *f;
   long ld;
   char a;
+  const char *matchstr="unexpected NAMED_GEN";
+  
+  if (strstr(s,matchstr)) {
+	char buff[1024];
+	char *ptr;
+	strcpy(buff,s);
+	ptr=strstr(s,matchstr);
+
+	buff[ptr-s]=0;
+	ptr+=strlen( matchstr);
+
+	strcat(buff,"unexpected '");
+	strcat(buff,yytext);
+	strcat(buff,"' ");
+	if (*ptr) strcat(buff,ptr);
+	s=buff;
+  }
+
+  if (A4GL_isyes(acl_getenv("LIST_ERRS"))) {
+	if (strcmp(s,"Variable not found")==0) return;
+	add_module_error(yylineno,s);
+  	//printf("Line %d - %s\n",yylineno,s);
+  	return;
+  }
 
   ld = A4GL_memfile_ftell (yyin);
   sprintf (errfile, "%s.err", outputfile);
@@ -1663,7 +1706,7 @@ a4gl_yyerror (char *s)
   }
   A4GL_write_cont (yyin);
   printf ("Error compiling %s.4gl - check %s.err\n", outputfile, outputfile);
-  exit (2);
+ exit (2);
 }
 
 /************************* same function from fcompile:
@@ -1845,5 +1888,13 @@ get_default_database (void)
 }
 
 
-/* ==================================== EOF =============================== */
+void add_module_error(int n,char *s) {
+	module_errors_cnt++;
+	if (module_errors_cnt<=20)  {
+		module_errors=realloc(module_errors,sizeof(module_errors[0])*module_errors_cnt);
+		module_errors[module_errors_cnt-1].lineno=n;
+		module_errors[module_errors_cnt-1].err_str=strdup(s);
+	}
+}
 
+/* ==================================== EOF =============================== */

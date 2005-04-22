@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.106 2005-03-23 15:50:25 mikeaubury Exp $
+# $Id: lexer.c,v 1.107 2005-04-22 06:03:23 mikeaubury Exp $
 #*/
 
 /**
@@ -202,6 +202,10 @@ mja_fgetc (FILE * f)
 }
 
 
+
+char *A4GL_get_yyline() {
+return yyline;
+}
 /**
  * @param a The Character to be ungeted
  * @param f The file pointer of file being read

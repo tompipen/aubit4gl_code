@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.165 2005-04-15 06:59:27 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.166 2005-04-22 06:06:16 mikeaubury Exp $
 #
 */
 
@@ -676,6 +676,13 @@
                     Variables definitions
 =====================================================================
 */
+
+
+struct s_module_error {
+        int lineno;
+        char *err_str;
+} ;
+
 
   /* ========================= from a4gl_ui.h ====================== */
 

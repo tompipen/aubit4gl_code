@@ -51,6 +51,8 @@ BEGIN  {
 
 			if (x>="A"&&x<="Z") {
 				x=$a
+				
+				if (x=="error") continue;
 				if (x=="NAMED") x="NAMED_GEN";
 				arr[x]=1
 			}
@@ -64,6 +66,7 @@ BEGIN  {
 					}
 					gsub(",","",x)
 					gsub("]","",x)
+					if (x=="error") continue;
 					if (x=="NAMED") x="NAMED_GEN";
 					arr[x]=1
 				}

@@ -56,7 +56,6 @@ n=scan_variable(buff2);
   if (n == -1&&buff[0]!=' ') {
            sprintf(buff2,"'%s' does not represent a defined variable (1)",buff);
            a4gl_yyerror(buff2);
-           exit (0);
   }
 
   strcpy(buff2,$<str>1);

@@ -4,14 +4,8 @@ Source:define.rule
 =====================================================================
 */
 define_section :
-		 {
-		   strcpy($<str>$,"");
-		   
-		} 	|	define_multiple {
-		   strcpy($<str>$,"");
-		   lastlineno=yylineno;
-		   
-		} 
+		 { strcpy($<str>$,""); } 	
+		| define_multiple { strcpy($<str>$,""); lastlineno=yylineno; } 
 ;
 
 
@@ -29,6 +23,7 @@ define_set :
 		   A4GL_lex_printcomment("/*end def */\n");
 		}  opt_semi
 		| DEFINE_NEW_TYPE {push_scope(); set_current_variable_scope('T');} var_def_name  AS dtype  opt_semi {pop_scope();}
+		| error
 ;
 
 
@@ -89,6 +84,7 @@ def_part2 :
 		   addmap("Constant",$<str>1,curr_func,yylineno,infilename);
 		   
 		} 
+	| error 
 ;
 
 
@@ -270,6 +266,7 @@ link_to_pk :
 
 dtype_ident :
 		dtype2
+		| error
 ;
 
 

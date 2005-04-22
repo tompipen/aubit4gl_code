@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.64 2005-04-15 06:59:25 mikeaubury Exp $
+# $Id: 1.reqd,v 1.65 2005-04-22 06:06:12 mikeaubury Exp $
 #
 */
 
@@ -246,7 +246,7 @@ void init_blk(void);
 %pure_parser
 //glr-parser
 %start module
-%expect  634
+//%expect  634
 %union	  {
 
 

@@ -8,7 +8,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.42 2005-03-25 12:48:34 afalout Exp $";
+		"$Id: generic_ui.c,v 1.43 2005-04-22 06:06:17 mikeaubury Exp $";
 #endif
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -2792,11 +2792,11 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
         h=A4GL_get_curr_height();
 
         if (y<1|| y>h) {
-                A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
+                A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal 1");
                 return;
         }
         if (x<1|| x>w) {
-                A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
+                A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal 2");
                 return;
         }
 
@@ -2812,21 +2812,21 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 
 	if (UILIB_A4GL_iscurrborder ()) {
         	if (y<1|| y>UILIB_A4GL_get_curr_height()) {
-                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
+                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal 3");
                 	return;
         	}
         	if (x<1|| x>A4GL_get_curr_width()) {
-                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
+                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal 4");
                 	return;
         	}
 
 	} else {
         	if (y<1|| y>UILIB_A4GL_get_curr_height()+10) {
-                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
+                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal 5");
                 	return;
         	}
         	if (x<1|| x>A4GL_get_curr_width()) {
-                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
+                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal 6");
                 	return;
         	}
 

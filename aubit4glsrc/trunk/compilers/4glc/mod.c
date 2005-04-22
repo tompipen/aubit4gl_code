@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.211 2005-04-15 06:58:36 mikeaubury Exp $
+# $Id: mod.c,v 1.212 2005-04-22 06:03:23 mikeaubury Exp $
 #
 */
 
@@ -1947,7 +1947,7 @@ pop_blockcommand (char *cmd_type)
     }
   A4GL_debug ("------------------\n");
   a4gl_yyerror (err);
-  exit (0);
+  //exit (0);
 }
 
 /**
@@ -1959,6 +1959,7 @@ in_command (char *cmd_type)
 {
 
   int z;
+  char buff[255];
 
   A4GL_debug ("Check for %s %d \n", cmd_type, ccnt);
 
@@ -1981,8 +1982,9 @@ in_command (char *cmd_type)
 	}
     }
 
-  PRINTF ("Not in a %s command\n", cmd_type);
-  a4gl_yyerror ("Can't exit command");
+  //PRINTF ("Not in a %s command\n", cmd_type);
+  sprintf(buff,"Can't exit/continue '%s' command (because you're not in one)",cmd_type);
+  a4gl_yyerror (buff);
 
   return 0;
 }

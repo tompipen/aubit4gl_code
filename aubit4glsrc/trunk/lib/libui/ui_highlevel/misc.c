@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: misc.c,v 1.24 2005-03-25 12:48:34 afalout Exp $";
+		"$Id: misc.c,v 1.25 2005-04-22 06:06:17 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -609,7 +609,7 @@ UILIB_A4GL_push_constr (void *vs)
 		}
 	      else
 		{
-		  A4GL_push_char (" AND ");
+		  A4GL_push_char (" and ");
 		  A4GL_push_char (ptr);
 		  A4GL_pushop (OP_CONCAT);
 		  A4GL_pushop (OP_CONCAT);

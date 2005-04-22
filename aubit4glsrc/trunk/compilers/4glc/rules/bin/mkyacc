@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkyacc,v 1.18 2004-10-23 13:36:29 mikeaubury Exp $
+# $Id: mkyacc,v 1.19 2005-04-22 06:06:15 mikeaubury Exp $
 #
 
 # This script builds "generated/fgl.yacc" files from several files
@@ -74,6 +74,7 @@ commands_all1 	:" >> generated/fgl.yacc
 grep -h "^[^ ]*_cmd.*:" generated/fgl.yacc  | $AWK '
 (NR==1) {print " 		" $1 >> "generated/fgl.yacc"}
 (NR!=1) {print "	|	" $1 >> "generated/fgl.yacc"}'
+echo " | error;" >> generated/fgl.yacc
 
 echo "/* ========================== end from mkyacc =========================== */" >> generated/fgl.yacc
 cat last.reqd >> generated/fgl.yacc
