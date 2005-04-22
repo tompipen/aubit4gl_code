@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.21 2005-03-31 13:36:27 afalout Exp $
+# $Id: display_array.c,v 1.22 2005-04-22 19:29:31 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: display_array.c,v 1.21 2005-03-31 13:36:27 afalout Exp $";
+		"$Id: display_array.c,v 1.22 2005-04-22 19:29:31 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -412,7 +412,6 @@ disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
 
         arr->processed_onkey=a;
         m_lastkey = a;
-
         if (A4GL_has_event_for_keypress(a,evt)) {
                 A4GL_debug("has event...");
                 return A4GL_has_event_for_keypress(a,evt);

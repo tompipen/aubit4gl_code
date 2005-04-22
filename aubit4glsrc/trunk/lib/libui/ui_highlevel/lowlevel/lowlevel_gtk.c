@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_gtk.c,v 1.61 2005-04-22 12:09:25 mikeaubury Exp $";
+		"$Id: lowlevel_gtk.c,v 1.62 2005-04-22 19:31:41 mikeaubury Exp $";
 #endif
 
 
@@ -309,6 +309,16 @@ A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
 
   add_keypress(keypressed);
   actionfield = widget;
+  return keypressed;
+}
+
+
+int
+A4GL_fake_a_keypress (GtkWidget *widget,int key)
+{
+  // printf ("Key Pressed! %x %x (%s) widget=%p user_data=%p\n", event->keyval, event->state, gdk_keyval_name (event->keyval),widget,user_data);
+	keypressed=key;
+  add_keypress(keypressed);
   return keypressed;
 }
 
@@ -1036,6 +1046,33 @@ a=gdk_key;
         if (a==GDK_F10) return A4GLKEY_F(10);
         if (a==GDK_F11) return A4GLKEY_F(11);
         if (a==GDK_F12) return A4GLKEY_F(12);
+        if (a==GDK_F13) return A4GLKEY_F(13);
+        if (a==GDK_F14) return A4GLKEY_F(14);
+        if (a==GDK_F15) return A4GLKEY_F(15);
+        if (a==GDK_F16) return A4GLKEY_F(16);
+        if (a==GDK_F17) return A4GLKEY_F(17);
+        if (a==GDK_F18) return A4GLKEY_F(18);
+        if (a==GDK_F19) return A4GLKEY_F(19);
+        if (a==GDK_F20) return A4GLKEY_F(20);
+        if (a==GDK_F21) return A4GLKEY_F(21);
+        if (a==GDK_F22) return A4GLKEY_F(22);
+        if (a==GDK_F23) return A4GLKEY_F(23);
+        if (a==GDK_F24) return A4GLKEY_F(24);
+        if (a==GDK_F25) return A4GLKEY_F(25);
+        if (a==GDK_F26) return A4GLKEY_F(26);
+        if (a==GDK_F27) return A4GLKEY_F(27);
+        if (a==GDK_F28) return A4GLKEY_F(28);
+        if (a==GDK_F29) return A4GLKEY_F(29);
+        if (a==GDK_F30) return A4GLKEY_F(30);
+        if (a==GDK_F31) return A4GLKEY_F(31);
+        if (a==GDK_F32) return A4GLKEY_F(32);
+        if (a==GDK_F33) return A4GLKEY_F(33);
+        if (a==GDK_F34) return A4GLKEY_F(34);
+        if (a==GDK_F35) return A4GLKEY_F(35);
+
+
+
+
 	if (a==0xff08) return A4GLKEY_DC;
 //printf("%x\n",a);
         return a;
@@ -2315,6 +2352,14 @@ void* A4GL_LL_make_field(void *prop,int frow,int fcol,int rows,int cols) {
   }
 
   widget=(void *)A4GL_make_widget (widget_str, config_str, cols);
+  if (widget==0) {
+	// Ooops - didn't make a widget...
+  	widget=(void *)A4GL_make_widget ("ENTRY", "", cols);
+	printf("WARNING - Coulnd't make widget as %s %s, made an entry field instead\n",widget_str, config_str);
+  	if (widget==0) { // Couldn't even fake one..
+		A4GL_assertion(1,"Failed to make a widget");
+	}
+  }
   A4GL_LL_set_field_opts (widget, 0);
 
   gtk_object_set_data(GTK_OBJECT(widget),"Attribute",(void *)fprop);
@@ -2349,7 +2394,7 @@ if (strcmp(label,"]")==0) return 0;
 label_utf=g_locale_to_utf8(label, -1, NULL, NULL, NULL);
 widget=gtk_label_new(label_utf);
 
-printf("Making label : %s\n",label);
+//printf("Making label : %s\n",label);
 #if GTK_CHECK_VERSION(2,0,0)
 if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
   	A4GL_debug("using PANGO ML for Label '%s'\n",label);

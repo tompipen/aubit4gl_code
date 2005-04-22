@@ -1,6 +1,6 @@
 #ifndef lint
 	static char const module_id[] =
-		"$Id: widget_gtk.c,v 1.16 2005-03-31 16:45:17 mikeaubury Exp $";
+		"$Id: widget_gtk.c,v 1.17 2005-04-22 19:31:41 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -19,7 +19,7 @@ void A4GL_add_signal_grab_focus (GtkWidget * widget, void *funcptr);
 void A4GL_add_signal_changed (GtkWidget * widget, void *funcptr);
 void A4GL_add_signal_select_row (GtkWidget * widget, void *funcptr);
 extern GtkWidget *actionfield ;
-extern int keypressed;
+//extern int keypressed;
 
 
 static GtkWidget *A4GL_cr_textbox (void);
@@ -89,16 +89,17 @@ struct s_widgets widgets[] = {
   {"", A4GL_cr_textbox, {"MAXCHARS", 0}},
   {"TEXT", A4GL_cr_textbox, {"MAXCHARS", 0}},
   {"ENTRY", A4GL_cr_textbox, {"MAXCHARS", 0}},
-  {"BUTTON", A4GL_cr_button, {"*LABEL", "*IMAGE", 0}},
+  {"BUTTON", A4GL_cr_button, {"*LABEL", "*IMAGE",0}},
   {"CHECK", A4GL_cr_check, {0}},
   {"LABEL", A4GL_cr_label, {"CAPTION", 0}},
-  {"PIXMAP", A4GL_cr_picture, {"FILENAME", 0}},
+  {"PIXMAP", A4GL_cr_picture, {"FILENAME",0}},
   {"COMBO", A4GL_cr_combo, {0}},
   {"RADIO", A4GL_cr_radio, {"NUM", 0}},
   {"LIST", A4GL_cr_list, {0}},
 
 #if GTK_CHECK_VERSION(2,0,0)
   {"PIXBUF", A4GL_cr_pixbuf, {0}},
+  {"FIELD_BMP", A4GL_cr_pixbuf, {0}},
 #endif
 
   /* NOTE : Calendar needs about 22 characters wide by 7 lines */
@@ -182,34 +183,32 @@ A4GL_split_config (char *str)
   char *ptr;
   char *s;
   int a;
-  ptr = str;
+  char *orig_ptr;
+  ptr = strdup(str);
+  orig_ptr=ptr;
   args_cnt = 0;
+
   while (1)
     {
-
       s = strtok (ptr, ";");
 
-      if (s)
-	{
-	  args[args_cnt++] = s;
-	}
-      else
-	{
-	  break;
-	}
+      if (s) { args[args_cnt++] = s; }
+      else   { break; }
 
       ptr = 0;
     }
 
   for (a = 0; a < args_cnt; a++)
     {
-      args_val[a] = 0;
+      args_val[a] = "";
       ptr = strchr (args[a], '=');
+
       if (ptr)
 	{
 	  *ptr = 0;
 	  args_val[a] = ptr + 1;
 	}
+
       if (args_val[a][0] == '\'')
 	{
 	  args_type[a] = TYPE_CHAR;
@@ -223,6 +222,22 @@ A4GL_split_config (char *str)
 
       A4GL_debug ("'%s' = --%s-- type=%d\n", args[a], args_val[a], args_type[a]);
     }
+
+    if (args_cnt==1) {
+		if (strlen(args_val[0])==0&&strlen(args[0])) {
+			printf("Looking at :%s\n",args[0]);
+			if (A4GL_key_val(args[0])>255) { 
+				// Looks like the config is just a key..
+				printf("Key ? %s\n",args[0]);
+	  			args_type[0] = TYPE_CHAR;
+				args_val[0]=strdup(args[0]); //@FIXME - memory leak
+				//if (args_val[0][0]=='f' && (args_arg[0][1]>='1' && args_val[0][1]<='9')) {a4gl_upshift(args_val[0]);}
+
+				args[0]="KEY";
+			}
+		}
+    }
+   free(orig_ptr);
 }
 
 /**
@@ -243,8 +258,10 @@ A4GL_find_param (char *name)
     }
   for (a = 0; a < args_cnt; a++)
     {
+		printf("Compare : '%s' '%s'\n",args[a], name);
       if (strcasecmp (args[a], name) == 0)
 	{
+		printf("Found..");
 	  if (args_type[a] == TYPE_CHAR)
 	    return args_val[a];
 	  else
@@ -288,6 +305,7 @@ A4GL_make_widget (char *widget, char *config, int w)
         {
           char *key;
           widget_next_size = w;
+          //printf("Making type %d - %s\n", a,widget);
           A4GL_debug ("Making type %d", a);
           ptr = widgets[a].make ();
           A4GL_debug ("SIzing widget (%p)", ptr);
@@ -311,6 +329,7 @@ A4GL_make_widget (char *widget, char *config, int w)
 
 
   A4GL_debug ("No widget of that type available...");
+  printf("Invalid Widget : %s\n",widget); fflush(stdout);
   A4GL_exitwith ("Invalid Widget");
   return 0;
 }
@@ -380,6 +399,29 @@ A4GL_fld_val_generic (GtkWidget * k)
       return txt_buf;
     }
 
+
+
+  if (strcasecmp (ptr, "BUTTON") == 0)
+    {
+      GtkWidget *l;
+      l=gtk_object_get_data (GTK_OBJECT (k), "LABEL");
+      if (l) {
+      	gtk_label_get (GTK_LABEL (l), &txt);
+	if (txt) {
+      		utf=g_locale_from_utf8(txt, -1, NULL, NULL, NULL);
+      		strncpy(txt_buf, utf, 256);
+      		g_free(utf);
+	} else {
+		strcpy(txt_buf,"");
+	}
+	} else {
+		strcpy(txt_buf,"");
+        }
+      	return txt_buf;
+
+    }
+
+
   if (strcasecmp (ptr, "ENTRY") == 0 || strcasecmp (ptr, "TEXT") == 0)
     {
       utf=g_locale_from_utf8(gtk_entry_get_text(GTK_ENTRY(k)), -1, NULL, NULL, NULL);
@@ -437,7 +479,7 @@ A4GL_fld_val_generic (GtkWidget * k)
       return buff;
     }
 
-printf("UNKNOWN WIDGET TYPE: %s\n",ptr);
+printf("UNKNOWN WIDGET TYPE: '%s'\n",ptr);
 /* NEWWIDGET - Add here */
 
 
@@ -559,6 +601,7 @@ void *
   GdkPixmap *p;
   GtkWidget *pixmap;
   A4GL_debug ("Making pixmap from file:%s\n", filename);
+  if (filename==0) filename="";
   p = gdk_pixmap_colormap_create_from_xpm (0,
 					   gdk_colormap_get_system (), NULL,
 					   NULL, filename);
@@ -591,6 +634,7 @@ A4GL_make_pixbuf_gw (char *filename)
     //gtk_window_set_default_size(GTK_WINDOW(window), 300, 300);
 
     //hbox = gtk_hbox_new(FALSE, 10);
+  if (filename==0) filename="";
   printf ("Making pixmap from file:%s\n", filename);
   A4GL_trim(filename);
 
@@ -714,33 +758,40 @@ A4GL_cr_button (void)
   GtkButton *b;
   GtkVBox *v;
   GtkWidget *pixmap = 0;
+  char *key;
 
   label = A4GL_find_param ("*LABEL");
   image = A4GL_find_param ("*IMAGE");
+  key   = A4GL_find_param ("*KEY");
+  printf("key=%s\n",key);
 
   b = (GtkButton *) gtk_button_new ();
   v = (GtkVBox *) gtk_vbox_new (0, 3);
   gtk_container_add (GTK_CONTAINER (b), GTK_WIDGET (v));
+	
 
-
-  	if (label) {
-		if (strlen (label)) {
-			char *utf=g_locale_to_utf8(label, -1, NULL, NULL, NULL);
-			printf("utf=%s\n",utf);
-			l = (GtkLabel *) gtk_label_new (utf);
-			#if GTK_CHECK_VERSION(2,0,0)
-				/*
-				if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
-					A4GL_debug("using PANGO ML for Label '%s'\n",label);
-					gtk_label_set_use_markup(l, TRUE);
-				}
-				*/
-			#endif
-			g_free(utf);
-			gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (l));
-			gtk_widget_show (GTK_WIDGET (l));
-			gtk_object_set_data (GTK_OBJECT (b), "LABEL", l);
-		}
+  if (label==0) label=" ";
+  if (strlen(label)==0) label=" ";
+  if (label)
+    {
+      if (strlen (label))
+	{
+	  char *utf = g_locale_to_utf8 (label, -1, NULL, NULL, NULL);
+	  //printf ("utf=%s\n", utf);
+	  l = (GtkLabel *) gtk_label_new (utf);
+#if GTK_CHECK_VERSION(2,0,0)
+	  /*
+	     if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
+	     A4GL_debug("using PANGO ML for Label '%s'\n",label);
+	     gtk_label_set_use_markup(l, TRUE);
+	     }
+	   */
+#endif
+	  g_free (utf);
+	  gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (l));
+	  gtk_widget_show (GTK_WIDGET (l));
+	  gtk_object_set_data (GTK_OBJECT (b), "LABEL", l);
+	}
     }
 
   if (image)
@@ -755,12 +806,20 @@ A4GL_cr_button (void)
     }
   gtk_widget_show (GTK_WIDGET (v));	/* Vbox */
   gtk_widget_show (GTK_WIDGET (b));	/* Button itself.. */
+  if (key!=0 ) {
+	if (strlen(key)) {
+		printf("ISKEY:%s\n",key);
+		gtk_object_set_data(GTK_OBJECT(b),"KEY",key);
+	}
+  }
 
   A4GL_add_signal_clicked ((GtkWidget *) b, 0);
   A4GL_add_signal_grab_focus ((GtkWidget *) b, 0);
+  if (strcmp(label," ")==0) { gtk_widget_hide(GTK_WIDGET(b)); 
+	//printf("Hiding empty button\n");
+	}
   return GTK_WIDGET (b);
 }
-
 
 /**
  * Create a radio button widget.
@@ -1312,12 +1371,14 @@ A4GL_func (GtkWidget * w, char *mode)
     {
       char *key;
       int m;
+	int keyn;
+	keyn=0;
       A4GL_debug ("setting A4GL_action field=%p", w);
       actionfield = w;
 
       key = gtk_object_get_data (GTK_OBJECT (w), "KEY");
 
-      A4GL_debug ("Key=%p\n", key);
+      printf ("Key=%p (%s)\n", key,key);
       fflush (stdout);
 
       if (key)
@@ -1327,23 +1388,33 @@ A4GL_func (GtkWidget * w, char *mode)
 
           if (strcasecmp (key, "ACCEPT") == 0)
             {
-              keypressed = 27;  /* FIXME */
+              keyn = 27;  /* FIXME */
             }
           else
             {
               if (strcasecmp (key, "INTERRUPT") == 0)
                 {
-                  keypressed = 3;       /* FIXME */
+                  keyn = 3;       /* FIXME */
                 }
               else
                 {
 			void *ptr;
 			ptr=&m;
-                  gtk_accelerator_parse (key, &keypressed, (GdkModifierType *) ptr);
-                  if (m & 4 && tolower (keypressed) >= 'a'
-                      && tolower (keypressed) <= 'z')
-                    keypressed = tolower (keypressed) - 'a' + 1;
-                  A4GL_debug ("keypressed=%x m=%x\n", keypressed, m);
+			
+                  gtk_accelerator_parse (key, &keyn, (GdkModifierType *) ptr);
+		if (keyn==0 && m==0) {
+			printf("Don't understand that key\n");
+			a4gl_upshift(key);
+                  	gtk_accelerator_parse (key, &keyn, (GdkModifierType *) ptr);
+			if (keyn==0 && m==0) {
+				keyn=A4GL_key_val(key);
+				printf("Still dont understand that key - hope the aubit one just passed through...");
+			}
+		}
+                  if (m & 4 && tolower (keyn) >= 'a' && tolower (keyn) <= 'z') keyn = tolower (keyn) - 'a' + 1;
+
+		A4GL_fake_a_keypress (w,keyn);
+                  printf ("keyn=%x m=%x\n", keyn, m);
                   fflush (stdout);
                 }
             }
@@ -1392,6 +1463,7 @@ A4GL_display_generic (GtkWidget * k, char *s)
 {
   char *ptr;
   char *utf;
+  char *btn;
   A4GL_debug ("in A4GL_display_generic k=%p s='%s'\n", k, s);
 
   ptr = gtk_object_get_data (GTK_OBJECT (k), "WIDGETSNAME");
@@ -1409,12 +1481,19 @@ A4GL_display_generic (GtkWidget * k, char *s)
   if (strcasecmp (ptr, "BUTTON") == 0)
     {
       GtkWidget *w;
+	btn=strdup(s);
+	A4GL_trim(btn);
+	
       w = gtk_object_get_data (GTK_OBJECT (k), "LABEL");
       if (w)
 	{
 	  gtk_label_set_text (GTK_LABEL (w), utf);
 	  g_free(utf);
 	}
+
+      if (strlen(btn)==0) { gtk_widget_hide(GTK_WIDGET(k)); }
+      else { gtk_widget_show(GTK_WIDGET(k)); }
+	free(btn);
     }
 
 
