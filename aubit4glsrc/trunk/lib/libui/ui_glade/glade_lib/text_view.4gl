@@ -149,10 +149,12 @@ if lv_widget=0 then return end if
 call textview_selection_get(lv_form,lv_field) returning lv_start,lv_length
 call textview_selection_delete(lv_form,lv_field)
 code
+{
 gint pos;
 pos=lv_start;
 A4GL_trim(lv_replace_with);
 gtk_editable_insert_text(GTK_EDITABLE(lv_widget),lv_replace_with,lv_length,&pos);
+}
 endcode
 return 
 end function
