@@ -535,7 +535,7 @@ int get_exec_mode_c() {
 }
 
 void set_outfname(void) {
-	sprintf(outfname,"/tmp/out%d.txt",getpid());
+	sprintf(outfname,"%s/tmp/out%d.txt",acl_getenv("AUBITDIR"),getpid());
 }
 
 
