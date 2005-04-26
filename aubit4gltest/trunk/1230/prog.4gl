@@ -7,6 +7,8 @@ define s1 char(200)
 	end construct
 
 	if s1 !="b.somecol='01/01/2001'" then
+		display s1, "!=\"b.somecol='01/01/2001'\""
+		sleep 1
 		exit program 1
 	end if
 

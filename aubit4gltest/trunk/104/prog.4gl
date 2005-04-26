@@ -26,6 +26,7 @@ define a,b,c char(5)
 	if l="test.a>'1' and test.b matches '*a' and test.c<='3'" then
 		exit program 0
 	else
+		display l
 		exit program 1
 	end if
 end main
