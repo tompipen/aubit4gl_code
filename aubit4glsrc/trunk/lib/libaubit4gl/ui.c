@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.34 2005-03-31 13:35:48 afalout Exp $
+# $Id: ui.c,v 1.35 2005-04-26 17:48:14 mikeaubury Exp $
 #
 */
 
@@ -864,4 +864,13 @@ void A4GL_make_field_slist_from_ap( struct s_field_name_list *list, va_list *ap)
         }
 }
 
+int aclfgl_aclfgl_get_curr_width(int n) {
+	  A4GL_push_long(A4GL_get_curr_width () );
+	return 1;
+}
+
+int aclfgl_aclfgl_get_curr_height(int n) {
+	  A4GL_push_long(A4GL_get_curr_height () );
+	return 1;
+}
 /* ============================= EOF ================================ */

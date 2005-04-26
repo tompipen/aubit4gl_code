@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.81 2005-03-31 13:35:47 afalout Exp $
+# $Id: ops.c,v 1.82 2005-04-26 17:48:13 mikeaubury Exp $
 #
 */
 
@@ -95,6 +95,9 @@ char *A4GL_display_date (void *ptr, int size, int size_c,
 			 struct struct_scr_field *field_details,
 			 int display_type);
 char *A4GL_display_char (void *ptr, int size, int size_c,
+			 struct struct_scr_field *field_details,
+			 int display_type);
+char *A4GL_display_vchar (void *ptr, int size, int size_c,
 			 struct struct_scr_field *field_details,
 			 int display_type);
 char *A4GL_display_decimal (void *ptr, int size, int size_c,
@@ -2717,6 +2720,13 @@ A4GL_display_char (void *ptr, int size, int size_c,
 {
   return 0;
 }
+char *
+A4GL_display_vchar (void *ptr, int size, int size_c,
+		   struct struct_scr_field *field_details, int display_type)
+{
+  return 0;
+}
+
 
 char *
 A4GL_display_decimal (void *ptr, int size, int size_c,
@@ -3039,6 +3049,7 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_SMFLOAT, "DISPLAY", A4GL_display_smfloat);
   A4GL_add_datatype_function_i (DTYPE_DATE, "DISPLAY", A4GL_display_date);
   A4GL_add_datatype_function_i (DTYPE_CHAR, "DISPLAY", A4GL_display_char);
+  A4GL_add_datatype_function_i (DTYPE_VCHAR, "DISPLAY", A4GL_display_vchar);
   A4GL_add_datatype_function_i (DTYPE_DECIMAL, "DISPLAY", A4GL_display_decimal);
   A4GL_add_datatype_function_i (DTYPE_MONEY, "DISPLAY", A4GL_display_money);
   A4GL_add_datatype_function_i (DTYPE_DTIME, "DISPLAY", A4GL_display_dtime);

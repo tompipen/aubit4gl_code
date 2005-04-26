@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.67 2005-03-31 16:45:03 mikeaubury Exp $
+# $Id: report.c,v 1.68 2005-04-26 17:48:13 mikeaubury Exp $
 #
 */
 
@@ -1150,7 +1150,7 @@ A4GL_report_char_pop (void)
   A4GL_get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
 
   function = A4GL_get_datatype_function_i (tos_dtype & DTYPE_MASK, "DISPLAY");
-
+  A4GL_assertion(function==0,"No report display function for this datatype");
   ptr =
     function (tos_ptr, tos_size, -1, (struct struct_scr_field *) 0,
 	      DISPLAY_TYPE_PRINT);

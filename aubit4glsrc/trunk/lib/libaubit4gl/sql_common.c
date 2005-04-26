@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.4 2005-04-15 06:59:28 mikeaubury Exp $
+# $Id: sql_common.c,v 1.5 2005-04-26 17:48:14 mikeaubury Exp $
 #
 */
 
@@ -231,7 +231,7 @@ int
 A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
 {
   int rc;
-  rc = A4GLSQL_init_session(sessname,dsn,usr,pwd);
+  rc = A4GLSQL_init_session_internal(sessname,dsn,usr,pwd);
   if (rc == 0) A4GL_apisql_add_sess (sessname);
   return rc;
 }
