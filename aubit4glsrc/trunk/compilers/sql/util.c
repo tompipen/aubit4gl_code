@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.18 2005-04-15 06:59:26 mikeaubury Exp $
+# $Id: util.c,v 1.19 2005-05-03 16:09:18 mikeaubury Exp $
 #
 */
 
@@ -694,8 +694,7 @@ print_select_all (char *s) {
 static void 
 print_exec_sql (char *s) {
 	add_sql(7,strdup(s));
-    	free(s);
-free(s);
+	free(s);
 }
 
 /**

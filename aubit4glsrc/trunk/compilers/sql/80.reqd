@@ -90,13 +90,13 @@ colident: identifier
 
 
 
-set_cmd : SQLSEOFF 		 { print_exec_sql($<str>1); }
-	| SQLSLMW op_fgl_expr    { sprintf($<str>$,"%s %s",$<str>1,$<str>2); print_exec_sql($<str>$); }
-	| SQLSLMNW		 { print_exec_sql($<str>1); }
-	| SQLSIDR		 { print_exec_sql($<str>1); }
-	| SQLSIRR		 { print_exec_sql($<str>1); }
-	| SQLSICS		 { print_exec_sql($<str>1); }
-	| SQLSICR		 { print_exec_sql($<str>1); }
+set_cmd : SQLSEOFF 		 { print_exec_sql(strdup($<str>1)); }
+	| SQLSLMW op_fgl_expr    { sprintf($<str>$,"%s %s",$<str>1,$<str>2); print_exec_sql(strdup($<str>$)); }
+	| SQLSLMNW		 { print_exec_sql(strdup($<str>1)); }
+	| SQLSIDR		 { print_exec_sql(strdup($<str>1)); }
+	| SQLSIRR		 { print_exec_sql(strdup($<str>1)); }
+	| SQLSICS		 { print_exec_sql(strdup($<str>1)); }
+	| SQLSICR		 { print_exec_sql(strdup($<str>1)); }
 ;
 
 
