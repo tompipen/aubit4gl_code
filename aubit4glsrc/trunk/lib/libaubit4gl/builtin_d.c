@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.62 2005-03-31 13:35:39 afalout Exp $
+# $Id: builtin_d.c,v 1.63 2005-05-04 12:33:44 mikeaubury Exp $
 #
 */
 
@@ -716,13 +716,13 @@ A4GL_func_concat (void)
   acl_free (p1);
   acl_free (p2);
   A4GL_push_char (z1);
-  free(z1);
 #ifdef DEBUG
   /* {DEBUG} */
   {
     A4GL_debug ("concat returns -> %s", A4GL_null_as_null(z1));
   }
 #endif
+  free(z1);
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.35 2005-04-26 17:48:14 mikeaubury Exp $
+# $Id: ui.c,v 1.36 2005-05-04 12:33:45 mikeaubury Exp $
 #
 */
 
@@ -719,6 +719,7 @@ key_mappings[nkeymappings-1].dest_keycode=dest;
 /* Transform a keycode based on our mappings */
 int A4GL_key_map(int keycode) {
 int a;
+A4GL_debug("Got key %d",keycode);
 if (key_mappings==0) return keycode;
 
 for (a=0;a<nkeymappings;a++) {

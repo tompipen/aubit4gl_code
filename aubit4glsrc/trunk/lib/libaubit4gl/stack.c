@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.119 2005-03-31 13:35:48 afalout Exp $
+# $Id: stack.c,v 1.120 2005-05-04 12:33:45 mikeaubury Exp $
 #
 */
 
@@ -2550,6 +2550,16 @@ A4GL_locate_var (struct fgl_int_loc *p, char where, char *filename)
   A4GL_debug ("7 Located at %c %s", p->where, p->filename);
 }
 
+
+int aclfgl_aclfgl_byte_as_str(int n) {
+	fglbyte b;
+	printf("1\n");
+	A4GL_pop_param(&b,0xb,0);
+	printf("2\n");
+	A4GL_push_long(1);
+//-A4GL_push_char("Hello");
+	return 1;
+}
 
 /**
  *

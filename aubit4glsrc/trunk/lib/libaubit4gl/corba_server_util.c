@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.7 2005-03-09 15:14:38 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.8 2005-05-04 12:33:45 mikeaubury Exp $
 #
 */
 
@@ -312,7 +312,8 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 
 //--from string.c
 char *A4GL_null_as_null(char *s) {
-if (s==0) return "(null)";
+static char *nbuff="(null)";
+if (s==0) return nbuff;
 return s;
 }
 
