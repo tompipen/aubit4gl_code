@@ -3,7 +3,7 @@ BEGIN  {
 	cnt=0
 	print "#include \"a4gl_4glc_int.h\""
 	print "#include \"y.tab.h\""
-	print "//andrej const short *token_groups[];"
+	print "/* andrej const short *token_groups[]; */"
 	print "/* andrej moved to end to avoid re-declaring token_groups:"
 	print "int allow_token_state(int yystate,int yytoken) {"
 	print "int a;"
@@ -89,7 +89,7 @@ END {
    }
    print "#include \"mk_states_1.h\""
    
-	print "//andrej moved here from top:"
+	print "/* andrej moved here from top: */"
 	print "int allow_token_state(int yystate,int yytoken) {"
 	print "int a;"
 	print "  if (yytoken<0) return 1;"

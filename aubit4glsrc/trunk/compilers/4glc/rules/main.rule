@@ -52,7 +52,6 @@ module_import
 | module_define_section  
 | db_section
 | pragma
-| error
 	;
 
 
