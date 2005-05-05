@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.17 2005-03-09 15:14:40 mikeaubury Exp $
+# $Id: match.c,v 1.18 2005-05-05 08:50:33 mikeaubury Exp $
 #*/
 
 /**
@@ -490,15 +490,15 @@ A4GL_matche (register char *p, register char *t, char multi, char single,
 		{
 		  if (*p == '\\')
 		    {		/* next character is quoted and must A4GL_match exactly */
-		      ///* move pattern pointer to quoted char and fall through */
+		      /* move pattern pointer to quoted char and fall through */
 		      p++;
-		      ///* if end of text then we have a bad pattern */
+		      /* if end of text then we have a bad pattern */
 		      if (!*p)
 			return MATCH_PATTERN;
 		    }
 		  else
 		    {
-		      ///* must A4GL_match this character exactly */
+		      /* must A4GL_match this character exactly */
 		      A4GL_debug("Literal matching : %c %c",*p,*t);
 		      if (*p != *t)
 			return MATCH_LITERAL;

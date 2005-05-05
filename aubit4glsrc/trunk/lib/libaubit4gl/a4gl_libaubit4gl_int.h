@@ -39,7 +39,7 @@
 	
 	/* Most of the time sizeof(d) will be 4 (size of a pointer) - */
 	/* but sometimes it'll be useful... */
-	#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,sizeof(d))
+	#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,(long)sizeof(d))
 
 #endif /* #ifndef _AUBIT_LIB_INCL_INT_ */
 

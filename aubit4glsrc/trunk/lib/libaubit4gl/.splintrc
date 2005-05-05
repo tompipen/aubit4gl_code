@@ -3,11 +3,9 @@
 #          LCLint / Splint config file for lib/libaubit4gl
 #
 ##########################################################################
-
 -weak
 +show-summary
 +show-scan
-
 ##########################################################################
 #builtin_d.c:56: Include file <sys/types> matches the name of a POSIX library,
 #    but the POSIX library is not being used.  Consider using +posixlib or

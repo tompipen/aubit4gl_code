@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.120 2005-05-04 12:33:45 mikeaubury Exp $
+# $Id: stack.c,v 1.121 2005-05-05 08:50:33 mikeaubury Exp $
 #
 */
 
@@ -837,7 +837,6 @@ A4GL_debug("51 Have data");
       if (A4GL_isnull (params[params_cnt - 2].dtype, params[params_cnt - 2].ptr))
 	{
 	  dn2=params[params_cnt - 2].dtype;
-	  //zzz = ((params[params_cnt - 2].dtype & DTYPE_MASK) + (strlen (params[params_cnt - 2].ptr)));	/* + params[params_cnt - 2].size; */
 	  zzz = 1;
 
 	  if (zzz == 0)
@@ -1392,14 +1391,6 @@ A4GL_debug("51 Have data");
       		A4GL_func_clip ();
 
 
-        //if (n1)
-	//{
-	  //A4GL_debug ("Parameter is null..");
-	  //A4GL_drop_param ();
-	  //A4GL_push_null (DTYPE_CHAR);		/*  FIXME FIXME */
-	  //break;
-	//} else {
-	//}
       break;
 
     case OP_ADD:

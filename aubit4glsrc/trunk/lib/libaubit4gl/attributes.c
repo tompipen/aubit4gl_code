@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.30 2005-03-17 20:48:34 mikeaubury Exp $
+# $Id: attributes.c,v 1.31 2005-05-05 08:50:33 mikeaubury Exp $
 #*/
 
 /**
@@ -214,7 +214,7 @@ A4GL_get_curr_form_attr (void)
   int attr;
   char buff[20];
   ptr = A4GL_get_curr_form (0);
-  sprintf (buff, "%p", ptr);
+  snprintf (buff, sizeof(buff),"%p", ptr);
   if (A4GL_has_pointer (buff, ATTRIBUTE))
     {
       attr = (int) A4GL_find_pointer (buff, ATTRIBUTE);
@@ -329,40 +329,40 @@ A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str)
 int
 A4GL_get_attr_from_string (char *s)
 {
-  if (strcasecmp (s, "BLACK") == 0)
+  if (A4GL_aubit_strcasecmp (s, "BLACK") == 0)
     return AUBIT_COLOR_BLACK;
-  if (strcasecmp (s, "RED") == 0)
+  if (A4GL_aubit_strcasecmp (s, "RED") == 0)
     return AUBIT_COLOR_RED;
-  if (strcasecmp (s, "GREEN") == 0)
+  if (A4GL_aubit_strcasecmp (s, "GREEN") == 0)
     return AUBIT_COLOR_GREEN;
-  if (strcasecmp (s, "YELLOW") == 0)
+  if (A4GL_aubit_strcasecmp (s, "YELLOW") == 0)
     return AUBIT_COLOR_YELLOW;
-  if (strcasecmp (s, "BLUE") == 0)
+  if (A4GL_aubit_strcasecmp (s, "BLUE") == 0)
     return AUBIT_COLOR_BLUE;
-  if (strcasecmp (s, "MAGENTA") == 0)
+  if (A4GL_aubit_strcasecmp (s, "MAGENTA") == 0)
     return AUBIT_COLOR_MAGENTA;
-  if (strcasecmp (s, "CYAN") == 0)
+  if (A4GL_aubit_strcasecmp (s, "CYAN") == 0)
     return AUBIT_COLOR_CYAN;
-  if (strcasecmp (s, "WHITE") == 0)
+  if (A4GL_aubit_strcasecmp (s, "WHITE") == 0)
     return AUBIT_COLOR_WHITE;
 
-  if (strcasecmp (s, "NORMAL") == 0)
+  if (A4GL_aubit_strcasecmp (s, "NORMAL") == 0)
     return AUBIT_ATTR_NORMAL;
-  if (strcasecmp (s, "REVERSE") == 0)
+  if (A4GL_aubit_strcasecmp (s, "REVERSE") == 0)
     return AUBIT_ATTR_REVERSE;
-  if (strcasecmp (s, "UNDERLINE") == 0)
+  if (A4GL_aubit_strcasecmp (s, "UNDERLINE") == 0)
     return AUBIT_ATTR_UNDERLINE;
-  if (strcasecmp (s, "BOLD") == 0)
+  if (A4GL_aubit_strcasecmp (s, "BOLD") == 0)
     return AUBIT_ATTR_BOLD;
-  if (strcasecmp (s, "BLINK") == 0)
+  if (A4GL_aubit_strcasecmp (s, "BLINK") == 0)
     return AUBIT_ATTR_BLINK;
 
-  if (strcasecmp (s, "DIM") == 0)
+  if (A4GL_aubit_strcasecmp (s, "DIM") == 0)
     return AUBIT_ATTR_DIM;
 
-  if (strcasecmp (s, "INVISIBLE") == 0)
+  if (A4GL_aubit_strcasecmp (s, "INVISIBLE") == 0)
     return AUBIT_ATTR_INVISIBLE;
-  if (strcasecmp (s, "LEFT") == 0)
+  if (A4GL_aubit_strcasecmp (s, "LEFT") == 0)
     return AUBIT_ATTR_LEFT;
   printf ("Unknown attribute : %s\n", s);
   return -1;

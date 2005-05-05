@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.63 2005-05-04 12:33:44 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.64 2005-05-05 08:50:33 mikeaubury Exp $
 #
 */
 
@@ -104,9 +104,9 @@ struct s_funcs builtin_funcs[] = {
 	{"using",func_using,2,1},
 	{"clip",func_clip,1,1},
 	{"concat",func_concat,2,1},
-	{"",0,0,0}
+	{"",(void *)0,0,0}
 */
-  {"", 0, 0, 0}
+  {"", (void *)0, 0, 0}
 };
 
 

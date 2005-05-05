@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.80 2005-04-22 19:37:24 mikeaubury Exp $
+# $Id: builtin.c,v 1.81 2005-05-05 08:50:33 mikeaubury Exp $
 #
 */
 
@@ -44,6 +44,7 @@
 */
 
 #include "a4gl_libaubit4gl_int.h"
+#include <string.h>
 #define ACLFGLI_STR_TO_ID         'S'
 void A4GL_generateError (char *str, char *fileName, int lineno);
 /*
@@ -52,9 +53,9 @@ void A4GL_generateError (char *str, char *fileName, int lineno);
 =====================================================================
 */
 
-int 	m_arr_count = 0;
-int 	m_arr_curr = 0;
-int 	m_scr_line = 0;
+int 	mv_arr_count = 0;
+int 	mv_arr_curr = 0;
+int 	mv_scr_line = 0;
 FILE *	error_log_file = 0;
 
 /*
@@ -117,7 +118,7 @@ aclfgl_set_count (int nargs)
 {
   long a = 0;
   struct BINDING fbind[] = {
-    {0, 2, 0}			
+    {0, 2, 0,0,0}			
   };				/* end of binding */
 
 	fbind[0].ptr=&a;
@@ -131,7 +132,7 @@ aclfgl_set_count (int nargs)
     }
   A4GLSQL_set_status (0, 0);
   A4GL_pop_params (fbind, 1);
-  m_arr_count = a;
+  mv_arr_count = a;
 /* a is now set to set_Count */
   return 0;
 }
@@ -150,7 +151,7 @@ aclfgl_arr_count (int nargs)
       A4GLSQL_set_status (-3001, 0);
       return 0;
     }
-  A4GL_push_long (m_arr_count);
+  A4GL_push_long (mv_arr_count);
 /* a is now set to set_Count */
   return 1;
 }
@@ -169,7 +170,7 @@ aclfgl_scr_line (int nargs)
       A4GLSQL_set_status (-3001, 0);
       return 0;
     }
-  A4GL_push_long (m_scr_line);
+  A4GL_push_long (mv_scr_line);
   return 1;
 }
 
@@ -187,7 +188,7 @@ aclfgl_arr_curr (int nargs)
       A4GLSQL_set_status (-3001, 0);
       return 0;
     }
-  A4GL_push_long (m_arr_curr);
+  A4GL_push_long (mv_arr_curr);
   return 1;
 }
 
@@ -262,7 +263,7 @@ int
 aclfgl_length (int nargs)
 {
   char *g;
-  int p;
+  size_t p;
   if (nargs != 1)
     {
       A4GL_pop_args (nargs);
@@ -276,7 +277,7 @@ aclfgl_length (int nargs)
 	}
   A4GL_trim (g);
   p = strlen (g);
-  A4GL_push_int (p);
+  A4GL_push_long ((long)p);
   acl_free (g);
   return 1;
 }
@@ -319,15 +320,15 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
 
 if (b) {
 
-  if ((b - a + 1) > strlen(ca)) {
+  if ((size_t)(b - a + 1) > strlen(ca)) {
 		A4GL_debug("Need a little more..");
 		free(np);
 		free(np2);
 	
-		np=malloc(b - a + 2);
-		np2=malloc(b - a + 2);
-		memset(np,0,b - a + 2);
-		memset(np2,0,b - a + 2);
+		np=malloc((size_t) (b - a + 2));
+		np2=malloc((size_t) (b - a + 2));
+		memset(np,0,(size_t)(b - a + 2));
+		memset(np2,0,(size_t)(b - a + 2));
 		strcpy(np,ca);
 		strcpy(np2,ca);
   }
@@ -353,13 +354,13 @@ if (b) {
 #endif
       //printf("PAD\n");
       free (np);
-      np = malloc (DECODE_SIZE (dtype) + 1);
+      np = malloc ((size_t) DECODE_SIZE (dtype) + 1);
       free (np2);
-      np2 = malloc (DECODE_SIZE (dtype) + 1);
-		memset(np,0,DECODE_SIZE (dtype) + 1);
-		memset(np2,0,DECODE_SIZE (dtype) + 1);
+      np2 = malloc ((size_t) DECODE_SIZE (dtype) + 1);
+		memset(np,0,(size_t) DECODE_SIZE (dtype) + 1);
+		memset(np2,0,(size_t) DECODE_SIZE (dtype) + 1);
 	
-      A4GL_pad_string (np, DECODE_SIZE (dtype));
+      A4GL_pad_string (np,  DECODE_SIZE (dtype));
     }
   a--;
   b--;
@@ -434,11 +435,11 @@ a4gl_let_substr (char *ca, int dtype, int a, int b, ...)
   }
 #endif
 
-  if (strlen(np)!=size) {
+  if (strlen(np)!=(size_t)size) {
 		A4GL_pad_string(np,size);
   }
 
-  strncpy (&ca[a - 1], np, size);
+  strncpy (&ca[a - 1], np, (size_t)size);
 #ifdef DEBUG
   {
     A4GL_debug ("Set to %s", A4GL_null_as_null(ca));
@@ -453,8 +454,8 @@ a4gl_let_substr (char *ca, int dtype, int a, int b, ...)
 int
 A4GL_get_count (void)
 {
- A4GL_debug("m_arr_count=%d XYX",m_arr_count);
-  return m_arr_count;
+ A4GL_debug("mv_arr_count=%d XYX",mv_arr_count);
+  return mv_arr_count;
 }
 
 /**
@@ -465,7 +466,7 @@ A4GL_get_count (void)
 void
 A4GL_set_arr_curr (int a)
 {
-  m_arr_curr = a;
+  mv_arr_curr = a;
 }
 
 /**
@@ -476,7 +477,7 @@ A4GL_set_arr_curr (int a)
 void
 A4GL_set_arr_count (int a)
 {
-  m_arr_count = a;
+  mv_arr_count = a;
 }
 
 /**
@@ -487,7 +488,7 @@ A4GL_set_arr_count (int a)
 void
 A4GL_set_scr_line (int a)
 {
-  m_scr_line = a;
+  mv_scr_line = a;
 }
 
 /**
@@ -501,7 +502,7 @@ A4GL_set_scr_line (int a)
 void
 get_arr_curr (int a)
 {
-  m_arr_curr = a;
+  mv_arr_curr = a;
 }
 */
 
@@ -516,7 +517,7 @@ get_arr_curr (int a)
 void
 get_scr_line (int a)
 {
-  m_scr_line = a;
+  mv_scr_line = a;
 }
 */
 
@@ -666,7 +667,7 @@ aclfgl_err_get (int n)
   static char buff[200];
   a = A4GL_pop_int ();
   /* A4GLSQL_set_status(-3001,0); */
-  sprintf (buff, "Error : %d ", a);
+  snprintf (buff,200, "Error : %d ", a);
   A4GL_push_char (buff);
   return 1;
 }
