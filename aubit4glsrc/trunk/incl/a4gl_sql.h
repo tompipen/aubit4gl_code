@@ -22,6 +22,7 @@ extern "C"
     char *select;                           /**< The SQL statement content */
     void *hstmt;                            /**< A pointer to the statement handle */
     char *statementName;                    /**< The name of the SQL statement */
+    void *extra_info;                       /**< A space for sql driver specific info */
   };
 
         /** A better name to the statement descriptor structure */
