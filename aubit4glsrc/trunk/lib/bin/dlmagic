@@ -395,7 +395,7 @@ print "typedef int (*x_func)(void);"
 print "static x_func func;";
 print "   libptr=(void *)A4GL_dl_openlibrary(\"" lib "\",acl_getenv(\"" env "\"));"
 print "   if (libptr==0) {"
-print "      A4GL_exitwith(\"Unable to open " $lib " library...\");"
+print "      A4GL_exitwith(\"Unable to open " lib " library...\");"
 print "      return 0;"
 print "   }"
 print "   func=(x_func)A4GL_find_func_allow_missing(libptr,\"" lib_prefix "A4GL" lib "_initlib\");"
@@ -548,7 +548,7 @@ if (rtype=="void")
 else {
 	print "   rval=(" rtype ")func_" funccnt " (" args ");"
 	print "#ifdef DEBUG_SPEC"
-	print ring(rtype)
+	ring(rtype)
 	print "#endif"
 	print "return rval;"
 }
