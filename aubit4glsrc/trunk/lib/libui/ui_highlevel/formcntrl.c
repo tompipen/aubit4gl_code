@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.27 2005-04-22 12:07:19 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.28 2005-05-05 09:03:02 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.27 2005-04-22 12:07:19 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.28 2005-05-05 09:03:02 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -990,7 +990,7 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
       else
 	{
              if (A4GL_isyes(acl_getenv("FIRSTCOL_ONERR_INCL"))) {
-                         A4GL_int_form_driver (sio->currform->form, AUBIT_REQ_BEG_FIELD);
+                         A4GL_LL_int_form_driver (sio->currform->form, AUBIT_REQ_BEG_FIELD);
              }
 
 

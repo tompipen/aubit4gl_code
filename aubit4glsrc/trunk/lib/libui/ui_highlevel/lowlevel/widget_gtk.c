@@ -1,6 +1,6 @@
 #ifndef lint
 	static char const module_id[] =
-		"$Id: widget_gtk.c,v 1.17 2005-04-22 19:31:41 mikeaubury Exp $";
+		"$Id: widget_gtk.c,v 1.18 2005-05-05 09:03:06 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -258,7 +258,7 @@ A4GL_find_param (char *name)
     }
   for (a = 0; a < args_cnt; a++)
     {
-		printf("Compare : '%s' '%s'\n",args[a], name);
+		//printf("Compare : '%s' '%s'\n",args[a], name);
       if (strcasecmp (args[a], name) == 0)
 	{
 		printf("Found..");
@@ -627,13 +627,6 @@ A4GL_make_pixbuf_gw (char *filename)
     GtkWidget *widget;
 	GdkPixbuf *pixbuf, *resized;
 
-  //window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    //g_signal_connect(G_OBJECT(window), "destroy",
-                     //G_CALLBACK(gtk_main_quit), NULL);
-    //gtk_window_set_title(GTK_WINDOW(window), "GtkPixbuf - scaling - bilinear");
-    //gtk_window_set_default_size(GTK_WINDOW(window), 300, 300);
-
-    //hbox = gtk_hbox_new(FALSE, 10);
   if (filename==0) filename="";
   printf ("Making pixmap from file:%s\n", filename);
   A4GL_trim(filename);
