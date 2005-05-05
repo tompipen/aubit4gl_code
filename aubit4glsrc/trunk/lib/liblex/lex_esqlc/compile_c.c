@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.220 2005-03-31 13:35:51 afalout Exp $
+# $Id: compile_c.c,v 1.221 2005-05-05 08:59:51 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.220 2005-03-31 13:35:51 afalout Exp $";
+		"$Id: compile_c.c,v 1.221 2005-05-05 08:59:51 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4013,7 +4013,6 @@ if (!A4GL_doing_pcode()) {
   printc
     ("   if (_g>0&&_useddata) {for (_p=acl_rep_ordcnt;_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
      get_curr_rep_name ());
-  /*for (a=0;a<cnt;a++) { printc("A4GL_setnull(_rbind[%d].dtype,_rbind[%d].ptr,_rbind[%d].size);",a,a,a); }*/
   printc ("   A4GL_pop_params(_rbind,%d);\n", cnt);
   printc ("   if (_useddata==0) {_g=1;}\n");
   printc ("   if (_g>0) {");
