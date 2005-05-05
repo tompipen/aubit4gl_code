@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.121 2005-03-31 16:45:05 mikeaubury Exp $
+# $Id: sql.c,v 1.122 2005-05-05 09:08:36 mikeaubury Exp $
 #
 */
 
@@ -1065,23 +1065,31 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *cursname)
 #endif
 
 #if (ODBCVER >= 0x0300) && !PGODBC
-      A4GL_debug("Setting cursor type to scrollable");
-      rc = SQLSetStmtAttr ((SQLHSTMT) nsid->hstmt, SQL_ATTR_CURSOR_TYPE, (SQLPOINTER)SQL_CURSOR_STATIC, 0);
-      A4GL_debug("set stmt attr rc=%d",rc);
-      rc = SQLSetStmtAttr ((SQLHSTMT) nsid->hstmt, SQL_ATTR_CURSOR_SCROLLABLE, (SQLPOINTER)SQL_SCROLLABLE, 0);
-      A4GL_debug("set stmt attr rc=%d",rc);
-
-      if (rc==1) {
-		//SQLINTEGER bl;
-		SQLINTEGER sl;
-		SQLUINTEGER r=99;
-		SQLUINTEGER r2=99;
-		SQLGetStmtAttr(nsid->hstmt,SQL_ATTR_CURSOR_SCROLLABLE,&r,sizeof(r),&sl);
-		SQLGetStmtAttr(nsid->hstmt,SQL_ATTR_CURSOR_TYPE,&r2,sizeof(r2),&sl);
-		// It didn't like that ?
-		A4GL_debug("Asked for %x - got %x %x",SQL_SCROLLABLE, r,r2);
-      }
-
+      if (!A4GL_isyes(aclget_env("NO_ATTR_CURSOR"))) {
+      	A4GL_debug("Setting cursor type to scrollable");
+      	rc = SQLSetStmtAttr ((SQLHSTMT) nsid->hstmt, SQL_ATTR_CURSOR_TYPE, (SQLPOINTER)SQL_CURSOR_STATIC, 0);
+      	A4GL_debug("set stmt attr rc=%d",rc);
+	
+      	rc = SQLSetStmtAttr ((SQLHSTMT) nsid->hstmt, SQL_ATTR_CURSOR_SCROLLABLE, (SQLPOINTER)SQL_SCROLLABLE, 0);
+      	A4GL_debug("set stmt attr rc=%d",rc);
+	
+		if (rc==-1) { // Well - we tried...
+			rc=0; 
+		}
+	
+      	if (rc==1) {
+			//SQLINTEGER bl;
+			SQLINTEGER sl;
+			SQLUINTEGER r=99;
+			SQLUINTEGER r2=99;
+			SQLGetStmtAttr(nsid->hstmt,SQL_ATTR_CURSOR_SCROLLABLE,&r,sizeof(r),&sl);
+			SQLGetStmtAttr(nsid->hstmt,SQL_ATTR_CURSOR_TYPE,&r2,sizeof(r2),&sl);
+			// It didn't like that ?
+			A4GL_debug("Asked for %x - got %x %x",SQL_SCROLLABLE, r,r2);
+      	}
+     } else {
+      	rc = SQLSetStmtOption ((SQLHSTMT) nsid->hstmt, SQL_CURSOR_TYPE, SQL_CURSOR_STATIC);
+     }
 #else
       rc = SQLSetStmtOption ((SQLHSTMT) nsid->hstmt, SQL_CURSOR_TYPE, SQL_CURSOR_STATIC);
 #endif
