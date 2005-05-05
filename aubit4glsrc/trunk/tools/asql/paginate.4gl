@@ -32,7 +32,7 @@ code
 #include <stdio.h>
 
 
-extern FILE *out;
+extern FILE *file_out_result;
 extern int outlines;
 extern char outfname[255];
 extern int display_lines;
@@ -66,9 +66,9 @@ code
 FILE *in;
 FILE *out2;
 set_display_lines();
-if (out) {
-	fclose(out);
-	out=0;
+if (file_out_result) {
+	fclose(file_out_result);
+	file_out_result=0;
 }
 in=fopen(outfname,"r");
 A4GL_debug("READING IN %s...",outfname);

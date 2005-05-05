@@ -46,7 +46,7 @@ void open_display_file_c() ;
 void set_outfname(void);
 
 
-FILE *out=0;
+FILE *file_out_result=0;
 FILE *exec_out;
 int outlines=0;
 
@@ -153,11 +153,11 @@ code
 A4GL_trim(lv_str);
 
 if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
-A4GL_assertion(out==0,"No output file (2.1)");
-fprintf(out,"%s\n",lv_str);
+	A4GL_assertion(file_out_result==0,"No output file (2.1)");
+	fprintf(file_out_result,"%s\n",lv_str);
 } else {
-A4GL_assertion(exec_out==0,"No output file (2.2)");
-fprintf(exec_out,"%s\n",lv_str);
+	A4GL_assertion(exec_out==0,"No output file (2.2)");
+	fprintf(exec_out,"%s\n",lv_str);
 }
 outlines++;
 endcode
@@ -178,13 +178,13 @@ code
 	if (lv_str[a-1]=='\n' || lv_str[a-1]=='\r') {
 		lv_col=0;
 		if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
-	 			fprintf(out,"\n");
+	 			fprintf(file_out_result,"\n");
 		} else {
 	 			fprintf(exec_out,"\n");
 		}
 	} else {
 		if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
-	     		fprintf(out,"%c",lv_str[a-1]);
+	     		fprintf(file_out_result,"%c",lv_str[a-1]);
 		} else {
 	     		fprintf(exec_out,"%c",lv_str[a-1]);
 		}
@@ -194,7 +194,7 @@ endcode
 	if lv_col=80 then
 code
 if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
-	 	fprintf(out,"\n");
+	 	fprintf(file_out_result,"\n");
 } else {
 	 	fprintf(exec_out,"\n");
 }
@@ -366,10 +366,10 @@ code
 			} else {
 				rpaginate=0;
 				if (a==0) {
-					if (out) fprintf(out,"\n\n");
+					if (file_out_result) fprintf(file_out_result,"\n\n");
 				}
 repeat_query: ;
-	A4GL_debug("EXEC Repeat query out=%p\n",out);
+	A4GL_debug("EXEC Repeat query out=%p\n",file_out_result);
 				if (execute_select_prepare()) {
 
 					if (get_sqlcode()<0) goto end_query;
@@ -410,7 +410,7 @@ repeat_query: ;
 
 					if (rpaginate==1) {
 						A4GL_debug("EXEC REPEAT");
-						if (out) {fclose(out); out=0;}
+						if (file_out_result) {fclose(file_out_result); file_out_result=0;}
 						first_open=1;
 						goto repeat_query;
 					}
@@ -426,8 +426,8 @@ code
 
 				A4GL_debug("EXEC CLOSEDOWN - %d",outlines);
 	
-A4GL_assertion(out==0,"No output file (2)");
-					if (out) {fprintf(out,")\n");fclose(out);out=0;}
+A4GL_assertion(file_out_result==0,"No output file (2)");
+					if (file_out_result) {fprintf(file_out_result,")\n");fclose(file_out_result);file_out_result=0;}
 
 					if (!execute_select_free()) goto end_query;
 					
@@ -548,20 +548,20 @@ fetchFirst=1;
 
 set_outfname();
 
-if (out) {
-	fclose(out);
-	out=0;
+if (file_out_result) {
+	fclose(file_out_result);
+	file_out_result=0;
 }
 
 
-if (out==0) {
+if (file_out_result==0) {
 	if (!first_open) {
-		out=fopen(outfname,"a");
+		file_out_result=fopen(outfname,"a");
 	} else {
-		out=fopen(outfname,"w");
+		file_out_result=fopen(outfname,"w");
 		first_open=0;
 	}
-	A4GL_assertion(out==0,"Unable to open output file (4)");
+	A4GL_assertion(file_out_result==0,"Unable to open output file (4)");
 }
 
 A4GL_debug("open_display_file_c succeeded - %s",outfname);
@@ -575,7 +575,7 @@ A4GL_debug("open_display_file_c succeeded - %s",outfname);
 int asql_info(struct element *e) {
 int a;
 
-if (out==0) {open_display_file_c();
+if (file_out_result==0) {open_display_file_c();
 }
 
 if (e->type=='3') {
