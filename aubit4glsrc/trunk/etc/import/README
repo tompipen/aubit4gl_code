@@ -70,7 +70,8 @@ other than by linking the shared library to some common name - but this
 restricts usage to one categeory on one server...
 
 ALL MODULES SHOULD BE shared libraries compiled using 4glpc --as-dll, 
-and be call libA4GL_<name> (uppercase A4GL lowercase for the rest of the name)
+. 
+Aubit4GL internal modules should be call libA4GL_<name> (uppercase A4GL lowercase for the rest of the name). User modules should avoid the libA4GL_... prefix so they don't get splatted by a later Aubit4GL module.
 
 
 
