@@ -2828,7 +2828,7 @@ if test "$ac_test_CFLAGS" = set; then
   CFLAGS=$ac_save_CFLAGS
 elif test $ac_cv_prog_cc_g = yes; then
   if test "$GCC" = yes; then
-    CFLAGS="-g -O2"
+    CFLAGS="-g"
   else
     CFLAGS="-g"
   fi
@@ -10531,7 +10531,7 @@ ROOT_FILES_CONF="install.sh"
 #Warning: ROOT_FILES variable is used by make install target
 ROOT_FILES="$ROOT_FILES_DOC $ROOT_FILES_CONF"
 
-ETC_FILES="gtkrc_2 odbc.ini.example"
+ETC_FILES="gtkrc_2 odbc.ini.example 4glpc.iem"
 
 ALL_CONF="$INST_BASE/configure $INST_BASE/etc/config/config.guess \
 		$INST_BASE/etc/config/config.sub $INST_BASE/etc/config/install-sh \
@@ -12746,7 +12746,7 @@ echo "$as_me: WARNING: Cannot read GCC version." >&2;}
 else
 	{ { echo "$as_me:$LINENO: error: Aubit needs GNU 'C' compiler - please install it. Stop." >&5
 echo "$as_me: error: Aubit needs GNU 'C' compiler - please install it. Stop." >&2;}
-   { (exit 1); exit 1; }; }
+   { echo hi; }; }
 fi
 
 ## ==================================================================
@@ -39280,7 +39280,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.319 2005-04-17 01:01:59 afalout Exp $
+| $Id: configure,v 1.320 2005-05-06 18:06:19 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
