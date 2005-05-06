@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.292 2005-04-30 10:12:34 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.293 2005-05-06 19:52:44 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2365,7 +2365,7 @@ ROOT_FILES_CONF="install.sh"
 #Warning: ROOT_FILES variable is used by make install target
 ROOT_FILES="$ROOT_FILES_DOC $ROOT_FILES_CONF"
 
-ETC_FILES="gtkrc_2 odbc.ini.example 4glpc.iem"
+ETC_FILES="gtkrc_2 odbc.ini.example 4glpc.hlp"
 
 ALL_CONF="$INST_BASE/configure $INST_BASE/etc/config/config.guess \
 		$INST_BASE/etc/config/config.sub $INST_BASE/etc/config/install-sh \
@@ -9068,7 +9068,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.292 2005-04-30 10:12:34 mikeaubury Exp $
+| $Id: configure.in,v 1.293 2005-05-06 19:52:44 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
