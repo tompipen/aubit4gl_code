@@ -1,0 +1,25 @@
+grep "aclfgl_" $AUBITDIR/lib/libaubit4gl/*.c | awk -F':' '
+{
+if(substr($2,1,1)=="\"") next
+a=index($2,"aclfgl_")
+fn1=substr($2,a)
+a=index(fn1,"(")
+if (a) {
+	fn2=substr(fn1,1,a-1)
+	gsub("aclfgl_","",fn2)
+	print fn2
+}
+}
+' | awk '
+BEGIN {
+	print "char *builtin_aclfgl_functions[]={"
+}
+
+{
+print "\"" $1 "\","
+}
+
+END {
+	print "0};"
+
+}' > $AUBITDIR/lib/generated/std_funcs.c

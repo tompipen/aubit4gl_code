@@ -1,0 +1,21 @@
+#!/usr/bin/expect -f
+######################################################################
+# Aubit 4gl compiler
+# "expect" script for making odbctest non-interactive
+# Modify DSN, UID, PWD, HOST and  DATABASE according to your odbc.ini
+# and/or database setup
+######################################################################
+
+#"odbctest" executable linked with iODBC manager:
+spawn ./odbctest-iodbc3
+
+expect "list):"
+
+send "DSN=ptest;UID=postgres;PWD=pg;HOST=localhost;DATABASE=andtest;\r"
+
+expect "SQL>"
+send "select typname from pg_type\r"
+expect "SQL>"
+send "exit\r"
+expect eof
+

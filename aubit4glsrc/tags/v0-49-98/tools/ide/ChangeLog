@@ -1,0 +1,16 @@
+Change Log for D4GL Programming Environment
+===========================================
+
+$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
+
+Release 2.00.UC2
+----------------
+1998-07-31: I4GL form4gl uses '#' to mark error lines; D4GL fglform uses
+            '|'.  Modify code to handle both.  Add README and ChangeLog.
+
+Release 2.00.UC1
+----------------
+1998-07-17: Initial Version released to IDN.
+
+@(#)$Id: ChangeLog,v 1.1.1.1 2001-08-20 02:37:04 afalout Exp $
+

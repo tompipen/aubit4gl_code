@@ -1,0 +1,85 @@
+#!/bin/sh
+
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: mkyacc,v 1.19 2005-04-22 06:06:15 mikeaubury Exp $
+#
+
+# This script builds "generated/fgl.yacc" files from several files
+# A Bison parser, will use fgl.yacc to create y.tab.c from it
+
+#Get settings
+#. ../../../../etc/aubitrc
+. ../../../etc/aubitrc
+
+if [ ! -w generated/fgl.yacc ] &&  [ -f generated/fgl.yacc ]
+then
+	chmod 666 generated/fgl.yacc
+	touch generated/fgl.yacc
+fi
+
+if [ "$A4GL_SQLPACK" = "" ]
+then
+	A4GL_SQLPACK="infx"
+fi
+
+cat [0-8]*.reqd generated/kw.yh 9*.reqd *.rule sqlpack/$A4GL_SQLPACK/*.rule  generated/single_words.rule > generated/fgl.yacc
+echo "/* ========================== from mkyacc =========================== */" >> generated/fgl.yacc
+echo "commands : | command1 ;" >> generated/fgl.yacc
+
+echo "all_commands : commands_all opt_semi ;" >> generated/fgl.yacc
+
+echo 'command1	: all_commands  {
+chk4var=0;A4GL_lex_printcomment("/* [Comm:%s] */\n",$<str>$);
+if (A4GL_isyes(acl_getenv("INCLINES")))
+A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
+	A4GL_prchkerr(lastlineno,infilename);
+	lastlineno=yylineno;
+}
+| command1  all_commands {
+A4GL_lex_printcomment("/* [COMM:%s] */\n",$<str>2);chk4var=0;
+if (A4GL_isyes(acl_getenv("INCLINES")))
+A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
+/* if (A4GL_aubit_strcasecmp($<str>$,"whenever")!=0)  */
+A4GL_prchkerr(lastlineno,infilename);
+lastlineno=yylineno;
+}
+;' >> generated/fgl.yacc
+echo "
+commands_all :  {print_cmd_start();} commands_all1 {print_cmd_end();};
+commands_all1 	:" >> generated/fgl.yacc
+grep -h "^[^ ]*_cmd.*:" generated/fgl.yacc  | $AWK '
+(NR==1) {print " 		" $1 >> "generated/fgl.yacc"}
+(NR!=1) {print "	|	" $1 >> "generated/fgl.yacc"}'
+echo " | error;" >> generated/fgl.yacc
+
+echo "/* ========================== end from mkyacc =========================== */" >> generated/fgl.yacc
+cat last.reqd >> generated/fgl.yacc
+echo "char *A4GL_compiled_sqlpack(void ) {char *s=\"$A4GL_SQLPACK\"; return A4GL_decode_packtype(s);}" >>  generated/fgl.yacc
+chmod 444 generated/fgl.yacc
+
+
+#------------------------------ EOF --------------------------------

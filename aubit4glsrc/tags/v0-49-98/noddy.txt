@@ -1,0 +1,510 @@
+Peter and Jane learn how to use Aubit4GL
+----------------------------------------
+
+Installation
+------------
+
+Installation should be possible on most Linux distributions, and with some 
+tweaking on most Unix and Windows machines too
+
+There are several possible sources for download
+
+1) MARS Binary releases (www.aubit.com/aubit4gl/)
+2) MARS Source releases (www.aubit.com/aubit4gl/src)
+3) Nightly builds (aubit4gl.sourceforge.net/files/aubitdownload.htm)
+4) CVS (see http://sourceforge.net/cvs/?group_id=32409 )
+
+
+
+
+
+Installing Source/CVS
+---------------------
+
+Basically -
+Follow the normal ./configure && make && make install routine..
+
+You may need to specify --prefix=/home/aubit4gl
+or something similar..
+
+
+Binary 
+------
+Just tar xvzf the tarball (you can optionally make install)
+
+
+
+Next step  *** READ THIS IF NOTHING ELSE ***
+---------
+
+You should note the libraries created in the lib directory.
+
+
+Eg (This is my list - yours will be different!) :
+
+	libaubit4gl.so
+
+	libA4GL_file.so
+	libA4GL_HTML.so
+	libA4GL_string.so
+	libDATA_menu_list.so
+	libDATA_module.so
+	libDATA_report.so
+	libDATA_struct_form.so
+	libESQL_INFORMIX.so
+	libESQL_POSTGRES.so
+	libEXDTYPE_mpz.so
+	libEXREPORT_NOPDF.so
+	libEXREPORT_PDF.so
+	libFORM_GENERIC.so
+	libFORM_NOFORM.so
+	libFORM_XDR.so
+	libHELP_std.so
+	libLEX_C.so
+	libLEX_CS.so
+	libLEX_EC.so
+	libLEX_PERL.so
+	libLOGREP_CSV.so
+	libLOGREP_PROC_CSV.so
+	libLOGREPPROC_TXT.so
+	libLOGREP_TXT.so
+	libMENU_NOMENU.so
+	libMSG_NATIVE.so
+	libPACKER_MEMPACKED.so
+	libPACKER_PACKED.so
+	libPACKER_PERL.so
+	libPACKER_XDR.so
+	libPACKER_XML.so
+	libRPC_NORPC.so
+	libRPC_XDR.so
+	libSQL_esql.so
+	libSQL_esql_s.so
+	libSQL_FILESCHEMA.so
+	libSQL_ifxodbc.so
+	libSQL_nosql.so
+	libSQL_sqlite.so
+	libSQL_sqliteS.so
+	libSQL_unixodbc.so
+	libUI_CONSOLE.so
+	libUI_HL_TUIN.so
+	libUI_HL_TUI.so
+	libUI_TUI.so
+	libUI_TUI_s.so
+	libXDRPACKER_menu_list.so
+	libXDRPACKER_module.so
+	libXDRPACKER_report.so
+	libXDRPACKER_struct_form.so
+		
+
+These are pretty critical to the operation of aubit4gl..
+
+Everything is highly configurable and these shared libraries are of crucial 
+importance. You'll notice that most of them have a libXXX_YYY.so format 
+(except libaubit4gl.so) so for example :
+
+	libSQL_esql.so
+		XXX=SQL
+		YYY=esql
+
+	libUI_HL_TUI
+		XXX=UI
+		YYY=HL_TUI
+
+
+The XXX represents the module type, the YYY the module name.
+
+
+Module types 
+------------
+
+	A4GL
+	----
+	eg :
+		libA4GL_file.so
+		libA4GL_HTML.so
+		libA4GL_string.so
+
+
+	These are miscellaneous extra libraries
+	
+	
+	DATA
+	----
+	eg :
+		libDATA_menu_list.so
+		libDATA_module.so
+		libDATA_report.so
+		libDATA_struct_form.so
+
+
+	These are internal libraries for reading data files
+	
+	ESQL
+	----
+	eg :
+		libESQL_INFORMIX.so
+		libESQL_POSTGRES.so
+	
+
+	These are helper libraries use when A4GL_LEXTYPE=EC. The library used 
+	is taken from the A4GL_LEXDIALECT variable.
+	This library is used to copy between native types and aubit types 
+	(eg for decimals, dates etc)
+
+	Not used when A4GL_LEXTYPE=C
+
+	
+	EXDTYPE
+	-------
+	eg :
+		libEXDTYPE_mpz.so
+	
+	Example extended datatype library (implements the GNU mpz datatype)
+
+	EXREPORT
+	--------
+	eg :
+		libEXREPORT_NOPDF.so
+		libEXREPORT_PDF.so
+
+	Extended report handling. libEXREPORT_PDF relies on having pdflib 
+	installed. It will not be generated otherwise...
+	PDF reports are experimental.
+	
+	FORM
+	----
+	eg :
+		libFORM_GENERIC.so
+		libFORM_NOFORM.so
+		libFORM_XDR.so
+
+	This is used to read, write and processes a form file. the library 
+	is specified by the A4GL_FORMTYPE variable.
+	eg A4GL_FORMTYPE=GENERIC
+
+
+	If you have 'libFORM_XDR.so' - that is probably the best one to use, so 
+		$ export A4GL_FORMTYPE=XDR
+
+
+
+	If you don't have libFORM_XDR.so, you'll need to use the GENERIC packers
+		$ export A4GL_FORMTYPE=GENERIC
+	You will then also need to specify the GENERIC packer by setting 
+	A4GL_PACKER (see PACKER)...
+		
+	
+	HELP
+	----
+	eg :
+		libHELP_std.so
+
+	Always set to std - can be ignored
+	
+	LEX
+	---
+	eg :
+		libLEX_C.so
+		libLEX_CS.so
+		libLEX_EC.so
+		libLEX_PERL.so
+
+	Specifies the output format - currently on C and EC are supported.
+
+	For C generation, calls are made to internal SQL functions within 
+	the library specified by A4GL_SQLTYPE (see SQL)
+
+	For EC generation, a .ec file is generated which should be compiled 
+	used native database tools (like esql for informix and ecpg for postgres).
+	If you can use EC generation - use it, performance will be better...
+	
+
+
+	LOGREP
+	------
+	eg :
+		libLOGREP_CSV.so
+		libLOGREP_PROC_CSV.so
+		libLOGREPPROC_TXT.so
+		libLOGREP_TXT.so
+	
+	Logical report handling - ignore for now
+
+	MENU
+	----
+	eg :
+		libMENU_NOMENU.so
+
+	GUI Menu handling - obsoleted (probably).
+	
+	MSG
+	---
+	eg :
+		libMSG_NATIVE.so
+
+	Ignore..
+	
+	PACKER
+	------
+	eg :
+		libPACKER_MEMPACKED.so
+		libPACKER_PACKED.so
+		libPACKER_PERL.so
+		libPACKER_XDR.so
+		libPACKER_XML.so
+
+	This specifies the packer to use for reading and writing data files.
+	The library is specified via the A4GL_PACKER variable.
+	Do not use MEMPACKER and PERL unless you know what you are doing..
+	PACKED, XML and XDR are all reasonable packers.
+	The packer library is only used when FORMTYPE etc is set to GENERIC
+	
+	RPC
+	---
+	eg :
+		libRPC_NORPC.so
+		libRPC_XDR.so
+	
+	Specifies which RPC protocol to use - advanced stuff - still experimental
+	
+	SQL
+	---
+	eg :
+		libSQL_esql.so
+		libSQL_esql_s.so
+		libSQL_FILESCHEMA.so
+		libSQL_ifxodbc.so
+		libSQL_nosql.so
+		libSQL_sqlite.so
+		libSQL_sqliteS.so
+		libSQL_unixodbc.so
+
+	This is probably the most important setting, specified through SQLTYPE - 
+	this determines how Aubit is going to talk 
+	to the database.
+	There are two distinct times that this is done :
+		1) At compile time
+		2) At runtime
+
+	For EC generation
+		COMPILE TIME
+		the library controls detecting datatypes for LIKE and RECORD 
+		LIKE etc, 
+
+		RUN TIME
+		the runtime usage is limited to handling LOAD and UNLOAD statements
+		For postgres, setting A4GL_ESQL_UNLOAD=Y will call the ecpg 
+		builtin load and unload statements
+		so this library doesn't need to be used at all...
+
+
+	For C generation
+		COMPILE TIME
+		the library controls detecting datatypes for LIKE and RECORD 
+		LIKE etc, 
+
+		RUN TIME
+		This handles all I/O with the database.
+
+	Special notes :
+		esql - Informix ESQL/C 'connector' - both runtime and compile time.
+			This required Informix ESQL/C to be installed & configured
+
+		unixodbc/ifxodbc - These require that ODBC has been correctly 
+		installed and configured
+			You MUST specify a username and password to connect to 
+			most databases this is done using SQLPWD and SQLUID:
+				$ export SQLUID=maubu
+				$ export SQLPWD=mypasswd
+
+	UI
+	--
+		libUI_CONSOLE.so
+		libUI_HL_TUIN.so
+		libUI_HL_TUI.so
+		libUI_TUI.so
+		libUI_TUI_s.so
+
+	This specifies how data will be displayed to the user. This handles 
+	all the UI controls (prompt,display, input etc)
+	
+	CONSOLE - is a simple I/O module which does not use any control codes. 
+		Just printfs and fgets etc..
+	TUI     - THIS IS THE ONE YOU SHOULD BE USING
+	HL_TUI  - The next version of TUI, abstracted to help make other HL_.. modules
+	HL_TUIN - Ignore
+	HL_GTK  - VERY experimental GTK version - don't expect this to work...
+	
+	XDRPACKER
+	---------
+	eg :
+		libXDRPACKER_menu_list.so
+		libXDRPACKER_module.so
+		libXDRPACKER_report.so
+		libXDRPACKER_struct_form.so
+			
+	This is a helper module when FORMTYPE etc are set to XDR. These contain 
+	the actual XDR routines.
+
+
+
+
+If you've got to here - check :
+
+	1) A4GL_UI=TUI
+
+	2a) A4GL_SQLTYPE=esql (and you have libSQL_esql.so) if you want to 
+		connect to an Informix database
+	2b) A4GL_SQLTYPE=unixodbc/ifxodbc - ensure that you have SQLUID and 
+		SQLPWD set...
+
+	3) A4GL_LEXTYPE=EC for Esql/c generation (you must have Informix esql 
+		or Postgres ecpg installed)
+	3.1) A4GL_LEXDIALECT=INFORMIX or  A4GL_LEXDIALECT=POSTGRES
+
+	4) A4GL_FORMTYPE=XDR (if you have it) or A4GL_FORMTYPE=GENERIC if you 
+		dont and set A4GL_PACKER=PACKED
+
+
+Finally
+-------
+
+export AUBITDIR=/directory/where/this/all/is
+export PATH=$PATH:$AUBITDIR/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib
+
+
+Troubleshooting
+---------------
+
+
+
+
+For informix
+------------
+
+
+1) Get the client SDK
+2) Configure the SDK (normally the
+$INFORMIX/etc/sqlhosts etc)
+3) Check the SDK
+
+Try a simple esql/c program like :
+
+main() {
+   $whenever error stop;
+   $database somedb;
+}
+
+$ esql somefile.ec -o somefile
+$ ./somefile
+
+Compile and run - it if doesn't this is an Informix
+setup problem - check out why...
+
+Most likely  :
+  .rhosts/hosts.equiv not set up properly
+  user doesn't exist on the remote machine
+  /etc/services isn't setup
+  /etc/hosts isn't set up
+  Remote server isn't allowing tcp connections only   
+ 
+    shared memory ones
+
+
+
+4) Setup Aubit - 
+export AUBITDIR=/aubits/path
+export A4GL_SQLTYPE=esql
+** check that you have a $AUBITDIR/lib/libSQL_esql.so
+**
+export A4GL_LEXTYPE=EC
+
+5) Try to compile a simple 4gl
+
+
+database somedb
+main
+display "Hello World"
+end main
+
+4glpc simple.4gl -o simple.4ae
+
+
+5) Try to run that simple.4ae
+
+
+
+For postgres
+------------
+
+1) Install postgres :-)
+
+If possible - use Postgres with the informix compatibility patches :
+(See http://gborg.postgresql.org/project/pginformix/projdisplay.php)
+Make sure you have the ecpg module.
+
+
+2) Configure postgres and create database if required 
+3) Check you're ecpg setup
+
+
+
+
+main() {
+        exec sql database somedb;
+        printf("Status=%d\n",sqlca.sqlcode);
+}
+
+$ ecpg  myprog.ec
+$ gcc myprog.c -o myprog -I/usr/local/pgsql/include -L/usr/local/pgsql/lib -lecpg
+(You'll need to adjust /usr/local/pgsql/include etc to you're environment)
+
+
+If Status=0 then you're fine - if not - its an ecpg/postgres problem...
+
+4) Setup Aubit
+export AUBITDIR=/aubits/path
+export A4GL_SQLTYPE=pg
+** check that you have a $AUBITDIR/lib/libSQL_pg.so
+** if not - go to $AUBITDIR/lib/libsql/postgresql and do a make
+** if that doesn't make it - find out why...
+
+export A4GL_LEXTYPE=EC
+export A4GL_LEXDIALECT=POSTGRES
+
+
+You may also want to consider :
+
+# All updates will be transformed to Ansi syntax
+export A4GL_FIXUPDATE=Y
+
+# The keyword 'AS' is included when using an alias on a select column
+export A4GL_USE_ALIAS_AS=Y
+
+# Any CREATE TEMP TABLE .. WITH NO LOG will have the 'WITH NO LOG' silently 
+removed
+export A4GL_OMIT_NO_LOG=Y
+
+
+# No indicator variables
+export A4GL_USE_INDICATOR=N
+
+# When needed use the ecpg UNLOAD statement rather
+# than the aubit code
+export A4GL_ESQL_UNLOAD=Y
+
+
+
+
+5) Try to run that simple.4ae
+
+database somedb
+main
+display "Hello World"
+end main
+
+4glpc simple.4gl -o simple.4ae
+
+
+

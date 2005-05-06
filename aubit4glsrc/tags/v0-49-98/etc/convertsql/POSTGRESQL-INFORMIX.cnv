@@ -1,0 +1,6 @@
+# rules for converting Postgres SQL to Informix-compatible syntax
+
+REGEX_TO_MATCHES
+CONSTRAINT_NAME_AFTER
+REPLACE oid = rowid
+REPLACE date(now()) = today

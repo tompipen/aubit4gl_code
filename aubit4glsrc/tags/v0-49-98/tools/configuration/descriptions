@@ -1,0 +1,706 @@
+###############################################################################
+# This file is used by mk_config script to create config.4gl and helpfile.msg
+#
+#
+# FORMAT :
+#
+# VAR CATEGORY/CATEGORY/... Brief Description (<= 55 char)
+# Followed by nothing or:
+# =OPTIONAL|LINE|FOR|POSSIBLE|VALUES|IF|REQUIRED
+# or
+# $DIRECTORY/filespec_?.so
+# where the ? would be the setting (like $AUBITDIR/lib/libSQL_?.so for SQLTYPE)
+#
+# The last portion is indented with a 'TAB' and gives a fuller description.
+#
+# Notes:
+#       Do not use double quotes (") use single quote(')
+#
+#  ALWAYS LEAVE A BLANK LINE AT THE END OF THIS FILE!
+###############################################################################
+A4GL_AUTOBANG UI/TUI/MENU  Enable automatic ! for command entry
+=YES|NO
+	(like dbaccess menus) for all applicable statements
+A4GL_CINT COMPILE/RUNTIME Full path to CINT C-code interpreter
+	Full path to CINT, if installed, othewise 'no'. Used by 4glc compiler to run
+	C compiled code after compilation.
+A4GL_C_COMP COMPILE Name of the executable of C compiler to use
+	Note that 4glpc uses $CC
+A4GL_EXE_EXT COMPILE Extension to use for executable files compiled by Aubit compiler
+	Aubit default extensions for compiled resources (forms,menus,help) and objects
+	as used by Amake _AND_ Aubit compiler (see resources.c)
+	Amake does NOT read this file (?-check)
+	note that composite variables A4GL_FRM_EXT and A4GL_MNU_EXT exist only in/for
+	Amake defaults:
+	A4GL_MNU_BASE_EXT=.mnu
+	A4GL_HLP_EXT=.hlp
+	A4GL_FRM_BASE_EXT=.afr
+	A4GL_XML_EXT=.xml
+	A4GL_PACKED_EXT=.dat
+	A4GL_OBJ_EXT=.ao
+	A4GL_LIB_EXT=.aox
+	A4GL_SOB_EXT=.aso
+	A4GL_SOL_EXT=.asx
+	A4GL_EXE_EXT=.4ae
+	To emulate Informix p-code extensions (for instance, to re-use legacy make
+	files) you would use this settings; note that doing this is not recomended
+	and that created files will still be in Aubit format, not Informix one:
+	A4GL_MNU_EXT=<no equivalent>
+	A4GL_HLP_EXT=.iem
+	A4GL_FRM_BASE_EXT=.frm
+	A4GL_XML_EXT=''
+	A4GL_PACKED_EXT=''
+	A4GL_OBJ_EXT=.4go
+	A4GL_LIB_EXT=<no (standard) equivalent>
+	A4GL_SOB_EXT=<no equivalent>
+	A4GL_SOL_EXT=<no equivalent>
+	A4GL_EXE_EXT=.4gi
+
+A4GL_FORMTYPE FORMS/RUNTIME Determine which runtime library to use for reading forms
+$AUBITDIR/lib/libFORM_?.so
+	Default forms driver to be loaded
+	When used: run-time only
+	Options: (GENERIC), NOFORM, XDR
+	Generic implies that format specified with A4GL_PACKER will be used
+
+A4GL_FRM_BASE_EXT RUNTIME/COMPILE/FORMS Default form extension (for all packing types)
+A4GL_HELPTYPE HELP/RUNTIME Determine which runtime library to use for displaying help messages
+$AUBITDIR/lib/libHELP_?.so
+A4GL_HLP_EXT HELP/RUNTIME/COMPILE Specify the default extension for a help file
+A4GL_INIFILE COMPILE/RUNTIME Environment variable optionaly specifiying aubitrc file to use
+A4GL_LEXDIALECT ESQL/COMPILE Determine which ESQL/C dialect to use
+$AUBITDIR/lib/libESQL_?.so
+	When A4GL_LEXTYPE=EC, specify type of EC compiler to be used. Ignored if
+	A4GL_LEXTYPE is not set to EC
+	When used: compile-time only
+	Options: (INFORMIX), POSTGRES, SAPDB, QUERIX
+
+A4GL_LEXTYPE COMPILE Determine what language to convert the 4GL code into
+$AUBITDIR/lib/libLEX_?.so
+	Default output language driver for 4gl compiler:
+	When used: compile-time only
+	Options: (C), PERL, EC, CS
+	Note: EC (Embedded SQL C) can be Informix ESQL/C, SAP DB pre-compiler, Querix
+	esqlc or PostgreSQL ecpg.
+	using EC will limit Aubit DB connectivity at run-time to that of used EC compiler, ignoring
+	setting of A4GL_SQLTYPE
+	Note: CS is C#
+
+A4GL_LIB_EXT COMPILE Extension to use for libraries created by Aubit compiler
+A4GL_LINK_LIBS COMPILE Libraries to link against when producing executables
+A4GL_MENUTYPE MENU/COMPILE/RUNTIME Determine library to use for menuhandlers (not normal 4GL menus)
+$AUBITDIR/lib/libMENU_?.so
+	Default menu driver to be loaded:
+	When used: run-time only
+	Options: (NOMENU), XDR, GENERIC
+	Generic implies that format specified with A4GL_PACKER will be used
+
+A4GL_MNU_BASE_EXT COMPILE/RUNTIME/MENU Base extension for compiled menu files
+	Base extension (without packer extension) to use when compiling/opening menu files
+A4GL_MSGTYPE HELP/RUNTIME Determine library for help message handling
+$AUBITDIR/lib/libMSG_?.so
+	Default help message driver to be loaded:
+	When used: run-time only
+	Options: (NATIVE), XML (??? XML? chech this!)
+
+A4GL_MV_CMD COMPILE Command to ise to move files on the file system
+A4GL_OBJ_EXT COMPILE extension to use when compiling 4GL modules to objects
+A4GL_OMIT_NO_LOG SQL Any CREATE TEMP TABLE .. WITH NO LOG will have the 'WITH NO LOG' silently removed
+=YES|NO
+A4GL_PACKED_EXT COMPILE/RUNTIME Determine file extension for packing
+A4GL_PACKER MENU/FORMS/HELP/COMPILE/RUNTIME Determine library for packing forms/menus/help etc
+$AUBITDIR/lib/libPACKER_?.so
+	You can select which packer to use by setting the variable 'A4GL_PACKER'
+	 1) (PACKED)  - default
+	  This is very similar to XDR in that data is written in a hopefully portable
+	 way (optionally non-portable if the required functions aren't available).
+	 This will probably give the smallest output files
+	 2) XDR
+	  This is the same as doing it the old way
+	 3) XML
+	  This stores and reads the data in an XML file. The reading is very limited
+	 and can basically only read the XML files that it generates - IT IS NOT A
+	 FULL BLOWN XML PARSER. It uses some odd constructs and isn't ideal - but
+	 you'll get the idea when you see the output. Size of created files is
+	 much larger then PACKED or XDR
+	 4) PERL
+	 This generates a data structure which can be used inside a perl program - its
+	 pretty complicated stuff though using hashes for the data representation.
+	 What you do with it after you've generated it is up to you, because this is
+	 an output only library (ie it can't read back what its written).
+
+
+A4GL_PDFTYPE REPORT/RUNTIME Determine which library to use for extended reports
+$AUBITDIR/lib/libEXREPORT_?.so
+	Determine default driver for Extended Reporting
+	When used: run-time only
+	Options: PDF, (NOPDF)
+
+A4GL_RESERVEWORDS COMPILE --obsolete?-- Reserved word handling
+	Used to determine if traditionaly reserved words in 4GL language should be treated as reserverd
+	Procesing of reserved word is experimental. Set this to YES, if you want to
+	disable this functionality. When set to NO, compiler will try to process
+	most reserved words, instead of reporting the error.
+
+A4GL_RM_CMD COMPILE Command to use for deleting files on the file system
+A4GL_SAPDB_ESQLC ESQL/COMPILE Full path to SAP DB ESQL/C compiler
+	full path to SAP-DB ESQL/C pre-compiler executable used when compiling EC output for
+	SAP DB(does not have to be in the path)
+A4GL_SQLTYPE SQL/RUNTIME/COMPILE Determine which library to use to connect to the database
+$AUBITDIR/libSQL_?.so
+	Name of default SQL library plug-in to use.
+	When used: run-time and compile-time
+	Options: (nosql)
+	   <ODBC MANAGERS> iodbc unixodbc odbc32 (Windows only)
+		<DIRECT ODBC> 	ifxodbc pgodbc  sapodbc sqliteodbc
+	   <NATIVE> 		esql esqpPG esqlSAP esqlQ sqlite sqliteS pg
+		<SPECIAL> 		FILESCHEMA
+	FILESCHEMA is to be used for compiling programs where either the database
+	doesn't exist yet - or you can't get immediate access to it.
+	This takes the 'database' as a filename (with a .schema extension) and uses
+	that to collect the data used by compiler(s)
+	Warning: this setting is ignored at run-rime when A4GL_LEXTYPE is set to 'EC'.
+	At compile time, it is used by compilers segardless of A4GL_LEXTYPE setting
+
+A4GL_UI UI/RUNTIME Determine which plug-in to use for the user interface
+$AUBITDIR/lib/libUI_?.so
+	Defines default UI (user intertface) driver plug-in to load
+	When used: run-time only
+	Options: (CONSOLE) [no deps.], TUI [curses], GTK [GTK+].
+
+A4GL_USE_ALIAS_AS SQL The keyword 'AS' is included when using an alias on a select column
+=YES|NO
+	Used for EC output only
+A4GL_XML_EXT COMPILE/RUNTIME extension to use with XML packer
+	Used when when creating output (forms,menus) or opening resource files using XML packer
+	Default:
+	SEE ALSO:
+A4GL_ALWAYSCLOBBER
+=YES|NO
+	See also: A4GL_NOCLOBBER
+	
+A4GL_ANSI_ERROR SQL/COMPILE ANSI SQL 92 error checking mode
+	When ANSI_ERROR is set to Yes, compiler will abort if non ANSI SQL 92 statemt
+	is found in source code (Static SQL only).
+	If neither A4GL_ANSI_WARN or A4GL_ANSI_ERROR is set, no checking is performed.
+A4GL_ANSI_WARN SQL/COMPILE ANSI SQL 92 warning checking mode
+	When ANSI_WARN is set to Yes compiler will display a warning if it encounters
+	static SQL statement not confitming to ANSI SQL 92 specification
+	If neither A4GL_ANSI_WARN or A4GL_ANSI_ERROR is set, no checking is performed.
+A4GL_ARR_DIR_MSG UI/TUI/LANG Display/Input array message 'There are no more rows in that direction'
+
+AUBITDIR COMPILE/RUNTIME Specify the location of the aubit source tree or installation
+	Default for source distribution:/opt/aubit/aubit4glsrc
+	Default for binary distribution:/opt/aubit4gl
+	Usually set using --prefix=/path to 'configure' script
+
+AUBITETC COMPILE/RUNTIME Location of global Aubit configuration directory
+	This internal variable points to default location of Aubit config files
+	Default: /etc/opt/aubit4gl You should not need to change this.
+	Note: location of system global cinfiguration file is determined by LSB standard.
+	But wheather it will be created or not will depend on user lever privilages 
+	of the user installing Aubit to write under /etc.
+	Actual location will be deternined by Autoconf in @AUBITETC@ variable.
+AUBIT_Y2K RUNTIME Specify Y2K handling of dates
+	+n (n<100) - set to nearest year using +n years from today as limit for future
+	-n (n>-100) - set to nearest year using -n from today as limit for past
+	(note: -25 = +75 )
+	eg if year=1997
+	n=20   > 17 will be taken as historic anything <17 is future
+	n=-20  <77 will be taken as future >77 is in the past
+	XX00 - always use century XX
+	999  - Do not add anything - dealing with AD 0-99
+	-999 - use current century
+A4GL_AUTONULL COMPILE Auto initializing module and function local variables
+=YES|NO
+	This setting is used at
+	compile-time only. Numeric variables are initializet to 0, everything else to NULL
+	To turn on, set to 'Y' (??? or is that YES ???)
+
+A4GL_BACKGROUND UI/TUI Default background character (in hex) when creating a window
+	(eg 2E for a '.')
+	Application windows background colour
+	xxxx is a HEX code of a colour attribute - eg 1400 (for 0x1400)
+	for blue and reverse. Applies to all windows created when no attribute is
+	specified (including the main screen)
+
+
+A4GL_CLASSIC_I4GL_MONO UI/TUI Inhibit mapping of colours to attributes (like red->BOLD)
+=YES|NO
+A4GL_COLOR_TUI_BKG UI/TUI specify the default background color
+A4GL_COLOR_TUI_BKG_DEF UI/TUI specify the default background color
+=1|2|3|4|5|6|7|8
+	Example:
+	4 = Set the background colour of the Application to blue
+
+A4GL_COLOR_TUI_BLACK UI/TUI Remap black screen color to alternative
+A4GL_COLOR_TUI_BLUE UI/TUI Remap blue screen color to alternative
+A4GL_COLOR_TUI_CYAN UI/TUI Remap cyan screen color to alternative
+A4GL_COLOR_TUI_FG	UI/TUI specify the default fg color
+A4GL_COLOR_TUI_FG_DEF	UI/TUI specify the default fg color
+A4GL_COLOR_TUI_GREEN UI/TUI Remap green screen color to alternative
+A4GL_COLOR_TUI_MAGENTA UI/TUI Remap magenta screen color to alternative
+A4GL_COLOR_TUI_RED UI/TUI Remap red screen color to alternative
+A4GL_COLOR_TUI_WHITE UI/TUI Remap white screen color to alternative
+A4GL_COLOR_TUI_YELLOW UI/TUI Remap yellow screen color to alternative
+
+A4GL_COLUMNS  UI/TUI Specify the width of the screen
+	See A4GL_LINES for sescription
+A4GL_COMMENTS COMPILE Add comments to the generated code
+
+A4GL_COMMENT_LIKE_DISPLAY UI Specify comments to be in current display color
+=YES|NO
+A4GL_COMMENT_LIKE_INPUT UI Specify comments to be in current input color
+=YES|NO
+A4GL_CONSTANT2DEFINES COMPILE Print on standard output a #define for all constants
+=YES|NO
+	(can be used to generate a .h file)
+DBDATE RUNTIME Specified how dates will be formated
+DBEDIT RUNTIME Name of the editor to use for TEXT BLOB fields
+	Applies to asql only?
+A4GL_DBPATH RUNTIME/COMPILE Path to look in for databases and resource files
+	See 'DBPATH' for more information
+DBPATH SQL/HELP/FORMS/MENU/RUNTIME/COMPILE Path to look in for databases and resource files
+	DBPATH variable containls list of directory(es) that will be searched for objects
+	like compiled form, help and menu files, and SQLite databases. Use coloumn (:)
+	as a delimiter between paths you want searched, (;) on Windows.
+	Default: tools/ in Aubit source code root directory and tools/ in Aubit binary
+	installation directory
+	As oposed to most Aubit settings that are exclusive and order of there surce
+	(environment, aubitrc, built-in resources) decides which one will prevail,
+	DBPATH and A4GL_DBPATH are cumulated from both variables, and added one to
+	another in order depending on there source. So if you have path 1 in
+	environment variable A4GL_DBPATH path 2 in environment variable DBPATH, path 3
+	in A4GL_DBPATH in aubitrc, path 4 in DBPATH in aubitrc, cumulated value will
+	look like this: 1:2:3:4. Search for the file in DBPATH will then be performed
+	from left to right, and first path found to contain file looked for will be used.
+	NOTE: DBPATH to xxx/incl is for adbaccess form files
+	Only SQLite databases are serched for usign DBPATH. Resources file are:
+	compiled forms/menus/help/p-code files
+
+
+DBPRINT PRINT/RUNTIME/REPORT Printing command
+	Name of command to use to pass report output when executing reports defines as
+	START REPORT ... TO PRINTER
+A4GL_DEBUG DEBUG/COMPILE/RUNTIME Log extensive information for tracing bugs in Aubit4gl code
+	When you encouter programs that crash, use this for debugging - it will
+	create file 'debug.out' that can be very usefull when you don't get core
+	dump, so you don't have file 'core' to run 'gdb' on. WARNING: do not set
+	this under normal circumstanced - all programs will create debug.out file
+	when they run, files can be VERY large, and they will slow down progrms
+	execution considerably. This setting applies to all Aubit compiler
+	executables (includign all compilers) and to all 4gl programs compiled
+	with Aubit compiler.
+	FIXME: we should have separate settings for compilers and compiled programs,
+	like A4GL_DEBUG_COMP and A4GL_DEBUG_PRG
+	FIXME: add note about priority numbers
+	Default=<not set>
+
+A4GL_DEBUG_CFG DEBUG
+A4GL_DEBUG_DECIMAL DEBUG
+A4GL_DEBUG_LEVEL DEBUG/COMPILE/RUNTIME Specify the detail in which debug messages will be logged
+A4GL_DEFPRINTER PRINT
+A4GL_DUMPCOMMENTS FORMS/COMPILE Dump form file attributes when compiling form to stdout
+A4GL_DUMPSTRINGS COMPILE Dump all the strings in a 4GL to a file called strings.out
+=YES|NO
+	(normally set to 'ident') (see TRANSLATEFILE)
+A4GL_DUMP_CORE DEBUG/RUNTIME Action to perform when aubit/4gl programs crash
+=YES|NO
+	either print a sorry message (Internal Error...) , or dump core (seg fault)
+A4GL_ERROR_MSG
+A4GL_ESQL_UNLOAD ESQL/RUNTIME PostgreSQL ecpg Informix compatibility
+=YES|NO
+	When needed use the ecpg UNLOAD statement rather than the aubit code
+A4GL_EXTENDED_ERRORLOG  DEBUG/RUNTIME Error log handling
+	Add module and line when writing to the error log from CALL errorlog(..)
+A4GL_EXTENDED_GRAPHICS FORMS/UI/TUI enable the use of extended graphics from form files (+<>^v for cross and tee's)
+	If set to Y allows forms to contain the additional graphics characters
+	<,>,^,v, and + to be used for tee's and an intersection.
+	So the following :
+	\gp--v--q\g
+	\g|  |  |\g
+	\g>--+--<\g
+	\g|  |  |\g
+	\gb--^--d\g
+	Will draw a box with an intersecting horizonal and vertical line.
+	Note - you'll need to set this before you compile the form as
+	well as when you run program that will use form file compiled this way
+
+A4GL_FAKELEXTYPE PCODE/COMPILE Compile C code resulting from 4gl compilation to P-code
+A4GL_FAKE_IMMEDIATE COMPILE Affects EXECUTE IMMEDIATE
+=YES|NO
+	This option instructs the compiler to generate a prepare/execute pair for esql/c generation
+	rather than use the native ESQL/C EXECUTE IMMEDIATE statement. This option is therefore most
+	useful where the native ESQL/C compiler does not support the EXECUTE IMMEDIATE statement 
+	(Postgres ecpg for example)
+	For example, to use:
+		EXECUTE IMMEDIATE "set enable_seqscan to on" 
+	with PostgreSQL RDBMS, you'd have to have A4GL_FAKE_IMMEDIATE set
+
+A4GL_FIELD_CONSTR_EXPR UI/TUI/LANG Message to display when a fields value cannot be used for a construct statement
+A4GL_FIELD_ERROR_MSG UI/TUI/LANG Message to display when a fields value is invalid (eg non numeric in numeric field)
+A4GL_FIELD_INCL_MSG UI/TUI/LANG Message to display when a value in a field is not in the include list
+A4GL_FIELD_PICTURE_MSG UI/TUI/LANG Message to display when a pressed which is invalid for picture fields
+A4GL_FIELD_REQD_MSG UI/TUI/LANG Message to display when a field requires a value to be entered
+A4GL_FIXUPDATE SQL All updates will be transformed to Ansi syntax. Applies only to EC output
+=YES|NO
+A4GL_FORMAT_OVERFLOW RUNTIME Determines what happens when a decimal number is too large to fit  [ROUND,REFORMAT]
+=ROUND|REFORMAT
+A4GL_GTKGUI UI/RUNTIME GTK+ ---obsolete?---
+GTKRC UI/RUNTIME GTK+ resources file to use when running in GTK+ GUI mode --probaly obsolete, GTK libs use this themselves?--
+A4GL_GTK_INC_PATH UI/COMPILE Path to includes needed ghen compiling GTK gui enabled code ---should be obsolete---
+	Full path to GTK+ includes (header) files, used when ...?
+	FIXME: why do we need this?
+
+A4GL_GUIPORT UI/RUNTIME ---obsolete?---
+A4GL_HELPTEXT HELP
+A4GL_HIDE_MENU MENU/UI/TUI Remove menu when finished with it, default is to leave it displayed
+=YES|NO
+A4GL_DIM_INACTIVE_MENU MENU/UI/TUI Leave menu displayed - but as DIM rather than NORMAL to show its inactive
+=YES|NO
+HOME COMPILE/RUNTIME System environement vatialbe pointing to current user's home directory
+	Used to find user-scpecific copy of Aubit configuration file (aubitrc) if any
+A4GL_INCLINES DEBUG/COMPILE Adds originating line number to genrated source code
+=YES|NO
+	Adds originating line number of each created target language statemtn
+	coresponding to 4gl source code, to created target language source code,
+	which is usefull for debugging. E.G.:
+		#line 2 '../tools/test/test_build.4gl'
+
+INFORMIXDIR ESQL/COMPILE Location of Informix ESQL/C installation
+	Used when compiling EC ouptput using Informix ESQL/C compiler
+A4GL_INIT_COL_REFRESH  UI/TUI Reinitialise curses colors on exit
+	Used when curses colours must be reinitialized when returning to Screen mode
+	(terminal specific)
+=YES|NO
+A4GL_INPARRAY_FULL_MSG UI/TUI/LANG Message to display when input array becomes full
+A4GL_KEEP_QUALIFIER
+=YES|NO
+A4GL_KEYFILE DEBUG/UI/RUNTIME Read keystokes from a file and replay them
+	Mechanism for doing automated testing
+	A4GL_KEYFILE=(some filename in DBPATH)
+	SEE ALSO: A4GL_KEYDELAY
+
+A4GL_KEYDELAY DEBUG/UI/RUNTIME Speed to replay keystokes
+	Mechanism for doing automated testing
+	A4GL_KEYDELAY=(time in usec 1000000 = 1 second, defaults to 0.1s)
+	SEE ALSO: A4GL_KEYFILE
+
+A4GL_NEEDALLKEYS DEBUG/UI/RUNTIME Keyfile handling
+	Specifies an error if more key stokes are requested than appear in the keystoke file
+	(otherwise -return to keyboard input)
+	SEE ALSO: A4GL_KEYFILE
+A4GL_KEYLOG DEBUG/UI/RUNTIME Log all keystokes to the specified file
+A4GL_LANGUAGE
+A4GL_LINES UI/TUI Number of rows on the screen
+	Terminal size
+	This should make programs work with a normal (not xterm) terminal session.
+	Defaults:
+	A4GL_COLUMNS=80
+	A4GL_LINES=24
+	FIXME: is this really A4GL_ variable - terminal will set LINES/COLUMNS, not
+	A4GL_LINES/A4GL_COLUMNS
+	SEE ALSO: A4GL_COLUMNS
+
+
+A4GL_LOGNAME DEBUG/RUNTIME
+MAKE
+A4GL_MAP4GL
+=YES|NO
+A4GL_MARK_SCOPE
+A4GL_MONEY_AS_DECIMAL COMPILE/ESQL Treat MONEY type as DECIMAL when compiling to POSTGRES EC LEXTYPE
+=YES|NO
+	Because PG EC compiler (ecpg) does not know about MONEY type. Without it,
+	you will get (ERROR: Only numeric/decimal have precision/scale argument)
+A4GL_MONEY_AS_MONEY COMPILE/ESQL Treat MONEY type as MONEY when compiling to POSTGRES EC LEXTYPE
+=YES|NO
+	This will probably fail, since PG EC compiler curently does not know about 
+	MONEY datatype (ERROR: invalid datatype 'money').
+A4GL_MONO UI/TUI Force monochrome output
+=YES|NO
+A4GL_NOCFILE
+=YES|NO
+A4GL_NOCLOBBER COMPILE Turn off window names clobbering
+=YES|NO
+	Each time you use a window/form etc - t is automatically preprended with the name of the module to form a unique name across the program.
+	This means that you can safely use window 'w1' in a module without worrying if you are using window w1 in another module..
+	If you want to turn this off (so thatt it works the same way as Informix) - try setting A4GL_NOCLOBBER=Y
+	NOCLOBBER defaults to 'Y' since Jan 2005, for Informix-4GL compatibility
+	See also: A4GL_ALWAYSCLOBBER
+A4GL_NO_INVIS_ATTR UI/TUI Disable usage of A_INVIS in curses - attempt alternative method for concealment
+=YES|NO
+A4GL_PAGER
+A4GL_PAUSE_MSG REPORT/RUNTIME/LANG Message to show when executing PAUSE statement in REPORT
+A4GL_PGKEYSMOVE UI Defines the use of the PgUp and PgDn keys as the same as NEXT KEY or for ON KEY (PGDN)
+=YES|NO
+POSTGRESDIR ESQL/COMPILE Base directory of PostgreSQL installation 
+	Used when looking for includes or libraries to link with, when compiling usign PostgreSQL ESQL compiler
+A4GL_PRINTPROGRESS
+A4GL_PRINTSCRFILE DEBUG/UI/TUI Specify a file to dump screen to (start with a | to pipe to a command)
+A4GL_PRINTSCRKEY DEBUG/UI/TUI Specify a key to automatically dump the screen with (goes to PRINTSCRFILE)
+A4GL_RPCTYPE RUNTIME Determine which library to use for remote procedure calls
+$AUBITDIR/lib/libRPC_?.so
+	Determine default RPC (Remote Procedure Call) driver to load
+	When used: run-time only
+	Options: SUNRPC, (NORPC), XMLRPC
+	Note: XMLRPC is client only at the moment
+
+A4GL_SCROLLBACKTO1 UI/TUI Display array handling
+=YES|NO
+A4GL_SCROLLTOEND UI/TUI Display array handling
+=YES|NO
+	In display array scroll back to first line if PgUp is used rather than to just first page
+A4GL_SIMPLE_GRAPHICS UI/TUI Force usage of simple graphics for borders
+=YES|NO
+	if set to Y then +,|,- will be used to draw graphics characters instead of
+	proper borders (if available)
+
+A4GL_SQLCNVPATH RUNTIME/SQL Specifies the location of the conversion details for SQL grammers
+	CONFIG FILE BASED CONVERSIONS
+	convert_sql() now uses configuration files.  These are by default
+	located in /opt/aubit4gl/etc/convertsql/, but that can be changed
+	with A4GL_SQLCNVPATH.
+
+A4GL_SQLCONVERT COMPILE/RUNTIME/SQL Autoconvert SQL from sources files dialect to runtime dialect
+	Conversion of SQL statements in 4GL code, to the SQL dialect of target RDBMS
+	Conversion is only done if you set A4GL_SQLCONVERT=YES and only if
+	the dialect used by the program differs from that used by the DBMS
+	interface.
+
+A4GL_SQLDIALECT COMPILE/RUNTIME/SQL SQL Dialect used for the source file
+	Declares the SQL dialect of SQL code in 4GL source code.
+	an 4GL directive to change the default SQL dialect at runtime is:
+	       SET SQL DIALECT TO ORACLE
+	by default the system assumes the 4GL application is using Informix SQL
+	syntax, but this can be changed by setting, for example:
+
+A4GL_SQLEXEC SQL
+A4GL_SQLPWD SQL/COMPILE/RUNTIME Database access password
+	See A4GL_SQLUID for description
+A4GL_SQLUID SQL/COMPILE/RUNTIME Database access user name
+	FIXME: is not odbc.ini supposed to have default login name and password?
+	Defines username and password for accessing database server via ODBC:
+	needed for DATABASE and DEFINE LIKE statements at compile time, and
+	procedural DATABASE statement ar run-time. You can use OPEN SESSION and
+	supply login information at run-time, but NOT at compile time:
+	Default=<no default value>
+	WARNING!! BE CAREFULL NOT TO HAVE A TAB OR OTHER SPECIAL CHARACTRS
+	IN THE VALUE OF THIS VARIABLES !!!!!!!!!!
+
+A4GL_SQL_CURRENT_FUNCTION SQL PostgreSQL ecpg Informix compatibility
+A4GL_TRANSLATEFILE COMPILE Specifies the location of a translation file
+	This is used for transforming 4GL strings via a message file (see DUMPSTRINGS)
+A4GL_TRANSMODE RUNTIME/SQL Set transactions behaviour (PodtgreSQL EC mode only??)
+	-1 	= silently ignore transactions
+	0	= Use odbc's SQLTransact call
+	1	= Use SQLExecDirect with "BEGIN WORK" etc
+	See also: A4GL_AUTOCOMMIT
+	
+A4GL_AUTOCOMMIT RUNTIME/SQL Set transaction commit behaviour (PostgreSQL EC mode only??)
+=YES|NO
+	If enabled, automatically perform a commit after each SQL statement
+	
+A4GL_TRIMDUMP DEBUG/UI/TUI Trim the results of a dump screen to a specified screen size (eg 24x80)
+=24x80|25x80|24x132|25x132
+A4GL_TRIMUSINGFMT RUNTIME Trim trailing spaces from a using string variable before applying it
+A4GL_USEPAGEKEYS UI Does odd processing with PgUp PgDn keys on keyboard
+A4GL_USE_BINDING_FOR_PUT SQL
+=YES|NO
+A4GL_USE_DATABASE_STMT SQL
+=YES|NO
+A4GL_USE_FORM_SIZE FORMS/UI/RUNTIME
+	Aubit used to honouring the size y by x in the form, this has been removed.
+	If you require to specify the size, it can still be used by setting
+	A4GL_USE_FORM_SIZE=Y (using this is an Aubit extension - and not default
+	informix behaviour!)
+
+=YES|NO
+A4GL_USE_INDICATOR ESQL/COMPILE Use indicator variables in ESQL/C generated code
+=YES|NO
+VISUAL RUNTIME Name of the editor for BLOB fields (?)
+A4GL_YYDEBUG DEBUG/COMPILE Aubit parser debugging
+A4GL_EXDTYPE RUNTIME External data types support to be loaded
+$AUBITDIR/lib/libEXDTYPE_?.so
+	Currently only MPZ (large integers) are supported
+	FIME: not sure if this is needed - looks like this is loaded on request:
+	see example testmpz.4gl into the tools/test directory.
+A4GL_NULL_DECIMAL_IF_BAD RUNTIME Null a decimal value rather than set it to 0 if its invalid
+=YES|NO
+	The standard informix behaviour seems to be to set the value to 0 for decimals
+	but sets dates to NULL. This is inconsistent and so this default behaviour is switchable
+	via this configuration setting
+A4GL_BEEPONERROR RUNTIME Indicates that a beep should be emitted by the ERROR statement
+=YES|NO
+A4GL_FLASHONERROR RUNTIME Indicates that a screen flash should be emitted by the ERROR statement
+=YES|NO
+	Not all terminals are capable of emitting a screen flash. If a screen flash is not 
+	possible then the terminal bell is rung instead.
+A4GL_REFRESH_AFTER_MOVE UI/TUI Issue a screen update after a cursor movement
+=YES|NO
+	This is a screen drawing optimization function. Normally a screen update is not required
+	but there may be some instances where the screen cursor does not move to the right place
+	if this isn't set. If you're not too worried about where the screen cursor is, or your application
+	doesn't suffer from this problem then set this to N
+A4GL_FIRSTCOL_ONERR UI/TUI Move to the beginning of a field after an error
+=YES|NO
+	Can only be set if CLR_FIELD_ON_ERROR=N
+	See CLR_FIELD_ON_ERROR
+A4GL_CLR_FIELD_ON_ERROR UI/TUI Clears a field after an error
+=YES|NO
+	If this is set them FIRSTCOL_ONERR will never be triggered
+	See FIRSTCOL_ONERR
+A4GL_NO_REFRESH_AFTER_SYSTEM UI Issue a screen refresh after any sysem command
+=YES|NO
+	In Informix 4GL, the screen is not refreshed after every system command but only
+	after a new screen instruction is issued. This means that if you are running a lot
+	of system commands, Aubit4GL's screen may appear to flicker between line mode
+	and screen mode. Set this to N to inhibit the automatic screen refresh.
+A4GL_NO_ARRAY_EXPAND COMPILE Remove the array expansion code
+=YES|NO
+	This is solely for backward compatibilty with older Aubit4GL versions.
+	It should be set to N in all other cases..
+A4GL_NO_ORDBY_INTO_TEMP COMPILE Remove any 'ORDER BY' clause when selecting into a temp table
+=YES|NO
+	The ORDER BY is redundant when selecting into a temporary table (and some
+	database engines don't support it). This option silently drops the ORDER BY clause
+RM_COMMENTS_FIRST COMPILE remove any comments before compiling the 4GL code
+=YES|NO
+	This defaults to Yes, if you have problems with compilation - it may be
+	that this code is getting confused. Try setting to N, or setting A4GL_DUMP_LAST
+GDB_ATTACH RUNTIME Attach GDB to the process when a Segmentation Fault occurs
+=YES|NO
+	This is useful for tracing back problems during runtime execution
+	The first command to execute in gdb would normally be a 'bt' which should give
+	something like :
+	#0  0x402095a9 in __wait4 () from /lib/libc.so.6
+	#1  0x40271ad8 in __DTOR_END__ () from /lib/libc.so.6
+	#2  0x401ad506 in system () from /lib/libc.so.6
+	#3  0x40038858 in A4GL_core_dump () at fglwrap.c:911
+	#4  <signal handler called>
+	#5  0x8048bbd in aclfgl_xxx (_nargs=0) at ./x1.c:95
+	#6  0x8048a6d in main (argc=1, argv=0xbffff1d4) at ./x1.c:58
+	#7  0x40180baf in __libc_start_main () from /lib/libc.so.6
+	Ignore everything up to the <signal handler called>, and 'frame 5' (in this case)
+	should show the offending line..
+GDB_EXE RUNTIME Path to executable of you prefered debugger (Default: gdb)
+NO_ALT_SCR RUNTIME/TUI Try to disable the alternate screen (for xterm and console)
+=YES|NO
+	When using some terminals types in curses mode, an alternate screen is employed so that
+	when the application finishes (or otherwise enters line mode), the original screen will 
+	be redisplayed. Setting this option attempts to disable this screen swapping so that the
+	original screen is used for the 4GL display.
+A4GL_DUMP_LAST DEBUG/COMPILE output the results of the last remove comments
+=YES|NO
+	This will produce a file 'last' which contains the file with the comments
+	removed. This is used to check the operation of the RM_COMMENTS_FIRST code. 
+	The file written will always be called last
+
+A4GL_CONSTRUCT_NO_MATCHES RUNTIME/SQL/UI Disable generation of MATCHES keywords
+=YES|NO
+	This setting stops construct from generating a MATCHES when it sees a [, * or ?
+	You can use this setting if your target SQL does NOT have the MATCHES keyword..
+	See also A4GL_CONSTRUCT_LIKE.
+
+A4GL_CONSTRUCT_LIKE RUNTIME/SQL/UI Enable generation of LIKE for construct
+=YES|NO
+	If set to Yes this allows % and _ to be detected and used to for a LIKE within
+	a generated construct string
+	This uses the same flag (ismatch==1 for MATCHES, ==2 for LIKE) as for matches.
+	So - If it looks like a matches, matches takes priority (unless CONSTRUCT_NO_MATCHES IS SET)..
+	Note: This does NOT translate from an entered MATCHES format string to a LIKE format...
+A4GL_DIALOG_OK LANG Text to display on OK button
+A4GL_DIALOG_CANCEL LANG Text to display on CANCEL button
+A4GL_DIALOG_ABORT LANG Text to display on ABORT button
+A4GL_DIALOG_RETRY LANG Text to display on RETRY button
+A4GL_DIALOG_IGNORE LANG Text to display on IGNORE button
+A4GL_DIALOG_YES LANG Text to display on YES button
+A4GL_DIALOG_NO LANG Text to display on NO button
+A4GL_DIALOG_ERROR LANG Text to display for ERROR window
+TUICANCELKEY TUI Allows the assigning of interrupt key.  For example in aterm's I set it to 263
+A4GL_USE_PANGO_ML UI Allow markup for GUI widgets labels 
+=YES|NO
+	When set to Yes, any form label can use the pango-markup-language:
+	(e.g.: DISPLAY "<span background='blue'>Blue BG</span>" to my_label)
+SWAP_SQLCA62 SQL Enable sqlca.sqlerrd[6] (ROWID/OID of last inserted record) translation 
+=Y|N
+	This is apparently needed only with PostgreSQL (with IFX compatibility patches)
+A4GL_SYSCOL_VAL SQL the name of the 'syscolval' table 
+A4GL_SYSCOL_ATT SQL the name of the 'syscolatt' table
+A4GL_CLASSPATH UNKNOWN Path to search for import packages
+RESTARTLOG RUNTIME Restart the error log
+	This causes the CALL startlog("...") to restart with an empty log file
+	each time the program is run. The default is to append to the end of the
+	current log
+A4GL_EC_LOGSQL  UNKNOWN UNKNOWN
+ALWAYS_CONVERT  UNKNOWN UNKNOWN
+BEEP_BADMENUKEY UNKNOWN UNKNOWN
+BINDDATEASINT UNKNOWN UNKNOWN
+COMSPEC COMPILE/RUNTIME On Windows used to determine that we are on Windows
+	Not to be changed by user - this is a Windows system environment variable
+CORE_ON_ASSERT RUNTIME/DEBUG Force a core dump when encountering an assert
+	Aubit4GL uses a series of assertions to check data being used internally.
+	When one of these assertion fails - it generally indicates something has gone
+	wrong internally. Setting this option will force a Core dump (Seg Fault) which
+	should allow any attached debugger to check exactly where the assertion failed 
+	and investigate why it failed.
+DATE_AS_CHAR SQL/ODBC Use character strings for dates
+=YES|NO
+	This specifies that when communicating with the ODBC driver, dates should
+	always be refered to as strings. Some ODBC do not correctly handle dates using
+	the proper ODBC SQL_DATE datatype - when this situation occurs, specifying 
+	DATE_AS_CHAR may help
+DTIME_AS_CHAR SQL/ODBC Use character strings for datetimes
+=YES|NO
+	This specifies that when communicating with the ODBC driver, datetimes should
+	always be refered to as strings. Some ODBC do not correctly handle datetimes using
+	the proper ODBC SQL_C_DATETIME/SQL_TIMESTAMP etc.W hen this situation occurs, specifying 
+	DTIME_AS_CHAR may help
+DUMP4GL DEBUG generates a file /tmp/file.out 
+=YES|NO
+	This generates a file /tmp/file.out which gets written to as the 4glc compiler
+	compiles 4GL code. This can be useful in debugging the 4glc compiler
+EC_EXT COMPILE Specify the extension for an ESQL/C file
+	Defaults: Informix=.ec Postgres=.cpc SAP=.cpc
+A4GL_INCOMPAT_AT_RUNTIME COMPILE Allow incompatible statements at compile-time, stop at run-time
+=YES|NO
+	When A4GL_INCOMPAT_AT_RUNTIME is set to YES,
+	statements that are not implemented or not possible when
+	using particular database (when it is known at compile-time)
+	will not cause compile-time error. Instead, they will compile
+	succesfully, and cause the error at run-time. This will allow
+	4GL source code using such features to be compiled, but if execution
+	of it is attempted, program execution will be halted.
+	Default is to abort with error on compile-time (when target 
+	database is known at compile time, which is tipically only when
+	using A4GL_LEXTYPE=EC)
+EMAIL_RECIPIENT UNKNOWN UNKNOWN
+FGLFRMCOMPILE UNKNOWN UNKNOWN
+FIRSTCOL_ONERR_INCL UNKNOWN UNKNOWN
+FLASH_BADMENUKEY UNKNOWN UNKNOWN
+FORCE_CLOSE UNKNOWN UNKNOWN
+FORCE_ROLLBACK_AT_EXIT UNKNOWN UNKNOWN
+FREE_SQL_MEM UNKNOWN UNKNOWN
+FUDGE_STATUS UNKNOWN UNKNOWN
+IFMX_ESQLC UNKNOWN UNKNOWN
+IFX_LIBS UNKNOWN UNKNOWN
+IGNORE_DATEFMT UNKNOWN UNKNOWN
+INFORMIX_ROUNDING UNKNOWN UNKNOWN
+LOGALL UNKNOWN UNKNOWN
+MONITORPORT UNKNOWN UNKNOWN
+NAMESPACE UNKNOWN UNKNOWN
+NEED_SIGCHLD UNKNOWN UNKNOWN
+NEED_SIGPIPE UNKNOWN UNKNOWN
+NEVER_CONVERT UNKNOWN UNKNOWN
+NO_CONV_ERR UNKNOWN UNKNOWN
+NUMBER_OF_PROCESSORS UNKNOWN UNKNOWN
+ODDOPTIONS UNKNOWN UNKNOWN
+ONKEY_ACCEPT UNKNOWN UNKNOWN
+SHELL UNKNOWN UNKNOWN
+SPACESCORE UNKNOWN UNKNOWN
+START_ALLOC UNKNOWN UNKNOWN
+TRACEDLL UNKNOWN UNKNOWN
+TRACE_AS_TEXT UNKNOWN UNKNOWN
+WAIT_FOR_GDB_ATTACH UNKNOWN UNKNOWN
+DBL2DEC_USING UNKNOWN UNKNOWN
+DEBUGFILE UNKNOWN UNKNOWN
+

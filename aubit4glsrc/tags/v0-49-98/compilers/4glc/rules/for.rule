@@ -1,0 +1,29 @@
+/*
+=====================================================================
+                        Source: for.rule
+=====================================================================
+*/
+
+
+for_cmd	:	FOR variable EQUAL fgl_expr TO fgl_expr for_step
+{
+print_for_start($<str>2);
+push_blockcommand("FOR");
+}
+commands {A4GL_debug("For_cmds\n");} 
+END_FOR {
+
+pop_blockcommand("FOR");
+print_for_end();
+A4GL_lex_printcomment(" /*END FOR*/\n");}
+;
+
+for_step :	{
+		print_for_default_step();
+	}
+	|	STEP fgl_expr
+;
+
+
+/* ============================= for.rule =========================== */
+

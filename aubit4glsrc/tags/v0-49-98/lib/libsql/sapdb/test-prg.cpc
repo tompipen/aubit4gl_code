@@ -1,0 +1,136 @@
+
+/*
+
+SAP-DB eSQL/C connect example Code in C
+
+from http://sapdb.automatix.de/
+
+*/
+
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <time.h>
+#include <malloc.h>
+#include <string.h>
+#include <syslog.h>
+#include <stdarg.h>
+#include <errno.h>
+
+
+/** Funktion: db_connect(char *user, password,
+                         char *db, char *server)
+    Anmelden an die Kran Datenbank (Version Adabas D)
+    
+    Das Programm meldet sich mit *user,*password an die laufende
+    Datenbank *db auf Rechner *server an.
+    
+    Return:  0, alles ok, Verbindung steht
+            -1, Problem, ging nicht
+
+    Author: (c) 1997 AutomatiX GmbH,  G. Janssen
+*/
+int     db_connect (char *us,
+		    char *pw,
+		    char *serverdb,
+		    char *servernode, 
+		    char *errstr)
+{
+  int len;
+  exec sql begin declare section;
+
+  char *password;
+  char *user;
+  char SERVERDB[19];
+  char SERVERNODE[65];
+
+  exec sql end declare section;
+
+  user=us;
+  password=pw;
+
+  strcpy(errstr,"OK");
+
+  len= strlen(serverdb);
+  if(len <1 || len >18) 
+    {
+      snprintf(errstr, 80, 
+	       "Ungültige ServerDB-Angabe (%s) 1...18 Zeichen", 
+	       serverdb);
+
+      return -1;
+    }
+  strcpy(SERVERDB, serverdb);
+
+  if (!servernode)
+    strcpy(SERVERNODE, "localhost");
+  else {
+    len= strlen (servernode);
+    if (len <1 || len >64) {
+      snprintf(errstr, 80, "Ungültige ServerNode-Angabe (%s) 1...18 Zeichen", 
+	       servernode);
+      return -1;
+    } else
+      strcpy(SERVERNODE, servernode);
+  }
+
+  exec sql 
+    set serverdb :SERVERDB on :SERVERNODE; 
+
+  if(sqlca.sqlcode) {
+    sprintf(errstr, "set serverdb (%ld): %s", sqlca.sqlcode, sqlca.sqlerrmc); 
+
+    return -1;
+  }
+
+
+  exec sql 
+    connect :user identified by :password isolation level 0;
+  
+  if (sqlca.sqlcode) {
+    sprintf(errstr, "connect (%ld): %s", sqlca.sqlcode, sqlca.sqlerrmc); 
+    return -1;
+  }
+
+  /* Alles in Ordnung, connect hergestellt */
+  
+  return 0;
+}
+
+/** Funktion: 
+    ABMELDEN Programm von der Kran Datenbank (Version Adabas D) abmelden
+    
+    Return:  0, alles ok, Verbindung getrennt
+
+    Author: (c) 1997 AutomatiX GmbH,  G. Janssen
+*/
+int     db_release (void)
+{
+  exec    sql commit release;
+
+  return 0;
+}
+
+
+int main(int argc, char **argv)
+{
+  char *errstr;
+  int ret;
+
+  errstr = calloc(4096, sizeof(char));
+
+  // ret = db_connect("JOJO", "FREI", "MODELL", "PC3", errstr);
+  ret = db_connect("JOJO", "FREI", "AX", "server", errstr);
+  if(ret==0)
+    {
+      printf("Alles Klar, Verbindung %s/OK\n",errstr);
+      db_release();
+    }
+  else
+    {
+      printf("Verbindung nicht hergestellt: %s\n",errstr);
+    }
+
+  return(0);
+}

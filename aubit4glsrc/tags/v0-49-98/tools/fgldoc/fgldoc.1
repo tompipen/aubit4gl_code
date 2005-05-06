@@ -1,0 +1,191 @@
+.\" fgldoc, an Informix-4GL program documenter
+.\" Copyright (c) 1995-1999 Ivan Nejgebauer <ian@uns.ns.ac.yu>
+.\" 
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2 of the License, or
+.\" (at your option) any later version.
+.\" 
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\" 
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program; if not, write to the Free Software
+.\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+.de SX
+.ie t .sp .5v
+.el .sp
+..
+.TH FGLDOC 1 "" "" ""
+.SH NAME
+fgldoc \- A documenter for Informix-4GL programs
+.SH SYNOPSIS
+.B fgldoc
+.RB [ \-v ]
+.RB [ \-s ]
+.RB [ \-x
+.IR modname [, modname ...]]
+.if n .ti +7n
+.RB [ \-apfro ]
+.I progname
+.SH DESCRIPTION
+.B fgldoc
+reads a list of 4GL module names comprising the program
+.I progname
+from the program design database or standard input (one name per line,
+without the
+.I .4gl
+extension), parses the modules, and generates one or more summary listings
+on standard output.  Verbosity of
+.BR fgldoc 's
+operation and the amount of summary information generated on output are
+controlled by command-line options.
+.PP
+.SH OPTIONS
+.TP 4
+.B \-v
+Verbose mode.  The program's progress is reported to standard error output.
+.TP 4
+.B \-s
+Use standard input to read module names.  This option is permanently set if
+the program has been compiled without database support routines.
+.TP 4
+.B \-x
+This option should be followed by a comma-separated list of additional
+modules to be parsed.  The modules are assumed to be in the current
+directory.  There shouldn't be any whitespace in the list.  The intended use
+of
+.B \-x
+is to specify modules containing external function templates; see the
+.B NOTES
+section for discussion.
+.TP 4
+.B \-a
+Print all summaries (program, function, report, form).  This is the
+default.
+.TP 4
+.B \-p
+Print the program summary, which reports the following:
+.RS
+.IP \- 3
+The number of modules, name and line count for each module, and total LOC
+for all modules.
+.IP \- 3
+The number of functions in the program.
+.IP \- 3
+The number of reports in the program.
+.IP \- 3
+The number of forms that the program activates, along with their names.
+.RE
+.TP 4
+.B \-f
+Print the function summary, which consists of two listings:
+.SX
+.IR "Function hierarchy" .
+Hierarchical list of functions, starting from
+.BR main .
+For each function, the list of functions (reports, forms) which the function
+calls is printed.  If a called function is
+.I non-terminal
+(i.e., it makes one or more calls itself), the process is recursively
+applied to that function.
+.SX
+.IR "Functions by name" .
+Alphabetical list of functions (exception:
+.B main
+is always displayed first, regardless of its actual lexicographic
+position).  For each function, the following information is provided:
+.RS
+.IP \- 3
+The name of the module where it is defined.
+.IP \- 3
+The list of functions (reports, forms) which it calls.
+.IP \- 3
+The list of functions/reports which call the function.
+.LP
+If a function is
+.I orphaned
+(i.e., defined but not called from anywhere in the progam), a hash sign ('#')
+will be displayed before its name, in the first column of the line, making
+it easy to find all orphaned functions with something like
+.nf
+.SX
+.ti +4n
+fgldoc \-f progname | grep '^#'
+.fi
+.RE
+.TP 4
+.B \-r
+Print the report summary, which is similar in form to the second part of
+the function summary.
+.TP 4
+.B \-o
+Print the form summary.  For each form, print its name and the list of
+functions which activate it.
+.PP
+Options
+.BR \-p ,
+.BR \-f ,
+.B \-r
+and
+.B \-o
+can be specified in any combination to produce just the desired summaries.
+The
+.B \-a
+option (which is, strictly speaking, redundant) is equivalent to
+.BR \-pfro .
+The order of options does not affect the order in which the summaries are
+output.
+.SH NOTES
+When opening the program design database,
+.B fgldoc
+will first try to use the value of the environment variable
+PROGRAM_DESIGN_DBS as the database name.  If that variable is unset, the
+standard name
+.I syspgm4gl
+will be used.
+.PP
+Connection to the program design database is made implicitly, for
+compatibility with the older versions of ESQL/C libraries.  There is no way
+to connect using a different username and password.
+.PP
+If a character variable is used to specify the form file in OPEN FORM and
+OPEN WINDOW... WITH FORM statements,
+.B fgldoc
+will print the variable identifier in all uppercase to distinguish it
+from file names given as literals.
+.PP
+By design, functions for which the corresponding definition is not found in
+the source are not reported anywhere (otherwise the parser could not have
+been as simple as it is).  If you want to track foreign functions (e.g.,
+in external libraries for compiled 4GL, or those in a custom p-code
+runner), create one or more modules with dummy definitions and list their
+names as an argument to the
+.B \-x
+option.  For example, if an external function
+.I foo()
+is used in the program
+.IR bar ,
+you could create the file
+.I .extern.4gl
+containing the lines
+.SX
+.nf
+.in +4n
+FUNCTION foo()
+END FUNCTION
+.in -4n
+.fi
+.SX
+and invoke
+.B fgldoc
+as follows:
+.SX
+.nf
+.ti +4n
+fgldoc \-x .extern bar
+.fi
+.SH AUTHOR
+Ivan Nejgebauer <ian@uns.ns.ac.yu>

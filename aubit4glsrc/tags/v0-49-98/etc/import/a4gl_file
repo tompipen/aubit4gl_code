@@ -1,0 +1,16 @@
+A4GL_file fclose
+A4GL_file feof
+A4GL_file ferror
+A4GL_file fgets
+A4GL_file fputs
+A4GL_file fopen
+A4GL_file fseek
+A4GL_file fseek_from_end
+A4GL_file fsize
+A4GL_file ftell
+A4GL_file popen
+A4GL_file pclose
+A4GL_file rewind
+A4GL_file opendir
+A4GL_file readdir
+A4GL_file closedir
