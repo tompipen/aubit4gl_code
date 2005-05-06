@@ -846,7 +846,7 @@ define filename char(128)
 define lv_char integer
 define lv_msgline char(256)
 
-let filename=fgl_getenv("AUBITDIR"),"/etc/4glpc.iem"
+let filename=fgl_getenv("AUBITDIR"),"/etc/4glpc.hlp"
 call aclfgl_openiem(filename,lv_n) returning lv_char,lv_msgline
 
 if lv_char then
