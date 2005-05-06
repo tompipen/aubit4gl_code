@@ -55,13 +55,15 @@ individual_sql_statement :
 	| unload_cmd  
 	| load_cmd  
 	| sql_commands 
-	| select_statement_ss_str_cfu 	{print_exec_select($<sql_string>1);}
+	| select_statement_ss_str_cfu 	{ print_exec_select($<sql_string>1); }
 	| set_cmd  			
 	| error				{print_unable_to_parse();}
 ;
 
 select_statement_ss_str_cfu:
-	select_statement_ss_str curs_forupdate { sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
+	select_statement_ss_str curs_forupdate { $<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup($<str>2),0);
+}
+
 ;
 
 
