@@ -3,6 +3,8 @@ GLOBALS
 	gv_filer_out_table_prefix char (16)
 END GLOBALS
 
+define mv_exprtext byte
+
 
 define lv_colnames array[2000] of char(128) #in IDS varchar(128,0)
 define mv_idx_cnt smallint
@@ -45,6 +47,7 @@ define lv_i record
 	part15     smallint,
 	part16     smallint
 end record
+define mv_located integer
 
 
 #main
@@ -68,6 +71,9 @@ define lv_nn char(10)
 DEFINE lv_systables integer	#true or false, process Informix sys* tables (default=0)
 DEFINE lv_prefix_idx smallint  #true or false, add prefic to index names (default=false)
 DEFINE lv_no_owner smallint
+
+
+	call locate_blob()
 
 	let lv_t=downshift(lv_t)
 	
@@ -94,7 +100,7 @@ DEFINE lv_no_owner smallint
 	from systables where tabname=lv_t
 	
 	if sqlca.sqlcode=100 then
-		display "Table ",lv_t clipped," not found"
+		DISPLAY "Table ",lv_t clipped," not found"
 		return
 	end if
 	
@@ -105,6 +111,7 @@ DEFINE lv_no_owner smallint
 		select tabname,owner into lv_stname,lv_so from systables where tabid=lv_stid
 	
 		if get_mode()=0 then
+
 			call outstr(" ")
 			let lv_str="CREATE SYNONYM"
 			if lv_no_owner then
@@ -226,7 +233,7 @@ DEFINE lv_no_owner smallint
 				when 41 let lv_sc.coldesc="CHAR(",10 using "<<<<<<<",")"," ",lv_nn
 	#Andrej mod end.			
 				otherwise
-					display "INVALID DATATYPE: ",lv_sc.coltype
+					DISPLAY "INVALID DATATYPE: ",lv_sc.coltype
 					exit program 1
 			end case
 			let lv_str="   ",lv_sc.colname clipped," ",lv_sc.coldesc
@@ -245,9 +252,17 @@ DEFINE lv_no_owner smallint
 		if is_ss() then
 			#  Do the server specific stuff..
 			if get_mode()=0 then
+
+
+
+
+
 				select locklevel,fextsize,nextsize into lv_l, lv_es,lv_ns from systables where tabid=lv_st.tabid
-		
-				let lv_str=") EXTENT SIZE ",lv_es using "<<<<<"," NEXT SIZE ",lv_ns using "<<<<<<" 
+
+				let lv_str=") ", frag_info(lv_st.tabid)
+				call outstr(lv_str)
+
+				let lv_str=" EXTENT SIZE ",lv_es using "<<<<<"," NEXT SIZE ",lv_ns using "<<<<<<" 
 				if lv_l="P" then
 						let lv_str=lv_str clipped," LOCK MODE PAGE"
 				Else
@@ -471,7 +486,7 @@ DEFINE lv_no_owner smallint
 		  end if
 		else
 			# Should have at least one....
-			display "Unexpected error"
+			DISPLAY "Unexpected error"
 		end if
 		call outstr(");")
 	end foreach
@@ -662,7 +677,7 @@ define lv_tmp_string char(128)
 	if gv_filer_out_table_prefix is not null then
 		let lv_tmp_string = gv_filer_out_table_prefix clipped, "*"
 		if lv_t matches lv_tmp_string then
-			#display "LOAD/UNLOAD: Filtering out ", lv_t clipped
+			#DISPLAY "LOAD/UNLOAD: Filtering out ", lv_t clipped
 			return
 		end if
 	end if
@@ -673,7 +688,7 @@ define lv_tmp_string char(128)
 			where tabname = lv_t
 	
 	if lv_st.tabtype = "" or lv_st.tabtype IS NULL then
-		display "Error: cannot get tabtype for ",lv_t clipped
+		DISPLAY "Error: cannot get tabtype for ",lv_t clipped
 		exit program 1
 	end if
 
@@ -688,9 +703,9 @@ define lv_tmp_string char(128)
 				
 	if lv_st.tabtype = "T" then
 		case lv_type
-			when "U" display "UNLOAD TO '",lv_t clipped,".unl' SELECT * FROM ",lv_t clipped,";"
+			when "U" DISPLAY "UNLOAD TO '",lv_t clipped,".unl' SELECT * FROM ",lv_t clipped,";"
 			when "L" 
-				display "LOAD FROM '",lv_t clipped,".unl' INSERT INTO ",lv_t clipped,";"
+				DISPLAY "LOAD FROM '",lv_t clipped,".unl' INSERT INTO ",lv_t clipped,";"
 {				
 issue - when loading data using LOAD FROM .... INSERT INTO ...
 that contains SERIAL column, data will be loaded, but associated sequence will 
@@ -703,19 +718,19 @@ Add this stmt after every LOAD FROM statement:
 	SELECT setval('tablename_colname_seq', max(colname)) FROM tablename;
 }				
 				if lv_serial_colname is not NULL then
-					display "IF dbms_dialect()='POSTGRESQL' THEN"
-					display "	let lv = \"SELECT setval('",
+					DISPLAY "IF dbms_dialect()='POSTGRESQL' THEN"
+					DISPLAY "	let lv = \"SELECT setval('",
 						lv_t clipped,"_",
 						lv_serial_colname clipped,"_seq', max(",
 						lv_serial_colname clipped,")) FROM ",
 						lv_t clipped,";\""
-					display "	PREPARE cur1 FROM lv"
-					display "	EXECUTE cur1"
-					display "END IF"
+					DISPLAY "	PREPARE cur1 FROM lv"
+					DISPLAY "	EXECUTE cur1"
+					DISPLAY "END IF"
 				end if
 				
 			otherwise
-				display "Operation >",lv_type, "< on table >", lv_t clipped, 
+				DISPLAY "Operation >",lv_type, "< on table >", lv_t clipped, 
 					"< not implemented yet"
 				exit program 1
 		end case
@@ -739,5 +754,78 @@ define
 	
 	return lv_string
 	
+end function
+
+
+
+function frag_info(lv_tid) 
+define lv_tid integer
+define lv_str char(2048)
+define lv_rec record
+	lv_ftype char(1),
+	indexname char(128),
+	strat char(1),
+	evalpos integer,
+	dbspace char(128)
+end record
+	
+whenever error stop
+call locate_blob()
+
+
+DECLARE frags CURSOR FOR 
+SELECT exprtext,fragtype,  indexname, strategy, evalpos,  dbspace 
+into 
+mv_exprtext, lv_rec.lv_ftype , lv_rec.indexname , lv_rec.strat , lv_rec.evalpos ,  lv_rec.dbspace 
+FROM sysfragments 
+WHERE tabid = lv_tid AND fragtype = 'T' 
+ORDER BY evalpos
+
+
+call locate_blob()
+foreach  frags
+
+	#display "...."
+	#display lv_rec.evalpos," ",lv_rec.strat
+	if lv_rec.evalpos=0 then
+		if lv_rec.strat="R" then
+			let lv_str="FRAGMENT BY ROUND ROBIN IN ",lv_rec.dbspace
+		end if
+
+		if lv_rec.strat="E" then
+			#display "Calling byte as str"
+                         let lv_str="FRAGMENT BY EXPRESSION ",aclfgl_byte_as_str(mv_exprtext)," IN ",lv_rec.dbspace
+		end if
+	else
+		let lv_str=lv_str clipped,","
+		if lv_rec.strat="R" then
+			let lv_str=lv_str clipped," ",lv_rec.dbspace
+		end if
+		if lv_rec.strat="E" then
+			#display "Calling byte as str"
+                         let lv_str=lv_str clipped," ",aclfgl_byte_as_str(mv_exprtext)," IN ",lv_rec.dbspace
+		end if
+	
+	end if
+end foreach
+#display "lv_str=",lv_str clipped
+return lv_str
+
+END FUNCTION
+
+
+
+function locate_blob()
+
+
+if mv_Exprtext is null then
+	let mv_located=0
+end if
+	
+if mv_located is null or mv_located=0 then
+        locate  mv_exprtext in memory
+        let mv_located=1
+end if
+
 end function
 
