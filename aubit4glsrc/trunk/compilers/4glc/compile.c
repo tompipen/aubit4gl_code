@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.82 2005-04-22 06:03:23 mikeaubury Exp $
+# $Id: compile.c,v 1.83 2005-05-09 19:50:25 whaslbeck Exp $
 #*/
 
 /**
@@ -603,12 +603,14 @@ initArguments (int argc, char *argv[])
 
 	/* prepare CC flags */
 	sprintf (incl_path, "-I\"%s/incl\" ",acl_getenv ("AUBITDIR"));
-	chrptr = acl_getenv ("GTK_INC_PATH");	/*GTK_INC_PATH is set in aubitrc by Autoconf*/
-	/* NOTE: when GTK_INC_PATH was not set, I got core dumps on Windows - this should not happen */
 
-	rm_quotes (chrptr);
-	strcat (incl_path, chrptr);
-	strcat (incl_path, " ");
+        /* add GTK_INC_PATH (only if set) */
+	if((chrptr = acl_getenv ("GTK_INC_PATH")) != NULL) {
+		rm_quotes (chrptr);
+		strcat (incl_path, chrptr);
+		strcat (incl_path, " ");
+        }
+
 	sprintf (l_path, "-L\"%s/lib\" ",acl_getenv ("AUBITDIR"));
 	strcpy (l_libs, acl_getenv ("A4GL_LINK_LIBS"));
 	
