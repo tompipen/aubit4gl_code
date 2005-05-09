@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.122 2005-05-05 09:08:36 mikeaubury Exp $
+# $Id: sql.c,v 1.123 2005-05-09 20:17:41 whaslbeck Exp $
 #
 */
 
@@ -1065,7 +1065,7 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *cursname)
 #endif
 
 #if (ODBCVER >= 0x0300) && !PGODBC
-      if (!A4GL_isyes(aclget_env("NO_ATTR_CURSOR"))) {
+      if (!A4GL_isyes(acl_getenv("NO_ATTR_CURSOR"))) {
       	A4GL_debug("Setting cursor type to scrollable");
       	rc = SQLSetStmtAttr ((SQLHSTMT) nsid->hstmt, SQL_ATTR_CURSOR_TYPE, (SQLPOINTER)SQL_CURSOR_STATIC, 0);
       	A4GL_debug("set stmt attr rc=%d",rc);
