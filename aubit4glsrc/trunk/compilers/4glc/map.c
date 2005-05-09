@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.33 2005-05-09 19:41:24 whaslbeck Exp $
+# $Id: map.c,v 1.34 2005-05-09 20:09:59 whaslbeck Exp $
 #*/
 
 /**
@@ -151,13 +151,14 @@ rm_quotes (char *s)
   int a;
   int b = 0;
 
-  buff = calloc(strlen(s), 1);
+  if(*s == 0) return;
+
+  buff = calloc(strlen(s) + 1, 1);
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] != '"')
 	{
 	  buff[b++] = s[a];
-	  buff[b] = 0;
 	}
     }
   strcpy (s, buff);
@@ -176,9 +177,11 @@ rm_quote (char *s)
   int a;
   int b = 0;
 
-  buff = calloc(strlen(s), 1);
+  if(*s == 0) return;
 
-  for (a = 0; a <= strlen (s); a++)
+  buff = calloc(strlen(s) + 1, 1);
+
+  for (a = 0; a <= strlen(s); a++)
     {
       if (s[a] != '"')
 	{
