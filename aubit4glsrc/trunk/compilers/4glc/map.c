@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.34 2005-05-09 20:09:59 whaslbeck Exp $
+# $Id: map.c,v 1.35 2005-05-11 13:51:38 whaslbeck Exp $
 #*/
 
 /**
@@ -147,22 +147,12 @@ closemap (void)
 void
 rm_quotes (char *s)
 {
-  char *buff;
-  int a;
-  int b = 0;
+    char *d;
 
-  if(*s == 0) return;
-
-  buff = calloc(strlen(s) + 1, 1);
-  for (a = 0; a <= strlen (s); a++)
-    {
-      if (s[a] != '"')
-	{
-	  buff[b++] = s[a];
-	}
-    }
-  strcpy (s, buff);
-  free(buff);
+    for(d = s; *s; *s++)
+	if(*s != '"')
+	    *d++ = *s;
+    *d = 0;
 }
 
 /**
