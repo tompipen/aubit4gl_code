@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.212 2005-04-22 06:03:23 mikeaubury Exp $
+# $Id: mod.c,v 1.213 2005-05-11 13:57:25 mikeaubury Exp $
 #
 */
 
@@ -3842,8 +3842,6 @@ void expand_bind (struct binding_comp *bind, int btype, int cnt)
 {
   char buff[256];
   int b1;
-  /*int b2;*/
-  /*int b3;*/
   int dim;
   int xxxa;
   static struct binding_comp *save_bind=0;
@@ -3875,17 +3873,55 @@ void expand_bind (struct binding_comp *bind, int btype, int cnt)
 
 	if (dim)   {
       		if (isarrvariable (buff)&&buff[strlen(buff)-1]!=']'&&buff[strlen(buff)-2]!=']' && dim==1) { 
-         		int type,arrsize,size,level;
+         		int type,arrsize1,arrsize2,arrsize3,size,level;
+			int c1;
+			int c2;
+			int c3;
          		char buff2[256];
          		char arrbuff[256];
 		
 		
-        		get_variable_dets (buff,&type,&arrsize,&size,&level,arrbuff);
-			for (b1=0;b1<arrsize;b1++) {
-				sprintf(buff2,"%s[%d]",buff,b1);
-      				if (scan_variable (buff2) == -2) { strcat (buff2, ".*"); }
-      				add_bind (btype, buff2);
+        		get_variable_dets_arr3 (buff,&type,&arrsize1,&arrsize2,&arrsize3,&size,&level,arrbuff);
+			//printf("%d %d %d\n",arrsize1,arrsize2,arrsize3);
+
+			if (arrsize3) {
+				for (c1=0;c1<arrsize1;c1++) {
+					for (c2=0;c2<arrsize2;c2++) {
+						for (c3=0;c3<arrsize3;c3++) {
+							sprintf(buff2,"%s[%d][%d][%d]",buff,c1,c2,c3);
+      							if (scan_variable (buff2) == -2) { strcat (buff2, ".*"); }
+      							add_bind (btype, buff2);
+						}
+					}
+				}
+			} else {
+
+			if (arrsize2) {
+				for (c1=0;c1<arrsize1;c1++) {
+					for (c2=0;c2<arrsize2;c2++) {
+							sprintf(buff2,"%s[%d][%d]",buff,c1,c2);
+      							if (scan_variable (buff2) == -2) { strcat (buff2, ".*"); }
+      							add_bind (btype, buff2);
+					}
+				}
+			} else {
+				for (c1=0;c1<arrsize1;c1++) {
+							sprintf(buff2,"%s[%d]",buff,c1);
+      							if (scan_variable (buff2) == -2) { strcat (buff2, ".*"); }
+      							add_bind (btype, buff2);
+				}
+
 			}
+			}
+
+
+
+
+
+
+
+
+
 			continue;
       		}
 	}
