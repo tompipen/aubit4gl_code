@@ -106,7 +106,7 @@ call_ext :
 	print_returning();
 	/* strcpy($<str>$,$<str>5);  */
    }
-   | SHARED char_or_var IN char_or_var OPEN_BRACKET {
+   | SHARED char_or_var KW_IN char_or_var OPEN_BRACKET {
 	A4GLSQL_set_status(0,0);
 	new_counter();
 	}
@@ -167,7 +167,33 @@ opt_func_call_args {
 		print_returning();
 		print_end_call_shared();
 	}
+   | identifier DOT identifier  OPEN_BRACKET {
+	if (!isclassvariable($<str>1)) {
+		a4gl_yyerror("Not an object");
+	}
+	if (!isclassmember($<str>1,$<str>3)) {
+		a4gl_yyerror("Not an method for the object");
+	}
 
+	sprintf($<str>$,"\"%s\",\"%s\"",$<str>1,$<str>3);
+	A4GLSQL_set_status(0,0);
+	new_counter();
+	}
+	opt_func_call_args {
+   	sprintf($<str>$,"%d",get_counter_val());drop_counter();
+	} CLOSE_BRACKET opt_return {
+		char buff[256];
+		char *ptr;
+ 		A4GL_debug("STR6 = %s",$<str>5);
+		strcpy(buff,$<str>5);
+		ptr=strchr(buff,',');
+		*ptr=0;
+		ptr++;
+        	print_expr ((struct expr_str *)$<ptr>6);  
+		print_call_shared(buff,ptr,atoi($<str>7));
+		print_returning();
+		print_end_call_shared();
+	}
    | EXTERNAL remote_host_name COLON remote_func_name OPEN_SQUARE valid_port CLOSE_SQUARE OPEN_BRACKET
    {
    char buff[256];

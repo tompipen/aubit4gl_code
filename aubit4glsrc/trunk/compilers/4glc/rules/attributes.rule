@@ -104,8 +104,8 @@ A4GL_debug("Set menu line to %s",$<str>2);
 { form_attrib.message_line=atoi($<str>2); }
 		|	PROMPT_LINE line_no
 { form_attrib.prompt_line =atoi($<str>2); }
-		| STYLE EQUAL CHAR_VALUE
-		| TEXT EQUAL CHAR_VALUE
+		| KW_STYLE EQUAL CHAR_VALUE
+		| KW_TEXT EQUAL CHAR_VALUE
 ;
 
 

@@ -51,7 +51,7 @@ template_value :
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_set_plus(a,$<str>1,$<str>3);}
 	|	template_value MINUS template_value {
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_set_minus(a,$<str>1,$<str>3);}
-	|	template_value IN template_value {
+	|	template_value KW_IN template_value {
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); 
 		list_in();
 	}

@@ -25,25 +25,25 @@ key_value_list : key_value | key_value_list KW_COMMA key_value {
 key_value : key_value_1 
 ;
 
-key_value_1 : 	FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
-	| 	CTRL_KEY /* {strcpy($<str>$,"^A");}*/
-	| 	INTERRUPT /* {strcpy($<str>$,"interrupt");}*/
-	| 	ACCEPT /* {strcpy($<str>$,"accept");}*/
-	|       SINGLE_KEY {strcpy($<str>$,$<str>1);}
-        |       ESCAPE {strcpy($<str>$,"escape");}
+key_value_1 : 	KW_FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
+	| 	KW_CTRL_KEY /* {strcpy($<str>$,"^A");}*/
+	| 	KW_INTERRUPT /* {strcpy($<str>$,"interrupt");}*/
+	| 	KW_ACCEPT /* {strcpy($<str>$,"accept");}*/
+	|       KW_SINGLE_KEY {strcpy($<str>$,$<str>1);}
+        |       KW_ESCAPE {strcpy($<str>$,"escape");}
         |       KWUP {strcpy($<str>$,"up");}
-        |       HELP {strcpy($<str>$,"help");}
+        |       KW_HELP {strcpy($<str>$,"help");}
         |       KWDOWN {strcpy($<str>$,"down");}
-        |       RETURN {strcpy($<str>$,"return");}
-        |       DELETE {strcpy($<str>$,"delete");}
-        |       INSERT {strcpy($<str>$,"insert");}
-        |       TAB {strcpy($<str>$,"tab");}
-        |       LEFT {strcpy($<str>$,"left");}
-        |       RIGHT {strcpy($<str>$,"right");}     
-        |       NEXTPAGE {strcpy($<str>$,"nextpage");}     
-        |       NEXT {strcpy($<str>$,"nextpage");}     
-        |       PREVPAGE {strcpy($<str>$,"prevpage");}     
-        |       PREVIOUS {strcpy($<str>$,"prevpage");}     
+        |       KW_RETURN {strcpy($<str>$,"return");}
+        |       KW_DELETE {strcpy($<str>$,"delete");}
+        |       KW_INSERT {strcpy($<str>$,"insert");}
+        |       KW_TAB {strcpy($<str>$,"tab");}
+        |       KW_LEFT {strcpy($<str>$,"left");}
+        |       KW_RIGHT {strcpy($<str>$,"right");}     
+        |       KW_NEXTPAGE {strcpy($<str>$,"nextpage");}     
+        |       KW_NEXT {strcpy($<str>$,"nextpage");}     
+        |       KW_PREVPAGE {strcpy($<str>$,"prevpage");}     
+        |       KW_PREVIOUS {strcpy($<str>$,"prevpage");}     
 	|       CHAR_VALUE { rm_quotes($<str>1); strcpy($<str>$,$<str>1); }
 ;
 

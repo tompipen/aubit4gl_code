@@ -444,6 +444,7 @@ char A4GL_cursor_type(char *s);
 // any normal use of printf by using PRINTF instead
 // that way - we can just grep for printf...
 #define PRINTF printf
+#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,(long)sizeof(d))
 
 #endif   //ifndef _A4GL_4GLC_INT_H_
 

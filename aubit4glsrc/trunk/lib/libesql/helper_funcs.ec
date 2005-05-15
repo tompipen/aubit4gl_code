@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.32 2005-03-07 14:53:05 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.33 2005-05-15 12:58:51 mikeaubury Exp $
 #
 */
 
@@ -300,6 +300,7 @@ short indicat=0;
 dtime_t *infx; struct A4GLSQL_dtime *a4gl;
 	infx=infxv;
 	a4gl=a4glv;
+A4GL_debug("Copy datetime : %c",mode);
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 		if (mode=='i') {

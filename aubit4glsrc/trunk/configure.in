@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.293 2005-05-06 19:52:44 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.294 2005-05-15 12:58:00 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -345,6 +345,7 @@ AC_SUBST(AUBIT_WEBSITE)
 AC_SUBST(AUBIT_PUBLISHER)
 AC_SUBST(FULLNAME)
 AC_SUBST(SHORTNAME)
+
 
 
 #aubitrc:
@@ -2542,7 +2543,6 @@ GLIBC_VER=2.2.4
 #BUILD_BOUNDED="no"
 #BUILD_STATIC_NSS="no"
 #STDIO="libio"
-
 
 ## ==================================================================
 ##                  Check make
@@ -7472,7 +7472,8 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	AC_HEADER_STDC
 	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h \
 		netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h \
-		sys/time.h unistd.h share.h])
+		sys/time.h sys/timeb.h unistd.h share.h limits.h  libintl.h fcntl.h])
+
 
 	#AC_HAVE_HEADERS(string.h fcntl.h sys/file.h sys/param.h)
 
@@ -7565,6 +7566,44 @@ AC_STRUCT_TM
 AC_CHECK_SIZEOF(long, 8)
 AC_CHECK_SIZEOF(int, 4)
 
+PHP_CONFIGURE_PART(Checking for cross compilation options:)
+###############################################################################
+# If we're cross-compiling, allow the user to override the tools and their
+# options.  The configure script is oriented toward identifying the host
+# compiler, etc., but we need a build compiler to generate parts of the source.
+: ${BUILD_CC:='$(CC)'}
+: ${BUILD_CFLAGS:='$(CFLAGS)'}
+: ${BUILD_CPPFLAGS:='$(CPPFLAGS)'}
+: ${BUILD_LDFLAGS:='$(LDFLAGS)'}
+: ${BUILD_LIBS:='$(LIBS)'}
+: ${BUILD_EXEEXT:='$x'}
+if test "$cross_compiling" = yes ; then
+        AC_ARG_WITH(build-cc,
+                [  --with-build-cc=XXX     the build C compiler ($BUILD_CC)],
+                [BUILD_CC="$withval"],
+                [AC_CHECK_PROGS(BUILD_CC, $CC gcc cc)])
+        AC_ARG_WITH(build-cflags,
+                [  --with-build-cflags=XXX the build C compiler-flags],
+                [BUILD_CFLAGS="$withval"])
+        AC_ARG_WITH(build-cppflags,
+                [  --with-build-cppflags=XXX the build C preprocessor-flags],
+                [BUILD_CPPFLAGS="$withval"])
+        AC_ARG_WITH(build-ldflags,
+                [  --with-build-ldflags=XXX the build linker-flags],
+                [BUILD_LDFLAGS="$withval"])
+        AC_ARG_WITH(build-libs,
+                [  --with-build-libs=XXX   the build libraries],
+                [BUILD_LIBS="$withval"])
+        BUILD_EXEEXT=
+fi
+AC_SUBST(BUILD_CC)
+AC_SUBST(BUILD_CFLAGS)
+AC_SUBST(BUILD_CPPFLAGS)
+AC_SUBST(BUILD_LDFLAGS)
+AC_SUBST(BUILD_LIBS)
+AC_SUBST(BUILD_EXEEXT)
+AC_SUBST(HAVE_WINSLEEP)
+
 
 ## ==================================================================
 ##                   Checks for library functions
@@ -7580,13 +7619,14 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	AC_FUNC_MEMCMP
 	AC_TYPE_SIGNAL
 	AC_FUNC_VPRINTF
-	AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp setlocale strcasecmp strchr strdup strncasecmp strrchr strstr strtol])
+	AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp setlocale strcasecmp strchr strdup strncasecmp strrchr strstr strtol index rindex popen snprintf vsnprintf sigaction gettimeofday trunc sleep ])
 
 	#select() and index() are used in Jabber 
 	#there is apprently an index() func somewhere in libaubit4gl or in some lib
 	#linked with it (on Windows)
 	AC_CHECK_FUNC(select,AC_DEFINE(HAVE_SELECT))
-	AC_CHECK_FUNC(index,AC_DEFINE(HAVE_INDEX))
+	#AC_CHECK_FUNC(index,AC_DEFINE(HAVE_INDEX))
+	AC_CHECK_FUNC(Sleep,AC_DEFINE(HAVE_WINSLEEP))
 
 	if test "$GCC_MINGW" = "yes"; then
 		dnl This is for Msys/Mingw
@@ -7617,6 +7657,18 @@ if test "$AUBIT_SOURCE" = "1" ; then
 
 	AC_CHECK_FUNCS([htons nstoh ntohs])
 
+
+AC_TRY_COMPILE( [
+#include <signal.h>
+#include <string.h>
+#include <stdio.h>
+],[
+struct sigaction sa;
+memset(&sa, 0, sizeof(sa));
+sa.sa_handler=SIG_IGN;
+sigaction(SIGCHLD, &sa, NULL);
+], AC_DEFINE(HAS_SIGACTION_SA_HANDLER))
+
 	#Check if we have it in libc:
 	AC_CHECK_FUNC(getopt_long,GETOPT_LONG=yes,AC_CHECK_LIB(iberty, getopt_long))
     if test "$GETOPT_LONG" != "yes"; then
@@ -7634,7 +7686,6 @@ if test "$AUBIT_SOURCE" = "1" ; then
         fi
     fi
 fi
-
 ## ==================================================================
 ##                   Checks for Cygwin specifics
 ## ==================================================================
@@ -9068,7 +9119,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.293 2005-05-06 19:52:44 mikeaubury Exp $
+| $Id: configure.in,v 1.294 2005-05-15 12:58:00 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

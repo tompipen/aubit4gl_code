@@ -7,7 +7,7 @@
 
 
 update_statement_ss:
-	UPDATE table_name {
+	KW_UPDATE table_name {
 		strcpy(current_upd_table,$<str>2);
 		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); pop_all_gen(UPDVAL2,"!");
 		$<sql_string>$=strdup("");

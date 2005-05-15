@@ -53,7 +53,7 @@ cr_table_extra :
 
 
 cr_table_extra_entry : 
-	IN space_name {sprintf($<str>$," IN %s",$<str>2);add_feature("CREATE_TABLE_IN");}
+	KW_IN space_name {sprintf($<str>$," IN %s",$<str>2);add_feature("CREATE_TABLE_IN");}
 	| EXTENT_SIZE INT_VALUE {sprintf($<str>$," EXTENT SIZE %s",$<str>2); add_feature("CREATE_TABLE_EXTENT_SIZE");}
 	| NEXT_SIZE INT_VALUE {sprintf($<str>$," NEXT SIZE %s",$<str>2); add_feature("CREATE_TABLE_NEXT_SIZE"); }
 	| LOCK_MODE_PAGE {sprintf($<str>$," LOCK MODE PAGE"); add_feature("CREATE_TABLE_LOCK_MODE"); }
@@ -70,7 +70,7 @@ cr_index_extra : cr_index_extra_entry
 ;
 
 cr_index_extra_entry :
-	IN space_name {sprintf($<str>$," IN %s",$<str>2); add_feature("INDEX_IN");}
+	KW_IN space_name {sprintf($<str>$," IN %s",$<str>2); add_feature("INDEX_IN");}
 	| FILLFACTOR INT_VALUE {sprintf($<str>$,"FILLFACTOR %s",$<str>2); add_feature("INDEX_FILLFACTOR");}
 ;
 
@@ -125,7 +125,7 @@ create_c_1  :
 			add_feature("CREATE_SYNONYM");
 			sprintf($<str>$,"%s %s FOR %s",$<str>1,$<str>2,$<str>4); 
 	}
-	| CREATE_AUDIT_FOR table_name IN CHAR_VALUE { 
+	| CREATE_AUDIT_FOR table_name KW_IN CHAR_VALUE { 
 		add_feature("CREATE_AUDIT");
 		sprintf($<str>$,"CREATE AUDIT FOR %s IN '%s'",$<str>2,A4GL_strip_quotes($<str>4)); 
 	}

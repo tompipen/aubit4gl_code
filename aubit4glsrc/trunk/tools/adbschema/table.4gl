@@ -12,7 +12,8 @@ define lv_st record
 	tabname char(128), 	#In IDS 9.x tabname (and most indentifiers) are varchar(128,0)
 	owner char(32),		#char(32) in IDS
 	tabid integer,
-	tabtype char(1)
+	tabtype char(1),
+	partnum integer
 end record
 define dtparts array[10] of char(10)
 
@@ -25,7 +26,7 @@ define lv_sc record
 end record
 
 define lv_i record 
-	idxname    char(18), 	# varchar(128,0) in IDS 9
+	idxname    char(128), 	# varchar(128,0) in IDS 9
 	owner      char(8),		#char 32 in IDS
 	tabid      integer,
 	idxtype    char(1),
@@ -96,7 +97,7 @@ DEFINE lv_no_owner smallint
 	
 	
 	# Get our basic table information
-	select tabid,owner,tabtype into lv_st.tabid,lv_st.owner,lv_st.tabtype 
+	select tabid,owner,tabtype,partnum into lv_st.tabid,lv_st.owner,lv_st.tabtype ,lv_st.partnum
 	from systables where tabname=lv_t
 	
 	if sqlca.sqlcode=100 then
@@ -166,7 +167,7 @@ DEFINE lv_no_owner smallint
 			
 			call outstr(lv_str clipped)
 		else
-			let lv_str="[",lv_t clipped,"]"
+			let lv_str="[",lv_t clipped,":",lv_st.tabid,":",lv_st.partnum using "<<<<<<<<<<<<","]"
 			call outstr(lv_str clipped)
 		end if
 		

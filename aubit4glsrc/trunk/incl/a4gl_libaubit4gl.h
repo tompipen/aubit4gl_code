@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.167 2005-05-15 08:47:24 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.168 2005-05-15 12:58:50 mikeaubury Exp $
 #
 */
 
@@ -2018,7 +2018,19 @@ int A4GL_fgl_infield (void *inp,char itype,...);
 int a4gl_toupper(int n);
 int a4gl_tolower(int n);
 
-
+char *A4GL_strcpy  (char *d,char *s,char *fname,int l,int sdest);
+int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) ;
+#define SPRINTF0(s,f)                        	A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f)
+#define SPRINTF1(s,f,p1)                        A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1)
+#define SPRINTF2(s,f,p1,p2)                     A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2)
+#define SPRINTF3(s,f,p1,p2,p3)                  A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2,p3)
+#define SPRINTF4(s,f,p1,p2,p3,p4)               A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2,p3,p4)
+#define SPRINTF5(s,f,p1,p2,p3,p4,p5)            A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2,p3,p4,p5)
+#define SPRINTF6(s,f,p1,p2,p3,p4,p5,p6)         A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2,p3,p4,p5,p6)
+#define SPRINTF7(s,f,p1,p2,p3,p4,p5,p6,p7)      A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2,p3,p4,p5,p6,p7)
+#define SPRINTF8(s,f,p1,p2,p3,p4,p5,p6,p7,p8)      	A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2,p3,p4,p5,p6,p7,p8)
+#define SPRINTF9(s,f,p1,p2,p3,p4,p5,p6,p7,p8,p9)      	A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2,p3,p4,p5,p6,p7,p8,p9)
+#define SPRINTF10(s,f,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10)	A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10)
 
 
 int aclfgl_fgl_dialog_setcurrline(int n);

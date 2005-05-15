@@ -212,16 +212,16 @@ action_list:
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
-action: SELECT op_grant_column_list {
+action: KW_SELECT op_grant_column_list {
 		if (A4GLSQLCV_check_requirement("SIMPLE_GRANT_SELECT"))  {
 			sprintf($<str>$," SELECT");
 		} else {
 			sprintf($<str>$," %s %s",$<str>1,$<str>2);
 		}
 	}
-	| INSERT
-	| DELETE
-	| UPDATE op_grant_column_list {
+	| KW_INSERT
+	| KW_DELETE
+	| KW_UPDATE op_grant_column_list {
 		if (A4GLSQLCV_check_requirement("SIMPLE_GRANT_UPDATE"))  {
 			sprintf($<str>$," UPDATE");
 		} else {
@@ -644,11 +644,11 @@ escape_character:
 
 
 in_predicate_ss:
-	value_expression_ss IN OPEN_BRACKET in_value_list CLOSE_BRACKET {
+	value_expression_ss KW_IN OPEN_BRACKET in_value_list CLOSE_BRACKET {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" IN ("),strdup($<str>4),kw_cb,0);
 		add_feature("WHERE_IN");
 	}
-	| value_expression_ss IN subquery_ss {
+	| value_expression_ss KW_IN subquery_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,0);
 		add_feature("WHERE_IN_SELECT");
 	}
@@ -837,7 +837,7 @@ exact_numeric_type:
 	| INTERVAL s_curr TO e_curr {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); add_feature("DDL_INTERVAL");}
 	| INTERVAL {add_feature("DDL_INTERVAL");}
 	| INTERVAL s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET TO e_curr {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7); add_feature("DDL_INTERVAL");}
-	| TEXT {add_feature("DDL_TEXT");}
+	| KW_TEXT {add_feature("DDL_TEXT");}
 	| KW_BYTE {add_feature("DDL_BYTE");}
 	| VARCHAR {add_feature("DDL_VARCHAR");}
 	| VARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"VARCHAR(%s)",$<str>3);add_feature("DDL_VARCHAR");}
@@ -1068,7 +1068,7 @@ e_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION | FRACTION OPEN_B
 
 
 select_statement_ss_str:
-	SELECT 
+	KW_SELECT 
 	op_ad 
 	{ start_bind('i',0); }
 	select_list_ss {A4GL_debug("Got select list...\n");}
@@ -1109,7 +1109,7 @@ uselect_statement2_ss:
 ;
 
 select_statement21_ss:
-	SELECT  op_ad select_list_ss
+	KW_SELECT  op_ad select_list_ss
         opt_into_sel_ss
 	table_expression_2_ss
         sel_p2_ss  {
@@ -1159,13 +1159,13 @@ opt_into_sel_ss :  { start_bind('o',0);$<sql_string>$=make_sql_string_and_free(s
 
 
 query_specification_ss:
-	SELECT op_ad select_list_ss table_expression_2_ss {
+	KW_SELECT op_ad select_list_ss table_expression_2_ss {
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space, $<sql_string>3,kw_space,$<sql_string>4,0);
 	}
 ;
 
 subquery_ss:
-	OPEN_BRACKET SELECT op_ad select_list_ss table_expression_2_ss CLOSE_BRACKET {
+	OPEN_BRACKET KW_SELECT op_ad select_list_ss table_expression_2_ss CLOSE_BRACKET {
 		$<sql_string>$=make_sql_string_and_free(strdup("("),strdup($<str>2),kw_space,strdup($<str>3),kw_space,$<sql_string>4,kw_space,$<sql_string>5,kw_cb,0);
 	}
 ;
@@ -1408,7 +1408,7 @@ units_qual:
 
 
 extend_qual_ss:
-        CURRENT KW_COMMA s_curr TO e_curr {
+        KW_CURRENT KW_COMMA s_curr TO e_curr {
 			$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_make_dtime_extend("CURRENT",$<str>3,$<str>5,1)),0);
 	}
         | var_ident_ibind_ss KW_COMMA s_curr TO e_curr {
@@ -1416,7 +1416,7 @@ extend_qual_ss:
 			free($<sql_string>1);
 		//$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup($<str>2),strdup($<str>3),kw_space,strdup($<str>4),kw_space,strdup($<str>5),0);
 	}
-        | CURRENT s_curr TO e_curr {
+        | KW_CURRENT s_curr TO e_curr {
 			$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_make_dtime_extend("CURRENT",$<str>2,$<str>4,1)),0);
 
 		//$<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup($<str>2),kw_space,strdup($<str>3),kw_space,strdup($<str>4),0);
@@ -1451,7 +1451,7 @@ interval_value:
 ;
 
 
-curr_clause : CURRENT  cur_part {
+curr_clause : KW_CURRENT  cur_part {
 strcpy($<str>$,$<str>2);
 }
 ;

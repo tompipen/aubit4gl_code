@@ -115,8 +115,8 @@ print_next_form_field($<str>2,$<str>4);
 }
 ;
 
-next_field	:	NEXT {sprintf($<str>$,"\"+\"");}
-		| 	PREVIOUS {sprintf($<str>$,"\"-\"");}
+next_field	:	KW_NEXT {sprintf($<str>$,"\"+\"");}
+		| 	KW_PREVIOUS {sprintf($<str>$,"\"-\"");}
 		| 	field_name_as_struct {sprintf($<str>$,field_name_as_char($<field_entry>1));}
 ;
 
@@ -193,7 +193,7 @@ up_or_down :
 
 ;
 
-op_help : {strcpy($<str>$,"");} | HELP INT_VALUE
+op_help : {strcpy($<str>$,"");} | KW_HELP INT_VALUE
 ;
 
 input_array_attributes: input_array_attributes_int {

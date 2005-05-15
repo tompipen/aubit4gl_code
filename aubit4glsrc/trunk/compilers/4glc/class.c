@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: class.c,v 1.9 2005-03-25 12:48:30 afalout Exp $
+# $Id: class.c,v 1.10 2005-05-15 12:58:48 mikeaubury Exp $
 #
 */
 
@@ -520,12 +520,15 @@ read_class (char *s, int is_parent)
   extern int list_class_cnt;	/* Our List */
   extern int list_class_alloc;	/* Our List */
   struct variable np;
+  struct variable *nptr;
   nline = 0;
-printf("read_class : %s\n",s);
+
+  printf("read_class : %s - is_parent=%d\n",s,is_parent);
 
   class_variable_data = CLASS_get_variable (s);
   class_members = CLASS_get_members (s);
 
+  if (find_dim(s) && !is_parent) return 1;
 
   if ((long) class_members != -1)
     {
@@ -554,8 +557,6 @@ printf("read_class : %s\n",s);
 
   read_class_int ("NUMVARS", &pvars);
 
-  //printf ("Reading %d list_class_cnt=%d\n", pvars, list_class_cnt);
-  //for (a = 0; a < list_class_cnt; a++) { printf ("    %s \n", list_class[a]->names.name); }
 
   // We know that the first pvars will be the parent...
 
@@ -568,10 +569,11 @@ printf("read_class : %s\n",s);
 
 
 
-  if (is_parent)
+  if (is_parent )
     {
       // First - read our parent 
 
+	printf("----------------\n");
       if (pvars >= 0)
 	{
 	  int a;
@@ -653,26 +655,79 @@ printf("read_class : %s\n",s);
       dump_variable_records (list_class, list_class_cnt, 0);
 
     } else {
-	//int a;
+	int a;
 	//struct variable v;
 	char buff[256];
 	int sz;
+
+        printf ("Reading %d list_class_cnt=%d\n", pvars, list_class_cnt);
+       //for (a = 0; a < list_class_cnt; a++) { printf ("    %s \n", list_class[a]->names.name); }
+
+
 	printf("dim_Set_name : %s\n",s);
 	sz=class_call(s,"aclfglclass__sizeof",0);
 	printf("sz=%d\n",sz);
+
+	read_variable_header (&np);
+
+
+	if (strcmp(np.names.name,"parent")!=0) {
+		a4gl_yyerror("Not set to parent in class");
+		return 0;
+	}
+
+
+	printf("variable_type=%d src_module=%s\n",np.variable_type,np.src_module);
+
+
+	printf("%s == THIS \n",np.names.name);
+	if (np.variable_type!=VARIABLE_TYPE_RECORD) {
+		a4gl_yyerror("Not a record in class");
+		return 0;
+	}
+
+
+
 	push_scope();
 	sprintf(buff,"%d",sz);
 	set_current_variable_scope('T');
 	push_name(s,0);
 	push_object(s);
+	//for (a=0;class_variable_data[a];a++) { dim_add (int a, char *s1, char *s2, char *s3) }
 	//push_name("_object_type",0);
 	//push_type("-","4",0);
-	push_name("object_type",0);
-	push_type("long","4",0);
+	//push_name("object_type",0);
+	//push_type("long","4",0);
 	push_name("object_space",0);
 	push_type("char",buff,0);
 	pop_record();
 	pop_scope();
+	nptr=find_dim(s);
+	//nptr->data.variables=realloc
+	
+	//nptr->v_record,np;
+
+
+	A4GL_pause_execution();
+
+  	//class_members = CLASS_get_members (s);
+
+	printf("class_members=%p\n",class_members);
+	if ((long) class_members==-1 || (long) class_members==0) ; 
+	else {
+		for (a=0;class_members[a];a++) {
+			printf("MEMBER : %s\n",class_members[a]);
+		}
+	}
+	printf("class_variable=%p\n",class_variable_data);
+	if ((long) class_variable_data==-1 || (long) class_variable_data==0) ; 
+	else {
+		for (a=0;class_variable_data[a];a++) {
+			//printf("VARIABLES : %s\n",class_variable_data[a]);
+		}
+	}
+
+
 
 
 	//dim_set_name(s);
@@ -808,7 +863,8 @@ read_variable_header (struct variable *v)
 /*struct name_list *ptr;*/
   int a;
   int cnt;
-
+ v->names.alias=0;
+  memset(v,0, sizeof(struct variable));
   read_class_string ("NAME", &v->names.name, 1);
   if (strcmp (v->names.name, "THIS") == 0)
     {
@@ -1076,8 +1132,41 @@ rm_class_copy (char *s)
 
 
 
+int isclassvariable(char *s) {
+	int dtype;
+	int size;
+	int vval;
+	struct variable *ptr;
+	vval=find_variable (s, &dtype, &size, 0, &ptr);
 
+	if (vval!=-2) {
+		return 0; // We're expecting a record/object
+	}
 
+	if (ptr->variable_type != VARIABLE_TYPE_OBJECT) {
+		return 0; // We're expecting an object
+	}
+
+	return 1;
+}
+
+int isclassmember(char *s,char *f) {
+	int dtype;
+	int size;
+	int vval;
+	struct variable *ptr;
+
+	vval=find_variable (s, &dtype, &size, 0, &ptr);
+
+	if (vval!=-2) {
+		return 0; // We're expecting a record/object
+	}
+	if (ptr->variable_type != VARIABLE_TYPE_OBJECT) {
+		return 0; // We're expecting an object
+	}
+
+	return 0;
+}
 
 
 /* ================================ EOF =================================== */

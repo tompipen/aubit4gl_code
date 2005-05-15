@@ -418,7 +418,7 @@ dtype :
 		   push_type("fgltext",0,0);
 		   
 		} 
-	|	TEXT {
+	|	KW_TEXT {
 		   push_type("fgltext",0,0);
 		   
 		} 

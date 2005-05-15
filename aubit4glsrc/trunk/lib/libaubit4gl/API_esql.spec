@@ -25,6 +25,16 @@ LIB_PREFIX ESQLAPI_
 //#undef DEBUG_SPEC
 //#endif
 
+// We don't want to enable debugging in here
+// because A4GL_copy_char can be passed invalid strings as a location
+// to copy INTO  (ie - it will be set After the copy)
+#ifdef DEBUG
+#undef DEBUG
+#endif
+#ifdef DEBUG_SPEC
+#undef DEBUG_SPEC
+#endif
+
 * ======================================================================
 * Function calls definitions:
 * func-name param-type param-name ... -> returns

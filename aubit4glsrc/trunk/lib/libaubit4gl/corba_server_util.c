@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.8 2005-05-04 12:33:45 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.9 2005-05-15 12:58:51 mikeaubury Exp $
 #
 */
 
@@ -309,6 +309,57 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 	
 	return dest;
 }
+
+
+int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) {
+char buff[256];
+int x;
+char *c;
+va_list args;
+char xbuff[10000];
+/* 
+
+We can end up with problems with overlapping - eg
+      sprintf(bibble,"'%s'",bibble);
+
+   so we'll sprintf into a temporary space first, then strcpy across after
+
+*/
+	A4GL_debug("sprintf %s %d - %s (%d)\n",f,l,fmt,sdest);
+        if (fmt==0) {
+                sprintf(buff,"No format for sprintf @ %s line %d",f,l);
+                A4GL_assertion(1,buff);
+        }
+
+
+	if (sdest>sizeof(char *)) { // We do this one...
+	      va_start (args, fmt);
+	      c=malloc(sdest);
+	      x=vsnprintf(c,sdest,fmt,args);
+	      if (x>=sdest) {
+                sprintf(buff,"sprintf trying to exceed allocated space @ %s (line %d)",f,l);
+			A4GL_assertion(1,buff);
+	      }
+	      strncpy(dest,c,sdest);
+	      free(c);
+	} else {
+	      va_start (args, fmt);
+	      A4GL_debug("vsprintf used because I can't see a size (or its the same as a char pointer) %s %d",f,l);
+	      x=vsprintf(xbuff,fmt,args);
+		if (x>sizeof(xbuff)) {
+			A4GL_assertion(1,"sprintf > 10,000 characters when using a pointer...");
+		}
+	      strcpy(dest,xbuff);
+	}
+
+	A4GL_debug("-->%s\n",dest);
+	return x;
+}
+
+
+
+
+
 
 //--from string.c
 char *A4GL_null_as_null(char *s) {

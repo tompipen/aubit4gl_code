@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.55 2005-03-09 15:14:27 mikeaubury Exp $
+# $Id: variables.c,v 1.56 2005-05-15 12:58:49 mikeaubury Exp $
 #
 */
 
@@ -1297,6 +1297,10 @@ A4GL_debug("-->%s",s);
   if (ptr->variable_type == VARIABLE_TYPE_RECORD || ptr->variable_type == VARIABLE_TYPE_OBJECT)
     {
       A4GL_debug ("Got a record - looks complicated..");
+	//A4GL_pause_execution();
+	if (var_ptr) {
+      		*var_ptr = ptr;		/* Carry on working with this one instead...*/
+	}
       return -2;
     }
 
@@ -1822,9 +1826,7 @@ make_arr_str (char *s, struct variable *v)
 }
 
 /******************************************************************************/
-long
-get_variable_dets (char *s, int *type, int *arrsize,
-		   int *size, int *level, char *arr)
+long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level, char *arr)
 {
   char buff[256];
   struct variable *v;
@@ -1886,6 +1888,135 @@ get_variable_dets (char *s, int *type, int *arrsize,
 
 }
 
+long get_variable_dets_arr3 (char *s, int *type, int *arrsize1,int *arrsize2,int *arrsize3, int *size, int *level, char *arr)
+{
+  char buff[256];
+  struct variable *v;
+
+
+  if (s[0] == '.' && s[1] == 0)
+    return -1;
+  if (s[0] == 0)
+    return -1;
+
+  strcpy (buff, s);
+      if (strncmp (buff, " ASSOCIATE_", 11) == 0)
+        {
+	char s[256];
+	char buff2[256];
+	strcpy(s,buff);
+          strcpy (buff, &s[11]);
+          strcpy (buff2, &s[A4GL_findex (s, ')') + 1]);
+          buff[A4GL_findex (buff, '(')] = 0;
+          strcat (buff, buff2);
+          A4GL_convlower (buff);
+        }
+
+  strip_bracket (buff);
+  v = find_variable_ptr (buff);
+
+  if (v == 0)
+    return -1;
+
+
+  *type = v->data.v_simple.datatype + ((v->data.v_simple.dimensions[0]) << 16);
+  *level = 1;
+
+  if (v->is_array)
+    {
+      *arrsize1 = v->arr_subscripts[0];
+      *arrsize2 = v->arr_subscripts[1];
+      *arrsize3 = v->arr_subscripts[2];
+    }
+  else
+    {
+      *arrsize1 = 0;
+      *arrsize2 = 0;
+      *arrsize3 = 0;
+    }
+
+  *size = v->data.v_simple.dimensions[0];
+
+  if (arr)
+    {
+      make_arr_str (arr, v);
+    }
+
+
+
+  if (v->variable_type != VARIABLE_TYPE_SIMPLE)
+    {
+      A4GL_debug ("Expecting a simple variable ?");
+      return -2;
+    }
+
+  return *type;
+
+}
+
+
+long
+get_variable_dets_obj (char *s, int *type, int *arrsize, int *size, int *level, char *arr)
+{
+  char buff[256];
+  struct variable *v;
+
+
+  if (s[0] == '.' && s[1] == 0)
+    return -1;
+  if (s[0] == 0)
+    return -1;
+
+  strcpy (buff, s);
+      if (strncmp (buff, " ASSOCIATE_", 11) == 0)
+        {
+	char s[256];
+	char buff2[256];
+	strcpy(s,buff);
+          strcpy (buff, &s[11]);
+          strcpy (buff2, &s[A4GL_findex (s, ')') + 1]);
+          buff[A4GL_findex (buff, '(')] = 0;
+          strcat (buff, buff2);
+          A4GL_convlower (buff);
+        }
+
+  strip_bracket (buff);
+  v = find_variable_ptr (buff);
+
+  if (v == 0)
+    return -1;
+
+
+  *type = v->data.v_simple.datatype + ((v->data.v_simple.dimensions[0]) << 16);
+  *level = 1;
+
+  if (v->is_array)
+    {
+      *arrsize = v->arr_subscripts[0];
+    }
+  else
+    {
+      *arrsize = 0;
+    }
+
+  *size = v->data.v_simple.dimensions[0];
+
+  if (arr)
+    {
+      make_arr_str (arr, v);
+    }
+
+
+
+  if (v->variable_type != VARIABLE_TYPE_SIMPLE)
+    {
+      A4GL_debug ("Expecting a simple variable ?");
+      return -2;
+    }
+
+  return *type;
+
+}
 
 
 

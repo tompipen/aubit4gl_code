@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.30 2005-03-25 12:48:32 afalout Exp $
+# $Id: io.c,v 1.31 2005-05-15 12:58:51 mikeaubury Exp $
 #
 */
 
@@ -177,12 +177,7 @@ FILE *f;
 		return 0;
 
 	if (strlen (path)) {
-		//Forward slash should work on Windows just fine...
-		//#ifndef WIN32 - we need __MINGW32__ or __CYGWIN__
 	      sprintf (buff, "%s/%s", path, name);
-		//#else
-		//  sprintf (buff, "%s\\%s", path, name);
-		//#endif
     } else {
 		sprintf (buff, name);
     }

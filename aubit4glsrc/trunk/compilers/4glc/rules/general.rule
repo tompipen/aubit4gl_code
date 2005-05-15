@@ -5,13 +5,13 @@
 */
 
 line_no		:
-	LAST MINUS INT_VALUE {sprintf($<str>$,"%d",-1-(atoi($<str>3)));}
-	| LAST {strcpy($<str>$,"-1");}
-	| FIRST PLUS INT_VALUE {sprintf ($<str>$,"%d",atoi($<str>3)+1);}
-	| FIRST {strcpy($<str>$,"1");}
+	KW_LAST MINUS INT_VALUE {sprintf($<str>$,"%d",-1-(atoi($<str>3)));}
+	| KW_LAST {strcpy($<str>$,"-1");}
+	| KW_FIRST PLUS INT_VALUE {sprintf ($<str>$,"%d",atoi($<str>3)+1);}
+	| KW_FIRST {strcpy($<str>$,"1");}
 	| INT_VALUE {strcpy($<str>$,$<str>1);}
 	| variable {strcpy($<str>$,$<str>1);}
-	| OFF {strcpy($<str>$,"0");}
+	| KW_OFF {strcpy($<str>$,"0");}
 ;
 
 file_name	:	CHAR_VALUE | cvariable 
@@ -101,7 +101,7 @@ addmap("Open Form",last_var,curr_func,yylineno,infilename);
 }
 ;
 
-opt_help_no		:	{strcpy($<str>$,"0");} | HELP INT_VALUE {strcpy($<str>$,$<str>2);};
+opt_help_no		:	{strcpy($<str>$,"0");} | KW_HELP INT_VALUE {strcpy($<str>$,$<str>2);};
 
 
 identifier	:  NAMED  { 

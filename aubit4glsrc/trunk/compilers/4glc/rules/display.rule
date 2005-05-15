@@ -31,7 +31,7 @@ display_b_n_cmd : DISPLAY_BY_NAME reset_cnt ibind_var_list display_attr
 ;
 
 
-display_cmd : DISPLAY reset_cnt fgl_expr_list opt_at display_attr 
+display_cmd : KW_DISPLAY reset_cnt fgl_expr_list opt_at display_attr 
 		{ 
 				print_display($<str>4,$<str>3,$<str>5);
 		} 

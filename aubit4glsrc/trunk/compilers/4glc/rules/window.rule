@@ -73,7 +73,7 @@ menu_name: identifier
 menu_handler: identifier;
 
 
-hide_cmd : HIDE_WINDOW win_name {
+hide_cmd : KW_HIDE_WINDOW win_name {
 	print_hide_window($<str>2);
 }
 ;

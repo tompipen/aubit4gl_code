@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.221 2005-05-05 08:59:51 mikeaubury Exp $
+# $Id: compile_c.c,v 1.222 2005-05-15 12:58:51 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.221 2005-05-05 08:59:51 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.222 2005-05-15 12:58:51 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -77,26 +77,9 @@
 
 #define FGL_PLUS_PLUS
 int isin_command (char *cmd_type);
-//char *A4GL_get_esql_ext(void);
-/*
-void add_function_to_header (char *identifier, int parms);
-char *get_namespace (char *s);
-void print_init_var (char *name, char *prefix, int alvl);
-void printcomment (char *fmt, ...);
-int is_builtin_func (char *s);
-static void order_by_report_stack(void);
-static void add_to_ordbyfields(int n);
-static void order_by_report_stack();
-extern void expand_bind (struct binding_comp *bind, int btype, int cnt);
-
-*/
-
-//char get_curr_report_stack_whytype(void);
-
 int print_bind_expr_portion (void *ptr, char i, int portion);
 
 int suppress_lines=0;
-//int print_bind_expr (void *ptr, char i);
 char **get_field_codes(char *fields) ;
 char *get_curr_report_stack_why(void);
 struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val);
@@ -107,11 +90,12 @@ int *get_key_codes(char *keys) ;
 int rep_print_entry=0;
 int doing_cs (void);
 int get_validate_list_cnt(void) ;
-//void set_yytext (char *s);
 char *A4GL_get_important_from_clobber(char *s);
 void add_class_function_to_header (char *identifier, int params,char* is_static);
 char* get_reset_state_after_call(void);
 void print_reset_state_after_call(void);
+
+
 /*
 =====================================================================
 		                    Includes
@@ -216,9 +200,6 @@ static void pr_report_agg (void);
 static void pr_report_agg_clr (void);
 static void print_menu (int mn, int n);
 
-/*void          A4GL_internal_lex_printc (char *fmt, va_list * ap);*/
-/*void          A4GL_internal_lex_printcomment (char *fmt, va_list * ap);*/
-/*void          A4GL_internal_lex_printh (char *fmt, va_list * ap);*/
 
 static void real_print_expr (struct expr_str *ptr);
 static void real_print_func_call (char *identifier, struct expr_str *args,
@@ -257,13 +238,11 @@ print_space (void)
 
 
 void set_suppress_lines(void) {
-	//printc("\n/* SUPPRESS */\n");
 	suppress_lines++;
 }
 
 void clr_suppress_lines(void) {
 	suppress_lines--;
-	//printc("\n/* !SUPPRESS */\n");
 }
 
 
@@ -411,13 +390,6 @@ open_outfile (void)
     fprintf (outfile, "#include \"%s\"\n", h);
 
 
-  /* if (acl_getenv ("GTKGUI"))
-     fprintf (outfile, "#include <acl4glgui.h>\n");
-
-     we no longer need this:
-     fprintf (outfile, "static char *_compiler_ser=\"%s\";\n", get_serno ());
-   */
-
   if (doing_cs ())
     {
       fprintf (outfile, "static string module_name=\"%s.4gl\";\n",
@@ -437,28 +409,6 @@ open_outfile (void)
       exit (3);
     }
 
-#ifdef OBSOLETE_CODE
-  if (strncmp (acl_getenv ("GTKGUI"), "Y", 1) == 0)
-    {
-      /*
-         strange: was this supposed to be A4GL_UI and not GTKGUI?
-         Since GTK programs are working anyway, should I assume this is
-         obsolete code?
-       */
-
-      /* fprintf (hfile, "#include <a4gl_incl_acl4glgui.h>\n"); */
-      /* only this was in a4gl_incl_acl4glgui.h, which was removed from CVS: */
-
-      fprintf (hfile, "#include <gtk/gtk.h>\n");
-      fprintf (hfile,
-	       "#define ON_FIELD(x) (widget_name_match(widget,x)&&event==0&&(A4GL_strnullcmp(data,'on')==0||A4GL_strnullcmp(data,'clicked')==0))\n");
-      fprintf (hfile,
-	       "#define BEFORE_OPEN_FORM  (event==0&&widget==0&&data==0)\n");
-      fprintf (hfile,
-	       "#define BEFORE_CLOSE_FORM  (isevent==1&&(event->type==GDK_DELETE|| event->type==GDK_DESTROY))\n");
-
-    }
-#endif
 }
 
 
@@ -487,14 +437,12 @@ printc (char *fmt, ...)
 void
 A4GL_internal_lex_printc (char *fmt, va_list * ap)
 {
-/* va_list args; */
   static char buff[40960] = "ERROR-empty init";
   //static char buff2[40960];
   char *ptr;
   int a;
 int os;
 
-  /*A4GL_debug("in real_lex_printc");*/
 
   if (outfile == 0)
     {
@@ -502,19 +450,13 @@ int os;
       if (outfile == 0)
 	return;
     }
-  /*A4GL_debug("before vsprintf");*/
-  /*A4GL_debug("ap = %p\n",ap);*/
-  /*A4GL_debug("fmt = %p\n",fmt);*/
 
-  /* va_start (args, fmt); */
   os=vsnprintf (buff, sizeof(buff),fmt, *ap);
 if (os>=sizeof(buff)) {
 	a4gl_yyerror("Internal error - string too big\n");
 	exit(0);
 } 
 
-  /*A4GL_debug("buff in lib=%s\n",buff);*/
-  //strcpy (buff2, fmt);
 
 
   if (A4GL_isyes (acl_getenv ("INCLINES")))
@@ -1759,16 +1701,7 @@ print_bind (char i)
     {
       printc ("\n");
       	expand_bind (&ordbind[0], 'O', ordbindcnt);
-      /*
-         warning: passing arg 1 of `expand_bind' from incompatible pointer type
-         void expand_bind (struct binding * bind, int btype, int cnt);
-         extern struct binding ordbind[NUMBINDINGS];
-       */
 
-      /*if (get_rep_no_orderby()) {*/
-      /*printc("static struct BINDING *_ordbind=");*/
-      /*} else {*/
-      /*}*/
 
       printc ("static struct BINDING _ordbind[%d]={\n", ONE_NOT_ZERO (ordbindcnt));
       if (ordbindcnt == 0)
