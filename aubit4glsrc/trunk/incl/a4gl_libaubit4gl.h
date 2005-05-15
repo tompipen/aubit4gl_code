@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.166 2005-04-22 06:06:16 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.167 2005-05-15 08:47:24 mikeaubury Exp $
 #
 */
 
@@ -364,8 +364,8 @@
 
 #define STREQL(a,b) 	(strcmp(a,b)==0)
 #define STRNEQ(a,b) 	(strcmp(a,b)!=0)
-#define STRIEQ(a,b) 	(strcasecmp(a,b)==0)
-#define STRINEQ(a,b) 	(strcasecmp(a,b)!=0)
+#define STRIEQ(a,b) 	(A4GL_aubit_strcasecmp(a,b)==0)
+#define STRINEQ(a,b) 	(A4GL_aubit_strcasecmp(a,b)!=0)
 
 #define RES_PANEL 		1
 #define RES_ACLWINDOW 	2
@@ -467,6 +467,7 @@
 
 #ifndef __NO_STDARG__
 	#include <stdarg.h>		/* va_start(), va-list ... */
+
 #endif
 
 #ifndef _NO_SYSINCL_
@@ -492,9 +493,11 @@
 	#endif
 	#include <stdlib.h>			/* free() */
 
+
 	#if HAVE_SEARCH_H && ! defined(__MINGW32__)
 		/* MinGW 3.1.0 introduced search.h, but it's not complete */
 		#include <search.h>		/* VISIT-used in pointers.c */
+
 	#else
 	
 		/* search internal node for windows and platforms without this 
@@ -591,7 +594,10 @@
 	//on CygWin cause conflicts with glib-2.0/glib/gwin32.h
 	// with g_win32_ftruncate
 	*/
+
+#ifndef MSVC
 	#include <unistd.h>		/* sleep() close() write() usleep() */
+#endif
 	#include <signal.h>		/* SIGINT */
 
   /*
