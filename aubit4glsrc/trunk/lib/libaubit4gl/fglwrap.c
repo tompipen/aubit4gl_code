@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.87 2005-03-31 16:45:02 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.88 2005-05-15 09:10:44 mikeaubury Exp $
 #
 */
 
@@ -265,7 +265,7 @@ char *p;
   }
 
 /*endwin(); *//* switch straight back to terminal mode */
-#if (defined(WIN32) && ! defined(__CYGWIN__) && ! defined (__MINGW32__))
+#if (defined(WIN32) && ! defined(__CYGWIN__) && ! defined (__MINGW32__) && ! defined(MSVC))
   rpc_nt_init ();
 #endif
 
@@ -960,41 +960,6 @@ A4GL_clob (char *s, char *p)
   return clobber;
 }
 
-/**
- * Check and show the aubit compiler ID
- *
- * @param program A string identifiing the program name
- * @param arg1 The first argument of the program argv[1]
- */
-void
-A4GL_check_and_show_id (char *program, char *arg1)
-{
-char mod[32];
-char id[132];
-int a;
-
-  	if (strcmp (arg1, "-v") == 0) {
-		printf ("(c) 1997-2005 Aubit project\n%s\n\n", program);
-		printf ("Version       %s\nBuild Level   %d\n",
-	      	A4GL_internal_version (), A4GL_internal_build ());
-
-		exit (0);
-	}
-
-	if (strcmp (arg1, "-vfull") == 0) {
-		printf ("(c) 1997-2005 Aubit project\n%s\n\n", program);
-		printf ("Version       %s\nBuild Level   %d\n",
-	      	A4GL_internal_version (), A4GL_internal_build ());
-		for (a = 0;; a++) {
-			A4GL_set_version (a, mod, id);
-			if (strlen (mod) == 0) {
-				break;
-			}
-			printf ("%s:\n  %s\n", mod, id);
-		}
-		exit (0);
-    }
-}
 
 /**
  * Yes it is... used (?)
@@ -1178,6 +1143,43 @@ A4GL_debug("SQL on line %d in %s:%s\n",lineno,module,s);
 char *A4GL_get_running_program(void) {
 	return running_program; // Argv[0]
 }
+/**
+ * Check and show the aubit compiler ID
+ *
+ * @param program A string identifiing the program name
+ * @param arg1 The first argument of the program argv[1]
+ */
+void
+A4GL_check_and_show_id (char *program, char *arg1)
+{
+char mod[32];
+char id[132];
+int a;
+
+  	if (strcmp (arg1, "-v") == 0) {
+		printf ("(c) 1997-2005 Aubit project\n%s\n\n", program);
+		printf ("Version       %s\nBuild Level   %d\n",
+	      	A4GL_internal_version (), A4GL_internal_build ());
+
+		exit (0);
+	}
+
+	if (strcmp (arg1, "-vfull") == 0) {
+		printf ("(c) 1997-2005 Aubit project\n%s\n\n", program);
+		printf ("Version       %s\nBuild Level   %d\n",
+	      	A4GL_internal_version (), A4GL_internal_build ());
+		for (a = 0;; a++) {
+			A4GL_set_version (a, mod, id);
+			if (strlen (mod) == 0) {
+				break;
+			}
+			printf ("%s:\n  %s\n", mod, id);
+		}
+		exit (0);
+    }
+}
+
+
 
 
 /* ================================= EOF ============================= */
