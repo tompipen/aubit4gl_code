@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.39 2005-03-09 15:14:39 mikeaubury Exp $
+# $Id: debug.c,v 1.40 2005-05-15 09:02:33 mikeaubury Exp $
 #
 */
 
@@ -178,7 +178,12 @@ A4GL_debug_full (char *fmt, ...)
     {
       va_start (args, fmt);
 	memset(buff,0,sizeof(buff));
-      vsnprintf (buff, 400,fmt, args);
+
+#ifdef  HAVE_VSNPRINTF
+	vsnprintf (buff, 400,fmt, args);
+#else
+      	vsprintf (buff, fmt, args);
+#endif
 
 	buff[400]=0;
       if (buff[strlen (buff) - 1] != ':')
