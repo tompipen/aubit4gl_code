@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.34 2005-03-09 15:14:40 mikeaubury Exp $
+# $Id: pointers.c,v 1.35 2005-05-15 11:13:10 mikeaubury Exp $
 #
 */
 
@@ -49,9 +49,9 @@
 #define TXT_LEN 128
 
 
-#define  FIND(a) (tfind((char *)a,(void *)&root,(int(*)(const void *, const void *))A4GL_strcmpare))
-#define  ADD(a) (tsearch((char *)a,(void *)&root,(int(*)(const void *, const void *))A4GL_strcmpare))
-#define  DELETE(a) (tdelete((char *)a,(void *)&root,(int(*)(const void *, const void *))A4GL_strcmpare))
+#define  FIND_X(a) (tfind((char *)a,(void *)&root,(int(*)(const void *, const void *))A4GL_strcmpare))
+#define  ADD_X(a) (tsearch((char *)a,(void *)&root,(int(*)(const void *, const void *))A4GL_strcmpare))
+#define  DELETE_X(a) (tdelete((char *)a,(void *)&root,(int(*)(const void *, const void *))A4GL_strcmpare))
 
 /*
 =====================================================================
@@ -184,7 +184,7 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
   strcat (buff->name, orig_name);
   buff->ptr = ptr;
   //A4GL_debug ("Buff=%p\n", buff);
-  a = FIND (buff);
+  a = FIND_X (buff);
 
   if (a)
     {
@@ -198,13 +198,13 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
       //A4GL_debug ("Copy buffer %s\n", ptrchar);
       strcpy (buff2.name, ptrchar);
       //A4GL_debug ("And find its pointer\n");
-      a = FIND (&buff2);
+      a = FIND_X (&buff2);
       if (a)
 	{
 	  //A4GL_debug ("Found ptr... \n");
 	  anode = *(struct s_node **) a;
 #if ! defined(__MINGW32__)
-	  DELETE (&buff2);
+	  DELETE_X (&buff2);
 #endif
 
 	  //A4GL_debug ("Try to free %p\n", anode);
@@ -219,14 +219,14 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
   else
     {
       //A4GL_debug ("tfind ... a=%p\n", a);
-      a = ADD (buff);
+      a = ADD_X (buff);
       //A4GL_debug ("tsearch ... a=%p %p\n", a, buff);
     }
   buff_add = (struct s_node *) malloc (sizeof (struct s_node));
   sprintf (buff_add->name, ">%p", ptr);
   buff_add->ptr = buff;
   //A4GL_debug ("Adding extra for %s %p\n", buff_add->name, buff_add->ptr);
-  a = ADD (buff_add);
+  a = ADD_X (buff_add);
   //A4GL_debug ("Added...");
 }
 
@@ -252,7 +252,7 @@ A4GL_find_pointer (const char *pname, char t)
   strcat (buff.name, pname);
   buff.ptr = 0;
   //A4GL_debug ("30 Finding %s", buff.name);
-  a = FIND (&buff);
+  a = FIND_X (&buff);
   ////A4GL_debug ("A=%p", a);
   if (a != NULL)
     {
@@ -300,24 +300,24 @@ A4GL_del_pointer (char *pname, char t)
   buff->name[1] = 0;
   strcat (buff->name, pname);
   //A4GL_debug ("Buff=%p pname=%s buff->name=%s\n", buff,pname,buff->name);
-  a = FIND (buff);
+  a = FIND_X (buff);
   if (a)
     {
       anode = *(struct s_node **) a;
       sprintf (ptrchar, ">%p", anode->ptr); // Was buff
       strcpy (buff2.name, ptrchar);
-      a = FIND (&buff2);
+      a = FIND_X (&buff2);
       if (a)
 	{
 	  anode = *(struct s_node **) a;
 #if ! defined(__MINGW32__)
-	  DELETE (&buff2);
+	  DELETE_X (&buff2);
 #endif
 	  strcpy (anode->name, "======");
 	  free (anode);
 	}
 #if ! defined(__MINGW32__)
-      DELETE (buff);
+      DELETE_X (buff);
 #endif
       free (buff);
     }
@@ -359,7 +359,7 @@ A4GL_find_pointer_ptr (char *name, char *type, void *ptr)
   //A4GL_debug ("Finding %s", buff.name);
   buff.ptr = 0;
 
-  a = FIND (&buff);
+  a = FIND_X (&buff);
   //A4GL_debug ("Find returns %p", a);
   if (a)
     {
