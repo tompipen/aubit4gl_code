@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.20 2005-03-09 15:14:39 mikeaubury Exp $
+# $Id: datatypes.c,v 1.21 2005-05-15 09:01:10 mikeaubury Exp $
 #
 */
 
@@ -289,7 +289,7 @@ A4GL_find_datatype_out (char *name)
 	  function = A4GL_get_datatype_function_i (a, "OUTPUT");
 	  A4GL_debug ("Got function as %p - comparing %s and %s", function,
 		 A4GL_null_as_null(function ()), A4GL_null_as_null(name));
-	  if (strcasecmp (function (), name) == 0)
+	  if (A4GL_aubit_strcasecmp (function (), name) == 0)
 	    return a;
 	}
     }
@@ -319,7 +319,7 @@ printf("Find datatype : %s\n",name);
 	continue;
 
 printf("Find datatype : %s = %s ? \n",name,dtypes[a].name);
-      if (strcasecmp (dtypes[a].name, name) == 0)
+      if (A4GL_aubit_strcasecmp (dtypes[a].name, name) == 0)
 	{
 	  return a;
 	}
