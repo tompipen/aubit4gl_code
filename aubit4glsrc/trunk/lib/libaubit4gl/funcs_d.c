@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.63 2005-03-31 13:35:47 afalout Exp $
+# $Id: funcs_d.c,v 1.64 2005-05-15 09:12:46 mikeaubury Exp $
 #
 */
 
@@ -436,8 +436,8 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
 	    return;
 	  }
 
-	if (strcasecmp (acl_getenv ("FORMAT_OVERFLOW"), "REFORMAT") == 0
-	    || strcasecmp (acl_getenv ("FORMAT_OVERFLOW"), "ROUND") == 0)
+	if (A4GL_aubit_strcasecmp (acl_getenv ("FORMAT_OVERFLOW"), "REFORMAT") == 0
+	    || A4GL_aubit_strcasecmp (acl_getenv ("FORMAT_OVERFLOW"), "ROUND") == 0)
 	  {
 	    // use a compact format that at least can display the number.
 	    // round off decimal places only if FORMAT_OVERFLOW allows it
@@ -453,7 +453,7 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
 	    if (n_cnt < a)
 	      fmt[n_cnt] = '.';
 	    if ((a - n_cnt > d_cnt) ||
-		(strcasecmp (acl_getenv ("FORMAT_OVERFLOW"), "ROUND") == 0))
+		(A4GL_aubit_strcasecmp (acl_getenv ("FORMAT_OVERFLOW"), "ROUND") == 0))
 	      {
 	 A4GL_debug ("trying fmt=%s", fmt);
 		a4gl_using (str, s, fmt, num);

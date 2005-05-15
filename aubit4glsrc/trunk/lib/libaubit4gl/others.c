@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.46 2005-03-09 15:14:40 mikeaubury Exp $
+# $Id: others.c,v 1.47 2005-05-15 09:12:47 mikeaubury Exp $
 #
 */
 
@@ -395,7 +395,7 @@ A4GL_replace_sql_var (char *s)
 
   A4GL_debug("Buff=%s\n",buff);
 
-  if (strcasecmp (buff, "today") == 0)
+  if (A4GL_aubit_strcasecmp (buff, "today") == 0)
     {
       A4GL_push_today ();
       ptr = A4GL_char_pop ();
@@ -406,7 +406,7 @@ A4GL_replace_sql_var (char *s)
 	return buff;
     }
 
-  if (strcasecmp (buff, "user") == 0)
+  if (A4GL_aubit_strcasecmp (buff, "user") == 0)
     {
       A4GL_push_user ();
       ptr = A4GL_char_pop ();
@@ -506,7 +506,7 @@ A4GL_find_srec (struct_form * fd, char *name)
   for (a = 0; a < fd->records.records_len; a++)
     {
 	A4GL_debug("MJA MJA %s - %s\n",fd->records.records_val[a].name,name);
-      if (strcasecmp (name, fd->records.records_val[a].name) == 0) {
+	if (A4GL_aubit_strcasecmp (name, fd->records.records_val[a].name) == 0) {
 		A4GL_debug("Found it...");
 	return a;
 	}
@@ -641,7 +641,7 @@ void
 a4gl_usleep (int a)
 {
 
-#ifdef __MINGW32__
+#if defined( __MINGW32__ ) || defined(MSVC)
 #include <winbase.h>
   DWORD b;
   b = a / 1000;
@@ -726,8 +726,11 @@ int aclfgl_aclfgl_read_pipe(int nargs)
         for (bytes = 0; bytes < MAX_STRING - 1; bytes++)
             if ((data[bytes] = getc(pp)) == EOF || data[bytes] == '\n')
                 break;
-
-        pclose(pp);                          /* close the pipe        */
+#ifdef MSVC
+        _pclose(pp);                          /* close the pipe        */
+#else
+		pclose(pp);                          /* close the pipe        */
+#endif
     }
 
     data[bytes] = 0;                      /* terminate string      */

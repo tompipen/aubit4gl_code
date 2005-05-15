@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.17 2005-03-31 13:35:48 afalout Exp $
+# $Id: translate.c,v 1.18 2005-05-15 09:12:47 mikeaubury Exp $
 #
 */
 
@@ -48,8 +48,7 @@
 =====================================================================
 */
 
-//#define stricmp strcasecmp
-#define stricmp A4GL_aubit_strcasecmp
+
 #define TRANSLINESIZE 2048
 
 /*
@@ -220,7 +219,7 @@ A4GL_dumpstring (char *s, long n, char *fname)
 			   list_of_strings_len * sizeof (char *));
       list_of_strings[list_of_strings_len - 1] = s;
 
-      if (stricmp ((char *) acl_getenv ("DUMPSTRINGS"), "ident") == 0)
+      if (A4GL_aubit_strcasecmp ((char *) acl_getenv ("DUMPSTRINGS"), "ident") == 0)
 	{
 	  fprintf (f, "%s:>%d\n", s, ident++);
 	}
