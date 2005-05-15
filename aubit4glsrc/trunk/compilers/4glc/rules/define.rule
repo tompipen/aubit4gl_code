@@ -50,28 +50,28 @@ define_ident :
 
 
 def_part2 :
-		CONSTANT define_ident op_equal CHAR_VALUE {
+		KW_CONSTANT define_ident op_equal CHAR_VALUE {
 		    add_constant('c',$<str>4,$<str>2);
 		    addmap("Constant",$<str>2,curr_func,yylineno,infilename);
 		    
 		} 
-	|	CONSTANT define_ident op_equal identifier {
+	|	KW_CONSTANT define_ident op_equal identifier {
 		    add_constant('C',$<str>4,$<str>2);
 		    addmap("Constant",$<str>2,curr_func,yylineno,infilename);
 		    
 		} 
-	|	CONSTANT define_ident op_equal real_number {
+	|	KW_CONSTANT define_ident op_equal real_number {
 		    add_constant('f',$<str>4,$<str>2);
 		   addmap("Constant",$<str>2,curr_func,yylineno,infilename);
 		    
 		} 
-	|	CONSTANT define_ident op_equal INT_VALUE {
+	|	KW_CONSTANT define_ident op_equal INT_VALUE {
 		    add_constant('i',$<str>4,$<str>2);
 		   addmap("Constant",$<str>2,curr_func,yylineno,infilename);
 		    
 		} 
 	|	var_def_list dtype_ident
-	|	define_ident CONSTANT constant_value {
+	|	define_ident KW_CONSTANT constant_value {
 		   char buff[20];
 		   strncpy(buff,$<str>3,3);
 		   if (buff[0]=='"') {
