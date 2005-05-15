@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: eval_field.c,v 1.7 2005-03-09 15:14:39 mikeaubury Exp $
+# $Id: eval_field.c,v 1.8 2005-05-15 09:03:28 mikeaubury Exp $
 #
 */
 
@@ -216,7 +216,7 @@ A4GL_debug("Evaludate field_expr - s=%s exprtype = %d",s,expr->itemtype);
       	ptr2 = expr->u_expression_u.complex_expr;
 
 	for (a=0;ops[a].type;a++) {
-		if (strcasecmp(ops[a].type,ptr2->comparitor)==0) {
+		if (A4GL_aubit_strcasecmp(ops[a].type,ptr2->comparitor)==0) {
 			compid=ops[a].id;
 			straightforward=ops[a].straightforward;
 			break;
