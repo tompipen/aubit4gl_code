@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.122 2005-05-06 18:11:41 mikeaubury Exp $
+# $Id: stack.c,v 1.123 2005-05-15 11:43:16 mikeaubury Exp $
 #
 */
 
@@ -47,10 +47,22 @@
 =====================================================================
 */
 
-#include <sys/time.h>
-#include <unistd.h>
-#include <ctype.h>
+
+
+
 #include "a4gl_libaubit4gl_int.h"
+
+
+#include <ctype.h>
+
+
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 //struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
 //int A4GL_conversion_ok(int);
@@ -987,7 +999,7 @@ A4GL_debug("51 Have data");
 
   if (d == OP_IN_SELECT || d == OP_NOTIN_SELECT)
     {
-      int a;
+      //int a=0;
       int ok = 0;
       int eql;
       char *s;
@@ -1035,7 +1047,7 @@ A4GL_debug("51 Have data");
 	  eql = A4GL_pop_int ();
 	  if (eql)
 	    ok = 1;
-	  a--;
+	  //a--;
 	}
       A4GL_drop_param ();		/* Get rid of the base */
       if (d == OP_IN_SELECT)
