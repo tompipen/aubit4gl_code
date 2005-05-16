@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.13 2005-05-15 12:58:52 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.14 2005-05-16 11:11:07 mikeaubury Exp $
 #*/
 
 /**
@@ -205,7 +205,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 	    }
 
 	  *ptr = 0;
-	  ptr=strchr(tname,':');
+	  ptr=strchr(tname,' ');
 	  if (ptr) *ptr=0;
 
 	  A4GL_debug ("Checking table : %s %s\n", tname, tabname);
