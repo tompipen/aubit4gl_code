@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.24 2005-05-18 13:48:41 mikeaubury Exp $
+# $Id: error.c,v 1.25 2005-05-18 14:05:51 mikeaubury Exp $
 #
 */
 
@@ -47,7 +47,7 @@
 */
 
 
-ifndef  FILE_TMPERRS_H
+#ifndef  FILE_TMPERRS_H
 #define FILE_TMPERRS_H "../generated/tmperrs.h"
 #endif
 #include FILE_TMPERRS_H
