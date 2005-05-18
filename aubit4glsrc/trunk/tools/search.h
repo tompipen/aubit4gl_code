@@ -20,7 +20,10 @@
 #ifndef _SEARCH_H
 #define	_SEARCH_H 1
 
+#if HAVE_FEATURES_H
 #include <features.h>
+#endif
+
 
 #define __need_size_t
 #include <stddef.h>
