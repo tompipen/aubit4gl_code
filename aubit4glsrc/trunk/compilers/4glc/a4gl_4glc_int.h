@@ -13,19 +13,25 @@
 	#include "a4gl_incl_config.h"
 #endif
 
+
+#ifdef SIMPLIFIED
+#error NOT DONE YET
 #ifndef _GETOPT_H
 	#if HAVE_GETOPT_H           /* struct option */
 		#include <getopt.h>
 	#else
-		#include "../../tools/getopt/getopt.h"
+		#include "tools/getopt/getopt.h"
 	#endif
 	#ifndef _GETOPT_H
 		#define _GETOPT_H
 	#endif
 #endif
+#endif
+
 
 #include "a4gl_libaubit4gl.h"
 #include "API_lex.h"
+#include <stdio.h>
 
 
 #ifdef __MINGW32__

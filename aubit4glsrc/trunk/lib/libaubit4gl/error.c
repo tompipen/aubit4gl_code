@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.23 2005-03-31 13:35:46 afalout Exp $
+# $Id: error.c,v 1.24 2005-05-18 13:48:41 mikeaubury Exp $
 #
 */
 
@@ -46,7 +46,11 @@
 =====================================================================
 */
 
-#include "../generated/tmperrs.h"
+
+ifndef  FILE_TMPERRS_H
+#define FILE_TMPERRS_H "../generated/tmperrs.h"
+#endif
+#include FILE_TMPERRS_H
 #include "a4gl_libaubit4gl_int.h"
 
 /*
@@ -71,7 +75,7 @@ char errorbuff[256] = "";
 char lasterrorstr[1024] = "";
 int cache_status = 0;
 int cache_statusno = 0;
-int int_err_flg;
+static int int_err_flg;
 //void aclfgli_clr_err_flg (void);
 void aclfgli_set_err_flg (void);
 //int aclfgli_get_err_flg (void);

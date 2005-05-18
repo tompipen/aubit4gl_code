@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.24 2005-04-15 06:59:28 mikeaubury Exp $
+# $Id: memfile.c,v 1.25 2005-05-18 13:48:41 mikeaubury Exp $
 #
 */
 
@@ -53,9 +53,9 @@ void A4GL_remove_comments_in_memfile(FILE *f) ;
 
 int opened = 0;
 static char *buff;
-long buff_len;
-FILE *in;
-long pos = 0;
+static long buff_len;
+static FILE *in;
+static long pos = 0;
 //FILE *A4GL_mja_fopen (char *name, char *mode);
 
 void A4GL_dump_buffer (char *s, int l);

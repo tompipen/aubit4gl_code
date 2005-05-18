@@ -28,6 +28,7 @@
 int A4GL_last_error (void);
 #if (defined(WIN32) && ! defined(__CYGWIN__))
 	#define USE_WINSOCK
+	int A4GL_get_connection (int socket_type, u_short port, int *listener);
 #endif
 
 #ifndef USE_WINSOCK

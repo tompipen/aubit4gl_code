@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.40 2005-05-15 09:02:33 mikeaubury Exp $
+# $Id: debug.c,v 1.41 2005-05-18 13:48:40 mikeaubury Exp $
 #
 */
 
@@ -66,8 +66,8 @@ extern sqlca_struct a4gl_sqlca;
 
 FILE *debugfile = 0;
 int nodebug = DEBUG_DONTKNOW;
-char g_fname[256];
-int g_lineno;
+static char g_fname[256];
+static int g_lineno;
 
 static char arg0[15] = "**undefined**";
 

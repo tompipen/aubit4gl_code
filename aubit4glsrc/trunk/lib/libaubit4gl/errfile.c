@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.15 2005-04-22 06:06:17 mikeaubury Exp $
+# $Id: errfile.c,v 1.16 2005-05-18 13:48:41 mikeaubury Exp $
 #
 */
 
@@ -59,10 +59,10 @@
 =====================================================================
 */
 
-char buff[2048];
-FILE *fout = 0;
-long le;
-int errline;
+static char buff[2048];
+static FILE *fout = 0;
+static long le;
+static int errline;
 
 /*
 =====================================================================

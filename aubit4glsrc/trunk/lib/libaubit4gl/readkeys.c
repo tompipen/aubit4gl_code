@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readkeys.c,v 1.10 2005-03-09 15:14:40 mikeaubury Exp $
+# $Id: readkeys.c,v 1.11 2005-05-18 13:48:41 mikeaubury Exp $
 #*/
 
 /**
@@ -43,12 +43,12 @@
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
 
-int have_keyfile=-1;
-FILE *keyfile;
+static int have_keyfile=-1;
+static FILE *keyfile;
 static void open_keyfile(void) ;
 
-int have_keylog=-1;
-FILE *keylog;
+static int have_keylog=-1;
+static FILE *keylog;
 static void open_keylog(void) ;
 long key_delay=100000;
 

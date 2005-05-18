@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.104 2005-03-31 13:35:39 afalout Exp $
+# $Id: conv.c,v 1.105 2005-05-18 13:48:40 mikeaubury Exp $
 #
 */
 
@@ -260,9 +260,9 @@ static void print_res_l (int ln, char *s);
 
 #include <errno.h>
 /* extern int 		errno; */
-int lastsize;
+static int lastsize;
 
-int size_of_operand=0;
+static int size_of_operand=0;
 
 /*
 =====================================================================

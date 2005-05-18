@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.18 2005-03-31 13:35:47 afalout Exp $
+# $Id: interval.c,v 1.19 2005-05-18 13:48:41 mikeaubury Exp $
 #
 */
 
@@ -53,9 +53,9 @@
 */
 
 //extern int errno;
-int rval_type;
-struct ival rval_ival;		/* 1 */
-double rval_double;		/* 2 */
+static int rval_type;
+static struct ival rval_ival;		/* 1 */
+static double rval_double;		/* 2 */
 
 
 /*

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.107 2005-04-22 06:03:23 mikeaubury Exp $
+# $Id: lexer.c,v 1.108 2005-05-18 13:46:13 mikeaubury Exp $
 #*/
 
 /**
@@ -57,7 +57,11 @@
 #define _NO_WINDOWS_H_
 #include "a4gl_4glc_int.h"
 #include "y.tab.h"
-#include "rules/generated/kw.h"
+
+#ifndef FILE_FOR_KW_H
+#define FILE_FOR_KW_H "rules/generated/kw.h"
+#endif
+#include FILE_FOR_KW_H
 #include "memfile.h"
 
 extern int isin_formhandler;

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: maths.c,v 1.16 2005-03-31 13:35:47 afalout Exp $
+# $Id: maths.c,v 1.17 2005-05-18 13:48:41 mikeaubury Exp $
 #
 */
 
@@ -58,7 +58,7 @@ struct s_math
 };
 
 static int inited = 0;
-struct s_math *arr_math[MAX_DTYPE][MAX_DTYPE];
+static struct s_math *arr_math[MAX_DTYPE][MAX_DTYPE];
 
 /*
 =====================================================================

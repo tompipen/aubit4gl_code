@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.22 2005-03-31 13:35:46 afalout Exp $
+# $Id: extfile.c,v 1.23 2005-05-18 13:48:41 mikeaubury Exp $
 #
 */
 
@@ -48,13 +48,13 @@
 =====================================================================
 */
 
-FILE *helpfile = 0;
-FILE *langfile = 0;
-char *language_file_contents = 0;
-char disp[24][81];
-int max_width;
-char *curr_help_filename = 0;
-char last_outfile[256] = "";
+static FILE *helpfile = 0;
+static FILE *langfile = 0;
+static char *language_file_contents = 0;
+static char disp[24][81];
+static int max_width;
+static char *curr_help_filename = 0;
+static char last_outfile[256] = "";
 
 /*
 =====================================================================

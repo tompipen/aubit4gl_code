@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.28 2005-03-28 20:23:22 mikeaubury Exp $
+# $Id: load.c,v 1.29 2005-05-18 13:48:41 mikeaubury Exp $
 #
 */
 
@@ -65,13 +65,13 @@
 
 
 /* Buffer that contains the current line being loaded */
-char loadbuff[LOADBUFFSIZE];
+static char loadbuff[LOADBUFFSIZE];
 
 /* Column name list where information is to be loaded */
-char col_list[MAXLOADCOLS][MAXCOLLENGTH];
+static char col_list[MAXLOADCOLS][MAXCOLLENGTH];
 
 /* Array with pointers to each delimiter in current load line */
-char *colptr[MAXLOADCOLS];
+static char *colptr[MAXLOADCOLS];
 
 
 /*

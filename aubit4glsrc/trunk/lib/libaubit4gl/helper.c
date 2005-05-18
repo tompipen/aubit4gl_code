@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.45 2005-03-31 13:35:47 afalout Exp $
+# $Id: helper.c,v 1.46 2005-05-18 13:48:41 mikeaubury Exp $
 #
 */
 
@@ -71,6 +71,7 @@ LIBPRIVATE int int_get_info_form (char *ptr, char *info);
 */
 
 LIBPRIVATE int used_value = 0;
+LIBPRIVATE char last_field[256];
 
 LIBPRIVATE char *a_get_info_types[] = {
   "Window",
@@ -958,7 +959,6 @@ aclfgl_fgl_prtscr (int n)
  * @param
  * @return
  */
-char last_field[256];
 void
 A4GL_set_last_field_name (char *s)
 {

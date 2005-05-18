@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.84 2005-05-15 12:58:48 mikeaubury Exp $
+# $Id: compile.c,v 1.85 2005-05-18 13:46:13 mikeaubury Exp $
 #*/
 
 /**
@@ -845,7 +845,7 @@ initArguments (int argc, char *argv[])
             compiler to do the linking */
 			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) {
 				//WARNING: link libs must be at the end
-				SPRINTF8 (buff, "%s %s %s -o %s %s %s %s %s %s",
+				SPRINTF9 (buff, "%s %s %s -o %s %s %s %s %s %s",
 			       gcc_exec, get_rdynamic(), all_objects, output_object, l_path, 
 				   pass_options, extra_ldflags, l_libs,pg_esql_libs);
 		    } else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0) {

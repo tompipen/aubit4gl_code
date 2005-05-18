@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.47 2005-05-15 09:12:47 mikeaubury Exp $
+# $Id: others.c,v 1.48 2005-05-18 13:48:41 mikeaubury Exp $
 #
 */
 
@@ -65,7 +65,7 @@ int ccnt = 0;			/* was in lexer.c */
 struct struct_form the_form;
 struct struct_scr_field *fld;
 int as_c = 1;
-int m_lastkey = 0;
+static int m_lastkey = 0;
 
 
 /*
