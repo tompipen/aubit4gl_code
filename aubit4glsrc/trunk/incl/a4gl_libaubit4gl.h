@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.168 2005-05-15 12:58:50 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.169 2005-05-18 13:32:08 mikeaubury Exp $
 #
 */
 
@@ -1556,8 +1556,21 @@ int A4GL_conversion_ok(int a);
   void A4GL_convupper (char *s);
 
 #ifndef _NO_FORM_X_H_
-#include "../common/dataio/form_x.x.h"	/* struct_form */
+
+
+#ifndef SIMPLIFIED
+ #include "../common/dataio/form_x.x.h"        /* struct_form */
+#else
+ #include "generated/form_x.x.h"       /* struct_form */
 #endif
+
+
+#endif
+
+
+
+
+
 
 #ifndef _NO_FORM_X_H_		/* if we don't include form_x.h, this would generate errors : */
   int A4GL_find_srec (struct struct_form * fd, char *name);
