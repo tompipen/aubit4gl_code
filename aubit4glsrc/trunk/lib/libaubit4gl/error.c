@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.25 2005-05-18 14:05:51 mikeaubury Exp $
+# $Id: error.c,v 1.26 2005-05-18 15:14:04 mikeaubury Exp $
 #
 */
 
@@ -47,11 +47,11 @@
 */
 
 
+#include "a4gl_libaubit4gl_int.h"
 #ifndef  FILE_TMPERRS_H
 #define FILE_TMPERRS_H "../generated/tmperrs.h"
 #endif
 #include FILE_TMPERRS_H
-#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================

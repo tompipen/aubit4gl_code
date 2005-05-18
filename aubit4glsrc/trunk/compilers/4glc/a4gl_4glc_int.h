@@ -15,7 +15,11 @@
 
 
 #ifdef SIMPLIFIED
-#error NOT DONE YET
+	#if HAVE_GETOPT_H           /* struct option */
+		#include <getopt.h>
+	#else
+		#include "tools/getopt/getopt.h"
+	#endif
 #else
 #ifndef _GETOPT_H
 	#if HAVE_GETOPT_H           /* struct option */
