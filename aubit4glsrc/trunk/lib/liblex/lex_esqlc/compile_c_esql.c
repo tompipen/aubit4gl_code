@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.118 2005-03-23 08:24:10 afalout Exp $
+# $Id: compile_c_esql.c,v 1.119 2005-05-20 18:34:28 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.118 2005-03-23 08:24:10 afalout Exp $";
+		"$Id: compile_c_esql.c,v 1.119 2005-05-20 18:34:28 mikeaubury Exp $";
 #endif
 
 /**
@@ -162,7 +162,7 @@ if (A4GL_isyes(acl_getenv("A4GL_EC_LOGSQL"))) {
  * @param The string with the sql statement to be executed.
  */
 void
-print_exec_sql (char *s)
+LEXLIB_print_exec_sql (char *s)
 {
   A4GL_debug("In print_exec_sql");
   A4GL_save_sql(s,0);
@@ -194,7 +194,7 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
  * @param
  */
 void
-print_exec_sql_bound (char *s)
+LEXLIB_print_exec_sql_bound (char *s)
 {
   int c;
   printc ("{/* Start exec_sql_bound */\n");
@@ -217,7 +217,7 @@ clr_suppress_lines();
  * @param
  */
 void
-print_close (char type, char *name)
+LEXLIB_print_close (char type, char *name)
 {
 printc("/* CLOSE */");
   switch (type)
@@ -265,7 +265,7 @@ printc("/* END OF CLOSE */");
  * @param into The variable list where the cursor is fetched in.
  */
 void
-print_foreach_next (char *xcursorname, int has_using, char *into)
+LEXLIB_print_foreach_next (char *xcursorname, int has_using, char *into)
 {
   int ni;
   int no;
@@ -313,7 +313,7 @@ clr_suppress_lines();
  * @param c The cursor name.
  */
 void
-print_free_cursor (char *s)
+LEXLIB_print_free_cursor (char *s)
 {
   static char *cname=0;
   if (cname) free(cname);
@@ -335,7 +335,7 @@ print_free_cursor (char *s)
  * @param var The 4gl variable name to be used.
  */
 int
-print_linked_cmd (int type, char *var)
+LEXLIB_print_linked_cmd (int type, char *var)
 {
   char tabname[64];
   char pklist[256];
@@ -440,7 +440,7 @@ A4GL_save_sql(buff,0);
  * @param fname The file name where it should be located (if type=F).
  */
 void
-print_locate (char where, char *var, char *fname)
+LEXLIB_print_locate (char where, char *var, char *fname)
 {
   printc ("A4GL_locate_var(&%s,'%c',%s);  /* FIXME */\n", var, where, fname);
 }
@@ -455,7 +455,7 @@ print_locate (char where, char *var, char *fname)
  * @param
  */
 void
-print_set_conn (char *conn)
+LEXLIB_print_set_conn (char *conn)
 {
 A4GL_save_sql("SET CONNECTION %s",conn);
   printc ("\nEXEC SQL SET CONNECTION %s;\n", conn);
@@ -467,7 +467,7 @@ A4GL_save_sql("SET CONNECTION %s",conn);
  * insert cursors.
  */
 void
-print_put (char *xcname,char *putvals)
+LEXLIB_print_put (char *xcname,char *putvals)
 {
   int n;
   int a;
@@ -568,7 +568,7 @@ A4GL_save_sql("PUT %s",cname);
  * prepared.
  */
 void
-print_prepare (char *xstmt, char *sqlvar)
+LEXLIB_print_prepare (char *xstmt, char *sqlvar)
 {
   static char *stmt=0;
   if (stmt) free(stmt);
@@ -609,7 +609,7 @@ A4GL_save_sql("PREPARE %s",sqlvar);
  *   - 3 :         has INTO & USING
  */
 void
-print_execute (char *stmt, int using)
+LEXLIB_print_execute (char *stmt, int using)
 {
   int ni;
   int no;
@@ -729,7 +729,7 @@ clr_suppress_lines();
  * @param user The user name used.
  */
 void
-print_open_session (char *s, char *v, char *user)
+LEXLIB_print_open_session (char *s, char *v, char *user)
 {
 
 
@@ -786,7 +786,7 @@ A4GL_save_sql("CONNECT TO '%s'", v);
  * @param using The using expression list.
  */
 void
-print_open_cursor (char *xcname, int has_using)
+LEXLIB_print_open_cursor (char *xcname, int has_using)
 {
   //int n;
   //int a;
@@ -848,7 +848,7 @@ print_open_cursor (char *xcname, int has_using)
  * @param
  */
 void
-print_sql_commit (int t)
+LEXLIB_print_sql_commit (int t)
 {
   if (t == -1) {
 A4GL_save_sql("BEGIN WORK",0);
@@ -883,7 +883,7 @@ A4GL_save_sql("COMMIT WORK",0);
  * @param into The into variable list, taht includes:
  */
 void
-print_fetch_3 (char *ftp, char *into)
+LEXLIB_print_fetch_3 (char *ftp, char *into)
 {
   int fp1 = 0;
   int fp2 = 0;
@@ -1043,7 +1043,7 @@ A4GL_save_sql(buff,0);
  *   - Otherwise : Use it as database name.
  */
 void
-print_init_conn (char *db)
+LEXLIB_print_init_conn (char *db)
 {
 
 if (A4GLSQLCV_check_requirement("USE_DATABASE_STMT")) {
@@ -1164,7 +1164,7 @@ A4GL_save_sql("CONNECT TO %s AS 'default'",db);
  * @param s A string with the complete SQL select statement text.
  */
 void
-print_do_select (char *s)
+LEXLIB_print_do_select (char *s)
 {
 //int no;
 A4GL_save_sql(s,0);
@@ -1188,7 +1188,7 @@ clr_suppress_lines();
  * @param s The cursor name.
  */
 void
-print_flush_cursor (char *s)
+LEXLIB_print_flush_cursor (char *s)
 {
 	if (A4GLSQLCV_check_requirement("EMULATE_INSERT_CURSOR")) {
 		/* When emulating insert cursor, acutual INSERT is performed so
@@ -1225,7 +1225,7 @@ print_flush_cursor (char *s)
  *   - 1 : The cursor is with scroll
  */
 void
-print_declare (char *a1, char *a2, char *a3, int h1, int h2)
+LEXLIB_print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 {
   char buff[256];
   int intprflg = 0;
@@ -1501,7 +1501,7 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
  * @return A string with the C implementation.
  */
 char *
-print_curr_spec (int type, char *s)
+LEXLIB_print_curr_spec (int type, char *s)
 {
   static char buff[3000];
 int bt;
@@ -1550,7 +1550,7 @@ extern int obindcnt;
  * @return A string with the C implementation
  */
 char *
-print_select_all (char *buff)
+LEXLIB_print_select_all (char *buff)
 {
   int ni, no;
   static char *b2;
@@ -1598,7 +1598,7 @@ return ptr;
  * @param sql The SQL that originate the unload data.
  */
 void
-print_unload (char *file, char *delim, char *sql)
+LEXLIB_print_unload (char *file, char *delim, char *sql)
 {
 char filename[256];
 char delim_s[256];
@@ -1723,7 +1723,7 @@ if (strncmp(sql,"SELECT ",7)==0) isvar=0;
  *             columns of the table.
  */
 void
-print_load (char *file, char *delim, char *tab, char *list)
+LEXLIB_print_load (char *file, char *delim, char *tab, char *list)
 {
   char filename[256];
   char delim_s[256];
@@ -1817,7 +1817,7 @@ print_load (char *file, char *delim, char *tab, char *list)
  * @param
  */
 void
-print_load_str (char *file, char *delim, char *str)
+LEXLIB_print_load_str (char *file, char *delim, char *str)
 {
   printc ("/* LOAD NOT IMPLEMENTED YET */");
 }
@@ -1832,7 +1832,7 @@ print_load_str (char *file, char *delim, char *str)
  * @param sess The session string identifier.
  */
 void
-print_use_session (char *sess)
+LEXLIB_print_use_session (char *sess)
 {
   /*printc ("{char _sav_cur_conn[32];\n");*/
   /*printc ("strcpy(_sav_cur_conn,A4GLSQL_get_curr_conn());\n");*/
@@ -1851,7 +1851,7 @@ print_use_session (char *sess)
  * @return The C implementation for seving current connection.
  */
 char *
-A4GL_get_undo_use (void)
+LEXLIB_A4GL_get_undo_use (void)
 {
   /*return "A4GLSQL_set_conn(_sav_cur_conn);}";*/
   return "";
@@ -1888,7 +1888,7 @@ print_copy_status ()
  * @param
  */
 void
-print_sql_block_cmd (char *s)
+LEXLIB_print_sql_block_cmd (char *s)
 {
 int ni;
 int no;
@@ -1914,7 +1914,7 @@ printc("}");
  * this statement (that is a C block close with }).
  */
 void
-print_foreach_end (char *cname)
+LEXLIB_print_foreach_end (char *cname)
 {
   printc ("}");
 
@@ -1936,7 +1936,7 @@ print_foreach_end (char *cname)
  * @param
  */
 char *
-get_column_transform(char *s) 
+LEXLIB_get_column_transform(char *s) 
 {
 char buff[256];
 static char buff2[256];
@@ -2249,11 +2249,11 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 }
 
 
-void A4GL_add_put_string(char *s) {
+void LEXLIB_A4GL_add_put_string(char *s) {
 }
 
 
-void *get_in_exists_sql(char *sql, char type) {
+void *LEXLIB_get_in_exists_sql(char *sql, char type) {
 char buff[256];
 char cname[256];
 char *buffer;

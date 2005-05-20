@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.222 2005-05-15 12:58:51 mikeaubury Exp $
+# $Id: compile_c.c,v 1.223 2005-05-20 18:34:28 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.222 2005-05-15 12:58:51 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.223 2005-05-20 18:34:28 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -435,7 +435,7 @@ printc (char *fmt, ...)
 }
 
 void
-A4GL_internal_lex_printc (char *fmt, va_list * ap)
+LEXLIB_A4GL_internal_lex_printc (char *fmt, va_list * ap)
 {
   static char buff[40960] = "ERROR-empty init";
   //static char buff2[40960];
@@ -514,7 +514,7 @@ printh (char *fmt, ...)
 
 void
 /* printh (char *fmt, ...) */
-A4GL_internal_lex_printh (char *fmt, va_list * ap)
+LEXLIB_A4GL_internal_lex_printh (char *fmt, va_list * ap)
 {
 /* va_list args; */
   if (outfile == 0)
@@ -550,7 +550,7 @@ printcomment (char *fmt, ...)
 
 void
 /* A4GL_internal_printcomment (char *fmt,...) */
-A4GL_internal_lex_printcomment (char *fmt, va_list * ap)
+LEXLIB_A4GL_internal_lex_printcomment (char *fmt, va_list * ap)
 {
 #ifdef USE_PRINTCOMMENT
 /*  va_list args; */
@@ -586,7 +586,7 @@ A4GL_internal_lex_printcomment (char *fmt, va_list * ap)
  * identation in the output source.
  */
 void
-A4GL_incprint (void)
+LEXLIB_A4GL_incprint (void)
 {
   int a;
 
@@ -609,7 +609,7 @@ A4GL_incprint (void)
  *   - AFTER GROUP
  */
 void
-print_repctrl_block (void)
+LEXLIB_print_repctrl_block (void)
 {
   printc ("rep_ctrl%d_%d:\n", report_cnt, report_stack_cnt);
 
@@ -623,7 +623,7 @@ rep_print_entry=0;
  * Print the C include statement for header file
  */
 void
-print_include (char *s)
+LEXLIB_print_include (char *s)
 {
   printc ("#include <%s.h>\n", s);
 }
@@ -632,7 +632,7 @@ print_include (char *s)
  * Print the C implementation of the current report control block
  */
 void
-print_report_ctrl (void)
+LEXLIB_print_report_ctrl (void)
 {
   int a;
   int printed_every;
@@ -770,7 +770,7 @@ print_report_ctrl (void)
  * @todo : If scan_arr_variable() removed then remove this one to.
  */
 void
-print_range_check (char *var, char *size)
+LEXLIB_print_range_check (char *var, char *size)
 {
   printc ("A4GL_range_chk(%s,%d);\n", var, atoi (size));
 }
@@ -781,7 +781,7 @@ print_range_check (char *var, char *size)
  * @param n The block sequential number (used for the name of label)
  */
 void
-print_start_block (int n)
+LEXLIB_print_start_block (int n)
 {
   printc ("\n");
   printc ("START_BLOCK_%d: ;\n", n,n);
@@ -796,7 +796,7 @@ print_start_block (int n)
  *   - Otherwise : Generate end brace
  */
 void
-print_continue_block (int n, int brace)
+LEXLIB_print_continue_block (int n, int brace)
 {
   printc ("\n");
   if (A4GL_doing_pcode()) {
@@ -816,7 +816,7 @@ print_continue_block (int n, int brace)
  * @param n The block sequential number.
  */
 void
-print_end_block (int n)
+LEXLIB_print_end_block (int n)
 {
   printc ("END_BLOCK_%d: ;\n\n", n,n);
 }
@@ -829,7 +829,7 @@ print_end_block (int n)
  * @param n The loop number
  */
 void
-print_continue_loop (int n, char *cmd_type)
+LEXLIB_print_continue_loop (int n, char *cmd_type)
 {
   if (strcmp (cmd_type, "INPUT") == 0 || strcmp (cmd_type, "CONSTRUCT") == 0)
     {
@@ -863,7 +863,7 @@ print_continue_loop (int n, char *cmd_type)
  * @param n The loop number
  */
 void
-print_exit_loop (int type, int n)
+LEXLIB_print_exit_loop (int type, int n)
 {
   if (type == 'M')
     {
@@ -886,7 +886,7 @@ print_exit_loop (int type, int n)
  */
 void
 /* print_rep_ret (void) */
-print_rep_ret (int report_cntx,int addit)
+LEXLIB_print_rep_ret (int report_cntx,int addit)
 {
   if (addit) printc("A4GL_pop_report_section(&_rep,%d);",rep_print_code++);
   printc ("goto report%d_ctrl; /* G1 */\n\n", report_cnt);
@@ -1119,7 +1119,7 @@ char b[255];
  * Do not do nothing. - called from /compilers/4glc/mod.c
  */
 void
-print_clr_status (void)
+LEXLIB_print_clr_status (void)
 {
   /* printc ("A4GLSQL_set_status(0);\n"); */
 }
@@ -1135,7 +1135,7 @@ print_clr_status (void)
  * @param f The source 4gl file name.
  */
 void
-A4GL_prchkerr (int l, char *f)
+LEXLIB_A4GL_prchkerr (int l, char *f)
 {
   int a;
 /* 0 = continue
@@ -1274,7 +1274,7 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
  * an expression).
  */
 void
-print_expr (void *ptr)
+LEXLIB_print_expr (void *ptr)
 {
 #ifdef DEBUG
   A4GL_debug ("via print_expr in lib");
@@ -1282,7 +1282,7 @@ print_expr (void *ptr)
   real_print_expr (ptr);
 }
 
-char * print_arr_expr_fcall(void *optr) {
+char * LEXLIB_print_arr_expr_fcall(void *optr) {
 struct expr_str *ptr;
 static int arr_print=0;
 static char buff[256];
@@ -1375,7 +1375,7 @@ print_field_bind (int ccc)
  *   - o : Output bind (4gl variables to be assigned.
  */
 void
-print_bind_pop1 (char i)
+LEXLIB_print_bind_pop1 (char i)
 {
   int a;
   a = 0;
@@ -1523,7 +1523,7 @@ print_field_bind_constr (void)
  * @return The number of parameters of the function.
  */
 int
-print_param (char i)
+LEXLIB_print_param (char i)
 {
   int a;
   int b;
@@ -1614,7 +1614,7 @@ print_param (char i)
  *   O : Use the array ordbind.
  */
 int
-print_bind (char i)
+LEXLIB_print_bind (char i)
 {
   int a;
 #ifdef DEBUG
@@ -1731,7 +1731,7 @@ print_bind (char i)
  *
  * @todo Describe function
  */
-int print_bind_expr (void *ptr, char i)
+int LEXLIB_print_bind_expr (void *ptr, char i)
 {
   int a;
 
@@ -1975,7 +1975,7 @@ int print_bind_expr_portion (void *ptr, char i, int portion)
  *   - 1 : OFF.
  */
 void
-print_screen_mode (int n)
+LEXLIB_print_screen_mode (int n)
 {
   printc ("A4GL_screen_mode(%d);", n);
 }
@@ -1993,7 +1993,7 @@ print_screen_mode (int n)
  * comma.
  */
 void
-print_start_server (char *port, char *funclist)
+LEXLIB_print_start_server (char *port, char *funclist)
 {
   printc ("A4GL_server_run(%s+0x2000000);", port);
 
@@ -2007,7 +2007,7 @@ print_start_server (char *port, char *funclist)
  * This statement makes that the program stops to act as a RPC server.
  */
 void
-print_stop_external (void)
+LEXLIB_print_stop_external (void)
 {
   printc ("A4GL_stop_serving();");
 }
@@ -2018,7 +2018,7 @@ print_stop_external (void)
  * @param identifier The 4gl function name.
  */
 void
-print_remote_func (char *identifier)
+LEXLIB_print_remote_func (char *identifier)
 {
   /*printh ("int %s%s(int np);\n", get_namespace(identifier),identifier);*/
   add_function_to_header (identifier, 1,"");
@@ -2035,7 +2035,7 @@ print_remote_func (char *identifier)
  * @param s The variable name.
  */
 void
-print_pop_variable (char *s)
+LEXLIB_print_pop_variable (char *s)
 {
   printc ("A4GL_pop_var(&%s,%d);\n", s, scan_variable (s));
 }
@@ -2050,7 +2050,7 @@ print_pop_variable (char *s)
  * @param fields The field list 
  */
 void
-print_getfldbuf (char *fields)
+LEXLIB_print_getfldbuf (char *fields)
 {
   printc ("{int _retvars;\n");
   printc ("_retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,0,0);\n",get_sio_id("ALL"), fields);
@@ -2061,7 +2061,7 @@ print_getfldbuf (char *fields)
  * Print the C implementation of the returning substatement of CALL statement.
  */
 void
-print_returning (void)
+LEXLIB_print_returning (void)
 {
   int cnt;
   printc ("{\n");
@@ -2084,7 +2084,7 @@ print_returning (void)
  * @todo Describe function
  */
 void
-print_form_is_compiled (char *s, char *packer, char *formtype)
+LEXLIB_print_form_is_compiled (char *s, char *packer, char *formtype)
 {
   printc ("A4GL_add_compiled_form(\"%s\",%s,%s,compiled_form_%s);\n", s,
 	  packer, formtype, s);
@@ -2102,7 +2102,7 @@ print_form_is_compiled (char *s, char *packer, char *formtype)
  *   - T : fieldtouched() function used.
  */
 void
-print_field_func (char type, char *name, char *var)
+LEXLIB_print_field_func (char type, char *name, char *var)
 {
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
   if (!isin_command ("INPUT") && !isin_command ("CONSTRUCT"))
@@ -2137,7 +2137,7 @@ print_field_func (char type, char *name, char *var)
  * @param args_cnt The number of arguments
  */
 void
-print_func_call (char *identifier, void *args, int args_cnt)
+LEXLIB_print_func_call (char *identifier, void *args, int args_cnt)
 {
   A4GL_debug ("via print_func_call in lib");
   real_print_func_call (identifier, args, args_cnt);
@@ -2148,7 +2148,7 @@ print_func_call (char *identifier, void *args, int args_cnt)
  * @todo Describe function
  */
 void
-print_class_func_call (char *var, char *identifier, void *args, int args_cnt)
+LEXLIB_print_class_func_call (char *var, char *identifier, void *args, int args_cnt)
 {
   A4GL_debug ("via print_func_call in lib");
   real_print_class_func_call (var, identifier, args, args_cnt);
@@ -2213,7 +2213,7 @@ print_reset_state_after_call();
  * @param a3 The returning values
  */
 void
-print_pdf_call (char *a1, void *args, char *a3)
+LEXLIB_print_pdf_call (char *a1, void *args, char *a3)
 {
   A4GL_debug ("via print_pdf_call in lib");
   real_print_pdf_call (a1, args, a3);
@@ -2237,7 +2237,7 @@ real_print_pdf_call (char *a1, struct expr_str *args, char *a3)
  * @param _nargs Number of arguments.
  */
 void
-print_call_shared (char *libfile, char *funcname, int nargs)
+LEXLIB_print_call_shared (char *libfile, char *funcname, int nargs)
 {
   printc ("{int _retvars;\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
@@ -2247,7 +2247,7 @@ print_reset_state_after_call();
 }
 
 void
-print_call_shared_bound (char *libfile, char *funcname)
+LEXLIB_print_call_shared_bound (char *libfile, char *funcname)
 {
 int ni,no;
   printc ("{int _retvars;\n");
@@ -2260,7 +2260,8 @@ int ni,no;
 print_reset_state_after_call();
 }
 
-void *get_call_shared_bound_expr(char *lname,char *fname) { 
+void *
+LEXLIB_get_call_shared_bound_expr(char *lname,char *fname) { 
 	char buff_small[200];
 	int ni;
 	int no;
@@ -2281,7 +2282,7 @@ void *get_call_shared_bound_expr(char *lname,char *fname) {
  * call.
  */
 void
-print_end_call_shared (void)
+LEXLIB_print_end_call_shared (void)
 {
   /* printc ("}\n"); */
 }
@@ -2295,7 +2296,7 @@ print_end_call_shared (void)
  * @param nargs The number of arguments to pass to the remote function.
  */
 void
-print_call_external (char *host, char *func, char *port, int nargs)
+LEXLIB_print_call_external (char *host, char *func, char *port, int nargs)
 {
   printc ("{int _retvars;\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
@@ -2308,7 +2309,7 @@ print_reset_state_after_call();
  * Print the C implementation of te last part of a call to a remote function.
  */
 void
-print_end_call_external (void)
+LEXLIB_print_end_call_external (void)
 {
   printc ("\n");
 }
@@ -2321,7 +2322,7 @@ print_end_call_external (void)
  *   - Otherwise : Have cas expression.
  */
 void
-print_case (int has_expr)
+LEXLIB_print_case (int has_expr)
 {
   if (has_expr)
     printc ("while (1==1) {char *s=0;if (s==0) {s=A4GL_char_pop();}\n");
@@ -2338,7 +2339,7 @@ print_case (int has_expr)
  *   - 1 : After OTHERWISE or END CASE
  */
 void
-print_after_when (int endofblock)
+LEXLIB_print_after_when (int endofblock)
 {
   printc ("break;\n");
   if (endofblock)
@@ -2356,7 +2357,7 @@ print_after_when (int endofblock)
  *   - 1 : Have expression.
  */
 void
-print_when (int has_expr)
+LEXLIB_print_when (int has_expr)
 {
   if (has_expr)
     {
@@ -2372,7 +2373,7 @@ print_when (int has_expr)
  * Print the C implementation of the first part of CONSTRUCT statement.
  */
 void
-print_construct_1 (void)
+LEXLIB_print_construct_1 (void)
 {
   printc ("} /* end of initialization */\n");
 }
@@ -2385,7 +2386,7 @@ print_construct_1 (void)
  * @param driver
  */
 void
-print_construct_2 (char *driver)
+LEXLIB_print_construct_2 (char *driver)
 {
 int sio_id;
   /*printc ("if (_fld_dr== -95) {\n");*/
@@ -2434,7 +2435,7 @@ int sio_id;
  * @param attr The attribute list to be used.
  */
 void
-print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,
+LEXLIB_print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,
 		   int cattr)
 {
   int ccc;
@@ -2493,7 +2494,7 @@ print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,
  * @param fieldexpr The field name (eventualy in an expression).
  */
 void
-print_befaft_field_1 (char *fieldexpr)
+LEXLIB_print_befaft_field_1 (char *fieldexpr)
 {
 int n;
   n=A4GL_get_nevents();
@@ -2506,7 +2507,7 @@ int n;
  * in the A4GL_construct statement.
  */
 void
-print_befaft_field_2 (void)
+LEXLIB_print_befaft_field_2 (void)
 {
   printc ("}\n");
 }
@@ -2518,7 +2519,7 @@ print_befaft_field_2 (void)
  * @param key_list_str The Key list.
  */
 void
-print_onkey_1 (char *key_list_str)
+LEXLIB_print_onkey_1 (char *key_list_str)
 {
   int n;
   n=A4GL_get_nevents();
@@ -2530,14 +2531,14 @@ print_onkey_1 (char *key_list_str)
  * statement.
  */
 void
-print_onkey_2 (void)
+LEXLIB_print_onkey_2 (void)
 {
   continue_loop ("INPUTREQ");
   printc ("}\n");
 }
 
 void
-print_onkey_2_prompt (void)
+LEXLIB_print_onkey_2_prompt (void)
 {
   print_exit_loop ('P', 0);
   printc ("}");
@@ -2551,7 +2552,7 @@ print_onkey_2_prompt (void)
  *   - 0 : INTERRUPT
  */
 void
-print_defer (int quit)
+LEXLIB_print_defer (int quit)
 {
   if (quit)
     printc ("A4GL_def_quit();");
@@ -2566,7 +2567,7 @@ print_defer (int quit)
  * Generate the C code that implements it.
  */
 void
-print_display_line (void)
+LEXLIB_print_display_line (void)
 {
   printc ("A4GL_push_int(-1);A4GL_push_int(-1);\n");
 }
@@ -2578,7 +2579,7 @@ print_display_line (void)
  * @param attr The attributes used on the display.
  */
 void
-print_display_by_name (char *attr)
+LEXLIB_print_display_by_name (char *attr)
 {
   int a;
   printc ("{\n");
@@ -2614,7 +2615,7 @@ print_display_by_name (char *attr)
  *   - 0 : No form name.
  */
 char *
-A4GL_get_display_str (int type, char *s, char *f)
+LEXLIB_A4GL_get_display_str (int type, char *s, char *f)
 {
   static char buff[1024];
   if (type == 0)
@@ -2641,7 +2642,7 @@ A4GL_get_display_str (int type, char *s, char *f)
  * @param attr The attributes used in display.
  */
 void
-print_display (char *fmt, char *expr, char *attr)
+LEXLIB_print_display (char *fmt, char *expr, char *attr)
 {
   printc (fmt, expr, attr);
 }
@@ -2654,7 +2655,7 @@ print_display (char *fmt, char *expr, char *attr)
  * @param a The attributes used to open the form.
  */
 void
-print_display_form (char *s, char *a)
+LEXLIB_print_display_form (char *s, char *a)
 {
   printc ("A4GL_disp_form(%s,%s);\n", s, a);
 }
@@ -2675,7 +2676,7 @@ char *l_arrvar; char *l_srec; char *l_scroll; char *l_attr;
  * @param attr The attributes
  */
 void
-print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *attr, void *v_input_attr)
+LEXLIB_print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *attr, void *v_input_attr)
 {
   int cnt;
   struct input_array_attribs *ptr_input_attr;
@@ -2710,7 +2711,7 @@ print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *attr, void
  *
  */
 void
-print_display_array_p2 (void)
+LEXLIB_print_display_array_p2 (void)
 {
   int sio_id;
   A4GL_add_event(-94,"");
@@ -2736,7 +2737,7 @@ print_display_array_p2 (void)
  * @param wait The flag that indicates that should wait for some key.
  */
 void
-print_error (char *s, int wait)
+LEXLIB_print_error (char *s, int wait)
 {
   printc ("A4GL_display_error(%s,%d);\n", s, wait);
 }
@@ -2751,7 +2752,7 @@ print_error (char *s, int wait)
  *   - Otherwise : Have and expression, so need to pop the value.
  */
 void
-print_exit_program (int has_expr)
+LEXLIB_print_exit_program (int has_expr)
 {
 
 
@@ -2778,7 +2779,7 @@ print_exit_program (int has_expr)
  * @param var The 4gl variable name used as iterator variable.
  */
 void
-print_for_start (char *var)
+LEXLIB_print_for_start (char *var)
 {
   printc
     ("\n{int _s;int _e;int _step;\n_step=A4GL_pop_long();_e=A4GL_pop_long();_s=A4GL_pop_long();\n");
@@ -2794,7 +2795,7 @@ print_for_start (char *var)
  *  Just finishes a C block.
  */
 void
-print_for_end (void)
+LEXLIB_print_for_end (void)
 {
   printc ("}\n");
 }
@@ -2804,7 +2805,7 @@ print_for_end (void)
  * it generates a push of 1 as default.
  */
 void
-print_for_default_step (void)
+LEXLIB_print_for_default_step (void)
 {
   printc ("A4GL_push_int(1);\n");
 }
@@ -2816,7 +2817,7 @@ print_for_default_step (void)
  * Called by the parser when it found FOREACH <cursor_name>.
  */
 void
-print_foreach_start (void)
+LEXLIB_print_foreach_start (void)
 {
   printc ("{");
 }
@@ -2849,7 +2850,7 @@ print_foreach_end (void)
  * @param s The string to be pushed.
  */
 void
-print_pushchar (char *s)
+LEXLIB_print_pushchar (char *s)
 {
   printc ("A4GL_push_char(%s);/* 1*/ \n", s);
 }
@@ -2863,7 +2864,7 @@ print_pushchar (char *s)
  * @param label The C label name.
  */
 void
-print_goto (char *label)
+LEXLIB_print_goto (char *label)
 {
   printc ("goto %s;\n", label);
 }
@@ -2879,7 +2880,7 @@ print_goto (char *label)
  *   - E : Enable menuitems.
  */
 void
-print_gui_do_menuitems (char *list, int mode)
+LEXLIB_print_gui_do_menuitems (char *list, int mode)
 {
 if (A4GL_doing_pcode()) {
   if (mode == 'U') printc ("@UNCHECK (%s,0)\n", list);
@@ -2903,7 +2904,7 @@ if (A4GL_doing_pcode()) {
  *   - E : Enable. 
  */
 void
-print_gui_do_fields (char *list, int mode)
+LEXLIB_print_gui_do_fields (char *list, int mode)
 {
   if (mode == 'D')
     printc ("A4GL_endis_fields(0,%s,0);\n", list);
@@ -2921,7 +2922,7 @@ print_gui_do_fields (char *list, int mode)
  *   - E : Enable.
  */
 void
-print_gui_do_form (char *name, char *list, int mode)
+LEXLIB_print_gui_do_form (char *name, char *list, int mode)
 {
   if (mode == 'D')
     printc ("A4GL_endis_form(0,%s,%s,0);\n", name, list);
@@ -2939,7 +2940,7 @@ print_gui_do_form (char *name, char *list, int mode)
  *
  */
 void
-print_if_start (void)
+LEXLIB_print_if_start (void)
 {
   printc ("if (A4GL_pop_bool()) {\n");
 }
@@ -2950,7 +2951,7 @@ print_if_start (void)
  * Generate the C implementation to the generated output file.
  */
 void
-print_if_else (void)
+LEXLIB_print_if_else (void)
 {
   printc ("} else {\n");
 }
@@ -2959,7 +2960,7 @@ print_if_else (void)
  * The parser found END IF and it generate the corresponding C end of block.
  */
 void
-print_if_end (void)
+LEXLIB_print_if_end (void)
 {
   printc ("}");
 }
@@ -2974,7 +2975,7 @@ print_if_end (void)
  * @param nargs The number of arguments that the function imported receive.
  */
 void
-print_import (char *func, int nargs)
+LEXLIB_print_import (char *func, int nargs)
 {
   int a;
   char buff[1024];
@@ -3196,7 +3197,7 @@ print_init_var (char *name, char *prefix, int alvl)
  * INITIALIZE <variable_list> TO NULL 4gl statement.
  */
 void
-print_init (void)
+LEXLIB_print_init (void)
 {
   int cnt;
   printc ("{\n");
@@ -3219,7 +3220,7 @@ print_init (void)
  * @param s The column list. Not used now.
  */
 void
-print_init_table (char *s)
+LEXLIB_print_init_table (char *s)
 {
   int cnt;
   printc ("{\n");
@@ -3230,7 +3231,7 @@ print_init_table (char *s)
 }
 
 void
-print_validate ()
+LEXLIB_print_validate ()
 {
   int cnt;
   int z;
@@ -3270,7 +3271,7 @@ print_validate ()
  * @param in2 The right part of boolean expression.
  */
 void
-A4GL_generate_or (char *out, char *in1, char *in2)
+LEXLIB_A4GL_generate_or (char *out, char *in1, char *in2)
 {
   sprintf (out, "%s||%s", in1, in2);
 }
@@ -3285,7 +3286,7 @@ A4GL_generate_or (char *out, char *in1, char *in2)
  * @param s The name of the field where the input should jump to.
  */
 void
-print_next_field (char *s)
+LEXLIB_print_next_field (char *s)
 {
   int sio_id;
 
@@ -3327,7 +3328,7 @@ print_next_field (char *s)
  * It generates the C implementation for the statement.
  */
 void
-print_input_1 (void)
+LEXLIB_print_input_1 (void)
 {
   printc ("} /* end of initialization */\n");
 }
@@ -3340,7 +3341,7 @@ print_input_1 (void)
  *   (generated by get_formloop_str())
  */
 void
-print_input_2 (char *s)
+LEXLIB_print_input_2 (char *s)
 {
  int sio_id;
   A4GL_add_event(-94,"");
@@ -3381,7 +3382,7 @@ print_input_2 (char *s)
  * @param fldlist The form field list from where the input is made.
  */
 void
-print_input (int byname, char *defs, char *helpno, char *fldlist, int attr)
+LEXLIB_print_input (int byname, char *defs, char *helpno, char *fldlist, int attr)
 {
   int ccc;
   int sio_id;
@@ -3443,7 +3444,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist, int attr)
  * @param attr
  */
 char *
-print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
+LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
 		   char *attr, void *v_input_attr)
 {
   static char buff2[256];
@@ -3529,7 +3530,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
  * @return A string with the C code that calls form_loop().
  */
 char *
-A4GL_get_formloop_str (int type)
+LEXLIB_A4GL_get_formloop_str (int type)
 {
 static char buff[256];
   if (type == 0)		/* Input, Input by name */ {
@@ -3550,7 +3551,7 @@ static char buff[256];
  * form or down.
  */
 void
-print_scroll (char *flds, char *updown)
+LEXLIB_print_scroll (char *flds, char *updown)
 {
   printc ("A4GL_acli_scroll(%s,%s,0,0);\n", updown,flds);
 }
@@ -3563,7 +3564,7 @@ print_scroll (char *flds, char *updown)
  * @param s The label name.
  */
 void
-print_label (char *s)
+LEXLIB_print_label (char *s)
 {
   printc ("%s: /* LABEL */\n", s);
   printc("aclfgli_clr_err_flg();");
@@ -3575,7 +3576,7 @@ print_label (char *s)
  * @param nexprs The number of variable to be assigned.
  */
 int
-print_let_manyvars (char *nexprs)
+LEXLIB_print_let_manyvars (char *nexprs)
 {
   int from_exprs;
   int to_vars;
@@ -3602,7 +3603,7 @@ print_let_manyvars (char *nexprs)
  * implementation push a null to the stack.
  */
 void
-print_push_null (void)
+LEXLIB_print_push_null (void)
 {
   printc ("A4GL_push_null(2,0);\n");
 }
@@ -3627,7 +3628,7 @@ print_push_null (void)
  * @param repname The report name.
  */
 void
-print_start_report (char *where, char *out, char *repname,char *dim)
+LEXLIB_print_start_report (char *where, char *out, char *repname,char *dim)
 {
   add_function_to_header (repname, 2,"");
   printc ("A4GL_push_char(\"%s\");\n", where);
@@ -3645,7 +3646,7 @@ print_start_report (char *where, char *out, char *repname,char *dim)
  * should be pushed to the stack).
  */
 void
-print_output_to_report (char *repname, char *nvalues)
+LEXLIB_print_output_to_report (char *repname, char *nvalues)
 {
   add_function_to_header (repname, 2,"");
   printc ("%s%s(%s,REPORT_SENDDATA);\n", get_namespace (repname), repname,
@@ -3660,7 +3661,7 @@ print_output_to_report (char *repname, char *nvalues)
  * @param repname The name of the report.
  */
 void
-print_finish_report (char *repname)
+LEXLIB_print_finish_report (char *repname)
 {
   add_function_to_header (repname, 2,"");
   printc ("%s%s(0,REPORT_FINISH);\n", get_namespace (repname), repname);
@@ -3674,7 +3675,7 @@ print_finish_report (char *repname)
  * @param repname The name of the report.
  */
 void
-print_terminate_report (char *repname)
+LEXLIB_print_terminate_report (char *repname)
 {
   add_function_to_header (repname, 2,"");
   printc ("%s%s(0,REPORT_TERMINATE);\n", get_namespace (repname), repname);
@@ -3687,7 +3688,7 @@ print_terminate_report (char *repname)
  * Generate the C implementation to the output file.
  */
 void
-print_format_every_row (void)
+LEXLIB_print_format_every_row (void)
 {
   push_report_block ("EVERY", 'E');
 
@@ -3711,7 +3712,7 @@ print_format_every_row (void)
  * Print the C implementation of NEED <number> LINES statement.
  */
 void
-print_need_lines (void)
+LEXLIB_print_need_lines (void)
 {
   printc ("A4GL_%sneed_lines(&_rep);\n", ispdf ());
 }
@@ -3720,7 +3721,7 @@ print_need_lines (void)
  * Print the C implementation of SKIP <number> LINES statement.
  */
 void
-print_skip_lines (double d)
+LEXLIB_print_skip_lines (double d)
 {
   printc ("A4GL_push_int(%d);", (int) d);
   printc ("A4GL_%saclfgli_skip_lines(&_rep);\n", ispdf ());
@@ -3730,7 +3731,7 @@ print_skip_lines (double d)
  * Print the C implementation of the SKIP TO TOP OF PAGE statement.
  */
 void
-print_skip_top (void)
+LEXLIB_print_skip_top (void)
 {
   printc ("A4GL_%sskip_top_of_page(&_rep,0);\n", ispdf ());
 }
@@ -3739,7 +3740,7 @@ print_skip_top (void)
  * Print the C implementation of SKIP BY statement.
  */
 void
-print_skip_by (double nval)
+LEXLIB_print_skip_by (double nval)
 {
   printc ("A4GL_pdf_skip_by(&_rep,%f);\n", nval);
 }
@@ -3748,7 +3749,7 @@ print_skip_by (double nval)
  * Print the C implementation of the SKIP TO statement.
  */
 void
-print_skip_to (char *nval)
+LEXLIB_print_skip_to (char *nval)
 {
   printc ("A4GL_pdf_skip_to(&_rep,%s);\n", nval);
 }
@@ -3768,7 +3769,7 @@ print_skip_to (char *nval)
  * @param wordwrap
  */
 void
-print_report_print (int type, char *semi, char *wordwrap)
+LEXLIB_print_report_print (int type, char *semi, char *wordwrap)
 {
 int semi_i;
  
@@ -3791,7 +3792,7 @@ int semi_i;
  *   - 1 : Semicolon after (do not change to other line).
  */
 void
-print_report_print_file (char *fname, char *semi)
+LEXLIB_print_report_print_file (char *fname, char *semi)
 {
   printc ("%sA4GL_rep_file_print(&_rep,%s,%s);\n", ispdf (), fname, semi);
 }
@@ -3813,7 +3814,7 @@ print_report_print_file (char *fname, char *semi)
  *   - 1 : Semicolon after (do not change to other line).
  */
 void
-print_report_print_img (char *scaling, char *blob, char *type, char *semi)
+LEXLIB_print_report_print_img (char *scaling, char *blob, char *type, char *semi)
 {
   printc ("%s pdf_blob_print(&_rep,&%s,\"%s\",%s);\n", scaling,
 	  blob, type, semi);
@@ -3825,7 +3826,7 @@ print_report_print_img (char *scaling, char *blob, char *type, char *semi)
  *  It generates a default scale to the generated C code.
  */
 char *
-A4GL_get_default_scaling (void)
+LEXLIB_A4GL_get_default_scaling (void)
 {
   return "A4GL_push_double(1.0);A4GL_push_double(1.0);";
 }
@@ -3838,7 +3839,7 @@ A4GL_get_default_scaling (void)
  *   - 2 : The order is external to the report (made in the select statement).
  */
 void
-print_order_by_type (int type, int size)
+LEXLIB_print_order_by_type (int type, int size)
 {
   last_orderby_type = type;
   printc ("static int acl_rep_ordcnt=%d;\n", size);
@@ -3857,7 +3858,7 @@ print_order_by_type (int type, int size)
  * @param name The name of the report.
  */
 void
-print_report_1 (char *name)
+LEXLIB_print_report_1 (char *name)
 {
   strcpy (mv_repname, name);
   add_function_to_header (name, 2,"");
@@ -3871,7 +3872,7 @@ print_report_1 (char *name)
  * The parser found the END REPORT and closes the generated C function.
  */
 void
-print_report_end (void)
+LEXLIB_print_report_end (void)
 {
   printc ("\n} /* end of report */\n");
 }
@@ -3885,7 +3886,7 @@ print_report_end (void)
  * @param repordby
  */
 void
-print_report_2 (int pdf, char *repordby)
+LEXLIB_print_report_2 (int pdf, char *repordby)
 {
   int cnt;
   int a;
@@ -4033,7 +4034,7 @@ if (!A4GL_doing_pcode()) {
  * @pause msg The message to display when it pauses.
  */
 void
-print_pause (char *msg)
+LEXLIB_print_pause (char *msg)
 {
   printc ("A4GL_pause(%s);\n", msg);
 }
@@ -4045,7 +4046,7 @@ print_pause (char *msg)
  * function call.
  */
 void
-print_sleep (void)
+LEXLIB_print_sleep (void)
 {
   printc ("A4GL_sleep_i();\n");
 }
@@ -4058,7 +4059,7 @@ print_sleep (void)
  * @todo Describe function
  */
 void
-print_op (char *type)
+LEXLIB_print_op (char *type)
 {
   printc ("A4GL_pushop(%s);\n", type);
 }
@@ -4072,7 +4073,7 @@ print_op (char *type)
  * @param type A string with the statement that is not implemented
  */
 void
-print_niy (char *type)
+LEXLIB_print_niy (char *type)
 {
   printc ("#error Not Implemented Yet %s", type);
 }
@@ -4082,7 +4083,7 @@ print_niy (char *type)
  * Not used? but it is called from /compilers/4glc/fgl.yacc
  */
 void
-print_push_variable (char *s)
+LEXLIB_print_push_variable (char *s)
 {
   printc ("A4GL_push_param(&%s,0x%x);\n", s, scan_variable (s));
 }
@@ -4095,7 +4096,7 @@ print_push_variable (char *s)
  * @param wait The time that it waits.
  */
 void
-print_message (int type, char *attr, int wait, int exprs)
+LEXLIB_print_message (int type, char *attr, int wait, int exprs)
 {
   if (type == 0)
     printc ("aclfgli_pr_message(%s,%d,%d);\n", attr, wait, exprs);
@@ -4114,7 +4115,7 @@ print_message (int type, char *attr, int wait, int exprs)
  * @param rvar The variable name to where the exit status should be returned.
  */
 void
-print_system_run (int type, char *rvar)
+LEXLIB_print_system_run (int type, char *rvar)
 {
   printc ("A4GL_system_run(%d);", type);
 
@@ -4135,7 +4136,7 @@ print_system_run (int type, char *rvar)
  * @param val
  */
 void
-print_set_options (char *type, char *id, char *var, char *val)
+LEXLIB_print_set_options (char *type, char *id, char *var, char *val)
 {
   printc ("A4GL_set_%s_options(%s,%s,%s);\n", type, id, var, val);
 }
@@ -4145,7 +4146,7 @@ print_set_options (char *type, char *id, char *var, char *val)
  * WHILE.
  */
 void
-print_while_1 (void)
+LEXLIB_print_while_1 (void)
 {
   printc ("while (1==1) {\n");
 }
@@ -4156,7 +4157,7 @@ print_while_1 (void)
  * Generate the C corresponding implementation.
  */
 void
-print_while_2 (void)
+LEXLIB_print_while_2 (void)
 {
   printc ("if (!(A4GL_pop_bool())) break;\n");
 }
@@ -4165,7 +4166,7 @@ print_while_2 (void)
  * for future enhancement! 
  */
 void
-print_while_3 (void)
+LEXLIB_print_while_3 (void)
 {
   /* for future enhancement! */
 }
@@ -4177,7 +4178,7 @@ print_while_3 (void)
  *
  */
 void
-print_undo_use (char *s)
+LEXLIB_print_undo_use (char *s)
 {
   printc (s);
 }
@@ -4195,7 +4196,7 @@ print_undo_use (char *s)
  * @param a4 The prompt attributes
  */
 void
-print_prompt_1 (char *a1, char *a2, char *a3, char *a4, int timeout)
+LEXLIB_print_prompt_1 (char *a1, char *a2, char *a3, char *a4, int timeout)
 {
   printc ("{char _sio_%d[%d];int _fld_dr= -9999;int _exec_block= 0;char *_sio_kw_%d=\"s_prompt\";int _acl_prompt_timeout=%d;\n",get_sio_id("PROMPT"), sizeof (struct s_prompt),get_sio_id("PROMPT"),timeout);
   printc ("A4GL_start_prompt(&_sio_%d,%s,%s,%s,%s);\n", get_sio_id("PROMPT"),a1, a2, a3, a4);
@@ -4209,7 +4210,7 @@ print_prompt_1 (char *a1, char *a2, char *a3, char *a4, int timeout)
  * libui instead of here...
  */
 void
-print_prompt_forchar (void)
+LEXLIB_print_prompt_forchar (void)
 {
   /*printc ("if (_fld_dr) {\n");*/
   /*print_exit_loop ('P', 0);*/
@@ -4225,7 +4226,7 @@ print_prompt_forchar (void)
  * @param s The name of the variable where the result pressed wil be inserted
  */
 void
-print_prompt_end (char *s)
+LEXLIB_print_prompt_end (char *s)
 {
   printc("{");
   print_event_list();
@@ -4248,7 +4249,7 @@ print_prompt_end (char *s)
  * @param type I think it is allways fixed with "cr_window"
  */
 void
-print_open_window (char *name, char *type)
+LEXLIB_print_open_window (char *name, char *type)
 {
   printc ("%s(%s,", type, name);
   print_form_attrib (&form_attrib);
@@ -4263,7 +4264,7 @@ print_open_window (char *name, char *type)
  * @param a2 The form name (again ?).
  */
 void
-print_open_form (char *fmt, char *a1, char *a2)
+LEXLIB_print_open_form (char *fmt, char *a1, char *a2)
 {
 if (strncmp(fmt,"A4GL_open_gui_form",strlen("A4GL_open_gui_form") )==0) {
 	//char buff[256];
@@ -4299,7 +4300,7 @@ if (strncmp(fmt,"A4GL_open_gui_form",strlen("A4GL_open_gui_form") )==0) {
  * @param s The window name.
  */
 void
-print_clr_window (char *s)
+LEXLIB_print_clr_window (char *s)
 {
   printc ("A4GL_clr_window(%s);\n", s);
 }
@@ -4316,7 +4317,7 @@ print_clr_window (char *s)
  *   - 0 : Do not use the defaults table.
  */
 void
-print_clr_form (char *formname, char *clr, char *defs)
+LEXLIB_print_clr_form (char *formname, char *clr, char *defs)
 {
   if (formname == 0)
     printc ("A4GL_clr_form(%d);", atoi (defs));
@@ -4336,7 +4337,7 @@ print_clr_form (char *formname, char *clr, char *defs)
  *   - 0 : Do not use the defaults table.
  */
 void
-print_clr_fields (char *flds, char *defs)
+LEXLIB_print_clr_fields (char *flds, char *defs)
 {
 
   printc ("A4GL_clr_fields(%d,%s,0,0);", atoi (defs), flds);
@@ -4353,7 +4354,7 @@ print_clr_fields (char *flds, char *defs)
  * @param s The window name.
  */
 void
-print_current_window (char *s)
+LEXLIB_print_current_window (char *s)
 {
   printc ("A4GL_current_window(%s);\n", s);
 }
@@ -4365,7 +4366,7 @@ print_current_window (char *s)
  * @param s The window name.
  */
 void
-print_show_window (char *s)
+LEXLIB_print_show_window (char *s)
 {
   printc ("A4GL_show_window(%s);\n", s);
 }
@@ -4377,7 +4378,7 @@ print_show_window (char *s)
  * @param s The window name.
  */
 void
-print_hide_window (char *s)
+LEXLIB_print_hide_window (char *s)
 {
   printc ("A4GL_hide_window(%s);\n", s);
 }
@@ -4390,7 +4391,7 @@ print_hide_window (char *s)
  * @param mhand The menu handler name.
  */
 void
-print_show_menu (char *mname, char *mhand)
+LEXLIB_print_show_menu (char *mname, char *mhand)
 {
   printh ("void aclfglmn_%s(char *);\n", mhand);
   printc ("A4GL_show_menu(\"%s\",aclfglmn_%s);\n", mname, mhand);
@@ -4402,7 +4403,7 @@ print_show_menu (char *mname, char *mhand)
  * It is used for the menu extensions to informix 4gl.
  */
 void
-print_def_mn_file (void)
+LEXLIB_print_def_mn_file (void)
 {
   printc ("A4GL_push_char(\"menu\"); /* default menu file */\n");
 }
@@ -4419,7 +4420,7 @@ print_def_mn_file (void)
  *   - 1 : The move is relative to the current position.
  */
 void
-print_move_window (char *n, int rel)
+LEXLIB_print_move_window (char *n, int rel)
 {
   if (rel == 0)
     printc ("A4GL_movewin(%s,1);", n);
@@ -4439,7 +4440,7 @@ print_move_window (char *n, int rel)
  * founds the MENU keyword.
  */
 void
-print_menu_1 (int n)
+LEXLIB_print_menu_1 (int n)
 {
   printc ("{void *m_%d=0;\n\nint cmd_no_%d= -1; /* n=%d */\n", n, n, n);
   printc ("MENU_START_%d: ;", n);
@@ -4448,7 +4449,7 @@ print_menu_1 (int n)
 }
 
 void
-print_menu_1b (int n)
+LEXLIB_print_menu_1b (int n)
 {
   /*printc (" switch(cmd_no_%d)  {\n", n);*/
 }
@@ -4496,7 +4497,7 @@ print_menu (int mn, int n)
  * This function implements the C code to terminate the menu scope
  */
 void
-print_end_menu_1 (int n)
+LEXLIB_print_end_menu_1 (int n)
 {
   /*printc ("\n}");*/
   printcomment (" /*end switch */\n");
@@ -4509,7 +4510,7 @@ print_end_menu_1 (int n)
  * Print the execution of the menu loop to the generated C code.
  */
 void
-print_end_menu_2 (int n)
+LEXLIB_print_end_menu_2 (int n)
 {
   printc ("cmd_no_%d=A4GL_menu_loop_v2(m_%d,0);\n}A4GL_free_menu(m_%d);\n", n, n,
 	  n);
@@ -4529,7 +4530,7 @@ print_end_menu_2 (int n)
  *
  */
 void
-print_menu_block (int menu, int n)
+LEXLIB_print_menu_block (int menu, int n)
 {
 	A4GL_assertion(n==-1,"N=-1?");
   printc (" if (cmd_no_%d==%d) { \n", menu, n);
@@ -4544,7 +4545,7 @@ print_menu_block (int menu, int n)
  *   - COMMAND.
  */
 void
-print_menu_block_end (int n)
+LEXLIB_print_menu_block_end (int n)
 {
   printc ("cmd_no_%d= -4;goto MENU_START_%d; } ", n, n);
 }
@@ -4564,7 +4565,7 @@ print_menu_block_end (int n)
  * @param n The option name list (wich is just one if NEXT OPTION).
  */
 void
-print_option_op (int type, char *n, int mn)
+LEXLIB_print_option_op (int type, char *n, int mn)
 {
   if (type == 'N')
     printc ("A4GL_next_option(m_%d,%s);\n", mn, n);
@@ -4584,7 +4585,7 @@ print_option_op (int type, char *n, int mn)
  * @param f The function name.
  */
 void
-print_at_termination (char *f)
+LEXLIB_print_at_termination (char *f)
 {
   print_niy ("AT TERMINATION");
 }
@@ -4594,7 +4595,7 @@ print_at_termination (char *f)
  * initialization function to the calling stack.
  */
 void
-printInitFunctionStack (void)
+LEXLIB_printInitFunctionStack (void)
 {
   if (!isGenStackInfo ())
     return;
@@ -4607,7 +4608,7 @@ printInitFunctionStack (void)
  * declaration function to the calling stack.
  */
 void
-printDeclareFunctionStack (char *_functionName)
+LEXLIB_printDeclareFunctionStack (char *_functionName)
 {
 #ifdef FGL_PLUS_PLUS
   extern int class_cnt;
@@ -4619,7 +4620,7 @@ printDeclareFunctionStack (char *_functionName)
 #ifdef FGL_PLUS_PLUS
 
   if (class_cnt) {
-	CLASS_add_method(_functionName,"");
+	LEXLIB_CLASS_add_method(_functionName,"");
   }
 #endif
   if (isGenStackInfo ())
@@ -4640,7 +4641,7 @@ printDeclareFunctionStack (char *_functionName)
  * push function to the calling stack.
  */
 void
-printPushFunction (void)
+LEXLIB_printPushFunction (void)
 {
   if (!isGenStackInfo ())
     return;
@@ -4654,7 +4655,7 @@ printPushFunction (void)
  * It only does it if defined as compiler option.
  */
 void
-printPopFunction (void)
+LEXLIB_printPopFunction (void)
 {
   if (!isGenStackInfo ())
     return;
@@ -4678,7 +4679,7 @@ printPopFunction (void)
  *   - 1 : Is a member function
  */
 void
-print_func_start (char *isstatic, char *fname, int type)
+LEXLIB_print_func_start (char *isstatic, char *fname, int type)
 {
 extern int class_cnt;
 
@@ -4712,7 +4713,7 @@ extern int class_cnt;
  * @param c The number of parameters from the 4gl function
  */
 void
-print_func_args (int c)
+LEXLIB_print_func_args (int c)
 {
 
 // cc 2005.01.25 return 0 changed to -1 to catch wrong parameter size
@@ -4730,7 +4731,7 @@ print_func_args (int c)
  * the C generated code.
  */
 void
-print_func_defret0 (void)
+LEXLIB_print_func_defret0 (void)
 {
   printc ("return 0;\n");
 }
@@ -4739,7 +4740,7 @@ print_func_defret0 (void)
  * The parser found the END FUNCTION and it closes the C function generated.
  */
 void
-print_func_end (void)
+LEXLIB_print_func_end (void)
 {
   printc ("}");
 	printcomment("/* END OF FUNCTION */\n\n\n\n");
@@ -4750,7 +4751,7 @@ print_func_end (void)
  * of C main function in the generated file.
  */
 void
-print_main_1 (void)
+LEXLIB_print_main_1 (void)
 {
   if (doing_cs ())
     {
@@ -4779,7 +4780,7 @@ print_main_1 (void)
  * @param db The header database name (DATABASE statement outside functions).
  */
 void
-print_fgllib_start (char *db)
+LEXLIB_print_fgllib_start (char *db)
 {
   extern int is_schema;
   printc ("A4GLSTK_setCurrentLine(0,0);", yylineno);
@@ -4819,7 +4820,7 @@ print_fgllib_start (char *db)
  * Prints the call to the fgl_end() function.
  */
 void
-print_main_end (void)
+LEXLIB_print_main_end (void)
 {
   if (doing_esql ())
     {
@@ -4843,7 +4844,7 @@ print_main_end (void)
  * @param n : The number of returning values.
  */
 void
-print_return (int n)
+LEXLIB_print_return (int n)
 {
 int z;
 char *s;
@@ -4874,7 +4875,7 @@ char *s;
  *   - Now just the menu line
  */
 void
-print_options (char n, char *s)
+LEXLIB_print_options (char n, char *s)
 {
   printc ("A4GL_set_option_value('%c',%s);\n", n, s);
 }
@@ -4887,7 +4888,7 @@ print_options (char n, char *s)
  * @param s The help file name.
  */
 void
-print_set_helpfile (char *s)
+LEXLIB_print_set_helpfile (char *s)
 {
   printc ("A4GL_set_help_file(%s);\n", s);
 }
@@ -4900,7 +4901,7 @@ print_set_helpfile (char *s)
  * @param s The help file name.
  */
 void
-print_set_langfile (char *s)
+LEXLIB_print_set_langfile (char *s)
 {
   printc ("A4GL_set_lang_file(%s);\n", s);
 }
@@ -4913,7 +4914,7 @@ print_set_langfile (char *s)
  * Executed by the parser imediatly after found the keyword FETCH.
  */
 void
-print_fetch_1 (void)
+LEXLIB_print_fetch_1 (void)
 {
   printc ("{");
 }
@@ -4925,7 +4926,7 @@ print_fetch_1 (void)
  * Prints a new part in the output C file.
  */
 void
-print_fetch_2 (void)
+LEXLIB_print_fetch_2 (void)
 {
   printc ("{");
   print_bind_definition('o');
@@ -4951,7 +4952,7 @@ print_fetch_2 (void)
  * @param field The field name
  */
 void
-print_next_form_field (char *form, char *field)
+LEXLIB_print_next_form_field (char *form, char *field)
 {
   print_niy ("NEXT FORM FIELD");
 }
@@ -4967,7 +4968,7 @@ print_next_form_field (char *form, char *field)
  * @param n The size in number  of characters of the associate key.
  */
 void
-print_declare_associate_1 (char *variable, char *size, char *n)
+LEXLIB_print_declare_associate_1 (char *variable, char *size, char *n)
 {
   printc ("DEF_ASS (_usg%s,%s+1);\n", downshift (variable), size);
   printc
@@ -4986,7 +4987,7 @@ print_declare_associate_1 (char *variable, char *size, char *n)
  * @param n The size in number  of characters of the associate key.
  */
 void
-print_declare_associate_2 (char *variable, char *size, char *n)
+LEXLIB_print_declare_associate_2 (char *variable, char *size, char *n)
 {
   printc
     ("#define ASSOCIATE_%s(w) %s[A4GL_ass_hash(_usg%s,%s,%s+1,w,sizeof(_usg%s))]\n",
@@ -5008,7 +5009,7 @@ print_declare_associate_2 (char *variable, char *size, char *n)
  *   - Otherwise : Not static and not extern
  */
 void
-print_define_char (char *var, int size, int isstatic_extern)
+LEXLIB_print_define_char (char *var, int size, int isstatic_extern)
 {
   char buff[20];
   strcpy (buff, "");
@@ -5043,7 +5044,7 @@ print_define_char (char *var, int size, int isstatic_extern)
  *   - 2 : Variable should be declared as extern
  */
 void
-print_define (char *varstring, int isstatic_extern)
+LEXLIB_print_define (char *varstring, int isstatic_extern)
 {
   char buff[20];
   strcpy (buff, "");
@@ -5071,7 +5072,7 @@ print_define (char *varstring, int isstatic_extern)
  * @param varname The record variable name. Not used
  */
 void
-print_start_record (int isstatic_extern, char *varname, char *arrsize,
+LEXLIB_print_start_record (int isstatic_extern, char *varname, char *arrsize,
 		    int level)
 {
   char buff[20] = "";
@@ -5142,7 +5143,7 @@ print_start_record (int isstatic_extern, char *varname, char *arrsize,
  * @param arrsize The array size if is a record array
  */
 void
-print_end_record (char *vname, char *arrsize, int level)
+LEXLIB_print_end_record (char *vname, char *arrsize, int level)
 {
   int cnt;
   int arrsizes[10];
@@ -5197,7 +5198,7 @@ print_end_record (char *vname, char *arrsize, int level)
  */
 char *
 /* char */
-A4GL_get_push_literal (char type, char *value)
+LEXLIB_A4GL_get_push_literal (char type, char *value)
 {
   static char buff[80];
   strcpy (buff, "SOME ERROR");
@@ -5235,7 +5236,7 @@ A4GL_get_push_literal (char type, char *value)
  * @param s
  */
 char *
-A4GL_decode_array_string (char *s)
+LEXLIB_A4GL_decode_array_string (char *s)
 {
   static char buff[2000] = "";
   int a;
@@ -5264,7 +5265,7 @@ A4GL_decode_array_string (char *s)
  * @todo Describe function
  */
 void
-print_cmd_start ()
+LEXLIB_print_cmd_start ()
 {
   printc ("\n\naclfgli_clr_err_flg();\n\n");
 }
@@ -5274,7 +5275,7 @@ print_cmd_start ()
  * @todo Describe function
  */
 void
-print_cmd_end ()
+LEXLIB_print_cmd_end ()
 {
   /*printc("\naclfgli_clr_err_flg()\n\n");*/
   printcomment ("\n/* End command */\n");
@@ -5285,7 +5286,7 @@ print_cmd_end ()
  * @todo Describe function
  */
 char *
-A4GL_get_into_part (int doing_declare, int no)
+LEXLIB_A4GL_get_into_part (int doing_declare, int no)
 {
   static char buffer[10000];
   int a;
@@ -5325,7 +5326,7 @@ A4GL_get_into_part (int doing_declare, int no)
  * @todo Describe function
  */
 char *
-A4GL_set_var_sql (int doing_declare, int n)
+LEXLIB_A4GL_set_var_sql (int doing_declare, int n)
 {
   int a;
   static char buff[8000];
@@ -5434,7 +5435,7 @@ esql_type ()
  * @todo Describe function
  */
 void
-A4GL_lex_parsed_fgl ()
+LEXLIB_A4GL_lex_parsed_fgl ()
 {
   if (strcmp (acl_getenv ("LEXTYPE"), "CS") == 0)
     {
@@ -5448,7 +5449,7 @@ A4GL_lex_parsed_fgl ()
 }
 
 void
-print_import_legacy (char *s)
+LEXLIB_print_import_legacy (char *s)
 {
   printc ("\n");
   printc ("\n");
@@ -5508,7 +5509,7 @@ identifier=buff;
 }
 
 char *
-A4GL_expr_for_call (char *ident, char *params, int line, char *file)
+LEXLIB_A4GL_expr_for_call (char *ident, char *params, int line, char *file)
 {
   static char buff[2048];
   char lib[255];
@@ -5536,7 +5537,7 @@ A4GL_expr_for_call (char *ident, char *params, int line, char *file)
 
 
 void
-print_foreach_close (char *cname)
+LEXLIB_print_foreach_close (char *cname)
 {
   print_close ('C', cname);
 }
@@ -5564,7 +5565,7 @@ doing_cs (void)
 
 
 void
-print_empty_bind (char *name)
+LEXLIB_print_empty_bind (char *name)
 {
   printc ("static struct BINDING *%s=0;\n", name);
 }
@@ -5691,7 +5692,7 @@ gen_ord (char *s)
 }
 
 void
-print_execute_immediate (char *stmt)
+LEXLIB_print_execute_immediate (char *stmt)
 {
   static int cnt = 0;
   char buff[256];
@@ -5723,7 +5724,7 @@ print_execute_immediate (char *stmt)
 
 
 void
-print_alloc_arr (char *s, char *d)
+LEXLIB_print_alloc_arr (char *s, char *d)
 {
   char *ptr;
   int a;
@@ -5784,7 +5785,7 @@ print_alloc_arr (char *s, char *d)
 
 
 void
-print_realloc_arr (char *s, char *d)
+LEXLIB_print_realloc_arr (char *s, char *d)
 {
   char *ptr;
   int a;
@@ -5842,7 +5843,7 @@ print_realloc_arr (char *s, char *d)
 }
 
 void
-print_dealloc_arr (char *s)
+LEXLIB_print_dealloc_arr (char *s)
 {
   printc ("A4GL_dynarr_free(&%s,%s);", s,s);
 }
@@ -6005,7 +6006,7 @@ if (x) {free(x);x=0;}
  *   O : Use the array ordbind.
  */
 int
-print_bind_definition (char i)
+LEXLIB_print_bind_definition (char i)
 {
   int a;
 #ifdef DEBUG
@@ -6125,7 +6126,7 @@ print_bind_definition (char i)
  *   O : Use the array ordbind.
  */
 int
-print_bind_set_value (char i)
+LEXLIB_print_bind_set_value (char i)
 {
   int a;
 #ifdef DEBUG
@@ -6193,7 +6194,7 @@ void print_reset_state_after_call(void) {
 }
 
 
-void print_convert_report(char *repname, char* fname,char *otype, char *layout,char *file_or_pipe) {
+void LEXLIB_print_convert_report(char *repname, char* fname,char *otype, char *layout,char *file_or_pipe) {
 
 	if (strcmp(file_or_pipe,"EMAIL")==0) {	
 		printc("A4GL_push_int(2);");
@@ -6207,7 +6208,7 @@ void print_convert_report(char *repname, char* fname,char *otype, char *layout,c
 	printc("A4GL_push_char(%s);A4GL_push_char(%s);A4GL_push_char(%s);%s%s(3,REPORT_CONVERT);",fname,otype,layout,get_namespace (repname),repname);
 }
 
-void print_free_convertable(char *repname) {
+void LEXLIB_print_free_convertable(char *repname) {
 	printc("%s%s(3,REPORT_FREE);", get_namespace (repname),repname);
 }
 

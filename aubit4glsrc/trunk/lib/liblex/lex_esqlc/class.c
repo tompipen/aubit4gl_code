@@ -27,7 +27,7 @@ int nparent_methods=0;
 char class_name[256]="";
 char parent_name[256]="";
 
-void CLASS_set_class_name(char *name) {
+void LEXLIB_CLASS_set_class_name(char *name) {
 char buff[1024];
 char *ptr;
 ptr=strrchr(infilename,'/');
@@ -53,13 +53,13 @@ if (ptr) { *ptr=0; }
 	}
 }
 
-void CLASS_set_parent_name(char *name) {
+void LEXLIB_CLASS_set_parent_name(char *name) {
 	A4GL_convlower(name);
 	strcpy(parent_name,name);
 }
 
 
-void CLASS_add_method(char *name,char *sig) {
+void LEXLIB_CLASS_add_method(char *name,char *sig) {
 printf(">> %s %s\n",name,sig);
 nmethods++;
 methods=realloc(methods,sizeof(struct s_method)*nmethods);
@@ -69,7 +69,7 @@ methods[nmethods-1].sig=strdup(sig);
 
 
 
-void CLASS_print_reflector() {
+void LEXLIB_CLASS_print_reflector() {
 int a;
 int b;
 char **parents;
@@ -136,7 +136,7 @@ printc("return tmp;\n}");
 
 
 
-void CLASS_print_class_variable_type(char *s) {
+void LEXLIB_CLASS_print_class_variable_type(char *s) {
 char *ptr;
 char *ptr2;
 char *news;
@@ -160,13 +160,13 @@ free(news);
 }
 
 
-char ** CLASS_get_variable (char *s) {
+char ** LEXLIB_CLASS_get_variable (char *s) {
 char **b;
 b=(char **)A4GL_call_4gl_dll (s, "aclfglclass__get_variable", 0);
 return b;
 }
 
-char ** CLASS_get_members (char *s) {
+char ** LEXLIB_CLASS_get_members (char *s) {
 char **b;
 b=(char **)A4GL_call_4gl_dll (s, "aclfglclass__methods", 0);
 return b;

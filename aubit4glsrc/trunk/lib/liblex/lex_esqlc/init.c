@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: init.c,v 1.13 2005-03-23 08:24:11 afalout Exp $
+# $Id: init.c,v 1.14 2005-05-20 18:34:28 mikeaubury Exp $
 */
 
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: init.c,v 1.13 2005-03-23 08:24:11 afalout Exp $";
+		"$Id: init.c,v 1.14 2005-05-20 18:34:28 mikeaubury Exp $";
 #endif
 void printc (char *fmt, ...);
 
@@ -42,7 +42,7 @@ int A4GL_doing_pcode (void);
 
 
 void
-print_module_variable_init (void)
+LEXLIB_print_module_variable_init (void)
 {
 if (!A4GL_doing_pcode()) {
   printc ("static int _done_init_module_variables=1;\n");
@@ -63,7 +63,7 @@ if (!A4GL_doing_pcode()) {
 }
 }
 
-void print_Constant(int type, char *vv) {
+void LEXLIB_print_Constant(int type, char *vv) {
 #ifdef PRINT_CONSTANTS
 	if (type==1) {
 		printc("char *%s;",vv);
