@@ -2,6 +2,11 @@
 	//../../../incl/
 	#include "a4gl_incl_config.h"
 #endif
+
+
+#include "a4gl_API_sql_lib.h"
+
+
 #if (defined (__CYGWIN__) || defined (__MINGW32__))
 	#include <windows.h>
 	#include <sqlext.h>

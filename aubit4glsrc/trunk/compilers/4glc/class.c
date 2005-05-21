@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: class.c,v 1.10 2005-05-15 12:58:48 mikeaubury Exp $
+# $Id: class.c,v 1.11 2005-05-21 16:16:55 mikeaubury Exp $
 #
 */
 
@@ -1137,6 +1137,7 @@ int isclassvariable(char *s) {
 	int size;
 	int vval;
 	struct variable *ptr;
+
 	vval=find_variable (s, &dtype, &size, 0, &ptr);
 
 	if (vval!=-2) {
@@ -1154,6 +1155,7 @@ int isclassmember(char *s,char *f) {
 	int dtype;
 	int size;
 	int vval;
+	int a;
 	struct variable *ptr;
 
 	vval=find_variable (s, &dtype, &size, 0, &ptr);
@@ -1164,6 +1166,19 @@ int isclassmember(char *s,char *f) {
 	if (ptr->variable_type != VARIABLE_TYPE_OBJECT) {
 		return 0; // We're expecting an object
 	}
+
+	//
+	
+  	class_members = CLASS_get_members (s);
+
+
+	// Second - is this a method of a  'superclass'
+	if ((long) class_members==-1 || (long) class_members==0) ; 
+	else {
+		for (a=0;class_members[a];a++) {if (A4GL_aubit_strcasecmp(f,class_members[a])==0) return 1;}
+	}
+
+
 
 	return 0;
 }

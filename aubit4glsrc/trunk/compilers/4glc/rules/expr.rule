@@ -343,12 +343,12 @@ string_match_expr:
  | NOT_MATCHES fgl_expr_c {
 	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_push_char(\"\\\\\");A4GL_pushop(OP_MATCHES);A4GL_pushop(OP_NOT);");
 }
- | MATCHES fgl_expr_c ESCAPE CHAR_VALUE {
+ | MATCHES fgl_expr_c KW_ESCAPE CHAR_VALUE {
 	char buff[40];
 	sprintf(buff,"A4GL_push_char(%s);A4GL_pushop(OP_MATCHES);",$<str>4);
 	$<ptr>$=A4GL_append_expr($<ptr>2,buff);
  }
- | NOT_MATCHES fgl_expr_c ESCAPE CHAR_VALUE {
+ | NOT_MATCHES fgl_expr_c KW_ESCAPE CHAR_VALUE {
 	char buff[40];
 	sprintf(buff,"A4GL_push_char(%s);A4GL_pushop(OP_MATCHES);A4GL_pushop(OP_NOT);",$<str>4);
 	$<ptr>$=A4GL_append_expr($<ptr>2,buff);
@@ -365,12 +365,12 @@ string_match_expr:
 	sprintf(buff,"A4GL_push_char(\"\\\\\");A4GL_pushop(OP_LIKE);A4GL_pushop(OP_NOT);");
 	$<ptr>$=A4GL_append_expr($<ptr>2,buff);
 }
-| LIKE fgl_expr_c ESCAPE CHAR_VALUE {
+| LIKE fgl_expr_c KW_ESCAPE CHAR_VALUE {
 	char buff[40];
 	sprintf(buff,"A4GL_push_char(%s);A4GL_pushop(OP_LIKE);",$<str>4);
 	$<ptr>$=A4GL_append_expr($<ptr>2,buff);
 }
-| NOT_LIKE fgl_expr_c ESCAPE CHAR_VALUE {
+| NOT_LIKE fgl_expr_c KW_ESCAPE CHAR_VALUE {
 	char buff[40];
 	sprintf(buff,"A4GL_push_char(%s);A4GL_pushop(OP_LIKE);A4GL_pushop(OP_NOT);",$<str>4);
 	$<ptr>$=A4GL_append_expr($<ptr>2,buff);

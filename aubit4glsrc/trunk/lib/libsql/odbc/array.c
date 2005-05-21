@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.14 2005-03-31 13:35:58 afalout Exp $
+# $Id: array.c,v 1.15 2005-05-21 16:18:50 mikeaubury Exp $
 #
 */
 
@@ -539,7 +539,7 @@ UDWORD collen;
  * @return Number of rows filled
  */
 int
-A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
+A4GLSQLLIB_A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 		    char *service, int mode, char *info)
 {
 #ifdef DEBUG

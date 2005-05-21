@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2005-04-15 06:58:36 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2005-05-21 16:16:55 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -181,11 +181,14 @@ ${Y_TAB_C} rules/generated/y.output: ${RULES_SRC}
 ../fcompile/form_x.h:
 	${MAKE} -C ../fcompile rpc
 
-API_lex.c: API_lex.spec ../../incl/API_lex.h
+API_lex.c: API_lex.spec ../../incl/API_lex.h  
 	${SH} ../../lib/bin/dlmagic $< > $@
 	
 ../../incl/API_lex.h: API_lex.spec	
 	${SH} ../../lib/bin/dlmagic $< -h > $@
+
+#../../incl/API_lex_lib.h: API_lex.spec	
+	#${SH} ../../lib/bin/dlmagic $< -H > $@
 
 #${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
 
@@ -248,7 +251,7 @@ show:
 clean: clean.rules.generated clean.rules
 	${RM} *${SO_EXT} *.o *.err *.a *.exe *.bak .*.bak .\#* \
 	*.log *.dll *.dll.a *.def wantkw.c wantkw.h mk_states_1.h mk_states.h \
-	mk_states.c API_lex.c API_lex.h
+	mk_states.c API_lex.c API_lex.h ../../incl/API_lex_lib.h
 #WARNING! do NOT clean mk_states_c - this is an autoconf generated file
 #and will get cleaned only in make.distclean target of root makefile
 	

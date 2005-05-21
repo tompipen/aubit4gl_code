@@ -27,7 +27,7 @@ int
 isSqlError_full (char *f,int l)
 {
   A4GL_debug("sqlca.sqlcode=%d - %s %d\n", sqlca.sqlcode,f,l);
-  A4GLSQL_set_sqlca_sqlcode (sqlca.sqlcode);
+  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (sqlca.sqlcode);
 
   if (sqlca.sqlcode < 0)
     return 1;
@@ -36,7 +36,7 @@ isSqlError_full (char *f,int l)
 
 
 char *
-A4GLSQL_get_sqlerrm (void)
+A4GLSQLLIB_A4GLSQL_get_sqlerrm (void)
 {
   static char msg[2000];
   strcpy (msg, sqlca.sqlerrm.sqlerrmc);
@@ -56,7 +56,7 @@ A4GLSQL_get_sqlerrm (void)
  *  - 0 : Connection estabilished.
  */
 int
-A4GLSQL_init_connection_internal (char *dbName)
+A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 {
   static int have_connected = 0;
 
@@ -115,7 +115,7 @@ A4GLSQL_close_connection (void)
  */
 
 int
-A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char strSelect[640];
@@ -193,7 +193,7 @@ SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod), a.attnotnull,
 #ifdef DEBUG
       A4GL_debug ("Error in EXEC SQL GET DESCRIPTOR, numberOfColumns = %s",
 	     numberOfColumns);
-      A4GL_debug ("ESQL/C Error message:%s", A4GLSQL_get_sqlerrm ());
+      A4GL_debug ("ESQL/C Error message:%s", A4GLSQLLIB_A4GLSQL_get_sqlerrm ());
 #endif
       return 0;
     }
@@ -292,7 +292,7 @@ return 0;
  *   - 0 : Error ocurred.
  */
 int
-A4GLSQL_next_column (char **colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   int idx = getColumnsOrder;
@@ -327,7 +327,7 @@ printf("1\n");
  *   - 1 : Error ocurred.
  */
 int
-A4GLSQL_end_get_columns (void)
+A4GLSQLLIB_A4GLSQL_end_get_columns (void)
 {
   EXEC SQL COMMIT WORK;
   EXEC SQL DEALLOCATE DESCRIPTOR descReadAllColumns;
@@ -424,7 +424,7 @@ printf("2\n");
  *   - 0 : Error ocurred.
  */
 int
-A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char strSelect[640];
@@ -534,10 +534,10 @@ fillColumnsArray (char *tableName, int max, char *colArray,
   char *ccol;
 
   strcpy (colname, "");
-  rv = A4GLSQL_get_columns (tableName, colname, &dtype, &size);
+  rv = A4GLSQLLIB_A4GLSQL_get_columns (tableName, colname, &dtype, &size);
   while (rv == 1)
     {
-      rv = A4GLSQL_next_column (&ccol, &dtype, &size);
+      rv = A4GLSQLLIB_A4GLSQL_next_column (&ccol, &dtype, &size);
       strcpy (colname, ccol);
 
       strncpy (&colArray[i * (sizeColArray + 1)], colname, sizeColArray);
@@ -566,7 +566,7 @@ fillColumnsArray (char *tableName, int max, char *colArray,
       if (i >= max)
 	break;
     }
-  rv = A4GLSQL_end_get_columns ();
+  rv = A4GLSQLLIB_A4GLSQL_end_get_columns ();
   return rv;
 }
 
@@ -638,7 +638,7 @@ fillColumnsArray (char *tableName, int max, char *colArray,
  * 
  */
 int
-A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
+A4GLSQLLIB_A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 		    char *service, int mode, char *info)
 {
   if (strcmp (service, "DATABASES") == 0)
@@ -665,7 +665,7 @@ A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 /* 	void A4GLSQL_set_sqlca_sqlcode(int a); */
 /* int */
 void
-A4GLSQL_set_sqlca_sqlcode (int a)
+A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (int a)
 {
   A4GL_debug ("In set_sqlca_sqlcode : %d\n", a);
   A4GL_set_a4gl_status(a);
@@ -688,7 +688,7 @@ A4GLSQL_set_sqlca_sqlcode (int a)
  * @return  a char string "INFORMIX"
  */
 char *
-A4GLSQL_dbms_dialect (void)
+A4GLSQLLIB_A4GLSQL_dbms_dialect (void)
 {
   return "POSTGRES";
 }

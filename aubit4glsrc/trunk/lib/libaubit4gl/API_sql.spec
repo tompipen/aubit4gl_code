@@ -2,7 +2,7 @@
 LIBRARY SQL
 * Name of the variable which will have second part of library name to load:
 VARIABLE A4GL_SQLTYPE
-
+LIB_PREFIX A4GLSQLLIB_
 
 
 * Driver data

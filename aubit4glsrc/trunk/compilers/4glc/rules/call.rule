@@ -172,7 +172,7 @@ opt_func_call_args {
 		a4gl_yyerror("Not an object");
 	}
 	if (!isclassmember($<str>1,$<str>3)) {
-		a4gl_yyerror("Not an method for the object");
+		a4gl_yyerror("Not a method for the object");
 	}
 
 	sprintf($<str>$,"\"%s\",\"%s\"",$<str>1,$<str>3);

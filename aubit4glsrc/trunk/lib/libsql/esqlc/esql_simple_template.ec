@@ -19,7 +19,7 @@ int isSqlError()  {
  *  - 1 : An error ocurred.
  *  - 0 : Connection estabilished.
  */
-int A4GLSQL_init_connection_internal (char *dbName)
+int A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 {
   static int have_connected=0;
 
@@ -76,7 +76,7 @@ int A4GLSQL_close_connection(void)
  */
 
 int
-A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   EXEC SQL BEGIN DECLARE SECTION;
     char strSelect[640];
@@ -417,7 +417,7 @@ static int fillColumnsArray(char *tableName,int max,char **colArray,
 char *ccol;
 
 strcpy(colname,"");
-  rv = A4GLSQL_get_columns (tableName, colname, &dtype, &size);
+  rv = A4GLSQLLIB_A4GLSQL_get_columns (tableName, colname, &dtype, &size);
   while ( rv == 1 ) 
 	{
 	  rv = A4GLSQL_next_column(&ccol,&dtype,&size);
@@ -518,7 +518,7 @@ strcpy(colname,"");
  * 
  */
 int
-A4GLSQL_fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
+A4GLSQLLIB_A4GLSQL_fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
 		    char *service, int mode, char *info)
 {
 	if ( strcmp(service,"DATABASES") == 0 )
@@ -545,7 +545,7 @@ A4GLSQL_fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
 /* 	void A4GLSQL_set_sqlca_sqlcode(int a); */
 /* int */
 void
-A4GLSQL_set_sqlca_sqlcode (int a)
+A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (int a)
 {
   status = a;
   sqlca.sqlcode = a;

@@ -13,7 +13,7 @@ VARIABLE A4GL_LEXTYPE
 * Add prefix for created API punctions:
 *API_PREFIX LEXAPI_
 * Add prefix for existing library functions:
-*LIB_PREFIX LEXLIB_
+LIB_PREFIX LEXLIB_
 * Name of the header file to be referenced with #include
 HEADER_FILE "API_lex_int.h"
 

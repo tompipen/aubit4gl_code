@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql_compatible.ec,v 1.14 2005-03-25 12:48:33 afalout Exp $
+# $Id: esql_compatible.ec,v 1.15 2005-05-21 16:18:35 mikeaubury Exp $
 #
 */
 
@@ -363,7 +363,7 @@ static int processPreStatementBinds(struct s_sid *sid);
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.14 2005-03-25 12:48:33 afalout Exp $";
+	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.15 2005-05-21 16:18:35 mikeaubury Exp $";
 #endif
 
 
@@ -2071,7 +2071,7 @@ static int processPosStatementBinds(struct s_sid *sid)
  *  - 1 : Connection does not exist or error ocurred.
  *  - -1 : The pointer to the statement is null.
  */
-int A4GLSQL_execute_implicit_select (struct s_sid *sid)
+int A4GLSQLLIB_A4GLSQL_execute_implicit_select (struct s_sid *sid)
 {
   EXEC SQL begin declare section;
     char *statementName;
@@ -2136,7 +2136,7 @@ if (sqlca.sqlcode==0) {
  *  - 0 : Statement executed.
  *  - 1 : An error as ocurred.
  */
-int A4GLSQL_execute_implicit_sql (struct s_sid *sid)
+int A4GLSQLLIB_A4GLSQL_execute_implicit_sql (struct s_sid *sid)
 {
   EXEC SQL begin declare section;
     char *statementName;
@@ -2326,7 +2326,7 @@ struct s_cid *A4GLSQL_declare_cursor(
  * 	@ FIXME - doesn't use the USING section...
  *
  */
-int A4GLSQL_open_cursor (int ni, char *s)
+int A4GLSQLLIB_A4GLSQL_open_cursor (int ni, char *s)
 {
   EXEC SQL BEGIN DECLARE SECTION;
     char *cursorName = s;
@@ -2466,7 +2466,7 @@ static int getFetchType(int fetch_mode,int fetch_when)
  *   - 1 : Cursor fetched.
  *   - 0 : An error as ocurred.
  */
-int A4GLSQL_fetch_cursor (char *cursor_name,
+int A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
 		      int fetch_mode, int fetch_when, int nobind,
 		      struct BINDING *obind)
 {
@@ -2655,7 +2655,7 @@ int A4GLSQL_fetch_cursor (char *cursor_name,
 /* 	void A4GLSQL_put_insert(struct BINDING *ibind,int n); */
 /* int */
 void
-A4GLSQL_put_insert (struct BINDING *ibind, int n)
+A4GLSQLLIB_A4GLSQL_put_insert (struct BINDING *ibind, int n)
 {
 exec sql begin declare section;
   char *cursorName;
@@ -3104,10 +3104,10 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
  *  - 0 : Instruction executed.
  *  - 1 : An error as ocurred.
  */
-/* 	void A4GLSQL_commit_rollback (int mode);*/
+/* 	void A4GLSQLLIB_A4GLSQL_commit_rollback (int mode);*/
 /* int */
 void
-A4GLSQL_commit_rollback (int mode)
+A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
 {
   A4GL_debug ("In commit_rollback");
 #ifndef NO_TRANSACTIONS
@@ -3181,7 +3181,7 @@ struct s_sid *A4GLSQL_find_prepare (char *pname)
 /* 	void A4GLSQL_flush_cursor(char *cursor); */
 /* int */
 void
-A4GLSQL_flush_cursor (char *cursor)
+A4GLSQLLIB_A4GLSQL_flush_cursor (char *cursor)
 {
   EXEC SQL BEGIN DECLARE SECTION;
     char *cursorName = cursor;
@@ -3244,7 +3244,7 @@ int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
  */
 
 int
-A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   EXEC SQL BEGIN DECLARE SECTION;
     char strSelect[640];
@@ -3683,7 +3683,7 @@ strcpy(colname,"");
 A4GL_debug("fillColumnsArray\n");
 
 
-  rv = A4GLSQL_get_columns (tableName, colname, &dtype, &size);
+  rv = A4GLSQLLIB_A4GLSQL_get_columns (tableName, colname, &dtype, &size);
   A4GL_debug("Got rv as %d\n",rv);
   while ( rv ) 
 	{
@@ -3787,7 +3787,7 @@ A4GL_debug("returning %d columns rv=%d",i,rv);
  * 
  */
 int
-A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
+A4GLSQLLIB_A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 		    char *service, int mode, char *info)
 {
 A4GL_debug("fill_array");
@@ -3815,7 +3815,7 @@ A4GL_debug("fill_array");
 /* 	void A4GLSQL_set_sqlca_sqlcode(int a); */
 /* int */
 void
-A4GLSQL_set_sqlca_sqlcode (int a)
+A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (int a)
 {
 	A4GL_set_a4gl_status(a);
   /* return 0; */
@@ -3831,7 +3831,7 @@ A4GLSQL_set_sqlca_sqlcode (int a)
  * @param type The type of the information wanted.
  * @return
  */
-long A4GLSQL_describe_stmt (char *stmt, int colno, int type)
+long A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 {
   printf("Describe smtm\n");
 }

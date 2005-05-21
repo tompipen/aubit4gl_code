@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.123 2005-05-09 20:17:41 whaslbeck Exp $
+# $Id: sql.c,v 1.124 2005-05-21 16:18:50 mikeaubury Exp $
 #
 */
 
@@ -481,7 +481,7 @@ A4GLSQL_set_status (int a, int sql)
 }
 
 char *
-A4GLSQL_get_errmsg (int a)
+A4GLSQLLIB_A4GLSQL_get_errmsg (int a)
 {
   return 0;
 }
@@ -512,7 +512,7 @@ A4GL_chk_rc_full (int rc, void *hstmt, char *c, int line, char *file)
     {
       if (rc == SQL_NO_DATA_FOUND)
 	{
-	  A4GLSQL_set_sqlca_sqlcode (100);
+	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (100);
 	  /* A4GL_set_sqlca (hstmt, c, 0,0 ); *//* no error */
 	  A4GLSQL_set_status (100, 1);
 	  return;
@@ -869,7 +869,7 @@ A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
  * @param s The text of the select statement.
  */
 void *
-A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int no, char *s)	/* mja */
+A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int no, char *s)	/* mja */
 {
   struct s_sid *sid;
   int rc;
@@ -1000,7 +1000,7 @@ A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind)	/* mja */
  * @return A pointer to the cursor informationstrucutre.
  */
 void *
-A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *cursname)
+A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *cursname)
 {
 #if (ODBCVER >= 0x0300)
   //static SQLUINTEGER is_scrollable=SQL_SCROLLABLE;
@@ -1115,7 +1115,7 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *cursname)
  * @param sid The statement informnation handle.
  */
 int
-A4GLSQL_execute_implicit_sql (void *vsid, int singleton)
+A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton)
 {
   struct s_sid *sid;
 
@@ -1172,7 +1172,7 @@ A4GLSQL_execute_implicit_sql (void *vsid, int singleton)
  * @param sid The statement information.
  */
 int
-A4GLSQL_execute_implicit_select (void *vsid, int singleton)
+A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 {
   int a;
   struct s_sid *sid;
@@ -1226,7 +1226,7 @@ A4GLSQL_execute_implicit_select (void *vsid, int singleton)
  * @return
  */
 int
-A4GLSQL_open_cursor (char *s, int ni, void *ibind)
+A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
 {
   struct s_cid *cid;
   char *curs;
@@ -1253,7 +1253,7 @@ A4GL_debug("XXX s=%s ni=%d ibind=%p",s,ni,ibind);
   if (cid->hstmt != 0)
     {
 
-      A4GLSQL_close_cursor (s);
+      A4GLSQLLIB_A4GLSQL_close_cursor (s);
     }
 
   sid = cid->statement;
@@ -1459,7 +1459,7 @@ A4GL_debug("XXX s=%s ni=%d ibind=%p",s,ni,ibind);
  * @param ibind
  */
 int
-A4GLSQL_fetch_cursor (char *cursor_name,
+A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
 		      int fetch_mode, int fetch_when, int nibind,
 		      void *vibind)
 {
@@ -1653,7 +1653,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
  * @return	0 if success (program terminates otherwise)
  */
 int
-A4GLSQL_init_connection_internal (char *dbName_f)
+A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName_f)
 {
   char empty[10] = "None";
   char dbName[2048];
@@ -1862,7 +1862,7 @@ A4GLSQL_get_status (void)
  * @return The contents of sqlca.sqlerrm.
  */
 char *
-A4GLSQL_get_sqlerrm (void)
+A4GLSQLLIB_A4GLSQL_get_sqlerrm (void)
 {
   return a4gl_sqlca.sqlerrm;
 }
@@ -1876,7 +1876,7 @@ A4GLSQL_get_sqlerrm (void)
  * @return Allways zero
  */
 void
-A4GLSQL_free_cursor (char *cname)
+A4GLSQLLIB_A4GLSQL_free_cursor (char *cname)
 {
   struct s_cid *ptr;
 
@@ -1911,7 +1911,7 @@ A4GLSQL_free_cursor (char *cname)
  *   - 1 Cursor closed
  */
 int
-A4GLSQL_close_cursor (char *cname)
+A4GLSQLLIB_A4GLSQL_close_cursor (char *cname)
 {
   struct s_cid *ptr;
 
@@ -2177,7 +2177,7 @@ A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p)
  * @return  dialect as char string
  */
 char *
-A4GLSQL_dbms_dialect (void)
+A4GLSQLLIB_A4GLSQL_dbms_dialect (void)
 {
   /* this is set in make_connection */
   return dbms_dialect;
@@ -2190,7 +2190,7 @@ A4GLSQL_dbms_dialect (void)
  * @return  pointer to name
  */
 char *
-A4GLSQL_dbms_name (void)
+A4GLSQLLIB_A4GLSQL_dbms_name (void)
 {
   /* this is set in make_connection */
   return dbms_name;
@@ -3235,7 +3235,7 @@ if (sqldtype==SQL_TIME) {
  * @return The current database name.
  */
 char *
-A4GLSQL_get_currdbname (void)
+A4GLSQLLIB_A4GLSQL_get_currdbname (void)
 {
   return OldDBname;
 }
@@ -3330,7 +3330,7 @@ A4GL_describecolumn (SQLHSTMT hstmt, int colno, int type)
  * @return
  */
 long
-A4GLSQL_describe_stmt (char *stmt, int colno, int type)
+A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 {
   struct s_sid *sid;
   HSTMT *hstmt;
@@ -3385,7 +3385,7 @@ A4GLSQL_describe_stmt (char *stmt, int colno, int type)
  *   - 0 : Error ocurred.
  */
 int
-A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   static char tq[256];
   static char to[256];
@@ -3561,7 +3561,7 @@ NULL, 0,                                     // owner
  *   - 0 : Error ocurred.
  */
 int
-A4GLSQL_next_column (char **colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 {
   rc = SQLFetch (hstmtGetColumns);
 #ifdef DEBUG
@@ -3599,7 +3599,7 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
  *   - 1 : Error ocurred.
  */
 int
-A4GLSQL_end_get_columns (void)
+A4GLSQLLIB_A4GLSQL_end_get_columns (void)
 {
   return 0;
 }
@@ -3618,7 +3618,7 @@ A4GLSQL_end_get_columns (void)
  *   - 0 : Error ocurred.
  */
 int
-A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   static HSTMT hstmt = 0;
   static char tq[256];
@@ -3853,7 +3853,7 @@ A4GL_ibind_column_arr (int pos, char *s, HSTMT hstmt)
  * @param pwd The password of the user to set the connection.
  */
 int
-A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr,
+A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr,
 			       char *pwd)
 {
   char empty[10] = "None";
@@ -3927,7 +3927,7 @@ A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr,
  * @return The current connection name.
  */
 char *
-A4GLSQL_get_curr_conn (void)
+A4GLSQLLIB_A4GLSQL_get_curr_conn (void)
 {
   return sess_name;
 }
@@ -4047,7 +4047,7 @@ aclfgl_hstmt_get (int np)
  * @param sessname The session name.
  */
 int
-A4GLSQL_set_conn_internal (char *sessname)
+A4GLSQLLIB_A4GLSQL_set_conn_internal (char *sessname)
 {
   HDBC *hdbc_new;
 
@@ -4085,7 +4085,7 @@ A4GLSQL_set_conn_internal (char *sessname)
  *  - 1 : Session closed.
  */
 int
-A4GLSQL_close_session_internal (char *sessname)
+A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 {
   HDBC *ptr;
   int rc;
@@ -4101,12 +4101,12 @@ A4GLSQL_close_session_internal (char *sessname)
   //FIXME: is there a bettr way? SQL_AUTOCOMMIT ? What should we really
   //do if program wants to exit after an error or by reaching EXIT PROGARAM?
   A4GL_debug ("commiting all transactions on SQLite...");
-  A4GLSQL_commit_rollback (1);
+  A4GLSQLLIB_A4GLSQL_commit_rollback (1);
 #endif
 
   if (A4GL_isyes (acl_getenv ("FORCE_ROLLBACK_AT_EXIT")))
     {
-      A4GLSQL_commit_rollback (1);
+      A4GLSQLLIB_A4GLSQL_commit_rollback (1);
     }
 
 
@@ -4584,7 +4584,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
  *   - 1 : Commit work
  */
 void
-A4GLSQL_commit_rollback (int mode)
+A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
 {
   HSTMT hstmt = 0;
   char *ptr;
@@ -4675,7 +4675,7 @@ A4GLSQL_commit_rollback (int mode)
  * @param sql1 Sql select text to generate the unload data.
  */
 void
-A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,
+A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,
 			      int nbind, void *vibind)
 {
   HSTMT hstmt;
@@ -4942,7 +4942,7 @@ A4GL_chk_need_blob (int rc, HSTMT hstmt)
  * @param a The value to be assigned.
  */
 void
-A4GLSQL_set_sqlca_sqlcode (int a)
+A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (int a)
 {
   a4gl_status = a;
   a4gl_sqlca.sqlcode = a;
@@ -5005,7 +5005,7 @@ A4GL_chk_getenv (char *s, int a)
  * @param n 
  */
 void
-A4GLSQL_put_insert (void *vibind, int n)
+A4GLSQLLIB_A4GLSQL_put_insert (void *vibind, int n)
 {
   struct BINDING *ibind;
   char *cursorName;
@@ -5045,7 +5045,7 @@ A4GLSQL_put_insert (void *vibind, int n)
  * @param The cursor name.
  */
 void
-A4GLSQL_flush_cursor (char *cursor)
+A4GLSQLLIB_A4GLSQL_flush_cursor (char *cursor)
 {
 #ifdef DEBUG
   A4GL_debug ("Not implemented A4GLSQL_flush_cursor");
@@ -5067,7 +5067,7 @@ A4GLSQL_initsqllib (void)
 }
 
 char *
-A4GLSQL_syscolval_expr (char *tabname, char *colname, char *typ)
+A4GLSQLLIB_A4GLSQL_syscolval_expr (char *tabname, char *colname, char *typ)
 {
   return 0;
 }
@@ -5107,7 +5107,7 @@ A4GL_add_validation_elements_to_expr (struct expr_str *ptr, char *val)
 
 /*
 void *
-A4GLSQL_get_validation_expr (char *tabname, char *colname)
+A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
 {
   char buff[300];
   sprintf (buff,
@@ -5138,9 +5138,9 @@ sprintf(buff,"select attrval from %s where attrname='INCLUDE' and tabname='%s' a
 cptr ,tabname,colname);
 A4GLSQL_add_prepare ("p_get_val", (void *) A4GLSQL_prepare_select (0, 0, 0, 0, buff));
 if (a4gl_sqlca.sqlcode!=0) return (void *)-1;
-A4GLSQL_declare_cursor (0 + 0, A4GLSQL_find_prepare ("p_get_val"), 0, "c_get_val");
+A4GLSQLLIB_A4GLSQL_declare_cursor (0 + 0, A4GLSQL_find_prepare ("p_get_val"), 0, "c_get_val");
 if (a4gl_sqlca.sqlcode!=0) return (void *)-1;
-A4GLSQL_open_cursor ("c_get_val", 0, 0);
+A4GLSQLLIB_A4GLSQL_open_cursor ("c_get_val", 0, 0);
 if (a4gl_sqlca.sqlcode!=0) return (void *)-1;
 
 

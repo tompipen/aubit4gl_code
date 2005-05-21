@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.27 2005-03-31 13:36:15 afalout Exp $
+# $Id: simple.c,v 1.28 2005-05-21 16:18:51 mikeaubury Exp $
 #*/
 
 
@@ -102,7 +102,7 @@ static struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *pt
  * @todo Describe function
  */
 int
-A4GLSQL_init_connection_internal (char *dbName)
+A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 {
   char buff2[256];
   char *envname;
@@ -149,7 +149,7 @@ A4GLSQL_get_status (void)
   return sqlcode;
 }
 
-int A4GLSQL_close_session_internal (char *sessname) {
+int A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname) {
  PGconn  *con;
  con=(PGconn *)A4GL_find_pointer (sessname, SESSCODE);
  if (con) {
@@ -166,7 +166,7 @@ int A4GLSQL_close_session_internal (char *sessname) {
  * @todo Describe function
  */
 char *
-A4GLSQL_get_sqlerrm (void)
+A4GLSQLLIB_A4GLSQL_get_sqlerrm (void)
 {
   return (char *) A4GL_global_A4GLSQL_get_sqlerrm ();
 }
@@ -176,7 +176,7 @@ A4GLSQL_get_sqlerrm (void)
  * @todo Describe function
  */
 int
-A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   char *buff;
   if (con == 0)
@@ -184,7 +184,7 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
       A4GL_exitwith ("Not connected to database");
       return 0;
     }
-  A4GLSQL_get_columns (tabname, colname, dtype, size);
+  A4GLSQLLIB_A4GLSQL_get_columns (tabname, colname, dtype, size);
 
   while (A4GLSQL_next_column (&buff, dtype, size))
     {
@@ -208,7 +208,7 @@ A4GLSQL_initsqllib (void)
 int nfields = 0;
 
 int
-A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   char buff[2048];
   char tname[256];
@@ -261,14 +261,14 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 
 
 int
-A4GLSQL_end_get_columns (void)
+A4GLSQLLIB_A4GLSQL_end_get_columns (void)
 {
   PQclear (res);
   return 0;
 }
 
 int
-A4GLSQL_next_column (char **colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 {
   //char buff[256];
   static char cname[256];
@@ -322,7 +322,7 @@ int A4GLSQL_initlib (void) {
 
 
 char *
-A4GLSQL_dbms_dialect (void)
+A4GLSQLLIB_A4GLSQL_dbms_dialect (void)
 {
 	/* 
 	WARNING - make sure we use names as per file naming in
@@ -695,7 +695,7 @@ if (INDICATOR !=-1 && strlen(buffer)==0 &&display_mode==DISPLAY_UNLOAD) {
 /*      void A4GLSQL_unload_data(char *fname,char *delims, char *sql1); */
 /* int */
 void
-A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr_o, int nbind, void *vibind)
+A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr_o, int nbind, void *vibind)
 {
   FILE *unloadFile;
   int nrows=0;

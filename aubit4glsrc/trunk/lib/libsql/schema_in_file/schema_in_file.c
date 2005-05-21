@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.14 2005-05-16 11:11:07 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.15 2005-05-21 16:18:51 mikeaubury Exp $
 #*/
 
 /**
@@ -104,7 +104,7 @@ A4GLSQL_set_status (int a, int sql)
  * @todo Describe function
  */
 int
-A4GLSQL_init_connection_internal (char *dbName)
+A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 {
   char fname[256];
   sprintf (fname, "%s.schema", dbName);
@@ -135,7 +135,7 @@ A4GLSQL_get_status (void)
  * @todo Describe function
  */
 char *
-A4GLSQL_get_sqlerrm (void)
+A4GLSQLLIB_A4GLSQL_get_sqlerrm (void)
 {
   return A4GL_global_A4GLSQL_get_sqlerrm ();
 }
@@ -145,7 +145,7 @@ A4GLSQL_get_sqlerrm (void)
  * @todo Describe function
  */
 int
-A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   char *buff;
   if (f_db_in == 0)
@@ -154,7 +154,7 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
       return 0;
     }
   A4GL_debug ("READ COLUMNS\n");
-  A4GLSQL_get_columns (tabname, colname, dtype, size);
+  A4GLSQLLIB_A4GLSQL_get_columns (tabname, colname, dtype, size);
 
   while (A4GLSQL_next_column (&buff, dtype, size))
     {
@@ -175,7 +175,7 @@ A4GLSQL_initsqllib (void)
 }
 
 int
-A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   char buff[256];
   char tname[256];
@@ -224,13 +224,13 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 
 
 int
-A4GLSQL_end_get_columns (void)
+A4GLSQLLIB_A4GLSQL_end_get_columns (void)
 {
   return 0;
 }
 
 int
-A4GLSQL_next_column (char **colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 {
   char buff[256];
   static char cname[256];
@@ -286,7 +286,7 @@ void *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
 }
 
 char *
-A4GLSQL_dbms_dialect (void)
+A4GLSQLLIB_A4GLSQL_dbms_dialect (void)
 {
   /* this is set in make_connection */
   return "FILE";
@@ -294,7 +294,7 @@ A4GLSQL_dbms_dialect (void)
 
 
 char *
-A4GLSQL_syscolval_expr (char *tabname, char *colname, char *typ)
+A4GLSQLLIB_A4GLSQL_syscolval_expr (char *tabname, char *colname, char *typ)
 {
   return 0;
 }

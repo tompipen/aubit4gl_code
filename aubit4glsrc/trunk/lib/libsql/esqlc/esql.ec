@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.131 2005-05-06 18:11:41 mikeaubury Exp $
+# $Id: esql.ec,v 1.132 2005-05-21 16:18:34 mikeaubury Exp $
 #
 */
 
@@ -174,7 +174,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.131 2005-05-06 18:11:41 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.132 2005-05-21 16:18:34 mikeaubury Exp $";
 #endif
 
 
@@ -317,7 +317,7 @@ A4GLSQL_get_status (void)
  * @return The contents of sqlca.sqlerrm.
  */
 char *
-A4GLSQL_get_sqlerrm (void)
+A4GLSQLLIB_A4GLSQL_get_sqlerrm (void)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char *msg = (char *) malloc (8191);
@@ -476,7 +476,7 @@ addESQLConnection (char *connectionName, char *dbName,
  *  - 0 : Connection estabilished.
  */
 int
-A4GLSQL_init_connection_internal (char *dbName)
+A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 {
   static int have_connected = 0;
   char buff[256];
@@ -522,7 +522,7 @@ A4GLSQL_init_connection_internal (char *dbName)
  *  - 1 : Connection does not exist or error ocurred.
  */
 int
-A4GLSQL_close_session_internal (char *sessname)
+A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 {
   EXEC SQL begin declare section;
   char *connectionName = sessname;
@@ -652,7 +652,7 @@ initPassword (const char *passwd)
  * @param pwd The password of the user to set the connection.
  */
 int
-A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, char *pwd)
+A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, char *pwd)
 {
   EXEC SQL begin declare section;
   char *dbName = dsn;
@@ -789,7 +789,7 @@ if (mode=='i'||mode=='o') ; else { A4GL_assertion(1,"Mode should be 'o' or 'i'")
  *   - 1 : Connection with that name does not exist.
  */
 int
-A4GLSQL_set_conn_internal (char *sessname)
+A4GLSQLLIB_A4GLSQL_set_conn_internal (char *sessname)
 {
   EXEC SQL begin declare section;
   char *connectionName = sessname;
@@ -815,7 +815,7 @@ A4GLSQL_set_conn_internal (char *sessname)
  * @return The current connection name.
  */
 char *
-A4GLSQL_get_curr_conn (void)
+A4GLSQLLIB_A4GLSQL_get_curr_conn (void)
 {
   return getCurrentESQLConnectionName ();
 }
@@ -833,7 +833,7 @@ A4GLSQL_get_curr_conn (void)
 /* 	char *A4GLSQL_get_currdbname(void); */
 /* char *A4GLSQL_get_currdbname(char *cursor) */
 char *
-A4GLSQL_get_currdbname (void)
+A4GLSQLLIB_A4GLSQL_get_currdbname (void)
 {
   DbConnection *currConnection;
 
@@ -2200,7 +2200,7 @@ if (n) {
  *  - -1 : The pointer to the statement is null.
  */
 int
-A4GLSQL_execute_implicit_select (void *vsid,int singleton)
+A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid,int singleton)
 {
 struct s_sid *sid;
   EXEC SQL begin declare section;
@@ -2305,7 +2305,7 @@ return 0;
  *  - 1 : An error as ocurred.
  */
 int
-A4GLSQL_execute_implicit_sql (void *vsid,int singleton)
+A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid,int singleton)
 {
 struct s_sid *sid;
 char buff[255];
@@ -2419,7 +2419,7 @@ A4GL_debug ("all ok : COPYA: %c%c%c%c%c%c%c%c\n", a4gl_sqlca.sqlawarn[0], a4gl_s
  * @return A pointer to the statement identification structure.
  */
 void *
-A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
+A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
 			int no, char *s)
 {
   return (prepareSqlStatement (ibind, ni, obind, no, s));
@@ -2482,7 +2482,7 @@ return -1;
  * @return A pointer to the cursor informationstrucutre.
  */
 void *
-A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
+A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 			char *cursname)
 {
   EXEC SQL BEGIN DECLARE SECTION;
@@ -2549,7 +2549,7 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 }
 
 void
-A4GLSQL_free_cursor (char *s)
+A4GLSQLLIB_A4GLSQL_free_cursor (char *s)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char *cursorName = s;
@@ -2607,7 +2607,7 @@ A4GLSQL_free_cursor (char *s)
  *
  */
 int
-A4GLSQL_open_cursor (char *s,int ni,void *vibind)
+A4GLSQLLIB_A4GLSQL_open_cursor (char *s,int ni,void *vibind)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char *cursorName = s;
@@ -2771,7 +2771,7 @@ getFetchType (int fetch_mode, int fetch_when)
  *   - 0 : An error as ocurred.
  */
 int
-A4GLSQL_fetch_cursor (char *cursor_name,
+A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
 		      int fetch_mode, int fetch_when, int nobind,
 			void *vobind
 )
@@ -2894,7 +2894,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
 /* 	void A4GLSQL_put_insert(struct BINDING *ibind,int n); */
 /* int */
 void
-A4GLSQL_put_insert (void *vibind, int n)
+A4GLSQLLIB_A4GLSQL_put_insert (void *vibind, int n)
 {
   exec sql begin declare section;
   char *cursorName;
@@ -3436,7 +3436,7 @@ dataType=p_datatype;
 /* 	void A4GLSQL_unload_data(char *fname,char *delims, char *sql1); */
 /* int */
 void
-A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr, int nbind, void *vibind)
+A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr, int nbind, void *vibind)
 {
   int cnt = 0;
   //static char databuf[64000];
@@ -3642,10 +3642,10 @@ A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr, int nbi
  *  - 0 : Instruction executed.
  *  - 1 : An error as ocurred.
  */
-/* 	void A4GLSQL_commit_rollback (int mode);*/
+/* 	void A4GLSQLLIB_A4GLSQL_commit_rollback (int mode);*/
 /* int */
 void
-A4GLSQL_commit_rollback (int mode)
+A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
 {
   A4GL_debug ("In commit_rollback");
 
@@ -3710,7 +3710,7 @@ A4GLSQL_find_prepare (char *pname)
 /* 	void A4GLSQL_flush_cursor(char *cursor); */
 /* int */
 void
-A4GLSQL_flush_cursor (char *cursor)
+A4GLSQLLIB_A4GLSQL_flush_cursor (char *cursor)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char *cursorName = cursor;
@@ -3773,7 +3773,7 @@ ibind=vibind;
  */
 
 int
-A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char strSelect[640];
@@ -3824,7 +3824,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
       A4GL_debug ("Error in EXEC SQL GET DESCRIPTOR, numberOfColumns = %s",
 		  numberOfColumns);
       //FIXME: can we read error returned by ESQL/C lib here, and sent it to debug() ?
-      A4GL_debug ("ESQL/C Error message:%s", A4GLSQL_get_sqlerrm ());
+      A4GL_debug ("ESQL/C Error message:%s", A4GLSQLLIB_A4GLSQL_get_sqlerrm ());
 #endif
       return 0;
     }
@@ -3923,7 +3923,7 @@ fixlength (int dtype, int length)
  *   - 0 : Error ocurred.
  */
 int
-A4GLSQL_next_column (char **colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   int idx = getColumnsOrder;
@@ -3956,7 +3956,7 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
  *   - 1 : Error ocurred.
  */
 int
-A4GLSQL_end_get_columns (void)
+A4GLSQLLIB_A4GLSQL_end_get_columns (void)
 {
   EXEC SQL DEALLOCATE DESCRIPTOR 'descReadAllColumns';
   if (isSqlError ())
@@ -4049,7 +4049,7 @@ getSQLDataType (char *connName, char *tabname, char *colname,
  *   - 0 : Error ocurred.
  */
 int
-A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char strSelect[640];
@@ -4133,7 +4133,7 @@ A4GLSQL_get_datatype (char *db, char *tab, char *col)
  * @return
  */
 int
-A4GLSQL_close_cursor (char *currname)
+A4GLSQLLIB_A4GLSQL_close_cursor (char *currname)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char *cursorName = currname;
@@ -4170,11 +4170,11 @@ fillColumnsArray (char *tableName, int max, char *colArray,
   A4GL_debug ("fillColumnsArray\n");
 
 
-  rv = A4GLSQL_get_columns (tableName, colname, &dtype, &size);
+  rv = A4GLSQLLIB_A4GLSQL_get_columns (tableName, colname, &dtype, &size);
   A4GL_debug ("Got rv as %d\n", rv);
   while (rv)
     {
-      rv = A4GLSQL_next_column (&ccol, &dtype, &size);
+      rv = A4GLSQLLIB_A4GLSQL_next_column (&ccol, &dtype, &size);
       if (!rv)
 	break;
 
@@ -4205,7 +4205,7 @@ fillColumnsArray (char *tableName, int max, char *colArray,
       if (i >= max)
 	break;
     }
-  rv = A4GLSQL_end_get_columns ();
+  rv = A4GLSQLLIB_A4GLSQL_end_get_columns ();
   A4GL_debug ("returning %d columns rv=%d", i, rv);
   return i;
 }
@@ -4278,7 +4278,7 @@ fillColumnsArray (char *tableName, int max, char *colArray,
  * 
  */
 int
-A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
+A4GLSQLLIB_A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 		    char *service, int mode, char *info)
 {
   A4GL_debug ("fill_array");
@@ -4307,7 +4307,7 @@ A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 /* 	void A4GLSQL_set_sqlca_sqlcode(int a); */
 /* int */
 void
-A4GLSQL_set_sqlca_sqlcode (int a)
+A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (int a)
 {
   A4GL_set_a4gl_status (a);
   /* return 0; */
@@ -4324,7 +4324,7 @@ A4GLSQL_set_sqlca_sqlcode (int a)
  * @return
  */
 long
-A4GLSQL_describe_stmt (char *stmt, int colno, int type)
+A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 {
   printf ("Describe smtm\n");
 return 1;
@@ -4338,7 +4338,7 @@ return 1;
  * @return  a char string "INFORMIX"
  */
 char *
-A4GLSQL_dbms_dialect (void)
+A4GLSQLLIB_A4GLSQL_dbms_dialect (void)
 {
   return "INFORMIX";
 }
@@ -4375,7 +4375,7 @@ return ptr;
 }
 
 
-void *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
+void *A4GLSQLLIB_A4GLSQL_get_validation_expr(char *tabname,char *colname) {
 EXEC SQL BEGIN DECLARE SECTION;
 char buff[300];
 char val[65];
@@ -4634,7 +4634,7 @@ main() {
 }
 #endif
 
-void A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr, int nbind, void *vibind) {
+void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr, int nbind, void *vibind) {
   int pos;
   char *cp;
   int i, j, nrows = 0;

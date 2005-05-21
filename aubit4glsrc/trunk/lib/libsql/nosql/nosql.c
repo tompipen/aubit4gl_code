@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.36 2005-03-25 12:48:33 afalout Exp $
+# $Id: nosql.c,v 1.37 2005-05-21 16:18:35 mikeaubury Exp $
 #*/
 
 /**
@@ -100,7 +100,7 @@ A4GLSQL_set_status (int a, int sql)
  * @todo Describe function
  */
 int
-A4GLSQL_init_connection_internal (char *dbName)
+A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 {
   A4GL_debug ("Connection with database not available: A4GL_SQLTYPE=nosql");
   A4GL_local_exitwith
@@ -123,7 +123,7 @@ A4GLSQL_get_status (void)
  * @todo Describe function
  */
 char *
-A4GLSQL_get_sqlerrm (void)
+A4GLSQLLIB_A4GLSQL_get_sqlerrm (void)
 {
   return A4GL_global_A4GLSQL_get_sqlerrm ();
 }
@@ -133,7 +133,7 @@ A4GLSQL_get_sqlerrm (void)
  * @todo Describe function
  */
 int
-A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   A4GL_local_exitwith ("Could not read_columns - noODBC build");
   return 0;
@@ -178,7 +178,7 @@ functions required to create executable from 4gl code that uses SQL
  * @todo Describe function
  */
 int
-A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, char *pwd)
+A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, char *pwd)
 {
   A4GL_local_exitwith ("Could not init_session - noODBC build");
   return 0;
@@ -189,7 +189,7 @@ A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, char *pwd)
  * @todo Describe function
  */
 int
-A4GLSQL_set_conn_internal (char *sessname)
+A4GLSQLLIB_A4GLSQL_set_conn_internal (char *sessname)
 {
   A4GL_local_exitwith ("Could not set_session - noODBC build");
   return 0;
@@ -210,7 +210,7 @@ void * A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *ibind)
  * @todo Describe function
  */
 int
-A4GLSQL_execute_implicit_sql (void *sid,int singleton)
+A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *sid,int singleton)
 {
   A4GL_local_exitwith ("Could not execute_implicit_sql - noODBC build");
   return 0;
@@ -221,7 +221,7 @@ A4GLSQL_execute_implicit_sql (void *sid,int singleton)
  * @todo Describe function
  */
 int
-A4GLSQL_close_session_internal (char *sessname)
+A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 {
   A4GL_local_exitwith ("Could not close_session - noODBC build");
   return 0;
@@ -232,7 +232,7 @@ A4GLSQL_close_session_internal (char *sessname)
  * @todo Describe function
  */
 int
-A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
+A4GLSQLLIB_A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 		    char *service, int mode, char *info)
 {
   A4GL_local_exitwith ("Could not fill_array - noODBC build");
@@ -275,7 +275,7 @@ int A4GLSQL_execute_sql_from_ptr_internal (char *pname, int ni, char *ibind)
  * @todo Describe function
  */
 int
-A4GLSQL_execute_implicit_select (void *sid,int singleton)
+A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *sid,int singleton)
 {
   A4GL_local_exitwith ("Could not execute_implicit_select - noODBC build");
   return 0;
@@ -286,7 +286,7 @@ A4GLSQL_execute_implicit_select (void *sid,int singleton)
  * @todo Describe function
  */
 void *
-A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
+A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
 			int no, char *s)
 {
   A4GL_local_exitwith ("Could not prepare_select - noODBC build");
@@ -298,7 +298,7 @@ A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
  * @todo Describe function
  */
 void *
-A4GLSQL_declare_cursor (int upd_hold, void *sid, int scroll,
+A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *sid, int scroll,
 			char *cursname)
 {
   A4GL_local_exitwith ("Could not declare_cursor - noODBC build");
@@ -310,7 +310,7 @@ A4GLSQL_declare_cursor (int upd_hold, void *sid, int scroll,
  * @todo Describe function
  */
 void
-A4GLSQL_set_sqlca_sqlcode (int a)
+A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (int a)
 {
   a4gl_status = a;
   a4gl_sqlca.sqlcode = a;
@@ -321,7 +321,7 @@ A4GLSQL_set_sqlca_sqlcode (int a)
  * @todo Describe function
  */
 int
-A4GLSQL_open_cursor (char *s,int ni,void *ibind)
+A4GLSQLLIB_A4GLSQL_open_cursor (char *s,int ni,void *ibind)
 {
   A4GL_local_exitwith ("Could not open_cursor - noODBC build");
   return 0;
@@ -332,7 +332,7 @@ A4GLSQL_open_cursor (char *s,int ni,void *ibind)
  * @todo Describe function
  */
 int
-A4GLSQL_fetch_cursor (char *cursor_name,
+A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
 		      int fetch_mode, int fetch_when, int nibind,
 		      void *ibind)
 {
@@ -345,7 +345,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
  * @todo Describe function
  */
 void
-A4GLSQL_put_insert (void *ibind, int n)
+A4GLSQLLIB_A4GLSQL_put_insert (void *ibind, int n)
 {
   A4GL_local_exitwith ("Could not put_insert - noODBC build");
 }
@@ -355,7 +355,7 @@ A4GLSQL_put_insert (void *ibind, int n)
  * @todo Describe function
  */
 void
-A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,int nbind,void *ibind)
+A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,int nbind,void *ibind)
 {
   A4GL_local_exitwith ("Could not unload_data - noODBC build");
 }
@@ -365,7 +365,7 @@ A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,int nbind,vo
  * @todo Describe function
  */
 void
-A4GLSQL_commit_rollback (int mode)
+A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
 {
   A4GL_local_exitwith ("Could not commit_rollback - noODBC build");
 }
@@ -386,7 +386,7 @@ A4GLSQL_find_prepare (char *pname)
  * @todo Describe function
  */
 void
-A4GLSQL_flush_cursor (char *cursor)
+A4GLSQLLIB_A4GLSQL_flush_cursor (char *cursor)
 {
   A4GL_local_exitwith ("Could not flush_cursor - noODBC build");
 }

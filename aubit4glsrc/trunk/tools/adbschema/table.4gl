@@ -167,7 +167,7 @@ DEFINE lv_no_owner smallint
 			
 			call outstr(lv_str clipped)
 		else
-			let lv_str="[",lv_t clipped,":",lv_st.tabid,":",lv_st.partnum using "<<<<<<<<<<<<","]"
+			let lv_str="[",lv_t clipped," ",lv_st.tabid using "<<<<<<<<<<"," ",lv_st.partnum using "<<<<<<<<<<<<","]"
 			call outstr(lv_str clipped)
 		end if
 		

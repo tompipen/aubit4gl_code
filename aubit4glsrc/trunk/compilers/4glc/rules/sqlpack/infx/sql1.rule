@@ -630,9 +630,9 @@ exists_predicate_ss:
 
 
 
-op_matches_escape: {strcpy($<str>$,"");} | ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_MATCHES_ESCAPE");} ;
-op_ilike_escape: {strcpy($<str>$,"");} 	 | ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_ILIKE_ESCAPE");} ;
-op_like_escape: {strcpy($<str>$,"");} 	 | ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_LIKE_ESCAPE");} ;
+op_matches_escape: {strcpy($<str>$,"");} | KW_ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_MATCHES_ESCAPE");} ;
+op_ilike_escape: {strcpy($<str>$,"");} 	 | KW_ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_ILIKE_ESCAPE");} ;
+op_like_escape: {strcpy($<str>$,"");} 	 | KW_ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_LIKE_ESCAPE");} ;
 
 pattern_ss:
 	value_expression_initial_ss {$<sql_string>$=$<sql_string>1;}

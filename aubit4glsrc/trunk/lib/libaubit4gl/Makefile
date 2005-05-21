@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2005-01-29 11:35:00 mikeaubury Exp $
+# $Id: Makefile,v 1.3 2005-05-21 16:18:34 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -89,7 +89,7 @@ OBJS				=${CMODS:.c=.o}
 LIBINCL_PATH		=${LIBROOT}/libincl
 INCL_PATH			=${ROOT}/incl
 DLMAGIC				=${LIBROOT}/bin/dlmagic
-ALL					=api ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}
+ALL					=api ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE} ${INCL_PATH}/a4gl_API_lex.h
 CFLAGS              +=-I.
 
 #we don't want -Wall in CFLAGS when compiling form_x_xdr.c because it would

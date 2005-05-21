@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.49 2005-05-20 18:34:28 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.50 2005-05-21 16:18:34 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.49 2005-05-20 18:34:28 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.50 2005-05-21 16:18:34 mikeaubury Exp $";
 #endif
 
 
@@ -696,7 +696,6 @@ char tmpbuff[256];
 }
 
 
-#ifdef NDEF
 /**
  * The parser found END FOREACH.
  *
@@ -717,7 +716,6 @@ LEXLIB_print_foreach_end (char *cname)
   printc ("}\n");
 }
 
-#endif
 
 
 
