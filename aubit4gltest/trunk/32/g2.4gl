@@ -8,7 +8,7 @@ end main
 
 function testrpt(i)
 define i int
-start report rpt to '/tmp/a'
+start report rpt to 'a'
 if i != 2 then
 	output to report rpt()
 end if
