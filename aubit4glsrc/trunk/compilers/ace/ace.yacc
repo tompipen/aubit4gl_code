@@ -80,16 +80,24 @@ set_expr_int(struct expr *e,int a)
 }
 
 
-%left USING
+%right USING
+%left WHERE
+%left OR
+%left AND
+%left NOT
+%left IS_NOT_NULL IS_NULL
+%left GREATER_THAN GREATER_THAN_EQ LESS_THAN LESS_THAN_EQ EQUAL NOT_EQUAL
+%right MATCHES NOT_MATCHES LIKE NOT_LIKE
 %left PLUS MINUS
 %left MULTIPLY DIVIDE
+%left POWER MOD
+
 %token AFTER
 %token AFTGROUP
 %token ALL
-%token AND
 %token ANY
 %token ASC
-%token ASCII
+%right ASCII
 %token ATSIGN
 %token AVERAGE 
 %token AVG
@@ -101,11 +109,11 @@ set_expr_int(struct expr *e,int a)
 %token CH
 %token CHAR
 %token CHAR_VALUE
-%token CLIPPED
+%right CLIPPED
 %token CLOSE_BRACKET
 %token CLOSE_SQUARE
 %token COLON
-%token COLUMN
+%right COLUMN
 %token COMMA
 %token COMMANDS
 %token COMPARISON
@@ -124,7 +132,6 @@ set_expr_int(struct expr *e,int a)
 %token DOT
 %token ELSE
 %token END
-%token EQUAL
 %token ESCAPE
 %token EVERY
 %token EXISTS
@@ -137,8 +144,6 @@ set_expr_int(struct expr *e,int a)
 %token FRACTION
 %token FROM
 %token FUNCTION
-%token GREATER_THAN
-%token GREATER_THAN_EQ
 %token GROUP
 %token GROUP_BY
 %token HAVING
@@ -151,8 +156,6 @@ set_expr_int(struct expr *e,int a)
 %token INTERVAL
 %token INTO
 %token INTVAL
-%token IS_NOT_NULL
-%token IS_NULL
 %token KW_FALSE
 %token KW_TRUE
 %token LAST
@@ -164,26 +167,19 @@ set_expr_int(struct expr *e,int a)
 %token LIKE
 %token LINES
 %token MARGIN
-%token MATCHES
 %token MINUTE
-%token MOD
 %token MONEY
 %token MONTH
 %token NAMED
 %token NEED
-%token NOT
-%token NOT_EQUAL
 %token NOT_EXISTS
 %token NOT_IN
-%token NOT_LIKE
-%token NOT_MATCHES
 %token NUMBER_VALUE
 %token NUMERIC
 %token OF 
 %token ON
 %token OPEN_BRACKET
 %token OPEN_SQUARE
-%token OR
 %token ORDER_BY
 %token ORDER_EXTERNAL_BY
 %token OUTER
@@ -210,7 +206,7 @@ set_expr_int(struct expr *e,int a)
 %token SMALLFLOAT
 %token SMALLINT
 %token SOME
-%token SPACES
+%right SPACES
 %token STEP
 %token SUM
 %token TEMP
@@ -232,7 +228,6 @@ set_expr_int(struct expr *e,int a)
 %token USER
 %token VARCHAR
 %token VARIABLE
-%token WHERE
 %token WHILE
 %token WITH_NO_LOG
 %token XBEGIN

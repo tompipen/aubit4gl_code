@@ -52,6 +52,7 @@ field_command :
 } commands {
 	print_onkey_2();
 }
+	| on_action { A4GL_add_onaction($<str>1); print_onaction_1($<str>1); } commands { print_onaction_2(); }
 	| AFTINP {
 		A4GL_add_event(-95,"");
 		print_befaft_field_1("AFTER_INP");

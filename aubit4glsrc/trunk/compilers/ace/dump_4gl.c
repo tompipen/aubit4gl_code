@@ -681,6 +681,7 @@ decode_call (struct cmd_call *cmd)
 {
   printf ("CALL %s (", cmd->fcall->fname);
   decode_list (cmd->fcall->lexpr);
+  printf(")\n");
 }
 
 void

@@ -192,6 +192,10 @@ print_befaft_field_2 -> void
 /* void print_onkey_1 (char *key_list_str) */
 print_onkey_1 char* key_list_str -> void
 
+
+print_onaction_1 char* action -> void
+print_onaction_2  -> void
+
 /* void print_onkey_2 () */
 print_onkey_2 -> void
 

@@ -48,3 +48,6 @@ key_value_1 : 	KW_FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
 ;
 
 
+on_action : 
+	ON_ACTION identifier {sprintf($<str>$,"\"%s\"",$<str>2);}
+;
