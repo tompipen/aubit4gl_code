@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_gtk.c,v 1.62 2005-04-22 19:31:41 mikeaubury Exp $";
+		"$Id: lowlevel_gtk.c,v 1.63 2005-05-22 12:42:37 mikeaubury Exp $";
 #endif
 
 
@@ -1580,7 +1580,7 @@ int A4GL_LL_set_field_status(void* f,int stat) {
 }
 
 void A4GL_LL_out_linemode(char* s) {
-A4GL_chkwin();
+//A4GL_chkwin();
 //printf("Adding '%s' to console\n",s);
 A4GL_add_to_console (s);
 }
@@ -1769,7 +1769,7 @@ int
   char buff[300];
   int a;
   int field_cnt = 0;
-  A4GL_chkwin ();
+  //A4GL_chkwin ();
   prompt = vprompt;
   A4GL_debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, af);
   prompt_last_key = 0;
@@ -1970,7 +1970,7 @@ int
   prompt = vprompt;
   evt=vevt;
 
-  A4GL_chkwin ();
+  //A4GL_chkwin ();
   mform = prompt->f;
 
   A4GL_set_abort (0);
@@ -2130,7 +2130,7 @@ struct s_a4gl_gtk_form *form;
 GtkWidget *labwidget;
 		char buff_label[50];
 
-  A4GL_chkwin ();
+  //A4GL_chkwin ();
   f=fd;
   form=f->form;
 
@@ -2979,7 +2979,7 @@ int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) {
   struct struct_scr_field *fprop;
   a4gl_status = 0;
 
-  A4GL_chkwin ();
+  //A4GL_chkwin ();
   A4GL_debug ("In disp_fields");
   w = A4GL_find_pointer (s, WINCODE);
 

@@ -8,7 +8,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.44 2005-04-22 12:07:19 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.45 2005-05-22 12:42:36 mikeaubury Exp $";
 #endif
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -985,12 +985,12 @@ A4GL_new_menu (char *title,
 
 
 
+#ifdef MOVED
 int
 A4GL_decode_colour_attr_aubit (int a)
 {
   char colour[20];
   char attr[256];
-//int col;
   A4GL_debug ("MJA Decoding %d", a);
   A4GL_get_strings_from_attr (a, colour, attr);
 
@@ -1020,6 +1020,11 @@ A4GL_decode_colour_attr_aubit (int a)
 
   return 0;
 }
+
+#endif
+
+
+
 
 
 void
@@ -2589,11 +2594,14 @@ A4GL_find_field_no (void *f, struct s_screenio *sio)
 }
 
 
+
 int UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout,void *evt) {
+	A4GL_chkwin();
 	return A4GL_LL_prompt_loop(vprompt,timeout,evt);
 }
 
 int UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af) {
+	A4GL_chkwin();
 	return A4GL_LL_start_prompt(vprompt,ap,c,h,af);
 }
 

@@ -90,7 +90,7 @@ A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff, int pfunc)
 void A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...) { 
   va_list args;
   unsigned char buff[2048];
-  A4GL_chkwin ();
+  //A4GL_chkwin ();
   va_start (args, fmt);
   memset(buff,0,sizeof(buff));
   vsnprintf (buff, sizeof(buff)-1, fmt, args);
@@ -115,7 +115,7 @@ void A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...) {
 void A4GL_wprintw_window (void *win, int attr, int x, int y, char *fmt, ...) { 
   va_list args;
   unsigned char buff[2048];
-  A4GL_chkwin ();
+  //A4GL_chkwin ();
 A4GL_debug("A4GL_wprintw_window");
   va_start (args, fmt);
   vsprintf (buff, fmt, args);

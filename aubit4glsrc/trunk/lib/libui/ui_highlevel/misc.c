@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: misc.c,v 1.26 2005-04-22 12:07:19 mikeaubury Exp $";
+		"$Id: misc.c,v 1.27 2005-05-22 12:42:37 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1066,11 +1066,10 @@ A4GL_turn_field_off (void *f)
 }
 
 
-
+#ifdef MOVED
 int
 A4GL_field_opts_on (void *v, int n)
 {
-  //A4GL_debug ("LL_field_opts_on");
 
   if (A4GL_LL_field_opts (v) & n) return 1;
   A4GL_LL_set_field_opts (v, A4GL_LL_field_opts (v) + n);
@@ -1080,16 +1079,14 @@ A4GL_field_opts_on (void *v, int n)
 int
 A4GL_field_opts_off (void *v, int n)
 {
-  //A4GL_debug ("LL_field_opts_off");
   if (!(A4GL_LL_field_opts (v) & n))
     return 1;
-  //A4GL_debug ("field opt was on - turn it off %x %x ", n, A4GL_LL_field_opts (v));
   A4GL_LL_set_field_opts (v, A4GL_LL_field_opts (v) - n);
   return 1;
 }
 
 
-
+#endif
 void
 A4GL_initialize_screen_mode (void)
 {
@@ -1116,7 +1113,7 @@ A4GL_switch_to_scr_mode (void)
   A4GL_debug ("All done..");
 }
 
-
+#ifdef MOVED
 /**
  * This function is called whenever the user hit a key
  *
@@ -1133,7 +1130,7 @@ A4GL_getch_win (int allow_acc_intr)
    if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys(0); }
   return a;
 }
-
+#endif
 
 void
 UILIB_A4GL_zrefresh ()
@@ -1142,6 +1139,7 @@ UILIB_A4GL_zrefresh ()
 }
 
 
+#ifdef MOVED
 void
 A4GL_mja_set_field_buffer_contrl (void *field, int nbuff, int ch)
 {
@@ -1156,7 +1154,7 @@ A4GL_mja_set_field_buffer_contrl (void *field, int nbuff, int ch)
   A4GL_debug ("Adding char %d %c", ch, ch);
   A4GL_mja_set_field_buffer (field, nbuff, buff);
 }
-
+#endif
 
 void
 A4GL_start_form (struct s_form_dets *s)

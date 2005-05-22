@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.223 2005-05-20 18:34:28 mikeaubury Exp $
+# $Id: compile_c.c,v 1.224 2005-05-22 12:40:06 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.223 2005-05-20 18:34:28 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.224 2005-05-22 12:40:06 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2543,6 +2543,23 @@ LEXLIB_print_onkey_2_prompt (void)
   print_exit_loop ('P', 0);
   printc ("}");
 }
+
+
+void
+LEXLIB_print_onaction_1 (char *key_list_str)
+{
+	  int n;
+	    n=A4GL_get_nevents();
+	      printc ("if (_exec_block==%d) { /* %s */\n", n,key_list_str);
+}
+
+void
+LEXLIB_print_onaction_2 (void)
+{
+	  continue_loop ("INPUTREQ");
+	    printc ("}\n");
+}
+
 
 /**
  * Print the C implementation for the defer instruction.

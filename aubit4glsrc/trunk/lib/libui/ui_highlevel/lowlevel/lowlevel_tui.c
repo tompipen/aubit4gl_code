@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.53 2005-04-22 12:09:25 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.54 2005-05-22 12:42:37 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,7 +85,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_tui.c,v 1.53 2005-04-22 12:09:25 mikeaubury Exp $";
+		"$Id: lowlevel_tui.c,v 1.54 2005-05-22 12:42:37 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 void *A4GL_get_currwin (void);
@@ -636,7 +636,7 @@ A4GL_LL_error_box (char *str, int attr)
   //int nattr;
   WINDOW *x;
 
-  A4GL_chkwin ();
+  //A4GL_chkwin ();
   /*YELLOW ON RED */
   //A4GL_mja_setcolor (ERROR_COL);
   a = 4;
@@ -682,7 +682,7 @@ A4GL_LL_display_form (void *vf, int attrib)
 
   int fl;
   f=vf;
-  A4GL_chkwin ();
+  //A4GL_chkwin ();
   A4GL_debug ("In display_form");
   w = (PANEL *) A4GL_get_currwin ();
 
@@ -2334,7 +2334,7 @@ int rblock;
   prompt = vprompt;
   evt=vevt;
 
-  A4GL_chkwin ();
+  //A4GL_chkwin ();
   mform = prompt->f;
 
   A4GL_set_abort (0);
@@ -2487,7 +2487,7 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   char buff[300];
   int a;
   int field_cnt = 0;
-  A4GL_chkwin ();
+  //A4GL_chkwin ();
   prompt = vprompt;
   A4GL_debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, af);
   prompt_last_key = 0;
@@ -2956,7 +2956,7 @@ int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) {
   struct struct_scr_field *fprop;
   a4gl_status = 0;
 
-  A4GL_chkwin ();
+  //A4GL_chkwin ();
   A4GL_debug ("In disp_fields");
   w = A4GL_find_pointer (s, WINCODE);
 

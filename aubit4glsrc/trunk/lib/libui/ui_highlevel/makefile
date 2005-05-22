@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.42 2005-04-15 06:59:28 mikeaubury Exp $
+# $Id: makefile,v 1.43 2005-05-22 12:42:36 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -177,7 +177,7 @@ CFLAGS			+=-g -I${ROOT}/incl -I.. -I${LIBROOT}/libaubit4gl
 ##                              Source files
 ## ==================================================================
 
-OBJS	=forms.o generic_ui.o menu.o display_array.o formcntrl.o input_array.o misc.o 
+OBJS	=forms.o generic_ui.o menu.o display_array.o formcntrl.o input_array.o common_hlui.o misc.o 
 OBJS2	=lowlevel_tui.o width_narrow.o
 OBJS4	=lowlevel_tui_noform_wide.o form_tui.o width_wide.o
 OBJS5	=lowlevel_gtk.o widget_gtk.o menu_gtk.o width_narrow.o

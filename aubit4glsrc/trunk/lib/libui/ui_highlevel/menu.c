@@ -9,7 +9,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: menu.c,v 1.16 2005-03-25 12:48:34 afalout Exp $";
+		"$Id: menu.c,v 1.17 2005-05-22 12:42:37 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -244,6 +244,7 @@ static void
 A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos)
 {
   A4GL_debug ("MORE MARKERS : Displaying ... at %d %d", pos + offset, 1);
+  A4GL_chkwin();
   A4GL_wprintw ((void *)A4GL_get_currwin (), 0, pos + offset, menu->gw_y, " ...");
 
 }
@@ -263,6 +264,7 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
   int xx = 0;
   int yx = 0;
   //int col;
+  A4GL_chkwin();
   A4GL_debug ("h_disp_opt");
 
   if (opt1->page != menu->curr_page)

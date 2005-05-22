@@ -1,6 +1,6 @@
 #ifndef lint
 	static char const module_id[] =
-		"$Id: forms.c,v 1.21 2005-04-22 12:07:19 mikeaubury Exp $";
+		"$Id: forms.c,v 1.22 2005-05-22 12:42:36 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -256,6 +256,7 @@ UILIB_A4GL_disp_form (char *name, int attr)
 	      f);
 
   windows[A4GL_get_currwinno ()].form = f;
+  A4GL_chkwin();
   w = (void *) A4GL_LL_display_form (f, attr);
 
   if (w == 0)
@@ -534,10 +535,13 @@ UILIB_A4GL_display_error (int a, int wait)
   A4GL_debug ("ZZ2 going to print an error : %s", s);
   A4GL_trim (s);
   A4GL_debug ("trimmed -> %s", s);
-      if (wait)
+      if (wait) {
+	A4GL_chkwin() ;
 	A4GL_LL_error_box (s, a);
-      else
+      } else {
+	A4GL_chkwin() ;
 	A4GL_error_nobox (s, a);
+      }
   A4GL_debug ("error_box done");
   acl_free (s);
   a4gl_status = 0;
@@ -936,7 +940,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
 
 
   windows[A4GL_get_currwinno ()].form = f;
-
+  A4GL_chkwin();
   if (A4GL_LL_display_form (f, attr))
     return w;
   else
@@ -1044,6 +1048,7 @@ UILIB_aclfgl_fgl_drawbox (int n)
   return 0;
 }
 
+#ifdef XX
 
 /**
  *
@@ -1063,7 +1068,7 @@ A4GL_create_blank_window (char *name, int x, int y, int w, int h, int border)
 
   return p;
 }
-
+#endif
 
 
 
@@ -1081,6 +1086,7 @@ A4GL_init_windows (void)
       windows[a].name[0] = 0;
     }
   A4GL_debug ("Creating screen");
+  A4GL_chkwin();
   p = A4GL_create_blank_window ("screen", 1, 1, 79, 23, 0);
   A4GL_debug ("Made...");
   if (p)
@@ -1525,7 +1531,7 @@ return 0;
 }
 
 
-
+#ifdef MOVED
 /**
  *
  * @todo Describe function
@@ -1564,7 +1570,7 @@ A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
   A4GL_LL_set_field_buffer (field, nbuff, buff2);
 }
 
-
+#endif
 
 /**
  *
