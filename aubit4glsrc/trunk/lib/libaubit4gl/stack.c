@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.124 2005-05-18 13:48:41 mikeaubury Exp $
+# $Id: stack.c,v 1.125 2005-05-23 20:16:05 whaslbeck Exp $
 #
 */
 
@@ -180,7 +180,6 @@ int alloc_params_cnt = 0;
  * IN & EXISTS with SQL required some bindings ....
  */
 static int local_binding_cnt = 0;
-static int init_local_bindings = 0;
 static struct BINDING *local_binding[LOCAL_BINDINGS];
 static int num_local_binding[LOCAL_BINDINGS];
 
@@ -221,6 +220,7 @@ int dif_pop_bind_smfloat (struct bound_list *list);
 int dif_pop_bind_dec (struct bound_list *list);
 int dif_pop_bind_money (struct bound_list *list);
 void A4GL_set_escape (char *s);
+int aclfgl_aclfgl_byte_as_str(int n);
 
 /*
 =====================================================================

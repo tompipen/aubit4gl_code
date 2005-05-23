@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.37 2005-05-18 13:48:41 mikeaubury Exp $
+# $Id: ui.c,v 1.38 2005-05-23 20:16:05 whaslbeck Exp $
 #
 */
 
@@ -89,6 +89,8 @@ int A4GL_find_gui_id_from_name(char *s) ;
 int A4GL_add_gui_id_name(char *s) ;
 char *A4GL_linemode_goto_column(int a) ;
 void A4GL_set_line_mode_column(int n,int ab_rel) ;
+int aclfgl_aclfgl_get_curr_width(int n);
+int aclfgl_aclfgl_get_curr_height(int n);
 
 
 
@@ -98,7 +100,6 @@ void A4GL_set_line_mode_column(int n,int ab_rel) ;
 #define UI_MODE_GTK     1
 extern int ui_mode;
 int currscrmode = SCREEN_MODE;
-static void *libptr;
 
 
 void
