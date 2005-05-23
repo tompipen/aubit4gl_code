@@ -32,6 +32,7 @@
 	  VISIT;
         */
 #endif
+#include <string.h>
 
 struct npfunction *current_function;
 

@@ -6,8 +6,8 @@ void print_arguments(GtkObject* object);
 
 void print_arguments(GtkObject* object)
 {
-  GtkType type;
 /*
+  GtkType type;
   type = GTK_OBJECT_TYPE(object);
 
   do {

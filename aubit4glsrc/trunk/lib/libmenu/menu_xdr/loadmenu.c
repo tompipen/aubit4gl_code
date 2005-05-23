@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.27 2005-03-31 13:35:53 afalout Exp $
+# $Id: loadmenu.c,v 1.28 2005-05-23 20:54:36 whaslbeck Exp $
 #*/
 
 /**
@@ -288,7 +288,7 @@ create_menu (menu_list * m, char *id, int mode, void *handler)
   /* Get the vbox associated with the current window */
 //  cwin = GTK_WINDOW (A4GL_get_curr_win_gtk ());
 //not sure if this is correct; A4GL_get_curr_win_gtk is no longer in API:
-  cwin = GTK_WIDGET (A4GL_get_currwin_name ());
+  cwin = GTK_WINDOW (A4GL_get_currwin_name ());
 
 
 

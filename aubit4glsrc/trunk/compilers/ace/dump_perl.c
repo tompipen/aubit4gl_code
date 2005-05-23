@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 void A4GL_bname (char *str, char *str1, char *str2);
 
 int compile_ace_report (char *filename);

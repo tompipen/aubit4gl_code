@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.224 2005-05-22 12:40:06 mikeaubury Exp $
+# $Id: compile_c.c,v 1.225 2005-05-23 20:58:10 whaslbeck Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.224 2005-05-22 12:40:06 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.225 2005-05-23 20:58:10 whaslbeck Exp $";
 #endif
 /**
  * @file
@@ -214,6 +214,8 @@ void add_function_to_header (char *identifier, int parms,char *is_static);
 char *get_namespace (char *s);
 void print_init_var (char *name, char *prefix, int alvl);
 void printcomment (char *fmt, ...);
+void LEXLIB_print_onaction_1 (char *key_list_str);
+void LEXLIB_print_onaction_2 (void);
 //int is_builtin_func (char *s);
 
 
