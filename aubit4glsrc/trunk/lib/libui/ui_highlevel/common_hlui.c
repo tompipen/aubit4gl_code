@@ -5,6 +5,8 @@
 //
 //
 
+#include <string.h>
+
 #define COLOR_BLACK     0
 #define COLOR_RED       1
 #define COLOR_GREEN     2
@@ -13,7 +15,6 @@
 #define COLOR_MAGENTA   5
 #define COLOR_CYAN      6
 #define COLOR_WHITE     7
-
 
 
 int

@@ -8,7 +8,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.45 2005-05-22 12:42:36 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.46 2005-05-23 20:45:18 whaslbeck Exp $";
 #endif
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -28,6 +28,7 @@ A4GL_find_fields_no_metric (struct_form * f, int metric_no);
 int
 A4GL_find_attrib_from_field (struct_form * f, int field_no);
 int UILIB_A4GLUI_initlib (void);
+int A4GL_UI_int_get_inc_quotes(int a);
 //int A4GL_conversion_ok(int);
 
 #define COLOR_BLACK     0

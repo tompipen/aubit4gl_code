@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_gtk.c,v 1.63 2005-05-22 12:42:37 mikeaubury Exp $";
+		"$Id: lowlevel_gtk.c,v 1.64 2005-05-23 20:45:25 whaslbeck Exp $";
 #endif
 
 
@@ -81,6 +81,7 @@ void A4GL_LL_screen_refresh(void);
 static int cancel_callback (gpointer data) ;
 static int ok_callback (gpointer data) ;
 static int A4GL_show_ok_cancel(int n) ;
+int A4GL_fake_a_keypress (GtkWidget *widget, int key);
 
 #define KEY_BUFFER_SIZE 256 
 int keybuffer[KEY_BUFFER_SIZE];

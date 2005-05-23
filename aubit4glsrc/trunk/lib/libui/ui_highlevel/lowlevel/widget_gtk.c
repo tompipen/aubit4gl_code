@@ -1,6 +1,6 @@
 #ifndef lint
 	static char const module_id[] =
-		"$Id: widget_gtk.c,v 1.18 2005-05-05 09:03:06 mikeaubury Exp $";
+		"$Id: widget_gtk.c,v 1.19 2005-05-23 20:45:25 whaslbeck Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -60,6 +60,7 @@ int A4GL_display_generic(GtkWidget *k, char *s);
 
 char * A4GL_decode_config (struct_form * f, int a);
 
+int A4GL_fake_a_keypress (GtkWidget *widget, int key);
 
 
 void A4GL_size_widget (GtkWidget * w, int width);

@@ -1,6 +1,6 @@
 #ifndef lint
 	static char const module_id[] =
-		"$Id: forms.c,v 1.22 2005-05-22 12:42:36 mikeaubury Exp $";
+		"$Id: forms.c,v 1.23 2005-05-23 20:45:18 whaslbeck Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -1707,7 +1707,6 @@ UILIB_A4GL_movewin (char *winname, int absol)
 {
   void *p;
   int x, y;
-  int r = 0;
   int nx, ny;
   struct s_windows *w;
   x = A4GL_pop_int ();
@@ -1757,12 +1756,6 @@ UILIB_A4GL_movewin (char *winname, int absol)
       A4GL_exitwith ("Window to move was not found");
       return 0;
     }
-#ifdef DEBUG
-  {
-    A4GL_debug ("r=%d", r);
-  }
-#endif
-
 
   w->x = nx;
   w->y = ny;
