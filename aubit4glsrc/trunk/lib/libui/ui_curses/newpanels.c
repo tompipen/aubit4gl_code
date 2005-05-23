@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.112 2005-03-23 10:32:04 mikeaubury Exp $
+# $Id: newpanels.c,v 1.113 2005-05-23 20:36:10 whaslbeck Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.112 2005-03-23 10:32:04 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.113 2005-05-23 20:36:10 whaslbeck Exp $";
 #endif
 
 /**
@@ -636,7 +636,6 @@ A4GL_int_current_window (char *win_name)
 int
  UILIB_A4GL_current_window (char *win_name)
 {
-  int a = 0;
   PANEL *p;
   WINDOW *w;
   A4GL_debug ("Current window....");
@@ -2934,7 +2933,7 @@ print_panel_stack (void)
   ptr = panel_below (0);
   while (ptr != 0)
     {
-      A4GL_debug ("Panel : %p (%s)", ptr, panel_userptr (ptr));
+      A4GL_debug ("Panel : %p (%s)", ptr, (char *)panel_userptr (ptr));
       ptr = panel_below (ptr);
     }
 }
@@ -2969,7 +2968,7 @@ A4GL_window_on_top (void)
   ptr=0;
   while (1) {
   	ptr = panel_below (ptr);
-  	s = panel_userptr (ptr);	/* get name of panel */
+  	s = (char *)panel_userptr (ptr);	/* get name of panel */
 	if (strcmp(s,"error window")==0) continue;
 	if (s) break;
 	
@@ -2992,7 +2991,7 @@ A4GL_window_on_top_ign_menu (void)
   while (1) {
   	ptr = panel_below (ptr);
 	A4GL_debug("panel below=%p",ptr);
-  	s = panel_userptr (ptr);	/* get name of panel */
+  	s = (char *)panel_userptr (ptr);	/* get name of panel */
 	if (strcmp(s,"error window")==0) continue;
 	A4GL_debug("userptr=%p",s);
 	
