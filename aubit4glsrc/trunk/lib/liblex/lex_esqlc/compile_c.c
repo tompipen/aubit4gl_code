@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.225 2005-05-23 20:58:10 whaslbeck Exp $
+# $Id: compile_c.c,v 1.226 2005-05-24 11:55:47 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.225 2005-05-23 20:58:10 whaslbeck Exp $";
+		"$Id: compile_c.c,v 1.226 2005-05-24 11:55:47 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -171,7 +171,7 @@ dll_import struct binding_comp ebind[NUMBINDINGS];
 dll_import struct binding_comp fbind[NUMBINDINGS];
 dll_import struct binding_comp ordbind[NUMBINDINGS];
 dll_import struct s_constr_buff constr_buff[256];
-dll_import char when_to[64][8];
+dll_import char when_to[8][128];
 int doing_esql (void);
 void make_sql_bind (char *sql, char *type);
 char *make_sql_bind_expr (char *sql, char *type);

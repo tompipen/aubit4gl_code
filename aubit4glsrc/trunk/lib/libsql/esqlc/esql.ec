@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.133 2005-05-24 08:54:40 mikeaubury Exp $
+# $Id: esql.ec,v 1.134 2005-05-24 11:55:48 mikeaubury Exp $
 #
 */
 
@@ -174,7 +174,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.133 2005-05-24 08:54:40 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.134 2005-05-24 11:55:48 mikeaubury Exp $";
 #endif
 
 
@@ -4412,7 +4412,7 @@ return ptr;
 
 }
 
-char *A4GLSQL_syscolval_expr(char *tabname,char *colname,char *typ) {
+char *A4GLSQLLIB_A4GLSQL_syscolval_expr(char *tabname,char *colname,char *typ) {
 EXEC SQL BEGIN DECLARE SECTION;
 char buff[300];
 static char val[65];
