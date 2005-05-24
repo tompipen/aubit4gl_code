@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.22 2005-04-22 19:29:31 mikeaubury Exp $
+# $Id: display_array.c,v 1.23 2005-05-24 16:59:18 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: display_array.c,v 1.22 2005-04-22 19:29:31 mikeaubury Exp $";
+		"$Id: display_array.c,v 1.23 2005-05-24 16:59:18 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -59,7 +59,7 @@ int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
 =====================================================================
 */
 
-int UILIB_aclfgl_set_arrline(int np);
+//int UILIB_aclfgl_fgl_set_arrline(int np);
 
 //extern struct         struct_screen_record *A4GL_get_srec (char *name);
 /* struct struct_screen_record *A4GL_get_srec (char *); */
@@ -802,7 +802,7 @@ set_arrline_da (int np)
 
 
 int
-UILIB_aclfgl_set_arrline(int np)
+UILIB_aclfgl_fgl_set_arrline(int np)
 {
 	if (cmode=='D') {
 		return set_arrline_da(np);

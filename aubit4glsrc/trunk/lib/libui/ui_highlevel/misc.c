@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: misc.c,v 1.27 2005-05-22 12:42:37 mikeaubury Exp $";
+		"$Id: misc.c,v 1.28 2005-05-24 16:59:18 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1360,4 +1360,32 @@ void UILIB_A4GL_finish_screenio(void *sio, char *siotype) {
 void * UILIB_A4GL_create_menu (void* m, char *id, int mode, void *handler) {
 	return A4GL_LL_create_menu(m,id,mode,handler);
 	
+}
+
+
+void
+UILIB_A4GL_reset_delims (void *vformdets, void *field, char *delims)
+{
+  struct s_form_dets *formdets;
+  int a;
+  char sbuff0[2];
+  char sbuff1[2];
+  formdets = vformdets;
+  sbuff0[0] = delims[0];
+  sbuff0[1] = 0;
+  sbuff1[0] = delims[1];
+  sbuff1[1] = 0;
+
+  for (a = 0; a < formdets->fileform->metrics.metrics_len; a++)
+    {
+      if (field
+	  && (void *) formdets->fileform->metrics.metrics_val[a].field !=
+	  field)
+	continue;
+
+      A4GL_mja_set_field_buffer ((void *)formdets->fileform->metrics.
+				 metrics_val[a].dlm1, 0, sbuff0);
+      A4GL_mja_set_field_buffer ((void *)formdets->fileform->metrics.
+				 metrics_val[a].dlm2, 0, sbuff1);
+    }
 }
