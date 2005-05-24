@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.214 2005-05-22 12:19:00 mikeaubury Exp $
+# $Id: mod.c,v 1.215 2005-05-24 07:59:50 mikeaubury Exp $
 #
 */
 
@@ -189,8 +189,8 @@ int lines_printed_false=0;
 
 static int push_construct_table (char *tableName);
 
-char when_to_tmp[64];
-char when_to[64][8];
+char when_to_tmp[64]="";
+char when_to[8][128];
 int menu_nos[100];
 int cmenu = 0;
 int use_group = 0;
@@ -3369,9 +3369,9 @@ set_ingroup (void)
 }
 
 
-char *whentostore_p;
-int whenever_store_c;
-char * whenever_store_p;
+char *whentostore_p=0;
+int whenever_store_c=0;
+char * whenever_store_p=0;
 
 
 
