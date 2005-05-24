@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.132 2005-05-21 16:18:34 mikeaubury Exp $
+# $Id: esql.ec,v 1.133 2005-05-24 08:54:40 mikeaubury Exp $
 #
 */
 
@@ -174,7 +174,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.132 2005-05-21 16:18:34 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.133 2005-05-24 08:54:40 mikeaubury Exp $";
 #endif
 
 
@@ -4481,7 +4481,7 @@ A4GL_debug("No Copy warnings");
 	
 }
 
-char* A4GLSQL_get_errmsg(int a) {
+char* A4GLSQLLIB_A4GLSQL_get_errmsg(int a) {
 static char lv_err1[512];
 static char lv_err2[512];
 rgetmsg(a,lv_err1,sizeof(lv_err1));
