@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.134 2005-05-24 11:55:48 mikeaubury Exp $
+# $Id: esql.ec,v 1.135 2005-05-24 15:34:58 mikeaubury Exp $
 #
 */
 
@@ -174,7 +174,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.134 2005-05-24 11:55:48 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.135 2005-05-24 15:34:58 mikeaubury Exp $";
 #endif
 
 
@@ -4125,6 +4125,15 @@ A4GLSQL_get_datatype (char *db, char *tab, char *col)
     return -1;
   return dataType;
 }
+
+char *
+A4GLSQLLIB_A4GLSQL_dbms_name (void)
+{
+  /* this is set in make_connection */
+    return "INFORMIX";
+}
+
+
 
 /**
  * Close a cursor opened.

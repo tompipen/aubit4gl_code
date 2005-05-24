@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.15 2005-05-21 16:18:51 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.16 2005-05-24 15:37:40 mikeaubury Exp $
 #*/
 
 /**
@@ -65,7 +65,8 @@ char lasterrorstr[1024] = "";
 
 FILE *f_db_in;
 char *A4GL_global_A4GLSQL_get_sqlerrm (void);
-struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val);
+struct expr_str *A4GL_add_validation_elements_to_expr (struct expr_str *ptr,
+						       char *val);
 //void * A4GL_new_expr (char *value);
 //void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
 /* We only need to implement the functions used by the compiler :
@@ -113,8 +114,8 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
     {
       A4GL_set_errm (fname);
       A4GL_exitwith ("Couldn't open schema file");
-      printf ("Couldn't open schema file %s in DBPATH\n",fname); 
-	  exit (1);
+      printf ("Couldn't open schema file %s in DBPATH\n", fname);
+      exit (1);
     }
 
   return 0;
@@ -145,7 +146,8 @@ A4GLSQLLIB_A4GLSQL_get_sqlerrm (void)
  * @todo Describe function
  */
 int
-A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
+				 int *size)
 {
   char *buff;
   if (f_db_in == 0)
@@ -175,7 +177,8 @@ A4GLSQL_initsqllib (void)
 }
 
 int
-A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
+				int *size)
 {
   char buff[256];
   char tname[256];
@@ -205,8 +208,9 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *s
 	    }
 
 	  *ptr = 0;
-	  ptr=strchr(tname,' ');
-	  if (ptr) *ptr=0;
+	  ptr = strchr (tname, ' ');
+	  if (ptr)
+	    *ptr = 0;
 
 	  A4GL_debug ("Checking table : %s %s\n", tname, tabname);
 	  if (strcasecmp (tname, tabname) == 0)
@@ -245,7 +249,7 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
   fgets (buff, 255, f_db_in);
 
 // Is this a valid line ?
-  if (buff[0] == '[' || feof(f_db_in))
+  if (buff[0] == '[' || feof (f_db_in))
     return 0;			// Obviously not - its another table...
   a = sscanf (buff, "%s %d %d", cname, dtype, size);
   if (a != 3)
@@ -257,32 +261,45 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 }
 
 
-struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) {
-char *ptr2;
-char *ptrn;
-char buff[256];
-A4GL_trim(val);
-ptr2=val;
-while (1) {
-        ptrn=strtok(ptr2,",");
-        if (ptrn==0) break;
-        if (ptr2) {ptr2=0;}
+struct expr_str *
+A4GL_add_validation_elements_to_expr (struct expr_str *ptr, char *val)
+{
+  char *ptr2;
+  char *ptrn;
+  char buff[256];
+  A4GL_trim (val);
+  ptr2 = val;
+  while (1)
+    {
+      ptrn = strtok (ptr2, ",");
+      if (ptrn == 0)
+	break;
+      if (ptr2)
+	{
+	  ptr2 = 0;
+	}
 
-        sprintf(buff,"A4GL_push_char(\"%s\");",ptrn);
+      sprintf (buff, "A4GL_push_char(\"%s\");", ptrn);
 
-        if (ptr==0) {
-                ptr=A4GL_new_expr(buff);
-        } else {
-                A4GL_append_expr(ptr,buff);
-        }
+      if (ptr == 0)
+	{
+	  ptr = A4GL_new_expr (buff);
+	}
+      else
+	{
+	  A4GL_append_expr (ptr, buff);
+	}
 
+    }
+  return ptr;
 }
-return ptr;
-}
 
-void *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
-        printf("Warning Validation feature not implemented in SCHEMA_IN_FILE  SQL Driver");
-        return 0;
+void *
+A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
+{
+  printf
+    ("Warning Validation feature not implemented in SCHEMA_IN_FILE  SQL Driver");
+  return 0;
 }
 
 char *
@@ -300,5 +317,10 @@ A4GLSQLLIB_A4GLSQL_syscolval_expr (char *tabname, char *colname, char *typ)
 }
 
 
-char* A4GLSQL_get_errmsg(int a) { return 0; }
+char *
+A4GLSQLLIB_A4GLSQL_get_errmsg (int a)
+{
+  return 0;
+}
+
 /* =============================== EOF ============================== */

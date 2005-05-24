@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.124 2005-05-21 16:18:50 mikeaubury Exp $
+# $Id: sql.c,v 1.125 2005-05-24 15:37:38 mikeaubury Exp $
 #
 */
 
@@ -5121,7 +5121,7 @@ A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
 
 
 
-void *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
+void *A4GLSQLLIB_A4GLSQL_get_validation_expr(char *tabname,char *colname) {
 char buff[300];
 char val[65];
 struct expr_str *ptr=0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.22 2005-03-31 13:36:17 afalout Exp $
+# $Id: console.c,v 1.23 2005-05-24 15:37:40 mikeaubury Exp $
 #*/
 
 /**
@@ -590,6 +590,71 @@ UILIB_A4GL_get_option_value_for_current_window (char type)
 return 0;
 }
 
+#define NOPE0 {A4GL_exitwith("Not available in console driver"); return 0;}
+#define NOPE {A4GL_exitwith("Not available in console driver"); return ;}
+
+
+char* UILIB_A4GL_get_currwin_name(void )  NOPE0
+int UILIB_A4GL_cr_window_form(char* name,int iswindow,int form_line,int error_line,int prompt_line,int menu_line,int border,int comment_line,int message_line,int attrib)  NOPE0
+int UILIB_A4GL_current_window(char* win_name)  NOPE0
+int UILIB_A4GL_disp_arr_v2(void* disp,void* ptr,char* srecname,int attrib,int scrollf,int scrollw,void* evt)  NOPE0
+int UILIB_A4GL_disp_fields_ap(int n,int attr,va_list* ap)  NOPE0
+int UILIB_A4GL_disp_form(char* name,int attr)  NOPE0
+int UILIB_A4GL_disp_form_fields_ap(int n,int attr,char* formname,va_list* ap)  NOPE0
+int UILIB_A4GL_endis_fields_ap(int en_dis,va_list* ap)  NOPE0
+int UILIB_A4GL_fgl_fieldnametoid(char* f,char* s,int n)  NOPE0
+int UILIB_A4GL_fgl_fieldtouched_input_ap(void* input,va_list* ap)  NOPE0
+int UILIB_A4GL_fgl_fieldtouched_input_array_ap(void* input,va_list* ap)  NOPE0
+int UILIB_A4GL_fgl_getfldbuf_ap(void* inp,va_list* ap)  NOPE0
+int UILIB_A4GL_fgl_getfldbuf_ia_ap(void* inp,va_list* ap)  NOPE0
+int UILIB_A4GL_fgl_infield_ap(void* inp,va_list* ap)  NOPE0
+int UILIB_A4GL_fgl_infield_ia_ap(void* inp,va_list* ap)  NOPE0
+int UILIB_A4GL_form_loop_v2(void* s,int init,void* evt)  NOPE0
+int UILIB_A4GL_gen_field_chars_ap(void* field_list,void* formdets,va_list* ap)  NOPE0
+int UILIB_A4GL_gen_field_list_from_slist(void* field_listv,void* formdetsv,void* listv)  NOPE0
+int UILIB_A4GL_get_curr_height(void )  NOPE0
+int UILIB_A4GL_get_key(int timeout)  NOPE0
+int UILIB_A4GL_inp_arr_v2(void* disp,int defs,char* srecname,int attrib,int init,void* evt)  NOPE0
+int UILIB_A4GL_movewin(char* winname,int absol)  NOPE0
+int UILIB_A4GL_open_form(char* name)  NOPE0
+int UILIB_A4GL_open_gui_form_internal(long* form_variable,char* name_orig,int absolute,int nat,char* like,int disable,void* handler_e,void* handler_c)  NOPE0
+int UILIB_A4GL_push_constr(void* s)  NOPE0
+int UILIB_A4GL_read_fields(void* formdets)  NOPE0
+int UILIB_A4GL_read_metrics(void* formdets)  NOPE0
+int UILIB_A4GL_req_field_input(void* s,char type,va_list* ap)  NOPE0
+int UILIB_A4GL_req_field_input_array(void* s,char type,va_list* ap)  NOPE0
+int UILIB_A4GL_set_fields(void* sio)  NOPE0
+int UILIB_A4GL_widget_name_match(void* w,char* name)  NOPE0
+int UILIB_aclfgl_a4gl_get_page(int n)  NOPE0
+int UILIB_aclfgl_a4gl_run_gui(int nargs)  NOPE0
+int UILIB_aclfgl_a4gl_set_page(int n)  NOPE0
+int UILIB_aclfgl_aclfgl_dump_screen(int n)  NOPE0
+int UILIB_aclfgl_fgl_drawbox(int n)  NOPE0
+int UILIB_aclfgl_fgl_set_arrline(int nparam)  NOPE0
+int UILIB_aclfgl_fgl_set_scrline(int nparam)  NOPE0
+int UILIB_aclfgl_set_window_title(int nargs)  NOPE0
+void* UILIB_A4GL_cr_window(char* s,int iswindow,int form_line,int error_line,int prompt_line,int menu_line,int border,int comment_line,int message_line,int attrib)  NOPE0
+void* UILIB_A4GL_create_menu(void* m,char* id,int mode,void* handler)  NOPE0
+void* UILIB_A4GL_get_curr_form(int warn_if_no_form)  NOPE0
+void* UILIB_A4GL_make_pixmap_gw(char* filename)  NOPE0
+
+
+void UILIB_A4GL_acli_scroll_ap(int n,va_list* ap) NOPE
+void UILIB_A4GL_close_form(char* name) NOPE
+void UILIB_A4GL_clr_fields_ap(int to_defaults,va_list* ap) NOPE
+void UILIB_A4GL_clr_form(int to_defaults) NOPE
+void UILIB_A4GL_clr_form_fields(int to_defaults,char* defs) NOPE
+void UILIB_A4GL_clr_window(char* winname) NOPE
+void UILIB_A4GL_finish_screenio(void* sio,char* siotype) NOPE
+void UILIB_A4GL_gui_run_til_no_more(void ) NOPE
+void UILIB_A4GL_hide_window(char* winname) NOPE
+void UILIB_A4GL_init_color(int n,int r,int g,int b) NOPE
+void UILIB_A4GL_next_option(void* menu,char* nextopt) NOPE
+void UILIB_A4GL_remove_window(char* win_name) NOPE
+void UILIB_A4GL_reset_delims(void* vformdets,void* field,char* delims) NOPE
+void UILIB_A4GL_reset_state_for(void* sio,char* siotype) NOPE
+void UILIB_A4GL_set_infield_from_stack(void ) NOPE
+void UILIB_A4GL_show_window(char* winname) NOPE
 
 
 
