@@ -127,8 +127,8 @@ if (A4GLF_open_db($<str>2)) {
 ;
 
 named_or_kw :
-	NAMED 
-	| any_kword
+	NAMED   
+	| any_kword 
 ;
 
 dbname : 
@@ -370,7 +370,7 @@ A4GL_add_table($<str>2,$<str>1);
 ;
 
 opequal :  {strcpy($<str>$,"");}
-| EQUAL table_qualifier  {sprintf($<str>$,"%s",$<str>2);}
+| EQUAL table_qualifier  {strcpy($<str>$,$<str>2); }
 ;
 
 table_qualifier : named_or_kw {sprintf($<str>$,"%s", $<str>1);}
@@ -439,7 +439,7 @@ op_field_desc
 			// Theres a picture in syscolval - but nothing in the form -
 			// Use the syscolval one...
 			A4GL_add_str_attr(fld,FA_S_PICTURE,p);
-			printf("Setting field picture from syscolval (%s)\n",p);
+			//printf("Setting field picture from syscolval (%s)\n",p);
 		}
 	}
 
@@ -512,6 +512,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
         fld->dtype_size=dtype_size;
 }
 | named_or_kw DOT named_or_kw {
+	//printf("%s %s\n",$<str>1,$<str>3);
 	fld->tabname=strdup($<str>1); 
 	fld->colname=strdup($<str>3);
 	fld->not_null=0;

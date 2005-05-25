@@ -268,7 +268,7 @@ on[	 ]beginning 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); r
 
 
 
-[a-zA-Z]+[a-zA-Z\_0-9]*	{
+[a-zA-Z_]+[a-zA-Z\_0-9]*	{
 	if (ignorekw) REJECT;
 	strcpy(yylval.str, yytext);
 	A4GL_debug("NAMED : %s\n",yytext);
