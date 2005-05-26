@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.78 2005-04-22 19:37:39 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.79 2005-05-26 16:36:22 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.78 2005-04-22 19:37:39 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.79 2005-05-26 16:36:22 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -551,8 +551,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 	      if (ok == 1)
 		{
-		  A4GL_int_form_driver (sio->currform->form,
-					sio->fcntrl[a].extent);
+		  A4GL_int_form_driver (sio->currform->form, sio->fcntrl[a].extent);
 		  A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
 		}
 
@@ -606,33 +605,49 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
       if (sio->fcntrl[a].state == 5)
         {
-
 		A4GL_debug("abort_pressed=%d last_key_code=%d extent=%d",abort_pressed,last_key_code,sio->fcntrl[a].extent);
           if (sio->mode == MODE_CONSTRUCT && last_key_code!=A4GLKEY_CANCEL) {
                         struct s_form_dets *form;
                         char rbuff[1024];
+			FIELD *xw;
                         int w;
+			FORM *mform;
+                        form=sio->currform;
+			mform=form->form;
+			xw= current_field (mform);
+			if (sio->currentfield!=xw) {
+					A4GL_debug("Wrong current field?"); 
+			}
+			memset(rbuff,0,sizeof(rbuff));
                         strcpy(rbuff,field_buffer(sio->currentfield,0));
                         A4GL_trim(rbuff);
-                        form=sio->currform;
                         w=form->fileform->metrics. metrics_val[A4GL_get_metric_for (form, form->currentfield)].w;
-                        A4GL_debug("CONSTRUCT - do we need a large window : '%s' gfw=%d strlen=%d w=%d",rbuff,A4GL_get_field_width(sio->currentfield),strlen(rbuff),w);
+                        A4GL_debug("CONSTRUCT - do we need a large window : '%s' gfw=%d strlen=%d w=%d",rbuff,
+							A4GL_get_field_width(sio->currentfield),strlen(rbuff),w);
                         if (strlen(rbuff)>=w) {
-				FORM *mform;
                                 struct struct_scr_field *fprop;
                                 int k;
-				mform=form->form;
+				int lm;
+				FIELD *cf;
 				strcpy(m_delims,form->fileform->delim);
+
+				lm=mform->curcol;
+                               	set_field_buffer (sio->currentfield,0,rbuff); 
+				mform->curcol=lm;
+				cf=sio->currentfield;
+				
                                 k=A4GL_construct_large(rbuff,evt,sio->fcntrl[a].extent,mform->curcol);
+
 				if (k==A4GLKEY_CANCEL) {
-				A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
+					A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
 				} else {
-                                fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-                                if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && a4gl_isupper (a) && a4gl_isalpha (a)) { a = a4gl_tolower (a); }
-                                if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && a4gl_islower (a) && a4gl_isalpha (a)) { a = a4gl_toupper (a); }
-                                A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS, 0, 0, k);
-                                set_field_buffer (sio->currentfield,0,rbuff);
+                                	fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+                                	if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && a4gl_isupper (a) && a4gl_isalpha (a)) { a = a4gl_tolower (a); }
+                                	if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && a4gl_islower (a) && a4gl_isalpha (a)) { a = a4gl_toupper (a); }
+                                	A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS, 0, 0, k);
+                                	set_field_buffer (sio->currentfield,0,rbuff);
 				}
+				sio->currentfield=cf;
                         }
           }
           new_state = 2;

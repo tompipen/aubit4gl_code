@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.124 2005-03-31 16:45:07 mikeaubury Exp $
+# $Id: ioform.c,v 1.125 2005-05-26 16:36:23 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.124 2005-03-31 16:45:07 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.125 2005-05-26 16:36:23 mikeaubury Exp $";
 #endif
 
 /**
@@ -762,10 +762,11 @@ A4GL_set_init_value (FIELD * f, void *ptr, int dtype)
     }
   else
     {
-      ff = malloc (A4GL_get_field_width (f) + 1);
-      for (a = 0; a < A4GL_get_field_width (f); a++)
-	ff[a] = ' ';
-      ff[A4GL_get_field_width (f) - 1] = 0;
+      int l;
+      l=A4GL_get_field_width (f);
+      ff = malloc (l+1);
+      memset(ff,' ',l);
+      ff[l] = 0;
     }
 
   A4GL_mja_set_field_buffer (f, 0, ff);
@@ -1434,6 +1435,7 @@ UILIB_A4GL_set_fields (void *vsio)
   struct s_form_dets *formdets;
   struct struct_scr_field *field;
   struct struct_scr_field *prop;
+
   FIELD **field_list;
   FIELD *firstfield = 0;
   int nofields;
@@ -1465,9 +1467,7 @@ UILIB_A4GL_set_fields (void *vsio)
 
   for (a = 0; formdets->form_fields[a] != 0; a++)
     {
-      field =
-	(struct struct_scr_field
-	 *) (field_userptr (formdets->form_fields[a]));
+      field = (struct struct_scr_field *) (field_userptr (formdets->form_fields[a]));
       if (field == 0)
 	continue;
 
@@ -1498,8 +1498,7 @@ UILIB_A4GL_set_fields (void *vsio)
 	}
       if (need_fix)
 	{
-	  A4GL_exitwith
-	    ("Construct needs fixing to handle 'byname on tab.*'");
+	  A4GL_exitwith ("Construct needs fixing to handle 'byname on tab.*'");
 	  sio->nfields = 0;
 	  return 0;
 	}
@@ -1531,6 +1530,24 @@ UILIB_A4GL_set_fields (void *vsio)
 	  firstfield = 0;
 	}
       A4GL_debug ("loop through fields a=%d %p", a, field_list[a]);
+      if (sio->mode==MODE_CONSTRUCT) {
+	      		int field_width;
+			char *b;
+			FIELD *f;
+			FORM *frm;
+			f=field_list[a];
+			frm=f->form;
+      			set_field_buffer(field_list[a],0,"");
+#ifdef NCURSES_VERSION
+			// For some reason the window associated with 
+			// a field isn't being cleared properly...
+			// lets make sure it is....
+			// build test 1253 demonstrates this...
+			if (a==0) werase(frm->w);
+#endif
+				
+
+      }
       A4GL_turn_field_on2 (field_list[a], sio->mode != MODE_CONSTRUCT);
 
       if (wid)
@@ -1614,6 +1631,7 @@ UILIB_A4GL_set_fields (void *vsio)
     {
       A4GL_error_box ("NO active field\n", 0);
     }
+
   UILIB_A4GL_zrefresh ();
   return 1;
 }
@@ -2683,12 +2701,12 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
   int a;
   int b; 
   int xerrno;
+  
   b = A4GL_get_field_width_w (field);
   strcpy (buff2, buff);
   a = strlen (buff2);
   b = A4GL_get_field_width_w (field);
-  A4GL_debug ("mja_set_field_buffer buff='%s' buff2='%s' (%d,%d) ", buff,
-	      buff2, a, b);
+  A4GL_debug ("mja_set_field_buffer buff='%s' buff2='%s' (%d,%d) ", buff, buff2, a, b);
   if (a < A4GL_get_field_width_w (field))
     {
       A4GL_debug ("Adding padding");
@@ -2698,7 +2716,6 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
     {
       A4GL_debug ("No padding required '%s'", buff);
     }
-
   xerrno = set_field_buffer (field, nbuff, buff2);
   A4GL_debug ("Setting %p %d to %s (%d)", field, nbuff, buff2, xerrno);
   A4GL_debug ("field buffer set to '%s'", field_buffer (field, 0));
@@ -3480,13 +3497,15 @@ A4GL_int_form_driver (FORM * form, int a)
   if (f)
     {
       strcpy (buff, field_buffer (f, 0));
+	A4GL_debug("Field buffer was %s\n",buff);
     }
   else
     {
       strcpy (buff, "");
     }
+  
 
-  A4GL_debug ("MJA Calling form_driver with %d for form %p - buff=%s", a,
+  A4GL_debug ("MJA Calling form_driver with %d (%x)  (%d)for form %p - buff=%s", a,a,a-KEY_MAX,
 	      form, buff);
 
   fd_ok = form_driver (form, a);
@@ -3525,13 +3544,16 @@ A4GL_int_form_driver (FORM * form, int a)
 
   if (field_pos != A4GL_get_curr_field_col (form))
     {
-      A4GL_debug ("Resetting position");
+      A4GL_debug ("Resetting position (%d %d)",field_pos,A4GL_get_curr_field_col (form));
       field_pos = A4GL_get_curr_field_col (form);
     }
 
   A4GL_debug ("Buff2 now = %s", buff2);
-  if (a != REQ_VALIDATION)
-    A4GL_int_form_driver (form, REQ_VALIDATION);
+
+  if (a != REQ_VALIDATION) {
+	  	A4GL_int_form_driver (form, REQ_VALIDATION);
+  }
+
   if (f)
     {
       strcpy (buff2, field_buffer (f, 0));
