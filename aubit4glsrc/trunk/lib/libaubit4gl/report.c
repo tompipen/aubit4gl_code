@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.68 2005-04-26 17:48:13 mikeaubury Exp $
+# $Id: report.c,v 1.69 2005-05-27 09:37:19 mikeaubury Exp $
 #
 */
 
@@ -60,6 +60,7 @@ static void A4GL_unload_report_table(struct BINDING *b) ;
 
 static int email_report(char *fname,char *otype) ;
 static void free_header(struct rep_structure *rep) ;
+static char *cursor_for_rep_tab(void *b) ;
 
 
 
@@ -343,7 +344,7 @@ gen_rep_tab_name (void *p)
   static char buff_0[256];
   a = (int) p;
 	 //a=1;
-  sprintf (buff_0, "rtab%d", ((int) a) & 0xfffffff);
+  sprintf (buff_0, "rtab%x", ((int) a) & 0xfffffff);
   return buff_0;
 }
 
@@ -918,7 +919,9 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
   int a2;
   int ok;
   char buff[1024];
-  char tbuff[1024];
+  //char tbuff[1024];
+  char obuff[1024];
+struct s_sid* pstmt;
   struct BINDING ibind[] = {
     /* ibind 0 */
     {0, 0, 0}
@@ -927,7 +930,7 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
     {0, 0, 0}
   };				/* end of binding */
 
-
+  A4GL_debug("init_rep_table");
   *reread = A4GL_duplicate_binding (b, n);
 
 
@@ -945,10 +948,11 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
       for (a2 = 0; a2 < n; a2++)
 	{
 	  A4GL_debug ("Checking %p %p", o[a1].ptr, b[a2].ptr);
+
 	  if (o[a1].ptr == b[a2].ptr)
 	    {
-	      sprintf (tbuff, "c%d", a2);
-	      strcat (buff, tbuff);
+	      sprintf (obuff, "c%d", a2);
+	      strcat (buff, obuff);
 	      ok = 1;
 	      break;
 	    }
@@ -963,14 +967,31 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
 
 
   A4GL_debug ("Got select statement as : %s\n", buff);
-  sprintf (tbuff, "c_%d", (int) gen_rep_tab_name (b));
 
 
-  A4GLSQL_declare_cursor (0, A4GLSQL_prepare_select (ibind, 0, obind, 0, buff), 0, tbuff);
-  if (a4gl_sqlca.sqlcode != 0) return 0;
+  //sprintf (tbuff, "c_%x", (int) gen_rep_tab_name (b));
 
 
-  A4GLSQL_open_cursor ( tbuff,0,0);
+
+  A4GL_debug("prepare...");
+  pstmt=A4GLSQL_prepare_select (ibind, 0, obind, 0, buff);
+  A4GL_debug("%d\n",a4gl_sqlca.sqlcode);
+  if (a4gl_sqlca.sqlcode != 0) {
+  	A4GL_debug("prepare failed");
+	  	A4GL_exitwith("Internal error - unable to prepare statement");
+	  	return 0;
+  }
+ A4GL_debug("declare...");
+  A4GLSQL_declare_cursor (0, pstmt, 0, cursor_for_rep_tab(b));
+  A4GL_debug("%d\n",a4gl_sqlca.sqlcode);
+  if (a4gl_sqlca.sqlcode != 0) {
+  	A4GL_debug("declare failed");
+	  	A4GL_exitwith("Internal error - unable to declare statement");
+	  return 0;
+  }
+
+
+  A4GLSQL_open_cursor ( cursor_for_rep_tab(b),0,0);
   if (a4gl_sqlca.sqlcode != 0) return 0;
 
 
@@ -985,12 +1006,9 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
 int
 A4GL_report_table_fetch (struct BINDING *reread, int n, struct BINDING *b)
 {
-  char tbuff[1024];
-
-  sprintf (tbuff, "c_%d", (int) gen_rep_tab_name (b));
   A4GLSQL_set_sqlca_sqlcode (0);
-	
-  A4GLSQL_fetch_cursor (tbuff, 2, 1, n, reread);
+  
+  A4GLSQL_fetch_cursor (cursor_for_rep_tab(b), 2, 1, n, reread);
   A4GL_push_params (reread, n);
 
   if (a4gl_sqlca.sqlcode == 0)
@@ -1587,4 +1605,11 @@ tmpnam(buff);
 return buff;
 }
 
+
+
+static char *cursor_for_rep_tab(void *b) {
+	static char tbuff[256];
+	sprintf(tbuff,"c_%x",b);
+	return tbuff;
+}
 /* ============================= EOF ================================ */
