@@ -654,7 +654,8 @@ A4GL_form_pos_form_cursor (FORM * form)
 		int incr;
 		if (UILIB_A4GL_iscurrborder ()) incr=1; else incr=0;
 		//w=form->sub;
-		w = (void *) panel_window(A4GL_window_on_top_ign_menu ());
+		w =  Get_Form_Window(form);
+			//(void *) panel_window(A4GL_window_on_top_ign_menu ());
 		if (w) {
 			wmove(w,form->current->frow+incr, form->current->fcol+form->curcol+incr); 
 			wcursyncup(w);

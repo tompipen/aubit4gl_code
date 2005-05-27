@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.125 2005-05-26 16:36:23 mikeaubury Exp $
+# $Id: ioform.c,v 1.126 2005-05-27 09:57:12 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.125 2005-05-26 16:36:23 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.126 2005-05-27 09:57:12 mikeaubury Exp $";
 #endif
 
 /**
@@ -523,7 +523,6 @@ A4GL_default_attributes (FIELD * f, int dtype)
 	}
     }
 
-  A4GL_debug ("STATIC");
 
   //set_field_fore (f, A4GL_colour_code (7));
   //set_field_back (f, A4GL_colour_code (7));
@@ -567,8 +566,9 @@ A4GL_set_field_attr (FIELD * field)
 
   if (f->dynamic != 0)
     {
-      A4GL_debug ("ZZZZ - SET OPTS");
+      A4GL_debug ("ZZZZ - SET OPTS - STATIC OFF");
       field_opts_off (field, O_STATIC);
+
 
       if (f->dynamic == -1)
 	{
@@ -1360,19 +1360,26 @@ A4GL_turn_field_on2 (FIELD * f, int a)
 
   A4GL_set_field_attr (f);
 
-  xx = set_max_field (f, A4GL_get_field_width_w (f));
-  if (xx < 0)
-    {
-      f->dcols = a;
-      xx = set_max_field (f, A4GL_get_field_width_w (f));
-    }
 
-  if (xx < 0)
-    {
-      A4GL_debug ("Unable to change field width\n");
-      A4GL_exitwith ("Internal error - unable to change field width");
-      return;
-    }
+  if (fprop->dynamic != 0) {
+      set_max_field (f, 0);
+  } else {
+  	xx = set_max_field (f, A4GL_get_field_width_w (f));
+	
+	
+  	if (xx < 0)
+    	{
+      	f->dcols = a;
+      	xx = set_max_field (f, A4GL_get_field_width_w (f));
+    	}
+	
+  	if (xx < 0)
+    	{
+      	A4GL_debug ("Unable to change field width\n");
+      	A4GL_exitwith ("Internal error - unable to change field width");
+      	return;
+    	}
+  }
 
   if (!a)
     {
@@ -2451,7 +2458,15 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
 
     }
 
-  A4GL_pop_char (ff, field_width);
+  if (f->dynamic==0) {
+  	A4GL_pop_char (ff, field_width);
+  }  else {
+	  A4GL_debug("Its a dynamic field.... %d",f->dynamic);
+	  acl_free(ff);
+	  ff=A4GL_char_pop();
+	  A4GL_debug("Got : %s instead..\n",ff);
+  }
+
   A4GL_debug ("set_field_contents : '%s'", ff);
   A4GL_mja_set_field_buffer (field, 0, ff);
   acl_free (ff);
@@ -3505,8 +3520,13 @@ A4GL_int_form_driver (FORM * form, int a)
     }
   
 
-  A4GL_debug ("MJA Calling form_driver with %d (%x)  (%d)for form %p - buff=%s", a,a,a-KEY_MAX,
-	      form, buff);
+  A4GL_debug ("MJA Calling form_driver with %d (%x)  for form %p - buff=%s", a,a, form, buff);
+  if (a>KEY_MAX) {
+	  	A4GL_debug("FORM CONTROL   - %d\n",a-KEY_MAX);
+  }
+  if (a_isprint(a)&&a>=' '&&a<127) {
+	  	A4GL_debug("Key : %c",a);
+  }
 
   fd_ok = form_driver (form, a);
 
