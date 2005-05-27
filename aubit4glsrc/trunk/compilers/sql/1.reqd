@@ -115,7 +115,11 @@ static int scan_variable (char *s);
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#ifdef SIMPLIFIED
+#include "y_tab.h"
+#else
 #include "y.tab.h"
+#endif
 
 #define GEN_STACK_HERE
 #include "../4glc/gen_stack.h"

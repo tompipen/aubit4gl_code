@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.108 2005-05-18 13:46:13 mikeaubury Exp $
+# $Id: lexer.c,v 1.109 2005-05-27 09:01:47 mikeaubury Exp $
 #*/
 
 /**
@@ -56,7 +56,11 @@
 /* please use A4GL_ namespace.*/
 #define _NO_WINDOWS_H_
 #include "a4gl_4glc_int.h"
+#ifdef SIMPLIFIED
+#include "y_tab.h"
+#else
 #include "y.tab.h"
+#endif
 
 #ifndef FILE_FOR_KW_H
 #define FILE_FOR_KW_H "rules/generated/kw.h"

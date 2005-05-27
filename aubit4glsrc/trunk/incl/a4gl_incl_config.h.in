@@ -134,7 +134,8 @@
         #define HAVE_SIGACTION 0
         #define HAVE_SNPRINTF 0
         #define HAVE_TRUNC 0
-        #define HAVE_VSNPRINTF 0
+        #define HAVE_VSNPRINTF 0	
+	#define HAVE_FEATURES_H 0
 
 
 
