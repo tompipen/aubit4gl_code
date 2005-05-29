@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.126 2005-05-27 09:57:12 mikeaubury Exp $
+# $Id: ioform.c,v 1.127 2005-05-29 19:24:32 whaslbeck Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.126 2005-05-27 09:57:12 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.127 2005-05-29 19:24:32 whaslbeck Exp $";
 #endif
 
 /**
@@ -738,7 +738,6 @@ void
 A4GL_set_init_value (FIELD * f, void *ptr, int dtype)
 {
   char *ff;
-  int a;
 
   A4GL_debug ("A4GL_set_init_value %p %x", ptr, dtype);
   if (ptr)
@@ -1538,8 +1537,6 @@ UILIB_A4GL_set_fields (void *vsio)
 	}
       A4GL_debug ("loop through fields a=%d %p", a, field_list[a]);
       if (sio->mode==MODE_CONSTRUCT) {
-	      		int field_width;
-			char *b;
 			FIELD *f;
 			FORM *frm;
 			f=field_list[a];
