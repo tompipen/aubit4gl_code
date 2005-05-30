@@ -119,7 +119,7 @@ if test "$POSTGRESDIR" = ""; then
 			echo "WARNING: POSTGRESDIR reported by aubit-config is invalid ($POSTGRESDIR)"
 		fi
 		
-		POSTGRESDIR=`ps -efw | grep postmaster | head -1 | awk '{print $8}'`
+		POSTGRESDIR=`ps -efw | grep postmaster | head -n 1 | awk '{print $8}'`
 		POSTGRESDIR=`dirname $POSTGRESDIR`
 		POSTGRESDIR=`dirname $POSTGRESDIR`
 	fi

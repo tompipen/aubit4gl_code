@@ -1,4 +1,4 @@
-database test
+database test1
 
 main
 	define x char(1)

@@ -1,0 +1,18 @@
+MAIN
+START REPORT r_test TO PIPE f_testpipe()
+OUTPUT TO REPORT r_test(x)
+FINISH REPORT r_test
+END MAIN
+
+REPORT r_test(lv_a)
+DEFINE lv_a char(10)
+FORMAT
+ON EVERY ROW
+PRINT lv_a
+END REPORT
+
+FUNCTIION f_testpipe()
+DEFINE lv_p VARCHAR(256)
+LET lv_p = "lpr -Pprinter01"
+RETURN lv_p
+END FUNCTION

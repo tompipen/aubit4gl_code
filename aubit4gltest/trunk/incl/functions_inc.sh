@@ -76,7 +76,7 @@ function db_features_doc () {
 	else
 		FINAL_OUT="./docs/support_status.txt"
 	fi
-	LAST_RESULTS=`ls -al --sort=t results_$HOSTNAME* 2> /dev/null | head -4 | grep ":" | head -1 | awk '{print $9}'`
+	LAST_RESULTS=`ls -al --sort=t results_$HOSTNAME* 2> /dev/null | head -n 4 | grep ":" | head -n 1 | awk '{print $9}'`
 	if test "$LAST_RESULTS" = ""; then 
 		echo "ERROR: no results files (results_HOSTNAME_DATE.unl) found"
 		exit 1
@@ -1597,7 +1597,7 @@ check_postgresql () {
 		if test "$COMSPEC" = ""; then #On UNIX 
 			#su -l postgres -s /bin/sh -c "$POSTGRES_BIN/pg_ctl -D $PGDATA status"
 			#We need wide output to get full command line:
-			PGDATA=`ps -auxw | grep postmaster | head -1 | awk '{print $14}'`
+			PGDATA=`ps -auxw | grep postmaster | head -n 1 | awk '{print $14}'`
 			#Sometimes retrns clipped path, so test it:
 			if test ! -d "$PGDATA"; then
 				unset PGDATA
@@ -1608,11 +1608,11 @@ check_postgresql () {
 				if test "$VERBOSE" = "1"; then
 					echo "WARNING: trying 'ps -efw' because 'ps -auxw' did not work"
 				fi
-				PGDATA=`ps -efw | grep postmaster | head -1 | awk '{print $11}'`
+				PGDATA=`ps -efw | grep postmaster | head -n 1 | awk '{print $11}'`
 			fi
 			if test "$PGDATA" = ""; then
 				#This apparently works in PG8, but not in 7.4				
-				PGDATA=`$PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -3 | grep -v row`
+				PGDATA=`$PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -n 3 | grep -v row`
 			fi
 			
 			if test "$PGDATA" = ""; then 
@@ -1704,10 +1704,10 @@ check_postgresql () {
 				#TODO: maybe we can use PGPASSWORD instead of 'echo $PGUSER_POSTGRES_PWD' ???
 				
 				#This apparently works in PG8, but not in 7.4				
-				#WIN_PG_CONF=`echo $PGUSER_POSTGRES_PWD | $PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -3 | grep -v row`	
-				#WIN_PGDATA=`echo $PGUSER_POSTGRES_PWD | $PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -3 | grep -v row`
-				WIN_PG_CONF=`$PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -3 | grep -v row`	
-				WIN_PGDATA=`$PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -3 | grep -v row`
+				#WIN_PG_CONF=`echo $PGUSER_POSTGRES_PWD | $PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -n 3 | grep -v row`	
+				#WIN_PGDATA=`echo $PGUSER_POSTGRES_PWD | $PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -n 3 | grep -v row`
+				WIN_PG_CONF=`$PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -n 3 | grep -v row`	
+				WIN_PGDATA=`$PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -n 3 | grep -v row`
 				
 				WIN_PGDATA=`echo $WIN_PGDATA`
 				WIN_PG_CONF=`echo $WIN_PG_CONF`
@@ -1738,7 +1738,7 @@ check_postgresql () {
 			PG_CONF="$PGDATA/postgresql.conf"
 		else
 			#This apparently works in PG8, but not in 7.4				
-			PG_CONF=`$PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -3 | grep -v row`
+			PG_CONF=`$PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -n 3 | grep -v row`
 			if ! test -f "$PG_CONF"; then		
 				#seems like engine does not keep config file name (tried psql 'SHOW ALL;')
 				#So only source of config file location is environment where postmaster
@@ -2844,7 +2844,8 @@ case "$DB_TYPE" in
 	*)  db_ver="Unknown type: $DB_TYPE";;
 esac
 
-set `$MAKE --version | head -1 | sed -e 's/^GNU Make version //' -e 's/^GNU Make //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
+set `$MAKE --version | head -n 1 | sed -e 's/^GNU Make version //' -e 's/^GNU Make //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
+
 make_ver="$1.$2.$3"
 sh_ver=`$SH --version | grep version | awk '{print $4}'`
 
@@ -5023,7 +5024,7 @@ GOT_INFO_FROM_CAT=0
 #DBG_load_info_from_catalogue=1
 
 	if test "$CATALOGUE_TIMESTAMP" = ""; then 
-		CATALOGUE_TIMESTAMP=`head -1 $CAT_FILE | cut --field=1 --delimiter="|"`
+		CATALOGUE_TIMESTAMP=`head -n 1 $CAT_FILE | cut --field=1 --delimiter="|"`
 	fi
 	
 	line=`grep "$CATALOGUE_TIMESTAMP|$TEST_NO|" docs/catalogue.unl`

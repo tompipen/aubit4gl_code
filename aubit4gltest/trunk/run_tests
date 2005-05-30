@@ -39,7 +39,7 @@ export A4GL_RESTARTLOG=Y
 
 #Make sure we don't have a left-over watcher
 WATCHIT_SH="./bin/watchit.sh"
-WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -1 | awk '{print $2}'`
+WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -n 1 | awk '{print $2}'`
 
 if test "$WATCH_PID" != "" -a "$WATCH_PID" != "0"; then
 	echo "Killing left-over watcher (pid $WATCH_PID)"
@@ -48,7 +48,7 @@ if test "$WATCH_PID" != "" -a "$WATCH_PID" != "0"; then
 	if test "$VERBOSE" = "1" ; then
 		echo "Killing watcher (pid $WATCH_PID) returned code $KILL_RET"
 	fi
-	WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -1 | awk '{print $2}'`
+	WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -n 1 | awk '{print $2}'`
 	if test "$WATCH_PID" != ""; then
 		echo "error: still have one or more running:"
 		ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH"
@@ -992,7 +992,7 @@ for a in $FLAGS; do
 		USE_SQLITE=0; USE_ESQLI=1
 		
 		#get version
-		set `fglpc -v 2>/dev/null | head -1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
+		set `fglpc -v 2>/dev/null | head -n 1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
 		if test "$1" != "" -a "$2" != ""; then
 			I4GL_PCOMPILER_VER_MAJOR=$1
 			I4GL_PCOMPILER_VER_MINOR=$2				
@@ -1360,7 +1360,7 @@ for a in $FLAGS; do
 				echo "No .err files found in test $a"
 			else
 				echo "-----------------------------------------------------------------------"			
-				grep -n -B 5 "^|" $x | head -20
+				grep -n -B 5 "^|" $x | head -n 20
 				echo "-----------------------------------------------------------------------"
 				echo "Above error(s) occured in file: `basename $x`"
 			fi
@@ -1925,7 +1925,7 @@ do
 		echo '	let RUN_CNT=RUN_CNT+1' >> $WATCHIT_SH
 		echo '	if test "$RUN_CNT" = "10"; then' >> $WATCHIT_SH
 		echo '		echo "Max loop 10 - exit" >> /tmp/watchit.log' >> $WATCHIT_SH
-		echo "		MAKE_PID=\`ps -ef | grep -v 'grep' | grep 'make run' | head -1 | awk '{print \$2}' \` " >> $WATCHIT_SH		
+		echo "		MAKE_PID=\`ps -ef | grep -v 'grep' | grep 'make run' | head -n 1 | awk '{print \$2}' \` " >> $WATCHIT_SH		
 		echo '		if test "$MAKE_PID" != "" -a "$MAKE_PID" != "0"; then' >> $WATCHIT_SH
 		echo '			echo "Killing $MAKE_PID" >> /tmp/watchit.log' >> $WATCHIT_SH
 		echo '			kill $MAKE_PID' >> $WATCHIT_SH
@@ -1934,8 +1934,8 @@ do
 		echo '		fi' >> $WATCHIT_SH
 		echo '		break' >> $WATCHIT_SH
 		echo '	fi' >> $WATCHIT_SH
-		echo "#	ps -ef | grep -v 'grep' | grep 'make run' | head -1  >> /tmp/watchit.log " >> $WATCHIT_SH		
-		echo "	MAKE_PID=\`ps -ef | grep -v 'grep' | grep 'make run' | head -1 | awk '{print \$2}' \` " >> $WATCHIT_SH		
+		echo "#	ps -ef | grep -v 'grep' | grep 'make run' | head -n 1  >> /tmp/watchit.log " >> $WATCHIT_SH		
+		echo "	MAKE_PID=\`ps -ef | grep -v 'grep' | grep 'make run' | head -n 1 | awk '{print \$2}' \` " >> $WATCHIT_SH		
 		echo '	echo "Test $TEST_NO Loop $RUN_CNT , make pid=$MAKE_PID" >> /tmp/watchit.log' >> $WATCHIT_SH
 		echo '	sleep 10' >> $WATCHIT_SH
 		echo 'done' >> $WATCHIT_SH
@@ -1952,14 +1952,14 @@ do
 		#by using ( )
 		#PID1=$!
 		#WATCH_PID=$!
-		WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -1 | awk '{print $2}'`
+		WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -n 1 | awk '{print $2}'`
 		#if test "$WATCH_PID" = "$PID1"; then
 		#	echo "same"
 		#	exit
 		#fi
 		if test "$WATCH_PID" = ""; then
 			echo "ERROR: no PID for watcher:"
-			ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -1
+			ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -n 1
 			exit 3
 		fi
 	fi #"$WATCHIT" = "1"
@@ -2088,7 +2088,7 @@ do
 				fi
 
 				#Check again to make sure we don't have another one still running				
-				NOW_WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -1 | awk '{print $2}'`
+				NOW_WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -n 1 | awk '{print $2}'`
 				if test "$NOW_WATCH_PID" != ""; then 
 					echo "ERROR: still have one or more $WATCHIT_SH running:"
 					ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH"

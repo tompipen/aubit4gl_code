@@ -14,7 +14,7 @@ main
 	display 'Inserted' at 2,10
 	display 'Got back' at 2,20
 	# date values
-	let d='01/08/2004'
+	let d=mdy(8,1,2004)
 	display d,'  ', d using "dd mmm yy" at 5,1
 	insert into dt values (d)
 	select dt into d2 from dt
@@ -24,7 +24,7 @@ main
 	
 
 	# character values
-	let dc='01/08/2004'
+	let dc=mdy(8,1,2004)
 	insert into dt values (dc)
 	select dt into d2 from dt
 	display 'char:  ',d,'   ',d2 at 7,1
@@ -36,8 +36,8 @@ main
 
 
 	# date values
-	let d='13/08/2004'
-	let d2='31/12/1899'
+	let d=mdy(8,13,2004)
+	let d2=mdy(12,31,1899)
 	display d,'  ', d using "dd mmm yy" at 10,1
 	insert into dt values (d)
 	select dt into d2 from dt
@@ -45,7 +45,7 @@ main
 	delete from dt
 
 	# character values
-	let dc='13/08/2004'
+	let dc=mdy(8,13,2004)
 	insert into dt values (dc)
 	select dt into d2 from dt
 	display 'char:  ',d,'   ',d2 at 12,1
