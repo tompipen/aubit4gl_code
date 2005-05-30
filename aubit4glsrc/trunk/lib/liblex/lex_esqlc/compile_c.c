@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.226 2005-05-24 11:55:47 mikeaubury Exp $
+# $Id: compile_c.c,v 1.227 2005-05-30 13:03:28 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.226 2005-05-24 11:55:47 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.227 2005-05-30 13:03:28 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3650,9 +3650,29 @@ void
 LEXLIB_print_start_report (char *where, char *out, char *repname,char *dim)
 {
   add_function_to_header (repname, 2,"");
+  // @ todo - fixup 'out' handling
+  // Background - historically, 'out' was a string  (either literal or a string variable)
+  // we can now use an expression instead - but all we've done here is a quick hack to pop
+  // the expression from the stack and then put it back in the right place (ie in the order the report is expected it - after the 'where')
+  // We need to do this properly by not popping it at all and just getting the start report to pop them off in the right 
+  // order - but this might break previously compiled code 
+  // (So we're leaving it to work with this kludge for now)
+  printc("{");
+	  printc("char *_rout_to=0;");
+  if (strlen(out)==0) {
+	  printc("_rout_to=A4GL_char_pop();");
+  }
+
   printc ("A4GL_push_char(\"%s\");\n", where);
-  printc ("A4GL_push_char(%s);\n", out);
- printc ("A4GL_set_report_dim(%s);", dim);
+
+  if (strlen(out)) {
+	  	printc ("A4GL_push_char(%s);\n", out);
+  } else { 
+	  	printc ("A4GL_push_char(_rout_to);\n", out);
+  }
+
+  printc ("A4GL_set_report_dim(%s);", dim);
+  printc("if (_rout_to) free(_rout_to);}");
   printc ("%s%s(2,REPORT_START);", get_namespace (repname), repname);
 }
 

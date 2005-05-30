@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2005-05-21 16:16:55 mikeaubury Exp $
+# $Id: Makefile,v 1.5 2005-05-30 13:03:13 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -43,11 +43,13 @@ Y_OUTPUT		= rules/generated/y.output
 ifeq "${YACC}" "no"
 	GENRULES    =${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated
 	Y_TAB_C		=${GENRULES}/y.tab.c
+	Y_TAB_H		=${GENRULES}/y.tab.h
 	CFLAGS		+=-I${ROOT}/tools/no_yacc/cygwin/compilers/4glc
 	Y_OUTPUT	=
 else
 	GENRULES    =rules/generated
 	Y_TAB_C		=${GENRULES}/y.tab.c
+	Y_TAB_H		=${GENRULES}/y.tab.h
 endif
 
 ifeq "${GCC_MINGW}" "yes"
@@ -172,7 +174,7 @@ endif
 #rules.t :
 #	${MAKE} -C rules $(MKNAME)
 
-rules/generated/y.tab.o: ${Y_TAB_C}
+rules/generated/y.tab.o: ${Y_TAB_C} ${Y_TAB_H}
 	${CC} ${CFLAGS} -c -o $@ ${Y_TAB_C} ${YYDEBUG} -I${ROOT}/lib/liblex/lex_c -I.
 
 ${Y_TAB_C} rules/generated/y.output: ${RULES_SRC}
@@ -224,8 +226,9 @@ compile.o: 				rules/generated/kw.h rules/generated/y.tab.h
 
 mod.o: 					mod.c ${Y_TAB_C}
 ${GENRULES}/y.tab.o: 	../fcompile/form_x.h
-lexer.o: 				${GENRULES}/kw.h
-lexer.o: 				${GENRULES}/y.tab.h
+
+lexer.o: ${GENRULES}/kw.h 
+lexer.o: ${GENRULES}/y.tab.h
 
 ## ==================================================================
 ##                            Other Targets

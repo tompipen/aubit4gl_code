@@ -561,6 +561,7 @@ if (file_out_result==0) {
 		file_out_result=fopen(outfname,"w");
 		first_open=0;
 	}
+	A4GL_debug("Open file : %s failed ",outfname);
 	A4GL_assertion(file_out_result==0,"Unable to open output file (4)");
 }
 

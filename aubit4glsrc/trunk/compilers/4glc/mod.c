@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.216 2005-05-24 11:54:46 mikeaubury Exp $
+# $Id: mod.c,v 1.217 2005-05-30 13:03:14 mikeaubury Exp $
 #
 */
 
@@ -5133,5 +5133,11 @@ void add_serial_column(char *t,char *c) {
 
 void do_yyerror(char *s)  {
 	a4gl_yyerror(s);
+}
+
+char *A4GL_print_start_to_is_expr(struct expr_str *ptr) {
+	A4GL_append_expr(ptr,"A4GL_set_rep_start_from_stack();");
+	print_expr(ptr); 
+	return "A4GL_get_rep_start()";
 }
 /* ================================= EOF ============================= */

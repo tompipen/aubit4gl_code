@@ -117,7 +117,10 @@ sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
 
 ;
 
-rout : CHAR_VALUE | cvariable
+rout : fgl_expr {strcpy($<str>$,"");}
+/*
+CHAR_VALUE | cvariable | function_call_expr  {strcpy($<str>$,A4GL_print_start_to_is_expr($<ptr>1)); }
+*/
 ;
 
 
