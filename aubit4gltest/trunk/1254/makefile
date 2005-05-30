@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Report to pip using an expression"
+desc: ; @echo "Tests use of a dynamic field"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
