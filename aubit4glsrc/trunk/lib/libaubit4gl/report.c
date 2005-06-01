@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.69 2005-05-27 09:37:19 mikeaubury Exp $
+# $Id: report.c,v 1.70 2005-06-01 16:00:11 mikeaubury Exp $
 #
 */
 
@@ -48,7 +48,7 @@
 #include "a4gl_API_sql.h"
 //struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
 //int A4GL_call_4gl_dll (char *filename, char *function, int args);
-static void A4GL_unload_report_table(struct BINDING *b) ;
+static void A4GL_unload_report_table (struct BINDING *b);
 
 #define ENTRY_START 1
 #define ENTRY_BLOCK 2
@@ -58,33 +58,35 @@ static void A4GL_unload_report_table(struct BINDING *b) ;
 #define ENTRY_ENTRY_END 6
 
 
-static int email_report(char *fname,char *otype) ;
-static void free_header(struct rep_structure *rep) ;
-static char *cursor_for_rep_tab(void *b) ;
+static int email_report (char *fname, char *otype);
+static void free_header (struct rep_structure *rep);
+static char *cursor_for_rep_tab (void *b);
 
 
 
-void print_header_entries(struct rep_structure *rep) ;
+void print_header_entries (struct rep_structure *rep);
 
 
-int rs_with_page_length=-1;
-int rs_with_left_margin=-1;
-int rs_with_right_margin=-1;
-int rs_with_top_margin=-1;
-int rs_with_bottom_margin=-1;
-char *rs_with_top_of_page="";
+int rs_with_page_length = -1;
+int rs_with_left_margin = -1;
+int rs_with_right_margin = -1;
+int rs_with_top_margin = -1;
+int rs_with_bottom_margin = -1;
+char *rs_with_top_of_page = "";
 
-struct s_save_header_entry {
-	int page_no;
-	int line_no;
-	int col_no;
-	int entry;
-	char *s;
+struct s_save_header_entry
+{
+  int page_no;
+  int line_no;
+  int col_no;
+  int entry;
+  char *s;
 };
 
-struct s_save_header {
-	struct s_save_header_entry *save;
-	int save_cnt;
+struct s_save_header
+{
+  struct s_save_header_entry *save;
+  int save_cnt;
 };
 
 static void report_write_entry (struct rep_structure *rep, char type);
@@ -136,7 +138,9 @@ static char *A4GL_report_char_pop (void);
 char *A4GL_decode_datatype (int dtype, int dim);
 extern sqlca_struct a4gl_sqlca;
 void A4GL_finished_report (void);
-static void add_header_entry(struct rep_structure *rep,struct s_save_header *hdr,char *buff,int entry) ;
+static void add_header_entry (struct rep_structure *rep,
+			      struct s_save_header *hdr, char *buff,
+			      int entry);
 
 
 int lvl = 0;
@@ -147,71 +151,89 @@ int lvl = 0;
 =====================================================================
 */
 
-void add_header_entry(struct rep_structure *rep,struct s_save_header *hdr,char *buff,int entry) {
-		char *n;
-		if (strlen(buff)) {
-			n=strdup(buff);
-			A4GL_trim(n);
-			if (strlen(n) && strcmp(n,"\n")!=0) {
-				hdr->save_cnt++;
-				hdr->save=realloc(hdr->save,sizeof(struct s_save_header_entry)*hdr->save_cnt);
-				hdr->save[hdr->save_cnt-1].page_no=rep->page_no;
-				hdr->save[hdr->save_cnt-1].line_no=rep->line_no;
-				hdr->save[hdr->save_cnt-1].col_no=rep->col_no;
-				hdr->save[hdr->save_cnt-1].entry=entry;
-				hdr->save[hdr->save_cnt-1].s=strdup(buff);
-				A4GL_debug("Add header entry : %d %d %d %d %s\n",rep->page_no,rep->line_no,rep->col_no,entry,buff);
-			}
-			free(n);
-		}
+void
+add_header_entry (struct rep_structure *rep, struct s_save_header *hdr,
+		  char *buff, int entry)
+{
+  char *n;
+  if (strlen (buff))
+    {
+      n = strdup (buff);
+      A4GL_trim (n);
+      if (strlen (n) && strcmp (n, "\n") != 0)
+	{
+	  hdr->save_cnt++;
+	  hdr->save =
+	    realloc (hdr->save,
+		     sizeof (struct s_save_header_entry) * hdr->save_cnt);
+	  hdr->save[hdr->save_cnt - 1].page_no = rep->page_no;
+	  hdr->save[hdr->save_cnt - 1].line_no = rep->line_no;
+	  hdr->save[hdr->save_cnt - 1].col_no = rep->col_no;
+	  hdr->save[hdr->save_cnt - 1].entry = entry;
+	  hdr->save[hdr->save_cnt - 1].s = strdup (buff);
+	  A4GL_debug ("Add header entry : %d %d %d %d %s\n", rep->page_no,
+		      rep->line_no, rep->col_no, entry, buff);
+	}
+      free (n);
+    }
 }
 
 
-void print_header_entries(struct rep_structure *rep) {
-int p;
-int l;
-int c;
-int a;
-struct s_save_header *hdr;
+void
+print_header_entries (struct rep_structure *rep)
+{
+  int p;
+  int l;
+  int c;
+  int a;
+  struct s_save_header *hdr;
 
 // Save these away - we'll need to change them...
 
-p=rep->page_no;
-l=rep->line_no;
-c=rep->col_no;
-if (rep->header) {
-	hdr=(struct s_save_header *)rep->header;
-	for (a=0;a<hdr->save_cnt;a++) {
-		rep->page_no=hdr->save[a].page_no;
-		rep->line_no=hdr->save[a].line_no;
-		rep->col_no=hdr->save[a].col_no;
-		print_data(rep,hdr->save[a].s,hdr->save[a].entry);
-		A4GL_debug("PRINING         : %d %d %d %d %s\n",   rep->page_no,rep->line_no,rep->col_no,hdr->save[a].entry,hdr->save[a].s);
-		free(hdr->save[a].s);
+  p = rep->page_no;
+  l = rep->line_no;
+  c = rep->col_no;
+  if (rep->header)
+    {
+      hdr = (struct s_save_header *) rep->header;
+      for (a = 0; a < hdr->save_cnt; a++)
+	{
+	  rep->page_no = hdr->save[a].page_no;
+	  rep->line_no = hdr->save[a].line_no;
+	  rep->col_no = hdr->save[a].col_no;
+	  print_data (rep, hdr->save[a].s, hdr->save[a].entry);
+	  A4GL_debug ("PRINING         : %d %d %d %d %s\n", rep->page_no,
+		      rep->line_no, rep->col_no, hdr->save[a].entry,
+		      hdr->save[a].s);
+	  free (hdr->save[a].s);
 	}
 
 
-	rep->page_no=p;
-	rep->line_no=l;
-	rep->col_no=c;
-	free(hdr->save);
-	free(hdr);
+      rep->page_no = p;
+      rep->line_no = l;
+      rep->col_no = c;
+      free (hdr->save);
+      free (hdr);
+    }
 }
-}
 
 
-void free_header(struct rep_structure *rep) {
-struct s_save_header *hdr;
-int a;
+void
+free_header (struct rep_structure *rep)
+{
+  struct s_save_header *hdr;
+  int a;
 
-if (rep->header) {
-	hdr=(struct s_save_header *)rep->header;
-	for (a=0;a<hdr->save_cnt;a++) {
-		free(hdr->save[a].s);
+  if (rep->header)
+    {
+      hdr = (struct s_save_header *) rep->header;
+      for (a = 0; a < hdr->save_cnt; a++)
+	{
+	  free (hdr->save[a].s);
 	}
-	free(hdr->save);
-	free(hdr);
-}
+      free (hdr->save);
+      free (hdr);
+    }
 }
 
 
@@ -227,9 +249,11 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
   va_list ap;
   char buff[20000];
 
-  if (rep->output==0) {
-		A4GL_assertion(rep->output==0,"Report outfile file closed prematurely ?");
-  }
+  if (rep->output == 0)
+    {
+      A4GL_assertion (rep->output == 0,
+		      "Report outfile file closed prematurely ?");
+    }
   va_start (ap, fmt);
 
   if (entry <= 0)
@@ -241,14 +265,17 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 
       if (rep->header)
 	{
-		if (rep->output_mode=='C') {
-			print_header_entries(rep);
-	  		rep->header = 0;
-		} else {
-	  		fprintf (rep->output, "%s", rep->header);
-	  		free (rep->header);
-	  		rep->header = 0;
-		}
+	  if (rep->output_mode == 'C')
+	    {
+	      print_header_entries (rep);
+	      rep->header = 0;
+	    }
+	  else
+	    {
+	      fprintf (rep->output, "%s", rep->header);
+	      free (rep->header);
+	      rep->header = 0;
+	    }
 	}
 
       if (rep->output_mode == 'C')
@@ -266,13 +293,16 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
     {
       if (rep->header)
 	{
-		if (rep->output_mode == 'C') {
-			free_header(rep);
-	  		rep->header = 0;
-		} else {
-	  		free (rep->header);
-	  		rep->header = 0;
-		}
+	  if (rep->output_mode == 'C')
+	    {
+	      free_header (rep);
+	      rep->header = 0;
+	    }
+	  else
+	    {
+	      free (rep->header);
+	      rep->header = 0;
+	    }
 	}			// we've got a cached header - don't do anything..
       else
 	{
@@ -292,17 +322,21 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
     {
       if (rep->output_mode == 'C')
 	{
-	  if (rep->header) {
-		add_header_entry(rep,(struct s_save_header *)rep->header,buff,entry);
-	  } else {
-		struct s_save_header *hdr;
-		hdr=malloc(sizeof(struct s_save_header));
-		hdr->save_cnt=0;
-		hdr->save=0;
-		rep->header=(char *)hdr;
-		add_header_entry(rep,hdr,buff,entry);
-		
-	  }
+	  if (rep->header)
+	    {
+	      add_header_entry (rep, (struct s_save_header *) rep->header,
+				buff, entry);
+	    }
+	  else
+	    {
+	      struct s_save_header *hdr;
+	      hdr = malloc (sizeof (struct s_save_header));
+	      hdr->save_cnt = 0;
+	      hdr->save = 0;
+	      rep->header = (char *) hdr;
+	      add_header_entry (rep, hdr, buff, entry);
+
+	    }
 	  //print_data (rep, buff, entry);
 
 	}
@@ -343,7 +377,7 @@ gen_rep_tab_name (void *p)
   int a;
   static char buff_0[256];
   a = (int) p;
-	 //a=1;
+  //a=1;
   sprintf (buff_0, "rtab%x", ((int) a) & 0xfffffff);
   return buff_0;
 }
@@ -369,7 +403,9 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,
   char *str;
   //if (a==0&&s==1) return;
 //printf("rep_print called : %d %d %d\n",a,s,entry);
-  A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p Page=%d Line=%d Col=%d entry=%d", rep, rep->report, rep->page_no, rep->line_no, rep->col_no, entry);
+  A4GL_debug
+    ("In A4GL_rep_print rep=%p rep->report=%p Page=%d Line=%d Col=%d entry=%d",
+     rep, rep->report, rep->page_no, rep->line_no, rep->col_no, entry);
 
   if (right_margin != 0)
     {
@@ -393,7 +429,7 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,
       else
 	{
 
-	  if (rep->output_mode == 'F' || rep->output_mode=='M')
+	  if (rep->output_mode == 'F' || rep->output_mode == 'M')
 	    {
 
 
@@ -429,10 +465,10 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,
 	}
 
 
-  if (rep->output_mode == 'C')
-    {
-      report_write_entry (rep, ENTRY_START);
-    }
+      if (rep->output_mode == 'C')
+	{
+	  report_write_entry (rep, ENTRY_START);
+	}
 
     }
 
@@ -443,10 +479,13 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,
     }
 
 
-  if (a || s==0 || rep->finishing || entry==-5) {
+  if (a || s == 0 || rep->finishing || entry == -5)
+    {
       if (rep->print_section == SECTION_NORMAL)
 	{
-	  if (rep->line_no > rep->page_length - rep->lines_in_trailer - rep->bottom_margin) {
+	  if (rep->line_no >
+	      rep->page_length - rep->lines_in_trailer - rep->bottom_margin)
+	    {
 	      //printf("Adding trailer..\n");
 	      rep->print_section = SECTION_TRAILER;
 	      rep->report (0, REPORT_PAGETRAILER);	/* report.c:180: too many arguments to function */
@@ -458,26 +497,22 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,
 	      //printf("Bottom margin %d",rep->bottom_margin);
 	      for (cnt = 0; cnt < rep->bottom_margin; cnt++)
 		{
-		  report_print (rep, -1, "\n");
-		  rep->line_no++;
+			  report_print (rep, -1, "\n");
+			  rep->line_no++;
 		  //printf("--->%d\n",rep->line_no);
 		}
 
 	      rep->line_no = 0;
 
 	      //if (a == 0 && s == 5) { return; } else {
-		  if (rep->lines_in_trailer)
-		    {
-		      A4GL_debug ("Calling rep_print");
-		      A4GL_rep_print (rep, 0, 1, 0, -10);
-		    }
-		//}
-
-
-
+	      if (rep->lines_in_trailer)
+		{
+		  A4GL_debug ("Calling rep_print");
+		  A4GL_rep_print (rep, 0, 1, 0, -10);
+		}
 	    }
 	}
-   }
+    }
 
 
 
@@ -500,7 +535,7 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,
       if (rep->report == 0)
 	{
 	  A4GL_debug ("OOPS - no report function!!!");
-	  A4GL_exitwith ("Internal error");
+	  A4GL_assertion (1,"Internal error - no report function");
 	  exit (10);
 	}
       //fprintf(rep->output,"FORCE HEADER1 %d\n",entry);
@@ -655,11 +690,13 @@ A4GL_need_lines (struct rep_structure *rep)
 {
   int a;
   a = A4GL_pop_int ();
-  if (rep->line_no-1 > (rep->page_length - rep->bottom_margin - a - rep->lines_in_trailer)) {	
+  if (rep->line_no - 1 >
+      (rep->page_length - rep->bottom_margin - a - rep->lines_in_trailer))
+    {
 
 //printf("NEED\n");
-    A4GL_skip_top_of_page (rep, 2);
-  }
+      A4GL_skip_top_of_page (rep, 2);
+    }
 }
 
 /**
@@ -671,7 +708,9 @@ A4GL_skip_top_of_page (struct rep_structure *rep, int n)
 {
   int z;
   int a;
-  a = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer+1;
+  a =
+    rep->page_length - rep->line_no - rep->bottom_margin -
+    rep->lines_in_trailer + 1;
 
 //printf("Skipping %d lines\n",a);
 
@@ -691,14 +730,15 @@ A4GL_skip_top_of_page (struct rep_structure *rep, int n)
 
 //printf("Add %d lines %d %d\n",a,rep->print_section,n);
 
-  if (a||n==999)
+  if (a || n == 999)
     {
       for (z = 0; z < a; z++)
 	{
 	  A4GL_rep_print (rep, 0, 0, 0, -4);
 	}
-	if (rep->finishing || n==0||n==999) {
-			A4GL_rep_print (rep, 0, 1, 0, -5);
+      if (rep->finishing || n == 0 || n == 999)
+	{
+	  A4GL_rep_print (rep, 0, 1, 0, -5);
 	}
     }
 
@@ -867,17 +907,20 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
 void
 A4GL_make_report_table (struct BINDING *b, int n)
 {
-  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_sql (A4GL_mk_temp_tab (b, n)),1);
+  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_sql (A4GL_mk_temp_tab (b, n)),
+				1);
 }
 
 
 
-static void A4GL_unload_report_table(struct BINDING *b) {
+static void
+A4GL_unload_report_table (struct BINDING *b)
+{
   char buff[1024];
-  struct BINDING *ibind=0;
+  struct BINDING *ibind = 0;
   return;
   sprintf (buff, "SELECT * FROM %s", gen_rep_tab_name (b));
-	A4GLSQL_unload_data("zz9pa","|", buff,0,ibind);
+  A4GLSQL_unload_data ("zz9pa", "|", buff, 0, ibind);
 }
 
 /**
@@ -901,9 +944,9 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
     }
   strcat (buff, ")");
   A4GL_debug ("Attempting to execute %s\n", buff);
-  x = (void *) A4GLSQL_prepare_select ( b,n,0,0,buff);
+  x = (void *) A4GLSQL_prepare_select (b, n, 0, 0, buff);
   A4GL_debug ("x=%p\n", x);
-  A4GLSQL_execute_implicit_sql (x,1);
+  A4GLSQL_execute_implicit_sql (x, 1);
   A4GL_debug ("a4glsqlca.sqlcode=%d", a4gl_sqlca.sqlcode);
 }
 
@@ -921,7 +964,7 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
   char buff[1024];
   //char tbuff[1024];
   char obuff[1024];
-struct s_sid* pstmt;
+  struct s_sid *pstmt;
   struct BINDING ibind[] = {
     /* ibind 0 */
     {0, 0, 0}
@@ -930,13 +973,13 @@ struct s_sid* pstmt;
     {0, 0, 0}
   };				/* end of binding */
 
-  A4GL_debug("init_rep_table");
+  A4GL_debug ("init_rep_table");
   *reread = A4GL_duplicate_binding (b, n);
 
 
   sprintf (buff, "select * from %s order by ", gen_rep_tab_name (b));
 
-  A4GL_unload_report_table(b) ; // This is useful for debugging....
+  A4GL_unload_report_table (b);	// This is useful for debugging....
 
   for (a1 = 0; a1 < no; a1++)
     {
@@ -973,26 +1016,29 @@ struct s_sid* pstmt;
 
 
 
-  A4GL_debug("prepare...");
-  pstmt=A4GLSQL_prepare_select (ibind, 0, obind, 0, buff);
-  A4GL_debug("%d\n",a4gl_sqlca.sqlcode);
-  if (a4gl_sqlca.sqlcode != 0) {
-  	A4GL_debug("prepare failed");
-	  	A4GL_exitwith("Internal error - unable to prepare statement");
-	  	return 0;
-  }
- A4GL_debug("declare...");
-  A4GLSQL_declare_cursor (0, pstmt, 0, cursor_for_rep_tab(b));
-  A4GL_debug("%d\n",a4gl_sqlca.sqlcode);
-  if (a4gl_sqlca.sqlcode != 0) {
-  	A4GL_debug("declare failed");
-	  	A4GL_exitwith("Internal error - unable to declare statement");
-	  return 0;
-  }
+  A4GL_debug ("prepare...");
+  pstmt = A4GLSQL_prepare_select (ibind, 0, obind, 0, buff);
+  A4GL_debug ("%d\n", a4gl_sqlca.sqlcode);
+  if (a4gl_sqlca.sqlcode != 0)
+    {
+      A4GL_debug ("prepare failed");
+      A4GL_exitwith ("Internal error - unable to prepare statement");
+      return 0;
+    }
+  A4GL_debug ("declare...");
+  A4GLSQL_declare_cursor (0, pstmt, 0, cursor_for_rep_tab (b));
+  A4GL_debug ("%d\n", a4gl_sqlca.sqlcode);
+  if (a4gl_sqlca.sqlcode != 0)
+    {
+      A4GL_debug ("declare failed");
+      A4GL_exitwith ("Internal error - unable to declare statement");
+      return 0;
+    }
 
 
-  A4GLSQL_open_cursor ( cursor_for_rep_tab(b),0,0);
-  if (a4gl_sqlca.sqlcode != 0) return 0;
+  A4GLSQL_open_cursor (cursor_for_rep_tab (b), 0, 0);
+  if (a4gl_sqlca.sqlcode != 0)
+    return 0;
 
 
   return 0;
@@ -1007,8 +1053,8 @@ int
 A4GL_report_table_fetch (struct BINDING *reread, int n, struct BINDING *b)
 {
   A4GLSQL_set_sqlca_sqlcode (0);
-  
-  A4GLSQL_fetch_cursor (cursor_for_rep_tab(b), 2, 1, n, reread);
+
+  A4GLSQL_fetch_cursor (cursor_for_rep_tab (b), 2, 1, n, reread);
   A4GL_push_params (reread, n);
 
   if (a4gl_sqlca.sqlcode == 0)
@@ -1118,27 +1164,34 @@ A4GL_rep_file_print (struct rep_structure *rep, char *fname, int opt_semi)
   FILE *f;
   char buff[10000];
   int has_cr;
-  f=fopen(fname,"r");
-  if (f==0) {
-  	A4GL_exitwith ("Unable to open PRINT FILE file");
-	return;
-  }
-  while (!feof(f)) {
-	  char *a;
-	  a=fgets(buff,sizeof(buff)-1,f);
-	  if (!a) break;
-	  has_cr=0;
-	   // Trim any trailing \n
-	   while (buff[strlen(buff)-1]=='\n' || buff[strlen(buff)-1]=='\r') { 
-		  int c;
-		  has_cr++;
-		  c=strlen(buff);
-		  buff[c-1]=0;
-	  }
-	   A4GL_push_char(buff);
-	   if (has_cr) A4GL_rep_print(rep,1,0,0,-1);
-	   else        A4GL_rep_print(rep,1,1,0,-1);
-  }
+  f = fopen (fname, "r");
+  if (f == 0)
+    {
+      A4GL_exitwith ("Unable to open PRINT FILE file");
+      return;
+    }
+  while (!feof (f))
+    {
+      char *a;
+      a = fgets (buff, sizeof (buff) - 1, f);
+      if (!a)
+	break;
+      has_cr = 0;
+      // Trim any trailing \n
+      while (buff[strlen (buff) - 1] == '\n'
+	     || buff[strlen (buff) - 1] == '\r')
+	{
+	  int c;
+	  has_cr++;
+	  c = strlen (buff);
+	  buff[c - 1] = 0;
+	}
+      A4GL_push_char (buff);
+      if (has_cr)
+	A4GL_rep_print (rep, 1, 0, 0, -1);
+      else
+	A4GL_rep_print (rep, 1, 1, 0, -1);
+    }
 }
 
 
@@ -1168,7 +1221,8 @@ A4GL_report_char_pop (void)
   A4GL_get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
 
   function = A4GL_get_datatype_function_i (tos_dtype & DTYPE_MASK, "DISPLAY");
-  A4GL_assertion(function==0,"No report display function for this datatype");
+  A4GL_assertion (function == 0,
+		  "No report display function for this datatype");
   ptr =
     function (tos_ptr, tos_size, -1, (struct struct_scr_field *) 0,
 	      DISPLAY_TYPE_PRINT);
@@ -1467,149 +1521,193 @@ A4GL_convert_report (struct rep_structure *rep, char *ofile,
   A4GL_trim (otype);
   A4GL_trim (layout);
 
-  running_program=A4GL_get_running_program();
+  running_program = A4GL_get_running_program ();
 
 
-  if (to_pipe==1)
+  if (to_pipe == 1)
     {
 
       if (strlen (layout))
 	{
-	  sprintf (buff, "%s/bin/process_report -M '%s' -p '%s' '%s' '%s' '%s'",
-		   acl_getenv ("AUBITDIR"), running_program, ofile, otype, rep->output_loc,
-		   layout);
+	  sprintf (buff,
+		   "%s/bin/process_report -M '%s' -p '%s' '%s' '%s' '%s'",
+		   acl_getenv ("AUBITDIR"), running_program, ofile, otype,
+		   rep->output_loc, layout);
 	}
       else
 	{
 	  sprintf (buff, "%s/bin/process_report -M '%s' -p '%s' '%s' '%s' ",
-		   acl_getenv ("AUBITDIR"), running_program, ofile, otype, rep->output_loc);
+		   acl_getenv ("AUBITDIR"), running_program, ofile, otype,
+		   rep->output_loc);
 	}
     }
 
-  if (to_pipe==0 || to_pipe==2) // File or email
+  if (to_pipe == 0 || to_pipe == 2)	// File or email
     {
       if (strlen (layout))
 	{
-	  sprintf (buff, "%s/bin/process_report -M '%s' -o '%s' '%s' '%s' '%s'",
-		   acl_getenv ("AUBITDIR"), running_program,ofile, otype, rep->output_loc,
-		   layout);
+	  sprintf (buff,
+		   "%s/bin/process_report -M '%s' -o '%s' '%s' '%s' '%s'",
+		   acl_getenv ("AUBITDIR"), running_program, ofile, otype,
+		   rep->output_loc, layout);
 	}
       else
 	{
 	  sprintf (buff, "%s/bin/process_report -M '%s' -o '%s' '%s' '%s' ",
-		   acl_getenv ("AUBITDIR"), running_program,ofile, otype, rep->output_loc);
+		   acl_getenv ("AUBITDIR"), running_program, ofile, otype,
+		   rep->output_loc);
 	}
     }
-  
+
   system (buff);
 
-  if (to_pipe==2) {
-		//printf("Sending %s\n",ofile);
-		email_report(ofile,otype);
-  }
+  if (to_pipe == 2)
+    {
+      //printf("Sending %s\n",ofile);
+      email_report (ofile, otype);
+    }
 
   free (ofile);
   free (otype);
   free (layout);
 }
 
-void A4GL_free_report(struct rep_structure *rep) {
-	if (rep->output_mode=='C') {
-		rep->output_mode=' ';
-		//unlink(rep->output_loc);
-	}
+void
+A4GL_free_report (struct rep_structure *rep)
+{
+  if (rep->output_mode == 'C')
+    {
+      rep->output_mode = ' ';
+      //unlink(rep->output_loc);
+    }
 
-	if (rep->output_mode=='M') {
-		//email_report(rep->output_loc,0);
-		unlink(rep->output_loc);
-		rep->output_mode=' ';
-	}
+  if (rep->output_mode == 'M')
+    {
+      //email_report(rep->output_loc,0);
+      unlink (rep->output_loc);
+      rep->output_mode = ' ';
+    }
 
 }
 
 
-void A4GL_set_report_dim(int with_page_length,int with_left_margin,int with_right_margin,int with_top_margin,int with_bottom_margin,char *with_top_of_page) {
-	rs_with_page_length	= with_page_length;
-	rs_with_left_margin	= with_left_margin;
-	rs_with_right_margin	= with_right_margin;
-	rs_with_top_margin	= with_top_margin;
-	rs_with_bottom_margin	= with_bottom_margin;
-	rs_with_top_of_page	= with_top_of_page;
+void
+A4GL_set_report_dim (int with_page_length, int with_left_margin,
+		     int with_right_margin, int with_top_margin,
+		     int with_bottom_margin, char *with_top_of_page)
+{
+  rs_with_page_length = with_page_length;
+  rs_with_left_margin = with_left_margin;
+  rs_with_right_margin = with_right_margin;
+  rs_with_top_margin = with_top_margin;
+  rs_with_bottom_margin = with_bottom_margin;
+  rs_with_top_of_page = with_top_of_page;
 }
 
 
 
-int A4GL_set_report_dim_int(char *type,int value) {
-	if (strcmp(type,"PAGE LENGTH")==0) {
-		if (rs_with_page_length!=-1) return rs_with_page_length;
-		return value;
-	}
+int
+A4GL_set_report_dim_int (char *type, int value)
+{
+  if (strcmp (type, "PAGE LENGTH") == 0)
+    {
+      if (rs_with_page_length != -1)
+	return rs_with_page_length;
+      return value;
+    }
 
-	if (strcmp(type,"LEFT MARGIN")==0) {
-		if (rs_with_left_margin!=-1) return rs_with_left_margin;
-		return value;
-	}
-	if (strcmp(type,"RIGHT MARGIN")==0) {
-		if (rs_with_right_margin!=-1) return rs_with_right_margin;
-		return value;
-	}
+  if (strcmp (type, "LEFT MARGIN") == 0)
+    {
+      if (rs_with_left_margin != -1)
+	return rs_with_left_margin;
+      return value;
+    }
+  if (strcmp (type, "RIGHT MARGIN") == 0)
+    {
+      if (rs_with_right_margin != -1)
+	return rs_with_right_margin;
+      return value;
+    }
 
-	if (strcmp(type,"TOP MARGIN")==0) {
-		if (rs_with_top_margin!=-1) return rs_with_top_margin;
-		return value;
-	}
+  if (strcmp (type, "TOP MARGIN") == 0)
+    {
+      if (rs_with_top_margin != -1)
+	return rs_with_top_margin;
+      return value;
+    }
 
-	if (strcmp(type,"BOTTOM MARGIN")==0) {
-		if (rs_with_bottom_margin!=-1) return rs_with_bottom_margin;
-		return value;
-	}
-return 0;
+  if (strcmp (type, "BOTTOM MARGIN") == 0)
+    {
+      if (rs_with_bottom_margin != -1)
+	return rs_with_bottom_margin;
+      return value;
+    }
+  return 0;
 }
 
 
-char *A4GL_find_report_dim_string(char *type,int value) {
+char *
+A4GL_find_report_dim_string (char *type, int value)
+{
 // not implemented yet...
-return "";
+  return "";
 }
 
 
 
-static int email_report(char *fname,char *fhint) {
-char *email;
-  if (fhint) {
-   A4GL_push_char(fhint);
-  } else {
-   A4GL_push_char( " " );
-  }
+static int
+email_report (char *fname, char *fhint)
+{
+  char *email;
+  if (fhint)
+    {
+      A4GL_push_char (fhint);
+    }
+  else
+    {
+      A4GL_push_char (" ");
+    }
 
-   A4GL_push_char(fname);
+  A4GL_push_char (fname);
 
-email=acl_getenv("EMAIL_RECIPIENT");
-if (email) { if (strlen(email)==0) email=0; }
-if (email==0) {
-   A4GL_push_user();
-} else {
-  A4GL_push_char(email);
+  email = acl_getenv ("EMAIL_RECIPIENT");
+  if (email)
+    {
+      if (strlen (email) == 0)
+	email = 0;
+    }
+  if (email == 0)
+    {
+      A4GL_push_user ();
+    }
+  else
+    {
+      A4GL_push_char (email);
+    }
+
+  //A4GL_push_char("mike.aubury@aubit.com"); // Normally username...
+  A4GL_call_4gl_dll ("fgl_smtp", "send_report", 3);
+  return 1;
 }
 
-   //A4GL_push_char("mike.aubury@aubit.com"); // Normally username...
-   A4GL_call_4gl_dll("fgl_smtp","send_report",3);
-return 1;
+
+
+char *
+A4GL_get_tmp_rep (char *mod, char *f)
+{
+  static char buff[256];
+  tmpnam (buff);
+  return buff;
 }
 
 
 
-char *A4GL_get_tmp_rep(char *mod,char *f) {
-static char buff[256];
-tmpnam(buff);
-return buff;
+static char *
+cursor_for_rep_tab (void *b)
+{
+  static char tbuff[256];
+  sprintf (tbuff, "c_%x", b);
+  return tbuff;
 }
 
-
-
-static char *cursor_for_rep_tab(void *b) {
-	static char tbuff[256];
-	sprintf(tbuff,"c_%x",b);
-	return tbuff;
-}
 /* ============================= EOF ================================ */

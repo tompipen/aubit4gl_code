@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.227 2005-05-30 13:03:28 mikeaubury Exp $
+# $Id: compile_c.c,v 1.228 2005-06-01 16:02:35 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.227 2005-05-30 13:03:28 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.228 2005-06-01 16:02:35 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3989,7 +3989,7 @@ if (!A4GL_doing_pcode()) {
   printc ("   A4GL_pop_params(_rbind,%d);\n", cnt);
   printc ("   if (_useddata==0) {_g=1;}\n");
   printc ("   if (_g>0) {");
-  printc ("    A4GL_rep_print(&_rep,0,1,0,-1);\n"); // Mantis ID 573
+  printc ("    A4GL_%srep_print(&_rep,0,1,0,-1);\n",ispdf()); // Mantis ID 573
   printc ("        _useddata=1;");
   printc ("        for (_p=_g;_p<=acl_rep_ordcnt;_p++) ");
   printc ("               %s(_p,REPORT_BEFOREGROUP);", get_curr_rep_name ());

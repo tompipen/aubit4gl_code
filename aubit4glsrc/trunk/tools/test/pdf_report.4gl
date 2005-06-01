@@ -10,7 +10,7 @@ define t,c char(20)
 define n integer
 
 #database stores7
-database maindb
+database test1
 
 
 #You may want to try with a small mod, change it to an order by on the select
@@ -30,14 +30,16 @@ database maindb
 		#and systables.tabid>99
 #		order by 1,2,3
 
+display "START"
 
     start report r1  to "rr1.pdf"
 	
 	foreach c1 into t,c,n
-        	#display "Processing table ", t clipped
+        	display "Processing table ", t clipped
 			output to report r1 (t,c,n)
 	end foreach
 	
+display "DONE"
 	finish report r1
 
     display "Finished, see result in rr1.pdf"
