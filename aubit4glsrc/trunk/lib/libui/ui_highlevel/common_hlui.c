@@ -96,23 +96,6 @@ A4GL_create_blank_window (char *name, int x, int y, int w, int h, int border)
 
 
 void
-A4GL_mja_set_field_buffer_contrl (void *field, int nbuff, int ch)
-{
-  char buff[20];
-  A4GL_debug ("Ch=%d", ch);
-  if (ch == 0)
-    {
-      return;
-    }
-  buff[0] = ch & 0xff;
-  buff[1] = 0;
-  A4GL_debug ("Adding char %d %c", ch, ch);
-  A4GL_mja_set_field_buffer (field, nbuff, buff);
-}
-
-
-
-void
 A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
 {
   char buff2[8024];
@@ -144,6 +127,23 @@ A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
 
 
   A4GL_LL_set_field_buffer (field, nbuff, buff2);
+}
+
+
+
+void
+A4GL_mja_set_field_buffer_contrl (void *field, int nbuff, int ch)
+{
+  char buff[20];
+  A4GL_debug ("Ch=%d", ch);
+  if (ch == 0)
+    {
+      return;
+    }
+  buff[0] = ch & 0xff;
+  buff[1] = 0;
+  A4GL_debug ("Adding char %d %c", ch, ch);
+  A4GL_mja_set_field_buffer (field, nbuff, buff);
 }
 
 
