@@ -1,0 +1,31 @@
+%token <str> NAME
+%left KW_COMMA
+%token FINPUT
+%right CLIPPED ASCII COLUMN SPACES KW_USING WORDWRAP
+%left WHERE
+%left KW_OR         
+%left KW_AND        
+%left NOT
+%left IS_NULL IS_NOT_NULL
+%left GREATER_THAN_EQ LESS_THAN GREATER_THAN EQUAL LESS_THAN_EQ NOT_EQUAL
+%right MATCHES NOT_MATCHES LIKE NOT_LIKE
+%left MINUS PLUS
+%left DIVIDE MULTIPLY
+%left POWER MOD
+%left UNITS
+%right UMINUS
+
+%right COMMAND
+%token NUMBER_VALUE
+%token CHAR_VALUE
+%token INT_VALUE
+%token NAMED_GEN
+/* %token COMMENT */
+%token CLINE
+%token SQLLINE
+%token KW_CSTART
+%token KW_CEND
+%token USER_DTYPE
+%token SQL_TEXT
+%token KW_WHENEVER_SET
+%token COMMENT

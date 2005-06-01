@@ -1,0 +1,15 @@
+run_cmd : KW_RUN fgl_expr  { print_system_run(0,0); } 
+	| KW_RUN fgl_expr run_mode { print_system_run($<integer_val>3,0); } 
+	| KW_RUN fgl_expr RETURNING variable { print_system_run(1,$<str>4); } 
+	| KW_RUN fgl_expr WITHOUT_WAITING { print_system_run(2,0); }
+	| KW_RUN fgl_expr run_mode RETURNING variable { print_system_run(1+$<integer_val>3,$<str>5); } 
+	| KW_RUN fgl_expr run_mode WITHOUT_WAITING { print_system_run(2+$<integer_val>3,0); }
+	| KW_RUN fgl_expr WAIT { print_system_run(0,0); }
+	| KW_RUN fgl_expr EXIT { print_system_run(0,0); }
+;
+
+run_mode : 
+	 IN_FORM_MODE {$<integer_val>$=512;}
+	| IN_LINE_MODE {$<integer_val>$=256;}
+;
+	

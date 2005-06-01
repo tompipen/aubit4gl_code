@@ -1,0 +1,254 @@
+/*
+=====================================================================
+                        Source: general.rule
+=====================================================================
+*/
+
+line_no		:
+	KW_LAST MINUS INT_VALUE {sprintf($<str>$,"%d",-1-(atoi($<str>3)));}
+	| KW_LAST {strcpy($<str>$,"-1");}
+	| KW_FIRST PLUS INT_VALUE {sprintf ($<str>$,"%d",atoi($<str>3)+1);}
+	| KW_FIRST {strcpy($<str>$,"1");}
+	| INT_VALUE {strcpy($<str>$,$<str>1);}
+	| variable {strcpy($<str>$,$<str>1);}
+	| KW_OFF {strcpy($<str>$,"0");}
+;
+
+file_name	:	CHAR_VALUE | cvariable 
+;
+
+a_number	:	fgl_expr;
+
+coords		:	a_number KW_COMMA a_number {sprintf($<str>$,"%s,%s",$<str>1,$<str>3); }
+;
+
+display_coords	:	coords;
+
+field_name_as_struct	:	
+		identifier { 
+			$<field_entry>$=new_field_entry($<str>1,"1",1);
+		}
+		| INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { 
+				char buff[256];
+				sprintf(buff,"int_to_id(%s)",$<str>3);
+				$<field_entry>$=new_field_entry(buff,"1",0); 
+		}
+		| identifier DOT INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { 
+				char buff[256];
+				sprintf(buff,"int_to_id(%s.%s)",$<str>1,$<str>5); 
+				$<field_entry>$=new_field_entry(buff,"1",0); 
+		}
+		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE {
+				$<field_entry>$=new_field_entry($<str>1,$<str>3,1);
+		}
+		| identifier DOT MULTIPLY {
+				char buff[256];
+				sprintf(buff,"%s.*",$<str>1);
+				$<field_entry>$=new_field_entry(buff,"1",1);
+		}
+		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT MULTIPLY {
+				char buff[256];
+				sprintf(buff,"%s.*",$<str>1);
+				$<field_entry>$=new_field_entry(buff,$<str>3,1);
+		}
+		| identifier DOT identifier 	{
+				char buff[256];
+				sprintf(buff,"%s.%s",$<str>1,$<str>3);
+				$<field_entry>$=new_field_entry(buff,"1",1);
+		}
+		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT identifier {
+				char buff[256];
+				sprintf(buff,"%s.%s",$<str>1,$<str>6);
+				$<field_entry>$=new_field_entry(buff,$<str>3,1);
+		}
+;
+
+field_name_or_char_as_struct: field_name_as_struct {$<field_entry>$=$<field_entry>1;}
+	| CHAR_VALUE { 
+                 char buff[256];
+                 sprintf(buff,"%s",$<str>1);
+                 $<field_entry>$=new_field_entry(buff,"1",0);
+	}
+;
+
+cursor_name	:	ident_or_var {
+				print_pushchar($<str>1);
+				addmap("Cursor",last_var,curr_func,yylineno,infilename);
+			}
+;
+
+
+fetch_cursor_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);};
+
+win_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);
+addmap("Window",last_var,curr_func,yylineno,infilename);
+}
+
+;
+
+open_win_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);
+addmap("Open Window",last_var,curr_func,yylineno,infilename);
+}
+;
+
+form_name	: ident_or_var {sprintf($<str>$,"%s",$<str>1);
+addmap("Form",last_var,curr_func,yylineno,infilename);
+}
+;
+
+open_form_name	: ident_or_var {sprintf($<str>$,"%s",$<str>1);
+addmap("Open Form",last_var,curr_func,yylineno,infilename);
+}
+;
+
+opt_help_no		:	{strcpy($<str>$,"0");} | KW_HELP INT_VALUE {strcpy($<str>$,$<str>2);};
+
+
+identifier	:  NAMED  { 
+			strcpy($<str>$,downshift($<str>1)) ;
+}
+;
+
+
+ident_or_var	: ident_p2  {
+			sprintf($<str>$,"%s",downshift($<str>1)) ;
+			}  
+;
+
+ident_p2 : NAMED {
+	strcpy($<str>$,do_clobbering(clobber,downshift($<str>1))) ;
+	strcpy(last_var,downshift($<str>1));
+} | VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET
+	{
+		if (strcmp(acl_getenv("A4GL_LEXTYPE"),"EC")==0) {
+			char buff[256];
+			strcpy(buff,$<str>3);
+			if (buff[0]=='"') {
+				sprintf($<str>$,"aclfgli_str_to_id(%s)",$<str>3);
+			} else {
+
+				sprintf($<str>$,"aclfgli_str_to_id(%s)",$<str>3);
+			}
+			sprintf(last_var,"->%s",$<str>3);
+		} else {
+			sprintf($<str>$,"aclfgli_str_to_id(%s)",$<str>3);
+			sprintf(last_var,"->%s",$<str>3);
+		}
+	}
+;
+
+
+
+
+
+var_or_string : var | CHAR_VALUE;
+
+field_name2_as_struct	:	identifier {
+					$<field_entry>$=new_field_entry($<str>1,"1",1); 
+				}
+				| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE {
+					$<field_entry>$=new_field_entry($<str>1,$<str>3,1); 
+				}
+				| identifier DOT MULTIPLY {
+					char buff[256];
+					sprintf(buff,"%s.*",$<str>1);
+					$<field_entry>$=new_field_entry(buff,"1",1); 
+				}
+				| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT MULTIPLY {
+					char buff[256];
+					sprintf(buff,"%s.*",$<str>1);
+					$<field_entry>$=new_field_entry(buff,$<str>3,1); 
+				}
+				| identifier DOT identifier {
+					char buff[256];
+					sprintf(buff,"%s.%s",$<str>1,$<str>3);
+					$<field_entry>$=new_field_entry(buff,"1",1); 
+				}
+				| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT identifier {
+					char buff[256];
+					sprintf(buff,"%s.%s",$<str>1,$<str>6);
+					$<field_entry>$=new_field_entry(buff,$<str>3,1); 
+				}
+;
+
+cvariable : variable {
+int dtype;
+A4GL_debug("Scanvar=%d",scan_variable($<str>1)&15);
+dtype=scan_variable($<str>1)&15;
+if (dtype!=DTYPE_CHAR && dtype!=DTYPE_VCHAR) {
+a4gl_yyerror("Only a character variable can be used for this");
+YYERROR;
+}
+};
+
+
+conn_id : ident_or_var;
+
+
+real_number : NUMBER_VALUE | DOT INT_VALUE {
+		sprintf($<str>$,".%s",$<str>2);
+};
+
+char_or_var : CHAR_VALUE | variable {
+                if ((scan_variable($<str>1)&15)!=0) {a4gl_yyerror("Variable must be of type charr..");YYERROR;}
+}
+;
+
+opt_use : {strcpy($<str>$,"");} | USE_SESSION conn_id FOR {
+	print_use_session($<str>3);
+	strcpy($<str>$,A4GL_get_undo_use());
+}
+;
+
+
+
+/*
+reserved_word :
+	PASSWORD
+	|CHECK
+	|CLEAR
+	|CLIPPED
+	|CLOSE
+	|CONSTANT
+	|CONSTRUCT
+	|COUNT
+	|OPTION
+	|CYAN
+	|HEADER
+	|DBA
+	|DBYNAME
+	|AUDIT
+	|KWLINE
+	|MODE
+	|DEFAULT
+	|DEFAULTS
+	|DEFER
+	|DELIMITER
+	|DESC
+	|DESCENDING
+	|DIM
+	|DISABLE
+	|KWDOWN
+	|DOWNSHIFT
+	|DROP
+	|FOREIGN
+	|EXISTS
+	|YEAR
+	|MONTH
+	|DAY
+	|SPACES
+	|RESOURCE
+	|COMMENT
+	|DELETE
+	|VALIDATE
+	|KW_ESCAPE
+	|UPSHIFT
+	|AVERAGE
+	|UNDERLINE
+	|MENU
+	|KW_DATE
+;
+*/
+
+
+/* ============================ general.rule ====================== */

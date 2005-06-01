@@ -1,0 +1,116 @@
+/*
+=====================================================================
+                        Source: formhandler.rule
+=====================================================================
+*/
+
+formhandler_def :
+        FORMHANDLER {isin_formhandler=1;} identifier {	
+		sprintf(curr_func,"%s",$<str>3); 
+		print_formhandler($<str>3);
+		push_blockcommand("FORMHANDLER");
+        } define_section  {
+		print_variables();
+		print_getwin();
+	} op_code op_bef_ev_list op_input_section op_aft_ev_list 
+	END_FORMHANDLER { 
+		isin_formhandler=0;
+		pop_blockcommand("FORMHANDLER"); print_end_formhandler(); 
+}
+;
+
+op_input_section : | input_section;
+
+op_bef_ev_list :
+        | bef_ev_list
+;
+
+bef_ev_list :
+        bef_ev | bef_ev_list bef_ev
+;
+
+bef_ev :
+        BEFORE_EVENT {
+		print_event('B');
+        }  commands {
+		print_event_2();
+        }
+        | BEFORE_OPEN_FORM {
+		print_event('b');
+        } commands {
+		print_event_2();
+        }
+;
+
+op_aft_ev_list :
+        | aft_ev_list
+;
+
+aft_ev_list :
+        aft_ev | aft_ev_list aft_ev
+;
+
+aft_ev :
+         AFTER_EVENT {
+		print_event('A');
+        }  commands {
+		print_event_2();
+        }
+        | BEFORE_CLOSE_FORM {
+		print_event('a');
+        } commands {
+		print_event_2();
+        }
+;
+
+input_section : 
+	FINPUT in_variable_list FROM in_id_list field_ops END_INPUT
+	| FINPUT BY_NAME in_bn_variable_list field_ops END_INPUT
+	| FINPUT field_ops END_INPUT
+;
+
+
+in_variable_list :
+        variable | in_variable_list KW_COMMA variable
+;
+
+in_id_list : identifier | in_id_list KW_COMMA identifier
+;
+
+in_bn_variable_list :
+        variable | in_bn_variable_list KW_COMMA variable
+;
+
+field_ops :
+        field_op | field_ops field_op
+;
+
+field_op :
+        BEFORE_ANY { 
+			print_gtk_field('B',0);
+		} commands {
+			print_gtk_field_2();
+		}
+        | AFTER_ANY { 
+			print_gtk_field('A',0);
+		} commands {
+			print_gtk_field_2();
+		}
+        | BEFORE in_id_list {
+			print_gtk_field('b',$<str>2);
+		} commands { 
+			print_gtk_field_2();
+		}
+        | AFTER in_id_list {
+			print_gtk_field('a',$<str>2);
+		} commands { 
+			print_gtk_field_2();
+		}
+        | ON in_id_list { 
+			print_gtk_field('o',$<str>2);
+		} commands { 
+			print_gtk_field_2();
+		}
+;
+
+

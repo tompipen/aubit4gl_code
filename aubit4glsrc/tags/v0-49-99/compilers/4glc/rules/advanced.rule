@@ -1,0 +1,52 @@
+/*
+=====================================================================
+                        Source: advanced.rule
+=====================================================================
+*/
+
+
+pause_screen_on_cmd : SETPMON  { print_screen_mode(0);}
+;
+
+pause_screen_off_cmd : SETPMOFF  { print_screen_mode(1);}
+;
+
+start_rpc_cmd : START_EXTERN valid_port CLOSE_SQUARE FOR  remote_func_list
+	{
+		print_start_server($<str>2,$<str>5);
+	}
+;
+
+stop_rpc_cmd : STOP_ALL_EXTERNAL 
+	{
+	print_stop_external();
+	}
+;
+
+valid_port : variable {
+		if (scan_variable($<str>1)!=2) {
+		char buff[256];
+			strcpy(buff,"START EXTERNAL ..ON must be an integer");
+			a4gl_yyerror(buff);
+			YYERROR;
+		}
+	} | INT_VALUE
+;
+
+
+remote_func_list :  remote_func |  remote_func_list KW_COMMA remote_func
+	{
+	sprintf($<str>$,"%s%s",$<str>1,$<str>3);
+	}
+;
+
+remote_func : identifier {
+	print_remote_func($<str>1);
+	sprintf($<str>$, "A4GL_unregister_func(\"%s\");\n", $<str>1); /* @fixme  direct C code - fixme ? */
+	addmap("Call Remote",$<str>1,curr_func,yylineno,infilename);
+	}
+;
+
+
+
+

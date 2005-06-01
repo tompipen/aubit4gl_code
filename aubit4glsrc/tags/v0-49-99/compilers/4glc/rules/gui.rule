@@ -1,0 +1,103 @@
+/*
+=====================================================================
+                        Source: gui.rule
+=====================================================================
+*/
+
+check_menu_cmd : CHECK_MENUITEM menu_item_list
+{
+print_gui_do_menuitems($<str>2,'C');
+}
+;
+
+menu_item_list:
+        menu_item | menu_item_list KW_COMMA menu_item
+                {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
+;
+
+menu_item:  identifier {
+        sprintf($<str>$,"\"%s\"",$<str>1);
+}
+;
+
+uncheck_menu_cmd : UNCHECK_MENUITEM menu_item_list
+{
+print_gui_do_menuitems($<str>2,'U');
+}
+;
+
+disable_cmd : DISABLE_MENUITEMS menu_item_list
+{
+print_gui_do_menuitems($<str>2,'D');
+}
+        | DISABLE field_name_list_as_struct
+{
+print_gui_do_fields(field_name_list_as_char($<field_list>2),'D');
+}
+        | DISABLE_FORM form_name KWFIELD field_name_list_as_struct
+{
+print_gui_do_form($<str>2,field_name_list_as_char($<field_list>4),'D');
+}
+;
+
+enable_cmd : ENABLE_MENUITEMS menu_item_list
+{
+print_gui_do_menuitems($<str>2,'E');
+}
+        | ENABLE field_name_list_as_struct
+{
+print_gui_do_fields(field_name_list_as_char($<field_list>2),'E');
+}
+        | ENABLE_FORM form_name KWFIELD field_name_list_as_struct
+{
+print_gui_do_form(field_name_list_as_char($<field_list>2),$<str>4,'E');
+}
+;
+
+msg_box_cmd : MESSAGEBOX {
+//start_state("messagebox",1);
+} fgl_expr_list
+        op_caption
+        op_icon
+        op_buttons
+        op_disable_msg
+        op_returning_msg {
+//start_state("messagebox",0);
+}
+;
+
+op_disable_msg :
+|  gm_disable_msg
+;
+
+
+gm_disable_msg: DISABLE_PROGRAM | DISABLE_ALL
+;
+
+
+op_returning_msg : 
+        | gm_returning_msg
+;
+
+gm_returning_msg: RETURNING variable
+;
+
+op_caption : | gm_caption
+;
+
+gm_caption: CAPTION fgl_expr_list ;
+
+op_icon : | gm_icon
+;
+
+gm_icon: ICON INT_VALUE  ;
+
+op_buttons : | gm_buttons;
+gm_buttons : BUTTONS INT_VALUE op_def_but;
+
+op_def_but : | DEFAULT INT_VALUE;
+
+
+/* ================================ gui.rule ============================= */
+
+

@@ -1,0 +1,101 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib makefile				 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.7 2004-09-28 09:49:22 afalout Exp $
+#
+
+ROOT    =../../..
+LIBROOT =../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                              Source files
+## ==================================================================
+
+CMODS_NORPC		=rpc_norpc.c
+OBJS_NORPC		=${CMODS_NORPC:.c=.o}
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+ALL		=${LIBROOT}/libRPC_NORPC${SO_EXT}
+
+#This must NOT be += because it would place affitional parameters AFTER
+#existing parameters already in CFLAGS: we must not do this, because if
+#specific path is needed to RPClib, it MUST be BEFORE other potenitially
+#conflicting paths:
+CFLAGS	:=-I../sun_rpc -I.. -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl -I${ROOT}/incl ${CFLAGS}
+
+ifneq "${COMSPEC}" ""
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+endif
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ALL}
+	@echo "Default targets (${ALL}) built successfully."
+
+${LIBROOT}/libRPC_NORPC${SO_EXT}: ${OBJS_NORPC}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
+
+## ==================================================================
+##                       Windows 32 DLL Targets
+## ==================================================================
+
+#dlllibRPC_NORPC: ${CMODS_NORPC}
+#	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} " DLL_LDFLAGS="@RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L${LIBROOT} -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile"
+#	${CP} libRPC_NORPC.dll libRPC_NORPC.dll.a ${LIBROOT}
+
+## ==================================================================
+##                        Clean Targets
+## ==================================================================
+
+clean :
+	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err core \
+	*.base *.exp *.def
+
+## ==================================================================
+##                         Other Targets
+## ==================================================================
+
+lclint: $(CMODS)
+	-lclint -weak $(CFLAGS) $(CMODS) > lclint.log 2>&1
+	@echo "see lclint.log for results"
+
+#----------------------------------- EOF -------------------------------
+
+
+
+
+

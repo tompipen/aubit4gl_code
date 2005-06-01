@@ -1,0 +1,42 @@
+alloc_arr_cmd :
+	ALLOCATE_ARRAY variable {
+		char buff[256];
+		char *s;
+		strcpy(buff,$<str>2);
+		s=strchr(buff,'[');
+		if (!s) {
+			a4gl_yyerror("Expecting an array and size");
+			YYERROR;
+		}
+		*s=0;
+		s++;
+
+		print_alloc_arr(buff,s);
+	}
+	
+;
+
+dealloc_arr_cmd : 
+	DEALLOCATE_ARRAY variable {
+		print_dealloc_arr($<str>2);
+	}
+;
+
+resize_arr_cmd :
+	RESIZE_ARRAY variable  {
+		char buff[256];
+		char *s;
+		strcpy(buff,$<str>2);
+		s=strchr(buff,'[');
+		if (!s) {
+			a4gl_yyerror("Expecting an array and size");
+			YYERROR;
+		}
+		*s=0;
+		s++;
+
+		print_realloc_arr(buff,s);
+	}
+
+;
+

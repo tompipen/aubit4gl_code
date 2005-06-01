@@ -1,0 +1,71 @@
+#!/bin/sh
+
+# Clean:
+rm -f makefile G__cpp_libA4GL_cint.C G__cpp_libA4GL_cint.h *.bak *~ \
+ 	libA4GL_cint.def  make.bat
+if test "$1" = "-clean"; then 
+	exit 0
+fi	
+
+################
+# Settings:
+source ../etc/aubitrc
+#WARNING: on Windows, CINTSYSDIR has to be in Windows format (not CygWin
+#or MSYS mapping (cygdrive) because makecint and cint executables are
+#native Windows executables and know nothing about path mapping
+case "$CINTSYSDIR" in *cygdrive*) 
+	echo "ERROR: CINTSYSDIR is in CygWin format"
+	exit 5
+	;;
+esac
+echo "CINTSYSDIR=$CINTSYSDIR"
+export CINTSYSDIR
+export PATH=$PATH:$CINTSYSDIR
+MAKECINT=$CINTSYSDIR/makecint
+
+USEAUBIT_PATH=`aubit-config AUBITDIR`
+#USEAUBIT_PATH=$AUBITDIR
+#clint will hard-code this path, can't use relative paths:
+#USEAUBIT_PATH=..
+
+export LD_LIBRARY_PATH=.:$CINTSYSDIR:$LD_LIBRARY_PATH
+export LD_ELF_LIBRARY_PATH=$LD_LIBRARY_PATH
+
+################
+# Check stuff;
+if test ! -f "$MAKECINT"; then 
+	echo "ERROR: file $MAKECINT does not exist"
+	exit 1
+fi
+if test "$COMSPEC" = ""; then 
+	SO_EXT=.so
+else
+	SO_EXT=.dll
+fi
+
+################
+# Create Makefile:
+$MAKECINT -mk makefile -dl libA4GL_cint$SO_EXT -p -H a4gl_cint_4gldef.h -l $USEAUBIT_PATH/lib/libaubit4gl$SO_EXT
+
+################
+# Build library:
+if test -f "makefile" ; then 
+	#make CINTIPATH=-I$(CINTLIBDIR) CINTSYSDIR=$CINTBINDIR -f makefile
+	make -f makefile
+else
+	echo "ERROR: failed to create makefile"
+	exit 2
+fi
+
+################
+# Copy lib to Aubit lib dir:
+if test -f libA4GL_cint$SO_EXT; then 
+	mv libA4GL_cint$SO_EXT ../lib
+	echo "CINT support library (lib/libA4GL_cint$SO_EXT) created."
+else
+	echo "ERROR: failed to create libA4GL_cint$SO_EXT"
+	exit 3
+fi
+
+exit 0
+

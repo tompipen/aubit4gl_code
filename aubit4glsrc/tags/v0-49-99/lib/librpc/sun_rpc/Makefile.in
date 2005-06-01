@@ -1,0 +1,121 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib makefile				 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.14 2004-09-28 09:49:22 afalout Exp $
+#
+
+ROOT    =../../..
+LIBROOT =../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                              Source files
+## ==================================================================
+
+CMODS_RPC		=rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c \
+				rpc_stack_xdr.c
+#CMODS_XDR		= ${ROOT}/compilers/fcompile/form_x_xdr.c
+
+OBJS_RPC			=${CMODS_RPC:.c=.o}
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+ifneq "@HAVE_RPCLIB@" "0"
+	ALL			+=${LIBROOT}/libRPC_XDR${SO_EXT}
+endif
+
+#This must NOT be += because it would place affitional parameters AFTER
+#existing parameters already in CFLAGS: we must not do this, because if
+#specific path is needed to RPClib, it MUST be BEFORE other potenitially
+#conflicting paths:
+CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl -I${ROOT}/incl ${CFLAGS}
+
+ifneq "${COMSPEC}" ""
+	LINKLIBS	=-L${LIBROOT} -laubit4gl @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
+endif
+
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ALL}
+	@echo "Default targets (${ALL}) built successfully."
+
+${LIBROOT}/libRPC_XDR${SO_EXT}: ${OBJS_RPC}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
+
+## ==================================================================
+##                       Windows 32 DLL Targets
+## ==================================================================
+
+#dlllibRPC_XDR: ${CMODS_RPC}
+#	${MAKE} libRPC_XDR.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} ${AUBIT_LIB}" DLL_LDFLAGS=" @RPCLIB_INCLUDE@ ${RPCLIB_NAME} ${PDF_LIBNAME} -L${LIBROOT} -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile -I${ROOT}/incl"
+#	${CP} libRPC_XDR.dll libRPC_XDR.dll.a ${LIBROOT}
+
+## ==================================================================
+##                        Sub Targets
+## ==================================================================
+
+form_x.h:
+	${MAKE} -C ${ROOT}/compilers/fcompile rpc
+
+## ==================================================================
+##                        Dependencies
+## ==================================================================
+
+${OBJS_RPC} ${OBJS_NORPC}: form_x.h
+${CMODS_RPC} : form_x.h
+
+## ==================================================================
+##                        Clean Targets
+## ==================================================================
+
+clean :
+	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err \
+	core *.base *.exp *.def
+
+## ==================================================================
+##                         Other Targets
+## ==================================================================
+
+lclint: $(CMODS)
+	-lclint -weak $(CFLAGS) $(CMODS) > lclint.log 2>&1
+	@echo "see lclint.log for results"
+
+#----------------------------------- EOF -------------------------------
+
+
+
+
+

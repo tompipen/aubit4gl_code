@@ -1,0 +1,67 @@
+0.49-98
+	* use 4glpc.hlp not 4glpc.iem for help messages
+	* lib/libaubit4gl/stack.c, lib/libsql/esqlc/esql.ec,
+	  tools/adbschema/makefile, tools/adbschema/table.4gl: Add some
+	  basic blob handling, add fragments to adbschema
+	* compilers/sql/80.reqd: Fix bug in SELECT .. FOR UPDATE
+	* lib/libui/ui_curses/iarray.c: MID  0000614 - make it so it only
+	  goes down 1 row when paging down to insert a new row...
+	* lib/libsql/odbc/sql.c: Fixup for a mantis issue 722 -
+	  SQL_ATTR_CURSOR_TYPE
+	* tools/asql/: execute.4gl, paginate.4gl, runforms/makefile: Make
+	  file cleanup & variable renaming
+	* lib/libui/ui_highlevel/: formcntrl.c, lowlevel/widget_gtk.c:
+	  int_driver rename & comment removal
+	* lib/liblex/lex_esqlc/compile_c.c: Small comment cleanup
+	* lib/libaubit4gl/: .splintrc, a4gl_libaubit4gl_int.h,
+	  attributes.c, builtin.c, builtin_d.c, match.c, stack.c: lint
+	  fixups
+	* lib/bin/dlmagic: Small fixups
+	* incl/a4gl_sql.h: Add extra generic field to s_sid
+	* etc/import/README: Tidy import naming convention
+	* compilers/4glc/: mk_states_c.in, rules/main.rule: Small fixups -
+	  change // comments to /* in mk_states.c	      remove a
+	  reduce/reduce error in main.rule
+	* etc/convertsql/INFORMIX-POSTGRES.cnv: Change mapping of SET
+	  ISOLATION commands
+	* compilers/sql/: 80.reqd, util.c: Fix invalid 'free' reported by
+	  Leonardo Cecchi
+
+Summary :
+ compilers/4glc/mk_states_c.in                |    4
+ compilers/4glc/rules/main.rule               |    1
+ compilers/sql/80.reqd                        |   20 -
+ compilers/sql/util.c                         |    5
+ configure                                    |    8
+ configure.in                                 |    6
+ etc/convertsql/INFORMIX-POSTGRES.cnv         |    4
+ etc/import/README                            |    3
+ incl/a4gl_sql.h                              |    1
+ lib/bin/dlmagic                              |    4
+ lib/libaubit4gl/.splintrc                    |    2
+ lib/libaubit4gl/API_ui.spec                  |    3
+ lib/libaubit4gl/a4gl_libaubit4gl_int.h       |    2
+ lib/libaubit4gl/attributes.c                 |   36 +-
+ lib/libaubit4gl/builtin.c                    |   63 ++--
+ lib/libaubit4gl/builtin_d.c                  |    8
+ lib/libaubit4gl/corba_server_util.c          |    5
+ lib/libaubit4gl/match.c                      |    8
+ lib/libaubit4gl/ops.c                        |   13
+ lib/libaubit4gl/report.c                     |    4
+ lib/libaubit4gl/sql_common.c                 |    4
+ lib/libaubit4gl/stack.c                      |   26 +
+ lib/libaubit4gl/ui.c                         |   12
+ lib/liblex/lex_esqlc/compile_c.c             |    5
+ lib/libsql/esqlc/esql.ec                     |  358 ++++++++++++++++++++++-----
+ lib/libsql/odbc/sql.c                        |   44 +--
+ lib/libui/ui_curses/iarray.c                 |   21 -
+ lib/libui/ui_highlevel/formcntrl.c           |    6
+ lib/libui/ui_highlevel/lowlevel/widget_gtk.c |   11
+ tools/4glpc/4glpc.4gl                        |    2
+ tools/adbschema/makefile                     |    4
+ tools/adbschema/table.4gl                    |  118 +++++++-
+ tools/asql/execute.4gl                       |   44 +--
+ tools/asql/paginate.4gl                      |    8
+ tools/asql/runforms/makefile                 |   41 +++
+ tools/project/build                          |    2
+ 36 files changed, 649 insertions(+), 257 deletions(-)

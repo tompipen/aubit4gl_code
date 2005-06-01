@@ -1,0 +1,91 @@
+4GL_metrics
+-----------
+Purpose : Generate LOC and Cyclomatic-complexity metrics for
+	  Informix 4GL modules.
+Author  : Renaat.VanHee@vlafo.be
+Date    : 1997
+Call    : 4GL_metrics UIT module1 module2 module3 ...
+	    UIT = csv : generate output as a CSV-file
+		  ... : generate output for printer
+            module? = 1 or more 4GL-modules to generate
+Language : Perl
+--------------------------------------------------------------
+
+This PERL-script is my first try at experimenting with metrics. Since
+I didn't find any (free) metrics for Informix 4GL on the web a decided
+to roll my own.
+The PERL script might not be the most perfect written in the world but
+it does wat it needs to do for my company.
+Here follows a description of the output :
+
+
+General format of CSV file:
+
+   1         2         3      4    5
+FUNC/REP|BLNC_CNT|CMNT_CNT|LN_CNT|V(G)
+
+first column : function name
+----------------------------
+In the first column you find the function names of the functions in
+the evaluated module. The first two are rather special and you will
+not find them in your code.
+The first "header" contains every line before the first
+"Function/Report". This give you an idea about the number of
+module-global variables used for the evaluated module.
+The second "separator" contains every line between "END
+FUNCTION/REPORT" and "FUNCTION/REPORT". Normally this would contain
+only blancs or comments.
+
+second column : number of blanc lines
+-------------------------------------
+I think this is rather self explanatory.
+
+third column : number of comment lines
+--------------------------------------
+
+fourth column : total number of lines
+-------------------------------------
+This equals = blanc + comment + code. This means that you can
+determine the number of code lines as total - blanc - comment.
+
+fifth column : cyclomatic complexity.
+-------------------------------------
+This metric contains the number of decisions in a module + 1. If you
+would like more information on this subject I suggest you look it up
+on the internet. Suffice is to say that this is a rather important
+metric.
+
+Raising of warnings
+-------------------
+What's the use of these numbers if you can't do anything with them ?
+That's why I put certain numbers as a warning in bold in the output generated for the printer.
+These warnings aren't based on an empirical study but are based on my
+experiences from the last 4 years as a 4GL-programmer, mainly in
+maintenance.
+The first warning you receive is if the total number of lines for a
+function exceeds 250. For most of us it is rather dificult to
+understand what the flow of a function is if it exceeds this value.
+The second warning you receive is when the V(G) exceeds a value of 10.
+This means dat their are more than 10 branching statements
+(IF,CASE,...) in a single function. This makes it very difficult to
+thoroughly test this function.
+When you receive the two warnings for a single function this might
+trigger a code review.
+
+
+Final
+-----
+If you find this script useful I would like to hear from you. If
+you're bussy with experiments regarding metrics on Informix 4GL I also
+would like to hear from you.
+For the moment I'm bussy making a script to generate an information
+flow metric for Informix 4GL.  If you're interested give me a sign.
+Last but not least. I'm no expert PERL-programmer so if you want to
+modify this script please, by all means, do so. The only thing that I
+want in return is that you send a copy of you modifications.
+
+
+Hope to be of some help,
+Renaat.VanHee@vlafo.be
+BELGIUM
+

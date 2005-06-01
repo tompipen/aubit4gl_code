@@ -1,0 +1,218 @@
+/*
+=====================================================================
+                        Source: input.rule
+=====================================================================
+*/
+
+end_input :
+| field_commands END_INPUT 
+| END_INPUT
+;
+
+opt_defs : {
+sprintf($<str>$,"0");
+} | WITHOUT_DEFAULTS {
+sprintf($<str>$,"1");
+}
+;
+
+field_commands : field_command | field_commands field_command;
+
+field_command :  
+	  BEFFIELD bef_field_list_as_struct
+		{
+		A4GL_add_event(-97,field_name_list_as_or_char($<field_list>2));
+		print_befaft_field_1(field_name_list_as_or_char($<field_list>2));
+} commands {
+	print_befaft_field_2();
+}
+	| AFTFIELD aft_field_list_as_struct
+		{
+		A4GL_add_event(-98,field_name_list_as_or_char($<field_list>2));
+		print_befaft_field_1(field_name_list_as_or_char($<field_list>2));
+} commands {
+	print_befaft_field_2();
+}
+	| AFTROW {
+		A4GL_add_event(-11,"");
+		print_befaft_field_1("AFT_ROW");
+} commands {
+	print_befaft_field_2();
+}
+	| BEFROW {
+		A4GL_add_event(-10,"");
+		A4GL_lex_printcomment("/* before row */ \n");
+		print_befaft_field_1("BEF_ROW");
+} commands {
+	print_befaft_field_2();
+		}
+	| on_key_command {
+	A4GL_add_onkey_key($<str>1);
+	print_onkey_1($<str>1);
+} commands {
+	print_onkey_2();
+}
+	| on_action { A4GL_add_onaction($<str>1); print_onaction_1($<str>1); } commands { print_onaction_2(); }
+	| AFTINP {
+		A4GL_add_event(-95,"");
+		print_befaft_field_1("AFTER_INP");
+} commands {
+	print_befaft_field_2();
+}
+	| BEFINP {
+		A4GL_add_event(-99,"");
+		print_befaft_field_1("BEFORE_INP");
+} commands {
+	print_befaft_field_2();
+}
+	| BEFORE_DELETE  {
+		A4GL_add_event(-12,"");
+		print_befaft_field_1("DO_BEFORE_DELETE");
+	} commands { print_befaft_field_2(); }
+	| BEFORE_INSERT  { A4GL_add_event(-14,""); print_befaft_field_1("DO_BEFORE_INSERT"); } commands { print_befaft_field_2(); }
+	| BEFORE_INSERT_DELETE  { A4GL_add_event(-17,""); print_befaft_field_1("DO_BEFORE_INSERT_DELETE"); } commands { print_befaft_field_2(); }
+	| AFTER_INSERT_DELETE  { A4GL_add_event(-18,""); print_befaft_field_1("DO_AFTER_INSERT_DELETE"); } commands { print_befaft_field_2(); }
+	| AFTER_DELETE  {
+		A4GL_add_event(-13,"");
+		print_befaft_field_1("DO_AFTER_DELETE");
+	} commands { print_befaft_field_2(); }
+	| AFTER_INSERT  {
+		A4GL_add_event(-15,"");
+		print_befaft_field_1("DO_AFTER_INSERT");
+	} commands { print_befaft_field_2(); }
+
+
+;
+
+
+
+bef_field_list_as_struct :
+        field_name_as_struct {
+                        $<field_list>$=new_field_list();
+                        $<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
+        }
+        | bef_field_list_as_struct KW_COMMA field_name_as_struct {
+                        $<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
+        }
+;
+
+aft_field_list_as_struct :
+        field_name_as_struct {
+                        $<field_list>$=new_field_list();
+                        $<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
+        }
+        |aft_field_list_as_struct KW_COMMA field_name_as_struct {
+                        $<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
+        }
+;
+
+next_field_cmd : NEXTFIELD next_field {
+print_next_field($<str>2);
+}
+;
+
+next_form_cmd : NEXTFORM identifier KWFIELD next_field {
+print_next_form_field($<str>2,$<str>4);
+}
+;
+
+next_field	:	KW_NEXT {sprintf($<str>$,"\"+\"");}
+		| 	KW_PREVIOUS {sprintf($<str>$,"\"-\"");}
+		| 	field_name_as_struct {sprintf($<str>$,field_name_as_char($<field_entry>1));}
+;
+
+input_cmd	:	KW_INPUT inp_rest
+{
+print_input_1();
+  A4GL_new_events();
+} end_input 
+{
+print_input_2($<str>2);
+A4GL_drop_events();
+}
+;
+
+
+inp_rest:
+BY_NAME ibind_var_list opt_defs opt_help_no opt_attributes 
+{
+print_input(1,$<str>3,$<str>4,0,atoi($<str>5));
+strcpy($<str>$,A4GL_get_formloop_str(0));
+}
+| ibind_var_list opt_defs FROM field_name_list_as_struct  opt_help_no opt_attributes 
+{
+print_input(0,$<str>2,$<str>5,field_name_list_as_char($<field_list>4),atoi($<str>6));
+strcpy($<str>$,A4GL_get_formloop_str(0));
+}
+| ARRAY use_arr_var opt_defs FROM identifier DOT MULTIPLY opt_help_no {
+curr_input_array_attribs.maxcount=0;
+curr_input_array_attribs.count=0;
+curr_input_array_attribs.allow_insert=1;
+curr_input_array_attribs.allow_delete=1;
+curr_input_array_attribs.curr_row_display=0;
+inp_flags=0;} opt_attributes
+{
+strcpy($<str>$,print_input_array(fgl_add_scope($<str>2,0),$<str>8,$<str>3,$<str>5,$<str>10,&curr_input_array_attribs));
+}
+;
+
+
+
+
+scroll_cmd : 
+	SCROLL field_name_list_as_struct up_or_down {
+		print_scroll(field_name_list_as_char($<field_list>2),$<str>3);
+	}
+;
+
+up_or_down :
+	 KWUP_BY INT_VALUE {sprintf($<str>$,"%s",$<str>2);}
+	| KWDOWN_BY INT_VALUE {sprintf($<str>$,"-%s",$<str>2);}
+	| KWUP {strcpy($<str>$,"1");} 
+	| KWDOWN {strcpy($<str>$,"-1");}
+	| KWUP_BY variable {
+  		int a;
+  		a=scan_variable($<str>2)&15;
+  		if (a!=1&&a!=2) {
+    		a4gl_yyerror("Only INTEGER/SMALLINT variables may be here");
+    		YYERROR;
+    		/* error processing */;
+  		}
+  		sprintf($<str>$,"%s",fgl_add_scope($<str>2,0));
+	}
+	| KWDOWN_BY variable {
+  		int a;
+  		a=scan_variable($<str>2)&15;
+  		if (a!=1&&a!=2) {
+    		a4gl_yyerror("Only INTEGER/SMALLINT variables may be here");
+    		YYERROR;
+    		/* error processing */;
+  		}
+  		sprintf($<str>$,"%s",fgl_add_scope($<str>2,0));
+	}
+
+
+;
+
+op_help : {strcpy($<str>$,"");} | KW_HELP INT_VALUE
+;
+
+input_array_attributes: input_array_attributes_int {
+	strcpy($<str>$,"");
+}
+;
+
+
+input_array_attributes_int : 
+	CURRENT_ROW_DISPLAY_EQUAL CHAR_VALUE 	{ curr_input_array_attribs.curr_row_display=strdup($<str>2); }
+	| COUNT EQUAL INT_VALUE 		{ curr_input_array_attribs.count=strdup($<str>3); }
+	| COUNT EQUAL variable 			{ curr_input_array_attribs.count=strdup($<str>3); }
+	| MAXCOUNT EQUAL INT_VALUE 		{ curr_input_array_attribs.maxcount=strdup($<str>3); }
+	| MAXCOUNT EQUAL variable 		{ curr_input_array_attribs.maxcount=strdup($<str>3); }
+	| INSERT_ROW_EQUAL_TRUE 		{ curr_input_array_attribs.allow_insert=1; }
+	| INSERT_ROW_EQUAL_FALSE 		{ curr_input_array_attribs.allow_insert=0; }
+	| DELETE_ROW_EQUAL_TRUE 		{ curr_input_array_attribs.allow_delete=1; }
+	| DELETE_ROW_EQUAL_FALSE 		{ curr_input_array_attribs.allow_delete=0; }
+;
+
+/* ========================= input.rule ============================= */
