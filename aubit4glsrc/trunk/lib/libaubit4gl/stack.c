@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.125 2005-05-23 20:16:05 whaslbeck Exp $
+# $Id: stack.c,v 1.126 2005-06-06 11:17:03 pjfalbe Exp $
 #
 */
 
@@ -2094,6 +2094,7 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 
       buff2 = buff;
       buff2 = A4GL_lrtrim (buff);
+	A4GL_debug("buff2=%s\n",buff2);
 
       if (a)
 	{
@@ -2475,6 +2476,7 @@ A4GL_isnull (int type, char *buff)
 
   if (type == DTYPE_CHAR)
     {
+	A4GL_debug("Got '%s' (%c %c)",buff,buff[0],buff[1]);
       if (buff[0] == 0 && buff[1]==0)
 	return 1;
       else
@@ -3123,6 +3125,8 @@ dif_pop_bind_money (struct bound_list *list)
 }
 
 
+
+#ifdef NDEF
 /**
  *
  *
@@ -3153,6 +3157,29 @@ A4GL_lrtrim (char *z)
   A4GL_debug ("10 lrtrim : All done - returning '%s'", A4GL_null_as_null(rstr));
   return rstr;
 }
+#endif
+
+char *A4GL_lrtrim (char *str)
+{
+      char *obuf;
+	char *s=0;
+A4GL_debug("new lrtrim");
+      if (str)
+      {
+            for (obuf = str; *obuf && isspace(*obuf); ++obuf)
+                  ;
+            if (str != obuf) {
+		s=strdup(obuf);
+		strcpy(str,s);
+		free(s);
+	    }
+  	   A4GL_trim(str);
+      }
+	A4GL_debug("Trimmed :'%s'",str);
+      return str;
+}
+
+
 
 
 static char escape_chr;
