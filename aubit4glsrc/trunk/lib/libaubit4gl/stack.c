@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.126 2005-06-06 11:17:03 pjfalbe Exp $
+# $Id: stack.c,v 1.127 2005-06-06 18:03:33 mikeaubury Exp $
 #
 */
 
@@ -330,6 +330,15 @@ A4GL_pop_double (void)
 {
   double ptr;
   A4GL_pop_param (&ptr, DTYPE_FLOAT, 0);
+  return ptr;
+}
+
+
+
+double A4GL_pop_double_null_as_zero(void ) {
+  double ptr;
+  A4GL_pop_param (&ptr, DTYPE_FLOAT, 0);
+  if (A4GL_isnull(DTYPE_FLOAT,(void *)&ptr)) return 0;
   return ptr;
 }
 

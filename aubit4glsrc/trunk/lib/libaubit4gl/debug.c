@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.41 2005-05-18 13:48:40 mikeaubury Exp $
+# $Id: debug.c,v 1.42 2005-06-06 18:03:33 mikeaubury Exp $
 #
 */
 
@@ -130,6 +130,7 @@ A4GL_debug_full (char *fmt, ...)
   char buff_n[20];
 
   if (strlen(fmt)==0) {
+		A4GL_assertion(1,"No format for debug");
 		A4GL_pause_execution();
   }
   if (nodebug == DEBUG_NOTREQUIRED)

@@ -535,6 +535,14 @@ int get_exec_mode_c() {
 }
 
 void set_outfname(void) {
+	static int have_made_dir=0;
+	if (have_made_dir==0) {
+		char buff[1024];
+		sprintf(buff,"%s/tmp",acl_getenv("AUBITDIR"));
+		mkdir(buff,0777);
+		chmod (buff,0777);
+		have_made_dir=1;
+	}
 	sprintf(outfname,"%s/tmp/out%d.txt",acl_getenv("AUBITDIR"),getpid());
 }
 

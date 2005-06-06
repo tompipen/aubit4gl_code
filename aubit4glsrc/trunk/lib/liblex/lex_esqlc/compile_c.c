@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.228 2005-06-01 16:02:35 mikeaubury Exp $
+# $Id: compile_c.c,v 1.229 2005-06-06 18:03:36 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.228 2005-06-01 16:02:35 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.229 2005-06-06 18:03:36 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1036,7 +1036,7 @@ pr_report_agg (void)
 	  A4GL_debug ("X2");
 	  print_expr (sreports[z].rep_cond_expr);
 	  A4GL_debug ("X3");
-	  printc ("_res=A4GL_pop_double(); _g%dused++; _g%d+=_res;}\n ", a,a);
+	  printc ("_res=A4GL_pop_double_null_as_zero(); _g%dused++; _g%d+=_res;}\n ", a,a);
 	}
 
       if (t == 'A')
@@ -1045,7 +1045,7 @@ pr_report_agg (void)
 	  printc ("if (A4GL_pop_bool()) {double _res;");
 	  print_expr (sreports[z].rep_cond_expr);
 
-	  printc ("_res=A4GL_pop_double(); _g%d+=_res;_g%d++;}\n", a, a + 1);
+	  printc ("_res=A4GL_pop_double(); if (!A4GL_isnull(3,&_res)) { _g%d+=_res;_g%d++;}}\n", a, a + 1);
 	}
 
       if (t == 'N')

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.102 2005-05-18 13:48:42 mikeaubury Exp $
+# $Id: resource.c,v 1.103 2005-06-06 18:03:38 mikeaubury Exp $
 #
 */
 
@@ -59,6 +59,11 @@
 
 //#define DEBUG_VARIABLE_USAGE
 
+#if (defined (__MINGW32__))
+#ifndef _AUBITETC_
+#define _AUBITETC_ AUBITETC
+#endif
+#endif
 
 #ifdef DEBUG_VARIABLE_USAGE
 FILE *fd1=0;
@@ -548,7 +553,6 @@ find_str_resource (char *s)
 
 char * acl_getenv (char *s) {
 	char *ptr;
-	//if (strstr(s,"HELP")) A4GL_pause_execution();
 	ptr=acl_getenv_internal(s,1);
 	return ptr;
 }

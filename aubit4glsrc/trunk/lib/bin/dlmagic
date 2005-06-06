@@ -222,6 +222,11 @@ if [ "$MAKE_HEADER" = "1" -o "$MAKE_HEADER" = "2" ]; then
 	/^[ 	]*$/ {next}
 	{
 	fname=$1
+	if (use_prefix) {
+		print "#ifdef LIBTOOL_PREFIX"
+		print "#define " lib_prefix fname " PRELOADED_LTX_ ## " lib_prefix fname
+		print "#endif"
+	}
 	rtype="void"
 
 	c=0

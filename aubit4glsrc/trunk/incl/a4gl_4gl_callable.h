@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.17 2005-03-09 15:14:33 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.18 2005-06-06 18:03:38 mikeaubury Exp $
 */
 
 /**
@@ -99,6 +99,7 @@ void A4GL_set_help_file (char *fname);
 
 
 double A4GL_pop_double(void);
+double A4GL_pop_double_null_as_zero(void);
 int A4GL_pop_bool (void);
 short A4GL_pop_int (void);
 long A4GL_pop_long (void);

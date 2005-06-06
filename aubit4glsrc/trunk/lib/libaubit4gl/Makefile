@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2005-05-21 16:18:34 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2005-06-06 18:03:22 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -113,6 +113,7 @@ ifeq "${TARGET_OS}" "solaris"
 	LINK_LIBS		+=-lsocket
 endif
 
+	LINK_LIBS		+=-lefence
 ifneq "${TARGET_OS}" "hpux"
 	ifneq "${TARGET_OS}" "cygwin"
 		ifneq "${GCC_MINGW}" "yes"
