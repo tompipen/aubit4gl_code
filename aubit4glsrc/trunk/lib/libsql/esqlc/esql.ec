@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.137 2005-06-06 16:31:56 mikeaubury Exp $
+# $Id: esql.ec,v 1.138 2005-06-06 19:18:43 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.137 2005-06-06 16:31:56 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.138 2005-06-06 19:18:43 mikeaubury Exp $";
 #endif
 
 
@@ -4935,13 +4935,8 @@ if (nbind)
 	}
 	
 
-      reccount += (nrows = sqlca.sqlerrd[2]);
-		A4GL_debug("Dumping %d rows",nrows);
-	for (i=0;i< nrows;i++) {
-		A4GL_debug("Dumping row %d",i);
-		dumprec(unloadFile,udesc,i);
-	}
-
+      reccount += 1;
+	dumprec(unloadFile,udesc,i);
 
     }				/*
 				 * end fetch loop 
@@ -5053,8 +5048,8 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
   for (col = ldesc->sqlvar, i = 0; i < ldesc->sqld; col++, i++)
     {
 	
-	ptr=ldesc->sqlvar[i].sqldata + (row * ldesc->sqlvar[i].sqllen);
-	ind=ldesc->sqlvar[i].sqlind[row]; //  + (row * sizeof(short));
+	ptr=ldesc->sqlvar[i].sqldata ; //+ (row * ldesc->sqlvar[i].sqllen);
+	ind=ldesc->sqlvar[i].sqlind ; //[row]; //  + (row * sizeof(short));
 
 
       errno = 0;
