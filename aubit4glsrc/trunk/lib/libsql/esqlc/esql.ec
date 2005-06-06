@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.135 2005-05-24 15:34:58 mikeaubury Exp $
+# $Id: esql.ec,v 1.136 2005-06-06 15:54:36 mikeaubury Exp $
 #
 */
 
@@ -65,9 +65,16 @@
 */
 
 
-#define KAGEL_UNLOAD
-#define IN_A4GL
 
+// the unload routine derived from Art's stuff isn't working properly yet..
+// @ todo - investigate whats wrong and fix it so test 1257 runs!
+#define KAGEL_UNLOAD
+
+#undef KAGEL_UNLOAD
+
+
+
+#define IN_A4GL
 //Not referenced anywhere:
 //#define DEFINE_SQLCA
 
@@ -174,7 +181,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.135 2005-05-24 15:34:58 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.136 2005-06-06 15:54:36 mikeaubury Exp $";
 #endif
 
 
@@ -4627,6 +4634,7 @@ char *insert_stmt, waitstmt[100];
 int towait = 10;
 EXEC SQL END DECLARE SECTION;
 FILE *unloadFile=0;
+static char *xbuff=0;
 
 #define ISSQLERROR if (isSqlError()) { if (unloadFile) {fclose(unloadFile); unloadFile=0;}free(fname); return; }
 
@@ -4650,11 +4658,11 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
   struct sqlda *udesc;
   struct sqlvar_struct *col;
   long  reccount = 0;
-  loc_t *loc=0;
+  static loc_t *loc=0;
   static char **bufary=0;
   static short **ipary=0;
   static int nd=0;
-  short *colszs=0;
+  static short *colszs=0;
   char *fname=0;
   int sstatus=0;
   struct BINDING *ibind;
@@ -4816,7 +4824,7 @@ A4GL_debug("unload...");
 	  break;
 	default: ;
 	}
-      pos = (int) rtypalign (pos, col->sqltype) + col->sqllen;
+      pos = (int) rtypalign (pos, col->sqltype) +rtypmsize(col->sqltype, col->sqllen);
     }
 
   /*
@@ -4853,8 +4861,8 @@ A4GL_debug("unload...");
   /*
    * Bufary and coszs need one pointer per column in the result set. 
    */
-  bufary = (char **) malloc (udesc->sqld * sizeof (char *)*4);
-  colszs = (short *) malloc (udesc->sqld * sizeof (short)*4);
+  bufary = (char **) malloc (udesc->sqld * sizeof (char *));
+  colszs = (short *) malloc (udesc->sqld * sizeof (short));
 
   /*
    * Allocate indicator list. 
@@ -4862,7 +4870,7 @@ A4GL_debug("unload...");
   /*
    * Array of indicators for fetch sqldat structure. 
    */
-  ipary = (short **) malloc (udesc->sqld * sizeof (short *)*4);
+  ipary = (short **) malloc (udesc->sqld * sizeof (short *));
   if (ipary == NULL || colszs == NULL) { A4GL_exitwith("Out of memory 1"); fclose(unloadFile); free(fname); fname=0;return; }
 
 
@@ -4870,7 +4878,7 @@ A4GL_debug("unload...");
    * Step 3: Set pointers in the allocated memory to receive each *
    *    item in the select list. 
    */
-  loc = (loc_t *) malloc (sizeof (loc_t)*4);
+  loc = (loc_t *) malloc (sizeof (loc_t));
   nd=udesc->sqld;
 
   for (col = udesc->sqlvar,  i = 0; i < udesc->sqld;  col++, i++)
@@ -4880,11 +4888,11 @@ A4GL_debug("unload...");
       /*
        * Allocate Fetch array for this column. 
        */
-      bufary[i] = malloc (col->sqllen * FetArrSize*4);
+      bufary[i] = malloc (rtypmsize(col->sqltype, col->sqllen));
       /*
        * Allocate indicator array for this column. 
        */
-      ipary[i] = (short *) malloc (FetArrSize * sizeof (short)*4);
+      ipary[i] = (short *) malloc (FetArrSize * sizeof (short));
 
 
       /*
@@ -4980,9 +4988,12 @@ if (nbind)
    */
   EXEC SQL CLOSE fetch_curs;
   ISSQLERROR 
+
   EXEC SQL FREE fetch_curs;
-  ISSQLERROR EXEC SQL FREE fetcher;
-ISSQLERROR
+  ISSQLERROR 
+
+  EXEC SQL FREE fetcher;
+  ISSQLERROR
 
   fflush(unloadFile);
   fclose(unloadFile);
