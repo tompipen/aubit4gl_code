@@ -497,7 +497,6 @@ printField (FILE * outputFile, int idx, char *descName)
 char fmt[255];
   int rc = 0;
 
-A4GL_assertion(out==0,"No output file (3)");
 
   EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator =
     INDICATOR,:dataType = TYPE;
@@ -919,6 +918,7 @@ int a;
         if (sqlca.sqlcode==100) {
                         if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
 				if (display_mode!=DISPLAY_UNLOAD) {
+					A4GL_assertion(out==0,"No output file (3)");
                                 	fprintf(out,"\n");
 				}
 			}
@@ -929,8 +929,10 @@ int a;
 	if ( fetchFirst==1) {
 			if (display_mode!=DISPLAY_UNLOAD) {
                         if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+				A4GL_assertion(out==0,"No output file (3)");
                                 fprintf(out,"\n");
                         } else {
+				A4GL_assertion(exec_out==0,"No output file (3)");
                                 fprintf(exec_out,"\n");
 			}
 			}
