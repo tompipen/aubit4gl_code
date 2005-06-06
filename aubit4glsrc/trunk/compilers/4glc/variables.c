@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.56 2005-05-15 12:58:49 mikeaubury Exp $
+# $Id: variables.c,v 1.57 2005-06-06 18:14:55 mikeaubury Exp $
 #
 */
 
@@ -1297,7 +1297,6 @@ A4GL_debug("-->%s",s);
   if (ptr->variable_type == VARIABLE_TYPE_RECORD || ptr->variable_type == VARIABLE_TYPE_OBJECT)
     {
       A4GL_debug ("Got a record - looks complicated..");
-	//A4GL_pause_execution();
 	if (var_ptr) {
       		*var_ptr = ptr;		/* Carry on working with this one instead...*/
 	}

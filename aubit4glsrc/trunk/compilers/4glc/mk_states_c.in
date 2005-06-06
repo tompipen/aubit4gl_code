@@ -2,7 +2,11 @@
 BEGIN  {
 	cnt=0
 	print "#include \"a4gl_4glc_int.h\""
+	print "#ifdef SIMPLIFIED"
+	print "#include \"y_tab.h\""
+	print "#else"
 	print "#include \"y.tab.h\""
+	print "#endif"
 	print "/* andrej const short *token_groups[]; */"
 	print "/* andrej moved to end to avoid re-declaring token_groups:"
 	print "int allow_token_state(int yystate,int yytoken) {"
