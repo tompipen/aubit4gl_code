@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2005-02-03 07:47:33 afalout Exp $
+# $Id: Makefile,v 1.4 2005-06-06 16:31:56 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -203,7 +203,7 @@ ifneq "${COMSPEC}" ""
 	-@rm $(basename $<).c $(basename $<).c_*
 	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $(basename $<).o ${IFX_LIBS} ${LINKLIBS} -o $@
 else
-	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -g -c $^ ${ESQL_FLAGS} \
+	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -g -c $^ ${ESQL_FLAGS} -Wall \
 		${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) -g  esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 endif
