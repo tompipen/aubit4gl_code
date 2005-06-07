@@ -24,7 +24,7 @@ A4GL_LL_decode_aubit_attr int a char s -> int
 A4GL_LL_delete_errorwindow void* curr_error_window -> void
 
 /* void* A4GL_LL_display_form struct s_form_dets *f int attrib */
-A4GL_LL_display_form void* f int attrib -> void* 
+A4GL_LL_display_form void* f int attrib int curr_width int curr_height int cb -> void* 
 
 /* int A4GL_LL_dump_screen int n */
 A4GL_LL_dump_screen int n -> int
@@ -127,7 +127,9 @@ A4GL_LL_set_field_back void* field int attr -> void
 
 /* void A4GL_LL_set_field_buffer void* field int n char* str */
 A4GL_LL_set_field_buffer void* field int n char* str -> void
-A4GL_LL_clr_field_buffer void* field int n -> void
+
+
+/* OLD ?A4GL_LL_clr_field_buffer void* field int n -> void */
 
 /* void A4GL_LL_set_field_fore void* field int attr */
 A4GL_LL_set_field_fore void* field int attr -> void
@@ -162,15 +164,15 @@ A4GL_LL_sleep int n -> void
 /* void A4GL_LL_switch_to_line_mode void */
 A4GL_LL_switch_to_line_mode  -> void
 
-/* void A4GL_LL_wadd_char_xy_col void* win int x int y int ch */
-A4GL_LL_wadd_char_xy_col void* win int x int y int ch -> void
-A4GL_LL_wadd_char_xy_col_w void* win int x int y int ch -> void
+/* void A4GL_LL_wadd_char_xy_col void* win int x int y int ch  */
+A4GL_LL_wadd_char_xy_col void* win int x int y int ch int curr_width int curr_height int cb -> void
+A4GL_LL_wadd_char_xy_col_w void* win int x int y int ch int curr_width int curr_height int cb -> void
 
 /* int UILIB_A4GL_prompt_loop void* vprompt int timeout void* evt_list*/
 A4GL_LL_prompt_loop void* vprompt int timeout void* evt_list -> int
 
 /* int UILIB_A4GL_start_prompt void* vprompt int ap int c int h int af */
-A4GL_LL_start_prompt void* vprompt int ap int c int h int af -> int
+A4GL_LL_start_prompt void* vprompt int ap int c int h int af int curr_width int cb -> int
 
 
 A4GL_LL_set_chars_normal int* n -> int
@@ -183,8 +185,8 @@ A4GL_LL_open_gui_form char* name_orig  int absolute  int nat  char* like  int di
 A4GL_LL_set_window_title int nargs -> int
 A4GL_LL_widget_name_match void* w char* name -> int
 A4GL_LL_clr_form_fields int to_defaults char* defs  -> void
-A4GL_LL_clr_menu_disp ACL_Menu* menu -> void 
-A4GL_LL_h_disp_title ACL_Menu* menu char* str -> void
+A4GL_LL_clr_menu_disp ACL_Menu* menu int curr_width void* cw -> void 
+A4GL_LL_h_disp_title ACL_Menu* menu char* str void* cw -> void
 A4GL_LL_set_acc_intr_keys int n -> void
 A4GL_LL_menu_loop ACL_Menu* menu -> int
-
+A4GL_LL_construct_large char* orig void* evt int initkey int initpos char* left char* right int curr_width int curr_height int comment_line -> int

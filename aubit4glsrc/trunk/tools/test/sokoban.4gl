@@ -57,7 +57,7 @@ end if
 				exit while
 			end if
 	
-			prompt "" for char lv_dummy attribute(invisible,blink)
+			prompt "" for char lv_dummy attribute(invisible)
 	
 				on key(control-k) 
 					if change_level() then
@@ -112,16 +112,16 @@ define c char(1)
 				let c=mv_level[a][b]
 				case c
 				when mv_brick 
-					display " " at lv_y,lv_x attribute(red,blink)
+					display " " at lv_y,lv_x attribute(red)
 
 				when mv_diamond 
-					display " " at lv_y,lv_x attribute(blue,blink)
+					display " " at lv_y,lv_x attribute(blue)
 
 				when mv_diamond_in_hole
-					display " " at lv_y,lv_x attribute(yellow,blink)
+					display " " at lv_y,lv_x attribute(yellow)
 
 				when mv_hole
-					display " " at lv_y,lv_x attribute(green,blink)
+					display " " at lv_y,lv_x attribute(green)
 
 				otherwise
 					display " " at lv_y,lv_x 
@@ -135,7 +135,7 @@ define c char(1)
 	let lv_y=mv_player_y+lv_offy
 	let lv_x=mv_player_x+lv_offx-1
 
-	display mv_player at lv_y,lv_x attribute(blink,cyan)
+	display mv_player at lv_y,lv_x attribute(cyan)
 
 	display "Moves:",mv_moves using "<<<<<<" at 1,1 
 	display "Level:",mv_this_level using "<<<<<<" at 1,30

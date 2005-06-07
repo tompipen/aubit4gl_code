@@ -6,6 +6,11 @@
 //
 
 #include <string.h>
+#include <stdlib.h>
+#include <stdarg.h>
+
+#include "a4gl_libaubit4gl.h"
+#include "a4gl_API_lowlevel.h"
 
 #define COLOR_BLACK     0
 #define COLOR_RED       1
@@ -158,5 +163,12 @@ A4GL_getch_win (int allow_acc_intr)
     A4GL_clr_error_nobox ("A4GL_getch_win");
     if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys(0); }
     return a;
+}
+
+
+int
+A4GL_get_field_width (void *field)
+{
+	  return A4GL_LL_get_field_width (field);
 }
 

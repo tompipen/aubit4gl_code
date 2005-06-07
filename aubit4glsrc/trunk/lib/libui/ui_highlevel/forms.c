@@ -1,6 +1,6 @@
 #ifndef lint
 	static char const module_id[] =
-		"$Id: forms.c,v 1.23 2005-05-23 20:45:18 whaslbeck Exp $";
+		"$Id: forms.c,v 1.24 2005-06-07 16:16:03 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -257,7 +257,7 @@ UILIB_A4GL_disp_form (char *name, int attr)
 
   windows[A4GL_get_currwinno ()].form = f;
   A4GL_chkwin();
-  w = (void *) A4GL_LL_display_form (f, attr);
+  w = (void *) A4GL_LL_display_form (f, attr,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder());
 
   if (w == 0)
     {
@@ -941,7 +941,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
 
   windows[A4GL_get_currwinno ()].form = f;
   A4GL_chkwin();
-  if (A4GL_LL_display_form (f, attr))
+  if (A4GL_LL_display_form (f, attr ,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder()))
     return w;
   else
     return 0;
@@ -1023,7 +1023,7 @@ UILIB_aclfgl_fgl_drawbox (int n)
   else
     offset = -1;
 
-#define PMOVE(x,y,ch)   A4GL_LL_wadd_char_xy_col(win,x+offset,y+offset,ch|c)
+#define PMOVE(x,y,ch)   A4GL_LL_wadd_char_xy_col(win,x+offset,y+offset,ch|c,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder())
 
   for (xx = x + 1; xx < x + w - 1; xx++)
     {

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.28 2005-05-05 09:03:02 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.29 2005-06-07 16:16:03 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.28 2005-05-05 09:03:02 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.29 2005-06-07 16:16:03 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -56,7 +56,7 @@ char *last_field_name;
 int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
-int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos,char *l,char *r);
+//int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos,char *l,char *r);
 //int A4GL_conversion_ok(int);
 //void A4GL_fgl_die_with_msg(int n,char *s);
 
@@ -627,7 +627,9 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
 	  			struct struct_scr_field *fprop;
 				int k;
 				//A4GL_error_nobox("CONSTRUCT BY KEY",0);
-				k=A4GL_LL_construct_large(rbuff,evt,fcntrl.extent,A4GL_LL_get_carat(sio->currform->form),"[","]");
+				k=A4GL_LL_construct_large(rbuff,(void *)evt,fcntrl.extent,A4GL_LL_get_carat(sio->currform->form),"[","]",UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),
+						A4GL_getcomment_line());
+				A4GL_comments(0);
                                 if (k==A4GLKEY_CANCEL) {
                                 A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
                                 } else {
@@ -780,16 +782,7 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
 		}
 
 
-	    } else {
-			//char rbuff[1024];
-			//strcpy(rbuff,A4GL_LL_field_buffer(sio->currentfield,0));
-			//A4GL_trim(rbuff);
-			//if (strlen(rbuff)>=A4GL_get_field_width(sio->currentfield)) {
-				//A4GL_error_nobox("CONSTRUCT BY BEFORE FIELD",0);
-				//A4GL_LL_construct_large(rbuff,evt,fcntrl.extent,A4GL_LL_get_carat(sio->currform->form));
-			//}
-
-	    }
+	    } 
 
 	  A4GL_comments (fprop);
 	  if ((fprop->flags & 1))

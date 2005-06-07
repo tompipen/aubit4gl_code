@@ -14,7 +14,7 @@ static int wc_char_len(wchar_t *s) ;
 static wchar_t *wc_col_width(wchar_t *s) ;
 static wchar_t *wc_byte_width(wchar_t *s) ;
 static char *wc_to_str(char *s,wchar_t *src,int char_size) ;
-void A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch);
+void A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch,int curr_width,int curr_height);
 #endif
 
 void A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff, int pfunc);
@@ -40,8 +40,12 @@ A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff, int pfunc)
 		// We'll try anyway...
 		for (a=0;a<strlen(buff);a++) {
 			A4GL_debug("Printing wide character %d - w=%d (%s)\n",a,w,buff);
-			if (pfunc==0) A4GL_LL_wadd_wchar_xy_col (win, x, y, attr, buff[a]);
-			else A4GL_LL_wadd_wchar_xy_col_w (win, x, y, attr, buff[a]);
+			if (pfunc==0) A4GL_LL_wadd_wchar_xy_col (win, x, y, attr, buff[a],
+					UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height()
+					);
+			else A4GL_LL_wadd_wchar_xy_col_w (win, x, y, attr, buff[a]
+					UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height()
+					);
 		}
 
 		return;
@@ -71,11 +75,11 @@ A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff, int pfunc)
       if (pfunc==0) {
 		c=buff[a];
 		A4GL_debug("Add1 : %x ", c);
-		A4GL_LL_wadd_char_xy_col (win, x, y, c | (attr&0xffffff00));
+		A4GL_LL_wadd_char_xy_col (win, x, y, c | (attr&0xffffff00),UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder());
 	} else {
 		A4GL_debug("Add2");
 		c=buff[a];
-		A4GL_LL_wadd_char_xy_col_w (win, x, y, c | (attr&0xffffff00));
+		A4GL_LL_wadd_char_xy_col_w (win, x, y, c | (attr&0xffffff00),UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder());
 	}
       x++;
     }

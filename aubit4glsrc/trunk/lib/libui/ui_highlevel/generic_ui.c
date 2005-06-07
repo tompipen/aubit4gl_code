@@ -8,7 +8,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.46 2005-05-23 20:45:18 whaslbeck Exp $";
+		"$Id: generic_ui.c,v 1.47 2005-06-07 16:16:03 mikeaubury Exp $";
 #endif
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -1663,13 +1663,13 @@ A4GL_gen_field_list_from_slist_internal (void ***field_list, struct s_form_dets 
   return cnt - 1;
 }
 
-
+/*
 int
 A4GL_get_field_width (void *field)
 {
   return A4GL_LL_get_field_width (field);
 }
-
+*/
 
 void
 A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
@@ -2603,7 +2603,7 @@ int UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout,void *evt) {
 
 int UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af) {
 	A4GL_chkwin();
-	return A4GL_LL_start_prompt(vprompt,ap,c,h,af);
+	return A4GL_LL_start_prompt(vprompt,ap,c,h,af,UILIB_A4GL_get_curr_width(),UILIB_A4GL_iscurrborder());
 }
 
 int UILIB_A4GL_get_key(int timeout) {
