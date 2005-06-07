@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.138 2005-06-06 19:18:43 mikeaubury Exp $
+# $Id: esql.ec,v 1.139 2005-06-07 07:08:25 pjfalbe Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.138 2005-06-06 19:18:43 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.139 2005-06-07 07:08:25 pjfalbe Exp $";
 #endif
 
 
@@ -4647,7 +4647,7 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
   long  reccount = 0;
   static loc_t *loc=0;
   static char **bufary=0;
-  static short **ipary=0;
+  static short *ipary=0;
   static int nd=0;
   static short *colszs=0;
   char *fname=0;
@@ -4659,7 +4659,7 @@ A4GL_debug("unload...");
   if (nd) {
 	for (i=0;i<nd;i++) {
 		//if (bufary) free(bufary[i]);
-		if (ipary)  free(ipary[i]);
+		//if (ipary)  free(ipary[i]);
 	}
   }
   //if (bufary) free(bufary);
@@ -4835,7 +4835,7 @@ A4GL_debug("unload...");
   /*
    * Array of indicators for fetch sqldat structure. 
    */
-  ipary = (short **) malloc (udesc->sqld * sizeof (short *));
+  ipary = (short *) malloc (udesc->sqld * sizeof (short));
   if (ipary == NULL || colszs == NULL) { A4GL_exitwith("Out of memory 1"); fclose(unloadFile); free(fname); fname=0;return; }
 
 
@@ -4858,14 +4858,15 @@ A4GL_debug("unload...");
       /*
        * Allocate indicator array for this column. 
        */
-      ipary[i] = (short *) malloc (sizeof (short));
+      //ipary[i] = (short *) malloc (sizeof (short));
       /*
        * Adjust pointer for each column for alignment in insert sqlda 
        */
       /*
        * Assign indicator addresses. 
        */
-      col->sqlind = ipary[i];
+      col->sqlind = &ipary[i];
+      ipary[i]=0;
       /*
        * Assign the data pointers. 
        */
@@ -5049,11 +5050,13 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
     {
 	
 	ptr=ldesc->sqlvar[i].sqldata ; //+ (row * ldesc->sqlvar[i].sqllen);
-	ind=ldesc->sqlvar[i].sqlind ; //[row]; //  + (row * sizeof(short));
+	ind=*ldesc->sqlvar[i].sqlind ; //[row]; //  + (row * sizeof(short));
 
 
       errno = 0;
 	
+
+
       if (ind==-1)
 	{
 	  flen = 0;
