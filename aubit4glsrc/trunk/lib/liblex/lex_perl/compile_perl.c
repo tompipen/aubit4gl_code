@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.59 2005-05-21 16:18:34 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.60 2005-06-07 08:38:42 mikeaubury Exp $
 #
 */
 
@@ -4349,12 +4349,12 @@ LEXLIB_A4GL_add_put_string (char *s)
 
 
 
-void print_Constant(int type, char *vv) {
+void LEXLIB_print_Constant(int type, char *vv) {
 
 }
 
 
-void A4GL_internal_lex_printcomment (char *fmt, va_list * ap) {
+void LEXLIB_A4GL_internal_lex_printcomment (char *fmt, va_list * ap) {
 }
 
 
