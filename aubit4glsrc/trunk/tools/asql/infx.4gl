@@ -756,7 +756,7 @@ int execute_query_1(int *raffected) {
 		*raffected=0;
                          EXEC SQL EXECUTE stExec; cp_sqlca();
                          if (ec_check_and_report_error()) { return 0; }
-                         *raffected=sqlca.sqlerrd[0];
+                         *raffected=sqlca.sqlerrd[2];
                          EXEC SQL FREE stExec; cp_sqlca();
                          if (ec_check_and_report_error()) { return 0; }
 	return 1;
