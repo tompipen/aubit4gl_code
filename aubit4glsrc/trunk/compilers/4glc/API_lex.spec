@@ -569,7 +569,7 @@ print_load char* file,char* delim,char* tab,char* list -> void
 print_load_str char* file,char* delim,char* sql -> void
 
 /* void print_use_session (char *sess) */
-print_use_session char *sess -> void
+print_use_session char* sess -> void
 
 /* char * get_undo_use (void) */
 A4GL_get_undo_use -> char*
@@ -590,10 +590,10 @@ print_define_char char* var,int size,int isstatic_extern -> void
 print_define char* varstring,int isstatic_extern -> void
 
 /* void print_start_record (int isstatic_extern, char *varname,char *arrsize,int level) */
-print_start_record int isstatic_extern,char* varname,char *arrsize,int level -> void
+print_start_record int isstatic_extern char* varname char* arrsize int level -> void
 
 /* void print_end_record (char *vname, char *arrsize) */
-print_end_record char* vname,char* arrsize,int level -> void
+print_end_record char* vname char* arrsize int level -> void
 
 /* char * get_push_literal (char type, char *value) */
 A4GL_get_push_literal char type,char* value -> char*

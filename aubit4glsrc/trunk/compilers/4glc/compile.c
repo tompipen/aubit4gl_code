@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.85 2005-05-18 13:46:13 mikeaubury Exp $
+# $Id: compile.c,v 1.86 2005-06-08 07:38:58 mikeaubury Exp $
 #*/
 
 /**
@@ -182,7 +182,7 @@ initArguments (int argc, char *argv[])
   int input_objects_cnt = 0; /* count of how many input objects there are on command line */
   
   char *chrptr;
-  char opt_list[40] = "";
+  char opt_list[80] = "";
   char mv_cmd[40] = "";  
   char a[128] = "";
   char b[128] = "";
@@ -217,6 +217,7 @@ initArguments (int argc, char *argv[])
     {"clean", 0, 0, 'K'},
     {"database", 1, 0, 'd'},
     {"system4gl", 0, 0, '4'},
+    {"sqltype", 1, 0, 'C'},
     {0, 0, 0, 0},
   };
 // ========================================================================
@@ -259,11 +260,11 @@ initArguments (int argc, char *argv[])
 	/* set valid options for getopt_long depending on putput language*/
 	if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0 ||
       	strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0) {
-		strcpy (opt_list, "G4s:N:kwKco::l::W::L::I::?hHSgVvftD:d:");
+		strcpy (opt_list, "G4s:N:kwKco::l::W::L::I::?hHSgVvftD:d:C:");
     } else if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0) {
-		strcpy (opt_list, "G4s:N:?hSgVvftd:");
+		strcpy (opt_list, "G4s:N:?hSgVvftd:C:");
     } else /* all other A4GL_LEXTYPE types*/ {
-		strcpy (opt_list, "G4s:N:kwKco::l::L::?hSgVvftd:");
+		strcpy (opt_list, "G4s:N:kwKco::l::L::?hSgVvftd:C:");
     }
 	SPRINTF1 (mv_cmd, "%s", acl_getenv ("A4GL_MV_CMD"));
 	if (! strcmp (acl_getenv ("COMSPEC"), "") == 0) {
@@ -457,6 +458,9 @@ initArguments (int argc, char *argv[])
 	  		A4GL_debug ("Pass trough option: %s\n", optarg);
 		#endif
 		SPRINTF2 (extra_ldflags,"%s -D%s ",extra_ldflags,optarg);
+		break;
+	case 'C':
+		A4GL_setenv("A4GL_SQLTYPE",optarg,1);
 		break;
 
     /************************/

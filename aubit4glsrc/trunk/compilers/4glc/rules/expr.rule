@@ -485,32 +485,14 @@ function_call_expr2:
 		$<ptr>$=A4GL_append_expr($<ptr>4,$<str>$);
 		inc_counter();
 		}
-   | KW_CHANNEL_READ OPEN_BRACKET variable KW_COMMA OPEN_SQUARE ebind_var_list CLOSE_SQUARE CLOSE_BRACKET {
+   | KW_CHANNEL_READ OPEN_BRACKET char_or_var KW_COMMA OPEN_SQUARE ebind_var_list CLOSE_SQUARE CLOSE_BRACKET {
 		start_bind('i',$<str>3);
                 $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
         }
-   | KW_CHANNEL_READ OPEN_BRACKET variable KW_COMMA ebind_var_list CLOSE_BRACKET  {
+   | KW_CHANNEL_READ OPEN_BRACKET char_or_var KW_COMMA ebind_var_list CLOSE_BRACKET  {
 		start_bind('i',$<str>3);
                 $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
         }
-/*
-| KW_CHANNEL_WRITE { new_counter(); } OPEN_BRACKET fgl_expr_c KW_COMMA {
-        A4GLSQL_set_status(0,0);
-} opt_cw_func_call_args CLOSE_BRACKET {
-	int cv;
-	void *p;
-        cv=get_counter_val();
-        drop_counter();
-        sprintf($<str>$,"{int _retvars;\n_retvars=A4GL_call_4gl_dll(\"channel\",\"write\",%d); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");A4GL_pop_args(_retvars);A4GL_push_null(2,0);}\n}\n}\n", cv, lastlineno,infilename);
-        p=A4GL_append_expr_expr($<ptr>4,$<ptr>7);
-        $<ptr>$=A4GL_append_expr(p,$<str>$);
-}
-*/
-
-
-
-
-
 | identifier DOUBLE_COLON identifier OPEN_BRACKET {
         sprintf($<str>$,"\"%s\",\"%s\"",$<str>1,$<str>3);
 	A4GL_debug("NEWFORMAT : %s\n",$<str>$);

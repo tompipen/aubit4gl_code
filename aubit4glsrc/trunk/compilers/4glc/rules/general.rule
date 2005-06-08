@@ -195,7 +195,7 @@ char_or_var : CHAR_VALUE | variable {
 ;
 
 opt_use : {strcpy($<str>$,"");} | USE_SESSION conn_id FOR {
-	print_use_session($<str>3);
+	print_use_session($<str>2);
 	strcpy($<str>$,A4GL_get_undo_use());
 }
 ;

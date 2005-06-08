@@ -118,7 +118,7 @@ opt_func_call_args {
 	print_returning();
 	print_end_call_shared();
 }
-   | KW_CHANNEL_READ OPEN_BRACKET variable KW_COMMA OPEN_SQUARE ebind_var_list CLOSE_SQUARE CLOSE_BRACKET  {
+   | KW_CHANNEL_READ OPEN_BRACKET char_or_var KW_COMMA OPEN_SQUARE ebind_var_list CLOSE_SQUARE CLOSE_BRACKET  {
                 start_bind('i',$<str>3);
                 $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
 	} RETURNING variable {
@@ -127,7 +127,7 @@ opt_func_call_args {
 		print_bind_pop1('o');
 		
 	}
-   | KW_CHANNEL_READ OPEN_BRACKET variable KW_COMMA ebind_var_list CLOSE_BRACKET {
+   | KW_CHANNEL_READ OPEN_BRACKET char_or_var KW_COMMA ebind_var_list CLOSE_BRACKET {
                 start_bind('i',$<str>3);
                 $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
 	}  RETURNING variable {
