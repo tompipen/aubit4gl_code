@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.29 2005-05-18 13:48:41 mikeaubury Exp $
+# $Id: load.c,v 1.30 2005-06-08 20:24:07 mikeaubury Exp $
 #
 */
 
@@ -72,6 +72,7 @@ static char col_list[MAXLOADCOLS][MAXCOLLENGTH];
 
 /* Array with pointers to each delimiter in current load line */
 static char *colptr[MAXLOADCOLS];
+extern sqlca_struct a4gl_sqlca;
 
 
 /*
@@ -341,7 +342,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 	  return 0;
 	}
     }
-
+  a4gl_sqlca.sqlerrd[2]=lineno; // sqlerrd[3] in 4gl
   fclose (p);
   return 1;
 }

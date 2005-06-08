@@ -24,7 +24,7 @@ A4GL_LL_decode_aubit_attr int a char s -> int
 A4GL_LL_delete_errorwindow void* curr_error_window -> void
 
 /* void* A4GL_LL_display_form struct s_form_dets *f int attrib */
-A4GL_LL_display_form void* f int attrib int curr_width int curr_height int cb int currwinno void* currwin -> void* 
+A4GL_LL_display_form void* f int attrib int curr_width int curr_height int cb int currwinno int form_line void* currwin -> void* 
 
 /* int A4GL_LL_dump_screen int n */
 A4GL_LL_dump_screen int n -> int
@@ -172,7 +172,7 @@ A4GL_LL_wadd_char_xy_col_w void* win int x int y int ch int curr_width int curr_
 A4GL_LL_prompt_loop void* vprompt int timeout void* evt_list -> int
 
 /* int UILIB_A4GL_start_prompt void* vprompt int ap int c int h int af */
-A4GL_LL_start_prompt void* vprompt int ap int c int h int af int curr_width int cb void* cw  -> int
+A4GL_LL_start_prompt void* vprompt char* promptstr int ap int c int h int af int curr_width int cb int prompt_line void* cw int prompt_mode -> int
 
 
 A4GL_LL_set_chars_normal int* n -> int
@@ -190,3 +190,4 @@ A4GL_LL_h_disp_title ACL_Menu* menu char* str int curr_width int curr_height int
 A4GL_LL_set_acc_intr_keys int n -> void
 A4GL_LL_menu_loop ACL_Menu* menu -> int
 A4GL_LL_construct_large char* orig void* evt int initkey int initpos char* left char* right int curr_width int curr_height int comment_line void* currwin -> int
+A4GL_LL_get_value char* s -> void*
