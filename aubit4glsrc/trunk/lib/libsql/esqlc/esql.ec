@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.139 2005-06-07 07:08:25 pjfalbe Exp $
+# $Id: esql.ec,v 1.140 2005-06-08 07:54:37 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.139 2005-06-07 07:08:25 pjfalbe Exp $";
+  "@(#)$Id: esql.ec,v 1.140 2005-06-08 07:54:37 mikeaubury Exp $";
 #endif
 
 
@@ -402,7 +402,11 @@ getCurrentESQLConnection (void)
 static char *
 getCurrentESQLConnectionName (void)
 {
-  return currentConnection;
+  if (currentConnection) {
+  	return currentConnection;
+  } else {
+	return "";
+  }
 }
 
 /**
@@ -574,9 +578,7 @@ A4GLSQL_close_connection (void)
  *   - 1 : Connection estabilished.
  *   - 0 : there was an error connecting to database.
  */
-/*	int A4GLSQL_make_connection(UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p); */
 int A4GLSQL_make_connection
-/*  const UCHAR *server,const UCHAR *uid_p,const UCHAR *pwd_p) */
   (char * server, char * uid_p, char * pwd_p)
 {
   EXEC SQL begin declare section;
@@ -705,8 +707,11 @@ A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, 
 
   if (isSqlError ())
     retval = 1;
-  else
-    addESQLConnection ("default", dbName, userName, password);
+  else {
+    addESQLConnection (sessname, dbName, userName, password);
+	setCurrentESQLConnection(sessname);
+  }
+
   return retval;
 }
 

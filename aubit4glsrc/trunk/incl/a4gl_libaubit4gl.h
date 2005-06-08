@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.170 2005-06-06 18:03:40 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.171 2005-06-08 07:53:14 mikeaubury Exp $
 #
 */
 
@@ -761,7 +761,7 @@ struct s_module_error {
   /* from curslib.c: */
   void A4GL_disp_opt (int row, int x, int y, int l, int type);
   int A4GL_do_key_menu (void);	/*internal function */
-  void A4GL_do_pause (void);		/*waits for a key press */
+  //void A4GL_do_pause (void);		/*waits for a key press */
   int A4GL_edit (char *string, char type, int length, int x, int y);
   int A4GL_check_type (char c, char type, int flg, int len);
   int A4GL_ask_int (char *prompt);	/*  prompt for an integer from user  */

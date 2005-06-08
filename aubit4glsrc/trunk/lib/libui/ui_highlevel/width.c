@@ -17,10 +17,10 @@ static char *wc_to_str(char *s,wchar_t *src,int char_size) ;
 void A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch,int curr_width,int curr_height);
 #endif
 
-void A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff, int pfunc);
+void A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff, int pfunc,int curr_width,int curr_height,int iscurrborder,int currwinno);
 
 void
-A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff, int pfunc) 
+A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff, int pfunc,int curr_width,int curr_height,int iscurrborder,int currwinno) 
 {
   int a;
   unsigned char c;
@@ -41,10 +41,10 @@ A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff, int pfunc)
 		for (a=0;a<strlen(buff);a++) {
 			A4GL_debug("Printing wide character %d - w=%d (%s)\n",a,w,buff);
 			if (pfunc==0) A4GL_LL_wadd_wchar_xy_col (win, x, y, attr, buff[a],
-					UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height()
+					curr_width,curr_height
 					);
 			else A4GL_LL_wadd_wchar_xy_col_w (win, x, y, attr, buff[a]
-					UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height()
+					curr_width,curr_height
 					);
 		}
 
@@ -75,11 +75,11 @@ A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff, int pfunc)
       if (pfunc==0) {
 		c=buff[a];
 		A4GL_debug("Add1 : %x ", c);
-		A4GL_LL_wadd_char_xy_col (win, x, y, c | (attr&0xffffff00),UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder());
+		A4GL_LL_wadd_char_xy_col (win, x, y, c | (attr&0xffffff00),curr_width,curr_height,iscurrborder,currwinno);
 	} else {
 		A4GL_debug("Add2");
 		c=buff[a];
-		A4GL_LL_wadd_char_xy_col_w (win, x, y, c | (attr&0xffffff00),UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder());
+		A4GL_LL_wadd_char_xy_col_w (win, x, y, c | (attr&0xffffff00),curr_width,curr_height,iscurrborder,currwinno);
 	}
       x++;
     }
@@ -91,7 +91,7 @@ A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff, int pfunc)
 
 
 
-void A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...) { 
+void A4GL_wprintw (void *win, int attr, int x, int y, int cw,int ch, int cb, int currwinno, char *fmt, ...) { 
   va_list args;
   unsigned char buff[2048];
   //A4GL_chkwin ();
@@ -105,18 +105,14 @@ void A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...) {
   A4GL_debug("wprintw : buff=%s",buff);
   A4GL_debug("wprintw : attr=%x",attr);
   A4GLSQL_set_status (0, 0);
-#ifdef WIDEC
-  A4GL_wprintw_internal(win,attr,x,y,buff,0);
-#else
-  A4GL_wprintw_internal(win,attr,x,y,buff,0);
-#endif
+  A4GL_wprintw_internal(win,attr,x,y,buff,0,cw,ch,cb,currwinno);
 }
 
 
 
 
 /* This is a bodge - fix it later... */
-void A4GL_wprintw_window (void *win, int attr, int x, int y, char *fmt, ...) { 
+void A4GL_wprintw_window (void *win, int attr, int x, int y, int cw,int ch, int cb,int currwinno, char *fmt, ...) { 
   va_list args;
   unsigned char buff[2048];
   //A4GL_chkwin ();
@@ -125,11 +121,7 @@ A4GL_debug("A4GL_wprintw_window");
   vsprintf (buff, fmt, args);
   A4GL_debug("wprintw : %d %d   '%s' attr=%x",x,y,buff,attr);
   A4GLSQL_set_status (0, 0);
-#ifdef WIDEC
-  A4GL_wprintw_internal(win,attr,x,y,buff,1);
-#else
-  A4GL_wprintw_internal(win,attr,x,y,buff,1);
-#endif
+  A4GL_wprintw_internal(win,attr,x,y,buff,1,cw,ch,cb,currwinno);
 }
 
 

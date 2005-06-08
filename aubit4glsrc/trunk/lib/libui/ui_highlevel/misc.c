@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: misc.c,v 1.28 2005-05-24 16:59:18 mikeaubury Exp $";
+		"$Id: misc.c,v 1.29 2005-06-08 07:54:38 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -979,7 +979,7 @@ A4GL_flatten_menu (ACL_Menu * menu)
 }
 #endif
 
-
+#ifdef MOVED
 void
 A4GL_default_attributes (void *f, int dtype)
 {
@@ -1037,6 +1037,7 @@ A4GL_default_attributes (void *f, int dtype)
   A4GL_LL_set_max_field(f,A4GL_get_field_width(f));
 
 }
+#endif
 
 
 void A4GL_clear_menu (ACL_Menu * menu)
@@ -1139,46 +1140,9 @@ UILIB_A4GL_zrefresh ()
 }
 
 
+
+
 #ifdef MOVED
-void
-A4GL_mja_set_field_buffer_contrl (void *field, int nbuff, int ch)
-{
-  char buff[20];
-  A4GL_debug ("Ch=%d", ch);
-  if (ch == 0)
-    {
-      return;
-    }
-  buff[0] = ch & 0xff;
-  buff[1] = 0;
-  A4GL_debug ("Adding char %d %c", ch, ch);
-  A4GL_mja_set_field_buffer (field, nbuff, buff);
-}
-#endif
-
-void
-A4GL_start_form (struct s_form_dets *s)
-{
-  A4GL_debug ("Start form - %p %p", s, s->form);
-
-  A4GL_LL_int_form_driver (s->form, AUBIT_REQ_FIRST_PAGE);
-  A4GL_LL_int_form_driver (s->form, AUBIT_REQ_FIRST_FIELD);
-  A4GL_LL_set_carat (s->form);
-
-  s->form_details.insmode = 0;
-
-  if (s->form_details.insmode)
-    A4GL_LL_int_form_driver (s->form, AUBIT_REQ_INS_MODE);
-  else
-    A4GL_LL_int_form_driver (s->form, AUBIT_REQ_OVL_MODE);
-
-  /*A4GL_form_field_chk (s, 1); */
-}
-
-
-
-
-
 
 int
 A4GL_proc_key_prompt (int a, void *mform, struct s_prompt *prompt)
@@ -1269,7 +1233,7 @@ A4GL_proc_key_prompt (int a, void *mform, struct s_prompt *prompt)
   A4GL_debug ("Returning %d from proc_key_prompt\n", a);
   return a;
 }
-
+#endif
 
 /*
 int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) {

@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_gtk.c,v 1.65 2005-06-07 16:16:03 mikeaubury Exp $";
+		"$Id: lowlevel_gtk.c,v 1.66 2005-06-08 07:54:39 mikeaubury Exp $";
 #endif
 
 
@@ -932,7 +932,7 @@ GtkWidget *wxx = 0;
 }
 
 void 
-A4GL_LL_error_box(char* str,int attr) {
+A4GL_LL_error_box (char *str, int attr) {
 char *error=acl_getenv("A4GL_DIALOG_ERROR");
   	A4GL_gtkdialog (error, "", BUTTONS_OK, BUTTON_OK, 0, str);
 }
@@ -1375,15 +1375,15 @@ ptr=gtk_object_get_data(field,"WIDGETSNAME");
 
 
 int A4GL_LL_set_field_opts(void* field,int oopt) {
-
-//printf("field opts %p %x\n",field,oopt);
+char *wtype;
 	gtk_object_set_data(GTK_OBJECT((GtkWidget *)field),"FIELD_OPTS",(void *)oopt);
 
     if (oopt & AUBIT_O_ACTIVE || oopt & AUBIT_O_EDIT) {
 		A4GL_gui_set_active (field, 1);
     } else {
+		wtype=gtk_object_get_data(GTK_OBJECT(field),"WIDGETSNAME");
  		if (gtk_object_get_data(GTK_OBJECT(field),"MF_ISLABEL")
-                || gtk_object_get_data(GTK_OBJECT(field),"DISPLAY_LABEL")) {
+                || gtk_object_get_data(GTK_OBJECT(field),"DISPLAY_LABEL") || strcasecmp(wtype,"pixmap")==0) {
 			// Labels are always active :)
 			A4GL_gui_set_active (field, 1);
 		} else {
@@ -1418,7 +1418,7 @@ void A4GL_LL_switch_to_line_mode(void ) {
 }
 
 
-void A4GL_LL_wadd_char_xy_col(void* win,int x,int y,int ch,int curr_width,int curr_height,int iscurrborder) {
+void A4GL_LL_wadd_char_xy_col(void* win,int x,int y,int ch,int curr_width,int curr_height,int iscurrborder,int currwinno) {
   GtkFixed *cwin;
   GtkEventBox *e;
   GtkLabel *lab;
@@ -1755,7 +1755,7 @@ int prompt_last_key = 0;
  * @param af The attributes.
  */
 int
- A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af,int curr_width,int iscurrborder)
+ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af,int curr_width,int iscurrborder,void *currwin)
 {
   char *promptstr;
   int promptline;
@@ -1809,7 +1809,6 @@ int
     }
   prompt->win = p;
   buff[width] = 0;
-  //A4GL_wprintw (p, "%s", buff);
   promptstr = A4GL_char_pop ();
   prompt->mode = 0;
   prompt->h = h;
@@ -2112,7 +2111,7 @@ void A4GL_gui_prompt_style (int a)
 /******************************************************************************
  *   FORM HANDLING
  *****************************************************************************/
-void* A4GL_LL_display_form(void * fd,int attrib,int curr_width,int curr_height,int iscurrborder) {
+void* A4GL_LL_display_form(void * fd,int attrib,int curr_width,int curr_height,int iscurrborder,int currwinno,void *currwin) {
   struct s_form_dets *f;
  
   int rows, cols;
@@ -2253,7 +2252,7 @@ GtkWidget *labwidget;
 			int c;
 			c=ptr[b]&0xff;
 			//printf("%p %d %d=%d\n",drwin,x+b,y,c);
-			A4GL_LL_wadd_char_xy_col(drwin,x+b,y,c,curr_width,curr_height,iscurrborder) ;
+			A4GL_LL_wadd_char_xy_col(drwin,x+b,y,c,curr_width,curr_height,iscurrborder,currwinno) ;
 		}
 		}
 
@@ -3034,7 +3033,7 @@ int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) {
 ** init_key = initial keystroke that caused us to be here.. (0 for before field)
 ** init_pos = position in field as retrived from the original field..
 */
-int A4GL_LL_construct_large(char *orig, void *vevt,int init_key,int initpos,char *l,char *r,int curr_width,int curr_height,int fl) {
+int A4GL_LL_construct_large(char *orig, void *vevt,int init_key,int initpos,char *l,char *r,int curr_width,int curr_height,int fl,void *currwin) {
         static char rbuff[1024];
         //static char rbuff2[1024];
 	struct s_form_dets fd;
@@ -3387,14 +3386,14 @@ int A4GL_LL_menu_loop(ACL_Menu *menu) {
 
 
 
-void A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch,int curr_width,int curr_height,int iscurrborder) {
+void A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch,int curr_width,int curr_height,int iscurrborder,int currwinno) {
 	A4GL_assertion(1,"Not implemented A4GL_LL_wadd_char_xy_col_w");
 }
 
 
 
 
-void A4GL_LL_clr_menu_disp (ACL_Menu * menu,int curr_width,void *cw)
+void A4GL_LL_clr_menu_disp (ACL_Menu * menu,int curr_width,int curr_height,int iscurrborder, int currwinno, void *cw)
 {
   static char buff[1025];
   int off;
@@ -3412,17 +3411,17 @@ void A4GL_LL_clr_menu_disp (ACL_Menu * menu,int curr_width,void *cw)
   off=menu->menu_offset;
   buff[w - off + 1] = 0;
   y=menu->gw_y;
-  A4GL_wprintw (cw, 0, off - 1, y, buff);
+  A4GL_wprintw (cw, 0, off - 1, y, curr_width,curr_height,iscurrborder,currwinno, buff);
   }
 }
 
 
 void
-A4GL_LL_h_disp_title (ACL_Menu * menu, char *str,void *cw)
+A4GL_LL_h_disp_title (ACL_Menu * menu, char *str,int curr_width,int curr_height,int iscurrborder,int currwinno, void *cw)
 {
 
 if (A4GL_isyes(acl_getenv("TRADMENU"))) {
-        A4GL_wprintw (cw, 0, 1, menu->gw_y, "%s", str);
+        A4GL_wprintw (cw, 0, 1, menu->gw_y, curr_width,curr_height,iscurrborder, currwinno, "%s", str);
 }
 
 

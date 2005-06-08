@@ -8,7 +8,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.47 2005-06-07 16:16:03 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.48 2005-06-08 07:54:38 mikeaubury Exp $";
 #endif
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -1072,42 +1072,6 @@ UILIB_A4GL_menu_loop_v2 (void *menuv,void *evt)
 
 
 
-#ifdef MOVED_TO_WIDTH
-void
-A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
-{
-  va_list args;
-  int a;
-  unsigned char buff[2048];
-  A4GL_chkwin ();
-  va_start (args, fmt);
-  vsprintf (buff, fmt, args);
-
-
-//A4GL_debug("win=%p attr=%p x=%d y=%d fmt=%s",win,attr,x,y,fmt);
-//A4GL_debug("wprintw passed : %s",buff);
-
-
-  for (a = 0; a < strlen (buff); a++)
-    {
-      A4GL_LL_wadd_char_xy_col (win, x, y, buff[a] + attr);
-      x++;
-/*
-      if (x >= UILIB_A4GL_get_curr_width ())
-	{
-	  x = 0;
-	  y++;
-	}
-      if (y > UILIB_A4GL_get_curr_height ())
-	{
-	  break;
-	}
-*/
-    }
-}
-#endif
-
-
 
 
 
@@ -1787,8 +1751,7 @@ A4GL_error_nobox (char *str, int attr)
   A4GL_debug ("Eline=%d\n", eline);
 
 
-  w = A4GL_LL_create_errorwindow (1, A4GL_LL_screen_width () - 1, eline, 0,
-				attr, str);
+  w = A4GL_LL_create_errorwindow (1, A4GL_LL_screen_width () - 1, eline, 0, attr, str);
   A4GL_debug("Error Window=%p",w);
   curr_error_window = w;
   A4GL_LL_screen_update ();
@@ -2603,7 +2566,7 @@ int UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout,void *evt) {
 
 int UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af) {
 	A4GL_chkwin();
-	return A4GL_LL_start_prompt(vprompt,ap,c,h,af,UILIB_A4GL_get_curr_width(),UILIB_A4GL_iscurrborder());
+	return A4GL_LL_start_prompt(vprompt,ap,c,h,af,UILIB_A4GL_get_curr_width(),UILIB_A4GL_iscurrborder(),A4GL_get_currwin());
 }
 
 int UILIB_A4GL_get_key(int timeout) {
@@ -2852,7 +2815,7 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 */
       //if (strlen(s)==0&&clr_line) return;
 
-      A4GL_wprintw(wot,a,x,y,"%s",s);
+      A4GL_wprintw(wot,a,x,y,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder (),A4GL_get_currwinno(), "%s",s);
 
       if (clr_line)
 	{
@@ -2867,7 +2830,7 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 	    	buff[sl] = 0;
 	  	buff[1023] = 0;
 		A4GL_debug("wprintw : %s\n",buff);
-		A4GL_wprintw(wot,(a&0xffffff00),x+strlen(s),y,buff);
+		A4GL_wprintw(wot,(a&0xffffff00),x+strlen(s),y,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder (),A4GL_get_currwinno(),"%s",buff);
 		}
 	}
   A4GL_LL_screen_update ();

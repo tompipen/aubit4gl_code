@@ -17,7 +17,7 @@ define
 	mv_make_globals smallint,
 	mv_static smallint
 
-
+define mv_sqltype char(255)
 
 define mv_export_symbols char(256)
 define mv_import_symbols char(256)
@@ -104,6 +104,7 @@ define lv_pack char(256)
 			mv_compile_pec_opts,
 			mv_preprocess,
 			mv_preprocess_opts,
+			mv_sqltype,
 			mv_show_errtail,
 			mv_link,
 			mv_dll_opts,	
@@ -476,6 +477,10 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 
 		WHEN "-d"			let a=a+1 let mv_db=arg_val(a) continue for
 		WHEN "--database"		let a=a+1 let mv_db=arg_val(a) continue for
+
+		WHEN "-C"			let a=a+1 let mv_sqltype=arg_val(a) call aclfgl_setenv("A4GL_SQLTYPE",mv_sqltype clipped) continue for
+		WHEN "--sqltype"		let a=a+1 let mv_sqltype=arg_val(a) call aclfgl_setenv("A4GL_SQLTYPE",mv_sqltype clipped) continue for
+
 
 		WHEN "--verbose"		let mv_verbose=mv_verbose+1 continue for
 		WHEN "-V"			let mv_verbose=mv_verbose+1 continue for

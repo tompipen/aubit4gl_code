@@ -11,6 +11,7 @@
 
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_API_lowlevel.h"
+#include "formdriver.h"
 
 #define COLOR_BLACK     0
 #define COLOR_RED       1
@@ -170,5 +171,178 @@ int
 A4GL_get_field_width (void *field)
 {
 	  return A4GL_LL_get_field_width (field);
+}
+
+
+void
+A4GL_start_form (struct s_form_dets *s)
+{
+  A4GL_debug ("Start form - %p %p", s, s->form);
+
+  A4GL_LL_int_form_driver (s->form, AUBIT_REQ_FIRST_PAGE);
+  A4GL_LL_int_form_driver (s->form, AUBIT_REQ_FIRST_FIELD);
+  A4GL_LL_set_carat (s->form);
+
+  s->form_details.insmode = 0;
+
+  if (s->form_details.insmode)
+    A4GL_LL_int_form_driver (s->form, AUBIT_REQ_INS_MODE);
+  else
+    A4GL_LL_int_form_driver (s->form, AUBIT_REQ_OVL_MODE);
+
+  /*A4GL_form_field_chk (s, 1); */
+}
+
+
+
+
+int
+A4GL_proc_key_prompt (int a, void *mform, struct s_prompt *prompt)
+{
+  void *f;
+
+  f = A4GL_LL_current_field (mform);
+
+
+  A4GL_debug ("In proc_key_prompt.... for %d", a);
+  switch (a)
+    {
+    case 18:
+      A4GL_LL_screen_redraw ();
+      break;
+
+
+    case -1:
+      abort_pressed = 1;
+      return 0;
+
+    case 27:
+      return 0;
+
+    case 26:
+      return 0;
+
+    case 127:
+    case 8:
+    case A4GLKEY_DC:
+    case A4GLKEY_DL:
+    case A4GLKEY_BACKSPACE:
+      A4GL_debug ("Req del prev");
+      if (A4GL_LL_get_carat (mform))
+        {
+          A4GL_LL_int_form_driver (mform, AUBIT_REQ_DEL_PREV);
+          A4GL_debug ("Done...");
+        }
+      return 0;
+
+    case 24:
+      A4GL_LL_int_form_driver (mform, AUBIT_REQ_DEL_CHAR);
+      return 0;
+
+    case '\t':
+    case A4GLKEY_DOWN:
+      if (prompt->charmode == 0)
+        return 10;
+      else
+        return 0;
+
+
+    //case A4GLKEY_ENTER:
+    case 13:
+    case 10:
+#ifdef DEBUG
+      A4GL_debug ("Next field in a prompt - they must mean enter");
+#endif
+      return 10;
+    case A4GLKEY_LEFT:
+      A4GL_LL_int_form_driver (mform, AUBIT_REQ_PREV_CHAR);
+      return 0;
+
+    case A4GLKEY_RIGHT:
+      A4GL_LL_int_form_driver (mform, AUBIT_REQ_NEXT_CHAR);
+      return 0;
+    case 4:
+      A4GL_LL_int_form_driver (mform, AUBIT_REQ_CLR_FIELD);
+      return 0;
+
+    case 1:                     // Control - A
+      prompt->insmode = prompt->insmode ? 0 : 1;
+      if (prompt->insmode)
+        A4GL_LL_int_form_driver (mform, AUBIT_REQ_INS_MODE);
+      else
+        A4GL_LL_int_form_driver (mform, AUBIT_REQ_OVL_MODE);
+      return 0;
+
+    }
+
+
+  if (A4GL_is_special_key(a, A4GLKEY_HELP))
+    {
+      aclfgl_a4gl_show_help (prompt->h);
+      a = 0;
+    }
+
+  A4GL_debug ("Returning %d from proc_key_prompt\n", a);
+  return a;
+}
+
+
+
+void
+A4GL_default_attributes (void *f, int dtype)
+{
+  struct struct_scr_field *fprop;
+
+  int done = 0;
+
+  fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
+  A4GL_debug ("In def attrib f=%p", f);
+
+
+
+
+
+  if (fprop)
+    {
+      if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
+        {
+          A4GL_debug ("ZZZZ - SET OPTS");
+          A4GL_LL_set_field_opts (f,
+                                  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
+                                  AUBIT_O_PUBLIC | AUBIT_O_EDIT );
+          done = 1;
+        }
+    }
+
+
+
+  if (done == 0)
+    {
+
+      A4GL_debug ("MMMM DTYPE & 255 = %d", dtype);
+
+      if ((dtype & 255) == 0)
+        {
+          A4GL_debug ("ZZZZ - SET OPTS");
+          A4GL_LL_set_field_opts (f,
+                                  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE | AUBIT_O_PUBLIC | AUBIT_O_EDIT);
+          A4GL_field_opts_off (f, AUBIT_O_BLANK);
+        }
+      else
+        {
+          A4GL_debug ("ZZZZ - SET OPTS");
+          A4GL_debug ("BLANK BLANK");
+          A4GL_LL_set_field_opts (f,
+                                  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
+                                  AUBIT_O_PUBLIC | AUBIT_O_EDIT | AUBIT_O_BLANK);
+        }
+
+    }
+
+  A4GL_debug ("STATIC");
+  A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
+  A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
+  A4GL_LL_set_max_field(f,A4GL_get_field_width(f));
+
 }
 

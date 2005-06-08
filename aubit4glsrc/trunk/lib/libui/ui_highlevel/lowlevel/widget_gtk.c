@@ -1,6 +1,6 @@
 #ifndef lint
 	static char const module_id[] =
-		"$Id: widget_gtk.c,v 1.19 2005-05-23 20:45:25 whaslbeck Exp $";
+		"$Id: widget_gtk.c,v 1.20 2005-06-08 07:54:39 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -99,8 +99,8 @@ struct s_widgets widgets[] = {
   {"LIST", A4GL_cr_list, {0}},
 
 #if GTK_CHECK_VERSION(2,0,0)
-  {"PIXBUF", A4GL_cr_pixbuf, {0}},
-  {"FIELD_BMP", A4GL_cr_pixbuf, {0}},
+  {"PIXBUF", A4GL_cr_pixbuf, {"FILENAME",0}},
+  {"FIELD_BMP", A4GL_cr_pixbuf, {"FILENAME",0}},
 #endif
 
   /* NOTE : Calendar needs about 22 characters wide by 7 lines */
@@ -238,7 +238,7 @@ A4GL_split_config (char *str)
 			}
 		}
     }
-   free(orig_ptr);
+   //free(orig_ptr);
 }
 
 /**
@@ -259,10 +259,8 @@ A4GL_find_param (char *name)
     }
   for (a = 0; a < args_cnt; a++)
     {
-		//printf("Compare : '%s' '%s'\n",args[a], name);
       if (strcasecmp (args[a], name) == 0)
 	{
-		printf("Found..");
 	  if (args_type[a] == TYPE_CHAR)
 	    return args_val[a];
 	  else
@@ -492,12 +490,16 @@ void
 A4GL_gui_set_active (GtkWidget * w, int en_dis)
 {
   GtkWidget *p;
+char *wtype;
   A4GL_debug ("Set active : %p %d", w, en_dis);
   p = gtk_object_get_data (GTK_OBJECT (w), "Child");
   A4GL_debug ("p=%p", p);
-  if (p == 0)
-    p = w;
+  if (p == 0) p = w;
   A4GL_debug (" activate %p ", p);
+                wtype=gtk_object_get_data(GTK_OBJECT(w),"WIDGETSNAME");
+	if (wtype)  {
+		if (strcasecmp(wtype,"pixmap")==0) en_dis=1;
+	}
   gtk_widget_set_sensitive (p, en_dis);
 
 }
@@ -581,7 +583,10 @@ void A4GL_size_widget (GtkWidget * w, int width)
   else
     y = 1 * YHEIGHT;		/* Use 1 character height */
 
-  gtk_widget_set_usize (GTK_WIDGET (w), x, y);
+
+  if (w) {
+  	gtk_widget_set_usize (GTK_WIDGET (w), x, y);
+  }
 
   lastWidth=x;
   lastHeight=y;
@@ -601,7 +606,7 @@ void *
 {
   GdkPixmap *p;
   GtkWidget *pixmap;
-  A4GL_debug ("Making pixmap from file:%s\n", filename);
+  A4GL_debug ("Making pixmap from file:%s (2)\n", filename);
   if (filename==0) filename="";
   p = gdk_pixmap_colormap_create_from_xpm (0,
 					   gdk_colormap_get_system (), NULL,
@@ -629,7 +634,7 @@ A4GL_make_pixbuf_gw (char *filename)
 	GdkPixbuf *pixbuf, *resized;
 
   if (filename==0) filename="";
-  printf ("Making pixmap from file:%s\n", filename);
+  printf ("Making pixmap from file:%s (1)\n", filename);
   A4GL_trim(filename);
 
 
@@ -707,9 +712,10 @@ A4GL_cr_picture (void)
 
   A4GL_debug ("Making picture filename=%s\n", filename);
   pixmap = UILIB_A4GL_make_pixmap_gw (filename);
-
-  A4GL_add_signal_grab_focus (pixmap, 0);
-  A4GL_add_signal_clicked (pixmap, 0);
+  if (pixmap) {
+  	A4GL_add_signal_grab_focus (pixmap, 0);
+  	A4GL_add_signal_clicked (pixmap, 0);
+  } 
   return pixmap;
 }
 
@@ -719,18 +725,16 @@ A4GL_cr_pixbuf (void)
 {
 GtkWidget *pixmap=0;
 char *filename;
+printf("Find param\n");
 
 	filename = A4GL_find_param ("FILENAME");
-
+printf("Found :%s\n",filename);
 	A4GL_debug ("Making picture filename=%s PIXBUF\n", filename);
 	#if GTK_CHECK_VERSION(2,0,0)
 		pixmap = A4GL_make_pixbuf_gw (filename);
 	#endif
-	//A4GL_add_signal_grab_focus (pixmap, 0);
-	//A4GL_add_signal_clicked (pixmap, 0);
 	gtk_widget_show(pixmap);
 	printf("Made : %p\n",pixmap);
-	//A4GL_add_signal_clicked ((GtkWidget *) pixmap, 0);
 	A4GL_add_signal_grab_focus ((GtkWidget *) pixmap, 0);
 	return pixmap;
 }

@@ -13,6 +13,12 @@
 
 void A4GL_LL_screen_refresh(void);
 
+// we need to fix some bits on here - 
+// we need to set curr_width, curr_height,curr_border
+// for now - we'll just use these defaults and hope for the 
+// best....
+//
+#define NEED_CURRWHB 24,80,0,1
 
 /* A lot of this is copied from ncurses libform and hacked...
 
@@ -187,8 +193,7 @@ WINDOW *wot;
 	  strncpy (xbuff, &buff[row * f->cols], f->cols);
 	  xbuff[f->cols] = 0;
 	  A4GL_debug ("Printing : '%s' @ %d,%d (multi line)\n", xbuff, x, y);
-      		//A4GL_wprintw(wot,a,x,y,"%s",s);
-      		A4GL_wprintw_window(wot,attr,x,y+row,"%s",xbuff);
+      		A4GL_wprintw_window(wot,attr,x,y+row,NEED_CURRWHB, "%s",xbuff); // @ fixme - needs curr_width, curr_height and curr_border?
 	A4GL_debug("Print0\n");
 	}
       free (xbuff);
@@ -197,7 +202,7 @@ WINDOW *wot;
     {
       //A4GL_debug ("Printing : %s @ %d,%d %x %x w=%p wot=%p\n", buff, x, y,f->opts,f->fore,w,w);
 	A4GL_debug("Print1 %p '%s'\n",wot,buff);
-      A4GL_wprintw_window(wot,attr,x+1,y+1,"%s",buff);
+      A4GL_wprintw_window(wot,attr,x+1,y+1,NEED_CURRWHB, "%s",buff);
     }
    //wrefresh(w);
    //A4GL_LL_screen_update();

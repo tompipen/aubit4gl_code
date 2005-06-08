@@ -1,4 +1,4 @@
-//static void A4GL_do_pause (void);
+// ,int currwinno//static void A4GL_do_pause (void);
 
 #ifdef XCURSES
 	#include <xcurses.h>
@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.55 2005-06-07 16:16:03 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.56 2005-06-08 07:54:39 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,10 +85,10 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_tui.c,v 1.55 2005-06-07 16:16:03 mikeaubury Exp $";
+		"$Id: lowlevel_tui.c,v 1.56 2005-06-08 07:54:39 mikeaubury Exp $";
 #endif
 int inprompt = 0;
-void *A4GL_get_currwin (void);
+//void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
 //int A4GLHLUI_initlib(void) ;
 int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
@@ -219,7 +219,7 @@ static int A4GL_init_colour_pairs (void)
   return 0;
 }
 
-void A4GL_do_pause (void)
+static void A4GL_do_pause (int curr_width,int curr_height,int iscurrborder,int currwinno)
 {
   WINDOW *x;
   int w;
@@ -230,8 +230,7 @@ void A4GL_do_pause (void)
   sprintf (buff, " %s ", acl_getenv ("ERROR_MSG"));
   emw = strlen (buff);
   x = A4GL_create_blank_window ("pause", ((w - emw) / 2), 20, emw, 3, 1);
-  A4GL_wprintw (x, A4GL_LL_colour_code (COLOR_RED) | A_REVERSE, 1, 2, "%s",
-		buff);
+  A4GL_wprintw (x, A4GL_LL_colour_code (COLOR_RED) | A_REVERSE, 1, 2, curr_width,curr_height,iscurrborder, currwinno, "%s", buff);
 	A4GL_debug("su");
   A4GL_LL_screen_update ();
   abort_pressed = FALSE;
@@ -459,7 +458,7 @@ A4GL_LL_remove_window (void *x)
  * @return 
  */
 void 
-A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch,int curr_width,int curr_height,int iscurrborder)
+A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch,int curr_width,int curr_height,int iscurrborder,int currwinno)
 {
   int ch2;
   int attr;
@@ -473,7 +472,7 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch,int curr_width,int cur
   ch2 = ch & 0xff;
   //A4GL_debug ("x=%d y=%d ch2=%c", x, y, ch2);
   p = panel_window (win);
-  if (!iscurrborder  || A4GL_get_currwinno () == 0)
+  if (!iscurrborder  || currwinno  == 0)
     {
       x--;
       y--;
@@ -494,7 +493,7 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch,int curr_width,int cur
  * @return 
  */
 void 
-A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch,int curr_width,int curr_height,int iscurrborder)
+A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch,int curr_width,int curr_height,int iscurrborder,int currwinno)
 {
   int ch2;
   int attr;
@@ -504,7 +503,7 @@ A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch,int curr_width,int c
   ch2 = ch & 0xff;
   //A4GL_debug ("x=%d y=%d ch2=%c", x, y, ch2);
   p =win;
-  if (!iscurrborder  || A4GL_get_currwinno () == 0)
+  if (!iscurrborder  || currwinno  == 0)
     {
       x--;
       y--;
@@ -635,7 +634,7 @@ A4GL_LL_error_box (char *str, int attr)
   int a, pos;
   //int nattr;
   WINDOW *x;
-
+#ifdef FIXME
   //A4GL_chkwin ();
   /*YELLOW ON RED */
   //A4GL_mja_setcolor (ERROR_COL);
@@ -648,16 +647,16 @@ A4GL_LL_error_box (char *str, int attr)
   x = A4GL_create_blank_window ("error", pos, a, strlen (str), 3, 1);
   /*wmove(x,2,2); */
   /* print ("%s", str); */
-  A4GL_wprintw (x, A4GL_LL_colour_code (COLOR_RED) | A_REVERSE, 1, 1, "%s",
-		str);
+  A4GL_wprintw (x, A4GL_LL_colour_code (COLOR_RED) | A_REVERSE, 1, 1, 80,4,1, 999, "%s", str);
 	A4GL_debug("su");
   A4GL_LL_screen_update ();
-  A4GL_do_pause ();
+  A4GL_do_pause (80,4,1,999);
   UILIB_A4GL_remove_window ("error");
 	A4GL_debug("su");
   A4GL_LL_screen_update ();
   A4GL_debug ("All done in error box");
   //A4GL_mja_setcolor (NORMAL_TEXT);
+#endif
 }
 
 /**
@@ -667,7 +666,7 @@ A4GL_LL_error_box (char *str, int attr)
  * @return 
  */
 void *
-A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int iscurrborder)
+A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int iscurrborder,int currwinno,void *currwin)
 {
   int rows, cols;
   char buff[80];
@@ -684,7 +683,7 @@ A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int is
   f=vf;
   //A4GL_chkwin ();
   A4GL_debug ("In display_form");
-  w = (PANEL *) A4GL_get_currwin ();
+  w = (PANEL *) currwin; 				// A4GL_get_currwin ();
 
   sprintf (buff, "%p", f);
   A4GL_add_pointer (buff, ATTRIBUTE, (void *) attrib);
@@ -807,7 +806,6 @@ A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int is
 
   A4GL_debug ("setup windows");
   keypad (panel_window ((PANEL *) w), TRUE);
-  sprintf (buff, "Currwinno=%d", A4GL_get_currwinno ());
 
   if (f->form == 0)
     {
@@ -1615,8 +1613,6 @@ A4GL_LL_set_carat (void *form)
   A4GL_debug("CURSES : set_carat");
 
 
-  //w = (PANEL *) A4GL_get_currwin ();
-  //wrefresh(panel_window(w));
   A4GL_LL_screen_update();
   
 }
@@ -2460,7 +2456,7 @@ A4GL_debug("Done..");
 
 
 int
-A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af,int curr_width,int iscurrborder)
+A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af,int curr_width,int iscurrborder,void *currwin)
 {
   char *promptstr;
   int promptline;
@@ -2485,7 +2481,7 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af,int curr_width
   width = curr_width ;
   A4GL_debug ("create window %d %d", 1, promptline);
   A4GL_debug ("%d %d", width - 1, 2);
-  cw = (void *) A4GL_get_currwin ();
+  cw = (void *) currwin; // A4GL_get_currwin ();
   if (iscurrborder )
     promptline++;
 
@@ -2766,7 +2762,7 @@ return ;
 */
 int A4GL_LL_construct_large(char *orig, 
 		void *vevt
-		,int init_key,int initpos,char *left,char *right,int curr_width,int curr_height,int fl) {
+		,int init_key,int initpos,char *left,char *right,int curr_width,int curr_height,int fl,void *currwin) {
 	static char rbuff[1024];
 	//static char rbuff2[1024];
 	FIELD *buff[4];
@@ -2786,7 +2782,7 @@ int A4GL_LL_construct_large(char *orig,
 	A4GL_trim(rbuff);
 	fwidth=curr_width ; 
 	if (fwidth>80) fwidth=80;
-        cwin = (PANEL *) A4GL_get_currwin ();
+        cwin = (PANEL *) currwin; 			// A4GL_get_currwin ();
   	//fl = A4GL_getcomment_line ();
   	if (fl > curr_height ) fl = curr_height ;
         drwin = derwin (panel_window ((PANEL *) cwin), 1, fwidth, fl-1, 0);
@@ -3018,7 +3014,7 @@ int A4GL_LL_menu_loop(ACL_Menu *menu) {
 
 #ifdef WIDEC
 void
-A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch,int curr_width,int curr_height,int iscurrborder)
+A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch,int curr_width,int curr_height,int iscurrborder,int currwinno)
 {
   int ch2;
   int attr;
@@ -3031,7 +3027,7 @@ A4GL_debug("xy_col");
 
 
   p = panel_window (win);
-  if (!iscurrborder  || A4GL_get_currwinno () == 0)
+  if (!iscurrborder  || currwinno  == 0)
     {
       x--;
       y--;
@@ -3044,7 +3040,7 @@ A4GL_debug("xy_col");
 }
 
 void
-A4GL_LL_wadd_wchar_xy_col_w (void *win, int x, int y, int oattr, wchar_t ch,int curr_width,int curr_height,int iscurrborder)
+A4GL_LL_wadd_wchar_xy_col_w (void *win, int x, int y, int oattr, wchar_t ch,int curr_width,int curr_height,int iscurrborder,int currwinno)
 {
   int ch2;
   int attr;
@@ -3057,7 +3053,7 @@ A4GL_debug("xy_col_w");
 
 
   p = win;
-  if (!iscurrborder  || A4GL_get_currwinno () == 0)
+  if (!iscurrborder  || currwinno == 0)
     {
       x--;
       y--;
@@ -3080,7 +3076,7 @@ void * A4GL_LL_create_menu (void * m, char *id, int mode, void *handler) {
 
 
 
-void A4GL_LL_clr_menu_disp (ACL_Menu * menu,int curr_width,void *cw)
+void A4GL_LL_clr_menu_disp (ACL_Menu * menu,int curr_width,int curr_height,int iscurrborder, int currwinno, void *cw)
 {
   static char buff[1025];
   int off;
@@ -3097,14 +3093,14 @@ void A4GL_LL_clr_menu_disp (ACL_Menu * menu,int curr_width,void *cw)
   buff[w - off + 1] = 0;
   y=menu->gw_y;
   //cw=A4GL_get_currwin ();
-  A4GL_wprintw (cw, 0, off - 1, y, buff);
+  A4GL_wprintw (cw, 0, off - 1, y, curr_width,curr_height,iscurrborder, currwinno,"%s",buff);
 }
 
 
 void
-A4GL_LL_h_disp_title (ACL_Menu * menu, char *str,void *cw)
+A4GL_LL_h_disp_title (ACL_Menu * menu, char *str,int curr_width,int curr_height,int iscurrborder,int currwinno, void *cw)
 {
-     A4GL_wprintw ((void *)cw, 0, 1, menu->gw_y, "%s", str);
+     A4GL_wprintw ((void *)cw, 0, 1, menu->gw_y, curr_width,curr_height,iscurrborder,currwinno,"%s", str);
 }
 
 

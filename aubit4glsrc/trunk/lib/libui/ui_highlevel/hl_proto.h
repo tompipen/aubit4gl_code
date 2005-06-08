@@ -87,11 +87,11 @@ void A4GL_start_form(struct s_form_dets *s);
 void A4GL_stripbracket(char *str);
 void A4GL_switch_to_scr_mode(void);
 void A4GL_turn_field_on2(void *f, int a);
-void A4GL_wprintw(void *win, int attr, int x, int y, char *fmt, ...);
+void A4GL_wprintw(void *win, int attr, int x, int y,int curr_width,int curr_height,int iscurrborder, int currwinno, char *fmt, ...);
 void chk_for_picture(void *f, char *buff);
 void debug_print_flags(void *sv, char *txt);
 void* A4GL_add_window(int x, int y, int w, int h, char *name, void *fd, void *win);
-void A4GL_wprintw_window (void *win, int attr, int x, int y, char *fmt, ...);
+void A4GL_wprintw_window (void *win, int attr, int x, int y, int curr_width,int curr_height,int iscurrborder,int currwinno, char *fmt, ...);
 //void A4GL_LL_screen_update(void ); //defined in a4gl_API_lowlevel
 //int UILIB_A4GL_iscurrborder (void); //defined in a4gl_API_ui_lib.h
 

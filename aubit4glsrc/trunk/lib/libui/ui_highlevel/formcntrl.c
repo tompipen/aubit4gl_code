@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.29 2005-06-07 16:16:03 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.30 2005-06-08 07:54:38 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.29 2005-06-07 16:16:03 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.30 2005-06-08 07:54:38 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -628,7 +628,7 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
 				int k;
 				//A4GL_error_nobox("CONSTRUCT BY KEY",0);
 				k=A4GL_LL_construct_large(rbuff,(void *)evt,fcntrl.extent,A4GL_LL_get_carat(sio->currform->form),"[","]",UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),
-						A4GL_getcomment_line());
+						A4GL_getcomment_line(),A4GL_get_currwin());
 				A4GL_comments(0);
                                 if (k==A4GLKEY_CANCEL) {
                                 A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);

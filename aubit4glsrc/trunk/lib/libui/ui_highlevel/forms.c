@@ -1,6 +1,6 @@
 #ifndef lint
 	static char const module_id[] =
-		"$Id: forms.c,v 1.24 2005-06-07 16:16:03 mikeaubury Exp $";
+		"$Id: forms.c,v 1.25 2005-06-08 07:54:38 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -257,7 +257,7 @@ UILIB_A4GL_disp_form (char *name, int attr)
 
   windows[A4GL_get_currwinno ()].form = f;
   A4GL_chkwin();
-  w = (void *) A4GL_LL_display_form (f, attr,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder());
+  w = (void *) A4GL_LL_display_form (f, attr,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder(),A4GL_get_currwinno(),A4GL_get_currwin());
 
   if (w == 0)
     {
@@ -941,7 +941,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
 
   windows[A4GL_get_currwinno ()].form = f;
   A4GL_chkwin();
-  if (A4GL_LL_display_form (f, attr ,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder()))
+  if (A4GL_LL_display_form (f, attr ,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder(),A4GL_get_currwinno(),A4GL_get_currwin()))
     return w;
   else
     return 0;
@@ -1023,7 +1023,7 @@ UILIB_aclfgl_fgl_drawbox (int n)
   else
     offset = -1;
 
-#define PMOVE(x,y,ch)   A4GL_LL_wadd_char_xy_col(win,x+offset,y+offset,ch|c,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder())
+#define PMOVE(x,y,ch)   A4GL_LL_wadd_char_xy_col(win,x+offset,y+offset,ch|c,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder(),A4GL_get_currwinno())
 
   for (xx = x + 1; xx < x + w - 1; xx++)
     {
@@ -1797,7 +1797,7 @@ UILIB_A4GL_clr_window (char *win_name)
   buff[win->w] = 0;
   for (a = 0; a <= win->h; a++)
     {
-      A4GL_wprintw (w, 0, 1, a+1, "%s", buff);
+      A4GL_wprintw (w, 0, 1, a+1,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder (),"%s", buff);
     }
 
   UILIB_A4GL_zrefresh ();
