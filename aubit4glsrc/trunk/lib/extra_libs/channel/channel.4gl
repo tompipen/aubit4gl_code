@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.11 2005-06-08 07:36:37 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.12 2005-06-08 08:26:57 mikeaubury Exp $
 }
 
 {**
@@ -330,8 +330,9 @@ obind=o;
 	}
 
 	if (no==1) {
+		char *ptr;
 		A4GL_push_char(buff);
-		A4GL_pop_char(obind[0].ptr,obind[0].size); // Its all into one variable - put the whole line there
+		A4GL_pop_param(obind[0].ptr,obind[0].dtype, obind[0].size); // Its all into one variable - put the whole line there
 	} else {
 		int a;
 		ptr=buff;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.106 2005-05-23 20:16:04 whaslbeck Exp $
+# $Id: conv.c,v 1.107 2005-06-08 08:28:32 mikeaubury Exp $
 #
 */
 
@@ -2801,7 +2801,7 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
       return 1;
     }
 
-  if (dtype1 == 0 && dtype2 != 0)
+  if (dtype1 == 0 && (dtype2 != 0 && dtype2!=13))
     {
       A4GL_trim (p1);
       if (strlen (p1) == 0)

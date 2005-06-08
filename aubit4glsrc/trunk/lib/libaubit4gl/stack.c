@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.127 2005-06-06 18:03:33 mikeaubury Exp $
+# $Id: stack.c,v 1.128 2005-06-08 08:28:32 mikeaubury Exp $
 #
 */
 
@@ -572,7 +572,6 @@ A4GL_pop_param (void *p, int d, int size)
 A4GL_conversion_ok(1);
 //A4GL_debug("pop_param");
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
-
   params_cnt--;
 
   if (params_cnt < 0)
