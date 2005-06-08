@@ -8,7 +8,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.48 2005-06-08 07:54:38 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.49 2005-06-08 20:44:55 mikeaubury Exp $";
 #endif
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -2293,23 +2293,6 @@ A4GL_get_metric_no (struct s_form_dets *form, void *f)
 
 
 
-int
-A4GL_get_metric_for (struct s_form_dets *form, void *f)
-{
-  int a;
-
-  A4GL_debug ("In curr metric");
-  for (a = 0; a < form->fileform->metrics.metrics_len; a++)
-    {
-      if (f == (void *) form->fileform->metrics.metrics_val[a].field)
-	{
-	  A4GL_debug ("Returning %d\n", a);
-	  return a;
-	}
-    }
-  A4GL_debug ("NO current metric !");
-  return -1;
-}
 
 
 
@@ -2565,9 +2548,29 @@ int UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout,void *evt) {
 }
 
 int UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af) {
+	char *promptstr;
+	struct s_prompt *promptx;
+	int x;
+        promptx=vprompt;
 	A4GL_chkwin();
-	return A4GL_LL_start_prompt(vprompt,ap,c,h,af,UILIB_A4GL_get_curr_width(),UILIB_A4GL_iscurrborder(),A4GL_get_currwin());
+	promptstr=A4GL_char_pop();
+
+  	promptx->mode = 0;
+  	promptx->h = h;
+  	promptx->insmode = 0;
+  	promptx->charmode = c;
+  	promptx->promptstr = promptstr;
+  	promptx->lastkey = 0;
+	x=A4GL_LL_start_prompt(vprompt,promptstr, ap,c,h,af,UILIB_A4GL_get_curr_width(),UILIB_A4GL_iscurrborder(),A4GL_getprompt_line(), (void *)A4GL_get_currwin(),promptx->mode);
+
+	promptx->field=A4GL_LL_get_value("prompt->field");
+	promptx->f=A4GL_LL_get_value("prompt->f");
+	promptx->win=A4GL_LL_get_value("prompt->win");
+	if (x==2) {promptx->mode==2; return 2;}
+	return x;
 }
+
+
 
 int UILIB_A4GL_get_key(int timeout) {
 	return A4GL_LL_getch_swin ((void *)A4GL_window_on_top ());

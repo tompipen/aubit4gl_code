@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: misc.c,v 1.29 2005-06-08 07:54:38 mikeaubury Exp $";
+		"$Id: misc.c,v 1.30 2005-06-08 20:44:55 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1353,3 +1353,41 @@ UILIB_A4GL_reset_delims (void *vformdets, void *field, char *delims)
 				 metrics_val[a].dlm2, 0, sbuff1);
     }
 }
+
+
+
+
+
+/**
+ *  *
+ *   * @todo Describe function
+ *    */
+void *
+A4GL_create_blank_window (char *name, int x, int y, int w, int h, int border)
+{
+  void *p;
+  //A4GL_chkwin ();
+  A4GL_debug ("Creating blank window..");
+  p =
+    (void *) A4GL_create_window (name, x, y, w, h, 1, 0xff, 0xff, 0xff, 0xff,
+                                 border, 0xff, 0xff, 0xffff);
+  A4GL_debug ("window=%p", p);
+
+
+  return p;
+}
+
+
+
+int
+A4GL_getch_win (int allow_acc_intr)
+{
+    int a;
+    A4GL_debug ("getch_win called...");
+    if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys(1); }
+    a = A4GL_LL_getch_swin (A4GL_get_currwin ());
+    A4GL_clr_error_nobox ("A4GL_getch_win");
+    if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys(0); }
+    return a;
+}
+

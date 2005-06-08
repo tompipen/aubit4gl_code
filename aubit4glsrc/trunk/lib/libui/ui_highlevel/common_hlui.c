@@ -80,26 +80,6 @@ A4GL_field_opts_off (void *v, int n)
 }
 
 
-/**
- *  *
- *   * @todo Describe function
- *    */
-void *
-A4GL_create_blank_window (char *name, int x, int y, int w, int h, int border)
-{
-  void *p;
-  //A4GL_chkwin ();
-  A4GL_debug ("Creating blank window..");
-  p =
-    (void *) A4GL_create_window (name, x, y, w, h, 1, 0xff, 0xff, 0xff, 0xff,
-				 border, 0xff, 0xff, 0xffff);
-  A4GL_debug ("window=%p", p);
-
-
-  return p;
-}
-
-
 
 void
 A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
@@ -152,19 +132,6 @@ A4GL_mja_set_field_buffer_contrl (void *field, int nbuff, int ch)
   A4GL_mja_set_field_buffer (field, nbuff, buff);
 }
 
-
-
-int
-A4GL_getch_win (int allow_acc_intr)
-{
-    int a;
-    A4GL_debug ("getch_win called...");
-    if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys(1); }
-    a = A4GL_LL_getch_swin (A4GL_window_on_top ());
-    A4GL_clr_error_nobox ("A4GL_getch_win");
-    if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys(0); }
-    return a;
-}
 
 
 int
@@ -344,5 +311,25 @@ A4GL_default_attributes (void *f, int dtype)
   A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
   A4GL_LL_set_max_field(f,A4GL_get_field_width(f));
 
+}
+
+
+
+int
+A4GL_get_metric_for (struct s_form_dets *form, void *f)
+{
+  int a;
+
+  A4GL_debug ("In curr metric");
+  for (a = 0; a < form->fileform->metrics.metrics_len; a++)
+    {
+      if (f == (void *) form->fileform->metrics.metrics_val[a].field)
+        {
+          A4GL_debug ("Returning %d\n", a);
+          return a;
+        }
+    }
+  A4GL_debug ("NO current metric !");
+  return -1;
 }
 

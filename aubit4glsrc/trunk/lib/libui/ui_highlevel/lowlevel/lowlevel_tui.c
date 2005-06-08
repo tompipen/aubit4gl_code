@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.56 2005-06-08 07:54:39 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.57 2005-06-08 20:47:31 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,9 +85,24 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_tui.c,v 1.56 2005-06-08 07:54:39 mikeaubury Exp $";
+		"$Id: lowlevel_tui.c,v 1.57 2005-06-08 20:47:31 mikeaubury Exp $";
 #endif
 int inprompt = 0;
+
+
+//
+// In order to get around a limitation of C not returning more than one value
+// and without using a pointer to each of these values - we're just going to store them
+// and return them when requested...
+// These will be populated by the start_prompt function, and should be retrieved immediatelty afterwards...
+FIELD *last_prompt_field=0;
+FORM  *last_prompt_f=0;
+void  *last_prompt_win=0;
+
+
+
+
+
 //void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
 //int A4GLHLUI_initlib(void) ;
@@ -113,6 +128,8 @@ static void A4GL_clear_prompt (struct s_prompt *prmt);
 
 //-----------------------
 
+
+void *curr_err_win=0;
 
 void A4GL_LL_beep(void) {
 	#ifndef XCURSES
@@ -225,7 +242,7 @@ static void A4GL_do_pause (int curr_width,int curr_height,int iscurrborder,int c
   int w;
   int emw;
   char buff[80];
-
+#ifdef FIXME
   w = A4GL_LL_screen_width ();
   sprintf (buff, " %s ", acl_getenv ("ERROR_MSG"));
   emw = strlen (buff);
@@ -242,6 +259,7 @@ static void A4GL_do_pause (int curr_width,int curr_height,int iscurrborder,int c
   A4GL_getch_win (0);
   A4GL_debug ("Done getch_win");
   UILIB_A4GL_remove_window ("pause");
+#endif
 }
 
 /**
@@ -666,7 +684,7 @@ A4GL_LL_error_box (char *str, int attr)
  * @return 
  */
 void *
-A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int iscurrborder,int currwinno,void *currwin)
+A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int iscurrborder,int currwinno,int form_line, void *currwin)
 {
   int rows, cols;
   char buff[80];
@@ -694,7 +712,7 @@ A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int is
     }
   A4GL_debug ("scale form %p", f->form);
 
-  fl = A4GL_getform_line ();
+  fl = form_line ;
   for (a = fl; a <= curr_height ; a++)
     {
       if (iscurrborder )
@@ -1810,6 +1828,8 @@ char buff[255];
 	A4GL_LL_beep();
   }
 
+  curr_err_win=p;
+
   return p;
 }
 
@@ -1822,8 +1842,10 @@ char buff[255];
 void
 A4GL_LL_delete_errorwindow (void *curr_error_window)
 {
-  A4GL_LL_remove_window (curr_error_window);
-
+  if (curr_err_win) {
+  		A4GL_LL_remove_window (curr_error_window);
+  }
+  curr_err_win=0;
 }
 
 /**
@@ -2314,35 +2336,36 @@ int rblock;
 
   void *mform;
 
-  struct s_prompt *prompt;
-  prompt = vprompt;
+  struct s_prompt *promptx;
+  promptx = vprompt;
   evt=vevt;
 
   //A4GL_chkwin ();
-  mform = prompt->f;
+  mform = promptx->f;
 
   A4GL_set_abort (0);
 
-  p = prompt->win;
+  p = promptx->win;
 
-  if (prompt->mode == 1)
+  if (promptx->mode == 1)
     {
       char buff[10024];
-      strcpy (buff, A4GL_LL_field_buffer (prompt->field, 0));
+      strcpy (buff, A4GL_LL_field_buffer (promptx->field, 0));
       A4GL_trim (buff);
 
       A4GL_push_char (buff);
-      prompt->mode = 2;
+      promptx->mode = 2;
 
-      if (prompt->f) {
-		A4GL_form_unpost_form (prompt->f);
-      		A4GL_clear_prompt (prompt);
+      if (promptx->f) {
+		A4GL_form_unpost_form (promptx->f);
+      		A4GL_clear_prompt (promptx);
 	}
       return 0;
     }
 
-  if (prompt->mode > 0)
+  if (promptx->mode > 0) {
     return 0;
+  }
 
       A4GL_form_pos_form_cursor (mform);
 	A4GL_debug("su");
@@ -2350,47 +2373,52 @@ int rblock;
       abort_pressed = 0;
       was_aborted = 0;
       a = A4GL_LL_getch_swin (p);
-      A4GL_clr_error_nobox ("prompt");
+      if (curr_err_win) {
+		A4GL_LL_delete_errorwindow(curr_err_win);
+		//A4GL_clr_error_nobox ("prompt");
+      }
 
-      prompt->processed_onkey = a;
+      promptx->processed_onkey = a;
+
       prompt_last_key = a;
       A4GL_set_last_key (a);
 
-      prompt->lastkey = A4GL_get_lastkey ();
+      promptx->lastkey = A4GL_get_lastkey ();
+
 
       if (abort_pressed) {
 	//printf("INTERRUPT!");
       	A4GL_set_last_key ( A4GL_key_val ("INTERRUPT"));
 	prompt_last_key 	= A4GL_key_val ("INTERRUPT");;
-	prompt->lastkey		= A4GL_key_val ("INTERRUPT");;
+	promptx->lastkey		= A4GL_key_val ("INTERRUPT");;
 
-      		if (!A4GL_has_event_for_keypress(prompt->lastkey,evt)) {
+      		if (!A4GL_has_event_for_keypress(promptx->lastkey,evt)) {
       			A4GL_push_null (DTYPE_CHAR, 1);
-      			prompt->mode = 2;
-      			A4GL_form_unpost_form (prompt->f);
-      			A4GL_clear_prompt (prompt);
+      			promptx->mode = 2;
+      			A4GL_form_unpost_form (promptx->f);
+      			A4GL_clear_prompt (promptx);
 			return 0;
 		}
 	}
 
       A4GL_debug ("No lastkey..");
-      rblock=A4GL_has_event_for_keypress(prompt->lastkey,evt);
+      rblock=A4GL_has_event_for_keypress(promptx->lastkey,evt);
 
       if (rblock) { // We appear to be all done here...
       		A4GL_push_null (DTYPE_CHAR, 1);
-      		prompt->mode = 2;
-      		A4GL_form_unpost_form (prompt->f);
-      		A4GL_clear_prompt (prompt);
-		prompt->f=0;
+      		promptx->mode = 2;
+      		A4GL_form_unpost_form (promptx->f);
+      		A4GL_clear_prompt (promptx);
+		promptx->f=0;
 		return rblock;
       } 
       
     if (was_aborted)  {
-		prompt->mode=2;
+		promptx->mode=2;
 		return 0;
 	}
     
-    a = A4GL_proc_key_prompt (a, mform, prompt);
+    a = A4GL_proc_key_prompt (a, mform, promptx);
 
   	if (a == 0) {
 		#ifdef DEBUG
@@ -2408,7 +2436,6 @@ int rblock;
     return a;
 
   A4GL_debug ("Requested..");
-  //if (prompt->lastkey == 10 || prompt->lastkey == 13)
   if (a == 10 || a == 13)
     {
       prompt_last_key = 0;
@@ -2418,7 +2445,7 @@ int rblock;
 	A4GL_debug("su");
       A4GL_LL_screen_update();
       A4GL_debug ("Return pressed");
-      prompt->mode = 1;
+      promptx->mode = 1;
       return 0;
     }
 
@@ -2437,15 +2464,15 @@ int rblock;
 	A4GL_debug("su");
       A4GL_LL_screen_update();
 
-  if (prompt->charmode)
+  if (promptx->charmode)
     {
   	if ((isprint (a)))
 	{
-	  A4GL_push_char (A4GL_LL_field_buffer (prompt->field, 0));
-   	  A4GL_form_unpost_form (prompt->f);
-      	  A4GL_clear_prompt (prompt);
-	  prompt->f=0;
-	  prompt->mode = 2;
+	  A4GL_push_char (A4GL_LL_field_buffer (promptx->field, 0));
+   	  A4GL_form_unpost_form (promptx->f);
+      	  A4GL_clear_prompt (promptx);
+	  promptx->f=0;
+	  promptx->mode = 2;
 	}
     }
 
@@ -2456,11 +2483,11 @@ A4GL_debug("Done..");
 
 
 int
-A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af,int curr_width,int iscurrborder,void *currwin)
+A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h, int af,int curr_width,int iscurrborder,int prompt_line, void *currwin,int prompt_mode)
 {
-  char *promptstr;
+  //char *promptstr;
   int promptline;
-  struct s_prompt *prompt;
+  //struct s_prompt *promptx;
   FIELD *sarr[3];
   void *p;
   void *d;
@@ -2469,14 +2496,15 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af,int curr_width
   WINDOW *pp;
   int width;
   char buff[300];
+  FIELD *prompt_field;
   int a;
   int field_cnt = 0;
   //A4GL_chkwin ();
-  prompt = vprompt;
-  A4GL_debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, af);
+  //promptx = vprompt;
+  //A4GL_debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, af);
   prompt_last_key = 0;
   memset (buff, ' ', 255);
-  promptline = A4GL_getprompt_line ();
+  promptline = prompt_line ; 			// A4GL_getprompt_line ();
   A4GL_debug ("promptline=%d", promptline);
   width = curr_width ;
   A4GL_debug ("create window %d %d", 1, promptline);
@@ -2496,17 +2524,17 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af,int curr_width
       A4GL_exitwith ("No prompt window created");
       return 0;
     }
-  prompt->win = p;
+
+
+  //promptx->win = p;
+  last_prompt_win = p;
+
+
+
   buff[width] = 0;
-	A4GL_debug("su");
+
   wprintw (p, "%s", buff); A4GL_LL_screen_update();
-  promptstr = A4GL_char_pop ();
-  prompt->mode = 0;
-  prompt->h = h;
-  prompt->insmode = 0;
-  prompt->charmode = c;
-  prompt->promptstr = promptstr;
-  prompt->lastkey = 0;
+
   width -= strlen (promptstr);
   width--;
 
@@ -2518,18 +2546,27 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af,int curr_width
   A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
   A4GL_form_set_new_page (sarr[field_cnt - 1], 1);
   sarr[field_cnt++] = (void *) A4GL_LL_make_field (0,0, strlen (promptstr), 1, width + 1);
-  prompt->field = sarr[field_cnt - 1];
+
+
+  last_prompt_field= sarr[field_cnt - 1];
+
+
+  //promptx->field = sarr[field_cnt - 1];
+
+
+  prompt_field=sarr[field_cnt - 1];
+
+
+
   sarr[field_cnt++] = 0;	/* (void *) A4GL_make_label (0, strlen(promptstr)+width-1,"|"); */
 
   /* set_field_pad(sarr[1],' '); */
-  A4GL_debug ("set field to =%p", prompt->field);
-  A4GL_debug ("Field=%p", prompt->field);
 
   /* A4GL_default_attributes (sarr[0], 0); */
 
-  A4GL_default_attributes (prompt->field, 0);
+  A4GL_default_attributes (prompt_field, 0);
   A4GL_debug ("STATIC OFF");
-  A4GL_form_field_opts_off (prompt->field, O_STATIC);
+  A4GL_form_field_opts_off (prompt_field, O_STATIC);
 
   A4GL_debug ("ap=%d(%x) af=%d(%x)", ap, ap, af, af);
   ap = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, ap, 0, 0);
@@ -2545,50 +2582,42 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af,int curr_width
 	}
     }
 
-  //A4GL_LL_set_field_back (prompt->field, A4GL_LL_colour_code (0));
-  //A4GL_LL_set_field_fore (prompt->field, A4GL_LL_colour_code (7));
-
   if (af)
     {
       A4GL_debug ("AF... %d",af);
-      A4GL_LL_set_field_back (prompt->field, A4GL_LL_decode_aubit_attr (af, 'b'));
-      A4GL_LL_set_field_fore (prompt->field, A4GL_LL_decode_aubit_attr (af, 'f'));	// maybe need 'B' for whole field..
+      A4GL_LL_set_field_back (prompt_field, A4GL_LL_decode_aubit_attr (af, 'b'));
+      A4GL_LL_set_field_fore (prompt_field, A4GL_LL_decode_aubit_attr (af, 'f'));	// maybe need 'B' for whole field..
       if (af & AUBIT_ATTR_INVISIBLE)
 	{
 	  A4GL_debug ("Invisible");
-	  A4GL_form_field_opts_off (prompt->field, O_PUBLIC);
+	  A4GL_form_field_opts_off (prompt_field, O_PUBLIC);
 	}
 
     }
 
-  A4GL_form_field_opts_on (prompt->field, AUBIT_O_NULLOK);
+  A4GL_form_field_opts_on (prompt_field, AUBIT_O_NULLOK);
   A4GL_debug ("Set attributes");
 
   buff[0] = 0;			/* -2 */
-  A4GL_debug ("Setting Buffer %p to '%s'", prompt->field, buff);
-  A4GL_LL_set_field_buffer (prompt->field, 0, buff);
+  A4GL_debug ("Setting Buffer %p to '%s'", prompt_field, buff);
+  A4GL_LL_set_field_buffer (prompt_field, 0, buff);
   A4GL_debug ("Set buffer ");
-
-  //sarr[2] = 0;
 
   A4GL_debug ("Made fields");
 
   f = A4GL_form_new_form ((FIELD **) &sarr);
   A4GL_debug ("Form f = %p", f);
-  prompt->f = f;
+
+
+  last_prompt_f=f;
+  //promptx->f = f;
+
+
   A4GLSQL_set_status (0, 0);
 
-  if (a4gl_status != 0)
-    return (prompt->mode = 2);
-
-/*
-	When compiling with PDcurses:
-	lowlevel/lowlevel_tui.c: In function `A4GL_LL_start_prompt':
-	lowlevel/lowlevel_tui.c:2087: warning: dereferencing `void *' pointer
-	lowlevel/lowlevel_tui.c:2087: request for member `_begy' in something not a structure or union
-	lowlevel/lowlevel_tui.c:2087: warning: dereferencing `void *' pointer
-	lowlevel/lowlevel_tui.c:2087: request for member `_begx' in something not a structure or union
-*/
+  if (a4gl_status != 0) {
+		return 2;
+  }
 
 
   pp=(WINDOW *) p;
@@ -2606,7 +2635,7 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af,int curr_width
   A4GLSQL_set_status (0, 0);
 	A4GL_debug("su");
   A4GL_LL_screen_update ();
-  return 1;
+  return 0;
 }
 
 
@@ -3107,3 +3136,18 @@ A4GL_LL_h_disp_title (ACL_Menu * menu, char *str,int curr_width,int curr_height,
 void A4GL_LL_set_acc_intr_keys(int n) {
 /* does nothing - required as it will be called from the HL driver */
 }
+
+
+
+
+// In order to get around a limitation of C not returning more than one value
+// and without using a pointer to each of these values - we're just going to store them
+// and return them when requested...
+void *A4GL_LL_get_value(char *s) {
+	if (strcmp(s,"prompt.field")==0) 	return (void *) last_prompt_field;
+	if (strcmp(s,"prompt.f")==0) 		return (void *) last_prompt_f;
+	if (strcmp(s,"prompt.win")==0) 		return (void *) last_prompt_win;
+	printf("Unknown value...%s\n",s);
+	return (void *)0;
+}
+

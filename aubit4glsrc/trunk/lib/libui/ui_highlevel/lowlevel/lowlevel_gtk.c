@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_gtk.c,v 1.66 2005-06-08 07:54:39 mikeaubury Exp $";
+		"$Id: lowlevel_gtk.c,v 1.67 2005-06-08 20:47:31 mikeaubury Exp $";
 #endif
 
 
@@ -1755,9 +1755,9 @@ int prompt_last_key = 0;
  * @param af The attributes.
  */
 int
- A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af,int curr_width,int iscurrborder,void *currwin)
+ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h, int af,int curr_width,int iscurrborder,int prompt_line, void *currwin,int prompt_mode)
 {
-  char *promptstr;
+  //char *promptstr;
   int promptline;
   struct s_prompt *prompt;
   //void *sarr[3];
@@ -1809,7 +1809,7 @@ int
     }
   prompt->win = p;
   buff[width] = 0;
-  promptstr = A4GL_char_pop ();
+  //promptstr = A4GL_char_pop ();
   prompt->mode = 0;
   prompt->h = h;
   prompt->insmode = 0;
@@ -2111,7 +2111,7 @@ void A4GL_gui_prompt_style (int a)
 /******************************************************************************
  *   FORM HANDLING
  *****************************************************************************/
-void* A4GL_LL_display_form(void * fd,int attrib,int curr_width,int curr_height,int iscurrborder,int currwinno,void *currwin) {
+void* A4GL_LL_display_form(void * fd,int attrib,int curr_width,int curr_height,int iscurrborder,int currwinno,int form_line,void *currwin) {
   struct s_form_dets *f;
  
   int rows, cols;
@@ -3486,3 +3486,22 @@ char buff2[256];
 }
 
 #endif
+
+
+
+
+
+
+
+
+
+/*
+
+void *A4GL_LL_get_value(char *s) {
+        if (strcmp(s,"prompt.field")==0)        return (void *) last_prompt_field;
+        if (strcmp(s,"prompt.f")==0)            return (void *) last_prompt_f;
+        if (strcmp(s,"prompt.win")==0)          return (void *) last_prompt_win;
+        printf("Unknown value...%s\n",s);
+        return (void *)0;
+}
+*/
