@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.10 2004-12-02 09:25:53 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.11 2005-06-08 07:36:37 mikeaubury Exp $
 }
 
 {**
@@ -321,6 +321,13 @@ obind=o;
 		
 	}
 	buff[19999]=0;
+
+	if (!A4GL_isno(acl_getenv("KEEPNLONREAD"))) {
+		int x;
+		x=strlen(buff);
+		if (buff[x-1]=='\n' || buff[x-1]=='\r') {buff[x-1]=0; x--;}
+		if (buff[x-1]=='\n' || buff[x-1]=='\r') {buff[x-1]=0; x--;}
+	}
 
 	if (no==1) {
 		A4GL_push_char(buff);
