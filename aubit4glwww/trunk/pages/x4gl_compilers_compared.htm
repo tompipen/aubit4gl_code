@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta http-equiv="Content-Language" content="en-us">
-<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
 <meta name="ProgId" content="FrontPage.Editor.Document">
 <title>x4GL compilers compared</title>
 </head>
@@ -13,9 +13,8 @@
 <p align="center"><font size="6" color="#00FF00"><a name="Top of page - x4GL compilers features compared">x4GL compilers features
 compared</a><img border="0" src="../images/AubitLogoOnBlack.jpg" width="184" height="98"></font></p>
 <hr>
-<p>Please email comments, suggestion and corrections to <a href="mailto:afalout@ihug.co.nz?Subject=x4GL's compared">Andrej Falout</a></p>
-<p>See <a href="http://aubit4gl.sourceforge.net/aubit4gldoc/4glreference/index.htm" target="_blank">x4GL
-Language Reference Manual</a> for definition of x4GL programming language.</p>
+<h1>Table of contents</h1>
+<p>x4GL products by features tables:</p>
 <ul>
   <li><a href="#General">General</a></li>
   <li><a href="#User Interface">User Interface</a></li>
@@ -24,8 +23,11 @@ Language Reference Manual</a> for definition of x4GL programming language.</p>
   <li><a href="#Database interface">Database Interface</a></li>
   <li><a href="#Tools">Tools</a></li>
   <li><a href="#Compatibility">Compatibility</a></li>
+	<li><font color="#FF0000"><a href="#Productivity_features">Productivity 
+	features</a></font></li>
+	<li><a href="#Notes">Legend &amp; Notes</a></li>
 </ul>
-<p>4GL to Java migration services :</p>
+<p>4GL to Java migration services links list:</p>
 <ul>
   <li><a href="http://www2.kumaran.com/Net/informix.asp" target="_blank">Kumaran
     Systems</a> - in-house, service only (India)</li>
@@ -36,17 +38,48 @@ Language Reference Manual</a> for definition of x4GL programming language.</p>
   <li><a href="http://www.anubex.com" target="_blank">Anubex</a> - in-house,
     service only (Belgium) Oracle only</li>
 </ul>
+<p>Individual products strengths &amp; weaknesses:</p>
+<ul>
+	<li><a href="#IBM_EGL">IBM EGL</a></li>
+	<li><a href="#Four_Js_BDL">Four J's BDL</a></li>
+	<li><a href="#Four_Js_Genero">Four J's Genero</a></li>
+	<li><a href="#Aubit_project_-_Aubit_4GL_">Aubit project - Aubit 4GL</a></li>
+	<li>IBM Informix 4GL (classic)</li>
+</ul>
+<p>One-On-One:</p>
+<ul>
+	<li>IBM EGL vs. Four J's Genero</li>
+	<li>IBM EGL vs. Aubit</li>
+	<li>Four J's Genero vs. Aubit</li>
+	<li>Four J's Genero vs. Querix</li>
+	<li>Aubit vs. Querix</li>
+	<li>Four J's Genero vs. Four J's BDL/D4GL</li>
+	<li>x4GL vs. x3GL</li>
+</ul>
+<hr>
+<h2 align="center">x4GL products by features</h2>
 <table border="1" width="100%" height="1112">
   <tr>
     <td width="14%" bgcolor="#C0C0C0" height="38">
       <h4><font color="#FF0000"><a name="General">General</a></font></h4>
     </td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://aubit4gl.sourceforge.net" target="_blank">Aubit</a></td>
-    <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="hy4gldoc.html" target="_blank">Hy4gl</a></td>
-    <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.informix.com" target="_blank">Informix 7.3</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">
+	<a target="_blank" href="http://aubit4gl.sourceforge.net/pages/hy4gldoc.html">Hy4gl</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">
+	<a target="_blank" href="http://www-306.ibm.com/software/data/informix/tools">IBM 
+	Informix 7.3</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">
+	<a target="_blank" href="http://www-106.ibm.com/developerworks/rational/library/egldoc.html">
+	IBM EGL </a>(3)</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.4js.com" target="_blank">4Js BDL 3.10</a> /
-      <a href="http://www.informix.com" target="_blank"> D4GL
+      <a target="_blank" href="http://www-306.ibm.com/software/data/informix/pubs/library/d4gl_3.html">D4GL
       3.10</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">
+	<a target="_blank" href="http://www.4js.com">4Js</a>
+	<a target="_blank" href="http://new.4js.com/fourjs/site/html/product_overview_02.htm">
+	Genero</a> (<a target="_blank" href="http://www-306.ibm.com/software/data/informix/tools/fourjs-gen/features/">also 
+	marketed by IBM</a>)</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.querix.com" target="_blank">Querix&nbsp;</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.plx.com" target="_blank">Plexus XDP AD32</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.supra.com.pl/en/products/" target="_blank">Supra-4GL</a></td>
@@ -65,15 +98,20 @@ Language Reference Manual</a> for definition of x4GL programming language.</p>
     <td width="14%" align="center" height="38">Experimental GNU/GPL compiler with
       PostgreSQL only as database and CUI mode only.</td>
     <td width="14%" align="center" height="38">Compiler that started it all.
-      Character only, Informix DB only.</td>
-    <td width="14%" align="center" height="38">Current technology leader among commercial
+      Character only, Informix &amp; DB/2 DB only.</td>
+    <td width="14%" align="center" height="38">Fusion of several 4GLs, IBM's 
+	answer to Java productivity limitations and i-4GL migration path, focused on 
+	web apps development</td>
+    <td width="14%" align="center" height="38">First generation 4Js 4GL product, 
+	high compatibility and proven performance</td>
+    <td width="14%" align="center" height="38">Second generation 4Js product, current technology leader among commercial
       products</td>
     <td width="14%" align="center" height="38">Strong focus on Oracle migration,
       many features</td>
     <td width="15%" align="center" height="38">Focus on image processing,
       derived form Informix 4GL</td>
     <td width="15%" align="center" height="38"> Focus on IBM DB/2 migration,
-      simple Java GUI client</td>
+      simple Java GUI client and .NET integration</td>
     <td width="15%" align="center" height="38"> 4GL
 compiler and 4GL CASE Tools, plus 4GL to Java source converter</td>
     <td width="15%" align="center" height="38">
@@ -88,6 +126,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" bgcolor="#C0C0C0" height="38">Source code available</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -106,6 +146,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -118,6 +160,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" bgcolor="#C0C0C0" height="38">Per-developer licensing</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38">?</td>
@@ -133,6 +177,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" bgcolor="#C0C0C0" height="38">Per-user (runtime) licensing</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="38">?</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38">?</td>
@@ -151,6 +197,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="58">Out of business (confirmed)</td>
@@ -165,7 +213,9 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="58"></td>
     <td width="14%" align="center" height="58"></td>
     <td width="14%" align="center" height="58"></td>
+    <td width="14%" align="center" height="58">&nbsp;</td>
     <td width="14%" align="center" height="58"></td>
+    <td width="14%" align="center" height="58">&nbsp;</td>
     <td width="14%" align="center" height="58"></td>
     <td width="15%" align="center" height="58"></td>
     <td width="15%" align="center" height="58"></td>
@@ -182,9 +232,11 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://aubit4gl.sourceforge.net" target="_blank">Aubit</a></td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="hy4gldoc.html" target="_blank">Hy4gl</a></td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.informix.com" target="_blank">Informix 7.3</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">IBM EGL</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.4js.com" target="_blank">4Js BDL 3.10</a> /
       <a href="http://www.informix.com" target="_blank"> D4GL
       3.10</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">4Js Genero</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.querix.com" target="_blank">Querix&nbsp;</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.plx.com" target="_blank">Plexus XDP AD32</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.supra.com.pl/en/products/" target="_blank">Supra-4GL</a></td>
@@ -198,6 +250,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
   </tr>
   <tr>
     <td width="14%" bgcolor="#C0C0C0" height="58">Character (terminal) mode</td>
+    <td width="14%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16"></td>
@@ -217,6 +271,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
       VNC, X, or other standard remote GUI display</td>
     <td width="14%" align="center" height="58"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="58"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="58"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="58"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -233,8 +289,10 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16">GTK+</td>
     <td width="14%" align="center" height="58"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="58"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="58">?</td>
     <td width="14%" align="center" height="58"><img border="0" src="../images/error.gif" width="20" height="16">
       TCL/TK and Java - partial</td>
+    <td width="14%" align="center" height="58">Yes/Limited</td>
     <td width="14%" align="center" height="58"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="58"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="58"></td>
@@ -249,7 +307,9 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
-    <td width="14%" align="center" height="19">GENERO clients- in alpha</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="19"></td>
@@ -260,15 +320,17 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="15%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
   </tr>
   <tr>
-    <td width="14%" bgcolor="#C0C0C0" height="19">Java GUI</td>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Java thin GUI</td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16">Using
       VNC or X Java clients</td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
-    <td width="15%" align="center" height="19"></td>
+    <td width="15%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
@@ -281,6 +343,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
       VNC or X Java clients</td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="57">N/A</td>
+    <td width="14%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="57"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -297,7 +361,9 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="57"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="57">N/A</td>
     <td width="14%" align="center" height="57">N/A</td>
+    <td width="14%" align="center" height="57">?</td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="57">Limited</td>
     <td width="14%" align="center" height="57">Client access to ActiveX and Java
       Beans, but not form 4gl code</td>
     <td width="15%" align="center" height="57">?</td>
@@ -309,12 +375,31 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="15%" align="center" height="57">N/A</td>
   </tr>
   <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="57">UI screen format</td>
+    <td width="14%" align="center" height="57">Block (.per) &amp; Glade</td>
+    <td width="14%" align="center" height="57">Block only (.per)</td>
+    <td width="14%" align="center" height="57">Block only (.per)</td>
+    <td width="14%" align="center" height="57">Converted .per, Java Server Faces</td>
+    <td width="14%" align="center" height="57">Block only (.per)</td>
+    <td width="14%" align="center" height="57">&nbsp;</td>
+    <td width="14%" align="center" height="57">Block only (.per)</td>
+    <td width="15%" align="center" height="57">Block only (.per)</td>
+    <td width="15%" align="center" height="57">&nbsp;</td>
+    <td width="15%" align="center" height="57">&nbsp;</td>
+    <td width="15%" align="center" height="57">&nbsp;</td>
+    <td width="15%" align="center" height="57">&nbsp;</td>
+    <td width="15%" align="center" height="57">&nbsp;</td>
+    <td width="15%" align="center" height="57">&nbsp;</td>
+  </tr>
+  <tr>
     <td width="14%" bgcolor="#C0C0C0" height="57">HTML interface</td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="57">CGI-BIN, not&nbsp; supported</td>
+    <td width="14%" align="center" height="57"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/error.gif" width="20" height="16">Using
       servlet</td>
+    <td width="14%" align="center" height="57"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="57"></td>
@@ -330,6 +415,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="76"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -343,10 +430,14 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
   <tr>
     <td width="14%" bgcolor="#C0C0C0" height="76">Adobe Acrobat (PDF) report
       generation</td>
-    <td width="14%" align="center" height="76"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="76"><img border="0" src="../images/error.gif" width="20" height="16">Both 
+	built-in and via transformation (LogicalReports)</td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="76">Via Jasper Reports</td>
     <td width="14%" align="center" height="76">Via XML Publication System</td>
+    <td width="14%" align="center" height="76">Via separate report 
+	transformation tool</td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="76"></td>
@@ -361,7 +452,9 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="76">&nbsp;</td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="76">&nbsp;</td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="76"></td>
@@ -377,7 +470,9 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="38"></td>
     <td width="14%" align="center" height="38"></td>
     <td width="14%" align="center" height="38"></td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
     <td width="14%" align="center" height="38"></td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
     <td width="14%" align="center" height="38"></td>
     <td width="15%" align="center" height="38"></td>
     <td width="15%" align="center" height="38"></td>
@@ -394,9 +489,11 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://aubit4gl.sourceforge.net" target="_blank">Aubit</a></td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="hy4gldoc.html" target="_blank">Hy4gl</a></td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.informix.com" target="_blank">Informix 7.3</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">IBM EGL</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.4js.com" target="_blank">4Js BDL 3.10</a> /
       <a href="http://www.informix.com" target="_blank"> D4GL
       3.10</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">4Js Genero</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.querix.com" target="_blank">Querix&nbsp;</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.plx.com" target="_blank">Plexus XDP AD32</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.supra.com.pl/en/products/" target="_blank">Supra-4GL</a></td>
@@ -416,6 +513,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
       supported</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38"></td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -431,6 +530,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38"></td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -441,8 +542,10 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
   </tr>
   <tr>
     <td width="14%" bgcolor="#C0C0C0" height="38">P-code compiler</td>
-    <td width="14%" align="center" height="38">Java/Parrot</td>
+    <td width="14%" align="center" height="38">Perl-Parrott/ Native (Alpha)</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="38">Java Byte-code</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -455,14 +558,33 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
   </tr>
   <tr>
-    <td width="14%" bgcolor="#C0C0C0" height="38">Java generation</td>
+    <td width="14%" bgcolor="#C0C0C0" height="38">C# generation</td>
     <td width="14%" align="center" height="38">In works</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
-    <td width="15%" align="center" height="38"></td>
+    <td width="15%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="38">&nbsp;</td>
+    <td width="15%" align="center" height="38">&nbsp;</td>
+    <td width="15%" align="center" height="38">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="38">Java generation</td>
+    <td width="14%" align="center" height="38">In works</td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="38">?</td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
@@ -476,6 +598,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38"></td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -485,11 +609,30 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
   </tr>
   <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="38">COBOL generation</td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38">iSeries &amp; zSeries only</td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="38">&nbsp;</td>
+    <td width="15%" align="center" height="38">&nbsp;</td>
+    <td width="15%" align="center" height="38">&nbsp;</td>
+    <td width="15%" align="center" height="38">&nbsp;</td>
+  </tr>
+  <tr>
     <td width="14%" bgcolor="#C0C0C0" height="38">C-code generation</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38">No longer supported</td>
+    <td width="14%" align="center" height="38">? No longer supported</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="38"></td>
@@ -506,6 +649,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="76"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="76"></td>
     <td width="15%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -515,12 +660,32 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="15%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
   </tr>
   <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="16">XML mapping to/from 4GL arrays</td>
+    <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="16">?</td>
+    <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="16">From, but not to</td>
+    <td width="14%" align="center" height="16">Exchange format for ThinStructure</td>
+    <td width="15%" align="center" height="16"></td>
+    <td width="15%" align="center" height="16"></td>
+    <td width="15%" align="center" height="16"></td>
+    <td width="15%" align="center" height="16"></td>
+    <td width="15%" align="center" height="16"></td>
+    <td width="15%" align="center" height="16"></td>
+    <td width="15%" align="center" height="16"></td>
+  </tr>
+  <tr>
     <td width="14%" bgcolor="#C0C0C0" height="16">XML parsing and output&nbsp; support</td>
-    <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16">IksEmEl</td>
+    <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16">IksEmEl, 
+	SXML and native</td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="16">Output only - Separate C/S reporting tool, can
       take output from 4gl PRINT</td>
+    <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="16">?</td>
@@ -536,7 +701,9 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="38"></td>
     <td width="14%" align="center" height="38"></td>
     <td width="14%" align="center" height="38"></td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
     <td width="14%" align="center" height="38"></td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
     <td width="14%" align="center" height="38"></td>
     <td width="15%" align="center" height="38"></td>
     <td width="15%" align="center" height="38"></td>
@@ -554,9 +721,11 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://aubit4gl.sourceforge.net" target="_blank">Aubit</a></td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="hy4gldoc.html" target="_blank">Hy4gl</a></td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.informix.com" target="_blank">Informix 7.3</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">IBM EGL</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.4js.com" target="_blank">4Js BDL 3.10</a> /
       <a href="http://www.informix.com" target="_blank"> D4GL
       3.10</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">4Js Genero</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.querix.com" target="_blank">Querix&nbsp;</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.plx.com" target="_blank">Plexus XDP AD32</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.supra.com.pl/en/products/" target="_blank">Supra-4GL</a></td>
@@ -571,8 +740,10 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
   <tr>
     <td width="14%" bgcolor="#C0C0C0" height="16">IM support</td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16">Jabber
-      (and most proprietary protocols via Jabber)</td>
+      (and most proprietary protocols via Jabber gateways)</td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="16">Via Java calls</td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -589,8 +760,10 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="38">RPC-XML via Jabber</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38">Via Java calls</td>
     <td width="14%" align="center" height="38">SOAP in CLI-HTML V3 - not
       documented</td>
+    <td width="14%" align="center" height="38">SOAP</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38"></td>
@@ -601,13 +774,33 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
   </tr>
   <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="38">SMTP/POP3 send/receive 
+	built-in (email)</td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
+    <td width="15%" align="center" height="38">&nbsp;</td>
+    <td width="15%" align="center" height="38">&nbsp;</td>
+    <td width="15%" align="center" height="38">&nbsp;</td>
+    <td width="15%" align="center" height="38">&nbsp;</td>
+    <td width="15%" align="center" height="38">&nbsp;</td>
+    <td width="15%" align="center" height="38">&nbsp;</td>
+    <td width="15%" align="center" height="38">&nbsp;</td>
+  </tr>
+  <tr>
     <td width="14%" bgcolor="#C0C0C0" height="38">IPC on Windows - DDE/OLE -
       from 4gl code</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38">DDE - not compatible with DDE in
       MS Office after Office 98 release.</td>
+    <td width="14%" align="center" height="38">?</td>
     <td width="14%" align="center" height="38">Client have access to Active X
       which is OLE based - but not from 4gl code.</td>
     <td width="15%" align="center" height="38">DDE</td>
@@ -620,8 +813,10 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
   </tr>
   <tr>
     <td width="14%" bgcolor="#C0C0C0" height="38">App partitioning - Middleware</td>
-    <td width="14%" align="center" height="38">RPC and&nbsp; Jabber (JAM)</td>
+    <td width="14%" align="center" height="38">Sun RPC,CORBA(Alpha),IBM MQ and&nbsp; Jabber (JAM)</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38">Via Java calls</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -638,6 +833,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="38">n-tier</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38">3-tier</td>
+    <td width="14%" align="center" height="38">?</td>
+    <td width="14%" align="center" height="38">3-tier</td>
     <td width="14%" align="center" height="38">3-tier</td>
     <td width="14%" align="center" height="38">3-tier</td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -653,6 +850,9 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="38">All with GNU C</td>
     <td width="14%" align="center" height="38">All with GNU C</td>
     <td width="14%" align="center" height="38">UNIX, Many</td>
+    <td width="14%" align="center" height="38">Windows, Linux, iSeries, zSeries, 
+	others planned</td>
+    <td width="14%" align="center" height="38">Many</td>
     <td width="14%" align="center" height="38">Many</td>
     <td width="14%" align="center" height="38">Limited</td>
     <td width="15%" align="center" height="38">Windows only</td>
@@ -669,7 +869,9 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="38"></td>
     <td width="14%" align="center" height="38"></td>
     <td width="14%" align="center" height="38"></td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
     <td width="14%" align="center" height="38"></td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
     <td width="14%" align="center" height="38"></td>
     <td width="15%" align="center" height="38"></td>
     <td width="15%" align="center" height="38"></td>
@@ -686,9 +888,11 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://aubit4gl.sourceforge.net" target="_blank">Aubit</a></td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="hy4gldoc.html" target="_blank">Hy4gl</a></td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.informix.com" target="_blank">Informix 7.3</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">IBM EGL</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.4js.com" target="_blank">4Js BDL 3.10</a> /
       <a href="http://www.informix.com" target="_blank"> D4GL
       3.10</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">4Js Genero</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.querix.com" target="_blank">Querix&nbsp;</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.plx.com" target="_blank">Plexus XDP AD32</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.supra.com.pl/en/products/" target="_blank">Supra-4GL</a></td>
@@ -706,7 +910,9 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38">?</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38">?</td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38"></td>
@@ -722,6 +928,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38">?</td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -733,16 +941,19 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
   </tr>
   <tr>
-    <td width="14%" bgcolor="#C0C0C0" height="38">Emulation of Informix
-      proprietary RDBMS features on non-Informix databases</td>
+    <td width="14%" bgcolor="#C0C0C0" height="38">Run-time emulation/translation of Informix
+      proprietary RDBMS&amp;SQL features on non-Informix databases</td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
-    <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16">Oracle
-      only</td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16">Oracle 
+	and others (?)</td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
-    <td width="15%" align="center" height="38"></td>
+    <td width="15%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"> 
+	via separate server (&quot;Multi Database Connectivity&quot;) Informix / Oracle / DB/2</td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38">?</td>
@@ -754,7 +965,9 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="38">Via JDBC/ODBC bridge</td>
     <td width="14%" align="center" height="38">Beta, MS SQL server only</td>
+    <td width="14%" align="center" height="38">?</td>
     <td width="14%" align="center" height="38">Alpha, MS SQL server only</td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="38"></td>
@@ -770,7 +983,9 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
       Windows</td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="57">?</td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="57">?</td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="57"></td>
@@ -782,10 +997,13 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
   </tr>
   <tr>
     <td width="14%" bgcolor="#C0C0C0" height="57">Native db support</td>
-    <td width="14%" align="center" height="57">PostgreSQL, Informix</td>
+    <td width="14%" align="center" height="57">PostgreSQL, Informix, others via 
+	config files</td>
     <td width="14%" align="center" height="57">PostgreSQL</td>
     <td width="14%" align="center" height="57">Informix, DB/2 in works</td>
+    <td width="14%" align="center" height="57">?</td>
     <td width="14%" align="center" height="57">All supported - many</td>
+    <td width="14%" align="center" height="57">All supported - many&nbsp;</td>
     <td width="14%" align="center" height="57">Informix, Oracle</td>
     <td width="15%" align="center" height="57">Informix</td>
     <td width="15%" align="center" height="57"></td>
@@ -796,12 +1014,15 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="15%" align="center" height="57">Informix, and own SE clone</td>
   </tr>
   <tr>
-    <td width="14%" bgcolor="#C0C0C0" height="57">Multiple DB systems from one
+    <td width="14%" bgcolor="#C0C0C0" height="57">Multiple databases and/or DB systems from one
       session</td>
-    <td width="14%" align="center" height="57"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="57"><img border="0" src="../images/error.gif" width="20" height="16">/ 
+	?</td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="57">?</td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/error.gif" width="20" height="16">ODI</td>
+    <td width="14%" align="center" height="57"><img border="0" src="../images/error.gif" width="20" height="16">ODI&nbsp;</td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="57"></td>
@@ -817,7 +1038,10 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
       ODBC</td>
     <td width="14%" align="center" height="57">PostgreSQL</td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="57">?</td>
     <td width="14%" align="center" height="57">PostgreSQL, MySQL (beta, native)</td>
+    <td width="14%" align="center" height="57">PostgreSQL, MySQL (with 
+	limitations)</td>
     <td width="14%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="57"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="57"></td>
@@ -832,7 +1056,9 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="16">?</td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="16">?</td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="16"></td>
@@ -848,7 +1074,9 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="38"></td>
     <td width="14%" align="center" height="38"></td>
     <td width="14%" align="center" height="38"></td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
     <td width="14%" align="center" height="38"></td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
     <td width="14%" align="center" height="38"></td>
     <td width="15%" align="center" height="38"></td>
     <td width="15%" align="center" height="38"></td>
@@ -865,12 +1093,15 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://aubit4gl.sourceforge.net" target="_blank">Aubit</a></td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="hy4gldoc.html" target="_blank">Hy4gl</a></td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.informix.com" target="_blank">Informix 7.3</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">IBM EGL</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.4js.com" target="_blank">4Js BDL 3.10</a> /
       <a href="http://www.informix.com" target="_blank"> D4GL
       3.10</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">4Js Genero</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.querix.com" target="_blank">Querix&nbsp;</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.plx.com" target="_blank">Plexus XDP AD32</a></td>
-    <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.supra.com.pl/en/products/" target="_blank">Supra-4GL</a></td>
+    <td width="15%" align="center" bgcolor="#C0C0C0" height="38">
+	<a target="_blank" href="http://www.supra.com.pl/index.php?DOC=04_03_TECH_NARZ">Supra-4GL</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.etrus.com" target="_blank">Etrus</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.supernova.com" target="_blank">SuperNova</a> (1)</td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.prodata-prodress.de" target="_blank">ProData
@@ -881,14 +1112,19 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
   </tr>
   <tr>
     <td width="14%" bgcolor="#C0C0C0" height="19">IDE</td>
-    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19">CUI (r4gl clone), GUI (Glade) 
+	alpha, integration with jEdit &amp; GWD IDEs</td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="19">CUI</td>
+    <td width="14%" align="center" height="19">WebSphere Studio (Eclipse)</td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16">Not
       supported, Java</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16">Windows 
+	only</td>
     <td width="14%" align="center" height="19">Win only</td>
     <td width="15%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
-    <td width="15%" align="center" height="19"></td>
+    <td width="15%" align="center" height="19">Integration with MS Visual studio 
+	.NET (option)</td>
     <td width="15%" align="center" height="19">?</td>
     <td width="15%" align="center" height="19">?</td>
     <td width="15%" align="center" height="19"></td>
@@ -897,12 +1133,13 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
   </tr>
   <tr>
     <td width="14%" bgcolor="#C0C0C0" height="16">Debugger</td>
-    <td width="14%" align="center" height="16">C only, full support via Java
-      planned</td>
+    <td width="14%" align="center" height="16">via C only</td>
     <td width="14%" align="center" height="16">C only</td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="16">?</td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16">not
       supported</td>
+    <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="16">C only - UNIX Debug in beta</td>
     <td width="15%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="16"></td>
@@ -918,7 +1155,11 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16">FGLGEN</td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
-    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16">separate 
+	product</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"> 
+	separate product</td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="19"></td>
@@ -929,11 +1170,31 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="15%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
   </tr>
   <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Documentation tools</td>
+    <td width="14%" align="center" height="19">Doc4GL (Can be used with other 
+	x4GLs too)</td>
+    <td width="14%" align="center" height="19">&nbsp;</td>
+    <td width="14%" align="center" height="19">&nbsp;</td>
+    <td width="14%" align="center" height="19">&nbsp;</td>
+    <td width="14%" align="center" height="19">&nbsp;</td>
+    <td width="14%" align="center" height="19">&nbsp;</td>
+    <td width="14%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+  <tr>
     <td width="14%" bgcolor="#C0C0C0" height="19">CASE tools</td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16">FGLBLD</td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">(Rational?)</td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="19"></td>
@@ -949,7 +1210,9 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="38"></td>
     <td width="14%" align="center" height="38"></td>
     <td width="14%" align="center" height="38"></td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
     <td width="14%" align="center" height="38"></td>
+    <td width="14%" align="center" height="38">&nbsp;</td>
     <td width="14%" align="center" height="38"></td>
     <td width="15%" align="center" height="38"></td>
     <td width="15%" align="center" height="38"></td>
@@ -966,9 +1229,11 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://aubit4gl.sourceforge.net" target="_blank">Aubit</a></td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="hy4gldoc.html" target="_blank">Hy4gl</a></td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.informix.com" target="_blank">Informix 7.3</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">IBM EGL</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.4js.com" target="_blank">4Js BDL 3.10</a> /
       <a href="http://www.informix.com" target="_blank"> D4GL
       3.10</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">4Js Genero</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.querix.com" target="_blank">Querix&nbsp;</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.plx.com" target="_blank">Plexus XDP AD32</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.supra.com.pl/en/products/" target="_blank">Supra-4GL</a></td>
@@ -985,6 +1250,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="38">Converted to EGL, limited</td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="15%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
@@ -1000,6 +1267,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="38">Converted to EGL, limited</td>
+    <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="38">Partial</td>
     <td width="15%" align="center" height="38">?</td>
@@ -1011,8 +1280,10 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="15%" align="center" height="38"><img border="0" src="../images/no.gif" width="14" height="14"></td>
   </tr>
   <tr>
-    <td width="14%" bgcolor="#C0C0C0" height="16">Plexus compatibility</td>
+    <td width="14%" bgcolor="#C0C0C0" height="16">Plexus extensions&nbsp; compatibility</td>
     <td width="14%" align="center" height="16">menu and form handlers</td>
+    <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -1026,10 +1297,12 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="15%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
   </tr>
   <tr>
-    <td width="14%" bgcolor="#C0C0C0" height="16">4Js compatibility</td>
+    <td width="14%" bgcolor="#C0C0C0" height="16">4Js BDL extensions&nbsp; compatibility</td>
     <td width="14%" align="center" height="16">partial</td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="16">Converted to EGL, limited</td>
+    <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -1046,6 +1319,8 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="16">N/A</td>
+    <td width="14%" align="center" height="16">Not x4GL</td>
+    <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16"></td>
@@ -1058,22 +1333,26 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
   </tr>
   <tr>
     <td width="14%" bgcolor="#C0C0C0" height="19">OO extensions</td>
-    <td width="14%" align="center" height="19"></td>
-    <td width="14%" align="center" height="19"></td>
-    <td width="14%" align="center" height="19"></td>
-    <td width="14%" align="center" height="19"></td>
-    <td width="14%" align="center" height="19"></td>
-    <td width="15%" align="center" height="19"></td>
+    <td width="14%" align="center" height="19">Alpha</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">?</td>
+    <td width="15%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="19">?</td>
     <td width="15%" align="center" height="19"></td>
     <td width="15%" align="center" height="19"></td>
-    <td width="15%" align="center" height="19"></td>
-    <td width="15%" align="center" height="19"></td>
-    <td width="15%" align="center" height="19"></td>
+    <td width="15%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
   </tr>
   <tr>
     <td width="14%" bgcolor="#C0C0C0" height="19">Embedded C code</td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -1087,9 +1366,47 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="15%" align="center" height="19">?</td>
   </tr>
   <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Reports</td>
+    <td width="14%" align="center" height="19">&quot;Logical Reports&quot;: text, PDF, XML, 
+	CSV transformations</td>
+    <td width="14%" align="center" height="19">text</td>
+    <td width="14%" align="center" height="19">text</td>
+    <td width="14%" align="center" height="19">Jasper Reports (XML)</td>
+    <td width="14%" align="center" height="19">text</td>
+    <td width="14%" align="center" height="19">text + PDF/XML via separate 
+	product</td>
+    <td width="14%" align="center" height="19">text</td>
+    <td width="15%" align="center" height="19">?</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">PDF reports Key remapping</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">?</td>
+    <td width="15%" align="center" height="19">?</td>
+    <td width="15%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">?</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
     <td width="14%" bgcolor="#C0C0C0" height="19">External C code&nbsp;</td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19">call C from 4GL only</td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
@@ -1101,19 +1418,500 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="15%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="19">?</td>
   </tr>
-  <tr>
+	<tr>
+    <td width="14%" bgcolor="#000000" height="19"><a href="#Top of page - x4GL compilers features compared">Back
+      to top...</a></td>
+    <td width="14%" align="center" height="19">&nbsp;</td>
+    <td width="14%" align="center" height="19">&nbsp;</td>
+    <td width="14%" align="center" height="19">&nbsp;</td>
+    <td width="14%" align="center" height="19">&nbsp;</td>
+    <td width="14%" align="center" height="19">&nbsp;</td>
+    <td width="14%" align="center" height="19">&nbsp;</td>
+    <td width="14%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
     <td width="14%" bgcolor="#C0C0C0" height="38">
-      <h4>&nbsp;</h4>
+      <h4><font color="#FF0000"><a name="Productivity_features">Productivity 
+		features</a></font></h4>
     </td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://aubit4gl.sourceforge.net" target="_blank">Aubit</a></td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="hy4gldoc.html" target="_blank">Hy4gl</a></td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.informix.com" target="_blank">Informix 7.3</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">IBM EGL</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.4js.com" target="_blank">4Js BDL 3.10</a> /
       <a href="http://www.informix.com" target="_blank"> D4GL
       3.10</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">4Js Genero</td>
     <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.querix.com" target="_blank">Querix&nbsp;</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.plx.com" target="_blank">Plexus XDP AD32</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.supra.com.pl/en/products/" target="_blank">Supra-4GL</a></td>
+    <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.etrus.com" target="_blank">Etrus</a></td>
+    <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.supernova.com" target="_blank">SuperNova</a> (1)</td>
+    <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.prodata-prodress.de" target="_blank">ProData
+      proBuilder</a></td>
+    <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.artinsoft.com" target="_blank">ArtInSoft</a>
+      Freedom</td>
+    <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.infoflex.com" target="_blank">Infoflex</a> (2)</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Associative arrays</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Dynamic arrays</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"> 
+	4Js compatible</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16">latest 
+	version only</td>
+    <td width="14%" align="center" height="19">Currently not translated</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Testing hooks</td>
+    <td width="14%" align="center" height="19">Can be scripted, scripted screen 
+	dumps</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">SQL...END SQL blocks for 
+	dialect independent SQL</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Shared library function 
+	calls/Packages invoked on the fly</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">? JNI</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">IN/Exists for 'IF' etc - not 
+	just for use within SQL statements <br>
+	<br>
+&nbsp;</td>
+    <td width="14%" align="center" height="19">
+	<p align="left">if exists (select * from sometab where&nbsp; company_code=lv_code) 
+	then<br>
+	error &quot;Company already exists!&quot;<br>
+	end if</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Multiple concurrent database 
+	connections </td>
+    <td width="14%" align="center" height="19">Multiple sessions/USE SESSION<br>
+&nbsp;</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">DEFINE constant</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Themable GUI output <br>
+&nbsp;</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"> 
+	via gtkrc</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">Limited TCL/TK client only</td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19">Some ActiveX based controld on 
+	Win client only </td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">IMPORT DATATYPE <br>
+&nbsp;</td>
+    <td width="14%" align="center" height="19">MPZ (large integer support)</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Linked defines</td>
+    <td width="14%" align="center" height="19">
+	<p align="left">DEFINE x LINKED TO tabname PRIMARY KEY (pkcol)<br>
+	..<br>
+	LET x.pk=123<br>
+	SELECT USING x<br>
+	LET x.someval=2<br>
+	UPDATE USING x<br>
+&nbsp;</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Form field options as SQL 
+	SELECT</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Moveable/Hidden windows<br>
+&nbsp;</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">&quot;Pragma&quot; style compiler 
+	hinting</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Structured cascading 
+	configuration</td>
+    <td width="14%" align="center" height="19">Global / user / directory / 
+	program / explicit /environment</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19">Global / directory / program 
+	/explicit</td>
+    <td width="14%" align="center" height="19">Global / directory / program 
+	/explicit<p>&nbsp;</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Compile against extracted db 
+	meta-data without db present</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">&quot;perform&quot; functionality</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"> 
+	Separate product</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+	<tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">&quot;ace&quot; reports functionality</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"> 
+	Separate product</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Convert Perform/Ace to 4GL</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Compiler regression tests 
+	available</td>
+    <td width="14%" align="center" height="19">Over 1000 automated tests</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">dbaccess/isql like 
+	functionality with database independence</td>
+    <td width="14%" align="center" height="19">asql</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">Separate product, no db 
+	independence</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Tools for automated schema &amp; 
+	data migration between databases</td>
+    <td width="14%" align="center" height="19">adbschemma</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Configurable SQL translation / 
+	db features emulation behavior</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+    <td width="15%" align="center" height="19">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="38">
+      <h4>&nbsp;</h4>
+    </td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://aubit4gl.sourceforge.net" target="_blank">
+	Aubit</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="hy4gldoc.html" target="_blank">
+	Hy4gl</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.informix.com" target="_blank">
+	Informix 7.3</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">IBM EGL</td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.4js.com" target="_blank">
+	4Js BDL 3.10</a> /
+      <a href="http://www.informix.com" target="_blank"> D4GL 3.10</a></td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38">4Js Genero</td>
+    <td width="14%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.querix.com" target="_blank">
+	Querix&nbsp;</a></td>
+    <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.plx.com" target="_blank">
+	Plexus XDP AD32</a></td>
+    <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.supra.com.pl/en/products/" target="_blank">
+	Supra-4GL</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.etrus.com" target="_blank">Etrus</a></td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.supernova.com" target="_blank">SuperNova</a> (1)</td>
     <td width="15%" align="center" bgcolor="#C0C0C0" height="38"><a href="http://www.prodata-prodress.de" target="_blank">ProData
@@ -1147,7 +1945,7 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     </table>
   </div>
 </blockquote>
-<p><i><u>Notes</u></i></p>
+<p><i><u><a name="Notes">Notes</a></u></i></p>
 <p>1) Supernova is not really a 4gl language compiler, it actually just re-links
 existing Informix 4gl compiles code with it's own libraries to provide GUI and
 connectivity, so you will need I-4GL compiler. The &quot;4gl Extender&quot; had
@@ -1156,8 +1954,789 @@ WRQ purchased SuperNova, both product are discontinued as of January 2000.</p>
 <p>2) InfoFlex is not really a 4gl compatible compiler, it is more like ISQL
 tool on steroids, using much of 4gl syntax to generate entry screens and reports
 from few lines of definition code, much like Informix Perform tool in ISQL.</p>
-<p>Please see Aubit 4gl home page for links to vendors web sites.</p>
+<p>3) IBM EGL as a product does not use x4GL compatible programming language 
+syntax. It requires existing I-4GL programs to be converted to EGL syntax, using 
+provided tools. EGL (Enterprise Generation Language) syntax is a fusion of old 
+IBM 4GL used in VisualGen line of products and I-4GL</p>
+<p>4) Please email comments, suggestion and corrections to 
+<a href="mailto:andrej@nospam.falout.org?subject=x4GL's compared">Andrej Falout</a> 
+(remove &quot;nospam.&quot; from the address)</p>
+<p>5) See <a href="http://aubit4gl.sourceforge.net/aubit4gldoc/4glreference/index.htm" target="_blank">x4GL
+Language Reference Manual</a> for definition of x4GL programming language.</p>
+<p>6) Please see Aubit 4gl home page for links to vendors web sites.</p>
 <p><a href="#Top of page - x4GL compilers features compared">Back to top...</a></p>
+<hr>
+<h2 align="center"><a name="Individual_products_strengths_&amp;_weaknesses">Individual products strengths &amp; weaknesses</a></h2>
+<table border="1" width="100%" id="table1">
+	<tr>
+		<td colspan="2" bgcolor="#C0C0C0">
+		<p align="center"><a name="IBM_EGL">IBM EGL</a></td>
+	</tr>
+	<tr>
+		<td>
+		<p align="center">Strength</td>
+		<td>
+		<p align="center">Weakness</td>
+	</tr>
+	<tr>
+		<td>
+		<ul>
+			<li>Its IBM - no-one will get fired :-)</li>
+			<li>Java Server Faces allow Visual Basic-style form design and 
+			&quot;coding without coding&quot;</li>
+			<li>Allows non-Java programmers some access to&nbsp; some J2EE 
+			technologies without learning Java. They will still have to learn 
+			all about J2EE (as a platform) components they wish to use. Which 
+			will in turn require that they learn a fair bit of Java (as a 
+			programming language)</li>
+			<li>It can potentially provide a gentle introduction to J2EE and 
+			Java to non-Java programmers. If you really want to be introduced to 
+			it.</li>
+			<li>Number of potentially useful tools are bundled with WebSphere 
+			Studio IDE (A.K.A. Eclipse). Then again, most of them are freely 
+			available, since Eclipse (IDE WebSphere Studio is based on) is an 
+			OpenSource product. </li>
+			<li>Event if its not a x4GL, it is still a 4GL, as in Fourth 
+			Generation Language. Which still makes it more productive for the 
+			purpose of creating BRDO (Business related, Database Oriented) 
+			applications, then any general purpose 3GL (like Java, C/C++/C#, 
+			etc.) will ever be.</li>
+			<li>It is a (potentially) simple way to incorporate existing mature, 
+			tried &amp; tested 4GL code into a corporate strategy that mandated use 
+			of Java/J2EE, without manually rewriting everything, and retraining 
+			all staff. </li>
+			<li>Depending on the actual ease of integration between Java and 
+			EGL, it might be possible to benefit from many 3rd party, both 
+			commercial and OpenSource reusable components available in Java 
+			world. EGL code translated into Java is based on OpenSource Struts 
+			framework, which is a very popular component in world of Web 
+			interface oriented Java developers.</li>
+			<li>It is based on Java, and not C#, so at least in theory maintains 
+			platform portability</li>
+			<li>Being a 4GL, it maintains a level of abstraction from underlying 
+			technologies. In theory. It is possible to imagine a EGL to C# 
+			compilation option, just as we now have EGL to Java and EGL to COBOL 
+			options. Or any other programming language/platform that will appear 
+			in the years to come.</li>
+		</ul>
+		</td>
+		<td>
+		<ul>
+			<li>&quot;Automatic&quot; conversion from i-4GL to EGL has a manual with 150 
+			pages - one has to wonder what they mean by &quot;automatic&quot;</li>
+			<li>Conversion of 4GL report formatting blocks is limited to format 
+			only, and results in Jasper Reports XML file. No tools for 
+			maintaining them are provided. Any functionality embedded in 
+			formatting (&quot;REPORT&quot; block) is lost. While Jasper Reports framework 
+			have number of solid OpenSource implementations, I am not ready to 
+			declare it 100% ready for large scale corporate reporting tasks. 
+			Maturity of report design tools also leaves a significant gap, when 
+			compared with the likes of Cognos, BO and&nbsp; Brio, and is not 
+			user friendly enough for the power users.</li>
+			<li>.per forms are converted into embedded hard-coded strings, 
+			loosing separation of presentation and logic, and removing even 
+			vague visual correlation between form layout and end result. All 
+			multilingual forms will have to become embedded in programs</li>
+			<li>Converted forms are usable ONLY in TUI mode. When converting 
+			existing 4GL code (that uses forms) to EGL to be used as Web 
+			interface applications, all forms will need to be re-created 
+			manually, from scratch. Given the nature of&nbsp; interaction 
+			between Java Server Faces (EGL UI component) and EGL code, 
+			significant parts of user interaction related 4GL code will have to 
+			be manually rewritten in EGL.</li>
+			<li>No tools for forms design of converted forms are provided (form 
+			painter)</li>
+			<li>Metadata extraction is static, and has several limitations. The 
+			way it is created and used will cause noticeable productivity 
+			overheads </li>
+			<li>Cobol generation only on iSeries and (maybe?) on zSeries, and 
+			does not work on any other platform</li>
+			<li>C code cant call EGL functions</li>
+			<li>Language syntax is a Frankenstein composed of several iterations 
+			of old IBM 4GL from VisualGen products, Informix-4GL plus bits of 
+			Java, shell scripting, and JavaScript syntax. Significant parts of 
+			the built-in functionally, which in 4GL are expected to be part of 
+			language syntax, are instead implemented as function calls. language 
+			syntax is everything but consistent, not to mention elegant. Which 
+			all translated to loss of productivity.</li>
+			<li>In 95% of the cases expect to create more code for same 
+			functionality then in x4GL. In many cases, a lot more code. Even the 
+			simple things like returning variables to a calling function require 
+			several statements. SQL is not embedded, and most database 
+			interactions require referencing extracted (static) meta-data.&nbsp; 
+			Productivity is degraded.</li>
+			<li>Quote from conversion manual: &quot;The performance of I4GL 
+			applications converted to EGL will be somewhat reduced.&quot; Given the 
+			legendary resource hunger of WebSphere AS, which is the ONLY 
+			supported and REQUIRED AS, and IBM's conflict of interest when 
+			selling expensive hardware, expect to buy brand new server hardware. 
+			The bigger the better.</li>
+			<li>It is completely unclear if EGL is able to produce GUI apps in 
+			any client configuration (Thin, fat...) It appears only web browser 
+			and TUI (Curses) clients are supported</li>
+			<li>Mostly because of the enormous footprint of the Eclipse and 
+			WebSphere application server, each developer will need the 
+			state-of-the-art machine to develop. Budget for dual CPU machines 
+			with 2GB memory and SCSI RAID disks. (Download size of basic package 
+			[&quot;Web Developer&quot;] is 4GB!) Otherwise, expect any potential gains in 
+			developer productivity to be lost by developers watching the 
+			hourglass for things to happen...</li>
+			<li>EGL does not allow Java code to be embedded in EGL, making me 
+			wonder what they mean by &quot;tight Java integration&quot; </li>
+			<li>Database support is unclear at this stage. It seems that there 
+			is no SQL run-time conversion. Again, there is a conflict of 
+			interest on IBM side, even between DB/2 and Informix families.</li>
+			<li>100% complete vendor lock-in: Once you convert to EGL, IBM is 
+			your only source for everything from products, training support and 
+			tools.</li>
+			<li>EGL creates a long chain of dependencies; you will not be able 
+			to choose your IDE, Versioning control system, database, application 
+			server, automated testing framework, web server, or operating 
+			system. Since IBM purchased Rational, it is easy to guess which 
+			tools will be promoted for all jobs possible. This might be a good 
+			thing in some environments, providing standardization. IMHO, it will 
+			be a bad thing in most development environments. Developers are 
+			craftsman, and have to be able to choose there tools based on task. 
+			Also expect to pay for a lot of stuff you don't need, and will never 
+			use.</li>
+			<li>On AS side, supported only on Windows, Linux, iSeries and 
+			zSeries. Which means that HP-UX is not supported. Support is 
+			apparently planned, but no date was released. </li>
+			<li>Whole EGL platform is a brand new product. Maturity, 
+			performance, scalability, productivity... are all unknown 
+			quantities. I am not aware of any mission critical EGL applications 
+			in production, or successful x4GL to EGL conversion projects. 
+			Prepare to become a guinea pig.</li>
+			<li>If EGL is really not capable of creating any user interfaces 
+			other then Web and TUI, this will represent a significant limitation 
+			in most business environments. Web browser interface is not suitable 
+			for many transaction oriented tasks where information is rapidly 
+			updated on the screen, or speed of operator input is critical. This 
+			includes POS environments.</li>
+			<li>IBM has many agendas built-in in every product; when they sell 
+			you software, they want to sell you services, hardware, and more 
+			additional software too. This agendas are built-in in every product, 
+			often in form of intentional limitations that require additional 
+			purchases of products or services to resolve. EGL, and WebSphere 
+			platform are a very good example of this approach. Buying IBM 
+			product more often then not means forming a relationship, much more 
+			then buying a product. If you are reluctant to accept this fact, EGL 
+			is probably not for you. If you already have a relationship with IBM 
+			(and know how to manage it), this may work&nbsp; for your benefit.</li>
+			<li>With tools of any kind, it is very important to have the ability 
+			to influence features implementation priorities and product 
+			direction in general. If you use this tools for mission critical 
+			tasks that impact your ability to compete in your marketplace, it 
+			becomes essential. When dealing with suppliers of the size of IBM, 
+			unless your vendor is Fortune 100 company, you will remain far below 
+			the radar for IBM product management people to notice you. In other 
+			words, you will get upgrades and fixes when you get them, and you 
+			will get features that you get. Think Microsoft.</li>
+		</ul>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">Bottom line:<p>Less productivity then x4GL based 
+		products, but still more then plain Java/J2EE. Mutant programming 
+		language syntax bring in question the very core advantage of 4GL 
+		concept. Possibly more flexible 
+		development environment, with functionality that is still lacking in 
+		most x4GLs. But not ready for mission critical production environments 
+		for at least one more year.</p>
+		<p>&nbsp;</td>
+	</tr>
+</table>
+<p>&nbsp;</p>
+<p>Not everything will benefit from migration/conversion. There is little 
+benefit to be gained by converting existing i-4gl report-only programs. Same 
+goes for most or all batch-type, data-driven programs that have no user 
+interaction or need to advanced integration technologies like Web Services.</p>
+<p>In same cases, it might be beneficial to, for example, utilize Aubit to 
+create PDF/XML reports, 4JS to perform batch actions utilizing SOAP protocol, 
+Aubit to utilize MQ series interface, and EGL to create web-based applications 
+that would benefit from, for instance, ability to integrate 3rd party Java based 
+products or tools. Choose your tools wisely, and do not blindly follow what 
+vendors are telling you. When all you have is a hammer, everything starts 
+looking like a nail.&nbsp; </p>
+<p>&nbsp;</p>
+<table border="1" width="100%" id="table2">
+	<tr>
+		<td colspan="2" bgcolor="#C0C0C0">
+		<p align="center"><a name="Four_Js_BDL">Four J's BDL</a></td>
+	</tr>
+	<tr>
+		<td>
+		<p align="center">Strengths</td>
+		<td>
+		<p align="center">Weaknesses</td>
+	</tr>
+	<tr>
+		<td>
+		<ul>
+			<li>Tried &amp; tested, mission critical proven</li>
+			<li>No vendor lock in - most if not all Four J's BDL (Business 
+			Development Language, A.K.A. Dynamic 4GL or D4GL) extension 
+			implemented in several x4GL compilers, including i-4GL, Aubit and 
+			Querix. A simple recompile will move your apps to a different x4GL 
+			compiler</li>
+			<li>Several useful language extensions to i-4gl, resulting in even 
+			better productivity when compared with I-4GL base</li>
+			<li>Low resources consumption</li>
+			<li>Choice of two implementations of thin clients - TCL/TK and Java 
+			(which can work as a web browser applet)</li>
+			<li>Usable Web Browser client implementation (WebFE)</li>
+			<li>Very good database independence, with run-time SQL translation 
+			for many SQL dialects (ODI)</li>
+			<li>Wide OS platforms support</li>
+			<li>Can use a range of AS for WebFE</li>
+			<li>Integrated AS support for Web and Thin clients via same AS 
+			servlet</li>
+			<li>Thin clients are message-based (as opposed to bit-map based) 
+			resulting in low latency and reasonable bandwidth consumption. They 
+			are actually usable over very average networks, and work well in 
+			conditions the likes of Cytrix will not even start.</li>
+			<li>100% i-4gl compatibility - recompile your code and it WILL work.</li>
+			<li></li>
+		</ul>
+		</td>
+		<td>
+		<ul>
+			<li>With per-user run-time licensing, it can quickly become 
+			expensive</li>
+			<li>Small, privately held company with unclear feature</li>
+			<li>GUI interface esthetically not up to today's desktop GUI 
+			standards</li>
+			<li>No direct control over UI widgets from 4GL code</li>
+			<li>No built-in XML or PDF support for reports</li>
+			<li>No built-in XML read/write support</li>
+			<li>After the release of second generation 4GL product (&quot;Genero&quot;) it 
+			is not clear how much longer will this product be available, or 
+			supported. One should probably not hope for much 
+			enhancements/development effort to go into BDL. (NB. BDL product is 
+			on version 3 level for almost 5 years.)</li>
+			<li>Due to per-user licensing, it is easy to mount a DOS attack on 
+			WebFE server, by exhausting available licenses, unless a per-server 
+			licensing is purchased. Which is not always cost effective.</li>
+			<li>Very strict licensing policy can cause many wasted hours. For 
+			example, it is enough to change a network card in your server to 
+			have to re-license the product.</li>
+		</ul>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">Bottom line:<p>Solid contender, but how much longer will 
+		a small company like Four J's support two comparable products? Expect to 
+		be &quot;forced&quot; to upgrade to Genero in the near future.</p>
+		<p>&nbsp;</p>
+		</td>
+	</tr>
+</table>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<table border="1" width="100%" id="table3">
+	<tr>
+		<td colspan="2" bgcolor="#C0C0C0">
+		<p align="center"><a name="Four_Js_Genero">Four J's Genero</a></td>
+	</tr>
+	<tr>
+		<td align="center">Strengths</td>
+		<td align="center">Weaknesses</td>
+	</tr>
+	<tr>
+		<td>
+		<ul>
+			<li>All of the strengths of BDL (minus the vendor lock-in &amp; 
+			tried&amp;tested points) plus:</li>
+			<li>Cutting-edge XML based, message oriented thin client technology 
+			that works</li>
+			<li>Based on tried-and-tested product</li>
+			<li>Built-in support for many business critical technologies: XML, 
+			PDF, Web Services (SOAP), separate report transformation tool</li>
+			<li>New Genero UI looks much closer to &quot;true&quot; GUI then any other 
+			attempt, and better then any other message-based thin client I have 
+			seen. It blends well into native OS, thanks to use of native widgets 
+			sets. But its still not what can be achieved using, for example, 
+			Visual Basic</li>
+			<li>Web browser AS finally reached the level of maturity where it is 
+			almost fully possible to recompile existing x4GL TUI program and 
+			expect it to do something usable with almost no changes. I used 
+			&quot;almost&quot; twice, but since realistically changes will be needed 
+			because of the nature of web browser technology, that is not as a 
+			big shortcoming as it sounds. But technically, it is a great 
+			achievement, and it opens many new possibilities fro your existing 
+			code, without requiring years to achieve.</li>
+		</ul>
+		</td>
+		<td>
+		<ul>
+			<li>Strong vendor lock-in: once you start using Genero extensions, 
+			your code will become incompatible with the rest of the x4GL 
+			compilers</li>
+			<li>To benefit from new XML based UI, manual effort is required. On 
+			the positive side, most work will involve REMOVING existing 
+			hard-coded formatting, since new interface does most of it 
+			automatically</li>
+			<li>With per-user run-time licensing, it can quickly become 
+			expensive, especially in the long run. Writing an application today, 
+			that will require per-user run-time license for next, say, 10 years, 
+			can be more expensive then the productivity gained by using x4GL 
+			based development tools. </li>
+			<li>Small, privately held company with unclear feature. Granted, 
+			they have been around for a while, but so where 90% of the companies 
+			gone in last year. Since they are privately owned, the whole product 
+			line can literally vanish over night, for whatever reason.</li>
+			<li>No direct control over UI widgets from 4GL code. This is a price 
+			to pay for message-based thin client. </li>
+			<li>Due to per-user licensing, it is easy to mount a DOS attack on 
+			WebFE server, by exhausting available licenses, unless a per-server 
+			licensing is purchased. Which is not always cost effective.</li>
+			<li>Very strict licensing policy can cause many wasted hours. For 
+			example, it is enough to change a network card in your server to 
+			have to re-license the product.</li>
+			<li>It took Four J's almost 5 years to arrive from announcements to 
+			GA product. This opens questions about the ability of the company to 
+			deliver this level of enhanced functionality on permanent basis that 
+			is needed to keep up with emerging and ever-changing technologies.</li>
+		</ul>
+		<p>&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="2">Bottom line:<p>Strong contender, rich in built-in 
+		technology options, a &quot;looker&quot; almost. Some aspects of large-scale 
+		production readiness are still open for debate, and most 4Js customers 
+		are still using BDL product. If you can live with the risk of your 
+		business-critical systems being in the hands of 50 people privately held 
+		company that can be gone tomorrow,&nbsp; technology is certainly worth 
+		at least evaluating. But remember, there will be no easy switching to 
+		other x4GL products once you start using enhanced functionality.</p>
+		<p>&nbsp;</td>
+	</tr>
+</table>
+<p>Please note: Since a significant number of features for Aubit compiler are 
+based on the very nature of OpenSource development process, for Aubit 4GL both 
+strengths and weaknesses are separated into product and license related</p>
+<table border="1" width="100%" id="table4">
+	<tr>
+		<td colspan="2" bgcolor="#C0C0C0">
+		<p align="center"><a name="Aubit_project_-_Aubit_4GL_">Aubit project - Aubit 4GL</a></p>
+		<p align="center"><font color="#FF0000">Disclaimer:</font></p>
+		<p align="center"><font color="#FF0000">Andrej Falout is the initiator 
+		of the Aubit Project, and one of the creators of Aubit4GL</font></p>
+		<p align="center">&nbsp;</td>
+	</tr>
+	<tr>
+		<td align="center">Product based Strengths</td>
+		<td align="center">Product based Weaknesses</td>
+	</tr>
+	<tr>
+		<td>
+		<ul>
+			<li>Many unique features, enhancing both productivity and 
+			performance</li>
+			<li>plug-in architecture</li>
+			<li>only x4GL with option of fat GUI and therefore full GUI widgets 
+			control, even for &quot;block&quot; screens (.per based)</li>
+			<li>Only x4GL will &quot;real&quot; GUI option, utilizing cross-platform GTK+ 
+			and Glade</li>
+			<li>Unique high-low approach brings best of both 4GL and 3GL worlds 
+			together, thanks to ability to embed 3gl code directly in 4GL code.</li>
+			<li>Full and automated regression testing suite available. On each 
+			release it will take less then an hour to make absolutely sure all 
+			features are working correctly</li>
+			<li>Production ready, used in large scale, business critical 
+			installations</li>
+			<li>Many external tools come as standard; from 
+			dbaccess,isql,ace,perform,r4gl and dbschema equivalents, to 
+			migration and conversion tools. Many tools compliment well any other 
+			x4GL compiler</li>
+			<li>High transparency of the development process allows both 
+			constant user participation and fast turnaround of bug fixes</li>
+			<li>Active, knowledgeable and involved user community means that you 
+			can share not only experience, but also influence the direction 
+			development is taking</li>
+		</ul>
+		</td>
+		<td>
+		<ul>
+			<li>Not all features available are on the same level of the 
+			maturity. Some may be implemented only to the level sufficient to 
+			satisfy particular environment or purpose; thankfully, given the 
+			available source code, nothing stands between you and implementation 
+			of this features to your precise specifications</li>
+			<li>No usable HTML/Web browser option. Can run as CGI, but there is 
+			no mapping of UI (forms, menus) to HTML</li>
+			<li>No message-based thin client. Uses VNC (Virtual Network 
+			Computing) for GUI thin client. VNC server not integrated, so 
+			requires separate installation.</li>
+			<li>No SOAP implementation. XML-RPC is client only</li>
+			<li>Only Informix and PostgreSQL are fully tested for 
+			emulation/translation of Informix specific SQL dialect/features. 
+			While thanks to target specific configuration files its possible to 
+			support practically any RDBMS, this is not tested</li>
+			<li>Full PostgreSQL support requires PG engine with Informix 
+			compatibility patches applied. Limited to version 7.4</li>
+			<li>P-code version not production ready</li>
+			<li>Manual out of date on semi-permanent basis, because of the fast 
+			pace of the development changes</li>
+		</ul>
+		</td>
+	</tr>
+	<tr>
+		<td align="center">License based Strengths</td>
+		<td align="center">License based Weaknesses</td>
+	</tr>
+	<tr>
+		<td>
+		<ul>
+			<li>Freedom to choose your support vendor, freedom to alter or build 
+			product features to suit your needs, freedom to choose time to 
+			upgrade (or not to upgrade) </li>
+			<li>Cost (or rather absence of it) - no per-developer cost, no 
+			run-time cost, no hidden costs, no add-on cost... you got the 
+			picture...</li>
+			<li>Ultimate flexibility and extensibility; there is nothing you 
+			will not be able to do, if you know how to do&nbsp; it (or who to 
+			hire, that knows how to do it)</li>
+			<li>No chance of product or vendor becoming unavailable or 
+			unsupported</li>
+			<li>No forced upgrades, no license fees extortion games</li>
+			<li>No vendor buy-outs, no product direction change, no &quot;upgrade 
+			paths&quot; that require conversion of all code, retraining of all staff 
+			and buying licenses for five more products.</li>
+			<li>No database vendor agendas or preferences, no OS preferences, no 
+			hardware preferences. No hidden agendas at all. Aubit developers are 
+			not trying to sell you anything. The only goal Aubit developers have 
+			is to make tools that will make them more productive and competitive 
+			as software developers. </li>
+		</ul>
+		</td>
+		<td>
+		<ul>
+			<li>Nobody to blame, nobody to sue</li>
+			<li>No glossy brochures, no free tee mugs, no user conferences that 
+			someone else pays for.</li>
+			<li>No full-page adds to tell you that you where right and make you 
+			feel good about your choice. Not yet anyway ;-)</li>
+			<li>No &quot;independent&quot; studies &quot;sponsored&quot; by the vendor making the 
+			product to tell you how much better it is then anything else, and 
+			how excellent your choice was.</li>
+			<li>No fancy vendor certifications to add to your CV</li>
+		</ul>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">Bottom line:<p>Most flexible and arguably most 
+		technologically advanced option, but it will suite best the environments 
+		which are prepared (and will benefit from) to take charge of there own 
+		technology future. It can provide significant savings, as well as open 
+		some unexpected enterprise integration options. But probably most 
+		importantly for a developer, you will never feel like you cannot achieve 
+		something because your tools are limited or someone is stopping you. 
+		Beware: freedom always has a cost, and it requires both knowledge and 
+		determination.</p>
+		<p><b>&quot;The man who trades freedom for security does not deserve nor will 
+		he ever receive either. &quot; - </b>Benjamin Franklin </p>
+		<p>&nbsp;</td>
+	</tr>
+</table>
+<hr>
+<h2 align="center"><a name="One-on-one">One-on-one</a></h2>
+<p>&nbsp;</p>
+<table border="1" width="100%" id="table11">
+	<tr>
+		<td colspan="2" bgcolor="#C0C0C0">
+		<p align="center">IBM EGL vs. Four J's Genero</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="2">Bottom line:<p>&nbsp;</td>
+	</tr>
+</table>
+<p>&nbsp;</p>
+<table border="1" width="100%" id="table10">
+	<tr>
+		<td colspan="2" bgcolor="#C0C0C0">
+		<p align="center">IBM EGL vs. Aubit</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="2">Bottom line:<p>&nbsp;</td>
+	</tr>
+</table>
+<p>&nbsp;</p>
+<table border="1" width="100%" id="table9">
+	<tr>
+		<td colspan="2" bgcolor="#C0C0C0">
+		<p align="center">Four J's Genero vs. Aubit</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="2">Bottom line:<p>&nbsp;</td>
+	</tr>
+</table>
+<p>&nbsp;</p>
+<table border="1" width="100%" id="table8">
+	<tr>
+		<td colspan="2" bgcolor="#C0C0C0">
+		<p align="center">Four J's Genero vs. Querix</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="2">Bottom line:<p>&nbsp;</td>
+	</tr>
+</table>
+<p>&nbsp;</p>
+<table border="1" width="100%" id="table7">
+	<tr>
+		<td colspan="2" bgcolor="#C0C0C0">
+		<p align="center">Aubit vs. Querix</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="2">Bottom line:<p>&nbsp;</td>
+	</tr>
+</table>
+<p>&nbsp;</p>
+<table border="1" width="100%" id="table6">
+	<tr>
+		<td colspan="2" bgcolor="#C0C0C0">
+		<p align="center">Four J's Genero vs. Four J's BDL/D4GL</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="2">Bottom line:<p>&nbsp;</td>
+	</tr>
+</table>
+<p>&nbsp;</p>
+<table border="1" width="100%" id="table5">
+	<tr>
+		<td colspan="3" bgcolor="#C0C0C0">
+		<p align="center">x4GL vs. x3GL</td>
+	</tr>
+	<tr>
+		<td>
+		<p align="center">Characteristic</p>
+		<p align="center">(Note: all viewed from the perspective of Business 
+		Related Database Oriented applications development environments)</td>
+		<td>
+		<p align="center">x4GL</td>
+		<td>
+		<p align="center">x3GL</p>
+		<p align="center">(C/C++/C#/Java/VB/COBOL/ASP/PHP/JSP...)</td>
+	</tr>
+	<tr>
+		<td>Productivity</td>
+		<td>Unmatched by any other BRDO tool or language. Realistically, gains 
+		between 5 and 20 times (that is, between 500% and 2000%) are expected 
+		and common.</td>
+		<td>Low at best; promise of productivity trough reusability (OOD, 
+		component assembly, RAD tools, process modeling &amp; code generation) never 
+		materialized. After over 20 years of spent trying, it is hard to expect 
+		them to be achieved in foreseeable future.</td>
+	</tr>
+	<tr>
+		<td>Flexibility</td>
+		<td>Limited by the purpose; do not try writing a web server with an 
+		x4GL; still, as long as efficient and transparent integration with lower 
+		level languages is available, you can benefit from both worlds, using 
+		high approach for BRDO tasks, and low level technologies when ultimate 
+		flexibility is needed.</td>
+		<td>Ultimate. There is very little not possible to achieve, but the 
+		price will be high. Same sentence can apply to Assembler, for example. 
+		If you are creating operating systems, web browser or video games, x3GL 
+		is a right tool for the job.</td>
+	</tr>
+	<tr>
+		<td>Functionality</td>
+		<td>Solid; typical x4GL tool will cover some 95% of the functionality 
+		BRDO environment needs, with remaining 5% easily reachable trough 
+		integration with x3GL technologies or EAI (Enterprise Application 
+		Integration)</td>
+		<td>Unlimited; As long as you have unlimited resources.</td>
+	</tr>
+	<tr>
+		<td>Integration with other enterprise level technologies</td>
+		<td>Lacking; at least historically. But if we accept that there are only 
+		2 layers on which integration can occur (Data and Application levels), 
+		and with the emergence of the Web services as the&nbsp; universal 
+		standard, this gap is almost erased.</td>
+		<td>Solid, but mostly provided as separate product (with additional 
+		cost) - MS Biztalk, etc. Option of manual integration is always there, 
+		but as most things achievable with x3GL technologies, prepare to pay the 
+		cost.</td>
+	</tr>
+	<tr>
+		<td>Maturity</td>
+		<td>Depends on the product, but in general as a programming language and 
+		platform, it is a very mature one</td>
+		<td>Some x3GL technologies, like Java, have just reached maturity levels 
+		promised long, long time ago. And that statement applies only to one of 
+		Java implementations, Sun Java. Most other implementations are still 
+		IMHO unsuitable for mission critical tasks. Some other x3GL 
+		technologies, like .NET/C# are simply not there, and if a parallel with 
+		Java is a valid one, don't expect it to be there for a while (just take 
+		a look at amount of updates MS releases for .NET run-time on monthly 
+		basis). To be fair, there are mature x3GL technologies available, but 
+		most people that call x4GL technology a &quot;legacy&quot; technology, will call C 
+		or C++ with the same name. </td>
+	</tr>
+	<tr>
+		<td>Marketability</td>
+		<td>Low; perception problems. Thankfully, it seems that IBM is the first 
+		to publicly accept productivity limitations of x3GLs, and put some 
+		weight behind EGL product. </td>
+		<td>With all largest software vendors involved in promoting x3GL on one 
+		side or the other (Microsoft vs. IBM/Sun/Oracle...) it is not a surprise 
+		many will see current market as a two horse race between .NET and J2EE 
+		platforms. Some will see it as two gorillas on the hills beating there 
+		chests, while life (and business) in the jungle continues as it always 
+		has. Your choice.</td>
+	</tr>
+	<tr>
+		<td>Manageability</td>
+		<td>High; the smaller the task, less time it takes to complete, and more 
+		often the milestones are reached, more manageable the project be. In 
+		fact, most stated goals in XP project management and development 
+		approach are the same goals x4GL technology is excelling at. In 
+		addition, the very nature of a x4GL developer is making him more 
+		manageable (see next item)</td>
+		<td>Low; every work unit takes far longer, and the results are not even 
+		presentable to end users until significant amount of application 
+		foundation is finished. Working prototypes will take much longer, and 
+		are often not reusable. It is not uncommon to see x3GL developers 
+		struggling for days and weeks with a technical problem, and when they 
+		finally resolve it, they will have hard time even to recall what was the 
+		actual business goal they where trying to achieve with this technical 
+		solution. In addition, the very nature of a x3GL developer makes him or 
+		her less manageable by definition (see next item)</td>
+	</tr>
+	<tr>
+		<td>Developer's focus</td>
+		<td>Clearly on business logic. Typical x4GL developer is fluent in 
+		business logic goals and terminologies, and communicates with business 
+		management and users well. His daily focus is on achieving business 
+		tasks, not on playing with fancy tools. Often they will come from 
+		business background, and as computer literacy is reaching high levels 
+		this days, it is not uncommon to see power users with no programming or 
+		even technology backgtound involved in or with x4GL development teams.</td>
+		<td>Clearly on technology, with business logic as an afterthought. The 
+		unfortunate consequence is that most capable 3GL developers will be 
+		technologists, not business knowledge workers. To achieve sufficient 
+		level of technical knowledge to handle its complexity, they have to be. 
+		Another consequence is that 3GL expert programmers are self-selecting 
+		group emerging from scientific backgrounds, not business backgrounds. As 
+		people choose there professions based on personal preferences, dealing 
+		with business aspects of technology will clearly not be the first 
+		preference for most of them. All of which will in turn name it harder to 
+		establish communication between business oriented management and users 
+		and such technology oriented professionals. Which is a reason often 
+		cited as the most common reason for failures of many business software 
+		projects. </td>
+	</tr>
+	<tr>
+		<td>Skills availability</td>
+		<td>With x4GL programming language being based on English language, and 
+		with almost 50% of that programming language being SQL (Structured Query 
+		Language - which is a 4GL itself) one has to wonder how the perception 
+		of &quot;4GL skill shortage&quot; was created. Probably the analogy with skills 
+		needed for x3GL programmer where applied, but should have not been. Main 
+		skill a x4GL programmer needs is ability to quickly learn business logic 
+		goals, and communicate well with business people. Add to that that 
+		practically any programmer utilizing any programming language in 
+		corporate environments will have to know SQL by definition, and you 
+		already have more then 50% skills needed in x4GL programmer. My advice 
+		is never to advertise for x4GL developer - advertise for a person that 
+		understands business processes, communicates well on business subjects, 
+		and knows SQL. Any knowledge of 4GL is just a bonus, as is knowledge of 
+		your particular industry.</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Future-proofing</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Portability</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="3">Bottom line:<p>&nbsp;</td>
+	</tr>
+</table>
 <hr>
 <p align="center"><a href="../index.htm">Aubit 4GL compiler home page</a></p>
 
