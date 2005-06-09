@@ -32,7 +32,7 @@ EXEC SQL BEGIN DECLARE SECTION;
 int numberOfColumns=0;
 EXEC SQL END DECLARE SECTION;
 static int field_widths(void);
-extern FILE *out;
+extern FILE *file_out_result;
 extern FILE *exec_out;
 extern int outlines;
 extern int display_mode;
@@ -671,8 +671,8 @@ EXEC SQL END DECLARE SECTION;
 EXEC SQL EXECUTE stExec INTO :lv_str;
 //printf("----->%s\n",lv_str);
                 if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
-			if (out==0) {open_display_file_c(); }
-                        fprintf(out,"%s\n",lv_str);
+			if (file_out_result==0) {open_display_file_c(); }
+                        fprintf(file_out_result,"%s\n",lv_str);
 			outlines++;
 			aclfgl_do_paginate(0);
                 } else {
@@ -753,7 +753,7 @@ int a;
 
         if (sqlca.sqlcode==100) {
                         if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
-                                fprintf(out,"\n");
+                                fprintf(file_out_result,"\n");
                         }
                 return 100;
         }
@@ -780,7 +780,7 @@ int a;
         if (fetchFirst==1) {
                         if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
 				if (display_mode!=DISPLAY_UNLOAD) {
-                                	fprintf(out,"\n");
+                                	fprintf(file_out_result,"\n");
 				}
                         }
                         else {
@@ -794,12 +794,12 @@ int a;
                 for (a=0;a<numberOfColumns;a++) {
                         if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
 
-                                A4GL_assertion(out==0,"No output file (5)");
-                                if (a) fprintf(out," ");
+                                A4GL_assertion(file_out_result==0,"No output file (5)");
+                                if (a) fprintf(file_out_result," ");
                                 if (columnAlign[a]) { // CA 1
-                                        fprintf(out,"%*.*s",columnWidths[a],columnWidths[a],columnNames[a]);  // CA 1
+                                        fprintf(file_out_result,"%*.*s",columnWidths[a],columnWidths[a],columnNames[a]);  // CA 1
                                 } else { // CA 1
-                                        fprintf(out,"%-*.*s",columnWidths[a],columnWidths[a],columnNames[a]); // CA 1
+                                        fprintf(file_out_result,"%-*.*s",columnWidths[a],columnWidths[a],columnNames[a]); // CA 1
                                 } // CA 1
                         }
                         else {
@@ -813,9 +813,9 @@ int a;
                         }
                 }
                 if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
-                        A4GL_assertion(out==0,"No output file (7)");
+                        A4GL_assertion(file_out_result==0,"No output file (7)");
 				if (display_mode!=DISPLAY_UNLOAD) {
-                        		fprintf(out,"\n\n");
+                        		fprintf(file_out_result,"\n\n");
 				}
                 } else {
                         A4GL_assertion(exec_out==0,"No output file (8)");
@@ -828,14 +828,14 @@ int a;
                 fetchFirst=0;
         }
         for (a=1;a<=numberOfColumns ;a++) {
-                if (printField(out,a,"descExec")==1) {
+                if (printField(file_out_result,a,"descExec")==1) {
                         A4GL_debug("Break Early %d of %d ",a,numberOfColumns);
                         break;
                 }
 
                 if (a<numberOfColumns && display_mode==DISPLAY_ACROSS) {
                         if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)
-                                fprintf(out," ");
+                                fprintf(file_out_result," ");
                         else
                                 fprintf(exec_out," ");
                 }
@@ -843,7 +843,7 @@ int a;
 
         if (display_mode==DISPLAY_ACROSS) {
                 if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)
-                        fprintf(out,"\n");
+                        fprintf(file_out_result,"\n");
                 else
                         fprintf(exec_out,"\n");
                 outlines++;
@@ -855,7 +855,7 @@ int a;
 
         if (display_mode==DISPLAY_DOWN) {
                 if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)
-                        fprintf(out,"");
+                        fprintf(file_out_result,"");
                 else
                         fprintf(exec_out,"");
 

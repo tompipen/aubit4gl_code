@@ -79,7 +79,7 @@ code
 int not_blank(char *s) {
 static int lastl=-1;
 int a;
-char buff[1024];
+static char buff[1024];
 if (strlen(s)!=lastl) {
 	lastl=strlen(s);
 	memset(buff,' ',lastl);

@@ -431,7 +431,7 @@ end function
 
 
 code
-FILE *out;
+FILE *sql_out;
 char outfile[256];
 char tabname[256][256];
 int tabcnt=0;
@@ -538,6 +538,7 @@ return buff[size];
 int generate(char *outfilex,char **tabname) {
 int a;
 char outfile[255];
+FILE *gen_out;
 for (a=0;tabname[a];a++) ;
 tabcnt=a;
 strcpy(outfile,outfilex);
@@ -547,17 +548,17 @@ if (!strstr(outfile,".per")) {
 
 
 if (strlen(outfile)) {
-        out=fopen(outfile,"w");
-        if (out==0) {
+        gen_out=fopen(outfile,"w");
+        if (gen_out==0) {
                 printf("Unable to open output file (%s)\n",outfile);
                 exit(2);
         }
 } else {
-        out=stdout;
+        gen_out=stdout;
 }
 
 
-fprintf(out,"database %s\n",mv_db);
+fprintf(gen_out,"database %s\n",mv_db);
 
 
 
@@ -574,42 +575,42 @@ for (a=0;a<tabcnt;a++) {
                 printf("Can't find table %s in database\n",tabname[a]);
                 exit(0);
         }
-        fprintf(out,"screen\n");
-        fprintf(out,"{\n");
+        fprintf(gen_out,"screen\n");
+        fprintf(gen_out,"{\n");
 
         while (1) {
                 rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
                 A4GL_trim(ccol);
                 if (rval==0) break;
-                fprintf(out,"%-19.19s",ccol);
-                fprintf(out,"[");
+                fprintf(gen_out,"%-19.19s",ccol);
+                fprintf(gen_out,"[");
                 id=get_id(idtype,isize);
-                fprintf(out,"%s",id);
-                fprintf(out,spaces(idtype,isize,id));
-                fprintf(out,"]\n");
+                fprintf(gen_out,"%s",id);
+                fprintf(gen_out,spaces(idtype,isize,id));
+                fprintf(gen_out,"]\n");
                 sprintf(buff,"%s = %s.%s;",id,tabname[a],ccol);
                 attribs_cnt++;
                 attribs=realloc(attribs,sizeof(char *)*attribs_cnt);
                 attribs[attribs_cnt-1]=strdup(buff);
         }
 
-        fprintf(out,"}\n");
+        fprintf(gen_out,"}\n");
 
 }
 
 
-fprintf(out,"end\n");
-fprintf(out,"tables\n");
+fprintf(gen_out,"end\n");
+fprintf(gen_out,"tables\n");
 
 for (a=0;a<tabcnt;a++) {
-        fprintf(out,"%s\n",tabname[a]);
+        fprintf(gen_out,"%s\n",tabname[a]);
 }
-fprintf(out,"attributes\n");
+fprintf(gen_out,"attributes\n");
 for (a=0;a<attribs_cnt;a++) {
-        fprintf(out,"%s\n",attribs[a]);
+        fprintf(gen_out,"%s\n",attribs[a]);
 }
-fprintf(out,"end\n");
-if (strlen(outfile)) { fclose(out); A4GL_push_char(outfile); aclfgl_compile_form(1);}
+fprintf(gen_out,"end\n");
+if (strlen(outfile)) { fclose(gen_out); A4GL_push_char(outfile); aclfgl_compile_form(1);}
 return 0;
 }
 

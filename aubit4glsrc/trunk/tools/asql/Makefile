@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.37 2005-03-31 13:36:30 afalout Exp $
+# $Id: Makefile,v 1.38 2005-06-09 14:09:11 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -112,7 +112,8 @@ ALL_PROGS				+=asql_g${A4GL_EXE_EXT}
 
 ################
 #4gl compiler command line to use
-4GLPC			=${FGLPCEXEC} ${VERBOSE_FLAG}
+#4GLPC			=${FGLPCEXEC} ${VERBOSE_FLAG}
+4GLPC			=4glpc
 
 ################
 #4gl compiler flags
@@ -124,7 +125,7 @@ ifeq "${VERBOSE}" "1"
 endif
 ################
 #Full make line to use when compiling 4gl objects
-COMP4GL			=${4GLPC} ${4GLPCFLAGS} -c $^ -o $@
+COMP4GL			=${4GLPC} -o $@ ${4GLPCFLAGS} -c $^ 
 #COMP4GL=${4GLPC} -g -c $(subst pg_,,$(subst ifx_,,$*)).4gl -o $@
 
 

@@ -383,6 +383,7 @@ repeat_query: ;
 
 				
 						if (exec_mode==EXEC_MODE_INTERACTIVE) {
+							rpaginate=0;
 							while (outlines>=display_lines || (outlines && b!=0)) {
 								done_once=1;
 								aclfgl_paginate(0);
@@ -391,7 +392,7 @@ repeat_query: ;
 								fetchFirst=1;
 							}
 
-							if (outlines && done_once) {
+							if (outlines && done_once &&rpaginate==0) {
 								aclfgl_paginate_always(0);
 								rpaginate=A4GL_pop_int();
 								if (rpaginate!=0) break;
