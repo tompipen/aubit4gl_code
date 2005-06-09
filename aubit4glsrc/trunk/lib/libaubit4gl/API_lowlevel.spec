@@ -169,7 +169,7 @@ A4GL_LL_wadd_char_xy_col void* win int x int y int ch int curr_width int curr_he
 A4GL_LL_wadd_char_xy_col_w void* win int x int y int ch int curr_width int curr_height int cb int cwno -> void
 
 /* int UILIB_A4GL_prompt_loop void* vprompt int timeout void* evt_list*/
-A4GL_LL_prompt_loop void* vprompt int timeout void* evt_list -> int
+/* A4GL_LL_prompt_loop void* vprompt int timeout void* evt_list -> int */
 
 /* int UILIB_A4GL_start_prompt void* vprompt int ap int c int h int af */
 A4GL_LL_start_prompt void* vprompt char* promptstr int ap int c int h int af int curr_width int cb int prompt_line void* cw int prompt_mode -> int
@@ -182,12 +182,17 @@ A4GL_LL_endis_fields_ap int n void* ap -> int
 A4GL_LL_disp_form_fields_ap int n int attr char* formname va_list* ap -> int
 A4GL_LL_open_gui_form char* name_orig  int absolute  int nat  char* like  int disable  void* handler_e void* phandler_c -> int
 
-A4GL_LL_set_window_title int nargs -> int
+A4GL_LL_set_window_title void* currwin int nargs -> int
 A4GL_LL_widget_name_match void* w char* name -> int
 A4GL_LL_clr_form_fields int to_defaults char* defs  -> void
-A4GL_LL_clr_menu_disp ACL_Menu* menu int curr_width int curr_height int iscurrborder int currwinno void* cw -> void 
-A4GL_LL_h_disp_title ACL_Menu* menu char* str int curr_width int curr_height int iscurrborder int currwinno void* cw -> void
+A4GL_LL_clr_menu_disp void* menu int curr_width int curr_height int iscurrborder int currwinno void* cw int menu_offset int gw_y -> void 
+A4GL_LL_h_disp_title void* menu char* str int curr_width int curr_height int iscurrborder int currwinno void* cw int gw_y -> void
 A4GL_LL_set_acc_intr_keys int n -> void
-A4GL_LL_menu_loop ACL_Menu* menu -> int
+A4GL_LL_menu_loop void* menu -> int
 A4GL_LL_construct_large char* orig void* evt int initkey int initpos char* left char* right int curr_width int curr_height int comment_line void* currwin -> int
 A4GL_LL_get_value char* s -> void*
+A4GL_LL_clear_prompt void* f void* p -> void
+
+A4GL_LL_disp_h_menu int num_opts -> int
+A4GL_LL_disp_h_menu_opt int opt_num int num_opts char* title int attrib -> int
+A4GL_LL_menu_type -> int
