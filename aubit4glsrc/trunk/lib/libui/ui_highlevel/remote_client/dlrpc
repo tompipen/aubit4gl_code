@@ -1,0 +1,221 @@
+#!/bin/sh
+
+##########################################################################
+#
+#This script is used to create API C source file for Aubit libraraies
+#to be loaded at run-time using dlopen() function call.
+#
+#
+#
+#
+#
+#
+##########################################################################
+
+#Include both headers:
+#In file included from console.c:58:
+#/opt/aubit/aubit4glsrc/incl/a4gl_API_ui_lib.h:38: warning: redundant redeclaration of `A4GLUI_initlib' in same scope
+#/opt/aubit/aubit4glsrc/incl/a4gl_API_ui.h:38: warning: previous declaration of `A4GLUI_initlib'
+
+
+
+#Get settings
+if [ "$AUBITDIR" != "" ]; then
+	. $AUBITDIR/etc/aubitrc
+else
+	echo "WARNING: AUBITDIR not set"
+	echo "ERROR: cannot read settings. STOP."
+	exit 3
+fi
+
+############################################################################
+#						Output API .c code
+############################################################################
+
+
+cat $1 | awk  '
+function ring(rtype) {
+	if (rtype=="char*") { print "A4GL_debug(\"Returning (%s)\",A4GL_null_as_null(rval));"; return;}
+	if (rtype=="void*") { print "A4GL_debug(\"Returning (%p)\",rval);"; return;}
+	if (rtype=="int") { print "A4GL_debug(\"Returning '%d'\",rval);"; return;}
+	print "A4GL_debug(\"Returning Unknown '%p'\",rval);"
+	}
+	
+	function ping(rtype,name) {
+	if (rtype=="char*")  return "(%s))"
+	if (rtype=="char")  return "(%c)"
+	if (rtype=="void*")  return "%p"
+	if (rtype=="va_list*")  return "%p"
+	if (rtype=="int") return "%d"
+	return "%p" 
+	#print "Unknown type : " rtype > "dlmagic.log"
+}
+
+function pind(rtype,rname) {
+	
+	if (rtype=="char*")  return sprintf("A4GL_null_as_null(%s)",rname);
+	return rname;
+	#print "Unknown type : " rtype > "dlmagic.log"
+}
+
+
+
+BEGIN {
+	FS="[ 	,]+"
+	print "/*******************************************************************"
+	print "* (c) 1997-2005 Aubit Computing Ltd."
+	print "*"
+	print "*"
+	print "********************************************************************/"
+	
+	print
+	
+	
+	
+	print ""
+	print ""
+}
+
+
+
+/^LIBRARY / {next}
+/^VARIABLE / {next}
+/^HEADER_FILE / {next}
+/^API_PREFIX / {next}
+/^LIB_PREFIX / {next}
+/MAP / { map[$2]=$3; next}
+
+/^#/ {print
+	next
+}
+
+/^\// {print
+	next
+}
+
+/^extern/ {print
+	next
+}
+
+/^ \*/ {print
+	next
+}
+/^\*\// {print
+	next
+}
+/^\*/ {next}
+/^$/ {next}
+
+/^[ 	]*$/ {next}
+
+
+
+{
+	fname=$1
+	call_fname=$1
+	rtype="void"
+	c=0
+	for (a=2;a<=NF;a++) {
+		param_type[c]=$a
+		if (param_type[c]=="->") {
+			param_type[c]=""
+			a++
+			rtype=$a
+			break
+		}
+	
+		if (param_type[c]=="...") {
+			param_name[c]=""
+    			call_fname="internal_"fname
+			a++
+			c++
+			break
+		}
+	
+	
+		a++
+		param_name[c]=$a
+		c++;
+	}
+	
+	
+	va_start=""
+	args=""
+	dargs=""
+	debug_args="Call to " rtype " " api_prefix fname "("
+	
+	for (b=0;b<c;b++) {
+		if (param_type[b]=="...") {
+			va_start=last;
+			args=args ",&ap"
+			dargs=dargs ",&ap"
+			if (b) debug_args=debug_args "," 
+			debug_args=debug_args ping("va_list*",param_name[b]);
+		} else {
+			if (b) debug_args=debug_args "," 
+			debug_args=debug_args ping(param_type[b],param_name[b])
+			args=args "," param_name[b]
+			dargs=dargs "," pind(param_type[b],param_name[b])
+		}
+		last=param_name[b]
+	}
+	args=substr(args,2)
+	dargs=substr(dargs,2)
+	
+	
+	funccnt++;
+	fnames[funccnt]=fname
+
+	if (c) {
+		printf("struct x_call_func_%d {\n",funccnt)
+		for (b=0;b<c;b++) {
+			xxtype=param_type[b]
+			gsub("[*]"," * ",xxtype)
+			gsub("  "," ",xxtype)
+
+			if (xxtype=="char * ") { print "   string " param_name[b] "<>;"; continue}
+			if (xxtype=="void * ") { xxtype="long"; }
+			if (xxtype=="va_list * ") { xxtype="arr"; }
+			
+			print "   " xxtype " " param_name[b]";"
+
+		}
+		param[funccnt]="x_call_func_" funccnt
+		print "};"
+	} else {
+		param[funccnt]="void"
+	}
+	
+	if (rtype=="void") {
+			rtypes[funccnt]="void"
+	} else {
+		if (rtype=="void *") rtype="long";
+		if (rtype=="void*") rtype="long";
+		if (rtype=="char*") {
+				print "typedef string ret_" funccnt "<>;"
+		} else {
+				print "typedef " rtype "  ret_" funccnt ";"
+		}
+		rtypes[funccnt]="ret_" funccnt
+	}
+	print ""
+}
+
+
+END {
+	print "program FGL_RPC {"
+	print "   version FGL_RPC_VER {"
+for (a=1;a<=funccnt;a++) {
+		printf ("       %-10s rpc_%-28s (%-15s) = %d;\n", rtypes[a] , fnames[a]  , param[a] ,a )
+}
+print "  } =1;"
+print "}= 0x2005123;"
+
+}
+
+'  > ui_lowlevel.x
+#< $specfile
+
+
+exit
+

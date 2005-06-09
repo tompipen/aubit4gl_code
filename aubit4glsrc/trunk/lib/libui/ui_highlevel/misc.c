@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: misc.c,v 1.30 2005-06-08 20:44:55 mikeaubury Exp $";
+		"$Id: misc.c,v 1.31 2005-06-09 15:15:04 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1284,7 +1284,7 @@ int UILIB_A4GL_disp_form_fields_ap(int n,int attr,char* formname,va_list* ap) {
 
 int UILIB_aclfgl_set_window_title(int nargs) {
 	A4GL_chkwin();
-	return A4GL_LL_set_window_title(nargs);
+	return A4GL_LL_set_window_title(A4GL_get_currwin(),nargs);
 }
 
 

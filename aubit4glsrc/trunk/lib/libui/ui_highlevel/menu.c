@@ -9,7 +9,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: menu.c,v 1.19 2005-06-08 07:54:38 mikeaubury Exp $";
+		"$Id: menu.c,v 1.20 2005-06-09 15:15:04 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -20,6 +20,7 @@ static int A4GL_menu_getkey (ACL_Menu * menu);
 void A4GL_size_menu (ACL_Menu * menu);
 void *A4GL_get_currwin (void);
 int aclfgli_show_help(int n);
+int A4GL_menu_loop_type_1(ACL_Menu *menu,int num_opts) ;
 
 
 void
@@ -37,7 +38,20 @@ UILIB_A4GL_disp_h_menu (void *menuv)
   menu = menuv;
 
 
-  if (A4GL_LL_disp_h_menu(menu)) return;
+  /* Is the UI client going to do most of the work for us ? */
+  if (A4GL_LL_menu_type()==1) {
+	A4GL_LL_disp_h_menu(menu->num_opts);
+	ACL_Menu_Opts *mo;
+	int a;
+	mo=menu->first;
+	// Seems so...
+	for (a=0;a<menu->num_opts;a++) {
+		A4GL_LL_disp_h_menu_opt(a,menu->num_opts,mo->opt_title,mo->attributes);
+		mo=mo->next_option;
+	}
+	A4GL_LL_screen_update();
+	return;
+  }
 
 #ifdef DEBUG
   A4GL_debug ("Adding window for menu");
@@ -255,7 +269,9 @@ A4GL_h_disp_title (ACL_Menu * menu, char *str)
 {
 A4GL_LL_h_disp_title(menu,str,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder (),
 A4GL_get_currwinno(),
-A4GL_get_currwin()
+A4GL_get_currwin(),
+menu->gw_y
+
 );
 }
 
@@ -335,7 +351,9 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
 
 void A4GL_clr_menu_disp (ACL_Menu * menu)
 {
-A4GL_LL_clr_menu_disp (menu,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder (),A4GL_get_currwinno(), A4GL_get_currwin());
+printf("clr_menu_disp\n");
+A4GL_LL_clr_menu_disp (menu,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder (),A4GL_get_currwinno(), A4GL_get_currwin(),menu->menu_offset,menu->gw_y);
+printf("done clr_menu_disp\n");
 }
 
 
@@ -353,8 +371,12 @@ A4GL_highlevel_menu_loop (void *menuv)
   A4GL_chkwin ();
 
   A4GL_current_window(menu->parent_window_name);
-  a=A4GL_LL_menu_loop(menu);
-  if (a>=0) return a;
+  if (A4GL_LL_menu_type()==1) {
+  	a=A4GL_menu_loop_type_1(menu,menu->num_opts);
+  	A4GL_clr_error_nobox ("menu_callback");
+	printf("Return %d\n",a);
+  	return a;
+  }
 
 
   if (menu->gw_x < 0)
@@ -508,3 +530,71 @@ A4GL_menu_getkey (ACL_Menu * menu)
       return a;
     }
 }
+
+
+
+
+
+int A4GL_menu_loop_type_1(ACL_Menu *menu,int num_opts) {
+  int key;
+  int menu_response=-1;
+  A4GL_LL_disp_h_menu(num_opts);
+  while (menu_response==-1) {
+    A4GL_LL_screen_update();
+    key=A4GL_LL_getch_swin(0);
+
+    if(key==0) continue;
+
+    if (key<0) {// button pressed
+		printf("Key = %d\n",key);
+
+		menu_response=(key*-1) -1000;
+		printf("menu_response=%d\n",menu_response);
+    } else {
+      ACL_Menu_Opts *f=menu->first;
+      int res=0;
+        //A4GL_clr_error_nobox ("gtkmenu");
+      /* first check optkey */
+
+      while(f) {
+        if(f->optkey[0]==key) {
+          menu_response=res;
+          break;
+        }
+        res++;
+        f=f->next_option;
+      }
+      if(menu_response>=0)
+        break;
+
+      /* no matching KEY found, so check the first letter of each title */
+      f=menu->first;
+      res=0;
+      while(f) {
+        char a=0;
+        int i;
+        /* set a to the first non-space char in opt_title */
+        for(i=0; i<sizeof(f->opt_title); i++)
+          if(f->opt_title[i]>' ') {
+            a=a4gl_tolower(f->opt_title[i]);
+            break;
+          }
+        if(a==key) {
+          menu_response=res;
+          break;
+        }
+        res++;
+        f=f->next_option;
+      }
+   }
+      if(menu_response>=0)
+        break;
+    
+
+
+  }
+
+  A4GL_LL_hide_h_menu(menu);
+  return menu_response;
+}
+

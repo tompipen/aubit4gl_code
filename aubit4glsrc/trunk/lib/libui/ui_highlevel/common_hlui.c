@@ -162,7 +162,7 @@ A4GL_start_form (struct s_form_dets *s)
 
 
 
-
+#ifdef MOVED
 int
 A4GL_proc_key_prompt (int a, void *mform, struct s_prompt *prompt)
 {
@@ -174,31 +174,22 @@ A4GL_proc_key_prompt (int a, void *mform, struct s_prompt *prompt)
   A4GL_debug ("In proc_key_prompt.... for %d", a);
   switch (a)
     {
-    case 18:
-      A4GL_LL_screen_redraw ();
-      break;
+    case 18: A4GL_LL_screen_redraw (); break;
 
+    case -1: abort_pressed = 1; return 0;
 
-    case -1:
-      abort_pressed = 1;
-      return 0;
+    case 27: return 0;
 
-    case 27:
-      return 0;
-
-    case 26:
-      return 0;
+    case 26: return 0;
 
     case 127:
     case 8:
     case A4GLKEY_DC:
     case A4GLKEY_DL:
     case A4GLKEY_BACKSPACE:
-      A4GL_debug ("Req del prev");
       if (A4GL_LL_get_carat (mform))
         {
           A4GL_LL_int_form_driver (mform, AUBIT_REQ_DEL_PREV);
-          A4GL_debug ("Done...");
         }
       return 0;
 
@@ -216,44 +207,23 @@ A4GL_proc_key_prompt (int a, void *mform, struct s_prompt *prompt)
 
     //case A4GLKEY_ENTER:
     case 13:
-    case 10:
-#ifdef DEBUG
-      A4GL_debug ("Next field in a prompt - they must mean enter");
-#endif
-      return 10;
-    case A4GLKEY_LEFT:
-      A4GL_LL_int_form_driver (mform, AUBIT_REQ_PREV_CHAR);
-      return 0;
+    case 10: return 10;
+    case A4GLKEY_LEFT: A4GL_LL_int_form_driver (mform, AUBIT_REQ_PREV_CHAR); return 0;
 
-    case A4GLKEY_RIGHT:
-      A4GL_LL_int_form_driver (mform, AUBIT_REQ_NEXT_CHAR);
-      return 0;
-    case 4:
-      A4GL_LL_int_form_driver (mform, AUBIT_REQ_CLR_FIELD);
-      return 0;
+    case A4GLKEY_RIGHT: A4GL_LL_int_form_driver (mform, AUBIT_REQ_NEXT_CHAR); return 0;
+    case 4: A4GL_LL_int_form_driver (mform, AUBIT_REQ_CLR_FIELD); return 0;
 
     case 1:                     // Control - A
       prompt->insmode = prompt->insmode ? 0 : 1;
-      if (prompt->insmode)
-        A4GL_LL_int_form_driver (mform, AUBIT_REQ_INS_MODE);
-      else
-        A4GL_LL_int_form_driver (mform, AUBIT_REQ_OVL_MODE);
+      if (prompt->insmode) A4GL_LL_int_form_driver (mform, AUBIT_REQ_INS_MODE);
+      else A4GL_LL_int_form_driver (mform, AUBIT_REQ_OVL_MODE);
       return 0;
-
     }
-
-
-  if (A4GL_is_special_key(a, A4GLKEY_HELP))
-    {
-      aclfgl_a4gl_show_help (prompt->h);
-      a = 0;
-    }
-
-  A4GL_debug ("Returning %d from proc_key_prompt\n", a);
+  if (A4GL_is_special_key(a, A4GLKEY_HELP)) { aclfgl_a4gl_show_help (prompt->h); a = 0; }
   return a;
 }
 
-
+#endif
 
 void
 A4GL_default_attributes (void *f, int dtype)

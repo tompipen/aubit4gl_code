@@ -8,7 +8,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.49 2005-06-08 20:44:55 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.50 2005-06-09 15:15:04 mikeaubury Exp $";
 #endif
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -16,10 +16,11 @@ static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
 static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap);
 static void A4GL_move_bar (ACL_Menu * menu, int a);
 int A4GL_gen_field_list_from_slist_internal (void ***field_list, struct s_form_dets *formdets, int a, struct s_field_name_list *list);
+int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
 //int UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv, void *listv);
 
 
-
+void *A4GL_get_currwin (void);
 static int started = -1;
 int
 A4GL_find_attrib_from_metric (struct_form * f, int metric_no);
@@ -2543,8 +2544,150 @@ A4GL_find_field_no (void *f, struct s_screenio *sio)
 
 
 int UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout,void *evt) {
+	int a;
+	int was_aborted=0;
+	void *p;
+	struct s_prompt *promptx;
+	int rblock;
+	promptx=vprompt;
 	A4GL_chkwin();
-	return A4GL_LL_prompt_loop(vprompt,timeout,evt);
+
+	A4GL_set_abort (0);
+
+  	p = promptx->win;
+
+  	if (promptx->mode == 1)
+    	{
+      	char buff[10024];
+      	strcpy (buff, A4GL_LL_field_buffer (promptx->field, 0));
+      	A4GL_trim (buff);
+	
+      	A4GL_push_char (buff);
+      	promptx->mode = 2;
+	
+      	if (promptx->f)
+        	{
+          	A4GL_LL_clear_prompt (promptx->f, promptx->win);
+	  A4GL_LL_screen_update ();
+        	}
+      	return 0;
+    	}
+
+  	if (promptx->mode > 0)
+    	{
+      	return 0;
+    	}
+
+  A4GL_LL_set_carat (promptx->f);
+
+  A4GL_LL_screen_update ();
+  abort_pressed = 0;
+  was_aborted = 0;
+  a = A4GL_LL_getch_swin (p);
+  A4GL_clr_error_nobox ("prompt");
+
+  promptx->processed_onkey = a;
+
+  //prompt_last_key = a;
+  A4GL_set_last_key (a);
+
+  promptx->lastkey = A4GL_get_lastkey ();
+
+
+  if (abort_pressed)
+    {
+      //printf("INTERRUPT!");
+      A4GL_set_last_key (A4GL_key_val ("INTERRUPT"));
+      //prompt_last_key = A4GL_key_val ("INTERRUPT");;
+      promptx->lastkey = A4GL_key_val ("INTERRUPT");;
+
+      if (!A4GL_has_event_for_keypress (promptx->lastkey, evt))
+        {
+          A4GL_push_null (DTYPE_CHAR, 1);
+          promptx->mode = 2;
+          A4GL_LL_clear_prompt (promptx->f, promptx->win);
+	  A4GL_LL_screen_update ();
+          return 0;
+        }
+    }
+
+  A4GL_debug ("No lastkey..");
+  rblock = A4GL_has_event_for_keypress (promptx->lastkey, evt);
+
+
+  if (rblock)
+    {                           // We appear to be all done here...
+      A4GL_push_null (DTYPE_CHAR, 1);
+      promptx->mode = 2;
+          A4GL_LL_clear_prompt (promptx->f, promptx->win);
+	  A4GL_LL_screen_update ();
+      promptx->f = 0;
+      return rblock;
+    }
+
+
+  if (was_aborted)
+    {
+      promptx->mode = 2;
+      return 0;
+    }
+
+
+a = A4GL_proc_key_prompt (a, promptx->f, promptx);
+
+  if (a == 0)
+    {
+      return 0;
+    }
+
+  if (a < 0)
+    return a;
+
+  A4GL_debug ("Requested..");
+
+  if (a == 10 || a == 13)
+    {
+      //prompt_last_key = 0;
+      A4GL_LL_int_form_driver (promptx->f, AUBIT_REQ_VALIDATION);
+      A4GL_debug ("su");
+      A4GL_LL_screen_update ();
+      A4GL_debug ("Return pressed");
+      promptx->mode = 1;
+      return 0;
+    }
+
+  A4GL_debug ("Requesting Validation : %p %x %d", promptx->f, a, a);
+  if ((a_isprint (a)))
+    {
+      A4GL_debug ("Printable");
+      A4GL_LL_int_form_driver (promptx->f, a);
+      A4GL_debug
+        ("Called int_form_driver - now calling REQ VALIDATION (%d) PREV_CHAR (%d)",
+         AUBIT_REQ_VALIDATION, AUBIT_REQ_PREV_CHAR);
+      A4GL_LL_int_form_driver (promptx->f, AUBIT_REQ_VALIDATION);
+      A4GL_debug ("Called int_form_driver - REQ VALIDATION");
+    }
+
+
+
+  A4GL_debug ("su");
+  A4GL_LL_screen_update ();
+
+  if (promptx->charmode)
+    {
+      if ((a_isprint (a)))
+        {
+          A4GL_push_char (A4GL_LL_field_buffer (promptx->field, 0));
+          A4GL_LL_clear_prompt (promptx->f, promptx->win);
+	  A4GL_LL_screen_update ();
+          promptx->f = 0;
+          promptx->mode = 2;
+        }
+    }
+
+  A4GL_debug ("Done..");
+  return -1000;
+
 }
 
 int UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af) {
@@ -2563,10 +2706,10 @@ int UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af) {
   	promptx->lastkey = 0;
 	x=A4GL_LL_start_prompt(vprompt,promptstr, ap,c,h,af,UILIB_A4GL_get_curr_width(),UILIB_A4GL_iscurrborder(),A4GL_getprompt_line(), (void *)A4GL_get_currwin(),promptx->mode);
 
-	promptx->field=A4GL_LL_get_value("prompt->field");
-	promptx->f=A4GL_LL_get_value("prompt->f");
-	promptx->win=A4GL_LL_get_value("prompt->win");
-	if (x==2) {promptx->mode==2; return 2;}
+	promptx->field=A4GL_LL_get_value("prompt.field");
+	promptx->f=A4GL_LL_get_value("prompt.f");
+	promptx->win=A4GL_LL_get_value("prompt.win");
+	if (x==2) {promptx->mode=2; return 2;}
 	return x;
 }
 
@@ -2873,5 +3016,86 @@ int A4GL_UI_int_get_inc_quotes(int a) {
      if ((a & 0xff) == DTYPE_CHAR || (a &0xff) == DTYPE_VCHAR) return 1;
         if ((a & 0xff) == DTYPE_DATE) return 2;
         return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int
+A4GL_proc_key_prompt (int a, void *mform, struct s_prompt *prompt)
+{
+  void *current_field;
+
+  //current_field = A4GL_LL_current_field (mform);
+
+
+  A4GL_debug ("In proc_key_prompt.... for %d", a);
+  switch (a)
+    {
+    case 18: A4GL_LL_screen_redraw (); break;
+
+    case -1: abort_pressed = 1; return 0;
+
+    case 27: return 0;
+
+    case 26: return 0;
+
+    case 127:
+    case 8:
+    case A4GLKEY_DC:
+    case A4GLKEY_DL:
+    case A4GLKEY_BACKSPACE:
+      if (A4GL_LL_get_carat (mform))
+        {
+          A4GL_LL_int_form_driver (mform, AUBIT_REQ_DEL_PREV);
+        }
+      return 0;
+
+    case 24:
+      A4GL_LL_int_form_driver (mform, AUBIT_REQ_DEL_CHAR);
+      return 0;
+
+    case '\t':
+    case A4GLKEY_DOWN:
+      if (prompt->charmode == 0)
+        return 10;
+      else
+        return 0;
+
+
+    //case A4GLKEY_ENTER:
+    case 13:
+    case 10: return 10;
+    case A4GLKEY_LEFT: A4GL_LL_int_form_driver (mform, AUBIT_REQ_PREV_CHAR); return 0;
+
+    case A4GLKEY_RIGHT: A4GL_LL_int_form_driver (mform, AUBIT_REQ_NEXT_CHAR); return 0;
+    case 4: A4GL_LL_int_form_driver (mform, AUBIT_REQ_CLR_FIELD); return 0;
+
+    case 1:                     // Control - A
+      prompt->insmode = prompt->insmode ? 0 : 1;
+      if (prompt->insmode) A4GL_LL_int_form_driver (mform, AUBIT_REQ_INS_MODE);
+      else A4GL_LL_int_form_driver (mform, AUBIT_REQ_OVL_MODE);
+      return 0;
+    }
+  if (A4GL_is_special_key(a, A4GLKEY_HELP)) { aclfgl_a4gl_show_help (prompt->h); a = 0; }
+  return a;
 }
 

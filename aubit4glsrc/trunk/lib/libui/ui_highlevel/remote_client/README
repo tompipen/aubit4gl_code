@@ -1,0 +1,30 @@
+This directory contains functions/routines which will
+enable the HL_... code to be split across machines in 
+order to create a thin client..
+
+
+
+	***  This is a work in progress! ***
+
+
+
+The makefile will create several outputs :
+
+
+	libLL_server.so - A convinience library for wrapping common server stuff up
+	libUI_client.so - This is a UI you can use just like TUI, HL_TUI, HL_GTK etc.. A4GL_UI=client
+
+	server_gtk	- This is the thin client program for displaying the output (GTK mode)
+	server_tui	- This is the thin client program for displaying the output (TUI mode)
+	server_console  - Not yet - but soon...
+
+The remoting is done via RPC calls for now,although this is easy enough to change - because the interface
+is defined by the .spec file..
+(In this way - it should be possible to adapt this technology to abstract many of the Aubit4GL interfaces which use a spec file)
+
+
+Todo list :
+	fix some of the @todo's
+	remove the need for libaubit4gl from the lowlevel code 
+	add a facility for setting/retrieving the status properly..
+	Allow the target to be selected (see clnt_main.c - it just calls localhost..)

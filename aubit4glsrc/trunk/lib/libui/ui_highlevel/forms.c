@@ -1,6 +1,6 @@
 #ifndef lint
 	static char const module_id[] =
-		"$Id: forms.c,v 1.26 2005-06-08 20:44:55 mikeaubury Exp $";
+		"$Id: forms.c,v 1.27 2005-06-09 15:15:04 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -1797,7 +1797,7 @@ UILIB_A4GL_clr_window (char *win_name)
   buff[win->w] = 0;
   for (a = 0; a <= win->h; a++)
     {
-      A4GL_wprintw (w, 0, 1, a+1,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder (),"%s", buff);
+      A4GL_wprintw (w, 0, 1, a+1,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder (),A4GL_get_currwinno(),"%s", buff);
     }
 
   UILIB_A4GL_zrefresh ();
