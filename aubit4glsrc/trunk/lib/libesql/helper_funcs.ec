@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.33 2005-05-15 12:58:51 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.34 2005-06-09 06:08:20 pjfalbe Exp $
 #
 */
 
@@ -477,9 +477,10 @@ if (p_indicat) {
 
 	if (mode=='i') {
 		A4GL_debug("Copy : '%s' from a4gl to rdbms",a4gl);
-		if (p_indicat) *p_indicat=0;
+			memset(infx,0,size+1);
+			if (p_indicat) *p_indicat=0;
 			if (A4GL_isnull(0,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
-		if (A4GL_isnull(0,(void *)a4gl)) {
+			if (A4GL_isnull(0,(void *)a4gl)) {
 				rsetnull(CCHARTYPE,infx);
 			return;
 	

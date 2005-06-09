@@ -69,7 +69,7 @@ function open_tmpfile(lv_type,p_mode)
 define lv_type CHAR(3)
 define p_mode char(1)
 code
-A4GL_debug("OPENING TMP : %s",mv_tmpinfile[get_type_id(lv_type)]);
+A4GL_debug("OPENING TMP : %s ",mv_tmpinfile[get_type_id(lv_type)]);
 mv_fin[get_type_id(lv_type)]=(long)fopen(mv_tmpinfile[get_type_id(lv_type)],p_mode);
 A4GL_assertion(mv_fin[get_type_id(lv_type)]==0,"Tried to open tmpfile failed");
 endcode
