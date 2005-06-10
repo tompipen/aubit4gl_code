@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2004-12-19 09:37:51 afalout Exp $
+# $Id: Makefile,v 1.2 2005-06-10 13:37:37 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -69,7 +69,7 @@ endif
 
 ALL		=iodbc unixodbc ifxodbc pgodbc sapodbc sqliteodbc sqlite
 
-.PHONY : ${ALL} clean all allodbc odbc32 sqlite.static
+.PHONY : ${ALL} clean all allodbc odbc32 #sqlite.static
 
 
 ## ==================================================================
@@ -78,7 +78,7 @@ ALL		=iodbc unixodbc ifxodbc pgodbc sapodbc sqliteodbc sqlite
 
 all :
 	@echo "Must specify target (because clean is not working.)"
-	@echo "Targets: ${ALL} odbc32 allodbc sqlite.static"
+	@echo "Targets: ${ALL} odbc32 allodbc " #sqlite.static"
 
 allodbc: ${ALL}
 

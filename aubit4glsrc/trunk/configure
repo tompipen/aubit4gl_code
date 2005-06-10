@@ -1622,6 +1622,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 #needed to initialize AutoMake functionallity, that will create Makefile.in
 #files from Makefile.am:
 #AM_INIT_AUTOMAKE
+am__api_version="1.4"
 ac_aux_dir=
 for ac_dir in $srcdir $srcdir/.. $srcdir/../..; do
   if test -f $ac_dir/install-sh; then
@@ -1836,17 +1837,17 @@ _ACEOF
 
 
 missing_dir=`cd $ac_aux_dir && pwd`
-echo "$as_me:$LINENO: checking for working aclocal" >&5
-echo $ECHO_N "checking for working aclocal... $ECHO_C" >&6
+echo "$as_me:$LINENO: checking for working aclocal-${am__api_version}" >&5
+echo $ECHO_N "checking for working aclocal-${am__api_version}... $ECHO_C" >&6
 # Run test in a subshell; some versions of sh will print an error if
 # an executable is not found, even if stderr is redirected.
 # Redirect stdin to placate older versions of autoconf.  Sigh.
-if (aclocal --version) < /dev/null > /dev/null 2>&1; then
-   ACLOCAL=aclocal
+if (aclocal-${am__api_version} --version) < /dev/null > /dev/null 2>&1; then
+   ACLOCAL=aclocal-${am__api_version}
    echo "$as_me:$LINENO: result: found" >&5
 echo "${ECHO_T}found" >&6
 else
-   ACLOCAL="$missing_dir/missing aclocal"
+   ACLOCAL="$missing_dir/missing aclocal-${am__api_version}"
    echo "$as_me:$LINENO: result: missing" >&5
 echo "${ECHO_T}missing" >&6
 fi
@@ -1866,17 +1867,17 @@ else
 echo "${ECHO_T}missing" >&6
 fi
 
-echo "$as_me:$LINENO: checking for working automake" >&5
-echo $ECHO_N "checking for working automake... $ECHO_C" >&6
+echo "$as_me:$LINENO: checking for working automake-${am__api_version}" >&5
+echo $ECHO_N "checking for working automake-${am__api_version}... $ECHO_C" >&6
 # Run test in a subshell; some versions of sh will print an error if
 # an executable is not found, even if stderr is redirected.
 # Redirect stdin to placate older versions of autoconf.  Sigh.
-if (automake --version) < /dev/null > /dev/null 2>&1; then
-   AUTOMAKE=automake
+if (automake-${am__api_version} --version) < /dev/null > /dev/null 2>&1; then
+   AUTOMAKE=automake-${am__api_version}
    echo "$as_me:$LINENO: result: found" >&5
 echo "${ECHO_T}found" >&6
 else
-   AUTOMAKE="$missing_dir/missing automake"
+   AUTOMAKE="$missing_dir/missing automake-${am__api_version}"
    echo "$as_me:$LINENO: result: missing" >&5
 echo "${ECHO_T}missing" >&6
 fi
@@ -4100,7 +4101,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4103 "configure"' > conftest.$ac_ext
+  echo '#line 4104 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7482,7 +7483,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 7485 "configure"
+#line 7486 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -7580,7 +7581,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 7583 "configure"
+#line 7584 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -29508,9 +29509,10 @@ fi
 
 
 
+
 for ac_header in alloca.h errno.h locale.h malloc.h memory.h netdb.h \
 		netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h \
-		sys/time.h sys/timeb.h unistd.h share.h limits.h  libintl.h fcntl.h
+		sys/time.h sys/timeb.h unistd.h share.h limits.h  libintl.h fcntl.h features.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
 if eval "test \"\${$as_ac_Header+set}\" = set"; then
@@ -33787,7 +33789,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 33790 "configure"' > conftest.$ac_ext
+  echo '#line 33792 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -34343,7 +34345,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 34346 "configure"
+#line 34348 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -34441,7 +34443,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 34444 "configure"
+#line 34446 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -36603,11 +36605,13 @@ fi
 	#SQLite native connection
 	if test "$SQLITE_LIB" = "1"; then
 		if test "$SQLITE_VER" = "3"; then
-			PLUGIN_YES="$PLUGIN_YES SQL_sqlite3 SQL_sqlite3S"
+			#PLUGIN_YES="$PLUGIN_YES SQL_sqlite3 SQL_sqlite3S"
+			PLUGIN_YES="$PLUGIN_YES SQL_sqlite3 "
 		else
 			PLUGIN_YES="$PLUGIN_YES SQL_sqlite"
 			if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
-				PLUGIN_YES="$PLUGIN_YES SQL_sqliteS"
+				#PLUGIN_YES="$PLUGIN_YES SQL_sqliteS"
+				PLUGIN_YES="$PLUGIN_YES "
 			else
 				#no static SQLite library supplied for Windows in V2
 				PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS SQL_sqliteS"
@@ -39646,7 +39650,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.322 2005-05-15 12:57:38 mikeaubury Exp $
+| $Id: configure,v 1.323 2005-06-10 13:35:11 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.295 2005-05-18 13:51:24 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.296 2005-06-10 13:35:58 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -8452,11 +8452,13 @@ fi
 	#SQLite native connection
 	if test "$SQLITE_LIB" = "1"; then
 		if test "$SQLITE_VER" = "3"; then	
-			PLUGIN_YES="$PLUGIN_YES SQL_sqlite3 SQL_sqlite3S"
+			#PLUGIN_YES="$PLUGIN_YES SQL_sqlite3 SQL_sqlite3S"
+			PLUGIN_YES="$PLUGIN_YES SQL_sqlite3 "
 		else
 			PLUGIN_YES="$PLUGIN_YES SQL_sqlite"
 			if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
-				PLUGIN_YES="$PLUGIN_YES SQL_sqliteS"
+				#PLUGIN_YES="$PLUGIN_YES SQL_sqliteS"
+				PLUGIN_YES="$PLUGIN_YES "
 			else
 				#no static SQLite library supplied for Windows in V2
 				PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS SQL_sqliteS"
@@ -9119,7 +9121,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.295 2005-05-18 13:51:24 mikeaubury Exp $
+| $Id: configure.in,v 1.296 2005-06-10 13:35:58 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

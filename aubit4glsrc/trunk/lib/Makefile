@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2005-03-31 13:35:38 afalout Exp $
+# $Id: Makefile,v 1.5 2005-06-10 13:37:36 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -384,14 +384,23 @@ libSQL_sqlite${SO_EXT}: ${LIBSQLODBC_DEPS}
 libSQL_sqlite3${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} sqlite3
 
+
+#################################### SQLITE - static/shared build issues...
+## The makefile needs to be fixed for these to work - so I'm commenting them out for now...
 #Compiled with SQLite ODBC driver source code in Aubit CVS and statically
 #linked with SQLite database engine ligrary (self sufficient - used mainly 
 #for binary distributions to provide "always there" SQL functionality)
-libSQL_sqliteS${SO_EXT}: ${LIBSQLODBC_DEPS}
-	${MAKE} -C ${LIBSQLODBC_PATH} sqlite.static
+#libSQL_sqliteS${SO_EXT}: ${LIBSQLODBC_DEPS}
+#	${MAKE} -C ${LIBSQLODBC_PATH} sqlite.static
 #Same, but version 3
-libSQL_sqlite3S${SO_EXT}: ${LIBSQLODBC_DEPS}
-	${MAKE} -C ${LIBSQLODBC_PATH} sqlite3.static
+#libSQL_sqlite3S${SO_EXT}: ${LIBSQLODBC_DEPS}
+#	${MAKE} -C ${LIBSQLODBC_PATH} sqlite3.static
+
+
+libSQL_sqlite3S${SO_EXT}: 
+	@echo "Sqlite3S build temporarily suspended"
+
+###################################
 
 
 ##############

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.89 2005-05-18 14:07:36 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.90 2005-06-10 13:37:37 mikeaubury Exp $
 #
 */
 
@@ -299,7 +299,7 @@ int oval;
   ui_mode=MODE_NORMAL;
 
 
-/* did they specify a more on the RUN .. line ? */
+/* did they specify a mode on the RUN .. line ? */
   if (a>255) {
 	if ((a&0xff00)==0x100)  ui_mode=MODE_LINE;
 	if ((a&0xff00)==0x200)  ui_mode=MODE_FORM;
@@ -336,8 +336,14 @@ int oval;
   }
 
   s = A4GL_char_pop ();
-  if (a == 2)
-    strcat (s, " &");
+  if (a == 2) {
+	char *s2;
+	s2=malloc(strlen(s)+10);
+	strcpy(s2,s);
+    	strcat (s2, " &");
+	free(s);
+	s=s2;
+   }
   ret = system (s);
   if (A4GL_env_option_set ("FIXSYSTEM"))
     ret = ret >> 8;
