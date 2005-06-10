@@ -1,0 +1,25 @@
+From: bkh@lib1.byu.edu (Brian K. Holman)
+Date: 15 Feb 1995 22:17:29 GMT
+Subject: [ANNOUNCE]Informix 4GL World-Wide-Web Interface
+Message-ID: <3htuhp$oc8@bones.et.byu.edu>
+
+I have created a small group of functions in the C language to simplify the
+retrieval of field values from HTML forms. I have also created Informix-4GL
+wrappers for each of those functions. So in essence, you can create CGI
+(Common Gateway Interface) compliant executables to take advantage of the
+Mosaic user interface and the Informix-4GL development environment. This
+project is very much in the early stages, any suggestions or improvements to
+the software are welcome!
+
+More information on my Informix 4GL World-Wide-Web Interface and my personal
+feelings on using 4GL with the Web can be obtained at the following URL:
+
+http://library.byu.edu/staff/bkh/cgi_4gldoc.html
+
+--
++-----------------------------+--------------------------------------------+
+| BRIAN K. HOLMAN             | E-Mail:               brian_holman@byu.edu |
+| Programmer/Systems Analyst  | URL:     http://library.byu.edu/staff/bkh/ |
+| Library Information Systems | Mail:           2330 HBLL, Provo, UT 84602 |
+| Brigham Young University    | Phone:                      (801) 378-8162 |
++-----------------------------+--------------------------------------------+

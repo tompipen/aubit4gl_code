@@ -1,0 +1,1094 @@
+#!/bin/sh
+
+##########################################################################
+#
+#This script is used to create API C source file for Aubit libraraies
+#to be loaded at run-time using dlopen() function call.
+#
+#
+#
+#
+#
+#
+##########################################################################
+
+#Include both headers:
+#In file included from console.c:58:
+#/opt/aubit/aubit4glsrc/incl/a4gl_API_ui_lib.h:38: warning: redundant redeclaration of `A4GLUI_initlib' in same scope
+#/opt/aubit/aubit4glsrc/incl/a4gl_API_ui.h:38: warning: previous declaration of `A4GLUI_initlib'
+
+
+
+#Get settings
+if [ "$AUBITDIR" != "" ]; then
+	. $AUBITDIR/etc/aubitrc
+else
+	echo "WARNING: AUBITDIR not set"
+	echo "ERROR: cannot read settings. STOP."
+	exit 3
+fi
+
+############################################################################
+#						Output API .c code
+############################################################################
+
+
+cat $1 | awk  -v "x=$1" -v"mode=$2" '
+function ring(rtype) {
+	if (rtype=="char*") { print "A4GL_debug(\"Returning (%s)\",A4GL_null_as_null(rval));"; return;}
+	if (rtype=="void*") { print "A4GL_debug(\"Returning (%p)\",rval);"; return;}
+	if (rtype=="int") { print "A4GL_debug(\"Returning '%d'\",rval);"; return;}
+	print "A4GL_debug(\"Returning Unknown '%p'\",rval);"
+	}
+	
+	function ping(rtype,name) {
+	if (rtype=="char*")  return "(%s))"
+	if (rtype=="char")  return "(%c)"
+	if (rtype=="void*")  return "%p"
+	if (rtype=="va_list*")  return "%p"
+	if (rtype=="int") return "%d"
+	return "%p" 
+	#print "Unknown type : " rtype > "dlmagic.log"
+}
+
+function pind(rtype,rname) {
+	
+	if (rtype=="char*")  return sprintf("A4GL_null_as_null(%s)",rname);
+	return rname;
+	#print "Unknown type : " rtype > "dlmagic.log"
+}
+
+
+
+BEGIN {
+	FS="[ 	,]+"
+	print "/*******************************************************************"
+	print "* (c) 1997-2005 Aubit Computing Ltd."
+	print "*"
+	print "*"
+	print "********************************************************************/"
+	
+	/* print "#include \"" x ".x.h\"" */
+	print "#include \"ui_lowlevel.h\""
+
+	if (mode=="client") {
+		print "CLIENT *get_UI_clnt(void);"
+	}
+	if (mode=="server") {
+		print "#include \"a4gl_libaubit4gl.h\""
+		print "#include \"a4gl_API_lowlevel.h\""
+	}
+	print ""
+	print ""
+}
+
+
+
+/^LIBRARY / {next}
+/^VARIABLE / {next}
+/^HEADER_FILE / {next}
+/^API_PREFIX / {next}
+/^LIB_PREFIX / {next}
+/MAP / { map[$2]=$3; next}
+/^#/ {print; next }
+/^\// {print; next }
+/^extern/ {print; next }
+
+/^ \*/ {print; next }
+/^\*\// {print; next }
+/^\*/ {next}
+/^$/ {next}
+/^[ 	]*$/ {next}
+
+
+{
+	fname=$1
+	call_fname=$1
+	rtype="void"
+	c=0
+	for (a=2;a<=NF;a++) {
+		param_type[c]=$a
+		if (param_type[c]=="->") {
+			param_type[c]=""
+			a++
+			rtype=$a
+			break
+		}
+	
+		if (param_type[c]=="...") {
+			param_name[c]=""
+    			call_fname="internal_"fname
+			a++
+			c++
+			break
+		}
+	
+	
+		a++
+		param_name[c]=$a
+		c++;
+	}
+	
+	
+	va_start=""
+	args=""
+	dargs=""
+	debug_args="Call to " rtype " " api_prefix fname "("
+	
+	args=substr(args,2)
+	dargs=substr(dargs,2)
+	
+	
+	funccnt++;
+	fnames[funccnt]=fname
+
+
+
+	if (mode=="client") {
+		printf("%s %s(",rtype , fname )
+		if (c) {
+			for (b=0;b<c;b++) {
+				if (b) printf(",");
+				printf(" %s %s", param_type[b], param_name[b]);
+			}
+			printf(") {");
+		} else {
+			printf("void) {");
+		}
+		printf("\n");
+
+
+		if (rtype != "void") { 
+			printf("ret_" funccnt " *ret;\n");
+		} else { 
+			printf("void *ret;\n"); 
+		}
+	
+		if (c) {
+			printf("x_call_func_%d use_with_call;\n",funccnt)
+		
+			for (b=0;b<c;b++) {
+				cast=""
+				if (param_type[b]=="void*") {
+						cast="(long)"
+				}
+				print "   use_with_call." param_name[b] " = " cast param_name[b] ";"
+			}
+			params="&use_with_call,get_UI_clnt()"
+		}  else {
+			printf("char *use_with_call=0;\n")
+			params="(void *)use_with_call,get_UI_clnt()"
+		}
+		
+		xfname=tolower(fname) "_1"
+		print "printf(\"Calling " fname "\\n\");"
+		if (rtype!="void") {
+			print "ret=rpc_" xfname " (" params  ");"
+			print "chk_result(ret); printf(\"Got %p\\n\",*ret); return *ret;"
+		} else {
+			print "ret=rpc_" xfname " (" params ");"
+			print "chk_result(ret);"
+		}
+	
+	
+		print "}"
+		print ""
+	} else {
+		if (rtype=="void") rval="void *";
+		else rval="ret_" funccnt " *"
+		printf("%s rpc_%s_1_svc(",rval , tolower(fname) )
+		if (c==0) {
+			printf "void *argp, struct svc_req *rqstp"
+		} else {
+			printf "x_call_func_" funccnt " *argp, struct svc_req *rqstp"
+		}
+		printf(") {\n")
+		if (rtype=="void") print "static char * result=0;"
+		else print "static ret_" funccnt " result;"
+
+
+		if (c) {
+			print "struct {"
+			for (b=0;b<c;b++) {
+				print "  " param_type[b] " " param_name[b] ";"
+			}
+			print "} use_with_call;\n"
+
+			#print "printf(\"Called " fname "\\n\");\n"
+
+
+			for (b=0;b<c;b++) {
+				cast=""
+				if (param_type[b]=="void*") {
+						cast="(void*)"
+				}
+				print "use_with_call." param_name[b] " = " cast " argp->" param_name[b] ";"
+			}
+			if (rtype!="void") {
+				printf("result=(ret_" funccnt ") %s(",fname);
+			}  else {
+				printf("result=0; %s(",fname);
+			}
+			for (b=0;b<c;b++) {
+					if (b) {printf(",")}
+					printf("use_with_call.%s",param_name[b]);
+			}
+			printf(");\n");
+		} else {
+			if (rtype!="void") {
+				printf("result=(ret_" funccnt ") %s();",fname);
+			}  else {
+				printf("result=0; %s();",fname);
+			}
+		}
+
+
+		if (rtype=="void") {
+			print "return (void *) &result;"
+		} else {
+			print "return &result;"
+		}
+		print "}"
+		print ""
+
+	}
+
+}
+
+
+
+'  #> marshall_client.c
+#< $specfile
+
+
+exit
+
+
+
+
+/*
+ * This is sample code generated by rpcgen.
+ * These are only templates and you can use them
+ * as a guideline for developing your own functions.
+ */
+
+#include "ui_lowlevel.h"
+
+void *
+rpc_a4gl_ll_beep_1_svc(void *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+ret_2 *
+rpc_a4gl_ll_colour_code_1_svc(x_call_func_2 *argp, struct svc_req *rqstp)
+{
+	static ret_2  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_3 *
+rpc_a4gl_ll_create_errorwindow_1_svc(x_call_func_3 *argp, struct svc_req *rqstp)
+{
+	static ret_3  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_4 *
+rpc_a4gl_ll_create_window_1_svc(x_call_func_4 *argp, struct svc_req *rqstp)
+{
+	static ret_4  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_5 *
+rpc_a4gl_ll_current_field_1_svc(x_call_func_5 *argp, struct svc_req *rqstp)
+{
+	static ret_5  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_6 *
+rpc_a4gl_ll_decode_aubit_attr_1_svc(x_call_func_6 *argp, struct svc_req *rqstp)
+{
+	static ret_6  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+void *
+rpc_a4gl_ll_delete_errorwindow_1_svc(x_call_func_7 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+ret_8 *
+rpc_a4gl_ll_display_form_1_svc(x_call_func_8 *argp, struct svc_req *rqstp)
+{
+	static ret_8  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_9 *
+rpc_a4gl_ll_dump_screen_1_svc(x_call_func_9 *argp, struct svc_req *rqstp)
+{
+	static ret_9  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+void *
+rpc_a4gl_ll_error_box_1_svc(x_call_func_10 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+ret_11 *
+rpc_a4gl_ll_field_buffer_1_svc(x_call_func_11 *argp, struct svc_req *rqstp)
+{
+	static ret_11  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_12 *
+rpc_a4gl_ll_field_opts_1_svc(x_call_func_12 *argp, struct svc_req *rqstp)
+{
+	static ret_12  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_13 *
+rpc_a4gl_ll_field_status_1_svc(x_call_func_13 *argp, struct svc_req *rqstp)
+{
+	static ret_13  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_14 *
+rpc_a4gl_ll_form_page_1_svc(x_call_func_14 *argp, struct svc_req *rqstp)
+{
+	static ret_14  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_15 *
+rpc_a4gl_ll_get_carat_1_svc(x_call_func_15 *argp, struct svc_req *rqstp)
+{
+	static ret_15  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_16 *
+rpc_a4gl_ll_get_field_userptr_1_svc(x_call_func_16 *argp, struct svc_req *rqstp)
+{
+	static ret_16  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_17 *
+rpc_a4gl_ll_get_field_width_1_svc(x_call_func_17 *argp, struct svc_req *rqstp)
+{
+	static ret_17  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_18 *
+rpc_a4gl_ll_get_form_userptr_1_svc(x_call_func_18 *argp, struct svc_req *rqstp)
+{
+	static ret_18  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_19 *
+rpc_a4gl_ll_getch_swin_1_svc(x_call_func_19 *argp, struct svc_req *rqstp)
+{
+	static ret_19  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+void *
+rpc_a4gl_ll_gui_run_til_no_more_1_svc(void *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_hide_window_1_svc(x_call_func_21 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_initialize_display_1_svc(void *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+ret_23 *
+rpc_a4gl_ll_int_form_driver_1_svc(x_call_func_23 *argp, struct svc_req *rqstp)
+{
+	static ret_23  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_24 *
+rpc_a4gl_ll_make_field_1_svc(x_call_func_24 *argp, struct svc_req *rqstp)
+{
+	static ret_24  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_25 *
+rpc_a4gl_ll_make_label_1_svc(x_call_func_25 *argp, struct svc_req *rqstp)
+{
+	static ret_25  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+void *
+rpc_a4gl_ll_make_window_top_1_svc(x_call_func_26 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_move_window_1_svc(x_call_func_27 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+ret_28 *
+rpc_a4gl_ll_new_form_1_svc(x_call_func_28 *argp, struct svc_req *rqstp)
+{
+	static ret_28  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+void *
+rpc_a4gl_ll_out_linemode_1_svc(x_call_func_29 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_remove_window_1_svc(x_call_func_30 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_scale_form_1_svc(x_call_func_31 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+ret_32 *
+rpc_a4gl_ll_screen_height_1_svc(void *argp, struct svc_req *rqstp)
+{
+	static ret_32  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+void *
+rpc_a4gl_ll_screen_mode_1_svc(void *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_screen_redraw_1_svc(void *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_screen_update_1_svc(void *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+ret_36 *
+rpc_a4gl_ll_screen_width_1_svc(void *argp, struct svc_req *rqstp)
+{
+	static ret_36  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+void *
+rpc_a4gl_ll_set_bkg_1_svc(x_call_func_37 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_set_carat_1_svc(x_call_func_38 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_set_current_field_1_svc(x_call_func_39 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_set_field_attr_1_svc(x_call_func_40 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_set_field_back_1_svc(x_call_func_41 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_set_field_buffer_1_svc(x_call_func_42 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_clr_field_buffer_1_svc(x_call_func_43 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_set_field_fore_1_svc(x_call_func_44 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+ret_45 *
+rpc_a4gl_ll_set_field_opts_1_svc(x_call_func_45 *argp, struct svc_req *rqstp)
+{
+	static ret_45  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_46 *
+rpc_a4gl_ll_set_field_status_1_svc(x_call_func_46 *argp, struct svc_req *rqstp)
+{
+	static ret_46  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+void *
+rpc_a4gl_ll_set_field_userptr_1_svc(x_call_func_47 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_set_form_page_1_svc(x_call_func_48 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_set_form_userptr_1_svc(x_call_func_49 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_set_max_field_1_svc(x_call_func_50 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+ret_51 *
+rpc_a4gl_ll_set_new_page_1_svc(x_call_func_51 *argp, struct svc_req *rqstp)
+{
+	static ret_51  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+void *
+rpc_a4gl_ll_show_window_1_svc(x_call_func_52 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_sleep_1_svc(x_call_func_53 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_switch_to_line_mode_1_svc(void *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_wadd_char_xy_col_1_svc(x_call_func_55 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_wadd_char_xy_col_w_1_svc(x_call_func_56 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+ret_57 *
+rpc_a4gl_ll_prompt_loop_1_svc(x_call_func_57 *argp, struct svc_req *rqstp)
+{
+	static ret_57  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_58 *
+rpc_a4gl_ll_start_prompt_1_svc(x_call_func_58 *argp, struct svc_req *rqstp)
+{
+	static ret_58  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_59 *
+rpc_a4gl_ll_set_chars_normal_1_svc(x_call_func_59 *argp, struct svc_req *rqstp)
+{
+	static ret_59  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_60 *
+rpc_a4gl_ll_endis_fields_ap_1_svc(x_call_func_60 *argp, struct svc_req *rqstp)
+{
+	static ret_60  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_61 *
+rpc_a4gl_ll_open_gui_form_1_svc(x_call_func_61 *argp, struct svc_req *rqstp)
+{
+	static ret_61  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_62 *
+rpc_a4gl_ll_set_window_title_1_svc(x_call_func_62 *argp, struct svc_req *rqstp)
+{
+	static ret_62  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+ret_63 *
+rpc_a4gl_ll_widget_name_match_1_svc(x_call_func_63 *argp, struct svc_req *rqstp)
+{
+	static ret_63  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+void *
+rpc_a4gl_ll_clr_form_fields_1_svc(x_call_func_64 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_clr_menu_disp_1_svc(x_call_func_65 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_h_disp_title_1_svc(x_call_func_66 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+void *
+rpc_a4gl_ll_set_acc_intr_keys_1_svc(x_call_func_67 *argp, struct svc_req *rqstp)
+{
+	static char * result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return (void *) &result;
+}
+
+ret_68 *
+rpc_a4gl_ll_menu_loop_1_svc(x_call_func_68 *argp, struct svc_req *rqstp)
+{
+	static ret_68  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+
+

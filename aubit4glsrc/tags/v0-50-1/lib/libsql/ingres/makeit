@@ -1,0 +1,11 @@
+. ~ingres/.ingIIbash
+PATH=/opt/CA/IngresII/ingres/bin/:$PATH
+export PATH
+export A4GL_DUMP_CORE=Y
+
+esqlc ingres.ec
+
+gcc -shared  -fPIC -I..  -I$AUBITDIR/incl ingres.c -o libSQL_ingres.so -L/opt/CA/IngresII/ingres/lib `cat $II_SYSTEM/ingres/files/abflnk.opt`
+cp  libSQL_ingres.so $AUBITDIR/lib 
+export A4GL_SQLTYPE=ingres
+#4glc test1.4gl

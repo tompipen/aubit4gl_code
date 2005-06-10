@@ -1,0 +1,133 @@
+Aubit 4gl compiler team note:
+
+This code was released to Aubit 4gl project under GNU license by kind
+permission of author, Jonathan Leffler [jleffler@informix.com] on
+Sat 16/06/2001. Thank you, Jonathan.
+
+
+--------------------------------------------------------------------------
+
+README for D4GL Programming Environment
+=======================================
+
+$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
+
+Overview
+--------
+
+The D4GL Programming Environment is a program which provides a programmer
+with an environment analogous to the i4gl and r4gl programmers environments
+provided with INFORMIX-4GL (I4GL) and INFORMIX-4GL Rapid Development System
+(I4GL-RDS).  It expects to work with a Makefile.  It can be used to compile
+programs with either Informix Dynamic 4GL (D4GL) or I4GL or I4GL-RDS.  When
+the program is being run, you can edit, compile and correct either source
+files or form files, and you can run builds of an entire program, or you
+can test the program you have built.
+
+The D4GL Programming Environment that can be compiled with Aubit 4gl, D4GL, 
+I4GL or I4GL-RDS.  It uses one C function, so it is necessary to have a C
+development system available.  It creates the custom p-code runners when
+necessary.
+
+Compiling
+---------
+
+Using Aubit 4gl compiler, you should be able to type:
+
+    make a4gl
+
+Also on Unix, you should be able to type:
+
+    make d4gl-pcode
+
+This should compile the Informix Dynamic 4GL p-code version of the
+program.  You could create the D4GL c-code version by making d4gl-ccode,
+the I4GL p-code version by making i4gl-pcode, and the I4GL c-code version
+by making i4gl-ccode.  You could create all of these by typing:
+
+    make all
+
+If you plan to install the program in somewhere other than $FGLDIR, then
+you should add D4GL_DIR=/where/you/plan/to/put/it to the command lines.
+
+Testing
+-------
+
+You can test the program by running one of the following commands:
+
+    ./d4gl              -- Aubit 4gl
+	./fglrun d4gl       -- D4GL p-code
+    ./d4gl.42e          -- D4GL c-code
+    ./fglgo  d4gl       -- I4GL p-code
+    ./d4gl.4ge          -- I4GL c-code
+
+Do not use the d4gl cover script as it will not work on the p-code files
+until they have been installed (or given execute permission).
+
+Installing
+----------
+
+By default, the software will be installed under $FGLDIR.  If you plan to
+install the D4GL environment in some other directory, then you should have
+specified D4GL_DIR=/where/you/plan/to/put/it when you compiled the program.
+If you forgot, simply remove the d4gl script before doing the install.
+
+To install the D4GL p-code version in the default directory, use:
+
+    make install.d4gl-pcode
+
+To install a different product, change the version code accordingly.  To
+install in a different directory, ensure that you have write permissions on
+the directory, and decide whether you need to remove the d4gl script before
+proceeding, and then type:
+
+    make D4GL_DIR=/where/you/want/to/put/it install.d4gl-pcode
+
+By default, the programs will be installed owned by user informix and
+belonging to group informix.  You can override these defaults by
+specifying:
+
+    make D4GL_USR=me D4GL_GRP=us D4GL_DIR=/some/where install.d4gl-pcode
+
+Note that the install process assumes you have a BSD-compatible install
+script.  If you do not have one, the install will probably fail.  There are
+public domain versions of the BSD install script readily available.
+
+Cleaning
+--------
+
+After the product is successfully installed, you can clean up the build
+area with:
+
+    make clean
+
+This removes all the generated files, leaving you with just the original
+source code and any ad hoc files you have created.
+
+Limitations
+-----------
+
+This is tested code on Unix.  It is only barely tested on NT.  There will
+be problems on NT with the use of sed (unless you have a Unix-workalike
+toolkit such as CygWin, MKS or Thompson on your NT machine).  There will be
+problems with running processes in xterm unless you have an xterm on your
+NT machine.  Ideas for how to correct these deficiencies will be gratefully
+received.
+
+Bug Reporting
+-------------
+
+Aubit 4gl team will extend and maintain origginal version of this code.
+Therefore, we suggest that you report problems to Aubit 4gl mailing list,
+if you obtained it from Aubit 4gl project. But you also might considder
+authors orriginal note:
+
+If you find a problem, please report it via the IDN web site:
+
+    http://www.informix.com/idn
+
+Optionally, you may also report it to Jonathan Leffler
+(jleffler@informix.com), but please use the web site too.
+
+@(#)$Id: README,v 1.1.1.1 2001-08-20 02:37:05 afalout Exp $
+

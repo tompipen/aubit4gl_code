@@ -1,0 +1,118 @@
+/*
+=====================================================================
+                        Source: display.rule
+=====================================================================
+*/
+
+
+opt_at : {
+	print_display_line();
+		strcpy($<str>$,A4GL_get_display_str(0,0,0));
+	} 
+	| AT display_coords {
+		strcpy($<str>$,A4GL_get_display_str(1,0,0)); /* FIXME */
+	}
+	| TO_MENUITEM identifier { 
+	strcpy($<str>$,"#error not implemented yet");
+	}
+	| TO_MAIN_CAPTION { strcpy($<str>$, A4GL_get_display_str(4,0,0)); }
+	| TO field_name_list_as_struct { strcpy($<str>$, A4GL_get_display_str(2,field_name_list_as_char($<field_list>2),0)); }
+	| TO KWFORM identifier KWFIELD field_name_list_as_struct { strcpy($<str>$, A4GL_get_display_str(3,field_name_list_as_char($<field_list>5),$<str>3)); }
+	| TO KWFORM identifier CAPTION { strcpy($<str>$, A4GL_get_display_str(5,$<str>3,0)); }
+	| TO_STATUSBOX identifier { 
+	strcpy($<str>$,"#error not implemented yet");
+ }
+;
+
+display_b_n_cmd : DISPLAY_BY_NAME reset_cnt ibind_var_list display_attr 
+		{
+		print_display_by_name($<str>4);
+                } 
+;
+
+
+display_cmd : KW_DISPLAY reset_cnt fgl_expr_list opt_at display_attr 
+		{ 
+				print_display($<str>4,$<str>3,$<str>5);
+		} 
+;
+
+display_form_cmd : DISPLAY_FORM form_name display_attr {
+		print_display_form($<str>2,$<str>3);
+	}
+;
+
+display_array_cmd : DISPLAY_ARRAY {
+		push_blockcommand("DISPLAY");
+		curr_input_array_attribs.curr_row_display=0;
+		} 
+	use_arr_var TO identifier DOT MULTIPLY opt_scroll opt_attributes 
+		{
+		print_display_array_p1(fgl_add_scope($<str>3,0),$<str>5,$<str>8,$<str>9,&curr_input_array_attribs);
+	  	A4GL_new_events();
+		}
+	disp_rest {
+		add_continue_blockcommand ("DISPLAY");  
+		print_display_array_p2();
+		pop_blockcommand("DISPLAY");
+	  	A4GL_drop_events();
+}
+;
+
+opt_scroll: 
+{
+strcpy($<str>$,"0,0");
+} | SCROLL_USING field_name_as_struct {
+	strcpy($<str>$,field_name_as_char($<field_entry>2));
+}
+;
+
+display_attr	:	opt_attributes {
+				sprintf($<str>$,"0x%lx",atol($<str>1));
+			}
+		;
+
+disp_rest : | disp_field_commands END_DISPLAY | END_DISPLAY;
+
+
+
+disp_field_commands : disp_field_command | disp_field_commands disp_field_command;
+
+disp_field_command :  
+	AFTROW {
+		A4GL_add_event(-11,"");
+		print_befaft_field_1("AFT_ROW");
+		} 
+	commands {
+		print_befaft_field_2();
+	}
+	| BEFROW {
+		A4GL_add_event(-10,"");
+		print_befaft_field_1("BEF_ROW");
+		} 
+	commands {
+		print_befaft_field_2();
+	}
+	| on_key_command {
+		A4GL_add_onkey_key($<str>1);
+		print_onkey_1($<str>1);
+		} 
+	commands {
+		print_onkey_2();
+	}
+	| on_action { A4GL_add_onaction($<str>1);  print_onaction_1($<str>1);} commands { print_onaction_2(); }
+	| AFTER_DISPLAY {
+		      A4GL_add_event(-95,"");
+		      print_befaft_field_1("AFTER_INP");
+		} commands {
+	             print_befaft_field_2();
+		}
+        | BEFORE_DISPLAY { A4GL_add_event(-99,"");
+	          print_befaft_field_1("BEFORE_INP");
+	} commands {
+	        print_befaft_field_2();
+	}
+
+;
+
+/* ============================ display.rule ====================== */

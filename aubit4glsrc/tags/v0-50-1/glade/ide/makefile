@@ -1,0 +1,95 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: makefile,v 1.3 2004-09-28 09:49:13 afalout Exp $
+#
+
+ROOT			=../..
+LIBROOT			=${ROOT}/lib
+
+#All stuff common to more then one Aubit compiler make file is there:
+include 		${ROOT}/incl/Makefile-common
+
+#Include rules for compiling 4GL source code using Aubit compiler
+include 		${ROOT}/incl/a4gl.mk
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+CFLAGS			+=-I${ROOT}/incl
+4GLPC			=${FGLPCEXEC}
+
+ALL				=${ROOT}/bin/ide1.4ae ${ROOT}/bin/sqleditor.4ae
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ALL}
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Default targets (${ALL}) successfuly compiled"
+	@echo "+--------------------------------------------------------------------+"	
+
+${ROOT}/bin/ide1.4ae: ide1.ao common/pick.ao common/about.ao edtprog.ao options.ao
+	${4GLPC} $^ -o $@
+
+${ROOT}/bin/sqleditor.4ae:
+	${MAKE} -C sqleditor
+	
+#FIXME: no target to compile ide.glade
+	
+## ==================================================================
+##                              Sub-targets
+## ==================================================================
+
+#Amake will do this automatically:
+
+#common/pick.ao: common/pick.4gl
+#	${4GLPC} $^ -c -o $@
+
+#common/about.ao: common/about.4gl
+#	${4GLPC} $^ -c -o $@
+	
+#options.ao: options.4gl
+#	${4GLPC} $^ -c -o $@ 
+
+#ide1.ao: ide1.4gl
+#	${4GLPC} $^ -c -o $@ 
+
+#edtprog.ao: edtprog.4gl
+#	${4GLPC} $^ -c -o $@
+
+## ==================================================================
+##                              Clean
+## ==================================================================
+
+clean:
+	${RM} *.ao *.ec *.glb *.o *.c *.h *.err *.warn debug.out *~ *.bak ${ALL}
+	${MAKE} -C sqleditor clean
+	cd common; ${RM} *.ao *.c *.glb *.h *.err *.warn debug.out *~ *.bak
+	
+

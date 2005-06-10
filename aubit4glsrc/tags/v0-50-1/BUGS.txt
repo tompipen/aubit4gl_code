@@ -1,0 +1,78 @@
+
+===========================================================================
+
+error:
+
+Err:Program stopped at 'base.4gl', line number 40.
+Error status number -201.
+.
+
+4gl function call stack :
+    max_db.4gl (Line 125) calls create_init_view()
+    MAIN
+make: *** [db] Error 1
+
+tested with dbaccess
+
+
+statement:
+
+create view v_salstatarea (cmpy_code,ware_code,area_code,territory_code,
+job_territory,job_area,ord_ind,cust_code,cust_type,year_num,type_code,int_num,
+gross_amt,net_amt,cost_amt,prod_amt,net_prod_amt,order_qty,return_qty,
+return_amt,return_net_amt,return_cost_amt,return_prod_amt,return_nprod_amt,
+inv_line_num,cred_line_num) as
+  select x0.cmpy_code ,x0.ware_code ,x0.area_code ,x0.territory_code
+    ,x0.job_territory ,x0.job_area ,x0.ord_ind ,x0.cust_code
+    ,x0.cust_type ,x0.year_num ,x0.type_code ,x0.int_num ,sum(x0.gross_amt
+    ) ,sum(x0.net_amt ) ,sum(x0.cost_amt ) ,sum(x0.prod_amt )
+    ,sum(x0.net_prod_amt ) ,sum(x0.order_qty ) ,sum(x0.return_qty
+    ) ,sum(x0.return_amt ) ,sum(x0.return_net_amt ) ,sum(x0.return_cost_amt
+    ) ,sum(x0.return_prod_amt ) ,sum(x0.return_nprod_amt ) ,sum(x0.inv_line_num
+    ) ,sum(x0.cred_line_num ) from salesstat x0 where
+    ((x0.rept_code = '0' ) AND (x0.rept_code_num = 0 ) ) group
+    by x0.cmpy_code ,x0.ware_code ,x0.area_code ,x0.territory_code
+    ,x0.job_territory ,x0.job_area ,x0.ord_ind ,x0.cust_code
+    ,x0.cust_type ,x0.year_num ,x0.type_code ,x0.int_num ;
+
+==========================================================================
+
+
+using esql plugin
+
+4Js:
+
+[root@aptiva test]# make callme.42r
+fgl2p  callme.4gl
+fgl2p  -o callme.42r callme.42m
+[root@aptiva test]# fglrun callme.42r
+aa >    4.01<
+
+Aubit:
+
+[root@aptiva test]# make callme.4ae
+aubit 4glc --clean  -ocallme.4ae callme.4gl
+[root@aptiva test]# callme.4ae
+aa >->41340201340>37<
+
+
+Code;
+
+database maindb
+main
+   define
+           pr_maxinfo record like maxinfo.*
+
+   declare c_maxinfo cursor for
+      select * from maxinfo
+   open c_maxinfo
+   fetch c_maxinfo into pr_maxinfo.*
+   close c_maxinfo
+
+display "aa >",pr_maxinfo.version_num clipped ,"<"
+
+
+end main
+
+===========================================================================
+

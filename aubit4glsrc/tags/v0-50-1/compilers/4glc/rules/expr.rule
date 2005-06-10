@@ -1,0 +1,928 @@
+/*
+=====================================================================
+                        Source: expr.rule
+=====================================================================
+*/
+
+fgl_expr_c :
+ boolean_expr
+| function_call_expr
+| fgl_expr_c fgl_next {
+	dec_counter();
+	$<ptr>$=A4GL_append_expr_expr($<ptr>1,$<ptr>2);
+}
+| report_only_expr
+| builtin_expr
+| pdf_expr
+| literal_expr { A4GL_debug("Got literal ptr=%p",$<ptr>1); }
+| MINUS fgl_expr_c {
+	$<ptr>$=A4GL_new_expr("A4GL_push_int(0);");
+	$<ptr>$=A4GL_append_expr_expr($<ptr>$,$<ptr>2);
+	$<ptr>$=A4GL_append_expr($<ptr>$,"A4GL_pushop(OP_SUB);");
+}
+| PLUS fgl_expr_c {
+	$<ptr>$=$<ptr>2;
+}
+
+;
+
+fgl_next:
+  and_or_expr
+| comparison_expr
+| in_expr
+| SPACES { $<ptr>$=A4GL_new_expr("A4GL_add_spaces();"); }
+| interval_expr {inc_counter();}
+| null_expr
+| string_match_expr
+| clip_expr 
+| using_expr 
+| math_expr
+| CONCAT_PIPES fgl_expr_c {
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_CONCAT);");
+}
+;
+
+
+
+op_fgl_expr_ret_list: reset_cnt {strcpy($<str>$,"0");} | reset_cnt fgl_expr_ret_list {
+strcpy($<str>$,$<str>2);}
+;
+
+
+fgl_expr_ret : fgl_expr | KW_NULL {$<ptr>$=A4GL_new_expr("A4GL_push_null(2,0);"); inc_counter();}
+;
+
+fgl_expr_ret_list 	: fgl_expr_ret
+{
+	/*set_counter(0);*/
+	sprintf($<str>$,"%d",get_counter_val());
+	A4GL_lex_printcomment("/*L1 %s*/\n",$<str>$);
+}
+		| 	fgl_expr_ret_list KW_COMMA fgl_expr_ret
+{
+	sprintf($<str>$,"%d",get_counter_val());
+	A4GL_lex_printcomment("/*L2 %s*/\n",$<str>$);
+}
+;
+
+
+fgl_expr_list 	: fgl_expr {
+	/*set_counter(0);*/
+	sprintf($<str>$,"%d",get_counter_val());
+	A4GL_lex_printcomment("/*L1 %s*/\n",$<str>$); }
+		| 	fgl_expr_list KW_COMMA fgl_expr {
+	sprintf($<str>$,"%d",get_counter_val());
+	A4GL_lex_printcomment("/*L2 %s*/\n",$<str>$);
+}
+;
+
+
+
+
+fgl_expr_concat	: 	fgl_expr {sprintf($<str>$,"%d",get_counter_val());}
+		| 	fgl_expr_concat KW_COMMA fgl_expr
+{
+	print_op("OP_CONCAT");
+	dec_counter();sprintf($<str>$,"%d",get_counter_val());
+}
+;
+
+
+fgl_expr:  fgl_expr_c {
+	A4GL_debug("Print expr (2)");
+	print_expr($<ptr>1);
+}
+;
+
+/*
+int_sign	: PLUS
+{
+	strcpy($<str>$,"+");
+}
+		| MINUS
+{
+	strcpy($<str>$,"-");
+}
+;
+*/
+
+/****************************************************************/
+
+boolean_expr:
+NOT fgl_expr_c {
+	
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_NOT);");
+}
+| KW_TRUE  
+{
+	$<ptr>$=A4GL_new_expr("A4GL_push_int(1);");
+        inc_counter();
+}
+| KW_FALSE 
+{
+	inc_counter();
+	$<ptr>$=A4GL_new_expr("A4GL_push_int(0);");
+}
+| OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>2; }
+/*| PLUS OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>3; } */
+| EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
+	$<ptr>$=get_in_exists_sql($<sql_string>3,'E');
+}
+| NOT_EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
+	$<ptr>$=get_in_exists_sql($<sql_string>3,'e');
+}
+;	
+
+
+
+literal_expr: 
+CHAR_VALUE  {
+	if (strcmp($<str>1,"\"\"")==0) {
+		sprintf($<str>$,"%s",A4GL_get_push_literal('N',$<str>1));
+		$<ptr>$=A4GL_new_expr($<str>$);
+	} else {
+		sprintf($<str>$,"%s",A4GL_get_push_literal('S',$<str>1));
+		$<ptr>$=A4GL_new_expr($<str>$);
+	}
+	inc_counter();
+}
+| real_number {
+	sprintf($<str>$,"%s",A4GL_get_push_literal('D',$<str>1));
+	$<ptr>$=A4GL_new_expr($<str>$);
+	inc_counter();
+}
+| INT_VALUE
+{
+	sprintf($<str>$,"%s",A4GL_get_push_literal('L',$<str>1));
+	$<ptr>$=A4GL_new_expr($<str>$);
+	inc_counter();
+} | variable_entry
+;
+
+
+variable_entry_2 :
+	variable
+	| variable THRU variable {
+		sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
+	}
+;
+
+variable_entry :
+	variable_entry_2 {
+   		int a;
+   		int incvcnt;
+   		int flg=0;
+		void *p1;
+
+		if (strchr($<str>1,'\n')==0) {
+   			a=scan_variable($<str>1);
+		} else {
+			a=-2;
+		}
+
+   		if (a>=0) {
+          		if (A4GL_aubit_strcasecmp($<str>1,"today")==0) {
+               		flg=1;
+               		strcpy($<str>$,"A4GL_push_today();");
+          		}
+		
+          		if (A4GL_aubit_strcasecmp($<str>1,"time")==0) {
+               		flg=1;
+               		strcpy($<str>$,"A4GL_push_time();");
+          		}
+		
+          		if (A4GL_aubit_strcasecmp($<str>1,"pageno")==0) {
+               		flg=1;
+               		strcpy($<str>$,"A4GL_push_variable(&_rep.page_no,2);");
+                  		}
+          		if (A4GL_aubit_strcasecmp($<str>1,"lineno")==0) {
+               		flg=1;
+               		//strcpy($<str>$,"{static int _ln; _ln=_rep.line_no-1;A4GL_push_variable(&_rep.line_no,2);");
+               		strcpy($<str>$,"{static int _ln; _ln=_rep.line_no-1;A4GL_push_variable(&_ln,2);}");
+          		}
+
+         		if (flg==0) {
+         				sprintf($<str>$,"A4GL_push_variable(&%s,0x%x);",$<str>1,(int)scan_variable($<str>1));
+         		}
+      			p1=A4GL_new_expr($<str>$);
+       			$<ptr>$=p1;
+			inc_counter();
+   		}
+
+
+
+        	if (a==-1)
+        	{
+                	sprintf($<str>$,"A4GL_push_char(%s);",$<str>1);inc_counter();
+      			p1=A4GL_new_expr($<str>$);
+       			$<ptr>$=p1;
+			inc_counter();
+        	}
+
+
+        	if (a==-2)
+        	{
+			p1=A4GL_new_expr("");
+	        	incvcnt=print_push_rec($<str>1,&p1);
+	        	inc_counter_by(incvcnt);
+			$<ptr>$=p1;
+        	}
+
+
+
+
+	}
+;
+
+
+
+report_only_expr:
+COLUMN fgl_expr_c 
+{
+	if (doing_a_print) {
+		sprintf($<str>$,"A4GL_%sset_column(&_rep);",ispdf());
+	} else {
+		sprintf($<str>$,"A4GL_ensure_column();");
+	}
+	$<ptr>$=A4GL_append_expr($<ptr>2,$<str>$);
+	
+}
+
+| COLUMNS fgl_expr_c 
+{
+	if (doing_a_print) {
+		sprintf($<str>$,"A4GL_%sset_column(&_rep);",ispdf());
+	} else {
+		sprintf($<str>$,"A4GL_ensure_column();");
+	}
+	$<ptr>$=A4GL_append_expr($<ptr>2,$<str>$);
+}
+| rep_agg  {
+   if (!isin_command("REPORT")) {
+   a4gl_yyerror("This can only be done in a report!");
+   YYERROR;
+} 
+insql=0;
+	$<ptr>$=A4GL_new_expr($<str>1);
+}  
+| KW_GROUP {insql=1;set_ingroup();} rep_agg  {
+	char buff[256];
+      if (!isin_command("REPORT")) {
+        a4gl_yyerror("This can only be done in a report!");YYERROR;
+      } insql=0; 
+	A4GL_lex_printcomment("/* rep_Agg = %s\n*/",$<str>3);
+        strcpy(buff,$<str>3);
+	A4GL_debug("report aggregate :  %s",buff);
+	$<ptr>$=A4GL_new_expr(buff);
+      }
+
+
+;
+
+and_or_expr: 
+KW_AND fgl_expr_c 
+{
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_AND);");
+}
+| KW_OR fgl_expr_c 
+{
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_OR);");
+}
+;
+
+
+inexpr_list : fgl_expr_c  {
+	$<ptr>$=$<ptr>1;
+	}
+	| inexpr_list KW_COMMA fgl_expr_c {
+		A4GL_debug("Adding to list...");
+		$<ptr>$=A4GL_append_expr_expr($<ptr>1,$<ptr>3);
+	}
+;
+
+
+in_expr:
+ KW_IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
+	$<ptr>$=get_in_exists_sql($<sql_string>3,'I');
+}
+	
+ | NOT_IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
+	$<ptr>$=get_in_exists_sql($<sql_string>3,'i');
+}
+ |KW_IN OPEN_BRACKET reset_cnt inexpr_list CLOSE_BRACKET {
+	char buff[256];
+	sprintf(buff,"A4GL_push_int(%d);",length_expr($<ptr>4));
+	$<ptr>$=A4GL_append_expr($<ptr>4,buff);
+	A4GL_append_expr($<ptr>$,"A4GL_pushop(OP_IN);");
+}
+| NOT_IN OPEN_BRACKET reset_cnt inexpr_list CLOSE_BRACKET {
+	char buff[256];
+	sprintf(buff,"A4GL_push_int(%d);",length_expr($<ptr>4));
+	$<ptr>$=A4GL_append_expr($<ptr>4,buff);
+	A4GL_append_expr($<ptr>$,"A4GL_pushop(OP_NOTIN);");
+}
+;
+
+null_expr:
+IS_NULL  
+{ 
+	strcpy($<str>$,"A4GL_pushop(OP_ISNULL);");
+	$<ptr>$=A4GL_new_expr($<str>$);
+}
+| IS_NOT_NULL
+{
+	strcpy($<str>$,"A4GL_pushop(OP_ISNOTNULL);");
+	$<ptr>$=A4GL_new_expr($<str>$);
+}
+;
+
+string_match_expr:
+ MATCHES fgl_expr_c {
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_push_char(\"\\\\\");A4GL_pushop(OP_MATCHES);");
+ }
+ | NOT_MATCHES fgl_expr_c {
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_push_char(\"\\\\\");A4GL_pushop(OP_MATCHES);A4GL_pushop(OP_NOT);");
+}
+ | MATCHES fgl_expr_c KW_ESCAPE CHAR_VALUE {
+	char buff[40];
+	sprintf(buff,"A4GL_push_char(%s);A4GL_pushop(OP_MATCHES);",$<str>4);
+	$<ptr>$=A4GL_append_expr($<ptr>2,buff);
+ }
+ | NOT_MATCHES fgl_expr_c KW_ESCAPE CHAR_VALUE {
+	char buff[40];
+	sprintf(buff,"A4GL_push_char(%s);A4GL_pushop(OP_MATCHES);A4GL_pushop(OP_NOT);",$<str>4);
+	$<ptr>$=A4GL_append_expr($<ptr>2,buff);
+}
+
+
+| LIKE fgl_expr_c {
+	char buff[40];
+	sprintf(buff,"A4GL_push_char(\"\\\\\");A4GL_pushop(OP_LIKE);");
+	$<ptr>$=A4GL_append_expr($<ptr>2,buff);
+}
+| NOT_LIKE fgl_expr_c {
+	char buff[40];
+	sprintf(buff,"A4GL_push_char(\"\\\\\");A4GL_pushop(OP_LIKE);A4GL_pushop(OP_NOT);");
+	$<ptr>$=A4GL_append_expr($<ptr>2,buff);
+}
+| LIKE fgl_expr_c KW_ESCAPE CHAR_VALUE {
+	char buff[40];
+	sprintf(buff,"A4GL_push_char(%s);A4GL_pushop(OP_LIKE);",$<str>4);
+	$<ptr>$=A4GL_append_expr($<ptr>2,buff);
+}
+| NOT_LIKE fgl_expr_c KW_ESCAPE CHAR_VALUE {
+	char buff[40];
+	sprintf(buff,"A4GL_push_char(%s);A4GL_pushop(OP_LIKE);A4GL_pushop(OP_NOT);",$<str>4);
+	$<ptr>$=A4GL_append_expr($<ptr>2,buff);
+}
+
+
+;
+
+clip_expr: 
+CLIPPED 
+{
+	strcpy($<str>$,"A4GL_pushop(OP_CLIP);");
+	$<ptr>$=A4GL_new_expr($<str>$);
+	inc_counter();
+}
+;
+using_expr:
+KW_USING fgl_expr_c 
+{
+	sprintf($<str>$,"%s A4GL_pushop(OP_USING);",$<str>2);
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_USING);");
+}
+;
+
+math_expr:
+PLUS fgl_expr_c 
+{
+	A4GL_debug("PLUS in math_expr $<ptr>2 = %p",$<ptr>2);
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_ADD);");
+}
+| MINUS fgl_expr_c
+{
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_SUB);");
+}
+| MULTIPLY fgl_expr_c 
+{
+      sprintf($<str>$,"%s A4GL_A4GL_pushop(OP_MULT);",$<str>2);
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_MULT);");
+}
+| DIVIDE  fgl_expr_c 
+{
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_DIV);");
+}
+| MOD fgl_expr_c 
+{
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_MOD);");
+}
+| POWER fgl_expr_c 
+{
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_POWER);");
+}
+;
+
+comparison_expr:
+EQUAL           fgl_expr_c {
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_EQUAL);");
+}
+| EQUAL_EQUAL   fgl_expr_c {
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_EQUAL);");
+}
+| LESS_THAN       fgl_expr_c
+{
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_LESS_THAN);");
+}
+| GREATER_THAN    fgl_expr_c
+{
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_GREATER_THAN);");
+}
+| NOT_EQUAL       fgl_expr_c
+{
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_NOT_EQUAL);");
+}
+| LESS_THAN_EQ    fgl_expr_c
+{
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_LESS_THAN_EQ);");
+}
+| GREATER_THAN_EQ fgl_expr_c
+{
+	$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_pushop(OP_GREATER_THAN_EQ);");
+}
+
+;
+
+
+reset_cnt : {
+	reset_counter();
+}
+;
+
+
+
+function_call_expr2:
+	identifier 
+	OPEN_BRACKET 
+		{ 
+		addmap("Call",$<str>1,curr_func,yylineno,infilename);
+		new_counter(); 
+		} 
+	opt_func_call_args 
+		{ 
+		sprintf($<str>$,"%d",get_counter_val()); 
+		A4GL_lex_printcomment("/*function_call_expr2 %s*/\n",$<str>$);
+		drop_counter(); 
+		}
+	CLOSE_BRACKET 
+		{
+		int cnt;
+		cnt=1;
+		A4GL_debug("Print expr (1)");
+
+		strcpy($<str>$,A4GL_expr_for_call($<str>1,$<str>5,lastlineno,infilename));
+		$<ptr>$=A4GL_append_expr($<ptr>4,$<str>$);
+		inc_counter();
+		}
+   | KW_CHANNEL_READ OPEN_BRACKET char_or_var KW_COMMA OPEN_SQUARE ebind_var_list CLOSE_SQUARE CLOSE_BRACKET {
+		start_bind('i',$<str>3);
+                $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
+        }
+   | KW_CHANNEL_READ OPEN_BRACKET char_or_var KW_COMMA ebind_var_list CLOSE_BRACKET  {
+		start_bind('i',$<str>3);
+                $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
+        }
+| identifier DOUBLE_COLON identifier OPEN_BRACKET {
+        sprintf($<str>$,"\"%s\",\"%s\"",$<str>1,$<str>3);
+	A4GL_debug("NEWFORMAT : %s\n",$<str>$);
+        A4GLSQL_set_status(0,0);
+        new_counter();
+} opt_func_call_args {
+	sprintf($<str>$,"%d",get_counter_val());  
+	drop_counter();
+} CLOSE_BRACKET {
+	char buff[256];
+        char *ptr;
+        strcpy(buff,$<str>5);
+        ptr=strchr(buff,',');
+        *ptr=0;
+        ptr++;
+	sprintf($<str>$,"{int _retvars;\n_retvars=A4GL_call_4gl_dll(%s,%s,%d); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");A4GL_pop_args(_retvars);A4GL_push_null(2,0);}\n}\n}\n", buff,ptr,atoi($<str>7), lastlineno,infilename);
+	$<ptr>$=A4GL_append_expr($<ptr>6,$<str>$);
+		inc_counter();
+}
+
+| identifier MEMBER_FUNCTION identifier OPEN_BRACKET {
+        sprintf($<str>$,"\"%s\",\"%s\"",$<str>1,$<str>3);
+	A4GL_debug("NEWFORMAT : %s\n",$<str>$);
+        A4GLSQL_set_status(0,0);
+        new_counter();
+} opt_func_call_args {
+	sprintf($<str>$,"%d",get_counter_val());  
+	drop_counter();
+} CLOSE_BRACKET {
+	char buff[256];
+        char *ptr;
+        strcpy(buff,$<str>5);
+        ptr=strchr(buff,',');
+        *ptr=0;
+        ptr++;
+	sprintf($<str>$,"{int _retvars;\n_retvars=A4GL_call_4gl_dll(%s,%s,%d); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");A4GL_pop_args(_retvars);A4GL_push_null(2,0);}\n}\n}\n", buff,ptr,atoi($<str>7), lastlineno,infilename);
+	$<ptr>$=A4GL_append_expr($<ptr>6,$<str>$);
+		inc_counter();
+}
+
+
+
+
+
+;
+
+function_callb:
+KW_DATE OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
+	$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_date(1);");
+}
+| TIME OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
+	$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_time(1);");
+}
+| MONTH OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
+	$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_month(1);");
+	/* consumes and replaces a fgl_expr_c - so we don't need to dec or inc_counter */
+} 
+| DAY OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
+	$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_day(1);");
+	/* consumes and replaces a fgl_expr_c - so we don't need to dec or inc_counter */
+} 
+| YEAR OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
+	$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_year(1);");
+	/* consumes and replaces a fgl_expr_c - so we don't need to dec or inc_counter */
+} 
+| INTERVAL OPEN_BRACKET interval_func_params CLOSE_BRACKET op_extend_i {
+	char buff[256];
+	sprintf(buff,"acli_interval(%s,%s);",$<str>3,$<str>5);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET CHAR_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(%s,%s);",$<str>3,$<str>5);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s\",%s);",$<str>3,$<str>5);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET NUMBER_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s\",%s);",$<str>3,$<str>5);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+
+| DATETIME OPEN_BRACKET INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s:%s\",%s);",$<str>3,$<str>5,$<str>7);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s:%s\",%s);",$<str>3,$<str>5,$<str>7);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+
+| DATETIME OPEN_BRACKET INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s:%s:%s\",%s);",$<str>3,$<str>5,$<str>7,$<str>9);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s:%s:%s\",%s);",$<str>3,$<str>5,$<str>7,$<str>9);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+
+
+| DATETIME OPEN_BRACKET INT_VALUE INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s %s\",%s);",$<str>3,$<str>4,$<str>6);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s %s:%s\",%s);",$<str>3,$<str>4,$<str>6,$<str>8);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+| DATETIME OPEN_BRACKET INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s %s:%s%s\",%s);",$<str>3,$<str>4,$<str>6,$<str>8,$<str>10);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+| DATETIME OPEN_BRACKET INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s %s:%s%s\",%s);",$<str>3,$<str>4,$<str>6,$<str>8,$<str>10);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+
+
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s\",%s);",$<str>3,$<str>5,$<str>7);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s-%s\",%s);",$<str>3,$<str>5,$<str>7,$<str>9);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE  INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s %s\",%s);",$<str>3,$<str>5,$<str>6,$<str>8);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s-%s %s\",%s);",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s-%s %s:%s\",%s);",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10,$<str>12);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s-%s %s:%s:%s\",%s);",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10,$<str>12,$<str>14);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s-%s %s:%s:%s\",%s);",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10,$<str>12,$<str>14);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s %s:%s\",%s);",$<str>3,$<str>5,$<str>6,$<str>8,$<str>10);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s %s:%s:%s\",%s);",$<str>3,$<str>5,$<str>6,$<str>8,$<str>10,$<str>12);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s-%s %s:%s:%s\",%s);",$<str>3,$<str>5,$<str>6,$<str>8,$<str>10,$<str>12);
+	$<ptr>$=A4GL_new_expr(buff);
+	inc_counter();
+}
+
+
+
+| FGL_SIZEOF OPEN_BRACKET variable CLOSE_BRACKET {
+	char buff[256];
+	sprintf(buff,"A4GL_push_long(sizeof(%s));",$<str>3);
+        $<ptr>$=A4GL_new_expr(buff);
+        inc_counter();
+}
+| FGL_ADDRESSOF OPEN_BRACKET variable CLOSE_BRACKET {
+	char buff[256];
+	sprintf(buff,"A4GL_push_long(&(%s));",$<str>3);
+        $<ptr>$=A4GL_new_expr(buff);
+        inc_counter();
+}
+| FGL_ISDYNARR_ALLOCATED OPEN_BRACKET variable CLOSE_BRACKET {
+	char buff[256];
+	sprintf(buff,"A4GL_isdynarr_allocated(&%s);",$<str>3);
+        $<ptr>$=A4GL_new_expr(buff);
+        inc_counter();
+}
+| FGL_DYNARR_EXTENTSIZE OPEN_BRACKET variable KW_COMMA INT_VALUE CLOSE_BRACKET { 
+        char buff[256];
+        sprintf(buff,"A4GL_dynarr_extent(&%s,%d);",$<str>3,atoi($<str>5));
+        $<ptr>$=A4GL_new_expr(buff);
+        inc_counter();
+}
+;
+
+
+
+op_extend_d: {strcpy($<str>$,"-1");} | dtime_val TO dtime_val
+	{sprintf($<str>$,"%d",atoi($<str>1)*16+atoi($<str>3));}
+;
+
+op_extend_i: interval_qual
+;
+
+function_call_expr:
+	function_callb
+	| GET_FLDBUF OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET {
+		if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
+   			a4gl_yyerror("get_fldbuf can only be used in an input or construct");
+   			YYERROR;
+		}
+		sprintf($<str>$,"{int _retvars;\n_retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,0,0);\nif (_retvars != 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n",get_sio_id("ALL"),
+		field_name_list_as_char($<field_list>3), lastlineno,infilename); 
+		$<ptr>$=A4GL_new_expr($<str>$);	
+		inc_counter();
+
+	} 
+	| FIELDTOWIDGET OPEN_BRACKET field_name_as_struct CLOSE_BRACKET {sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldnametoid(\"\",%s));",field_name_as_char($<field_entry>3)); $<ptr>$=A4GL_new_expr($<str>$); }
+	| ID_TO_INT OPEN_BRACKET field_name_as_struct CLOSE_BRACKET {
+		sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldnametoid(\"\",%s));",field_name_as_char($<field_entry>3)); $<ptr>$=A4GL_new_expr($<str>$); 
+		addmap("Get Field",field_name_as_char($<field_entry>3),curr_func,yylineno,infilename);
+		inc_counter();
+	}
+
+	| INFIELD OPEN_BRACKET field_name_list_or_char_as_struct CLOSE_BRACKET {
+		/* Informix allows this outside of a input/construct... */
+		if (isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
+			sprintf($<str>$,"A4GL_push_int(A4GL_fgl_infield(_sio_%d,_inp_io_type,%s,0,0));",get_sio_id("ALL"),field_name_list_as_char($<field_list>3)); 
+		} else {
+			sprintf($<str>$,"A4GL_push_int(A4GL_fgl_infield(0,0,%s,0,0));",field_name_list_as_char($<field_list>3)); 
+		}
+		$<ptr>$=A4GL_new_expr($<str>$);
+		inc_counter();
+	}
+	| FIELD_TOUCHED OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET 
+		{ 
+			if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
+   			a4gl_yyerror("field_touched can only be used in an input or construct");
+   			YYERROR;
+		}
+		sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldtouched(_sio_%d,_inp_io_type,%s,0,0));",get_sio_id("ALL"),field_name_list_as_char($<field_list>3)); 
+		$<ptr>$=A4GL_new_expr($<str>$);
+		inc_counter();
+	}
+	| NOT_FIELD_TOUCHED OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET 
+		{ 
+		if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
+   			a4gl_yyerror("field_touched can only be used in an input or construct");
+   			YYERROR;
+		}
+		sprintf($<str>$,"A4GL_push_int(!A4GL_fgl_fieldtouched(_sio_%d,_inp_io_type,%s,0,0));",get_sio_id("ALL"),field_name_list_as_char($<field_list>3)); 
+		$<ptr>$=A4GL_new_expr($<str>$);
+		inc_counter();
+	}
+	| builtin_funcs
+	| function_call_expr2
+;
+
+builtin_expr : curr_v_clause {
+		inc_counter();
+               sprintf($<str>$,"A4GL_push_current(%s);",$<str>1);
+		$<ptr>$=A4GL_new_expr($<str>$);
+          	}
+       | KW_DATE  { inc_counter(); strcpy($<str>$,"A4GL_push_date_expr();");
+		$<ptr>$=A4GL_new_expr($<str>$);
+	}
+       | TIME  { inc_counter(); strcpy($<str>$,"A4GL_push_time_expr();");
+		$<ptr>$=A4GL_new_expr($<str>$);
+	}
+
+;
+
+builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET 
+	{ 
+		$<ptr>$=A4GL_append_expr($<ptr>3,"A4GL_upshift_stk();");
+	}
+	|               DOWNSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
+	{ 
+		$<ptr>$=A4GL_append_expr($<ptr>3,"A4GL_downshift_stk();");
+	}
+	| ASCII fgl_expr_c  { 
+		$<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_push_ascii();");
+	}
+	| EXTEND extend_parameters { 
+		$<ptr>$=A4GL_append_expr($<ptr>2,"aclfgli_extend();"); } 
+	;
+
+
+
+pdf_expr : fgl_expr_c KW_POINTS  {
+		$<ptr>$=A4GL_append_expr($<ptr>1,"A4GL_push_double(-1);A4GL_pushop(OP_MULT);");
+	}
+		|  fgl_expr_c  MM     {
+		$<ptr>$=A4GL_append_expr($<ptr>1,"A4GL_push_double(-28.3465);A4GL_pushop(OP_MULT);");
+	}
+		|  fgl_expr_c INCHES     {
+		$<ptr>$=A4GL_append_expr($<ptr>1,"A4GL_push_double(-72.0);A4GL_pushop(OP_MULT);");
+	}
+	;
+
+
+
+
+
+interval_func_params :
+	CHAR_VALUE {
+		strcpy($<str>$,$<str>1);
+	}
+	|  numeric_time_interval {
+		strcpy($<str>$,$<str>1);
+	}
+	;
+
+numeric_time_interval:
+		MINUS numeric_time_interval {sprintf($<str>$,"-%s",$<str>2);}
+		| numeric_time_unit_big	{sprintf($<str>$,"\"%s\"",$<str>1);}
+		| numeric_time_unit_small	{sprintf($<str>$,"\"%s\"",$<str>1);}
+	;
+
+numeric_time_unit_small : 
+		INT_VALUE INT_VALUE 			{sprintf($<str>$,"%s %s",$<str>1,$<str>2);}		/* DD HH */
+		| INT_VALUE INT_VALUE COLON INT_VALUE 	{sprintf($<str>$,"%s %s:%s",$<str>1,$<str>2,$<str>4);}		/* DD HH:MM */
+		| INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE 	 {sprintf($<str>$,"%s %s:%s:%s",$<str>1,$<str>2,$<str>4,$<str>6);} /* DD HH:MM:SS*/
+		| INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE	{sprintf($<str>$,"%s %s:%s:%s",$<str>1,$<str>2,$<str>4,$<str>6);} /* DD HH MM SS.FFFF*/
+
+		| INT_VALUE COLON INT_VALUE 			{sprintf($<str>$,"%s:%s",$<str>1,$<str>3);} /* HH MM */
+		| INT_VALUE COLON INT_VALUE COLON INT_VALUE 	{sprintf($<str>$,"%s:%s:%s",$<str>1,$<str>3,$<str>5);} /* HH MM SS*/
+		| INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE	{sprintf($<str>$,"%s:%s:%s",$<str>1,$<str>3,$<str>5);} /* HH MM SS.FFFF*/
+
+		| INT_VALUE COLON NUMBER_VALUE			{sprintf($<str>$,"%s:%s",$<str>1,$<str>3);}	/* MM SS.FFFF*/
+		| NUMBER_VALUE					{sprintf($<str>$,"%s",$<str>1);}		/* SS.FFFF*/
+		| DOT INT_VALUE {sprintf($<str>$,"0.%s",$<str>2);}
+	;
+
+numeric_time_unit_big:
+		INT_VALUE
+		| INT_VALUE MINUS INT_VALUE 
+			{sprintf($<str>$,"%s-%s",$<str>1,$<str>3);}
+	;
+
+
+field_name_list_as_struct : field_name_as_struct {
+				$<field_list>$=new_field_list();
+				$<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
+			} |
+		field_name_list_as_struct KW_COMMA field_name_as_struct {
+				$<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
+		}
+	;
+
+field_name_list_or_char_as_struct : field_name_or_char_as_struct {
+				$<field_list>$=new_field_list();
+				$<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
+			} |
+		field_name_list_or_char_as_struct KW_COMMA field_name_or_char_as_struct {
+				$<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
+		}
+	;
+
+
+
+curr_v_clause : KW_CURRENT  cur_v_part 
+{strcpy($<str>$,$<str>2);}
+;
+
+
+cur_v_part: {strcpy($<str>$,"1,10");}
+| s_curr_v TO s_curr_v
+{sprintf($<str>$," %s ,%s",$<str>1,$<str>3);}
+;
+
+s_curr_v: YEAR {strcpy($<str>$,"1");} | MONTH  {strcpy($<str>$,"2");}| DAY  {strcpy($<str>$,"3");}| HOUR  {strcpy($<str>$,"4");}| MINUTE  {strcpy($<str>$,"5");}| SECOND  {strcpy($<str>$,"6");}| 
+FRACTION {
+sprintf($<str>$,"%d",6+2);
+}
+| FRACTION OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+sprintf($<str>$,"%d",atoi($<str>3)+6);
+}
+;
+
+
+
+opt_cw_func_call_args : opt_func_call_args {$<ptr>$=$<ptr>1;} |
+	OPEN_SQUARE opt_func_call_args CLOSE_SQUARE { $<ptr>$=$<ptr>2;}
+;
+
+/* ============================ expr.rule =========================== */

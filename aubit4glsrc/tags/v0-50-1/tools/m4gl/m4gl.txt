@@ -1,0 +1,33 @@
+From infmx!obelix.informix.com!johnl@uunet.UU.NET Mon Oct  5 06:30:07 1992
+Date: Mon, 5 Oct 92 11:08:18 GMT
+From: johnl@obelix.informix.com (Jonathan Leffler)
+Message-Id: <9210051108.AA07288@obelix.informix.com>
+To: informix-list@rmy.emory.edu
+Subject: Re:  Advice wanted: m4 and I4GL?
+Cc: berner@proinf.dk
+X-Informix-List-Id: <list.1505>
+
+>From: uunet!diku.dk!berner (Niels Berner)
+>Subject: Advice wanted: m4 and I4GL?
+>Date: 2 Oct 92 11:22:45 GMT
+>X-Informix-List-Id: <news.1909>
+>
+>Hey Netlanders.
+>
+>If they are any of you outthere, who have any experience with m4 in
+>conjunction with informix, I would be happy to hear from you.
+>
+>Any kind of advice, hints og pointers will help.
+>
+>Please email to: berner@proinf.dk
+>Thanks in advance.
+>Niels Berner.
+
+I've never used this in anger, but it was designed to use m4 to provide
+an include and define mechanism.  The m4 code is inscrutable (incomprehensible)
+but works.   The dnl's stop you get extraneous space in the output.
+The shell archive includes a manual page -- miracles sometimes occur!
+
+Yours,
+Jonathan Leffler (johnl@obelix.informix.com) #include <disclaimer.h>
+

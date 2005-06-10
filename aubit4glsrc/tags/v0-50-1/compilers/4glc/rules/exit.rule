@@ -1,0 +1,56 @@
+/*
+=====================================================================
+                        Source: exit.rule
+=====================================================================
+*/
+
+
+ext_cmd : EXIT_WHILE
+        { if (in_command("WHILE")) { exit_loop("WHILE"); } else { YYERROR;} }
+	| EXIT_INPUT
+        { if (in_command("INPUT")) { exit_loop("INPUT"); } else { YYERROR;} }
+	| EXIT_FOREACH
+        { if (in_command("FOREACH")) { exit_loop("FOREACH"); } else { YYERROR;} }
+	| EXIT_FOR
+        { if (in_command("FOR")) { exit_loop("FOR"); } else { YYERROR;} }
+	| EXIT_CONSTRUCT
+        { if (in_command("CONSTRUCT")) { exit_loop("CONSTRUCT"); } else { YYERROR;} }
+	| EXIT_DISPLAY
+        { if (in_command("DISPLAY")) { exit_loop("DISPLAY"); } else { YYERROR;} }
+	| EXIT_MENU  {
+	if (in_command("MENU")) {
+		exit_loop("MENU");
+		/* A4GL_lex_printc("cmd_no=-3;continue;\n"); */
+	} 
+              else YYERROR;}
+	| EXIT_CASE
+        { if (in_command("CASE")) { exit_loop("CASE"); } else { YYERROR;} }
+	| EXIT_PROMPT
+        { if (in_command("PROMPT")) { exit_loop("PROMPT"); } else { YYERROR;} }
+;
+
+continue_cmd : CONTINUE_WHILE 
+        { if (in_command("WHILE")) { continue_loop("WHILE");  } else { YYERROR;} }
+	| CONTINUE_INPUT
+        { if (in_command("INPUT")) { continue_loop("INPUT"); } else { YYERROR;} }
+	| CONTINUE_FOREACH
+        { if (in_command("FOREACH")) { continue_loop("FOREACH");} else { YYERROR;} }
+	| CONTINUE_FOR 
+        { if (in_command("FOR")) { continue_loop("FOR"); } else { YYERROR;} }
+	| CONTINUE_CONSTRUCT
+        { if (in_command("CONSTRUCT")) { continue_loop("CONSTRUCT"); } else { YYERROR;} }
+	| CONTINUE_DISPLAY
+        { if (in_command("DISPLAY")) { continue_loop("DISPLAY"); } else { YYERROR;} }
+	| CONTINUE_MENU
+        { if (in_command("MENU")) {  continue_loop("MENU");  } else { YYERROR;} }
+
+/* There is no continue case... */
+	/* | CONTINUE_CASE */
+        /* { if (in_command("CASE")) { continue_loop("CASE");  } else { YYERROR;} } */
+	| CONTINUE_PROMPT
+        { if (in_command("PROMPT")) { continue_loop("PROMPT"); } else { YYERROR;} }
+;
+
+
+/* =============================== exit.rule ========================= */
+

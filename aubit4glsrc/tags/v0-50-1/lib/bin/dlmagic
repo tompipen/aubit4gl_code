@@ -1,0 +1,568 @@
+#!/bin/sh
+
+##########################################################################
+#
+#This script is used to create API C source file for Aubit libraraies
+#to be loaded at run-time using dlopen() function call.
+#
+#
+#
+#
+#
+#
+##########################################################################
+
+#Include both headers:
+#In file included from console.c:58:
+#/opt/aubit/aubit4glsrc/incl/a4gl_API_ui_lib.h:38: warning: redundant redeclaration of `A4GLUI_initlib' in same scope
+#/opt/aubit/aubit4glsrc/incl/a4gl_API_ui.h:38: warning: previous declaration of `A4GLUI_initlib'
+
+
+
+#Get settings
+if [ "$AUBITDIR" != "" ]; then
+	. $AUBITDIR/etc/aubitrc
+else
+	echo "WARNING: AUBITDIR not set"
+	echo "ERROR: cannot read settings. STOP."
+	exit 3
+fi
+
+if [ $# -lt 1 -o "$1" = "--help" ]; then
+	echo "Creates run-time loadable library API definition source code "
+	echo " "
+	echo "Usage:   dlmagic <SpecFile> [<APIName>] [<EnvVar>] > <APIname>.c"
+	echo "  SpecFile - contains specifications for the API"
+	echo "  APIName - API name (will be overwritten by LIBRARY tag if declared"
+	echo "      in SpecFile)"
+	echo "  EnvVar - Environment variable to read (will be overwritten by"
+	echo "      VARIABLE tag if declared in the SpecFile)"
+	echo " "
+	echo "Example: "
+	echo "  dlmagic sqlapi.spec SQL SQLTYPE > API_SQL.c "
+	echo " "
+	echo "SpecFile file format:"
+	echo "  func-name param-type param-name ... -> returns"
+	echo "  line beginning with * is a comment"
+	echo "  line beginning with # or / is included in the output Eg #define //comment etc"
+	echo " "
+	echo "Example input File :"
+	echo "	LIBRARY TEST"
+	echo "	VARIABLE VTEST"
+	echo "	* This is a comment - Note - there are no spaces for void* int* etc."
+	echo "	pdf_rep_print void* rep,int a,int s,int right_margin -> int*"
+	echo "	disp_fields int n int attr ... -> int"
+	echo " "
+
+	exit 0
+fi
+
+specfile=$1
+VERBOSE=0
+
+if [ "$2" = "-h" ] ; then
+	#make header only; use api_prefix for function names
+	MAKE_HEADER=1 		#use_prefix=0 (printf rtype " " api_prefix fname)
+	#for instance, in case of API_ui.spec, this will generate a4gl_API_ui.h
+else
+	if [ "$2" = "-H" ] ; then
+		#make header only; use lib_prefix for function names
+		MAKE_HEADER=2 	#use_prefix=1 (printf rtype " " lib_prefix fname)
+		#for instance, in case of API_ui.spec, this will generate a4gl_API_ui_lib.h
+	else
+		lib=$2
+		env=$3
+	fi
+fi
+
+lib_prefix=
+api_prefix=
+
+if test "$lib" = ""; then
+	#Potentially already passed on command line 
+	if grep "^LIBRARY " $specfile > /dev/null ; then
+		lib=`$AWK '/^LIBRARY /{print $2}' $specfile`
+	fi
+fi
+if test "$env" = ""; then
+	#Potentially already passed on command line
+	if grep "^VARIABLE " $specfile > /dev/null ; then
+		env=`$AWK '/^VARIABLE /{print $2}' $specfile`
+	fi
+fi
+
+#if you want prefix to be added to API function names
+if grep "^API_PREFIX " $specfile > /dev/null ; then
+	api_prefix=`$AWK '/^API_PREFIX /{print $2}' $specfile`
+fi
+
+#if you want prefix to be added to LIB functions calls
+if grep "^LIB_PREFIX " $specfile > /dev/null ; then
+	lib_prefix=`$AWK '/^LIB_PREFIX /{print $2}' $specfile`
+fi
+
+#name of the headers file to be refgerenced with #include
+if grep "^HEADER_FILE " $specfile > /dev/null ; then
+	HEADER_FILE=`$AWK '/^HEADER_FILE /{print $2}' $specfile`
+fi
+
+
+#echo "/* Library=$lib env=$env */"
+
+if [ "$MAKE_HEADER" = "1" -o "$MAKE_HEADER" = "2" ]; then
+	################################################################
+	#					Output a header file (.h)
+	################################################################
+	if  [ $MAKE_HEADER = "2" ] ; then
+		use_prefix=1
+		if test "$lib_prefix" = ""; then
+			if test "$VERBOSE" = "1" ; then
+				echo "WARNING: LIB_PREFIX not set in .spec file (-H)" > /dev/stderr
+			fi
+			#exit 4
+		fi
+		if test "$VERBOSE" = "1" ; then 
+			echo "dlmagic: making header using LIB_PREFIX=$lib_prefix (-H)" > /dev/stderr
+		fi
+	else
+		use_prefix=0
+		if test "$api_prefix" = ""; then
+			if test "$VERBOSE" = "1" ; then
+				echo "WARNING: API_PREFIX not set in .spec file (-h)" > /dev/stderr
+			fi
+			#exit 4
+		fi
+		if test "$VERBOSE" = "1" ; then 
+			echo "dlmagic: making header using API_PREFIX=$api_prefix (-h)" > /dev/stderr
+		fi
+		
+	fi
+
+	$AWK -v use_prefix=$use_prefix -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" '
+	BEGIN {
+		FS="[ \t,]+"
+		print ""
+		print "/*"
+		print " * lib=" lib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
+		print " * @file"
+		print " * Function prototypes"
+		print " *"
+		print " * This file was created from .spec file of same name, using dlmagic script"
+		print " * - if you need to edit it, edit .spec file instad, and use [make filename.h]"
+		print " * to re-create it."
+		print " *"
+		print " * @todo See if the functions are static"
+		print " * or to be externally seen"
+		print " */"
+		print ""
+		print "/*******************************************************************"
+		print "* (c) 1997-2005 Aubit Computing Ltd."
+		print "*"
+		print "*"
+		print "********************************************************************/"
+		print ""
+		print "/*"
+		print "====================================================================="
+		print "                    Functions prototypes"
+		print "====================================================================="
+		print "*/"
+		print ""
+		print "#ifdef DEBUG"
+		print "#define DEBUG_SPEC"
+		print "#endif"
+		if (use_prefix==0) {
+			print "#ifndef __" lib "_H__"
+			print "#define __" lib "_H__"
+		} else {
+			print "#ifndef __" lib "_LIB_H__"
+			print "#define __" lib "_LIB_H__"
+		}
+		print "#ifdef __cplusplus"
+		print "extern \"C\""
+		print "{"
+		print "#endif"
+		print ""
+		if (use_prefix==0) {
+			print "//moved to headers by Andrej - remove all protos from plug-ins:"
+			print "int A4GL" lib "_initlib (void);"
+		}
+		#if (use_prefix==0) {
+		#	print "int " api_prefix "_initlib (void);"
+		#} else {
+		#	print "int " lib_prefix "_initlib (void);"
+		#}
+		
+	}
+	/^LIBRARY / {next}
+	/^VARIABLE / {next}
+	/^HEADER_FILE / {next}
+	/^API_PREFIX / {next}
+	/^LIB_PREFIX / {next}
+	/^MAP / { map[$2]=$3; next}
+	/^#/ {print
+		next
+	}
+	/^\// {print
+		next
+	}
+    /^extern/ {print
+		next
+	}
+	/^\/\*/ {print
+		next
+	}
+	/^ \*/ {print
+		next
+	}
+	/^\*\// {print
+		next
+	}
+	/^$/ {next}
+	/^\*/ {next	}
+	/^[ 	]*$/ {next}
+	{
+	fname=$1
+	if (use_prefix) {
+		print "#ifdef LIBTOOL_PREFIX"
+		print "#define " lib_prefix fname " PRELOADED_LTX_ ## " lib_prefix fname
+		print "#endif"
+	}
+	rtype="void"
+
+	c=0
+	for (a=2;a<=NF;a++) 
+	{
+		if ($a==" "||$a=="\t"||$a==",") continue;
+		param_type[c]=$a
+		if (param_type[c]=="->")
+		{
+			param_type[c]=""
+			a++
+			rtype=$a
+			break
+		}
+
+		if (param_type[c]=="...")
+		{
+			param_name[c]=""
+			a++
+			c++
+			break
+		}
+
+
+		a++
+		param_name[c]=$a
+		c++;
+	}
+
+    if (c==0)
+    {
+		param_name[c]=""
+		param_type[c]="void"
+        c++
+    }
+
+	if (use_prefix==0) {
+		printf rtype " " api_prefix fname "("
+	} else {
+		printf rtype " " lib_prefix fname "("
+	}
+	va_start=""
+	args=""
+	for (b=0;b<c;b++)
+	{
+		printf("%s %s",param_type[b],param_name[b]);
+		
+		if (param_type[b]=="...")
+		{
+			va_start=last;
+			args=args ",&ap"
+		}
+		else
+		{
+			args=args "," param_name[b]
+		}
+
+		last=param_name[b]
+		
+		if (b<c-1)
+		{
+			printf(",");
+		}
+	}
+	args=substr(args,2)
+	print ");"
+	print ""
+	}
+	' < $specfile
+	echo "#ifdef __cplusplus"
+	echo "}"
+	echo "#endif"
+	echo "#endif  /* #ifdef __($lib)_H__  */"
+	echo ""
+
+    exit 0
+fi # "$MAKE_HEADER" = "1" -o "$MAKE_HEADER" = "2"
+
+############################################################################
+#						Output API .c code
+############################################################################
+
+	if test "$VERBOSE" = "1" ; then 
+		echo "dlmagic: making .c API code..." > /dev/stderr
+	fi
+
+
+$AWK -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" '
+
+function ring(rtype) {
+	if (rtype=="char*") { print "A4GL_debug(\"Returning (%s)\",A4GL_null_as_null(rval));"; return;}
+	if (rtype=="void*") { print "A4GL_debug(\"Returning (%p)\",rval);"; return;}
+	if (rtype=="int") { print "A4GL_debug(\"Returning '%d'\",rval);"; return;}
+	print "A4GL_debug(\"Returning Unknown '%p'\",rval);"
+	}
+	
+	function ping(rtype,name) {
+	if (rtype=="char*")  return "(%s))"
+	if (rtype=="char")  return "(%c)"
+	if (rtype=="void*")  return "%p"
+	if (rtype=="va_list*")  return "%p"
+	if (rtype=="int") return "%d"
+	return "%p" 
+	#print "Unknown type : " rtype > "dlmagic.log"
+}
+
+function pind(rtype,rname) {
+	
+	if (rtype=="char*")  return sprintf("A4GL_null_as_null(%s)",rname);
+	return rname;
+	#print "Unknown type : " rtype > "dlmagic.log"
+}
+
+
+
+BEGIN {
+FS="[ 	,]+"
+print "/*"
+print " * lib=" lib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
+print " * @file"
+print " * File definition"
+print " *"
+print " * This file was created from .spec file of same name, using dlmagic script"
+print " * - if you need to edit it, edit .spec file instad, and use [make filename.c]"
+print " * to re-create it."
+print " *"
+print " * @todo Add Doxygen comments to file"
+print " * @todo Take the prototypes here declared. See if the functions are static"
+print " * or to be externally seen"
+print " * @todo Doxygen comments to add to functions"
+print " */"
+print ""
+print "/*******************************************************************"
+print "* (c) 1997-2005 Aubit Computing Ltd."
+print "*"
+print "*"
+print "********************************************************************/"
+print ""
+print ""
+if (HEADER_FILE=="") print "#include \"a4gl_libaubit4gl_int.h\""
+else print "#include " HEADER_FILE 
+print ""
+print "#ifdef DEBUG"
+print "#ifndef DEBUG_SPEC"
+print "#define DEBUG_SPEC"
+print "#endif"
+print "#endif"
+print "static void *libptr=0;"
+#print "static int (*func)();"
+#print "static double (*func_d)();"
+#print "void *A4GL_find_func(void *p,char *s);"
+#Moved to headers by Andrej (see above):
+#print "int A4GL" lib "_initlib (void);"
+print "void A4GL" lib "_clrlibptr (void);"
+print "int dlclose (void *__handle);"
+print ""
+print "/**"
+print " * Library init function."
+print " *"
+print " * @todo : explain ussage and parameters."
+print " * @return ."
+print " */"
+print ""
+print "void A4GL" lib "_clrlibptr (void) {"
+print "    if (libptr) {dlclose(libptr);}"
+print "    libptr=0;"
+print "}"
+print ""
+print "int A4GL" lib "_initlib (void) {"
+print "typedef int (*x_func)(void);"
+print "static x_func func;";
+print "   libptr=(void *)A4GL_dl_openlibrary(\"" lib "\",acl_getenv(\"" env "\"));"
+print "   if (libptr==0) {"
+print "      A4GL_exitwith(\"Unable to open " lib " library...\");"
+print "      return 0;"
+print "   }"
+print "   func=(x_func)A4GL_find_func_allow_missing(libptr,\"" lib_prefix "A4GL" lib "_initlib\");"
+print ""
+print "   if (func)"
+print "      return func();"
+print "   else"
+print "      return 1;"
+print "}"
+print ""
+print ""
+}
+/^LIBRARY / {next}
+/^VARIABLE / {next}
+/^HEADER_FILE / {next}
+/^API_PREFIX / {next}
+/^LIB_PREFIX / {next}
+/MAP / { map[$2]=$3; next}
+/^#/ {print
+	next
+}
+/^\// {print
+	next
+}
+/^extern/ {print
+	next
+}
+/^ \*/ {print
+	next
+}
+/^\*\// {print
+	next
+}
+/^\*/ {next}
+/^$/ {next}
+
+/^[ 	]*$/ {next}
+{
+fname=$1
+call_fname=$1
+rtype="void"
+
+c=0
+for (a=2;a<=NF;a++) {
+
+param_type[c]=$a
+if (param_type[c]=="->") {
+	param_type[c]=""
+	a++
+	rtype=$a
+	break
+}
+
+if (param_type[c]=="...") {
+	param_name[c]=""
+    call_fname="internal_"fname
+	a++
+	c++
+	break
+}
+
+
+a++
+param_name[c]=$a
+c++;
+}
+
+
+#THIS SHOULD BE PART OF .spec file
+#print ""
+#print "/**"
+#print " * API call function for xyz ."
+#print " *"
+#print " * @todo : explain ussage and parameters."
+#print " * @param xyz Explain me..."
+#print " * @return xyz Explain me..."
+#print " */"
+#print ""
+
+printf rtype " " api_prefix fname "("
+va_start=""
+args=""
+dargs=""
+debug_args="Call to " rtype " " api_prefix fname "("
+
+for (b=0;b<c;b++) {
+	printf("%s %s",param_type[b],param_name[b]);
+	if (param_type[b]=="...") {
+		va_start=last;
+		args=args ",&ap"
+		dargs=dargs ",&ap"
+		if (b) debug_args=debug_args "," 
+		debug_args=debug_args ping("va_list*",param_name[b]);
+	} else {
+		if (b) debug_args=debug_args "," 
+		debug_args=debug_args ping(param_type[b],param_name[b])
+		args=args "," param_name[b]
+		dargs=dargs "," pind(param_type[b],param_name[b])
+	}
+	last=param_name[b]
+	if (b<c-1) {
+		printf(",");
+	}
+}
+args=substr(args,2)
+dargs=substr(dargs,2)
+print ") {"
+if (va_start!="") {print "va_list ap;"}
+if (rtype!="void") {
+	print rtype " rval;"
+}
+
+funccnt++;
+printf("typedef %s(*x_func_%d)(",rtype,funccnt)
+
+for (b=0;b<c;b++) {
+	xxtype=param_type[b]
+	gsub("[*]"," * ",xxtype)
+	gsub("  "," ",xxtype)
+	if (b) printf(",")
+	printf("%s ",xxtype) 
+}
+
+
+if (c==0) {
+	printf("void");
+}
+print ");"
+
+printf("static x_func_%s func_%s;\n",funccnt,funccnt)
+
+
+print "#ifdef DEBUG_SPEC"
+debug_args=debug_args ")"
+if (args!="")
+print "A4GL_debug(\"" debug_args "\\n\"," dargs ");"
+else
+print "A4GL_debug(\"" debug_args "\\n\");"
+print "#endif"
+print "   if (libptr==0) A4GL" lib "_initlib();"
+if (map[call_fname]) cfname=map[call_fname];
+else cfname=call_fname;
+print "   func_" funccnt "=(x_func_" funccnt ")A4GL_find_func(libptr,\"" lib_prefix cfname "\");"
+if (va_start!="") {
+	print "   va_start(ap," va_start ");"
+}
+
+if (rtype=="void")
+	print "   func_" funccnt "(" args ");"
+else {
+	print "   rval=(" rtype ")func_" funccnt " (" args ");"
+	print "#ifdef DEBUG_SPEC"
+	ring(rtype)
+	print "#endif"
+	print "return rval;"
+}
+
+print "}"
+print ""
+
+}' < $specfile
+
+
+exit
+

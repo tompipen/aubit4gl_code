@@ -1,0 +1,85 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.19 2005-03-25 12:48:31 afalout Exp $
+#
+
+ROOT        =../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                    Options
+## ==================================================================
+
+C_LOCAL_IFLAGS  =-I${ROOT}/lib/libincl -I../fcompile
+CFLAGS			+=${C_LOCAL_IFLAGS}
+EXE_CFLAGS		+=-L${ROOT}/lib ${C_LOCAL_IFLAGS} ${C_IFLAGS}
+LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
+CMODS           =mkmess.c
+OBJS			=${CMODS:.c=.o}
+
+ALL             =${ROOT}/bin/amkmessage ${ROOT}/bin/unmkmessage
+#Obsolete: ${ROOT}/bin/mkmess
+
+## ==================================================================
+##                    Targets
+## ==================================================================
+
+all: ${ALL}
+	@echo "Default targets (${ALL}) successfuly compiled."
+
+#Obsolete:
+${ROOT}/bin/mkmess: ${OBJS}
+	${LD_EXE} $^ -o $@ ${AUBIT_LIB} -L${ROOT}/lib
+
+${ROOT}/bin/amkmessage: amkmessage.o
+	${LD_EXE} $^ -o $@ ${AUBIT_LIB} -L${ROOT}/lib
+
+${ROOT}/bin/unmkmessage: unmkmessage.o
+	${LD_EXE} $^ -o $@ ${AUBIT_LIB} -L${ROOT}/lib
+
+
+amkmessage.o: amkmessage.c
+	${CC} ${CFLAGS} -DPORTABLE -c $^ -o $@
+
+## ==================================================================
+##                    Clean
+## ==================================================================
+
+clean:
+	${RM} *.o mkmess.err mkmess mkmess.a *.bak .*.bak *.exe
+	rm -rf .deps
+	rm -rf .libs
+
+splint: lclint
+lclint: $(CMODS)
+	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
+	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
+	@echo "see ${LCLINTLOG} for results"
+
+# ========================== EOF ================================

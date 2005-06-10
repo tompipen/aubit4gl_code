@@ -1,0 +1,23 @@
+#  "@(#)$Id: bootstrap,v 1.1 2002-01-29 11:07:53 afalout Exp $"
+#
+# Steps required to AutoConfigure SQLCMD
+#
+# Assumes MAKE is cognizant of RCS files.
+
+CONFIG_FILES1="acconfig.h configure.in Makefile.in"
+CONFIG_FILES2="actimer.m4 acdevstd.m4 acinformix.m4"
+CONFIG_FILES3="install-sh acsetup.sh"
+
+CONFIG_FILES="$CONFIG_FILES1 $CONFIG_FILES2 $CONFIG_FILES3"
+${MAKE:-make} -s -f /dev/null $CONFIG_FILES
+
+rm -f aclocal.m4
+
+#aclocal -I .
+#autoheader
+#autoconf
+
+aclocal --output=config/aclocal.m4 -I config
+autoheader -l config
+autoconf -l config  -o configure
+
