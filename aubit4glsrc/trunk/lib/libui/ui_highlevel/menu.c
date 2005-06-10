@@ -9,7 +9,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: menu.c,v 1.20 2005-06-09 15:15:04 mikeaubury Exp $";
+		"$Id: menu.c,v 1.21 2005-06-10 18:07:09 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -40,9 +40,9 @@ UILIB_A4GL_disp_h_menu (void *menuv)
 
   /* Is the UI client going to do most of the work for us ? */
   if (A4GL_LL_menu_type()==1) {
-	A4GL_LL_disp_h_menu(menu->num_opts);
 	ACL_Menu_Opts *mo;
 	int a;
+	A4GL_LL_disp_h_menu(menu->num_opts);
 	mo=menu->first;
 	// Seems so...
 	for (a=0;a<menu->num_opts;a++) {
