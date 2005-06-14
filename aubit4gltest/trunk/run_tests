@@ -1529,7 +1529,7 @@ if test "$CLEAN" = "1" -a "$RUN_ONE" = ""; then
 		echo "Cleaning all tests..."
 	fi
 
-	EXEC="$FIND . $CLEAN_FIND_FILES -exec rm {} \;"
+	EXEC="$FIND . $CLEAN_FIND_FILES -exec rm -f {} \;"
 	eval $EXEC
 
 	if test "$CLEAN_ALL" = "1"; then
@@ -1542,7 +1542,7 @@ if test "$CLEAN" = "1" -a "$RUN_ONE" = ""; then
 		#editor's backup files
 		EXEC='	$FIND . "(" -name "*~" -o -name "*.bak"
 		-o -name ".#*"  -o -name ".*~"
-		")" -exec rm  {} \;'
+		")" -exec rm  -f {} \;'
 		
 		eval $EXEC
 	fi
@@ -1895,7 +1895,7 @@ do
 			echo "Cleaning $CURR_DIR/$TEST_NO ..."
 		fi
 
-		EXEC="$FIND $CURR_DIR/$TEST_NO $CLEAN_FIND_FILES -exec rm  {} \;"
+		EXEC="$FIND $CURR_DIR/$TEST_NO $CLEAN_FIND_FILES -exec rm  -f {} \;"
 		eval $EXEC
 
 		if test "$VERBOSE" = "1"; then 

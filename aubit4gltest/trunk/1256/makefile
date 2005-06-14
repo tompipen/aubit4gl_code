@@ -5,6 +5,7 @@ include ${MAKEFILE_COMMON}
 FORMS=	${PER:.per=${A4GL_FORMEXT}}
 MODULES=${FGL:.4gl=${OBJ_EXT}}
 HELP=	${MSG:.msg=${HLP_EXT}}
+EXTRA_4GLC=--sqltype=FILESCHEMA
 ifneq "${A4GL_KEYFILE}" ""
 	export A4GL_KEYFILE A4GL_KEYDELAY
 endif
@@ -23,7 +24,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Tests a bug using consecutive constructs not blanking the field properly"
+desc: ; @echo "This is not a test but a Testing template. Please describe here."
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"

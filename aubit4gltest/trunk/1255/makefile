@@ -16,14 +16,14 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; ${DEFAULT_RUN}
+run: compile ; ${DEFAULT_DIFF}
 #	${DEFAULT_DIFF} ${DEFAULT_DUMP_DIFF}
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Tests a bug using consecutive constructs not blanking the field properly"
+desc: ; @echo "tests  start report to expression"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"

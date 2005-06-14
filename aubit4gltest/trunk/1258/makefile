@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Tests a bug using consecutive constructs not blanking the field properly"
+desc: ; @echo "This tests the summation of nulls within a report"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"

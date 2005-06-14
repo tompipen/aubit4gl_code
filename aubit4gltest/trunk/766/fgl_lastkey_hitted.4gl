@@ -11,6 +11,7 @@ DEFINE retVal SMALLINT
 
 MAIN
 	LET retVal = FALSE
+display " " at 1,1
 	CALL myGetKey("TAB",9) 
 	CALL myGetKey("RETURN",13) 
 	CALL myGetKey("CONTROL-W",23) 
@@ -57,10 +58,10 @@ FUNCTION myGetKey(keyName,keyVal)
 	DEFINE keyVal SMALLINT
 	DEFINE ans SMALLINT
 
-  DISPLAY "Hit ", keyName CLIPPED, " : " #AT 1, 1
+  DISPLAY "Hit ", keyName CLIPPED, " : " AT 1, 1
 	LET ans = fgl_getkey()
 	IF ans != keyVal THEN
-		display "Key ", keyName CLIPPED, " was ", ans, " and not ", keyVal
+		display "Key ", keyName CLIPPED, " was ", ans, " and not ", keyVal	 at 2,1
 		sleep 1
 	  LET retVal = TRUE
 	END IF

@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "This is not a test but a Testing template. Please describe here."
+desc: ; @echo "Yes another report test - mid 721 (varchars)"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
