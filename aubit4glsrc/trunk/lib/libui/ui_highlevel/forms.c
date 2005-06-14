@@ -1,6 +1,6 @@
 #ifndef lint
 	static char const module_id[] =
-		"$Id: forms.c,v 1.27 2005-06-09 15:15:04 mikeaubury Exp $";
+		"$Id: forms.c,v 1.28 2005-06-14 22:05:29 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -151,6 +151,7 @@ UILIB_A4GL_cr_window_form (char *namet,
   A4GL_add_pointer (name, S_FORMDETSCODE, form);
 
   win = (void *) A4GL_display_form_new_win (name, form, x, y, attrib);
+
   if (win)
     {
       A4GL_add_pointer (name, WINCODE, win);
@@ -239,6 +240,7 @@ UILIB_A4GL_disp_form (char *name, int attr)
 {
   struct s_form_dets *f;
   void *w;
+  char buff[255];
   A4GL_chkwin ();
   A4GL_debug (" IN UILIB_A4GL_disp_form  %d\n", attr);
 
@@ -257,7 +259,14 @@ UILIB_A4GL_disp_form (char *name, int attr)
 
   windows[A4GL_get_currwinno ()].form = f;
   A4GL_chkwin();
-  w = (void *) A4GL_LL_display_form (f, attr,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder(),A4GL_get_currwinno(),A4GL_getform_line(), A4GL_get_currwin());
+  w = (void *) A4GL_LL_display_form (f, attr,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder(),A4GL_get_currwinno(),A4GL_getform_line(), A4GL_get_currwin(),
+
+	f->form, f->fileform->maxline,f->fileform->maxcol
+);
+  sprintf(buff,"%p",f);
+  A4GL_add_pointer (buff, ATTRIBUTE, (void *) attr);
+  f->form_details.border=UILIB_A4GL_iscurrborder();
+  f->form_details.insmode = 0;
 
   if (w == 0)
     {
@@ -590,40 +599,6 @@ A4GL_inc_winname (char *b)
     }
 }
 
-#ifdef CRAP
-char *
-A4GL_glob_window (int x, int y, int w, int h, int border)
-{
-  static char winname[20];
-  int f;
-#ifdef DEBUG
-  {
-    A4GL_debug ("In glob_window");
-  }
-#endif
-  A4GL_chkwin ();
-  memset (winname, 'A', 19);
-  f = 1;
-  winname[19] = 0;
-
-#ifdef DEBUG
-  {
-    A4GL_debug ("Finding free window ... starting with %s", winname);
-  }
-#endif
-
-  while (A4GL_has_pointer (winname, WINCODE))
-    {
-      A4GL_inc_winname (winname);
-    }
-  A4GL_create_blank_window (winname, x, y + 1, w, h, border);
-#ifdef DEBUG
-  {				/*debug("Adding window @ %d %s",a,winname); */
-  }
-#endif
-  return winname;
-}
-#endif
 
 /**
  *
@@ -941,8 +916,13 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
 
   windows[A4GL_get_currwinno ()].form = f;
   A4GL_chkwin();
-  if (A4GL_LL_display_form (f, attr ,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder(),A4GL_get_currwinno(),A4GL_getform_line(), A4GL_get_currwin()))
+  if (A4GL_LL_display_form (f, attr ,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder(),A4GL_get_currwinno(),A4GL_getform_line(), A4GL_get_currwin(), f->form, f->fileform->maxline,f->fileform->maxcol)) {
+        f->form_details.border=UILIB_A4GL_iscurrborder();
+	f->form_details.insmode = 0;
+  	sprintf(buff,"%p",f);
+  	A4GL_add_pointer (buff, ATTRIBUTE, (void *) attr);
     return w;
+  }
   else
     return 0;
 }
@@ -1048,27 +1028,6 @@ UILIB_aclfgl_fgl_drawbox (int n)
   return 0;
 }
 
-#ifdef XX
-
-/**
- *
- * @todo Describe function
- */
-void *
-A4GL_create_blank_window (char *name, int x, int y, int w, int h, int border)
-{
-  void *p;
-  A4GL_chkwin ();
-  A4GL_debug ("Creating blank window..");
-  p =
-    (void *) A4GL_create_window (name, x, y, w, h, 1, 0xff, 0xff, 0xff, 0xff,
-				 border, 0xff, 0xff, 0xffff);
-  A4GL_debug ("window=%p", p);
-
-
-  return p;
-}
-#endif
 
 
 
@@ -1531,46 +1490,6 @@ return 0;
 }
 
 
-#ifdef MOVED
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
-{
-  char buff2[8024];
-  int a;
-  int b;
-  int width;
-  b = A4GL_get_field_width (field);
-  strcpy (buff2, buff);
-  a = strlen (buff2);
-  b = A4GL_get_field_width (field);
-  A4GL_debug ("field_buffer %p %d %s", field, nbuff, buff);
-  width = A4GL_get_field_width (field);
-  if (width > 2048)
-    {
-      char *ptr = 0;
-      A4GL_debug ("Field too big...");
-      *ptr = 0;
-
-    }
-  if (a < A4GL_get_field_width (field))
-    {
-      A4GL_debug ("Adding padding");
-      A4GL_pad_string (buff2, A4GL_get_field_width (field));
-    }
-  else
-    {
-      A4GL_debug ("No padding required '%s'", buff);
-    }
-
-
-  A4GL_LL_set_field_buffer (field, nbuff, buff2);
-}
-
-#endif
 
 /**
  *

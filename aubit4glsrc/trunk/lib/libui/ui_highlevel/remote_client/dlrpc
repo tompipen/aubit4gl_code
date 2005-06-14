@@ -97,6 +97,8 @@ BEGIN {
 	next
 }
 
+/^!/ {print substr($0,2); next}
+
 /^ \*/ {print
 	next
 }

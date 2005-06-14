@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
+#include "hl_proto.h"
 #include "a4gl_lib_ui_int.h"
 #include "a4gl_API_ui_lib.h"
 #include "a4gl_API_lowlevel.h"
 #include "formdriver.h"
-#include "hl_proto.h"
 #include <wchar.h>
 
 #ifdef WIDEC

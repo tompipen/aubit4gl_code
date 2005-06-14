@@ -1,5 +1,6 @@
 
 #include "a4gl_libaubit4gl.h"
+#include "hl_proto.h"
 #include "a4gl_API_lowlevel.h"
 #include "a4gl_API_ui_lib.h"
 #include "a4gl_incl_4gldef.h"
@@ -8,11 +9,10 @@
 #include "lowlevel.h"
 #include "formdriver.h"
 #include "low_gtk.h"
-#include "hl_proto.h"
 #include <ctype.h>
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_gtk.c,v 1.68 2005-06-09 15:17:03 mikeaubury Exp $";
+		"$Id: lowlevel_gtk.c,v 1.69 2005-06-14 22:09:30 mikeaubury Exp $";
 #endif
 
 
@@ -76,7 +76,7 @@ int A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data);
 void A4GL_run_gtkrc(void) ;
 void A4GL_decode_gui_winname (char *name);
 int menu_callback (gpointer data);
-int A4GL_LL_hide_h_menu(ACL_Menu *menu);
+//int A4GL_LL_hide_h_menu(ACL_Menu *menu);
 void A4GL_LL_screen_refresh(void);
 static int cancel_callback (gpointer data) ;
 static int ok_callback (gpointer data) ;
@@ -136,6 +136,27 @@ struct s_a4gl_gtk_form {
 
 
 /****************************************************************************/
+
+
+
+static int
+A4GL_fld_opts_on (void *v, int n)
+{
+
+  if (A4GL_LL_field_opts (v) & n)
+    return 1;
+  A4GL_LL_set_field_opts (v, A4GL_LL_field_opts (v) + n);
+  return 1;
+}
+
+static int
+A4GL_fld_opts_off (void *v, int n)
+{
+  if (!(A4GL_LL_field_opts (v) & n))
+    return 1;
+  A4GL_LL_set_field_opts (v, A4GL_LL_field_opts (v) - n);
+  return 1;
+}
 
 /**
  * 
@@ -775,6 +796,7 @@ GtkWidget *wxx = 0;
 			additional=15;
 		}
 		win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+		printf("Screen size : %d %d\n",(A4GL_LL_screen_width()+additional)*gui_xwidth,(A4GL_LL_screen_height()+1)*gui_yheight);
 		gtk_widget_set_usize (GTK_WIDGET (win), (A4GL_LL_screen_width()+additional)*gui_xwidth, (A4GL_LL_screen_height()+1)*gui_yheight);
 		gtk_window_set_title (GTK_WINDOW (win), "4GL Application");
 		gtk_widget_set_name(GTK_WIDGET(win), "AppWindow");
@@ -955,12 +977,12 @@ int
 A4GL_LL_getch_swin(void* window_ptr) {
   int a;
   A4GL_set_abort (0);
-  a = A4GL_readkey ();
-  if (a != 0) {
-      A4GL_debug ("Read %d from keyfile", a);
-	A4GL_LL_gui_run_til_no_more();
-      return a;
-    }
+  //a = A4GL_readkey ();
+  //if (a != 0) {
+  //A4GL_debug ("Read %d from keyfile", a);
+  //A4GL_LL_gui_run_til_no_more();
+  //return a;
+  //}
 
 	keypressed=0;
       	while (1) {
@@ -987,7 +1009,7 @@ A4GL_LL_getch_swin(void* window_ptr) {
 	}
 
 	a=A4GL_which_key_aubit(a);
-	A4GL_logkey(a);
+	//A4GL_logkey(a);
 	return a;
 }
 
@@ -1287,7 +1309,6 @@ int A4GL_LL_screen_width(void ) {
         if (acl_getenv("COLUMNS")) {
 			if (strlen(acl_getenv("COLUMNS"))) w=atoi(acl_getenv("COLUMNS"));
 	}
-	//printf("screen width=%d\n",w);
 	return w;
 }
 
@@ -1455,7 +1476,6 @@ A4GL_debug("Wadd_char to window %p %d %d %x",win,x,y,ch);
       sprintf (buff_evt, "EVENTBOX_%d_%d", x, y);
       sprintf (buff_attr, "ATTR_%d_%d", x, y);
       
-//printf("%d %d\n",x,y);
       cwin=gtk_object_get_data (GTK_OBJECT (win), "FIXED");
       lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff_label);
       e = (GtkEventBox *) gtk_object_get_data (GTK_OBJECT (cwin), buff_evt);
@@ -1465,8 +1485,6 @@ A4GL_debug("Wadd_char to window %p %d %d %x",win,x,y,ch);
       if (old_attr==ch &&lab && e) return;
       gtk_object_set_data(GTK_OBJECT(cwin),buff_attr,(void *)ch);
 
-//printf("fixed=%p win=%p %c %x\n",cwin,win,ch&0xff,ch&0xffffff00);fflush(stdout);
-	
 
 		// It did have...
      if (ch==32||ch==0||ch==0x10720||ch==0x10700) {
@@ -1647,7 +1665,9 @@ char *lab_utf=g_locale_to_utf8(str, -1, NULL, NULL, NULL);
 A4GL_debug("Create error window");
 
 frame=gtk_frame_new(0);
+
 label=gtk_label_new(lab_utf);
+
 #if GTK_CHECK_VERSION(2,0,0)
 if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
   A4GL_debug("using PANGO ML for Label '%s'\n", str);
@@ -1659,7 +1679,7 @@ evt=gtk_event_box_new();
 
 if (A4GL_isyes(acl_getenv("FITOSIZE_ERRWIN")))  ;
 else {
-	gtk_widget_set_usize (GTK_WIDGET (frame), w*gui_xwidth , h*gui_yheight);
+	gtk_widget_set_usize (GTK_WIDGET (frame), w*gui_xwidth , h*gui_yheight+2);
 }
 
 errorWindow=frame;
@@ -1669,12 +1689,15 @@ gtk_fixed_put(win_screen,errorWindow,x*gui_xwidth,y*gui_yheight);
 // Align it halfway through the frame vertically, but on the left
 //
 gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5f);
-if (attr==0) {
+if (attr==0||attr==-1) {
 	sprintf(buff,"Error");
+	printf("Using Error...\n");
+
 	gtk_widget_set_name(GTK_WIDGET(frame), buff);
 	gtk_widget_set_name(GTK_WIDGET(evt), buff);
 	gtk_widget_set_name(GTK_WIDGET(label), buff);
 } else {
+	printf("ATTR = %x\n",attr);
 	sprintf(buff,"%x",attr>>8);
 	gtk_widget_set_name(GTK_WIDGET(frame), buff);
 	gtk_widget_set_name(GTK_WIDGET(evt), buff);
@@ -1695,7 +1718,7 @@ return errorWindow;
 }
 
 
-
+#ifdef XDEF
 char * A4GL_decode_str_fprop (struct_scr_field * fprop, int type)
 {
   int b;
@@ -1708,6 +1731,7 @@ char * A4GL_decode_str_fprop (struct_scr_field * fprop, int type)
     }
   return "";
 }
+#endif
 
 /******************************************************************************
  *   Not Implemented Yet...
@@ -1743,7 +1767,7 @@ char *ptr;
 
 }
 
-int A4GL_LL_dump_screen(int n) {
+int A4GL_LL_dump_screen(int n,char *fname,int mode) {
 	return 0;
 // NIY
 }
@@ -1778,6 +1802,7 @@ int
   char buff[300];
   int a;
   int field_cnt = 0;
+  list_of_fields lof;
   A4GL_debug ("In start prompt %d %d %d %d",  ap, c, h, af);
 	last_prompt_mode=prompt_mode;
 
@@ -1854,7 +1879,7 @@ int
   A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
   A4GL_LL_set_new_page (fd.form_fields[field_cnt - 1], 1);
 
-  fd.form_fields[field_cnt++] = (void *) A4GL_LL_make_field (0,0, strlen (promptstr), 1, width - 1);
+  fd.form_fields[field_cnt++] = (void *) A4GL_LL_make_field (0, strlen (promptstr), 1, width - 1,0,0,0);
 
   gtk_fixed_put (GTK_FIXED (p), fd.form_fields[field_cnt-1],  (strlen(promptstr)+1)*gui_xwidth,0);
   last_prompt_field = fd.form_fields[field_cnt - 1];
@@ -1866,12 +1891,12 @@ int
   
   A4GL_debug ("set field to =%p", last_prompt_field);
 
-  A4GL_default_attributes (last_prompt_field, 0);
+  A4GL_default_attributes (last_prompt_field, 0,0);
   A4GL_debug ("STATIC OFF");
 
 
 
-  A4GL_field_opts_off (last_prompt_field, AUBIT_O_STATIC);
+  A4GL_fld_opts_off (last_prompt_field, AUBIT_O_STATIC);
 
   af = A4GL_determine_attribute (FGL_CMD_INPUT, af, 0, 0);
 
@@ -1886,11 +1911,11 @@ int
       if (af & AUBIT_ATTR_INVISIBLE)
         {
           A4GL_debug ("Invisible");
-          A4GL_field_opts_off (last_prompt_field, AUBIT_O_PUBLIC);
+          A4GL_fld_opts_off (last_prompt_field, AUBIT_O_PUBLIC);
         }
 
     }
-  A4GL_field_opts_on (last_prompt_field, AUBIT_O_NULLOK);
+  A4GL_fld_opts_on (last_prompt_field, AUBIT_O_NULLOK);
   A4GL_debug ("Set attributes");
 
   buff[0] = 0;                  /* -2 */
@@ -1900,7 +1925,11 @@ int
 
 
   A4GL_debug ("Made fields");
-  f = A4GL_LL_new_form (&fd);
+
+  lof.a.a_len=field_cnt;
+  lof.a.a_val=(long *)&fd.form_fields;
+
+  f = A4GL_LL_new_form (&lof);
   f->currentfield=f->nwidgets-1;
   A4GL_debug ("Form f = %p", f);
   last_prompt_f = f;
@@ -1927,130 +1956,6 @@ void A4GL_LL_clear_prompt(void *f, void *w) {
 }
 
 
-
-#ifdef OBSOLETE
-/**
- * Implementaion in GTK GUI mode of the PROMPT 4gl statement.
- *
- * @param prompt A pointer to the prompt structure where the information about
- * it is stored.
- */
-int
- A4GL_LL_prompt_loop (void *vprompt,int timeout,void *vevt)
-{
-  int a;
-  void *p;
-  int was_aborted = 0;
-  int rblock;
-  struct aclfgl_event_list *evt;
-
-  void *mform;
-
-  struct s_prompt *prompt;
-  prompt = vprompt;
-  evt=vevt;
-
-  mform = prompt->f;
-
-  A4GL_set_abort (0);
-
-  p = prompt->win;
-
-  if (prompt->mode == 1)
-    {
-      static char buff[10024];
-      strcpy (buff, A4GL_LL_field_buffer (prompt->field, 0));
-      A4GL_trim (buff);
-
-      A4GL_push_char (buff);
-      prompt->mode = 2;
-      //unpost_form (prompt->f);
-      A4GL_clear_prompt (prompt);
-      return 0;
-    }
-  if (prompt->mode > 0)
-    return 0;
-
-
-      A4GL_LL_set_carat(prompt->f);
-      A4GL_LL_screen_update ();
-      abort_pressed = 0;
-      was_aborted = 0;
-      a = A4GL_LL_getch_swin (p);
-      if (abort_pressed) prompt_last_key = -100;
-      prompt->processed_onkey = a;
-      A4GL_debug ("Read character... %d", a);
-      A4GL_clr_error_nobox ("prompt");
-      prompt_last_key = a;
-      A4GL_set_last_key (a);
-      prompt->lastkey = A4GL_get_lastkey ();
-      rblock=A4GL_has_event_for_keypress(prompt->lastkey,evt);
-      if (rblock) { // We appear to be all done here...
-      		A4GL_push_null (DTYPE_CHAR, 1);
-      		prompt->mode = 2;
-      		A4GL_clear_prompt (prompt);
-                return rblock;
-      }
-
-
-
-
-
-  a = A4GL_proc_key_prompt (a, mform, prompt);
-
-
-  if (a == 0)
-    {
-#ifdef DEBUG
-      {
-        A4GL_debug ("a==0");
-      }
-#endif
-      return 0;
-    }
-#ifdef DEBUG
-  {
-    A4GL_debug ("a==%d", a);
-  }
-#endif
-
-  if (a < 0)
-    return a;
-
-  A4GL_debug ("Requested..");
-  //if (prompt->lastkey == 10 || prompt->lastkey == 13)
-  if (a == 10 || a == 13)
-    {
-      prompt_last_key = 0;
-      A4GL_LL_int_form_driver (mform, AUBIT_REQ_VALIDATION);
-      A4GL_debug ("Return pressed");
-      prompt->mode = 1;
-      return 0;
-    }
-
-  A4GL_debug ("Requesting Validation : %p %x %d", mform, a, a);
-  if (isprint (a) && a < 0xff)
-    {
-      A4GL_LL_int_form_driver (mform, a);
-      A4GL_debug ("Called int_form_driver");
-      A4GL_LL_int_form_driver (mform, AUBIT_REQ_VALIDATION);
-    }
-
-  if (prompt->charmode)
-    {
-      if (isprint (a) && a < 0xff)
-        {
-          A4GL_push_char (A4GL_LL_field_buffer (prompt->field, 0));
-
-          prompt->mode = 2;
-        }
-    }
-
-
-  return -1000;
-}
-
-#endif
 
 
 
@@ -2096,8 +2001,8 @@ void A4GL_gui_prompt_style (int a)
 /******************************************************************************
  *   FORM HANDLING
  *****************************************************************************/
-void* A4GL_LL_display_form(void * fd,int attrib,int curr_width,int curr_height,int iscurrborder,int currwinno,int form_line,void *currwin) {
-  struct s_form_dets *f;
+void* A4GL_LL_display_form(void * fd,int attrib,int curr_width,int curr_height,int iscurrborder,int currwinno,int form_line,void *currwin,void*frm, int maxline,int maxcol) {
+  //struct s_form_dets *f;
  
   int rows, cols;
 int b;
@@ -2111,13 +2016,13 @@ int b;
 
 
   int fl;
-struct s_a4gl_gtk_form *form;
-GtkWidget *labwidget;
-		char buff_label[50];
+  struct s_a4gl_gtk_form *form;
+  GtkWidget *labwidget;
+  char buff_label[50];
 
   //A4GL_chkwin ();
-  f=fd;
-  form=f->form;
+  //f=fd;
+  form=frm; // f->form;
 
   A4GL_debug ("In display_form");
 
@@ -2125,15 +2030,15 @@ GtkWidget *labwidget;
   w = (GtkWidget *)currwin ;
   cwin=gtk_object_get_data (GTK_OBJECT (w), "FIXED");
 
-  sprintf (buff, "%p", f);
-  A4GL_add_pointer (buff, ATTRIBUTE, (void *) attrib);
+  //sprintf (buff, "%p", frm);
+  //A4GL_add_pointer (buff, ATTRIBUTE, (void *) attrib);
 
   if (w == 0)
     {
       A4GL_LL_error_box ("NO WINDOW", 0);
     }
 
-  A4GL_debug ("scale form %p", f->form);
+  A4GL_debug ("scale form %p", frm);
 
   fl = form_line ;
   for (a = fl; a <= curr_height ; a++)
@@ -2151,9 +2056,13 @@ GtkWidget *labwidget;
 		gtk_widget_destroy(drwin);
 		drwin=0;
   }
-  A4GL_LL_scale_form (f, &rows, &cols);
-  rows = f->fileform->maxline - 1;
-  cols = f->fileform->maxcol;
+
+
+  A4GL_LL_scale_form (frm, &rows, &cols);
+  A4GL_pause_execution();
+
+  rows = maxline;    //f->fileform->maxline - 1;
+  cols = maxcol;     //f->fileform->maxcol;
 
   A4GL_debug ("Form line=%d", fl);
   A4GL_debug ("Scale form returns %d %d", rows, cols);
@@ -2166,22 +2075,22 @@ GtkWidget *labwidget;
     {
     }
 
-  if (rows - iscurrborder  > A4GL_get_curr_width () + 1)
+  if (rows - iscurrborder  >curr_width  + 1)
     {
       A4GL_exitwith ("Window is too small to display this form (too high)");
       return 0;
     }
 
 
-  if (cols - iscurrborder  > A4GL_get_curr_width () + 1)
+  if (cols - iscurrborder  > curr_width  + 1)
     {
       A4GL_exitwith ("Window is too small to display this form (too wide)");
       return 0;
     }
 
-  f->form_details.border = iscurrborder ;
+  //f->form_details.border = iscurrborder ;
 
-  if (f->form_details.border)
+  if (iscurrborder)
     {
       A4GL_debug ("Form details returns it has border");
     }
@@ -2220,11 +2129,12 @@ GtkWidget *labwidget;
   gtk_object_set_data(GTK_OBJECT(cwin),"FORMWINDOW",(void *)drwin);
   gtk_object_set_data(GTK_OBJECT(drwin),"FIXED",(void *)drwin);
 
-  A4GL_start_form (f);
+  A4GL_start_form (frm);
   A4GL_clr_form (0);
   A4GL_debug ("And return");
   A4GL_LL_screen_update ();
   if (!form->notebook) {
+	printf("widgets : %d\n",form->nwidgets);
   for (a=0;a<form->nwidgets;a++) {
 	if (gtk_object_get_data(GTK_OBJECT(form->widgets[a]),"MF_ISLABEL"))  {
 		char *ptr;
@@ -2265,11 +2175,11 @@ int a;
 int max_x=0;
 int max_y=0;
 int wx,wy,ww,wh;
-fd=vfd;
+//fd=vfd;
 
 
-form=fd->form;
-
+form=vfd;
+/*
 if (form->frmMagic!=0xABC123) {
 	char *ptr=0;
 	
@@ -2278,6 +2188,8 @@ if (form->frmMagic!=0xABC123) {
 	*ptr=0;
 	exit(0);
 }
+*/
+
 
 
 for (a=0;a<form->nwidgets;a++) {
@@ -2319,22 +2231,18 @@ return form->curcol;
 }
 
 
-void* A4GL_LL_make_field(void *prop,int frow,int fcol,int rows,int cols) {
-  struct struct_scr_field *fprop;
+void* A4GL_LL_make_field(int frow,int fcol,int rows,int cols,char *widget_str,char *config,void *id) {
+  //struct struct_scr_field *fprop;
   void *widget;
-  char *widget_str;
   char *config_str;
-  fprop=prop;
 
-  if (fprop) {
-    widget_str=A4GL_decode_str_fprop (fprop, FA_S_WIDGET);
-    if (strlen(widget_str)==0)
-      widget_str="ENTRY";
-    config_str=A4GL_decode_str_fprop(fprop,FA_S_CONFIG);
-  } else {
-    widget_str="ENTRY";
-    config_str="";
-  }
+
+  if (widget_str==0) widget_str="";
+  config_str=config;
+
+  if (strlen(widget_str)==0) widget_str="ENTRY";
+  if (config_str==0) config_str="";
+
 
   widget=(void *)A4GL_make_widget (widget_str, config_str, cols);
   if (widget==0) {
@@ -2347,7 +2255,7 @@ void* A4GL_LL_make_field(void *prop,int frow,int fcol,int rows,int cols) {
   }
   A4GL_LL_set_field_opts (widget, 0);
 
-  gtk_object_set_data(GTK_OBJECT(widget),"Attribute",(void *)fprop);
+  gtk_object_set_data(GTK_OBJECT(widget),"Attribute",(void *)id);
   gtk_object_set_data(GTK_OBJECT(widget),"MF_FROW",(void *)frow);
   gtk_object_set_data(GTK_OBJECT(widget),"MF_FCOL",(void *)fcol);
   gtk_object_set_data(GTK_OBJECT(widget),"MF_ROWS",(void *)rows);
@@ -2371,10 +2279,17 @@ GtkWidget *widget=0;
 char *label_utf;
 
 
-if (strcmp(label,"[")==0) return 0;
-if (strcmp(label,"]")==0) return 0;
+if (strcmp(label,"[")==0) {
+		printf("Wimping out and not making a '[' label\n");
+		return 0;
+}
+if (strcmp(label,"]")==0) {
+		printf("Wimping out and not making a ']' label\n");
+	return 0;
+}
 
 
+printf("making label for %s\n",label);
 
 label_utf=g_locale_to_utf8(label, -1, NULL, NULL, NULL);
 widget=gtk_label_new(label_utf);
@@ -2433,22 +2348,13 @@ void A4GL_LL_set_form_page(void* vform,int page) {
 //struct s_a4gl_gtk_form *form;
 }
 
-void* A4GL_LL_new_form(void* vfd) {
-struct s_form_dets *fd;
+void* A4GL_LL_new_form(list_of_fields* vfd) {
+//struct s_form_dets *fd;
 struct s_a4gl_gtk_form *form;
 int a;
 
-/*
-        int nwidgets;
-        int npages;
-        int currentpage;
-        GtkWidget *currentfield;
-        GtkWidget **widgets;
-        GtkWidget *notebook;
-        void *userptr;
-*/
 
-fd=vfd;
+
 form=malloc(sizeof(struct s_a4gl_gtk_form));
 
 /* Set everything up.. */
@@ -2462,17 +2368,13 @@ form->widgets=0;
 form->notebook=0;
 form->userptr=0;
 
-//printf("fd->form_Fields[0]=%d\n",fd->form_fields[0]);
-//printf("fd->form_Fields[1]=%d\n",fd->form_fields[1]);
-
-for (a=0;fd->form_fields[a];a++)  {
-	if (gtk_object_get_data(GTK_OBJECT(fd->form_fields[a]),"NEWPAGE")) form->npages++;
+for (a=0;a<vfd->a.a_len;a++)  {
+	if (gtk_object_get_data(GTK_OBJECT(vfd->a.a_val[a]),"NEWPAGE")) form->npages++;
 }
 
-//printf("%d widgets detected on %d pages\n",a,form->npages);
 
-form->nwidgets=a;
-form->widgets=malloc(sizeof(void *)*a);
+form->nwidgets=vfd->a.a_len;
+form->widgets=malloc(sizeof(void *)*vfd->a.a_len);
 
 if (form->npages>1) {
 	form->notebook = gtk_notebook_new ();
@@ -2481,9 +2383,9 @@ if (form->npages>1) {
 	form->notebook=0;
 }
 
-//printf("Making form notebook=%p\n",form->notebook);
-for (a=0;fd->form_fields[a];a++)  {
-	form->widgets[a]=fd->form_fields[a];
+for (a=0;a<vfd->a.a_len;a++)  {
+	form->widgets[a]=(void *)vfd->a.a_val[a];
+	printf("Make active : %p\n",form->widgets[a]);
         A4GL_gui_set_active (form->widgets[a],0);
 }
 return form;
@@ -2616,80 +2518,69 @@ return 0;
 }
 
 
-void A4GL_LL_set_field_attr(void* field) {
-  struct struct_scr_field *f;
+void A4GL_LL_set_field_attr(void* field,int dtype,int dynamic,int autonext,int invis,int reqd,int compress,int has_picture) {
+  //struct struct_scr_field *f;
 
-  f = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (field));
-  if (f == 0) return;
+  //f = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (field));
+  //if (f == 0) return;
 
   A4GL_debug ("Setting defs");
 
 
-//printf("set_field_attr..\n");
-  A4GL_default_attributes (field, f->datatype);
-//printf("Done\n");
+  A4GL_default_attributes (field, dtype,has_picture);
 
 
   A4GL_debug ("Set defs");
 
-  if (A4GL_has_bool_attribute (f, FA_B_AUTONEXT))
+  if (autonext)
     {
       A4GL_debug ("Autoskip");
       A4GL_debug ("ZZZZ - SET OPTS");
-      A4GL_field_opts_on (field, AUBIT_O_AUTOSKIP);
+      A4GL_fld_opts_on (field, AUBIT_O_AUTOSKIP);
     }
 
-  if (A4GL_has_bool_attribute (f, FA_B_INVISIBLE))
+  if (invis)
     {
       A4GL_debug ("Invisible ***");
       A4GL_debug ("ZZZZ - SET OPTS");
-      A4GL_field_opts_off (field, AUBIT_O_PUBLIC);
+      A4GL_fld_opts_off (field, AUBIT_O_PUBLIC);
     }
 
-  if (f->dynamic != 0)
+  if (dynamic != 0)
     {
       A4GL_debug ("ZZZZ - SET OPTS STATIC OFF");
-      A4GL_field_opts_off (field, AUBIT_O_STATIC);
+      A4GL_fld_opts_off (field, AUBIT_O_STATIC);
 
-      if (f->dynamic == -1)
+      if (dynamic == -1)
         {
           A4GL_LL_set_max_field (field, 0);
         }
       else
         {
-          A4GL_LL_set_max_field (field, f->dynamic);
+          A4GL_LL_set_max_field (field, dynamic);
         }
 
     }
   else
     {
-      A4GL_field_opts_on (field, AUBIT_O_STATIC);
+      A4GL_fld_opts_on (field, AUBIT_O_STATIC);
     }
 
-/*
-  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY))
-    {
-      A4GL_debug ("No entry");
-      A4GL_debug ("ZZZZ - SET OPTS");
-      A4GL_field_opts_off (field, AUBIT_O_ACTIVE);
-      A4GL_field_opts_off (field, AUBIT_O_EDIT);
-    }
-*/
-  if (A4GL_has_bool_attribute (f, FA_B_REQUIRED))
+  if (reqd)
     {
       A4GL_debug ("ZZZZ - SET OPTS");
-      A4GL_field_opts_off (field, AUBIT_O_NULLOK);
+      A4GL_fld_opts_off (field, AUBIT_O_NULLOK);
     }
   else
     {
       A4GL_debug ("ZZZZ - SET OPTS");
-      A4GL_field_opts_on (field, AUBIT_O_NULLOK);
+      A4GL_fld_opts_on (field, AUBIT_O_NULLOK);
     }
 
-  if (A4GL_has_bool_attribute (f, FA_B_COMPRESS))
+  if (compress)
     {
       A4GL_debug ("ZZZZ - SET OPTS");
-      A4GL_field_opts_on (field, AUBIT_O_WRAP);
+      A4GL_fld_opts_on (field, AUBIT_O_WRAP);
     }
 }
 
@@ -2793,10 +2684,11 @@ int A4GL_LL_widget_name_match(void* wv,char* name) {
 
 GtkWidget * w;
   void *s;
-w=wv;
+  w=wv;
   if (w == 0) return 0;
-//printf("widget name match : %s\n",name);
+
   s = gtk_object_get_data (GTK_OBJECT (w), "Attribute");
+
   if (s == 0) {
 	//printf("No attribute\n");
     return 0;
@@ -2827,6 +2719,7 @@ int A4GL_LL_construct_large(char *orig, void *vevt,int init_key,int initpos,char
         GtkWidget *drwin;
 	GtkWidget *v;
         struct s_a4gl_gtk_form *f;
+	list_of_fields lof;
 
 
         int ins_ovl='o';
@@ -2850,15 +2743,15 @@ int A4GL_LL_construct_large(char *orig, void *vevt,int init_key,int initpos,char
 
 
         fd.form_fields[0]=gtk_label_new("[");
-        fd.form_fields[1]=A4GL_LL_make_field(0,0,0,0,fwidth); // gtk_entry_new();
+        fd.form_fields[1]=A4GL_LL_make_field(0,0,0,0,fwidth,0,0); // gtk_entry_new();
 
         fd.form_fields[2]=gtk_label_new("]");
 	fd.form_fields[3]=0;
 
 	gtk_object_set_data(GTK_OBJECT(fd.form_fields[0]),"WIDGETSNAME","LABEL");
-        A4GL_field_opts_on (fd.form_fields[1], AUBIT_O_ACTIVE);
-        A4GL_field_opts_on (fd.form_fields[1], AUBIT_O_EDIT);
-        A4GL_field_opts_on (fd.form_fields[1], AUBIT_O_BLANK);
+        A4GL_fld_opts_on (fd.form_fields[1], AUBIT_O_ACTIVE);
+        A4GL_fld_opts_on (fd.form_fields[1], AUBIT_O_EDIT);
+        A4GL_fld_opts_on (fd.form_fields[1], AUBIT_O_BLANK);
 	gtk_object_set_data(GTK_OBJECT(fd.form_fields[1]),"WIDGETSNAME",(void *)"ENTRY");
 	gtk_object_set_data(GTK_OBJECT(fd.form_fields[2]),"WIDGETSNAME",(void *)"LABEL");
 	gtk_widget_show(fd.form_fields[0]);
@@ -2866,19 +2759,12 @@ int A4GL_LL_construct_large(char *orig, void *vevt,int init_key,int initpos,char
 	gtk_widget_show(fd.form_fields[2]);
 
 
-
-  	//A4GL_default_attributes (fd.form_fields[1], 0);
-  	//A4GL_add_signal_changed (fd.form_fields[1], 0);
-  	//A4GL_add_signal_grab_focus (fd.form_fields[1], 0);
-	//A4GL_field_opts_off (fd.form_fields[1], AUBIT_O_STATIC);
-
-
-////printf("All done..");
-//printf("Add to container b0=%p b1=%p b2=%p v=%p\n",fd.form_fields[0],fd.form_fields[1],fd.form_fields[2],v);
-        f=A4GL_LL_new_form(&fd);
+	lof.a.a_len=3;
+	lof.a.a_val=(long *)fd.form_fields;
+        f=A4GL_LL_new_form(&lof);
 	
   	f->currentfield=1;
-        A4GL_mja_set_field_buffer(fd.form_fields[1],0,rbuff);
+        A4GL_LL_set_field_buffer(fd.form_fields[1],0,rbuff);
 
 	gtk_container_add(GTK_CONTAINER(v),fd.form_fields[0]);
 	gtk_container_add(GTK_CONTAINER(v),fd.form_fields[1]);
@@ -2996,9 +2882,8 @@ int menu_callback (gpointer data) {
 }
 
 
-int A4GL_LL_hide_h_menu(ACL_Menu *menu) {
+int A4GL_LL_hide_h_menu(void ) {
   GtkWidget *bb;
-  //printf("hide_h_menu\n");
   bb=gtk_object_get_data(GTK_OBJECT(win_screen),"BB");
   if (bb==0) return 0;
   gtk_widget_hide(bb);
@@ -3122,66 +3007,6 @@ int A4GL_LL_menu_type(void) {
 
 }
 
-
-#ifdef NOLONGERREQUIRED
-int A4GL_LL_menu_loop(ACL_Menu *menu,int num_opts) {
-
-  int key;
-
-  A4GL_LL_disp_h_menu(num_opts);
-
-  if (A4GL_isyes(acl_getenv("TRADMENU")))
-    return -1;
-
-  menu_response=-1;
-
-  while (menu_response==-1) {
-    A4GL_LL_screen_update();
-
-    if((key=get_keypress_from_buffer())>0) { /* key pressed: */
-      ACL_Menu_Opts *f=menu->first; 
-      int res=0;
-	//A4GL_clr_error_nobox ("gtkmenu");
-      /* first check optkey */
-      while(f) {
-        if(f->optkey[0]==key) {
-          menu_response=res;
-          break;
-        }
-        res++;
-        f=f->next_option;
-      }
-      if(menu_response>=0)
-        break;
-
-      /* no matching KEY found, so check the first letter of each title */
-      f=menu->first;
-      res=0;
-      while(f) {
-        char a=0;
-        int i;
-        /* set a to the first non-space char in opt_title */
-        for(i=0; i<sizeof(f->opt_title); i++)
-          if(f->opt_title[i]>' ') {
-            a=a4gl_tolower(f->opt_title[i]);
-            break;
-          }
-        if(a==key) {
-          menu_response=res;
-          break;
-        }
-        res++;
-        f=f->next_option;
-      }
-      if(menu_response>=0)
-        break;
-    }
-  }
-
-  A4GL_LL_hide_h_menu(menu);
-  return menu_response;
-}
-#endif
 
 
 
@@ -3402,9 +3227,9 @@ int A4GL_LL_open_gui_form (char *name_orig, int absolute, int nat, char *like, i
 
 
 int A4GL_LL_fieldnametoid(char* f,char* s,int n) {
-  GtkWidget *formdets;
+  //GtkWidget *formdets;
   GtkWidget *w=0;
-  int nofields;
+  //int nofields;
   GtkWidget **field_list = 0;
 
 #ifdef FIXME
@@ -3436,7 +3261,7 @@ int A4GL_LL_fieldnametoid(char* f,char* s,int n) {
 }
 
 int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) {
-  int a;
+  //int a;
   int flg;
   struct s_form_dets *formdets;
   void **field_list;
@@ -3509,8 +3334,7 @@ ap=vap;
 
   A4GL_debug ("Formdets = %p\n", formdets);
 
-  nofields =
-    A4GL_gen_field_list ((void *)&field_list, (void*) formdets, 9999, ap);
+  nofields = A4GL_gen_field_list ((void *)&field_list, (void*) formdets, 9999, ap);
   A4GL_debug ("nofields=%d\n", nofields);
 
   for (a = 0; a <= nofields; a++)
@@ -3521,4 +3345,5 @@ ap=vap;
 #endif
 return 1;
 }
+
 

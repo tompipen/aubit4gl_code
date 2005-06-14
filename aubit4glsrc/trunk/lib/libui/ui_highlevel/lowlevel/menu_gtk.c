@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_gtk.c,v 1.8 2005-03-31 13:36:28 afalout Exp $
+# $Id: menu_gtk.c,v 1.9 2005-06-14 22:09:30 mikeaubury Exp $
 #*/
 
 /**
@@ -54,6 +54,7 @@
 
 
 #include "a4gl_libaubit4gl.h"
+#include "hl_proto.h"
 #include "a4gl_API_lowlevel.h"
 #include "a4gl_API_ui_lib.h"
 #include "a4gl_incl_4gldef.h"
@@ -62,13 +63,12 @@
 #include "lowlevel.h"
 #include "formdriver.h"
 #include "low_gtk.h"
-#include "hl_proto.h"
 #include <ctype.h>
 #include "menu_x.x.h"
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: menu_gtk.c,v 1.8 2005-03-31 13:36:28 afalout Exp $";
+		"$Id: menu_gtk.c,v 1.9 2005-06-14 22:09:30 mikeaubury Exp $";
 #endif
 
 

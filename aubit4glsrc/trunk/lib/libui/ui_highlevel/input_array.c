@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.29 2005-04-22 12:07:19 mikeaubury Exp $
+# $Id: input_array.c,v 1.30 2005-06-14 22:05:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: input_array.c,v 1.29 2005-04-22 12:07:19 mikeaubury Exp $";
+		"$Id: input_array.c,v 1.30 2005-06-14 22:05:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -48,12 +48,12 @@
 
 
 #include "a4gl_lib_ui_int.h"
+#include "hl_proto.h"
 #include "a4gl_API_ui_lib.h"
 #include "formdriver.h"
 //#include "ui_highlevel.h"
 #include "input_array.h"
 #include "a4gl_API_lowlevel.h"
-#include "hl_proto.h"
 
 #include <ctype.h>
 
@@ -3305,7 +3305,7 @@ A4GL_turn_field_on2 (void *f, int a)
 
   //if ((fprop->datatype&255)!=0) { field_opts_on (f, AUBIT_O_BLANK); }
 
-  A4GL_LL_set_field_attr (f);
+  A4GL_set_field_attr_for_ll (f);
   //if (a)
     //{
 
@@ -3355,3 +3355,6 @@ A4GL_set_field_attr_with_attr_already_determined (void *field, int attr,
      attr);
   A4GL_set_field_colour_attr (field, r, attr);
 }
+
+
+

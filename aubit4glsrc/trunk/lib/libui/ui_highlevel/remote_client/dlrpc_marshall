@@ -93,6 +93,7 @@ BEGIN {
 /^#/ {print; next }
 /^\// {print; next }
 /^extern/ {print; next }
+/^!/ { next}
 
 /^ \*/ {print; next }
 /^\*\// {print; next }
@@ -184,7 +185,13 @@ BEGIN {
 		print "printf(\"Calling " fname "\\n\");"
 		if (rtype!="void") {
 			print "ret=rpc_" xfname " (" params  ");"
-			print "chk_result(ret); printf(\"Got %p\\n\",*ret); return *ret;"
+			print "chk_result(ret); "
+			print "printf(\"Got %p\\n\",*ret); "
+			if (rtype!="void*") {
+				print "return *ret;"
+			} else {
+				print "return (void*)*ret;"
+			}
 		} else {
 			print "ret=rpc_" xfname " (" params ");"
 			print "chk_result(ret);"

@@ -1,15 +1,15 @@
 #include "a4gl_libaubit4gl.h"
+#include "hl_proto.h"
 #include "a4gl_lib_ui_int.h"
 #include "a4gl_API_ui_lib.h"
 #include "a4gl_API_lowlevel.h"
-#include "hl_proto.h"
 #include "lowlevel.h"
 #include <ctype.h>
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: menu.c,v 1.21 2005-06-10 18:07:09 mikeaubury Exp $";
+		"$Id: menu.c,v 1.22 2005-06-14 22:05:30 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -351,9 +351,9 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
 
 void A4GL_clr_menu_disp (ACL_Menu * menu)
 {
-printf("clr_menu_disp\n");
+//printf("clr_menu_disp\n");
 A4GL_LL_clr_menu_disp (menu,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder (),A4GL_get_currwinno(), A4GL_get_currwin(),menu->menu_offset,menu->gw_y);
-printf("done clr_menu_disp\n");
+//printf("done clr_menu_disp\n");
 }
 
 
@@ -594,7 +594,7 @@ int A4GL_menu_loop_type_1(ACL_Menu *menu,int num_opts) {
 
   }
 
-  A4GL_LL_hide_h_menu(menu);
+  A4GL_LL_hide_h_menu();
   return menu_response;
 }
 

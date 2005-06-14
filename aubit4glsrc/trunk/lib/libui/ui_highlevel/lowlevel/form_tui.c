@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "a4gl_libaubit4gl.h"
+#include "hl_proto.h"
 #include "a4gl_API_lowlevel.h"
 #include "a4gl_API_ui_lib.h"
 #include "aubit_noform.h"
@@ -9,7 +10,6 @@
 #else
 	#include <panel.h>
 #endif
-#include "hl_proto.h"
 
 void A4GL_LL_screen_refresh(void);
 

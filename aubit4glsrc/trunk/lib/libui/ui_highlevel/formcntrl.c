@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.31 2005-06-08 20:44:55 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.32 2005-06-14 22:05:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.31 2005-06-08 20:44:55 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.32 2005-06-14 22:05:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -42,13 +42,13 @@
 =====================================================================
 */
 #include "a4gl_libaubit4gl.h"
+#include "hl_proto.h"
 #include "a4gl_lib_ui_int.h"
 #include "a4gl_API_ui_lib.h"
 #include "a4gl_incl_4gldef.h"
 #include "a4gl_API_lowlevel.h"
 #include "formdriver.h"
 #include "formcntrl.h"
-#include "hl_proto.h"
 #include <string.h>
 #include <ctype.h>
 char *last_field_name;

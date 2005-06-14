@@ -1,14 +1,14 @@
 
 #include "a4gl_libaubit4gl.h"
+#include "hl_proto.h"
 #include "a4gl_lib_ui_int.h"
 #include "a4gl_API_lowlevel.h"
 #include "a4gl_API_ui_lib.h"
-#include "hl_proto.h"
 #include "misc.h"
 #include "lowlevel.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: misc.c,v 1.31 2005-06-09 15:15:04 mikeaubury Exp $";
+		"$Id: misc.c,v 1.32 2005-06-14 22:05:30 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -17,13 +17,13 @@ int initialized_screen_mode = 0;
 #include "formdriver.h"
 
 //void chk_for_picture (void *f, char *buff);
-//void A4GL_default_attributes (void *f, int dtype);
 
 //int A4GL_field_opts_off (void *v, int n);
 //int A4GL_field_opts_on (void *v, int n);
 
 int A4GL_LL_fieldnametoid(char* f,char* s,int n);
 void *A4GL_get_currwin (void);
+int A4GL_UI_int_get_inc_quotes(int a);
 
 void A4GL_clear_menu (ACL_Menu * menu);
 int aclfgl_a4gl_show_help(int n);
@@ -53,7 +53,11 @@ UILIB_aclfgl_a4gl_set_page (int n)
 int
 UILIB_aclfgl_aclfgl_dump_screen (int n)
 {
-  return A4GL_LL_dump_screen (n);
+  char *ptr="tmpfile";
+  int mode=1;
+  if (n==1) { ptr=A4GL_char_pop(); }
+  if (n==2) { mode = A4GL_pop_int (); ptr = A4GL_char_pop (); }
+  return A4GL_LL_dump_screen (n,ptr,mode);
 }
 
 
@@ -152,7 +156,7 @@ UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
 	(struct struct_scr_field
 	 *) (A4GL_LL_get_field_userptr (field_list[a]));
       if (f)
-	A4GL_default_attributes (field_list[a], f->datatype);
+	A4GL_default_attributes (field_list[a], f->datatype,A4GL_has_str_attribute (f, FA_S_PICTURE));
     }
 
   //if (field_list) free(field_list);
@@ -912,132 +916,6 @@ chk_for_picture (void *f, char *buff)
 }
 
 
-#ifdef REDUNDANT
-void
-A4GL_flatten_menu (ACL_Menu * menu)
-{
-  void *m;
-  void *p;
-  int a;
-  int x;
-  int y;
-  int px;
-  int py;
-
-
-  if (A4GL_isyes (acl_getenv ("HIDE_MENU")))
-    {
-      A4GL_debug ("No Flattened menu");
-      return;
-    }
-
-  px = menu->gw_x;
-  py = menu->gw_y;
-
-  if (menu->gw_b)
-    {
-      px -= 1;
-      py -= 1;
-    }
-  else
-    {
-
-      //px-=2;
-      //py-=2;
-
-      px = 0;			// I'm sure this is gonna come back and bite me...
-      py = 0;
-    }
-
-  m = menu->menu_win;
-  p = A4GL_find_pointer (menu->window_name, MNPARCODE);
-
-
-  if (p && m);
-  else
-    return;
-
-
-/*
-  for (y = 0; y <= 1; y++)
-    {
-      for (x = 0; x < menu->w; x++)
-        {
-          a = mvwinch (m, y, x);
-          if (A4GL_isyes (acl_getenv ("DIM_INACTIVE_MENU")))
-            {
-              if (a & A_BOLD) a -= A_BOLD;
-              if (a & A_NORMAL) a -= A_NORMAL;
-              a |= A_DIM;
-            }
-          A4GL_debug ("%d - %d,%d %04x %c", x, x + px, y + py, a, a & 0xff);
-          mvwaddch (p, y + py, x + px, a);
-        }
-    }
-*/
-  A4GL_debug ("Flattened menu %d ", menu->w);
-}
-#endif
-
-#ifdef MOVED
-void
-A4GL_default_attributes (void *f, int dtype)
-{
-  struct struct_scr_field *fprop;
-
-  int done = 0;
-
-  fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
-  A4GL_debug ("In def attrib f=%p", f);
-
-
-
-
-
-  if (fprop)
-    {
-      if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
-	{
-	  A4GL_debug ("ZZZZ - SET OPTS");
-	  A4GL_LL_set_field_opts (f,
-				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-				  AUBIT_O_PUBLIC | AUBIT_O_EDIT );
-	  done = 1;
-	}
-    }
-
-
-
-  if (done == 0)
-    {
-
-      A4GL_debug ("MMMM DTYPE & 255 = %d", dtype);
-
-      if ((dtype & 255) == 0)
-	{
-	  A4GL_debug ("ZZZZ - SET OPTS");
-	  A4GL_LL_set_field_opts (f,
-				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE | AUBIT_O_PUBLIC | AUBIT_O_EDIT);
-	  A4GL_field_opts_off (f, AUBIT_O_BLANK);
-	}
-      else
-	{
-	  A4GL_debug ("ZZZZ - SET OPTS");
-	  A4GL_debug ("BLANK BLANK");
-	  A4GL_LL_set_field_opts (f,
-				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-				  AUBIT_O_PUBLIC | AUBIT_O_EDIT | AUBIT_O_BLANK);
-	}
-
-    }
-
-  A4GL_debug ("STATIC");
-  A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
-  A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
-  A4GL_LL_set_max_field(f,A4GL_get_field_width(f));
-
-}
-#endif
 
 
 void A4GL_clear_menu (ACL_Menu * menu)
@@ -1067,27 +945,6 @@ A4GL_turn_field_off (void *f)
 }
 
 
-#ifdef MOVED
-int
-A4GL_field_opts_on (void *v, int n)
-{
-
-  if (A4GL_LL_field_opts (v) & n) return 1;
-  A4GL_LL_set_field_opts (v, A4GL_LL_field_opts (v) + n);
-  return 1;
-}
-
-int
-A4GL_field_opts_off (void *v, int n)
-{
-  if (!(A4GL_LL_field_opts (v) & n))
-    return 1;
-  A4GL_LL_set_field_opts (v, A4GL_LL_field_opts (v) - n);
-  return 1;
-}
-
-
-#endif
 void
 A4GL_initialize_screen_mode (void)
 {
@@ -1114,24 +971,6 @@ A4GL_switch_to_scr_mode (void)
   A4GL_debug ("All done..");
 }
 
-#ifdef MOVED
-/**
- * This function is called whenever the user hit a key
- *
- * @return A value corresponding to the key typed.
- */
-int
-A4GL_getch_win (int allow_acc_intr)
-{
-  int a;
-  A4GL_debug ("getch_win called...");
-   if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys(1); }
-   a = A4GL_LL_getch_swin (A4GL_window_on_top ());
-   A4GL_clr_error_nobox ("A4GL_getch_win");
-   if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys(0); }
-  return a;
-}
-#endif
 
 void
 UILIB_A4GL_zrefresh ()
@@ -1142,108 +981,6 @@ UILIB_A4GL_zrefresh ()
 
 
 
-#ifdef MOVED
-
-int
-A4GL_proc_key_prompt (int a, void *mform, struct s_prompt *prompt)
-{
-  void *f;
-
-  f = A4GL_LL_current_field (mform);
-
-
-  A4GL_debug ("In proc_key_prompt.... for %d", a);
-  switch (a)
-    {
-    case 18:
-      A4GL_LL_screen_redraw ();
-      break;
-
-
-    case -1:
-      abort_pressed = 1;
-      return 0;
-
-    case 27:
-      return 0;
-
-    case 26:
-      return 0;
-
-    case 127:
-    case 8:
-    case A4GLKEY_DC:
-    case A4GLKEY_DL:
-    case A4GLKEY_BACKSPACE:
-      A4GL_debug ("Req del prev");
-      if (A4GL_LL_get_carat (mform))
-	{
-	  A4GL_LL_int_form_driver (mform, AUBIT_REQ_DEL_PREV);
-	  A4GL_debug ("Done...");
-	}
-      return 0;
-
-    case 24:
-      A4GL_LL_int_form_driver (mform, AUBIT_REQ_DEL_CHAR);
-      return 0;
-
-    case '\t':
-    case A4GLKEY_DOWN:
-      if (prompt->charmode == 0)
-	return 10;
-      else
-	return 0;
-
-
-    //case A4GLKEY_ENTER:
-    case 13:
-    case 10:
-#ifdef DEBUG
-      A4GL_debug ("Next field in a prompt - they must mean enter");
-#endif
-      return 10;
-    case A4GLKEY_LEFT:
-      A4GL_LL_int_form_driver (mform, AUBIT_REQ_PREV_CHAR);
-      return 0;
-
-    case A4GLKEY_RIGHT:
-      A4GL_LL_int_form_driver (mform, AUBIT_REQ_NEXT_CHAR);
-      return 0;
-    case 4:
-      A4GL_LL_int_form_driver (mform, AUBIT_REQ_CLR_FIELD);
-      return 0;
-
-    case 1:			// Control - A
-      prompt->insmode = prompt->insmode ? 0 : 1;
-      if (prompt->insmode)
-	A4GL_LL_int_form_driver (mform, AUBIT_REQ_INS_MODE);
-      else
-	A4GL_LL_int_form_driver (mform, AUBIT_REQ_OVL_MODE);
-      return 0;
-
-    }
-
-
-  if (A4GL_is_special_key(a, A4GLKEY_HELP))
-    {
-      aclfgl_a4gl_show_help (prompt->h);
-      a = 0;
-    }
-
-  A4GL_debug ("Returning %d from proc_key_prompt\n", a);
-  return a;
-}
-#endif
-
-/*
-int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) {
-int n;
-for (n=0;evt[n].event_type;n++) {
-	if (evt[n].event_type==-90 && evt[n].keycode==a) return evt[n].block;
-}
-return 0;
-}
-*/
 
 
 int

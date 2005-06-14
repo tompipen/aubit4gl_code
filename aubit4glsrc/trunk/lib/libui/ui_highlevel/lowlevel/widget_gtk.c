@@ -1,9 +1,10 @@
 #ifndef lint
 	static char const module_id[] =
-		"$Id: widget_gtk.c,v 1.20 2005-06-08 07:54:39 mikeaubury Exp $";
+		"$Id: widget_gtk.c,v 1.21 2005-06-14 22:09:30 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
+#include "hl_proto.h"
 #include "lowlevel.h"
 #include "formdriver.h"
 #include "low_gtk.h"
@@ -1419,15 +1420,6 @@ A4GL_func (GtkWidget * w, char *mode)
         }
     }
 
-#ifdef TESTING
-  /*
-     if (strcmp (field, "formonly.btn1[0]") == 0
-     && strcmp (mode, "clicked") == 0)
-     {
-     testfunc ();
-     }
-   */
-#endif
 
 
   A4GL_debug ("All done");
