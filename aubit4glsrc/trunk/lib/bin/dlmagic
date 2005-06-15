@@ -208,6 +208,7 @@ if [ "$MAKE_HEADER" = "1" -o "$MAKE_HEADER" = "2" ]; then
     /^extern/ {print
 		next
 	}
+	/^!/ {next}
 	/^\/\*/ {print
 		next
 	}
