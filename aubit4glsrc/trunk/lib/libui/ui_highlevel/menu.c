@@ -8,8 +8,8 @@
 
 
 #ifndef lint
-	static char const module_id[] =
-		"$Id: menu.c,v 1.23 2005-06-16 16:54:37 mikeaubury Exp $";
+static char const module_id[] =
+  "$Id: menu.c,v 1.24 2005-06-16 17:01:19 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -19,8 +19,8 @@ void A4GL_h_disp_title (ACL_Menu * menu, char *str);
 static int A4GL_menu_getkey (ACL_Menu * menu);
 void A4GL_size_menu (ACL_Menu * menu);
 void *A4GL_get_currwin (void);
-int aclfgli_show_help(int n);
-int A4GL_menu_loop_type_1(ACL_Menu *menu,int num_opts) ;
+int aclfgli_show_help (int n);
+int A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts);
 
 
 void
@@ -39,27 +39,31 @@ UILIB_A4GL_disp_h_menu (void *menuv)
 
 
   /* Is the UI client going to do most of the work for us ? */
-  if (A4GL_LL_menu_type()==1) {
-	ACL_Menu_Opts *mo;
-	int a;
-	A4GL_LL_disp_h_menu(menu->num_opts);
-	mo=menu->first;
-	// Seems so...
-	for (a=0;a<menu->num_opts;a++) {
-		A4GL_LL_disp_h_menu_opt(a,menu->num_opts,mo->opt_title,mo->attributes);
-		mo=mo->next_option;
+  if (A4GL_LL_menu_type () == 1)
+    {
+      ACL_Menu_Opts *mo;
+      int a;
+      A4GL_LL_disp_h_menu (menu->num_opts);
+      mo = menu->first;
+      // Seems so...
+      for (a = 0; a < menu->num_opts; a++)
+	{
+	  A4GL_LL_disp_h_menu_opt (a, menu->num_opts, mo->opt_title,
+				   mo->attributes);
+	  mo = mo->next_option;
 	}
-	A4GL_LL_screen_update();
-	return;
-  }
+      A4GL_LL_screen_update ();
+      return;
+    }
 
 #ifdef DEBUG
   A4GL_debug ("Adding window for menu");
   A4GL_debug ("Current metrics : %d %d %d", A4GL_get_curr_left (),
 	      A4GL_get_curr_print_top () - 1, UILIB_A4GL_get_curr_width ());
 #endif
-  mnln = A4GL_getmenu_line () ;
-  if ( UILIB_A4GL_iscurrborder ()) mnln--;
+  mnln = A4GL_getmenu_line ();
+  if (UILIB_A4GL_iscurrborder ())
+    mnln--;
 
   cl = A4GL_get_curr_left ();
   cw = UILIB_A4GL_get_curr_width ();
@@ -120,10 +124,11 @@ UILIB_A4GL_disp_h_menu (void *menuv)
   A4GL_debug ("completed disp_h_menu");
 #endif
   /*set_window(owin); */
- if (menu->menu_offset>1000) {
-	char *ptr=0;
-	*ptr=0;
-	}
+  if (menu->menu_offset > 1000)
+    {
+      char *ptr = 0;
+      *ptr = 0;
+    }
 }
 
 
@@ -258,8 +263,10 @@ static void
 A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos)
 {
   A4GL_debug ("MORE MARKERS : Displaying ... at %d %d", pos + offset, 1);
-  A4GL_chkwin();
-  A4GL_wprintw ((void *)A4GL_get_currwin (), 0, pos + offset, menu->gw_y, UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder (),A4GL_get_currwinno()," ...");
+  A4GL_chkwin ();
+  A4GL_wprintw ((void *) A4GL_get_currwin (), 0, pos + offset, menu->gw_y,
+		UILIB_A4GL_get_curr_width (), UILIB_A4GL_get_curr_height (),
+		UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (), " ...");
 
 }
 
@@ -267,12 +274,10 @@ A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos)
 void
 A4GL_h_disp_title (ACL_Menu * menu, char *str)
 {
-A4GL_LL_h_disp_title(menu,str,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder (),
-A4GL_get_currwinno(),
-A4GL_get_currwin(),
-menu->gw_y
-
-);
+  A4GL_LL_h_disp_title (menu, str, UILIB_A4GL_get_curr_width (),
+			UILIB_A4GL_get_curr_height (),
+			UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (),
+			A4GL_get_currwin (), menu->gw_y);
 }
 
 
@@ -283,7 +288,7 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
   int xx = 0;
   int yx = 0;
   //int col;
-  A4GL_chkwin();
+  A4GL_chkwin ();
   A4GL_debug ("h_disp_opt");
 
   if (opt1->page != menu->curr_page)
@@ -321,8 +326,11 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
       if (type == INVERT)
 	{
 	  A4GL_debug ("xx=%d yx=%d", xx, yx);
-	  A4GL_wprintw ((void *)A4GL_get_currwin (), 0, xx, yx + 1, UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder (),A4GL_get_currwinno(),"%s",
-			A4GL_string_width (opt1->shorthelp));
+	  A4GL_wprintw ((void *) A4GL_get_currwin (), 0, xx, yx + 1,
+			UILIB_A4GL_get_curr_width (),
+			UILIB_A4GL_get_curr_height (),
+			UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (),
+			"%s", A4GL_string_width (opt1->shorthelp));
 	}
 
 
@@ -332,11 +340,17 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
 
 
       if (type == INVERT)
-	A4GL_wprintw ((void *)A4GL_get_currwin (), AUBIT_ATTR_REVERSE, xx, menu->gw_y,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),
-		      UILIB_A4GL_iscurrborder (),A4GL_get_currwinno(),"%s", opt1->opt_title);
+	A4GL_wprintw ((void *) A4GL_get_currwin (), AUBIT_ATTR_REVERSE, xx,
+		      menu->gw_y, UILIB_A4GL_get_curr_width (),
+		      UILIB_A4GL_get_curr_height (),
+		      UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (), "%s",
+		      opt1->opt_title);
       else
-	A4GL_wprintw ((void *)A4GL_get_currwin (), 0, xx, menu->gw_y, UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder (),A4GL_get_currwinno(),
-			"%s", opt1->opt_title);
+	A4GL_wprintw ((void *) A4GL_get_currwin (), 0, xx, menu->gw_y,
+		      UILIB_A4GL_get_curr_width (),
+		      UILIB_A4GL_get_curr_height (),
+		      UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (), "%s",
+		      opt1->opt_title);
 
 
 
@@ -349,10 +363,14 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
 }
 
 
-void A4GL_clr_menu_disp (ACL_Menu * menu)
+void
+A4GL_clr_menu_disp (ACL_Menu * menu)
 {
 //printf("clr_menu_disp\n");
-A4GL_LL_clr_menu_disp (menu,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder (),A4GL_get_currwinno(), A4GL_get_currwin(),menu->menu_offset,menu->gw_y);
+  A4GL_LL_clr_menu_disp (menu, UILIB_A4GL_get_curr_width (),
+			 UILIB_A4GL_get_curr_height (),
+			 UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (),
+			 A4GL_get_currwin (), menu->menu_offset, menu->gw_y);
 //printf("done clr_menu_disp\n");
 }
 
@@ -370,13 +388,14 @@ A4GL_highlevel_menu_loop (void *menuv)
   menu = menuv;
   A4GL_chkwin ();
 
-  A4GL_current_window(menu->parent_window_name);
-  if (A4GL_LL_menu_type()==1) {
-  	a=A4GL_menu_loop_type_1(menu,menu->num_opts);
-  	A4GL_clr_error_nobox ("menu_callback");
-	printf("Return %d\n",a);
-  	return a;
-  }
+  A4GL_current_window (menu->parent_window_name);
+  if (A4GL_LL_menu_type () == 1)
+    {
+      a = A4GL_menu_loop_type_1 (menu, menu->num_opts);
+      A4GL_clr_error_nobox ("menu_callback");
+      printf ("Return %d\n", a);
+      return a;
+    }
 
 
   if (menu->gw_x < 0)
@@ -406,7 +425,7 @@ A4GL_highlevel_menu_loop (void *menuv)
 
       a = A4GL_menu_getkey (menu);
       A4GL_debug ("menu_getkey returns %d", a);
-      if (a == 23 || A4GL_is_special_key(a,A4GLKEY_HELP))
+      if (a == 23 || A4GL_is_special_key (a, A4GLKEY_HELP))
 	{
 	  if (menu->curr_option->help_no)
 	    {
@@ -480,15 +499,16 @@ A4GL_menu_getkey (ACL_Menu * menu)
   while (1)
     {
 
-	A4GL_debug("debugging - error box");
-      A4GL_debug ("wprintw - printing menu title %s @ %d %d", menu->menu_title, menu->gw_x, menu->gw_y);
+      A4GL_debug ("debugging - error box");
+      A4GL_debug ("wprintw - printing menu title %s @ %d %d",
+		  menu->menu_title, menu->gw_x, menu->gw_y);
 
       sprintf (buff, "%s:", menu->menu_title);
       A4GL_h_disp_title (menu, buff);
       A4GL_LL_screen_update ();
 
       a = A4GL_getch_internal (A4GL_get_currwin ());
-      A4GL_debug("Clearing error box");
+      A4GL_debug ("Clearing error box");
       A4GL_clr_error_nobox ("Menu");
       if (a == -1)
 	{
@@ -529,65 +549,76 @@ A4GL_menu_getkey (ACL_Menu * menu)
 
 
 
-int A4GL_menu_loop_type_1(ACL_Menu *menu,int num_opts) {
+int
+A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
+{
   int key;
-  int menu_response=-1;
-  A4GL_LL_disp_h_menu(num_opts);
-  while (menu_response==-1) {
-    A4GL_LL_screen_update();
-    key=A4GL_getch_internal(0);
+  int menu_response = -1;
+  A4GL_LL_disp_h_menu (num_opts);
+  while (menu_response == -1)
+    {
+      A4GL_LL_screen_update ();
+      key = A4GL_getch_internal (0);
 
-    if(key==0) continue;
+      if (key == 0)
+	continue;
 
-    if (key<0) {// button pressed
-		printf("Key = %d\n",key);
+      if (key < 0)
+	{			// button pressed
+	  printf ("Key = %d\n", key);
 
-		menu_response=(key*-1) -1000;
-		printf("menu_response=%d\n",menu_response);
-    } else {
-      ACL_Menu_Opts *f=menu->first;
-      int res=0;
-      /* first check optkey */
+	  menu_response = (key * -1) - 1000;
+	  printf ("menu_response=%d\n", menu_response);
+	}
+      else
+	{
+	  ACL_Menu_Opts *f = menu->first;
+	  int res = 0;
+	  /* first check optkey */
 
-      while(f) {
-        if(f->optkey[0]==key) {
-          menu_response=res;
-          break;
-        }
-        res++;
-        f=f->next_option;
-      }
-      if(menu_response>=0)
-        break;
+	  while (f)
+	    {
+	      if (f->optkey[0] == key)
+		{
+		  menu_response = res;
+		  break;
+		}
+	      res++;
+	      f = f->next_option;
+	    }
+	  if (menu_response >= 0)
+	    break;
 
-      /* no matching KEY found, so check the first letter of each title */
-      f=menu->first;
-      res=0;
-      while(f) {
-        char a=0;
-        int i;
-        /* set a to the first non-space char in opt_title */
-        for(i=0; i<sizeof(f->opt_title); i++)
-          if(f->opt_title[i]>' ') {
-            a=a4gl_tolower(f->opt_title[i]);
-            break;
-          }
-        if(a==key) {
-          menu_response=res;
-          break;
-        }
-        res++;
-        f=f->next_option;
-      }
-   }
-      if(menu_response>=0)
-        break;
-    
+	  /* no matching KEY found, so check the first letter of each title */
+	  f = menu->first;
+	  res = 0;
+	  while (f)
+	    {
+	      char a = 0;
+	      int i;
+	      /* set a to the first non-space char in opt_title */
+	      for (i = 0; i < sizeof (f->opt_title); i++)
+		if (f->opt_title[i] > ' ')
+		  {
+		    a = a4gl_tolower (f->opt_title[i]);
+		    break;
+		  }
+	      if (a == key)
+		{
+		  menu_response = res;
+		  break;
+		}
+	      res++;
+	      f = f->next_option;
+	    }
+	}
+      if (menu_response >= 0)
+	break;
 
 
-  }
 
-  A4GL_LL_hide_h_menu();
+    }
+
+  A4GL_LL_hide_h_menu ();
   return menu_response;
 }
-

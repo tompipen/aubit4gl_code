@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_gtk.c,v 1.9 2005-06-14 22:09:30 mikeaubury Exp $
+# $Id: menu_gtk.c,v 1.10 2005-06-16 17:01:57 mikeaubury Exp $
 #*/
 
 /**
@@ -67,13 +67,13 @@
 #include "menu_x.x.h"
 
 #ifndef lint
-	static char const module_id[] =
-		"$Id: menu_gtk.c,v 1.9 2005-06-14 22:09:30 mikeaubury Exp $";
+static char const module_id[] =
+  "$Id: menu_gtk.c,v 1.10 2005-06-16 17:01:57 mikeaubury Exp $";
 #endif
 
 
 #include <gtk/gtk.h>
-#include <gdk/gdkkeysyms.h>     /* GDK_Down */
+#include <gdk/gdkkeysyms.h>	/* GDK_Down */
 
 
 /*
@@ -156,7 +156,8 @@ A4GL_mn_help (char *s)
  * @return A pointer to the widget created.
  */
 static GtkWidget *
-make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm, char *id, int type, void *handler)
+make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm,
+	    char *id, int type, void *handler)
 {
   menu *mm;
   menu_option_item *o;
@@ -183,7 +184,8 @@ make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm, char *id,
 	  for (b = 0; b < mm->options.options_len; b++)
 	    {
 	      o = &mm->options.options_val[b];
-	      A4GL_debug ("Adding option %s %s %s\n", o->caption, o->id, o->image);
+	      A4GL_debug ("Adding option %s %s %s\n", o->caption, o->id,
+			  o->image);
 	      if (strlen (o->submenu_id) != 0)
 		{
 		  A4GL_debug ("Has a submenu\n");
@@ -203,7 +205,9 @@ make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm, char *id,
 	      if (strlen (A4GL_mn_caption (o->image)) == 0)
 		{
 		  A4GL_debug ("Caption - no image");
-		  w = gtk_menu_item_new_with_label (A4GL_mn_caption (o->caption));
+		  w =
+		    gtk_menu_item_new_with_label (A4GL_mn_caption
+						  (o->caption));
 		  if (strlen (A4GL_mn_help (o->caption)))
 		    gtk_tooltips_set_tip (GTK_TOOLTIPS (tooltips_menu), w,
 					  A4GL_mn_help (o->caption),
@@ -301,13 +305,15 @@ make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm, char *id,
 //void * A4GL_LL_create_menu (menu_list * m, char *id, int mode, void *handler)
 //had to change to void pointer to allow prototype to apply to both 
 //GUI and TUI variants of this function
-void * A4GL_LL_create_menu (void * m, char *id, int mode, void *handler) {
-GtkWidget *menubar;
-GtkWindow *cwin;
+void *
+A4GL_LL_create_menu (void *m, char *id, int mode, void *handler)
+{
+  GtkWidget *menubar;
+  GtkWindow *cwin;
 
 //changed by Andrej; see comment below
 //extern GtkWidget *win_screen;
-extern GtkWindow *win_screen;
+  extern GtkWindow *win_screen;
 
   /* Get the vbox associated with the current window */
 //  cwin = GTK_WINDOW (A4GL_get_curr_win_gtk ());
@@ -316,13 +322,13 @@ extern GtkWindow *win_screen;
 
   cwin = win_screen;
   /*
-  warning: assignment from incompatible pointer type
-  GtkWindow *cwin;
-  extern GtkWidget *win_screen;
-  defiend in lowlevel_gtk.c as : void *win_screen;
-  Therefore changed declaration to extern GtkWindow *win_screen;
-  
-  */
+     warning: assignment from incompatible pointer type
+     GtkWindow *cwin;
+     extern GtkWidget *win_screen;
+     defiend in lowlevel_gtk.c as : void *win_screen;
+     Therefore changed declaration to extern GtkWindow *win_screen;
+
+   */
   /* Is there a menu bar there already ? */
   menubar = gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
 
@@ -354,7 +360,7 @@ extern GtkWindow *win_screen;
   A4GL_debug ("Make menubar\n");
 
   gtk_object_set_data (GTK_OBJECT (menubar), "selected", (void *) -1);
-  return (void *)menubar;
+  return (void *) menubar;
 }
 
 

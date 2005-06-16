@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.23 2005-05-24 16:59:18 mikeaubury Exp $
+# $Id: display_array.c,v 1.24 2005-06-16 17:01:08 mikeaubury Exp $
 #*/
 #ifndef lint
-	static char const module_id[] =
-		"$Id: display_array.c,v 1.23 2005-05-24 16:59:18 mikeaubury Exp $";
+static char const module_id[] =
+  "$Id: display_array.c,v 1.24 2005-06-16 17:01:08 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -51,8 +51,8 @@
 #include "hl_proto.h"
 #include "formdriver.h"
 #include "a4gl_API_lowlevel.h"
-int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
-int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
+int A4GL_has_event (int a, struct aclfgl_event_list *evt);
 /*
 =====================================================================
                     Functions prototypes
@@ -321,7 +321,7 @@ A4GL_set_array_mode (int type)
  * @param arr A pointer to the display array information structure.
  */
 static int
-disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
+disp_loop_internal (struct s_disp_arr *arr, struct aclfgl_event_list *evt)
 {
   struct s_form_dets *form;
   int a;
@@ -344,7 +344,7 @@ disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
   if (form != UILIB_A4GL_get_curr_form (0))
     {
 
-        A4GL_make_window_with_this_form_current(form);
+      A4GL_make_window_with_this_form_current (form);
     }
 
   if (form != (void *) UILIB_A4GL_get_curr_form (1))
@@ -375,12 +375,13 @@ disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
     {
       //A4GL_zrefresh();
       arr->processed_onkey = 0;
-      A4GL_LL_set_carat(form->form);
+      A4GL_LL_set_carat (form->form);
 
 
       a = A4GL_getch_win (1);
-      if (abort_pressed) a=A4GLKEY_INTERRUPT;
-      
+      if (abort_pressed)
+	a = A4GLKEY_INTERRUPT;
+
 /*
 // Traditional key handling
 // Assume F1 is the Accept Key...
@@ -404,22 +405,27 @@ disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
 //     N            Y               F1        ACCEPT   Do ON KEY (ACCEPT)
 //     Y            Y               F1        F1       Do ON KEY(f1)
 */
-        if (A4GL_isyes(acl_getenv("ONKEY_ACCEPT"))) {
-                if (!A4GL_has_event_for_keypress(a,evt)) { // Is it hard coded...
-                        if (A4GL_is_special_key(a,A4GLKEY_ACCEPT)&& A4GL_has_event_for_keypress(A4GLKEY_ACCEPT,evt)) a=A4GLKEY_ACCEPT;
-                }
-        }
+      if (A4GL_isyes (acl_getenv ("ONKEY_ACCEPT")))
+	{
+	  if (!A4GL_has_event_for_keypress (a, evt))
+	    {			// Is it hard coded...
+	      if (A4GL_is_special_key (a, A4GLKEY_ACCEPT)
+		  && A4GL_has_event_for_keypress (A4GLKEY_ACCEPT, evt))
+		a = A4GLKEY_ACCEPT;
+	    }
+	}
 
-        arr->processed_onkey=a;
-        m_lastkey = a;
-        if (A4GL_has_event_for_keypress(a,evt)) {
-                A4GL_debug("has event...");
-                return A4GL_has_event_for_keypress(a,evt);
-        }
-        arr->processed_onkey=0;
+      arr->processed_onkey = a;
+      m_lastkey = a;
+      if (A4GL_has_event_for_keypress (a, evt))
+	{
+	  A4GL_debug ("has event...");
+	  return A4GL_has_event_for_keypress (a, evt);
+	}
+      arr->processed_onkey = 0;
     }
 
-  
+
   redisp = 0;
   act_as = a;
 
@@ -429,13 +435,13 @@ disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
     }
 
 
-  if (A4GL_is_special_key(a , A4GLKEY_NEXT))
+  if (A4GL_is_special_key (a, A4GLKEY_NEXT))
     {
       act_as = A4GLKEY_PGDN;
       a = act_as;
     }
 
-  if (A4GL_is_special_key(a ,A4GLKEY_PREV))
+  if (A4GL_is_special_key (a, A4GLKEY_PREV))
     {
       act_as = A4GLKEY_PGUP;
       a = act_as;
@@ -457,12 +463,13 @@ disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
 	  || (arr->arr_line > 1 && A4GL_isyes (acl_getenv ("SCROLLBACKTO1"))))
 	{
 	  arr->cntrl = 0 - A4GLKEY_PGUP;
-	if (A4GL_has_event(-11,evt)) return A4GL_has_event(-11,evt);
+	  if (A4GL_has_event (-11, evt))
+	    return A4GL_has_event (-11, evt);
 	}
       else
 	{
 	  A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
-	  A4GL_LL_set_carat(form->form);
+	  A4GL_LL_set_carat (form->form);
 	}
       break;
 
@@ -485,7 +492,8 @@ disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
       redisplay_arr (arr, 2);
       A4GL_set_arr_curr (arr->arr_line);
       A4GL_set_scr_line (arr->scr_line);
-	if (A4GL_has_event(-10,evt)) return A4GL_has_event(-10,evt);
+      if (A4GL_has_event (-10, evt))
+	return A4GL_has_event (-10, evt);
       break;
 
     case 0 - A4GLKEY_PGDN:
@@ -496,32 +504,39 @@ disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
 	  //arr->scr_line = 1;
 	  arr->arr_line = arr->no_arr;
 	}
-	while (arr->arr_line<arr->scr_line) arr->scr_line--;
+      while (arr->arr_line < arr->scr_line)
+	arr->scr_line--;
 
       redisplay_arr (arr, 2);
       A4GL_set_arr_curr (arr->arr_line);
       A4GL_set_scr_line (arr->scr_line);
-	if (A4GL_has_event(-10,evt)) return A4GL_has_event(-10,evt);
+      if (A4GL_has_event (-10, evt))
+	return A4GL_has_event (-10, evt);
       break;
 
 
 
     case A4GLKEY_PGDN:
-if ( (arr->arr_line+arr->srec->dim -arr->scr_line-1 <= arr->no_arr) || ( (arr->arr_line+1< arr->no_arr)&&A4GL_isyes(acl_getenv("SCROLLTOEND"))))  {
-      if (arr->arr_line + 1 <= arr->no_arr)
+      if ((arr->arr_line + arr->srec->dim - arr->scr_line - 1 <= arr->no_arr)
+	  || ((arr->arr_line + 1 < arr->no_arr)
+	      && A4GL_isyes (acl_getenv ("SCROLLTOEND"))))
 	{
-	  arr->cntrl = 0 - A4GLKEY_PGDN;
-	if (A4GL_has_event(-11,evt)) return A4GL_has_event(-11,evt);
+	  if (arr->arr_line + 1 <= arr->no_arr)
+	    {
+	      arr->cntrl = 0 - A4GLKEY_PGDN;
+	      if (A4GL_has_event (-11, evt))
+		return A4GL_has_event (-11, evt);
+	    }
 	}
-} else
+      else
 	{
 	  A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
-	  A4GL_LL_set_carat(form->form);
+	  A4GL_LL_set_carat (form->form);
 	}
       break;
 
 
-    //case A4GLKEY_ENTER:
+      //case A4GLKEY_ENTER:
     case 13:
     case '\t':
     case A4GLKEY_RIGHT:
@@ -530,12 +545,13 @@ if ( (arr->arr_line+arr->srec->dim -arr->scr_line-1 <= arr->no_arr) || ( (arr->a
       if (arr->arr_line < arr->no_arr)
 	{
 	  arr->cntrl = 0 - A4GLKEY_DOWN;
-	if (A4GL_has_event(-11,evt)) return A4GL_has_event(-11,evt);
+	  if (A4GL_has_event (-11, evt))
+	    return A4GL_has_event (-11, evt);
 	}
       else
 	{
 	  A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
-	  A4GL_LL_set_carat(form->form);
+	  A4GL_LL_set_carat (form->form);
 	}
       break;
 
@@ -560,7 +576,8 @@ if ( (arr->arr_line+arr->srec->dim -arr->scr_line-1 <= arr->no_arr) || ( (arr->a
 	}
       A4GL_set_arr_curr (arr->arr_line);
       A4GL_set_scr_line (arr->scr_line);
-	if (A4GL_has_event(-10,evt)) return A4GL_has_event(-10,evt);
+      if (A4GL_has_event (-10, evt))
+	return A4GL_has_event (-10, evt);
       break;
 
     case A4GLKEY_LEFT:
@@ -568,12 +585,13 @@ if ( (arr->arr_line+arr->srec->dim -arr->scr_line-1 <= arr->no_arr) || ( (arr->a
       if (arr->arr_line > 1)
 	{
 	  arr->cntrl = 0 - A4GLKEY_UP;
-	if (A4GL_has_event(-11,evt)) return A4GL_has_event(-11,evt);
+	  if (A4GL_has_event (-11, evt))
+	    return A4GL_has_event (-11, evt);
 	}
       else
 	{
 	  A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
-	  A4GL_LL_set_carat(form->form);
+	  A4GL_LL_set_carat (form->form);
 	}
       break;
 
@@ -597,22 +615,25 @@ if ( (arr->arr_line+arr->srec->dim -arr->scr_line-1 <= arr->no_arr) || ( (arr->a
 	}
       A4GL_set_arr_curr (arr->arr_line);
       A4GL_set_scr_line (arr->scr_line);
-	if (A4GL_has_event(-10,evt)) return A4GL_has_event(-10,evt);
+      if (A4GL_has_event (-10, evt))
+	return A4GL_has_event (-10, evt);
       break;
 
 
     case A4GLKEY_ACCEPT:
       A4GL_debug ("Maybe ACCEPT");
-      if (A4GL_has_event(-94,evt)) return A4GL_has_event(-94,evt);
+      if (A4GL_has_event (-94, evt))
+	return A4GL_has_event (-94, evt);
       break;
 
-    case A4GLKEY_INTERRUPT: 
-	int_flag=1;
-    	if (A4GL_has_event(-94,evt)) return A4GL_has_event(-94,evt);
-	return 0;
+    case A4GLKEY_INTERRUPT:
+      int_flag = 1;
+      if (A4GL_has_event (-94, evt))
+	return A4GL_has_event (-94, evt);
+      return 0;
 
     case -101:
-      return 0;		/* ACCEPT */
+      return 0;			/* ACCEPT */
       break;
 
     case 26:			/* control-z */
@@ -621,14 +642,17 @@ if ( (arr->arr_line+arr->srec->dim -arr->scr_line-1 <= arr->no_arr) || ( (arr->a
   return -1;
 }
 
-static int disp_loop(struct s_disp_arr *arr,struct aclfgl_event_list *evt) {
-int rval;
-rval=disp_loop_internal(arr,evt);
-if (rval<-1) {
-	printf("Returned <0 : %d\n",rval);
-	exit(0);
-}
-return rval;
+static int
+disp_loop (struct s_disp_arr *arr, struct aclfgl_event_list *evt)
+{
+  int rval;
+  rval = disp_loop_internal (arr, evt);
+  if (rval < -1)
+    {
+      printf ("Returned <0 : %d\n", rval);
+      exit (0);
+    }
+  return rval;
 }
 
 
@@ -643,12 +667,13 @@ return rval;
  * @param attrib The attributes
  */
 int
-UILIB_A4GL_disp_arr_v2 (void *dispv, void *ptr, char *srecname, int attrib,int scrollf,int scrollw, void *vevt)
+UILIB_A4GL_disp_arr_v2 (void *dispv, void *ptr, char *srecname, int attrib,
+			int scrollf, int scrollw, void *vevt)
 {
   int a;
   struct s_disp_arr *disp;
   struct aclfgl_event_list *evt;
-  evt=vevt;
+  evt = vevt;
   disp = dispv;
   A4GL_chkwin ();
   curr_arr_disp = disp;
@@ -739,11 +764,12 @@ UILIB_A4GL_disp_arr_v2 (void *dispv, void *ptr, char *srecname, int attrib,int s
       A4GL_set_arr_curr (disp->arr_line);
       A4GL_set_scr_line (disp->scr_line);
       A4GL_LL_screen_update ();
-      if (A4GL_has_event(-10,evt)) return A4GL_has_event(-10,evt);
+      if (A4GL_has_event (-10, evt))
+	return A4GL_has_event (-10, evt);
       //return -10;
     }
   A4GL_debug ("disparr4");
-  return disp_loop (disp,evt);
+  return disp_loop (disp, evt);
 }
 
 /**
@@ -769,9 +795,11 @@ set_scrline_da (int np)
   A4GL_set_scr_line (a);
   draw_arr_all (curr_arr_disp);
 #ifdef DEBUG
-  {    A4GL_debug ("Set scrline...%d", a);  }
+  {
+    A4GL_debug ("Set scrline...%d", a);
+  }
 #endif
-    return 0;
+  return 0;
 }
 
 
@@ -795,23 +823,27 @@ set_arrline_da (int np)
   A4GL_set_arr_curr (a);
   draw_arr_all (curr_arr_disp);
 #ifdef DEBUG
-  {    A4GL_debug ("Set arrline... %d", a);  }
+  {
+    A4GL_debug ("Set arrline... %d", a);
+  }
 #endif
-    return 0;
+  return 0;
 }
 
 
 int
-UILIB_aclfgl_fgl_set_arrline(int np)
+UILIB_aclfgl_fgl_set_arrline (int np)
 {
-	if (cmode=='D') {
-		return set_arrline_da(np);
-	}
+  if (cmode == 'D')
+    {
+      return set_arrline_da (np);
+    }
 
-	if (cmode=='I') {
-		return set_arrline_ia(np);
-	}
-return 0;
+  if (cmode == 'I')
+    {
+      return set_arrline_ia (np);
+    }
+  return 0;
 }
 
 
@@ -822,16 +854,19 @@ return 0;
  */
 
 int
-UILIB_aclfgl_fgl_set_scrline(int np)
+UILIB_aclfgl_fgl_set_scrline (int np)
 {
-  if (cmode=='D') {
-    return set_scrline_da(np);
-  }
+  if (cmode == 'D')
+    {
+      return set_scrline_da (np);
+    }
 
-  if (cmode=='I') {
-    return set_scrline_ia(np);
-  }
-  A4GL_exitwith("set_scrline() may only be called when in a display/input array");
+  if (cmode == 'I')
+    {
+      return set_scrline_ia (np);
+    }
+  A4GL_exitwith
+    ("set_scrline() may only be called when in a display/input array");
   return 0;
 }
 

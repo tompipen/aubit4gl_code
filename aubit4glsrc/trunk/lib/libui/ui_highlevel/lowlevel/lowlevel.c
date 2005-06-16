@@ -1,8 +1,8 @@
 #include "a4gl_libaubit4gl.h"
 #include "lowlevel.h"
 #ifndef lint
-	static char const module_id[] =
-		"$Id: lowlevel.c,v 1.4 2005-03-25 12:48:35 afalout Exp $";
+static char const module_id[] =
+  "$Id: lowlevel.c,v 1.5 2005-06-16 17:01:57 mikeaubury Exp $";
 #endif
 
 
@@ -53,7 +53,8 @@ A4GL_LL_screen_mode ()
 }
 
 void
-A4GL_LL_screen_update (void) {
+A4GL_LL_screen_update (void)
+{
 // Update the physical screen
   printf ("screen update\n");
 }

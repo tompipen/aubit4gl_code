@@ -1,11 +1,11 @@
 // ,int currwinno//static void A4GL_do_pause (void);
 
 #ifdef XCURSES
-	#include <xcurses.h>
+#include <xcurses.h>
 #else
-	#include <curses.h>
+#include <curses.h>
 #endif
-	
+
 static int A4GL_curses_to_aubit (int a);
 static int A4GL_curses_to_aubit_int (int a);
 #include "a4gl_libaubit4gl.h"
@@ -17,7 +17,7 @@ static int A4GL_curses_to_aubit_int (int a);
 #include <ctype.h>
 
 #ifdef XCURSES
-	extern bool trace_on;
+extern bool trace_on;
 #endif
 
 
@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.60 2005-06-16 16:54:38 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.61 2005-06-16 17:01:57 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -60,32 +60,32 @@ http://www.mit.edu/afs/athena/software/cygwin/cygwin_v1.3.2/usr/include/ncurses/
 Looks like it was removed in Curses 5.3???!
 */
 //#ifndef WIN32
-#if (! defined(__CYGWIN__)) 
+#if (! defined(__CYGWIN__))
 //&& ! defined(__MINGW32__))
-	#define a4gl_mvwaddwstr mvwaddwstr
-#else 
-	#define a4gl_mvwaddwstr(win,y,x,wstr) (wmove(win,y,x) == ERR ? ERR : waddwstr(win,wstr))
+#define a4gl_mvwaddwstr mvwaddwstr
+#else
+#define a4gl_mvwaddwstr(win,y,x,wstr) (wmove(win,y,x) == ERR ? ERR : waddwstr(win,wstr))
 #endif
 
 
 #ifndef NO_CURSES_FORM
-	#include "aubit_form.h"
-	#include <form.h>
+#include "aubit_form.h"
+#include <form.h>
 #else
-	#include "aubit_noform.h"
+#include "aubit_noform.h"
 #endif
 
 
 #ifdef XCURSES
-	#include <xpanel.h>
+#include <xpanel.h>
 #else
-	#include <panel.h>
+#include <panel.h>
 #endif
 
 #include "formdriver.h"
 #ifndef lint
-	static char const module_id[] =
-		"$Id: lowlevel_tui.c,v 1.60 2005-06-16 16:54:38 mikeaubury Exp $";
+static char const module_id[] =
+  "$Id: lowlevel_tui.c,v 1.61 2005-06-16 17:01:57 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 
@@ -95,10 +95,10 @@ int inprompt = 0;
 // and without using a pointer to each of these values - we're just going to store them
 // and return them when requested...
 // These will be populated by the start_prompt function, and should be retrieved immediatelty afterwards...
-FIELD *last_prompt_field=0;
-FORM  *last_prompt_f=0;
-void  *last_prompt_win=0;
-long   last_prompt_mode=0;
+FIELD *last_prompt_field = 0;
+FORM *last_prompt_f = 0;
+void *last_prompt_win = 0;
+long last_prompt_mode = 0;
 
 
 
@@ -106,19 +106,21 @@ long   last_prompt_mode=0;
 
 static int A4GL_mja_get_field_width (void *f);
 
-void *last_construct_drwin=0;
+void *last_construct_drwin = 0;
 
 
 
-static void A4GL_default_attributes_in_ll (void *f, int dtype,int has_picture);
-void try_to_stop_alternate_view(void) ;
-int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
-int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
-int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
-int A4GL_LL_decode_colour_attr_aubit(int a) ;
+static void A4GL_default_attributes_in_ll (void *f, int dtype,
+					   int has_picture);
+void try_to_stop_alternate_view (void);
+int A4GL_has_event (int a, struct aclfgl_event_list *evt);
+int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
+int A4GL_has_event_for_field (int cat, char *a,
+			      struct aclfgl_event_list *evt);
+int A4GL_LL_decode_colour_attr_aubit (int a);
 int A4GL_LL_get_field_width_dynamic (void *f);
-int A4GL_LL_fieldnametoid(char* f,char* s,int n) ;
-int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) ;
+int A4GL_LL_fieldnametoid (char *f, char *s, int n);
+int A4GL_LL_disp_form_field_ap (int n, int attr, char *s, va_list * ap);
 static void A4GL_debug_print_field_opts (FIELD * a);
 int chars_normal[6];
 int have_default_colors = 0;
@@ -128,7 +130,7 @@ int have_default_colors = 0;
 //-----------------------
 
 
-void *curr_err_win=0;
+void *curr_err_win = 0;
 
 static int
 A4GL_fld_opts_on (void *v, int n)
@@ -151,32 +153,40 @@ A4GL_fld_opts_off (void *v, int n)
 }
 #endif
 
-void A4GL_LL_beep(void) {
-	#ifndef XCURSES
-  if (A4GL_isyes(acl_getenv("FLASHFORBEEP"))) {
-		flash();
-	}
-  else {
-	if (!A4GL_isyes(acl_getenv("DISABLEBEEP"))) beep();
-  }
-	#endif
+void
+A4GL_LL_beep (void)
+{
+#ifndef XCURSES
+  if (A4GL_isyes (acl_getenv ("FLASHFORBEEP")))
+    {
+      flash ();
+    }
+  else
+    {
+      if (!A4GL_isyes (acl_getenv ("DISABLEBEEP")))
+	beep ();
+    }
+#endif
 }
 
 
 
-int A4GL_LL_set_chars_normal(int* n) {
+int
+A4GL_LL_set_chars_normal (int *n)
+{
   n[0] = (ACS_HLINE & 0xff) + AUBIT_ATTR_ALTCHARSET;
   n[1] = (ACS_VLINE & 0xff) + AUBIT_ATTR_ALTCHARSET;
   n[2] = (ACS_ULCORNER & 0xff) + AUBIT_ATTR_ALTCHARSET;
   n[3] = (ACS_URCORNER & 0xff) + AUBIT_ATTR_ALTCHARSET;
   n[4] = (ACS_LLCORNER & 0xff) + AUBIT_ATTR_ALTCHARSET;
   n[5] = (ACS_LRCORNER & 0xff) + AUBIT_ATTR_ALTCHARSET;
-return 1;
+  return 1;
 }
 
 
 
-static int A4GL_init_colour_pairs (void)
+static int
+A4GL_init_colour_pairs (void)
 {
   int bkgcolor;
   int colors[8];
@@ -247,7 +257,8 @@ static int A4GL_init_colour_pairs (void)
  * @param The code of the curses key.
  * @return The 4gl code key.
  */
-static int A4GL_curses_to_aubit_int (int a)
+static int
+A4GL_curses_to_aubit_int (int a)
 {
   int b;
   for (b = 0; b < 64; b++)
@@ -305,7 +316,7 @@ static int A4GL_curses_to_aubit_int (int a)
  * @param 
  * @return 
  */
-static int 
+static int
 A4GL_curses_to_aubit (int a)
 {
   int orig_a;
@@ -330,7 +341,7 @@ A4GL_curses_to_aubit (int a)
 void
 A4GL_LL_switch_to_line_mode (void)
 {
-  A4GL_debug("Switch to line mode");
+  A4GL_debug ("Switch to line mode");
   endwin ();
 
   // A4GL_set_scrmode ('L');
@@ -348,7 +359,7 @@ A4GL_LL_switch_to_line_mode (void)
 void *
 A4GL_LL_create_window (int h, int w, int y, int x, int border)
 {
-  WINDOW *win=0;
+  WINDOW *win = 0;
   PANEL *pan;
   WINDOW *dswin;
 
@@ -372,14 +383,14 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
 
   if (border == 1)
     {
-	A4GL_debug("border=1");
+      A4GL_debug ("border=1");
       win = newwin (h + 2, w + 2, y - 2, x - 2);
       A4GL_debug ("newwin returns %p", win);
     }
 
   if (border == 2)
     {
-	A4GL_debug("border=2");
+      A4GL_debug ("border=2");
       dswin = newwin (h + 4, w + 4, y - 2, x - 2);
       A4GL_debug ("newwin returns %p", win);
       win = newwin (h + 2, w + 2, y - 2, x - 2);
@@ -391,7 +402,7 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
 
   if (border == 3)
     {
-	A4GL_debug("border=3");
+      A4GL_debug ("border=3");
       dswin = newwin (h + 4, w + 4, y - 1, x - 1);
       A4GL_debug ("newwin returns %p", win);
       win = newwin (h, w, y - 2, x - 2);
@@ -423,7 +434,7 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
   A4GL_debug ("new_panel pan=%p", pan);
   keypad (win, TRUE);
   top_panel (pan);
-	A4GL_debug("su");
+  A4GL_debug ("su");
   A4GL_LL_screen_update ();
   return pan;
 }
@@ -440,13 +451,13 @@ void
 A4GL_LL_remove_window (void *x)
 {
   WINDOW *w;
-	A4GL_debug("remove window... del_panel : %p",x);
+  A4GL_debug ("remove window... del_panel : %p", x);
   w = panel_window (x);
-	A4GL_debug("w=%p",w);
+  A4GL_debug ("w=%p", w);
   del_panel (x);
-	A4GL_debug("Deleted panel %p\n",x);
+  A4GL_debug ("Deleted panel %p\n", x);
   delwin (w);
- 	A4GL_debug("delwin %p",w);
+  A4GL_debug ("delwin %p", w);
 }
 
 /**
@@ -455,33 +466,35 @@ A4GL_LL_remove_window (void *x)
  * @param 
  * @return 
  */
-void 
-A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch,int curr_width,int curr_height,int iscurrborder,int currwinno)
+void
+A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch, int curr_width,
+			  int curr_height, int iscurrborder, int currwinno)
 {
   int ch2;
   int attr;
   void *p;
 
-  attr=ch & 0xffffff00;
+  attr = ch & 0xffffff00;
   //A4GL_debug("attr before=%x",attr);
-  attr = A4GL_LL_decode_aubit_attr (attr, 'w') ;
+  attr = A4GL_LL_decode_aubit_attr (attr, 'w');
   //A4GL_debug("attr after=%x",attr);
 
   ch2 = ch & 0xff;
   //A4GL_debug ("x=%d y=%d ch2=%c", x, y, ch2);
   p = panel_window (win);
-  if (!iscurrborder  || currwinno  == 0)
+  if (!iscurrborder || currwinno == 0)
     {
       x--;
       y--;
     }
-  if (x < 0 || y < 0 || x > curr_width 
-      || y > curr_height );
-  else {
-		if (ch2==0) ch2='*';
-		//A4GL_debug("waddch  p=%p y=%d x=%d ch=%x ATTR=%x CH=%x",p,y,x,ch,attr,ch2);
-    		mvwaddch (p, y, x,  attr|ch2);
-	}
+  if (x < 0 || y < 0 || x > curr_width || y > curr_height);
+  else
+    {
+      if (ch2 == 0)
+	ch2 = '*';
+      //A4GL_debug("waddch  p=%p y=%d x=%d ch=%x ATTR=%x CH=%x",p,y,x,ch,attr,ch2);
+      mvwaddch (p, y, x, attr | ch2);
+    }
 }
 
 /**
@@ -490,8 +503,9 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch,int curr_width,int cur
  * @param 
  * @return 
  */
-void 
-A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch,int curr_width,int curr_height,int iscurrborder,int currwinno)
+void
+A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch, int curr_width,
+			    int curr_height, int iscurrborder, int currwinno)
 {
   int ch2;
   int attr;
@@ -500,22 +514,24 @@ A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch,int curr_width,int c
   attr = A4GL_LL_decode_aubit_attr (ch & 0xffffff00, 'w');
   ch2 = ch & 0xff;
   //A4GL_debug ("x=%d y=%d ch2=%c", x, y, ch2);
-  p =win;
-  if (!iscurrborder  || currwinno  == 0)
+  p = win;
+  if (!iscurrborder || currwinno == 0)
     {
       x--;
       y--;
     }
-  if (x < 0 || y < 0 || x > curr_width 
-      || y > curr_height ) {
-		A4GL_debug("Out of range:%d,%d ",x,y);
-	}
-  else {
-		if (ch2==0) ch2='*';
-		//A4GL_debug("----> waddch  %p %d %d %x ATTR=%x CH=%d",p,y,x,ch,attr,ch2);
-    		mvwaddch (p, y, x, attr + ch2);
-	}
-	//wrefresh(p);
+  if (x < 0 || y < 0 || x > curr_width || y > curr_height)
+    {
+      A4GL_debug ("Out of range:%d,%d ", x, y);
+    }
+  else
+    {
+      if (ch2 == 0)
+	ch2 = '*';
+      //A4GL_debug("----> waddch  %p %d %d %x ATTR=%x CH=%d",p,y,x,ch,attr,ch2);
+      mvwaddch (p, y, x, attr + ch2);
+    }
+  //wrefresh(p);
 }
 
 
@@ -526,10 +542,10 @@ A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch,int curr_width,int c
  * @param 
  * @return 
  */
-void 
+void
 A4GL_LL_screen_update (void)
 {
-A4GL_debug("CURSES : update");
+  A4GL_debug ("CURSES : update");
 // Update the physical screen
   if (A4GL_LL_pause_mode (-1))
     {
@@ -548,7 +564,7 @@ void
 A4GL_LL_screen_redraw (void)
 {
 // Blank the screen and redraw from scratch
-A4GL_debug("CURSES : refresh");
+  A4GL_debug ("CURSES : refresh");
   clearok (curscr, 1);
   A4GL_LL_screen_update ();
 }
@@ -563,13 +579,14 @@ int
 A4GL_LL_colour_code (int a)
 {
   int z;
-  static int ismono=-1;
-  static int isclassic=-1;
+  static int ismono = -1;
+  static int isclassic = -1;
   z = 1;
-  if (ismono==-1) {
-  	ismono=A4GL_isyes (acl_getenv ("MONO"));
-  }
-	
+  if (ismono == -1)
+    {
+      ismono = A4GL_isyes (acl_getenv ("MONO"));
+    }
+
 
   if (!has_colors () || ismono)
     {
@@ -583,10 +600,11 @@ A4GL_LL_colour_code (int a)
       //{
       //z *= 2;
       //}
-      if (isclassic==-1) {
-		isclassic=A4GL_isyes (acl_getenv ("CLASSIC_I4GL_MONO"));
+      if (isclassic == -1)
+	{
+	  isclassic = A4GL_isyes (acl_getenv ("CLASSIC_I4GL_MONO"));
 	}
-      if (!isclassic) 
+      if (!isclassic)
 	{
 	  if (a == 1)
 	    z = A_BOLD;		// RED
@@ -627,9 +645,9 @@ A4GL_LL_colour_code (int a)
  * @return 
  */
 void *
-A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int iscurrborder,int currwinno,int form_line, void *currwin,
-	void *f_form, int maxline, int maxcol
-)
+A4GL_LL_display_form (void *vf, int attrib, int curr_width, int curr_height,
+		      int iscurrborder, int currwinno, int form_line,
+		      void *currwin, void *f_form, int maxline, int maxcol)
 {
   int rows, cols;
   char buff[80];
@@ -647,7 +665,7 @@ A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int is
 
   //A4GL_chkwin ();
   A4GL_debug ("In display_form");
-  w = (PANEL *) currwin; 				// A4GL_get_currwin ();
+  w = (PANEL *) currwin;	// A4GL_get_currwin ();
 
   sprintf (buff, "%p", vf);
 
@@ -656,29 +674,31 @@ A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int is
       A4GL_LL_error_box ("NO WINDOW", 0);
     }
 
-  fl = form_line ;
-  for (a = fl; a <= curr_height ; a++)
+  fl = form_line;
+  for (a = fl; a <= curr_height; a++)
     {
-      if (iscurrborder )
+      if (iscurrborder)
 	{
-		
-		A4GL_wprintw(currwin,0,1,a+1,curr_width,curr_height,iscurrborder,currwinno, " ");
+
+	  A4GL_wprintw (currwin, 0, 1, a + 1, curr_width, curr_height,
+			iscurrborder, currwinno, " ");
 	  //A4GL_display_internal (1, a + 1, " ", 0, 1);
 	}
       else
 	{
-		A4GL_wprintw(currwin,0,1,a,curr_width,curr_height,iscurrborder ,currwinno, " ");
+	  A4GL_wprintw (currwin, 0, 1, a, curr_width, curr_height,
+			iscurrborder, currwinno, " ");
 	  //A4GL_display_internal (1, a, " ", 0, 1);
 	}
     }
   A4GL_form_scale_form (f_form, &rows, &cols);
-  rows = maxline ;
+  rows = maxline;
   cols = maxcol;
 
   A4GL_debug ("Form line=%d", fl);
   A4GL_debug ("Scale form returns %d %d", rows, cols);
 
-  if (iscurrborder )
+  if (iscurrborder)
     {
       rows++;
     }
@@ -686,12 +706,12 @@ A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int is
     {
     }
 
-  if (rows - iscurrborder  > curr_width + 1)
+  if (rows - iscurrborder > curr_width + 1)
     {
       A4GL_exitwith ("Window is too small to display this form (too high)");
       return 0;
     }
-  if (cols - iscurrborder  > curr_width + 1)
+  if (cols - iscurrborder > curr_width + 1)
     {
       A4GL_exitwith ("Window is too small to display this form (too wide)");
       return 0;
@@ -709,7 +729,7 @@ A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int is
       A4GL_debug ("Form details returns it has *NO* border");
     }
 
-  if (iscurrborder )
+  if (iscurrborder)
     {
       A4GL_debug ("Window details returns it has border");
     }
@@ -719,7 +739,7 @@ A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int is
     }
   A4GL_debug ("derwin - %d rows %d cols form line=%d", rows, cols, fl);
 
-  if (iscurrborder )
+  if (iscurrborder)
     {
       drwin = derwin (panel_window ((PANEL *) w), rows, cols, fl + 1, 1);
     }
@@ -750,22 +770,23 @@ A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int is
 
   if (a == E_POSTED)
     {
-        WINDOW *olddrwin;
-	A4GL_debug("Deleteing old subwin");
-        olddrwin=A4GL_form_form_sub(f_form);
-	if (olddrwin) {
-		A4GL_debug("delwin %p",olddrwin);
-		delwin(olddrwin);
+      WINDOW *olddrwin;
+      A4GL_debug ("Deleteing old subwin");
+      olddrwin = A4GL_form_form_sub (f_form);
+      if (olddrwin)
+	{
+	  A4GL_debug ("delwin %p", olddrwin);
+	  delwin (olddrwin);
 	}
-        A4GL_form_unpost_form (f_form);
-  	a = A4GL_form_set_form_sub (f_form, drwin);
+      A4GL_form_unpost_form (f_form);
+      a = A4GL_form_set_form_sub (f_form, drwin);
     }
 
-  a = A4GL_form_set_form_win (f_form, panel_window(w));
+  a = A4GL_form_set_form_win (f_form, panel_window (w));
   if (a == E_POSTED)
     {
-	A4GL_exitwith("That shouldn't be posted by now...");
-	exit(33);
+      A4GL_exitwith ("That shouldn't be posted by now...");
+      exit (33);
     }
 
 
@@ -785,7 +806,7 @@ A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int is
       A4GL_debug ("Form posted already - dumping and re-doing");
       A4GL_form_unpost_form (f_form);
       a = A4GL_form_post_form (f_form);
-      A4GL_debug ("Form was already posted - status now : %d",a);
+      A4GL_debug ("Form was already posted - status now : %d", a);
     }
 
   if (iscurrborder)
@@ -881,15 +902,16 @@ A4GL_LL_screen_width (void)
   if (scr_width == -1)
     {
 
-	A4GL_debug("Getting values");
+      A4GL_debug ("Getting values");
       getmaxyx (stdscr, scr_height, scr_width);
-	A4GL_debug("%d %d\n",scr_height,scr_width);
+      A4GL_debug ("%d %d\n", scr_height, scr_width);
       if (atoi (acl_getenv ("COLUMNS")))
 	{
-	A4GL_debug("Got COLUMNS ");
+	  A4GL_debug ("Got COLUMNS ");
 	  scr_width = atoi (acl_getenv ("COLUMNS"));
 	  scr_height = atoi (acl_getenv ("LINES"));
-	A4GL_debug("Got COLUMNS (%s %s)",acl_getenv ("COLUMNS"),acl_getenv ("LINES"));
+	  A4GL_debug ("Got COLUMNS (%s %s)", acl_getenv ("COLUMNS"),
+		      acl_getenv ("LINES"));
 	}
     }
   A4GL_debug ("screen_width returning %d", scr_width);
@@ -907,10 +929,10 @@ A4GL_LL_screen_height (void)
 {
   if (scr_width == -1)
     {
-	A4GL_debug("Getting values");
+      A4GL_debug ("Getting values");
       getmaxyx (stdscr, scr_height, scr_width);
-	A4GL_debug("%d %d\n",scr_height,scr_width);
-	
+      A4GL_debug ("%d %d\n", scr_height, scr_width);
+
       if (atoi (acl_getenv ("COLUMNS")))
 	{
 	  scr_width = atoi (acl_getenv ("COLUMNS"));
@@ -946,13 +968,13 @@ A4GL_LL_set_bkg (void *win, int attr)
  * @param 
  * @return 
  */
-int 
+int
 A4GL_LL_decode_aubit_attr (int a, char s)
 {
   char colour[20];
   char attr[256];
   int ca;			/* Curses attribute */
-  static int noinvis=-1;
+  static int noinvis = -1;
 
   A4GL_get_strings_from_attr (a, colour, attr);
 
@@ -1019,10 +1041,11 @@ A4GL_LL_decode_aubit_attr (int a, char s)
 	ca += A_UNDERLINE;
     }
 //A4GL_debug("Returning ca = %d %x (visible=%d)",ca,ca,!(ca&A_INVIS));
-  if (noinvis==-1) {
-	noinvis=A4GL_isyes (acl_getenv ("NO_INVIS_ATTR"));
-  }
-  if (noinvis) 
+  if (noinvis == -1)
+    {
+      noinvis = A4GL_isyes (acl_getenv ("NO_INVIS_ATTR"));
+    }
+  if (noinvis)
     {
       if (ca & A_INVIS)
 	ca -= A_INVIS;
@@ -1039,7 +1062,9 @@ A4GL_LL_decode_aubit_attr (int a, char s)
  * @param 
  * @return 
  */
-int A4GL_LL_decode_colour_attr_aubit(int a) {
+int
+A4GL_LL_decode_colour_attr_aubit (int a)
+{
   char colour[20];
   char attr[256];
 //int col;
@@ -1047,12 +1072,13 @@ int A4GL_LL_decode_colour_attr_aubit(int a) {
   A4GL_get_strings_from_attr (a, colour, attr);
 
   //A4GL_debug ("MJA Got colour as : %s - %s", colour,attr);
-  A4GL_trim(colour);
+  A4GL_trim (colour);
 
-  if (strlen(colour)==0) {
-	A4GL_debug("No colour..");
-		return A4GL_LL_colour_code(COLOR_WHITE);
-}
+  if (strlen (colour) == 0)
+    {
+      A4GL_debug ("No colour..");
+      return A4GL_LL_colour_code (COLOR_WHITE);
+    }
 
   if (strcmp (colour, "BLACK") == 0)
     return A4GL_LL_colour_code (COLOR_BLACK);
@@ -1068,12 +1094,13 @@ int A4GL_LL_decode_colour_attr_aubit(int a) {
     return A4GL_LL_colour_code (COLOR_MAGENTA);
   if (strcmp (colour, "CYAN") == 0)
     return A4GL_LL_colour_code (COLOR_CYAN);
-  if (strcmp (colour, "WHITE") == 0) {
-		A4GL_debug("Its white.. %d",A4GL_LL_colour_code (COLOR_WHITE));
-    return A4GL_LL_colour_code (COLOR_WHITE);
-	}
+  if (strcmp (colour, "WHITE") == 0)
+    {
+      A4GL_debug ("Its white.. %d", A4GL_LL_colour_code (COLOR_WHITE));
+      return A4GL_LL_colour_code (COLOR_WHITE);
+    }
 
-A4GL_debug("No match for colour...");
+  A4GL_debug ("No match for colour...");
 
   return 0;
 
@@ -1086,7 +1113,8 @@ A4GL_debug("No match for colour...");
  * @return 
  */
 void *
-A4GL_LL_make_field (int frow, int fcol, int rows, int cols,char *widget,char *config,void* id)
+A4GL_LL_make_field (int frow, int fcol, int rows, int cols, char *widget,
+		    char *config, void *id)
 {
   FIELD *f;
   A4GL_debug ("Creating new field entry y=%d x=%d rows=%d width=%d\n", frow,
@@ -1264,7 +1292,8 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
       if (is_graphics)
 	{
 	  A4GL_form_set_field_opts (f, A4GL_form_field_opts (f) & ~O_ACTIVE);
-	  A4GL_debug ("SET FIELD OPTS : STATIC %x ", A4GL_form_field_opts (f) & O_STATIC);
+	  A4GL_debug ("SET FIELD OPTS : STATIC %x ",
+		      A4GL_form_field_opts (f) & O_STATIC);
 	  return f;
 	}
       else
@@ -1282,7 +1311,8 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
       A4GL_debug ("99 set field buffer to label = **%s**", label);
       A4GL_form_set_field_buffer (f, 0, label);
       A4GL_form_set_field_opts (f, A4GL_form_field_opts (f) & ~O_ACTIVE);
-      A4GL_debug ("SET FIELD OPTS : STATIC %x ", A4GL_form_field_opts (f) & O_STATIC);
+      A4GL_debug ("SET FIELD OPTS : STATIC %x ",
+		  A4GL_form_field_opts (f) & O_STATIC);
     }
   else
     {
@@ -1339,7 +1369,8 @@ A4GL_LL_get_field_userptr (void *field)
  * @return 
  */
 void
-A4GL_LL_set_field_attr (void *field,int dtype,int dynamic,int autonext,int invis,int reqd,int compress,int has_picture)
+A4GL_LL_set_field_attr (void *field, int dtype, int dynamic, int autonext,
+			int invis, int reqd, int compress, int has_picture)
 {
   //struct struct_scr_field *f;
   int bc;
@@ -1353,7 +1384,7 @@ A4GL_LL_set_field_attr (void *field,int dtype,int dynamic,int autonext,int invis
 
 
   A4GL_debug ("Setting defs");
-  A4GL_default_attributes_in_ll (field, dtype,has_picture);
+  A4GL_default_attributes_in_ll (field, dtype, has_picture);
   A4GL_debug ("Set defs");
 
   if (autonext)
@@ -1382,7 +1413,7 @@ A4GL_LL_set_field_attr (void *field,int dtype,int dynamic,int autonext,int invis
 	}
       else
 	{
-	A4GL_debug("set max field : %d\n",dynamic);
+	  A4GL_debug ("set max field : %d\n", dynamic);
 	  A4GL_form_set_max_field (field, dynamic);
 	  A4GL_debug ("Max size=%d CARAT", dynamic);
 	}
@@ -1391,7 +1422,7 @@ A4GL_LL_set_field_attr (void *field,int dtype,int dynamic,int autonext,int invis
   else
     {
       A4GL_form_field_opts_off (field, O_STATIC);
-      A4GL_form_set_max_field (field, A4GL_mja_get_field_width(field));
+      A4GL_form_set_max_field (field, A4GL_mja_get_field_width (field));
     }
 
   if (reqd)
@@ -1423,15 +1454,18 @@ A4GL_LL_set_field_attr (void *field,int dtype,int dynamic,int autonext,int invis
  * @return 
  */
 void *
-A4GL_LL_new_form (list_of_fields *flist)
+A4GL_LL_new_form (list_of_fields * flist)
 {
   FIELD **flds;
   void *frm;
   int a;
-  flds=malloc((flist->a.a_len+1)*sizeof(FIELD *));
-  for (a=0;a<flist->a.a_len;a++) { flds[a]=(FIELD *)flist->a.a_val[a]; }
-  flds[flist->a.a_len]=0;
-  frm=A4GL_form_new_form (flds);
+  flds = malloc ((flist->a.a_len + 1) * sizeof (FIELD *));
+  for (a = 0; a < flist->a.a_len; a++)
+    {
+      flds[a] = (FIELD *) flist->a.a_val[a];
+    }
+  flds[flist->a.a_len] = 0;
+  frm = A4GL_form_new_form (flds);
   //free(flds); //@fixme - memory leak...
   return frm;
 }
@@ -1478,11 +1512,13 @@ A4GL_LL_field_buffer (void *field, int n)
 void
 A4GL_LL_set_field_buffer (void *field, int n, char *str)
 {
-int a;
-A4GL_debug("LL_set_field_buffer : '%s' ",str);
-  a=A4GL_form_set_field_buffer (field, n, str);
-A4GL_debug("set_field_buffer : %s returns %d field buffer=%s opts=%x",str,a,A4GL_form_field_buffer(field,n),A4GL_form_field_opts(field));
-A4GL_debug_print_field_opts(field);
+  int a;
+  A4GL_debug ("LL_set_field_buffer : '%s' ", str);
+  a = A4GL_form_set_field_buffer (field, n, str);
+  A4GL_debug ("set_field_buffer : %s returns %d field buffer=%s opts=%x", str,
+	      a, A4GL_form_field_buffer (field, n),
+	      A4GL_form_field_opts (field));
+  A4GL_debug_print_field_opts (field);
 
 }
 
@@ -1512,7 +1548,7 @@ A4GL_LL_set_field_opts (void *field, int oopt)
 {
   A4GL_debug ("SET FIELD OPTS : STATIC %x ", oopt & O_STATIC);
   A4GL_form_set_field_opts (field, oopt);
-  return A4GL_LL_field_opts(field);
+  return A4GL_LL_field_opts (field);
 }
 
 
@@ -1566,11 +1602,11 @@ A4GL_LL_set_carat (void *form)
 {
 //PANEL *w;
   A4GL_form_pos_form_cursor (form);
-  A4GL_debug("CURSES : set_carat");
+  A4GL_debug ("CURSES : set_carat");
 
 
-  A4GL_LL_screen_update();
-  
+  A4GL_LL_screen_update ();
+
 }
 
 
@@ -1591,24 +1627,25 @@ A4GL_LL_getch_swin (void *window_ptr)
 
   //a = A4GL_readkey ();
   //if (a != 0)
-    //{
-      //A4GL_debug ("Read %d from keyfile", a);
-      //return a;
-    //}
+  //{
+  //A4GL_debug ("Read %d from keyfile", a);
+  //return a;
+  //}
 
   while (1)
     {
 #ifndef XCURSES
-	// Half delay seems to mess up pdcurses (at least under X)
+      // Half delay seems to mess up pdcurses (at least under X)
       halfdelay (1);
 #endif
       //a = wgetch (window_ptr);
-	abort_pressed=0;
+      abort_pressed = 0;
       a = getch ();
 
 #ifdef __MINGW32__
-	// ^c
-	if (a==3) abort_pressed=1;
+      // ^c
+      if (a == 3)
+	abort_pressed = 1;
 #endif
 
       if (a == KEY_MOUSE)
@@ -1634,7 +1671,8 @@ A4GL_LL_getch_swin (void *window_ptr)
   a = A4GL_curses_to_aubit (a);	// Convert it to an aubit key...
   //A4GL_chk_for_screen_print (a);
   //A4GL_logkey (a);
-  A4GL_debug ("Got char from keyboard : %d F2=%d LEFT=%d 4GL for f5 = %d", a, KEY_F (2), KEY_LEFT, A4GLKEY_F (5));
+  A4GL_debug ("Got char from keyboard : %d F2=%d LEFT=%d 4GL for f5 = %d", a,
+	      KEY_F (2), KEY_LEFT, A4GLKEY_F (5));
   return a;
 }
 
@@ -1650,7 +1688,8 @@ A4GL_LL_get_carat (void *form)
 {
   FORM *mform;
   mform = form;
-  A4GL_debug ("get CARAT : %d in %p", mform->curcol, A4GL_form_current_field (mform));
+  A4GL_debug ("get CARAT : %d in %p", mform->curcol,
+	      A4GL_form_current_field (mform));
   return mform->curcol;
 }
 
@@ -1663,37 +1702,67 @@ A4GL_LL_get_carat (void *form)
 int
 A4GL_LL_int_form_driver (void *mform, int mode)
 {
-int a;
-int nmode;
+  int a;
+  int nmode;
 
-if (mode>=0x6000) {
-	A4GL_debug("FX1 Should be called with AUBIT_REQ not REQ %x\n",mode);
-	A4GL_pause_execution();
-}
+  if (mode >= 0x6000)
+    {
+      A4GL_debug ("FX1 Should be called with AUBIT_REQ not REQ %x\n", mode);
+      A4GL_pause_execution ();
+    }
 
-nmode=-1;
+  nmode = -1;
 
-switch(mode) {
-	case AUBIT_REQ_BEG_FIELD: nmode= REQ_BEG_FIELD; break;
-	case AUBIT_REQ_END_FIELD: nmode= REQ_END_FIELD;break;
-	case AUBIT_REQ_CLR_EOF: nmode= REQ_CLR_EOF; break;
-	case AUBIT_REQ_CLR_FIELD: nmode=REQ_CLR_FIELD; break;
-	case AUBIT_REQ_DEL_CHAR: nmode= REQ_DEL_CHAR; break;
-	case AUBIT_REQ_DEL_PREV: nmode= REQ_DEL_PREV;break;
-	case AUBIT_REQ_FIRST_FIELD: nmode= REQ_FIRST_FIELD; break;
-	case AUBIT_REQ_FIRST_PAGE: nmode= REQ_FIRST_PAGE; break;
-	case AUBIT_REQ_INS_MODE: nmode= REQ_INS_MODE; break;
-	case AUBIT_REQ_NEXT_CHAR: nmode= REQ_NEXT_CHAR;break;
-	case AUBIT_REQ_OVL_MODE: nmode= REQ_OVL_MODE; break;
-	case AUBIT_REQ_PREV_CHAR: nmode= REQ_PREV_CHAR; break;
-	case AUBIT_REQ_VALIDATION: nmode= REQ_VALIDATION; break;
-	default : nmode=mode;
-}
-  if (mode==-1) return 0;
-  a=A4GL_form_form_driver (mform, nmode);
-  A4GL_debug("int_form_Driver %p %x = %d",mform,nmode,a);
-	return a;
-	//return 1;
+  switch (mode)
+    {
+    case AUBIT_REQ_BEG_FIELD:
+      nmode = REQ_BEG_FIELD;
+      break;
+    case AUBIT_REQ_END_FIELD:
+      nmode = REQ_END_FIELD;
+      break;
+    case AUBIT_REQ_CLR_EOF:
+      nmode = REQ_CLR_EOF;
+      break;
+    case AUBIT_REQ_CLR_FIELD:
+      nmode = REQ_CLR_FIELD;
+      break;
+    case AUBIT_REQ_DEL_CHAR:
+      nmode = REQ_DEL_CHAR;
+      break;
+    case AUBIT_REQ_DEL_PREV:
+      nmode = REQ_DEL_PREV;
+      break;
+    case AUBIT_REQ_FIRST_FIELD:
+      nmode = REQ_FIRST_FIELD;
+      break;
+    case AUBIT_REQ_FIRST_PAGE:
+      nmode = REQ_FIRST_PAGE;
+      break;
+    case AUBIT_REQ_INS_MODE:
+      nmode = REQ_INS_MODE;
+      break;
+    case AUBIT_REQ_NEXT_CHAR:
+      nmode = REQ_NEXT_CHAR;
+      break;
+    case AUBIT_REQ_OVL_MODE:
+      nmode = REQ_OVL_MODE;
+      break;
+    case AUBIT_REQ_PREV_CHAR:
+      nmode = REQ_PREV_CHAR;
+      break;
+    case AUBIT_REQ_VALIDATION:
+      nmode = REQ_VALIDATION;
+      break;
+    default:
+      nmode = mode;
+    }
+  if (mode == -1)
+    return 0;
+  a = A4GL_form_form_driver (mform, nmode);
+  A4GL_debug ("int_form_Driver %p %x = %d", mform, nmode, a);
+  return a;
+  //return 1;
 }
 
 /**
@@ -1744,7 +1813,7 @@ A4GL_LL_create_errorwindow (int h, int w, int y, int x, int attr, char *str)
 {
   WINDOW *win;
   PANEL *p;
-char buff[255];
+  char buff[255];
   A4GL_debug ("Creating errorwindow h=%d w=%d y=%d x=%d attr=%d str=%s", h, w,
 	      y, x, attr, str);
   win = newwin (h, w, y, x);
@@ -1758,14 +1827,15 @@ char buff[255];
   wattrset (win, attr);
   wprintw (win, "%s", str);
 
-  strcpy(buff,str);
-  A4GL_trim(buff);
+  strcpy (buff, str);
+  A4GL_trim (buff);
 
-  if (strlen(buff)) {
-	A4GL_LL_beep();
-  }
+  if (strlen (buff))
+    {
+      A4GL_LL_beep ();
+    }
 
-  curr_err_win=p;
+  curr_err_win = p;
 
   return p;
 }
@@ -1779,10 +1849,11 @@ char buff[255];
 void
 A4GL_LL_delete_errorwindow (void *curr_error_window)
 {
-  if (curr_err_win) {
-  		A4GL_LL_remove_window (curr_error_window);
-  }
-  curr_err_win=0;
+  if (curr_err_win)
+    {
+      A4GL_LL_remove_window (curr_error_window);
+    }
+  curr_err_win = 0;
 }
 
 /**
@@ -1805,7 +1876,7 @@ A4GL_LL_field_status (void *field)
  * @return 
  */
 int
-A4GL_LL_dump_screen (int n,char *ptr,int mode)
+A4GL_LL_dump_screen (int n, char *ptr, int mode)
 {
   FILE *f;
   int sh;
@@ -1817,14 +1888,14 @@ A4GL_LL_dump_screen (int n,char *ptr,int mode)
   //int mode = 1;
   char *buff;
 //  int is_line_drawing;
-  
-  
-	#ifdef DEBUG
-		A4GL_debug ("Begin dump screen");
-	#endif
-  
-	//w=find_pointer ("screen", WINCODE);
-	w = curscr;
+
+
+#ifdef DEBUG
+  A4GL_debug ("Begin dump screen");
+#endif
+
+  //w=find_pointer ("screen", WINCODE);
+  w = curscr;
 /*
 	if (n == 1) { ptr = A4GL_char_pop (); }
 
@@ -1834,135 +1905,175 @@ A4GL_LL_dump_screen (int n,char *ptr,int mode)
     }
 */
 
-	if (n != 0) {
-		A4GL_trim (ptr);
+  if (n != 0)
+    {
+      A4GL_trim (ptr);
     }
 
 
   if (mode == 3)
     {
-	#if (! defined(__MINGW32__) && ! defined (XCURSES))
-		scr_dump (ptr);
-		return 0;		
-	#else
-        A4GL_debug ("scr_dump not implemented in PDcurses/Xcurses - try mode=1 instead");
- 		mode=1;
-	#endif
+#if (! defined(__MINGW32__) && ! defined (XCURSES))
+      scr_dump (ptr);
+      return 0;
+#else
+      A4GL_debug
+	("scr_dump not implemented in PDcurses/Xcurses - try mode=1 instead");
+      mode = 1;
+#endif
       return 0;
 
     }
 
-	sh = A4GL_LL_screen_height ();
-	sw = A4GL_LL_screen_width ();
+  sh = A4GL_LL_screen_height ();
+  sw = A4GL_LL_screen_width ();
 
-	if (strcasecmp (acl_getenv ("TRIMDUMP"), "24x80") == 0) {
-		if (sh > 24)
-			sh = 24;
-		if (sw > 80)
-			sw = 80;
+  if (strcasecmp (acl_getenv ("TRIMDUMP"), "24x80") == 0)
+    {
+      if (sh > 24)
+	sh = 24;
+      if (sw > 80)
+	sw = 80;
     }
-	if (strcasecmp (acl_getenv ("TRIMDUMP"), "25x80") == 0) {
-		if (sh > 24)
-			sh = 25;
-		if (sw > 80)
-			sw = 80;
+  if (strcasecmp (acl_getenv ("TRIMDUMP"), "25x80") == 0)
+    {
+      if (sh > 24)
+	sh = 25;
+      if (sw > 80)
+	sw = 80;
     }
-	if (strcasecmp (acl_getenv ("TRIMDUMP"), "24x132") == 0) {
-		if (sh > 24)
-			sh = 24;
-		if (sw > 132)
-			sw = 132;
+  if (strcasecmp (acl_getenv ("TRIMDUMP"), "24x132") == 0)
+    {
+      if (sh > 24)
+	sh = 24;
+      if (sw > 132)
+	sw = 132;
     }
-	if (strcasecmp (acl_getenv ("TRIMDUMP"), "25x132") == 0) {
-		if (sh > 24)
-			sh = 25;
-		if (sw > 132)
-			sw = 132;
-    }
-
-	if (n == 0) {
-		A4GL_debug ("AUTO PRINT...");
-		// We want to dump to to PRINTSCRFILE
-		ptr = acl_getenv ("A4GL_PRINTSCRFILE");
-		if (ptr) {
-			if (strlen (ptr) == 0)
-				ptr = 0;
-		}
-		if (ptr == 0) {
-			A4GL_debug ("No PRINTSCRFILE - ignored print dump request");
-			return 0;
-		}
-		if (ptr[0] == '|') {
-			f = popen (&ptr[1], "w");
-		} else {
-			if (ptr[0] == '+') {
-				f = fopen (&ptr[1], "a");
-			} else {
-				f = fopen (ptr, "w");
-			}
-		}
-    } else {
-		f = fopen (ptr, "w");
-    }
-	if (f == 0) {
-		A4GL_debug ("Unable to open A4GL_dump file");
-		return 0;
+  if (strcasecmp (acl_getenv ("TRIMDUMP"), "25x132") == 0)
+    {
+      if (sh > 24)
+	sh = 25;
+      if (sw > 132)
+	sw = 132;
     }
 
-	for (y = 0; y < sh; y++) {
-		for (x = 0; x < sw; x++) {
-			attr = mvwinch (w, y, x);
-			if (mode == 0) {
-				buff = (char *) &attr;
-				/* @todo - Fix for different ENDISMS */
-				fprintf (f, "%c%c", buff[2], attr & 255);
-			}
-
-			if (mode == 1) {
-				// Translate line drawings chars into printable ones
-				if ((attr & 0xff) == (ACS_VLINE & 0xff)
-					#ifndef __PDCURSES__
-						&& (attr & A_ALTCHARSET)
-					#endif
-						) {	attr = (int) '|'; }
-						 
-				if ((attr & 0xff) == (ACS_HLINE & 0xff)
-					#ifndef __PDCURSES__
-						&& (attr & A_ALTCHARSET)
-					#endif
-						) {	attr = (int) '-'; }
-						 
-				if ((attr & 0xff) == (ACS_LLCORNER & 0xff)
-					#ifndef __PDCURSES__
-						&& (attr & A_ALTCHARSET)
-					#endif 
-						) { attr = (int) '+'; }
-						 
-				if ((attr & 0xff) == (ACS_LRCORNER & 0xff)
-					#ifndef __PDCURSES__
-						&& (attr & A_ALTCHARSET)
-					#endif
-						) { attr = (int) '+'; }
-						 
-				if ((attr & 0xff) == (ACS_URCORNER & 0xff)
-					#ifndef __PDCURSES__
-						&& (attr & A_ALTCHARSET)
-					#endif
-						) { attr = (int) '+'; }
-
-				if ((attr & 0xff) == (ACS_ULCORNER & 0xff)
-					#ifndef __PDCURSES__
-						&& (attr & A_ALTCHARSET) 
-					#endif
-					) { attr = (int) '+'; }
-
-				fprintf (f, "%c", attr & 255);
-			}
-		}
-		fprintf (f, "\n");
+  if (n == 0)
+    {
+      A4GL_debug ("AUTO PRINT...");
+      // We want to dump to to PRINTSCRFILE
+      ptr = acl_getenv ("A4GL_PRINTSCRFILE");
+      if (ptr)
+	{
+	  if (strlen (ptr) == 0)
+	    ptr = 0;
 	}
-	fclose (f);
-	return 0;
+      if (ptr == 0)
+	{
+	  A4GL_debug ("No PRINTSCRFILE - ignored print dump request");
+	  return 0;
+	}
+      if (ptr[0] == '|')
+	{
+	  f = popen (&ptr[1], "w");
+	}
+      else
+	{
+	  if (ptr[0] == '+')
+	    {
+	      f = fopen (&ptr[1], "a");
+	    }
+	  else
+	    {
+	      f = fopen (ptr, "w");
+	    }
+	}
+    }
+  else
+    {
+      f = fopen (ptr, "w");
+    }
+  if (f == 0)
+    {
+      A4GL_debug ("Unable to open A4GL_dump file");
+      return 0;
+    }
+
+  for (y = 0; y < sh; y++)
+    {
+      for (x = 0; x < sw; x++)
+	{
+	  attr = mvwinch (w, y, x);
+	  if (mode == 0)
+	    {
+	      buff = (char *) &attr;
+	      /* @todo - Fix for different ENDISMS */
+	      fprintf (f, "%c%c", buff[2], attr & 255);
+	    }
+
+	  if (mode == 1)
+	    {
+	      // Translate line drawings chars into printable ones
+	      if ((attr & 0xff) == (ACS_VLINE & 0xff)
+#ifndef __PDCURSES__
+		  && (attr & A_ALTCHARSET)
+#endif
+		)
+		{
+		  attr = (int) '|';
+		}
+
+	      if ((attr & 0xff) == (ACS_HLINE & 0xff)
+#ifndef __PDCURSES__
+		  && (attr & A_ALTCHARSET)
+#endif
+		)
+		{
+		  attr = (int) '-';
+		}
+
+	      if ((attr & 0xff) == (ACS_LLCORNER & 0xff)
+#ifndef __PDCURSES__
+		  && (attr & A_ALTCHARSET)
+#endif
+		)
+		{
+		  attr = (int) '+';
+		}
+
+	      if ((attr & 0xff) == (ACS_LRCORNER & 0xff)
+#ifndef __PDCURSES__
+		  && (attr & A_ALTCHARSET)
+#endif
+		)
+		{
+		  attr = (int) '+';
+		}
+
+	      if ((attr & 0xff) == (ACS_URCORNER & 0xff)
+#ifndef __PDCURSES__
+		  && (attr & A_ALTCHARSET)
+#endif
+		)
+		{
+		  attr = (int) '+';
+		}
+
+	      if ((attr & 0xff) == (ACS_ULCORNER & 0xff)
+#ifndef __PDCURSES__
+		  && (attr & A_ALTCHARSET)
+#endif
+		)
+		{
+		  attr = (int) '+';
+		}
+
+	      fprintf (f, "%c", attr & 255);
+	    }
+	}
+      fprintf (f, "\n");
+    }
+  fclose (f);
+  return 0;
 }
 
 /**
@@ -2071,133 +2182,134 @@ void
 A4GL_LL_initialize_display ()
 {
 #ifdef XCURSES
-		char *argv[1];
+  char *argv[1];
 #endif
-#ifdef DEBUG	
-	A4GL_debug ("LL_initialize_display *************************");
-#endif	
-  
-  
-  /*
-  
- To use XCurses with an existing curses program, you need to make one
- change to your code:
+#ifdef DEBUG
+  A4GL_debug ("LL_initialize_display *************************");
+#endif
 
- Call XCursesExit() just before exiting from your program. eg.
+
+  /*
+
+     To use XCurses with an existing curses program, you need to make one
+     change to your code:
+
+     Call XCursesExit() just before exiting from your program. eg.
+
+     #ifdef XCURSES
+     XCursesExit();
+     #endif
+     exit(0);
+
+     This call is required to enable the child X process to shut down cleanly
+     and free up the shared memory it used.
+
+     To get the most out of XCurses in your curses application you need
+     to call Xinitscr() rather than initscr(). This allows you to pass
+     your program name and resource overrides to XCurses.
+
+     The program name is used as the title of the X window, and for defining X
+     resources specific to your program.
+
+     Resources may also be passed as a parameter to the Xinitscr() function.
+     The parameter is a string in the form of switches. eg. to set the color
+     "red" to "indianred", and the number of lines to 30, the string passed to 
+     Xinitscr would be:
+     "-colorRed indianred -lines 30"
+     -colorBlack  midnightblue
+
+   */
 
 #ifdef XCURSES
- XCursesExit();
+#ifdef DEBUG
+  //trace_on=1;
+  //PDC_debug("Set trace_on=1 from Aubit lowlevel_tui.c\n");
+  A4GL_debug ("calling Xinitscr()");
 #endif
- exit(0);
+  /* PDC_debug defined in PDcurses pdcdebug.c - writes to ./trace file
+     Note that PDcurses need to be compiled with -DPDCDEBUG for most
+     of them to work
+     #ifdef PDCDEBUG
+     if (trace_on) PDC_debug("%s:shmid_Xcurscr %d shmkey_Xcurscr %d LINES %d COLS %d\n",(XCursesProcess)?"     X":"CURSES",shmid_Xcurscr,shmkey_Xcurscr,LINES,COLS);
+     #endif
+     #ifdef PDCDEBUG
+     say ("cursesprocess exiting from Xinitscr\n");
+     #endif
+   */
+  //Xinitscr is defined in PDcurses initscr.c
+  //returns WINDOW*  stdscr=NULL;  - the default screen window  
+  argv[0] = A4GL_get_running_program ();
+  stdscr = Xinitscr (1, argv);	//(argc, argv);
+#ifdef DEBUG
+  A4GL_debug ("returned from Xinitscr()");
+#endif
+#else
+  initscr ();
+#endif
 
- This call is required to enable the child X process to shut down cleanly
- and free up the shared memory it used.
-  
-     To get the most out of XCurses in your curses application you need
-      to call Xinitscr() rather than initscr(). This allows you to pass
-      your program name and resource overrides to XCurses.
-     
-      The program name is used as the title of the X window, and for defining X
-      resources specific to your program.
-	  
-		Resources may also be passed as a parameter to the Xinitscr() function.
-		The parameter is a string in the form of switches. eg. to set the color
-		"red" to "indianred", and the number of lines to 30, the string passed to 
-		Xinitscr would be:
-		"-colorRed indianred -lines 30"
-		-colorBlack  midnightblue
-	  
-  */
-  
-  	#ifdef XCURSES
-		#ifdef DEBUG
-			//trace_on=1;
-			//PDC_debug("Set trace_on=1 from Aubit lowlevel_tui.c\n");
-			A4GL_debug ("calling Xinitscr()");
-		#endif
-		/* PDC_debug defined in PDcurses pdcdebug.c - writes to ./trace file
-		Note that PDcurses need to be compiled with -DPDCDEBUG for most
-		of them to work
-		#ifdef PDCDEBUG
-		   if (trace_on) PDC_debug("%s:shmid_Xcurscr %d shmkey_Xcurscr %d LINES %d COLS %d\n",(XCursesProcess)?"     X":"CURSES",shmid_Xcurscr,shmkey_Xcurscr,LINES,COLS);
-		#endif
-		#ifdef PDCDEBUG
-		   say ("cursesprocess exiting from Xinitscr\n");
-		#endif
-		*/		
-		//Xinitscr is defined in PDcurses initscr.c
-		//returns WINDOW*  stdscr=NULL;  - the default screen window  
-		argv[0]=A4GL_get_running_program();
-		stdscr=Xinitscr( 1, argv );  //(argc, argv);
-		#ifdef DEBUG	
-			A4GL_debug ("returned from Xinitscr()");
-		#endif	
-	#else
-		initscr ();
-	#endif
-	
-	
-  if (A4GL_isyes(acl_getenv("NO_ALT_SCR"))) {
-	/* 
-	When using some terminals types in curses mode, an alternate screen is employed so that
-	when the application finishes (or otherwise enters line mode), the original screen will 
-	be redisplayed. Setting this option attempts to disable this screen swapping so that the
-	original screen is used for the 4GL display.
-	*/
-	#ifdef DEBUG	
-		A4GL_debug ("calling try_to_stop_alternate_view()");
-	#endif	
-	
-  	try_to_stop_alternate_view();
-  }
+
+  if (A4GL_isyes (acl_getenv ("NO_ALT_SCR")))
+    {
+      /* 
+         When using some terminals types in curses mode, an alternate screen is employed so that
+         when the application finishes (or otherwise enters line mode), the original screen will 
+         be redisplayed. Setting this option attempts to disable this screen swapping so that the
+         original screen is used for the 4GL display.
+       */
+#ifdef DEBUG
+      A4GL_debug ("calling try_to_stop_alternate_view()");
+#endif
+
+      try_to_stop_alternate_view ();
+    }
 
   if (has_colors () == FALSE);
   else
     {
-	#ifdef DEBUG	
-		A4GL_debug ("setting up colors...");
-	#endif	
+#ifdef DEBUG
+      A4GL_debug ("setting up colors...");
+#endif
 
       start_color ();
       refresh ();
-	  	#if (! defined(__sun__) && ! defined (__sparc__))	
-			#if (! defined(__MINGW32__) && ! defined (XCURSES))
-				//curses function not available on Solaris (!!!!?????) and PDcurses
-				use_default_colors ();
-				have_default_colors = 1;
-			#else
-				A4GL_debug ("use_default_colors not available with PDcurses/Xcurses");
-			#endif
-		#else
-			A4GL_debug ("use_default_colors not available on Solaris/Sparc");
-		#endif
+#if (! defined(__sun__) && ! defined (__sparc__))
+#if (! defined(__MINGW32__) && ! defined (XCURSES))
+      //curses function not available on Solaris (!!!!?????) and PDcurses
+      use_default_colors ();
+      have_default_colors = 1;
+#else
+      A4GL_debug ("use_default_colors not available with PDcurses/Xcurses");
+#endif
+#else
+      A4GL_debug ("use_default_colors not available on Solaris/Sparc");
+#endif
     }
-	#ifdef DEBUG	
-		A4GL_debug ("calling cbreak()");
-	#endif	
+#ifdef DEBUG
+  A4GL_debug ("calling cbreak()");
+#endif
   cbreak ();
-	#ifdef DEBUG	
-		A4GL_debug ("calling noecho()");
-	#endif	
-  
+#ifdef DEBUG
+  A4GL_debug ("calling noecho()");
+#endif
+
   noecho ();
-	#ifdef DEBUG	
-		A4GL_debug ("calling nonl()");
-	#endif	
-  
+#ifdef DEBUG
+  A4GL_debug ("calling nonl()");
+#endif
+
   nonl ();
-	#ifdef DEBUG	
-		A4GL_debug ("calling intrflush()");
-	#endif	
-  
+#ifdef DEBUG
+  A4GL_debug ("calling intrflush()");
+#endif
+
   intrflush (stdscr, TRUE);
   keypad (stdscr, TRUE);
-  
-	#ifdef DEBUG	
-		A4GL_debug ("after call to keypad()");
-	#endif	
-  
-  
+
+#ifdef DEBUG
+  A4GL_debug ("after call to keypad()");
+#endif
+
+
   if (has_colors ())
     {
       //start_color ();
@@ -2218,37 +2330,38 @@ A4GL_LL_initialize_display ()
 
 
 #ifdef NCURSES_MOUSE_VERSION
-	#ifdef DEBUG
-		A4GL_debug ("Turning Mouse on");
-	#endif
-	#ifdef WIN32
-		#if (! defined(__CYGWIN__) && ! defined(__MINGW32__))
-			#ifdef DEBUG
-				A4GL_debug ("Turning WIN32 mouse on\n");
-			#endif
-			if (A4GL_env_option_set ("ACL_MOUSE") mouse_on (ALL_MOUSE_EVENTS);
-		#endif
-	#else
-	  	if (A4GL_env_option_set ("ACL_MOUSE")) {
-			#ifdef DEBUG
-				A4GL_debug ("Turning UNIX mouse on\n");
-			#endif
-			{
-				int mcode;
-				mcode = mousemask (ALL_MOUSE_EVENTS, 0);
-				#ifdef DEBUG
-					A4GL_debug ("Turned on %d (%d)", mcode, ALL_MOUSE_EVENTS);
-				#endif
-			}
-		}
-	#endif
+#ifdef DEBUG
+  A4GL_debug ("Turning Mouse on");
 #endif
-	refresh ();
-  
-#ifdef DEBUG	
-	A4GL_debug ("LL_initialize_display - done");
-#endif	
-  
+#ifdef WIN32
+#if (! defined(__CYGWIN__) && ! defined(__MINGW32__))
+#ifdef DEBUG
+  A4GL_debug ("Turning WIN32 mouse on\n");
+#endif
+  if (A4GL_env_option_set ("ACL_MOUSE") mouse_on (ALL_MOUSE_EVENTS);
+#endif
+#else
+  if (A4GL_env_option_set ("ACL_MOUSE"))
+    {
+#ifdef DEBUG
+      A4GL_debug ("Turning UNIX mouse on\n");
+#endif
+      {
+	int mcode;
+	mcode = mousemask (ALL_MOUSE_EVENTS, 0);
+#ifdef DEBUG
+	A4GL_debug ("Turned on %d (%d)", mcode, ALL_MOUSE_EVENTS);
+#endif
+      }
+    }
+#endif
+#endif
+  refresh ();
+
+#ifdef DEBUG
+  A4GL_debug ("LL_initialize_display - done");
+#endif
+
 }
 
 /************* PROMPT IMPLEMENTATION ************/
@@ -2259,7 +2372,9 @@ int prompt_last_key = 0;
 
 
 int
-A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h, int af,int curr_width,int iscurrborder,int prompt_line, void *currwin,int prompt_mode)
+A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
+		      int af, int curr_width, int iscurrborder,
+		      int prompt_line, void *currwin, int prompt_mode)
 {
   //char *promptstr;
   int promptline;
@@ -2281,20 +2396,22 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h, int 
   //A4GL_debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, af);
   prompt_last_key = 0;
   memset (buff, ' ', 255);
-  promptline = prompt_line ; 			// A4GL_getprompt_line ();
+  promptline = prompt_line;	// A4GL_getprompt_line ();
   A4GL_debug ("promptline=%d", promptline);
-  width = curr_width ;
+  width = curr_width;
   A4GL_debug ("create window %d %d", 1, promptline);
   A4GL_debug ("%d %d", width - 1, 2);
-  cw = (void *) currwin; // A4GL_get_currwin ();
-  if (iscurrborder )
+  cw = (void *) currwin;	// A4GL_get_currwin ();
+  if (iscurrborder)
     promptline++;
 
-   last_prompt_mode=prompt_mode;
+  last_prompt_mode = prompt_mode;
 
- A4GL_debug("panel_window (cw)=%d , width=%d, promptline - 1 =%d UILIB_A4GL_iscurrborder ()=%d", panel_window (cw), width, promptline - 1, iscurrborder );
+  A4GL_debug
+    ("panel_window (cw)=%d , width=%d, promptline - 1 =%d UILIB_A4GL_iscurrborder ()=%d",
+     panel_window (cw), width, promptline - 1, iscurrborder);
 
-  p = derwin (panel_window (cw), 1, width, promptline - 1, iscurrborder );
+  p = derwin (panel_window (cw), 1, width, promptline - 1, iscurrborder);
 
 
   if (p == 0)
@@ -2311,7 +2428,8 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h, int 
 
   buff[width] = 0;
 
-  wprintw (p, "%s", buff); A4GL_LL_screen_update();
+  wprintw (p, "%s", buff);
+  A4GL_LL_screen_update ();
 
   width -= strlen (promptstr);
   width--;
@@ -2321,18 +2439,21 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h, int 
       sarr[field_cnt++] = (void *) A4GL_LL_make_label (0, 0, promptstr);
     }
 
-  A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
+  A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1,
+	      width - 1);
   A4GL_form_set_new_page (sarr[field_cnt - 1], 1);
-  sarr[field_cnt++] = (void *) A4GL_LL_make_field (0, strlen (promptstr), 1, width + 1,0,0,0);
+  sarr[field_cnt++] =
+    (void *) A4GL_LL_make_field (0, strlen (promptstr), 1, width + 1, 0, 0,
+				 0);
 
 
-  last_prompt_field= sarr[field_cnt - 1];
+  last_prompt_field = sarr[field_cnt - 1];
 
 
   //promptx->field = sarr[field_cnt - 1];
 
 
-  prompt_field=sarr[field_cnt - 1];
+  prompt_field = sarr[field_cnt - 1];
 
 
 
@@ -2341,11 +2462,11 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h, int 
 
 
 
-  flist.a.a_len=field_cnt;
-  flist.a.a_val=(long *)sarr;
+  flist.a.a_len = field_cnt;
+  flist.a.a_val = (long *) sarr;
 
 
-  A4GL_default_attributes_in_ll (prompt_field, 0,0);
+  A4GL_default_attributes_in_ll (prompt_field, 0, 0);
   A4GL_debug ("STATIC OFF");
   A4GL_form_field_opts_off (prompt_field, O_STATIC);
 
@@ -2358,15 +2479,17 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h, int 
       A4GL_debug ("AP...");
       if (strlen (promptstr))
 	{
-	  A4GL_LL_set_field_fore (sarr[0], A4GL_LL_decode_aubit_attr (ap, 'f'));
+	  A4GL_LL_set_field_fore (sarr[0],
+				  A4GL_LL_decode_aubit_attr (ap, 'f'));
 	  A4GL_LL_set_field_back (sarr[0], A4GL_LL_decode_aubit_attr (ap, 'b'));	// maybe need 'B' for whole field..
 	}
     }
 
   if (af)
     {
-      A4GL_debug ("AF... %d",af);
-      A4GL_LL_set_field_back (prompt_field, A4GL_LL_decode_aubit_attr (af, 'b'));
+      A4GL_debug ("AF... %d", af);
+      A4GL_LL_set_field_back (prompt_field,
+			      A4GL_LL_decode_aubit_attr (af, 'b'));
       A4GL_LL_set_field_fore (prompt_field, A4GL_LL_decode_aubit_attr (af, 'f'));	// maybe need 'B' for whole field..
       if (af & AUBIT_ATTR_INVISIBLE)
 	{
@@ -2385,23 +2508,24 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h, int 
   A4GL_debug ("Set buffer ");
 
   A4GL_debug ("Made fields");
-  
+
   f = A4GL_form_new_form (sarr);
   A4GL_debug ("Form f = %p", f);
 
 
-  last_prompt_f=f;
+  last_prompt_f = f;
   //promptx->f = f;
 
 
   A4GLSQL_set_status (0, 0);
 
-  if (a4gl_status != 0) {
-		return 2;
-  }
+  if (a4gl_status != 0)
+    {
+      return 2;
+    }
 
 
-  pp=(WINDOW *) p;
+  pp = (WINDOW *) p;
   d = derwin (pp, 0, 0, width + 1, 1);
   A4GL_form_set_form_win (f, d);
   A4GL_form_set_form_sub (f, p);
@@ -2414,9 +2538,9 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h, int 
   A4GL_LL_int_form_driver (f, AUBIT_REQ_FIRST_FIELD);
   A4GL_LL_int_form_driver (f, AUBIT_REQ_OVL_MODE);
   A4GLSQL_set_status (0, 0);
-	A4GL_debug("su");
+  A4GL_debug ("su");
 
-  A4GL_LL_set_carat(f);
+  A4GL_LL_set_carat (f);
   A4GL_LL_screen_update ();
   return 0;
 }
@@ -2424,13 +2548,15 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h, int 
 
 
 
-void A4GL_LL_clear_prompt (void *f,void *p)
+void
+A4GL_LL_clear_prompt (void *f, void *p)
 {
-  if (f) {
-	A4GL_form_unpost_form ((FORM *)f);
-  }
+  if (f)
+    {
+      A4GL_form_unpost_form ((FORM *) f);
+    }
 
-  delwin ((WINDOW *)p);
+  delwin ((WINDOW *) p);
 }
 
 
@@ -2438,12 +2564,13 @@ void
 A4GL_LL_scale_form (void *vf, int *y, int *x)
 {
   struct s_form_dets *f;
-	f=vf;
+  f = vf;
   A4GL_form_scale_form (f->form, y, x);
   A4GL_debug ("y=%d x=%x", y, x);
 }
 
-int A4GL_LL_get_field_width_dynamic (void *f)
+int
+A4GL_LL_get_field_width_dynamic (void *f)
 {
   int x, y, a;
   A4GL_form_dynamic_field_info (f, &y, &x, &a);
@@ -2452,10 +2579,11 @@ int A4GL_LL_get_field_width_dynamic (void *f)
 
 
 
-int A4GL_mja_get_field_width (void *f)
+int
+A4GL_mja_get_field_width (void *f)
 {
   //int x, y, a;
-   //int w;
+  //int w;
   int rows;
   int cols;
   int frow;
@@ -2469,10 +2597,10 @@ int A4GL_mja_get_field_width (void *f)
   //formdets = (struct s_form_dets *)A4GL_get_curr_form (0); 
 
   //if (formdets==0||fprop==0) {
-	return A4GL_LL_get_field_width_dynamic(f);
+  return A4GL_LL_get_field_width_dynamic (f);
   //}
 
-  A4GL_form_field_info(f,&rows, &cols, &frow,&fcol, &nrow, &nbuf);
+  A4GL_form_field_info (f, &rows, &cols, &frow, &fcol, &nrow, &nbuf);
 
   //w=A4GL_form_field_width(f);
   //w=formdets->fileform->metrics. metrics_val[A4GL_get_metric_for (formdets, f)].w;
@@ -2481,18 +2609,23 @@ int A4GL_mja_get_field_width (void *f)
 }
 
 
-void A4GL_LL_set_max_field (void *f, int n)
+void
+A4GL_LL_set_max_field (void *f, int n)
 {
-int a;
-	A4GL_debug("set max field : %d\n",n);
-	if (n==0)  {
-  		a=A4GL_form_set_max_field (f, 0);
-	} else {
-		FIELD *rfield;
-		rfield=f;
-		if (rfield->dcols>n) rfield->dcols=n;
-  		a=A4GL_form_set_max_field (f, n);
-	}
+  int a;
+  A4GL_debug ("set max field : %d\n", n);
+  if (n == 0)
+    {
+      a = A4GL_form_set_max_field (f, 0);
+    }
+  else
+    {
+      FIELD *rfield;
+      rfield = f;
+      if (rfield->dcols > n)
+	rfield->dcols = n;
+      a = A4GL_form_set_max_field (f, n);
+    }
 }
 
 
@@ -2525,53 +2658,69 @@ A4GL_debug_print_field_opts (FIELD * a)
   A4GL_debug ("Field %p attribs= %s:", a, str);
 }
 
-int A4GLHLUI_initlib(void) {
-	return 0;
+int
+A4GLHLUI_initlib (void)
+{
+  return 0;
 }
 
 
 // Not available in TUI mode...
-int A4GL_LL_endis_fields_ap(int n,void* ap)
+int
+A4GL_LL_endis_fields_ap (int n, void *ap)
 {
-return 0;
+  return 0;
 }
 
 
-int A4GL_LL_open_gui_form (char *name_orig, int absolute, int nat, char *like, int disable, void *handler_e, void *phandler_c) {
+int
+A4GL_LL_open_gui_form (char *name_orig, int absolute, int nat, char *like,
+		       int disable, void *handler_e, void *phandler_c)
+{
 // Not in TUI mode you don't....
-return 0;
+  return 0;
 }
 
 
 
 
 
-int A4GL_LL_disp_form_fields_ap(int n,int attr,char* formname,va_list* ap) {
-	return 0;
+int
+A4GL_LL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
+{
+  return 0;
 }
 
 
-int A4GL_LL_set_window_title(void *currwin, int nargs) {
+int
+A4GL_LL_set_window_title (void *currwin, int nargs)
+{
 
-	return 0;
+  return 0;
 }
 
 
 
 
-int A4GL_LL_widget_name_match(void* w,char* name) {
-	return 0;
+int
+A4GL_LL_widget_name_match (void *w, char *name)
+{
+  return 0;
 }
 
 
 
 
-int A4GL_LL_fieldnametoid(char* f,char* s,int n) {
-	return 0;
+int
+A4GL_LL_fieldnametoid (char *f, char *s, int n)
+{
+  return 0;
 }
 
-void A4GL_LL_clr_form_fields(int to_defaults,char* defs) {
-return ;
+void
+A4GL_LL_clr_form_fields (int to_defaults, char *defs)
+{
+  return;
 }
 
 
@@ -2581,138 +2730,172 @@ return ;
 ** init_key = initial keystroke that caused us to be here.. (0 for before field)
 ** init_pos = position in field as retrived from the original field..
 */
-void *A4GL_LL_construct_large(char *orig, 
-		void *vevt
-		,int init_key,int initpos,char *left,char *right,int curr_width,int curr_height,int fl,void *currwin,int isborder) {
-	static char rbuff[1024];
-	FIELD *buff[4];
-	PANEL *cwin;
-	WINDOW *drwin;
-	FORM *f;
-	//int ins_ovl='o';
-	//int looping=1;
-	int fwidth;
-	int a;
-		struct aclfgl_event_list *evt;
-		evt=vevt;
-	A4GL_debug("In construct_large");
+void *
+A4GL_LL_construct_large (char *orig,
+			 void *vevt, int init_key, int initpos, char *left,
+			 char *right, int curr_width, int curr_height, int fl,
+			 void *currwin, int isborder)
+{
+  static char rbuff[1024];
+  FIELD *buff[4];
+  PANEL *cwin;
+  WINDOW *drwin;
+  FORM *f;
+  //int ins_ovl='o';
+  //int looping=1;
+  int fwidth;
+  int a;
+  struct aclfgl_event_list *evt;
+  evt = vevt;
+  A4GL_debug ("In construct_large");
 
-	strcpy(rbuff,orig);
-	A4GL_trim(rbuff);
-	fwidth=curr_width ; 
-	if (fwidth>80) fwidth=80;
-        cwin = (PANEL *) currwin; 			// A4GL_get_currwin ();
-  	if (fl > curr_height ) fl = curr_height ;
-  
-        drwin = derwin (panel_window ((PANEL *) cwin), 1, fwidth, fl-1, isborder);
-	last_construct_drwin=drwin;
-	buff[0]=A4GL_LL_make_label(0,0,left);
-	buff[1]=A4GL_LL_make_field(0,1,1,fwidth-2,0,0,0);
+  strcpy (rbuff, orig);
+  A4GL_trim (rbuff);
+  fwidth = curr_width;
+  if (fwidth > 80)
+    fwidth = 80;
+  cwin = (PANEL *) currwin;	// A4GL_get_currwin ();
+  if (fl > curr_height)
+    fl = curr_height;
+
+  drwin = derwin (panel_window ((PANEL *) cwin), 1, fwidth, fl - 1, isborder);
+  last_construct_drwin = drwin;
+  buff[0] = A4GL_LL_make_label (0, 0, left);
+  buff[1] = A4GL_LL_make_field (0, 1, 1, fwidth - 2, 0, 0, 0);
 
 
-        A4GL_fld_opts_on (buff[1], AUBIT_O_ACTIVE);
-        A4GL_fld_opts_on (buff[1], AUBIT_O_EDIT);
-        A4GL_fld_opts_on (buff[1], AUBIT_O_BLANK);
+  A4GL_fld_opts_on (buff[1], AUBIT_O_ACTIVE);
+  A4GL_fld_opts_on (buff[1], AUBIT_O_EDIT);
+  A4GL_fld_opts_on (buff[1], AUBIT_O_BLANK);
 
-	buff[2]=A4GL_LL_make_label(0,fwidth-1,right);
-	buff[3]=0;
+  buff[2] = A4GL_LL_make_label (0, fwidth - 1, right);
+  buff[3] = 0;
 
-	f=A4GL_form_new_form(buff);
+  f = A4GL_form_new_form (buff);
 
-        A4GL_form_set_form_win (f, panel_window(cwin));
-        A4GL_form_set_form_sub (f, drwin);
-	
-	a=A4GL_form_post_form(f);
-	A4GL_debug("construct - post_form = %d",a);
-	A4GL_LL_set_field_buffer(buff[1],0,rbuff);
+  A4GL_form_set_form_win (f, panel_window (cwin));
+  A4GL_form_set_form_sub (f, drwin);
 
-	A4GL_debug("su");
-	A4GL_LL_screen_update();
+  a = A4GL_form_post_form (f);
+  A4GL_debug ("construct - post_form = %d", a);
+  A4GL_LL_set_field_buffer (buff[1], 0, rbuff);
 
-	A4GL_LL_int_form_driver(f,AUBIT_REQ_FIRST_FIELD);
-	A4GL_LL_int_form_driver(f,AUBIT_REQ_OVL_MODE);
+  A4GL_debug ("su");
+  A4GL_LL_screen_update ();
 
-	if (f->current==0) {
-		A4GL_debug("Still not current...");
-	}
+  A4GL_LL_int_form_driver (f, AUBIT_REQ_FIRST_FIELD);
+  A4GL_LL_int_form_driver (f, AUBIT_REQ_OVL_MODE);
 
-	if (initpos) {
-		A4GL_LL_int_form_driver(f,AUBIT_REQ_END_FIELD);
-	}
-	return f;
+  if (f->current == 0)
+    {
+      A4GL_debug ("Still not current...");
+    }
+
+  if (initpos)
+    {
+      A4GL_LL_int_form_driver (f, AUBIT_REQ_END_FIELD);
+    }
+  return f;
 
 }
 
 
 #ifdef MOVED
-int A4GL_LL_construct_large_loop() {
-		A4GL_LL_set_carat(f);
-		A4GL_debug("su");
-		A4GL_LL_screen_update();
-		a=A4GL_LL_getch_swin_i (panel_window(cwin));
-		A4GL_debug("construct_large a=%d abort_pressed=%d",a,abort_pressed);
-		if (abort_pressed||a==A4GLKEY_INTERRUPT || a==A4GLKEY_CANCEL) {break;}
-		if (A4GL_has_event_for_keypress(a,evt)) return a;
+int
+A4GL_LL_construct_large_loop ()
+{
+  A4GL_LL_set_carat (f);
+  A4GL_debug ("su");
+  A4GL_LL_screen_update ();
+  a = A4GL_LL_getch_swin_i (panel_window (cwin));
+  A4GL_debug ("construct_large a=%d abort_pressed=%d", a, abort_pressed);
+  if (abort_pressed || a == A4GLKEY_INTERRUPT || a == A4GLKEY_CANCEL)
+    {
+      break;
+    }
+  if (A4GL_has_event_for_keypress (a, evt))
+    return a;
 
 
-		switch (a) {
+  switch (a)
+    {
 
-			case 1: 
-				if (ins_ovl=='o') {	
-					ins_ovl='i';	
-					A4GL_LL_int_form_driver(f,AUBIT_REQ_INS_MODE);
-				} else {
-					ins_ovl='o';	
-					A4GL_LL_int_form_driver(f,AUBIT_REQ_OVL_MODE);
-				}
-				
-			case 27:
-			case A4GLKEY_DOWN:
-			case A4GLKEY_UP: 
-			case A4GLKEY_ENTER:
-			case '\t': looping=0; break;
-
-			case A4GLKEY_LEFT:
-				if (A4GL_LL_get_carat(f)==0)  {looping=0;break;}
-          			A4GL_LL_int_form_driver (f, AUBIT_REQ_PREV_CHAR);
-				break;
-
-
-    			case 127:
-    			case 8:
-    			case A4GLKEY_DC:
-    			case A4GLKEY_DL:
-    			case A4GLKEY_BACKSPACE: A4GL_LL_int_form_driver (f, AUBIT_REQ_DEL_PREV); break;
-	
-    			case 24: 		A4GL_LL_int_form_driver (f, AUBIT_REQ_DEL_CHAR);break;
-			case A4GLKEY_RIGHT: 	A4GL_LL_int_form_driver (f, AUBIT_REQ_NEXT_CHAR);break;
-			default : 		A4GL_LL_int_form_driver (f, a);break;
-		}
-	return looping;
-}
-#endif
-
-
-
-
-
-char *A4GL_LL_construct_large_finished(void *f) {
-  	static char orig[2000];
-	WINDOW *w;
-	A4GL_LL_int_form_driver(f,AUBIT_REQ_VALIDATION);
-	w=A4GL_form_form_sub(f);
-	strcpy(orig,A4GL_LL_field_buffer(A4GL_form_current_field(f),0));
-	A4GL_debug("Unpost and delete...");
-        A4GL_form_unpost_form(f);
- 	A4GL_debug("delwin %p",w);
-	if (w!=last_construct_drwin) {
-		A4GL_assertion(1,"Very confused...");
+    case 1:
+      if (ins_ovl == 'o')
+	{
+	  ins_ovl = 'i';
+	  A4GL_LL_int_form_driver (f, AUBIT_REQ_INS_MODE);
 	}
-	delwin(w);
-	A4GL_debug("su");
-	A4GL_LL_screen_update();
-	//A4GL_comments(0);
-	return orig;
+      else
+	{
+	  ins_ovl = 'o';
+	  A4GL_LL_int_form_driver (f, AUBIT_REQ_OVL_MODE);
+	}
+
+    case 27:
+    case A4GLKEY_DOWN:
+    case A4GLKEY_UP:
+    case A4GLKEY_ENTER:
+    case '\t':
+      looping = 0;
+      break;
+
+    case A4GLKEY_LEFT:
+      if (A4GL_LL_get_carat (f) == 0)
+	{
+	  looping = 0;
+	  break;
+	}
+      A4GL_LL_int_form_driver (f, AUBIT_REQ_PREV_CHAR);
+      break;
+
+
+    case 127:
+    case 8:
+    case A4GLKEY_DC:
+    case A4GLKEY_DL:
+    case A4GLKEY_BACKSPACE:
+      A4GL_LL_int_form_driver (f, AUBIT_REQ_DEL_PREV);
+      break;
+
+    case 24:
+      A4GL_LL_int_form_driver (f, AUBIT_REQ_DEL_CHAR);
+      break;
+    case A4GLKEY_RIGHT:
+      A4GL_LL_int_form_driver (f, AUBIT_REQ_NEXT_CHAR);
+      break;
+    default:
+      A4GL_LL_int_form_driver (f, a);
+      break;
+    }
+  return looping;
+}
+#endif
+
+
+
+
+
+char *
+A4GL_LL_construct_large_finished (void *f)
+{
+  static char orig[2000];
+  WINDOW *w;
+  A4GL_LL_int_form_driver (f, AUBIT_REQ_VALIDATION);
+  w = A4GL_form_form_sub (f);
+  strcpy (orig, A4GL_LL_field_buffer (A4GL_form_current_field (f), 0));
+  A4GL_debug ("Unpost and delete...");
+  A4GL_form_unpost_form (f);
+  A4GL_debug ("delwin %p", w);
+  if (w != last_construct_drwin)
+    {
+      A4GL_assertion (1, "Very confused...");
+    }
+  delwin (w);
+  A4GL_debug ("su");
+  A4GL_LL_screen_update ();
+  //A4GL_comments(0);
+  return orig;
 }
 
 
@@ -2720,37 +2903,40 @@ char *A4GL_LL_construct_large_finished(void *f) {
 
 
 #ifdef NCURSES_VERSION
-	#include <term.h>
-	#define isprivate(s) ((s) != 0 && strstr(s, "\033[?") != 0)
+#include <term.h>
+#define isprivate(s) ((s) != 0 && strstr(s, "\033[?") != 0)
 #endif
 
-void try_to_stop_alternate_view(void) {
+void
+try_to_stop_alternate_view (void)
+{
 #ifdef NCURSES_VERSION
-    /*
-     * Cancel xterm's alternate-screen mode.
-     */
-        if ( isprivate(enter_ca_mode) && isprivate(exit_ca_mode)) {
-        /*
-         * initscr() or newterm() already did putp(enter_ca_mode) as a side
-         * effect of initializing the screen.  It would be nice to not even
-         * do that, but we do not really have access to the correct copy of
-         * the terminfo description until those functions have been invoked.
-         */
-        (void) putp(exit_ca_mode);
-        (void) putp(clear_screen);
-        /*
-         * Prevent ncurses from switching "back" to the normal screen when
-         * exiting from dialog.  That would move the cursor to the original
-         * location saved in xterm.  Normally curses sets the cursor position
-         * to the first line after the display, but the alternate screen
-         * switching is done after that point.
-         *
-         * Cancelling the strings altogether also works around the buggy
-         * implementation of alternate-screen in rxvt, etc., which clear
-         * more of the display than they should.
-         */
-        enter_ca_mode = 0;
-        exit_ca_mode = 0;
+  /*
+   * Cancel xterm's alternate-screen mode.
+   */
+  if (isprivate (enter_ca_mode) && isprivate (exit_ca_mode))
+    {
+      /*
+       * initscr() or newterm() already did putp(enter_ca_mode) as a side
+       * effect of initializing the screen.  It would be nice to not even
+       * do that, but we do not really have access to the correct copy of
+       * the terminfo description until those functions have been invoked.
+       */
+      (void) putp (exit_ca_mode);
+      (void) putp (clear_screen);
+      /*
+       * Prevent ncurses from switching "back" to the normal screen when
+       * exiting from dialog.  That would move the cursor to the original
+       * location saved in xterm.  Normally curses sets the cursor position
+       * to the first line after the display, but the alternate screen
+       * switching is done after that point.
+       *
+       * Cancelling the strings altogether also works around the buggy
+       * implementation of alternate-screen in rxvt, etc., which clear
+       * more of the display than they should.
+       */
+      enter_ca_mode = 0;
+      exit_ca_mode = 0;
     }
 #endif
 }
@@ -2768,8 +2954,10 @@ void try_to_stop_alternate_view(void) {
   or if it is used only for GTK
 
 */
-int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) {
-  
+int
+A4GL_LL_disp_form_field_ap (int n, int attr, char *s, va_list * ap)
+{
+
 #ifdef FIX_THIS_C_AND_P_FROM_GTK
   int a;
   int flg;
@@ -2784,7 +2972,7 @@ int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) {
   A4GL_debug ("In disp_fields");
   w = A4GL_find_pointer (s, WINCODE);
 
-  formdets = (struct s_form_dets *)A4GL_find_form_for_win(w);
+  formdets = (struct s_form_dets *) A4GL_find_form_for_win (w);
 
 #ifdef DEBUG
   {
@@ -2816,14 +3004,14 @@ int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) {
 
       A4GL_set_field_pop_attr (field_list[a], attr, FGL_CMD_DISPLAY_CMD);
       fprop =
-        (struct struct_scr_field
-         *) (A4GL_LL_get_field_userptr (field_list[a]));
+	(struct struct_scr_field
+	 *) (A4GL_LL_get_field_userptr (field_list[a]));
       fprop->flags |= 2;
 
 
 
     }
-	A4GL_debug("su");
+  A4GL_debug ("su");
   A4GL_LL_screen_update ();
 #else
 
@@ -2837,87 +3025,104 @@ int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) {
 }
 
 
-int A4GL_LL_disp_h_menu( int num_opts) {
-	return 0;
+int
+A4GL_LL_disp_h_menu (int num_opts)
+{
+  return 0;
 }
 
 
-int A4GL_LL_menu_loop(void*menu) {
-	return -1;
+int
+A4GL_LL_menu_loop (void *menu)
+{
+  return -1;
 }
 
 
-int  A4GL_LL_menu_type(void) {
-	/* let the high level stuff do all the processing... */
-	return 0; 
+int
+A4GL_LL_menu_type (void)
+{
+  /* let the high level stuff do all the processing... */
+  return 0;
 }
 
 
 #ifdef WIDEC
 void
-A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch,int curr_width,int curr_height,int iscurrborder,int currwinno)
+A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch,
+			   int curr_width, int curr_height, int iscurrborder,
+			   int currwinno)
 {
   int ch2;
   int attr;
   void *p;
   wchar_t buff[2];
-A4GL_debug("xy_col");
-  attr = A4GL_LL_decode_aubit_attr (oattr& 0xffffff00, 'w');
-  buff[0]=ch;
-  buff[1]=0;
+  A4GL_debug ("xy_col");
+  attr = A4GL_LL_decode_aubit_attr (oattr & 0xffffff00, 'w');
+  buff[0] = ch;
+  buff[1] = 0;
 
 
   p = panel_window (win);
-  if (!iscurrborder  || currwinno  == 0)
+  if (!iscurrborder || currwinno == 0)
     {
       x--;
       y--;
     }
-  if (x < 0 || y < 0 || x > curr_width || y > curr_height );
-  else {
-		wattrset((WINDOW *)p,attr&0xffffff00);
-		mvwaddwstr(p,  y, x, buff);
-	}
+  if (x < 0 || y < 0 || x > curr_width || y > curr_height);
+  else
+    {
+      wattrset ((WINDOW *) p, attr & 0xffffff00);
+      mvwaddwstr (p, y, x, buff);
+    }
 }
 
 void
-A4GL_LL_wadd_wchar_xy_col_w (void *win, int x, int y, int oattr, wchar_t ch,int curr_width,int curr_height,int iscurrborder,int currwinno)
+A4GL_LL_wadd_wchar_xy_col_w (void *win, int x, int y, int oattr, wchar_t ch,
+			     int curr_width, int curr_height,
+			     int iscurrborder, int currwinno)
 {
   int ch2;
   int attr;
   void *p;
   wchar_t buff[2];
-A4GL_debug("xy_col_w");
-  attr = A4GL_LL_decode_aubit_attr (oattr& 0xffffff00, 'w');
-  buff[0]=ch;
-  buff[1]=0;
+  A4GL_debug ("xy_col_w");
+  attr = A4GL_LL_decode_aubit_attr (oattr & 0xffffff00, 'w');
+  buff[0] = ch;
+  buff[1] = 0;
 
 
   p = win;
-  if (!iscurrborder  || currwinno == 0)
+  if (!iscurrborder || currwinno == 0)
     {
       x--;
       y--;
     }
-  if (x < 0 || y < 0 || x > curr_width || y > curr_height );
-  else {
-		wattrset((WINDOW *)p,attr&0xffffff00);
-		mvwaddwstr(p,  y, x, buff);
-	}
+  if (x < 0 || y < 0 || x > curr_width || y > curr_height);
+  else
+    {
+      wattrset ((WINDOW *) p, attr & 0xffffff00);
+      mvwaddwstr (p, y, x, buff);
+    }
 }
 #else
-	 
+
 #endif
 
 
-void * A4GL_LL_create_menu (void * m, char *id, int mode, void *handler) {
-	A4GL_exitwith("Not in TUI mode");
-	return 0;
+void *
+A4GL_LL_create_menu (void *m, char *id, int mode, void *handler)
+{
+  A4GL_exitwith ("Not in TUI mode");
+  return 0;
 }
 
 
 
-void A4GL_LL_clr_menu_disp (void* menu,int curr_width,int curr_height,int iscurrborder, int currwinno, void *cw,int menu_offset,int gw_y)
+void
+A4GL_LL_clr_menu_disp (void *menu, int curr_width, int curr_height,
+		       int iscurrborder, int currwinno, void *cw,
+		       int menu_offset, int gw_y)
 {
   static char buff[1025];
   int off;
@@ -2925,26 +3130,31 @@ void A4GL_LL_clr_menu_disp (void* menu,int curr_width,int curr_height,int iscurr
   //void *cw;
   int y;
 
-  A4GL_debug ("Clearing menu clr_menu_disp - %p",menu);
+  A4GL_debug ("Clearing menu clr_menu_disp - %p", menu);
   memset (buff, ' ', 1023);
-  buff[1024]=0;
+  buff[1024] = 0;
 
-  w=curr_width;
-  off=menu_offset;
+  w = curr_width;
+  off = menu_offset;
   buff[w - off + 1] = 0;
-  y=gw_y;
-  A4GL_wprintw (cw, 0, off - 1, y, curr_width,curr_height,iscurrborder, currwinno,"%s",buff);
+  y = gw_y;
+  A4GL_wprintw (cw, 0, off - 1, y, curr_width, curr_height, iscurrborder,
+		currwinno, "%s", buff);
 }
 
 
 void
-A4GL_LL_h_disp_title (void* menu, char *str,int curr_width,int curr_height,int iscurrborder,int currwinno, void *cw,int gw_y)
+A4GL_LL_h_disp_title (void *menu, char *str, int curr_width, int curr_height,
+		      int iscurrborder, int currwinno, void *cw, int gw_y)
 {
-     A4GL_wprintw ((void *)cw, 0, 1, gw_y, curr_width,curr_height,iscurrborder,currwinno,"%s", str);
+  A4GL_wprintw ((void *) cw, 0, 1, gw_y, curr_width, curr_height,
+		iscurrborder, currwinno, "%s", str);
 }
 
 
-void A4GL_LL_set_acc_intr_keys(int n) {
+void
+A4GL_LL_set_acc_intr_keys (int n)
+{
 /* does nothing - required as it will be called from the HL driver */
 }
 
@@ -2956,25 +3166,35 @@ void A4GL_LL_set_acc_intr_keys(int n) {
 // and return them when requested...
 // (the reason for not using pointers to return the values is that we can then split
 // this over the network using RPC calls...)
-void *A4GL_LL_get_value(char *s) {
-	if (strcmp(s,"prompt.field")==0) 	return (void *) last_prompt_field;
-	if (strcmp(s,"prompt.f")==0) 		return (void *) last_prompt_f;
-	if (strcmp(s,"prompt.win")==0) 		return (void *) last_prompt_win;
-	if (strcmp(s,"prompt.mode")==0) 	return (void *) last_prompt_mode;
-	printf("Unknown value...%s\n",s);
-	return (void *)0;
+void *
+A4GL_LL_get_value (char *s)
+{
+  if (strcmp (s, "prompt.field") == 0)
+    return (void *) last_prompt_field;
+  if (strcmp (s, "prompt.f") == 0)
+    return (void *) last_prompt_f;
+  if (strcmp (s, "prompt.win") == 0)
+    return (void *) last_prompt_win;
+  if (strcmp (s, "prompt.mode") == 0)
+    return (void *) last_prompt_mode;
+  printf ("Unknown value...%s\n", s);
+  return (void *) 0;
 }
 
-int A4GL_LL_disp_h_menu_opt(int a,int n,char *title,int attr) {
-	// Does nothing - but is required by the API...
-	return 0;
+int
+A4GL_LL_disp_h_menu_opt (int a, int n, char *title, int attr)
+{
+  // Does nothing - but is required by the API...
+  return 0;
 }
 
 
 
-int A4GL_LL_hide_h_menu(void ) {
-	// Does nothing - but is required by the API...
-	return 0;
+int
+A4GL_LL_hide_h_menu (void)
+{
+  // Does nothing - but is required by the API...
+  return 0;
 }
 
 
@@ -2982,7 +3202,9 @@ int A4GL_LL_hide_h_menu(void ) {
 
 
 
-static void A4GL_do_pause (int curr_width,int curr_height,int iscurrborder,int currwinno)
+static void
+A4GL_do_pause (int curr_width, int curr_height, int iscurrborder,
+	       int currwinno)
 {
   PANEL *x;
   int w;
@@ -2992,19 +3214,19 @@ static void A4GL_do_pause (int curr_width,int curr_height,int iscurrborder,int c
   w = A4GL_LL_screen_width ();
   sprintf (buff, " %s ", acl_getenv ("ERROR_MSG"));
   emw = strlen (buff);
-  memset(buff_b,' ',80);
-  buff_b[strlen(buff)]=0;
-  x =  (PANEL *) A4GL_LL_create_window (3, emw, 20, ((w - emw) / 2),1);
+  memset (buff_b, ' ', 80);
+  buff_b[strlen (buff)] = 0;
+  x = (PANEL *) A4GL_LL_create_window (3, emw, 20, ((w - emw) / 2), 1);
 //A4GL_create_blank_window ("pause", ((w - emw) / 2), 20, emw, 3, 1);
 
-  wattrset(panel_window(x), A4GL_LL_colour_code (COLOR_RED) | A_REVERSE);
-  mvwaddstr (panel_window(x), 1,1, buff_b);
-  mvwaddstr (panel_window(x), 2,1, buff);
-  mvwaddstr (panel_window(x), 3,1, buff_b);
+  wattrset (panel_window (x), A4GL_LL_colour_code (COLOR_RED) | A_REVERSE);
+  mvwaddstr (panel_window (x), 1, 1, buff_b);
+  mvwaddstr (panel_window (x), 2, 1, buff);
+  mvwaddstr (panel_window (x), 3, 1, buff_b);
   A4GL_LL_screen_update ();
   abort_pressed = FALSE;
   A4GL_LL_getch_swin (0);
-  A4GL_LL_remove_window(x);
+  A4GL_LL_remove_window (x);
   A4GL_LL_screen_update ();
 }
 
@@ -3022,25 +3244,28 @@ A4GL_LL_error_box (char *str, int attr)
   PANEL *x;
   a = 4;
   pos = (A4GL_LL_screen_width () - (strlen (str))) / 2;
-  x = (PANEL *) A4GL_LL_create_window (3, strlen(str), a, pos,1);
-  wattrset((WINDOW *)x,attr&0xffffff00);
-  mvwaddstr(panel_window(x),  2, 1, str);
+  x = (PANEL *) A4GL_LL_create_window (3, strlen (str), a, pos, 1);
+  wattrset ((WINDOW *) x, attr & 0xffffff00);
+  mvwaddstr (panel_window (x), 2, 1, str);
   A4GL_LL_screen_update ();
-  A4GL_do_pause (80,4,1,999);
-  A4GL_LL_remove_window(x);
+  A4GL_do_pause (80, 4, 1, 999);
+  A4GL_LL_remove_window (x);
   A4GL_LL_screen_update ();
 }
 
 
 
-void *UILIB_A4GL_make_pixmap_gw(char *fname) {
-        //
-        return 0;
+void *
+UILIB_A4GL_make_pixmap_gw (char *fname)
+{
+  //
+  return 0;
 
 }
 
 
-static void A4GL_default_attributes_in_ll (void *f, int dtype,int has_picture)
+static void
+A4GL_default_attributes_in_ll (void *f, int dtype, int has_picture)
 {
   int done = 0;
 
@@ -3048,14 +3273,14 @@ static void A4GL_default_attributes_in_ll (void *f, int dtype,int has_picture)
 
 
 
-      if (has_picture)
-        {
-          A4GL_debug ("ZZZZ - SET OPTS");
-          A4GL_LL_set_field_opts (f,
-                                  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-                                  AUBIT_O_PUBLIC | AUBIT_O_EDIT );
-          done = 1;
-        }
+  if (has_picture)
+    {
+      A4GL_debug ("ZZZZ - SET OPTS");
+      A4GL_LL_set_field_opts (f,
+			      AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
+			      AUBIT_O_PUBLIC | AUBIT_O_EDIT);
+      done = 1;
+    }
 
 
 
@@ -3067,31 +3292,33 @@ static void A4GL_default_attributes_in_ll (void *f, int dtype,int has_picture)
       A4GL_debug ("MMMM DTYPE & 255 = %d", dtype);
 
       if ((dtype & 255) == 0)
-        {
-          A4GL_debug ("ZZZZ - SET OPTS");
-          A4GL_LL_set_field_opts (f,
-                                  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE | AUBIT_O_PUBLIC | AUBIT_O_EDIT);
+	{
+	  A4GL_debug ("ZZZZ - SET OPTS");
+	  A4GL_LL_set_field_opts (f,
+				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
+				  AUBIT_O_PUBLIC | AUBIT_O_EDIT);
 
 
 
-          //A4GL_field_opts_off (f, AUBIT_O_BLANK); @todo     is it ok to remove this ?
+	  //A4GL_field_opts_off (f, AUBIT_O_BLANK); @todo     is it ok to remove this ?
 
-        }
+	}
       else
-        {
-          A4GL_debug ("ZZZZ - SET OPTS");
-          A4GL_debug ("BLANK BLANK");
-          A4GL_LL_set_field_opts (f,
-                                  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-                                  AUBIT_O_PUBLIC | AUBIT_O_EDIT | AUBIT_O_BLANK);
-        }
+	{
+	  A4GL_debug ("ZZZZ - SET OPTS");
+	  A4GL_debug ("BLANK BLANK");
+	  A4GL_LL_set_field_opts (f,
+				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
+				  AUBIT_O_PUBLIC | AUBIT_O_EDIT |
+				  AUBIT_O_BLANK);
+	}
 
     }
 
   A4GL_debug ("STATIC");
   A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
   A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
-  A4GL_LL_set_max_field(f,A4GL_mja_get_field_width(f));
+  A4GL_LL_set_max_field (f, A4GL_mja_get_field_width (f));
 
 }
 
@@ -3100,7 +3327,8 @@ static void A4GL_default_attributes_in_ll (void *f, int dtype,int has_picture)
 // Called when SET PAUSE MODE ON/OFF is set
 // and to check which is in effect (a==-1)
 //
-int A4GL_LL_pause_mode (int a)
+int
+A4GL_LL_pause_mode (int a)
 {
   static int smode = 1;
   if (a == -1)

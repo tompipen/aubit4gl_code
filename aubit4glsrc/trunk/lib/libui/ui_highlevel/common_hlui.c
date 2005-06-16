@@ -48,7 +48,7 @@ A4GL_start_form (void *frm)
   //else
 
 
-    A4GL_LL_int_form_driver (frm, AUBIT_REQ_OVL_MODE);
+  A4GL_LL_int_form_driver (frm, AUBIT_REQ_OVL_MODE);
 
 }
 
@@ -62,12 +62,11 @@ A4GL_get_metric_for (struct s_form_dets *form, void *f)
   for (a = 0; a < form->fileform->metrics.metrics_len; a++)
     {
       if (f == (void *) form->fileform->metrics.metrics_val[a].field)
-        {
-          A4GL_debug ("Returning %d\n", a);
-          return a;
-        }
+	{
+	  A4GL_debug ("Returning %d\n", a);
+	  return a;
+	}
     }
   A4GL_debug ("NO current metric !");
   return -1;
 }
-

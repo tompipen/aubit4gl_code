@@ -7,8 +7,8 @@
 #include "misc.h"
 #include "lowlevel.h"
 #ifndef lint
-	static char const module_id[] =
-		"$Id: misc.c,v 1.33 2005-06-16 16:54:37 mikeaubury Exp $";
+static char const module_id[] =
+  "$Id: misc.c,v 1.34 2005-06-16 17:01:19 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -21,19 +21,19 @@ int initialized_screen_mode = 0;
 //int A4GL_field_opts_off (void *v, int n);
 //int A4GL_field_opts_on (void *v, int n);
 
-int A4GL_LL_fieldnametoid(char* f,char* s,int n);
+int A4GL_LL_fieldnametoid (char *f, char *s, int n);
 void *A4GL_get_currwin (void);
-int A4GL_UI_int_get_inc_quotes(int a);
+int A4GL_UI_int_get_inc_quotes (int a);
 
 void A4GL_clear_menu (ACL_Menu * menu);
-int aclfgl_a4gl_show_help(int n);
+int aclfgl_a4gl_show_help (int n);
 
 int
 UILIB_aclfgl_a4gl_get_page (int n)
 {
   struct s_form_dets *f;
   f = UILIB_A4GL_get_curr_form (1);
-  A4GL_push_int (1); //A4GL_LL_form_page (f->form));
+  A4GL_push_int (1);		//A4GL_LL_form_page (f->form));
   return 1;
 }
 
@@ -53,11 +53,18 @@ UILIB_aclfgl_a4gl_set_page (int n)
 int
 UILIB_aclfgl_aclfgl_dump_screen (int n)
 {
-  char *ptr="tmpfile";
-  int mode=1;
-  if (n==1) { ptr=A4GL_char_pop(); }
-  if (n==2) { mode = A4GL_pop_int (); ptr = A4GL_char_pop (); }
-  return A4GL_LL_dump_screen (n,ptr,mode);
+  char *ptr = "tmpfile";
+  int mode = 1;
+  if (n == 1)
+    {
+      ptr = A4GL_char_pop ();
+    }
+  if (n == 2)
+    {
+      mode = A4GL_pop_int ();
+      ptr = A4GL_char_pop ();
+    }
+  return A4GL_LL_dump_screen (n, ptr, mode);
 }
 
 
@@ -84,7 +91,8 @@ UILIB_A4GL_clr_form (int to_default)
 
   formdets = UILIB_A4GL_get_curr_form (1);
 
-  if (formdets==0) return;
+  if (formdets == 0)
+    return;
 
 
   /* Go through each field */
@@ -156,7 +164,8 @@ UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
 	(struct struct_scr_field
 	 *) (A4GL_LL_get_field_userptr (field_list[a]));
       if (f)
-	A4GL_default_attributes (field_list[a], f->datatype,A4GL_has_str_attribute (f, FA_S_PICTURE));
+	A4GL_default_attributes (field_list[a], f->datatype,
+				 A4GL_has_str_attribute (f, FA_S_PICTURE));
     }
 
   //if (field_list) free(field_list);
@@ -598,10 +607,13 @@ UILIB_A4GL_push_constr (void *vs)
 	  ptr =
 	    (char *) A4GL_construct (s->constr[a].tabname,
 				     s->constr[a].colname,
-				     A4GL_LL_field_buffer (f, 0), A4GL_UI_int_get_inc_quotes(fprop->datatype));
+				     A4GL_LL_field_buffer (f, 0),
+				     A4GL_UI_int_get_inc_quotes (fprop->
+								 datatype));
 
 
- 	  A4GL_assertion(ptr==0,"Pointer returned from A4GL_construct is null");
+	  A4GL_assertion (ptr == 0,
+			  "Pointer returned from A4GL_construct is null");
 
 	  if (strlen (ptr) > 0)
 	    {
@@ -698,7 +710,8 @@ UILIB_A4GL_set_fields (void *vsio)
 	}
       if (need_fix)
 	{
-	  A4GL_exitwith ("Construct needs fixing to handle 'byname on tab.*'");
+	  A4GL_exitwith
+	    ("Construct needs fixing to handle 'byname on tab.*'");
 	  sio->nfields = 0;
 	  return 0;
 	}
@@ -709,7 +722,8 @@ UILIB_A4GL_set_fields (void *vsio)
       A4GL_debug
 	("Number of fields (%d) is not the same as the number of vars (%d)",
 	 nofields + 1, nv);
-      A4GL_exitwith ("Number of fields is not the same as the number of variables");
+      A4GL_exitwith
+	("Number of fields is not the same as the number of variables");
       sio->nfields = 0;
       return 0;
     }
@@ -739,8 +753,11 @@ UILIB_A4GL_set_fields (void *vsio)
 	}
       else
 	{
-	  prop = (struct struct_scr_field *) A4GL_LL_get_field_userptr (field_list[a]);
-	  if (A4GL_has_str_attribute (prop, FA_S_DEFAULT) && sio->mode != MODE_CONSTRUCT)
+	  prop =
+	    (struct struct_scr_field *)
+	    A4GL_LL_get_field_userptr (field_list[a]);
+	  if (A4GL_has_str_attribute (prop, FA_S_DEFAULT)
+	      && sio->mode != MODE_CONSTRUCT)
 	    {
 	      A4GL_debug ("99  set_init_value from form");
 	      A4GL_debug ("default from form to '%s'",
@@ -763,13 +780,17 @@ UILIB_A4GL_set_fields (void *vsio)
 
       if (sio->mode != MODE_CONSTRUCT)
 	{
-	  prop = (struct struct_scr_field *) A4GL_LL_get_field_userptr (field_list[a]);
+	  prop =
+	    (struct struct_scr_field *)
+	    A4GL_LL_get_field_userptr (field_list[a]);
 	  strcpy (buff, A4GL_LL_field_buffer (field_list[a], 0));
 	  A4GL_trim (buff);
 
-	  if (strlen (buff)) {
-	    A4GL_push_char ((char *)A4GL_fld_data_ignore_format(prop,buff));
-	}
+	  if (strlen (buff))
+	    {
+	      A4GL_push_char ((char *)
+			      A4GL_fld_data_ignore_format (prop, buff));
+	    }
 	  else
 	    A4GL_push_null (sio->vars[a].dtype, sio->vars[a].size);	// @todo - check if its set to not null and return CHARs instead..
 
@@ -918,7 +939,8 @@ chk_for_picture (void *f, char *buff)
 
 
 
-void A4GL_clear_menu (ACL_Menu * menu)
+void
+A4GL_clear_menu (ACL_Menu * menu)
 {
 /*
   void *w;
@@ -984,83 +1006,112 @@ UILIB_A4GL_zrefresh ()
 
 
 int
- UILIB_A4GL_endis_fields_ap (int en_dis, va_list * ap)
+UILIB_A4GL_endis_fields_ap (int en_dis, va_list * ap)
 {
- return A4GL_LL_endis_fields_ap(en_dis,ap);
+  return A4GL_LL_endis_fields_ap (en_dis, ap);
 
 }
 
 
-int UILIB_A4GL_open_gui_form_internal(long *form_variable,char* name_orig,int absolute,int nat,char* like,int disable,void* handler_e,void* handler_c) {
-int n;
-	A4GL_chkwin();
-	n=A4GL_LL_open_gui_form(name_orig,absolute,nat,like,disable,handler_e,handler_c);
-	*form_variable=n;
-	A4GL_LL_screen_update();
-	return n;
+int
+UILIB_A4GL_open_gui_form_internal (long *form_variable, char *name_orig,
+				   int absolute, int nat, char *like,
+				   int disable, void *handler_e,
+				   void *handler_c)
+{
+  int n;
+  A4GL_chkwin ();
+  n =
+    A4GL_LL_open_gui_form (name_orig, absolute, nat, like, disable, handler_e,
+			   handler_c);
+  *form_variable = n;
+  A4GL_LL_screen_update ();
+  return n;
 
 }
 
 
 
-void UILIB_A4GL_clr_form_fields(int to_defaults,char* defs) {
-	A4GL_chkwin();
-	A4GL_LL_clr_form_fields(to_defaults,defs);
+void
+UILIB_A4GL_clr_form_fields (int to_defaults, char *defs)
+{
+  A4GL_chkwin ();
+  A4GL_LL_clr_form_fields (to_defaults, defs);
 }
 
 
-void UILIB_A4GL_init_color(int n,int r,int g,int b) { }
+void
+UILIB_A4GL_init_color (int n, int r, int g, int b)
+{
+}
 
 
-int UILIB_A4GL_disp_form_fields_ap(int n,int attr,char* formname,va_list* ap) {
-	A4GL_chkwin();
-	return A4GL_LL_disp_form_fields_ap(n,attr,formname,ap);
+int
+UILIB_A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
+{
+  A4GL_chkwin ();
+  return A4GL_LL_disp_form_fields_ap (n, attr, formname, ap);
 
 }
 
 
-int UILIB_aclfgl_set_window_title(int nargs) {
-	A4GL_chkwin();
-	return A4GL_LL_set_window_title(A4GL_get_currwin(),nargs);
-}
-
-
-
-
-int UILIB_A4GL_widget_name_match(void* w,char* name) {
-	A4GL_chkwin();
-	return A4GL_LL_widget_name_match(w,name);
-}
-
-
-int UILIB_aclfgl_a4gl_run_gui(int nargs) {
-	while (1) A4GL_LL_screen_update();
-	return 1;
-}
-
-
-int UILIB_A4GL_fgl_fieldnametoid(char* f,char* s,int n) {
-	return A4GL_LL_fieldnametoid(f,s,n);
+int
+UILIB_aclfgl_set_window_title (int nargs)
+{
+  A4GL_chkwin ();
+  return A4GL_LL_set_window_title (A4GL_get_currwin (), nargs);
 }
 
 
 
 
+int
+UILIB_A4GL_widget_name_match (void *w, char *name)
+{
+  A4GL_chkwin ();
+  return A4GL_LL_widget_name_match (w, name);
+}
 
-void UILIB_A4GL_finish_screenio(void *sio, char *siotype) {
-        if (strcmp(siotype,"s_inp_arr")==0) {
-                A4GL_comments(0);
-        }
 
-        if (strcmp(siotype, "s_screenio")==0) {
-                A4GL_comments(0);
-        }
+int
+UILIB_aclfgl_a4gl_run_gui (int nargs)
+{
+  while (1)
+    A4GL_LL_screen_update ();
+  return 1;
+}
+
+
+int
+UILIB_A4GL_fgl_fieldnametoid (char *f, char *s, int n)
+{
+  return A4GL_LL_fieldnametoid (f, s, n);
+}
+
+
+
+
+
+void
+UILIB_A4GL_finish_screenio (void *sio, char *siotype)
+{
+  if (strcmp (siotype, "s_inp_arr") == 0)
+    {
+      A4GL_comments (0);
+    }
+
+  if (strcmp (siotype, "s_screenio") == 0)
+    {
+      A4GL_comments (0);
+    }
 
 }
 
-void * UILIB_A4GL_create_menu (void* m, char *id, int mode, void *handler) {
-	return A4GL_LL_create_menu(m,id,mode,handler);
-	
+void *
+UILIB_A4GL_create_menu (void *m, char *id, int mode, void *handler)
+{
+  return A4GL_LL_create_menu (m, id, mode, handler);
+
 }
 
 
@@ -1084,9 +1135,9 @@ UILIB_A4GL_reset_delims (void *vformdets, void *field, char *delims)
 	  field)
 	continue;
 
-      A4GL_mja_set_field_buffer ((void *)formdets->fileform->metrics.
+      A4GL_mja_set_field_buffer ((void *) formdets->fileform->metrics.
 				 metrics_val[a].dlm1, 0, sbuff0);
-      A4GL_mja_set_field_buffer ((void *)formdets->fileform->metrics.
+      A4GL_mja_set_field_buffer ((void *) formdets->fileform->metrics.
 				 metrics_val[a].dlm2, 0, sbuff1);
     }
 }
@@ -1107,7 +1158,7 @@ A4GL_create_blank_window (char *name, int x, int y, int w, int h, int border)
   A4GL_debug ("Creating blank window..");
   p =
     (void *) A4GL_create_window (name, x, y, w, h, 1, 0xff, 0xff, 0xff, 0xff,
-                                 border, 0xff, 0xff, 0xffff);
+				 border, 0xff, 0xff, 0xffff);
   A4GL_debug ("window=%p", p);
 
 
@@ -1119,13 +1170,19 @@ A4GL_create_blank_window (char *name, int x, int y, int w, int h, int border)
 int
 A4GL_getch_win (int allow_acc_intr)
 {
-    int a;
-    A4GL_debug ("getch_win called...");
-    if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys(1); }
-    a = A4GL_getch_internal (A4GL_get_currwin ());
-    A4GL_clr_error_nobox ("A4GL_getch_win");
-    if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys(0); }
-    return a;
+  int a;
+  A4GL_debug ("getch_win called...");
+  if (allow_acc_intr)
+    {
+      A4GL_LL_set_acc_intr_keys (1);
+    }
+  a = A4GL_getch_internal (A4GL_get_currwin ());
+  A4GL_clr_error_nobox ("A4GL_getch_win");
+  if (allow_acc_intr)
+    {
+      A4GL_LL_set_acc_intr_keys (0);
+    }
+  return a;
 }
 
 
@@ -1135,17 +1192,19 @@ int
 A4GL_get_field_width (void *f)
 {
   //int x, y, a;
-        int w;
+  int w;
   struct s_form_dets *formdets;
   struct s_scr_field *fprop;
   fprop = (struct s_scr_field *) (A4GL_LL_get_field_userptr (f));
-  formdets = (struct s_form_dets *)A4GL_get_curr_form (0);
-  if (formdets==0||fprop==0) {
-        return A4GL_LL_get_field_width_dynamic(f);
-  }
+  formdets = (struct s_form_dets *) A4GL_get_curr_form (0);
+  if (formdets == 0 || fprop == 0)
+    {
+      return A4GL_LL_get_field_width_dynamic (f);
+    }
 
-  w=formdets->fileform->metrics. metrics_val[A4GL_get_metric_for (formdets, f)].w;
+  w =
+    formdets->fileform->metrics.
+    metrics_val[A4GL_get_metric_for (formdets, f)].w;
 
   return w;
 }
-
