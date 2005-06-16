@@ -673,6 +673,17 @@ A4GL_form_pos_form_cursor (FORM * form)
 }
 
 
+int A4GL_form_field_info(const FIELD *f, int *rows, int *cols, int *frow, int *fcol, int *nrow, int *nbuf) {
+  *rows=f->rows ;
+  *cols=f->cols ;
+  *frow=f->frow ;
+  *fcol=f->fcol ;
+  *nrow=f->nrow ;
+  *nbuf=f->nbuf ;
+  return 1;
+}
+
+
 
 int
 A4GL_form_dynamic_field_info (const FIELD * field, int *rows, int *cols,
@@ -931,6 +942,8 @@ A4GL_debug("Looking for first - maxfield=%d\n",form->maxfield);
   redraw_current_field(form);
   return E_OK;
 }
+
+
 
 
 

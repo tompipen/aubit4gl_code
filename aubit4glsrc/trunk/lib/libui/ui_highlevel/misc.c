@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: misc.c,v 1.32 2005-06-14 22:05:30 mikeaubury Exp $";
+		"$Id: misc.c,v 1.33 2005-06-16 16:54:37 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1122,9 +1122,30 @@ A4GL_getch_win (int allow_acc_intr)
     int a;
     A4GL_debug ("getch_win called...");
     if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys(1); }
-    a = A4GL_LL_getch_swin (A4GL_get_currwin ());
+    a = A4GL_getch_internal (A4GL_get_currwin ());
     A4GL_clr_error_nobox ("A4GL_getch_win");
     if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys(0); }
     return a;
+}
+
+
+
+
+int
+A4GL_get_field_width (void *f)
+{
+  //int x, y, a;
+        int w;
+  struct s_form_dets *formdets;
+  struct s_scr_field *fprop;
+  fprop = (struct s_scr_field *) (A4GL_LL_get_field_userptr (f));
+  formdets = (struct s_form_dets *)A4GL_get_curr_form (0);
+  if (formdets==0||fprop==0) {
+        return A4GL_LL_get_field_width_dynamic(f);
+  }
+
+  w=formdets->fileform->metrics. metrics_val[A4GL_get_metric_for (formdets, f)].w;
+
+  return w;
 }
 

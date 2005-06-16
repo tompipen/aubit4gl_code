@@ -259,3 +259,4 @@ typedef struct formnode {
        int A4GL_form_set_new_page(FIELD *field, bool new_page_flag);
        bool A4GL_form_new_page(const FIELD *field);
        FIELD *A4GL_form_new_field(int height, int width, int toprow, int leftcol, int offscreen, int nbuffers);
+	int A4GL_form_field_info(const FIELD *f, int *rows, int *cols, int *frow, int *fcol, int *nrow, int *nbuf);

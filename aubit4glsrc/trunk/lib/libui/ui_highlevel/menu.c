@@ -9,7 +9,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: menu.c,v 1.22 2005-06-14 22:05:30 mikeaubury Exp $";
+		"$Id: menu.c,v 1.23 2005-06-16 16:54:37 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -473,28 +473,22 @@ A4GL_highlevel_menu_loop (void *menuv)
 static int
 A4GL_menu_getkey (ACL_Menu * menu)
 {
-  //char cmd[60] = "";
   char buff[80];
   int a;
-  //A4GL_debug ("Getting character for menu from window %p", menu->menu_win);
   a = -1;
   A4GL_set_abort (0);
   while (1)
     {
-
-      /* a = A4GL_getch_swin (menu->menu_win); */
 
 	A4GL_debug("debugging - error box");
       A4GL_debug ("wprintw - printing menu title %s @ %d %d", menu->menu_title, menu->gw_x, menu->gw_y);
 
       sprintf (buff, "%s:", menu->menu_title);
       A4GL_h_disp_title (menu, buff);
-      //A4GL_wprintw(A4GL_get_currwin(),0,1,menu->gw_y,"%s:",menu->menu_title);
       A4GL_LL_screen_update ();
 
-      //a = wrapper_wgetch (menu->menu_win);
-      a = A4GL_LL_getch_swin (A4GL_get_currwin ());
-	A4GL_debug("Clearing error box");
+      a = A4GL_getch_internal (A4GL_get_currwin ());
+      A4GL_debug("Clearing error box");
       A4GL_clr_error_nobox ("Menu");
       if (a == -1)
 	{
@@ -541,7 +535,7 @@ int A4GL_menu_loop_type_1(ACL_Menu *menu,int num_opts) {
   A4GL_LL_disp_h_menu(num_opts);
   while (menu_response==-1) {
     A4GL_LL_screen_update();
-    key=A4GL_LL_getch_swin(0);
+    key=A4GL_getch_internal(0);
 
     if(key==0) continue;
 
@@ -553,7 +547,6 @@ int A4GL_menu_loop_type_1(ACL_Menu *menu,int num_opts) {
     } else {
       ACL_Menu_Opts *f=menu->first;
       int res=0;
-        //A4GL_clr_error_nobox ("gtkmenu");
       /* first check optkey */
 
       while(f) {

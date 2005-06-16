@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.80 2005-05-27 09:57:12 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.81 2005-06-16 16:54:36 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.80 2005-05-27 09:57:12 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.81 2005-06-16 16:54:36 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -644,13 +644,14 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 				cf=sio->currentfield;
 				
                                 k=A4GL_construct_large(rbuff,evt,sio->fcntrl[a].extent,mform->curcol);
+			
 
 				if (k==A4GLKEY_CANCEL) {
-					A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
+					A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, k);
 				} else {
                                 	fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-                                	if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && a4gl_isupper (a) && a4gl_isalpha (a)) { a = a4gl_tolower (a); }
-                                	if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && a4gl_islower (a) && a4gl_isalpha (a)) { a = a4gl_toupper (a); }
+                                	if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && a4gl_isupper (k) && a4gl_isalpha (k)) { k = a4gl_tolower (k); }
+                                	if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && a4gl_islower (k) && a4gl_isalpha (k)) { k = a4gl_toupper (k); }
                                 	A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS, 0, 0, k);
                                 	set_field_buffer (sio->currentfield,0,rbuff);
 				}
@@ -1595,6 +1596,7 @@ m_d2[1]=0;
                                 }
 
                         case 27:
+                        case A4GLKEY_ACCEPT:
                         case A4GLKEY_DOWN:
                         case A4GLKEY_UP:
                         case A4GLKEY_ENTER:

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.109 2005-03-31 13:36:18 afalout Exp $
+# $Id: curslib.c,v 1.110 2005-06-16 16:54:35 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: curslib.c,v 1.109 2005-03-31 13:36:18 afalout Exp $";
+		"$Id: curslib.c,v 1.110 2005-06-16 16:54:35 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -3167,4 +3167,39 @@ static int to=0;
 	if (a<0) return to;
 return a;
 }
+
+
+
+
+//
+// Called when SET PAUSE MODE ON/OFF is set
+// and to check which is in effect (a==-1) 
+//
+int
+UILIB_A4GL_screen_mode (int a)
+{
+  static int smode = 1;
+  if (a == -1)
+    return smode;
+
+  if (a == smode)
+    return smode;
+  if (a == 0)
+    {
+      smode = 0;
+      return smode;
+    }
+  smode = 1;
+  A4GL_zrefresh ();
+  return smode;
+}
+
+
+
+
+
+
+
+
 /* ============================== EOF ============================== */
+

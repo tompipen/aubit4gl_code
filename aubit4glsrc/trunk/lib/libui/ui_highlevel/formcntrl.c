@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.32 2005-06-14 22:05:29 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.33 2005-06-16 16:54:37 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.32 2005-06-14 22:05:29 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.33 2005-06-16 16:54:37 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -52,12 +52,13 @@
 #include <string.h>
 #include <ctype.h>
 char *last_field_name;
+int construct_last_key;
 
+static int A4GL_construct_large_loop(void *f,struct aclfgl_event_list *evt) ;
 int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
 void *A4GL_get_currwin (void);
-//int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos,char *l,char *r);
 //int A4GL_conversion_ok(int);
 //void A4GL_fgl_die_with_msg(int n,char *s);
 
@@ -627,20 +628,21 @@ process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt)
 			if (strlen(rbuff)>=w) {
 	  			struct struct_scr_field *fprop;
 				int k;
+				void *f;
 				//A4GL_error_nobox("CONSTRUCT BY KEY",0);
-				k=A4GL_LL_construct_large(rbuff,(void *)evt,fcntrl.extent,A4GL_LL_get_carat(sio->currform->form),"[","]",UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),
-						A4GL_getcomment_line(),A4GL_get_currwin());
+				f=A4GL_LL_construct_large(rbuff,(void *)evt,fcntrl.extent,A4GL_LL_get_carat(sio->currform->form),"[","]",UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(), A4GL_getcomment_line(),A4GL_get_currwin(),UILIB_A4GL_iscurrborder ());
+				while (A4GL_construct_large_loop(f,evt));
+				strcpy(rbuff,A4GL_LL_construct_large_finished(f));
 				A4GL_comments(0);
+				k=construct_last_key;
                                 if (k==A4GLKEY_CANCEL) {
-                                A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
+                                	A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, k);
                                 } else {
-
-
-	  			fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (sio->currentfield));
-      				if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && a4gl_isupper (a) && a4gl_isalpha (a)) { a = a4gl_tolower (a); }
-      				if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && a4gl_islower (a) && a4gl_isalpha (a)) { a = a4gl_toupper (a); }
-  				A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS, 0, 0, k);
-				A4GL_LL_set_field_buffer (sio->currentfield,0,rbuff);
+	  				fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (sio->currentfield));
+      					if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && a4gl_isupper (k) && a4gl_isalpha (k)) { k = a4gl_tolower (k); }
+      					if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && a4gl_islower (k) && a4gl_isalpha (k))   { k = a4gl_toupper (k); }
+  					A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS, 0, 0, k);
+					A4GL_LL_set_field_buffer (sio->currentfield,0,rbuff);
 				}
 			}
 	  }
@@ -1743,5 +1745,73 @@ int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f) {
         A4GL_debug("OK");
         A4GL_debug("A4GL_field_is_noentry returns 0");
         return 0;
+}
+
+
+
+static int A4GL_construct_large_loop(void *f,struct aclfgl_event_list *evt) {
+static int ins_ovl='o';
+int a;
+int looping=1;
+                A4GL_LL_set_carat(f);
+                A4GL_debug("su");
+                A4GL_LL_screen_update();
+
+                a=A4GL_getch_internal(0);
+		construct_last_key=a;
+
+                A4GL_debug("construct_large a=%d abort_pressed=%d",a,abort_pressed);
+
+                if (abort_pressed||a==A4GLKEY_INTERRUPT || a==A4GLKEY_CANCEL) {
+			ins_ovl='o';
+			return 0;
+		}
+                if (A4GL_has_event_for_keypress(a,evt)) {
+			ins_ovl='o';
+			return 0;
+		}
+
+                switch (a) {
+
+                        case 1:
+                                if (ins_ovl=='o') {
+                                        ins_ovl='i';
+                                        A4GL_LL_int_form_driver(f,AUBIT_REQ_INS_MODE);
+                                } else {
+                                        ins_ovl='o';
+                                        A4GL_LL_int_form_driver(f,AUBIT_REQ_OVL_MODE);
+                                }
+
+                        case 27:
+                        case A4GLKEY_ACCEPT:
+                        case A4GLKEY_DOWN:
+                        case A4GLKEY_UP:
+                        case A4GLKEY_ENTER:
+                        case '\t': looping=0; break;
+
+                        case A4GLKEY_LEFT:
+                                if (A4GL_LL_get_carat(f)==0)  {looping=0;break;}
+                                A4GL_LL_int_form_driver (f, AUBIT_REQ_PREV_CHAR);
+                                break;
+
+
+                        case 127:
+                        case 8:
+                        case A4GLKEY_DC:
+                        case A4GLKEY_DL:
+                        case A4GLKEY_BACKSPACE: A4GL_LL_int_form_driver (f, AUBIT_REQ_DEL_PREV); break;
+
+                        case 24:                A4GL_LL_int_form_driver (f, AUBIT_REQ_DEL_CHAR);break;
+                        case A4GLKEY_RIGHT:     A4GL_LL_int_form_driver (f, AUBIT_REQ_NEXT_CHAR);break;
+                        default :               A4GL_LL_int_form_driver (f, a);break;
+                }
+
+
+// Reset the ins_ovl flag for next time....
+if (looping==0) {
+		ins_ovl='o';
+		return 0;
+}
+return 1;
 }
 

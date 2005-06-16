@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.59 2005-06-14 22:09:30 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.60 2005-06-16 16:54:38 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,7 +85,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_tui.c,v 1.59 2005-06-14 22:09:30 mikeaubury Exp $";
+		"$Id: lowlevel_tui.c,v 1.60 2005-06-16 16:54:38 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 
@@ -104,6 +104,13 @@ long   last_prompt_mode=0;
 
 
 
+static int A4GL_mja_get_field_width (void *f);
+
+void *last_construct_drwin=0;
+
+
+
+static void A4GL_default_attributes_in_ll (void *f, int dtype,int has_picture);
 void try_to_stop_alternate_view(void) ;
 int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
@@ -115,7 +122,7 @@ int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) ;
 static void A4GL_debug_print_field_opts (FIELD * a);
 int chars_normal[6];
 int have_default_colors = 0;
-int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos,char *l,char *r,int curr_width,int curr_height) ;
+//int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos,char *l,char *r,int curr_width,int curr_height) ;
 
 
 //-----------------------
@@ -304,7 +311,7 @@ A4GL_curses_to_aubit (int a)
   int orig_a;
   orig_a = a;
   a = A4GL_curses_to_aubit_int (a);
-  a = A4GL_key_map (a);
+  //a = A4GL_key_map (a);
   if (a == -1 && orig_a != a)
     {
       int_flag = 1;
@@ -325,7 +332,8 @@ A4GL_LL_switch_to_line_mode (void)
 {
   A4GL_debug("Switch to line mode");
   endwin ();
-  A4GL_set_scrmode ('L');
+
+  // A4GL_set_scrmode ('L');
 }
 
 
@@ -507,7 +515,7 @@ A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch,int curr_width,int c
 		//A4GL_debug("----> waddch  %p %d %d %x ATTR=%x CH=%d",p,y,x,ch,attr,ch2);
     		mvwaddch (p, y, x, attr + ch2);
 	}
-	wrefresh(p);
+	//wrefresh(p);
 }
 
 
@@ -523,7 +531,7 @@ A4GL_LL_screen_update (void)
 {
 A4GL_debug("CURSES : update");
 // Update the physical screen
-  if (A4GL_screen_mode (-1))
+  if (A4GL_LL_pause_mode (-1))
     {
       update_panels ();
       doupdate ();
@@ -642,7 +650,6 @@ A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int is
   w = (PANEL *) currwin; 				// A4GL_get_currwin ();
 
   sprintf (buff, "%p", vf);
-  //A4GL_add_pointer (buff, ATTRIBUTE, (void *) attrib);
 
   if (w == 0)
     {
@@ -654,11 +661,14 @@ A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int is
     {
       if (iscurrborder )
 	{
-	  A4GL_display_internal (1, a + 1, " ", 0, 1);
+		
+		A4GL_wprintw(currwin,0,1,a+1,curr_width,curr_height,iscurrborder,currwinno, " ");
+	  //A4GL_display_internal (1, a + 1, " ", 0, 1);
 	}
       else
 	{
-	  A4GL_display_internal (1, a, " ", 0, 1);
+		A4GL_wprintw(currwin,0,1,a,curr_width,curr_height,iscurrborder ,currwinno, " ");
+	  //A4GL_display_internal (1, a, " ", 0, 1);
 	}
     }
   A4GL_form_scale_form (f_form, &rows, &cols);
@@ -809,10 +819,9 @@ A4GL_LL_display_form (void *vf, int attrib,int curr_width,int curr_height,int is
 
 
 
-  A4GL_clr_form (0);
-  A4GL_debug ("And return");
-	A4GL_debug("su");
-  A4GL_LL_screen_update ();
+  //A4GL_clr_form (0);
+  //A4GL_LL_screen_update ();
+
   return w;
 }
 
@@ -1001,7 +1010,7 @@ A4GL_LL_decode_aubit_attr (int a, char s)
 
   if (s == 'B')
     {
-      ca = A4GL_decode_colour_attr_aubit (a);
+      ca = A4GL_LL_decode_colour_attr_aubit (a);
       if (strstr (attr, "REVERSE"))
 	ca += A_REVERSE;
       if (strstr (attr, "INVISIBLE"))
@@ -1344,7 +1353,7 @@ A4GL_LL_set_field_attr (void *field,int dtype,int dynamic,int autonext,int invis
 
 
   A4GL_debug ("Setting defs");
-  A4GL_default_attributes (field, dtype,has_picture);
+  A4GL_default_attributes_in_ll (field, dtype,has_picture);
   A4GL_debug ("Set defs");
 
   if (autonext)
@@ -1382,7 +1391,7 @@ A4GL_LL_set_field_attr (void *field,int dtype,int dynamic,int autonext,int invis
   else
     {
       A4GL_form_field_opts_off (field, O_STATIC);
-      A4GL_form_set_max_field (field, A4GL_LL_get_field_width(field));
+      A4GL_form_set_max_field (field, A4GL_mja_get_field_width(field));
     }
 
   if (reqd)
@@ -1503,7 +1512,7 @@ A4GL_LL_set_field_opts (void *field, int oopt)
 {
   A4GL_debug ("SET FIELD OPTS : STATIC %x ", oopt & O_STATIC);
   A4GL_form_set_field_opts (field, oopt);
-return A4GL_LL_field_opts(field);
+  return A4GL_LL_field_opts(field);
 }
 
 
@@ -1578,7 +1587,7 @@ A4GL_LL_getch_swin (void *window_ptr)
 
   A4GL_debug ("Reading from keyboard on window %p", window_ptr);
 
-  A4GL_set_abort (0);
+  //A4GL_set_abort (0);
 
   //a = A4GL_readkey ();
   //if (a != 0)
@@ -2336,13 +2345,13 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h, int 
   flist.a.a_val=(long *)sarr;
 
 
-  A4GL_default_attributes (prompt_field, 0,0);
+  A4GL_default_attributes_in_ll (prompt_field, 0,0);
   A4GL_debug ("STATIC OFF");
   A4GL_form_field_opts_off (prompt_field, O_STATIC);
 
   A4GL_debug ("ap=%d(%x) af=%d(%x)", ap, ap, af, af);
-  ap = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, ap, 0, 0);
-  af = A4GL_determine_attribute (FGL_CMD_INPUT, af, 0, 0);
+  //ap = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, ap, 0, 0);
+  //af = A4GL_determine_attribute (FGL_CMD_INPUT, af, 0, 0);
 
   if (ap)
     {
@@ -2406,6 +2415,8 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h, int 
   A4GL_LL_int_form_driver (f, AUBIT_REQ_OVL_MODE);
   A4GLSQL_set_status (0, 0);
 	A4GL_debug("su");
+
+  A4GL_LL_set_carat(f);
   A4GL_LL_screen_update ();
   return 0;
 }
@@ -2439,22 +2450,34 @@ int A4GL_LL_get_field_width_dynamic (void *f)
   return x * y;
 }
 
-int
-A4GL_LL_get_field_width (void *f)
+
+
+int A4GL_mja_get_field_width (void *f)
 {
   //int x, y, a;
-	int w;
-  struct s_form_dets *formdets;
-  struct s_scr_field *fprop;
-  fprop = (struct s_scr_field *) (A4GL_LL_get_field_userptr (f));
-  formdets = (struct s_form_dets *)A4GL_get_curr_form (0); 
-  if (formdets==0||fprop==0) {
+   //int w;
+  int rows;
+  int cols;
+  int frow;
+  int fcol;
+  int nrow;
+  int nbuf;
+  //struct s_form_dets *formdets;
+  struct struct_scr_field *fprop;
+  fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
+
+  //formdets = (struct s_form_dets *)A4GL_get_curr_form (0); 
+
+  //if (formdets==0||fprop==0) {
 	return A4GL_LL_get_field_width_dynamic(f);
-  }
+  //}
 
-  w=formdets->fileform->metrics. metrics_val[A4GL_get_metric_for (formdets, f)].w;
+  A4GL_form_field_info(f,&rows, &cols, &frow,&fcol, &nrow, &nbuf);
 
-  return w;
+  //w=A4GL_form_field_width(f);
+  //w=formdets->fileform->metrics. metrics_val[A4GL_get_metric_for (formdets, f)].w;
+
+  return cols;
 }
 
 
@@ -2558,18 +2581,16 @@ return ;
 ** init_key = initial keystroke that caused us to be here.. (0 for before field)
 ** init_pos = position in field as retrived from the original field..
 */
-int A4GL_LL_construct_large(char *orig, 
+void *A4GL_LL_construct_large(char *orig, 
 		void *vevt
-		,int init_key,int initpos,char *left,char *right,int curr_width,int curr_height,int fl,void *currwin) {
+		,int init_key,int initpos,char *left,char *right,int curr_width,int curr_height,int fl,void *currwin,int isborder) {
 	static char rbuff[1024];
-	//static char rbuff2[1024];
 	FIELD *buff[4];
 	PANEL *cwin;
 	WINDOW *drwin;
 	FORM *f;
-	int ins_ovl='o';
-	int looping=1;
-	//int fl=0; // comment line...
+	//int ins_ovl='o';
+	//int looping=1;
 	int fwidth;
 	int a;
 		struct aclfgl_event_list *evt;
@@ -2581,10 +2602,10 @@ int A4GL_LL_construct_large(char *orig,
 	fwidth=curr_width ; 
 	if (fwidth>80) fwidth=80;
         cwin = (PANEL *) currwin; 			// A4GL_get_currwin ();
-  	//fl = A4GL_getcomment_line ();
   	if (fl > curr_height ) fl = curr_height ;
-        drwin = derwin (panel_window ((PANEL *) cwin), 1, fwidth, fl-1, 0);
-
+  
+        drwin = derwin (panel_window ((PANEL *) cwin), 1, fwidth, fl-1, isborder);
+	last_construct_drwin=drwin;
 	buff[0]=A4GL_LL_make_label(0,0,left);
 	buff[1]=A4GL_LL_make_field(0,1,1,fwidth-2,0,0,0);
 
@@ -2593,11 +2614,6 @@ int A4GL_LL_construct_large(char *orig,
         A4GL_fld_opts_on (buff[1], AUBIT_O_EDIT);
         A4GL_fld_opts_on (buff[1], AUBIT_O_BLANK);
 
-
-
-        //set_max_field(buff[1],fwidth-2);
-
-
 	buff[2]=A4GL_LL_make_label(0,fwidth-1,right);
 	buff[3]=0;
 
@@ -2605,6 +2621,7 @@ int A4GL_LL_construct_large(char *orig,
 
         A4GL_form_set_form_win (f, panel_window(cwin));
         A4GL_form_set_form_sub (f, drwin);
+	
 	a=A4GL_form_post_form(f);
 	A4GL_debug("construct - post_form = %d",a);
 	A4GL_LL_set_field_buffer(buff[1],0,rbuff);
@@ -2614,27 +2631,28 @@ int A4GL_LL_construct_large(char *orig,
 
 	A4GL_LL_int_form_driver(f,AUBIT_REQ_FIRST_FIELD);
 	A4GL_LL_int_form_driver(f,AUBIT_REQ_OVL_MODE);
+
 	if (f->current==0) {
 		A4GL_debug("Still not current...");
 	}
+
 	if (initpos) {
-		//for (a=0;a<=initpos;a++) {
-			//A4GL_LL_int_form_driver(f,AUBIT_REQ_NEXT_CHAR);
-		//}
 		A4GL_LL_int_form_driver(f,AUBIT_REQ_END_FIELD);
 	}
-			
+	return f;
+
+}
 
 
-	while (looping) {
+#ifdef MOVED
+int A4GL_LL_construct_large_loop() {
 		A4GL_LL_set_carat(f);
-	A4GL_debug("su");
+		A4GL_debug("su");
 		A4GL_LL_screen_update();
-		a=A4GL_LL_getch_swin (panel_window(cwin));
+		a=A4GL_LL_getch_swin_i (panel_window(cwin));
 		A4GL_debug("construct_large a=%d abort_pressed=%d",a,abort_pressed);
 		if (abort_pressed||a==A4GLKEY_INTERRUPT || a==A4GLKEY_CANCEL) {break;}
 		if (A4GL_has_event_for_keypress(a,evt)) return a;
-
 
 
 		switch (a) {
@@ -2670,21 +2688,36 @@ int A4GL_LL_construct_large(char *orig,
 			case A4GLKEY_RIGHT: 	A4GL_LL_int_form_driver (f, AUBIT_REQ_NEXT_CHAR);break;
 			default : 		A4GL_LL_int_form_driver (f, a);break;
 		}
-		
-	}
+	return looping;
+}
+#endif
 
+
+
+
+
+char *A4GL_LL_construct_large_finished(void *f) {
+  	static char orig[2000];
+	WINDOW *w;
 	A4GL_LL_int_form_driver(f,AUBIT_REQ_VALIDATION);
-	strcpy(orig,A4GL_LL_field_buffer(buff[1],0));
-
+	w=A4GL_form_form_sub(f);
+	strcpy(orig,A4GL_LL_field_buffer(A4GL_form_current_field(f),0));
 	A4GL_debug("Unpost and delete...");
         A4GL_form_unpost_form(f);
- 	A4GL_debug("delwin %p",drwin);
-	delwin(drwin);
+ 	A4GL_debug("delwin %p",w);
+	if (w!=last_construct_drwin) {
+		A4GL_assertion(1,"Very confused...");
+	}
+	delwin(w);
 	A4GL_debug("su");
 	A4GL_LL_screen_update();
 	//A4GL_comments(0);
-	return a;
+	return orig;
 }
+
+
+
+
 
 #ifdef NCURSES_VERSION
 	#include <term.h>
@@ -2946,9 +2979,6 @@ int A4GL_LL_hide_h_menu(void ) {
 
 
 
-// --------------------------------------------------------------------------------------
-// FIXMEs...
-// --------------------------------------------------------------------------------------
 
 
 
@@ -3002,3 +3032,97 @@ A4GL_LL_error_box (char *str, int attr)
 }
 
 
+
+void *UILIB_A4GL_make_pixmap_gw(char *fname) {
+        //
+        return 0;
+
+}
+
+
+static void A4GL_default_attributes_in_ll (void *f, int dtype,int has_picture)
+{
+  int done = 0;
+
+  A4GL_debug ("In def attrib f=%p", f);
+
+
+
+      if (has_picture)
+        {
+          A4GL_debug ("ZZZZ - SET OPTS");
+          A4GL_LL_set_field_opts (f,
+                                  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
+                                  AUBIT_O_PUBLIC | AUBIT_O_EDIT );
+          done = 1;
+        }
+
+
+
+
+
+  if (done == 0)
+    {
+
+      A4GL_debug ("MMMM DTYPE & 255 = %d", dtype);
+
+      if ((dtype & 255) == 0)
+        {
+          A4GL_debug ("ZZZZ - SET OPTS");
+          A4GL_LL_set_field_opts (f,
+                                  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE | AUBIT_O_PUBLIC | AUBIT_O_EDIT);
+
+
+
+          //A4GL_field_opts_off (f, AUBIT_O_BLANK); @todo     is it ok to remove this ?
+
+        }
+      else
+        {
+          A4GL_debug ("ZZZZ - SET OPTS");
+          A4GL_debug ("BLANK BLANK");
+          A4GL_LL_set_field_opts (f,
+                                  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
+                                  AUBIT_O_PUBLIC | AUBIT_O_EDIT | AUBIT_O_BLANK);
+        }
+
+    }
+
+  A4GL_debug ("STATIC");
+  A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
+  A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
+  A4GL_LL_set_max_field(f,A4GL_mja_get_field_width(f));
+
+}
+
+
+//
+// Called when SET PAUSE MODE ON/OFF is set
+// and to check which is in effect (a==-1)
+//
+int A4GL_LL_pause_mode (int a)
+{
+  static int smode = 1;
+  if (a == -1)
+    return smode;
+
+  if (a == smode)
+    return smode;
+  if (a == 0)
+    {
+      smode = 0;
+      return smode;
+    }
+  smode = 1;
+
+  A4GL_LL_screen_update ();
+
+  return smode;
+}
+
+
+
+
+// --------------------------------------------------------------------------------------
+// FIXMEs...
+// --------------------------------------------------------------------------------------

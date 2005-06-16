@@ -8,7 +8,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.51 2005-06-14 22:05:29 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.52 2005-06-16 16:54:37 mikeaubury Exp $";
 #endif
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -57,6 +57,8 @@ void A4GL_size_menu (ACL_Menu * menu);
 static char * A4GL_decode_str_fprop (struct_scr_field * fprop, int type)
 {
   int b;
+  if (fprop==0) return 0;
+  if (fprop->str_attribs.str_attribs_val==0) return 0;
   for (b = 0; b < fprop->str_attribs.str_attribs_len; b++)
     {
       if (fprop->str_attribs.str_attribs_val[b].  type == type)
@@ -1053,6 +1055,8 @@ UILIB_A4GL_read_metrics (void *formdetsv)
   int lscr = 1;
   int lfieldscr = -1;
   char delims[3][2];
+  char *widget;
+  char *config;
   int attr_no;
 
   formdets = formdetsv;
@@ -1097,14 +1101,24 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 	  A4GL_debug("attr_no=%d fprop=%p",attr_no,fprop);
 
 
+
+
+			widget=A4GL_decode_str_fprop (fprop, FA_S_WIDGET);
+			config=A4GL_decode_str_fprop(fprop,FA_S_CONFIG);
+		if (widget==0) widget="";
+		if (config==0) config="";
+		
+
 	  formdets->fileform->metrics.metrics_val[a].field =
 	    (int) A4GL_LL_make_field (formdets->fileform->metrics.metrics_val[a].y,
 				      formdets->fileform->metrics.metrics_val[a].x,
 				      formdets->fileform->metrics.metrics_val[a].h,
 				      formdets->fileform->metrics.metrics_val[a].w, 
-			A4GL_decode_str_fprop (fprop, FA_S_WIDGET),
-			A4GL_decode_str_fprop(fprop,FA_S_CONFIG),fprop
+			widget,
+			config,
+			fprop
 	);
+
 	  A4GL_debug ("Making field 2");
 
 
@@ -1591,13 +1605,6 @@ A4GL_gen_field_list_from_slist_internal (void ***field_list, struct s_form_dets 
   return cnt - 1;
 }
 
-/*
-int
-A4GL_get_field_width (void *field)
-{
-  return A4GL_LL_get_field_width (field);
-}
-*/
 
 void
 A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
@@ -2541,11 +2548,10 @@ int UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout,void *evt) {
       	return 0;
     	}
 
-  A4GL_LL_set_carat (promptx->f);
-
-  A4GL_LL_screen_update ();
   abort_pressed = 0;
   was_aborted = 0;
+  A4GL_LL_set_carat (promptx->f);
+  A4GL_LL_screen_update ();
   a = A4GL_getch_internal (p);
   A4GL_clr_error_nobox ("prompt");
 
@@ -2667,6 +2673,11 @@ int UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af) {
   	promptx->charmode = c;
   	promptx->promptstr = promptstr;
   	promptx->lastkey = 0;
+
+
+  	ap = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, ap, 0, 0);
+  	af = A4GL_determine_attribute (FGL_CMD_INPUT, af, 0, 0);
+
 	x=A4GL_LL_start_prompt(vprompt,promptstr, ap,c,h,af,UILIB_A4GL_get_curr_width(),UILIB_A4GL_iscurrborder(),A4GL_getprompt_line(), (void *)A4GL_get_currwin(),promptx->mode);
 
 	promptx->field=A4GL_LL_get_value("prompt.field");
@@ -2867,6 +2878,7 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
       if (A4GL_isscrmode ())
 	{
 	  A4GL_LL_switch_to_line_mode ();
+  	  A4GL_set_scrmode ('L');
 	}
       A4GL_LL_out_linemode (s);
     }
@@ -2898,31 +2910,6 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 
 	A4GL_debug("CURR=%d",UILIB_A4GL_get_curr_height());
 
-/*
-	if (UILIB_A4GL_iscurrborder ()) {
-        	if (y<1|| y>UILIB_A4GL_get_curr_height()) {
-                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal 3");
-                	return;
-        	}
-        	if (x<1|| x>A4GL_get_curr_width()) {
-                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal 4");
-                	return;
-        	}
-
-	} else {
-        	if (y<1|| y>UILIB_A4GL_get_curr_height()+10) {
-                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal 5");
-                	return;
-        	}
-        	if (x<1|| x>A4GL_get_curr_width()) {
-                	A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal 6");
-                	return;
-        	}
-
-
-	}
-*/
-      //if (strlen(s)==0&&clr_line) return;
 
       A4GL_wprintw(wot,a,x,y,UILIB_A4GL_get_curr_width(),UILIB_A4GL_get_curr_height(),UILIB_A4GL_iscurrborder (),A4GL_get_currwinno(), "%s",s);
 
@@ -3064,22 +3051,28 @@ A4GL_proc_key_prompt (int a, void *mform, struct s_prompt *prompt)
 
 void A4GL_set_field_attr_for_ll (void *field) {
 struct struct_scr_field *fprop;
-      fprop = (struct struct_scr_field *) A4GL_LL_get_field_userptr (field);
-      A4GL_LL_set_field_attr(field,fprop->datatype,fprop->dynamic,
-		A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT),
-		A4GL_has_bool_attribute (fprop, FA_B_INVISIBLE),
-		A4GL_has_bool_attribute (fprop, FA_B_REQUIRED),
-		A4GL_has_bool_attribute (fprop, FA_B_COMPRESS),
-		A4GL_has_str_attribute (fprop, FA_S_PICTURE)
-	);
+int autonext;
+int invis;
+int reqd;
+int compress;
+int has_picture;
+
+fprop = (struct struct_scr_field *) A4GL_LL_get_field_userptr (field);
+
+autonext=A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT);
+invis=A4GL_has_bool_attribute (fprop, FA_B_INVISIBLE);
+reqd=A4GL_has_bool_attribute (fprop, FA_B_REQUIRED);
+compress=A4GL_has_bool_attribute (fprop, FA_B_COMPRESS);
+has_picture=A4GL_has_str_attribute (fprop, FA_S_PICTURE);
+
+
+A4GL_LL_set_field_attr(field,fprop->datatype,fprop->dynamic, autonext,invis,reqd,compress,has_picture);
+
+
 }
 
 
-int
-A4GL_get_field_width (void *field)
-{
-          return A4GL_LL_get_field_width (field);
-}
+// int A4GL_get_field_width (void *field) { return A4GL_LL_get_field_width (field); }
 
 
 void
@@ -3089,12 +3082,12 @@ A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
   int a;
   int b;
   int width;
-  b = A4GL_LL_get_field_width (field);
+  b = A4GL_get_field_width (field);
   strcpy (buff2, buff);
   a = strlen (buff2);
-  b = A4GL_LL_get_field_width (field);
+  b = A4GL_get_field_width (field);
   A4GL_debug ("field_buffer %p %d %s", field, nbuff, buff);
-  width = A4GL_LL_get_field_width (field);
+  width = A4GL_get_field_width (field);
   if (width > 2048)
     {
       char *ptr = 0;
@@ -3102,10 +3095,10 @@ A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
       *ptr = 0;
 
     }
-  if (a < A4GL_LL_get_field_width (field))
+  if (a < A4GL_get_field_width (field))
     {
       A4GL_debug ("Adding padding");
-      A4GL_pad_string (buff2, A4GL_LL_get_field_width (field));
+      A4GL_pad_string (buff2, A4GL_get_field_width (field));
     }
   else
     {
@@ -3141,6 +3134,7 @@ A4GL_field_opts_off (void *v, int n)
 
 int A4GL_getch_internal(void *win) {
   int a;
+  A4GL_set_abort (0);
   a = A4GL_readkey ();
   if (a != 0)
     {
@@ -3148,7 +3142,88 @@ int A4GL_getch_internal(void *win) {
       return a;
     }
   a = A4GL_LL_getch_swin (win);
+  a = A4GL_key_map(a);
   A4GL_chk_for_screen_print (a);
   A4GL_logkey (a);
+	
   return a;
 }
+
+
+void UILIB_A4GLUI_set_intr() {
+	// Does nothing yet - called if DEFER INTERRUPT has been called...
+}
+
+
+
+
+void
+A4GL_default_attributes (void *f, int dtype,int has_picture)
+{
+  int done = 0;
+
+  A4GL_debug ("In def attrib f=%p", f);
+
+
+
+      if (has_picture)
+        {
+          A4GL_debug ("ZZZZ - SET OPTS");
+          A4GL_LL_set_field_opts (f,
+                                  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
+                                  AUBIT_O_PUBLIC | AUBIT_O_EDIT );
+          done = 1;
+        }
+
+
+
+
+
+  if (done == 0)
+    {
+
+      A4GL_debug ("MMMM DTYPE & 255 = %d", dtype);
+
+      if ((dtype & 255) == 0)
+        {
+          A4GL_debug ("ZZZZ - SET OPTS");
+          A4GL_LL_set_field_opts (f,
+                                  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE | AUBIT_O_PUBLIC | AUBIT_O_EDIT);
+
+
+
+          //A4GL_field_opts_off (f, AUBIT_O_BLANK); @todo     is it ok to remove this ?
+
+        }
+      else
+        {
+          A4GL_debug ("ZZZZ - SET OPTS");
+          A4GL_debug ("BLANK BLANK");
+          A4GL_LL_set_field_opts (f,
+                                  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
+                                  AUBIT_O_PUBLIC | AUBIT_O_EDIT | AUBIT_O_BLANK);
+        }
+
+    }
+
+  A4GL_debug ("STATIC");
+  A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
+  A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
+  A4GL_LL_set_max_field(f,A4GL_get_field_width(f));
+
+}
+
+
+
+//
+// Called when SET PAUSE MODE ON/OFF is set
+// and to check which is in effect (a==-1)
+//
+int
+UILIB_A4GL_screen_mode (int a)
+{
+	return A4GL_LL_pause_mode(a);
+}
+
+
+

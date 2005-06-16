@@ -31,3 +31,4 @@
 #define A4GL_form_scale_form scale_form
 #define A4GL_form_unpost_form unpost_form
 #define A4GL_form_form_sub form_sub
+#define A4GL_form_field_info field_info

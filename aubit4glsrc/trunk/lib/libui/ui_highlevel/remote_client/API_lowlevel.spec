@@ -13,7 +13,7 @@ A4GL_LL_clear_prompt void* f void* p -> void
 A4GL_LL_clr_form_fields int to_defaults char* defs  -> void
 A4GL_LL_clr_menu_disp void* menu int curr_width int curr_height int iscurrborder int currwinno void* cw int menu_offset int gw_y -> void 
 A4GL_LL_colour_code int a -> int
-A4GL_LL_construct_large char* orig void* evt int initkey int initpos char* left char* right int curr_width int curr_height int comment_line void* currwin -> int
+A4GL_LL_construct_large char* orig void* evt int initkey int initpos char* left char* right int curr_width int curr_height int comment_line void* currwin  int currisborder -> int
 A4GL_LL_create_errorwindow int h int w int y int x int attr char* str -> void* 
 A4GL_LL_create_window int h int w int y int x int border -> void* 
 A4GL_LL_current_field void* form -> void* 
@@ -22,7 +22,7 @@ A4GL_LL_delete_errorwindow void* curr_error_window -> void
 A4GL_LL_disp_h_menu int num_opts -> int
 A4GL_LL_disp_h_menu_opt int opt_num int num_opts char* title int attrib -> int
 A4GL_LL_display_form void* f int attrib int curr_width int curr_height int cb int currwinno int form_line void* currwin void* frm int maxline int maxcol -> void* 
-A4GL_LL_dump_screen int n -> int
+A4GL_LL_dump_screen int n char* fname int mode -> int
 A4GL_LL_endis_fields_ap int n void* ap -> int
 A4GL_LL_error_box char* str int attr  -> void 
 A4GL_LL_field_buffer void* field int n -> char* 
@@ -31,7 +31,6 @@ A4GL_LL_field_status void* field -> int
 A4GL_LL_form_page void* form -> int
 A4GL_LL_get_carat void* form -> int
 A4GL_LL_get_field_userptr void* field -> void* 
-A4GL_LL_get_field_width void* f -> int
 A4GL_LL_get_form_userptr void* form -> void* 
 A4GL_LL_get_value char* s -> void*
 A4GL_LL_getch_swin void* window_ptr -> int 
@@ -80,3 +79,4 @@ A4GL_LL_switch_to_line_mode  -> void
 A4GL_LL_wadd_char_xy_col void* win int x int y int ch int curr_width int curr_height int cb int cwno -> void
 A4GL_LL_wadd_char_xy_col_w void* win int x int y int ch int curr_width int curr_height int cb int cwno -> void
 A4GL_LL_widget_name_match void* w char* name -> int
+A4GL_LL_pause_mode int pm -> int

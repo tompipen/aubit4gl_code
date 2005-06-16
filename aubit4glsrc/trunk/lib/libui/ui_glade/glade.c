@@ -739,8 +739,32 @@ int UILIB_aclfgl_a4gl_run_gui(int n) {
 
 
 
+//
+// Called when SET PAUSE MODE ON/OFF is set
+// and to check which is in effect (a==-1)
+//
+int
+UILIB_A4GL_screen_mode (int a)
+{
+  static int smode = 1;
+  if (a == -1)
+    return smode;
+
+  if (a == smode)
+    return smode;
+  if (a == 0)
+    {
+      smode = 0;
+      return smode;
+    }
+  smode = 1;
+  A4GL_zrefresh ();
+  return smode;
+}
 
 
 
 
 
+void UILIB_A4GLUI_set_intr(void ) {
+}

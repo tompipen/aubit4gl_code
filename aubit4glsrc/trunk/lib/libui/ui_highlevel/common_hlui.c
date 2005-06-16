@@ -14,55 +14,6 @@
 #include "a4gl_API_lowlevel.h"
 #include "formdriver.h"
 
-#define COLOR_BLACK     0
-#define COLOR_RED       1
-#define COLOR_GREEN     2
-#define COLOR_YELLOW    3
-#define COLOR_BLUE      4
-#define COLOR_MAGENTA   5
-#define COLOR_CYAN      6
-#define COLOR_WHITE     7
-
-
-int
-A4GL_decode_colour_attr_aubit (int a)
-{
-  char colour[20];
-  char attr[256];
-  A4GL_debug ("MJA Decoding %d", a);
-  A4GL_get_strings_from_attr (a, colour, attr);
-
-  A4GL_debug ("MJA Got colour as : %s - %s", colour, attr);
-  A4GL_trim (colour);
-
-  if (strlen (colour) == 0)
-    return A4GL_LL_colour_code (COLOR_WHITE);
-  if (strcmp (colour, "BLACK") == 0)
-    return A4GL_LL_colour_code (COLOR_BLACK);
-  if (strcmp (colour, "RED") == 0)
-    return A4GL_LL_colour_code (COLOR_RED);
-  if (strcmp (colour, "GREEN") == 0)
-    return A4GL_LL_colour_code (COLOR_GREEN);
-  if (strcmp (colour, "YELLOW") == 0)
-    return A4GL_LL_colour_code (COLOR_YELLOW);
-  if (strcmp (colour, "BLUE") == 0)
-    return A4GL_LL_colour_code (COLOR_BLUE);
-  if (strcmp (colour, "MAGENTA") == 0)
-    return A4GL_LL_colour_code (COLOR_MAGENTA);
-  if (strcmp (colour, "CYAN") == 0)
-    return A4GL_LL_colour_code (COLOR_CYAN);
-  if (strcmp (colour, "WHITE") == 0)
-    return A4GL_LL_colour_code (COLOR_WHITE);
-
-
-
-  return 0;
-}
-
-
-
-
-
 
 
 void
@@ -100,66 +51,6 @@ A4GL_start_form (void *frm)
     A4GL_LL_int_form_driver (frm, AUBIT_REQ_OVL_MODE);
 
 }
-
-
-
-
-void
-A4GL_default_attributes (void *f, int dtype,int has_picture)
-{
-  int done = 0;
-
-  A4GL_debug ("In def attrib f=%p", f);
-
-
-
-      if (has_picture)
-        {
-          A4GL_debug ("ZZZZ - SET OPTS");
-          A4GL_LL_set_field_opts (f,
-                                  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-                                  AUBIT_O_PUBLIC | AUBIT_O_EDIT );
-          done = 1;
-        }
-
-
-
-
-
-  if (done == 0)
-    {
-
-      A4GL_debug ("MMMM DTYPE & 255 = %d", dtype);
-
-      if ((dtype & 255) == 0)
-        {
-          A4GL_debug ("ZZZZ - SET OPTS");
-          A4GL_LL_set_field_opts (f,
-                                  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE | AUBIT_O_PUBLIC | AUBIT_O_EDIT);
-
-
-	
-          //A4GL_field_opts_off (f, AUBIT_O_BLANK); @todo     is it ok to remove this ?
-
-        }
-      else
-        {
-          A4GL_debug ("ZZZZ - SET OPTS");
-          A4GL_debug ("BLANK BLANK");
-          A4GL_LL_set_field_opts (f,
-                                  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-                                  AUBIT_O_PUBLIC | AUBIT_O_EDIT | AUBIT_O_BLANK);
-        }
-
-    }
-
-  A4GL_debug ("STATIC");
-  A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
-  A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
-  A4GL_LL_set_max_field(f,A4GL_LL_get_field_width(f));
-
-}
-
 
 
 int

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.23 2005-05-24 15:37:40 mikeaubury Exp $
+# $Id: console.c,v 1.24 2005-06-16 16:52:44 mikeaubury Exp $
 #*/
 
 /**
@@ -139,6 +139,31 @@ void
   free (s);
 
 }
+
+//
+// Called when SET PAUSE MODE ON/OFF is set
+// and to check which is in effect (a==-1)
+//
+int
+UILIB_A4GL_screen_mode (int a)
+{
+  static int smode = 1;
+  if (a == -1)
+    return smode;
+
+  if (a == smode)
+    return smode;
+  if (a == 0)
+    {
+      smode = 0;
+      return smode;
+    }
+  smode = 1;
+  A4GL_zrefresh ();
+  return smode;
+}
+
+
 
 /**
  *
@@ -576,6 +601,9 @@ void UILIB_A4GL_zrefresh(void) {
 	/* REQUIRED - BUT DOES NOTHING */
 }
 
+void UILIB_A4GLUI_set_intr(void) {
+	/* REQUIRED - BUT DOES NOTHING */
+}
 
 
 void
@@ -659,3 +687,4 @@ void UILIB_A4GL_show_window(char* winname) NOPE
 
 
 /* ========================== EOF =============================== */
+
