@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.103 2005-06-06 18:03:38 mikeaubury Exp $
+# $Id: resource.c,v 1.104 2005-06-16 19:21:13 mikeaubury Exp $
 #
 */
 
@@ -1336,5 +1336,8 @@ static char * A4GL_strip_quotes_resource (char *s)
     }
   return buff;
 }
+
+
+
 
 /* ----------------------------- EOF --------------------------------- */

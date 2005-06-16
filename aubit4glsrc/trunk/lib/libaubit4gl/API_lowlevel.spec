@@ -4,6 +4,8 @@ LIBRARY HLUI
 * Name of the variable which will have second part of library name to load:
 VARIABLE A4GL_HLUI
 
+!  struct list_of_fields { long a<>;};
+
 A4GL_LL_beep -> void 
 /* int A4GL_LL_colour_code int a */ 
 A4GL_LL_colour_code int a -> int
@@ -24,10 +26,10 @@ A4GL_LL_decode_aubit_attr int a char s -> int
 A4GL_LL_delete_errorwindow void* curr_error_window -> void
 
 /* void* A4GL_LL_display_form struct s_form_dets *f int attrib */
-A4GL_LL_display_form void* f int attrib int curr_width int curr_height int cb int currwinno int form_line void* currwin -> void* 
+A4GL_LL_display_form void* f int attrib int curr_width int curr_height int cb int currwinno int form_line void* currwin void* frm int maxline int maxcol -> void* 
 
 /* int A4GL_LL_dump_screen int n */
-A4GL_LL_dump_screen int n -> int
+A4GL_LL_dump_screen int n char* fname int mode -> int
 
 /* void A4GL_LL_error_box char* str int attr */
 A4GL_LL_error_box char* str int attr  -> void 
@@ -72,7 +74,7 @@ A4GL_LL_initialize_display  -> void
 A4GL_LL_int_form_driver void* mform int mode -> int
 
 /* void* A4GL_LL_make_field int frow int fcol int rows int cols */
-A4GL_LL_make_field void* prop int frow int fcol int rows int cols -> void* 
+A4GL_LL_make_field int frow int fcol int rows int cols char* widget char* config void* fprop_id -> void* 
 
 /* void* A4GL_LL_make_label int frow int fcol char* label */
 A4GL_LL_make_label int frow int fcol char* label -> void* 
@@ -84,7 +86,7 @@ A4GL_LL_make_window_top void* w -> void
 A4GL_LL_move_window void* w int y int x -> void
 
 /* void* A4GL_LL_new_form void* *fields */
-A4GL_LL_new_form void* formdets -> void*
+A4GL_LL_new_form list_of_fields* formdets -> void*
 
 /* void A4GL_LL_out_linemode char* s */
 A4GL_LL_out_linemode char* s -> void
@@ -119,8 +121,7 @@ A4GL_LL_set_carat void* form -> void
 /* void A4GL_LL_set_current_field void* form void* field */
 A4GL_LL_set_current_field void* form void* field -> void
 
-/* void A4GL_LL_set_field_attr void* field */
-A4GL_LL_set_field_attr void* field -> void
+A4GL_LL_set_field_attr void* field int dtype int dynamic int autonext int invis int required int compress int has_picture -> void
 
 /* void A4GL_LL_set_field_back void* field int attr */
 A4GL_LL_set_field_back void* field int attr -> void
@@ -189,10 +190,14 @@ A4GL_LL_clr_menu_disp void* menu int curr_width int curr_height int iscurrborder
 A4GL_LL_h_disp_title void* menu char* str int curr_width int curr_height int iscurrborder int currwinno void* cw int gw_y -> void
 A4GL_LL_set_acc_intr_keys int n -> void
 A4GL_LL_menu_loop void* menu -> int
-A4GL_LL_construct_large char* orig void* evt int initkey int initpos char* left char* right int curr_width int curr_height int comment_line void* currwin -> int
+
 A4GL_LL_get_value char* s -> void*
 A4GL_LL_clear_prompt void* f void* p -> void
 
 A4GL_LL_disp_h_menu int num_opts -> int
 A4GL_LL_disp_h_menu_opt int opt_num int num_opts char* title int attrib -> int
 A4GL_LL_menu_type -> int
+A4GL_LL_hide_h_menu -> int
+A4GL_LL_construct_large char* orig void* evt int initkey int initpos char* left char* right int curr_width int curr_height int comment_line void* currwin int currisborder  -> void*
+A4GL_LL_construct_large_finished void* f -> char*
+A4GL_LL_pause_mode int pm -> int

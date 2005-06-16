@@ -249,7 +249,9 @@ style "280" {
 style "Error" { 
         fg[NORMAL]       = "#ffffff"
         bg[NORMAL]       = "#ff0000"
-  	font_name = "monospace 6 bold"
+	text[NORMAL]     = "#0000ff"
+	base[NORMAL]     = "#00ff00"
+  	font_name = "monospace 12"
 }
 #class "GtkLabel" style "lblMenuButtons"
 #class "GtkButton" style "btnMenuButtons"

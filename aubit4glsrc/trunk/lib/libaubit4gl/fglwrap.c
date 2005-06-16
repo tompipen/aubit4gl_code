@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.90 2005-06-10 13:37:37 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.91 2005-06-16 19:21:11 mikeaubury Exp $
 #
 */
 
@@ -704,6 +704,7 @@ A4GL_set_intr (void)
   A4GL_set_abort (1);
   /* Reset signal */
   A4GL_def_int ();
+  A4GLUI_set_intr();
 }
 
 #if (defined(WIN32) && ! defined(__CYGWIN__))

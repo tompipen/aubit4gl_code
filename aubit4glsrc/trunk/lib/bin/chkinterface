@@ -8,14 +8,16 @@ echo "char *ifname;"
 echo "char *api;"
 echo "void *libptr;"
 echo " " 
-echo "chk_interface(char *f) {"
+echo "int chk_interface(char *f) {"
 echo "void *func;"
 echo "int missing=0;"
 echo "func=(void *)A4GL_find_func_allow_missing(libptr,f);"
 echo "if (func==0||A4GL_isnullfunc(func)) missing=1;"
 echo "if (missing) printf(\"%-40s - %s\n\",f,(missing==0)?\"Exists\":\"Missing <------------\");"
+echo "return missing;"
 echo "}"
 echo "main(int argc,char *argv[]) {"
+echo "int cnt_bad=0;"
 echo "if (argc!=4) {printf(\"Usage : %s class api interface\neg %s  UI ui HL_TUI\n\",argv[0],argv[0]);exit(2);}"
 echo "name=argv[1];"
 echo "api=argv[2];"
@@ -37,7 +39,7 @@ BEGIN {
 
 { 
 
-print "   chk_interface(\"" prefix $3 "\");"
+print "   cnt_bad+=chk_interface(\"" prefix $3 "\");"
 }
 
 END {
@@ -46,6 +48,8 @@ END {
 
 ' 
 done
+echo "if (cnt_bad) exit(1);"
+echo "exit(0);"
 echo "}"
 
 ) > chk1.c

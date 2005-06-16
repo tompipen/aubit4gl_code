@@ -170,4 +170,5 @@ A4GL_reset_state_for void* sio char* siotype -> void
 aclfgl_fgl_set_arrline int nparam -> int
 aclfgl_fgl_set_scrline int nparam -> int
 A4GL_reset_delims void* vformdets void* field char* delims -> void
-
+A4GLUI_set_intr -> void
+A4GL_screen_mode int sm -> int

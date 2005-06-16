@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.119 2005-05-20 18:34:28 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.120 2005-06-16 19:21:11 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.119 2005-05-20 18:34:28 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.120 2005-06-16 19:21:11 mikeaubury Exp $";
 #endif
 
 /**
@@ -277,9 +277,6 @@ LEXLIB_print_foreach_next (char *xcursorname, int has_using, char *into)
 
 
   print_open_cursor(cursorname,has_using);
-
-  /*printc("internal_recopy_%s_i_Dir();",cursorname);*/
-  /*print_copy_status ();*/
 
 
   printc ("if (a4gl_sqlca.sqlcode==0) {\n");
@@ -1403,9 +1400,6 @@ LEXLIB_print_declare (char *a1, char *a2, char *a3, int h1, int h2)
   printh ("static struct BINDING *acli_nbo_%s=0;\n", cname3);
   printh ("static struct BINDING *acli_nbii_%s=0;\n", cname3);
   printh ("static struct BINDING *acli_nboi_%s=0;\n", cname3);
-  /*printh("#undef ibind\n#undef obind\n"); */
-  /*printh("#define ibind acli_bi_%s\n",A4GL_strip_quotes(a3)); */
-  /*printh("#define obind acli_bo_%s\n",A4GL_strip_quotes(a3)); */
 
   printh ("\n\nstatic void internal_recopy_%s_i_Dir(void) {\n", cname3);
   printh ("struct BINDING *ibind;\n");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.217 2005-05-30 13:03:14 mikeaubury Exp $
+# $Id: mod.c,v 1.218 2005-06-16 19:17:18 mikeaubury Exp $
 #
 */
 
@@ -151,6 +151,7 @@ extern int menu_cnt;			/** The count of menus found */
 extern int yylineno;			/** The source file line number */
 extern char *infilename;    /** The input (4gl file name */
 extern int in_define;
+char *compiling_module(void);
 
 static int db_used = 0;		 /** Flag that indicate that a database is being used */
 static int inc = 0;
@@ -4764,6 +4765,8 @@ fgl_add_scope (char *s, int n)
   char c;
   static char buffer[256];
   char buffer2[1024];
+  static char if1[2000]="";
+  static char if2[2000]="";
 
   if (strncmp(s,"CLASS_COPY->",12)==0) return s;
 
@@ -4773,18 +4776,14 @@ fgl_add_scope (char *s, int n)
   if (c == 'C' || c=='P');
   else
     {
-      if (!A4GL_isyes (acl_getenv ("MARK_SCOPE")))
-	{
-	  return s;
-	}
+      if (A4GL_isyes (acl_getenv ("MARK_SCOPE")) || A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")) ) ;
+      else { return s; }
     }
 
 
   if (buffer2[0] >= 'A' && buffer2[0] <= 'Z' && buffer2[1] == '_')
     {
-      char buff[1024];
-      strcpy (buff, &buffer2[2]);
-      strcpy (buffer2, buff);
+      strcpy (buffer2, A4GL_unscope(buffer2));
     }
 
 
@@ -4813,17 +4812,22 @@ fgl_add_scope (char *s, int n)
   if (c != 'S') {
 		if (c=='C'||c=='P') {
 			if (c=='C')  {
-    			sprintf (buffer, "CLASS_COPY->%s",  buffer2);
+    				sprintf (buffer, "CLASS_COPY->%s",  buffer2);
 			} else {
-			find_variable_ptr (buffer2);
-    			sprintf (buffer, "CLASS_COPY->%s",  get_last_class_var());
+				find_variable_ptr (buffer2);
+    				sprintf (buffer, "CLASS_COPY->%s",  get_last_class_var());
 			}
 		} else {
-    			sprintf (buffer, "%c_%s", c, buffer2);
+      			if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")) && c=='M') {
+    				sprintf (buffer, "%c_%s_%s", c,compiling_module(),buffer2);
+			} else {
+    				sprintf (buffer, "%c_%s", c, buffer2);
+			}
 		}
 	}
-  else
+  else {
     sprintf (buffer, "%s", buffer2);
+  }
 
   return buffer;
 }

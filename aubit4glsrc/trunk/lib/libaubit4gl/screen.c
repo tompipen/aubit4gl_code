@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: screen.c,v 1.17 2005-03-31 13:35:48 afalout Exp $
+# $Id: screen.c,v 1.18 2005-06-16 19:21:11 mikeaubury Exp $
 #*/
 
 /**
@@ -74,6 +74,7 @@ extern int ui_mode;
 //char *A4GL_find_attribute (struct s_form_dets *f, int field_no);
 //int A4GL_chk_iskey (char *keys);
 
+#ifdef MOVED
 /*
 =====================================================================
                     Functions definitions
@@ -102,7 +103,7 @@ A4GL_screen_mode (int a)
   A4GL_zrefresh ();
   return smode;
 }
-
+#endif
 
 /**
  * moved here from lib/libform/form_xdr/readforms.c

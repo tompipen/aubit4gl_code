@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.86 2005-06-08 07:38:58 mikeaubury Exp $
+# $Id: compile.c,v 1.87 2005-06-16 19:17:18 mikeaubury Exp $
 #*/
 
 /**
@@ -68,7 +68,7 @@ static int genStackInfo = 1;
 /*FIXME - move in "a4gl_4glc_int.h"*/
 extern char *outputfilename;	/* Defined in libaubit4gl */
 extern int globals_only;	/* defined in map.c */
-extern char infilename[132];
+extern char infilename[256];
 extern FILE *yyin;
 extern int glob_only;
 extern long fpos;					/** current file position for direct fseek */
@@ -118,7 +118,7 @@ int has_default_database (void);
 char *get_default_database (void);
 int A4GL_db_used(void );
 static void add_module_error(int n,char *s) ;
-
+char compiling_module_name[256]="notset";
 
 
 static char *get_rdynamic(void ) {
@@ -1137,7 +1137,7 @@ static char local_pass_options[1024] = "";
     file compilation, if nececery */
 	SPRINTF2 (fgl_file, "%s%s", fgl_basename, ".4gl");
 	strcpy (buff, fgl_file);
-	
+	strcpy(compiling_module_name,fgl_basename);
 	//Note: output_object is empty when compilation is invoked because
 	//that 4gl file was specified as GLOBALS file
 	A4GL_debug ("Compiling: %s to %s\n", fgl_file,output_object);
@@ -1888,6 +1888,11 @@ void add_module_error(int n,char *s) {
 		module_errors[module_errors_cnt-1].lineno=n;
 		module_errors[module_errors_cnt-1].err_str=strdup(s);
 	}
+}
+
+
+char *compiling_module(void) {
+	return  compiling_module_name;
 }
 
 /* ==================================== EOF =============================== */

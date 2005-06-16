@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.171 2005-06-08 07:53:14 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.172 2005-06-16 19:21:10 mikeaubury Exp $
 #
 */
 
@@ -1604,7 +1604,7 @@ int A4GL_conversion_ok(int a);
   void *A4GL_find_pointer_val (char *pname, char t);
 
   /* ============================ screen.c =============================== */
-  int A4GL_screen_mode (int a);
+  //int A4GL_screen_mode (int a);
 
   /* ============================ maths.c ================================ */
   void *A4GL_find_op_function (int dtype1, int dtype2, int op);

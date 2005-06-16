@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.60 2005-06-07 08:38:42 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.61 2005-06-16 19:21:12 mikeaubury Exp $
 #
 */
 
@@ -89,6 +89,7 @@
 
 FILE *outfile = 0;
 FILE *hfile = 0;
+int print_sqlca;
 extern char *outputfilename;
 extern char *curr_func;
 extern char *infilename;
@@ -2081,11 +2082,11 @@ LEXLIB_print_exit_program (int has_expr)
 void
 LEXLIB_print_for_start (char *var)
 {
-  printc
-    ("\n{int _s,_e,_step;\n_step=pop_int();_e=pop_int();_s=pop_int();\n");
-  printc
-    ("for (%s=_s; (%s<=_e && _step>0)||(%s>=_e &&  _step<0);%s+=_step) {\n",
-     var, var, var, var);
+  printc("\n{my $_s;my $_e;my $_step;\n");
+  printc("$_step=aubit4gl_pl::pop_int();");
+  printc("$_e=aubit4gl_pl::pop_int();\n");
+  printc("$_s=aubit4gl_pl::pop_int();\n");
+  printc ("$%s=$_s;\nwhile (($%s<=$_e && $_step>0)||($%s>=$_e &&  $_step<0)) {\n$%s+=$_step;\n", var, var, var, var);
 }
 
 
@@ -3814,21 +3815,21 @@ LEXLIB_print_declare_associate_2 (char *variable, char *size, char *n)
  * @return
  */
 void
-LEXLIB_print_define_char (char *var, int size, int isstatic_extern)
+LEXLIB_print_define_char (char *varstring, int size, int isstatic_extern)
 {
-  /*
-     if (isstatic_extern == 1)
-     printc ("static ");
-     if (isstatic_extern == 2)
-     printc ("extern ");
-   */
+  char dtype[32];
+  char vname[32];
+if (print_sqlca) return;
+  sscanf (varstring, "%s %s", dtype, vname);
+
+
   if (!printing_record)
     {
-      printc ("my $%s;\n", var, size);
+      printc ("my $%s; \n", vname);
     }
   else
     {
-      printc ("%s => '$',\n", var, size);
+      printc ("%s => '$',\n", vname);
     }
 
 }
@@ -3843,6 +3844,7 @@ LEXLIB_print_define (char *varstring, int isstatic_extern)
 {
   char dtype[32];
   char vname[32];
+if (print_sqlca) return;
   /*
      if (isstatic_extern == 1)
      printc ("static ");
@@ -3865,14 +3867,9 @@ void
 LEXLIB_print_start_record (int isstatic_extern, char *vname, char *arrsize,
 		    int level)
 {
+  if (strcmp(vname,"a4gl_sqlca")==0) { print_sqlca=1; return ;}
   printing_record++;
-  /*
-     if (isstatic_extern == 1)
-     printc ("static ");
-     if (isstatic_extern == 2)
-     printc ("extern ");
-   */
-  printc ("struct a4glStruct_%s => {\n", vname);
+  printc ("struct (a4glStruct_%s => {\n", vname);
 }
 
 /**
@@ -3883,17 +3880,21 @@ LEXLIB_print_start_record (int isstatic_extern, char *vname, char *arrsize,
 void
 LEXLIB_print_end_record (char *vname, char *arrsize, int level)
 {
+  if (strcmp(vname,"a4gl_sqlca")==0) { print_sqlca=0; return; }
   printing_record--;
   if (atoi (arrsize) == -1)
     {
-      printc ("}; \n", vname);
+      printc ("}); \n", vname);
     }
   else
     {
-      printc ("} %s[%s];\n", vname, arrsize);
+      printc ("});");
     }
-
-  printc ("my $%s=a4glStruct_%s->new();", vname, vname);
+  if (arrsize) {
+  	printc ("my $%s=a4glStruct_%s->new(); \n", vname, vname,arrsize);
+  } else {
+  	printc ("my $%s=a4glStruct_%s->new();", vname, vname);
+  }
 }
 
 
@@ -4197,7 +4198,7 @@ void
 LEXLIB_print_cmd_end ()
 {
   //printc("\naclfgli_clr_err_flg()\n\n");      
-  printc ("\n/* End command */\n");
+  //printc ("\n/* End command */\n");
 }
 
 char *
@@ -4209,7 +4210,7 @@ LEXLIB_get_column_transform (char *s)
 void
 LEXLIB_A4GL_lex_parsed_fgl ()
 {
-  printc ("/* END OF 4GL */");
+  //printc ("/* END OF 4GL */");
 }
 
 

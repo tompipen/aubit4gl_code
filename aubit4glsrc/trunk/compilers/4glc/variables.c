@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.57 2005-06-06 18:14:55 mikeaubury Exp $
+# $Id: variables.c,v 1.58 2005-06-16 19:17:19 mikeaubury Exp $
 #
 */
 
@@ -90,7 +90,9 @@ void print_class_variables (void);
 void set_last_class_var(char *s);
 /******************************************************************************/
 
+char *A4GL_unscope(char *s);
 int A4GL_findex (char *str, char c);
+char *compiling_module(void);
 /*void dump_gvars (void);*/
 //void set_yytext (char *s);
 int isin_command (char *s);
@@ -162,7 +164,19 @@ get_variable_user_system ()
 /*static void set_variable_scope(char n)        { scope=n; }*/
 /*static char get_variable_scope()              { return scope; }*/
 
-
+char *A4GL_unscope(char *s) {
+static char buff[1024];
+int sl=-1;
+  if (s[0] >= 'A' && s[0] <= 'Z' && s[1] == '_') {
+      if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")) && s[0]=='M') {
+		sl=strlen(compiling_module())+3;
+      } else {
+		sl=2;
+      }
+	strcpy(buff,&s[sl]);
+  }
+  return buff;
+}
 
 void force_curr_v(struct variable *v,int rcnt) {
 	if (rcnt<0) rcnt=last_record_cnt;
@@ -948,9 +962,13 @@ add_to_scope (int record_cnt, int unroll)
 	  || curr_v[record_cnt]->variable_type == VARIABLE_TYPE_ASSOC))
     {
       char buff[256];
-      if (A4GL_isyes (acl_getenv ("MARK_SCOPE")))
+      if (A4GL_isyes (acl_getenv ("MARK_SCOPE")) || A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")))
 	{
-	  sprintf (buff, "%c_", get_current_variable_scope ());
+	  if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE"))) {
+	  	sprintf (buff, "%c_%s_", get_current_variable_scope (),compiling_module());
+	  } else {
+	  	sprintf (buff, "%c_", get_current_variable_scope ());
+	  }
 	  A4GL_convupper (buff);
 	  strcat (buff, curr_v[record_cnt]->names.name);
 	  curr_v[record_cnt]->names.alias = strdup (buff);
@@ -1141,9 +1159,7 @@ A4GL_debug("find_variable_ptr : %s",s);
 
   if (s[0] >= 'A' && s[0] <= 'Z' && s[1] == '_')
     {
-      char buff[1024];
-      strcpy (buff, &s[2]);
-      strcpy (s, buff);
+      strcpy (s, A4GL_unscope(s));
     }
 
 /* First we look locally - then at module level - then globally*/
@@ -1236,11 +1252,13 @@ find_variable (char *s_in, int *dtype, int *size, int *is_array,
   strcpy (s, s_in);
   strip_bracket (s);
 A4GL_debug("-->%s",s);
+
+
   if (s[0] >= 'A' && s[0] <= 'Z' && s[1] == '_')
     {
-      char buff[1024];
-      strcpy (buff, &s[2]);
-      strcpy (s, buff);
+
+
+       strcpy(s,A4GL_unscope(s));
     }
 
   ptr = find_variable_ptr (s);
@@ -2475,7 +2493,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
       strcpy (record2, ptr);
       if (record2[0] >= 'A' && record2[0] <= 'Z' && record2[1] == '_')
 	{
-	  strcpy (record2, &ptr[2]);
+	  strcpy (record2, A4GL_unscope(ptr));
 	}
 
       dot[0] = strrchr (record1, '.');
@@ -2948,7 +2966,7 @@ print_variable (struct variable *v, char scope, int level)
     }
 
   strcpy (name, v->names.name);
-  if (level == 0 && A4GL_isyes (acl_getenv ("MARK_SCOPE"))  )
+  if (level == 0 && (A4GL_isyes (acl_getenv ("MARK_SCOPE"))|| A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")))  )
     {
       /*printf("%s %c %c %c\n",name,v->user_system,v->scope,scope);*/
       if (is_system_variable (name));
@@ -2960,7 +2978,11 @@ print_variable (struct variable *v, char scope, int level)
 	    }
 	  if (v->scope == 'M' || v->scope == 'm')
 	    {
-	      sprintf (name, "M_%s", v->names.name);
+		if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE"))) {	
+	      		sprintf (name, "M_%s_%s", compiling_module(),v->names.name);
+		} else {
+	      		sprintf (name, "M_%s", v->names.name);
+		}
 	    }
 	  if (v->scope == 'L' || v->scope == 'l')
 	    {
@@ -2978,8 +3000,7 @@ print_variable (struct variable *v, char scope, int level)
   if (v->variable_type == VARIABLE_TYPE_SIMPLE)
     {
       char tmpbuff[256];
-      sprintf (tmpbuff, "%s %s", rettype_integer (v->data.v_simple.datatype),
-	       name);
+      sprintf (tmpbuff, "%s %s", rettype_integer (v->data.v_simple.datatype), name);
       if (v->is_array)
 	{
 	  if (strchr (arrbuff, '-') == 0)
@@ -2995,7 +3016,7 @@ print_variable (struct variable *v, char scope, int level)
 	    }
 	}
 
-      if (v->data.v_simple.datatype == 0 || v->data.v_simple.datatype==DTYPE_VCHAR)
+      if (v->data.v_simple.datatype == DTYPE_CHAR || v->data.v_simple.datatype==DTYPE_VCHAR)
 	{			/* Its a 'char' (may need varchar & friends too...*/
 
 
@@ -3200,9 +3221,7 @@ char find_variable_scope (char *s_in)
 
   if (s[0] >= 'A' && s[0] <= 'Z' && s[1] == '_')
     {
-      char buff[1024];
-      strcpy (buff, &s[2]);
-      strcpy (s, buff);
+      strcpy (s, A4GL_unscope(s));
     }
 
   if (is_system_variable (s))
