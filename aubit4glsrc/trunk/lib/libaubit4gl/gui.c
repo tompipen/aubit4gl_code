@@ -219,7 +219,7 @@ A4GL_get_connection (int socket_type, u_short port, int *listener)
   if (listening_socket < 0)
     {
       perror ("socket");
-      exit (EXIT_FAILURE);
+      A4GL_fgl_die (EXIT_FAILURE);
     }
 
   if (listener != NULL)
@@ -233,7 +233,7 @@ A4GL_get_connection (int socket_type, u_short port, int *listener)
     {
       perror ("bind");
       close (listening_socket);
-      exit (EXIT_FAILURE);
+      A4GL_fgl_die (EXIT_FAILURE);
     }
 
   if (socket_type == SOCK_STREAM)
@@ -253,7 +253,7 @@ A4GL_get_connection (int socket_type, u_short port, int *listener)
 		{
 		  perror ("accept");
 		  close (listening_socket);
-		  exit (EXIT_FAILURE);
+		  A4GL_fgl_die (EXIT_FAILURE);
 		}
 	      else
 		{

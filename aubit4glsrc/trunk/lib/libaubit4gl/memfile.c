@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.25 2005-05-18 13:48:41 mikeaubury Exp $
+# $Id: memfile.c,v 1.26 2005-06-18 09:56:56 mikeaubury Exp $
 #
 */
 
@@ -68,13 +68,13 @@ A4GL_memfile_fopen (char *f, char *mode)
   if (opened > 1)
     {
       printf ("Too many opened!!");
-      exit (1);
+      A4GL_fgl_die (1);
     }
 
   if (a_strchr (mode, 'w'))
     {
       printf ("Can't use memfile for Writing...");
-      exit (1);
+      A4GL_fgl_die (1);
 
     }
 
@@ -97,7 +97,7 @@ A4GL_memfile_fopen (char *f, char *mode)
 	{
 	  printf ("Unable to read file into buffer\n");
 	  //FIXME - use exit_with()
-	  exit (1);
+	  A4GL_fgl_die (1);
  
 	}
 	}
@@ -270,7 +270,7 @@ A4GL_memfile_feof (FILE * f)
 	("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
       printf
 	("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
-      exit (2);
+      A4GL_fgl_die (2);
       return feof (f);
     }
   else

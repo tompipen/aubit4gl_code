@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.107 2005-06-08 08:28:32 mikeaubury Exp $
+# $Id: conv.c,v 1.108 2005-06-18 09:56:55 mikeaubury Exp $
 #
 */
 
@@ -2873,8 +2873,7 @@ void A4GL_assertion_failed(char *s)  {
       A4GL_exitwith ("Assertion failed %s");
       A4GL_chk_err (0, "Unknown");
 
-
-      exit (2);
+      A4GL_fgl_die(2);
 }
 
 /**

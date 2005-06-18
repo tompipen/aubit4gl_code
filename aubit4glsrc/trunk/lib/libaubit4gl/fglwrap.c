@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.91 2005-06-16 19:21:11 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.92 2005-06-18 09:56:56 mikeaubury Exp $
 #
 */
 
@@ -118,14 +118,14 @@ void
 A4GL_fgl_end_4gl_0 (void)
 {
 A4GL_fgl_end();
-exit (0);
+A4GL_fgl_die (0);
 }
 
 void
 A4GL_fgl_end_4gl_1 (void)
 {
 A4GL_fgl_end();
-exit (1);
+A4GL_fgl_die (1);
 }
 
 
@@ -244,7 +244,7 @@ char *p;
     {
       printf ("4gllib: Error opening UI library (A4GL_UI=%s)\n",
 	      acl_getenv ("A4GL_UI"));
-      exit (1);
+      A4GL_fgl_die (1);
     }
   /* Do any startup required by the library */
   A4GLUI_ui_init (nargs, argv);
@@ -472,7 +472,7 @@ A4GL_chk_err (int lineno, char *fname)
 	}
 
       }
-  exit (1);
+  A4GL_fgl_die (1);
 }
 
 /**
@@ -662,7 +662,8 @@ int start;
 			#ifdef DEBUG
 				A4GL_debug ("Out of hash spaces\n");
 			#endif
-			exit (0);
+			A4GL_assertion(1,"Out of hash spaces");
+			A4GL_fgl_die (0);
 		}
     }
 
@@ -862,9 +863,9 @@ A4GL_def_int (void)
 	
 	  A4GL_close_database ();
 	  A4GL_close_errorlog_file ();
-	  exit(99);
+	  A4GL_fgl_die(99);
 	} else {
-		exit(99);
+	  	A4GL_fgl_die(99);
 	}
 	
 	}
@@ -1067,7 +1068,7 @@ A4GL_fgl_error (int a, char *s, int err, int stat)
 #endif
   printf ("\n\n\nError at line %d in file %s\n", a, s);
   printf ("Error number %d - Error level %d\n\n", err, stat);
-  exit (0);
+  A4GL_fgl_die (0);
   return 0;
 }
 
@@ -1162,7 +1163,7 @@ int a;
 		printf ("Version       %s\nBuild Level   %d\n",
 	      	A4GL_internal_version (), A4GL_internal_build ());
 
-		exit (0);
+		A4GL_fgl_die (0);
 	}
 
 	if (strcmp (arg1, "-vfull") == 0) {
@@ -1176,7 +1177,7 @@ int a;
 			}
 			printf ("%s:\n  %s\n", mod, id);
 		}
-		exit (0);
+		A4GL_fgl_die (0);
     }
 }
 

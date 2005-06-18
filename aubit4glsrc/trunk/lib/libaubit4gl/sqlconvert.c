@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.57 2005-05-15 09:12:47 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.58 2005-06-18 09:56:56 mikeaubury Exp $
 #
 */
 
@@ -68,6 +68,7 @@ char *cvsql_names[]={
   "CVSQL_DOUBLE_TO_SINGLE",
   "CVSQL_MATCHES_TO_LIKE",
   "CVSQL_MATCHES_TO_REGEX",
+  "CVSQL_MATCHES_TO_REGEXP",
   "CVSQL_MATCHES_TO_GLOB",
   "CVSQL_SUBSTRING_FUNCTION",
   "CVSQL_TABLE_ALIAS_AS",
@@ -110,6 +111,7 @@ char *cvsql_names[]={
   "CVSQL_TEMP_AS_TEMPORARY",
   "CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL",
   "CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS",
+  "CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS",
   "CVSQL_SWAP_SQLCA62",
   "CVSQL_NO_ORDBY_INTO_TEMP",
   "CVSQL_ADD_SESSION_TO_TEMP_TABLE",
@@ -129,6 +131,8 @@ char *cvsql_names[]={
   "CVSQL_ESQL_UNLOAD_LIB_FALLBACK",
   "CVSQL_CLOSE_CURSOR_BEFORE_OPEN",
   
+  "CVSQL_DTIME_AS_CHAR",
+  "CVSQL_DATE_AS_CHAR",
   "CVSQL_DTYPE_ALIAS"
 };
 
@@ -154,6 +158,7 @@ enum cvsql_type
   CVSQL_DOUBLE_TO_SINGLE,
   CVSQL_MATCHES_TO_LIKE,
   CVSQL_MATCHES_TO_REGEX,
+  CVSQL_MATCHES_TO_REGEXP,
   CVSQL_MATCHES_TO_GLOB,
   CVSQL_SUBSTRING_FUNCTION,
   CVSQL_TABLE_ALIAS_AS,
@@ -196,6 +201,7 @@ enum cvsql_type
   CVSQL_TEMP_AS_TEMPORARY,
   CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL,
   CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS,
+  CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS,
   CVSQL_SWAP_SQLCA62,
   CVSQL_NO_ORDBY_INTO_TEMP,
   CVSQL_ADD_SESSION_TO_TEMP_TABLE,
@@ -214,6 +220,8 @@ enum cvsql_type
   CVSQL_ESQL_UNLOAD_STRING,
   CVSQL_ESQL_UNLOAD_LIB_FALLBACK,
   CVSQL_CLOSE_CURSOR_BEFORE_OPEN,
+  CVSQL_DTIME_AS_CHAR,
+  CVSQL_DATE_AS_CHAR,
   CVSQL_DTYPE_ALIAS
 };
 
@@ -982,6 +990,16 @@ if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_REGEX")) {
 		}
 		return buff;
 }
+if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_REGEXP")) {
+		if (strstr(not,"NOT")==0) {
+			sprintf(buff," REGEXP %s",CV_matches("~",str,esc));
+		} else {
+			sprintf(buff," NOT REGEXP %s",CV_matches("~",str,esc));
+		}
+		return buff;
+}
+
+
 if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_GLOB")) {
 		sprintf(buff,"%s GLOB %s",not,CV_matches("~",str,esc));
 		return buff;
@@ -1038,32 +1056,20 @@ return s;
 int A4GL_cv_str_to_func (char *p, int len)
 {
 
-  if (strncasecmp (p, "REPLACE", len) == 0)
-    return CVSQL_REPLACE;
-  if (strncasecmp (p, "REPLACE_EXPR", len) == 0)
-    return CVSQL_REPLACE_EXPR;
-  if (strncasecmp (p, "REPLACE_COMMAND", len) == 0)
-    return CVSQL_REPLACE_CMD;
-  if (strncasecmp (p, "REPLACE_SQLCONST", len) == 0)
-    return CVSQL_REPLACE_SQLCONST;
-  if (strncasecmp (p, "REPLACE_SQLFUNC", len) == 0)
-    return CVSQL_REPLACE_SQLFUNC;
-  if (strncasecmp (p, "DOUBLE_TO_SINGLE_QUOTES", len) == 0)
-    return CVSQL_DOUBLE_TO_SINGLE;
-  if (strncasecmp (p, "MATCHES_TO_LIKE", len) == 0)
-    return CVSQL_MATCHES_TO_LIKE;
-  if (strncasecmp (p, "MATCHES_TO_REGEX", len) == 0)
-    return CVSQL_MATCHES_TO_REGEX;
-  if (strncasecmp (p, "MATCHES_TO_GLOB", len) == 0)
-    return CVSQL_MATCHES_TO_GLOB;
-  if (strncasecmp (p, "SUBSTRING_FUNCTION", len) == 0)
-    return CVSQL_SUBSTRING_FUNCTION;
-  if (strncasecmp (p, "TABLE_ALIAS_AS", len) == 0)
-    return CVSQL_TABLE_ALIAS_AS;
-  if (strncasecmp (p, "COLUMN_ALIAS_AS", len) == 0)
-    return CVSQL_COLUMN_ALIAS_AS;
-  if (strncasecmp (p, "ANSI_UPDATE_SYNTAX", len) == 0)
-    return CVSQL_ANSI_UPDATE;
+  if (strncasecmp (p, "REPLACE", len) == 0) return CVSQL_REPLACE;
+  if (strncasecmp (p, "REPLACE_EXPR", len) == 0) return CVSQL_REPLACE_EXPR;
+  if (strncasecmp (p, "REPLACE_COMMAND", len) == 0) return CVSQL_REPLACE_CMD;
+  if (strncasecmp (p, "REPLACE_SQLCONST", len) == 0) return CVSQL_REPLACE_SQLCONST;
+  if (strncasecmp (p, "REPLACE_SQLFUNC", len) == 0) return CVSQL_REPLACE_SQLFUNC;
+  if (strncasecmp (p, "DOUBLE_TO_SINGLE_QUOTES", len) == 0) return CVSQL_DOUBLE_TO_SINGLE;
+  if (strncasecmp (p, "MATCHES_TO_LIKE", len) == 0) return CVSQL_MATCHES_TO_LIKE;
+  if (strncasecmp (p, "MATCHES_TO_REGEX", len) == 0) return CVSQL_MATCHES_TO_REGEX;
+  if (strncasecmp (p, "MATCHES_TO_REGEXP", len) == 0) return CVSQL_MATCHES_TO_REGEXP;
+  if (strncasecmp (p, "MATCHES_TO_GLOB", len) == 0) return CVSQL_MATCHES_TO_GLOB;
+  if (strncasecmp (p, "SUBSTRING_FUNCTION", len) == 0) return CVSQL_SUBSTRING_FUNCTION;
+  if (strncasecmp (p, "TABLE_ALIAS_AS", len) == 0) return CVSQL_TABLE_ALIAS_AS;
+  if (strncasecmp (p, "COLUMN_ALIAS_AS", len) == 0) return CVSQL_COLUMN_ALIAS_AS;
+  if (strncasecmp (p, "ANSI_UPDATE_SYNTAX", len) == 0) return CVSQL_ANSI_UPDATE;
 
   if (strncasecmp (p, "MONEY_AS_DECIMAL", len) == 0) return CVSQL_MONEY_AS_DECIMAL;
   if (strncasecmp (p, "MONEY_AS_MONEY", len) == 0) return CVSQL_MONEY_AS_MONEY;
@@ -1104,6 +1110,7 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "TEMP_AS_TEMPORARY", len) == 0) return CVSQL_TEMP_AS_TEMPORARY;
   if (strncasecmp (p, "SELECT_INTO_TEMP_AS_DECLARE_GLOBAL", len) == 0) return CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL;
   if (strncasecmp (p, "SELECT_INTO_TEMP_AS_CREATE_TEMP_AS", len) == 0) return CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS;
+  if (strncasecmp (p, "SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS", len) == 0) return CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS;
   //if (strncasecmp (p, "", len) == 0) return CVSQL_;
 
 
@@ -1124,6 +1131,8 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "EMULATE_INSERT_CURSOR", len) == 0) return CVSQL_EMULATE_INSERT_CURSOR;
   if (strncasecmp (p, "ESQL_UNLOAD_STRING", len) == 0) return CVSQL_ESQL_UNLOAD_STRING;
   if (strncasecmp (p, "ESQL_UNLOAD_LIB_FALLBACK", len) == 0) return CVSQL_ESQL_UNLOAD_LIB_FALLBACK;
+  if (strncasecmp (p, "DATE_AS_CHAR", len) == 0) return CVSQL_DATE_AS_CHAR;
+  if (strncasecmp (p, "DTIME_AS_CHAR", len) == 0) return CVSQL_DTIME_AS_CHAR;
   if (strncasecmp (p, "DTYPE_ALIAS", len) == 0) return CVSQL_DTYPE_ALIAS;
   if (strncasecmp (p, "CLOSE_CURSOR_BEFORE_OPEN", len) == 0) return CVSQL_CLOSE_CURSOR_BEFORE_OPEN;
 
@@ -1649,6 +1658,11 @@ if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_AS_CREATE_TEMP_AS")) {
 }
 
 
+if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS")) {
+	ptr=malloc(strlen(sel)+2000);
+	sprintf(ptr,"CREATE TEMPORARY TABLE %s AS %s ",tabname,sel);
+	return ptr;
+}
 
 
 ptr=malloc(strlen(sel)+2000);

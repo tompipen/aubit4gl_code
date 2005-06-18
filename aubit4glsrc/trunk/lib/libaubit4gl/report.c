@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.70 2005-06-01 16:00:11 mikeaubury Exp $
+# $Id: report.c,v 1.71 2005-06-18 09:56:56 mikeaubury Exp $
 #
 */
 
@@ -536,7 +536,7 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,
 	{
 	  A4GL_debug ("OOPS - no report function!!!");
 	  A4GL_assertion (1,"Internal error - no report function");
-	  exit (10);
+	  A4GL_fgl_die (10);
 	}
       //fprintf(rep->output,"FORCE HEADER1 %d\n",entry);
       rep->report (0, REPORT_PAGEHEADER);	/* report.c:180: too many arguments to function */
@@ -1706,7 +1706,7 @@ static char *
 cursor_for_rep_tab (void *b)
 {
   static char tbuff[256];
-  sprintf (tbuff, "c_%x", b);
+  sprintf (tbuff, "c_%lx", (unsigned long)b);
   return tbuff;
 }
 

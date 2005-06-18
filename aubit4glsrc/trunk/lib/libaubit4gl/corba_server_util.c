@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.9 2005-05-15 12:58:51 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.10 2005-06-18 09:56:56 mikeaubury Exp $
 #
 */
 
@@ -369,13 +369,40 @@ return s;
 }
 
 
+
+
+// We're quitting - so close down any UI specific stuff
+// before we go...
+void A4GL_stop_ui(void) {
+
+  if (A4GL_isscrmode ())
+    {
+#ifdef DEBUG
+      A4GL_debug ("In screen mode - ending curses...");
+#endif
+      A4GL_gotolinemode ();
+    }
+
+}
+
+
+
+
 // --- from fglwrap.c
 void
-A4GL_fgl_die_with_msg(int n,char *s)
+A4GL_fgl_die_with_msg (int n, char *s)
 {
-if (dying) return;
-dying++;
-if (dying>1) { exit(n); }
+  if (dying)
+    {
+      // We're already trying to die...
+      return;
+    }
+  dying++;
+
+  if (dying > 1)
+    {
+      exit (n);
+    }
   if (A4GL_isscrmode ())
     {
 #ifdef DEBUG
@@ -385,27 +412,39 @@ if (dying>1) { exit(n); }
     }
   A4GL_close_database ();
   A4GL_close_errorlog_file ();
-  A4GL_debug ("End of program - exit(%d).",n);
-  printf("%s\n",s);
+  A4GL_debug ("End of program - exit(%d).", n);
+  printf ("%s\n", s);
   exit (n);
 }
 
 void
-A4GL_fgl_die(int n)
+A4GL_fgl_die (int n)
 {
-if (dying) return;
-dying++;
-if (dying>1) { exit(n); }
+  if (dying)
+    return;
+  dying++;
+  if (dying > 1)
+    {
+      // Die quickly...
+      exit (n);
+    }
+
+
+
+  A4GL_stop_ui();
+
+
   if (A4GL_isscrmode ())
     {
 #ifdef DEBUG
       A4GL_debug ("In screen mode - ending curses...");
 #endif
-      A4GL_gotolinemode ();
+      A4GL_stop_ui();
+      //A4GL_gotolinemode ();
     }
   A4GL_close_database ();
   A4GL_close_errorlog_file ();
-  A4GL_debug ("End of program - exit(%d).",n);
+  A4GL_debug ("End of program - exit(%d).", n);
   exit (n);
 }
 

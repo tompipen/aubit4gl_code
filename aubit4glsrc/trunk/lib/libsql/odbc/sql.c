@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.125 2005-05-24 15:37:38 mikeaubury Exp $
+# $Id: sql.c,v 1.126 2005-06-18 09:56:56 mikeaubury Exp $
 #
 */
 
@@ -428,11 +428,11 @@ dll_import sqlca_struct a4gl_sqlca;
 static void 
 ensure_as_char(void) {
 	
-	if (A4GL_isyes(acl_getenv("DATE_AS_CHAR"))) { date_as_char=1; }
-	if (A4GL_isyes(acl_getenv("DTIME_AS_CHAR"))) { dtime_as_char=1; }
+	if (A4GLSQLCV_check_requirement("DATE_AS_CHAR"))  { date_as_char=1;  }
+	if (A4GLSQLCV_check_requirement("DTIME_AS_CHAR")) { dtime_as_char=1; }
 
-	if (A4GL_isno(acl_getenv("DATE_AS_CHAR"))) { date_as_char=0; }
-	if (A4GL_isno(acl_getenv("DTIME_AS_CHAR"))) { dtime_as_char=0; }
+	if (A4GL_isno(acl_getenv("DATE_AS_CHAR")))        { date_as_char=0;  }
+	if (A4GL_isno(acl_getenv("DTIME_AS_CHAR")))       { dtime_as_char=0; }
 }
 
 
@@ -1729,8 +1729,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName_f)
 	   cannot find a specified SQLite database file in DBPATH.
 
 	 */
-	A4GL_debug ("SQLite database file not found in DBPATH='%s'",
-		    acl_getenv ("DBPATH"));
+	A4GL_debug ("SQLite database file not found in DBPATH='%s'", acl_getenv ("DBPATH"));
 	A4GL_exitwith ("SQLite database file not found in DBPATH");
       }
   }
@@ -4286,8 +4285,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 		y = -1;
 		d = -1;
 		m = -1;
-		A4GL_debug ("DATE=(%s,%d)\n", date1->uDate.date_c,
-			    strlen (date1->uDate.date_c));
+		A4GL_debug ("DATE=(%s,%d)\n", date1->uDate.date_c, strlen (date1->uDate.date_c));
 
 		if (strlen (date1->uDate.date_c))
 		  {

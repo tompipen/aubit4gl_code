@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.128 2005-06-08 08:28:32 mikeaubury Exp $
+# $Id: stack.c,v 1.129 2005-06-18 09:56:56 mikeaubury Exp $
 #
 */
 
@@ -504,7 +504,7 @@ A4GL_debug_print_stack();
     {
       A4GL_debug ("Stack got corrupted");
       A4GL_assertion (1, "Stack got corrupted");
-      exit (0);
+      A4GL_fgl_die (1);
     }
 
   if ((params[params_cnt - 1].dtype & DTYPE_MASK) != DTYPE_CHAR)
@@ -578,7 +578,7 @@ A4GL_conversion_ok(1);
     {
       A4GL_debug ("1 Stack got corrupted");
       A4GL_assertion (1, "Stack got corrupted");
-      exit (0);
+      A4GL_fgl_die (1);
     }
 
 
@@ -2661,7 +2661,7 @@ A4GL_drop_param (void)
     {
       A4GL_debug ("1 Stack got corrupted");
       A4GL_assertion (1, "Stack got corrupted");
-      exit (0);
+      A4GL_fgl_die (1);
     }
 
   if (params[params_cnt].dtype & DTYPE_MALLOCED)

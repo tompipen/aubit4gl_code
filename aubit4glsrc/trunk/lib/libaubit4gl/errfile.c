@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.17 2005-05-23 20:16:05 whaslbeck Exp $
+# $Id: errfile.c,v 1.18 2005-06-18 09:56:56 mikeaubury Exp $
 #
 */
 
@@ -103,7 +103,7 @@ A4GL_write_errfile (FILE * f, char *fname, long as, int lineno)
   if (fout == 0)
     {
       printf ("Unable to open %s\n", fname);
-      exit (2);
+      A4GL_fgl_die (2);
     }
   //errorno = ferror (f);
 
@@ -245,7 +245,7 @@ int maxed=0;
   if (fout == 0)
     {
       printf ("Unable to open %s\n", errfile);
-      exit (2);
+      A4GL_fgl_die (2);
     }
     rewind(fin);
     ln=0;

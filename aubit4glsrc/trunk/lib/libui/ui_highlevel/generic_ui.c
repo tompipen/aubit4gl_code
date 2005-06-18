@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.53 2005-06-16 17:01:19 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.54 2005-06-18 09:56:57 mikeaubury Exp $";
 #endif
 
 int A4GL_field_is_noentry (int doing_construct, struct struct_scr_field *f);
@@ -3355,3 +3355,9 @@ UILIB_A4GL_screen_mode (int a)
 {
   return A4GL_LL_pause_mode (a);
 }
+
+
+void UILIB_A4GL_ui_exit(void) {
+        // Does nothing - required by the API
+}
+
