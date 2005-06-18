@@ -47,6 +47,13 @@ define
 		#Invalid delimiter. Do not use '\\' or hex digits (0-9, A-F, a-f).
 		let done_load = 1
 	end if	
+	if db_dialect() = 6 then # MYODBC
+		display "Performing PostgreSQL compatible load"
+		#Informix 4GL has a problem with this:
+		load from filename delimiter "\n" insert into tmp_tmp
+		#Invalid delimiter. Do not use '\\' or hex digits (0-9, A-F, a-f).
+		let done_load = 1
+	end if	
 	if db_dialect() = 1 then #INFORMIX
 		display "Performing Informix compatible load"
 		#This works fine on Informix, but fails on PostgreSQL with:
@@ -102,6 +109,8 @@ define DIALECT char (20)
 			
 			when "SQLITE"
 				return 5
+			when "MYSQL"
+				return 6
 			otherwise
 				error "Cannot determine SQL DIALECT based on ",DIALECT clipped
 				return 0 #unknown

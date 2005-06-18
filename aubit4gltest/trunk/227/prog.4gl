@@ -17,7 +17,7 @@ define c record
 end record
 define cnt integer
 
-	create temp table test227 ( key int, stamp datetime year to fraction(5) )
+	create temp table test227 ( xkey int, stamp datetime year to fraction(5) )
 	
 	let a = "12345678901234567890"
 	let b.d[1].e = "Hello Mike!"
