@@ -14,6 +14,7 @@ opt_attributes:	/*empty*/ {
 attributes_def	: ATTRIBUTES OPEN_BRACKET attribs_sec CLOSE_BRACKET {strcpy($<str>$,$<str>3); }
 | VARIABLE_ATTRIBUTES OPEN_BRACKET var_or_string CLOSE_BRACKET {sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>3); }
 | ATTRIBUTES OPEN_BRACKET VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET CLOSE_BRACKET {sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>5); }
+| ATTRIBUTES OPEN_BRACKET var_or_string CLOSE_BRACKET {sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>3); }
 | KW_SIZE OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET
 ;
 
