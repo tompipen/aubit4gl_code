@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.230 2005-06-23 14:51:54 mikeaubury Exp $
+# $Id: compile_c.c,v 1.231 2005-06-23 16:36:18 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.230 2005-06-23 14:51:54 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.231 2005-06-23 16:36:18 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1371,7 +1371,16 @@ real_print_expr (struct expr_str *ptr)
 static void
 print_form_attrib (struct form_attr *form_attrib)
 {
-  printc ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)",
+char *frm_attr;
+char buff[256];
+if (form_attrib->attrib_str==0) {
+	sprintf(buff,"(0x%x)",form_attrib->attrib);
+	frm_attr=buff;
+} else {
+	frm_attr=form_attrib->attrib_str;
+}
+
+  printc ("%d,%d,%d,%d,%d,%d,%d,%d,%s",
 	  form_attrib->iswindow,
 	  form_attrib->form_line,
 	  form_attrib->error_line,
@@ -1379,14 +1388,14 @@ print_form_attrib (struct form_attr *form_attrib)
 	  form_attrib->menu_line,
 	  form_attrib->border,
 	  form_attrib->comment_line,
-	  form_attrib->message_line, form_attrib->attrib);
+	  form_attrib->message_line, frm_attr);
 #ifdef DEBUG
   A4GL_debug ("Printing attributes\n");
-  A4GL_debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow,
+  A4GL_debug ("%d,%d,%d,%d,%d,%d,%d,%d,%s", form_attrib->iswindow,
 	      form_attrib->form_line, form_attrib->error_line,
 	      form_attrib->prompt_line, form_attrib->menu_line,
 	      form_attrib->border, form_attrib->comment_line,
-	      form_attrib->message_line, form_attrib->attrib);
+	      form_attrib->message_line, frm_attr);
 #endif
 }
 
