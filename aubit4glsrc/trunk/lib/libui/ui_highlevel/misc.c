@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.34 2005-06-16 17:01:19 mikeaubury Exp $";
+  "$Id: misc.c,v 1.35 2005-06-23 17:57:40 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -27,6 +27,7 @@ int A4GL_UI_int_get_inc_quotes (int a);
 
 void A4GL_clear_menu (ACL_Menu * menu);
 int aclfgl_a4gl_show_help (int n);
+extern void *inp_current_field;
 
 int
 UILIB_aclfgl_a4gl_get_page (int n)
@@ -454,7 +455,7 @@ UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
   c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
   for (a = 0; a <= c; a++)
     {
-      extern void *inp_current_field;
+      //extern void *inp_current_field;
       if (field_list[a] == (void *) inp_current_field)
 	{
 
@@ -505,7 +506,6 @@ UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
   c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
   for (a = 0; a <= c; a++)
     {
-      extern void *inp_current_field;
       if (field_list[a] == (void *) inp_current_field)
 	{
 

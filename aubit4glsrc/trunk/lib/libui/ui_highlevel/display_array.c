@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.24 2005-06-16 17:01:08 mikeaubury Exp $
+# $Id: display_array.c,v 1.25 2005-06-23 17:57:40 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.24 2005-06-16 17:01:08 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.25 2005-06-23 17:57:40 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -53,6 +53,7 @@ static char const module_id[] =
 #include "a4gl_API_lowlevel.h"
 int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
 int A4GL_has_event (int a, struct aclfgl_event_list *evt);
+#define PRINTF printf
 /*
 =====================================================================
                     Functions prototypes
@@ -649,7 +650,7 @@ disp_loop (struct s_disp_arr *arr, struct aclfgl_event_list *evt)
   rval = disp_loop_internal (arr, evt);
   if (rval < -1)
     {
-      printf ("Returned <0 : %d\n", rval);
+      PRINTF ("Returned <0 : %d\n", rval);
       exit (0);
     }
   return rval;

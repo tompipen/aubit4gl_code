@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.49 2005-05-22 20:49:45 whaslbeck Exp $
+# $Id: others.c,v 1.50 2005-06-23 17:57:37 mikeaubury Exp $
 #
 */
 
@@ -428,17 +428,18 @@ A4GL_replace_sql_var (char *s)
  * @todo Describe function
  */
 int
-A4GL_attr_name_match (struct struct_scr_field *field, char *s)
+A4GL_attr_name_match (struct struct_scr_field *field, char *s_x)
 {
   char colname[40];
   char tabname[40];
   int aa;
   int ab;
+   char *s;
 
      A4GL_debug ("Field : %p\n", field);
      A4GL_debug ("attr_name_match : %s", s);
-
-
+s=strdup(s_x);
+  A4GL_trim(s);
   A4GL_bname (s, tabname, colname);
 
 
@@ -452,17 +453,20 @@ A4GL_attr_name_match (struct struct_scr_field *field, char *s)
   if ((ab == 0) || (colname[0] == '*'))
     {
       A4GL_debug ("Match on * (%s,%s,%s) (%s,%s)",s,tabname,colname,field->tabname,field->colname);
+      free(s);
       return 1;
     }
   if (ab == 0 && tabname[0] == 0)
     {
       A4GL_debug ("Matched %s.%s = %s.%s ",tabname,colname,field->tabname,field->colname);
+      free(s);
       return 1;
     }
   
      A4GL_debug ("Not matched (%s!=%s or %s!=%s)", field->tabname, tabname,
     field->colname, colname);
  
+      free(s);
   return 0;
 }
 

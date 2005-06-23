@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.92 2005-06-18 09:56:56 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.93 2005-06-23 17:57:37 mikeaubury Exp $
 #
 */
 
@@ -167,7 +167,11 @@ int b = 0;
 void *ptr;
 char *p;
 
-	strcpy(running_program,argv[0]);
+	if (argv) {
+		strcpy(running_program,argv[0]);
+	} else {
+		strcpy(running_program,"unknown");
+	}
 	A4GL_build_user_resources ();
 
 	/* 

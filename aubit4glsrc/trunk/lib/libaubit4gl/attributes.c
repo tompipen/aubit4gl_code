@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.31 2005-05-05 08:50:33 mikeaubury Exp $
+# $Id: attributes.c,v 1.32 2005-06-23 17:57:37 mikeaubury Exp $
 #*/
 
 /**
@@ -366,6 +366,47 @@ A4GL_get_attr_from_string (char *s)
     return AUBIT_ATTR_LEFT;
   printf ("Unknown attribute : %s\n", s);
   return -1;
+}
+
+int A4GL_strattr_to_num (char *s)
+{
+char *buff;
+char *ptr;
+int a;
+int nattr;
+int attr=0;
+buff=strdup(s);
+char *b2;
+ptr=buff;
+A4GL_debug("Got str attr as : %s",s);
+for (a=0;a<=strlen(s);a++) {
+	if (buff[a]==' '||buff[a]==','||buff[a]==0) {
+			// We've come to the end of a token..
+			buff[a]=0;
+			b2=strdup(ptr);
+			A4GL_trim(b2);
+			if (strlen(b2)) {
+				A4GL_debug("Checking : %s\n",b2);
+				nattr=A4GL_get_attr_from_string(b2);
+				if (nattr!=-1) attr+=nattr;
+			}
+			free(b2);
+			// skip any further white space
+			ptr=&buff[a]; 
+			while (*ptr==' '||*ptr==','||*ptr==0) { 
+				if (a>=strlen(s)) {
+					break;
+				} 
+				a++; 
+				ptr=&buff[a]; 
+			}
+				
+	}
+}
+
+free(buff);
+A4GL_debug("Returning %d\n",attr);
+return attr;
 }
 
 

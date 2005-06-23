@@ -8,9 +8,10 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.54 2005-06-18 09:56:57 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.55 2005-06-23 17:57:40 mikeaubury Exp $";
 #endif
 
+static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
 int A4GL_field_is_noentry (int doing_construct, struct struct_scr_field *f);
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
 static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap);
@@ -1648,7 +1649,6 @@ A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
   char *ff;
 
 
-//printf("display_field_contents");
 
 
   A4GL_debug ("In display_field_contents");
@@ -2550,9 +2550,14 @@ A4GL_find_field_no (void *f, struct s_screenio *sio)
 }
 
 
-
 int
-UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt)
+UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt) {
+int a;
+a=A4GL_prompt_loop_v2_int (vprompt,  timeout, evt);
+return a;
+}
+
+static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
 {
   int a;
   int was_aborted = 0;
@@ -2565,6 +2570,8 @@ UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt)
   A4GL_set_abort (0);
 
   p = promptx->win;
+  
+
 
   if (promptx->mode == 1)
     {
@@ -2605,9 +2612,7 @@ UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt)
 
   if (abort_pressed)
     {
-      //printf("INTERRUPT!");
       A4GL_set_last_key (A4GL_key_val ("INTERRUPT"));
-      //prompt_last_key = A4GL_key_val ("INTERRUPT");;
       promptx->lastkey = A4GL_key_val ("INTERRUPT");;
 
       if (!A4GL_has_event_for_keypress (promptx->lastkey, evt))
@@ -2628,7 +2633,7 @@ UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt)
     {				// We appear to be all done here...
       A4GL_push_null (DTYPE_CHAR, 1);
       promptx->mode = 2;
-      A4GL_LL_clear_prompt (promptx->f, promptx->win);
+      //A4GL_LL_clear_prompt (promptx->f, promptx->win);
       A4GL_LL_screen_update ();
       promptx->f = 0;
       return rblock;
@@ -2729,6 +2734,8 @@ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   promptx->field = A4GL_LL_get_value ("prompt.field");
   promptx->f = A4GL_LL_get_value ("prompt.f");
   promptx->win = A4GL_LL_get_value ("prompt.win");
+  
+
   if (x == 2)
     {
       promptx->mode = 2;

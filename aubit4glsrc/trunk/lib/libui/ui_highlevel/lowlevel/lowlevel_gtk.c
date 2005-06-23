@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.71 2005-06-16 17:01:57 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.72 2005-06-23 17:57:41 mikeaubury Exp $";
 #endif
 
 
@@ -1834,13 +1834,11 @@ A4GL_LL_get_field_userptr (void *field)
   return gtk_object_get_data (GTK_OBJECT (field), "USERPTR");
 }
 
-#ifdef MOVED
 int
-A4GL_LL_get_field_width (void *f)
+A4GL_LL_get_field_width_dynamic(void *f) 
 {
   return (int) gtk_object_get_data (GTK_OBJECT ((GtkWidget *) f), "MF_COLS");
 }
-#endif
 
 void *
 A4GL_LL_get_form_userptr (void *vform)
@@ -1941,7 +1939,8 @@ A4GL_LL_create_errorwindow (int h, int w, int y, int x, int attr, char *str)
   char buff[80];
   char *lab_utf = g_locale_to_utf8 (str, -1, NULL, NULL, NULL);
   A4GL_debug ("Create error window");
-
+  if (str==0) return 0;
+  if (strlen(str)==0) return 0;
   frame = gtk_frame_new (0);
 
   label = gtk_label_new (lab_utf);
@@ -1973,8 +1972,7 @@ A4GL_LL_create_errorwindow (int h, int w, int y, int x, int attr, char *str)
   if (attr == 0 || attr == -1)
     {
       sprintf (buff, "Error");
-      printf ("Using Error...\n");
-
+      	printf("Error string : '%s'\n",str);
       gtk_widget_set_name (GTK_WIDGET (frame), buff);
       gtk_widget_set_name (GTK_WIDGET (evt), buff);
       gtk_widget_set_name (GTK_WIDGET (label), buff);
@@ -2090,16 +2088,20 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   int promptline;
   void *p;
   void *cw;
-  struct s_form_dets fd;
+  //struct s_form_dets fd;
   struct s_a4gl_gtk_form *f;
   int width;
   char buff[300];
   int a;
   int field_cnt = 0;
+  GtkWidget **widgets;
   list_of_fields lof;
   A4GL_debug ("In start prompt %d %d %d %d", ap, c, h, af);
+  printf("Start prompt\n");
   last_prompt_mode = prompt_mode;
 
+
+  widgets=malloc(sizeof(GtkWidget *)*10);
 
   prompt_last_key = 0;
   memset (buff, ' ', 255);
@@ -2129,31 +2131,28 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
 #endif
   gtk_widget_show (p);
   gtk_widget_set_usize (GTK_WIDGET (p), width * gui_xwidth, 1 * gui_yheight);
-  gtk_fixed_put (GTK_FIXED (cw), p, iscurrborder,
-		 (promptline - 1) * gui_yheight);
+  gtk_fixed_put (GTK_FIXED (cw), p, iscurrborder, (promptline - 1) * gui_yheight);
 
   if (p == 0)
     {
       A4GL_exitwith ("No prompt window created");
+      	printf("Nope1\n");
       return 0;
     }
   last_prompt_win = p;
 
   width -= strlen (promptstr);
   width--;
-  memset (&fd, 0, sizeof (struct s_form_dets));
-
 
 
   if (strlen (promptstr))
     {
       GtkWidget *evt;
       evt = gtk_event_box_new ();
-      fd.form_fields[field_cnt++] =
-	(void *) A4GL_LL_make_label (0, 0, promptstr);
-      gtk_container_add (GTK_CONTAINER (evt), fd.form_fields[field_cnt - 1]);
+      widgets[field_cnt++] = (void *) A4GL_LL_make_label (0, 0, promptstr);
+      gtk_container_add (GTK_CONTAINER (evt), widgets[field_cnt - 1]);
       gtk_widget_show (evt);
-      gtk_misc_set_alignment (GTK_MISC (fd.form_fields[field_cnt - 1]), 0.0f,
+      gtk_misc_set_alignment (GTK_MISC (widgets[field_cnt - 1]), 0.0f,
 			      0.5f);
       gtk_fixed_put (GTK_FIXED (p), evt, 0, 0);
 
@@ -2167,60 +2166,44 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
 	    {
 
 
-	      A4GL_LL_set_field_fore (fd.form_fields[0],
+	      A4GL_LL_set_field_fore (widgets[0],
 				      A4GL_LL_decode_aubit_attr (ap, 'f'));
 	      A4GL_LL_set_field_back (evt,
 				      A4GL_LL_decode_aubit_attr (ap, 'b'));
 	    }
 	  else
 	    {
-	      A4GL_LL_set_field_back (fd.form_fields[0],
-				      A4GL_LL_colour_code (0));
-	      A4GL_LL_set_field_fore (fd.form_fields[0],
-				      A4GL_LL_colour_code (7));
+	      A4GL_LL_set_field_back (widgets[0], A4GL_LL_colour_code (0));
+	      A4GL_LL_set_field_fore (widgets[0], A4GL_LL_colour_code (7));
 
 	    }
 	}
 
     }
-  A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1,
-	      width - 1);
-  A4GL_LL_set_new_page (fd.form_fields[field_cnt - 1], 1);
+  A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
 
-  fd.form_fields[field_cnt++] =
-    (void *) A4GL_LL_make_field (0, strlen (promptstr), 1, width - 1, 0, 0,
-				 0);
+  A4GL_LL_set_new_page (widgets[field_cnt - 1], 1);
 
-  gtk_fixed_put (GTK_FIXED (p), fd.form_fields[field_cnt - 1],
-		 (strlen (promptstr) + 1) * gui_xwidth, 0);
-  last_prompt_field = fd.form_fields[field_cnt - 1];
+  widgets[field_cnt++] = (GtkWidget *) A4GL_LL_make_field (0, strlen (promptstr), 1, width - 1, 0, 0, 0);
+
+  gtk_fixed_put (GTK_FIXED (p), widgets[field_cnt - 1], (strlen (promptstr) + 1) * gui_xwidth, 0);
+  last_prompt_field = widgets[field_cnt - 1];
 
   for (a = 0; a < field_cnt; a++)
     {
-      if (fd.form_fields[a])
-	gtk_widget_show (GTK_WIDGET (fd.form_fields[a]));
+      if (widgets[a])
+	gtk_widget_show (GTK_WIDGET (widgets[a]));
     }
 
 
-  A4GL_debug ("set field to =%p", last_prompt_field);
-
   A4GL_default_attributes_in_ll (last_prompt_field, 0, 0);
-  A4GL_debug ("STATIC OFF");
-
-
-
   A4GL_fld_opts_off (last_prompt_field, AUBIT_O_STATIC);
-
-  //af = A4GL_determine_attribute (FGL_CMD_INPUT, af, 0, 0);
-
-
   gtk_widget_show (last_prompt_field);
 
   if (af)
     {
       A4GL_debug ("AF...");
-      A4GL_LL_set_field_back (last_prompt_field,
-			      A4GL_LL_decode_aubit_attr (af, 'f'));
+      A4GL_LL_set_field_back (last_prompt_field, A4GL_LL_decode_aubit_attr (af, 'f'));
       A4GL_LL_set_field_fore (last_prompt_field, A4GL_LL_decode_aubit_attr (af, 'b'));	// maybe need 'B' for whole field..
       if (af & AUBIT_ATTR_INVISIBLE)
 	{
@@ -2241,9 +2224,11 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   A4GL_debug ("Made fields");
 
   lof.a.a_len = field_cnt;
-  lof.a.a_val = (long *) &fd.form_fields;
+  lof.a.a_val = (long *) widgets;
 
   f = A4GL_LL_new_form (&lof);
+  free(widgets);
+  printf("Here\n");
   f->currentfield = f->nwidgets - 1;
   A4GL_debug ("Form f = %p", f);
   last_prompt_f = f;
@@ -2251,7 +2236,8 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
 
   if (a4gl_status != 0)
     {
-      last_prompt_mode = 2;
+      //last_prompt_mode = 2;
+      printf("Nope2\n");
       return 2;
     }
 
@@ -2261,7 +2247,8 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   A4GL_LL_int_form_driver (f, AUBIT_REQ_OVL_MODE);
   A4GLSQL_set_status (0, 0);
   A4GL_LL_screen_update ();
-  return 1;
+  printf("All ok\n");
+  return 0;
 }
 
 
@@ -2269,6 +2256,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
 void
 A4GL_LL_clear_prompt (void *f, void *w)
 {
+	A4GL_pause_execution();
   gtk_widget_destroy (w);
 }
 
@@ -2328,7 +2316,7 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
 
   int rows, cols;
   int b;
-  char buff[80];
+  //char buff[80];
   int a;
   GtkWidget *w;
   GtkWidget *drwin;
@@ -2457,7 +2445,6 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
   A4GL_LL_screen_update ();
   if (!form->notebook)
     {
-      printf ("widgets : %d\n", form->nwidgets);
       for (a = 0; a < form->nwidgets; a++)
 	{
 	  if (gtk_object_get_data
@@ -2512,7 +2499,7 @@ void
 A4GL_LL_scale_form (void *vfd, int *y, int *x)
 {
   struct s_a4gl_gtk_form *form;
-  struct s_form_dets *fd;
+  //struct s_form_dets *fd;
   GtkWidget *widget;
   int a;
   int max_x = 0;
@@ -2657,7 +2644,6 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
     }
 
 
-  printf ("making label for %s\n", label);
 
   label_utf = g_locale_to_utf8 (label, -1, NULL, NULL, NULL);
   widget = gtk_label_new (label_utf);
@@ -3161,8 +3147,8 @@ A4GL_LL_construct_large (char *orig, void *vevt, int init_key, int initpos,
   GtkWidget *v;
   struct s_a4gl_gtk_form *f;
   list_of_fields lof;
-  int ins_ovl = 'o';
-  int looping = 1;
+  //int ins_ovl = 'o';
+  //int looping = 1;
   int fwidth;
   int a;
   struct aclfgl_event_list *evt;
@@ -3607,8 +3593,10 @@ stock_item (char *s)
 void *
 A4GL_LL_get_value (char *s)
 {
-  if (strcmp (s, "prompt.field") == 0)
+  if (strcmp (s, "prompt.field") == 0) {
+	  printf("last_prompt_field : %p\n",last_prompt_field);
     return (void *) last_prompt_field;
+  }
   if (strcmp (s, "prompt.f") == 0)
     return (void *) last_prompt_f;
   if (strcmp (s, "prompt.win") == 0)
@@ -3634,8 +3622,8 @@ int
 A4GL_LL_open_gui_form (char *name_orig, int absolute, int nat, char *like,
 		       int disable, void *handler_e, void *phandler_c)
 {
-  GtkWindow *win;
 #ifdef FIXME
+  GtkWindow *win;
   void (*handler_c) ();
   GtkFixed *fixed;
   //GtkFixed *form;
@@ -3735,10 +3723,10 @@ A4GL_LL_fieldnametoid (char *f, char *s, int n)
 {
   //GtkWidget *formdets;
   GtkWidget *w = 0;
+#ifdef FIXME
   //int nofields;
   GtkWidget **field_list = 0;
 
-#ifdef FIXME
 
   A4GL_debug ("fgl_fieldnametoid (%p,%d)", s, n);
 

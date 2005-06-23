@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.61 2005-06-16 19:21:12 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.62 2005-06-23 17:57:37 mikeaubury Exp $
 #
 */
 
@@ -712,50 +712,50 @@ pr_report_agg (void)
       if (t == 'C')
 	{
 	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (pop_bool()) {_g%d++;}\n", a);
+	  printc ("if (A4GL_pop_bool()) {_g%d++;}\n", a);
 	}
 
       if (t == 'P')
 	{
 	  printc ("_g%d++;", a + 1);
 	  print_expr (sreports[z].rep_where_expr);
-	  printc (" if (pop_bool()) {_g%d++;} \n", a);
+	  printc (" if (A4GL_pop_bool()) {_g%d++;} \n", a);
 	}
 
       if (t == 'S')
 	{
 	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (pop_bool()) {double _res;");
+	  printc ("if (A4GL_pop_bool()) {double _res;");
 	  print_expr (sreports[z].rep_cond_expr);
-	  printc ("_res=pop_double(); _g%d+=_res;}\n ", a);
+	  printc ("_res=A4GL_pop_double(); _g%d+=_res;}\n ", a);
 	}
 
       if (t == 'A')
 	{
 	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (pop_bool()) {double _res;");
+	  printc ("if (A4GL_pop_bool()) {double _res;");
 	  print_expr (sreports[z].rep_cond_expr);
 
-	  printc ("_res=pop_double(); _g%d+=_res;_g%d++;}\n", a, a + 1);
+	  printc ("_res=A4GL_pop_double(); _g%d+=_res;_g%d++;}\n", a, a + 1);
 	}
 
       if (t == 'N')
 	{
 	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (pop_bool()) {double _res;");
+	  printc ("if (A4GL_pop_bool()) {double _res;");
 	  print_expr (sreports[z].rep_cond_expr);
 	  printc
-	    ("_res=pop_double(); if (_res<_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
+	    ("_res=A4GL_pop_double(); if (_res<_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
 	     a, a, a, a);
 	}
 
       if (t == 'X')
 	{
 	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (pop_bool()) {double _res;");
+	  printc ("if (A4GL_pop_bool()) {double _res;");
 	  print_expr (sreports[z].rep_cond_expr);
 	  printc
-	    ("_res=pop_double(); if (_res>_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
+	    ("_res=A4GL_pop_double(); if (_res>_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
 	     a, a, a, a);
 	}
 
@@ -843,47 +843,47 @@ LEXLIB_A4GL_prchkerr (int l, char *f)
 /* 3 = goto */
   A4GL_debug ("MJA A4GL_prchkerr %d %s", l, f);
   printc
-    ("if ($aubit4gl_pl::sqlca_sqlcode !=0 || $aubit4gl_pl::status !=0 || %d) {\n",
+    ("if ($aubit4gl_pl::a4gl_sqlca_sqlcode !=0 || $aubit4gl_pl::a4gl_status !=0 || %d) {\n",
      when_code[A_WHEN_SUCCESS] == WHEN_CALL
      || when_code[A_WHEN_SQLSUCCESS] == WHEN_CALL);
-  /*printc("A4GL_debug(\"status=%%d sqlca_sqlcode=%%d\",status,sqlca_sqlcode);\n"); */
+  /*printc("A4GL_debug(\"status=%%d a4gl_sqlca_sqlcode=%%d\",status,a4gl_sqlca_sqlcode);\n"); */
   printcomment ("/* NOTFOUND */");
   a =
-    pr_when_do ("   if ($aubit4gl_pl::sqlca_sqlcode==100)",
+    pr_when_do ("   if ($aubit4gl_pl::a4gl_sqlca_sqlcode==100)",
 		when_code[A_WHEN_NOTFOUND], l, f, when_to[A_WHEN_NOTFOUND]);
   printcomment ("/* SQLERROR */");
   a =
     pr_when_do
-    ("   if ($aubit4gl_pl::sqlca_sqlcode<0 && $aubit4gl_pl::status==$aubit4gl_pl::sqlca_sqlcode)",
+    ("   if ($aubit4gl_pl::a4gl_sqlca_sqlcode<0 && $aubit4gl_pl::a4gl_status==$aubit4gl_pl::a4gl_sqlca_sqlcode)",
      when_code[A_WHEN_SQLERROR], l, f, when_to[A_WHEN_SQLERROR]);
   printcomment ("/* ANYERROR */");
   a =
     pr_when_do
-    ("   if ($aubit4gl_pl::status<0 || $aubit4gl_pl::sqlca_sqlcode<0)",
+    ("   if ($aubit4gl_pl::a4gl_status<0 || $aubit4gl_pl::a4gl_sqlca_sqlcode<0)",
      when_code[A_WHEN_ANYERROR], l, f, when_to[A_WHEN_ANYERROR]);
   printcomment ("/* ERROR */");
   a =
-    pr_when_do ("   if ($aubit4gl_pl::status<0)", when_code[A_WHEN_ERROR], l,
+    pr_when_do ("   if ($aubit4gl_pl::a4gl_status<0)", when_code[A_WHEN_ERROR], l,
 		f, when_to[A_WHEN_ERROR]);
   printcomment ("/* SQLWARNING */");
   a =
     pr_when_do
-    ("   if ($aubit4gl_pl::sqlca_sqlcode==0 && $aubit4gl_pl::sqlca_sqlawarn[0]=='W')",
+    ("   if ($aubit4gl_pl::a4gl_sqlca_sqlcode==0 && $aubit4gl_pl::sqlca_sqlawarn[0]=='W')",
      when_code[A_WHEN_SQLWARNING], l, f, when_to[A_WHEN_SQLWARNING]);
   printcomment ("/* WARNING */");
   a =
     pr_when_do
-    ("   if ($aubit4gl_pl::sqlca_sqlcode==0 && ($aubit4gl_pl::sqlca_sqlawarn[0]=='w'||$aubit4gl_pl::sqlca_sqlawarn[0]=='W'))",
+    ("   if ($aubit4gl_pl::a4gl_sqlca_sqlcode==0 && ($aubit4gl_pl::sqlca_sqlawarn[0]=='w'||$aubit4gl_pl::sqlca_sqlawarn[0]=='W'))",
      when_code[A_WHEN_WARNING], l, f, when_to[A_WHEN_WARNING]);
   printcomment ("/* SQLSUCCESS */");
   a =
     pr_when_do
-    ("   if ($aubit4gl_pl::sqlca_sqlcode==0 && $aubit4gl_pl::status==0)",
+    ("   if ($aubit4gl_pl::a4gl_sqlca_sqlcode==0 && $aubit4gl_pl::a4gl_status==0)",
      when_code[A_WHEN_SQLSUCCESS], l, f, when_to[A_WHEN_SQLSUCCESS]);
   printcomment ("/* SUCCESS */");
   a =
     pr_when_do
-    ("   if ($aubit4gl_pl::sqlca_sqlcode==0 && $aubit4gl_pl::status==0)",
+    ("   if ($aubit4gl_pl::a4gl_sqlca_sqlcode==0 && $aubit4gl_pl::a4gl_status==0)",
      when_code[A_WHEN_SUCCESS], l, f, when_to[A_WHEN_SUCCESS]);
   printc ("}\n");
 }
@@ -903,7 +903,7 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
     return 0;
   if (when_code == WHEN_STOP)
     {
-      printc ("%s {aubit4gl_pl::chk_err(%d,aubit_module_name);}\n", when_str,
+      printc ("%s {aubit4gl_pl::A4GL_chk_err(%d,aubit_module_name);}\n", when_str,
 	      l, f);
       printcomment ("/* WHENSTOP */");
     }
@@ -1013,7 +1013,7 @@ LEXLIB_print_bind_pop1 (char i)
   if (i == 'i')
     {
       if (scan_variable (obind[a].varname) != -1)
-	printc ("%s=pop_var2(%d,%d);\n", ibind[a].varname,
+	printc ("%s=A4GL_pop_var2(%d,%d);\n", ibind[a].varname,
 		(int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
       else
 	printc ("%s;\n", ibind[a].varname);
@@ -1022,7 +1022,7 @@ LEXLIB_print_bind_pop1 (char i)
   if (i == 'o')
     {
       if (scan_variable (obind[a].varname) != -1)
-	printc ("%s=pop_var2(%d,%d);\n", obind[a].varname,
+	printc ("%s=A4GL_pop_var2(%d,%d);\n", obind[a].varname,
 		(int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
       else
 	printc ("%s;\n", obind[a].varname);
@@ -1194,98 +1194,98 @@ LEXLIB_print_bind (char i)
 	      printc ("aubit4gl_pl::dif_add_bind_char($ibind,$%s,%d);\n",
 		      ibind[a].varname, ibind[a].dtype >> 16);
 	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::dif_pop_bind_char($ibind);",
+		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_char($ibind);",
 		       ibind[a].varname);
 	      break;
 	    case 1:
-	      printc ("aubit4gl_pl::dif_add_bind_smint($ibind,$%s);\n",
+	      printc ("aubit4gl_pl::A4GL_dif_add_bind_smint($ibind,$%s);\n",
 		      ibind[a].varname, ibind[a].dtype >> 16);
 	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::dif_pop_bind_smint($ibind);",
+		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_smint($ibind);",
 		       ibind[a].varname);
 	      break;
 	    case 2:
-	      printc ("aubit4gl_pl::dif_add_bind_int($ibind,$%s);\n",
+	      printc ("aubit4gl_pl::A4GL_dif_add_bind_int($ibind,$%s);\n",
 		      ibind[a].varname, ibind[a].dtype >> 16);
 	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::dif_pop_bind_int($ibind);",
+		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_int($ibind);",
 		       ibind[a].varname);
 	      break;
 	    case 3:
-	      printc ("aubit4gl_pl::dif_add_bind_float($ibind,$%s);\n",
+	      printc ("aubit4gl_pl::A4GL_dif_add_bind_float($ibind,$%s);\n",
 		      ibind[a].varname, ibind[a].dtype >> 16);
 	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::dif_pop_bind_float($ibind);",
+		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_float($ibind);",
 		       ibind[a].varname);
 	      break;
 	    case 4:
-	      printc ("aubit4gl_pl::dif_add_bind_smfloat($ibind,$%s);\n",
+	      printc ("aubit4gl_pl::A4GL_dif_add_bind_smfloat($ibind,$%s);\n",
 		      ibind[a].varname, ibind[a].dtype >> 16);
 	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::dif_pop_bind_smfloat($ibind);",
+		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_smfloat($ibind);",
 		       ibind[a].varname);
 	      break;
 	    case 5:
-	      printc ("aubit4gl_pl::dif_add_bind_dec($ibind,$%s,%d);\n",
+	      printc ("aubit4gl_pl::A4GL_dif_add_bind_dec($ibind,$%s,%d);\n",
 		      ibind[a].varname, ibind[a].dtype >> 16);
 	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::dif_pop_bind_dec($ibind);",
+		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_dec($ibind);",
 		       ibind[a].varname);
 	      break;
 	    case 6:
-	      printc ("aubit4gl_pl::dif_add_bind_int($ibind,$%s);\n",
+	      printc ("aubit4gl_pl::A4GL_dif_add_bind_int($ibind,$%s);\n",
 		      ibind[a].varname, ibind[a].dtype >> 16);
 	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::dif_pop_bind_int($ibind);",
+		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_int($ibind);",
 		       ibind[a].varname);
 	      break;
 	    case 7:
-	      printc ("aubit4gl_pl::dif_add_bind_date($ibind,$%s);\n",
+	      printc ("aubit4gl_pl::A4GL_dif_add_bind_date($ibind,$%s);\n",
 		      ibind[a].varname, ibind[a].dtype >> 16);
 	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::dif_pop_bind_date($ibind);",
+		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_date($ibind);",
 		       ibind[a].varname);
 	      break;
 	    case 8:
-	      printc ("aubit4gl_pl::dif_add_bind_money($ibind,$%s,%d);\n",
+	      printc ("aubit4gl_pl::A4GL_dif_add_bind_money($ibind,$%s,%d);\n",
 		      ibind[a].varname, ibind[a].dtype >> 16);
 	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::dif_pop_bind_money($ibind);",
+		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_money($ibind);",
 		       ibind[a].varname);
 	      break;
 	    case 10:
-	      printc ("aubit4gl_pl::dif_add_bind_dtime($ibind,$%s,%d);\n",
+	      printc ("aubit4gl_pl::A4GL_dif_add_bind_dtime($ibind,$%s,%d);\n",
 		      ibind[a].varname, ibind[a].dtype >> 16);
 	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::dif_pop_bind_dtime($ibind);",
+		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_dtime($ibind);",
 		       ibind[a].varname);
 	      break;
 	    case 11:
-	      printc ("aubit4gl_pl::dif_add_bind_byte($ibind,$%s);\n",
+	      printc ("aubit4gl_pl::A4GL_dif_add_bind_byte($ibind,$%s);\n",
 		      ibind[a].varname, ibind[a].dtype >> 16);
 	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::dif_pop_bind_byte($ibind);",
+		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_byte($ibind);",
 		       ibind[a].varname);
 	      break;
 	    case 12:
-	      printc ("aubit4gl_pl::dif_add_bind_text($ibind,$%s);\n",
+	      printc ("aubit4gl_pl::A4GL_dif_add_bind_text($ibind,$%s);\n",
 		      ibind[a].varname, ibind[a].dtype >> 16);
 	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::dif_pop_bind_text($ibind);",
+		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_text($ibind);",
 		       ibind[a].varname);
 	      break;
 	    case 13:
-	      printc ("aubit4gl_pl::dif_add_bind_vchar($ibind,$%s,%d);\n",
+	      printc ("aubit4gl_pl::A4GL_dif_add_bind_vchar($ibind,$%s,%d);\n",
 		      ibind[a].varname, ibind[a].dtype >> 16);
 	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::dif_pop_bind_vchar($ibind);",
+		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_vchar($ibind);",
 		       ibind[a].varname);
 	      break;
 	    case 14:
-	      printc ("aubit4gl_pl::dif_add_bind_interval($ibind,$%s,%d);\n",
+	      printc ("aubit4gl_pl::A4GL_dif_add_bind_interval($ibind,$%s,%d);\n",
 		      ibind[a].varname, ibind[a].dtype >> 16);
 	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::dif_pop_bind_interval($ibind);",
+		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_interval($ibind);",
 		       ibind[a].varname);
 	      break;
 	    }
@@ -1472,7 +1472,7 @@ LEXLIB_print_remote_func (char *identifier)
 {
   printh ("int aclfgl_%s(int np);\n", identifier);
   printc
-    ("$aubit4gl_pl::status=0;register_func(\"%s\",aclfgl_%s);if ($aubit4gl_pl::status<0) {aubit4gl_pl::chk_err(%d,aubit_module_name);}\n",
+    ("$aubit4gl_pl::a4gl_status=0;register_func(\"%s\",aclfgl_%s);if ($aubit4gl_pl::a4gl_status<0) {aubit4gl_pl::A4GL_chk_err(%d,aubit_module_name);}\n",
      identifier, identifier, yylineno);
 }
 
@@ -1578,9 +1578,9 @@ void
 LEXLIB_print_field_func (char type, char *name, char *var)
 {
   if (type == 'I')
-    printc ("aubit4gl_pl::push_int(aubit4gl_pl::fgl_infield(%s));", name);
+    printc ("aubit4gl_pl::A4GL_push_int(aubit4gl_pl::A4GL_fgl_infield(%s));", name);
   if (type == 'T')
-    printc ("aubit4gl_pl::push_int(aubit4gl_pl::fgl_fieldtouched(%s));",
+    printc ("aubit4gl_pl::A4GL_push_int(aubit4gl_pl::A4GL_fgl_fieldtouched(%s));",
 	    name);
 
   print_pop_variable (var);
@@ -1604,7 +1604,7 @@ static void
 real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
 {
   real_print_expr (args);
-  printc ("{my $a4gl_retvars; aubit4gl_pl::xset_status(0);\n");
+  printc ("{my $a4gl_retvars; aubit4gl_pl::A4GL_xset_status(0);\n");
   printc ("$a4gl_retvars=aclfgl_%s(%d);\n", identifier, args_cnt);
 }
 
@@ -1725,7 +1725,7 @@ LEXLIB_print_when (int has_expr)
       printc ("push_char(s);");
       printc ("pushop(OP_EQUAL);\n");
     }
-  printc ("if (aubit4gl_pl::pop_bool()) {\n");
+  printc ("if (aubit4gl_pl::A4GL_pop_bool()) {\n");
 }
 
 
@@ -1741,10 +1741,10 @@ LEXLIB_print_close (char type, char *name)
   switch (type)
     {
     case 'F':
-      printc ("aubit4gl_pl::close_form(%s);\n", name);
+      printc ("aubit4gl_pl::A4GL_close_form(%s);\n", name);
       break;
     case 'W':
-      printc ("aubit4gl_pl::remove_window(%s);\n", name);
+      printc ("aubit4gl_pl::A4GL_remove_window(%s);\n", name);
       break;
     case 'D':
       printc ("aubit4gl_pl::close_database();\n");
@@ -1930,7 +1930,7 @@ LEXLIB_print_defer (int quit)
 void
 LEXLIB_print_display_line (void)
 {
-  printc ("aubit4gl_pl::push_int(-1);aubit4gl_pl::push_int(-1);\n");
+  printc ("aubit4gl_pl::A4GL_push_int(-1);aubit4gl_pl::A4GL_push_int(-1);\n");
 }
 
 
@@ -1964,17 +1964,17 @@ LEXLIB_A4GL_get_display_str (int type, char *s, char *f)
 {
   static char buff[1024];
   if (type == 0)
-    strcpy (buff, "aubit4gl_pl::display_at(%s,%s);\n");
+    strcpy (buff, "aubit4gl_pl::A4GL_display_at(%s,%s);\n");
   if (type == 1)
-    strcpy (buff, "aubit4gl_pl::display_at(%s,%s);");
+    strcpy (buff, "aubit4gl_pl::A4GL_display_at(%s,%s);");
   if (type == 2)
-    sprintf (buff, "aubit4gl_pl::disp_fields(%%s,%%s,%s,0);\n", s);
+    sprintf (buff, "aubit4gl_pl::A4GL_disp_fields(%%s,%%s,%s,0);\n", s);
   if (type == 3)
-    sprintf (buff, "aubit4gl_pl::disp_form_fields(%%s,%%s,%s,%s,0);\n", f, s);
+    sprintf (buff, "aubit4gl_pl::A4GL_disp_form_fields(%%s,%%s,%s,%s,0);\n", f, s);
   if (type == 4)
-    sprintf (buff, "aubit4gl_pl::disp_main_caption();\n");
+    sprintf (buff, "aubit4gl_pl::A4GL_disp_main_caption();\n");
   if (type == 5)
-    sprintf (buff, "aubit4gl_pl::disp_form_caption(%s);\n", s);
+    sprintf (buff, "aubit4gl_pl::A4GL_disp_form_caption(%s);\n", s);
   return buff;
 }
 
@@ -2067,9 +2067,9 @@ void
 LEXLIB_print_exit_program (int has_expr)
 {
   if (has_expr)
-    printc ("fgl_end();exit(pop_int());");
+    printc ("aubit4gl_pl::A4GL_fgl_end();exit(aubit4gl_pl::A4GL_pop_int());");
   else
-    printc ("fgl_end();exit(0);");
+    printc ("aubit4gl_pl::A4GL_fgl_end();exit(0);");
 }
 
 
@@ -2083,9 +2083,9 @@ void
 LEXLIB_print_for_start (char *var)
 {
   printc("\n{my $_s;my $_e;my $_step;\n");
-  printc("$_step=aubit4gl_pl::pop_int();");
-  printc("$_e=aubit4gl_pl::pop_int();\n");
-  printc("$_s=aubit4gl_pl::pop_int();\n");
+  printc("$_step=aubit4gl_pl::A4GL_pop_int();");
+  printc("$_e=aubit4gl_pl::A4GL_pop_int();\n");
+  printc("$_s=aubit4gl_pl::A4GL_pop_int();\n");
   printc ("$%s=$_s;\nwhile (($%s<=$_e && $_step>0)||($%s>=$_e &&  $_step<0)) {\n$%s+=$_step;\n", var, var, var, var);
 }
 
@@ -2110,7 +2110,7 @@ LEXLIB_print_for_end (void)
 void
 LEXLIB_print_for_default_step (void)
 {
-  printc ("aubit4gl_pl::push_int(1);\n");
+  printc ("aubit4gl_pl::A4GL_push_int(1);\n");
 }
 
 
@@ -2137,11 +2137,11 @@ LEXLIB_print_foreach_next (char *cursorname, int using, char *into)
   printc ("set_sqlca_sqlcode(0);\n");
   //printc ("open_cursor(0,%s);\n", cursorname);
   print_open_cursor (cursorname, using);
-  printc ("if ($aubit4gl_pl::sqlca_sqlcode==0) {");
+  printc ("if ($aubit4gl_pl::a4gl_sqlca_sqlcode==0) {");
   printc ("while (1) {\n");
   printc ("fetch_cursor(%s,%d,1,%s);\n", cursorname, FETCH_RELATIVE, into);
   printc
-    ("if ($aubit4gl_pl::sqlca_sqlcode<0||$aubit4gl_pl::sqlca_sqlcode==100) break;\n");
+    ("if ($aubit4gl_pl::a4gl_sqlca_sqlcode<0||$aubit4gl_pl::a4gl_sqlca_sqlcode==100) break;\n");
 }
 
 
@@ -2295,11 +2295,11 @@ LEXLIB_print_import (char *func, int nargs)
   printc ("my _argc[%s];\n", nargs);
   printc ("my _retval;");
   printc
-    ("   if (nargs!=%d) {$aubit4gl_pl::status=-30174;A4GL_pop_args(nargs);return 0;}\n",
+    ("   if (nargs!=%d) {$aubit4gl_pl::a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}\n",
      nargs, yylineno);
   for (a = 1; a <= nargs; a++)
     {
-      printc ("   _argc[%d]=aubit4gl_pl::pop_int();\n", nargs - a);
+      printc ("   _argc[%d]=aubit4gl_pl::A4GL_pop_int();\n", nargs - a);
     }
   sprintf (buff, "_retval=%s(", func);
   for (a = 0; a <= nargs - 1; a++)
@@ -2309,7 +2309,7 @@ LEXLIB_print_import (char *func, int nargs)
       sprintf (buff2, "_argc[%d]", a);
       strcat (buff, buff2);
     }
-  strcat (buff, ");\n   aubit4gl_pl::push_int(_retval);\n   return 1;\n");
+  strcat (buff, ");\n   aubit4gl_pl::A4GL_push_int(_retval);\n   return 1;\n");
   strcat (buff, "}\n\n\n");
   printc (buff);
 }
@@ -2746,7 +2746,7 @@ void
 LEXLIB_print_skip_lines (double d)
 {
   printc ("A4GL_push_int(%d)", (int) d);
-  printc ("%saclfgli_skip_lines(&rep);\n", ispdf ());
+  printc ("A4GL_%saclfgli_skip_lines(&rep);\n", ispdf ());
 }
 
 /**
@@ -3013,9 +3013,9 @@ void
 LEXLIB_print_message (int type, char *attr, int wait, int n)
 {
   if (type == 0)
-    printc ("aubit4gl_pl::aclfgli_pr_message(%s,%d,%d);\n", attr, wait, n);
+    printc ("aubit4gl_pl::A4GL_aclfgli_pr_message(%s,%d,%d);\n", attr, wait, n);
   else
-    printc ("aubit4gl_pl::aclfgli_pr_message_cap(%d,%d,%d);\n", attr, wait,
+    printc ("aubit4gl_pl::A4GL_aclfgli_pr_message_cap(%d,%d,%d);\n", attr, wait,
 	    n);
 }
 
@@ -3483,7 +3483,7 @@ void
 LEXLIB_print_func_args (int c)
 {
   printc
-    ("if ($nargs!=%d) {$aubit4gl_pl::status=-30174;aubit4gl_pl::A4GL_pop_args($nargs);return 0;}\n",
+    ("if ($nargs!=%d) {$aubit4gl_pl::a4gl_status=-30174;aubit4gl_pl::A4GL_pop_args($nargs);return 0;}\n",
      c, yylineno);
   printc ("aubit4gl_pl::pop_params(fbind,%d);\n", c);
 }
@@ -3530,12 +3530,12 @@ LEXLIB_print_main_1 (void)
 void
 LEXLIB_print_fgllib_start (char *db)
 {
-  printc ("\naubit4gl_pl::fgl_start(0,$ARGS);\n");
+  printc ("\naubit4gl_pl::A4GL_fgl_start(0,$ARGS);\n");
   if (db[0] != 0)
     {
       print_init_conn (db);
       printc
-	("if ($aubit4gl_pl::sqlca_sqlcode<0) {aubit4gl_pl::chk_err(%d,aubit_module_name);}\n",
+	("if ($aubit4gl_pl::a4gl_sqlca_sqlcode<0) {aubit4gl_pl::A4GL_chk_err(%d,aubit_module_name);}\n",
 	 lastlineno);
     }
 }
@@ -3548,7 +3548,7 @@ LEXLIB_print_fgllib_start (char *db)
 void
 LEXLIB_print_main_end (void)
 {
-  printc ("aubit4gl_pl::fgl_end();\n}");
+  printc ("aubit4gl_pl::A4GL_fgl_end();\n}");
 }
 
 /**
@@ -3947,17 +3947,17 @@ LEXLIB_A4GL_get_push_literal (char type, char *value)
   static char buff[80];
   if (type == 'D')
     {
-      sprintf (buff, "aubit4gl_pl::push_double(%f);\n", atof (value));
+      sprintf (buff, "aubit4gl_pl::A4GL_push_double(%f);\n", atof (value));
     }
 
   if (type == 'L')
     {
-      sprintf (buff, "aubit4gl_pl::push_long(%d);\n", atoi (value));
+      sprintf (buff, "aubit4gl_pl::A4GL_push_long(%d);\n", atoi (value));
     }
 
   if (type == 'S')
     {
-      sprintf (buff, "aubit4gl_pl::push_char(%s);\n", value);
+      sprintf (buff, "aubit4gl_pl::A4GL_push_char(%s);\n", value);
     }
   return buff;
 }
@@ -4187,7 +4187,7 @@ LEXLIB_print_module_variable_init (void)
 void
 LEXLIB_print_cmd_start ()
 {
-  printc ("\n\naclfgli_clr_err_flg();\n\n");
+  printc ("\n\naubit4gl_pl::aclfgli_clr_err_flg();\n\n");
 }
 
 /**                                             

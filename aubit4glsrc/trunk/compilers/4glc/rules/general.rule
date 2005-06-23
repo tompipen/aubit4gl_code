@@ -61,6 +61,14 @@ field_name_as_struct	:
 				sprintf(buff,"%s.%s",$<str>1,$<str>6);
 				$<field_entry>$=new_field_entry(buff,$<str>3,1);
 		}
+		| VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET {
+				$<field_entry>$=new_field_entry($<str>3,"1",0);
+		}
+		| VARIABLE OPEN_BRACKET var_or_string KW_COMMA arr_expr CLOSE_BRACKET {
+				char buff[256];
+				strcpy(buff,$<str>5);
+				$<field_entry>$=new_field_entry($<str>3,buff,0);
+		}
 ;
 
 field_name_or_char_as_struct: field_name_as_struct {$<field_entry>$=$<field_entry>1;}

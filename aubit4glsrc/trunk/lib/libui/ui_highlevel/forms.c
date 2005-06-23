@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.30 2005-06-16 17:01:19 mikeaubury Exp $";
+  "$Id: forms.c,v 1.31 2005-06-23 17:57:40 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -1844,7 +1844,7 @@ A4GL_add_window (int x, int y, int w, int h, char *name, void *fd, void *win)
 	{
 	  strcpy (windows[a].name, name);
 	  A4GL_add_pointer (name, S_WINDOWSCODE, &windows[a]);
-	  printf ("Setting form to %p\n", fd);
+	  //printf ("Setting form to %p\n", fd);
 	  windows[a].form = fd;
 	  windows[a].winattr.comment_line = 0;	//comment_line;
 	  windows[a].winattr.menu_line = 0;	//menu_line;

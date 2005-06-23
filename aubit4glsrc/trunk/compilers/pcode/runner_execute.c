@@ -877,7 +877,6 @@ get_var_ptr (struct use_variable *uv, int *size)
 		        fprintf (logfile, "     Evaluate gives bounds check failure = %ld of %ld\n", x, max);
 			printf("Bounds check failed\n");
 			*ptr=0;
-			
 		      exit (2);
 		    }
 		}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.172 2005-06-16 19:21:10 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.173 2005-06-23 17:57:36 mikeaubury Exp $
 #
 */
 
@@ -866,6 +866,8 @@ char *A4GLSQLCV_make_substr(char *colname,int nints,int i1,int i2) ;
     int sqlintr;
     int run_ui_mode;
     int pipe_ui_mode;
+    char *inpattr_s;
+    char *dispattr_s;
   };
 
   /* OBJECTMODULE is defined ONLY in keys.c */
@@ -1831,6 +1833,7 @@ int A4GL_conversion_ok(int a);
     int menu_line;
     int border;
     int attrib;
+    int attrib_str;
   };
 
 

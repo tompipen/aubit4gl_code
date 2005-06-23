@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.26 2005-06-18 09:56:56 mikeaubury Exp $
+# $Id: memfile.c,v 1.27 2005-06-23 17:57:37 mikeaubury Exp $
 #
 */
 
@@ -346,6 +346,17 @@ int a;
 int b;
 int type=0;
 FILE *last;
+FILE *save_comment=0;
+char *save=0;
+static int lineno=1;
+
+save=acl_getenv("SAVE_COMMENTS");
+if (save) {
+	if (strlen(save)) {
+		save_comment=fopen(save,"w");
+	}
+}
+
 
   if (!A4GL_isyes(acl_getenv("RM_COMMENTS_FIRST"))) return;
 
@@ -358,6 +369,7 @@ FILE *last;
 
 
     for (a=0;a<buff_len;a++) {
+	if (buff[a]=='\n') lineno++;
 
 	if (buff[a]=='\n'&&type!=1) type=0; 	// newlines always reset everything.
 					// That way - if we get confused - it won't propagate too far..
@@ -390,9 +402,13 @@ FILE *last;
 
         if (buff[a]=='-'&&buff[a+1]=='-'&&type==0) {
 		if (buff[a+2]!='!') {
+			if (save_comment) fprintf(save_comment,"%d|",lineno);
                 	for (b=a;buff[b]!='\n'&&b<buff_len;b++) {
+				if (save_comment) fprintf(save_comment,"%c",buff[b]);
+				
 				buff[b]=' ';
 			}
+			if (save_comment) fprintf(save_comment,"\n");
                 	a=b-1;
                 	continue;
 		} else {
@@ -404,18 +420,27 @@ FILE *last;
 
         if (buff[a]=='#'&&type==0) {
 		//printf("Found #\n");
+		if (save_comment) fprintf(save_comment,"%d|",lineno);
                 for (b=a;buff[b]!='\n'&&b<buff_len;b++) {
 			//printf("Skipping... '%c'\n",buff[b]);
+			if (save_comment) fprintf(save_comment,"%c",buff[b]);
 			buff[b]=' ';
 		}
+			if (save_comment) fprintf(save_comment,"\n");
                 a=b-1;
                 continue;
         }
         if (buff[a]=='{'&&type==0&&buff[a+1]!='!') {
+		if (save_comment) fprintf(save_comment,"%d|",lineno);
                 for (b=a;buff[b]!='}'&&b<buff_len;b++) {
-			if (buff[b]=='\n') continue;
+			if (buff[b]=='\n') {
+				if (save_comment) fprintf(save_comment," ");
+				continue;
+			}
+			if (save_comment&&b>a) fprintf(save_comment,"%c",buff[b]);
 			buff[b]=' ';
 		}
+		if (save_comment) fprintf(save_comment,"\n");
 		buff[b]=' ';
                 a=b-1;
                 continue;
@@ -445,5 +470,8 @@ FILE *last;
 	fwrite(buff,1,buff_len,last);
 	fclose(last);
     }
+
+if (save_comment) {fclose(save_comment);}
+
 }
 

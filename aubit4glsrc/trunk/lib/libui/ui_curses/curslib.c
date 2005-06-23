@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.110 2005-06-16 16:54:35 mikeaubury Exp $
+# $Id: curslib.c,v 1.111 2005-06-23 17:57:39 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: curslib.c,v 1.110 2005-06-16 16:54:35 mikeaubury Exp $";
+		"$Id: curslib.c,v 1.111 2005-06-23 17:57:39 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -93,6 +93,7 @@ char *a_strchr(char *s,char c);
 WINDOW *curr_error_window = 0;
 PANEL *curr_error_panel = 0;
 int curr_error_panel_visible=0;
+void A4GL_do_pause (void);
 
 int have_default_colors = 0;
 
@@ -787,8 +788,7 @@ A4GL_clearbox (textarea * area)
  *
  * @todo Describe function
  */
-void
-A4GL_do_pause (void)
+void A4GL_do_pause (void)
 {
   WINDOW *x;
   int w;

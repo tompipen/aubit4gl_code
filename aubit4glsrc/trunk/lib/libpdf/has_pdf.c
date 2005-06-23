@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.21 2005-06-01 15:59:28 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.22 2005-06-23 17:57:38 mikeaubury Exp $
 #*/
 
 /**
@@ -66,6 +66,7 @@
 #define SECTION_NORMAL 0
 #define SECTION_HEADER 1
 #define SECTION_TRAILER 2
+static char * A4GL_report_char_pop (void);
 
 #ifdef NOT_REQUIRED
 double A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p);
