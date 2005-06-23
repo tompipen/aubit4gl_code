@@ -68,7 +68,11 @@ strcpy($<str>$,"0,0");
 ;
 
 display_attr	:	opt_attributes {
-				sprintf($<str>$,"0x%lx",atol($<str>1));
+				if (strncmp($<str>1,"A4GL_",5)==0)  {
+					strcpy($<str>$,$<str>1);
+				} else {
+					sprintf($<str>$,"0x%lx",atol($<str>1));
+				}
 			}
 		;
 
