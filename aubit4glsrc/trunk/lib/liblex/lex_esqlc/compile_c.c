@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.229 2005-06-06 18:03:36 mikeaubury Exp $
+# $Id: compile_c.c,v 1.230 2005-06-23 14:51:54 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.229 2005-06-06 18:03:36 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.230 2005-06-23 14:51:54 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -94,6 +94,8 @@ char *A4GL_get_important_from_clobber(char *s);
 void add_class_function_to_header (char *identifier, int params,char* is_static);
 char* get_reset_state_after_call(void);
 void print_reset_state_after_call(void);
+static void
+pr_nongroup_report_agg_clr (void);
 
 
 /*
@@ -716,9 +718,16 @@ LEXLIB_print_report_ctrl (void)
 
   printed_every=0;
 
+  // We need to clear down any counters...
+  printc(" if (acl_ctrl==REPORT_START||acl_ctrl==REPORT_RESTART) {");
+pr_nongroup_report_agg_clr();
+  printc("}");
   for (a = 0; a < report_stack_cnt; a++)
     {
       /* on last row */
+
+
+
       if (get_report_stack_whytype (a) == 'L')
 	printc
 	  ("if (acl_ctrl==REPORT_LASTROW) { acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
@@ -1068,6 +1077,41 @@ pr_report_agg (void)
 	     a, a, a, a);
 	}
 
+    }
+}
+
+static void
+pr_nongroup_report_agg_clr (void)
+{
+  int z;
+  int a;
+  int t;
+  int in_b;
+  char b[255];
+  for (z = 0; z < sreports_cnt; z++)
+    {
+      a = sreports[z].a;
+      t = sreports[z].t;
+      sprintf(b,"%d",sreports[z].in_b);
+      in_b = gen_ord(b);
+      
+      if (in_b == 0)
+	{
+	  if (t == 'C' || t == 'N' || t == 'X' || t == 'S')
+	    {
+	      printc ("_g%d=0;\n", a);
+	    }
+
+	  if (t == 'N' || t == 'X' || t=='S')
+	    {
+	      printc ("_g%dused=0;\n", a);
+	    }
+
+	  if (t == 'P' || t == 'A')
+	    {
+	      printc ("_g%d=0;_g%d=0;\n", a + 1, a);
+	    }
+	}
     }
 }
 
@@ -3913,6 +3957,8 @@ LEXLIB_print_report_1 (char *name)
 void
 LEXLIB_print_report_end (void)
 {
+
+
   printc ("\n} /* end of report */\n");
 }
 
