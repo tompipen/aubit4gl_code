@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.81 2005-03-09 15:14:33 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.82 2005-06-24 09:18:44 mikeaubury Exp $
 */
 
 /**
@@ -354,6 +354,8 @@ int a_isprint(int a);
   int A4GL_field_name_str_match(char *f1,char *f2);
   int A4GL_chk_iskey (char *base,char *iot, char *keys);
   void A4GL_disp_fields (int n, int attr, ...);
+  char *A4GL_var_for_inp_array(char *s);
+  char *A4GL_add_dot_star(char *s);
 
   int A4GL_fgl_getfldbuf (void *inp,char itype, ...);
   void A4GL_set_init (struct BINDING *b, int n);

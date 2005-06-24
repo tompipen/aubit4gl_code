@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.38 2005-05-23 20:16:05 whaslbeck Exp $
+# $Id: ui.c,v 1.39 2005-06-24 09:18:45 mikeaubury Exp $
 #
 */
 
@@ -875,4 +875,44 @@ int aclfgl_aclfgl_get_curr_height(int n) {
 	  A4GL_push_long(A4GL_get_curr_height () );
 	return 1;
 }
+
+
+// When using input/display array - the screen record is *always* specified as srecname.*
+// So we need to be able to swap and change between having the .* and not
+// These two functions make sure the .* exists (or not)
+// 
+// Get a sreen record - but remove the .*
+char *A4GL_var_for_inp_array(char *s) {
+	static char buff[255];
+	char *ptr;
+
+	if (strchr(s,'*')) {
+		strcpy(buff,s);
+		A4GL_trim(s);
+		ptr=strchr(buff,'*');
+		ptr--;
+		*ptr=0;
+		return buff;
+	}
+	strcpy(buff,s);
+	A4GL_trim(buff);
+	return buff;
+}
+
+
+// Get a sreen record - but add the .*
+char *A4GL_add_dot_star(char *s) {
+	static char buff[256];
+	static char buff2[256];
+	if (strstr(s,".*")) {
+			strcpy(buff,s);
+			A4GL_trim(buff);
+			return buff;
+	}
+	strcpy(buff2,s);
+	sprintf(buff,"%s.*",buff2);
+	return buff;
+}
+//*************************************************************************
+
 /* ============================= EOF ================================ */

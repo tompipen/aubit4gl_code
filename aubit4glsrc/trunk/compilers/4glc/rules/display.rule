@@ -46,9 +46,11 @@ display_array_cmd : DISPLAY_ARRAY {
 		push_blockcommand("DISPLAY");
 		curr_input_array_attribs.curr_row_display=0;
 		} 
-	use_arr_var TO identifier DOT MULTIPLY opt_scroll opt_attributes 
+	use_arr_var TO idm_input_array
+
+	opt_scroll opt_attributes 
 		{
-		print_display_array_p1(fgl_add_scope($<str>3,0),$<str>5,$<str>8,$<str>9,&curr_input_array_attribs);
+		print_display_array_p1(fgl_add_scope($<str>3,0),$<str>5,$<str>6,$<str>7,&curr_input_array_attribs);
 	  	A4GL_new_events();
 		}
 	disp_rest {
@@ -58,6 +60,8 @@ display_array_cmd : DISPLAY_ARRAY {
 	  	A4GL_drop_events();
 }
 ;
+
+
 
 opt_scroll: 
 {

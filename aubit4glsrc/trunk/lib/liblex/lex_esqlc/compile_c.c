@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.231 2005-06-23 16:36:18 mikeaubury Exp $
+# $Id: compile_c.c,v 1.232 2005-06-24 09:19:01 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.231 2005-06-23 16:36:18 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.232 2005-06-24 09:19:01 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2791,7 +2791,7 @@ LEXLIB_print_display_array_p2 (void)
   printc("if (_exec_block==%d) { break; } ",A4GL_get_nevents());
   printc("{");
   print_event_list();
-  printc ("_exec_block=A4GL_disp_arr_v2(&_sio_%d,%s,\"%s\",%s /* attr */ ,%s /*scroll */,_sio_evt);\n", sio_id,l_arrvar, l_srec, l_attr, l_scroll);
+  printc ("_exec_block=A4GL_disp_arr_v2(&_sio_%d,%s,%s,%s /* attr */ ,%s /*scroll */,_sio_evt);\n", sio_id,l_arrvar, l_srec, l_attr, l_scroll);
 	free(l_arrvar);
 	free(l_srec);
 	free(l_attr);
@@ -3584,10 +3584,9 @@ LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
 
 
   printc
-    ("SET(\"s_inp_arr\",_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_inp_arr\",_sio_%d,\"field_list\"),(void *)GET(\"s_inp_arr\",_sio_%d,\"currform\"),\"%s.*\",0,0));\n",sio_id,sio_id,sio_id,
-     srec);
+    ("SET(\"s_inp_arr\",_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_inp_arr\",_sio_%d,\"field_list\"),(void *)GET(\"s_inp_arr\",_sio_%d,\"currform\"),A4GL_add_dot_star(%s),0,0));\n",sio_id,sio_id,sio_id, srec);
   printc ("_fld_dr= -1;_exec_block=-1;continue;\n");
-  sprintf (buff2, "A4GL_inp_arr_v2(&_sio_%d,%s,\"%s\",%s,_forminit,_sio_evt);\n", sio_id,defs, srec, attr);
+  sprintf (buff2, "A4GL_inp_arr_v2(&_sio_%d,%s,%s,%s,_forminit,_sio_evt);\n", sio_id,defs, srec, attr);
   return buff2;
 }
 
