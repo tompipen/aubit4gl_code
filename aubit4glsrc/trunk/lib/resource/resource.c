@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.104 2005-06-16 19:21:13 mikeaubury Exp $
+# $Id: resource.c,v 1.105 2005-06-25 18:57:55 mikeaubury Exp $
 #
 */
 
@@ -73,6 +73,7 @@ char *debug_level=0;
 
 static char * A4GL_strip_quotes_resource (char *s);
 static char * acl_getenv_internal (char *s,int rcfiles);
+char *an_empty_string="";
 
 #define USE_OPTIMISATION 1
 
@@ -557,6 +558,17 @@ char * acl_getenv (char *s) {
 	return ptr;
 }
 
+
+char * acl_getenv_not_set_as_0 (char *s) {
+	char *ptr;
+	ptr=acl_getenv_internal(s,1);
+	if (ptr==an_empty_string) {
+		return 0;
+	} else {
+		return ptr;
+	}
+}
+
 char * acl_getenv_only (char *s) {
 	return acl_getenv_internal(s,0);
 }
@@ -726,7 +738,7 @@ if (ptr)  {
 #ifdef USE_OPTIMISATION
 		A4GL_add_pointer(s,STR_RESOURCE_VAL,value_not_set);
 #endif
-		return "";
+		return an_empty_string;
 	} else {
 
     	/* 
@@ -1315,6 +1327,10 @@ A4GL_env_option_set (char *s)
 }
 
 
+// Get the value thats used to represent an empty string...
+char *A4GL_not_set_empty_string() {
+	return an_empty_string;
+}
 static char * A4GL_strip_quotes_resource (char *s)
 {
   static char *buff=0;

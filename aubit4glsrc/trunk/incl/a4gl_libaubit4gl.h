@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.174 2005-06-24 09:18:45 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.175 2005-06-25 18:56:21 mikeaubury Exp $
 #
 */
 
@@ -1102,6 +1102,7 @@ enum cmd_types {
   void A4GL_debug_full (char *fmt, ...);
   int A4GLSTK_isStackInfo (void);
   char *acl_getenv (char *);
+  char * acl_getenv_not_set_as_0 (char *s);
   char *A4GLSTK_getStackTrace (void);
   void A4GLSTK_pushFunction (const char *functionName, char *params[], int n);
   void A4GLSTK_popFunction (void);
@@ -2161,7 +2162,7 @@ void * A4GL_new_expr (char *value);
 
 void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
 void *A4GL_esql_dbopen_connection(void) ;
-char *A4GL_var_for_inp_array(char *s);
+//char *A4GL_var_for_inp_array(char *s);
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.82 2005-05-23 20:16:04 whaslbeck Exp $
+# $Id: builtin.c,v 1.83 2005-06-25 18:57:55 mikeaubury Exp $
 #
 */
 
@@ -215,13 +215,22 @@ aclfgl_fgl_getenv (int nargs)
   g = A4GL_char_pop ();
   A4GL_trim (g);
   A4GL_debug ("Looking up %s", A4GL_null_as_null(g));
-  p = acl_getenv (g);
+  p = acl_getenv_not_set_as_0(g);
   A4GL_debug("Got back %p");
-  if (p) A4GL_debug(" %s = '%s'",A4GL_null_as_null(g),A4GL_null_as_null(p));
-  if (p == 0)
-    A4GL_push_char ("");
-  else
+  if (p) {
+	  A4GL_debug(" %s = '%s'",A4GL_null_as_null(g),A4GL_null_as_null(p));
+  }
+
+
+  if (p == 0) {
+	 if (A4GL_isyes(acl_getenv("ENV_NOT_SET_AS_STR"))) { // Historic Aubit4GL behaviour
+    		A4GL_push_char ("");
+	 } else {
+		 A4GL_push_null (DTYPE_CHAR,0);
+	 }
+  } else {
     A4GL_push_char (p);
+  }
   acl_free (g);
   return 1;
 }
