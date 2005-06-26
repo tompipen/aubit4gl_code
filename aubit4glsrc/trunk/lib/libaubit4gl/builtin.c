@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.83 2005-06-25 18:57:55 mikeaubury Exp $
+# $Id: builtin.c,v 1.84 2005-06-26 11:06:42 mikeaubury Exp $
 #
 */
 
@@ -229,7 +229,12 @@ aclfgl_fgl_getenv (int nargs)
 		 A4GL_push_null (DTYPE_CHAR,0);
 	 }
   } else {
-    A4GL_push_char (p);
+	     if (strcmp(p,"")==0) {
+                 A4GL_push_char (" ");
+             } else {
+                 A4GL_push_char (p);
+             }
+	  
   }
   acl_free (g);
   return 1;
