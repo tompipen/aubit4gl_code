@@ -1,0 +1,1936 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>New Page 1</title>
+</head>
+
+<body>
+
+<h2 align="center">Aubit 4GL compiler status</h2>
+<hr>
+<p>Last updated on 25/06/2005, by Andrej Falout</p>
+<p>Aubit compiler is a work in progress, and by the very nature of OpenSource 
+development process, it will remain in such state for foreseeable future. This 
+means that some components may be fully production ready and extensively tested, 
+but some other may be not much then a prototype. </p>
+<p>Thanks to the fully modular architecture of Aubit compiler, where practically 
+all functionality is implemented in a form of plug-ins, this varying status 
+levels do not have to be a cause for concern. Additionally, Aubit provides a 
+full automated regression tests suite of over 800 tests, so it easy for user to 
+verify functionality of all components on every Aubit release, in less then 30 
+minutes.</p>
+<p>This page attempts to keep track on progress of various Aubit compiler 
+functionality and components, and quantify there maturity. It will hopefully 
+help you set appropriate level of expectations.</p>
+<p>TODO:</p>
+<ul>
+	<li>Add link to regression test results for general 4GL features</li>
+	<li>Add links to regression test result for database features/SQL for each 
+	database upported</li>
+</ul>
+<hr>
+<table border="1" width="100%" id="table1">
+	<tr>
+		<td align="center" bgcolor="#C0C0C0">Functionality</td>
+		<td align="center" bgcolor="#C0C0C0">Module (plug-in library / 
+		executable / command) name</td>
+		<td align="center" bgcolor="#C0C0C0">Description</td>
+		<td align="center" bgcolor="#C0C0C0">Source code location</td>
+		<td align="center" bgcolor="#C0C0C0">Status</td>
+		<td align="center" bgcolor="#C0C0C0">Maintainer</td>
+		<td align="center" bgcolor="#C0C0C0">Build command</td>
+		<td align="center" bgcolor="#C0C0C0">Usage examples</td>
+		<td align="center" bgcolor="#C0C0C0">Depends<br>
+		on</td>
+		<td align="center" bgcolor="#C0C0C0">Regression tests coverage</td>
+		<td align="center" bgcolor="#C0C0C0">Notes</td>
+	</tr>
+	<tr>
+		<td>Core 4GL language library</td>
+		<td>libaubit4gl</td>
+		<td>Implements core programming language run-time functionality and 
+		contains APIs for all plug-ins</td>
+		<td>lib/libaubit4gl</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>always created by root makefile</td>
+		<td>aubit4gltest</td>
+		<td>None</td>
+		<td>mostly </td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>RPM package</td>
+		<td>N/A</td>
+		<td>Packages Aubit compiler into .rpm format</td>
+		<td>etc/aubit-rpm.spec.in</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>AF</td>
+		<td>root makefile: make rpm</td>
+		<td>N/A</td>
+		<td>RPM tools</td>
+		<td>some in makefile</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Debian package</td>
+		<td>N/A</td>
+		<td>Packages Aubit compiler into .deb format</td>
+		<td>etc/debian</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>SF</td>
+		<td>?</td>
+		<td>N/A</td>
+		<td>?</td>
+		<td>none</td>
+		<td>Directory named &quot;debian&quot; in Aubit tree root is empty and obsolete</td>
+	</tr>
+	<tr>
+		<td>Windows installer</td>
+		<td>&nbsp;</td>
+		<td>Packages Aubit compiler into Windows setup installer executable</td>
+		<td>etc/aubit-InnoSetop.iss.in</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>AF</td>
+		<td>root makefile: make winsetup</td>
+		<td>&nbsp;</td>
+		<td>InnoSetup &amp; additional InnoSetup extension</td>
+		<td>some in makefile</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>4GL compiler - core</td>
+		<td>4glc</td>
+		<td>Parses .4gl files and generates compiled output using one of 
+		plug-ins</td>
+		<td>compilers/4glc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>None</td>
+		<td>mostly</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Windows only library</td>
+		<td>lib4glc</td>
+		<td>Contains most functionality of 4glc executable on Windows platform</td>
+		<td>compilers/4glc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>mostly</td>
+		<td>Needed because of limitations on Windows platform. Otherwise same as 
+		4glc excutable.</td>
+	</tr>
+	<tr>
+		<td>4GL compiler front end</td>
+		<td>4glpc</td>
+		<td>Provides user friendly front end to 4glc</td>
+		<td>tools/4glpc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>Written in 4GL</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>aace</td>
+		<td>&nbsp;</td>
+		<td>compilers/ace</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>some files in tools/test/ace manual testing only</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>aace_4gl</td>
+		<td>&nbsp;</td>
+		<td>compilers/ace</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>some files in tools/test/ace manual testing only</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>aace_perl</td>
+		<td>&nbsp;</td>
+		<td>compilers/ace and compilers/ace/perl_runner</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>some files in tools/test/ace manual testing only</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>adbschema</td>
+		<td>&nbsp;</td>
+		<td>tools/adbschema</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>adecompile</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>afinderr</td>
+		<td>&nbsp;</td>
+		<td>tools/afinderr</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>4GL make front end</td>
+		<td>amake</td>
+		<td>Command line tool for compiling 4GL programs using simplified 
+		program specifications and multiple 4GL&nbsp; compilers</td>
+		<td>bin</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>AF</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>used in regression tests and compiler build itself</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>OLD?</td>
+		<td>amkmessage</td>
+		<td>&nbsp;</td>
+		<td>compilers/helpcompile</td>
+		<td>?</td>
+		<td>?</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>?</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>PostgreSQL specific dbaccess/isql clone</td>
+		<td>asql_p</td>
+		<td>uses ecpg ESQL/C compiler</td>
+		<td>tools/asql</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Informix specific&nbsp; dbaccess/isql clone</td>
+		<td>asql_i</td>
+		<td>uses Informix ESQL/C</td>
+		<td>tools/asql</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Generic&nbsp; dbaccess/isql clone</td>
+		<td>asql_g</td>
+		<td>uses any Aubit SQL plug-in</td>
+		<td>tools/asql</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Aubit tools wrapper script</td>
+		<td>aubit</td>
+		<td>Enables usage of compilers, tools and compiled programs without 
+		manually setting PATH, LD_LIBRARY_PATH and other configuration </td>
+		<td>bin</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>AF</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>used in regression tests</td>
+		<td>Shell script</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>aupscol</td>
+		<td>&nbsp;</td>
+		<td>tools/aupscol</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Automatic build script</td>
+		<td>aubitbuild</td>
+		<td>Enambles fully automatic scheduled builds and uploads</td>
+		<td>bin</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>AF</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>used daily for automated builds</td>
+		<td>Shell script - primarily used for automatic nightly builds page</td>
+	</tr>
+	<tr>
+		<td>Configuration info tool</td>
+		<td>aubit-config</td>
+		<td>Command line tool that provides information about the state of 
+		various Aubit configuration options, as &quot;seen&quot; by Aubit tools and 
+		compiled programs.</td>
+		<td>lib/resource</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>P-code ...</td>
+		<td>runner</td>
+		<td>&nbsp;</td>
+		<td>compilers/pcode</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>some tests in regression tests are p-code enabled</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>P-code ...</td>
+		<td>runner_fgl</td>
+		<td>&nbsp;</td>
+		<td>compilers/pcode</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>P-code ...</td>
+		<td>c2pcode</td>
+		<td>&nbsp;</td>
+		<td>compilers/pcode</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>P-code ...</td>
+		<td>c2pcode_fgl</td>
+		<td>&nbsp;</td>
+		<td>compilers/pcode</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>P-code ...</td>
+		<td>checker</td>
+		<td>&nbsp;</td>
+		<td>compilers/pcode</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>P-code ...</td>
+		<td>checker_fgl</td>
+		<td>&nbsp;</td>
+		<td>compilers/pcode</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Configuration tool</td>
+		<td>configurator</td>
+		<td>Interactive TUI or GUI tool to inspect and set Aubit configuration 
+		options</td>
+		<td>tools/configuration</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>OLD SQL dialect converter</td>
+		<td>convertsql</td>
+		<td>Command line </td>
+		<td>tools/convertsql</td>
+		<td>?</td>
+		<td>?</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Default form generator</td>
+		<td>default_frm</td>
+		<td>Creates default form file (.per) based on database table </td>
+		<td>compilers/fcompile</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Core form compiler</td>
+		<td>fcompile</td>
+		<td>Parses .per files and creates compiled forms in various formats 
+		using plug-ins</td>
+		<td>compilers/fcompile</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>mostly</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Form decompiler</td>
+		<td>fdecompile</td>
+		<td>De-compiles compiled form (in ? format) back to .per format</td>
+		<td>compilers/fcompile</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Form display utility</td>
+		<td>fshow</td>
+		<td>Command line tool to show how form will look</td>
+		<td>compilers/fcompile</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>generate_aace</td>
+		<td>&nbsp;</td>
+		<td>compilers/ace</td>
+		<td>&nbsp;</td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>GUI SQL editor</td>
+		<td>sqleditor</td>
+		<td>Simple SQL front-end&nbsp; written in 4GL using GLADE UI</td>
+		<td>glade/ide/sqleditor</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>Mostly a demonstration of Aubit &quot;real&quot; GUI (non-block mode/.per) 
+		using GLADE&nbsp; </td>
+	</tr>
+	<tr>
+		<td>GUI IDE </td>
+		<td>ide1</td>
+		<td>Simple IDE written in 4GL using GLADE UI</td>
+		<td>glade/ide</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>Mostly a demonstration of Aubit &quot;real&quot; GUI (non-block mode/.per) 
+		using GLADE</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>layout_engine</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Map loader</td>
+		<td>loadmap</td>
+		<td>Command line tool to load 4glc generated .map files into database</td>
+		<td>tools/loadmap</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Menu compiler</td>
+		<td>mcompile</td>
+		<td>Plexus compatible &quot;menu handler&quot; compiler for GUI mode only. Parses 
+		.menu files and generates compiled menus in various formats using 
+		plug-ins</td>
+		<td>compilers/menus</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>maybe one test ?</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Menu decompiler</td>
+		<td>mdecompile</td>
+		<td>De-compiles compiled menus back into source code format</td>
+		<td>compilers/menus</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>process_report</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Logical REports report viewer </td>
+		<td>report_viewer</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>runner_fgl</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>maybe few tests that are p-code enabled?</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>NEW command line SQL statement dialect converter</td>
+		<td>sql_parse</td>
+		<td>Command line utility that converts SQL statements or files to other 
+		SQL dialects using same methods that would be used by compiled Aubit 4GL 
+		programs</td>
+		<td>compilers/sql and etc/convertsql</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>Useful mostly for testing conversion or for external non-Aubit 
+		database tools</td>
+	</tr>
+	<tr>
+		<td>OLD? help file decompiler</td>
+		<td>unmkmessage</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>?</td>
+		<td>?</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Internal compiler tool</td>
+		<td>xgen</td>
+		<td>&nbsp;</td>
+		<td>compilers/xgen</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>used in Aubit build</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Interpreted C run-time</td>
+		<td>&nbsp;</td>
+		<td>Runs 4GL programs compiled to C with interpreter instead of 
+		compiling it with C compiler</td>
+		<td>cint</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>root makefile: make cint</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none, simple test in tools/test makefile</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libchannel</td>
+		<td>lib/extra_libs/channel</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>mostly</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libA4GL_file</td>
+		<td>lib/extra_libs/file</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>mostly</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/extra_libs/memcached</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>?</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/extra_libs/pcre</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/extra_libs/pop</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libA4GL_string</td>
+		<td>lib/extra_libs/string</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/extra_libs/sxml</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>tools/test/xml</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libesql</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>?</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libexdata</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>?</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libFORM_GENERIC</td>
+		<td>lib/libform/form_generic</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>mostly</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libform/form_xdr</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>mostly</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libFORM_NOFORM</td>
+		<td>lib/libform/noform</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>?? libHELP_std</td>
+		<td>lib/libhelp</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>?</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libLEX_C</td>
+		<td>lib/liblex/lex_c</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>mostly</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libLEX_CS</td>
+		<td>&nbsp;</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libLEX_EC</td>
+		<td>lib/liblex/lex_esqlc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>mostly</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libLEX_PERL</td>
+		<td>lib/liblex/lex_perl</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>none</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libLOGREP_CSV</td>
+		<td>lib/liblogical/csv</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>?</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/liblogical/layout_engine</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/liblogical/pdf</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libLOGREPPROC_CSV<br>
+		libLOGREPPROC_TXT</td>
+		<td>lib/liblogical/processor</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><br>
+		<img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/liblogical/report_viewer</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libLOGREP_TXT</td>
+		<td>lib/liblogical/txt</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libMENU_GENERIC</td>
+		<td>lib/libmenu/menu_generic</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libMENU_NOMENU</td>
+		<td>lib/libmenu/menu_nomenu</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libmenu/menu_xdr</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libMSG_NATIVE</td>
+		<td>lib/libmsg/msg_native</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libpacker/gzpacked</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libPACKER_MEMPACKED</td>
+		<td>lib/libpacker/mempacked</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libPACKER_PACKED</td>
+		<td>lib/libpacker/packed</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libPACKER_PERL</td>
+		<td>lib/libpacker/perl</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libpacker/xdr</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libPACKER_XML</td>
+		<td>lib/libpacker/xml</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libEXREPORT_NOPDF</td>
+		<td>lib/libpdf</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libRPC_NORPC</td>
+		<td>lib/librpc/no_rpc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/librpc/sun_rpc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/librpc/xml_rpc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>?? libSQL_c_ecpg ??</td>
+		<td>lib/libsql/esqlc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libsql/ingres</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libSQL_nosql</td>
+		<td>lib/libsql/nosql</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libSQL_odbc32</td>
+		<td>lib/libsql/odbc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libsql/odbc</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libsql/odbc</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libsql/odbc</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libsql/odbc</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>Simple PostgreSQL access library (compile time only)</td>
+		<td>NOT- libESQL_POSTGRES<br>
+		libSQL_pg</td>
+		<td>lib/libsql/postgresql</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libSQLPARSE_INFORMIX</td>
+		<td>&nbsp;</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libsql/sapdb</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libSQL_FILESCHEMA</td>
+		<td>lib/libsql/schema_in_file</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libSQLPARSE_NONE</td>
+		<td>lib/libsqlparse/none</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libUI_CONSOLE</td>
+		<td>lib/libui/ui_console</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libui/ui_curses</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libA4GL_glade ??<p>libUI_GLADE</td>
+		<td>lib/libui/ui_glade</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libUI_HL_GTK</td>
+		<td>lib/libui/ui_highlevel</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libui/ui_highlevel</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libui/ui_highlevel</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/swig</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>libDATA_menu_list<br>
+		module<br>
+		report<br>
+		struct_form</td>
+		<td>&nbsp;</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+</table>
+<p>Status legend:</p>
+<ul>
+	<li><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"> 
+	- Mature; feature complete, fully tested, mission critical production ready</li>
+	<li><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"> 
+	- Feature complete; not sufficiently tested for mission critical production</li>
+	<li><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"> 
+	- Mostly Feature complete; somewhat tested</li>
+	<li><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"> 
+	- Beta; Somewhat usable in particular environments and with limited scope</li>
+	<li><img border="0" src="../images/star.gif"> - Alpha; of interest only to 
+	developers, experimental, not more then a&nbsp; proof of concept</li>
+</ul>
+<p>Maintainer legend:</p>
+<ul>
+	<li>MA - Mike Aubury</li>
+	<li>AF - Andrej Falout</li>
+	<li>SF - Sergio Ferreira</li>
+</ul>
+<p>&nbsp;&nbsp;&nbsp; Note: Please always use Aubit project mailing lists to 
+contact developers.</p>
+<p>Other symbols used:</p>
+<ul>
+	<li>N/A - Not Applicable</li>
+	<li>? - Unknown</li>
+</ul>
+<p>Notes:</p>
+<ul>
+	<li>Testing column uses &quot;mostly&quot; for cases where automated testing coverage 
+	is extensive, and not &quot;complete&quot;, simply because coverage was never 
+	explicitly quantified. Keyword &quot;complete&quot; is reserved for functionality 
+	where we have defined list of all features, and all tests performed, like we 
+	do, for example, for SQL and database features. Therefore, meaning of 
+	&quot;mostly&quot; should be interpreted as: As far as we know, most if not all 
+	features are tested, but we never explicitly checked that, and there might 
+	be some less used features that are not covered by tests. </li>
+</ul>
+<hr>
+<p align="center"><a href="../index.html">Aubit 4GL compiler home page</a></p>
+
+</body>
+
+</html>

@@ -483,7 +483,7 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
   <tr>
     <td width="14%" bgcolor="#C0C0C0" height="76">Emulation of 4GL UI in HTML
       (menu, forms...)</td>
-    <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
+    <td width="14%" align="center" height="76">Planned</td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="76"><img border="0" src="../images/no.gif" width="14" height="14"></td>
@@ -739,6 +739,24 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" align="center" height="16"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="16">From, but not to</td>
     <td width="14%" align="center" height="16">Exchange format for ThinStructure</td>
+    <td width="15%" align="center" height="16"></td>
+    <td width="15%" align="center" height="16"></td>
+    <td width="15%" align="center" height="16"></td>
+    <td width="15%" align="center" height="16"></td>
+    <td width="15%" align="center" height="16"></td>
+    <td width="15%" align="center" height="16"></td>
+    <td width="15%" align="center" height="16"></td>
+  </tr>
+  <tr>
+    <td width="14%" bgcolor="#C0C0C0" height="16">Compiler generates resources 
+	(metrics, tables used, functions declared,...) map information</td>
+    <td width="14%" align="center" height="16"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="16"></td>
+    <td width="14%" align="center" height="16"></td>
+    <td width="14%" align="center" height="16"></td>
+    <td width="14%" align="center" height="16"></td>
+    <td width="14%" align="center" height="16"></td>
+    <td width="14%" align="center" height="16"></td>
     <td width="15%" align="center" height="16"></td>
     <td width="15%" align="center" height="16"></td>
     <td width="15%" align="center" height="16"></td>
@@ -1440,13 +1458,13 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="15%" align="center" height="19">&nbsp;</td>
   </tr>
   <tr>
-    <td width="14%" bgcolor="#C0C0C0" height="19">PDF reports Key remapping</td>
+    <td width="14%" bgcolor="#C0C0C0" height="19">Key remapping</td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
-    <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
-    <td width="14%" align="center" height="19">?</td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
+    <td width="14%" align="center" height="19"><img border="0" src="../images/error.gif" width="20" height="16"></td>
     <td width="14%" align="center" height="19"><img border="0" src="../images/no.gif" width="14" height="14"></td>
     <td width="15%" align="center" height="19">?</td>
     <td width="15%" align="center" height="19">?</td>
@@ -1731,7 +1749,7 @@ I4GL Extender and integration product, uses I-4gl or 4Js compiler
     <td width="14%" bgcolor="#C0C0C0" height="19">Can use variable instead of 
 	string in all statements</td>
     <td width="14%" align="center" height="19">Most, but not function and 
-	variable names</td>
+	variable names [see _variable() syntax]</td>
     <td width="14%" align="center" height="19">Only as per i-4GL specs</td>
     <td width="14%" align="center" height="19">Only as per i-4GL specs</td>
     <td width="14%" align="center" height="19">?</td>
@@ -2204,19 +2222,27 @@ Language Reference Manual</a> for definition of x4GL programming language.</li>
 			compilation option, just as we now have EGL to Java and EGL to COBOL 
 			options. Or any other programming language/platform that will appear 
 			in the years to come.</li>
-			<li>Database objects access definitions kept separately, and 
-			therefore reusable, which is in theory a good thing. They also 
-			contain some basic business rules, which can be used for validation. 
-			Based on meta-data (which is static) and therefore an invitation for 
+			<li>Database objects access definitions kept separately (&quot;Dataitem&quot;), 
+			and therefore reusable, which is in theory a good thing. They also 
+			contain some basic business rules, which can be used for validation 
+			(server-side only - client-side validation has to be hand coded). 
+			Based on meta-data which is static, and therefore an invitation for 
 			all sorts of bugs that will be hard to trace (because of this layer 
 			of abstraction)</li>
+			<li>EGL is potentially a great web front-end for x4GL business logic 
+			in Services Oriented Architecture scenarios. Most x4GL are limited 
+			in there ability to handle customized web sites development, but 
+			EGL, thanks to the JSF (Java Server Faces) technology brings almost 
+			drag-and-drop, Visual Basic style solution to it. Which will also 
+			make VB programmers happy.</li>
 		</ul>
 		</td>
 		<td>
 		<ul>
 			<li>&quot;Automatic&quot; conversion from i-4GL to EGL has a manual with 150 
 			pages. It is questionable how automatic is something that needs such 
-			a large manual.</li>
+			a large manual. The mention of &quot;large percentage&quot; of x4GL code that 
+			gets converted automatically, is making me uneasy too...</li>
 			<li>Conversion of 4GL report formatting blocks is limited to format 
 			only, and results in Jasper Reports XML file. No tools for 
 			maintaining them are provided. Any functionality embedded in 
@@ -2305,6 +2331,22 @@ Language Reference Manual</a> for definition of x4GL programming language.</li>
 			for many transaction oriented tasks where information is rapidly 
 			updated on the screen, or speed of operator input is critical. This 
 			includes POS environments.</li>
+			<li>No QBE (Query By Example). Which is only the number one time 
+			saver and user satisfaction tool in every x4GL. </li>
+			<li>IBM is misleading customers big time by talking about Java and 
+			EGL. There is no Java in EGL - EGL is translated into JSP (Java 
+			Server Pages) which is a separate programming language dedicated to 
+			web applications programming. JSP is Java as much as JavaScript is.</li>
+			<li>The only available demo code is explicitly compatible with DB/2 
+			only. I wonder what this is saying about database portability of EGL 
+			apps. I did not find any mention of Informix in the documentation.</li>
+			<li>Few things IBM is promising for future releases includes 
+			&quot;Extensions to records - relationships&quot; and &quot;GUI / Rich client 
+			support&quot;. Which means there is no tables relationships support in 
+			current &quot;Dataitem&quot; implementation, which is in my book making it 
+			completely useless. And how they plan to support GUI on top of JSP 
+			is going to be interesting to see. Also note that &quot;future&quot; has no 
+			date.</li>
 		</ul>
 		</td>
 	</tr>
@@ -2334,6 +2376,10 @@ Language Reference Manual</a> for definition of x4GL programming language.</li>
 			<li>If having sufficient resources counts for anything in technology 
 			development, then IBM sure has it (just don't ask them about &quot;San 
 			Francisco&quot;...)</li>
+			<li>According to IBM marketing material, 5000 enterprises worldwide 
+			use some form of IBM 4GL technology. If any company knows the 4GL 
+			market, it should be them. Weather they understand it, is a 
+			different question. </li>
 		</ul>
 		<p align="center">&nbsp;</td>
 		<td>
@@ -2358,7 +2404,8 @@ Language Reference Manual</a> for definition of x4GL programming language.</li>
 			remain far below the radar for IBM product management people to 
 			notice you. In other words, you will get upgrades and fixes when you 
 			get them, and you will get features that you get. Think Microsoft. 
-			With mature products like I-4GL, this is probably acceptable. With 
+			With mature products like I-4GL, this is probably acceptable for 
+			most users. With 
 			emerging ones, like EGL, this may not be the case.</li>
 		</ul>
 		</td>
@@ -2381,7 +2428,13 @@ Language Reference Manual</a> for definition of x4GL programming language.</li>
 		people will not think you are insane, incompetent or afraid of the new. 
 		And nobody got fired for thinking what IBM is thinking :-)</p>
 		<p>However positive, this step unfortunately brings us less productivity then x4GL based 
-		products, but still more then plain Java/J2EE. Mutant programming 
+		products, but still more then plain Java/J2EE. Reading available IBM 
+		brochures and presentations, the strongest advantage of EGL is 
+		apparently that it is &quot;modern&quot;, and &quot;not legacy&quot;. Even a claims of 
+		higher productivity over x4GL languages where nowhere to be found. If 
+		the only motivation for making EGL was to make &quot;not legacy&quot; product, as 
+		far as I'm concerned, they should had not bothered.</p>
+		<p>Mutant programming 
 		language syntax bring in question the very core advantage of 4GL concept 
 		- the language itself. Half-hearted implementation of meta-data will 
 		probably hurt more then help. Possibly more flexible 
@@ -2708,7 +2761,10 @@ strengths and weaknesses are separated into product and license related</p>
 		well. Environments unfamiliar with the way OpenSource software and 
 		projects work from process perspective, may have a bit of cultural 
 		shock. Calling 24/7 support number and shouting at support guy is not an 
-		option here. Similarly, due to the nature of OpenSource development 
+		option here. [Comment by Mike Aubury:] <i>Although commercial support 
+		contracts are available at highly competitive rates :-) (&amp; The big 
+		difference is you get to speak to the organ grinder...)</i> </p>
+		<p>Similarly, due to the nature of OpenSource development 
 		process, occasionally you will see more nuts &amp; bolts that you would like 
 		to; unfinished functionality that looks tempting, but is not, well, 
 		finished. Things you would not expect from commercial vendors. Not most 
@@ -3576,6 +3632,23 @@ it from brochures and presentations is:</p>
 	synergy between products and services; customers chase high integration and 
 	compatibility, single source and one neck to choke. IBM delivers. </li>
 </ul>
+<p>&nbsp;&nbsp;&nbsp; OTOH, the official IBM list of &quot;who is it for&quot; goes like 
+this (my notes in italics):</p>
+<ol>
+	<li>Customers who need higher productivity <i>(Not stating higher then what)</i></li>
+	<li>Customers who need to deploy on diverse platforms <i>(all 5 of them, 
+	supported: Windows, Linux, AIX, iSeries, zSeries)</i></li>
+	<li>Business oriented developers:<ol>
+		<li>4GL developers (Oracle forms, etc)</li>
+		<li>VB developers</li>
+		<li>Database developers <i>(sic!)</i></li>
+		<li>RPG developers</li>
+		<li>COBOL/PLI developers</li>
+		<li>VisualAge Generator developers</li>
+		<li>Informix 4GL developers <i>(Yes, last on the list)</i></li>
+	</ol>
+	</li>
+</ol>
 <p>Other sources of information:</p>
 <ul>
 	<li>Authors presentations on OpenSource, x4GL and Aubit project are
