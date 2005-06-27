@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.32 2005-06-23 17:57:37 mikeaubury Exp $
+# $Id: attributes.c,v 1.33 2005-06-27 20:40:56 mikeaubury Exp $
 #*/
 
 /**
@@ -375,8 +375,8 @@ char *ptr;
 int a;
 int nattr;
 int attr=0;
-buff=strdup(s);
 char *b2;
+buff=strdup(s);
 ptr=buff;
 A4GL_debug("Got str attr as : %s",s);
 for (a=0;a<=strlen(s);a++) {
