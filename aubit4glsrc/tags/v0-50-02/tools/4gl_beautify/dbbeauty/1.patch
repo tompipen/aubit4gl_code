@@ -1,0 +1,86 @@
+
+*** dbbeauty.c.orig	Sat Jan 27 22:58:10 1996
+--- dbbeauty.c	Mon Aug 19 14:52:54 1996
+***************
+*** 53,59 ****
+  void
+  process()
+  {
+! 	char	*bsearch(), s[19], tmp_s[19];
+  	int	delimiter, getword(), node_compare();
+  	struct node *node_ptr, node;
+  	void	upshift();
+--- 53,59 ----
+  void
+  process()
+  {
+! 	char	*bsearch(), s[100], tmp_s[100];
+  	int	delimiter, getword(), node_compare();
+  	struct node *node_ptr, node;
+  	void	upshift();
+***************
+*** 89,95 ****
+  			if ((c = getchar()) == '-') {
+  				(void)putchar('-');
+  				(void)putchar(c);
+! 				while ((c = getchar()) != '\n')
+  					(void)putchar(c);
+  			} else {
+  				(void)ungetc(c, stdin);
+--- 89,95 ----
+  			if ((c = getchar()) == '-') {
+  				(void)putchar('-');
+  				(void)putchar(c);
+! 				while ((c = getchar()) != '\n' && !feof(stdin))
+  					(void)putchar(c);
+  			} else {
+  				(void)ungetc(c, stdin);
+***************
+*** 100,120 ****
+  			continue;
+  		case '#':
+  			(void)putchar(c);
+! 			while ((c = getchar()) != '\n')
+  				(void)putchar(c);
+- 			(void)putchar(c);
+  			continue;
+  		case '{':
+  			(void)putchar(c);
+! 			while ((c = getchar()) != '}')
+  				(void)putchar(c);
+- 			(void)putchar(c);
+  			continue;
+  		case '"':
+  			(void)putchar(c);
+! 			while ((c = getchar()) != '"')
+  				(void)putchar(c);
+- 			(void)putchar(c);
+  			continue;
+  		}
+  		if (!fglalpha(c))
+--- 100,123 ----
+  			continue;
+  		case '#':
+  			(void)putchar(c);
+! 			while ((c = getchar()) != '\n' && !feof(stdin))
+! 				(void)putchar(c);
+! 			if (!feof(stdin))
+  				(void)putchar(c);
+  			continue;
+  		case '{':
+  			(void)putchar(c);
+! 			while ((c = getchar()) != '}' && !feof(stdin))
+! 				(void)putchar(c);
+! 			if (!feof(stdin))
+  				(void)putchar(c);
+  			continue;
+  		case '"':
+  			(void)putchar(c);
+! 			while ((c = getchar()) != '"' && c != '\n' && !feof(stdin))
+! 				(void)putchar(c);
+! 			if (!feof(stdin))
+  				(void)putchar(c);
+  			continue;
+  		}
+  		if (!fglalpha(c))
+

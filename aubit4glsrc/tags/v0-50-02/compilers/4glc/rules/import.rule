@@ -1,0 +1,21 @@
+import_m : IMPORT_FUNCTION identifier OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+		print_import($<str>2,atoi($<str>4));
+	} 
+	| IMPORT_LEGACY_FUNCTION identifier {
+		print_import_legacy($<str>2);
+	}
+;
+
+
+import_package:
+	 IMPORT_PACKAGE identifier {
+		import_package($<str>2);
+	}
+;
+
+
+
+module_import: IMPORT_DATATYPE identifier { add_ex_dtype($<str>2); } 
+;
+
+

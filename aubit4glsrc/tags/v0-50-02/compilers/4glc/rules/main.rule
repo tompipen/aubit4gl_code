@@ -1,0 +1,262 @@
+/*
+=====================================================================
+                        Source: main.rule
+=====================================================================
+*/
+
+
+module : 
+	class_module 
+	| trad_module
+;
+
+class_module: class_definition
+;
+
+trad_module: op_module_header
+	{
+		if (glob_only==1) {
+       			A4GL_debug("Read globals section so Im done\n");
+       			YYACCEPT;
+		}
+	
+		set_4gl_vars();
+
+		set_current_variable_scope('g'); print_variables (); set_current_variable_scope('G'); print_variables (); set_current_variable_scope('m'); print_variables ();
+print_module_variable_init();
+		set_current_variable_scope('m');
+	}
+	func_main_def
+;
+
+
+
+op_module_header: | module_header {
+	}
+;
+
+module_header	:	module_entry 
+		| 	module_header module_entry
+;
+
+
+
+	
+
+module_entry : 
+module_import 
+| module_code 
+| whenever_cmd
+| import_package
+| module_globals_section 
+| module_define_section  
+| db_section
+| pragma
+	;
+
+
+
+
+func_main_def	: /* could be empty file */
+                 {strcpy($<str>$,"");}
+                | func_or_main2
+;
+func_or_main2 : func_or_main
+	| func_or_main2 func_or_main
+	;
+
+at_term_cmd :
+        AT_TERMINATION_CALL  identifier {
+		print_at_termination($<str>2);
+	}
+;
+
+func_or_main	:	func_def
+		|	main_def
+		|	report_def
+		|	pdf_report_def
+                |       menu_def
+                |       formhandler_def
+		|	code_cmd
+		| 	import_m
+		| 	pragma
+		|       whenever_cmd
+		| error
+		;
+
+module_code : code_cmd   ;
+
+op_code : | code_cmd   ;
+
+module_define_section : define_multiple 
+;
+
+
+ldeffunction :  FUNCTION {strcpy($<str>$,"");} | LOCAL_FUNCTION
+{
+strcpy($<str>$,"static ");
+} ;
+
+/*
+ * Function definition 
+ */
+func_def	: ldeffunction
+{
+  if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
+  clr_variable(); lastlineno=yylineno;
+  clr_function_constants (); 
+}
+identifier  OPEN_BRACKET  
+{ 
+if (is_builtin_func($<str>3)&&!compiling_system_4gl) {
+	a4gl_yyerror("You can't use this name - this is the name of a builtin Aubit4GL function");
+}
+
+if (strcmp($<str>1,"static ")!=0) {
+	// We don't export static functions
+	variable_action(-1,$<str>3,"","","add_function");
+}
+  sprintf(curr_func,"%s",$<str>3);
+  addmap("Declare Function",curr_func,"MODULE",yylineno,infilename);
+  print_func_start($<str>1,$<str>3,0);
+  printDeclareFunctionStack($<str>3);
+  cnt=0;
+}
+op_param_var_list CLOSE_BRACKET 
+{
+  A4GL_lex_printcomment("/* new function %s parameters*/\n",$<str>6);
+  push_blockcommand("FUNC");
+  A4GL_lex_printcomment("/* define section */\n");
+}
+define_section 
+{
+  int c;
+  A4GL_lex_printcomment("/*end of define section */\n");
+	print_variables();
+  c=print_param('f');
+  printPushFunction();
+  print_func_args(c);
+}
+op_code commands end_func_command;
+
+/*
+ * The end of the function rule 
+ */
+end_func_command : 
+  END_FUNCTION 
+  {
+    printPopFunction();
+    print_func_defret0();
+    pop_blockcommand("FUNC");
+    print_func_end();
+    clr_function_constants ();
+    A4GL_lex_printcomment("/*end function*/\n");
+    A4GL_chk_and_clr_labels();
+  }
+;
+
+
+main_def:	
+  MAIN 
+  { 
+    if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
+    lastlineno=yylineno;
+    variable_action(-1,$<str>1,"","","add_function");
+    sprintf(curr_func,"MAIN");
+    clr_variable(); 
+    push_blockcommand("MAIN"); 
+    addmap("MAIN",curr_func,"MODULE",yylineno,infilename);
+    print_main_1();
+  } 
+  define_section
+  {
+	print_variables();
+    printDeclareFunctionStack("MAIN");
+    print_fgllib_start(hdr_dbname);
+    printInitFunctionStack();
+    printPushFunction();
+  }
+commands END_MAIN {
+pop_blockcommand("MAIN");
+    A4GL_chk_and_clr_labels();
+print_main_end();
+A4GL_lex_printcomment("/*end main */\n");} ;
+
+return_cmd : 
+  KW_RETURN op_fgl_expr_ret_list 
+  {
+    printPopFunction();
+    print_return(atoi($<str>2));
+  }
+;
+
+op_fgl_expr_list : reset_cnt {strcpy($<str>$,"0");} | reset_cnt fgl_expr_list {
+A4GL_lex_printcomment("/* Got expr list */");
+sprintf($<str>$,"%s",$<str>2);}
+;
+
+db_section	:	  DATABASE dbase_name {
+					add_feature("DATABASE_USED");
+					open_db($<str>2);
+					strcpy(hdr_dbname,$<str>2);
+					lastlineno=yylineno;
+					is_schema=0;
+				file_out_nl("1");
+			}
+		| SCHEMA dbase_name {
+					add_feature("SCHEMA_USED");
+					open_db($<str>2);
+					strcpy(hdr_dbname,$<str>2);
+					lastlineno=yylineno;
+					is_schema=1;
+				file_out_nl("2");
+			}
+;
+
+module_globals_section : actual_globals_section {
+}
+;
+
+actual_globals_section : 
+	xglobals_entry
+	| actual_globals_section xglobals_entry
+;
+
+xglobals_entry : globals_entry 
+;
+
+globals_entry: GLOBALS {
+strcpy(curr_func,"[Globals]");
+set_current_variable_scope('g');
+A4GL_lex_printcomment("/* start of globals */\n");
+} 
+glob_section  {
+				file_out_nl("3");
+}
+;
+
+glob_section : define_section END_GLOBALS {
+ A4GL_lex_printcomment("/* end of globals */");
+	A4GL_debug("end of globals\n");
+	lastlineno=yylineno;
+	set_current_variable_scope('m');
+}
+| file_name {
+char b[256];
+	lastlineno=yylineno;
+	strcpy(b,$<str>1);
+	set_current_variable_scope('G');
+	tr_glob_fname(b);
+	A4GL_debug("Reading globals file %s\n",b);
+	rm_quote(b);
+	read_glob(b);
+	set_current_variable_scope('m');
+}
+| module_code  
+| db_section
+;
+
+
+
+/* ========================== main.rule ============================= */
+

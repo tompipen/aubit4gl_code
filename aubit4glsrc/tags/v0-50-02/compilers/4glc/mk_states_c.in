@@ -1,0 +1,110 @@
+@AWK@ '
+BEGIN  {
+	cnt=0
+	print "#include \"a4gl_4glc_int.h\""
+	print "#ifdef SIMPLIFIED"
+	print "#include \"y_tab.h\""
+	print "#else"
+	print "#include \"y.tab.h\""
+	print "#endif"
+	print "/* andrej const short *token_groups[]; */"
+	print "/* andrej moved to end to avoid re-declaring token_groups:"
+	print "int allow_token_state(int yystate,int yytoken) {"
+	print "int a;"
+	print "  if (yytoken<0) return 1;"
+	print "  for (a=0;token_groups[yystate][a]>=0;a++) {";
+	print "   if (token_groups[yystate][a]==yytoken) return 1;"
+	print "  }"
+	print "  return 0;"
+	print "}"
+	print "*/"	
+	print "const short *token_groups[]={" > "mk_states_1.h";
+}
+
+/^state/ {
+	if (state!="") {
+		val=""
+		for (a in arr) {
+			if (substr(a,1,1)=="$") continue;
+			if (val) val=val "," a 
+			else val=a
+		}
+
+		#print "val = " val
+		if (val=="") val="-1"
+		if (arr_vals[val]!="") this_val=arr_vals[val]
+		else {
+			this_val=cnt;
+			arr_vals[val]=cnt++;
+		}
+		print "    token_group_" this_val "," > "mk_states_1.h"
+	}
+	state=$2
+	delete arr
+}
+
+(state=="") {next}
+
+/\. / {
+	for (a=1;a<=NF;a++) {
+
+		if ($a==".") {
+			rest=""
+			a++;
+			x=substr($a,1,1)
+
+			if (x>="A"&&x<="Z") {
+				x=$a
+				
+				if (x=="error") continue;
+				if (x=="NAMED") x="NAMED_GEN";
+				arr[x]=1
+			}
+
+			if (x=="[") {
+				for (b=a;b<=NF;b++) {
+					if (b==a) {
+						x=substr($b,2)
+					} else {
+						x=$b
+					}
+					gsub(",","",x)
+					gsub("]","",x)
+					if (x=="error") continue;
+					if (x=="NAMED") x="NAMED_GEN";
+					arr[x]=1
+				}
+				
+			}
+		}
+	}
+}
+
+END {
+   print "   0};" > "mk_states_1.h"
+   print " "
+
+   for (a in arr_vals) {
+      if (printed[arr_vals[a]]!="") continue; printed[arr_vals[a]]="YES"
+      #print "const short *token_group_" arr_vals[a] ";" > "mk_states.h"
+      if (a=="") a="-1"
+      print "const short token_group_" arr_vals[a] "[]={" a ",-1};"
+      print " "
+   }
+   print "#include \"mk_states_1.h\""
+   
+	print "/* andrej moved here from top: */"
+	print "int allow_token_state(int yystate,int yytoken) {"
+	print "int a;"
+	print "  if (yytoken<0) return 1;"
+	print "  for (a=0;token_groups[yystate][a]>=0;a++) {";
+	print "   if (token_groups[yystate][a]==yytoken) return 1;"
+	print "  }"
+	print "  return 0;"
+	print "}"
+   
+   
+   
+
+}' < rules/generated/y.output > mk_states.c
+touch mk_states.h

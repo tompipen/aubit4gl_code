@@ -1,0 +1,97 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib/libgui makefile		 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+# ====================================================================
+# Makefile for compiling the unit tests of the Aubit4gl to postgresql
+# direct connector.
+#
+# The unit tests depends on the compilation of ../connection_suite.o
+# that is the generic connection tests to the C interface functions.
+# ====================================================================
+
+#
+# $Id: Makefile.in,v 1.3 2004-09-28 09:50:28 afalout Exp $
+#
+
+ROOT    =../../../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                    Options
+## ==================================================================
+
+4GLPC			=${FGLPCEXEC}
+CFLAGS			+=-I${ROOT}/lib/libincl -L$(AUBITDIR)/lib
+
+SOURCES_C       =test_postgresql.c ../connection_suite.c 
+
+OBJECTS         =${SOURCES_C:.c=.o} 
+
+LIBS			=-lcheck -laubit4gl -lpq
+
+ifeq "@HAS_CHECK@" "1"
+	ifneq "${HAVE_PGSQL_LIB}" "no"
+		ALL=test_postgresql
+	else
+		ALL=no_libpq
+	endif
+else
+	ALL=no_check
+endif
+
+.PHONY: all clean no_libpq no_check
+
+## ==================================================================
+##                    Targets
+## ==================================================================
+
+all: ${ALL}
+	@echo "Successfully compiled default targets: ${ALL}"
+
+test_postgresql: ${OBJECTS}
+	$(CC) $(CFLAGS) $^ -o $@ ${LIBS}
+
+no_libpq:
+	@echo "Configure did not found 'libpq' library - cannot compile tests."
+
+no_check:
+	@echo "Configure did not found 'check' library - cannot compile tests."
+
+## ==================================================================
+##                    Sub - Targets
+## ==================================================================
+
+
+## ==================================================================
+##                    Clean
+## ==================================================================
+
+clean:
+	${RM} *.o test_postgresql *.exe *.bak *.out
+
+# =============================== EOF ===============================
+

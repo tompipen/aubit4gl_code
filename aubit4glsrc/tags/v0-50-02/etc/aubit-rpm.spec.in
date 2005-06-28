@@ -1,0 +1,630 @@
+###########################################################################
+#			RPM Package manager config file for Aubit 4gl
+#
+# Initial spec file created by autospec ver. 0.6 with rpm 2.5 compatibility
+# for Aubit 4gl version 0.20
+###########################################################################
+
+#
+# $Id: aubit-rpm.spec.in,v 1.25 2004-12-22 11:22:18 afalout Exp $
+#
+
+###########
+#Variables
+%define RPM_A4GL_INSTALL_DIR		/opt/aubit4gl
+%define RPM_A4GL_RPMINSTALL_LOG		/tmp/aubit4gl-rpminstall.log
+%define RPM_A4GL_RPMDEINSTALL_LOG	/tmp/aubit4gl-rpmdeinstall.log
+%define RPM_MAKE					gmake
+
+
+###########
+#There may be times when RPM's automatic dependency processing is not
+#desired. In these cases, the autoreqprov tag may be used to disable it.
+#This tag takes a yes/no or 0/1 value. For example, to disable automatic
+#dependency processing, the following line may be used:
+#This is needed in case of Aubit, because otherwise all dependencies for
+#all modules like GTK+ unixODBC, iODBC, ESQL/C, PDFlib, wtc, will be defined
+#as prerequisites for installing Aubit, which is not true, since Aubit can
+#be configured to use this extensions only if they are installed on target 
+#system
+AutoReqProv: no
+
+
+##############
+#Description
+##############
+Summary: @FULLNAME@
+Name: @SHORTNAME@
+Version: @AUBIT_VERSION@.@AUBIT_BUILD@
+Release: 1
+Copyright: @AUBIT_LICENSE@
+Vendor: @AUBIT_PUBLISHER@
+Packager: Andrej Falout <andrej@falout.org>
+Group: Development/Languages
+URL: http://@AUBIT_WEBSITE@
+Distribution: Red Hat Contrib-Net
+BuildArchitectures: @target_cpu@
+
+#FIXME: Icon tag accepts only GIF or XPM formats
+#Icon: docs/aubit4gl.ico
+
+#Provides is supposed to specify a capability needed by other packages,
+#that can be provided by more then one package. For instance, both 4Js BDL,
+#Querix Hydra, and Informix RDS provide Informix-4gl compatible compiler.
+Provides: x4gl_compiler
+
+#Finding  Requires: (using /usr/lib/rpm/find-requires)...
+Requires: glibc >= 2.2, glibc-devel >= 2.2, /bin/bash, /bin/sh, make
+
+#Obsoletes:
+#BuildRoot: /tmp/aubit4glsrc-%{version}-root
+Prefix: /opt
+
+#WARNNING: file name used here will need to be present on local system
+#at time of building RPM:
+Source: http://@AUBIT_WEBSITE@/files/%{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@.@ARCHEXT@
+
+#Patch: aubit4glsrc-%{version}.patch
+
+##############
+%description
+##############
+Aubit 4gl (Fourth Generation programing Language) compiler compiles source
+files to several low-level programming languages (C, Perl, Java...). It has
+ODBC and native database conectivity, GUI interface and many features.
+
+Install Aubit compiler if you want to write business related database
+oriented (BRDO) applications.
+
+##############
+%prep
+##############
+%setup -c aubit4glsrc
+#%setup -n /usr/aubit/aubit4glsrc
+
+#%patch
+#%patch -p1
+#%patch1 -p1
+
+##############
+%build
+##############
+cd %{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@
+./configure
+make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
+#CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
+
+##############
+%install
+##############
+#install -s -m 755 -o 0 -g 0 loadmap /usr/bin/loadmap
+#install -m 644 -o 0 -g 0 eject.1 /usr/man/man1
+cd %{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@
+make install
+
+##############
+#%clean
+##############
+#[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf "$RPM_BUILD_ROOT"
+
+##############
+%files
+##############
+%defattr(-,root,root)
+
+#Directories to be created:
+%dir %{RPM_A4GL_INSTALL_DIR}/bin
+%dir %{RPM_A4GL_INSTALL_DIR}/lib
+%dir %{RPM_A4GL_INSTALL_DIR}/etc
+%dir %{RPM_A4GL_INSTALL_DIR}/etc/convertsql
+%dir %{RPM_A4GL_INSTALL_DIR}/etc/config
+%dir %{RPM_A4GL_INSTALL_DIR}/incl
+%dir %{RPM_A4GL_INSTALL_DIR}/tools/test/gui
+%dir %{RPM_A4GL_INSTALL_DIR}/tools/test
+%dir %{RPM_A4GL_INSTALL_DIR}/tools
+%dir %{RPM_A4GL_INSTALL_DIR}/docs
+
+#Files that will be created depending on system confuguration, defined
+#from configure:
+@RPMFILE_1@
+@RPMFILE_2@
+@RPMFILE_3@
+@RPMFILE_4@
+@RPMFILE_5@
+@RPMFILE_6@
+@RPMFILE_7@
+@RPMFILE_8@
+@RPMFILE_9@
+@RPMFILE_10@
+@RPMFILE_11@
+@RPMFILE_12@
+@RPMFILE_13@
+@RPMFILE_14@
+@RPMFILE_15@
+@RPMFILE_16@
+@RPMFILE_17@
+@RPMFILE_18@
+@RPMFILE_19@
+@RPMFILE_20@
+@RPMFILE_21@
+@RPMFILE_22@
+@RPMFILE_23@
+@RPMFILE_24@
+@RPMFILE_25@
+@RPMFILE_26@
+@RPMFILE_27@
+@RPMFILE_28@
+@RPMFILE_29@
+@RPMFILE_30@
+@RPMFILE_31@
+@RPMFILE_32@
+@RPMFILE_33@
+@RPMFILE_34@
+@RPMFILE_35@
+@RPMFILE_36@
+@RPMFILE_37@
+@RPMFILE_38@
+@RPMFILE_39@
+@RPMFILE_40@
+@RPMFILE_41@
+@RPMFILE_42@
+@RPMFILE_43@
+@RPMFILE_44@
+@RPMFILE_45@
+@RPMFILE_46@
+@RPMFILE_47@
+@RPMFILE_48@
+@RPMFILE_49@
+@RPMFILE_50@
+
+
+#Below are only files that should be created by make in any case:
+
+## ==================================================================
+##               Files that are allways created
+## ==================================================================
+
+#Shared libraries:
+@LIBFILE_1@
+@LIBFILE_2@
+@LIBFILE_3@
+@LIBFILE_4@
+@LIBFILE_5@
+@LIBFILE_6@
+@LIBFILE_7@
+@LIBFILE_8@
+@LIBFILE_9@
+@LIBFILE_10@
+@LIBFILE_11@
+@LIBFILE_12@
+@LIBFILE_13@
+@LIBFILE_14@
+@LIBFILE_15@
+@LIBFILE_16@
+@LIBFILE_17@
+@LIBFILE_18@
+@LIBFILE_19@
+@LIBFILE_20@
+@LIBFILE_21@
+@LIBFILE_22@
+@LIBFILE_23@
+@LIBFILE_24@
+@LIBFILE_25@
+@LIBFILE_26@
+@LIBFILE_27@
+@LIBFILE_28@
+@LIBFILE_29@
+@LIBFILE_30@
+@LIBFILE_31@
+@LIBFILE_32@
+@LIBFILE_33@
+@LIBFILE_34@
+@LIBFILE_35@
+@LIBFILE_36@
+@LIBFILE_37@
+@LIBFILE_38@
+@LIBFILE_39@
+@LIBFILE_40@
+
+#executables:
+@EXEFILE_1@
+@EXEFILE_2@
+@EXEFILE_3@
+@EXEFILE_4@
+@EXEFILE_5@
+@EXEFILE_6@
+@EXEFILE_7@
+@EXEFILE_8@
+@EXEFILE_9@
+@EXEFILE_10@
+@EXEFILE_11@
+@EXEFILE_12@
+@EXEFILE_13@
+@EXEFILE_14@
+@EXEFILE_15@
+@EXEFILE_16@
+@EXEFILE_17@
+@EXEFILE_18@
+@EXEFILE_19@
+@EXEFILE_20@
+@EXEFILE_21@
+@EXEFILE_22@
+@EXEFILE_23@
+@EXEFILE_24@
+@EXEFILE_25@
+@EXEFILE_26@
+@EXEFILE_27@
+@EXEFILE_28@
+@EXEFILE_29@
+@EXEFILE_30@
+@EXEFILE_31@
+@EXEFILE_32@
+@EXEFILE_33@
+@EXEFILE_34@
+@EXEFILE_35@
+@EXEFILE_36@
+@EXEFILE_37@
+@EXEFILE_38@
+@EXEFILE_39@
+@EXEFILE_40@
+@EXEFILE_41@
+@EXEFILE_42@
+@EXEFILE_43@
+@EXEFILE_44@
+@EXEFILE_45@
+@EXEFILE_46@
+@EXEFILE_47@
+@EXEFILE_48@
+@EXEFILE_49@
+@EXEFILE_50@
+
+
+#Shell scripts:
+@SHFILE_1@
+@SHFILE_2@
+@SHFILE_3@
+@SHFILE_4@
+@SHFILE_5@
+@SHFILE_6@
+@SHFILE_7@
+@SHFILE_8@
+@SHFILE_9@
+@SHFILE_10@
+@SHFILE_11@
+@SHFILE_12@
+@SHFILE_13@
+@SHFILE_14@
+@SHFILE_15@
+@SHFILE_16@
+@SHFILE_17@
+@SHFILE_18@
+@SHFILE_19@
+@SHFILE_20@
+
+
+#Include files:
+
+@INCFILE_1@
+@INCFILE_2@
+@INCFILE_3@
+@INCFILE_4@
+@INCFILE_5@
+@INCFILE_6@
+@INCFILE_7@
+@INCFILE_8@
+@INCFILE_9@
+@INCFILE_10@
+@INCFILE_11@
+@INCFILE_12@
+@INCFILE_13@
+@INCFILE_14@
+@INCFILE_15@
+@INCFILE_16@
+@INCFILE_17@
+@INCFILE_18@
+@INCFILE_19@
+@INCFILE_20@
+@INCFILE_21@
+@INCFILE_22@
+@INCFILE_23@
+@INCFILE_24@
+@INCFILE_25@
+@INCFILE_26@
+@INCFILE_27@
+@INCFILE_28@
+@INCFILE_29@
+@INCFILE_30@
+
+
+#Examples:
+@EXAMPFILE_1@
+@EXAMPFILE_2@
+@EXAMPFILE_3@
+@EXAMPFILE_4@
+@EXAMPFILE_5@
+@EXAMPFILE_6@
+@EXAMPFILE_7@
+@EXAMPFILE_8@
+@EXAMPFILE_9@
+@EXAMPFILE_10@
+@EXAMPFILE_11@
+@EXAMPFILE_12@
+@EXAMPFILE_13@
+@EXAMPFILE_14@
+@EXAMPFILE_15@
+@EXAMPFILE_16@
+@EXAMPFILE_17@
+@EXAMPFILE_18@
+@EXAMPFILE_19@
+@EXAMPFILE_20@
+@EXAMPFILE_21@
+@EXAMPFILE_22@
+@EXAMPFILE_23@
+@EXAMPFILE_24@
+@EXAMPFILE_25@
+@EXAMPFILE_26@
+@EXAMPFILE_27@
+@EXAMPFILE_28@
+@EXAMPFILE_29@
+@EXAMPFILE_30@
+@EXAMPFILE_31@
+@EXAMPFILE_32@
+@EXAMPFILE_33@
+@EXAMPFILE_34@
+@EXAMPFILE_35@
+@EXAMPFILE_36@
+@EXAMPFILE_37@
+@EXAMPFILE_38@
+@EXAMPFILE_39@
+@EXAMPFILE_40@
+@EXAMPFILE_41@
+@EXAMPFILE_42@
+@EXAMPFILE_43@
+@EXAMPFILE_44@
+@EXAMPFILE_45@
+@EXAMPFILE_46@
+@EXAMPFILE_47@
+@EXAMPFILE_48@
+@EXAMPFILE_49@
+@EXAMPFILE_50@
+@EXAMPFILE_51@
+@EXAMPFILE_52@
+@EXAMPFILE_53@
+@EXAMPFILE_54@
+@EXAMPFILE_55@
+@EXAMPFILE_56@
+@EXAMPFILE_57@
+@EXAMPFILE_58@
+@EXAMPFILE_59@
+@EXAMPFILE_60@
+
+
+#Makefiles:
+@MAKEFILE_1@
+@MAKEFILE_2@
+@MAKEFILE_3@
+@MAKEFILE_4@
+@MAKEFILE_5@
+@MAKEFILE_6@
+@MAKEFILE_7@
+@MAKEFILE_8@
+@MAKEFILE_9@
+@MAKEFILE_10@
+@MAKEFILE_11@
+@MAKEFILE_12@
+@MAKEFILE_13@
+@MAKEFILE_14@
+@MAKEFILE_15@
+@MAKEFILE_16@
+@MAKEFILE_17@
+@MAKEFILE_18@
+@MAKEFILE_19@
+@MAKEFILE_20@
+
+#Documentation files:
+@DOCFILE_1@
+@DOCFILE_2@
+@DOCFILE_3@
+@DOCFILE_4@
+@DOCFILE_5@
+@DOCFILE_6@
+@DOCFILE_7@
+@DOCFILE_8@
+@DOCFILE_9@
+@DOCFILE_10@
+@DOCFILE_11@
+@DOCFILE_12@
+@DOCFILE_13@
+@DOCFILE_14@
+@DOCFILE_15@
+@DOCFILE_16@
+@DOCFILE_17@
+@DOCFILE_18@
+@DOCFILE_19@
+@DOCFILE_20@
+
+
+#Configuration files:
+@CONFFILE_1@
+@CONFFILE_2@
+@CONFFILE_3@
+@CONFFILE_4@
+@CONFFILE_5@
+@CONFFILE_6@
+@CONFFILE_7@
+@CONFFILE_8@
+@CONFFILE_9@
+@CONFFILE_10@
+@CONFFILE_11@
+@CONFFILE_12@
+@CONFFILE_13@
+@CONFFILE_14@
+@CONFFILE_15@
+@CONFFILE_16@
+@CONFFILE_17@
+@CONFFILE_18@
+@CONFFILE_19@
+@CONFFILE_20@
+
+#SQL conversion files:
+@CONVFILE_1@
+@CONVFILE_2@
+@CONVFILE_3@
+@CONVFILE_4@
+@CONVFILE_5@
+@CONVFILE_6@
+@CONVFILE_7@
+@CONVFILE_8@
+@CONVFILE_9@
+@CONVFILE_10@
+@CONVFILE_11@
+@CONVFILE_12@
+@CONVFILE_13@
+@CONVFILE_14@
+@CONVFILE_15@
+@CONVFILE_16@
+@CONVFILE_17@
+@CONVFILE_18@
+@CONVFILE_19@
+@CONVFILE_20@
+
+#Import files:
+@IMPORTFILE_1@
+@IMPORTFILE_2@
+@IMPORTFILE_3@
+@IMPORTFILE_4@
+@IMPORTFILE_5@
+@IMPORTFILE_6@
+@IMPORTFILE_7@
+@IMPORTFILE_8@
+@IMPORTFILE_9@
+@IMPORTFILE_10@
+@IMPORTFILE_11@
+@IMPORTFILE_12@
+@IMPORTFILE_13@
+@IMPORTFILE_14@
+@IMPORTFILE_15@
+@IMPORTFILE_16@
+@IMPORTFILE_17@
+@IMPORTFILE_18@
+@IMPORTFILE_19@
+@IMPORTFILE_20@
+
+
+@HELPFILE_1@
+@HELPFILE_2@
+@HELPFILE_3@
+@HELPFILE_4@
+@HELPFILE_5@
+@HELPFILE_6@
+@HELPFILE_7@
+@HELPFILE_8@
+@HELPFILE_9@
+@HELPFILE_10@
+
+@FORMFILE_1@
+@FORMFILE_2@
+@FORMFILE_3@
+@FORMFILE_4@
+@FORMFILE_5@
+@FORMFILE_6@
+@FORMFILE_7@
+@FORMFILE_8@
+@FORMFILE_9@
+@FORMFILE_10@
+
+##############
+%changelog
+##############
+#WARNING!!! RPM actually checks date format here !!
+
+* Mon Jan 19 2004 afalout <andrej@falout.org>
+- Make it all work again
+* Wed Sep 17 2003 root <root@aptiva.falout.com>
+- All files set from Autoconf
+* Sun Aug 25 2002 root <root@aptiva.falout.com>
+- Synchronised files between tarball and RPM
+* Thu Dec 06 2001 root <root@aptiva.falout.com>
+- Manually modified autospec version
+* Thu Dec 06 2001 root <root@aptiva.falout.com>
+- Initial spec file created by autospec ver. 0.6 with rpm 2.5 compatibility
+
+
+##############
+#%pre
+#is the macro to do pre-install scripts.
+##############
+
+##############
+%post
+#is the macro to do post-install scripts.
+##############
+
+#reset log file
+date > %{RPM_A4GL_RPMINSTALL_LOG}
+
+#[ ! -d $RPM_INSTALL_PREFIX/bin ] && mkdir $RPM_INSTALL_PREFIX/bin > /dev/null 2>&1
+#ln -fs $RPM_INSTALL_PREFIX/aubit4gl/bin/4glpc $RPM_INSTALL_PREFIX/bin/4glpc
+#
+#[ ! -d /etc%{RPM_A4GL_INSTALL_DIR} ] && mkdir /etc%{RPM_A4GL_INSTALL_DIR} > /dev/null 2>&1
+#[ ! -f /etc%{RPM_A4GL_INSTALL_DIR}/aubitenv	 ] && cp $RPM_INSTALL_PREFIX/aubit4gl/bin/aubitenv.example /etc%{RPM_A4GL_INSTALL_DIR}/aubitenv
+
+cd %{RPM_A4GL_INSTALL_DIR}
+
+echo "PATH=$PATH"  >> %{RPM_A4GL_RPMINSTALL_LOG}
+#It appears that RPM runs under some strange environent where PATH is not what you would
+#expect to find in your currnt environment, but the ABSOLUTE SYSTEM MINIMUM, like:
+#/sbin:/bin:/usr/bin:usr/X11R6/bin  - that's it.
+#Since we are trying to autodetect a lot of stuff, we will try to source syste and user's
+#profile files, to set "normal" user's environment
+source /etc/profile >> %{RPM_A4GL_RPMINSTALL_LOG}
+source ~/.bash_profile >> %{RPM_A4GL_RPMINSTALL_LOG}
+
+echo "PATH=$PATH" >> %{RPM_A4GL_RPMINSTALL_LOG}
+
+echo "Running 'make' in %{RPM_A4GL_INSTALL_DIR}..." >> %{RPM_A4GL_RPMINSTALL_LOG}
+#run 'configure', create and install /etc%{RPM_A4GL_INSTALL_DIR}/aubitrc, install
+#links to /usr/bin and /usr/lib, run test_build:
+make install >> %{RPM_A4GL_RPMINSTALL_LOG} 2>&1
+
+echo "Running 'aubit configurator -firstrun' in %{RPM_A4GL_INSTALL_DIR}..."  >> %{RPM_A4GL_RPMINSTALL_LOG}
+aubit configurator -firstrun >> %{RPM_A4GL_RPMINSTALL_LOG} 2>&1
+
+#TODO: install icons in GNOME and K desktop menu for:
+#configurator
+#asql (ifx/pg)
+#SQLite tool (native Linux? or Java/Wine?)
+#Web browser shortcut to web site
+#readme file
+#install Kate editor's sintax highliting xml files for .4gl and .per
+
+echo "post tasks finshed" >> %{RPM_A4GL_RPMINSTALL_LOG}
+echo "Install finished,see %{RPM_A4GL_RPMINSTALL_LOG} for more info."
+echo "Run 'aubit configurator' if you wish to customise default configuration."
+
+##############
+%preun
+# is the macro to do pre-uninstall scripts.
+##############
+
+echo "NOTE: Logging pre-Uninstall tasks to %{RPM_A4GL_RPMDEINSTALL_LOG}"
+#reset log file
+date > %{RPM_A4GL_RPMDEINSTALL_LOG}
+cd %{RPM_A4GL_INSTALL_DIR}
+#remove links created by 'make', and debris in tools/test
+echo "Running 'make clean' in %{RPM_A4GL_INSTALL_DIR}..."  >> %{RPM_A4GL_RPMDEINSTALL_LOG}
+make clean >> %{RPM_A4GL_RPMDEINSTALL_LOG}
+echo "Running 'make deinstall' in %{RPM_A4GL_INSTALL_DIR}..." >> %{RPM_A4GL_RPMDEINSTALL_LOG}
+make deinstall >> %{RPM_A4GL_RPMDEINSTALL_LOG}
+echo "preun tasks finshed" >> %{RPM_A4GL_RPMDEINSTALL_LOG}
+echo "pre-Uninstall tasks finished,see %{RPM_A4GL_RPMDEINSTALL_LOG} for more info."
+
+##############
+#%postun
+# is the macro to do post-uninstall scripts.
+##############
+
+
+
+#-------------------------------- EOF ----------------------------------
+

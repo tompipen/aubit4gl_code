@@ -1,0 +1,332 @@
+#!/bin/sh
+
+FLAGS="$@"
+
+if test "$DEBUG" = "ALL"; then
+	#Force verbose mode for debugging when Aubit DEBUG is set
+	FLAGS="$FLAGS --verbose"
+	SCRIPT_DEBUG="1"
+fi
+
+for a in $FLAGS; do
+	case $a in
+			
+        -noecho)    #Don't show any non-critical messages while running
+			NO_ECHO=1
+			;;
+
+        -verbose | --verbose)   #Show more information about what is going on
+            VERBOSE=1
+			;;
+			
+		-script-debug)
+			SCRIPT_DEBUG="1"
+			;;
+	esac
+done
+
+if test "$SCRIPT_DEBUG" = "1"; then 
+	echo "In ecpg_wrap : $FLAGS"
+fi
+
+#######################################################################
+#				Set environment 
+#######################################################################
+
+
+if [ "$POSTGRESDIR" = "" ]; then
+    POSTGRESDIR=`aubit-config POSTGRESDIR 2>/dev/null`
+	if [ "$POSTGRESDIR" = "" ]; then
+		#try default
+		export POSTGRESDIR=/usr/local/pgsql
+	fi
+fi
+
+if [ "$AUBITDIR" = "" ]
+then
+    AUBITDIR=`aubit-config AUBITDIR 2>/dev/null`
+	if [ "$AUBITDIR" = "" ]
+	then
+        echo "ERROR: AUBITDIR unknown. Stop."
+        exit 5
+    fi
+fi
+
+if test "$PG_IFLAGS" = ""; then 
+    PG_IFLAGS=`aubit-config ECPG_IFLAGS 2>/dev/null`
+	LIBPQ_FE_H_IFLAGS=`aubit-config LIBPQ_FE_H_IFLAGS 2>/dev/null`
+
+	if test "$PG_IFLAGS" = ""; then
+		#try default
+		PG_IFLAGS="-I$POSTGRESDIR/include -I/usr/include/pgsql -I/usr/include/postgresql/informix/esql"
+	else
+		PG_IFLAGS="$PG_IFLAGS $LIBPQ_FE_H_IFLAGS"	
+	fi
+fi
+
+if [ "$PGSQL_INCDIR" != "" ]; then
+	PG_IFLAGS="$PG_IFLAGS -I$PGSQL_INCDIR/include -I$PGSQL_INCDIR/include/postgresql/informix/esql"
+fi
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib
+export LD_RUN_PATH=$LD_RUN_PATH:$AUBITDIR/lib:$POSTGRESDIR/lib
+
+ECPG_EXT=cpc
+COMPILE_OBJ=0
+output=""
+
+ECPG_ONLY=0
+
+
+# If we have a .ec on the command line -
+# assume they have .ec as the extension instead
+echo $* | grep "\.ec" >/dev/null 2>&1
+[ $? -eq 0 ] &&	ECPG_EXT=ec
+
+
+###########################################################################
+#		Parse the command line options received
+###########################################################################
+
+while [ "$1" != "" ]
+do
+	a=$1
+
+	if [ "$a" = "-t" ]
+	then
+		ecpg_args="$ecpg_args $a"
+		shift
+		continue
+	fi
+
+
+	if [ "$a" = "-e" ]
+	then
+		ECPG_ONLY=1
+		COMPILE_OBJ=0
+		shift
+		continue
+	fi
+
+
+	if [ "$a" = "-c" ]
+	then
+		COMPILE_OBJ=1
+		shift
+		continue
+	fi
+
+
+	xx=`expr "$a" : "-I\(.*\)"`
+	if [ "$xx" != "" ] 
+	then
+		incl_args="$incl_args -I $xx"
+		shift
+		continue
+	fi
+
+	if [ "$a" = "-I"  ]
+	then
+		incl_args="$incl_args $a"
+		shift
+		a=$1
+		incl_args="$incl_args $a"
+		shift
+		continue
+	fi
+
+
+	if [ "$a" = "-C" -o "$a" = "-D"  ]
+	then
+		ecpg_args="$ecpg_args $a"
+		shift
+		a=$1
+		ecpg_args="$ecpg_args $a"
+		shift
+		continue
+	fi
+
+	d=`dirname "$a"`
+
+	if [ "$d" != "" -a "$d" != "." ]
+	then
+		c=$d/`basename "$a" `
+		b=$d/`basename "$c" ".$ECPG_EXT"`
+		bc=$d/`basename "$c" ".c"`
+		bo=$d/`basename "$c" ".o"`
+		bao=$d/`basename "$c" ".ao"`
+		b4go=$d/`basename "$c" ".4go"`
+	else
+		c=`basename "$a" `
+		b=`basename "$c" ".$ECPG_EXT"`
+		b2=./`basename "$c" ".$ECPG_EXT"`
+
+		bc=`basename "$c" ".c"`
+		bc2=./`basename "$c" ".c"`
+		bo=`basename "$c" ".o"`
+		bao=`basename "$c" ".ao"`
+		bo2=./`basename "$c" ".o"`
+		bao2=./`basename "$c" ".ao"`
+		b4go=`basename "$c" ".4go"`
+		b4go2=./`basename "$c" ".4go"`
+	fi
+
+	if [ "$b.$ECPG_EXT" = "$a" -o "$b2.$ECPG_EXT" = "$a" ]
+	then
+		srcs="$srcs $a"
+		shift
+		continue
+	fi
+
+
+	if [ "$bc.c" = "$a" -o "$bc2.c" = "$a" ]
+	then
+		csrcs="$csrcs $a"
+		shift
+		continue
+	fi
+
+	if [ "$bo.o" = $a -o "$bo2.o" = $a -o "$b4go.4go" = $a -o "$b4go2.4go" = $a ]
+	then
+		ofiles="$ofiles $a"
+		shift
+		continue
+	fi
+
+	if [ "$bao.ao" = $a -o "$bao2.ao" = $a ]
+	then
+		ofiles="$ofiles $a"
+		shift
+		continue
+	fi
+
+	if [ $a = "-o" ]
+	then
+		shift
+		output="-o $1"
+		case $1 in
+            *.ao)
+                OUTPUT_IS_OBJECT="1"
+                ;;
+			*.o)
+                OUTPUT_IS_OBJECT="1"
+				;;
+        esac
+		shift
+		continue
+	fi
+
+	other_args="$other_args $a"
+	if test "$SCRIPT_DEBUG" = "1" ; then
+		echo "ADDED $a to other_args"
+	fi
+
+	shift
+done
+
+if test "$VERBOSE" = "1" -a "$srcs" != "" ; then
+	echo "SOURCES : $srcs"
+fi
+if test "$VERBOSE" = "1" -a "$incl_args" != "" ; then
+	echo "incl_args=$incl_args"
+fi
+
+for a in $srcs
+do
+	ECPG_RUN="$POSTGRESDIR/bin/ecpg -C INFORMIX_SE -rno_indicator -t $ecpg_args $incl_args $a"
+    #-C INFORMIX_SE
+	if test "$VERBOSE" = "1"; then
+    	echo $ECPG_RUN
+	fi
+    eval $ECPG_RUN
+
+    RET=$?
+    if test "$RET" != "0"; then
+        exit $RET
+    fi
+    out=`basename $a ".$ECPG_EXT"`
+    cfiles="$cfiles $out.c"
+
+
+    if [ "$ECPG_ONLY" = "0" ]
+    then
+    	GCC_COMPILE="gcc $incl_args $other_args -c $out.c $PG_IFLAGS "
+
+		if test "$OUTPUT_IS_OBJECT" = "1"; then
+			GCC_COMPILE="$GCC_COMPILE $output"
+			if test "$VERBOSE" = "1"; then
+				echo "Compiling $out.c to object $output"
+			fi
+		else
+			if test "$VERBOSE" = "1"; then
+				echo "Compiling $out.c to object"
+			fi
+		fi
+		
+		if test "$VERBOSE" = "1"; then
+			echo $GCC_COMPILE
+		fi
+		
+		eval $GCC_COMPILE
+		RET=$?
+		
+		if test "$RET" != "0"; then
+			if test "$VERBOSE" = "1"; then
+				echo "Exiting with code $RET"
+			fi
+			exit $RET
+		fi
+
+    	ofiles="$ofiles $out.o"
+    fi
+done
+
+
+if [ "$ECPG_ONLY" = "1" ]
+then
+exit 0
+fi
+
+if [ $COMPILE_OBJ = 1 -o "$ofiles" = "" ]; then
+	if [ "$csrcs" = "" ]; then
+		if test "$SCRIPT_DEBUG" = "1"; then 
+			echo "COMPILE_OBJ=$COMPILE_OBJ"
+			echo "ofiles=$ofiles"
+			echo "csrcs=$csrcs"
+		fi
+
+		if test "$COMPILE_OBJ" = "1"; then
+			#no linking - we are done
+			exit 0
+		else
+			if test "$VERBOSE" = "1"; then
+				echo "Linking only: COMPILE_OBJ or no ofiles other_args=$other_args"
+			fi
+			#This is not an error - do not exit!
+			#exit 1
+		fi
+	fi
+fi
+
+
+if test "$COMPILE_OBJ" = "1"; then
+	other_args="-c $other_args"
+else 
+	LFLAGS="-L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes -lpq -lm \
+			-L$AUBITDIR/lib -laubit4gl"
+fi
+
+GCC_RUN="gcc $ofiles $csrcs $PG_IFLAGS $other_args $LFLAGS $output $incl_args"
+if test "$VERBOSE" = "1"; then
+	echo "(3) $GCC_RUN"
+fi
+
+eval $GCC_RUN
+RET=$?
+
+if test "$VERBOSE" = "1"; then
+	echo "Exiting ecpg_wrap with code $RET"
+fi
+exit $RET
+
+

@@ -1,0 +1,27 @@
+locate_cmd : LOCATE obind_var_list IN_MEMORY {
+int vtype;
+int a;
+for (a=0;a<get_bind_cnt('o');a++) {
+	vtype=scan_variable(get_bind_varname('o',a));
+	if (vtype!=11&&vtype!=12) {
+		a4gl_yyerror("Only Byte & Text may be located...");
+		YYERROR;
+	}
+	print_locate('M',get_bind_varname('o',a),"0");
+}
+}
+| LOCATE obind_var_list IN_FILE file_name {
+int vtype;
+int a;
+for (a=0;a<get_bind_cnt('o');a++) {
+	vtype=scan_variable(get_bind_varname('o',a));
+	if (vtype!=11&&vtype!=12) {
+		a4gl_yyerror("Only Byte & Text may be located...");
+		YYERROR;
+	}
+	print_locate('F',get_bind_varname('o',a),$<str>4);
+}
+}
+;
+
+
