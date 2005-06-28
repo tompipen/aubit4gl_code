@@ -28,9 +28,6 @@ LIB_PREFIX ESQLAPI_
 // We don't want to enable debugging in here
 // because A4GL_copy_char can be passed invalid strings as a location
 // to copy INTO  (ie - it will be set After the copy)
-#ifdef DEBUG
-#undef DEBUG
-#endif
 #ifdef DEBUG_SPEC
 #undef DEBUG_SPEC
 #endif

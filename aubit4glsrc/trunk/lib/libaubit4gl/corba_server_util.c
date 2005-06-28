@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.10 2005-06-18 09:56:56 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.11 2005-06-28 14:35:24 mikeaubury Exp $
 #
 */
 
@@ -351,7 +351,6 @@ We can end up with problems with overlapping - eg
 		}
 	      strcpy(dest,xbuff);
 	}
-
 	A4GL_debug("-->%s\n",dest);
 	return x;
 }

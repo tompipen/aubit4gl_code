@@ -17,8 +17,8 @@ LIB_PREFIX LEXLIB_
 * Name of the header file to be referenced with #include
 HEADER_FILE "API_lex_int.h"
 
-#ifdef DEBUG
-#undef DEBUG
+#ifdef DEBUG_SPEC
+#undef DEBUG_SPEC
 #endif
 * ======================================================================
 * Function calls definitions:

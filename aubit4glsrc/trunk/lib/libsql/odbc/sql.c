@@ -1,4 +1,6 @@
 /*
+ *
+ * A4GL_debug("Get columns...");
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
@@ -24,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.126 2005-06-18 09:56:56 mikeaubury Exp $
+# $Id: sql.c,v 1.127 2005-06-28 14:35:26 mikeaubury Exp $
 #
 */
 
@@ -217,6 +219,10 @@ extern int A4GL_set_blob_data (SQLHSTMT hstmt);
 extern int A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt,
 			       int colno);
 
+
+#ifndef DEBUG
+#error No debug
+#endif
 /*
 =====================================================================
                     Variables definitions
@@ -1197,7 +1203,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
   a = ODBC_exec_select ((SQLHSTMT) sid->hstmt);
 
 
-  if (a)
+  if (a && a4gl_status!=100)
     {
       A4GL_post_fetch_proc_bind (sid->obind, sid->no, (SQLHSTMT) & sid->hstmt);
       SQLFreeStmt ((SQLHSTMT) sid->hstmt, SQL_DROP);
@@ -2568,10 +2574,10 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
   //A4GL_debug("Binding : %s\n",bind->ptr);
   //}
   
-  set_conv_4gl_to_c();
 
   A4GL_debug ("SQLBindCol");
 #endif
+  set_conv_4gl_to_c();
 
   if (bind->dtype == DTYPE_DATE)
     {
@@ -2595,9 +2601,12 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
       return;
     }
   outlen[pos]=0;
+
+
   A4GL_debug("SQLBindCol (%p,%d,%d,%p,%d,%p)",(SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], bind->ptr, fgl_size (bind->dtype, bind->size), &outlen[pos]);
 
 
+  A4GL_assertion(conv_4gl_to_c[bind->dtype]<0,"Invalid 4GL->ODBC conversion of datatype..");
   rc = SQLBindCol ((SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], bind->ptr, fgl_size (bind->dtype, bind->size), &outlen[pos]);
 
 
@@ -3399,12 +3408,15 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *s
   static int rc;
   short nColumns;
 
+
+  A4GL_debug("Get columns...");
   hstmtGetColumns = 0;
   if (hdbc == 0)
     {
       A4GL_exitwith ("Not connected to database");
       return 0;
     }
+A4GL_debug("Here1");
 
   if (hstmtGetColumns == 0)
     {
@@ -3424,12 +3436,6 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *s
       A4GL_debug ("Got Statement");
 #endif
 
-/*
-SQLColumns (hstmt, "DatabaseName", SQL_NTS,  // qualifier
-NULL, 0,                                     // owner
-"TcpConnectionTable", SQL_NTS,               // table
-"%",SQL_NTS);                                // all columns
-*/
       rc = SQLColumns (hstmtGetColumns,
 		       NULL, 0, NULL, 0, tabname, SQL_NTS, NULL, 0);
 

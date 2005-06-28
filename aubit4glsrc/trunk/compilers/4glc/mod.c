@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.218 2005-06-16 19:17:18 mikeaubury Exp $
+# $Id: mod.c,v 1.219 2005-06-28 14:32:23 mikeaubury Exp $
 #
 */
 
@@ -1626,10 +1626,12 @@ pushLikeAllTableColumns (char *tableName)
   char cdtype[20];
   char buff[300];
   char *ccol=0;
+  int ncol=0;
+  
 
   A4GL_debug ("pushLikeAllTableColumns()");
   /* A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size) */
-  A4GL_debug ("Calling get_columns : %s\n", A4GL_null_as_null(tableName));
+  A4GL_debug ("Calling get_columns : '%s'\n", A4GL_null_as_null(tableName));
   rval = A4GLSQL_get_columns (tableName, colname, &idtype, &isize);
   A4GL_debug ("rval = %d", rval);
   if (rval == 0 && tableName)
@@ -1639,8 +1641,8 @@ pushLikeAllTableColumns (char *tableName)
       return 1;
     }
 
-  A4GL_debug ("Rval !=0");
-
+  A4GL_debug ("Rval (%d) !=0",rval);
+  
   while (1)
     {
       colname[0] = 0;
@@ -1648,7 +1650,12 @@ pushLikeAllTableColumns (char *tableName)
       /* int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
 	ccol=0;
         rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
-      if (rval == 0) break;
+      if (rval == 0) {
+	      	A4GL_debug("Got rval back from next_column as 0");
+	      	break;
+	}
+
+      ncol++;
 
         A4GL_assertion(ccol==0,"No column name set");
 
@@ -1673,6 +1680,13 @@ pushLikeAllTableColumns (char *tableName)
       push_name (colname, 0);
       push_type (rettype (cdtype), csize, 0);
     }
+  A4GL_debug("ncol=%d\n",ncol);
+  if (ncol==0) {
+	 
+      sprintf (buff, "%s does not exist in the database", tableName);
+      a4gl_yyerror (buff);
+      return 1;
+  }
   A4GLSQL_end_get_columns ();
   return 0;
 }

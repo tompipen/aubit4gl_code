@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.129 2005-06-18 09:56:56 mikeaubury Exp $
+# $Id: stack.c,v 1.130 2005-06-28 14:35:24 mikeaubury Exp $
 #
 */
 
@@ -2484,7 +2484,7 @@ A4GL_isnull (int type, char *buff)
 
   if (type == DTYPE_CHAR)
     {
-	A4GL_debug("Got '%s' (%c %c)",buff,buff[0],buff[1]);
+	//A4GL_debug("Got '%s' (%c %c)",buff,buff[0],buff[1]);
       if (buff[0] == 0 && buff[1]==0)
 	return 1;
       else
