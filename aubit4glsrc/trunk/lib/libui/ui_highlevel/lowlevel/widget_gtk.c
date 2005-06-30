@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.22 2005-06-16 17:01:57 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.23 2005-06-30 22:15:28 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -1619,7 +1619,7 @@ A4GL_display_generic (GtkWidget * k, char *s)
       int d, m, y;
       char ss[21];
       strcpy (ss, s);
-      A4GLSQL_set_status (0, 0);
+      //A4GLSQL_set_status (0, 0);
       A4GL_trim (ss);
       if (strlen (ss) == 0)
 	{

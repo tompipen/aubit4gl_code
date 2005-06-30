@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.72 2005-06-23 17:57:41 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.73 2005-06-30 22:15:26 mikeaubury Exp $";
 #endif
 
 
@@ -2232,7 +2232,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   f->currentfield = f->nwidgets - 1;
   A4GL_debug ("Form f = %p", f);
   last_prompt_f = f;
-  A4GLSQL_set_status (0, 0);
+  //A4GLSQL_set_status (0, 0);
 
   if (a4gl_status != 0)
     {
@@ -2245,7 +2245,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   A4GL_debug ("Posted form=%d", a);
   A4GL_LL_int_form_driver (f, AUBIT_REQ_FIRST_FIELD);
   A4GL_LL_int_form_driver (f, AUBIT_REQ_OVL_MODE);
-  A4GLSQL_set_status (0, 0);
+  //A4GLSQL_set_status (0, 0);
   A4GL_LL_screen_update ();
   printf("All ok\n");
   return 0;

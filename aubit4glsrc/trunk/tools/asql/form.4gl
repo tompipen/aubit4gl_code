@@ -15,6 +15,7 @@ code
 #define DTYPE_TEXT      12
 #define DTYPE_VCHAR     13
 #define DTYPE_INTERVAL  14
+char **read_directory(char *dir,char *spec) ;
 endcode
 define mv_lastform char(255)
 define mv_editor char(255)

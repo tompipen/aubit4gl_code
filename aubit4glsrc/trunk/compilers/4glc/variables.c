@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.58 2005-06-16 19:17:19 mikeaubury Exp $
+# $Id: variables.c,v 1.59 2005-06-30 22:13:07 mikeaubury Exp $
 #
 */
 
@@ -1243,7 +1243,7 @@ A4GL_debug("find_variable_ptr : %s",s);
 /******************************************************************************/
 int
 find_variable (char *s_in, int *dtype, int *size, int *is_array,
-	       void **var_ptr)
+	       struct variable **var_ptr)
 {
   struct variable *ptr;
   char s[1024];

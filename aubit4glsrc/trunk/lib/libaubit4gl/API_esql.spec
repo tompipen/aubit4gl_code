@@ -17,17 +17,10 @@ LIB_PREFIX ESQLAPI_
 * Name of the header file to be referenced with #include
 * HEADER_FILE API_esql.h
 
-// This is needed to get the prototypes for the functions
-// FIXME: should this not be printed by dlmagic ??
-// - NO - dlmagic includes a4gl_libaubit4gl_int.h which includes all API headers
-//#include "a4gl_API_esql.h"
-//#ifdef DEBUG_SPEC
-//#undef DEBUG_SPEC
-//#endif
 
-// We don't want to enable debugging in here
-// because A4GL_copy_char can be passed invalid strings as a location
-// to copy INTO  (ie - it will be set After the copy)
+/* We don't want to enable debugging in here */
+/*  because A4GL_copy_char can be passed invalid strings as a location */
+/* to copy INTO  (ie - it will be set After the copy) */
 #ifdef DEBUG_SPEC
 #undef DEBUG_SPEC
 #endif

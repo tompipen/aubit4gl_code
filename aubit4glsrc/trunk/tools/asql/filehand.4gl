@@ -59,7 +59,7 @@ end function
 function open_tmpfile_as_stdin(lv_type) 
 define lv_type char(3)
 code
-mv_fin[get_type_id(lv_type)]=stdin;
+mv_fin[get_type_id(lv_type)]=(long)stdin;
 endcode
 end function
 
@@ -220,8 +220,8 @@ if (f) {
 if (fo&&f) {
 	FILE *r_f;
 	FILE *r_fo;
-	r_f=f;
-	r_fo=fo;
+	r_f=(FILE *)f;
+	r_fo=(FILE *)fo;
 	rewind(r_f);
 	while (1) {
 		strcpy(buff,"");

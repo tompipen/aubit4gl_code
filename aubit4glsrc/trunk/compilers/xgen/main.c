@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.13 2005-03-31 16:45:00 mikeaubury Exp $
+# $Id: main.c,v 1.14 2005-06-30 22:15:23 mikeaubury Exp $
 #*/
 
 /**
@@ -139,10 +139,10 @@ yyerror (char *s)
 int
 main (int argc, char *argv[])
 {
-  char a[128];
-  char b[128];
-  char c[128];
-  char d[128];
+  char a[128]="";
+  char b[128]="";
+  char c[128]="";
+  char d[128]="";
   int rval;
 
   /* load settings from config file(s): */
@@ -233,7 +233,6 @@ main (int argc, char *argv[])
       exit (0);
 
     }
-
 
   if (yyin == 0)
     {

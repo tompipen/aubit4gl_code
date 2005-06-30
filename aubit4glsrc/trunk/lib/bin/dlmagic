@@ -183,7 +183,7 @@ if [ "$MAKE_HEADER" = "1" -o "$MAKE_HEADER" = "2" ]; then
 		print "#endif"
 		print ""
 		if (use_prefix==0) {
-			print "//moved to headers by Andrej - remove all protos from plug-ins:"
+			print "/*moved to headers by Andrej - remove all protos from plug-ins: */"
 			print "int A4GL" lib "_initlib (void);"
 		}
 		#if (use_prefix==0) {

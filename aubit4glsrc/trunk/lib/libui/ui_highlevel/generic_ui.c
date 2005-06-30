@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.55 2005-06-23 17:57:40 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.56 2005-06-30 22:15:25 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -2725,12 +2725,13 @@ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   ap = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, ap, 0, 0);
   af = A4GL_determine_attribute (FGL_CMD_INPUT, af, 0, 0);
 
+A4GLSQL_set_status (0, 0);
   x =
     A4GL_LL_start_prompt (vprompt, promptstr, ap, c, h, af,
 			  UILIB_A4GL_get_curr_width (),
 			  UILIB_A4GL_iscurrborder (), A4GL_getprompt_line (),
 			  (void *) A4GL_get_currwin (), promptx->mode);
-
+A4GLSQL_set_status (0, 0);
   promptx->field = A4GL_LL_get_value ("prompt.field");
   promptx->f = A4GL_LL_get_value ("prompt.f");
   promptx->win = A4GL_LL_get_value ("prompt.win");
