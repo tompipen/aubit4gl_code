@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.114 2005-06-28 14:14:48 mikeaubury Exp $
+# $Id: newpanels.c,v 1.115 2005-07-01 13:25:48 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.114 2005-06-28 14:14:48 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.115 2005-07-01 13:25:48 mikeaubury Exp $";
 #endif
 
 /**
@@ -1865,11 +1865,11 @@ int
   char name[256];
   struct s_form_dets *form;
   WINDOW *win;
+  strcpy(name,namet);
+  A4GL_trim(name);
   A4GL_debug ("cr_window_form(%s,%d,%d,%d,%d,%d,%d,%d,%d,%d)\n",
 	 name, iswindow, form_line, error_line, prompt_line, menu_line,
 	 border, comment_line, message_line, attrib);
-  strcpy(name,namet);
-  A4GL_trim(name);
   A4GL_chkwin();
 
   s = A4GL_char_pop ();
