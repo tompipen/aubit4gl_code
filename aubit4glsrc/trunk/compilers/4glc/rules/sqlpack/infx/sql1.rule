@@ -182,8 +182,8 @@ sql_commands :
 
 
 privilege_definition:
-	GRANT privileges ON table_name TO grantee_list op_with_grant_option {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);  add_feature("GRANT"); }
-	| REVOKE privileges ON table_name FROM grantee_list  {sprintf($<str>$,"%s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);  add_feature("REVOKE"); }
+	GRANT privileges KW_ON table_name TO grantee_list op_with_grant_option {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);  add_feature("GRANT"); }
+	| REVOKE privileges KW_ON table_name FROM grantee_list  {sprintf($<str>$,"%s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);  add_feature("REVOKE"); }
 	| GRANT db_priv TO grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4); add_feature("GRANT"); }
 	| REVOKE db_priv FROM grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4);  add_feature("REVOKE"); }
 ;

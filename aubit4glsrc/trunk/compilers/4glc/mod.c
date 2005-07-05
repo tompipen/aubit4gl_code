@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.220 2005-07-05 12:00:26 mikeaubury Exp $
+# $Id: mod.c,v 1.221 2005-07-05 16:08:20 mikeaubury Exp $
 #
 */
 
@@ -3856,7 +3856,7 @@ ispdf (void)
 void expand_bind (struct binding_comp *bind, int btype, int cnt)
 {
   char buff[256];
-  int b1;
+  /*int b1; */
   int dim;
   int xxxa;
   static struct binding_comp *save_bind=0;
@@ -4779,8 +4779,8 @@ fgl_add_scope (char *s, int n)
   char c;
   static char buffer[256];
   char buffer2[1024];
-  static char if1[2000]="";
-  static char if2[2000]="";
+  //static char if1[2000]="";
+  //static char if2[2000]="";
 
   if (strncmp(s,"CLASS_COPY->",12)==0) return s;
 
@@ -5168,7 +5168,7 @@ void do_yyerror(char *s)  {
 	a4gl_yyerror(s);
 }
 
-char *A4GL_print_start_to_is_expr(struct expr_str *ptr) {
+static char *A4GL_print_start_to_is_expr(struct expr_str *ptr) {
 	A4GL_append_expr(ptr,"A4GL_set_rep_start_from_stack();");
 	print_expr(ptr); 
 	return "A4GL_get_rep_start()";

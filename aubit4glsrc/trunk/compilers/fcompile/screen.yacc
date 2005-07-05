@@ -36,6 +36,7 @@ int in_comment;
 long fileseek=0;
 int ltab=0;
 int replicate_bug=0;
+int extended_graphics=0;
 
 dll_import struct_form the_form;
 
@@ -103,6 +104,7 @@ FORMONLY COMMENT
 %token KW_CALL
 %token KW_BELL KW_ABORT KW_LET KW_EXITNOW KW_NEXTFIELD
 %token KW_IF KW_THEN KW_ELSE  KW_BEGIN KW_END KW_TOTAL KW_RIGHT KW_ZEROFILL
+%token KW_USES_EXTENDED
 
 
 %%
@@ -170,17 +172,19 @@ screens_section :
 	}  screens_rest
 ;
 
-screens_rest: op_size 
-		{ 
-		lineno=0; scr++; if (scr>1) newscreen=1; } 
+screens_rest: op_size { lineno=0; scr++; if (scr>1) newscreen=1; } 
+	op_extended
 	OPEN_BRACE { ignorekw=1; lineno=0; } 
 	screen_layout 
 	CLOSE_BRACE 
-		{ ignorekw=0; if (lineno>the_form.maxline) the_form.maxline=lineno;in_screen_section=0;} 
+	{ ignorekw=0; if (lineno>the_form.maxline) the_form.maxline=lineno;in_screen_section=0;} 
 	op_end 
 ;
 
 
+op_extended :  | KW_USES_EXTENDED { extended_graphics=1; }
+;
+	
 
 
 op_size :  
@@ -1183,6 +1187,8 @@ expression :
 	single_expression
 	| expression KWAND expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,"AND");  }
 	| expression KWOR expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,"OR");  }
+
+
 ;
 
 op_expression_list : 
@@ -1194,31 +1200,28 @@ expression_list : expression
 ;
 
 single_expression: 
-	expression COMPARISON expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
-	|expression LESSTHAN expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
-	|expression GREATERTHAN expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
-	|expression STAR expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
-	|expression PLUS expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
-	|expression MINUS expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	MINUS expression { void *x; x=create_int_expr(0); $<expr>$=create_expr_comp_expr(x,$<expr>2,"-"); }
 
-	|MINUS expression { 
-			void *x; x=create_int_expr(0); $<expr>$=create_expr_comp_expr(x,$<expr>2,"-"); }
-	|PLUS expression  {
-			void *x; x=create_int_expr(0); $<expr>$=create_expr_comp_expr(x,$<expr>2,"+"); }
-
-	|expression DIVIDE expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	|PLUS expression  { void *x; x=create_int_expr(0); $<expr>$=create_expr_comp_expr(x,$<expr>2,"+"); }
+	| evalue  { $<expr>$=$<expr>1; }
+	| KWNOT expression { $<expr>$=create_not_expr($<expr>2); }
+	| OPEN_BRACKET expression CLOSE_BRACKET { $<expr>$=$<expr>2; }
+	| fcall_name OPEN_BRACKET op_expression_list CLOSE_BRACKET { $<expr>$=$<expr>3; }
+	| KW_TOTAL KW_OF field_tag_name { $<expr>$=$<expr>3; }
+	| expression COMPARISON expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	| expression LESSTHAN expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	| expression GREATERTHAN expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	| expression STAR expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	| expression PLUS expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	| expression MINUS expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	| expression DIVIDE expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
 	| expression LIKE expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
 	| expression KWNOT LIKE expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>4,"NOTLIKE"); }
 	| expression EQUAL expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
 	| expression KWNULLCHK { void *p; p=create_char_expr("ISNULL"); $<expr>$=create_expr_comp_expr($<expr>1,p,"ISNULL"); }
 	| expression KWNOTNULLCHK { void *p; p=create_char_expr("ISNOTNULL"); $<expr>$=create_expr_comp_expr($<expr>1,p,"ISNOTNULL"); }
-	| evalue  { $<expr>$=$<expr>1; }
 	| expression KWBETWEEN expression KWAND expression { $<expr>$=create_list_expr(); add_list_expr($<expr>$,$<expr>3); add_list_expr($<expr>$,$<expr>5); $<expr>$=create_expr_comp_expr($<expr>1,$<expr>$,"BETWEEN"); }
 	| expression KWIN OPEN_BRACKET evalue_list CLOSE_BRACKET { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>4,"IN"); }
-	| KWNOT expression { $<expr>$=create_not_expr($<expr>2); }
-	| OPEN_BRACKET expression CLOSE_BRACKET { $<expr>$=$<expr>2; }
-	| fcall_name OPEN_BRACKET op_expression_list CLOSE_BRACKET { $<expr>$=$<expr>3; }
-	| KW_TOTAL KW_OF field_tag_name { $<expr>$=$<expr>3; }
 ;
 
 fcall_name: named_or_kw
@@ -1282,7 +1285,6 @@ any_kword :
 | KW_DECIMAL
 | KW_FLOAT
 | KW_INT
-| KW_NULL
 | KW_PANEL
 | KW_SCREEN
 | KW_SCREEN_TITLE

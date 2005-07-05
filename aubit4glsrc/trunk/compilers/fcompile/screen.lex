@@ -51,11 +51,17 @@
 
 [v<>+^] {
         if (graphics_mode==0) REJECT;
-	if (!A4GL_isyes(acl_getenv("EXTENDED_GRAPHICS"))) REJECT;
+	if (A4GL_isyes(acl_getenv("EXTENDED_GRAPHICS"))) {
+			if (extended_graphics==0) { REJECT; }
+	}
         sprintf(yylval.str, "\n%s",yytext);
         return (GRAPH_CH);
 }
 
+"uses extended" 	{
+			if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_USES_EXTENDED;
+
+}
 "like"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(LIKE);}
 "database"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(DATABASE);}
 "instructions"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(INSTRUCTIONS);}

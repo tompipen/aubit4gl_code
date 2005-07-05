@@ -76,14 +76,14 @@ cr_index_extra_entry :
 
 
 create_c_1  : 
-	CREATE_U_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {sprintf($<str>$,"CREATE UNIQUE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
+	CREATE_U_IDX idx_name KW_ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {sprintf($<str>$,"CREATE UNIQUE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 		add_feature("CREATE_INDEX");
 		add_feature("CREATE_INDEX_UNIQUE");
 		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("CREATE_INDEX_QUALIFIED_PATH");
 		if (strchr($<str>6,',')) { add_feature("CREATE_INDEX_COMPOSITE"); }
 	
 } 
-	| CREATE_UC_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
+	| CREATE_UC_IDX idx_name KW_ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
 		add_feature("CREATE_INDEX");
 		add_feature("CREATE_INDEX_UNIQUE");
 		add_feature("CLUSTER_INDEX");
@@ -95,7 +95,7 @@ create_c_1  :
 		sprintf($<str>$,"CREATE UNIQUE CLUSTER INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 		}
 	} 
-	| CREATE_C_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
+	| CREATE_C_IDX idx_name KW_ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
 		add_feature("CREATE_INDEX");
 		add_feature("CLUSTER_INDEX");
 		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("CREATE_INDEX_QUALIFIED_PATH");
@@ -106,7 +106,7 @@ create_c_1  :
 			sprintf($<str>$,"CREATE CLUSTER INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 		}
 	} 
-	| CREATE_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
+	| CREATE_IDX idx_name KW_ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
 		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("CREATE_INDEX_QUALIFIED_PATH");
 		if (strchr($<str>6,',')) { add_feature("CREATE_INDEX_COMPOSITE"); }
 			add_feature("CREATE_INDEX");

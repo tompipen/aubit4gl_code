@@ -338,6 +338,13 @@ void A4GL_new_events(void) ;
 void A4GL_drop_events(void) ;
 void A4GL_add_event(int n,char *s) ;
 void A4GL_add_onkey_key(char *s) ;
+void A4GL_add_ontimer(char *s) ;
+void A4GL_add_onaction(char *s) ;
+char *A4GL_unscope(char *s);
+
+
+
+
 char get_curr_report_stack_whytype (void);
 int is_builtin_func (char *s);
 int get_blk_no(void) ;
@@ -445,7 +452,7 @@ void A4GL_load_features(void);
 void A4GL_lex_printh(char* fmt,... );
 void emulate_insert(char *s);
 char A4GL_cursor_type(char *s);
-
+char *A4GL_print_start_to_is_expr(struct expr_str *ptr) ;
 #define add_feature A4GL_add_feature
 
 

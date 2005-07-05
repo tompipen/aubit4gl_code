@@ -28,7 +28,7 @@ menu_handler_element :
                 pop_blockcommand("BSM");
 		print_gtk_menuhandler_bsm_end();
         }
-        | ON identifier {
+        | KW_ON identifier {
 		print_gtk_menuhandler_on($<str>2);
                 push_blockcommand("ON");
         } commands {

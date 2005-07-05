@@ -106,7 +106,7 @@ field_op :
 		} commands { 
 			print_gtk_field_2();
 		}
-        | ON in_id_list { 
+        | KW_ON in_id_list { 
 			print_gtk_field('o',$<str>2);
 		} commands { 
 			print_gtk_field_2();

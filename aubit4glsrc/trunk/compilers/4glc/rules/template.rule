@@ -63,7 +63,7 @@ template_value :
 
 	|	PREPEND template_single_value TO template_value  {
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_append(a,$<str>4,$<str>2);}
-	| 	USE template_value WITH template_single_value ON template_value  {
+	| 	USE template_value WITH template_single_value KW_ON template_value  {
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); 
         list_append($<str>2,$<str>6,$<str>4);
 	}
