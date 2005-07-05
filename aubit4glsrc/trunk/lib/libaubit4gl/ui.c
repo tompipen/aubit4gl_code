@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.39 2005-06-24 09:18:45 mikeaubury Exp $
+# $Id: ui.c,v 1.40 2005-07-05 12:03:31 mikeaubury Exp $
 #
 */
 
@@ -913,6 +913,69 @@ char *A4GL_add_dot_star(char *s) {
 	sprintf(buff,"%s.*",buff2);
 	return buff;
 }
-//*************************************************************************
 
+
+
+void A4GL_clr_evt_timeouts(struct aclfgl_event_list *evt) {
+	int a;
+	long now;
+	now=time(0);
+  	for (a=0;evt[a].event_type;a++) {
+			if (evt[a].event_type==A4GL_EVENT_ON_IDLE) {
+				*(long *)evt[a].field=now;
+			}
+			if (evt[a].event_type==A4GL_EVENT_ON_INTERVAL) {
+				*(long *)evt[a].field=now;
+			}
+			if (evt[a].event_type==A4GL_EVENT_ON_TIME) {
+				// Not implemented...
+				A4GL_assertion(1,"ON TIMESTAMP not implemented");
+			}
+	}
+}
+
+
+int A4GL_has_evt_timeout(struct aclfgl_event_list *evt) {
+  	int a;
+	long now;
+	long then;
+	long timeout_val;
+	now=time(0);
+  	for (a=0;evt[a].event_type;a++) {
+			if (evt[a].event_type==A4GL_EVENT_ON_IDLE) {
+				timeout_val=evt[a].keycode;
+				then=*(long *)evt[a].field;
+				if ((now-then)>=timeout_val) { 
+					*(long *)evt[a].field=now;
+					return evt[a].block; 
+				}
+			}
+			if (evt[a].event_type==A4GL_EVENT_ON_INTERVAL) {
+				timeout_val=evt[a].keycode;
+				then=*(long *)evt[a].field;
+				if ((now-then)>=timeout_val) { 
+					*(long *)evt[a].field=now;
+					return evt[a].block; 
+				}
+			}
+			if (evt[a].event_type==A4GL_EVENT_ON_TIME) {
+				// Not implemented...
+				A4GL_assertion(1,"ON TIMESTAMP not implemented");
+			}
+	}
+	return 0;
+}
+
+void A4GL_evt_not_idle(struct aclfgl_event_list *evt) {
+  	int a;
+	long now;
+	now=time(0);
+  	for (a=0;evt[a].event_type;a++) {
+			if (evt[a].event_type==A4GL_EVENT_ON_IDLE) {
+				*(long *)evt[a].field=now;
+			}
+	}
+}
+
+//*************************************************************************
 /* ============================= EOF ================================ */

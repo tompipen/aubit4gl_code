@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.81 2005-06-16 16:54:36 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.82 2005-07-05 12:03:33 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.81 2005-06-16 16:54:36 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.82 2005-07-05 12:03:33 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -374,7 +374,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
   if (sio->fcntrl[a].op == FORMCONTROL_BEFORE_INPUT)
     {
       new_state = 0;
-      rval = -99;
+      rval = A4GL_EVENT_BEFORE_INP;
     }
 
   if (sio->fcntrl[a].op == FORMCONTROL_AFTER_INPUT)
@@ -382,13 +382,13 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
       if (sio->fcntrl[a].state == 99)
 	{
 	  new_state = 50;
-	  rval = -95;		// Do any AFTER INPUT section
+	  rval = A4GL_EVENT_AFTER_INP;		// Do any AFTER INPUT section
 	}
 
       if (sio->fcntrl[a].state == 50)
 	{
 	  new_state = 0;
-	  rval = -94;		// CLEANUP
+	  rval = A4GL_EVENT_AFTER_INP_CLEAN;		// CLEANUP
 	}
     }
 
@@ -448,7 +448,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	{
 	  new_state = 75;
 	  last_key_code=sio->fcntrl[a].extent;
-	  rval = -90;
+	  rval = A4GL_EVENT_KEY_PRESS;
 	}
 
 
@@ -691,8 +691,8 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 	  last_field_name=sio->fcntrl[a].field_name;
  	  A4GL_set_infield_from_parameter ((long) sio->field_list[sio->curr_attrib]);
-	  A4GL_debug ("Setting rval to -197");
-	  rval = -197;
+	  A4GL_debug ("Setting rval to A4GL_EVENT_BEFORE_FIELD_1");
+	  rval = A4GL_EVENT_BEFORE_FIELD_1;
 	}
 
       if (sio->fcntrl[a].state == 50)
@@ -981,7 +981,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 
 
-	  rval = -198;
+	  rval = A4GL_EVENT_AFTER_FIELD_1;
 	}
       else
 	{
@@ -1027,12 +1027,12 @@ int rval;
 rval=process_control_stack_internal(sio,evt);
 A4GL_debug("Got rval as : %d",rval);
 switch (rval) {
-	case -197: if (A4GL_has_event_for_field(-97,last_field_name,evt)) { return A4GL_has_event_for_field(-97,last_field_name,evt); } rval=-1;break;
-	case -198: if (A4GL_has_event_for_field(-98,last_field_name,evt)) { return A4GL_has_event_for_field(-98,last_field_name,evt); } rval=-1;break;
-	case -90 :if (A4GL_has_event_for_keypress(last_key_code,evt)) { sio->processed_onkey=0; return A4GL_has_event_for_keypress(last_key_code,evt);} rval=-1;break;
- 	case -99: if (A4GL_has_event(-99,evt)) return A4GL_has_event(-99,evt);rval=-1;break;
- 	case -95: if (A4GL_has_event(-95,evt)) return A4GL_has_event(-95,evt);rval=-1;break;
- 	case -94: if (A4GL_has_event(-94,evt)) return A4GL_has_event(-94,evt);rval=-1;break;
+	case A4GL_EVENT_BEFORE_FIELD_1: if (A4GL_has_event_for_field(A4GL_EVENT_BEFORE_FIELD,last_field_name,evt)) { return A4GL_has_event_for_field(A4GL_EVENT_BEFORE_FIELD,last_field_name,evt); } rval=-1;break;
+	case A4GL_EVENT_AFTER_FIELD_1: if (A4GL_has_event_for_field(A4GL_EVENT_AFTER_FIELD,last_field_name,evt)) { return A4GL_has_event_for_field(A4GL_EVENT_AFTER_FIELD,last_field_name,evt); } rval=-1;break;
+	case A4GL_EVENT_KEY_PRESS :if (A4GL_has_event_for_keypress(last_key_code,evt)) { sio->processed_onkey=0; return A4GL_has_event_for_keypress(last_key_code,evt);} rval=-1;break;
+ 	case A4GL_EVENT_BEFORE_INP: if (A4GL_has_event(A4GL_EVENT_BEFORE_INP,evt)) return A4GL_has_event(A4GL_EVENT_BEFORE_INP,evt);rval=-1;break;
+ 	case A4GL_EVENT_AFTER_INP: if (A4GL_has_event(A4GL_EVENT_AFTER_INP,evt)) return A4GL_has_event(A4GL_EVENT_AFTER_INP,evt);rval=-1;break;
+ 	case A4GL_EVENT_AFTER_INP_CLEAN: if (A4GL_has_event(A4GL_EVENT_AFTER_INP_CLEAN,evt)) return A4GL_has_event(A4GL_EVENT_AFTER_INP_CLEAN,evt);rval=-1;break;
 
 }
 if (rval>=0||rval==-1) return -1;
@@ -1124,6 +1124,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
   struct struct_scr_field *fprop;
   struct struct_metrics *metrics;
   FORM *mform;
+  int blk;
   evt=vevt;
   s = vs;
   if (init == 1)
@@ -1158,6 +1159,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
       s->curr_attrib = 0;
       s->currentfield = 0;
       A4GL_newMovement (s, 0);
+      A4GL_clr_evt_timeouts(evt);
       A4GL_add_to_control_stack (s, FORMCONTROL_BEFORE_INPUT, 0, 0, 0);
     }
 
@@ -1182,10 +1184,21 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
   A4GL_mja_set_current_field (mform, form->currentfield);
   A4GL_mja_pos_form_cursor (mform);
 
+    blk=A4GL_has_evt_timeout(evt);
+    if (blk) {
+             return blk;
+    }
+
+
   // cc 2004.09.14 fprop may have been changed, always read it again
   fprop = (struct struct_scr_field *) field_userptr (current_field (mform));
 // Wait for a key..
   a = A4GL_getch_win ();
+
+  if (a!=0&&a!=-1) {
+	  A4GL_evt_not_idle(evt);
+  }
+
   if (abort_pressed) a = A4GLKEY_INTERRUPT;
   s->processed_onkey = a;
   A4GL_set_last_key(a);

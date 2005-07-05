@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.34 2005-06-16 17:01:19 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.35 2005-07-05 12:03:35 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.34 2005-06-16 17:01:19 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.35 2005-07-05 12:03:35 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -383,8 +383,8 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
   if (fcntrl.op == FORMCONTROL_BEFORE_INPUT)
     {
       new_state = 0;
-      if (A4GL_has_event (-99, evt))
-	rval = A4GL_has_event (-99, evt);
+      if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt))
+	rval = A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
     }
 
   if (fcntrl.op == FORMCONTROL_AFTER_INPUT)
@@ -392,15 +392,15 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
       if (fcntrl.state == 99)
 	{
 	  new_state = 50;
-	  if (A4GL_has_event (-95, evt))
-	    rval = A4GL_has_event (-95, evt);
+	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt))
+	    rval = A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
 	}
 
       if (fcntrl.state == 50)
 	{
 	  new_state = 0;
-	  if (A4GL_has_event (-94, evt))
-	    rval = A4GL_has_event (-94, evt);
+	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
+	    rval = A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
 	  else
 	    {
 	      A4GL_exitwith ("Internal error - no break\n");
@@ -744,9 +744,9 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 
 	  A4GL_set_infield_from_parameter ((long) sio->
 					   field_list[sio->curr_attrib]);
-	  if (A4GL_has_event_for_field (-97, fcntrl.field_name, evt))
+	  if (A4GL_has_event_for_field (A4GL_EVENT_BEFORE_FIELD, fcntrl.field_name, evt))
 	    {
-	      rval = A4GL_has_event_for_field (-97, fcntrl.field_name, evt);
+	      rval = A4GL_has_event_for_field (A4GL_EVENT_BEFORE_FIELD, fcntrl.field_name, evt);
 	    }
 	}
 
@@ -862,7 +862,6 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 	    fprop->flags -= 1;	// Clear a flag to indicate that we're just starting on this field
 	  new_state = 0;
 	  A4GL_debug ("Setting rval to -1");
-	  //rval=-99;
 	}
     }
 
@@ -1054,9 +1053,9 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 	  //last_field_name=sio->fcntrl[a].field_name;
 
 
-	  if (A4GL_has_event_for_field (-98, fcntrl.field_name, evt))
+	  if (A4GL_has_event_for_field (A4GL_EVENT_AFTER_FIELD, fcntrl.field_name, evt))
 	    {
-	      rval = A4GL_has_event_for_field (-98, fcntrl.field_name, evt);
+	      rval = A4GL_has_event_for_field (A4GL_EVENT_AFTER_FIELD, fcntrl.field_name, evt);
 	    }
 
 
@@ -1198,6 +1197,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
   struct struct_scr_field *fprop;
   struct struct_metrics *metrics;
   void *mform;
+  int blk;
   evt = vevt;
   s = vs;
   if (init == 1)
@@ -1232,6 +1232,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
       s->curr_attrib = 0;
       s->currentfield = 0;
       A4GL_newMovement (s, 0);
+      A4GL_clr_evt_timeouts(evt);
       A4GL_add_to_control_stack (s, FORMCONTROL_BEFORE_INPUT, 0, 0, 0);
     }
 
@@ -1267,7 +1268,10 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
   A4GL_mja_set_current_field (mform, form->currentfield);
 //}
 
-
+   blk=A4GL_has_evt_timeout(evt);
+   if (blk) {
+		             return blk;
+   }
 
 // Wait for a key..
   A4GL_LL_set_carat (mform);
@@ -1275,6 +1279,10 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
     (struct struct_scr_field *)
     A4GL_LL_get_field_userptr (A4GL_LL_current_field (mform));
   a = A4GL_getch_win (1);
+
+  if (a!=0&&a!=-1) {
+       A4GL_evt_not_idle(evt);
+  }
 
   if (A4GL_is_special_key (a, A4GLKEY_ACCEPT))
     {

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.232 2005-06-24 09:19:01 mikeaubury Exp $
+# $Id: compile_c.c,v 1.233 2005-07-05 12:03:32 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.232 2005-06-24 09:19:01 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.233 2005-07-05 12:03:32 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2450,7 +2450,7 @@ int sio_id;
   /*printc ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack();");*/
   /*printc ("   _fld_dr= -97;continue;\n}\n");*/
 
-  A4GL_add_event(-94,"");
+  A4GL_add_event(A4GL_EVENT_AFTER_INP_CLEAN,"");
   printc("if (_exec_block== %d) { break; } ",A4GL_get_nevents());
   printc("{");
   print_event_list();
@@ -2610,6 +2610,21 @@ LEXLIB_print_onaction_1 (char *key_list_str)
 
 void
 LEXLIB_print_onaction_2 (void)
+{
+	  continue_loop ("INPUTREQ");
+	    printc ("}\n");
+}
+
+void
+LEXLIB_print_ontimer_1 (char *key_list_str)
+{
+	  int n;
+	    n=A4GL_get_nevents();
+	      printc ("if (_exec_block==%d) { /* %s */\n", n,key_list_str);
+}
+
+void
+LEXLIB_print_ontimer_2 (void)
 {
 	  continue_loop ("INPUTREQ");
 	    printc ("}\n");
@@ -2786,7 +2801,7 @@ void
 LEXLIB_print_display_array_p2 (void)
 {
   int sio_id;
-  A4GL_add_event(-94,"");
+  A4GL_add_event(A4GL_EVENT_AFTER_INP_CLEAN,"");
   sio_id=get_sio_id("DISPLAY");
   printc("if (_exec_block==%d) { break; } ",A4GL_get_nevents());
   printc("{");
@@ -3416,7 +3431,7 @@ void
 LEXLIB_print_input_2 (char *s)
 {
  int sio_id;
-  A4GL_add_event(-94,"");
+  A4GL_add_event(A4GL_EVENT_AFTER_INP_CLEAN,"");
   printc("if (_exec_block==%d) { break; } ",A4GL_get_nevents());
   printc("{");
   print_event_list();
@@ -5965,54 +5980,88 @@ return ptr;
 }
 
 
-void print_event_list () {
-int a;
-int n;
-int b;
-int event_id;
-char *event_dets;
-int *keys;
+void
+print_event_list ()
+{
+  int a;
+  int n;
+  int b;
+  int event_id;
+  char *event_dets;
+  static int idle_cnt=0;
+  int *keys;
 //char comma=' ';
-char **fields;
+  char **fields;
 
-n=A4GL_get_nevents();
-if (n==0) {
-	if (A4GL_doing_pcode()) {
-		printc("struct aclfgl_event_list _sio_evt[1]={");
-	} else {
-		printc("static struct aclfgl_event_list _sio_evt[]={");
+  n = A4GL_get_nevents ();
+  if (n == 0)
+    {
+      if (A4GL_doing_pcode ())
+	{
+	  printc ("struct aclfgl_event_list _sio_evt[1]={");
 	}
-	printc(" {0}};");
-	return ;
-}
-
-if (A4GL_doing_pcode()) {
-	printc("struct aclfgl_event_list _sio_evt[%d]={",n);
-} else {
-	printc("static struct aclfgl_event_list _sio_evt[]={");
-}
-for (a=0;a<n;a++) {
-	A4GL_get_event(a,&event_id,&event_dets);
-	if (event_id==-90) {
-		keys=get_key_codes(event_dets);
-		for (b=0;keys[b];b++) {
-			printc("{%d,%d,%d,0},",event_id,a+1,keys[b]);
-		}
-	} else {
-		fields=get_field_codes(event_dets);
-		for (b=0;fields[b];b++) {
-			if (strlen(fields[b])!=0) {
-				printc("{%d,%d,0,%s},",event_id,a+1,fields[b]);
-			} else {
-				printc("{%d,%d,0,\"\"},",event_id,a+1);
-			}
-		}
+      else
+	{
+	  printc ("static struct aclfgl_event_list _sio_evt[]={");
 	}
-}
-	printc("{0}");
-	printc("};");
-}
+      printc (" {0}};");
+      return;
+    }
 
+  if (A4GL_doing_pcode ())
+    {
+      printc ("struct aclfgl_event_list _sio_evt[%d]={", n);
+    }
+  else
+    {
+      printc ("static struct aclfgl_event_list _sio_evt[]={");
+    }
+  for (a = 0; a < n; a++)
+    {
+      A4GL_get_event (a, &event_id, &event_dets);
+
+      if (event_id == A4GL_EVENT_KEY_PRESS)
+	{
+	  keys = get_key_codes (event_dets);
+	  for (b = 0; keys[b]; b++)
+	    {
+	      printc ("{%d,%d,%d,0},", event_id, a + 1, keys[b]);
+	    }
+	  continue;
+	}
+
+      if (event_id == A4GL_EVENT_ON_IDLE)
+	{
+	    printh("static long a4gl_idle%d=0;\n",idle_cnt);
+	    printc ("{%d,%d,%s,(void *)&a4gl_idle%d},", event_id, a + 1, event_dets,idle_cnt++);
+	    continue;
+	}
+
+      if (event_id == A4GL_EVENT_ON_INTERVAL)
+	{
+	    printh("static long a4gl_idle%d=0;\n",idle_cnt);
+	    printc ("{%d,%d,%s,(void *)&a4gl_idle%d},", event_id, a + 1, event_dets,idle_cnt++);
+	    continue;
+	}
+
+
+
+      fields = get_field_codes (event_dets);
+      for (b = 0; fields[b]; b++)
+	{
+	  if (strlen (fields[b]) != 0)
+	    {
+	      printc ("{%d,%d,0,%s},", event_id, a + 1, fields[b]);
+	    }
+	  else
+	    {
+	      printc ("{%d,%d,0,\"\"},", event_id, a + 1);
+	    }
+	}
+    }
+  printc ("{0}");
+  printc ("};");
+}
 
 
 

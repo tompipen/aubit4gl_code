@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.115 2005-07-01 13:25:48 mikeaubury Exp $
+# $Id: newpanels.c,v 1.116 2005-07-05 12:03:34 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.115 2005-07-01 13:25:48 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.116 2005-07-05 12:03:34 mikeaubury Exp $";
 #endif
 
 /**
@@ -78,6 +78,7 @@ void A4GL_make_window_with_this_form_current(void *form);
 #define MAXWIN 200
 #define MAXPOINTERS 2000
 
+#define USE_HALF_DELAY
 /*
 =====================================================================
                     Variables definitions
@@ -1318,15 +1319,12 @@ A4GL_getch_swin (WINDOW * window_ptr)
 
   while (1)
     {
-	int to;
-	to=A4GL_has_timeout(-1);
-	if (to) { 
-		halfdelay (to); 
-	}
-
-
+      halfdelay (1); 
       a = getch (); // GETCH - getch_swin
-
+      if (a==-1) {
+	      	cbreak();
+	      	return 0;
+      }
 
       if (a == KEY_MOUSE)
 	{
@@ -1340,7 +1338,7 @@ A4GL_getch_swin (WINDOW * window_ptr)
 	  break;
 	}
 
-      if (a != -1 || to)
+      if (a != -1 )
 	{
 	  A4GL_debug ("MJAC Key Pressed %d", a);
 	  break;
@@ -1353,6 +1351,7 @@ A4GL_getch_swin (WINDOW * window_ptr)
   A4GL_chk_for_screen_print(a);
   A4GL_logkey(a);
   A4GL_debug ("Got char from keyboard : %d F2=%d LEFT=%d 4GL for f5 = %d", a,KEY_F(2),KEY_LEFT,A4GLKEY_F (5));
+
   return a;
 }
 
@@ -1378,6 +1377,7 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
   while (1)
     {
 #ifdef USE_HALF_DELAY
+	A4GL_debug("HALF DELAY\n");
       halfdelay (1);
 #endif
       if (window_ptr) {
@@ -1411,7 +1411,7 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
           A4GL_debug ("MJAC Key Pressed %d", a);
           break;
         }
-
+      if (a==-1) {a=0; cbreak();return a;}
     }
   cbreak ();
   A4GL_debug ("Got char from keyboard : %d LEFT=%d", a,KEY_LEFT);

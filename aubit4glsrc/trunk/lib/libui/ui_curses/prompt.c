@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.50 2005-03-31 13:36:21 afalout Exp $
+# $Id: prompt.c,v 1.51 2005-07-05 12:03:35 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.50 2005-03-31 13:36:21 afalout Exp $";
+		"$Id: prompt.c,v 1.51 2005-07-05 12:03:35 mikeaubury Exp $";
 #endif
 
 /**
@@ -113,7 +113,7 @@ int
   buff[width]=0;
   wprintw(p,"%s",buff);
   promptstr = A4GL_char_pop ();
-  prompt->mode = 0;
+  prompt->mode = -1;
   prompt->h = h;
   prompt->insmode=0;
   prompt->charmode = c;
@@ -319,6 +319,13 @@ int was_aborted=0;
   prompt = vprompt;
   evt=vevt;
 
+  if (prompt->mode==-1) { // Initialize prompt...
+  	int a;
+	A4GL_clr_evt_timeouts(evt);
+	prompt->mode=0;
+	return  0;
+  }
+
   A4GL_chkwin ();
   mform = prompt->f;
   A4GL_set_abort (0);
@@ -328,6 +335,17 @@ int was_aborted=0;
     A4GL_debug ("In prompt loop mode = %d", prompt->mode);
   }
 #endif
+
+
+
+  if (prompt->mode==0) { // Check for any timeouts...
+	  int blk;
+	  blk=A4GL_has_evt_timeout(evt);
+	  if (blk) {
+		 return blk;
+	}
+  }
+
   if (prompt->mode == 1)
     {
       char buff[10024];
@@ -359,7 +377,9 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
   	pos_form_cursor (mform);
 	abort_pressed=0;
 	was_aborted=0;
+        A4GL_debug("Timeout : %d\n",timeout);
   	a=A4GL_real_getch_swin (p);
+//printf("a=%d\n",a);fflush(stdout);
         prompt->processed_onkey=a;
 	A4GL_debug("Read character... %d",a);
   	A4GL_clr_error_nobox("prompt");
@@ -368,6 +388,9 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
   	A4GL_set_last_key (a);
   	prompt->lastkey = A4GL_get_lastkey ();
 
+	if (a!=0&&a!=-1) {
+		A4GL_evt_not_idle(evt);
+	}
 
 	if (A4GL_has_event_for_keypress(a,evt)|| abort_pressed) {
       		A4GL_push_null (DTYPE_CHAR,1);
@@ -378,7 +401,6 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
 		return A4GL_has_event_for_keypress(a,evt);
 	}
 	A4GL_debug("No lastkey..");
-
 
 
   a = A4GL_proc_key_prompt (a, mform, prompt);

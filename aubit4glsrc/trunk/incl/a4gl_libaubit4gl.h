@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.175 2005-06-25 18:56:21 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.176 2005-07-05 12:03:30 mikeaubury Exp $
 #
 */
 
@@ -2049,6 +2049,39 @@ int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) ;
 #define SPRINTF8(s,f,p1,p2,p3,p4,p5,p6,p7,p8)      	A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2,p3,p4,p5,p6,p7,p8)
 #define SPRINTF9(s,f,p1,p2,p3,p4,p5,p6,p7,p8,p9)      	A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2,p3,p4,p5,p6,p7,p8,p9)
 #define SPRINTF10(s,f,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10)	A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10)
+
+
+#define A4GL_EVENT_BEF_ROW 		-10
+#define A4GL_EVENT_AFT_ROW  		-11
+#define A4GL_EVENT_BEFORE_DELETE  	-12
+#define A4GL_EVENT_AFTER_DELETE  	-13
+#define A4GL_EVENT_BEFORE_INSERT  	-14
+#define A4GL_EVENT_AFTER_INSERT  	-15
+/* */
+#define A4GL_EVENT_BEF_INSERT_DELETE  	-17
+#define A4GL_EVENT_AFT_INSERT_DELETE  	-18
+
+/* ... */
+
+#define A4GL_EVENT_ON_IDLE  		-50
+#define A4GL_EVENT_ON_INTERVAL 		-51
+#define A4GL_EVENT_ON_TIME 		-52
+
+/* ... */
+
+#define A4GL_EVENT_KEY_PRESS  		-90
+#define A4GL_EVENT_ON_ACTION  		-91
+/* */
+/* */
+#define A4GL_EVENT_AFTER_INP_CLEAN 	-94
+#define A4GL_EVENT_AFTER_INP  		-95
+/* */
+#define A4GL_EVENT_BEFORE_FIELD 	-97
+#define A4GL_EVENT_AFTER_FIELD 		-98
+#define A4GL_EVENT_BEFORE_INP  		-99
+/* */
+#define A4GL_EVENT_BEFORE_FIELD_1 	-197
+#define A4GL_EVENT_AFTER_FIELD_1 	-198
 
 
 int aclfgl_fgl_dialog_setcurrline(int n);

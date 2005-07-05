@@ -21,26 +21,26 @@ field_commands : field_command | field_commands field_command;
 field_command :  
 	  BEFFIELD bef_field_list_as_struct
 		{
-		A4GL_add_event(-97,field_name_list_as_or_char($<field_list>2));
+		A4GL_add_event(A4GL_EVENT_BEFORE_FIELD,field_name_list_as_or_char($<field_list>2));
 		print_befaft_field_1(field_name_list_as_or_char($<field_list>2));
 } commands {
 	print_befaft_field_2();
 }
 	| AFTFIELD aft_field_list_as_struct
 		{
-		A4GL_add_event(-98,field_name_list_as_or_char($<field_list>2));
+		A4GL_add_event(A4GL_EVENT_AFTER_FIELD,field_name_list_as_or_char($<field_list>2));
 		print_befaft_field_1(field_name_list_as_or_char($<field_list>2));
 } commands {
 	print_befaft_field_2();
 }
 	| AFTROW {
-		A4GL_add_event(-11,"");
+		A4GL_add_event(A4GL_EVENT_AFT_ROW,"");
 		print_befaft_field_1("AFT_ROW");
 } commands {
 	print_befaft_field_2();
 }
 	| BEFROW {
-		A4GL_add_event(-10,"");
+		A4GL_add_event(A4GL_EVENT_BEF_ROW,"");
 		A4GL_lex_printcomment("/* before row */ \n");
 		print_befaft_field_1("BEF_ROW");
 } commands {
@@ -53,31 +53,36 @@ field_command :
 	print_onkey_2();
 }
 	| on_action { A4GL_add_onaction($<str>1); print_onaction_1($<str>1); } commands { print_onaction_2(); }
+        | on_timer {
+                A4GL_add_ontimer($<str>1);
+                print_ontimer_1($<str>1);
+        } commands { print_ontimer_2(); }
+
 	| AFTINP {
-		A4GL_add_event(-95,"");
+		A4GL_add_event(A4GL_EVENT_AFTER_INP,"");
 		print_befaft_field_1("AFTER_INP");
 } commands {
 	print_befaft_field_2();
 }
 	| BEFINP {
-		A4GL_add_event(-99,"");
+		A4GL_add_event(A4GL_EVENT_BEFORE_INP,"");
 		print_befaft_field_1("BEFORE_INP");
 } commands {
 	print_befaft_field_2();
 }
 	| BEFORE_DELETE  {
-		A4GL_add_event(-12,"");
+		A4GL_add_event(A4GL_EVENT_BEFORE_DELETE,"");
 		print_befaft_field_1("DO_BEFORE_DELETE");
 	} commands { print_befaft_field_2(); }
-	| BEFORE_INSERT  { A4GL_add_event(-14,""); print_befaft_field_1("DO_BEFORE_INSERT"); } commands { print_befaft_field_2(); }
-	| BEFORE_INSERT_DELETE  { A4GL_add_event(-17,""); print_befaft_field_1("DO_BEFORE_INSERT_DELETE"); } commands { print_befaft_field_2(); }
-	| AFTER_INSERT_DELETE  { A4GL_add_event(-18,""); print_befaft_field_1("DO_AFTER_INSERT_DELETE"); } commands { print_befaft_field_2(); }
+	| BEFORE_INSERT  { A4GL_add_event(A4GL_EVENT_BEFORE_INSERT,""); print_befaft_field_1("DO_BEFORE_INSERT"); } commands { print_befaft_field_2(); }
+	| BEFORE_INSERT_DELETE  { A4GL_add_event(A4GL_EVENT_BEF_INSERT_DELETE,""); print_befaft_field_1("DO_BEFORE_INSERT_DELETE"); } commands { print_befaft_field_2(); }
+	| AFTER_INSERT_DELETE  { A4GL_add_event(A4GL_EVENT_AFT_INSERT_DELETE,""); print_befaft_field_1("DO_AFTER_INSERT_DELETE"); } commands { print_befaft_field_2(); }
 	| AFTER_DELETE  {
-		A4GL_add_event(-13,"");
+		A4GL_add_event(A4GL_EVENT_AFTER_DELETE,"");
 		print_befaft_field_1("DO_AFTER_DELETE");
 	} commands { print_befaft_field_2(); }
 	| AFTER_INSERT  {
-		A4GL_add_event(-15,"");
+		A4GL_add_event(A4GL_EVENT_AFTER_INSERT,"");
 		print_befaft_field_1("DO_AFTER_INSERT");
 	} commands { print_befaft_field_2(); }
 

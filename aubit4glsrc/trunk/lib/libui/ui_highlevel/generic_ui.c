@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.56 2005-06-30 22:15:25 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.57 2005-07-05 12:03:35 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -2573,6 +2573,22 @@ static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
   
 
 
+  if (promptx->mode==-1) { // Initialize prompt...
+          int a;
+          A4GL_clr_evt_timeouts(evt);
+          promptx->mode=0;
+          return  0;
+  }
+
+  if (promptx->mode==0) { // Check for any timeouts...
+          int blk;
+          blk=A4GL_has_evt_timeout(evt);
+          if (blk) {
+                 return blk;
+        }
+  }
+
+
   if (promptx->mode == 1)
     {
       char buff[10024];
@@ -2606,6 +2622,10 @@ static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
 
   //prompt_last_key = a;
   A4GL_set_last_key (a);
+        if (a!=0&&a!=-1) {
+                A4GL_evt_not_idle(evt);
+        }
+
 
   promptx->lastkey = A4GL_get_lastkey ();
 
@@ -2714,7 +2734,7 @@ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   A4GL_chkwin ();
   promptstr = A4GL_char_pop ();
 
-  promptx->mode = 0;
+  promptx->mode = -1;
   promptx->h = h;
   promptx->insmode = 0;
   promptx->charmode = c;

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.31 2005-06-16 17:01:19 mikeaubury Exp $
+# $Id: input_array.c,v 1.32 2005-07-05 12:03:36 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.31 2005-06-16 17:01:19 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.32 2005-07-05 12:03:36 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -634,6 +634,7 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
       //A4GL_LL_screen_update();
       abort_pressed = 0;
       a = A4GL_getch_win (1);
+        if (a!=0&&a!=-1) { A4GL_evt_not_idle(evt); }
 
 
       if (A4GL_is_special_key (a, A4GLKEY_ACCEPT))
@@ -1020,6 +1021,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinpa, int defs, char *srecname, int attrib,
   void ***fld_list;
   int rval;
   struct aclfgl_event_list *evt;
+  int blk;
   struct s_inp_arr *inpa;
   evt = vevt;
   //int a;
@@ -1053,7 +1055,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinpa, int defs, char *srecname, int attrib,
 
       A4GL_debug ("Init control stack");
       A4GL_init_control_stack (inpa, 1);
-
+	A4GL_clr_evt_timeouts(evt);
 #ifdef DEBUG
       {
 	A4GL_debug ("inpa->currform=%p", inpa->currform);
@@ -1154,13 +1156,15 @@ UILIB_A4GL_inp_arr_v2 (void *vinpa, int defs, char *srecname, int attrib,
       inpa->last_scr_line = 1;
       inpa->last_arr_line = 1;
       A4GL_debug ("inp_arr - returning -99  BEFORE INPUT....");
-      if (A4GL_has_event (-99, evt))
-	return A4GL_has_event (-99, evt);
+      if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt))
+	return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
       return -1;
-      //return -99;
     }
   A4GL_debug ("inpaarr4");
-  //ireinpalay_arr (inpa, 2);
+   blk=A4GL_has_evt_timeout(evt);
+    if (blk) {
+                      return blk;
+    }
 
   rval = iarr_loop (inpa, evt);
   A4GL_debug ("DEBUGGING rval=%d", rval);
@@ -1747,10 +1751,9 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	{
 	  A4GL_debug ("AFTER INPUT state 99");
 	  new_state = 50;
-	  //rval = -95;         // Do any AFTER INPUT section
 	  A4GL_debug ("Calling after field..");
-	  if (A4GL_has_event (-95, evt))
-	    rval = A4GL_has_event (-95, evt);
+	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt))
+	    rval = A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
 	  else
 	    rval = -1;
 	}
@@ -1760,12 +1763,11 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	  A4GL_comments (0);
 	  A4GL_debug ("AFTER INPUT state 50");
 	  new_state = 0;
-	  if (A4GL_has_event (-94, evt))
-	    rval = A4GL_has_event (-94, evt);
+	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
+	    rval = A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
 	  else
 	    rval = -1;
 	  A4GL_debug ("Calling all done..");
-	  //rval = -94;         // CLEANUP
 	}
     }
 
@@ -1829,13 +1831,12 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
       if (arr->fcntrl[a].state == 99)
 	{
 	  new_state = 50;
-	  //rval = -12;
-	  if (A4GL_has_event (-12, evt))
-	    rval = A4GL_has_event (-12, evt);
+	  if (A4GL_has_event (A4GL_EVENT_BEFORE_DELETE, evt))
+	    rval = A4GL_has_event (A4GL_EVENT_BEFORE_DELETE, evt);
 	  else
 	    {
-	      if (A4GL_has_event (-17, evt))
-		rval = A4GL_has_event (-17, evt);
+	      if (A4GL_has_event (A4GL_EVENT_BEF_INSERT_DELETE, evt))
+		rval = A4GL_has_event (A4GL_EVENT_BEF_INSERT_DELETE, evt);
 	    }
 	}
 
@@ -1854,14 +1855,13 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
       if (arr->fcntrl[a].state == 99)
 	{
 	  new_state = 50;
-	  if (A4GL_has_event (-13, evt))
-	    rval = A4GL_has_event (-13, evt);
+	  if (A4GL_has_event (A4GL_EVENT_AFTER_DELETE, evt))
+	    rval = A4GL_has_event (A4GL_EVENT_AFTER_DELETE, evt);
 	  else
 	    {
-	      if (A4GL_has_event (-18, evt))
-		rval = A4GL_has_event (-18, evt);
+	      if (A4GL_has_event (A4GL_EVENT_AFT_INSERT_DELETE, evt))
+		rval = A4GL_has_event (A4GL_EVENT_AFT_INSERT_DELETE, evt);
 	    }
-	  //rval = -13;
 	}
 
       if (arr->fcntrl[a].state == 50)
@@ -1957,9 +1957,8 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	      fprop->flags = 0;
 	    }
 	  new_state = 50;
-	  if (A4GL_has_event (-10, evt))
-	    rval = A4GL_has_event (-10, evt);
-	  //rval = -10;
+	  if (A4GL_has_event (A4GL_EVENT_BEF_ROW, evt))
+	    rval = A4GL_has_event (A4GL_EVENT_BEF_ROW, evt);
 	}
 
 
@@ -1980,9 +1979,9 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
   if (arr->fcntrl[a].op == FORMCONTROL_AFTER_ROW)
     {
       new_state = 0;
-      if (A4GL_has_event (-11, evt))
-	rval = A4GL_has_event (-11, evt);
-      //rval = -11;
+      if (A4GL_has_event (A4GL_EVENT_AFT_ROW, evt))
+	rval = A4GL_has_event (A4GL_EVENT_AFT_ROW, evt);
+      //rval = A4GL_EVENT_AFT_ROW;
     }
 
   if (arr->fcntrl[a].op == FORMCONTROL_BEFORE_INSERT)
@@ -1999,13 +1998,12 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
       if (arr->fcntrl[a].state == 50)
 	{			// BEFORE INSERT 
 	  new_state = 0;
-	  //rval = -14;
-	  if (A4GL_has_event (-14, evt))
-	    rval = A4GL_has_event (-14, evt);
+	  if (A4GL_has_event (A4GL_EVENT_BEFORE_INSERT, evt))
+	    rval = A4GL_has_event (A4GL_EVENT_BEFORE_INSERT, evt);
 	  else
 	    {
-	      if (A4GL_has_event (-17, evt))
-		rval = A4GL_has_event (-17, evt);
+	      if (A4GL_has_event (A4GL_EVENT_BEF_INSERT_DELETE, evt))
+		rval = A4GL_has_event (A4GL_EVENT_BEF_INSERT_DELETE, evt);
 	    }
 	  arr->curr_line_is_new = 1;
 	}
@@ -2017,14 +2015,13 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
     {
       arr->curr_line_is_new = 0;
       new_state = 0;
-      if (A4GL_has_event (-15, evt))
-	rval = A4GL_has_event (-15, evt);
+      if (A4GL_has_event (A4GL_EVENT_AFTER_INSERT, evt))
+	rval = A4GL_has_event (A4GL_EVENT_AFTER_INSERT, evt);
       else
 	{
-	  if (A4GL_has_event (-18, evt))
-	    rval = A4GL_has_event (-18, evt);
+	  if (A4GL_has_event (A4GL_EVENT_AFT_INSERT_DELETE, evt))
+	    rval = A4GL_has_event (A4GL_EVENT_AFT_INSERT_DELETE, evt);
 	}
-      //rval = -15;
     }
 
   if (arr->fcntrl[a].op == FORMCONTROL_KEY_PRESS)
@@ -2254,10 +2251,10 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 
 	  A4GL_set_infield_from_parameter ((long) arr->currentfield);
 	  //A4GL_push_char (arr->fcntrl[a].field_name);
-	  if (A4GL_has_event_for_field (-97, arr->fcntrl[a].field_name, evt))
+	  if (A4GL_has_event_for_field (A4GL_EVENT_BEFORE_FIELD, arr->fcntrl[a].field_name, evt))
 	    {
 	      rval =
-		A4GL_has_event_for_field (-97, arr->fcntrl[a].field_name,
+		A4GL_has_event_for_field (A4GL_EVENT_BEFORE_FIELD, arr->fcntrl[a].field_name,
 					  evt);
 	    }
 	}
@@ -2564,10 +2561,10 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	  new_state = 0;
 	  A4GL_set_infield_from_parameter ((long) arr->currentfield);
 	  //A4GL_push_char (arr->fcntrl[a].field_name);
-	  if (A4GL_has_event_for_field (-98, arr->fcntrl[a].field_name, evt))
+	  if (A4GL_has_event_for_field (A4GL_EVENT_AFTER_FIELD, arr->fcntrl[a].field_name, evt))
 	    {
 	      rval =
-		A4GL_has_event_for_field (-98, arr->fcntrl[a].field_name,
+		A4GL_has_event_for_field (A4GL_EVENT_AFTER_FIELD, arr->fcntrl[a].field_name,
 					  evt);
 	    }
 	  //rval = -198;

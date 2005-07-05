@@ -51,3 +51,16 @@ key_value_1 : 	KW_FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
 on_action : 
 	ON_ACTION identifier {sprintf($<str>$,"\"%s\"",$<str>2);}
 ;
+
+on_timer : 
+	ON_IDLE idle_time {sprintf($<str>$,"D %s",$<str>2);}
+	| ON_INTERVAL idle_time {sprintf($<str>$,"V %s",$<str>2);}
+	/* T %s is reserved for TIMESTAMP - when we get round to it... */
+;
+
+idle_time: INT_VALUE {sprintf($<str>$,"%d",atoi($<str>1));}
+| INT_VALUE IDLE_SECONDS {sprintf($<str>$,"%d",atoi($<str>1));}
+| INT_VALUE IDLE_MINUTES {sprintf($<str>$,"%d",atoi($<str>1)*60);}
+| INT_VALUE IDLE_HOURS {sprintf($<str>$,"%d",atoi($<str>1)*60*60);}
+;
+

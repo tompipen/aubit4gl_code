@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.219 2005-06-28 14:32:23 mikeaubury Exp $
+# $Id: mod.c,v 1.220 2005-07-05 12:00:26 mikeaubury Exp $
 #
 */
 
@@ -4931,11 +4931,26 @@ int a;
 }
 
 void A4GL_add_onkey_key(char *s) {
-	A4GL_add_event(-90,s);
+	A4GL_add_event(A4GL_EVENT_KEY_PRESS,s);
 }
 
 void A4GL_add_onaction(char *s) {
-	A4GL_add_event(-91,s);
+	A4GL_add_event(A4GL_EVENT_ON_ACTION,s);
+}
+
+void A4GL_add_ontimer(char *s) {
+	if (s[0]=='D') {
+		A4GL_add_event(A4GL_EVENT_ON_IDLE,&s[2]);
+		return;
+	}
+	if (s[0]=='V') {
+		A4GL_add_event(A4GL_EVENT_ON_INTERVAL,&s[2]);
+		return;
+	}
+	if (s[0]=='T') {
+		A4GL_add_event(A4GL_EVENT_ON_TIME,&s[2]);
+		return;
+	}
 }
 
 void A4GL_add_event(int n,char *s) {

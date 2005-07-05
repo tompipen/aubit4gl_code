@@ -6,11 +6,11 @@
 
 prompt_cmd	:
 	PROMPT prompt_title opt_attributes FOR opt_char
-        variable opt_timeout opt_help_no
+        variable opt_help_no
         opt_attributes {
                 push_blockcommand("PROMPT");
 	A4GL_new_events();
-	print_prompt_1($<str>3,$<str>5,$<str>8,$<str>9,atoi($<str>7)) ;
+	print_prompt_1($<str>3,$<str>5,$<str>7,$<str>8,0) ;
 }
         prompt_key_sec {
 		if (strcmp($<str>5,"1")==0) {
@@ -25,9 +25,6 @@ prompt_cmd	:
 
 ;
 
-opt_timeout:  {sprintf($<str>$,"0");}
-| TIMEOUT INT_VALUE {sprintf($<str>$,$<str>2);}
-;
 
 gui_prompt_cmd :
 	PROMPT prompt_title opt_attributes  RETURNING variable {
@@ -52,7 +49,12 @@ on_key_command_prompt : on_key_command {
 } commands {
 	print_onkey_2_prompt();
 }
-	| on_action { A4GL_add_onaction($<str>1);  print_onaction_1($<str>1);} commands { print_onaction_2(); }
+	| on_action { 
+		A4GL_add_onaction($<str>1);  print_onaction_1($<str>1);} commands { print_onaction_2(); }
+	| on_timer {
+		A4GL_add_ontimer($<str>1);  
+		print_ontimer_1($<str>1);
+	} commands { print_ontimer_2(); }
 	
 ;
 
