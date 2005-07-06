@@ -223,11 +223,12 @@ struct s_menu_stack
 {
 
   char menu_title[132];
-
   char menu_help[132];
-
   char menu_key[30];
   int menu_helpno;
+  char idle_interval;
+  long timeout_val;
+  char action[256];
 };
 
 struct s_report_stack

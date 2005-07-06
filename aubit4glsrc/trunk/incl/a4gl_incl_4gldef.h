@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.83 2005-06-30 22:15:25 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.84 2005-07-06 09:26:46 mikeaubury Exp $
 */
 
 /**
@@ -214,6 +214,13 @@ struct s_constr_list {char *tabname;char *colname;};
   }
   ACL_Menu_Opts;
 
+  struct aclfgl_event_list {
+        int event_type;
+        int block;
+        int keycode;
+        char *field;
+  };
+
   typedef struct
   {
     char menu_title[80];
@@ -237,15 +244,10 @@ struct s_constr_list {char *tabname;char *colname;};
     int gw_y;
     int gw_x;
     int gw_b;
+    struct aclfgl_event_list *evt;
+    int nevt;
   }
   ACL_Menu;
-
-  struct aclfgl_event_list {
-        int event_type;
-        int block;
-        int keycode;
-        char *field;
-  };
 
 
 /* This prototypes should be created by 4glc, in assist.h, but they are not.

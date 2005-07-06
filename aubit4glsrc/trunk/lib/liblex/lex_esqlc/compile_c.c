@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.233 2005-07-05 12:03:32 mikeaubury Exp $
+# $Id: compile_c.c,v 1.234 2005-07-06 09:26:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.233 2005-07-05 12:03:32 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.234 2005-07-06 09:26:46 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -124,6 +124,7 @@ static int gen_ord (char *s);
 char mv_repname[256];
 int cs_ticker = 0;
 int current_ordbindcnt = 0;
+static int idle_cnt=0;
 /** Pointer to the output C file */
 static FILE *outfile = 0;
 
@@ -4573,7 +4574,11 @@ print_menu (int mn, int n)
 {
   int a;
   int c;
+  int option;
   c = 0;
+
+
+
   for (a = 0;
        menu_stack[mn][a].menu_title[0] != 0 ||
        menu_stack[mn][a].menu_key[0] != 0 ||
@@ -4581,17 +4586,36 @@ print_menu (int mn, int n)
     c = a;
   printc ("m_%d=(void *)A4GL_new_menu_create(%s,1,1,%d,0);\n", n, mmtitle[mn],
 	  2);
-  for (a = 0;
-       menu_stack[mn][a].menu_title[0] != 0
-       || menu_stack[mn][a].menu_key[0] != 0
-       || menu_stack[mn][a].menu_help[0] != 0; a++)
-    {
 
-      printc ("A4GL_add_menu_option(m_%d, %s,%s,%s,%d,0);\n", n,
-	      menu_stack[mn][a].menu_title,
-	      menu_stack[mn][a].menu_key,
-	      menu_stack[mn][a].menu_help, menu_stack[mn][a].menu_helpno);
+
+// First - lets rattle off any *real* menu options....
+  for (a = 0; menu_stack[mn][a].menu_title[0] != 0 
+		  	|| menu_stack[mn][a].menu_key[0] != 0 
+			|| menu_stack[mn][a].menu_help[0] != 0 
+			|| menu_stack[mn][a].idle_interval != 0; a++) {
+
+	      printc ("A4GL_add_menu_option(m_%d, %s,%s,%s,%d,0);\n", n,
+	      		menu_stack[mn][a].menu_title,
+	      		menu_stack[mn][a].menu_key,
+	      		menu_stack[mn][a].menu_help, menu_stack[mn][a].menu_helpno);
+
+	      if (menu_stack[mn][a].idle_interval=='A') {
+	      	printc ("A4GL_add_menu_action(m_%d, '%s',%d);\n", n, menu_stack[mn][a].action,a);
+	      }
+	      if (menu_stack[mn][a].idle_interval=='D') {
+	    	printh("static long a4gl_idle%d=0;\n",idle_cnt);
+	      	printc ("A4GL_add_menu_timeout(m_%d, 'D',%d,%d,&a4gl_idle%d);a4gl_idle%d=0;\n", n, menu_stack[mn][a].timeout_val,a,idle_cnt,idle_cnt);
+		idle_cnt++;
+	      }
+	      if (menu_stack[mn][a].idle_interval=='V') {
+	    	printh("static long a4gl_idle%d=0;\n",idle_cnt);
+	      	printc ("A4GL_add_menu_timeout(m_%d, 'V',%d,%d,&a4gl_idle%d);a4gl_idle%d=0;\n", n, menu_stack[mn][a].timeout_val,a,idle_cnt,idle_cnt);
+		idle_cnt++;
+	      }
+
+
     }
+
 
   printc
     ("A4GL_finish_create_menu(m_%d);\nA4GL_disp_h_menu(m_%d);cmd_no_%d= -2;continue;\n",
@@ -5988,7 +6012,6 @@ print_event_list ()
   int b;
   int event_id;
   char *event_dets;
-  static int idle_cnt=0;
   int *keys;
 //char comma=' ';
   char **fields;

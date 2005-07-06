@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.221 2005-07-05 16:08:20 mikeaubury Exp $
+# $Id: mod.c,v 1.222 2005-07-06 09:25:48 mikeaubury Exp $
 #
 */
 
@@ -763,10 +763,50 @@ A4GL_assertion(mnopt>=MAXMENUOPTS,"Ran out of option slots");
     menu_stack[mn][mnopt - 1].menu_helpno = atoi (hlp);
   else
     menu_stack[mn][mnopt - 1].menu_helpno = 0;
+
   menu_stack[mn][mnopt].menu_title[0] = 0;
   menu_stack[mn][mnopt].menu_help[0] = 0;
   menu_stack[mn][mnopt].menu_key[0] = 0;
+  menu_stack[mn][mnopt].idle_interval = 0;
+  menu_stack[mn][mnopt].timeout_val= 0;
+  menu_stack[mn][mnopt].action[0]=0;
 }
+
+
+void push_menu_action(int mn,int mnopt,char *s) {
+  strcpy (menu_stack[mn][mnopt - 1].menu_title, "\"\"");
+  strcpy (menu_stack[mn][mnopt - 1].menu_help, "\"\"");
+  strcpy (menu_stack[mn][mnopt - 1].menu_key, "");
+  menu_stack[mn][mnopt - 1].menu_helpno = 0;
+  menu_stack[mn][mnopt - 1].idle_interval = 'A';
+  strcpy(menu_stack[mn][mnopt - 1].action,s);
+
+
+  menu_stack[mn][mnopt].menu_title[0] = 0;
+  menu_stack[mn][mnopt].menu_help[0] = 0;
+  menu_stack[mn][mnopt].menu_key[0] = 0;
+  menu_stack[mn][mnopt].idle_interval = 0;
+  menu_stack[mn][mnopt].timeout_val= 0;
+  menu_stack[mn][mnopt].action[0]=0;
+}
+
+void push_menu_timeout(int mn,int mnopt,char *s) {
+  strcpy (menu_stack[mn][mnopt - 1].menu_title, "\"\"");
+  strcpy (menu_stack[mn][mnopt - 1].menu_help, "\"\"");
+  strcpy (menu_stack[mn][mnopt - 1].menu_key, "\"\"");
+  menu_stack[mn][mnopt - 1].menu_helpno = 0;
+  menu_stack[mn][mnopt - 1].idle_interval = s[0];
+  menu_stack[mn][mnopt - 1].timeout_val = atol(&s[2]);
+
+  menu_stack[mn][mnopt].menu_title[0] = 0;
+  menu_stack[mn][mnopt].menu_help[0] = 0;
+  menu_stack[mn][mnopt].menu_key[0] = 0;
+  menu_stack[mn][mnopt].idle_interval = 0;
+  menu_stack[mn][mnopt].timeout_val= 0;
+  menu_stack[mn][mnopt].action[0]=0;
+}
+
+
 
 /**
  * Obtain the value of the inc variable.
@@ -5168,7 +5208,7 @@ void do_yyerror(char *s)  {
 	a4gl_yyerror(s);
 }
 
-static char *A4GL_print_start_to_is_expr(struct expr_str *ptr) {
+char *A4GL_print_start_to_is_expr(struct expr_str *ptr) {
 	A4GL_append_expr(ptr,"A4GL_set_rep_start_from_stack();");
 	print_expr(ptr); 
 	return "A4GL_get_rep_start()";

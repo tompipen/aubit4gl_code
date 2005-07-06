@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.24 2005-06-16 17:01:19 mikeaubury Exp $";
+  "$Id: menu.c,v 1.25 2005-07-06 09:26:48 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -423,7 +423,21 @@ A4GL_highlevel_menu_loop (void *menuv)
 
 
 
-      a = A4GL_menu_getkey (menu);
+      while (1) {
+	if (menu->evt) {
+		int blk;
+		blk=A4GL_has_evt_timeout(menu->evt);
+		if (blk) {
+				return blk-1;
+		}
+	}
+      	a = A4GL_menu_getkey (menu);
+	if (a) break;
+      }
+      if (menu->evt) {
+	      A4GL_evt_not_idle(menu->evt);
+      }
+      
       A4GL_debug ("menu_getkey returns %d", a);
       if (a == 23 || A4GL_is_special_key (a, A4GLKEY_HELP))
 	{
@@ -622,3 +636,39 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
   A4GL_LL_hide_h_menu ();
   return menu_response;
 }
+
+
+
+
+
+
+
+
+void UILIB_A4GL_add_menu_timeout(void *vmenu,char timeout_type,int timeout_len,int cmd_on_timeout,long *timeoutvar) {
+		ACL_Menu *menu;
+		menu=vmenu;
+		menu->nevt++;
+		menu->evt=realloc(menu->evt,sizeof(struct aclfgl_event_list)*(menu->nevt+1));
+
+
+		if (timeout_type=='D') { menu->evt[menu->nevt-1].event_type=A4GL_EVENT_ON_IDLE;     }
+		if (timeout_type=='V') { menu->evt[menu->nevt-1].event_type=A4GL_EVENT_ON_INTERVAL; }
+		menu->evt[menu->nevt-1].block=cmd_on_timeout+1; // menu options are numbered from 0 - but event blocks are from 1...
+		menu->evt[menu->nevt-1].keycode=timeout_len;
+		menu->evt[menu->nevt-1].field=timeoutvar;
+
+
+		menu->evt[menu->nevt].event_type=0; // We deliberatly made the evt record 1 more than nevt - so this should be ok
+}
+
+
+
+void UILIB_A4GL_add_menu_action(void *vmenu,char *action,int cmd_on_timeout) {
+		ACL_Menu *menu;
+		menu=vmenu;
+		menu->nevt++;
+		menu->evt=realloc(menu->evt,sizeof(struct aclfgl_event_list)*(menu->nevt+1));
+		menu->evt[menu->nevt].event_type=0; // We deliberatly made the evt record 1 more than nevt - so this should be ok
+}
+
+

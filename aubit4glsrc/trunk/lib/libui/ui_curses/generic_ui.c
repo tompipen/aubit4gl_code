@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.24 2005-06-18 09:56:57 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.25 2005-07-06 09:26:47 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -699,6 +699,8 @@ void *
   menu->mn_offset = 0;
   menu->first = 0;
   menu->num_opts = 0;
+  menu->evt=0;
+  menu->nevt=0;
   return (void *)menu;
 }
 
@@ -794,10 +796,45 @@ void
         (ACL_Menu_Opts *) menu->curr_option->next_option;
     }
 
+
+ if (menu->evt) { A4GL_clr_evt_timeouts(menu->evt); }
+
+
+
   A4GL_debug ("Current option=%p", menu->curr_option);
   A4GL_debug ("Current option help=%d", menu->curr_option->help_no);
   return;
 }
+
+
+void UILIB_A4GL_add_menu_timeout(void *vmenu,char timeout_type,int timeout_len,int cmd_on_timeout,long *timeoutvar) {
+		ACL_Menu *menu;
+		menu=vmenu;
+		menu->nevt++;
+		menu->evt=realloc(menu->evt,sizeof(struct aclfgl_event_list)*(menu->nevt+1));
+
+
+		if (timeout_type=='D') { menu->evt[menu->nevt-1].event_type=A4GL_EVENT_ON_IDLE;     }
+		if (timeout_type=='V') { menu->evt[menu->nevt-1].event_type=A4GL_EVENT_ON_INTERVAL; }
+		menu->evt[menu->nevt-1].block=cmd_on_timeout+1; // menu options are numbered from 0 - but event blocks are from 1...
+		menu->evt[menu->nevt-1].keycode=timeout_len;
+		menu->evt[menu->nevt-1].field=timeoutvar;
+
+
+		menu->evt[menu->nevt].event_type=0; // We deliberatly made the evt record 1 more than nevt - so this should be ok
+}
+
+
+
+void UILIB_A4GL_add_menu_action(void *vmenu,char *action,int cmd_on_timeout) {
+		ACL_Menu *menu;
+		menu=vmenu;
+		menu->nevt++;
+		menu->evt=realloc(menu->evt,sizeof(struct aclfgl_event_list)*(menu->nevt+1));
+		menu->evt[menu->nevt].event_type=0; // We deliberatly made the evt record 1 more than nevt - so this should be ok
+}
+
+
 
 
 ACL_Menu *
@@ -831,6 +868,7 @@ A4GL_new_menu (char *title,
   menu->y = y;
   menu->curr_page = 0;
   menu->mn_offset = 0;
+  menu->evt=0;
   opt1 = nalloc (ACL_Menu_Opts);
   menu->first = (ACL_Menu_Opts *) opt1;
   opt1->prev_option = 0;

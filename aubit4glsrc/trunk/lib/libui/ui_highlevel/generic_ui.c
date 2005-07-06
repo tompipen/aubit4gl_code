@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.57 2005-07-05 12:03:35 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.58 2005-07-06 09:26:48 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -786,6 +786,8 @@ UILIB_A4GL_new_menu_create (char *title, int x, int y, int mn_type,
   menu->mn_offset = 0;
   menu->first = 0;
   menu->num_opts = 0;
+  menu->evt=0;
+  menu->nevt=0;
   //A4GL_gui_startmenu (title, (long) menu);
   return (void *) menu;
 }
@@ -879,7 +881,9 @@ UILIB_A4GL_finish_create_menu (void *menuv)
 	break;
       menu->curr_option = (ACL_Menu_Opts *) menu->curr_option->next_option;
     }
-
+  if (menu->evt) {
+	  	A4GL_clr_evt_timeouts(menu->evt);
+  }
   A4GL_debug ("Current option=%p", menu->curr_option);
   A4GL_debug ("Current option help=%d", menu->curr_option->help_no);
   return;

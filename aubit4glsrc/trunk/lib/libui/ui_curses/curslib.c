@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.111 2005-06-23 17:57:39 mikeaubury Exp $
+# $Id: curslib.c,v 1.112 2005-07-06 09:26:47 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: curslib.c,v 1.111 2005-06-23 17:57:39 mikeaubury Exp $";
+		"$Id: curslib.c,v 1.112 2005-07-06 09:26:47 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1580,53 +1580,75 @@ void
  * @todo Describe function
  */
 int
- UILIB_A4GL_menu_loop_v2 (void *menuv,void *vevt)
+UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
 {
   ACL_Menu_Opts *old_option;
   //struct aclfgl_event_list *evt;
-   //WINDOW *w;
+  //WINDOW *w;
   int a;
   int key_pressed;
+  int lcnt = 0;
   ACL_Menu *menu;
+
   menu = menuv;
   A4GL_chkwin ();
   A4GL_menu_setcolor (menu, NORMAL_TEXT);
-  //A4GL_gui_actmenu ((int) menu);
-  A4GL_current_window(menu->parent_window_name);
-
-  //A4GL_refresh_menu_window (menu->window_name, 1);
-  A4GL_disp_h_menu(menu);
+  A4GL_current_window (menu->parent_window_name);
+  A4GL_disp_h_menu (menu);
   A4GL_debug ("Refreshed window - going into while loop");
+
   while (1 == 1)
     {
-      //A4GL_gui_setfocus ((int) menu->curr_option);
       old_option = (ACL_Menu_Opts *) menu->curr_option;
       abort_pressed = FALSE;
-      A4GL_h_disp_opt (menu, menu->curr_option, menu->menu_offset, menu->mn_offset, INVERT);
+      A4GL_h_disp_opt (menu, menu->curr_option, menu->menu_offset,
+		       menu->mn_offset, INVERT);
       A4GL_menu_setcolor (menu, NORMAL_TEXT);
-      //A4GL_mja_gotoxy (1, 1);
-      //A4GL_debug ("Gone to 1,1");
 
 
 
 #ifdef DEBUG
-      A4GL_debug ("Moved cursor for menu to %d %d", menu->menu_offset - 1, menu->menu_line);
+      A4GL_debug ("Moved cursor for menu to %d %d", menu->menu_offset - 1,
+		  menu->menu_line);
 #endif
 
-   //w=(WINDOW *)A4GL_find_pointer (A4GL_get_currwin_name (), WINCODE);
-      //wmove (w, 0, 0);
-	
+
 
 #ifdef DEBUG
       A4GL_debug (">>>> Getting key from menu");
 #endif
-      a = A4GL_menu_getkey (menu);
+
+      while (1)
+	{
+	  if (menu->evt)
+	    {
+	      int blk;
+	      blk = A4GL_has_evt_timeout (menu->evt);
+	      if (blk)
+		{
+		  return blk - 1;	// menu options are numbered from 0
+		}
+	    }
+
+	  a = A4GL_menu_getkey (menu);
+	  if (a)
+	    break;
+	}
+
+
+      if (menu->evt)
+	{
+	  A4GL_evt_not_idle (menu->evt);
+	}
+
+
 #ifdef DEBUG
-      A4GL_debug (">>>> KEY=%d %d %d", a,A4GLKEY_HELP,A4GL_is_special_key(a,A4GLKEY_HELP));
+      A4GL_debug (">>>> KEY=%d %d %d", a, A4GLKEY_HELP,
+		  A4GL_is_special_key (a, A4GLKEY_HELP));
 #endif
 
-	
-      if (A4GL_is_special_key(a,A4GLKEY_HELP))
+
+      if (A4GL_is_special_key (a, A4GLKEY_HELP))
 	{
 #ifdef DEBUG
 	  A4GL_debug ("....SHOWHELP.... menu->curr_option->help_no=%d",
@@ -2650,6 +2672,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
       A4GL_mja_gotoxy (1, 1+menu->menu_line);
       A4GL_tui_printr (1,"%s:", menu->menu_title);
       a = A4GL_getch_win ();
+      if (a==-1) return 0;
       A4GL_clr_error_nobox ("Menu");
 
       if (a == -1)

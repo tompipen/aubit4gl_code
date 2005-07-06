@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.25 2005-06-18 09:56:56 mikeaubury Exp $
+# $Id: console.c,v 1.26 2005-07-06 09:26:46 mikeaubury Exp $
 #*/
 
 /**
@@ -666,6 +666,8 @@ void* UILIB_A4GL_create_menu(void* m,char* id,int mode,void* handler)  NOPE0
 void* UILIB_A4GL_get_curr_form(int warn_if_no_form)  NOPE0
 void* UILIB_A4GL_make_pixmap_gw(char* filename)  NOPE0
 
+void UILIB_A4GL_add_menu_timeout (void* menu,char timeout_type,int timeout_len,int cmd_on_timer,long *timeoutvar) NOPE
+void UILIB_A4GL_add_menu_action  (void* menu,char*action,int cmd_on_timer) NOPE
 
 void UILIB_A4GL_acli_scroll_ap(int n,va_list* ap) NOPE
 void UILIB_A4GL_close_form(char* name) NOPE
