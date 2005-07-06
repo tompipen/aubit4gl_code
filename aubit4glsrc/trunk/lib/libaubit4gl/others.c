@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.52 2005-07-01 13:25:46 mikeaubury Exp $
+# $Id: others.c,v 1.53 2005-07-06 15:32:15 mikeaubury Exp $
 #
 */
 
@@ -113,6 +113,34 @@ aclfgl_fgl_lastkey (int _np)
   A4GL_push_long (_r);
   return 1;
 }
+
+
+
+
+int aclfgl_aclfgl_set_color (int _nargs){ 
+static char *_functionName = "a";
+   long c ; 
+   long r ; 
+   long g ; 
+   long b ; 
+   struct BINDING fbind[4]={ /* 4 */
+   {0,2,0} ,
+   {0,2,0} ,
+   {0,2,0} ,
+   {0,2,0}
+   }; 
+   fbind[0].ptr=&c;
+   fbind[1].ptr=&r;
+   fbind[2].ptr=&g;
+   fbind[3].ptr=&b;
+   A4GL_pop_params(fbind,4);
+
+   A4GL_init_color(c,r,g,b);
+
+   return 0;
+}
+
+
 
 
 int aclfgl_aclfgl_get_user(int n) {

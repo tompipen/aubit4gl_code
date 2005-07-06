@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.176 2005-07-05 12:03:30 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.177 2005-07-06 15:30:09 mikeaubury Exp $
 #
 */
 
@@ -2129,6 +2129,13 @@ int
 A4GL_call_4gl_dll_bound (char *filename, char *function, int ni,struct BINDING *ibind,int no,struct BINDING *obind);
 int A4GLSQL_execute_sql (char *pname, int ni, void *vibind);
 int A4GLSQL_add_prepare (char *pname, void *vsid);
+///
+
+int A4GL_has_evt_timeout(struct aclfgl_event_list *evt) ;
+void A4GL_clr_evt_timeouts(struct aclfgl_event_list *evt) ;
+void A4GL_evt_not_idle(struct aclfgl_event_list *evt) ;
+
+///
 
 
 char *A4GLSQLCV_insert_alias_column(char *t,char *c,char *v,int dtype);

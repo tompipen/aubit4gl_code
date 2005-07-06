@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.101 2005-07-05 12:03:33 mikeaubury Exp $
+# $Id: iarray.c,v 1.102 2005-07-06 15:32:16 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.101 2005-07-05 12:03:33 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.102 2005-07-06 15:32:16 mikeaubury Exp $";
 #endif
 
 /**
@@ -81,8 +81,8 @@ struct s_movement
   int attrib_no;
 };
 
-char *last_field_name;
-int last_key_code;
+static char *last_field_name;
+static int last_key_code;
 
 /*
 =====================================================================

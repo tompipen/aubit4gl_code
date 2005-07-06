@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.82 2005-07-05 12:03:33 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.83 2005-07-06 15:32:16 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.82 2005-07-05 12:03:33 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.83 2005-07-06 15:32:16 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -63,8 +63,8 @@ static int A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s);
 static void do_key_move_fc (char lr, struct s_screenio *s, int a,
 			 int has_picture, char *picture);
 char *A4GL_fld_data_ignore_format(struct struct_scr_field *fprop,char *fld_data) ;
-char *last_field_name;
-int last_key_code;
+static char *last_field_name;
+static int last_key_code;
 int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;

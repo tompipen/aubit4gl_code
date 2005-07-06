@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.26 2005-03-23 10:32:04 mikeaubury Exp $
+# $Id: colours.c,v 1.27 2005-07-06 15:32:15 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: colours.c,v 1.26 2005-03-23 10:32:04 mikeaubury Exp $";
+		"$Id: colours.c,v 1.27 2005-07-06 15:32:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -258,8 +258,9 @@ if (A4GL_isyes(acl_getenv("NO_INVIS_ATTR"))) {
   return ca;
 }
 
-void A4GL_init_color(int n,int r,int g,int b) {
+void UILIB_A4GL_init_color(int n,int r,int g,int b) {
 #ifdef NCURSES_VERSION
+	A4GL_chkwin();
 	if (can_change_color())   {
 		A4GL_debug("Changing Colour - %d %d %d %d",n,r,g,b);
 		init_color(n,r,g,b);

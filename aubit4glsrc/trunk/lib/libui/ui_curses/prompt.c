@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.51 2005-07-05 12:03:35 mikeaubury Exp $
+# $Id: prompt.c,v 1.52 2005-07-06 15:32:16 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.51 2005-07-05 12:03:35 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.52 2005-07-06 15:32:16 mikeaubury Exp $";
 #endif
 
 /**
@@ -320,7 +320,7 @@ int was_aborted=0;
   evt=vevt;
 
   if (prompt->mode==-1) { // Initialize prompt...
-  	int a;
+  	//int a;
 	A4GL_clr_evt_timeouts(evt);
 	prompt->mode=0;
 	return  0;

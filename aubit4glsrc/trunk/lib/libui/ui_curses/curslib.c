@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.112 2005-07-06 09:26:47 mikeaubury Exp $
+# $Id: curslib.c,v 1.113 2005-07-06 15:32:15 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: curslib.c,v 1.112 2005-07-06 09:26:47 mikeaubury Exp $";
+		"$Id: curslib.c,v 1.113 2005-07-06 15:32:15 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -97,7 +97,7 @@ void A4GL_do_pause (void);
 
 int have_default_colors = 0;
 
-int aborted;
+/* int aborted;*/
 char arr[MAXFORM][MAXFIELDS][A4GL_MAXWIDTH];
 char names[MAXFORM][MAXFIELDS][20];
 int namescnt = 0;
@@ -1587,7 +1587,7 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
   //WINDOW *w;
   int a;
   int key_pressed;
-  int lcnt = 0;
+  //int lcnt = 0;
   ACL_Menu *menu;
 
   menu = menuv;
