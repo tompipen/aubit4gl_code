@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.44 2005-03-14 18:35:09 mikeaubury Exp $
+# $Id: fcompile.c,v 1.45 2005-07-06 20:11:08 mikeaubury Exp $
 #*/
 
 /**
@@ -71,6 +71,7 @@ extern char *outputfilename;	/* defined in libaubit4gl */
 extern struct struct_scr_field *fld;	/* defined in libaubit4gl */
 extern struct struct_form the_form;	/* defined in libaubit4gl */
 
+int silent=0;
 char outputfile[132];
 int ignorekw = 0;
 int colno = 0;
@@ -107,6 +108,7 @@ main (int argc, char *argv[])
   char a[128];
   char b[128];
   char c[128] = "";
+  int waserr;
   char d[128] = "";
   int cnt;
   int cnt_files = 0;
@@ -130,10 +132,22 @@ main (int argc, char *argv[])
   strcpy (d, "");
 
   as_c = 0;
+  if (A4GL_isyes(acl_getenv("FCOMPILE_SILENT"))) {
+	  silent=1;
+  }
 
   for (cnt = 1; cnt < argc; cnt++)
     {
 
+
+      if (strcmp(argv[cnt],"-q")==0) {
+	      	silent=1;
+		continue;
+      }
+      if (strcmp(argv[cnt],"-s")==0) {
+	      	silent=1;
+		continue;
+      }
       if (strcmp (argv[cnt], "-v") == 0)
 	{
 	  A4GL_check_and_show_id ("4GL Form Compiler", argv[cnt]);
@@ -204,6 +218,11 @@ main (int argc, char *argv[])
     }
 
 
+  if (!silent) {
+  	A4GL_check_and_show_id ("4GL Form Compiler", "");
+	printf("\nThe form '%s' will now be compiled\n\n\n",c);
+  }
+
 
   yyin = A4GL_mja_fopen (c, "r");
 
@@ -219,7 +238,15 @@ main (int argc, char *argv[])
     }
   A4GL_init_form ();
 
-  return (a4gl_form_yyparse ());
+  waserr=a4gl_form_yyparse ();
+  if (!silent) {
+  	if (waserr) {
+		  printf("    The form compilation was ** not ** successful.\nPlease look at the relevant .err file\n\n");
+	  } else {
+		  printf("    The form compilation was successful.\n\n");
+	}
+  }
+  return waserr;
 
 }
 

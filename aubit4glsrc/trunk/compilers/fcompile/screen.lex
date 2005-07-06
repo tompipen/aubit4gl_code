@@ -14,6 +14,7 @@
 %o 4200
 %x comment
 %x instructions
+%x escaped
 %option yylineno
 /*%option interactive*/
 
@@ -29,18 +30,47 @@
 <comment>.	;
 <comment>[\n]	;
 
-"\\g" 	{
+
+<escaped>g	{
+		BEGIN INITIAL;
 		if (graphics_mode) graphics_mode=0;
 		else graphics_mode=1;
 		if (ignorekw==1) {
 			return KW_NONSPACE;
 		}
+}
+
+<escaped>. {
+	BEGIN INITIAL;
+        if (ignorekw==0) {
+			REJECT;
 	}
+	strcpy(yylval.str,yytext);
+
+	if (graphics_mode) {
+		if (
+			strcmp(yytext,"+")==0 ||
+			strcmp(yytext,"p")==0 ||
+			strcmp(yytext,"q")==0 ||
+			strcmp(yytext,"b")==0 ||
+			strcmp(yytext,"d")==0 ||
+			strcmp(yytext,"-")==0 ||
+			strcmp(yytext,"|")==0 ) {
+			sprintf(yylval.str,"\n%s",yytext);
+			return  GRAPH_CH;
+		}
+	}
+ 	A4GL_debug("CH : %s\n",yytext);  
+	return CH;
+}
+
+"\\"		{ if (ignorekw==0) REJECT; BEGIN escaped; }
+"["		{ strcpy(yylval.str, yytext); return(OPEN_SQUARE);}
+"]"		{ strcpy(yylval.str, yytext); return(CLOSE_SQUARE);}
 
 --! 	{if (in_screen_section) REJECT; }
 	
---[^!].* 	{if (in_screen_section) REJECT; 
-}
+--[^!].* 	{if (in_screen_section) REJECT; }
 
 [pdqb]  {
         if (ignorekw==0) REJECT;
@@ -85,9 +115,9 @@ screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_S
 "formonly"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(FORMONLY);}
 "size"		{ if (ignorekw) REJECT;strcpy(yylval.str, yytext); return(KW_SIZE);}
 "by"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(BY);}
-"["		{ strcpy(yylval.str, yytext); return(OPEN_SQUARE);}
+
+
 "end"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_END);}
-"]"		{ strcpy(yylval.str, yytext); return(CLOSE_SQUARE);}
 is[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNULLCHK;}
 is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNOTNULLCHK;}
 "is null" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNULLCHK;}
@@ -126,6 +156,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "NOT" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNOT;}
 
 "." 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DOT;}
+
 "|" 		{ strcpy(yylval.str,yytext); 
 			if (graphics_mode==0) {
 				return PIPE; 
@@ -134,6 +165,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 				return GRAPH_CH; 
 			}
 		}
+
 "=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return EQUAL;}
 "tables" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return TABLES;}
 "without" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return WITHOUT;}
@@ -278,6 +310,7 @@ on[	 ]beginning 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); r
 	if (ignorekw) REJECT;
 	strcpy(yylval.str, yytext);
 	A4GL_debug("NAMED : %s\n",yytext);
+	if (yydebug) printf("%s\n",yytext);
  	return(NAMED);
 }
 [a-zA-Z\_0-9]+[a-zA-Z\_0-9]*	{
@@ -294,6 +327,7 @@ if (graphics_mode) {
 strcpy(yylval.str, yytext);
  A4GL_debug("NAMED : %s\n",yytext); 
 	A4GL_debug("NAMED : %s\n",yytext);
+	if (yydebug) printf("%s\n",yytext);
 return(NAMED);}
 
 .	{
@@ -314,8 +348,10 @@ return(NAMED);}
 		}
 	}
  A4GL_debug("CH : %s\n",yytext);  
+	if (yydebug) printf("%s\n",yytext);
 return CH;
 }
+
 %%
 
 /**

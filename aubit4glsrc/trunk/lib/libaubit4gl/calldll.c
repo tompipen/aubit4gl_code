@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.55 2005-05-18 13:48:40 mikeaubury Exp $
+# $Id: calldll.c,v 1.56 2005-07-06 20:13:39 mikeaubury Exp $
 #
 */
 
@@ -303,6 +303,8 @@ A4GL_dl_openlibrary (char *type, char *p)
   static char buff[1024];
   char buff2[1024];
   static char tmpbuff[1024];
+  char *soext;
+  char soext_2[256];
 
   char *plugin_name;
 
@@ -319,6 +321,17 @@ A4GL_dl_openlibrary (char *type, char *p)
 	A4GL_fgl_die_with_msg(43,"Cannot determine AUBITDIR");
     }
 
+
+soext=acl_getenv("SO_EXT");
+strcpy(soext_2,SO_EXT);
+if (soext) {
+	if (strlen(soext)) {
+		strcpy(soext_2,soext);
+	}
+}
+sprintf (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type, plugin_name,soext_2);
+
+#ifdef WHY_MESS_AROUND
 #ifdef __CYGWIN__
   sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type,
 	   plugin_name);
@@ -327,67 +340,24 @@ A4GL_dl_openlibrary (char *type, char *p)
 	  sprintf (buff, "%s/lib/lib%s_%s.bundle", acl_getenv ("AUBITDIR"), type,
 		   plugin_name);
 
-	  /*
-	     void *handle;
-	     void (*hw)(void);
-	     void (*hh)(void);
-	     printf("Loading \"libhello.dylib\" .....\n");
-	     handle = dlopen("/Users/fujiik/sandbox/mypkg/src/libdl/test/libhello.dylib",RTLD_LAZY);
-
-	     hw = dlsym(handle,"_helloworld");
-	     (*hw)();
-	     hh = dlsym(handle,"_hellohoge");
-	     (*hh)();
-
-	     dlclose(handle);
-
-	   */
-
 
 	#else
 		#if defined(__MINGW32__)
-
-		//printf("Mingwin mode %s\n",acl_getenv("AUBITDIR"));
-		  //printf("dl_openlibrary received %s %s\n",type, plugin_name);
-		  //printf("1 plugin_name = %s\n",plugin_name);
 		  char *aubitdirptr;
-		  //printf("2 plugin_name = %s\n",plugin_name);
 		  aubitdirptr = acl_getenv ("AUBITDIR");
-		  //sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, plugin_name);
-		  //printf("3 plugin_name = %s\n",plugin_name); // <<<<<<< FUCKED!!!!
 		  sprintf (buff2, "%s/lib/lib%s", aubitdirptr, type);
-		  //printf("buff2 = %s\n",buff2);
-		  //printf("4 plugin_name = %s\n",plugin_name);
 		  sprintf (buff, "%s_%s.dll", buff2, plugin_name);
-		  //printf("buff = %s\n",buff);
 		#else
-/*
-#define hppa 1
-#define hpux 1
-#define __hp9000s800__ 1
-#define __hppa 1
-#define __hpux 1
-#define __hp9000s700 1
-#define __hp9k8__ 1
-#define hp9000s800 1
-#define __hppa__ 1
-#define __hp9k8 1
-#define __hp9000s800 1
-#define hp9k8 1
-#define __hpux__ 1
-#define __VERSION__ "3.2"
-*/
-
 			#if defined(__hpux__) //HP-UX UNIX OS
 			  sprintf (buff, "%s/lib/lib%s_%s.sl", acl_getenv ("AUBITDIR"), type,
 				   plugin_name);
             #else
 			  /* all other platforms: */
-			  sprintf (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type,
-				   plugin_name,SO_EXT);
+			  sprintf (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type, plugin_name,SO_EXT);
             #endif
 		#endif
 	#endif
+#endif
 #endif
 
 #ifdef DEBUG
@@ -447,11 +417,11 @@ A4GL_find_func (void *dllhandle, char *func)
 */
 
 
-#if (defined(__MACH__) && defined(__APPLE__))
-  sprintf (tempbuff, "_%s", func);
-#else
-  sprintf (tempbuff, "%s", func);
-#endif
+  if (A4GL_isyes(acl_getenv("PREFIX_DLLFUNCTION"))) {
+  	sprintf (tempbuff, "_%s", func);
+  } else {
+  	sprintf (tempbuff, "%s", func);
+  }
 
 inc_usage(func);
   A4GL_debug ("35 find_func: Finding pointer to DLL function %s\n", A4GL_null_as_null(tempbuff));
