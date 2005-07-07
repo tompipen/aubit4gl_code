@@ -48,7 +48,7 @@ MAIN
 	DECLARE cr_ CURSOR FOR
     SELECT keyColumn, valueColumn, dateColumn
       FROM xpto
-      WHERE dateColumn <> mdy(12,31,1999)
+      WHERE dateColumn <> dt 			# mdy(12,31,1999)
 			ORDER BY 1
 
 	OPEN cr_
