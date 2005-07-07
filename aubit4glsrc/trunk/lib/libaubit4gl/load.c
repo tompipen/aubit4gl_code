@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.30 2005-06-08 20:24:07 mikeaubury Exp $
+# $Id: load.c,v 1.31 2005-07-07 14:40:07 mikeaubury Exp $
 #
 */
 
@@ -282,7 +282,6 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 
   while (1)
     {
-      lineno++;
       fgets (loadbuff, LOADBUFFSIZE - 1, p);
 
 
@@ -292,6 +291,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 	  A4GL_debug ("Got to end of the file");
 	  break;
 	}
+      lineno++;
       stripnlload (loadbuff, delim);
       A4GL_debug ("Read line '%s'", loadbuff);
       nfields = find_delims (delim);
