@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.140 2005-06-08 07:54:37 mikeaubury Exp $
+# $Id: esql.ec,v 1.141 2005-07-07 15:51:01 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.140 2005-06-08 07:54:37 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.141 2005-07-07 15:51:01 mikeaubury Exp $";
 #endif
 
 
@@ -2876,7 +2876,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
    	sid->obind=o1; sid->no=o2;
     return 0;
   }
-
+ copy_sqlca_Stuff(1);
 
   if (processPosStatementBinds (sid) == 1) {
    	sid->obind=o1; sid->no=o2;

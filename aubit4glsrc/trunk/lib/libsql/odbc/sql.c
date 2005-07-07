@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.128 2005-07-07 10:18:33 mikeaubury Exp $
+# $Id: sql.c,v 1.129 2005-07-07 15:51:07 mikeaubury Exp $
 #
 */
 
@@ -1484,6 +1484,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
 
 
   ibind = vibind;
+      a4gl_sqlca.sqlerrd[2] = 0;
 
 #ifdef DEBUG
   A4GL_debug ("In fetch_cursor (%s,%d,%d,%d,%p)", cursor_name, fetch_mode,
@@ -1628,6 +1629,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
       A4GLSQL_set_status (100, 1);
       return 0;
     }
+      a4gl_sqlca.sqlerrd[2] = 1;
 
   /*
      if (rc != SQL_SUCCESS && rc != SQL_NO_DATA_FOUND)
