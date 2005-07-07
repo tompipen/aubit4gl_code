@@ -8,43 +8,249 @@
 
 <body>
 
-<h2 align="center">Aubit 4GL compiler status</h2>
+<h2 align="center">Aubit project status</h2>
 <hr>
 <p>Last updated on 25/06/2005, by Andrej Falout</p>
+<p>This page attempts to keep track on progress of various Aubit compiler 
+functionality and components, and quantify there maturity. It's main goal is to 
+help set appropriate level of expectations for the end user, and at the same 
+time provide a common place of reference for developers. As it catalogues all 
+components of the project, it may also serve as a good starting point for 
+exploration, both end users and developers. For folks that prefer bullets to sentences (and therefore probably 
+are not reading this anyway):</p>
+<p>Purpose:</p>
+<ul>
+  <li>keep track of progress</li>
+  <li>quantify maturity</li>
+  <li>set expectations</li>
+  <li>common place of reference</li>
+  <li>catalogue components</li>
+</ul>
 <p>Aubit compiler is a work in progress, and by the very nature of OpenSource 
 development process, it will remain in such state for foreseeable future. This 
 means that some components may be fully production ready and extensively tested, 
-but some other may be not much then a prototype. </p>
+but some other may be not much more then a prototype. For readers unfamiliar 
+with OpenSource software, this is common, if not universal occurrence. Same is 
+true for most commercial software products, it is just that end user rarely has 
+the chance to see any parts of internal, proprietary development process.</p>
 <p>Thanks to the fully modular architecture of Aubit compiler, where practically 
 all functionality is implemented in a form of plug-ins, this varying status 
-levels do not have to be a cause for concern. Additionally, Aubit provides a 
-full automated regression tests suite of over 800 tests, so it easy for user to 
-verify functionality of all components on every Aubit release, in less then 30 
+levels do not have to be a cause for concern, but has to be understood. Additionally, Aubit provides a 
+full automated regression tests suite of over 800 tests, so it is easy for user to 
+verify functionality of all components (or only components developer wants to 
+use) on every Aubit release, in less then 30 
 minutes.</p>
-<p>This page attempts to keep track on progress of various Aubit compiler 
-functionality and components, and quantify there maturity. It will hopefully 
-help you set appropriate level of expectations.</p>
-<p>TODO:</p>
+<p>TO-DO:</p>
 <ul>
-	<li>Add link to regression test results for general 4GL features</li>
+	<li>Add link to current regression test results for general 4GL features 
+    (Mike?)</li>
 	<li>Add links to regression test result for database features/SQL for each 
-	database upported</li>
+	database supported (Andrej)</li>
+    <li>Make this page a Wiki home page; create link for each feature/module 
+    into its own Wiki page, to enable developers to easily share information 
+    specific to functionality/module with users and other developers, especially 
+    between the manual releases. This repositories of information will then 
+    represent a base to migrate information on new functionality into the 
+    manual. (Andrej)</li>
 </ul>
 <hr>
+<h2 align="center">All components of Aubit project</h2>
+<table border="1" width="100%" id="table2">
+	<tr>
+		<td align="center" bgcolor="#C0C0C0">Name</td>
+		<td align="center" bgcolor="#C0C0C0">Description</td>
+		<td align="center" bgcolor="#C0C0C0">Current maintainer</td>
+		<td align="center" bgcolor="#C0C0C0">Source code location (from CVS 
+        root)</td>
+		<td align="center" bgcolor="#C0C0C0">Status</td>
+		<td align="center" bgcolor="#C0C0C0">Work needed</td>
+		<td align="center" bgcolor="#C0C0C0">Notes</td>
+	</tr>
+	<tr>
+		<td>Aubit 4GL compiler</td>
+		<td>Contains x4GL programming language compiler(s) and run-rime 
+        libraries</td>
+		<td>see <a href="#Aubit_4GL_compiler">table</a>; Overall: Mike 
+        Aubury</td>
+		<td>aubit4glsrc/</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>See <a href="#Aubit_4GL_compiler">table</a> </td>
+		<td>Overall status is an estimate of maturity of most commonly used 
+        components. See <a href="#Aubit_4GL_compiler">table</a> for details.</td>
+	</tr>
+    <tr>
+		<td>Aubit 4GL compiler documentation</td>
+		<td>Contains Aubit 4GL compiler manual and other documentation</td>
+		<td>John O'Gorman</td>
+		<td>aubit4gldoc/manual</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>Re-format, re-write significant parts, update, complete missing 
+        chapters, create PDF and set-up online HTML version with reader comment 
+        functionality (ala PHP manual). Add source to CVS<p>Project Plan and 
+        Quick Start documents need to be written; clean up docs on SF doc. 
+        manager</td>
+		<td>Manual is currently being rewritten by John O'Gorman. Work in 
+        progress can be found <a href="http://www.og.co.nz/aubithome.html">here</a>.</td>
+	</tr>
+    <tr>
+		<td>x4GL programming language reference</td>
+		<td>Documents syntax of x4GL programming language</td>
+		<td>Andrej Falout</td>
+		<td>aubit4gldoc/4glreference</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>Add SQL syntax as per Informix dialect; add Aubit and other 
+        extensions; convert current format (HTML) into DocBook</td>
+		<td>Currently contains only 4GL statements, and NOT any SQL statements 
+        and related information. It provides almost exclusively only base I-4GL 
+        syntax, and does not document Aubit, 4JS or any other language 
+        extensions</td>
+	</tr>
+    <tr>
+		<td>FGLBLD</td>
+		<td>Jonathan Leffler's data driven application generator</td>
+		<td>Andrej Falout</td>
+		<td>gen4gl/</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>Use amake to compile, enabling compilation with all x4GL compilers</td>
+		<td>&nbsp;i-4GL only makefiles. Manual in aubit4gldoc/fglbld-doc</td>
+	</tr>
+    <tr>
+		<td>FGLGEN</td>
+		<td>Jonathan Leffler's data driven advanced application framework 
+        generator</td>
+		<td>?</td>
+		<td>?</td>
+		<td>?</td>
+		<td>Import to CVS</td>
+		<td>Looks like it was never imported into CVS?</td>
+	</tr>
+    <tr>
+		<td>Hy4GL</td>
+		<td>Experimental 4GL compiler written by David Prieto</td>
+		<td>Not maintained</td>
+		<td>hy4gl/</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>None</td>
+		<td>Not developed or supported - primarily of historic interest</td>
+	</tr>
+    <tr>
+		<td>4GLworks</td>
+		<td>4GL application framework; Message driven, Object oriented, written 
+        in 4GL</td>
+		<td>? Marco Greco</td>
+		<td>appframework/</td>
+		<td>&nbsp;</td>
+		<td>Use amake to compile to enable compilation with all x4GL compilers</td>
+		<td>Manual is in aubit4gldoc/4glworks-manual. Also see
+        <a href="4glworks.com">Marco's site</a> </td>
+	</tr>
+    <tr>
+		<td>x4GL regression tests</td>
+		<td>Fully automated framework of regression tests for x4GL compilers</td>
+		<td>Mike/Andrej</td>
+		<td>aubit4gltest/</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>Expand Aubit features coverage, as documented in the
+        <a href="#Aubit_4GL_compiler">table</a></td>
+		<td>Some documentation in aubit4gltest/docs folder</td>
+	</tr>
+    <tr>
+		<td>Aubit project web site</td>
+		<td>Pages and files that make Aubit project web site</td>
+		<td>Andrej Falout</td>
+		<td>aubit4glwww/</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>To be migrated into CMS framework in next few weeks by Andrej</td>
+		<td>New web site priorities:<ul>
+          <li>CMS based</li>
+          <li>Wiki</li>
+          <li>FAQ management</li>
+          <li>Downloads management</li>
+          <li>Web discussion ONLY if it has transparent gateway to the mailing 
+          list</li>
+          <li>Articles management</li>
+          <li>News management</li>
+          <li>Enables easy migration to other CMS if needed</li>
+          <li>Will work on SF server</li>
+        </ul>
+        </td>
+	</tr>
+    <tr>
+		<td>Doc4GL</td>
+		<td>x4GL and database documentation tools originally written by Sergio 
+        Ferreira</td>
+		<td>Andrej Falout</td>
+		<td>doc4gl/</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>Use amake to compile to enable compilation with all x4GL compilers; 
+        complete automatic makefile generation testing on OneMaxx; enable 
+        database meta-data (data dictionary) input and maintenance via web 
+        interface</td>
+		<td>Major components of Doc4GL<ul>
+          <li>Parser/metadata collection <img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></li>
+          <li>Web browser interface (JSP) <img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></li>
+          <li>GUI interface (Perl) <img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></li>
+          <li>TUI interface (4GL) <img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></li>
+          <li>DB meta-data / x4GL program integration</li>
+          <li>Automatic makefiles generation (for Amake)</li>
+          <li>Manual (in aubit4gldoc/doc4gl-manual) <img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></li>
+        </ul>
+        <p>All the tools currently expect Informix RDBMS back-end. Tools are 
+        successfully used in <a href="http://apps4gl.sourceforge.net/">Apps4GL</a> 
+        project's <a href="http://apps4gl.sourceforge.net/onemaxx/index.htm">
+        OneMaxx ERP suite</a></td>
+	</tr>
+    <tr>
+		<td>x4GL libraries repository</td>
+		<td>Collections of generally useful and reusable libraries of functions 
+        fort use in x4GL programs</td>
+		<td>Andrej Falout</td>
+		<td>lib4gl/</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>Use amake to compile to enable compilation with all x4GL compilers</td>
+		<td>Main components:<ul>
+          <li>lib4glc - collection of extension written in C (most originally 
+          written by ) (manual in aubit4gldoc/lib4glc-manual) <img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></li>
+          <li>libi4gl - collection of libraries in x4GL and C (most originally 
+          written by Jonathan Leffler) (manual in aubit4gldoc/lib4gl-manual) <img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></li>
+          <li>power4gl - general purpose functions toolkit with main focus on 
+          user interface and reports (Originally written by John H. Frantz) <img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></li>
+        </ul>
+        <p>Note: most makefiles are currently i-4gl only; code itself should 
+        work with any x4GL compiler</td>
+	</tr>
+</table>
+<p>&nbsp;</p>
+<p>Useful links:</p>
+<ul>
+  <li><a href="http://sourceforge.net/cvs/?group_id=32409">CVS access 
+  instructions</a> for all Aubit project</li>
+  <li><a href="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/">Web browser 
+  interface</a> for CVS repository</li>
+  <li><a href="http://aubit4gl.sourceforge.net/aubit4gldoc/index.html">On-line 
+  manuals &amp; documentation</a> main page</li>
+</ul>
+<hr>
+<h2 align="center"><a name="Aubit_4GL_compiler">Aubit 4GL compiler</a> 
+components </h2>
 <table border="1" width="100%" id="table1">
 	<tr>
 		<td align="center" bgcolor="#C0C0C0">Functionality</td>
 		<td align="center" bgcolor="#C0C0C0">Module (plug-in library / 
 		executable / command) name</td>
 		<td align="center" bgcolor="#C0C0C0">Description</td>
-		<td align="center" bgcolor="#C0C0C0">Source code location</td>
+		<td align="center" bgcolor="#C0C0C0">Source code location<br>
+        (relative to aubit4glsrc)</td>
 		<td align="center" bgcolor="#C0C0C0">Status</td>
 		<td align="center" bgcolor="#C0C0C0">Maintainer</td>
 		<td align="center" bgcolor="#C0C0C0">Build command</td>
-		<td align="center" bgcolor="#C0C0C0">Usage examples</td>
+		<td align="center" bgcolor="#C0C0C0">Usage examples /<br>
+        settings needed</td>
 		<td align="center" bgcolor="#C0C0C0">Depends<br>
 		on</td>
+		<td align="center" bgcolor="#C0C0C0">Documentation</td>
 		<td align="center" bgcolor="#C0C0C0">Regression tests coverage</td>
+		<td align="center" bgcolor="#C0C0C0" width="55">Work needed</td>
 		<td align="center" bgcolor="#C0C0C0">Notes</td>
 	</tr>
 	<tr>
@@ -53,12 +259,16 @@ help you set appropriate level of expectations.</p>
 		<td>Implements core programming language run-time functionality and 
 		contains APIs for all plug-ins</td>
 		<td>lib/libaubit4gl</td>
-		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><p>
+        (with some exceptions)</td>
 		<td>MA</td>
 		<td>always created by root makefile</td>
-		<td>aubit4gltest</td>
+		<td>see aubit4gltest regression tests source code tree for many examples<p>
+        ABUITDIR</td>
 		<td>None</td>
+		<td>Aubit manual</td>
 		<td>mostly </td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -71,7 +281,10 @@ help you set appropriate level of expectations.</p>
 		<td>root makefile: make rpm</td>
 		<td>N/A</td>
 		<td>RPM tools</td>
-		<td>some in makefile</td>
+		<td>Build -none (auto generated by Autoconf)<br>
+        Usage - &quot;man RPM&quot;</td>
+		<td>some in root makefile</td>
+		<td width="55">testing</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -84,20 +297,25 @@ help you set appropriate level of expectations.</p>
 		<td>?</td>
 		<td>N/A</td>
 		<td>?</td>
+		<td>Build - none<br>
+        Usage - &quot;man apt&quot;</td>
 		<td>none</td>
+		<td width="55">Probably easier to use Alien to convert RPM's? Abandon?</td>
 		<td>Directory named &quot;debian&quot; in Aubit tree root is empty and obsolete</td>
 	</tr>
 	<tr>
 		<td>Windows installer</td>
-		<td>&nbsp;</td>
+		<td>N/A</td>
 		<td>Packages Aubit compiler into Windows setup installer executable</td>
 		<td>etc/aubit-InnoSetop.iss.in</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>AF</td>
 		<td>root makefile: make winsetup</td>
-		<td>&nbsp;</td>
+		<td>N/A</td>
 		<td>InnoSetup &amp; additional InnoSetup extension</td>
-		<td>some in makefile</td>
+		<td>Build - see InnoSetup manual (spec auto generated by Autoconf)</td>
+		<td>some in root makefile</td>
+		<td width="55">testing</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -108,25 +326,53 @@ help you set appropriate level of expectations.</p>
 		<td>compilers/4glc</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>MA</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>always created by root makefile</td>
+		<td>see aubit4gltest regression tests source code tree for many examples<p>
+        ABUITDIR, A4GL_SQLTYPE when x4GL code contains Define ... LIKE 
+        statements</p>
+&nbsp;</td>
 		<td>None</td>
+		<td>Aubit manual</td>
 		<td>mostly</td>
+		<td width="55">OO extensions; language bindings for extension&nbsp; 
+        components that do not have them </td>
 		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td align="center" bgcolor="#C0C0C0">Functionality</td>
+		<td align="center" bgcolor="#C0C0C0">Module (plug-in library / 
+		executable / command) name</td>
+		<td align="center" bgcolor="#C0C0C0">Description</td>
+		<td align="center" bgcolor="#C0C0C0">Source code location<br>
+        (relative to aubit4glsrc)</td>
+		<td align="center" bgcolor="#C0C0C0">Status</td>
+		<td align="center" bgcolor="#C0C0C0">Maintainer</td>
+		<td align="center" bgcolor="#C0C0C0">Build command</td>
+		<td align="center" bgcolor="#C0C0C0">Usage examples /<br>
+        settings needed</td>
+		<td align="center" bgcolor="#C0C0C0">Depends<br>
+		on</td>
+		<td align="center" bgcolor="#C0C0C0">Documentation</td>
+		<td align="center" bgcolor="#C0C0C0">Regression tests coverage</td>
+		<td align="center" bgcolor="#C0C0C0" width="55">Work needed</td>
+		<td align="center" bgcolor="#C0C0C0">Notes</td>
 	</tr>
 	<tr>
 		<td>Windows only library</td>
 		<td>lib4glc</td>
-		<td>Contains most functionality of 4glc executable on Windows platform</td>
+		<td>Contains most functionality of 4glc executable on Windows platform, 
+        but packaged as dll</td>
 		<td>compilers/4glc</td>
-		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>mostly</td>
+		<td>see 4glc</td>
+		<td>see 4glc</td>
+		<td>always created by root makefile (on Windows)</td>
+		<td>see 4glc</td>
+		<td>see 4glc</td>
+		<td>see 4glc</td>
+		<td>see 4glc</td>
+		<td width="55">see 4glc</td>
 		<td>Needed because of limitations on Windows platform. Otherwise same as 
-		4glc excutable.</td>
+		4glc executable.</td>
 	</tr>
 	<tr>
 		<td>4GL compiler front end</td>
@@ -135,66 +381,79 @@ help you set appropriate level of expectations.</p>
 		<td>tools/4glpc</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>MA</td>
+		<td>make in home dir</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Aubit</td>
+		<td>see --help (&quot;4glpc --help&quot;)</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>Written in 4GL</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
+		<td>Informix-Ace compatible reports&nbsp; compiler</td>
 		<td>aace</td>
-		<td>&nbsp;</td>
+		<td>Compiles an Informix compatible .ace report instructions source file 
+        into an executable program</td>
 		<td>compilers/ace</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>MA</td>
 		<td>&nbsp;</td>
+		<td>some files in tools/test/ace</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>some files in tools/test/ace manual testing only</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
+		<td>Informix-Ace compatible reports&nbsp; translator for x4GL</td>
 		<td>aace_4gl</td>
-		<td>&nbsp;</td>
+		<td>Translates .ace source files to .4gl source files</td>
 		<td>compilers/ace</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>MA</td>
 		<td>&nbsp;</td>
+		<td>some files in tools/test/ace</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>some files in tools/test/ace manual testing only</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
+		<td>Informix-Ace compatible reports&nbsp; translator for Perl</td>
 		<td>aace_perl</td>
-		<td>&nbsp;</td>
+		<td>Translates .ace source files to .pl source files</td>
 		<td>compilers/ace and compilers/ace/perl_runner</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>MA</td>
 		<td>&nbsp;</td>
+		<td>some files in tools/test/ace</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>some files in tools/test/ace manual testing only</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
+		<td>Informix-like dbschemma utility with extensions</td>
 		<td>adbschema</td>
-		<td>&nbsp;</td>
+		<td>Re-creates SQL statements needed to re-create an existing database. 
+        Also creates schema files for &quot;schema-in-file&quot; plug-in and can help in 
+        porting database data </td>
 		<td>tools/adbschema</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>MA</td>
 		<td>&nbsp;</td>
+		<td>DB porting example in root OneMaxx makefile</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
+		<td>???</td>
 		<td>adecompile</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
@@ -203,38 +462,65 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
+		<td align="center" bgcolor="#C0C0C0">Functionality</td>
+		<td align="center" bgcolor="#C0C0C0">Module (plug-in library / 
+		executable / command) name</td>
+		<td align="center" bgcolor="#C0C0C0">Description</td>
+		<td align="center" bgcolor="#C0C0C0">Source code location<br>
+        (relative to aubit4glsrc)</td>
+		<td align="center" bgcolor="#C0C0C0">Status</td>
+		<td align="center" bgcolor="#C0C0C0">Maintainer</td>
+		<td align="center" bgcolor="#C0C0C0">Build command</td>
+		<td align="center" bgcolor="#C0C0C0">Usage examples /<br>
+        settings needed</td>
+		<td align="center" bgcolor="#C0C0C0">Depends<br>
+		on</td>
+		<td align="center" bgcolor="#C0C0C0">Documentation</td>
+		<td align="center" bgcolor="#C0C0C0">Regression tests coverage</td>
+		<td align="center" bgcolor="#C0C0C0" width="55">Work needed</td>
+		<td align="center" bgcolor="#C0C0C0">Notes</td>
+	</tr>
+	<tr>
+		<td>Informix-like finderr utility</td>
 		<td>afinderr</td>
-		<td>&nbsp;</td>
+		<td>Enables user to look-op a corresponding error description, using a 
+        error message number</td>
 		<td>tools/afinderr</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>none</td>
 		<td>&nbsp;</td>
+		<td>none</td>
+		<td width="55">&nbsp;</td>
+		<td>User has to manually copy original Informix .iem message files to to 
+        the Aubit directory, in order to get standard error message descriptions </td>
 	</tr>
 	<tr>
 		<td>4GL make front end</td>
 		<td>amake</td>
-		<td>Command line tool for compiling 4GL programs using simplified 
-		program specifications and multiple 4GL&nbsp; compilers</td>
+		<td>Command line tool for compiling x4GL programs using simplified 
+		program specifications and multiple x4GL&nbsp;compilers</td>
 		<td>bin</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>AF</td>
+		<td>N/A</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>used in regression tests and compiler build itself</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Amake makefiles can be automatically generated using Doc4GL</td>
 	</tr>
 	<tr>
-		<td>OLD?</td>
+		<td>OLD???</td>
 		<td>amkmessage</td>
 		<td>&nbsp;</td>
 		<td>compilers/helpcompile</td>
@@ -243,7 +529,9 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>&nbsp;</td>
 		<td>?</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -255,8 +543,10 @@ help you set appropriate level of expectations.</p>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>PostgreSQL ecpg </td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -268,8 +558,10 @@ help you set appropriate level of expectations.</p>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>Informix ESQL/C</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -281,8 +573,10 @@ help you set appropriate level of expectations.</p>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>At least one available Aubit SQL plug-in </td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -293,23 +587,47 @@ help you set appropriate level of expectations.</p>
 		<td>bin</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>AF</td>
+		<td>N/A</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Bash interpreter</td>
 		<td>&nbsp;</td>
 		<td>used in regression tests</td>
+		<td width="55">&nbsp;</td>
 		<td>Shell script</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
+		<td align="center" bgcolor="#C0C0C0">Functionality</td>
+		<td align="center" bgcolor="#C0C0C0">Module (plug-in library / 
+		executable / command) name</td>
+		<td align="center" bgcolor="#C0C0C0">Description</td>
+		<td align="center" bgcolor="#C0C0C0">Source code location<br>
+        (relative to aubit4glsrc)</td>
+		<td align="center" bgcolor="#C0C0C0">Status</td>
+		<td align="center" bgcolor="#C0C0C0">Maintainer</td>
+		<td align="center" bgcolor="#C0C0C0">Build command</td>
+		<td align="center" bgcolor="#C0C0C0">Usage examples /<br>
+        settings needed</td>
+		<td align="center" bgcolor="#C0C0C0">Depends<br>
+		on</td>
+		<td align="center" bgcolor="#C0C0C0">Documentation</td>
+		<td align="center" bgcolor="#C0C0C0">Regression tests coverage</td>
+		<td align="center" bgcolor="#C0C0C0" width="55">Work needed</td>
+		<td align="center" bgcolor="#C0C0C0">Notes</td>
+	</tr>
+	<tr>
+		<td>Informix-like aupscol utility</td>
 		<td>aupscol</td>
-		<td>&nbsp;</td>
+		<td>Simple utility for maintaining central database repository of form 
+        fields validation and display information </td>
 		<td>tools/aupscol</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -321,8 +639,10 @@ help you set appropriate level of expectations.</p>
 		<td>AF</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>Bash, wget, scp</td>
 		<td>&nbsp;</td>
 		<td>used daily for automated builds</td>
+		<td width="55">&nbsp;</td>
 		<td>Shell script - primarily used for automatic nightly builds page</td>
 	</tr>
 	<tr>
@@ -336,8 +656,10 @@ help you set appropriate level of expectations.</p>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -349,8 +671,10 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>XDR?</td>
 		<td>&nbsp;</td>
 		<td>some tests in regression tests are p-code enabled</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -365,6 +689,8 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>P-code ...</td>
@@ -377,6 +703,8 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -391,6 +719,8 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>P-code ...</td>
@@ -403,6 +733,8 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -417,6 +749,8 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>Configuration tool</td>
@@ -428,12 +762,14 @@ help you set appropriate level of expectations.</p>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>OLD SQL dialect converter</td>
+		<td>OLD??? SQL dialect converter</td>
 		<td>convertsql</td>
 		<td>Command line </td>
 		<td>tools/convertsql</td>
@@ -441,8 +777,10 @@ help you set appropriate level of expectations.</p>
 		<td>?</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -454,9 +792,30 @@ help you set appropriate level of expectations.</p>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td align="center" bgcolor="#C0C0C0">Functionality</td>
+		<td align="center" bgcolor="#C0C0C0">Module (plug-in library / 
+		executable / command) name</td>
+		<td align="center" bgcolor="#C0C0C0">Description</td>
+		<td align="center" bgcolor="#C0C0C0">Source code location<br>
+        (relative to aubit4glsrc)</td>
+		<td align="center" bgcolor="#C0C0C0">Status</td>
+		<td align="center" bgcolor="#C0C0C0">Maintainer</td>
+		<td align="center" bgcolor="#C0C0C0">Build command</td>
+		<td align="center" bgcolor="#C0C0C0">Usage examples /<br>
+        settings needed</td>
+		<td align="center" bgcolor="#C0C0C0">Depends<br>
+		on</td>
+		<td align="center" bgcolor="#C0C0C0">Documentation</td>
+		<td align="center" bgcolor="#C0C0C0">Regression tests coverage</td>
+		<td align="center" bgcolor="#C0C0C0" width="55">Work needed</td>
+		<td align="center" bgcolor="#C0C0C0">Notes</td>
 	</tr>
 	<tr>
 		<td>Core form compiler</td>
@@ -468,8 +827,11 @@ help you set appropriate level of expectations.</p>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>If forms compiled reference a database, then at least one Aubit SQL 
+        plug-in capable of accessing that database</td>
 		<td>&nbsp;</td>
 		<td>mostly</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -481,8 +843,10 @@ help you set appropriate level of expectations.</p>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -494,21 +858,26 @@ help you set appropriate level of expectations.</p>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
+		<td>Default Ace report generator</td>
 		<td>generate_aace</td>
-		<td>&nbsp;</td>
+		<td>Generates default report .ace source file based on one database 
+        table</td>
 		<td>compilers/ace</td>
 		<td>&nbsp;</td>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>SQL plug-in</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -520,8 +889,10 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>libGLADE (GTK+), Informix ESQL/C</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>Mostly a demonstration of Aubit &quot;real&quot; GUI (non-block mode/.per) 
 		using GLADE&nbsp; </td>
 	</tr>
@@ -534,8 +905,10 @@ help you set appropriate level of expectations.</p>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>libGLADE (GTK+)</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>Mostly a demonstration of Aubit &quot;real&quot; GUI (non-block mode/.per) 
 		using GLADE</td>
 	</tr>
@@ -551,6 +924,27 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td align="center" bgcolor="#C0C0C0">Functionality</td>
+		<td align="center" bgcolor="#C0C0C0">Module (plug-in library / 
+		executable / command) name</td>
+		<td align="center" bgcolor="#C0C0C0">Description</td>
+		<td align="center" bgcolor="#C0C0C0">Source code location<br>
+        (relative to aubit4glsrc)</td>
+		<td align="center" bgcolor="#C0C0C0">Status</td>
+		<td align="center" bgcolor="#C0C0C0">Maintainer</td>
+		<td align="center" bgcolor="#C0C0C0">Build command</td>
+		<td align="center" bgcolor="#C0C0C0">Usage examples /<br>
+        settings needed</td>
+		<td align="center" bgcolor="#C0C0C0">Depends<br>
+		on</td>
+		<td align="center" bgcolor="#C0C0C0">Documentation</td>
+		<td align="center" bgcolor="#C0C0C0">Regression tests coverage</td>
+		<td align="center" bgcolor="#C0C0C0" width="55">Work needed</td>
+		<td align="center" bgcolor="#C0C0C0">Notes</td>
 	</tr>
 	<tr>
 		<td>Map loader</td>
@@ -561,8 +955,10 @@ help you set appropriate level of expectations.</p>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>At least one Aubit SQL plug-in</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -576,8 +972,10 @@ help you set appropriate level of expectations.</p>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None, but needs GTK+ libraries at run-time</td>
 		<td>&nbsp;</td>
 		<td>maybe one test ?</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -589,8 +987,10 @@ help you set appropriate level of expectations.</p>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -603,11 +1003,13 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>Logical REports report viewer </td>
+		<td>Logical Reports report viewer </td>
 		<td>report_viewer</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
@@ -616,7 +1018,9 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -629,7 +1033,9 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>&nbsp;</td>
 		<td>maybe few tests that are p-code enabled?</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -643,8 +1049,10 @@ help you set appropriate level of expectations.</p>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>Useful mostly for testing conversion or for external non-Aubit 
 		database tools</td>
 	</tr>
@@ -657,21 +1065,26 @@ help you set appropriate level of expectations.</p>
 		<td>?</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>Internal compiler tool</td>
 		<td>xgen</td>
-		<td>&nbsp;</td>
+		<td>Generates data structures needed by compiler. A rpcgen tool 
+        replacement</td>
 		<td>compilers/xgen</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>MA</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>used in Aubit build</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -684,34 +1097,60 @@ help you set appropriate level of expectations.</p>
 		<td>MA</td>
 		<td>root makefile: make cint</td>
 		<td>&nbsp;</td>
+		<td>cint</td>
 		<td>&nbsp;</td>
 		<td>none, simple test in tools/test makefile</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td align="center" bgcolor="#C0C0C0">Functionality</td>
+		<td align="center" bgcolor="#C0C0C0">Module (plug-in library / 
+		executable / command) name</td>
+		<td align="center" bgcolor="#C0C0C0">Description</td>
+		<td align="center" bgcolor="#C0C0C0">Source code location<br>
+        (relative to aubit4glsrc)</td>
+		<td align="center" bgcolor="#C0C0C0">Status</td>
+		<td align="center" bgcolor="#C0C0C0">Maintainer</td>
+		<td align="center" bgcolor="#C0C0C0">Build command</td>
+		<td align="center" bgcolor="#C0C0C0">Usage examples /<br>
+        settings needed</td>
+		<td align="center" bgcolor="#C0C0C0">Depends<br>
+		on</td>
+		<td align="center" bgcolor="#C0C0C0">Documentation</td>
+		<td align="center" bgcolor="#C0C0C0">Regression tests coverage</td>
+		<td align="center" bgcolor="#C0C0C0" width="55">Work needed</td>
+		<td align="center" bgcolor="#C0C0C0">Notes</td>
+	</tr>
+	<tr>
+		<td>Files and pipes manipulation library</td>
 		<td>libchannel</td>
+		<td>Four J's compatible file and pipe read/write functions, with x4GL 
+        language bindings. Built on top of libA4GL_file library.</td>
 		<td>lib/extra_libs/channel</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>libA4GL_file</td>
 		<td>&nbsp;</td>
 		<td>mostly</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
 		<td>libA4GL_file</td>
+		<td>Low-level file access functions. No x4GL language bindings.</td>
 		<td>lib/extra_libs/file</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>mostly</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -724,98 +1163,118 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>&nbsp;</td>
 		<td>?</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
+		<td>Perl compatible regular expressions support library</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Perl compatible regular expressions wrapper. Some x4GL language 
+        bindings.</td>
 		<td>lib/extra_libs/pcre</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>pcre library</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
+		<td>POP &amp; SMTP interface support library</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>POP &amp; SMTP interface wrappers. No x4GL language bindings</td>
 		<td>lib/extra_libs/pop</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>POP and SMTP libraries</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>String manipulation library</td>
 		<td>libA4GL_string</td>
+		<td>Collection of useful string manipulation functions. No x4GL language 
+        bindings</td>
 		<td>lib/extra_libs/string</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
+		<td>XML manipulation library</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>XML manipulation wrappers. No language bindings</td>
 		<td>lib/extra_libs/sxml</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>tools/test/xml</td>
 		<td>&nbsp;</td>
+		<td>sXML library</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
+		<td>Internal ESQL/C languages support library</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Collection of internal utility functions for use with ESQL/C 
+        compiler output </td>
 		<td>lib/libesql</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>?</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Library is used internally by Aubit compiler - not of interest to 
+        the end user.</td>
 	</tr>
 	<tr>
+		<td>Dynamic data support library</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Provides a way to dynamically load custom data types at run-time. </td>
 		<td>lib/libexdata</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>libmpz</td>
 		<td>&nbsp;</td>
 		<td>?</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Currently supports only large integers.</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Forms run-time support library</td>
 		<td>libFORM_GENERIC</td>
+		<td>for all form files compiled using Aubit &quot;packers&quot;</td>
 		<td>lib/libform/form_generic</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>A4GL_PACKER</td>
+		<td>Aubit &quot;packer&quot; plug-in</td>
 		<td>&nbsp;</td>
 		<td>mostly</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -827,99 +1286,136 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>Sun RPC</td>
 		<td>&nbsp;</td>
 		<td>mostly</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td align="center" bgcolor="#C0C0C0">Functionality</td>
+		<td align="center" bgcolor="#C0C0C0">Module (plug-in library / 
+		executable / command) name</td>
+		<td align="center" bgcolor="#C0C0C0">Description</td>
+		<td align="center" bgcolor="#C0C0C0">Source code location<br>
+        (relative to aubit4glsrc)</td>
+		<td align="center" bgcolor="#C0C0C0">Status</td>
+		<td align="center" bgcolor="#C0C0C0">Maintainer</td>
+		<td align="center" bgcolor="#C0C0C0">Build command</td>
+		<td align="center" bgcolor="#C0C0C0">Usage examples /<br>
+        settings needed</td>
+		<td align="center" bgcolor="#C0C0C0">Depends<br>
+		on</td>
+		<td align="center" bgcolor="#C0C0C0">Documentation</td>
+		<td align="center" bgcolor="#C0C0C0">Regression tests coverage</td>
+		<td align="center" bgcolor="#C0C0C0" width="55">Work needed</td>
+		<td align="center" bgcolor="#C0C0C0">Notes</td>
+	</tr>
+	<tr>
+		<td>Dummy forms plug-in</td>
 		<td>libFORM_NOFORM</td>
+		<td>Enables usage of Aubit compiled programs without form files support</td>
 		<td>lib/libform/noform</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>A4GL_FORMTYPE</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>none</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Primarily usefull for debugging and CGI type applications</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
 		<td>?? libHELP_std</td>
+		<td>&nbsp;</td>
 		<td>lib/libhelp</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>?</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>C language generation plug-in</td>
 		<td>libLEX_C</td>
+		<td>Used by compiler to create C code representation of x4GL program</td>
 		<td>lib/liblex/lex_c</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>A4GL_LEXTYPE</td>
+		<td>None to compile, GCC compiler to use</td>
 		<td>&nbsp;</td>
 		<td>mostly</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
 		<td>libLEX_CS</td>
+		<td>Used by compiler to create C# code representation of x4GL program</td>
 		<td>&nbsp;</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>A4GL_LEXTYPE</td>
+		<td>None to compile, supported C# compiler to use</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
 		<td>libLEX_EC</td>
+		<td>Used by compiler to create embedded C (ESQL/C) code representation 
+        of x4GL program. Supports several ESQL/C dialects (Informix, PostgreSQL 
+        ecpg, Ingres,...)</td>
 		<td>lib/liblex/lex_esqlc</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>A4GL_LEXTYPE</td>
+		<td>None to compile, supported ESQL/C compiler to use</td>
 		<td>&nbsp;</td>
 		<td>mostly</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
 		<td>libLEX_PERL</td>
+		<td>Used by compiler to create Perl code representation of x4GL program</td>
 		<td>lib/liblex/lex_perl</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>A4GL_LEXTYPE</td>
+		<td>None to compile, Perl interpreter to use</td>
 		<td>&nbsp;</td>
 		<td>none</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
 		<td>libLOGREP_CSV</td>
+		<td>&nbsp;</td>
 		<td>lib/liblogical/csv</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>?</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -934,9 +1430,11 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
+		<td>LibLogical PDF output plug-in</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>lib/liblogical/pdf</td>
@@ -944,23 +1442,27 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>PDF librearies</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
 		<td>libLOGREPPROC_CSV<br>
 		libLOGREPPROC_TXT</td>
+		<td>&nbsp;</td>
 		<td>lib/liblogical/processor</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><br>
 		<img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -975,57 +1477,87 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td align="center" bgcolor="#C0C0C0">Functionality</td>
+		<td align="center" bgcolor="#C0C0C0">Module (plug-in library / 
+		executable / command) name</td>
+		<td align="center" bgcolor="#C0C0C0">Description</td>
+		<td align="center" bgcolor="#C0C0C0">Source code location<br>
+        (relative to aubit4glsrc)</td>
+		<td align="center" bgcolor="#C0C0C0">Status</td>
+		<td align="center" bgcolor="#C0C0C0">Maintainer</td>
+		<td align="center" bgcolor="#C0C0C0">Build command</td>
+		<td align="center" bgcolor="#C0C0C0">Usage examples /<br>
+        settings needed</td>
+		<td align="center" bgcolor="#C0C0C0">Depends<br>
+		on</td>
+		<td align="center" bgcolor="#C0C0C0">Documentation</td>
+		<td align="center" bgcolor="#C0C0C0">Regression tests coverage</td>
+		<td align="center" bgcolor="#C0C0C0" width="55">Work needed</td>
+		<td align="center" bgcolor="#C0C0C0">Notes</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
 		<td>libLOGREP_TXT</td>
+		<td>&nbsp;</td>
 		<td>lib/liblogical/txt</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>libMENU_GENERIC</td>
+		<td>MENUHANDLER type menus run-time support plug-in</td>
+		<td>libMENU_GENERIC&nbsp;</td>
+		<td>Supports all menus compiled with one of Aubit &quot;packers&quot;</td>
 		<td>lib/libmenu/menu_generic</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>A4GL_MENU???</td>
+		<td>Aubit packer plug-in, GTK+ to use</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
 		<td>libMENU_NOMENU</td>
+		<td>Enables usage of Aubit compiled programs without MENUHANDLER-type 
+        menus support</td>
 		<td>lib/libmenu/menu_nomenu</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>A4GL_MENU???</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Primarily useful for debugging</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Supports only menus compiled to Sun RPC XDR format</td>
 		<td>lib/libmenu/menu_xdr</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>Sun RPC, GTK+ to use</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1037,8 +1569,10 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1053,6 +1587,8 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -1066,6 +1602,8 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -1076,8 +1614,10 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1092,6 +1632,8 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -1102,8 +1644,10 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>Sun RPC</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1115,9 +1659,11 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Outputs simplified XML, with fixed format</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -1128,9 +1674,11 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Primarily used for debugging</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -1141,9 +1689,11 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Primarily used for debugging&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -1154,9 +1704,30 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>Sun RPC</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td align="center" bgcolor="#C0C0C0">Functionality</td>
+		<td align="center" bgcolor="#C0C0C0">Module (plug-in library / 
+		executable / command) name</td>
+		<td align="center" bgcolor="#C0C0C0">Description</td>
+		<td align="center" bgcolor="#C0C0C0">Source code location<br>
+        (relative to aubit4glsrc)</td>
+		<td align="center" bgcolor="#C0C0C0">Status</td>
+		<td align="center" bgcolor="#C0C0C0">Maintainer</td>
+		<td align="center" bgcolor="#C0C0C0">Build command</td>
+		<td align="center" bgcolor="#C0C0C0">Usage examples /<br>
+        settings needed</td>
+		<td align="center" bgcolor="#C0C0C0">Depends<br>
+		on</td>
+		<td align="center" bgcolor="#C0C0C0">Documentation</td>
+		<td align="center" bgcolor="#C0C0C0">Regression tests coverage</td>
+		<td align="center" bgcolor="#C0C0C0" width="55">Work needed</td>
+		<td align="center" bgcolor="#C0C0C0">Notes</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -1167,8 +1738,10 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>XML-RPC library</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1183,6 +1756,8 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -1196,6 +1771,8 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -1206,9 +1783,11 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Primarily used for debugging&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -1219,8 +1798,25 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Windows only</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>lib/libsql/odbc</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>iODBC</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1232,21 +1828,10 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>UnixODBC</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>lib/libsql/odbc</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1258,9 +1843,26 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>Informix ODBC library</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>None - SQLite ODBC API code is part of Aubit CVS</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Needs SQLite db engine library</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -1271,15 +1873,17 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>PostgreSQL ODBC library</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
 		<td>Simple PostgreSQL access library (compile time only)</td>
 		<td>NOT- libESQL_POSTGRES<br>
 		libSQL_pg</td>
+		<td>&nbsp;</td>
 		<td>lib/libsql/postgresql</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
@@ -1288,19 +1892,43 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td align="center" bgcolor="#C0C0C0">Functionality</td>
+		<td align="center" bgcolor="#C0C0C0">Module (plug-in library / 
+		executable / command) name</td>
+		<td align="center" bgcolor="#C0C0C0">Description</td>
+		<td align="center" bgcolor="#C0C0C0">Source code location<br>
+        (relative to aubit4glsrc)</td>
+		<td align="center" bgcolor="#C0C0C0">Status</td>
+		<td align="center" bgcolor="#C0C0C0">Maintainer</td>
+		<td align="center" bgcolor="#C0C0C0">Build command</td>
+		<td align="center" bgcolor="#C0C0C0">Usage examples /<br>
+        settings needed</td>
+		<td align="center" bgcolor="#C0C0C0">Depends<br>
+		on</td>
+		<td align="center" bgcolor="#C0C0C0">Documentation</td>
+		<td align="center" bgcolor="#C0C0C0">Regression tests coverage</td>
+		<td align="center" bgcolor="#C0C0C0" width="55">Work needed</td>
+		<td align="center" bgcolor="#C0C0C0">Notes</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
 		<td>libSQLPARSE_INFORMIX</td>
+		<td>Parses SQL statements in Informix dialect, to enable SQL dialect 
+        translation</td>
 		<td>&nbsp;</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Currently the only input plug-in for SQL translation</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -1311,48 +1939,58 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>SAP DB (MySQL MaxDB) ESQL/C compiler</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
 		<td>libSQL_FILESCHEMA</td>
+		<td>&nbsp;</td>
 		<td>lib/libsql/schema_in_file</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Dummy SQL parse input plug-in</td>
 		<td>libSQLPARSE_NONE</td>
+		<td>&nbsp;</td>
 		<td>lib/libsqlparse/none</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Useful in rare cases when user cant use real SQLPARSE plug-in, or 
+        for debugging</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Console user interface plug-in</td>
 		<td>libUI_CONSOLE</td>
+		<td>Enables basic interface to function without Curses - forms are not 
+        supported</td>
 		<td>lib/libui/ui_console</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>None</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Especially usefull for CGI style applicationms</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -1366,11 +2004,13 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
+		<td>libA4GL_glade ??<p>libUI_GLADE&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>libA4GL_glade ??<p>libUI_GLADE</td>
 		<td>lib/libui/ui_glade</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
@@ -1379,19 +2019,57 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>GUI plug-in (block mode)</td>
 		<td>libUI_HL_GTK</td>
+		<td>New generation UI plug-in using shared High Level library</td>
 		<td>lib/libui/ui_highlevel</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>GTK+, version 2 recomended</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>TUI plug-in</td>
+		<td>&nbsp;</td>
+		<td>New generation UI plug-in using shared High Level library</td>
+		<td>lib/libui/ui_highlevel</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>nCurses or PDcurses</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td align="center" bgcolor="#C0C0C0">Functionality</td>
+		<td align="center" bgcolor="#C0C0C0">Module (plug-in library / 
+		executable / command) name</td>
+		<td align="center" bgcolor="#C0C0C0">Description</td>
+		<td align="center" bgcolor="#C0C0C0">Source code location<br>
+        (relative to aubit4glsrc)</td>
+		<td align="center" bgcolor="#C0C0C0">Status</td>
+		<td align="center" bgcolor="#C0C0C0">Maintainer</td>
+		<td align="center" bgcolor="#C0C0C0">Build command</td>
+		<td align="center" bgcolor="#C0C0C0">Usage examples /<br>
+        settings needed</td>
+		<td align="center" bgcolor="#C0C0C0">Depends<br>
+		on</td>
+		<td align="center" bgcolor="#C0C0C0">Documentation</td>
+		<td align="center" bgcolor="#C0C0C0">Regression tests coverage</td>
+		<td align="center" bgcolor="#C0C0C0" width="55">Work needed</td>
+		<td align="center" bgcolor="#C0C0C0">Notes</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -1405,40 +2083,32 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>lib/libui/ui_highlevel</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
+		<td>Aubit library scripting languages wrapper</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Provides a wrapper for Aubit libaubit4gl to be accessed from 
+        scripting laguages</td>
 		<td>lib/swig</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>SWIG toolset</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Currently used only for Aubit Perl output mode</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
 		<td>libDATA_menu_list<br>
-		module<br>
-		report<br>
-		struct_form</td>
+		libDATA_module<br>
+		libDATA_report<br>
+		libDATA_struct_form</td>
+		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
@@ -1447,6 +2117,90 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Build system</td>
+		<td>N/A</td>
+		<td>Enables Aubit compiler to be compiled on various platforms and in 
+        various configurations; consists of Autoconf scripts, makefiles, and 
+        various scripts</td>
+		<td>N/A</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>AF</td>
+		<td>N/A</td>
+		<td>configure; make; make install</td>
+		<td>GNU Make, awk, Perl, Bash, sed </td>
+		<td>&nbsp;</td>
+		<td>N/A</td>
+		<td width="55">&nbsp;</td>
+		<td>Does not use automake or libtool. Currently does not support 
+        cross-compiling or parallel builds</td>
+	</tr>
+	<tr>
+		<td>CORBA APIs for Aubit plug-ins</td>
+		<td>N/A</td>
+		<td>CORBA midleware inserted between Aubit plug-in APIs (dlmagic)</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>ORBit</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>CORBA RPC middleware support</td>
+		<td>libRPC_CORBA</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>ORBit</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>MQ middleware support</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>IBM MQ toolset</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td align="center" bgcolor="#C0C0C0">Functionality</td>
+		<td align="center" bgcolor="#C0C0C0">Module (plug-in library / 
+		executable / command) name</td>
+		<td align="center" bgcolor="#C0C0C0">Description</td>
+		<td align="center" bgcolor="#C0C0C0">Source code location<br>
+        (relative to aubit4glsrc)</td>
+		<td align="center" bgcolor="#C0C0C0">Status</td>
+		<td align="center" bgcolor="#C0C0C0">Maintainer</td>
+		<td align="center" bgcolor="#C0C0C0">Build command</td>
+		<td align="center" bgcolor="#C0C0C0">Usage examples /<br>
+        settings needed</td>
+		<td align="center" bgcolor="#C0C0C0">Depends<br>
+		on</td>
+		<td align="center" bgcolor="#C0C0C0">Documentation</td>
+		<td align="center" bgcolor="#C0C0C0">Regression tests coverage</td>
+		<td align="center" bgcolor="#C0C0C0" width="55">Work needed</td>
+		<td align="center" bgcolor="#C0C0C0">Notes</td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
@@ -1460,109 +2214,7 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1577,18 +2229,7 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1603,18 +2244,7 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1629,18 +2259,7 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1655,18 +2274,7 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1681,18 +2289,7 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1707,18 +2304,7 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1733,18 +2319,7 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1759,18 +2334,7 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1785,18 +2349,7 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1811,18 +2364,7 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1837,18 +2379,7 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1863,18 +2394,7 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -1888,6 +2408,248 @@ help you set appropriate level of expectations.</p>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 </table>
