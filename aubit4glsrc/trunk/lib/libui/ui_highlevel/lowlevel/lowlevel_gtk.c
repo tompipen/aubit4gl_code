@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.73 2005-06-30 22:15:26 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.74 2005-07-07 10:23:34 mikeaubury Exp $";
 #endif
 
 
@@ -3929,3 +3929,10 @@ A4GL_default_attributes_in_ll (void *f, int dtype, int has_picture)
 					      "MF_COLS"));
 
 }
+
+
+void A4GL_LL_init_color(int c,int r,int g,int b) {
+	// Does nothing yet
+}
+
+

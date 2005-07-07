@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.36 2005-07-06 15:32:16 mikeaubury Exp $";
+  "$Id: misc.c,v 1.37 2005-07-07 10:23:34 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1044,6 +1044,7 @@ void
 UILIB_A4GL_init_color (int n, int r, int g, int b)
 {
 	// Does nothing in this version...
+	A4GL_LL_init_color(n,r,g,b);
 }
 
 

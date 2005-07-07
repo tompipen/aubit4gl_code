@@ -49,6 +49,8 @@ A4GL_LL_form_page void* form -> int
 /* int A4GL_LL_get_carat void* form */
 A4GL_LL_get_carat void* form -> int
 
+A4GL_LL_init_color int c int r int g int b -> void
+
 /* void* A4GL_LL_get_field_userptr void* field */
 A4GL_LL_get_field_userptr void* field -> void* 
 

@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.127 2005-06-28 14:35:26 mikeaubury Exp $
+# $Id: sql.c,v 1.128 2005-07-07 10:18:33 mikeaubury Exp $
 #
 */
 
@@ -1206,6 +1206,9 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
   if (a && a4gl_status!=100)
     {
       A4GL_post_fetch_proc_bind (sid->obind, sid->no, (SQLHSTMT) & sid->hstmt);
+    }
+
+  if (a) {
       SQLFreeStmt ((SQLHSTMT) sid->hstmt, SQL_DROP);
 	free_extra(sid->hstmt);
       sid->hstmt = 0;
