@@ -1,0 +1,31 @@
+/*
+=====================================================================
+                        Source: init.rule
+=====================================================================
+*/
+
+
+init_cmd : INITIALIZE init_bind_var_list {A4GL_debug("init to\n");} TO KW_NULL
+ {
+	print_init();
+ }
+| INITIALIZE init_bind_var_list LIKE init_tab_list  {
+	add_feature("INITIALIZE_LIKE");
+	print_init_table($<str>4);
+}
+;
+
+
+init_tab_list : init_tab | init_tab_list KW_COMMA init_tab {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+}
+;
+
+init_tab : init_table_name DOT column_name {setrecord($<str>$,$<str>1,$<str>3);}
+	 | init_table_name DOT MULTIPLY {setrecord($<str>$,$<str>1,0);}
+;
+
+
+init_table_name: table_name {strcpy($<str>$,$<str>1);}
+;
+
+/* =============================== init.rule ======================== */

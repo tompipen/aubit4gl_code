@@ -1,0 +1,125 @@
+##########################################################################
+#
+#          LCLint / Splint config file for lib/libaubit4gl
+#
+##########################################################################
+-weak
++show-summary
++show-scan
+##########################################################################
+#builtin_d.c:56: Include file <sys/types> matches the name of a POSIX library,
+#    but the POSIX library is not being used.  Consider using +posixlib or
+#    +posixstrictlib to select the POSIX library, or -warnposix to suppress this
+#    message.
+#  Header name matches a POSIX header, but the POSIX library is not selected.
+#  (-warnposixheaders will suppress message)
+#
+# +posixlib also removes this error:
+#
+#/usr/include/rpc/xdr.h:306:48: Parse Error:
+#    Inconsistent function parameter syntax: int64_t :
+#    ?. (For help on parse errors, see lclint -help parseerrors.)
+#*** Cannot continue.
+#
+# This make LCLint use the posix library specification instead
+# of reading the posix header files:
++posixlib
+
+
+#after adding +posixlib :
+
+
+#
+#/usr/include/rpc/auth.h:74:12: Parse Error. (For help on parse errors, see
+#               lclint -help parseerrors.)
+#line 74 =  u_int32_t high;
+#
+#
+#Define it manually:
+-Du_int32_t=int
+
+
+#... or force lclint to process the header file that defines it. This is
+#done by setting -skipansiheaders or -skipposixheaders before the file
+#that defines the type is #include'd:
+#
+#   /*@-skipposixheaders@*/
+#   # include <sys/types.h>
+#   /*@=skipposixheaders@*/
+#   # include <sys/local.h>
+#
+#to force LCLint to process <sys/types.h>.
+
+
+#after adding -Du_int32_t=int :
+
+#/usr/include/rpc/svc.h:265:24: Parse Error: Inconsistent function declaration:
+#    fd_set : extern ?. (For help on parse errors, see lclint -help
+#    parseerrors.)
+#*** Cannot continue.
+#
+#line 265: extern fd_set svc_fdset;
+#included via /usr/include/sys/types.h but defined in /usr/include/sys/select.h
+#
+#Tried /*@-skipposixheaders@*/ in a4gl_formxw.h - did not work (???!!!)
+-skipposixheaders
+
+#after adding  -skipposixheaders :
+
+#/usr/include/rpc/xdr.h:306:48: Parse Error:
+#    Inconsistent function parameter syntax: int64_t :
+#    ?. (For help on parse errors, see lclint -help parseerrors.)
+#*** Cannot continue.
+#
+#line 306: extern bool_t xdr_int64_t (XDR *__xdrs, int64_t *__ip) __THROW;
+#this is probably wrong:
+-Dint64_t=int
+
+#after adding -Dint64_t=int :
+
+#../libincl/a4gl_debug.h: (in macro getenv)
+#../libincl/a4gl_debug.h:77:32: Macro syntax not parseable: getenv
+#context.c:2246: at source point
+#../libincl/a4gl_debug.h:79:1: *** Internal Bug at context.c:2246:
+#    llassert failed: clauseStack_isEmpty (gc.clauses) [errno: 25]
+#*** Last code point: exprNode.c:8679
+#*** Previous code point: exprNode.c:8679
+#Possible system error diagnostic: : Inappropriate ioctl for device
+#     *** Please report bug to lclint-bug@cs.virginia.edu ***
+#       (attempting to continue, results may be incorrect)
+
+
+#after fixing a4gl_debug.h :
+
+#/usr/include/bits/confname.h:30:27: *** Internal Bug at cscanner.l:1396:
+#    Unexpanded macro not function or constant: int _PC_MAX_CANON [errno: 25]
+#*** Last code point: exprNode.c:8679
+#*** Previous code point: exprNode.c:8679
+#Possible system error diagnostic: : Inappropriate ioctl for device
+#     *** Please report bug to lclint-bug@cs.virginia.edu ***
+#       (attempting to continue, results may be incorrect)
+#/usr/include/bits/confname.h:31:1: Parse Error:
+#    Inconsistent function declaration: _PC_MAX_CANON :
+#    int. (For help on parse errors, see lclint -help parseerrors.)
+#*** Cannot continue.
+
+#included via  <unistd.h>
+#line 30: #define _PC_MAX_CANON                   _PC_MAX_CANON     
+#line 31:		_PC_MAX_INPUT,
+
+#-skipansiheaders
+
+#-skipansiheaders caused even more problems, neede additional -I paths 
+# and finally failed with:
+#
+#< checking builtin.c >
+#/usr/include/asm/types.h:11:24: Parse Error:
+#    Suspect missing struct or union keyword: __signed__ :
+#    unsigned short int. (For help on parse errors, see lclint -help
+#    parseerrors.)
+#*** Cannot continue.
+
+
+
+# ============================== EOF ====================================
+

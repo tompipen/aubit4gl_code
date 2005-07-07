@@ -1,0 +1,192 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: Makefile.in,v 1.26 2005-02-21 00:52:54 afalout Exp $
+#
+
+ROOT        =../..
+LIBROOT     =${ROOT}/lib
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                    Source code
+## ==================================================================
+
+ifeq "${YACC}" "no"
+	Y_TAB_C		=${ROOT}/tools/no_yacc/cygwin/compilers/ace/y.tab.c
+	CFLAGS      +=-I${ROOT}/tools/cygwin -I${ROOT}/tools/no_rpc/cygwin \
+				-I${ROOT}/tools/no_yacc/cygwin/compilers/ace
+else
+	Y_TAB_C		=y.tab.c
+endif
+
+CMODS       	=${Y_TAB_C} main.c data.c output.c tables.c fileio.c
+CMODS_DECOMP	=dump.c
+CMODS_4GL    	=dump_4gl.c
+CMODS_PERL   	=${Y_TAB_C} dump_perl.c data.c output.c tables.c fileio.c
+OBJS			=${CMODS:.c=.o}
+OBJS_DECOMP 	=${CMODS_DECOMP:.c=.o}
+OBJS_4GL    	=${CMODS_4GL:.c=.o}
+OBJS_PERL   	=${CMODS_PERL:.c=.o} 
+
+## ==================================================================
+##                    Settings
+## ==================================================================
+
+4GLPC       =${FGLPCEXEC}
+CFLAGS      +=-I.
+
+#we don't want -Wall in CFLAGS when compiling rpcgen created c code because it
+#would give us bunch of warnings about unused varibles, that we cannot fix
+
+ALL 		=${ROOT}/bin/aace ${ROOT}/bin/adecompile ${ROOT}/bin/aace_perl \
+			${ROOT}/bin/aace_4gl ${ROOT}/bin/generate_aace
+
+#Should no longer need RPC - using xgen now:
+#ifeq "@HAVE_RPCLIB@" "0"
+#	ifneq "${COMSPEC}" ""
+#        #On Windows unresolved symbols are not alloved at link time, and we have no RPCLIB:
+#		ALL=norpclib
+#    endif
+#endif
+
+ifneq "${COMSPEC}" ""
+	LINKLIBS	=-L${LIBROOT} -laubit4gl @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
+endif
+
+#generate_aace
+
+ifeq "${TARGET_OS}" "solaris"
+	LINK_LIBS		=-lnsl
+endif
+
+TEST_DB				=mips_3_3 
+TEST_TABLE			=systables
+
+## ==================================================================
+##                    Targets
+## ==================================================================
+
+all: ${ALL}
+	@echo "Default targets (${ALL}) successfully compiled."
+
+#Main Ace executable
+${ROOT}/bin/aace: ${OBJS}
+	${LD_EXE} -o $@ ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS}
+
+#de-compiles compiled aace forms
+${ROOT}/bin/adecompile:  ${OBJS_DECOMP}
+	${LD_EXE} -o $@ ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS}
+
+#translates ace forms to 4gl
+${ROOT}/bin/aace_4gl :  ${OBJS_4GL}
+	${LD_EXE} -o $@ ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS}
+
+#translates ace forms to perl
+${ROOT}/bin/aace_perl :  ${OBJS_PERL}
+	${LD_EXE} -o $@ ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS}
+
+#program to create default ace form for a given table in selected database
+${ROOT}/bin/generate_aace : generate.4gl
+	${4GLPC} $^ -o $@
+	
+norpclib:
+	@echo "RPCLIB not detected, cannot link. Skipping all in ace..."
+
+## ==================================================================
+##                    Sub-Targets
+## ==================================================================
+
+y.tab.c: ace.yacc
+	${YACC} -v $^
+
+lex.yy.c: ace.lex
+	${LEX} -i $^
+
+y.tab.o: ${Y_TAB_C} lex.yy.c 
+#	${CC} $(CFLAGS) -c ${Y_TAB_C} -o $@
+
+#Obsolete - use built-in make rules 
+#data.o:  data.c
+#	${CC} $(CFLAGS) -c $< -o $@
+
+## ==================================================================
+##                    Testing
+## ==================================================================
+
+#test that creates default ace form for table in selected database
+test_generate_aace : ${ROOT}/bin/generate_aace
+	./$< ${TEST_DB} ${TEST_TABLE}
+
+#Compile form, translate it to 4gl, and compile 4gl
+test: ${ROOT}/bin/aace_4gl ${ROOT}/bin/aace m1.ace
+	${ROOT}/bin/aace m1.ace
+	touch t1.4gl t1.err
+	${RM} t1.4gl t1.err
+	${ROOT}/bin/aace_4gl m1.aarc > t1.4gl
+	${ROOT}/bin/4glc t1.4gl
+	${4GLPC} -g t1.c -o t1
+
+#create default form, compile it, translate it to 4gl, and compile 4gl
+test2: ${ROOT}/bin/generate_aace ${ROOT}/bin/aace ${ROOT}/bin/aace_4gl
+	${ROOT}/bin/generate_aace ${TEST_DB} ${TEST_TABLE}
+	${ROOT}/bin/aace ${TEST_TABLE}.aace
+	${ROOT}/bin/aace_4gl ${TEST_TABLE}.aarc > ${TEST_TABLE}.4gl
+	${ROOT}/bin/4glc ${TEST_TABLE}.4gl
+	${4GLPC} -g ${TEST_TABLE}.c -o ${TEST_TABLE}
+
+## ==================================================================
+##                    Clean
+## ==================================================================
+
+clean:
+	${RM} *.bak .*.bak lex.yy.c y.tab.c y.output *.o \
+	*.a *${SO_EXT} *.err aace adecompile debug.out \
+	${ROOT}/tools/no_yacc/cygwin/compilers/ace/*.o ${ALL} \
+	*.warn
+
+## ==================================================================
+##                         Other Targets
+## ==================================================================
+
+splint: lclint
+lclint: $(CMODS)
+	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
+	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
+	@echo "see ${LCLINTLOG} for results"
+
+#Installation for Perl modules in perl_runner/
+#Should be invoked in root Makefile 'install' target
+#Also add to binary tar/RPM/Windows installer
+install.ace.perl:
+	@echo "TODO: Installation of Ace Perl runner modules not implemented"
+	#	cp ./perl_runner/*.pm ${PERL_ROOT}/lib
+
+
+#=============================== EOF ================================
+
+

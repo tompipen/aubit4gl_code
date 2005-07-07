@@ -1,0 +1,143 @@
+/**
+ * @file
+ * Configuration file for compilation using configure
+ *
+ * Use @DEFS@ in Makefile.in to get -DHAVE_CONFIG_H
+ * TODO: remove all patform specific #ifdef in Aubit code and replace
+ *       them with #if HAVE_
+ * To refresh without running configure, use command 
+ * 'config.status --header=a4gl_inc_config.h'
+ */
+
+#ifndef CONFIG_H_INCL
+#define CONFIG_H_INCL
+
+/* this 6 are used in pcode compiler - but I don't think that  */
+/* we are setting them from configure - check */
+	#define CAN_DLOPEN_SELF 0
+	#define NEED_DL_UNDERSCORE 0
+	#define RTLD_LAZY 0
+	#define DL_LAZY 0
+	#define RTLD_NOW 0
+	#define DL_NOW 0
+
+
+
+	#define HAVE_ALLOCA_H 0
+	#define HAVE_CPC_H 0
+	#define HAVE_CTYPE 0
+	#define HAVE_CTYPE_H 0
+	#define HAVE_CURSES_H 0
+	#define HAVE_DECIMAL_H 0
+	#define HAVE_DLFCN_H 0
+	#define HAVE_ERRNO_H 0
+	#define HAVE_FCNTL_H 0
+	#define HAVE_FLOOR 0
+	#define HAVE_FORK 0
+	#define HAVE_GETHOSTBYNAME 0
+	#define HAVE_GETOPT_H 0
+	#define HAVE_GMP_H 0
+	#define HAVE_HTONS 0
+	#define HAVE_INET_NTOA 0
+	#define HAVE_INTERFACES_ODBC_INCL_SQLEXT_H 0
+	#define HAVE_INTERFACES_ODBC_INCL_SQLTYPES_H 0
+	#define HAVE_INTERFACES_ODBC_INCL_SQL_H 0
+	#define HAVE_INTERFACES_ODBC_INCL_WINDOWS_H 0
+	#define HAVE_INTTYPES_H 0
+	#define HAVE_IODBC_HEADERS 0
+	#define HAVE_LEAST_BYTE_FIRST 0
+	#define HAVE_LIBC 0
+	#define HAVE_LIBCURSES 0
+	#define HAVE_LIBDL 0
+	#define HAVE_LIBFORM 0
+	#define HAVE_LIBGDK 0
+	#define HAVE_LIBGLIB 0
+	#define HAVE_LIBGTK 0
+	#define HAVE_LIBINTL_H 0
+	#define HAVE_LIBODBC 0
+	#define HAVE_LIBPANEL 0
+	#define HAVE_LIBPQ_FE_H 0
+	#define HAVE_LIBSPOPC_H 0
+	#define HAVE_LIMITS_H 0
+	#define HAVE_LOCALE_H 0
+	#define HAVE_MALLOC 0
+	#define HAVE_MALLOC_H 0
+	#define HAVE_MEMORY_H 0
+	#define HAVE_MEMSET 0
+	#define HAVE_NCURSES_H 0
+	#define HAVE_NETDB_H 0
+	#define HAVE_NETINET_IN_H 0
+	#define HAVE_NSTOH 0
+	#define HAVE_NTOHS 0
+	#define HAVE_ODBCINST_H 0
+	#define HAVE_PDCURSES 0
+	#define HAVE_PDFLIB_H 0
+	#define HAVE_PGODBC_HEADERS 0
+	#define HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H 0
+	#define HAVE_PGSQL_IODBC_IODBC_H 0
+	#define HAVE_PGSQL_IODBC_ISQLEXT_H 0
+	#define HAVE_PGSQL_IODBC_ISQL_H 0
+	#define HAVE_PGSQL_LIBPQ_FE_H 0
+	#define HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H 0
+	#define HAVE_POSTGRESQL_LIBPQ_FE_H 0
+	#define HAVE_POW 0
+	#define HAVE_PUTENV 0
+	#define HAVE_PUTENV 0	
+	#define HAVE_REGCOMP 0
+	#define HAVE_RE_COMP 0
+	#define HAVE_RPC_H 0
+	#define HAVE_RPC_RPC_H 0
+	#define HAVE_SAPODBC_HEADERS 0
+	#define HAVE_SEARCH_H 0
+	#define HAVE_SELECT 0
+	#define HAVE_SETENV 0
+	#define HAVE_SETLOCALE 0
+	#define HAVE_SHARE_H 0
+	#define HAVE_SLEEP 0
+	#define HAVE_SOCKET 0
+	#define HAVE_SQLEXT_H 0
+	#define HAVE_SQLITE_H 0
+	#define HAVE_SQL_H 0
+	#define HAVE_STDDEF_H 0
+	#define HAVE_STDINT_H 0
+	#define HAVE_STDLIB_H 0
+	#define HAVE_STRCASECMP 0
+	#define HAVE_STRCHR 0
+	#define HAVE_STRDUP 0
+	#define HAVE_STRINGS_H 0
+	#define HAVE_STRING_H 0
+	#define HAVE_STRNCASECMP 0
+	#define HAVE_STRRCHR 0
+	#define HAVE_STRSTR 0
+	#define HAVE_STRTOL 0
+	#define HAVE_SYS_SOCKET_H 0
+	#define HAVE_SYS_STAT_H 0
+	#define HAVE_SYS_TIME_H 0
+	#define HAVE_SYS_TYPES_H 0
+	#define HAVE_UNISTD_H 0
+	#define HAVE_UNIXODBC_HEADERS 0
+	#define HAVE_VFORK 0
+	#define HAVE_VPRINTF 0
+	#define HAVE_WINSLEEP 0
+	#define HAVE_WORKING_FORK 0
+	#define HAVE_WORKING_VFORK 0
+	#define HAVE_XMLRPC_CLIENT_H 0
+	#define HAVE_XMLRPC_H 0
+	#define RETSIGTYPE 0
+	#define STDC_HEADERS 0
+	#define TIME_WITH_SYS_TIME 0
+	#define YYTEXT_POINTER 0
+        #define HAVE_GETTIMEOFDAY 0
+        #define HAVE_INDEX 0
+        #define HAVE_POPEN 0
+        #define HAVE_RINDEX 0
+        #define HAVE_SIGACTION 0
+        #define HAVE_SNPRINTF 0
+        #define HAVE_TRUNC 0
+        #define HAVE_VSNPRINTF 0	
+	#define HAVE_FEATURES_H 0
+
+
+
+
+#endif /* #ifndef CONFIG_H_INCL */

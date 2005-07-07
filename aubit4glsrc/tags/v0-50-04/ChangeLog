@@ -1,0 +1,2595 @@
+2005-06-18 20:19  mikeaubury
+
+	* tools/: no_yacc/cygwin/compilers/ace/lex.yy.c,
+	  no_yacc/cygwin/compilers/fcompile/lex.yy.c,
+	  no_yacc/cygwin/compilers/menus/lex.yy.c,
+	  no_yacc/cygwin/compilers/sql/lex.sqlparse_yy.c,
+	  no_yacc/cygwin/compilers/sql/y.tab.c,
+	  no_yacc/cygwin/compilers/sql/y.tab.h,
+	  no_yacc/cygwin/compilers/xgen/lex.yy.c, project/build: new build
+
+2005-06-18 10:56  mikeaubury
+
+	* lib/: libaubit4gl/API_ui.spec, libaubit4gl/conv.c,
+	  libaubit4gl/corba_server_util.c, libaubit4gl/debug.c,
+	  libaubit4gl/errfile.c, libaubit4gl/error.c,
+	  libaubit4gl/fglwrap.c, libaubit4gl/gui.c, libaubit4gl/memfile.c,
+	  libaubit4gl/report.c, libaubit4gl/sqlconvert.c,
+	  libaubit4gl/stack.c, libsql/odbc/sql.c,
+	  libui/ui_console/console.c, libui/ui_curses/generic_ui.c,
+	  libui/ui_glade/dialog.c, libui/ui_highlevel/generic_ui.c: various
+	  fixups - replace exit with fgl_die's etc UI cleanups
+
+2005-06-16 20:21  mikeaubury
+
+	* etc/gtkrc_2, incl/a4gl_libaubit4gl.h,
+	  lib/libaubit4gl/API_lowlevel.spec, lib/libaubit4gl/API_ui.spec,
+	  lib/libaubit4gl/fglwrap.c, lib/libaubit4gl/screen.c,
+	  lib/liblex/lex_esqlc/compile_c_esql.c,
+	  lib/liblex/lex_esqlc/init.c, lib/liblex/lex_perl/compile_perl.c,
+	  lib/resource/resource.c: [no log message]
+
+2005-06-16 20:17  mikeaubury
+
+	* compilers/4glc/: compile.c, mod.c, variables.c: [no log message]
+
+2005-06-16 18:01  mikeaubury
+
+	* lib/libui/ui_highlevel/: common_hlui.c, display_array.c,
+	  formcntrl.c, forms.c, generic_ui.c, input_array.c, menu.c,
+	  misc.c, width.c, lowlevel/form_tui.c, lowlevel/lowlevel.c,
+	  lowlevel/lowlevel_gtk.c, lowlevel/lowlevel_tui.c,
+	  lowlevel/menu_gtk.c, lowlevel/widget_gtk.c: indentation
+
+2005-06-16 17:52  mikeaubury
+
+	* lib/libui/: ui_console/console.c, ui_curses/curslib.c,
+	  ui_curses/formcntrl.c, ui_curses/generic_ui.c, ui_glade/glade.c,
+	  ui_highlevel/aubit_form.h, ui_highlevel/aubit_noform.h,
+	  ui_highlevel/common_hlui.c, ui_highlevel/formcntrl.c,
+	  ui_highlevel/forms.c, ui_highlevel/generic_ui.c,
+	  ui_highlevel/menu.c, ui_highlevel/misc.c,
+	  ui_highlevel/lowlevel/form_tui.c,
+	  ui_highlevel/lowlevel/lowlevel_gtk.c,
+	  ui_highlevel/lowlevel/lowlevel_tui.c: General fixups - moving the
+	  pause mode stuff down from libaubit4gl into the UI library etc.
+
+2005-06-15 09:02  mikeaubury
+
+	* lib/bin/dlmagic: [no log message]
+
+2005-06-14 23:09  mikeaubury
+
+	* lib/libui/ui_highlevel/lowlevel/: form_tui.c, lowlevel_gtk.c,
+	  lowlevel_tui.c, menu_gtk.c, widget_gtk.c: [no log message]
+
+2005-06-14 23:05  mikeaubury
+
+	* lib/libui/ui_highlevel/: common_hlui.c, formcntrl.c, forms.c,
+	  generic_ui.c, hl_proto.h, input_array.c, menu.c, misc.c, width.c:
+	  [no log message]
+
+2005-06-10 19:07  mikeaubury
+
+	* lib/libui/ui_highlevel/menu.c: fixup badd variable definition
+	  placement
+
+2005-06-10 14:35  mikeaubury
+
+	* aclocal.m4, configure, configure.in, compilers/sql/not_used,
+	  lib/Makefile, lib/libaubit4gl/fglwrap.c,
+	  lib/libsql/odbc/Makefile: [no log message]
+
+2005-06-10 10:15  mikeaubury
+
+	* tools/: no_yacc/cygwin/compilers/4glc/mk_states_1.h,
+	  no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c,
+	  no_yacc/cygwin/compilers/ace/lex.yy.c,
+	  no_yacc/cygwin/compilers/fcompile/lex.yy.c,
+	  no_yacc/cygwin/compilers/menus/lex.yy.c,
+	  no_yacc/cygwin/compilers/sql/lex.sqlparse_yy.c,
+	  no_yacc/cygwin/compilers/xgen/lex.yy.c, project/build,
+	  project/version: [no log message]
+
+2005-06-09 16:21  mikeaubury
+
+	* lib/libaubit4gl/API_lowlevel.spec: [no log message]
+
+2005-06-09 16:15  mikeaubury
+
+	* lib/libui/ui_highlevel/: common_hlui.c, forms.c, generic_ui.c,
+	  lowlevel.h, menu.c, misc.c, lowlevel/lowlevel_gtk.c,
+	  lowlevel/lowlevel_tui.c: partial commit - more to come...
+
+2005-06-09 15:09  mikeaubury
+
+	* tools/asql/: Makefile, cedit.4gl, execute.4gl, form.4gl,
+	  infx.4gl, postgres.4gl: Fixups - use 4glpc rather than 4glc
+	  reorder to allow proper debug builds fix screen mode to use
+	  file_out_result  (was completely broken) fix double 'Exit'
+	  requirement when paging through output results
+
+2005-06-09 07:09  pjfalbe
+
+	* incl/a4gl_incl_4glhdr.h: [no log message]
+
+2005-06-09 07:06  pjfalbe
+
+	* tools/asql/filehand.4gl, lib/libesql/helper_funcs.ec: [no log
+	  message]
+
+2005-06-08 21:44  mikeaubury
+
+	* lib/libui/ui_highlevel/: common_hlui.c, formcntrl.c, forms.c,
+	  generic_ui.c, misc.c, lowlevel/lowlevel_gtk.c,
+	  lowlevel/lowlevel_tui.c: more partial updates
+
+2005-06-08 21:30  mikeaubury
+
+	* tools/asql/infx.4gl: Use number of rows affected - not estimated
+	  number
+
+2005-06-08 21:24  mikeaubury
+
+	* lib/libaubit4gl/: API_lowlevel.spec, load.c: set sqlerrd[3] after
+	  a load
+
+2005-06-08 09:26  mikeaubury
+
+	* lib/: extra_libs/channel/channel.4gl, libaubit4gl/conv.c,
+	  libaubit4gl/stack.c: Fix some issues with channel::read
+
+2005-06-08 08:53  mikeaubury
+
+	* incl/a4gl.mk, incl/a4gl_libaubit4gl.h,
+	  lib/libaubit4gl/API_lowlevel.spec, lib/libsql/esqlc/esql.ec,
+	  lib/libui/ui_highlevel/common_hlui.c,
+	  lib/libui/ui_highlevel/formcntrl.c,
+	  lib/libui/ui_highlevel/forms.c,
+	  lib/libui/ui_highlevel/generic_ui.c,
+	  lib/libui/ui_highlevel/hl_proto.h, lib/libui/ui_highlevel/menu.c,
+	  lib/libui/ui_highlevel/misc.c, lib/libui/ui_highlevel/width.c,
+	  lib/libui/ui_highlevel/lowlevel/form_tui.c,
+	  lib/libui/ui_highlevel/lowlevel/lowlevel_gtk.c,
+	  lib/libui/ui_highlevel/lowlevel/lowlevel_tui.c,
+	  lib/libui/ui_highlevel/lowlevel/widget_gtk.c,
+	  tools/4glpc/4glpc.4gl: Fairly major movements withing the
+	  highlevel code to reduce the callbacks in the lowlevel code
+	  session updates for esqlc sqltype
+
+2005-06-08 08:38  mikeaubury
+
+	* compilers/4glc/: API_lex.spec, compile.c, rules/call.rule,
+	  rules/expr.rule, rules/general.rule, rules/open.rule: fix
+	  channel::read to allow character strings as well as variables
+	  Fixups for Sessions Add -C/--sqltype to 4glc options (specifies
+	  what sqltype to use)
+
+2005-06-08 08:36  mikeaubury
+
+	* lib/extra_libs/channel/channel.4gl: remove newlines from input
+
+2005-06-07 17:14  mikeaubury
+
+	* lib/libaubit4gl/API_lowlevel.spec, lib/libaubit4gl/rexp2.c,
+	  lib/libui/ui_highlevel/common_hlui.c,
+	  lib/libui/ui_highlevel/formcntrl.c,
+	  lib/libui/ui_highlevel/forms.c,
+	  lib/libui/ui_highlevel/generic_ui.c,
+	  lib/libui/ui_highlevel/menu.c, lib/libui/ui_highlevel/width.c,
+	  lib/libui/ui_highlevel/lowlevel/lowlevel_gtk.c,
+	  lib/libui/ui_highlevel/lowlevel/lowlevel_tui.c,
+	  tools/test/sokoban.4gl: first phase hl_.. updates - isolating
+	  calls from the lowlevel functions to the callers
+
+2005-06-07 09:42  mikeaubury
+
+	* tools/: no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.h,
+	  no_yacc/cygwin/compilers/ace/lex.yy.c,
+	  no_yacc/cygwin/compilers/ace/y.tab.c,
+	  no_yacc/cygwin/compilers/fcompile/lex.yy.c,
+	  no_yacc/cygwin/compilers/fcompile/y.tab.c,
+	  no_yacc/cygwin/compilers/menus/lex.yy.c,
+	  no_yacc/cygwin/compilers/menus/y.tab.c,
+	  no_yacc/cygwin/compilers/sql/lex.sqlparse_yy.c,
+	  no_yacc/cygwin/compilers/sql/y.tab.c,
+	  no_yacc/cygwin/compilers/sql/y.tab.h,
+	  no_yacc/cygwin/compilers/xgen/lex.yy.c,
+	  no_yacc/cygwin/compilers/xgen/y.tab.c, project/build: new build
+
+2005-06-07 09:38  mikeaubury
+
+	* lib/liblex/lex_perl/compile_perl.c,
+	  tools/no_yacc/cygwin/compilers/4glc/mk_states.c,
+	  tools/no_yacc/cygwin/compilers/4glc/mk_states_1.h,
+	  tools/no_yacc/cygwin/compilers/4glc/rules/generated/kw.h,
+	  tools/no_yacc/cygwin/compilers/4glc/rules/generated/kw.yh,
+	  tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c: new
+	  build
+
+2005-06-07 08:08  pjfalbe
+
+	* lib/libsql/esqlc/esql.ec: fixup - remove multirow unload properly
+
+2005-06-06 20:18  mikeaubury
+
+	* lib/libsql/esqlc/esql.ec: [no log message]
+
+2005-06-06 19:14  mikeaubury
+
+	* compilers/4glc/: mk_states_c.in, variables.c: [no log message]
+
+2005-06-06 19:11  mikeaubury
+
+	* ChangeLog: [no log message]
+
+2005-06-06 19:03  mikeaubury
+
+	* lib/libaubit4gl/Makefile, lib/libaubit4gl/debug.c,
+	  lib/libaubit4gl/stack.c, lib/liblex/lex_esqlc/compile_c.c,
+	  incl/a4gl_4gl_callable.h, lib/resource/resource.c,
+	  incl/a4gl_libaubit4gl.h: [no log message]
+
+2005-06-06 18:59  mikeaubury
+
+	* tools/asql/execute.4gl, tools/asql/filehand.4gl, lib/bin/dlmagic:
+	  [no log message]
+
+2005-06-06 18:44  mikeaubury
+
+	* tools/asql/: execute.4gl, infx.4gl: [no log message]
+
+2005-06-06 17:31  mikeaubury
+
+	* lib/libsql/esqlc/: Makefile, esql.ec: fix bug in unload code..
+
+2005-06-06 16:54  mikeaubury
+
+	* lib/libsql/esqlc/esql.ec: go back to using old unload code (for
+	  now)
+
+2005-06-06 12:17  pjfalbe
+
+	* lib/libaubit4gl/stack.c: Fixup on lrtrim
+
+2005-06-01 17:02  mikeaubury
+
+	* lib/liblex/lex_esqlc/compile_c.c, tools/test/pdf_report.4gl: [no
+	  log message]
+
+2005-06-01 16:59  mikeaubury
+
+	* lib/: libpdf/has_pdf.c, libaubit4gl/report.c: [no log message]
+
+2005-06-01 14:41  fortiz
+
+	* lib/libui/ui_highlevel/common_hlui.c: change order to avoid
+	  prototyping
+
+2005-05-30 14:03  mikeaubury
+
+	* compilers/4glc/Makefile, compilers/4glc/mod.c,
+	  compilers/4glc/rules/report.rule, tools/asql/execute.4gl,
+	  tools/asql/filehand.4gl: Small fixups - allow an expression for
+	  the destination of a report, bug fixes and debugging traces in
+	  asql
+
+2005-05-30 14:00  mikeaubury
+
+	* remake.mja: Small fixups - allow an expression for the
+	  destination of a report, bug fixes and debugging traces in asql
+
+2005-05-29 20:24  whaslbeck
+
+	* lib/libui/ui_curses/ioform.c: removed some warnings
+
+2005-05-27 10:57  mikeaubury
+
+	* lib/libui/: ui_curses/formcntrl.c,
+	  ui_highlevel/lowlevel/form_tui.c: [no log message]
+
+2005-05-27 10:05  mikeaubury
+
+	* incl/a4gl_incl_config.h.in: [no log message]
+
+2005-05-27 10:01  mikeaubury
+
+	* compilers/: 4glc/lexer.c, sql/1.reqd: [no log message]
+
+2005-05-25 08:02  mikeaubury
+
+	* compilers/fcompile/: screen.lex, screen.yacc: Allow an identifier
+	  to begin with an '_'
+
+2005-05-24 17:59  mikeaubury
+
+	* lib/libui/ui_highlevel/: display_array.c, misc.c: [no log
+	  message]
+
+2005-05-24 16:34  mikeaubury
+
+	* lib/: libsql/esqlc/esql.ec, libsql/nosql/nosql.c,
+	  libsql/odbc/sql.c, libsql/postgresql/simple.c,
+	  libsql/schema_in_file/schema_in_file.c,
+	  libui/ui_console/console.c: Various fixups for API functions
+
+2005-05-23 21:54  whaslbeck
+
+	* lib/: libmenu/menu_xdr/loadmenu.c, libui/ui_glade/obj.c: gcc
+	  warning fix
+
+2005-05-23 21:50  whaslbeck
+
+	* compilers/: pcode/compiler_list.c, ace/dump_perl.c: gcc warning
+	  fix
+
+2005-05-23 21:45  whaslbeck
+
+	* lib/libui/ui_highlevel/: forms.c, generic_ui.c,
+	  lowlevel/lowlevel_gtk.c, lowlevel/widget_gtk.c: Fix some gcc
+	  compiler warnings
+
+2005-05-23 21:36  whaslbeck
+
+	* lib/libui/ui_curses/newpanels.c: Fix gcc compiler warning
+
+2005-05-23 21:16  whaslbeck
+
+	* lib/libaubit4gl/: builtin.c, conv.c, errfile.c, stack.c, ui.c:
+	  Fix some gcc compiler warnings
+
+2005-05-22 21:50  whaslbeck
+
+	* compilers/sql/80.reqd: ESCAPE -> KW_ESCAPE
+
+2005-05-22 21:49  whaslbeck
+
+	* lib/libaubit4gl/others.c: changed visibility of m_lastkey from
+	  static to public visible (static breaks HL_TUI/HL_GTK)
+
+2005-05-22 21:42  whaslbeck
+
+	* compilers/4glc/map.c: [no log message]
+
+2005-05-22 13:42  mikeaubury
+
+	* lib/libui/ui_highlevel/: makefile, menu.c, width.c,
+	  lowlevel/lowlevel_tui.c: [no log message]
+
+2005-05-22 13:38  mikeaubury
+
+	* etc/convertsql/INFORMIX-POSTGRES.cnv: [no log message]
+
+2005-05-22 13:19  mikeaubury
+
+	* compilers/: 4glc/API_lex.spec, 4glc/rules/construct.rule,
+	  4glc/rules/display.rule, 4glc/rules/input.rule,
+	  4glc/rules/keys.rule, 4glc/rules/prompt.rule,
+	  4glc/rules/data/kwords, ace/ace.yacc, ace/dump_4gl.c: [no log
+	  message]
+
+2005-05-21 17:16  mikeaubury
+
+	* compilers/4glc/API_lex_int.h, compilers/4glc/class.c,
+	  compilers/4glc/rules/call.rule, compilers/4glc/rules/expr.rule,
+	  compilers/4glc/rules/general.rule,
+	  compilers/4glc/rules/sqlpack/infx/sql1.rule,
+	  lib/libaubit4gl/API_lex.spec, lib/libaubit4gl/API_sql.spec,
+	  lib/libaubit4gl/Makefile, lib/liblex/lex_esqlc/compile_c_sql.c,
+	  lib/liblex/lex_perl/compile_perl.c,
+	  lib/libsql/a4gl_lib_sql_int.h,
+	  lib/libsql/esqlc/esql_compatible.ec,
+	  lib/libsql/esqlc/esql_simple_ecpg.ec,
+	  lib/libsql/esqlc/esql_simple_infx.ec,
+	  lib/libsql/esqlc/esql_simple_template.ec,
+	  lib/libsql/odbc/a4gl_lib_sql_odbc_int.h, lib/libsql/odbc/array.c,
+	  tools/adbschema/table.4gl: Partial commit - more to come...
+
+2005-05-20 19:33  mikeaubury
+
+	* lib/liblex/: a4gl_lib_lex_int.h, lex_esqlc/bad_idents.c,
+	  lex_esqlc/class.c, lex_esqlc/compile_c_esql.c,
+	  lex_esqlc/compile_c_gtk.c, lex_esqlc/init.c: remap functions to
+	  begin with LEXLIB_.
+
+2005-05-18 16:17  mikeaubury
+
+	* compilers/4glc/a4gl_4glc_int.h: [no log message]
+
+2005-05-18 16:14  mikeaubury
+
+	* lib/libaubit4gl/error.c: [no log message]
+
+2005-05-18 15:07  mikeaubury
+
+	* lib/libaubit4gl/fglwrap.c: [no log message]
+
+2005-05-18 14:59  mikeaubury
+
+	* tools/search.h: add check for features.h header file
+
+2005-05-18 14:51  mikeaubury
+
+	* configure.in: [no log message]
+
+2005-05-18 14:46  mikeaubury
+
+	* compilers/4glc/compile.c, lib/libaubit4gl/calldll.c,
+	  lib/libaubit4gl/debug.c, lib/libaubit4gl/extfile.c,
+	  lib/libaubit4gl/gui.c, lib/libaubit4gl/helper.c,
+	  lib/libaubit4gl/interval.c, lib/libaubit4gl/load.c,
+	  lib/libaubit4gl/maths.c, lib/libaubit4gl/memfile.c,
+	  lib/libaubit4gl/readkeys.c, lib/libaubit4gl/rexp2.c,
+	  lib/resource/resource.c: Simplified build updates & portability
+	  changes
+
+2005-05-18 14:32  mikeaubury
+
+	* incl/a4gl_libaubit4gl.h: simplified build fixups
+
+2005-05-17 15:32  mikeaubury
+
+	* tools/no_yacc/cygwin/compilers/sql/lex.sqlparse_yy.c: [no log
+	  message]
+
+2005-05-15 14:24  mikeaubury
+
+	* compilers/4glc/rules/define.rule,
+	  tools/no_yacc/cygwin/compilers/4glc/mk_states.c,
+	  tools/no_yacc/cygwin/compilers/4glc/mk_states_1.h,
+	  tools/no_yacc/cygwin/compilers/4glc/rules/generated/kw.h,
+	  tools/no_yacc/cygwin/compilers/4glc/rules/generated/kw.yh,
+	  tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c,
+	  tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.h,
+	  tools/no_yacc/cygwin/compilers/ace/lex.yy.c,
+	  tools/no_yacc/cygwin/compilers/fcompile/lex.yy.c,
+	  tools/no_yacc/cygwin/compilers/menus/lex.yy.c,
+	  tools/no_yacc/cygwin/compilers/sql/y.tab.c,
+	  tools/no_yacc/cygwin/compilers/sql/y.tab.h,
+	  tools/no_yacc/cygwin/compilers/xgen/lex.yy.c,
+	  tools/project/build: [no log message]
+
+2005-05-15 13:57  mikeaubury
+
+	* configure, compilers/4glc/variables.c,
+	  compilers/4glc/rules/attributes.rule,
+	  compilers/4glc/rules/error.rule,
+	  compilers/4glc/rules/import.rule, compilers/4glc/rules/main.rule,
+	  compilers/4glc/rules/options.rule, compilers/4glc/rules/run.rule,
+	  compilers/4glc/rules/template.rule,
+	  compilers/4glc/rules/window.rule,
+	  compilers/4glc/rules/sqlpack/infx/schema.rule,
+	  compilers/4glc/rules/sqlpack/infx/sql_4gl.rule,
+	  compilers/4glc/rules/sqlpack/infx/update.rule,
+	  lib/libaubit4gl/API_esql.spec,
+	  lib/libaubit4gl/a4gl_libaubit4gl_int.h,
+	  lib/libaubit4gl/corba_server_util.c, lib/libaubit4gl/io.c,
+	  lib/libesql/helper_funcs.ec: [no log message]
+
+2005-05-15 12:13  mikeaubury
+
+	* lib/libaubit4gl/pointers.c: rename some of the macros
+
+2005-05-15 10:12  mikeaubury
+
+	* lib/libaubit4gl/: funcs_d.c, sqlconvert.c, translate.c:
+	  strcasecmp -> A4GL_aubit_strcasecmp
+
+2005-05-15 10:03  mikeaubury
+
+	* lib/libaubit4gl/eval_field.c: strcasecmp -> A4GL_aubit_strcasecmp
+
+2005-05-15 10:01  mikeaubury
+
+	* lib/libaubit4gl/datatypes.c: replace strcasecmp
+
+2005-05-08 14:52  mikeaubury
+
+	* ChangeLog: [no log message]
+
+2005-05-06 20:47  mikeaubury
+
+	* tools/4glpc/4glpc.4gl: use 4glpc.hlp not 4glpc.iem
+
+2005-05-06 19:11  mikeaubury
+
+	* tools/adbschema/makefile: Add some basic blob handling, add
+	  fragments to adbschema
+
+2005-05-05 11:03  mikeaubury
+
+	* lib/libui/ui_curses/iarray.c: MID  0000614 - make it so it only
+	  goes down 1 row when paging down to insert a new row...
+
+2005-05-05 10:04  mikeaubury
+
+	* tools/asql/: paginate.4gl, runforms/makefile: Make file cleanup &
+	  variable renaming
+
+2005-05-05 10:03  mikeaubury
+
+	* lib/libui/ui_highlevel/formcntrl.c: int_driver rename & comment
+	  removal
+
+2005-05-05 09:50  mikeaubury
+
+	* lib/libaubit4gl/: .splintrc, attributes.c, builtin_d.c, match.c:
+	  lint fixups
+
+2005-05-05 09:49  mikeaubury
+
+	* lib/bin/dlmagic: Small fixups
+
+2005-05-05 09:49  mikeaubury
+
+	* incl/a4gl_sql.h: Add extra generic field to s_sid
+
+2005-05-05 09:48  mikeaubury
+
+	* etc/import/README: Tidy import naming convention
+
+2005-05-05 09:45  mikeaubury
+
+	* compilers/4glc/mk_states_c.in: Small fixups - 	change //
+	  comments to /* in mk_states.c 	remove a reduce/reduce
+	  error in main.rule
+
+2005-05-03 17:09  mikeaubury
+
+	* compilers/sql/util.c: Fix invalid 'free' reported by Leonardo
+	  Cecchi
+
+2005-04-26 18:48  mikeaubury
+
+	* lib/libaubit4gl/: API_ui.spec, ops.c, sql_common.c: [no log
+	  message]
+
+2005-04-23 15:34  mikeaubury
+
+	* lib/libui/ui_glade/glade_lib/text_view.4gl: [no log message]
+
+2005-04-23 10:17  mikeaubury
+
+	* tools/no_yacc/cygwin/compilers/: ace/y.tab.c, fcompile/y.tab.c,
+	  menus/y.tab.c, xgen/y.tab.c: new build
+
+2005-04-22 20:37  mikeaubury
+
+	* etc/gtkrc_2: [no log message]
+
+2005-04-22 13:07  mikeaubury
+
+	* lib/libui/ui_highlevel/input_array.c: copy across some bug fixes
+	  from ui_curses
+
+2005-04-22 07:06  mikeaubury
+
+	* compilers/4glc/rules/1.reqd,
+	  compilers/4glc/rules/newvariable.rule,
+	  compilers/4glc/rules/bin/mkyacc, incl/Makefile-common.in: [no log
+	  message]
+
+2005-04-20 14:06  afalout
+
+	* lib/extra_libs/pop/Makefile: Small fix
+
+2005-04-17 02:05  afalout
+
+	* etc/aubit-InnoSetup.iss.in, lib/extra_libs/pop/pop.4gl: Windows
+	  updates
+
+2005-04-15 20:38  mikeaubury
+
+	* lib/libaubit4gl/dmy.c: [no log message]
+
+2005-04-15 11:36  mikeaubury
+
+	* compilers/4glc/gen_stack.h: [no log message]
+
+2005-04-15 10:22  mikeaubury
+
+	* compilers/4glc/fix_insert.c: [no log message]
+
+2005-04-15 07:59  mikeaubury
+
+	* compilers/4glc/rules/pragma.rule, compilers/sql/makefile,
+	  incl/a4gl_incl_infx.h, lib/libaubit4gl/compat.c: [no log message]
+
+2005-04-01 08:55  mikeaubury
+
+	* lib/: liblogical/processor/process_report.c,
+	  liblogical/report_viewer/main.c,
+	  liblogical/report_viewer/report_viewer.c,
+	  liblogical/report_viewer/report_viewer.h,
+	  libui/ui_glade/glade_lib/list.4gl: [no log message]
+
+2005-03-31 17:45  mikeaubury
+
+	* compilers/xgen/main.c, lib/libexdata/mpz.c,
+	  lib/liblogical/csv/common/csv_io.c,
+	  lib/liblogical/csv/layout/layout_csv.c,
+	  lib/liblogical/pdf/common/common_pdf.h,
+	  lib/liblogical/pdf/layout/layout_pdf.c,
+	  lib/libsql/odbc/sqlite3odbc.c, lib/libui/ui_glade/dialog.c,
+	  lib/libui/ui_glade/list.c,
+	  lib/libui/ui_glade/glade_lib/common.4gl,
+	  lib/libui/ui_glade/glade_lib/entry.4gl,
+	  lib/libui/ui_glade/glade_lib/form.4gl,
+	  lib/libui/ui_glade/glade_lib/mlist.4gl,
+	  lib/libui/ui_glade/glade_lib/sbar.4gl: [no log message]
+
+2005-03-31 14:39  afalout
+
+	* tools/sqlfmt/getopt.c: Warning fixes - down to 80
+
+2005-03-31 14:33  afalout
+
+	* Makefile, common/dataio/form_x.x, common/dataio/report.x,
+	  compilers/4glc/globals.c, compilers/4glc/list.c,
+	  compilers/ace/data.c, compilers/ace/dump.c,
+	  compilers/ace/fileio.c, compilers/ace/main.c,
+	  compilers/ace/output.c, compilers/menus/.cvsignore,
+	  compilers/menus/decompile.c, compilers/menus/mcompile.c,
+	  compilers/sql/.cvsignore, lib/Makefile,
+	  lib/libaubit4gl/API_form.spec, lib/libaubit4gl/API_help.spec,
+	  lib/libaubit4gl/data_if.c, lib/libaubit4gl/dataio.c,
+	  lib/libaubit4gl/dates.c, lib/libaubit4gl/gui_io.c,
+	  lib/libaubit4gl/keys.c, lib/libaubit4gl/read_dty.c,
+	  lib/libaubit4gl/screen.c, lib/libaubit4gl/string.c,
+	  lib/libform/form_generic/readforms.c,
+	  lib/libform/form_xdr/readforms.c,
+	  lib/libform/noform/form_noform.c, lib/liblex/lex_c/compile_c.c,
+	  lib/libmenu/menu_generic/loadmenu.c,
+	  lib/libmenu/menu_generic/menuwrite.c,
+	  lib/libmenu/menu_nomenu/menu_nomenu.c,
+	  lib/libmenu/menu_xdr/menuwrite.c,
+	  lib/libmsg/msg_native/readmsg.c,
+	  lib/libpacker/gzpacked/pack_packed.c,
+	  lib/libpacker/mempacked/pack_mempacked.c,
+	  lib/libpacker/packed/pack_packed.c,
+	  lib/libpacker/perl/pack_perl.c, lib/libpacker/xdr/pack_xdr.c,
+	  lib/libpacker/xml/pack_xml.c, lib/libpdf/nopdf.c,
+	  lib/librpc/no_rpc/rpc_norpc.c,
+	  lib/librpc/sun_rpc/a4gl_lib_rpc_xdr_int.h,
+	  lib/librpc/sun_rpc/rpc_client.c, lib/librpc/sun_rpc/rpc_server.c,
+	  lib/librpc/sun_rpc/rpc_stack_clnt.c,
+	  lib/librpc/sun_rpc/rpc_stack_xdr.c, lib/librpc/sun_rpc/rpc_svc.c,
+	  lib/librpc/xml_rpc/xmlrpc_client.c,
+	  lib/librpc/xml_rpc/xmlrpc_server.c, lib/libsql/odbc/sqlex.c,
+	  lib/libui/ui_curses/a4gl_lib_ui_tui_int.h,
+	  lib/libui/ui_curses/array.c, lib/libui/ui_curses/curslib.c,
+	  lib/libui/ui_curses/prompt.c, lib/libui/ui_highlevel/formcntrl.h,
+	  lib/libui/ui_highlevel/hl_proto.h,
+	  lib/libui/ui_highlevel/lowlevel/low_gtk.h,
+	  lib/libui/ui_highlevel/lowlevel/menu_gtk.c, lib/windows/dll.c,
+	  libltdl/ltdl.c, tools/asql/.cvsignore, tools/asql/Makefile,
+	  tools/fgldoc/fgldoc.c, tools/getopt/getopt.c: Warning fixes -
+	  down to 80
+
+2005-03-29 12:24  mikeaubury
+
+	* compilers/4glc/rules/sqlblock.rule,
+	  etc/convertsql/INFORMIX-SQLITE.cnv: [no log message]
+
+2005-03-28 21:23  mikeaubury
+
+	* tools/asql/asql.4gl: [no log message]
+
+2005-03-28 21:19  mikeaubury
+
+	* compilers/xgen/x.yacc: [no log message]
+
+2005-03-27 04:00  afalout
+
+	* tools/html/Makefile: Happened again: cvs update: warning:
+	  new-born tools/html/Makefile has disappeared
+
+2005-03-26 23:31  afalout
+
+	* compilers/menus/Makefile: Did not commit
+
+2005-03-25 12:48  afalout
+
+	* compilers/4glc/lex.c, compilers/fcompile/create_default.c,
+	  compilers/fcompile/dump.c, compilers/helpcompile/Makefile.in,
+	  compilers/helpcompile/unmkmessage.c,
+	  compilers/menus/a4gl_mcompile_int.h, compilers/pcode/Makefile,
+	  compilers/sql/ilist.h, compilers/sql/main.c,
+	  lib/libui/ui_highlevel/input_array.h,
+	  lib/libui/ui_highlevel/lowlevel.h,
+	  lib/libui/ui_highlevel/lowlevel/lowlevel.c, tools/asql/dir.c,
+	  tools/asql/parse.l, tools/convertsql/convertsql.c: Fixing
+	  warnings - down to 16
+
+2005-03-24 14:26  mikeaubury
+
+	* tools/asql/form.4gl: test1
+
+2005-03-23 14:48  pjfalbe
+
+	* tools/asql/runforms/runform.4gl: Quick fix - put interrupt key
+	  back in and reset set the flag before using it
+
+2005-03-23 10:32  mikeaubury
+
+	* lib/libui/ui_curses/colours.c: [no log message]
+
+2005-03-23 08:24  afalout
+
+	* bin/4glpc.obsolete, bin/esql_wrap, etc/Makefile-install,
+	  etc/aubitbuild.cron.sh, etc/aubitrc.in,
+	  incl/Makefile-install.mki, lib/libform/form_generic/formwrite2.c,
+	  lib/liblex/lex_esqlc/binding.c, lib/libui/ui_curses/dump_scr.c,
+	  lib/libui/ui_curses/generic_ui.c, lib/resource/Makefile.in,
+	  tools/4gl_beautify/dbbeauty/dbbeauty.c,
+	  tools/configuration/descriptions, tools/configuration/rest.4gl:
+	  Fixing warnings - down from 196 to 150
+
+2005-03-23 08:18  afalout
+
+	* README.txt: Fixing warnings - down from 196 to 150
+
+2005-03-22 23:24  afalout
+
+	* compilers/xgen/Makefile: Did not commit??
+
+2005-03-21 00:43  afalout
+
+	* compilers/xgen/x.lex: Fixing warnings
+
+2005-03-20 04:26  afalout
+
+	* bin/amake, bin/aubit, incl/a4gl.mk, incl/footer.mki: Updates to
+	  Amake
+
+2005-03-14 21:42  mikeaubury
+
+	* tools/asql/: postgres.4gl, query.4gl, simple_parse.c: [no log
+	  message]
+
+2005-03-14 21:39  mikeaubury
+
+	* compilers/sql/99.reqd: [no log message]
+
+2005-03-14 18:32  mikeaubury
+
+	* compilers/: 4glc/labels.c, fcompile/fcompile.c, fcompile/where.c:
+	  [no log message]
+
+2005-03-14 15:55  fortiz
+
+	* glade/ide/sqleditor/execute.4gl: declare function first to avoid
+	  implicit declaration
+
+2005-03-11 19:54  mikeaubury
+
+	* tools/asql/infx.4gl: [no log message]
+
+2005-03-11 08:50  afalout
+
+	* incl/footer2.mki, incl/header.mki, tools/4glpc/.cvsignore: Amake
+	  updates
+
+2005-03-10 10:06  mikeaubury
+
+	* lib/libaubit4gl/function_call_stack.c: [no log message]
+
+2005-03-10 10:04  mikeaubury
+
+	* lib/extra_libs/file/libfile.4gl: Fix constantly pushing onto the
+	  function call stack without  popping..
+
+2005-03-09 15:14  mikeaubury
+
+	* cint/a4gl_cint_4gldef.h, compilers/4glc/4glc.c,
+	  compilers/4glc/dim.c, compilers/4glc/field_handling.c,
+	  compilers/4glc/generic.c, compilers/ace/tables.c,
+	  compilers/fcompile/decompile.c,
+	  compilers/helpcompile/amkmessage.c,
+	  compilers/helpcompile/mkmess.c, compilers/pcode/compiler_main.c,
+	  incl/a4gl_4gl_callable.h, incl/a4gl_incl_4gldef.h,
+	  incl/a4gl_incl_4glhdr.h, lib/bin/dlmagic_self, lib/bin/idlmagic,
+	  lib/generated/std_funcs.c, lib/libaubit4gl/dynmem.c,
+	  lib/libaubit4gl/err.c, lib/libaubit4gl/gtime.c,
+	  lib/libaubit4gl/sqlca.c, lib/libaubit4gl/stack_ops.c,
+	  lib/libform/form_xdr/formwrite2.c,
+	  lib/liblex/lex_c/compile_c_gtk.c, lib/liblex/lex_c/init.c,
+	  lib/libmsg/msg_native/writemsg.c, lib/resource/aubit-config.c:
+	  [no log message]
+
+2005-03-09 15:10  mikeaubury
+
+	* bin/aubitbuild.sh.in: [no log message]
+
+2005-03-09 02:21  afalout
+
+	* bin/.cvsignore: Amake updated & small fix
+
+2005-03-07 21:32  mikeaubury
+
+	* lib/libhelp/: Makefile, helplib.4gl: [no log message]
+
+2005-03-07 14:51  mikeaubury
+
+	* compilers/4glc/import.c, incl/a4gl_esql.h,
+	  lib/extra_libs/channel/Makefile, lib/extra_libs/file/Makefile.in,
+	  lib/extra_libs/string/Makefile.in, lib/libesql/Makefile,
+	  tools/4glpc/makefile: Warning fixups
+
+2005-03-04 20:25  mikeaubury
+
+	* lib/libesql/make_static: [no log message]
+
+2005-03-04 08:11  afalout
+
+	* tools/test/Makefile: Several updates
+
+2005-03-04 08:07  afalout
+
+	* lib/extra_libs/pcre/makefile, tools/adbschema/adbschema.4gl:
+	  Several updates
+
+2005-03-01 18:24  mikeaubury
+
+	* compilers/4glc/insert_curs.c: [no log message]
+
+2005-03-01 08:25  mikeaubury
+
+	* etc/import/a4gl_file: Small bug fixes. Added libfile.4gl changes
+	  supplied by Miguel Caldera
+
+2005-02-26 09:26  mikeaubury
+
+	* compilers/4glc/rules/: goto.rule, label.rule: [no log message]
+
+2005-02-26 08:41  mikeaubury
+
+	* etc/convertsql/INFORMIX-POSTGRESQL.cnv: [no log message]
+
+2005-02-25 11:21  mikeaubury
+
+	* tools/4glpc/settings/: C_INFORMIX, INFORMIX: [no log message]
+
+2005-02-25 09:29  mikeaubury
+
+	* tools/asql/cedit.4gl: fix cursor keys in asql_i.4ae
+
+2005-02-25 08:39  mikeaubury
+
+	* compilers/4glc/rules/open.rule: Various fixes - added more
+	  'add_features@ fixed NOT MATCHES conversion added
+	  SELECT_INTO_TEMP_AS_CREATE_TEMP_AS for ODBC postgres added
+	  tool/4glpc/settings to be installed by make install
+
+2005-02-24 09:32  afalout
+
+	* tools/adbschema/.cvsignore: Few updates
+
+2005-02-22 12:29  mikeaubury
+
+	* compilers/4glc/rules/: close.rule, free.rule, init.rule,
+	  prepare.rule, validate.rule: [no log message]
+
+2005-02-22 09:28  mikeaubury
+
+	* compilers/4glc/rules/sqlpack/infx/: put.rule, set.rule: [no log
+	  message]
+
+2005-02-22 08:20  mikeaubury
+
+	* tools/aupscol/: att.4gl, infx.4gl, main.4gl, val.4gl: [no log
+	  message]
+
+2005-02-21 00:52  afalout
+
+	* compilers/ace/Makefile.in, tools/adbaccess/Makefile.in,
+	  tools/adbload/.cvsignore, tools/adbload/Makefile.in,
+	  tools/loadmap/.cvsignore: Small updates & fixes
+
+2005-02-20 19:34  mikeaubury
+
+	* compilers/fcompile/form_x.x, compilers/pcode/test_c.c,
+	  incl/a4gl_esql_postgres.h, tools/4glpc/readsettings.4gl: [no log
+	  message]
+
+2005-02-17 11:50  mikeaubury
+
+	* compilers/fcompile/a4gl_fcompile_int.h,
+	  lib/libaubit4gl/decimal.c: warning fixes
+
+2005-02-16 13:21  mikeaubury
+
+	* tools/4glpc/settings/EC_POSTGRES: [no log message]
+
+2005-02-15 09:28  mikeaubury
+
+	* tools/afinderr/afinderr.4gl: [no log message]
+
+2005-02-15 01:32  afalout
+
+	* tools/afinderr/Makefile: Small updates, fixed afinderr
+
+2005-02-13 10:26  afalout
+
+	* compilers/ace/.cvsignore, glade/ide/common/.cvsignore,
+	  tools/adbaccess/.cvsignore, tools/adbaccess/misql.4gl,
+	  tools/ide/.cvsignore: Updates
+
+2005-02-11 16:49  mikeaubury
+
+	* compilers/4glc/rules/foreach.rule: mid 686 685 683
+
+2005-02-11 12:36  afalout
+
+	* docs/.cvsignore: Small updates
+
+2005-02-11 10:12  afalout
+
+	* incl/a4gl_esql_infx.h: Small updates
+
+2005-02-09 18:10  mikeaubury
+
+	* compilers/4glc/rules/4.reqd: [no log message]
+
+2005-02-09 02:22  afalout
+
+	* tools/syspg4gl_to_make/to_amake.sh: Minimal build and small
+	  updates
+
+2005-02-08 18:52  mikeaubury
+
+	* compilers/4glc/rules/: last.reqd, var2.rule: [no log message]
+
+2005-02-03 14:10  mikeaubury
+
+	* lib/extra_libs/memcached/: Makefile, crc32_table.h, mem.4gl,
+	  memcache.c, memcache.h, test1.4gl: [no log message]
+
+2005-02-03 10:31  afalout
+
+	* tools/jabber/: Makefile, lib4glim.c: Small updates
+
+2005-02-03 07:47  afalout
+
+	* lib/liblogical/pdf/layout/Makefile, lib/libsql/esqlc/Makefile,
+	  tools/mq/makefile, tools/mq/test_mq.4gl: Few Windows updates
+
+2005-02-03 05:01  afalout
+
+	* tools/mq/: fgiusr.c, mqfunc.c: Added 4GL interface to IBM
+	  WebSphere MQ by Claus Samuelsen
+
+2005-02-02 10:36  mikeaubury
+
+	* tools/asql/: generic.4gl, pick.4gl, tools.4gl, user_menu.4gl: [no
+	  log message]
+
+2005-01-29 11:35  mikeaubury
+
+	* etc/convertsql/INFORMIX-INGRES.cnv, lib/libaubit4gl/sql.c,
+	  tools/adbschema/grant.4gl, tools/asql/runforms/dbi.4gl,
+	  tools/asql/runforms/list.4gl: [no log message]
+
+2005-01-24 15:57  mikeaubury
+
+	* lib/liblogical/common/a4gl_lle.c: [no log message]
+
+2005-01-23 19:53  mikeaubury
+
+	* lib/libsql/ingres/: ingres.ec, makeit: [no log message]
+
+2005-01-12 11:15  mikeaubury
+
+	* glade/ide/sqleditor/main.4gl, incl/a4gl_esql_ingres.h,
+	  lib/libui/ui_glade/glade.c: [no log message]
+
+2005-01-11 15:00  mikeaubury
+
+	* tools/4glpc/settings/EC_INFORMIX: [no log message]
+
+2005-01-10 14:43  mikeaubury
+
+	* tools/asql/runforms/globals.4gl: [no log message]
+
+2005-01-07 10:28  mikeaubury
+
+	* tools/4glpc/settings/: EC_INGRES, EC_SAP: [no log message]
+
+2005-01-07 08:19  afalout
+
+	* tools/prepare-ChangeLog.pl: Windows updates
+
+2005-01-05 20:04  mikeaubury
+
+	* lib/: extra_libs/pop/pop_killer.4gl,
+	  libaubit4gl/API_lowlevel.spec: Various fixes -	 fcompile -
+	  some changes to allow sperform type forms	    etc/gtkrc_2  -
+	  minor mods to make it look nicer.
+	  lib/extra_libs/pop/pop_killer.4gl - fixed a bug
+	  lib/libform/form_generic/readforms.c - fixed silly bug causing
+	  valgrind issues	   Highlevel UI - numerous updates/bugfixes
+
+2005-01-04 03:35  afalout
+
+	* glade/ide/.cvsignore: Corba stuff - compiles now
+
+2004-12-25 00:33  afalout
+
+	* help/.cvsignore: Updates
+
+2004-12-22 11:22  afalout
+
+	* etc/.cvsignore, etc/aubit-rpm.spec.in, help/Makefile,
+	  tools/4glpc/helpfile.msg, tools/configuration/makefile: Build
+	  updates
+
+2004-12-21 07:31  afalout
+
+	* help/: help_aubit.msg, help_ecpg.msg, help_sqlite.msg: Wrong
+	  extension - Informix 4GL help source files are .msg - not .hlp
+
+2004-12-20 11:48  mikeaubury
+
+	* lib/libaubit4gl/API_sqlparse.spec: [no log message]
+
+2004-12-19 10:39  mikeaubury
+
+	* compilers/: pcode/common_eval.c, pcode/common_print.c,
+	  pcode/compiler_optimize.c, pcode/compiler_pcode.c,
+	  pcode/compiler_variables.c, pcode/fgl_calls.h,
+	  pcode/npcode_defs.h, pcode/runner_calls.c,
+	  pcode/runner_execute.c, pcode/runner_main.c, pcode/set_var.c,
+	  pcode/simple.lex, pcode/simple.yacc, sql/gen_lex: warning fixes
+
+2004-12-19 10:13  afalout
+
+	* tools/project/version: Updates
+
+2004-12-19 09:37  afalout
+
+	* lib/libsql/odbc/: .cvsignore, Makefile: Update
+
+2004-12-19 08:24  afalout
+
+	* lib/libsql/odbc/: sqlite3odbc.h, sqliteodbc.h: SQLite version 3
+	  support files
+
+2004-12-19 08:12  afalout
+
+	* glade/ide/sqleditor/.cvsignore, lib/extra_libs/pcre/.cvsignore,
+	  lib/extra_libs/sxml/.cvsignore, lib/libsql/odbc/sqlite3-local.h,
+	  lib/libui/ui_glade/glade_lib/.cvsignore,
+	  tools/aupscol/.cvsignore, tools/jabber/.cvsignore,
+	  tools/jabber/test_im.4gl: Windows build updates - Jabber and
+	  SQLite
+
+2004-12-15 06:40  afalout
+
+	* lib/extra_libs/infx_dump_screen/infx.c,
+	  lib/libui/ui_highlevel/aubit_noform.h,
+	  tools/test/altris/key_press.c: Xcurses, take one
+
+2004-12-14 06:50  afalout
+
+	* .cvsignore: Updates
+
+2004-12-13 01:55  afalout
+
+	* lib/: libexdata/Makefile.in, liblogical/csv/layout/Makefile,
+	  liblogical/csv/process/makefile, liblogical/pdf/process/Makefile,
+	  liblogical/txt/layout/Makefile, liblogical/txt/process/Makefile,
+	  librpc/xml_rpc/Makefile.in: Windows build updates
+
+2004-12-10 19:05  mikeaubury
+
+	* compilers/4glc/rules/menu.rule: Allow order by on unload, and fix
+	  memory error when theres lots of menus
+
+2004-12-09 23:59  afalout
+
+	* lib/: extra_libs/sxml/Makefile, libpdf/Makefile.in,
+	  libsql/esqlc/Makefile.cygwin: Windows build updates
+
+2004-12-09 11:51  afalout
+
+	* tools/cygwin/pcre.h: PCRE header from Linux - Windows one is
+	  missing
+
+2004-12-09 07:26  mikeaubury
+
+	* compilers/sql/not_used,
+	  lib/extra_libs/infx_dump_screen/fgl_prtscr.c: [no log message]
+
+2004-12-07 20:26  whaslbeck
+
+	* compilers/fcompile/Makefile.in: Build fixes
+
+2004-12-07 01:43  afalout
+
+	* lib/: liblogical/layout_engine/Makefile,
+	  liblogical/report_viewer/Makefile,
+	  libmenu/menu_generic/Makefile.in: Windows build updates
+
+2004-12-05 19:16  mikeaubury
+
+	* lib/libui/ui_glade/Makefile:
+	  add -laubit4gl to the link line
+
+2004-12-04 09:22  mikeaubury
+
+	* tools/odbctest/incl/sql.h: [no log message]
+
+2004-12-02 09:33  mikeaubury
+
+	* compilers/4glc/rules/advanced.rule: Small fixups
+
+2004-12-02 09:25  mikeaubury
+
+	* lib/extra_libs/channel/channel.4gl: [no log message]
+
+2004-12-01 07:21  afalout
+
+	* lib/libsql/postgresql/Makefile.in, lib/libsqlparse/none/Makefile,
+	  tools/gwd/Open_err.bsh: Windows build updates - enabled ecpg
+
+2004-11-28 14:33  mikeaubury
+
+	* compilers/4glc/rules/sql1.rule: [no log message]
+
+2004-11-27 15:37  mikeaubury
+
+	* incl/a4gl_exdata.h: [no log message]
+
+2004-11-26 11:43  mikeaubury
+
+	* docs/manaual_to-do.txt: Added some more liblogical stuff
+
+2004-11-26 08:56  mikeaubury
+
+	* incl/: a4gl_esql_querix.h, a4gl_esql_sap.h: [no log message]
+
+2004-11-26 03:57  afalout
+
+	* incl/.cvsignore, lib/libaubit4gl/.cvsignore: small updates
+
+2004-11-25 15:46  mikeaubury
+
+	* compilers/sql/: 10.reqd, memfile.c: [no log message]
+
+2004-11-25 11:31  mikeaubury
+
+	* lib/libsqlparse/none/util.c: [no log message]
+
+2004-11-15 03:37  afalout
+
+	* tools/.cvsignore: small fix & updates
+
+2004-11-12 18:13  pjfalbe
+
+	* lib/liblogical/pdf/common/common_pdf.c,
+	  lib/liblogical/pdf/process/pdf_handling.c, tools/asql/report.4gl:
+	  [no log message]
+
+2004-11-11 16:28  pjfalbe
+
+	* tools/asql/main_menu.4gl: [no log message]
+
+2004-11-10 13:40  mikeaubury
+
+	* lib/liblogical/txt/process/process_txt.c: Fixups - liblogical
+	  stuff + fix picture in input array in HL_..
+
+2004-11-07 14:49  mikeaubury
+
+	* bin/ecpg_wrap: Small fixups - added WITH dimensions to reports,
+	  small changes to sqlconvert
+
+2004-11-05 19:03  mikeaubury
+
+	* tools/4glpc/settings/: C, EC: [no log message]
+
+2004-11-05 00:37  afalout
+
+	* lib/extra_libs/channel/.cvsignore: Small fixes
+
+2004-11-04 21:12  pjfalbe
+
+	* lib/liblogical/: layout_engine/layout_engine.c,
+	  pdf/process/process_pdf.c: MA again - Small updates & bug fixes
+
+2004-11-03 14:34  pjfalbe
+
+	* tools/: 4glpc/times.4gl, test/conv_report.4gl: Really Mike Aubury
+	  - but I'm offsite....  Small fixups for some bugs I've found...
+
+2004-11-01 05:11  afalout
+
+	* tools/test/file.4gl: Updates
+
+2004-10-31 11:55  mikeaubury
+
+	* tools/test/xml/: test.xml, xml.4gl: [no log message]
+
+2004-10-26 12:55  mikeaubury
+
+	* todo: [no log message]
+
+2004-10-23 14:36  mikeaubury
+
+	* compilers/4glc/var_handling.c, etc/convertsql/README.txt: [no log
+	  message]
+
+2004-10-21 11:23  afalout
+
+	* tools/syspg4gl_to_make/: d4gl.mk, getopt.4gl, i4gl.mk,
+	  instring.4gl, tomake.4gl, tomake.mk, tomake1.mk: Adding JLs
+	  syspg4gl to make utility
+
+2004-10-20 13:18  afalout
+
+	* incl/i4gl.mk: small fix
+
+2004-10-15 16:00  mikeaubury
+
+	* compilers/4glc/rules/: datetime.rule, formhandler.rule, gui.rule,
+	  set.rule: [no log message]
+
+2004-10-12 01:40  afalout
+
+	* lib/libui/ui_glade/glade_lib/makefile: Updates & fix for -W
+
+2004-10-10 04:08  afalout
+
+	* cint/.cvsignore: Updates
+
+2004-10-08 03:47  afalout
+
+	* tools/aupscol/makefile: Windows updates
+
+2004-10-04 14:49  afalout
+
+	* bin/prepmake, compilers/ace/generate.4gl,
+	  tools/loadmap/Makefile.in: Removing 4glpc and fixing build and
+	  RPM
+
+2004-10-02 09:03  mikeaubury
+
+	* compilers/4glc/variables.h: [no log message]
+
+2004-10-02 05:45  afalout
+
+	* lib/swig/.cvsignore: Build updates
+
+2004-10-01 11:44  afalout
+
+	* incl/compat/decimal.h: Autoconf fixes
+
+2004-09-30 13:20  afalout
+
+	* compilers/pcode/.cvsignore: Update
+
+2004-09-29 16:42  mikeaubury
+
+	* compilers/pcode/common_io.c: [no log message]
+
+2004-09-29 10:15  mikeaubury
+
+	* compilers/4glc/rules/: put.rule, schema.rule, update.rule: [no
+	  log message]
+
+2004-09-29 06:37  afalout
+
+	* lib/swig/: domake.in, lib.i: Updates
+
+2004-09-28 10:49  afalout
+
+	* cint/make_cintlib, cint/runner, common/dataio/Makefile.in,
+	  compilers/pcode/checker_read.c, compilers/pcode/compiler_param.c,
+	  compilers/pcode/runner_vars.c, glade/ide/makefile,
+	  glade/ide/sqleditor/makefile,
+	  lib/libform/form_generic/Makefile.in,
+	  lib/libform/form_xdr/Makefile.in, lib/libform/noform/Makefile.in,
+	  lib/liblex/lex_c/Makefile.in, lib/liblex/lex_esqlc/Makefile.in,
+	  lib/liblex/lex_perl/Makefile.in,
+	  lib/libmenu/menu_nomenu/Makefile.in,
+	  lib/libmenu/menu_xdr/Makefile.in,
+	  lib/libmsg/msg_native/Makefile.in,
+	  lib/libpacker/gzpacked/Makefile.in,
+	  lib/libpacker/mempacked/Makefile.in,
+	  lib/libpacker/packed/Makefile.in, lib/libpacker/xdr/Makefile.in,
+	  lib/libpacker/xml/Makefile.in, lib/librpc/no_rpc/Makefile.in,
+	  lib/librpc/sun_rpc/Makefile.in, lib/libsql/nosql/Makefile.in,
+	  lib/libsql/schema_in_file/Makefile,
+	  lib/libui/ui_console/Makefile.in,
+	  lib/libui/ui_curses/Makefile.in,
+	  lib/libui/ui_curses/Makefile.mja, tools/ide/d4gl.sh,
+	  tools/test/altris/makefile, tools/test/db/Makefile.in,
+	  tools/test/db/postgresql/Makefile.in: Replacing 4glpc and other
+	  build updates on Windows
+
+2004-09-26 02:47  afalout
+
+	* lib/extra_libs/sxml/: README, sxmllib.4gl: build updates
+
+2004-09-22 15:39  afalout
+
+	* glade/ide/sqleditor/infx.4gl, tools/asql/database.4gl: Small
+	  updates & fixes
+
+2004-09-21 21:26  mikeaubury
+
+	* common/dataio/npcode.x, compilers/pcode/npcode.x: pcode changes,
+	  esql unload speedups
+
+2004-08-31 21:46  mikeaubury
+
+	* tools/test/hello.4gl: bug fixes.  Remove menu window for normal
+	  window handling layout changes for logical reports datetime
+	  fixups wide character enhancements
+
+2004-08-31 15:41  mikeaubury
+
+	* tools/asql/load.4gl: [no log message]
+
+2004-08-10 14:41  mikeaubury
+
+	* compilers/4glc/rules/: class.rule, dim.rule, bin/procstates: [no
+	  log message]
+
+2004-08-02 07:36  mikeaubury
+
+	* lib/libaubit4gl/API_exreport.spec: [no log message]
+
+2004-08-02 06:57  afalout
+
+	* lib/liblogical/: csv/process/process_csv.c,
+	  txt/layout/layout_txt.c: compiling on new MinGW
+
+2004-07-17 10:02  mikeaubury
+
+	* lib/liblogical/: common/a4gl_lle.h,
+	  layout_engine/API_layout.spec: [no log message]
+
+2004-07-17 08:10  mikeaubury
+
+	* lib/libaubit4gl/ns.c: [no log message]
+
+2004-07-12 09:35  mikeaubury
+
+	* lib/liblogical/: makeit, csv/common/csv_io.h,
+	  processor/API_process.spec: fixups for windows
+
+2004-07-11 03:57  afalout
+
+	* noddy.txt, lib/liblogical/processor/Makefile,
+	  lib/liblogical/processor/process.h: MinGW updates
+
+2004-06-09 07:03  mikeaubury
+
+	* lib/libui/ui_highlevel/hl_forms.h: fixing oldlib build problems
+
+2004-05-18 19:36  mikeaubury
+
+	* lib/extra_libs/pcre/match.4gl: [no log message]
+
+2004-05-18 12:28  mikeaubury
+
+	* glade/ide/sqleditor/simple.h: [no log message]
+
+2004-05-13 15:38  mikeaubury
+
+	* lib/libpacker/gzpacked/: a4gl_lib_packer_packed_int.h, README:
+	  [no log message]
+
+2004-04-22 18:07  mikeaubury
+
+	* glade/ide/: edtprog.4gl, ide.glade, ide1.4gl, options.4gl,
+	  common/about.4gl, common/pick.4gl, sqleditor/editor.4gl,
+	  sqleditor/ide.glade, sqleditor/parse.l, sqleditor/simple_parse.c:
+	  [no log message]
+
+2004-04-21 22:26  mikeaubury
+
+	* lib/libaubit4gl/API_rpc.spec: Small fixups
+
+2004-04-21 12:40  mikeaubury
+
+	* etc/import/a4gl_pcre: [no log message]
+
+2004-04-20 18:47  mikeaubury
+
+	* etc/import/: a4gl_glade, a4gl_html, a4gl_string, default: [no log
+	  message]
+
+2004-03-29 18:37  mikeaubury
+
+	* lib/libui/ui_glade/glade_lib/field.4gl: [no log message]
+
+2004-03-27 06:26  afalout
+
+	* tools/project/mkproject: Updates
+
+2004-03-26 22:33  afalout
+
+	* lib/extra_libs/infx_dump_screen/decap.c: Adding donated code for
+	  4Js screen dump
+
+2004-03-25 18:07  mikeaubury
+
+	* compilers/4glc/rules/bin/: convkw, convkw_hash: fixups -
+	  including lexer.c - so beware!
+
+2004-03-25 09:16  afalout
+
+	* tools/afinderr/.cvsignore: Updates
+
+2004-03-25 04:55  afalout
+
+	* lib/libaubit4gl/API_menu.spec: Updates & fixes
+
+2004-03-24 19:58  mikeaubury
+
+	* tools/asql/connection_menu.4gl: [no log message]
+
+2004-03-23 23:34  mikeaubury
+
+	* compilers/menus/menu.yacc: menu compile fix
+
+2004-03-23 23:12  mikeaubury
+
+	* lib/bin/mkerrors: Fix andrejs handywork...
+
+2004-03-22 19:38  mikeaubury
+
+	* lib/libmenu/: menu_generic/a4gl_lib_menu_generic_int.h,
+	  menu_xdr/a4gl_lib_menu_xdr_int.h: [no log message]
+
+2004-03-19 11:05  afalout
+
+	* tools/odbctest/: Makefile.in, odbctest.c: Small fixes
+
+2004-03-19 09:56  mikeaubury
+
+	* lib/liblogical/: README.txt, layout_engine/file_hand.c: logical
+	  report fixups
+
+2004-03-19 04:00  afalout
+
+	* lib/liblogical/layout_engine/.cvsignore,
+	  tools/configuration/.cvsignore, tools/fgldoc/.cvsignore: Updates
+
+2004-03-19 02:52  afalout
+
+	* lib/liblogical/processor/.cvsignore: Updates
+
+2004-03-17 13:33  mikeaubury
+
+	* tools/configuration/mk_config: Some fairly major
+	  changes/additions
+
+	  1) More liblogical stuff
+
+	  2) Added _%d for all _sio and _sio_kw so these should be unique
+	  on the call stack..	  (But not always unique within a program -
+	  they should never overlap..)
+
+	  3) Added an automatic clean up call with doing a 'return' when in
+	  a UI statement (like INPUT/DISPLAY ARRAY etc)
+
+	  4) Resource optimisations
+
+	  5) Fix {! .. !} non-comments
+
+	  6) Some minor configurator changes
+
+	  7) Minor mod to asql for informix, changed to allow more space
+	  for database names
+
+	  8) Small fixups for money handling (so that test 1 passes!)
+
+2004-03-16 13:24  mikeaubury
+
+	* lib/liblogical/: csv/process/test.c, txt/process/test.c: logical
+	  report layout stuff
+
+2004-03-15 20:17  mikeaubury
+
+	* compilers/4glc/rules/comment.rule: Two fixes - 1 for comments as
+	  a word 2 Initial implementation of varchars (work in progress)
+
+2004-03-15 16:27  mikeaubury
+
+	* tools/aupscol/upscol.4gl: Small fixups - remove putenv/setenv
+	  usage, implement acl_getenv caching
+
+2004-03-14 10:42  mikeaubury
+
+	* compilers/4glc/var_handling.h: New variable usage handling for
+	  SQL
+
+2004-03-14 10:41  mikeaubury
+
+	* lib/libui/ui_curses/make_static: "update" changes (may affect
+	  other SQL too)
+
+2004-03-14 10:40  afalout
+
+	* compilers/fcompile/fshow.4gl: Updates
+
+2004-03-12 01:10  afalout
+
+	* incl/d4gl.mk: Updates
+
+2004-03-09 07:12  afalout
+
+	* tools/no_curses/cygwin/: curses.h, ncurses/unctrl.h: Updates
+
+2004-03-08 02:43  afalout
+
+	* compilers/fcompile/.cvsignore: Updates
+
+2004-03-05 04:36  afalout
+
+	* compilers/4glc/memfile.c: Updates
+
+2004-02-29 15:02  mikeaubury
+
+	* compilers/4glc/rules/locate.rule: [no log message]
+
+2004-02-22 02:26  afalout
+
+	* tools/configuration/globals.4gl: removed then need for .head file
+	  - several enhance,ments
+
+2004-02-20 14:39  mikeaubury
+
+	* lib/libui/ui_highlevel/aubit_form.h: small fixups, cache getenv
+	  results, fix mem faults, fix HL_TUI for use with configurator
+
+2004-02-12 11:58  afalout
+
+	* compilers/4glc/.cvsignore: Updates
+
+2004-02-12 11:01  afalout
+
+	* BUGS.txt: Updates from SuSE
+
+2004-02-10 13:53  mikeaubury
+
+	* compilers/ace/a4gl_ace_int.h: warning fixes
+
+2004-02-10 13:50  mikeaubury
+
+	* lib/extra_libs/string/libstring.4gl, tools/configuration/dir.c:
+	  more warning fixes
+
+2004-02-10 10:21  mikeaubury
+
+	* lib/libui/ui_highlevel/ui_highlevel.h: warning fixes
+
+2004-02-09 19:51  mikeaubury
+
+	* compilers/4glc/rules/if.rule: some binding changes in esql/c
+	  generation, tui fixups fix page trailer in reports
+
+2004-02-03 04:55  afalout
+
+	* tools/fgldoc/Makefile.in: clean.all updates
+
+2004-02-02 09:38  afalout
+
+	* tools/4glunit/Makefile.in: Fixes on SuSE
+
+2004-01-28 21:47  mikeaubury
+
+	* lib/liblex/lex_esqlc/a4gl_lib_lex_esqlc_int.h: Remove some of the
+	  // from code to make it ansi standard
+
+2004-01-28 16:21  mikeaubury
+
+	* compilers/4glc/rules/whenever.rule: Small bug fixes to get some
+	  more build tests working
+
+2004-01-27 10:10  mikeaubury
+
+	* compilers/4glc/rules/menuhandler.rule: Small fixups for new GUI
+	  UI module
+
+2004-01-23 13:49  mikeaubury
+
+	* compilers/4glc/field_handling.h: Move the liblex API stuff here
+	  from the libaubit4gl stuff
+
+2004-01-23 10:31  mikeaubury
+
+	* tools/test/gui/calc.4gl: Fixups
+
+2004-01-23 10:27  mikeaubury
+
+	* tools/test/testmpz.4gl: Fixups
+
+2004-01-23 10:11  mikeaubury
+
+	* lib/libui/ui_highlevel/misc.h: Fixups
+
+2004-01-23 09:58  mikeaubury
+
+	* compilers/4glc/rules/arr_expr.rule: Fixups
+
+2004-01-23 09:53  mikeaubury
+
+	* compilers/4glc/generic.h: Fixups
+
+2004-01-18 11:11  afalout
+
+	* lib/libui/ui_highlevel/.cvsignore, tools/loadmap/loadmap.4gl:
+	  Updates
+
+2004-01-17 12:31  mikeaubury
+
+	* tools/test/: sok_microban.4gl, sokoban.4gl: Sokoban game..
+
+2004-01-17 05:49  afalout
+
+	* tools/test/hello2.4gl: Updates
+
+2004-01-16 19:03  mikeaubury
+
+	* lib/libui/ui_highlevel/: display_array.h, generic_ui.h: New event
+	  mechanism
+
+2004-01-16 17:24  mikeaubury
+
+	* tools/test/form.per: [no log message]
+
+2004-01-14 13:06  mikeaubury
+
+	* lib/libesql/make_simple: [no log message]
+
+2004-01-14 12:15  mikeaubury
+
+	* compilers/4glc/rules/dynarr.rule: Dynamic array stuff
+
+2004-01-12 21:37  mikeaubury
+
+	* tools/test/gui/radio.per: Small fixups
+
+2004-01-12 18:00  mikeaubury
+
+	* compilers/ace/perl_runner/using.pm: [no log message]
+
+2004-01-12 14:00  mikeaubury
+
+	* lib/libui/ui_highlevel/: testit.c, formdriver.h, menu.h,
+	  testit.h: [no log message]
+
+2004-01-05 17:46  mikeaubury
+
+	* tools/configuration/: change.per, values.per: Configurator
+	  changes..  Mostly there now...  Just need to add the final output
+	  routine
+
+2003-12-09 08:36  mikeaubury
+
+	* tools/configuration/options.per: [no log message]
+
+2003-11-26 11:46  mikeaubury
+
+	* tools/asql/simple.h: Added some more dynamic array handling
+	  features new tests EXPLAIN SELECT ... added to asql_p.4ae
+
+2003-11-19 12:07  mikeaubury
+
+	* tools/asql/: session.4gl, table.4gl: small fixups + table info
+	  menu (triggers, status columns and index are all implemented)
+
+2003-11-15 20:47  mikeaubury
+
+	* tools/asql/README: Fixups Postgres fixes to detect statement type
+
+2003-11-13 12:48  mikeaubury
+
+	* tools/asql/qryfrm.per: Query form
+
+2003-10-21 11:29  afalout
+
+	* common/dataio/.cvsignore: updates
+
+2003-10-20 13:18  mikeaubury
+
+	* compilers/pcode/std_calls.h, lib/libaubit4gl/API_packer.spec:
+	  Pcode updates
+
+2003-10-12 13:04  mikeaubury
+
+	* tools/adbload/adbload.4gl: [no log message]
+
+2003-10-08 02:36  afalout
+
+	* tools/getopt/getopt.h: Fixes on windows
+
+2003-09-30 15:42  mikeaubury
+
+	* tools/test/gui/gui.4gl: New build
+
+2003-09-30 11:32  mikeaubury
+
+	* tools/test/gui/: Makefile.in, calc.per, list.per: Various fixes
+
+2003-09-29 16:09  mikeaubury
+
+	* todo.done, tools/sqlfmt/Makefile, tools/sqlfmt/esqlmain.c,
+	  tools/sqlfmt/example.out, tools/sqlfmt/fglxref.c,
+	  tools/sqlfmt/filter.c, tools/sqlfmt/sqlmain.c,
+	  tools/sqlfmt/stderr.c: lots of fixes...
+
+2003-09-22 21:57  mikeaubury
+
+	* tools/ide/: d4glmain.4gl, getopt.4gl: Small fixups..
+
+2003-09-22 08:03  afalout
+
+	* tools/no_rpc/cygwin/rpc/: rpc.h, rpc.h.bak: Windows port updates
+	  - MinGW
+
+2003-09-22 05:03  afalout
+
+	* lib/: libesql/.cvsignore, libsql/esqlc/.cvsignore: Updates &
+	  cleanup
+
+2003-09-20 08:48  mikeaubury
+
+	* tools/test/helpfile.msg: [no log message]
+
+2003-09-19 17:16  mikeaubury
+
+	* compilers/ace/perl_runner/report.pm: New tests + bug fixes
+
+	  0000347 09-19-03 input array before row causes -30034 0000339
+	  09-19-03 unable to trigger ON KEY(accept) and ON KEY(f12) in
+	  DISPLAY ARRAY 0000340 09-19-03 Comparison problems when one
+	  operand is CHAR and the other is not.  0000343 09-19-03 always
+	  able to exit from INPUT ARRAY with ESC key
+
+2003-09-15 14:07  mikeaubury
+
+	* tools/test/regression/torturetest4glcomp.4gl: Lots of fixes all
+	  over the place...
+
+2003-09-14 10:51  mikeaubury
+
+	* tools/test/testmenu.menu: Out=out
+
+2003-09-14 04:44  afalout
+
+	* compilers/pcode/README: Sorting out build
+
+2003-09-12 11:00  mikeaubury
+
+	* compilers/pcode/calls.h: Update to allow compiler without any
+	  aubit specifics..
+
+2003-09-10 11:32  afalout
+
+	* lib/libsql/sapdb/: .cvsignore, Makefile.in: Updates
+
+2003-09-09 20:01  mikeaubury
+
+	* tools/test/random.4gl: decimal fixes added $DBG to test run files
+	  so I can 'valgrind' them all in one go..
+
+2003-08-26 06:27  afalout
+
+	* lib/libsql/odbc/sqliteodbc.c: Windows updates
+
+2003-08-23 01:42  afalout
+
+	* tools/test/ace/Makefile.in: Linux updates
+
+2003-08-20 08:39  afalout
+
+	* lib/libsql/postgresql/: PreparedStatement.cpp,
+	  PreparedStatement.h, ResultSet.h: Updates and fixes
+
+2003-08-19 00:31  afalout
+
+	* bin/abug.sh: Updates
+
+2003-08-10 09:07  afalout
+
+	* lib/libsql/odbc/sqlite-local.h: Added header file because it's
+	  not in Windows distribution
+
+2003-08-02 05:19  afalout
+
+	* lib/extra_libs/pop/.cvsignore: Small updates
+
+2003-07-27 09:24  mikeaubury
+
+	* lib/extra_libs/pop/: test.4gl, test.per: [no log message]
+
+2003-07-26 05:47  afalout
+
+	* tools/: jabber/test_im.mk, test/hello_db.4gl: SQLite connectors,
+	  fixes and autoconf changes
+
+2003-07-25 23:04  mikeaubury
+
+	* compilers/4glc/rules/data/defstates: bug fixes & pop3 library
+	  (every app should have one)
+
+2003-07-23 08:07  afalout
+
+	* lib/extra_libs/file/.cvsignore, lib/extra_libs/string/.cvsignore,
+	  tools/html/.cvsignore: Updates and ncurses autoconf change
+
+2003-07-20 07:53  afalout
+
+	* tools/html/: simple_html.4gl, simple_html.mk: Updates and fixes
+
+2003-07-18 09:31  mikeaubury
+
+	* lib/libaubit4gl/lex.c: Added lex.c to do the function name
+	  translations for variable arguments..  Made API_lex.spec master
+	  again...
+
+2003-06-25 08:48  mikeaubury
+
+	* compilers/4glc/rules/let.rule: Major changes & bug fixes
+
+	  high 61 4 A4GL problem feature assigned(maubury) 06-25-03 DECIMAL
+	  field input generates unpredictable results.	normal 104 1 A4GL
+	  problem feature assigned(maubury) 06-25-03 Generated .ec code
+	  appears to be incorrect for FOREACH ...  normal 97 1 A4GL problem
+	  crash assigned(maubury) 06-25-03 A4GL process crashes while
+	  attempting to exit.  low 103 1 A4GL problem feature
+	  assigned(maubury) 06-25-03 ERROR ... ATTRIBUTE has mind of its
+	  own.	low 105 1 A4GL problem feature assigned(maubury) 06-25-03
+	  DISPLAY FORM ... ATTRIBUTE support.  low 106 1 A4GL problem
+	  feature assigned(maubury) 06-24-03 FGL_DRAWBOX colour support.
+	  normal 107 1 A4GL problem feature assigned(maubury) 06-24-03
+	  Load/unload not implemented yet in ec mode against Postgres
+	  normal 101 3 A4GL problem feature assigned(maubury) 06-24-03 When
+	  is an ERROR message cleared? normal 99 1 A4GL problem feature
+	  assigned(maubury) 06-23-03 REPORT TO PRINTER issues.
+
+2003-06-20 16:00  mikeaubury
+
+	* tools/test/keys/keychecker.4gl: Function key checking program
+
+2003-06-20 01:02  afalout
+
+	* lib/libhelp/.cvsignore: usleep fix for Windows
+
+2003-06-13 19:40  mikeaubury
+
+	* compilers/4glc/rules/message.rule: fix some display problems
+
+2003-06-13 06:49  afalout
+
+	* incl/q4gl.mk: Update for Querix Hydra 4.1 non-comments
+
+2003-06-06 08:30  mikeaubury
+
+	* tools/test/sol.4gl: Small updates
+
+2003-05-16 07:49  afalout
+
+	* tools/html/libahtmllib.4gl: More missing A4GL_
+
+2003-05-15 08:10  mikeaubury
+
+	* compilers/4glc/memfile.h, compilers/4glc/rules/builtin.rule,
+	  compilers/4glc/rules/case.rule, compilers/4glc/rules/code.rule,
+	  compilers/4glc/rules/exit.rule, compilers/4glc/rules/for.rule,
+	  compilers/ace/ace.lex, lib/libaubit4gl/API_msg.spec,
+	  lib/libaubit4gl/memfile.h, lib/liblex/lex_c/bad_idents.c,
+	  tools/4gl_beautify/infmx_tidy/infmx_tidy.c,
+	  tools/cgi_4gl/cgi_4gla/4gl_wrapper.c,
+	  tools/cgi_4gl/cgi_4gla/formsproc.c,
+	  tools/cgi_4gl/cgi_4gla/formsproc.h,
+	  tools/cgi_4gl/cgi_4glb/formsproc.c, tools/cygwin/report.h,
+	  tools/cygwin/report_xdr.c, tools/getopt/getopt1.c,
+	  tools/gwd/client/script/remote/config.c,
+	  tools/gwd/client/script/remote/putback.c,
+	  tools/gwd/client/script/remote/rdebug.c,
+	  tools/gwd/client/script/remote/rrun.c,
+	  tools/gwd/client/script/remote/rsave.c, tools/ide/popstr.c,
+	  tools/no_curses/cygwin/ncurses/curses.h, tools/no_perl/wantkw.c,
+	  tools/no_perl/wantkw.h, tools/no_rpc/cygwin/rpc/xdr.h,
+	  tools/sqlfmt/stderr.h: First stab at prefixing all function
+	  calls...
+
+	  Fix set session
+
+2003-05-12 15:23  mikeaubury
+
+	* compilers/helpcompile/a4gl_mkmess_int.h,
+	  compilers/menus/mnorpclib.c, compilers/xgen/a4gl_xgen_int.h,
+	  lib/reflection.c, lib/libexdata/a4gl_lib_exdata_int.h,
+	  lib/libexdata/a4gl_lib_exdata_mpz_int.h,
+	  lib/libform/a4gl_lib_form_int.h,
+	  lib/libform/form_generic/a4gl_lib_form_generic_int.h,
+	  lib/libform/form_xdr/a4gl_lib_form_xdr_int.h,
+	  lib/liblex/lex_c/a4gl_lib_lex_c_int.h,
+	  lib/liblex/lex_perl/a4gl_lib_lex_perl_int.h,
+	  lib/libmenu/a4gl_lib_menu_int.h, lib/libmsg/a4gl_lib_msg_int.h,
+	  lib/libmsg/msg_native/a4gl_lib_msg_native_int.h,
+	  lib/libpacker/a4gl_lib_packer_int.h,
+	  lib/libpacker/mempacked/a4gl_lib_packer_mempacked_int.h,
+	  lib/libpacker/packed/a4gl_lib_packer_packed_int.h,
+	  lib/libpacker/perl/a4gl_lib_packer_perl_int.h,
+	  lib/libpacker/xdr/a4gl_lib_packer_xdr_int.h,
+	  lib/libpacker/xml/a4gl_lib_packer_xml_int.h,
+	  lib/libpdf/a4gl_lib_exreport_int.h,
+	  lib/libpdf/a4gl_lib_exreport_pdf_int.h,
+	  lib/librpc/a4gl_lib_rpc_int.h,
+	  lib/librpc/xml_rpc/a4gl_lib_rpc_rpcxml_int.h,
+	  lib/libsql/AubitConnection.h, lib/libsql/AubitDatabaseDriver.h,
+	  lib/libsql/ConnectionManager.h,
+	  lib/libsql/esqlc/a4gl_lib_sql_esqlc_int.h,
+	  lib/libsql/postgresql/ConnectionException.h,
+	  lib/libsql/postgresql/DatabaseMetaData.h,
+	  lib/libsql/postgresql/PgConnection.h,
+	  lib/libsql/postgresql/PgDriver.h,
+	  lib/libsql/postgresql/Statement.h, lib/libui/a4gl_lib_ui_int.h,
+	  lib/libui/ui_console/a4gl_lib_ui_console_int.h, libltdl/ltdl.h,
+	  tools/4gl_beautify/dbbeauty/keyword.h,
+	  tools/4gl_beautify/iid/iid.c, tools/Tcl4gl/hsTcl4gl.c,
+	  tools/Tcl4gl/init.c, tools/Tcl4gl/tcl4gl.c,
+	  tools/Tcl4gl/tcl4gl.h, tools/Tcl4gl/tcl4glP.h,
+	  tools/convertsql/convertsql.h, tools/convertsql/main.c,
+	  tools/cygwin/form_x.h, tools/cygwin/form_x_xdr.c,
+	  tools/cygwin/menu_x.h, tools/cygwin/menu_x_xdr.c,
+	  tools/fgldoc/fgldoc.h, tools/gwd/client/script/remote/next_err.c,
+	  tools/gwd/client/script/remote/rcompile.c,
+	  tools/gwd/client/script/remote/return_re.c,
+	  tools/gwd/client/script/remote/rmake.c,
+	  tools/gwd/client/script/remote/ropen.c,
+	  tools/gwd/client/script/remote/strip_err.c,
+	  tools/gwd/client/script/remote/takeout.c, tools/ide/access.c,
+	  tools/ide/fgiusr.c, tools/ide/fglext.c,
+	  tools/no_rpc/cygwin/rpc/auth.h,
+	  tools/no_rpc/cygwin/rpc/auth_unix.h,
+	  tools/no_rpc/cygwin/rpc/clnt.h, tools/no_rpc/cygwin/rpc/netdb.h,
+	  tools/no_rpc/cygwin/rpc/pmap_clnt.h,
+	  tools/no_rpc/cygwin/rpc/pmap_prot.h,
+	  tools/no_rpc/cygwin/rpc/pmap_rmt.h,
+	  tools/no_rpc/cygwin/rpc/rpc_msg.h, tools/no_rpc/cygwin/rpc/svc.h,
+	  tools/no_rpc/cygwin/rpc/svc_auth.h,
+	  tools/no_rpc/cygwin/rpc/types.h, tools/odbctest/incl/sqlext.h,
+	  tools/odbctest/incl/sqltypes.h, tools/sqlfmt/bsearch.c,
+	  tools/sqlfmt/compare.c, tools/sqlfmt/dokeyword.c,
+	  tools/sqlfmt/esqldata.c, tools/sqlfmt/fgldata.c,
+	  tools/sqlfmt/filter.h, tools/sqlfmt/getopt.h,
+	  tools/sqlfmt/install.c, tools/sqlfmt/jlss.h,
+	  tools/sqlfmt/memmove.c, tools/sqlfmt/sqldata.c,
+	  tools/sqlfmt/sqlfmt.h, tools/sqlfmt/strlower.c,
+	  tools/sqlfmt/strupper.c, tools/test/altris/random.c,
+	  tools/test/db/connection_suite.c,
+	  tools/test/db/connection_suite.h,
+	  tools/test/db/informix/connection_suite.c,
+	  tools/test/db/informix/ddl_suite.c,
+	  tools/test/db/informix/dml_suite.c,
+	  tools/test/db/informix/informix_test.h,
+	  tools/test/db/informix/test_informix.c,
+	  tools/test/db/postgresql/postgresql_test.h,
+	  tools/test/db/postgresql/test_postgresql.c: Indentation...
+
+2003-04-26 07:37  afalout
+
+	* lib/libpacker/mempacked/.cvsignore, tools/test/testmenu.4gl:
+	  Small fixes and HP-UX workaround
+
+2003-04-13 07:45  afalout
+
+	* tools/test/make.bat: fix
+
+2003-04-13 06:34  afalout
+
+	* lib/.cvsignore: updating
+
+2003-04-07 17:26  mikeaubury
+
+	* lib/libhelp/a4gl_xxhelp.per: Adding help support
+
+2003-04-07 08:12  afalout
+
+	* compilers/helpcompile/README, lib/libaubit4gl/help.per,
+	  lib/libaubit4gl/helplib.4gl, tools/test/helptest.4gl: John's help
+	  stuff and small fixes
+
+2003-04-02 19:54  mikeaubury
+
+	* lib/bin/collect_our_functions: namespace changes
+
+2003-03-24 13:36  mikeaubury
+
+	* tools/test/altris/altris.4gl: Altris (from iiug repository) -
+	  tetris clone...
+
+	  (Authors permission has been given for adding this)
+
+2003-03-23 07:19  afalout
+
+	* tools/4glunit/4glUnit.4gl: Moved writemsg to libMSG, small fixes
+	  and updates
+
+2003-03-12 23:52  afalout
+
+	* tools/: 4glunit/.cvsignore, test/regression/.cvsignore: Small
+	  updates
+
+2003-03-10 23:46  afalout
+
+	* tools/4glunit/: Example4glUnit.mk, lib4glUnit.mk: Small updates
+
+2003-03-10 23:42  afalout
+
+	* tools/4glunit/Example4glUnit.4gl: small updates
+
+2003-03-10 16:13  mikeaubury
+
+	* compilers/fcompile/: fnorpclib.c, form.c: just indentations
+
+2003-03-10 09:09  mikeaubury
+
+	* tools/adbaccess/coxxq01.4gl: Small fixups - probably breaks a few
+	  things
+
+2003-03-09 07:06  afalout
+
+	* tools/test/: ace/.cvsignore, gui/.cvsignore,
+	  regression/Makefile.in, regression/regression-fails-4gl.4gl,
+	  regression/regression-test-4gl.4gl: Small fixes
+
+2003-03-06 22:39  mikeaubury
+
+	* compilers/4glc/rules/: Makefile.in, linked.rule: yy -> a4gl_yy
+	  conversion
+
+2003-03-05 07:27  afalout
+
+	* tools/test/ace/perms.ace: small fixes and updates
+
+2003-02-28 19:36  mikeaubury
+
+	* tools/test/gui/form-gui.per: [no log message]
+
+2003-02-24 07:53  afalout
+
+	* tools/test/.cvsignore: small updates
+
+2003-02-23 08:56  mikeaubury
+
+	* tools/no_yacc/cygwin/compilers/4glc/mk_states.h: [no log message]
+
+2003-02-22 01:52  afalout
+
+	* lib/libpacker/perl/Makefile.in: Windows updates
+
+2003-02-17 12:28  mikeaubury
+
+	* tools/test/parser_bugs/: p4.4gl, p7.4gl: All Fixed ?!
+
+2003-02-17 12:03  mikeaubury
+
+	* compilers/4glc/wantkw_gen.pl: Small fixes Removed reserved words
+	  fixed couple of parser bugs
+
+2003-02-16 13:35  mikeaubury
+
+	* compilers/4glc/rules/99.reqd: Small changes
+
+2003-02-15 05:46  psterry
+
+	* etc/convertsql/POSTGRESQL-INFORMIX.cnv:
+
+	  rename sql dialect POSTGRES to POSTGRESQL
+
+2003-02-14 10:18  mikeaubury
+
+	* tools/test/parser_bugs/p2.4gl: Small changes - fixed some parser
+	  errors
+
+2003-02-12 08:53  mikeaubury
+
+	* tools/test/: lang/README, parser_bugs/p5.4gl, parser_bugs/p6.4gl:
+	  More fixes
+
+2003-02-11 14:52  mikeaubury
+
+	* tools/test/parser_bugs/p3.4gl: return label: fixed fixed
+	  strip_quotes
+
+2003-02-11 10:37  mikeaubury
+
+	* tools/test/parser_bugs/: p1.4gl, p8.4gl, p9.4gl, remake: Fixed
+	  ones ?
+
+2003-02-10 02:08  afalout
+
+	* lib/extra_libs/esqlc/.cvsignore: samll updates
+
+2003-02-09 17:38  saferreira
+
+	* lib/libsql/postgresql/: DatabaseMetaData.cpp, PgConnection.cpp,
+	  Statement.cpp, postgresql.cpp: Continue the postgresql
+	  implementation
+
+2003-02-09 06:43  afalout
+
+	* tools/convertsql/: .cvsignore, Makefile, README.txt: small
+	  updates
+
+2003-02-07 04:01  afalout
+
+	* tools/: ide/Makefile.in, test/lang/Makefile.in: small fixes &
+	  workarounds
+
+2003-02-06 01:15  afalout
+
+	* tools/test/test_msgresp.4gl: new testing example
+
+2003-02-05 08:15  afalout
+
+	* lib/liblex/lex_esqlc/.cvsignore: Added libLEX_EC to coonfigure
+	  and make files, small fixes
+
+2003-02-04 05:21  afalout
+
+	* tools/metrics_4gl/: 4GL_metrics.cgi, README: misc. updates
+
+2003-02-03 15:03  saferreira
+
+	* tools/test/db/: cursor_with_var.4gl, insert_null.4gl: Tests for
+	  fixing the ESQL connector bugs
+
+2003-02-01 21:44  psterry
+
+	* etc/convertsql/: INFORMIX-ORACLE.cnv, ORACLE-INFORMIX.cnv:
+
+	  config files for SQL dialect conversion
+
+2003-01-28 23:45  saferreira
+
+	* lib/libsql/postgresql/ResultSet.cpp: Postgres connector stuff
+
+2003-01-24 08:36  afalout
+
+	* tools/adbaccess/misql.mk: Fixes and updates
+
+2003-01-22 10:55  afalout
+
+	* tools/test/db/informix/Makefile.in: Fixing clean.all and menu
+	  compiler
+
+2003-01-21 08:25  afalout
+
+	* tools/test/db/.cvsignore: Updates and fixes
+
+2003-01-20 09:50  mikeaubury
+
+	* lib/swig/Makefile.PL: More changes
+
+2003-01-19 21:26  saferreira
+
+	* lib/libsql/postgresql/PgDriver.cpp: Postgresql connector stuff
+
+2003-01-17 23:04  afalout
+
+	* tools/test/db/: informix/.cvsignore, postgresql/.cvsignore: Small
+	  fixes and updates
+
+2003-01-15 22:29  saferreira
+
+	* lib/libsql/postgresql/ConnectionException.cpp: Postgres connector
+	  stuff
+
+2003-01-10 23:13  saferreira
+
+	* tools/test/db/informix/test_informix_util.ec: Working on postgres
+	  connector
+
+2003-01-09 02:03  afalout
+
+	* tools/: 4gltree/4gltree.sh, 4glunit/fglTestData.4gl: Small
+	  updates; added 4glunit code
+
+2003-01-04 01:58  afalout
+
+	* tools/: 4gl_beautify/php/highlight_4gl.inc.php, gwd/.cvsignore:
+	  Small fixes
+
+2002-12-26 02:34  afalout
+
+	* lib/liblex/lex_c/.cvsignore: Fix
+
+2002-12-26 02:31  afalout
+
+	* lib/libpacker/perl/.cvsignore: Adding new entries
+
+2002-11-28 06:43  afalout
+
+	* tools/gwd/README.html: Small fixes
+
+2002-11-28 06:40  afalout
+
+	* tools/: 4gl_beautify/dbbeauty/1.patch,
+	  4gl_beautify/dbbeauty/2.patch, 4gl_beautify/dbbeauty/CHANGES,
+	  4gl_beautify/dbbeauty/COPYING, 4gl_beautify/dbbeauty/INSTALL,
+	  4gl_beautify/dbbeauty/MANIFEST, 4gl_beautify/dbbeauty/dbbeauty.1,
+	  4gl_beautify/dbbeauty/makefile, 4gl_beautify/iid/Makefile,
+	  4gl_beautify/iid/iid.txt, 4gl_beautify/infmx_tidy/Makefile,
+	  Tcl4gl/Makefile, Tcl4gl/README, Tcl4gl/README.NEW,
+	  Tcl4gl/Tcl4gl.doc, Tcl4gl/rcs.mk, Tcl4gl/rules.mk,
+	  Tcl4gl/sccs.mk, Tcl4gl/symbols.mk, Tcl4gl/test.4gl,
+	  cgi_4gl/cgi_4gla/CDI_ANNOUNCE, cgi_4gl/cgi_4gla/Makefile,
+	  cgi_4gl/cgi_4gla/README, cgi_4gl/cgi_4gla/WEB_PAGE.TXT,
+	  cgi_4gl/cgi_4gla/circinfo.4gl, cgi_4gl/cgi_4glb/README,
+	  fgldoc/FGLDOC-2.00, fgldoc/README, fgldoc/aclocal.m4,
+	  fgldoc/config.h.in, fgldoc/configure, fgldoc/configure.in,
+	  fgldoc/fgldoc.1, fgldoc/fgldoc.txt, fgldoc/install-sh,
+	  fgldoc/lexer.l, fgldoc/parser.y, fgldoc/read_pdbs.ec,
+	  fglpp/fglpp, fglpp/fglpp_readme, fglpp/p4gl, fglpp/ppcc4gl.sh,
+	  fglpp/ppcc4gl.txt, scriba/build_index, scriba/create_man_entries,
+	  scriba/insert_index, scriba/merge_index,
+	  scriba/merge_man_entries, scriba/postprocess, scriba/preprocess,
+	  scriba/readme, scriba/rebuild_list, sqlfmt/esqlfmt.l,
+	  sqlfmt/example.4gl, sqlfmt/fglxrefl.l, sqlfmt/function.4gl,
+	  sqlfmt/i4glxref.1j, sqlfmt/i4glxref.sh, sqlfmt/mknmd.sh,
+	  sqlfmt/mkversion.sh, sqlfmt/report.4gl, sqlfmt/sqlfmt.1j,
+	  sqlfmt/sqlfmt.l, sqlfmt/sqlfmt.nmd, sqlfmt/tmac.esee,
+	  sqlfmt/updnmd.sh: Initial import from IIUG
+
+2002-11-28 06:39  afalout
+
+	* tools/m4gl/: m4gl, m4gl.man, m4gl.txt: Initial import
+
+2002-11-16 07:31  afalout
+
+	* tools/gwd/: bin/README.txt, bin/rcp.pif, client/bat/geterfil.bat,
+	  client/bat/gettoc.bat, client/bat/makeErr.ini,
+	  client/bat/putback.bat, client/bat/rcompile.bat,
+	  client/bat/rd4gl.bat, client/bat/rdebug.bat,
+	  client/bat/rmake.bat, client/bat/rmax.bat, client/bat/ropen.bat,
+	  client/bat/rrun.bat, client/bat/rsave.bat, client/bat/settoc.bat,
+	  client/bat/takeout.bat, client/i-gwd/get.ini,
+	  client/i-gwd/gwd.ini, client/i-gwd/plwin.ini,
+	  client/i-gwd/remote.ini, client/i-gwd/syntax.hgl,
+	  client/i-gwd/icons/macro4.bmp, client/i-gwd/icons/macro5.bmp,
+	  client/i-gwd/icons/macro6.bmp, client/i-gwd/icons/macro9.bmp,
+	  client/i-gwd/icons/tool1.bmp, client/i-gwd/icons/tool11.bmp,
+	  client/script/remote/re.sh, server/GWDagents/gettoc.sh,
+	  server/GWDagents/rcompile.sh, server/GWDagents/rd4gl.sh,
+	  server/GWDagents/rgrep.sh, server/GWDagents/rmake.sh,
+	  server/GWDagents/rrun.sh: Initial commit of the GWD-4GL scripts
+
+2002-11-12 21:34  afalout
+
+	* tools/test/test_build.4gl: Small fixes
+
+2002-11-10 06:46  afalout
+
+	* tools/cygwin/install_gtk+.sh: Shell script that installs GTK+
+	  over CygWin installation
+
+2002-11-02 01:28  afalout
+
+	* libltdl/.cvsignore: Updates
+
+2002-10-30 01:46  afalout
+
+	* docs/README-Windows.txt: More native Windows stuff
+
+2002-10-22 07:43  afalout
+
+	* libltdl/configure: First take on native Windows port using MinGW
+	  GCC and CygWin tools - SOME THINGS ARE PROBABLY BROKEN
+
+2002-10-14 01:02  afalout
+
+	* compilers/helpcompile/.cvsignore,
+	  lib/libmenu/menu_generic/.cvsignore, tools/odbctest/.cvsignore,
+	  tools/test/lang/.cvsignore: Small fixes
+
+2002-10-04 12:26  afalout
+
+	* acinclude.m4, aclocal.m4, tools/project/shtool: Small fixes,
+	  update for autoconf
+
+2002-10-03 15:49  mikeaubury
+
+	* compilers/4glc/rules/: 2.reqd, 3.reqd, 8.reqd: major changes...
+	  1) Cleaned up grammer (Removed the unused terminals and rules) 2)
+	  Cleaned up 4glc reqd files 3) Added new error handling routines
+	  (should start making error handling work!)
+
+2002-10-01 10:50  afalout
+
+	* docs/LICENSE: Smaller fixes
+
+2002-09-27 04:40  afalout
+
+	* compilers/helpcompile/: Makefile-automake, Makefile-automake.in:
+	  Examples of automake created make files
+
+2002-09-27 03:43  afalout
+
+	* etc/config/: config.guess, config.sub, ltmain.sh: Updated libtool
+	  to 1.4 using libtoolize on RedHat 7.2
+
+2002-09-27 03:41  afalout
+
+	* libltdl/: COPYING.LIB, Makefile.am, Makefile.in, README,
+	  acconfig.h, acinclude.m4, aclocal.m4, config.h.in, configure.in:
+	  Files added by libtoolize 1.4
+
+2002-09-21 09:37  afalout
+
+	* compilers/4glc/rules/bin/: convkw.single, make_enable: awk
+	  executable name set from Autoconf
+
+2002-09-20 11:06  mikeaubury
+
+	* tools/ide/: checkint.4gl, d4glinpt.per: Small changes...
+
+2002-09-08 11:38  afalout
+
+	* tools/cygwin/readme-runtime.html: changed AUBITGUI to A4GL_UI
+
+2002-09-08 10:41  afalout
+
+	* lib/libform/form_generic/.cvsignore: Varous build enhancements
+
+2002-08-26 08:10  afalout
+
+	* lib/libsql/sapdb/: adload.cpc, test-prg.cpc: SAP DB code examples
+
+2002-08-24 08:01  afalout
+
+	* install.sh, compilers/helpcompile/Makefile.am,
+	  etc/config/.cvsignore, lib/libexdata/.cvsignore,
+	  lib/libsql/postgresql/.cvsignore: Working on automake and
+	  install/seinstall: consolidated inst. file names
+
+2002-08-13 02:52  afalout
+
+	* compilers/4glc/rules/.cvsignore,
+	  compilers/4glc/rules/generated/.cvsignore,
+	  compilers/xgen/.cvsignore, lib/generated/.cvsignore,
+	  lib/resource/.cvsignore: more cvs ignore entryes
+
+2002-08-13 01:57  afalout
+
+	* docs/doxy/.cvsignore: New entryes in .cvsignore
+
+2002-08-13 01:49  afalout
+
+	* lib/: libform/form_xdr/.cvsignore, libform/noform/.cvsignore,
+	  liblex/lex_perl/.cvsignore, libmenu/menu_nomenu/.cvsignore,
+	  libmenu/menu_xdr/.cvsignore, libmsg/msg_native/.cvsignore,
+	  libpacker/packed/.cvsignore, libpacker/xdr/.cvsignore,
+	  libpacker/xml/.cvsignore, libpdf/.cvsignore,
+	  librpc/no_rpc/.cvsignore, librpc/sun_rpc/.cvsignore,
+	  librpc/xml_rpc/.cvsignore, libsql/nosql/.cvsignore,
+	  libui/ui_console/.cvsignore, libui/ui_curses/.cvsignore: Adding
+	  cvs ignore files
+
+2002-07-31 16:30  mikeaubury
+
+	* compilers/ace/report.x: Added EXPR_MOD
+
+	  Fixed perl packing to output strings using ' instead of " (a " is
+	  still used for the names - but there won't be a $ in that so its
+	  not a problem
+
+2002-07-28 09:58  afalout
+
+	* lib/libincl/remove_this_dir: small changes
+
+2002-07-11 10:47  mikeaubury
+
+	* lib/libpacker/README: libpacker
+
+2002-07-11 10:25  mikeaubury
+
+	* common/dataio/menu_x.x: xgen changes
+
+2002-06-26 07:08  afalout
+
+	* lib/libgui/remove_this_dir: Moving to lib/libui/ui_gtk
+
+2002-06-26 07:03  afalout
+
+	* lib/libtui/remove_this_dir: Moved to lib/libui/ui_console and
+	  ui_curses
+
+2002-06-11 09:42  afalout
+
+	* compilers/: 4glc/.splintrc, fcompile/.splintrc,
+	  helpcompile/.splintrc, menus/.splintrc: Enabling Splint checking
+
+2002-06-02 07:52  afalout
+
+	* compilers/menus/menu.lex: Finshed fixing -Wmissing-declarations,
+	  total warnings = 6
+
+2002-05-23 10:29  afalout
+
+	* compilers/4glc/rules/: defer.rule, exit_prog.rule, sleep.rule,
+	  while.rule: Fixing warning with -Wall
+
+2002-05-11 11:37  afalout
+
+	* incl/footer-c.mki: Fixed install
+
+2002-05-07 23:52  saferreira
+
+	* lib/libsql/ConnectionManager.cpp,
+	  tools/test/db/fgl_dml_suite.4gl: Function call stack trace
+	  implementation
+
+2002-04-19 14:18  mikeaubury
+
+	* tools/test/assoc2.4gl: Example of using associate arrays
+
+2002-04-19 04:45  afalout
+
+	* lib/windows/windef.def: Moving things arround...
+
+2002-04-03 19:20  mikeaubury
+
+	* lib/librpc/xml_rpc/README: basic xml_rpc calls (early alpha
+	  stuff) Server side still needs writing
+
+2002-02-25 18:27  mikeaubury
+
+	* tools/adbaccess/coxxc04.4gl: bug fix - function call in an
+	  expression
+
+2002-02-23 03:36  afalout
+
+	* tools/test/lang/: english.msg, french.msg, german.msg,
+	  italian.msg, lang.4gl, source.lang, spanish.msg: Moving to
+	  separate directory
+
+2002-02-23 03:22  afalout
+
+	* tools/test/regression/: regression-fails-per.per,
+	  regression-test-per.per: Moving to separate directory
+
+2002-02-21 12:55  mikeaubury
+
+	* lib/data/errs: Language translation stuff and a small bug fix
+
+2002-02-21 11:33  mikeaubury
+
+	* tools/test/gui/hello-gui.4gl:
+	  This strings.lang file is used to generate the file used by a
+	  second environment variable  'TRANSLATEFILE' which specifies a
+	  translation file.  Eg.  $ DUMPSTRINGS= $ export DUMPSTRINGS
+	  m1.4gl:
+
+	  main DISPLAY "Hello" DISPLAY "World" end main
+
+	  $ 4glc m1.4gl  # we're not interest in producing an executable so
+	  I'm using 4glc instead of 4glpc (Creates string.lang : Hello:=
+	  World:= )
+
+	  $ cp strings.lang french Edit 'french' : Hello:=Bonjour
+	  World:=Monde
+
+	  (Please bear in mind I'm english and therefore do not speak any
+	  foreign languages :-)
+
+	  $ TRANSLATEFILE=french $ export TRANSLATEFILE $ 4glpc m1.4gl -o
+	  m1 $ ./m1 Bonjour Monde
+
+	  Hey presto !
+
+	  If you were wondering about the 'ident' bit - that needs more
+	  coding but will eventually use the mkmess (help file) to read the
+	  strings at runtime
+
+2002-01-29 11:07  afalout
+
+	* docs/aubit4gl.ico, docs/doxy/Doxyfile.in, etc/config/bootstrap:
+	  Doxy autoconf, fixed installation, foxed linking PDF
+
+2002-01-13 09:40  afalout
+
+	* docs/CREDITS: Make install and autoconf for GTK
+
+2002-01-03 19:35  saferreira
+
+	* etc/: config/install-sh, config/missing, config/mkinstalldirs,
+	  debian/Makefile.am, debian/Makefile.in, debian/aubit4gl.dirs,
+	  debian/aubit4gl.doc-base.tut, debian/aubit4gl.docs,
+	  debian/aubit4gl.files, debian/aubit4gl.postinst.debhelper,
+	  debian/aubit4gl.prerm.debhelper, debian/changelog,
+	  debian/control, debian/copyright, debian/dirs, debian/files,
+	  debian/rules: Cleanning the pollution of aubit4gl root
+
+2001-12-10 20:04  saferreira
+
+	* compilers/4glc/rules/Makefile.old: Added initial suport to
+	  autoconf. Moved the old makefiles to makefile.old
+
+2001-12-03 04:55  afalout
+
+	* tools/html/IE_HTA_demo.hta: Fixing CygWin
+
+2001-11-27 07:04  afalout
+
+	* tools/jabber/README.txt: Small fixes
+
+2001-11-26 02:53  afalout
+
+	* tools/jabber/test_im.per: Initial version of Jabber IM
+	  functionallity
+
+2001-11-19 06:28  afalout
+
+	* tools/html/: brown-red.css, gray-blue.css: Initial version
+
+2001-11-09 08:14  afalout
+
+	* compilers/menus/README.txt: commit.build
+
+2001-11-09 01:38  afalout
+
+	* tools/test/gui/: aubit.xpm, img1.xpm, linux.xpm: Pictures needed
+	  for GUI forms demo app
+
+2001-10-21 07:40  afalout
+
+	* tools/cygwin/unhide.bat: Initial version
+
+2001-10-19 08:09  afalout
+
+	* tools/cygwin/: Aubit 4gl GUI app mouse test.lnk.hide, Aubit 4gl
+	  app with GUI widget in console.lnk.hide, Aubit 4gl app with GUI
+	  widget.lnk.hide, Aubit 4gl multithread test.lnk.hide, Aubit 4gl
+	  simple app.lnk.hide, Aubit4gl ODBC access test.lnk.hide: [no log
+	  message]
+
+2001-10-19 07:07  afalout
+
+	* tools/cygwin/run.exe: Utility program for running apps woithout
+	  console on Windows - BINARY
+
+2001-10-16 04:09  afalout
+
+	* bin/genmake: NoODBC build and HTML form functionality prototype
+
+2001-09-24 05:18  afalout
+
+	* tools/adbaccess/: coxxq01a.per, coxxq01b.per, coxxq01c.per,
+	  coxxq01d.per, coxxq01e.per, coxxq01f.per, coxxq01g.per,
+	  coxxq01h.per, coxxq01i.per, coxxq01j.per, coxxx03.4gl, misql.per:
+	  Initial import of dbaccess-like tool
+
+2001-09-14 07:06  afalout
+
+	* tools/odbctest/: autotest-ifx-iodbc, autotest-ifx-unix,
+	  autotest-pg-iodbc, autotest-pg-unix: First version of odbctest
+	  ODBC connection testing program
+
+2001-09-13 19:17  mikeaubury
+
+	* tools/test/test_select.4gl: Test select...
+
+2001-08-20 03:35  afalout
+
+	* compilers/menus/menu_x.x, docs/changelog.txt, docs/COPYING,
+	  tools/adbload/README.txt, tools/ide/ChangeLog,
+	  tools/test/gui/gui.per, tools/test/gui/multi.per,
+	  tools/test/gui/widget.per, tools/ide/README,
+	  tools/ide/access_a4gl.4gl, tools/ide/d4glfile.4gl,
+	  tools/ide/d4glform.4gl, tools/ide/d4glglob.4gl,
+	  tools/ide/d4glhelp.msg, tools/ide/d4glopts.per,
+	  tools/ide/findstr.4gl, tools/ide/instring.4gl,
+	  tools/ide/rcsmunge.4gl, tools/ide/shell.4gl,
+	  etc/odbc.ini.example: Initial import to SF
+

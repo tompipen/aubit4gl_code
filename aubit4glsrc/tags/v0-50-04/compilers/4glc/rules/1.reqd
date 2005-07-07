@@ -1,0 +1,278 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: 1.reqd,v 1.66 2005-07-06 09:26:45 mikeaubury Exp $
+#
+*/
+
+/**
+ * @file
+ *
+ * File generated/fgl.yacc is created from:
+ *
+ *		rules/*.rule
+ *      rules/*.reqd
+ *		rules/generated/single_words.rule
+ *      rules/generated/kw.yh
+ *
+ * using 'mkyacc' shell script. It is then processed by 'yacc' tool
+ * to make generated/y.tab.c
+ *
+ * generated/single_words.rule is created from file generated/single_words
+ * using shell script 'make_enable'
+ *
+ * generated/single_words is created from data/kwords file using
+ * shell script 'convkw.single'
+ *
+ * "1.reqd" file is allways the first file concernatad into fgl.yacc.
+ * Therefore, it is the only one in compilers/4glc/rules directory that
+ * contains copyrigh message and DoxyGen file comment.
+ *
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ * @todo Doxygen comments to add to functions
+ */
+
+
+/*
+=====================================================================
+                        Source: 1.reqd
+=====================================================================
+*/
+
+%{
+
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
+
+
+#ifdef YYPURE
+#undef YYPURE
+#endif
+#define YYPURE 1
+#define YYLEX_PARAM yystate,yyssa,yyssp
+#define INCASE 		0
+#define INCONSTRUCT 1
+#define INDISPLAY 	2
+#define INFOR 		3
+#define INFOREACH 	4
+#define ININPUT 	5
+#define INMENU 		6
+#define INPROMPT 	7
+#define INWHILE 	8
+#define INIF 		9
+
+#include "gen_stack.h"
+//#define UPDCOL 		0
+//#define UPDVAL 		1
+//#define SELINTO 	2
+//#define PUTVAL 		3
+//#define UPDVAL2 	4
+//#define INSCOL 		5
+//#define INSVAL 		6
+
+// Hehe - This one is pretty cool if you have a fairly recent version of bison
+#define YYERROR_VERBOSE
+
+#define YYDEBUG 1
+
+
+/* prevent warning for redundant declaration of yyparse: */
+#define _BISON_SIMPLE_INCL_
+
+#define _NO_Y_TAB_H_
+#define _NO_WINDOWS_H_
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#include "a4gl_4glc_int.h"
+#include "variables.h"
+#include "var_handling.h"
+
+/*
+=====================================================================
+		                    Variables definitions
+=====================================================================
+*/
+
+extern int 	lineno;
+extern int 	read_glob_var;
+extern int 	modlevel;
+extern int 	charno;
+extern int 	last_var_found;
+extern int 	varcnt;
+extern int 	in_record;
+extern int 	rep_type;
+extern int 	yylineno;
+extern int compiling_system_4gl;
+int isin_formhandler=0;
+int with_page_length=-1;
+int with_left_margin=-1;
+int with_right_margin=-1;
+int with_top_margin=-1;
+int with_bottom_margin=-1;
+char *with_top_of_page="";
+
+int table_cnt=0;
+int sql_mode=0;
+
+char 		menuhandler[256];
+char 		last_var [256];
+char 		larr[4096]="";
+char 		larr2[4096]="";
+char 		clobber[64]="";
+char 		dtypelist[2048];
+char 		curr_func[256]="Module";
+char 		where_having[1024];
+char		menu[2048];
+char 		varstring[100];
+char 		infilename[132]="";
+char 		hdr_dbname[64]="";
+char 		current_upd_table[64]="";
+char 		current_ins_table[64]="";
+
+int 		is_schema=0;
+int 		in_define=0;
+int 		rordcnt;
+int 		racnt=0;
+int 		ccode=0;
+int 		errbomb=0;
+int 		glob_only=0;
+int 		inp_flags=0;
+int 		lcnt;
+int 		vcnt;
+int 		rcnt;
+int 		lastlineno=0;
+int 		cnt;
+int 		mcnt=0;
+int 		inrec=0;
+int 		iskey=0;
+int 		insql=0;
+int 		menu_cnt=0;
+int 		chk4var=0;
+int 		menu_cmd_cnt[MAXMENUOPTS] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int 		menu_blk[MAXMENU]         ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int 		in_sql=0;
+int 		continue_cmd[]={0,1,1,1,1,1,1,1,1,0};
+int 		in_cmd[]={0,0,0,0,0,0,0,0,0,0};
+int 		fcall_cnt=0;
+int 		doing_declare=0;
+int 		message_cnt=0;
+int 		doing_a_print=0;
+int 		class_cnt  =0;
+char mv_parent_class[255];
+
+struct 		rep_structure rep_struct;
+struct 		pdf_rep_structure pdf_rep_struct;
+struct 		form_attr form_attrib;
+char *		make_sql_string_and_free(char *first,...);
+char *into_temp_clause=0;
+void copy_gen (int a, int b);
+char *get_namespace (char *s);
+//void set_yytext (char *s);
+int isin_command (char *cmd_type);
+int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
+char *do_clobbering(char *f,char *s);
+//void A4GL_copy_fbind_to_Obind(void);
+struct input_array_attribs curr_input_array_attribs;
+
+int if_print_stack[100][2];
+int if_print_stack_cnt=0;
+int if_print_section[100]={0,0,0,0};
+char last_tmp_name[256]="";
+char *kw_comma=",";
+char *kw_space=" ";
+char *kw_ob="(";
+char *kw_cb=")";
+
+
+//char *A4GL_strcpy(char *d,char *s,char *fname,int l,int sdest);
+#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,sizeof(d))
+
+
+#include "../generic.h"
+#include "../field_handling.h"
+
+struct sql_statement {
+	int stmt_type;
+	char *sql_string;
+	struct binding_comp *ibind;
+	struct binding_comp *obind;	
+	int nibind;
+	int nobind;
+};
+
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+void init_blk(void);
+
+%}
+%name-prefix="a4gl_yy"
+%pure_parser
+//glr-parser
+%start module
+//%expect  634
+%union	  {
+
+
+
+	//char	str[3100];  /* This would core dump in CygWin on call to */
+	char	str[1024];  /* This would core dump in CygWin on call to */
+						/* yyparse in y.tab.c - 3100 in maximum. */
+						/* Was: char	str[20000]; */
+
+	struct expr_str *ptr;
+	char *sql_string;
+	struct fh_field_entry *field_entry;
+	struct fh_field_list *field_list;
+	struct generic_entry_list *list;
+	struct generic_entry *entry;
+	struct generic_entry_ident *ident;
+	struct generic_entry_variable *variable;
+	struct generic_entry_literal *literal;
+	struct variable_usage *var_usg;
+	struct num_list *num_list;
+	struct array_list *array_list;
+	int 	integer_val;
+	float 	float_val;
+	struct sql_statement *sql_stmt;
+	struct ilist int_list;
+	}
+
+/* ============================== 1.reqd ============================ */
+

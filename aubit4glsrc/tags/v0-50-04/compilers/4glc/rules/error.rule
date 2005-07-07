@@ -1,0 +1,17 @@
+/*
+=====================================================================
+                        Source: error.rule
+=====================================================================
+*/
+
+
+error_cmd	: KW_ERROR reset_cnt fgl_expr_concat opt_attributes {
+			print_error($<str>4,0);
+		}
+	| KW_ERROR reset_cnt fgl_expr_concat opt_attributes  WAIT_FOR_KEY { 
+			print_error($<str>4,1);
+	}
+;
+
+
+

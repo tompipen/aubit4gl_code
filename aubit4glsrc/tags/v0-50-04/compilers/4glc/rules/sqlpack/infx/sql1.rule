@@ -1,0 +1,1460 @@
+/*
+=====================================================================
+                        Source: sql1.rule
+=====================================================================
+*/
+
+rollback_statement:
+	ROLLBACK_W  {  add_feature("ROLLBACK_WORK"); }
+;
+
+
+
+insert_statement_ss:
+	INSERT_INTO { insql=1;start_bind('i',0);} 
+	table_name  { strcpy(current_ins_table,$<str>3);pop_all_gen(INSCOL,"!"); pop_all_gen(INSVAL,"!");}
+	op_insert_column_list 
+	ins_2_ss {
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1), kw_space,strdup($<str>3),kw_space,strdup($<str>5),kw_space,$<sql_string>6,0); 
+		$<sql_string>$=A4GLSQLCV_generate_ins_string(current_ins_table,$<sql_string>$);
+			pop_all_gen(INSCOL,"!"); pop_all_gen(INSVAL,"!"); 
+		add_feature("ANSI_INSERT");
+	}
+;
+
+ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET { insql=0; $<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup(" ("),$<sql_string>4,kw_cb,0);}
+	| query_specification_ss {$<sql_string>$=$<sql_string>1; add_feature("INSERT_INTO_SELECT_FROM");}
+;
+
+op_insert_column_list: {strcpy($<str>$,""); push_gen(INSCOL,"*"); }
+	| OPEN_BRACKET insert_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
+			 add_feature("INSERT_COLUMNLIST_EQ_VALUELIST");
+		}
+;
+
+
+insert_column_list:
+	column_name {
+		push_gen(INSCOL,$<str>1);
+	}
+	| insert_column_list KW_COMMA column_name {
+			sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
+			push_gen(INSCOL,$<str>3);
+	}
+;
+
+insert_value_list_ss:
+	insert_value_ss {
+		$<sql_string>$=$<sql_string>1;
+		push_gen(INSVAL,$<sql_string>1);
+	}
+	| insert_value_list_ss KW_COMMA insert_value_ss {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma, $<sql_string>3,0);
+		push_gen(INSVAL,$<sql_string>3);
+	}
+;
+
+insert_value_ss:
+	value_expression_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| KW_NULL {
+		$<sql_string>$=strdup("NULL");
+	}
+;
+
+
+
+
+
+delete_statement_search_ss:
+	DELETE_FROM table_name op_where_clause_ss
+              {
+		add_feature("ANSI_DELETE");
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,$<sql_string>3,0);
+			if (strstr($<sql_string>3," EXISTS ")) {
+				add_feature("DELETE_FROM_WHERE_EXISTS_SUBSELECT");
+			}
+		}
+;
+
+
+order_by_clause:
+	ORDER BY sort_specification_list
+	{sprintf($<str>$,"ORDER BY %s",$<str>3); add_feature("ORDER_BY");}
+;
+
+sort_specification_list:
+	sort_specification
+	| sort_specification_list KW_COMMA sort_specification {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+;
+
+sort_specification: sort_spec op_asc_desc {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+;
+
+sort_spec: INT_VALUE  { add_feature("ORDER_BY_NUMBER");}
+	| column_name 
+;
+
+op_asc_desc: {strcpy($<str>$,"");}
+	| ASC 
+		{add_feature("ORDER_BY_ASC"); strcpy($<str>$,"ASC");}
+	| DESC
+		{add_feature("ORDER_BY_DESC"); strcpy($<str>$,"DESC");}
+;
+
+begin_statement: BEGIN_WORK  { add_feature("BEGIN_WORK"); }
+;
+
+commit_statement:
+	COMMIT_W  { add_feature("COMMIT_WORK"); }
+;
+
+
+op_db_exclusive :
+		{strcpy($<str>$,"");}
+	|	EXCLUSIVE {
+		add_feature("DATABASE_EXCLUSIVE");
+		strcpy($<str>$,"EXCLUSIVE");
+	}
+;
+
+
+set_database_cmd : 
+       DATABASE var_ident_qchar op_db_exclusive
+{
+	add_feature("DATABASE_USED");
+if (strcmp($<str>2,"?")==0) {
+	print_init_conn(0);
+} else {
+	print_init_conn($<str>2);
+}
+}
+
+;
+
+other_misc_infx_stmt  :
+        UPDATESTATS_T   identifier {sprintf($<str>$,"%s %s",$<str>1,$<str>2); add_feature("UPDATE_STATISTICS_TABLE");}
+        | UPDATESTATS {add_feature("UPDATE_STATISTICS");}
+;
+
+
+misc_infx_stmt: 
+	MISC_INFX_SQL  {
+		if (strcmp($<str>1,"SET BUFFERED LOG")==0) add_feature("SET_BUFFERED_LOG");
+		if (strcmp($<str>1,"SET LOG")==0) add_feature("SET_LOG");
+		if (strncmp($<str>1,"START DATABASE",14)==0) {
+			if (strstr($<str>1,"ANSI")) {
+				add_feature("START_DATABAE_WITH_LOG_MODE_ANSI");
+			} else {
+				add_feature("START_DATABAE_WITH_LOG");
+			}
+		}
+	}
+	| other_misc_infx_stmt
+;
+
+
+
+sql_commands :  
+	schema_ss { A4GL_CV_print_exec_sql($<sql_string>1); strcpy($<str>$,"Schema"); } 
+	| misc_infx_stmt {
+			char buff[256];
+			A4GL_CV_print_exec_sql(convstrsql($<str>1));
+			sprintf(buff,"Warning: Informix specific SQL @ line %d\n",yylineno);
+			ansi_violation(buff,1);
+			strcpy($<str>$,"InfxSpecificSql");
+	}
+	| schema_element_ss { A4GL_CV_print_exec_sql($<sql_string>1); strcpy($<str>$,"Schema Element"); } 
+	| commit_statement  { print_sql_commit(1); }
+	| misc_sql { A4GL_CV_print_exec_sql($<str>1); }
+	| begin_statement   { print_sql_commit(-1); }
+	| fgl_sql_statement
+	| delete_statement_search_ss { A4GL_CV_print_exec_sql_bound($<sql_string>1); strcpy($<str>$,"Delete where ..."); } 
+	| insert_statement_ss { A4GL_lex_printcomment("/*  insert */\n"); A4GL_CV_print_exec_sql_bound($<sql_string>1); strcpy($<str>$,"insert"); } 
+	| rollback_statement  { print_sql_commit(0); }
+	| update_statement_ss { A4GL_CV_print_exec_sql_bound($<sql_string>1); strcpy($<str>$,"update"); } 
+	| drops_statement { A4GL_CV_print_exec_sql($<str>1); }
+	| create_statement_ss { A4GL_CV_print_exec_sql($<sql_string>1); }
+	| alter_statement_ss {A4GL_CV_print_exec_sql($<sql_string>1); }
+;
+
+
+
+privilege_definition:
+	GRANT privileges KW_ON table_name TO grantee_list op_with_grant_option {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);  add_feature("GRANT"); }
+	| REVOKE privileges KW_ON table_name FROM grantee_list  {sprintf($<str>$,"%s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);  add_feature("REVOKE"); }
+	| GRANT db_priv TO grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4); add_feature("GRANT"); }
+	| REVOKE db_priv FROM grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4);  add_feature("REVOKE"); }
+;
+
+
+db_priv:
+	CONNECT
+	| RESOURCE
+	| DBA
+;
+
+op_with_grant_option: {strcpy($<str>$,"");}
+	| WITH_GRANT_OPTION {sprintf($<str>$," %s ",$<str>1);}
+	| AS identifier {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+;
+
+privileges:
+	ALL_PRIVILEGES {sprintf($<str>$," %s ",$<str>1);}
+	| ALL {sprintf($<str>$," %s ",$<str>1);}
+	| action_list
+;
+
+action_list:
+	action
+	| action_list KW_COMMA action
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+;
+
+action: KW_SELECT op_grant_column_list {
+		if (A4GLSQLCV_check_requirement("SIMPLE_GRANT_SELECT"))  {
+			sprintf($<str>$," SELECT");
+		} else {
+			sprintf($<str>$," %s %s",$<str>1,$<str>2);
+		}
+	}
+	| KW_INSERT
+	| KW_DELETE
+	| KW_UPDATE op_grant_column_list {
+		if (A4GLSQLCV_check_requirement("SIMPLE_GRANT_UPDATE"))  {
+			sprintf($<str>$," UPDATE");
+		} else {
+			sprintf($<str>$," %s %s",$<str>1,$<str>2);
+		}
+	}
+	| ALTER
+	| INDEX
+;
+
+op_grant_column_list: {strcpy($<str>$,"");}
+	| OPEN_BRACKET grant_column_list CLOSE_BRACKET
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+;
+
+grant_column_list:
+	  column_name
+	| grant_column_list KW_COMMA column_name
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+;
+
+grantee_list:
+	  grantee
+	| grantee_list KW_COMMA grantee
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+;
+
+grantee:
+	PUBLIC
+	| authorization_identifier
+;
+
+
+view_definition_ss:
+	CREATE_VIEW table_name op_view_column_list AS query_specification_ss op_with_check_option {
+		add_feature("CREATE_VIEW_AS_SELECT");
+$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,strdup($<str>3),kw_space,strdup($<str>4),kw_space,$<sql_string>5,kw_space,strdup($<str>6),0);
+	
+}
+;
+
+op_view_column_list: {strcpy($<str>$,"");}
+	| OPEN_BRACKET view_column_list CLOSE_BRACKET
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+;
+
+view_column_list:
+	column_name
+	| view_column_list KW_COMMA column_name
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+;
+
+op_with_check_option: {strcpy($<str>$,"");}
+	| WITH_CHECK_OPTION {
+		add_feature("CREATE_VIEW_SELECT_WITH_CHECK");
+	}
+;
+
+
+check_constraint_definition_ss:
+	CHECK OPEN_BRACKET search_condition_ss CLOSE_BRACKET {
+		$<sql_string>$=make_sql_string_and_free(strdup("CHECK("),$<sql_string>3,kw_cb,0);
+add_feature("DDL_CHECK");
+	}
+;
+
+
+referential_constraint_definition:
+	FOREIGN_KEY OPEN_BRACKET references_columns CLOSE_BRACKET references_specification
+{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);
+	add_feature("DDL_FOREIGN_KEY");
+}
+;
+
+references_specification:
+	REFERENCES referenced_table_and_columns
+{sprintf($<str>$," %s %s",$<str>1,$<str>2);
+add_feature("DDL_REFERENCES");
+}
+;
+
+references_columns:
+	references_column_list
+;
+
+referenced_table_and_columns:
+	  table_name
+	| table_name OPEN_BRACKET references_column_list CLOSE_BRACKET
+{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+;
+
+references_column_list:
+	  column_name
+	| references_column_list KW_COMMA column_name
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+;
+
+
+unique_constraint_definition:
+	  UNIQUE OPEN_BRACKET unique_column_list CLOSE_BRACKET {
+		sprintf($<str>$," UNIQUE %s %s %s",$<str>2,$<str>3,$<str>4);
+add_feature("DDL_UNIQUE");
+	}
+	  | DISTINCT OPEN_BRACKET unique_column_list CLOSE_BRACKET {
+		ansi_violation("Use UNIQUE not DISTINCT",0);
+		sprintf($<str>$," UNIQUE %s %s %s",$<str>2,$<str>3,$<str>4);
+add_feature("DDL_DISTINCT");
+	}
+	| PRIMARY_KEY OPEN_BRACKET unique_column_list CLOSE_BRACKET
+{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);
+add_feature("DDL_PRIMARY_KEY");
+}
+;
+
+unique_column_list:
+	  column_name
+	| unique_column_list KW_COMMA column_name
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+;
+	
+
+table_constraint_definition_ss:
+	unique_constraint_definition {
+		$<sql_string>$=strdup($<str>1);
+	}
+	| referential_constraint_definition {
+		$<sql_string>$=strdup($<str>1);
+	}
+	| check_constraint_definition_ss  {
+		$<sql_string>$=$<sql_string>1;
+	}
+;
+
+
+default_clause:
+	  DEFAULT literal {sprintf($<str>$," %s %s",$<str>1,$<str>2); add_feature("DDL_DEFAULT_VALUE"); }
+	  | DEFAULT_USER {sprintf($<str>$," DEFAULT USER"); add_feature("DDL_DEFAULT_VALUE"); }
+	  | DEFAULT_TODAY {sprintf($<str>$," DEFAULT TODAY"); add_feature("DDL_DEFAULT_VALUE"); }
+	  | DEFAULT_NULL { sprintf($<str>$," %s",$<str>1); add_feature("DDL_DEFAULT_VALUE"); }
+;
+
+
+
+ct_column_definiton_ss:
+	identifier data_type op_default_clause op_column_constraint_list_ss {
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,strdup($<str>3),kw_space,$<sql_string>4,0);
+	}
+;
+
+op_default_clause: {strcpy($<str>$,"");}
+	|default_clause
+;
+
+op_column_constraint_list_ss: {
+		$<sql_string>$=strdup("");
+	} | column_constraint_list_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+;
+
+
+column_constraint_list_ss :
+	column_constraint_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| column_constraint_list_ss column_constraint_ss {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,$<sql_string>2,0);
+	}
+;
+
+column_constraint_ss : 
+	column_constraint_ss_1 opt_constraint_name {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup($<str>2),0);
+	}
+;
+
+
+
+column_constraint_ss_1:
+	  NOT_NULL {
+		sprintf($<str>$," %s ",$<str>1);
+		$<sql_string>$=strdup($<str>$);
+		add_feature("DDL_NOT_NULL");
+	}
+	| NOT_NULL_UNIQUE {
+		sprintf($<str>$," NOT NULL UNIQUE ");
+		$<sql_string>$=strdup($<str>$);
+		add_feature("DDL_NOT_NULL");
+		add_feature("DDL_UNIQUE");
+	}
+	| UNIQUE {
+		sprintf($<str>$," UNIQUE ");
+		$<sql_string>$=strdup($<str>$);
+		add_feature("DDL_UNIQUE");
+	}
+	| DISTINCT {
+		ansi_violation("Use UNIQUE not DISTINCT",0);
+		sprintf($<str>$," UNIQUE ");
+		$<sql_string>$=strdup($<str>$);
+		add_feature("DDL_DISTINCT");
+	}
+	| references_specification {
+		$<sql_string>$=strdup($<str>1);
+	}
+	| CHECK OPEN_BRACKET search_condition_ss CLOSE_BRACKET {
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,$<sql_string>3,kw_space,strdup($<str>4),0);
+		add_feature("DDL_CHECK");
+		
+	}
+	| PRIMARY_KEY {
+		$<sql_string>$=make_sql_string_and_free(strdup(" PRIMARY KEY "),0);
+		add_feature("DDL_PRIMARY_KEY");
+	}
+;
+
+
+schema_ss:
+	CREATE_SCHEMA schema_authorization_clause schema_element_list_ss
+{
+		add_feature("CREATE_SCHEMA");
+
+$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,strdup($<str>3),0);
+}
+;
+
+schema_authorization_clause:
+	schema_authorization_identifier
+{sprintf($<str>$," %s",$<str>1);}
+;
+
+schema_authorization_identifier:
+	authorization_identifier
+;
+
+schema_element_list_ss:
+	  schema_element_ss
+	| schema_element_list_ss schema_element_ss {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,$<sql_string>2,0);
+	}
+;
+
+schema_element_ss:
+	view_definition_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| privilege_definition {
+		$<sql_string>$=strdup($<str>1);
+	}
+;
+
+
+
+
+
+
+having_clause_ss:
+	HAVING search_condition_ss {
+		 add_feature("HAVING"); 
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,$<sql_string>2,0);
+	}
+;
+
+
+group_by_clause_ss:
+	GROUP_BY gr_column_specification_list_ss {
+		 add_feature("GROUP_BY"); 
+		$<sql_string>$=make_sql_string_and_free(strdup("GROUP BY "),$<sql_string>2,0);
+	}
+;
+
+/*
+column_specification_list_ss:
+	  column_specification_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| column_specification_list_ss KW_COMMA column_specification_ss {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(","),$<sql_string>3,0);
+	}
+;
+*/
+
+gr_column_specification_list_ss:
+	  gr_column_specification_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| gr_column_specification_list_ss KW_COMMA gr_column_specification_ss {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(","),$<sql_string>3,0);
+	}
+;
+
+
+gr_column_specification_ss: column_specification_ss
+;
+
+
+where_clause_ss:
+	WHERE search_condition_ss {
+		$<sql_string>$=make_sql_string_and_free(strdup("WHERE "),$<sql_string>2,0);
+	}
+;
+
+
+from_clause:
+	FROM {table_cnt=0;} table_reference_list {
+		sprintf($<str>$,"FROM %s",$<str>3);
+	}
+;
+
+table_reference_list:
+	  table_reference {table_cnt++;}
+	| table_reference_list KW_COMMA table_reference {
+		sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
+		table_cnt++;
+	}
+;
+
+table_reference:
+	  tname {sprintf($<str>$," %s ", $<str>1);}
+	| OUTER tname {sprintf($<str>$," %s %s ",$<str>1,$<str>2); add_feature("SELECT_OUTER");}
+	| OUTER OPEN_BRACKET tname_list  CLOSE_BRACKET {sprintf($<str>$," %s (%s) ",$<str>1,$<str>3);add_feature("SELECT_OUTER");}
+;
+
+tname: table_name  { strcpy($<str>$,A4GLSQLCV_make_tablename($<str>1,0));}
+	| table_name correlation_name { strcpy($<str>$,A4GLSQLCV_make_tablename($<str>1,$<str>2)); }
+	| table_name AS correlation_name { strcpy($<str>$,A4GLSQLCV_make_tablename($<str>1,$<str>3)); }
+;
+
+
+tname_list : table_reference | tname_list KW_COMMA table_reference { sprintf($<str>$," %s,%s ",$<str>1,$<str>3);  }
+;
+
+
+table_expression_2_ss: from_clause  op_where_clause_2_ss
+		{$<sql_string>$=make_sql_string_and_free($<str>1," ",$<sql_string>2,0);}
+;
+
+op_where_clause_2_ss:
+	op_group_by_clause_2_ss {$<sql_string>$=$<sql_string>1;}
+	| where_clause_ss op_group_by_clause_2_ss {$<sql_string>$=make_sql_string_and_free($<sql_string>1," ",$<sql_string>2,0);}
+;
+
+op_group_by_clause_2_ss:
+	op_having_clause_2_ss {$<sql_string>$=$<sql_string>1;}
+	| group_by_clause_ss op_having_clause_2_ss {$<sql_string>$=make_sql_string_and_free($<sql_string>1," ",$<sql_string>2,0);}
+;
+
+
+
+
+
+op_having_clause_2_ss :  {$<sql_string>$=strdup("");}
+	| having_clause_ss {$<sql_string>$=$<sql_string>1;}
+;
+
+
+
+
+op_where_clause_ss:  { $<sql_string>$=strdup("");}
+	| where_clause_ss {$<sql_string>$=$<sql_string>1;}
+;
+
+search_condition_ss:
+	boolean_term_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| search_condition_ss KW_OR boolean_term_ss {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" OR "),$<sql_string>3,0);
+	}
+;
+
+boolean_term_ss:
+	boolean_factor_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| boolean_term_ss KW_AND boolean_factor_ss {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" AND "),$<sql_string>3,0);
+	}
+;
+
+boolean_factor_ss:
+	boolean_primary_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| NOT boolean_primary_ss {
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,$<sql_string>2,0);
+	}
+;
+
+boolean_primary_ss:
+	  predicate_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| OPEN_BRACKET search_condition_ss CLOSE_BRACKET {
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),$<sql_string>2,strdup($<str>3),0);
+	}
+;
+
+
+exists_predicate_ss:
+	EXISTS subquery_ss 		{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,$<sql_string>2,0); add_feature("WHERE_EXISTS");}
+	| NOT_EXISTS subquery_ss 	{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,$<sql_string>2,0); add_feature("WHERE_EXISTS");}
+;
+
+
+
+
+
+
+op_matches_escape: {strcpy($<str>$,"");} | KW_ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_MATCHES_ESCAPE");} ;
+op_ilike_escape: {strcpy($<str>$,"");} 	 | KW_ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_ILIKE_ESCAPE");} ;
+op_like_escape: {strcpy($<str>$,"");} 	 | KW_ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_LIKE_ESCAPE");} ;
+
+pattern_ss:
+	value_expression_initial_ss {$<sql_string>$=$<sql_string>1;}
+;
+
+escape_character:
+	  value_specification
+;
+
+
+in_predicate_ss:
+	value_expression_ss KW_IN OPEN_BRACKET in_value_list CLOSE_BRACKET {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" IN ("),strdup($<str>4),kw_cb,0);
+		add_feature("WHERE_IN");
+	}
+	| value_expression_ss KW_IN subquery_ss {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,0);
+		add_feature("WHERE_IN_SELECT");
+	}
+	| value_expression_ss NOT_IN OPEN_BRACKET in_value_list CLOSE_BRACKET {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" NOT IN ("),strdup($<str>4),kw_cb,0);
+		add_feature("WHERE_IN");
+	}
+	| value_expression_ss NOT_IN subquery_ss {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,0);
+		add_feature("WHERE_IN_SELECT");
+	}
+;
+
+in_value_list:
+	  in_value_specification
+	| in_value_list KW_COMMA in_value_specification
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+;
+
+in_value_specification : var_ident_ibind_ss {
+		strcpy($<str>$,$<sql_string>1);
+	}
+	 | literal
+;
+
+op_not: {strcpy($<str>$,"");}
+	| NOT {strcpy($<str>$," NOT ");}
+;
+
+
+comparison_predicate_ss:
+	value_expression_ss op_not IS_NULL { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),strdup(" IS NULL"),0); 
+		add_feature("WHERE_NULL");
+		}
+	| value_expression_ss op_not IS_NOT_NULL { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),strdup(" IS NOT NULL"),0); 
+		add_feature("WHERE_NULL");
+	}
+	| value_expression_ss comp_op value_expression_ss { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,0); }
+	| value_expression_ss EQUAL value_expression_ss { 
+			$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,0); table_cnt--; 
+	}
+	| value_expression_ss op_not BETWEEN value_expression_ss KW_AND value_expression_ss { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),strdup(" BETWEEN "),$<sql_string>4,strdup(" AND "),$<sql_string>6,0);
+	}
+	| value_expression_ss LIKE pattern_ss op_like_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
+	| value_expression_ss NOT_LIKE pattern_ss op_like_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
+	| value_expression_ss ILIKE pattern_ss op_ilike_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
+	| value_expression_ss NOT_ILIKE pattern_ss op_ilike_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
+	| value_expression_ss op_not MATCHES pattern_ss op_matches_escape { 
+			$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space, strdup(A4GLSQLCV_matches_string($<str>2,$<sql_string>4,$<str>5)),0);
+		}
+;
+
+comp_op:
+	NOT_EQUAL {strcpy($<str>$,"!=");}
+	| LESS_THAN
+	| GREATER_THAN 
+	| TILDE
+	| LESS_THAN_EQ {strcpy($<str>$,"<=");}
+	| GREATER_THAN_EQ {strcpy($<str>$,">=");}
+;
+
+
+predicate_ss:
+	  comparison_predicate_ss {
+		$<sql_string>$=$<sql_string>1;
+
+	
+	}
+	| in_predicate_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| exists_predicate_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+;
+
+
+op_all: {strcpy($<str>$,"");}
+	| ALL {strcpy($<str>$," ALL "); add_feature("AGG_ALL");}
+	| DISTINCT {
+		strcpy($<str>$," DISTINCT ");
+		add_feature("AGG_DISTINCT");
+	}
+	| UNIQUE {
+		ansi_violation("Use DISTINCT not UNIQUE",0);
+		strcpy($<str>$," DISTINCT ");
+		add_feature("AGG_DISTINCT");
+	}
+;
+
+op_u_all: {strcpy($<str>$,"");}
+	| ALL {strcpy($<str>$," ALL "); add_feature("UNION_ALL");}
+	| DISTINCT {
+		strcpy($<str>$," DISTINCT ");
+		add_feature("UNION_DISTINCT");
+	}
+	| UNIQUE {
+		ansi_violation("Use DISTINCT not UNIQUE",0);
+		add_feature("UNION_DISTINCT");
+		strcpy($<str>$," DISTINCT ");
+	}
+;
+
+
+
+
+
+
+
+data_type :
+	data_type_i {
+		strcpy($<str>$,A4GLSQLCV_dtype_alias($<str>1));
+	}
+;
+
+
+data_type_i:
+	  char_string_type
+	| exact_numeric_type
+	| approx_numeric_type
+;
+
+char_string_type:
+	  KW_CHAR
+	| KW_CHAR OPEN_BRACKET length CLOSE_BRACKET
+{sprintf($<str>$," %s %s%s%s",$<str>1,$<str>2,$<str>3,$<str>4);}
+;
+
+exact_numeric_type:
+	SERIAL  {strcpy($<str>$,"SERIAL"); add_feature("DDL_SERIAL"); }
+	| SERIAL OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+			add_feature("DDL_SERIAL");
+			if (A4GLSQLCV_check_requirement("NO_SERIAL_START_VALUE"))  {
+				sprintf($<str>$,"SERIAL");
+			} else {
+				sprintf($<str>$,"SERIAL(%s)",$<str>3);
+			}
+	}
+	| KW_DECIMAL  {
+ 			add_feature("DDL_DECIMAL");
+	}
+	| KW_DECIMAL OPEN_BRACKET precision op_scale CLOSE_BRACKET {
+ 			add_feature("DDL_DECIMAL");
+		if (strlen($<str>4)) {
+			sprintf($<str>$,"DECIMAL(%s%s)",$<str>3,$<str>4);
+		} else {
+			sprintf($<str>$,"DECIMAL(%s)",$<str>3);
+		}
+	}
+	| MONEY OPEN_BRACKET precision op_scale CLOSE_BRACKET {
+ 			add_feature("DDL_MONEY");
+		if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
+			sprintf($<str>$," DECIMAL(%s%s)",$<str>3,$<str>4);
+		} else {
+			sprintf($<str>$," MONEY(%s%s)",$<str>3,$<str>4);
+		}
+	}
+
+
+	| MONEY  {
+ 			add_feature("DDL_MONEY");
+		if (A4GLSQLCV_check_requirement ("MONEY_AS_DECIMAL")) {
+			strcpy($<str>$,"DECIMAL");
+		} else {
+			strcpy($<str>$,"MONEY");
+		}
+	}
+        | KW_DATE {strcpy($<str>$,"DATE");
+ 			add_feature("DDL_DATE"); }
+	| INTEGER {strcpy($<str>$,"INTEGER");}
+	| SMALLINT {strcpy($<str>$,"SMALLINT");}
+	| NCHAR {strcpy($<str>$,"NCHAR"); add_feature("DDL_NCHAR");}
+	| NCHAR OPEN_BRACKET length CLOSE_BRACKET {sprintf($<str>$,"NCHAR(%s)",$<str>3); add_feature("DDL_NCHAR");}
+	| NVARCHAR {add_feature("DDL_NVARCHAR");}
+	| NVARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"NVARCHAR(%s)",$<str>3); add_feature("DDL_NVARCHAR");}
+	| NVARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
+			add_feature("DDL_NVARCHAR");
+			if (A4GLSQLCV_check_requirement("IGNORE_DTYPE_VARCHAR_MIN"))  {
+				sprintf($<str>$,"NVARCHAR(%s)",$<str>3);
+			} else {
+				sprintf($<str>$,"NVARCHAR(%s,%s)",$<str>3,$<str>5);
+			}
+	}
+	| DATETIME s_curr TO e_curr {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); add_feature("DDL_DATETIME");}
+	| DATETIME  {add_feature("DDL_DATETIME");}
+	| INTERVAL s_curr TO e_curr {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); add_feature("DDL_INTERVAL");}
+	| INTERVAL {add_feature("DDL_INTERVAL");}
+	| INTERVAL s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET TO e_curr {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7); add_feature("DDL_INTERVAL");}
+	| KW_TEXT {add_feature("DDL_TEXT");}
+	| KW_BYTE {add_feature("DDL_BYTE");}
+	| VARCHAR {add_feature("DDL_VARCHAR");}
+	| VARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"VARCHAR(%s)",$<str>3);add_feature("DDL_VARCHAR");}
+	| VARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
+			add_feature("DDL_VARCHAR");
+			if (A4GLSQLCV_check_requirement("IGNORE_DTYPE_VARCHAR_MIN"))  {
+				sprintf($<str>$,"VARCHAR(%s)",$<str>3);
+			} else {
+				sprintf($<str>$,"VARCHAR(%s,%s)",$<str>3,$<str>5);
+			}
+		}
+;
+
+op_scale: {strcpy($<str>$,"");}
+	| KW_COMMA scale {
+		sprintf($<str>$,",%s",$<str>2);
+}
+;
+
+approx_numeric_type:
+	KW_FLOAT OPEN_BRACKET precision CLOSE_BRACKET
+{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+	| REAL
+	| SMALLFLOAT
+	| KW_FLOAT
+	| DOUBLE_PRECISION {add_feature("DDL_DOUBLE_PRECISION"); sprintf($<str>$," %s",$<str>1);}
+;
+
+length:
+	INT_VALUE
+;
+
+precision:
+	INT_VALUE
+;
+
+scale:
+	INT_VALUE
+;
+
+
+table_name: table_name_i  {
+		if (strstr($<str>1,"systables")!=0) { add_feature("IFX_SYSTABLES"); }	
+		if (strstr($<str>1,"syscolumns")!=0) { add_feature("IFX_SYSCOLUMNS"); }	
+		if (strstr($<str>1,"sysindexes")!=0) { add_feature("IFX_SYSINDEXES"); }	
+		strcpy($<str>$,A4GLSQLCV_check_tablename($<str>1));
+		}
+;
+
+
+table_name_i:
+	 CHAR_VALUE DOT identifier { 
+			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
+					sprintf($<str>$,"%s", $<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+			} else {
+				if (A4GL_escape_quote_owner()) {
+					sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+				} else {
+					sprintf($<str>$,"\"%s\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+				}
+			}
+	}
+	| CHAR_VALUE {
+		sprintf($<str>$," %s", A4GL_strip_quotes ($<str>1));
+		addmap("Use Table",$<str>$,curr_func,yylineno,infilename);
+	}
+	| identifier {strcpy($<str>$,$<str>1); addmap("Use Table",$<str>1,curr_func,yylineno,infilename); }
+	| identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
+	| identifier COLON CHAR_VALUE DOT identifier { 
+			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
+					sprintf($<str>$," %s:%s",$<str>1,$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+			} else {
+                        	if (A4GL_escape_quote_owner()) {
+					sprintf($<str>$," %s:\\\"%s\\\".%s",$<str>1,A4GL_strip_quotes($<str>3),$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+                        	} else {
+					sprintf($<str>$," %s:%s.%s",$<str>1,$<str>3,$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+                        	}
+			}
+	}
+
+	| identifier ATSIGN identifier {strcpy($<str>$,$<str>1); addmap("Use Table",$<str>1,curr_func,yylineno,infilename); }
+	| identifier ATSIGN identifier COLON identifier { sprintf($<str>$," %s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
+	| identifier ATSIGN identifier COLON CHAR_VALUE DOT identifier { 
+			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
+					sprintf($<str>$," %s@%s:%s",$<str>1,$<str>3,$<str>7); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+			} else {
+                        	if (A4GL_escape_quote_owner()) {
+					sprintf($<str>$," %s@%s:\\\"%s\\\".%s",$<str>1,$<str>3,A4GL_strip_quotes($<str>5),$<str>7); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+                        	} else {
+					sprintf($<str>$," %s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+                        	}
+			}
+	}
+
+;
+
+idx_name:
+	 CHAR_VALUE DOT identifier { 
+			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
+					sprintf($<str>$,"%s", $<str>3); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+			} else {
+				if (A4GL_escape_quote_owner()) {
+					sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+				} else {
+					sprintf($<str>$,"\"%s\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+				}
+			}
+	}
+	| CHAR_VALUE {
+		sprintf($<str>$," %s", A4GL_strip_quotes ($<str>1));
+		addmap("Use Index",$<str>$,curr_func,yylineno,infilename);
+	}
+
+	| identifier {strcpy($<str>$,$<str>1); addmap("Use Index",$<str>1,curr_func,yylineno,infilename); }
+	| identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); }
+	| identifier COLON CHAR_VALUE DOT identifier { 
+			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
+				sprintf($<str>$," %s:%s",$<str>1,$<str>5); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+			} else {
+                        if (A4GL_escape_quote_owner()) {
+				sprintf($<str>$," %s:\\\"%s\\\".%s",$<str>1,A4GL_strip_quotes($<str>3),$<str>5); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+                        } else {
+				sprintf($<str>$," %s:%s.%s",$<str>1,$<str>3,$<str>5); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+                        }
+		}
+	}
+
+	| identifier ATSIGN identifier {strcpy($<str>$,$<str>1); addmap("Use Index",$<str>1,curr_func,yylineno,infilename); }
+	| identifier ATSIGN identifier COLON identifier { sprintf($<str>$," %s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); }
+	| identifier ATSIGN identifier COLON CHAR_VALUE DOT identifier { 
+			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
+					sprintf($<str>$," %s@%s:%s",$<str>1,$<str>3,$<str>7); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+			} else {
+                        	if (A4GL_escape_quote_owner()) {
+					sprintf($<str>$," %s@%s:\\\"%s\\\".%s",$<str>1,$<str>3,A4GL_strip_quotes($<str>5),$<str>7); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+                        	} else {
+					sprintf($<str>$," %s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+                        	}
+			}
+	}
+
+
+;
+
+
+
+
+
+authorization_identifier:
+	identifier
+;
+
+
+
+col_arr : {$<int_list.i0>$=0;}
+	| OPEN_SQUARE INT_VALUE CLOSE_SQUARE {
+		$<int_list.i0>$=1;
+		$<int_list.i1>$=atoi($<str>2);
+	}
+	| OPEN_SQUARE INT_VALUE KW_COMMA INT_VALUE CLOSE_SQUARE {
+		$<int_list.i0>$=2;
+		$<int_list.i1>$=atoi($<str>2);
+		$<int_list.i2>$=atoi($<str>4);
+		//sprintf($<str>$,"[%s,%s]",$<str>2,$<str>4);
+	}
+;
+
+column_name : 
+	column_name_specific {
+		strcpy($<str>$,$<str>1);
+	}
+	| ATSIGN column_name_specific {
+		strcpy($<str>$,$<str>2);
+	}
+;
+
+column_name_specific: identifier col_arr { 
+		struct ilist *i;
+		i=&$<int_list>2;
+		if (strcmp($<str>1,"rowid")==0) { add_feature("ROWID"); }
+		addmap("Use Column",$<str>1,curr_func,yylineno,infilename);
+		strcpy($<str>$,A4GLSQLCV_make_substr(A4GLSQLCV_check_colname(0,$<str>1), i->i0,i->i1,i->i2));
+	}
+	| table_name DOT identifier col_arr {
+		struct ilist *i;
+		if (strcmp($<str>3,"rowid")==0) { add_feature("ROWID"); }
+		sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>1,$<str>3));
+		addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
+		i=&$<int_list>4;
+		strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
+	}
+	| table_name  DOT MULTIPLY {
+		sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>1,"*"));
+		addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
+	}
+;
+
+correlation_name:
+	identifier
+;
+
+
+literal: CHAR_VALUE { strcpy($<str>$,convstrsql($<str>1)); A4GL_debug("Set $<str>$ to %s\n",$<str>$); }
+	| real_number
+	| INT_VALUE
+        | curr_clause 
+		
+;
+
+
+cur_part: { strcpy($<str>$,A4GLSQLCV_generate_current(0,0)); 
+}
+	| s_curr TO e_curr {
+		strcpy($<str>$,A4GLSQLCV_generate_current($<str>1,$<str>3));
+	}
+;
+
+
+
+
+
+s_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
+e_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION | FRACTION OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"FRACTION(%s)",$<str>3);}
+;
+
+
+
+
+
+select_statement_ss_str:
+	KW_SELECT 
+	op_ad 
+	{ start_bind('i',0); }
+	select_list_ss {A4GL_debug("Got select list...\n");}
+        opt_into_sel_ss 
+	table_expression_2_ss
+        sel_p2_ss sel_finish {
+		if (!strstr($<sql_string>9,"INTO TEMP")) {
+			add_feature("SELECT");
+                	$<sql_string>$=make_sql_string_and_free(strdup("SELECT "),strdup($<str>2), $<sql_string>4,kw_space, $<sql_string>6, kw_space,$<sql_string>7,kw_space,$<sql_string>8,$<sql_string>9,0);
+		} else {
+			char *ptr;
+                	ptr=make_sql_string_and_free(strdup("SELECT "),strdup($<str>2), $<sql_string>4,kw_space, $<sql_string>6, kw_space,$<sql_string>7,kw_space,$<sql_string>8,0);
+			
+                	$<sql_string>$=A4GLSQLCV_select_into_temp(ptr, $<sql_string>9, last_tmp_name);
+		}
+
+}
+;
+
+select_statement2_ss:
+	select_statement21_ss  {
+	add_feature("UNLOAD_TO_SELECT_FROM");
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,0);
+	 }
+	| char_or_var {
+		add_feature("UNLOAD_TO_CHAR");
+		$<sql_string>$=strdup($<str>1);
+	}
+;
+
+uselect_statement2_ss:
+	select_statement21_ss  {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,0);
+	 }
+	| char_or_var {
+		$<sql_string>$=strdup($<str>1);
+	}
+;
+
+select_statement21_ss:
+	KW_SELECT  op_ad select_list_ss
+        opt_into_sel_ss
+	table_expression_2_ss
+        sel_p2_ss  {
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1), kw_space,strdup($<str>2),kw_space,$<sql_string>3,kw_space, $<sql_string>4,kw_space, $<sql_string>5, kw_space,$<sql_string>6,0);
+}
+;
+
+
+sel_p2_ss : { $<sql_string>$=strdup(""); }
+	| UNION op_u_all select_statement2_ss { $<sql_string>$=make_sql_string_and_free(strdup("UNION "),strdup($<str>2),kw_space,$<sql_string>3,0); add_feature("SELECT_UNION"); }
+;
+
+
+sel_finish_unload: {$<sql_string>$=strdup("");}
+	| order_by_clause {  $<sql_string>$=make_sql_string_and_free(kw_space,strdup($<str>1),0); }
+;
+
+
+sel_finish: {$<sql_string>$=strdup("");}
+	| order_by_clause  {  $<sql_string>$=strdup($<str>1); }
+	| order_by_clause INTO_TEMP tmp_tabname op_no_log { 
+			add_feature("SELECT_INTO_TEMP_ORDER_BY");
+	if (A4GLSQLCV_check_requirement("STRIP_ORDER_BY_INTO_TEMP")) {
+		$<sql_string>$=make_sql_string_and_free(strdup("INTO TEMP "),strdup($<str>3),kw_space,strdup($<str>4),0);
+		strcpy(last_tmp_name,$<str>3);
+	} else {
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup(" INTO TEMP "),strdup($<str>3),kw_space,strdup($<str>4),0);
+		strcpy(last_tmp_name,$<str>3);
+	}
+}
+	| INTO_TEMP tmp_tabname op_no_log { 
+			add_feature("SELECT_INTO_TEMP");
+$<sql_string>$=make_sql_string_and_free(strdup("INTO TEMP "),strdup($<str>2),kw_space,strdup($<str>3),0); strcpy(last_tmp_name,$<str>2);} 
+;
+
+
+tmp_tabname: identifier;
+
+
+opt_into_sel_ss :  { start_bind('o',0);$<sql_string>$=make_sql_string_and_free(strdup(""),0); }
+	| INTO  obind_var_list { 
+		$<sql_string>$=make_sql_string_and_free(strdup(A4GL_get_into_part(doing_declare,get_bind_cnt('o'))),0 ); 
+
+	}
+;
+
+
+
+query_specification_ss:
+	KW_SELECT op_ad select_list_ss table_expression_2_ss {
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space, $<sql_string>3,kw_space,$<sql_string>4,0);
+	}
+;
+
+subquery_ss:
+	OPEN_BRACKET KW_SELECT op_ad select_list_ss table_expression_2_ss CLOSE_BRACKET {
+		$<sql_string>$=make_sql_string_and_free(strdup("("),strdup($<str>2),kw_space,strdup($<str>3),kw_space,$<sql_string>4,kw_space,$<sql_string>5,kw_cb,0);
+	}
+;
+
+op_ad: {strcpy($<str>$,"");}
+	| ALL {strcpy($<str>$,"ALL "); add_feature("SELECT_ALL");}
+	| DISTINCT {strcpy($<str>$," DISTINCT "); add_feature("SELECT_DISTINCT");}
+	| UNIQUE {strcpy($<str>$," DISTINCT ");
+		add_feature("SELECT_UNIQUE");
+		ansi_violation("Use DISTINCT not UNIQUE",0);
+		strcpy($<str>$," DISTINCT ");
+}
+;
+
+select_list_ss: 
+	value_expression_pls_ss  {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| select_list_ss KW_COMMA value_expression_pls_ss { 
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(","),$<sql_string>3,0);
+	}
+;
+
+value_expression_pls_ss : 
+	value_expression_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| value_expression_ss  identifier {
+
+
+		if (A4GLSQLCV_check_requirement("COLUMN_ALIAS_AS")) {
+			$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" AS "),strdup($<str>2),0);
+		} else {
+			$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),0);
+		}
+	}
+	| value_expression_ss AS identifier {
+		if (A4GLSQLCV_check_requirement("COLUMN_ALIAS_AS")) {
+			$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" AS "),strdup($<str>3),0);
+		} else {
+			$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>3),0);
+		}
+	}
+
+
+;
+
+
+column_specification_ss : value_expression_ss {
+	$<sql_string>$=$<sql_string>1;
+}
+
+;
+
+
+
+
+value_expression_ss:
+	value_expression_initial_ss {
+		char *a;
+		a=strdup(A4GLSQLCV_check_expr($<sql_string>1));
+		$<sql_string>$=a;
+		free($<sql_string>1);
+	}
+	| MINUS value_expression_initial_ss {
+		char *a;
+		a=strdup(A4GLSQLCV_check_expr($<sql_string>2));
+		$<sql_string>$=make_sql_string_and_free(strdup("-"),a,0);
+		free($<sql_string>2);
+	}
+	| PLUS value_expression_initial_ss {
+		char *a;
+		a=strdup(A4GLSQLCV_check_expr($<sql_string>2));
+		$<sql_string>$=make_sql_string_and_free(strdup("+"),a,0);
+		free($<sql_string>2);
+	}
+;
+
+
+value_expression_complex_ss :
+	value_expression_initial_ss DIVIDE value_expression_ss {$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup("/"),$<sql_string>3,0);}
+	| value_expression_initial_ss units_qual {$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),0);}
+	| value_expression_initial_ss MULTIPLY value_expression_ss {$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup("*"),$<sql_string>3,0);}
+	| value_expression_initial_ss PLUS value_expression_ss {$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup("+"),$<sql_string>3,0);}
+	| value_expression_initial_ss MINUS value_expression_ss {$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup("-"),$<sql_string>3,0);}
+	| literal {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
+	| KW_TRUE {$<sql_string>$=make_sql_string_and_free(strdup("1"),0);}
+	| KW_FALSE {$<sql_string>$=make_sql_string_and_free(strdup("0"),0);}
+	| USER {$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_get_sqlconst("USER")),0);}
+	| KW_TODAY {$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_get_sqlconst("TODAY")),0);}
+	| MULTIPLY {$<sql_string>$=make_sql_string_and_free(strdup("*"),0);}
+	| COUNT_MULTIPLY {$<sql_string>$=make_sql_string_and_free(strdup("COUNT(*)"),0); add_feature("SELECT_COUNT");}
+ 	| AVG OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("AVG("),strdup($<str>3),$<sql_string>4,kw_cb,0); add_feature("SELECT_AVG");}
+	| XMAX OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("MAX("),strdup($<str>3),$<sql_string>4,kw_cb,0); add_feature("SELECT_MAX");}
+	| XMIN OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("MIN("),strdup($<str>3),$<sql_string>4,kw_cb,0); add_feature("SELECT_MIN");}
+	| SUM OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("SUM("),strdup($<str>3),$<sql_string>4,kw_cb,0); add_feature("SELECT_SUM");}
+	| COUNT OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("COUNT("),strdup($<str>3),$<sql_string>4,kw_cb,0); add_feature("SELECT_COUNT");
+}
+	| YEAR OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("YEAR",$<sql_string>3));}
+	| MONTH OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("MONTH",$<sql_string>3));}
+	| DAY OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("DAY",$<sql_string>3));}
+	| MDY OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("MDY",$<sql_string>3));}
+	| WEEKDAY OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("WEEKDAY",$<sql_string>3));}
+	| KW_DOW OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("DOW",$<sql_string>3));}
+	| KW_DATE OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$= strdup(A4GLSQLCV_sql_func("DATE",$<sql_string>3));}
+	| identifier OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func($<str>1,$<sql_string>3));}
+	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("("),$<sql_string>2,kw_cb,0);}
+	| EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET { add_feature("EXTEND"); $<sql_string>$=$<sql_string>3; }
+	| datetime_value_qualified { $<sql_string>$=make_sql_string_and_free(strdup($<str>1),0); add_feature("FUNC_DATETIME");}
+	| interval_value_qualified {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0); add_feature("FUNC_INTERVAL");}
+
+
+;
+
+value_expr_list_ss : 
+	value_expression_ss {$<sql_string>$=$<sql_string>1;}
+	| value_expr_list_ss KW_COMMA value_expression_ss {
+	$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(","),$<sql_string>3,0);
+}
+	
+;
+
+value_specification:
+	 literal
+;
+
+
+select_statement_unload : uselect_statement2_ss sel_finish_unload {
+	$<sql_string>$=make_sql_string_and_free($<sql_string>1,$<sql_string>2,0);
+}
+;
+
+
+
+unload_cmd :  opt_use UNLOAD_TO ufile opt_delim select_statement_unload {
+	add_feature("UNLOAD_TO");
+	if (strcasecmp($<sql_string>5," WHERE ")==0) {
+		add_feature("UNLOAD_TO_SELECT_WHERE");
+	}
+	add_feature("UNLOAD_TO");
+	print_unload($<str>3,$<str>4,$<sql_string>5);
+	print_undo_use($<str>1);
+}
+;
+
+
+load_cmd :  
+opt_use LOAD_FROM ufile opt_delim INSERT_INTO table_name opt_col_list {
+	add_feature("LOAD_FROM_INSERT_INTO");
+	print_load($<str>3,$<str>4,$<str>6,$<str>7);
+	print_undo_use($<str>1);
+}
+| opt_use LOAD_FROM ufile opt_delim variable {
+	add_feature("LOAD_FROM_VARIABLE");
+	print_load_str($<str>3,$<str>4,$<str>5);
+	print_undo_use($<str>1);
+}
+
+;
+
+opt_delim : {strcpy($<str>$,"\"|\"");} | DELIMITER char_or_var {
+strcpy($<str>$,$<str>2);
+};
+
+
+opt_col_list: {strcpy($<str>$,"0");} | OPEN_BRACKET col_list CLOSE_BRACKET {
+sprintf($<str>$,"%s,0",$<str>2);
+};
+
+col_list : simple_column_name | col_list KW_COMMA simple_column_name {
+    sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+};
+
+simple_column_name : identifier {
+     sprintf($<str>$,"\"%s\"",$<str>1);
+}
+;
+
+
+ufile : CHAR_VALUE | variable;
+
+
+
+
+
+
+
+
+misc_sql :
+	lock_stmt
+	| unlock_stmt
+	| rename_stmt
+;
+
+rename_stmt :
+	RENTAB rentabname TO rentabname { add_feature("RENAME_TABLE"); strcpy($<str>$,A4GLSQLCV_rentab($<str>2,$<str>4)); }
+	| RENCOL table_name DOT rencolname TO rencolname { add_feature("RENAME_COLUMN"); strcpy($<str>$,A4GLSQLCV_rencol($<str>2,$<str>4,$<str>6) ); }
+;
+
+rentabname : identifier;
+rencolname : identifier;
+
+unlock_stmt:
+
+	UNLOCK_TABLE table_name {
+		add_feature("UNLOCK_TABLE");
+		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+	}
+;
+
+lock_stmt :
+	LOCK_TABLE table_name share_or_exclusive  {
+		add_feature("LOCK_TABLE");
+		sprintf($<str>$,"%s %s %s",
+					$<str>1,
+					$<str>2,
+					$<str>3
+					);
+		}
+;
+
+share_or_exclusive :
+	INSHARE { add_feature("LOCK_TABLE_SHARED");}
+	| INEXCLUSIVE {add_feature("LOCK_TABLE_EXCLUSIVE");}
+;
+
+
+
+
+
+units_qual:
+	UNITS_YEAR {strcpy($<str>$," UNITS YEAR");}
+	| UNITS_MONTH {strcpy($<str>$," UNITS MONTH"); }
+	| UNITS_DAY {strcpy($<str>$," UNITS DAY"); }
+	| UNITS_HOUR {strcpy($<str>$," UNITS HOUR"); }
+	| UNITS_MINUTE {strcpy($<str>$," UNITS MINUTE"); }
+	| UNITS_SECOND {strcpy($<str>$," UNITS SECOND"); }
+;
+
+
+
+extend_qual_ss:
+        KW_CURRENT KW_COMMA s_curr TO e_curr {
+			$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_make_dtime_extend("CURRENT",$<str>3,$<str>5,1)),0);
+	}
+        | var_ident_ibind_ss KW_COMMA s_curr TO e_curr {
+			$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_make_dtime_extend($<sql_string>1,$<str>3,$<str>5,1)),0);
+			free($<sql_string>1);
+		//$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup($<str>2),strdup($<str>3),kw_space,strdup($<str>4),kw_space,strdup($<str>5),0);
+	}
+        | KW_CURRENT s_curr TO e_curr {
+			$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_make_dtime_extend("CURRENT",$<str>2,$<str>4,1)),0);
+
+		//$<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup($<str>2),kw_space,strdup($<str>3),kw_space,strdup($<str>4),0);
+	}
+	| value_expression_ss KW_COMMA s_curr TO e_curr {
+			$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_make_dtime_extend($<sql_string>1,$<str>3,$<str>5,1)),0);
+			free($<sql_string>1);
+	}
+;
+
+datetime_value_qualified :
+	datetime_value {strcpy($<str>$,$<str>1);}
+	| datetime_value s_curr TO e_curr {strcpy($<str>$,A4GLSQLCV_make_dtime_extend($<str>1,$<str>2,$<str>4,0));}
+;
+
+datetime_value:
+	DATETIME_VALUE  {sprintf($<str>$,"%s",A4GLSQLCV_datetime_value($<str>1));}
+;
+
+interval_value_qualified :
+	interval_value {strcpy($<str>$,$<str>1);}
+	| interval_value s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET TO e_curr {
+			strcpy($<str>$,A4GLSQLCV_make_ival_extend($<str>1,$<str>2,$<str>4,$<str>7,0));
+		}
+	| interval_value s_curr TO e_curr {
+		strcpy($<str>$,A4GLSQLCV_make_ival_extend($<str>1,$<str>2,(char *)0, $<str>4,0));
+	}
+;
+
+interval_value:
+	INTERVAL_VALUE  {sprintf($<str>$,"%s",A4GLSQLCV_interval_value($<str>1));}
+;
+
+
+curr_clause : KW_CURRENT  cur_part {
+strcpy($<str>$,$<str>2);
+}
+;
+
+
+/* ========================= sql1.rule ================================ */

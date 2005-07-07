@@ -1,0 +1,17 @@
+#This script will setup environment for "CINT" C intrpreter and
+#run C file specified as parameter to this script using "cint" executable
+
+USE_AUBITDIR=`aubit-config AUBITDIR`
+#USE_AUBITDIR=../..
+
+export CINTSYSDIR=/opt/cint
+export MANPATH=$MANPATH:$CINTSYSDIR/doc
+export PATH=$PATH:$CINTSYSDIR
+
+LD_LIBRARY_PATH=.:$CINTSYSDIR:$USE_AUBITDIR/lib:$LD_LIBRARY_PATH
+LD_ELF_LIBRARY_PATH=$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH LD_ELF_LIBRARY_PATH
+
+#	$ cint <options> <[file1].c [file2].c [shl].sl ...> [main].c
+#cint -p -I$USE_AUBITDIR/incl -l$USE_AUBITDIR/lib/libA4GL_cint.so $1.c
+cint -p -I$USE_AUBITDIR/incl -l$USE_AUBITDIR/lib/libA4GL_cint.so $@

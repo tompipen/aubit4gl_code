@@ -1,0 +1,66 @@
+on_key_command : 
+        ONKEY {iskey=1;} key_do {strcpy($<str>$,$<str>3);iskey=0;} 
+|
+        ON_ANY_KEY {strcpy($<str>$,"->ANY");} 
+;
+
+key_val : KEY {iskey=1;} key_do {strcpy($<str>$,$<str>3);iskey=0;};
+
+accept_key :  ACCEPTKEY key_value {sprintf($<str>$,"A4GL_key_val(\"%s\")",$<str>2);iskey=0;}
+;
+
+
+single_key_val : KEY key_do {sprintf($<str>$,"A4GL_key_val(\"%s\")",$<str>2);iskey=0;}
+;
+
+key_do	: key_value  {strcpy($<str>$,$<str>1);}
+	| OPEN_BRACKET key_value_list CLOSE_BRACKET  {strcpy($<str>$,$<str>2);}
+;
+
+key_value_list : key_value | key_value_list KW_COMMA key_value {
+	sprintf($<str>$,"%s||%s",$<str>1,$<str>3);
+}
+;
+
+key_value : key_value_1 
+;
+
+key_value_1 : 	KW_FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
+	| 	KW_CTRL_KEY /* {strcpy($<str>$,"^A");}*/
+	| 	KW_INTERRUPT /* {strcpy($<str>$,"interrupt");}*/
+	| 	KW_ACCEPT /* {strcpy($<str>$,"accept");}*/
+	|       KW_SINGLE_KEY {strcpy($<str>$,$<str>1);}
+        |       KW_ESCAPE {strcpy($<str>$,"escape");}
+        |       KWUP {strcpy($<str>$,"up");}
+        |       KW_HELP {strcpy($<str>$,"help");}
+        |       KWDOWN {strcpy($<str>$,"down");}
+        |       KW_RETURN {strcpy($<str>$,"return");}
+        |       KW_DELETE {strcpy($<str>$,"delete");}
+        |       KW_INSERT {strcpy($<str>$,"insert");}
+        |       KW_TAB {strcpy($<str>$,"tab");}
+        |       KW_LEFT {strcpy($<str>$,"left");}
+        |       KW_RIGHT {strcpy($<str>$,"right");}     
+        |       KW_NEXTPAGE {strcpy($<str>$,"nextpage");}     
+        |       KW_NEXT {strcpy($<str>$,"nextpage");}     
+        |       KW_PREVPAGE {strcpy($<str>$,"prevpage");}     
+        |       KW_PREVIOUS {strcpy($<str>$,"prevpage");}     
+	|       CHAR_VALUE { rm_quotes($<str>1); strcpy($<str>$,$<str>1); }
+;
+
+
+on_action : 
+	KW_ON KW_ACTION identifier {sprintf($<str>$,"\"%s\"",$<str>3);}
+;
+
+on_timer : 
+	KW_ON KW_IDLE idle_time {sprintf($<str>$,"D %s",$<str>3);}
+	| KW_ON INTERVAL idle_time {sprintf($<str>$,"V %s",$<str>3);}
+	/* T %s is reserved for TIMESTAMP - when we get round to it... */
+;
+
+idle_time: INT_VALUE {sprintf($<str>$,"%d",atoi($<str>1));}
+| INT_VALUE IDLE_SECONDS {sprintf($<str>$,"%d",atoi($<str>1));}
+| INT_VALUE IDLE_MINUTES {sprintf($<str>$,"%d",atoi($<str>1)*60);}
+| INT_VALUE IDLE_HOURS {sprintf($<str>$,"%d",atoi($<str>1)*60*60);}
+;
+

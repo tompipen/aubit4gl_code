@@ -1,0 +1,61 @@
+Aubit 4gl Version 0.30 Development Team
+
+--------------------------------------------------------------------------
+
+Core Developers
+===============
+
+Mike Aubury [mike@aubit.com]
+
+	* Original language definition and implementation
+	* GTK+ GUI interface
+    * Practically everything else...
+
+Andrej Falout [afalout@ihug.co.nz]
+
+    * Project managment
+	* Manual and doccumentation
+    * CVS and development environment setup and hosting
+    * Binary distributions
+    * Jabber lib extensions
+    * HTML lib extensions and CGI compile
+    * Web site
+    * amake 4gl make front-end and rules
+
+
+
+Major Contributors
+==================
+
+Sergio Alexandre Ferreira [sergio.alexandre.ferreira@tmn.pt]
+
+    * Autoconf
+    * compiler warnings fixes
+    * DoxyGen source code documentation
+
+Brett Geer [brett@brabys.co.za]
+
+	* AIX port modifications
+
+Carlos Alberto Correa Fayad [ccorreafy@linuxmail.org]
+
+	* Spanish manual translation
+
+Jonathan Leffler [jleffler@informix.com]
+
+	* Mentoring and a lot of advice
+	* Solaris 7 port modifications
+    * IDE 4gl code
+    * Universal D4GL(4Js) and i-4gl makefiles templates
+
+
+
+Beta Testers
+------------
+
+
+
+--------------------------------------------------------------------------
+
+
+

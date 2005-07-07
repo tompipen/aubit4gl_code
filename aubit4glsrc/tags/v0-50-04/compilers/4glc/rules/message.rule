@@ -1,0 +1,35 @@
+message_cmd : msg_start msg_next 
+;
+
+msg_next : {
+		print_message(0,"0",0,message_cnt);
+	   }
+ 	| attributes_def op_msg_wait { 
+		print_message(0,$<str>1,atoi($<str>2),message_cnt);
+	  } 
+ 	| msg_wait { 
+		print_message(0,"0",atoi($<str>1),message_cnt);
+	  } 
+
+	| gui_message
+;
+
+gui_message:
+	 	gm_caption
+   		| gm_icon
+   		| gm_buttons
+   		| gm_disable_msg
+   		| gm_returning_msg 
+;
+
+
+msg_start : KWMESSAGE reset_cnt fgl_expr_list {
+		strcpy($<str>$,$<str>3);
+		message_cnt=atoi($<str>3);
+		};
+
+op_msg_wait : {strcpy($<str>$,"0");} | WAIT_FOR_KEY {strcpy($<str>$,"1");} 
+;
+
+msg_wait :  WAIT_FOR_KEY {strcpy($<str>$,"1");} 
+;
