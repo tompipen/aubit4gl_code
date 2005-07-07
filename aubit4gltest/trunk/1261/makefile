@@ -9,6 +9,7 @@ ifneq "${A4GL_KEYFILE}" ""
 	export A4GL_KEYFILE A4GL_KEYDELAY
 endif
 ADD_CLEAN=
+OUT_LIST=out1 out2
 
 ## ======================================================================
 ##                 	Local Targets
@@ -16,26 +17,24 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; 
-	${DEFAULT_DUMP_DIFF}
-	#${DEFAULT_RUN}
-	#${DEFAULT_DIFF} 
+run: compile ; ${DEFAULT_DUMP_DIFF}
+	#${DEFAULT_RUN} ${DEFAULT_DIFF} 
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Testing DISPLAY ... ATTRIBUTE(variable) Syntax"
+desc: ; @echo "This is not a test but a Testing template. Please describe here."
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
-tui_test:				; @echo "1"
+tui_test:				; @echo "0"
 form_test:				; @echo "0"
 report_test:			; @echo "0"
 graphic_test:			; @echo "0"
 console_prompt_test:	; @echo "0"
-dump_screen_test:		; @echo "1"
+dump_screen_test:		; @echo "0"
 long_test:				; @echo "0"
 cert_test:				; @echo "0"
 obsolete_test:			; @echo "0"

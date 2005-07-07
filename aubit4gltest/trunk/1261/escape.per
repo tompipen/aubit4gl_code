@@ -1,0 +1,41 @@
+database formonly
+
+screen size 24 by 80
+{
+hlkjhlkjhlh          jkhlkhlkjhlkjhlkjhlkhlkjh         Date:[a1        ]
+                                                       Time:[a2      ]
+========================================================================
+
+              jkj (LAST 7):     [a7     ]    ljjllkjlkj: [t]
+
+              START DATE:       [a3        ] TIME [z1  ]
+
+              END DATE:         [a4        ] TIME [z2  ]
+
+              lkjlkjljljlkjlj   [a6   ]   LOT: [a9]
+
+              kljlkjljkljlj:    [a5]      SORT ORDER \[I/V\]: [z]
+
+
+  <DEL> Exit Program     <ESC> To Accept     <F10> To Print Screen
+
+}
+end
+attributes
+
+z1 = formonly.begtm type char,upshift;
+z2 = formonly.endtm type char,upshift;
+a1 = formonly.wdate type date,noentry,format="mm/dd/yyyy";
+a2 = formonly.wtime type char,noentry;
+a3 = formonly.begdt type date,format="mm/dd/yyyy";
+a4 = formonly.enddt type date,format="mm/dd/yyyy";
+a5 = formonly.luq type smallint, format = "##";
+a6 = formonly.kjhssj type char, upshift;
+a9 = formonly.kjh type char, upshift;
+a7 = formonly.hjh type char, upshift;
+t = formonly.pc type char, upshift;
+z  = formonly.sortkey type char, upshift, include=("I","V");
+
+instructions
+
+delimiters "  "

@@ -20,5 +20,7 @@ for lv_i = 1 to 8
   display "hello (" || lv_attrib clipped || ")" at lv_i + 1 ,40 attribute(lv_attrib)
 end for
 call aclfgl_dump_screen("out")
+sleep 1
 close window w1
+
 end main
