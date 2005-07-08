@@ -52,6 +52,14 @@ minutes.</p>
     between the manual releases. This repositories of information will then 
     represent a base to migrate information on new functionality into the 
     manual. (Andrej)</li>
+    <li>Add status for tools in tools/ directory</li>
+    <li>Add list of directories to be removed or renamed/moved in CVS</li>
+    <li>Create links for directories to Aubit CVS web browser interface</li>
+    <li>Create links to manual or other documentation entry for it</li>
+    <li>Crate links from classes of components to architecture diagram section, 
+    and vice versa</li>
+    <li>Group entries in this table by class (database access, user interface, 
+    RPC, etc...)</li>
 </ul>
 <hr>
 <h2 align="center">All components of Aubit project</h2>
@@ -297,10 +305,10 @@ components </h2>
 		<td>not attempted</td>
 		<td>&nbsp;</td>
 		<td>none</td>
-		<td>-</td>
-		<td>-</td>
-		<td>-</td>
-		<td>-</td>
+		<td>&nbsp;</td>
+		<td>Gentoo Ebuild tools</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
 		<td width="55">implementation</td>
 		<td>Need to modify configure to not alter FS outside of Aubit src tree</td>
 	</tr>
@@ -1040,22 +1048,6 @@ components </h2>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>Logical Reports report viewer </td>
-		<td>report_viewer</td>
-		<td>GUI application that enables user to preview and initiate printing 
-        of reports created using Logical Reports framework</td>
-		<td>lib/liblogical/report_viewer</td>
-		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
-		<td>MA</td>
-		<td>make liblogical in root</td>
-		<td>&nbsp;</td>
-		<td>GTK+ version 2</td>
-		<td>&nbsp;</td>
-		<td>none</td>
-		<td width="55">&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
 		<td>NEW command line SQL statement dialect converter</td>
 		<td>sql_parse</td>
 		<td>Command line utility that converts SQL statements or files to other 
@@ -1071,7 +1063,7 @@ components </h2>
 		<td>none</td>
 		<td width="55">&nbsp;</td>
 		<td>Useful mostly for testing conversion or for external non-Aubit 
-		database tools</td>
+		database tools<p>Obsoletes 'convertsql'</td>
 	</tr>
 	<tr>
 		<td>OLD? help file decompiler</td>
@@ -1352,6 +1344,21 @@ components </h2>
 		<td>Primarily usefull for debugging and CGI type applications</td>
 	</tr>
 	<tr>
+		<td>And what is libHELP_std then??</td>
+		<td>libMSG_NATIVE</td>
+		<td>&nbsp;</td>
+		<td>lib/libmsg/msg_native</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>None</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
 		<td>Message and help files run-time handler plug-in</td>
 		<td>?? libHELP_std</td>
 		<td>Enables use of compiled help / message files in .iem/.hlp format 
@@ -1371,7 +1378,7 @@ components </h2>
 		<td>C language generation plug-in</td>
 		<td>libLEX_C</td>
 		<td>Used by compiler to create C code representation of x4GL program</td>
-		<td>lib/liblex/lex_c</td>
+		<td>lib/liblex/lex_c IS OBSOLETE!<p>lib/liblex/lex_esqlc</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
@@ -1386,7 +1393,7 @@ components </h2>
 		<td>C# language generation plug-in</td>
 		<td>libLEX_CS</td>
 		<td>Used by compiler to create C# code representation of x4GL program</td>
-		<td>&nbsp;</td>
+		<td>lib/liblex/lex_esqlc&nbsp;</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
@@ -1427,26 +1434,27 @@ components </h2>
 		<td>&nbsp;</td>
 		<td>none</td>
 		<td width="55">&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Currently broken - SWIG support out of date</td>
 	</tr>
 	<tr>
-		<td>Logical reports ... ??</td>
-		<td>libLOGREP_CSV</td>
-		<td>&nbsp;</td>
-		<td>lib/liblogical/csv</td>
+		<td>Logical Reports report viewer </td>
+		<td>report_viewer</td>
+		<td>GUI application that enables user to preview and initiate printing 
+        of reports created using Logical Reports framework</td>
+		<td>lib/liblogical/report_viewer</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>MA</td>
+		<td>make liblogical in root</td>
 		<td>&nbsp;</td>
+		<td>GTK+ version 2</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>None</td>
-		<td>&nbsp;</td>
-		<td>?</td>
+		<td>none</td>
 		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>Logical reports ??</td>
-		<td>&nbsp;</td>
+		<td>layout_engine</td>
 		<td>&nbsp;</td>
 		<td>lib/liblogical/layout_engine</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
@@ -1460,24 +1468,10 @@ components </h2>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>Logical reports PDF output plug-in</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>lib/liblogical/pdf</td>
-		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>PDF librearies</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td width="55">&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
 		<td>Logical reports ???</td>
 		<td>libLOGREPPROC_CSV<br>
-		libLOGREPPROC_TXT</td>
+		libLOGREPPROC_TXT<br>
+		libLOGREPPROC_PDF</td>
 		<td>&nbsp;</td>
 		<td>lib/liblogical/processor</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><br>
@@ -1512,9 +1506,11 @@ components </h2>
 	</tr>
 	<tr>
 		<td>Logical reports ???</td>
-		<td>libLOGREP_TXT</td>
+		<td>libLOGREP_CVS<br>
+        libLOGREP_TXT<br>
+        libLOGREP_PDF</td>
 		<td>&nbsp;</td>
-		<td>lib/liblogical/txt</td>
+		<td>lib/liblogical/txt, cvs, pdf</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
@@ -1558,7 +1554,7 @@ components </h2>
 	</tr>
 	<tr>
 		<td>MENUHANDLER type menus run-time support plug-in</td>
-		<td>&nbsp;</td>
+		<td>libMENU_XDR</td>
 		<td>Supports only menus compiled to Sun RPC XDR format</td>
 		<td>lib/libmenu/menu_xdr</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
@@ -1566,21 +1562,6 @@ components </h2>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>Sun RPC, GTK+ to use</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td width="55">&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>And what is libHELP_std then??</td>
-		<td>&nbsp;</td>
-		<td>libMSG_NATIVE</td>
-		<td>lib/libmsg/msg_native</td>
-		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>None</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td width="55">&nbsp;</td>
@@ -1603,9 +1584,9 @@ components </h2>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>Dup entry??</td>
-		<td>&nbsp;</td>
+		<td>??</td>
 		<td>libPACKER_MEMPACKED</td>
+		<td>??</td>
 		<td>lib/libpacker/mempacked</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
@@ -1619,8 +1600,9 @@ components </h2>
 	</tr>
 	<tr>
 		<td>Data packer plug-in, PACKED format</td>
-		<td>&nbsp;</td>
 		<td>libPACKER_PACKED</td>
+		<td>Used internally by plug-ins and compilers to create and read 
+        compiled representation of resource files</td>
 		<td>lib/libpacker/packed</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
@@ -1634,8 +1616,9 @@ components </h2>
 	</tr>
 	<tr>
 		<td>Data packer plug-in, Perl compatible format</td>
-		<td>&nbsp;</td>
 		<td>libPACKER_PERL</td>
+		<td>Used internally by plug-ins and compilers to create and read 
+        compiled representation of resource files</td>
 		<td>lib/libpacker/perl</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
@@ -1649,8 +1632,9 @@ components </h2>
 	</tr>
 	<tr>
 		<td>Data packer plug-in, Sun RPC (XDR) format</td>
-		<td>&nbsp;</td>
 		<td>libPACKER_XDR</td>
+		<td>Used internally by plug-ins and compilers to create and read 
+        compiled representation of resource files</td>
 		<td>lib/libpacker/xdr</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
@@ -1664,8 +1648,9 @@ components </h2>
 	</tr>
 	<tr>
 		<td>Data packer plug-in, simplified XML format</td>
-		<td>&nbsp;</td>
 		<td>libPACKER_XML</td>
+		<td>Used internally by plug-ins and compilers to create and read 
+        compiled representation of resource files</td>
 		<td>lib/libpacker/xml</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
@@ -1679,9 +1664,24 @@ components </h2>
 	</tr>
 	<tr>
 		<td>Dummy EXtended Reports plug-in</td>
+		<td>libEXREPORT_NOPDF</td>
 		<td>Enables execution of PDF enabled reports when PDF plug-in is not 
         available</td>
-		<td>libEXREPORT_NOPDF</td>
+		<td>lib/libpdf</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>None</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Primarily used for debugging</td>
+	</tr>
+	<tr>
+		<td>EXtended Reports plug-in for PDF</td>
+		<td>libEXREPORT_PDF</td>
+		<td>Enables creation of 4GL reports in PDF format</td>
 		<td>lib/libpdf</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
@@ -1695,9 +1695,9 @@ components </h2>
 	</tr>
 	<tr>
 		<td>Dummy RPC plug-in</td>
+		<td>libRPC_NORPC</td>
 		<td>Enables execution of RPC enabled programs when no RPC plug-ins are 
         available</td>
-		<td>libRPC_NORPC</td>
 		<td>lib/librpc/no_rpc</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
@@ -1711,9 +1711,9 @@ components </h2>
 	</tr>
 	<tr>
 		<td>SUN RPC plug-in</td>
+		<td>libRPC_XDR<p>&nbsp;</td>
 		<td>Plug-in enables communication between Sun RPC compatible 
         applications</td>
-		<td>libRPC_XDR</td>
 		<td>lib/librpc/sun_rpc</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
@@ -1747,9 +1747,9 @@ components </h2>
 	</tr>
 	<tr>
 		<td>XML-RPC plug-in</td>
+		<td>lib_RPC_XMLRPC</td>
 		<td>Enables Remote Procedure Calls between XML-RPC compatible 
         applications</td>
-		<td>lib_RPC_XMLRPC</td>
 		<td>lib/librpc/xml_rpc</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
@@ -1762,39 +1762,88 @@ components </h2>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
+		<td height="63">Compile-time ONLY native plug-in for PostgreSQL</td>
+		<td height="63">libSQL_c_ecpg</td>
+		<td height="63">Not sure it it has any use other to demonstrate use of 
+        &quot;simple&quot; template?</td>
+		<td height="63">lib/libsql/esqlc</td>
+		<td height="63">?</td>
+		<td height="63">&nbsp;</td>
+		<td height="63">&nbsp;</td>
+		<td height="63">&nbsp;</td>
+		<td height="63">PostgreSQL ecpg compiler</td>
+		<td height="63">&nbsp;</td>
+		<td height="63">&nbsp;</td>
+		<td width="55" height="63">Obsolete it?</td>
+		<td height="63">&nbsp;</td>
+	</tr>
+    <tr>
+		<td>Compile-time ONLY native plug-in for PostgreSQL</td>
+		<td>libSQL_pg</td>
+		<td>Used for database access by compilers, when compiling in EC output 
+        mode for PG ecpg compiler. Based on 'simple' template.</td>
+		<td>lib/libsql/postgresql</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>?? libSQL_c_ecpg ??</td>
+		<td>&nbsp;</td>
+		<td>PostgreSQL libraries (libpq)&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">Expand it for use at run-time?</td>
+		<td>&nbsp;</td>
+	</tr>
+    <tr>
+		<td>Prototype fully functional plug-in for PostgreSQL</td>
+		<td>libSQL_pg</td>
+		<td>Incomplete - written by Sergio Ferreira using C++</td>
+		<td>lib/libsql/postgresql</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>PostgreSQL libraries (libpq)and C++ compiler</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">Finish it</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Native mode Informix plug-in</td>
+		<td>libSQL_esql</td>
+		<td>Fully featured plug-in for native mode Informix database access. 
+        Also used by compilers when compiling in EC output mode for Informix 
+        ESQL/C compiler.&nbsp;</td>
 		<td>lib/libsql/esqlc</td>
-		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Informix esql compiler</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Native mode Ingres plug-in</td>
+		<td>libSQL_ingres</td>
+		<td>Plug-in for native mode Ingres database access</td>
 		<td>lib/libsql/ingres</td>
-		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>?</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Ingres esqlc compiler</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Dummy database plug-in</td>
 		<td>libSQL_nosql</td>
+		<td>Enables use of compiled programs with no database access</td>
 		<td>lib/libsql/nosql</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
@@ -1807,9 +1856,9 @@ components </h2>
 		<td>Primarily used for debugging&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Windows only ODBC manager plug-in</td>
 		<td>libSQL_odbc32</td>
+		<td>Enables database access via Windows ODBC manager</td>
 		<td>lib/libsql/odbc</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
@@ -1822,11 +1871,11 @@ components </h2>
 		<td>Windows only</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>iODBC manager database access plug-in</td>
+		<td>libSQL_iodbc</td>
+		<td>Enables database access via iODBC manager</td>
 		<td>lib/libsql/odbc</td>
-		<td>&nbsp;</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
@@ -1834,14 +1883,16 @@ components </h2>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td width="55">&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Using ODBC manger enables use of multiple database connections, even 
+        to different databases, but requires separate installation (and 
+        configuration) of an ODBC manager</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>UnixODBC manager database access plug-in</td>
+		<td>libSQL_unixodbc</td>
+		<td>Enables database access via UnixODBC manager</td>
 		<td>lib/libsql/odbc</td>
-		<td>&nbsp;</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
@@ -1849,14 +1900,15 @@ components </h2>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td width="55">&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>See above</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Informix ODBC plug-in</td>
+		<td>libSQL_ifxodbc</td>
+		<td>Enables Informix database access via ODBC API without using ODBC 
+        manager</td>
 		<td>lib/libsql/odbc</td>
-		<td>&nbsp;</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
@@ -1864,29 +1916,100 @@ components </h2>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td width="55">&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Be careful when editing ODBC configuration files for Informix ODBC - 
+        it is VERY sensitive to trailing spaces and special characters</td>
 	</tr>
 	<tr>
+		<td>Legacy SQLite access plug-in</td>
+		<td>libSQL_sqliteodbc</td>
+		<td>Enables access to external SQLite ODBC library</td>
+		<td>lib/libsql/odbc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>DATABASE statement name can include full path to SQLite database, 
+        otherwise, DBPATH is searched</td>
+		<td>SQLite ODBC library</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td width="55">Need a version of this plug-in for SQLite3</td>
+		<td>Needs SQLite db engine library</td>
+	</tr>
+    <tr>
+		<td>Legacy SQLite access plug-in (integrated with ODBC interface only) </td>
+		<td>libSQL_sqlite</td>
+		<td>Combines Aubit ODBC plug-in code and SQLite ODBC driver in one plug 
+        in, enabling access to SQLite database engine library</td>
+		<td>lib/libsql/odbc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>see above</td>
 		<td>None - SQLite ODBC API code is part of Aubit CVS</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td width="55">&nbsp;</td>
 		<td>Needs SQLite db engine library</td>
 	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+    <tr>
+		<td>Legacy SQLite access plug-in (integrated with ODBC interface and 
+        engine)</td>
+		<td>libSQL_sqliteS</td>
+		<td>Includes Aubit ODBC code, SQLite ODBC code, and SQLite database 
+        engine in single plug-in&nbsp;</td>
 		<td>lib/libsql/odbc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>see above</td>
+		<td>SQLite engine library</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Can be useful to provide database access without installing any 
+        additional database components, since it includes SQL engine.</td>
+	</tr>
+    <tr>
+		<td>SQLite access plug-in (integrated with ODBC interface only) </td>
+		<td>libSQL_sqlite3</td>
+		<td>Combines Aubit ODBC plug-in code and SQLite ODBC driver in one plug 
+        in, enabling access to SQLite database engine library</td>
+		<td>lib/libsql/odbc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>see above</td>
+		<td>None - SQLite3 ODBC API code is part of Aubit CVS</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Needs SQLite db engine library</td>
+	</tr>
+	<tr>
+		<td>Legacy SQLite access plug-in (integrated with ODBC interface and 
+        engine)</td>
+		<td>libSQL_sqlite3S</td>
+		<td>Includes Aubit ODBC code, SQLite ODBC code, and SQLite database 
+        engine in single plug-in</td>
+		<td>lib/libsql/odbc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>see above</td>
+		<td>SQLite3 engine library</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Can be useful to provide database access without installing any 
+        additional database components, since it includes SQL engine.</td>
+	</tr>
+	<tr>
+		<td>PostgreSQL ODBC plug-in</td>
+		<td>libSQL_pgodbc</td>
+		<td>Enables PostgreSQL database access via ODBC API without using ODBC 
+        manager</td>
+		<td>lib/libsql/odbc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
@@ -1897,16 +2020,34 @@ components </h2>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>Simple PostgreSQL access library (compile time only)</td>
-		<td>NOT- libESQL_POSTGRES<br>
-		libSQL_pg</td>
+		<td>Database connection manager</td>
+		<td>N/A</td>
+		<td>Prototype connection manager - to enable multiple concurent 
+        connections and multiple concurent database types support for all Aubit 
+        database plug-ins </td>
+		<td>lib/libsql</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
-		<td>lib/libsql/postgresql</td>
-		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">Implement it</td>
+		<td>Prototype sources written by Sergio Ferreira using C++ some 3 years 
+        ago</td>
+	</tr>
+	<tr>
+		<td>SAP DB (MySQL MaxDB) ODBC plug-in</td>
+		<td>libSQL_sapodbc</td>
+		<td>Enables SAP DB (MySQL MaxDB) database access via ODBC API without 
+        using ODBC manager</td>
+		<td>lib/libsql/odbc</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>SAP DB (MySQL MaxDB) ODBC library</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td width="55">&nbsp;</td>
@@ -1932,7 +2073,40 @@ components </h2>
 		<td align="center" bgcolor="#C0C0C0">Notes</td>
 	</tr>
 	<tr>
+		<td>Prototype native mode SAP DB (MySQL MaxDB) plug-in</td>
+		<td>N/A</td>
+		<td>&nbsp;<p>Collection of examples for accessing SAP DB from ESQL/C. To 
+        be used to create plug-in</td>
+		<td>lib/libsql/sapdb</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>SAP DB (MySQL MaxDB) ESQL/C compiler</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">Write the plug-in</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Compile-time ONLY &quot;schema-in-file&quot; plug-in </td>
+		<td>libSQL_FILESCHEMA</td>
+		<td>Enables compilation of 4GL programs that reference database using 
+        DEFINE ... LIKE statements, without database being accessible from 
+        compile machine</td>
+		<td>lib/libsql/schema_in_file</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>None</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td width="55">&nbsp;</td>
+		<td>Schema files can be created by hand, or using adbschema utility</td>
+	</tr>
+	<tr>
+		<td>SQL dialect input parser</td>
 		<td>libSQLPARSE_INFORMIX</td>
 		<td>Parses SQL statements in Informix dialect, to enable SQL dialect 
         translation</td>
@@ -1948,39 +2122,10 @@ components </h2>
 		<td>Currently the only input plug-in for SQL translation</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>lib/libsql/sapdb</td>
-		<td><img border="0" src="../images/star.gif" width="11" height="11"></td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>SAP DB (MySQL MaxDB) ESQL/C compiler</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td width="55">&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>libSQL_FILESCHEMA</td>
-		<td>&nbsp;</td>
-		<td>lib/libsql/schema_in_file</td>
-		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>None</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td width="55">&nbsp;</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
 		<td>Dummy SQL parse input plug-in</td>
 		<td>libSQLPARSE_NONE</td>
-		<td>&nbsp;</td>
+		<td>Enables usage of compiler when no other SQL parsing input plug-ins 
+        are available</td>
 		<td>lib/libsqlparse/none</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
@@ -2010,34 +2155,49 @@ components </h2>
 		<td>Especially usefull for CGI style applicationms</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Legacy TUI plug-in</td>
+		<td>libUI_TUI</td>
+		<td>Handles user interface in terminal mode</td>
 		<td>lib/libui/ui_curses</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>Ncurses or PDcurses library</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td width="55">&nbsp;</td>
+		<td width="55">Obsolete and remove</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td>libA4GL_glade ??<p>libUI_GLADE&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Glade UI support functions library</td>
+		<td>libA4GL_glade</td>
+		<td>Support library for Glade plug-in</td>
 		<td>lib/libui/ui_glade</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Internal use</td>
+		<td>GTK+ version 2, libGlade</td>
+		<td>none</td>
+		<td>none</td>
 		<td width="55">&nbsp;</td>
+		<td>Written in 4GL</td>
+	</tr>
+	<tr>
+		<td>Glade UI plug-in</td>
+		<td><p>libUI_GLADE&nbsp;</td>
+		<td>Enables usage of GLADE GUI layouts/forms (.glade XML files)</td>
+		<td>lib/libui/ui_glade</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>See ide1 and sqleditor examples in glade/ide</td>
+		<td>GTK+ version 2, libGlade</td>
+		<td>none</td>
+		<td>none</td>
+		<td width="55">&nbsp;</td>
+		<td>Use GLADE to create user interface files</td>
 	</tr>
 	<tr>
 		<td>GUI plug-in (block mode)</td>
@@ -2056,17 +2216,17 @@ components </h2>
 	</tr>
 	<tr>
 		<td>TUI plug-in</td>
-		<td>&nbsp;</td>
+		<td>libUI_HL_TUI</td>
 		<td>New generation UI plug-in using shared High Level library</td>
 		<td>lib/libui/ui_highlevel</td>
-		<td>&nbsp;</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>nCurses or PDcurses</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-		<td width="55">&nbsp;</td>
+		<td width="55">Finish testing so old one can be removed</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
@@ -2089,44 +2249,47 @@ components </h2>
 		<td align="center" bgcolor="#C0C0C0">Notes</td>
 	</tr>
 	<tr>
+		<td>Message-based user interface plug-in</td>
+		<td>libUI_client - UI plug-in<br>
+        libLL_server - server common functions support library </td>
+		<td>Prototype of massage based (thin clients) user interface </td>
+		<td>lib/libui/ui_highlevel/remote_client</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
+		<td>A4GL_UI=client</td>
 		<td>&nbsp;</td>
-		<td>lib/libui/ui_highlevel</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>see README</td>
 		<td>&nbsp;</td>
 		<td width="55">&nbsp;</td>
 		<td>&nbsp;</td>
 	</tr>
 	<tr>
 		<td>Aubit library scripting languages wrapper</td>
-		<td>&nbsp;</td>
+		<td>aubit4gl_pl.pm (Perl module)</td>
 		<td>Provides a wrapper for Aubit libaubit4gl to be accessed from 
-        scripting laguages</td>
+        scripting languages</td>
 		<td>lib/swig</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>'make perl' in root makefile</td>
 		<td>&nbsp;</td>
 		<td>SWIG toolset</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td width="55">&nbsp;</td>
-		<td>Currently used only for Aubit Perl output mode</td>
+		<td>Currently used only for Aubit programs compiled in Perl output mode 
+        and aace Perl runner. SWIG itself supports several scripting languages 
+        and Java</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
+		<td>Internal data structures libraries </td>
 		<td>libDATA_menu_list<br>
 		libDATA_module<br>
 		libDATA_report<br>
 		libDATA_struct_form</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>Used internaly</td>
+		<td>common/dataio</td>
 		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
@@ -2158,47 +2321,55 @@ components </h2>
 	<tr>
 		<td>CORBA APIs for Aubit plug-ins</td>
 		<td>N/A</td>
-		<td>CORBA midleware inserted between Aubit plug-in APIs (dlmagic)</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>CORBA middleware inserted between Aubit plug-in APIs (dlmagic)</td>
+		<td>lib/libui/ui_highlevel/makefile</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"></td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>ORBit</td>
+		<td>Find already written doc and make it public</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td width="55">&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">move to lib/libaubit4gl makefile; complete &amp; test</td>
+		<td>It compiles, but its not tested. Idea is that inserting CORBA 
+        between Aubit plug-ins and libaubit4gl would enable transparent n-tier 
+        functionality (hint- running UI_HL_GTK remotely = instant thin GUI 
+        client)</td>
 	</tr>
 	<tr>
 		<td>CORBA RPC middleware support</td>
 		<td>libRPC_CORBA</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>CORBA RPC plug-in; enables communication between any CORBA 
+        compatible applications</td>
+		<td>none</td>
+		<td>not started</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>ORBit</td>
+		<td>Find already written doc and make it public</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td width="55">&nbsp;</td>
-		<td>&nbsp;</td>
+		<td width="55">First modify 4glc to create idl files</td>
+		<td>Purpose is to enable 4GL programs to be callable and to be able to 
+        call Java, PHP, JSP, C# (pretty much anything) applications. It was also 
+        intention to modify 4glc to create .idl files when compiling 4GL code, 
+        therefore automatically creating an CORBA server out of every 4GL 
+        application. </td>
 	</tr>
 	<tr>
 		<td>MQ middleware support</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>libA4GL_MQ</td>
+		<td>Interface to IBM Websphere MQ middleware</td>
+		<td>tools/mq</td>
+		<td><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"></td>
+		<td>AF</td>
+		<td>make in home dir</td>
+		<td>See test_mq.4gl</td>
 		<td>IBM MQ toolset</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-		<td width="55">&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>See link to original article in test_mq.4gl</td>
+		<td>none</td>
+		<td width="55">Currently works only using I-4GL; </td>
+		<td>Written by Claus Samuelsen</td>
 	</tr>
 	<tr>
 		<td align="center" bgcolor="#C0C0C0">Functionality</td>
@@ -2358,7 +2529,7 @@ components </h2>
 	</tr>
 	<tr>
 		<td>Various tools in /tools directory</td>
-		<td>&nbsp;</td>
+		<td>...add here...</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
@@ -2708,6 +2879,18 @@ contact developers.</p>
 	&quot;mostly&quot; should be interpreted as: As far as we know, most if not all 
 	features are tested, but we never explicitly checked that, and there might 
 	be some less used features that are not covered by tests. </li>
+    <li>When &quot;Depends on&quot; column refers to a 3rd party package, in most cases 
+    both the standard package and development package are needed to compile the 
+    functionality. Aubit Autoconf script, &quot;configure&quot; checks for all 
+    prerequisites.</li>
+    <li>&quot;Build command&quot; column is usually just &quot;make&quot; in home directory, 
+    assuming that all dependencies are satisfied. Unless &quot;configure&quot; declares 
+    them found, make will probably not work.</li>
+    <li>Aubit Autoconf script (&quot;configure&quot; and its source file, configure.in) by 
+    default attempt to detect ALL dependencies for ALL Aubit components. All 
+    components that are found to have necessary dependencies satisfied, will 
+    automatically be included in default build. Therefore, user is not expected 
+    to build components individually.</li>
 </ul>
 <hr>
 <p align="center"><a href="../index.html">Aubit 4GL compiler home page</a></p>
