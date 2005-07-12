@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Test sqlerrd[3] is set after a fetch"
+desc: ; @echo "Another test for sqlerrd[3] not being set for a fetch"
 
 db_test: 				; @echo "1"
 ec_test: 				; @echo "0"
