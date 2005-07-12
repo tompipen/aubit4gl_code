@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.71 2005-06-18 09:56:56 mikeaubury Exp $
+# $Id: report.c,v 1.72 2005-07-12 15:15:40 mikeaubury Exp $
 #
 */
 
@@ -1687,6 +1687,7 @@ email_report (char *fname, char *fhint)
 
   //A4GL_push_char("mike.aubury@aubit.com"); // Normally username...
   A4GL_call_4gl_dll ("fgl_smtp", "send_report", 3);
+  printf("--->%d\n",a4gl_status);
   return 1;
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.113 2005-07-06 15:32:15 mikeaubury Exp $
+# $Id: curslib.c,v 1.114 2005-07-12 15:19:06 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: curslib.c,v 1.113 2005-07-06 15:32:15 mikeaubury Exp $";
+		"$Id: curslib.c,v 1.114 2005-07-12 15:19:06 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -3103,7 +3103,7 @@ int x;
 	abort_pressed=0;
 	A4GL_chkwin();
 
-	if (timeout) {
+	if (timeout!=-1) {
 		A4GL_has_timeout(timeout);
 	}
 
