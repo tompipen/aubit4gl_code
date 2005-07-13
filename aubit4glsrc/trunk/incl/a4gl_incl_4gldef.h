@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.85 2005-07-13 13:33:07 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.86 2005-07-13 13:34:39 mikeaubury Exp $
 */
 
 /**
@@ -135,7 +135,7 @@ extern "C"
     long memsize;	/**< Memory size */
     char filename[256];
     void *ptr;
-    void *loc_user_env;
+    char *loc_user_env;
   };
 
 
