@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.83 2005-07-06 15:32:16 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.84 2005-07-13 14:14:41 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.83 2005-07-06 15:32:16 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.84 2005-07-13 14:14:41 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1185,9 +1185,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
   A4GL_mja_pos_form_cursor (mform);
 
     blk=A4GL_has_evt_timeout(evt);
-    if (blk) {
-             return blk;
-    }
+    if (blk) { return blk; }
 
 
   // cc 2004.09.14 fprop may have been changed, always read it again
@@ -1586,8 +1584,11 @@ m_d2[1]=0;
         while (looping) {
 		pos_form_cursor(f);
       		A4GL_mja_refresh ();
-		a=A4GL_real_getch_swin (drwin);
-      		A4GL_mja_refresh ();
+		while (1) {
+			a=A4GL_real_getch_swin (drwin);
+			if (a) break;
+		}
+      		a4GL_mja_refresh ();
                 if (abort_pressed || a==A4GLKEY_INTERRUPT || a==A4GLKEY_CANCEL) {
 			A4GL_debug("Abort Pressed!");
 			break;

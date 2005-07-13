@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.117 2005-07-05 16:11:04 mikeaubury Exp $
+# $Id: newpanels.c,v 1.118 2005-07-13 14:14:42 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.117 2005-07-05 16:11:04 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.118 2005-07-13 14:14:42 mikeaubury Exp $";
 #endif
 
 /**
@@ -1319,7 +1319,10 @@ A4GL_getch_swin (WINDOW * window_ptr)
 
   while (1)
     {
+#ifdef USE_HALF_DELAY
+	A4GL_debug("HALF DELAY\n");
       halfdelay (5); 
+#endif
       a = getch (); // GETCH - getch_swin
       if (a==-1) {
 	      	cbreak();
