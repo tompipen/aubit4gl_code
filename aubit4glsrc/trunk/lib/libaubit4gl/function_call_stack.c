@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.22 2005-07-14 11:32:51 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.23 2005-07-14 12:51:06 mikeaubury Exp $
 #*/
 
 /**
@@ -214,7 +214,7 @@ A4GLSTK_popFunction (void)
 char * A4GLSTK_topFunction (void)
 {
 	if (functionCallPointer) {
-		return functionCallStack[functionCallPointer-1].functionName;
+		return (char *)functionCallStack[functionCallPointer-1].functionName;
 	} else {
 		return "MAIN";
 	}
