@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.12 2005-06-08 08:26:57 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.13 2005-07-14 10:36:04 mikeaubury Exp $
 }
 
 {**
@@ -426,7 +426,7 @@ int a;
 char ds[2];
 nn=n;
 
-px=(char **)malloc(sizeof(char *)*n);
+px=(char **)acl_malloc2(sizeof(char *)*n);
 while (nn) {
 		nn--;
 		ptr2=A4GL_char_pop();
@@ -435,7 +435,7 @@ while (nn) {
 		px[nn]=ptr2;
 }
 
-ptr=(char *)malloc(l);
+ptr=(char *)acl_malloc2(l);
 handle=px[0];
 A4GL_trim(handle);
 
