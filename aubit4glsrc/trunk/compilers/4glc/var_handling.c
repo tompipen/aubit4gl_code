@@ -14,9 +14,9 @@ new_variable_usage (struct variable_usage *old, char *partname, char prepend)
 {
   struct variable_usage *newv;
   int a;
-  newv = malloc (sizeof (struct variable_usage));
+  newv = acl_malloc2 (sizeof (struct variable_usage));
 
-  newv->variable_name = strdup (partname);
+  newv->variable_name = acl_strdup (partname);
   newv->nsubscripts = 0;
   for (a = 0; a < 10; a++)
     {
@@ -67,7 +67,7 @@ append_variable_usage (struct variable_usage *old,
 void
 set_variable_usage_subscript (struct variable_usage *var, int sub, char *val)
 {
-  var->subscripts[sub] = strdup (val);
+  var->subscripts[sub] = acl_strdup (val);
   if (sub >= var->nsubscripts)
     {
       var->nsubscripts = sub + 1;
@@ -83,7 +83,7 @@ set_variable_usage_substr (struct variable_usage *var, int sub, char *val)
       a4gl_yyerror ("Substring expression expected to be start or start,end");
       return;
     }
-  var->substrings[sub] = strdup (val);
+  var->substrings[sub] = acl_strdup (val);
   if (sub >= var->nsubstrings)
     {
       var->nsubstrings = sub + 1;
@@ -259,8 +259,8 @@ struct num_list *
 new_num_list_item (char *s)
 {
   struct num_list *nl;
-  nl = malloc (sizeof (struct num_list));
-  nl->num = strdup (s);
+  nl = acl_malloc2 (sizeof (struct num_list));
+  nl->num = acl_strdup (s);
   nl->next = 0;
   return nl;
 }

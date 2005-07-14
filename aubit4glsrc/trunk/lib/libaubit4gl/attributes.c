@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.33 2005-06-27 20:40:56 mikeaubury Exp $
+# $Id: attributes.c,v 1.34 2005-07-14 11:32:51 mikeaubury Exp $
 #*/
 
 /**
@@ -376,14 +376,14 @@ int a;
 int nattr;
 int attr=0;
 char *b2;
-buff=strdup(s);
+buff=acl_strdup(s);
 ptr=buff;
 A4GL_debug("Got str attr as : %s",s);
-for (a=0;a<=strlen(s);a++) {
+for (a=0;a<=(int)strlen(s);a++) {
 	if (buff[a]==' '||buff[a]==','||buff[a]==0) {
 			// We've come to the end of a token..
 			buff[a]=0;
-			b2=strdup(ptr);
+			b2=acl_strdup(ptr);
 			A4GL_trim(b2);
 			if (strlen(b2)) {
 				A4GL_debug("Checking : %s\n",b2);

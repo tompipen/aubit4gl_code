@@ -181,7 +181,7 @@ wc_strdup (char *buff)
       return 0;
     }
   n = (len + 10) * sizeof (wchar_t);
-  wp = (wchar_t *) malloc (n);
+  wp = (wchar_t *) acl_malloc2 (n);
   len = mbstowcs (wp, buff, n);
   wp[len] = 0;
   if (len)

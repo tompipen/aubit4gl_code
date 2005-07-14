@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.85 2005-07-12 12:44:49 mikeaubury Exp $
+# $Id: builtin.c,v 1.86 2005-07-14 11:32:51 mikeaubury Exp $
 #
 */
 
@@ -329,8 +329,8 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
     acl_free (np);
   if (np2 != 0)
     acl_free (np2);
-  np = strdup (ca);
-  np2 = strdup (ca);
+  np = acl_strdup (ca);
+  np2 = acl_strdup (ca);
 
 
 if (b) {
@@ -340,8 +340,8 @@ if (b) {
 		free(np);
 		free(np2);
 	
-		np=malloc((size_t) (b - a + 2));
-		np2=malloc((size_t) (b - a + 2));
+		np=acl_malloc2((size_t) (b - a + 2));
+		np2=acl_malloc2((size_t) (b - a + 2));
 		memset(np,0,(size_t)(b - a + 2));
 		memset(np2,0,(size_t)(b - a + 2));
 		strcpy(np,ca);
@@ -369,9 +369,9 @@ if (b) {
 #endif
       //printf("PAD\n");
       free (np);
-      np = malloc ((size_t) DECODE_SIZE (dtype) + 1);
+      np = acl_malloc2 ((size_t) DECODE_SIZE (dtype) + 1);
       free (np2);
-      np2 = malloc ((size_t) DECODE_SIZE (dtype) + 1);
+      np2 = acl_malloc2 ((size_t) DECODE_SIZE (dtype) + 1);
 		memset(np,0,(size_t) DECODE_SIZE (dtype) + 1);
 		memset(np2,0,(size_t) DECODE_SIZE (dtype) + 1);
 	
@@ -400,7 +400,7 @@ if (b) {
 
   A4GL_debug ("a=%d b-a+1=%d",a,b-a+1);
 
-  strncpy (np2, &np[a], b - a + 1);
+  strncpy (np2, &np[a], (long)(b - a + 1));
   np2[b - a + 1] = 0;
 #ifdef DEBUG
   {
@@ -1010,7 +1010,7 @@ aclfgli_str_to_id (char *name)
 
   strcpy (buff, name);
   A4GL_trim (buff);
-  ptr=strdup(buff);
+  ptr=acl_strdup(buff);
   A4GL_add_pointer(name,ACLFGLI_STR_TO_ID,ptr);
   return ptr;
 }

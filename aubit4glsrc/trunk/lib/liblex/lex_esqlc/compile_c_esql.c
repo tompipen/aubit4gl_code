@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.120 2005-06-16 19:21:11 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.121 2005-07-14 11:32:54 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,8 +32,10 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.120 2005-06-16 19:21:11 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.121 2005-07-14 11:32:54 mikeaubury Exp $";
 #endif
+extern int yylineno;
+
 
 /**
  * @file
@@ -133,12 +135,11 @@ static void A4GL_save_sql(char *s,char *s2) {
 static int sqlcnt=0;
 char *buff;
 int a;
-extern int yylineno;
 if (A4GL_isyes(acl_getenv("A4GL_EC_LOGSQL"))) {
 	if (s2==0) {
 		buff=strdup(s);
 	} else {
-		buff=malloc(strlen(s)+strlen(s2));
+		buff=acl_malloc2(strlen(s)+strlen(s2));
 		sprintf(buff,s,s2);
 	}
 	printh("char _sql_stmt_%d[]={\n",sqlcnt);
@@ -578,7 +579,7 @@ LEXLIB_print_prepare (char *xstmt, char *sqlvar)
   printc ("\nEXEC SQL END DECLARE SECTION;\n");
   clr_suppress_lines();
 
-  printc ("_s=strdup(CONVERTSQL(%s));\n", sqlvar);
+  printc ("_s=strdup(CONVERTSQL_LN(%s,%d));\n", sqlvar,yylineno);
 
   if (A4GL_strstartswith(stmt,"aclfgli_str_to_id")) { 
 		printc ("_sid=%s;\n",xstmt); 
@@ -1252,7 +1253,7 @@ LEXLIB_print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 			char *sstr;
 			printc("/* preparing insert used on declare cursor - faking insert cursor */");
 			sprintf(buff,"\"p_a4gl_%d\"",pcnt++);
-			sstr=malloc(strlen(a2)+2000);
+			sstr=acl_malloc2(strlen(a2)+2000);
 			sprintf(sstr,"\"%s\"",a2);
         		for (aa=0;aa<strlen(sstr);aa++) {
                 		if (strncmp(&sstr[aa],":_vi_",5)==0) {
@@ -1568,7 +1569,7 @@ int b=0;
 static char *ptr=0;
 if (ptr) free(ptr);
 
-ptr=malloc(strlen(s)+1000);
+ptr=acl_malloc2(strlen(s)+1000);
 for (a=0;a<strlen(s);a++) {
 	if (s[a]=='"'&&s[a-1]!='\\') ptr[b++]='\\';
 	ptr[b++]=s[a];
@@ -2256,7 +2257,7 @@ static int ncnt=0;
 void *ptr;
 extern char buff_in[];
 	sprintf(cname,"aclfgl_c%d_%d",type,ncnt++);
-        buffer=malloc(255+strlen(sql));
+        buffer=acl_malloc2(255+strlen(sql));
 
         ptr=A4GL_new_expr("{ EXEC SQL BEGIN DECLARE SECTION;/*6*/\nint _npc;short _npi;char _np[256];\nEXEC SQL END DECLARE SECTION;");
 

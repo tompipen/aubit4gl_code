@@ -15,6 +15,8 @@
 #endif
 
 #include "npcode_defs.h"
+#include "a4gl_memhandling.h"
+
 //#include "a4gl_incl_4glhdr.h"
 extern module this_module;
 #define FglMoney long
@@ -131,9 +133,9 @@ run_module ()
   fprintf (logfile, "Running 'main' - function no %d\n", a);
 
   main_params.param_type = PARAM_TYPE_LIST;
-  main_params.param_u.p_list = malloc (sizeof (struct param_list));
+  main_params.param_u.p_list = acl_malloc2 (sizeof (struct param_list));
   main_params.param_u.p_list->list_param_id.list_param_id_len = 1;
-  main_params.param_u.p_list->list_param_id.list_param_id_val = malloc(sizeof(long));
+  main_params.param_u.p_list->list_param_id.list_param_id_val = acl_malloc2(sizeof(long));
   param_id=nset_param(&main_params_2,99);
   main_params.param_u.p_list->list_param_id.list_param_id_val[0]=param_id;
   main_params_2.param_type = PARAM_TYPE_LITERAL_INT;
@@ -381,3 +383,6 @@ main (int argc, char *argv[])
 
   exit (open_and_run (argv[1]));
 }
+
+
+

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.102 2005-07-06 15:32:16 mikeaubury Exp $
+# $Id: iarray.c,v 1.103 2005-07-14 11:32:56 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.102 2005-07-06 15:32:16 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.103 2005-07-14 11:32:56 mikeaubury Exp $";
 #endif
 
 /**
@@ -1597,7 +1597,7 @@ A4GL_init_control_stack (struct s_inp_arr *sio, int malloc_data)
 // Do we need to allocate the storage area ?
   if (malloc_data)
     {
-      sio->fcntrl = malloc (sizeof (struct s_formcontrol) * 10);
+      sio->fcntrl = acl_malloc2 (sizeof (struct s_formcontrol) * 10);
       sio->fcntrl_cnt = 0;
     }
 
@@ -2514,7 +2514,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 		  w = A4GL_get_field_width (arr->currentfield);
 		  has_picture = 1;
 		  picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
-		  ptr = malloc (w + 1);
+		  ptr = acl_malloc2 (w + 1);
 		  strncpy (ptr, cptr, w);
 		  ptr[w] = 0;
 

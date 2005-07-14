@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.40 2005-07-05 12:03:31 mikeaubury Exp $
+# $Id: ui.c,v 1.41 2005-07-14 11:32:52 mikeaubury Exp $
 #
 */
 
@@ -521,7 +521,7 @@ void *tos_ptr;
 char *ptr;
 char *buff=0;
 int ls;
-  s = malloc (2);
+  s = acl_malloc2 (2);
   s[0] = 0;
 
   for (z = n -1; z >=0 ; z--)
@@ -546,7 +546,7 @@ A4GL_debug("z=%d n=%d\n",z,n);
           //if (ptr != 0) { A4GL_drop_param (); }
 
 
-		if (ptr) ptr=strdup(ptr);
+		if (ptr) ptr=acl_strdup(ptr);
 
         } 
 
@@ -563,9 +563,9 @@ A4GL_debug("z=%d n=%d\n",z,n);
 			strcpy(buff,&ptr[1]);
 			a=atoi(buff);
 			free(ptr);
-			ptr=strdup(A4GL_linemode_goto_column(a));
+			ptr=acl_strdup(A4GL_linemode_goto_column(a));
 		} else {
-			ptr=strdup("");
+			ptr=acl_strdup("");
 		}
 
 	}
@@ -805,7 +805,7 @@ int A4GL_add_gui_id_name(char *s) {
 	if (id==-1) {
 		gui_id_names_cnt++;
 		gui_id_names=realloc(gui_id_names,sizeof(char *)*gui_id_names_cnt);
-		gui_id_names[gui_id_names_cnt-1]=strdup(s);
+		gui_id_names[gui_id_names_cnt-1]=acl_strdup(s);
 		return gui_id_names_cnt-1;
 	}
 	return id;
@@ -977,5 +977,4 @@ void A4GL_evt_not_idle(struct aclfgl_event_list *evt) {
 	}
 }
 
-//*************************************************************************
 /* ============================= EOF ================================ */

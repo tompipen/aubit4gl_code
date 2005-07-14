@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.11 2005-06-28 14:35:24 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.12 2005-07-14 11:32:51 mikeaubury Exp $
 #
 */
 
@@ -334,7 +334,7 @@ We can end up with problems with overlapping - eg
 
 	if (sdest>sizeof(char *)) { // We do this one...
 	      va_start (args, fmt);
-	      c=malloc(sdest);
+	      c=acl_malloc2(sdest);
 	      x=vsnprintf(c,sdest,fmt,args);
 	      if (x>=sdest) {
                 sprintf(buff,"sprintf trying to exceed allocated space @ %s (line %d)",f,l);

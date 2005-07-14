@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.129 2005-07-07 15:51:07 mikeaubury Exp $
+# $Id: sql.c,v 1.130 2005-07-14 11:32:56 mikeaubury Exp $
 #
 */
 
@@ -763,7 +763,7 @@ A4GLSQL_prepare_sql_internal (char *s)
 #ifdef DEBUG
   A4GL_debug ("prepare_sql : %s", s);
 #endif
-  sid = malloc (sizeof (struct s_sid));
+  sid = acl_malloc2 (sizeof (struct s_sid));
 #ifdef DEBUG
   A4GL_debug ("Malloced sid=%p", sid);
 #endif
@@ -884,7 +884,7 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, 
   ibind = vibind;
   obind = vobind;
 
-  sid = malloc (sizeof (struct s_sid));
+  sid = acl_malloc2 (sizeof (struct s_sid));
   sid->select = strdup (s);
   sid->ibind = ibind;
   A4GL_debug ("sid->ni=%d", ni);
@@ -950,7 +950,7 @@ A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind)	/* mja */
   struct BINDING *ibind;
   ibind = vibind;
   A4GL_debug ("prepare_glob_sql '%s' %p %d", s, ibind, ni);
-  sid = malloc (sizeof (struct s_sid));
+  sid = acl_malloc2 (sizeof (struct s_sid));
   sid->select = strdup (s);
   sid->ibind = ibind;
 
@@ -1028,9 +1028,9 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *c
 	      scroll, cursname);
 #endif
 
-  cid = malloc (sizeof (struct s_cid));
+  cid = acl_malloc2 (sizeof (struct s_cid));
 
-  nsid = malloc (sizeof (struct s_sid));
+  nsid = acl_malloc2 (sizeof (struct s_sid));
   A4GL_debug ("Malloced nsid & cid");
 #ifdef DEBUG
   A4GL_debug ("sid=%p", sid);
@@ -1343,7 +1343,7 @@ A4GL_debug("XXX s=%s ni=%d ibind=%p",s,ni,ibind);
 #ifdef DEBUG
       A4GL_debug ("We dont have a binding - but I'll make one");
 #endif
-      b = malloc (sizeof (struct BINDING) * ni);
+      b = acl_malloc2 (sizeof (struct BINDING) * ni);
 
       for (a = ni - 1; a >= 0; a--)
 	{
@@ -1815,7 +1815,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName_f)
       hh = A4GL_find_pointer_val ("default", SESSCODE);
       if (hh == 0)
 	{
-	  hh = malloc (sizeof (HDBC));
+	  hh = acl_malloc2 (sizeof (HDBC));
 	}
       *hh = hdbc;
       A4GL_add_pointer ("default", SESSCODE, hh);
@@ -2781,7 +2781,7 @@ ensure_as_char();
       int dtype;
       double d;
       ptr = bind->ptr;
-      p = malloc (sizeof (double));
+      p = acl_malloc2 (sizeof (double));
       dtype = bind->dtype + ENCODE_SIZE (bind->size);
       A4GL_push_variable (bind->ptr, dtype);
       d = A4GL_pop_double ();
@@ -2808,7 +2808,7 @@ ensure_as_char();
   		rc = A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype], size, k, bind->ptr, &nullval);
 	} else {
 		SQLINTEGER *sz;
-		sz=malloc(sizeof(SQLINTEGER));
+		sz=acl_malloc2(sizeof(SQLINTEGER));
 		*sz=size_c;
 		set_extra_data(hstmt,1,pos, SE_NULLPTR,(void *)sz);
   		rc = A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype], size, k, bind->ptr, sz);
@@ -3915,7 +3915,7 @@ A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr,
   if (A4GLSQL_make_connection (dsn, u, p))
     {
       /* do we have an existing pointer to default */
-      hh = malloc (sizeof (HDBC));
+      hh = acl_malloc2 (sizeof (HDBC));
       A4GL_add_pointer (sessname, SESSCODE, hh);
       *hh = hdbc;
 
@@ -4156,7 +4156,7 @@ A4GL_bind_date (long *ptr_to_date_var)
 {
   ACLDATE *ptr;
 
-  ptr = malloc (sizeof (ACLDATE));
+  ptr = acl_malloc2 (sizeof (ACLDATE));
 #ifdef DEBUG
   A4GL_debug ("Binding date for %p", ptr_to_date_var);
 #endif
@@ -4178,7 +4178,7 @@ A4GL_bind_datetime (void *ptr_to_dtime_var)
 {
   ACLDTIME *ptr;
 
-  ptr = malloc (sizeof (ACLDTIME));
+  ptr = acl_malloc2 (sizeof (ACLDTIME));
 
 ensure_as_char();
 if (dtime_as_char) {
@@ -4201,7 +4201,7 @@ void * A4GL_bind_interval (void *ptr_to_ival)
 {
   ACLIVAL *ptr;
 
-  ptr = malloc (sizeof (ACLIVAL));
+  ptr = acl_malloc2 (sizeof (ACLIVAL));
   strcpy (ptr->ival_u.ival_c, "");
   ptr->ptr = ptr_to_ival;
   return (void *) ptr;

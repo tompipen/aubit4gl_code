@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: tables.c,v 1.7 2005-03-09 15:14:28 mikeaubury Exp $
+# $Id: tables.c,v 1.8 2005-07-14 11:32:49 mikeaubury Exp $
 #*/
 
 /**
@@ -136,10 +136,10 @@ add_select_column (char *colname, char *alias)
 char buff2[256];
 char buff3[256];*/
   /*printf("Adding  %s %s\n",colname,alias); */
-  ptr = malloc (sizeof (struct select_columns));
+  ptr = acl_malloc2 (sizeof (struct select_columns));
   ptr->table = 0;
-  ptr->column = strdup (colname);
-  ptr->alias = strdup (alias);
+  ptr->column = acl_strdup (colname);
+  ptr->alias = acl_strdup (alias);
   ptr->next = 0;
   if (sel_col_start == 0)
     {
@@ -201,9 +201,9 @@ add_column (struct table *table, char *colname, int size, int dtype)
 {
   struct column *col;
   struct column *ptr;
-  ptr = malloc (sizeof (struct column));
+  ptr = acl_malloc2 (sizeof (struct column));
 
-  ptr->colname = strdup (colname);
+  ptr->colname = acl_strdup (colname);
   ptr->size = size;
   ptr->dtype = dtype;
   ptr->next = 0;
@@ -234,11 +234,11 @@ int
 ace_add_table (char *tabname, char *alias)
 {
   struct table *ptr;
-  ptr = malloc (sizeof (struct table));
+  ptr = acl_malloc2 (sizeof (struct table));
   ptr->next = 0;
   ptr->first_col = 0;
-  ptr->tablename = strdup (tabname);
-  ptr->alias = strdup (alias);
+  ptr->tablename = acl_strdup (tabname);
+  ptr->alias = acl_strdup (alias);
 
   if (last_table == 0)
     {

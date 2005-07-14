@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.21 2005-05-15 09:01:10 mikeaubury Exp $
+# $Id: datatypes.c,v 1.22 2005-07-14 11:32:51 mikeaubury Exp $
 #
 */
 
@@ -346,7 +346,7 @@ A4GL_add_datatype_function_i (int a, char *funcname, void *func)
 			      1) * sizeof (struct dtype_functions *));
 
   dtypes[a].funcs[dtypes[a].funcs_len] =
-    malloc (sizeof (struct dtype_functions));
+    acl_malloc2 (sizeof (struct dtype_functions));
   dtypes[a].funcs[dtypes[a].funcs_len]->name = funcname;
   dtypes[a].funcs[dtypes[a].funcs_len]->function = func;
 

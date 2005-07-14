@@ -11,6 +11,7 @@
 #endif
 
 #include "npcode_defs.h"
+#include "a4gl_memhandling.h"
 #include <string.h>
 
 
@@ -145,7 +146,7 @@ set_master_set (long e_i)
 //struct param *set;
 
   struct use_variable *uv;
-  uv = malloc (sizeof (struct use_variable));
+  uv = acl_malloc2 (sizeof (struct use_variable));
   uv->variable_id = master_variable->variable_id;
   uv->defined_in_block_pc = vstack_pc[vstack_cnt - 1];
 
@@ -170,7 +171,7 @@ add_variable (int type, struct variable_element *e, char *id, long set_i) // @to
   struct npvariable *v;
   struct cmd_block *base;
 
-  v = malloc (sizeof (struct npvariable));
+  v = acl_malloc2 (sizeof (struct npvariable));
   A4GL_debug ("Add variable .. %s type=%d \n", id, type);
 
   master_variable = v;
@@ -374,7 +375,7 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
   struct use_variable_sub *sub = 0;
 
 
-  u = malloc (sizeof (struct use_variable));
+  u = acl_malloc2 (sizeof (struct use_variable));
   A4GL_debug ("Use variable... %d\n", p_i);
 
   u->indirection = indirection;
@@ -402,7 +403,7 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
  
 // command = &this_module.functions.functions_val[this_module.functions.  functions_len - 1].cmds.cmds_val[p->param_u.  uv-> defined_in_block_pc];
 	 
-	  sub = malloc (sizeof (struct use_variable_sub));
+	  sub = acl_malloc2 (sizeof (struct use_variable_sub));
 	  sub->x1element = -1;
 	  sub->x1subscript_param_id[0] = arr_i1;
 	  sub->x1subscript_param_id[1] = arr_i2;
@@ -534,7 +535,7 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
       parent->sub.sub_val =
 	realloc (parent->sub.sub_val,
 		 sizeof (struct use_variable_sub) * parent->sub.sub_len);
-      sub = malloc (sizeof (struct use_variable_sub));
+      sub = acl_malloc2 (sizeof (struct use_variable_sub));
 
 
       sub->x1element = next_element;
@@ -568,7 +569,7 @@ struct variable_element *
 param_variable (char *dtype, char *name, struct param *size)
 {
   struct variable_element *n;
-  n = malloc (sizeof (struct variable_element));
+  n = acl_malloc2 (sizeof (struct variable_element));
   n->name_id = add_id (name);
   n->dtype = get_dtype (dtype);
   n->arr_size = size;
@@ -634,7 +635,7 @@ struct variable_element *
 new_variable_element_string (char *s)
 {
   struct variable_element *n;
-  n = malloc (sizeof (struct variable_element));
+  n = acl_malloc2 (sizeof (struct variable_element));
   n->name_id = -1;
   n->dtype = get_dtype (s);
   n->unit_size = 0;
@@ -679,7 +680,7 @@ new_variable_struct (struct define_variables *v)
   struct variable_element *n;
   int a;
   int s = 0;
-  n = malloc (sizeof (struct variable_element));
+  n = acl_malloc2 (sizeof (struct variable_element));
   n->name_id = -1;
   n->dtype = DSTRUCT;
   n->i_arr_size[0] = 0;
@@ -694,7 +695,7 @@ new_variable_struct (struct define_variables *v)
   if (v->var_len)
     {
       n->next.next_val =
-	malloc (sizeof (struct variable_element) * n->next.next_len);
+	acl_malloc2 (sizeof (struct variable_element) * n->next.next_len);
       for (a = 0; a < v->var_len; a++)
 	{
 	  int arr;
@@ -733,7 +734,7 @@ make_named_struct (char *name, struct define_variables *v)
   named_structs =
     realloc (named_structs,
 	     sizeof (struct define_variables) * named_structs_cnt);
-  named_structs[named_structs_cnt - 1].name = strdup (name);
+  named_structs[named_structs_cnt - 1].name = acl_strdup (name);
   named_structs[named_structs_cnt - 1].v = v;
 
 }
@@ -803,9 +804,9 @@ add_default_struct_list (struct define_variables *v,
 
   if (v == 0)
     {
-      v = malloc (sizeof (struct define_variables));
+      v = acl_malloc2 (sizeof (struct define_variables));
       v->var_len = 1;
-      v->var_val = malloc (sizeof (struct variable_element));
+      v->var_val = acl_malloc2 (sizeof (struct variable_element));
     }
   else
     {

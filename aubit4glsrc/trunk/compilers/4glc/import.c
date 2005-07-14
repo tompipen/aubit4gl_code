@@ -24,8 +24,8 @@ a=has_file(s);
 if (a==-1) {
 	a=nfiles;
 	nfiles++;
-	files=realloc(files,sizeof(struct file_description)*nfiles);
-	files[nfiles-1].name=strdup(s);
+	files=acl_realloc(files,sizeof(struct file_description)*nfiles);
+	files[nfiles-1].name=acl_strdup(s);
 	files[nfiles-1].list=0;
 	files[nfiles-1].nlist=0;
 }
@@ -60,13 +60,13 @@ static int add_function(int n, char *func,int type,char *special) {
 	
 	nlist=files[n].nlist;
 	files[n].nlist++;
-	files[n].list=realloc(files[n].list,(nlist+1)*sizeof(struct flist));
+	files[n].list=acl_realloc(files[n].list,(nlist+1)*sizeof(struct flist));
 
 
-	files[n].list[nlist].name=strdup(func);
+	files[n].list[nlist].name=acl_strdup(func);
 	files[n].list[nlist].type=type;
 	if (special) {
-		files[n].list[nlist].special=strdup(special);
+		files[n].list[nlist].special=acl_strdup(special);
 	} else {
 		files[n].list[nlist].special=0;
 	}

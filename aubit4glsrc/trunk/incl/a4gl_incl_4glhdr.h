@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.35 2005-06-09 06:09:34 pjfalbe Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.36 2005-07-14 11:32:50 mikeaubury Exp $
 */
 
 /**
@@ -134,9 +134,7 @@ extern "C"
 #define ENCODE_SIZE(x) (x<<16)
 #define DECODE_SIZE(x) (x>>16)
 
-
-#define acl_free(s) acl_free_full(s,__FILE__,__LINE__)
-#define acl_malloc(a,b) acl_malloc_full(a,b,__FILE__,__LINE__)
+#include "a4gl_memhandling.h"
 
 #define GETSETNEW -1
 #define GETSETRM -2

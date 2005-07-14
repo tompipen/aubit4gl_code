@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.20 2005-07-14 06:28:33 mikeaubury Exp $
+# $Id: util.c,v 1.21 2005-07-14 11:32:50 mikeaubury Exp $
 #
 */
 
@@ -123,7 +123,7 @@ make_sql_string_and_free (char *first, ...)
 
   n = 0;
   va_start (ap, first);
-  ptr = strdup (first);
+  ptr = acl_strdup (first);
 
 
         if (first!=kw_comma && first!=kw_space && first!=kw_ob && first!=kw_cb) {
@@ -347,8 +347,10 @@ static void A4GL_lex_printcomment (char *fmt,...) { }
  *
  * @todo Describe function
  */
-static void addmap (char *s,char *f,char *m,int lno,char *fname) { 
- 	printf("'%s' '%s' '%s' '%d' '%s'\n",s,f,m,lno,fname);
+static void addmap_runtime (char *s,char *f) { 
+	char buff[1024];
+ 	sprintf(buff,"%s|%s|%s|%d|%s|",s,f,A4GLSTK_topFunction(),m_ln,m_module);
+	A4GL_log_sql_prepared_map(buff);
 } 
 
 /**
@@ -465,7 +467,7 @@ static void
 A4GLSQLCV_setbuffer(char *s) {
 	if (nbs) yy_delete_buffer(nbs);
 	if (Sql) free(Sql);
-	Sql=strdup(s);
+	Sql=acl_strdup(s);
 	A4GL_trim(Sql);
 	nbs=yy_scan_string(Sql);
 	if (stmts) { free(stmts); stmts=0;stmts_cnt=0; }
@@ -590,7 +592,7 @@ static void
 A4GL_CV_print_exec_sql(char *s) {
 	sql_type=1;
 	if (sql_string) sql_string=0;
-	sql_string=strdup(s);
+	sql_string=acl_strdup(s);
 	add_sql(sql_type,sql_string);
 }
 
@@ -603,12 +605,12 @@ static void
 A4GL_CV_print_exec_sql_bound(char *s) {
 	sql_type=2;
 	if (sql_string) sql_string=0;
-	sql_string=strdup(s);
+	sql_string=acl_strdup(s);
 	add_sql(sql_type,sql_string);
 }
 /* andrej 
 static void print_exec_sql_bound (char *s) {
-	add_sql(8,strdup(s));
+	add_sql(8,acl_strdup(s));
         free(s);
 }
 */
@@ -621,13 +623,13 @@ char s[256];
 		sprintf(s,"DATABASE %s",conn);
 		sql_type=3;
 		if (sql_string) sql_string=0;
-		sql_string=strdup(s);
+		sql_string=acl_strdup(s);
 		add_sql(sql_type,sql_string);
 	} else {
 		sprintf(s,"DATABASE %s",conn);
 		sql_type=3;
 		if (sql_string) sql_string=0;
-		sql_string=strdup(s);
+		sql_string=acl_strdup(s);
 		add_sql(sql_type,sql_string);
 	}
 }
@@ -661,17 +663,17 @@ print_sql_commit (int n) {
 char *s=0;
   if (n==-1) {
 	sql_type=3;
-    	s=strdup("BEGIN WORK");
+    	s=acl_strdup("BEGIN WORK");
 	add_sql(sql_type,s);
   }
   if (n==0) {
 	sql_type=4;
-    	s=strdup("ROLLBACK WORK");
+    	s=acl_strdup("ROLLBACK WORK");
 	add_sql(sql_type,s);
   }
   if (n==1) {
 	sql_type=5;
-    	s=strdup("COMMIT WORK");
+    	s=acl_strdup("COMMIT WORK");
 	add_sql(sql_type,s);
   }
 
@@ -686,7 +688,7 @@ char *s=0;
 /* andrej
 static void 
 print_select_all (char *s) {
-	add_sql(6,strdup(s));
+	add_sql(6,acl_strdup(s));
     	free(s);
 }
 */
@@ -697,7 +699,7 @@ print_select_all (char *s) {
  */
 static void 
 print_exec_sql (char *s) {
-	add_sql(7,strdup(s));
+	add_sql(7,acl_strdup(s));
 	free(s);
 }
 
@@ -707,7 +709,7 @@ print_exec_sql (char *s) {
  */
 static void 
 print_exec_select (char *s)    {
-	add_sql(9,strdup(s));
+	add_sql(9,acl_strdup(s));
 	free(s);
 }
 
@@ -747,10 +749,10 @@ print_init_conn (char *s) {
 char buff[256];
 	if (A4GLSQLCV_check_requirement("USE_DATABASE_STMT")) {
 	 	sprintf(buff,"DATABASE %s",s);
-		add_sql(10,strdup(buff));
+		add_sql(10,acl_strdup(buff));
         } else {
 	 	sprintf(buff,"CONNECT TO  %s AS 'default'",s);
-		add_sql(10,strdup(buff));
+		add_sql(10,acl_strdup(buff));
         }
 }
 
@@ -762,7 +764,7 @@ static void
 print_unable_to_parse() {
 	char *s;
 	s=get_bad_sql();
-	add_sql(11,strdup(s));
+	add_sql(11,acl_strdup(s));
 	
 }
 
@@ -871,7 +873,7 @@ return ptr;
 char * 
 A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,char *module,int ln) {
 char *ptr;
-	sql=strdup(sql);
+	sql=acl_strdup(sql);
 	strcpy(m_module,module);
 	m_ln=ln;
 	A4GL_log_sql_prepared(sql);
@@ -939,7 +941,7 @@ A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
         if (A4GLSQLCV_check_requirement("FULL_INSERT")) {
                 sprintf(buff,"INSERT INTO %s %s",current_ins_table,fix_insert_expr(1));
                 free(s);
-                return strdup(buff);
+                return acl_strdup(buff);
         } else {
                 return s;
         }

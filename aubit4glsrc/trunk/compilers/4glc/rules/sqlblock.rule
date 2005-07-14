@@ -12,11 +12,11 @@ sql_block_cmd : SQL {
 
 sql_block :
 	sql_block_entry  {
-		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);
+		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),0);
 	}
 	| sql_block sql_block_entry  {
 			if (strlen($<str>2)) {
-				$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),0);
+				$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,acl_strdup($<str>2),0);
 			} else {
 				$<sql_string>$=$<sql_string>1;
 			}

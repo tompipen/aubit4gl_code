@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.31 2005-07-07 14:40:07 mikeaubury Exp $
+# $Id: load.c,v 1.32 2005-07-14 11:32:52 mikeaubury Exp $
 #
 */
 
@@ -310,7 +310,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 
       if (ibind) { free (ibind); }
 
-      ibind = malloc (sizeof (struct BINDING) * cnt);
+      ibind = acl_malloc2 (sizeof (struct BINDING) * cnt);
       for (a = 0; a < cnt; a++)
 	{
 	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
@@ -382,7 +382,7 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
   delim = delims[0];
 
   if (sqlstmt) free(sqlstmt);
-  sqlstmt=strdup(sqlstmt_orig);
+  sqlstmt=acl_strdup(sqlstmt_orig);
   A4GL_debug ("In load_data");
   strcpy (filename, fname);
   A4GL_trim (filename);
@@ -425,7 +425,7 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
 		if (cnt==0) {
 			int a;
 			free(sqlstmt);
-			sqlstmt=malloc(strlen(sqlstmt_orig)+ (nfields * 4) + 10000);
+			sqlstmt=acl_malloc2(strlen(sqlstmt_orig)+ (nfields * 4) + 10000);
 			
 			strcpy(sqlstmt,sqlstmt_orig);
 			A4GL_trim(sqlstmt);
@@ -449,7 +449,7 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
 	{
 	  free (ibind);
 	}
-      ibind = malloc (sizeof (struct BINDING) * nfields);
+      ibind = acl_malloc2 (sizeof (struct BINDING) * nfields);
       for (a = 0; a < nfields; a++)
 	{
 	  A4GL_debug ("Binding %s @ %d", colptr[a], a);

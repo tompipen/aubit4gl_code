@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.74 2005-07-07 10:23:34 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.75 2005-07-14 11:32:58 mikeaubury Exp $";
 #endif
 
 
@@ -2101,7 +2101,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   last_prompt_mode = prompt_mode;
 
 
-  widgets=malloc(sizeof(GtkWidget *)*10);
+  widgets=acl_malloc2(sizeof(GtkWidget *)*10);
 
   prompt_last_key = 0;
   memset (buff, ' ', 255);
@@ -2722,7 +2722,7 @@ A4GL_LL_new_form (list_of_fields * vfd)
 
 
 
-  form = malloc (sizeof (struct s_a4gl_gtk_form));
+  form = acl_malloc2 (sizeof (struct s_a4gl_gtk_form));
 
 /* Set everything up.. */
   form->frmMagic = 0xABC123;
@@ -2743,7 +2743,7 @@ A4GL_LL_new_form (list_of_fields * vfd)
 
 
   form->nwidgets = vfd->a.a_len;
-  form->widgets = malloc (sizeof (void *) * vfd->a.a_len);
+  form->widgets = acl_malloc2 (sizeof (void *) * vfd->a.a_len);
 
   if (form->npages > 1)
     {
@@ -3634,7 +3634,7 @@ A4GL_LL_open_gui_form (char *name_orig, int absolute, int nat, char *like,
   struct s_window *w;
   struct s_a4gl_gtk_form *gtk_f;
   int a;
-  w = malloc (sizeof (struct s_windows));
+  w = acl_malloc2 (sizeof (struct s_windows));
 
   handler_c = phandler_c;
 

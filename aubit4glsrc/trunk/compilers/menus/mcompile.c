@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.26 2005-03-31 13:35:36 afalout Exp $
+# $Id: mcompile.c,v 1.27 2005-07-14 11:32:49 mikeaubury Exp $
 #*/
 
 /**
@@ -231,7 +231,7 @@ init_menu (void)
 {
   the_menus.menus.menus_len = 0;
   the_menus.menus.menus_val = 0;
-  the_menus.menus.menus_val = malloc (sizeof (menu) * MAXMENUS);	/* MAX 256 Menus */
+  the_menus.menus.menus_val = acl_malloc2 (sizeof (menu) * MAXMENUS);	/* MAX 256 Menus */
 }
 
 /**
@@ -281,12 +281,12 @@ new_option (menu * m)
     realloc (m->options.options_val,
 	     m->options.options_len * sizeof (menu_option_item));
   i = &m->options.options_val[m->options.options_len - 1];
-  i->caption = strdup ("");
-  i->key_list = strdup ("");
+  i->caption = acl_strdup ("");
+  i->key_list = acl_strdup ("");
   i->checked = 0;
   i->align = 0;
   i->color = -1;
-  i->submenu_id = strdup ("");
+  i->submenu_id = acl_strdup ("");
   return i;
 }
 

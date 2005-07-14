@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.30 2005-06-07 16:14:11 mikeaubury Exp $
+# $Id: rexp2.c,v 1.31 2005-07-14 11:32:52 mikeaubury Exp $
 #
 */
 
@@ -178,8 +178,8 @@ int b;
 char *ptr;
 
 A4GL_assertion(s==0,"Passed in a null pointer for A4GL_escape_single") ;
-if (!strchr(s,'\''))  return strdup(s);
-ptr=malloc(strlen(s)*2+1);
+if (!strchr(s,'\''))  return acl_strdup(s);
+ptr=acl_malloc2(strlen(s)*2+1);
 memset(ptr,0,strlen(s)*2+1);
 b=0;
 for (a=0;a<strlen(s);a++) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.59 2005-06-30 22:13:07 mikeaubury Exp $
+# $Id: variables.c,v 1.60 2005-07-14 11:32:47 mikeaubury Exp $
 #
 */
 
@@ -271,15 +271,15 @@ add_linked_columns (struct linked_variable *linked, char *collist_orig)
 	  collist[a] = 0;
 	  if (ptr_name == 0)
 	    {
-	      linked->col_list.name = strdup (ptr);
+	      linked->col_list.name = acl_strdup (ptr);
 	      linked->col_list.next = 0;
 	      ptr_name = &linked->col_list;
 	    }
 	  else
 	    {
-	      ptr_name->next = malloc (sizeof (struct name_list));
+	      ptr_name->next = acl_malloc2 (sizeof (struct name_list));
 	      ptr_name = ptr_name->next;
-	      ptr_name->name = strdup (ptr);
+	      ptr_name->name = acl_strdup (ptr);
 	      ptr_name->next = 0;
 	    }
 	  ptr = &collist[a + 1];
@@ -289,14 +289,14 @@ add_linked_columns (struct linked_variable *linked, char *collist_orig)
 /* Last column to add...*/
   if (ptr_name == 0)
     {
-      linked->col_list.name = strdup (ptr);
+      linked->col_list.name = acl_strdup (ptr);
       linked->col_list.next = 0;
     }
   else
     {
-      ptr_name->next = malloc (sizeof (struct name_list));
+      ptr_name->next = acl_malloc2 (sizeof (struct name_list));
       ptr_name = ptr_name->next;
-      ptr_name->name = strdup (ptr);
+      ptr_name->name = acl_strdup (ptr);
       ptr_name->next = 0;
     }
 }
@@ -491,7 +491,7 @@ A4GL_debug("scope=%c",scope);
     case MODE_ADD_DIM:
 	ptr=&curr_v[record_cnt]->names;
 	tmp_var=find_dim(name);
-      	curr_v[record_cnt]=malloc(sizeof(struct variable));
+      	curr_v[record_cnt]=acl_malloc2(sizeof(struct variable));
 	memcpy(curr_v[record_cnt],tmp_var,sizeof(struct variable));
       	memcpy(&curr_v[record_cnt]->names,ptr,sizeof(struct name_list));
       	add_to_scope (record_cnt, 0);
@@ -543,7 +543,7 @@ A4GL_debug("scope=%c",scope);
       curr_v[record_cnt]->data.v_assoc.variables = 0;
       print_declare_associate_1 (curr_v[record_cnt]->names.name, n, type);
       record_cnt++;
-      curr_v[record_cnt] = malloc (sizeof (struct variable));
+      curr_v[record_cnt] = acl_malloc2 (sizeof (struct variable));
       set_arr_subscripts (0, record_cnt);
       curr_v[record_cnt]->variable_type = VARIABLE_TYPE_SIMPLE;
       curr_v[record_cnt]->names.name = ASSOC_INTERNAL;
@@ -568,8 +568,8 @@ A4GL_debug("scope=%c",scope);
     case MODE_ADD_LINK:
       {
 	struct linked_variable *linked;
-	linked = malloc (sizeof (struct linked_variable));
-	linked->tabname = strdup (name);
+	linked = acl_malloc2 (sizeof (struct linked_variable));
+	linked->tabname = acl_strdup (name);
 	add_linked_columns (linked, type);
 	curr_v[record_cnt - 1]->data.v_record.linked = linked;
 	break;
@@ -602,8 +602,8 @@ A4GL_debug("scope=%c",scope);
       if (curr_v[record_cnt] == 0)
 	{
 	  A4GL_debug ("First at level");
-	  curr_v[record_cnt] = malloc (sizeof (struct variable));
-	  curr_v[record_cnt]->names.name = strdup (name);
+	  curr_v[record_cnt] = acl_malloc2 (sizeof (struct variable));
+	  curr_v[record_cnt]->names.name = acl_strdup (name);
 	  curr_v[record_cnt]->names.next = 0;
 	  curr_v[record_cnt]->variable_type = VARIABLE_TYPE_SIMPLE;
 	  curr_v[record_cnt]->user_system = get_variable_user_system ();
@@ -639,10 +639,10 @@ A4GL_debug("scope=%c",scope);
 	      ptr = ptr->next;
 	    }
 
-	  ptr->next = malloc (sizeof (struct name_list));
+	  ptr->next = acl_malloc2 (sizeof (struct name_list));
 	  ptr = ptr->next;
 	  ptr->next = 0;
-	  ptr->name = strdup (name);
+	  ptr->name = acl_strdup (name);
 	}
 
 
@@ -684,8 +684,8 @@ make_function (char *name, int record_cnt)
 //printf("MAKE FUNCTION : %s\n",name);
 
   //A4GL_debug ("MAKE FUNCTION : %s\n", name);
-  local_v = (struct variable *) malloc (sizeof (struct variable));
-  local_v->names.name = strdup (name);
+  local_v = (struct variable *) acl_malloc2 (sizeof (struct variable));
+  local_v->names.name = acl_strdup (name);
   A4GL_convlower (local_v->names.name);
   local_v->names.next = 0;
   local_v->variable_type = VARIABLE_TYPE_FUNCTION_DECLARE;
@@ -715,8 +715,8 @@ make_constant (char *name, char *value, char *int_or_char)
 {
   struct variable *local_v;
   int c;
-  local_v = (struct variable *) malloc (sizeof (struct variable));
-  local_v->names.name = strdup (name);
+  local_v = (struct variable *) acl_malloc2 (sizeof (struct variable));
+  local_v->names.name = acl_strdup (name);
   local_v->names.next = 0;
   local_v->variable_type = VARIABLE_TYPE_CONSTANT;
   local_v->user_system = get_variable_user_system ();
@@ -734,13 +734,13 @@ make_constant (char *name, char *value, char *int_or_char)
   if (int_or_char[0] == 'c')
     {
       local_v->data.v_const.consttype = CONST_TYPE_CHAR;
-      local_v->data.v_const.data.data_c = strdup (value);
+      local_v->data.v_const.data.data_c = acl_strdup (value);
     }
 
   if (int_or_char[0] == 'C')
     {
       local_v->data.v_const.consttype = CONST_TYPE_IDENT;
-      local_v->data.v_const.data.data_c = strdup (value);
+      local_v->data.v_const.data.data_c = acl_strdup (value);
     }
 
   if (int_or_char[0] == 'i')
@@ -802,7 +802,7 @@ add_to_scope (int record_cnt, int unroll)
 	  names = &curr_v[record_cnt]->names;
 	  while (names)
 	    {
-	      v_new = malloc (sizeof (struct variable));
+	      v_new = acl_malloc2 (sizeof (struct variable));
 	      memcpy (v_new, curr_v[record_cnt], sizeof (struct variable));
 	      curr_v[record_cnt] = v_new;
 	      curr_v[record_cnt]->names.name = names->name;
@@ -936,7 +936,7 @@ add_to_scope (int record_cnt, int unroll)
       long space;
       (*alloc) += 10;
       space = (*alloc) * sizeof (struct variable *);
-      *variable_holder = realloc (*variable_holder, space);
+      *variable_holder = acl_realloc (*variable_holder, space);
     }
 
 
@@ -971,7 +971,7 @@ add_to_scope (int record_cnt, int unroll)
 	  }
 	  A4GL_convupper (buff);
 	  strcat (buff, curr_v[record_cnt]->names.name);
-	  curr_v[record_cnt]->names.alias = strdup (buff);
+	  curr_v[record_cnt]->names.alias = acl_strdup (buff);
 	}
     }
 
@@ -2303,14 +2303,14 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 
       if (dim==0) {
       		sprintf (buff, "%s.%s", prefix_buff, v->names.name);
-      		list->list = realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = malloc (sizeof (struct record_list_entry)); e->variable = v; e->name = strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
+      		list->list = acl_realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = acl_malloc2 (sizeof (struct record_list_entry)); e->variable = v; e->name = acl_strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
       }
 
         if (dim==1)  {
                 for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
                                                         sprintf(subscript,fmt,b0);
       							sprintf (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
-      							list->list = realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = malloc (sizeof (struct record_list_entry)); e->variable = v; e->name = strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
+      							list->list = acl_realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = acl_malloc2 (sizeof (struct record_list_entry)); e->variable = v; e->name = acl_strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
                 }
         }
 
@@ -2320,7 +2320,7 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
                         for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
                                                         sprintf(subscript,fmt,b0,b1);
       							sprintf (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
-      							list->list = realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = malloc (sizeof (struct record_list_entry)); e->variable = v; e->name = strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
+      							list->list = acl_realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = acl_malloc2 (sizeof (struct record_list_entry)); e->variable = v; e->name = acl_strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
                         }
                 }
         }
@@ -2331,7 +2331,7 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
                                 for (b2 = 0; b2 < v->arr_subscripts[2]; b2++) {
                                                         sprintf(subscript,fmt,b0,b1,b2);
       							sprintf (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
-      							list->list = realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = malloc (sizeof (struct record_list_entry)); e->variable = v; e->name = strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
+      							list->list = acl_realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = acl_malloc2 (sizeof (struct record_list_entry)); e->variable = v; e->name = acl_strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
                                 }
                         }
                 }
@@ -2344,7 +2344,7 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
                                         for (b3 = 0; b3 < v->arr_subscripts[3]; b3++) {
                                                         sprintf(subscript,fmt,b0,b1,b2,b3);
       							sprintf (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
-      							list->list = realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = malloc (sizeof (struct record_list_entry)); e->variable = v; e->name = strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
+      							list->list = acl_realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = acl_malloc2 (sizeof (struct record_list_entry)); e->variable = v; e->name = acl_strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
                                         }
                                 }
                         }
@@ -2359,7 +2359,7 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
                                                 for (b4 = 0; b4 < v->arr_subscripts[4]; b4++) {
                                                         sprintf(subscript,fmt,b0,b1,b2,b3,b4);
       							sprintf (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
-      							list->list = realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = malloc (sizeof (struct record_list_entry)); e->variable = v; e->name = strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
+      							list->list = acl_realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = acl_malloc2 (sizeof (struct record_list_entry)); e->variable = v; e->name = acl_strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
                                                 }
                                         }
                                 }
@@ -2618,14 +2618,14 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 	  strcpy (buff, s);
 	  ptr = strstr (buff, ".*");
 	  *ptr = 0;
-	  list = malloc (sizeof (struct record_list));
+	  list = acl_malloc2 (sizeof (struct record_list));
 	  list->list = 0;
 	  list->records_cnt = 0;
-	  list->list = malloc (sizeof (struct record_list_entry *));
-	  e = malloc (sizeof (struct record_list_entry));
+	  list->list = acl_malloc2 (sizeof (struct record_list_entry *));
+	  e = acl_malloc2 (sizeof (struct record_list_entry));
 	  sprintf (buff2, "%s", buff);
 	  e->variable = (struct variable *) curr_v;
-	  e->name = strdup (buff2);
+	  e->name = acl_strdup (buff2);
 	  list->list[list->records_cnt] = e;
 	  list->records_cnt++;
 
@@ -2655,7 +2655,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 
   if (list == 0)
     {
-      list = malloc (sizeof (struct record_list));
+      list = acl_malloc2 (sizeof (struct record_list));
       list->list = 0;
       list->records_cnt = 0;
     }

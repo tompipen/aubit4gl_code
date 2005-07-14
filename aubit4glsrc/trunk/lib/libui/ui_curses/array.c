@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.42 2005-07-05 12:03:33 mikeaubury Exp $
+# $Id: array.c,v 1.43 2005-07-14 11:32:56 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.42 2005-07-05 12:03:33 mikeaubury Exp $";
+		"$Id: array.c,v 1.43 2005-07-14 11:32:56 mikeaubury Exp $";
 #endif
 
 
@@ -987,11 +987,11 @@ if (srec_no==-1) {
 A4GL_debug("srec_no=%d nrows=%d attribs=%d",srec_no,
 f->fileform->records.records_val[srec_no].dim,
 f->fileform->records.records_val[srec_no].attribs.attribs_len);
-buff=malloc(sizeof(char *) * f->fileform->records.records_val[srec_no].dim);
+buff=acl_malloc2(sizeof(char *) * f->fileform->records.records_val[srec_no].dim);
 
 
 for (a=0;a<f->fileform->records.records_val[srec_no].dim;a++) {
-	buff[a]=malloc(sizeof(char *) * f->fileform->records.records_val[srec_no].attribs.attribs_len);
+	buff[a]=acl_malloc2(sizeof(char *) * f->fileform->records.records_val[srec_no].attribs.attribs_len);
 }
 
 dim=f->fileform->records.records_val[srec_no].dim;

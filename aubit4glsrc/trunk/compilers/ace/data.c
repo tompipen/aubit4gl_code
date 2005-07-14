@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.23 2005-03-31 13:35:35 afalout Exp $
+# $Id: data.c,v 1.24 2005-07-14 11:32:49 mikeaubury Exp $
 #*/
 
 /**
@@ -92,7 +92,7 @@ init_report (void)
   this_report.output.page_length = 66;
   this_report.output.report_to_where = 0;
   this_report.output.report_to_filename = "";
-  this_report.magic = strdup ("AACE");
+  this_report.magic = acl_strdup ("AACE");
   this_report.dbname = 0;
   this_report.report_name = outputfilename;
   this_report.variables.variables_len = 0;
@@ -254,8 +254,8 @@ ace_add_variable (char *name, char *dstring, int category, int pno, int dtype,
   ptr =
     &this_report.variables.variables_val[this_report.variables.variables_len -
 					 1];
-  ptr->name = strdup (name);
-  ptr->datatype_string = strdup (dstring);
+  ptr->name = acl_strdup (name);
+  ptr->datatype_string = acl_strdup (dstring);
   ptr->category = category;
   ptr->param_no = pno;
   ptr->datatype = dtype;
@@ -281,7 +281,7 @@ add_function (char *name)
 		 this_report.functions.functions_len * sizeof (struct a4gl_report_function));
 
   this_report.functions.functions_val[this_report.functions.functions_len -
-				      1].name = strdup (name);
+				      1].name = acl_strdup (name);
 }
 
 
@@ -347,7 +347,7 @@ add_select (char *sql, char *temptabname)
 							selects_len - 1];
   ptr->orderby_list.orderby_list_len = 0;
   ptr->orderby_list.orderby_list_val = 0;
-  ptr->temp_tab_name = strdup (temptabname);
+  ptr->temp_tab_name = acl_strdup (temptabname);
   strcpy (temptabname, "");
 
   ptr->varids.varids_len = 0;
@@ -361,7 +361,7 @@ add_select (char *sql, char *temptabname)
   ptr->wherepos1 = 0;
   ptr->wherepos2 = 0;
 
-  buff = strdup (sql);
+  buff = acl_strdup (sql);
 
   c = 0;
   for (a = 0; a < strlen (sql); a++)
@@ -428,7 +428,7 @@ add_select (char *sql, char *temptabname)
       buff[c] = 0;
     }
 
-  ptr->statement = strdup (buff);
+  ptr->statement = acl_strdup (buff);
   free (buff);
 
 
@@ -452,9 +452,9 @@ add_inputs (char *prompt, char *variable)
     realloc (this_report.inputs.inputs_val,
 	     sizeof (struct input_vals) * this_report.inputs.inputs_len);
   this_report.inputs.inputs_val[this_report.inputs.inputs_len - 1].prompt =
-    strdup (prompt);
+    acl_strdup (prompt);
   this_report.inputs.inputs_val[this_report.inputs.inputs_len -
-				1].variable_name = strdup (variable);
+				1].variable_name = acl_strdup (variable);
 
   x = find_variable (variable);
   if (x >= 0)
@@ -482,7 +482,7 @@ add_fmt (int cat, char *col, struct commands commands)
 	     sizeof (struct format) * this_report.fmt.fmt_len);
 
   this_report.fmt.fmt_val[this_report.fmt.fmt_len - 1].category = cat;
-  this_report.fmt.fmt_val[this_report.fmt.fmt_len - 1].column = strdup (col);
+  this_report.fmt.fmt_val[this_report.fmt.fmt_len - 1].column = acl_strdup (col);
 
   memcpy (&this_report.fmt.fmt_val[this_report.fmt.fmt_len - 1].commands,
 	  &commands, sizeof (struct commands));
@@ -521,7 +521,7 @@ add_zero_rows_where (struct select_stmts *ptr)
 {
   char *buff;
   char *buff1;
-  buff = malloc (strlen (ptr->statement) + 200);	/* We need a little extra space...*/
+  buff = acl_malloc2 (strlen (ptr->statement) + 200);	/* We need a little extra space...*/
 
   return ptr->statement;
   if (ptr->has_where == 0)
@@ -536,7 +536,7 @@ add_zero_rows_where (struct select_stmts *ptr)
     }
   else
     {
-      buff1 = strdup (&ptr->statement[ptr->wherepos1]);
+      buff1 = acl_strdup (&ptr->statement[ptr->wherepos1]);
       strncpy (buff, ptr->statement, ptr->wherepos1);
       buff[ptr->wherepos1] = 0;
       strcat (buff, " (1=0) AND ");
@@ -725,7 +725,7 @@ execute_selects (void)
 	    {
 	      ptr->orderby_list.orderby_list_len = ordbycnt;
 	      ptr->orderby_list.orderby_list_val =
-		malloc (sizeof (int) * ordbycnt);
+		acl_malloc2 (sizeof (int) * ordbycnt);
 	      for (oby_cnt = 0; oby_cnt < ordbycnt; oby_cnt++)
 		{
 		  /* printf("---> %d %d\n",oby_cnt,ordbycnt); */

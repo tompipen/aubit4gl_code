@@ -202,7 +202,7 @@ void
 pushquote (char *s, int n)
 {
   char *ptr;
-  ptr = malloc (n + 1);
+  ptr = acl_malloc2 (n + 1);
   strncpy (ptr, s, n);
   ptr[n] = 0;
   A4GL_push_char (ptr);

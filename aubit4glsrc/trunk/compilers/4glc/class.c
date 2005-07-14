@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: class.c,v 1.11 2005-05-21 16:16:55 mikeaubury Exp $
+# $Id: class.c,v 1.12 2005-07-14 11:32:46 mikeaubury Exp $
 #
 */
 
@@ -108,7 +108,7 @@ do_append (void)
   if (allbuffsize == 0)
     init = 1;
   allbuffsize += strlen (tmpbuff) + 10;
-  allbuff = realloc (allbuff, allbuffsize);
+  allbuff = acl_realloc (allbuff, allbuffsize);
   if (init)
     strcpy (allbuff, tmpbuff);
   else
@@ -578,13 +578,13 @@ read_class (char *s, int is_parent)
 	{
 	  int a;
 	  //printf("Allocating space for %d entries\n",pvars + 1+list_class_cnt);
-	  list_class = realloc (list_class, sizeof (struct variable *) * (pvars + 1 + list_class_cnt));
+	  list_class = acl_realloc (list_class, sizeof (struct variable *) * (pvars + 1 + list_class_cnt));
 	  list_class_alloc += pvars;
 	  if (list_class_cnt == 0)
 	    {
-	      list_class[0] = malloc (sizeof (struct variable));
+	      list_class[0] = acl_malloc2 (sizeof (struct variable));
 	      list_class[0]->variable_type = VARIABLE_TYPE_RECORD;
-	      list_class[0]->names.name = strdup ("this_class_c");
+	      list_class[0]->names.name = acl_strdup ("this_class_c");
 	      list_class[0]->names.next = 0;
 	      list_class[0]->user_system = 'U';
 	      list_class[0]->scope = 'P';
@@ -593,7 +593,7 @@ read_class (char *s, int is_parent)
 	      list_class[0]->is_extern = 0;
 	      for (a = 0; a < MAX_ARR_SUB; a++)
 		list_class[0]->arr_subscripts[a] = 0;
-	      list_class[0]->src_module = strdup ("IMPLICIT");
+	      list_class[0]->src_module = acl_strdup ("IMPLICIT");
 	      list_class[0]->data.v_record.variables = 0;
 	      list_class[0]->data.v_record.record_alloc = 0;
 	      list_class[0]->data.v_record.record_cnt = 0;
@@ -608,7 +608,7 @@ read_class (char *s, int is_parent)
 	  pid = list_class[0]->data.v_record.record_cnt - 1;
 	  printf ("pid=%d\n", list_class[0]->data.v_record.record_cnt - 1);
 	  list_class[0]->data.v_record.variables =
-	    realloc (list_class[0]->data.v_record.variables,
+	    acl_realloc (list_class[0]->data.v_record.variables,
 		     sizeof (struct variable *) *
 		     list_class[0]->data.v_record.record_alloc);
 	  list_class[0]->data.v_record.linked = 0;
@@ -616,7 +616,7 @@ read_class (char *s, int is_parent)
 
 
 	  list_class[0]->data.v_record.variables[pid] =
-	    malloc (sizeof (struct variable));
+	    acl_malloc2 (sizeof (struct variable));
 
 //printf("THISCNT= %d\n",list_class[0]->data.v_record.record_cnt);
 	  memcpy (list_class[0]->data.v_record.variables[pid], &np,
@@ -628,7 +628,7 @@ read_class (char *s, int is_parent)
 	      for (a = 0; a < pvars; a++)
 		{
 		  list_class[a + list_class_cnt] =
-		    malloc (sizeof (struct variable));
+		    acl_malloc2 (sizeof (struct variable));
 		  memset (list_class[a + list_class_cnt], 0,
 			  sizeof (struct variable));
 		  read_variable_header (list_class[a + list_class_cnt]);
@@ -637,7 +637,7 @@ read_class (char *s, int is_parent)
 		      char buff[1024];
 		      sprintf (buff, "%s.%s", s, list_class[a + list_class_cnt]->names.name);
 		      list_class[a + list_class_cnt]->names.name =
-			strdup (buff);
+			acl_strdup (buff);
 
 		    }
 		}
@@ -703,7 +703,7 @@ read_class (char *s, int is_parent)
 	pop_record();
 	pop_scope();
 	nptr=find_dim(s);
-	//nptr->data.variables=realloc
+	//nptr->data.variables=acl_realloc
 	
 	//nptr->v_record,np;
 
@@ -799,7 +799,7 @@ read_class_string (char *name, char **val, int alloc)
 
   if (alloc)
     {
-      *val = strdup (buff2);
+      *val = acl_strdup (buff2);
     }
   else
     {
@@ -868,7 +868,7 @@ read_variable_header (struct variable *v)
   read_class_string ("NAME", &v->names.name, 1);
   if (strcmp (v->names.name, "THIS") == 0)
     {
-      v->names.name = strdup ("parent");
+      v->names.name = acl_strdup ("parent");
     }
   //printf ("-> %s\n", v->names.name);
   v->names.next = 0;
@@ -963,7 +963,7 @@ read_variable_linked (struct variable *v)
 
   while (cnt > 1)
     {
-      ptr->next = malloc (sizeof (struct name_list));
+      ptr->next = acl_malloc2 (sizeof (struct name_list));
       ptr = ptr->next;
       ptr->next = 0;
       read_class_string ("LINKCOLUMN", &ptr->name, 1);
@@ -995,16 +995,16 @@ read_variable_record (struct variable *v)
 
   if (is_linked)
     {
-      v->data.v_record.linked = malloc (sizeof (struct linked_variable));
+      v->data.v_record.linked = acl_malloc2 (sizeof (struct linked_variable));
       read_variable_linked (v);
     }
 
   v->data.v_record.variables =
-    malloc (sizeof (struct variable *) * v->data.v_record.record_cnt + 1);
+    acl_malloc2 (sizeof (struct variable *) * v->data.v_record.record_cnt + 1);
 
   for (a = 0; a < v->data.v_record.record_cnt; a++)
     {
-      v->data.v_record.variables[a] = malloc (sizeof (struct variable));
+      v->data.v_record.variables[a] = acl_malloc2 (sizeof (struct variable));
       read_variable_header (v->data.v_record.variables[a]);
     }
 
@@ -1036,21 +1036,21 @@ char buff[255];
 
   if (is_linked)
     {
-      v->data.v_record.linked = malloc (sizeof (struct linked_variable));
+      v->data.v_record.linked = acl_malloc2 (sizeof (struct linked_variable));
       read_variable_linked (v);
     }
 
   v->data.v_record.variables =
-    malloc (sizeof (struct variable *) * v->data.v_record.record_cnt + 1);
+    acl_malloc2 (sizeof (struct variable *) * v->data.v_record.record_cnt + 1);
 
   for (a = 0; a < v->data.v_record.record_cnt; a++)
     {
-      v->data.v_record.variables[a] = malloc (sizeof (struct variable));
+      v->data.v_record.variables[a] = acl_malloc2 (sizeof (struct variable));
       read_variable_header (v->data.v_record.variables[a]);
     }
 
 	read_class_string ("OBJECT_TYPE", (char **)buff,255);
-	v->data.v_record.object_type=strdup(buff);
+	v->data.v_record.object_type=acl_strdup(buff);
 
 }
 
@@ -1067,7 +1067,7 @@ read_variable_assoc (struct variable *v)
 
   read_class_int ("SIZE", &v->data.v_assoc.size);
   read_class_int ("CHARSIZE", &v->data.v_assoc.char_size);
-  v->data.v_assoc.variables = malloc (sizeof (struct variable *) * 1);
+  v->data.v_assoc.variables = acl_malloc2 (sizeof (struct variable *) * 1);
   ptr = v->data.v_assoc.variables[0];
   read_variable_header (ptr);
 }

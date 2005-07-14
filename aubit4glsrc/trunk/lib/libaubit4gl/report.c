@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.72 2005-07-12 15:15:40 mikeaubury Exp $
+# $Id: report.c,v 1.73 2005-07-14 11:32:52 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ add_header_entry (struct rep_structure *rep, struct s_save_header *hdr,
   char *n;
   if (strlen (buff))
     {
-      n = strdup (buff);
+      n = acl_strdup (buff);
       A4GL_trim (n);
       if (strlen (n) && strcmp (n, "\n") != 0)
 	{
@@ -170,7 +170,7 @@ add_header_entry (struct rep_structure *rep, struct s_save_header *hdr,
 	  hdr->save[hdr->save_cnt - 1].line_no = rep->line_no;
 	  hdr->save[hdr->save_cnt - 1].col_no = rep->col_no;
 	  hdr->save[hdr->save_cnt - 1].entry = entry;
-	  hdr->save[hdr->save_cnt - 1].s = strdup (buff);
+	  hdr->save[hdr->save_cnt - 1].s = acl_strdup (buff);
 	  A4GL_debug ("Add header entry : %d %d %d %d %s\n", rep->page_no,
 		      rep->line_no, rep->col_no, entry, buff);
 	}
@@ -330,7 +330,7 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 	  else
 	    {
 	      struct s_save_header *hdr;
-	      hdr = malloc (sizeof (struct s_save_header));
+	      hdr = acl_malloc2 (sizeof (struct s_save_header));
 	      hdr->save_cnt = 0;
 	      hdr->save = 0;
 	      rep->header = (char *) hdr;
@@ -354,7 +354,7 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 	    }
 	  else
 	    {
-	      rep->header = strdup (buff);
+	      rep->header = acl_strdup (buff);
 	    }
 
 
@@ -590,7 +590,7 @@ A4GL_fputmanyc (struct rep_structure *rep, int c, int cnt)
 {
   //int a;
   char *x;
-  x = malloc (cnt + 1);
+  x = acl_malloc2 (cnt + 1);
   memset (x, c, cnt);
   x[cnt] = 0;
   report_print (rep, -1, x);
@@ -1084,7 +1084,7 @@ A4GL_duplicate_binding (struct BINDING *b, int n)
   int a;
   int sz;
   A4GL_debug ("Duplicating bindings....");
-  rbind = malloc (sizeof (struct BINDING) * n);
+  rbind = acl_malloc2 (sizeof (struct BINDING) * n);
   for (a = 0; a < n; a++)
     {
       sz = 0;
@@ -1124,7 +1124,7 @@ A4GL_duplicate_binding (struct BINDING *b, int n)
 	}
 
       A4GL_debug ("allocing %d bytes\n", sz);
-      rbind[a].ptr = malloc (sz);
+      rbind[a].ptr = acl_malloc2 (sz);
       A4GL_debug ("allocated as %p", rbind[a].ptr);
 
       rbind[a].dtype = b[a].dtype;
@@ -1228,7 +1228,7 @@ A4GL_report_char_pop (void)
 	      DISPLAY_TYPE_PRINT);
   if (ptr != 0)
     {
-      ptr = strdup (ptr);
+      ptr = acl_strdup (ptr);
       A4GL_drop_param ();
     }
   else
@@ -1393,7 +1393,7 @@ print_data (struct rep_structure *rep, char *buff, int entry)
       return;
     }
 
-  s = strdup (buff);
+  s = acl_strdup (buff);
   A4GL_trim (s);
   if (A4GL_isyes (acl_getenv ("TRACE_AS_TEXT")))
     {
@@ -1687,7 +1687,6 @@ email_report (char *fname, char *fhint)
 
   //A4GL_push_char("mike.aubury@aubit.com"); // Normally username...
   A4GL_call_4gl_dll ("fgl_smtp", "send_report", 3);
-  printf("--->%d\n",a4gl_status);
   return 1;
 }
 

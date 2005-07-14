@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.35 2005-07-05 12:03:35 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.36 2005-07-14 11:32:57 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.35 2005-07-05 12:03:35 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.36 2005-07-14 11:32:57 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -177,7 +177,7 @@ A4GL_init_control_stack (struct s_screenio *sio, int malloc_data)
 // Do we need to allocate the storage area ?
   if (malloc_data)
     {
-      sio->fcntrl = malloc (sizeof (struct s_formcontrol) * 10);
+      sio->fcntrl = acl_malloc2 (sizeof (struct s_formcontrol) * 10);
       sio->fcntrl_cnt = 0;
     }
 
@@ -264,7 +264,7 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
 
 
 
-  ptr = malloc (sizeof (struct s_movement));
+  ptr = acl_malloc2 (sizeof (struct s_movement));
   ptr->scr_line = -1;		// Not used for a normal input/construct
   ptr->arr_line = -1;		// Not used for a normal input/construct
   ptr->attrib_no = attrib;
@@ -789,7 +789,7 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 		  w = A4GL_get_field_width (sio->currentfield);
 		  has_picture = 1;
 		  picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
-		  ptr = malloc (w + 1);
+		  ptr = acl_malloc2 (w + 1);
 
 		  strcpy (ptr, A4GL_LL_field_buffer (sio->currentfield, 0));
 		  ptr[w] = 0;
@@ -1663,12 +1663,12 @@ A4GL_set_init_value (void *f, void *ptr, int dtype)
   if (ptr != 0)
     {
       A4GL_push_param (ptr, dtype);
-      ff = malloc (A4GL_get_field_width (f) + 1);
+      ff = acl_malloc2 (A4GL_get_field_width (f) + 1);
       A4GL_pop_char (ff, A4GL_get_field_width (f));
     }
   else
     {
-      ff = malloc (A4GL_get_field_width (f) + 1);
+      ff = acl_malloc2 (A4GL_get_field_width (f) + 1);
       for (a = 0; a < A4GL_get_field_width (f); a++)
 	ff[a] = ' ';
       ff[A4GL_get_field_width (f) - 1] = 0;

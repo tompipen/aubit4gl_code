@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.27 2005-06-23 17:57:37 mikeaubury Exp $
+# $Id: memfile.c,v 1.28 2005-07-14 11:32:52 mikeaubury Exp $
 #
 */
 
@@ -88,7 +88,7 @@ A4GL_memfile_fopen (char *f, char *mode)
     {
       fseek (in, 0, SEEK_END);
       buff_len = ftell (in);
-      buff = (char *) malloc (buff_len + 10);
+      buff = (char *) acl_malloc2 (buff_len + 10);
       //memset(buff,0,buff_len+10);
 	buff[buff_len]=0;
       rewind (in);
@@ -112,7 +112,7 @@ A4GL_memdup (void *ptr, int size)
 {
   void *p2;
   A4GL_debug("A4GL_memdup - ptr=%p size=%p",ptr,size);
-  p2 = malloc (size);
+  p2 = acl_malloc2 (size);
   memcpy (p2, ptr, size);
   A4GL_debug("Done");
   return p2;

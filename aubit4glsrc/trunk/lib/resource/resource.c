@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.105 2005-06-25 18:57:55 mikeaubury Exp $
+# $Id: resource.c,v 1.106 2005-07-14 11:33:09 mikeaubury Exp $
 #
 */
 
@@ -1328,7 +1328,7 @@ A4GL_env_option_set (char *s)
 
 
 // Get the value thats used to represent an empty string...
-char *A4GL_not_set_empty_string() {
+char *A4GL_not_set_empty_string(void) {
 	return an_empty_string;
 }
 static char * A4GL_strip_quotes_resource (char *s)

@@ -27,9 +27,9 @@ static int find_label(char *s) {
 static int add_label(char *s,int u,int d) {
 	int lb;
 	labels_cnt++;
-	labels=realloc(labels,sizeof (struct s_labels)* labels_cnt);
+	labels=acl_realloc(labels,sizeof (struct s_labels)* labels_cnt);
 	lb=labels_cnt-1;
-	labels[lb].label=strdup(s);
+	labels[lb].label=acl_strdup(s);
 	labels[lb].usage=u;
 	labels[lb].defined=d;
 	return lb;

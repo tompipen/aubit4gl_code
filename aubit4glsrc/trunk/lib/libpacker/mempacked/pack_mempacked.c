@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_mempacked.c,v 1.8 2005-03-31 13:35:54 afalout Exp $
+# $Id: pack_mempacked.c,v 1.9 2005-07-14 11:32:55 mikeaubury Exp $
 #*/
 
 /**
@@ -223,7 +223,7 @@ input_string (char *name, char **val, int ptr, int isarr)
   if (!input_long ("", &l, 0, -1))
     return 0;
   A4GL_debug ("Got length as %d", l);
-  *val = malloc (l + 1);	/* Extra 1 for the \0 */
+  *val = acl_malloc2 (l + 1);	/* Extra 1 for the \0 */
   memset (*val, 0, l + 1);
   a = A4GL_memfile_fread ((char *)*val, 1, l, (void *)infile);
   if (a == 0 && l == 0)

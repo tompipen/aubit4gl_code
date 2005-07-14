@@ -712,9 +712,9 @@ if (columnAlign) { // CA1
 } // CA1
 
 colnamesize=-1;
-columnNames=malloc(sizeof(char*) * (numberOfColumns+1));
-columnWidths=malloc(sizeof(int) * (numberOfColumns+1));
-columnAlign=malloc(sizeof(int) * (numberOfColumns+1));
+columnNames=acl_malloc2(sizeof(char*) * (numberOfColumns+1));
+columnWidths=acl_malloc2(sizeof(int) * (numberOfColumns+1));
+columnAlign=acl_malloc2(sizeof(int) * (numberOfColumns+1));
 
 for(index=1;index<=numberOfColumns;index++) {
         EXEC SQL GET DESCRIPTOR descExec VALUE:index:size=LENGTH,:datatype=TYPE,:columnName=NAME;cp_sqlca();

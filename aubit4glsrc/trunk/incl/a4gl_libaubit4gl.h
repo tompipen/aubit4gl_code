@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.177 2005-07-06 15:30:09 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.178 2005-07-14 11:32:50 mikeaubury Exp $
 #
 */
 
@@ -125,6 +125,8 @@
 
 #endif
 
+
+#include "a4gl_memhandling.h"
   /* ======================= from a4gl_constats.h ================== */
 
 #define ATTRIB_AUTONEXT 			1
@@ -322,7 +324,7 @@
 */
   /* ========================= from a4gl_ui.h ====================== */
 #define DESCLENGTH 		10
-#define nalloc(x) 		malloc(sizeof(x))
+#define nalloc(x) 		acl_malloc2(sizeof(x))
 #define INVERT 			1
 #define NORM 			0
 #define BS 				KEY_BACKSPACE
@@ -761,7 +763,6 @@ struct s_module_error {
   /* from curslib.c: */
   void A4GL_disp_opt (int row, int x, int y, int l, int type);
   int A4GL_do_key_menu (void);	/*internal function */
-  //void A4GL_do_pause (void);		/*waits for a key press */
   int A4GL_edit (char *string, char type, int length, int x, int y);
   int A4GL_check_type (char c, char type, int flg, int len);
   int A4GL_ask_int (char *prompt);	/*  prompt for an integer from user  */
@@ -1105,6 +1106,7 @@ enum cmd_types {
   char * acl_getenv_not_set_as_0 (char *s);
   char *A4GLSTK_getStackTrace (void);
   void A4GLSTK_pushFunction (const char *functionName, char *params[], int n);
+  char *A4GLSTK_topFunction(void);
   void A4GLSTK_popFunction (void);
   void A4GL_pushop (int a);
   void A4GL_chk_err (int lineno, char *fname);
@@ -1158,8 +1160,6 @@ enum cmd_types {
   void A4GL_locate_var (struct fgl_int_loc *p, char where, char *filename);
   void A4GL_whats_in_a_string(char *s,int *d,int *sz);
 
-#define acl_free(s) acl_free_full(s,__FILE__,__LINE__)
-#define acl_malloc(a,b) acl_malloc_full(a,b,__FILE__,__LINE__)
 
 #define GETSETNEW 		-1
 #define GETSETRM 		-2
@@ -1354,8 +1354,7 @@ enum cmd_types {
   /* void A4GL_trim (char *p); */
   void A4GL_bnamexxx (char *str, char *str1, char *str2);
   void A4GL_pad_string (char *ptr, int size);
-  void *acl_malloc_full (int size, char *why, char *f, long line);
-  void acl_free_full (void *ptr, char *f, long line);
+  /*void acl_free_full (void *ptr, char *f, long line); */
   void a4gl_using (char *str, int s, char *fmt, double num);
   int A4GL_digittoc (int *a, char *z, char *fmt, int dtype, int size);
   void A4GL_strmaxcpy(char *dest,char *src,int max);
@@ -1426,8 +1425,8 @@ enum cmd_types {
 #define fglbyte struct fgl_int_loc
 #define fgltext struct fgl_int_loc
 
-#define acl_free(s) acl_free_full(s,__FILE__,__LINE__)
-#define acl_malloc(a,b) acl_malloc_full(a,b,__FILE__,__LINE__)
+//#define acl_free(s) acl_free_full(s,__FILE__,__LINE__)
+//#define acl_malloc(a,b) acl_malloc_full(a,b,__FILE__,__LINE__)
 
 
 
@@ -2112,8 +2111,15 @@ char * A4GL_make_using_tostring (char *ptr, int d, int n);
 int fgl_callback (int nargs, char *argv[]);
 char *A4GL_get_esql_ext(void);
 int a4gl_isupper(int n);
+void A4GL_log_sql_prepared_map(char *s);
 
 int a4gl_islower(int n);
+void A4GL_log_sql_prepared(char *s);
+char *A4GLSQLCV_convert_sql (  char* target_dialect ,char* sql );
+int A4GL_strattr_to_num (char *s);
+void A4GL_stop_ui(void);
+int aclfgl_aclfgl_set_color (int _nargs);
+char *A4GL_not_set_empty_string(void);
 
 int A4GL_monitor_puts_int (char *str);
 void

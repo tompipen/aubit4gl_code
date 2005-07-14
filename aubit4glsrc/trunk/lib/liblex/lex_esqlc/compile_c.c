@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.235 2005-07-14 06:28:35 mikeaubury Exp $
+# $Id: compile_c.c,v 1.236 2005-07-14 11:32:53 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.235 2005-07-14 06:28:35 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.236 2005-07-14 11:32:53 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5792,7 +5792,7 @@ order_by_report_stack ()
 	("static void acl_exchange_rep_ordby%d(struct BINDING *ord,int cnt) {\n",
 	 fiddle);
       printh ("struct BINDING *copy;\n");
-      printh ("copy=(struct BINDING *)malloc(sizeof(struct BINDING)*cnt);\n");
+      printh ("copy=(struct BINDING *)acl_malloc2(sizeof(struct BINDING)*cnt);\n");
       printh ("memcpy(copy,ord,sizeof(struct BINDING)*cnt);\n");
       /* We've got our copy - now we can splat the original! */
       for (a = 0; a < ordbyfieldscnt; a++)
@@ -5914,7 +5914,7 @@ LEXLIB_print_alloc_arr (char *s, char *d)
     }
   l = dim[0] * dim[1] * dim[2] * dim[3] * dim[4];
   printc ("%s=A4GL_alloc_dynarr(&%s,%s,%d,%d,%d,%d,%d,%d * sizeof(%s[0]),0);", s,s, s,dim[0],dim[1],dim[2],dim[3],dim[4],l, s);
-  /*printc ("%s=malloc(%d * sizeof(%s[0]));", s, l, s);*/
+  /*printc ("%s=acl_malloc2(%d * sizeof(%s[0]));", s, l, s);*/
 }
 
 
@@ -6105,7 +6105,7 @@ if (x) {free(x);x=0;}
   strcat (s, "||");
   A4GL_debug ("Chk keys %s\n", s);
 
-  if (strcmp (keys, "->ANY") == 0) { x=malloc(sizeof(int)*2); x[0]=0xffff; x[1]=0; return x;}
+  if (strcmp (keys, "->ANY") == 0) { x=acl_malloc2(sizeof(int)*2); x[0]=0xffff; x[1]=0; return x;}
 
   k=s;
 

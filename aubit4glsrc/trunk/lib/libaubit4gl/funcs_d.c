@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.64 2005-05-15 09:12:46 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.65 2005-07-14 11:32:51 mikeaubury Exp $
 #
 */
 
@@ -208,13 +208,30 @@ A4GL_bnamexxx (char *str, char *str1, char *str2)
  * @return A pointer for the memory alocated
  */
 void *
-acl_malloc_full (int size, char *why, char *f, long line)
+acl_malloc_full (long size, char *why, char *f, long line)
 {
   void *p;
   p = malloc (size);
+  A4GL_assertion(p==0,"Unable to allocate memory");
   A4GL_debug ("alloc %d bytes : %p %s %s %d", size,p,why,f,line);
   return p;
 }
+
+char *acl_strdup_full(void *a,char *r,char *f,int l) {
+	char *p;
+	p=strdup(a);
+	A4GL_assertion(p==0,"Unable to allocate memory");
+	return p;
+}
+
+void *acl_realloc_full(void *a,long b,char *r,char *f,int l) {
+	void *p;
+	p=realloc(a,b);
+	A4GL_assertion(p==0,"Unable to allocate memory");
+	return p;
+}
+
+
 
 /**
  *
@@ -677,9 +694,9 @@ A4GL_new_expr (char *value)
 {
   struct expr_str *ptr;
   A4GL_debug ("new_expr - %s", value);
-  ptr = malloc (sizeof (struct expr_str));
+  ptr = acl_malloc2 (sizeof (struct expr_str));
   ptr->next = 0;
-  ptr->expr = strdup (value);
+  ptr->expr = acl_strdup (value);
   A4GL_debug ("newexpr : %s -> %p\n", value, ptr);
   //dump_expr(ptr);
   return ptr;

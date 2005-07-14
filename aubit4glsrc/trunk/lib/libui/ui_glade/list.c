@@ -12,7 +12,7 @@ static GtkTreeModel * create_model (int n)
   GtkListStore *store;
   GtkType *types;
 
-  types=(GtkType*)malloc(sizeof(GtkType)*n);
+  types=(GtkType*)acl_malloc2(sizeof(GtkType)*n);
   for (i=0;i<n;i++) {
 	types[i]=G_TYPE_STRING;
   }

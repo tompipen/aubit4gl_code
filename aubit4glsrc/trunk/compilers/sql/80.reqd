@@ -61,7 +61,7 @@ individual_sql_statement :
 ;
 
 select_statement_ss_str_cfu:
-	select_statement_ss_str curs_forupdate { $<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup($<str>2),0);
+	select_statement_ss_str curs_forupdate { $<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),0);
 }
 
 ;
@@ -92,18 +92,18 @@ colident: identifier
 
 
 
-set_cmd : SQLSEOFF 		 { print_exec_sql(strdup($<str>1)); }
-	| SQLSLMW op_fgl_expr    { sprintf($<str>$,"%s %s",$<str>1,$<str>2); print_exec_sql(strdup($<str>$)); }
-	| SQLSLMNW		 { print_exec_sql(strdup($<str>1)); }
-	| SQLSIDR		 { print_exec_sql(strdup($<str>1)); }
-	| SQLSIRR		 { print_exec_sql(strdup($<str>1)); }
-	| SQLSICS		 { print_exec_sql(strdup($<str>1)); }
-	| SQLSICR		 { print_exec_sql(strdup($<str>1)); }
+set_cmd : SQLSEOFF 		 { print_exec_sql(acl_strdup($<str>1)); }
+	| SQLSLMW op_fgl_expr    { sprintf($<str>$,"%s %s",$<str>1,$<str>2); print_exec_sql(acl_strdup($<str>$)); }
+	| SQLSLMNW		 { print_exec_sql(acl_strdup($<str>1)); }
+	| SQLSIDR		 { print_exec_sql(acl_strdup($<str>1)); }
+	| SQLSIRR		 { print_exec_sql(acl_strdup($<str>1)); }
+	| SQLSICS		 { print_exec_sql(acl_strdup($<str>1)); }
+	| SQLSICR		 { print_exec_sql(acl_strdup($<str>1)); }
 ;
 
 
-var_ident_ibind_ss :  column_name_x { $<sql_string>$=strdup($<str>1); } 
-	 | QUESTION_MARK { $<sql_string>$=strdup($<str>1); } 
+var_ident_ibind_ss :  column_name_x { $<sql_string>$=acl_strdup($<str>1); } 
+	 | QUESTION_MARK { $<sql_string>$=acl_strdup($<str>1); } 
 ;
 
 
@@ -118,9 +118,9 @@ value_expression_initial_ss :
         value_expression_complex_ss { $<sql_string>$=$<sql_string>1; }
         | var_ident_ibind_ss    { $<sql_string>$=$<sql_string>1; }
         | subquery_ss { $<sql_string>$=$<sql_string>1; }
-        | ALL subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("ALL "),$<sql_string>2,0); }
-        | ANY subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("ANY "),$<sql_string>2,0); }
-        | SOME subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("SOME "),$<sql_string>2,0); }
+        | ALL subquery_ss { $<sql_string>$=make_sql_string_and_free(acl_strdup("ALL "),$<sql_string>2,0); }
+        | ANY subquery_ss { $<sql_string>$=make_sql_string_and_free(acl_strdup("ANY "),$<sql_string>2,0); }
+        | SOME subquery_ss { $<sql_string>$=make_sql_string_and_free(acl_strdup("SOME "),$<sql_string>2,0); }
 ;
 
 

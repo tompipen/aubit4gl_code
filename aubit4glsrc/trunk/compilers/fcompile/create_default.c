@@ -225,7 +225,7 @@ for (a=0;a<tabcnt;a++) {
 		sprintf(buff,"%s = %s.%s;",id,tabname[a],ccol);
 		attribs_cnt++;
 		attribs=realloc(attribs,sizeof(char *)*attribs_cnt);
-		attribs[attribs_cnt-1]=strdup(buff);
+		attribs[attribs_cnt-1]=acl_strdup(buff);
 	}
 
 	fprintf(file_out,"}\n");

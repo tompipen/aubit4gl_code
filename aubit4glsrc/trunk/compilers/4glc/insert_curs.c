@@ -33,9 +33,9 @@ static int find_cursor(char *s) {
 static int add_cursor(char *s,int type,int u,int d) {
 	int lb;
 	cursors_cnt++;
-	curs=realloc(curs,sizeof (struct s_cursors)* cursors_cnt);
+	curs=acl_realloc(curs,sizeof (struct s_cursors)* cursors_cnt);
 	  lb=cursors_cnt-1;
-	  curs[lb].name=strdup(s);
+	  curs[lb].name=acl_strdup(s);
 	  curs[lb].type=type;
 	  curs[lb].usage=u;
 	  curs[lb].defined=d;
@@ -93,7 +93,7 @@ void A4GL_insert_cursor_prep(char *cname,char *stmt) {
 int a;
 a=find_cursor(cname);
 if (a==-1) return;
-curs[a].prep=strdup(stmt);
+curs[a].prep=acl_strdup(stmt);
 }
 
 void A4GL_cursor_defined(char *s,char type) {

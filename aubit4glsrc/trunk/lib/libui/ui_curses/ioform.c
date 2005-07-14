@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.128 2005-07-05 16:10:48 mikeaubury Exp $
+# $Id: ioform.c,v 1.129 2005-07-14 11:32:57 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.128 2005-07-05 16:10:48 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.129 2005-07-14 11:32:57 mikeaubury Exp $";
 #endif
 
 /**
@@ -756,14 +756,14 @@ A4GL_set_init_value (FIELD * f, void *ptr, int dtype)
   if (ptr != 0)
     {
       A4GL_push_param (ptr, dtype);
-      ff = malloc (A4GL_get_field_width (f) + 1);
+      ff = acl_malloc2 (A4GL_get_field_width (f) + 1);
       A4GL_pop_char (ff, A4GL_get_field_width (f));
     }
   else
     {
       int l;
       l=A4GL_get_field_width (f);
-      ff = malloc (l+1);
+      ff = acl_malloc2 (l+1);
       memset(ff,' ',l);
       ff[l] = 0;
     }
@@ -2382,7 +2382,7 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
 
   A4GL_debug ("In display_field_contents");
   f = (struct struct_scr_field *) (field_userptr (field));
-  ff = malloc  (field_width+1);
+  ff = acl_malloc2  (field_width+1);
 
   has_format = A4GL_has_str_attribute (f, FA_S_FORMAT);
   A4GL_debug ("Has format : %d  ", has_format);
@@ -4342,7 +4342,7 @@ A4GL_clr_field (FIELD * f)
   fprop = (struct struct_scr_field *) (field_userptr (f));
 
   w = A4GL_get_field_width (f);
-  str = malloc (w + 1);
+  str = acl_malloc2 (w + 1);
   memset (str, ' ', w);
   str[w] = 0;
 

@@ -51,7 +51,7 @@ void *
 memdup(void *p,int l)
 {
 	void *ptr;
-	ptr=malloc(l);
+	ptr=acl_malloc2(l);
 	memcpy(ptr,p,l);
 	return ptr;
 }
@@ -245,10 +245,10 @@ ace_report :
 
 db_section:
 	DATABASE ASCII END {
-		this_report.dbname=strdup("!!ASCII!!");;
+		this_report.dbname=acl_strdup("!!ASCII!!");;
 	}
 	| DATABASE NAMED END {
-		this_report.dbname=strdup($<str>2);
+		this_report.dbname=acl_strdup($<str>2);
 		A4GLSQL_init_connection ($<str>2);
 		if (a4gl_status!=0) {
 			a4gl_ace_yyerror("Unable to connect to database");
@@ -350,10 +350,10 @@ output_element_list : output_element | output_element_list output_element
 ;
 
 output_element:
-	REPORT TO PRINTER string { this_report.output.report_to_where=2; this_report.output.report_to_filename=strdup($<str>4);}
+	REPORT TO PRINTER string { this_report.output.report_to_where=2; this_report.output.report_to_filename=acl_strdup($<str>4);}
 	| REPORT TO PRINTER  { this_report.output.report_to_where=1; }
-	| REPORT TO string { this_report.output.report_to_where=3; this_report.output.report_to_filename=strdup($<str>3); }
-	| REPORT TO PIPE string { this_report.output.report_to_where=4; this_report.output.report_to_filename=strdup($<str>4); }
+	| REPORT TO string { this_report.output.report_to_where=3; this_report.output.report_to_filename=acl_strdup($<str>3); }
+	| REPORT TO PIPE string { this_report.output.report_to_where=4; this_report.output.report_to_filename=acl_strdup($<str>4); }
 	| LEFT MARGIN int_val {
 		this_report.output.left_margin=atoi($<str>3);
 	}
@@ -370,7 +370,7 @@ output_element:
 		this_report.output.right_margin=atoi($<str>3);
 	}
 	| TOP_OF_PAGE string {
-		this_report.output.top_of_page=strdup($<str>2);
+		this_report.output.top_of_page=acl_strdup($<str>2);
 	}
 ;
 
@@ -517,12 +517,12 @@ sort_specification: sort_spec op_asc_desc;
 sort_spec: INTVAL  {
 		char buff[256];
 		sprintf(buff,"I%d",atoi($<str>1));
-		ordby[ordbycnt++]=strdup(buff);
+		ordby[ordbycnt++]=acl_strdup(buff);
 	}
 	| column_name  {
 		char buff[256];
 		sprintf(buff,"C%s",$<str>1);
-		ordby[ordbycnt++]=strdup(buff);
+		ordby[ordbycnt++]=acl_strdup(buff);
 	}
 	;
 
@@ -995,7 +995,7 @@ value_specification:
 commands:
 	command {
 		$<commands>$.commands.commands_len=1;
-		$<commands>$.commands.commands_val=malloc(sizeof(struct command));
+		$<commands>$.commands.commands_val=acl_malloc2(sizeof(struct command));
 		COPY($<commands>$.commands.commands_val[0],$<cmd>1);
 		} 
 	| commands command  {
@@ -1033,7 +1033,7 @@ block_commands: command {
 
 	$<cmd>$.command_u.commands.commands.commands_len=1;
 	printf("L1= %d\n",$<cmd>$.command_u.commands.commands.commands_len);
-	$<cmd>$.command_u.commands.commands.commands_val=malloc(sizeof(struct command));
+	$<cmd>$.command_u.commands.commands.commands_val=acl_malloc2(sizeof(struct command));
 
 	COPY($<cmd>$.command_u.commands.commands.commands_val[0],$<cmd>1);
 
@@ -1059,8 +1059,8 @@ block_commands: command {
 
 call_command :  KW_CALL func_identifier OPEN_BRACKET op_val_expr_list CLOSE_BRACKET {
 		$<cmd>$.cmd_type=CMD_CALL;
-		$<cmd>$.command_u.cmd_call.fcall=malloc(sizeof(struct expr_call));
-                $<cmd>$.command_u.cmd_call.fcall->fname=strdup($<str>2);
+		$<cmd>$.command_u.cmd_call.fcall=acl_malloc2(sizeof(struct expr_call));
+                $<cmd>$.command_u.cmd_call.fcall->fname=acl_strdup($<str>2);
 	
                 $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>4.expr_u.lexpr;
 		print_lexpr( $<cmd>$.command_u.cmd_call.fcall->lexpr);
@@ -1143,7 +1143,7 @@ LET NAMED OPEN_SQUARE expr COMMA expr CLOSE_SQUARE EQUAL expr_concat {
 expr_concat: expr | expr_concat COMMA expr {
 
 	$<expr>$.type=EXPRTYPE_COMPLEX;
-	$<expr>$.expr_u.expr=malloc(sizeof(struct complex_expr));
+	$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr));
 	COPY($<expr>$.expr_u.expr->expr1,$<expr>1);
 	COPY($<expr>$.expr_u.expr->expr2,$<expr>3);
 	$<expr>$.expr_u.expr->operand=EXPR_CONCAT;
@@ -1160,7 +1160,7 @@ need_command: NEED int_val LINES {
 
 pause_command: PAUSE string {
 	$<cmd>$.cmd_type=CMD_PAUSE;
-	$<cmd>$.command_u.cmd_pause.message=strdup($<str>2);
+	$<cmd>$.command_u.cmd_pause.message=acl_strdup($<str>2);
 }
 ;
 
@@ -1178,7 +1178,7 @@ op_semi: {strcpy($<str>$,"1");} | SEMICOLON {strcpy($<str>$,"0");}
 
 print_file_command: PRINT_FILE string {
 	$<cmd>$.cmd_type=CMD_PRINTFILE;
-	$<cmd>$.command_u.cmd_printfile.filename=strdup($<str>2);
+	$<cmd>$.command_u.cmd_printfile.filename=acl_strdup($<str>2);
 }
 ;
 
@@ -1279,7 +1279,7 @@ aggregate_elem:
 val_expression:
 	 val_expression DIVIDE val_expression 
 		{ 
-		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
 		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
 		$<expr>$.expr_u.expr->operand=EXPR_DIV; 
@@ -1287,14 +1287,14 @@ val_expression:
 
 	 | val_expression POW val_expression 
 		{ 
-		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
 		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
 		$<expr>$.expr_u.expr->operand=EXPR_POW; 
 		}
 	 | val_expression MOD val_expression 
 		{ 
-		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
 		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
 		$<expr>$.expr_u.expr->operand=EXPR_MOD; 
@@ -1303,21 +1303,21 @@ val_expression:
 
 	| val_expression MULTIPLY val_expression
 		{ 
-		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
 		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
 		$<expr>$.expr_u.expr->operand=EXPR_MUL; 
 		}
 	| val_expression PLUS val_expression { 
 		$<expr>$.type=EXPRTYPE_COMPLEX; 
-		$<expr>$.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
 		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
 		$<expr>$.expr_u.expr->operand=EXPR_ADD; 
 	}
 	| val_expression AND val_expression { 
 		$<expr>$.type=EXPRTYPE_COMPLEX; 
-		$<expr>$.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
 		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
 		$<expr>$.expr_u.expr->operand=EXPR_AND; 
@@ -1325,7 +1325,7 @@ val_expression:
 
 	| val_expression OR val_expression { 
 		$<expr>$.type=EXPRTYPE_COMPLEX; 
-		$<expr>$.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
 		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
 		$<expr>$.expr_u.expr->operand=EXPR_OR; 
@@ -1334,14 +1334,14 @@ val_expression:
 
 	| val_expression MINUS val_expression { 
 		$<expr>$.type=EXPRTYPE_COMPLEX;
-		$<expr>$.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
 		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
 		$<expr>$.expr_u.expr->operand=EXPR_SUB; 
 	}
 	| val_expression USING val_expression { 
 		$<expr>$.type=EXPRTYPE_COMPLEX;
-		$<expr>$.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
 		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
 		$<expr>$.expr_u.expr->operand=EXPR_USING; 
@@ -1350,10 +1350,10 @@ val_expression:
 
 	| val_expression comp_op val_expression {
 		$<expr>$.type=EXPRTYPE_COMPARE;
-		$<expr>$.expr_u.cexpr=malloc(sizeof(struct complex_expr)); 
+		$<expr>$.expr_u.cexpr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY($<expr>$.expr_u.cexpr->expr1,$<expr>1); 
 		COPY($<expr>$.expr_u.cexpr->expr2,$<expr>3); 
-		$<expr>$.expr_u.cexpr->method=strdup($<str>2); 
+		$<expr>$.expr_u.cexpr->method=acl_strdup($<str>2); 
 	}
 	| KW_TRUE {
 		$<expr>$.type=EXPRTYPE_INT;
@@ -1365,7 +1365,7 @@ val_expression:
 		}
 	| USER {
 		$<expr>$.type=EXPRTYPE_BUILTIN;
-		$<expr>$.expr_u.name=strdup($<str>1);
+		$<expr>$.expr_u.name=acl_strdup($<str>1);
 	}
 	| DATE {
 		int v;
@@ -1379,65 +1379,65 @@ val_expression:
 
 	| DATE  OPEN_BRACKET  val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
-		$<expr>$.expr_u.fcall=malloc(sizeof(struct expr_call));
-		$<expr>$.expr_u.fcall->fname=strdup("DATE");
+		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
+		$<expr>$.expr_u.fcall->fname=acl_strdup("DATE");
                 $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 
 	| MONTH  OPEN_BRACKET  val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
-		$<expr>$.expr_u.fcall=malloc(sizeof(struct expr_call));
-		$<expr>$.expr_u.fcall->fname=strdup("MONTH");
+		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
+		$<expr>$.expr_u.fcall->fname=acl_strdup("MONTH");
                 $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 	| YEAR  OPEN_BRACKET  val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
-		$<expr>$.expr_u.fcall=malloc(sizeof(struct expr_call));
-		$<expr>$.expr_u.fcall->fname=strdup("YEAR");
+		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
+		$<expr>$.expr_u.fcall->fname=acl_strdup("YEAR");
                 $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 	| DAY  OPEN_BRACKET  val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
-		$<expr>$.expr_u.fcall=malloc(sizeof(struct expr_call));
-		$<expr>$.expr_u.fcall->fname=strdup("DAY");
+		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
+		$<expr>$.expr_u.fcall->fname=acl_strdup("DAY");
                 $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 
 	| NAMED OPEN_BRACKET val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
-		$<expr>$.expr_u.fcall=malloc(sizeof(struct expr_call));
-		$<expr>$.expr_u.fcall->fname=strdup($<str>1);
+		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
+		$<expr>$.expr_u.fcall->fname=acl_strdup($<str>1);
                 $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 	| OPEN_BRACKET val_expression CLOSE_BRACKET { COPY($<expr>$,$<expr>2); }
 	| COLUMN val_expression {
 		$<expr>$.type=EXPRTYPE_SIMPLE; 
-		$<expr>$.expr_u.sexpr=malloc(sizeof(struct simple_expr)); 
+		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
 		COPY($<expr>$.expr_u.sexpr->expr,$<expr>2); 
 		$<expr>$.expr_u.sexpr->operand=EXPR_COLUMN; 
 	}
 	| ASCII val_expression {
 		$<expr>$.type=EXPRTYPE_SIMPLE; 
-		$<expr>$.expr_u.sexpr=malloc(sizeof(struct simple_expr)); 
+		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
 		COPY($<expr>$.expr_u.sexpr->expr,$<expr>2); 
 		$<expr>$.expr_u.sexpr->operand=EXPR_ASCII; 
 	}
 	| val_expression SPACES  {
 		$<expr>$.type=EXPRTYPE_SIMPLE; 
-		$<expr>$.expr_u.sexpr=malloc(sizeof(struct simple_expr)); 
+		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
 		COPY($<expr>$.expr_u.sexpr->expr,$<expr>1); 
 		$<expr>$.expr_u.sexpr->operand=EXPR_COLUMN; 
 	}
 
 	| val_expression IS_NULL  {
 		$<expr>$.type=EXPRTYPE_SIMPLE; 
-		$<expr>$.expr_u.sexpr=malloc(sizeof(struct simple_expr)); 
+		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
 		COPY($<expr>$.expr_u.sexpr->expr,$<expr>1); 
 		$<expr>$.expr_u.sexpr->operand=EXPR_ISNULL; 
 	}
 	| val_expression IS_NOT_NULL  {
 		$<expr>$.type=EXPRTYPE_SIMPLE; 
-		$<expr>$.expr_u.sexpr=malloc(sizeof(struct simple_expr)); 
+		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
 		COPY($<expr>$.expr_u.sexpr->expr,$<expr>1); 
 		$<expr>$.expr_u.sexpr->operand=EXPR_ISNOTNULL; 
 	}
@@ -1445,7 +1445,7 @@ val_expression:
 
 	| val_expression CLIPPED  {
 		$<expr>$.type=EXPRTYPE_SIMPLE; 
-		$<expr>$.expr_u.sexpr=malloc(sizeof(struct simple_expr)); 
+		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
 		COPY($<expr>$.expr_u.sexpr->expr,$<expr>1); 
 		$<expr>$.expr_u.sexpr->operand=EXPR_CLIP; 
 	}
@@ -1472,7 +1472,7 @@ val_expression:
 
 op_val_expr_list : null_expr {
 		$<expr>$.type=EXPRTYPE_LIST;
-		$<expr>$.expr_u.lexpr=malloc(sizeof(struct expr_list));
+		$<expr>$.expr_u.lexpr=acl_malloc2(sizeof(struct expr_list));
 		$<expr>$.expr_u.lexpr->elem.elem_len=1;
 		$<expr>$.expr_u.lexpr->elem.elem_val=0;
 		$<expr>$.expr_u.lexpr->elem.elem_val=realloc(
@@ -1490,7 +1490,7 @@ op_val_expr_list : null_expr {
 val_expr_list : 
 	val_expression {
 		$<expr>$.type=EXPRTYPE_LIST;
-		$<expr>$.expr_u.lexpr=malloc(sizeof(struct expr_list));
+		$<expr>$.expr_u.lexpr=acl_malloc2(sizeof(struct expr_list));
 		$<expr>$.expr_u.lexpr->elem.elem_len=1;
 		$<expr>$.expr_u.lexpr->elem.elem_val=0;
 		$<expr>$.expr_u.lexpr->elem.elem_val=realloc( $<expr>$.expr_u.lexpr->elem.elem_val,sizeof(struct expr)* $<expr>$.expr_u.lexpr->elem.elem_len);
@@ -1512,7 +1512,7 @@ null_expr : {
 
 literal_expr: CHAR_VALUE {
 		$<expr>$.type=EXPRTYPE_STRING;
-		$<expr>$.expr_u.s=strdup($<str>1);
+		$<expr>$.expr_u.s=acl_strdup($<str>1);
 	}
 	| NUMERIC {
 		$<expr>$.type=EXPRTYPE_DOUBLE;

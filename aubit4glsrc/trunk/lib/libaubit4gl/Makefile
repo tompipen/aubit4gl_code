@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2005-06-06 18:03:22 mikeaubury Exp $
+# $Id: Makefile,v 1.5 2005-07-14 11:32:51 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -107,7 +107,7 @@ else
 	CFLAGS_NO_PEDANTIC  =${CFLAGS}
 endif
 
-LCLINT_CFLAGS   	=${C_IFLAGS}
+LCLINT_CFLAGS   	=${C_IFLAGS} -I.
 
 ifeq "${TARGET_OS}" "solaris"
 	LINK_LIBS		+=-lsocket

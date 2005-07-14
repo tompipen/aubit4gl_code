@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.43 2005-03-31 13:35:50 afalout Exp $
+# $Id: readforms.c,v 1.44 2005-07-14 11:32:53 mikeaubury Exp $
 #*/
 
 /**
@@ -505,7 +505,7 @@ include_range_check (char *ss, char *ptr, int dtype)
   memset(buff,0,sizeof(buff));
   memset(buff2,0,sizeof(buff2));
   memset(buff3,0,sizeof(buff3));
-  s = malloc (strlen(ss)+10);
+  s = acl_malloc2 (strlen(ss)+10);
   memset(s,0,strlen(ss)+10);
   strcpy(s,ss);
 

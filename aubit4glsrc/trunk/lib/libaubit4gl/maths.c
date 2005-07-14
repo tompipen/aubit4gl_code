@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: maths.c,v 1.17 2005-05-18 13:48:41 mikeaubury Exp $
+# $Id: maths.c,v 1.18 2005-07-14 11:32:52 mikeaubury Exp $
 #
 */
 
@@ -165,7 +165,7 @@ void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int 
 
   ptr_orig = arr_math[dtype1][dtype2];
 
-  ptr_new = malloc (sizeof (struct s_math));
+  ptr_new = acl_malloc2 (sizeof (struct s_math));
   ptr_new->op = op;
   ptr_new->function = function;
   ptr_new->next = 0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.7 2005-07-14 06:28:35 mikeaubury Exp $
+# $Id: sql_common.c,v 1.8 2005-07-14 11:32:52 mikeaubury Exp $
 #
 */
 
@@ -409,7 +409,7 @@ A4GL_apisql_strdup (char *sql)
   n2 = 20 + (n1 * 3 / 2);
 
   /* malloc space for the new string, copy it and pad with spaces */
-  if ((p = malloc (n2 + 1)))
+  if ((p = acl_malloc2 (n2 + 1)))
     {
       p = memcpy (memset (p, ' ', n2), sql, n1);
       p[n2] = '\0';
@@ -428,7 +428,7 @@ A4GL_apisql_add_sess (char *sessname)
   struct sess *next;
   next = curr_sess;
   A4GL_debug("Add session : %s\n",sessname);
-  curr_sess = (struct sess *) malloc (sizeof (struct sess));
+  curr_sess = (struct sess *) acl_malloc2 (sizeof (struct sess));
   strcpy (curr_sess->sessname, sessname);
   strcpy (curr_sess->dbms_dialect, A4GLSQL_dbms_dialect ());
   curr_sess->next = next;
@@ -661,7 +661,7 @@ void A4GL_log_sql_prepared(char *s) {
 	char *fname;
 	FILE *fout;
 	char buff[256];
-	fname=acl_getenv("MAPSQL");
+	fname=acl_getenv("LOGSQL");
 	if (fname==0) return;
 	if (strlen(fname)==0) return;
 
@@ -679,9 +679,54 @@ void A4GL_log_sql_prepared(char *s) {
 	fclose(fout);
 }
 
+void A4GL_log_sql_prepared_map(char *s) {
+	static char logfname[256]="<not_set>";
+	static int logfnameset=0;
+	char *fname=0;
+	FILE *fout;
+	char buff[256];
+
+
+	if (logfnameset==-1) return;
+
+	fname=acl_getenv("MAPSQL");
+	if (fname==0) 	{logfnameset=-1;return;}
+	if (strlen(fname)==0) {logfnameset=-1;return;}
+
+	if (logfnameset==1) {
+			fout=fopen(logfname,"a");
+			if (fout==0) return; // should have been able to ... very odd..
+	}
+
+	if (logfnameset==0) {
+		// Firstly - MAPSQL should be a directory...
+		sprintf(buff,"%s/%s_%d.map",fname,A4GL_get_running_program(),getpid());
+		fout=fopen(buff,"a");
+		if (fout==0) { // Maybe - its just a file ?
+			sprintf(buff,"%s",fname);
+			fout=fopen(buff,"a");
+		}
+		if (fout==0) {
+			logfnameset=-1;
+			return;
+		}
+
+		// buff should be our current file - so copy it into out stored name
+		logfnameset=1;
+		strcpy(logfname,buff);
+	}
+
+	A4GL_assertion(fout==0,"fout not set - shouldn't happen");
+	// if we've got to here - we've got a file to write to...
+	//
+	fprintf(fout,"%s\n",s);
+	fclose(fout);
+}
+
+
 
 char *A4GLSQLCV_convert_sql (  char* target_dialect ,char* sql ) {
-		A4GLSQLCV_convert_sql_ml(target_dialect,sql,"unknown",0);
+		return A4GLSQLCV_convert_sql_ml(target_dialect,sql,"unknown",0);
 }
 
 /* =============================== EOF ============================== */

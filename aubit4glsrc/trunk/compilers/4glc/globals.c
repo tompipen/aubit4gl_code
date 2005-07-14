@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.33 2005-07-14 06:27:52 mikeaubury Exp $
+# $Id: globals.c,v 1.34 2005-07-14 11:32:47 mikeaubury Exp $
 #
 */
 
@@ -641,12 +641,12 @@ read_glob (char *s)
     }
 
   list_imported_global =
-    realloc (list_imported_global,
+    acl_realloc (list_imported_global,
 	     sizeof (struct variable *) * list_imported_global_alloc);
 
   for (a = start; a < list_imported_global_cnt; a++)
     {
-      list_imported_global[a] = malloc (sizeof (struct variable));
+      list_imported_global[a] = acl_malloc2 (sizeof (struct variable));
       read_variable_header (f, list_imported_global[a]);
     }
   fclose (f);
@@ -698,7 +698,7 @@ read_global_string (FILE * f, char *name, char **val, int alloc)
 
   if (alloc)
     {
-      *val = strdup (buff2);
+      *val = acl_strdup (buff2);
     }
   else
     {
@@ -851,7 +851,7 @@ read_variable_linked (FILE * f, struct variable *v)
 
   while (cnt > 1)
     {
-      ptr->next = malloc (sizeof (struct name_list));
+      ptr->next = acl_malloc2 (sizeof (struct name_list));
       ptr = ptr->next;
       ptr->next = 0;
       read_global_string (f, "LINKCOLUMN", &ptr->name, 1);
@@ -876,16 +876,16 @@ read_variable_record (FILE * f, struct variable *v)
 
   if (is_linked)
     {
-      v->data.v_record.linked = malloc (sizeof (struct linked_variable));
+      v->data.v_record.linked = acl_malloc2 (sizeof (struct linked_variable));
       read_variable_linked (f, v);
     }
 
   v->data.v_record.variables =
-    malloc (sizeof (struct variable *) * v->data.v_record.record_cnt);
+    acl_malloc2 (sizeof (struct variable *) * v->data.v_record.record_cnt);
 
   for (a = 0; a < v->data.v_record.record_cnt; a++)
     {
-      v->data.v_record.variables[a] = malloc (sizeof (struct variable));
+      v->data.v_record.variables[a] = acl_malloc2 (sizeof (struct variable));
       read_variable_header (f, v->data.v_record.variables[a]);
     }
 
@@ -908,16 +908,16 @@ read_variable_object (FILE * f, struct variable *v)
 
   if (is_linked)
     {
-      v->data.v_record.linked = malloc (sizeof (struct linked_variable));
+      v->data.v_record.linked = acl_malloc2 (sizeof (struct linked_variable));
       read_variable_linked (f, v);
     }
 
   v->data.v_record.variables =
-    malloc (sizeof (struct variable *) * v->data.v_record.record_cnt);
+    acl_malloc2 (sizeof (struct variable *) * v->data.v_record.record_cnt);
 
   for (a = 0; a < v->data.v_record.record_cnt; a++)
     {
-      v->data.v_record.variables[a] = malloc (sizeof (struct variable));
+      v->data.v_record.variables[a] = acl_malloc2 (sizeof (struct variable));
       read_variable_header (f, v->data.v_record.variables[a]);
     }
 
@@ -935,7 +935,7 @@ read_variable_assoc (FILE * f, struct variable *v)
 
   read_global_int (f, "SIZE", &v->data.v_assoc.size);
   read_global_int (f, "CHARSIZE", &v->data.v_assoc.char_size);
-  v->data.v_assoc.variables = malloc (sizeof (struct variable *) * 1);
+  v->data.v_assoc.variables = acl_malloc2 (sizeof (struct variable *) * 1);
   ptr = v->data.v_assoc.variables[0];
   read_variable_header (f, ptr);
 }

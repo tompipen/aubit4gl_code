@@ -517,7 +517,7 @@ EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator = INDICATOR,:dataType =
 	      rc = 1;
 	      break;
 	    }
-	  char_var = (char *) malloc (length + 1);
+	  char_var = (char *) acl_malloc2 (length + 1);
 	  EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:char_var = DATA;
 	  cp_sqlca ();
 	  A4GL_trim (char_var);
@@ -615,7 +615,7 @@ EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator = INDICATOR,:dataType =
 	      break;
 	    }
 
-	  //fgl_decimal = malloc (sizeof (fgldecimal));
+	  //fgl_decimal = acl_malloc2 (sizeof (fgldecimal));
 	  if (dectoasc (&decimal_var, buff, 32, -1))
 	    {
 	      A4GL_debug ("BAD DECIMAL");
@@ -646,7 +646,7 @@ EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator = INDICATOR,:dataType =
 	      rc = 1;
 	      break;
 	    }
-	  char_var = (char *) malloc (sizeof (char) * 20);
+	  char_var = (char *) acl_malloc2 (sizeof (char) * 20);
 	  A4GL_dtos (&date_var, char_var, 19);
 	  A4GL_trim (char_var);
 	  sprintf (buffer, "%s", char_var);
@@ -661,7 +661,7 @@ EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator = INDICATOR,:dataType =
 	      rc = 1;
 	      break;
 	    }
-	  //fgl_money = malloc (sizeof (fglmoney));
+	  //fgl_money = acl_malloc2 (sizeof (fglmoney));
 	  if (dectoasc (&money_var, buff, 32, -1))
 	    {
 	/** @todo : Store the error somewhere */
@@ -684,7 +684,7 @@ EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator = INDICATOR,:dataType =
 	      rc = 1;
 	      break;
 	    }
-	  //fgl_dtime = malloc (sizeof (FglDatetime));
+	  //fgl_dtime = acl_malloc2 (sizeof (FglDatetime));
 	  if (dttoasc (&dtime_var, buff))
 	    {
 	/** @todo : Store the error somewhere */
@@ -703,7 +703,7 @@ EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator = INDICATOR,:dataType =
 	      rc = 1;
 	      break;
 	    }
-	  //fgl_interval = malloc (sizeof (FglInterval));
+	  //fgl_interval = acl_malloc2 (sizeof (FglInterval));
 	  if (intoasc (&interval_var, buff))
 	    {
 	/** @todo : Store the error somewhere */
@@ -886,9 +886,9 @@ if (columnNames)
   colnamesize = -1;
 
 
-  columnNames = malloc (sizeof (char *) * (numberOfColumns + 1));
-  columnWidths = malloc (sizeof (int) * (numberOfColumns + 1));
-  columnAlign = malloc (sizeof (int) * (numberOfColumns + 1));
+  columnNames = acl_malloc2 (sizeof (char *) * (numberOfColumns + 1));
+  columnWidths = acl_malloc2 (sizeof (int) * (numberOfColumns + 1));
+  columnAlign = acl_malloc2 (sizeof (int) * (numberOfColumns + 1));
 
 
   for (index = 1; index <= numberOfColumns; index++)

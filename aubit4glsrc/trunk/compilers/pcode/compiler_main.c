@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compiler_main.c,v 1.15 2005-03-09 15:14:32 mikeaubury Exp $
+# $Id: compiler_main.c,v 1.16 2005-07-14 11:32:49 mikeaubury Exp $
 #*/
 
 /**
@@ -53,6 +53,7 @@ int do_optimise=1;
 	#include "npcode.xs.h"
 #endif
 #include "npcode_defs.h"
+#include "a4gl_memhandling.h"
 #include "time.h"
 
 /*
@@ -197,7 +198,7 @@ main (int argc, char *argv[])
 	    }
 	  else
 	    {
-	      this_module.module_name = strdup (argv[a]);
+	      this_module.module_name = acl_strdup (argv[a]);
 	      //printf ("Opening input file %s\n",argv[a]);
 	      yyin = fopen (this_module.module_name, "r");
 	      if (yyin == 0)
@@ -260,7 +261,7 @@ main (int argc, char *argv[])
 
   {
     char *ptr;
-    ptr = malloc (1024 * 1024 * 16);
+    ptr = acl_malloc2 (1024 * 1024 * 16);
     free (ptr);			// Should speed things up a little...
   }
 

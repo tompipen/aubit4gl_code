@@ -14,6 +14,7 @@
 #endif
 
 #include "npcode_defs.h"
+#include "a4gl_memhandling.h"
 
 extern module this_module;
 int really = 0;
@@ -359,9 +360,9 @@ optimize ()
       pcoff = 0;
       if (old_pc_to_new_pc)
 	free (old_pc_to_new_pc);
-      old_pc_to_new_pc = malloc (sizeof (long) * func->cmds.cmds_len);
+      old_pc_to_new_pc = acl_malloc2 (sizeof (long) * func->cmds.cmds_len);
 
-      cmds = malloc (sizeof (struct cmd) * func->cmds.cmds_len);
+      cmds = acl_malloc2 (sizeof (struct cmd) * func->cmds.cmds_len);
       memset (cmds, 0, sizeof (struct cmd) * func->cmds.cmds_len);
 
       // First pass - generate our list of old -> new pointers...

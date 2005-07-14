@@ -15,6 +15,7 @@
 #endif
 
 #include "npcode_defs.h"
+#include "a4gl_memhandling.h"
 
 void A4GL_breakpoint (void);
 
@@ -109,7 +110,7 @@ add_block_to_stack (int pc, struct cmd_block *b)
 	      b->c_vars.c_vars_val[a].category = CAT_ALLOC_STATIC;
 	      //printf("MALLOC : %d\n",b->c_vars.c_vars_val[a].var->total_size);
 	      b->c_vars.c_vars_val[a].var->offset =
-		(long) malloc (b->c_vars.c_vars_val[a].var->total_size);
+		(long) acl_malloc2 (b->c_vars.c_vars_val[a].var->total_size);
 	    }
 
 	  if (b->c_vars.c_vars_val[a].category == CAT_EXTERN)
@@ -143,7 +144,7 @@ add_block_to_stack (int pc, struct cmd_block *b)
   if (callstack[callstack_cnt - 1].mem_to_alloc)
     {
       callstack[callstack_cnt - 1].mem_for_vars =
-	(long) malloc (callstack[callstack_cnt - 1].mem_to_alloc);
+	(long) acl_malloc2 (callstack[callstack_cnt - 1].mem_to_alloc);
       //printf("MALLOC : %d\n",callstack[callstack_cnt - 1].mem_to_alloc);
       //printf("mem=%p to %p  (%d)\n",
 //callstack[callstack_cnt - 1].mem_for_vars, 
@@ -266,7 +267,7 @@ set_var (long pc, struct cmd_set_var *sv)
 
       nsv.variable.sub.sub_len = use_var->sub.sub_len + 1;
       nsv.variable.sub.sub_val =
-	malloc (sizeof (struct use_variable_sub) *
+	acl_malloc2 (sizeof (struct use_variable_sub) *
 		(use_var->sub.sub_len + 1));
 
 
@@ -962,3 +963,17 @@ A4GL_breakpoint (void)
 {
   printf ("Break here\n");
 }
+
+#ifndef FGLCALLS
+void *
+acl_malloc_full (long size, char *why, char *f, long line)
+{
+	  void *p;
+	    p = malloc (size); // acl_malloc_full
+	      if (p==0) {
+		      	printf("Unable to allocate memory\n");
+			exit(1);
+	      }
+	  return p;
+}
+#endif

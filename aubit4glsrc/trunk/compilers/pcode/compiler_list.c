@@ -14,6 +14,7 @@
 #endif
 
 #include "npcode_defs.h"
+#include "a4gl_memhandling.h"
 
 #if HAVE_SEARCH_H
 	#include <search.h>		/* VISIT-used in pointers.c */
@@ -67,7 +68,7 @@ add_label (char *label)
 
 
 
-  e.key = strdup (label);
+  e.key = acl_strdup (label);
   e.data = (char *) current_function->cmds.cmds_len;
 
 #if ! defined (__CYGWIN__) && ! defined (__MINGW32__)
@@ -80,7 +81,7 @@ add_label (char *label)
       exit (10);
     }
 
-  //  labels[labels_cnt].str = strdup (label);
+  //  labels[labels_cnt].str = acl_strdup (label);
   //labels[labels_cnt].pc = current_function->cmds.cmds_len;
 }
 
@@ -99,3 +100,19 @@ find_label (char *label)
   return (long) ep->data;
 
 }
+
+
+
+char *
+acl_strdup_full (void *a, char *r, char *f, int l)
+{
+	  char *p;
+	    p = strdup (a);
+	      if (p == 0)
+		          {
+				        printf ("Unable to allocate memory\n");
+					      exit (1);
+					          }
+	        return p;
+}
+

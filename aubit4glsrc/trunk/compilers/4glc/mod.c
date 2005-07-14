@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.222 2005-07-06 09:25:48 mikeaubury Exp $
+# $Id: mod.c,v 1.223 2005-07-14 11:32:47 mikeaubury Exp $
 #
 */
 
@@ -1328,7 +1328,7 @@ add_constant (char t, char *ptr, char *name)
   strcpy (const_arr[const_cnt].name, name);
   const_arr[const_cnt].type = t;
   const_arr[const_cnt].scope = scope;
-  const_arr[const_cnt].ptr = strdup (ptr);
+  const_arr[const_cnt].ptr = acl_strdup (ptr);
   const_cnt++;
 #endif
 }
@@ -2531,7 +2531,7 @@ continue_loop (char *cmd_type)
 /* Same goes for construct*/
 
 
-  internal_cmd_type=strdup(cmd_type);
+  internal_cmd_type=acl_strdup(cmd_type);
 
   if (strcmp(cmd_type,"INPUTREQ")==0) strcpy(internal_cmd_type,"INPUT");
   if (strcmp(cmd_type,"CONSTRUCTREQ")==0) strcpy(internal_cmd_type,"CONSTRUCT");
@@ -3431,7 +3431,7 @@ char * whenever_store_p=0;
 
 
 void set_whento_store(char *p) {
-	if (p) whentostore_p=strdup(p);
+	if (p) whentostore_p=acl_strdup(p);
 	else whentostore_p=0;
 }
 
@@ -3448,7 +3448,7 @@ void set_whento (char *p)
 
 void set_whenever_store (int c, char *p) {
 	whenever_store_c=c;
-	if (p) whenever_store_p=strdup(p);
+	if (p) whenever_store_p=acl_strdup(p);
 	else whenever_store_p=0;
 }
 
@@ -3905,7 +3905,7 @@ void expand_bind (struct binding_comp *bind, int btype, int cnt)
 
   if (cnt==0) return; /* theres nothing there to expand */
 
-  save_bind=realloc(save_bind,sizeof(struct binding_comp)*cnt);
+  save_bind=acl_realloc(save_bind,sizeof(struct binding_comp)*cnt);
   for (xxxa = 0; xxxa < cnt; xxxa++)
     {
       strcpy (save_bind[xxxa].varname, bind[xxxa].varname);
@@ -4087,9 +4087,9 @@ A4GL_new_expr (char *value)
 {
   struct expr_str *ptr;
   A4GL_debug ("new_expr - %s", value);
-  ptr = malloc (sizeof (struct expr_str));
+  ptr = acl_malloc2 (sizeof (struct expr_str));
   ptr->next = 0;
-  ptr->expr = strdup (value);
+  ptr->expr = acl_strdup (value);
   A4GL_debug ("newexpr : %s -> %p\n", value, ptr);
   /*dump_expr(ptr);*/
   return ptr;
@@ -4438,7 +4438,7 @@ fix_insert_expr (int mode)
 	    		break;
 	  		trim_spaces (colname);
 	  		push_gen (INSCOL, colname);
-			idtypes=realloc(idtypes,sizeof(int)*gen_stack_cnt[INSCOL]);
+			idtypes=acl_realloc(idtypes,sizeof(int)*gen_stack_cnt[INSCOL]);
 			idtypes[gen_stack_cnt[INSCOL]-1]=idtype;
 		}
       		A4GLSQL_end_get_columns ();
@@ -4461,7 +4461,7 @@ fix_insert_expr (int mode)
 	    		break;
 	  		trim_spaces (colname);
 	  		push_gen (TCOL, colname);
-			idtypes_t=realloc(idtypes,sizeof(int)*gen_stack_cnt[INSCOL]);
+			idtypes_t=acl_realloc(idtypes,sizeof(int)*gen_stack_cnt[INSCOL]);
 			idtypes_t[gen_stack_cnt[TCOL]-1]=idtype;
 		}
       		A4GLSQL_end_get_columns ();
@@ -4502,7 +4502,7 @@ fix_insert_expr (int mode)
 	copy_ids=0;
 	if (idtypes_t && idtypes==0) {
 		copy_ids=1;
-		idtypes=realloc(idtypes,sizeof(int)*gen_stack_cnt[INSCOL]);
+		idtypes=acl_realloc(idtypes,sizeof(int)*gen_stack_cnt[INSCOL]);
 		idtypes[gen_stack_cnt[INSCOL]-1]=idtype;
 	}
 
@@ -4572,7 +4572,7 @@ make_sql_string_and_free (char *first, ...)
 
   n = 0;
   va_start (ap, first);
-  ptr = strdup (first);
+  ptr = acl_strdup (first);
 
 
 	if (first!=kw_comma && first!=kw_space && first!=kw_ob && first!=kw_cb) {
@@ -4592,7 +4592,7 @@ make_sql_string_and_free (char *first, ...)
 	break;
       l += strlen (next);
       l++;			/* Extra space...*/
-      ptr = realloc (ptr, l);
+      ptr = acl_realloc (ptr, l);
       strcat (ptr, next);
 	if (next!=kw_comma && next!=kw_space && next!=kw_ob && next!=kw_cb) {
 		A4GL_debug("FREE %p (%s)\n",next,next); 
@@ -4614,7 +4614,7 @@ char * pg_make_sql_string_and_free (char *first, ...)
   int n;
   n = 0;
   va_start (ap, first);
-  ptr = strdup (first);
+  ptr = acl_strdup (first);
 
 
   if (A4GL_isyes(acl_getenv("FREE_SQL_MEM"))) {
@@ -4631,7 +4631,7 @@ char * pg_make_sql_string_and_free (char *first, ...)
 	break;
       l += strlen (next);
       l+=3;			/* Extra space...*/
-      ptr = realloc (ptr, l);
+      ptr = acl_realloc (ptr, l);
 	if (strlen(ptr)) {
 		if (!ispunct(ptr[strlen(ptr)-1])) {
 			strcat(ptr," ");
@@ -4768,7 +4768,7 @@ char b1[256];
 	if (has_clobber(buff_orig)) return get_clobber(buff_orig);
 
 	clob_arr_cnt++;
-	clob_arr=realloc(clob_arr,sizeof(struct s_exchange_clobber)*clob_arr_cnt);
+	clob_arr=acl_realloc(clob_arr,sizeof(struct s_exchange_clobber)*clob_arr_cnt);
 	if (clob_arr==0) {
 		a4gl_yyerror("Unable to allocate buffer...");
 		return 0;
@@ -4777,18 +4777,18 @@ char b1[256];
 
 
 	if (strlen(buff_orig)<=20) { /* Extra 2 for the quotes...*/
-		clob_arr[clob_arr_cnt-1].orig=strdup(buff_orig);
-		clob_arr[clob_arr_cnt-1].new=strdup(buff_new);
-		clob_arr[clob_arr_cnt-1].important=strdup(important);
+		clob_arr[clob_arr_cnt-1].orig=acl_strdup(buff_orig);
+		clob_arr[clob_arr_cnt-1].new=acl_strdup(buff_new);
+		clob_arr[clob_arr_cnt-1].important=acl_strdup(important);
 		return buff_orig;
 	}
 
 	strcpy(b1,important);
 	b1[9]=0;
 	sprintf(buff_new,"\"a4gl_%03d_%s\"",p++,b1);
-	clob_arr[clob_arr_cnt-1].orig=strdup(buff_orig);
-	clob_arr[clob_arr_cnt-1].new=strdup(buff_new);
-	clob_arr[clob_arr_cnt-1].important=strdup(important);
+	clob_arr[clob_arr_cnt-1].orig=acl_strdup(buff_orig);
+	clob_arr[clob_arr_cnt-1].new=acl_strdup(buff_new);
+	clob_arr[clob_arr_cnt-1].important=acl_strdup(important);
 	return buff_new;
 }
 
@@ -4917,7 +4917,7 @@ void clr_validate_list(void) {
 
 static void push_validate_column(char *tabname,char *colname) {
 	validate_list_cnt++;
-	validate_list=realloc(validate_list,sizeof(struct s_validate)*validate_list_cnt);
+	validate_list=acl_realloc(validate_list,sizeof(struct s_validate)*validate_list_cnt);
 	/*A4GL_trim(tabname);*/
 	/*A4GL_trim(colname);*/
 	strcpy(validate_list[validate_list_cnt-1].tabname,tabname);
@@ -4995,9 +4995,9 @@ void A4GL_add_ontimer(char *s) {
 
 void A4GL_add_event(int n,char *s) {
 	event_queue[nevent_queue].nevents++;
-	event_queue[nevent_queue].events=realloc(event_queue[nevent_queue].events,sizeof(struct s_event)*event_queue[nevent_queue].nevents);
+	event_queue[nevent_queue].events=acl_realloc(event_queue[nevent_queue].events,sizeof(struct s_event)*event_queue[nevent_queue].nevents);
 	event_queue[nevent_queue].events[event_queue[nevent_queue].nevents-1].n=n;
-	event_queue[nevent_queue].events[event_queue[nevent_queue].nevents-1].s=strdup(s);
+	event_queue[nevent_queue].events[event_queue[nevent_queue].nevents-1].s=acl_strdup(s);
 }
 
 int A4GL_get_nevents(void) {
@@ -5131,7 +5131,7 @@ char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
         if (A4GLSQLCV_check_requirement("FULL_INSERT")) {
                 sprintf(buff,"INSERT INTO %s %s",current_ins_table,fix_insert_expr(1));
                 free(s);
-                return strdup(buff);
+                return acl_strdup(buff);
         } else {
                 return s;
         }
@@ -5146,7 +5146,7 @@ if (strncasecmp(s,"DATETIME(",9)==0) {
 	if (s[9]!='"') {
 		if (A4GLSQLCV_check_requirement("QUOTE_DATETIME")) {
 			char *ptr;
-			ptr=strdup(&s[9]);
+			ptr=acl_strdup(&s[9]);
 			ptr[strlen(ptr)-1]=0;
 			sprintf(buff,"DATETIME(\"%s\")",ptr);
 			free(ptr);
@@ -5168,7 +5168,7 @@ if (strncasecmp(s,"INTERVAL(",9)==0) {
 	if (s[9]!='"') {
 		if (A4GLSQLCV_check_requirement("QUOTE_INTERVAL")) {
 			char *ptr;
-			ptr=strdup(&s[9]);
+			ptr=acl_strdup(&s[9]);
 			ptr[strlen(ptr)-1]=0;
 			sprintf(buff,"INTERVAL(\"%s\")",ptr);
 			free(ptr);

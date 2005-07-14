@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.28 2005-03-31 13:35:40 afalout Exp $
+# $Id: data_if.c,v 1.29 2005-07-14 11:32:51 mikeaubury Exp $
 #
 */
 
@@ -111,7 +111,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
   A4GL_debug ("screenio - %p mode=%d name=%s var=%x", ptr, mode, A4GL_null_as_null(name), var);
   if (mode == GETSETNEW)
     {
-      return (void *) malloc (sizeof (struct s_s_screenio_1));
+      return (void *) acl_malloc2 (sizeof (struct s_s_screenio_1));
     }
 
   if (mode == GETSETRM)
@@ -383,7 +383,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
 	 sizeof (struct s_s_inp_arr_1));
   if (mode == GETSETNEW)
     {
-      return (void *) malloc (sizeof (struct s_s_inp_arr_1));
+      return (void *) acl_malloc2 (sizeof (struct s_s_inp_arr_1));
     }
 
   if (mode == GETSETRM)
@@ -867,7 +867,7 @@ get_set_s_prompt (void *ptr, int mode, char *name, long var)
 
   if (mode == GETSETNEW)
     {
-      return (void *) malloc (sizeof (struct s_s_prompt_1));
+      return (void *) acl_malloc2 (sizeof (struct s_s_prompt_1));
     }
 
   if (mode == GETSETRM)
@@ -1037,7 +1037,7 @@ get_set_rep_structure (void *ptr, int mode, char *name, long var)
 
   if (mode == GETSETNEW)
     {
-      return (void *) malloc (sizeof (struct s_rep_structure_1));
+      return (void *) acl_malloc2 (sizeof (struct s_rep_structure_1));
     }
 
   if (mode == GETSETRM)
@@ -1304,7 +1304,7 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
 
   if (mode == GETSETNEW)
     {
-      return (void *) malloc (sizeof (struct s_s_disp_arr_1));
+      return (void *) acl_malloc2 (sizeof (struct s_s_disp_arr_1));
     }
 
   if (mode == GETSETRM)

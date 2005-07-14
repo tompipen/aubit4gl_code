@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mpz.c,v 1.13 2005-03-31 16:45:03 mikeaubury Exp $
+# $Id: mpz.c,v 1.14 2005-07-14 11:32:52 mikeaubury Exp $
 */
 
 /**
@@ -212,7 +212,7 @@ void *
 A4GL_mpz_alloc (void)
 {
   mpz_t *ptr;
-  ptr = (mpz_t *) malloc (sizeof (mpz_t));
+  ptr = (mpz_t *) acl_malloc2 (sizeof (mpz_t));
   mpz_init (*ptr);
   return ptr;
 }
@@ -366,7 +366,7 @@ A4GL_add_mpz (int dummy)
   mpz_t a1;
   mpz_t a2;
   mpz_t *ptr;
-  ptr = malloc (sizeof (mpz_t));
+  ptr = acl_malloc2 (sizeof (mpz_t));
   A4GL_debug ("add_mpz");
   A4GL_pop_param (&a2, dtype_mpz, 0);
   A4GL_pop_param (&a1, dtype_mpz, 0);
@@ -392,7 +392,7 @@ A4GL_sub_mpz (int dummy)
   mpz_t a1;
   mpz_t a2;
   mpz_t *ptr;
-  ptr = malloc (sizeof (mpz_t));
+  ptr = acl_malloc2 (sizeof (mpz_t));
   A4GL_debug ("sub_mpz");
 
   A4GL_pop_param (&a2, dtype_mpz, 0);
@@ -416,7 +416,7 @@ A4GL_mul_mpz (int dummy)
   mpz_t a1;
   mpz_t a2;
   mpz_t *ptr;
-  ptr = malloc (sizeof (mpz_t));
+  ptr = acl_malloc2 (sizeof (mpz_t));
   A4GL_debug ("mul_mpz");
 
   A4GL_pop_param (&a2, dtype_mpz, 0);
@@ -441,7 +441,7 @@ A4GL_pow_mpz (int dummy)
   unsigned int a2;
   mpz_t *ptr;
 
-  ptr = malloc (sizeof (mpz_t));
+  ptr = acl_malloc2 (sizeof (mpz_t));
   A4GL_debug ("pow_mpz");
   A4GL_debug_print_stack ();
   A4GL_pop_param (&a2, DTYPE_INT, 0);
@@ -467,7 +467,7 @@ A4GL_div_mpz (int dummy)
   mpz_t a1;
   mpz_t a2;
   mpz_t *ptr;
-  ptr = malloc (sizeof (mpz_t));
+  ptr = acl_malloc2 (sizeof (mpz_t));
   A4GL_debug ("div_mpz");
 
   A4GL_pop_param (&a2, dtype_mpz, 0);
@@ -492,7 +492,7 @@ A4GL_mod_mpz (int dummy)
   mpz_t a1;
   mpz_t a2;
   mpz_t *ptr;
-  ptr = malloc (sizeof (mpz_t));
+  ptr = acl_malloc2 (sizeof (mpz_t));
   A4GL_debug ("mod_mpz");
 
   A4GL_pop_param (&a2, dtype_mpz, 0);

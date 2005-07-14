@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.35 2005-05-15 11:13:10 mikeaubury Exp $
+# $Id: pointers.c,v 1.36 2005-07-14 11:32:52 mikeaubury Exp $
 #
 */
 
@@ -179,6 +179,7 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
   A4GL_trim (orig_name);
   //A4GL_debug ("Adding pointer to %s %c (%p)", orig_name, type, ptr);
   buff = (struct s_node *) malloc (sizeof (struct s_node));
+  A4GL_assertion(buff==0,"Unable to allocate memory");
   buff->name[0] = type;
   buff->name[1] = 0;
   strcat (buff->name, orig_name);
@@ -222,7 +223,7 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
       a = ADD_X (buff);
       //A4GL_debug ("tsearch ... a=%p %p\n", a, buff);
     }
-  buff_add = (struct s_node *) malloc (sizeof (struct s_node));
+  buff_add = (struct s_node *) acl_malloc2 (sizeof (struct s_node));
   sprintf (buff_add->name, ">%p", ptr);
   buff_add->ptr = buff;
   //A4GL_debug ("Adding extra for %s %p\n", buff_add->name, buff_add->ptr);
@@ -295,7 +296,7 @@ A4GL_del_pointer (char *pname, char t)
   struct s_node buff2;
   struct s_node *anode;
   char ptrchar[800];
-  buff = (struct s_node *) malloc (sizeof (struct s_node));
+  buff = (struct s_node *) acl_malloc2 (sizeof (struct s_node));
   buff->name[0] = t;
   buff->name[1] = 0;
   strcat (buff->name, pname);
@@ -442,7 +443,7 @@ A4GL_has_pointer (char *pname, char t)
       rootp = (r < 0) ? &(*rootp)->left :	/* T3: follow left branch */
 	&(*rootp)->right;	/* T4: follow right branch */
     }
-  q = (node *) malloc (sizeof (node));	/* T5: key not found */
+  q = (node *) acl_malloc2 (sizeof (node));	/* T5: key not found */
   if (q != (struct node_t *) 0)	/* make new node */
     {
       *rootp = q;		/* link new node to old */

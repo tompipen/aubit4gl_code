@@ -14,6 +14,7 @@
 #endif
 
 #include "npcode_defs.h"
+#include "a4gl_memhandling.h"
 
 extern module this_module;
 
@@ -25,7 +26,7 @@ malloc_clr (long size)
 {
   void *ptr;
 
-  ptr = malloc (size);
+  ptr = acl_malloc2 (size);
   memset (ptr, 0, size);
   return ptr;
 }
@@ -38,7 +39,7 @@ strdup_with_conv (char *s)
   char *buff;
   int a;
   int b = 0;
-  buff = strdup (s);
+  buff = acl_strdup (s);
   for (a = 0; a < strlen (s); a++)
     {
       if (s[a] == '\\')
@@ -229,7 +230,7 @@ new_param_returns_long (char s, void *ptr)
 
     case 'v':
       p->param_type = PARAM_TYPE_VAR;
-      p->param_u.v = strdup (ptr);
+      p->param_u.v = acl_strdup (ptr);
       break;
 
     case 'I':

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.23 2005-05-18 13:48:41 mikeaubury Exp $
+# $Id: extfile.c,v 1.24 2005-07-14 11:32:51 mikeaubury Exp $
 #
 */
 
@@ -98,7 +98,7 @@ A4GL_set_help_file (char *fname)
 
   if (curr_help_filename)
     free (curr_help_filename);
-  curr_help_filename = strdup (fname);
+  curr_help_filename = acl_strdup (fname);
 
   helpfile = (FILE *) A4GL_open_file_dbpath (fname);
 
@@ -145,7 +145,7 @@ A4GL_set_lang_file (char *fname_orig)
   long a;
   char *fname;
 
-  fname = strdup (fname_orig);
+  fname = acl_strdup (fname_orig);
   A4GL_trim (fname);
   A4GL_debug ("Language file='%s'", fname);
 
@@ -164,7 +164,7 @@ A4GL_set_lang_file (char *fname_orig)
   fseek (langfile, 0, SEEK_END);
   l = ftell (langfile);
   rewind (langfile);
-  language_file_contents = malloc (l + 1);
+  language_file_contents = acl_malloc2 (l + 1);
   fread (language_file_contents, l, 1, langfile);
 
   language_file_contents[l] = 0x0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.14 2005-06-30 22:15:23 mikeaubury Exp $
+# $Id: main.c,v 1.15 2005-07-14 11:32:50 mikeaubury Exp $
 #*/
 
 /**
@@ -353,5 +353,17 @@ aubit_yyprint (int xstderr, int xyychar, int xyylval)
 #endif
 
 
+char *
+acl_strdup_full (void *a, char *r, char *f, int l)
+{
+  char *p;
+  p = strdup (a);
+  if (p == 0)
+    {
+      printf ("Unable to allocate memory\n");
+      exit (1);
+    }
+  return p;
+}
 
 /* ================================= EOF ============================= */

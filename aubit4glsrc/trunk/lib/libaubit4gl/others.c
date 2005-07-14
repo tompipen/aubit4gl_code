@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.53 2005-07-06 15:32:15 mikeaubury Exp $
+# $Id: others.c,v 1.54 2005-07-14 11:32:52 mikeaubury Exp $
 #
 */
 
@@ -118,7 +118,6 @@ aclfgl_fgl_lastkey (int _np)
 
 
 int aclfgl_aclfgl_set_color (int _nargs){ 
-static char *_functionName = "a";
    long c ; 
    long r ; 
    long g ; 
@@ -743,7 +742,7 @@ int aclfgl_aclfgl_read_pipe(int nargs)
 
     cmd_orig=A4GL_char_pop();               /* get the command       */
     A4GL_trim(cmd_orig);                   /* strip trailing spaces */
-    cmd=malloc(strlen(cmd_orig)+20);
+    cmd=acl_malloc2(strlen(cmd_orig)+20);
     strcpy(cmd,cmd_orig);
     free(cmd_orig);
     strcat(cmd, " 2>/dev/null");             /* ignore error output   */

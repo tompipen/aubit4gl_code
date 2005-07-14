@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.88 2005-07-14 06:27:51 mikeaubury Exp $
+# $Id: compile.c,v 1.89 2005-07-14 11:32:47 mikeaubury Exp $
 #*/
 
 /**
@@ -193,7 +193,7 @@ initArguments (int argc, char *argv[])
   char l_libs[1028] = "";
   char buff[4000] = "";
   //char all_objects[4000] = "";
-  char *all_objects = malloc(4000);
+  char *all_objects = acl_malloc2(4000);
   
   char extra_ldflags[1024] = "";
 
@@ -484,7 +484,7 @@ initArguments (int argc, char *argv[])
 	case 'd':		/* Name of the database to compile against - for things*/
 					/* like DEFINE ... LIKE ...*/
 	  printf ("\n\nDB=%s\n\n", optarg);
-	  default_database = strdup (optarg);
+	  default_database = acl_strdup (optarg);
 	  break;
 
 
@@ -1886,9 +1886,9 @@ get_default_database (void)
 void add_module_error(int n,char *s) {
 	module_errors_cnt++;
 	if (module_errors_cnt<=20)  {
-		module_errors=realloc(module_errors,sizeof(module_errors[0])*module_errors_cnt);
+		module_errors=acl_realloc(module_errors,sizeof(module_errors[0])*module_errors_cnt);
 		module_errors[module_errors_cnt-1].lineno=n;
-		module_errors[module_errors_cnt-1].err_str=strdup(s);
+		module_errors[module_errors_cnt-1].err_str=acl_strdup(s);
 	}
 }
 

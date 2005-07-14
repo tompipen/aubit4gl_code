@@ -74,7 +74,7 @@ with_entry:
 	| BOTTOM_MARGIN INT_VALUE {with_bottom_margin=atoi($<str>2);}
 	| LEFT_MARGIN INT_VALUE {with_left_margin=atoi($<str>2);}
 	| RIGHT_MARGIN INT_VALUE {with_right_margin=atoi($<str>2);}
-	| TOP_OF_PAGE CHAR_VALUE {with_top_of_page=strdup($<str>2);}
+	| TOP_OF_PAGE CHAR_VALUE {with_top_of_page=acl_strdup($<str>2);}
 ;
 	
  

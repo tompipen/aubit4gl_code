@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.109 2005-05-27 09:01:47 mikeaubury Exp $
+# $Id: lexer.c,v 1.110 2005-07-14 11:32:47 mikeaubury Exp $
 #*/
 
 /**
@@ -584,7 +584,7 @@ read_word2 (FILE * f, int *t)
 	  	if ((a=='+' || a=='-') && strlen(word)>=2 && toupper(word[strlen(word)-1])=='E') {
 		char *ptr;
 		//printf("a=%c\n",a);
-		ptr=strdup(word);
+		ptr=acl_strdup(word);
 		ptr[strlen(ptr)-1]=0;
 		if (isnum(ptr))  {
 				free(ptr);
@@ -719,7 +719,7 @@ read_word (FILE * f, int *t)
   if (*t == CHAR_VALUE)
     {
       char *s;
-      s = strdup (ptr + 1);
+      s = acl_strdup (ptr + 1);
       s[strlen (s) - 1] = 0;
       A4GL_dumpstring (s, yylineno, infilename);
       s2 = A4GL_translate (s);
@@ -1505,7 +1505,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   word_cnt = 0;
   if (file_out) { 
 		char*buff2;
-		buff2=strdup(buff);
+		buff2=acl_strdup(buff);
 		if (a==NAMED_GEN) {
 			downshift(buff2);
 		} else {

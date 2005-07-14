@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.58 2005-06-18 09:56:56 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.59 2005-07-14 11:32:52 mikeaubury Exp $
 #
 */
 
@@ -312,7 +312,7 @@ char * A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *s
 	//
 	A4GL_debug("sql=%s\n",sql);
 
-	sql=strdup(sqlx);
+	sql=acl_strdup(sqlx);
 
 	A4GL_trim(sql);
 
@@ -541,13 +541,13 @@ static void A4GL_cv_fnlist (char *source, char *target)
 			//printf("yy %s\n",right);
 			while (*right=='='||*right==' '||*right=='\t') right++;
 			A4GL_trim(right);
-	      		conversion_rules[conversion_rules_cnt - 1].data.to = strdup(right);
+	      		conversion_rules[conversion_rules_cnt - 1].data.to = acl_strdup(right);
 			//printf("xx %s\n",right);
 		} else {
 	      		conversion_rules[conversion_rules_cnt - 1].data.to = 0;
 		}
 		A4GL_trim(left);
-      		conversion_rules[conversion_rules_cnt - 1].data.from = strdup(left);
+      		conversion_rules[conversion_rules_cnt - 1].data.from = acl_strdup(left);
 	    }
 	}
     }
@@ -579,7 +579,7 @@ for (b=0;b<conversion_rules_cnt;b++) {
 }
 
 A4GL_debug("check sql 2\n");
-ptr=malloc(strlen(s)*2+1000);
+ptr=acl_malloc2(strlen(s)*2+1000);
 strcpy(ptr,s);
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE) {
@@ -592,9 +592,9 @@ A4GL_debug("returning\n");
 if (buff) free(buff);
 
 if (A4GLSQLCV_check_requirement("LIMIT_LINE")) {
-	buff=strdup(A4GL_space_out(ptr));
+	buff=acl_strdup(A4GL_space_out(ptr));
 } else {
-	buff=strdup(ptr);
+	buff=acl_strdup(ptr);
 }
 free(ptr);
 return buff;
@@ -640,7 +640,7 @@ if (strchr(sv,'(')) {
 	static char *ptr=0;
 	char *ptr2;
 	if (ptr) free(ptr);
-	ptr=strdup(sv);
+	ptr=acl_strdup(sv);
 	ptr2=strchr(ptr,'(');
 	*ptr2=0;
 	ptr2++;
@@ -671,7 +671,7 @@ if (strchr(s,'(')) {
 	static char *ptr=0;
 	char *ptr2;
 	if (ptr) free(ptr);
-	ptr=strdup(s);
+	ptr=acl_strdup(s);
 	ptr2=strchr(ptr,'(');
 	*ptr2=0;
 	ptr2++;
@@ -724,7 +724,7 @@ if (strchr(sv,'(')) {
 	static char *ptr=0;
 	char *ptr2;
 	if (ptr) free(ptr);
-	ptr=strdup(sv);
+	ptr=acl_strdup(sv);
 	ptr2=strchr(ptr,'(');
 	*ptr2=0;
 	ptr2++;
@@ -755,7 +755,7 @@ if (strchr(s,'(')) {
 	static char *ptr=0;
 	char *ptr2;
 	if (ptr) free(ptr);
-	ptr=strdup(s);
+	ptr=acl_strdup(s);
 	ptr2=strchr(ptr,'(');
 	*ptr2=0;
 	ptr2++;
@@ -794,7 +794,7 @@ if (strchr(s,'(')) {
 	static char buff[256];
 	char *ptr;
 	char *ptr2;
-	ptr=strdup(s);
+	ptr=acl_strdup(s);
 	ptr2=strchr(ptr,'(');
 	*ptr2=0;
 	ptr2++;
@@ -1260,7 +1260,7 @@ A4GL_cvsql_split_update (char *sql, char *args)
 
   /* create a temp. buffer to build the new 'set' clause */
   n = cb2 - ob1;
-  s = malloc (n);
+  s = acl_malloc2 (n);
   s[0] = '\0';
 
   /* scan each pair of brackets, extracting col = value pairs */
@@ -1475,8 +1475,8 @@ int b_i;
 char *o1;
 char *o2;
 b_i=0;
-o1=strdup(a);
-o2=strdup(b);
+o1=acl_strdup(a);
+o2=acl_strdup(b);
 b_i=0;
 for (a_i=0;a_i<strlen(a);a_i++) {
 	if (a[a_i]==' '||a[a_i]=='\t') continue;
@@ -1582,7 +1582,7 @@ if (strncasecmp(s,"DATETIME(",9)==0) {
                         char *ptr;
 			char *xx;
 			xx=conversion_rules[hr-1].data.from;
-                        ptr=strdup(&s[9]);
+                        ptr=acl_strdup(&s[9]);
                         ptr[strlen(ptr)-1]=0;
                         sprintf(buff,"%s(\"%s\")",xx,ptr);
                         free(ptr);
@@ -1605,7 +1605,7 @@ if (strncasecmp(s,"INTERVAL(",9)==0) {
                         char *ptr;
 			char *xx;
 			xx=conversion_rules[hr-1].data.from;
-                        ptr=strdup(&s[9]);
+                        ptr=acl_strdup(&s[9]);
                         ptr[strlen(ptr)-1]=0;
                         sprintf(buff,"%s(\"%s\")",xx,ptr);
                         free(ptr);
@@ -1644,7 +1644,7 @@ char *A4GLSQLCV_select_into_temp(char *sel,char *lp,char *tabname)  {
 char *ptr;
 
 if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_AS_DECLARE_GLOBAL")) {
-	ptr=malloc(strlen(sel)+2000);
+	ptr=acl_malloc2(strlen(sel)+2000);
 	A4GL_debug("Creating temp table called %s",tabname);
 	if (!A4GL_has_pointer(tabname,LOG_TEMP_TABLE)) { A4GL_add_pointer(tabname,LOG_TEMP_TABLE,(void *)1); }
 	sprintf(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s AS %s ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,sel);
@@ -1652,20 +1652,20 @@ if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_AS_DECLARE_GLOBAL")) {
 }
 
 if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_AS_CREATE_TEMP_AS")) {
-	ptr=malloc(strlen(sel)+2000);
+	ptr=acl_malloc2(strlen(sel)+2000);
 	sprintf(ptr,"CREATE TEMP TABLE %s AS %s ",tabname,sel);
 	return ptr;
 }
 
 
 if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS")) {
-	ptr=malloc(strlen(sel)+2000);
+	ptr=acl_malloc2(strlen(sel)+2000);
 	sprintf(ptr,"CREATE TEMPORARY TABLE %s AS %s ",tabname,sel);
 	return ptr;
 }
 
 
-ptr=malloc(strlen(sel)+2000);
+ptr=acl_malloc2(strlen(sel)+2000);
 sprintf(ptr,"%s %s",sel,lp);
 return ptr;
 return 0;
@@ -1680,7 +1680,7 @@ void A4GLSQLCV_add_temp_table(char *tabname) {
 
 char *A4GLSQLCV_create_temp_table(char *tabname,char *elements,char *extra,char *oplog) {
 char *ptr;
-ptr=malloc(strlen(tabname)+strlen(elements)+strlen(extra)+strlen(oplog)+1000);
+ptr=acl_malloc2(strlen(tabname)+strlen(elements)+strlen(extra)+strlen(oplog)+1000);
 
 if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 	A4GL_debug("Creating temp table called TABLE : %s",tabname);
@@ -1838,8 +1838,8 @@ char *A4GL_strcasestr(char *s,char *t) {
 	char *p2;
 	char *a;
 	int b;
-	p1=strdup(s);
-	p2=strdup(t);
+	p1=acl_strdup(s);
+	p2=acl_strdup(t);
 	a4gl_upshift(p1);
 	a4gl_upshift(p2);
 	a=strstr(p1,p2);
@@ -1933,7 +1933,7 @@ int in_single=0;
 
 if (ptr) free(ptr);
 
-ptr=malloc(strlen(s)*2+1);
+ptr=acl_malloc2(strlen(s)*2+1);
 
 
 for (a=0;a<strlen(s);a++) {

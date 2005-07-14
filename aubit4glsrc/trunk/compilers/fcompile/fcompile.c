@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.45 2005-07-06 20:11:08 mikeaubury Exp $
+# $Id: fcompile.c,v 1.46 2005-07-14 11:32:49 mikeaubury Exp $
 #*/
 
 /**
@@ -171,7 +171,7 @@ main (int argc, char *argv[])
       // secify database name to be used while compiling form
 	{
 	  cnt++;
-	  default_database = strdup (argv[cnt]);
+	  default_database = acl_strdup (argv[cnt]);
 	  continue;
 	}
 
@@ -210,11 +210,11 @@ main (int argc, char *argv[])
 
   if (strcmp (d, "") == 0)
     {
-      outputfilename = strdup (a);
+      outputfilename = acl_strdup (a);
     }
   else
     {
-      outputfilename = strdup (d);
+      outputfilename = acl_strdup (d);
     }
 
 
@@ -377,7 +377,7 @@ char *rm_dup_quotes(char *s) {
 char *x;
 int a;
 int c;
-x=strdup(s);
+x=acl_strdup(s);
 c=0;
 for (a=0;a<strlen(s);a++) {
 	if (s[a]=='"'&&s[a+1]=='"') continue;

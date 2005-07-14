@@ -65,3 +65,18 @@ void set_block_clicked(int rb) {
 	
 }
 
+
+
+void *
+acl_realloc_full (void *a, long b, char *r, char *f, int l)
+{
+	  void *p;
+	    p = realloc (a, b);
+	      if (p == 0)
+		          {
+				        printf ("Unable to allocate memory\n");
+					      exit (2);
+					          }
+	        return p;
+}
+

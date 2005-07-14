@@ -191,7 +191,7 @@ redraw_field (FIELD * f)
   attr = (f->back | f->fore) & 0xffffff00;
   if (f->rows > 1)
     {
-      xbuff = malloc (f->cols + 1);
+      xbuff = acl_malloc2 (f->cols + 1);
       for (row = 0; row < f->rows; row++)
 	{
 	  strncpy (xbuff, &buff[row * f->cols], f->cols);
@@ -468,7 +468,7 @@ A4GL_form_new_field (int height, int width, int toprow, int leftcol,
   int a;
   char **ptr;
 
-  f = malloc (sizeof (FIELD));
+  f = acl_malloc2 (sizeof (FIELD));
   f->status = 0;
   f->rows = height;
   f->cols = width;
@@ -493,13 +493,13 @@ A4GL_form_new_field (int height, int width, int toprow, int leftcol,
   f->usrptr = 0;
   f->nrow = offscreen;
   f->nbuf = nbuffers;
-  f->buf = malloc (sizeof (char *) * (nbuffers + 1));
+  f->buf = acl_malloc2 (sizeof (char *) * (nbuffers + 1));
   ptr = (char **) f->buf;
 
   for (a = 0; a < nbuffers + 1; a++)
     {
       //char *cptr;
-      ptr[a] = malloc (width * height + 1);
+      ptr[a] = acl_malloc2 (width * height + 1);
       A4GL_form_set_field_buffer (f, a, "");
     }
 
@@ -621,7 +621,7 @@ A4GL_form_new_form (FIELD ** fields)
   FORM *form;
   int a;
 
-  form = (FORM *) malloc (sizeof (FORM));
+  form = (FORM *) acl_malloc2 (sizeof (FORM));
   memcpy (form, &default_form, sizeof (FORM));
 
   for (a = 0; fields[a]; a++)
@@ -630,7 +630,7 @@ A4GL_form_new_form (FIELD ** fields)
     }
   form->maxfield = a;
 
-  form->field = malloc (sizeof (FIELD *) * form->maxfield);
+  form->field = acl_malloc2 (sizeof (FIELD *) * form->maxfield);
   for (a = 0; fields[a]; a++)
     {
       form->field[a] = fields[a];

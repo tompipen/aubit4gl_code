@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: where.c,v 1.14 2005-03-14 18:35:10 mikeaubury Exp $
+# $Id: where.c,v 1.15 2005-07-14 11:32:49 mikeaubury Exp $
 #
 */
 
@@ -80,9 +80,9 @@ t_expression *
 create_field_expr (char *fieldname)
 {
   t_expression *ptr;
-  ptr = malloc (sizeof (t_expression));
+  ptr = acl_malloc2 (sizeof (t_expression));
   ptr->itemtype = ITEMTYPE_FIELD;
-  ptr->u_expression_u.field = strdup (fieldname);
+  ptr->u_expression_u.field = acl_strdup (fieldname);
   return ptr;
 }
 
@@ -94,7 +94,7 @@ t_expression *
 create_int_expr (long intval)
 {
   t_expression *ptr;
-  ptr = malloc (sizeof (t_expression));
+  ptr = acl_malloc2 (sizeof (t_expression));
   ptr->itemtype = ITEMTYPE_INT;
   ptr->u_expression_u.intval = intval;
   return ptr;
@@ -108,10 +108,10 @@ t_expression *
 create_char_expr (char *charval)
 {
   t_expression *ptr;
-  ptr = malloc (sizeof (t_expression));
+  ptr = acl_malloc2 (sizeof (t_expression));
   ptr->itemtype = ITEMTYPE_CHAR;
 
-  ptr->u_expression_u.charval = strdup(&charval[1]);
+  ptr->u_expression_u.charval = acl_strdup(&charval[1]);
   ptr->u_expression_u.charval[strlen(ptr->u_expression_u.charval)-1]=0;
   return ptr;
 }
@@ -134,10 +134,10 @@ create_special_expr (char *charval)
 {
   t_expression *ptr;
   int a;
-  charval=strdup(charval);
+  charval=acl_strdup(charval);
   for (a = 0; a < strlen (charval); a++)
     charval[a] = toupper (charval[a]);
-  ptr = malloc (sizeof (t_expression));
+  ptr = acl_malloc2 (sizeof (t_expression));
   ptr->itemtype = ITEMTYPE_SPECIAL;
   ptr->u_expression_u.special = charval;
   return ptr;
@@ -152,7 +152,7 @@ t_expression *
 create_not_expr (t_expression * expr)
 {
   t_expression *ptr;
-  ptr = malloc (sizeof (t_expression));
+  ptr = acl_malloc2 (sizeof (t_expression));
   ptr->itemtype = ITEMTYPE_NOT;
   ptr->u_expression_u.notexpr = expr;
   return ptr;
@@ -166,7 +166,7 @@ t_expression *
 create_list_expr (void)
 {
   t_expression *ptr;
-  ptr = malloc (sizeof (t_expression));
+  ptr = acl_malloc2 (sizeof (t_expression));
   ptr->itemtype = ITEMTYPE_LIST;
   ptr->u_expression_u.list.list_len = 0;
   ptr->u_expression_u.list.list_val = 0;
@@ -207,7 +207,7 @@ t_expression *
 create_expr_expr (t_complex_expr * expr)
 {
   t_expression *ptr;
-  ptr = malloc (sizeof (t_expression));
+  ptr = acl_malloc2 (sizeof (t_expression));
   ptr->itemtype = ITEMTYPE_COMPLEX;
   ptr->u_expression_u.complex_expr = expr;
   return ptr;
@@ -222,13 +222,13 @@ create_expr_comp_expr (t_expression * expr1, t_expression * expr2, char *comp)
 {
   t_expression *ptr;
   t_complex_expr *ptr2;
-  ptr = malloc (sizeof (t_expression));
-  ptr2 = malloc (sizeof (t_complex_expr));
+  ptr = acl_malloc2 (sizeof (t_expression));
+  ptr2 = acl_malloc2 (sizeof (t_complex_expr));
   ptr->itemtype = ITEMTYPE_COMPLEX;
   ptr->u_expression_u.complex_expr = ptr2;
   ptr2->item1 = expr1;
   ptr2->item2 = expr2;
-  ptr2->comparitor = strdup (comp);
+  ptr2->comparitor = acl_strdup (comp);
   return ptr;
 }
 

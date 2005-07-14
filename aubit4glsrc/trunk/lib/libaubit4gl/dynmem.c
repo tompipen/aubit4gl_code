@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dynmem.c,v 1.3 2005-03-09 15:14:39 mikeaubury Exp $
+# $Id: dynmem.c,v 1.4 2005-07-14 11:32:51 mikeaubury Exp $
 #
 */
 
@@ -69,7 +69,7 @@ int has_old=0;
 		a=A4GL_find_pointer(dyn_ptr_name(var_ptr),DYNMEMALLOC);
 		has_old=1;
 	} else {
-		a=malloc(sizeof(struct s_dyn_allocation));
+		a=acl_malloc2(sizeof(struct s_dyn_allocation));
 		A4GL_add_pointer(dyn_ptr_name(var_ptr),DYNMEMALLOC,a);
 		has_old=0;
 	}
@@ -90,7 +90,7 @@ int has_old=0;
 	if (isRealloc) 	{
 		newPtr=realloc(old_ptr,total_bytes);
 	} else {
-		newPtr=malloc(total_bytes);
+		newPtr=acl_malloc2(total_bytes);
 	}
 
 	a->dims[1]=dim1;

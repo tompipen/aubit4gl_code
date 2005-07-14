@@ -114,14 +114,14 @@ form_def :
 database_section screen_section op_table_section attribute_section op_instruction_section {A4GL_write_form();}
 ;
 database_section :
-DATABASE FORMONLY {the_form.dbname=strdup("formonly");}
+DATABASE FORMONLY {the_form.dbname=acl_strdup("formonly");}
 | DATABASE dbname WITHOUT KW_NULL INPUT {the_form.dbname=($<str>2);
 if (A4GLF_open_db($<str>2)) {
 		yyerror("Unable to connect to database\n");
 }
 }
 | DATABASE FORMONLY WITHOUT KW_NULL INPUT {the_form.dbname=("formonly");}
-| DATABASE dbname {the_form.dbname=strdup($<str>2);
+| DATABASE dbname {the_form.dbname=acl_strdup($<str>2);
 if (A4GLF_open_db($<str>2)) {
 		yyerror("Unable to connect to database\n");
 }
@@ -149,7 +149,7 @@ screens_section :
 					sizeof(struct screen_name));
 
 		the_form.snames.snames_val[the_form.snames.snames_len-1].name=
-				strdup(buff);
+				acl_strdup(buff);
 
 		in_screen_section=1; 
 	}  screens_rest
@@ -166,7 +166,7 @@ screens_section :
 		ptr[strlen(ptr)-1]=0;
 
 		the_form.snames.snames_val[
-			the_form.snames.snames_len-1].name =strdup(ptr);
+			the_form.snames.snames_len-1].name =acl_strdup(ptr);
 
 	in_screen_section=1; 
 	}  screens_rest
@@ -483,8 +483,8 @@ field_datatype : {strcpy($<str>$,"0");}
 ;
 
 field_type : FORMONLY DOT field_name field_datatype_null {
-	fld->tabname=strdup("formonly");
-	fld->colname=strdup($<str>3);
+	fld->tabname=acl_strdup("formonly");
+	fld->colname=acl_strdup($<str>3);
         fld->datatype=atoi($<str>4)&0xff;
 	if (atoi($<str>4)&256) fld->not_null=1;
 	else fld->not_null=0;
@@ -495,8 +495,8 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 	static int xdo=0;
 	char buff[256];
 	sprintf(buff,"_do_%d",xdo++);
-	fld->tabname=strdup("formonly");
-	fld->colname=strdup(buff);
+	fld->tabname=acl_strdup("formonly");
+	fld->colname=acl_strdup(buff);
         fld->datatype=atoi($<str>2)&0xff;
 	if (atoi($<str>2)&256) fld->not_null=1;
 	else fld->not_null=0;
@@ -507,8 +507,8 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 	static int di=0;
 	char buff[256];
 	sprintf(buff,"_di_%d",di++);
-	fld->tabname=strdup("formonly");
-	fld->colname=strdup(buff);
+	fld->tabname=acl_strdup("formonly");
+	fld->colname=acl_strdup(buff);
         fld->datatype=atoi($<str>4)&0xff;
 	if (atoi($<str>4)&256) fld->not_null=1;
 	else fld->not_null=0;
@@ -517,15 +517,15 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 }
 | named_or_kw DOT named_or_kw {
 	//printf("%s %s\n",$<str>1,$<str>3);
-	fld->tabname=strdup($<str>1); 
-	fld->colname=strdup($<str>3);
+	fld->tabname=acl_strdup($<str>1); 
+	fld->colname=acl_strdup($<str>3);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
         fld->dtype_size=A4GL_get_dtype_size();
         //if (fld->datatype==DTYPE_SERIAL) { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
 }
 | named_or_kw {
-	fld->colname=strdup($<str>1);
+	fld->colname=acl_strdup($<str>1);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
         fld->dtype_size=A4GL_get_dtype_size();
@@ -533,15 +533,15 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 }
 
 | STAR named_or_kw DOT named_or_kw {
-	fld->tabname=strdup($<str>2); 
-	fld->colname=strdup($<str>4);
+	fld->tabname=acl_strdup($<str>2); 
+	fld->colname=acl_strdup($<str>4);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
         fld->dtype_size=A4GL_get_dtype_size();
         //if (fld->datatype==DTYPE_SERIAL) { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
 }
 | STAR named_or_kw {
-	fld->colname=strdup($<str>2);
+	fld->colname=acl_strdup($<str>2);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
         fld->dtype_size=A4GL_get_dtype_size();
@@ -714,7 +714,7 @@ DELIMITERS CHAR_VALUE {
 		buff[2]=buff[0];
 		buff[3]=0;
 	}
-	the_form.delim=strdup(buff);
+	the_form.delim=acl_strdup(buff);
 }
 | KW_SCREEN RECORD {
 A4GL_add_srec();

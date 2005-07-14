@@ -474,7 +474,7 @@ if (indicator!=-1) {
           rc = 1;
           break;
         }
-      char_var = (char *)malloc (length + 1);
+      char_var = (char *)acl_malloc2 (length + 1);
       EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:char_var = DATA;cp_sqlca();
       A4GL_trim (char_var);
       sprintf (buffer, "%s", char_var);
@@ -552,7 +552,7 @@ if (indicator!=-1) {
           break;
         }
       /** @todo : Print as date field */
-      char_var = (char *)malloc (sizeof (char) * 10);
+      char_var = (char *)acl_malloc2 (sizeof (char) * 10);
       A4GL_dtos (&date_var, char_var, 10);
       sprintf (buffer, "%s", char_var);
       free (char_var);
@@ -719,9 +719,9 @@ if (columnAlign) {
 colnamesize=-1;
 
 
-columnNames=malloc(sizeof(char*) * (numberOfColumns+1));
-columnWidths=malloc(sizeof(int) * (numberOfColumns+1));
-columnAlign=malloc(sizeof(int) * (numberOfColumns+1));
+columnNames=acl_malloc2(sizeof(char*) * (numberOfColumns+1));
+columnWidths=acl_malloc2(sizeof(int) * (numberOfColumns+1));
+columnAlign=acl_malloc2(sizeof(int) * (numberOfColumns+1));
 
 
 for(index=1;index<=numberOfColumns;index++) {

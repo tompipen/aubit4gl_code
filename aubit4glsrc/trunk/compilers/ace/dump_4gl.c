@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../../common/dataio/report.xs.h"
+#include "a4gl_memhandling.h"
 /*
 # 4GL code generator
 #
@@ -844,7 +845,7 @@ replace_vars_sql (struct select_stmts *ptr)
   if (ptr->varids.varids_len == 0)
     return ptr->statement;
 
-  cptr = strdup (ptr->statement);
+  cptr = acl_strdup (ptr->statement);
 
   lpos = &cptr[0];
   for (a = 0; a < ptr->varpos.varpos_len; a++)
@@ -884,4 +885,18 @@ trans (char *s)
     }
   buff[c] = 0;
   return buff;
+}
+
+
+char *
+acl_strdup_full (void *a, char *r, char *f, int l)
+{
+  char *p;
+  p = strdup (a);
+  if (p == 0)
+    {
+      printf ("Unable to allocate memory\n");
+      exit (1);
+    }
+  return p;
 }

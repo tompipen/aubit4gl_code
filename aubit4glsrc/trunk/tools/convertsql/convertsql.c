@@ -25,7 +25,7 @@ process_stdin (char *dialect_in, char *dialect_out)
 //  int n = 0;
   char *ptr;
 
-  buff = malloc (buffsize);
+  buff = acl_malloc2 (buffsize);
   clearbuff ();
 
   /* read stdin into the statement buffer, converting and

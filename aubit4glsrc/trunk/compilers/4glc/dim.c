@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dim.c,v 1.20 2005-03-09 15:14:14 mikeaubury Exp $
+# $Id: dim.c,v 1.21 2005-07-14 11:32:47 mikeaubury Exp $
 #*/
 
 /**
@@ -131,14 +131,14 @@ dim_add (int a, char *s1, char *s2, char *s3)
 	  size_space = sizeof (struct s_dimentry *) * dimalloc;
 	  A4GL_debug ("Allocating space for %d dims of %d bytes\n", dimalloc,
 		 size_space);
-	  dims = (struct s_dimentry **) realloc (dims, size_space);
+	  dims = (struct s_dimentry **) acl_realloc (dims, size_space);
 	  A4GL_debug ("dims=%p\n", dims);
 	}
       A4GL_debug ("Allocating entry\n");
-      ent = (struct s_dimentry *) malloc (sizeof (struct s_dimentry));
+      ent = (struct s_dimentry *) acl_malloc2 (sizeof (struct s_dimentry));
       A4GL_debug ("ent=%p\n", ent);
 
-      ent->dimname = (char *) strdup (s1);
+      ent->dimname = (char *) acl_strdup (s1);
       ent->item = 0;
       dimcnt += 1;
       A4GL_debug ("Adding to array at %d\n", dimcnt);
@@ -152,22 +152,22 @@ dim_add (int a, char *s1, char *s2, char *s3)
     }
   A4GL_debug ("Adding item dimcnt=%d dimalloc=%d dims=%p\n", dimcnt, dimalloc,
 	 dims);
-  itm = (struct s_dimitem *) malloc (sizeof (struct s_dimitem));
+  itm = (struct s_dimitem *) acl_malloc2 (sizeof (struct s_dimitem));
   A4GL_debug ("itm=%p\n", itm);
   itm->type = a;
 
   if (s1)
-    itm->a = strdup (s1);
+    itm->a = acl_strdup (s1);
   else
     itm->a = 0;
 
   if (s2)
-    itm->b = strdup (s2);
+    itm->b = acl_strdup (s2);
   else
     itm->b = 0;
 
   if (s3)
-    itm->c = strdup (s3);
+    itm->c = acl_strdup (s3);
   else
     itm->c = 0;
   A4GL_debug ("set strings\n");

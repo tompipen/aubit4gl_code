@@ -179,7 +179,7 @@ int need_tabname=0;
 		}
 
 		if (e==0) {
-			e=malloc(sizeof(struct element));
+			e=acl_malloc2(sizeof(struct element));
 			e->type='?';
 			e->delim=0;
 			e->fname=0;

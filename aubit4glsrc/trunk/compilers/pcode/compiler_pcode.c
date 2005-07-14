@@ -14,6 +14,7 @@
 #endif
 
 #include "npcode_defs.h"
+#include "a4gl_memhandling.h"
 
 char **call_list;
 int ncalls = 0;
@@ -67,7 +68,7 @@ set_externs ()
     return; 
 
 
-   this_module.external_function_table.external_function_table_val = malloc (sizeof (char *) * n);
+   this_module.external_function_table.external_function_table_val = acl_malloc2 (sizeof (char *) * n);
   this_module.external_function_table.external_function_table_len = n;
   n = 0;
 
@@ -96,7 +97,7 @@ void add_called (char *s)
   ncalls++;
 
   call_list = realloc (call_list, sizeof (char *) * ncalls);
-  call_list[ncalls - 1] = strdup (s);
+  call_list[ncalls - 1] = acl_strdup (s);
   called[ncalls-1]=1;
 }
 
@@ -284,7 +285,7 @@ new_command (enum cmd_type cmd_type, void *ptr)
 long add_call (char *funcname, long params_i)
 {
   struct npcmd_call *c;
-  c = malloc (sizeof (struct npcmd_call));
+  c = acl_malloc2 (sizeof (struct npcmd_call));
   c->func_id = add_id (funcname);
   c->func_params_param_id = params_i;
   add_called (funcname);
@@ -296,7 +297,7 @@ long add_block (void *ptr_c_vars)
 {
   struct cmd_block *blk;
   long pc;
-  blk = malloc (sizeof (struct cmd_block));
+  blk = acl_malloc2 (sizeof (struct cmd_block));
   blk->c_vars.c_vars_len = 0;
   blk->c_vars.c_vars_val = 0;
   blk->mem_for_vars = 0;
@@ -323,15 +324,15 @@ long xadd_set_var (struct use_variable *var_orig, long value, int once)
   int block=0;
 
 printf("\n\nAdd set var\n");
-  var = malloc (sizeof (struct use_variable));
+  var = acl_malloc2 (sizeof (struct use_variable));
   memcpy (var, var_orig, sizeof (struct use_variable));
 
   printf ("In add set var : ");
   print_use_variable (var);
   printf ("\n");
 
-  v = malloc (sizeof (struct cmd_set_var));
-  v1 = malloc (sizeof (struct cmd_set_var1));
+  v = acl_malloc2 (sizeof (struct cmd_set_var));
+  v1 = acl_malloc2 (sizeof (struct cmd_set_var1));
 
   A4GL_debug ("sizes : %d %d\n", sizeof (v->variable),
 	      sizeof (struct use_variable));
@@ -436,7 +437,7 @@ printf("\n\nAdd set var\n");
 		  //int sublist_n;
 		  int npid_a;
 
-		  var2 = malloc (sizeof (struct use_variable));
+		  var2 = acl_malloc2 (sizeof (struct use_variable));
 		  memcpy (var2, var, sizeof (struct use_variable));
 
 		  printf ("---> %d %d\n", a,
@@ -455,7 +456,7 @@ printf("\n\nAdd set var\n");
 		  n =
 		    this_module.params.params_val[value].param_u.p_list->
 		    list_param_id.list_param_id_val[a];
-		  subparam = malloc (sizeof (struct param));
+		  subparam = acl_malloc2 (sizeof (struct param));
 		  memcpy (subparam, &this_module.params.params_val[n],
 			  sizeof (struct param));
 		  if (subparam->param_type != PARAM_TYPE_LIST)
@@ -500,7 +501,7 @@ printf("\n\nAdd set var\n");
 			}
 		      printf ("sub type2 : %d\n", subparam->param_type);
 		      var2->sub.sub_val =
-			malloc (sizeof (struct use_variable_sub));
+			acl_malloc2 (sizeof (struct use_variable_sub));
 		      var2->sub.sub_len = 1;
 		      var2->sub.sub_val[0].x1element = -1;
 		      var2->sub.sub_val[0].x1subscript_param_id[0] = 0;
@@ -554,9 +555,9 @@ printf("\n\nAdd set var\n");
 		      printf ("Excess elements ignored (3)\n");
 		      break;
 		    }
-		  var2 = malloc (sizeof (struct use_variable));
+		  var2 = acl_malloc2 (sizeof (struct use_variable));
 		  memcpy (var2, var, sizeof (struct use_variable));
-		  var2->sub.sub_val = malloc (sizeof (struct use_variable_sub));
+		  var2->sub.sub_val = acl_malloc2 (sizeof (struct use_variable_sub));
 		  var2->sub.sub_len = 1;
 		  var2->sub.sub_val[0].x1element = -1;
 		  var2->sub.sub_val[0].x1subscript_param_id[0] = 0;
@@ -590,9 +591,9 @@ printf("\n\nAdd set var\n");
 			printf("Excess elements for structure (4)\n");
 			break;
 		}
-		  var2 = malloc (sizeof (struct use_variable));
+		  var2 = acl_malloc2 (sizeof (struct use_variable));
 		  memcpy (var2, var, sizeof (struct use_variable));
-		  var2->sub.sub_val = malloc (sizeof (struct use_variable_sub));
+		  var2->sub.sub_val = acl_malloc2 (sizeof (struct use_variable_sub));
 		  var2->sub.sub_len = 1;
 
 		  var2->sub.sub_val[0].x1element = a;
@@ -658,7 +659,7 @@ long add_goto (char *label)
     }
   else
     {
-      return new_command (CMD_GOTO_LABEL, strdup (label));
+      return new_command (CMD_GOTO_LABEL, acl_strdup (label));
     }
 }
 
@@ -695,7 +696,7 @@ end_block ()
 {
   int begin_pc;
   struct cmd_end_block *b;
-  b = malloc (sizeof (struct cmd_end_block));
+  b = acl_malloc2 (sizeof (struct cmd_end_block));
   begin_pc = do_end_block ();
   b->pc_start_block = begin_pc;
 
@@ -705,7 +706,7 @@ end_block ()
 long add_if (long e_i, char *true, char *false)
 {
   struct npcmd_if *f;
-  f = malloc (sizeof (struct npcmd_if));
+  f = acl_malloc2 (sizeof (struct npcmd_if));
   f->condition_param_id = e_i;
   f->goto_true = (long) true;
   f->goto_false = (long) false;
@@ -774,8 +775,8 @@ long add_ecall (char *s, int a, int b)
   struct ecall *xptr;
   char *ptr;
   char *eptr;
-  xptr = malloc (sizeof (struct ecall));
-  ptr = strdup (&s[1]);
+  xptr = acl_malloc2 (sizeof (struct ecall));
+  ptr = acl_strdup (&s[1]);
   eptr = &ptr[strlen (ptr) - 1];
   *eptr = 0;
 
@@ -831,7 +832,7 @@ long add_push_char (char *s)
   int n;
   char *ptr;
   char *eptr;
-  ptr = strdup (&s[1]);
+  ptr = acl_strdup (&s[1]);
   eptr = &ptr[strlen (ptr) - 1];
   *eptr = 0;
 
@@ -1074,7 +1075,7 @@ int add_id (char *s)
     realloc (this_module.id_table.id_table_val,
 	     sizeof (struct vstring) * this_module.id_table.id_table_len);
   this_module.id_table.id_table_val[this_module.id_table.id_table_len - 1].s =
-    strdup (s);
+    acl_strdup (s);
   this_module.id_table.id_table_val[this_module.id_table.id_table_len -
 				    1].rcnt = 1;
 
@@ -1115,7 +1116,7 @@ void add_function (char *function_name, struct define_variables *v, int is_stati
     {
       curr_func->param_vars.param_vars_len = v->var_len;
       curr_func->param_vars.param_vars_val =
-	malloc (sizeof (struct use_variable) * v->var_len);
+	acl_malloc2 (sizeof (struct use_variable) * v->var_len);
       memset (curr_func->param_vars.param_vars_val, 0,
 	      (sizeof (struct use_variable) * v->var_len));
     }

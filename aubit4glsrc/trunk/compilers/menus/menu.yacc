@@ -125,7 +125,7 @@ menu_sec :
 menu:
 	KW_MENU identifier {
 		m=nmenu();
-		m->id=strdup($<str>2);
+		m->id=acl_strdup($<str>2);
 		push_menu(m);
 	}  menu_rest KW_END KW_MENU {pop_menu();}
 ; 
@@ -142,36 +142,36 @@ menu_item :
 		menu_option_item *o;
 		A4GL_debug("New option %s for menu %p\n",$<str>2,get_menu());
 		o=new_option(get_menu());
-		o->id=strdup($<str>2);
-		o->caption=strdup($<str>4);
+		o->id=acl_strdup($<str>2);
+		o->caption=acl_strdup($<str>4);
 		o->image=img_val;
-		o->key_list=strdup($<str>5);
+		o->key_list=acl_strdup($<str>5);
 		o->align=atoi($<str>6);
 	 	A4GL_debug("Ok option\n"); }
 	| KW_SUBMENU identifier op_image op_string op_key op_attr KW_USE identifier {
 		menu_option_item *o;
 		A4GL_debug("Submenu with use\n");
 		o=new_option(get_menu());
-		o->id=strdup($<str>2);
+		o->id=acl_strdup($<str>2);
 		o->image=img_val;
-		o->caption=strdup($<str>4);
-		o->submenu_id=strdup($<str>8);
-		o->key_list=strdup($<str>5);
+		o->caption=acl_strdup($<str>4);
+		o->submenu_id=acl_strdup($<str>8);
+		o->key_list=acl_strdup($<str>5);
 		o->align=atoi($<str>6);
 	}
 	| KW_SUBMENU identifier op_image op_string op_key op_attr {
 		menu_option_item *o;
 		A4GL_debug("Submenu without use\n");
 		o=new_option(get_menu());
-		o->id=strdup($<str>2);
+		o->id=acl_strdup($<str>2);
 		o->image=img_val;
-		o->caption=strdup($<str>4);
-		o->key_list=strdup($<str>5);
+		o->caption=acl_strdup($<str>4);
+		o->key_list=acl_strdup($<str>5);
 		o->align=atoi($<str>6);
 		/* sprintf(sbuff,"_menuid%d",menu_cnt); */
-		o->submenu_id=strdup($<str>2);
+		o->submenu_id=acl_strdup($<str>2);
 		m=nmenu();
-		m->id=strdup($<str>2);
+		m->id=acl_strdup($<str>2);
 		push_menu(m);
 
 	} menu_rest KW_END KW_SUBMENU  {pop_menu();}
@@ -179,7 +179,7 @@ menu_item :
 
 op_string: {strcpy($<str>$,"");} 
 | CHAR_VALUE { strcpy($<str>$,A4GL_char_val($<str>1));}
-| CHAR_VALUE CHAR_VALUE { sprintf($<str>$,"%s\n%s",strdup(A4GL_char_val($<str>1)),strdup(A4GL_char_val($<str>2)));}
+| CHAR_VALUE CHAR_VALUE { sprintf($<str>$,"%s\n%s",acl_strdup(A4GL_char_val($<str>1)),acl_strdup(A4GL_char_val($<str>2)));}
 ;
 
 op_key : {strcpy($<str>$,"");} | key
@@ -205,7 +205,7 @@ attr_elem:
 op_image  : {
 		img_val="";
 	} | KW_IMAGE EQUAL CHAR_VALUE {
-		img_val=strdup(A4GL_char_val($<str>3));
+		img_val=acl_strdup(A4GL_char_val($<str>3));
 	}
 ;
 %%

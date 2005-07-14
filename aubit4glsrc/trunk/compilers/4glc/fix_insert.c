@@ -118,7 +118,7 @@ fix_insert_expr (int mode)
 	  		trim_spaces (colname);
 			if (is_serial_column(current_ins_table, colname)) idtype=DTYPE_SERIAL;
 	  		push_gen (INSCOL, colname);
-			idtypes=realloc(idtypes,sizeof(int)*gen_stack_cnt[INSCOL]);
+			idtypes=acl_realloc(idtypes,sizeof(int)*gen_stack_cnt[INSCOL]);
 			idtypes[gen_stack_cnt[INSCOL]-1]=idtype;
 		}
       		A4GLSQL_end_get_columns ();
@@ -145,7 +145,7 @@ fix_insert_expr (int mode)
 	  		push_gen (TCOL, colname);
 
 
-			idtypes_t=realloc(idtypes_t,sizeof(int)*gen_stack_cnt[TCOL]);
+			idtypes_t=acl_realloc(idtypes_t,sizeof(int)*gen_stack_cnt[TCOL]);
 			idtypes_t[gen_stack_cnt[TCOL]-1]=idtype;
 		}
       		A4GLSQL_end_get_columns ();
@@ -186,7 +186,7 @@ fix_insert_expr (int mode)
 
 	if (idtypes_t && idtypes==0) {
 		copy_ids=1;
-		idtypes=realloc(idtypes,sizeof(int)*gen_stack_cnt[TCOL]);
+		idtypes=acl_realloc(idtypes,sizeof(int)*gen_stack_cnt[TCOL]);
 		for (a=0;a<gen_stack_cnt[TCOL];a++) { 
 			idtypes[a]=-1; 
 		}

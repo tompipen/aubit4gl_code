@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.18 2005-05-15 09:12:47 mikeaubury Exp $
+# $Id: translate.c,v 1.19 2005-07-14 11:32:52 mikeaubury Exp $
 #
 */
 
@@ -248,7 +248,7 @@ A4GL_add_translate (int mode, char *from, char *to, int quote)
     (struct translate_string *) realloc (translate_list,
 					 sizeof (struct translate_string) *
 					 translate_list_cnt);
-  translate_list[translate_list_cnt - 1].from = strdup (from);
+  translate_list[translate_list_cnt - 1].from = acl_strdup (from);
   A4GL_debug ("Adding %s -> %s mode %d", from, to, mode);
   if (mode == 1)
     {
@@ -263,7 +263,7 @@ A4GL_add_translate (int mode, char *from, char *to, int quote)
 	  sprintf (buff, "\"%s\"", to);
 	}
 
-      translate_list[translate_list_cnt - 1].to = strdup (buff);
+      translate_list[translate_list_cnt - 1].to = acl_strdup (buff);
       translate_list[translate_list_cnt - 1].identifier = 0;
     }
   else
@@ -280,7 +280,7 @@ A4GL_add_translate (int mode, char *from, char *to, int quote)
 	  sprintf (buff, "get_translated_id(\"%s\")", to);
 	}
 
-      translate_list[translate_list_cnt - 1].identifier = strdup (buff);
+      translate_list[translate_list_cnt - 1].identifier = acl_strdup (buff);
       translate_list[translate_list_cnt - 1].to = 0;
     }
 }

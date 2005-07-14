@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.58 2005-07-06 09:26:48 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.59 2005-07-14 11:32:57 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -768,7 +768,7 @@ UILIB_A4GL_new_menu_create (char *title, int x, int y, int mn_type,
   A4GL_chkwin ();
   strcpy (buff, title);
   A4GL_trim (buff);
-  menu = malloc (sizeof (ACL_Menu) + 0);
+  menu = acl_malloc2 (sizeof (ACL_Menu) + 0);
   strcpy (menu->menu_title, buff);
   A4GL_trim (menu->menu_title);
   menu->menu_type = mn_type;
@@ -802,7 +802,7 @@ UILIB_A4GL_add_menu_option (void *menuv, char *txt, char *keys, char *desc,
   char op1[256];
   int nopts;
   menu = menuv;
-  opt1 = malloc (sizeof (ACL_Menu_Opts));
+  opt1 = acl_malloc2 (sizeof (ACL_Menu_Opts));
   A4GL_debug ("MJAMJA helpno=%d", helpno);
 
   opt1->next_option = 0;
@@ -910,7 +910,7 @@ A4GL_new_menu (char *title,
   strcpy (buff, title);
   A4GL_trim (buff);
   A4GL_debug (" Menu title : '%s'", title);
-  menu = malloc (sizeof (ACL_Menu) + 100);
+  menu = acl_malloc2 (sizeof (ACL_Menu) + 100);
   strcpy (menu->menu_title, buff);
   A4GL_trim (menu->menu_title);
 
@@ -928,7 +928,7 @@ A4GL_new_menu (char *title,
 
   menu->curr_page = 0;
   menu->mn_offset = 0;
-  opt1 = malloc (sizeof (ACL_Menu_Opts));
+  opt1 = acl_malloc2 (sizeof (ACL_Menu_Opts));
   menu->first = (ACL_Menu_Opts *) opt1;
   opt1->prev_option = 0;
   A4GL_debug ("Menu=%p &Menu=%p", menu, &menu);
@@ -937,7 +937,7 @@ A4GL_new_menu (char *title,
     {
       if (ret != 0)
 	{
-	  opt2 = malloc (sizeof (ACL_Menu_Opts));
+	  opt2 = acl_malloc2 (sizeof (ACL_Menu_Opts));
 	  opt2->prev_option = (ACL_Menu_Opts *) opt1;
 	  opt1->next_option = (ACL_Menu_Opts *) opt2;
 	  opt2->next_option = 0;
@@ -2402,7 +2402,7 @@ A4GL_clr_field (void *f)
   fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
 
   w = A4GL_get_field_width (f);
-  str = malloc (w + 1);
+  str = acl_malloc2 (w + 1);
   memset (str, ' ', w);
   str[w] = 0;
 
@@ -2847,13 +2847,13 @@ UILIB_A4GL_acli_scroll_ap (int n, va_list * ap)
 	      f->fileform->records.records_val[srec_no].dim,
 	      f->fileform->records.records_val[srec_no].attribs.attribs_len);
   buff =
-    malloc (sizeof (char *) * f->fileform->records.records_val[srec_no].dim);
+    acl_malloc2 (sizeof (char *) * f->fileform->records.records_val[srec_no].dim);
 
 
   for (a = 0; a < f->fileform->records.records_val[srec_no].dim; a++)
     {
       buff[a] =
-	malloc (sizeof (char *) *
+	acl_malloc2 (sizeof (char *) *
 		f->fileform->records.records_val[srec_no].attribs.
 		attribs_len);
     }

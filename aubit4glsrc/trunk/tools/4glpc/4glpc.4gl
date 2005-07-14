@@ -1308,7 +1308,7 @@ if (f!=0) {
 	fseek(f,0,SEEK_END);
 	a=ftell(f);
 	rewind(f);
-	ptr=malloc(a+1);
+	ptr=acl_malloc2(a+1);
 	fread(ptr,a,1,f);
 	fclose(f);
 	while (a) {
@@ -1343,7 +1343,7 @@ if (f!=0) {
 	fseek(f,0,SEEK_END);
 	a=ftell(f);
 	rewind(f);
-	ptr=malloc(a+1);
+	ptr=acl_malloc2(a+1);
 	memset(ptr,0,a+1);
 	fread(ptr,a,1,f);
 	fclose(f);

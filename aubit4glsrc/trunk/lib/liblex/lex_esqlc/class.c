@@ -86,7 +86,7 @@ if (strlen(parent_name)) {
 		for (a=0;parents[a];a++) ;
 		nparents=a;
 	}
-	buff=malloc(nparents*sizeof(char *));
+	buff=acl_malloc2(nparents*sizeof(char *));
 	memcpy(buff,parents,nparents*sizeof(char *));
 	printf("Parent has %d methods\n",nparents);
 
@@ -110,7 +110,7 @@ if (strlen(parent_name)) {
 
 
 printc("int aclfglclass__sizeof(){ return sizeof(struct this_class_var);}");
-printc("char *aclfglclass__alloc(){ return malloc(aclfglclass__sizeof());}");
+printc("char *aclfglclass__alloc(){ return acl_malloc2(aclfglclass__sizeof());}");
 printc("void aclfglclass__free(void *ptr) { free(ptr);}");
 printc("void aclfglclass__copy(void *dest,void *src) { memcpy(dest,src,aclfglclass__sizeof());}");
 printc("char *aclfglclass__parent(){ static char *tmp=\"%s\"; return tmp;}",parent_name);
@@ -140,7 +140,7 @@ void LEXLIB_CLASS_print_class_variable_type(char *s) {
 char *ptr;
 char *ptr2;
 char *news;
-news=malloc(strlen(s)+2);
+news=acl_malloc2(strlen(s)+2);
 strcpy(news,s);
 strcat(news,"\n");
 ptr=news;

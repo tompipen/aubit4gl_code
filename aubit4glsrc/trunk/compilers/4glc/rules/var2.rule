@@ -91,7 +91,7 @@ var_ident_ibind_ss :  var2_vu /* a1 */
 {
 	int sv_val;
         char *str1;
-	str1=strdup(variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
+	str1=acl_strdup(variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
 
 	sv_val=scan_variable(str1);
 
@@ -108,11 +108,11 @@ var_ident_ibind_ss :  var2_vu /* a1 */
 		a=get_bind_cnt('i');
 		z=add_bind('i',str1);
 		z-=a;
-		$<sql_string>$=strdup(A4GL_set_var_sql(doing_declare,z));
+		$<sql_string>$=acl_strdup(A4GL_set_var_sql(doing_declare,z));
 
 	} else { 
 		// Its a column
-		$<sql_string>$=strdup(get_column_transform(str1));
+		$<sql_string>$=acl_strdup(get_column_transform(str1));
 	}
 free(str1);
 }
@@ -123,8 +123,8 @@ char *str3;
 char was_str[40000];
 //char lstr[1024];
 int z = 0,a = 0;
-str1=strdup(variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
-str3=strdup(variable_usage_as_string($<var_usg>3,VAR_USG_ANY));
+str1=acl_strdup(variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
+str3=acl_strdup(variable_usage_as_string($<var_usg>3,VAR_USG_ANY));
 strcpy(was_str,"");
 sprintf(buff,"%s\n%s",str1,str3);
 a=get_bind_cnt('i');
@@ -132,7 +132,7 @@ a=get_bind_cnt('i');
 z=add_bind('i',buff);
 z-=a;
 strcpy(was_str,A4GL_set_var_sql(doing_declare,z));
-$<sql_string>$=strdup(was_str);
+$<sql_string>$=acl_strdup(was_str);
 free(str1);
 free(str3);
 }
@@ -178,7 +178,7 @@ arr_subscripts_al :
         OPEN_SQUARE num_list_nl CLOSE_SQUARE {
 		struct array_list *al;
          	A4GL_debug("---> Subscript or substring");
-		al=malloc(sizeof(struct array_list));
+		al=acl_malloc2(sizeof(struct array_list));
 		al->array=$<num_list>2;
 		al->substr=0;
 		$<array_list>$=al;
@@ -187,7 +187,7 @@ arr_subscripts_al :
 	| OPEN_SQUARE num_list_nl CLOSE_SQUARE OPEN_SQUARE num_list_nl CLOSE_SQUARE {
 		struct array_list *al;
          	A4GL_debug("---> Subscript & substring");
-		al=malloc(sizeof(struct array_list));
+		al=acl_malloc2(sizeof(struct array_list));
 		al->array=$<num_list>2;
 		al->substr=$<num_list>5;
 		$<array_list>$=al;

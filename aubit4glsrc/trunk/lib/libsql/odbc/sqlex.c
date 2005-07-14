@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.24 2005-03-31 13:36:15 afalout Exp $
+# $Id: sqlex.c,v 1.25 2005-07-14 11:32:56 mikeaubury Exp $
 #
 */
 
@@ -574,7 +574,7 @@ A4GL_allocate_mem (int size, void *parent)
       exit (0);
     }
 
-  alloc_mem[a].ptr = malloc (size);
+  alloc_mem[a].ptr = acl_malloc2 (size);
 
   if (alloc_mem[a].ptr == 0)
     {

@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "npcode_defs.h"
+#include "a4gl_memhandling.h"
 
 int while_cnt=0;
 int if_cnt=0;
@@ -225,10 +226,10 @@ fgl_funcs :
 			struct cmd_errchk_40000 *ptr_40000;
 			int added=0;
 
-			ptr=malloc(sizeof(struct cmd_errchk));
-			ptr_40110=malloc(sizeof(struct cmd_errchk_40110));
-			ptr_40010=malloc(sizeof(struct cmd_errchk_40010));
-			ptr_40000=malloc(sizeof(struct cmd_errchk_40000));
+			ptr=acl_malloc2(sizeof(struct cmd_errchk));
+			ptr_40110=acl_malloc2(sizeof(struct cmd_errchk_40110));
+			ptr_40010=acl_malloc2(sizeof(struct cmd_errchk_40010));
+			ptr_40000=acl_malloc2(sizeof(struct cmd_errchk_40000));
 
 			memset(ptr,0,sizeof(struct cmd_errchk));
 			memset(ptr_40110,0,sizeof(struct cmd_errchk_40110));
@@ -295,9 +296,9 @@ fparm:
 	
 has_fparam:
 	param  			{
-					$<define_variables>$=malloc(sizeof(struct define_variables));
+					$<define_variables>$=acl_malloc2(sizeof(struct define_variables));
 					$<define_variables>$->var_len=1;
-					$<define_variables>$->var_val=malloc(sizeof(struct variable_element));
+					$<define_variables>$->var_val=acl_malloc2(sizeof(struct variable_element));
 					memcpy(&$<define_variables>$->var_val[0],$<define_var>1,sizeof(struct variable_element));
 				}
 	| has_fparam ',' param 	{ 
@@ -313,9 +314,9 @@ has_fparam:
 has_structparam:
 	param_semi  			{
 					struct define_variables *v;
-					v=malloc(sizeof(struct define_variables));
+					v=acl_malloc2(sizeof(struct define_variables));
 					v->var_len=1;
-					v->var_val=malloc(sizeof(struct variable_element));
+					v->var_val=acl_malloc2(sizeof(struct variable_element));
 					memcpy(&v->var_val[0],$<define_var>1,sizeof(struct variable_element));
 					$<define_variables>$=v;
 				}
@@ -384,13 +385,13 @@ id_list : IDENTIFIER
 /*
 	IDENTIFIER  {
 		$<clist>$.char_len=1;
-		$<clist>$.ptr=malloc(sizeof(char *)*($<clist>$.char_len));
-		$<clist>$.ptr[$<clist>$.char_len-1]=strdup($<str>1);
+		$<clist>$.ptr=acl_malloc2(sizeof(char *)*($<clist>$.char_len));
+		$<clist>$.ptr[$<clist>$.char_len-1]=acl_strdup($<str>1);
 	}
 	| id_list ',' IDENTIFIER {
 	        $<clist>$.char_len++;
                 $<clist>$.ptr=realloc($<clist>$.ptr,sizeof(char *)*($<clist>$.char_len));
-                $<clist>$.ptr[$<clist>$.char_len-1]=strdup($<str>3);
+                $<clist>$.ptr[$<clist>$.char_len-1]=acl_strdup($<str>3);
 
 	}
 ;
@@ -607,7 +608,7 @@ if: IF '(' expr ')' {
 			A4GL_debug("i = %d\n",$<i>$);
 			add_label(buff);
 			sprintf(buff,"_if_else_%d",if_cnt);
-			add_if($<e_id>3,0,strdup(buff));
+			add_if($<e_id>3,0,acl_strdup(buff));
 			}
 		cmd  {
 			A4GL_debug("using i = %d\n",$<i>5);
@@ -638,7 +639,7 @@ for :
                         add_label(buff);
 	} expr ';' {
                         sprintf(buff,"_while_e_%d",$<i>5);
-                        add_if($<e_id>6,0,strdup(buff));
+                        add_if($<e_id>6,0,acl_strdup(buff));
 	}
 	assign_common ')' cmd 
 	{
@@ -663,7 +664,7 @@ while : WHILE {
 
 		} '(' expr ')'  {
 			sprintf(buff,"_while_e_%d",$<i>2);
-			add_if($<e_id>4,0,strdup(buff));
+			add_if($<e_id>4,0,acl_strdup(buff));
 		} cmd {
 			sprintf(buff,"_while_c_%d",$<i>2);
 			add_goto(buff);
@@ -705,7 +706,7 @@ expr_1:
 	| STRING_LITERAL 	{
 			char *buff;
 			char *buff2;
-			buff=strdup($<str>1);
+			buff=acl_strdup($<str>1);
 			buff2=&buff[1];
 			buff2[strlen(buff2)-1]=0;
 			$<e_id>$=new_param_returns_long('s',buff2); 

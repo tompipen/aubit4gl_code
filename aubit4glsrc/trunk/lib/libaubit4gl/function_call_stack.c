@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.21 2005-03-10 10:06:42 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.22 2005-07-14 11:32:51 mikeaubury Exp $
 #*/
 
 /**
@@ -209,6 +209,17 @@ A4GLSTK_popFunction (void)
   if (functionCallPointer < 0)
     functionCallPointer = 0;
 }
+
+
+char * A4GLSTK_topFunction (void)
+{
+	if (functionCallPointer) {
+		return functionCallStack[functionCallPointer-1].functionName;
+	} else {
+		return "MAIN";
+	}
+}
+
 
 /**
  * Generate a string with the current 4gl stack trace.

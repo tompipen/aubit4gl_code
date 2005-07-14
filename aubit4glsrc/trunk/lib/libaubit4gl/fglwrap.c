@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.94 2005-07-06 20:13:39 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.95 2005-07-14 11:32:51 mikeaubury Exp $
 #
 */
 
@@ -211,7 +211,7 @@ char *p;
   	b = 0;
 	for (a = 0; a < MAX_ARGS; a++) {
 		if (a < nargs) {
-			p_args[b++] = strdup (argv[a]);
+			p_args[b++] = acl_strdup (argv[a]);
 		} else {
 			p_args[b++] = 0;
 		}
@@ -264,8 +264,8 @@ char *p;
 #endif
 
   if (A4GL_isyes(acl_getenv("START_ALLOC"))) {
-  ptr = malloc (1024 * 1024 * 10);
-  free (ptr);
+  ptr = acl_malloc (1024 * 1024 * 10,"START ALLOC");
+  acl_free (ptr);
   }
 
 /*endwin(); *//* switch straight back to terminal mode */
@@ -342,7 +342,7 @@ int oval;
   s = A4GL_char_pop ();
   if (a == 2) {
 	char *s2;
-	s2=malloc(strlen(s)+10);
+	s2=acl_malloc2(strlen(s)+10);
 	strcpy(s2,s);
     	strcat (s2, " &");
 	free(s);

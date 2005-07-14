@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.32 2005-07-05 12:03:36 mikeaubury Exp $
+# $Id: input_array.c,v 1.33 2005-07-14 11:32:57 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.32 2005-07-05 12:03:36 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.33 2005-07-14 11:32:57 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1430,7 +1430,7 @@ A4GL_init_control_stack (struct s_inp_arr *sio, int malloc_data)
 // Do we need to allocate the storage area ?
   if (malloc_data)
     {
-      sio->fcntrl = malloc (sizeof (struct s_formcontrol) * 10);
+      sio->fcntrl = acl_malloc2 (sizeof (struct s_formcontrol) * 10);
       sio->fcntrl_cnt = 0;
     }
 
@@ -1655,7 +1655,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 
 
 
-  ptr = malloc (sizeof (struct s_movement));
+  ptr = acl_malloc2 (sizeof (struct s_movement));
   ptr->scr_line = scr_line;
   ptr->arr_line = arr_line;
   ptr->attrib_no = attrib;
@@ -2322,7 +2322,7 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 		  w = A4GL_get_field_width (arr->currentfield);
 		  has_picture = 1;
 		  picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
-		  ptr = malloc (w + 1);
+		  ptr = acl_malloc2 (w + 1);
 		  strncpy (ptr, cptr, w);
 		  ptr[w] = 0;
 

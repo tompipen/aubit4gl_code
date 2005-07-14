@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.46 2005-05-18 13:48:41 mikeaubury Exp $
+# $Id: helper.c,v 1.47 2005-07-14 11:32:52 mikeaubury Exp $
 #
 */
 
@@ -859,7 +859,7 @@ A4GL_strip_pc (char *s, char *d)
 int
 aclfgl_i_rowid_s (int arg)
 {
-  if ((ptr = (long *) malloc (sizeof (long))) != NULL)
+  if ((ptr = (long *) acl_malloc2 (sizeof (long))) != NULL)
     A4GL_push_int (0);
   else
     A4GL_push_int (1);
@@ -1070,7 +1070,7 @@ A4GL_debug("A4GL_setenv %s %s %d",name,value,overwrite);
 		char buff[1024]; 
 	A4GL_debug("have putenv");
 		sprintf (buff,"%s=%s",name,value);
-		ret = putenv(strdup(buff));
+		ret = putenv(acl_strdup(buff));
 		}
 	#else
 		#ifdef DEBUG

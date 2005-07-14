@@ -15,7 +15,7 @@
 #endif
 
 #include "npcode_defs.h"
-
+#include "a4gl_memhandling.h"
 
 
 extern module this_module;
@@ -104,13 +104,13 @@ add_set_var (struct use_variable *var_orig, long value, int once, int lvl)
   printf ("\n\n%sAdd set var\n", do_lvl (lvl));
 #endif
 
-  var = malloc (sizeof (struct use_variable));
+  var = acl_malloc2 (sizeof (struct use_variable));
   memcpy (var, var_orig, sizeof (struct use_variable));
 
   if (once)
     {
       struct cmd_set_var1 *v1 = 0;
-      v1 = malloc (sizeof (struct cmd_set_var1));
+      v1 = acl_malloc2 (sizeof (struct cmd_set_var1));
       memcpy (&(v1->variable), var, sizeof (struct use_variable));
       v1->value_param_id = value;
       v1->set = 0;
@@ -119,7 +119,7 @@ add_set_var (struct use_variable *var_orig, long value, int once, int lvl)
   else
     {
       struct cmd_set_var *v = 0;
-      v = malloc (sizeof (struct cmd_set_var));
+      v = acl_malloc2 (sizeof (struct cmd_set_var));
       memcpy (&(v->variable), var, sizeof (struct use_variable));
       v->value_param_id = value;
       pc = new_command (CMD_SET_VAR, v);
@@ -256,7 +256,7 @@ process_add_list (struct use_variable *var_orig, long value, int once,
 		{		// Go though each subscript of that array
 		  struct use_variable *var_new;
 		  new_sub_val =
-		    malloc (sizeof (struct use_variable_sub) * new_sub_len);
+		    acl_malloc2 (sizeof (struct use_variable_sub) * new_sub_len);
 		  if (var->sub.sub_len)
 		    {
 		      memcpy (new_sub_val, var->sub.sub_val,
@@ -280,7 +280,7 @@ process_add_list (struct use_variable *var_orig, long value, int once,
 		      continue;
 		    }
 
-		  var_new = malloc (sizeof (struct use_variable));
+		  var_new = acl_malloc2 (sizeof (struct use_variable));
 		  memcpy (var_new, var_orig, sizeof (struct use_variable));
 
 		  npid_a = new_param_returns_long ('I', (void *) a);
@@ -338,7 +338,7 @@ process_add_list (struct use_variable *var_orig, long value, int once,
 		    {
 		      struct use_variable *var_new;
 		      new_sub_val =
-			malloc (sizeof (struct use_variable_sub) *
+			acl_malloc2 (sizeof (struct use_variable_sub) *
 				new_sub_len);
 		      if (var->sub.sub_len)
 			{
@@ -365,7 +365,7 @@ process_add_list (struct use_variable *var_orig, long value, int once,
 #endif
 			  continue;
 			}
-		      var_new = malloc (sizeof (struct use_variable));
+		      var_new = acl_malloc2 (sizeof (struct use_variable));
 		      memcpy (var_new, var_orig,
 			      sizeof (struct use_variable));
 		      npid_a = new_param_returns_long ('I', (void *) a);
@@ -428,7 +428,7 @@ process_add_list (struct use_variable *var_orig, long value, int once,
 	      struct use_variable *var_new;
 	      int param_id;
 	      new_sub_val =
-		malloc (sizeof (struct use_variable_sub) * new_sub_len);
+		acl_malloc2 (sizeof (struct use_variable_sub) * new_sub_len);
 	      if (var->sub.sub_len)
 		{
 		  memcpy (new_sub_val, var->sub.sub_val,
@@ -449,7 +449,7 @@ process_add_list (struct use_variable *var_orig, long value, int once,
 #endif
 		  continue;
 		}
-	      var_new = malloc (sizeof (struct use_variable));
+	      var_new = acl_malloc2 (sizeof (struct use_variable));
 	      memcpy (var_new, var_orig, sizeof (struct use_variable));
 	      new_sub_val[new_sub_len - 1].x1element = a;
 	      var_new->sub.sub_len = new_sub_len;

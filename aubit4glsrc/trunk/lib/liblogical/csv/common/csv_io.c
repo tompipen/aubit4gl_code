@@ -53,7 +53,7 @@ struct csv_report_layout *read_csv(FILE *fin) {
 	static struct csv_report_layout csv_report_layout;
 
 	fread(&csv_report_layout.nblocks,sizeof(int),1,fin);
-	csv_report_layout.blocks=malloc(sizeof(struct csv_blocks)*csv_report_layout.nblocks);
+	csv_report_layout.blocks=acl_malloc2(sizeof(struct csv_blocks)*csv_report_layout.nblocks);
 
 	for (a=0;a<csv_report_layout.nblocks;a++) {
 		fread(&csv_report_layout.blocks[a].nrows,sizeof(int),1,fin);
@@ -61,11 +61,11 @@ struct csv_report_layout *read_csv(FILE *fin) {
 		if (csv_report_layout.blocks[a].nrows==0) {
 			csv_report_layout.blocks[a].matrix=0;
 		} else {
-			csv_report_layout.blocks[a].matrix=malloc(sizeof(struct csv_entry *)*csv_report_layout.blocks[a].nrows);
+			csv_report_layout.blocks[a].matrix=acl_malloc2(sizeof(struct csv_entry *)*csv_report_layout.blocks[a].nrows);
 		
 
 			for (y=0;y<csv_report_layout.blocks[a].nrows;y++) {
-				csv_report_layout.blocks[a].matrix[y]=malloc(sizeof(struct csv_entry)*csv_report_layout.blocks[a].ncols);
+				csv_report_layout.blocks[a].matrix[y]=acl_malloc2(sizeof(struct csv_entry)*csv_report_layout.blocks[a].ncols);
 			}
 	
 	
@@ -130,7 +130,7 @@ rbx=vrbx;
 		
   //printf("Every=%d\n",every);
   csv_report_layout.nblocks=rbs;
-  csv_report_layout.blocks=malloc(sizeof(struct csv_blocks)*csv_report_layout.nblocks);
+  csv_report_layout.blocks=acl_malloc2(sizeof(struct csv_blocks)*csv_report_layout.nblocks);
 
   for (a=0;a<rbs;a++) {
 	if (a!=every) {
@@ -145,7 +145,7 @@ rbx=vrbx;
 
   n=0;
 
-  csv_report_layout.blocks[every].matrix=malloc(sizeof(struct csv_entry *)*1);
+  csv_report_layout.blocks[every].matrix=acl_malloc2(sizeof(struct csv_entry *)*1);
   csv_report_layout.blocks[every].matrix[0]=0;
   for (a = 0; a < rbs; a++)
     {
@@ -157,7 +157,7 @@ rbx=vrbx;
 		//printf("Add - its a before or on every row...\n");
 		for (b=0;b<rbx[a].nentry_nos;b++) {
 			if (rbx[a].max_size_entry[b]) n++;
-			csv_report_layout.blocks[every].matrix[0]=realloc( csv_report_layout.blocks[every].matrix[0], sizeof(struct csv_entry)*n);
+			csv_report_layout.blocks[every].matrix[0]=acl_realloc( csv_report_layout.blocks[every].matrix[0], sizeof(struct csv_entry)*n);
   			entry=csv_report_layout.blocks[every].matrix[0];
 			//printf("Entry %d - %d/%d\n",n-1,rbx[a].rb,rbx[a].entry_nos[b]);
                         entry[n-1].rb=rbx[a].rb;

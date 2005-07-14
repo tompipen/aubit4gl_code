@@ -462,3 +462,18 @@ msgbox (char *title, char *txt)
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
 }
+
+
+
+void *
+acl_realloc_full (void *a, long b, char *r, char *f, int l)
+{
+  void *p;
+  p = realloc (a, b);
+  if (p == 0)
+    {
+      printf ("Unable to allocate memory\n");
+      exit (2);
+    }
+  return p;
+}

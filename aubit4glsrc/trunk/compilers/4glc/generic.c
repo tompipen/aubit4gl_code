@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: generic.c,v 1.6 2005-03-09 15:14:14 mikeaubury Exp $
+# $Id: generic.c,v 1.7 2005-07-14 11:32:47 mikeaubury Exp $
 #*/
 
 /**
@@ -50,7 +50,7 @@ struct generic_entry_ident *
 new_ident (char *identifier)
 {
   struct generic_entry_ident *i;
-  i = malloc (sizeof (struct generic_entry_ident));
+  i = acl_malloc2 (sizeof (struct generic_entry_ident));
   strcpy (i->identifier, identifier);
   return i;
 }
@@ -60,7 +60,7 @@ struct generic_entry_variable *
 new_variable (void)
 {
   struct generic_entry_variable *i;
-  i = malloc (sizeof (struct generic_entry_variable));
+  i = acl_malloc2 (sizeof (struct generic_entry_variable));
   return i;
 }
 
@@ -71,12 +71,12 @@ new_literal (char type, char *ptr)
 {
   struct generic_entry_literal *i;
 
-  i = malloc (sizeof (struct generic_entry_literal));
+  i = acl_malloc2 (sizeof (struct generic_entry_literal));
 
   i->type = type;
   if (type == 's')
     {
-      i->data.s = strdup (ptr);
+      i->data.s = acl_strdup (ptr);
     }
 
   if (type == 'i')
@@ -95,7 +95,7 @@ struct generic_entry_expression2 *
 new_expression2 (struct generic_entry *l, struct generic_entry *r, char op)
 {
   struct generic_entry_expression2 *i;
-  i = malloc (sizeof (struct generic_entry_expression2));
+  i = acl_malloc2 (sizeof (struct generic_entry_expression2));
   i->lhs = l;
   i->rhs = r;
   i->op = op;
@@ -106,7 +106,7 @@ struct generic_entry_expression1 *
 new_expression1 (struct generic_entry *l, char op)
 {
   struct generic_entry_expression1 *i;
-  i = malloc (sizeof (struct generic_entry_expression1));
+  i = acl_malloc2 (sizeof (struct generic_entry_expression1));
   i->lhs = l;
   i->op = op;
   return i;
@@ -117,7 +117,7 @@ struct generic_entry_expression_f *
 new_functioncall (char *functionname, struct generic_entry_list *l)
 {
   struct generic_entry_expression_f *i;
-  i = malloc (sizeof (struct generic_entry_expression_f));
+  i = acl_malloc2 (sizeof (struct generic_entry_expression_f));
   strcpy (i->function_name, functionname);
   i->operands = l;
   return i;
@@ -128,7 +128,7 @@ struct generic_entry_expression *
 new_expression (char type, void *expr)
 {
   struct generic_entry_expression *i;
-  i = malloc (sizeof (struct generic_entry_expression));
+  i = acl_malloc2 (sizeof (struct generic_entry_expression));
   i->type = type;
   if (type == '1')
     {
@@ -152,7 +152,7 @@ struct generic_entry *
 new_entry (char type, void *entry)
 {
   struct generic_entry *i;
-  i = malloc (sizeof (struct generic_entry));
+  i = acl_malloc2 (sizeof (struct generic_entry));
   i->type = type;
   if (type == 'i')
     {
@@ -184,7 +184,7 @@ struct generic_entry_list *
 new_list (struct generic_entry *entry)
 {
   struct generic_entry_list *i;
-  i = malloc (sizeof (struct generic_entry_list));
+  i = acl_malloc2 (sizeof (struct generic_entry_list));
   i->entry = entry;
   i->next = 0;
   return i;
@@ -199,7 +199,7 @@ append_list (struct generic_entry_list *orig, struct generic_entry *entry)
   while (ptr->next)
     ptr = ptr->next;
 
-  i = malloc (sizeof (struct generic_entry_list));
+  i = acl_malloc2 (sizeof (struct generic_entry_list));
   i->entry = entry;
   i->next = 0;
   ptr->next = i;
@@ -209,14 +209,14 @@ append_list (struct generic_entry_list *orig, struct generic_entry *entry)
 struct field_entry *new_field_entry(char *f,char *n,int needs_quoting) {
 	struct field_entry *field;
 	char buff[256];
-	field=malloc(sizeof(struct field_entry));
+	field=acl_malloc2(sizeof(struct field_entry));
 	if (needs_quoting) {
 		sprintf(buff,"\"%s\"",f);
 	} else {
 		sprintf(buff,"%s",f);
 	}
-	field_entry.field_name=strdup(buff);
-	field_entry.field_sub=strdup(n);
+	field_entry.field_name=acl_strdup(buff);
+	field_entry.field_sub=acl_strdup(n);
 	return field_entry;
 }
 
@@ -228,7 +228,7 @@ void free_field(struct field_entry *field) {
 
 struct field_list *new_field_list() {
 	struct field_list *field_list;
-	field_list=malloc(sizeof(struct field_list));
+	field_list=acl_malloc2(sizeof(struct field_list));
 	field_list.fields=0;
 	field_list.nfields=0;
 	return field_list;
@@ -237,7 +237,7 @@ struct field_list *new_field_list() {
 
 struct field_list *append_field_to_list(struct field_list *field_list, struct field_entry *field) {
 	field_list.nfields++;
-	field_list.fields=realloc(field_list.fields,sizeof(struct field_entry)*field_list.nfields);
+	field_list.fields=acl_realloc(field_list.fields,sizeof(struct field_entry)*field_list.nfields);
 	return field_list;
 }
 

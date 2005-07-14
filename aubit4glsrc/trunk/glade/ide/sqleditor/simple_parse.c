@@ -172,7 +172,7 @@ int need_tabname=0;
 		if (a==KW_SEMI) { e->stmt=ptr; add_stmt(e); free(e); e=0; ptr=0;continue;}
 
 		if (e==0) {
-			e=malloc(sizeof(struct element));
+			e=acl_malloc2(sizeof(struct element));
 			e->type='?';
 			e->delim=0;
 			e->fname=0;

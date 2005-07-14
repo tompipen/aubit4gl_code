@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.141 2005-07-07 15:51:01 mikeaubury Exp $
+# $Id: esql.ec,v 1.142 2005-07-14 11:32:55 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.141 2005-07-07 15:51:01 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.142 2005-07-14 11:32:55 mikeaubury Exp $";
 #endif
 
 
@@ -323,7 +323,7 @@ char *
 A4GLSQLLIB_A4GLSQL_get_sqlerrm (void)
 {
   EXEC SQL BEGIN DECLARE SECTION;
-  char *msg = (char *) malloc (8191);
+  char *msg = (char *) acl_malloc2 (8191);
   EXEC SQL END DECLARE SECTION;
 
   EXEC SQL get diagnostics exception 1:msg = MESSAGE_TEXT;
@@ -372,7 +372,7 @@ NewDbConnection ()
 {
   DbConnection *connection;
 
-  connection = (DbConnection *) malloc (sizeof (DbConnection));
+  connection = (DbConnection *) acl_malloc2 (sizeof (DbConnection));
   return connection;
 }
 
@@ -899,7 +899,7 @@ static struct s_sid *
 newStatement (struct BINDING *ibind, int ni, struct BINDING *obind, int no,
 	      char *s)
 {
-  struct s_sid *sid = malloc (sizeof (struct s_sid));
+  struct s_sid *sid = acl_malloc2 (sizeof (struct s_sid));
 
   sid->select = strdup (s);
   sid->ibind = ibind;
@@ -1447,7 +1447,7 @@ int type;
 	A4GL_debug("1");
       if (isSqlError ())
 	return 1;
-      char_var = malloc (length + 1);
+      char_var = acl_malloc2 (length + 1);
       EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:char_var = DATA;
 		if (length>bind[idx].size) {
   A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
@@ -1611,7 +1611,7 @@ int type;
 				if (byte_var.loc_loctype==LOCMEMORY) {
 					char *x;
 					((fglbyte *) ei->raw_blobs[cnt].f)->memsize=byte_var.loc_bufsize;
-					x=malloc(byte_var.loc_bufsize+1);
+					x=acl_malloc2(byte_var.loc_bufsize+1);
 					memcpy(x,byte_var.loc_buffer,byte_var.loc_bufsize);
 					x[byte_var.loc_bufsize]=0;
 					((fglbyte *)ei->raw_blobs[cnt].f)->ptr=x;
@@ -1749,7 +1749,7 @@ char *
 getDescriptorName (char *statementName, char bindType)
 {
   char *descriptorName;
-  descriptorName = malloc (strlen (statementName) + 20);
+  descriptorName = acl_malloc2 (strlen (statementName) + 20);
   sprintf (descriptorName, "%s_%cbind", statementName, bindType);
   return descriptorName;
 }
@@ -1896,7 +1896,7 @@ static loc_t *add_blob(struct s_sid *sid, int nv,struct s_extra_info *e,fglbyte 
 	EXEC SQL END DECLARE SECTION;
 	e->nblobs++;
 	nb= e->nblobs-1;
-	e->raw_blobs=malloc(sizeof(struct s_b_info)*e->nblobs);
+	e->raw_blobs=acl_malloc2(sizeof(struct s_b_info)*e->nblobs);
 	e2=e;
 
 	i=&e->raw_blobs[e->nblobs-1].ifx_blob;
@@ -1978,7 +1978,7 @@ processPreStatementBinds (struct s_sid *sid)
 
 
   if (!sid->extra_info) {
-  	ei=malloc(sizeof(struct s_extra_info));
+  	ei=acl_malloc2(sizeof(struct s_extra_info));
   	sid->extra_info=ei;
   	ei->raw_blobs=0;
   	ei->nblobs=0;
@@ -2034,7 +2034,7 @@ processPreStatementBinds (struct s_sid *sid)
 			} else { // It is located...
 				struct fgl_int_loc *p;
 				loc_t *infx_var;
-				infx_var=malloc(sizeof(loc_t));
+				infx_var=acl_malloc2(sizeof(loc_t));
 				p=sid->obind[a].ptr;
 				infx_var=add_blob(sid,a,ei,p,'o'); 
 			}
@@ -2518,7 +2518,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 
 
 
-   cursorIdentification = malloc (sizeof (struct s_cid));
+   cursorIdentification = acl_malloc2 (sizeof (struct s_cid));
    cursorIdentification->statement = sid;
   
   //printf("declare\n");
@@ -3093,7 +3093,7 @@ dataType=p_datatype;
 	  rc = 1;
 	  break;
 	}
-      //fgl_decimal = malloc (sizeof (fgldecimal));
+      //fgl_decimal = acl_malloc2 (sizeof (fgldecimal));
 
       fgl_decimal = &actual_fgl_decimal;
       char_var=(char *)&fgl_decimal->dec_data[2];
@@ -3328,7 +3328,7 @@ dataType=p_datatype;
 	  break;
 	}
       if (indicator == -1) { return 0; } 
-      //fgl_decimal = malloc (sizeof (fgldecimal));
+      //fgl_decimal = acl_malloc2 (sizeof (fgldecimal));
 
       fgl_decimal = &actual_fgl_decimal;
       char_varx=(char *)&fgl_decimal->dec_data[2];
@@ -3551,8 +3551,8 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlS
       return;			/* return 1; */
     }
 
-  column_types=malloc(sizeof(int) * numberOfColumns);
-  column_sizes=malloc(sizeof(int) * numberOfColumns);
+  column_types=acl_malloc2(sizeof(int) * numberOfColumns);
+  column_sizes=acl_malloc2(sizeof(int) * numberOfColumns);
 
   for (colcnt=0;colcnt<numberOfColumns;colcnt++) {
 		EXEC SQL BEGIN DECLARE SECTION;
@@ -4820,7 +4820,7 @@ A4GL_debug("unload...");
     }
 
   if (xbuff) free(xbuff);
-  xbuff=malloc(pos);
+  xbuff=acl_malloc2(pos);
   
   /*
    * Step 2: Allocate memory to receive rows of the table returned *
@@ -4831,8 +4831,8 @@ A4GL_debug("unload...");
   /*
    * Bufary and coszs need one pointer per column in the result set. 
    */
-  bufary = (char **) malloc (udesc->sqld * sizeof (char *));
-  colszs = (short *) malloc (udesc->sqld * sizeof (short));
+  bufary = (char **) acl_malloc2 (udesc->sqld * sizeof (char *));
+  colszs = (short *) acl_malloc2 (udesc->sqld * sizeof (short));
 
   /*
    * Allocate indicator list. 
@@ -4840,7 +4840,7 @@ A4GL_debug("unload...");
   /*
    * Array of indicators for fetch sqldat structure. 
    */
-  ipary = (short *) malloc (udesc->sqld * sizeof (short));
+  ipary = (short *) acl_malloc2 (udesc->sqld * sizeof (short));
   if (ipary == NULL || colszs == NULL) { A4GL_exitwith("Out of memory 1"); fclose(unloadFile); free(fname); fname=0;return; }
 
 
@@ -4848,7 +4848,7 @@ A4GL_debug("unload...");
    * Step 3: Set pointers in the allocated memory to receive each *
    *    item in the select list. 
    */
-  loc = (loc_t *) malloc (sizeof (loc_t));
+  loc = (loc_t *) acl_malloc2 (sizeof (loc_t));
   nd=udesc->sqld;
   pos=0;
   for (col = udesc->sqlvar,  i = 0; i < udesc->sqld;  col++, i++)
@@ -5045,7 +5045,7 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 
   if (iobuf == (char *) NULL)
     {
-      iobuf = (char *) malloc (iobsz);
+      iobuf = (char *) acl_malloc2 (iobsz);
       if (!iobuf)
 	{
 	A4GL_exitwith("Out of memory2"); return 0; }

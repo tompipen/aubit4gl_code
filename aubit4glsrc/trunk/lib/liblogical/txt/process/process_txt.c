@@ -26,7 +26,7 @@ clear_page (int w, int h)
 {
   int a;
   char *buff;
-  buff = malloc (w + 1);
+  buff = acl_malloc2 (w + 1);
   memset (buff, ' ', w);
   buff[w] = 0;
 
@@ -117,12 +117,12 @@ int RP_process_report (void *rp, char *buff,void *rbx, int rbs)
 	
   sz =(sizeof (char *) * report->page_length);
   //printf("Alloc %d bytes\n"); fflush(stdout);
-  lines = malloc (sz);
+  lines = acl_malloc2 (sz);
   //printf("lines=%p\n",lines);
 
   for (a = 0; a < report->page_length; a++)
     {
-      lines[a] = malloc (report->max_col + 1+report->left_margin);	// for the \NULL
+      lines[a] = acl_malloc2 (report->max_col + 1+report->left_margin);	// for the \NULL
     }
 
   clear_page (report->max_col+report->left_margin, report->page_length);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.130 2005-06-28 14:35:24 mikeaubury Exp $
+# $Id: stack.c,v 1.131 2005-07-14 11:32:52 mikeaubury Exp $
 #
 */
 
@@ -1381,7 +1381,7 @@ A4GL_debug("51 Have data");
 		A4GL_drop_param();
 		A4GL_drop_param();
 		A4GL_debug("PUSHED NULL %d",dn1>>16);
-		ptr=malloc(s1+1);
+		ptr=acl_malloc2(s1+1);
 		memset(ptr,' ',s1);
 		ptr[s1]=0;
 		A4GL_push_char(ptr);
@@ -2028,11 +2028,11 @@ add_to_z (char *z, char *s)
   int l;
   if (z == 0)
     {
-      z = strdup ("");
+      z = acl_strdup ("");
     }
 
   A4GL_debug ("Adding '%s' to '%s'", A4GL_null_as_null(s), A4GL_null_as_null(z));
-  ptr = strdup (z);
+  ptr = acl_strdup (z);
 
   l = strlen (z) + strlen (s) + 1;
 
@@ -2092,7 +2092,7 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 	  A4GL_debug ("char - sz=%d", sz);
 	}
 
-      buff = malloc (sz + 10);
+      buff = acl_malloc2 (sz + 10);
       A4GL_debug ("Calling conv...");
 
       A4GL_conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, sz);
@@ -2837,7 +2837,7 @@ dif_start_bind (void)
 {
   struct bound_list *list;
   A4GL_debug ("10 STarting bind");
-  list = malloc (sizeof (struct bound_list));
+  list = acl_malloc2 (sizeof (struct bound_list));
   list->ptr = 0;
   list->cnt = 0;
   list->popped = -1;
@@ -2875,7 +2875,7 @@ void
 dif_add_bind_date (struct bound_list *list, long a)
 {
   int *z;
-  z = malloc (sizeof (int));
+  z = acl_malloc2 (sizeof (int));
   *z = a;
   dif_add_bind (list, z, DTYPE_DATE, 0);
 }
@@ -2889,7 +2889,7 @@ void
 dif_add_bind_smint (struct bound_list *list, int a)
 {
   short *z;
-  z = malloc (sizeof (short));
+  z = acl_malloc2 (sizeof (short));
   *z = a;
   dif_add_bind (list, z, DTYPE_SMINT, 0);
 }
@@ -2930,7 +2930,7 @@ void
 dif_add_bind_int (struct bound_list *list, long a)
 {
   long *z;
-  z = malloc (sizeof (long));
+  z = acl_malloc2 (sizeof (long));
   *z = a;
   dif_add_bind (list, z, DTYPE_INT, 0);
 }
@@ -2944,7 +2944,7 @@ void
 dif_add_bind_float (struct bound_list *list, double a)
 {
   double *z;
-  z = malloc (sizeof (double));
+  z = acl_malloc2 (sizeof (double));
   *z = a;
   dif_add_bind (list, z, DTYPE_FLOAT, 0);
 }
@@ -2958,7 +2958,7 @@ void
 dif_add_bind_smfloat (struct bound_list *list, float a)
 {
   float *z;
-  z = malloc (sizeof (int));
+  z = acl_malloc2 (sizeof (int));
   *z = a;
   dif_add_bind (list, z, DTYPE_SMFLOAT, 0);
 }
@@ -2972,7 +2972,7 @@ void
 dif_add_bind_char (struct bound_list *list, char *a)
 {
   char *z;
-  z = strdup (a);
+  z = acl_strdup (a);
   dif_add_bind (list, z, DTYPE_CHAR, strlen (z));
 }
 
@@ -3177,7 +3177,7 @@ A4GL_debug("new lrtrim");
             for (obuf = str; *obuf && isspace(*obuf); ++obuf)
                   ;
             if (str != obuf) {
-		s=strdup(obuf);
+		s=acl_strdup(obuf);
 		strcpy(str,s);
 		free(s);
 	    }

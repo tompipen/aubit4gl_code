@@ -72,7 +72,7 @@ static char * read_string ()
   int n;
   char *p;
   n = read_int ();
-  p = (char *) malloc (n + 1);
+  p = (char *) acl_malloc2 (n + 1);
   fread (p, n, 1, fin);
   p[n] = 0;
   return p;
@@ -136,7 +136,7 @@ struct r_report *read_report_output(char *fname) {
 	return 0;
     }
 
-  report=(struct r_report *)malloc(sizeof(struct r_report));
+  report=(struct r_report *)acl_malloc2(sizeof(struct r_report));
 
   report->repName=0;
   report->modName=0;
@@ -202,7 +202,7 @@ static void read_block ()
   if (debug) { printf("read block - lvl=%d \n",lvl); }
   lvl++;
   cblock = report->nblocks++;
-  report->blocks = (struct r_report_block *) realloc (report->blocks, report->nblocks * sizeof (struct r_report_block));
+  report->blocks = (struct r_report_block *) acl_realloc (report->blocks, report->nblocks * sizeof (struct r_report_block));
   report->blocks[cblock].why=0;
   report->blocks[cblock].nentries = 0;
   report->blocks[cblock].entries = 0;
@@ -250,7 +250,7 @@ static void read_block ()
 void read_entry(struct r_report_block *block) {
       /* If we've got to here - then we must have a valid DATA block.. */
       block->nentries++;
-      block->entries = (struct r_report_block_entries *) realloc (block->entries, block->nentries * sizeof (struct r_report_block_entries));
+      block->entries = (struct r_report_block_entries *) acl_realloc (block->entries, block->nentries * sizeof (struct r_report_block_entries));
 
       block->entries[block->nentries - 1].string = 0;
       block->entries[block->nentries - 1].page_no = read_int ();
@@ -316,7 +316,7 @@ int b;
         continue;
       rbs++;
 
-      rbx = realloc (rbx, sizeof (struct s_rbx) * rbs);
+      rbx = acl_realloc (rbx, sizeof (struct s_rbx) * rbs);
       rbx[rbs - 1].rb = report->blocks[a].rb;
       rbx[rbs - 1].why = report->blocks[a].why;
       rbx[rbs - 1].where = report->blocks[a].where;
@@ -351,8 +351,8 @@ int b;
 		nval=nmax;
 		if (report->blocks[rblock_cnt].nentries>nval) nval=report->blocks[rblock_cnt].nentries;
 
-                  rbx[block_cnt].entry_nos = realloc (rbx[block_cnt].entry_nos, sizeof (int) * (nval));
-                  rbx[block_cnt].max_size_entry = realloc (rbx[block_cnt].max_size_entry, sizeof (int) * (nval));
+                  rbx[block_cnt].entry_nos = acl_realloc (rbx[block_cnt].entry_nos, sizeof (int) * (nval));
+                  rbx[block_cnt].max_size_entry = acl_realloc (rbx[block_cnt].max_size_entry, sizeof (int) * (nval));
                   for (a = rbx[block_cnt].max_entry; a < nval; a++)
                     {
                       rbx[block_cnt].entry_nos[a] = -1;
@@ -379,8 +379,8 @@ int b;
             }
         }
       b = 0;
-      tmp_space_e = malloc (sizeof (int) * rbx[block_cnt].max_entry);
-      tmp_space_s = malloc (sizeof (int) * rbx[block_cnt].max_entry);
+      tmp_space_e = acl_malloc2 (sizeof (int) * rbx[block_cnt].max_entry);
+      tmp_space_s = acl_malloc2 (sizeof (int) * rbx[block_cnt].max_entry);
       for (a = 0; a < rbx[block_cnt].max_entry; a++)
         {
           if (rbx[block_cnt].entry_nos[a] >= 0

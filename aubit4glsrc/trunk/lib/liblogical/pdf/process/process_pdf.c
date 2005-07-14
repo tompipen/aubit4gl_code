@@ -33,7 +33,7 @@ clear_page (int w, int h)
 {
   int a;
   char *buff;
-  buff = malloc (w + 1);
+  buff = acl_malloc2 (w + 1);
   memset (buff, ' ', w);
   buff[w] = 0;
 
@@ -118,11 +118,11 @@ int RP_process_report (void *vreport, char *buff,void *rbx,int rbs)
   PDF_set_info(p,"Title",report->repName);
   PDF_set_info(p,"Subject",report->modName);
 
-  lines = malloc (sizeof (char *) * report->page_length);
+  lines = acl_malloc2 (sizeof (char *) * report->page_length);
 
   for (a = 0; a < report->page_length; a++)
     {
-      lines[a] = malloc (report->max_col + 1+report->left_margin);	// for the \NULL
+      lines[a] = acl_malloc2 (report->max_col + 1+report->left_margin);	// for the \NULL
     }
 
   for (block = 0; block < report->nblocks; block++)

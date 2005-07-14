@@ -23,7 +23,8 @@ int insql=0;
 static char *make_sql_string_and_free(char *,...);
 char last_tmp_name[256];
 //char *a4gl_upshift(char *a);
-
+#define ADDMAP(x,y) addmap_runtime(x,y)
+#define ADDMAP_MODULE(x,y) addmap_runtime(x,y)
 
 int yylineno;
 int table_cnt=0;
@@ -108,7 +109,7 @@ static int gen_cnt (int a);
 static void ansi_violation(char *s,int n);
 static int A4GL_escape_quote_owner(void);
 static void A4GL_lex_printcomment (char *fmt,...);
-static void addmap (char *s,char *f,char *x,int l,char *fn);
+static void addmap_runtime (char *s,char *f);
 static int scan_variable (char *s);
 
 #include <stdio.h>

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.50 2005-05-21 16:18:34 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.51 2005-07-14 11:32:54 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.50 2005-05-21 16:18:34 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.51 2005-07-14 11:32:54 mikeaubury Exp $";
 #endif
 
 
@@ -767,7 +767,7 @@ char buff[2048];
 int n;
 void *ptr;
 char *x;
-	x=malloc(strlen(sql)+255);
+	x=acl_malloc2(strlen(sql)+255);
 	sprintf(x,"A4GL_push_char(\"%s\");",sql);
         ptr=A4GL_new_expr(x);
 	

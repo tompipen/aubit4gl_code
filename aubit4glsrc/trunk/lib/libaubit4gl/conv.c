@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.108 2005-06-18 09:56:55 mikeaubury Exp $
+# $Id: conv.c,v 1.109 2005-07-14 11:32:51 mikeaubury Exp $
 #
 */
 
@@ -1006,7 +1006,7 @@ A4GL_debug("ftodec... %lf" ,*(double *)a);
 if (A4GL_isyes(acl_getenv("DBL2DEC_USING"))) {
 	ptr=A4GL_make_using_tostring("",h,t);
 	strcpy(fmt,ptr);
-	ptr=malloc(strlen(fmt)+10);
+	ptr=acl_malloc2(strlen(fmt)+10);
 	a4gl_using (ptr, strlen(fmt), fmt, da);
 	strcpy(buff,ptr);
 	free(ptr);
@@ -1361,7 +1361,7 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
     }
   if (decimal_char==',' && a_strchr(a,'.')) {
 		char *ptr;
-		a=strdup(a);
+		a=acl_strdup(a);
 		ptr=a_strchr(a,'.');
 		*ptr=',';
 		duped=1;
@@ -1436,7 +1436,7 @@ a = (char *) aa;
  } 
  if (decimal_char==',' && a_strchr(a,'.')) { 
  char *ptr; 
- a=strdup(a); 
+ a=acl_strdup(a); 
  ptr=a_strchr(a,'.'); 
  *ptr=','; 
  duped=1; 

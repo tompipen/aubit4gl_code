@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.29 2005-03-23 08:24:09 afalout Exp $
+# $Id: formwrite2.c,v 1.30 2005-07-14 11:32:52 mikeaubury Exp $
 #*/
 
 /**
@@ -258,7 +258,7 @@ new_records (void)
 					  sizeof (struct
 						  struct_screen_record));
   the_form.records.records_val[cnt - 1].attribs.attribs_val =
-    malloc (sizeof (int) * 10);
+    acl_malloc2 (sizeof (int) * 10);
   the_form.records.records_val[cnt - 1].attribs.attribs_len = 0;
   return the_form.records.records_len - 1;
 }
@@ -273,7 +273,7 @@ A4GL_add_srec (void)
   new_records ();
   curr_rec = &the_form.records.records_val[the_form.records.records_len - 1];
   curr_rec->dim = 0;
-  curr_rec->attribs.attribs_val = malloc (sizeof (int) * 1000);
+  curr_rec->attribs.attribs_val = acl_malloc2 (sizeof (int) * 1000);
   curr_rec->attribs.attribs_len = 0;
 }
 
@@ -545,7 +545,7 @@ A4GL_add_field (char *s, int x, int y, int wid, int scr, int delim, char *label)
 	  if (the_form.metrics.metrics_val[a].x +
 	      the_form.metrics.metrics_val[a].w == x - 1)
 	    {
-	      ptr = malloc (the_form.metrics.metrics_val[a].w + wid + 1);
+	      ptr = acl_malloc2 (the_form.metrics.metrics_val[a].w + wid + 1);
 	      sprintf (ptr, "%s%s", the_form.metrics.metrics_val[a].label,
 		       label);
 	      free (the_form.metrics.metrics_val[a].label);
@@ -562,7 +562,7 @@ A4GL_add_field (char *s, int x, int y, int wid, int scr, int delim, char *label)
 	    {
 	      A4GL_debug ("Alloc %d bytes",
 		     the_form.metrics.metrics_val[a].w + wid + 1);
-	      ptr = malloc (the_form.metrics.metrics_val[a].w + wid + 2);
+	      ptr = acl_malloc2 (the_form.metrics.metrics_val[a].w + wid + 2);
 	      sprintf (ptr, "%s %s", the_form.metrics.metrics_val[a].label,
 		       label);
 	      A4GL_debug ("Got : %s\n", ptr);
