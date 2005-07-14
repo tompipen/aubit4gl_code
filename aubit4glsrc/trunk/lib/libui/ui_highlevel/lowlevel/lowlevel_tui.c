@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.66 2005-07-07 10:23:35 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.67 2005-07-14 06:28:40 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,7 +85,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.66 2005-07-07 10:23:35 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.67 2005-07-14 06:28:40 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 
@@ -1636,7 +1636,7 @@ A4GL_LL_getch_swin (void *window_ptr)
     {
 #ifndef XCURSES
       // Half delay seems to mess up pdcurses (at least under X)
-      halfdelay (1);
+      halfdelay (10);
 #endif
       //a = wgetch (window_ptr);
       abort_pressed = 0;

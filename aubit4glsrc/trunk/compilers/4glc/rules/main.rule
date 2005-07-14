@@ -117,7 +117,7 @@ if (strcmp($<str>1,"static ")!=0) {
 	variable_action(-1,$<str>3,"","","add_function");
 }
   sprintf(curr_func,"%s",$<str>3);
-  addmap("Declare Function",curr_func,"MODULE",yylineno,infilename);
+  ADDMAP_MODULE("Declare Function",curr_func);
   print_func_start($<str>1,$<str>3,0);
   printDeclareFunctionStack($<str>3);
   cnt=0;
@@ -165,7 +165,7 @@ main_def:
     sprintf(curr_func,"MAIN");
     clr_variable(); 
     push_blockcommand("MAIN"); 
-    addmap("MAIN",curr_func,"MODULE",yylineno,infilename);
+    ADDMAP_MODULE("MAIN","MAIN");
     print_main_1();
   } 
   define_section

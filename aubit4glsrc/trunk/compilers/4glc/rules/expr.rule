@@ -466,7 +466,7 @@ function_call_expr2:
 	identifier 
 	OPEN_BRACKET 
 		{ 
-		addmap("Call",$<str>1,curr_func,yylineno,infilename);
+		ADDMAP("Call",$<str>1);
 		new_counter(); 
 		} 
 	opt_func_call_args 
@@ -759,7 +759,7 @@ function_call_expr:
 	| FIELDTOWIDGET OPEN_BRACKET field_name_as_struct CLOSE_BRACKET {sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldnametoid(\"\",%s));",field_name_as_char($<field_entry>3)); $<ptr>$=A4GL_new_expr($<str>$); }
 	| ID_TO_INT OPEN_BRACKET field_name_as_struct CLOSE_BRACKET {
 		sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldnametoid(\"\",%s));",field_name_as_char($<field_entry>3)); $<ptr>$=A4GL_new_expr($<str>$); 
-		addmap("Get Field",field_name_as_char($<field_entry>3),curr_func,yylineno,infilename);
+		ADDMAP("Get Field",field_name_as_char($<field_entry>3));
 		inc_counter();
 	}
 

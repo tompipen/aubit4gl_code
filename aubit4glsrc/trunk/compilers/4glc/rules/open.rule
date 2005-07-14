@@ -29,7 +29,7 @@ open_statusbox_cmd :
 ;
 
 formhandler_name:identifier {
-addmap("Call Formhandler",$<str>1,curr_func,yylineno,infilename); 
+ADDMAP("Call Formhandler",$<str>1); 
 }
 ;
 open_form_cmd :

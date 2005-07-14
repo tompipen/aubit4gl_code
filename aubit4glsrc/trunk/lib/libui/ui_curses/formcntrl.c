@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.84 2005-07-13 14:14:41 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.85 2005-07-14 06:28:38 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.84 2005-07-13 14:14:41 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.85 2005-07-14 06:28:38 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1588,7 +1588,7 @@ m_d2[1]=0;
 			a=A4GL_real_getch_swin (drwin);
 			if (a) break;
 		}
-      		a4GL_mja_refresh ();
+      		A4GL_mja_refresh ();
                 if (abort_pressed || a==A4GLKEY_INTERRUPT || a==A4GLKEY_CANCEL) {
 			A4GL_debug("Abort Pressed!");
 			break;

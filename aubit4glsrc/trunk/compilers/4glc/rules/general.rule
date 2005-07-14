@@ -81,7 +81,7 @@ field_name_or_char_as_struct: field_name_as_struct {$<field_entry>$=$<field_entr
 
 cursor_name	:	ident_or_var {
 				print_pushchar($<str>1);
-				addmap("Cursor",last_var,curr_func,yylineno,infilename);
+				ADDMAP("Cursor",last_var);
 			}
 ;
 
@@ -89,23 +89,23 @@ cursor_name	:	ident_or_var {
 fetch_cursor_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);};
 
 win_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);
-addmap("Window",last_var,curr_func,yylineno,infilename);
+ADDMAP("Window",last_var);
 }
 
 ;
 
 open_win_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);
-addmap("Open Window",last_var,curr_func,yylineno,infilename);
+ADDMAP("Open Window",last_var);
 }
 ;
 
 form_name	: ident_or_var {sprintf($<str>$,"%s",$<str>1);
-addmap("Form",last_var,curr_func,yylineno,infilename);
+ADDMAP("Form",last_var);
 }
 ;
 
 open_form_name	: ident_or_var {sprintf($<str>$,"%s",$<str>1);
-addmap("Open Form",last_var,curr_func,yylineno,infilename);
+ADDMAP("Open Form",last_var);
 }
 ;
 

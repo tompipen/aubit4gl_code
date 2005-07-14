@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.66 2005-07-06 09:26:45 mikeaubury Exp $
+# $Id: 1.reqd,v 1.67 2005-07-14 06:28:32 mikeaubury Exp $
 #
 */
 
@@ -215,6 +215,8 @@ char *kw_space=" ";
 char *kw_ob="(";
 char *kw_cb=")";
 
+#define ADDMAP(x,y) addmap(x,y,curr_func,yylineno,infilename)
+#define ADDMAP_MODULE(x,y) addmap(x,y,"MODULE",yylineno,infilename) 
 
 //char *A4GL_strcpy(char *d,char *s,char *fname,int l,int sdest);
 #define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,sizeof(d))

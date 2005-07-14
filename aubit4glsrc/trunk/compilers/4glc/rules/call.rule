@@ -42,7 +42,7 @@ call_ext :
 
    | variable COLON identifier OPEN_BRACKET   {
 	new_counter();
-   	addmap("Call",$<str>1,curr_func,yylineno,infilename);
+   	ADDMAP("Call",$<str>1);
    }
    opt_func_call_args 
    CLOSE_BRACKET 
@@ -62,7 +62,7 @@ call_ext :
 
    | variable MEMBER_FUNCTION identifier OPEN_BRACKET   {
 	new_counter();
-   	addmap("Call",$<str>1,curr_func,yylineno,infilename);
+   	ADDMAP("Call",$<str>1);
    }
    opt_func_call_args 
    CLOSE_BRACKET 
@@ -84,7 +84,7 @@ call_ext :
 
    | identifier OPEN_BRACKET {
 	new_counter();
-   	addmap("Call",$<str>1,curr_func,yylineno,infilename);
+   	ADDMAP("Call",$<str>1);
    } 
    opt_func_call_args 
    {
@@ -199,7 +199,7 @@ opt_func_call_args {
    char buff[256];
    new_counter();
    sprintf(buff,"%s:%s(%p)",$<str>2,$<str>4,$<str>6);
-   addmap("External",buff,curr_func,yylineno,infilename);
+   ADDMAP("External",buff);
    } 
    opt_func_call_args 
    {

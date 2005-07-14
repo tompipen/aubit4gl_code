@@ -149,7 +149,7 @@ upd_column_name_specific: identifier col_arr {
                 struct ilist *i;
                 i=&$<int_list>2;
                 if (strcmp($<str>1,"rowid")==0) { add_feature("ROWID"); }
-                addmap("Use Column",$<str>1,curr_func,yylineno,infilename);
+                ADDMAP("Use Column",$<str>1);
                 strcpy($<str>$,A4GLSQLCV_make_substr(A4GLSQLCV_check_colname(0,$<str>1), i->i0,i->i1,i->i2));
         }
         | table_name DOT identifier col_arr {
@@ -160,7 +160,7 @@ upd_column_name_specific: identifier col_arr {
 		} else {
                 	sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>1,$<str>3));
 		}
-                addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
+                ADDMAP("Use Column",$<str>$);
                 i=&$<int_list>4;
                 strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
         }
@@ -170,7 +170,7 @@ upd_column_name_specific: identifier col_arr {
 		} else {
                 	sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>1,"*"));
 		}
-                addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
+                ADDMAP("Use Column",$<str>$);
         }
 ;
 

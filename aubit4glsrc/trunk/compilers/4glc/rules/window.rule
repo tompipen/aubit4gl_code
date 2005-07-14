@@ -52,11 +52,11 @@ reset_attrib(&form_attrib);
 
 show_cmd : SHOW_WINDOW win_name {
 	print_show_window($<str>2);
-	addmap("Show Window",$<str>2,curr_func,yylineno,infilename); 
+	ADDMAP("Show Window",$<str>2); 
 }
 | SHOW_MENU menu_name KW_USING menu_handler op_mnfile {
 	print_show_menu($<str>2,$<str>4);
-	addmap("Call Menuhandler",$<str>4,curr_func,yylineno,infilename); 
+	ADDMAP("Call Menuhandler",$<str>4); 
 }
 ;
 op_mnfile : {
@@ -67,7 +67,7 @@ print_def_mn_file();
 ;
 
 menu_name: identifier
-{addmap("Use Menu",$<str>1,curr_func,yylineno,infilename); }
+{ADDMAP("Use Menu",$<str>1); }
 ;
 
 menu_handler: identifier;

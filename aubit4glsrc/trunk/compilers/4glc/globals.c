@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.32 2005-03-31 13:35:34 afalout Exp $
+# $Id: globals.c,v 1.33 2005-07-14 06:27:52 mikeaubury Exp $
 #
 */
 
@@ -512,6 +512,7 @@ generate_globals_for (char *s)
     {
       sprintf (buff, "mv debug.out debug1.out");
       A4GL_debug ("Preserving debug.out: %s\n", buff);
+      if (fglc_verbosity()) { printf("Executing :%s\n",buff);}
       system (buff);
     }
 #endif
@@ -539,6 +540,7 @@ generate_globals_for (char *s)
 #ifdef DEBUG
   A4GL_debug ("Executing system call: %s\n", buff);
 #endif
+      if (fglc_verbosity()) { printf("Executing :%s\n",buff);}
   system (buff);
 #ifdef MSVC
   putenv("NOCFILE=Y");
@@ -550,9 +552,11 @@ generate_globals_for (char *s)
     {
       sprintf (buff, "mv debug.out debug-globals.out");
       A4GL_debug ("Preserving debug.out: %s\n", buff);
+      if (fglc_verbosity()) { printf("Executing :%s\n",buff);}
       system (buff);
       sprintf (buff, "mv debug1.out debug.out");
       A4GL_debug ("Restoring debug.out: %s\n", buff);
+      if (fglc_verbosity()) { printf("Executing :%s\n",buff);}
       system (buff);
     }
 #endif

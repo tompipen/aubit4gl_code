@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.36 2005-05-22 20:42:15 whaslbeck Exp $
+# $Id: map.c,v 1.37 2005-07-14 06:27:53 mikeaubury Exp $
 #*/
 
 /**
@@ -180,6 +180,7 @@ rm_quote (char *s)
     }
   for (a = strlen (buff) - 1; a >= 0; a--)
     {
+      if (buff[a]=='/') break; // Maybe its a . or .. directory...
       if (buff[a] == '.')
 	{
 	  buff[a] = 0;

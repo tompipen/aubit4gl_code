@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.19 2005-05-03 16:09:18 mikeaubury Exp $
+# $Id: util.c,v 1.20 2005-07-14 06:28:33 mikeaubury Exp $
 #
 */
 
@@ -57,6 +57,8 @@ struct sql_stmt {
 struct sql_stmt *stmts=0;
 int stmts_cnt=0;
 char last_conversion[256];
+char m_module[256]="unknown";
+char m_ln=0;
 
 
 /*
@@ -345,7 +347,9 @@ static void A4GL_lex_printcomment (char *fmt,...) { }
  *
  * @todo Describe function
  */
-static void addmap (char *s,char *f,char *m,int lno,char *fname) { } 
+static void addmap (char *s,char *f,char *m,int lno,char *fname) { 
+ 	printf("'%s' '%s' '%s' '%d' '%s'\n",s,f,m,lno,fname);
+} 
 
 /**
  *
@@ -865,11 +869,16 @@ return ptr;
  * @todo Describe function
  */
 char * 
-A4GLSQLCV_convert_sql (char *target_dialect, char *sql) {
+A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,char *module,int ln) {
 char *ptr;
 	sql=strdup(sql);
+	strcpy(m_module,module);
+	m_ln=ln;
+	A4GL_log_sql_prepared(sql);
 	ptr=A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql,0) ;
 	if (ptr!=sql) free(sql);
+	strcpy(m_module,"unknown");
+	m_ln=0;
 	return ptr;
 }
 

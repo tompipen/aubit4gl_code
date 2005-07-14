@@ -8,7 +8,7 @@
 
 /*
 #
-# $Id: a4gl_esql_infx.h,v 1.25 2005-02-11 10:12:15 afalout Exp $
+# $Id: a4gl_esql_infx.h,v 1.26 2005-07-14 06:28:33 mikeaubury Exp $
 #
 */
 
@@ -97,7 +97,11 @@ extern "C"
 
 #endif
 
+#ifdef ALWAYS_CONVERT_PREPARED
+#define CONVERTSQL(s) A4GLSQLCV_convert_sql_ml("INFORMIX",s,_module_name,__LINE__)
+#else
 #define CONVERTSQL(s) s
+#endif
 
 
 #define COPY_SQLCA

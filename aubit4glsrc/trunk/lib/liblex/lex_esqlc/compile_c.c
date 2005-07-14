@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.234 2005-07-06 09:26:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.235 2005-07-14 06:28:35 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.234 2005-07-06 09:26:46 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.235 2005-07-14 06:28:35 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -352,6 +352,9 @@ open_outfile (void)
 	{
 	case 1:
 	  fprintf (outfile, "#define DIALECT_INFORMIX\n");
+	  if (!A4GL_isno(acl_getenv("ALWAYS_CONVERT_PREPARED"))) {
+		  fprintf(outfile,"#define ALWAYS_CONVERT_PREPARED\n");
+	  }
 	  break;
 	case 2:
 	  fprintf (outfile, "#define DIALECT_POSTGRES\n");

@@ -52,22 +52,22 @@ define_ident :
 def_part2 :
 		KW_CONSTANT define_ident op_equal CHAR_VALUE {
 		    add_constant('c',$<str>4,$<str>2);
-		    addmap("Constant",$<str>2,curr_func,yylineno,infilename);
+		    ADDMAP("Constant",$<str>2);
 		    
 		} 
 	|	KW_CONSTANT define_ident op_equal identifier {
 		    add_constant('C',$<str>4,$<str>2);
-		    addmap("Constant",$<str>2,curr_func,yylineno,infilename);
+		    ADDMAP("Constant",$<str>2);
 		    
 		} 
 	|	KW_CONSTANT define_ident op_equal real_number {
 		    add_constant('f',$<str>4,$<str>2);
-		   addmap("Constant",$<str>2,curr_func,yylineno,infilename);
+		   ADDMAP("Constant",$<str>2);
 		    
 		} 
 	|	KW_CONSTANT define_ident op_equal INT_VALUE {
 		    add_constant('i',$<str>4,$<str>2);
-		   addmap("Constant",$<str>2,curr_func,yylineno,infilename);
+		   ADDMAP("Constant",$<str>2);
 		    
 		} 
 	|	var_def_list dtype_ident
@@ -81,7 +81,7 @@ def_part2 :
 		    if (strchr($<str>3,'.'))   add_constant('f',$<str>3,$<str>1);
 		       else  add_constant('i',$<str>3,$<str>1);
 		      }
-		   addmap("Constant",$<str>1,curr_func,yylineno,infilename);
+		   ADDMAP("Constant",$<str>1);
 		   
 		} 
 	| error 
@@ -102,7 +102,7 @@ constant_value :
 var_def_name :
 		define_ident {
 			push_name($<str>1,0);
-		   addmap("Define",$<str>1,curr_func,yylineno,infilename);
+		   ADDMAP("Define",$<str>1);
 			strcpy($<str>$,$<str>1);
 		   
 		} 
@@ -291,16 +291,10 @@ dtype :
 		   
 		} 
 	|	KW_CHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
-		    if (atoi($<str>3)==4) {
-		    addmap("size=4","----",curr_func,yylineno,infilename);
-		       }
 		    push_type("char",$<str>3,0);
 		    
 		} 
 	|	NCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
-		    if (atoi($<str>3)==4) {
-		    addmap("size=4","----",curr_func,yylineno,infilename);
-		       }
 		    push_type("char",$<str>3,0);
 		    
 		} 

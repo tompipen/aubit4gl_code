@@ -891,43 +891,43 @@ table_name: table_name_i  {
 table_name_i:
 	 CHAR_VALUE DOT identifier { 
 			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-					sprintf($<str>$,"%s", $<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+					sprintf($<str>$,"%s", $<str>3); ADDMAP("Use Table",$<str>$); 
 			} else {
 				if (A4GL_escape_quote_owner()) {
-					sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+					sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); ADDMAP("Use Table",$<str>$); 
 				} else {
-					sprintf($<str>$,"\"%s\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+					sprintf($<str>$,"\"%s\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); ADDMAP("Use Table",$<str>$); 
 				}
 			}
 	}
 	| CHAR_VALUE {
 		sprintf($<str>$," %s", A4GL_strip_quotes ($<str>1));
-		addmap("Use Table",$<str>$,curr_func,yylineno,infilename);
+		ADDMAP("Use Table",$<str>$);
 	}
-	| identifier {strcpy($<str>$,$<str>1); addmap("Use Table",$<str>1,curr_func,yylineno,infilename); }
-	| identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
+	| identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Table",$<str>1); }
+	| identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); ADDMAP("Use Table",$<str>$); }
 	| identifier COLON CHAR_VALUE DOT identifier { 
 			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-					sprintf($<str>$," %s:%s",$<str>1,$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+					sprintf($<str>$," %s:%s",$<str>1,$<str>5); ADDMAP("Use Table",$<str>$); 
 			} else {
                         	if (A4GL_escape_quote_owner()) {
-					sprintf($<str>$," %s:\\\"%s\\\".%s",$<str>1,A4GL_strip_quotes($<str>3),$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+					sprintf($<str>$," %s:\\\"%s\\\".%s",$<str>1,A4GL_strip_quotes($<str>3),$<str>5); ADDMAP("Use Table",$<str>$); 
                         	} else {
-					sprintf($<str>$," %s:%s.%s",$<str>1,$<str>3,$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+					sprintf($<str>$," %s:%s.%s",$<str>1,$<str>3,$<str>5); ADDMAP("Use Table",$<str>$); 
                         	}
 			}
 	}
 
-	| identifier ATSIGN identifier {strcpy($<str>$,$<str>1); addmap("Use Table",$<str>1,curr_func,yylineno,infilename); }
-	| identifier ATSIGN identifier COLON identifier { sprintf($<str>$," %s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
+	| identifier ATSIGN identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Table",$<str>1); }
+	| identifier ATSIGN identifier COLON identifier { sprintf($<str>$," %s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); ADDMAP("Use Table",$<str>$); }
 	| identifier ATSIGN identifier COLON CHAR_VALUE DOT identifier { 
 			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-					sprintf($<str>$," %s@%s:%s",$<str>1,$<str>3,$<str>7); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+					sprintf($<str>$," %s@%s:%s",$<str>1,$<str>3,$<str>7); ADDMAP("Use Table",$<str>$); 
 			} else {
                         	if (A4GL_escape_quote_owner()) {
-					sprintf($<str>$," %s@%s:\\\"%s\\\".%s",$<str>1,$<str>3,A4GL_strip_quotes($<str>5),$<str>7); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+					sprintf($<str>$," %s@%s:\\\"%s\\\".%s",$<str>1,$<str>3,A4GL_strip_quotes($<str>5),$<str>7); ADDMAP("Use Table",$<str>$); 
                         	} else {
-					sprintf($<str>$," %s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+					sprintf($<str>$," %s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7); ADDMAP("Use Table",$<str>$); 
                         	}
 			}
 	}
@@ -937,44 +937,44 @@ table_name_i:
 idx_name:
 	 CHAR_VALUE DOT identifier { 
 			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-					sprintf($<str>$,"%s", $<str>3); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+					sprintf($<str>$,"%s", $<str>3); ADDMAP("Use Index",$<str>$); 
 			} else {
 				if (A4GL_escape_quote_owner()) {
-					sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+					sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); ADDMAP("Use Index",$<str>$); 
 				} else {
-					sprintf($<str>$,"\"%s\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+					sprintf($<str>$,"\"%s\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); ADDMAP("Use Index",$<str>$); 
 				}
 			}
 	}
 	| CHAR_VALUE {
 		sprintf($<str>$," %s", A4GL_strip_quotes ($<str>1));
-		addmap("Use Index",$<str>$,curr_func,yylineno,infilename);
+		ADDMAP("Use Index",$<str>$);
 	}
 
-	| identifier {strcpy($<str>$,$<str>1); addmap("Use Index",$<str>1,curr_func,yylineno,infilename); }
-	| identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); }
+	| identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Index",$<str>1); }
+	| identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); ADDMAP("Use Index",$<str>$); }
 	| identifier COLON CHAR_VALUE DOT identifier { 
 			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-				sprintf($<str>$," %s:%s",$<str>1,$<str>5); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+				sprintf($<str>$," %s:%s",$<str>1,$<str>5); ADDMAP("Use Index",$<str>$); 
 			} else {
                         if (A4GL_escape_quote_owner()) {
-				sprintf($<str>$," %s:\\\"%s\\\".%s",$<str>1,A4GL_strip_quotes($<str>3),$<str>5); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+				sprintf($<str>$," %s:\\\"%s\\\".%s",$<str>1,A4GL_strip_quotes($<str>3),$<str>5); ADDMAP("Use Index",$<str>$); 
                         } else {
-				sprintf($<str>$," %s:%s.%s",$<str>1,$<str>3,$<str>5); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+				sprintf($<str>$," %s:%s.%s",$<str>1,$<str>3,$<str>5); ADDMAP("Use Index",$<str>$); 
                         }
 		}
 	}
 
-	| identifier ATSIGN identifier {strcpy($<str>$,$<str>1); addmap("Use Index",$<str>1,curr_func,yylineno,infilename); }
-	| identifier ATSIGN identifier COLON identifier { sprintf($<str>$," %s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); }
+	| identifier ATSIGN identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Index",$<str>1); }
+	| identifier ATSIGN identifier COLON identifier { sprintf($<str>$," %s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); ADDMAP("Use Index",$<str>$); }
 	| identifier ATSIGN identifier COLON CHAR_VALUE DOT identifier { 
 			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-					sprintf($<str>$," %s@%s:%s",$<str>1,$<str>3,$<str>7); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+					sprintf($<str>$," %s@%s:%s",$<str>1,$<str>3,$<str>7); ADDMAP("Use Index",$<str>$); 
 			} else {
                         	if (A4GL_escape_quote_owner()) {
-					sprintf($<str>$," %s@%s:\\\"%s\\\".%s",$<str>1,$<str>3,A4GL_strip_quotes($<str>5),$<str>7); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+					sprintf($<str>$," %s@%s:\\\"%s\\\".%s",$<str>1,$<str>3,A4GL_strip_quotes($<str>5),$<str>7); ADDMAP("Use Index",$<str>$); 
                         	} else {
-					sprintf($<str>$," %s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+					sprintf($<str>$," %s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7); ADDMAP("Use Index",$<str>$); 
                         	}
 			}
 	}
@@ -1018,20 +1018,20 @@ column_name_specific: identifier col_arr {
 		struct ilist *i;
 		i=&$<int_list>2;
 		if (strcmp($<str>1,"rowid")==0) { add_feature("ROWID"); }
-		addmap("Use Column",$<str>1,curr_func,yylineno,infilename);
+		ADDMAP("Use Column",$<str>1);
 		strcpy($<str>$,A4GLSQLCV_make_substr(A4GLSQLCV_check_colname(0,$<str>1), i->i0,i->i1,i->i2));
 	}
 	| table_name DOT identifier col_arr {
 		struct ilist *i;
 		if (strcmp($<str>3,"rowid")==0) { add_feature("ROWID"); }
 		sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>1,$<str>3));
-		addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
+		ADDMAP("Use Column",$<str>$);
 		i=&$<int_list>4;
 		strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
 	}
 	| table_name  DOT MULTIPLY {
 		sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>1,"*"));
-		addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
+		ADDMAP("Use Column",$<str>$);
 	}
 ;
 

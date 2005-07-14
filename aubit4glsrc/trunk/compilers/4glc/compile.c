@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.87 2005-06-16 19:17:18 mikeaubury Exp $
+# $Id: compile.c,v 1.88 2005-07-14 06:27:51 mikeaubury Exp $
 #*/
 
 /**
@@ -63,7 +63,7 @@
 static char outputfile[132];		/** The output file name */
 static int genStackInfo = 1;
 
-
+int fglc_m_verbose=0;
 /* -------- extern --------- */
 /*FIXME - move in "a4gl_4glc_int.h"*/
 extern char *outputfilename;	/* Defined in libaubit4gl */
@@ -583,6 +583,8 @@ initArguments (int argc, char *argv[])
 		printUsage (argv);
 		exit (1);
     }
+
+	fglc_m_verbose=verbose;
 
 #if YYDEBUG != 0
 	#ifdef DEBUG
@@ -1894,5 +1896,10 @@ void add_module_error(int n,char *s) {
 char *compiling_module(void) {
 	return  compiling_module_name;
 }
+
+int fglc_verbosity() {
+		return fglc_m_verbose;
+}
+
 
 /* ==================================== EOF =============================== */

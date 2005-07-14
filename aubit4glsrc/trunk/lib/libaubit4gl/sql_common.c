@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.6 2005-06-28 14:35:24 mikeaubury Exp $
+# $Id: sql_common.c,v 1.7 2005-07-14 06:28:35 mikeaubury Exp $
 #
 */
 
@@ -653,7 +653,35 @@ A4GLSQL_find_prepare (char *pname)
 //struct s_sid 
 }
 
+/* 
+ * This function takes a piece of SQL (normally from a PREPARE statement
+ * and logs it to a file
+ */
+void A4GL_log_sql_prepared(char *s) {
+	char *fname;
+	FILE *fout;
+	char buff[256];
+	fname=acl_getenv("MAPSQL");
+	if (fname==0) return;
+	if (strlen(fname)==0) return;
+
+	// Firstly - MAPSQL should be a directory...
+	sprintf(buff,"%s/%s_%d.log",fname,A4GL_get_running_program(),getpid());
+	fout=fopen(buff,"a");
+	if (fout==0) { // Maybe - its just a file ?
+		sprintf(buff,"%s",fname);
+		fout=fopen(buff,"a");
+	}
+	if (fout==0) return;
+	// if we've got to here - we've got a file to write to...
+	//
+	fprintf(fout,"%s\n",s);
+	fclose(fout);
+}
 
 
+char *A4GLSQLCV_convert_sql (  char* target_dialect ,char* sql ) {
+		A4GLSQLCV_convert_sql_ml(target_dialect,sql,"unknown",0);
+}
 
 /* =============================== EOF ============================== */

@@ -8,7 +8,7 @@
 prepare_cmd : opt_use PREPARE stmt_id FROM var_or_char 
 {
 	print_prepare($<str>3,$<str>5);
-	addmap("Prepare",$<str>3,curr_func,yylineno,infilename);
+	ADDMAP("Prepare",$<str>3);
 	print_undo_use($<str>1);
 }
 ;
@@ -17,21 +17,21 @@ var_or_char: variable | CHAR_VALUE;
 
 execute_cmd : EXECUTE stmt_id {
 		print_execute($<str>2,0);
-		addmap("Execute",$<str>2,curr_func,yylineno,infilename);
+		ADDMAP("Execute",$<str>2);
 		}
         | EXECUTE stmt_id KW_USING ibind_var_list {
 		add_feature("EXECUTE_USING");
-		addmap("Execute",$<str>2,curr_func,yylineno,infilename);
+		ADDMAP("Execute",$<str>2);
 		print_execute($<str>2,1);
 	}
         | EXECUTE stmt_id INTO obind_var_list {
 		add_feature("EXECUTE_INTO");
-		addmap("Execute",$<str>2,curr_func,yylineno,infilename);
+		ADDMAP("Execute",$<str>2);
 		print_execute($<str>2,2);
 	}
         | EXECUTE stmt_id INTO obind_var_list KW_USING ibind_var_list {
 		add_feature("EXECUTE_INTO_USING");
-		addmap("Execute",$<str>2,curr_func,yylineno,infilename);
+		ADDMAP("Execute",$<str>2);
 		print_execute($<str>2,3);
 	}
 	| EXECUTE_IMMEDIATE var_or_char {

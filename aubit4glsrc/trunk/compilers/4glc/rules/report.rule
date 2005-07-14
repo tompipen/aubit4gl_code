@@ -8,44 +8,44 @@
 start_cmd : 
 	START_REPORT rep_name TO_PRINTER  op_with_dim {
 			add_feature("USE_REPORT");
-			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
+			ADDMAP("Start Report",$<str>2);
 			print_start_report("P","acl_getenv(\"DBPRINT\")",$<str>2,$<str>4);
 			}
 	| START_REPORT rep_name TO_EMAIL  op_with_dim {
 			char buff[256];
 			add_feature("USE_REPORT");
-			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
+			ADDMAP("Start Report",$<str>2);
 			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
 			print_start_report("M",buff,$<str>2,$<str>4);
 			}
 	    | START_REPORT rep_name TO rout op_with_dim {
 			add_feature("USE_REPORT");
-			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
+			ADDMAP("Start Report",$<str>2);
 			print_start_report("F",$<str>4,$<str>2,$<str>5);
 			}
 	    | START_REPORT rep_name TO_FILE rout op_with_dim {
 			add_feature("USE_REPORT");
-			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
+			ADDMAP("Start Report",$<str>2);
 			print_start_report("F",$<str>4,$<str>2,$<str>5);
 			}
 	    | START_REPORT rep_name TO_PIPE rout op_with_dim {
 			add_feature("USE_REPORT");
-			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
+			ADDMAP("Start Report",$<str>2);
 			print_start_report("P",$<str>4,$<str>2,$<str>5);
 			}
 	    | START_REPORT rep_name TO_SCREEN op_with_dim {
 			add_feature("USE_REPORT");
-			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
+			ADDMAP("Start Report",$<str>2);
 			print_start_report("S","\"\"",$<str>2,$<str>4);
 			}
 	    | START_REPORT rep_name AS_CONVERTABLE  op_with_dim {
 			add_feature("USE_REPORT");
-			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
+			ADDMAP("Start Report",$<str>2);
 			print_start_report("C","\"\"",$<str>2,$<str>4);
 			}
 	    | START_REPORT rep_name  op_with_dim {
 			add_feature("USE_REPORT");
-			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
+			ADDMAP("Start Report",$<str>2);
 			print_start_report("","\"\"",$<str>2,$<str>3);
 			}
 ;
@@ -136,20 +136,20 @@ op_values : | VALUES ; /* This isn't standard - but it looks pretty OUTPUT TO RE
 
 output_cmd : OUTPUT_TO_REPORT rep_name op_values  OPEN_BRACKET reset_cnt op_fgl_expr_list CLOSE_BRACKET {
 			add_feature("USE_REPORT");
-		addmap("Output to report",$<str>2,curr_func,yylineno,infilename);
+		ADDMAP("Output to report",$<str>2);
 		print_output_to_report($<str>2,$<str>6); 
 		}
 ;
 
 finish_cmd : FINISH_REPORT rep_name {
 			add_feature("USE_REPORT");
-		addmap("Finish Report",$<str>2,curr_func,yylineno,infilename);
+		ADDMAP("Finish Report",$<str>2);
 		print_finish_report($<str>2);
 		print_free_convertable($<str>2); // Shouldn't really be needed - but they may have started it "AS CONVERTABLE"
 		}
 	| FINISH_REPORT rep_name CONVERTING_TO_MANY   {
 			add_feature("USE_REPORT");
-		addmap("Finish Report",$<str>2,curr_func,yylineno,infilename);
+		ADDMAP("Finish Report",$<str>2);
 		print_finish_report($<str>2);
 		// Can't free convertable here - developer needs to do that using FREE REPORT
 	}
@@ -227,7 +227,7 @@ finish_cmd : FINISH_REPORT rep_name {
 
 term_rep_cmd : TERMINATE_REPORT rep_name {
 			add_feature("USE_REPORT");
-		addmap("Finish Report",$<str>2,curr_func,yylineno,infilename);
+		ADDMAP("Terminate Report",$<str>2);
 		print_terminate_report($<str>2);
 }
 ;
@@ -628,7 +628,7 @@ report_def : REPORT
 	{
 		inc_report_cnt();
 		sprintf(curr_func,"%s",$<str>3);
-		addmap("Define Report",curr_func,"MODULE",yylineno,infilename);
+		ADDMAP_MODULE("Define Report",curr_func);
 		variable_action(-1,$<str>3,"","","add_function");
 		set_curr_rep_name($<str>3);
 		print_report_1($<str>3);
@@ -708,7 +708,7 @@ identifier OPEN_BRACKET
 inc_report_cnt();
 variable_action(-1,$<str>3,"","","add_function");
 sprintf(curr_func,"%s",$<str>3);
-addmap("Define PDF Report",curr_func,"MODULE",yylineno,infilename);
+ADDMAP_MODULE("Define PDF Report",curr_func);
 set_curr_rep_name($<str>3);
 print_report_1($<str>3);
 push_blockcommand("REPORT");
@@ -743,7 +743,7 @@ pdf_report_section: pdf_op_output_section op_rep_order_by  { strcpy($<str>$,$<st
 
 pdf_functions :
 	PDF_FUNCTION OPEN_BRACKET CHAR_VALUE KW_COMMA {new_counter();
-   		addmap("CALL",$<str>3,curr_func,yylineno,infilename);
+   		ADDMAP("CALL",$<str>3);
    		}
    		opt_func_call_args
    		{

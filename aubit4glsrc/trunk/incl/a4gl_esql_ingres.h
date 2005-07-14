@@ -67,7 +67,7 @@ extern "C"
 
 /* A4GL_copy_sqlca_sqlawarn_string8(sqlca.sqlwarn) */
 #ifndef NO_SQL_TRANSLATION
-#define CONVERTSQL(s) A4GLSQLCV_convert_sql("INGRES",s)
+#define CONVERTSQL(s) A4GLSQLCV_convert_sql_ml("INGRES",s,_module_name,__LINE__)
 #else
 #define CONVERTSQL(s) s
 #endif
