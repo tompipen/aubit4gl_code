@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.59 2005-07-14 11:32:57 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.60 2005-07-14 15:20:16 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -2578,7 +2578,6 @@ static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
 
 
   if (promptx->mode==-1) { // Initialize prompt...
-          int a;
           A4GL_clr_evt_timeouts(evt);
           promptx->mode=0;
           return  0;

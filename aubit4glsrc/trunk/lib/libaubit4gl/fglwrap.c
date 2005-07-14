@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.95 2005-07-14 11:32:51 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.96 2005-07-14 15:20:15 mikeaubury Exp $
 #
 */
 
@@ -1140,11 +1140,69 @@ if (A4GL_isyes(acl_getenv("NEED_SIGPIPE")) || 1 ) {
  *
  * @todo Describe function
  */
-void A4GL_logsql(int lineno,char *module, char *s) {
-if (s==0) return;
-A4GL_debug("SQL on line %d in %s:%s\n",lineno,module,s);
+void
+A4GL_logsql (int lineno, char *module, char *s)
+{
+  static char logfname[255];
+  static long logfnameset = 0;
+  char *fname;
+  FILE *fout;
+  char buff[256];
+  if (s == 0)
+    return;
+
+  A4GL_debug ("SQL on line %d in %s:%s\n", lineno, module, s);
+  if (logfnameset == -1)
+    return;
+
+  if (logfnameset == 1)
+    {
+      fout = fopen (logfname, "a");
+      if (fout == 0)
+	return;			// should have been able to ... very odd..
+    }
+
+
+  if (logfnameset == 0)
+    {
+      fname = acl_getenv ("LOGSQL");
+      if (fname == 0)
+	{
+	  logfnameset = -1;
+	  return;
+	}
+      if (strlen (fname) == 0)
+	{
+	  logfnameset = -1;
+	  return;
+	}
+
+      // Firstly - MAPSQL should be a directory...
+      sprintf (buff, "%s/%s_%d.log", fname, A4GL_get_running_program (),
+	       getpid ());
+      fout = fopen (buff, "a");
+      if (fout == 0)
+	{			// Maybe - its just a file ?
+	  sprintf (buff, "%s", fname);
+	  fout = fopen (buff, "a");
+	}
+      logfnameset = 1;
+      strcpy (logfname, buff);
+    }
+
+  if (fout == 0)
+    {
+      logfnameset = -1;
+      return;
+    }
+  // if we've got to here - we've got a file to write to...
+  //
+  fprintf (fout, "%s\n", s);
+  fclose (fout);
 
 }
+
+
 
 char *A4GL_get_running_program(void) {
 	return running_program; // Argv[0]

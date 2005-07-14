@@ -203,3 +203,4 @@ A4GL_LL_hide_h_menu -> int
 A4GL_LL_construct_large char* orig void* evt int initkey int initpos char* left char* right int curr_width int curr_height int comment_line void* currwin int currisborder  -> void*
 A4GL_LL_construct_large_finished void* f -> char*
 A4GL_LL_pause_mode int pm -> int
+A4GL_LL_get_field_width_dynamic void* f -> int

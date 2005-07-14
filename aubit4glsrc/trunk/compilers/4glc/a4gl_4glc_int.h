@@ -462,6 +462,8 @@ void push_menu_timeout(int mn,int mnopt,char *s);
 int fglc_verbosity(void);
 char *A4GL_get_yyline(void);
 void do_yyerror(char *s);
+long
+get_variable_dets_obj (char *s, int *type, int *arrsize, int *size, int *level, char *arr);
 
 
 #define add_feature A4GL_add_feature

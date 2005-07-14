@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.75 2005-07-14 11:32:58 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.76 2005-07-14 15:20:16 mikeaubury Exp $";
 #endif
 
 
@@ -3760,13 +3760,13 @@ int
 A4GL_LL_disp_form_field_ap (int n, int attr, char *s, va_list * ap)
 {
   //int a;
+#ifdef FIXME
   int flg;
   struct s_form_dets *formdets;
   void **field_list;
   int nofields;
   void *w;
   struct struct_scr_field *fprop;
-#ifdef FIXME
   a4gl_status = 0;
 
   //A4GL_chkwin ();
@@ -3821,12 +3821,12 @@ A4GL_LL_disp_form_field_ap (int n, int attr, char *s, va_list * ap)
 int
 A4GL_LL_endis_fields_ap (int en_dis, void *vap)
 {
+#ifdef FIXME
   GtkWidget *formdets;
   int a;
   va_list *ap;
   int nofields;
   GtkWidget **field_list;
-#ifdef FIXME
   ap = vap;
   formdets = A4GL_get_curr_form (1);
 

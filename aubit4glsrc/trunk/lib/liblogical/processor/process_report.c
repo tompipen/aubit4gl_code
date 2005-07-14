@@ -5,7 +5,7 @@
 #include "API_process.h"
 int ispipe;
 
-int A4GLLOGREPPROC_initlib (void);
+//int A4GLLOGREPPROC_initlib (void);
 //int A4GL_setenv (char *v, char *val, int overwrite);
 static int do_we_have(char *s) ;
 static char * find_default_filter(char *rtype) ;

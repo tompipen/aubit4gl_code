@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.25 2005-07-06 09:26:48 mikeaubury Exp $";
+  "$Id: menu.c,v 1.26 2005-07-14 15:20:16 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -655,7 +655,7 @@ void UILIB_A4GL_add_menu_timeout(void *vmenu,char timeout_type,int timeout_len,i
 		if (timeout_type=='V') { menu->evt[menu->nevt-1].event_type=A4GL_EVENT_ON_INTERVAL; }
 		menu->evt[menu->nevt-1].block=cmd_on_timeout+1; // menu options are numbered from 0 - but event blocks are from 1...
 		menu->evt[menu->nevt-1].keycode=timeout_len;
-		menu->evt[menu->nevt-1].field=timeoutvar;
+		menu->evt[menu->nevt-1].field=(void *)timeoutvar;
 
 
 		menu->evt[menu->nevt].event_type=0; // We deliberatly made the evt record 1 more than nevt - so this should be ok

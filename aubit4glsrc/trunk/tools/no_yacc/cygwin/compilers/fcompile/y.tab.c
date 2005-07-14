@@ -2555,7 +2555,7 @@ yyreduce:
 
   case 3:
 #line 117 "screen.yacc"
-    {the_form.dbname=strdup("formonly");}
+    {the_form.dbname=acl_strdup("formonly");}
     break;
 
   case 4:
@@ -2574,7 +2574,7 @@ if (A4GLF_open_db(yyvsp[-3].str)) {
 
   case 6:
 #line 124 "screen.yacc"
-    {the_form.dbname=strdup(yyvsp[0].str);
+    {the_form.dbname=acl_strdup(yyvsp[0].str);
 if (A4GLF_open_db(yyvsp[0].str)) {
 		yyerror("Unable to connect to database\n");
 }
@@ -2597,7 +2597,7 @@ if (A4GLF_open_db(yyvsp[0].str)) {
 					sizeof(struct screen_name));
 
 		the_form.snames.snames_val[the_form.snames.snames_len-1].name=
-				strdup(buff);
+				acl_strdup(buff);
 
 		in_screen_section=1; 
 	}
@@ -2618,7 +2618,7 @@ if (A4GLF_open_db(yyvsp[0].str)) {
 		ptr[strlen(ptr)-1]=0;
 
 		the_form.snames.snames_val[
-			the_form.snames.snames_len-1].name =strdup(ptr);
+			the_form.snames.snames_len-1].name =acl_strdup(ptr);
 
 	in_screen_section=1; 
 	}
@@ -3002,8 +3002,8 @@ A4GL_init_fld();
   case 81:
 #line 485 "screen.yacc"
     {
-	fld->tabname=strdup("formonly");
-	fld->colname=strdup(yyvsp[-1].str);
+	fld->tabname=acl_strdup("formonly");
+	fld->colname=acl_strdup(yyvsp[-1].str);
         fld->datatype=atoi(yyvsp[0].str)&0xff;
 	if (atoi(yyvsp[0].str)&256) fld->not_null=1;
 	else fld->not_null=0;
@@ -3018,8 +3018,8 @@ A4GL_init_fld();
 	static int xdo=0;
 	char buff[256];
 	sprintf(buff,"_do_%d",xdo++);
-	fld->tabname=strdup("formonly");
-	fld->colname=strdup(buff);
+	fld->tabname=acl_strdup("formonly");
+	fld->colname=acl_strdup(buff);
         fld->datatype=atoi(yyvsp[0].str)&0xff;
 	if (atoi(yyvsp[0].str)&256) fld->not_null=1;
 	else fld->not_null=0;
@@ -3034,8 +3034,8 @@ A4GL_init_fld();
 	static int di=0;
 	char buff[256];
 	sprintf(buff,"_di_%d",di++);
-	fld->tabname=strdup("formonly");
-	fld->colname=strdup(buff);
+	fld->tabname=acl_strdup("formonly");
+	fld->colname=acl_strdup(buff);
         fld->datatype=atoi(yyvsp[0].str)&0xff;
 	if (atoi(yyvsp[0].str)&256) fld->not_null=1;
 	else fld->not_null=0;
@@ -3048,8 +3048,8 @@ A4GL_init_fld();
 #line 518 "screen.yacc"
     {
 	//printf("%s %s\n",$<str>1,$<str>3);
-	fld->tabname=strdup(yyvsp[-2].str); 
-	fld->colname=strdup(yyvsp[0].str);
+	fld->tabname=acl_strdup(yyvsp[-2].str); 
+	fld->colname=acl_strdup(yyvsp[0].str);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
         fld->dtype_size=A4GL_get_dtype_size();
@@ -3060,7 +3060,7 @@ A4GL_init_fld();
   case 85:
 #line 527 "screen.yacc"
     {
-	fld->colname=strdup(yyvsp[0].str);
+	fld->colname=acl_strdup(yyvsp[0].str);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
         fld->dtype_size=A4GL_get_dtype_size();
@@ -3071,8 +3071,8 @@ A4GL_init_fld();
   case 86:
 #line 535 "screen.yacc"
     {
-	fld->tabname=strdup(yyvsp[-2].str); 
-	fld->colname=strdup(yyvsp[0].str);
+	fld->tabname=acl_strdup(yyvsp[-2].str); 
+	fld->colname=acl_strdup(yyvsp[0].str);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
         fld->dtype_size=A4GL_get_dtype_size();
@@ -3083,7 +3083,7 @@ A4GL_init_fld();
   case 87:
 #line 543 "screen.yacc"
     {
-	fld->colname=strdup(yyvsp[0].str);
+	fld->colname=acl_strdup(yyvsp[0].str);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
         fld->dtype_size=A4GL_get_dtype_size();
@@ -3389,7 +3389,7 @@ A4GL_debug("fld->dynamic=%d",fld->dynamic); }
 		buff[2]=buff[0];
 		buff[3]=0;
 	}
-	the_form.delim=strdup(buff);
+	the_form.delim=acl_strdup(buff);
 }
     break;
 

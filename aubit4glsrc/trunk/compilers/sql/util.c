@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.21 2005-07-14 11:32:50 mikeaubury Exp $
+# $Id: util.c,v 1.22 2005-07-14 15:20:14 mikeaubury Exp $
 #
 */
 
@@ -876,7 +876,7 @@ char *ptr;
 	sql=acl_strdup(sql);
 	strcpy(m_module,module);
 	m_ln=ln;
-	A4GL_log_sql_prepared(sql);
+	A4GL_logsql(ln,module,sql);
 	ptr=A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql,0) ;
 	if (ptr!=sql) free(sql);
 	strcpy(m_module,"unknown");

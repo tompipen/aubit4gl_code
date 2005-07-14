@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.18 2005-06-18 09:56:56 mikeaubury Exp $
+# $Id: errfile.c,v 1.19 2005-07-14 15:20:15 mikeaubury Exp $
 #
 */
 
@@ -72,7 +72,7 @@ static int errline;
 
 void A4GL_find_nl (FILE * f, long fp, long *s, long *e);
 void A4GL_prerrmark (FILE * f, int a);
-void A4GL_write_errfile_many_errors(char *errfile,FILE *fin,struct s_module_error *e,int cnt);
+//void A4GL_write_errfile_many_errors(char *errfile,FILE *fin,struct s_module_error *e,int cnt);
 
 /*
 =====================================================================

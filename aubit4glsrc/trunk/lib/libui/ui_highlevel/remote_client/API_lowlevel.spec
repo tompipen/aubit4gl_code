@@ -80,3 +80,4 @@ A4GL_LL_wadd_char_xy_col void* win int x int y int ch int curr_width int curr_he
 A4GL_LL_wadd_char_xy_col_w void* win int x int y int ch int curr_width int curr_height int cb int cwno -> void
 A4GL_LL_widget_name_match void* w char* name -> int
 A4GL_LL_pause_mode int pm -> int
+A4GL_LL_get_field_width_dynamic void* f -> int

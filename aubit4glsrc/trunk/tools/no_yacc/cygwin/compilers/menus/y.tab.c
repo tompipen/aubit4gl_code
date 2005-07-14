@@ -1171,7 +1171,7 @@ yyreduce:
 #line 126 "menu.yacc"
     {
 		m=nmenu();
-		m->id=strdup(yyvsp[0].str);
+		m->id=acl_strdup(yyvsp[0].str);
 		push_menu(m);
 	}
     break;
@@ -1187,10 +1187,10 @@ yyreduce:
 		menu_option_item *o;
 		A4GL_debug("New option %s for menu %p\n",yyvsp[-4].str,get_menu());
 		o=new_option(get_menu());
-		o->id=strdup(yyvsp[-4].str);
-		o->caption=strdup(yyvsp[-2].str);
+		o->id=acl_strdup(yyvsp[-4].str);
+		o->caption=acl_strdup(yyvsp[-2].str);
 		o->image=img_val;
-		o->key_list=strdup(yyvsp[-1].str);
+		o->key_list=acl_strdup(yyvsp[-1].str);
 		o->align=atoi(yyvsp[0].str);
 	 	A4GL_debug("Ok option\n"); }
     break;
@@ -1201,11 +1201,11 @@ yyreduce:
 		menu_option_item *o;
 		A4GL_debug("Submenu with use\n");
 		o=new_option(get_menu());
-		o->id=strdup(yyvsp[-6].str);
+		o->id=acl_strdup(yyvsp[-6].str);
 		o->image=img_val;
-		o->caption=strdup(yyvsp[-4].str);
-		o->submenu_id=strdup(yyvsp[0].str);
-		o->key_list=strdup(yyvsp[-3].str);
+		o->caption=acl_strdup(yyvsp[-4].str);
+		o->submenu_id=acl_strdup(yyvsp[0].str);
+		o->key_list=acl_strdup(yyvsp[-3].str);
 		o->align=atoi(yyvsp[-2].str);
 	}
     break;
@@ -1216,15 +1216,15 @@ yyreduce:
 		menu_option_item *o;
 		A4GL_debug("Submenu without use\n");
 		o=new_option(get_menu());
-		o->id=strdup(yyvsp[-4].str);
+		o->id=acl_strdup(yyvsp[-4].str);
 		o->image=img_val;
-		o->caption=strdup(yyvsp[-2].str);
-		o->key_list=strdup(yyvsp[-1].str);
+		o->caption=acl_strdup(yyvsp[-2].str);
+		o->key_list=acl_strdup(yyvsp[-1].str);
 		o->align=atoi(yyvsp[0].str);
 		/* sprintf(sbuff,"_menuid%d",menu_cnt); */
-		o->submenu_id=strdup(yyvsp[-4].str);
+		o->submenu_id=acl_strdup(yyvsp[-4].str);
 		m=nmenu();
-		m->id=strdup(yyvsp[-4].str);
+		m->id=acl_strdup(yyvsp[-4].str);
 		push_menu(m);
 
 	}
@@ -1247,7 +1247,7 @@ yyreduce:
 
   case 16:
 #line 182 "menu.yacc"
-    { sprintf(yyval.str,"%s\n%s",strdup(A4GL_char_val(yyvsp[-1].str)),strdup(A4GL_char_val(yyvsp[0].str)));}
+    { sprintf(yyval.str,"%s\n%s",acl_strdup(A4GL_char_val(yyvsp[-1].str)),acl_strdup(A4GL_char_val(yyvsp[0].str)));}
     break;
 
   case 17:
@@ -1281,7 +1281,7 @@ yyreduce:
   case 26:
 #line 207 "menu.yacc"
     {
-		img_val=strdup(A4GL_char_val(yyvsp[0].str));
+		img_val=acl_strdup(A4GL_char_val(yyvsp[0].str));
 	}
     break;
 

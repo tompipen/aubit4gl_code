@@ -447,7 +447,7 @@ void *
 memdup(void *p,int l)
 {
 	void *ptr;
-	ptr=malloc(l);
+	ptr=acl_malloc2(l);
 	memcpy(ptr,p,l);
 	return ptr;
 }
@@ -2213,14 +2213,14 @@ yyreduce:
         case 3:
 #line 247 "ace.yacc"
     {
-		this_report.dbname=strdup("!!ASCII!!");;
+		this_report.dbname=acl_strdup("!!ASCII!!");;
 	}
     break;
 
   case 4:
 #line 250 "ace.yacc"
     {
-		this_report.dbname=strdup(yyvsp[-1].str);
+		this_report.dbname=acl_strdup(yyvsp[-1].str);
 		A4GLSQL_init_connection (yyvsp[-1].str);
 		if (a4gl_status!=0) {
 			a4gl_ace_yyerror("Unable to connect to database");
@@ -2364,7 +2364,7 @@ yyreduce:
 
   case 47:
 #line 353 "ace.yacc"
-    { this_report.output.report_to_where=2; this_report.output.report_to_filename=strdup(yyvsp[0].str);}
+    { this_report.output.report_to_where=2; this_report.output.report_to_filename=acl_strdup(yyvsp[0].str);}
     break;
 
   case 48:
@@ -2374,12 +2374,12 @@ yyreduce:
 
   case 49:
 #line 355 "ace.yacc"
-    { this_report.output.report_to_where=3; this_report.output.report_to_filename=strdup(yyvsp[0].str); }
+    { this_report.output.report_to_where=3; this_report.output.report_to_filename=acl_strdup(yyvsp[0].str); }
     break;
 
   case 50:
 #line 356 "ace.yacc"
-    { this_report.output.report_to_where=4; this_report.output.report_to_filename=strdup(yyvsp[0].str); }
+    { this_report.output.report_to_where=4; this_report.output.report_to_filename=acl_strdup(yyvsp[0].str); }
     break;
 
   case 51:
@@ -2420,7 +2420,7 @@ yyreduce:
   case 56:
 #line 372 "ace.yacc"
     {
-		this_report.output.top_of_page=strdup(yyvsp[0].str);
+		this_report.output.top_of_page=acl_strdup(yyvsp[0].str);
 	}
     break;
 
@@ -2585,7 +2585,7 @@ sprintf(yyval.str," %s %s %s",yyvsp[-2].str,yyvsp[-1].str,yyvsp[0].str);
     {
 		char buff[256];
 		sprintf(buff,"I%d",atoi(yyvsp[0].str));
-		ordby[ordbycnt++]=strdup(buff);
+		ordby[ordbycnt++]=acl_strdup(buff);
 	}
     break;
 
@@ -2594,7 +2594,7 @@ sprintf(yyval.str," %s %s %s",yyvsp[-2].str,yyvsp[-1].str,yyvsp[0].str);
     {
 		char buff[256];
 		sprintf(buff,"C%s",yyvsp[0].str);
-		ordby[ordbycnt++]=strdup(buff);
+		ordby[ordbycnt++]=acl_strdup(buff);
 	}
     break;
 
@@ -3130,7 +3130,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 996 "ace.yacc"
     {
 		yyval.commands.commands.commands_len=1;
-		yyval.commands.commands.commands_val=malloc(sizeof(struct command));
+		yyval.commands.commands.commands_val=acl_malloc2(sizeof(struct command));
 		COPY(yyval.commands.commands.commands_val[0],yyvsp[0].cmd);
 		}
     break;
@@ -3160,8 +3160,8 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1060 "ace.yacc"
     {
 		yyval.cmd.cmd_type=CMD_CALL;
-		yyval.cmd.command_u.cmd_call.fcall=malloc(sizeof(struct expr_call));
-                yyval.cmd.command_u.cmd_call.fcall->fname=strdup(yyvsp[-3].str);
+		yyval.cmd.command_u.cmd_call.fcall=acl_malloc2(sizeof(struct expr_call));
+                yyval.cmd.command_u.cmd_call.fcall->fname=acl_strdup(yyvsp[-3].str);
 	
                 yyval.cmd.command_u.cmd_call.fcall->lexpr=yyvsp[-1].expr.expr_u.lexpr;
 		print_lexpr( yyval.cmd.command_u.cmd_call.fcall->lexpr);
@@ -3256,7 +3256,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
     {
 
 	yyval.expr.type=EXPRTYPE_COMPLEX;
-	yyval.expr.expr_u.expr=malloc(sizeof(struct complex_expr));
+	yyval.expr.expr_u.expr=acl_malloc2(sizeof(struct complex_expr));
 	COPY(yyval.expr.expr_u.expr->expr1,yyvsp[-2].expr);
 	COPY(yyval.expr.expr_u.expr->expr2,yyvsp[0].expr);
 	yyval.expr.expr_u.expr->operand=EXPR_CONCAT;
@@ -3276,7 +3276,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1161 "ace.yacc"
     {
 	yyval.cmd.cmd_type=CMD_PAUSE;
-	yyval.cmd.command_u.cmd_pause.message=strdup(yyvsp[0].str);
+	yyval.cmd.command_u.cmd_pause.message=acl_strdup(yyvsp[0].str);
 }
     break;
 
@@ -3303,7 +3303,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1179 "ace.yacc"
     {
 	yyval.cmd.cmd_type=CMD_PRINTFILE;
-	yyval.cmd.command_u.cmd_printfile.filename=strdup(yyvsp[0].str);
+	yyval.cmd.command_u.cmd_printfile.filename=acl_strdup(yyvsp[0].str);
 }
     break;
 
@@ -3433,7 +3433,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
   case 312:
 #line 1281 "ace.yacc"
     { 
-		yyval.expr.type=EXPRTYPE_COMPLEX; yyval.expr.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		yyval.expr.type=EXPRTYPE_COMPLEX; yyval.expr.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY(yyval.expr.expr_u.expr->expr1,yyvsp[-2].expr); 
 		COPY(yyval.expr.expr_u.expr->expr2,yyvsp[0].expr); 
 		yyval.expr.expr_u.expr->operand=EXPR_DIV; 
@@ -3443,7 +3443,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
   case 313:
 #line 1289 "ace.yacc"
     { 
-		yyval.expr.type=EXPRTYPE_COMPLEX; yyval.expr.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		yyval.expr.type=EXPRTYPE_COMPLEX; yyval.expr.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY(yyval.expr.expr_u.expr->expr1,yyvsp[-2].expr); 
 		COPY(yyval.expr.expr_u.expr->expr2,yyvsp[0].expr); 
 		yyval.expr.expr_u.expr->operand=EXPR_POW; 
@@ -3453,7 +3453,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
   case 314:
 #line 1296 "ace.yacc"
     { 
-		yyval.expr.type=EXPRTYPE_COMPLEX; yyval.expr.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		yyval.expr.type=EXPRTYPE_COMPLEX; yyval.expr.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY(yyval.expr.expr_u.expr->expr1,yyvsp[-2].expr); 
 		COPY(yyval.expr.expr_u.expr->expr2,yyvsp[0].expr); 
 		yyval.expr.expr_u.expr->operand=EXPR_MOD; 
@@ -3463,7 +3463,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
   case 315:
 #line 1305 "ace.yacc"
     { 
-		yyval.expr.type=EXPRTYPE_COMPLEX; yyval.expr.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		yyval.expr.type=EXPRTYPE_COMPLEX; yyval.expr.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY(yyval.expr.expr_u.expr->expr1,yyvsp[-2].expr); 
 		COPY(yyval.expr.expr_u.expr->expr2,yyvsp[0].expr); 
 		yyval.expr.expr_u.expr->operand=EXPR_MUL; 
@@ -3474,7 +3474,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1311 "ace.yacc"
     { 
 		yyval.expr.type=EXPRTYPE_COMPLEX; 
-		yyval.expr.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		yyval.expr.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY(yyval.expr.expr_u.expr->expr1,yyvsp[-2].expr); 
 		COPY(yyval.expr.expr_u.expr->expr2,yyvsp[0].expr); 
 		yyval.expr.expr_u.expr->operand=EXPR_ADD; 
@@ -3485,7 +3485,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1318 "ace.yacc"
     { 
 		yyval.expr.type=EXPRTYPE_COMPLEX; 
-		yyval.expr.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		yyval.expr.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY(yyval.expr.expr_u.expr->expr1,yyvsp[-2].expr); 
 		COPY(yyval.expr.expr_u.expr->expr2,yyvsp[0].expr); 
 		yyval.expr.expr_u.expr->operand=EXPR_AND; 
@@ -3496,7 +3496,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1326 "ace.yacc"
     { 
 		yyval.expr.type=EXPRTYPE_COMPLEX; 
-		yyval.expr.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		yyval.expr.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY(yyval.expr.expr_u.expr->expr1,yyvsp[-2].expr); 
 		COPY(yyval.expr.expr_u.expr->expr2,yyvsp[0].expr); 
 		yyval.expr.expr_u.expr->operand=EXPR_OR; 
@@ -3507,7 +3507,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1335 "ace.yacc"
     { 
 		yyval.expr.type=EXPRTYPE_COMPLEX;
-		yyval.expr.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		yyval.expr.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY(yyval.expr.expr_u.expr->expr1,yyvsp[-2].expr); 
 		COPY(yyval.expr.expr_u.expr->expr2,yyvsp[0].expr); 
 		yyval.expr.expr_u.expr->operand=EXPR_SUB; 
@@ -3518,7 +3518,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1342 "ace.yacc"
     { 
 		yyval.expr.type=EXPRTYPE_COMPLEX;
-		yyval.expr.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		yyval.expr.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY(yyval.expr.expr_u.expr->expr1,yyvsp[-2].expr); 
 		COPY(yyval.expr.expr_u.expr->expr2,yyvsp[0].expr); 
 		yyval.expr.expr_u.expr->operand=EXPR_USING; 
@@ -3534,10 +3534,10 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1351 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_COMPARE;
-		yyval.expr.expr_u.cexpr=malloc(sizeof(struct complex_expr)); 
+		yyval.expr.expr_u.cexpr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY(yyval.expr.expr_u.cexpr->expr1,yyvsp[-2].expr); 
 		COPY(yyval.expr.expr_u.cexpr->expr2,yyvsp[0].expr); 
-		yyval.expr.expr_u.cexpr->method=strdup(yyvsp[-1].str); 
+		yyval.expr.expr_u.cexpr->method=acl_strdup(yyvsp[-1].str); 
 	}
     break;
 
@@ -3561,7 +3561,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1366 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_BUILTIN;
-		yyval.expr.expr_u.name=strdup(yyvsp[0].str);
+		yyval.expr.expr_u.name=acl_strdup(yyvsp[0].str);
 	}
     break;
 
@@ -3582,8 +3582,8 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1380 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_FCALL; 
-		yyval.expr.expr_u.fcall=malloc(sizeof(struct expr_call));
-		yyval.expr.expr_u.fcall->fname=strdup("DATE");
+		yyval.expr.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
+		yyval.expr.expr_u.fcall->fname=acl_strdup("DATE");
                 yyval.cmd.command_u.cmd_call.fcall->lexpr=yyvsp[-1].expr.expr_u.lexpr;
 	}
     break;
@@ -3592,8 +3592,8 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1387 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_FCALL; 
-		yyval.expr.expr_u.fcall=malloc(sizeof(struct expr_call));
-		yyval.expr.expr_u.fcall->fname=strdup("MONTH");
+		yyval.expr.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
+		yyval.expr.expr_u.fcall->fname=acl_strdup("MONTH");
                 yyval.cmd.command_u.cmd_call.fcall->lexpr=yyvsp[-1].expr.expr_u.lexpr;
 	}
     break;
@@ -3602,8 +3602,8 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1393 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_FCALL; 
-		yyval.expr.expr_u.fcall=malloc(sizeof(struct expr_call));
-		yyval.expr.expr_u.fcall->fname=strdup("YEAR");
+		yyval.expr.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
+		yyval.expr.expr_u.fcall->fname=acl_strdup("YEAR");
                 yyval.cmd.command_u.cmd_call.fcall->lexpr=yyvsp[-1].expr.expr_u.lexpr;
 	}
     break;
@@ -3612,8 +3612,8 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1399 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_FCALL; 
-		yyval.expr.expr_u.fcall=malloc(sizeof(struct expr_call));
-		yyval.expr.expr_u.fcall->fname=strdup("DAY");
+		yyval.expr.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
+		yyval.expr.expr_u.fcall->fname=acl_strdup("DAY");
                 yyval.cmd.command_u.cmd_call.fcall->lexpr=yyvsp[-1].expr.expr_u.lexpr;
 	}
     break;
@@ -3622,8 +3622,8 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1406 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_FCALL; 
-		yyval.expr.expr_u.fcall=malloc(sizeof(struct expr_call));
-		yyval.expr.expr_u.fcall->fname=strdup(yyvsp[-3].str);
+		yyval.expr.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
+		yyval.expr.expr_u.fcall->fname=acl_strdup(yyvsp[-3].str);
                 yyval.cmd.command_u.cmd_call.fcall->lexpr=yyvsp[-1].expr.expr_u.lexpr;
 	}
     break;
@@ -3637,7 +3637,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1413 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_SIMPLE; 
-		yyval.expr.expr_u.sexpr=malloc(sizeof(struct simple_expr)); 
+		yyval.expr.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
 		COPY(yyval.expr.expr_u.sexpr->expr,yyvsp[0].expr); 
 		yyval.expr.expr_u.sexpr->operand=EXPR_COLUMN; 
 	}
@@ -3647,7 +3647,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1419 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_SIMPLE; 
-		yyval.expr.expr_u.sexpr=malloc(sizeof(struct simple_expr)); 
+		yyval.expr.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
 		COPY(yyval.expr.expr_u.sexpr->expr,yyvsp[0].expr); 
 		yyval.expr.expr_u.sexpr->operand=EXPR_ASCII; 
 	}
@@ -3657,7 +3657,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1425 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_SIMPLE; 
-		yyval.expr.expr_u.sexpr=malloc(sizeof(struct simple_expr)); 
+		yyval.expr.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
 		COPY(yyval.expr.expr_u.sexpr->expr,yyvsp[-1].expr); 
 		yyval.expr.expr_u.sexpr->operand=EXPR_COLUMN; 
 	}
@@ -3667,7 +3667,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1432 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_SIMPLE; 
-		yyval.expr.expr_u.sexpr=malloc(sizeof(struct simple_expr)); 
+		yyval.expr.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
 		COPY(yyval.expr.expr_u.sexpr->expr,yyvsp[-1].expr); 
 		yyval.expr.expr_u.sexpr->operand=EXPR_ISNULL; 
 	}
@@ -3677,7 +3677,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1438 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_SIMPLE; 
-		yyval.expr.expr_u.sexpr=malloc(sizeof(struct simple_expr)); 
+		yyval.expr.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
 		COPY(yyval.expr.expr_u.sexpr->expr,yyvsp[-1].expr); 
 		yyval.expr.expr_u.sexpr->operand=EXPR_ISNOTNULL; 
 	}
@@ -3687,7 +3687,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1446 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_SIMPLE; 
-		yyval.expr.expr_u.sexpr=malloc(sizeof(struct simple_expr)); 
+		yyval.expr.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
 		COPY(yyval.expr.expr_u.sexpr->expr,yyvsp[-1].expr); 
 		yyval.expr.expr_u.sexpr->operand=EXPR_CLIP; 
 	}
@@ -3726,7 +3726,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1473 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_LIST;
-		yyval.expr.expr_u.lexpr=malloc(sizeof(struct expr_list));
+		yyval.expr.expr_u.lexpr=acl_malloc2(sizeof(struct expr_list));
 		yyval.expr.expr_u.lexpr->elem.elem_len=1;
 		yyval.expr.expr_u.lexpr->elem.elem_val=0;
 		yyval.expr.expr_u.lexpr->elem.elem_val=realloc(
@@ -3748,7 +3748,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1491 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_LIST;
-		yyval.expr.expr_u.lexpr=malloc(sizeof(struct expr_list));
+		yyval.expr.expr_u.lexpr=acl_malloc2(sizeof(struct expr_list));
 		yyval.expr.expr_u.lexpr->elem.elem_len=1;
 		yyval.expr.expr_u.lexpr->elem.elem_val=0;
 		yyval.expr.expr_u.lexpr->elem.elem_val=realloc( yyval.expr.expr_u.lexpr->elem.elem_val,sizeof(struct expr)* yyval.expr.expr_u.lexpr->elem.elem_len);
@@ -3778,7 +3778,7 @@ sprintf(yyval.str,"\n2(%d)",find_variable(yyvsp[0].str));
 #line 1513 "ace.yacc"
     {
 		yyval.expr.type=EXPRTYPE_STRING;
-		yyval.expr.expr_u.s=strdup(yyvsp[0].str);
+		yyval.expr.expr_u.s=acl_strdup(yyvsp[0].str);
 	}
     break;
 

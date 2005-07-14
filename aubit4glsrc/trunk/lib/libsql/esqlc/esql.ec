@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.142 2005-07-14 11:32:55 mikeaubury Exp $
+# $Id: esql.ec,v 1.143 2005-07-14 15:20:15 mikeaubury Exp $
 #
 */
 
@@ -96,7 +96,7 @@ $include sqlca;
 
 #include "a4gl_incl_4gldef.h"
 char unloadBuffer[BUFSIZ];
-static void A4GL_quick_trim(char *s) ;
+//static void A4GL_quick_trim(char *s) ;
 
 //extern sqlca_struct a4gl_sqlca;
 dll_export sqlca_struct a4gl_sqlca;
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.142 2005-07-14 11:32:55 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.143 2005-07-14 15:20:15 mikeaubury Exp $";
 #endif
 
 
@@ -4510,6 +4510,7 @@ return lv_err2;
 }
 
 
+#ifdef NDEF
 static void A4GL_quick_trim(char *s) {
         char *ptr;
 	int a;
@@ -4542,7 +4543,7 @@ static void A4GL_quick_trim2(char *s) {
 		ptr=strrchr(s,' ');
 	}
 }
-
+#endif
 
 
 /*
@@ -4646,7 +4647,8 @@ main() {
 void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr, int nbind, void *vibind) {
   int pos;
   char *cp;
-  int i, j, nrows = 0;
+  int i, j;
+  //int nrows = 0;
   struct sqlda *udesc;
   struct sqlvar_struct *col;
   long  reccount = 0;
@@ -4661,12 +4663,12 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
   ibind = vibind;
 A4GL_debug("unload...");
   //printf("UNLOAD KAGEL STYLE\n");
-  if (nd) {
-	for (i=0;i<nd;i++) {
+  //if (nd) {
+	//for (i=0;i<nd;i++) {
 		//if (bufary) free(bufary[i]);
 		//if (ipary)  free(ipary[i]);
-	}
-  }
+	//}
+  //}
   //if (bufary) free(bufary);
   if (ipary)  free(ipary);
   if (fname)  free(fname);
@@ -5087,7 +5089,7 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 
 	    case CLONGTYPE:
 	    case CINTTYPE:
-	      flen = sprintf (string, "%d", *(long *) ptr);
+	      flen = sprintf (string, "%ld", *(long *) ptr);
 	      break;
 
 	    case CSHORTTYPE:

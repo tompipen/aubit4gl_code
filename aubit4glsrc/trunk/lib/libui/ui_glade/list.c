@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
+#include "a4gl_memhandling.h"
 
 
 void do_setup_list(GtkWidget *treeview,int n) ;

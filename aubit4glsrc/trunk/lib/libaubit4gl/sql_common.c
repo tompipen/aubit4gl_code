@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.8 2005-07-14 11:32:52 mikeaubury Exp $
+# $Id: sql_common.c,v 1.9 2005-07-14 15:20:15 mikeaubury Exp $
 #
 */
 
@@ -653,6 +653,8 @@ A4GLSQL_find_prepare (char *pname)
 //struct s_sid 
 }
 
+
+#ifdef NDEF
 /* 
  * This function takes a piece of SQL (normally from a PREPARE statement
  * and logs it to a file
@@ -678,6 +680,7 @@ void A4GL_log_sql_prepared(char *s) {
 	fprintf(fout,"%s\n",s);
 	fclose(fout);
 }
+#endif
 
 void A4GL_log_sql_prepared_map(char *s) {
 	static char logfname[256]="<not_set>";

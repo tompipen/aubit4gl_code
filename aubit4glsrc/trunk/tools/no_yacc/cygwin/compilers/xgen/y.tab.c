@@ -340,7 +340,7 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 		if (m.pointer==0) fprintf(cfi,"   if (!input_%s(\"%s\",&r->%s,0,-1)) return 0;\n",s,m.name,buff);
 		if (m.pointer==1) {
 			fprintf(cfi,"\n   if (!input_ptr_ok()) r->%s=0;\n",buff); 
-			fprintf(cfi,"   else r->%s=malloc(sizeof(%s));\n",buff,s); 
+			fprintf(cfi,"   else r->%s=acl_malloc2(sizeof(%s));\n",buff,s); 
 			fprintf(cfi,"   if (!input_%s(\"%s\",r->%s,1,-1)) return 0;\n\n",s,m.name,buff);
 		}
 		return;
@@ -351,12 +351,12 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 		fprintf(cfi,"   if (!input_start_array(\"%s\",1,&r->%s.%s_len)) return 0;\n",m.name,buff,m.name);
 		fprintf(cfi,"   {\n");
 		fprintf(cfi,"      int cnt; if (r->%s.%s_len) {\n",buff,m.name);
-	        fprintf(cfi,"      r->%s.%s_val=malloc(r->%s.%s_len*sizeof(r->%s.%s_val[0]));\n", buff,m.name, buff,m.name, buff,m.name);
+	        fprintf(cfi,"      r->%s.%s_val=acl_malloc2(r->%s.%s_len*sizeof(r->%s.%s_val[0]));\n", buff,m.name, buff,m.name, buff,m.name);
 	        fprintf(cfi,"      for (cnt=0;cnt<r->%s.%s_len;cnt++) {\n",buff,m.name);
 		if (m.pointer==0) fprintf(cfi,"         if (!input_%s(\"%s\",(void *)&r->%s.%s_val[cnt],0,cnt)) return 0; /*MJALI2*/\n",s,m.name,buff,m.name);
 		if (m.pointer==1) {
 			fprintf(cfi,"\n   if (!input_ptr_ok()) r->%s.%s_val[cnt]=0;\n",buff,m.name);
-			fprintf(cfi,"   else r->%s.%s_val[cnt]=malloc(sizeof(%s));\n",buff,m.name,s);
+			fprintf(cfi,"   else r->%s.%s_val[cnt]=acl_malloc2(sizeof(%s));\n",buff,m.name,s);
 			fprintf(cfi,"   if (!input_%s(\"%s\",&r->%s.%s_val[cnt],1,cnt)) return 0; /*MJALI1*/\n\n",
 				s,m.name,buff,m.name);
 		}
@@ -376,7 +376,7 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 		if (m.pointer==0) fprintf(cfi,"   if (!input_%s(\"%s\",&r->%s[cnt],0,-1)) return 0;/*MJALI3*/\n",s,m.name,buff);
 		if (m.pointer==1) {
 			fprintf(cfi,"\n   if (!input_ptr_ok()) r->%s[cnt]=0;\n",m.name);
-			fprintf(cfi,"   else r->%s[cnt]=malloc(sizeof(%s));\n",m.name,s);
+			fprintf(cfi,"   else r->%s[cnt]=acl_malloc2(sizeof(%s));\n",m.name,s);
 			fprintf(cfi,"   if (!input_%s(\"%s\",&r->%s[cnt],0,cnt)) return 0;\n\n",s,m.name,buff);
 		}
 		fprintf(cfi,"      }\n");
@@ -1835,7 +1835,7 @@ yyreduce:
 #line 657 "x.yacc"
     {
 	char *ptr;
-	ptr=strdup(yyvsp[0].str);
+	ptr=acl_strdup(yyvsp[0].str);
 	ptr++;
 	ptr[strlen(ptr)-1]=0;
 	strcpy(yyval.str,ptr);
