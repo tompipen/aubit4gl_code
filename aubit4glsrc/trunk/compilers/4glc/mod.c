@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.223 2005-07-14 11:32:47 mikeaubury Exp $
+# $Id: mod.c,v 1.224 2005-07-14 14:07:55 mikeaubury Exp $
 #
 */
 
@@ -151,7 +151,6 @@ extern int menu_cnt;			/** The count of menus found */
 extern int yylineno;			/** The source file line number */
 extern char *infilename;    /** The input (4gl file name */
 extern int in_define;
-char *compiling_module(void);
 
 static int db_used = 0;		 /** Flag that indicate that a database is being used */
 static int inc = 0;
@@ -4873,7 +4872,7 @@ fgl_add_scope (char *s, int n)
 			}
 		} else {
       			if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")) && c=='M') {
-    				sprintf (buffer, "%c_%s_%s", c,compiling_module(),buffer2);
+    				sprintf (buffer, "%c_%s_%s", c,A4GL_compiling_module(),buffer2);
 			} else {
     				sprintf (buffer, "%c_%s", c, buffer2);
 			}

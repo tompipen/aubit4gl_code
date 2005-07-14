@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.13 2004-09-28 09:49:18 afalout Exp $
+# $Id: Makefile.in,v 1.14 2005-07-14 14:11:30 mikeaubury Exp $
 #
 
 ROOT        =../../..
@@ -102,6 +102,21 @@ ${LIBROOT}/libLEX_EC${SO_EXT} : ${4GLCOBJ_EC} ${LINKDEPS}
 ## ==================================================================
 ##                            Sub Targets
 ## ==================================================================
+
+bad_idents.o: a4gl_lib_lex_esqlc_int.h
+binding.o: a4gl_lib_lex_esqlc_int.h
+class.o: a4gl_lib_lex_esqlc_int.h
+compile_c.o: a4gl_lib_lex_esqlc_int.h
+compile_c_esql.o: a4gl_lib_lex_esqlc_int.h
+compile_c_gtk.o: a4gl_lib_lex_esqlc_int.h
+compile_c_sql.o: a4gl_lib_lex_esqlc_int.h
+init.o: a4gl_lib_lex_esqlc_int.h
+
+a4gl_lib_lex_esqlc_int.h: ../a4gl_lib_lex_int.h
+
+../a4gl_lib_lex_int.h: ${ROOT}/compilers/4glc/API_lex.spec
+	${MAKE} -C ${ROOT}/compilers/4glc ../../incl/a4gl_API_lex_lib.h
+	${MAKE} -C ${ROOT}/compilers/4glc ../../incl/a4gl_API_lex.h
 
 
 ${LIBROOT}/lib4glc${SO_EXT}:

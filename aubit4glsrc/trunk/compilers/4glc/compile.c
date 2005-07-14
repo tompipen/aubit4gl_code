@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.89 2005-07-14 11:32:47 mikeaubury Exp $
+# $Id: compile.c,v 1.90 2005-07-14 14:07:55 mikeaubury Exp $
 #*/
 
 /**
@@ -1893,11 +1893,11 @@ void add_module_error(int n,char *s) {
 }
 
 
-char *compiling_module(void) {
+char *A4GL_compiling_module(void) {
 	return  compiling_module_name;
 }
 
-int fglc_verbosity() {
+int fglc_verbosity(void) {
 		return fglc_m_verbose;
 }
 

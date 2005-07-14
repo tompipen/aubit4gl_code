@@ -194,9 +194,11 @@ print_onkey_1 char* key_list_str -> void
 
 
 print_onaction_1 char* action -> void
+
 print_onaction_2  -> void
 
 print_ontimer_1 char* action -> void
+
 print_ontimer_2  -> void
 
 /* void print_onkey_2 () */

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2005-05-30 13:03:13 mikeaubury Exp $
+# $Id: Makefile,v 1.6 2005-07-14 14:07:54 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -183,14 +183,14 @@ ${Y_TAB_C} rules/generated/y.output: ${RULES_SRC}
 ../fcompile/form_x.h:
 	${MAKE} -C ../fcompile rpc
 
-API_lex.c: API_lex.spec ../../incl/API_lex.h  
+API_lex.c: API_lex.spec ../../incl/a4gl_API_lex.h    ../../incl/a4gl_API_lex_lib.h
 	${SH} ../../lib/bin/dlmagic $< > $@
 	
-../../incl/API_lex.h: API_lex.spec	
+../../incl/a4gl_API_lex.h: API_lex.spec	
 	${SH} ../../lib/bin/dlmagic $< -h > $@
 
-#../../incl/API_lex_lib.h: API_lex.spec	
-	#${SH} ../../lib/bin/dlmagic $< -H > $@
+../../incl/a4gl_API_lex_lib.h: API_lex.spec	
+	${SH} ../../lib/bin/dlmagic $< -H > $@
 
 #${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
 
@@ -254,7 +254,7 @@ show:
 clean: clean.rules.generated clean.rules
 	${RM} *${SO_EXT} *.o *.err *.a *.exe *.bak .*.bak .\#* \
 	*.log *.dll *.dll.a *.def wantkw.c wantkw.h mk_states_1.h mk_states.h \
-	mk_states.c API_lex.c API_lex.h ../../incl/API_lex_lib.h
+	mk_states.c API_lex.c ../../incl/a4gl_API_lex.h ../../incl/a4gl_API_lex_lib.h
 #WARNING! do NOT clean mk_states_c - this is an autoconf generated file
 #and will get cleaned only in make.distclean target of root makefile
 	

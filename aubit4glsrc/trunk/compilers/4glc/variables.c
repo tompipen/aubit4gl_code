@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.60 2005-07-14 11:32:47 mikeaubury Exp $
+# $Id: variables.c,v 1.61 2005-07-14 14:07:56 mikeaubury Exp $
 #
 */
 
@@ -90,9 +90,8 @@ void print_class_variables (void);
 void set_last_class_var(char *s);
 /******************************************************************************/
 
-char *A4GL_unscope(char *s);
+//char *A4GL_unscope(char *s);
 int A4GL_findex (char *str, char c);
-char *compiling_module(void);
 /*void dump_gvars (void);*/
 //void set_yytext (char *s);
 int isin_command (char *s);
@@ -169,7 +168,7 @@ static char buff[1024];
 int sl=-1;
   if (s[0] >= 'A' && s[0] <= 'Z' && s[1] == '_') {
       if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")) && s[0]=='M') {
-		sl=strlen(compiling_module())+3;
+		sl=strlen(A4GL_compiling_module())+3;
       } else {
 		sl=2;
       }
@@ -965,7 +964,7 @@ add_to_scope (int record_cnt, int unroll)
       if (A4GL_isyes (acl_getenv ("MARK_SCOPE")) || A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")))
 	{
 	  if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE"))) {
-	  	sprintf (buff, "%c_%s_", get_current_variable_scope (),compiling_module());
+	  	sprintf (buff, "%c_%s_", get_current_variable_scope (),A4GL_compiling_module());
 	  } else {
 	  	sprintf (buff, "%c_", get_current_variable_scope ());
 	  }
@@ -2979,7 +2978,7 @@ print_variable (struct variable *v, char scope, int level)
 	  if (v->scope == 'M' || v->scope == 'm')
 	    {
 		if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE"))) {	
-	      		sprintf (name, "M_%s_%s", compiling_module(),v->names.name);
+	      		sprintf (name, "M_%s_%s", A4GL_compiling_module(),v->names.name);
 		} else {
 	      		sprintf (name, "M_%s", v->names.name);
 		}

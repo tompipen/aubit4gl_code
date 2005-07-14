@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.110 2005-07-14 11:32:47 mikeaubury Exp $
+# $Id: lexer.c,v 1.111 2005-07-14 14:07:55 mikeaubury Exp $
 #*/
 
 /**
@@ -211,7 +211,7 @@ mja_fgetc (FILE * f)
 
 
 
-char *A4GL_get_yyline() {
+char *A4GL_get_yyline(void) {
 return yyline;
 }
 /**

@@ -35,7 +35,7 @@
 
 
 #include "a4gl_libaubit4gl.h"
-#include "API_lex.h"
+#include "a4gl_API_lex.h"
 #include <stdio.h>
 
 
@@ -454,6 +454,16 @@ void A4GL_lex_printh(char* fmt,... );
 void emulate_insert(char *s);
 char A4GL_cursor_type(char *s);
 char *A4GL_print_start_to_is_expr(struct expr_str *ptr) ;
+long get_variable_dets_arr3 (char *s, int *type, int *arrsize1,int *arrsize2,int *arrsize3, int *size, int *level, char *arr);
+int isclassvariable(char *s);
+int isclassmember(char *s,char *f);
+void push_menu_action(int mn,int mnopt,char *s);
+void push_menu_timeout(int mn,int mnopt,char *s);
+int fglc_verbosity(void);
+char *A4GL_get_yyline(void);
+void do_yyerror(char *s);
+
+
 #define add_feature A4GL_add_feature
 
 
@@ -463,7 +473,10 @@ char *A4GL_print_start_to_is_expr(struct expr_str *ptr) ;
 // any normal use of printf by using PRINTF instead
 // that way - we can just grep for printf...
 #define PRINTF printf
+#ifndef A4GL_strcpy_defined
+#define A4GL_strcpy_defined
 #define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,(long)sizeof(d))
+#endif 
 
 #endif   //ifndef _A4GL_4GLC_INT_H_
 

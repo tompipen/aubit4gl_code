@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.22 2005-06-23 17:57:38 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.23 2005-07-14 14:11:31 mikeaubury Exp $
 #*/
 
 /**
@@ -210,7 +210,7 @@ int entry=0;
               if (rep->lines_in_trailer)
                 {
                   A4GL_debug ("Calling rep_print");
-                  A4GL_rep_print (rep, 0, 1, 0, -10);
+                  A4GL_pdf_rep_print (rep, 0, 1, 0, -10);
                 }
             }
         }

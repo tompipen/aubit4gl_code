@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.236 2005-07-14 11:32:53 mikeaubury Exp $
+# $Id: compile_c.c,v 1.237 2005-07-14 14:11:30 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.236 2005-07-14 11:32:53 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.237 2005-07-14 14:11:30 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -41,7 +41,7 @@
  * The goal is to generate a C program that implement the functionality of
  * the 4gl being compiled.
  */
-
+void push_gen (int a, char *s);
 /*
 =====================================================================
 
@@ -217,8 +217,8 @@ void add_function_to_header (char *identifier, int parms,char *is_static);
 char *get_namespace (char *s);
 void print_init_var (char *name, char *prefix, int alvl);
 void printcomment (char *fmt, ...);
-void LEXLIB_print_onaction_1 (char *key_list_str);
-void LEXLIB_print_onaction_2 (void);
+//void LEXLIB_print_onaction_1 (char *key_list_str);
+//void LEXLIB_print_onaction_2 (void);
 //int is_builtin_func (char *s);
 
 
@@ -1381,7 +1381,7 @@ if (form_attrib->attrib_str==0) {
 	sprintf(buff,"(0x%x)",form_attrib->attrib);
 	frm_attr=buff;
 } else {
-	frm_attr=form_attrib->attrib_str;
+	frm_attr=(char *)form_attrib->attrib_str;
 }
 
   printc ("%d,%d,%d,%d,%d,%d,%d,%d,%s",
@@ -4577,7 +4577,7 @@ print_menu (int mn, int n)
 {
   int a;
   int c;
-  int option;
+  /*int option; */
   c = 0;
 
 

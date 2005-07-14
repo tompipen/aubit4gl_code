@@ -80,7 +80,7 @@ wattribute	: attribute { form_attrib.attrib      =form_attrib.attrib|atoi($<str>
 		| PROMPT_LINE line_no { form_attrib.prompt_line =atoi($<str>2); }
 		| VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET {
 			sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>3); 
-			form_attrib.attrib_str=acl_strdup($<str>$);
+			form_attrib.attrib_str=(long)acl_strdup($<str>$);
 		}
 		| KW_STYLE EQUAL CHAR_VALUE
 		| KW_TEXT EQUAL CHAR_VALUE
