@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.179 2005-07-14 14:11:29 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.180 2005-07-15 18:28:07 mikeaubury Exp $
 #
 */
 
@@ -1272,6 +1272,17 @@ enum cmd_types {
 #define ABORT 					1
 #define WARN 					2
 
+
+
+// Don't confuse the A4GL_debug prototype with the function thats normally used 
+// for logging debug messages throughout the code
+// here we're just defining a function to call that will
+// complain that A4GL_debug_full hasn't been called...
+//
+// Because the #define that follows will map A4GL_debug to A4GL_debug_full
+// we should *never* really be calling a function called 'A4GL_debug'....
+void A4GL_debug(char *s); 
+
 #ifndef NODEBUG
 #define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
 #else
@@ -2048,6 +2059,7 @@ int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) ;
 #define SPRINTF8(s,f,p1,p2,p3,p4,p5,p6,p7,p8)      	A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2,p3,p4,p5,p6,p7,p8)
 #define SPRINTF9(s,f,p1,p2,p3,p4,p5,p6,p7,p8,p9)      	A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2,p3,p4,p5,p6,p7,p8,p9)
 #define SPRINTF10(s,f,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10)	A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10)
+#define SPRINTF24(s,f, p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16,p17,p18,p19,p20,p21,p22,p23,p24)	A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f, p1,p2,p3,p4,p5,p6,p7,p8,p9,p10, p11,p12,p13,p14,p15,p16,p17,p18,p19,p20,p21,p22,p23,p24)
 
 
 #define A4GL_EVENT_BEF_ROW 		-10

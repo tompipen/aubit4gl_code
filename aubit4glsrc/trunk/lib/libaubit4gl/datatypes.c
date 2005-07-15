@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.22 2005-07-14 11:32:51 mikeaubury Exp $
+# $Id: datatypes.c,v 1.23 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -369,7 +369,7 @@ A4GL_call_datatype_function_i (void *obj, int dtype, char *funcname, int nparam)
 
   A4GL_debug ("in call_datatype_function obj=%p dtype=%d funcname=%s nparam=%d",
 	 obj, dtype, A4GL_null_as_null(funcname), nparam);
-  sprintf (buff, ":%s", A4GL_null_as_null(funcname));
+  SPRINTF1 (buff, ":%s", A4GL_null_as_null(funcname));
 
   if (!inited)
     A4GL_init_datatypes ();

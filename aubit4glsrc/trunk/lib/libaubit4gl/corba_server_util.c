@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.12 2005-07-14 11:32:51 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.13 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -263,7 +263,7 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 	char buff[256];
 
 	if (src==0) {
-		sprintf(buff,"No source for strcpy @ %s line %d",f,l);
+		SPRINTF2(buff,"No source for strcpy @ %s line %d",f,l);
 		A4GL_assertion(1,buff);
 	}
 
@@ -271,7 +271,7 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 	if (sd!=sizeof(char *)) {
 		if (lsrc>=sd) {
 			A4GL_debug("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
-			sprintf(buff,"String overflow detected @ %s line %d",f,l);
+			SPRINTF2(buff,"String overflow detected @ %s line %d",f,l);
 			A4GL_assertion(1,buff);
 		}
 	}
@@ -316,7 +316,11 @@ char buff[256];
 int x;
 char *c;
 va_list args;
-char xbuff[10000];
+char xbuff[10000]; 
+
+
+// DO NOT CALL A4GL_debug from this function!!!!
+// (put that in a few times - just top make sure :-)
 /* 
 
 We can end up with problems with overlapping - eg
@@ -325,12 +329,12 @@ We can end up with problems with overlapping - eg
    so we'll sprintf into a temporary space first, then strcpy across after
 
 */
-	A4GL_debug("sprintf %s %d - %s (%d)\n",f,l,fmt,sdest);
         if (fmt==0) {
                 sprintf(buff,"No format for sprintf @ %s line %d",f,l);
                 A4GL_assertion(1,buff);
         }
 
+// DO NOT CALL A4GL_debug from this function!!!!
 
 	if (sdest>sizeof(char *)) { // We do this one...
 	      va_start (args, fmt);
@@ -342,17 +346,17 @@ We can end up with problems with overlapping - eg
 	      }
 	      strncpy(dest,c,sdest);
 	      free(c);
+// DO NOT CALL A4GL_debug from this function!!!!
 	} else {
 	      va_start (args, fmt);
-	      A4GL_debug("vsprintf used because I can't see a size (or its the same as a char pointer) %s %d",f,l);
 	      x=vsprintf(xbuff,fmt,args);
 		if (x>sizeof(xbuff)) {
 			A4GL_assertion(1,"sprintf > 10,000 characters when using a pointer...");
 		}
 	      strcpy(dest,xbuff);
 	}
-	A4GL_debug("-->%s\n",dest);
 	return x;
+// DO NOT CALL A4GL_debug from this function!!!!
 }
 
 

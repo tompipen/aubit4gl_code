@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.237 2005-07-14 14:11:30 mikeaubury Exp $
+# $Id: compile_c.c,v 1.238 2005-07-15 18:28:08 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.237 2005-07-14 14:11:30 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.238 2005-07-15 18:28:08 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1493,7 +1493,7 @@ print_arr_bind (char i)
 	{
 	  if (a > 0)
 	    printc (",\n");
-	  printc ("{0,%d,%d}", 
+	  printc ("{0,%d,%d,0,0,0}", 
 		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
 	}
       printc ("\n}; \n");
@@ -1512,7 +1512,7 @@ print_arr_bind (char i)
       for (a = 0; a < obindcnt; a++)
 	{
 	  if (a > 0) printc (",\n");
-	  printc ("{0,%d,%d}", (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
+	  printc ("{0,%d,%d,0,0,0}", (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
 	}
       printc ("\n}; ");
 	printcomment("/* end of binding */\n");
@@ -1602,7 +1602,7 @@ LEXLIB_print_param (char i)
   }
       if (fbindcnt == 0)
 	{
-	  printc ("{0,0,0}");
+	  printc ("{0,0,0,0,0,0}");
 	} else {
   		for (a = 0; a < fbindcnt; a++)
     		{
@@ -1610,8 +1610,8 @@ LEXLIB_print_param (char i)
       		fbind[a].dtype = scan_variable (fbind[a].varname);
       		if (a > 0)
 			printc (",\n");
-      		/* printc ("{&%s,%d,%d}", fbind[a].varname, (int) fbind[a].dtype & 0xffff, (int) fbind[a].dtype >> 16); */
-      		printc ("{0,%d,%d}", (int) fbind[a].dtype & 0xffff, (int) fbind[a].dtype >> 16);
+      		/* printc ("{&%s,%d,%d,0,0,0}", fbind[a].varname, (int) fbind[a].dtype & 0xffff, (int) fbind[a].dtype >> 16); */
+      		printc ("{0,%d,%d,0,0,0}", (int) fbind[a].dtype & 0xffff, (int) fbind[a].dtype >> 16);
 				
     		}
 	}
@@ -1686,13 +1686,13 @@ LEXLIB_print_bind (char i)
 	      ONE_NOT_ZERO (ibindcnt), ibindcnt);
       if (ibindcnt == 0)
 	{
-	  printc ("{0,0,0}");
+	  printc ("{0,0,0,0,0,0}");
 	}
       for (a = 0; a < ibindcnt; a++)
 	{
 	  if (a > 0)
 	    printc (",\n");
-	  printc ("{&%s,%d,%d,%d,%d}", ibind[a].varname,
+	  printc ("{&%s,%d,%d,%d,%d,0}", ibind[a].varname,
 		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16,
 		  ibind[a].start_char_subscript, ibind[a].end_char_subscript);
 	}
@@ -1714,14 +1714,14 @@ LEXLIB_print_bind (char i)
 	      ONE_NOT_ZERO (nullbindcnt), nullbindcnt);
       if (nullbindcnt == 0)
 	{
-	  printc ("{0,0,0}");
+	  printc ("{0,0,0,0,0,0}");
 	}
       for (a = 0; a < nullbindcnt; a++)
 	{
 	  if (a > 0)
 	    printc (",\n");
 	  chk_init_var (nullbind[a].varname);
-	  printc ("{&%s,%d,%d}", nullbind[a].varname,
+	  printc ("{&%s,%d,%d,0,0,0}", nullbind[a].varname,
 		  (int) nullbind[a].dtype & 0xffff,
 		  (int) nullbind[a].dtype >> 16);
 	}
@@ -1736,14 +1736,14 @@ LEXLIB_print_bind (char i)
       printc ("struct BINDING obind[%d]={\n", ONE_NOT_ZERO (obindcnt));
       if (obindcnt == 0)
 	{
-	  printc ("{0,0,0}");
+	  printc ("{0,0,0,0,0,0}");
 	}
 
       for (a = 0; a < obindcnt; a++)
 	{
 	  if (a > 0)
 	    printc (",\n");
-	  printc ("{&%s,%d,%d,%d,%d}", obind[a].varname,
+	  printc ("{&%s,%d,%d,%d,%d,0}", obind[a].varname,
 		  (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16,
 		  ibind[a].start_char_subscript, ibind[a].end_char_subscript);
 	}
@@ -1765,14 +1765,14 @@ LEXLIB_print_bind (char i)
       printc ("static struct BINDING _ordbind[%d]={\n", ONE_NOT_ZERO (ordbindcnt));
       if (ordbindcnt == 0)
 	{
-	  printc ("{0,0,0}");
+	  printc ("{0,0,0,0,0,0}");
 	}
 
       for (a = 0; a < ordbindcnt; a++)
 	{
 	  if (a > 0)
 	    printc (",\n");
-	  printc ("{&%s,%d,%d}", ordbind[a].varname,
+	  printc ("{&%s,%d,%d,0,0,0}", ordbind[a].varname,
 		  (int) ordbind[a].dtype & 0xffff,
 		  (int) ordbind[a].dtype >> 16);
 	}
@@ -1801,13 +1801,13 @@ int LEXLIB_print_bind_expr (void *ptr, char i)
       A4GL_append_expr (ptr, buff);
       if (ibindcnt == 0)
 	{
-	  A4GL_append_expr (ptr, "{0,0,0}");
+	  A4GL_append_expr (ptr, "{0,0,0,0,0,0}");
 	}
       for (a = 0; a < ibindcnt; a++)
 	{
 	  if (a > 0)
 	    A4GL_append_expr (ptr, ",");
-	  sprintf (buff, "{0,%d,%d}", 
+	  sprintf (buff, "{0,%d,%d,0,0,0}", 
 		   (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
 	  A4GL_append_expr (ptr, buff);
 	}
@@ -1835,13 +1835,13 @@ int LEXLIB_print_bind_expr (void *ptr, char i)
       A4GL_append_expr (ptr, buff);
       if (obindcnt == 0)
 	{
-	  A4GL_append_expr (ptr, "{0,0,0}");
+	  A4GL_append_expr (ptr, "{0,0,0,0,0,0}");
 	}
       for (a = 0; a < obindcnt; a++)
 	{
 	  if (a > 0)
 	    A4GL_append_expr (ptr, ",");
-	  sprintf (buff, "{0,%d,%d}", 
+	  sprintf (buff, "{0,%d,%d,0,0,0}", 
 		   (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
 	  A4GL_append_expr (ptr, buff);
 	}
@@ -1865,13 +1865,13 @@ int LEXLIB_print_bind_expr (void *ptr, char i)
       A4GL_append_expr (ptr, buff);
       if (ebindcnt == 0)
 	{
-	  A4GL_append_expr (ptr, "{0,0,0}");
+	  A4GL_append_expr (ptr, "{0,0,0,0,0,0}");
 	}
       for (a = 0; a < ebindcnt; a++)
 	{
 	  if (a > 0)
 	    A4GL_append_expr (ptr, ",");
-	  sprintf (buff, "{0,%d,%d}", 
+	  sprintf (buff, "{0,%d,%d,0,0,0}", 
 		   (int) ebind[a].dtype & 0xffff, (int) ebind[a].dtype >> 16);
 	  A4GL_append_expr (ptr, buff);
 	}
@@ -1905,13 +1905,13 @@ int print_bind_expr_portion (void *ptr, char i, int portion)
 	  A4GL_append_expr (ptr, buff);
 	  if (ibindcnt == 0)
 	    {
-	      A4GL_append_expr (ptr, "{0,0,0}");
+	      A4GL_append_expr (ptr, "{0,0,0,0,0,0}");
 	    }
 	  for (a = 0; a < ibindcnt; a++)
 	    {
 	      if (a > 0)
 		A4GL_append_expr (ptr, ",");
-	      sprintf (buff, "{0,%d,%d}",
+	      sprintf (buff, "{0,%d,%d,0,0,0}",
 		       (int) ibind[a].dtype & 0xffff,
 		       (int) ibind[a].dtype >> 16);
 	      A4GL_append_expr (ptr, buff);
@@ -1951,14 +1951,14 @@ int print_bind_expr_portion (void *ptr, char i, int portion)
 
 	  if (obindcnt == 0)
 	    {
-	      A4GL_append_expr (ptr, "{0,0,0}");
+	      A4GL_append_expr (ptr, "{0,0,0,0,0,0}");
 	    }
 
 	  for (a = 0; a < obindcnt; a++)
 	    {
 	      if (a > 0)
 		A4GL_append_expr (ptr, ",");
-	      sprintf (buff, "{0,%d,%d}",
+	      sprintf (buff, "{0,%d,%d,0,0,0}",
 		       (int) obind[a].dtype & 0xffff,
 		       (int) obind[a].dtype >> 16);
 	      A4GL_append_expr (ptr, buff);
@@ -1991,13 +1991,13 @@ int print_bind_expr_portion (void *ptr, char i, int portion)
 	  A4GL_append_expr (ptr, buff);
 	  if (ebindcnt == 0)
 	    {
-	      A4GL_append_expr (ptr, "{0,0,0}");
+	      A4GL_append_expr (ptr, "{0,0,0,0,0,0}");
 	    }
 	  for (a = 0; a < ebindcnt; a++)
 	    {
 	      if (a > 0)
 		A4GL_append_expr (ptr, ",");
-	      sprintf (buff, "{0,%d,%d}",
+	      sprintf (buff, "{0,%d,%d,0,0,0}",
 		       (int) ebind[a].dtype & 0xffff,
 		       (int) ebind[a].dtype >> 16);
 	      A4GL_append_expr (ptr, buff);
@@ -6186,12 +6186,12 @@ LEXLIB_print_bind_definition (char i)
       printc ("struct BINDING ibind[%d]={\n ", ONE_NOT_ZERO (ibindcnt), ibindcnt);
       if (ibindcnt == 0)
 	{
-	  printc ("{0,0,0}");
+	  printc ("{0,0,0,0,0,0}");
 	}
       for (a = 0; a < ibindcnt; a++)
 	{
 	  //if (a > 0) printc (",\n");
-	  printc ("{0,%d,%d,%d,%d}%c", 
+	  printc ("{0,%d,%d,%d,%d,0}%c", 
 		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16,
 		  ibind[a].start_char_subscript, ibind[a].end_char_subscript,(a<ibindcnt-1)?',':' ');
 	}
@@ -6209,12 +6209,12 @@ LEXLIB_print_bind_definition (char i)
       printc ("struct BINDING obind[%d]={\n", ONE_NOT_ZERO (obindcnt));
       if (obindcnt == 0)
 	{
-	  printc ("{0,0,0}");
+	  printc ("{0,0,0,0,0,0}");
 	}
 
       for (a = 0; a < obindcnt; a++)
 	{
-	  printc ("{0,%d,%d,%d,%d}%c", 
+	  printc ("{0,%d,%d,%d,%d,0}%c", 
 		  (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16,
 		  obind[a].start_char_subscript, obind[a].end_char_subscript, (a<obindcnt-1)?',':' '
 );
@@ -6234,12 +6234,12 @@ LEXLIB_print_bind_definition (char i)
       printc ("static struct BINDING _ordbind[%d]={\n", ONE_NOT_ZERO (ordbindcnt));
       if (ordbindcnt == 0)
 	{
-	  printc ("{0,0,0}");
+	  printc ("{0,0,0,0,0,0}");
 	}
 
       for (a = 0; a < ordbindcnt; a++)
 	{
-	  printc ("{0,%d,%d,%d,%d}%c", 
+	  printc ("{0,%d,%d,%d,%d,0}%c", 
 		  (int) ordbind[a].dtype & 0xffff, (int) ordbind[a].dtype >> 16,
 		  ordbind[a].start_char_subscript, ordbind[a].end_char_subscript, (a<ordbindcnt-1)?',':' '
 );
@@ -6261,14 +6261,14 @@ LEXLIB_print_bind_definition (char i)
               ONE_NOT_ZERO (nullbindcnt), nullbindcnt);
       if (nullbindcnt == 0)
         {
-          printc ("{0,0,0}");
+          printc ("{0,0,0,0,0,0}");
         }
       for (a = 0; a < nullbindcnt; a++)
         {
           if (a > 0)
             printc (",\n");
           chk_init_var (nullbind[a].varname);
-          printc ("{0,%d,%d}", 
+          printc ("{0,%d,%d,0,0,0}", 
                   (int) nullbind[a].dtype & 0xffff,
                   (int) nullbind[a].dtype >> 16);
         }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.59 2005-07-14 11:32:52 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.60 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -435,7 +435,7 @@ void
 A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
 {
   char buff[256];
-  sprintf (buff, "%s_%s", source_dialect, target_dialect);
+  SPRINTF2 (buff, "%s_%s", source_dialect, target_dialect);
   A4GL_debug("Load convert : %s %s",source_dialect,target_dialect);
 
 
@@ -472,9 +472,9 @@ static void A4GL_cv_fnlist (char *source, char *target)
   strcpy (buff, acl_getenv ("SQLCNVPATH"));
 
   if (buff[0] == '\0')
-    sprintf (buff, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
+    SPRINTF1 (buff, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
   len = strlen (buff);
-  sprintf (buff_sm, "/%s-%s.cnv", source, target);
+  SPRINTF2 (buff_sm, "/%s-%s.cnv", source, target);
   strcat (buff, buff_sm);
 
   A4GL_debug ("loading sql conversion file %s", buff);
@@ -608,9 +608,9 @@ char *A4GLSQLCV_insert_alias_column(char *t,char *c,char *v,int dtype) {
 int b;
 char s[256];
 char sv[512];
-sprintf(s,"%s.%s",t,c);
+SPRINTF2(s,"%s.%s",t,c);
 #ifdef MSVC
-	sprintf(sv,"%s.%s.%s",t,c,v);
+	SPRINTF3(sv,"%s.%s.%s",t,c,v);
 #else
 	snprintf(sv,512,"%s.%s.%s",t,c,v);
 #endif
@@ -648,7 +648,7 @@ if (strchr(sv,'(')) {
 		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_COLUMN) {
 			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
 				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
-				sprintf(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
+				SPRINTF2(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
 				return buff;
 			}
 		}
@@ -679,7 +679,7 @@ if (strchr(s,'(')) {
 		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_COLUMN) {
 			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
 				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
-				sprintf(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
+				SPRINTF2(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
 				return buff;
 			}
 		}
@@ -698,9 +698,9 @@ char *A4GLSQLCV_insert_alias_value(char *t,char *c,char *v,int dtype) {
 int b;
 char s[256];
 char sv[512];
-sprintf(s,"%s.%s",t,c);
+SPRINTF2(s,"%s.%s",t,c);
 #ifdef MSVC
-sprintf(sv,"%s.%s.%s",t,c,v);
+SPRINTF3(sv,"%s.%s.%s",t,c,v);
 #else
 snprintf(sv,512,"%s.%s.%s",t,c,v);
 #endif
@@ -732,7 +732,7 @@ if (strchr(sv,'(')) {
 		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_VALUE) {
 			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
 				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
-				sprintf(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
+				SPRINTF2(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
 				return buff;
 			}
 		}
@@ -763,7 +763,7 @@ if (strchr(s,'(')) {
 		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_VALUE) {
 			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
 				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
-				sprintf(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
+				SPRINTF2(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
 				return buff;
 			}
 		}
@@ -802,7 +802,7 @@ if (strchr(s,'(')) {
 		if (conversion_rules[b].type==CVSQL_DTYPE_ALIAS) {
 			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
 				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
-				sprintf(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
+				SPRINTF2(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
 				return buff;
 			}
 		}
@@ -908,9 +908,9 @@ hr=A4GLSQLCV_check_requirement("SQL_CURRENT_FUNCTION");
                 if (hr) {
 			char *ptr;
 			ptr=conversion_rules[hr-1].data.from;
-                        sprintf(buff,"%s('%s','%s')",ptr,from,to);
+                        SPRINTF3(buff,"%s('%s','%s')",ptr,from,to);
                 } else {
-                        sprintf(buff,"CURRENT %s TO %s",from,to);
+                        SPRINTF2(buff,"CURRENT %s TO %s",from,to);
                 }
 
 return buff;
@@ -960,9 +960,9 @@ return 0;
 char *A4GLSQLCV_check_colname(char *tabname,char *colname) {
 static char buff[256];
 	if (tabname) {
-		sprintf(buff,"%s.%s",tabname,colname);
+		SPRINTF2(buff,"%s.%s",tabname,colname);
 	} else {
-		sprintf(buff,"%s",colname);
+		SPRINTF1(buff,"%s",colname);
 	}
 	return buff;
 }
@@ -974,9 +974,9 @@ static char buff[1024];
 
 if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_LIKE")) {
 		if (strstr(not,"NOT")==0) {
-		sprintf(buff,"LIKE %s",CV_matches("LIKE",str,esc));
+		SPRINTF1(buff,"LIKE %s",CV_matches("LIKE",str,esc));
 		} else {
-		sprintf(buff,"NOT LIKE %s",CV_matches("LIKE",str,esc));
+		SPRINTF1(buff,"NOT LIKE %s",CV_matches("LIKE",str,esc));
 		}
 
 		return buff;
@@ -984,32 +984,32 @@ if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_LIKE")) {
 
 if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_REGEX")) {
 		if (strstr(not,"NOT")==0) {
-			sprintf(buff,"~ %s",CV_matches("~",str,esc));
+			SPRINTF1(buff,"~ %s",CV_matches("~",str,esc));
 		} else {
-			sprintf(buff,"!~ %s",CV_matches("~",str,esc));
+			SPRINTF1(buff,"!~ %s",CV_matches("~",str,esc));
 		}
 		return buff;
 }
 if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_REGEXP")) {
 		if (strstr(not,"NOT")==0) {
-			sprintf(buff," REGEXP %s",CV_matches("~",str,esc));
+			SPRINTF1(buff," REGEXP %s",CV_matches("~",str,esc));
 		} else {
-			sprintf(buff," NOT REGEXP %s",CV_matches("~",str,esc));
+			SPRINTF1(buff," NOT REGEXP %s",CV_matches("~",str,esc));
 		}
 		return buff;
 }
 
 
 if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_GLOB")) {
-		sprintf(buff,"%s GLOB %s",not,CV_matches("~",str,esc));
+		SPRINTF2(buff,"%s GLOB %s",not,CV_matches("~",str,esc));
 		return buff;
 }
 
 
 if (strlen(esc)) {
-		sprintf(buff,"%s MATCHES %s %s",not,str,esc);
+		SPRINTF3(buff,"%s MATCHES %s %s",not,str,esc);
 } else {
-		sprintf(buff,"%s MATCHES %s ",not,str);
+		SPRINTF2(buff,"%s MATCHES %s ",not,str);
 }
 
 
@@ -1026,13 +1026,13 @@ rule=A4GLSQLCV_check_requirement("SUBSTRING_FUNCTION");
 strcpy(buff,colname);
 if (!rule || n==0) {
 	if (n==0) return buff; 
-	if (n==1) { sprintf(buff,"%s[%s]",colname,l); return buff; }  
-	if (n==2) { sprintf(buff,"%s[%s,%s]",colname,l,r); return buff; } 
+	if (n==1) { SPRINTF2(buff,"%s[%s]",colname,l); return buff; }  
+	if (n==2) { SPRINTF3(buff,"%s[%s,%s]",colname,l,r); return buff; } 
 } else {
 	char *func;
         func=conversion_rules[rule-1].data.from;
-	if (n==1) { sprintf(buff,"%s(%s,%s,1)",func,colname,l); return buff; }  
-	if (n==2) { sprintf(buff,"%s(%s,%s,(%s)-(%s)+1)",func,colname,l,r,l); return buff; } 
+	if (n==1) { SPRINTF3(buff,"%s(%s,%s,1)",func,colname,l); return buff; }  
+	if (n==2) { SPRINTF5(buff,"%s(%s,%s,(%s)-(%s)+1)",func,colname,l,r,l); return buff; } 
 }
 A4GL_debug("Shouldn't get to here...");
 return "???";
@@ -1045,8 +1045,8 @@ static char l[256]="";
 static char r[256]="";
 char *s;
 
-if (i0) sprintf(l,"%d",i1);
-if (i0>=2) sprintf(r,"%d",i2);
+if (i0) SPRINTF1(l,"%d",i1);
+if (i0>=2) SPRINTF1(r,"%d",i2);
 s= A4GLSQLCV_make_substr_s(colname,i0,l,r);
 return s;
 }
@@ -1527,23 +1527,23 @@ char *A4GLSQLCV_make_ival_extend(char *ival,char *from,char *from_len,char *to,i
         if (hr) {
 		xx=conversion_rules[hr-1].data.from;
 		if (from_len==0) {
-                sprintf(buff,"%s(%s,'%s',0,'%s')",xx, ival,from,to);
+                SPRINTF4(buff,"%s(%s,'%s',0,'%s')",xx, ival,from,to);
 		} else {
-                sprintf(buff,"%s(%s,'%s',%s,'%s')",xx, ival,from,from_len,to);
+                SPRINTF5(buff,"%s(%s,'%s',%s,'%s')",xx, ival,from,from_len,to);
 		}
 
         } else {
         	if (from_len==0) { // The pointer not the value :-)
 			if (extend) {
-                		sprintf(buff,"EXTEND(%s,%s TO %s)",ival,from,to);
+                		SPRINTF3(buff,"EXTEND(%s,%s TO %s)",ival,from,to);
 			} else {
-                		sprintf(buff,"%s %s TO %s",ival,from,to);
+                		SPRINTF3(buff,"%s %s TO %s",ival,from,to);
 			}
         	} else {
 			if (extend) {
-                		sprintf(buff,"EXTEND(%s,%s(%s) TO %s)",ival,from,from_len,to);
+                		SPRINTF4(buff,"EXTEND(%s,%s(%s) TO %s)",ival,from,from_len,to);
 			} else {
-                		sprintf(buff,"%s %s(%s) TO %s",ival,from,from_len,to);
+                		SPRINTF4(buff,"%s %s(%s) TO %s",ival,from,from_len,to);
 			}
         	}
         }
@@ -1559,12 +1559,12 @@ char *A4GLSQLCV_make_dtime_extend(char *dval,char *from,char *to,int extend) {
         hr=A4GLSQLCV_check_requirement("DATETIME_EXTEND_FUNCTION");
         if (hr) {
 		xx=conversion_rules[hr-1].data.from;
-                sprintf(buff,"%s(%s,'%s','%s')",xx, dval,from,to);
+                SPRINTF4(buff,"%s(%s,'%s','%s')",xx, dval,from,to);
         } else {
 		if (extend) {
-        	sprintf(buff,"EXTEND(%s,%s TO %s)",dval,from,to);
+        	SPRINTF3(buff,"EXTEND(%s,%s TO %s)",dval,from,to);
 		} else {
-        	sprintf(buff,"%s %s TO %s",dval,from,to);
+        	SPRINTF3(buff,"%s %s TO %s",dval,from,to);
 		}
         }
         return buff;
@@ -1584,7 +1584,7 @@ if (strncasecmp(s,"DATETIME(",9)==0) {
 			xx=conversion_rules[hr-1].data.from;
                         ptr=acl_strdup(&s[9]);
                         ptr[strlen(ptr)-1]=0;
-                        sprintf(buff,"%s(\"%s\")",xx,ptr);
+                        SPRINTF2(buff,"%s(\"%s\")",xx,ptr);
                         free(ptr);
                         return buff;
 			
@@ -1607,7 +1607,7 @@ if (strncasecmp(s,"INTERVAL(",9)==0) {
 			xx=conversion_rules[hr-1].data.from;
                         ptr=acl_strdup(&s[9]);
                         ptr[strlen(ptr)-1]=0;
-                        sprintf(buff,"%s(\"%s\")",xx,ptr);
+                        SPRINTF2(buff,"%s(\"%s\")",xx,ptr);
                         free(ptr);
                         return buff;
                 }
@@ -1633,7 +1633,7 @@ if (A4GLSQLCV_check_requirement("ESQL_UNLOAD_FULL_PATH")) {
 		getcwd(buff,512);
 #endif
 		strcpy(buff2,s);
-		sprintf(s,"%s/%s",buff,buff2);
+		SPRINTF2(s,"%s/%s",buff,buff2);
 	}
 }
 
@@ -1647,26 +1647,26 @@ if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_AS_DECLARE_GLOBAL")) {
 	ptr=acl_malloc2(strlen(sel)+2000);
 	A4GL_debug("Creating temp table called %s",tabname);
 	if (!A4GL_has_pointer(tabname,LOG_TEMP_TABLE)) { A4GL_add_pointer(tabname,LOG_TEMP_TABLE,(void *)1); }
-	sprintf(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s AS %s ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,sel);
+	SPRINTF2(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s AS %s ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,sel);
 	return ptr;
 }
 
 if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_AS_CREATE_TEMP_AS")) {
 	ptr=acl_malloc2(strlen(sel)+2000);
-	sprintf(ptr,"CREATE TEMP TABLE %s AS %s ",tabname,sel);
+	SPRINTF2(ptr,"CREATE TEMP TABLE %s AS %s ",tabname,sel);
 	return ptr;
 }
 
 
 if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS")) {
 	ptr=acl_malloc2(strlen(sel)+2000);
-	sprintf(ptr,"CREATE TEMPORARY TABLE %s AS %s ",tabname,sel);
+	SPRINTF2(ptr,"CREATE TEMPORARY TABLE %s AS %s ",tabname,sel);
 	return ptr;
 }
 
 
 ptr=acl_malloc2(strlen(sel)+2000);
-sprintf(ptr,"%s %s",sel,lp);
+SPRINTF2(ptr,"%s %s",sel,lp);
 return ptr;
 return 0;
 }
@@ -1686,16 +1686,16 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 	A4GL_debug("Creating temp table called TABLE : %s",tabname);
 
 	if (!A4GL_has_pointer(tabname,LOG_TEMP_TABLE)) { A4GL_add_pointer(tabname,LOG_TEMP_TABLE,(void *)1); }
-	sprintf(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,A4GL_space_out(elements));
+	SPRINTF2(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,A4GL_space_out(elements));
 	return ptr;
 } 
 
 if (A4GLSQLCV_check_requirement("TEMP_AS_TEMPORARY")) {
-	sprintf(ptr,"CREATE TEMPORARY TABLE %s (%s) %s %s",tabname,elements,extra,oplog);
+	SPRINTF4(ptr,"CREATE TEMPORARY TABLE %s (%s) %s %s",tabname,elements,extra,oplog);
 	return ptr;
 }
 
-sprintf(ptr,"CREATE TEMP TABLE %s (%s) %s %s",tabname,elements,extra,oplog);
+SPRINTF4(ptr,"CREATE TEMP TABLE %s (%s) %s %s",tabname,elements,extra,oplog);
 return ptr;
 }
 
@@ -1704,9 +1704,9 @@ return ptr;
 char *A4GLSQLCV_rencol(char *tabname,char *colname,char *ncolname) {
 static char buff[256];
 if (A4GLSQLCV_check_requirement("RENAME_COLUMN_AS_ALTER_TABLE")) {
-	sprintf(buff,"ALTER TABLE %s RENAME COLUMN %s TO %s",tabname,colname,ncolname);
+	SPRINTF3(buff,"ALTER TABLE %s RENAME COLUMN %s TO %s",tabname,colname,ncolname);
 } else {
-	sprintf(buff,"RENAME COLUMN %s.%s TO %s",tabname,colname,ncolname);
+	SPRINTF3(buff,"RENAME COLUMN %s.%s TO %s",tabname,colname,ncolname);
 }
 return buff;
 }
@@ -1714,9 +1714,9 @@ return buff;
 char *A4GLSQLCV_rentab(char *tabname,char *ntabname) {
 static char buff[256];
 if (A4GLSQLCV_check_requirement("RENAME_TABLE_AS_ALTER_TABLE")) {
-	sprintf(buff,"ALTER TABLE %s RENAME TO %s",tabname,ntabname);
+	SPRINTF2(buff,"ALTER TABLE %s RENAME TO %s",tabname,ntabname);
 } else {
-	sprintf(buff,"RENAME TABLE %s TO %s",tabname,ntabname);
+	SPRINTF2(buff,"RENAME TABLE %s TO %s",tabname,ntabname);
 }
 return buff;
 }
@@ -1767,12 +1767,12 @@ return s;
 char *A4GLSQLCV_sql_func(char *f,char *param) {
 static char buff[256];
 int b;
-sprintf(buff,"%s(%s)",f,param);
+SPRINTF2(buff,"%s(%s)",f,param);
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE_SQLFUNC) {
 		if (A4GL_aubit_strcasecmp(f,conversion_rules[b].data.from)==0) {
 			//printf("Here...\n");
-			sprintf(buff,conversion_rules[b].data.to,param);
+			SPRINTF1(buff,conversion_rules[b].data.to,param);
 			break;
 		}
 	}
@@ -1789,7 +1789,7 @@ static char b2[200];
 A4GL_debug("TABLE : %s\n",t);
 if (A4GLSQLCV_check_requirement("ADD_SESSION_TO_TEMP_TABLE")) {
 	if (A4GL_has_pointer(t,LOG_TEMP_TABLE)) {
-		sprintf(b2,"session.%s",t);
+		SPRINTF1(b2,"session.%s",t);
 		return b2;
 	}
 }
@@ -1809,7 +1809,7 @@ if (c) {
 
 if (A4GLSQLCV_check_requirement("ADD_SESSION_TO_TEMP_TABLE")) {
 	if (A4GL_has_pointer(t,LOG_TEMP_TABLE)) {
-		sprintf(b2,"session.%s",t);
+		SPRINTF1(b2,"session.%s",t);
 		doneSession=1;
 		if (c==0 || strlen(c)==0) {
 			c=t;
@@ -1822,12 +1822,12 @@ if (A4GLSQLCV_check_requirement("ADD_SESSION_TO_TEMP_TABLE")) {
 
 	if (c&&strlen(c) && A4GL_aubit_strcasecmp(c,t)!=0) {
                 	if (A4GLSQLCV_check_requirement("TABLE_ALIAS_AS")) {
-                        	sprintf(buff,"%s AS %s",t,c);
+                        	SPRINTF2(buff,"%s AS %s",t,c);
                 	} else {
-                        	sprintf(buff,"%s %s",t,c);
+                        	SPRINTF2(buff,"%s %s",t,c);
                 	}
         } else {
-                	sprintf(buff,"%s",t);
+                	SPRINTF1(buff,"%s",t);
 	}
 return buff;
 }
@@ -1856,66 +1856,66 @@ char *A4GL_strcasestr(char *s,char *t) {
 static char *get_dollared_sql_var(char *s) {
 static char buff[256];
 char *c;
-	if (A4GL_aubit_strcasecmp(s,"$TODAY")==0)                    { A4GL_push_today(); c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; } 
-	if (A4GL_aubit_strcasecmp(s,"$USER")==0)                     { A4GL_push_user(); c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$TODAY")==0)                    { A4GL_push_today(); c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; } 
+	if (A4GL_aubit_strcasecmp(s,"$USER")==0)                     { A4GL_push_user(); c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
 
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_YEAR")==0)        { A4GL_push_current(1,1);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_MONTH")==0)       { A4GL_push_current(1,2);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_DAY")==0)         { A4GL_push_current(1,3);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_HOUR")==0)        { A4GL_push_current(1,4);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_MINUTE")==0)      { A4GL_push_current(1,5);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_SECOND")==0)      { A4GL_push_current(1,6);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_FRACTION1")==0)   { A4GL_push_current(1,7);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_FRACTION2")==0)   { A4GL_push_current(1,8);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_FRACTION3")==0)   { A4GL_push_current(1,9);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_FRACTION4")==0)   { A4GL_push_current(1,10);  c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_FRACTION5")==0)   { A4GL_push_current(1,10);  c=A4GL_char_pop(); sprintf(buff,"'%s0'",c); free(c); return buff; } // ,11 aint working yet..
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_YEAR")==0)        { A4GL_push_current(1,1);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_MONTH")==0)       { A4GL_push_current(1,2);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_DAY")==0)         { A4GL_push_current(1,3);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_HOUR")==0)        { A4GL_push_current(1,4);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_MINUTE")==0)      { A4GL_push_current(1,5);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_SECOND")==0)      { A4GL_push_current(1,6);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_FRACTION1")==0)   { A4GL_push_current(1,7);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_FRACTION2")==0)   { A4GL_push_current(1,8);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_FRACTION3")==0)   { A4GL_push_current(1,9);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_FRACTION4")==0)   { A4GL_push_current(1,10);  c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_YEAR_FRACTION5")==0)   { A4GL_push_current(1,10);  c=A4GL_char_pop(); SPRINTF1(buff,"'%s0'",c); free(c); return buff; } // ,11 aint working yet..
   
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_MONTH")==0)      { A4GL_push_current(2,2);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_DAY")==0)        { A4GL_push_current(2,3);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_HOUR")==0)       { A4GL_push_current(2,4);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_MINUTE")==0)     { A4GL_push_current(2,5);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_SECOND")==0)     { A4GL_push_current(2,6);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_FRACTION1")==0)  { A4GL_push_current(2,7);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_FRACTION2")==0)  { A4GL_push_current(2,8);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_FRACTION3")==0)  { A4GL_push_current(2,9);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_FRACTION4")==0)  { A4GL_push_current(2,10);  c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_FRACTION5")==0)  { A4GL_push_current(2,10);  c=A4GL_char_pop(); sprintf(buff,"'%s0'",c); free(c); return buff; } // ,11 aint working yet..
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_MONTH")==0)      { A4GL_push_current(2,2);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_DAY")==0)        { A4GL_push_current(2,3);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_HOUR")==0)       { A4GL_push_current(2,4);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_MINUTE")==0)     { A4GL_push_current(2,5);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_SECOND")==0)     { A4GL_push_current(2,6);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_FRACTION1")==0)  { A4GL_push_current(2,7);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_FRACTION2")==0)  { A4GL_push_current(2,8);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_FRACTION3")==0)  { A4GL_push_current(2,9);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_FRACTION4")==0)  { A4GL_push_current(2,10);  c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MONTH_FRACTION5")==0)  { A4GL_push_current(2,10);  c=A4GL_char_pop(); SPRINTF1(buff,"'%s0'",c); free(c); return buff; } // ,11 aint working yet..
 
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_DAY")==0)          { A4GL_push_current(3,3);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_HOUR")==0)         { A4GL_push_current(3,4);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_MINUTE")==0)       { A4GL_push_current(3,5);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_SECOND")==0)       { A4GL_push_current(3,6);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_FRACTION1")==0)    { A4GL_push_current(3,7);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_FRACTION2")==0)    { A4GL_push_current(3,8);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_FRACTION3")==0)    { A4GL_push_current(3,9);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
- 	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_FRACTION4")==0)    { A4GL_push_current(3,10);  c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
- 	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_FRACTION5")==0)    { A4GL_push_current(3,10);  c=A4GL_char_pop(); sprintf(buff,"'%s0'",c); free(c); return buff; } // ,11 aint working yet..
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_DAY")==0)          { A4GL_push_current(3,3);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_HOUR")==0)         { A4GL_push_current(3,4);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_MINUTE")==0)       { A4GL_push_current(3,5);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_SECOND")==0)       { A4GL_push_current(3,6);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_FRACTION1")==0)    { A4GL_push_current(3,7);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_FRACTION2")==0)    { A4GL_push_current(3,8);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_FRACTION3")==0)    { A4GL_push_current(3,9);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+ 	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_FRACTION4")==0)    { A4GL_push_current(3,10);  c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+ 	if (A4GL_aubit_strcasecmp(s,"$CURRENT_DAY_FRACTION5")==0)    { A4GL_push_current(3,10);  c=A4GL_char_pop(); SPRINTF1(buff,"'%s0'",c); free(c); return buff; } // ,11 aint working yet..
  
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_HOUR")==0)        { A4GL_push_current(4,4);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_MINUTE")==0)      { A4GL_push_current(4,5);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_SECOND")==0)      { A4GL_push_current(4,6);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_FRACTION1")==0)   { A4GL_push_current(4,7);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_FRACTION2")==0)   { A4GL_push_current(4,8);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_FRACTION3")==0)   { A4GL_push_current(4,9);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_FRACTION4")==0)   { A4GL_push_current(4,10);  c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_FRACTION5")==0)   { A4GL_push_current(4,10);  c=A4GL_char_pop(); sprintf(buff,"'%s0'",c); free(c); return buff; } // ,11 aint working yet..
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_HOUR")==0)        { A4GL_push_current(4,4);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_MINUTE")==0)      { A4GL_push_current(4,5);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_SECOND")==0)      { A4GL_push_current(4,6);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_FRACTION1")==0)   { A4GL_push_current(4,7);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_FRACTION2")==0)   { A4GL_push_current(4,8);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_FRACTION3")==0)   { A4GL_push_current(4,9);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_FRACTION4")==0)   { A4GL_push_current(4,10);  c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_HOUR_FRACTION5")==0)   { A4GL_push_current(4,10);  c=A4GL_char_pop(); SPRINTF1(buff,"'%s0'",c); free(c); return buff; } // ,11 aint working yet..
 
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MINUTE_MINUTE")==0)    { A4GL_push_current(5,5);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MINUTE_SECOND")==0)    { A4GL_push_current(5,6);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MINUTE_FRACTION1")==0) { A4GL_push_current(5,7);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MINUTE_FRACTION2")==0) { A4GL_push_current(5,8);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MINUTE_FRACTION3")==0) { A4GL_push_current(5,9);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MINUTE_FRACTION4")==0) { A4GL_push_current(5,10);  c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MINUTE_FRACTION5")==0) { A4GL_push_current(5,10);  c=A4GL_char_pop(); sprintf(buff,"'%s0'",c); free(c); return buff; } // ,11 aint working yet..
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MINUTE_MINUTE")==0)    { A4GL_push_current(5,5);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MINUTE_SECOND")==0)    { A4GL_push_current(5,6);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MINUTE_FRACTION1")==0) { A4GL_push_current(5,7);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MINUTE_FRACTION2")==0) { A4GL_push_current(5,8);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MINUTE_FRACTION3")==0) { A4GL_push_current(5,9);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MINUTE_FRACTION4")==0) { A4GL_push_current(5,10);  c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_MINUTE_FRACTION5")==0) { A4GL_push_current(5,10);  c=A4GL_char_pop(); SPRINTF1(buff,"'%s0'",c); free(c); return buff; } // ,11 aint working yet..
 
 
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_SECOND_SECOND")==0)    { A4GL_push_current(6,6);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_SECOND_FRACTION1")==0) { A4GL_push_current(6,7);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_SECOND_FRACTION2")==0) { A4GL_push_current(6,8);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_SECOND_FRACTION3")==0) { A4GL_push_current(6,9);   c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_SECOND_FRACTION4")==0) { A4GL_push_current(6,10);  c=A4GL_char_pop(); sprintf(buff,"'%s'",c); free(c); return buff; }
-	if (A4GL_aubit_strcasecmp(s,"$CURRENT_SECOND_FRACTION5")==0) { A4GL_push_current(6,10);  c=A4GL_char_pop(); sprintf(buff,"'%s0'",c); free(c); return buff; } // ,11 aint working yet..
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_SECOND_SECOND")==0)    { A4GL_push_current(6,6);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_SECOND_FRACTION1")==0) { A4GL_push_current(6,7);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_SECOND_FRACTION2")==0) { A4GL_push_current(6,8);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_SECOND_FRACTION3")==0) { A4GL_push_current(6,9);   c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_SECOND_FRACTION4")==0) { A4GL_push_current(6,10);  c=A4GL_char_pop(); SPRINTF1(buff,"'%s'",c); free(c); return buff; }
+	if (A4GL_aubit_strcasecmp(s,"$CURRENT_SECOND_FRACTION5")==0) { A4GL_push_current(6,10);  c=A4GL_char_pop(); SPRINTF1(buff,"'%s0'",c); free(c); return buff; } // ,11 aint working yet..
 
 
 

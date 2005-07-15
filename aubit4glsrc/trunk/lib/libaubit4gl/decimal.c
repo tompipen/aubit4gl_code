@@ -52,7 +52,7 @@ char str[1024];
   int round_cnt;
   int carry;
   if (decimal_char==0) {
-	  sprintf(buff,"%f",1.2);
+	  SPRINTF1(buff,"%f",1.2);
 	  if (strchr(buff,'.')) decimal_char='.';
 	  if (strchr(buff,',')) decimal_char=',';
   }
@@ -179,7 +179,7 @@ A4GL_trim(str);
   tail[decimals]=0;
   A4GL_debug("head_len=%d",head_len);
   A4GL_debug("head_i=%d head='%s'",head_i,head);
-  sprintf(buff,"%0*ld",head_len,head_i);
+  SPRINTF2(buff,"%0*ld",head_len,head_i);
   memset(head2,'0',255);
 
   head2[head_len]=0;
@@ -195,7 +195,7 @@ A4GL_trim(str);
   A4GL_debug("head2=%s\n",head2);
   
   
-  sprintf(&dec->dec_data[2],buff);
+  strcpy(&dec->dec_data[2],buff);
   strcat(&dec->dec_data[2],".");
   strcat(&dec->dec_data[2],tail);
   

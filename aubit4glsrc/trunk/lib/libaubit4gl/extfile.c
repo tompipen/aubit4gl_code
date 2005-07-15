@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.24 2005-07-14 11:32:51 mikeaubury Exp $
+# $Id: extfile.c,v 1.25 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -100,7 +100,7 @@ A4GL_set_help_file (char *fname)
     free (curr_help_filename);
   curr_help_filename = acl_strdup (fname);
 
-  helpfile = (FILE *) A4GL_open_file_dbpath (fname);
+  helpfile =  A4GL_open_file_dbpath (fname);
 
   if (helpfile == 0)
     {
@@ -118,7 +118,7 @@ A4GL_set_help_file (char *fname)
 
       strcat (a, acl_getenv ("A4GL_HLP_EXT"));
 
-      helpfile = (FILE *) A4GL_open_file_dbpath (a);
+      helpfile = A4GL_open_file_dbpath (a);
 
 
       if (helpfile == 0)
@@ -151,7 +151,7 @@ A4GL_set_lang_file (char *fname_orig)
 
   if (language_file_contents != 0)
     free (language_file_contents);
-  langfile = (FILE *) A4GL_open_file_dbpath (fname);
+  langfile = A4GL_open_file_dbpath (fname);
 
   if (langfile == 0)
     {

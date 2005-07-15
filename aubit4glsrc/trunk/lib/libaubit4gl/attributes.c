@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.34 2005-07-14 11:32:51 mikeaubury Exp $
+# $Id: attributes.c,v 1.35 2005-07-15 18:28:07 mikeaubury Exp $
 #*/
 
 /**
@@ -394,7 +394,7 @@ for (a=0;a<=(int)strlen(s);a++) {
 			// skip any further white space
 			ptr=&buff[a]; 
 			while (*ptr==' '||*ptr==','||*ptr==0) { 
-				if (a>=strlen(s)) {
+				if (a>=(long) strlen(s)) {
 					break;
 				} 
 				a++; 

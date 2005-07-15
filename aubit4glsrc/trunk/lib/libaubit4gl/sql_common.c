@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.10 2005-07-15 08:09:21 mikeaubury Exp $
+# $Id: sql_common.c,v 1.11 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -580,7 +580,7 @@ A4GLSQL_add_prepare (char *pname, void *vsid)
     {
 	char rname[256];
   	A4GL_debug("Adding prepare - %s - %p",pname,vsid);
-	sprintf(rname,"%p",sid);
+	SPRINTF1(rname,"%p",sid);
         A4GL_add_pointer (pname, PRECODE, sid);
         A4GL_add_pointer (rname, PRECODE_R, pname);
       return 1;
@@ -672,10 +672,10 @@ void A4GL_log_sql_prepared(char *s) {
 	if (strlen(fname)==0) return;
 
 	// Firstly - MAPSQL should be a directory...
-	sprintf(buff,"%s/%s_%d.log",fname,A4GL_get_running_program(),getpid());
+	SPRINTF3(buff,"%s/%s_%d.log",fname,A4GL_get_running_program(),getpid());
 	fout=fopen(buff,"a");
 	if (fout==0) { // Maybe - its just a file ?
-		sprintf(buff,"%s",fname);
+		SPRINTF1(buff,"%s",fname);
 		fout=fopen(buff,"a");
 	}
 	if (fout==0) return;
@@ -707,10 +707,10 @@ void A4GL_log_sql_prepared_map(char *s) {
 
 	if (logfnameset==0) {
 		// Firstly - MAPSQL should be a directory...
-		sprintf(buff,"%s/%s_%d.map",fname,A4GL_get_running_program(),getpid());
+		SPRINTF3(buff,"%s/%s_%d.map",fname,A4GL_get_running_program(),getpid());
 		fout=fopen(buff,"a");
 		if (fout==0) { // Maybe - its just a file ?
-			sprintf(buff,"%s",fname);
+			SPRINTF1(buff,"%s",fname);
 			fout=fopen(buff,"a");
 		}
 		if (fout==0) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readkeys.c,v 1.11 2005-05-18 13:48:41 mikeaubury Exp $
+# $Id: readkeys.c,v 1.12 2005-07-15 18:28:08 mikeaubury Exp $
 #*/
 
 /**
@@ -209,7 +209,7 @@ void A4GL_logkey(long a) {
 
 	for (k=1;k<=36;k++) {
 		char buff[256];
-		sprintf(buff,"F%d",k);
+		SPRINTF1(buff,"F%d",k);
 		if (a==A4GL_key_val(buff)) {
 			fprintf(keylog,"\\%s\n",buff);fflush(keylog);
 			return;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.73 2005-07-14 11:32:52 mikeaubury Exp $
+# $Id: report.c,v 1.74 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -378,7 +378,7 @@ gen_rep_tab_name (void *p)
   static char buff_0[256];
   a = (int) p;
   //a=1;
-  sprintf (buff_0, "rtab%x", ((int) a) & 0xfffffff);
+  SPRINTF1 (buff_0, "rtab%x", ((int) a) & 0xfffffff);
   return buff_0;
 }
 
@@ -841,11 +841,11 @@ sz (int d, int s)
 
     case 0:
     case 13:
-      sprintf (buff_1, "(%d)", s);
+      SPRINTF1 (buff_1, "(%d)", s);
       return buff_1;
 
     case 14:
-      sprintf (buff_1, "year to second(5)");
+      SPRINTF0 (buff_1, "year to second(5)");
       return buff_1;
     }
   return "";
@@ -860,7 +860,7 @@ char *
 A4GL_decode_datatype (int dtype, int dim)
 {
   static char buff_2[256];
-  sprintf (buff_2, "%s %s", nm (dtype), sz (dtype, dim));
+  SPRINTF2 (buff_2, "%s %s", nm (dtype), sz (dtype, dim));
   return buff_2;
 }
 
@@ -883,14 +883,13 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
 
 
 
-  sprintf (buff_3, "create temp table %s (\n", gen_rep_tab_name (b));
-  //sprintf (buff, "create  table %s (\n", gen_rep_tab_name (b));
+  SPRINTF1 (buff_3, "create temp table %s (\n", gen_rep_tab_name (b));
 
   for (a = 0; a < n; a++)
     {
       if (a)
 	strcat (buff_3, ",\n");
-      sprintf (tmpbuff, "c%d %s %s", a, nm (b[a].dtype),
+      SPRINTF3 (tmpbuff, "c%d %s %s", a, nm (b[a].dtype),
 	       sz (b[a].dtype, b[a].size));
       strcat (buff_3, tmpbuff);
     }
@@ -919,7 +918,7 @@ A4GL_unload_report_table (struct BINDING *b)
   char buff[1024];
   struct BINDING *ibind = 0;
   return;
-  sprintf (buff, "SELECT * FROM %s", gen_rep_tab_name (b));
+  SPRINTF1 (buff, "SELECT * FROM %s", gen_rep_tab_name (b));
   A4GLSQL_unload_data ("zz9pa", "|", buff, 0, ibind);
 }
 
@@ -934,7 +933,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
   int a;
   void *x;
   A4GL_debug ("Add row report table");
-  sprintf (buff, "INSERT INTO %s VALUES (", gen_rep_tab_name (b));
+  SPRINTF1 (buff, "INSERT INTO %s VALUES (", gen_rep_tab_name (b));
 
   for (a = 0; a < n; a++)
     {
@@ -967,17 +966,17 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
   struct s_sid *pstmt;
   struct BINDING ibind[] = {
     /* ibind 0 */
-    {0, 0, 0}
+    {0, 0, 0,0,0,0}
   };				/* end of binding */
   struct BINDING obind[] = {
-    {0, 0, 0}
+    {0, 0, 0,0,0,0}
   };				/* end of binding */
 
   A4GL_debug ("init_rep_table");
   *reread = A4GL_duplicate_binding (b, n);
 
 
-  sprintf (buff, "select * from %s order by ", gen_rep_tab_name (b));
+  SPRINTF1 (buff, "select * from %s order by ", gen_rep_tab_name (b));
 
   A4GL_unload_report_table (b);	// This is useful for debugging....
 
@@ -994,7 +993,7 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
 
 	  if (o[a1].ptr == b[a2].ptr)
 	    {
-	      sprintf (obuff, "c%d", a2);
+	      SPRINTF1 (obuff, "c%d", a2);
 	      strcat (buff, obuff);
 	      ok = 1;
 	      break;
@@ -1012,7 +1011,6 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
   A4GL_debug ("Got select statement as : %s\n", buff);
 
 
-  //sprintf (tbuff, "c_%x", (int) gen_rep_tab_name (b));
 
 
 
@@ -1529,14 +1527,14 @@ A4GL_convert_report (struct rep_structure *rep, char *ofile,
 
       if (strlen (layout))
 	{
-	  sprintf (buff,
+	  SPRINTF6 (buff,
 		   "%s/bin/process_report -M '%s' -p '%s' '%s' '%s' '%s'",
 		   acl_getenv ("AUBITDIR"), running_program, ofile, otype,
 		   rep->output_loc, layout);
 	}
       else
 	{
-	  sprintf (buff, "%s/bin/process_report -M '%s' -p '%s' '%s' '%s' ",
+	  SPRINTF5 (buff, "%s/bin/process_report -M '%s' -p '%s' '%s' '%s' ",
 		   acl_getenv ("AUBITDIR"), running_program, ofile, otype,
 		   rep->output_loc);
 	}
@@ -1546,14 +1544,14 @@ A4GL_convert_report (struct rep_structure *rep, char *ofile,
     {
       if (strlen (layout))
 	{
-	  sprintf (buff,
+	  SPRINTF6 (buff,
 		   "%s/bin/process_report -M '%s' -o '%s' '%s' '%s' '%s'",
 		   acl_getenv ("AUBITDIR"), running_program, ofile, otype,
 		   rep->output_loc, layout);
 	}
       else
 	{
-	  sprintf (buff, "%s/bin/process_report -M '%s' -o '%s' '%s' '%s' ",
+	  SPRINTF5 (buff, "%s/bin/process_report -M '%s' -o '%s' '%s' '%s' ",
 		   acl_getenv ("AUBITDIR"), running_program, ofile, otype,
 		   rep->output_loc);
 	}
@@ -1706,7 +1704,7 @@ static char *
 cursor_for_rep_tab (void *b)
 {
   static char tbuff[256];
-  sprintf (tbuff, "c_%lx", (unsigned long)b);
+  SPRINTF1 (tbuff, "c_%lx", (unsigned long)b);
   return tbuff;
 }
 

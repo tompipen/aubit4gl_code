@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.83 2005-07-14 11:32:52 mikeaubury Exp $
+# $Id: ops.c,v 1.84 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -968,7 +968,7 @@ if (op==OP_SUB) {
       A4GL_debug ("Datetime : F=%d\n", dtime_data[6]);
 
       A4GL_debug ("I reckon thats ok...");
-      sprintf (buff_2, "%04d-%02d-%02d %02d:%02d:%02d.%05d",
+      SPRINTF7 (buff_2, "%04d-%02d-%02d %02d:%02d:%02d.%05d",
 	       dtime_data[0],
 	       dtime_data[1],
 	       dtime_data[2],
@@ -1744,14 +1744,14 @@ A4GL_in_in_ops (int op)
       if (se1 == 2)
 	{
 	  char buff_3[256];
-	  sprintf (buff_3, "%f", d_i1);
+	  SPRINTF1 (buff_3, "%f", d_i1);
 	  acli_interval (buff_3, 0x822);
 	  return;
 	}
       else
 	{
 	  char buff_4[256];
-	  sprintf (buff_4, "%f", d_i1);
+	  SPRINTF1 (buff_4, "%f", d_i1);
 	  A4GL_debug ("Converting : %s to interval second to second", buff_4);
 	  acli_interval (buff_4, 0x867);	// was 866
 	  return;
@@ -1768,14 +1768,14 @@ A4GL_in_in_ops (int op)
 		yrs=(int)d_i1;
 		yrs=(yrs-(yrs%12))/12;
 		d_i1-=yrs*12;
-	  	sprintf (buff_5, "%d-%d", yrs,(int)d_i1);
+	  	SPRINTF2 (buff_5, "%d-%d", yrs,(int)d_i1);
 	  acli_interval (buff_5, 0x812);
 	  return;
 	}
       else
 	{
 	  char buff_6[256];
-	  sprintf (buff_6, "%f", d_i1);
+	  SPRINTF1 (buff_6, "%f", d_i1);
 	  A4GL_debug ("Converting : %s to interval second to second", buff_6);
 	  acli_interval (buff_6, 0x867);	// Was 866
 	  return;
@@ -2164,14 +2164,14 @@ A4GL_dt_dt_ops (int op)
 	  if (dtime_data2[0] || dtime_data2[1] )
 	    {
 	      // YEAR TO MONTH interval
-	      sprintf (buff_7, "%4d-%02d", dtime_data2[0], dtime_data2[1]);
+	      SPRINTF2 (buff_7, "%4d-%02d", dtime_data2[0], dtime_data2[1]);
 
 	      A4GL_ctoint (buff_7, &in, 1298);
 	      A4GL_push_interval (&in);
 	    }
 	  else
 	    {
-	      sprintf (buff_7, "%d %02d:%02d:%02d.%05d", dtime_data2[2],
+	      SPRINTF5 (buff_7, "%d %02d:%02d:%02d.%05d", dtime_data2[2],
 		       dtime_data2[3], dtime_data2[4], dtime_data2[5],
 		       dtime_data2[6]);
 	      A4GL_debug ("Got buff as : %s - op=%d\n", buff_7, op);
@@ -2306,7 +2306,7 @@ A4GL_display_int (void *ptr, int size, int size_c,
       else
 	{
 	  a = *(long *) ptr;
-	  sprintf (buff_8, "%11ld", a);
+	  SPRINTF1 (buff_8, "%11ld", a);
 	}
     }
 
@@ -2319,7 +2319,7 @@ A4GL_display_int (void *ptr, int size, int size_c,
       else
 	{
 	  a = *(long *) ptr;
-	  sprintf (buff_8, "%ld", a);
+	  SPRINTF1 (buff_8, "%ld", a);
 	}
     }
 
@@ -2392,7 +2392,7 @@ A4GL_display_smint (void *ptr, int size, int size_c,
       else
 	{
 	  a = *(short *) ptr;
-	  sprintf (buff_9, "%6d", a);
+	  SPRINTF1 (buff_9, "%6d", a);
 	}
     }
 
@@ -2405,7 +2405,7 @@ A4GL_display_smint (void *ptr, int size, int size_c,
       else
 	{
 	  a = *(short *) ptr;
-	  sprintf (buff_9, "%d", a);
+	  SPRINTF1 (buff_9, "%d", a);
 	}
     }
 
@@ -2458,7 +2458,7 @@ A4GL_display_float (void *ptr, int size, int size_c,
 	  return buff_10;
 	}
       a = *(double *) ptr;
-      sprintf (buff_10, "%14.2f", a);
+      SPRINTF1 (buff_10, "%14.2f", a);
     }
 
   if (display_type == DISPLAY_TYPE_DISPLAY_AT)
@@ -2470,7 +2470,7 @@ A4GL_display_float (void *ptr, int size, int size_c,
 	  return buff_10;
 	}
       a = *(double *) ptr;
-      sprintf (buff_10, "%f", a);
+      SPRINTF1 (buff_10, "%f", a);
       for (cnt = strlen (buff_10) - 1; cnt > 0; cnt--)
 	{
 	  if (cnt <= 1)
@@ -2535,7 +2535,7 @@ A4GL_display_smfloat (void *ptr, int size, int size_c,
 	  return buff_11;
 	}
       a = *(float *) ptr;
-      sprintf (buff_11, "%14.2f", a);
+      SPRINTF1 (buff_11, "%14.2f", a);
     }
 
   if (display_type == DISPLAY_TYPE_DISPLAY_AT)
@@ -2547,7 +2547,7 @@ A4GL_display_smfloat (void *ptr, int size, int size_c,
 	  return buff_11;
 	}
       a = *(float *) ptr;
-      sprintf (buff_11, "%f", a);
+      SPRINTF1 (buff_11, "%f", a);
       for (cnt = strlen (buff_11) - 1; cnt > 0; cnt--)
 	{
 	  if (cnt <= 1)
@@ -2701,7 +2701,7 @@ A4GL_display_date (void *ptr, int size, int size_c,
 	  char *ptr;
 	  A4GL_push_date (a);
 	  ptr = A4GL_char_pop ();
-	  sprintf (buff_12, ptr);
+	  strcpy (buff_12, ptr);
 	  free (ptr);
 	}
 
@@ -3042,24 +3042,24 @@ DTYPE_SERIAL
   A4GL_debug ("Finished adding default operations");
 
 
-  A4GL_add_datatype_function_i (DTYPE_INT, "DISPLAY", A4GL_display_int);
-  A4GL_add_datatype_function_i (DTYPE_SERIAL, "DISPLAY", A4GL_display_int);
-  A4GL_add_datatype_function_i (DTYPE_SMINT, "DISPLAY", A4GL_display_smint);
-  A4GL_add_datatype_function_i (DTYPE_FLOAT, "DISPLAY", A4GL_display_float);
-  A4GL_add_datatype_function_i (DTYPE_SMFLOAT, "DISPLAY", A4GL_display_smfloat);
-  A4GL_add_datatype_function_i (DTYPE_DATE, "DISPLAY", A4GL_display_date);
-  A4GL_add_datatype_function_i (DTYPE_CHAR, "DISPLAY", A4GL_display_char);
-  A4GL_add_datatype_function_i (DTYPE_VCHAR, "DISPLAY", A4GL_display_vchar);
-  A4GL_add_datatype_function_i (DTYPE_DECIMAL, "DISPLAY", A4GL_display_decimal);
-  A4GL_add_datatype_function_i (DTYPE_MONEY, "DISPLAY", A4GL_display_money);
-  A4GL_add_datatype_function_i (DTYPE_DTIME, "DISPLAY", A4GL_display_dtime);
-  A4GL_add_datatype_function_i (DTYPE_INTERVAL, "DISPLAY", A4GL_display_interval);
-  A4GL_add_datatype_function_i (DTYPE_BYTE, "DISPLAY", A4GL_display_byte);
-  A4GL_add_datatype_function_i (DTYPE_TEXT, "DISPLAY", A4GL_display_text);
+  A4GL_add_datatype_function_i (DTYPE_INT, "DISPLAY", (void *)A4GL_display_int);
+  A4GL_add_datatype_function_i (DTYPE_SERIAL, "DISPLAY", (void *)A4GL_display_int);
+  A4GL_add_datatype_function_i (DTYPE_SMINT, "DISPLAY", (void *)A4GL_display_smint);
+  A4GL_add_datatype_function_i (DTYPE_FLOAT, "DISPLAY", (void *)A4GL_display_float);
+  A4GL_add_datatype_function_i (DTYPE_SMFLOAT, "DISPLAY", (void *)A4GL_display_smfloat);
+  A4GL_add_datatype_function_i (DTYPE_DATE, "DISPLAY", (void *)A4GL_display_date);
+  A4GL_add_datatype_function_i (DTYPE_CHAR, "DISPLAY", (void *)A4GL_display_char);
+  A4GL_add_datatype_function_i (DTYPE_VCHAR, "DISPLAY", (void *)A4GL_display_vchar);
+  A4GL_add_datatype_function_i (DTYPE_DECIMAL, "DISPLAY", (void *)A4GL_display_decimal);
+  A4GL_add_datatype_function_i (DTYPE_MONEY, "DISPLAY", (void *)A4GL_display_money);
+  A4GL_add_datatype_function_i (DTYPE_DTIME, "DISPLAY", (void *)A4GL_display_dtime);
+  A4GL_add_datatype_function_i (DTYPE_INTERVAL, "DISPLAY", (void *)A4GL_display_interval);
+  A4GL_add_datatype_function_i (DTYPE_BYTE, "DISPLAY", (void *)A4GL_display_byte);
+  A4GL_add_datatype_function_i (DTYPE_TEXT, "DISPLAY", (void *)A4GL_display_text);
 
 
 #ifndef CSCC
-  A4GL_add_datatype_function_i (DTYPE_DECIMAL, ">STRING", A4GL_tostring_decimal);
+  A4GL_add_datatype_function_i (DTYPE_DECIMAL, ">STRING", (void *)A4GL_tostring_decimal);
 #endif
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.14 2005-03-09 15:14:42 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.15 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -86,9 +86,9 @@ A4GL_debug("A4GL_process_stack_op_other");
       char cname[256];
       char tmpvar[256];
       struct BINDING ibind[] = {
-	{&tmpvar, 0, 255}
+	{&tmpvar, 0, 255,0,0,0}
       };			/* end of binding */
-      sprintf (cname, "chkin_%d", cntsql_0++);
+      SPRINTF1 (cname, "chkin_%d", cntsql_0++);
 	memset(tmpvar,0,255);
       s = A4GL_char_pop ();
       A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
@@ -96,7 +96,7 @@ A4GL_debug("A4GL_process_stack_op_other");
       {
 	int n;
 	struct BINDING *ibind;
-	struct BINDING obind[] = { {0, 0, 0} };	/* end of binding */
+	struct BINDING obind[] = { {0, 0, 0,0,0,0} };	/* end of binding */
 	ibind = A4GL_pop_binding (&n);
 		A4GL_debug("declare - binding : %d\n",n);
 	A4GLSQL_declare_cursor (0, A4GLSQL_prepare_select (ibind, n, obind, 0, s), 0, cname);
@@ -144,15 +144,15 @@ A4GL_debug("A4GL_process_stack_op_other");
       static int cntsql_1 = 0;
       char cname[256];
 
-      struct BINDING ibind[] = { {&tmpvar, 0, 255} };	/* end of binding */
-      struct BINDING obind[] = { {0, 0, 0} };	/* end of binding */
+      struct BINDING ibind[] = { {&tmpvar, 0, 255,0,0,0} };	/* end of binding */
+      struct BINDING obind[] = { {0, 0, 0,0,0,0} };	/* end of binding */
       struct BINDING *dbind;
       void *prep;
 
       int n;
 
       A4GL_debug ("OP_EXISTS - OP_NOTEXISTS...");
-      sprintf (cname, "chkex%d", cntsql_1++);
+      SPRINTF1 (cname, "chkex%d", cntsql_1++);
       A4GL_debug ("Popping binding...");
 
       dbind = A4GL_pop_binding (&n);

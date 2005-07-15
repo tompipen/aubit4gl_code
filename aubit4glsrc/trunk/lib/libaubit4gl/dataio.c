@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dataio.c,v 1.11 2005-03-31 13:35:46 afalout Exp $
+# $Id: dataio.c,v 1.12 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -102,7 +102,7 @@ A4GL_read_data_from_file (char *datatype, void *ptr, char *filename)
       return 0;
     }
 
-  sprintf (buff, "read_%s", datatype);
+  SPRINTF1 (buff, "read_%s", datatype);
   A4GL_func = A4GL_find_func (libptr, buff);
   return A4GL_func (ptr, filename);
 }
@@ -131,7 +131,7 @@ A4GL_write_data_to_file (char *datatype, void *ptr, char *filename)
       return 0;
     }
 
-  sprintf (buff, "write_%s", datatype);
+  SPRINTF1 (buff, "write_%s", datatype);
 
 #ifdef DEBUG
   A4GL_debug ("Looking for function : %s", A4GL_null_as_null(buff));

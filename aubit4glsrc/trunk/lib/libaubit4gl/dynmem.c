@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dynmem.c,v 1.4 2005-07-14 11:32:51 mikeaubury Exp $
+# $Id: dynmem.c,v 1.5 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -48,7 +48,7 @@ void A4GL_dynarr_extent(void *var_ptr,int dim) ;
 
 static char *dyn_ptr_name(void *var_ptr)  {
 static char buff[128];
-sprintf(buff,"%p",var_ptr);
+SPRINTF1(buff,"%p",var_ptr);
 return buff;
 }
 

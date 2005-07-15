@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.86 2005-07-14 11:32:51 mikeaubury Exp $
+# $Id: builtin.c,v 1.87 2005-07-15 18:28:07 mikeaubury Exp $
 #
 */
 
@@ -119,7 +119,7 @@ aclfgl_set_count (int nargs)
 {
   long a = 0;
   struct BINDING fbind[] = {
-    {0, 2, 0,0,0}			
+    {0, 2, 0,0,0,0}			
   };				/* end of binding */
 
 	fbind[0].ptr=&a;
@@ -400,7 +400,7 @@ if (b) {
 
   A4GL_debug ("a=%d b-a+1=%d",a,b-a+1);
 
-  strncpy (np2, &np[a], (long)(b - a + 1));
+  strncpy (np2, &np[a], (size_t)(b - a + 1));
   np2[b - a + 1] = 0;
 #ifdef DEBUG
   {
@@ -1225,14 +1225,14 @@ int aclfgl_fgl_getkey_wait(int n) {
 	int wait;
 	long s;
 	long t;
-	s=time(0);
+	s=(long) time(0);
 	A4GL_debug("FGL1");
 	wait=A4GL_pop_long();
 	
 	A4GLSQL_set_status (0, 0);
 	while (1) {
 		a=A4GL_get_key(wait);
-		t=time(0);
+		t=(long)time(0);
 		if (t-s>n || a) break;
 	}
 	A4GL_push_long(a);

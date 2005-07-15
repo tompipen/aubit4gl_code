@@ -134,7 +134,7 @@ named_or_kw :
 ;
 
 dbname : 
-named_or_kw | named_or_kw ATSIGN named_or_kw {sprintf($<str>$,"%s@%s",$<str>1,$<str>3);}
+named_or_kw | named_or_kw ATSIGN named_or_kw {SPRINTF2($<str>$,"%s@%s",$<str>1,$<str>3);}
 ;
 
 screen_section : screens_section | screen_section screens_section ;

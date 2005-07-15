@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.131 2005-07-14 11:32:52 mikeaubury Exp $
+# $Id: stack.c,v 1.132 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -1015,9 +1015,9 @@ A4GL_debug("51 Have data");
       char cname[256];
       char tmpvar[256];
       struct BINDING ibind[] = {
-	{&tmpvar, 0, 255}
+	{&tmpvar, 0, 255,0,0,0}
       };			/* end of binding */
-      sprintf (cname, "chkin_%d", cntsql_0++);
+      SPRINTF1 (cname, "chkin_%d", cntsql_0++);
 
       s = A4GL_char_pop ();
       A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
@@ -1025,7 +1025,7 @@ A4GL_debug("51 Have data");
       {
 	int n;
 	struct BINDING *ibind;
-	struct BINDING obind[] = { {0, 0, 0} };	/* end of binding */
+	struct BINDING obind[] = { {0, 0, 0,0,0,0} };	/* end of binding */
 	ibind = A4GL_pop_binding (&n);
 	A4GLSQL_declare_cursor (0,(void *)
 				A4GLSQL_prepare_select (ibind, n, obind, 0,
@@ -1073,15 +1073,15 @@ A4GL_debug("51 Have data");
       static int cntsql_1 = 0;
       char cname[256];
 
-      struct BINDING ibind[] = { {&tmpvar, 0, 255} };	/* end of binding */
-      struct BINDING obind[] = { {0, 0, 0} };	/* end of binding */
+      struct BINDING ibind[] = { {&tmpvar, 0, 255,0,0,0} };	/* end of binding */
+      struct BINDING obind[] = { {0, 0, 0,0,0,0} };	/* end of binding */
       struct BINDING *dbind;
       void *prep;
 
       int n;
 
       A4GL_debug ("OP_EXISTS - OP_NOTEXISTS...");
-      sprintf (cname, "chkex%d", cntsql_1++);
+      SPRINTF1 (cname, "chkex%d", cntsql_1++);
       A4GL_debug ("Popping binding...");
 
       dbind = A4GL_pop_binding (&n);
@@ -1651,7 +1651,7 @@ A4GL_push_current (int a, int b)
        0123456789012345678901234
        YYYY-MM-DD hh:mm:ss.fffff
 */
-  sprintf (buff, "%04d-%02d-%02d %02d:%02d:%02d.%06ld",
+  SPRINTF7 (buff, "%04d-%02d-%02d %02d:%02d:%02d.%06ld",
 	   year, month, mja_day, local_time->tm_hour,
 	   local_time->tm_min, local_time->tm_sec, tv1.tv_usec
 	   /* , 0 */
@@ -1689,7 +1689,7 @@ char buff[50];
 
   (void) time (&now);
   local_time = localtime (&now);
-  sprintf (buff, "%d",local_time->tm_sec);
+  SPRINTF1 (buff, "%d",local_time->tm_sec);
   A4GL_debug ("Time is %s", A4GL_null_as_null(buff));
 	return local_time->tm_sec;
 }
@@ -1714,7 +1714,7 @@ A4GL_push_time (void)
   A4GL_debug ("Called time...");
   local_time = localtime (&now);
   A4GL_debug ("Got local time");
-  sprintf (buff, "%02d:%02d:%02d",
+  SPRINTF3 (buff, "%02d:%02d:%02d",
 	   local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
   A4GL_debug ("Time is %s", A4GL_null_as_null(buff));
   A4GL_push_char (buff);
@@ -2756,10 +2756,10 @@ A4GL_conv_to_interval (int a)
   switch (a)
     {
     case (OP_YEAR):
-      sprintf (buff, "%d-00", (int) d);
+      SPRINTF1 (buff, "%d-00", (int) d);
       break;
     case (OP_MONTH):
-      sprintf (buff, "0000-%d", (int) d);
+      SPRINTF1 (buff, "0000-%d", (int) d);
       break;
     }
 
@@ -2775,7 +2775,7 @@ A4GL_conv_to_interval (int a)
       d = d * 60;
     case OP_SECOND:
       d = d;
-	sprintf(buff,"%f",d);
+	SPRINTF1(buff,"%f",d);
     }
   A4GL_debug ("11 D now set to %lf", d);
   A4GL_debug ("11 a=%d %d %d %d\n", a, OP_YEAR, OP_MONTH, OP_HOUR);
@@ -2791,7 +2791,7 @@ A4GL_conv_to_interval (int a)
     }
   else
     {
-      sprintf (buff, "%f", d);
+      SPRINTF1 (buff, "%f", d);
       A4GL_debug ("11 Calling acli_interval for second to fraction");
       acli_interval (buff, 0x46b);	// SECOND(4) TO FRACTION(5)
     }

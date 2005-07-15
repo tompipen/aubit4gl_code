@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.18 2005-04-15 19:38:34 mikeaubury Exp $
+# $Id: dmy.c,v 1.19 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -210,16 +210,16 @@ A4GL_using_date (int dn, char *us)
 
   strcpy (rep_strs[0], (char *) A4GL_find_str_resource_int ("_FDAY", dno));
   strcpy (rep_strs[1], (char *) A4GL_find_str_resource_int ("_DAY", dno));
-  sprintf (rep_strs[2], "%02d", d);
+  SPRINTF1 (rep_strs[2], "%02d", d);
   strcpy (rep_strs[3], (char *) A4GL_find_str_resource_int ("_FMON", m));
   strcpy (rep_strs[4], (char *) A4GL_find_str_resource_int ("_MON", m));
-  sprintf (rep_strs[5], "%02d", m);
-  sprintf (rep_strs[6], "%04d", y);
-  sprintf (rep_strs[7], "%02d", y % 100);
+  SPRINTF1 (rep_strs[5], "%02d", m);
+  SPRINTF1 (rep_strs[6], "%04d", y);
+  SPRINTF1 (rep_strs[7], "%02d", y % 100);
   A4GL_debug ("--DNO=%d", dno);
-  sprintf (rep_strs[8], (char *) A4GL_find_str_resource_int ("_DAYTH", d));
-  sprintf (rep_strs[9], "%d", d);
-  sprintf (rep_strs[10], "%d", m);
+  SPRINTF1 (rep_strs[8], "%s",(char *) A4GL_find_str_resource_int ("_DAYTH", d));
+  SPRINTF1 (rep_strs[9], "%d", d);
+  SPRINTF1 (rep_strs[10], "%d", m);
 
   /* replace the ddmmyy etc with something the user cant have used */
   for (a = 0; using_strs[a][0] != 0; a++)

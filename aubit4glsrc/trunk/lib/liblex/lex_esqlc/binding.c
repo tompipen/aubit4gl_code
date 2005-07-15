@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.42 2005-03-23 08:24:10 afalout Exp $
+# $Id: binding.c,v 1.43 2005-07-15 18:28:08 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.42 2005-03-23 08:24:10 afalout Exp $";
+		"$Id: binding.c,v 1.43 2005-07-15 18:28:08 mikeaubury Exp $";
 #endif
 
 extern int ibindcnt;
@@ -229,18 +229,18 @@ make_sql_bind (char *sql, char *type)
 
 		char comma=' ';
       		printc("struct BINDING native_binding_i[%d]={\n",ONE_NOT_ZERO(ibindcnt));
-		if(ibindcnt==0) { printc("{0,0,0}"); }
+		if(ibindcnt==0) { printc("{0,0,0,0,0,0}"); }
 		for (a=0;a<ibindcnt;a++) {
-			printc("   %c{&_vi_%d,%d,%d}",comma,a,ibind[a].dtype&0xffff,ibind[a].dtype>>16);
+			printc("   %c{&_vi_%d,%d,%d,0,0,0}",comma,a,ibind[a].dtype&0xffff,ibind[a].dtype>>16);
 			comma=',';
 		}
  		printc("};\n");
  		if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
 			char comma=' ';
       			printc("struct BINDING native_binding_i_ind[]={\n");
-			if(ibindcnt==0) { printc("{0,0,0}"); }
+			if(ibindcnt==0) { printc("{0,0,0,0,0,0}"); }
 			for (a=0;a<ibindcnt;a++) {
-				printc(" %c{&_vii_%d,%d,%d}",comma,a,2,4);
+				printc(" %c{&_vii_%d,%d,%d,0,0,0}",comma,a,2,4);
 				comma=',';
 			}
  			printc("};\n");
@@ -254,7 +254,7 @@ make_sql_bind (char *sql, char *type)
 	if (strchr (type, 'o')) {
 		char comma=' ';
       		printc("struct BINDING native_binding_o[%d]={\n",ONE_NOT_ZERO(obindcnt));
-		if(obindcnt==0) { printc("{0,0,0}"); }
+		if(obindcnt==0) { printc("{0,0,0,0,0,0}"); }
 		for (a=0;a<obindcnt;a++) {
 			printc(" %c{&_vo_%d,%d,%d}",comma,a,obind[a].dtype&0xffff,obind[a].dtype>>16);
 			comma=',';
@@ -264,9 +264,9 @@ make_sql_bind (char *sql, char *type)
  		if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
 			char comma=' ';
       			printc("struct BINDING native_binding_o_ind[]={\n");
-			if(obindcnt==0) { printc("{0,0,0}"); }
+			if(obindcnt==0) { printc("{0,0,0,0,0,0}"); }
 			for (a=0;a<obindcnt;a++) {
-				printc(" %c{&_voi_%d,%d,%d}",comma,a,2,4);
+				printc(" %c{&_voi_%d,%d,%d,0,0,0}",comma,a,2,4);
 				comma=',';
 			}
  			printc("};\n");
@@ -405,7 +405,7 @@ make_sql_bind_expr (char *sql, char *type)
 
 		char comma=' ';
       		ptr=addstr(ptr,&sz,"struct BINDING native_binding_i[]={\n");
-		if(ibindcnt==0) { ptr=addstr(ptr,&sz,"{0,0,0}"); }
+		if(ibindcnt==0) { ptr=addstr(ptr,&sz,"{0,0,0,0,0,0}"); }
 		for (a=0;a<ibindcnt;a++) {
 			char buff[255];
 			sprintf(buff,"   %c{&_vi_%d,%d,%d}",comma,a,ibind[a].dtype&0xffff,ibind[a].dtype>>16);
@@ -418,7 +418,7 @@ make_sql_bind_expr (char *sql, char *type)
  		if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
 			char comma=' ';
       			ptr=addstr(ptr,&sz,"struct BINDING native_binding_i_ind[]={\n");
-			if(ibindcnt==0) { ptr=addstr(ptr,&sz,"{0,0,0}"); }
+			if(ibindcnt==0) { ptr=addstr(ptr,&sz,"{0,0,0,0,0,0}"); }
 			for (a=0;a<ibindcnt;a++) {
 				char buff[255];
 				sprintf(buff," %c{&_vii_%d,%d,%d}",comma,a,2,4);
@@ -436,10 +436,10 @@ make_sql_bind_expr (char *sql, char *type)
 	if (strchr (type, 'o')) {
 		char comma=' ';
       		ptr=addstr(ptr,&sz,"struct BINDING native_binding_o[]={\n");
-		if(obindcnt==0) { printc("{0,0,0}"); }
+		if(obindcnt==0) { printc("{0,0,0,0,0,0}"); }
 		for (a=0;a<obindcnt;a++) {
 			char buff[255];
-			sprintf(buff," %c{&_vo_%d,%d,%d}",comma,a,obind[a].dtype&0xffff,obind[a].dtype>>16);
+			sprintf(buff," %c{&_vo_%d,%d,%d,0,0,0}",comma,a,obind[a].dtype&0xffff,obind[a].dtype>>16);
 			ptr=addstr(ptr,&sz,buff);
 			comma=',';
 		}
@@ -448,10 +448,10 @@ make_sql_bind_expr (char *sql, char *type)
  		if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
 			char comma=' ';
       			ptr=addstr(ptr,&sz,"struct BINDING native_binding_o_ind[]={\n");
-			if(obindcnt==0) { ptr=addstr(ptr,&sz,"{0,0,0}"); }
+			if(obindcnt==0) { ptr=addstr(ptr,&sz,"{0,0,0,0,0,0}"); }
 			for (a=0;a<obindcnt;a++) {
 				char buff[255];
-				sprintf(buff," %c{&_voi_%d,%d,%d}",comma,a,2,4);
+				sprintf(buff," %c{&_voi_%d,%d,%d,0,0,0}",comma,a,2,4);
 				ptr=addstr(ptr,&sz,buff);
 				comma=',';
 			}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.36 2005-07-14 11:32:52 mikeaubury Exp $
+# $Id: pointers.c,v 1.37 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -193,7 +193,7 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
       anode = *(struct s_node **) a;
       //A4GL_debug ("Node = %p\n", anode);
       //A4GL_debug ("Node=%p name=%s\n", anode, anode->name);
-      sprintf (ptrchar, ">%p", buff->ptr);
+      SPRINTF1 (ptrchar, ">%p", buff->ptr);
       //A4GL_debug ("Copied ptr\n");
       anode->ptr = ptr;
       //A4GL_debug ("Copy buffer %s\n", ptrchar);
@@ -224,7 +224,7 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
       //A4GL_debug ("tsearch ... a=%p %p\n", a, buff);
     }
   buff_add = (struct s_node *) acl_malloc2 (sizeof (struct s_node));
-  sprintf (buff_add->name, ">%p", ptr);
+  SPRINTF1 (buff_add->name, ">%p", ptr);
   buff_add->ptr = buff;
   //A4GL_debug ("Adding extra for %s %p\n", buff_add->name, buff_add->ptr);
   a = ADD_X (buff_add);
@@ -305,7 +305,7 @@ A4GL_del_pointer (char *pname, char t)
   if (a)
     {
       anode = *(struct s_node **) a;
-      sprintf (ptrchar, ">%p", anode->ptr); // Was buff
+      SPRINTF1 (ptrchar, ">%p", anode->ptr); // Was buff
       strcpy (buff2.name, ptrchar);
       a = FIND_X (&buff2);
       if (a)
@@ -356,7 +356,7 @@ A4GL_find_pointer_ptr (char *name, char *type, void *ptr)
   struct s_node *anode;
   void *a;
   //A4GL_debug ("Finding pointer to pointer %p", ptr);
-  sprintf (buff.name, ">%p", ptr);
+  SPRINTF1 (buff.name, ">%p", ptr);
   //A4GL_debug ("Finding %s", buff.name);
   buff.ptr = 0;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.31 2005-07-14 11:32:52 mikeaubury Exp $
+# $Id: rexp2.c,v 1.32 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -223,7 +223,7 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
   }
   A4GL_debug("A4GL_construct : '%s' '%s' '%s'",tabname,colname_s,val);
   if (strlen(tabname)) {
-		sprintf(colname,"%s.%s",tabname,colname_s);
+		SPRINTF2(colname,"%s.%s",tabname,colname_s);
   } else {
 		strcpy(colname,colname_s);
   }
@@ -405,7 +405,7 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
 	  	strcat (buff2, ptr);
 		free(ptr);
 	}
-      sprintf (buff3, "%s%s%s", colname, buff2, quote);
+      SPRINTF3 (buff3, "%s%s%s", colname, buff2, quote);
     }
 
 A4GL_debug("z=%d",z);
@@ -441,13 +441,13 @@ A4GL_debug("z=%d",z);
 	}
 
 
-      sprintf (buff3, "%s%s", colname, buff2);
+      SPRINTF2 (buff3, "%s%s", colname, buff2);
     }
   if (z == OR || (z2 == OR && z == 0))
     {
       if (z == OR)
 	{
-	  sprintf (buff3, "%s in ('',", colname);
+	  SPRINTF1 (buff3, "%s in ('',", colname);
 	  for (z = 1; z < constr_size; z++)
 	    {
 	      if (A4GL_is_construct_op (constr_bits[z], 0) == OR)
@@ -466,7 +466,7 @@ A4GL_debug("z=%d",z);
 	}
       else
 	{
-	  sprintf (buff3, "%s in (", colname);
+	  SPRINTF1 (buff3, "%s in (", colname);
 	  for (z = 0; z < constr_size; z++)
 	    {
 	      if (A4GL_is_construct_op (constr_bits[z], 0) == OR)
@@ -487,7 +487,7 @@ A4GL_debug("z=%d",z);
     {
       if (z == RANGE)
 	{
-	  sprintf (buff3, "(%s  between '' and %s", colname, quote);
+	  SPRINTF2 (buff3, "(%s  between '' and %s", colname, quote);
 	  for (z = 1; z < constr_size; z++)
 	    {
 		ptr=A4GL_escape_single(constr_bits[z]);
@@ -497,7 +497,7 @@ A4GL_debug("z=%d",z);
 	}
       else
 	{
-	  sprintf (buff3, "%s  between %s%s%s and ", colname, quote,
+	  SPRINTF4 (buff3, "%s  between %s%s%s and ", colname, quote,
 		   constr_bits[0], quote);
 	  	//A4GL_pause_execution();
 	  if (constr_size >= 2)

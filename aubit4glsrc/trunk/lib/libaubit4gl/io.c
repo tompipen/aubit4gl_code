@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.31 2005-05-15 12:58:51 mikeaubury Exp $
+# $Id: io.c,v 1.32 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -177,9 +177,9 @@ FILE *f;
 		return 0;
 
 	if (strlen (path)) {
-	      sprintf (buff, "%s/%s", path, name);
+	      SPRINTF2 (buff, "%s/%s", path, name);
     } else {
-		sprintf (buff, name);
+		strcpy (buff, name);
     }
 
 	//A4GL_debug ("Opening path '%s'", buff);
@@ -250,20 +250,20 @@ char buff[1024];
 		//note that CygWin (which alos have _WIN32_ defined needs 
 		//unix-like paths
 		if (strlen(acl_getenv("A4GL_CLASSPATH"))) {
-			sprintf(buff,"%s;%s/etc/import;%s/import",
+			SPRINTF3(buff,"%s;%s/etc/import;%s/import",
 				acl_getenv("A4GL_CLASSPATH"),acl_getenv("AUBITDIR"),
 				acl_getenv("AUBITETC"));
 		} else {
-			sprintf(buff,"%s/etc/import;%s/import",
+			SPRINTF2(buff,"%s/etc/import;%s/import",
 				acl_getenv("AUBITDIR"),acl_getenv("AUBITETC"));
 		}
 	#else
 		if (strlen(acl_getenv("A4GL_CLASSPATH"))) {
-			sprintf(buff,"%s:%s/etc/import:%s/import",
+			SPRINTF3(buff,"%s:%s/etc/import:%s/import",
 				acl_getenv("A4GL_CLASSPATH"),acl_getenv("AUBITDIR"),
 				acl_getenv("AUBITETC"));
 		} else {
-			sprintf(buff,"%s/etc/import:%s/import",
+			SPRINTF2(buff,"%s/etc/import:%s/import",
 			acl_getenv("AUBITDIR"),acl_getenv("AUBITETC"));
 		}
 	#endif
@@ -348,7 +348,7 @@ A4GL_fullpath_xpath (char *fname, char *path)
 
 				if (A4GL_try_to_open (ptr, fname, 0))	{
 					//printf("ptr=%s\n",ptr);
-					sprintf(str_path,"%s/%s",ptr,fname);
+					SPRINTF2(str_path,"%s/%s",ptr,fname);
 					return str_path;
 				} else {
 					cnt++;
@@ -366,7 +366,7 @@ A4GL_fullpath_xpath (char *fname, char *path)
 	if (strlen (ptr)) {
 		A4GL_debug ("One last time...");
 		if (A4GL_try_to_open (ptr, fname, 0)) {
-			sprintf(str_path,"%s/%s",ptr,fname);
+			SPRINTF2(str_path,"%s/%s",ptr,fname);
 			return str_path;
 		}
     }

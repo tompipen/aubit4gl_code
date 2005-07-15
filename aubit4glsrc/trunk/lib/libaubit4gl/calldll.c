@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.56 2005-07-06 20:13:39 mikeaubury Exp $
+# $Id: calldll.c,v 1.57 2005-07-15 18:28:07 mikeaubury Exp $
 #
 */
 
@@ -151,14 +151,14 @@ static void inc_usage (char *s);
 	#ifdef _WIN32
 	  if (!hdll)
 		{
-		  sprintf (errbuf, "error code %d loading library %s", GetLastError (),
+		  SPRINTF2 (errbuf, "error code %d loading library %s", GetLastError (),
 			   name);
 		  return NULL;
 		}
 	#else
 	  if ((UINT) hdll < 32)
 		{
-		  sprintf (errbuf, "error code %d loading library %s", (UINT) hdll, name);
+		  SPRINTF2 (errbuf, "error code %d loading library %s", (UINT) hdll, name);
 		  return NULL;
 		}
 	#endif
@@ -181,7 +181,7 @@ static void inc_usage (char *s);
 	  void *symAddr;
 	  symAddr = (void *) GetProcAddress (hdll, name);
 	  if (symAddr == NULL)
-		sprintf (errbuf, "can't find symbol %s", name);
+		SPRINTF1 (errbuf, "can't find symbol %s", name);
 	  return symAddr;
 	}
 	
@@ -195,7 +195,7 @@ static void inc_usage (char *s);
 		return 0;
 	  else
 		{
-		  sprintf (errbuf, "error code %d closing library", GetLastError ());
+		  SPRINTF1 (errbuf, "error code %d closing library", GetLastError ());
 		  return -1;
 		}
 	#else
@@ -274,7 +274,7 @@ A4GL_nullfunc (void)
 
 
 int A4GL_isnullfunc(void *ptr) {
-if (ptr==A4GL_nullfunc) return 1;
+if (ptr==(void *)A4GL_nullfunc) return 1;
 else return 0;
 }
 
@@ -309,7 +309,7 @@ A4GL_dl_openlibrary (char *type, char *p)
   char *plugin_name;
 
   //need to hide this pointer, something in the way we read registry is messing it up! >>>>>>>>>STATIC!!!!!!<<<<<<<<<FIX IT!!!!!
-  sprintf (tmpbuff, "%s", p);
+  SPRINTF1 (tmpbuff, "%s", p);
   plugin_name = tmpbuff;
 
 
@@ -329,15 +329,14 @@ if (soext) {
 		strcpy(soext_2,soext);
 	}
 }
-sprintf (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type, plugin_name,soext_2);
+SPRINTF4 (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type, plugin_name,soext_2);
 
 #ifdef WHY_MESS_AROUND
 #ifdef __CYGWIN__
-  sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type,
-	   plugin_name);
+  SPRINTF3 (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, plugin_name);
 #else
 	#if defined(__DARWIN__)
-	  sprintf (buff, "%s/lib/lib%s_%s.bundle", acl_getenv ("AUBITDIR"), type,
+	  SPRINTF3 (buff, "%s/lib/lib%s_%s.bundle", acl_getenv ("AUBITDIR"), type,
 		   plugin_name);
 
 
@@ -345,15 +344,14 @@ sprintf (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type, plugin_name,
 		#if defined(__MINGW32__)
 		  char *aubitdirptr;
 		  aubitdirptr = acl_getenv ("AUBITDIR");
-		  sprintf (buff2, "%s/lib/lib%s", aubitdirptr, type);
-		  sprintf (buff, "%s_%s.dll", buff2, plugin_name);
+		  SPRINTF2 (buff2, "%s/lib/lib%s", aubitdirptr, type);
+		  SPRINTF2 (buff, "%s_%s.dll", buff2, plugin_name);
 		#else
 			#if defined(__hpux__) //HP-UX UNIX OS
-			  sprintf (buff, "%s/lib/lib%s_%s.sl", acl_getenv ("AUBITDIR"), type,
-				   plugin_name);
+			  SPRINTF3 (buff, "%s/lib/lib%s_%s.sl", acl_getenv ("AUBITDIR"), type, plugin_name);
             #else
 			  /* all other platforms: */
-			  sprintf (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type, plugin_name,SO_EXT);
+			  SPRINTF4 (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type, plugin_name,SO_EXT);
             #endif
 		#endif
 	#endif
@@ -376,9 +374,9 @@ sprintf (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type, plugin_name,
       /* dllerror is nulled after first call - can't call it twice, so we
          have to store it to be able to use it twice */
 #ifdef USE_SHL
-	sprintf(buff2,"Error loading.. (1)");
+	SPRINTF0(buff2,"Error loading.. (1)");
 #else
-      sprintf (buff2, "%s", dlerror ());
+      SPRINTF1 (buff2, "%s", dlerror ());
 #endif
 
       printf ("Error: can't open DLL %s - STOP\n", A4GL_null_as_null(buff));
@@ -418,9 +416,9 @@ A4GL_find_func (void *dllhandle, char *func)
 
 
   if (A4GL_isyes(acl_getenv("PREFIX_DLLFUNCTION"))) {
-  	sprintf (tempbuff, "_%s", func);
+  	SPRINTF1 (tempbuff, "_%s", func);
   } else {
-  	sprintf (tempbuff, "%s", func);
+  	SPRINTF1 (tempbuff, "%s", func);
   }
 
 inc_usage(func);
@@ -443,18 +441,18 @@ inc_usage(func);
   func_ptr = dlsym (dllhandle, tempbuff);
 #endif
   A4GL_debug ("35 Got %p", func_ptr);
-  if (func_ptr == 0)
+  if ((void *)func_ptr == (void *)0)
     {
 	char buff[256];
       A4GL_debug ("1 Function Not found : %s",tempbuff);
       A4GL_exitwith ("Could not find function in shared library");
-	sprintf(buff,"Error:Could not find function in shared library (%s)- STOP",func);
+	SPRINTF1(buff,"Error:Could not find function in shared library (%s)- STOP",func);
       A4GL_fgl_die_with_msg(43,buff);
       /* return badfunc; */
     }
 
 
-  return func_ptr;
+  return (void *)func_ptr;
 }
 
 /**
@@ -475,9 +473,9 @@ inc_usage(func);
      func);
 
 #if (defined(__MACH__) && defined(__APPLE__))
-  sprintf (tempbuff, "_%s", func);
+  SPRINTF1 (tempbuff, "_%s", func);
 #else
-  sprintf (tempbuff, "%s", func);
+  SPRINTF1 (tempbuff, "%s", func);
 #endif
 
 
@@ -485,7 +483,7 @@ inc_usage(func);
     {
       A4GL_debug ("Not found - bad handle");
       A4GL_exitwith ("Could not open share library");
-      return badfunc;
+      return (void *)badfunc;
     }
 #ifdef USE_SHL
 //printf("U1\n");
@@ -495,13 +493,13 @@ inc_usage(func);
   func_ptr = dlsym (dllhandle, tempbuff);
 #endif
   A4GL_debug ("Got %p", func_ptr);
-  if (func_ptr == 0)
+  if (func_ptr == NULL)
     {
       A4GL_debug ("Function Not found");
       A4GL_exitwith ("Could not find function in shared library");
-      return badfunc;
+      return (void *)badfunc;
     }
-  return func_ptr;
+  return (void *)func_ptr;
 }
 
 /**
@@ -519,16 +517,16 @@ A4GL_find_func_allow_missing (void *dllhandle, char *func)
 	 A4GL_null_as_null(func));
 
 #if (defined(__MACH__) && defined(__APPLE__))
-  sprintf (tempbuff, "_%s", func);
+  SPRINTF1 (tempbuff, "_%s", func);
 #else
-  sprintf (tempbuff, "%s", func);
+  SPRINTF1 (tempbuff, "%s", func);
 #endif
 
 
   if (dllhandle == 0)
     {
       /*  A4GL_exitwith ("2: Non-existing function (%s) called in DLL",func); */
-      return &badfunc;
+      return (void *)&badfunc;
     }
 #ifdef USE_SHL
 //printf("U2\n");
@@ -538,9 +536,9 @@ A4GL_find_func_allow_missing (void *dllhandle, char *func)
   func_ptr = dlsym (dllhandle, tempbuff);
 #endif
 
-  if (func_ptr == 0)
-    return &A4GL_nullfunc;
-  return func_ptr;
+  if ((void *)func_ptr == (void *)0)
+    return (void *)&A4GL_nullfunc;
+  return (void *)func_ptr;
 }
 
 
@@ -601,7 +599,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
   if (dllhandle == 0)
     {
-      sprintf (buff, "%s/lib/lib%s.%s", acl_getenv ("AUBITDIR"), nfile,SO_EXT);
+      SPRINTF3 (buff, "%s/lib/lib%s.%s", acl_getenv ("AUBITDIR"), nfile,SO_EXT);
       A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
@@ -610,7 +608,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
   if (dllhandle == 0)
     {
-      sprintf (buff, "./lib%s.%s", nfile,SO_EXT);
+      SPRINTF2 (buff, "./lib%s.%s", nfile,SO_EXT);
       A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
@@ -619,7 +617,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
   if (dllhandle == 0)
     {
-      sprintf (buff, "./%s.%s", nfile,SO_EXT);
+      SPRINTF2 (buff, "./%s.%s", nfile,SO_EXT);
       A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
@@ -637,7 +635,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
   func_ptr = dlsym (dllhandle, nfunc);
 
-  if (func_ptr == 0)
+  if (func_ptr == NULL)
     {
       A4GL_debug ("No function handle");
       A4GL_exitwith ("Unable to load function from shared libary");
@@ -710,7 +708,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
   if (dllhandle == 0)
     {
-      sprintf (buff, "%s/lib/lib%s.%s", acl_getenv ("AUBITDIR"), nfile,SO_EXT);
+      SPRINTF3 (buff, "%s/lib/lib%s.%s", acl_getenv ("AUBITDIR"), nfile,SO_EXT);
       A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
@@ -719,7 +717,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
   if (dllhandle == 0)
     {
-      sprintf (buff, "./lib%s.%s", nfile,SO_EXT);
+      SPRINTF2 (buff, "./lib%s.%s", nfile,SO_EXT);
       A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
@@ -728,7 +726,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
   if (dllhandle == 0)
     {
-      sprintf (buff, "./%s.%s", nfile,SO_EXT);
+      SPRINTF2 (buff, "./%s.%s", nfile,SO_EXT);
       A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
@@ -746,7 +744,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
   func_ptr_b = dlsym (dllhandle, nfunc);
 
-  if (func_ptr_b == 0)
+  if (func_ptr_b == NULL)
     {
       A4GL_debug ("No function handle");
       A4GL_exitwith ("Unable to load function from shared libary");

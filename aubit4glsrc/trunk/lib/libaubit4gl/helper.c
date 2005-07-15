@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.47 2005-07-14 11:32:52 mikeaubury Exp $
+# $Id: helper.c,v 1.48 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -326,7 +326,7 @@ int_get_info_form (char *ptr, char *info)
 
     case 6: // FIELDNAME
 	if (used_value<p->fileform->attributes.attributes_len) {
-      sprintf (buff, "%s.%s",
+      SPRINTF2 (buff, "%s.%s",
 	       p->fileform->attributes.attributes_val[used_value].tabname,
 	       p->fileform->attributes.attributes_val[used_value].colname);
       A4GL_push_char (buff);
@@ -1014,8 +1014,8 @@ A4GL_read_form (char *s, char *p)
   if (A4GL_has_pointer (s, COMPILED_FORM))
     {
       A4GL_debug ("COMPILED_FORM!");
-      sprintf (old_packer, acl_getenv ("A4GL_PACKER"));
-      sprintf (old_formtype, acl_getenv ("A4GL_FORMTYPE"));
+      strcpy (old_packer, acl_getenv ("A4GL_PACKER"));
+      strcpy (old_formtype, acl_getenv ("A4GL_FORMTYPE"));
       A4GL_debug ("Saved old packer=%s formtype=%s", old_packer, old_formtype);
       A4GLFORM_clrlibptr ();
       A4GLPACKER_clrlibptr ();
@@ -1049,7 +1049,7 @@ int ret;
 char prefixed_name[256];
 char *ptr;
 A4GL_debug("A4GL_setenv %s %s %d",name,value,overwrite);
-	sprintf (prefixed_name, "A4GL_%s", name);
+	SPRINTF1 (prefixed_name, "A4GL_%s", name);
 	/* Clear the current cache if there is one.. */
 
 
@@ -1069,7 +1069,7 @@ A4GL_debug("A4GL_setenv %s %s %d",name,value,overwrite);
 		{
 		char buff[1024]; 
 	A4GL_debug("have putenv");
-		sprintf (buff,"%s=%s",name,value);
+		SPRINTF2 (buff,"%s=%s",name,value);
 		ret = putenv(acl_strdup(buff));
 		}
 	#else

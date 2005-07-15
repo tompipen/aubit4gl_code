@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtime.c,v 1.8 2005-03-09 15:14:39 mikeaubury Exp $
+# $Id: gtime.c,v 1.9 2005-07-15 18:28:08 mikeaubury Exp $
 #*/
 
 /**
@@ -52,7 +52,6 @@ extern void A4GL_debug_full (char *fmt, ...);
 */
 
 long A4GL_gettime (void);
-void A4GL_debug (char *s);
 
 /*
 =====================================================================
@@ -74,21 +73,5 @@ A4GL_gettime (void)
 
 
 
-/**
- * Write a A4GL_debug message
- *
- * @param s The A4GL_debug message
- */
-/* what is this doing here?
-    a4gl_debug.h defines A4GL_debug as:
-    #define A4GL_debug set_line(__FILE__,__LINE__); debug_full
-
-    it is needed but how/why ?
-*/
-void
-A4GL_debug (char *s)
-{
-  A4GL_debug_full ("ERROR  - A4GL_debug called in full with %s", s);
-}
 
 /* ================================= EOF ============================= */

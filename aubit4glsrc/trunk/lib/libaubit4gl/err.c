@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: err.c,v 1.15 2005-03-09 15:14:39 mikeaubury Exp $
+# $Id: err.c,v 1.16 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -89,7 +89,7 @@ A4GL_err_print (int a, char *s)
   char *k;
   static char static_err[256];
   A4GL_debug ("In err print %d %s",a,s);
-  sprintf (static_err, "Unknown error %d (%s)", a, s);
+  SPRINTF2 (static_err, "Unknown error %d (%s)", a, s);
   k = static_err;
   if (a == -3001)
     {
@@ -101,7 +101,7 @@ A4GL_err_print (int a, char *s)
   if (a == -400)
     {
       A4GL_debug ("Ignore wrong number of variables..");
-      sprintf (static_err, "Database error (%s)",s);
+      SPRINTF1 (static_err, "Database error (%s)",s);
 	
   	return static_err;
       return k;
@@ -119,7 +119,7 @@ A4GL_err_print (int a, char *s)
   A4GL_debug ("Calling get_errm");
   k = A4GL_get_errm (a * -1);
   A4GL_debug ("Got %s", k);
-  sprintf (static_err, k, s);
+  SPRINTF1 (static_err, k, s);
   return static_err;
 
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.19 2005-07-14 15:20:15 mikeaubury Exp $
+# $Id: errfile.c,v 1.20 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -127,8 +127,8 @@ A4GL_write_errfile (FILE * f, char *fname, long as, int lineno)
     {
       if (a > s)
 	a = s;
-      fread (buff, a, 1, f);
-      fwrite (buff, a, 1, fout);
+      fread (buff, (size_t)a, 1, f);
+      fwrite (buff, (size_t)a, 1, fout);
       s -= a;
     }
   le = as - s2;
@@ -150,8 +150,8 @@ A4GL_write_cont (FILE * f)
   while (s > 0)
     {
       /* if (feof(f)) break; */
-      s = fread (buff, 1, a, f);
-      fwrite (buff, s, 1, fout);
+      s = fread (buff, (size_t)1, a, f);
+      fwrite (buff, (size_t)s, 1, fout);
     }
   fclose (fout);
 }
@@ -175,7 +175,7 @@ A4GL_find_nl (FILE * f, long fp, long *s, long *e)
   while (fp > 0)
     {
       fseek (f, fp, SEEK_SET);
-      fread (buff, 1, 1, f);
+      fread (buff, (size_t)1, 1, f);
       if (buff[0] == '\n')
 	break;
       fp--;
@@ -185,7 +185,7 @@ A4GL_find_nl (FILE * f, long fp, long *s, long *e)
   for (fp = *s + 1; buff[0] != '\n'; fp++)
     {
       fseek (f, fp, SEEK_SET);
-      fread (buff, 1, 1, f);
+      fread (buff, (size_t)1, 1, f);
       if (feof (f))
 	break;
     }

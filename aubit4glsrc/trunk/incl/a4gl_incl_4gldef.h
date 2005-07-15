@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.86 2005-07-13 13:34:39 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.87 2005-07-15 18:28:07 mikeaubury Exp $
 */
 
 /**
@@ -90,6 +90,7 @@ extern "C"
 
     long start_char_subscript;
     long end_char_subscript;
+    void *libptr;
   };
 
 

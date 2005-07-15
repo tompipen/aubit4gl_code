@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.32 2005-07-14 11:32:52 mikeaubury Exp $
+# $Id: load.c,v 1.33 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -156,7 +156,7 @@ gen_insert_for_load (char *tabname, int ncols)
   static char inserttxt[6000];
   int a;
   strcpy (inserttxt, "");
-  sprintf (inserttxt, "INSERT INTO %s (%s) values (", tabname, collist_to_str (ncols));
+  SPRINTF2 (inserttxt, "INSERT INTO %s (%s) values (", tabname, collist_to_str (ncols));
   for (a = 0; a < ncols; a++)
     {
       if (a > 0)
@@ -300,7 +300,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 
       if (nfields != cnt)
 	{
-	  sprintf (buff, "%d", cnt);
+	  SPRINTF1 (buff, "%d", cnt);
 	  A4GL_set_errm (buff);
 	  A4GL_exitwith ("Number of fields in load file does not equal the number of columns %s");
 	  return 0;
@@ -335,7 +335,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 
       if (a4gl_status != 0 || A4GL_get_a4gl_sqlca_sqlcode()!=0)
 	{
-	  sprintf (buff, "%d", cnt);
+	  SPRINTF1 (buff, "%d", cnt);
 	  A4GL_set_errm (buff);
 	  A4GL_exitwith ("Error reading load file at line %s");
   		fclose (p);
@@ -414,7 +414,7 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
 
       if (nfields != cnt && cnt)
 	{
-	  sprintf (buff, "%d", cnt);
+	  SPRINTF1 (buff, "%d", cnt);
 	  A4GL_set_errm (buff);
 	  A4GL_exitwith ("Number of fields in load file does not equal the number of columns %s");
 	  return 0;
@@ -462,7 +462,7 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
 
       if (a4gl_status != 0)
 	{
-	  sprintf (buff, "%d", nfields);
+	  SPRINTF1 (buff, "%d", nfields);
 	  A4GL_set_errm (buff);
 	  A4GL_exitwith ("Error reading load file at line %s");
 	}

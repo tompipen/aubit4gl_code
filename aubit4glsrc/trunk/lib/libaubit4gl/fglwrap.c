@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.96 2005-07-14 15:20:15 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.97 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -409,14 +409,14 @@ A4GL_isno (char *s)
 void
 A4GL_generateError (char *str, char *fileName, int lineno)
 {
-      sprintf (str,
+      SPRINTF4 (str,
 	       "Program stopped at '%s', line number %d.\nError status number %d.\n%s.\n",
 	       fileName,
 	       lineno,
 	       (int) a4gl_status,
 	       A4GL_err_print (a4gl_status, a4gl_sqlca.sqlerrm));
   if (A4GLSTK_isStackInfo ())
-    sprintf (str, "%s\n%s", str, A4GLSTK_getStackTrace ());
+    SPRINTF2 (str, "%s\n%s", str, A4GLSTK_getStackTrace ());
 }
 
 /**
@@ -464,9 +464,9 @@ A4GL_chk_err (int lineno, char *fname)
 	ptr=acl_getenv("LOG_TEXT");
 
 	if (ptr&&strlen(ptr)) {
-		sprintf(buff,"%s/test_fail/%s/%s.err",acl_getenv("AUBITDIR"),ptr,acl_getenv("RUNNING_TEST"));
+		SPRINTF3(buff,"%s/test_fail/%s/%s.err",acl_getenv("AUBITDIR"),ptr,acl_getenv("RUNNING_TEST"));
 	} else {
-		sprintf(buff,"%s/test_fail/%s.err",acl_getenv("AUBITDIR"),acl_getenv("RUNNING_TEST"));
+		SPRINTF2(buff,"%s/test_fail/%s.err",acl_getenv("AUBITDIR"),acl_getenv("RUNNING_TEST"));
 	}
 	f=fopen(buff,"w");
 
@@ -859,7 +859,7 @@ A4GL_def_int (void)
 	
 	   if (A4GL_isyes(acl_getenv("GDB_ATTACH"))) {
 		char buff[256];
-		sprintf(buff,"%s %s %d", acl_getenv("GDB_EXE"), running_program, getpid() );
+		SPRINTF3(buff,"%s %s %d", acl_getenv("GDB_EXE"), running_program, getpid() );
 		system(buff);
 	   }
 	
@@ -968,7 +968,7 @@ char *
 A4GL_clob (char *s, char *p)
 {
   static char clobber[256];
-  sprintf (clobber, "%s:%s", s, ftrim (p));
+  SPRINTF2 (clobber, "%s:%s", s, ftrim (p));
   return clobber;
 }
 
@@ -1178,12 +1178,12 @@ A4GL_logsql (int lineno, char *module, char *s)
 	}
 
       // Firstly - MAPSQL should be a directory...
-      sprintf (buff, "%s/%s_%d.log", fname, A4GL_get_running_program (),
+      SPRINTF3 (buff, "%s/%s_%d.log", fname, A4GL_get_running_program (),
 	       getpid ());
       fout = fopen (buff, "a");
       if (fout == 0)
 	{			// Maybe - its just a file ?
-	  sprintf (buff, "%s", fname);
+	  SPRINTF1 (buff, "%s", fname);
 	  fout = fopen (buff, "a");
 	}
       logfnameset = 1;
@@ -1253,5 +1253,14 @@ int a;
 
 
 
+// PLEASE MAKE SURE THIS IS THE LAST FUNCTION :
+#ifdef A4GL_debug
+#undef A4GL_debug
+void
+A4GL_debug (char *s)
+{
+	  A4GL_debug_full ("ERROR  - A4GL_debug called in full with %s", s);
+}
+#endif
 
 /* ================================= EOF ============================= */

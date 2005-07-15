@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.65 2005-07-14 11:32:51 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.66 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -44,6 +44,9 @@
 
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
 
 /*
 =====================================================================
@@ -154,7 +157,7 @@ A4GL_bnamexxx (char *str, char *str1, char *str2)
     A4GL_debug ("In A4GL_bnamexxx - splitting %s", str);
   }
 #endif
-  for (a = strlen (fn); a >= 0; a--)
+  for (a = (int)strlen (fn); a >= 0; a--)
     {
       if (A4GL_date_sep (fn[a]))
 	{
@@ -257,12 +260,12 @@ A4GL_pad_string (char *ptr, int size)
   //int a;
   int p;
   int s;
-  s=strlen(ptr);
-  p=size-strlen(ptr);
+  s=(int)strlen(ptr);
+  p=size-(int)strlen(ptr);
   
   if (p>0) {memset(&ptr[s],' ',p);}
 /*
-  for (a = strlen (ptr); a < size; a++)
+  for (a = (int)strlen (ptr); a < size; a++)
     {
       ptr[a] = ' ';
     }
@@ -290,7 +293,7 @@ static char buff[100];
 	#ifdef DEBUG
 		A4GL_debug ("digittoc %d",*a);
 	#endif
-	sprintf (buff, fmt, *a);
+	SPRINTF1 (buff, fmt, *a);
 
 	#ifdef DEBUG
 		A4GL_debug ("digittoc: %s", buff);
@@ -299,9 +302,9 @@ static char buff[100];
 	#define DIGIT_ALIGN_LEFT
 
 	#ifdef DIGIT_ALIGN_LEFT
-		sprintf (buff, "%%-%d%s", size, fmt);
+		SPRINTF2 (buff, "%%-%d%s", size, fmt);
 	#else
-		sprintf (buff, "%%%d%s", size, fmt);
+		SPRINTF2 (buff, "%%%d%s", size, fmt);
 	#endif
 
 	#ifdef DEBUG
@@ -390,14 +393,14 @@ a4gl_using (char *str, int s, char *fmt, double num)
   ad = 0.5;
   A4GL_trim (fm2);
 
-  for (a = 1; a <= strlen (fm2); a++)
+  for (a = 1; a <= (int)strlen (fm2); a++)
     {
       ad = ad / 10;
     }
 
   num += ad;
 
-  	sprintf (number, "%64.32f", num);
+  	SPRINTF1 (number, "%64.32f", num);
 
   num_dec=num-floor(num);
   A4GL_debug("Decimal portion = lf",num_dec);
@@ -414,7 +417,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
     int d_cnt = 0;		// number of digits to right of dec. point
     int n_cnt = isneg;		// number of left-digits needed for number supplied
     // count format string number place holders, up to decimal point
-    for (a = 0; a < strlen (fmt); a++)
+    for (a = 0; a < (int)strlen (fmt); a++)
       {
 	if (fmt[a] == '.')
 	  break;
@@ -422,7 +425,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
 	  f_cnt++;
       }
     // count format string number place holders, after the decimal point
-    while (a < strlen (fmt))
+    while (a < (int)strlen (fmt))
       {
 	if (a_strchr (rep_digit, fmt[a]))
 	  d_cnt++;
@@ -441,7 +444,7 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
     if (f_cnt < n_cnt +has_money)
       {
  A4GL_debug ("overflow, f_cnt=%d,d_cnt=%d,n_cnt=%d", f_cnt, d_cnt, n_cnt);
-	a = strlen (fmt);
+	a = (int)strlen (fmt);
 	if (a > s)
 	  a = s;
 
@@ -460,12 +463,12 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
 	    // round off decimal places only if FORMAT_OVERFLOW allows it
 	    if (isneg)
 	      {
-		memset (fmt, '-', a);
+		memset (fmt, '-', (size_t)a);
 		num = 0 - num;
 	      }
 	    else
 	      {
-		memset (fmt, '#', a);
+		memset (fmt, '#', (size_t)a);
 	      }
 	    if (n_cnt < a)
 	      fmt[n_cnt] = '.';
@@ -483,7 +486,7 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
       }
   }
 
-  for (a = strlen (fm1) - 1; a >= 0; a--)
+  for (a = (int)strlen (fm1) - 1; a >= 0; a--)
     {
       if (a_strchr (rep_digit, fm1[a]))
 	{
@@ -584,11 +587,11 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
   variable_called_b = 0;
 
 
-  sprintf(new_str,"%1.*lf",(int)strlen(fm2)+1,num_dec); 
+  SPRINTF2(new_str,"%1.*lf",(int)strlen(fm2)+1,num_dec); 
   ptr2=&new_str[2];
   A4GL_debug("str=%s fm1=%s fm2=%s ptr2=%s",str,fm1,fm2,ptr2);
 
-  for (a = 0; a < strlen (fm2); a++)
+  for (a = 0; a < (int)strlen (fm2); a++)
     {
       A4GL_debug("a=%d fm[a]=%c",a,fm2[a]);
       if (a_strchr (rep_digit, fm2[a]))
@@ -597,22 +600,22 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
 	    {
 	      if (isneg)
 		{
-		  str[a + strlen (fm1) + 1] = ')';
+		  str[a + (int)strlen (fm1) + 1] = ')';
 		  continue;
 		}
 	      else
 		{
-		  str[a + strlen (fm1) + 1] = ' ';
+		  str[a + (int)strlen (fm1) + 1] = ' ';
 		  continue;
 		}
 	    }
-	  A4GL_debug("setting str[%d]=%c",a + strlen (fm1) + 1,ptr2[variable_called_b]);
-	  str[a + strlen (fm1) + 1] = ptr2[variable_called_b++];
+	  A4GL_debug("setting str[%d]=%c",a + (int)strlen (fm1) + 1,ptr2[variable_called_b]);
+	  str[a + (int)strlen (fm1) + 1] = ptr2[variable_called_b++];
 	}
       else
 	{
-	  A4GL_debug("setting str[%d]=%c",a + strlen (fm1) + 1,fm2[a]);
-	  str[a + strlen (fm1) + 1] = fm2[a];
+	  A4GL_debug("setting str[%d]=%c",a + (int)strlen (fm1) + 1,fm2[a]);
+	  str[a + (int)strlen (fm1) + 1] = fm2[a];
 	}
     }
 #if defined (__MINGW32__)
@@ -627,7 +630,7 @@ A4GL_debug("str=%s",str);
   if (ptr)
     {
       variable_called_b = 0;
-      for (a = 0; a < strlen (str); a++)
+      for (a = 0; a < (int)strlen (str); a++)
 	{
 	  if (str[a] == '<')
 	    {
@@ -644,7 +647,7 @@ A4GL_debug("str=%s",str);
     }
 
 A4GL_debug("str=%s",str);
-   for (a=0;a<strlen(str);a++) {
+   for (a=0;a<(int)strlen(str);a++) {
 	if (str[a]==0x01) {
 
 		if (a==0) str[a]=' ';
@@ -745,7 +748,7 @@ a_strchr(char *s,int c) {
 int a;
 	if (s==0) return 0;
 	
-	for (a=0;a<strlen(s);a++) {
+	for (a=0;a<(int)strlen(s);a++) {
 			if (s[a]==c) return &s[a];
 	}
 	return 0;
@@ -767,7 +770,7 @@ char *hr;
 	hr=acl_getenv("EC_EXT");
 	
 	if (hr) {
-		if (strlen(hr)) return hr;
+		if ((int)strlen(hr)) return hr;
 	}
 	
 	if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "INFORMIX") == 0) { return ".ec"; }

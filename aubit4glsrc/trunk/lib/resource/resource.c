@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.106 2005-07-14 11:33:09 mikeaubury Exp $
+# $Id: resource.c,v 1.107 2005-07-15 18:28:09 mikeaubury Exp $
 #
 */
 
@@ -641,7 +641,8 @@ if (ptr)  {
         }
 
 	if (strncmp(s,"A4GL_",5)!=0) { // No point looking for an A4GL_A4GL_...
-        	sprintf (prefixed_string, "A4GL_%s", s);
+        	snprintf (prefixed_string, sizeof(prefixed_string), "A4GL_%s", s);
+		prefixed_string[1000]=0;
 		ptr_env_A4GL = getenv (prefixed_string); /* in environmet, with A4GL_ prefix */
 	} else {
 		ptr_env_A4GL = 0;
@@ -691,6 +692,10 @@ if (ptr)  {
 		if (strlen (cumulated_string) != 0 ){
 			ptr=(char *)cumulated_string;
         	}
+		if (strlen(cumulated_string)>=sizeof(cumulated_string)) {
+			printf("Ran out of space - sorry - not enough space to generate a full '%s'\n",s);
+			exit(1);
+		}
     } else {
 
 
@@ -1020,7 +1025,7 @@ FILE *resourcefile = 0;
 	On Windows, this will work only if there is CygWin installed
   */
 
-	sprintf (buff, "%s/%s", acl_getenv ("AUBITETC"), "aubitrc");
+	sprintf(buff, "%s/%s", acl_getenv ("AUBITETC"), "aubitrc");
 	resourcefile = fopen (buff, "r");
 	if (resourcefile != 0) {
 		#ifdef DEBUG

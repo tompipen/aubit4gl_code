@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.54 2005-07-14 11:32:52 mikeaubury Exp $
+# $Id: others.c,v 1.55 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -44,7 +44,11 @@
 */
 
 #include "a4gl_libaubit4gl_int.h"
+#include <stdio.h>
 #include <ctype.h>
+#if HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 /*
 =====================================================================
@@ -123,10 +127,10 @@ int aclfgl_aclfgl_set_color (int _nargs){
    long g ; 
    long b ; 
    struct BINDING fbind[4]={ /* 4 */
-   {0,2,0} ,
-   {0,2,0} ,
-   {0,2,0} ,
-   {0,2,0}
+   {0,2,0,0,0,0} ,
+   {0,2,0,0,0,0} ,
+   {0,2,0,0,0,0} ,
+   {0,2,0,0,0,0}
    }; 
    fbind[0].ptr=&c;
    fbind[1].ptr=&r;

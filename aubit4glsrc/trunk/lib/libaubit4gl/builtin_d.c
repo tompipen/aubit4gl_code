@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.64 2005-05-05 08:50:33 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.65 2005-07-15 18:28:07 mikeaubury Exp $
 #
 */
 
@@ -196,7 +196,7 @@ push_byte (void *ptr)
      p2=acl_malloc(sizeof(struct fgl_int_loc),"push_byte");
      memcpy(p2,ptr,sizeof(struct fgl_int_loc));
    */
-  A4GL_push_param (ptr, DTYPE_BYTE + ENCODE_SIZE (sizeof (struct fgl_int_loc)));
+  A4GL_push_param (ptr, (int)(DTYPE_BYTE + ENCODE_SIZE (sizeof (struct fgl_int_loc))));
 }
 
 /**
@@ -248,7 +248,7 @@ A4GL_push_dec (char *p, int ismoney,int size)
 
   if (p) {
   if (NUM_DIG(p)!=l&&NUM_DEC(p)!=d) {
-  	A4GL_init_dec((fgldecimal *)p,l,d);
+  	(void)A4GL_init_dec((fgldecimal *)p,l,d);
 	A4GL_push_null(DTYPE_DECIMAL,size);
 	A4GL_setnull(DTYPE_DECIMAL,p,size);
 	return;
@@ -260,10 +260,10 @@ A4GL_push_dec (char *p, int ismoney,int size)
   }
 
   //plen= (p[0] & 127) + 2;
-  plen=sizeof(fgldecimal);
+  plen=(int)sizeof(fgldecimal);
   
   ptr = (char *) acl_malloc (plen, "push dec");
-  memcpy (ptr, p, plen);
+  memcpy (ptr, p, (size_t)plen);
   if (ismoney)
     {
       A4GL_push_param (ptr, DTYPE_MONEY + DTYPE_MALLOCED+ENCODE_SIZE(size));
@@ -317,7 +317,7 @@ A4GL_push_chars (char *p, int dtype, int size)
   char *ptr;
 last_was_empty=0;
   A4GL_debug ("In A4GL_push_chars - %s\n", A4GL_null_as_null(p));
-  ptr = (char *) A4GL_new_string_set (strlen (p), p);
+  ptr = (char *) A4GL_new_string_set ((int)strlen (p), p);
   //push_param(ptr,(DTYPE_CHAR+DTYPE_MALLOCED+ENCODE_SIZE(size)));
   A4GL_debug ("Using dtype : %d",
 	 (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (size)));
@@ -342,8 +342,8 @@ buff[1]=0;
 p=buff;
 last_was_empty=1;
 //A4GL_push_char (buff);
-  ptr = (char *) A4GL_new_string_set (strlen (p), p);
-  A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (strlen (p))));
+  ptr = (char *) A4GL_new_string_set ((int)strlen (p), p);
+  A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE ((int)strlen (p))));
 
 }
 
@@ -362,15 +362,15 @@ A4GL_push_char (char *p)
   A4GL_assertion(p==0,"pointer was 0 in A4GL_push_char");
   if (p[0] == 0 && p[1] != 0)
     {
-      ptr = (char *) A4GL_new_string_set (strlen (p) + 1, p);
+      ptr = (char *) A4GL_new_string_set ((int)strlen (p) + 1, p);
       ptr[0] = 0;
       ptr[1] = 1;
     }
   else
     {
-      ptr = (char *) A4GL_new_string_set (strlen (p), p);
+      ptr = (char *) A4GL_new_string_set ((int)strlen (p), p);
     }
-  A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (strlen (p))));
+  A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE ((int)strlen (p))));
 }
 
 /**
@@ -404,7 +404,7 @@ aclfgl_hex (int n)
   long z;
   char buff[100];
   z = A4GL_pop_long ();
-  sprintf (buff, "0x%x", (int) z);
+  SPRINTF1 (buff, "0x%x", (int) z);
   A4GL_push_char (buff);
   return 1;
 }
@@ -421,7 +421,7 @@ aclfgl_abs (int n)
   double p;
   p = A4GL_pop_double ();
   if (p < 0)
-    p = 0 - p;
+    p = (double)0.0 - p;
   A4GL_push_double (p);
   return 1;
 }
@@ -450,7 +450,7 @@ A4GL_func_mod (void)
 
 int aclfgl_ord(int n) {
 unsigned char *s;
-s=A4GL_char_pop();
+s=(unsigned char *)A4GL_char_pop();
 A4GL_push_long(s[0]);
 free(s);
 return 1;
@@ -703,7 +703,7 @@ A4GL_func_concat (void)
     A4GL_debug ("   copy %d %d ", strlen (p1), strlen (p2));
   }
 #endif
-  a = strlen (p1) + strlen (p2) + 1;
+  a = (int)strlen (p1) + (int)strlen (p2) + 1;
   z1 = A4GL_new_string (a);
   strcpy (z1, p2);
   strcat (z1, p1);
@@ -769,7 +769,7 @@ A4GL_func_using (void)
   if (A4GL_isyes(acl_getenv("TRIMUSINGFMT"))) {
       A4GL_trim (fmt);
   }
-      s = strlen (fmt);
+      s = (int)strlen (fmt);
       z = A4GL_new_string (s+1);
 	A4GL_debug("Calling a4gl_using");
       a4gl_using (z, s, fmt, a);
@@ -861,7 +861,7 @@ char buff[256];
 
 
 ival=ptr;
-  sprintf (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
+  SPRINTF24 (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
            ival->data[0], ival->data[1], ival->data[2], ival->data[3],
            ival->data[4], ival->data[5],
            ival->data[6], ival->data[7],

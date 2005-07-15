@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.19 2005-05-18 13:48:41 mikeaubury Exp $
+# $Id: interval.c,v 1.20 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -124,7 +124,7 @@ A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
   A4GL_debug ("m %d\n", data[4]);
   A4GL_debug ("S %d\n", data[5]);
   A4GL_debug ("F %d\n", data[6]);
-  sprintf (fractions, "%05d", data[6]);
+  SPRINTF1 (fractions, "%05d", data[6]);
 
   while (data[5] >= 60)
     {
@@ -198,27 +198,27 @@ A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
     }
 
   if (v2 == 1)
-    sprintf (buff, "%0*d%02d0000000000000", v3, data[0], data[1]);
+    SPRINTF3 (buff, "%0*d%02d0000000000000", v3, data[0], data[1]);
 
   if (v2 == 2)
-    sprintf (buff, "0000%0*d0000000000000", v3, data[1]);
+    SPRINTF2 (buff, "0000%0*d0000000000000", v3, data[1]);
 
   if (v2 == 3)
-    sprintf (buff, "000000%0*d%02d%02d%02d%s",
+    SPRINTF6 (buff, "000000%0*d%02d%02d%02d%s",
 	     v3, data[2], data[3], data[4], data[5], fractions);
 
   if (v2 == 4)
-    sprintf (buff, "00000000%0*d%02d%02d%s",
+    SPRINTF5 (buff, "00000000%0*d%02d%02d%s",
 	     v3, data[3], data[4], data[5], fractions);
 
   if (v2 == 5)
-    sprintf (buff, "0000000000%0*d%02d%s", v3, data[4], data[5], fractions);
+    SPRINTF4 (buff, "0000000000%0*d%02d%s", v3, data[4], data[5], fractions);
 
   if (v2 == 6)
-    sprintf (buff, "000000000000%0*d%s", v3, data[5], fractions);
+    SPRINTF3 (buff, "000000000000%0*d%s", v3, data[5], fractions);
 
   if (v2 >= 7)
-    sprintf (buff, "000000000000000%s", fractions);
+    SPRINTF1 (buff, "000000000000000%s", fractions);
 
   A4GL_debug ("Copied data");
   return 1;
@@ -518,19 +518,6 @@ A4GL_decode_interval (struct ival *ival, int *data)
 
 
 
-/*
-  sprintf (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
-	   ival->data[0], ival->data[1], ival->data[2], ival->data[3],
-	   ival->data[4], ival->data[5],
-	   ival->data[6], ival->data[7],
-	   ival->data[8], ival->data[9],
-	   ival->data[10], ival->data[11],
-	   ival->data[12], ival->data[13],
-	   ival->data[14], ival->data[15],
-	   ival->data[16], ival->data[17], ival->data[18],
-	   ival->data[19], ival->data[20], ival->data[21],
-	   ival->data[22], ival->data[23]);
-*/
 
   A4GL_debug ("buff=%s\n", buff);
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.23 2005-07-14 12:51:06 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.24 2005-07-15 18:28:08 mikeaubury Exp $
 #*/
 
 /**
@@ -241,7 +241,7 @@ A4GLSTK_getStackTrace (void)
 	strcat (stackTrace, functionCallStack[i].functionName);
       else
 	{
-	  sprintf (tmpStackTrace,
+	  SPRINTF3 (tmpStackTrace,
 		   "%s (Line %d) calls %s",
 		   functionCallStack[i].moduleName,
 		   functionCallStack[i].lineNumber,

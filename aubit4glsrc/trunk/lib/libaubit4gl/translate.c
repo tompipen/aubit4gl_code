@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.19 2005-07-14 11:32:52 mikeaubury Exp $
+# $Id: translate.c,v 1.20 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -255,12 +255,12 @@ A4GL_add_translate (int mode, char *from, char *to, int quote)
       if (quote == 0)
 	{
 	  /* formwrite2.c: */
-	  sprintf (buff, "%s", to);
+	  SPRINTF1 (buff, "%s", to);
 	}
       else
 	{
 	  /* lexer.c: */
-	  sprintf (buff, "\"%s\"", to);
+	  SPRINTF1 (buff, "\"%s\"", to);
 	}
 
       translate_list[translate_list_cnt - 1].to = acl_strdup (buff);
@@ -272,12 +272,12 @@ A4GL_add_translate (int mode, char *from, char *to, int quote)
 	{
 	  /* formwrite2.c: */
 	  //ORIGINAL: sprintf(buff,"get_translated_id:%s",to);
-	  sprintf (buff, "get_translated_id(\"%s\")", to);
+	  SPRINTF1 (buff, "get_translated_id(\"%s\")", to);
 	}
       else
 	{
 	  /* lexer.c: NO LONGER THERE !!?? */
-	  sprintf (buff, "get_translated_id(\"%s\")", to);
+	  SPRINTF1 (buff, "get_translated_id(\"%s\")", to);
 	}
 
       translate_list[translate_list_cnt - 1].identifier = acl_strdup (buff);

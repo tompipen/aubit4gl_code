@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.41 2005-07-14 11:32:52 mikeaubury Exp $
+# $Id: ui.c,v 1.42 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -579,7 +579,7 @@ A4GL_debug("z=%d n=%d\n",z,n);
 		A4GL_set_line_mode_column(strlen(ptr),1);
 	}
       s = realloc (s, ls);
-      sprintf (buff, "%s%s",  s,ptr);
+      SPRINTF2 (buff, "%s%s",  s,ptr);
       free(ptr);
       strcpy (s, buff);
       A4GL_debug ("s='%s' %p %d %d\n", s, s,strlen(s),ls);
@@ -834,7 +834,7 @@ void A4GL_ensure_column(void ) {
 char buff[2048];
 int a;
 a=A4GL_pop_int();
-sprintf(buff,"%c%d",0x01,a);
+SPRINTF2(buff,"%c%d",0x01,a);
 A4GL_push_char(buff);
 }
 
@@ -910,7 +910,7 @@ char *A4GL_add_dot_star(char *s) {
 			return buff;
 	}
 	strcpy(buff2,s);
-	sprintf(buff,"%s.*",buff2);
+	SPRINTF1(buff,"%s.*",buff2);
 	return buff;
 }
 

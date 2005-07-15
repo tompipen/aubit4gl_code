@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.28 2005-07-14 11:32:52 mikeaubury Exp $
+# $Id: memfile.c,v 1.29 2005-07-15 18:28:08 mikeaubury Exp $
 #
 */
 
@@ -327,7 +327,7 @@ A4GL_dump_buffer (char *s, int l)
   A4GL_debug ("Dump buffer");
   for (a = 0; a < l; a++)
     {
-      sprintf (buffx, "0x%02x,", s[a] & 0xff);
+      SPRINTF1 (buffx, "0x%02x,", s[a] & 0xff);
       strcat (buff, buffx);
       if (strlen (buff) >= 80)
 	{

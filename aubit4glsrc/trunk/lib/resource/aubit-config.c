@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.18 2005-03-09 15:15:27 mikeaubury Exp $
+# $Id: aubit-config.c,v 1.19 2005-07-15 18:28:09 mikeaubury Exp $
 #
 */
 
@@ -244,4 +244,39 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l) {
 void A4GL_pause_execution(void ) {
 // Does nothing - only here so the thing will link
 }
+
+
+int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) {
+int x;
+char *c;
+va_list args;
+char xbuff[10000];
+
+        if (sdest>sizeof(char *)) { // We do this one...
+              va_start (args, fmt);
+              c=malloc(sdest);
+	      if (c==0) {
+		      		printf("Unable to allocate memory..\n");
+				exit(1);
+		}
+              x=vsnprintf(c,sdest,fmt,args);
+              if (x>=sdest) {
+			printf("sprintf trying to exceed allocated space @ %s (line %d)",f,l);
+			exit(1);
+		
+              }
+              strncpy(dest,c,sdest);
+              free(c);
+        } else {
+              va_start (args, fmt);
+              x=vsprintf(xbuff,fmt,args);
+                if (x>sizeof(xbuff)) {
+                        printf("sprintf > 10,000 characters when using a pointer...");
+                }
+              strcpy(dest,xbuff);
+        }
+        return x;
+}
+
+
 /* -------------------------- EOF ------------------------ */
