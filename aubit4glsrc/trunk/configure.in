@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.296 2005-06-10 13:35:58 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.297 2005-07-15 20:13:26 whaslbeck Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2179,7 +2179,8 @@ ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
 		a4gl_API_sqlparse.h a4gl_API_esql.h a4gl_incl_infx.h \
 		a4gl_API_esql.h a4gl_incl_infx.h \
 		a4gl_esql.h a4gl_esql_infx.h a4gl_esql_postgres.h \
-		a4gl_esql_ingres.h"
+		a4gl_esql_ingres.h \
+		a4gl_memhandling"
 		
 		
     COUNTER=0
@@ -9121,7 +9122,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.296 2005-06-10 13:35:58 mikeaubury Exp $
+| $Id: configure.in,v 1.297 2005-07-15 20:13:26 whaslbeck Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

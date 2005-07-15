@@ -10350,7 +10350,8 @@ ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
 		a4gl_API_sqlparse.h a4gl_API_esql.h a4gl_incl_infx.h \
 		a4gl_API_esql.h a4gl_incl_infx.h \
 		a4gl_esql.h a4gl_esql_infx.h a4gl_esql_postgres.h \
-		a4gl_esql_ingres.h"
+		a4gl_esql_ingres.h \
+		a4gl_memhandling.h"
 
 
     COUNTER=0
@@ -39650,7 +39651,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.323 2005-06-10 13:35:11 mikeaubury Exp $
+| $Id: configure,v 1.324 2005-07-15 20:12:21 whaslbeck Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
