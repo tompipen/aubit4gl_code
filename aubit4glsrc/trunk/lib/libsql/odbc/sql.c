@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.130 2005-07-14 11:32:56 mikeaubury Exp $
+# $Id: sql.c,v 1.131 2005-07-15 08:11:07 mikeaubury Exp $
 #
 */
 
@@ -181,8 +181,7 @@ void A4GL_ibind_column_arr (int pos, char *s, HSTMT hstmt);
 void *A4GL_bind_date (long *ptr_to_date_var);
 void A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt);
 void A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt);
-void A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
-				HSTMT hstmt);
+void A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hstmt);
 void A4GL_add_cursor (struct s_cid *cid, char *cname);
 int ODBC_exec_prepared_sql (SQLHSTMT hstmt);
 int ODBC_exec_stmt (SQLHSTMT hstmt);
@@ -725,7 +724,7 @@ A4GLSQL_find_cursor (char *cname)
 
   ptr = (struct s_cid *) A4GL_find_pointer_val (cname, CURCODE);
   if (ptr) return ptr;
-  A4GL_exitwith ("Cursor not found");
+  A4GL_exitwith_sql ("Cursor not found");
   return 0;
 }
 
@@ -804,28 +803,7 @@ A4GLSQL_prepare_sql_internal (char *s)
 #endif
 
 
-/**
- * Find a statement prepared in the pointer tree.
- *
- * @param pname The statement name.
- * @param mode Not used.
- * @return A pointer to the statement strucuture, 0 otherwise.
- */
-void *
-A4GLSQL_find_prepare (char *pname)
-{
-  struct s_sid *ptr;
-
-#ifdef DEBUG
-  A4GL_debug ("chk %s was prepared", pname);
-#endif
-  A4GL_set_errm (pname);
-  ptr = A4GL_find_pointer_val (pname, PRECODE);
-  if (ptr)
-    return ptr;
-  return (struct s_sid *) 0;
-}
-
+#ifdef NDEF
 /**
  * Execute an SQL statement.
  *
@@ -862,6 +840,7 @@ A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
 #endif
   return ODBC_exec_prepared_sql ((SQLHSTMT) sid->hstmt);
 }
+#endif
 
 /**
  * Prepare a select statement.
@@ -1031,6 +1010,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *c
   cid = acl_malloc2 (sizeof (struct s_cid));
 
   nsid = acl_malloc2 (sizeof (struct s_sid));
+  nsid->hstmt=0;
   A4GL_debug ("Malloced nsid & cid");
 #ifdef DEBUG
   A4GL_debug ("sid=%p", sid);
@@ -1040,6 +1020,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *c
   cid->mode = upd_hold + scroll * 256;
   nsid->ibind = sid->ibind;
   nsid->hstmt = sid->hstmt;
+  A4GL_debug("nsid->hstmt=%p",sid->hstmt);
   nsid->ni = sid->ni;
 #ifdef DEBUG
   A4GL_debug ("nsid->ni=%d", nsid->ni);
@@ -1401,6 +1382,7 @@ A4GL_debug("XXX s=%s ni=%d ibind=%p",s,ni,ibind);
   else
     {
       cid->hstmt = cid->statement->hstmt;
+      A4GL_debug("cid->hstmt=%p",cid->hstmt);
     }
   /* Execute the SQL statement. */
 
@@ -1493,6 +1475,10 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
 #endif
 
   cid = A4GLSQL_find_cursor (cursor_name);
+  if (cid==0) {
+  		A4GL_exitwith_sql ("Cursor not found");
+		return 0;
+  }
 #ifdef DEBUG
   A4GL_debug ("fetch_cursor : cid=%p", cid);
 #endif
@@ -3082,6 +3068,7 @@ A4GL_new_hstmt (SQLHSTMT * hstmt)
 #ifdef DEBUG
   A4GL_debug ("allocate statement returns rc=%d", rc);
 #endif
+  A4GL_debug("Got hstmt : %p %p",hstmt,*hstmt);
   return (HSTMT *) * hstmt;
 }
 
@@ -3279,32 +3266,42 @@ A4GL_describecolumn (SQLHSTMT hstmt, int colno, int type)
   SDWORD rowcount;
   int rc;
 
+  if (type==6) {
+	  	A4GL_pause_execution();
+  }
   if (hstmt == 0)
     {
       A4GL_exitwith ("Statement has not been prepared");
       return 0;
     }
 
+  A4GL_debug("hstmt=%p",hstmt);
   if (type == 5)
     {
-      SQLNumResultCols (hstmt, &nresultcols);
+    	nresultcols=0;
+		A4GL_debug("SQLNumResultCols");
+      rc=SQLNumResultCols (hstmt, &nresultcols);
+  if (rc != SQL_SUCCESS) { A4GL_set_sqlca (hstmt, "numresultcols", 0); return 0; }
+	    A4GL_debug("Returning SQLNumResultCols\n",nresultcols);
       return nresultcols;
     }
 
   if (type == 6)
     {
-      SQLRowCount (hstmt, &rowcount);
+      		rowcount=0;
+		A4GL_debug("SQLRowCount");
+      rc=SQLRowCount (hstmt, &rowcount);
+  if (rc != SQL_SUCCESS) { A4GL_set_sqlca (hstmt, "rowcount", 0); return 0; }
+	    A4GL_debug("Returning SQLRowCount\n",rowcount);
       return rowcount;
     }
 
+
+  A4GL_debug("Describing...");
   rc = SQLDescribeCol (hstmt, colno, colname,
 		       (SWORD) sizeof (colname),
 		       &colnamelen, &coltype, &collen, &scale, &nullable);
-  if (rc != SQL_SUCCESS)
-    {
-      A4GL_set_sqlca (hstmt, "Describe column", 0);
-      return 0;
-    }
+  if (rc != SQL_SUCCESS) { A4GL_set_sqlca (hstmt, "Describe column", 0); return 0; }
 
 #ifdef DEBUG
   A4GL_debug ("SQL DATATYPE : Got %s %d %d", colname, coltype, collen);
@@ -3346,11 +3343,14 @@ long
 A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 {
   struct s_sid *sid;
-  HSTMT *hstmt;
+  HSTMT *hstmt=0;
   struct s_cid *cid;
   long z;
+  A4GL_debug("A4GLSQLLIB_A4GLSQL_describe_stmt ('%s', %d, %d)",stmt,colno,type);
 
   sid = A4GLSQL_find_prepare (stmt);
+
+  A4GL_debug("sid=%p\n",sid);
   cid = 0;
 
   if (sid == 0)
@@ -3372,7 +3372,7 @@ A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
     }
   else
     {
-      hstmt = (SQLHSTMT *) & sid->hstmt;
+      hstmt = (SQLHSTMT *) sid->hstmt;
     }
 
 
@@ -3381,7 +3381,9 @@ A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
       A4GL_exitwith ("Statement could not be found");
     }
 
+  A4GL_debug("describecolumn");
   z = A4GL_describecolumn ((SQLHSTMT) hstmt, colno, type);
+  A4GL_debug("Returning %d\n",z);
   return z;
 }
 
@@ -4296,6 +4298,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 		y = -1;
 		d = -1;
 		m = -1;
+	      A4GL_debug("Date as char");
 		A4GL_debug ("DATE=(%s,%d)\n", date1->uDate.date_c, strlen (date1->uDate.date_c));
 
 		if (strlen (date1->uDate.date_c))
@@ -4334,6 +4337,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 	    }
 	  else
 	    {
+	      A4GL_debug("Date not as char");
 	      A4GL_assertion (date1->uDate.date_ds.month < 1
 			      || date1->uDate.date_ds.month > 12,
 			      "Invalid month retrieved from db");
@@ -4353,6 +4357,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 				 date1->uDate.date_ds.month,
 				 date1->uDate.date_ds.year);
 			*(long *) date1->ptr = zz;
+	      
 	    }
 	
 	  //*(long *) use_binding[bind_counter].ptr = zz;

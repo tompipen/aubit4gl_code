@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.9 2005-07-14 15:20:15 mikeaubury Exp $
+# $Id: sql_common.c,v 1.10 2005-07-15 08:09:21 mikeaubury Exp $
 #
 */
 
@@ -579,6 +579,7 @@ A4GLSQL_add_prepare (char *pname, void *vsid)
   if (sid)
     {
 	char rname[256];
+  	A4GL_debug("Adding prepare - %s - %p",pname,vsid);
 	sprintf(rname,"%p",sid);
         A4GL_add_pointer (pname, PRECODE, sid);
         A4GL_add_pointer (rname, PRECODE_R, pname);
@@ -644,11 +645,14 @@ void *
 A4GLSQL_find_prepare (char *pname)
 {
   struct s_sid *ptr;
-
+A4GL_debug("Find prepare : %s\n",pname);
   A4GL_set_errm (pname);
   ptr = (struct s_sid *) A4GL_find_pointer_val (pname, PRECODE);
-  if (ptr)
+  if (ptr) {
+	  A4GL_debug("Found it : %p",ptr);
     return (void *) ptr;
+  }
+  A4GL_debug("Not found");
   return (void *) 0;
 //struct s_sid 
 }

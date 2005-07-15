@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.143 2005-07-14 15:20:15 mikeaubury Exp $
+# $Id: esql.ec,v 1.144 2005-07-15 08:11:07 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.143 2005-07-14 15:20:15 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.144 2005-07-15 08:11:07 mikeaubury Exp $";
 #endif
 
 
@@ -486,7 +486,7 @@ int
 A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 {
   static int have_connected = 0;
-  char buff[256];
+  char buff[1000];
 
   EXEC SQL BEGIN DECLARE SECTION;
   char *db;
@@ -4301,16 +4301,36 @@ A4GLSQLLIB_A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int s
 		    char *service, int mode, char *info)
 {
   A4GL_debug ("fill_array");
-  if (strcmp (service, "DATABASES") == 0)
-    A4GL_exitwith
-      ("Could not fill_array - DATABASES service not implemented !");
-  else if (strcmp (service, "TABLES") == 0)
-    A4GL_exitwith ("Could not fill_array - TABLES service not implemented !");
+  if (strcmp (service, "DATABASES") == 0)   {
+	int a;
+	#define MAXDBS 100
+	#define FASIZ (MAXDBS * 256)
+	char *dbsname[MAXDBS+1];
+	char dbsarea[FASIZ];
+	int ndbs=0;
+	sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
+	for (a=0;a<ndbs;a++) {
+	        if (arr1 != 0) strncpy (&arr1[a * (szarr1 + 1)], dbsname[a], szarr1);
+      		if (arr2 != 0) strncpy (&arr2[a * (szarr2 + 1)], dbsname[a], szarr2);
+	}
+
+	return ndbs;
+  }
+
+
+  if (strcmp (service, "TABLES") == 0) {
+	A4GL_exitwith ("Could not fill_array - TABLES service not implemented !");
+	return 0;
+  }
+
+
   // This is the important to implement
-  else if (strcmp (service, "COLUMNS") == 0)
+  if (strcmp (service, "COLUMNS") == 0) {
     return fillColumnsArray (info, mx, arr1, szarr1, arr2, szarr2, mode);
-  else
-    A4GL_exitwith ("Could not fill_array - Invalid service asked !");
+  }
+
+
+  A4GL_exitwith ("Could not fill_array - Invalid service asked !");
   return 0;
 }
 
@@ -4345,8 +4365,9 @@ A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (int a)
 long
 A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 {
-  printf ("Describe smtm\n");
-return 1;
+  printf ("Describe stmt not implemented...\n");
+  A4GL_assertion(1,"Describe stmt not implemented...");
+  return 0;
 }
 
 

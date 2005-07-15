@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.27 2005-06-18 09:56:56 mikeaubury Exp $
+# $Id: error.c,v 1.28 2005-07-15 08:09:20 mikeaubury Exp $
 #
 */
 
@@ -173,7 +173,7 @@ A4GL_exitwith_sql (char *s)
    * display the error message to standard output
    */
 
-   
+  return;
   printf ("Error: %s\n", s);
   #ifdef DEBUG
   	A4GL_debug ("About to exit with code %d %d", errors[a].a4gl_errno,errors[cache_statusno].a4gl_errno);
