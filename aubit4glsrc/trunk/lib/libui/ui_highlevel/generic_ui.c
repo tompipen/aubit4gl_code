@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.60 2005-07-14 15:20:16 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.61 2005-07-15 13:26:49 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -2619,7 +2619,7 @@ static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
   A4GL_LL_set_carat (promptx->f);
   A4GL_LL_screen_update ();
   a = A4GL_getch_internal (p);
-  A4GL_clr_error_nobox ("prompt");
+  if (a) A4GL_clr_error_nobox ("prompt");
 
   promptx->processed_onkey = a;
 

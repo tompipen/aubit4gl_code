@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.37 2005-07-07 10:23:34 mikeaubury Exp $";
+  "$Id: misc.c,v 1.38 2005-07-15 13:26:49 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1179,7 +1179,7 @@ A4GL_getch_win (int allow_acc_intr)
       A4GL_LL_set_acc_intr_keys (1);
     }
   a = A4GL_getch_internal (A4GL_get_currwin ());
-  A4GL_clr_error_nobox ("A4GL_getch_win");
+  if (a) A4GL_clr_error_nobox ("A4GL_getch_win");
   if (allow_acc_intr)
     {
       A4GL_LL_set_acc_intr_keys (0);

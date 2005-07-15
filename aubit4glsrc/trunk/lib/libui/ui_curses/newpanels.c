@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.118 2005-07-13 14:14:42 mikeaubury Exp $
+# $Id: newpanels.c,v 1.119 2005-07-15 13:26:49 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.118 2005-07-13 14:14:42 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.119 2005-07-15 13:26:49 mikeaubury Exp $";
 #endif
 
 /**
@@ -1297,7 +1297,7 @@ A4GL_getch_win (void)
 int a;
   A4GL_debug ("getch_win called...");
   a=A4GL_getch_swin (A4GL_window_on_top ());
-  A4GL_clr_error_nobox("A4GL_getch_win");
+  if (a) A4GL_clr_error_nobox("A4GL_getch_win");
   return a;
 }
 

@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.26 2005-07-14 15:20:16 mikeaubury Exp $";
+  "$Id: menu.c,v 1.27 2005-07-15 13:26:49 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -392,7 +392,7 @@ A4GL_highlevel_menu_loop (void *menuv)
   if (A4GL_LL_menu_type () == 1)
     {
       a = A4GL_menu_loop_type_1 (menu, menu->num_opts);
-      A4GL_clr_error_nobox ("menu_callback");
+      if (a) A4GL_clr_error_nobox ("menu_callback");
       printf ("Return %d\n", a);
       return a;
     }
@@ -523,7 +523,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
 
       a = A4GL_getch_internal (A4GL_get_currwin ());
       A4GL_debug ("Clearing error box");
-      A4GL_clr_error_nobox ("Menu");
+      if (a) A4GL_clr_error_nobox ("Menu");
       if (a == -1)
 	{
 	  if (abort_pressed)

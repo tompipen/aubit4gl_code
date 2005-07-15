@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.52 2005-07-06 15:32:16 mikeaubury Exp $
+# $Id: prompt.c,v 1.53 2005-07-15 13:26:49 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.52 2005-07-06 15:32:16 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.53 2005-07-15 13:26:49 mikeaubury Exp $";
 #endif
 
 /**
@@ -382,7 +382,7 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
 //printf("a=%d\n",a);fflush(stdout);
         prompt->processed_onkey=a;
 	A4GL_debug("Read character... %d",a);
-  	A4GL_clr_error_nobox("prompt");
+  	if (a) {A4GL_clr_error_nobox("prompt");}
 	if (abort_pressed ) a=A4GLKEY_INTERRUPT;
 	prompt_last_key=a;
   	A4GL_set_last_key (a);
