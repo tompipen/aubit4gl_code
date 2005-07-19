@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.129 2005-07-14 11:32:57 mikeaubury Exp $
+# $Id: ioform.c,v 1.130 2005-07-19 11:06:31 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.129 2005-07-14 11:32:57 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.130 2005-07-19 11:06:31 mikeaubury Exp $";
 #endif
 
 /**
@@ -3088,8 +3088,14 @@ UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
   for (a = 0; a <= c; a++)
     {
       char *buff;
-      buff = strdup (field_buffer (field_list[a], 0));
+      char *orig;
+
+      orig=field_buffer (field_list[a], 0);
+      A4GL_debug("Orig=%s\n",orig);
+      buff = strdup (orig);
+      A4GL_debug("Got buff as : '%s'",buff);
       chk_for_picture (field_list[a], buff);
+      A4GL_debug("getfldbuf='%s'\n",buff);
       A4GL_push_char (buff);
       acl_free (buff);
       nr++;

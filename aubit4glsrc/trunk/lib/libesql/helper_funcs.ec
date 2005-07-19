@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.34 2005-06-09 06:08:20 pjfalbe Exp $
+# $Id: helper_funcs.ec,v 1.35 2005-07-19 11:06:29 mikeaubury Exp $
 #
 */
 
@@ -35,7 +35,11 @@
  */
 
 
-void ESQLAPI_A4GL_connect_db(char *dbname) ;
+#include "a4gl_libaubit4gl.h"
+#include "a4gl_esql.h"
+#include "a4gl_API_esql_lib.h"
+
+//void ESQLAPI_A4GL_connect_db(char *dbname) ;
 #ifdef DIALECT_QUERIX
 	//avoid redeclaration of int_flag, quit_flag, UCHAR
 	#define _NO_INT_QUIT_FLAG_
@@ -45,10 +49,10 @@ void ESQLAPI_A4GL_connect_db(char *dbname) ;
     #endif
 #endif
 
-void ESQLAPI_popdec_native(void *vx);
-void ESQLAPI_retdec_native(void* vx);
-void ESQLAPI_popdtime_native(void* vx);
-void ESQLAPI_retdtime_native(void* vx);
+//void ESQLAPI_popdec_native(void *vx);
+//void ESQLAPI_retdec_native(void* vx);
+//void ESQLAPI_popdtime_native(void* vx);
+//void ESQLAPI_retdtime_native(void* vx);
 
 
 // Get rid of a duplicate bool definition
@@ -56,16 +60,10 @@ void ESQLAPI_retdtime_native(void* vx);
 #define X_form_x_X_H
 #define XS_form_x_X_H
 
-struct struct_form  {
-	void *n;
-};
+//struct struct_form  { void *n; };
 
-struct struct_scr_field {
-	void *a;
-};
+//struct struct_scr_field { void *a; };
 
-#include "a4gl_libaubit4gl.h"
-#include "a4gl_esql.h"
 
 #ifdef DIALECT_INFORMIX
 	#define DIALECTED 1
@@ -100,7 +98,10 @@ strcpy(dbName,dbname);
 }
 
 
-void* ESQLAPI_A4GL_db_connected(char *dbname) ;
+/* void* ESQLAPI_A4GL_db_connected(char *dbname) ; */
+
+
+
 #ifdef DIALECT_POSTGRES
 struct connection
 {
@@ -294,7 +295,7 @@ int arr_dtime[]={
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_datetime(void *infxv, void *a4glv,short *p_indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_datetime(void *infxv, void *a4glv,short *p_indicat,int size,char mode) 
 {
 short indicat=0;
 dtime_t *infx; struct A4GLSQL_dtime *a4gl;
@@ -368,7 +369,7 @@ if (p_indicat) indicat=*p_indicat;
  * @todo describe function
  */
 #ifdef DIALECT_INFORMIX
-void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,short *p_indicat,int size,int mode) 
+void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,short *p_indicat,int size,char mode) 
 {
 short indicat=0;
 intrvl_t *infx; struct ival *a4gl;
@@ -398,7 +399,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 			ndig_s=size>>8;
 			s=(size>>4)&0xf;
 			e=(size&0xf);
-			printf("%x %d %d %d %d\n",size,size,ndig_s,s,e);
+			//printf("%x %d %d %d %d\n",size,size,ndig_s,s,e);
 			infx->in_qual=TU_IENCODE(ndig_s,tr[s],tr[e]);
 		}
 	#endif
@@ -407,9 +408,9 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 	// Debugging stuff only
 		A4GL_debug("Copy interval in - aubit=%s\n",ptr);
-		printf("Copy interval in - aubit=%s\n",ptr);
+		//printf("Copy interval in - aubit=%s\n",ptr);
 			intoasc(infx,buff);
-		printf("                Informix=%s\n",buff);
+		//printf("                Informix=%s\n",buff);
 		A4GL_debug("                Informix=%s\n",buff);
 	// End of Debugging stuff only
 
@@ -449,7 +450,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 #ifdef DIALECT_POSTGRES
 
-void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,short *p_indicat,int size,int mode)  {
+void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,short *p_indicat,int size,char mode)  {
 short indicat=0;
 	printf("A4GL_copy_interval for postgres not implemented yet\n");
 	if (p_indicat) indicat=*p_indicat;
@@ -462,7 +463,7 @@ short indicat=0;
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_char(char *infx,char *a4gl,short *p_indicat,int size,int mode,int x,int y) 
+ESQLAPI_A4GL_copy_char(char *infx,char *a4gl,short *p_indicat,int size,char mode,int x,int y) 
 {
 short indicat=0;
 
@@ -471,6 +472,8 @@ A4GL_debug("Copy char : mode=%c",mode);
 A4GL_debug("Copy char : x=%d",x);
 A4GL_debug("Copy char : y=%d",y);
 A4GL_debug("Copy char : p_indicat=%p",p_indicat);
+
+
 if (p_indicat) {
 	A4GL_debug("Copy char : *p_indicat=%p",*p_indicat);
 }
@@ -489,7 +492,10 @@ if (p_indicat) {
 		strncpy((char *)(infx),(char *)(a4gl),size);
 		infx[size]=0;
 		A4GL_trim(infx); // @todo -  what about varchars ... ?
+		A4GL_debug("copy_char - > %s",infx);
 	}
+
+
 	if (mode=='o') {
 		if (p_indicat) indicat=*p_indicat;
 		if (indicat==-1) { A4GL_setnull(0,(void *)a4gl,size); return;}
@@ -499,6 +505,8 @@ if (p_indicat) {
 		strcpy((char *)(a4gl),(char *)(infx));
 		A4GL_pad_string(a4gl,size);
 	}
+
+
 }
 
 
@@ -510,7 +518,7 @@ if (p_indicat) {
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_date(long *infx,long *a4gl,short *p_indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_date(long *infx,long *a4gl,short *p_indicat,int size,char mode) 
 {
 short indicat=0;
 short  mdy[3];
@@ -553,7 +561,7 @@ long orig_date;
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_smint(short *infx,short *a4gl,short *p_indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_smint(short *infx,short *a4gl,short *p_indicat,int size,char mode) 
 {
 short indicat=0;
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
@@ -577,7 +585,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_int(long *infx,long *a4gl,short *p_indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_int(long *infx,long *a4gl,short *p_indicat,int size,char mode) 
 {
 short indicat=0;
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
@@ -605,7 +613,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_float(float *infx,float *a4gl,short *p_indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_float(float *infx,float *a4gl,short *p_indicat,int size,char mode) 
 {
 short indicat=0;
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
@@ -622,6 +630,15 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	}
 }
 
+void 
+ESQLAPI_A4GL_copy_blob_byte(double *infx,double *a4gl,short *p_indicat,int size,char mode)  {
+A4GL_assertion(1,"copy_blob_byte not implemented");
+}
+
+void 
+ESQLAPI_A4GL_copy_blob_text(double *infx,double *a4gl,short *p_indicat,int size,char mode)  {
+A4GL_assertion(1,"copy_blob_text not implemented");
+}
 
 /**
  *
@@ -629,7 +646,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
  * @todo describe function
  */
 void 
-ESQLAPI_A4GL_copy_double(double *infx,double *a4gl,short *p_indicat,int size,int mode) 
+ESQLAPI_A4GL_copy_double(double *infx,double *a4gl,short *p_indicat,int size,char mode) 
 {
 short indicat=0;
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
@@ -715,6 +732,53 @@ ESQLAPI_retdtime_native(void *vx)
         dttoasc(x,s);
 }
 
+
+void ESQLAPI_A4GL_copy_native_bind(char dir,struct BINDING *a4gl_bind,struct BINDING *native_bind,struct BINDING *native_bind_ind,int n) {
+int a;
+int x;
+int y;
+short *i;
+void *native;
+void *a4gl;
+int size;
+
+for (a=0;a<n;a++) {
+	native=native_bind[a].ptr;
+	a4gl=a4gl_bind[a].ptr;
+
+	if (native_bind_ind) {
+		i=native_bind_ind[a].ptr;
+	} else {
+		i=0;
+	}
+
+	size=a4gl_bind[a].size;
+	x=a4gl_bind[a].start_char_subscript;
+	y=a4gl_bind[a].end_char_subscript;
+
+		//if ((a4gl_bind[a].dtype&DTYPE_MASK)==0) {
+			//printf("%p %p %p %d %c %d %d\n",native,a4gl,i,size,dir,x,y);
+		//}
+	switch (a4gl_bind[a].dtype&DTYPE_MASK) {
+		case 0:  ESQLAPI_A4GL_copy_char(native,a4gl,i,size,dir,x,y); break;
+		case 1:  ESQLAPI_A4GL_copy_smint(native,a4gl,i,size,dir); break;
+		case 2:  ESQLAPI_A4GL_copy_int(native,a4gl,i,size,dir); break;
+		case 3:  ESQLAPI_A4GL_copy_double(native,a4gl,i,size,dir); break;
+		case 4:  ESQLAPI_A4GL_copy_float(native,a4gl,i,size,dir); break;
+		case 5:  ESQLAPI_A4GL_copy_decimal(native,a4gl,i,size,dir); break;
+		case 6:  ESQLAPI_A4GL_copy_int(native,a4gl,i,size,dir); break;
+		case 7:  ESQLAPI_A4GL_copy_date(native,a4gl,i,size,dir); break;
+		case 8:  ESQLAPI_A4GL_copy_money(native,a4gl,i,size,dir); break;
+		case 9:  ESQLAPI_A4GL_copy_int(native,a4gl,i,size,dir); break;
+		case 10: ESQLAPI_A4GL_copy_datetime(native,a4gl,i,size,dir); break;
+		case 11: ESQLAPI_A4GL_copy_blob_byte(native,a4gl,i,size,dir); break;
+		case 12: ESQLAPI_A4GL_copy_blob_text(native,a4gl,i,size,dir); break;
+		case 13: ESQLAPI_A4GL_copy_char(native,a4gl,i,size,dir,x,y); break;
+	}
+}
+
+
+}
 
 /**
  *

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.74 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: report.c,v 1.75 2005-07-19 11:06:28 mikeaubury Exp $
 #
 */
 
@@ -1127,6 +1127,7 @@ A4GL_duplicate_binding (struct BINDING *b, int n)
 
       rbind[a].dtype = b[a].dtype;
       rbind[a].size = b[a].size;
+      rbind[a].libptr = 0;
     }
 
   A4GL_debug ("All done");

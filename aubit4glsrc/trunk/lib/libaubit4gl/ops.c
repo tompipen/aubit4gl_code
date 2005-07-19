@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.84 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: ops.c,v 1.85 2005-07-19 11:06:28 mikeaubury Exp $
 #
 */
 
@@ -296,6 +296,18 @@ static void A4GL_char_char_ops (int op)
   int done1;
   int done2;
 
+int d1;
+int d2;
+int s1;
+int s2;
+char *ptr1;
+char *ptr2;
+
+  A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
+  A4GL_get_top_of_stack (2, &d2, &s2, (void **) &ptr2);
+
+  A4GL_debug(" About to pop '%s'(%s) '%s'(%s)",ptr1,A4GL_isnull(d1,ptr1)?"null":"not null",ptr2,A4GL_isnull(d2,ptr2)?"null":"not null");
+
   b = A4GL_char_pop ();
   a = A4GL_char_pop ();
 
@@ -306,6 +318,7 @@ static void A4GL_char_char_ops (int op)
 		//printf("n2=%d",(A4GL_isnull (DTYPE_CHAR, (void *) &b)));
 		//printf("n3=%d",(A4GL_isnull (DTYPE_CHAR, (char *) a)));
 		//printf("n4=%d",(A4GL_isnull (DTYPE_CHAR, (char *) b)));
+		A4GL_debug("One of them is null...");
 		A4GL_push_null (DTYPE_CHAR, 0); 
 		free(a); free(b); 
 		return; 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.42 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: ui.c,v 1.43 2005-07-19 11:06:28 mikeaubury Exp $
 #
 */
 
@@ -420,6 +420,7 @@ int a=-1;
 
   va_start (ap, itype);
 
+  A4GL_debug("itype=%c",itype);
   if (itype=='I' || itype=='C') {
   	a=A4GL_fgl_getfldbuf_ap (inp,&ap); 
   } else {

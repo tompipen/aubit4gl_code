@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.65 2005-07-15 18:28:07 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.66 2005-07-19 11:06:27 mikeaubury Exp $
 #
 */
 
@@ -316,7 +316,7 @@ A4GL_push_chars (char *p, int dtype, int size)
 {
   char *ptr;
 last_was_empty=0;
-  A4GL_debug ("In A4GL_push_chars - %s\n", A4GL_null_as_null(p));
+  A4GL_debug ("In A4GL_push_chars - '%s'\n", A4GL_null_as_null(p));
   ptr = (char *) A4GL_new_string_set ((int)strlen (p), p);
   //push_param(ptr,(DTYPE_CHAR+DTYPE_MALLOCED+ENCODE_SIZE(size)));
   A4GL_debug ("Using dtype : %d",
@@ -360,14 +360,17 @@ A4GL_push_char (char *p)
   char *ptr;
   last_was_empty=0;
   A4GL_assertion(p==0,"pointer was 0 in A4GL_push_char");
+  A4GL_debug("Poping char...");
   if (p[0] == 0 && p[1] != 0)
     {
+      A4GL_debug("blank first not second ('%s')",p);
       ptr = (char *) A4GL_new_string_set ((int)strlen (p) + 1, p);
       ptr[0] = 0;
       ptr[1] = 1;
     }
   else
     {
+      A4GL_debug("not (blank first not second) '%s'",p);
       ptr = (char *) A4GL_new_string_set ((int)strlen (p), p);
     }
   A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE ((int)strlen (p))));

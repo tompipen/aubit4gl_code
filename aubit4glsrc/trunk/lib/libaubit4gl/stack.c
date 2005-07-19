@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.132 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: stack.c,v 1.133 2005-07-19 11:06:28 mikeaubury Exp $
 #
 */
 
@@ -498,8 +498,7 @@ A4GL_char_pop (void)
   char *s;
   int f;
 
-A4GL_debug_print_stack();
-
+  A4GL_debug("A4GL_char_pop...");
   if (params_cnt <= 0)
     {
       A4GL_debug ("Stack got corrupted");
@@ -545,6 +544,7 @@ A4GL_debug_print_stack();
     }				/* if last entry is not a character string make it one */
   else
     {
+	    A4GL_debug("Looks like it was a string..'%s'",params[params_cnt - 1].ptr);
 	if (params[params_cnt - 1].ptr)
       		params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
     }
@@ -552,7 +552,10 @@ A4GL_debug_print_stack();
 
   a = params[params_cnt - 1].size;
   s = A4GL_new_string (a);
+  A4GL_debug("a=%d\n",a);
+  if (a==0) s[1]=1;
   a = A4GL_pop_param (s, DTYPE_CHAR, a);
+  A4GL_debug("A4GL_char_pop - returning '%s' (%s)",s,A4GL_isnull(DTYPE_CHAR,s)?"null":"not null");
   return s;
 }
 
@@ -570,7 +573,7 @@ A4GL_pop_param (void *p, int d, int size)
   char *ptr;
 
 A4GL_conversion_ok(1);
-//A4GL_debug("pop_param");
+A4GL_debug("pop_param");
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
   params_cnt--;
 
@@ -887,6 +890,8 @@ A4GL_debug("51 Have data");
       function = 0;
 
 
+      if (d==OP_EQUAL) { A4GL_debug("OP_EQUAL"); 
+      }
 
 
 /* 
@@ -907,7 +912,6 @@ A4GL_debug("51 Have data");
 	case OP_EQUAL:
 	case OP_NOT_EQUAL:
 	  function = A4GL_find_op_function (dtype_2, dtype_1, OP_MATH);
-
        if (function==0 && ((dtype_1 & DTYPE_MASK) == DTYPE_CHAR || (dtype_1 & DTYPE_MASK) == DTYPE_VCHAR )) {
 		int dx;
 		int sx;

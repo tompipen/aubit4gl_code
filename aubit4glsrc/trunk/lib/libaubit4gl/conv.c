@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.110 2005-07-15 18:28:07 mikeaubury Exp $
+# $Id: conv.c,v 1.111 2005-07-19 11:06:27 mikeaubury Exp $
 #
 */
 
@@ -1981,7 +1981,7 @@ A4GL_itoc (void *aa, void *zz, int size)
   short local_a;
   int local_a_int;
   char *z;
-  char buff[256];
+  char buff[356];
   local_a=*(short *)aa;
   local_a_int=local_a;
   z = (char *) zz;

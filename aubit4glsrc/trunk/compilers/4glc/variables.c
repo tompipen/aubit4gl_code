@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.61 2005-07-14 14:07:56 mikeaubury Exp $
+# $Id: variables.c,v 1.62 2005-07-19 11:05:33 mikeaubury Exp $
 #
 */
 
@@ -311,7 +311,7 @@ add_linked_columns (struct linked_variable *linked, char *collist_orig)
  * @param function - the calling function
  */
 void
-variable_action (int category, char *name, char *type, char *n, char *function)
+variable_action (int category, char *name, char *type, char *n,  char *function)
 {
   static int record_cnt = 0;
   char scope;

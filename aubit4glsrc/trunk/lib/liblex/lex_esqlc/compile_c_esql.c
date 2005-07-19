@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.121 2005-07-14 11:32:54 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.122 2005-07-19 11:06:29 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.121 2005-07-14 11:32:54 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.122 2005-07-19 11:06:29 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -1947,18 +1947,15 @@ if (strchr(s,'[')==0) return s;
 
 
 
-/*printf("TRANSFORM %s\n",s);*/
       switch (esql_type ())
 	{
 	case 1:
-		/*printf("Informix\n");*/
 		return s; /* Informix style*/
 	  break;
 
 	case 2:
 	case 3:
 	case 4:
-		/*printf("Postgres\n");*/
 		strcpy(buff,s);
 		ptr1=strchr(buff,'[');
 		*ptr1=0;
@@ -1976,7 +1973,6 @@ if (strchr(s,'[')==0) return s;
 		}
 		n=atoi(ptr1);
 		m=atoi(ptr2);
-		/*printf("N=%d m=%d s=%s\n",n,m,s);*/
 		sprintf(buff2,"substr(%s,%d,%d)",buff,n,(m-n)+1);
 		return buff2;
 	  break;
@@ -2153,7 +2149,6 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 		start_bind('i',0);
 		start_bind('o',0);
 		p=print_select_all(sql);
-		/*printf("p=%s",p);*/
 		print_declare("0",p,cname,0,0);
 		print_open_cursor(cname,0);
 
@@ -2180,7 +2175,6 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 if (type=='M') { /* Make the table */
 	char *xptr;
 if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
-	printf("XXXX\n");
 	printc("A4GLSQLCV_add_temp_table(\"%s\");",&reptab[8]);
   	sprintf (buff, "DECLARE GLOBAL TEMPORARY TABLE %s( /* AA */\n",reptab);
 
@@ -2207,7 +2201,6 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 
 if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
         strcat(buff,") ON COMMIT PRESERVE ROWS WITH NORECOVERY");
-	//printf("---> %s\n",reptab[8]);
         if (!A4GL_has_pointer(&reptab[8],LOG_TEMP_TABLE)) { A4GL_add_pointer(&reptab[8],LOG_TEMP_TABLE,(void *)1); }
 
 } else {

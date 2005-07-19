@@ -24,6 +24,7 @@ LIB_PREFIX ESQLAPI_
 #ifdef DEBUG_SPEC
 #undef DEBUG_SPEC
 #endif
+#define structBINDING struct BINDING
 
 * ======================================================================
 * Function calls definitions:
@@ -36,12 +37,13 @@ A4GL_copy_datetime void* infx, void* a4gl,short*  indicat,int size,char mode -> 
 A4GL_copy_interval void* infx, void* a4gl,short*  indicat,int size,char mode -> void
 A4GL_copy_decimal void* infx,void* a4gl,short*  indicat,int size,char dir -> void
 A4GL_copy_float float* infx,float* a4gl,short*  indicat,int size,char mode -> void
-A4GL_copy_double double* infx,double* a4gl,short*  indicat,int size,int mode -> void
+A4GL_copy_double double* infx,double* a4gl,short*  indicat,int size,char mode -> void
 A4GL_copy_int long* infx,long* a4gl,short*  indicat,int size,char mode -> void
 A4GL_copy_money void* infx,void* a4gl,short*  indicat,int size,char dir -> void
 A4GL_copy_smint short* infx,short* a4gl,short*  indicat,int size,char mode -> void
 A4GL_connect_db char* dbname -> void
 A4GL_db_connected char* dbname -> void*
+A4GL_copy_native_bind char dir structBINDING* a4glbind structBINDING* nativebind structBINDING* indbind int n -> void
 
 popdec_native void* vx -> void
 retdec_native void* vx -> void

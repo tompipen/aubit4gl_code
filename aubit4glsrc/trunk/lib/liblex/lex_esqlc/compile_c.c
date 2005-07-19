@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.238 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: compile_c.c,v 1.239 2005-07-19 11:06:29 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.238 2005-07-15 18:28:08 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.239 2005-07-19 11:06:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4384,7 +4384,6 @@ if (strncmp(fmt,"A4GL_open_gui_form",strlen("A4GL_open_gui_form") )==0) {
 
 
 	if (A4GL_isyes(acl_getenv("NOCLOBBER")) && 0) {
-		printf("Hello World\n");
         	if (scan_variable (a1) == -1) {
 	  		set_yytext(a1);
 	  		a4gl_yyerror ("Form variable not defined");
@@ -5339,9 +5338,7 @@ LEXLIB_A4GL_get_push_literal (char type, char *value)
   strcpy (buff, "SOME ERROR");
   if (type == 'D')		/* Double */
     {
-	//printf("-->%s\n",value);
         sprintf (buff, "A4GL_push_double_str(\"%s\");\n", value);
-	//printf("=%s\n",buff);
 	
     }
 

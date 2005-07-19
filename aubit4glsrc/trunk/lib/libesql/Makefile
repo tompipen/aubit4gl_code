@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.28 2005-03-07 14:53:05 mikeaubury Exp $
+# $Id: Makefile,v 1.29 2005-07-19 11:06:29 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -112,7 +112,7 @@ all: ${ALL}
 libESQL_INFORMIX${SO_EXT}: ${LIBROOT}/libESQL_INFORMIX${SO_EXT}
 ${LIBROOT}/libESQL_INFORMIX${SO_EXT}: helper_funcs_informix.o
 ifneq "${COMSPEC}" ""
-	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $^ ${IFX_WIN_LIBS} ${LIBAUBIT4GL} -o $@
+	$(CC) $(LDFLAGS) -g -mms-bitfields -shared -Wl,--export-all-symbols $^ ${IFX_WIN_LIBS} ${LIBAUBIT4GL} -o $@
 else
 	${IFMX_ESQLC}  ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} 
 #Solaris:
