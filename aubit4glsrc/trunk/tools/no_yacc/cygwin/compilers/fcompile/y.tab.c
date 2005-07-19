@@ -2583,7 +2583,7 @@ if (A4GLF_open_db(yyvsp[0].str)) {
 
   case 10:
 #line 137 "screen.yacc"
-    {sprintf(yyval.str,"%s@%s",yyvsp[-2].str,yyvsp[0].str);}
+    {SPRINTF2(yyval.str,"%s@%s",yyvsp[-2].str,yyvsp[0].str);}
     break;
 
   case 13:
