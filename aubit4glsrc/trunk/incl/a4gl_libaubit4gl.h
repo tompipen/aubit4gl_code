@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.180 2005-07-15 18:28:07 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.181 2005-07-19 19:16:34 mikeaubury Exp $
 #
 */
 
@@ -2046,6 +2046,13 @@ int A4GL_fgl_infield (void *inp,char itype,...);
 int a4gl_toupper(int n);
 int a4gl_tolower(int n);
 
+
+#ifndef NOSTRCPYMAP
+#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,(long)sizeof(d))
+#define strcat(d,s) A4GL_strcat(d,s,__FILE__,__LINE__,(long)sizeof(d))
+#endif
+
+char *A4GL_strcat  (char *d,char *s,char *fname,int l,int sdest);
 char *A4GL_strcpy  (char *d,char *s,char *fname,int l,int sdest);
 int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) ;
 #define SPRINTF0(s,f)                        	A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f)

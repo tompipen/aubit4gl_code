@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.90 2005-07-14 14:07:55 mikeaubury Exp $
+# $Id: compile.c,v 1.91 2005-07-19 19:12:29 mikeaubury Exp $
 #*/
 
 /**
@@ -1132,7 +1132,7 @@ char fgl_file[128];			/*The 4gl file*/
 char a_part[128], b_part[128];	//for bname()
 char *ptr;
 static FILE *filep = 0;
-char ext[8];
+char ext[256];
 static char local_pass_options[1024] = "";
 
 	/* store the directory part of file name, if any, so we can use it for GLOBALS

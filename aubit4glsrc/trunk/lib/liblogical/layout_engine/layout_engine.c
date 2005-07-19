@@ -3,6 +3,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 //#define NOUNIXHEADERS
+#define NOSTRCPYMAP
 #include "a4gl_libaubit4gl.h"
 #include "../common/a4gl_lle.h"
 #include "API_layout.h"
@@ -477,3 +478,6 @@ acl_realloc_full (void *a, long b, char *r, char *f, int l)
     }
   return p;
 }
+
+
+

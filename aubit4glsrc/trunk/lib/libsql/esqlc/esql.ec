@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.144 2005-07-15 08:11:07 mikeaubury Exp $
+# $Id: esql.ec,v 1.145 2005-07-19 19:16:39 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.144 2005-07-15 08:11:07 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.145 2005-07-19 19:16:39 mikeaubury Exp $";
 #endif
 
 
@@ -243,6 +243,12 @@ esqlWarningHandler (void)
 }
 
 
+
+void strmaxcpy (char *dest, char *src, int atmost) {
+	strncpy(dest,src,atmost);
+	dest[atmost]=atmost;
+	A4GL_pad_string(dest,atmost);
+}
 
 
 void A4GL_sql_exitwith(char *s) {
@@ -4167,6 +4173,7 @@ A4GLSQLLIB_A4GLSQL_close_cursor (char *currname)
 
 #define COLUMN_SIZE 0
 #define DATA_TYPE   1
+#define COLUMN_DESCRIPTION  2
 
 /**
  * Fill the array for columns.
@@ -4212,9 +4219,15 @@ fillColumnsArray (char *tableName, int max, char *colArray,
 	    case COLUMN_SIZE:
 	      sprintf (&array2[i * (sizeArray2 + 1)], "%d", size);
 	      break;
+
 	    case DATA_TYPE:
 	      sprintf (&array2[i * (sizeArray2 + 1)], "%d", dtype);
 	      break;
+
+	    case COLUMN_DESCRIPTION:
+	      sprintf (&array2[i * (sizeArray2 + 1)], "%d(%d)", dtype,size);
+	      break;
+
 
 	    default:
 	      A4GL_exitwith ("Could not fill_array - Wrong mode asked!");
@@ -4319,8 +4332,23 @@ A4GLSQLLIB_A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int s
 
 
   if (strcmp (service, "TABLES") == 0) {
-	A4GL_exitwith ("Could not fill_array - TABLES service not implemented !");
-	return 0;
+	int a;
+	$int mintid;
+	$char tabname[65];
+	int i;
+	if (mode==1) mintid=99; else mintid=0;
+	$declare c_get_tables cursor for select tabname from systables where tabid>$mintid order by tabname;
+	$open c_get_tables;
+	a=0;
+	while (a<mx) {
+		$fetch c_get_tables into $tabname;
+		if (sqlca.sqlcode!=0) break;
+		A4GL_trim(tabname);
+	        if (arr1 != 0) strmaxcpy (&arr1[a * (szarr1 + 1)], tabname, szarr1);
+      		if (arr2 != 0) strmaxcpy (&arr2[a * (szarr2 + 1)], tabname, szarr2);
+		a++;
+	}
+	return a;
   }
 
 
@@ -4363,10 +4391,34 @@ A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (int a)
  * @return
  */
 long
-A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
-{
-  printf ("Describe stmt not implemented...\n");
-  A4GL_assertion(1,"Describe stmt not implemented...");
+A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type) {
+$struct sqlda *udesc;
+$char *sql_stmt;
+$struct sqlvar_struct *col;
+struct s_sid *sid;
+int i;
+
+  sid = A4GLSQL_find_prepare (stmt);	// ,0
+  
+  if(sid==0)     { A4GL_exitwith ("Statement could not be found"); return 0; }
+
+
+  sql_stmt=sid->statementName;
+  
+  A4GL_debug("Looking for statement : %s\n",stmt);
+  EXEC SQL DESCRIBE $sql_stmt INTO udesc;
+  if (sqlca.sqlcode==0) {
+
+  if (type==5) { return udesc->sqld; }
+  if (type==6) { 0; } // How many rows ?
+
+  if (type==0) { return udesc->sqlvar[colno-1].sqltype;}
+  if (type==1) { return (long)udesc->sqlvar[colno-1].sqlname;}
+  if (type==2) { return udesc->sqlvar[colno-1].sqllen;}
+  if (type==3) { return udesc->sqlvar[colno-1].sqllen;}
+  if (type==4) { return (long)udesc->sqlvar[colno-1].sqlind;}
+}
+
   return 0;
 }
 
@@ -4737,8 +4789,7 @@ A4GL_debug("unload...");
    * Allocate pointer array to hold the fetch array pointers. 
    */
 
-  for (col = udesc->sqlvar, i = 0; i < udesc->sqld;
-       col++, i++)
+  for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
     {
       switch (col->sqltype & SQLTYPE)
 	{

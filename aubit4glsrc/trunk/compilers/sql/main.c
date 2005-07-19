@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.2 2005-03-25 12:48:31 afalout Exp $
+# $Id: main.c,v 1.3 2005-07-19 19:16:27 mikeaubury Exp $
 #
 */
 
@@ -41,6 +41,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>               /* exit() */
+#include <stdarg.h>
 #ifdef NDEF
 	#include "ilist.h"
 	#include "y.tab.h"
@@ -71,5 +72,28 @@ char *snew;
 	snew=A4GLSQLCV_convert_file("POSTGRES",argv[1]);
 	printf("%s\n",snew);
 	return 0;
+}
+
+
+char *A4GL_strcpy  (char *d,char *s,char *fname,int l,int sdest) {
+		strcpy(s,d);
+}
+char *A4GL_strcat  (char *d,char *s,char *fname,int l,int sdest) {
+		strcat(s,d);
+}
+
+
+int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) {
+char buff[256];
+int x;
+char *c;
+va_list args;
+char xbuff[10000];
+
+
+              va_start (args, fmt);
+              x=vsprintf(xbuff,fmt,args);
+              strcpy(dest,xbuff);
+        return x;
 }
 

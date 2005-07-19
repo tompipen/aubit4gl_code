@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.37 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: pointers.c,v 1.38 2005-07-19 19:16:37 mikeaubury Exp $
 #
 */
 
@@ -59,7 +59,11 @@
 =====================================================================
 */
 
+
+
+#define NOSTRCPYMAP /* Dont worry about strcpy/strcat checking */
 #include "a4gl_libaubit4gl_int.h"
+
 
 /*
 =====================================================================

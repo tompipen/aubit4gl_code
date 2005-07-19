@@ -124,8 +124,21 @@ return lv_err2
 end function
 
 
-function load_info_columns()
-error "Not Implemented Yet load_info_columns"
+function load_info_columns(lv_tabname)
+define lv_tabname char(18)
+define lv_arr array[1000] of char(18)
+define lv_a integer
+define lv_cnt integer
+define col_list array [1024] of char (18);
+define col_desc array [1024] of char (18);
+code
+      lv_cnt = A4GLSQL_fill_array (1024, (char *) col_list, 18, col_desc, 18, "COLUMNS", 2, lv_tabname);
+endcode
+for lv_a=1 to lv_cnt
+	display col_list[lv_a]," ",col_desc[lv_a]
+end for
+sleep 10
+
 end function
 
 function load_info_indexes()
@@ -141,15 +154,118 @@ error "Not Implemented Yet load_info_status"
 end function
 
 function load_info_tables()
-error "Not Implemented Yet load_info_tables"
+define lv_tabname char(18)
+define lv_arr array[1000] of char(18)
+define lv_num_tables integer
+define lv_cnt integer
+code
+lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,18,0,0,"TABLES",1,0);
+endcode
+
+call add_to_display_file("TableName")
+call add_to_display_file(" ")
+
+for lv_cnt=1 to lv_num_tables
+	call add_to_display_file(lv_arr[lv_cnt])
+end for
+
+return 1
 end function
+
+
 
 function table_info()
-error "Not Implemented Yet table_info"
+define lv_tabname char(255)
+define lv_txt char(128)
+define lv_cont integer
+        if not has_db() then
+                call select_db()
+        end if
+
+
+        if not has_db() then
+                return
+        end if
+
+
+        while true
+                call table_select("INFO FOR TABLE >>") returning lv_tabname
+
+                if lv_tabname is not null and lv_tabname not matches " " THEN
+                else
+                        return
+                end if
+
+                let lv_cont=0
+
+                CALL set_exec_mode(0)
+                let lv_txt="INFO - ",lv_tabname
+                menu lv_txt
+                        command "Columns" "List columns for the table"
+                                CALL open_display_file()
+                                if load_info_columns(lv_tabname) then
+                                        call do_paginate()
+                                end if
+
+                        command "Table" "Change table"
+                                let lv_cont=1
+                                exit menu
+
+
+                        command "Exit" "Exit menu"
+                                let lv_cont=0
+                                exit menu
+
+                end menu
+        if lv_cont=0 then
+                exit while
+        end if
+        end while
+
+
 end function
 
-function table_select()
-error "Not Implemented Yet table_select"
+function table_select(lv_prompt)
+define lv_prompt char(64)
+define lv_tabname char(255)
+define lv_cnt integer
+define lv_arr array[1000] of char(18)
+define lv_num_tables integer
+define lv_found integer
+code
+lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,18,0,0,"TABLES",1,0);
+endcode
+
+
+for lv_cnt=1 to lv_num_tables
+        call set_pick(lv_cnt,lv_arr[lv_cnt])
+end for
+call set_pick_cnt(lv_cnt-1)
+
+while true
+	call prompt_pick(lv_prompt,"") returning lv_tabname
+
+	if lv_tabname is not null then
+		let lv_found=0
+		for lv_cnt=1 to lv_num_tables
+			if lv_arr[lv_cnt]=lv_tabname then
+				let lv_found=1
+				exit for
+			end if
+		end for
+	
+        	if lv_found=0 then
+                	error "Table not found"
+		else
+			exit while
+        	end if
+	else
+        	exit while
+	end if
+end while
+
+return lv_tabname
+
 end function
 
 
@@ -214,6 +330,7 @@ asql_explain(struct element *e) {
 
 
 int asql_load_data(struct element *e) {
+	A4GL_assertion("Load data not implemented");
 }
 
 
@@ -343,17 +460,21 @@ printField (FILE * outputFile, int idx, char *descName) {
 	} else {
 		switch (gen_obind[idx-1].dtype) {
 			case DTYPE_CHAR: strcpy(buff,gen_obind[idx-1].ptr); A4GL_trim(buff); break;
+			case DTYPE_SERIAL:
 			case DTYPE_INT: if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD) { sprintf (buff, "%ld", *(long *)gen_obind[idx-1].ptr); } else { sprintf (buff, "%*ld", columnWidths[idx - 1], *(long *)gen_obind[idx-1].ptr); } break;
 			case DTYPE_SMINT: if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD) { sprintf (buff, "%d", *(short *)gen_obind[idx-1].ptr); } else { sprintf (buff, "%*d", columnWidths[idx - 1], *(short *)gen_obind[idx-1].ptr); } break;
 			case DTYPE_SMFLOAT: if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD) { sprintf (buff, "%f", *(float *)gen_obind[idx-1].ptr); } else { sprintf (buff, "%*f", columnWidths[idx - 1], *(float *)gen_obind[idx-1].ptr); } break;
 			case DTYPE_FLOAT: if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD) { sprintf (buff, "%lf", *(double *)gen_obind[idx-1].ptr); } else { sprintf (buff, "%*lf", columnWidths[idx - 1], *(double *)gen_obind[idx-1].ptr); } break;
 			case DTYPE_DATE: 
-          			char_var = (char *) acl_malloc2 (sizeof (char) * 20);
-          			A4GL_dtos (gen_obind_copy[idx-1].ptr, char_var, 19);
-          			A4GL_trim (char_var);
-          			sprintf (buff, "%s", char_var);
-          			free (char_var);
+				{
+				char dt_c[200];
+				long x;
+				x=*(long *)gen_obind[idx-1].ptr;
+          			A4GL_dtos (&x, dt_c, 19);
+          			A4GL_trim (dt_c);
+          			sprintf (buff, "%s",dt_c);
 				break;
+				}
 
 			default :
 				sprintf(buff,">%d<",gen_obind[idx-1].dtype);
@@ -364,8 +485,10 @@ printField (FILE * outputFile, int idx, char *descName) {
 
 	}
 
-  if (display_mode == DISPLAY_DOWN)
-    {
+
+  switch (display_mode) {
+
+ case DISPLAY_DOWN:
       sprintf (fmt, "%%-%d.%ds %%s\n", colnamesize + 1, colnamesize + 1);
       if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
         {
@@ -375,27 +498,27 @@ printField (FILE * outputFile, int idx, char *descName) {
         {
           fprintf (exec_out, fmt, columnNames[idx - 1], buff);
         }
-      outlines++;
-    }
+      outlines++; break;
 
-  if (display_mode == DISPLAY_ACROSS)
-    {
+  case DISPLAY_ACROSS:
       if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
         {
 
           A4GL_debug ("EXECO '%s' '%20s' '%-20s'", buff, buff, buff);
           fprintf (outputFile, "%-*s", columnWidths[idx - 1], buff);
         }
-      else
+      else {
         fprintf (exec_out, "%-*s", columnWidths[idx - 1], buff);
-    }
+	}
 
-  if (display_mode == DISPLAY_UNLOAD)
-    {
+
+	break;
+
+  case DISPLAY_UNLOAD:
       fprintf (unloadFile, "%s", escape_delim (buff));
       fprintf (unloadFile, "%s", delim);
-    }
-
+	break;
+	}
 }
 
 static int
@@ -549,9 +672,9 @@ int execute_sql_fetch(int *raffected) {
 			colname=A4GLSQL_describe_stmt ("generic_stexec",a+1,1);
 			coltype=A4GLSQL_describe_stmt ("generic_stexec",a+1,0);
 			colsize=A4GLSQL_describe_stmt ("generic_stexec",a+1,3);
-			if (coltype==DTYPE_DATE) {
-				coltype=DTYPE_CHAR; colsize=12;
-			}
+
+			//if (coltype==DTYPE_DATE) { coltype=DTYPE_CHAR; colsize=12; }
+
 			gen_obind[a].dtype=coltype;
 			gen_obind[a].size=colsize;
 			gen_obind[a].start_char_subscript=0;
@@ -573,6 +696,7 @@ int execute_sql_fetch(int *raffected) {
 
 	A4GL_debug("describe returned numberOfColumns as %d %d\n",numberOfColumns);
 	A4GLSQL_fetch_cursor("generic_crexec", 2, 1,numberOfColumns,gen_obind);
+
   if (a4gl_sqlca.sqlcode == 100)
     {
       if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)

@@ -6,6 +6,7 @@
 #define _NO_WINDOWS_H_
 
 /* FIXME: this should be a4gl_xgen_int.h */
+#define NOSTRCPYMAP
 #include "a4gl_libaubit4gl.h"
 
 #define YYDEBUG 1

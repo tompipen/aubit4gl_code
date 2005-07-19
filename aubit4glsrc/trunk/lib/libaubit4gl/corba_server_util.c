@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.14 2005-07-19 11:06:28 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.15 2005-07-19 19:16:37 mikeaubury Exp $
 #
 */
 
@@ -254,6 +254,8 @@ int dying=0;
 =====================================================================
 */
 
+
+
 //--- from funcs_d.c
 #ifdef strcpy
 #undef strcpy
@@ -276,6 +278,60 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 		}
 	}
 	strcpy(dest,src);
+
+
+#ifdef DEBUG
+{
+// This just adds some debugging stuff - but this 
+// isn't applicable when called from the routines in dmy.c 
+// as they put some funny characters in the string as placeholders
+//
+	if (strcmp(f,"dmy.c")==0) return dest;
+
+
+// Quick - is it big ?
+	if (lsrc>255) {
+		char buff[3000];
+		strncpy(buff,src,2999);
+		buff[2999]=0;
+		A4GL_debug("Long string : %s\n",buff);
+	}
+
+// Does it look Good ?
+{
+	int a;
+	for (a=0;a<lsrc;a++) {
+		if (!isprint(src[a])&&src[a]!='\n'&&!ispunct(src[a])) {
+			A4GL_debug("Possible bad char @%d for string '%s' (%d)\n",a,src,strlen(src));
+		}
+	}
+}
+}
+#endif
+	
+	return dest;
+}
+
+#ifdef strcat
+#undef strcat
+#endif
+char *A4GL_strcat(char *dest,char *src,char *f,int l,int sd) {
+  	int lsrc;
+	char buff[256];
+
+	if (src==0) { SPRINTF2(buff,"No source for strcat @ %s line %d",f,l); A4GL_assertion(1,buff); }
+	if (dest==0) { SPRINTF2(buff,"No destination for strcat @ %s line %d",f,l); A4GL_assertion(1,buff); }
+
+	lsrc=strlen(src)+strlen(dest);
+
+	if (sd!=sizeof(char *)) {
+		if (lsrc>=sd) {
+			A4GL_debug("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
+			SPRINTF2(buff,"String overflow detected @ %s line %d",f,l);
+			A4GL_assertion(1,buff);
+		}
+	}
+	strcat(dest,src);
 
 
 #ifdef DEBUG
@@ -1328,7 +1384,20 @@ etk_name_service_resolve (CosNaming_NamingContext  name_service,
 	
 	return retval;
 }
+
+
+
+
+
+
+
+
+
+
+
 //------------ end utility functions from exaples-toolkit.c --------
+
+
 
 #endif //__CAPI__
 
