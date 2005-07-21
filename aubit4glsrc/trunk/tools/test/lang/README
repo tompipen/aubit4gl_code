@@ -70,7 +70,7 @@ Bonjour
 Monde
 
 
-Compile up the help messages (using mkmess) and then you good to go - just use the options language file to specify which of the help files to use...
+Compile up the help messages (using amkmessage) and then you good to go - just use the options language file to specify which of the help files to use...
 
 
 

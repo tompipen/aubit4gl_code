@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.44 2005-07-14 11:32:53 mikeaubury Exp $
+# $Id: readforms.c,v 1.45 2005-07-21 08:17:38 mikeaubury Exp $
 #*/
 
 /**
@@ -171,7 +171,7 @@ ret_string (char *str)
  *
  */
 void *
-A4GL_read_form_internal (char *fname, char *formname)
+A4GLFORM_A4GL_read_form_internal (char *fname, char *formname)
 {
   A4GL_debug ("via A4GL_read_form in lib");
   return real_read_form (fname, formname);
@@ -304,7 +304,7 @@ real_read_form (char *fname, char *formname)
  * Called from lib/libtui/newpanels.c so it should be in API_form
  */
 void
-A4GL_set_default_form (void *form)
+A4GLFORM_A4GL_set_default_form (void *form)
 {
   real_set_default_form (form);
 }
@@ -394,7 +394,7 @@ real_comments (struct struct_scr_field *fprop)
  *
  */
 void
-A4GL_dump_srec (void *fd)
+A4GLFORM_A4GL_dump_srec (void *fd)
 {
   real_dump_srec (fd);
 }
@@ -422,45 +422,12 @@ real_dump_srec (struct s_form_dets *fd)
     }
 }
 
-/** This should be moved to lib tui
- *
- *
- */
-/* moved to others.c
-struct struct_screen_record *
-A4GL_get_srec (char *name)
-{
-  int a;
-  struct s_form_dets *form;
-  A4GL_debug ("Get_srec");
-  form = A4GL_get_curr_form ();
-  A4GL_debug ("found form");
-
-  A4GL_debug ("Got form %p", form);
-
-  if (form == 0)
-    {
-      A4GL_debug ("No form...");
-      return (struct struct_screen_record *) 0;
-    }
-
-  debug("fileform=%p name=%p(%s)",form->fileform,name,name);
-
-  a = A4GL_find_srec (form->fileform, name);
-  A4GL_debug ("Got %d", a);
-  if (a == -1)
-    return (struct struct_screen_record *) 0;
-  else
-    return (struct struct_screen_record *) &form->fileform->records.
-      records_val[a];
-}
-*/
 
 /**
  * called from lib/libtui/ioform.c so it should be in API_form
  */
 int
-A4GL_check_field_for_include (char *s, char *inc, int dtype)
+A4GLFORM_A4GL_check_field_for_include (char *s, char *inc, int dtype)
 {
   static char buff[10024];
   char *ptr;
@@ -662,7 +629,7 @@ A4GL_strip_quotes (char *s)
  *
  */
 int
-A4GL_has_bool_attribute (void *f, int bool)
+A4GLFORM_A4GL_has_bool_attribute (void *f, int bool)
 {
   A4GL_debug ("via A4GL_has_bool_attribute in lib");
   return real_has_bool_attribute (f, bool);

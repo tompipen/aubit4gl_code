@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.25 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: extfile.c,v 1.26 2005-07-21 08:17:36 mikeaubury Exp $
 #
 */
 
@@ -203,34 +203,35 @@ aclfgl_a4gl_show_help (int a)
 char *
 A4GL_get_translated_id (char *no_c)
 {
-  short pos;
+  short mno;
   int cnt;
-  short num;
-  short *ptr;
+  //short num;
+  //short *ptr;
   int no;
-  char *cptr;
+  unsigned char *cptr;
+  long len;
+  long offset;
   max_width = 0;
   cnt = 0;
   no = atoi (no_c);
-
+  A4GL_debug("no=%d (from %s)",no,no_c);
   cptr = language_file_contents;
   if (cptr == 0)
     {
       A4GL_exitwith ("No language file");
       return "<unknown>";
     }
+  cptr+=4;
 
-
-  ptr = (short *) language_file_contents;
+  //ptr = (short *) (language_file_contents);
 
   while (1)
     {
-      pos = *(short *) cptr;
-      A4GL_debug ("pos=%d", pos);
+      mno =  cptr[0] * 256 + cptr[1];
+      A4GL_debug ("pos=%d (%x)", mno,mno);
 
-      cptr += 2;
 
-      if (pos == -1 || pos > no)
+      if (mno == -1 || mno > no)
 	{
 	  A4GL_debug ("Out of range 1");
 	  A4GL_exitwith ("message not found");
@@ -238,17 +239,22 @@ A4GL_get_translated_id (char *no_c)
 	  break;
 	}
 
-      num = *(short *) cptr;
-      cptr += 2;
-      A4GL_debug ("num=%d", num);
+	len = cptr[2] * 256 + cptr[3];
 
-      if (pos == no)
+	offset = cptr[4] * 16777216 // 256 ^ 3
+	        + cptr[5] * 65536   // 256 ^ 2
+		        + cptr[6] * 256
+			 +cptr[7];
+
+
+      if (mno == no)
 	{
-	  cptr = language_file_contents + num + 3;
+	  cptr = language_file_contents + offset ;
 	  A4GL_debug ("returning %p", cptr);
 	  return cptr;
 
 	}
+      cptr += 8;
     }
   A4GL_exitwith ("Could not read lang text");
   return "<unknown>";

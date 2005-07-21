@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: writemsg.c,v 1.4 2005-03-09 15:14:49 mikeaubury Exp $
+# $Id: writemsg.c,v 1.5 2005-07-21 08:17:38 mikeaubury Exp $
 #*/
 
 /**
@@ -71,14 +71,14 @@
  *
  * @param offset
  * @param msg input file handle - source code with help messages (.msg)
- * @param tmp temporary file handle
+ * @param tmpfile temporary file handle
  * @param hlp output file handle
  */
 int
-A4GL_writemsg (int offset, FILE * msg, FILE * tmp, FILE * hlp)
+A4GL_writemsg (int offset, FILE * msg, FILE * tmpfile, FILE * hlp)
 {
   int flg = 0;
-  char tmpbuf[80];
+  char tmpbuf[100];
   int offset2;
   int num;
 
@@ -94,7 +94,7 @@ A4GL_writemsg (int offset, FILE * msg, FILE * tmp, FILE * hlp)
 	    {
 	      if (tmpbuf[strlen (tmpbuf)] != '\n' && tmpbuf[0] != '#')
 		{
-		  fprintf (tmp, "\n");
+		  fprintf (tmpfile, "\n");
 		}
 	      offset++;
 	    }
@@ -102,16 +102,22 @@ A4GL_writemsg (int offset, FILE * msg, FILE * tmp, FILE * hlp)
 	}
       tmpbuf[0] = 0;
       fgets (tmpbuf, 80, msg);
-      if (feof (msg))
+      if (feof (msg)) {
+	      A4GL_debug("End of file");
 	break;
+      }
+
+      A4GL_debug("fgets returns %s",msg);
       if (tmpbuf[0] == '.')
 	{
+	  A4GL_debug("tmpbuf[0] =='.' flg=%d",flg);
 	  if (flg == 1)
 	    {
-	      fprintf (tmp, "%c", 127);
+	      fprintf (tmpfile, "%c", 127);
 	    }
 	  offset++;
 	  num = atoi (&tmpbuf[1]);
+	  A4GL_debug("Writing %d %d to hlp",num,offset);
 	  fwrite (&num, 2, 1, hlp);
 	  fwrite (&offset, 2, 1, hlp);
 	  flg = 1;
@@ -119,15 +125,17 @@ A4GL_writemsg (int offset, FILE * msg, FILE * tmp, FILE * hlp)
 	}
       if (flg == 1)
 	{
-	  fprintf (tmp, "%s", tmpbuf);
+		A4GL_debug("Writing %s to tmpfile",tmpbuf);
+	  fprintf (tmpfile, "%s", tmpbuf);
 	  offset = offset + strlen (tmpbuf);
 	}
     }
 
   num = -1;
+  A4GL_debug("Writing %d %d to hlp",num,offset);
   fwrite (&num, 2, 1, hlp);
   fwrite (&offset, 2, 1, hlp);
-  fclose (tmp);
+  fclose (tmpfile);
 
 
   return (0);

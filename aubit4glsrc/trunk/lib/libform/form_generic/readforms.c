@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.30 2005-03-31 13:35:49 afalout Exp $
+# $Id: readforms.c,v 1.31 2005-07-21 08:17:37 mikeaubury Exp $
 #*/
 
 /**
@@ -129,7 +129,7 @@ static void real_dump_srec (struct s_form_dets *fd);
  *
  */
 void *
-A4GL_read_form_internal (char *fname, char *formname)
+A4GLFORM_A4GL_read_form_internal (char *fname, char *formname)
 {
   A4GL_debug ("via A4GL_read_form in lib");
   return real_read_form (fname, formname);
@@ -218,7 +218,7 @@ return 0; // Should never get here...
  * Called from lib/libtui/newpanels.c so it should be in API_form
  */
 void
-A4GL_set_default_form (void *form)
+A4GLFORM_A4GL_set_default_form (void *form)
 {
   real_set_default_form (form);
 }
@@ -264,7 +264,7 @@ read_attributes (struct s_form_dets *f)
  *
  */
 void
-A4GL_dump_srec (void *fd)
+A4GLFORM_A4GL_dump_srec (void *fd)
 {
   real_dump_srec (fd);
 }
@@ -307,7 +307,7 @@ real_dump_srec (struct s_form_dets *fd)
  * called from lib/libtui/ioform.c so it should be in API_form
  */
 int
-A4GL_check_field_for_include (char *s, char *inc, int dtype)
+A4GLFORM_A4GL_check_field_for_include (char *s, char *inc, int dtype)
 {
   static char buff[10024];
   char *ptr;
@@ -471,7 +471,7 @@ include_range_check (char *ss, char *ptr, int dtype)
  *
  */
 int
-A4GL_has_bool_attribute (void *f, int boolval)
+A4GLFORM_A4GL_has_bool_attribute (void *f, int boolval)
 {
   A4GL_debug ("via A4GL_has_bool_attribute in lib");
   return real_has_bool_attribute (f, boolval);

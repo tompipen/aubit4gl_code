@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.20 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: translate.c,v 1.21 2005-07-21 08:17:36 mikeaubury Exp $
 #
 */
 
@@ -169,9 +169,22 @@ A4GL_make_trans_list (void)
 	{
 	  if (buff[a] == ':' && buff[a + 1] == '=' && buff[a - 1] != '/')
 	    {
+	      char *p;
+	      int b;
+	      int c;
 	      ptr2 = &buff[a + 2];
+	      p=malloc(strlen(ptr2)*2+10); // Allow plenty of space..
 	      buff[a] = 0;
-	      A4GL_add_translate (1, buff, ptr2, 0);
+	      c=0;
+	      p[c++]='"';
+	      for (b=0;ptr2[b];b++) {
+		      if (ptr2[b]!='"') p[c++]=ptr2[b];
+		      else {p[c++]='\\'; p[c++]=ptr2[b];}
+	      }
+	      p[c++]='"';
+	      p[c]=0;
+	      A4GL_add_translate (1, buff, p, 0);
+	      free(p);
 	    }
 
 	  if (buff[a] == ':' && buff[a + 1] == '>' && buff[a - 1] != '/')
@@ -197,6 +210,10 @@ A4GL_dumpstring (char *s, long n, char *fname)
   static FILE *f;
   static int ident = 0;
   int a;
+
+  if (ident==0 && strlen (acl_getenv ("DUMPSTRINGS_START"))) {
+	  ident=atoi(acl_getenv ("DUMPSTRINGS_START"));
+  }
 
   if (strlen (acl_getenv ("DUMPSTRINGS")))
     {
@@ -271,13 +288,13 @@ A4GL_add_translate (int mode, char *from, char *to, int quote)
       if (quote == 0)
 	{
 	  /* formwrite2.c: */
-	  //ORIGINAL: sprintf(buff,"get_translated_id:%s",to);
-	  SPRINTF1 (buff, "get_translated_id(\"%s\")", to);
+	  //ORIGINAL: sprintf(buff,"A4GL_get_translated_id:%s",to);
+	  SPRINTF1 (buff, "A4GL_get_translated_id(\"%s\")", to);
 	}
       else
 	{
 	  /* lexer.c: NO LONGER THERE !!?? */
-	  SPRINTF1 (buff, "get_translated_id(\"%s\")", to);
+	  SPRINTF1 (buff, "A4GL_get_translated_id(\"%s\")", to);
 	}
 
       translate_list[translate_list_cnt - 1].identifier = acl_strdup (buff);

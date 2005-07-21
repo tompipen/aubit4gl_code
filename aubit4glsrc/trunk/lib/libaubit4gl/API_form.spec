@@ -13,7 +13,7 @@ VARIABLE A4GL_FORMTYPE
 * Add prefix for created API punctions:
 *API_PREFIX FORMAPI_
 * Add prefix for existing library functions:
-*LIB_PREFIX FORMLIB_
+LIB_PREFIX A4GLFORM_
 * Name of the header file to be referenced with #include
 *HEADER_FILE API_form.h
 
@@ -84,13 +84,6 @@ A4GL_add_srec -> void
 /* void set_dim_srec (char *s, int a) */
 A4GL_set_dim_srec char* s,int a -> void
 
-/**
- * Lower all the caracters of a string
- *
- * @param s The string to be lowered
- */
-/* void make_downshift(char *s) */
-A4GL_make_downshift char* s -> void
 
 /**
  * Makes some validations and assigns default values on a new field description

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkmess.c,v 1.13 2005-03-09 15:14:30 mikeaubury Exp $
+# $Id: mkmess.c,v 1.14 2005-07-21 08:13:23 mikeaubury Exp $
 #*/
 
 /**
@@ -207,9 +207,9 @@ main (int argc, char *argv[])
 
 
   retcode = A4GL_writemsg (offset, msg, tmp, hlp);
-
-  /* copy content of tmp file to actual output file, lien by line */
-  /* FIXME: why are we not writing directly to output file? */
+  fclose(tmp);
+  /* append content of tmp file to actual output file, lien by line */
+  /* this is because the help file will currently only contain the header... */
 
   tmp = fopen (fname_tmp, "rb");
   while (1 == 1)
@@ -234,73 +234,6 @@ main (int argc, char *argv[])
 }
 
 
-#ifdef _MOVED_TO_WRITEMSG_C_
-
-int
-A4GL_writemsg (int offset2)
-{
-  int flg = 0;
-
-  rewind (msg);
-  tmpbuf[0] = 0;
-
-  while (1)
-    {
-      if (feof (msg))
-	{
-	  if (flg == 1)
-	    {
-	      if (tmpbuf[strlen (tmpbuf)] != '\n' && tmpbuf[0] != '#')
-		{
-		  fprintf (tmp, "\n");
-		}
-	      offset++;
-	    }
-	  break;
-	}
-      tmpbuf[0] = 0;
-      fgets (tmpbuf, 80, msg);
-      if (feof (msg))
-	break;
-      if (tmpbuf[0] == '.')
-	{
-	  if (flg == 1)
-	    {
-	      fprintf (tmp, "%c", 127);
-	    }
-	  offset++;
-	  num = atoi (&tmpbuf[1]);
-	  fwrite (&num, 2, 1, hlp);
-	  fwrite (&offset, 2, 1, hlp);
-	  flg = 1;
-	  continue;
-	}
-      if (flg == 1)
-	{
-	  fprintf (tmp, "%s", tmpbuf);
-	  offset = offset + strlen (tmpbuf);
-	}
-    }
-
-  num = -1;
-  fwrite (&num, 2, 1, hlp);
-  fwrite (&offset, 2, 1, hlp);
-  fclose (tmp);
-  tmp = fopen (fname_tmp, "rb");
-  while (1 == 1)
-    {
-      num = fgetc (tmp);
-      if (feof (tmp))
-	break;
-      fputc (num, hlp);
-    }
-
-
-  return (1);
-
-}
-
-#endif
 
 
 /* ================================ EOF ========================== */

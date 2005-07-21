@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.66 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.67 2005-07-21 08:17:36 mikeaubury Exp $
 #
 */
 
@@ -782,5 +782,15 @@ char *hr;
 }
 
 
+
+void
+A4GL_make_downshift (char *s)
+{
+  int a;
+  for (a = 0; a < strlen (s); a++)
+    {
+      s[a] = tolower (s[a]);
+    }
+}
 
 /* ============================== EOF ========================== */

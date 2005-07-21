@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.38 2005-07-14 11:32:52 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.39 2005-07-21 08:17:37 mikeaubury Exp $
 #*/
 
 /**
@@ -142,7 +142,7 @@ new_attribute (void)
  * element.
  */
 void
-A4GL_init_fld (void)
+A4GLFORM_A4GL_init_fld (void)
 {
   int cnt;
   A4GL_debug ("init_fld\n");
@@ -203,7 +203,7 @@ chk_alias (char *s)
  * @return -1 if not found, the index in the array otherwise
  */
 int
-A4GL_find_field (char *s)
+A4GLFORM_A4GL_find_field (char *s)
 {
   int a;
   A4GL_debug ("Looking for tag '%s' in %d fields\n", s,
@@ -269,7 +269,7 @@ new_records (void)
  * Add / Initialize a new screen array
  */
 void
-A4GL_add_srec (void)
+A4GLFORM_A4GL_add_srec (void)
 {
   A4GL_debug ("add_srec\n");
   new_records ();
@@ -286,27 +286,13 @@ A4GL_add_srec (void)
  *  @param a The array size
  */
 void
-A4GL_set_dim_srec (char *s, int a)
+A4GLFORM_A4GL_set_dim_srec (char *s, int a)
 {
   A4GL_debug ("set_dim_srec\n");
   curr_rec->dim = a;
   curr_rec->name = strdup (s);
 }
 
-/**
- * Lower all the caracters of a string
- *
- * @param s The string to be lowered
- */
-void
-A4GL_make_downshift (char *s)
-{
-  int a;
-  for (a = 0; a < strlen (s); a++)
-    {
-      s[a] = tolower (s[a]);
-    }
-}
 
 /**
  *
@@ -332,8 +318,8 @@ add_srec_direct (char *tab, int a)
 
   if (strcasecmp (tab, "formonly") == 0)
     {
-      A4GL_add_srec ();
-      A4GL_set_dim_srec ("formonly", 1);
+      A4GLFORM_A4GL_add_srec ();
+      A4GLFORM_A4GL_set_dim_srec ("formonly", 1);
       curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len++] = a;
       return;
     }
@@ -352,7 +338,7 @@ add_srec_direct (char *tab, int a)
  * @param f The field attributes filled in a struct (struct_scr_field)
  */
 void
-A4GL_set_field (char *s, void *f)
+A4GLFORM_A4GL_set_field (char *s, void *f)
 {
   real_set_field (s, f);
 }
@@ -396,7 +382,7 @@ real_set_field (char *s, struct struct_scr_field *f)
 		  f->tabname, f->colname);
     }
 
-  f->field_no = A4GL_find_field (s);
+  f->field_no = A4GLFORM_A4GL_find_field (s);
   A4GL_debug ("****************** set field number to %d\n", f->field_no);
 
   if (f->field_no == -1)
@@ -407,27 +393,6 @@ real_set_field (char *s, struct struct_scr_field *f)
   add_srec_direct (f->tabname, the_form.attributes.attributes_len - 1);
 }
 
-/**
- * It takes the first and last character from a string (normaly "") and
- * convert the tabs to spaces.
- * Called from screen.lex, so is not static
- *  @param s The origin string
- *  @return A pointer to a static transformated string
- */
-char *
-A4GL_char_val (char *s)
-{
-  static char str[80];
-  int a;
-  strcpy (str, &s[1]);
-  str[strlen (str) - 1] = 0;
-  for (a = 0; a < strlen (str); a++)
-    {
-      if (str[a] == '\t')
-	str[a] = ' ';
-    }
-  return str;
-}
 
 /**
  * Allocate memory space to a metric structure and insert it in the 
@@ -533,7 +498,7 @@ new_form_metric (int cnt)
  * @param label The screen label
  */
 int
-A4GL_add_field (char *s, int x, int y, int wid, int scr, int delim, char *label)
+A4GLFORM_A4GL_add_field (char *s, int x, int y, int wid, int scr, int delim, char *label)
 {
   int a;
   int f;
@@ -615,7 +580,7 @@ A4GL_add_field (char *s, int x, int y, int wid, int scr, int delim, char *label)
  * @param a table alias
  */
 void
-A4GL_add_table (char *s, char *a)
+A4GLFORM_A4GL_add_table (char *s, char *a)
 {
   char z[3];
   z[0] = 0;
@@ -633,8 +598,8 @@ A4GL_add_table (char *s, char *a)
 
   the_form.tables.tables_val[the_form.tables.tables_len].tabname = strdup (s);
   the_form.tables.tables_val[the_form.tables.tables_len].alias = strdup (a);
-  A4GL_add_srec ();
-  A4GL_set_dim_srec (s, 1);
+  A4GLFORM_A4GL_add_srec ();
+  A4GLFORM_A4GL_set_dim_srec (s, 1);
   the_form.tables.tables_len++;
 }
 
@@ -712,7 +677,7 @@ proc_thru (void)
  * @param thru 
  */
 void
-A4GL_add_srec_attribute (char *tab, char *col, char *thru)
+A4GLFORM_A4GL_add_srec_attribute (char *tab, char *col, char *thru)
 {
   int *ptr;
   int a;
@@ -769,7 +734,7 @@ A4GL_add_srec_attribute (char *tab, char *col, char *thru)
 		 the_form.fields.fields_val[the_form.attributes.
 					    attributes_val[ptr[z]].field_no].
 		 metric.metric_len, curr_rec->dim);
-        if (!A4GL_has_bool_attribute( &the_form.attributes.attributes_val[ptr[z]] , FA_B_WORDWRAP)){
+        if (!A4GLFORM_A4GL_has_bool_attribute( &the_form.attributes.attributes_val[ptr[z]] , FA_B_WORDWRAP)){
 	  if (curr_rec->dim==1) {
 		printf("Warning : Mismatch in screen record\n");
 		curr_rec->dim=the_form.fields.fields_val[the_form.attributes.attributes_val[ptr[z]].field_no].metric.metric_len;
@@ -834,7 +799,7 @@ chk_for_wordwrap(void)
     the_form.attributes.attributes_val[fno].tabname,
     the_form.attributes.attributes_val[fno].colname);
 
-    if (!A4GL_has_bool_attribute( &the_form.attributes.attributes_val[fno] ,
+    if (!A4GLFORM_A4GL_has_bool_attribute( &the_form.attributes.attributes_val[fno] ,
         FA_B_WORDWRAP)) 
       continue;
 
@@ -877,7 +842,7 @@ chk_for_wordwrap(void)
  * Write the frm file with the information parsed from the .per to memory
  */
 void
-A4GL_write_form (void)
+A4GLFORM_A4GL_write_form (void)
 {
   char fname[132];
   char fname2[132];
@@ -978,7 +943,7 @@ A4GL_write_form (void)
  * @tab The table name
  */
 int
-A4GL_getdatatype (char *col, char *tab)
+A4GLFORM_A4GL_getdatatype (char *col, char *tab)
 {
   char *tabs[256];
   char buff[256];
@@ -1030,7 +995,7 @@ A4GL_getdatatype (char *col, char *tab)
  * the lexical and sintatic parser to load the information found
  */
 void
-A4GL_init_form (void)
+A4GLFORM_A4GL_init_form (void)
 {
   A4GL_debug ("init_form\n");
   the_form.dbname = strdup ("");
@@ -1064,50 +1029,6 @@ A4GL_init_form (void)
 
 
 /**
- * It seems that its not used
- * @toto Confirm if its used and if not remove it
- */
-/*
-static void
-new_field_bool_attribute(void)
-{
-  int cnt;
-
-  A4GL_debug("new_field_bool_attr\n");
-  cnt= the_form.attributes.attributes_len-1;
-
-  the_form.attributes.attributes_val[cnt].bool_attribs.bool_attribs_len++;
-  the_form.attributes.attributes_val[cnt].bool_attribs.bool_attribs_val=realloc(
-    the_form.attributes.attributes_val[cnt].bool_attribs.bool_attribs_val,
-    the_form.attributes.attributes_val[cnt].bool_attribs.bool_attribs_len*
-    sizeof(enum FIELD_ATTRIBUTES_BOOL)
-  );
-}
-*/
-
-/**
- * It seems that its not used
- *
- * @todo Confirm if its used and if not remove it
- */
-/*
-static void
-new_field_str_attribute(void)
-{
-	int cnt;
-
-	A4GL_debug("new_field_str_attr\n");
-	cnt= the_form.attributes.attributes_len-1;
-
-	the_form.attributes.attributes_val[cnt].str_attribs.str_attribs_len++;
-	the_form.attributes.attributes_val[cnt].str_attribs.str_attribs_val=realloc(
-	the_form.attributes.attributes_val[cnt].str_attribs.str_attribs_val,
-	the_form.attributes.attributes_val[cnt].str_attribs.str_attribs_len*
-		sizeof(struct struct_field_attr_string));
-}
-*/
-
-/**
  * If necessary locate memory to field attributes and insert it to the 
  * attribute array of the screen field pointer.
  *
@@ -1118,7 +1039,7 @@ new_field_str_attribute(void)
  * @param str The attribute to add
  */
 void
-A4GL_add_str_attr (void *f, int type, char *str)
+A4GLFORM_A4GL_add_str_attr (void *f, int type, char *str)
 {
   real_add_str_attr (f, type, str);
 }
@@ -1158,7 +1079,7 @@ real_add_str_attr (struct struct_scr_field *f, int type, char *str)
  *   
  */
 void
-A4GL_add_bool_attr (void *f, int type)
+A4GLFORM_A4GL_add_bool_attr (void *f, int type)
 {
   real_add_bool_attr (f, type);
 }
@@ -1179,7 +1100,7 @@ real_add_bool_attr (struct struct_scr_field *f, int type)
 
   A4GL_debug ("add_bool_attr\n");
 
-  if (!A4GL_has_bool_attribute (f, type))	/* see a4gl_aubit_lib.h for declaration */
+  if (!A4GLFORM_A4GL_has_bool_attribute (f, type))	/* see a4gl_aubit_lib.h for declaration */
     {
       if (f->bool_attribs.bool_attribs_len == 0)
 	f->bool_attribs.bool_attribs_val = 0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.181 2005-07-19 19:16:34 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.182 2005-07-21 08:17:35 mikeaubury Exp $
 #
 */
 
@@ -1823,6 +1823,7 @@ int A4GL_conversion_ok(int a);
 
   /* ====================== From formwrite2.c ====================== */
   char *A4GL_char_val (char *s);
+  void A4GL_make_downshift(char* s);
 
   /* ============================ read_dty.c ============================= */
   int A4GL_get_dtype (char *tabname, char *colname, char *dbname, char *tablist[]);

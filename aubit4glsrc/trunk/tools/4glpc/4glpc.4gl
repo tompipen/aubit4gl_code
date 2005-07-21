@@ -25,6 +25,7 @@ define mv_objects char(20480)
 define mv_errfile char(256)
 define mv_newest_obj char(256)
 DEFINE mv_output_type CHAR(20)
+define mv_dump_strings integer
 
 define
 	mv_db 			char(128),
@@ -63,6 +64,7 @@ define lv_pack char(256)
 	if mv_verbose>=4 then display "Reading packs" end if
 	let lv_pack=fgl_getenv("A4GL_LEXTYPE")
 	call read_pack(lv_pack)
+	let mv_dump_strings=0
 
 	let lv_pack=fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
 	call read_pack(lv_pack)
@@ -443,6 +445,10 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		WHEN "-s1"			let mv_stacktrace=1 continue for
 
 
+		WHEN "--dump-strings"		let mv_dump_strings=1 call aclfgl_setenv("A4GL_DUMPSTRINGS","Y")continue for
+		WHEN "--dump-strings-ident"	let mv_dump_strings=2 call aclfgl_setenv("A4GL_DUMPSTRINGS","ident") continue for
+		WHEN "--ident-start"		let a=a+1 call aclfgl_setenv("A4GL_DUMPSTRINGS_START",arg_val(a)) continue for
+		WHEN "--translation-file"	let a=a+1 call aclfgl_setenv("A4GL_TRANSLATEFILE",arg_val(a))continue for
 		WHEN "--output"			let a=a+1 let mv_output=arg_val(a) continue for
 		WHEN "-o"			let a=a+1 let mv_output=arg_val(a) continue for
 
