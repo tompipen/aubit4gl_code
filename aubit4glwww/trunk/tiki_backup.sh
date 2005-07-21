@@ -4,6 +4,8 @@
 # - Creates backup database dump file using choosen method
 # - Creates backup of all files in Tiki dir that changed since installation
 # - Then downloads both to local machine
+# $Id: tiki_backup.sh,v 1.4 2005-07-21 11:20:50 afalout Exp $
+# Please report bugs to andrej@dontspam.falout.org
 #-----------------------------------------------------------------------------
 # Prerequisites:
 #
@@ -12,6 +14,7 @@
 #	- bzip2 (To compress backup file)
 #	- Script to perform scp automatically, suplying username/password (SCP_SCRIPT)
 #		use --make-scp option to create it
+#	- ssh login on the TikiWiki server
 #
 #	Only for 'tiki' method:
 #	- lynx (To trigger TikiWiki to create a backup)
@@ -22,6 +25,8 @@
 #   - ssh (to remotely execute mysqldump)
 #	- Script to perform ssh automatically, suplying username/password (SSH_SCRIPT)
 #		use --make-ssh option to create it
+#   - mysqldump on TikiWiki server
+#	- login information for mysql database
 #
 # Installation:
 #	1: Check that all listed prerequisites exist on your system
@@ -45,29 +50,180 @@
 #
 # Todo:
 # - silent does not work with Tiki method (lynx hangs when redirected to file)
-# - remove backups older then 7 days from web site, created by Tiki method
-# - remove backups older then 30 days from local machine
-# - Find a way to kill lynx if it does not exit in X seconds
+# - remove backups older then x days from web site, created by Tiki method
+# - Find a way to kill lynx if it does not exit in X seconds (no response)
+# - Enable wget as alternative to scp, for use on sites where user does not
+#	have a ssh loging (tiki method only)
 #
 #############################################################################
 
-############################# Settings #####################################
+############################# Global Settings ###############################
 
 DOMAIN=`hostname -d`
-if test "$DOMAIN" = "falout.org"; then
-	#Private settings for specified domain
-	LYNX_SCRIPT_DIR="/etc/custom"
-	SCP_BASE="/bin/custom"
-	BACKUP_BASE="/data/backups/TikiWiki"
-	echo "`date` $0" > /var/log/run.log
+if test -f "/etc/custom/tiki_backup-$DOMAIN.conf"; then
+	. "/etc/custom/tiki_backup-$DOMAIN.conf"
 else
-	#Settings for everyone else
-	LYNX_SCRIPT_DIR="/usr/local/bin"
-	SCP_BASE="/usr/local/share"
-	BACKUP_BASE="/var/spool/backups/TikiWiki"
+	if test -f "/etc/tiki_backup-$DOMAIN.conf"; then
+		. "/etc/tiki_backup-$DOMAIN.conf"
+	else
+		#Defaults that should work for most Linux installations, used in 
+		#absense of .conf files tested for above. To override, preferably create 
+		#one of configuration files as tested for above. If you instead choose
+		#to modify this script, be aware that all changes will be lost on 
+		#next update of this script.
+		
+		#Directory to put created Lynx script:
+		#Default: "/usr/local/bin"
+		#LYNX_SCRIPT_DIR="/usr/local/bin"
+		
+		#Directory to put SCP and SSH expect scripts"
+		#Default: "/usr/local/share"
+		#SCP_BASE="/usr/local/share"
+		
+		#Location to put created backup files in; if it does not
+		#exist, it will be created
+		#Default: "/var/spool/backups/TikiWiki"
+		#BACKUP_BASE="/var/spool/backups/TikiWiki"
+		
+		#How many days to keep backups
+		#Default: 30
+		#KEEP_DAYS=30
+		
+		#Are the backups older then KEEP_DAYS to be deleted or not (yes|no)
+		#Default: yes
+		#REMOVE_OLD="yes"
+		
+		#Minimum number of backups to ALLWAYS keep, regardles of how old they are
+		#This is to prevent an system clock error from deleting all backups we have
+		#Default: 12
+		#ALLWAYS_KEEP=12
+		
+		#Do we have a SSH login on TikiWiki server; if no, we must use 'tiki'
+		#method of creating database backup, and use wget to download it.
+		#Note that without SSH login, we cant backup Tiki files
+		#Default: yes
+		#HAVE_SSH_ACCOUNT=yes
+		
+		if test "$SH_DEBUG" = "1"; then
+			echo "NOTE: using default settings"
+		fi
+	fi
 fi
-MAX_RETRY=4
-LYNX_FLAGS="-connect_timeout=60"
+
+#################################
+function site_list () {
+#################################
+#Define a list of recognised sites
+
+	#all sites we know about. When adding sites, add it both here and in 'case'
+	#statement below
+	ALL_SITES="aubit apps"
+}
+
+#################################
+function site_settings () {
+#################################
+#Set configuration that is site dependent. To add more sites to backup,
+#modify this function ONLY
+
+	case $TIKI_SITE in
+		aubit) 
+			PROJECT="aubit4gl"
+			DOMAIN="sourceforge.net"
+			SITE="$PROJECT.$DOMAIN"
+			TIKI_PATH="/tiki" 	#Path to root of tiki installation, relative to Apache htdocs root
+			SITE_URL="http://$SITE$TIKI_PATH"
+			SITE_PATH="/home/groups/a/au/$PROJECT/htdocs$TIKI_PATH"
+			DB_NAME="$PROJECT"
+			DB_USER="$PROJECT"
+			DB_HOST="mysql-a.$DOMAIN"
+			;;
+		apps)
+			PROJECT="apps4gl"
+			DOMAIN="sourceforge.net"
+			SITE="$PROJECT.$DOMAIN"
+			TIKI_PATH=""
+			SITE_URL="http://$SITE"
+			SITE_PATH="/home/groups/a/ap/$PROJECT/htdocs$TIKI_PATH"
+			DB_NAME="$PROJECT"
+			DB_USER="$PROJECT"
+			DB_HOST="mysql-a.$DOMAIN"
+			;;
+		*) error "Site $TIKI_SITE not recognised"
+			exit 4
+	esac
+
+}
+
+##############################################################################
+#
+#								FUNCTIONS
+#          User should not need to change anything below this line
+#
+##############################################################################
+
+#########################################
+function remove_old_tiki_backups () {
+#########################################
+# - remove backups older then 7 days from web site, created by Tiki method
+
+	debug "TODO: remove backups older then 7 days from web site, created by Tiki method"
+
+}
+
+#########################################
+function remove_old_local_backups () {
+#########################################
+# - remove backups older then 30 days from local machine
+
+	BACKUPS_PATH="$BACKUP_BASE/$SITE"
+	cd "$BACKUPS_PATH"
+	
+	ALL_CNT=`ls $SITE-*.*.bz2 | wc -l`
+	ALL_LIST=`ls $SITE-*.*.bz2`
+	
+	JOIN="-a"
+	TIME_TEST="-ctime"
+
+	FIND_OLD="find . -type f $JOIN -name \"$SITE-*.*.bz2\" $JOIN $TIME_TEST $KEEP_DAYS -print"
+	#echo "FIND CMD=$FIND_OLD"
+	
+	OLD_CNT=`eval $FIND_OLD | wc -l`
+	OLD_LIST=`eval $FIND_OLD`
+	
+	if test "$SH_DEBUG" = "1"; then
+		echo "All: $ALL_CNT Older then $KEEP_DAYS days: $OLD_CNT" 
+		echo "--------------------- All -----------------------------"
+		ls -al $SITE-*.*.bz2
+		echo "-------------------- Older ----------------------------"
+	fi
+	
+	let AFTER_DELETE=ALL_CNT-OLD_CNT
+	
+	if test "$AFTER_DELETE" -lt "$ALLWAYS_KEEP" ; then
+		echo "WARNING:"
+		echo "There are $OLD_CNT backups older then $KEEP_DAYS days, but I can't delete them"
+		echo "because then there would be only $AFTER_DELETE left, which is less then"
+		echo "a configured value of backups to allways keep, which is $ALLWAYS_KEEP"
+		return
+	fi
+	
+	if test "$OLD_CNT" != "0"; then
+		if test "$REMOVE_OLD" != "yes"; then
+			message "There are $OLD_CNT backups older then $KEEP_DAYS days, but REMOVE_OLD is set to '$REMOVE_OLD'"
+		else
+			echo "---------- REMOVING BACKUPS OLDER THEN $KEEP_DAYS days: ---------"
+			for file in $OLD_LIST ; do
+				if test "$file" != "." ; then
+					ls -al $file
+					rm $file
+				fi
+			done
+		fi
+	else
+		debug "No backup older then $KEEP_DAYS"
+	fi
+}
 
 ##############################
 function create_backup () {
@@ -284,10 +440,10 @@ function dl_new_backup () {
 			else
 				mv $FINAL_RESULT $BACKUPS_PATH/$SITE-$date_stamp.sql.bz2
 			fi
-			message "Success: created backup file is:"
 			ENDFILE=`ls $BACKUPS_PATH/$SITE-$date_stamp.sql.bz2`
-			if test "$SILENT" != "1"; then			
-				echo $ENDFILE
+			if test "$SILENT" != "1"; then
+				message "Success: created backup file is:"
+				ls -al $ENDFILE
 			fi
 		else
 			error "Moving $THE_RESULT to $BACKUPS_PATH FAILED"
@@ -453,10 +609,10 @@ LOCAL_DEBUG=0
 			debug "Success: $FINAL_RESULT"
 			date_stamp=`date +%d-%m-%Y_%H-%M-%S`
 			mv $FINAL_RESULT $BACKUPS_PATH/$SITE-$date_stamp.tar.bz2
-			message "Success: created backup file is:"
 			ENDFILE=`ls $BACKUPS_PATH/$SITE-$date_stamp.tar.bz2`
 			if test "$SILENT" != "1"; then
-				echo $ENDFILE
+				message "Success: created backup file is:"
+				ls -al $ENDFILE
 			fi
 		else
 			error "Moving $THE_RESULT to $BACKUPS_PATH failed. STOP"
@@ -475,6 +631,7 @@ LOCAL_DEBUG=0
 		echo "----------------------------------------------------------------"
 	else
 		if test "$SH_DEBUG" = "1"; then
+			mkdir -p /tmp/test
 			cd /tmp/test
 			rm -rf *
 			tar -xjf $ENDFILE
@@ -519,12 +676,108 @@ function check_lynx () {
 	fi
 }
 
+##################################
+function do_backup () {
+##################################
+#Perform selected actions for one site
+
+	site_settings
+
+	if test "$SITE" = ""; then
+		error "SITE is undefined. Use --tiki-site= to select one. STOP"
+		exit 5
+	fi
+
+	if test "$HAVE_SSH_ACCOUNT" != "yes" -a "$METHOD" = 'mysql'; then
+		error "Cannot use 'mysql' method without SSH login to server. STOP"
+		exit 4
+	fi
+	
+	BACKUPS_PATH="$BACKUP_BASE/$SITE"
+	LYNX_SCRIPT="$LYNX_SCRIPT_DIR/$SITE.cmd"
+	SCP_SCRIPT="$SCP_BASE/scp-$SITE.sh"
+	SSH_SCRIPT="$SCP_BASE/ssh-$SITE.sh"
+
+	if test "$RECORD" = "1"; then
+		record_script
+		exit 0
+	fi
+	if test "$MAKE_SCP" = "1"; then
+		make_scp
+		exit 0
+	fi
+	if test "$MAKE_SSH" = "1"; then
+		make_ssh
+		exit 0
+	fi
+	if test "$MAKE_CRON" = "1"; then
+		make_cron
+		exit 0
+	fi
+	if test "$CLEAN_LOCAL" = "1"; then
+		remove_old_local_backups
+		exit 0
+	fi
+	if test "$CLEAN_TIKI" = "1"; then
+		remove_old_tiki_backups
+		exit 0
+	fi
+	
+	if test "$METHOD" = 'mysql'; then
+		check_scp
+		check_ssh
+		tar_changed_files
+	fi
+	if test "$FILES_ONLY" = "1"; then
+		exit 0
+	fi
+	if test "$METHOD" = "tiki"; then
+		check_lynx
+		create_backup
+		get_new_backup_name
+		dl_new_backup
+		remove_old_tiki_backups
+	else
+		ssh_mysqldump
+		dl_new_backup
+		remove_old_local_backups
+	fi
+}
+
 ################################### MAIN ##################################
 
+#Built-in defaults:
 PAGE_OLD="./tiki-backup1.txt"
 PAGE_NEW="./tiki-backup2.txt"
 ALL_FLAGS="$@"
 METHOD="mysql"
+MAX_RETRY=4
+LYNX_FLAGS="-connect_timeout=60"
+
+#Make sure we have values for all user configurable settings:
+if test "$LYNX_SCRIPT_DIR" = ""; then
+	LYNX_SCRIPT_DIR="/usr/local/bin"
+fi
+if test "$SCP_BASE" = ""; then
+	SCP_BASE="/usr/local/share"
+fi
+if test "$BACKUP_BASE" = ""; then
+	BACKUP_BASE="/var/spool/backups/TikiWiki"
+fi
+if test "$KEEP_DAYS" = ""; then
+	KEEP_DAYS=30
+fi
+if test "$REMOVE_OLD" = ""; then
+	REMOVE_OLD="yes"
+fi
+if test "$ALLWAYS_KEEP" = ""; then
+	ALLWAYS_KEEP=12
+fi
+if test "$HAVE_SSH_ACCOUNT" = ""; then
+	HAVE_SSH_ACCOUNT=yes
+fi
+
+START_TIME=`date +%s`
 
 for flag in $ALL_FLAGS ; do
 	case $flag in 
@@ -537,33 +790,7 @@ for flag in $ALL_FLAGS ; do
 			;;
 
 		--tiki-site=*) #select TikiWiki site to backup
-			TIKI_SITE=`echo $flag | cut --field=2 --delimiter="="`
-			case $TIKI_SITE in
-				aubit) 
-					PROJECT="aubit4gl"
-					DOMAIN="sourceforge.net"
-					SITE="$PROJECT.$DOMAIN"
-					TIKI_PATH="/tiki" 	#Path to root of tiki installation, relative to Apache htdocs root
-					SITE_URL="http://$SITE$TIKI_PATH"
-					SITE_PATH="/home/groups/a/au/$PROJECT/htdocs$TIKI_PATH"
-					DB_NAME="$PROJECT"
-					DB_USER="$PROJECT"
-					DB_HOST="mysql-a.$DOMAIN"
-					;;
-				apps)
-					PROJECT="apps4gl"
-					DOMAIN="sourceforge.net"
-					SITE="$PROJECT.$DOMAIN"
-					TIKI_PATH="" 	#Path to root of tiki installation, relative to Apache htdocs root					
-					SITE_URL="http://$SITE"
-					SITE_PATH="/home/groups/a/ap/$PROJECT/htdocs$TIKI_PATH"
-					DB_NAME="$PROJECT"
-					DB_USER="$PROJECT"
-					DB_HOST="mysql-a.$DOMAIN"
-					;;
-				*) error "Site $TIKI_SITE not recognised"
-					exit 4
-			esac
+			BACKUP_SITE=`echo $flag | cut --field=2 --delimiter="="`
 			;;
 		
 		--silent)
@@ -587,6 +814,14 @@ for flag in $ALL_FLAGS ; do
 		--make-scp)
 			MAKE_SCP=1
 			;;
+
+		--clean-local)
+			CLEAN_LOCAL=1
+			;;
+
+		--clean-tiki)
+			CLEAN_TIKI=1
+			;;
 			
 		--make-ssh)
 			MAKE_SSH=1
@@ -606,10 +841,11 @@ for flag in $ALL_FLAGS ; do
 			echo "--help    This page"
 			echo "--debug	Output additional debugging info (verbose)"
 			echo "--silent  Report only errors"
-			echo "--tiki-site=[aubit|apps] Tiki site to backup"
+			echo "--tiki-site=[$ALL_SITES] Tiki site to backup"
 			echo "--method=[tiki|mysql] Use Tiki backup functionality or Use mysqldump"
 			echo "--make-scp Generate script to download created backup file"
 			echo "--cron Create daily cron invocation using specified flags"
+			echo "--files-only Backup only static files, not database"
 			echo " "			
 			echo "Method=mysql options:"
 			echo "--db-pass=password Specify database password to use for mysqldump command"
@@ -630,47 +866,20 @@ for flag in $ALL_FLAGS ; do
 	esac
 done
 
-	if test "$SITE" = ""; then
-		error "SITE is undefined. Use --tiki-site= to select one. STOP"
-		exit 5
-	fi
-
-	BACKUPS_PATH="$BACKUP_BASE/$SITE"
-	LYNX_SCRIPT="$LYNX_SCRIPT_DIR/$SITE.cmd"
-	SCP_SCRIPT="$SCP_BASE/scp-$SITE.sh"
-	SSH_SCRIPT="$SCP_BASE/ssh-$SITE.sh"
-
-	if test "$RECORD" = "1"; then
-		record_script
-		exit 0
-	fi
-	if test "$MAKE_SCP" = "1"; then
-		make_scp
-		exit 0
-	fi
-	if test "$MAKE_SSH" = "1"; then
-		make_ssh
-		exit 0
-	fi
-	if test "$MAKE_CRON" = "1"; then
-		make_cron
-		exit 0
-	fi
-	check_scp
-	check_ssh
-	tar_changed_files
-	if test "$FILES_ONLY" = "1"; then
-		exit 0
-	fi
-	if test "$METHOD" = "tiki"; then
-		check_lynx
-		create_backup
-		get_new_backup_name
-		dl_new_backup
+	if test "$BACKUP_SITE" = "all"; then
+		site_list
+		for AN_SITE in $ALL_SITES ; do
+			TIKI_SITE="$AN_SITE"
+			do_backup
+		done
 	else
-		ssh_mysqldump
-		dl_new_backup
+		TIKI_SITE="$BACKUP_SITE"
+		do_backup
 	fi
+
+	EXIT_TIME=`date +%s`
+	let TOOK_TIME=EXIT_TIME-START_TIME
+	debug "This script was running for $TOOK_TIME secconds"
 	exit 0
 
 ################################ EOF ######################################
