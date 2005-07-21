@@ -25,7 +25,7 @@ run: compile ; ${DEFAULT_RUN}
 
 desc: ; @echo "Tests a bug using consecutive constructs not blanking the field properly"
 
-db_test: 				; @echo "0"
+db_test: 				; @echo "1"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"

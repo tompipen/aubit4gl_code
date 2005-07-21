@@ -112,7 +112,7 @@ desc:
 ################
 #If this test needs database, return 1
 db_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #return 1 if tests use/require ESQL compiler output, instead of C output
@@ -210,4 +210,5 @@ transaction:			; @echo ""
 
 
 sql_features_used:			; @echo ""
+
 

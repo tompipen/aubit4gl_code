@@ -25,7 +25,7 @@ run: compile ; ${DEFAULT_RUN}
 
 desc: ; @echo "This tests the summation of nulls within a report"
 
-db_test: 				; @echo "0"
+db_test: 				; @echo "1"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"

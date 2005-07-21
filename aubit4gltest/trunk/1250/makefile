@@ -25,7 +25,7 @@ run: compile ; ${DEFAULT_DIFF}
 
 desc: ; @echo "This is a test provided by Miguel Caldera which demonstates some corruption"
 
-db_test: 				; @echo "0"
+db_test: 				; @echo "1"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"

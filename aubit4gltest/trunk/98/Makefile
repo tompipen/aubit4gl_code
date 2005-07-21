@@ -17,3 +17,5 @@ desc:
 sql_features_used:
 	@echo "CREATE_TEMP_TABLE DDL_SERIAL"
 	
+db_test:
+	@echo "1"

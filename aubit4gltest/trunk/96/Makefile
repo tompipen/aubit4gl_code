@@ -11,3 +11,5 @@ run: m1.4ae
 ansi_sql_compat:
 	@echo "1"
 
+db_test:
+	@echo "1"

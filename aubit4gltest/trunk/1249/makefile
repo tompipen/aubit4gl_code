@@ -27,7 +27,7 @@ desc:
 	@echo "This is not a test but a Testing template. \
 		Please provide brief description of functionality tested here."
 
-db_test: 				; @echo "0"
+db_test: 				; @echo "1"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"

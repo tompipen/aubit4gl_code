@@ -19,3 +19,5 @@ sql_features_used:
 
 desc:
 	@echo "Test of Aubit4GL extension - IN and EXISTS as 4GL expression"
+db_test:
+	@echo "1"

@@ -21,3 +21,6 @@ sql_features_used:
 
 desc:
 	@echo "VALIDATE check"
+
+db_test:
+	@echo "1"

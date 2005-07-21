@@ -8,7 +8,8 @@ compile: simple_null.4ae
 run: simple_null.4ae
 	sh ./run_simple_null
 
-
+db_test: 
+	@echo "1"
 
 ansi_sql_compat:
 	@echo "0"

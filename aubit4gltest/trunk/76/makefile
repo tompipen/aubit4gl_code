@@ -5,6 +5,8 @@ datetime.4ae: datetime.4gl
 
 compile: datetime.4ae
 	
+db_test:
+	@echo "1"
 run: datetime.4ae
 	sh ./run_datetime
 

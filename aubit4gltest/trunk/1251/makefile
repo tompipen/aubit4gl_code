@@ -24,7 +24,7 @@ run: compile ; ${DEFAULT_DIFF}
 
 desc: ; @echo "date handling - mid 720"
 
-db_test: 				; @echo "0"
+db_test: 				; @echo "1"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"

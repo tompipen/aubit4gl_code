@@ -16,3 +16,6 @@ sql_features_used:
 
 desc: 
 	@echo  "Null string date/datetime checking"
+
+db_test:
+	@echo "1"

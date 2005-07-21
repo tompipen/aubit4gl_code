@@ -11,6 +11,8 @@ into.4ae: into.4gl
 
 compile: into.4ae
 	
+db_test:
+	@echo "1"
 run: into.4ae
 	sh ./run_into
 	

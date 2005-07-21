@@ -25,7 +25,7 @@ run: compile ; ${DEFAULT_RUN}
 
 desc: ; @echo "Checks the value of variables after a fetch with too few columns in the select"
 
-db_test: 				; @echo "0"
+db_test: 				; @echo "1"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"
