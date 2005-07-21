@@ -1,12 +1,13 @@
 #!/bin/sh
 #############################################################################
 # Script to perform automatic backup of TikiWiki web site.
-# Creates backup dump file using choosen method, and then downloads it 
-# to local machine
+# - Creates backup database dump file using choosen method
+# - Creates backup of all files in Tiki dir that changed since installation
+# - Then downloads both to local machine
 #-----------------------------------------------------------------------------
 # Prerequisites:
 #
-#	- scp (to retrive backup file from remote server)
+#	- scp (to retrive backup files from remote server)
 #	- expect (To run commands that need password at run-time)
 #	- bzip2 (To compress backup file)
 #	- Script to perform scp automatically, suplying username/password (SCP_SCRIPT)
@@ -43,10 +44,8 @@
 #
 #
 # Todo:
-# - backup forum attachments, Image/File Galleries files, ... anything else?
-# - backup tiki-custom_home.php and theme template file (only in V 1.8.5)
-# - silent does not work (lynx hangs when redirected to file)
-# - remove backups older then 7 days from web site
+# - silent does not work with Tiki method (lynx hangs when redirected to file)
+# - remove backups older then 7 days from web site, created by Tiki method
 # - remove backups older then 30 days from local machine
 # - Find a way to kill lynx if it does not exit in X seconds
 #
@@ -254,7 +253,7 @@ function error () {
 ##################################
 function dl_new_backup () {
 ##################################
-#Download created backiup file to local machine (both methods)
+#Download created db backup file to local machine (both methods)
 
 	if ! test -d "$BACKUPS_PATH" ; then
 		mkdir -p "$BACKUPS_PATH"
@@ -287,7 +286,9 @@ function dl_new_backup () {
 			fi
 			message "Success: created backup file is:"
 			ENDFILE=`ls $BACKUPS_PATH/$SITE-$date_stamp.sql.bz2`
-			echo $ENDFILE
+			if test "$SILENT" != "1"; then			
+				echo $ENDFILE
+			fi
 		else
 			error "Moving $THE_RESULT to $BACKUPS_PATH FAILED"
 			exit 2
@@ -369,6 +370,155 @@ function make_cron () {
 	
 }
 
+#######################################
+function tar_changed_files () {
+#######################################
+#pack all files in TikiWiki installation directory that changed after a 
+#reference file into a tar file, compress, and download to local machine
+
+LOCAL_DEBUG=0
+
+	#List of directories that contain temporary or irrelevant files, that
+	#are not needed in the case of restoreing the installation
+	EXCLUDE="./templates_c ./temp ./mods/Cache ./backups ./modules/cache \
+		./mods/avatars ./img/avatars './tikiwiki-*.tar.bz2' './tikiwiki-*.tar' \
+		./backup.sql.bz2"
+		
+	#File (or directory) that has a timestamp of installation date:
+	REF_FILE="./modules"
+
+	#Name of tar file to create
+	if test "$LOCAL_DEBUG" = "1"; then	
+		NEW_TAR="/tmp/test/new.tar.bz2"
+	else
+		NEW_TAR="./new.tar.bz2"
+	fi
+
+	if test "$LOCAL_DEBUG" = "1"; then
+		cd /srv/www/htdocs/tiki
+	fi
+	
+	for skip in $EXCLUDE ; do
+		#cant use -wholename since it was introduced only recently - use -path
+		EX_STRING="$EX_STRING -path '$skip' -prune -o"
+	done
+	
+	FIND_CMD="find . $EX_STRING -newer $REF_FILE -type f -print"
+	
+	if test "$LOCAL_DEBUG" = "1"; then	
+		NEW_FILES=`eval $FIND_CMD`
+	else
+		#SSH_CMD="NEW_FILES=\`eval $FIND_CMD\`"
+		SSH_CMD=""
+	fi
+	
+	if test "$LOCAL_DEBUG" = "1"; then
+		echo "----------------------------------------------------------------"
+		echo "$NEW_FILES"
+		echo "----------------------------------------------------------------"
+	fi
+	
+	if test "$LOCAL_DEBUG" = "1"; then	
+		rm -rf /tmp/test/*
+	fi
+	
+	if test "$LOCAL_DEBUG" = "1"; then	
+		tar -cjf $NEW_TAR $NEW_FILES
+	else
+		#SSH_CMD="$SSH_CMD; tar -cjf $NEW_TAR \$NEW_FILES"
+		SSH_CMD="cd $SITE_PATH && rm -f $NEW_TAR && tar -cjf $NEW_TAR \`$FIND_CMD\`"
+		
+		debug "Creating archive..."
+		if test "$SH_DEBUG" = "1"; then
+			$SSH_SCRIPT $SSH_CMD
+		else
+			$SSH_SCRIPT $SSH_CMD > /dev/null 2>&1
+		fi
+		
+		TMPSTAT="$?"
+		if test "$TMPSTAT" != "0"; then
+			error "$SSH_SCRIPT returned $TMPSTAT STOP"
+			exit 5
+		fi
+	fi
+	
+	debug "Downloading archive..."
+	$SCP_SCRIPT $SITE_PATH/$NEW_TAR >> /tmp/tiki_scp.log 2>&1
+	THE_RESULT=`ls ./$NEW_TAR`
+
+	if test "$THE_RESULT" != ""; then
+		mv "$THE_RESULT" "$BACKUPS_PATH"
+		FINAL_RESULT=`ls $BACKUPS_PATH/$NEW_TAR`
+		if test "$FINAL_RESULT" != ""; then
+			debug "Success: $FINAL_RESULT"
+			date_stamp=`date +%d-%m-%Y_%H-%M-%S`
+			mv $FINAL_RESULT $BACKUPS_PATH/$SITE-$date_stamp.tar.bz2
+			message "Success: created backup file is:"
+			ENDFILE=`ls $BACKUPS_PATH/$SITE-$date_stamp.tar.bz2`
+			if test "$SILENT" != "1"; then
+				echo $ENDFILE
+			fi
+		else
+			error "Moving $THE_RESULT to $BACKUPS_PATH failed. STOP"
+			exit 5
+		fi
+	else
+		error "Download of $NEW_TAR failed. STOP"
+		exit 9
+	fi
+
+	if test "$LOCAL_DEBUG" = "1"; then
+		cd /tmp/test
+		tar -xjf new.tar.bz2
+		echo "----------------------------------------------------------------"
+		find . -type f -print
+		echo "----------------------------------------------------------------"
+	else
+		if test "$SH_DEBUG" = "1"; then
+			cd /tmp/test
+			rm -rf *
+			tar -xjf $ENDFILE
+			echo "Backed up files:"
+			echo "----------------------------------------------------------------"
+			find . -type f -print
+			echo "----------------------------------------------------------------"
+		fi
+	fi
+	
+}
+
+##################################
+function check_ssh () {
+##################################
+	if ! test -f $SSH_SCRIPT ; then
+		error "Missing SSH_SCRIPT:$SSH_SCRIPT STOP"
+		echo "Use --make-ssh to create it."
+		exit 5
+	fi
+}
+
+##################################
+function check_scp () {
+##################################
+	
+	if ! test -f $SCP_SCRIPT ; then
+		error "Missing SCP_SCRIPT:$SCP_SCRIPT STOP"
+		echo "Use --make-scp to create it."	
+		exit 5
+	fi
+}
+
+##################################
+function check_lynx () {
+##################################
+	
+	if ! test -f $LYNX_SCRIPT ; then
+		error "Missing LYNX_SCRIPT:$LYNX_SCRIPT STOP"
+		echo "Use --record to create it."
+		exit 5
+	fi
+}
+
 ################################### MAIN ##################################
 
 PAGE_OLD="./tiki-backup1.txt"
@@ -393,8 +543,9 @@ for flag in $ALL_FLAGS ; do
 					PROJECT="aubit4gl"
 					DOMAIN="sourceforge.net"
 					SITE="$PROJECT.$DOMAIN"
-					SITE_URL="http://$SITE/tiki"
-					SITE_PATH="/home/groups/a/au/$PROJECT/htdocs"
+					TIKI_PATH="/tiki" 	#Path to root of tiki installation, relative to Apache htdocs root
+					SITE_URL="http://$SITE$TIKI_PATH"
+					SITE_PATH="/home/groups/a/au/$PROJECT/htdocs$TIKI_PATH"
 					DB_NAME="$PROJECT"
 					DB_USER="$PROJECT"
 					DB_HOST="mysql-a.$DOMAIN"
@@ -403,8 +554,9 @@ for flag in $ALL_FLAGS ; do
 					PROJECT="apps4gl"
 					DOMAIN="sourceforge.net"
 					SITE="$PROJECT.$DOMAIN"
+					TIKI_PATH="" 	#Path to root of tiki installation, relative to Apache htdocs root					
 					SITE_URL="http://$SITE"
-					SITE_PATH="/home/groups/a/ap/$PROJECT/htdocs"
+					SITE_PATH="/home/groups/a/ap/$PROJECT/htdocs$TIKI_PATH"
 					DB_NAME="$PROJECT"
 					DB_USER="$PROJECT"
 					DB_HOST="mysql-a.$DOMAIN"
@@ -442,6 +594,10 @@ for flag in $ALL_FLAGS ; do
 			
 		--cron)
 			MAKE_CRON=1
+			;;
+			
+		--files-only)
+			FILES_ONLY=1
 			;;
 			
 		--help)
@@ -500,29 +656,18 @@ done
 		make_cron
 		exit 0
 	fi
-	
-
-	if ! test -f $SCP_SCRIPT ; then
-		error "Missing SCP_SCRIPT:$SCP_SCRIPT STOP"
-		echo "Use --make-scp to create it."	
-		exit 5
+	check_scp
+	check_ssh
+	tar_changed_files
+	if test "$FILES_ONLY" = "1"; then
+		exit 0
 	fi
-	
 	if test "$METHOD" = "tiki"; then
-		if ! test -f $LYNX_SCRIPT ; then
-			error "Missing LYNX_SCRIPT:$LYNX_SCRIPT STOP"
-			echo "Use --record to create it."
-			exit 5
-		fi
+		check_lynx
 		create_backup
 		get_new_backup_name
 		dl_new_backup
 	else
-		if ! test -f $SSH_SCRIPT ; then
-			error "Missing SSH_SCRIPT:$SSH_SCRIPT STOP"
-			echo "Use --make-ssh to create it."
-			exit 5
-		fi
 		ssh_mysqldump
 		dl_new_backup
 	fi
