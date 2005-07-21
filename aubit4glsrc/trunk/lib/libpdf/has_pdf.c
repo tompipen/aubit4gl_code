@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.23 2005-07-14 14:11:31 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.24 2005-07-21 18:28:22 mikeaubury Exp $
 #*/
 
 /**
@@ -609,9 +609,12 @@ A4GL_pdf_metric (int a, char c, struct pdf_rep_structure *p)
   if (c == 'c')
     {
       A4GL_debug ("metric C %d %c", a, c);
-      return (double) ((double) a *
-		       PDF_stringwidth (p->pdf_ptr, "W", p->font,
-					p->font_size));
+      if (p->pdf_ptr) {
+      return (double) ((double) a * PDF_stringwidth (p->pdf_ptr, "W", p->font, p->font_size));
+      } else {
+      return (double) ((double) a * 8);
+      }
+
     }
   else
     {
