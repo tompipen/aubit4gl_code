@@ -28,9 +28,10 @@ MAIN
   IF sqlca.sqlawarn[4] != "W" THEN
 	  DISPLAY 
 		"An warning was not issued after a select with less variables then into"
+	display sqlca.sqlawarn
 		LET exitStatus = 1
 	END IF
-
+	
 	DROP TABLE xpto
 	EXIT PROGRAM exitStatus
 END MAIN

@@ -22,6 +22,7 @@ define a,b,c char(10)
 
 #display "One to many"
 	initialize a,b,c to null
+	
 	select * into a,b,c from t1
 	call dodisplay(a,b,c)
 #display "end."
