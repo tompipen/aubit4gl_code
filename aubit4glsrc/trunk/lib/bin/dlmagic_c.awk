@@ -25,7 +25,6 @@ function pind(rtype,rname) {
 
 
 BEGIN {
-selfonly=1
 FS="[ 	,]+"
 print "/*"
 print " * lib=" lib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
@@ -208,6 +207,8 @@ if (c==0) {
 	printf("void");
 }
 print ");"
+
+printf("static x_func_%s func_%s;\n",funccnt,funccnt)
 }
 
 print "#ifdef DEBUG_SPEC"
