@@ -20,8 +20,11 @@
 
 %%
 [\r] ;
-[\n] 	{if (ignorekw==1) {graphics_mode=0;return KW_NL;} else {graphics_mode=0;REJECT; }}
+[\n] 	{ if (ignorekw==1) {graphics_mode=0;return KW_NL;} else {graphics_mode=0;REJECT; }}
+<escaped>[\n] 	{ if (ignorekw==1) {graphics_mode=0;return KW_NL;} else {graphics_mode=0;REJECT; }}
 [ ]	{ if (ignorekw==1) return KW_WS; }
+<escaped>[ ]	{ if (ignorekw==1) return KW_WS; }
+
 [\t]	{ 	
 		if (ignorekw==1) {return KW_TAB;}
 	}
@@ -35,6 +38,7 @@
 		BEGIN INITIAL;
 		if (graphics_mode) graphics_mode=0;
 		else graphics_mode=1;
+
 		if (ignorekw==1) {
 			return KW_NONSPACE;
 		}
@@ -46,8 +50,12 @@
 			REJECT;
 	}
 	strcpy(yylval.str,yytext);
-
+	printf("Looking...");
 	if (graphics_mode) {
+		int test_extend=0;
+	        if (A4GL_isyes(acl_getenv("EXTENDED_GRAPHICS"))||extended_graphics==1) { 
+			test_extend=1;
+		}
 		if (
 			strcmp(yytext,"+")==0 ||
 			strcmp(yytext,"p")==0 ||
@@ -55,15 +63,23 @@
 			strcmp(yytext,"b")==0 ||
 			strcmp(yytext,"d")==0 ||
 			strcmp(yytext,"-")==0 ||
-			strcmp(yytext,"|")==0 ) {
-			sprintf(yylval.str,"\n%s",yytext);
-			return  GRAPH_CH;
+			strcmp(yytext,"|")==0 ||
+			(test_extend && ( 
+				strcmp(yytext,"^")==0 ||
+				strcmp(yytext,"v")==0 ||
+				strcmp(yytext,"<")==0 ||
+				strcmp(yytext,">")==0 ||
+				strcmp(yytext,"+")==0))) {
+
+						sprintf(yylval.str,"\n%s",yytext);
+						return  GRAPH_CH;
 		}
 	}
+
  	A4GL_debug("CH : %s\n",yytext);  
 	return CH;
 }
-
+"]"		{ strcpy(yylval.str, yytext); return(CLOSE_SQUARE);}
 "\\"		{ if (ignorekw==0) REJECT; BEGIN escaped; }
 "["		{ strcpy(yylval.str, yytext); return(OPEN_SQUARE);}
 "]"		{ strcpy(yylval.str, yytext); return(CLOSE_SQUARE);}
@@ -71,22 +87,6 @@
 --! 	{if (in_screen_section) REJECT; }
 	
 --[^!].* 	{if (in_screen_section) REJECT; }
-
-[pdqb]  {
-        if (ignorekw==0) REJECT;
-        if (graphics_mode==0) REJECT;
-        sprintf(yylval.str, "\n%s",yytext);
-        return (GRAPH_CH);
-}
-
-[v<>+^] {
-        if (graphics_mode==0) REJECT;
-	if (A4GL_isyes(acl_getenv("EXTENDED_GRAPHICS"))) {
-			if (extended_graphics==0) { REJECT; }
-	}
-        sprintf(yylval.str, "\n%s",yytext);
-        return (GRAPH_CH);
-}
 
 "uses extended" 	{
 			if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_USES_EXTENDED;
@@ -315,15 +315,29 @@ on[	 ]beginning 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); r
 }
 [a-zA-Z\_0-9]+[a-zA-Z\_0-9]*	{
 if (ignorekw!=1) REJECT;
-if (graphics_mode) {
-	if (strchr(yytext,'p')) REJECT;
-	if (strchr(yytext,'q')) REJECT;
-	if (strchr(yytext,'b')) REJECT;
-	if (strchr(yytext,'d')) REJECT;
-	if (strchr(yytext,'-')) REJECT;
-	if (strchr(yytext,'|')) REJECT;
-	if (strchr(yytext,'+')) REJECT;
+
+        if (graphics_mode) {
+                int test_extend=0;
+                if (A4GL_isyes(acl_getenv("EXTENDED_GRAPHICS"))||extended_graphics==1) {
+                        test_extend=1;
+                }
+                if (
+                        strcmp(yytext,"+")==0 ||
+                        strcmp(yytext,"p")==0 ||
+                        strcmp(yytext,"q")==0 ||
+                        strcmp(yytext,"b")==0 ||
+                        strcmp(yytext,"d")==0 ||
+                        strcmp(yytext,"-")==0 ||
+                        strcmp(yytext,"|")==0 ||
+                        (test_extend && (
+                                strcmp(yytext,"^")==0 ||
+                                strcmp(yytext,"v")==0 ||
+                                strcmp(yytext,"<")==0 ||
+                                strcmp(yytext,">")==0 ))) { REJECT;}
+
+
 }
+
 strcpy(yylval.str, yytext);
  A4GL_debug("NAMED : %s\n",yytext); 
 	A4GL_debug("NAMED : %s\n",yytext);
@@ -333,8 +347,11 @@ return(NAMED);}
 .	{
         if (ignorekw==0) REJECT;
 	strcpy(yylval.str,yytext);
-
 	if (graphics_mode) {
+		int test_extend=0;
+	        if (A4GL_isyes(acl_getenv("EXTENDED_GRAPHICS"))||extended_graphics==1) { 
+			test_extend=1;
+		}
 		if (
 			strcmp(yytext,"+")==0 ||
 			strcmp(yytext,"p")==0 ||
@@ -342,11 +359,19 @@ return(NAMED);}
 			strcmp(yytext,"b")==0 ||
 			strcmp(yytext,"d")==0 ||
 			strcmp(yytext,"-")==0 ||
-			strcmp(yytext,"|")==0 ) {
-			sprintf(yylval.str,"\n%s",yytext);
-			return  GRAPH_CH;
+			strcmp(yytext,"|")==0 ||
+			(test_extend && ( 
+				strcmp(yytext,"^")==0 ||
+				strcmp(yytext,"v")==0 ||
+				strcmp(yytext,"<")==0 ||
+				strcmp(yytext,">")==0 ))) {
+
+						sprintf(yylval.str,"\n%s",yytext);
+						return  GRAPH_CH;
 		}
 	}
+
+
  A4GL_debug("CH : %s\n",yytext);  
 	if (yydebug) printf("%s\n",yytext);
 return CH;

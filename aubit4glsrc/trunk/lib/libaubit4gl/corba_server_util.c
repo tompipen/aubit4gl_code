@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.15 2005-07-19 19:16:37 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.16 2005-07-21 16:52:35 mikeaubury Exp $
 #
 */
 
@@ -351,15 +351,6 @@ char *A4GL_strcat(char *dest,char *src,char *f,int l,int sd) {
 		A4GL_debug("Long string : %s\n",buff);
 	}
 
-// Does it look Good ?
-{
-	int a;
-	for (a=0;a<lsrc;a++) {
-		if (!isprint(src[a])&&src[a]!='\n'&&!ispunct(src[a])) {
-			A4GL_debug("Possible bad char @%d for string '%s' (%d)\n",a,src,strlen(src));
-		}
-	}
-}
 }
 #endif
 	

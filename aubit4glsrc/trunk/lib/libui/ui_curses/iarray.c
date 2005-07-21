@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.103 2005-07-14 11:32:56 mikeaubury Exp $
+# $Id: iarray.c,v 1.104 2005-07-21 16:52:39 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.103 2005-07-14 11:32:56 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.104 2005-07-21 16:52:39 mikeaubury Exp $";
 #endif
 
 /**
@@ -689,8 +689,12 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 
       A4GL_mja_pos_form_cursor (mform);
       abort_pressed = 0;
+
       a = A4GL_getch_win ();
-      if (a!=0&&a!=-1) { A4GL_evt_not_idle(evt); }
+      if (abort_pressed) { a = A4GLKEY_INTERRUPT; }
+
+      A4GL_debug("a=%d",a);
+      if (a!=0 && a!=-1) { A4GL_evt_not_idle(evt); }
 
 
       if (A4GL_is_special_key (a, A4GLKEY_ACCEPT))
@@ -711,11 +715,6 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 
 
 
-
-      if (abort_pressed)
-	{
-	  a = A4GLKEY_INTERRUPT;
-	}
       A4GL_debug ("calling set_last_key : %d", a);
       A4GL_set_last_key (a);
     }
