@@ -55,7 +55,7 @@ define n integer
 format
 first page header
 	print column 2.5 inches;
-	print image mv_logo AS JPEG
+	print image mv_logo AS JPEG SCALED BY 0.25
 	skip to 3 inches;
 	call pdf_function("set_font_size",16)
 	print column 2 inches,"Table Dump First Page"

@@ -410,14 +410,19 @@ print_file_command : PRINT_FILE pf_char_or_var opt_semi {
 
 
 print_img_command : PRINT_IMAGE blob_var img_types opt_scaling opt_semi { 
-	print_report_print_img($<str>4,$<str>2,$<str>3,$<str>5);
+	print_expr($<ptr>4);
+	print_report_print_img("",$<str>2,$<str>3,$<str>5);
 } 
 ;
 
 opt_scaling :
-	{ strcpy($<str>$,A4GL_get_default_scaling());}
-	| SCALED_BY fgl_expr_c { strcpy($<str>$,$<str>2); strcat($<str>$,$<str>2); }
-	| SCALED_BY fgl_expr_c KW_COMMA fgl_expr_c {sprintf($<str>$,"%s %s",$<str>2,$<str>4);}
+	{ $<ptr>$=A4GL_new_expr(A4GL_get_default_scaling());}
+	| SCALED_BY fgl_expr_c { 
+			$<ptr>$=A4GL_append_expr_expr($<ptr>2,$<ptr>2);
+	}
+	| SCALED_BY fgl_expr_c KW_COMMA fgl_expr_c {
+			$<ptr>$=A4GL_append_expr_expr($<ptr>2,$<ptr>4);
+	}
 ;
 
 img_types : 	

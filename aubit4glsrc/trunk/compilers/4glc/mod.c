@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.224 2005-07-14 14:07:55 mikeaubury Exp $
+# $Id: mod.c,v 1.225 2005-07-21 09:43:16 mikeaubury Exp $
 #
 */
 
@@ -4133,6 +4133,15 @@ void *
 A4GL_append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
 {
   struct expr_str *start;
+  if (orig_ptr==second_ptr) {
+	  struct expr_str *new_ptr;
+	  // duplication of ourselves...
+	  new_ptr=malloc(sizeof(struct expr_str));
+	  new_ptr->next=0;
+	  new_ptr->expr=strdup(orig_ptr->expr);
+	  return A4GL_append_expr_expr (new_ptr,orig_ptr);
+	  
+  }
   A4GL_debug ("MJA A4GL_append_expr_expr %p %p", orig_ptr, second_ptr);
   start = orig_ptr;
   if (orig_ptr->next != 0)

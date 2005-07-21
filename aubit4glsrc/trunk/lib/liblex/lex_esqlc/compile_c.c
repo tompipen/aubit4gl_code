@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.240 2005-07-21 09:03:54 mikeaubury Exp $
+# $Id: compile_c.c,v 1.241 2005-07-21 09:43:17 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.240 2005-07-21 09:03:54 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.241 2005-07-21 09:43:17 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3926,8 +3926,7 @@ LEXLIB_print_report_print_file (char *fname, char *semi)
 void
 LEXLIB_print_report_print_img (char *scaling, char *blob, char *type, char *semi)
 {
-  printc ("%s A4GL_pdf_blob_print(&_rep,&%s,\"%s\",%s);\n", scaling,
-	  blob, type, semi);
+  printc ("A4GL_pdf_blob_print(&_rep,&%s,\"%s\",%s);\n", blob, type, semi);
 }
 
 /**
