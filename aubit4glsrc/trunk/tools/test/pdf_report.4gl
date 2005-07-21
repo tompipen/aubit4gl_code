@@ -1,3 +1,4 @@
+database test1
 #This program demonstrates ussage of PDF report capability in Aubit 4gl
 
 define mv_logo byte
@@ -9,8 +10,7 @@ main
 define t,c char(20)
 define n integer
 
-#database stores7
-database test1
+locate mv_logo in file "logo.jpg"    # Low quality Aubit logo...
 
 
 #You may want to try with a small mod, change it to an order by on the select
@@ -35,7 +35,6 @@ display "START"
     start report r1  to "rr1.pdf"
 	
 	foreach c1 into t,c,n
-        	display "Processing table ", t clipped
 			output to report r1 (t,c,n)
 	end foreach
 	
@@ -55,6 +54,9 @@ define n integer
 
 format
 first page header
+	print column 2.5 inches;
+	print image mv_logo AS JPEG
+	skip to 3 inches;
 	call pdf_function("set_font_size",16)
 	print column 2 inches,"Table Dump First Page"
 
@@ -70,7 +72,6 @@ on every row
 
 before group of t
 	skip to top of page
-	display "Processing table: ", t
 	print "";
 	call pdf_function("set_font_size",20);
 	call pdf_function("set_parameter","underline","true");
