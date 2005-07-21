@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.241 2005-07-21 09:43:17 mikeaubury Exp $
+# $Id: compile_c.c,v 1.242 2005-07-21 12:38:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.241 2005-07-21 09:43:17 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.242 2005-07-21 12:38:25 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -928,7 +928,15 @@ print_output_rep (struct rep_structure *rep)
   printc ("_rep.bottom_margin= A4GL_set_report_dim_int(\"BOTTOM MARGIN\",%d);\n", rep->bottom_margin);
   printc ("_rep.left_margin= A4GL_set_report_dim_int(\"LEFT MARGIN\",%d);\n", rep->left_margin);
   printc ("_rep.right_margin= A4GL_set_report_dim_int(\"RIGHT MARGIN\",%d);\n", rep->right_margin);
+
   printc ("_rep.page_length= A4GL_set_report_dim_int(\"PAGE LENGTH\",%d);\n", rep->page_length);
+
+  if (rep->top_of_page&&strlen(rep->top_of_page)) {
+	  printc ("strcpy(_rep.top_of_page, %s);", rep->top_of_page); 
+  } else {
+	  printc ("strcpy(_rep.top_of_page, "");", rep->top_of_page); 
+  }
+
   printc ("_rep.header=0;\n");
   printc ("_rep.finishing=0;\n");
   printc ("_rep.repName=_reportName;\n");
