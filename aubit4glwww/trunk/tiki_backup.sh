@@ -4,109 +4,35 @@
 # - Creates backup database dump file using choosen method
 # - Creates backup of all files in Tiki dir that changed since installation
 # - Then downloads both to local machine
-# $Id: tiki_backup.sh,v 1.4 2005-07-21 11:20:50 afalout Exp $
+# $Id: tiki_backup.sh,v 1.5 2005-07-22 06:16:20 afalout Exp $
+# See --help and --man for instructions
 # Please report bugs to andrej@dontspam.falout.org
-#-----------------------------------------------------------------------------
-# Prerequisites:
-#
-#	- scp (to retrive backup files from remote server)
-#	- expect (To run commands that need password at run-time)
-#	- bzip2 (To compress backup file)
-#	- Script to perform scp automatically, suplying username/password (SCP_SCRIPT)
-#		use --make-scp option to create it
-#	- ssh login on the TikiWiki server
-#
-#	Only for 'tiki' method:
-#	- lynx (To trigger TikiWiki to create a backup)
-#   - Lynx pre-recorded command keys script (LYNX_SCRIPT) (use --record option 
-#		to create it)
-#
-#	Only for 'mysql' method (DEFAULT)
-#   - ssh (to remotely execute mysqldump)
-#	- Script to perform ssh automatically, suplying username/password (SSH_SCRIPT)
-#		use --make-ssh option to create it
-#   - mysqldump on TikiWiki server
-#	- login information for mysql database
-#
-# Installation:
-#	1: Check that all listed prerequisites exist on your system
-#	2: Make this script executable (chmod +x ...)
-#	3: Check that scipts required for choosen method are created. Use
-#		--record | --make-scp | --make-ssh options to create them
-#	4: run this script from command line, to verify it works on your system
-#		Example: ./tiki_backup.sh --tiki-site=aubit --db-pass=MyPass
-#	5: To create script in /etc/cron.daily directory to invoke it with
-#		same flags as tested in step 4, add --cron flags to flags used in
-#		step 4
-#
-# Methods for performing backup:
-#	1. Mysql (DEFAULT)
-#		Uses SSH to run mysqldump on remote system, then downloads created
-#		backup file using SCP
-#	2. Tiki 
-#		Uses lynx web browser to trigger a TikiWiki web page that creates
-#		backup file, then downloads created file using SCP
-#
-#
-# Todo:
-# - silent does not work with Tiki method (lynx hangs when redirected to file)
-# - remove backups older then x days from web site, created by Tiki method
-# - Find a way to kill lynx if it does not exit in X seconds (no response)
-# - Enable wget as alternative to scp, for use on sites where user does not
-#	have a ssh loging (tiki method only)
-#
 #############################################################################
 
-############################# Global Settings ###############################
+######################## Read Global Settings ###############################
 
-DOMAIN=`hostname -d`
-if test -f "/etc/custom/tiki_backup-$DOMAIN.conf"; then
-	. "/etc/custom/tiki_backup-$DOMAIN.conf"
+MY_DOMAIN=`hostname -d`
+#Read global configuration file (system wide)
+GLOBAL_CONF="/etc/custom/tiki_backup-$MY_DOMAIN.conf"
+if test -f "$GLOBAL_CONF"; then
+	. "$GLOBAL_CONF"
 else
-	if test -f "/etc/tiki_backup-$DOMAIN.conf"; then
-		. "/etc/tiki_backup-$DOMAIN.conf"
+	GLOBAL_CONF="/etc/tiki_backup-$MY_DOMAIN.conf"
+	if test -f "$GLOBAL_CONF"; then
+		. "$GLOBAL_CONF"
 	else
-		#Defaults that should work for most Linux installations, used in 
-		#absense of .conf files tested for above. To override, preferably create 
-		#one of configuration files as tested for above. If you instead choose
-		#to modify this script, be aware that all changes will be lost on 
-		#next update of this script.
-		
-		#Directory to put created Lynx script:
-		#Default: "/usr/local/bin"
-		#LYNX_SCRIPT_DIR="/usr/local/bin"
-		
-		#Directory to put SCP and SSH expect scripts"
-		#Default: "/usr/local/share"
-		#SCP_BASE="/usr/local/share"
-		
-		#Location to put created backup files in; if it does not
-		#exist, it will be created
-		#Default: "/var/spool/backups/TikiWiki"
-		#BACKUP_BASE="/var/spool/backups/TikiWiki"
-		
-		#How many days to keep backups
-		#Default: 30
-		#KEEP_DAYS=30
-		
-		#Are the backups older then KEEP_DAYS to be deleted or not (yes|no)
-		#Default: yes
-		#REMOVE_OLD="yes"
-		
-		#Minimum number of backups to ALLWAYS keep, regardles of how old they are
-		#This is to prevent an system clock error from deleting all backups we have
-		#Default: 12
-		#ALLWAYS_KEEP=12
-		
-		#Do we have a SSH login on TikiWiki server; if no, we must use 'tiki'
-		#method of creating database backup, and use wget to download it.
-		#Note that without SSH login, we cant backup Tiki files
-		#Default: yes
-		#HAVE_SSH_ACCOUNT=yes
-		
-		if test "$SH_DEBUG" = "1"; then
-			echo "NOTE: using default settings"
-		fi
+		GLOBAL_CONF="none"
+	fi
+fi
+
+#Read global configuration file (user private)
+#NOTE: all settings defined in user private configuration file will
+#OVERRIDE settings from system-wide configuration file
+USER_GLOBAL_CONF="~/.tiki_backup-$MY_DOMAIN.conf"
+if test -f "$USER_GLOBAL_CONF"; then
+	. "$USER_GLOBAL_CONF"
+	if test "$GLOBAL_CONF" = "none"; then
+		GLOBAL_CONF="$USER_GLOBAL_CONF"
 	fi
 fi
 
@@ -115,52 +41,255 @@ function site_list () {
 #################################
 #Define a list of recognised sites
 
-	#all sites we know about. When adding sites, add it both here and in 'case'
-	#statement below
-	ALL_SITES="aubit apps"
+	SITE_CONF_LIST="`ls /etc/custom/tiki_backup-site-*.conf 2> /dev/null`"
+	SITE_CONF_LIST="`ls /etc/tiki_backup-site-*.conf 2> /dev/null` $SITE_CONF_LIST"
+	SITE_CONF_LIST="`ls ~/.tiki_backup-site-*.conf 2> /dev/null` $SITE_CONF_LIST"
+	ALL_SITES=""
+	for conf in $SITE_CONF_LIST; do
+		AN_SITE=`echo "$conf" | sed -e 's/\/etc/\//' -e 's/custom\///'`
+		THE_SITE=`echo $AN_SITE | cut --field=3 --delimiter="-" | cut --field=1 --delimiter="."`
+		ALL_SITES="$ALL_SITES $THE_SITE"
+	done
+	
+	if test "$ALL_SITES" = ""; then
+		message "WARNING: no site configuration files found"
+	else
+		debug "ALL_SITES=$ALL_SITES"
+	fi
+	
 }
 
 #################################
 function site_settings () {
 #################################
-#Set configuration that is site dependent. To add more sites to backup,
-#modify this function ONLY
+#read configuration that is site dependent. 
 
-	case $TIKI_SITE in
-		aubit) 
-			PROJECT="aubit4gl"
-			DOMAIN="sourceforge.net"
-			SITE="$PROJECT.$DOMAIN"
-			TIKI_PATH="/tiki" 	#Path to root of tiki installation, relative to Apache htdocs root
-			SITE_URL="http://$SITE$TIKI_PATH"
-			SITE_PATH="/home/groups/a/au/$PROJECT/htdocs$TIKI_PATH"
-			DB_NAME="$PROJECT"
-			DB_USER="$PROJECT"
-			DB_HOST="mysql-a.$DOMAIN"
-			;;
-		apps)
-			PROJECT="apps4gl"
-			DOMAIN="sourceforge.net"
-			SITE="$PROJECT.$DOMAIN"
-			TIKI_PATH=""
-			SITE_URL="http://$SITE"
-			SITE_PATH="/home/groups/a/ap/$PROJECT/htdocs$TIKI_PATH"
-			DB_NAME="$PROJECT"
-			DB_USER="$PROJECT"
-			DB_HOST="mysql-a.$DOMAIN"
-			;;
-		*) error "Site $TIKI_SITE not recognised"
+	CONF_PATHS="/etc/custom /etc ~/."
+	
+	site_list
+	HAVE_CONF=0
+	for an_site in $ALL_SITES; do
+		if test "$TIKI_SITE" = "$an_site"; then
+			for an_path in $CONF_PATHS; do
+				if test -f "$an_path/tiki_backup-site-$TIKI_SITE.conf"; then
+					. "$an_path/tiki_backup-site-$TIKI_SITE.conf"
+					HAVE_CONF=1
+					break
+				fi
+			done
+		fi
+	done
+
+	
+	if test "$HAVE_CONF" = "0"; then
+		message "Site $TIKI_SITE not recognised"
+		read -p "Would you like to create a default demonstration config file for this site? (N/y)"
+		if test "$REPLY" = "y"; then 
+			make_default_site_conf "$TIKI_SITE"
+		else
+			error "You ned to crate a configuration file for $TIKI_SITE site first."
 			exit 4
-	esac
+		fi
+	fi
+	
+}
+
+#########################################
+function make_default_site_conf () {
+#########################################
+#Create default (demonstration) site configuration file
+
+	THIS_CONF="/etc/tiki_backup-site-$1.conf"
+	touch $THIS_CONF
+	if test ! -f "$THIS_CONF" ; then
+		THIS_CONF="$HOME/.tiki_backup-site-$1.conf"
+	fi
+	
+	echo "#Tiki_backup configuration file for site $1" > "$THIS_CONF"
+	echo "#This is a demonstration configuration, automatically generated, for" >> "$THIS_CONF" 
+	echo "#a Tiki site of Aubit project; use it as a starting point, change" >> "$THIS_CONF"
+	echo "#settings to suit your web site" >> "$THIS_CONF"
+	echo "PROJECT="aubit4gl"" >> "$THIS_CONF"
+	echo "DOMAIN="sourceforge.net"" >> "$THIS_CONF"
+	echo "SITE="\$PROJECT.\$DOMAIN"" >> "$THIS_CONF"
+	echo "TIKI_PATH="/tiki" 	#Path to root of tiki installation, relative to Apache htdocs root" >> "$THIS_CONF"
+	echo "SITE_URL="http://\$SITE\$TIKI_PATH"" >> "$THIS_CONF"
+	echo "SITE_PATH="/home/groups/a/au/\$PROJECT/htdocs\$TIKI_PATH"" >> "$THIS_CONF"
+	echo "DB_NAME="\$PROJECT"" >> "$THIS_CONF"
+	echo "DB_USER="\$PROJECT"" >> "$THIS_CONF"
+	echo "DB_HOST="mysql-a.\$DOMAIN"" >> "$THIS_CONF"
+	echo "" >> "$THIS_CONF"
+	
+	echo "=============================================================="
+	echo "Default demonstration configuration file for site $1 created as:"
+	echo "$THIS_CONF"
+	echo "It contains settings for a Tiki web site of Aubit project"
+	echo "You MUST edit it to reflect YOUR site settings before you can use it"
+	echo "=============================================================="
+	exit 0
+	
+	#PROJECT="apps4gl"
+	#TIKI_PATH=""
+	#SITE_PATH="/home/groups/a/ap/$PROJECT/htdocs$TIKI_PATH"
+	
+}
+
+################################################
+function man_page () {
+################################################
+#Show instructions to the user (man page)
+	
+echo " Script to perform automatic backup of TikiWiki web site."
+echo " - Creates backup database dump file using choosen method"
+echo " - Creates backup of all files in Tiki dir that changed since installation"
+echo " - Then downloads both to local machine"
+echo " $Id: tiki_backup.sh,v 1.5 2005-07-22 06:16:20 afalout Exp $"
+echo " Please report bugs to andrej@dontspam.falout.org"
+echo "-----------------------------------------------------------------------------"
+echo " Prerequisites:"
+echo "---------------"
+echo "  - scp (to retrive backup files from remote server)"
+echo "  - expect (To run commands that need password at run-time)"
+echo "  - bzip2 (To compress backup file)"
+echo "  - Script to perform scp automatically, suplying username/password (SCP_SCRIPT)"
+echo "    use --make-scp option to create it"
+echo "  - ssh login on the TikiWiki server"
+echo ""
+echo "  Only for 'tiki' method:"
+echo "    - lynx (To trigger TikiWiki to create a backup)"
+echo "    - Lynx pre-recorded command keys script (LYNX_SCRIPT) (use --record option" 
+echo "      to create it)"
+echo ""
+echo "  Only for 'mysql' method (DEFAULT)"
+echo "    - ssh (to remotely execute mysqldump)"
+echo "    - Script to perform ssh automatically, suplying username/password (SSH_SCRIPT)"
+echo "      use --make-ssh option to create it"
+echo "    - mysqldump on TikiWiki server"
+echo "    - login information for mysql database"
+echo ""
+echo "Configuration:"
+echo "---------------"
+echo " Global configuration files:" 
+echo "   - tiki_backup-`hostname -d`.conf in /etc/custom or /etc "
+echo "   - .tiki_backup-`hostname -d`.conf in your home directory ($HOME)"
+echo "	   NOTE: If global config is found in user's home directory, it will"
+echo "           overwrite system-wide settings"
+echo "     If none is found, default one will be automatically crated"
+echo ""
+echo " Site specific configuration files:"
+echo "   - tiki_backup-site-SITENAME.conf in  /etc or /etc/custom"
+echo "   - .tiki_backup-site-$1.conf in your home directory ($HOME)"
+echo "	   NOTE: If site config is found in user's home directory, it will"
+echo "           overwrite system-wide settings"
+echo "     If none is found, you will be offered to automatically crate it"
+echo "     and populate it with demonstration settings"
+echo "     SITENAME is taken from name supplied using --tiki-site flag"
+echo ""
+echo "Installation:"
+echo "-------------"
+echo "  1: Check that all listed prerequisites exist on your system"
+echo "  2: Make this script executable (chmod +x ...)"
+echo "  3: Check that scipts required for choosen method are created. Use"
+echo "     --record | --make-scp | --make-ssh options to create them"
+echo "  4: run this script from command line, to verify it works on your system"
+echo "     Example: ./tiki_backup.sh --tiki-site=aubit --db-pass=MyPass"
+echo "  5: To create script in /etc/cron.daily directory to invoke it with"
+echo "     same flags as tested in step 4, add --cron flags to flags used in"
+echo "     step 4"
+echo ""
+echo "Methods for performing database backup:"
+echo "---------------------------------------"
+echo "  1. Mysql (DEFAULT)"
+echo "      Uses SSH to run mysqldump on remote system, then downloads created"
+echo "      backup file using SCP"
+echo "  2. Tiki" 
+echo "      Uses lynx web browser to trigger a TikiWiki web page that creates"
+echo "      backup file, then downloads created file using SCP, or wget if user"
+echo "      does not have a SSH account on the Tiki server"
+echo ""
+echo "Features:"
+echo "----------"
+echo "  - can use scp or wget to download created backups"
+echo "  - cleans old backups automatically on each run, depending on settings"
+echo "  - separate configuration files for system-wide and user specific"
+echo "  - separate configuration for each site to backup"
+echo "  - automatically creates needed scripts, based on user input"
+echo "  - automatically creates default configuration files"
+echo "  - can use mysqldump or TikiWiki functionality to create db backups"
+echo "    NOTE: do not use Tiki functionality with TikiWiki version 1.8.5"
+echo "  - back ups both database and files changed/added since installation in Tiki directory"
+echo "  - can backup multiple sites in one invocation (if db passwords are different, and" 
+echo "    when mysql methos is used, DB password has to be specified in site config file)"
+echo "  - can backup database on server with no SSH access (but not files)"
+echo "  - once configured, runs fully automatic with no user input needed"
+echo "  - can install itself as daily cron script"
+echo "  - ..."
+echo ""
+
 
 }
 
-##############################################################################
-#
-#								FUNCTIONS
-#          User should not need to change anything below this line
-#
-##############################################################################
+##############################################
+function make_default_global_conf () {
+##############################################
+#Create default global configuration file
+	
+	GLOBAL_CONF="/etc/tiki_backup-$MY_DOMAIN.conf"
+
+	echo "#Defaults that should work for most Linux installations" > $GLOBAL_CONF
+	echo "" >> $GLOBAL_CONF
+	echo "#Directory to put created Lynx script:" >> $GLOBAL_CONF
+	echo "#Default: "/usr/local/bin"" >> $GLOBAL_CONF
+	echo "#LYNX_SCRIPT_DIR="/usr/local/bin"" >> $GLOBAL_CONF
+	echo "" >> $GLOBAL_CONF
+	echo "#Directory to put SCP and SSH expect scripts" >> $GLOBAL_CONF
+	echo "#Default: "/usr/local/share"" >> $GLOBAL_CONF
+	echo "#SCP_BASE="/usr/local/share"" >> $GLOBAL_CONF
+	echo "" >> $GLOBAL_CONF
+	echo "#Location to put created backup files in; if it does not" >> $GLOBAL_CONF
+	echo "#exist, it will be created" >> $GLOBAL_CONF
+	echo "#Default: "/var/spool/backups/TikiWiki"" >> $GLOBAL_CONF
+	echo "#BACKUP_BASE="/var/spool/backups/TikiWiki"" >> $GLOBAL_CONF
+	echo "" >> $GLOBAL_CONF
+	echo "#How many days to keep backups" >> $GLOBAL_CONF
+	echo "#Default: 30" >> $GLOBAL_CONF
+	echo "#KEEP_DAYS=30" >> $GLOBAL_CONF
+	echo "" >> $GLOBAL_CONF
+	echo "#Are the backups older then KEEP_DAYS to be deleted or not (yes|no)" >> $GLOBAL_CONF
+	echo "#Default: yes" >> $GLOBAL_CONF
+	echo "#REMOVE_OLD="yes"" >> $GLOBAL_CONF
+	echo "" >> $GLOBAL_CONF
+	echo "#Minimum number of backups to ALLWAYS keep, regardles of how old they are" >> $GLOBAL_CONF
+	echo "#This is to prevent an system clock error from deleting all backups we have" >> $GLOBAL_CONF
+	echo "#Default: 12" >> $GLOBAL_CONF
+	echo "#ALLWAYS_KEEP=12" >> $GLOBAL_CONF
+	echo "" >> $GLOBAL_CONF
+	echo "#Do we have a SSH login on TikiWiki server; if no, we must use 'tiki'" >> $GLOBAL_CONF
+	echo "#method of creating database backup, and use wget to download it." >> $GLOBAL_CONF
+	echo "#Note that without SSH login, we cant backup Tiki files" >> $GLOBAL_CONF
+	echo "#Default: yes" >> $GLOBAL_CONF
+	echo "#HAVE_SSH_ACCOUNT=yes" >> $GLOBAL_CONF
+	echo "" >> $GLOBAL_CONF
+	echo "#Which metod to use for downloading files from web server" >> $GLOBAL_CONF
+	echo "#Options are: scp | wget (NOT IMPLEMENTED)" >> $GLOBAL_CONF
+	echo "#Default: scp" >> $GLOBAL_CONF
+	echo "#DL_METHOD=scp" >> $GLOBAL_CONF
+	echo "" >> $GLOBAL_CONF
+		
+	if test -f "$GLOBAL_CONF"; then
+		echo "-------------------------------------------------------------------"
+		echo "NOTE: Default global configuration file for tiki_backup was created:"
+		echo "$GLOBAL_CONF"
+		echo " You can edit it to adjust preferences"
+		echo "-------------------------------------------------------------------"
+	else
+		echo "-------------------------------------------------------------------"
+		echo "NOTE: Attempt to create default configuration file:"
+		echo "$GLOBAL_CONF"
+		echo "FAILED"
+		echo "-------------------------------------------------------------------"
+	fi
+}	
 
 #########################################
 function remove_old_tiki_backups () {
@@ -411,16 +540,23 @@ function dl_new_backup () {
 ##################################
 #Download created db backup file to local machine (both methods)
 
+
 	if ! test -d "$BACKUPS_PATH" ; then
 		mkdir -p "$BACKUPS_PATH"
 	fi
-	
-	if test "$METHOD" = "tiki"; then
-		$SCP_SCRIPT $SITE_PATH/tiki/backups/$CREATED_BACKUP*.sql > /tmp/tiki_scp.log 2>&1
-		THE_RESULT=`ls ./$CREATED_BACKUP*.sql`
+
+	if test "$DL_METHOD" = "wget"; then
+		error "DL_METHOD $DL_METHOD not implemented. STOP"
+		exit 1
 	else
-		$SCP_SCRIPT $SITE_PATH/$CREATED_BACKUP > /tmp/tiki_scp.log 2>&1
-		THE_RESULT=`ls ./$CREATED_BACKUP`
+		#use scp method to dl files
+		if test "$METHOD" = "tiki"; then
+			$SCP_SCRIPT $SITE_PATH/tiki/backups/$CREATED_BACKUP*.sql > /tmp/tiki_scp.log 2>&1
+			THE_RESULT=`ls ./$CREATED_BACKUP*.sql`
+		else
+			$SCP_SCRIPT $SITE_PATH/$CREATED_BACKUP > /tmp/tiki_scp.log 2>&1
+			THE_RESULT=`ls ./$CREATED_BACKUP`
+		fi
 	fi
 
 	if test "$THE_RESULT" != ""; then
@@ -480,8 +616,13 @@ function ssh_mysqldump () {
 		error "--db-pass= was not specified. STOP"
 		exit 3
 	fi
-
-	CREATED_BACKUP="backup.sql.bz2"
+	get_username
+	if test "$LOGIN_USERNAME" = ""; then
+		error "LOGIN_USERNAME is empty; STOP"
+		exit 4
+	fi
+	
+	CREATED_BACKUP="$LOGIN_USERNAME-DBbackup.sql.bz2"
 	
 	CMD="mysqldump --opt --user="$DB_USER" --password="$DB_PASS" --host="$DB_HOST" $DB_NAME | bzip2 > $SITE_PATH/$CREATED_BACKUP "
 
@@ -527,6 +668,23 @@ function make_cron () {
 }
 
 #######################################
+function get_username () {
+#######################################
+#Get use name that is used to log-in into remote system. Used to make
+#distinc file names between multiple users performing backups, since we
+#cant rely on file permissions or users belonging to same group, and 
+#we certanly cant leave world writable files on web server
+
+	TMP_STR=`cat "$SCP_SCRIPT" | grep "$SITE" | cut --field=1 --delimiter="@"`
+	#last field befoore cut (@) will have username
+	for field in $TMP_STR; do
+		LOGIN_USERNAME="$field"
+	done
+	#echo $LOGIN_USERNAME
+
+}
+
+#######################################
 function tar_changed_files () {
 #######################################
 #pack all files in TikiWiki installation directory that changed after a 
@@ -538,16 +696,21 @@ LOCAL_DEBUG=0
 	#are not needed in the case of restoreing the installation
 	EXCLUDE="./templates_c ./temp ./mods/Cache ./backups ./modules/cache \
 		./mods/avatars ./img/avatars './tikiwiki-*.tar.bz2' './tikiwiki-*.tar' \
-		./backup.sql.bz2"
+		./backup.sql.bz2 './*-tikiBackup.tar.bz2'"
 		
 	#File (or directory) that has a timestamp of installation date:
 	REF_FILE="./modules"
-
+	get_username
+	if test "$LOGIN_USERNAME" = ""; then
+		error "LOGIN_USERNAME is empty; STOP"
+		exit 4
+	fi
+	
 	#Name of tar file to create
 	if test "$LOCAL_DEBUG" = "1"; then	
-		NEW_TAR="/tmp/test/new.tar.bz2"
+		NEW_TAR="/tmp/test/$LOGIN_USERNAME-tikiBackup.tar.bz2"
 	else
-		NEW_TAR="./new.tar.bz2"
+		NEW_TAR="./$LOGIN_USERNAME-tikiBackup.tar.bz2"
 	fi
 
 	if test "$LOCAL_DEBUG" = "1"; then
@@ -564,7 +727,6 @@ LOCAL_DEBUG=0
 	if test "$LOCAL_DEBUG" = "1"; then	
 		NEW_FILES=`eval $FIND_CMD`
 	else
-		#SSH_CMD="NEW_FILES=\`eval $FIND_CMD\`"
 		SSH_CMD=""
 	fi
 	
@@ -581,16 +743,13 @@ LOCAL_DEBUG=0
 	if test "$LOCAL_DEBUG" = "1"; then	
 		tar -cjf $NEW_TAR $NEW_FILES
 	else
-		#SSH_CMD="$SSH_CMD; tar -cjf $NEW_TAR \$NEW_FILES"
 		SSH_CMD="cd $SITE_PATH && rm -f $NEW_TAR && tar -cjf $NEW_TAR \`$FIND_CMD\`"
-		
 		debug "Creating archive..."
 		if test "$SH_DEBUG" = "1"; then
 			$SSH_SCRIPT $SSH_CMD
 		else
 			$SSH_SCRIPT $SSH_CMD > /dev/null 2>&1
 		fi
-		
 		TMPSTAT="$?"
 		if test "$TMPSTAT" != "0"; then
 			error "$SSH_SCRIPT returned $TMPSTAT STOP"
@@ -625,7 +784,7 @@ LOCAL_DEBUG=0
 
 	if test "$LOCAL_DEBUG" = "1"; then
 		cd /tmp/test
-		tar -xjf new.tar.bz2
+		tar -xjf $NEW_TAR
 		echo "----------------------------------------------------------------"
 		find . -type f -print
 		echo "----------------------------------------------------------------"
@@ -706,6 +865,10 @@ function do_backup () {
 		make_scp
 		exit 0
 	fi
+	if test "$GET_USERNAME"; then
+		get_username
+		exit 0
+	fi
 	if test "$MAKE_SSH" = "1"; then
 		make_ssh
 		exit 0
@@ -738,6 +901,8 @@ function do_backup () {
 		dl_new_backup
 		remove_old_tiki_backups
 	else
+		#method is mysql
+		get_username
 		ssh_mysqldump
 		dl_new_backup
 		remove_old_local_backups
@@ -753,6 +918,11 @@ ALL_FLAGS="$@"
 METHOD="mysql"
 MAX_RETRY=4
 LYNX_FLAGS="-connect_timeout=60"
+
+if test "$GLOBAL_CONF" = "none"; then
+	make_default_global_conf
+fi
+
 
 #Make sure we have values for all user configurable settings:
 if test "$LYNX_SCRIPT_DIR" = ""; then
@@ -776,7 +946,9 @@ fi
 if test "$HAVE_SSH_ACCOUNT" = ""; then
 	HAVE_SSH_ACCOUNT=yes
 fi
-
+if test "$DL_METHOD" = ""; then 
+	DL_METHOD="scp"
+fi
 START_TIME=`date +%s`
 
 for flag in $ALL_FLAGS ; do
@@ -797,6 +969,10 @@ for flag in $ALL_FLAGS ; do
 			SILENT=1
 			;;
 
+		#--get-username)
+		#	GET_USERNAME=1
+		#	;;
+			
 		--db-pass=*)
 			DB_PASS=`echo $flag | cut --field=2 --delimiter="="`
 			;;
@@ -834,28 +1010,41 @@ for flag in $ALL_FLAGS ; do
 		--files-only)
 			FILES_ONLY=1
 			;;
+
+		--man)
+			man_page
+			exit 0
+			;;
 			
 		--help)
+			SH_DEBUG=0
+			site_list
+			echo " "
 			echo "Script to perform automatic backup of TikiWiki web site. Options:"
-			echo " "			
-			echo "--help    This page"
-			echo "--debug	Output additional debugging info (verbose)"
-			echo "--silent  Report only errors"
-			echo "--tiki-site=[$ALL_SITES] Tiki site to backup"
-			echo "--method=[tiki|mysql] Use Tiki backup functionality or Use mysqldump"
-			echo "--make-scp Generate script to download created backup file"
-			echo "--cron Create daily cron invocation using specified flags"
+			echo " "
+			echo "General options:"
+			echo "----------------"
+			echo "--help       This page"
+			echo "--debug      Output additional debugging info (verbose)"
+			echo "--silent     Report only errors"
+			echo "--tiki-site=[$ALL_SITES all] Tiki site to backup. If settings"
+			echo "             for supplied site name do not exist, default will be created"
+			echo "--method=[tiki|mysql] Use Tiki backup functionality, or Use mysqldump"
+			echo "--make-scp   Generate script to download created backup file"
+			echo "--cron       Create daily cron invocation using specified flags"
 			echo "--files-only Backup only static files, not database"
+			echo "--clean-tiki Remove old backups from Tiki web site, according to settings"
+			echo "--clean-local Remove old backups from local machine, according to settings"
+			echo "--man        Show man page" 
 			echo " "			
-			echo "Method=mysql options:"
+			echo "Method=mysql only options:"
+			echo "--------------------------"
 			echo "--db-pass=password Specify database password to use for mysqldump command"
-			echo "--make-ssh Generate script to execute mysqldump command remotely"
+			echo "--make-ssh         Generate script to execute mysqldump command remotely"
 			echo " "			
 			echo "Method=tiki options:"
-			echo "--record  Run lynx, record keystrokes to file"
-			echo " "			
-			echo "See also: prerequisites and installation instructions at the top"
-			echo "of file $0"
+			echo "--------------------"
+			echo "--record      Run lynx, record keystrokes to file"
 			echo " "
 			exit 0
 			;;
