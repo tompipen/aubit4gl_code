@@ -4,7 +4,7 @@
 # - Creates backup database dump file using choosen method
 # - Creates backup of all files in Tiki dir that changed since installation
 # - Then downloads both to local machine
-# $Id: tiki_backup.sh,v 1.5 2005-07-22 06:16:20 afalout Exp $
+# $Id: tiki_backup.sh,v 1.6 2005-07-22 11:51:02 afalout Exp $
 # See --help and --man for instructions
 # Please report bugs to andrej@dontspam.falout.org
 #############################################################################
@@ -143,7 +143,7 @@ echo " Script to perform automatic backup of TikiWiki web site."
 echo " - Creates backup database dump file using choosen method"
 echo " - Creates backup of all files in Tiki dir that changed since installation"
 echo " - Then downloads both to local machine"
-echo " $Id: tiki_backup.sh,v 1.5 2005-07-22 06:16:20 afalout Exp $"
+echo " $Id: tiki_backup.sh,v 1.6 2005-07-22 11:51:02 afalout Exp $"
 echo " Please report bugs to andrej@dontspam.falout.org"
 echo "-----------------------------------------------------------------------------"
 echo " Prerequisites:"
@@ -390,6 +390,7 @@ function make_scp () {
 	SCP_PASS="$REPLY"
 
 	echo "#!/usr/bin/expect -f" > $SCP_SCRIPT
+	#Timeout is set to 900 seconds - thats 15 minutes
 	echo "set timeout 900" >> $SCP_SCRIPT
 	echo "spawn scp -q $SCP_USER@$SITE:\$argv ." >> $SCP_SCRIPT
 	echo "expect \" password:\"" >> $SCP_SCRIPT
@@ -545,16 +546,29 @@ function dl_new_backup () {
 		mkdir -p "$BACKUPS_PATH"
 	fi
 
+	if test "$DL_METHOD" = "scp"; then
+		#In some cases user may not have permission to create tar file under
+		#web server root, so we have to create it in his home directory
+		DOWNLOAD_FROM="~"
+	else
+		#we will get tar with wget, so resulting file has to be under web server
+		DOWNLOAD_FROM="$SITE_PATH"
+	fi
+	
 	if test "$DL_METHOD" = "wget"; then
 		error "DL_METHOD $DL_METHOD not implemented. STOP"
 		exit 1
 	else
 		#use scp method to dl files
 		if test "$METHOD" = "tiki"; then
+			#dl a Tiki created backup
+			rm -f $CREATED_BACKUP*.sql
 			$SCP_SCRIPT $SITE_PATH/tiki/backups/$CREATED_BACKUP*.sql > /tmp/tiki_scp.log 2>&1
 			THE_RESULT=`ls ./$CREATED_BACKUP*.sql`
 		else
-			$SCP_SCRIPT $SITE_PATH/$CREATED_BACKUP > /tmp/tiki_scp.log 2>&1
+			#dl a mysqldump created backup
+			rm -f $CREATED_BACKUP
+			$SCP_SCRIPT $DOWNLOAD_FROM/$CREATED_BACKUP > /tmp/tiki_scp.log 2>&1
 			THE_RESULT=`ls ./$CREATED_BACKUP`
 		fi
 	fi
@@ -621,17 +635,23 @@ function ssh_mysqldump () {
 		error "LOGIN_USERNAME is empty; STOP"
 		exit 4
 	fi
+
+	if test "$DL_METHOD" = "scp"; then
+		#In some cases user may not have permission to create tar file under
+		#web server root, so we have to create it in his home directory
+		DOWNLOAD_FROM="~"
+	else
+		#we will get tar with wget, so resulting file has to be under web server
+		DOWNLOAD_FROM="$SITE_PATH"
+	fi
 	
 	CREATED_BACKUP="$LOGIN_USERNAME-DBbackup.sql.bz2"
 	
-	CMD="mysqldump --opt --user="$DB_USER" --password="$DB_PASS" --host="$DB_HOST" $DB_NAME | bzip2 > $SITE_PATH/$CREATED_BACKUP "
-
-	if test "$SH_DEBUG" = "1"; then	
-		echo "SSH command is : "
-		echo "$CMD"
-	fi
+	CMD="mysqldump --opt --user="$DB_USER" --password="$DB_PASS" --host="$DB_HOST" $DB_NAME | bzip2 > $DOWNLOAD_FROM/$CREATED_BACKUP "
 	
 	if test "$SH_DEBUG" = "1"; then
+		echo "SSH command is : "
+		echo "$CMD"
 		$SSH_SCRIPT $CMD
 	else
 		$SSH_SCRIPT $CMD > /dev/null 2>&1
@@ -676,11 +696,10 @@ function get_username () {
 #we certanly cant leave world writable files on web server
 
 	TMP_STR=`cat "$SCP_SCRIPT" | grep "$SITE" | cut --field=1 --delimiter="@"`
-	#last field befoore cut (@) will have username
+	#last field before @ will have username
 	for field in $TMP_STR; do
 		LOGIN_USERNAME="$field"
 	done
-	#echo $LOGIN_USERNAME
 
 }
 
@@ -690,16 +709,28 @@ function tar_changed_files () {
 #pack all files in TikiWiki installation directory that changed after a 
 #reference file into a tar file, compress, and download to local machine
 
-LOCAL_DEBUG=0
+	CD_TO="$SITE_PATH"
+	FIND_IN="."
+	PF="."
+	
+	if test "$DL_METHOD" = "scp"; then
+		#In some cases user may not have permission to create tar file under
+		#web server root, so we have to create it in his home directory
+		DOWNLOAD_FROM="~"
+	else
+		#we will get tar with wget, so resulting file has to be under web server
+		DOWNLOAD_FROM="$SITE_PATH"
+	fi
 
 	#List of directories that contain temporary or irrelevant files, that
 	#are not needed in the case of restoreing the installation
-	EXCLUDE="./templates_c ./temp ./mods/Cache ./backups ./modules/cache \
-		./mods/avatars ./img/avatars './tikiwiki-*.tar.bz2' './tikiwiki-*.tar' \
-		./backup.sql.bz2 './*-tikiBackup.tar.bz2'"
-		
+	EXCLUDE="$PF/templates_c $PF/temp $PF/mods/Cache $PF/backups $PF/modules/cache \
+		$PF/mods/avatars $PF/img/avatars '$PF/tikiwiki-*.tar.bz2' '$PF/tikiwiki-*.tar' \
+		$PF/backup.sql.bz2 '$PF/*-tikiBackup.tar.bz2' $PF/dump/new.tar $PF/new.tar.bz2 \
+		'$PF/*-DBbackup.sql.bz2'"
+
 	#File (or directory) that has a timestamp of installation date:
-	REF_FILE="./modules"
+	REF_FILE="$SITE_PATH/modules"
 	get_username
 	if test "$LOGIN_USERNAME" = ""; then
 		error "LOGIN_USERNAME is empty; STOP"
@@ -707,59 +738,35 @@ LOCAL_DEBUG=0
 	fi
 	
 	#Name of tar file to create
-	if test "$LOCAL_DEBUG" = "1"; then	
-		NEW_TAR="/tmp/test/$LOGIN_USERNAME-tikiBackup.tar.bz2"
-	else
-		NEW_TAR="./$LOGIN_USERNAME-tikiBackup.tar.bz2"
-	fi
-
-	if test "$LOCAL_DEBUG" = "1"; then
-		cd /srv/www/htdocs/tiki
-	fi
+	NEW_TAR="./$LOGIN_USERNAME-tikiBackup.tar.bz2"
+	rm -f "$NEW_TAR"
 	
 	for skip in $EXCLUDE ; do
 		#cant use -wholename since it was introduced only recently - use -path
 		EX_STRING="$EX_STRING -path '$skip' -prune -o"
 	done
-	
-	FIND_CMD="find . $EX_STRING -newer $REF_FILE -type f -print"
-	
-	if test "$LOCAL_DEBUG" = "1"; then	
-		NEW_FILES=`eval $FIND_CMD`
+
+	FIND_CMD="find $FIND_IN $EX_STRING -newer $REF_FILE -type f -print"
+	SSH_CMD="cd $CD_TO && rm -f $NEW_TAR && tar -cjf $DOWNLOAD_FROM/$NEW_TAR \`$FIND_CMD\`"
+	debug "Creating archive..."
+	if test "$SH_DEBUG" = "1"; then
+		$SSH_SCRIPT $SSH_CMD
 	else
-		SSH_CMD=""
+		$SSH_SCRIPT $SSH_CMD > /dev/null 2>&1
 	fi
-	
-	if test "$LOCAL_DEBUG" = "1"; then
-		echo "----------------------------------------------------------------"
-		echo "$NEW_FILES"
-		echo "----------------------------------------------------------------"
-	fi
-	
-	if test "$LOCAL_DEBUG" = "1"; then	
-		rm -rf /tmp/test/*
-	fi
-	
-	if test "$LOCAL_DEBUG" = "1"; then	
-		tar -cjf $NEW_TAR $NEW_FILES
-	else
-		SSH_CMD="cd $SITE_PATH && rm -f $NEW_TAR && tar -cjf $NEW_TAR \`$FIND_CMD\`"
-		debug "Creating archive..."
-		if test "$SH_DEBUG" = "1"; then
-			$SSH_SCRIPT $SSH_CMD
-		else
-			$SSH_SCRIPT $SSH_CMD > /dev/null 2>&1
-		fi
-		TMPSTAT="$?"
-		if test "$TMPSTAT" != "0"; then
-			error "$SSH_SCRIPT returned $TMPSTAT STOP"
-			exit 5
-		fi
+	TMPSTAT="$?"
+	if test "$TMPSTAT" != "0"; then
+		error "$SSH_SCRIPT returned $TMPSTAT STOP"
+		exit 5
 	fi
 	
 	debug "Downloading archive..."
-	$SCP_SCRIPT $SITE_PATH/$NEW_TAR >> /tmp/tiki_scp.log 2>&1
-	THE_RESULT=`ls ./$NEW_TAR`
+	if test "$SH_DEBUG" = "1"; then
+		$SCP_SCRIPT $DOWNLOAD_FROM/$NEW_TAR
+	else
+		$SCP_SCRIPT $DOWNLOAD_FROM/$NEW_TAR >> /tmp/tiki_scp.log 2>&1
+	fi
+	THE_RESULT=`ls $NEW_TAR`
 
 	if test "$THE_RESULT" != ""; then
 		mv "$THE_RESULT" "$BACKUPS_PATH"
@@ -782,25 +789,18 @@ LOCAL_DEBUG=0
 		exit 9
 	fi
 
-	if test "$LOCAL_DEBUG" = "1"; then
+	if test "$SH_DEBUG" = "1"; then
+		#Show whats in downloaded archive:
+		mkdir -p /tmp/test
 		cd /tmp/test
-		tar -xjf $NEW_TAR
+		rm -rf *
+		tar -xjf $ENDFILE
+		echo "Backed up files:"
 		echo "----------------------------------------------------------------"
 		find . -type f -print
 		echo "----------------------------------------------------------------"
-	else
-		if test "$SH_DEBUG" = "1"; then
-			mkdir -p /tmp/test
-			cd /tmp/test
-			rm -rf *
-			tar -xjf $ENDFILE
-			echo "Backed up files:"
-			echo "----------------------------------------------------------------"
-			find . -type f -print
-			echo "----------------------------------------------------------------"
-		fi
 	fi
-	
+
 }
 
 ##################################
@@ -1013,6 +1013,11 @@ for flag in $ALL_FLAGS ; do
 
 		--man)
 			man_page
+			exit 0
+			;;
+			
+		--version)
+			echo "$Id: tiki_backup.sh,v 1.6 2005-07-22 11:51:02 afalout Exp $"
 			exit 0
 			;;
 			
