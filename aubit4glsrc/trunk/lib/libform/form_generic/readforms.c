@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.31 2005-07-21 08:17:37 mikeaubury Exp $
+# $Id: readforms.c,v 1.32 2005-07-22 13:23:25 mikeaubury Exp $
 #*/
 
 /**
@@ -553,7 +553,7 @@ all .spec APIs - so since we are lazy we will for now repeat the proto here*/
 // NOTE - was void here, but int in API
 //void
 int
-A4GLFORM_initlib (void)
+A4GLFORM_A4GLFORM_initlib (void)
 {
   // Does nothing...
   return 0;

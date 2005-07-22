@@ -109,7 +109,7 @@ DTYPE_ALIAS NVARCHAR=VARCHAR
 
 OMIT_NO_LOG
 USE_INDICATOR
-REPLACE_SQLCONST rowid = oid
+REPLACE_EXPR rowid = oid
 
 # These are only needed for non-patched postgres :
 REPLACE_SQLCONST today = date(now())

@@ -26,7 +26,7 @@ LIB_PREFIX HELPLIB_
 aclfgl_aclfgl_libhelp_showhelp int helpno -> int
 aclfgl_aclfgl_openiem int nparams -> int
 aclfgl_aclfgl_fetchiem int nparams -> int
-aclfgl_aclfgl_close int nparams -> int
+aclfgl_aclfgl_closeiem int nparams -> int
 
 /* ------------------------ EOF ------------------------ */
 

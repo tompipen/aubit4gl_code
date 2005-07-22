@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.60 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.61 2005-07-22 13:23:24 mikeaubury Exp $
 #
 */
 
@@ -439,7 +439,6 @@ A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
   A4GL_debug("Load convert : %s %s",source_dialect,target_dialect);
 
 
-  //printf("Looking for : %s\n",buff);
 
   if (A4GL_has_pointer (buff, SQL_CONVERSION))
     {
@@ -526,7 +525,6 @@ static void A4GL_cv_fnlist (char *source, char *target)
 	    len--;
 
 
-	  //printf ("3. (%s)\n", t);
 	  if (len > 0)
 	    {
 		strncpy(xx,t,255);
@@ -538,11 +536,9 @@ static void A4GL_cv_fnlist (char *source, char *target)
 		if (right) {
 			*right=0;
 			right++;
-			//printf("yy %s\n",right);
 			while (*right=='='||*right==' '||*right=='\t') right++;
 			A4GL_trim(right);
 	      		conversion_rules[conversion_rules_cnt - 1].data.to = acl_strdup(right);
-			//printf("xx %s\n",right);
 		} else {
 	      		conversion_rules[conversion_rules_cnt - 1].data.to = 0;
 		}
@@ -876,6 +872,7 @@ strcpy(buff,s);
 
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE_EXPR) {
+			
 		if (A4GL_strcasestr(buff,conversion_rules[b].data.from)!=0) {
 			char *to;
 			if (conversion_rules[b].data.to[0]=='$') {
@@ -883,11 +880,13 @@ for (b=0;b<conversion_rules_cnt;b++) {
 			} else {
 				to=conversion_rules[b].data.to;
 			}
+			A4GL_debug("Converting %s to %s in %s\n",conversion_rules[b].data.from,to,buff);
 			A4GL_cvsql_replace_str (buff, conversion_rules[b].data.from,to );
+			A4GL_debug("Converted: %s\n",buff);
 		}
 	}
 }
-
+A4GL_debug("Returning %s\n",buff);
 return buff;
 
 }
@@ -941,7 +940,6 @@ if (a==0) {
 
 if (conversion_rules==0) {
 A4GL_debug("A4GLSQLCV_check_requirement(%s) - No rules",s);
-	//printf("No rules loaded\n");
 	return 0;
 }
 
@@ -1731,6 +1729,7 @@ int b;
 //static char buff[200];
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE_SQLCONST) {
+		printf("%s %s\n",s,conversion_rules[b].data.from);
 		if (A4GL_aubit_strcasecmp(s,conversion_rules[b].data.from)==0) {
 			char *to;
 			if (conversion_rules[b].data.to[0]=='$') {

@@ -60,11 +60,13 @@ define msgline char(255)
 
 define msgerror array[17] of record errline char(HELPMAXLEN) end record
 define msgerrcnt integer
+
 code
-//void HELPLIB_A4GLHELP_initlib(void) {
-	//A4GL_debug("initialized helplib");
-//}
+void HELPLIB_A4GLHELP_initlib(void) {
+// Does nothing - required by the API
+}
 endcode
+
 ----------------------------------------------------------------------
 {  main section: comment this out when linking into libaubit  }
 {
@@ -462,7 +464,9 @@ endcode
 	end menu
 	close window w1
 end function
-local function closeiem()
+
+
+function aclfgl_closeiem()
 	let msgno = 0
 	let msgcount = 0
 	let msglen = 0

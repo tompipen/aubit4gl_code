@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readmsg.c,v 1.12 2005-03-31 13:35:54 afalout Exp $
+# $Id: readmsg.c,v 1.13 2005-07-22 13:23:25 mikeaubury Exp $
 #*/
 
 /**
@@ -43,7 +43,8 @@
 		                    Includes
 =====================================================================
 */
-
+#include <stdio.h>
+#include "a4gl_API_msg_lib.h"
 #include "a4gl_lib_msg_native_int.h"
 
 /*
@@ -69,7 +70,7 @@ FILE *helpfile = 0;
  * @todo Describe function
  */
 int
-A4GL_read_help_f (int no, int *maxwidth)
+A4GLMSG_A4GL_read_help_f (int no, int *maxwidth)
 {
   short pos;
   int cnt;
@@ -164,4 +165,7 @@ A4GL_read_help_f (int no, int *maxwidth)
 
 }
 
+void A4GLMSG_A4GLMSG_initlib(void) {
+	// Does nothing - required by API
+}
 /* ============================== EOF =============================== */

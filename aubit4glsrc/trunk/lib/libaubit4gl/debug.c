@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.44 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: debug.c,v 1.45 2005-07-22 13:23:24 mikeaubury Exp $
 #
 */
 
@@ -128,7 +128,10 @@ A4GL_debug_full (char *fmt, ...)
   int a;
   int dbg_level;
   char buff_n[20];
+  static int indebug=0;
 
+  if (indebug) return;
+  indebug++;
   if (strlen(fmt)==0) {
 		A4GL_assertion(1,"No format for debug");
 		A4GL_pause_execution();
@@ -143,6 +146,7 @@ A4GL_debug_full (char *fmt, ...)
       else
 	{
 	  nodebug = DEBUG_NOTREQUIRED;
+	  indebug=0;
 	  return;
 	}
     }
@@ -164,6 +168,7 @@ A4GL_debug_full (char *fmt, ...)
   	dbg_level=atoi(acl_getenv("DEBUG_LEVEL"));
   	a=atoi(buff_n);
   	if (a && dbg_level && a > dbg_level) {
+		indebug=0;
 		return;
   	}
   }
@@ -224,6 +229,7 @@ A4GL_debug_full (char *fmt, ...)
       //if (buff[strlen (buff) - 1] != ':') fprintf (debugfile, "LF\n");
       fflush (debugfile);
     }
+  indebug=0;
 }
 
 

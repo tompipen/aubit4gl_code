@@ -12,7 +12,7 @@ LIBRARY MSG
 VARIABLE A4GL_MSGTYPE
 * Name of the header file to be referenced with #include
 *HEADER_FILE API_msg.h
-
+LIB_PREFIX A4GLMSG_
 
 *
 * Function calls definitions:
