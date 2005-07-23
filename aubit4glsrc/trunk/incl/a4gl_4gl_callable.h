@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.18 2005-06-06 18:03:38 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.19 2005-07-23 09:00:01 mikeaubury Exp $
 */
 
 /**
@@ -65,7 +65,7 @@ extern "C"
 #include "a4gl_API_help.h"
 /* #include "a4gl_API_lex.h" */
 #include "a4gl_API_menu.h"
-#include "a4gl_API_msg.h"
+//#include "a4gl_API_msg.h"
 /* #include "a4gl_API_packer.h" */
 #include "a4gl_API_rpc.h"
 #include "a4gl_API_sql.h"

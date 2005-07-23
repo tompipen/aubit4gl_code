@@ -1,3 +1,4 @@
+#ifdef OBSOLETE
 /*
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
@@ -24,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: writemsg.c,v 1.6 2005-07-22 13:23:25 mikeaubury Exp $
+# $Id: writemsg.c,v 1.7 2005-07-23 09:01:16 mikeaubury Exp $
 #*/
 
 /**
@@ -144,3 +145,4 @@ A4GLMSG_A4GL_writemsg (int offset, FILE * msg, FILE * tmpfile, FILE * hlp)
 
 
 /* ============================= EOF ================================== */
+#endif

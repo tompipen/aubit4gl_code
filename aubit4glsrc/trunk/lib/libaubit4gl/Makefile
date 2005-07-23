@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.8 2005-07-22 13:23:24 mikeaubury Exp $
+# $Id: Makefile,v 1.9 2005-07-23 09:01:16 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -42,7 +42,7 @@ CMODS_PROJECT	=project.c
 #List of API specification files used to generate .c/.h pair
 #created headers are included via a4gl_libaubit4gl_int.h
 API_SPEC    =API_esql.spec API_help.spec API_menu.spec API_packer.spec \
-			API_form.spec API_msg.spec API_ui.spec  API_sqlparse.spec \
+			API_form.spec  API_ui.spec  API_sqlparse.spec \
 			API_sql.spec API_rpc.spec API_exreport.spec
 
 #List of API .c files that do not have coresponding .spec file (should no 
@@ -89,7 +89,7 @@ OBJS				=${CMODS:.c=.o}
 LIBINCL_PATH	=${LIBROOT}/libincl
 INCL_PATH	=${ROOT}/incl
 DLMAGIC		=${LIBROOT}/bin/dlmagic
-ALL		=api ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE} API_form_self.c API_help_self.c API_msg_self.c
+ALL		=api ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE} API_form_self.c API_help_self.c
 CFLAGS              +=-I.
 
 #we don't want -Wall in CFLAGS when compiling form_x_xdr.c because it would

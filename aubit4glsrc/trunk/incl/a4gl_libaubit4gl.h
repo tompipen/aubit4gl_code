@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.182 2005-07-21 08:17:35 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.183 2005-07-23 09:00:01 mikeaubury Exp $
 #
 */
 
@@ -2175,7 +2175,7 @@ void A4GLSQLCV_add_temp_table(char *tabname);
   /* API prototypes - now all generated from .spec files by dlmagic */
 #include "a4gl_API_form.h"	
 #include "a4gl_API_menu.h"	
-#include "a4gl_API_msg.h"	
+//#include "a4gl_API_msg.h"	
 #include "a4gl_API_packer.h"
 #include "a4gl_API_ui.h"	
 #include "a4gl_API_help.h"	

@@ -1,3 +1,4 @@
+#ifdef OBSOLETE
 /*
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
@@ -24,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readmsg.c,v 1.13 2005-07-22 13:23:25 mikeaubury Exp $
+# $Id: readmsg.c,v 1.14 2005-07-23 09:01:16 mikeaubury Exp $
 #*/
 
 /**
@@ -169,3 +170,4 @@ void A4GLMSG_A4GLMSG_initlib(void) {
 	// Does nothing - required by API
 }
 /* ============================== EOF =============================== */
+#endif
