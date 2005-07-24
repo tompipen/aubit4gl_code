@@ -1,0 +1,744 @@
+#! /bin/ksh
+#	4glWorks application rebuild command file
+#
+#	The 4glWorks application framework
+#	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
+#
+#	Initial release: May 94
+#	Current release: Jan 02
+#
+#	This library is free software; you can redistribute it and/or
+#	modify it under the terms of the GNU Lesser General Public
+#	License as published by the Free Software Foundation; either
+#	version 2.1 of the License, or (at your option) any later version.
+#
+#	This library is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#	Lesser General Public License for more details.
+#
+#	You should have received a copy of the GNU Lesser General Public
+#	License along with this library; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+#  ***WARNING***
+#
+#  This script will use the current directory to temporarily
+#  store c, ec and 4go files created by c4gl and fglcp
+#  Watch out for files being erroneously deleted after it runs !!!
+
+#
+#  some useful functions
+#  true if $1 exists and newer than $2
+#
+if [ -z "`[ a -ot b] 2>&1`" ]
+then
+todate()
+{
+     test $1 -nt $2
+}
+else
+todate()
+{
+    test "`/bin/ls -tm $1 $2 2>&-`" = "$1, $2"
+}
+fi
+
+#
+#  c4gl compilation scripts
+#
+ccompile4gl()
+{
+    $AWK -f $framepath/fglpp $1 $tmpdir/cbuild $tmpdir/$2.4gl $inclist
+#
+#  ARGHHH! report code changed, and it's no longer possible to stick
+#  blobs in report headers :-((( the following is a dirty workaround,
+#  but it only works with c4gl -- still looking for a better solution
+#
+    case $2 in
+      *r)
+	c4gl -e $tmpdir/$2.4gl
+	e=$?
+	if [ $e -eq 0 ]
+	then
+	    $AWK '
+/c_rp->outfp = \(FILE \*\)0;/	{ print "fgw_fpsave();" }
+				{ print }
+' $2.c > $tmpdir/sfb.c
+	    c4gl -c $tmpdir/sfb.c -o $3 2>&-
+	fi
+	;;
+      *)
+	c4gl -c $tmpdir/$2.4gl -o $3
+	e=$?
+	;;
+    esac
+#
+#  workaround ends here. uncomment next two lines, when better solution found
+#
+#    c4gl -c $tmpdir/$2.4gl -o $3
+#    e=$?
+#
+    rm $tmpdir/$2.4gl 2>&-
+#
+#  -keep flag? don't know about no -keep flag!
+#
+    if [ $e -eq 0 ]
+    then
+	rm $2.c $2.ec 2>&-
+    fi
+    return $e
+}
+
+ccompiley()
+{
+    if [ -n "`which bison`" ]
+    then
+	bison -b $2 -p $2 -o $tmpdir/$2.c $1
+    else
+	yacc $1
+	mv y.tab.c $tmpdir/$2.c
+    fi
+    c4gl $cinclist -c $tmpdir/$2.c -o $3
+    rm $tmpdir/$2.c
+}
+
+ccompilec()
+{
+    c4gl $cinclist -c $1 -o $3
+}
+
+ccompileec()
+{
+    c4gl $cinclist -c $1 -o $3
+}
+#
+#  p4gl compilation script
+#
+
+pcompile4gl()
+{
+    $AWK -f $framepath/fglpp $1 $tmpdir/cbuild $tmpdir/$2.4gl $inclist
+    fglpc $tmpdir/$2.4gl
+    e=$?
+#
+#  had some problems with the -p opt
+#
+    if [ $e -eq 0 ]
+    then
+	mv $2.4go $3
+    fi
+    rm $tmpdir/$2.4gl
+    return $e
+}
+
+#
+# true sh echoing?
+#
+if [ `echo 'a\c'` = 'a\c' ]
+then
+    ECHO='echo -e'
+else
+    ECHO='echo'
+fi
+
+#
+#  some vars
+#
+rebuild=false
+relink=false
+
+#
+# get cached settings
+#
+if [ -r .cbuildrc ]
+then
+    for v in AWK INFORMIXC INFORMIXDIR
+    do
+	if [ "x`eval $ECHO \\$$v`" = x ]
+	then
+	    eval `fgrep -e "$v=" .cbuildrc | tail -1`
+	fi
+    done
+    eval `egrep -e '(destbase|framepath|lang|sourcepath)=' .cbuildrc`
+fi
+#
+# get parms
+#
+while [ $# -gt 0 ]
+do
+    case $1 in
+    -d) 
+	shift
+        destpath=$1
+        ;;
+    -e) 
+        rebuild=true
+        ;;
+    -f) 
+	shift
+        framepath=$1
+        ;;
+    -l) 
+	shift
+        lang=$1
+        ;;
+    -r)
+	relink=true
+	;;
+    -s) 
+	shift
+        sourcepath=$1
+        ;;
+    -*)
+	$ECHO "invalid parms...\n"
+        exit 1
+        ;;
+    *)
+	break
+	;;
+    esac
+    shift
+done
+
+if [ $# -ne 1 ]
+then
+    $ECHO "invalid parms...\n"
+    exit 1
+fi
+modname=$1
+$ECHO `basename $0`" started on \c"
+date
+
+#
+# setup defaults
+#
+destbase=${destbase:-/usr/local}
+destpath=${destpath:-$destbase/`basename $modname`}
+framepath=${framepath:-4glworks}
+lang=${lang:-eng}
+INFORMIXDIR=${INFORMIXDIR:-/usr/informix}
+INFORMIXC=${INFORMIXC:-$CC}
+
+#
+#  adjust path
+#
+if ! echo $PATH | grep $INFORMIXDIR 1>&- 2>&-
+then
+    PATH=$INFORMIXDIR/bin:$PATH
+fi
+export INFORMIXC INFORMIXDIR PATH
+
+#
+#  determine which awk to use
+#
+if [ -z "$AWK" ]
+then
+    s=$IFS
+    IFS=:
+    for f in gawk nawk awk
+    do
+	for d in $PATH
+	do
+	    if [ -x $d/$f ]
+	    then
+		AWK=$d/$f
+		break 2
+	    fi
+	done
+    done
+    IFS=$s
+    $ECHO "AWK=$AWK" >> .cbuildrc
+fi
+
+#
+#  put all our temp stuff here
+#
+tmpdir=/tmp/cbuild$$
+mkdir $tmpdir 2>&-
+
+#
+#  set p or c specific env vars
+#
+case `basename $0` in
+    p*)
+	compile=pcompile
+	mkform=form4gl
+	mkmessage=mkmessage
+	objdir=pcode
+	objext=4go
+	appext=4gi
+	srcext='4gl'
+	srcdirs='source rds'
+	;;
+    c*)
+	compile=ccompile
+	mkform=form4gl
+	mkmessage=mkmessage
+	objdir=objcode
+	objext=o
+	appext=4ge
+	srcext='4gl y c ec'
+	srcdirs='source c4gl'
+	;;
+    *)
+	$ECHO "$0: name must start with c or p!"
+	exit 1
+	;;
+esac
+
+#
+#  get list of modules to be rebuilt
+#
+modlist=`$AWK  -v od=$objdir -v oe=$objext -v fw=$framepath -v tm=$modname \
+ -v sd=$sourcepath -v dp=$destpath -v fname=$tmpdir/flist '
+BEGIN	{
+	    ORS=" "
+	    cj=" -o "
+	    if (od=="pcode")
+	    {
+		ae=".4gi"
+		ld="cat"
+		cj=" > "
+	    }
+	    else
+	    {
+		ae=".4ge"
+		ld="c4gl"
+	    }
+	    vars["FW"]=fw
+	    vars["TM"]=tm
+
+# initialize include variables
+	    filestack[0]=ARGV[1]
+	    filepoint=0
+
+# rats! Cannot use pattern driven syntax
+	    for (;;)
+
+# read next line
+	    {
+		while ((getline <filestack[filepoint])<=0)
+		{
+		    close(filestack[filepoint])
+		    if (!filepoint--)
+			exit
+		}
+
+# strip comments
+		if ($0 ~ /#.*/)
+		{
+		    sub("#.*", "")
+
+#skip entirely commented out lines, so that they dont interfere
+#with continued lines
+		    if (!length) continue
+		}
+
+# prepend a continued rule
+		if (length(pl))
+		{
+		    $0=pl " " $0
+		    pl=""
+		}
+
+# rule continues - store & skip to next line
+		if ($NF ~ /\\\\$/)
+		{
+		    sub(".$", "", $NF)
+		    pl=$0
+		    continue
+		}
+
+# skip empty lines
+		if (!NF)
+		    continue
+
+# definition? (/\= to please solaris nawk)
+		if (split($0, df, " *= *")==2 || $NF ~ /\=$/)
+		{
+		    vars[df[1]]=df[2]
+		    continue
+		}
+
+# we have an include "filename" directive, here
+		if ($1 == "include")
+		{
+		    gsub("include *", "")
+		    filestack[++filepoint]=$0
+		    continue
+		}
+
+# drop : and complain if this is not a well formed rule
+		if (gsub(":", "")!=1)
+		    exit 1
+
+		if (NF<2)
+		     exit 1
+
+# good rule
+		{
+
+# brace expansion
+		    for (i=2; i<=NF;)
+
+# seems that braces are reserved with RE on HPUX
+			if (match ($i, /\{(.+,)+[^,]+\}/))
+			{
+
+# get brace expansion, ...
+			    n=substr($i, RSTART, RLENGTH)
+			    if (RSTART>1)
+				sb=substr($i, 1, RSTART-1)
+			    else
+				sb=""
+
+# ...header & trailer
+			    if (RSTART+RLENGTH<=length($i))
+				eb=substr($i, RSTART+RLENGTH)
+			    else
+				eb=""
+
+# drop braces
+			    gsub("[\{\}]", "", n)
+
+# split file name patterns in separate tokens
+			    split(n, nl, ",")
+			    n=""
+			    for (e in nl)
+				n=n sb nl[e] eb " "
+
+#the trick is, we force reevaluation of $0, and start from this field again
+#therefore, if we have more than one expansion per field, we get that evaluated
+#for free
+			    $i=n
+			    $0=$0
+			}
+			else
+			    i++
+
+# form full target name
+		    t=dp "/" $1 ae
+		    print "for i in " > fname
+		    deplist=""
+		    for (i=2; i<=NF; i++)
+		    {
+
+# substitute for variables
+			while (p=match($i, /[$][(].+[)]/))
+			{
+			    if (RSTART>1)
+				sb=substr($i, 1, RSTART-1)
+			    else
+				sb=""
+			    if ((v=substr($i, RSTART+2, RLENGTH-3)) in vars)
+				sb=sb vars[v]
+			    if (RSTART+RLENGTH<=length($i))
+				sb=sb substr($i, RSTART+RLENGTH)
+			    $i=sb
+			}
+			gsub("[$][*]", $1, $i)
+			gsub("[$][@]", $1, $i)
+
+# library, option, absolute path? -- use at your own risk!
+			if ($i ~ /^[-\/].*/)
+			{
+
+# if not pcode, add to command line
+			    if (oe=="o")
+				deplist=deplist " " $i
+			    continue
+			}
+
+# normal stuff
+			else if (length($i))
+			{
+
+# drop filename part & complain if this is a bad dependency
+			    d=$i
+		 	    if (!sub("\/[^\/]+$", "", d) || !length(d)) exit 1
+
+# add source path, if necessary
+			    if (sd!="" && $i!=fw && !($i ~ /.*\/.*/))
+				$i=sd "/" $i
+
+# output to dependecy list
+			    if (!(d in dirs))
+			    {
+				print d
+				dirs[d]=1
+			    }
+			}
+
+# substitutions yielded empty dependecy
+			else
+			    continue
+
+# get dependency name & output it
+			match($i, /[^\/]+$/)
+			n=d "/" od "/" substr($i, RSTART, RLENGTH) "." oe
+			deplist=deplist " " n
+			print "'"'"'" n "'"'"'" > fname
+		    }
+		    print "\ndo\n" > fname
+		    print "   d=\`dirname \"$i\"\`\n">fname
+		    print "   b=\`basename \"$i\"\`\n">fname
+		    printf "   if test -n \"\`find $d -name \\\\\"$b\\\\\" -newer %s -print 2>&1\`\"\n", t > fname
+		    print "    then\n" > fname
+		    print "\t" ld deplist cj t "\n" > fname
+		    print "\tbreak\n    fi\ndone\n\n" > fname
+		}
+	    }
+	}
+'  $modname/buildfile`
+#
+#  quit if could't parse buildfile
+#
+if [ $? -ne 0 -o -z "$modlist" ]
+then
+    $ECHO "don't know how to build $modname"
+    exit 1
+#
+#  nothing to rebuild if relink only
+#
+elif [ $relink = true ]
+then
+    modlist=""
+fi
+
+#
+#  build include directories list
+#
+inclist=
+cinclist=
+for sd in $modlist
+do
+    for sl in $srcdirs
+    do
+	inclist=$inclist" "$sd/$sl
+	cinclist=$cinclist" -I"$sd/$sl
+    done
+    inclist=$inclist" "$sd/$lang
+    cinclist=$cinclist" -I"$sd/$lang
+done
+#
+#  make directories
+#
+for sd in $modlist
+do
+    if [ ! -d $sd/$objdir ]
+    then
+	mkdir $sd/$objdir
+	if [ $? -ne 0 ]
+	then
+	    exit 1
+	fi
+    fi
+done
+if [ ! -d $destpath ]
+then
+    mkdir -p $destpath
+    if [ $? -ne 0 ]
+    then
+	exit 1
+    fi
+    chmod 750 $destpath
+fi
+
+#
+#  remove obsolete modules
+#
+if [ $rebuild = true ]
+then
+    for sd in $modlist
+    do
+	rm $sd/$objdir/*.$objext
+    done
+    rm $destpath/*.$appext $destpath/*.frm
+elif [ $relink = false ]
+then
+#
+#  test for to date 4gl, c modules in afw & source paths
+#
+    for sd in $modlist
+    do
+	for sf in $sd/$objdir/*.$objext
+	do
+	    tf=`basename $sf .$objext`
+	    for sl in $srcdirs
+	    do
+		for se in $srcext
+		do
+		    if todate $sf $sd/$sl/$tf.$se
+		    then
+			continue 3
+		    fi
+		done
+	    done
+	    rm $sf
+	done
+    done
+#
+#  test for to date forms in afw & source paths
+#
+    for sf in $destpath/*.frm
+    do
+	tf=`basename $sf .frm`
+	for td in $modlist
+	do
+	    if todate $sf $td/$lang/$tf.per
+	    then
+		continue 2
+	    fi
+	done
+	rm $sf
+    done
+fi
+#
+#  text, help, shell & sql files are rebuilt anyway since it takes less time!
+#
+if [ $relink = false ]
+then
+    rm $destpath/*.txt $destpath/*.lst $destpath/*.hlp $destpath/*.sh \
+       $destpath/*.sql 2>&-
+fi
+#
+#  make object code
+#
+errs=0
+for sd in $modlist
+do
+    for sl in $srcdirs
+    do 
+	for se in $srcext
+	do
+	    for sf in $sd/$sl/*.$se
+	    do
+		sfb=`basename $sf .$se`
+		df=$sd/$objdir/$sfb.$objext
+		if [ "$sfb" = "*" ]
+		then
+		    continue
+		elif [ ! -f $df ]
+		then
+		    $ECHO $sfb:
+		    $compile$se $sf $sfb $df
+		    errs=`expr $errs + $?`
+		fi
+	    done
+	done
+    done
+done
+#
+#  make 4ge/4gi files
+#
+if [ $errs -eq 0 -o $relink = true ]
+then
+    if [ -f $tmpdir/flist ]
+    then
+	. $tmpdir/flist
+    fi
+fi
+
+#
+#  make forms
+#
+for sd in $modlist
+do
+    for sf in $sd/$lang/*.per
+    do
+	sfb=`basename $sf .per`
+	if [ "$sfb" = "*" ]
+	then
+	    continue
+	elif [ ! -f $destpath/$sfb.frm ]
+	then
+	    $mkform $sf
+	    errs=`expr $errs + $?`
+	fi
+    done
+    chmod 640 $sd/$lang/*.frm 2>&-
+    mv $sd/$lang/*.frm $destpath 2>&-
+done
+
+#
+#  copy sh, sql files
+#
+for sd in $modlist
+do
+    cp $sd/etc/*.sh $sd/etc/*.sql $sd/etc/.profile $destpath 2>&-
+done
+
+#
+#  find a suitable .profile - $framepath/etc/.profile used as a last resort
+#
+sf=
+for sd in $modlist
+do
+   if [ $sd = $framepath ]
+   then
+	continue
+   elif [ -f $sd/etc/.profile ]
+   then
+	sf=$sd/etc/.profile
+	break
+    fi
+done 
+if [ -n "$sf" ]
+then
+    cp $sf $destpath 2>&-
+else
+    cp $framepath/etc/.profile $destpath 2>&-
+fi
+
+#
+#  compile help files
+#
+for sd in $modlist
+do
+    for sf in $sd/$lang/*.msg
+    do
+	tf=`basename $sf .msg`
+	if [ "$tf" = "*" ]
+	then
+	    continue
+	fi
+	$AWK -f $framepath/fglpp $sf /dev/null $tmpdir/cbuild $inclist
+	$mkmessage $tmpdir/cbuild $destpath/$tf.hlp
+        chmod 640 $destpath/$tf.hlp
+    done
+done
+
+#
+#  make text files
+#
+for se in txt lst
+do
+    for sd in $modlist
+    do
+	for sf in $sd/$lang/*.$se
+	do
+	    tf=`basename $sf .$se`
+	    if [ "$tf" = "*" ]
+	    then
+		continue
+	    fi
+	    $AWK -f $framepath/fglpp $sf /dev/null $destpath/$tf.$se $inclist
+	done
+    done
+done
+chmod 640 $destpath/*.txt $destpath/*.lst
+
+rm -r $tmpdir 2>&-
+
+$ECHO "\nall done!    \c"
+date
+
+#
+#  if test requested, go test it
+#
+df=`basename $0`
+if [ \( $df = ctest -o $df = ptest \) -a $errs -eq 0 ]
+then
+    exec $destpath/.profile $appext
+fi

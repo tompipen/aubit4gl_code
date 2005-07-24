@@ -1,0 +1,194 @@
+1|1|select name, owner, created, partnum, case|
+1|2|  when (is_logging=1) then 'U'|
+1|3|  when (is_buff_log=1) then 'B'|
+1|4|  when (is_ansi=1) then 'A'|
+1|5|  else 'N' end|
+1|6|  from sysmaster:sysdatabases|
+1|7|  format full "%-20s %-20s [ddd, dd mmm yyyy] \|0x%08x \|   %-4s"|
+1|8|  headers "Database", "Owner", "Date created", "Systables", "Status|
+2|1|select tabname, tabid, partnum, owner, created, nrows, case|
+1|9|"|
+2|2|  when (tabtype="V") then 'View'|
+2|3|  when (tabtype=" " or tabtype is null) then 'GLS/ver'|
+2|4|  when (tabtype="S") then 'Synonym'|
+2|5|  when (partnum=0) then 'Fragmented'|
+2|6|  else 'Plain' end|
+2|7|  from <+lone select name from sysmaster:sysdatabases+>:systables|
+2|8|order by tabid|
+2|9|  format full "%-18s %5i \|0x%08x %8s [ddd, dd mmm yyyy] %8i %-7.7s"|
+5|2|  when (usertype="D") then 'DBA'|
+5|3|  when (usertype="R") then 'Resource'|
+2|10|    headers "Name", "Tabid", "Partnum", "Owner", "Created", "Rows", "Type|
+2|11|     "|
+5|1|select username,  case|
+5|4|  else 'Normal' end|
+5|5|  from <+lone select name from sysmaster:sysdatabases+>:sysusers|
+5|6|  order by username|
+5|7|  format full "%-8s %-10s"|
+5|8|    headers "Name", "Type|
+5|9|     "|
+3|1|select colname, colno, decode(mod(coltype, 256),|
+3|2|  0, 'Char', 1, 'Smallint', 2, 'Integer', 3, 'Float', 4, 'Smallfloat',|
+3|3|  5, 'Decimal', 6, 'Serial', 7, 'Date', 8, 'Money', 10, 'Datetime',|
+3|4|  11, 'Byte', 12, 'Text', 13, 'Varchar', 14, 'Interval',|
+3|5|  'Unknown'), decode(mod(coltype, 256),|
+3|6|  0, collength\|\|'', 5, round(collength/256,0) \|\| '.' \|\| mod(coltype, 256),|
+3|7|  8, round(collength/256,0) \|\| '.' \|\| mod(collength, 256),|
+3|8|  13, mod(collength, 256) \|\| ',' \|\| round(collength/256, 0), ''), case|
+3|9|  when (coltype>255) then 'No'|
+3|10|  else 'Yes' end|
+3|11|  from <+lone put db select name from sysmaster:sysdatabases+>:syscolumns|
+3|12|  where tabid=<+coded select tabid, tabname from <+get db+>:systables|
+3|13|                  order by tabid+>|
+3|14|  order by colno|
+3|15|  format full "%-18s\| \|%-16s %-7s %-6s"|
+3|16|    headers "Name", "", "Type", "Length", "Nulls|
+3|17|     "|
+19|12|                                       exit }'`|
+19|13|atrm $job|
+19|14|rm $file|
+12|1|delay="<+lone exec cat<<!|
+12|2|5 min|
+12|3|10 min|
+12|4|20 min|
+12|5|30 min|
+12|6|1 hour|
+12|7|!+>"|
+12|8|ioops="<+coded exec cat<<!|
+12|9|   1000 fair|
+12|10|  10000 medium|
+12|11| 100000 heavy|
+12|12|1000000 outrageous|
+19|11|file=`at -c $job \| awk '/^.pmonfile/ { print $2|
+11|1|delay="<+lone exec cat<<!|
+11|2|5 min|
+11|3|10 min|
+11|4|20 min|
+11|5|30 min|
+11|6|1 hour|
+11|7|!+>"|
+11|20|select cbl_sessionid, username, hostname, cbl_estcost, cbl_estrows|
+19|1|job=<+coded exec for i in `atq \| awk '{ print $1 }'` ''|
+19|2|do|
+19|3|    d=`at -c $i\| awk '/^.pmon job/ { gsub(".pmon job ", "")|
+19|4|                                     print }|
+19|5|                      { next }'`|
+19|6|    if [ -n "$d" ]|
+19|7|    then|
+19|8|        echo $i $d|
+19|9|    fi|
+19|10|done+>|
+11|8|cost="<+coded exec cat<<!|
+11|9|   1000 fair|
+11|10|  10000 medium|
+11|11| 100000 heavy|
+11|12|1000000 outrageous|
+11|13|!+>"|
+11|14|file=/tmp/pmon$$|
+11|15|cat<<EOF-ext >$file|
+11|16|#pmon job Interval: $delay, Cost: $cost|
+11|17|#pmonfile $file|
+11|18|$DBPATH/scripter.4ge<<EOF|
+11|19|database sysmaster;|
+11|21|  from sysconblock cbl, syssdblock sdb, sysscblst scb|
+11|22|  where sdb.sdb_sessionid=scb.sid|
+11|23|    and sdb.sdb_iscurrent="Y"|
+11|24|    and cbl.cbl_sessionid=scb.sid|
+11|25|    and cbl.cbl_ismainblock="Y"|
+11|26|    and cbl.cbl_estcost>$cost|
+11|27|  format full "%7i %-8s %-18s %10i %7i"|
+11|28|    headers "Session", "User", "Host", "Cost", "Rows|
+11|29|"|
+11|30|EOF|
+11|31|at -f $file now + $delay 2>&-|
+11|32|EOF-ext|
+11|33|at -f $file now + $delay 2>&-|
+12|13|!+>"|
+12|14|file=/tmp/pmon$$|
+12|15|cat<<EOF-ext >$file|
+12|16|#pmon job Interval: $delay, IO ops: $ioops|
+12|17|#pmonfile $file|
+12|18|$DBPATH/scripter.4ge<<EOF|
+12|19|database sysmaster;|
+12|20|select tcb.sid, username, hostname, sum(nreads), sum(nwrites)|
+12|21|  from sysrstcb tcb, sysscblst scb|
+12|22|  where scb.sid=tcb.sid|
+12|23|  having sum(nreads)+sum(nwrites)>$ioops|
+12|24|  group by 1, 2, 3|
+12|25|  format full "%7i %-8s %-18s %7i %7i"|
+12|26|    headers "Session", "User", "Host", "Reads", "Writes|
+12|27|"|
+12|28|EOF|
+12|29|at -f $file now + $delay 2>&-|
+12|30|EOF-ext|
+12|31|at -f $file now + $delay 2>&-|
+13|1|delay="<+lone exec cat<<!|
+13|2|5 min|
+13|3|10 min|
+13|4|20 min|
+13|5|30 min|
+13|6|1 hour|
+13|7|!+>"|
+13|8|extime=<+coded exec cat<<!|
+13|9|   1 fair|
+13|10|  10 medium|
+13|11| 100 heavy|
+13|12|1000 outrageous|
+13|13|!+>|
+13|14|file=/tmp/pmon$$|
+13|15|cat<<EOF-ext >$file|
+13|16|#pmon job Interval: $delay, Time: $extime|
+13|17|#pmonfile $file|
+13|18|$DBPATH/scripter.4ge<<EOF|
+13|19|database sysmaster;|
+13|20|select scb_sessionid, username, hostname, sum(sdb_cumtime)|
+13|21|  from syssdblock sdb, sysscblst scb|
+13|22|  where sdb.sdb_sessionid=scb.sid|
+13|23|  having sum(sdb_cumtime)>$extime|
+13|24|  group by 1, 2, 3|
+13|25|  format full "%7i %-8s %-18s %6.3f"|
+13|26|    headers "Session", "User", "Host", "Time|
+13|27|"|
+13|28|EOF|
+13|29|at -f $file now + $delay 2>&-|
+13|30|EOF-ext|
+13|31|at -f $file now + $delay 2>&-|
+10|1|select cbl_stmt, cbl_estcost, cbl_estrows, cbl_sdbno, cbl_conbno,|
+10|2|       cbl_seqscan, cbl_srtscan, cbl_autoindex, cbl_index, cbl_mrgjoin,|
+10|3|       cbl_dynhashjoin, cbl_keyonly, cbl_tempfile, cbl_tempview, cbl_remsql,|
+10|4|       cbl_secthreads, sdb_pdq_prio_req, sdb_pdq_priority|
+10|5|  from sysmaster:sysconblock cbl, sysmaster:syssdblock sdb|
+10|6|  where cbl.cbl_sessionid=<+select sid, username \|\| " " \|\| hostname|
+10|7|     from sysmaster:sysscblst+>|
+10|8|    and cbl.cbl_sessionid=sdb.sdb_sessionid|
+10|9|    and sdb.sdb_iscurrent="Y"|
+10|10|    and cbl.cbl_ismainblock="Y"|
+10|11|    and cbl.cbl_sdbno=sdb.sdb_sdbno|
+10|12|  order by cbl_sdbno, cbl_conbno desc|
+10|13|  format vertical "%s%8i%8i[][]%8i%8i%8i%8i%8i%8i%8i%8i%8i%8i%8i%8i%8i"|
+10|14|  headers "Statement", "Cost", "Rows", "", "",|
+10|15|     "Sequential scans", "Sort scans", "AutoIndexes", "Index paths",|
+10|16|     "Merge joins", "Hash Joins", "Key only paths", "Temp files", "Views",|
+10|17|     "Remote sql", "Sec. threads", "Requested PDQ", "PDQ priority"|
+4|4|               part4, part5, part6, part7, part8|
+4|5|  from <+lone put db select name from sysmaster:sysdatabases+>:sysindexes i,|
+4|6|       <+get db+>:syscolumns c|
+4|7|  where i.tabid=<+coded put tbl select tabid, tabname from|
+4|8|                  <+get db+>:systables order by tabid+>|
+4|9|    and c.tabid=i.tabid|
+4|10|    and i.part1=c.colno|
+4|11|  order by idxname|
+4|12|  into name, owner, type, clustered, col1, part2, part3, part4, part5,|
+4|1|display  "Name", "Owner", "Type", "Cluster", "Column"|
+4|2|  format full "%-18s %-8s %-7s %-7s %-18s";|
+4|3|foreach select idxname, owner, idxtype, clustered, colname, part2, part3,|
+4|13|       part6, part7, part8;|
+4|14|    display name, owner, type, clustered, col1|
+4|15|      format full "%-18s %-8s %3s     %3s     %-18s";|
+4|16|    select colname from <+get db+>:syscolumns c|
+4|17|      where c.colno in (<+separator "," get part2, part3, part4, part5,|
+4|18|                          part6, part7, part8+>)|
+4|19|        and c.tabid=<+get tbl+>|
+4|20|      format full "\\t\\t\\t\\t\\t    %-18s";|
+4|21|    display "";|
+4|22|done|

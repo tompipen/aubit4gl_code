@@ -1,0 +1,6 @@
+Name: 4GLworks
+Description: 4GL application framework; Message driven, Object oriented, written in 4GL
+Maintainer: Marco Greco (?)
+Status: 3
+Todo: Use amake to compile to enable compilation with all x4GL compilers
+Notes: Manual is in aubit4gldoc/4glworks-manual. Also see <a href=http://www.4glworks.com>Marco's site</a>

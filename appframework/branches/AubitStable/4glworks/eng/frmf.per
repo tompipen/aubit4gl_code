@@ -1,0 +1,66 @@
+{
+	FRMF.per  -  Form data maintenance form, eng
+
+	The 4glWorks application framework
+	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
+
+	Initial release: Oct 92
+	Current release: Jan 02
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License as published by the Free Software Foundation; either
+	version 2.1 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Lesser General Public License for more details.
+
+	You should have received a copy of the GNU Lesser General Public
+	License along with this library; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+}
+database formonly
+
+screen
+{
+ Code:[f000 ]            Description:[f001                                   ]
+
+ Model:[f002 |f003                                    ]
+
+ Length:[f004] Width:[f005 ]                                Left margin:[f06]
+
+ Top of Form:[f007                                              ]
+
+ Header:[f008          ]                              Footer:[f009          ]
+}
+end
+
+attributes
+
+f000 = formonly.code_frm type smallint not null, autonext, reverse,
+       include = (1 to 32000);
+f001 = formonly.desc_frm type char not null, autonext, reverse;
+f002 = formonly.link_mdl type smallint not null, autonext, reverse,
+       include = (1 to 32000),
+       comments = "Insert the required code, or hit Ctrl-b for help";
+f003 = formonly.desc_mdl, noentry;
+f004 = formonly.form_length type smallint not null, autonext, reverse,
+       include = (8 to 900),
+       comments = "Usefull paper length in ""/48";
+f005 = formonly.form_width type smallint not null, autonext, reverse,
+       include = (30 to 10800),
+       comments = "Usefull paper width in points (""/72)";
+f06  = formonly.left_margin type smallint not null, autonext, reverse,
+       include = (0 to 600),
+       comments = "Left margin in points (""/72)";
+f007 = formonly.top_of_form, autonext, reverse;
+f008 = formonly.form_header, autonext, reverse;
+f009 = formonly.form_footer, autonext, reverse;
+
+instructions
+
+delimiters "  ";
+
+end

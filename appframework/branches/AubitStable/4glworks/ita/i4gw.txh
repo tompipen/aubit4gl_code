@@ -1,0 +1,61 @@
+#	I4GW.txh  -  Main text include file, ita
+#
+#	The 4glWorks application framework
+#	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
+#
+#	Initial release: Apr 96
+#	Current release: Jan 02
+#
+#	This library is free software; you can redistribute it and/or
+#	modify it under the terms of the GNU Lesser General Public
+#	License as published by the Free Software Foundation; either
+#	version 2.1 of the License, or (at your option) any later version.
+#
+#	This library is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#	Lesser General Public License for more details.
+#
+#	You should have received a copy of the GNU Lesser General Public
+#	License along with this library; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+abort	DEL per abbandonare
+accept	ESC per confermare
+cn	Spiacente, ma il comando non e` operativo
+co	Spiacente, ma non conosco il codice in questione
+Copy	Copia
+cu	Codice gia` usato
+dc	Piu` di un comando per lo stesso tasto: attendo conferma!
+du	Descrizione gia` usata
+ea	Eliminazione annullata
+ee	Eliminazione effettuata
+EF	Campo vuoto?
+erase1	Procedo all'eliminazione?
+erase2	Prego confermare l'eliminazione
+help	Ctrl-W per Aiuto
+hit	premi
+hitkey	premere un tasto per continuare
+ia	Inserimento annullato
+ic	Il campo contiene caratteri non validi
+in	Ctrl-N per inserire un nuovo record
+IN	Inserire un nuovo record?
+ma	Modifica annullata
+mr	Modifica il record visualizzato?
+New	Inserimento
+nd	Archivio vuoto
+NH	Mi spiace, ma il messaggio di aiuto non e` disponibile
+NO	No
+np	Spiacente, ma non e` possibile
+ns	Non c'e` spazio per selezionare questa voce
+NT	Niente testo?
+nv	Nessuna voce in tabella
+oi	Operazione interrotta
+proceed	Procedi
+QUIT	Uscita
+re	Registrazione effettuata
+Search	Ricerca
+sp	Il campo non puo` iniziare per <Spazio>
+Update	Modifica
+wa	Attendere...
+YES	Si

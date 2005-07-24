@@ -1,0 +1,10 @@
+1|List databases|Q|
+2|List tables in a database|Q|
+5|List users of a database|Q|
+3|List columns of a table|Q|
+19|Stop performance monitors|EB|
+11|Query cost monitor|EB|
+12|IO monitor|EB|
+13|Execution time monitor|EB|
+10|Set explain on|Q|
+4|List indexes of a table|Q|

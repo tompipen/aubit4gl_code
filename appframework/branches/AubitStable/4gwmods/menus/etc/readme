@@ -1,0 +1,55 @@
+4gwMenus 1.0b release notes					Feb 10, 2002
+
+4gwMenus is a simple tool that allows the addition of dynamic menus &
+customizable data browsers to 4glWorks applications.
+This document briefly discusses how to integrate 4gwMenus in your application,
+while a description of its pratical usage is given in the 4gwMenus demo readme.
+
+In essence all that is required is to
+
+- change all the references to the menu library functions mnh_get and
+  mnv_get to app_mnhget and app_mnvget respectively.
+- set up a menu entry for the application maintenance viewer
+- initialize the module by calling app_init and apv_setviewer at
+  application startup
+- incorporate the two viewers app_viewer and apv_viewer into the
+  viewer spawner in the main program.
+
+By way of example, this diff illustrates how the 4gwMenus demo was built
+starting from the 4glworks demo application.
+
+diff -rN 4gwapps/4gwdemo/source/ifstm.4gl 4gwapps/menusdemo/source/ifstm.4gl
+39a46
+>     let i=mnv_view("Application maintenance", "A", MB_exit, V_app)
+44c51
+<     call mnv_get() returning im, ip
+---
+>     call app_mnvget() returning im, ip
+diff -rN 4gwapps/4gwdemo/source/ihorm.4gl 4gwapps/menusdemo/source/ihorm.4gl
+84c90
+< 	call mnh_get() returning om, op
+---
+> 	call app_mnhget() returning om, op
+diff -rN 4gwapps/4gwdemo/source/iinil.4gl 4gwapps/menusdemo/source/iinil.4gl
+48a55
+>     call app_init()
+diff -rN 4gwapps/4gwdemo/source/iminv.4gl 4gwapps/menusdemo/source/iminv.4gl
+37a44
+>     call app_setviewer(V_apv)
+50a58,59
+> 	  when (cv=V_app)
+> 	    let nv=app_viewer()
+58a68,69
+> 	  when (cv=V_apv)
+> 	    let nv=apv_viewer()
+diff -rN 4gwapps/4gwdemo/source/isndm.4gl 4gwapps/menusdemo/source/isndm.4gl
+48c54
+<     call mnv_get() returning im, ip
+---
+>     call app_mnvget() returning im, ip
+diff -rN 4gwapps/4gwdemo/source/ivwrl.4gh 4gwapps/menusdemo/source/ivwrl.4gh
+30,33c36,41
+> #define V_app	7
+> #define V_apv	8
+
+Marco Greco <marco@4glworks.com>

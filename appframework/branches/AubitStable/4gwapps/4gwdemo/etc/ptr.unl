@@ -1,0 +1,2 @@
+31000|File|31000|cat > "fgw"$$ 2>&1||||
+10|Sample printer|10|lp -s -dlp00 -o-LB -oUC -n# 2>&-|lpstat -alp00 -r 2>&1\|egrep 'lpstat\|not running\|not accepting'\|exit `wc -c`|lpstat -plp00 2>&1\|egrep 'disabled\|idle.*lp00-[0-9]*'\|exit `wc -c`|enable lp00 1>/dev/null 2>&1;sleep 2|

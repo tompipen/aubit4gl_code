@@ -1,0 +1,38 @@
+#	IERRL.4gh  -  Error trappers strings definitions, ita
+#
+#	The 4glWorks application framework
+#	Copyright (C) 1992-2002 Marco Greco (marco@4glworks.com)
+#
+#	Initial release: Apr 96
+#	Current release: Jan 02
+#
+#	This library is free software; you can redistribute it and/or
+#	modify it under the terms of the GNU Lesser General Public
+#	License as published by the Free Software Foundation; either
+#	version 2.1 of the License, or (at your option) any later version.
+#
+#	This library is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#	Lesser General Public License for more details.
+#
+#	You should have received a copy of the GNU Lesser General Public
+#	License along with this library; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+#define KS_viewer	"Viewer: "
+#define KS_useractions	"Catena messaggi: "
+#define KS_userid	"Utente: "
+#define KS_nl		ascii(10)
+#define KS_exit		": premere U per uscire"
+#define KS_contorexit	": premere <DEL> per continuare, U per uscire "
+#define KS_error	" Errore "
+#define KS_closed	" Il sistema e` stato chiuso"
+#define KS_access       " Violazione dei diritti di accesso"
+#define KS_keyexit	"U"
+
+#define KS_badviewer	"Viewer sconosciuto: "
+#define KS_badmessage	"Messaggio inaspettato: "
+#define KS_badfile	"File testi non trovato: "
+
+#define KS_newlog	"Nuovo error log il "
