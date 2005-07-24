@@ -1,0 +1,6 @@
+Name: x4GL libraries repository
+Description: Collections of generally useful and reusable libraries of functions fort use in x4GL programs
+Maintainer: AF
+Status: 3
+Todo:  	Use amake to compile to enable compilation with all x4GL compilers
+Notes: See @subprojects. <br><br>Note: most makefiles are currently i-4gl only; code itself should work with any x4GL compiler

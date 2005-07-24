@@ -1,0 +1,13 @@
+Name: lib4glc
+Parent: lib4gl
+Description: collection of extension written in C (most originally written by ) (manual in aubit4gldoc/lib4glc-manual)
+Functionality: 
+Build:
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: ?
+Status:  2
+Todo: 
+Notes: 
