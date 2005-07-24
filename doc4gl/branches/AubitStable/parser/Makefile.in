@@ -1,0 +1,229 @@
+#  ============================================================================
+#  TITLE : P4gl - Informix 4gl parser and repository loader
+#
+#  AUTHOR : Sergio Ferreira
+#           Moredata, Lda - Lisbon, Portugal
+#
+# $Id: Makefile.in,v 1.12 2003-12-10 11:48:07 afalout Exp $
+#
+#  DESCRIPTION : Makefile for fgldoc 4gl parser compilation
+#
+#  ============================================================================
+
+
+include ../FgldocDefs.mk
+
+ALL=p4gl p4glpp
+
+ifneq "${FJS_PCOMPILER}" "no"
+    ALL+=mkf.42r loadform.42r
+    ADD_INSTALL=mkf.42m loadform.42m
+endif
+ifneq "${I4GL_PCOMPILER}" "no"
+    ALL+=mkf.4gi loadform.4gi
+endif
+ifneq "${QUERIX_COMP}" "no"
+    ALL+=mkf.4qe loadform.4qe
+endif
+ifneq "${AUBIT_FRONT}" "no"
+    ALL+=mkf.4ae loadform.4ae
+endif
+
+#Override Aubit settings, since we can only work with Informix db at the moment
+A4GL_SQLTYPE=esql
+A4GL_LEXTYPE=C
+A4GL_LEXDIALECT=INFORMIX
+export A4GL_SQLTYPE A4GL_LEXTYPE A4GL_LEXDIALECT
+
+#.PRECIOUS : %.sch maxdev.sch p4gl_synt.c
+.PRECIOUS : %.sch maxdev.sch
+.PHONY:install clean deinstall tags test
+
+#  ============================================================================
+#  4GL Parser (for each source file)
+#  ============================================================================
+P4GLOBJ= p4gl_synt.o p4gl_ld_st.o p4gl_lex.o p4gl_parse.o  \
+	p4gl_util.o p4gl_dump_st.o actions.o GenFglDoc.o \
+	InsertP4glRep.o StringBuffer.o CommentLexer.o ParseComment.o GenParameters.o \
+	ReadComments.o CommentsManagement.o Comment.o P4glLexFuncs.o P4glInit.o \
+	TableUsage.o P4glAbstractTree.o p4gl_ins_rep.o
+
+P4GLPPOBJ= p4pp_lex.o m_p4glpp.o
+
+#  ============================================================================
+#  Compilation of all programs
+#  ============================================================================
+
+all: ${ALL}
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Doc4gl parser targets:                                             |"
+	@echo "|     ${ALL}"
+	@echo "| successfully compiled.                                             |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
+p4gl : $(P4GLOBJ) m_p4gl.o
+	$(ESQL) $(CFLAGS) -o $@ $(P4GLOBJ) m_p4gl.o
+
+# Compilation of esql/c API for inserting in the repository
+p4gl_ins_rep.o: p4gl_ins_rep.ec
+	$(ESQL) $(CFLAGS) -c $< $(CFLAGS)
+	${RM} p4gl_ins_rep.c
+
+# TODO - Fazer regra genérica
+# Compilation of esql/c API for inserting in the repository
+InsertP4glRep.o: InsertP4glRep.ec
+	$(ESQL) $(CFLAGS) -c $<
+
+#  ============================================================================
+#  Geração do lexer para os comentários
+#  ============================================================================
+CommentLexer.o: CommentLexer.l
+	$(LEX) -PyyComment -oCommentLexer.c $<
+	$(CC) $(CFLAGS) -c CommentLexer.c
+
+
+#  ==========================================================================
+#  Esta regra tem de ser bem vista.
+#  Sera que o GNU make mudou as regras ?
+#  ==========================================================================
+p4gl_lex.o : p4gl_lex.l m_p4gl.c y.tab.h
+#       -t     instructs flex to write the scanner it generates to
+#              standard output instead of lex.yy.c.
+	${LEX} -t $< > p4gl_lex.c
+	$(CC) -c p4gl_lex.c
+	${RM} p4gl_lex.c
+
+
+y.tab.h: p4gl_synt.o
+#This is already done my make automatically:
+#p4gl_synt.o: p4gl_synt.y
+
+p4pp_lex.o : p4pp_lex.l m_p4glpp.c
+	${LEX} -t p4pp_lex.l > p4pp_lex.c
+	$(CC) -c p4pp_lex.c
+	${RM} p4pp_lex.c
+
+#  ==========================================================================
+#  4gl Pre-Processor
+#    It resolve all the inclusions of globals (globals "file.4gl") and
+#    generates a temporary file.
+#  ==========================================================================
+
+p4glpp: $(P4GLPPOBJ)
+	$(ESQL) -o $@ $(P4GLPPOBJ)
+
+
+#  ==========================================================================
+#  Make file manupulation tool, and loadform loader compile rules
+#  ==========================================================================
+
+# Aubit
+%.4ae: %.4gl
+	aubit 4glc $^ -o $@
+
+# Informix
+%.4gi: %.4gl
+	fglpc  $^
+	cat $*.4go > $@
+
+# 4Js / D4GL
+#%.42r: %.4gl ${DOC4GL_DBNAME}.sch ${DBDOC_DBNAME}.sch
+%.42r: %.4gl maxdev.sch
+	fgl2p  -c $<
+	fgllink -O -o $@ $*.42m /usr/fgl2c/lib/libfgl4js.42x
+
+#Create 4Js databas schema file
+#%.sch:
+#	fglschema $*    --- does not work !?
+maxdev.sch:
+	fglschema maxdev
+
+# Querix
+%.4qe: %.4gl
+	fglc -a -w -D -I -z -Ig $^
+	gcc -c -I/opt/querix/./incl -DQUERIX $*.c -o $*.qo
+	gcc -I/opt/querix/./incl -DQUERIX -rdynamic -o $@ $*.qo -L"/opt/querix/./lib" -lfgl -lsqlc
+
+
+#  ==========================================================================
+#  P4gl as library. Done for unit testing.
+#  ==========================================================================
+p4gl.a : $(P4GLOBJ) p4glpp
+	ar rv p4gl.a $(P4GLOBJ)
+
+
+test: test.parser unit.test
+
+#run parser on some test 4gl files
+test.parser:
+	./p4gl --file=test/p4gl.4gl --database=maxdevdoc  --insert
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl parser parsing test successfull                 |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
+#run Test suite for p4gl unit testing:
+unit.test:
+	${MAKE} -C test
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl parser unit test successfull.                   |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+#  ==========================================================================
+#  Generate tag(s) file
+#  ==========================================================================
+tags:
+	@-rm tags
+	touch *c
+	ctags *.c
+
+#  ==========================================================================
+#  Install the software
+#  ==========================================================================
+install: ${ALL}
+	${INSTALL} ${ALL} ${ADD_INSTALL} $(BINDIR)
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl parser successfully installed.                  |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
+deinstall:
+	${RM} $(addprefix ${BINDIR}/,${ALL} ${ADD_INSTALL})
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl parser successfully de-installed.               |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
+run.loadform: loadform.4ae
+	@export A4GL_SQLTYPE=esql; export A4GL_UI=TUI; ./loadform.4ae interactive
+
+run.loadform.d: loadform.42r
+	@fglrun ./loadform.42r interactive
+
+run.mkf.d: mkf.42r
+	@fglrun ./mkf.42r -db-maxdev -m
+
+#  ==========================================================================
+#  Cleaning of all the garbage
+#  ==========================================================================
+clean:
+	${RM} *.o ${ALL} lex.yy.c y.tab.h a.out core y.output sqexplain.out \
+	*.4go *.4gi *.4ge *.a  InsertP4glRep.c \
+	*.bak *.42m *.42r *.4gi *.4ae *.4qe loadform.h *.warn *.glb\
+    loadform.c *.qo  *.sch *.err *.ao mkf.c mkf.h p4gl_lex.c p4pp_lex.c \
+    CommentLexer.c *.html p4gl_synt.c tags *.txt *.unl
+
+
+
+

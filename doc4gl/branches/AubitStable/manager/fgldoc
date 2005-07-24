@@ -1,0 +1,1443 @@
+#!/usr/bin/perl
+
+#  =========================================================================
+#  Interface gráfico interactivo para documentação de aplicações em Informix
+#  4gl.
+#
+#  Está desenvolvido em Perl / tk e apresenta-se de forma bastante mais 
+#  profissional.
+#
+#  @todo Cancel(s) não funcionam correctamente
+#  @todo Gestão de sinais (quit)
+#  @todo Options tem de passar a ser usado como objecto
+#  @todo Forms para interacção com repositorio
+#
+#  $Id: fgldoc,v 1.9 2003-11-26 05:07:31 afalout Exp $
+#  $Author: afalout $
+#
+#  =========================================================================
+
+use sigtrap 'handler' => \&signal_handler, 'INT' ;
+
+use Getopt::Long;
+use POSIX;
+use Tk;
+use Tk::FileSelect;
+use Tk::Dialog;
+use Tk::Label;
+use Tk::HList;
+
+use FglDocumenter::Utils;
+use FglDocumenter::Log;
+use FglDocumenter::Error;
+use FglDocumenter::ExportCSV;
+use FglDocumenter::FormExport4gl;
+use FglDocumenter::ExportFgl;
+use FglDocumenter::DatabaseConnection;
+use FglDocumenter::P4glRepository;
+use FglDocumenter::Options;
+use FglDocumenter::FormImportCSV;
+use FglDocumenter::ImportCSV;
+use FglDocumenter::LoadProcess;
+use FglDocumenter::FormP4gl;
+use FglDocumenter::ImportFgl;
+use FglDocumenter::FormExportHtml;
+use FglDocumenter::ExportHtml;
+use FglDocumenter::Test;
+use FglDocumenter::L10N;
+use FglDocumenter::Toolbar;
+
+
+#  =========================================================================
+#  Inicializa o funcionamento das mensagens em vários idiomas
+#    @todo - Meter inicializaçao a recever linguagem por parametro
+#  =========================================================================
+sub initL10N
+{
+  $lh = FglDocumenter::L10N->get_handle("pt_pt") || die "What language?";
+}
+
+
+#  =========================================================================
+#  Iniciualizações diversas para já fixas mas que poderão ser armazenadas
+#  em ficheiros de configuração em XML
+#  =========================================================================
+sub initFglDoc
+{
+  initL10N();
+  $user = $ENV{USER};
+  $log = new FglDocumenter::Log("/tmp/fgldoc_$user.log");
+  $log->openLogFile();
+  $err = new FglDocumenter::Error();
+  $err->setLog($log);
+  FglDocumenter::Options::loadOptions();
+  # @todo Retirar esta afectação daqui e meter num melhor sitio
+  $FglDocumenter::Options::p4glRepository->setLog($log);
+  $FglDocumenter::Options::p4glRepository->setError($err);
+  $p4glRepObject = new FglDocumenter::P4glRepository();
+  $p4glRepObject->setError($err);
+  $p4glRepObject->setLog($log);
+  FglDocumenter::P4glRepository::setError($err);
+}
+
+#  =========================================================================
+#  Inicializações especificas em ambiente GUI
+#  =========================================================================
+sub initGui
+{
+  $log->setUI("GUI");
+  $err->setUI("GUI");
+  $err->setDisplayError(1);
+}
+
+#  =========================================================================
+#  Inicializações especificas para ambiente CUI (Command line User Interface)
+#  =========================================================================
+sub initCui
+{
+  $log->setUI("CUI");
+  $err->setUI("CUI");
+  #openRepository();
+  #$p4glRepObject->setConnection($FglDocumenter::Options::p4glRepository);
+}
+
+#  =========================================================================
+#  The signal handler for enabling the manager to let the INTERRUPT to work.
+#    @todo : Make diferent things acording to the UI choosed.
+#  =========================================================================
+sub signal_handler
+{
+  die "Interrupt !...";
+}
+
+#  =========================================================================
+#  Cria a barra de menus com as respectivas opções
+#  =========================================================================
+sub createMenu
+{
+  my $f = $mw->Frame(-relief => 'ridge', -borderwidth => 2);
+  $f->pack(
+    -side => 'top', 
+    -anchor => 'n',
+    -fill => 'x'
+  );
+
+  push(@menus, $f->Menubutton(
+    -text => $lh->maketext("File"), -underline => 0)
+  );
+  push(@menus, $f->Menubutton(
+    -text => $lh->maketext("Import"), -underline => 0)
+  );
+  push(@menus, $f->Menubutton(
+    -text => $lh->maketext("Export"), -underline => 0)
+  );
+  push(@menus, $f->Menubutton(
+    -text => $lh->maketext("Repository"), -underline => 0)
+  );
+  push(@menus, $f->Menubutton(
+    -text => $lh->maketext("Options"), -underline => 0)
+  );
+  push(@menus, $f->Menubutton(
+    -text => $lh->maketext("Help"), -underline => 0)
+  );
+
+  $menus[5]->pack(-side => 'right' );
+  $menus[0]->pack(-side => 'left' );
+  $menus[1]->pack(-side => 'left' );
+  $menus[2]->pack(-side => 'left' );
+  $menus[3]->pack(-side => 'left' );
+  $menus[4]->pack(-side => 'left' );
+
+  $menus[0]->AddItems(["command" => $lh->maketext("~Open"),
+                        command => \&openOptionsFile],
+                      ["command" => $lh->maketext("~Save"), 
+                        command => \&saveOptionsFile],
+                      ["command" => $lh->maketext("~Exit"), 
+                        command => \&exitFgldoc],
+  );
+
+  $menus[1]->AddItems(["command" => $lh->maketext("~CSV (Tab separated)"), 
+                        command => \&importCSV],
+                      ["command" => $lh->maketext("~4gl Sources"), 
+                        command => \&importFgl],
+                        #["command" => "XML", 
+                        #command => \&importXml],
+                        #["command" => "Syspgm4gl", 
+                        #command => \&importSyspgm]
+  );
+
+  $menus[2]->AddItems(["command" => $lh->maketext("~CSV (Tab separated)"), 
+                        command => \&export2CSV],
+                      ["command" => $lh->maketext("~4gl Sources"), 
+                        command => \&export2FglGui],
+                        #["command" => "XML", 
+                        #command => \&exportXml],
+                        #["command" => "Makefile", 
+                        #command => \&exportMakefile],
+                      ["command" => $lh->maketext("~HTML"), 
+                        command => \&export2Html]
+  );
+  $menus[3]->AddItems(["command" => $lh->maketext("~Create"), 
+                        command => \&createRepository],
+                      ["command" => $lh->maketext("~Drop"), 
+                        command => \&dropRepository],
+                      ["command" => $lh->maketext("~Clean"), 
+                        command => \&cleanRepository]
+  );
+
+  $menus[4]->AddItems(["checkbutton" => $lh->maketext("~Show Log"), 
+                        -command => \&toogleLog,
+                        -variable => \$FglDocumenter::Options::logShowed],
+                      ["command" => $lh->maketext("~Configure"), 
+                        command => \&configureOptions]
+  );
+}
+
+#  =========================================================================
+#  Cria a toolbar
+#  =========================================================================
+sub createToolbar
+{
+  my $toolbar = new FglDocumenter::Toolbar();
+  $toolbar->show();
+}
+
+#  =========================================================================
+#  Muda o estado do log
+#  =========================================================================
+sub toogleLog
+{
+  if ( $FglDocumenter::Options::logShowed == 1 )
+  {
+    $log->setShowGUI(true);
+    $log->showLogWindow();
+  }
+  else
+  {
+    $log->setShowGUI(false);
+    $log->hideLogWindow();
+  }
+}
+
+#  =========================================================================
+#  Abre o ficheiro das opções e carrega para o objecto de opções
+#  =========================================================================
+sub openOptionsFile
+{
+  FglDocumenter::Options::setParentWin($mw);
+  FglDocumenter::Options::open();
+}
+
+#  =========================================================================
+#  Salva as opções num ficheiro
+#  =========================================================================
+sub saveOptionsFile
+{
+  FglDocumenter::Options::setParentWin($mw);
+  FglDocumenter::Options::save();
+}
+
+#  =========================================================================
+#  Abre o forma para configuração das opções
+#  =========================================================================
+sub configureOptions
+{
+  use FglDocumenter::FormOptions;
+
+  my $objOptions = new FglDocumenter::FormOptions();
+  $objOptions->setLanguageHandler($lh);
+  $objOptions->show();
+}
+
+
+#  =========================================================================
+#  Abre a base de dados que está configurada para ser usada como repositório
+#  dos comentários
+#  Se estiver aberta não estabelece a conexão
+#  =========================================================================
+sub openRepository
+{
+  # @todo Tem de eventualmente abrir form para login e password
+  $FglDocumenter::Options::p4glRepository->connect();
+}
+
+#  =========================================================================
+#  Executar form para importar ficheiro com sperador TAB
+#  =========================================================================
+sub importCSV
+{
+  $formImportObject = new FglDocumenter::FormImportCSV();
+
+  $formImportObject->setLog($log);
+  $formImportObject->setError($err);
+  $formImportObject->setLh($lh);
+
+  $formImportObject->setCsvImportFile($FglDocumenter::Options::csvImportFile);
+  $formImportObject->setClearRepository(
+    $FglDocumenter::Options::clearRepository
+  );
+  $formImportObject->setNormalize($FglDocumenter::Options::normalize);
+
+  $formImportObject->addOkListener(\&listenerImportCsv);
+  $formImportObject->addCancelListener(sub {
+    my $dialog = $mw->Dialog(-title => $lh->maketext("CSV Import"),
+        -text => $lh->maketext("Import canceled")
+    );
+    $dialog->Show();
+    $mw->update;
+  });
+  $formImportObject->show();
+}
+
+#  =========================================================================
+#  Método gráfico usado para ler as variáveis configuradas no form e 
+#  executar a acção com estes valores
+#  =========================================================================
+sub listenerImportCsv
+{
+  $FglDocumenter::Options::csvImportFile=$formImportObject->getCsvImportFile();
+  $FglDocumenter::Options::clearRepository = 
+    $formImportObject->getClearRepository();
+  $FglDocumenter::Options::normalize = $formImportObject->getNormalize();
+  executeImportCSV();
+}
+
+#  =========================================================================
+#  Import CSV com interface CUI (Command line User Interface)
+#  =========================================================================
+sub importCSVCui
+{
+  if ( !defined($FglDocumenter::Options::csvImportFile) )
+  {
+    $err->error(
+      "Import comments to repository",
+      "Name of cvs file not defined"
+    );
+    printUsage();
+    exit;
+  }
+  executeImportCSV();
+}
+
+#  =========================================================================
+#  Após o utilizador carregar no botão OK executa a importação da informação
+#  de um ficheiro com separador TAB
+#    @todo - Transformar em objecto a execução de import CSV
+#  =========================================================================
+sub executeImportCSV
+{
+
+  openRepository();
+
+  my $importObject = new FglDocumenter::ImportCSV();
+
+  $importObject->setSheetFile(
+    $FglDocumenter::Options::csvImportFile
+  );
+
+  $importObject->setRepository(
+    $FglDocumenter::Options::p4glRepository
+  );
+
+  $importObject->setLog($log);
+  $importObject->setError($err);
+  $importObject->setSendLineToLog(
+    $FglDocumenter::Options::sendLineToLog
+  );
+  my $numActions = $importObject->getNumActions();
+  if ( $FglDocumenter::Options::clearRepositoryOnImportCsv == 1 )
+  {
+    $numActions += 4;
+  }
+
+  actionStarted("Import CSV File");
+  $importObject->addProgressListener(\&displayProgress);
+  if ( $FglDocumenter::Options::clearRepositoryOnImportCsv == 1 )
+  {
+    $importObject->cleanRepository();
+  }
+  $result = "Importação terminada com sucesso";
+  print "11\n";
+  if ( $importObject->loadSheet() )
+  {
+    if ( $FglDocumenter::Options::normalize == 1 ) 
+    {
+      $importObject->normalize();
+    }
+  }
+  else
+  {
+    $result = "Importação com erros";
+  }
+
+  $percent_done = 100;
+  finishProgressBar();
+  # @todo A Importação pode não ter tido sucesso e portanto isto devia 
+  #       ter passado para outro sitio
+  actionFinished(
+    "Importar dados de ficheiro",
+    $result
+  );
+}
+
+#  =========================================================================
+#  Load the process unload file with CUI (Command line User Interface)
+#  =========================================================================
+sub loadProcessCui
+{
+  if ( !defined($FglDocumenter::Options::process_file) )
+  {
+    $err->error(
+      "Import comments to repository",
+      "Name of process file not defined"
+    );
+    printUsage();
+    exit;
+  }
+  executeLoadProcess();
+}
+
+#  =========================================================================
+#  Execute the loading of a process action.
+#  =========================================================================
+sub executeLoadProcess
+{
+
+  openRepository();
+
+  my $loadObject = new FglDocumenter::LoadProcess();
+
+  $loadObject->setUnloadFile(
+    $FglDocumenter::Options::process_file
+  );
+
+  $loadObject->setRepository(
+    $FglDocumenter::Options::p4glRepository
+  );
+
+  $loadObject->setLog($log);
+  $loadObject->setError($err);
+  $loadObject->setSendLineToLog(
+    $FglDocumenter::Options::sendLineToLog
+  );
+  #my $numActions = $loadObject->getNumActions();
+
+  actionStarted("Load process file");
+  $loadObject->addProgressListener(\&displayProgress);
+  $result = "Process file loaded";
+  if ( ! $loadObject->loadFile() )
+  {
+    $result = "Errors loading process file";
+  }
+
+  $percent_done = 100;
+  finishProgressBar();
+  # @todo A Importação pode não ter tido sucesso e portanto isto devia 
+  #       ter passado para outro sitio
+  actionFinished(
+    "Load process file",
+    $result
+  );
+}
+
+use Tk::ProgressBar;
+
+#  =========================================================================
+#  Iniciar interface que indica que importação iniciada
+#  =========================================================================
+sub actionStarted
+{
+  if ( $FglDocumenter::Options::UI eq "CUI" )
+  {
+    printf("[ACTION] New action started ($_[0])\n");
+    return;
+  }
+
+  $mw->configure(-cursor => "watch");
+  $actionCount = 0;
+  startProgressBar();
+}
+
+#  =========================================================================
+#  Inicializa a progress bar
+#  =========================================================================
+sub startProgressBar
+{
+  $progressDialog = $mw->Toplevel();
+  
+  # @todo Meter a mensagem configuravel
+  $progressDialog->title("Importar documentação de CSV");
+  $progressDialog->geometry("400x200");
+  
+  $percent_done = 0;
+
+  $progress = $progressDialog->ProgressBar(
+    -width => 20,
+    -length => 100,
+    -to => $numActions,
+    -blocks => 1,
+    #-colors => [0, 'green', 50, 'yellow' , 80, 'red'],
+    -variable => \$percent_done
+  );
+  $progress->grid;
+
+  $msg1Label = $progressDialog->Label(-text => $msg1);
+  $msg1Label->grid;
+
+  $msg2Label = $progressDialog->Label(-text => $msg2);
+  $msg2Label->grid;
+  $progressDialog->Popup();
+}
+
+#  =========================================================================
+#  Faz o display do progresso na progress bar
+#    @param $_[0] Valor do contador
+#    @param $_[1] String identificadora da acção
+#  =========================================================================
+sub displayProgress
+{
+  $msg1 = shift;
+  $msg2 = shift;
+  $percent_done = $actionCount;
+  $actionCount++;
+
+  if ( $FglDocumenter::Options::UI eq "CUI" )
+  {
+    printf("[PROGRESS] $msg1\n");
+    printf("[PROGRESS] $msg2\n");
+    return;
+  }
+
+  $msg1Label->configure(-text => $msg1);
+  $msg2Label->configure(-text => $msg2);
+  $progressDialog->update();
+  $progressDialog->raise();
+}
+
+
+#  =========================================================================
+#  Termina a progress bar
+#  =========================================================================
+sub finishProgressBar
+{
+  if ( $FglDocumenter::Options::UI eq "CUI" )
+  {
+    return
+  }
+  $progressDialog->destroy();
+}
+
+#  =========================================================================
+#  Abre uma dialog que informa que o import terminou
+#  =========================================================================
+sub actionFinished
+{
+  if ( $FglDocumenter::Options::UI eq "CUI" )
+  {
+    printf("[ACTIONS] Action finished\n");
+    return;
+  }
+
+  $mw->configure(-cursor => "arrow" );
+  my $dialog = $mw->Dialog(-title => $_[0],
+    -text => $_[1]
+  );
+  $dialog->Show();
+}
+
+#  =========================================================================
+#  Apresenta uma dialog que apresenta um erro ocorrido
+#  =========================================================================
+sub showError
+{
+  my $dialog = $mw->Dialog(-title => "Error : " . $_[0],
+    -text => $_[1]
+  );
+  $dialog->Show();
+}
+
+#  =========================================================================
+#  Apresenta uma dialog que apresenta uma mensagem
+#  =========================================================================
+sub showMessage
+{
+  my $dialog = $mw->Dialog(-title => $_[0],
+    -text => $_[1]
+  );
+  $dialog->Show();
+}
+
+#  =========================================================================
+#  Importar XML
+#  =========================================================================
+sub importXml
+{ 
+  my $types = [
+            ['XML',              ['.xml', 'XML']],
+            ['Text',              '.txt', 'TEXT'],
+            ['GIF Files',        '.gif',          ],
+            ['GIF Files',        '',        'GIFF'],
+            ['All Files',        '*',             ],
+        ];
+  my $filename = $mw->getOpenFile(-filetypes=>$types);
+
+  print "import XML\n";
+}
+
+#  =========================================================================
+#  Importar syspgm
+#  =========================================================================
+sub importSyspgm
+{
+  print "import syspgm4gl\n";
+}
+
+#  =========================================================================
+#  Exportar para CSV
+#  @todo - Ainda não convertido
+#  =========================================================================
+sub export2CSV
+{
+  my $types = [ ['TEXT', ['.txt', '.TXT']] ,
+                ['All Files', '*', ]
+  ];
+  $FglDocumenter::Options::csvExportFile = $mw->getSaveFile(
+    -filetypes=>$types
+  );
+  if ( defined($FglDocumenter::Options::csvExportFile) )
+  {
+    executeExport2CSV();
+  }
+}
+
+#  =========================================================================
+#  Execução para CSV em ambiente CUI
+#  =========================================================================
+sub export2CSVCui
+{
+   executeExport2CSV();
+}
+
+#  =========================================================================
+#  Executa a exportação para um ficheiro com CSV
+#  =========================================================================
+sub executeExport2CSV
+{
+  actionStarted("Export CSV");
+  openRepository();
+  $exportCSVObject = new FglDocumenter::ExportCSV();
+  $exportCSVObject->setRepository(
+    $FglDocumenter::Options::p4glRepository
+  );
+  $exportCSVObject->setLog($log);
+  $exportCSVObject->setError($err);
+  $exportCSVObject->setFileName(
+    $FglDocumenter::Options::csvExportFile
+  );
+  $exportCSVObject->export2CSV();
+  actionFinished(
+    "Exportar dados para flat file com CSV (TAB)",
+    "Exportação terminada com sucesso"
+  );
+}
+
+
+#  =========================================================================
+#  Exportar os comentários existentes no repositório para os sources de 4gl
+#
+#  Esta função é executada apenas no ambiente GUI
+#
+#    @todo Permitir escolher mais do que um ficheiro
+#  =========================================================================
+sub export2FglGui
+{
+  $formExportObject = new FglDocumenter::FormExport4gl();
+
+  $formExportObject->setLog($log);
+  $formExportObject->setError($err);
+  $formExportObject->setLanguageHandler($lh);
+  # Afectar valores de default (directorio, etc com valores das opçoes)
+  $formExportObject->setSourceDir($FglDocumenter::Options::sourceDir);
+  $formExportObject->setFglSource($FglDocumenter::Options::fglSource);
+  $formExportObject->setReplaceFglDoc($FglDocumenter::Options::replaceFglDoc);
+
+  $formExportObject->addOkListener(\&executeExport2Fgl);
+  $formExportObject->addCancelListener(sub {
+    my $dialog = $mw->Dialog(-title => "Exportação para 4gl",
+        -text => "Exportação cancelada"
+    );
+    $dialog->Show();
+    $mw->update;
+  });
+  $formExportObject->show();
+}
+
+#  =========================================================================
+#  Exportação dos comentários para 4gl no ambiente CUI
+#  (Command Line User Interface)
+#  =========================================================================
+sub export2FglCui
+{
+  if ( !defined($FglDocumenter::Options::fglSource) )
+  {
+    $err->error(
+      "Export comments to 4gl source",
+      "Name of fglSource not defined"
+    );
+    printUsage();
+    exit;
+  }
+  if ( !defined($FglDocumenter::Options::sourceDir) )
+  {
+    $err->error(
+      "Export comments to 4gl source",
+      "Name of source directory not defined"
+    );
+    printUsage();
+    exit;
+  }
+  executeExport2Fgl();
+}
+
+#  =========================================================================
+#  Executa a acção de exportação para 4gl
+#  Executado quando o utilizador carrega em OK no form (se em funcionamento
+#  interactivo)
+#  =========================================================================
+sub executeExport2Fgl
+{
+
+  openRepository();
+  # @todo Isto deve ser responsabilidade da classe que documenta os fontes
+  my $currentDir = getcwd();
+  if ( ! chdir $FglDocumenter::Options::sourceDir )
+  {
+    $err->error(
+      "Mudança de directório",
+      "Can't change to ($FglDocumenter::Options::sourceDir):\n$!"
+    );
+    return 0;
+  }
+
+  $exportFglObject = new FglDocumenter::ExportFgl();
+  $exportFglObject->setRepository(
+    $FglDocumenter::Options::p4glRepository
+  );
+  $exportFglObject->setLog($log);
+  $exportFglObject->setError($err);
+  $exportFglObject->setReplaceFgldoc(
+    $FglDocumenter::Options::replaceFgldoc
+  );
+  $exportFglObject->setInsertEmptyComment(
+    $FglDocumenter::Options::insertEmptyComment
+  );
+
+  # @todo Meter a funcionar listas de ficheiros
+  my @mod = ($FglDocumenter::Options::fglSource); 
+  my @dir = ($FglDocumenter::Options::sourceDir);
+
+  $exportFglObject->setFglModules(\@mod);
+  $exportFglObject->setFglDirectoryList(\@dir);
+  $exportFglObject->addProgressListener(\&displayProgress);
+
+  $numActions = $exportFglObject->getNumActions();
+  actionStarted("Export to Fgl");
+
+  $exportFglObject->insertDocComments();
+
+  # @todo Gestão dos erros
+  actionFinished(
+    "Exportar dados para 4gl",
+    "Exportação terminada"
+  );
+
+  chdir $currentDir;
+  return 1;
+}
+
+
+#  =========================================================================
+#  Exportar para XML
+#  =========================================================================
+sub exportXml
+{
+  my $types = [ ['XML', ['.xml', '.XML']] ,
+                ['All Files', '*', ]
+  ];
+  my $fileName = $mw->getSaveFile(-filetypes=>$types);
+  actionStarted("Export to Xml");
+  setFileName($fileName);
+  export2Xml();
+  actionFinished(
+    "Exportar dados para ficheiro XML",
+    "Exportação terminada com sucesso"
+  );
+}
+
+#  =========================================================================
+#  Exportar para makefile
+#  =========================================================================
+sub exportMakefile
+{
+  print "Export Makefile\n";
+}
+
+#  =========================================================================
+#  Exportar para HTML
+#  =========================================================================
+sub export2Html
+{
+  #my $fileSelect = $mw->FileSelect(
+    #-directory => "/tmp"
+  #);
+  # @todo : Criar um form próprio para exportação para html
+  #$fileSelect->configure(-verify => ["-d"]);
+  #$FglDocumenter::Options::htmlExportDir = $fileSelect->Show;
+  #$FglDocumenter::Options::htmlExportDir = "/tmp/xpto";
+  #executeExportHtml();
+
+  $formExportObject = new FglDocumenter::FormExportHtml();
+
+  $formExportObject->setLog($log);
+  $formExportObject->setError($err);
+  $formExportObject->setLanguageHandler($lh);
+  # Afectar valores de default (directorio, etc com valores das opçoes)
+  $formExportObject->setExportDir($FglDocumenter::Options::htmlExportDir);
+
+  $formExportObject->addOkListener(sub {
+    $FglDocumenter::Options::htmlExportDir = $formExportObject->getExportDir();
+    executeExportHtml();
+  });
+  $formExportObject->addCancelListener(sub {
+    my $dialog = $mw->Dialog(-title => "Exportação para Html",
+        -text => "Exportação cancelada"
+    );
+    $dialog->Show();
+    $mw->update;
+  });
+  $formExportObject->show();
+}
+
+#  =========================================================================
+#  Exportar para HTML em ambiente CUI
+#  =========================================================================
+sub export2HtmlCui
+{
+  executeExportHtml();
+}
+
+#  =========================================================================
+#  Executa a exportaçao dos comentarios para uma arvore de html
+#  =========================================================================
+sub executeExportHtml
+{
+  $exportHtmlObject = new FglDocumenter::ExportHtml();
+
+  openRepository();
+  $exportHtmlObject->setRepository(
+    $FglDocumenter::Options::p4glRepository
+  );
+  $exportHtmlObject->setLog($log);
+  $exportHtmlObject->setError($err);
+  $exportHtmlObject->setLanguageHandler($lh);
+  #my @mod = @$FglDocumenter::Options::importFglModules;
+  #my @dir = @$FglDocumenter::Options::importFglDirs;
+  #$exportHtmlObject->setFglModules(\@mod);
+  #$exportHtmlObject->setFglDirectoryList(\@dir);
+  $exportHtmlObject->setDestinationDir(
+    $FglDocumenter::Options::htmlExportDir
+  );
+  $exportHtmlObject->setIgnoreExistDir(
+    $FglDocumenter::Options::ignoreExistDir
+  );
+  $exportHtmlObject->addProgressListener(\&displayProgress);
+
+  #--export_html_module
+  if ( defined($FglDocumenter::Options::htmlExportModule) )
+  {
+	#exporting one module
+	actionStarted("Export module $FglDocumenter::Options::htmlExportModule to HTML");
+	$exportHtmlObject->genHtmlForModule($FglDocumenter::Options::htmlExportModule);
+  } else {
+	#Export everything:
+	actionStarted("Export repository to HTML");
+	$exportHtmlObject->export();
+  }
+
+
+  finishProgressBar();
+
+  actionFinished(
+    "Exportar informação para Html",
+    "Exportaçao de repositório terminada"
+  );
+  # @todo - Resolver erro da destruiçao do objecto
+  #destroy $exportHtmlObject;
+}
+
+#  =========================================================================
+#  Importar dados para o repositório tendo como origem os fontes 4gl.
+#  Usa o parser de informix 4gl.
+#  =========================================================================
+sub importFgl
+{
+  $formP4glObject = FglDocumenter::FormP4gl->new();
+  $formP4glObject->addOkListener(\&listenerImportFgl);
+  $formP4glObject->setError($err);
+  $formP4glObject->setLog($log);
+  $formP4glObject->setLanguageHandler($lh);
+  openRepository();
+  $formP4glObject->setConnection(
+    $FglDocumenter::Options::p4glRepository
+  );
+  $p4glRepObject->setConnection(
+    $FglDocumenter::Options::p4glRepository
+  );
+  $formP4glObject->setRepositoryUtil($p4glRepObject);
+  $formP4glObject->setLoadComments($FglDocumenter::Options::loadComments);
+  $formP4glObject->setParseOnly($FglDocumenter::Options::parseOnly);
+  $formP4glObject->setLoadTableUsage($FglDocumenter::Options::loadTableUsage);
+  $formP4glObject->setLoadParameters($FglDocumenter::Options::loadParameters);
+  $formP4glObject->setLoadStrings($FglDocumenter::Options::loadStrings);
+  $formP4glObject->setLoadLocalVariables(
+    $FglDocumenter::Options::loadLocalVariables
+  );
+  $formP4glObject->setImportFglLocation(
+    $FglDocumenter::Options::importFglLocation
+  );
+  $formP4glObject->setLoadFilesRecursive(
+    $FglDocumenter::Options::loadFilesRecursive
+  );
+
+
+  $formP4glObject->addCancelListener(sub {
+    $dialog = $mw->Dialog(
+      -title => $lh->maketext("4gl source information import"),
+      -text => $lh->maketext("Import canceled")
+    );
+    $dialog->Show();
+    $mw->update;
+  });
+  $formP4glObject->show();
+}
+#  =========================================================================
+#  Método gráfico usado para ler as variáveis configuradas no form e 
+#  executar a acção com estes valores
+#  =========================================================================
+sub listenerImportFgl
+{
+  $FglDocumenter::Options::packageName =
+    $formP4glObject->getPackage()
+  ;
+  $FglDocumenter::Options::loadComments =
+    $formP4glObject->getLoadComments()
+  ;
+  $FglDocumenter::Options::parseOnly =
+    $formP4glObject->getParseOnly()
+  ;
+  $FglDocumenter::Options::loadTableUsage =
+    $formP4glObject->getLoadTableUsage()
+  ;
+  $FglDocumenter::Options::loadParameters =
+    $formP4glObject->getLoadParameters()
+  ;
+  $FglDocumenter::Options::loadStrings =
+    $formP4glObject->getLoadStrings()
+  ;
+  $FglDocumenter::Options::loadLocalVariables =
+    $formP4glObject->getLoadLocalVariables()
+  ;
+  $FglDocumenter::Options::importFglLocation =
+    $formP4glObject->getImportFglLocation()
+  ;
+  $FglDocumenter::Options::loadFilesRecursive =
+    $formP4glObject->getLoadFilesRecursive()
+  ;
+  $FglDocumenter::Options::importFglModules =
+    $formP4glObject->getModuleList()
+  ;
+  $FglDocumenter::Options::importFglDirs =
+    $formP4glObject->getDirectoryList()
+  ;
+
+  executeImportFgl();
+}
+
+
+#  =========================================================================
+#  CUI interface to make the import of documentation comments making a parse
+#  in the .4gl(s).
+#  =========================================================================
+sub importFglCui
+{
+  FglDocumenter::Utils::initDirectoryList();
+  $fileListRef = FglDocumenter::Utils::getModules(
+      $FglDocumenter::Options::importFglLocation, 1
+  );
+  @fileList = @$fileListRef;
+  $FglDocumenter::Options::importFglModules = \@fileList;
+  $FglDocumenter::Options::importFglDirs    = 
+    FglDocumenter::Utils::getDirectoryList()
+  ;
+  my $dirListRef = FglDocumenter::Utils::getDirectoryList();
+  my @dirList = @$dirListRef;
+  executeImportFgl();
+}
+
+#  =========================================================================
+#  Executa o p4gl de acordo com os parametros configurados para os módulos
+#  seleccionados.
+#  =========================================================================
+sub executeImportFgl
+{
+  my $importFglObject = new FglDocumenter::ImportFgl();
+
+  $importFglObject->setRepository(
+    $FglDocumenter::Options::p4glRepository
+  );
+  $importFglObject->setLog($log);
+  $importFglObject->setError($err);
+  #my @mod = @FglDocumenter::FormP4gl::modules;
+  #my @dir = @FglDocumenter::FormP4gl::directoryList;
+  my @mod = @$FglDocumenter::Options::importFglModules;
+  my @dir = @$FglDocumenter::Options::importFglDirs;
+  $importFglObject->setStop($FglDocumenter::Options::stop);
+  $importFglObject->setFglModules(\@mod);
+  $importFglObject->setFglDirectoryList(\@dir);
+  $importFglObject->addProgressListener(\&displayProgress);
+  $numActions = $importFglObject->getNumActions();
+
+  actionStarted("Import 4gl information");
+  $log->log("Starting 4gl import");
+  $importFglObject->parseSources();
+  finishProgressBar();
+
+  actionFinished(
+    "Importar informação de 4gl",
+    "Importação por parsing terminada"
+  );
+}
+
+#  =========================================================================
+#  Criaçao de um novo repositorio
+#  =========================================================================
+sub createRepository
+{
+  if ( !defined($FglDocumenter::Options::importDatabase) )
+  {
+    $err->error(
+      "Create repository",
+      "database name undefined"
+    );
+    printUsage();
+    return 0;
+  }
+  my $dbConnection = new FglDocumenter::DatabaseConnection(
+    $FglDocumenter::Options::importInformixDir,
+    $FglDocumenter::Options::importInformixServer,
+    $FglDocumenter::Options::importHost,
+    $FglDocumenter::Options::importDatabase,
+    $FglDocumenter::Options::importUser,
+    ""
+  );
+  $p4glRepObject->setConnection($dbConnection);
+  $p4glRepObject->createRepositoryFromScrach();
+  # @todo : This should be in other place
+  if ( $FglDocumenter::Options::UI eq "GUI" )
+  {
+    my $dialog = $mw->Dialog(
+      -title => $lh->maketext("Create repository"),
+      -text  => $lh->maketext("Repository database created")
+    );
+    $dialog->Show();
+    $mw->update;
+  }
+}
+
+#  =========================================================================
+#  Apagar repositorio (drop database)
+#  =========================================================================
+sub dropRepository
+{
+  if ( !defined($FglDocumenter::Options::importDatabase) )
+  {
+    $err->error(
+      "Drop repository",
+      "database name undefined"
+    );
+    printUsage();
+    return 0;
+  }
+  my $dbConnection = new FglDocumenter::DatabaseConnection(
+    $FglDocumenter::Options::importInformixDir,
+    $FglDocumenter::Options::importInformixServer,
+    $FglDocumenter::Options::importHost,
+    $FglDocumenter::Options::importDatabase,
+    $FglDocumenter::Options::importUser,
+    ""
+  );
+  $p4glRepObject->setConnection($dbConnection);
+  #$dbConnection->connect();
+  $p4glRepObject->setDbh($dbConnection->getConnection());
+  if ( $p4glRepObject->dropRepository() )
+  {
+    my $dialog = $mw->Dialog(
+      -title => $lh->maketext("Drop repository"),
+      -text  => $lh->maketext("Repository database dropped")
+    );
+    $dialog->Show();
+    $mw->update;
+  }
+  else
+  {
+    $err->error(
+      "Drop repository",
+      "Repository not removed"
+    );
+  }
+}
+
+#  =========================================================================
+#  Apaga os dados do repositorio deixando no entanto as tabelas e base de 
+#  dados existentes
+#    @todo : Implementar esta opção
+#  =========================================================================
+sub cleanRepository
+{
+  if ( !defined($FglDocumenter::Options::importDatabase) )
+  {
+    $err->error(
+      "Clean repository",
+      "database name undefined"
+    );
+    printUsage();
+    return 0;
+  }
+  my $dbConnection = new FglDocumenter::DatabaseConnection(
+    $FglDocumenter::Options::importInformixDir,
+    $FglDocumenter::Options::importInformixServer,
+    $FglDocumenter::Options::importHost,
+    $FglDocumenter::Options::importDatabase,
+    $FglDocumenter::Options::importUser,
+    ""
+  );
+  $p4glRepObject->setConnection($dbConnection);
+  $dbConnection->connect();
+  $p4glRepObject->setDbh($dbConnection->getConnection());
+
+  # @todo : Deve testar valores de retorno
+  $p4glRepObject->clean();
+  my $dialog = $mw->Dialog(
+    -title => $lh->maketext("Clean repository"),
+    -text  => $lh->maketext("Repository cleaned")
+  );
+  $dialog->Show();
+  $mw->update;
+}
+
+#  =========================================================================
+#  Sair da ferramenta
+#  =========================================================================
+sub exitFgldoc
+{
+  FglDocumenter::Options::saveOptions();
+  $log->closeLogFile();
+  exit;
+}
+
+#  =========================================================================
+#  Print program usage
+#  =========================================================================
+sub printUsage()
+{
+    print qq/Usage: fgldoc [options]
+  Options:
+    --help  : Show this help message
+    --quiet : Do not show progress information
+    --action=<ActionToDo>   : Specify one of the actions
+    --ui={GUI|CUI}  : Start program in GUI or character mode
+    --process_file=<file_name>  : pipe separated (.unl) file to load process list from
+    --export_directory=<directory>  : Export something to this directory
+    --export_source=<fglSourceName> : ??/
+    --insertEmptyComment    : Insert empty comments to all modules when perfoming action ???
+    --sheet_file=<CSVfileName>  : Specify Comma Separated Values file for action ???
+    --normalize : Normalise data loaded in action ???
+    --clean_repository  : clear Repository On ImportCsv action
+    --send_line_to_log  : log progress and errors to /tmp/p4gl.log
+    --package_name=s    : Set package name (default='.')
+    --load_recursive    : Load information form modules recursively
+    --import_directory=s    : Specify directory from which to import something
+    --export_html_directory=<htmlDirectoryName> : Directory where HTML docs will be created
+    --export_html_module=<ModuleName.4gl> : Export only specified module to HTML
+    --ignore_exist_dir  : Ignore the fact that some directory exists
+    --database=<databaseName>   : Specify database name to connect to
+    --locale=<language (current just en_us and pt_pt)> : Language for messages
+    --stop      : Stop when an error ocurr
+  Actions:
+    test        : No idea
+    importCsv   : Import data from Comma Separated Values file to database
+    importFgl   : Import data from 4GL modules
+    export2Fgl  : Export data from database to 4GL modules
+    export2Csv  : Export data from database to Comma Separated Values file
+    export2Html : Export data from database to static HTML files
+    createRepository    : Create empty database repository
+    dropRepository      : delete all tables Doc4GL tables from repository
+/;
+}
+
+
+#  =========================================================================
+#  Inicialização/validação dos parâmetros de execução
+#
+#  Falta trabalhar com opcoes so com um - (resumidas)
+#  @todo Trabalhar com execução de métodos
+#
+#  Possible parameters to the program:
+#    - no_gui : Com gui por default
+#    - export_directory = %s
+#    - export_source = %s
+#  =========================================================================
+sub getParameters
+{
+  my $optResult = GetOptions(
+    "help"              => \$help,
+    "ui=s"              => \$FglDocumenter::Options::UI,
+    "export_directory=s"=> \$FglDocumenter::Options::sourceDir,
+    "export_source=s"   => \$FglDocumenter::Options::fglSource,
+    "insert_empty_comment=i"=> \$FglDocumenter::Options::insertEmptyComment,
+    "sheet_file=s"      => \$FglDocumenter::Options::csvImportFile,
+    "normalize"         => \$FglDocumenter::Options::normalize,
+    "clean_repository"  => \$FglDocumenter::Options::clearRepositoryOnImportCsv,
+    "send_line_to_log"  => \$FglDocumenter::Options::sendLineToLog,
+    "package_name=s"    => \$FglDocumenter::Options::packageName,
+    "load_recursive"    => \$FglDocumenter::Options::loadFilesRecursive,
+    "import_directory=s"=> \$FglDocumenter::Options::importFglLocation,
+    "export_html_directory=s"=> \$FglDocumenter::Options::htmlExportDir,
+    "export_html_module=s"=> \$FglDocumenter::Options::htmlExportModule,
+    "ignore_exist_dir"  => \$FglDocumenter::Options::ignoreExistDir,
+    "action=s"          => \$FglDocumenter::Options::action,
+    "database=s"        => \$FglDocumenter::Options::importDatabase,
+    "locale=s"          => \$FglDocumenter::Options::locale,
+    "normalize"         => \$FglDocumenter::Options::normalize,
+    "stop"              => \$FglDocumenter::Options::stop,
+    "process_file=s"    => \$FglDocumenter::Options::process_file,
+  );
+
+  $lh = FglDocumenter::L10N->get_handle(
+    $FglDocumenter::Options::locale,
+  ) || die "What language?";
+
+  if ( $help )
+  {
+    printf("Error in options\n");
+    printUsage();
+    exit;
+  }
+
+  if ( ! $optResult )
+  {
+    print "Error";
+    printUsage();
+    exit;
+  }
+}
+
+#  =========================================================================
+#  Start the environment in GUI (Graphical User Interface) mode.
+#  =========================================================================
+sub startGui
+{
+  $mw = MainWindow->new;
+
+  initGui();
+  $mw->title("4Doc - Fgl documentation tool");
+  #$width  = $mw->screenwidth()-10;
+  #$height = $mw->screenheight()-30;
+  $width  = 600;
+  $height = 300;
+  $mw->geometry("${width}x${height}+0+0");
+  createMenu();
+  createToolbar();
+  $FglDocumenter::Options::logShowed = 1;
+  if ( $FglDocumenter::Options::logShowed )
+  {
+    $log->showLogWindow();
+  }
+  MainLoop
+}
+
+#  =========================================================================
+#  Uma vez que foi executado com a opçao de linha de comando, tem de existir
+#  alguma a acçao a executar.
+#  =========================================================================
+sub analiseCuiOptions
+{
+  $numActions = 0;
+  if ( ! $FglDocumenter::Options::process_file eq "" )
+  {
+    $numActions++;
+  }
+
+  if ( $FglDocumenter::Options::action eq "importCsv" )
+  {
+    $numActions++;
+  }
+  if ( $FglDocumenter::Options::action eq "importFgl" )
+  {
+    $numActions++;
+  }
+  if ( $FglDocumenter::Options::action eq "export2Fgl" )
+  {
+    $numActions++;
+  }
+  if ( $FglDocumenter::Options::action eq "export2CSV" )
+  {
+    $numActions++;
+  }
+  if ( $FglDocumenter::Options::action eq "export2Html" )
+  {
+    $numActions++;
+  }
+  if ( $FglDocumenter::Options::action eq "createRepository" )
+  {
+    $numActions++;
+  }
+  if ( $FglDocumenter::Options::action eq "dropRepository" )
+  {
+    $numActions++;
+  }
+  if ( $FglDocumenter::Options::action eq "test" )
+  {
+    $numActions++;
+  }
+  
+  if ( $numActions <= 0 )
+  {
+    printf("There must be at least one option defined in CUI\n");
+    return 0;
+  }
+  return 1;
+}
+
+#  =========================================================================
+#  Start the execution in CUI (Comand User Interface) mode.
+#
+#  Executa as acçoes com dados recebidos com parametros enviando
+#  os resultados para ficheiro(s) de log ou standard output
+#
+#  @todo Implementar todas as acções possiveis
+#  =========================================================================
+sub startCui
+{
+  printf("Starting with no GUI\n");
+  if ( analiseCuiOptions() == 0)
+  {
+    printUsage();
+    exit;
+  }
+
+  initCui();
+
+  print "ACTION $FglDocumenter::Options::action \n";
+
+
+  if ( ! $FglDocumenter::Options::process_file eq "" )
+  {
+    loadProcessCui();
+  }
+
+  if ( $FglDocumenter::Options::action eq "importFgl" )
+  {
+    importFglCui();
+  }
+
+  if ( $FglDocumenter::Options::action eq "importCsv" )
+  {
+    importCSVCui();
+  }
+
+  if ( $FglDocumenter::Options::action eq "export2Fgl" )
+  {
+    export2FglCui();
+  }
+
+  if ( $FglDocumenter::Options::action eq "export2Csv" )
+  {
+    export2CSVCui();
+  }
+
+  if ( $FglDocumenter::Options::action eq "export2Html" )
+  {
+    export2HtmlCui();
+  }
+
+  if ( $FglDocumenter::Options::action eq "createRepository" )
+  {
+    createRepository();
+  }
+
+  if ( $FglDocumenter::Options::action eq "dropRepository" )
+  {
+    dropRepository();
+  }
+
+  if ( $FglDocumenter::Options::action eq "test" )
+  {
+    testFglDocumenter();
+  }
+
+  exitFgldoc();
+}
+
+#  =========================================================================
+#  Executes unit tests of fgldocumenter in order to check if everithing
+#  is working.
+#  The tests are executed in CUI mode
+#  =========================================================================
+sub testFglDocumenter
+{
+  $FglDocumenter::Options::UI = "CUI";
+  initCui();
+  $testObject = new FglDocumenter::Test();
+  $testObject->setLog($log);
+  $testObject->setError($err);
+  my $dbConnection = new FglDocumenter::DatabaseConnection(
+    $FglDocumenter::Options::importInformixDir,
+    $FglDocumenter::Options::importInformixServer,
+    $FglDocumenter::Options::importHost,
+    $FglDocumenter::Options::importDatabase,
+    $FglDocumenter::Options::importUser,
+    ""
+  );
+  $testObject->setRepository($dbConnection);
+  $p4glRepObject->setConnection($dbConnection);
+  $testObject->setRepositoryUtil($p4glRepObject);
+  $testObject->setLanguageHandler($lh);
+  $testObject->runTests();
+}
+
+#  Handler for trapping interrupt
+sub gotInterrupt()
+{
+  my $obj = shift;
+  die "\n\nINTERRUPT !\n";
+}
+
+
+# Main
+$SIG{INT} = \&gotInterrupt;
+initFglDoc();
+
+getParameters();
+
+if ( $FglDocumenter::Options::UI eq "CUI" )
+{
+  startCui();
+}
+else
+{
+  startGui();
+}
+
+ 
+

@@ -1,0 +1,26 @@
+
+
+database despodata
+
+sufixo mtab
+
+screen
+{
+                                                         [a  ] de [b   ]
+\g--------------------------------------------------------------------------
+ Modulo           [d0   ] [d0d                                          ]
+ Tabela           [d1                 ] [d1d       ]
+}
+
+
+TABLES
+   d_mod_tab 
+	systables
+	d_modulos
+
+ATTRIBUTES
+   a=FORMONLY.RegCorrente;
+   b=FORMONLY.totalRegs;
+   d0 = codmod, lookup d0d=d_modulos.nome joining *codigo;
+   d1 = d_mod_tab.tabname, 
+		  lookup d1d=systables.owner joining systables.tabname ;

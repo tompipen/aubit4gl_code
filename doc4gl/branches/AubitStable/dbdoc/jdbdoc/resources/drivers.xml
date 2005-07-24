@@ -1,0 +1,42 @@
+<JDBC_DRIVER
+ id="Informix"
+ name="Informix Dynamic Server"
+ class="com.informix.jdbc.IfxDriver"
+ url="jdbc:informix-sqli://<HOST>:<PORT>/<DB>:INFORMIXSERVER=<SERVER_NAME>"
+/>
+<JDBC_DRIVER
+ id="HSQL"
+ name="Hypersonic SQL (v1.3 and later)"
+ class="org.hsql.jdbcDriver"
+ url="jdbc:HypersonicSQL:<DB>"
+/>
+<JDBC_DRIVER
+ id="PostgreSQL"
+ name="PostgreSQL (v7.0 and later)"
+ class="org.postgresql.Driver"
+ url="jdbc:postgresql://<HOST>:<PORT>/<DB>"
+/>
+<JDBC_DRIVER
+ id="MySQL"
+ name="MySQL (MM.MySQL driver)"
+ class="org.gjt.mm.mysql.Driver"
+ url="jdbc:mysql://<HOST>:<PORT>/<DB>"
+/>
+<JDBC_DRIVER
+ id="DB2"
+ name="IBM DB2 (net)"
+ class="COM.ibm.db2.jdbc.net.DB2Driver"
+ url="jdbc:db2://<HOST>:<PORT>/<DB>"
+/>
+<JDBC_DRIVER
+ id="Oracle"
+ name="Oracle thin"
+ class="oracle.jdbc.driver.OracleDriver"
+ url="jdbc:oracle:thin:@<HOST>:<PORT>:<SID>"
+/>
+<JDBC_DRIVER
+ id="Firebird"
+ name="Firebird (JCA/JDBC driver)"
+ class="org.firebirdsql.jdbc.FBDriver"
+ url="jdbc:firebirdsql:[//<HOST>[:<PORT>]/]<DB>"
+/>

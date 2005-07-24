@@ -1,0 +1,6 @@
+Name: Doc4GL
+Description: x4GL and database documentation tools originally written by Sergio Ferreira
+Maintainer: AF
+Status: 3
+Todo:  	Use amake to compile to enable compilation with all x4GL compilers; complete automatic makefile generation testing on OneMaxx; enable database meta-data (data dictionary) input and maintenance via web interface
+Notes: notes

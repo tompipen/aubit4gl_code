@@ -1,0 +1,280 @@
+#!/usr/bin/perl -w
+
+#  ===========================================================================
+#  Gestor da informação para documentação de tabelas
+#  Serve de interface com o utilizador para executar as diferentes opções,
+#  nomeadamente:
+#    - Exportar para UNL
+#    - Importar de UNL
+#    - Criar as tabelas no repositório (eventualmente apagando-os)
+#
+#  $Author: afalout $
+#  $Id: dbdoc,v 1.1 2003-05-22 08:48:23 afalout Exp $
+#  ===========================================================================
+
+use strict;
+use Getopt::Long;
+
+use DbDocumenter::Options;
+use DbDocumenter::Error;
+use DbDocumenter::Log;
+use DbDocumenter::ExportUnl;
+use DbDocumenter::ImportUnl;
+use DbDocumenter::DatabaseConnection;
+
+my $options;
+my $log;
+my $err;
+my $help;
+my $test;
+
+#  =========================================================================
+#  Inicialização das variáveis necessárias para o manager trabalhar 
+#  =========================================================================
+sub initDbDoc
+{
+  $options = new DbDocumenter::Options();
+  $log     = new DbDocumenter::Log();
+  $err     = new DbDocumenter::Error();
+
+	$options->setDir("/tmp");
+
+	# @todo Meter isto como opção
+	$log->setFileName("/tmp/dbdoc.log");
+	$log->openLogFile();
+	
+	# Conexão
+	my $connection = new DbDocumenter::DatabaseConnection(
+	  $ENV{INFORMIXDIR},
+		"",
+		"ninja",
+		"desp",
+		"sergio",
+		"jfola45"
+	);
+	$connection->setError($err);
+	$connection->setLog($log);
+	$options->setConnection(\$connection);
+}
+
+#  =========================================================================
+#  Executa a exportação para ficheiros de unload
+#    @todo Afectação correcta do nome do directório
+#  =========================================================================
+sub executeExportUnl
+{
+  my $exportUnlObject = new DbDocumenter::ExportUnl();
+  $exportUnlObject->setErr($err);
+  $exportUnlObject->setLog($log);
+  $exportUnlObject->setExportDirectory($options->getDir());
+  my $dbConnRef = $options->getConnection();
+  my $dbConn = $$dbConnRef;
+  unless ( $dbConn->connect() )
+	{
+	  return 0;
+	}
+  $exportUnlObject->setDbh($dbConn->getConnection());
+  $exportUnlObject->exportUnl();
+	return 1;
+}
+
+#  =========================================================================
+#  Executa a importação de ficheiros de unload
+#    @todo Afectação correcta do nome do directório
+#  =========================================================================
+sub executeImportUnl
+{
+  my $importUnlObject = new DbDocumenter::ImportUnl();
+  $importUnlObject->setErr($err);
+  $importUnlObject->setLog($log);
+  $importUnlObject->setExportDirectory($options->getDir());
+  my $dbConnRef = $options->getConnection();
+  my $dbConn = $$dbConnRef;
+  unless ( $dbConn->connect() )
+	{
+	  return 0;
+	}
+  $importUnlObject->setDbh($dbConn->getConnection());
+  $importUnlObject->importUnl();
+	return 1;
+}
+
+#  =========================================================================
+#  Start the execution of the asked action in Command line User Interface
+#  =========================================================================
+sub startCui
+{
+	if ( $options->getAction() eq "importUnl" )
+	{
+    executeImportUnl();
+	}
+	elsif ( $options->getAction() eq "exportUnl" )
+	{
+    executeExportUnl();
+  }
+	else
+	{
+	  printUsage();
+    $log->log("Invalid action");
+	}
+}
+
+#  =========================================================================
+#  Start the executing of wanted action in GUI mode
+#  =========================================================================
+sub startGui
+{
+  print "Not yet implemented";
+}
+
+#  =========================================================================
+#  Print program usage
+#  =========================================================================
+sub printUsage()
+{
+	  print qq/Usage: dbdoc [options]
+  Options:
+    --help
+    --quiet
+    --ui={GUI|CUI}
+    --database=<database_name>
+    --user=<user_name>
+    --password=<user_name>
+		--unload || --load
+    --unload_directory=<unload_directory>
+/;
+}
+
+#  =========================================================================
+#  Valida as opções para acções
+#  =========================================================================
+sub validateAction
+{
+  my $unload = shift;
+  my $load = shift;
+	my $retval;
+
+	if ( $unload == 1 && $load == 1 )
+	{
+	  printUsage();
+		exit;
+	}
+
+	if ( $unload == 0 && $load == 0 )
+	{
+	  printUsage();
+		exit;
+	}
+
+	if ( $unload == 1 )
+	{
+	  $retval = "exportUnl";
+	}
+	if ( $load == 1 )
+	{
+	  $retval = "importUnl";
+	}
+	return $retval;
+}
+
+#  =========================================================================
+#  Inicialização/validação dos parâmetros de execução
+#
+#  Falta trabalhar com opcoes so com um - (resumidas)
+#
+#  Possible parameters to the program:
+#    - no_gui : Com gui por default
+#    - export_directory = %s
+#    - export_source = %s
+#  =========================================================================
+sub getParameters
+{
+	my $ui           = "CUI";
+	my $unloadAction = 0;
+	my $loadAction   = 0;
+	my $database     = "";
+	my $user         = "";
+	my $password     = "";
+	my $unload_dir   = "";
+  my $optResult = GetOptions(
+		"help"               => \$help,
+		"test"               => \$test,
+		# ??? Ver como consigo um callback
+		"ui=s"               => \$ui,
+		"unload"             => \$unloadAction,
+		"load"               => \$loadAction,
+		"database=s"         => \$database,
+		"user=s"             => \$user,
+		"password=s"         => \$password,
+		"unload_directory=s" => \$unload_dir,
+  );
+
+
+	$options->setUI($ui);
+	$err->setUI($ui);
+	$log->setUI($ui);
+	my $action = validateAction($unloadAction,$loadAction);
+	$options->setAction($action);
+  my $dbConnRef = $options->getConnection();
+  my $conn = $$dbConnRef;
+	if ( !$database eq "" )
+	{
+	  $conn->setDatabase($database);
+	}
+	if ( !$user eq "" )
+	{
+	  $conn->setUser($user);
+	}
+	if ( !$password eq "" )
+	{
+	  $conn->setPassword($password);
+  }
+	if ( !$unload_dir eq "" )
+	{
+	  $options->setDir($unload_dir);
+  }
+	
+	if ( $help )
+	{
+	  printUsage();
+		exit;
+	}
+
+  if ( ! $optResult )
+	{
+		print "Error";
+	  printUsage();
+    exit;
+	}
+}
+
+#  ===========================================================================
+#  Apanhar o sinal interrupr e decidir o que fazer com ele
+#  ===========================================================================
+sub gotInterrupt()
+{
+  my $obj = shift;
+  die "\n\nINTERRUPT !\n";
+}
+
+# Main
+$SIG{INT} = \&gotInterrupt;
+initDbDoc();
+getParameters();
+
+if ( $test )
+{
+  testDbdoc();
+  exitDbdoc();
+}
+
+if ( $options->getUI() eq "CUI" )
+{
+	startCui();
+}
+else
+{
+  startGui();
+}
+
+

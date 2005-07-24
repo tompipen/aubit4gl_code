@@ -1,0 +1,59 @@
+/**
+ * @file
+ * 4gl Screen Interaction treecc input file for C++.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+
+/**
+ * An abstract type to be used in the places where we expect to have 
+ * abstract fgl statements.
+ */
+%node fglStatement FglNode %abstract %typedef
+
+/**
+ * Node definition for the open form statement.
+ */
+%node OpenForm fglStatement %typedef =
+{
+    FglNode *form_name;
+		FglNode *form_rest;
+}
+
+%node FormRest FglNode %abstract %typedef
+
+/**
+ * The possible name of the form as a variable and (or) string.
+ */
+%node FormName FglNode %typedef = 
+{
+  char *name;
+}
+
+/**
+ * A concrete place from where the form is opened.
+ * 4gl code Example: 
+ *    FROM "xpto"
+ *    FROM var_name
+ */
+%node OpenFormFrom FormRest %typedef =
+{
+   char *open_form_from_place;
+	 // @tbd
+   //FglExpression *open_form_from_place;
+}
+
+

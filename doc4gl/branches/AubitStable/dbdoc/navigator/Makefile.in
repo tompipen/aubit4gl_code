@@ -1,0 +1,86 @@
+
+ROOT    =../..
+
+include ${ROOT}/FgldocDefs.mk
+
+# =========================================================================
+#                           Settings
+# =========================================================================
+
+ALL=4gl jsp
+
+.PHONY : ${ALL} all install clean
+
+# =========================================================================
+#                           Targets
+# =========================================================================
+
+all: ${ALL}
+	@echo "All done {$ALL}"
+
+#4GL based browser
+4gl:
+	${MAKE} -C 4gl
+
+#Nothing to do - all files there are Perl CGI scripts
+#cgi:
+
+#"Old" JSP based browser
+jsp:
+	${MAKE} -C jsp
+
+# =========================================================================
+#                           Install
+# =========================================================================
+
+install: install.4gl install.cgi install.jsp
+
+
+install.4gl:
+	${MAKE} -C 4gl install
+
+
+install.cgi:
+	${MAKE} -C cgi install
+
+
+install.jsp:
+	${MAKE} -C jsp install
+
+# =========================================================================
+#                           De-install
+# =========================================================================
+
+deinstall: deinstall.4gl deinstall.cgi deinstall.jsp
+
+
+deinstall.4gl:
+	${MAKE} -C 4gl deinstall
+
+
+deinstall.cgi:
+	${MAKE} -C cgi deinstall
+
+
+deinstall.jsp:
+	${MAKE} -C jsp deinstall
+
+# =========================================================================
+#                           Clean
+# =========================================================================
+
+clean:
+	${RM} *.bak
+	${MAKE} -C 4gl clean
+	${MAKE} -C cgi clean
+	${MAKE} -C jsp clean
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             DBdoc navigator source code tree now clean.            |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
+Makefile: Makefile.in
+	cd ${ROOT}; config.status --file=dbdoc/navigator/Makefile; cd -
+

@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--
+    An example how to use this DTD from your XML document:
+
+    <?xml version="1.0"?>
+
+    <!DOCTYPE PARAMETERS SYSTEM "dbdoc.dtd">
+
+    <PARAMETERS>
+    ...
+    </PARAMETERS>
+-->
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT OPERATIONAL_DB_CONNECTION EMPTY>
+<!ATTLIST OPERATIONAL_DB_CONNECTION
+    name CDATA #IMPLIED
+  >
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT REPOSITORY_CONNECTION EMPTY>
+<!ATTLIST REPOSITORY_CONNECTION
+    name CDATA #IMPLIED
+  >
+
+<!--- Put your DTDDoc comment here. -->
+<!ELEMENT PARAMETERS (OPERATIONAL_DB_CONNECTION|REPOSITORY_CONNECTION)*>

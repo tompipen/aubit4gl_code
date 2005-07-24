@@ -1,0 +1,23 @@
+database dge
+screen size 24 by 80
+{
+n_fiscal           [f000       ]
+nome               [f001                          ]
+                   [f002                          ]
+morada             [f003                                    ]
+localidade         [f004                    ]
+cod_postal         [f005  ]
+data_entrada       [f006    ]
+}
+end
+tables
+entidades
+attributes
+f000 = entidades.n_fiscal;
+f001 = entidades.nome[1,30];
+f002 = entidades.nome[31,60];
+f003 = entidades.morada;
+f004 = entidades.localidade;
+f005 = entidades.cod_postal;
+f006 = entidades.data_entrada;
+end

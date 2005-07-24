@@ -1,0 +1,149 @@
+/**
+ * @file
+ * 4gl definition and declaration treecc input file for C++.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+%option lang = "C++"
+%option reentrant
+
+%header "Fgl.h"
+%output "Fgl.cpp"
+
+
+
+/*
+ * Include the following declarations into the ".h" file.
+ */
+%decls %{
+
+#define FunctionVector vector <Function> 
+
+%}
+
+/*
+ * Include the following declarations into the ".cc" file.
+ */
+%{
+#include <iostream.h>
+#include <vector>
+#include <stdio.h>
+#include <stdlib.h>
+#include "Fgl.h"
+
+%}
+
+/**
+ * Basic 4gl node.
+ */
+%node FglNode %abstract %typedef
+
+%include "FglBase.tc"
+%include "FglExpression.tc"
+%include "FglDefinition.tc"
+%include "CompilerDirectives.tc"
+%include "StorageManipulation.tc"
+%include "ScreenInteraction.tc"
+%include "ReportExecution.tc"
+%include "Sql.tc"
+
+// @this is here just for test
+%include "FglNavigate.tc"
+
+
+/*
+ * Include the following code at the end of the ".h" file.
+ */
+%end %decls %{
+
+/*
+ * Inherit YYNODESTATE to provide additional functionality.
+ */
+class NodeState : public YYNODESTATE
+{
+private:
+
+	char *progname;
+	char *filename;
+	long  linenum;
+
+public:
+
+	NodeState(char *_progname, char *_filename)
+			: YYNODESTATE()
+		{
+			filename = _filename;
+			linenum = 1;
+		}
+	virtual ~NodeState();
+
+public:
+
+	virtual char *currFilename();
+	virtual long currLinenum();
+	virtual void failed();
+
+	void incLine() { ++linenum; }
+
+};
+
+%}
+
+/*
+ * Include the following code at the end of the ".cc" file.
+ */
+%end %{
+
+/*
+ * Entry points that are imported from the yacc parser.
+ */
+extern void yyrestart(FILE *file);
+extern int yyparse(void *);
+
+/*
+ * Destructor for NodeState.
+ */
+NodeState::~NodeState()
+{
+	/* Nothing needs to be done here */
+}
+
+/*
+ * Get the name of the current input file in use by the parser.
+ */
+char *NodeState::currFilename()
+{
+	return filename;
+}
+
+/*
+ * Get the line number for the current input line in use by the parser.
+ */
+long NodeState::currLinenum()
+{
+	return linenum;
+}
+
+/*
+ * Report memory failure and exit.
+ */
+void NodeState::failed()
+{
+	cerr << progname << ": virtual memory exhausted" << endl;
+	exit(1);
+}
+
+%}

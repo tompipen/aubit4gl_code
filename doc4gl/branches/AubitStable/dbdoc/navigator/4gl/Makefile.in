@@ -1,0 +1,187 @@
+
+#  ============================================================================
+#
+#  Copyright 1992 DESPODATA - Lisboa, PORTUGAL
+#
+#  Divisao de desenvolvimento e producao de software.
+#
+#  Autor:  Sergio Alexandre ferreira
+#          Pedro Higgs Menezes
+#
+#
+#  ----------------------------------------------------------------
+#  DESCRICAO: Makefile para utilitario bdesquema.
+#
+#  ============================================================================
+
+ROOT=../../..
+
+include ${ROOT}/FgldocDefs.mk
+
+
+#include /usr/desenvolv/include/4glbuilt.mk
+O=xxx
+
+VPATH 			=./4glsrc:./4glsrc/functions_4gl:./forms:
+export VPATH
+
+LIBSDIR=/usr/desenvolv/lib/
+MYFGLDIR=/usr/desenvolv/bin/4gl
+BINDIR=/usr/desenvolv/bin/bin
+FGLFORM=/usr/desenvolv/bin/perform
+
+LIBS=${LIBSDIR}Llibfgldd.4go ${LIBSDIR}d_libglob.4go
+
+FGEI=.4gi
+
+ALL=bdesquema$(FGEI) modulos$(FGEI) BdeUtil$(FGEI)
+
+
+#SCRIPTS=bdesquema modulos
+
+#Scripts we need to create:
+BDESQUEMA=./bdesquema
+MODULOS=./modulos
+BDEUTIL=./bdeutil
+
+FORMS = par_bde.frm ged_mod.frm ged_mtab.frm
+
+
+#4GLCOMP=d4gl-pcode
+#4GLCOMP=aubit
+#4GLCOMP=querix
+#4GLCOMP=i4gl-pcode
+4GLCOMP=${COMP_4GL}
+
+#  ============================================================================
+#  Compila todos .4go(s)
+#  ============================================================================
+#all: $(ALL)
+all:
+	export DEFAULT=${4GLCOMP}; amake
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             DBdoc 4GL browser successfully compiled.               |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
+#  ============================================================================
+#  Utilitario bdesquema.
+#  ============================================================================
+BDEUTIL_MOD= BdeUtil$O
+BdeUtil$(FGEI): $(BDEUTIL_MOD) $(FORMS)
+		$(FGLLN) $(BDEUTIL_MOD) $(LIBS) $(OUT_OP) $@
+
+#  ============================================================================
+#  Utilitarios do bdesquema.
+#  ============================================================================
+BDE_MOD= main_bde$O bdesquema$O d_get_tipo$O
+BDE_FORM = par_bde.frm
+bdesquema$(FGEI): $(BDE_MOD) $(FORMS)
+		$(FGLLN) $(BDE_MOD) $(LIBS) $(OUT_OP) $@
+
+#  ============================================================================
+#  Manutencao de modulos
+#  ============================================================================
+mod_MOD=scr_mod$O gl_mod$O ext_mod$O m_mod$O \
+scr_mtab$O gl_mtab$O ext_mtab$O cr_ext$O
+mod_FORM=ged_mod.frm ged_mtab.frm
+modulos$(FGEI): $(mod_MOD) $(mod_FORM)
+		$(FGLLN) $(mod_MOD) $(LIBS) $(OUT_OP) $@
+
+
+#  ============================================================================
+#  Instalacao dos utilitarios no sitio certo.
+#  ============================================================================
+old.install: $(ALL)
+	-- chmod 664 $(ALL)
+	-- chmod 664 $(FORMS)
+	cp $(ALL) $(MYFGLDIR)
+	cp $(ALL) /usr/appl/bdesquema/bin/4gl
+	cp JoinTabelas.class /usr/appl/html-docs
+	cp $(FORMS) $(FGLFORM)
+	cp $(SCRIPTS) $(BINDIR)
+
+install: make.bdesquema make.modulos make.bdeutil
+	chmod a+x ${BDESQUEMA} ${MODULOS} ${BDEUTIL}
+	${MV} ${BDESQUEMA} ${MODULOS} ${BDEUTIL} /usr/bin
+#where should this go?
+#	cp JoinTabelas.class /usr/appl/html-docs
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|    DBdoc 4GL browser installed. You can run it by typing:          |"
+	@echo "|    '${BDESQUEMA}' or '${MODULOS}' or '${BDEUTIL}' "
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+make.bdesquema:
+	@echo "if [ \$$# -lt 1 ]; then" > ${BDESQUEMA}
+	@echo "	echo 'Usage: bdesquema database_name'" >> ${BDESQUEMA}
+	@echo "	echo" >> ${BDESQUEMA}
+	@echo "	exit 1" >> ${BDESQUEMA}
+	@echo "else" >> ${BDESQUEMA}
+	@echo "	DATABASE=\$$1" >> ${BDESQUEMA}
+	@echo "	DBPATH=\$$DBPATH:${DOC4GLSRCDIR}/dbdoc/navigator/4gl/forms" >> ${BDESQUEMA}
+	@echo "	export DBPATH" >> ${BDESQUEMA}
+	@echo "fi" >> ${BDESQUEMA}
+	@echo "${FGLRUNNER} ${DOC4GLSRCDIR}/dbdoc/navigator/4gl/bdesquema \$$DATABASE 'INT' '???'" >> ${BDESQUEMA}
+	@echo " " >> ${BDESQUEMA}
+
+make.modulos:
+	@echo "# Utilitario para geracao de modulos e associacao de tabelas a modulos" > ${MODULOS}
+	@echo "if [ \$$# -lt 1 ]; then" >> ${MODULOS}
+	@echo " echo 'Usage: modulos databse_name '" >> ${MODULOS}
+	@echo "	echo" >> ${MODULOS}
+	@echo "	exit 1" >> ${MODULOS}
+	@echo "else" >> ${MODULOS}
+	@echo "	DATABASE=\$$1" >> ${MODULOS}
+	@echo "	DBPATH=\$$DBPATH:${DOC4GLSRCDIR}/dbdoc/navigator/4gl/forms" >> ${MODULOS}
+	@echo "	export DBPATH" >> ${MODULOS}
+	@echo "fi" >> ${MODULOS}
+	@echo "${FGLRUNNER} ${DOC4GLSRCDIR}/dbdoc/navigator/4gl/modulos \$$DATABASE" >> ${MODULOS}
+	@echo " " >> ${MODULOS}
+
+make.bdeutil:
+	@echo "# " > ${BDEUTIL}
+	@echo "if [ \$$# -lt 1 ]; then" >> ${BDEUTIL}
+	@echo " echo 'Usage: bdeutil databse_name '" >> ${BDEUTIL}
+	@echo "	echo" >> ${BDEUTIL}
+	@echo "	exit 1" >> ${BDEUTIL}
+	@echo "else" >> ${BDEUTIL}
+	@echo "	DATABASE=\$$1" >> ${BDEUTIL}
+	@echo "	DBPATH=\$$DBPATH:${DOC4GLSRCDIR}/dbdoc/navigator/4gl/forms" >> ${BDEUTIL}
+	@echo "	export DBPATH" >> ${BDEUTIL}
+	@echo "fi" >> ${BDEUTIL}
+	@echo "${FGLRUNNER} ${DOC4GLSRCDIR}/dbdoc/navigator/4gl/BdeUtil \$$DATABASE" >> ${BDEUTIL}
+	@echo " " >> ${BDEUTIL}
+
+deinstall:
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|            FIXME: not implemented                                  |"
+#	@echo "|             DBdoc 4GL browser de-installed.                        |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+#  ============================================================================
+#  Limpa a directoria corrente
+#  ============================================================================
+clean:
+	${RM} *.4go *.4gi *.4bk *.o a.out core *.err *.frm *.o *.bak *.ao *.aox \
+    *.4gx  *.qo *.qox *.c *.h *.glb *.42m
+	export DEFAULT=${4GLCOMP}; amake clean
+	cd 4glsrc; ${RM} *.4go *.4gi *.4bk *.o a.out core *.err *.frm *.o *.bak \
+	*.ao *.aox *.4gx *.c *.h *.glb *.qo *.qox *.c *.h *.glb
+	cd 4glsrc/functions_4gl; ${RM} *.4go *.4gi *.4bk *.o a.out core *.err *.frm *.o *.bak \
+	*.ao *.aox *.4gx *.c *.h *.glb *.qo *.qox *.c *.h *.glb
+	cd forms; ${RM} *.err *.frm *.bak *.42f
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             DBdoc 4GL browser source code now clean.               |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
+makefile: Makefile.in
+	cd ${ROOT}; config.status --file=dbdoc/navigator/4gl/Makefile; cd -

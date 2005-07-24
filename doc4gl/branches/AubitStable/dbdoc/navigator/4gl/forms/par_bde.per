@@ -1,0 +1,33 @@
+database formonly
+
+screen 
+{
+                                   PARAMETROS
+\g--------------------------------------------------------------------------
+
+      Tabelas      [a1        ]
+      Modulos      [d] [a2   ] [a2d                                    ] 
+      Ordenacao    [a4        ]
+      Formato      [a5         ]
+      Gerar Header [c]
+      Resultado    [a6           ]
+      Ficheiro     [a7                                         ]
+      Remover      [b]
+
+}
+
+attributes
+   a1 = formonly.tabelas;
+	d  = formonly.mod type char, upshift, include=("T","S","M"),
+		  comments="T-Todos ; S-Sem modulo associado ; M-Modulo especifico";
+   a2 = formonly.modulos;
+   a2d = formonly.modname type char, noentry;
+   a4 = formonly.ordenacao;
+   a5 = formonly.formato type char, include=("Macros Word","html"),
+		  comments="Formato : Marcos word ; html";
+   c = formonly.cabecalho type char, include=("S","N"), upshift, autonext,
+		  comments="Gera Header e footer (S/N)";
+   a6 = formonly.resultado;
+   a7 = formonly.ficheiro;
+   b  = formonly.remover;
+

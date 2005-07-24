@@ -1,0 +1,505 @@
+
+#  ==========================================================================
+#  Main makefile for compile and install of fgldoc tools
+#
+#  Developed by Sergio Ferreira, Lisbon, Portugal
+#
+#  $Id: Makefile.in,v 1.17 2003-07-15 07:13:53 afalout Exp $
+#
+#  ==========================================================================
+
+include FgldocDefs.mk
+
+# =========================================================================
+#                           Settings
+# =========================================================================
+
+ALL				=parser manager dbdoc
+ALL.INSTALL		=install.parser install.manager install.dbdoc
+
+ifneq "@TOMCAT_DIR@" "no"
+ifneq "${ANT}" "no"
+ifneq "${JAVAC}" "no"
+	ALL			+=browser
+	ALL.INSTALL	+=install.browser
+endif
+endif
+endif
+
+#list of all targets taht would install _ALL_ Perl modules Doc4GL needs:
+ALL.PERLMODS	= install.cpan install.dbi install.tk install.unit \
+				install.dbd-informix install.dumper
+
+.PHONY:all parser manager browser install clean install.parser \
+		install.manager install.browser deinstall install.cpan install.dbi \
+		install.tk install.unit install.dbd-informix missing.perlmods \
+        all.perlmods test dbdoc
+
+
+# =========================================================================
+#                        	   Targets
+# =========================================================================
+
+###########################
+# Default target: compile all Doc4GL components
+all: ${ALL}
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Doc4gl default targets :                                           |"
+	@echo "| ${ALL} "
+	@echo "| successfully compiled. Execute 'make install' to install it.       |"
+	@echo "|   Execute 'make test' to test it.                                  |"
+	@echo "|   Execute 'make install' to install it.                            |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+###########################
+# Compile Doc4GL Parser component (C)
+parser:
+	$(MAKE) -C parser all
+
+###########################
+# Compile Doc4GL Browser component (JSP/Java)
+browser:
+	$(MAKE) -C browser all
+
+dbdoc:
+	$(MAKE) -C dbdoc
+
+###########################
+# Compile Doc4GL Manager compinent (Perl)
+manager:
+#This will invoke makefile created by Perl MakeMaker from Makefile.PL:
+	$(MAKE) -C manager
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl manager successfully compiled.                  |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
+# =========================================================================
+#                           	Install
+# =========================================================================
+
+###########################
+# Main install target; install all Doc4GL components from source code tree
+# to the system locations
+install: ${ALL.INSTALL}
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Doc4gl default install targets :                                   |"
+	@echo "| ${ALL.INSTALL} "
+	@echo "| installed. See User's manual for usage instructions                |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
+install.dbdoc:
+	$(MAKE) -C dbdoc install
+
+###########################
+# Install Doc4GL Parser component
+install.parser:
+	$(MAKE) -C parser install
+
+###########################
+# Install Doc4GL Browser component
+install.browser:
+	$(MAKE) -C browser install
+
+###########################
+# Install Doc4GL Manager component
+# This will invoke makefile created by Perl MakeMaker from Makefile.PL, so we
+# need to do some preparation work here:
+install.manager:
+	mkdir -p $(PERL_MODULE_DIR)/img
+	mkdir -p $(PERL_MODULE_DIR)/L10N
+	${INSTALL} manager/fgldoc ${BINDIR}
+	chmod a+x ${BINDIR}/fgldoc
+#Note that Perl generated make file will install to:
+#Installing /usr/local/lib/perl5/site_perl/5.8.0/FglDocumenter/img/ftv2lastnode.gif
+#Installing /usr/local/bin/fgldoc
+#Maybe I should use PREFIX=xyz to controll install location?
+	$(MAKE) -C manager install
+#This will be installed by Perl generated makefile, now obsolete (check!)
+#	${INSTALL} manager/FglDocumenter/*.pm $(PERL_MODULE_DIR)
+#	${INSTALL} manager/FglDocumenter/img/*.gif $(PERL_MODULE_DIR)/img
+#	${INSTALL} manager/FglDocumenter/L10N/*.pm $(PERL_MODULE_DIR)/L10N
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl manager successfully instaled to:               |"
+	@echo "| fgldoc executable in : ${BINDIR}"
+	@echo "| Perl modules in      : $(PERL_MODULE_DIR)"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+# =========================================================================
+#                           Deinstall
+# =========================================================================
+
+###########################
+# Main deinstall target; deinstall all elements od Doc4GL installed outside
+# source code tree
+deinstall: deinstall.manager
+	$(MAKE) -C parser deinstall
+#Perl generated make file has no deinstall target:
+#	$(MAKE) -C manager deinstall
+	$(MAKE) -C browser deinstall
+	$(MAKE) -C dbdoc deinstall
+
+###########################
+# Deinstall all installed Doc4GL Perl manager files
+# Cannot be in Manager make file, becaise that one is created automatically
+# by Perl make maker
+deinstall.manager:
+	cd ${PERL_MODULE_DIR}; rm -f ${MGR_PM_FILES} ${MGR_PRG} *.bak
+	cd ${PERL_MODULE_DIR}/img; rm -f ${MGR_IMG_FILES}
+	cd ${PERL_MODULE_DIR}/L10N; rm -f ${MGR_PM_L10N_FILES} *.bak
+	cd ${PERL_MODULE_DIR}/test; rm -f ${MGR_PM_TEST_FILES} *.bak
+	rm -f ${BINDIR}/${MGR_PRG}
+	rmdir ${PERL_MODULE_DIR}/img
+	rmdir ${PERL_MODULE_DIR}/L10N
+	rmdir ${PERL_MODULE_DIR}/test
+	rmdir ${PERL_MODULE_DIR}
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl manager successfully de-installed.              |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+# =========================================================================
+#                                Clean
+# =========================================================================
+
+###########################
+# Main clean target; clean everything not in CVS
+clean: clean.etc clean.sql clean.manager clean.dbdoc
+	$(MAKE) -C parser clean
+	$(MAKE) -C browser clean
+	${RM} *.bak libtool
+
+
+clean.dbdoc:
+	${MAKE} -C dbdoc clean
+
+###########################
+# Clean etc folder
+clean.etc:
+	cd etc; ${RM} *.bak stamp-h
+
+###########################
+# Clean sql folder
+clean.sql:
+	cd sql; ${RM} *.bak
+
+###########################
+# clean all Doc4GL Perl Manager files
+clean.manager:
+	$(MAKE) -C manager clean
+#Perl created makefile - from Makefile.PL - will rename Makefle to Makefile.old
+#so we have to restore that:
+	cd manager; mv Makefile.old Makefile
+	cd manager; ${RM} *.bak pm_to_blib
+	cd manager/FglDocumenter; ${RM} *.bak
+	cd manager/FglDocumenter/test; ${RM} *.bak
+	rm -rf blib
+
+###########################
+#delete everything not in the distribution (CVS)
+distclean: clean
+	${RM} libtool config.log config.status Makefile
+
+###########################
+#Files created by configure script
+clean.config: clean.makefile
+	${RM} etc/fgldocrc FgldocDefs.mk pm_to_blib
+	rm -rf manager/blib etc/doc4gl_config.h
+
+###########################
+#Make files created by configure script:
+clean.makefile:
+	${RM} parser/Makefile browser/Makefile manager/Makefile manager/Makefile.old
+
+
+#BUG: fgldoc does not exit with error code on this error, so we cannot detect
+#if command failed or not in make files:
+#
+#[root@aptiva erp]# make doc4gl.drop.repository
+#/usr/local/bin/fgldoc --action=dropRepository --ui=CUI --package_name=MaxERP --database=maxdevdoc --send_line_to_log
+#Starting with no GUI
+#ACTION dropRepository
+#DBD::Informix::db do failed: SQL: -425: Database is currently opened by another user.
+#ISAM: -107: ISAM error:  record is locked. at /usr/local/lib/perl5/site_perl/5.8.0/FglDocumenter/P4glRepository.pm line 556.
+#[root@aptiva erp]#
+#NOTE: same for createRepository
+
+## ==================================================================
+##            DoxyGen doccumentation creation
+## ==================================================================
+
+###########################
+# Create DoxyGen documentation
+doxy: docs/doxy/html/index.html
+docs/doxy/html/index.html:
+ifneq "@DOXYGEN@" "no"
+	${MAKE} doxy.make
+ifneq "@WWW_DOCUMENT_ROOT@" ""
+	${MAKE} doxy.install.www
+endif
+ifneq "@CGI_DIR@" ""
+	${MAKE} doxy.install.search
+endif
+	@echo DoxyGen source code documentation generated.
+	@echo To use it, open file 'docs/doxy/html/index.html' in your web browser
+else
+	@echo "Sorry DOXYGEN not detected"
+endif
+
+###########################
+# First remove existing documentation, then create new one
+doxy.make: clean.doxy.html doxy.create.html
+	@echo DoxyGen doccumentation created and placed in docs/doxy/html
+
+##########################
+# Invoke DoxyGen to create HTML documentation
+doxy.create.html:
+	@DOXYGEN@ docs/Doxyfile
+
+##########################
+# Install HTML documentation created by DoxyGen under Web server documents tree:
+doxy.install.www: clean.doxy.www doxy.copy.html
+	@echo DoxyGen doccumentation installed in web server path :
+	@echo @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html
+	@echo Point your web browser to http://@WWW_HOST_NAME@/${DOXY_WWWPATH}/html/index.html
+
+#########################
+# Copy HTML documentation created by DoxyGen under Web server documents tree:
+doxy.copy.html:
+	${MKPATH} @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}
+	cp -r docs/doxy/html @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html
+	cd @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html; doxytag -s search.idx
+
+#########################
+#Install DoxyGen serach CGI script
+doxy.install.search:
+	${CP} docs/doxy/html/doxysearch.cgi @CGI_DIR@
+#run docs/doxy/html/installdox to replace any dummy links:
+	@docs/doxy/html/installdox
+
+##########################
+# Remove ALL files created by DoxyGen:
+clean.doxy: clean.doxy.html clean.doxy.www
+
+##########################
+# Remove all DoxyGen created files under Doc4GL source code tree:
+clean.doxy.html:
+	rm -rf docs/doxy/html
+
+##########################
+# Remove all DoxyGen created files under Web server documents tree:
+clean.doxy.www:
+	rm -rf @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html
+
+# =========================================================================
+#                           Install Perl modules
+# =========================================================================
+
+#Fixme: is there a way to accept all defaults when installing using CPAN
+#and avoid all this prompting?
+
+###########################
+#This will install _ALL_ Perl modules Doc4GL needs:
+all.perlmods: ${ALL.PERLMODS}
+
+###########################
+#This will install only Perl modules that are detected as missing by Autoconf:
+missing.perlmods: @MISSING_PERLMODS@
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|                          *** NOTE ***                              |"
+	@echo "|         Doc4gl missing Perl modules installation finished          |"
+	@echo "|       Please re-run 'configure' to update changed configureation   |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+###########################
+#if you're using ActivePerl on Windows, the PPM (Perl Package Manager) has
+#much of the same functionality as CPAN.pm.
+#manual: http://search.cpan.org/author/JHI/perl-5.8.0/lib/CPAN.pm
+install.tk:
+	${PERL} -MCPAN -e 'install Bundle::Tk'
+
+###########################
+install.unit:
+	${PERL} -MCPAN -e 'install Test::Unit'
+
+###########################
+install.dbd-informix:
+ifneq "@DBD_INFORMIX_USERNAME@" ""
+ifneq "@DBD_INFORMIX_PASSWORD@" ""
+	(export DBI_DBNAME=@DOC4GL_DB@; \
+	export DBD_INFORMIX_DATABASE=@DOC4GL_DB@; \
+	export DBD_INFORMIX_USERNAME=@DBD_INFORMIX_USERNAME@; \
+	export DBD_INFORMIX_PASSWORD=@DBD_INFORMIX_PASSWORD@; \
+	${PERL} -MCPAN -e 'install DBD::Informix')
+else
+	@echo "ERROR: Informix DB password not specified. Cannot install DBD::Informix"
+	@echo "re-run configure like this, to specify them:"
+	@echo "./configure --with-ifx-uname=MyUserName --with-ifx-pwd=MyPassword"
+endif
+else
+	@echo "ERROR: Informix DB user name not specified. Cannot install DBD::Informix"
+	@echo "re-run configure like this, to specify them:"
+	@echo "./configure --with-ifx-uname=MyUserName --with-ifx-pwd=MyPassword"
+endif
+
+###########################
+install.cpan:
+	${PERL} -MCPAN -e 'install Bundle::CPAN'
+
+###########################
+install.dbi:
+	${PERL} -MCPAN -e 'install Bundle::DBI'
+
+###########################
+install.dumper:
+	${PERL} -MCPAN -e 'install XML::Dumper'
+
+###########################
+install.maketxt:
+	${PERL} -MCPAN -e 'install Locale::Maketext'
+
+# =========================================================================
+#                           Install Tomcat and it's dependencies
+# =========================================================================
+
+###########################
+# Install BlaskDown Java SDK
+install.jdk: ${BASE}/${BLACKDOWN_JSDK}
+	@echo ""
+	@echo "Answer the questions and the JDK will uncompress to ${BASE}:"
+	@echo ""
+	cd ${BASE}; ./${BLACKDOWN_JSDK}
+	@echo ""
+	@echo "Plese set in your configuration scripts ('profile' or equivalent):"
+	@echo "  export JAVA_HOME=${BASE}/j2sdk1.3.1 ---VERIFY---!"
+	@echo '  export PATH=$PATH:$JAVA_HOME/bin'
+	@echo ""
+
+###########################
+# Install Tomcat
+install.tomcat:  ${TOMCAT_RPMS}
+	${RPM} -i $^
+	@echo "Tomcat Notes:"
+	@echo "If you wanted TomCat started at boot, run:"
+	@echo "  /sbin/chkconfig --add tomcat4"
+	@echo "  or"
+	@echo "  ntsysv"
+	@echo ""
+	@echo "To manually control TomCat start-up:"
+	@echo "  /etc/rc.d/init.d/tomcat4 start"
+	@echo "  /etc/rc.d/init.d/tomcat4 stop"
+	@echo "  /etc/rc.d/init.d/tomcat4 restart"
+	@echo ""
+	@echo "To Confirm Basic Service is Running:"
+	@echo "Start Tomcat Point browser at :"
+	@echo "  http://localhost:8080 and try to view available services."
+	@echo ""
+	@echo "If TomCat fail to start, examine:"
+	@echo "  /var/log/tomcat4/catalina.out"
+	@echo ""
+	@echo "Now edit /etc/tomcat4/tomcat4.conf to reflect your system's configuration."
+	@echo "Also edit/create /etc/java/java.conf to define your default JDK"
+	@echo "Then re-run Doc4GL configure script, to detect changes in the configuration."
+	@echo ""
+
+
+###########################
+# Install Ant
+#NOT TESTED!!!
+install.ant:
+	wget http://jakarta.apache.org/builds/jakarta-ant/release/v1.4.1/bin/jakarta-ant-1.4.1-bin.tar.gz
+	wget http://jakarta.apache.org/builds/jakarta-ant/release/v1.4.1/bin/jakarta-ant-1.4.1-optional.jar
+	tar --gunzip -xf jakarta-ant-1.4.1-bin.tar.gz
+	export ANT_HOME=$BASE/jakarta-ant-1.4.1
+	export PATH=$PATH:$ANT_HOME/bin
+	export CLASSPATH=$CLASSPATH:$ANT_HOME/lib/ant.jar:$ANT_HOME/lib/crimson.jar:$ANT_HOME/lib/jaxp.jar
+	mv jakarta-ant-1.4.1-optional.jar $ANT_HOME/lib/.
+	cp /usr/share/java/xerces-j1-1.4.4.jar $ANT_HOME/lib/xerces.jar
+#cp /var/tomcat4/common/lib/xerces.jar $ANT_HOME/lib/.
+	cp $BASE/jakarta-ant-1.4.1/lib/jakarta-ant-1.4.1-optional.jar $BASE/jakarta-ant-1.4.1/lib/optional.jar
+
+###########################
+# Install Junit
+#NOT TESTED!!!
+install.junit:
+	wget http://download.sourceforge.net/junit/junit3.7.zip
+	unzip $BASE/junit3.7.zip
+	export JUNIT_HOME=$BASE/junit3.7
+	export CLASSPATH=$CLASSPATH:$JUNIT_HOME/junit.jar
+
+###########################
+# Install Infromix JDBC
+install.informix_jdbc: ${IFX_JDBC_PKG}
+	mkdir -p /tmp/ifxjdbc
+	unzip ${IFX_JDBC_PKG} -d /tmp/ifxjdbc
+	${JAVA} -cp /tmp/ifxjdbc/setup.jar run -silent -P product.installLocation=${INFORMIXDIR}/jdbc
+	cp ${INFORMIXDIR}/jdbc/lib/ifxjdbc.jar ${JAVA_SHARED}
+	cp ${INFORMIXDIR}/jdbc/lib/ifxjdbc.jar ${TOMCAT_DIR}/shared/lib
+#FIXME: any TomCat config files to edit? (server.xml?) to make this JDBC jar work?
+	@@echo "add the following line to your profile:"
+	@echo 'export CLASSPATH=$INFORMIXDIR/jdbc/lib/ifxjdbc.jar:$CLASSPATH'
+#ALTERNATIVE:
+#if we unpack this jar like this:
+#	cd ${INFORMIXDIR}/jdbc/lib; jar xvf ifxjdbc.jar
+#we can copy all filed to ${JAVA_SHARED}, and set CLASSPATH to ${JAVA_SHARED}
+
+
+# =========================================================================
+#     Targets to download install files for all third-party dependencies
+# =========================================================================
+
+${BASE}/${BLACKDOWN_JSDK}:
+	cd ${BASE}; ${WGET} ${BLACKDOWN_JSDK_PATH}/${BLACKDOWN_JSDK}
+	chmod +x ${BASE}/${BLACKDOWN_JSDK}
+${TOMCAT4_RPM}:
+	${WGET} ${JAKARTA_RPM_PATH}/${TOMCAT4_RPM}
+${SERVLETAPI_RPM}:
+	${WGET} ${JAKARTA_RPM_PATH}/${SERVLETAPI_RPM}
+${REGEX_RPM}:
+	${WGET} ${JAKARTA_RPM_PATH}/${REGEX_RPM}
+${XERCES_RPM}:
+	${WGET} ${JAKARTA_RPM_PATH}/${XERCES_RPM}
+${ADMINWEBAPPS_RPM}:
+	${WGET} ${JAKARTA_RPM_PATH}/${ADMINWEBAPPS_RPM}
+${WEBAPPS}:
+	${WGET} ${JAKARTA_RPM_PATH}/${WEBAPPS}
+${IFX_JDBC_PKG}:
+	${WGET} ${IFX_JDBC_PKG_PATH}/${IFX_JDBC_PKG}
+
+# =========================================================================
+#                           Misc targets
+# =========================================================================
+
+###########################
+# For make debugging: show values of make varibles
+show:
+	@echo DOXY_WWWPATH=${DOXY_WWWPATH}
+
+############################
+#Run tests to see if everything is working OK:
+test:
+#TODO there is a test 4gl file /manager/FglDocumenter/test/TestSource.4gl
+	${MAKE} -C parser test
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             All Doc4gl test successfull                            |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+Makefile: Makefile.in
+	config.status --file=Makefile
+
+
+# =============================== EOF ======================================
