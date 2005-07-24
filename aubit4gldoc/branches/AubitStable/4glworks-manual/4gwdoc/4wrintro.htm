@@ -1,0 +1,328 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glWorks Online Manual - Introduction</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand crafted in Catania by expert Webmakers">
+</HEAD>
+<BODY BGCOLOR="White">
+<H1><HR><CENTER><B>4glWorks Online Manual - Introduction</CENTER></B><HR></H1>
+
+<A HREF="#CODEORG">Code organization</A><BR>
+<A HREF="#COMPTOOL">Code compilation tools</A><BR>
+<A HREF="#DEMOREF">4gwdemo reference</A><BR>
+<A NAME="CODEORG">
+<H2><HR><CENTER><B>Code organization</CENTER></B><HR></H2></A>
+An appropriate directory structure and naming scheme for files, functions,
+tables and columns can ease a great deal the management of a project. This
+section illustrates convention used to organize 4glWorks code.
+
+<H3>File naming scheme.</H3>
+The name of files included in 4glWorks distribution adhere to the
+following format:
+<PRE>
+[a]mdl[t].ext
+</PRE>
+where <CODE>a</CODE>, an application qualifier, is
+<UL>
+<LI><CODE>i</CODE> for modules pertaining to interactive apps</LI>
+<LI><CODE>o</CODE> to batch apps</LI>
+<LI><CODE>c</CODE> to both</LI>
+</UL>
+<P>the application qualifier is only used in 4gl c and text files, since form and help files are only used in interactive apps.</P>
+
+<P><CODE>mdl</CODE> is a three letter code identifying the module, for instance</P>
+<UL>
+<LI><CODE>afi</CODE> application framework initialization</LI>
+<LI><CODE>dtb</CODE> many to many table scroller</LI>
+<LI><CODE>err</CODE> error logging routines</LI>
+<LI><CODE>frm</CODE> form table maintenance</LI>
+<LI><CODE>log</CODE> error log viewer</LI>
+<LI><CODE>mdl</CODE> printer model table maintenance</LI>
+<LI><CODE>mnh</CODE> horizontal menus</LI>
+<LI><CODE>mnv</CODE> vertical menus</LI>
+<LI><CODE>pan</CODE> multiple pane support</LI>
+<LI><CODE>ptr</CODE> printer functions</LI>
+<LI><CODE>shl</CODE> OS related functions</LI>
+<LI><CODE>sql</CODE> sql interpreter / viewer</LI>
+<LI><CODE>stb</CODE> single table maintenance scroller</LI>
+<LI><CODE>str</CODE> string manipulation</LI>
+<LI><CODE>ted</CODE> text editor</LI>
+<LI><CODE>txt</CODE> text related routines</LI>
+<LI><CODE>usr</CODE> user interaction</LI>
+</UL>
+<P>and <CODE>t</CODE> identifies the module type. for code it migth be something like</P>
+<UL>
+<LI><CODE>m</CODE> for menus</LI>
+<LI><CODE>s</CODE> for scrollers</LI>
+<LI><CODE>v</CODE> for viewers</LI>
+<LI><CODE>h</CODE> help pick lists</LI>
+<LI><CODE>i</CODE> for user input modules</LI>
+<LI><CODE>r</CODE> for reports</LI>
+<LI><CODE>l</CODE> for 4gl libraries</LI>
+<LI><CODE>c</CODE> for c libraries</LI>
+</UL>
+<P>while forms use</P>
+<UL>
+<LI><CODE>f</CODE> for screen forms</LI>
+<LI><CODE>w</CODE> for window forms</LI>
+</UL>
+<P>optionally followed by another letter to distinguish otherwise equal file names.
+Text and help files have no type qualifier.</P>
+
+<H3>Extensions</H3>
+I've tried to stick to traditional Informix exts. except that
+there's no agreed upon convention for help source and cooked
+help files. I've used <CODE>msg</CODE> and <CODE>hlp</CODE>.
+Any ext ending with h (except <CODE>sh</CODE>!) indicates an
+include file of some kind.
+
+<A NAME="DIRSTRUCT"><H3>Directory structure</H3></A>
+4glworks source has been divided into two directories, the first, named
+4glworks, containing the application framework, the second, named 4gwapps/4gwdemo,
+containing a demo, minimal, working application. Each is organized as follows:
+<P><UL>
+<LI><CODE>&lt;dirname&gt;/source</CODE> source code</LI>
+<LI><CODE>&lt;dirname&gt;/c4gl</CODE> compiled 4gl specific source code</LI>
+<LI><CODE>&lt;dirname&gt;/rds</CODE> rds specific source code</LI>
+<LI><CODE>&lt;dirname&gt;/&lt;language&gt;</CODE> forms, text and help files pertaining to a particular language (eng. ita, etc)</LI>
+<LI><CODE>&lt;dirname&gt;/objcode</CODE> .o files</LI>
+<LI><CODE>&lt;dirname&gt;/pcode</CODE> .4go files and .o files needed for the runner</LI>
+<LI><CODE>&lt;dirname&gt;/etc</CODE> shell scripts, release notes, sql files, etc</LI>
+</UL></P>
+<P>The only exception to this scheme is <CODE>ierrl.4gh</CODE>, a 4gl include
+file that contains text constants related to error handling (I've preferred to
+string error handling related text to the application, rather
+than put it in a file loaded at run time, to be sure the user
+gets meaningful info should text files be unavailable), which
+is put (correctly) in the appropriate <CODE>4glworks/&lt;language&gt;/</CODE>directories.</P>
+
+<H3>Function names</H3>
+Function names mostly follow a <CODE>mdl_methodname</CODE> format for public functions
+and <CODE>methodname_mdl</CODE> for private ones. I've tried to confine private functions
+to the bottom of each file, but this is not always possible, due to
+language limitations (eg cursor or prepared statements, which must be defined
+before they can be used).<BR>
+I've tried, with a varying degree of success (I've quickly run out
+of names!) to use meaningful and consistent names for methods.
+
+<H3>Table and column names</H3>
+The naming style used for printer definition tables is <CODE>code_&lt;tablename&gt;</CODE>
+for primary keys, <CODE>desc_&lt;tablename&gt;</CODE> for descriptive fields, and
+<CODE>link_&lt;linkedtable&gt;</CODE> for foreign keys.<BR>
+Single and multiple selection pick lists (<CODE>i???h.4gl</CODE>), as well as the single
+table maintenance scroller (<CODE>istbs.4gl</CODE>) have been written to take advantage
+of my own naming style, but they can be fed with any select statement.
+
+<A NAME="COMPTOOL">
+<H2><HR><CENTER><B>Code compilation tools</CENTER></B><HR></H2></A>
+
+<H3>fglpp</H3>
+Fglpp is a cpp stile preprocessor for Informix-4gl originally written to
+ease message definition management within 4glworks. <A HREF="misc.htm#4gl">Follow this link</A>
+for more info on fglpp.
+
+<H3>cbuild</H3>
+This is the tool used to build 4glworks applications. Essentially, it is a
+sh based replacement for make, originally written because AT&T SVR3 make
+doesn't do file name expansion.
+
+<H4>Usage</H4>
+<PRE>cbuild [-e|-r][-l language][-f framepath][-s sourcepath][-d destpath] project
+</PRE>
+where
+<UL>
+<LI><CODE>project</CODE> is the name of the project to be remade</LI>
+<LI><CODE>language</CODE> is the language to be used for forms, etc (default <CODE>eng</CODE>)</LI>
+<LI><CODE>framepath</CODE> is the directory where 4glworks resides (default <CODE>4glworks</CODE>)</LI>
+<LI><CODE>sourcepath</CODE> is the directory where the modules making up the project
+    reside (default <CODE>.</CODE>)</LI>
+<LI><CODE>destpath</CODE> is the directory where executables, forms, etc will be
+   installed (default is <CODE>/usr/local/&lt;project&gt;</CODE>)</LI>
+</UL>
+
+<P>Cbuild makes use of a file named <CODE>.cbuildrc</CODE> to store user preferences.
+This is a list of <CODE>def=value</CODE> entries, in which <CODE>def</CODE>
+could be any of:</P>
+
+<TABLE>
+<TR><TD><CODE>AWK</CODE></TD><TD>the location of awk</TD></TR>
+<TR><TD><CODE>INFORMIXC</CODE></TD><TD>self explanatory</TD></TR>
+<TR><TD><CODE>INFORMIXDIR</CODE></TD><TD>self explanatory</TD></TR>
+<TR><TD><CODE>destbase</CODE></TD><TD>base directory for cbuild output</TD></TR>
+<TR><TD><CODE>framepath</CODE></TD><TD>see above</TD></TR>
+<TR><TD><CODE>lang</CODE></TD><TD>see above</TD></TR>
+<TR><TD><CODE>sourcepath</CODE></TD><TD>see above</TD></TR>
+</TABLE>
+
+<P>All of the defs in uppercase can be overriden by defining a correspondently
+named environmental variable; those in lowercase by command line options.</P>
+
+<P>Linked to cbuild are pbuild, ctest and ptest.<BR>
+Depending on the name with which it has been invoked, cbuild will</P>
+<UL>
+<LI>make 4ge (cbuild, ctest) or 4gi (pbuild, ptest) files</LI>
+<LI>fire <CODE>&lt;destpath&gt;/.profile</CODE> upon successful compilation (ctest, ptest)</LI>
+</UL>
+
+<P>cbuild expects to find a script named <CODE>buildfile</CODE> in <CODE>&lt;sourcepath&gt;/&lt;project&gt;</CODE>.
+<CODE>Buildfile</CODE> is used to</P>
+<UL>
+<LI>determine the list of directories (whose structure <I>must</I> be that
+<A HREF="#DIRSTRUCT">previously</A> described) containing code and forms
+to be compiled</LI>
+
+<LI>determine whether there are .o/.4go files newer than a give 4ge/4gi executable</LI>
+
+<LI>instruct cbuild as to which .o/.4go file are needed to link which
+executable</LI>
+</UL>
+<P>As of beta 2.0b6, <CODE>buildfile</CODE> is no longer a shell script, but a
+makefile-style dependency specification file, the main differences with makefiles
+being that</P>
+<UL>
+<LI>all rules are scanned, and not the first one only</LI>
+<LI>rules don't fire other rules</LI>
+<LI>there are no implicit / pattern / static pattern rules</LI>
+</UL>
+
+<P>(the above sums up to the fact that you have to name each and every
+target application)</P>
+
+<P>rules have a target and dependencies, but no commands - everything is handled
+internally by cbuild</P>
+
+<P>On the other hand, unlike make, it's perfectly fine to exploit pathname
+or brace expansion when specifying dependencies.<BR>
+In this respect, note that pathname expansion support is provided by the shell
+in use, so please specify dependecies sensibly.</P>
+
+<P> Cbuild also supports the use of include files, variables, some
+automatic variables (<CODE>$@</CODE> and <CODE>$*</CODE>, target name and stem
+respectively), as well as predefined
+variables <CODE>$(FW)</CODE>and <CODE>$(TM)</CODE> which respectively
+expand to the path of the applicationframework and the path of the package being
+compiled, as specified from the command line.<BR>
+Note that you don't have to specify source / target / pcode /object code
+directories, nor object or target file extensions, as this is handled by
+cbuild.</P>
+
+<H3>mkfgwgo</H3>
+<P>Use to build a custom runner for 4glworks applications. The command line syntax
+is:</P>
+<PRE>
+mkfgwgo [-f framepath] [-s sourcepath] [-llib...] [project list]
+</PRE>
+where
+<UL>
+<LI><CODE>project list</CODE> is  a space separated list of 4glworks modules with c
+    functions</LI>
+<LI><CODE>framepath</CODE> is the directory where 4glworks resides (default 4glworks)
+<LI><CODE>sourcepath</CODE> is a base directory for all the modules
+    (default is <CODE>.</CODE>)</LI>
+<LI><CODE>lib</CODE> is any extra library required to build the runner</LI>
+</UL>
+<P>Mkfgwgo will need a function definition file for each of the modules to be
+linked in the runner to build an appropriate fgiusr.c file. This file is named
+<CODE>cfuncs</CODE> and can either be located in <CODE>&lt;modulename&gt;/source</CODE>
+or <CODE>&lt;modulename&gt;/rds.</CODE>
+The format is simply a line with the function name and the number of parameters
+accepted for each of the functions added to the runner.<BR>
+Mkfgwgo will also access buildfile files in each module directory to determine
+whether any library should be linked. At present this is done by searching for
+definitions of a variable namede <CODE>LIBS</CODE>.<BR>
+The runner produced is installed in <CODE>$INFORMIXDIR/bin/fgwgo</CODE>. Name and output
+directory are not configurable.</P>
+
+<H3>configure.sh</H3>
+<P>A simple shell script to set a few bits and pieces in the source to match
+your tool (c4gl/rds) and version.</P>
+
+<A NAME="DEMOREF">
+<H2><HR><CENTER><B>4gwDemo reference</CENTER></B><HR></H2></A>
+4gwdemo is a demo application for 4glWorks. It primarily serves three
+purposes:
+<P><UL>
+<LI>to offer a base to develop 4glWorks applications. Just add services and
+viewers, and taylor the menu structure and the main program to reflect your
+additions.</LI>
+<LI>to offer a quick way to maintain printer data.</LI>
+<LI>to show the basic capabilities of 4glWorks apps.</LI>
+</UL></P>
+<P>The following notes give a brief explanation of 4gwdemo usage.</P>
+
+<H3>Menu structure</H3>
+Pull down menu "First" is used to choose the current viewer, choose or reload the active
+set. The following are the available viewers:
+<P><UL>
+<LI>Null viewer (does nothing, shows nothing)</LI>
+<LI>Error log</LI>
+<LI>Sql Interpreter</LI>
+<LI>Printer maintenance</LI>
+<LI>Form maintenance</LI>
+<LI>Model maintenance</LI>
+<LI>Form to printer table</LI>
+</UL></P>
+<P>Pull down menu "Second" is used for miscellaneous operation, like changing the display mode
+for a viewer, enabling a printer, locking or unlocking the database.<BR>
+Other commands will appear in the horizontal menu whenever meaningful to a particular viewer.<BR>
+Use Ctrl-X to quit 4gwdemo.</P>
+
+<H3>Printer data tables</H3>
+<UL>
+<LI>First/Printer maintenance will let you define physical printers: output pipes, etc</LI>
+<LI>First/Form maintenance is used to define paper formats: width, length, blobs, etc</LI>
+<LI>First/Model maintenance allows to enter printer model capabilities</LI>
+<LI>First/Form to printer table permits the enforcement of restrictions (stronger than
+  printer & form must pertain to the same model) as to which form may be printed on
+  which printer</LI>
+</UL>
+<P>For all the above viewers, use</P>
+<UL>
+<LI>First/Choose to redefine the active set</LI>
+<LI>New to create a new record</LI>
+<LI>Copy to create a record based on the one currently highlighted</LI>
+<LI>Modify to change a record</LI>
+<LI>Remove to delete a record</LI>
+</UL>  
+<H3>Pick lists usage</H3>
+In all of the above viewers, within input or construct statements, it is possible to
+display the list of all available choices for a particular field by hitting Ctrl-B.
+Upon showing up, the pick list will position the cursor on the row that best matches
+the contents of the field, be it a code, or the relative description. Try the following, and things
+will become a bit more clear:
+<P><UL>
+<LI>First/Form maintenance</LI>
+<LI>Modify</LI>
+<LI>move to the model field</LI>
+<LI>type <KBD>fi</KBD>
+<LI>hit <KBD>ctrl-b</KBD>
+</UL></P>
+<H3>Error log</H3>
+This just shows the application error log for 4gwdemo.
+Hopefully, it should always be empty. <BR>
+4glWorks applications error log is a plain 4gl error log with some additions,
+notably the message chain that lead to the error and the user id.
+<P>Use</P>
+<UL>
+<LI>First/Reread to reload the error log</LI>
+<LI>Second/Print to send it to a printer</LI>
+<LI>New to clear it</LI>
+</UL>
+<H3>Sql Interpreter</H3>
+This demonstrates multiple panes usage and the <A HREF="4wrcsqll.htm#FGWLANGREF">extended sql interpreter</A> capabilities.
+<P>Use</P>
+<UL>
+<LI>Edit to enter a query</LI>
+<LI>Do to execute it</LI>
+<LI>Read to read a query from a file</LI>
+<LI>Write to save the query to a file</LI>
+<LI>Second/Print to send the results to a printer</LI>
+<LI><KBD>TAB</KBD> to cycle thru panes</LI>
+</UL>
+
+<P>If you have DBA privileges, you can also enter statements that alter or change
+the current DB. Execution of such statements is subject to confirmation.</P>
+
+</BODY>
+</HTML>

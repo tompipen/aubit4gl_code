@@ -1,0 +1,19 @@
+<HTML>
+<HEAD>
+<TITLE>Interrupt key</TITLE>
+</HEAD><BODY>
+<B>Interrupt key
+<P></P>
+</B>The logical key that the user can press within a 4GL application to indicate
+cancellation of the user interaction statement. If the 4GL program does not
+include the DEFER INTERRUPT statement, pressing this key terminates program
+execution. With DEFER INTERRUPT, pressing the Interrupt key sets the built-in int_flag
+variable to TRUE and cancels the current interaction statement, resuming
+execution at the next 4GL statement. However, further response to the Interrupt
+signal may be deferred until the next pause for user input. The physical key for
+Interrupt is CONTROL-C. 
+<P></P>
+See also <A HREF="4GLREFAccept_key.htm">Accept key</A>, <A HREF="4GLREFexception_handling.htm">exception handling</A>, <A HREF="4GLREFinterrupt_signal.htm">interrupt signal</A>, <A HREF="4GLREFlogical_key.htm">logical key</A>, <A HREF="4GLREFQuit_key.htm">Quit key</A>, <A HREF="4GLREFuser_interaction_statement.htm">user interaction statement</A>.
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+<TITLE>GET_FLDBUF( )</TITLE>
+</HEAD><BODY>
+<B>GET_FLDBUF( )
+<P></P>
+</B>The GET_FLDBUF( ) operator returns the character values of the con-tents of
+one or more fields in the currently active screen form. (This operator can only
+appear within the CONSTRUCT, INPUT, or INPUT ARRAY statements of 4GL.)    
+<P></P>
+<IMG SRC="4GLREF00000090.gif" ALT="4GLREF00000090.gif" BORDER="0" USEMAP="#map56" WIDTH="588" HEIGHT="213"><MAP NAME="map56"><AREA COORDS="167,161,236,199" HREF="4GLREFField_Clause.htm"></MAP>
+<P></P>
+<B>field</B> is the name of a field in the current screen form.
+<P></P>
+<B>program record</B> is the name of a program record, whose members are character variables to
+store values from the specified fields.
+<P></P>
+<B>screen-array</B> is the name of a screen array that was defined in the INSTRUCTIONS section of
+the form specification file. 
+<P></P>
+<B>screen-record</B> is the name of a screen record that is explicitly or implicitly defined in the
+form specification file. 
+<P></P>
+<B>table reference</B> is the unqualified name, alias, or synonym of a database table or view, or
+else the keyword FORMONLY.
+<P></P>
+<B><UL><LI>ariable</B>  is a name within a list of one or more character variables, separated by
+commas. Variables must correspond in number and position with the list of fields in
+the field clause. 
+<P></P>
+</UL>GET_FLDBUF( ) operates on a list of one or more fields. 
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFFIELDTOUCHED_.htm"></A></B><A HREF="4GLREFFIELDTOUCHED_.htm">FIELD_TOUCHED( )</A> 
+<P></P>
+<A HREF="4GLREFINFIELD_.htm">INFIELD( )</A> 
+<P></P>
+</BODY>
+</HTML>

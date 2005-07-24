@@ -1,0 +1,278 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Development environment</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p align="center"> <font size="6"><a name="Top of page - A4GL development environment">A4GL development environment</a></font></p>
+
+<hr>
+
+<p> In this chapter:</p>
+
+<ul>
+  <li><a href="#Aubit 4gl IDE">Aubit 4gl IDE</a></li>
+  <li><a href="#Examples of development environment">Examples of development
+    environment</a></li>
+  <li>FIXME: RedHat 7.1 standard RPM installation components</li>
+</ul>
+<hr>
+
+<h3> <a name="Aubit 4gl IDE">Aubit 4gl IDE</a></h3>
+
+<ul>
+  <li><a href="#Introduction">Introduction</a></li>
+  <li>Overview</li>
+  <li>Compiling</li>
+  <li>Testing</li>
+  <li>Installing</li>
+  <li>Cleaning</li>
+  <li>Limitations</li>
+  <li>Bug reporting</li>
+  <li><a href="#Using IDE">Using IDE</a></li>
+</ul>
+
+<p> <i><u><a name="Introduction">Introduction</a></u></i></p>
+
+<p>Aubit 4gl compiler distributions include simple Interactive Development
+Environment (IDE).&nbsp;</p>
+
+<p>FIXME: why not use CodeCrusader etc...?</p>
+
+<p> This code was released to Aubit 4gl project under GNU license by kind permission of author, Jonathan Leffler [jleffler@informix.com] on
+Sat 16/06/2001. Thank you, Jonathan.</p>
+
+<p> <i><u>Overview</u></i></p>
+
+<p> The D4GL Programming Environment is a program which provides a programmer with an environment analogous to the i4gl and r4gl programmers environments
+provided with INFORMIX-4GL (I4GL) and INFORMIX-4GL Rapid Development System (I4GL-RDS).  It expects to work with a Makefile.  It can be used to compile
+programs with either Informix Dynamic 4GL (D4GL) or I4GL or I4GL-RDS.  When the program is being run, you can edit, compile and correct either source
+files or form files, and you can run builds of an entire program, or you can test the program you have built.&nbsp;</p>
+
+<p> The D4GL Programming Environment that can be compiled with Aubit 4gl, D4GL,&nbsp;
+I4GL or I4GL-RDS.  It uses one C function, so it is necessary to have a C development system available.  It creates the custom p-code runners when
+necessary.</p>
+
+<p> <i><u>Compiling</u></i></p>
+
+<p> Using Aubit 4gl compiler, you should be able to type:</p>
+
+<p> &nbsp;&nbsp;&nbsp; make a4gl</p>
+
+<p> Also on Unix, you should be able to type:</p>
+
+<p> &nbsp;&nbsp;&nbsp; make d4gl-pcode</p>
+
+<p> This should compile the Informix Dynamic 4GL p-code version of the program.  You could create the D4GL c-code version by making d4gl-ccode,
+the I4GL p-code version by making i4gl-pcode, and the I4GL c-code version by making i4gl-ccode.  You could create all of these by typing:</p>
+
+<p> &nbsp;&nbsp;&nbsp; make all</p>
+
+<p> If you plan to install the program in somewhere other than $FGLDIR, then you should add D4GL_DIR=/where/you/plan/to/put/it to the command lines.</p>
+
+<p> <i><u>Testing</u></i></p>
+
+<p> You can test the program by running one of the following commands:</p>
+
+<blockquote>
+
+<p>    ./d4gl              -- Aubit 4gl<br>
+	./fglrun d4gl       -- D4GL p-code<br>
+    ./d4gl.42e          -- D4GL c-code<br>
+    ./fglgo  d4gl       -- I4GL p-code<br>
+    ./d4gl.4ge          -- I4GL c-code</p>
+
+</blockquote>
+
+<p> Do not use the d4gl cover script as it will not work on the p-code files until they have been installed (or given execute permission).</p>
+
+<p> <i><u>Installing</u></i></p>
+
+<p> By default, the software will be installed under $FGLDIR.  If you plan to install the D4GL environment in some other directory, then you should have
+specified D4GL_DIR=/where/you/plan/to/put/it when you compiled the program. If you forgot, simply remove the d4gl script before doing the install.</p>
+
+<p> To install the D4GL p-code version in the default directory, use:</p>
+
+<p> &nbsp;&nbsp;&nbsp; make install.d4gl-pcode</p>
+
+<p> To install a different product, change the version code accordingly.  To install in a different directory, ensure that you have write permissions on
+the directory, and decide whether you need to remove the d4gl script before<br>
+proceeding, and then type:</p>
+
+<p> &nbsp;&nbsp;&nbsp; make D4GL_DIR=/where/you/want/to/put/it install.d4gl-pcode</p>
+
+<p> By default, the programs will be installed owned by user informix and belonging to group informix.  You can override these defaults by
+specifying:</p>
+
+<p>    make D4GL_USR=me D4GL_GRP=us D4GL_DIR=/some/where install.d4gl-pcode</p>
+
+<p> Note that the install process assumes you have a BSD-compatible install script.  If you do not have one, the install will probably fail.  There are
+public domain versions of the BSD install script readily available.</p>
+
+<p> <i><u>Cleaning</u></i></p>
+
+<p> After the product is successfully installed, you can clean up the build area with:</p>
+
+<p> &nbsp;&nbsp;&nbsp; make clean</p>
+
+<p> This removes all the generated files, leaving you with just the original source code and any ad hoc files you have created.</p>
+
+<p> <i><u>Limitations</u></i></p>
+
+<p> This is tested code on Unix.  It is only barely tested on NT.  There will be problems on NT with the use of sed (unless you have a
+Unix-workalike toolkit such as CygWin, MKS or Thompson on your NT machine).  There will be
+problems with running processes in xterm unless you have an xterm on your NT machine.  Ideas for how to correct these deficiencies will be gratefully
+received.</p>
+
+<p> <i><u>Bug Reporting</u></i></p>
+
+<p> Aubit 4gl team will extend and maintain original version of this code. Therefore, we suggest that you report problems to Aubit 4gl mailing list,
+if you obtained it from Aubit 4gl project. But you also might consider authors original
+note:</p>
+
+<p> If you find a problem, please report it via the IDN web site:</p>
+
+<p> <a href="http://www.informix.com/idn">http://www.informix.com/idn</a></p>
+
+<p> Optionally, you may also report it to Jonathan Leffler (jleffler@informix.com), but please use the web site too.</p>
+
+<p><i><u><a name="Using IDE">Using IDE</a></u></i></p>
+
+<p>FIXME: describe menu option, and typical cycle in editing, compiling, fixing
+errors and linking...</p>
+
+<p> <a href="#Top of page - A4GL development environment">Back to top</a></p>
+
+<hr>
+
+<h3> <a name="Examples of development environment">Examples of development
+environment</a></h3>
+
+<p> Our aim is to provide full GNU/GPL alternative, not only to commercial x4gl
+compilers and database, but also for general development environment like ODBC
+configuration tools, IDE (Interactive development environment) for code and
+project manipulation, down to version control and database management
+tools.&nbsp;</p>
+
+<p>Here, you will find some examples of this kind of environments that will
+enhance your productivity, and at the same time maintain team-oriented
+development environment in the manageable fashion.</p>
+
+<p>You can, of course, be completely happy with just the compiler, database and
+vi editor, but we believe this will leave you in the dark. Providing productive
+compiler and language is just one of the components of productive development
+environment.</p>
+
+<p>This chapter is very much only a draft</p>
+
+<p><font color="#FF0000">Please also see related project at <a href="http://www.falout.com">www.falout.com</a></font></p>
+
+<p> <i><u> Full GNU base framework:</u></i></p>
+
+<p> 
+PostgreSQL database and ODBC driver, platform and OS independent</p>
+
+<p> iODBC manager platform and OS independent (needed on UNIX only) (unixODBC
+would extend or replace&nbsp; iODBC functionality with it's own ODBC set of
+drivers and GUI ODBC setup and maintenance tools)</p>
+
+<p> 
+Aubit 4GL platform OS and database independent</p>
+
+<p> &nbsp;</p>
+
+<p> <i><u>Full GNU, additional tools:</u></i></p>
+
+<p> 
+<a href="http://www.newplanetsoftware.com/jcc/" target="_blank">
+Code Crusader</a> with 4gl extensions and syntax highlighting, platform and OS independent</p>
+
+<p> 
+Paccess management for PostgreSQL (very nice, TCL/TK) platform and OS independent</p>
+
+<p> 
+B&amp;J WTK for Aubit GUI front-end, (TCL/TK)  platform and OS independent</p>
+
+<p> CVS Concurrent Version Control framework</p>
+
+<p> jCVS CVS access client written in Java</p>
+
+<p> Keystone</p>
+
+<p> Phorum</p>
+
+<p> PHP</p>
+
+<p> &nbsp;</p>
+
+<p> 
+And then, add bunch of GNU 4gl application, including our Maximise (I hope..)</p>
+
+<p> <i><u>Commercial:</u></i></p>
+
+<p> GWD shareware text editor with many 4gl related, IDE-like functionality</p>
+
+<p>FIXME: GWD using Wine, import GWD::4gl files to CVS</p>
+
+<p> Informix IDS database engine</p>
+
+<p> <a href="#Top of page - A4GL development environment">Back to top</a></p>
+
+<hr>
+
+<p> From temp documents:</p>
+
+<p> &nbsp;</p>
+
+<p> &nbsp;</p>
+
+<font SIZE="2">
+<p>NOTE: this is a temporary document, which will be removed once it's included
+in Aubit 4gl manual. Please look for updates in manual.</p>
+<h2>Aubit 4gl Development Environment - aIDE</h2>
+<p>most x4GL compilers don't have a standard development environment distributed
+with them, that is analogous to the Informix i4gl and r4gl programmer's
+environments distributed with Classic I4GL and I4GL-RDS. However, it is not very
+hard to create one using 4GL programming language, and the source code for one
+such environment is available through IDN, and included in Aubit CVS and
+distributions with authors permission.</p>
+<p>aIDE assumes that you are working with MAKE rather than trying to use the
+program database used by i4gl and r4gl. The source code requires two C functions
+and the corresponding fglext.c file to be linked into the custom runner, if
+compiling with Informix or 4Js p-code compilers.</p>
+<p>One of those functions, file_access(), is called by the aIDE code. It allows
+an 4GL program to determine whether a file exists and is readable, writable or
+executable. It uses the Unix/POSIX system call access(2), so it can produce odd
+results if the program is running SUID.</p>
+<p>The other function is a C support function, popstring(), that has been
+included in the Classic I4GL library since release 4.12/6.00 but is not in the
+D4GL library. This is a variant on popquote() which removes all trailing blanks
+from the variable. It behaves differently from both popquote() and popvchar().</p>
+<p>All the other code is relatively straight-forward I4GL code. The program has
+been enhanced to work with the D4GL/BDL environment. It can run in character
+mode or GUI mode, and can be compiled with all compilers supported by
+&quot;amake&quot;, including Aubit 4gl, Classic I4GL (p-code or c-code) or with
+D4GL (p-code or c-code).</p>
+<p>There is a Makefile included which works with amake, using GNU MAKE. The
+Makefile is a reasonable example of how to design Makefiles for use with amake
+while remaining compatible with other 4gl compilers when using C functions. Because
+program uses C functions, special case of amake footer file, footer-c.mki is
+used.</p>
+<p>Prepared by: <a href="mailto:jleffler@informix.com">mailto:jleffler@informix.com</a><br>
+Last Updated: 1999-10-06</p>
+<p>Modified by: <a href="mailto:afalout@ihug.co.nz">mailto:afalout@ihug.co.nz</a><br>
+Last Modified: 2001-09-23</p>
+</font>
+
+
+
+</body>
+
+</html>
+

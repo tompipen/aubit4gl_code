@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0043)http://heilabrot.itn.is/pow4gl/pow4glm.html -->
+<HTML><HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<TITLE>POWER-4GL Reference Manual</TITLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+<H1><a href="index.htm"><IMG alt="Main page" 
+src="images/pow4gl.gif" align=bottom border=1 width="216" height="65"></a> Reference Manual</H1><EM>Extending
+x-4gl</EM> 
+<HR SIZE=3>
+
+<H1>Table of contents:</H1>
+<UL>
+  <LI><a href="#Introduction">Introduction</a> 
+
+  <LI><a href="Menu_functions.htm">Menu functions:</a> 
+
+  <UL>
+    <LI><a href="Menu_functions.htm#Menuopen">Menuopen</a> 
+    <LI><a href="Menu_functions.htm#Menuline">Menuline</a> 
+    <LI><a href="Menu_functions.htm#Menufline">Menufline</a> 
+    <LI><a href="Menu_functions.htm#Menusetup">Menusetup</a> 
+    <LI><a href="Menu_functions.htm#Menuman">Menuman</a> 
+    <LI><a href="Menu_functions.htm#Menuclose">Menuclose</a> 
+    </LI></UL>
+  <LI><a href="Pick-list_functions.htm">Pick-list 
+  functions:</a> 
+  <UL>
+    <LI><a href="Pick-list_functions.htm#Listopen">Listopen</a> 
+    <LI><a href="Pick-list_functions.htm#Listsetup">Listsetup</a> 
+    <LI><a href="Pick-list_functions.htm#Listman">Listman</a> 
+    <LI><a href="Pick-list_functions.htm#Listinit">Listinit</a> 
+    <LI><a href="Pick-list_functions.htm#Listclose">Listclose</a> 
+    <LI><a href="Pick-list_functions.htm#Listview">Listview</a> 
+    <LI><a href="Pick-list_functions.htm#Listnpage/Listppage">Listnpage/Listppage</a> 
+
+    <LI><a href="Pick-list_functions.htm#Listfirst/Listnext/Listprev">Listfirst/Listnext/Listprev</a> 
+
+    <LI><a href="Pick-list_functions.htm#Listhead">Listhead</a> 
+    <LI><a href="Pick-list_functions.htm#Listsum/Listavg/Listmax/Listmin">Listsum/Listavg/Listmax/Listmin</a> 
+
+    <LI><a href="Pick-list_functions.htm#Listmsg">Listmsg</a> 
+    <LI><a href="Pick-list_functions.htm#Listspitem">Listspitem</a> 
+
+    <LI><a href="Pick-list_functions.htm#Listtransl">Listtransl</a> 
+
+    <LI><a href="Pick-list_functions.htm#Listprinter">Listprinter</a> 
+
+    <LI><a href="Pick-list_functions.htm#Listmarks">Listmarks</a> 
+    </LI></UL>
+  <LI><a href="Report_functions.htm">Report 
+  functions:</a> 
+  <UL>
+    <LI><a href="Report_functions.htm#Reportopen">Reportopen</a> 
+
+    <LI><a href="Report_functions.htm#Reportinit">Reportinit</a> 
+
+    <LI><a href="Report_functions.htm#Reportput">Reportput</a> 
+    <LI><a href="Report_functions.htm#Reportfputrow">Reportfputrow</a> 
+
+    <LI><a href="Report_functions.htm#Reportline">Reportline</a> 
+
+    <LI><a href="Report_functions.htm#Reportupd">Reportupd</a> 
+    <LI><a href="Report_functions.htm#Reportsetup">Reportsetup</a> 
+
+    <LI><a href="Report_functions.htm#Reportman">Reportman</a> 
+    <LI><a href="Report_functions.htm#Reportclose">Reportclose</a> 
+
+    <LI><a href="Report_functions.htm#Reporthead">Reporthead</a> 
+
+    <LI><a href="Report_functions.htm#Reportprinter">Reportprinter</a> 
+
+    <LI><a href="Report_functions.htm#Reportcovput">Reportcovput</a> 
+
+    <LI><a href="Report_functions.htm#Reportcovtime">Reportcovtime</a> 
+
+    <LI><a href="Report_functions.htm#Reportcovtext">Reportcovtext</a> 
+
+    <LI><a href="Report_functions.htm#Reportget">Reportget</a> 
+    <LI><a href="Report_functions.htm#Reportview">Reportview</a> 
+    </LI></UL>
+  <LI><a href="Screen_handling_functions.htm">Screen handling 
+  functions:</a> 
+  <UL>
+    <LI><a href="Screen_handling_functions.htm#Helpman">Helpman</a> 
+    <LI><a href="Screen_handling_functions.htm#Disptitle">Disptitle</a> 
+    <LI><a href="Screen_handling_functions.htm#Winform">Winform</a> 
+    <LI><a href="Screen_handling_functions.htm#Winopen">Winopen</a> 
+    <LI><a href="Screen_handling_functions.htm#Winclear">Winclear</a> 
+    <LI><a href="Screen_handling_functions.htm#Winclose">Winclose</a> 
+    <LI><a href="Screen_handling_functions.htm#Msgopen">Msgopen</a> 
+    <LI><a href="Screen_handling_functions.htm#Msgadd">Msgadd</a> 
+
+    <LI><a href="Screen_handling_functions.htm#Msgclose">Msgclose</a> 
+    <LI><a href="Screen_handling_functions.htm#Pscreen">Pscreen</a> 
+    <LI><a href="Screen_handling_functions.htm#Pause">Pause</a> 
+    <LI><a href="Screen_handling_functions.htm#Getyn">Getyn</a> 
+    <LI><a href="Screen_handling_functions.htm#Goahead">Goahead</a> 
+    <LI><a href="Screen_handling_functions.htm#Sure">Sure</a> 
+    <LI><a href="Screen_handling_functions.htm#Bang">Bang</a> 
+    <LI><a href="Screen_handling_functions.htm#Checknum">Checknum</a> 
+    <LI><a href="Screen_handling_functions.htm#Checkx">Checkx</a> 
+    </LI></UL>
+  <LI><a href="Conversion_functions.htm">Conversion 
+  functions:</a> 
+  <UL>
+    <LI><a href="Conversion_functions.htm#Word">Word</a> 
+    <LI><a href="Conversion_functions.htm#Stx">Stx</a> 
+    <LI><a href="Conversion_functions.htm#Mtx">Mtx</a> 
+    <LI><a href="Conversion_functions.htm#Hourtime">Hourtime</a> 
+    <LI><a href="Conversion_functions.htm#Sectime">Sectime</a> 
+    <LI><a href="Conversion_functions.htm#Secinterv">Secinterv</a> 
+    <LI><a href="Conversion_functions.htm#Strctrlrep">Strctrlrep</a> 
+
+    <LI><a href="Conversion_functions.htm#Formatnum">Formatnum</a> 
+    </LI></UL>
+  <LI><a href="Mathematics_functions.htm">Mathematics 
+  functions:</a> 
+  <UL>
+    <LI><a href="Mathematics_functions.htm#Similar">Similar</a> 
+    <LI><a href="Mathematics_functions.htm#Abs">Abs</a> 
+    <LI><a href="Mathematics_functions.htm#Round">Round</a> 
+    <LI><a href="Mathematics_functions.htm#Power">Power</a> 
+    </LI></UL>
+  <LI><a href="String_handling_functions.htm">String handling 
+  functions:</a> 
+  <UL>
+    <LI><a href="String_handling_functions.htm#Addwild">Addwild</a> 
+    <LI><a href="String_handling_functions.htm#Left">Left</a> 
+    <LI><a href="String_handling_functions.htm#Right">Right</a> 
+    <LI><a href="String_handling_functions.htm#Center">Center</a> 
+
+    <LI><a href="String_handling_functions.htm#Checkpath">Checkpath</a> 
+    <LI><a href="String_handling_functions.htm#Firstword">Firstword</a> 
+    <LI><a href="String_handling_functions.htm#Lastword">Lastword</a> 
+    <LI><a href="String_handling_functions.htm#Strpos">Strpos</a> 
+
+    <LI><a href="String_handling_functions.htm#Strrep">Strrep</a> 
+    </LI></UL>
+  <LI><a href="Interface_functions.htm">Interface 
+  functions:</a> 
+  <UL>
+    <LI><a href="Interface_functions.htm#Keymap">Keymap</a> 
+
+    <LI><a href="Interface_functions.htm#Disp">Disp</a> 
+    <LI><a href="Interface_functions.htm#Transl">Transl</a> 
+
+    <LI><a href="Interface_functions.htm#Getdefprinter">Getdefprinter</a> 
+
+    <LI><a href="Interface_functions.htm#Getprinter">Getprinter</a> 
+
+    <LI><a href="Interface_functions.htm#Checkprinter">Checkprinter</a> 
+
+    <LI><a href="Interface_functions.htm#Progerr">Progerr</a> 
+    <LI><a href="Interface_functions.htm#Progerrq">Progerrq</a> 
+    </LI></UL>
+  <LI><a href="Text_tables.htm">Text tables:</a> 
+  <UL>
+    <LI><a href="Text_tables.htm#Label">Label</a> 
+    <LI><a href="Text_tables.htm#Title">Title</a> 
+    <LI><a href="Text_tables.htm#Word">Word</a> 
+    <LI><a href="Text_tables.htm#Stx">Stx</a> 
+    <LI><a href="Text_tables.htm#Mtx">Mtx</a> 
+  </LI></UL></LI></UL>
+<H1><A name=Introduction>Introduction</A></H1>
+<P>The Power-4gl functions are contained in a few 4gl and c modules. Included in 
+this manual are detailed programmer descriptions of the most essential entities 
+in the Power-4gl tool kit, including some programming examples. The descriptions 
+are categorized as follows:</P>
+<UL>
+  <LI><STRONG><a href="Menu_functions.htm">Menu 
+  functions</a> </STRONG>offer an alternative to the horizontal menu system 
+  included in Informix-4gl. 
+  <LI><STRONG><a href="Pick-list_functions.htm">Pick-list 
+  functions</a> </STRONG>provide an essential tool for modern user interfaces. 
+  Full featured pick-lists are effortlessly produced to view database tables. 
+  <LI><STRONG><a href="Report_functions.htm">Report 
+  functions</a> </STRONG>supply tools to produce reports that appear on screen 
+  as horizontally and vertically scrollable documents. 
+  <LI><STRONG><a href="Screen_handling_functions.htm">Screen 
+  handling functions</a> </STRONG>are underlying functions that handle screen 
+  objects, which the menu, pick-list and report functions use extensively. 
+  <LI><STRONG><a href="Conversion_functions.htm">Conversion 
+  functions</a></STRONG> are routines that perform various conversions of data. 
+  <LI><STRONG><a href="Mathematics_functions.htm">Mathematics 
+  functions</a></STRONG> contain assorted calculation routines. 
+  <LI><STRONG><a href="String_handling_functions.htm">String 
+  handling functions</a></STRONG> manipulate text strings. 
+  <LI><STRONG><a href="Interface_functions.htm">Interface 
+  functions</a> </STRONG>are programmer definable functions that mold the user 
+  interface objects to the particular system, thus representing the system 
+  dependent aspects of Power-4gl. 
+  <LI><STRONG><a href="Text_tables.htm">Text 
+  tables</a> </STRONG>are editable flat files that contain the language 
+  dependent aspects of Power-4gl. A default set of text tables is supplied in 
+  English that can be altered and added to by the programmer. </LI></UL>
+<HR SIZE=3>
+
+<A 
+href="http://heilabrot.itn.is/pow4gl/pow4gl.html">Power-4gl main page</A> 
+</BODY></HTML>

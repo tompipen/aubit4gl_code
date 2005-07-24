@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0044)http://heilabrot.itn.is/pow4gl/pow4glm2.html -->
+<HTML><HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<TITLE>POWER-4GL Reference Manual - Pick-list functions</TITLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+<H1><a href="index.htm"><IMG alt="Main page" 
+src="images/pow4gl.gif" 
+align=bottom border=1 width="216" height="65"></a> Reference Manual</H1><EM>Extending x-4gl</EM> 
+<HR SIZE=3>
+
+<H1>Pick-list functions</H1>
+<P>Functions to produce pick-lists are contained in the list.4gl module. The 
+following example shows a typical program stub to produce a simple 
+pick-list:</P>
+<UL><TT>call listopen('mylist','','','','') returning dummy<BR>call 
+  listsetup('mytable','item1,item2',format,'item1','')<BR>while true
+  <UL>call listman() returning action,rowid<BR>case action<BR>when 'enter' ... 
+    {edit/view the selected row}<BR>when 'insert' ... {insert a new row}<BR>when 
+    'delete' ... {delete the selected row}<BR>when 'accept' exit while<BR>when 
+    'exit' rowid=null exit while<BR>end case</UL>end while<BR>call 
+listclose()</TT></UL>
+<P>The pick-list object is initialized with 'listopen' which supplies the 
+pick-list title and displays the appropriately sized and positioned window on 
+the screen. The database criteria are defined with 'listsetup' indicating such 
+things as the database tables and columns, search filters, list order and a 
+formatting string.</P>
+<P>User responses are handled by 'listman', which returns some of them for the 
+calling program to handle, along with the current rowid.</P>
+<P>Finally, the pick-list object is removed with 'listclose'.</P>
+<P>Following are more detailed descriptions of the functions in the pick-list 
+system (ordered by approximate importance):</P>
+<H3><A name=Listopen>Listopen</A></H3>
+<P>Initializes a pick-list object with a title and displays an appropriate 
+window on the screen.</P>
+<P>5 parameters:<BR><STRONG>Title</STRONG>: A title string or a key into the 
+title text file. More than one title line can be defined in the title text 
+file.<BR><STRONG>Row</STRONG>: Optional row position of the pick-list 
+window.<BR><STRONG>Column</STRONG>: Optional column position of the pick-list 
+window.<BR><STRONG>Height</STRONG>: Optional window 
+height.<BR><STRONG>Width</STRONG>: Optional window width.</P>
+<P>1 return value:<BR><STRONG>Status</STRONG>: If the operation was successful, 
+the return code is zero.</P>
+<P>If the position and size parameters are omitted, they are automatically set. 
+The window width is determined by the title width. The window length is set 
+according to the number of screen lines available. The default window position 
+is in the upper right corner of the screen.</P>
+<H3><A name=Listsetup>Listsetup</A></H3>
+<P>Sets up the database criteria. Scroll cursors are opened and a page is 
+displayed.</P>
+<P>6 parameters:<BR><STRONG>Tables</STRONG>: A list of the tables used in the 
+query (SQL 'from' clause). The first table in the list is considered as the 
+primary table and any rowids subsequently returned are from that 
+table.<BR><STRONG>Items</STRONG>: A list of items or expressions that will be 
+used in the pick-list (SQL 'select' clause).<BR><STRONG>Format</STRONG>: An 
+optional formatting string (c style) to indicate how the columns will be 
+presented in the list. E.g. '%-10s' left justifies a string in a ten character 
+space.<BR><STRONG>Filter</STRONG>: Filter information and table joining 
+information (SQL 'where' clause).<BR><STRONG>Order</STRONG>: List of items to 
+order by (SQL 'order by' clause).<BR><STRONG>Position</STRONG>: A value which 
+positions the current window page in the list. The value corresponds to the 
+first order item. E.g. if a list of a thousand lines is ordered by customer name 
+and the position value is 'Zebra' then the starting current page will be near 
+the end of the list.</P>
+<H3><A name=Listman>Listman</A></H3>
+<P>Handles user responses to a pick-list object.</P>
+<P>2 return values:<BR><STRONG>Action</STRONG>: A string containing a logical 
+user response that the calling program can act on. Possible responses and 
+typical uses are as follows:<BR>'enter' = Edit or view the current row with a 
+form.<BR>'insert' = Insert a new row with a form (typically the editing 
+form).<BR>'delete' = Delete the current row.<BR>'accept' = Exit the pick-list 
+function returning the row to a calling program.<BR>'exit' = Exit the pick-list 
+function without returning the row.<BR>'filter' = dit the pick-list selection 
+criteria (followed by calling 'listsetup').<BR>'other' = Other operations, 
+perhaps a menu offering some possibilities.<BR>'prevset' = Regenerate the list 
+with the previous logical set of data.<BR>'nextset' = Regenerate the list with 
+the next logical set of data.<BR><STRONG>Rowid</STRONG>: The rowid of the 
+current pick-list line.</P>
+<P>Other user responses like 'help', 'refresh', 'print', 'opsys', cursor 
+movement keys and more are handled automatically within 'listman'.</P>
+<H3><A name=Listinit>Listinit</A></H3>
+<P>Refresh the list without changing any criteria. This is typically used after 
+the user has edited, deleted or inserted a new row to update the list.</P>
+<H3><A name=Listclose>Listclose</A></H3>
+<P>Removes the current pick-list object.</P>
+<H3><A name=Listview>Listview</A></H3>
+<P>Handles a viewing window that has been created. This is typically used when 
+the user has pressed the logical key 'enter' to view a selected row in window. 
+After the calling program opens the window and display the data, it can call 
+this function to handle standard user inputs. An example of this follows:</P>
+<UL><TT>... {open form/window}<BR>while not done
+  <UL>... {retrieve and display the information}<BR>while true
+    <UL>call listview('form',rowid,'') returning action,rowid<BR>case 
+      action<BR>when 'refresh' exit while<BR>when 'exit'
+      <UL>let done=true<BR>exit while</UL>end case</UL>end while</UL>end 
+  while<BR>... {close form/window}</TT></UL>
+<P>The 'listview' function handles most user responses. The user can page 
+through the pick-list in the viewing window.</P>
+<P>3 parameters:<BR><STRONG>Name</STRONG>: A string value which is used to 
+display a title in the viewing window and to select the appropriate help 
+text.<BR><STRONG>Rowid</STRONG>: The current rowid.<BR><STRONG>Text</STRONG>: 
+Message that appears in the viewing window.</P>
+<P>2 return values:<BR><STRONG>Action</STRONG>: A string containing a logical 
+user response that the calling program can act on. Possible responses are and 
+typical uses are as follows:<BR>'exit' = Exit the pick-list function without 
+returning the row.<BR>'other' = Other operations, perhaps a menu offering some 
+possibilities.<BR>'refresh' = Refresh the viewing window (possibly the 
+next/previous row).<BR><STRONG>Rowid</STRONG>: The rowid to be viewed next.</P>
+<H3><A name=Listnpage/Listppage>Listnpage/Listppage</A></H3>
+<P>Return the next/previous rowid in the pick-list. These functions are 
+typically used within an input statement in editing windows that are called from 
+a pick-list to be able to page through the pick-list rows.</P>
+<P>1 parameter:<BR><STRONG>Rowid</STRONG>: The current rowid.</P>
+<P>1 return value:<BR><STRONG>Rowid</STRONG>: The next/previous rowid. If there 
+are no rows in that direction, a null is returned.</P>
+<H3><A name=Listfirst/Listnext/Listprev>Listfirst/Listnext/Listprev</A></H3>
+<P>Return the first/next/previous rowid in a pick-list. These functions are 
+meant to be used in operations that process the list as a whole, e.g. if the 
+whole list is to be deleted or updated. An example of their usage is as 
+follows:</P>
+<UL><TT>let rowid=listfirst()<BR>while rowid is not null
+  <UL>... {processing statements}<BR>let rowid=listnext()</UL>end while</TT></UL>
+<P>1 return value:<BR><STRONG>Rowid</STRONG>: The rowid of the table row to be 
+processed.</P>
+<H3><A name=Listhead>Listhead</A></H3>
+<P>Displays title text dynamically. This function can be called after a 
+pick-list has been opened to change title lines.</P>
+<P>2 parameters:<BR><STRONG>Text</STRONG>: The new title text to be 
+displayed.<BR><STRONG>Line</STRONG>: The title line number affected.</P>
+<H3><A 
+name=Listsum/Listavg/Listmax/Listmin>Listsum/Listavg/Listmax/Listmin</A></H3>
+<P>Set up aggregate values which appear at the bottom of the pick-list window, 
+e.g. to display the total of an amount column. The aggregate value pertains to 
+the whole list and not just the page.</P>
+<P>1 parameters:<BR><STRONG>Column</STRONG>: The pick-list column number 
+(measured left to right starting with 1).</P>
+<H3><A name=Listmsg>Listmsg</A></H3>
+<P>Sets up a message which is displayed at the bottom right corner of the 
+pick-list window. This is typically used to display additional instructions and 
+options.</P>
+<P>1 parameter:<BR><STRONG>Text</STRONG>: Message text.</P>
+<H3><A name=Listspitem>Listspitem</A></H3>
+<P>Defines special items such as key values that are normally not visible to the 
+user. The rowid is automatically such a special item and does not have to be 
+defined explicitly. These special items appear in a special viewing window when 
+the user enters '#' in a pick-list.</P>
+<P>1 parameter<BR><STRONG>Item</STRONG>: Name of a table column.</P>
+<H3><A name=Listtransl>Listtransl</A></H3>
+<P>Sets up translation methods for columns in a pick-list. This is typically 
+used when the desired format of a column cannot be achieved by the standard-c 
+formatting string. The actual translation method must be contained in a function 
+called 'transl' (an interface function).</P>
+<P>2 parameters:<BR><STRONG>Method</STRONG>: A string value corresponding to a 
+method defined in the 'transl' function.<BR><STRONG>Column</STRONG>: The pick 
+list column number to be translated or formatted.</P>
+<H3><A name=Listprinter>Listprinter</A></H3>
+<P>Sets up the name of the default printer to be used in the pick-list. This 
+name will then appear in the print dialogue box when the user presses the 
+logical key 'print'.</P>
+<P>1 parameter:<BR><STRONG>Name</STRONG>: The name of the default printer.</P>
+<H3><A name=Listmarks>Listmarks</A></H3>
+<P>Returns a list of rowid values corresponding to pick-list rows that the user 
+has marked with the logical key 'toggle'. The calling program can subsequently 
+use these values for processing.</P>
+<P>1 return value:<BR><STRONG>Rows</STRONG>: A list of rowid values separated by 
+commas (ready for an SQL where clause).</P>
+<HR SIZE=3>
+
+<a href="index.htm">Power-4gl manual main 
+page</a> </BODY></HTML>

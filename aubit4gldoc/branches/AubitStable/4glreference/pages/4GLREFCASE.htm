@@ -1,0 +1,67 @@
+<HTML>
+<HEAD>
+<TITLE>CASE</TITLE>
+</HEAD><BODY>
+<B>CASE
+<P></P>
+</B>The CASE statement specifies statement blocks to be executed conditionally,
+depending on the value of an expression. Unlike IF statements, CASE does not
+restrict the logical flow of control to only two branches.   
+<P></P>
+<IMG SRC="4GLREF00000113.gif" ALT="4GLREF00000113.gif" BORDER="0" USEMAP="#map69" WIDTH="697" HEIGHT="321"><MAP NAME="map69"><AREA COORDS="190,267,290,312" HREF="4GLREF4GL_Boolean_Expressions.htm"><AREA COORDS="559,129,651,175" HREF="4GLREFCASE.htm#264a23ac"><AREA COORDS="265,69,339,127" HREF="4GLREFExpressions_of_4GL.htm"><AREA COORDS="85,70,166,127" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+<B>statement</B> is an SQL statement or other 4GL statement.
+<P></P>
+The CASE statement is equivalent to a set of nested IF statements. 
+<P></P>
+<B>You can specify two types of CASE statements: 
+<P></P>
+</B>If you specify an expression following the CASE keyword, you must also specify
+INT, SMALLINT, DECIMAL, CHAR(1), or VARCHAR(1) expressions in the WHEN block.
+(The syntax diagram indicates a subset of general 4GL expressions because of
+these data type restrictions.) 4GL executes the statement block if both
+expressions return the same non-NULL value.
+<P></P>
+If no expression follows the CASE keyword, the WHEN block must specify a 4GL <A HREF="4GLREFBoolean.htm">Boolean</A> expression; if this returns TRUE, then the WHEN block is executed. This form
+of CASE typically executes more quickly than the equivalent CASE expression
+form.
+<P></P>
+<B>The WHEN Blocks
+<P></P>
+</B>Each WHEN block specifies an expression and a block of one or more associated
+statements. The WHEN block has the following syntax:
+<P></P>
+<IMG SRC="4GLREF00000114.gif" ALT="4GLREF00000114.gif" BORDER="0" USEMAP="#map70" WIDTH="538" HEIGHT="127"><MAP NAME="map70"><AREA COORDS="177,96,310,122" HREF="4GLREF4GL_Boolean_Expressions.htm"><AREA COORDS="198,59,288,85" HREF="4GLREFExpressions_of_4GL.htm"></MAP>
+<P></P>
+<B>statement</B> is an SQL statement or other 4GL statement.
+<P></P>
+The data type of the expression that you use in the WHEN blocks depends on
+whether or not you include an expression following the CASE keyword. 
+<P></P>
+If you omit the CASE expression, then you must include a Boolean expression
+(one that returns either TRUE or FALSE or NULL) in each of the WHEN blocks. If
+the Boolean expression is TRUE (non-zero), 4GL executes the corresponding block
+of statements.
+<P></P>
+<B>The OTHERWISE Block
+<P></P>
+</B>The OTHERWISE keyword specifies statements to be executed when 4GL does not
+find a matching WHEN block to execute. It has this syntax:
+<P></P>
+<IMG SRC="4GLREF00000115.gif" ALT="4GLREF00000115.gif" BORDER="0" WIDTH="542" HEIGHT="86">
+<P></P>
+<B>statement</B> is an SQL statement or other 4GL statement.
+<P></P>
+4GL executes the OTHERWISE block only if it cannot execute any of the WHEN
+blocks. If you include the OTHERWISE block, it must follow the last WHEN block. 
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFFOR.htm"></A></B><A HREF="4GLREFFOR.htm">FOR</A> 
+<P></P>
+<A HREF="4GLREFIF.htm">IF</A> 
+<P></P>
+<A HREF="4GLREFWHILE.htm">WHILE</A> 
+<P></P>
+</BODY>
+</HTML>

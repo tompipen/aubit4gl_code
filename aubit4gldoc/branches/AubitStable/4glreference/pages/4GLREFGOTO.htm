@@ -1,0 +1,81 @@
+<HTML>
+<HEAD>
+<TITLE>GOTO</TITLE>
+</HEAD><BODY>
+<B>GOTO
+<P></P>
+</B>The GOTO statement transfers program control to a labeled line within the same
+program block. 
+<P></P>
+<IMG SRC="4GLREF00000150.gif" ALT="4GLREF00000150.gif" BORDER="0" WIDTH="455" HEIGHT="44">
+<P></P>
+<B>label name</B>  is a statement label that you declare in a LABEL statement.
+<P></P>
+The GOTO statement transfers control of execution within a program block. Upon
+encountering this statement, 4GL jumps to the statement immediately following
+the specified LABEL statement, and resumes execution there, skipping any
+intervening statements that lexically follow the GOTO statement.
+<P></P>
+<B>These rules apply to the use of the GOTO and LABEL statements:
+<P></P>
+</B>To transfer control to a labeled line, the GOTO statement must use the same
+label name as the LABEL statement above the desired line. 
+<P></P>
+Both statements must reside in the same MAIN, FUNCTION, or REPORT block. You
+cannot use GOTO to transfer into or out of a program block.
+<P></P>
+Excessive use of GOTO statements in 4GL (or any programming language) can make
+your code difficult to read or to maintain, or can result in a loop that has
+no termination. Many situations in which you need to transfer control of program
+execution can be solved by using one of the following alternatives to the GOTO
+statement:
+<P></P>
+<A HREF="4GLREF4GL_Boolean_Expressions.htm">Boolean expressions</A> and the <A HREF="4GLREFCASE.htm">CASE</A>, <A HREF="4GLREFFOR.htm">FOR</A>, <A HREF="4GLREFIF.htm">IF</A>, and <A HREF="4GLREFWHILE.htm">WHILE</A> statements.
+<P></P>
+The <A HREF="4GLREFEXIT.htm">EXIT</A> keyword in blocks within the following statements:
+<P></P>
+<TABLE><TR VALIGN=TOP><TD><A HREF="4GLREFCASE.htm">CASE</A> 
+<BR></TD><TD><A HREF="4GLREFFOREACH.htm">FOREACH</A> 
+<BR></TD><TD><A HREF="4GLREFMENU00000455.htm">MENU</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDISPLAY_ARRAY.htm">DISPLAY ARRAY</A> 
+<BR></TD><TD><A HREF="4GLREFINPUT.htm">INPUT</A> 
+<BR></TD><TD><A HREF="4GLREFWHILE.htm">WHILE</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFFOR.htm">FOR</A> 
+<BR></TD><TD><A HREF="4GLREFINPUT_ARRAY.htm">INPUT ARRAY</A> 
+<BR></TD><TD>
+<BR>&nbsp;</TD></TR></TABLE>The <A HREF="4GLREFCONTINUE.htm">CONTINUE</A> keyword in blocks within the following statements:
+<P></P>
+<TABLE><TR VALIGN=TOP><TD><A HREF="4GLREFFOR.htm">FOR</A> 
+<BR></TD><TD><A HREF="4GLREFINPUT.htm">INPUT</A> 
+<BR></TD><TD><A HREF="4GLREFMENU00000455.htm">MENU</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFFOREACH.htm">FOREACH</A> 
+<BR></TD><TD><A HREF="4GLREFINPUT_ARRAY.htm">INPUT ARRAY</A> 
+<BR></TD><TD><A HREF="4GLREFWHILE.htm">WHILE</A> 
+<BR></TD></TR></TABLE>The <A HREF="4GLREFCALL.htm">CALL</A> statement
+<P></P>
+The <A HREF="4GLREFWHENEVER.htm#b7ca4914">WHENEVER</A> statement.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFCASE.htm"></A></B><A HREF="4GLREFCASE.htm">CASE</A> 
+<P></P>
+<A HREF="4GLREFFOR.htm">FOR</A> 
+<P></P>
+<A HREF="4GLREFFUNCTION00000443.htm">FUNCTION</A> 
+<P></P>
+<A HREF="4GLREFIF.htm">IF</A> 
+<P></P>
+<A HREF="4GLREFLABEL00000450.htm">LABEL</A> 
+<P></P>
+<A HREF="4GLREFMAIN.htm">MAIN</A> 
+<P></P>
+<A HREF="4GLREFREPORT00000465.htm">REPORT</A> 
+<P></P>
+<A HREF="4GLREFWHENEVER.htm#b7ca4914">WHENEVER</A>
+<P></P>
+<A HREF="4GLREFWHILE.htm">WHILE</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

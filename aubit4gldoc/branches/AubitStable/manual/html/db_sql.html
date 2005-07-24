@@ -1,0 +1,565 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Writing database independent SQL</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p align="center"><font size="6">Writing database independent SQL</font></p>
+<hr>
+<p align="left">Using ODBC to connect 4GL applications to different database is
+great feature, and when you are writing new code is something you can consider
+from day one, but what about existing 4GL applications, that where expected to
+work with Informix database engines, and in most cases, where using
+non-standard, Informix specific syntax?</p>
+<p align="left">You can find good documentation about deference's between Informix
+database functionality and SQL, and Oracle, DB/2 and Sybase in 4Js documentation
+and migration guides. Querix also have documentation for Oracle versus Informix.
+Since both 4Js and Querix are using native connectivity to the non-Informix
+database, instead of ODBC connectivity, be aware that depending on the
+capabilities of particular ODBC drivers that you will be using, this information
+may or may not apply.</p>
+<p align="left">The remainder of this document will consider PostgreSQL, as a
+natural choice for GNU tool like Aubit 4GL. PostgreSQL is the most advanced
+RDBMS with GPL/GNU license, and at the same time, closest to implementation and
+concepts of Informix world. After all, the Informix CTO is the same guy who
+designed the grandfather of PostgreSQL, Postgress, long time ago (see PostgreSQL
+manual for more info).</p>
+<p align="left">To compare functionality between many commercial and GNU
+database, including Informix and PostgreSQL, see <a href="http://www.mysql.com/crash-me-choode.htmy" target="_blank">http://www.mysql.com/crash-me-choose.htmy</a></p>
+<p align="left">&nbsp;</p>
+<hr>
+<h3 align="left">PostgreSQL 6.5 vs. Informix IDS 7.3</h3>
+<p align="left"><u><i>Missing syntax in supported keywords:</i></u></p>
+<p align="left">MATCHING (use LIKE)<br>
+FIRST (use LIMIT)<br>
+* (use %)<br>
+? (N/A)<br>
+(please fill blank...)</p>
+<p align="left"><u><i>Missing SQL keywords in PostgreSQL compared to Informix:</i></u></p>
+<p align="left">&nbsp;</p>
+<table border="1" width="100%">
+  <tr>
+    <td width="36%" bgcolor="#C0C0C0">
+      <p align="center"><i>Statement</i></td>
+    <td width="10%" bgcolor="#C0C0C0" align="center">
+      <p align="center"><i>Risk</i></td>
+    <td width="10%" bgcolor="#C0C0C0" align="center">
+      <p align="center"><i>SE</i></td>
+    <td width="44%" bgcolor="#C0C0C0">
+      <p align="center"><i>Alternative</i></td>
+    <td width="25%" bgcolor="#C0C0C0">
+      <p align="center"><i>Comments</i></td>
+  </tr>
+  <tr>
+    <td width="36%">ALLOCATE DESCRIPTOR</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">ALTER FRAGMENT</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">ALTER INDEX</td>
+    <td width="10%" align="center">2</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">CLOSE DATABASE</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">CONNECT</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">CREATE EXTERNAL TABLE</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">CREATE PROCEDURE</td>
+    <td width="10%" align="center">2</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">CREATE PROCEDURE FROM</td>
+    <td width="10%" align="center">2</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">CREATE ROLE</td>
+    <td width="10%" align="center">1</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">CREATE SCHEMA</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">CREATE SYNONYM</td>
+    <td width="10%" align="center">1</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">DATABASE</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">ALLOCATE DESCRIPTOR</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">DISCONNECT</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">DROP PROCEDURE</td>
+    <td width="10%" align="center">2</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">DROP ROLE</td>
+    <td width="10%" align="center">1</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">DROP SYNONYM</td>
+    <td width="10%" align="center">1</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">EXECUTE (..all..)</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">FLUSH</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">FREE</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">GET (..all..)</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">INFO</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">OPEN</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">OUTPUT</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">PREPARE</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">PUT</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">RENAME (..all..)</td>
+    <td width="10%" align="center">2</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">SET (..some..)</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">START VIOLATIONS TABLE</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">STOP VIOLATIONS TABLE</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">UNLOAD</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">UNLOCK TABLE</td>
+    <td width="10%" align="center">2</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">WHENEVER</td>
+    <td width="10%" align="center">0</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="36%">&nbsp;</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="10%" align="center">&nbsp;</td>
+    <td width="44%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+</table>
+<p align="left"><i>Notes:</i></p>
+<p align="left"><i>Many SQL statements where never executable from 4GL syntax
+(some additions to this functionality where made in I4GL 7.3/D4GL 3.0),
+and needed to be prepared anyway. And what you can prepare, you can still
+execute, of course against Informix engine, but not against PostgreSQL.</i></p>
+<p align="left">Many of this statements do not appear in Informix SE engines,
+and most of 4GL code that I know about is SE compatible</p>
+<p align="left">Options:</p>
+<p align="left">1) Use Informix syntax (which most other SQL's recognize except for 'outer').
+If we want to get nasty, we can even add missing Informix syntax to PostgreSQL, this
+is what the OpenSource is for after all..</p>
+<p align="left">2) or you prepare it first (in which case the 4gl doesn't interpret the
+SQL and passes it straight back into ODBC) Good for new code, bad for old code, bad for coders, a lot of work.</p>
+<p align="left">Some of the missing keywords outlined are not used, eg 'CLOSE DATABASE' would be done via ODBC so its not an issue.
+Most of them are very Informix specific.</p>
+<p align="left">EXECUTE statement_id is not really part of the engine in Informix, and as
+such, it should work with prepared statements. EXECUTE procedure is a different story!</p>
+<p align="left">The syntax for the SQL in relatively unimportant, provided it can be read by
+the SQL parsing bit, have a look at sql*.rule</p>
+<p align="left">Most of the time its very simple to add statements in there, could even
+using #defs for specifics if you want:</p>
+<blockquote>
+  <p align="left">#ifdef POSTGRES_TARGET<br>
+	...<br>
+  #endif</p>
+</blockquote>
+<p align="left">Then allow the user to specify which syntaxes it compiler will allow,
+whether the ODBC server will allow it is up to the developer to a large extent....</p>
+<p align="left">Alternatively go with the SQL standard mechanisms and BAN any extensions....!</p>
+<p align="left">I want to keep some degree of DBMS portability, allowing POSTGRESS only
+syntax is fine, INFORMIX only syntax etc. I suppose issuing a warning may be the best bet if the compiler encounters non-standard SQL...</p>
+<p align="left">&nbsp;</p>
+<p align="left"><u><i>Keywords existing in both Informix and PostgreSQL</i></u></p>
+<table border="1" width="100%">
+  <tr>
+    <td width="25%" bgcolor="#C0C0C0">
+      <p align="center"><i>statement</i></td>
+    <td width="25%" bgcolor="#C0C0C0">
+      <p align="center"><i>supported keywords</i></td>
+    <td width="25%" bgcolor="#C0C0C0">
+      <p align="center"><i>unsupported keywords</i></td>
+    <td width="25%" bgcolor="#C0C0C0">
+      <p align="center"><i>comments</i></td>
+  </tr>
+  <tr>
+    <td width="25%">ALTER TABLE</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">BEGIN WORK</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">CLOSE</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">CLOSE DATABASE</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">COMMIT WORK</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">CREATE DATABASE</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">CREATE INDEX</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">CREATE TABLE</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">CREATE TRIGGER</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">CREATE VIEW</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">DECLARE</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">DELETE</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">DROP DATABASE</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">DROP INDEX</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">DROP TABLE</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">DROP TRIGGER</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">DROP VIEW</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">FETCH</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">GRANT</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">INSERT</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">LOAD</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">LOCK TABLE</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">REVOKE</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">ROLLBACK WORK</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">SELECT</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">SET</td>
+    <td width="25%">&nbsp;(..some..)</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%">UPDATE</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+    <td width="25%">&nbsp;</td>
+  </tr>
+</table>
+<p><i>Notes:</i></p>
+<p>&nbsp;</p>
+<hr>
+<h3 align="left">Converting database schema from Informix to PostgreSQL</h3>
+
+<p align="left">Actually, I did it by hand.  I took the output of dbschema and modified
+it to match PostgreSQL syntax.</p>
+
+<p align="left"><u><i>Example, PG table definition:</i></u></p>
+
+<blockquote>
+<p align="left">create sequence caltype_seq start1;<br>
+create table caltype<br>
+  (<br>
+    caltype_nmbr int4 default nextval('caltype_seq'),<br>
+    ctype char(2),<br>
+    descr varchar(21),<br>
+    rpt_desc varchar(8),<br>
+    evntnmbr int4<br>
+  );<br>
+<br>
+create unique index caltype_idx on caltype (caltype_nmbr);<br>
+<br>
+create unique index caltype_ctype_idx on caltype<br>
+    (ctype);<br>
+create index caltype_evnt_idx on caltype (evntnmbr);</p>
+
+</blockquote>
+<p align="left">Same Table with Informix:</p>
+
+<blockquote>
+<p align="left">create table caltype<br>
+  (<br>
+    caltype_nmbr serial not null ,<br>
+    ctype char(2),<br>
+    descr char(21),<br>
+    rpt_desc char(8),<br>
+    evntnmbr integer<br>
+  );<br>
+<br>
+create unique index caltype_idx on caltype (caltype_nmbr);<br>
+<br>
+create unique index caltype_ctype_idx on caltype<br>
+    (ctype);<br>
+create index caltype_evnt_idx on caltype (evntnmbr);</p>
+
+</blockquote>
+<p align="left">The only real difference is in handling the serial number.  I'm not sure
+I will continue to use varchar.  I understand there may be a performance hit with it.</p>
+
+<p align="left">I'm not having difficulty with NULLs in the database though I'm not happy
+with how I had to load it.  I was not able to use the copy command on the results of an Informix unload.  I had to write a 4GL report to format the
+data so PostgreSQL would not ralph on the first null date or decimal<br>
+field it tried to load.</p>
+
+<p align="left">&nbsp;</p>
+
+</body>
+
+</html>
+

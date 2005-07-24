@@ -1,0 +1,1119 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>FAQ</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+
+<h2>Documentation errata:</h2>
+<h2>Miscellaneous notes and information, not in manual, and manual corrections.</h2>
+<p>This document contains temporary place to list notes and documentation that
+is not currently in the manual, and corrections for incorrect information in
+manuals. They will be removed as they are migrated to manual. Please se manual
+for updates.</p>
+<hr>
+<h3>Aubit equivalent of 4js --# comment, or &quot;#IFDEF AUBIT4GL&quot;
+functionality</h3>
+<p>Aubit will ignore this two special cases of comments:</p>
+<p> {!<br>
+&nbsp;&nbsp;&nbsp; message &quot;you will see this only if you compiled 4gl
+program using Aubit 4gl&quot;<br>
+ }</p>
+<p>and&nbsp;</p>
+<p>--! message &quot;you will see this only if you compiled 4gl program using
+Aubit 4gl&quot;</p>
+<p>--! is also ignored by Aubit form compiler, fcompile.</p>
+<p>Aubit will ignore them as a comment and pass through that code. This is very useful
+for preserving compatibility between different x4GL compilers, especially when
+you want to use Aubit specific statements, that are not understood by other
+compilers. For example, following function will returned &quot;1&quot; only if
+compiled with Aubit 4gl compiler:</p>
+<p>#identify that we are running on Aubit 4gl:<br>
+ FUNCTION compiler_is_a4gl()<br>
+ 	{!<br>
+	 RETURN 1<br>
+	 !}<br>
+	 RETURN 0<br>
+ END FUNCTION</p>
+<p>--! is aubit4gl specific. It doesn't get ignored by Aubit4gl&nbsp;</p>
+<hr>
+<h3>Aubit extension to ERROR statement:</h3>
+<p>ERROR &quot;something&quot; WAIT FOR ANY KEY&nbsp;</p>
+<p>Will display &quot;something&quot;, and ask user to press any key - at least in GUI mode - yet to do the TUI</p>
+<hr>
+<h3>Core dumps debugging notes</h3>
+<p>Please attempt to fix bugs before reporting them (but do report them if you can't fix them).</p>
+<p>Bug reports, fixes, and patches should go to the developers list in "diff -p -c3" or "diff -p -u3" format.</p>
+<p> All the 4gl code now compiles with '-g' by default (or at least it did). This means that the gdb debugger can be used.</p>
+<p>If you get a core dump, do a&nbsp;</p>
+<p>$ gdb 4glc<br>
+gdb> set args myfile.4gl<br>
+gdb> run<br>
+..<br>
+gdb> bt<br>
+...</p>
+<p>On CygWin, in CUI mode, this just freezes with message:</p>
+<p>&quot;Starting program: 4glc.exe hello.4gl"</p>
+<p>Your probably not doing this - but just to make sure: in gdb you can't</p>
+<p>gdb 4glc.exe hello.4gl</p>
+<p>you have to use the &quot;set args&quot; , otherwise it tries to read hello.4gl as a core dump...</p>
+<p>You can use &quot;gdb --nw&quot; to run debugger in CUI mode, not GUI</p>
+<p>gdb --nw 4glc.exe 4glc.exe.stackdump</p>
+<p>Output of typical debugging session:</p>
+<p>(gdb) set args hello.4gl<br>
+(gdb) run<br>
+Starting program: /usr/aubit/aubit4glsrc/bin/4glc hello.4gl<br>
+<br>
+Program received signal SIGSEGV, Segmentation fault.<br>
+0x804b5d9 in yyparse () at /usr/lib/bison.simple:248<br>
+248          YYPARSE_PARAM_DECL<br>
+<br>
+<br>
+(gdb) bt<br>
+#0  0x804b5d9 in yyparse () at /usr/lib/bison.simple:248<br>
+#1  0x805c97d in main ()<br>
+#2  0x400abcb3 in __libc_start_main (main=0x805c7b0 &lt;main>, argc=2,<br>
+    argv=0xbffff564, init=0x804a840 &lt;_init>, fini=0x8084dec &lt;_fini>,<br>
+    rtld_fini=0x4000a350 &lt;_dl_fini>, stack_end=0xbffff55c)<br>
+    at ../sysdeps/generic/libc-start.c:78</p>
+<p>FIXME : debug.out description (DEBUG=ALL)</p>
+<p>All I can suggest is putting in some debug (&quot;Got to here..") in the code
+(around the call to yyparse..) and see if you can narrow it down. It may be memory corruption too, have a look for dmalloc in
+freshmeat...</p>
+<hr>
+<h3>Note about running A4GL compiled programs in non-interactive mode</h3>
+<p>The control characters are used to move the cursor etc on your 'terminal'. If you want to get rid - set the NOCURSES environment
+variable</p>
+<p>$ NOCURSES=Yes<br>
+$ export NOCURSES</p>
+<p>and then run it..</p>
+<p>YOU WILL NOT BE ABLE TO USE ANY SCREEN IO COMMANDS</p>
+<p>(no error/message/menu/display .. at). You can use&nbsp;</p>
+<p>DISPLAY "All OK"</p>
+<p>(With no TO or AT - this is a line mode command).</p>
+<hr>
+<h3>Note about selecting GTK GUI themes:</h3>
+<p>To enable the theme, put the following in ~/.gtkrc:</p>
+<p>module_path "/usr/lib/gtk/themes/engines"<br>
+include &quot;/usr/share/themes/Handheld/gtk/gtkrc&quot;</p>
+<p>To build themes (iPaq Linux):</p>
+<p>./configure --prefix=/usr --target=arm-linux</p>
+<p>This will produce a DSO which is the theme engine. You must copy the .so files to:</p>
+<p>/usr/lib/gtk/themes/engines/</p>
+<p>and the gtkrc file in Themes/ into:</p>
+<p>/usr/share/themes/Handheld/gtk/</p>
+<p>Then, to enable it, put the following in your</p>
+<p>~/.gtkrc</p>
+<p>include &quot;/usr/share/themes/Handheld/gtk/gtkrc&quot;</p>
+<hr>
+<h3>Notes about RPC in Aubit 4gl</h3>
+<p>Just how much exactly is RPC built in Aubit compatible with other RPC
+implementations?</p>
+<p>I'm thinking about RPC calls between different languages; for example:</p>
+<p>If I can do RPC from PHP code to Aubit, I can make really impressive web
+browser database applications using PHP to write presentation logic, and still call exiting 4gl code, stripped of
+presentation logic.</p>
+<p>It seems that XML-RPC is becoming standard RPC in OpenSource community, and
+it's available for many different languages, there is even client for MSIE browser.
+See here:</p>
+<p><a href="http://www.xmlrpc.com/">http://www.xmlrpc.com/</a></p>
+<p><a href="http://xmlrpc.usefulinc.com/php.html">http://xmlrpc.usefulinc.com/php.html</a></p>
+<p><a href="http://xmlrpc-c.sourceforge.net/">http://xmlrpc-c.sourceforge.net/</a></p>
+<p><a href="http://xmlrpc-epi.sourceforge.net/">http://xmlrpc-epi.sourceforge.net/</a></p>
+<p> Did you try RPC between Aubit and anything else?</p>
+<p>RPC in aubit 4gl is sun's ONC/RPC (this is the one used for NFS), there are a
+lot of different RPC implementations, all of which are completely incompatible.</p>
+<p>In particular, aubit4gl only implements one service, one specific to aubit4gl. Therefore - you can't even call non-aubit4gl sun onc/rpc
+functions!</p>
+<p>If you want XML/RPC (or SOAP as it used to be called I think) - you can always implement it as a C module, within a 4GL function wrapper - you'll
+see a lot of this in assist.4gl :</p>
+<p>FUNCTION myfunc()<br>
+DEFINE a INTEGER<br>
+code<br>
+some_c_function();<br>
+endcode<br>
+END FUNCTION</p>
+<p>RPC to PHP:</p>
+<p><a href="http://www.xmlrpc.com/">http://www.xmlrpc.com/</a></p>
+<p><a href="http://xmlrpc.usefulinc.com/php.html">http://xmlrpc.usefulinc.com/php.html</a></p>
+<p><a href="http://xmlrpc-c.sourceforge.net/">http://xmlrpc-c.sourceforge.net/</a></p>
+<p><a href="http://xmlrpc-epi.sourceforge.net/">http://xmlrpc-epi.sourceforge.net/</a></p>
+<hr>
+<h3>File names extension conventions for Aubit 4gl</h3>
+<p>Source files:</p>
+<ul>
+  <li>4gl</li>
+  <li>per</li>
+  <li>msg</li>
+</ul>
+<p>Intermediate:</p>
+<ul>
+  <li>glb</li>
+  <li>mnu</li>
+  <li>c</li>
+  <li>h</li>
+</ul>
+<p>Objects:</p>
+<ul>
+  <li>ao</li>
+  <li>aox</li>
+  <li>frm</li>
+  <li>hlp</li>
+</ul>
+<p>Executable</p>
+<ul>
+  <li>4ae</li>
+</ul>
+<hr>
+<h3>Aubit programs, compilers and utilities exit codes</h3>
+<p><i><u>All 4glc exit error codes:</u></i></p>
+<table border="1" width="100%">
+  <tr>
+    <td width="50%">Unable to open map file<br>
+      #if (only_doing_globals ())<br>
+      #yyerror (err);&nbsp;<br>
+      Out of stack&nbsp;<br>
+      Couldnt open output file&nbsp;<br>
+      Couldnt open globals fil&nbsp;<br>
+      Internal error setting whenever error&nbsp;<br>
+      No input&nbsp;<br>
+      No input&nbsp;<br>
+      Usage %s filename[.4gl]&nbsp;<br>
+      Error opening file :&nbsp;<br>
+      #  x = yyparse ();   closemap ();&nbsp;<br>
+      Error compiling %s.4gl - check %s.err&nbsp;<br>
+      ID %s is unknown to the template				0<br>
+      List are different length						0</td>
+    <td width="50%">1<br>
+      0<br>
+      0<br>
+      0<br>
+      0<br>
+      7<br>
+      0<br>
+      0<br>
+      0<br>
+      1<br>
+      1<br>
+      x<br>
+      2<br>
+      0<br>
+      0</td>
+  </tr>
+</table>
+<p><i><u>All 4glpc exit codes:</u></i></p>
+<table border="1" width="100%">
+  <tr>
+    <td width="68%">Cannot find /etc/a4glrc, $AUBITDIR/etc/.a4glrc or $HOME/.a4glrc&nbsp;<br>
+      Cannot find $A4GLRC&nbsp;<br>
+      help messages&nbsp;<br>
+      per compile error (from fcompile) $err_code<br>
+      No C files to compile.&nbsp;<br>
+      all errors after 4glc $err_code<br>
+      all errors after CC $err_code<br>
+      4glc not returned error code, but .c file was not generated&nbsp;<br>
+      4gl file not found&nbsp;</td>
+    <td width="32%">5<br>
+      5<br>
+      6<br>
+      $<br>
+      8<br>
+      $<br>
+      $<br>
+      9<br>
+      10</td>
+  </tr>
+</table>
+<p>fcompile</p>
+<p>mkmess</p>
+<p>runtime</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<h3>Note about 4glc performance</h3>
+<p>4glc compiler is from user perspective not very fast as configured by default.
+This is because&nbsp;</p>
+<p>1) you made me put in all those reserved words and extra '+' which have pushed it up to 500 odd
+reduce/reduce's</p>
+<p>2) Its compiled with -g</p>
+<p>There is currently no way to disabel -g in 4glpc. I wonder if this is really needed as
+defailt:</p>
+<p>if [ "$COMSPEC" = "" ]<br>
+ 			then<br>
+ 				GCC=${GCC:-"cc -O -g "}<br>
+ 			else<br>
+ 				GCC=${GCC:-"gcc -O -g "}<br>
+&nbsp;fi</p>
+<p>when we have -debug flag for 4glpc ? Especially when compiling large ammounts of code, I'm interested in -g only if it fails?</p>
+<p> Like, I do a first run wothout -debug, and it's fast, and it compiles what it compiles. Now I know the rest will fail, so I use -debug...</p>
+<p>No, the debug stuff is compiled into the compiler - nothing to do wth what you're compiling... You could have two 4glc's
+though...</p>
+<p> 3) Its compiled with bison --debug</p>
+<p> This is in 4glc makefiles - this affect 4glc speed only at run-time.</p>
+<p>Try setting YYDEBUG=1</p>
+<p>as an environment variable and you'll see its effect...</p>
+<p>4) You've probably got DEBUG=ALL set</p>
+<p>What exactly does this do? My understanding is that it is usefull only together with -g ?</p>
+<p>Its my internal debugging (-g is gdb debugging), its what produces the debug .out file</p>
+<p>It'll be a lot faster when we're happy that 4glc is working properly.</p>
+<p>This is a gprof output for 4glc You can see most o the time is spent in yyparse (which is generated by bison)
+I may be able to trim a little in 'words' and 'chk_word' - but your dodgey syntax is costing the time !</p>
+<p>Each sample counts as 0.01 seconds.<br>
+  %   cumulative   self              self     total<br>
+ time   seconds   seconds    calls  us/call  us/call  name<br>
+ 45.26      0.43     0.43        1 430000.00 909473.68  yyparse<br>
+ 23.16      0.65     0.22  1336578     0.16     0.17  words<br>
+ 21.05      0.85     0.20     2626    76.16   175.17  chk_word<br>
+  3.16      0.88     0.03     4878     6.15     8.20  read_word2<br>
+  3.16      0.91     0.03                             chk_str_resource<br>
+  1.05      0.92     0.01    53487     0.19     0.19  mja_fgetc<br>
+  1.05      0.93     0.01     2910     3.44     3.44  print_space<br>
+  1.05      0.94     0.01      380    26.32    26.32  turn_state<br>
+  1.05      0.95     0.01                             set_line<br>
+  0.00      0.95     0.00    40419     0.00     0.00  ccat<br>
+  0.00      0.95     0.00     4878     0.00     8.20  read_word<br>
+  0.00      0.95     0.00     2925     0.00     3.42  printc<br>
+  0.00      0.95     0.00     2851     0.00     0.00  printcomment<br>
+  0.00      0.95     0.00     2626     0.00     0.00  set_str<br>
+  0.00      0.95     0.00     2626     0.00   175.17  yylex<br>
+  0.00      0.95     0.00     1671     0.00     0.00  mk_word<br>
+  0.00      0.95     0.00     1632     0.00     0.85  pr_when_do<br>
+  0.00      0.95     0.00     1427     0.00     0.00  check_for_constant<br>
+  0.00      0.95     0.00     1123     0.00     0.00  isnum<br>
+  0.00      0.95     0.00     1014     0.00     0.00  scan_variables<br>
+  0.00      0.95     0.00     1010     0.00     0.00  strip_bracket<br>
+  0.00      0.95     0.00      846     0.00     0.00  scan_variable<br>
+  0.00      0.95     0.00      764     0.00     0.00  downshift<br>
+  0.00      0.95     0.00      722     0.00     0.00  mja_ungetc<br>
+  0.00      0.95     0.00      717     0.00     0.00  find_type<br>
+  0.00      0.95     0.00      440     0.00     0.00  addmap<br>
+  0.00      0.95     0.00      257     0.00     0.00  inc_counter<br>
+  0.00      0.95     0.00      252     0.00    37.59  start_state<br>
+  0.00      0.95     0.00      230     0.00     0.00  start_bind<br>
+  0.00      0.95     0.00      204     0.00    13.68  prchkerr<br>
+  0.00      0.95     0.00      169     0.00     0.00  add_bind<br>
+  0.00      0.95     0.00      137     0.00     0.00  get_counter_val<br>
+  0.00      0.95     0.00      128     0.00     0.00  add_variable<br>
+  0.00      0.95     0.00      123     0.00     0.00  dec_counter<br>
+  0.00      0.95     0.00      117     0.00     0.00  isin_command<br>
+  0.00      0.95     0.00      114     0.00     3.00  print_variable<br>
+  0.00      0.95     0.00      114     0.00     0.00  push_name<br>
+  0.00      0.95     0.00       91     0.00     0.00  push_type<br>
+  0.00      0.95     0.00       73     0.00     0.00  reset_counter<br>
+  0.00      0.95     0.00       68     0.00    16.69  print_bind<br>
+  0.00      0.95     0.00       46     0.00     0.00  setinc<br>
+  0.00      0.95     0.00       45     0.00     0.00  ispdf<br>
+  0.00      0.95     0.00       42     0.00     0.00  how_many_in_bind<br>
+  0.00      0.95     0.00       41     0.00     3.42  print_bind_pop1<br>
+  0.00      0.95     0.00       40     0.00     0.00  get_curr_rep_name<br>
+  0.00      0.95     0.00       39     0.00     4.73  pop_blockcommand<br>
+  0.00      0.95     0.00       39     0.00     3.16  push_blockcommand<br>
+  0.00      0.95     0.00       23     0.00     0.00  expand_bind<br>
+  0.00      0.95     0.00       22     0.00     0.00  dump_vars<br>
+  0.00      0.95     0.00       22     0.00    19.89  print_variables<br>
+  0.00      0.95     0.00       22     0.00     0.00  system_var<br>
+  0.00      0.95     0.00       20     0.00     0.00  clr_variable<br>
+  0.00      0.95     0.00       20     0.00     3.93  incprint<br>
+  0.00      0.95     0.00       19     0.00     0.00  get_bind_cnt<br>
+  0.00      0.95     0.00       19     0.00    16.19  print_param<br>
+  0.00      0.95     0.00       19     0.00     3.42  print_rep_ret<br>
+  0.00      0.95     0.00       18     0.00     0.00  iscontinuecmd<br>
+  0.00      0.95     0.00       18     0.00     0.00  set_variable<br>
+  0.00      0.95     0.00       14     0.00     0.00  convstrsql<br>
+  0.00      0.95     0.00       14     0.00     0.00  pop_record<br>
+  0.00      0.95     0.00       14     0.00     6.84  print_record<br>
+  0.00      0.95     0.00       14     0.00     0.00  push_bind_rec<br>
+  0.00      0.95     0.00       14     0.00     0.00  push_record<br>
+  0.00      0.95     0.00       11     0.00     0.00  drop_counter<br>
+  0.00      0.95     0.00       11     0.00     0.00  new_counter<br>
+  0.00      0.95     0.00       10     0.00     0.00  pop_all_gen<br>
+  0.00      0.95     0.00        9     0.00     6.84 add_continue_blockcommand<br>
+  0.00      0.95     0.00        8     0.00     0.00  set_curr_block<br>
+  0.00      0.95     0.00        7     0.00     0.00  bname<br>
+  0.00      0.95     0.00        7     0.00     3.42  push_report_block<br>
+  0.00      0.95     0.00        6     0.00     0.00  matoi<br>
+  0.00      0.95     0.00        6     0.00     0.00  push_gen<br>
+  0.00      0.95     0.00        5     0.00     0.00  attr_code<br>
+  0.00      0.95     0.00        5     0.00     0.00  colour_code</p>
+<hr>
+<h3>&quot;loadmap&quot; uttility</h3>
+<p> in 4glpc there is a call to &quot;loadmap&quot;. It can be very useful. This
+is listing of loadmap.4gl</p>
+<p># Change to the database on the following line to point to the<br>
+# database you wish to store your mapfile data in&nbsp;</p>
+<p>database informix<br>
+main<br>
+define l_fname char(64)<br>
+<br>
+if num_args() > 0 then<br>
+   let l_fname=arg_val(1)<br>
+   delete from acl_map where map_module=l_fname<br>
+   load from l_fname insert into acl_map<br>
+   if status &lt;> 0 then<br>
+      exit program<br>
+   end if<br>
+else<br>
+   display "No file to load"<br>
+end if<br>
+<br>
+end main</p>
+<p>Remember - this is only an example of what you can do with the map files.</p>
+<hr>
+<h3>Note about PRETTYC in 4glpc</h3>
+<p> 3) What's the story with "indent" and "$PRETTYC"  ?</p>
+<p>When you've got a problem with the C code its quite nice to run it through 'indent' to get the indentation right. (Theres a lot of beautifier programs -
+so you could specify an alternative with PRETTYC).</p>
+<p>This takes a while though and doesn't actually do anything useful normally..</p>
+<p>Should really be something like :</p>
+<p>PRETTYC=${PRETTYC:indent}<br>
+if [ "$AUTOINDENT" = "Y" ]<br>
+then<br>
+	$PRETTYC $fname.c<br>
+fi</p>
+<hr>
+<h3>Correction of fcompile command line usage</h3>
+<p>fcompile [-c] formname[.per] [path/compiledform.ext]</p>
+<p>-c will compile form to C code, instead to .afr file</p>
+<p>compiling forms to C code</p>
+<p>The fcompile -c should compile down to C code - I'll have to investigate why thats bits not working - but thats not
+what most people want. They want the .frm's and not to use the 'form_is_compiled' function..</p>
+<hr>
+<h3>Notes / reminders about missing documentation</h3>
+<p>FIXME: glb files description and usage, lookup paths?</p>
+<p>FIXME: how Aubit finds form files, help files ($DBPATH ?)</p>
+<p>FIXME: explain ussage of _variable(xxx)</p>
+<p>FIXME: new syntax in hello_gui and gui forms</p>
+<p>4gl reference:</p>
+<p>FIXME: remove all "see..." pages</p>
+<p>FIXME: Add Aubit and 4Js specifics</p>
+<p>FIXME: way to : search, add anottations</p>
+<hr>
+<p> DBPATH should now be implemented</p>
+<p>It's tested for forms - but for help files?</p>
+<hr>
+<h3>Note about &quot;Attribute already used&quot; warning in fcompile</h3>
+<p>Compiling form P109.per<br>
+Attribute already used</p>
+<p>I think its a mistake in the compiler when there is a field thats  'LIKE' a table/column.
+</p>
+<p>No, it's actally ATTRIBUTE=(green, green)</p>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+
+
+<p align="center"><font size="6"><a name="FAQ - top of page">FAQ</a></font></p>
+<hr>
+<ul>
+  <li><a href="#I'm compiling a 4GL program using fglc, not fglpc, and I see this messages:">I'm compiling a 4GL program using
+    fglc, not fglpc, and I see &quot;Start state attribute 1&quot;
+    messages</a></li>
+  <li><a href="#Can I use Aubit compiled program as CGI for my web server?">Can I use Aubit compiled program as CGI for my web server?</a></li>
+  <li><a href="#What is NCURESES, and what is it used for in Aubit 4GL?">What is
+    NCURESES, and what is it used for in Aubit 4GL?</a></li>
+  <li> <a href="#What about loadmap.4gl? Is it needed? How is it used and what for"> What about loadmap.4gl? Is it needed? How is it used and what for?</a></li>
+  <li><a href="#ODBC related">ODBC related Q &amp; A</a></li>
+  <li><a href="#Is Aubit 4GL thread-safe?">Is Aubit 4GL thread-safe?</a></li>
+  <li> <a href="#Ok, first project will be...err...Java GUI client for Aubit 4gl! Where do we start?"> Ok, first project will be Java GUI client for Aubit 4gl! Where do we start?</a></li>
+  <li><a href="#What is thing called Bison doing with Aubit 4GL?">What is thing called Bison doing with Aubit 4GL?</a></li>
+  <li><a href="#What about directory structure of source distribution?">What about directory structure of source distribution?</a></li>
+  <li><a href="#I get core dump when trying to compile 4gl program. How can I find out where is the problem?">I get core dump when trying to compile 4gl program. How can I find out
+    where is the problem?</a></li>
+  <li><a href="#When trying to compile the compiler, I get macro `wattr_get' used with just one arg:">When trying to compile the compiler, I get &quot;macro
+    `wattr_get' used with just one arg&quot;</a></li>
+  <li><a href="#I've already got normal CVS - is there anyway of pulling that into use for development CVS repository access">I've already got normal CVS - is there anyway of pulling that into use for
+    development?</a></li>
+  <li><a href="#Is there any way I can not use Keystone?">Is there any way I can not use Keystone?</a></li>
+  <li><a href="#How about x4GL and PHP? Is there a library for 4GL constructs?">How about x4GL and PHP? Is there a library for 4GL constructs?</a></li>
+  <li><a name="Q: Can I compile Aubit 4gl on Windows?" href="#Q: Can I compile Aubit 4gl on Windows?">Can
+    I compile Aubit 4gl on Windows?</a></li>
+  <li><a href="#How should makefiles for Aubit 4gl look like?">How should
+    makefiles for Aubit 4gl look like?</a></li>
+  <li><a href="#What GUI options, other then GTK+ ?">What GUI options, other
+    then GTK+ ?</a></li>
+  <li><a href="#Is there any compatibility between Aubit 4gl and 4Js 4gl extended syntax?">Is
+    there any compatibility between Aubit 4gl and 4Js 4gl extended syntax?</a></li>
+  <li><a href="#What format are compiled forms in, and how is Aubit4gl using XDR and RPCGEN?">What
+    format are compiled forms in, and how is Aubit4gl using XDR and RPCGEN?</a></li>
+  <li><a href="#Can I run Aubit 4gl applications over the Internet, inside my web browser?">Can
+    I run Aubit 4gl applications over the Internet, inside my web browser?</a></li>
+</ul>
+<p><font color="#FF0000">Please also see Phorum group dedicated to Aubit 4gl,
+for more questions and answers, at <a href="http://www.falout.com">www.falout.com</a></font></p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<p><span style="background-color: #00FF00">Q:</span>  <a name="I'm compiling a 4GL program using fglc, not fglpc, and I see this messages:"> I'm compiling a 4GL program
+using fglc, not fglpc, and I see this messages:</a>
+</p>
+<blockquote>
+<p>4glc hello.4gl<br>
+ Start state attribute 1<br>
+ Start state attribute 0<br>
+ Start state attribute 1<br>
+ Start state attribute 0
+</p>
+</blockquote>
+<p>What are they?
+</p>
+<p><span style="background-color: #00FF00">A:</span> As for the 'Start state's have a look in the states.c file (probably in
+4glc/generated or 4glc/rules/generated)
+They should not be printed in user versions and were for me during
+development of the compiler....
+</p>
+<p> The 'states' messages are there because of the menu command - which invokes the states for control keys (eg. f1, f2, control-x etc).
+Its about the lexer, take the following
+</p>
+<blockquote>
+<p>
+define f1 integer			(1)<br>
+menu<br>
+	command key(f1) ...	(2)<br>
+..
+</p>
+</blockquote>
+<p>
+in (2) f1 should be function-key-f1, in (1) it should be a variable name.
+</p>
+<p>
+States are when certain keywords can be accepted. so there is a 'state' for
+command keys etc.
+The messages shouldn't be printed though...
+</p>
+<p>
+<a href="#FAQ - top of page">Back to top</a>
+</p>
+<hr>
+<p><span style="background-color: #00FF00">Q: </span><a name="Can I use Aubit compiled program as CGI for my web server?">Can I use Aubit compiled
+program as CGI for my web server?</a></p>
+<p><span style="background-color: #00FF00">A:&nbsp;</span> Yes. But, there's the bit about taking input from a page into 4gl
+variables.There is also a small matter of invoking 4gl program from WWW server. How do you make program execute when you put URL,
+say, <a href="http://www.falout.com/cgi-bin/myprog"> www.falout.com/cgi-bin/myprog</a>
+when myprog is Aubit 4gl compiled code, like your HTML example, and get page displayed in your browser?</p>
+<p> If you cannot take input, how different is this from executing the same 4gl code in any other 4gl compiler?</p>
+<p>You can invoke you normally by putting it in your cgi bin directory exactly as
+you say, using the NOCURSES bit disables all the screen setup control codes (eg. clear screen, move curses to top left, etc etc).</p>
+<p>How would that call look?</p>
+<p><a href="http://www.falout.com/cgi-bin/myprog?NOCOURSES=1?param3?param3">www.falout.com/cgi-bin/myprog?NOCOURSES=1?param3?param3</a></p>
+<p>If I was using it in a CGI mode - I'd probably have a shell script wrapper than passing the NOCURSES in the CGI call:</p>
+<blockquote>
+<p>#!/bin/sh<br>
+	cat - | my4glprog NOCURSES= $@</p>
+</blockquote>
+<p>(or something similar anyway)</p>
+<p>Pity it would not attempt to output regular screen interactions as HTML, but that would probably not make sense anyway since HTML is page
+oriented, so no action before you submit the whole page... Try 4Js CLI-HTML or Querix HTML stuff.</p>
+<p>The other difference between this and other 4gls doing the same thing is that
+you can embed C code into your own to do virtually anything you want, look at example for that 'list' function - try doing that in
+4gl.</p>
+<p>The input should be simple too, I'll have a look later at implementing the reading for GET and POST and see what I can
+find. I was only using this as an example - but it could be useful to provide a fuller example..!</p>
+<p> For existing 4gl code it simply does not make sense. The fact that you must operate on the page, not
+field level, is forcing rewrite of most user interaction logic, so about 30 % of code at least. And it's not easy, and it breaks
+compatibility. If you write from scratch, then you now have tools like PHP, that are simply FANTASTIC for this task.</p>
+<p>Maybe you should forget this HTML stuff for anything but reports. In reports, as Querix is doing, HTML output is really cool.</p>
+<p>And after all, HTML is/was designed to be static, and reports are static. Otherwise, I see XML and/or JavaScript as OK for interaction,
+but I really fell we need real Java applet to run presentation logic for real field level operations, like lookup, pop-up windows, input
+validation with sub-queries after input on field level, etc...&nbsp;</p>
+<p>But CGI can be complicated, it may be quite easy to write a little library to help the novice do this in 4GL rather than C or shell scripts directly.
+I repeat - No screen interactions (ie any thing needing keypresses)- these are in fact prohibited in this
+mode.</p>
+<p>Heres an example that could be used for generating HTML pages...</p>
+<blockquote>
+  <p>simple_html.4gl:</p>
+  <p><br>
+  #################################################<br>
+  # When run - use the environment variable 'NOCURSES'<br>
+  # or the command line 'simple_html NOCURSES=YES'<br>
+  # when running to avoid the normal screen setup<br>
+  <br>
+  main<br>
+  &nbsp;&nbsp;&nbsp; call display_page()<br>
+  end main<br>
+  <br>
+  function display_page()<br>
+  &nbsp;&nbsp;&nbsp; display "&lt;html>"<br>
+  &nbsp;&nbsp;&nbsp; call head()<br>
+  &nbsp;&nbsp;&nbsp; call body()<br>
+  &nbsp;&nbsp;&nbsp; display "&lt;/html>"<br>
+  end function<br>
+  <br>
+  function head()<br>
+  &nbsp;&nbsp;&nbsp; display "&lt;head>"<br>
+  &nbsp;&nbsp;&nbsp; call title("Aubit 4GL")<br>
+  &nbsp;&nbsp;&nbsp; display "&lt;/head>"<br>
+  end function<br>
+  <br>
+  function body()<br>
+  &nbsp;&nbsp;&nbsp; call heading("Overview",1)<br>
+  &nbsp;&nbsp;&nbsp; # need these in reverse order because of the 4GL stack....<br>
+  &nbsp;&nbsp;&nbsp; call list("Item3","Item2","Item1")<br>
+  end function<br>
+  <br>
+  <br>
+  function heading(p_string,p_level)<br>
+  &nbsp;&nbsp;&nbsp; define p_string char(512)<br>
+  &nbsp;&nbsp;&nbsp; define p_level integer<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; display "&lt;H",p_level using "&lt;&lt;&lt;",">",p_string clipped,<br>
+  &nbsp;&nbsp;&nbsp; "&lt;/H",p_level using "&lt;&lt;&lt;",">"<br>
+  <br>
+  end function<br>
+  <br>
+  function title(p_string)<br>
+  &nbsp;&nbsp;&nbsp; define p_string char(512)<br>
+  &nbsp;&nbsp;&nbsp; define p_level integer<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; display "&lt;title>",p_string clipped,"&lt;/title>"<br>
+  <br>
+  end function<br>
+  <br>
+  <br>
+  # This have a variable number of parameters<br>
+  # so we'll have to pop them off in C<br>
+  # NOTE: List is in reverse order - thats the order they will be pulled<br>
+  # off the stack..<br>
+  #<br>
+  code<br>
+  &nbsp;&nbsp;&nbsp; aclfgl_list(int a) {<br>
+  &nbsp;&nbsp;&nbsp; int c;<br>
+  &nbsp;&nbsp;&nbsp; char s[256];<br>
+  &nbsp;&nbsp;&nbsp; for (c=0;c&lt;a;c++) {<br>
+  &nbsp;&nbsp;&nbsp; memset(s,0,255);<br>
+  &nbsp;&nbsp;&nbsp; pop_char(s,80);<br>
+  &nbsp;&nbsp;&nbsp; trim(s);<br>
+  &nbsp;&nbsp;&nbsp; printf(&quot;&lt;li>%s&lt;/li>\n",s,c,a);<br>
+  &nbsp;&nbsp;&nbsp; }<br>
+  &nbsp;&nbsp;&nbsp; return 0;<br>
+  &nbsp;&nbsp;&nbsp; }<br>
+  endcode<br>
+  #######################</p>
+</blockquote>
+<p>When run :</p>
+<blockquote>
+  <p>$ ./simple_4gl NOCURSES=YES</p>
+  <p>&lt;html><br>
+  &lt;head><br>
+  &lt;title>Aubit 4GL&lt;/title><br>
+  &lt;/head><br>
+  &lt;H1>Overview&lt;/H1><br>
+  &lt;li>Item1&lt;/li><br>
+  &lt;li>Item2&lt;/li><br>
+  &lt;li>Item3&lt;/li><br>
+  &lt;/html></p>
+</blockquote>
+<p>Crude example - but add a CGI type interface and you could develop some really
+neat stuff.</p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<p><span style="background-color: #00FF00">Q: </span><a name="What is NCURESES, and what is it used for in Aubit 4GL?">What is
+NCURESES, and what
+is it used for in Aubit 4GL?</a></p>
+<p><span style="background-color: #00FF00">A: </span>The ncurses (new curses) library is a freeware emulation of
+System V Release 4.0 curses. It uses terminfo format, supports pads and color and multiple
+highlights and forms characters and function-key mapping, and has all the other
+SYSV-curses enhancements over BSD curses.&nbsp;</p>
+<p>Download: <a href="ftp://ftp.gnu.org/pub/gnu/ncurses/ncurses-5.0.tar.gz">ftp://ftp.gnu.org/pub/gnu/ncurses/ncurses-5.0.tar.gz</a></p>
+<p>The NOCURSES parameter (see CGI) is just plain ASCII text of what your program outputs, no other
+controls sent..</p>
+<p>One other thing that might be of interest (as I alluded to before) is the NOCURSES option, this suppresses the calls to the curses
+library.</p>
+<p>I agree that NOCURSES making no sense for existing 4GL applications, it not meant for that,
+ever tried piping a 4gl through another program ?</p>
+<p>	test.4ge | wc</p>
+<p>There are all sorts of ^[[A23 type stuff in there meant to move the cursor around and set
+colors and stuff.</p>
+<p>The windows version of ncurses is called 'pdcurses' which does not implement this call - so if WIN32 is defined (ie. your compiling under windows 95)
+then it makes one up.</p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<p><span style="background-color: #00FF00">Q: </span> <a name="What about loadmap.4gl? Is it needed? How is it used and what for"> What about loadmap.4gl? Is it needed? How is it used and what
+for</a>?</p>
+<p><span style="background-color: #00FF00">A: </span>Its an example - yes it is useful..</p>
+<p>Good to know. Now I understand how to use it... :-) Please...explain?</p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<h3><i><u><a name="ODBC related">ODBC related</a>:</u></i></h3>
+<p><span style="background-color: #00FF00">Q: </span> at the moment, Aubit compiler is usable only with Informix engines,
+because syntax differences in SQL, and/or/not because other reasons, that I will put in manual when you reply to this question.</p>
+<p><span style="background-color: #00FF00">A: </span> You can use it with any engine provided&nbsp;</p>
+<p>	1) You use informix syntax (which most other SQLs recognise except for 'outer')</p>
+<p>	2) or you prepare it first (in which case the 4gl doesnt interpret the SQL and passes it straight back into ODBC</p>
+<p><span style="background-color: #00FF00">Q: </span> Because of this, it does not make sense to force people to install
+OpenLink, which is not really easy anyway, since they will need to install some informix engine, and then they can install CSDK easily,
+maybe even RPM's, that will include CLI ODBC.</p>
+<p><span style="background-color: #00FF00">A:</span> It shouldn't be limited to just informix, but it should be easy to set up both
+ICDK, and IODBC.</p>
+<p><span style="background-color: #00FF00">Q:</span> there is no way currently to take -liodbc from LD_LIBRARY_PATH, and
+all libraries MUST physically be in $AUBITDIR/extlibs, and this directory name is hard-coded (extlibs), and there is no environment
+variable, that can change this.</p>
+<p><span style="background-color: #00FF00">A: </span> Correct at time of going to press, the ODBC_LIB_DIR should be implemented in
+the 4glpc program...</p>
+<p><span style="background-color: #00FF00">Q: </span> Since there is no library called libiodbc in Informix
+CSDK/CLI, compiling the compiler using provided make files is possible using OpenLink only.</p>
+<p><span style="background-color: #00FF00">A: </span> Quite possibly - I'll investigate - I *have* compiled against the SDK
+previously..</p>
+<p><span style="background-color: #00FF00">Q: </span> You have mentioned that you did use Informix ODBC. Can you please
+describe.</p>
+<p><span style="background-color: #00FF00">A: </span> I'll try to do it again and let you know how I did it.</p>
+<p><span style="background-color: #00FF00">Q: </span> I'm confused with the fact that the ODBC driver is linked into
+compiler. Or is this just Iodbc manager? Can you choose actual driver in
+runtime/compiletime, without re-compiling compiler?&nbsp;</p>
+<p><span style="background-color: #00FF00">A: </span> Its just the manager for iODBC/Openlink, for Informix its the actual driver..
+If you compile in a driver manager, yes you can swap and change, I have had connections to two different
+RDBMS s concurrently doing this..&nbsp;</p>
+<p>I have written a couple of ODBC drivers myself - maybe bundling one of them is a good
+idea. One doesn't even connect to a database, but connects to a file, eg</p>
+<blockquote>
+  <p>	select owner,modified_date,dir_name,file_name from '/tmp/myfile'<br>
+  <br>
+	owner 		mike<br>
+	modified_date	1/1/2000<br>
+	dir_name /tmp<br>
+	file_name	myfile</p>
+</blockquote>
+<p>or</p>
+<blockquote>
+  <p>	select file_name  from '/tmp' where size>1000<br>
+  <br>
+	file_name	myfile<br>
+	file_name	myfile2<br>
+	filename	coredump</p>
+</blockquote>
+<p><span style="background-color: #00FF00">Q: </span>What choices I have for
+ODBC manager, when linking compiler?</p>
+<p><span style="background-color: #00FF00">A:</span></p>
+<p><a href="http://www.unixodbc.org">http://www.unixodbc.org</a></p>
+<p><a href="http://www.iodbc.org">http://www.iodbc.org</a></p>
+<p>As far as I know - the ODBC manager should present a common interface to Aubit
+4GL, whether that manager is unixODBC or iODBC.</p>
+<p>But in that case, one would ask, why did I need to have iODBC /lib dir present when&nbsp;
+compiling? If I understand correctly, only header file should be enough to compile?
+Not quite - you'll get link errors without the library.</p>
+<p>NOTE :It may use some different header files to iODBC (in the same way the iODBC uses different header files to Win32 MS-ODBC)</p>
+<p>Normally only the names of the files change so you can just #ifdef around them.
+Filename is maybe different, but any ODBC .h defining interface should be OK- as far as I can tell...</p>
+<p>But in that case, if you compile with iODBC header, you cannot use compiler with unixODBC manager
+until you recompile the compiler? It is not maybe tragic for compiler, but you also need to recompile all
+programs, if you need to change ODBC driver. Bit of a git this isn't it ?!</p>
+<p>Remember though that unixODBC is specific in some areas (GUI tools) at the last count. It is not as portable as
+iODBC, and is most definitely harder to compile</p>
+<p>From the iodbc mailing list  (June '99):<br>
+Peter Harvey wrote:</p>
+<p>The focus for iODBC is clearly the DM and platform portability while unixODBC is broader in scope with less focus on portability. My feeling is
+that this *was* a great problem when unixODBC started out but is not much of an issue anymore. Its not an issue anymore because most of unixODBC goals
+have been achieved, or are on the verge of being achieved, on Linux and so now portability is more in the focus of unixODBC. The extra tools in
+unixODBC (ODBCConfig, DataManager), the code template, the driver helper libs, and some sample drivers are still important but does not negate the
+use of a common DM.</p>
+<p>Peter Harvey<br>
+<a href="http://www.codebydesign.com">http://www.codebydesign.com</a></p>
+<table border="1" width="100%">
+  <tr>
+    <td width="33%">&nbsp;</td>
+    <td width="33%">			iODBC</td>
+    <td width="34%">&nbsp;unixODBC</td>
+  </tr>
+  <tr>
+    <td width="33%">GUI tools</td>
+    <td width="33%">no</td>
+    <td width="34%">yes</td>
+  </tr>
+  <tr>
+    <td width="33%">code template</td>
+    <td width="33%">no</td>
+    <td width="34%">yes</td>
+  </tr>
+  <tr>
+    <td width="33%">drvhelper</td>
+    <td width="33%">no</td>
+    <td width="34%">yes</td>
+  </tr>
+  <tr>
+    <td width="33%">ODBC drivers</td>
+    <td width="33%">no</td>
+    <td width="34%">yes</td>
+  </tr>
+  <tr>
+    <td width="33%">CUI tools</td>
+    <td width="33%">yes</td>
+    <td width="34%">yes</td>
+  </tr>
+</table>
+<p>Now, you compare them, and say: Bugger, if I use unixODBC on Xenix, I will not have GUI configuration, templates, etc, so
+I'll rather use iODBC and not have them anyway, because of ...Also, GUI part is really
+no longer issue after qt was ported left and right.</p>
+<p>The most important reason for me to look at unixODBC is GUI management. As you would probably agree, people
+exhibit extraordinary ability to mess up ODBC config files, put them in all the wrong places, etc.</p>
+<p>Then again, there in mot much reason not to take just that out of unixODBC and use it with iODBC. Or
+not.</p>
+<p><span style="background-color: #00FF00">Q:&nbsp;</span> Do I even need to link compiler with any manager, after all, .so
+is for Shared Object?</p>
+<p><span style="background-color: #00FF00">A:</span> Yes - it needs to resolve them before it can call them.
+Otherwise a4gl would have to act like a driver manager. Would that be a right thing to do in the future?</p>
+<p>No it would mean incorporating an extra ODBC level, adding (say) iODBC into Aubit 4G, to then call an iODBC manager or the unixODBC manager. or the
+Informix CLI.</p>
+<p>Interestingly - I beleive that an ODBC manager can call another ODBC manager as if it was an ODBC driver, so you could link against iODBC, point
+that to the unixODBC driver which then points to a data source - bit messy though !</p>
+<p> We could include iODBC in a4gl distribution, but that would slow things down if we didnt need it ...</p>
+<p>Best off posting to the iODBC (freeODBC) mailing list for general help - we are
+not just talking iODBC and unixODBC. Now that iODBC is GPL - there could be any number of possible DM (data source managers..).</p>
+<p>Its an interesting problem - but I dont think the answer is to add an ODBC manager into 4GL directly - you would gain nothing to having it statically
+linked.</p>
+<p>I agree that there is a good chance that unixODBC is the way to go - but all the openlink drivers (for anything other than non-GPL dBs your probably going
+to be using these) use iODBC, i beleive you said that the informix CLI now uses iODBC too.</p>
+<p>With that in mind its probably best keeping things as they are - You can link
+the 4gl compiler and the resulting codes against one or other at compile time (at the very least - it may also be possible to fudge the shared libraries
+around) I doubt that in most cases this would be a problem.</p>
+<p>The only other consideration is that a4gl always used version 2.0 -> 2.5 (?) of ODBC. iODBC and unixODBC are now 3.0 -> 3.5 compatible - it may be that the
+way I'm doing things is not the most efficient....</p>
+<p><span style="background-color: #00FF00">Q: </span>libodbc.so      (ODBC Driver Manager): am I correct in assuming I can link Aubit 4GL compiler with that?</p>
+<p><span style="background-color: #00FF00">A:</span><span style="background-color: #00FF00">
+</span>Yes - probably</p>
+<p><span style="background-color: #00FF00">Q: </span>Do I even need to link compiler with any manager, after all, .so is
+for Shared Object?</p>
+<p><span style="background-color: #00FF00">A:</span><span style="background-color: #00FF00">
+</span>Yes - it needs to resolve them before it can call them Otherwise a4gl would have to act like a driver manager</p>
+<p><span style="background-color: #00FF00">Q: </span>What is iodbc.h doing in /lib/odbc ?</p>
+<p><span style="background-color: #00FF00">A: </span>I don't know...</p>
+<p><span style="background-color: #00FF00">Q: </span>Is there anything iODBC specific in Aubit compiler?</p>
+<p><span style="background-color: #00FF00">A:</span><span style="background-color: #00FF00">
+</span>No - It compiles up against Windows ODBC too, but the header files have different names (sql.h -> isql.h etc.)</p>
+<p>Interestingly - I beleive that an ODBC manager can call another ODBC manager as
+if it was an ODBC driver, so you could link against iODBC, point that to the unixODBC driver which then points to a data source - bit messy though !</p>
+<p><span style="background-color: #00FF00">Q:</span><font color="#00FF00"> </font>How
+do I link a4gl with Informix CLI ODBC driver, without using any ODBC managers?</p>
+<p><span style="background-color: #00FF00">A: </span>This allows for specifying the data required to use the
+Informix CLI (I'm using Informix Foundation 2000).</p>
+<p>The .a4glrc file then has these entries :</p>
+<blockquote>
+  <p>ODBC_LIB_NAME=ifcli<br>
+  ODBC_LIB_DIR=$INFORMIXDIR/lib/cli<br>
+  export ODBC_LIB_NAME ODBC_LIB_DIR</p>
+</blockquote>
+<p>Informix still needs a .odbc.ini file - so it should be possible to connect to any datasource from the Informix CLI
+and vice versa  (making previous discussions about ODBC managers pretty irrelevant!)</p>
+<p>my .odbc.ini file:</p>
+<blockquote>
+  <p>[ODBC Data Sources]<br>
+  Informix7=Informix 7.x ODBC Driver<br>
+  ;<br>
+  ; Define ODBC Database Driver's Below - Driver Configuration Section<br>
+  ;<br>
+  <br>
+  [Informix7]<br>
+  Driver=/disks/disk1/informix/lib/cli/iclis09a.so<br>
+  Description=Informix 7.x ODBC Driver<br>
+  Database=stores7<br>
+  HostName=dax<br>
+  LogonID=informix<br>
+  pwd=informix<br>
+  Service=sqids7<br>
+  Protocol=onsoctcp<br>
+  Servername=ids7</p>
+</blockquote>
+<p>So, you can link a4gl to CLI, and connect to PostgreSQL, just by defining a section in
+.odbc.ini, although I have not tested this.</p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<p><span style="background-color: #00FF00">Q:</span>  <a name="Is Aubit 4GL thread-safe?"> Is Aubit 4GL thread-safe?</a></p>
+<p><span style="background-color: #00FF00">A: </span>One thing I would like to add would be threads - but that starts getting
+complicated because of the 4GL stack.</p>
+<p>Jonathan Lefller once posted some discussion about this, and I think it looked not-so-tragic-but-not-trivial. I think he's main problem was
+ESQL/C at the time, but they are treaded now, and we don't need them anyway.</p>
+<p>The main problem as far as we are conserned is our 4gl stack which expects to
+be linear, if you have threading, each thread must use a different stack.</p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<p><span style="background-color: #00FF00">Q:</span>  <a name="Ok, first project will be...err...Java GUI client for Aubit 4gl! Where do we start?"> Ok, first project will be...err...Java GUI client for Aubit 4gl! Where do we start?</a></p>
+<p><span style="background-color: #00FF00">A:</span> I added all the hooks one could think of - it shouldn't be too
+difficult to do.</p>
+<p>I did start work on a VB front end - but didn't get very far.</p>
+<p>Quick overview - have a look in lib/gui.c &amp; lib/gui_io.c</p>
+<p>when the 4gl application starts - the parameters to it are pre-processed before
+making them available to arg_val.. There are currently two options</p>
+<blockquote>
+  <p>NOCURSES=...</p>
+</blockquote>
+<p>and</p>
+<blockquote>
+  <p>GUIPORT=...</p>
+</blockquote>
+<p>For the NOCURSES you just need a value after the equals. For 'guiport' it starts listening at the given service port for a
+tcp/ip connection.</p>
+<p>eg.</p>
+<blockquote>
+  <p>test1.4gl :<br>
+  <br>
+	main<br>
+	        display "Hello"<br>
+	end main</p>
+</blockquote>
+<p>if you compile this to be test1 then run it</p>
+<blockquote>
+  <p>	$ ./test1 GUIPORT=2000</p>
+</blockquote>
+<p>then on another terminal</p>
+<blockquote>
+  <p>	$ telnet &lt;yourmachine> 2000 		# mine is called 'dax'</p>
+</blockquote>
+<p>you get something like :</p>
+<blockquote>
+  <p>	bash-2.02# telnet dax 2000<br>
+	Trying 192.168.1.7...	# printed by telnet<br>
+	Connected to dax.<br>
+	Escape character is '^]'.<br>
+  <br>
+		STARTGUI		# printed by the GUI bit of 4gl<br>
+		MKWIN screen 1 1 80 24 0 8052b78<br>
+		WREFRESH 8052b78<br>
+		CURRWIN 8052b78<br>
+		CURRWIN 8052b78<br>
+		WREFRESH 8052b78<br>
+		REFRESH<br>
+		REFRESH<br>
+		REFRESH<br>
+		MOVE 1 1<br>
+		REFRESH<br>
+		REFRESH<br>
+		REFRESH<br>
+		PRINT 0 "Hello"<br>
+  <br>
+  Connection closed by foreign host.</p>
+</blockquote>
+<p>Also, take a look at WTK (GNU) code&nbsp; from Bruickner &amp; Jarosh</p>
+<p><a href="http://www.bj-ig.de/wtk.html">http://www.bj-ig.de/wtk.html</a></p>
+<p>Why not take this as front-end to start with, if it was good enough for 4Js?
+They made they GUI front-end using this.</p>
+<p> There are utilities on www.freshmeat.net which will allow you to proxy this conversation and have a look at
+what's being passed. Have a look for 'sniffit' it can generate log files for connections via ports
+and has an interactive mode too.</p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<p><span style="background-color: #00FF00">Q: </span><a name="What is thing called Bison doing with Aubit 4GL?">What is thing called Bison
+doing with Aubit 4GL?</a></p>
+<p><span style="background-color: #00FF00">A: </span>Best bet on bison is get a book!
+Most Unix programming books will cover it. The user never sees the bison bit - its just for the compiler writers.</p>
+<p>The section I posted you looks for 'DEFER INTERRUPT" or "DEFER QUIT" and if it
+finds it in the file your compiling it performs the printc actions...</p>
+<p>You will not *need* to learn bison, but if you want to modify any of the compiler then you might want to.
+Its very straightforward :</p>
+<p>A simple example :</p>
+<blockquote>
+  <p>defer_cmd       :       DEFER_INTERRUPT {printc("def_int();");}<br>
+                |       DEFER_QUIT {printc("def_quit();");}<br>
+                ;<br>
+  </p>
+</blockquote>
+<p>printc is part of the aubit4gl library for printing to the generated C file. Having the _cmd is preprocessed by some of my scripts to mean it can be used
+anywhere a normal command can.(Eg. sleep_cmd is defined, display_cmd etc.etc)</p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<p><span style="background-color: #00FF00">Q: </span><a name="What about directory structure of source distribution?">What about directory
+structure of source distribution?</a></p>
+<p><span style="background-color: #00FF00">A:</span> The basic idea of the directories
+was:</p>
+<blockquote>
+  <p>	/<br>
+	/compilers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  where compilers should go<br>
+		/4glc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  Code for compiling .4GLs<br>
+		/fglcompile&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Code for compiling .frms<br>
+	/bin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  Binaries<br>
+	/lib&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  Library source code<br>
+		/incl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  Library Includes (used to compile the compilers and libraries)<br>
+  	/incl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  Include files for 'c' files generated by 4glc<br>
+ 	/project&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  Versioning info etc.</p>
+</blockquote>
+<p>In directories there may be another 'bin', and/or 'generated' directories 'bin' would contain any scripts used to generate some source code
+'generated' would contain any generated source code (ie. wouldn't normally be distributed as part of the source
+code)</p>
+<p>libincl is a directory that contains all the headers needed to compile the compiler (and the associated library).</p>
+<p>If you cd to the lib directory - it should be a directory under there. These are *not* needed by the programs you compile, at the moment the only
+header needed by that is '4glhdr.h' (or something similar)</p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<p><span style="background-color: #00FF00">Q: </span><a name="I get core dump when trying to compile 4gl program. How can I find out where is the problem?">I get core dump when trying
+to compile 4gl program. How can I find out where is the problem?</a></p>
+<p><span style="background-color: #00FF00">A:&nbsp; </span>try setting</p>
+<blockquote>
+  <p>DEBUG=ALL<br>
+  export DEBUG</p>
+</blockquote>
+<p>Then, compile:</p>
+<blockquote>
+  <p>4glc hello.4gl</p>
+</blockquote>
+<p>This should generate hello.c and a debug.out file. With a simple hello.4gl :</p>
+<blockquote>
+  <p>main<br>
+  &nbsp;&nbsp;&nbsp; display "Hello"<br>
+  end main</p>
+</blockquote>
+<p>Generates :</p>
+<blockquote>
+  <p>#define fgldate long<br>
+  #include "4glhdr.h"<br>
+  #include "hello.h"<br>
+  static char _compiler_ser[]="XXXXXXXXXX";<br>
+  static char _module_name[]="hello.4gl";<br>
+   main(int argc,char *argv[]) {<br>
+   fgl_start(argc,argv);<br>
+   push_char("Hello");<br>
+   push_int(-1);push_int(-1);<br>
+   display_at(1,0x0);<br>
+   if (sqlca.sqlcode !=0 || status !=0 || 0) {<br>
+      if (sqlca.sqlcode&lt;0&amp;&amp;status==sqlca.sqlcode) chk_err(2,_module_name);<br>
+      if (status&lt;0) chk_err(2,_module_name);<br>
+   }<br>
+  fgl_end();<br>
+  }<br>
+  </p>
+</blockquote>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<p><span style="background-color: #00FF00">Q: </span><a name="When trying to compile the compiler, I get macro `wattr_get' used with just one arg:">When trying to compile the
+compiler, I get macro `wattr_get' used with just one arg:</a></p>
+<blockquote>
+  <p>cc -O2 -Wall -I../libincl  -I.  -DAUTOBANG -DDEBUG -I./odbc   -c<br>
+  curslib.c -o curslib.o<br>
+  curslib.c:2685: macro `wattr_get' used with just one arg<br>
+  make[1]: *** [curslib.o] Error 1</p>
+</blockquote>
+<p><span style="background-color: #00FF00">A: </span>see NCURSES Q&amp;A</p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<p><span style="background-color: #00FF00">Q: </span><a name="I've already got normal CVS - is there anyway of pulling that into use for development CVS repository access">I've already got normal CVS - is there anyway of pulling
+that into use for development CVS repository access</a> at <a href="http://www.falout.com">www.falout.com</a>?</p>
+<p><span style="background-color: #00FF00">A: </span>Unless I open pserver port on my router, no. It is possible, but jCVS client (Java + Swing) is really simple, and it is
+using it's own servlet on my server, so the communication is going on http port. At the same time, it will run on Linux, and it is really
+easy to work with.</p>
+<p>Another option is WinCVS, that is more or less same stuff as jCVS, but it is using pserver, so I would need to open the pserver port.</p>
+<p>Since WinCVS is more powerful, you might consider using jCVS just to import files from my server, then work on local files with WinCVS (if
+you have a Windows box) and then return stuff to the repository using jCVS.</p>
+<p>But I think when you see jCVS client in action, you will see it is really easy, and very good for what we need.</p>
+<p>The point is, it took me only few hours to make jCVS client work, and we need to think about other people that will join us too. jCVS is
+presenting repositories as tree menu of files, and the GUI was always good for simplifying file oriented tasks.</p>
+<p>Reasonably useful manual is included, and if you install JavaHelp (that is also provided as part of client, just make sure it is in the
+CLASSPATH), you will get context sensitive help too.</p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<p><span style="background-color: #00FF00">Q: </span><a name="Is there any way I can not use Keystone?">Is there any way I can not
+use Keystone?</a></p>
+<p><span style="background-color: #00FF00">A: </span>No! If you don't know how
+to use it, you can browse Keystone manual at</p>
+<p><a href="http://www.stonekeep.com/ksonline/docs/docindex.html">http://www.stonekeep.com/ksonline/docs/docindex.html</a></p>
+<p>You should receive automatic slip assign notification for the task of Initial CVS repository import.</p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<p align="left"><span style="background-color: #00FF00">Q: </span><a name="How about x4GL and PHP? Is there a library for 4GL constructs?">How about x4GL
+and PHP? Is there a library for 4GL constructs?</a></p>
+
+<p align="left"><span style="background-color: #00FF00">A:</span> x y started
+working on one. He said:</p>
+
+<p align="left">&quot;If you truly wish to see some of my I can attach some files.
+I can't say it is in a form anywhere near complete and it alsoinvolves PHPLIB and PDFLIB stuff.&quot;</p>
+
+<p align="left"><a href="#FAQ - top of page">Back to top</a></p>
+
+<hr>
+<p><span style="background-color: #00FF00"><a name="Q: Can I compile Aubit 4gl on Windows?">Q:
+</a></span><a name="Q: Can I compile Aubit 4gl on Windows?">Can I compile Aubit
+4gl on Windows?</a></p>
+
+<p>There are two ways you can (try) to do this: Using UNIX POSIX compatibility
+layer and libraries, like CygWin, or using native Windows platform compiler,
+like Microsoft Visual C++</p>
+
+<p><i><u>CygWin issues:</u></i></p>
+
+<p>FIXME: describe CygWin</p>
+
+<p>gcc + ncurses + tools = <a href="http://sources.redhat.com/cygwin/">http://sources.redhat.com/cygwin/</a></p>
+
+<p>contains:</p>
+
+<p>ash autoconf bash binutils bison byacc bzip2 clear common crypt cygwin dejagnu diff expect fileutils findutils flex gawk gcc gdb gperf grep groff gzip inetutils less login m4 make man mt opengl openssh openssl patch regex sed shellutils tar tcltk termcap texinfo textutils time vim w32api cvs gdbm gettext jbigkit jpeg libpng ncurses readline tiff xpm zlib</p>
+
+<p>Cygwin contrib. also contains PG:</p>
+
+<p>&nbsp;&nbsp;&nbsp; <a href="ftp://mirror.aarnet.edu.au/pub/cygwin/contrib/postgresql/">ftp://mirror.aarnet.edu.au/pub/cygwin/contrib/postgresql/</a></p>
+
+<p>GTK+ <a href="http://user.sgic.fi/~tml/gimp/win32/">http://user.sgic.fi/~tml/gimp/win32/</a></p>
+
+<p>What about ODBC?</p>
+
+<p>Issues:</p>
+
+<ul>
+  <li>Cygwin does not define WIN32, only __CYGWIN__ but its easy to add a CFLAGS +=-DWIN32     to the makefile&nbsp;</li>
+  <li>Rpcgen</li>
+  <li>search.h</li>
+  <li>GTK+ on Windows (CygWin port) Comments on <a href="http://www.gimp.org/~tml/gimp/win32//README.win32">http://www.gimp.org/~tml/gimp/win32//README.win32</a>  and in particular about -fnative-struct switch? No problem (probably)</li>
+</ul>
+<p><i><u>MS Visual C++ issues:</u></i></p>
+
+<p>FIXME: Why use VC, where is code, how to compile</p>
+
+<p>There was (is) a native port which compiles using Visual C</p>
+
+<p><a href="#FAQ - top of page">Back to top</a></p>
+
+<hr>
+<p><span style="background-color: #00FF00">Q:</span> <a name="How should makefiles for Aubit 4gl look like?">How
+should makefiles for Aubit 4gl look like?</a></p>
+
+<p>FIXME: describe JL's make files, and note examples in IDE/</p>
+
+<p><a href="#FAQ - top of page">Back to top</a></p>
+
+<hr>
+<p><span style="background-color: #00FF00">Q:</span> <a name="What GUI options, other then GTK+ ?">What
+GUI options, other then GTK+ ?</a></p>
+<p>There was VB code once .I've got to reintegrate it all - it was written in VB (ie non Linux).</p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<p><span style="background-color: #00FF00">Q:</span> <a name="Is there any compatibility between Aubit 4gl and 4Js 4gl extended syntax?">Is
+there any compatibility between Aubit 4gl and 4Js 4gl extended syntax?</a></p>
+<p>Incorporated in fcompile are WIDGET and CONFIG fields from the 4Js forms syntax - they are
+compiled by the form compiler, and placed into the .frm - but 4gl doesn't use them at all yet...</p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<p><span style="background-color: #00FF00">Q: </span><a name="What format are compiled forms in, and how is Aubit4gl using XDR and RPCGEN?">What
+format are compiled forms in, and how is Aubit4gl using XDR and RPCGEN?</a></p>
+<p>Try:</p>
+<p>&nbsp;&nbsp;&nbsp; $ man xdr</p>
+<p>Its a universal way of storing data which can be read on any platform.&nbsp; Its
+normally used for ONC RPC calls, but I've used it to save the form data. In this way, a form compiled under unix can be run under windows without
+recompiling it. XDR always converts to the local format.One of the nice things about it is that there is a program called
+'rpcgen' which is used to create ONC RPC programs, this takes a definition file ( .x
+extension) and compiles a ..._xdr.c file - this handled the loading and saving of data for you. Using this is how I managed to get forms compiled into 'C'
+code written so quickly...</p>
+<p>&nbsp;&nbsp;&nbsp; fcompile -c formname</p>
+<p>generates formname.c which is a dump of the xdr data.</p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<hr>
+<p><span style="background-color: #00FF00">Q:</span> <a name="Can I run Aubit 4gl applications over the Internet, inside my web browser?">Can
+I run Aubit 4gl applications over the Internet, inside my web browser?</a></p>
+<p>See Aubit GUI page for pictures. There is one there that shows Aubit 4gl running on Linux with display on W2K via VNC Java running as applet inside MS Internet explorer using Sun plug-in JVM. Visit
+<a href="http://www.falout.com/projects/Aubit4GL/AubitGUI/aubit_4gl_gui.htm">http://www.falout.com/projects/Aubit4GL/AubitGUI/aubit_4gl_gui.htm</a></p>
+<p><a href="#FAQ - top of page">Back to top</a></p>
+<p>&nbsp;</p>
+<hr>
+
+</body>
+
+</html>
+

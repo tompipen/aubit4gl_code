@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>LABEL</TITLE>
+</HEAD><BODY>
+<B>LABEL
+<P></P>
+</B>The LABEL statement defines a statement label, marking the next statement as
+one to which the WHENEVER statement or the GOTO statement can transfer program
+control.
+<P></P>
+<IMG SRC="4GLREF00000161.gif" ALT="4GLREF00000161.gif" BORDER="0" WIDTH="455" HEIGHT="36">
+<P></P>
+<B>label identifier</B> is a statement label, with a colon ( : ) as the last character. 
+<P></P>
+The LABEL statement indicates where to transfer control of program execution
+within the same program block. Upon executing a GOTO or WHENEVER statement that
+references the label identifier, 4GL jumps to the statement immediately
+following the LABEL statement, skipping any intervening statements.
+<P></P>
+<B>The following restrictions apply to the LABEL statement:
+<P></P>
+</B>The label identifier must be unique within its program block.
+<P></P>
+To jump to a label, the GOTO or WHENEVER statement must use the same label
+identifier as the LABEL statement above the desired statement.
+<P></P>
+The GOTO and LABEL (or the WHENEVER and LABEL) statements must both be in the
+same MAIN, FUNCTION, or REPORT program block.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFGOTO.htm"></A></B><A HREF="4GLREFGOTO.htm">GOTO</A> 
+<P></P>
+<A HREF="4GLREFWHENEVER.htm#b7ca4914">WHENEVER</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

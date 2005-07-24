@@ -1,0 +1,20 @@
+<HTML>
+<HEAD>
+<TITLE>Line mode</TITLE>
+</HEAD><BODY>
+<B>Line mode
+<P></P>
+</B>An output mode of a 4GL program which produces a scrolling, character-based
+display interface. Screen addressing is not used. 4GL enters this mode and
+displays the Line-mode overlay when it executes a simple DISPLAY statement (one
+without an AT, BY NAME, or TO clause).4GL remains in Line mode as long as it
+encounters additional simple DISPLAY statements or the PROMPT statement. When it
+encounters any other output statement (ERROR, DISPLAY AT, and so on) or a user
+interaction statement, 4GL returns to Formatted mode. Because this mode results in a
+simple stream of characters to standard output, it should not be mixed with
+Formatted mode. 
+<P></P>
+See also <A HREF="4GLREFFormatted_mode.htm">Formatted mode</A>, <A HREF="4GLREFLinemode_overlay.htm">Line-mode overlay</A>.
+<P></P>
+</BODY>
+</HTML>

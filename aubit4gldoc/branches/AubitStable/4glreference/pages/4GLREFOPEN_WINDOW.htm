@@ -1,0 +1,118 @@
+<HTML>
+<HEAD>
+<TITLE>OPEN WINDOW</TITLE>
+</HEAD><BODY>
+<B>OPEN WINDOW
+<P></P>
+</B>The OPEN WINDOW statement declares and opens a 4GL window. 
+<P></P>
+<IMG SRC="4GLREF00000174.gif" ALT="4GLREF00000174.gif" BORDER="0" USEMAP="#map106" WIDTH="544" HEIGHT="117"><MAP NAME="map106"><AREA COORDS="412,31,501,81" HREF="4GLREFOPEN_WINDOW.htm#8d0fbfde"></MAP>
+<P></P>
+<B>filename</B> is a quoted string that specifies the file containing a compiled 4GL form.
+This can also include a pathname and file extension.
+<P></P>
+<B>height </B> is an integer expression to specify the height, in lines.
+<P></P>
+<B>left-offset </B> is an integer expression to specify the left margin, in characters, where 0 =
+the left edge of the Application window.
+<P></P>
+<B>top-line </B> is an integer expression to specify the position of the top line of the 4GL
+window, where 0 = the top of the Application window.
+<P></P>
+<B><UL><LI>ariable</B> is a CHAR or VARCHAR variable that specifies the filename.
+<P></P>
+</UL><B>width  </B>is an integer expression to specify the width, in characters.
+<P></P>
+<B>window </B> is a name that you declare here for the 4GL window to be opened.
+<P></P>
+A 4GL window is a rectangular area in the Application window that can display
+a form, a menu, or output from the DISPLAY, MESSAGE, or PROMPT statements. Note
+that the term 4GL window is distinct from a Windows graphical window like the
+Help window or Report window. (That is, the Application window is a graphical
+window that can display one or more 4GL windows.) An OPEN WINDOW statement can
+have the following effects:
+<P></P>
+Declares a name for the 4GL window.
+<P></P>
+Specifies the position of the 4GL window on the Application window.
+<P></P>
+Defines the dimensions of the 4GL window, in lines and characters.
+<P></P>
+Specifies the display attributes of the 4GL window.
+<P></P>
+The window identifier must follow the rules for 4GL identifiers and be unique
+among 4GL windows in the program. Its scope is the entire program. You can use
+this identifier to reference the same 4GL window in other statements (for
+example, CLEAR, CURRENT WINDOW, and CLOSE WINDOW).
+<P></P>
+<B>The OPEN WINDOW ATTRIBUTE Clause
+<P></P>
+</B>Specify a border for the 4GL window.
+<P></P>
+Display the 4GL window in reverse video or in a color.
+<P></P>
+Relocate the Prompt, Message, Menu, Form, and Comment lines.
+<P></P>
+The OPEN WINDOW ATTRIBUTE clause has the following syntax:
+<P></P>
+<IMG SRC="4GLREF00000175.gif" ALT="4GLREF00000175.gif" BORDER="0" USEMAP="#map107" WIDTH="583" HEIGHT="300"><MAP NAME="map107"><AREA COORDS="439,110,490,159" HREF="4GLREFOPEN_WINDOW.htm#b65f8edf"></MAP>
+<P></P>
+<B>The BORDER Attribute
+<P></P>
+</B>The BORDER attribute draws a border outside the specified 4GL window, in an
+area, occupying two lines and two character positions on the screen. Make sure to
+account for this space when you specify coordinates in the AT clause.
+<P></P>
+<B>Positioning Reserved Lines
+<P></P>
+</B>Line values specified in the OPTIONS ATTRIBUTE clause of the most recently
+executed OPTIONS statement can position the Form, Prompt, Menu, Message, Comment,
+and Error lines. If no line positions are specified in the OPTIONS ATTRIBUTE
+nor OPEN WINDOW ATTRIBUTE clause, then the 4GL window uses the following default
+positions for its reserved lines:
+<P></P>
+<TABLE><TR VALIGN=TOP><TD><B>Default Location
+<BR></B></TD><TD><B>Reserved for
+<BR></B></TD></TR><TR VALIGN=TOP><TD><B></B>First line
+<BR></TD><TD>Prompt line (output from PROMPT statement); also Menu line (command value from
+MENU statement) 
+<BR></TD></TR><TR VALIGN=TOP><TD>Second line
+<BR></TD><TD>Message line (output from MESSAGE statement; also the description value output
+from MENU statement); 
+<BR></TD></TR><TR VALIGN=TOP><TD>Third line
+<BR></TD><TD>Form line (output from DISPLAY FORM statement) 
+<BR></TD></TR><TR VALIGN=TOP><TD>Last line
+<BR></TD><TD>Comment line in any 4GL window except SCREEN.
+<BR></TD></TR></TABLE>These positional values are relative to the first or last line of the 4GL
+window, rather than to the Application window. (The Error line is always the last
+line of the Application window.) When you open a new 4GL window, however, the
+OPEN WINDOW ATTRIBUTE clause can override these defaults for every reserved line
+(except the Error line). This disables the OPTIONS statement reserved line
+specifications only for the specified 4GL window.
+<P></P>
+<IMG SRC="4GLREF00000176.gif" ALT="4GLREF00000176.gif" BORDER="0" WIDTH="332" HEIGHT="167">
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFCLEAR.htm"></A></B><A HREF="4GLREFCLEAR.htm">CLEAR</A> 
+<P></P>
+<A HREF="4GLREFCLOSE_FORM.htm">CLOSE FORM</A> 
+<P></P>
+<A HREF="4GLREFCLOSE_WINDOW.htm">CLOSE WINDOW</A> 
+<P></P>
+<A HREF="4GLREFCURRENT_WINDOW.htm">CURRENT WINDOW</A> 
+<P></P>
+<A HREF="4GLREFDISPLAY.htm">DISPLAY</A> 
+<P></P>
+<A HREF="4GLREFMESSAGE.htm">MESSAGE</A> 
+<P></P>
+<A HREF="4GLREFOPEN_FORM.htm">OPEN FORM</A> 
+<P></P>
+<A HREF="4GLREFOPTIONS.htm">OPTIONS</A> 
+<P></P>
+<A HREF="4GLREFPROMPT.htm">PROMPT</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

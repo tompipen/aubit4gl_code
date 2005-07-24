@@ -1,0 +1,94 @@
+<HTML>
+<HEAD>
+<TITLE>Table Qualifiers</TITLE>
+</HEAD><BODY>
+<B>Table Qualifiers</p>
+<P></P>
+</B>Statements that reference database tables, views, or synonyms (either alone,
+or as qualifiers of database column names) can include table qualifiers:
+<P></P>
+<IMG SRC="4GLREF00000226.gif" ALT="4GLREF00000226.gif" BORDER="0" WIDTH="519" HEIGHT="154">
+<P></P>
+<B>database</B> is the name of a database containing the table, view, or synonym.
+<P></P>
+<B>owner</B>  is the login name of the owner of the table, view, or synonym whose identifier
+immediately follows the table qualifier.
+<P></P>
+<B>server</B> is the name of the host system where database resides. Blank spaces are not
+valid after the @ symbol. 
+<P></P>
+Table qualifiers can appear in SQL and other 4GL statements, and in table
+alias declarations in the TABLES section of form specifications. You cannot,
+however, prefix a table alias or a field name with a table qualifier. Except in table
+alias declarations within the TABLES section, you cannot include table
+qualifiers anywhere in a form specification file.
+<P></P>
+<B>Owner Naming
+<P></P>
+</B>The qualifier can specify the login name of the owner of the table. You must
+specify owner if table.column is not a unique identifier within its database. 
+<P></P>
+<B>ANSI</B>  In an ANSI-compliant database, you must qualify each table name with that of
+the owner of the table (owner.table). The only exception is that you can omit
+the owner prefix for any tables that you own. For example, if Les owns table t1,
+you own table t2, and Sasha owns table t3, then you could use the following
+statement to reference three columns in those tables:
+<P></P>
+ VALIDATE var1, var2, var3 LIKE les.t1.c1, t2.c2, sasha.t3.c3
+<P></P>
+You can include the owner name in a database that is not ANSI-compliant. If
+the owner is incorrect, however, 4GL generates an error.
+<P></P>
+<B>Database References
+<P></P>
+</B>When INFORMIX-NET PC accesses an INFORMIX-OnLine database across a network,
+table qualifiers can include the database name. This example from a form
+specification defines aes as an alias for a table in the aliena database:
+<P></P>
+TABLES aes = aliena:cesar.receivables
+<P></P>
+The LIKE clause of 4GL statements like DEFINE, INITIALIZE, and VALIDATE can
+use this database: or database@server: notation in table qualifiers to specify
+tables in a database other than the default database. Without such qualifiers,
+4GL looks for the table in the default database. Even if the table qualifier
+includes a database reference, however, the LIKE clause will fail unless you also
+include a DATABASE statement before the first program block in the same module
+to specify a default database.
+<P></P>
+The current database is the database specified by the most recently executed
+DATABASE statement in a MAIN or FUNCTION program block in the same module. 4GL
+programs can include SELECT statements that query a table in an INFORMIX-OnLine
+database that is not the current database, but they cannot insert, update, nor
+delete rows from any table that is not in the current database.
+<P></P>
+If the current database is supported by the INFORMIX-OnLine database engine
+and by INFORMIX-STAR, a table reference can also include @server to specify the
+name of another host system on which a table resides. 
+<P></P>
+LOAD FROM &quot;fyl&quot; INSERT INTO dbas@hostile:woody.table42
+<P></P>
+<B>SE</B>  Only the databases stored in your current directory, or in a directory
+specified in your DBPATH environment variable, are recognized. Table qualifiers cannot
+include references to an INFORMIX-SE database. 
+<P></P>
+<B>ANSI</B>  If the current database is ANSI-compliant, a run-time error results if you
+attempt to query a remote database that is not ANSI-compliant. 
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFDATABASE00000431.htm"></A></B><A HREF="4GLREFDATABASE00000431.htm">DATABASE</A>
+<P></P>
+<A HREF="4GLREFDEFINE00000433.htm">DEFINE</A>
+<P></P>
+<A HREF="4GLREFINITIALIZE.htm">INITIALIZE</A>
+<P></P>
+<A HREF="4GLREFLOAD.htm">LOAD</A>
+<P></P>
+<A HREF="4GLREFVALIDATE.htm">VALIDATE</A>
+<P></P>
+<A HREF="4GLREFUNLOAD.htm">UNLOAD</A>
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>GLOBALS</TITLE>
+</HEAD><BODY>
+<B>GLOBALS
+<P></P>
+</B>The GLOBALS statement declares modular variables that can be exported to other
+program modules. It can also import variables from other modules.   
+<P></P>
+<IMG SRC="4GLREF00000149.gif" ALT="4GLREF00000149.gif" BORDER="0" USEMAP="#map91" WIDTH="544" HEIGHT="111"><MAP NAME="map91"><AREA COORDS="232,36,335,62" HREF="4GLREFDEFINE00000433.htm"></MAP>
+<P></P>
+<B>filename</B> is a quoted string that specifies the pathname of a file that contains the
+GLOBALS . . . END GLOBALS statement (and optionally the DATABASE statement, but no
+executable statement). The filename can include a pathname. The .4GL file
+extension is required.
+<P></P>
+In general, a program variable is visible only in the same FUNCTION, MAIN, or
+REPORT program block in which it was declared. To make its scope of reference
+the entire source module, you must specify a modular declaration, by locating
+the DEFINE statement outside of any program block.  
+<P></P>
+<B>To extend the visibility of one or more modular variables beyond the source
+module in which they are declared, you must take the following steps:
+<P></P>
+</B>Declare the variable in a GLOBALS  . . . END GLOBALS declaration in a .4GL
+file that contains only GLOBALS, DEFINE, and DATABASE statements.
+<P></P>
+Specify that file in GLOBALS &quot;filename&quot; statements in each additional source
+module that includes statements referencing the variable.
+<P></P>
+These files must also be compiled and linked with the 4GL application.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFDATABASE00000431.htm"></A></B><A HREF="4GLREFDATABASE00000431.htm">DATABASE</A> 
+<P></P>
+<A HREF="4GLREFDEFINE00000433.htm">DEFINE</A> 
+<P></P>
+<A HREF="4GLREFFUNCTION00000443.htm">FUNCTION</A> 
+<P></P>
+<A HREF="4GLREFMAIN.htm">MAIN</A> 
+<P></P>
+<A HREF="4GLREFREPORT00000465.htm">REPORT</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+<TITLE>PROGRAM Attribute</TITLE>
+</HEAD><BODY>
+<B>PROGRAM
+<P></P>
+</B>The PROGRAM attribute can specify an external application program to work with
+screen fields of data type TEXT or BYTE.
+<P></P>
+<IMG SRC="4GLREF00000048.gif" ALT="4GLREF00000048.gif" BORDER="0" USEMAP="#map22" WIDTH="467" HEIGHT="45"><MAP NAME="map22"><AREA COORDS="64,14,125,41" HREF="4GLREFATTRIBUTES_Section.htm#1ccfe80d"></MAP>
+<P></P>
+<B>command</B> is a command string (or the name of a shell script) that invokes an editing
+program, enclosed within quotes.
+<P></P>
+<B>field-tag</B> is the <A HREF="4GLREFfield_tag.htm">field tag</A> that you declared in the <A HREF="4GLREFSCREEN_Section.htm">SCREEN section</A>. 
+<P></P>
+You can assign the PROGRAM attribute to a BYTE or TEXT field to call an
+external program to work with the TEXT or BYTE values. Users of the application
+invoke the external program by pressing the exclamation ( ! ) point key while the
+screen cursor is in a <A HREF="4GLREFblob.htm">blob</A> field. The external program then takes over control of the screen. When the
+user exits from the external program, the form is redisplayed, with any display
+attributes besides PROGRAM in effect.
+<P></P>
+<B>Related Attributes
+<P></P>
+</B><TABLE><TR VALIGN=TOP><TD><B><A HREF="4GLREFAUTONEXTAttribute.htm#dff45350"></A></B><A HREF="4GLREFAUTONEXTAttribute.htm#dff45350">AUTONEXT</A> 
+<BR></TD><TD><A HREF="4GLREFFORMAT_Attribute.htm">FORMAT</A> 
+<BR></TD><TD><A HREF="4GLREFREVERSE_Attribute.htm">REVERSE</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFCOLOR_Attribute.htm">COLOR</A> 
+<BR></TD><TD><A HREF="4GLREFINCLUDE_Attribute.htm">INCLUDE</A> 
+<BR></TD><TD><A HREF="4GLREFUPSHIFT_Attribute.htm">UPSHIFT</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFCOMMENTS_Attribute.htm">COMMENTS</A> 
+<BR></TD><TD><A HREF="4GLREFINVISIBLE_Attribute.htm">INVISIBLE</A> 
+<BR></TD><TD><A HREF="4GLREFVALIDATE_LIKE_Attribute.htm">VALIDATE LIKE</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDEFAULT_Attribute.htm">DEFAULT</A> 
+<BR></TD><TD><A HREF="4GLREFNOENTRY_Attribute.htm">NOENTRY</A> 
+<BR></TD><TD><A HREF="4GLREFVERIFY_Attribute.htm">VERIFY</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDISPLAY_LIKE_Attribute.htm">DISPLAY LIKE</A> 
+<BR></TD><TD><A HREF="4GLREFPICTURE_Attribute.htm">PICTURE</A> 
+<BR></TD><TD><A HREF="4GLREFWORDWRAP_Attribute.htm">WORDWRAP</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDOWNSHIFT_Attribute.htm">DOWNSHIFT</A> 
+<BR></TD><TD><A HREF="4GLREFREQUIRED_Attribute.htm">REQUIRED</A> 
+<BR></TD><TD>
+<BR>&nbsp;</TD></TR></TABLE><B></B></BODY>
+</HTML>

@@ -1,0 +1,40 @@
+<HTML>
+<HEAD>
+<TITLE>IF</TITLE>
+</HEAD><BODY>
+<B>IF
+<P></P>
+</B>The IF statement executes a group of statements conditionally. It can switch
+program control conditionally between two blocks of statements. 
+<P></P>
+<IMG SRC="4GLREF00000151.gif" ALT="4GLREF00000151.gif" BORDER="0" USEMAP="#map92" WIDTH="457" HEIGHT="87"><MAP NAME="map92"><AREA COORDS="43,27,114,65" HREF="4GLREF4GL_Boolean_Expressions.htm"></MAP>
+<P></P>
+<B>statement</B> is an SQL statement or other 4GL statement.
+<P></P>
+If the <A HREF="4GLREFBoolean.htm">Boolean</A> expression is TRUE, 4GL executes the block of statements following the THEN
+keyword, until it reaches either the ELSE keyword or the END IF keywords. 4GL
+then resumes execution after the END IF keywords.
+<P></P>
+If the Boolean expression is FALSE, 4GL executes the block of statements
+between the ELSE keyword and the END IF statement. If you omit the ELSE keyword, 4GL
+resumes execution with the statement following the END IF keywords. The
+Boolean expression is treated as FALSE if it contains a NULL value anywhere (except
+as the operand of the IS NULL operator).
+<P></P>
+If you have a set of nested IF statements, all testing the same value,
+consider using a CASE statement.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFCASE.htm"></A></B><A HREF="4GLREFCASE.htm">CASE</A> 
+<P></P>
+<A HREF="4GLREFFOR.htm">FOR</A> 
+<P></P>
+<A HREF="4GLREFWHENEVER.htm#b7ca4914">WHENEVER</A> 
+<P></P>
+<A HREF="4GLREFWHILE.htm">WHILE</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

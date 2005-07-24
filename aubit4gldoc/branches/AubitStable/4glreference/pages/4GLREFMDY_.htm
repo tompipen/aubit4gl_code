@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<TITLE>MDY( )</TITLE>
+</HEAD><BODY>
+<B>MDY( )
+<P></P>
+</B>The MDY( ) operator returns a value of the DATE data type from three integer
+operands that represent the month, the day of the month, and the year. 
+<P></P>
+<IMG SRC="4GLREF00000094.gif" ALT="4GLREF00000094.gif" BORDER="0" USEMAP="#map58" WIDTH="461" HEIGHT="47"><MAP NAME="map58"><AREA COORDS="320,10,422,38" HREF="4GLREFInteger_Expressions.htm"><AREA COORDS="190,10,289,34" HREF="4GLREFInteger_Expressions.htm"><AREA COORDS="57,11,155,37" HREF="4GLREFInteger_Expressions.htm"></MAP>
+<P></P>
+The MDY( ) operator converts to a single DATE format a list of exactly three
+valid integer expressions. The three expressions correspond with the month, day,
+and year elements of a calendar date:
+<P></P>
+The first expression must return an integer, representing the number of the
+month (1-12). 
+<P></P>
+The second expression must return an integer, representing the number of the
+day of the month (1-28, 29, 30, or 31, depending on the month). 
+<P></P>
+The third expression must return a four-digit integer, representing the year. 
+<P></P>
+An error results if you specify values outside the range of days and months in
+the calendar, or if the number of operands is not three.
+<P></P>
+You must enclose the three integer expression operands within parentheses,
+separated by commas, just as you would if MDY( ) were a function.
+<P></P>
+The value of the third expression cannot be the abbreviation for the year. For
+example, 91 specifies a year in the first century, more than 1,900 years ago. 
+<P></P>
+<B>Reference
+<P></P>
+<A HREF="4GLREFDATE_.htm"></A></B><A HREF="4GLREFDATE_.htm">DATE( )</A> 
+<P></P>
+</BODY>
+</HTML>

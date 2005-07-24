@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<TITLE>NEED</TITLE>
+</HEAD><BODY>
+<B>NEED
+<P></P>
+</B>NEED is a conditional statement to control output from the PRINT statement.
+(The NEED statement can appear only in a REPORT program block.)
+<P></P>
+<IMG SRC="4GLREF00000172.gif" ALT="4GLREF00000172.gif" BORDER="0" WIDTH="455" HEIGHT="32">
+<P></P>
+<B>lines</B> is an integer expression that specifies how many lines must remain in the
+current page between the line above the current character position and the bottom
+margin.
+<P></P>
+The NEED statement causes subsequent report output from the PRINT statement to
+start on the next page of the report, if fewer than the specified number of
+available lines remain between the current line of the page and the bottom
+margin. NEED has the effect of a conditional SKIP TO TOP OF PAGE, the condition being
+that the number returned by the integer expression must be greater than the
+number of lines that remain on the current page.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFPAUSE00000462.htm"></A></B><A HREF="4GLREFPAUSE00000462.htm">PAUSE</A> 
+<P></P>
+<A HREF="4GLREFPRINT00000463.htm">PRINT</A> 
+<P></P>
+<A HREF="4GLREFREPORT00000465.htm">REPORT</A> 
+<P></P>
+<A HREF="4GLREFSKIP00000469.htm">SKIP</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

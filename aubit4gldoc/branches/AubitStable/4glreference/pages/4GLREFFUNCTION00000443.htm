@@ -1,0 +1,75 @@
+<HTML>
+<HEAD>
+<TITLE>FUNCTION</TITLE>
+</HEAD><BODY>
+<B>FUNCTION
+<P></P>
+</B>This statement defines a FUNCTION program block.
+<P></P>
+<IMG SRC="4GLREF00000058.gif" ALT="4GLREF00000058.gif" BORDER="0" USEMAP="#map88" WIDTH="592" HEIGHT="120"><MAP NAME="map88"><AREA COORDS="407,75,464,113" HREF="4GLREFRETURN.htm"><AREA COORDS="295,51,356,88" HREF="4GLREFDEFINE00000433.htm"></MAP>
+<P></P>
+<B>argument</B> is the name of a formal <A HREF="4GLREFargument.htm">argument</A> to this function. The DEFINE statement that follows must specify a data type
+for each argument. 
+<P></P>
+<B>function </B> is the identifier that you declare for this 4GL function. 
+<P></P>
+<B>statement</B> is an SQL statement or other 4GL statement.
+<P></P>
+A <A HREF="4GLREF4GL_function.htm">4GL function</A> is a named block of statements. The FUNCTION statement defines a 4GL function
+that can be invoked from any module of your program. 
+<P></P>
+<B>The FUNCTION statement has two effects:
+<P></P>
+</B>To declare the name of a function and of any formal arguments. 4GL imposes no
+limit on the number or size of formal arguments.
+<P></P>
+To define the corresponding FUNCTION program block.
+<P></P>
+The FUNCTION statement cannot appear within the MAIN statement, nor in a
+REPORT statement, nor within another FUNCTION statement. 
+<P></P>
+If the function returns a single value, it can be invoked as an operand within
+a 4GL expression. Otherwise, you must invoke it with the CALL statement. An
+error results if the list of returned values in the RETURN statement conflicts in
+number or in data types with the  RETURNING clause of the CALL statement that
+invokes the function.
+<P></P>
+<B>The Prototype of the Function 
+<P></P>
+</B>The FUNCTION statement both declares and defines a 4GL function. The function
+declaration specifies the identifier of the function and the identifiers of its
+formal arguments (if any). These specifications are sometimes called the
+function prototype, as distinct from the function definition:
+<P></P>
+<IMG SRC="4GLREF00000147.gif" ALT="4GLREF00000147.gif" BORDER="0" USEMAP="#map89" WIDTH="456" HEIGHT="145"><MAP NAME="map89"><AREA COORDS="215,7,303,44" HREF="4GLREFFUNCTION00000443.htm#1f39c48b"></MAP>
+<P></P>
+<B>argument</B> is the name of a formal argument to this function. This can be of any data
+type of 4GL except ARRAY.
+<P></P>
+<B>function  </B>is the identifier that you declare for this 4GL function.
+<P></P>
+<B>The FUNCTION Program Block
+<P></P>
+</B>The statements between the argument list and the END FUNCTION keywords
+comprise the FUNCTION program block. These statements are executed whenever the
+function is successfully invoked. 
+<P></P>
+<IMG SRC="4GLREF00000148.gif" ALT="4GLREF00000148.gif" BORDER="0" USEMAP="#map90" WIDTH="454" HEIGHT="135"><MAP NAME="map90"><AREA COORDS="328,92,388,129" HREF="4GLREFRETURN.htm"><AREA COORDS="182,56,251,95" HREF="4GLREFDEFINE00000433.htm"></MAP>
+<P></P>
+<B>statement</B> is any SQL statement or other 4GL statement (but not FUNCTION, REPORT, MAIN,
+GLOBALS, nor the report execution statements (NEED, PAUSE, PRINT, and SKIP).
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFCALL.htm"></A></B><A HREF="4GLREFCALL.htm">CALL</A> 
+<P></P>
+<A HREF="4GLREFDEFINE00000433.htm">DEFINE</A> 
+<P></P>
+<A HREF="4GLREFRETURN.htm">RETURN</A> 
+<P></P>
+<A HREF="4GLREFWHENEVER.htm#b7ca4914">WHENEVER</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

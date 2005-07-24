@@ -1,0 +1,1119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head http-equiv="content-type" content="text/html; charset=UTF-8" >
+   
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+  <meta name="ProgId" content="FrontPage.Editor.Document">
+  <title>Doc4GL - Technical Manual</title>
+                                  
+</head>
+  <body bgcolor="#FFFFFF">
+         
+         
+<h2 align="center">DOC4GL - 4gl   
+ programs documenter</h2> 
+<h3 align="center">Technical Manual</h3> 
+<hr>
+         
+         
+<h2> <a name="Table of contents"><i>Table of contents</i></a> </h2> 
+<ul>
+         <li> <a href="#Introduction">Introduction</a> </li>
+         <li> <a href="#Architecture"> Architecture</a>&nbsp;
+          <ul>
+            <li><a href="#Repository"> Repository</a></li>
+            <li><a href="#Documenter">Documenter</a>
+              <ul>
+                <li><a href="#Parser and Extractor of documentation from 4gl source code">Parser 
+                  and Extractor of documentation from 4gl source code</a></li>
+                <li><a href="#Access to the repository"> Access to the repository</a></li> 
+                <li><a href="#Exporter for 4gl sources"> Exporter for 4gl source 
+                  files</a></li>
+                <li><a href="#CSV Importer">CSV Importer&nbsp;</a></li>         
+                <li><a href="#CSV Exporter">CSV Exporter&nbsp;</a></li>         
+                <li><a href="#HTML Generation"> HTML generation</a></li>         
+              </ul>
+            </li>
+            <li><a href="#Web Navigator">Web Navigator</a></li>
+          </ul>
+ </li>
+         <li> <a href="#Repository Data Model">Repository Data Model</a> 
+         </li>
+         <li> Functional structure (FIXME: missing)
+         </li>
+         <li> Modular structure (FIXME: missing) </li>
+         <li> <a href="#Dependencies"> Dependencies</a>
+         </li>
+                   
+         <li> <a href="#Installation and Compilation instructions">Installation 
+          and Compilation instructions</a> 
+         </li>
+                   
+         <li> <a href="#Configuration file">Configuration file</a>
+         </li>
+                   
+</ul>
+<p><a href="../index.html">Doc4GL documentation index page</a></p> 
+<hr>
+         
+<h1> <a name="Introduction"> Introduction</a> </h1>
+<blockquote>
+      This manual presents the DOC4GL tools from the implementation point        
+of view. This document is part of DOC4GL documentation set. Please see <a href="../index.html">Doc4GL documentation index page</a>      
+  for other related documents.     
+      <p>This <i>Technical Manual</i> is intended for person that will install,     
+      configure and&nbsp; maintain DOC4GL installation, and for developers that     
+      will enhance it's functionality.&nbsp;</p>    
+</blockquote>
+<p><a href="#Table of contents">Back to Table of contents</a></p>    
+<hr>
+                   
+  <h1> <a name="Architecture"> Architecture</a> </h1>
+<blockquote>
+  This diagram details architecture of the DOC4GL tools: 
+</blockquote>
+           
+  <div align="Center"><img src="../images/fgldoc_architectural_model.jpg" alt="Arq" width="605" height="619">
+     <br>
+     </div>
+<blockquote>
+     In conceptual terms, it can be divided in the following components:                              
+    <ul>
+          <li> <a href="#Repository"> Repository</a>
+        </li>
+        <li> <a href="#Documenter">Documenter</a> </li>
+                               
+      <ul>
+            <li> <a href="#Parser and Extractor of documentation from 4gl source code">Parser 
+              and Extractor of documentation from 4gl source code</a> </li>
+            <li> <a href="#Access to the repository"> Access to the repository</a> 
+            </li>
+            <li> <a href="#Exporter for 4gl sources">Exporter for 4gl source 
+              files</a>
+            </li>
+            <li> <a href="#CSV Importer">CSV Importer&nbsp;</a> </li>         
+            <li> <a href="#CSV Exporter">CSV Exporter&nbsp;</a> </li>         
+            <li> <a href="#HTML Generation"> HTML generation</a>         
+            </li>
+                               
+      </ul>
+          <li> <a href="#Web Navigator">Web Navigator</a>
+          </li>
+                       
+    </ul>
+</blockquote>
+                       
+    <h2> <a name="Repository"> Repository</a></h2>
+<blockquote>
+   The repository is the place (database) where the meta-data information about 
+   4GL programs is stored.   
+  <p>
+   The tool interacts with this information, importing it from 4GL source code files. It also allow exporting data in other     
+formats. It is possible to access data on-line, through available interfaces (in Web,  
+   GUI or CUI environments) or with SQL.</p>   
+</blockquote>
+           
+    <h2> <a name="Documenter">Documenter</a> </h2>
+<blockquote>
+     The <i>documenter</i> is composed from modules programmed with 4GL programming          
+  languages, and DOC4GL tools. It was designed in attempt to guarantee the integrity of    
+     both,          
+  but this goal is still not fully reached.<p>Program written in Perl serves as user interface, for       
+the execution of the different <i>documenter</i> actions. It allows execution in graphical environments   
+  (GUI) or command line (CUI) without any interaction with the user (except when  
+     generating messages) facilitating batch processing.</p>  
+  <p>Also implemented is set of utilities, that executes each one of the components, 
+  for example, management of errors and   
+writing to log files.  This is perhaps the ratio of the dependences,    
+given that still did not reach one level of null dependence.</p>  
+                       
+    <h3> <a name="Parser and Extractor of documentation from 4gl source code">Parser 
+    and Extractor of documentation from 4gl source code</a> </h3>
+     Receiving the name of 4gl source file as parameter, it performs syntactic analysis,          
+  and loads the information into memory and later storing (if corresponding     
+     option was chosen) in a relational repository inside of a database.          
+  <p>
+     It was build using the following tools:</p> 
+                       
+    <blockquote>                            
+      <ul>
+            <li> Bison / Yacc </li>
+            <li> Flex / Lex </li>
+            <li> C language compiler </li>
+            <li> Informix ESQL/C
+            </li>
+                               
+      </ul>
+          </blockquote>
+   It can be executed with the following options:          
+  <blockquote>
+    <div align="left">
+      <table border="0" bgcolor="#C0C0C0">
+        <tr>
+          <td>p4gl [ - h ] [ - d ] [ - i ] [ - v ] [ - w level   
+] - f file.4gl</td> 
+        </tr>
+      </table>
+    </div>
+  </blockquote>
+               
+      <blockquote>                  
+        <ul>
+            <li>   -h:  Display this help message </li>           
+            <li>   -d:  Debug mode </li>           
+            <li>   -i:  Insert in the repository </li>           
+            <li>   -v:  Verbose mode </li>           
+            <li>   -w:  Warning level (1-10) </li>          
+            <li>   -c:  Generate documentation </li>           
+            <li>   -s: Standard comments will be documentation           
+          </li>
+            <li>   -p package:  Name of package </li>           
+                   
+        </ul>
+          </blockquote>
+                                   
+        <h3> <a name="Access to the repository"> Access to the repository</a> </h3> 
+   The access to the repository (for reading and writing) is built in Informix ESQL/C,          
+  and as such it can only access and create the repositories in Informix     
+     databases, for the moment. Access to other databases will be implemented     
+     using Aubit 4gl ODBC connection methods.         
+  <p>Name of the database where the repository will be  
+installed is specified using the DATABASE environment variable.</p> 
+                                                 
+        <h3> <a name="Exporter for 4gl sources"> Exporter for 4gl sources</a> </h3> 
+     Developed in Perl under the object/class model, it reads the information          
+  from the repository, for one or more intended modules, and&nbsp; generates the     
+     comments            
+in <i> fgldoc</i> format and inserts them inside the 4gl source files.<h3><a name="CSV Importer">CSV Importer</a> </h3>           
+  Developed using Perl with Object/Class model, attempts to open the file specified and     
+     load information to a database with exactly the            
+same format. Optionally, later it can perform normalization of that information     
+     into normalized tables in the repository.          
+  <p>Note that loaded information in the CSV file format is of little or no use 
+  to the user.</p>
+                   
+        <h3><a name="CSV Exporter">CSV Exporter</a> </h3> 
+ Reads the information from fully normalized tables in relational database,          
+  un-normalize            
+it in the table p4gl_excel and unloads it in&nbsp;character separated format          
+  (CSV).
+                   
+        <h3><a name="HTML Generation">HTML Generation</a> </h3> 
+  To be able to use this information in off-line environments, it is possible to generate a set          
+  HTML formatted files with            
+all the repository information.          
+   This information cannot be modified or loaded, and loses the SQL access ability.    
+  <p>
+   This type of functionality is often used by similar documentation systems, as for example the  
+  DoxyGen or Javadoc.</p> 
+</blockquote>
+                                       
+        <h2> <a name="Web Navigator">Web Navigator</a> </h2>
+<blockquote>
+  Developed in JSP (Java Server Pages), it allows on-line access to the information   
+  stored about the programs, that reside in the repository. Database access is   
+  performed through JDBC.   
+  <p>
+   Because it is the nature of JSP that they are compiled dynamically by the respective     
+container, there will have to be compiled and installed in the correct place, for the Web/JSP 
+   server, like TomCat.</p> 
+</blockquote>
+<p><a href="#Table of contents">Back to Table of contents</a></p>
+<hr>
+                                       
+        <h2><a name="Repository Data Model">Repository Data Model</a> </h2> 
+<blockquote>
+     The repository of the DOC4GL has a relational structure, with referential          
+  integrity. It constitutes the central storage of the fgldoc tool. It is, for now, implemented and tested     
+     only using Informix DBMS. 
+     <p><a href="../images/ERwin-Doc4GL.jpg"><img border="2" src="../images/ERwin-Doc4GL_small1.jpg" alt="ERwin-Doc4GL.jpg (88971 bytes)" width="100" height="75"></a></p>
+     <p>Click on the image to see picture of Doc4GL database repository model as 
+     designed in ERwin.</p>
+     <p>Click here to open Adobe Acrobat (.pdf) file containing the image of <a href="../images/ERwin-Doc4GL.pdf">Doc4GL 
+     database repository model</a> showing all tables and there relationships as 
+     modeled in ERwin. You can download this model as ERwin (.er1) file <a href="../images/ERwin-Doc4GL.ER1">here</a>.</p>
+  <p>
+     Given the normalization of the structure (and the fact that it don't use <i>serial</i>     
+nor <i>rowid</i>), the conversion to other RDBMS (such as PostgreSQL)     
+should not be to complicated.</p>   
+  <p>Following is the description of each table of the relational repository.            
+We currently don't have descriptions for each column, but this is on the TO-DO          
+  list.</p>
+  <p>Summary of database tables:</p>
+                                                                        
+      
+                                      <table cellpadding="2" cellspacing="2" border="1">
+                                          <tbody>
+                                            <tr>
+                                              <td valign="Top" width="154">         
+                                                                        
+       
+                                            <div align="Center"><b> Table 
+                                             </b>
+                                              </div>
+                                              </td>
+                                              <td valign="Top" width="749">         
+                                                                        
+       
+                                            <div align="Center"><b>Description</b>
+                                              </div>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top" width="154"> <a href="#p4gl_excel"> p4gl_excel</a>
+                                              </td>
+                                              <td valign="Top" width="749"> Image 
+                                                of  
+the CSV file (Character Separated Values) used for loading with information coming  
+                                                from a spreadsheet.  
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top" width="154"> <a href="#p4gl_module"> p4gl_module</a>
+                                              </td>
+                                              <td valign="Top" width="749">Name of the  
+4gl Source file. 
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top" width="154"> <a href="#p4gl_package">p4gl_package</a>
+                                              </td>
+                                              <td valign="Top" width="749"> Package.   
+ Abstraction with the goal of having one entity that provide unique source file name. In 
+                                                most cases it corresponds to the directory   
+(normally not fully qualified) where the source file reside.  
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top" width="154"> <a href="#p4gl_process"> p4gl_process</a>
+                                              </td>
+                                              <td valign="Top" width="749"> Processes 
+                                                abstraction that define the business processes implemented by the code. 
+It could be organized in a hierarchy
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top" width="154"> <a href="#p4gl_function"> p4gl_function</a>
+                                              </td>
+                                              <td valign="Top" width="749"> Functions 
+implemented in the modules. 
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top" width="154"> <a href="#p4gl_fun_parameter"> p4gl_fun_parameter</a>
+                                              </td>
+                                              <td valign="Top" width="749">Function parameters 
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top" width="154"> p4gl_fun_process
+                                                <p><a href="#p4gl_process-duplicate">p4gl_process-duplicate</a></p>
+                                              </td>
+                                              <td valign="Top" width="749">Business processes 
+                                                implemented by a function 
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top" width="154"> <a href="#p4gl_fun_return"> p4gl_fun_return</a>
+                                              </td>
+                                              <td valign="Top" width="749">Return values 
+of a function 
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top" width="154"> <a href="#p4gl_fun_todo"> p4gl_fun_todo</a>
+                                              </td>
+                                              <td valign="Top" width="749"> Stack of 
+actions to be done by a function 
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top" width="154"> <a href="#p4gl_module_prog"> p4gl_module_prog</a>
+                                              </td>
+                                              <td valign="Top" width="749">4gl source 
+modules that are linked in a program 
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top" width="154"> <a href="#p4gl_program"> p4gl_program</a> 
+                                              </td>
+                                              <td valign="Top" width="749">4gl executable 
+program
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td valign="Top" width="154"> <a href="#p4gl_table_usage"> p4gl_table_usage</a>
+                                              </td>
+                                              <td valign="Top" width="749">Database table 
+usage in functions 
+                                              </td>
+                                            </tr>
+                                                                        
+          
+                                        </tbody>                         
+                                                    
+                                      </table>
+</blockquote>
+                   
+        <h3> <a name="p4gl_package">p4gl_package</a>
+          </h3>
+<blockquote>
+  Identifies Package, that typically corresponds to a directory. This way, it 
+  provides uniqueness of source files. 
+</blockquote>
+<div align="center">
+  <center>
+                   
+        <table cellpadding="2" cellspacing="2" border="1" width="80%">
+            <tbody>
+              <tr>
+                <td valign="Top">                              
+              <div align="Center"><b> Column </b>
+                </div>
+                </td>
+                <td valign="Top">                              
+              <div align="Center"><b> Description </b>
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> id_package </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> comments
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+                       
+          </tbody>                  
+        </table>
+                   
+  </center>
+</div>
+                   
+        <h3> <a name="p4gl_program"> p4gl_program</a>
+          </h3>
+<blockquote>
+   Executable program to be compiled. It does not support programs with 
+   non-unique name.   
+ It is not used at the moment. When the <i> syspgm</i> or makefile importer is 
+   implemented, it will be the place where the executables are defined.  
+</blockquote>
+<div align="center">
+  <center>
+                   
+        <table cellpadding="2" cellspacing="2" border="1" width="80%">
+            <tbody>
+              <tr>
+                <td valign="Top">                              
+              <div align="Center"><b> Column </b>
+                </div>
+                </td>
+                <td valign="Top">                              
+              <div align="Center"><b> Description </b>
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> program_name </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> comments </td>
+              </tr>
+                       
+          </tbody>                  
+        </table>
+                   
+  </center>
+</div>
+                   
+        <h3> <a name="p4gl_module"> p4gl_module</a>
+          </h3>
+<blockquote>
+   Identifies 4GL module (4gl source file).  
+</blockquote>
+<div align="center">
+  <center>
+                   
+        <table cellpadding="2" cellspacing="2" border="1" width="80%">
+            <tbody>
+              <tr>
+                <td valign="Top">                              
+              <div align="Center"><b> Column </b>
+                </div>
+                </td>
+                <td valign="Top">                              
+              <div align="Center"><b> Description </b>
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> id_package </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> module_name </td>
+              </tr>
+              <tr>
+                <td valign="Top"> comments
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+                       
+          </tbody>                  
+        </table>
+                   
+  </center>
+</div>
+                   
+        <h3> <a name="p4gl_module_prog"> p4gl_module_prog</a>
+          </h3>
+<blockquote>
+   Definition of dependencies of 4gl source files, for the construction of one     
+programs. Not used at this time. FIXME: Does not track usage of form, menu or 
+   help files. 
+</blockquote>
+<div align="center">
+  <center>
+                   
+        <table cellpadding="2" cellspacing="2" border="1" width="80%">
+            <tbody>
+              <tr>
+                <td valign="Top">                              
+              <div align="Center"><b> Column </b>
+                </div>
+                </td>
+                <td valign="Top">                              
+              <div align="Center"><b> Description </b>
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> program_name
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> id_package </td>
+              </tr>
+              <tr>
+                <td valign="Top"> module_name
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+                       
+          </tbody>                  
+        </table>
+                   
+  </center>
+</div>
+                   
+        <h3> <a name="p4gl_function"> p4gl_function</a>
+          </h3>
+<blockquote>
+  Identifies each 4gl function. 
+</blockquote>
+<div align="center">
+  <center>
+                   
+        <table cellpadding="2" cellspacing="2" border="1" width="80%">
+            <tbody>
+              <tr>
+                <td valign="Top">                              
+              <div align="Center"><b> Column </b>
+                </div>
+                </td>
+                <td valign="Top">                              
+              <div align="Center"><b> Description </b>
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> id_package </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> module_name </td>
+              </tr>
+              <tr>
+                <td valign="Top"> function_name
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> function_type
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> comments
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+                       
+          </tbody>                  
+        </table>
+                   
+  </center>
+</div>
+                   
+        <h3> <a name="p4gl_process"> p4gl_process</a>
+          </h3>
+<blockquote>
+  Identifies an analyzed and described process that the software implements.  
+</blockquote>
+<div align="center">
+  <center>
+                   
+        <table cellpadding="2" cellspacing="2" border="1" width="80%">
+            <tbody>
+              <tr>
+                <td valign="Top">                              
+              <div align="Center"><b> Column </b>
+                </div>
+                </td>
+                <td valign="Top">                              
+              <div align="Center"><b> Description </b>
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> id_package </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> den_process
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> comments
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+                       
+          </tbody>                  
+        </table>
+                   
+  </center>
+</div>
+                   
+        <h3> <a name="p4gl_process-duplicate"> p4gl_process-FIXMEduplicate</a>NAME
+          </h3>
+<blockquote>
+   Associates functions the processes.  
+</blockquote>
+<div align="center">
+  <center>
+                   
+        <table cellpadding="2" cellspacing="2" border="1" width="80%">
+            <tbody>
+              <tr>
+                <td valign="Top">                              
+              <div align="Center"><b> Column </b>
+                </div>
+                </td>
+                <td valign="Top">                              
+              <div align="Center"><b> Description </b>
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> id_package </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> module_name </td>
+              </tr>
+              <tr>
+                <td valign="Top"> function_name
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> id_process
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+                       
+          </tbody>                  
+        </table>
+                   
+  </center>
+</div>
+                   
+        <h3> <a name="p4gl_fun_parameter">p4gl_fun_parameter</a>
+          </h3>
+<blockquote>
+           Associates parameters to functions      
+</blockquote>
+<div align="center">
+  <center>
+                   
+        <table cellpadding="2" cellspacing="2" border="1" width="80%">
+            <tbody>
+              <tr>
+                <td valign="Top">                              
+              <div align="Center"><b> Column </b>
+                </div>
+                </td>
+                <td valign="Top">                              
+              <div align="Center"><b> Description </b>
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> id_package </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> module_name </td>
+              </tr>
+              <tr>
+                <td valign="Top"> function_name
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> item_num
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> var_name
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> data_type
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> comments
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+                       
+          </tbody>                  
+        </table>
+                   
+  </center>
+</div>
+                   
+        <h3> <a name="p4gl_fun_return"> p4gl_fun_return</a>
+          </h3>
+<blockquote>
+ Returns values of a function.  
+</blockquote>
+<div align="center">
+  <center>
+                   
+        <table cellpadding="2" cellspacing="2" border="1" width="80%">
+            <tbody>
+              <tr>
+                <td valign="Top">                              
+              <div align="Center"><b> Column </b>
+                </div>
+                </td>
+                <td valign="Top">                              
+              <div align="Center"><b> Description </b>
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> id_package </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> module_name
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> function_name
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> item_num
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> var_name
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> data_type
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> comments
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+                       
+          </tbody>                  
+        </table>
+                   
+  </center>
+</div>
+                   
+        <h3> <a name="p4gl_fun_todo"> p4gl_fun_todo</a>
+          </h3>
+<blockquote>
+   Modifications to be made in function code, in the future. 
+</blockquote>
+<div align="center">
+  <center>
+                   
+        <table cellpadding="2" cellspacing="2" border="1" width="80%">
+            <tbody>
+              <tr>
+                <td valign="Top">                              
+              <div align="Center"><b> Column </b>
+                </div>
+                </td>
+                <td valign="Top">                              
+              <div align="Center"><b> Description </b>
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> id_package </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> module_name </td>
+              </tr>
+              <tr>
+                <td valign="Top"> function_name
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> item_num
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> comments
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+                       
+          </tbody>                  
+        </table>
+                   
+  </center>
+</div>
+                   
+        <h3> <a name="p4gl_table_usage"> p4gl_table_usage</a>
+          </h3>
+<blockquote>
+   Describes database tables used by functions and modules. 
+</blockquote>
+<div align="center">
+  <center>
+                   
+        <table cellpadding="2" cellspacing="2" border="1" width="80%">
+            <tbody>
+              <tr>
+                <td valign="Top">                              
+              <div align="Center"><b> Column </b>
+                </div>
+                </td>
+                <td valign="Top">                              
+              <div align="Center"><b> Description </b>
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> id_package </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> module_name </td>
+              </tr>
+              <tr>
+                <td valign="Top"> function_name
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> table_name
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> operation
+                </td>
+                <td valign="Top">                              
+              <pre> 'I','U','D','S' =
+Insert, Update, Delete, Search (Query)</pre>
+                </td>
+              </tr>
+                       
+          </tbody>                  
+        </table>
+                   
+  </center>
+</div>
+                   
+        <h3> <a name="p4gl_excel"> p4gl_excel</a>
+          </h3>
+<blockquote>
+   Not normalized data loaded directly from a spreadsheet.  
+</blockquote>
+<div align="center">
+  <center>
+                   
+        <table cellpadding="2" cellspacing="2" border="1" width="80%">
+            <tbody>
+              <tr>
+                <td valign="Top">                              
+              <div align="Center"><b> Column </b>
+                </div>
+                </td>
+                <td valign="Top">                              
+              <div align="Center"><b> Description </b>
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> module_name </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> id_process </td>
+              </tr>
+              <tr>
+                <td valign="Top"> function_name
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> parameters
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> returns
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> called
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+              <tr>
+                <td valign="Top"> comments
+                </td>
+                <td valign="Top">&nbsp;
+                </td>
+              </tr>
+                       
+          </tbody>                  
+        </table>
+  </center>
+</div>
+&nbsp;
+<p><a href="#Table of contents">Back to Table of contents</a></p>    
+<hr>
+                                           
+        <h1> <a name="Dependencies"> Dependencies</a> </h1>
+<blockquote>
+     To be compiled and executed, the DOC4GL documenter have to fulfill a      
+certain number of requirements, that are describe here.      
+                                           
+        <h2> Run-time</h2>
+ You need to install the following software in order to run the compiled tools.    
+     This also applies if you download pre-compiled binary distribution of    
+     DOC4GL. 
+                                                 
+        <blockquote>                                                 
+          <ul>
+           <li> <a href="http://www.perl.org" target="_blank"> Perl</a> language interpreter, version &gt;= 5.6 </li> 
+           <li> <a href="http://www.perl.org"> Perl DBI</a> module</li> 
+           <li> <a href="http://www.perl.org"> Perl DBD</a>::Informix module </li> 
+           <li> Perl::Tk module </li> 
+                <li> Perl::Data module </li> 
+                <li> Perl::Getopt module 
+                </li>
+           <li> <a href="http://www.informix.com/evaluate"> Informix CLI</a> (Part of Informix CSDK 
+            (Client SDK) - also contains ESQL/C) </li> 
+           <li> <a href="http://www.informix.com/evaluate"> Informix JDBC</a> drivers </li> 
+           <li> <a href="http://www.informix.com">Informix database server</a> (commercial) </li>
+           <li> JSP enabled web server, for example <a href="http://www.apache.org" target="_blank"> Jakarta Tomcat</a> </li>  
+           <li> Java Run-time environment - JRE, also referred to as JVM (for 
+            example, <a href="http://java.sun.com/j2se" target="_blank">Sun J2SE</a> 
+            or <a href="http://kaffe.org">Kaffe</a> implementation) </li>
+                                                     
+          </ul>
+          All software listed here is free software, either under GPL license, 
+          or free for use, expect Informix database server, which is a commercial 
+          product. This dependency will be removed in next version.
+         </blockquote>
+                                                     
+          <h2> Compilation</h2>
+ To compile the DOC4GL tools from source code, you will need:     
+                                                     
+          <blockquote>                                                  
+        
+            <ul>
+             <li> <a href="http://www.informix.com/evaluate" target="_blank"> Informix ESQL/C</a>&nbsp;  
+              (part of Informix CSDK (Client SDK)) </li>   
+             <li> <a href="http://www.gnu.org/software/bison/bison.html" target="_blank"> Bison</a> </li>
+             <li> <a href="http://dinosaur.compilertools.net" target="_blank"> Lex</a> </li>
+             <li> <a href="http://gcc.gnu.org" target="_blank"> GCC</a> (GNU C compiler) </li> 
+             <li> J2SE SDK (for example, <a href="http://java.sun.com/j2se" target="_blank">Sun 
+              J2SE</a> or <a href="http://www.dms.at/kopi" target="_blank">Kopi</a> 
+              implementation) </li>
+                  <li> <a href="http://www.gnu.org/software/make/make.html" target="_blank"> Make</a> tool 
+             </li>
+                                                               
+            </ul>
+           </blockquote>
+                           
+</blockquote>
+<p><a href="#Table of contents">Back to Table of contents</a></p>
+<hr>
+                           
+            <h1><a name="Installation and Compilation instructions">Installation 
+            and Compilation instructions</a></h1> 
+<blockquote>
+  <h4>Obtaining the DOC4GL software package</h4>
+<p>Currently, DOC4GL is available only in source code form, and only form   
+  Aubit 4gl CVS repository. Pre-compiled binary packages and source code   
+  distributions, both tar-balls (.tgz) and RPM and Debian (.deb) will be available soon. Please   
+  see instructions for accessing CVS on Aubit 4gl project CVS page.</p>  
+<p>
+Execute './configure' script before proceeding.</p>
+  <h4>Location and prerequisites</h4>
+  <p>
+DOC4GL application package consists of 3 core components:</p> 
+<p>1) <i> Web browser interface</i> component, used to allow viewing and searching generated   
+documentation served by web server, using web browser.</p>  
+  <blockquote>
+<p><i>Location</i>: doc4gl/browser</p> 
+  </blockquote>
+<p>2) Perl CUI and GUI Manager front-end, used to allow viewing and searching generated   
+documentation from graphical interface (GUI) or command line interface (CUI) 
+including batch processing.</p>
+  <blockquote>
+<p><i>Location</i>: doc4gl/manager</p>
+  </blockquote>
+  <p>3) Parser / loader , core component that performs all core documentation 
+  creation tasks.</p>
+  <blockquote>
+    <p><i>Location</i>: doc4gl/parser</p>
+  </blockquote>
+<p>
+     The components that need compilation are:  the <i> parser / loader</i> (p4gl) and additional   
+classes of the web browser manager.</p>  
+  <h4>Compilation</h4> 
+  <p>You have to compile DOC4GL programs from source code and install it, in order to use it.</p>  
+  <p>
+The compile configuration is kept in a makefile include file called &quot;FgldocDefs.mk&quot;. 
+This is the only place to make changes in order to compile and install the   
+tool. The steps to compile are:</p>  
+            <blockquote>
+              <ul>
+                <li>Execute './configure' script</li>
+                <li>(optional) Edit FgldocDefs.mk to verify that it reflects your configuration</li> 
+                <li>(optional) Type <i>make clean</i></li>   
+                <li>Type <i>make</i></li> 
+                <li>Type <i>make install</i></li>
+              </ul>
+              </blockquote>
+<p>
+     Compiling, installing and using Web browser and GUI interface components is      
+     optional, but recommended. If you want to compile and install just core <i>Parser      
+     and loader</i> component, including CUI command line interface, <i>cd</i>      
+     into doc4gl/parser directory before invoking <i>make</i> command.&nbsp;</p>     
+<h4>Installation</h4>
+  <p>
+     Execute &quot;<i>make install&quot; </i>from DOC4GL root directory or from   
+  component subdirectory. By default, if settings in compile-time configuration   
+  file &quot;FgldocDefs.mk&quot; where not changed, binaries will be installed   
+  in /usr/local/bin. Please make sure that directory that will be used to 
+  install executable files is in your PATH environment variable.</p> 
+<p>
+     Directory doc4gl/sql contains SQL DDL (data definition language) scripts,  
+     that user must execute against designated database (currently, since  
+     Informix is only database option, execute them using dbaccess or isql  
+     tools) to create database structures needed by doc4gl applications. This 
+     should be done automatically by 'configure' script:</p>
+  <ul>
+    <li>inslib_rep.sql - Creates repository structure for scan_fgl / p4gl documenter</li>
+    <li>p4gl_rep.sql - FIXME: Creates some tables, probably tables needed for reports   
+      generation.</li>
+    <li>p4gl_rep_drop.sql - drops all tables created by p4gl_rep.sql script.</li>
+    <li>p4gl_del.sql - deletes ALL data from doc4gl related tables</li>
+    <li>load_process.sql - is used to manually load data from &quot;.unl&quot; files into  
+      p4gl_process table, typically from &quot;p4gl_process.unl&quot; file</li> 
+    <li>p4gl_process.unl - unload file is used by load_process.sql script. It  
+      contains ... FIXME?</li>
+  </ul>
+</blockquote>
+              <h1><a name="Configuration file">Configuration file</a> </h1>  
+<blockquote>
+   The configuration file has the export format of Perl data, created using the &quot;Data::Dumper&quot; module.  
+  <p>
+   It can be manually modified, however, care should be taken that each string 
+  can be correctly evaluated by the Perl &quot;eval&quot; instruction.</p>
+</blockquote>
+<p><a href="#Table of contents">Back to Table of contents</a></p>
+<hr>
+<p align="center"><a href="../index.html">Doc4GL documentation index page</a>&nbsp; 
+<a href="http://aubit4gl.sourceforge.net" target="_blank">Aubit 4gl project</a>&nbsp; 
+<a href="../../common/index.html">Aubit 4gl compiler documentation menu</a></p> 
+                                                               
+              </body>
+              </html>

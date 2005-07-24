@@ -1,0 +1,52 @@
+<HTML>
+<HEAD>
+<TITLE>TOP OF PAGE Clause</TITLE>
+</HEAD><BODY>
+<B>TOP OF PAGE Clause
+<P></P>
+</B>This optional clause identifies the page-eject character sequence for a
+printer.
+<P></P>
+<IMG SRC="4GLREF00000010.gif" ALT="4GLREF00000010.gif" BORDER="0" WIDTH="448" HEIGHT="29">
+<P></P>
+<B>string</B>  is a quoted string that begins with the page-eject character.
+<P></P>
+If you include the TOP OF PAGE clause, 4GL uses the specified page-eject
+character to set up new pages.
+<P></P>
+<B>New Pages of Report Output
+<P></P>
+</B>In the output from the report, 4GL includes the page-eject character that you
+specify in the character string to advance to the next page whenever the
+program causes a new page to be set up. New pages can be initiated by any of the
+following conditions:
+<P></P>
+The next line of output from a PRINT statement meets the bottom margin.
+<P></P>
+The SKIP TO TOP OF PAGE statement is executed.
+<P></P>
+The SKIP n LINES statement specifies more lines than are available on the
+current page.
+<P></P>
+The NEEDS statement specifies more lines than are available on the current
+page.
+<P></P>
+If you omit the TOP OF PAGE clause, INFORMIX-4GL fills the remaining lines of
+the current page with LINEFEED characters when a new page is set up.
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFBOTTOM_MARGIN_Clause.htm"></A></B><A HREF="4GLREFBOTTOM_MARGIN_Clause.htm">BOTTOM MARGIN Clause</A> 
+<P></P>
+<A HREF="4GLREFLEFT_MARGIN_Clause.htm">LEFT MARGIN Clause</A> 
+<P></P>
+<A HREF="4GLREFPAGE_LENGTH_Clause.htm">PAGE LENGTH Clause</A> 
+<P></P>
+<A HREF="4GLREFREPORT_TO_Clause.htm">REPORT TO Clause</A> 
+<P></P>
+<A HREF="4GLREFRIGHT_MARGIN_Clause.htm">RIGHT MARGIN Clause</A> 
+<P></P>
+<A HREF="4GLREFTOP_MARGIN_Clause.htm">TOP MARGIN Clause</A> 
+<P></P>
+</BODY>
+</HTML>

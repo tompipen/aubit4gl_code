@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<TITLE>PROMPT</TITLE>
+</HEAD><BODY>
+<B>PROMPT
+<P></P>
+</B>The PROMPT statement assigns a user-supplied value to a variable.
+<P></P>
+<IMG SRC="4GLREF00000181.gif" ALT="4GLREF00000181.gif" BORDER="0" USEMAP="#map110" WIDTH="583" HEIGHT="201"><MAP NAME="map110"><AREA COORDS="97,140,162,176" HREF="4GLREFATTRIBUTE00000476.htm"><AREA COORDS="211,49,276,85" HREF="4GLREFATTRIBUTE00000476.htm"></MAP>
+<P></P>
+<B>key  </B>is a keyword to specify an activation key:
+<P></P>
+<B>number </B>is a literal integer to specify a Help message number.
+<P></P>
+<B>response </B> is the name of a variable to store the response of the user to the PROMPT
+character string. This cannot be of data type BYTE.
+<P></P>
+<B>statement</B> is a 4GL statement. 
+<P></P>
+<B>string </B>is a quoted string that 4GL displays on the Prompt line.
+<P></P>
+<B><UL><LI>ariable </B>is the name of a CHAR or VARCHAR variable containing a message to the user,
+typically prompting the user to enter a value.
+<P></P>
+<B></UL><OL START="4"><LI>GL takes the following actions when it executes a PROMPT statement:
+<P></P>
+</B></OL><OL><LI> Replaces any variables with their current values.
+<P></P>
+<LI> Concatenates the list of values into a single prompt string. The total length
+of this string, plus the users response, cannot exceed 80 characters.
+<P></P>
+<LI> Displays the resulting string on the Prompt line of the current form (or in
+the Line mode overlay, if it currently covers the Application window)..
+<P></P>
+<LI> Waits for the user to enter a value.
+<P></P>
+<LI> Reads whatever value was entered until the user presses RETURN, and then
+stores this value in response variable. 
+<P></P>
+</OL>The prompt string remains visible until the user enters a response.  
+<P></P>
+<B>References
+<P></P>
+<A HREF="4GLREFDISPLAY.htm"></A></B><A HREF="4GLREFDISPLAY.htm">DISPLAY</A> 
+<P></P>
+<A HREF="4GLREFDISPLAY_ARRAY.htm">DISPLAY ARRAY</A> 
+<P></P>
+<A HREF="4GLREFINPUT.htm">INPUT</A> 
+<P></P>
+<A HREF="4GLREFINPUT_ARRAY.htm">INPUT ARRAY</A> 
+<P></P>
+<A HREF="4GLREFOPEN_WINDOW.htm#beef7ac7">OPEN WINDOW</A> 
+<P></P>
+<A HREF="4GLREFOPTIONS.htm">OPTIONS</A> 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

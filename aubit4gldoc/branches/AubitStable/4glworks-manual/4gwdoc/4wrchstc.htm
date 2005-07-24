@@ -1,0 +1,371 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glWorks reference: Associative arrays</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glWorks reference: Associative arrays</CENTER></B><HR></H1>
+
+<P>4glworks offers a homegrown implementation of associative arrays built
+over memory located byte variables. Hashes have no limit in the number of
+entries and are self reorganizing.
+<CODE>K_entrysize</CODE> and <CODE>K_defsize</CODE> (see the declarations
+below) are currently set to 32K.<BR>
+The functions below that return values return nulls in case of erroneous
+arguments. All set <CODE>status</CODE> in case of errors.</P>
+<UL>
+<LI><A HREF="#hst_drop">hst_drop</A></LI>
+<LI><A HREF="#hst_enter">hst_enter</A></LI>
+<LI><A HREF="#hst_enterdate">hst_enterdate</A></LI>
+<LI><A HREF="#hst_enterdecimal">hst_enterdecimal</A></LI>
+<LI><A HREF="#hst_enterdtime">hst_enterdtime</A></LI>
+<LI><A HREF="#hst_enterfloat">hst_enterfloat</A></LI>
+<LI><A HREF="#hst_enterint">hst_enterint</A></LI>
+<LI><A HREF="#hst_enterinv">hst_enterinv</A></LI>
+<LI><A HREF="#hst_free">hst_free</A></LI>
+<LI><A HREF="#hst_member">hst_member</A></LI>
+<LI><A HREF="#hst_retrieve">hst_retrieve</A></LI>
+<LI><A HREF="#hst_scan">hst_scan</A></LI>
+<LI><A HREF="#hst_start">hst_start</A></LI>
+</UL>
+
+<P><A NAME="hst_drop"><H3>hst_drop</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>chstc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function hst_drop(ht, e)
+    define ht	byte,
+	   e	char(K_entrysize)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Deletes an entry from an associative array.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="hst_enter"><H3>hst_enter</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>chstc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function hst_enter(ht, e, d)
+    define ht	byte,
+	   e	char(K_entrysize),
+	   d	char(K_defsize)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Adds or updates an entry to an associative array.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="hst_enterdate"><H3>hst_enterdate</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>chstc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function hst_enterdate(ht, e, d)
+    define ht	byte,
+	   e	char(K_entrysize),
+	   d	date
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Adds or updates an entry to an associative array.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="hst_enterdecimal"><H3>hst_enterdecimal</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>chstc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function hst_enterdecimal(ht, e, d)
+    define ht	byte,
+	   e	char(K_entrysize),
+	   d	decimal
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Adds or updates an entry to an associative array.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="hst_enterdtime"><H3>hst_enterdtime</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>chstc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function hst_enterdtime(ht, e, d)
+    define ht	byte,
+	   e	char(K_entrysize),
+	   d	datetime
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Adds or updates an entry to an associative array.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="hst_enterfloat"><H3>hst_enterfloat</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>chstc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function hst_enterfloat(ht, e, d)
+    define ht	byte,
+	   e	char(K_entrysize),
+	   d	float
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Adds or updates an entry to an associative array.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="hst_enterint"><H3>hst_enterint</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>chstc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function hst_enterint(ht, e, d)
+    define ht	byte,
+	   e	char(K_entrysize),
+	   d	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Adds or updates an entry to an associative array.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="hst_enterinv"><H3>hst_enterinv</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>chstc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function hst_enterinv(ht, e, d)
+    define ht	byte,
+	   e	char(K_entrysize),
+	   d	interval
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Adds or updates an entry to an associative array.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="hst_free"><H3>hst_free</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>chstc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function hst_free(ht)
+    define ht	byte
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Frees a hash variable
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>
+It appears that 4gl keeps track of the blobs it locates, so while it is
+entirely possible to <CODE>free</CODE> hashes the 4gl way, this is 
+cumbersome and error prone. Use <CODE>hst_free</CODE> instead.
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="hst_member"><H3>hst_member</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>chstc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function hst_member(ht, e)
+    define ht	byte,
+	   e	char(K_entrysize)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>m</VAR>, boolean
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Tests whether an entry is member of an associative array.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="hst_retrieve"><H3>hst_retrieve</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>chstc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function hst_retrieve(ht, e)
+    define ht	byte,
+	   e	char(K_entrysize)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>d</VAR>, char(K_entrysize), value associated with entry <CODE>e</CODE>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Retrieves the value associated with an entry of an associative array.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>in actual fact, <CODE>hst_retrieve</CODE> return value could
+be of any type. It is safer to use a character destination variable if the
+type of the return value of <CODE>hst_retrieve</CODE> is not readily
+available</TD></TR>
+</TABLE></P>
+
+<P><A NAME="hst_scan"><H3>hst_scan</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>chstc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function hst_scan(ht, idx)
+    define ht	byte,
+	   idx	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>e</VAR>, char(K_entrysize), next entry<BR>
+<VAR>d</VAR>, char(K_entrysize), entry value<BR>
+<VAR>idx</VAR>, integer, routine state.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Scans an associative array.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>The initial value of <CODE>idx</CODE> should be <CODE>NULL</CODE></LI>
+<LI>Successive calls should be passed the value returned by the previous call</LI>
+<LI>The end of the array being reached is flagged by <VAR>e</VAR> and <VAR>d</VAR>
+both being <CODE>NULL</CODE></LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="hst_start"><H3>hst_start</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>chstc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function hst_start(ht, hs)
+    define ht	byte,
+	   hs	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Initializes an associative array.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI><CODE>hs</CODE> is the initial number of buckets</LI>
+<LI>The associative array can <EM>only</EM> be disposed of using
+<A HREF="4wrcascc.htm#asc_free">asc_free</A></LI>
+</UL></TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>

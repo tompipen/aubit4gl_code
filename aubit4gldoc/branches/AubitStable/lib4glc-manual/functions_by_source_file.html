@@ -1,0 +1,324 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Functions by source file</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h2 align="center"><a name="Top of page - C library functions for 4gl - manual">C
+function library for 4gl</a></h2>
+<hr>
+<p>Catalogue of functions by source file:</p>
+<ul>
+  <li><a href="#c_alarm">c_alarm</a></li>
+  <li>c_bits</li>
+  <li><a href="#c_daemon">c_daemon</a></li>
+  <li><a href="#c_direct">c_direct</a></li>
+  <li>c_errno (.c and .h)</li>
+  <li>c_getkey</li>
+  <li><a href="#c_getprg">c_getprg</a></li>
+  <li><a href="#c_getpsh">c_getpsh</a></li>
+  <li><a href="#c_is4js">c_is4js</a></li>
+  <li>c_math</li>
+  <li>c_md5</li>
+  <li>c_memory</li>
+  <li>c_msg</li>
+  <li><a href="#c_passwd">c_passwd</a></li>
+  <li>c_printf</li>
+  <li><a href="#c_process">c_process</a></li>
+  <li><a href="#c_rawio">c_rawio</a></li>
+  <li>c_regex</li>
+  <li>c_sem</li>
+  <li>c_socket (.c and .h)</li>
+  <li>c_statfile</li>
+  <li>c_stdio</li>
+  <li>c_string</li>
+  <li>c_stub4j</li>
+  <li>c_time</li>
+</ul>
+<p>Supporting files:</p>
+<ul>
+  <li>cface.pl</li>
+  <li>cfun4gl (.c and .h)
+All .c files include <b>cfun4gl.h</b>
+which contains universal #includes and definitions. <b>cfun4gl.c</b>
+contains the bulk of the support functions shared among all source code.</li>
+  <li>fdecls.h - SHOULD NOT BE IN CVS - functions.pl --fdecls *.c &gt; fdecls.h</li>
+  <li>fgiusr (.c and .inc) .inc SHOULD NOT BE IN CVS - &quot;functions.pl --fgiusr
+    *.c &gt; fgiusr.inc&quot;&nbsp;</li>
+  <li>fglext (.c and .inc) .inc SHOULD NOT BE IN CVS - &quot;functions.pl --fglext
+    *.c &gt; fglext.inc&quot;</li>
+  <li>functions.pl - generate includable function headers,
+and the interface definitions (hooks into 4GL)</li>
+  <li>j_getkey.c</li>
+  <li>j_is4js.c</li>
+  <li>Makefile</li>
+  <li>md5.h</li>
+  <li>md5glob.h</li>
+</ul>
+<p>&nbsp;</p>
+<p><a href="c4gl_library.html">Introduction to C&nbsp; function library for
+4gl&nbsp;</a></p>
+<hr>
+<h2><a name="c_rawio">c_rawio</a></h2>
+<p>USAGE:</p>
+<blockquote>
+  <p>function c_open(path, oflag, mode char(*)) returning integer<br>
+  function c_pipe() returning (rfd, wfd) integer<br>
+  function c_dup(fd integer) returning (nfd) integer<br>
+  function c_dup2(fd1, fd2 integer) returning (fd) integer<br>
+  function c_close(fd integer) returning (stat) integer<br>
+  function c_read(fd, n integer) returning (nbytes) integer, (str) char(*)<br>
+  function c_write(fd integer, str char(*), n integer) returning (nbytes) integer<br>
+  function c_lseek(fd, ofs, whence integer) returning integer<br>
+  function c_chmod(path, mode char(*)) returning integer</p>
+</blockquote>
+<p>DESCRIPTION:</p>
+<p>Most of these functions are adequately described in the standard manual pages. Following are some special points to note.</p>
+<p>open() oflags may contain the following characters:</p>
+<blockquote>
+  <p>    'r'  Open for reading<br>
+    'w'  Open for writing<br>
+    'a'  Append - O/S set file pointer to end prior to each write<br>
+    'c'  Create - allow creation of non-existent file<br>
+    'e'  Exclusive - force failure if file exists (must use with 'c')<br>
+    's'  Sync - writes wait for file data and status to be updated<br>
+    't'  Truncate - affects existing regular files only<br>
+    'y'  No CTTY - prevents a terminal device becoming the controlling<br>
+         terminal for a process without a controller.<br>
+    'b'  Non-blocking I/O - different behaviour to 'd' (so the manual says)<br>
+    'd'  No delay I/O - different behaviour to 'b' (so the manual says)</p>
+</blockquote>
+<p>The mode flag for c_open() and c_chmod() must be a string, but it can be either octal digits, or "rwxrwxrwx", with - in position for any unset bits.
+If the string is too short, trailing bits are assumed to be - ie unset.</p>
+<p>If the length parameter given to c_write() is zero, then the length of the string is calculated - trailing blanks are ignored in the 4GL tradition.
+If you specify the length then you can get away with blanks, but make sure those blanks are actually in the string.</p>
+<p>All functions store errno whenever the system call returns an error. See
+c_errno() and c_strerror()</p>
+<p>WARNINGS:</p>
+<p>Maximum length for a filename is 1024 bytes. Maximum read and write strings are 2048 bytes. Extra characters are silently discarded. Beware writing nulls
+in strings - I have a nasty feeling the remaining characters will not get delivered to the write() system call, due to the nature of 4GL string
+handling. If that's a problem, we can write a simple lowlevel writebyte() which takes a numeric parameter.</p>
+<p><a href="#Top of page - C library functions for 4gl - manual">Back to top</a></p>
+<hr>
+<h2><a name="c_process">c_process</a></h2>
+<p>USAGE:</p>
+<blockquote>
+  <p>function c_fork() returning (pid) integer<br>
+  function c_wait() returning (pid, status) integer<br>
+  function c_waitpid(pid, options integer) returning (pid, status) integer<br>
+  function c_waitopt(option char(*)) returning integer<br>
+  function c_waitstat(funct char(*), status integer) returning integer<br>
+  function c_sqldetach()<br>
+  function c_argv(arg char(*)) returning integer<br>
+  function c_argc() returning (argc, max_argv, max_argc) integer<br>
+  function c_execv(path char(*)) returning integer<br>
+  function c_execvp(file char(*)) returning integer</p>
+</blockquote>
+<p>DESCRIPTION:</p>
+<p>c_fork() flushes all open FILE streams, wac_errno, child does sqldetach()</p>
+<p>c_wait() and c_waitopt() wait for a child process, and return the process ID and status of the result.</p>
+<p>c_waitopt() returns constants to be used in the c_waitpid() call. Supported options are:</p>
+<blockquote>
+  <p>&quot;WCONTINUED&quot;<br>
+    "WNOHANG"<br>
+    "WNOWAIT"<br>
+  &quot;WUNTRACED&quot;</p>
+</blockquote>
+<p>c_waitstat() performs the duties of the named macros, as documented for the
+waitpid() system call. Supported macros are:</p>
+<blockquote>
+  <p>&quot;WIFEXITED&quot;<br>
+    "WEXITSTATUS"<br>
+    "WIFSIGNALED"<br>
+    "WTERMSIG"<br>
+  &quot;WCOREDUMP&quot;</p>
+</blockquote>
+<p>c_argv() stores the (next) string for a subsequent call of execv() or execvp()
+A null argument frees all stored strings and resets the array to empty.&nbsp;</p>
+<p>TODO: probably should have a different clearing convention, like NO args</p>
+<p>c_argc() returns the present number of stored arguments, the maximum allowed length for an argument and the maximum number of arguments allowed.&nbsp;</p>
+<p>c_execv() calls the execv() system call using the path given and the previously stored arguments, and c_execvp() calls the execvp() system call
+which searches for the named file using $PATH. If these functions return then they has failed - see below for return values.</p>
+<p>function c_execvp(file char(*)) returning integer</p>
+<p>RETURN VALUES:</p>
+<p>c_fork() returns -1 on failure and stores errno, returns 0 for the child process and returns the child process id to the parent process.</p>
+<p>c_wait() and c_waitpid() return -1 on failure and store errno.</p>
+<p>c_waitopt() and c_waitstat() craps out if an unknown option is passed.</p>
+<p>c_argv() return values are:</p>
+<blockquote>
+  <p>0 after clearing the remembered arguments.<br>
+  -1  exceeded maximum argument count.<br>
+  -2  failed to allocate memory for the new argument.<br>
+  n   number of arguments now stored</p>
+</blockquote>
+<p>c_execv() and c_execvp() both return -1 (if they return at all) and errno is stored. The argv array is not cleared - you may want to call again with the
+same values.</p>
+<p>WARNING:</p>
+<p>c_fork() correctly detaches the child process from the database, thus the child process may call execv() or execvp() without trouble. If a parent
+process (or a process whih hasn't forked) wants to call one of the exec functions, then it MUST close the database and then call
+c_sqldetach(). Heinous results may ensue if this is not done. I'm not sure the consequences
+of calling c_sqldetach() when already detached (ie in a child for example).&nbsp;</p>
+<p>If a child process opens a database, then it is reattached and will need to call
+c_sqldetach() if it wants to call an exec function.</p>
+<p><a href="#Top of page - C library functions for 4gl - manual">Back to top</a></p>
+<hr>
+<h2><a name="c_passwd">c_passwd</a></h2>
+<p>USAGE:</p>
+<p>function c_crypt(char(100), char(15)) returning char(15)</p>
+<p>function c_setpwent()</p>
+<p>function c_endpwent()</p>
+<p>function c_getpwent()<br>
+&nbsp;&nbsp;&nbsp; returning (name, passwd) char(*),<br>
+&nbsp;&nbsp;&nbsp; (uid, gid) integer,<br>
+&nbsp;&nbsp;&nbsp; (age, comment, gecos, dir, shell) char(*)</p>
+<p>function c_getpwuid(int)<br>
+&nbsp;&nbsp;&nbsp; returning (name, passwd) char(*),<br>
+&nbsp;&nbsp;&nbsp; (uid, gid) integer,<br>
+&nbsp;&nbsp;&nbsp; (age, comment, gecos, dir, shell) char(*)</p>
+<p>function c_getpwnam(char (8))<br>
+&nbsp;&nbsp;&nbsp; returning (name, passwd) char(*),<br>
+&nbsp;&nbsp;&nbsp; (uid, gid) integer,<br>
+&nbsp;&nbsp;&nbsp; (age, comment, gecos, dir, shell) char(*)</p>
+<p>DESCRIPTION:</p>
+<p>c_crypt() returns the string result of calling crypt(key, salt). Note that the first two characters of an encrypted password stored in /etc/passwd are
+the salt.</p>
+<p>c_setpwent(), c_getpwent() and c_endpwent() perform lookups into /etc/passwd or NIS (formerly YP) as appropriate for the machine.</p>
+<p>c_setpwent() opens the password file stream, and c_endpwent() closes it.</p>
+<p>c_getpwent() when called sequentially returns each row of the password stream, returning all-nulls when the stream is finished.</p>
+<p>c_getpwuid() and c_getpwnam() return a password record keyed by uid and name respectively.</p>
+<p><a href="#Top of page - C library functions for 4gl - manual">Back to top</a></p>
+<hr>
+<h2><a name="c_alarm">c_alarm</a></h2>
+<p>USAGE:</p>
+<p>c_alarm(name char(10))<br>
+&nbsp;&nbsp;&nbsp; set an alarm, according to the named duration</p>
+<p>c_alarmed() returning integer<br>
+&nbsp;&nbsp;&nbsp; get and reset the alarmed indicator</p>
+<p>DESCRIPTION:</p>
+<p>Alarm times are specified by name, to allow changes in the timing without having to rewrite and recompile programs. The names are looked up in the
+environment as ${FGL_TO_&lt;name>}. If this value exists as an environment variable, it is used as the duration of the timing. Note that
+the $name part is expected to be lowercase.</p>
+<p>Any value not explicitly exported uses the value $FGL_TO_TIMEOUT. The default
+for $FGL_TO_TIMEOUT is 900 (ie 15 minutes). A non-positive or null timeout means the named timeout is disabled, and any existing alarm is cleared.
+There may be up to 20 timeout names. Only one alarm can be set at a time; old alarms are implicitly cancelled when a new alarm is set. An existing
+alarm can be cancelled by passing a null name.&nbsp;</p>
+<p>The libraries and generator (will) use these standard timeouts:</p>
+<blockquote>
+  <p>    FGL_TO_menu		timeout for exiting program from main ring menu<br>
+    FGL_TO_input	timeout for data entry in header/detail screen<br>
+    FGL_TO_cancel	timeout for the popup cancel window&nbsp;<br>
+    FGL_TO_zoom		timeout for closing down zoom screens<br>
+    FGL_TO_view		timeout for other popup view screens<br>
+    FGL_TO_edit		timeout for other popup edit screens</p>
+</blockquote>
+<p>Feel free to invent 8 of your own, but I would like to reserve 6 more for the libraries.</p>
+<p>Internally, the timeouts are set by calling the alarm() system call. When the alarm goes off, the operating system sends the SIGALRM signal. When
+this signal is caught, the alarm is registered in a static C variable and the process then sends SIGINT to itself. Informix registers this interrupt
+by interrupting whatever it feels like, and setting int_flag. Finally, all the alarm interrupt handlers return. The 4GL program then continues as if
+a genuine interrupt has been sent by the user. The 4GL interrupt handling code can detect the alarm by calling c_alarmed() which, if it returns true,
+implies that the interrupt is actually an alarm signal.</p>
+<p><a href="#Top of page - C library functions for 4gl - manual">Back to top</a></p>
+<hr>
+<h2><a name="c_getpsh">c_getpsh</a></h2>
+<p>USAGE:</p>
+<p>function c_getprotobyname(name char(*))<br>
+&nbsp;&nbsp;&nbsp; returning (name) char(*), (nalias, proto) integer</p>
+<p>function c_getprotobynumber(proto integer)<br>
+&nbsp;&nbsp;&nbsp; returning (name) char(*), (nalias, proto) integer</p>
+<p>function c_proto_alias(nalias integer)<br>
+&nbsp;&nbsp;&nbsp; returning (alias) char(*)</p>
+<p>DESCRIPTION:</p>
+<p>Protocols referred to here imply lowlevel Internet protocols eg IP TCP UDP.</p>
+<p>c_getprotobyname() performs a lookup by name, and c_getprotobynumber() performs a lookup by number.</p>
+<p>RETURN VALUES:</p>
+<p>Both functions return the official name, number of name aliases and the protocol number. Nulls are returned if the protocol cannot be found. Name
+aliases are stored in a static array which is overwritten by each call, and may be fetched using the c_proto_alias() function.</p>
+<p>USAGE:</p>
+<p>function c_getservbyname(name, protocol char(*))<br>
+&nbsp;&nbsp;&nbsp; returning (name) char(*), (nalias, port) integer, (protocol) char(*)</p>
+<p>function c_getservbyport(port integer, protocol char(*))<br>
+&nbsp;&nbsp;&nbsp; returning (name) char(*), (nalias, port) integer, (protocol) char(*)</p>
+<p>function c_serv_alias(nalias integer)<br>
+&nbsp;&nbsp;&nbsp; returning (alias) char(*)</p>
+<p>DESCRIPTION:</p>
+<p>Services here imply members of the /etc/services file or members of the services table of NIS (formerly YP) as appropriate for the machine.</p>
+<p>c_getservbyname() performs a lookup by name, and c_getservbyport() performs a lookup by number. The protocol argument must be passed as a lowercase
+string (eg tcp or udp) as found in the /etc/services file. If a null protocol is passed, the first service found is returned.</p>
+<p>RETURN VALUES:</p>
+<p>Both functions return the official service name, the number of name aliases, the port number of the service and the name of the protocol. Nulls are
+returned if the service cannot be found. Name aliases are stored in a static array which is overwritten by each call, and may be fetched using the
+c_serv_alias() function.</p>
+<p>USAGE:</p>
+<p>function c_gethostname() returning (hostname) char(*)</p>
+<p>DESCRIPTION:</p>
+<p>Returns the primary name of the host. Null is returned and errno is stored if the hostname cannot be found. See the manual entry for the
+gethostname() system call for details.</p>
+<p>USAGE:</p>
+<p>function c_gethostbyname(name char(*))<br>
+&nbsp;&nbsp;&nbsp; returning (name) char(*), (nalias, naddr) integer</p>
+<p>function c_gethostbyaddr(ipaddr char(*))<br>
+&nbsp;&nbsp;&nbsp; returning (name) char(*), (nalias, naddr) integer</p>
+<p>function c_host_alias(nalias integer) returning (alias) char(*)</p>
+<p>function c_host_addr(naddr integer) returning (addr) char(*)</p>
+<p>DESCRIPTION:</p>
+<p>c_gethostbyname() performs a name lookup, and c_gethostbyaddr() performs a lookup by IP address. See resolv.conf, DNS nis (formerly YP) and /etc/hosts
+for resolution details; they are what you would expect if you expect the right thing. The address should be specified as text eg 192.168.105.104.
+Only the internet address format is understood.</p>
+<p>RETURN VALUES:</p>
+<p>Both functions return the official name of the host, the number of name aliases and the number of addresses for the machine. The list of aliases and
+the list of addresses are stored in static arrays which are overwritten by each call.</p>
+<p>The aliases can be fetched using c_host_alias(), and the addresses can be fetched using c_host_addr(). The address is returned in dotted format.</p>
+<p><a href="#Top of page - C library functions for 4gl - manual">Back to top</a></p>
+<hr>
+<h2><a name="c_getprg">c_getprg</a></h2>
+<blockquote>
+  <p>function c_getuid()  returning integer<br>
+  function c_geteuid() returning integer<br>
+  function c_getgid()  returning integer<br>
+  function c_getegid() returning integer<br>
+  function c_getpid()  returning integer<br>
+  function c_getppid() returning integer</p>
+</blockquote>
+<p>These functions return the values of the corresponding system call. These functions cannot fail, so there is no error return value.</p>
+<p>function c_ttyname() returning char(*)</p>
+<p>This function examines the first three I/O streams in an attempt to get the name of the controlling terminal. If the controlling terminal cannot be
+found, the function returns a null string, and errno is stored.</p>
+<p><a href="#Top of page - C library functions for 4gl - manual">Back to top</a></p>
+<hr>
+<h2><a name="c_direct">c_direct</a></h2>
+<p>function c_mkdir(path [, mode] char(*)) returning integer</p>
+<p>Creates a directory by calling the mkdir() system call. The mode can either be an octal number (passed as a string!) or passed as a permissions string
+rwxrwxrwx. Unset bits should be passed as a - character. Missing character positions on the end of the string are assumed to be -
+The default mode is 0777.</p>
+<p>Upon successful completion, a value of 0 is returned. Otherwise, a value of -1 is returned, and errno is stored. See c_errno() and c_strerror()</p>
+<p>function c_chdir(path char(*)) returning integer</p>
+<p>change the current working directory of the process to path. Upon success, returns 0. Upon failure, returns -1 and stores errno. See c_errno()</p>
+<p><a href="#Top of page - C library functions for 4gl - manual">Back to top</a></p>
+<hr>
+<h2><a name="c_daemon">c_daemon</a></h2>
+<p>function c_daemon() returning integer</p>
+<p>Changes session and process group id's closes highlevel FILE streams stdin, stderr, and stdout
+closes lowlevel file streams 0, 1, 2</p>
+<p>return value is the new process group id if successful; returns -1 and stores
+errno on failure. See c_errno() and c_strerror() functions</p>
+<p><a href="#Top of page - C library functions for 4gl - manual">Back to top</a></p>
+<hr>
+<h2><a name="c_is4js">c_is4js</a></h2>
+<p>USAGE:</p>
+<p>function c_is4js() returning integer</p>
+<p>DESCRIPTION:</p>
+<p>This simple function returns true if running under a FourJays runner, and false if running under RDS or 4GL/C</p>
+<p>Probably should be supersceded by a function which returns a string so that multiple 4GL products can be supported.</p>
+<p><a href="#Top of page - C library functions for 4gl - manual">Back to top</a></p>
+<hr>
+<p><a href="#Top of page - C library functions for 4gl - manual">Back to top</a></p>
+
+</body>
+
+</html>

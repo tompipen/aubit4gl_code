@@ -1,0 +1,160 @@
+<HTML>
+<HEAD>
+<TITLE>Time Expressions</TITLE>
+</HEAD><BODY>
+<B>Time Expressions
+<P></P>
+</B>A time expression is a specification that INFORMIX-4GL can evaluate as a DATE,
+DATETIME, or INTERVAL value. 
+<P></P>
+<IMG SRC="4GLREF00000214.gif" ALT="4GLREF00000214.gif" BORDER="0" USEMAP="#map136" WIDTH="459" HEIGHT="147"><MAP NAME="map136"><AREA COORDS="139,115,210,142" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="125,79,224,106" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="124,42,225,70" HREF="4GLREFTime_Expressions.htm#7ecb4334"></MAP>
+<P></P>
+As the diagram suggests, the DATE data type is a logical subset of DATETIME.
+4GL rules for arithmetic, however, are not identical for DATE and DATETIME
+operands, and formatting features like USING or the FORMAT and PICTURE attributes
+treat DATETIME and DATE values differently.
+<P></P>
+The time data types are logically related because they express values as units
+of time. But unlike the number data types or the character data types, within
+which 4GL generally supports automatic data type conversion (aside from
+restrictions based on truncation, overflow, or under flow), conversion among time data
+types is more limited. In contexts where a time expression is required,
+DATETIME or DATE values can sometimes be substituted for one another. INTERVAL
+values, however, which represent one-dimensional spans of time, cannot be converted
+to DATETIME or DATE values, because these represent zero-dimensional points in
+time. 
+<P></P>
+In addition, if the declared precision of an INTERVAL value includes years or
+months, then automatic conversion to an INTERVAL having smaller time units
+(like days, hours, minutes, or seconds) is not available. 
+<P></P>
+Each of the three types of time expressions has its own syntax:  
+<P></P>
+<IMG SRC="4GLREF00000215.gif" ALT="4GLREF00000215.gif" BORDER="0" USEMAP="#map137" WIDTH="446" HEIGHT="456"><MAP NAME="map137"><AREA COORDS="197,333,298,356" HREF="4GLREFTime_Expressions.htm#f19a7503"><AREA COORDS="310,356,390,378" HREF="4GLREFTime_Expressions.htm#f19a7503"><AREA COORDS="184,428,271,452" HREF="4GLREFInteger_Expressions.htm"><AREA COORDS="312,406,376,426" HREF="4GLREFExpressions_of_4GL.htm#1f31ecbe"><AREA COORDS="200,380,266,403" HREF="4GLREFExpressions_of_4GL.htm#0f2fb87c"><AREA COORDS="129,137,230,161" HREF="4GLREFTime_Expressions.htm#d215409a"><AREA COORDS="280,162,359,182" HREF="4GLREFTime_Expressions.htm#2b3a5a7d"><AREA COORDS="280,278,363,299" HREF="4GLREFTime_Expressions.htm#cc12ad54"><AREA COORDS="281,233,365,255" HREF="4GLREFTime_Expressions.htm#cc12ad54"><AREA COORDS="204,178,269,201" HREF="4GLREFExpressions_of_4GL.htm#0f2fb87c"><AREA COORDS="132,201,196,223" HREF="4GLREFExpressions_of_4GL.htm#1f31ecbe"><AREA COORDS="182,73,247,94" HREF="4GLREFExpressions_of_4GL.htm#1f31ecbe"><AREA COORDS="106,49,172,70" HREF="4GLREFExpressions_of_4GL.htm#0f2fb87c"><AREA COORDS="184,30,243,52" HREF="4GLREFTime_Expressions.htm#d215409a"></MAP>
+<P></P>
+<B>format string</B> is a quoted character string to specify a DATE display format.
+<P></P>
+<B>keyword </B>is YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, or FRACTION.
+<P></P>
+In each case, the function call or named value must return a single value of
+the corresponding data type. 
+<P></P>
+<B>Numeric Date
+<P></P>
+</B>A numeric date represents a DATE value as a quoted string of digits:
+<P></P>
+<IMG SRC="4GLREF00000216.gif" ALT="4GLREF00000216.gif" BORDER="0" WIDTH="529" HEIGHT="68">
+<P></P>
+<B>DATETIME Qualifier
+<P></P>
+</B>The DATETIME qualifier specifies the precision and scale of a DATETIME value.
+It has the same syntax as for DATETIME database columns:
+<P></P>
+<IMG SRC="4GLREF00000217.gif" ALT="4GLREF00000217.gif" BORDER="0" WIDTH="536" HEIGHT="275">
+<P></P>
+<B>scale</B> is a whole number from 1 to 5, enclosed between parentheses. This specifies
+the number of decimal digits for fractions of a second. If you omit the scale
+specification, the default scale is 3 digits. 
+<P></P>
+<B>DATETIME Literal
+<P></P>
+</B>A DATETIME literal is the representation of a DATETIME value as the numeric
+date and time, or a portion thereof, followed by a DATETIME qualifier:
+<P></P>
+<IMG SRC="4GLREF00000218.gif" ALT="4GLREF00000218.gif" BORDER="0" USEMAP="#map138" WIDTH="532" HEIGHT="340"><MAP NAME="map138"><AREA COORDS="386,40,495,68" HREF="4GLREFTime_Expressions.htm#cc12ad54"></MAP>
+<P></P>
+<B>yyyy</B> is a number from 1 to 9999, representing a year. If you use only two digits,
+19 is assumed as the first part of the year, as in 1993.
+<P></P>
+<B>mo</B> is a number from 1 to 12, representing a month.
+<P></P>
+<B>dd</B> is the number of the day of the month, from 1 to 31.
+<P></P>
+<B>space</B> is a blank space (ASCII 32), entered by pressing the SPACEBAR.
+<P></P>
+<B>hh</B> is the hour (from a 24-hour clock), from 0 (= midnight) to 23.
+<P></P>
+<B>mi</B> is the minute of the hour, from 0 to 59.
+<P></P>
+<B>ss</B> is the second of the minute, from 0 to 59.
+<P></P>
+<B>fffff</B> is the fraction of a second, in up to 5 digits, as set by the precision
+specified for the FRACTION time units in the DATETIME qualifier.
+<P></P>
+<B>INTERVAL Qualifier 
+<P></P>
+</B>The INTERVAL qualifier specifies the precision and scale of an INTERVAL value.
+It has the same syntax in 4GL as for INTERVAL database columns:
+<P></P>
+<IMG SRC="4GLREF00000219.gif" ALT="4GLREF00000219.gif" BORDER="0" WIDTH="580" HEIGHT="370">
+<P></P>
+<B>precision</B> is the number of digits in the largest number of months, days, hours, minutes,
+or seconds that the interval can include. The default number of digits is two;
+the maximum is nine.
+<P></P>
+<B>scale</B> is the number of decimal digits to record fractions of a second in a span of
+time. The default is three digits; the maximum is five.
+<P></P>
+<B>y- precision</B> is the number of digits in the largest number of years that the interval can
+include. The default is four; the maximum is nine.
+<P></P>
+<B>INTERVAL Literal 
+<P></P>
+</B>An INTERVAL literal represents a span of time as a numeric representation of
+its chronological units, followed by an INTERVAL qualifier. 
+<P></P>
+<IMG SRC="4GLREF00000220.gif" ALT="4GLREF00000220.gif" BORDER="0" USEMAP="#map139" WIDTH="571" HEIGHT="318"><MAP NAME="map139"><AREA COORDS="462,24,526,64" HREF="4GLREFTime_Expressions.htm#98323f2a"></MAP>
+<P></P>
+<B>dd</B> is the number of days.
+<P></P>
+<B>fffff</B> is the fraction of a second in up to five digits, depending on the precision
+of the fractional portion in the INTERVAL qualifier.
+<P></P>
+<B>hh</B> is the number of hours.
+<P></P>
+<B>mi</B> is the number of minutes.
+<P></P>
+<B>mo</B> is the number of months, in two digits. 
+<P></P>
+<B>space</B> is a blank space (= ASCII 32), made by pressing the spacebar.
+<P></P>
+<B>ss</B> is the number of seconds.
+<P></P>
+<B>yyyy</B> is the number of years. 
+<P></P>
+<B>Arithmetic Operations on Time Values
+<P></P>
+</B>Time expressions can be operands of some arithmetic operators. These
+expressions return a DATE value:
+<P></P>
+<IMG SRC="4GLREF00000221.gif" ALT="4GLREF00000221.gif" BORDER="0" USEMAP="#map140" WIDTH="456" HEIGHT="46"><MAP NAME="map140"><AREA COORDS="324,9,412,35" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="105,7,179,35" HREF="4GLREFTime_Expressions.htm#7ecb4334"></MAP>
+<P></P>
+Here you can also reverse the data types of the operands. All the other binary
+arithmetic operators also accept DATE operands, equivalent to the count of
+days since December 31, 1899, but the values returned (except from a DATE
+expression as the left-hand MOD operand) are meaningless in most applications.
+<P></P>
+<B>NOTE</B>: DATE and DATETIME values have no true zero point, so they lie on &quot;interval&quot;
+scales. Such scales support addition and subtraction, as well as relational
+operators, but multiplication, division, and exponentiation are undefined.
+<P></P>
+The difference between two DATE values is an INTEGER value, representing the
+positive or negative number of days between the two calendar dates.
+<P></P>
+You must explicitly apply the UNITS DAY operator to the difference between
+DATE values, if you wish to store the result as an INTERVAL value.
+<P></P>
+This is the syntax for arithmetic expressions that return a DATETIME value:
+<P></P>
+<IMG SRC="4GLREF00000222.gif" ALT="4GLREF00000222.gif" BORDER="0" USEMAP="#map141" WIDTH="455" HEIGHT="150"><MAP NAME="map141"><AREA COORDS="297,120,386,143" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="296,89,368,115" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="308,59,398,82" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="296,24,389,47" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="69,120,156,144" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="60,90,153,114" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="56,41,129,66" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="57,10,149,34" HREF="4GLREFTime_Expressions.htm#7ecb4334"></MAP>
+<P></P>
+Do not write expressions that specify the sum ( + ) of two DATE or DATETIME
+values, nor a difference ( - ) whose second operand is  a DATE or DATETIME value,
+and whose first operand is an INTERVAL value. 
+<P></P>
+This is the syntax for arithmetic expressions that return an INTERVAL value:
+<P></P>
+<IMG SRC="4GLREF00000223.gif" ALT="4GLREF00000223.gif" BORDER="0" USEMAP="#map142" WIDTH="457" HEIGHT="204"><MAP NAME="map142"><AREA COORDS="302,90,405,115" HREF="4GLREFNumber_Expressions.htm"><AREA COORDS="303,171,373,198" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="303,133,400,159" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="304,63,396,85" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="304,29,396,54" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="65,173,160,195" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="63,135,135,160" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="67,54,155,80" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="60,6,155,32" HREF="4GLREFTime_Expressions.htm#7ecb4334"></MAP>
+<P></P>
+</BODY>
+</HTML>

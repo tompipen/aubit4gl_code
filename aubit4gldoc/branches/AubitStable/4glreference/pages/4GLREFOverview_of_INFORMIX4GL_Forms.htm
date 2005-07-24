@@ -1,0 +1,41 @@
+<HTML>
+<HEAD>
+<TITLE>Overview of INFORMIX-4GL Forms</TITLE>
+</HEAD><BODY>
+<B>4GL Forms Overview
+</B>
+<p>A screen form is a visual display that can support input or output tasks in an
+INFORMIX-4GL application. Before your 4GL program can use a screen form, you
+must first create and compile a form specification file. This is an <A HREF="4GLREFASCII00000025.htm">ASCII</A> source file that describes the logical format of the screen form, and
+provides instructions to 4GL about how to display data values in the form at runtime.
+You describe a screen form in its own source file and compile it separately
+from program code. A compiled form can be used by many programs.
+<p>
+<B>Form Drivers
+</B>
+<p>To work with a compiled screen form, the application requires a form driver, a
+logical set of 4GL statements that control the display of the form, that <A HREF="4GLREFbinding.htm">bind</A>s its fields to 4GL variables, and responds to actions by the user in fields.
+The form driver can include 4GL screen interaction and data manipulation
+statements to enter, retrieve, modify, or delete data in the database.
+<p>
+<B>Graphical Windows
+</B>
+<p>Character terminals support only a single graphical window, namely the screen
+itself. GUI environments allow for multiple graphical windows of many types.
+The GUI user who runs 4GL applications in a terminal emulator window also works
+with a single graphical window, the emulator window that displays the character
+interface of 4GL. By contrast, 4GL for Windows automatically provides several
+graphical windows for a single 4GL application, usually allowing the user
+simultaneous access to all of them. This capability to freely address several screens
+at once is one of the key benefits of GUI platforms and INFORMIX-4GL.
+<p>
+<B>4GL Application Window
+</B>
+<p>Except for <A HREF="4GLREFhelp_message.htm">Help message</A>s, <A HREF="4GLREFLinemode_overlay.htm">Line-mode display</A>s, and 4GL <A HREF="4GLREFreport00000243.htm">report</A> output that is sent to the screen, all 4GL interactive statements appear in
+the 4GL Application window. The 4GL Application window provides a user interface
+based on the native GUI format, rather the character format that a terminal
+emulator uses. The window manager provides the 4GL Application window with a
+frame containing GUI-standard window controls. The 4GL Application window also
+typically contains a <A HREF="4GLREFmouse_bar.htm">mouse bar </A> with convenience buttons outside the <A HREF="4GLREFdisplay_area.htm">display area </A>.
+</BODY>
+</HTML>

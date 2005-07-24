@@ -1,0 +1,6 @@
+Name: x4GL programming language reference
+Description: Documents syntax of x4GL programming language
+Maintainer: AF
+Status: 3
+Todo: Add SQL syntax as per Informix dialect; add Aubit and other extensions; convert current format (HTML) into DocBook
+Notes: Currently contains only 4GL statements, and NOT any SQL statements and related information. It provides almost exclusively only base I-4GL syntax, and does not document Aubit, 4JS or any other language extensions

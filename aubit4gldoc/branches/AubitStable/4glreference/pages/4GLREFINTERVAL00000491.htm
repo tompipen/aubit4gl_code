@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<TITLE>INTERVAL</TITLE>
+</HEAD><BODY>
+<B>INTERVAL
+<P></P>
+</B>This data type stores spans of time, the differences between two points in
+time. You can also use it to store quantities that are naturally measured in units
+of time, such as age or sums of ages, estimated or actual time required for
+some activity, or person-hours or person-years of effort attributed to some task.
+<P></P>
+An INTERVAL data value is stored as a DECIMAL number that includes a
+contiguous sequence of values representing units of time. 
+<P></P>
+<B>The INTERVAL data types of 4GL fall into two classes, based on their
+precision: 
+<P></P>
+</B>A year-month interval can represent a span of years and/or months 
+<P></P>
+A day-time interval can represent a span of days, hours, minutes, seconds, and
+fractions of a second, or a contiguous subset of those time units. 
+<P></P>
+Unlike DATETIME data types, which they somewhat resemble in their format,
+INTERVAL data types can assume zero or negative values. The declaration of an
+INTERVAL data type uses the following syntax:     
+<P></P>
+<IMG SRC="4GLREF00000199.gif" ALT="4GLREF00000199.gif" BORDER="0" USEMAP="#map122" WIDTH="458" HEIGHT="45"><MAP NAME="map122"><AREA COORDS="214,9,324,37" HREF="4GLREFTime_Expressions.htm#98323f2a"></MAP>
+<P></P>
+<B>INTERVAL Qualifiers 
+<P></P>
+</B>The INTERVAL qualifier specifies the precision and scale of an INTERVAL data
+type, using a first TO last format to declare 4GL variables, named constants,
+function and report parameters, and screen fields. It has the same syntax in
+declarations of 4GL variables, named constants, and FORMONLY fields as for INTERVAL
+columns of the database.    
+<P></P>
+<B>INTERVAL Literals and Delimiters
+<P></P>
+</B>The INTERVAL literal format begins with the INTERVAL keyword, followed by a
+pair of parentheses that enclose unsigned whole numbers (separated by delimiters)
+to represent a consecutive sequence of year through fraction values, or as a
+portion thereof. This must be followed by a valid INTERVAL qualifier, specifying
+the first TO last keywords for the set of time units:
+<P></P>
+<IMG SRC="4GLREF00000200.gif" ALT="4GLREF00000200.gif" BORDER="0" USEMAP="#map123" WIDTH="538" HEIGHT="68"><MAP NAME="map123"><AREA COORDS="403,34,505,64" HREF="4GLREFTime_Expressions.htm#98323f2a"><AREA COORDS="238,36,376,62" HREF="4GLREFTime_Expressions.htm#f19a7503"><AREA COORDS="8,6,99,34" HREF="4GLREFTime_Expressions.htm#f19a7503"></MAP>
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,212 @@
+<html>
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+ <meta http-equiv="Content-Language" content="en-us">
+ <title> Automatic SQL Syntax Conversion </title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p align="center"><font size="6">Automatic SQL Syntax Conversion </font></p>
+<hr>
+<p align="left">
+Aubit4GL allows you to connect to DBMS's (database management systems) from various vendors, as long the connection is via the SQL command language.
+</p>
+<p align="left">
+Unfortunately, the syntax of the SQL language can differ considerably from one vendor to another, and often valid syntax for one DBMS fails when executed against some other DBMS. One way around this is to maintain different versions of your application, eg. one for use with Informix, another for running against Oracle, another for PostgreSQL, and so on.  Another way is to replace each SQL command in your source code with a number of alternatives in a <i>case</i> statement, depending on the target database type.  Either way, your code will be difficult to maintain and harder to read.
+</p>
+<p align="left">
+Aubit4GL resolves this by providing a module that lets you write code using just one version or "dialect" of SQL, and have this converted into the correct form for whatever database you connect to at run-time.
+</p>
+<p align="left">
+In order to do this, Aubit4GL needs to know the following:
+<ul>
+  <li> the <i>source</i> SQL dialect that your source code is written in
+  <li> the <i>target</i> SQL dialect expected by the currently connected DBMS
+  <li> rules on how to convert SQL commands between <i>source</i> and <i>target</i> forms.
+</ul>
+</p>
+
+<h3> Source SQL dialect </h3>
+By default, the compiler assumes SQL is written using standard Informix syntax.
+<p>
+This can be changed by setting the environment variable A4GL_SQLDIALECT, or by setting the value of SQLDIALECT in the /etc/opt/aubit4gl/aubitrc file.
+<p>
+You can also change it at run-time using the <i>SET SQL DIALECT</i> command
+eg.<pre>
+   SET SQL DIALECT TO ORACLE
+</pre>
+This will cause all subsequent statements to be treated as if they were written using Oracle syntax.
+
+<p>
+Note - the 4GL compiler is not guaranteed to handle commands using non-Informix syntax.  If the compiler cannot understand a particular command, simply place itin a char variable (string), prepare it, and execute it.
+
+<h3> Target (DBMS) SQL dialect </h3>
+The database connection driver will inform Aubit4GL at run-time what dialect of SQL it speaks, so you do not have to configure this explicitly.
+<p>
+
+<h3> Conversion rule configuration files </h3>
+The syntax of an SQL command is converted from its source dialect to the DBMS' native dialect, by applying a number of transformations one after another on the SQL text.
+<p>
+For example, consider the steps taken to get the following Informix SQL statement to run correctly with PostgreSQL: <pre>
+    select last_name, first_name[1], (today-birthday)/365 age
+      from client
+     where last_name matches "M*"
+</pre>
+<ol>
+<li> replace double quotes with single quotes
+<li> replace <i>matches</i> with the regular expression operator ~
+<li> use the function <i>substr()</i> instead of subscripting with [] 
+<li> replace the word <i>today</i> with <i>date(now())</i> 
+<li> insert the word "AS" before the column alias <i>age</i>
+</ol>
+The result is:<pre>
+    select last_name, substr(first_name,1,1), (date(now())-birthday)/365 AS age
+      from client
+     where last_name ~ '^M.*'
+</pre>
+<p>
+Special configuration files are used to indicate what conversions are needed. They are located in the directory /opt/aubit4gl/etc/convertsql (this can be changed by setting the environment variable <i>A4GL_SQLCNVPATH</i> to an alternative location).
+<p>
+There is one file for each combination of source and target dialect, each file being named as <i>source</i>-<i>target</i>.cnv.  For example, the rules for translating from Informix to PostgreSQL are in a file called <i>INFORMIX-POSTGRESQL.cnv</i>, in which the conversion rules for the above example are given as:<pre>
+DOUBLE_TO_SINGLE_QUOTES
+MATCHES_TO_REGEX
+SUBSTRING_FUNCTION = substr
+REPLACE today = date(now())
+COLUMN_ALIAS_AS
+</pre>
+
+
+<h3> Converting SQL script files </h3>
+
+Many 4GL programmers keep script files of SQL commands to be run through SQL command interpreters like isql, psql, etc., rather than via a 4GL program.
+<p>
+A command line utility, <i>convertsql</i> is available to convert these as well. 
+<p>
+You may have to compile this program from source. Go to /opt/aubit4g/tools/convertsql, and follow the instructions in <i>README.txt</i>.
+
+<p>
+For example, to convert a file full of Informix SQL commands into SapDB compatible commands, you might execute:
+<pre>
+    convertsql INFORMIX SAPDB < mystuff.sql > mystuff2.sql
+</pre>
+
+
+<h3> Conversion file syntax reference </h3>
+
+The file contains a series of conversion directives, one to a line, with the following formats:
+<p>
+1) Simple directives, taking no arguments <pre>
+ DOUBLE_TO_SINGLE_QUOTES
+
+   Change double quotes (") to single quotes (') around literal strings.
+
+ MATCHES_TO_LIKE
+
+    Change Informix_style 'matches' clause to one using 'like',
+    and change * and ? to % and _ respectively.
+    eg:
+       matches 'X?Z*'   ->  like 'X_Z%'
+
+ MATCHES_TO_REGEX
+
+    Similar to 'matches-to-like' but uses the Postgres style regular
+    expression syntax,
+    eg:
+       matches 'X?Z*'   ->  ~ '^X.Z.*'
+
+ TABLE_ALIAS_AS
+
+    Insert the word "as" before table alias names in a 'from' clause
+    eg:
+       from ..., table1 t1, ...  ->  from ..., table1 as t1, ...
+
+ COLUMN_ALIAS_AS
+
+    Insert the word "as" before column/expression alias names in a
+    'select' clause
+    eg:
+       select ..., sum(amount) amt, ...
+       ->
+       select ..., sum(amount) as amt, ...
+
+ ANSI_UPDATE_SYNTAX
+
+    Convert Informix-style "update ... set (..,..) = (..,..) " to the
+    ANSI standard format "update ... set ...=..., ...=... "
+    eg.
+       update mytable set (col1,col2,col3) = ("01", "X", 104) where ...
+       ->
+       update mytable set col1="01", col2="X", col3=104  where ...
+
+ CONSTRAINT_NAME_AFTER
+
+    Move the constraint name in a constraint command to after the
+    constraint definition,
+    eg:
+       ... constraint c_name unique
+       ->
+       ... unique constraint c_name
+
+ CONSTRAINT_NAME_BEFORE
+
+    Move the constraint name in a constraint command to before the
+    constraint definition,
+    eg:
+       ... unique constraint c_name
+       ->
+       ... constraint c_name unique
+</pre>
+<p>
+2) Directives that take an argument ( in the rules below, replace
+   the word "string" with the appropriate values ) <pre>
+
+ SUBSTRING_FUNCTION = string
+
+   Change Informix-style string subscripting to a function call,
+   Replace 'string' with the name of the sql function.
+   eg. 
+       where ... foo[3,5] = ....
+       ->
+       where ... substr(foo,3,3)
+</pre>
+<p>
+3) Text replacement directives <pre>
+
+   Search and replace is not case-sensitive. For legibility, lower case
+   is used in the rules for search/replace strings to distinguish them from 
+   the keywords (in upper case).
+
+   You may leave the replacement string (after the = sign) blank. This will
+   have the effect of removing the matched string from the converted output.
+ 
+
+ REPLACE before = after
+
+   Replace any occurrence of the string 'before' with 'after',
+   eg.
+      REPLACE rowid = oid
+      REPLACE current year to second = sysdate
+      REPLACE today = date(now())
+
+ REPLACE_EXPR before = after
+
+   Replace only if the 'before' text is found in an expression or where
+   an expression is allowed, such as in a where clause or a select clause.
+   
+   eg.
+      REPLACE_EXPR sysdate = current year to second
+      REPLACE_EXPR today = date(now())
+
+ REPLACE COMMAND before = after
+
+   Replace, but only if the whole SQL statement matches the 'before' string
+   eg. 
+      REPLACE_COMMAND set isolation to dirty read =
+
+   The example above has the effect of completely erasing the command.
+</pre>
+
+</body>
+</html>
+

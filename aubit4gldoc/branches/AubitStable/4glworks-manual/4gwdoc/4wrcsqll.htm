@@ -1,0 +1,429 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glworks reference: Extended SQL interepreter</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glworks reference: Extended SQL interepreter</CENTER></B><HR></H1>
+
+<UL>
+<LI><A HREF="#sql_execute">sql_execute</A></LI>
+<LI><A HREF="#sql_execute2">sql_execute2</A></LI>
+<LI><A HREF="#sql_explode">sql_explode</A></LI>
+<LI><A HREF="#FGWLANGREF">Extended SQL languare reference</A></LI>
+</UL>
+
+<P><A NAME="sql_execute"><H3>sql_execute</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>csqll.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function sql_execute(i_query, touch, verbose, html, width, txtvar)
+    define i_query	char(K_scriptbuf),	#the sql statemet(s)
+	   def_fd,				#output stream
+	   flags,				#various behavioural flags
+	   width	integer,		#text width
+	   txtvar	text			#where to store the output
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>sqlcode</VAR>, integer, sql error returned by the script
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+A sql interpreter with a number of <A HREF="#FGWLANGREF">syntax and
+formatting additions</A> and an <A HREF="#FGWEXPREF">expansion facility</A>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI><VAR>def_fd</VAR> is any valid stream open for writing, or <CODE>0</CODE> to
+signify that the default output should go to <VAR>txtvar</VAR>. On exit the
+stream is left open.</LI>
+<LI><VAR>flags</VAR> is any combination of the following:
+<UL>
+<LI><VAR>K_html</VAR> produces a simple but effective html output</LI>
+<LI><VAR>K_verbose</VAR> flags that status information and error messages
+should be issued</LI>
+<LI><VAR>K_errorcont</VAR> has the same effect as <CODE>whenever error
+continue</CODE></LI>
+<LI><VAR>K_dml</VAR> flags that DML/DDL statements are allowed</LI>
+<LI><VAR>K_noconf</VAR> specifies that no confirmation should be asked to the
+user before executing DML/DDL statements</LI>
+</UL>
+constants are define in <CODE>csqll.4gh</CODE></LI>
+<LI>the behaviour of the expansion facility depends on which copy of
+<A HREF="#sql_explode">sql_explode</A> support (<CODE>iexpl.4gl</CODE>, <CODE>oexpl.4gl</CODE>)
+the application is linked against</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="sql_execute2"><H3>sql_execute2</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>csqll.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function sql_execute2(i_query, touch, verbose, html, width, txtvar)
+    define i_query	text,			#the sql statemet(s)
+	   def_fd,				#output stream
+	   flags,				#various behavioural flags
+	   width	integer,		#text width
+	   txtvar	text			#where to store the output
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>sqlcode</VAR>, integer, sql error returned by the script
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+<CODE>sql_execute2</CODE> offers a slight different interface to the
+<A HREF="#FGWLANGREF">sql interpreter facility</A> than
+<A HREF="#sql_execute">sql_execute</A>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI><VAR>def_fd</VAR> is any valid stream open for writing, or <CODE>0</CODE> to
+signify that the default output should go to <VAR>txtvar</VAR>. On exit the
+stream is left open.</LI>
+<LI><VAR>flags</VAR> is any combination of the following:
+<UL>
+<LI><VAR>K_html</VAR> produces a simple but effective html output</LI>
+<LI><VAR>K_verbose</VAR> flags that status information and error messages
+should be issued</LI>
+<LI><VAR>K_errorcont</VAR> has the same effect as <CODE>whenever error
+continue</CODE></LI>
+<LI><VAR>K_dml</VAR> flags that DML/DDL statements are allowed</LI>
+<LI><VAR>K_noconf</VAR> specifies that no confirmation should be asked to the
+user before executing DML/DDL statements</LI>
+</UL>
+constants are define in <CODE>csqll.4gh</CODE></LI>
+<LI>the behaviour of the expansion facility depends on which copy of
+<A HREF="#sql_explode">sql_explode</A> support (<CODE>iexpl.4gl</CODE>, <CODE>oexpl.4gl</CODE>)
+the application is linked against</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="sql_explode"><H3>sql_explode</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cexpl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function sql_explode(i_query, hash, verbose, state, s)
+    define i_query	char(K_scriptbuf),	#the script buffer
+	   hash		text,			#variables hash
+	   verbose,				#verbose flag
+	   state,				#expansion state flag
+	   s		smallint		#starting column
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>ts</VAR>, smallint, start of unexpanded query text<BR>
+<VAR>te</VAR>, smallint, end of unexpanded query text<BR>
+<VAR>txt</VAR>, char(512), expanded text<BR>
+<VAR>tr</VAR>, smallint, scan resume point
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Implements the <A HREF="#FGWEXPREF">expansion facility</A>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI><VAR>s</VAR> should initially be 1, and the value returned by <VAR>tr</VAR>
+on successive calls</LI>
+<LI>the end of the query is marked by <VAR>tr</VAR> being set to <CODE>NULL</CODE></LI>
+<LI><VAR>state</VAR> is at present used in conjunction with the <A HREF="#sql_execute">sql_execute</A> family of routines.
+If set to zero, it allows to skip actions on expansion blocks (eg because in
+inactive sections of the input script)</LI>
+<LI>there are two different copies of the expansion facility support: the one in 
+<CODE>oexpl.4gl</CODE>, being targeted at batch application, does not offer
+<A HREF="4wriunih.htm">pick lists</A></LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<A NAME="FGWLANGREF">
+<H2><HR><CENTER><B>Extended SQL language reference</CENTER></B><HR></H2>
+
+<P>The Sql interpreter boosts a number of interesting features, including</P>
+<UL>
+<LI><P>Additional statements. Besides supporting multiple SQL statements (separated
+  by semicolons), the following is supported</P>
+  <TABLE>
+  <TR><TD><PRE>foreach &lt;select statement&gt;;
+    &lt;statement list&gt;|break|continue
+done;</PRE></TD></TR>
+  <TR><TD><PRE>for &lt;variable&gt; in &lt;expression&gt;[, &lt;expression&gt;...];
+    &lt;statement list&gt;|break|continue
+done;</PRE></TD></TR>
+  <TR><TD><PRE>while &lt;expression&gt;;
+    &lt;statement list&gt;|break|continue
+done;</PRE></TD></TR>
+  <TR><TD><PRE>if &lt;expression&gt;;
+    &lt;statement list&gt;
+[elif &lt;expression&gt;;
+    &lt;statement list&gt;
+...]
+[else
+    &lt;statement list&gt;]
+fi;</PRE></TD></TR>
+  <TR><TD><PRE>unload to &lt;expression&gt; [delimiter &lt;expression&gt;] &lt;select statement&gt;;</PRE></TD></TR>
+  <TR><TD><PRE>load &lt;expression&gt; [delimiter &lt;expression&gt;]&lt; insert statement&gt;;</PRE></TD></TR>
+  <TR><TD><PRE>let &lt;variable&gt[&lt;substring range&gt;]=&lt;expression&gt;;</PRE></TD></TR>
+  <TR><TD><PRE>display &lt;expression&gt;[, &lt;expression&gt;...];</PRE></TD></TR>
+  <TR><TD><PRE>append to &lt;expression&gt;|default;</PRE></TD></TR>
+  <TR><TD><PRE>output to &lt;expression&gt;;</PRE></TD></TR>
+  <TR><TD><PRE>pipe to &lt;expression&gt;;</PRE></TD></TR>
+  <TR><TD><PRE>exit [&lt;expression&gt;];</PRE></TD></TR>
+  <TR><TD><PRE>whenever error continue|stop;</PRE></TD></TR>
+  <TR><TD><CODE>&lt;expression&gt;</CODE> can be just about anything listed in the "Condition" and
+   "Expression" segments of the IDS 7.3 syntax guide with the following
+   variations: 
+   <UL>
+  <LI>expressions do not handle columns, but variables instead :-)</LI>
+  <LI>variables are dynamic and typed, ie they spring into existence when
+    first referenced and change type at every new assignment (or select)
+    as the case needs be</LI>
+  <LI>a number of functions and operators have been borrowed from 4gl: <CODE>ASCII</CODE>,
+    <CODE>CLIPPED</CODE>, <CODE>SPACES</CODE>, <CODE>USING</CODE> (please note that <CODE>ASCII</CODE>
+    is a function & requires the parenthesis)</LI>
+  <LI>a couple of function have been added:
+    <UL>
+    <LI><CODE>EXEC(command_line)</CODE> executes a system command without ever returning.
+    it maps to
+    <PRE>
+    execl("/bin/sh", "-c", command_line, NULL);</PRE>
+    so it handles shell expansions, etc</LI>
+    <LI><CODE>FORK</CODE> creates a child process as in <CODE>fork(2)</CODE>. the child does not
+    inherit database connections, and does an implicit <CODE>exit</CODE> (see later)
+    at the end of the script</LI>
+    <LI><CODE>GETENV(variable)</CODE>returns the value of an environmental variable</LI>
+    <LI><CODE>WAIT</CODE> waits for any child processes as in <CODE>wait(2)</CODE>. returns the pid
+    of the child that has just terminated. return code and error number
+    are returned by <CODE>DBINFO("$?")</CODE> and <CODE>DBINFO("errno")</CODE> respectively</LI>
+    <LI><CODE>WAITPID(pid)</CODE> waits for child pid to terminate as in <CODE>waitpid(2)</CODE></LI>
+    <LI><CODE>INDEX(source_string, substring)</CODE> returns the position of substring
+    within source_string</LI>
+    <LI><CODE>PAD(pattern, len)</CODE> will build a len bytes string containing
+    repeated pattern</LI>
+    <LI><CODE>RANDOM(mod [, seed])</CODE> returns a random number in the range
+      <CODE>0..mod-1</CODE></LI>
+    </UL></LI>
+  <LI><CODE>DATETIME</CODE> and <CODE>INTERVAL</CODE> do not introduce constants, but are functions
+    instead. This is consistent with date handling (there's no such thing
+    as a date constant) and offers added versatility with a simplified
+    grammar, as both functions perform conversion and qualifier extension
+    in one invocation</LI>
+  <LI>the <CODE>FRACTION</CODE> qualifier and the initial qualifier (intervals only) do not
+    support a precision specifier</LI>
+  <LI>datetime and interval expression are automatically extended as the case
+    needs be: <CODE>1 UNITS DAY - 1 UNITS HOUR</CODE> returns interval(0 23) day to hour
+    rather than a -1266</LI>
+  <LI><CODE>DATETIME</CODE>, <CODE>INTERVAL</CODE> and <CODE>DATE</CODE> accept an optional second parameter specifying
+    the input format a la <CODE>TO_DATE</CODE></LI>
+  <LI><CODE>REPLACE</CODE> accepts optional start and length parameters having
+    the same meaning as in <CODE>SUBSTR</CODE></LI>
+  <LI><CODE>DBINFO</CODE> only knows how to handle <CODE>"sqlca.sqlerrd1"</CODE>,
+    <CODE>"sqlca.sqlerrd2"</CODE>, <CODE>"sqlca.sqlcode"</CODE>,
+    <CODE>"$?"</CODE> and <CODE>"errno"</CODE>
+  <LI><CODE>USER</CODE>, <CODE>TODAY</CODE> and <CODE>CURRENT</CODE> do not
+    necessarily return the same value as they would on the engine side</LI>
+  <LI>inline SPL and subselect invocation is not supported
+  <LI>GLS support is incomplete at best</LI>
+  <LI>a number of functions has not been implemented as deemed redundant, or
+    not easily implementable, or would needlessly complicate the grammar (or all
+    of the above): <CODE>DBSERVERNAME</CODE>, <CODE>SITENAME</CODE>,
+    <CODE>OCTET_LENGTH</CODE>, <CODE>EXTEND</CODE>, <CODE>TO_CHAR</CODE>,
+    <CODE>TO_DATE</CODE>, <CODE>TRIM</CODE>, <CODE>SUBSTRING</CODE></LI>
+   </UL></TD></TR>
+  <TR><TD><CODE>for</CODE>, <CODE>foreach</CODE> and <CODE>while</CODE> loops can
+  be exited with a <CODE>break</CODE> statement, or their
+  reminder can be skipped with a <CODE>continue</CODE> statement.</TD></TR>
+  <TR><TD><CODE>append</CODE>, <CODE>output</CODE> and <CODE>pipe</CODE> all
+  instruct the interpreter to redirect its output.
+  The expression passed to <CODE>append</CODE> and <CODE>output</CODE> is a
+  name of a file (<CODE>output</CODE> will truncate it, <CODE>append</CODE>
+  will add to it), while <CODE>pipe</CODE>, as you would expect, pipes
+  the output to a child process.
+  In case of failure, the output is redirected to the deafult stream, and
+  the reason of the failure can be inspected via <CODE>dbinfo("errno")</CODE>.
+  <CODE>append to default</CODE> causes the new output generated by the
+  interpreter to be added to the default stream, which in the case of the demo
+  application is the viewer display, but can be defined to be a
+  <A HREF="4wrcsqll.htm">file or pipe</A>.</TD></TR>
+  <TR><TD>Note finally that <CODE>exit</CODE> has different meanings depending
+  whether the process is the result of a <CODE>FORK</CODE> (the process
+  terminates) or not (the script terminates and the process resumes normal
+  operation).</TD></TR>
+  </TABLE>
+  
+</LI>
+<LI><P>Data Storage. Foreach and plain select statements can assign values to
+  variables. Use an</P>
+<PRE>
+  into variable[, variable...]
+</PRE>
+<P>clause at the end of the statement to list the target variables.</P>
+</LI>
+<LI><P>Placeholders. As an alternative to the expansion facility (see below), it
+  is possible to use placeholders as you would on an <CODE>open</CODE> or <CODE>execute</CODE>
+  statement. Use an</P>
+<PRE>
+  using variable[, variable...]
+</PRE>
+<P>clause at the end of the statement to list the variables that should
+  substitute placeholders. This feature can be used to insert or update
+  (should you ever get a working version of the <CODE>IFX_UPDDESC</CODE> feature)
+  text values on the fly.</P>
+</LI>
+<LI><P>Formatting. Queries and displays can be formatted. add the following clause at the end of the select
+  statement:
+</P>
+<PRE>
+  format brief|{full|vertical [&lt;expression&gt;] [headers &lt;expression list&gt;]}
+</PRE>
+<P>
+  The brief format only outputs column values separated by commas, with no formatting
+  whatsoever, vertical will output rows in a header/column fashion (formatting
+  columns in the way), and lastly full formats rows as you would expect.
+</P>
+<P>
+  The first expression is a format specifier in which c and 4gl format specifiers
+  can be used. C formats are specified the usual way (see <CODE>sprintf (3)</CODE>), while
+  4gl formats have to be enclosed in square brackets. format specifiers can
+  be interspersed with plain text, hard tabs &amp; new lines, or <CODE>\n</CODE> and <CODE>\t</CODE>.
+  To ease header formatting (in case plain text appears in the format, in particular
+  for vertical formats), columns
+  can be separated with the pipe (<CODE>|</CODE>) sign. This is not required though.
+  Special characters (<CODE>[]%|</CODE> and the quotes in use) can be escaped by doubling
+  them. Note that the backslash has special significance only when followed
+  by either 't' or 'n'.<BR>
+  Note that there's no need to specify as many format specifiers as columns,
+  while with full format, more than needed will combine multiple rows into
+  a single format.
+</P>
+<P>
+  The header clause specifies a list of headers to be output as the
+  first row of the query in full format, and preceding each column
+  in vertical format. Headers will be padded to the length of
+  the appropriate field (full format) or the largest header (vertical).
+</P>
+  As for formats, there's no need that the number of headers matches
+  that of the items being selected.
+</P>
+</LI>
+<A NAME="FGWEXPREF">
+<LI><P>An expansion facility caters for pick lists or query or application output
+  substitution anywhere in the script. Expansions are
+  performed whenever a <CODE>&lt;+ +&gt;</CODE> pair is encountered, can be freely nested (up
+  to a depth of 10 at present), and can be any of the following:
+</P>
+<TABLE>
+<TR><TD>
+  <CODE>READ file[ file...]</CODE></TD>
+  <TD>displays the contents of multiple files</TD></TR>
+<TR><TD>
+  <CODE>EXEC pipe</CODE></TD>
+  <TD>executes an arbitrary application</TD></TR>
+<TR><TD>
+  <CODE>get variable [, variable...]</CODE></TD>
+  <TD>returns the contents of previously stored variables</TD></TR>
+<TR><TD>
+  a select statement</TD>
+<TD>displays the results of a query</TD></TR>
+</TABLE>
+<P>
+  prefix the above with any of the following options to change expansion
+  behavior:
+</P>
+<TABLE>
+<TR><TD VALIGN=TOP>
+  <CODE>[coded|lone|silent]</CODE></TD>
+<TD>	Specifies which expansion should be performed.
+	<CODE>coded</CODE> will open a code/description pick list
+	(only the code is returned), <CODE>lone</CODE> will open
+	a description only pick list, while <CODE>silent</CODE>
+	will just do a plain expansion.</TD></TR>
+<TR><TD VALIGN=TOP>
+  <CODE>[single|multi]</CODE></TD>
+<TD>	Specifies whether the expansion should return
+	one or more values. For pick lists, this
+	controls whether multiple selections are
+	allowed. For silent expansions, whether only
+	the first or all values should be returned.</TD></TR>
+<TR><TD VALIGN=TOP>
+  <CODE>put variable</CODE></TD>
+<TD>	stores the output of the expansion in the
+	variable specified.</TD></TR>
+<TR><TD VALIGN=TOP>
+  <CODE>quotes &lt;quoted string&gt;</CODE></TD>
+<TD>	Specifies quotes to surround each value
+	returned by get or multiple expansions. Default
+	is none. Enter two characters to specify
+	differring start and end quotes.</TD></TR>
+<TR><TD VALIGN=TOP>
+  <CODE>separator &lt;quoted string&gt;</TD>
+<TD>	Specifies the entry separator between each
+	value returned by get or multiple expansions.
+	Default is blank.</TD></TR>
+</TABLE>
+<P>A few gotchas:</P>
+  <UL>
+  <LI>default behavior is coded single (only because I use it a lot :-)</LI>
+  <LI>quotes and separator are illegal with single,
+    and imply multi (so, multi usage is redundant, with them)</LI>
+  <LI>pick list expansions will fail if the pick list is empty, while get
+    and silent expansions can happily expand to nothing. this is useful
+    to silently execute external applications</LI>
+  </UL>
+
+<P>Expansions can be commented using a <CODE>&lt;* *&gt;</CODE> pair. At par to <CODE>&lt;+ +&gt; </CODE>pairs, such
+  comments can be nested. Expansions and comment tokens can be escaped with a
+  backslash. Note that the backslash does not escape anything else, thus you
+  don't need to escape it to use it in the context of a select statement or a
+  shell script.<BR>
+  Finally, feel free to use whichever comment mechanism you like, as long as it
+  makes sense within the context in which it is used, eg <CODE>{}</CODE> or <CODE>--&lt;CR&gt;</CODE> in
+  SQL statements, or <CODE>#&lt;CR&gt;</CODE> in perl/awk/sh scripts.</P>
+</LI></UL>
+
+<P>The following query (find it in <CODE>4gwapps/4gwdemo/etc/demo1.fgw</CODE>) shows many of
+the syntax additions:</P>
+<PRE>
+display  "Name", "Owner", "Type", "Cluster", "Column"
+  format full "%-18s %-8s %-7s %-7s %-18s";
+foreach select idxname, owner, idxtype, clustered, colname, part2, part3,
+               part4, part5, part6, part7, part8
+  from &lt;+lone put db select name from sysmaster:sysdatabases+&gt;:sysindexes i,
+       &lt;+get db+&gt;:syscolumns c
+  where i.tabid=&lt;+coded put tbl select tabid, tabname from
+                  &lt;+get db+&gt;:systables order by tabid+&gt;
+    and c.tabid=i.tabid
+    and i.part1=c.colno
+  order by idxname
+  into name, owner, type, clustered, col1, part2, part3, part4, part5,
+       part6, part7, part8;
+    display name, owner, type, clustered, col1
+      format full "%-18s %-8s %3s     %3s     %-18s";
+    select colname from &lt;+get db+&gt;:syscolumns c
+      where c.colno in (&lt;+separator "," get part2, part3, part4, part5,
+                          part6, part7, part8+&gt;)
+        and c.tabid=&lt;+get tbl+&gt;
+      format full "\t\t\t\t\t    %-18s";
+    display "";
+done;
+</PRE>
+
+<P>Which yields:</P>
+<P ALIGN=CENTER><IMG SRC="img/demo.gif" WIDTH=736 HEIGHT=426 BORDER=0 ALT="SQL demo"></P>
+
+</BODY>
+</HTML>

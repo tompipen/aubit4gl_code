@@ -1,0 +1,370 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Internal statement</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p align="center"><font size="6">Internal statement/connection options</font></p>
+<hr>
+<ul>
+  <li>
+    <p align="left">ODBC Statement/connection options available</li>
+  <li>
+    <p align="left">
+Built in resources, environment variables overridable</li>
+  <li>
+    <p align="left">GET_INFO() parameters</li>
+</ul>
+<hr>
+<h3>ODBC Statement/connection options available&nbsp;
+</h3>
+
+<p> (see ODBC documentation):
+</p>
+
+<p>
+"ACCESS MODE","READ ONLY",&nbsp;<br>
+"ACCESS MODE","READ WRITE",&nbsp;<br>
+"AUTO COMMIT","ON",&nbsp;<br>
+"AUTO COMMIT","OFF",&nbsp;<br>
+"CURRENT QUALIFIER","STRING",&nbsp;<br>
+"LOGIN TIMEOUT","LONG",&nbsp;<br>
+"ODBC CURSORS","USE IF NEEDED",<br>
+"ODBC CURSORS","USE ODBC",&nbsp;<br>
+"ODBC CURSORS","USE DRIVER",&nbsp;<br>
+"TRACE","OFF",&nbsp;<br>
+"TRACE","ON",&nbsp;<br>
+"TRACEFILE","STRING",&nbsp;<br>
+"PACKET SIZE","LONG",&nbsp;<br>
+"QUIET MODE","LONG",&nbsp;<br>
+"ISOLATION","READ UNCOMMITTED",<br>
+"ISOLATION","READ COMMITTED",&nbsp;<br>
+"ISOLATION","REPEATABLE READ",&nbsp;<br>
+"ISOLATION","SERIALIZABLE",&nbsp;<br>
+<br>
+"CONCURRENCY","READ ONLY",&nbsp;<br>
+"CONCURRENCY","LOCK",&nbsp;<br>
+"CONCURRENCY","ROWVER",&nbsp;<br>
+"CONCURRENCY","VALUES",&nbsp;<br>
+"CURSOR TYPE","FORWARD ONLY",&nbsp;<br>
+"CURSOR TYPE","STATIC",&nbsp;<br>
+"CURSOR TYPE","KEYSET DRIVEN",&nbsp;<br>
+"CURSOR TYPE","DYNAMIC",&nbsp;<br>
+"KEYSET SIZE","LONG",&nbsp;<br>
+"MAX LENGTH","LONG",&nbsp;<br>
+"MAX ROWS","LONG",&nbsp;<br>
+"NOSCAN","OFF",&nbsp;<br>
+"NOSCAN","ON",&nbsp;<br>
+"QUERY TIMEOUT","LONG",&nbsp;<br>
+"RETRIEVE DATA","ON",&nbsp;<br>
+"RETRIEVE DATA","OFF",&nbsp;<br>
+"SIMULATE CURSOR","NON UNIQUE",<br>
+"SIMULATE CURSOR","TRY UNIQUE",<br>
+"SIMULATE CURSOR","UNIQUE",&nbsp;<br>
+"USE BOOKMARKS","ON",&nbsp;<br>
+"USE BOOKMARKS","OFF",&nbsp;<br>
+<br>
+"ACCESS MODE","READ ONLY",&nbsp;<br>
+"ACCESS MODE","READ WRITE",&nbsp;<br>
+"AUTO COMMIT","ON",&nbsp;<br>
+"AUTO COMMIT","OFF",&nbsp;<br>
+"CURRENT QUALIFIER","STRING",&nbsp;<br>
+"LOGIN TIMEOUT","LONG",&nbsp;<br>
+"ODBC CURSORS","USE IF NEEDED",<br>
+"ODBC CURSORS","USE ODBC",&nbsp;<br>
+"ODBC CURSORS","USE DRIVER",&nbsp;<br>
+"TRACE","OFF",&nbsp;<br>
+"TRACE","ON",&nbsp;<br>
+"TRACEFILE","STRING",&nbsp;<br>
+"PACKET SIZE","LONG",&nbsp;<br>
+"QUIET MODE","LONG",&nbsp;<br>
+"ISOLATION","READ UNCOMMITTED",<br>
+"ISOLATION","READ COMMITTED",&nbsp;<br>
+"ISOLATION","REPEATABLE READ",&nbsp;<br>
+"ISOLATION","SERIALIZABLE",&nbsp;<br>
+<br>
+<br>
+"CONCURRENCY","READ ONLY",&nbsp;<br>
+"CONCURRENCY","LOCK",&nbsp;<br>
+"CONCURRENCY","ROWVER",&nbsp;<br>
+"CONCURRENCY","VALUES",&nbsp;<br>
+"CURSOR TYPE","FORWARD ONLY",&nbsp;<br>
+"CURSOR TYPE","STATIC",&nbsp;<br>
+"CURSOR TYPE","KEYSET DRIVEN",&nbsp;<br>
+"CURSOR TYPE","DYNAMIC",&nbsp;<br>
+"KEYSET SIZE","LONG",&nbsp;<br>
+"MAX LENGTH","LONG",&nbsp;<br>
+"MAX ROWS","LONG",&nbsp;<br>
+"NOSCAN","OFF",&nbsp;<br>
+"NOSCAN","ON",&nbsp;<br>
+"QUERY TIMEOUT","LONG",&nbsp;<br>
+"RETRIEVE DATA","ON",&nbsp;<br>
+"RETRIEVE DATA","OFF",&nbsp;<br>
+"SIMULATE CURSOR","NON UNIQUE",<br>
+"SIMULATE CURSOR","TRY UNIQUE",<br>
+"SIMULATE CURSOR","UNIQUE",&nbsp;<br>
+"USE BOOKMARKS","ON",&nbsp;<br>
+"USE BOOKMARKS","OFF",&nbsp;
+</p>
+
+<hr>
+
+<h3>
+Built in resources&nbsp;
+</h3>
+
+<p>
+ (Use environment variables to overwrite)
+</p>
+
+<p>
+(Some of these may not be being used yet - eg. DBEDIT)
+</p>
+
+<p>
+&quot;DBDATE&quot;,&quot;MDY4/&quot;<br>
+        "DBANSIWARN","N"<br>
+        "DBBLOBBUF","64"<br>
+        "DBCENTURY","C"<br>
+        "DBDELIMITER","|"<br>
+        "DBEDIT","vi"<br>
+        "DBFLTMASK","2"<br>
+        "DBLANG","&lt;ACLDIR>"<br>
+        "DBMONEY","#."<br>
+        "DBPATH","."<br>
+        "DBPRINT","lp"<br>
+        "ACLCCOMP","cc"<br>
+        "AUBIT_Y2K","70"<br>
+        "LOGNAME","UNKNOWN"<br>
+#ifdef WIN32<br>
+        "EXTENDED_FETCH","Y"<br>
+#endif<br>
+        "ACLDIR","/usr/acl"<br>
+        "ACLTEMP","tempdsn"<br>
+<br>
+/* abbr week days */<br>
+        "_DAY0","Sun"<br>
+        "_DAY1","Mon"<br>
+        "_DAY2","Tue"<br>
+        "_DAY3","Wed"<br>
+        "_DAY4","Thu"<br>
+        "_DAY5","Fri"<br>
+        "_DAY6","Sat"<br>
+<br>
+/* full week days */<br>
+        "_FDAY0","Sunday"<br>
+        "_FDAY1","Monday"<br>
+        "_FDAY2","Tuesday"<br>
+        "_FDAY3","Wednesday"<br>
+        "_FDAY4","Thursday"<br>
+        "_FDAY5","Friday"<br>
+        "_FDAY6","Saturday"<br>
+<br>
+/* abbr months */<br>
+        "_MON1","Jan"&nbsp;<br>
+        "_MON2","Feb"&nbsp;<br>
+        "_MON3","Mar"&nbsp;<br>
+        "_MON4","Apr"&nbsp;<br>
+        "_MON5","May"&nbsp;<br>
+        "_MON6","Jun"&nbsp;<br>
+        "_MON7","Jul"&nbsp;<br>
+        "_MON8","Aug"&nbsp;<br>
+        "_MON9","Sep"&nbsp;<br>
+        "_MON10","Oct"&nbsp;<br>
+        "_MON11","Nov"<br>
+        "_MON12","Dec"<br>
+<br>
+/* Full months */<br>
+        "_FMON1","January"<br>
+        "_FMON2","February"<br>
+        "_FMON3","March"<br>
+        "_FMON4","April"<br>
+        "_FMON5","May"<br>
+        "_FMON6","June"<br>
+        "_FMON7","July"<br>
+        "_FMON8","August"<br>
+        "_FMON9","September"<br>
+        "_FMON10","October"<br>
+        "_FMON11","November"<br>
+        "_FMON12","December"<br>
+<br>
+/* addition for days */<br>
+        "_DAYTH1","st"<br>
+        "_DAYTH2","nd"<br>
+        "_DAYTH3","rd"<br>
+        "_DAYTH4","th"<br>
+        "_DAYTH5","th"<br>
+        "_DAYTH6","th"<br>
+        "_DAYTH7","th"<br>
+        "_DAYTH8","th"<br>
+        "_DAYTH9","th"<br>
+        "_DAYTH10","th"<br>
+        "_DAYTH11","th"<br>
+        "_DAYTH12","th"<br>
+        "_DAYTH13","th"<br>
+        "_DAYTH14","th"<br>
+        "_DAYTH15","th"<br>
+        "_DAYTH16","th"<br>
+        "_DAYTH17","th"<br>
+        "_DAYTH18","th"<br>
+        "_DAYTH19","th"<br>
+        "_DAYTH20","th"<br>
+        "_DAYTH21","st"<br>
+        "_DAYTH22","nd"<br>
+        "_DAYTH23","rd"<br>
+        "_DAYTH24","th"<br>
+        "_DAYTH25","th"<br>
+        "_DAYTH26","th"<br>
+        "_DAYTH27","th"<br>
+        "_DAYTH28","th"<br>
+        "_DAYTH29","th"<br>
+        "_DAYTH30","th"<br>
+        "_DAYTH31","st"<br>
+/* default lines... */<br>
+&quot;_FORMLINE&quot;,&quot;3&quot;<br>
+&quot;_MENULINE&quot;,&quot;1&quot;<br>
+&quot;_PROMPTLINE&quot;,&quot;1&quot;<br>
+&quot;_ERRORLINE&quot;,&quot;-1&quot;<br>
+&quot;_MESSAGELINE&quot;,&quot;-2&quot;<br>
+&quot;_COMMENTLINE&quot;,&quot;-2&quot;<br>
+</p>
+
+<hr>
+
+<h3>
+GET_INFO parameters
+</h3>
+
+<p>
+# indicates supply a number<br>
+	eg. Name# 	Name1 = name for column 1<br>
+			Name2 = name for column 2<br>
+</p>
+
+<p>
+<u><i>
+"Window"</i></u>
+</p>
+
+<p>
+	Info		Returns:
+</p>
+
+<p>
+	"Height",	Window Height (Integer)<br>
+  	"Width",	Window Width (Integer)<br>
+	"BeginX",	Left position on screen of top left corner(Integer)<br>
+	"BeginY",	Y Position on screen of top left corner (Integer)<br>
+	"Border",	Does window have a border (true/false - Integer)<br>
+	"Metrics",	BeginX, BeginY,Width,Height<br>
+	"CommentLine",	Windows comment line(Integer)<br>
+	"MenuLine",	Windows menu line(Integer)<br>
+	"PromptLine",	Windows prompt line(Integer)<br>
+	"FormLine",	Windows form line(Integer)<br>
+	"MessageLine",	Windows message line(Integer)<br>
+	"Color"		Windows colour (Integer)
+</p>
+
+<p>
+<i><u>
+"Statement"</u></i>
+</p>
+
+<p>
+	"NoColumns",	Number of columns (Integer)<br>
+	"NoRows",       Number of Rows (Integer)<br>
+	"Name#",	Column Name for column # (char)<br>
+	"Type#",	Column type for column # (integer)<br>
+	"Scale#",	Column Scale for column # (integer)<br>
+	"Nullable#",	Can column # contain a null (true/false - integer)<br>
+	"Length#"	Column length for column # (integer)
+</p>
+
+<p>
+<i><u>
+"Form"</u></i>
+</p>
+
+<p>
+	"Database",		Database name on form<br>
+	"Delimiters",		Delimiters as specified on the form<br>
+	"ScreenRecordCount",	Number of screen records<br>
+	"ScreenRecordName#",	Screen Record name for record #<br>
+	"FieldCount",		Number of fields on the form<br>
+	"FieldName#",		Field name for field #<br>
+	"Field#",		Curses FIELD pointer for field #<br>
+	"AttributesCount",	Number of attributes<br>
+	"CurrentField",		Current field<br>
+	"Width",		Form Width<br>
+	"Height"		Form Height
+</p>
+
+<p>
+<i><u>&quot;Connection&quot;</u></i>
+</p>
+
+<p>
+&nbsp;		(See ODBC Doc for a lot of these ODBC Driver Dependant)
+</p>
+
+<p>
+	"Database",<br>
+	"ActiveConnections",<br>
+	"ActiveStatements",<br>
+	"DataSourceName",<br>
+	"DriverHenv",<br>
+	"DriverHstmt",<br>
+	"DriverName",<br>
+	"DriverVer",<br>
+	"FetchDirection",<br>
+	"ODBCAPIConform",<br>
+	"ODBCSAGConform",<br>
+	"ODBCSQLConform",<br>
+	"ODBCOPTIEF",<br>
+	"ODBCVer",<br>
+	"Procedures",<br>
+	"RowUpdates",<br>
+	"SearchPatternEscape",<br>
+	"ServerName",<br>
+	"DatabaseName",<br>
+	"DBMSName",<br>
+	"DBMSVer",<br>
+	"AccessibleTables",<br>
+	"AccessibleProcedures",<br>
+	"ConcatNull",<br>
+	"CursorCommit",<br>
+	"CursorRollback",<br>
+	"ReadOnly",<br>
+	"DefaultIsolation",<br>
+	"ExpressionsInOrderBy",<br>
+	"IdentifierCase",<br>
+	"IndentifierQuoteChar",<br>
+	"MaxColumnNameLen",<br>
+	"MaxCursorNameLen",<br>
+	"MaxOwnerNameLen"
+</p>
+
+<p>
+<i><u>&quot;Cursor&quot;</u></i>
+</p>
+
+<p>
+	None coded yet.
+</p>
+
+<hr>
+
+<p>
+&nbsp;
+</p>
+
+</body>
+
+</html>
+

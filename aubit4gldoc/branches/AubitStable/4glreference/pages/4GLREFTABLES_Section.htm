@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+<TITLE>TABLES Section</TITLE>
+</HEAD><BODY>
+<B>TABLES Section
+<P></P>
+</B>The TABLES section lists the database tables that are referenced elsewhere in
+the form specification file. You must list in this section any table, view, or
+synonym that includes a column whose name is referenced in the form.
+<P></P>
+You must use the TABLES section to declare an <A HREF="4GLREFalias.htm">alias</A> for the identifier of any table that requires a qualifier. In an <A HREF="4GLREFANSIcompliant.htm">ANSI-compliant</A> database, for example, you must qualify any table name with the owner prefix
+if the form will be run by users other than owner.
+<P></P>
+Similarly, if the form references an external table or external, distributed
+table, as described in the description of the <A HREF="4GLREFDATABASE_Section.htm">DATABASE section</A>, then the name of the table must be qualified by the name of the remote
+database and by the name of the database server. 
+<P></P>
+<IMG SRC="4GLREF00000030.gif" ALT="4GLREF00000030.gif" BORDER="0" USEMAP="#map8" WIDTH="599" HEIGHT="129"><MAP NAME="map8"><AREA COORDS="306,87,395,121" HREF="4GLREFTable_Qualifiers.htm"></MAP>
+<P></P>
+<B>alias</B> is the alias that replaces table in the form specification file. 
+<P></P>
+<B>database</B> is the name of a database (one that is different from the database that you
+specified in the DATABASE section).
+<P></P>
+<B>owner</B> is the username of whoever created table. 
+<P></P>
+<B>server</B>  is the name of a database server where database resides. This option requires
+INFORMIX-STAR or INFORMIX-NET.
+<P></P>
+<B>table</B> is the identifier or synonym of a table or view in its database.
+<P></P>
+If the DATABASE section specifies FORMONLY, no TABLES section is needed,
+unless you give a field the VALIDATE LIKE or DISPLAY LIKE attribute in the <A HREF="4GLREFATTRIBUTES_Section.htm">ATTRIBUTES Section</A>, or specify a FORMONLY field LIKE a database column.   
+<P></P>
+You must identify the database of any table that is not part of the database
+that you specified in the DATABASE section. Every database column referenced in
+the ATTRIBUTES section must be part of some table specified in the TABLES
+Section. The table identifier is the name listed in the tabname column of the
+systables catalog, or else a synonym. 
+<P></P>
+4GL allows you to specify up to 20 tables, but the actual limit on the number
+of tables, views, and synonyms that you can reference in a form depends on how
+your system is configured. 
+<P></P>
+You must specify an alias for any table that requires a qualifier. You do not
+need to specify alias, unless the form will be used in an ANSI-compliant
+database by a user who did not create table, or the form references an external
+table, or an external, distributed table.
+<P></P>
+</BODY>
+</HTML>

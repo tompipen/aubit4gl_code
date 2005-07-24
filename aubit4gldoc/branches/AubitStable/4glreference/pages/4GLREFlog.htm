@@ -1,0 +1,26 @@
+<HTML>
+<HEAD>
+<TITLE>log</TITLE>
+</HEAD><BODY>
+<B>log
+<P></P>
+</B><OL><LI> A file that records some type of information. physical and logical. With an
+INFORMIX-OnLine database engine, a physical log contains images of entire pages
+before they were changed. Physical logs are used during fast recovery when
+INFORMIX-OnLine is coming up. 
+<P></P>
+</OL>See also <A HREF="4GLREFerror_log.htm">error log</A>, <A HREF="4GLREFfile.htm">file</A>. 
+<P></P>
+<OL START="2"><LI> A logical log, sometimes called a transaction log, records changes performed
+on a database during the period the log was active. A logical log includes, as
+needed, images of the row before it was changed and images of the row after it
+was changed. Logical logs are used to roll back transactions, recover from
+system failures, and restore databases from archives. 
+<P></P>
+</OL>See also <A HREF="4GLREFcommit.htm">commit</A>, <A HREF="4GLREFroll_back.htm">roll back</A>, <A HREF="4GLREFtransaction.htm">transaction</A>. 
+<P></P>
+<OL START="3"><LI> The 4GL STARTLOG( ) function can specify an error log file in which to record
+runtime errors.
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,29 @@
+<HTML>
+<HEAD>
+<TITLE>RECORD</TITLE>
+</HEAD><BODY>
+<B>RECORD
+<P></P>
+</B>The RECORD data type stores an ordered set of values. Within each of these
+sets (called a program record), the values can be of any 4GL data type, or any
+combination of data types in a fixed order, including the simple data types, large
+binary (BYTE, TEXT) data types, and structured data types (ARRAY, RECORD). A
+component variable in a record is called a member.
+<P></P>
+This is the data-type declaration syntax for RECORD variables:.
+<P></P>
+<IMG SRC="4GLREF00000131.gif" ALT="4GLREF00000131.gif" BORDER="0" USEMAP="#map124" WIDTH="702" HEIGHT="170"><MAP NAME="map124"><AREA COORDS="274,125,374,161" HREF="4GLREFTable_Qualifiers.htm"><AREA COORDS="266,58,405,93" HREF="4GLREFData_Types_of_INFORMIX4GL.htm"></MAP>
+<P></P>
+<B>member</B> is a name that you declare for a member variable of the record.
+<P></P>
+<B>table </B> is the SQL identifier of a database table, synonym, or view.
+<P></P>
+The LIKE keyword declares a member variable that has the same data type as
+some column of a database table. If you substitute an asterisk ( * ) symbol for
+the column specification, the record has members with the same identifiers as the
+columns in table, and 4GL data types that correspond to the fixed sequence of
+SQL data types in an entire row of the table. (Any SERIAL column in table
+corresponds to a record member of data type INTEGER.) 
+<P></P>
+</BODY>
+</HTML>

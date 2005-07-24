@@ -1,0 +1,169 @@
+<HTML>
+<HEAD>
+<TITLE>ATTRIBUTES Section</TITLE>
+</HEAD><BODY>
+<B>ATTRIBUTES Section
+<P></P>
+</B>The ATTRIBUTES section specifies a field description that associates an
+identifier and a data type with every field in the SCREEN section. You can also
+control the behavior and appearance of each field by using field attributes to
+describe how INFORMIX-4GL should display the field, supply a default value, limit
+the values that can be entered, or set other parameters. 
+<P></P>
+ <IMG SRC="4GLREF00000031.gif" ALT="4GLREF00000031.gif" BORDER="0" WIDTH="573" HEIGHT="261">
+<P></P>
+<B>attribute</B>  is a string of keywords, identifiers, and symbols to specify a field attribute.
+<P></P>
+<B>column</B> is the unqualified SQL identifier of a database column.
+<P></P>
+<B>data type</B> is any data type specification except ARRAY or RECORD.
+<P></P>
+<B>field name</B> is an identifier that you assign to a FORMONLY field (a field that is not
+associated here with any database column). 
+<P></P>
+<B>field-tag</B> is the <A HREF="4GLREFfield_tag.htm">field tag</A>, as declared in the <A HREF="4GLREFSCREEN_Section.htm">SCREEN section</A>. 
+<P></P>
+<B>table</B> is the name or alias of a database table, synonym, or view, as declared in the <A HREF="4GLREFTABLES_Section.htm">TABLES section</A>. This is not required, unless several columns in different tables have the
+same name, or the table is an external table, or INFORMIX-STAR is being used to
+access an external, distributed table.
+<P></P>
+The ATTRIBUTES section must describe every field-tag from the SCREEN section.
+The order in which you list the field tags determines the order of fields in
+the default screen records that INFORMIX-4GL creates for each table.
+<P></P>
+The END keyword is not required. It is supported to provide compatibility with
+form specification files for earlier versions of Informix products.
+<P></P>
+You can specify two kinds of field descriptions: those that associate a field
+tag with the data type and with the default attributes of a database column,
+and those that link field tags to FORMONLY fields.
+<P></P>
+<B>Related Attributes
+<P></P>
+</B><TABLE><TR VALIGN=TOP><TD><B><A HREF="4GLREFAUTONEXTAttribute.htm#dff45350"></A></B><A HREF="4GLREFAUTONEXTAttribute.htm#dff45350">AUTONEXT</A> 
+<BR></TD><TD><A HREF="4GLREFFORMAT_Attribute.htm">FORMAT</A> 
+<BR></TD><TD><A HREF="4GLREFREQUIRED_Attribute.htm">REQUIRED</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFCOLOR_Attribute.htm">COLOR</A> 
+<BR></TD><TD><A HREF="4GLREFINCLUDE_Attribute.htm">INCLUDE</A> 
+<BR></TD><TD><A HREF="4GLREFREVERSE_Attribute.htm">REVERSE</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFCOMMENTS_Attribute.htm">COMMENTS</A> 
+<BR></TD><TD><A HREF="4GLREFINVISIBLE_Attribute.htm">INVISIBLE</A> 
+<BR></TD><TD><A HREF="4GLREFUPSHIFT_Attribute.htm">UPSHIFT</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDEFAULT_Attribute.htm">DEFAULT</A> 
+<BR></TD><TD><A HREF="4GLREFNOENTRY_Attribute.htm">NOENTRY</A> 
+<BR></TD><TD><A HREF="4GLREFVALIDATE_LIKE_Attribute.htm">VALIDATE LIKE</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDISPLAY_LIKE_Attribute.htm">DISPLAY LIKE</A> 
+<BR></TD><TD><A HREF="4GLREFPICTURE_Attribute.htm">PICTURE</A> 
+<BR></TD><TD><A HREF="4GLREFVERIFY_Attribute.htm">VERIFY</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDOWNSHIFT_Attribute.htm">DOWNSHIFT</A> 
+<BR></TD><TD><A HREF="4GLREFPROGRAM_Attribute.htm">PROGRAM</A> 
+<BR></TD><TD><A HREF="4GLREFWORDWRAP_Attribute.htm">WORDWRAP</A> 
+<BR><A NAME="a265a6fa"></A></TD></TR></TABLE><B>Fields Linked to Database Columns 
+<P></P>
+</B>Unless a display field is FORMONLY, its field-description must specify the SQL
+identifier of some database column as the name of the display field. Fields
+are associated with database columns only during the compilation of the form
+specification file. During the compilation process, the Form Compiler examines two
+optional tables, syscolval and syscolatt, for default values of the attributes
+that you have associated with any columns of the database.
+<P></P>
+After the Form Compiler extracts any default attributes and identifies data
+types from the system catalog, the association between fields and database
+columns is broken, and the form cannot distinguish the name of a table or view from
+the name of a screen record. The form driver in your 4GL program must mediate
+between screen fields and database columns with program variables
+<P></P>
+<IMG SRC="4GLREF00000032.gif" ALT="4GLREF00000032.gif" BORDER="0" WIDTH="448" HEIGHT="61">
+<P></P>
+<B>attribute </B> is a string of keywords, identifiers, and symbols to specify a field attribute.
+<P></P>
+<B>column</B> is the unqualified SQL identifier of a database column. This can also appear
+in 4GL statements that reference the field.
+<P></P>
+<B>field-tag</B> is the field tag, as declared in the SCREEN section. 
+<P></P>
+<B>table</B> is the name or alias of a database table, synonym, or view, as declared in the
+TABLES section. Qualifiers are not allowed.
+<P></P>
+Although you must include an ATTRIBUTES section that assigns at least one name
+to every field-tag from the SCREEN section, you are not required to specify
+any field attributes.
+<P></P>
+You are not required to specify table unless the column identifier occurs in
+more than one table of the TABLES section, or if table is an external table, or
+if INFORMIX-STAR is being used to access an external, distributed table. If
+there is ambiguity, the Form Compiler issues an error during compilation. 
+<P></P>
+Because you can refer to field names collectively through a screen record
+built upon all the fields linked to the same table, your forms may be easier to
+work with if you specify table for each field. 
+<P></P>
+A screen field can display a portion of a character string by using subscripts
+in the column specification. Subscripts are a pair of comma-separated integers
+in square ( [ ] ) brackets to indicate starting and ending character positions
+within a string value.   But if you specify in the ATTRIBUTES section that two
+fields are linked to the same character column in the database, you cannot
+associate each field with a different substring of the same column.
+<P></P>
+<A NAME="ad65818c"></A><B>FORMONLY Fields 
+<P></P>
+</B>FORMONLY fields are not associated with columns of any database table or view.
+They can be used to enter or display the values of program variables. 
+<P></P>
+If the DATABASE section specifies FORMONLY, this is the only kind of field
+description that you can specify in the ATTRIBUTES section. 
+<P></P>
+<IMG SRC="4GLREF00000033.gif" ALT="4GLREF00000033.gif" BORDER="0" USEMAP="#map9" WIDTH="581" HEIGHT="113"><MAP NAME="map9"><AREA COORDS="232,82,339,109" HREF="4GLREFData_Types_of_INFORMIX4GL.htm"></MAP>
+<P></P>
+<B>attribute</B>  is a string of keywords, identifiers, and symbols to specify a field attribute.
+<P></P>
+<B>column</B> is the unqualified SQL identifier of a database column.
+<P></P>
+<B>field name</B> is an identifier that you assign to a FORMONLY field. This can also appear in
+4GL statements that reference the field. 
+<P></P>
+<B>field-tag</B> is a field tag, as declared in the SCREEN section. 
+<P></P>
+<B>table</B> is the name or alias of a table, synonym, or view, as declared in the TABLES
+section. This is required if columns in different tables of the TABLES section
+have the same name, or if table references an external table or an external,
+distributed table. 
+<P></P>
+Like other 4GL identifiers, field name cannot begin with a number. It can have
+up to 50 characters, including letters, numbers, and underscore ( _ ) symbols. 
+<P></P>
+If you specify one or more FORMONLY fields, INFORMIX-4GL behaves as if they
+formed a database table named formonly, with the field names as column names. The
+following are examples of FORMONLY fields: 
+<P></P>
+<A NAME="1ccfe80d"></A><B>Field Attribute Syntax
+<P></P>
+</B>Syntax for assigning each of these attributes is described in the sections
+that follow. For simplicity, these use the following syntax diagram format:
+<P></P>
+<IMG SRC="4GLREF00000034.gif" ALT="4GLREF00000034.gif" BORDER="0" WIDTH="456" HEIGHT="37">
+<P></P>
+This format is simplified by ignoring fields with multiple attributes and by
+ignoring the required semicolon ( ; ) that separates field descriptions. Here is
+the complete syntax of a field description within the ATTRIBUTES section:
+<P></P>
+<IMG SRC="4GLREF00000035.gif" ALT="4GLREF00000035.gif" BORDER="0" WIDTH="551" HEIGHT="205">
+<P></P>
+<B>attribute </B> is a string of keywords, identifiers, and symbols to specify a field
+attribute, as described in the sections that follow.
+<P></P>
+<B>column  </B>is the unqualified SQL identifier of a database column.
+<P></P>
+<B>data type</B> is any 4GL data type except ARRAY or RECORD.
+<P></P>
+<B>field name</B> is an identifier that you assign to a FORMONLY field. 
+<P></P>
+<B>field-tag </B>is the field tag that you declared in the SCREEN section. 
+<P></P>
+<B>table </B>is the name or alias of a table, synonym, or view, as declared in the TABLES
+section. This is required if columns in different tables of the TABLES section
+have the same name, or if table references an external table or an external,
+distributed table.
+<P></P>
+</BODY>
+</HTML>

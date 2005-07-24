@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glWorks reference: language support routines</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glWorks reference: language support routines</CENTER></B><HR></H1>
+
+<P>National language support is given in the form of text files which map
+tokens to phrases. Message files are organized in the
+<A HREF="4wrintro.htm#CODEORG">source code tree</A>
+in a directory per each language, and are formatted using a simple
+<VAR>token</VAR>, <VAR>blanks or tabs</VAR>, <VAR>text</VAR> scheme.
+Comments are marked by a pound (<CODE>#</CODE>) sign.<BR>
+For the time being there is no provision for multiple line messages.</P>
+
+<UL>
+<LI><A HREF="#txt_fetch">txt_fetch</A></LI>
+<LI><A HREF="#txt_retrieve">txt_retrieve</A></LI>
+<LI><A HREF="#txt_validate">txt_validate</A></LI>
+</UL>
+
+<P><A NAME="txt_fetch"><H3>txt_fetch</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>ctxtl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function txt_fetch(fname, code)
+    define fname	char(14),
+	   code		char(8)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>description</VAR>, char(80), retrieved text
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+retrieves a line of text from a file
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><A NAME="nttxt01"><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>Should any error occur while loading the file, an error is written to the
+log, and depending on the error trapping routine behaviour, a message given to
+the user. Subsequent accesses to the same file trigger no action.</LI>
+<LI>Text identifiers not found in the file cause the routine to return the
+value of <VAR>code</VAR>, followed by a question mark.</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="txt_retrieve"><H3>txt_retrieve</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>ctxtl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function txt_retrieve(code)
+    define code		char(14)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>description</VAR>, char(80), retrieved text
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+<CODE>txt_retrieve</CODE> serves a similar purpose to
+<A HREF="#txt_fetch"><CODE>txt_fetch</CODE></A>, but gathers the output
+text from different places depending on the format of <VAR>code</VAR>:<UL>
+<LI>an integer will return a standard Informix error message</LI>
+<LI>a string of the form <CODE>token1.token2</CODE> will retrieve 
+message <CODE>token2</CODE> from file <CODE>token1</CODE></LI>
+<LI>any other string will retrieve the corresponding text from the
+default message file, named <CODE>&lt;application&gt;.txt</CODE>.</LI>
+</UL></TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><A HREF="#nttxt01">see txt_fetch</A></TD></TR>
+</TABLE></P>
+
+<P><A NAME="txt_validate"><H3>txt_validate</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>ctxtl.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function txt_validate(fname, codes)
+    define fname	char(14),
+	   codes	char(80)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+true or false<BR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Determines whether file <VAR>fname</VAR> defines all the texts specified
+in <VAR>codes</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI><VAR>codes</VAR> is a space separated list of tokens</LI>
+<LI><A HREF="#nttxt01">see also txt_fetch</A></LI>
+</UL></TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>

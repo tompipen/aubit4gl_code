@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+<TITLE>ORDER BY Section</TITLE>
+</HEAD><BODY>
+<B>ORDER BY Section
+<P></P>
+</B>The ORDER BY section specifies how to sort input records, and determines the
+sequence of execution of GROUP OF control blocks in the <A HREF="4GLREFFORMAT_Section.htm">FORMAT section</A>. 
+<P></P>
+<IMG SRC="4GLREF00000011.gif" ALT="4GLREF00000011.gif" BORDER="0" WIDTH="542" HEIGHT="108">
+<P></P>
+<B><UL><LI>ariable</B> is the name of an argument from the report prototype. The list of variables
+that you specify here is called the sort list.
+<P></P>
+</UL>The ORDER BY section specifies a sort list for the input records. Include this
+section if the values that the REPORT routine receives from the <A HREF="4GLREFINFORMIX4GL_Reports_Overview.htm#804c3110">report driver</A> have not been ordered and you want the report to contain ordered data. 
+<P></P>
+If you omit the ORDER BY section, 4GL processes input records in the order in
+which they are passed by the report driver, and processes any GROUP OF control
+blocks in the order of their appearance in the FORMAT section. If the records
+are not sorted in the report driver, any GROUP OF control blocks are likely to
+be executed after each input record, because the unsorted values tend to change
+from record to record.
+<P></P>
+If you specify only one variable in the GROUP OF control blocks, and the input
+records are already sorted by the SELECT statement, then you do not need to
+include an ORDER BY section in the report.
+<P></P>
+Specify ORDER EXTERNAL BY if the report contains GROUP BY control blocks that
+specify more than one variable, and the input records have already been sorted
+by the SELECT statement. The variables after the keywords ORDER EXTERNAL BY
+control the execution order of GROUP BY control blocks.
+<P></P>
+Without the EXTERNAL keyword, INFORMIX-4GL makes two passes through the input
+records. During the first pass, it sorts the data and stores the sorted values
+in a temporary file. During the second pass, it calculates any aggregate
+values, and produces output from data in the temporary files.
+<P></P>
+With the EXTERNAL keyword, INFORMIX-4GL only needs to make a single pass
+through the data: it does not need to build the temporary table in the database for
+sorting the data. Specifying EXTERNAL to instruct 4GL not to sort the records
+again may result in an improvement in performance.
+<P></P>
+The EXTERNAL keyword in the ORDER BY section instructs the report to accept
+the input records without sorting them. Without this keyword, the report needs
+access to a database to create its temporary table for sorting. (If no database
+is open and you run a two-pass report, a run-time error occurs when 4GL cannot
+create the temporary table.)
+<P></P>
+If the input records for your report come from the rows returned by only one
+cursor, you should use the ORDER BY clause in the SELECT statement that is
+associated with the cursor, and then use the EXTERNAL keyword in the ORDER BY
+section of your report. 
+<P></P>
+</BODY>
+</HTML>

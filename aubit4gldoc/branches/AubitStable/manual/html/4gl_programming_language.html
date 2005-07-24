@@ -1,0 +1,696 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>4GL Programming language</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p align="center"><font size="6">4GL Programming language</font></p>
+<hr>
+<ol>
+  <li>
+    <p align="left">Introduction</li>
+  <li>
+    <p align="left">Short, quick-and-dirty, general intro to x4GL</li>
+</ol>
+<ul>
+  <li>
+    <p align="left">4GL Programs</li>
+  <li>
+    <p align="left">Structure of a program</li>
+  <li>
+    <p align="left">DATABASE section</li>
+  <li>
+    <p align="left">GLOBALS section</li>
+  <li>
+    <p align="left">Functions</li>
+  <li>
+    <p align="left">MAIN block</li>
+  <li>
+    <p align="left">DEFINE section</li>
+  <li>
+    <p align="left">4GL
+Commands&nbsp;</li>
+</ul>
+<hr>
+<h3 align="left"><i><u>1) Introduction</u></i></h3>
+<p align="left">4GL programming language was born in Informix corp., about 15
+years ago. Because of that, and not to conflict with with 4GL as general
+programming concept (BASIC is in principle also Fourth Generation Language, as
+opposed to C, that is Third Generation Language), we should refer to basic 4GL
+syntax as I-4GL.&nbsp;</p>
+<p align="left">Today, even among Informix-distributed products, there is distinction
+among &quot;classic&quot; I-4GL and D4GL (Informix name for 4Js 4gl compiler),
+that introduced number of language enhancements. Then Informix implemented some
+of this enhancements back to &quot;classic&quot; 4gl, and added some of it's own
+(v 7.3), that 4Js in turn implemented in 'Universal Compiler&quot; V3 (this is actual
+name for 4Js product that Informix distributes under the name &quot;D4GL&quot; -
+Dynamic 4GL.)</p>
+<p align="left">Confused? Why am I not surprised. So here is how we will refer
+to different implementations of LANGUAGE syntax:</p>
+<ul>
+  <li>
+    <p align="left">I4GL - Informix non-GUI, a.k.a. &quot;classic&quot; products
+    syntax, V 7.3</li>
+  <li>
+    <p align="left">D4GL - 4Js extended syntax, including I4GL</li>
+  <li>
+    <p align="left">A4GL - Aubit 4GL specific syntax, including I4GL.</li>
+  <li>
+    <p align="left">x4GL - all of the above as general name for all</li>
+</ul>
+<p align="left">Lucky for us, Querix decided that it will not change language,
+and instead do all GUI related configuration from separate configuration files.</p>
+<p align="left">Aubit 4GL, as package, and A4GL, as language definition, is a
+superset of I4GL. Our first aim is to provide full UNCONDITIONAL compatibility
+with I4GL.</p>
+<p align="left">Since this means that 90% of the syntax used in A4GL will be
+I4GL, and since this document is not intended to be I4GL manual, we strongly
+suggest that if you refer to existing Informix&nbsp; documentation and tutorials
+downloadable from there web site, and books about 4gl, like:</p>
+<p align="left"><a href="http://docs.cn.ua:8101/Database/Informix/InformixUnleashed/index.htm" target="_blank">Informix
+Unleashed</a>, (ISBN 0672306506) complete book in HTML format about Informix
+products, by John McNally. You will find several complete chapters about 4GL
+language there, including chapters on Informix database servers. You will also
+learn there that &quot;To develop with a 4gl, the developer does not have to be
+an expert programmer&quot;.&nbsp;</p>
+<p align="left">(I have asked the author for permission to include his book in
+Aubit 4GL distribution, but received no answer)</p>
+<p align="left">The rest of this page will serve more like quick and dirty crash
+course to give you some idea how the I4GL look like, as the language. For A4GL
+extensions. please refer to the appropriate sections of this manual.</p>
+<p align="left"><i>Summary:</i></p>
+<ul>
+  <li>
+    <p align="left">To learn I4GL, refer to Informix manuals for Informix-4GL version
+    7.3 ( <a href="http://www.informix.com">http://www.informix.com</a> or
+    direct links to <a href="http://www.informix.com/answers/english/docs/734gl/5296.pdf">Informix
+    4gl by example</a>, <a href="http://www.informix.com/answers/english/docs/734gl/5298.pdf">Informix
+    4gl concepts and use</a>, <a href="http://www.informix.com/answers/english/docs/734gl/5299.pdf">Informix
+    4gl Reference Manual</a> - please remember that exact locations can change,
+    and if they do, use search function on Informix web site to find new locations
+    of this documents),
+    and third-party books&nbsp;</li>
+  <li>
+    <p align="left">To learn about A4GL extensions, read this manual</li>
+  <li>
+    <p align="left">To get some idea about how I4GL looks like, and get some
+    idea about combined I4GL and A4GL functionality, continue reading this page</li>
+  <li>
+    <p align="left">To get 4GL code examples, go to <a href="http://www.informix.com/idn">http://www.informix.com/idn</a>
+    and look for Example application, or download one of GNU 4GL programs from <a href="http://www.falout.com">http://www.falout.com</a></li>
+</ul>
+<p align="left">&nbsp;</p>
+<hr>
+<h3 align="left"><i><u>2) Short, quick-and-dirty, general intro to x4GL</u></i>
+</h3>
+
+<ul>
+  <li>
+    <p align="left">4GL Programs</li>
+  <li>
+    <p align="left">Structure of a program</li>
+  <li>
+    <p align="left">DATABASE section</li>
+  <li>
+    <p align="left">GLOBALS section</li>
+  <li>
+    <p align="left">Functions</li>
+  <li>
+    <p align="left">MAIN block</li>
+  <li>
+    <p align="left">DEFINE section</li>
+  <li>
+    <p align="left">4GL
+Commands&nbsp;</li>
+</ul>
+<h3>4GL Programs
+</h3>
+
+<p>
+A 4gl program consists of a series of modules and forms.
+Each 4gl module can contain functions and reports and each program must contain exactly one 'main' section and must end in a .4gl extension.
+C modules can also be included in programs
+</p>
+
+<h3>Structure of a program
+</h3>
+
+<blockquote>
+<p>
+database section
+</p>
+
+<p>
+globals section
+</p>
+
+<p>
+function/report/main block<br>
+.<br>
+.<br>
+.<br>
+.
+</p>
+
+<p>
+function/report/main block
+</p>
+
+</blockquote>
+<h3>DATABASE section
+</h3>
+
+<p>
+This section is optional and is of the format :
+</p>
+
+<blockquote>
+<p>
+	DATABASE database-name
+</p>
+
+</blockquote>
+<p>
+The database name is actually the DATA SOURCE NAME (DSN) from the ODBC drivers.
+</p>
+
+<h3>GLOBALS section
+</h3>
+
+<p>
+This optional section allows you to define variables which are accessible
+to all modules.  There is normally a single file (typically called&nbsp;'globals.4gl') where variables are defined. All other modules which&nbsp;need these variables then include that file using the a global statement .
+</p>
+
+<p>
+eg.
+</p>
+
+<p>
+globals.4gl
+</p>
+
+<blockquote>
+<p>
+	GLOBALS<br>
+		DEFINE a INTEGER<br>
+	END GLOBALS
+</p>
+
+</blockquote>
+<p>
+module.4gl
+</p>
+
+<blockquote>
+<p>
+	GLOBALS "globals.4gl"
+</p>
+
+</blockquote>
+<p>
+Note: In Aubit 4GL the any 'globals' module (containing the GLOBALS / END GLOBALS) must be compiled first.
+</p>
+
+<h3>Functions
+</h3>
+
+<p>
+A function in 4GL is a set of commands which are executed when called from&nbsp;another block of code. A function can accepts parameters and can return values.
+</p>
+
+<p>
+A function is defined :
+</p>
+
+<blockquote>
+<p>
+FUNCTION function-name ( parameter-list )<br>
+&nbsp;&nbsp;&nbsp; define-section&nbsp;<br>
+&nbsp;&nbsp;&nbsp; commands<br>
+END FUNCTION
+</p>
+
+</blockquote>
+<p>
+Values are returned using the RETURN keyword:
+</p>
+
+<blockquote>
+<p>
+	RETURN value
+</p>
+
+</blockquote>
+<h3>MAIN block
+</h3>
+
+<p>
+Each program must contain a main section - it is the starting point in any program.
+</p>
+
+<blockquote>
+<p>
+MAIN<br>
+&nbsp;&nbsp;&nbsp; define-section<br>
+&nbsp;&nbsp;&nbsp; commands<br>
+END MAIN
+</p>
+
+</blockquote>
+<h3>DEFINE section
+</h3>
+
+<p>
+This optional section allows you to define variables which may be used subsequently:
+</p>
+
+<p>
+In its simplest form&nbsp;
+</p>
+
+<blockquote>
+<p>
+		DEFINE variable_names datatype
+</p>
+
+</blockquote>
+<p>
+	or&nbsp;
+</p>
+
+<blockquote>
+<p>
+		DEFINE CONSTANT constant_name "Value"<br>
+		DEFINE CONSTANT constant_name Number-Value
+</p>
+
+</blockquote>
+<p>
+More than one variable can be defined  as any type in the same statement by separating the names with a comma:
+</p>
+
+<blockquote>
+<p>
+	DEFINE a,b,c INTEGER
+</p>
+
+</blockquote>
+<p>
+Available datatypes are :
+</p>
+
+<blockquote>
+<p>
+	SMALLINT	 (2 byte integer)<br>
+	INTEGER		(4 byte integer)<br>
+	CHAR		(Single character 'string')<br>
+	CHAR(n)		(n character string<br>
+	MONEY<br>
+	DECIMAL		(These are not fully implemented)<br>
+	FLOAT		(8 byte floating point number - (C double))<br>
+	SMALLFLOAT	(4 byte floating point number - (C float))<br>
+	DATE		(date - number of days since 31/12/1899)
+<br>
+	DATETIME<br>
+	INTERVAL<br>
+	BYTE<br>
+	TEXT<br>
+	VARCHAR		Unimplemented yet<br>
+	LIKE tablename.columnname  '1&nbsp;<br>
+	RECORD LIKE tablename.*    '1
+</p>
+
+</blockquote>
+<p><i>
+'1 - can only be used when the module has a DATABASE statement
+     These copy the datatypes directly from the database either for a simple column, or  to generate an entire record (see below)</i>
+</p>
+
+<p>
+Special datatypes are :
+</p>
+
+<blockquote>
+<p>
+	ARRAY [n] OF datatype		defines an array
+</p>
+
+<p>
+	RECORD .. END RECORD		defines a record structure
+</p>
+
+<p>
+	ASSOCIATE ....
+</p>
+
+</blockquote>
+<p>
+These special types are used with the other datatypes.
+</p>
+
+<p><i><u>
+Arrays</u></i>
+</p>
+
+<p>
+Syntax:
+</p>
+
+<blockquote>
+<p>
+	DEFINE vars ARRAY [n] OF datatype
+</p>
+
+</blockquote>
+<p>
+Eg.
+</p>
+
+<blockquote>
+<p>
+	DEFINE lv_arr ARRAY[200] OF INTEGER
+</p>
+
+</blockquote>
+<p>
+		defines an array of 200 elements each being an integer
+</p>
+
+<p>
+Elements of an array are indexed from 1 to the number of elements specified.
+</p>
+
+<p>
+IMPORTANT: NO BOUNDS CHECKS ARE MADE, accessing elements which are outside those defined (ie &lt;1 or > n) will result in an error (Usually a core dump).
+</p>
+
+<p>
+Eg&nbsp;
+</p>
+
+<blockquote>
+<p>	LET lv_arr[1]=1<br>
+	.<br>
+	LET lv_arr[200]=200<br>
+	LET lv_arr[201]=201 # this will cause a program fault!
+</p>
+
+</blockquote>
+<p><i><u>
+Records&nbsp;</u></i>
+</p>
+
+<p>
+Records are structured groups of data, with the entries are separated by commas.
+</p>
+
+<p>
+Elements within a record are accessed via the record name '.' element name.
+</p>
+
+<p>
+Syntax
+</p>
+
+<blockquote>
+<p>
+	DEFINE recordname RECORD<br>
+		element datatype,<br>
+		.<br>
+		.<br>
+		element datatype<br>
+	END RECORD
+</p>
+
+</blockquote>
+<p>
+Eg.
+</p>
+
+<blockquote>
+<p>
+	DEFINE lv_rec RECORD&nbsp;<br>
+		elem1 	CHAR(10),<br>
+		elem2 	INTEGER<br>
+	END RECORD
+</p>
+
+</blockquote>
+<p>
+	Defines a record with two elements.
+</p>
+
+<p>Eg.
+</p>
+
+<blockquote>
+<p>
+		LET lv_rec.elem1="string1"
+</p>
+
+</blockquote>
+<p>
+Record may also be nested and used in conjunction with arrays.&nbsp;
+</p>
+
+<p>
+The following are all therefore valid:
+</p>
+
+<blockquote>
+<p>
+	DEFINE lv_record ARRAY[20] OF RECORD<br>
+    &nbsp;&nbsp;&nbsp; elem1 CHAR(20),<br>
+    &nbsp;&nbsp;&nbsp; elem2 INTEGER<br>
+	END RECORD
+</p>
+
+<p>
+	DEFINE lv_record RECORD<br>
+    &nbsp;&nbsp;&nbsp; a ARRAY[200] of INTEGER,<br>
+    &nbsp;&nbsp;&nbsp; b CHAR(20)<br>
+	END RECORD
+</p>
+
+<p>
+	DEFINE lv_record RECORD<br>
+    &nbsp;&nbsp;&nbsp; subrecord1 RECORD<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; elem1 CHAR(10),<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; elem2 INTEGER<br>
+    &nbsp;&nbsp;&nbsp; END RECORD,<br>
+    &nbsp;&nbsp;&nbsp; subrecord2 RECORD<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; elem2 DATE<br>
+    &nbsp;&nbsp;&nbsp; END RECORD<br>
+	END RECORD
+</p>
+
+</blockquote>
+<p><i><u>
+ASSOCIATE ARRAYS</u></i>
+</p>
+
+<p>
+Associative arrays allow you to access data from an array using a string as a subscript rather than an integer. For example:
+</p>
+
+<blockquote>
+<p>
+		LET age&lt;&lt;"bob">>=40<br>
+		DISPLAY age&lt;&lt;"bob">>
+</p>
+
+</blockquote>
+<p>
+This can be especially useful when dealing with codes and code desciptions:
+</p>
+
+<blockquote>
+<p>
+	LET lv_desc&lt;&lt;"A">>="Active"<br>
+	LET lv_desc&lt;&lt;"I">>="Inactive"<br>
+	LET lv_desc&lt;&lt;"R">>="Running"<br>
+	LET lv_desc&lt;&lt;"D">>="Deleted"<br>
+<br>
+	LET lv_state="A"<br>
+	.<br>
+	.<br>
+	DISPLAY lv_desc&lt;&lt;lv_state>>
+</p>
+
+</blockquote>
+<p>
+(This is for illustration, the data would normally be read from a database!)
+</p>
+
+<p>
+To define an associate array:
+</p>
+
+<blockquote>
+<p>
+	DEFINE name ASSOCIATE [CHAR] (nc) WITH ARRAY [nx] OF datatype
+</p>
+
+</blockquote>
+<p>
+	Where nc is the number of characters to use for the index, and nx is the
+	total number of elements that may be stored.
+</p>
+
+<p><i>
+PERFORMANCE NOTE:</i>
+</p>
+
+<p>
+	Internally, associate arrays are stored using hash tables, for&nbsp;performance reasons always declare 'nx' larger than is actually required.&nbsp;A factor of two is optimum in most cases.
+</p>
+
+<p>
+Again the datatype used in this form of array may be a RECORD, ARRAY etc.
+</p>
+
+<p>
+Eg.
+</p>
+
+<blockquote>
+<p>
+DEFINE lv_asoc1 ASSOCIATE CHAR(10)  WITH  ARRAY[10] OF INTEGER<br>
+DEFINE lv_asoc3 ASSOCIATE (10)  WITH ARRAY[10] OF INTEGER<br>
+DEFINE lv_asoc2 ASSOCIATE CHAR(10)  WITH ARRAY[10] OF RECORD<br>
+	element1 CHAR(10),<br>
+	element2 CHAR(20)<br>
+END RECORD
+</p>
+
+</blockquote>
+<p><i><u>
+Constants</u></i>
+</p>
+
+<p>
+	Constants are defined using
+</p>
+
+<blockquote>
+<p>
+	DEFINE CONSTANT name value
+</p>
+
+</blockquote>
+<p>
+Eg.
+</p>
+
+<blockquote>
+<p>
+	DEFINE CONSTANT max_num_vars 30<br>
+	DEFINE CONSTANT err_string "There is an error"<br>
+<br>
+	IF num_vars>max_num_vars THEN<br>
+		ERROR err_string<br>
+	END IF
+</p>
+
+</blockquote>
+<p>
+It is also possible to use constants in any subsequent define sections:
+</p>
+
+<blockquote>
+<p>
+	DEFINE CONSTANT num_elems 20<br>
+	DEFINE lv_arr ARRAY [num_elems] OF INTEGER<br>
+<br>
+	IF num_vars&lt;=num_elems THEN<br>
+		LET lv_arr[num_vars]=1<br>
+	END IF
+</p>
+
+</blockquote>
+<h3>4GL Commands&nbsp;
+</h3>
+
+<p>(syntax and documentation in Informix manuals)
+</p>
+
+<blockquote>
+<p>
+CALL<br>
+CASE<br>
+CLEAR<br>
+CLOSE<br>
+CODE<br>
+CONSTRUCT<br>
+CONTINUE<br>
+CREATE<br>
+CURRENT WINDOW<br>
+DECLARE<br>
+DISPLAY<br>
+DROPS<br>
+ERROR<br>
+EXECUTE<br>
+EXIT PROGRAM<br>
+EXT<br>
+FINISH<br>
+FOR<br>
+FOREACH<br>
+GOTO<br>
+HIDE<br>
+HIDE OPTION<br>
+IF<br>
+INIT<br>
+INPUT<br>
+LABEL<br>
+LET<br>
+LOAD<br>
+LOCATE<br>
+MENU<br>
+MESSAGE<br>
+MOVE<br>
+NEXT FIELD<br>
+NEXT OPTION<br>
+OPEN<br>
+OPENS<br>
+OPTIONS<br>
+OUTPUT<br>
+PAUSE SCREEN<br>
+PREPARE<br>
+PROMPT<br>
+REPORT<br>
+RETURN<br>
+RUN<br>
+SET<br>
+SET DATABASE<br>
+SHOW<br>
+SHOW OPTION<br>
+SLEEP<br>
+SQL<br>
+SQLCODE<br>
+START<br>
+START RPC<br>
+STOP RPC<br>
+UNLOAD<br>
+WHENEVER<br>
+WHILE<br>
+DEFER<br>
+	SYNTAX<br>
+	DEFER INTERRUPT<br>
+...etc...
+</p>
+
+</blockquote>
+<p>&nbsp;
+</p>
+
+</body>
+
+</html>
+

@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glWorks: features</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Microsoft FrontPage 4.0">
+</HEAD>
+<BODY BGCOLOR="White">
+<H1></h1>
+<HR><CENTER><B>4glWorks: features</CENTER></B><HR>
+
+<P>This document has been prepared assuming that you have read the in-depth description.<BR>
+If you haven't, <A HREF="4gwdesc.htm">now</A> is a good time to do it.</P>
+
+<P>4glWorks is a working application that serves no useful purpose other
+than maintaining printer tables but knows how to perform many common tasks.<BR>
+Currently, 4glWorks components include:</P>
+
+<UL>
+<P><LI><a HREF="4wrinulv.htm">viewers</a>:&nbsp;
+  <UL>
+  <LI>a null (empty) viewer</LI>
+
+  <LI>a simple sql interpreter, built around two scrollers and one library</LI>
+  
+  <LI>an application error log viewer</LI>
+
+  <LI>printer data maintenance viewers.</LI>
+  </UL></LI>
+
+<P><LI>Sample glue code (viewer spawner &amp; menu structure). Apart from serving as an example,
+the glue code constitutes a good starting point to build new applications:<BR>
+Add viewers &amp; services, taylor the menus &amp; the main program to reflect
+your additions and pronto, your application is up and running.<BR>
+This is the closest I can get to an Application Framework using Informix-4gl.</LI>
+
+<P><LI><A HREF="4wridtbs.htm">scrollers</A>:
+  <UL>
+  <LI>a table maintenance browser, capable of brief (e.g. code &amp; description) or,
+   with appropriate viewer aid, full record display</LI>
+
+  <LI>a similar many to many table maintenance scroller</LI>
+
+  <LI>a simple text browser with printing capability</LI>
+
+  <LI>a complex text scroller that displays data taken from different tables
+   in various orders (table/record, record/table, etc) and maintains links
+   to the original records, thus allowing for easy record modification or
+   deletion</LI>
+</UL></LI>
+
+<P><LI>A basic <A HREF="4writedl.htm">text editor</A>, very much work in
+progress (the interface is likely to change).</LI>
+
+<P><LI><A HREF="4wrimnhl.htm">Horizontal and vertical menus</A> support,
+with key trapping and viewer dependent help messages.</LI>
+
+<P><LI>Support for multiple <A HREF="4wrimnhl.htm#tim_clear">timer
+generated messages</A>.</LI>
+
+<P><LI>Single and multiple selection <A HREF="4wriunih.htm">picklists</A>.
+These can get their data from tables,
+pipes or multiple files, handle comments, return automatically if only
+one choice was found, position the cursor on the entry that is closest
+to the field contents and have a quick search capability.</LI>
+
+<P><LI>Printing support in the form of printer tables, and print library routines
+with the ability to produce variable length reports (not a novelty!) and
+to include byte data (i.e. images, logos, you name it...) in headers or
+footers.</LI>
+
+<P><LI>An <A HREF="4wrcsqll.htm">sql interpreter library</A>, with
+<A HREF="4wrcsqll.htm#FGWLANGREF">additional statements</A> and good formatting
+and <A HREF="4wrcsqll.htm#FGWEXPREF">expansion</A> capabilities</LI>
+
+<P><LI>Text blobs manipulation <A HREF="4wrcascc.htm">routines</A></LI>
+
+<P><LI><A HREF="4wrchstc.htm">Associative arrays</A></LI>
+
+<P><LI>File and os oriented <A HREF="4wrcfioc.htm">routines</A></LI>
+
+<P><LI>Table and DB related functions, including table/db lock/unlock services.</LI>
+
+<P><LI>Text and display related functions (common dialogs, filters, etc)</LI>
+
+<P><LI><A HREF="4wrctxtl.htm">Language support</A> that allows to run the same executable in different
+languages without modifications or recompilation.</LI>
+
+<P><LI>A complete <A HREF="4wrierrl.htm">error logging</A> facility that includes tracking of unexpected
+messages and not found text files. Error log includes, as an aid to debugging,
+the complete message chain that led to the error and the identity of the user
+who encountered the error.</LI>
+
+</UL>
+
+</BODY>
+</HTML>

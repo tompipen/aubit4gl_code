@@ -1,0 +1,26 @@
+<HTML>
+<HEAD>
+<TITLE>SMALLINT</TITLE>
+</HEAD><BODY>
+<B>SMALLINT
+<P></P>
+</B>The SMALLINT data type stores data as signed two-byte binary integers.
+<P></P>
+Values must be whole numbers within the range from -32,767 to +32,767. 
+<P></P>
+Any fractional part of the data value is discarded. If a value lies outside
+this range, you cannot store it in a SMALLINT variable or database column. (The
+negative value -32,768 is reserved; it cannot be assigned to a SMALLINT
+variable, constant, or database column, nor entered into a SMALLINT field.)
+<P></P>
+You can use SMALLINT variables, constants, and FORMONLY fields of screen forms
+to store, manipulate, and display data that can be represented as whole
+numbers of an absolute value less than 2**15. This data type typically stores small
+whole numbers, Boolean values, ranks, 4-digit codes, or measurements that
+classify data into a small number of numerically-coded categories. Since a SMALLINT
+data type requires only 2 bytes of storage, arithmetic operations in number
+expressions can be done very efficiently, provided that the values of the operands
+lie within the somewhat limited range of SMALLINT values.
+<P></P>
+</BODY>
+</HTML>

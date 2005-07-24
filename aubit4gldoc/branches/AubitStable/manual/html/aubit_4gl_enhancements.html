@@ -1,0 +1,1995 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Aubit 4GL enhancements to standard 4GL language</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p align="right"><font size="3"><a href="../index.htm">show TOC</a></font></p>
+
+<p align="center"><font size="6">Aubit 4GL enhancements to standard I4GL language</font></p>
+<hr>
+<ul>
+  <li>
+    <p align="left"><i><u><a href="#A4GL enhanced syntax summary table">A4GL enhanced syntax summary table</a></u></i>
+  </li>
+</ul>
+    <p align="left">In this chapter:
+<ul>
+  <li>
+    <p align="left"><a href="#Associative Arrays">Associative Arrays</a></li>
+  <li>
+    <p align="left"><a href="#PAUSE Screen Handling">PAUSE
+Screen Handling</a></li>
+  <li>
+    <p align="left"><a href="#ODBC Compliance">ODBC Compliance</a></li>
+  <li>
+    <p align="left"><a href="#Multiple concurrent connections&nbsp;">Multiple concurrent connections</a></li>
+  <li>
+    <p align="left"><a href="#Application Constants">Application Constants</a></li>
+  <li>
+    <p align="left"><a href="#Map Files">Map Files</a></li>
+  <li>
+    <p align="left"><a href="#Variable IDs">Variable IDs</a></li>
+  <li>
+    <p align="left">
+<a href="#Passing IDs to functions">
+Passing IDs to functions</a></li>
+  <li>
+    <p align="left"><a href="#Embedded 'C' code">Embedded 'C' code</a></li>
+  <li>
+    <p align="left"><a href="#Move/Show/Hide Window">Move / Show / Hide Window</a></li>
+  <li>
+    <p align="left"><a href="#WHENEVER SUCCESS/SQLSUCCESS">WHENEVER SUCCESS /
+    SQLSUCCESS</a></li>
+  <li>
+    <p align="left"><a href="#Multi-level Menus">Multi-level Menus</a></li>
+  <li>
+    <p align="left">
+<a href="#Extended Display Array Control">
+Extended Display Array Control</a></li>
+  <li>
+    <p align="left">
+<a href="#User overridable and extended USING functionality for use with dates">
+Extended &quot;USING&quot; syntax</a></li>
+  <li>
+    <p align="left">
+<a href="#Local functions">
+Local functions</a></li>
+  <li>
+    <p align="left"><a href="#get_info function">get_info function</a></li>
+  <li>
+    <p align="left"><a href="#Dynamic Screen Fields">Dynamic Screen Fields</a></li>
+  <li>
+    <p align="left"><a href="#Remote Function Calls">Remote Function Calls</a></li>
+  <li>
+    <p align="left">
+<a href="#SELECT/DELETE/UPDATE USING">
+SELECT/DELETE / UPDATE USING</a></li>
+  <li>
+    <p align="left"><a href="#ON ANY KEY">ON ANY KEY</a></li>
+  <li>
+    <p align="left"><a href="#Compile Time Environment Setting">Compile Time Environment Setting</a></li>
+  <li>
+    <p align="left"><a href="#SET SESSION OPTION/SET CURSOR OPTION">SET SESSION
+    OPTION / SET CURSOR OPTION</a></li>
+  <li>
+    <p align="left"><a href="#Application Partitioning">Application Partitioning</a></li>
+  <li>
+    <p align="left"><a href="#Y2K runtime translation">Y2K runtime translation</a></li>
+  <li>
+    <p align="left">
+<a href="#Globbing">
+Globbing</a></li>
+  <li>
+    <p align="left"><a href="#A4GL Wizard and program templates">A4GL Wizard and program templates</a></li>
+  <li>
+    <p align="left"><a href="#ENABLE/DISABLE fields">ENABLE / DISABLE fields</a></li>
+</ul>
+<hr>
+<p align="left">FIXME:
+</p>
+<p align="left">
+	RPC calls 			Very sexy - Is this the same as RFC? Should we call ir
+RFC or RPC ?
+</p>
+<p align="left">
+	Dynamic Library Interface	Again - very useful - WHAT IS THIS in English
+please
+</p>
+<p align="left">
+	Curses Windows handling	Normally a bitch to use - HOW DOES THIS AFFECT a4gl?
+</p>
+<p align="left">
+    Add new GUI related syntax in menu files, form files, menuhandler, etc...
+</p>
+<hr>
+<p align="center"><i><u><a name="A4GL enhanced syntax summary table">A4GL enhanced syntax summary table</a></u></i>
+</p>
+<table border="1" width="100%">
+  <tr>
+    <td width="50%" bgcolor="#C0C0C0">
+      <p align="center">For this a4gl Syntax...</td>
+    <td width="50%" bgcolor="#C0C0C0">
+      <p align="center">...See this feature details...</td>
+  </tr>
+  <tr>
+    <td width="50%">LET Age&lt;&lt;&quot;Fred&quot;&gt;&gt;=30</td>
+    <td width="50%"><a href="#Associative Arrays">Associative Arrays</a></td>
+  </tr>
+  <tr>
+    <td width="50%">DEFINE .... ASSOCIATE ... WITH ...</td>
+    <td width="50%"><a href="#Associative Arrays">Associative Arrays</a></td>
+  </tr>
+  <tr>
+    <td width="50%">SET PAUSE MODE ON|OFF</td>
+    <td width="50%"><a href="#PAUSE Screen Handling">PAUSE
+Screen Handling</a></td>
+  </tr>
+  <tr>
+    <td width="50%">SET SESSION | CURSOR OPTION</td>
+    <td width="50%"><a href="#SET SESSION OPTION/SET CURSOR OPTION">SET SESSION OPTION/SET CURSOR OPTION</a></td>
+  </tr>
+  <tr>
+    <td width="50%">OPEN SESSION ... TO DATABASE ...AS USER ... PASWORD ...</td>
+    <td width="50%"><a href="#Multiple concurrent connections&nbsp;">Multiple concurrent connections</a></td>
+  </tr>
+  <tr>
+    <td width="50%">SET SESSION TO ...</td>
+    <td width="50%"><a href="#Multiple concurrent connections&nbsp;">Multiple concurrent connections</a></td>
+  </tr>
+  <tr>
+    <td width="50%">USE SESSION ... FOR ...</td>
+    <td width="50%"><a href="#Multiple concurrent connections&nbsp;">Multiple concurrent connections</a></td>
+  </tr>
+  <tr>
+    <td width="50%">CLOSE SESSION</td>
+    <td width="50%"><a href="#Multiple concurrent connections&nbsp;">Multiple concurrent connections</a></td>
+  </tr>
+  <tr>
+    <td width="50%">DEFINE CONSTANT ...</td>
+    <td width="50%"><a href="#Application Constants">Application Constants</a></td>
+  </tr>
+  <tr>
+    <td width="50%">_variable(x)</td>
+    <td width="50%"><a href="#Variable IDs">Variable IDs</a></td>
+  </tr>
+  <tr>
+    <td width="50%">code { ....} endcode</td>
+    <td width="50%"><a href="#Embedded 'C' code">Embedded &quot;C&quot; code</a></td>
+  </tr>
+  <tr>
+    <td width="50%">HIDE | SHOW | MOVE WINDOW</td>
+    <td width="50%"><a href="#Move/Show/Hide Window">Move/Show/Hide Window</a></td>
+  </tr>
+  <tr>
+    <td width="50%">WHENEVER SUCCESS | SQLSUCCESS</td>
+    <td width="50%"><a href="#WHENEVER SUCCESS/SQLSUCCESS">Whenever
+      success/sqlsuccess</a></td>
+  </tr>
+  <tr>
+    <td width="50%">FGL_SET_ARRLINE | FGL_SET_SCRLINE</td>
+    <td width="50%"><a href="#Extended Display Array Control">Extended Display Array Control</a></td>
+  </tr>
+  <tr>
+    <td width="50%">LOCAL FUNCTION ...</td>
+    <td width="50%"><a href="#Local functions">Local functions</a></td>
+  </tr>
+  <tr>
+    <td width="50%">CALL get_info(...)</td>
+    <td width="50%"><a href="#get_info function">get_info function</a></td>
+  </tr>
+  <tr>
+    <td width="50%">f000=..., dynamic size=x (.PER files)</td>
+    <td width="50%"><a href="#Dynamic Screen Fields">Dynamic Screen Fields</a></td>
+  </tr>
+  <tr>
+    <td width="50%">START EXTERNAL FUNCTION[x] FOR ...</td>
+    <td width="50%"><a href="#Remote Function Calls">Remote Function Calls</a></td>
+  </tr>
+  <tr>
+    <td width="50%">CALL EXTERNAL ...[x] (y)</td>
+    <td width="50%"><a href="#Remote Function Calls">Remote Function Calls</a></td>
+  </tr>
+  <tr>
+    <td width="50%">DEFINE ... LINKED TO ...(...)</td>
+    <td width="50%"><a href="#SELECT/DELETE/UPDATE USING">Select/delete/update using</a></td>
+  </tr>
+  <tr>
+    <td width="50%">SELECT | DELETE | UPDATE USING ...</td>
+    <td width="50%"><a href="#SELECT/DELETE/UPDATE USING">Select/delete/update using</a></td>
+  </tr>
+  <tr>
+    <td width="50%">ON ANY KEY</td>
+    <td width="50%"><a href="#ON ANY KEY">On any key</a></td>
+  </tr>
+  <tr>
+    <td width="50%">TEMPLATE ... END TEMPLATE</td>
+    <td width="50%"><a href="#A4GL Wizard and program templates">A4GL Wizard and program templates</a></td>
+  </tr>
+  <tr>
+    <td width="50%"> ENABLE/DISABLE fields</td>
+    <td width="50%"><a href="#ENABLE/DISABLE fields"> ENABLE/DISABLE fields</a></td>
+  </tr>
+</table>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3><a name="Associative Arrays">Associative Arrays</a></h3>
+<p>Allows arrays and/or record arrays to be indexed by character strings :</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Define
+lv_str CHAR(20)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LET
+Age&lt;&lt;&quot;Fred&quot;&gt;&gt;=30<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LET
+Surname&lt;&lt;&quot;Fred&quot;&gt;&gt;=&quot;Smith&quot;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LET lv_str=&quot;Fred&quot;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Display
+Age&lt;&lt;lv_str&gt;&gt;,&quot; &quot;,Surname&lt;&lt;&quot;Fred&quot;&gt;&gt;</p>
+      </td>
+    </tr>
+  </table>
+</div>
+<p> Assoc. arrays let you use strings instead of integers for the subscripts - great if you have a lookup table, eg country codes.
+But then you cannot move trough them with, say</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>
+<p> FOR x=1 to 20<br>
+ 	let a_dummy[x].something = x<br>
+ end for</p>
+      </td>
+    </tr>
+  </table>
+</div>
+<p>Quite often you don't need to, but maybe this is something we need to look at.</p>
+<p>With a4gl:</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>
+<p>DEFINE lv_arr ASSOCIATE CHAR(10)  WITH ARRAY [20] OF CHAR(80)<br>
+ 	LET lv_arr&lt;&lt;"Informix">>="Top"<br>
+ 	LET lv_arr&lt;&lt;"Oracle">>="No so top"<br>
+ 	DISPLAY lv_arr&lt;&lt;"Oracle">></p>
+      </td>
+    </tr>
+  </table>
+</div>
+<p>Assoc. arrays let you use strings instead of integers for the subscripts - great if you have a lookup table, eg country codes</p>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>	LET desc&lt;&lt;"UK">>="United Kingdom"<br>
+	LET desc&lt;&lt;"NZ">>="New Zealand"<br>
+	LET lv_code=&quot;NZ&quot;<br>
+	DISPLAY lv_code,&quot; &quot;,desc&lt;&lt;lv_code&gt;&gt;</td>
+    </tr>
+  </table>
+</div>
+<p>Result:</p>
+<blockquote>
+  <p>	NZ New Zealand</p>
+</blockquote>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3>
+<a name="PAUSE Screen Handling">
+PAUSE Screen Handling</a>
+</h3>
+
+<blockquote>
+<p>SET PAUSE MODE ON|OFF  - pause screen updates
+</p>
+
+</blockquote>
+<p>Use this to turn off screen redraws during a large number of screen updates,
+SET PAUSE MODE ON, then open all windows, forms etc. then SET PAUSE MODE OFF to
+redraw the screen in a single pass, great for displaying information on a window
+that is obscured slightly by the another window.</p>
+<p>
+Screen drawing can be slow on some low speed links (eg. over a modem on
+a tty).If there are a lot of changes to be made to a screen, eg. opening
+a few windows, it may be advantagous to group the changes into a single&nbsp;
+block and then refresh the screen. This can be also be used to stop the&nbsp;
+screen being updated at all.
+</p>
+
+<p>
+To stop the screen being updated:
+</p>
+
+<blockquote>
+<p>
+	SET PAUSE MODE ON
+</p>
+
+</blockquote>
+<p>
+To refresh the screen
+</p>
+
+<blockquote>
+<p>
+	SET PAUSE MODE OFF
+</p>
+
+</blockquote>
+<p>
+This can also be useful when you need to display something to a window&nbsp;
+which is currently overlapped:
+</p>
+
+<p>
+&nbsp;
+</p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="300" height="148">
+  <tr>
+    <td width="2" bgcolor="#008000" rowspan="2" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="30">&nbsp;</td>
+    <td width="107" bgcolor="#008000" rowspan="3" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="100">&nbsp;Window
+      w1
+      <p>&nbsp;</p>
+      <p>&nbsp;</td>
+    <td width="78" bgcolor="#008000" rowspan="2" height="30">&nbsp;</td>
+    <td width="105" bgcolor="#FFFFFF" height="23">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="105" bgcolor="#FFFFFF" height="7">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="2" bgcolor="#008000" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="70">&nbsp;</td>
+    <td width="185" bgcolor="#800000" colspan="2" rowspan="2" height="118">&nbsp;
+      Window w2
+      <p>&nbsp;</p>
+      <p>&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="2" bgcolor="#FFFFFF" bordercolor="#FFFFFF" height="48">&nbsp;</td>
+    <td width="107" bgcolor="#FFFFFF" bordercolor="#FFFFFF" height="48">&nbsp;</td>
+  </tr>
+</table>
+
+<p align="left">
+    &nbsp;
+</p>
+
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>
+<p>
+	SET PAUSE MODE ON<br>
+	CURRENT WINDOW IS w1 # brings w1 over w2<br>
+	DISPLAY "Something" AT 1,1<br>
+	CURRENT WINDOW IS w2 # brings w2 over w1<br>
+	SET PAUSE MODE OFF
+</p>
+
+      </td>
+    </tr>
+  </table>
+</div>
+<p>
+<i><u>
+Normally</u></i>
+</p>
+
+<p>
+&nbsp;
+</p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="300" height="148">
+  <tr>
+    <td width="2" bgcolor="#008000" rowspan="2" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="30">&nbsp;</td>
+    <td width="107" bgcolor="#008000" rowspan="3" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="100">&nbsp;Window
+      w1
+      <p>&nbsp;</p>
+      <p>&nbsp;</td>
+    <td width="78" bgcolor="#008000" rowspan="2" height="30">&nbsp;</td>
+    <td width="105" bgcolor="#FFFFFF" height="23">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="105" bgcolor="#FFFFFF" height="7">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="2" bgcolor="#008000" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="70">&nbsp;</td>
+    <td width="185" bgcolor="#800000" colspan="2" rowspan="2" height="118">&nbsp;
+      Window w2
+      <p>&nbsp;</p>
+      <p>&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="2" bgcolor="#FFFFFF" bordercolor="#FFFFFF" height="48">&nbsp;</td>
+    <td width="107" bgcolor="#FFFFFF" bordercolor="#FFFFFF" height="48">&nbsp;</td>
+  </tr>
+</table>
+
+<p>&nbsp;</p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="299" height="123">
+  <tr>
+    <td width="2" bgcolor="#008000" rowspan="2" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="6">&nbsp;</td>
+    <td width="211" bgcolor="#008000" rowspan="3" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="76">&nbsp;</td>
+    <td width="101" bgcolor="#008000" rowspan="3" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="76">&nbsp;Window
+      w1
+      <p>&nbsp;</p>
+      <p>&nbsp;</td>
+    <td width="2" bgcolor="#FFFFFF" rowspan="2" height="6">&nbsp;</td>
+    <td width="168" bgcolor="#FFFFFF" height="23">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="168" bgcolor="#FFFFFF" height="1">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="2" bgcolor="#008000" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="70">&nbsp;</td>
+    <td width="169" bgcolor="#800000" colspan="2" rowspan="2" height="117">&nbsp;
+      <p>&nbsp;</p>
+      <p>&nbsp;Window w2</td>
+  </tr>
+  <tr>
+    <td width="2" bgcolor="#FFFFFF" bordercolor="#FFFFFF" height="47">&nbsp;</td>
+    <td width="211" bgcolor="#FFFFFF" bordercolor="#FFFFFF" height="47">&nbsp;</td>
+    <td width="101" bgcolor="#800000" bordercolor="#FFFFFF" height="47">&nbsp;</td>
+  </tr>
+</table>
+
+<p>
+&nbsp;
+</p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="300" height="148">
+  <tr>
+    <td width="2" bgcolor="#008000" rowspan="2" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="30">&nbsp;</td>
+    <td width="107" bgcolor="#008000" rowspan="3" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="100">&nbsp;Window
+      w1
+      <p>&nbsp;</p>
+      <p>&nbsp;</td>
+    <td width="78" bgcolor="#008000" rowspan="2" height="30">&nbsp;</td>
+    <td width="105" bgcolor="#FFFFFF" height="23">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="105" bgcolor="#FFFFFF" height="7">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="2" bgcolor="#008000" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="70">&nbsp;</td>
+    <td width="185" bgcolor="#800000" colspan="2" rowspan="2" height="118">&nbsp;
+      Window w2
+      <p>&nbsp;</p>
+      <p>&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="2" bgcolor="#FFFFFF" bordercolor="#FFFFFF" height="48">&nbsp;</td>
+    <td width="107" bgcolor="#FFFFFF" bordercolor="#FFFFFF" height="48">&nbsp;</td>
+  </tr>
+</table>
+
+<p align="left">
+    &nbsp;
+</p>
+
+<p>
+This sequence would normally be fairly quick and appear as a flash on the&nbsp;
+screen
+</p>
+
+<p>
+<u><i>
+With pause mode</i></u>
+</p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="300" height="148">
+  <tr>
+    <td width="2" bgcolor="#008000" rowspan="2" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="30">&nbsp;</td>
+    <td width="107" bgcolor="#008000" rowspan="3" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="100">&nbsp;Window
+      w1
+      <p>&nbsp;</p>
+      <p>&nbsp;</td>
+    <td width="78" bgcolor="#008000" rowspan="2" height="30">&nbsp;</td>
+    <td width="105" bgcolor="#FFFFFF" height="23">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="105" bgcolor="#FFFFFF" height="7">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="2" bgcolor="#008000" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="70">&nbsp;</td>
+    <td width="185" bgcolor="#800000" colspan="2" rowspan="2" height="118">&nbsp;
+      Window w2
+      <p>&nbsp;</p>
+      <p>&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="2" bgcolor="#FFFFFF" bordercolor="#FFFFFF" height="48">&nbsp;</td>
+    <td width="107" bgcolor="#FFFFFF" bordercolor="#FFFFFF" height="48">&nbsp;</td>
+  </tr>
+</table>
+
+<p>
+&nbsp;
+</p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="300" height="148">
+  <tr>
+    <td width="2" bgcolor="#008000" rowspan="2" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="30">&nbsp;</td>
+    <td width="107" bgcolor="#008000" rowspan="3" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="100">&nbsp;Window
+      w1
+      <p>&nbsp;</p>
+      <p>&nbsp;</td>
+    <td width="78" bgcolor="#008000" rowspan="2" height="30">&nbsp;</td>
+    <td width="105" bgcolor="#FFFFFF" height="23">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="105" bgcolor="#FFFFFF" height="7">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="2" bgcolor="#008000" bordercolor="#008000" bordercolorlight="#008000" bordercolordark="#008000" height="70">&nbsp;</td>
+    <td width="185" bgcolor="#800000" colspan="2" rowspan="2" height="118">&nbsp;
+      Window w2
+      <p>&nbsp;</p>
+      <p>&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="2" bgcolor="#FFFFFF" bordercolor="#FFFFFF" height="48">&nbsp;</td>
+    <td width="107" bgcolor="#FFFFFF" bordercolor="#FFFFFF" height="48">&nbsp;</td>
+  </tr>
+</table>
+
+<p><a href="#Top of page">Go to top of page...</a></p>
+
+<hr>
+<h3><a name="ODBC Compliance">ODBC Compliance</a></h3>
+<p>Uses ODBC to connect to data. This allows access to heterogeneous data and
+increased portability of application. See also SET SESSION OPTION/SET CURSOR
+OPTION</p>
+<p>
+Using ODBC allows access to any data source for which an ODBC driver is
+available. This requires:
+</p>
+
+<p>
+		1) An ODBC driver manager<br>
+		2) (UNIX Only) ODBC sources file (~/.odbc.ini)<br>
+		3) Username/Password combination for the required data source.
+</p>
+
+<p>
+<u><i>Notes:</i></u>
+</p>
+
+<p>
+UNIX<br>
+	The ODBC driver for UNIX is compiled into the 4GL application.
+</p>
+
+<p>
+Windows<br>
+	The ODBC driver is a core part of the operating system
+</p>
+
+<p>
+ODBC Sources file - Unix
+</p>
+
+<p>
+This file should normally reside in the users home directory and is called '.odbc.ini' .This file has the following format :
+</p>
+
+<blockquote>
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>
+[ODBC Data Sources]<br>
+sample=Aubit Computing Ltd<br>
+<br>
+<br>
+[sample]<br>
+Driver		= /home/odbcdrivers/driver.so<br>
+Host		= localhost<br>
+Database	= mja1<br>
+Options		=<br>
+ReadOnly	= No<br>
+FetchBufferSize = 60</td>
+    </tr>
+  </table>
+</div>
+
+</blockquote>
+<p>
+The entries under "ODBC Data Sources" compromise the Data Source Names (or&nbsp;DSNs).
+Each entry here has a correspnding group of options which are dependant on&nbsp;
+the
+driver being used. Aubit 4GL uses these Data Source Names as the "Database&nbsp;
+Name" in the modules.
+</p>
+
+<p>
+For the example above we might use:
+</p>
+
+<blockquote>
+<p>
+DATABASE sample<br>
+DEFINE ...
+</p>
+
+</blockquote>
+<p>
+In order to make a connection to a data source, you generally need to
+specify a Username and Password. Depending on the ODBC driver, you may
+ need to specify a valid Unix Login/Password or Database Login/Password.
+ In Aubit 4GL these may be specified in one of two ways :&nbsp;
+</p>
+
+<p>
+Using the SQLUID and SQLPWD environment variables &amp; the DATABASE statement:&nbsp;
+</p>
+
+<p>
+eg.
+</p>
+
+<blockquote>
+<p>
+	DATABASE informix
+</p>
+
+</blockquote>
+<p>
+or in the program
+</p>
+
+<p>
+eg.
+</p>
+
+<blockquote>
+<p>
+OPEN SESSION s_id1 TO DATABASE informix as user "username" password&nbsp;"password"<br>
+</p>
+
+</blockquote>
+<p>
+or
+</p>
+
+<blockquote>
+<p>
+OPEN SESSION s_id1 TO DATABASE informix as "username", "password"
+</p>
+
+</blockquote>
+<p>
+Using the Open Session allows you to obtain the username and password at
+runtime from the user more easily than using the DATABASE statement and
+is more secure.
+</p>
+
+<p>
+During development it is easier to use the DATABASE statement and SQLUID/SQLPWD, and this format MUST be used when using the DEFINE..LIKE&nbsp;
+statement.
+</p>
+
+<p>
+<u><i>
+Sessions</i></u>
+</p>
+
+<p>
+Using the DATABASE statement opens a connection or 'session' to the
+database with the name 'default'. It is possible to open more than one
+session to the same, or different databases, and because ODBC makes
+available databases which are not even of the same type, it is possible to
+open two sessions to two completly different databases.
+</p>
+
+<p>
+The syntax for using sessions is as follows
+</p>
+
+<blockquote>
+<p>
+OPEN SESSION session_name TO DATABASE database_name AS USER "username" PASSWORD "password"
+</p>
+
+</blockquote>
+<p>
+If you do not specify a username and password then these will be read
+from the SQLUID and SQLPWD environment statements. To make use of sessions
+ you may either:
+</p>
+
+<p>
+	1) Change the current session<br>
+	2) Temporarily change the current session.&nbsp;
+</p>
+
+<blockquote>
+<p>
+SET SESSION TO session_name<br>
+USE SESSION session_name FOR<br>
+	[SQL STATEMENT]
+</p>
+
+</blockquote>
+<p>
+You can remove close a database session by using the CLOSE SESSION&nbsp;
+statement:
+</p>
+
+<p>
+Eg.&nbsp;
+</p>
+
+<blockquote>
+<p>
+ CLOSE SESSION session1
+</p>
+
+</blockquote>
+<p>
+An example:
+</p>
+
+<div align="left">
+  <table border="1" bgcolor="#C0C0C0">
+    <tr>
+      <td>
+MAIN<br>
+DEFINE l_rec RECORD<br>
+	var1 INTEGER,<br>
+	var2 CHAR(20)<br>
+END RECORD<br>
+<br>
+OPEN SESSION original_db TO DATABASE db1 AS USER "m123456" PASSWORD "a1234"<br>
+<br>
+OPEN SESSION copy_db TO DATABASE db2 AS USER "m654321" PASSWORD "b2345"<br>
+<br>
+USE SESSION original_db FOR<br>
+	DECLARE c1 CURSOR FOR SELECT col1,col2 FROM tab1<br>
+<br>
+FOREACH c1 INTO l_rec.*<br>
+	USE SESSION copy_db FOR<br>
+		INSERT INTO copy_tab VALUES(l_rec.*)<br>
+END FOREACH<br>
+CLOSE SESSION copy_db<br>
+CLOSE SESSION original_db<br>
+        END MAIN</td>
+    </tr>
+  </table>
+</div>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3><a name="Multiple concurrent connections&nbsp;">Multiple concurrent connections&nbsp;</a></h3>
+<p>Using the new OPEN/USE/CLOSE SESSION it is possible to open multiple
+connections to the same or to different data sources. For example, run two
+transactions against a database or copy from one type of database to another.
+Use Informix and Access to gather data for a report. Or Oracle and SQL-Server
+for data entry screens. It ideal for copying data too.</p>
+<p> allow access to multiple databases at the same time.</p>
+<p>&nbsp;&nbsp;&nbsp; OPEN SESSION&nbsp;<br>
+&nbsp;&nbsp;&nbsp; USE SESSION<br>
+&nbsp;&nbsp;&nbsp; CLOSE SESSION</p>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3><a name="Application Constants">Application Constants</a></h3>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DEFINE CONSTANT name
+&quot;Fred&quot;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DEFINE CONSTANT cv_arraysize 20<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DEFINE m_array ARRAY[cv_arraysize] OF
+INTEGER</p>
+<p>
+	These can then even be used for array sizing
+</p>
+
+<blockquote>
+<p>
+	DEFINE CONSTANT cv_arrsize 100<br>
+	DEFINE m_array ARRAY[cv_arrsize] OF INTEGER<br>
+<br>
+	FOREACH some_cursor into m_array[l_counter]<br>
+&nbsp;&nbsp;&nbsp; LET l_counter=l_counter+1<br>
+&nbsp;&nbsp;&nbsp; IF l_counter>vc_arrsize THEN<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ERROR "There May be more rows than can be displayed"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EXIT FOREACH<br>
+&nbsp;&nbsp;&nbsp; END IF<br>
+	END FOREACH
+</p>
+
+</blockquote>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3><a name="Map Files">Map Files</a></h3>
+<p>It is possible to instruct the compiler to generate a map file describing
+where variables, functions, cursors, windows etc. are defined and used. Detailed list of the usage of cursors, windows, variables, tables, columns etc.</p>
+<p>4glpc -map hello_db.4gl</p>
+<p>this will produce a hello_db.map file in the format I described</p>
+<p>It gives answers to :</p>
+<ul>
+  <li> 	Where is this function defined</li>
+  <li> 	Where is this function used</li>
+  <li> 	Where is this table used</li>
+  <li> 	Where is this variable referenced</li>
+  <li> 	Where is this variable assigned a value</li>
+</ul>
+<p>I'll try and make a full list sometime soon..</p>
+<p>Have you looked at  map files yet ? (Do a grep for addmap in the rules: $ grep addmap *.rule)</p>
+<p>type|object|Place|Line|Module</p>
+<p>Where type is :</p>
+<blockquote>
+<p>		d for a define<br>
+		M is for the MAIN<br>
+		L is for an assignment (LET)<br>
+		v is for a variable being used<br>
+		W is for a window name<br>
+		C is for a function call<br>
+		F is for a function definition<br>
+		t is for a table being referenced<br>
+		D is for a declare cursor<br>
+  </p>
+</blockquote>
+<p>(I think these are right - have a look for 'add_map' in the 4glc/rules).</p>
+<p>Object is the name of the variable/cursor/window etc</p>
+<p>Place is 'Module' for functions reports and 'MAIN' Its 'MAIN' for things in 'MAIN'..'END MAIN'
+and its the Function name/report name for things in those areas.</p>
+<p>for hello_db.4gl :</p>
+<blockquote>
+<p>d|ifx_sess|Module|2|hello_db.4gl|<br>
+d|pg_sess|Module|4|hello_db.4gl|<br>
+M|MAIN|MODULE|10|hello_db.4gl|<br>
+d|p_tabname|MAIN|13|hello_db.4gl|<br>
+d|dsn_informix|MAIN|14|hello_db.4gl|<br>
+d|dsn_postgres|MAIN|16|hello_db.4gl|<br>
+L|ifx_sess|MAIN|18|hello_db.4gl|<br>
+L|pg_sess|MAIN|19|hello_db.4gl|<br>
+v|dsn_informix|MAIN|21|hello_db.4gl|<br>
+v|dsn_postgres|MAIN|22|hello_db.4gl|<br>
+W|w1|MAIN|29|hello_db.4gl|<br>
+w|w1|MAIN|33|hello_db.4gl|<br>
+C|db_select|MAIN|36|hello_db.4gl|<br>
+F|db_select|MODULE|49|hello_db.4gl|<br>
+d|dsn_informix|db_select|52|hello_db.4gl|<br>
+d|dsn_postgres|db_select|54|hello_db.4gl|<br>
+C|ifx_session|db_select|77|hello_db.4gl|<br>
+v|dsn_informix|db_select|77|hello_db.4gl|<br>
+C|pg_session|db_select|84|hello_db.4gl|<br>
+v|dsn_postgres|db_select|84|hello_db.4gl|<br>
+C|pg_session_scroll|db_select|89|hello_db.4gl|<br>
+v|dsn_postgres|db_select|89|hello_db.4gl|<br>
+F|ifx_database|MODULE|104|hello_db.4gl|<br>
+d|dsn_informix|ifx_database|107|hello_db.4gl|<br>
+d|p_tabname|ifx_database|109|hello_db.4gl|<br>
+t|systables|ifx_database|120|hello_db.4gl|<br>
+D|"hello_db:c1"|ifx_database|120|hello_db.4gl|<br>
+v|p_tabname|ifx_database|121|hello_db.4gl|<br>
+v|p_tabname|ifx_database|123|hello_db.4gl|<br>
+F|ifx_session|MODULE|132|hello_db.4gl|<br>
+d|dsn_informix|ifx_session|135|hello_db.4gl|<br>
+d|p_tabname|ifx_session|137|hello_db.4gl|<br>
+L|dsn_informix|ifx_session|145|hello_db.4gl|<br>
+v|ifx_sess|ifx_session|150|hello_db.4gl|<br>
+L|ifx_sess|ifx_session|153|hello_db.4gl|<br>
+t|systables|ifx_session|160|hello_db.4gl|<br>
+D|"hello_db:c4"|ifx_session|160|hello_db.4gl|<br>
+v|p_tabname|ifx_session|161|hello_db.4gl|<br>
+v|p_tabname|ifx_session|163|hello_db.4gl|<br>
+F|pg_database|MODULE|174|hello_db.4gl|<br>
+d|dsn_postgres|pg_database|178|hello_db.4gl|<br>
+d|p_tabname|pg_database|180|hello_db.4gl|<br>
+t|pg_type|pg_database|190|hello_db.4gl|<br>
+D|"hello_db:c2"|pg_database|190|hello_db.4gl|<br>
+v|p_tabname|pg_database|191|hello_db.4gl|<br>
+v|p_tabname|pg_database|193|hello_db.4gl|<br>
+F|pg_session|MODULE|202|hello_db.4gl|<br>
+d|dsn_postgres|pg_session|205|hello_db.4gl|<br>
+d|p_tabname|pg_session|207|hello_db.4gl|<br>
+v|pg_sess|pg_session|213|hello_db.4gl|<br>
+L|dsn_postgres|pg_session|213|hello_db.4gl|<br>
+v|dsn_postgres|pg_session|215|hello_db.4gl|<br>
+L|pg_sess|pg_session|227|hello_db.4gl|<br>
+t|pg_type|pg_session|236|hello_db.4gl|<br>
+D|"hello_db:c3"|pg_session|236|hello_db.4gl|<br>
+v|p_tabname|pg_session|237|hello_db.4gl|<br>
+v|p_tabname|pg_session|239|hello_db.4gl|<br>
+F|pg_session_scroll|MODULE|251|hello_db.4gl|<br>
+d|dsn_postgres|pg_session_scroll|254|hello_db.4gl|<br>
+d|p_tabname|pg_session_scroll|256|hello_db.4gl|<br>
+v|pg_sess|pg_session_scroll|264|hello_db.4gl|<br>
+L|pg_sess|pg_session_scroll|266|hello_db.4gl|<br>
+t|pg_type|pg_session_scroll|275|hello_db.4gl|<br>
+D|"hello_db:c3"|pg_session_scroll|275|hello_db.4gl|<br>
+v|p_tabname|pg_session_scroll|276|hello_db.4gl|<br>
+v|p_tabname|pg_session_scroll|278|hello_db.4gl|<br>
+>|"hello_db:c3"|pg_session_scroll|281|hello_db.4gl|<br>
+v|p_tabname|pg_session_scroll|282|hello_db.4gl|<br>
+v|p_tabname|pg_session_scroll|284|hello_db.4gl|<br>
+>|"hello_db:c3"|pg_session_scroll|284|hello_db.4gl|<br>
+v|p_tabname|pg_session_scroll|285|hello_db.4gl|<br>
+v|p_tabname|pg_session_scroll|287|hello_db.4gl|<br>
+<br>
+  </p>
+</blockquote>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3><a name="Variable IDs">Variable IDs</a>
+</h3>
+
+<p>(For use with Form/cursor/window/Prepare statement names etc.) Many of these
+compile time 'names' may now be variables or string constants. They are also
+compiled in such a way that one module can access cursors etc. defined in
+another. Each ID name is processed by the module name at compile time, cursor,&nbsp;
+c_cursor1 in module mod1.4gl becomes &quot;mod1:c_cursor1&quot; when called from
+a different module. In this way normal processing is not affected. In order to
+use strings or variables use the _variable keyword in 4GL :</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DEFINE a
+CHAR(20)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LET
+a=&quot;Window1&quot;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OPEN FORM _variable(a)
+FROM &quot;filename&quot;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DISPLAY FORM
+_variable(&quot;Window1&quot;)</p>
+<p>
+4GL uses a lot of IDs, session names, cursor names, form names etc.
+</p>
+
+<p>
+These may be written using the normal identifier method or via the special
+function '_variable' (note the important '_')
+</p>
+
+<blockquote>
+<p>
+	OPEN WINDOW _variable("e1") AT 1,1 ....
+</p>
+
+</blockquote>
+<p>
+is roughly equivalent to (see globbing) :
+</p>
+
+<blockquote>
+<p>
+	OPEN WINDOW e1 AT 1,1
+</p>
+
+</blockquote>
+<p>
+The advantage of this is that IDs can now be passed to functions as&nbsp;
+strings.
+</p>
+
+<p>
+You dont need the _variable for these instances, the _variable is for naming
+things, eg. windows, cursors etc. where YOU give it a name
+</p>
+
+<p>
+The informix syntax for database is
+</p>
+
+<p>
+	DATABASE dbname
+</p>
+
+<p>
+OR
+</p>
+
+<p>
+	DATABASE variable-name
+</p>
+
+<p>
+This is the same in a4gl:
+</p>
+
+<p>
+	DEFINE xx CHAR(20)<br>
+	LET xx="mydbname"<br>
+	DATABASE xx	#1<br>
+<br>
+	DATABASE yy	#2
+</p>
+
+<p>
+If it can't resolve the name as a variable - it assumes its the name of the database
+</p>
+
+<p>
+	#1	 - Connect to "mydbname"<br>
+	#2	 - Connect to &quot;yy&quot;<br>
+</p>
+
+<p>
+The same goes for the sessions. The only difference is that you GIVE the sessions a name:
+</p>
+
+<p>
+	OPEN SESSION mysession TO DATABASE xx #1 again
+</p>
+
+<p>
+or
+</p>
+
+<p>
+	OPEN SESSION mysession TO DATABASE yy #2 again
+</p>
+
+<p>
+Would work the same as before.
+</p>
+
+<p>
+You can use the _variable for the open session - but only for specifying the name of the session :
+</p>
+
+<p>
+	DEFINE zz CHAR(20)<br>
+	LET zz="mysession"<br>
+<br>
+	OPEN SESSION zz TO DATABASE xx # would open a session called 'zz' #1<br>
+	OPEN SESSION _variable(zz) TO DATABASE xx # would open a session<br>
+called 'mysession' #2
+</p>
+
+<p>
+In fact - its a little more involved than that - if you look at the generated code, the code in #1
+would actually 'clobber' the session id to be 'modulename:zz', whereas #2 would not do
+any clobbering and so could be easily referenced from a different module...
+</p>
+
+<blockquote>
+<p>
+_variable (cursor_name)<br>
+_variable (session_id)<br>
+_variable (window_name)<br>
+etc...
+</p>
+
+<p>
+DEFINE lv_winname CHAR(20)<br>
+DEFINE lv_cnt INTEGER<br>
+&nbsp;&nbsp;&nbsp; FOR lv_cnt=1 to 10 STEP 4<br>
+&nbsp;&nbsp;&nbsp; LET lv_winname=&quot;w_&quot;,lv_cnt using "&lt;&lt;"<br>
+&nbsp;&nbsp;&nbsp; OPEN WINDOW _variable(lv_winname)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at lv_cnt,lv_cnt with 3 columns,3 rows&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; attribute(border) ## check syntax for the rows/columns bit&nbsp;<br>
+END FOR
+</p>
+
+</blockquote>
+<p>
+<br>
+_variable is NOT supported in that place because it is not REQUIRED in that place!
+</p>
+
+<p>
+WRT the etc. - I'll check the source and get you a definative list - bit it is basically any 'NAMES' like statements, windows, etc.
+</p>
+
+<p>
+OPEN WINDOW _variable(...
+</p>
+
+<p>
+OPEN _variable(cursor)
+</p>
+
+<p>
+But I'll generate a list:
+</p>
+
+<ul>
+  <li>Connection IDs</li>
+  <li>Cursor Names</li>
+  <li>Window names</li>
+  <li>Form names</li>
+  <li>Statement IDs</li>
+</ul>
+<p>
+> > They use some spec char (I forgot) to signify that the following is<br>
+> > the name of the variable, like OPEN WINDOW @var_winname AT ...<br>
+><br>
+> Do you want to change _VARIABLE to be @variable ?<br>
+</p>
+
+<p><a href="#Top of page">Go to top of page...</a></p>
+
+<hr>
+<h3 align="left">
+<a name="Passing IDs to functions">
+Passing IDs to functions</a>
+</h3>
+
+<p>
+module1.4gl:
+</p>
+
+<blockquote>
+<p>
+	DECLARE c1 CURSOR FOR SELECT * FROM systables<br>
+	CALL open_cursor("module1:c1")
+</p>
+
+</blockquote>
+<p>
+anymod.4gl:
+</p>
+
+<blockquote>
+<p>
+	FUNCTION open_cursor(p_cursor)<br>
+	DEFINE p_cursor CHAR(20)<br>
+<br>
+	OPEN CURSOR _variable(p_cursor)<br>
+<br>
+	IF SQLCA.SQLCODE!=0 THEN<br>
+		ERROR "There was some error opening the cursor!"<br>
+	END IF<br>
+<br>
+	END FUNCTION
+</p>
+
+</blockquote>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3><a name="Embedded 'C' code">Embedded 'C' code</a></h3>
+<p>Whilst C code may hamper portability, this feature does allow embedding of C
+statements within the 4GL code. This means that you do not need to compile and
+call separate C functions in C modules:</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MAIN<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+code<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+char buff[256];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+FILE *f;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+f=fopen(&quot;filename&quot;,&quot;r&quot;);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+fgets(buff,255,f);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+endcode</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+DISPLAY &quot;Read : &quot;,buff clipped AT 1,1</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END MAIN</p>
+<p>
+You can embed C code directly into a 4GL program by using the code/endcode&nbsp;
+block. The code and endcode MUST be in lowercase (This is the only&nbsp;
+statement that is case-sensitive and MUST begin at the start of a line and&nbsp;
+the line may not contain any other characters (including spaces and tabs) :
+</p>
+
+<blockquote>
+<p>
+	code<br>
+		f=fopen("FILE","r");<br>
+	ENDCODE # this will not work!!!
+</p>
+
+</blockquote>
+<p>
+Everything between the code and endcode is passed directly into the C&nbsp;
+module created when the 4GL module is compiled.
+</p>
+
+<p>
+You can use code/endcode :
+</p>
+
+<blockquote>
+<p>
+	1) Any where you can use any other 4GL statement<br>
+	2) Before/After any section
+</p>
+
+</blockquote>
+<p>
+You cannot use the code/endcode in a:
+</p>
+
+<blockquote>
+<p>
+	1) globals section<br>
+	2) in a define section
+</p>
+
+</blockquote>
+<p>
+<i><u>
+Variables</u></i>
+</p>
+
+<p>
+	You can define variables in a code section as in normal C after a '{'.&nbsp;
+	It is therefore common to use the following code segment:
+</p>
+
+<blockquote>
+<p>
+	code<br>
+	{<br>
+	.<br>
+	.<br>
+	}<br>
+	endcode
+</p>
+
+</blockquote>
+<p>
+Any variables defined in the code segment are only available IN that code&nbsp;
+segment. Normal C rules apply (eg. define the variable as 'static' if you&nbsp;
+want to keep its value between calls.)
+</p>
+
+<p>
+You can also access the variables define in the 4GL module. INTEGERs&nbsp;
+normally translate to long, SMALLINTs to short etc. The most common&nbsp;
+mistake made is with strings, strings in 4GL are padded to fill the size&nbsp;
+of the string with spaces ' '.When using the strings in C you normally&nbsp;
+need to remove these spaces.
+</p>
+
+<p>
+E.g.:
+</p>
+
+<blockquote>
+<p>
+	FUNCTION open_file(p_filename,p_mode)<br>
+	# This is a bad example because it doesnt work properly<br>
+	DEFINE p_filename CHAR(20)<br>
+	DEFINE p_mode CHAR(2)<br>
+	DEFINE lv_file INTEGER<br>
+	code<br>
+		lv_file=(long)fopen(p_filename,p_mode);<br>
+	endcode<br>
+	RETURN lv_file<br>
+	END FUNCTION
+</p>
+
+</blockquote>
+<p>
+Calling this with "fgl.log","r" will result in a call to fopen of
+                ("fgl.log             ","r ")
+which will most likely fail.
+</p>
+
+<p>
+The easiest way of resolving this is to remove the extra spaces using the&nbsp;
+trim 'C' function:
+</p>
+
+<blockquote>
+<p>
+	FUNCTION open_file(p_filename,p_mode)<br>
+	# This is a better example<br>
+	DEFINE p_filename CHAR(20)<br>
+	DEFINE p_mode CHAR(2)<br>
+	DEFINE lv_file INTEGER<br>
+<br>
+	code<br>
+		trim(p_filename); /* must be in a code/endcode block */<br>
+		trim(p_mode);     .<br>
+		lv_file=(long)fopen(p_filename,p_mode);<br>
+	endcode<br>
+	RETURN lv_file<br>
+	END FUNCTION
+</p>
+
+</blockquote>
+<p align="left">
+<i><u>
+Calling 4GL functions from embedded C code</u></i>
+</p>
+
+<p>
+4GL function names are 'globbed' when compiled in the above example
+</p>
+
+<blockquote>
+<p>
+	FUNCTION open_file<br>
+will be translated into<br>
+	aclfgl_open_file()
+</p>
+
+</blockquote>
+<p>
+You need to pass the number of parameters as the parameter, and push the&nbsp;
+actual parameters onto the 4GL stack.
+</p>
+
+<p>
+Eg:
+</p>
+
+<blockquote>
+<p>
+	code<br>
+	{<br>
+	int a;<br>
+	push_char("fgl.log");<br>
+	push_char("r");<br>
+	a=aclfgl_open_file(2);<br>
+	}
+</p>
+
+</blockquote>
+<p>
+Numbers can be pushed using push_double, push_float, push_int,push_date&nbsp;
+etc.
+</p>
+
+<p>
+The number of values returned from the function is returned as an integer&nbsp;
+from the function and can be poped from the 4GL stack using the pop..&nbsp;
+group of functions
+</p>
+
+<p align="left">
+<i><u>
+Calling C functions from 4GL</u></i>
+</p>
+
+<p>
+Use a code/endcode block (see the example above). Some C functions&nbsp;
+required the inclusion of another file via a '#include .." statement.&nbsp;
+These can be put in a code/endcode block at the top of the program
+</p>
+
+<p>
+eg. full file open example
+</p>
+
+<blockquote>
+<p>
+code<br>
+#include &lt;stdio.h><br>
+endcode<br>
+<br>
+FUNCTION open_file(p_filename,p_mode)<br>
+DEFINE p_filename CHAR(20)<br>
+DEFINE p_mode CHAR(2)<br>
+DEFINE lv_file INTEGER<br>
+<br>
+code<br>
+	trim(p_filename); /* must be in a code/endcode block */<br>
+	trim(p_mode);<br>
+/* need to convert this to a long only works if sizeof(long)=sizeof(void&nbsp;<br>
+*) */<br>
+	lv_file=(long)fopen(p_filename,p_mode);<br>
+endcode<br>
+RETURN lv_file<br>
+END FUNCTION
+</p>
+
+</blockquote>
+<p align="left">
+Most 4gls allow calls to C, but doing that for a novice is not easy, tried calling fopen ?
+You have to write all the interface code yourself to pop off the stack and push back on it...
+</p>
+
+<blockquote>
+<p align="left">
+	FUNCTION fopen(p_filename,p_mode)<br>
+&nbsp;&nbsp;&nbsp; DEFINE p_filename CHAR(128)<br>
+&nbsp;&nbsp;&nbsp; DEFINE p_mode CHAR(5)<br>
+&nbsp;&nbsp;&nbsp; DEFINE p_fileid INTEGER<br>
+<br>
+&nbsp;&nbsp;&nbsp; code<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; trim(p_filename); // library function to remove trailing
+spaces<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; trim(p_mode);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; p_fileid=fopen(p_filename,p_mode);<br>
+&nbsp;&nbsp;&nbsp; endcode<br>
+<br>
+&nbsp;&nbsp;&nbsp; RETURN p_fileid<br>
+	END FUNCTION<br>
+</p>
+
+</blockquote>
+<p align="left">
+Could it be any simpler ?
+</p>
+
+<p align="left">
+(A4GL can also link to .so's looking up functions names dynamically...)
+</p>
+
+<p><a href="#Top of page">Go to top of page...</a></p>
+
+<hr>
+<h3><a name="Move/Show/Hide Window">Move/Show/Hide Window</a></h3>
+<p>Allow Moving, hiding and redisplaying of windows:</p>
+<p>&nbsp;&nbsp;&nbsp; HIDE WINDOW<br>
+&nbsp;&nbsp;&nbsp; SHOW WINDOW<br>
+&nbsp;&nbsp;&nbsp; MOVE WINDOW</p>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3><a name="WHENEVER SUCCESS/SQLSUCCESS">WHENEVER SUCCESS/SQLSUCCESS</a></h3>
+<p>Might come in handy, but costly in terms of performance!</p>
+<p>&nbsp;&nbsp;&nbsp; WHENEVER SUCCESS/SQLSUCCESS</p>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3><a name="Multi-level Menus">Multi-level Menus</a></h3>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MENU
+&quot;Main Menu&quot;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+COMMAND &quot;SubMenu 1&quot;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+MENU &quot;Menu 2&quot;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+COMMAND &quot;Option 2.1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+COMMAND &quot;Exit'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+EXIT MENU<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+END MENU</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+COMMAND &quot;SubMenu 2&quot;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+MENU &quot;Menu 2&quot;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+COMMAND &quot;Option 2.1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+COMMAND &quot;Exit'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+EXIT MENU<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+END MENU<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END MENU<br>
+</p>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3>
+<a name="Extended Display Array Control">
+Extended Display Array Control</a></h3>
+<p><i>&nbsp;&nbsp;&nbsp; <u>BEFORE/AFTER ROW in DISPLAY ARRAY</u></i></p>
+<p>&nbsp;&nbsp;&nbsp; Use Before row/After row in display arrays to display
+highlight bars or associated information.</p>
+<p><i>&nbsp;&nbsp;&nbsp;</i><u><i> FGL_SET_ARRLINE / FGL_SET_SCRLINE</i></u></p>
+<p>&nbsp;&nbsp;&nbsp; Use with display/input arrays to set current array and
+screen lines - Great for searches.</p>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3><a name="User overridable and extended USING functionality for use with dates">User overridable and extended USING functionality for use with dates</a></h3>
+<p>Added in 'dddd','mmmm' for full weekday names and month names, also added 'th'
+for '1st', '2nd' type processing and 'd' &amp; 'm' for non-padded days and
+months, eg : 'dddd dth mmmm yyyy' = 'Monday 20th July 1998'. And because not
+everybody speaks English, these are overridable by using either Environment
+variables or compile time environment settings.</p>
+<p>
+Can also use :</p>
+<p>&nbsp;&nbsp;&nbsp; dddd mmmm th</p>
+<p>
+	in the using clause for full day names, month names and the
+		(1)'st', (2)'nd', (3)'rd', (4)'th' of the day number</p>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3>
+<a name="Local functions">
+Local functions</a></h3>
+<p>
+	functions can be defined as being local to a module (ie not callable outside that module).</p>
+<p>&nbsp;&nbsp;&nbsp; LOCAL FUNCTION func_name...<br>
+&nbsp;&nbsp;&nbsp; END FUNCTION</p>
+<p>
+	This is the same as 'static' before a function in 'C'</p>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3><a name="get_info function">get_info function</a></h3>
+<blockquote>
+  <p>
+CALL getinfo...</p>
+</blockquote>
+<p>Get information on most things from with 4GL code, includes :</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Windows</p>
+<blockquote>
+  <blockquote>
+    <p>Height, Width etc., Comment/Message/Error line</p>
+  </blockquote>
+</blockquote>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Forms</p>
+<blockquote>
+  <blockquote>
+    <p>Delimiters, database, screen record count, names, field names/count,
+    Current field, Width, Height of fields.</p>
+  </blockquote>
+</blockquote>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sessions</p>
+<blockquote>
+  <blockquote>
+    <p>Database name, Most ODBC information.</p>
+  </blockquote>
+</blockquote>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Statements</p>
+<blockquote>
+  <blockquote>
+    <p>No. of columns, rows, Column names, types, length etc.</p>
+  </blockquote>
+</blockquote>
+<p>
+There is a wide range of information available to 4GL programs about the&nbsp;
+current
+state of the application. This include details about Cursor, Windows,&nbsp;
+Forms etc.
+This information is the mainstay of 'extreme 4GL' because it allows the&nbsp;
+generation of generic code which can be used for a wide range of&nbsp;
+applications.
+</p>
+
+<p>
+Firstly then, the get_info function call :
+</p>
+
+<blockquote>
+<p>
+	CALL get_info(type, ID, info) RETURNING ...
+</p>
+
+</blockquote>
+<p>
+In all cases ID is the ID being queried. Bear in mind that this will&nbsp;
+normally point to a globbed value which should therefore include the&nbsp;
+module name containing the definition of the ID and a colon. Eg.
+</p>
+
+<p>
+	module1.4gl
+</p>
+
+<blockquote>
+<p>
+		OPEN WINDOW w1 AT 2,2 ....<br>
+		CALL get_info("window","module1:w1","BeginX") RETURNING a<br>
+				# a would be set to 2
+</p>
+
+</blockquote>
+<p>
+For appropriate values for info for each types, see &quot;Internal statements&quot;
+section of Aubit 4gl manual
+</p>
+
+<p><a href="#Top of page">Go to top of page...</a></p>
+
+<hr>
+<h3><a name="Dynamic Screen Fields">Dynamic Screen Fields</a></h3>
+<p>This allows the user to type in more text than can be displayed in a field by
+allowing horizontal scrolling</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the
+.per file :</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No Maximum
+Limit:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+f000=formonly.fld1,dynamic;</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Maximum of
+80 characters:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+f000=formonly.fld1,dynamic size=80;</p>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3><font size="5"><a name="Remote Function Calls">Remote Function Calls</a></font>
+</h3>
+
+<p>This feature allow the programmer to write client/server applications using
+remote function calls. The functions can be based on the same host machine, or
+across a network. You can even use RFCs across platforms. This is useful for a
+variety of purposes especially :</p>
+<ul>
+  <li>To avoid polling for requests (Eg. for a print or report server)
+  <li>For multiprocessing across many hosts
+  <li>Accessing data on a Windows database from Unix (Access for example has no
+    Unix ODBC driver)</li>
+</ul>
+<p>Have you ever tried using rpcgen ? Ever tried to write the client and server side implementations ?</p>
+<p>Heres the 4GL :</p>
+<blockquote>
+<p>	Server.4gl<br>
+<br>
+		FUNCTION disp(lv_who)<br>
+		DEFINE lv_who CHAR(20)<br>
+			DISPLAY "I've been called by ",lv_who CLIPPED<br>
+		END FUNCTION<br>
+<br>
+		MAIN<br>
+			START EXTERNAL FUNCTION[1] FOR disp<br>
+		END MAIN</p>
+<p>	client.4gl<br>
+		MAIN<br>
+			CALL EXTERNAL dax:disp[1] ("Me")<br>
+		END MAIN</p>
+</blockquote>
+<p>The function calls can also be set to run asynchronously by using the without
+waiting clause</p>
+<p>&nbsp;Eg:&nbsp;</p>
+<blockquote>
+  <p><u><i>Server Code:</i></u></p>
+  <blockquote>
+    DEFINE mv_inv_num INTEGER&nbsp;&nbsp;&nbsp;&nbsp;
+    <p>FUNCTION next_invoice_number()&nbsp;&nbsp;&nbsp;&nbsp;<br>
+    &nbsp;&nbsp;&nbsp; LET mv_inv_num=mv_inv_num+1<br>
+    &nbsp;&nbsp;&nbsp; RETURN mv_inv_num<br>
+    END FUNCTION</p>
+    <p>MAIN<br>
+    &nbsp;&nbsp;&nbsp; SELECT MAX(invoice_no) INTO mv_inv_num FROM invoices<br>
+    &nbsp;&nbsp;&nbsp; START EXTERNAL FUNCTION [1] FOR next_invoice_number<br>
+    END MAIN</p>
+  </blockquote>
+  <p><u><i>Client Code:</i></u></p>
+  <blockquote>
+    <p>FUNCTION generate_invoice()<br>
+    &nbsp;&nbsp;&nbsp; DEFINE lv_inv_no INTEGER<br>
+    &nbsp;&nbsp;&nbsp; CALL EXTERNAL localhost <b>: </b>next_invoice_number[1]
+    () RETURNING lv_inv_no<br>
+    END FUNCTION</p>
+  </blockquote>
+</blockquote>
+<p>Example 2:
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; CALL EXTERNAL host:function-name '[' servernumber ']' '(' parameters ')'
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; START EXTERNAL FUNCTION '[' servernumber ']' FOR function-name-list
+</p>
+
+<p>
+eg.2:
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; server.4gl
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; FUNCTION bibble()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RETURN 1<br>
+&nbsp;&nbsp;&nbsp; END FUNCTION
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; FUNCTION myfunc(x,y)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RETURN x+y<br>
+&nbsp;&nbsp;&nbsp; END FUNCTION
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; MAIN&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; START EXTERNAL FUNCTION [1] FOR bibble,myfunc<br>
+&nbsp;&nbsp;&nbsp; END MAIN
+</p>
+
+<p>
+client.4gl
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; ...<br>
+&nbsp;&nbsp;&nbsp; CALL EXTERNAL localhost:myfunc [1] (1,2)<br>
+&nbsp;&nbsp;&nbsp; ...
+</p>
+
+<p><a href="#Top of page">Go to top of page...</a></p>
+
+<hr>
+
+<h3>
+<a name="SELECT/DELETE/UPDATE USING">
+SELECT/DELETE/UPDATE USING</a>
+</h3>
+
+<p>&nbsp;It is now possible to 'link' a record with a table and its primary key.
+</p>
+
+<p>Eg.
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; # stock (stock_code char(4), balance INTEGER);<br>
+&nbsp;&nbsp;&nbsp; DEFINE lv_stock LINKED TO stock (stock_code)
+</p>
+
+<p>
+	After defining this relation, you can then use the new USING construct to access this data:
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; LET lv_stock.stock_code="BAY1"<br>
+&nbsp;&nbsp;&nbsp; SELECT USING lv_stock
+</p>
+
+<p>
+		This will fill the record with all the other details from the
+		table via the value set in the primary key field (or fields) The above example would be written by hand as :
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; SELECT * INTO lv_stock FROM stock WHERE stock_code=lv_stock.stock_code
+</p>
+
+<p>
+	You can also use the DELETE USING to delete the row referenced by the
+	primary key.
+</p>
+
+<p>
+	In addition the UPDATE USING will update ALL non-key columns to the&nbsp;values in the structure for the given primary key. Columns given for
+the primary key are used to find the row to update. The values for&nbsp;the columns defined as primary keys are obviously not updated.
+</p>
+
+<p>
+	Eg.
+</p>
+
+<blockquote>
+<p>
+	LET lv_stock.stock_code="BAY1"<br>
+<br>
+	SELECT USING lv_stock<br>
+	LET lv_stock.balance=lv_stock.balance-1<br>
+<br>
+	IF lv_stock > 0 THEN
+</p>
+
+  <blockquote>
+<p>
+		UPDATE USING lv_stock<br>
+		##################################################<br>
+		# = 	UPDATE stock SET balance=lv_stock.balance&nbsp;<br>
+		#	WHERE stock_code=lv_stock.stock_code<br>
+		##################################################
+</p>
+
+  </blockquote>
+<p>
+	ELSE # No stock left - remove the row
+</p>
+
+  <blockquote>
+<p>
+		DELETE USING lv_stock<br>
+		##################################################<br>
+		# = 	DELETE FROM stock&nbsp;<br>
+		#	WHERE stock_code=lv_stock.stock_code<br>
+		##################################################
+</p>
+
+  </blockquote>
+<p>
+	END IF
+</p>
+
+</blockquote>
+<p>
+	To define a composite primary key use the column names in the LINKED TO.
+</p>
+
+<p>
+	Eg.&nbsp;
+</p>
+
+<p>&nbsp;&nbsp;&nbsp; DEFINE lv_tab1 LINKED TO mytable(pk1,pk2)
+</p>
+
+<p><a href="#Top of page">Go to top of page...</a></p>
+
+<hr>
+
+<h3><a name="ON ANY KEY">ON ANY KEY</a></h3>
+<p>Useful with fgl_set_arrline/fgl_set_scrline for searches and context
+sensitive handling.</p>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3><a name="Compile Time Environment Setting">Compile Time Environment Setting</a></h3>
+<p>The library uses some environment variable, default values are specified by
+the library - but you can set your own, this are still overridden by environment
+variables when required.</p>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3><a name="SET SESSION OPTION/SET CURSOR OPTION">SET SESSION OPTION/SET CURSOR OPTION</a></h3>
+<p>Set ODBC specific options on sessions and cursors. For instance</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DECLARE c1
+CURSOR<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+SELECT tabname FROM systables</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # only
+pull back up to three rows<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SET CURSOR c1
+OPTION &quot;MAX ROWS&quot; TO &quot;3&quot;</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; # not
+really need here - but dynamic cursors, no more stale data.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SET CURSOR c1
+OPTION &quot;CURSOR TYPE&quot; TO &quot;DYNAMIC&quot;</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OPEN c1</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; FOREACH c1
+INTO l_str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+DISPLAY l_str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; END FOREACH<br>
+</p>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h2><a name="Application Partitioning">Application Partitioning</a></h2>
+<p>The applications generated can access data on another machine, and a GUI
+viewer is in construction which communicates with the application via TCP/IP.
+The built-in viewer is currently only text based. Once construction of the Thin
+Client viewer is complete the application will be able to run on any of one to
+three machines, and with the onset of Unix ODBC clients, application logic can
+still run on a server.</p>
+<p><i>&nbsp;&nbsp;&nbsp; <u>Possible Configurations</u></i></p>
+<p>---&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Network connection to different machines<br>
+&nbsp;+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Running on the same machine<br>
+&nbsp;</p>
+<p><tt>&nbsp;&nbsp;&nbsp; Data&nbsp;&nbsp;&nbsp;&nbsp; ---&nbsp; Application
+Logic&nbsp;&nbsp; ---&nbsp;&nbsp; Viewer</tt></p>
+<p><tt>&nbsp;&nbsp;&nbsp; Data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;
+Application Logic&nbsp;&nbsp; ---&nbsp;&nbsp; Viewer</tt></p>
+<p><tt>&nbsp;&nbsp;&nbsp; Data&nbsp;&nbsp;&nbsp;&nbsp; ---&nbsp; Application
+Logic&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;&nbsp; Viewer</tt></p>
+<p><tt>&nbsp;&nbsp;&nbsp; Data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;
+Application Logic&nbsp;&nbsp;&nbsp; +&nbsp;&nbsp;&nbsp; Viewer</tt></p>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h2><a name="Y2K runtime translation">Y2K runtime translation</a></h2>
+<p>A4GL cannot ensure Y2K compliance of data sources but uses a AUBIT_Y2K
+variable for its own Y2K compliance. Setting this to a number will select which
+century will be chosen for a 2 digit year.&nbsp; E.g.. setting this to 80 will
+mean 80+ will be treated as the 19xx whilst 0-79 will be treated as the 20xx.</p>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<h3 align="left">
+<a name="Globbing">
+Globbing</a>
+</h3>
+
+<p>
+All IDs are shared between all modules in a program, in order to make them&nbsp;
+unique within a module a mechanism called globbing is employed. This&nbsp;
+entails using the module name to form part of the ID.
+</p>
+
+<p>
+Upon compilation
+</p>
+
+<blockquote>
+<p>
+	DECLARE CURSOR c1 ...
+</p>
+
+</blockquote>
+<p>
+has the Internal ID of "modulename:c1"<br>
+Eg. if the module was called test.4gl - "test:c1"
+</p>
+
+<p>
+This is useful because it allows access to IDs defined in other modules&nbsp;
+when required
+</p>
+
+<p>
+module1.4gl
+</p>
+
+<blockquote>
+<p>
+	 open form form1 from "sales"
+</p>
+
+</blockquote>
+<p>
+module2.4gl
+</p>
+
+<blockquote>
+<p>
+	display form _variable("module1:form1")
+</p>
+
+</blockquote>
+<p>
+When you use the '_variable' no extra globbing is done, hence:
+</p>
+
+<p>
+module1.4gl
+</p>
+
+<blockquote>
+<p>
+	open form _variable("form1") from "sales"
+</p>
+
+</blockquote>
+<p>
+could be referenced in module2.4gl as :
+</p>
+
+<blockquote>
+<p>
+	display form _variable("form1")
+</p>
+
+</blockquote>
+<p>
+<font color="#FF0000">Warning</font>: Using this form of declaration can lead to problems when you&nbsp;
+require unique names across modules.
+</p>
+
+<p><a href="#Top of page">Go to top of page...</a></p>
+
+<hr>
+<h3><a name="A4GL Wizard and program templates">A4GL Wizard and program templates</a></h3>
+<p>the Wizard processor takes an input file, and generates the 4GL for you after
+answering a couple of questions.</p>
+<p>eg.</p>
+<blockquote>
+  <p>TEMPLATE<br>
+        database=PROMPT "Database Name"	# prompts for a dbname<br>
+        tabname=PROMPT "Table Name"		# prompts for a table name<br>
+        collist=COLUMNS tabname			# gets a list of columns for tab<br>
+        funcname=PREPEND "proc_" TO tabname	# see note 1<br>
+        pk=PROMPTMANY "Primary key"		# note 2<br>
+        nonpk=collist-(pk)				# note 3<br>
+        pkvar=PREPEND "l_record." TO pk<br>
+        nonpkvar=PREPEND "l_record." TO nonpk<br>
+        varpkeq=LIST (USE pkvar WITH " = " ON pk) WITH " AND "<br>
+  <br>
+  <br>
+  ENDTEMPLATE<br>
+  <br>
+  database %database<br>
+  <br>
+  function %funcname<br>
+  define l_record record like %tabname<br>
+  <br>
+  declare c_id1 cursor for<br>
+        select * from %tabname where %(%pk*=l_record.%pk*)<br>
+  foreach c_id1 into l_record.*<br>
+  end main<br>
+  </p>
+</blockquote>
+<p>In order to use the file you need the template compiler. This takes a module.tpl and outputs a module.4gl.</p>
+<p>It would be quite easy to fudge 4glpc to read a tpl, convert it into /tmp/...4gl  and then compile that and move the .c &amp; .h files back..</p>
+<p>There are some enhancements still needed on this - like reading some data directory for the primary keys etc. But that hasnt been done yet...</p>
+<p>Runtime</p>
+<p>There usage is really bloody complicated, but I dont envisage normal users using them.</p>
+<p>We can generate a few for simple 4gl modules etc.</p>
+<p>They work on lists which you can perform actions on. eg. prepend which add some text to everything in the list</p>
+<p><i>note 1:</i></p>
+<p>	tabname is a list with only one entry, so we'll end up with another	list called funcname = "proc_",tabname</p>
+<p><i>note 2:</i></p>
+<p>	This gets as many values for 'pk' as required.</p>
+<p><i>note 3:&nbsp;</i></p>
+<p> list subtraction, removes elements from a list where they are in another list</p>
+<p>When typing in 4GL there are some things that you have to keep on repeating because of the way 4GL works. This allows us to set
+up normal maintenance handlers in a couple of seconds!</p>
+<p><a href="#Top of page">Go to top of page...</a></p>
+
+<hr>
+
+<h3><a name="ENABLE/DISABLE fields"> ENABLE/DISABLE fields</a></h3>
+<p> ENABLE/DISABLE fields.. 100% complete</p>
+<p>FIXME: This one is new, how do one use this?</p>
+<p><a href="#Top of page">Go to top of page...</a></p>
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>
+

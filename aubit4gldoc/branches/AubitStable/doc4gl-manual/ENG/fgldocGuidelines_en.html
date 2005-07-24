@@ -1,0 +1,592 @@
+
+<HTML>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Content-Language" content="en-us">
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<!-- BabelFish added base tag --><SCRIPT LANGUAGE="JavaScript">
+<!--
+ var babelOrigUrl="http://www.falout.com/fgldocGuidelines_pt.html";  if  ((null == parent) || (null == parent.BabelFishAdd) || ('TF' != parent.BabelFishAdd.babelTF)) { var i = new Image(); i.src = 'http://babel.altavista.com/aftu' }
+//--></SCRIPT>
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta name="AUTHOR" content="Sérgio Ferreira">
+<meta name="CREATED" content="20010326;17552300">
+<meta name="CHANGED" content="20010404;12125000">
+	<TITLE>How to write commentaries of documentation for fgldoc</TITLE>
+<STYLE>
+	<!--
+		H1 { font-family:  }
+		H2 { font-family:  }
+		H3 { font-family:  }
+	-->
+	</STYLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+
+<h2 align="center">DOC4GL - 4gl   
+ programs documenter</h2> 
+<h3 align="center">Writing documentation comments for DOC4GL</h3> 
+<hr>
+<H2> <a name="Table of Content"><i>Table of content</i></a><i>s</i>
+</H2>
+<UL>
+	<LI><a href="#Basic principles">Basic principles</a><LI><a href="#Terminology">
+	 Terminology</a><LI><a href="#Filing-cabinets Source">
+     Source files</a><LI><a href="#General form of a documentation comment">
+	 General form of a documentation comment</a><LI><a href="#Descriptions">
+	 Description</a><LI><a href="#Style guide">Style guide</a><LI><a href="#Conventions for tagging">
+	 Conventions for tagging</a><LI>
+     Comments describing functionality (missing)<LI><a href="#Examples"> 
+	 Examples</a></UL>
+<p><a href="../index.html">Doc4GL documentation index page</a></p> 
+<hr>
+<H2> <a name="Basic principles">Basic principles</a>
+</H2>
+<blockquote>
+<P> The applications normally have three types of documents:&nbsp;
+</P>
+<ul>
+  <li>
+structural specifications</li>               
+  <li>manual specifications</li>
+  <li>documents for the users</li>
+</ul>
+  <P> The scope of this document is limited to documents that describe the applications 
+  <i>structurally</i>. 
+</P>
+<P> Documentation created in autonomous documents normally is obsolete and modified only when the management defines it as priority task (what  
+usually only happens when we already don't have any resources available).   
+</P>
+<P> We think that the best way is to put programmers in charge of the documentation 
+and place it close to the code that it's describing (or even in the source 
+code). 
+
+</P>
+<P> Following the example of Javadoc, we decided to create a definite tool that on the basis of  
+well defined standards extracts the information from the code and generates  
+documents in specified format.
+</P>
+<P> We must therefore try to follow this principles: 
+</P>
+<ul>
+  <li>
+    <p> The structural documentation is defined in the form of documentation comments, written in the source code.</p>  
+  </li>
+  <li>
+    <p> References of the changes in particular version of the programs must be kept in the versioning control system, 
+    like CVS or similar .</p> 
+  </li>
+</ul>
+<p> Who is <i>the owner</i> of the documentation comments - Designers, Documentation   
+writers or Programmers ? The comments do not have to be of the exclusive   
+responsibility of none of these entities.  This is divided between   
+them depending on the phase of the project. 
+</p>
+<P> It is important to notice that in majority of the projects, the programs source 
+code is inherited   
+and already exist, and in most cases is not documented. Or they are probably not 
+documented in the format that we use or prefer.  
+</P>
+<P> Ideally, the documentation should be written by the programmers who implement  
+or modify the functions.  If there is a methodology for initial writing of a 
+skeleton or prototype,  
+and later each  
+function implemented by the programmers, then the responsible person  
+for the construction of the skeleton should write it.  
+</P>
+<P> When documentation effort is initiated after the   
+application is already in use (in a process of redesign or to document it), must be 
+FIXME efectuada under the form of taken   
+over on a contract basis FIXME tentanto to the absolute maximum.  
+</P>
+<P> After the documentation comments are inserted, during the phase of   
+maintenance of the project, the programmers have to modify all the   
+documentation that relates to performed modifications.  In   
+the case of resolution of a bug, these must be registered in the version control 
+instead. 
+</P>
+<P> These principles try to describe the comments for documentation.  They must be understood as     
+suggestions instead of rigid requirements to follow without question. There are always 
+alternative  
+ways, that if prove to be more efficient, should be used. Please suggest them to person responsible   
+for this document.     
+</P>
+</blockquote>
+<P> <a href="#Table of Content">Back to Table of Content</a>  
+</P>
+<hr>
+<H2> <a name="Terminology"> Terminology</a>
+</H2>
+<blockquote>
+<P><B> Documentation Comments </B><SPAN STYLE="font-weight: medium">(doc comments)  
+</SPAN></P>
+  <blockquote>
+<P> Comments special written in the  
+4gl source code and delimited by {**... } symbols. These comments are processed by the  
+<i>p4gl</i> tool<i> </i>to create the documentation in a relational database.   
+</P>
+  </blockquote>
+<P><B> fgldoc
+</B></P>
+  <blockquote>
+<P> The tool that dynamically generates the documentation from    
+the loaded data in the relationally formatted repository, inside the database 
+system. 
+</P>
+  </blockquote>
+</blockquote>
+<p> <a href="#Table of Content">Back to Table of Content</a> 
+</p>
+<hr>
+<H2> <a name="Filing-cabinets Source"> Source files</a>&nbsp; 
+</H2>
+<blockquote>
+<P> The tool generates documentation with origin in 4GL source files:              
+
+</P>
+<ul>
+  <li>
+ Program source files written in 4GL language.</li>  
+  <li>Documents describing the business processes.</li> 
+  <li>Documents describing the packages.</li> 
+</ul>
+</blockquote>
+<p>Currently, form files (.per) menu files (.menu) and help files (.msg) are not 
+processed by this tools.</p> 
+<p><a href="#Table of Content">Back to Table of Content</a></p>  
+<hr>
+<H2> <a name="General form of a documentation comment"> General form of a documentation 
+comment</a>
+</H2>
+<blockquote>
+<P> A documentation comments are made from two parts: following      
+description of zero or more tags, with a blank string between these sections:  
+</P>
+<TABLE width=80% BORDER=1 CELLPADDING=4 CELLSPACING=3>
+	<COL WIDTH=256*>
+	<THEAD>
+		<TR>
+			<TD WIDTH=100% VALIGN=TOP bgcolor="#C0C0C0">
+				<PRE>{**
+  This is the part of the description of the documentation comment
+
+  @process SUBSCRIBERS 
+}</PRE>
+			</TD>
+		</TR>
+	</THEAD>
+</TABLE>
+<ul>
+  <li>
+    The first line is indented to be lined up with the code that follows  
+    the comment and starts with symbol of beginning-of-comment ({**) followed  
+    by one return (ENTER). FIXME: and what about the description as shown above?
+  </li>
+  <li>
+    The following line start with an &quot;*&quot; or with a space.  
+    When it exist, the &quot;*&quot; is removed and substituted with a space  
+    (&quot; &quot;) character. 
+  </li>
+  <li>
+    A line of blank comment between the description and the list of tags  
+    must be inserted as shown above. 
+  </li>
+  <li>
+   To insert blank line between related tablets of tags....What? FIXME
+  </li>
+  <li>
+    The ending line starts with symbol of end-of-comment (}) followed by  
+    one return character (ENTER). 
+  </li>
+</ul>
+<P> Strings with more than 80 characters must be to be left (FIXME??).  If there will be more than    
+one paragraph in     
+the documentation comment, separates the paragraphs with tag     
+&lt;P&gt;.   
+</P>
+</blockquote>
+<p><a href="#Table of Content">Back to Table of Content</a></p> 
+<hr>
+<H2> <a name="Descriptions"> Descriptions</a>
+</H2>
+<blockquote>
+<P><B> First section (sentence)</B></P>
+<P> The first section (sentence) of each documentation comment must be  
+a summary, containing a concise but full description of the item that is  
+to be described by the comment entry.  The Javadoc tool uses this first phrase for the summary of the item.  This becomes important  
+for writing of summary information, that is easily recognizable. 
+
+</P>
+<P> This section (sentence) ends with the first full stop (&quot;.&quot;) followed by    
+one of the following:&nbsp;     
+</P>
+<ul>
+  <li>  
+space,</li>
+  <li> tab,</li>
+  <li> end of string</li> 
+  <li> or in first tag found.&nbsp;</li>   
+</ul>
+<P>  In the following example, the first section finishes in &quot;Prof.&quot; :     
+</P>
+  <blockquote>
+<PRE>{**
+  This is a simulation of experience of the Prof. Sparrow.
+}</PRE>
+  </blockquote>
+  <P> We can insert a full stop using HTML meta-characters to achieve this, as in following example:  
+</P>
+  <blockquote>
+<PRE>{** 
+  This is a simulation of experience of the Prof.&amp;nbsp; Sparrow.
+}</PRE>
+  </blockquote>
+</blockquote>
+<p><a href="#Table of Content">Back to Table of Content</a></p> 
+<hr>
+<H2> <a name="Style guide">Style guide</a>
+</H2>
+<P>Following are some suggestions and conventions for writing of 
+the descriptions in the documentation comments.
+</P>
+<ul>
+  <li>
+    <p><B>Use &lt;CODE&gt; for keywords and names   
+</B></p>
+  </li>
+</ul>
+<blockquote>
+<P> The reserved words must be surrounded by tags &lt;CODE&gt;... &lt;/ CODE&gt; when  
+included in a  
+description. This includes: 
+</P>
+<ul>
+  <li>
+ 4gl language reserved word
+  </li>
+  <li>
+   Names of functions
+  </li>
+  <li>
+   Names of variables (global, local and parameters) 
+  </li>
+  <li>
+  Examples of code 
+  </li>
+</ul>
+</blockquote>
+<ul>
+  <li><b>Omit parentheses for the general form of the functions</b></li>  
+</ul>
+<blockquote>
+<P> When mentioning function itself in the comment of the   
+function, one must always omit the parentheses and the respective   
+parameters. It is preferred to use the word method if you   
+intend to use the function name.  
+</P>
+<P> Example:
+</P>
+  <ul>
+    <li> The function add allows to insert items. - <i>Recommended</i></li>
+    <li> Function add(item) allows to insert items - <i>Avoid</i></li> 
+  </ul>
+</blockquote>
+<UL>
+	<LI><P><B>Use expressions instead of full conjuncts, in the interest 
+of the brevity 
+</B></P>
+</UL>
+<blockquote>
+<P> This rule must primarily be applied when you define tags, as  
+for example the @param 
+</P>
+</blockquote>
+<UL>
+	<LI><P><B>Use third person (descriptive), not a second person              
+(prescriptive) form
+</B></P>
+</UL>
+<blockquote>
+<P> The description should be written in third, declarative person instead of 
+second, imperative person.              
+</P>
+<P> Example:
+</P>
+  <ul>
+    <li> It returns the number: <i>Recommended</i></li>
+    <li> You return the number: <i> Avoid</i></li>
+  </ul>
+</blockquote>
+<UL>
+	<LI><P><B> Descriptions of functions must start with verbal expression
+</B></P>
+</UL>
+<blockquote>
+<P> A method implements an operation, thus normally starts with a 
+phrase.
+</P>
+  <ul>
+    <li>Gets the name of the customer: <i>Recommended</i></li>
+    <li>This function gets the name of the customer: <i>Avoid</i></li>
+  </ul>
+</blockquote>
+<ul>
+	<LI><P><B> Add descriptions beyond the name the function  
+</B></P>
+</ul>
+<blockquote>
+<P> The names of functions are automatically registered.  However, if  
+the comment repeats the name of the function, this does not add any information.  The ideal  
+comment goes beyond the these words and must always complement it with information that is not immediately (or at  
+all)  
+obvious from the name of the function.  
+</P>
+<P> Example:
+</P>
+  <blockquote>
+<P><B> <i>Avoid</i> -
+</B>
+</P>
+<PRE>{** 
+ * Affects the name of the customer 
+ *} 
+function setClientName(name)
+...</PRE><P >
+<b><i>Recommended</i> -</b>
+</P>
+<PRE>{** 
+ * Stores the customer name in the modular variable and saves it in the table customers
+ *}
+function setCliemntName(name)
+...</PRE>
+  </blockquote>
+</blockquote>
+<ul>
+  <li><b>Avoid abbreviations</b></li>
+</ul>
+<blockquote>
+<P > Use &quot;also known as&quot; instead of &quot;aka&quot;, or &quot;to be more  
+specific&quot; instead of &quot;i.e&quot;. 
+</P>
+</blockquote>
+<ul>
+  <li><b>Separator</b></li>
+</ul>
+<blockquote>
+<P > Optionally tags can be separated from the content/value with a column character:
+</P>
+  <blockquote>
+<P > @Author: John Smith
+</P>
+  </blockquote>
+<P > The : character will be removed from the documentation output.
+</P>
+</blockquote>
+<P > &nbsp;
+</P>
+<p> <a href="#Table of Content">Back to Table of Content</a> 
+</p>
+<hr>
+<H2> <a name="Conventions for tagging"> Conventions for tagging</a>
+</H2>
+<H3> Order of tags
+</H3>
+<blockquote>
+<P> <I> Tags </I><SPAN STYLE="font-style: normal"> must be included  
+in the following order: 
+</SPAN></P>
+<PRE STYLE="margin-left: 2cm"><a href="#author">@author</a>
+<a href="#version">@version
+</a>
+<a href="#param">@param</a>
+<a href="#return">@return</a>
+<a href="#see">@see</a>
+<a href="#since">@since</a>
+<a href="#deprecated">@deprecated</a>
+<a href="#todo">@todo
+</a>@table (FIXME) for dynamic SQL statements that Doc4GL parser 
+   cannot automatically &quot;see&quot;</PRE><P>
+ &nbsp; 
+</P>
+<P>
+ Tags on file (module) level <i>only</i>: 
+</P>
+<ul>
+  <li>
+ FIXME: <a href="#process">@process</a> ??</li> 
+  <li><a href="#file">@file</a>&nbsp;</li>
+</ul>
+<P>
+ Tags accepted in both module <i>and</i> function level comments:&nbsp;  
+</P>
+<ul>
+  <li>@todo&nbsp;</li>
+  <li>@author</li>
+</ul>
+<p>Therefore, when writing a module level comment, that describes the 4Gl source 
+file as the whole, user may utilize following tags only:</p>
+<ul>
+  <li>
+ FIXME: <a href="#process">@process</a> ??</li> 
+  <li><a href="#file">@file</a>&nbsp;</li>
+  <li>@todo&nbsp;</li>
+  <li>@author</li>
+</ul>
+<P>
+ It is preferable to divide tags for related tablets.   
+</P>
+<P> When same tag is inserted multiple times, it&nbsp; must be separated from others to     
+enhance readability.                
+</P>
+<P>&nbsp; 
+</P>
+</blockquote>
+<H3> Description of comment tags
+</H3>
+<blockquote>
+<P STYLE="margin-left: 0cm"><B> @<a name="author">author</a>
+</B></P>
+  <blockquote>
+<P STYLE="font-weight: medium; margin-left: 0cm"> Omit if author is unknown.    
+FIXME: It can be used expans&#245;es                  
+efectuadas for the control of versoes.  If several exist, it must be                  
+commanded for log order.                  
+</P>
+  </blockquote>
+<P STYLE="margin-left: 0cm"><B> @<a name="version">version</a>
+</B></P>
+  <blockquote>
+<P STYLE="font-weight: medium; margin-left: 0cm"> It can be used to expand the  
+version control.  It corresponds to the described item in source code, and not to the   
+version of the executable that results from compilation of several source 
+modules.  
+
+</P>
+  </blockquote>
+<P STYLE="margin-left: 0cm"><B>@<a name="param">param</a>
+</B></P>
+  <blockquote>
+<P STYLE="margin-left: 0cm"><SPAN STYLE="font-weight: medium"> This tag must be followed by the name of the parameter (not  
+it's type).  Although it is redundant with the declaration of parameters, it is the only  
+way to associate a comments with the parameter.  For convention the first    
+substantive of the description must reflect the type of information    
+that it stores (it can be preceded by articles as &quot;    
+&quot;). </SPAN>@param tag must have the same order as corresponding function parameters.</P> 
+<P STYLE="margin-left: 0cm"> Example:
+</P>
+<PRE STYLE="margin-left: 0cm">* @param num 		string formatting of the number
+* @param strUsing	the number to format</PRE><P STYLE="font-weight: medium; margin-left: 0">
+ Do not insert it between &lt;CODE&gt; &lt;/CODE&gt; tags, because the scanning tool already 
+ creates them.
+</P>
+<P STYLE="font-weight: medium; margin-left: 0"> Preferably, use an expression  
+in conjunction. 
+</P>
+  </blockquote>
+<P STYLE="margin-left: 0"><B> @<a name="return">return</a>
+</B></P>
+  <blockquote>
+<P STYLE="font-weight: medium; margin-left: 0"> In functions that do not return any value,  
+it must be omitted.  
+</P>
+<P STYLE="font-weight: medium; margin-left: 0"> When the function returns different values,  
+several tags for each occurrence of RETURN must be created. 
+</P>
+  </blockquote>
+<P STYLE="margin-left: 0"><B> @<a name="deprecated">deprecated</a>
+</B></P>
+  <blockquote>
+<P STYLE="font-weight: medium; margin-left: 0"> Indicates a method as not to be 
+used, to      
+indicate it will probably be removed in next version.     
+</P>
+  </blockquote>
+<P STYLE="margin-left: 0"><B> @<a name="since">since</a>
+</B></P>
+  <blockquote>
+<P STYLE="font-weight: medium; margin-left: 0"> It marks the version (when this  
+is known ) from which the  
+method was added. 
+</P>
+<P STYLE="font-weight: medium; margin-left: 0"> Insert it only if this is known 
+to be  
+correct.
+</P>
+  </blockquote>
+<P STYLE="margin-left: 0"><B> @<a name="todo">todo</a>
+</B></P>
+  <blockquote>
+<P STYLE="font-weight: medium; margin-left: 0"> Defines a functionality to  
+be implement in this method, in the future.  It  
+allows the programmer to mark task that must be implemented  
+in the function, but that it is not opportune to implement at the moment, or only to 
+note a problem or because it does not wants to break compatibility.
+</P>
+<P STYLE="font-weight: medium; margin-left: 0"> This way we can document what is  
+lacking in implementation.  
+</P>
+  </blockquote>
+<p> <b>@<a name="process">process</a></b> 
+</p>
+<blockquote>
+<p> FIXME 
+</p>
+</blockquote>
+<p> <b>@<a name="see">see</a></b> 
+</p>
+<blockquote>
+<p> FIXME 
+</p>
+</blockquote>
+<p> <b>@<a name="file">file</a></b> 
+</p>
+<blockquote>
+<p> This DoxyGen sybmol is not needed, and will be ignored by Doc4GL  
+</p>
+</blockquote>
+<p> DoxyGen/JavaDoc list of tags: <a href="http://www.stack.nl/~dimitri/doxygen/commands.html" target="_blank">http://www.stack.nl/~dimitri/doxygen/commands.html</a> 
+</p>
+</blockquote>
+<p> <a href="#Table of Content">Back to Table of Content</a>  
+</p>
+<hr>
+<H2> <a name="Examples"> Examples</a>
+</H2>
+  <p>Also see doc/manager/FglDocumenter/test directory.
+<blockquote>
+  <pre>{**
+ * This is a 4gl to test a 4gl import
+ *}
+
+
+{**
+ * Function comment
+ *
+ * @param a ParameterA
+ * @param b ParameterA
+ * @return Return a value
+ *}
+function OneFunctionToTest(a,b)
+  define a smallint
+	define b char(20)
+
+  return 1
+end function
+</pre>
+  <p>TO-DO - provide more examples 
+</p>
+</blockquote>
+<p><a href="#Table of Content">Back to Table of Content</a> 
+</p>
+<hr>
+<p align="center"><a href="../index.html">Doc4GL documentation index page</a>&nbsp; 
+<a href="http://aubit4gl.sourceforge.net" target="_blank">Aubit 4gl project</a>&nbsp;      
+<a href="../../common/index.html">Aubit 4gl compiler documentation menu</a></p>      
+</BODY>
+</HTML>
+
+

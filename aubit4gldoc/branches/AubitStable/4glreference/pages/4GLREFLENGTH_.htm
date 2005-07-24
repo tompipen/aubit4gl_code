@@ -1,0 +1,52 @@
+<HTML>
+<HEAD>
+<TITLE>LENGTH( )</TITLE>
+</HEAD><BODY>
+<B>LENGTH( )
+<P></P>
+</B>The LENGTH( ) function returns the number of bytes in its string argument
+after deleting all trailing spaces.
+<P></P>
+<IMG SRC="4GLREF00000092.gif" ALT="4GLREF00000092.gif" BORDER="0" USEMAP="#map57" WIDTH="449" HEIGHT="52"><MAP NAME="map57"><AREA COORDS="125,9,194,42" HREF="4GLREFCharacter_Expressions.htm"></MAP>
+<P></P>
+The LENGTH( ) function returns an integer value, based on the length (in
+bytes) of its character-expression argument.
+<P></P>
+<B>The following are among the possible uses for the LENGTH( ) function:
+<P></P>
+</B>You can check whether a user has entered a database name and, if not, set a
+default name. 
+<P></P>
+Check whether the user has supplied the name of a file to receive the output
+from a report and, if not, set a default output.
+<P></P>
+Check whether a file name is longer than n characters (and therefore not DOS
+compatible).
+<P></P>
+Use LENGTH(string) as the maximum value in a FOR loop, and then check each
+character in string for a specific character. For example, you can check for . to
+determine whether a table name has an owner prefix. 
+<P></P>
+<B>Using LENGTH( ) in SQL Expressions
+<P></P>
+</B>Unlike some other built-in functions of 4GL, you can use LENGTH( ) in SQL
+statements, as well as in other 4GL statements. LENGTH( ) can also be called from a
+C function. (That is, the database engine supports a function of the same name
+and of similar functionality.)
+<P></P>
+In a SELECT or UPDATE statement, the argument of LENGTH( ) is the identifier
+of a character column. In this instance, LENGTH( ) returns the number of bytes
+in the CLIPPED data value (for CHAR or VARCHAR columns) or the full number of
+bytes (for TEXT and BYTE data types). 
+<P></P>
+The LENGTH( ) function can also take the name of a database column as its
+argument, but only within an SQL statement.
+<P></P>
+<B>References 
+<P></P>
+<A HREF="4GLREFCLIPPED00000383.htm"></A></B><A HREF="4GLREFCLIPPED00000383.htm">CLIPPED</A>
+<P></P>
+<A HREF="4GLREFUSING.htm">USING</A> 
+<P></P>
+</BODY>
+</HTML>

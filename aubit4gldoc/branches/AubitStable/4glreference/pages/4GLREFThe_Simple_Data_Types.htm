@@ -1,0 +1,100 @@
+<HTML>
+<HEAD>
+<TITLE>The Simple Data Types</TITLE>
+</HEAD><BODY>
+<B>Simple Data Types
+<P></P>
+</B>Each simple data type of 4GL can store a single value whose maximum storage
+requirement is specified or implied in the data-type declaration.
+<P></P>
+<IMG SRC="4GLREF00000195.gif" ALT="4GLREF00000195.gif" BORDER="0" USEMAP="#map118" WIDTH="587" HEIGHT="447"><MAP NAME="map118"><AREA COORDS="171,299,272,328" HREF="4GLREFTime_Expressions.htm#cc12ad54"><AREA COORDS="172,338,272,368" HREF="4GLREFTime_Expressions.htm#98323f2a"></MAP>
+<P></P>
+<B>maximum size</B> is a whole number from 1 to 255, specifying the largest number of characters
+that a VARCHAR variable can store. 
+<P></P>
+<B>precision </B>specifies the total number of decimal digits, from 1 to 32.
+<P></P>
+<B>reserve size </B>is a whole number, from 0 to maximum size. The default is 0.
+<P></P>
+<B>scale </B>is a whole number, from 1 to precision, specifying the number of digits in the
+fractional part of a fixed-point number.
+<P></P>
+<B>size </B>is a whole number from 1 to 32,767, specifying how many characters a CHAR
+variable stores. The default is 1.
+<P></P>
+Each simple data type can be classified as a number, time, or character type:
+<P></P>
+<B>Number Data Types 
+<P></P>
+</B>4GL supports six simple data types to store various kinds of numbers:
+<P></P>
+<B>Whole Number Data Types
+<P></P>
+</B><TABLE><TR VALIGN=TOP><TD><B>SMALLINT 
+<BR></B></TD><TD><B></B>Whole numbers, ranging from -32,767 to +32,767.
+<BR></TD></TR><TR VALIGN=TOP><TD><B>INTEGER 
+<BR></B></TD><TD><B></B>Whole numbers, from -2,147,483,647 to +2,147,483,647. 
+<BR></TD></TR></TABLE><B>Fixed-Point Number Data Types
+<P></P>
+</B><TABLE><TR VALIGN=TOP><TD><B>DECIMAL (p,s)
+<BR></B></TD><TD><B></B>Fixed-point numbers, of scale s and precision p. 
+<BR></TD></TR><TR VALIGN=TOP><TD><B>MONEY 
+<BR></B></TD><TD><B></B>Currency values, of a definable scale and precision.
+<BR></TD></TR></TABLE><B>Floating-Point Number Data Types
+<P></P>
+</B><TABLE><TR VALIGN=TOP><TD><B>DECIMAL (p)
+<BR></B></TD><TD><B></B>Floating-point numbers of precision p (or by default, 16).
+<BR></TD></TR><TR VALIGN=TOP><TD><B>FLOAT 
+<BR></B></TD><TD><B></B>Floating-point, double-precision numbers. 
+<BR></TD></TR><TR VALIGN=TOP><TD><B>SMALLFLOAT 
+<BR></B></TD><TD><B></B>Floating-point, single-precision numbers.
+<BR></TD></TR></TABLE><B>Time Data Types
+<P></P>
+</B>4GL supports three simple data types for storing values in chronological
+units. Two of these store points in time, and the third can store spans of time
+(positive or negative differences between points in time):   
+<P></P>
+<B>Date</B> Calendar dates (month, day, year) with a fixed scale of days, within the range
+of calendar dates from January 1 of the year 1 up to December 31 of the year
+9999. 
+<P></P>
+<B>Datetime</B> Instants in time expressed as calendar dates (year, month, day) and
+time-of-day (hour, minute, second, and fraction of a second), within the range of years 1
+to 9999.
+<P></P>
+<B>Interval</B> Differences between two DATETIME or INTERVAL values, or between a DATE and a
+DATETIME value, expressed in years and months, or else in days and smaller units
+of time.
+<P></P>
+<B>Character Data Types
+<P></P>
+</B>4GL supports two simple data types for storing character strings. Each is
+designed for a different maximum length of the data string:
+<P></P>
+<B>Char</B> Strings of up to 32,767 characters. (The ANSI standard also recognizes the
+keyword CHARACTER for this data type.)
+<P></P>
+<B>Varchar</B>  Strings of up to 255 characters, optionally reserving a definable number of
+bytes (up to 255) of storage space.
+<P></P>
+<B>Structured Data Types
+<P></P>
+</B>4GL supports two structured data types for storing sets of values:
+<P></P>
+<B>Array </B> Arrays of up to 32,767 values (in any of up to three dimensions) of any data
+type except ARRAY. (The limit on the total number of elements in an array is
+compiler-dependent.)
+<P></P>
+<B>Record</B> Sets of values of any data type, or any combination of types.
+<P></P>
+<B>Large Data Types
+<P></P>
+</B>These store pointers to binary large object (blob) values, up to 2**31 bytes
+in size (or to a limit imposed by your implementation of INFORMIX-OnLine):
+<P></P>
+<B>Text</B> Character strings.
+<P></P>
+<B>Byte</B> Anything that can be digitized and stored on your system.
+<P></P>
+</BODY>
+</HTML>

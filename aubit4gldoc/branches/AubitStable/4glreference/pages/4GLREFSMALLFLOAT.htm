@@ -1,0 +1,35 @@
+<HTML>
+<HEAD>
+<TITLE>SMALLFLOAT</TITLE>
+</HEAD><BODY>
+<B>SMALLFLOAT
+<P></P>
+</B>The SMALLFLOAT data type stores values as single-precision floating-point
+binary numbers, with up to 8 significant digits. The range of SMALLFLOAT values is
+the same as for the float data type on your C compiler. The storage requirement
+is usually 4 bytes. The SMALLFLOAT data type typically stores scientific or
+engineering data that can only be calculated approximately. Since floating-point
+numbers retain only their most significant digits, a value that is entered into
+a SMALLFLOAT variable, constant, or column can differ slightly from the
+base-10 value that an 4GL form or 4GL report displays. 
+<P></P>
+This error arises from the internal storage format of binary floating-point
+numbers. For example, if you enter a value of 1.1 into a SMALLFLOAT field and,
+after processing the 4GL statement, the screen might display this value as
+1.1000001. This occurs in the typical case where the exact floating-point binary
+representation of a base-10 value requires an infinite number of digits in the
+mantissa. A computer stores only a finite number of digits, so it stores an
+approximate value, with the least-significant digits treated as zeros.
+<P></P>
+Statements of 4GL can specify SMALLFLOAT values as floating-point literals.
+<P></P>
+You can use uppercase or lowercase E as the exponent symbol; omitted signs
+default to + (positive). If a literal value in another format (such as an integer
+or a fixed-point decimal) is supplied from the keyboard into a SMALLFLOAT
+field, or in a statement, 4GL attempts data-type conversion.
+<P></P>
+In reports and screen displays, the USING operator can format SMALLFLOAT
+values. Unless you do so, the default scale in output is two (2) digits.
+<P></P>
+</BODY>
+</HTML>

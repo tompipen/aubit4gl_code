@@ -1,0 +1,889 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glWorks reference: Scrollers</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glWorks reference: Scrollers</CENTER></B><HR></H1>
+
+<UL>
+<LI><A HREF="#dtb_looks">dtb_looks</A></LI>
+<LI><A HREF="#dtb_scroller">dtb_scroller</A></LI>
+<LI><A HREF="#mlt_create">mlt_create</A></LI>
+<LI><A HREF="#mlt_delete">mlt_delete</A></LI>
+<LI><A HREF="#mlt_downstream">mlt_downstream</A></LI>
+<LI><A HREF="#mlt_head_tail">mlt_head_tail</A></LI>
+<LI><A HREF="#mlt_looks">mlt_looks</A></LI>
+<LI><A HREF="#mlt_newline">mlt_newline</A></LI>
+<LI><A HREF="#mlt_newrec">mlt_newrec</A></LI>
+<LI><A HREF="#mlt_op_filter">mlt_op_filter</A></LI>
+<LI><A HREF="#mlt_open">mlt_open</A></LI>
+<LI><A HREF="#mlt_recdone">mlt_recdone</A></LI>
+<LI><A HREF="#mlt_retrieve">mlt_retrieve</A></LI>
+<LI><A HREF="#mlt_scroller">mlt_scroller</A></LI>
+<LI><A HREF="#mlt_upstream">mlt_upstream</A></LI>
+<LI><A HREF="#stb_looks">stb_looks</A></LI>
+<LI><A HREF="#stb_open">stb_open</A></LI>
+<LI><A HREF="#stb_scroller">stb_scroller</A></LI>
+<LI><A HREF="#uni_create">uni_create</A></LI>
+<LI><A HREF="#uni_downstream">uni_downstream</A></LI>
+<LI><A HREF="#uni_getlength">uni_getlength</A></LI>
+<LI><A HREF="#uni_gettext">uni_gettext</A></LI>
+<LI><A HREF="#uni_looks">uni_looks</A></LI>
+<LI><A HREF="#uni_newline">uni_newline</A></LI>
+<LI><A HREF="#uni_retrieve">uni_retrieve</A></LI>
+<LI><A HREF="#uni_scroller">uni_scroller</A></LI>
+<LI><A HREF="#uni_setid">uni_setid</A></LI>
+<LI><A HREF="#uni_settext">uni_settext</A></LI>
+<LI><A HREF="#uni_upstream">uni_upstream</A></LI>
+</UL>
+
+<P><A NAME="dtb_looks"><H3>dtb_looks</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>idtbs.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function dtb_looks(frm, dsc, p)
+    define frm	char(14),		# form file name
+	   dsc	char(40),		# form description
+	   p	smallint		# pane length
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets appearence attributes for the dtb scroller
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>The form needs to have a screen array named <CODE>s_dtb</CODE>
+containing 4 character fields (names unimportant)</TD></TR>
+</TABLE></P>
+
+<P><A NAME="dtb_scroller"><H3>dtb_scroller</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>idtbs.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function dtb_scroller(im, ip)
+    define im, ip	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+a message
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>services</B></TD>
+<TD WIDTH=100%>
+Upstream:
+<UL>
+<LI><CODE>MB_init</CODE> to <CODE>MB_maxupstream</CODE></LI>
+<LI><CODE>MB_prevrec</CODE> (detailed display only)</LI>
+<LI><CODE>MB_nextrec</CODE> (detailed display only)</LI>
+<LI><CODE>MB_display</CODE> (detailed display only)</LI>
+</UL>
+Downstream:
+<UL>
+<LI><CODE>MB_display</CODE></LI>
+<LI><CODE>MB_open</CODE></LI>
+<LI><CODE>MB_declare</CODE></LI>
+<LI><CODE>MB_exit</CODE></LI>
+<LI>All messages serviced by <A HREF="4wrwip.htm#browse_filter">browse_filter</A>
+<LI><CODE>MB_reloadset</CODE></LI>
+<LI><CODE>MB_brief</CODE></LI>
+<LI><CODE>MB_deleterec</CODE> (asks for confirmation, and passes it down on a positive answer)</LI>
+</UL>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+A scroller suitable for many to many relations maintenance
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>The scroller uses a select statement as specified in the <CODE>search</CODE>
+    global variable</LI>
+<LI>the current row is held in globals <CODE>code1</CODE> and <CODE>code2</CODE></LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="mlt_create"><H3>mlt_create</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imlts.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mlt_create()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+(Re)creates the temporary table used by the mlt scroller for data display
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mlt_delete"><H3>mlt_delete</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imlts.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mlt_delete(type_rec, link_rec)
+    define type_rec	char(1),		# The type of the record
+	   link_rec	integer			# The primay key of the record
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Removes from the mlt temporary table text related to a record tracked
+by the mlt scroller
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>Normally used when deleting or updating records</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mlt_downstream"><H3>mlt_downstream</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imlts.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mlt_downstream(im, ip)
+    define im, ip	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+a message
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>services</B></TD>
+<TD WIDTH=100%>
+<A NAME="svc01"></A><UL>
+<LI><CODE>MB_display</CODE></LI>
+<LI><CODE>MB_open</CODE></LI>
+<LI><CODE>MB_declare</CODE></LI>
+<LI><CODE>MB_exit</CODE></LI>
+<LI>All messages serviced by <A HREF="4wrwip.htm#scroll_filter">scroll_filter</A>
+<LI><CODE>MB_changerec</CODE> (highlights record, asks for confirmation, and passes it down on a positive answer)</LI>
+<LI><CODE>MB_deleterec</CODE> (highlights record, asks for confirmation, and passes it down on a positive answer)</LI>
+<LI><CODE>MB_prevrec</CODE></LI>
+<LI><CODE>MB_nextrec</CODE></LI>
+</UL>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+The downstream filter of the mlt_scroller
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mlt_head_tail"><H3>mlt_head_tail</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imltr.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mlt_head_tail(h, t)
+    define h	char(78),
+	   t	char(40)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Used to set head and tail for mlt scroller printouts
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mlt_looks"><H3>mlt_looks</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imlts.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mlt_looks(frm, p)
+    define frm	char(14),		# form file name
+	   p	smallint		# pane lenght
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets appearence attributes for the mlt scroller
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>The form needs to have a screen array named <CODE>s_mlt</CODE>
+containing 1 character field (name unimportant)</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mlt_newline"><H3>mlt_newline</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imlts.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mlt_newline(txt, num_ord)
+    define txt		char(78),		# The actual text
+	   num_ord	smallint		# The line number
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Adds a new text line to a record being created
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><VAR>num_ord</VAR> is disregarded if the auto increment flag
+is in effect for the record being currently created</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mlt_newrec"><H3>mlt_newrec</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imlts.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mlt_newrec(tr, lr, dr, ai, maxl)
+    define tr	char(1),		# Table type
+	   lr	integer,		# Record primary key
+	   dr	date,			# A date, for time sorting purposes
+	   ai,				# The line auto increment flag
+	   maxl	smallint		# The highest line number in the record
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Prepares the mlt scroller for the creation of a new record
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mlt_op_filter"><H3>mlt_op_filter</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imlts.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mlt_op_filter(m, t)
+    define m	smallint,	# message body
+	   t	char(10)	# list of record types
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Specifies a list of record types  on which a particular message is disallowed
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>The mlt scroller supports message disabilitation per record type,
+ie a certain message, though originally enabled, will only be so if the current
+record is not listed in <VAR>t</VAR> above.< Successive calls to this function
+allow to specify multiple concurrently controlled messages. The limit of
+concurrent messages is at present set to 4.</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mlt_open"><H3>mlt_open</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imlts.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mlt_open(new_ord, cpos)
+    define new_ord,			#new display order
+	   cpos		smallint	#cursor position
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Specifies a new data display order
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>currently the following orderings are supported:
+<UL>
+<LI>-1: date_rec desc, link_rec desc</LI>
+<LI>0: link_rec</LI>
+<LI>1: date_rec, type_rec, link_rec</LI>
+<LI>2: date_rec desc, type_rec desc, link_rec</LI>
+<LI>3: type_rec, date_rec, link_rec</LI>
+<LI>4: type_rec desc, date_rec desc, link_rec</LI>
+<LI>11: date_rec, link_rec, type_rec</LI>
+<LI>12: date_rec, type_rec, link_rec <CODE>#=1, but needed</CODE></LI>
+<LI>13: link_rec, type_rec, date_rec</LI>
+<LI>14: type_rec, link_rec, date_rec</LI>
+</UL>
+the cursor position on reopening could be:
+<UL>
+<LI>1: last line</LI>
+<LI>2: current record</LI>
+<LI>3: current line number</LI>
+<LI>any other value: first line</LI>
+</UL>
+Note that the new order does not take effect until a <CODE>MB_declare</CODE> is
+issued, and that the repositioning of the cursor cannot be guaranteed if control
+is passed back to the menu structure before such message is issued.
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mlt_recdone"><H3>mlt_recdone</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imlts.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mlt_recdone()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Terminates the creation of a record
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mlt_retrieve"><H3>mlt_retrieve</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imlts.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mlt_retrieve(r)
+    define r	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>txt</VAR>, char(78), row contents
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Returns the contents of a particular line.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>Although the mlt scroller services print requests, for
+multi pane viewers, it may be necessary to write more complex reports.
+mlt_retrieve comes handy in such circumstances</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mlt_scroller"><H3>mlt_scroller</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imlts.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mlt_scroller(im, ip)
+    define im, ip	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+a message
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>services</B></TD>
+<TD WIDTH=100%>
+Upstream: see <A HREF="#svc02">mlt_upstream</A><BR>
+Downstream: see <A HREF="#svc01">mlt_downstream</A>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+A complex scroller used to maintain and view in textual form and with
+different sorting orders records from multiple disjoint tables
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="mlt_upstream"><H3>mlt_upstream</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imlts.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function mlt_upstream(im, ip)
+    define im, ip	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+a message
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>services</B></TD>
+<TD WIDTH=100%>
+<A NAME="svc02"></A><UL>
+<LI><CODE>MB_init</CODE> to <CODE>MB_maxupstream</CODE></LI>
+<LI><CODE>MB_notfound</CODE></LI>
+<LI><CODE>MB_print</CODE></LI>
+</UL>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+The upstream filter of the mlt scroller
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="stb_looks"><H3>stb_looks</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>istbs.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function stb_looks(frm, dsc, p)
+    define frm	char(14),		# form file name
+	   dsc	char(40),		# form description
+	   p	smallint		# pane lenght
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets appearence attributes for the stb scroller
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>The form needs to have a screen array named <CODE>s_stb</CODE>
+containing 2 character fields (names unimportant)</TD></TR>
+</TABLE></P>
+
+<P><A NAME="stb_open"><H3>stb_open</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>istbs.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function stb_open(fname, cond)
+    define fname	char(3),
+	   cond		char(250)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+A convenient tool to quickly initialize the <CODE>search</CODE>
+global variable
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="stb_scroller"><H3>stb_scroller</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>istbs.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function stb_scroller(im, ip)
+    define im, ip	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+a message
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>services</B></TD>
+<TD WIDTH=100%>
+Upstream:
+<UL>
+<LI><CODE>MB_init</CODE> to <CODE>MB_maxupstream</CODE></LI>
+<LI><CODE>MB_prevrec</CODE> (detailed display only)</LI>
+<LI><CODE>MB_nextrec</CODE> (detailed display only)</LI>
+<LI><CODE>MB_display</CODE> (detailed display only)</LI>
+</UL>
+Downstream:
+<UL>
+<LI><CODE>MB_display</CODE></LI>
+<LI><CODE>MB_open</CODE></LI>
+<LI><CODE>MB_declare</CODE></LI>
+<LI><CODE>MB_exit</CODE></LI>
+<LI>All messages serviced by <A HREF="4wrwip.htm#browse_filter">browse_filter</A>
+<LI><CODE>MB_reloadset</CODE></LI>
+<LI><CODE>MB_brief</CODE></LI>
+<LI><CODE>MB_deleterec</CODE> (asks for confirmation, and passes it down on a positive answer)</LI>
+</UL>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+A scroller suitable for single table maintenance
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>The scroller uses a select statement as specified in the <CODE>search</CODE>
+    global variable</LI>
+<LI>the current row is held in global <CODE>code1</CODE></LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="uni_create"><H3>uni_create</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iunis.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function uni_create()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Allocates memory for the text variable used  by the uni scroller
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>see <A HREF="#ntuni01">uni_setid</A> for more info on how
+to use multiple panes</TD></TR>
+</TABLE></P>
+
+<P><A NAME="uni_downstream"><H3>uni_downstream</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iunis.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function uni_downstream(im, ip)
+    define im, ip	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+a message
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>services</B></TD>
+<TD WIDTH=100%>
+<A NAME="svc03"></A><UL>
+<LI><CODE>MB_display</CODE></LI>
+<LI><CODE>MB_open</CODE></LI>
+<LI><CODE>MB_declare</CODE></LI>
+<LI><CODE>MB_exit</CODE></LI>
+<LI>All messages serviced by <A HREF="4wrwip.htm#scroll_filter">scroll_filter</A>
+</UL>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+The downstream filter of the uni scroller
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="uni_getlength"><H3>uni_getlength</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iunis.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function uni_getlength()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>l</VAR> (integer), number of lines in text
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+returns the length in lines of the text tracked by the uni scroller.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>see <A HREF="#ntuni01">uni_setid</A> for more info on how
+to use multiple panes</TD></TR>
+</TABLE></P>
+
+<P><A NAME="uni_gettext"><H3>uni_gettext</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iunis.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function uni_gettext(t)
+    define t	text
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Makes a copy of the text tracked by the uni scroller into the text
+variable <VAR>t</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>see <A HREF="#ntuni01">uni_setid</A> for more info on how
+to use multiple panes</TD></TR>
+</TABLE></P>
+
+<P><A NAME="uni_looks"><H3>uni_looks</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iunis.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function uni_looks(frm, p)
+    define frm	char(14),		# form file name
+	   p	smallint		# pane lenght
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets appearence attributes for the uni scroller
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>The form needs to have a screen array containing one character field
+(name unimportant) for each of the panes tracked by the scroller. The name
+of the array is dependent on the id of the pane: <CODE>s_uni</CODE> if 1,
+<CODE>s_uni&lt;id&gt;</CODE> for all other id's.</LI>
+<LI>see <A HREF="#ntuni01">uni_setid</A> for more info on how
+to use multiple panes</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="uni_newline"><H3>uni_newline</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iunis.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function uni_newline(txt)
+    define txt	char(78)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Adds a new line to the text being displayed by the uni scroller
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>see <A HREF="#ntuni01">uni_setid</A> for more info on how
+to use multiple panes</TD></TR>
+</TABLE></P>
+
+<P><A NAME="uni_retrieve"><H3>uni_retrieve</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iunis.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function uni_retrieve(r)
+    define r	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>txt</VAR>, char(78), row contents
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Returns the contents of a particular line.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>Although the uni scroller services print requests, for
+multi pane viewers, it may be necessary to write more complex reports.
+uni_retrieve comes handy in such circumstances</LI>
+<LI>see <A HREF="#ntuni01">uni_setid</A> for more info on how
+to use multiple panes</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="uni_scroller"><H3>uni_scroller</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iunis.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function uni_scroller(im, ip)
+    define im, ip	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+a message
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>services</B></TD>
+<TD WIDTH=100%>
+Upstream: see <A HREF="#svc04">uni_upstream</A><BR>
+Downstream: see <A HREF="#svc03">uni_downstream</A>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+A simple text scroller
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="uni_setid"><H3>uni_setid</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iunis.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function uni_setid(p)
+    define p	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets identity of the pane used by most <CODE>uni_scroller</CODE> routines
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><A NAME="ntuni01">
+<CODE>uni_setid</CODE> provides a mechanism to name and address different
+<CODE>uni_scroller</CODE> panes, when more than one is in use. Rather than
+addressing them by pane id, they are given a unique id by calling
+<CODE>uni_setid</CODE> prior to adding a new pane with
+<A HREF="#uni_looks">uni_looks</A>. Each pane is then addressed by invoking
+<CODE>uni_setid</CODE> prior to the invocation of the appropriate routine.
+The advantage of this scheme is that panes can be added to /dropped from/
+shuffled in the viewer without affecting the identity of each, thus eliminating
+the need to correct for the changed id in the code.
+<CODE>uni_setid</CODE> can be safely skipped when the <CODE>uni_Scroller</CODE>
+is in control of only one pane.
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="uni_settext"><H3>uni_settext</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iunis.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function uni_settext(t)
+    define t	text
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets the text to be displayed by the uni scroller
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>see <A HREF="#ntuni01">uni_setid</A> for more info on how
+to use multiple panes</TD></TR>
+</TABLE></P>
+
+<P><A NAME="uni_upstream"><H3>uni_upstream</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>iunis.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function uni_upstream(im, ip)
+    define im, ip	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+a message
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>services</B></TD>
+<TD WIDTH=100%>
+<A NAME="svc04"></A><UL>
+<LI><CODE>MB_init</CODE> to <CODE>MB_maxupstream</CODE></LI>
+<LI><CODE>MB_print</CODE></LI>
+</UL>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+The upstream filter of the uni scroller
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>

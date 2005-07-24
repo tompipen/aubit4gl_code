@@ -1,0 +1,2224 @@
+<HTML>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>FGLBLD 4gl code generator manual</title>
+</head>
+
+<h2 align="center">FGLBLD</h2>
+
+<p align="center">(4GL Build)</p>
+<h3 align="center">An x4GL Application Generator<br>
+User Guide and Reference Manual</h3>
+<h4 align="center">Version 6.12 (6.5)</h4>
+<hr>
+<p><a name="Table of Contents">Table of Contents</a></p>
+<h2><a href="#INTRODUCTION">INTRODUCTION</a></h2>
+<ul>
+  <li><a href="#SUMMARY">Summary</a></li>
+  <li><a href="#What is an SPI">What is an SPI?</a></li>
+  <li><a href="#PERFORM">PERFORM</a></li>
+  <li><a href="#Simplified PERFORM Interface">Simplified PERFORM Interface</a></li>
+  <li><a href="#What is FGLBLD">What is FGLBLD?</a></li>
+  <li><a href="#What is a PRIMARY KEY">What is a PRIMARY KEY?</a></li>
+  <li><a href="#What is a D-List">What is a D-List?</a></li>
+</ul>
+<h2><a href="#USING FGLBLD">USING FGLBLD</a> </h2>
+<ul>
+  <li><a href="#Creating an SPI">Creating an SPI</a></li>
+  <li><a href="#The Pop-up menu">The Pop-up menu</a></li>
+  <li><a href="#Which type of popup">Which type of popup?</a></li>
+  <li><a href="#Creating a conditional popup function">Creating a conditional popup function</a></li>
+  <li><a href="#Creating an unconditional popup function">Creating an unconditional popup function</a></li>
+  <li><a href="#Creating a fetch function">Creating a fetch function</a></li>
+  <li><a href="#The Database, Build, Run and Name options">The Database, Build, Run and Name options</a></li>
+  <li><a href="#Modifying the source code">Modifying the source code</a></li>
+  <li><a href="#Environment variables">Environment variables</a></li>
+</ul>
+<h2><a href="#A GUIDED TOUR OF AN FGLBLD APPLICATION">A GUIDED TOUR OF AN FGLBLD APPLICATION</a> </h2>
+<ul>
+  <li><a href="#Sample Database">Sample Database</a></li>
+  <li><a href="#The GLOBALS file ctsg.4gl">The GLOBALS file ctsg.4gl</a></li>
+  <li><a href="#The MAIN file ctsm.4gl">The MAIN file ctsm.4gl</a></li>
+  <li><a href="#The main program">The main program</a></li>
+  <li><a href="#The main menu">The main menu</a></li>
+  <li><a href="#The delete control function">The delete control function</a></li>
+  <li><a href="#The update control function">The update control function</a></li>
+  <li><a href="#The insert control function">The insert control function</a></li>
+  <li><a href="#The cursor position control function">The cursor position control
+    function</a></li>
+  <li><a href="#The CURSOR file ctsc.4gl">The CURSOR file ctsc.4gl</a></li>
+  <li><a href="#The INPUT file">The INPUT file</a></li>
+  <li><a href="#The REPORT file">The REPORT file</a></li>
+  <li><a href="#The FORM file">The FORM file</a></li>
+  <li><a href="#The MAKEFILE">The MAKEFILE</a></li>
+  <li><a href="#The HELP file">The HELP file</a></li>
+  <li><a href="#The auxilliary files">The auxiliary files</a></li>
+</ul>
+<h2><a href="#MODIFYING FGLBLD SOURCE">MODIFYING FGLBLD SOURCE</a></h2>
+<ul>
+  <li>The INPUT code</li>
+  <li>Changing the order of the fields</li>
+  <li>Splitting a large table</li>
+  <li>Modifying the report</li>
+  <li>Modifying a popup function</li>
+  <li>Modifying a fetch function</li>
+</ul>
+<h2><a href="#FGLBLD SUPPORT CODE">FGLBLD SUPPORT CODE</a></h2>
+<ul>
+  <li><a href="#D-lists code">D-lists code</a></li>
+  <li><a href="#MAKE rules">MAKE rules</a></li>
+  <li><a href="#Other functions">Other functions</a>
+    <ul>
+      <li><a href="#Transaction Logs">Transaction Logs</a></li>
+      <li><a href="#Handling transaction logs">Handling transaction logs</a></li>
+      <li><a href="#Miscellaneous functions">Miscellaneous functions</a></li>
+    </ul>
+  </li>
+  <li><a href="#Custom versions of fglgo and fgldb">Custom versions of <i>fglgo</i> and
+    <i>fgldb</i></a></li>
+</ul>
+<h2><a href="#FGLBLD Installation">FGLBLD Installation</a></h2>
+<ul>
+  <li><a href="#Compiling FGLBLD">Compiling FGLBLD</a></li>
+  <li><a href="#Installing FGLBLD">Installing FGLBLD</a></li>
+  <li><a href="#Customizing FGLBLD">Customizing FGLBLD</a></li>
+</ul>
+<h2><a href="#REJECTED STRATEGIES">REJECTED STRATEGIES</a></h2>
+<h2><a href="#WHAT IS MISSING">WHAT IS MISSING?</a></h2>
+<h2><a href="#WHAT MAY CHANGE">WHAT MAY CHANGE?</a></h2>
+<h2><a href="#CREDITS">CREDITS</a></h2>
+<h2><a href="#LICENSE">LICENSE</a></h2>
+<p>&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h2><a name="INTRODUCTION">INTRODUCTION</a></h2>
+<p>FGLBLD is an application generator for xxx which generates 4GL code suitable for use
+with any x4gl compatible compiler (Informix, 4Js, Querix, Aubit...). It generates code to handle a particular style of interaction
+which is termed a <i><b> Simplified Perform Interface</b></i> or SPI. This is analogous to a customized
+version of the xxx program xxx.&nbsp;</p>
+<p>In the hands of an experienced user, FGLBLD can be used to create a custom
+application in less than an hour with a complete set of default help messages,
+multiple pop-up facilities to allow the user to choose a value from a list, and
+a report which at least gives all the information stored in the table. Unlike
+some other products available, it is possible to have more than one SPI included
+in one program - the functions are named systematically but use the table name
+as part of the function name.&nbsp;</p>
+<p>This document is a user guide to the product. It covers the use of the
+product, the structure of the code, how to modify the code, how to install the
+product and what could be improved. It assumes a good working knowledge of 4GL
+and xxx and a reasonable understanding of shell scripts - not normally a problem if the
+other requirements are met. It does not hold your hand and take you through
+every keystroke.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h2><a name="SUMMARY">SUMMARY</a></h2>
+<p>FGLBLD is an application generator for xxx which can generate high-quality
+programs from just 5 pieces of information specified by the programmer (the
+database, the table, the primary key, the menu title and the <i> basename</i> for the
+files). All the code used by the generated program is supplied as source code so
+there are no hidden libraries.</p>
+<p>The generated code is easily modifiable; FGLBLD supplies code generators
+which allow the programmer to create popup windows which allow the user (of the
+generated program) to select the required input value from a list, and also code
+which simplifies the validation and display of data from joining tables.&nbsp;</p>
+<p>
+Although it does not eliminate all xxx programming (only the simplest of application
+would need no improvements beyond reorganizing the layout of the screen form),
+FGLBLD does speed up the development process greatly.</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="What is an SPI">What is an SPI?</a></h3>
+<p>As mentioned above, an SPI is a <i><b> Simplified Perform Interface</b></i>. To understand
+what is meant by this, it is helpful to understand what the regular xxx interface
+looks like.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="PERFORM">PERFORM</a></h3>
+<p> The xxx program is the xxx screen-based transaction processor, which is a
+fancy way of saying it allows the user to edit the data in the database, using a
+screen from (a screen layout with additional control information) to allow the
+user to see what they are doing. It is basically very easy to use: there are six
+important options (query, next, previous, add, remove, update), six minor
+options (screen, table, master, detail, current, output), and the exit option.
+The main menu for xxx is illustrated in Figure 1.</p>
+<blockquote>
+<p><i>The PERFORM main menu</i></p>
+<p>FIXME: Fig 1. perform.pic</p>
+</blockquote>
+<p>xxx works with one active table at a time (in the figure, the active table is
+customers), though there may be a number of tables listed in one form. The
+important options allow the user to work on the current table and to:&nbsp;</p>
+<ul>
+  <li>Select a set of records from the table (query)&nbsp;</li>
+  <li>Look at any records in the current set (next, previous)</li>
+  <li>Add new records (add)&nbsp;</li>
+  <li>Remove existing records (remove)&nbsp;</li>
+  <li>Update existing records (update).&nbsp;</li>
+</ul>
+<p>The behavior of the add, delete and update options can be partially
+controlled by information in the ATTRIBUTES and INSTRUCTIONS section of the
+form. This allows some simple validation to be done, and some types of
+cross-referencing (lookup, verify joins) can be done as the data is displayed.
+However, there are many complex types of validation, and cross-references to
+multiple tables, which cannot be handled in xxx.</p>
+<p>The minor options (except Output) are used to control complex forms with
+several screen layouts and several tables in the form. These are the least
+satisfactory part of xxx because the user must be trained to understand what is
+happening to be able to use these options reliably.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="Simplified PERFORM Interface">Simplified PERFORM Interface</a></h3>
+<p> Although the complete set of
+options in xxx is unwieldy, the set of important options plus output and exit are
+very useful for editing one table at a time, and these options can be understood
+by most users.&nbsp;</p>
+<p> It is possible to provide an xxx program which supplies these options
+and which allows the programmer to add a variety of extra features, such as more
+complicated data validation, choosing from lists of possible data values,
+complicated lookups for data, properly cascaded deletes, and also extra
+constraints on the user -- even different constraints on different users.&nbsp;</p>
+<p>The basic SPI menu offers the eight options shown in Figure 2.&nbsp;</p>
+<blockquote>
+<p>FIXME: Fig 2</p>
+<p>"A main menu generated by FGLBLD." fglmenu.pic</p>
+</blockquote>
+<p>The Exit option is the way of terminating the menu and does not need further
+discussion.&nbsp;</p>
+<p> The Query, Next and Previous options allow the user to specify which
+data they wish to look at and to step through the data. Both Next and Previous
+can be preceded by a number indicating the number of records to jump over. The
+Add option (which might be called Insert to be consistent with the other
+database operations) allows the user to add a new row of data.&nbsp;</p>
+<p> The Delete option
+allows the user to reconsider their decision, but deletes the current row of
+data when required. The Update option allows the user to edit the current row of
+data. The Report option allows the user to print the data they are working with,
+or to file it or see it on the screen.&nbsp;</p>
+<p> This basic set of options can be
+augmented by editing the generated code.&nbsp;</p>
+<p>FGLBLD also provides a set of hidden options. These include First and Last to
+move to either end of a set of records, Goto to move to a particular record in
+the list, Current to reselect the current row of data (it may have been changed
+by someone else), Same to re-execute the same query again, and there is normally
+a shell escape option too.</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="What is FGLBLD">What is FGLBLD</a>?</h3>
+<p>FGLBLD is a program written in xxx which gives the user a menu-driven system for
+working with SPIs.&nbsp;</p>
+<p> It has options to create an SPI, a pop-up function (which
+allows the user to choose a value from a list), or a fetch function (which
+collects a record from the database). It also provides a usable environment in
+which to edit the code for an SPI, to recompile it or run it.</p>
+<p>The standard
+distribution comes in two flavors depending on whether compiled xxx or Informix-RDS
+is in use. If the distribution is for compiled xxx, there are just two user-level
+commands, namely fglbld and de-fluff. If the distribution is for Informix-RDS,
+you also get a command called <i> mkfglgo</i>.&nbsp;</p>
+<p> The main command that users see is fglbld.
+This is actually a shell script which amends the environment so that the rest of
+FGLBLD will work correctly and then runs the program that gives the user the
+menu and so on.&nbsp;</p>
+<p><i>Defluff</i> is a filter which removes certain comments from the code generated
+by fglbld. These comments indicate how the code could be modified if required,
+but the comments in, for example, the input validation functions are repeated
+for every function and are frequently unwanted. <i> Defluff</i> removes these
+comments.&nbsp;</p>
+<p><i>Mkfglgo</i> is used to create a custom version of <i> fglgo</i> and <i> fgldb</i>. It copies the
+necessary source code into the current directory (including a makefile) and then
+compiles both <i> fglgo</i> and <i> fgldb</i>. If required, the set of functions can be extended
+by the user.</p>
+<p>These three scripts are normally installed in one of the standard bin
+directories on the system: the default directory would be $INFORMIXDIR/bin.&nbsp;</p>
+<p> The
+rest of the software is normally stored in a separate directory system such as
+the default, /usr/fglbld, though it could be installed under $INFORMIXDIR. The
+software comprises the xxx executable (or interpretable for an Informix-RDS
+installation), the code generator scripts, the form files, the help message
+files, the installation tools and the code templates.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="What is a PRIMARY KEY">What is a PRIMARY KEY</a>?</h3>
+<p>When generating code with FGLBLD, one of the questions the user is asked is
+the name of the <i>primary key</i> column. It is important to be able to answer
+this question correctly; if an incorrect answer is given, the behavior of the
+generated program will be unsatisfactory to the user.&nbsp;</p>
+<p> Put simply, the primary
+key of a table is the column or set of columns which contains a unique
+identifier for each row of data. A typical example of a primary key is a SERIAL
+column. When the table is created, the SERIAL column will have nulls disallowed
+(NOT NULL), and there will be a unique index on the column too. By specifying
+the value in the SERIAL column in the WHERE clause of a SELECT statement, at
+most one row of data will be fetched from the database. If there is a row with the matching value stored in the SERIAL column, it
+will be retrieved; if there is no such row, no rows will be returned. Under no
+circumstances will more than one row be returned.&nbsp;</p>
+<p> Some tables do not have a
+single-column primary key. For example, a table expressing a relationship
+between two entities defined in different tables normally has a primary key
+consisting of a value from the first table and a value from the second table.
+FGLBLD handles this by using the ROWID in place of a single column -- see the
+section on `Creating an SPI'.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="What is a D-List">What is a D-List?</a></h3>
+<h4>Scroll cursors</h4>
+<p>Versions of xxx prior to 1.10 only had one type of CURSOR and the only operations
+available on these were OPEN, FETCH and CLOSE. The FETCH operation always
+fetched the next row. This sort of cursor is not very suitable for moving
+backwards and forwards through a set of rows of data -- backwards is
+particularly difficult.&nbsp;</p>
+<p> Later versions of added SCROLL CURSORS which support the
+operations FETCH FIRST, FETCH LAST, FETCH PREVIOUS, FETCH NEXT, FETCH ABSOLUTE,
+FETCH RELATIVE and FETCH CURRENT as well as OPEN and CLOSE.</p>
+<p>At first sight, these seem to be ideal for implementing an SPI; further
+acquaintance reveals some shortcomings. The main shortcoming is that the list of
+rows in the cursor cannot be modified after the cursor is opened. This means
+that if the user deletes a row from the list, there is no way of removing it
+from the set of rows in the scroll cursor, so if the user moves on to the next
+item and then comes back, it will look to them as though the row has not been
+deleted. There are two ways of circumventing this trouble:&nbsp;</p>
+<p> After a delete or
+update or sequence of add operations, reopen the scroll cursor and reposition
+the user in the list.</p>
+<p>Only select the ROWID (or possibly the primary key column(s) for the table)
+with the scroll cursor. Every time the user changes the current row, use the
+scroll cursor to fetch the next key value and then select the data from the
+database again.&nbsp;</p>
+<p> The first alternative is clumsy, particularly if the query
+specified by the user fetches a large number of rows of data. Also,
+repositioning the user in the list at the same point is impossible to do
+accurately on a multi-user system because someone else could have been adding or
+deleting rows while the user was fiddling.&nbsp;</p>
+<p>The second alternative requires some complex coding to handle the rows which
+are no longer retrieved because the original record has been deleted; should the
+next record which is fetched be FETCH NEXT or FETCH PREVIOUS, and what happens
+when the first or last record is deleted, or all records are deleted.&nbsp;</p>
+<p> A second
+issue with SCROLL CURSORS arises if the database has a transaction log on it;
+all SELECT FOR UPDATE statements (and table locks) have to be applied within a
+transaction. When a transaction is terminated, all currently open cursors are
+closed. It is not satisfactory to start a transaction when the user starts the
+program and terminate it when they finish since it definitely reduces the
+possibility of multiple users accessing the database and can also run into
+problems with the number of locks applied to the table.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<h4>D-Lists</h4>
+<p>D-Lists are a solution to the problems outlined above. The name is an
+abbreviation of `doubly-linked list'. They are a set of functions written in C
+which can maintain arbitrary lists of values. The operations supported on
+D-Lists include add, update and delete as well as create, destroy and a fetch
+function which includes all the operations supported by scroll cursors. There
+are a couple of other utility functions which return the index number of the
+current row and the total number of rows, and there is a function to empty the
+list but not destroy it. These operations are completely independent of the
+database engine and so they are not affected by transaction boundaries.&nbsp;</p>
+<p>There is a problem with using D-Lists from xxx, namely that for each type of
+value to be stored in the D-List, you need a separate set of interface routines.
+For practical reasons therefore, only four sets of xxx routines have been provided,
+and they are for integers, strings, decimals and floats.&nbsp;</p>
+<p> The decimal and float
+routines have never been used in anger; it is implausible (but not impossible)
+to have a primary key based on these types. If a table has a composite primary
+key (a key consisting of more than one column), it is necessary to use the
+integer D-List routines to store the ROWID of each row and to use this to
+retrieve the relevant information. It would be possible to use the ROWID for all
+operations, but if the primary key is a simple integer (or a SERIAL or DATE
+column) or a character string, it is more natural to use these instead.&nbsp;</p>
+<p>The only disadvantage of using D-Lists is if Informix-RDS is in use; because
+they are written in C, the D-List routines have to be incorporated into customized
+versions of <i> fglgo</i> and <i> fgldb</i>. The script <i> mkfglgo</i> is provided with FGLBLD to
+create these programs.</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h2><a name="USING FGLBLD">USING FGLBLD</a></h2>
+<p>FGLBLD can be run in either of two ways. Simply typing:&nbsp;</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0"> &nbsp;<i>fglbld</i>&nbsp;</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p> runs the
+program and is the normal way of using it. Alternatively, typing:&nbsp;</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0"> &nbsp; <i> fglbld
+database</i> &nbsp;</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p> will pre-select the specified database. The database can be changed
+within fglbld; if it is not pre-selected (or if the pre-selected database cannot
+be opened), it will have to be specified using either the Database option in the
+main menu or before any code is generated. The main menu is illustrated in
+Figure 3.</p>
+<blockquote>
+<p>FXIME: Fig 3</p>
+<p>"The FGLBLD main menu." mainmenu.pic</p>
+</blockquote>
+<ul>
+  <li>The SPI option generates an SPI;&nbsp;</li>
+  <li> the Popup option leads to a submenu which
+allows you to generate two different types of popup function;&nbsp;</li>
+  <li> the Fetch option
+generates a function to select a row of data from the database;&nbsp;</li>
+  <li> the Modify
+option leads to a sub-menu which can be used for editing, compiling and running
+the generated code;&nbsp;</li>
+  <li> the Build option rebuilds the generated application;&nbsp;</li>
+  <li> the Run
+option runs it;&nbsp;</li>
+  <li> the Name option allows the user to work with different generated
+applications;&nbsp;</li>
+  <li> the Database option allows the user to change the active database;&nbsp;</li>
+  <li>
+and the Exit option terminates the session with FGLBLD.&nbsp;</li>
+</ul>
+<p>There is a single hidden option: `!' provides a shell escape. Throughout
+FGLBLD itself, the following rules apply:&nbsp;</p>
+<ul>
+  <li> At any point, you can type control-W
+and get help.&nbsp;</li>
+  <li> If you are entering data in a form, you can more detailed help for
+the field you are in by typing control-F (or the F6 key).&nbsp;</li>
+  <li> If there is a popup
+available, you can activate it by typing control-B (or the F5 key).&nbsp;</li>
+  <li> Hitting the
+interrupt key in a form or a popup terminates whatever operation you were doing
+and returns you to what you were doing before. Hitting the interrupt key in a
+menu has no effect beyond generating annoying messages.&nbsp;</li>
+</ul>
+<p>A lot of the information presented in the next section (creating an SPI) is
+also applicable to creating a popup function and creating a fetch function.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="Creating an SPI">Creating an SPI</a></h3>
+<p> When
+the SPI option is chosen, a form is displayed and has to be filled in.&nbsp;</p>
+<p> If no
+database has been specified, another, smaller window will be popped up asking
+for the name of a database. Until a database has been opened successfully, you
+cannot proceed further, though an interrupt will take you back to the main
+menu.&nbsp;</p>
+<p>The name of the database should not contain any path; it must be accessible
+via the environment variable DBPATH. Once a database has been selected, there
+are a number of details that must be specified, and also a number of options
+that may be specified. The mandatory items are:&nbsp;</p>
+<ul>
+  <li>the table name,&nbsp;</li>
+  <li>the primary key of table,&nbsp;</li>
+  <li>the menu name,&nbsp;</li>
+  <li>the <i> basename</i> of the files.</li>
+</ul>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<h4>Specifying the table name</h4>
+<p>The table name must be specified first; it can be entered directly, or it can
+be chosen from a list by pressing the F5 key or control-B.</p>
+<p>When choosing from a
+list, you are offered a conditional popup which was originally generated by
+FGLBLD. When the conditional popup code is entered for the first time, there are
+no items in its list, so it immediately asks you to specify the criteria for
+selecting the list of tables. You can specify conditions on the table name or
+number; you could just hit the ESCAPE key which would select all the tables in
+the database, or you could specify that the table number should be greater than
+or equal to one hundred which yields a complete list of user-defined tables, or
+you could specify some other condition.&nbsp;</p>
+<p>The list of tables is displayed using a DISPLAY ARRAY, and you can choose the
+required table (or view) by hitting ESCAPE with the cursor on the correct row.&nbsp;</p>
+<p>
+Hitting the interrupt key will abandon the selection process and return you to
+the form so that you can type a table name. When a conditional popup is entered
+and there are some items in its list, it will offer you a menu with options
+Query, Same and Exit.&nbsp;</p>
+<p>The Query option allows you to enter new criteria for the tables to be shown;
+the Same option allows you to choose from the same list as before; and the Exit
+option exits the popup without selecting anything. If the criteria ever returns
+an empty list of names, you will be shown the menu again.</p>
+<p>If the search criteria select more than thirty table names, only the first
+thirty will be shown; you will have to re-specify the criteria if the required
+table is not in the list. When the database changes, any previous list of table
+names is forgotten. This table popup function is also used when creating a popup
+function or a fetch function.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<h4>Specifying the primary key</h4>
+<p> Once the table has been chosen, the primary key
+must be specified. The column name can be entered directly, or you can choose
+from a list by pressing the F5 key. The popup is an unconditional popup this
+time -- the possible choices of column name are fixed when the table is
+specified. (This too was originally generated by FGLBLD, but it was modified to
+take the table number as an argument so that the correct list of columns can be
+generated automatically.)&nbsp;</p>
+<p>If the table's primary key is a composite key, the special value `ROWID'
+should be entered or chosen. This name must be entered in capital letters. The
+ROWID is always a valid choice as the primary key, but it is often convenient to
+use a real column that does not allow nulls and which has a unique index as the
+primary key. A typical example is a SERIAL column. Any column name except ROWID
+must be entered in lower-case letters.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<h4>Specifying the menu name</h4>
+<p>After the table and column have been specified, the menu title is entered.
+This is automatically converted to upper-case letters. The colon will be
+supplied by xxx; if you supply one too, two colons will appear when the program is
+run.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<h4>Specifying the menu name</h4>
+<p>Finally, the <i> basename</i> of the generated files is specified. This is restricted
+to seven lower-case characters because the xxx source files will be given an extra
+letter and `.4gl' as a suffix, which uses up to 12 characters, and 2 characters
+will be needed for the `s.' prefix supplied by SCCS, giving a total of 14
+characters which is as long a name as System V Unix allows. All the generated
+files will start with the specified <i> basename</i>, but the standard files which are
+copied into the directory will have other names.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<h4>Specifying the options</h4>
+<p> Frequently, this will be all
+the information you need to specify because the rest of the input is supplied
+with default values of `Y' that specify a fully-featured SPI.&nbsp;</p>
+<p>However, you can elect to omit any of the sections listed below by changing
+the option value to `N':&nbsp;</p>
+<ul>
+  <li>Add<br>
+ There will be no Add option in the generated menu.&nbsp;</li>
+  <li>Before field<br>
+ The
+BEFORE FIELD code in the INPUT statement will be omitted.&nbsp;</li>
+  <li>After field<br>
+    The AFTER FIELD code
+in the INPUT statement will be omitted.&nbsp;</li>
+  <li>Control-P<br>
+    The code which copies the value
+previously entered or displayed in this field will be omitted.&nbsp;</li>
+  <li>Control-B<br>
+    The code which
+can activate a popup will be omitted.&nbsp;</li>
+  <li>Update<br>
+    There will be no Update option in the
+generated menu.&nbsp;</li>
+  <li>Update<br>
+    There will be no Delete option in the generated menu.&nbsp;</li>
+  <li>Report<br>
+    There will
+be no Report option in the generated menu.&nbsp;</li>
+  <li>Shell escape<br>
+    There will be no hidden option to run
+a Unix command.</li>
+</ul>
+<p>If both the Add and Update code are omitted, the values specified for the
+before field, after field, control-P and control-B flags are irrelevant as no
+input code will be generated. It is not a good idea to omit either the before
+field or the after field code.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<h4>Generating the code</h4>
+<p> Once the ESCAPE key is hit with the data fully
+defined, FGLBLD will generate the code. It does this in 9 phases:&nbsp;</p>
+<ol>
+  <li>Generate a default form.&nbsp;<br>
+ If the form contains more than one screen of data,
+or if any of the fields is split onto several lines, <i> fglbld.alt</i> (the code
+generator script) produces a warning that the form needs editing.&nbsp;</li>
+  <li>Generate the default help message file.&nbsp;<br>
+ Most of the help messages are
+properly helpful, but the field level help messages for input and update are
+just `This is the default help message for <i> Table.column</i>.'&nbsp;</li>
+  <li>Generate the main, globals and cursor files.&nbsp;<br>
+ These files are simply copies of
+the templates.&nbsp;</li>
+  <li>Generate the input file.&nbsp;<br>
+ This is generated even if no input is needed.&nbsp;</li>
+  <li>Generate the report file.&nbsp;<br>
+ This too is generated even if the report is not
+needed.&nbsp;</li>
+  <li>Generate the makefile.&nbsp;</li>
+  <li>Generate the auxiliary files.&nbsp;<br>
+ These files do not change from SPI to SPI and
+can be included in a library if desired.&nbsp;</li>
+  <li>Edit the files.&nbsp;<br>
+ This converts the template files into the operational code,
+and also deletes any unwanted code.&nbsp;</li>
+  <li>Compile the program.&nbsp;<br>
+ This runs xxx to build the SPI object.&nbsp;</li>
+</ol>
+<p> If no errors or
+warning were generated, the program can now be run.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<h4>Reusing file names</h4>
+<p> If you accidentally (or
+deliberately) create a new file with the same name as some existing file, you
+will get one or two cryptic messages. If you have not previously offended like
+this, you will see a message such as:&nbsp;</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0"> mv filename.4gl o.filename.4gl</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p> If you
+have already committed the same offence, you will get a message such as:&nbsp;</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0"> rm -f
+o.filename.4gl&nbsp;<br>
+          mv filename.4gl o.filename.4gl&nbsp;</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="The Pop-up menu">The Pop-up menu</a></h3>
+<p>The pop-up option in the main menu leads to the sub-menu shown in Figure
+4.&nbsp;</p>
+<blockquote>
+<p>FIXME: fig 4</p>
+<p>The Popup menu. popmenu.pic</p>
+</blockquote>
+<p>The Conditional option is used to generate a conditional popup -- the type
+which allows the user to specify what they wish to choose from. The
+Unconditional option is used to generate an unconditional popup -- the type
+where the user gets no choice about what to choose from. the Database option
+allows you to change the current database. The Exit option returns you to the
+main menu.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="Which type of popup">Which type of popup?</a></h3>
+<p> Pop-ups let the user choose from a list of possible values.&nbsp;</p>
+<p>To be effective, the list should not be so long that the user gets annoyed
+with having to scroll through the list to find the required value. An
+unconditional popup is all that will be needed when a user will only have to
+choose between a few possible values.&nbsp;</p>
+<p> Unconditional pop-ups frequently need an
+argument which indicates which subset of a large number of possible values
+should be shown.</p>
+<p>A conditional popup is needed when there are a very large
+number of possible choices and the user will need to be able to reduce the list
+to a more manageable length by specifying some criteria for which rows should be
+displayed.&nbsp;</p>
+<p>In extreme cases, a full SPI could be used as a super-popup -- it gives the
+ultimate in flexibility -- but be careful of carrying this too far. One
+technical <i>tour de force</i> consisted of an SPI which used a second SPI as a
+popup; the second xxx itself used a third SPI as a popup; and the third SPI used a
+fourth SPI as a popup. The fourth SPI only used standard pop-ups. Although this
+worked -- and was very powerful and versatile in the hands of its designer -- it
+was beyond the capacity of the end users and was never used seriously.</p>
+<p>A good illustration of when to use a conditional popup and when to use an
+unconditional one is in the code for FGLBLD:&nbsp;</p>
+<p> the table
+name popup is conditional, and the column name popup is unconditional. In a
+database, there may be several hundred tables. The user normally knows roughly
+which tables are relevant and does not want to have to scroll through the
+complete list to find the required name. Additionally, there is a problem with
+writing the code: how big should the list be? And what happens when the actual
+number of tables in the database grows too large?&nbsp;</p>
+<p>A general purpose program such as FGLBLD cannot just ignore this problem, and
+it cannot just forget to show the extra tables to the user because Sod's Law
+Sod's Law, also known as Murphy's Law, states:</p>
+<p>`If anything can go wrong, it will'.&nbsp;</p>
+<p>The first corollary is:</p>
+<p>`Even if you thought it couldn't go wrong, Sod's Law still applies'.&nbsp;</p>
+<p>dictates that the omitted tables will be the ones that FGLBLD's fussiest user
+will be having difficulty remembering. Thus, for choosing tables, a conditional
+popup is necessary.&nbsp;</p>
+<p> One the other hand, once the table is chosen, there are
+normally only a few columns in the table and all the columns can be shown. In
+the unlikely event that some columns are omitted from the list, it shouldn't
+matter since the primary key column would normally be one of the first few
+columns in the table. By allocating a list of fixed size, and by passing the
+table name (or number) as an argument to the popup function, the use can choose
+from a list without having to specify a query.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="Creating a conditional popup function">Creating a conditional popup function</a></h3>
+<p>The Conditional option is similar to, but simpler than, the SPI option. As
+with the SPI option, a form is displayed and has to be filled in. As before, the
+current database is used, and if no database has been specified yet, you will
+have to choose one via the popup window.&nbsp;</p>
+<p>When the database has been selected, there are five mandatory pieces of
+information to be supplied:&nbsp;</p>
+<ol>
+  <li> the table name,&nbsp;</li>
+  <li> the primary key of the table,&nbsp;</li>
+  <li> the
+menu name,&nbsp;</li>
+  <li> the file name,&nbsp;</li>
+  <li> what is being selected.&nbsp;</li>
+</ol>
+<p> The mechanisms and constraints
+on entering the table name, primary key, menu name and file name are almost
+identical to those in the SPI option; the only difference is that the file name
+may have up to 8 characters (rather than 7) because no letter is put between the
+name entered in the form and the `.4gl' suffix.&nbsp;</p>
+<p>The last item is more difficult to explain. In the generated code, there are
+two places where a message is produced which refers to what the user is
+selecting. For example, when the chosen table contained a list of jobs, the two
+messages were:&nbsp;</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0"> MESSAGE &quot;Use cursor keys to choose job: ESC to select&quot;&nbsp;<br>
+ MESSAGE &quot;Some jobs not displayed&quot;&nbsp;</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p>Because FGLBLD is not psychic, the user has to specify what should be put
+into these messages in the fifth field, the one which is labeled `What is being
+selected'. The value entered should be the singular (e.g. `job'). If the name
+does not simply take an `s' to make the plural (which is used in the second
+message), the source code will have to be edited.&nbsp;</p>
+<p> Once these details have been
+specified and the ESCAPE key has been hit, FGLBLD will generate the code. It
+does this in 3 phases;&nbsp;</p>
+<ol>
+  <li>Generate a default form. Modify this so that there is a screen array of
+length one defined.&nbsp;</li>
+  <li>Generate the popup code.&nbsp;</li>
+  <li>Compile the code.&nbsp;</li>
+</ol>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="Creating an unconditional popup function">Creating an unconditional popup function</a></h3>
+<p>The Unconditional option is almost identical to the Conditional one; the only
+difference is that no menu is generated, so no menu name is entered.&nbsp;</p>
+<p> All the
+other comments apply as before.&nbsp;</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="Creating a fetch function">Creating a fetch function</a></h3>
+<p>The Fetch option is the simplest of the code generating options. As with all
+the other code generating options, you specify the table and primary key and the
+file name, but with a fetch function, that is all that is specified. The same
+popup facilities are available for choosing the table and column as in the SPI
+option. The Fetch option generates the code very quickly.&nbsp;</p>
+<p>There is one issue which causes trouble, namely that you need to specify a
+real column as the primary key. If the primary key for the table is composite,
+you will need to specify one of those columns as the primary key and then modify
+the generated code to add enough extra arguments to define the primary key
+completely. This is more fiddly than difficult -- see the section on `Modifying
+a fetch function'.</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="The Database, Build, Run and Name options">The Database, Build, Run and Name options</a></h3>
+<p>The database option allows you to choose a new active
+database. It pops up a small window and shows you the current database. You can
+enter a new database name, or leave the entry blank to continue with the same
+database. The same option is available from the Pop-up menu, and the same code
+is used if one of the code generating options is chosen when no database is
+active.&nbsp;</p>
+<p>The name of the current database is shown on the status line of the menu as
+soon as possible. If the code is called from a menu, it is displayed
+immediately; if the code is called from a form, it is only displayed after the
+all the data has been entered in the form.&nbsp;</p>
+<p> The Name option allows you to change
+the name of the program being worked on. It is always set when you generate a
+new piece of code, and it can also be set via the menu option. It actually
+defines the <i> basename</i> of the program; the other options will extend this name as
+appropriate so that they operate on the correct files.&nbsp;</p>
+<p>The name of the current program is shown on the status line of the menu as
+soon as possible. If the name is specified from a menu, it is displayed
+immediately; if the name is specified as part of the data in a form, it is only
+displayed after the all the data has been entered in the form.&nbsp;</p>
+<p>The Build option runs xxx to build the application. It actually runs:&nbsp;</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0"> ${MAKE:-make} -f program.mk ${FGLBLD_I4GL:-rds}</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p> If the exit status from xxx is 0,
+the next option is Run;&nbsp; otherwise, the next option is Modify.&nbsp;</p>
+<p> Note that FGLBLD
+does not normally create `.4ge' files, though the rules in the makefile can be
+modified to do so very easily.&nbsp;</p>
+<p>The Run option effectively runs the command below:&nbsp;</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0"> case
+&quot;$FGLBLD_I4GL&quot; in&nbsp;<br>
+&nbsp;&nbsp;&nbsp; c4gl) program;;&nbsp;<br>
+&nbsp;&nbsp;&nbsp; *) ${FGLGO:-fglgo} program;;&nbsp;<br>
+          esac</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="Modifying the source code">Modifying the source code</a></h3>
+<p>The Modify option leads to the sub-menu shown in Figure 5.&nbsp;</p>
+<blockquote>
+<p>FIXME: Fig 5</p>
+<p>The Modify menu. modmenu.pic</p>
+</blockquote>
+<p>If the Source option is chosen, it leads to the sub-menu shown in Figure
+6.&nbsp;</p>
+<blockquote>
+<p>FIXME: fig 6</p>
+<p>The Source menu srcmenu.pic</p>
+</blockquote>
+<p>If the Form option is chosen, the extension `.4pr' is added to the program
+name and the editor specified by DBEDIT (default vi) is run to allow you to edit
+the file. Similarly, if the Makefile option is chosen, the extension `.mk' is
+added to the end of the program name and the editor is run.&nbsp;</p>
+<p>The Build, Run and Name options in this menu are identical to the Build, Run
+and Name options in the main menu.&nbsp;</p>
+<p> When the Source option is chosen, it leads to
+the Source File menu shown in Figure 6. If the Input option is chosen, the
+extension `i.4gl' is added to the program name and the editor specified by
+DBEDIT (default vi) is run to allow you to edit the file. Similarly, the Report,
+Cursor, Main and Globals options add the extensions `r.4gl', `c.4gl', `m.4gl',
+and `g.4gl' and then run the editor.&nbsp;</p>
+<p> These options are used when the program
+name is the name specified when an SPI was generated. The Other option is used
+when the program name is the <i> basename</i> of a popup function or a fetch function or
+some other piece of xxx code; it adds the extension `.4gl' and runs the editor. The
+Exit option exits from the menu without editing anything. All the options edit a
+single file and then return to the Modify menu shown in Figure 5.</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="Environment variables">Environment variables</a></h3>
+<p>FGLBLD code uses a large number of environment variables. The ones which can
+be set by the user to affect its behavior are:</p>
+<ul>
+  <li>FGLBLDDIR<br>
+    This is set by the fglbld script.&nbsp;</li>
+  <li>FGLBLD_I4GL<br>
+    This governs whether Informix-RDS or
+compiled xxx is used. If it is set to c4gl, compiled xxx is used; otherwise,
+Informix-RDS is used.</li>
+  <li>FGLGO<br>
+    This can be set to use a custom interpreter; one standard setting would be <i>
+fgldb</i> to debug programs rather than just interpret them.</li>
+  <li>DBEDIT<br>
+    This controls the editor used. If it is not set, vi is assumed.</li>
+  <li>MAKE<br>
+    This controls the name of the xxx program that is run. Some installations use
+alternative versions of such as <i> rmk, cake, nmake</i>.</li>
+</ul>
+<p><i>Rmk</i> is available through
+Sphinx. It has a better understanding of than standard versions of . Except that
+it does not have the concept of `.KEEP_STATE:', it is as powerful as the version
+of under SunOS, plus it understands better than that version does (but only by a
+small margin).</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h2><a name="A GUIDED TOUR OF AN FGLBLD APPLICATION">A GUIDED TOUR OF AN FGLBLD APPLICATION</a> </h2>
+<p>This section gives you a guided tour around an application generated by
+FGLBLD. It discusses the various files which are generated and what is found in
+them, using an example database (one which was extensively used while testing
+FGLBLD). </p>
+<p>The next main section (Section 1) describes how the code can be modified to
+improve the appearance for the user.&nbsp;</p>
+<p> There are some conventions observed by all
+the code generated by FGLBLD which should be pointed out. These conform with the
+proposed internal standards at Sphinx, and have been used as <i>de facto</i>
+standards on some projects for a considerable time.&nbsp;</p>
+<ul>
+  <li> All XXX keywords are in
+upper-case.</li>
+  <li>All xxx program variable names are in lower-case.&nbsp;</li>
+  <li> All references to objects
+within the database should have an initial capital letter followed by lower-case
+letters.&nbsp;</li>
+  <li> Objects on the screen are referred to via the FORMONLY screen record or
+via screen records starting `s_'.&nbsp;</li>
+  <li> Program records which are local variables
+normally consist of the prefix `r_' followed by a suitable name, frequently that
+of a table.&nbsp;</li>
+  <li> Module variables (a badly documented but supported feature of xxx) are
+used extensively to cut down on the number of global variables and the number of
+globals files.&nbsp;</li>
+  <li> The names of module and global variables typically consist of a
+two character prefix followed by an underscore and a meaningful name; the name
+is usually the name of a table.</li>
+  <li>All functions generated by FGLBLD have a name consisting of three characters
+which are semi-mnemonic followed by an underscore and the name of the table
+which the file was generated from.&nbsp;</li>
+  <li> All comments which are intended to be kept
+are enclosed in braces `{}'. Any comments started by a hash `#' can be deleted.&nbsp;</li>
+  <li>
+Hash comments normally indicate a possible set of code which could be used in
+place of (or as well as) the functional code in the function. The <i> defluff</i> script removes hash comments that would match the
+    <i> sed</i> pattern `/#
+[A-Z]/'; the actual script is more complex because it handles both the case
+where the hash comes after some code and where the comment is all there is on
+the line.&nbsp;</li>
+  <li> The code defers interrupts and monitors the state of INT_FLAG to see
+whether the user has hit the interrupt key. It also defers quit signals, but it
+ignores the state of QUIT_FLAG completely.</li>
+  <li>All input is done with the INPUT WRAP option set.&nbsp;</li>
+</ul>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="Sample Database">Sample Database</a> </h3>
+<p> The database used for the
+example is called consult and contains three tables. The first table, <i><b>Clients</b></i>,
+briefly describes clients; they are the people who pay for work to be done. </p>
+<p>"The CLIENTS table." </p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
+  <p>{<br>
+  @(#)clients.sql 1.1 89/10/09<br>
+  @(#)Create Clients Table <br>
+  }</p>
+  <p>CREATE TABLE Clients (</p>
+  <blockquote>
+    <p>Clientid SERIAL NOT NULL,<br>
+    Client CHAR(40) NOT NULL,<br>
+    Contact CHAR(40) NOT NULL,<br>
+    Phone CHAR(20) NOT NULL,<br>
+    Telex CHAR(15),<br>
+    Ansback CHAR(6),<br>
+    Fax CHAR(15),<br>
+    Notes CHAR(50) </p>
+  </blockquote>
+  <p>); </p>
+  <p>{PRIMARY KEY Clients(Clientid) } </p>
+  <p>CREATE UNIQUE INDEX clients_1<br>
+  ON clients(clientid); </p>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p>The second table, <b><i>Jobs</i></b>, describes jobs done on behalf of
+clients; there may be several jobs for each client.</p>
+<p>"The JOBS table."</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
+  <p>{<br>
+  @(#)jobs.sql 1.1 89/10/09<br>
+  @(#)Create Jobs Table <br>
+  }</p>
+  <p>CREATE TABLE Jobs (</p>
+  <blockquote>
+    <p>Jobid SERIAL NOT NULL,<br>
+    Clientid INTEGER NOT NULL,<br>
+    Started DATE NOT NULL,<br>
+    Completed DATE,<br>
+    Notesfile CHAR(50),<br>
+    Notes CHAR(50) </p>
+  </blockquote>
+  <p>); </p>
+  <p>{<br>
+  PRIMARY KEY Jobs(Jobid)<br>
+  FOREIGN KEY Jobs(Clientid)<br>
+  REFERENCES Clients(Clientid) <br>
+  } </p>
+  <p>CREATE UNIQUE INDEX jobs_1<br>
+  ON jobs(jobid); CREATE INDEX jobs_2 ON jobs(clientid); </p>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p>The third table, <b><i>Timesheet</i></b>, records the time spent working on
+different jobs. This version is for a single-user database so there is no
+identification of the consultant doing the work. </p>
+<p> "The TIMESHEET table." </p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
+  <p>{<br>
+  @(#)times.sql 1.1 89/10/09<br>
+  @(#)Create Timesheet Table <br>
+  }</p>
+  <p>CREATE TABLE Timesheet (</p>
+  <blockquote>
+    <p>Ts_date DATE NOT NULL,<br>
+    Ts_from CHAR(5) NOT NULL,<br>
+    Ts_upto CHAR(5) NOT NULL,<br>
+    Jobid INTEGER NOT NULL,<br>
+    Notes CHAR(60) </p>
+  </blockquote>
+  <p>); </p>
+  <p>{<br>
+  PRIMARY KEY Timesheet(Ts_date, Ts_from)<br>
+  FOREIGN KEY Timesheet(Jobid)<br>
+  REFERENCES Jobs(Jobid) <br>
+  } </p>
+  <p>CREATE UNIQUE INDEX timesheet_1<br>
+  ON timesheet(ts_date, jobid, ts_from); CREATE INDEX timesheet_2<br>
+  ON timesheet(jobid); </p>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p>As you can see from the descriptions, the <b><i>Timesheet</i></b> table
+cross-references the <i><b>Jobs</b></i> table, and the Jobs table
+cross-references the Clients table.&nbsp; </p>
+<p> The generated SPI is based on the <b><i>Timesheet</i></b>
+table; it has a composite primary key so the ROWID was specified as the primary
+key when the code was generated. The menu title was `TIMESHEET', and the
+filename specified was `ts'. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="The GLOBALS file ctsg.4gl">The GLOBALS file ctsg.4gl</a> </h3>
+<p>This is essentially very simple. It defines a working record wr_timesheet
+which is used for all input and insert/delete/update operations, a null record
+nr_timesheet which is initialized to nulls, and a copy record cp_timesheet which
+contains the previous inserted or displayed value. The copy record is used when
+the program user presses control-P or F6. There is also a control record
+ct_timesheet which wraps most of the control information needed by FGLBLD into a
+single record. </p>
+<p> "The globals file." </p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
+  <p>{<br>
+  @(#)tsg.4gx 1.3 90/02/19<br>
+  @(#)Built by: FGLBLD Version 6.10 (09/02/1990)<br>
+  @(#)Global definitions for SPI on Timesheet <br>
+  }</p>
+  <p>DATABASE CONSULT</p>
+  <p>GLOBALS</p>
+  <p>DEFINE<br>
+  wr_timesheet RECORD LIKE Timesheet.*, { Working record }<br>
+  nr_timesheet RECORD LIKE Timesheet.*, { Null record }<br>
+  cp_timesheet RECORD LIKE Timesheet.*, { Previous record }<br>
+  ct_timesheet RECORD</p>
+  <blockquote>
+    <p>list_number INTEGER, { List number }<br>
+    active_set INTEGER, { Number of rows in active set }<br>
+    active_row INTEGER, { Current row in active set }<br>
+    direction INTEGER, { Moving forwards/backwards }<br>
+    rep_query INTEGER, { Report enquiry constructed? }<br>
+    rowid INTEGER, { Rowid is not part of wr_timesheet }<br>
+    query_done SMALLINT { General query constructed? }</p>
+  </blockquote>
+  <p>END RECORD</p>
+  <p>END GLOBALS </p>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="The MAIN file ctsm.4gl">The MAIN file ctsm.4gl</a> </h3>
+<p>This file will not be shown in full - it's big and boring. It seldom needs
+much changing. The cursor positioning code should not be changed without serious
+study.&nbsp; </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="The main program">The main program</a> </h3>
+<p>The default main program is very simple: </p>
+<p>"The main program." </p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
+  <p>{<br>
+  @(#)tsm 1.3 90/02/19<br>
+  @(#)Built by: FGLBLD Version 6.10 (09/02/1990)<br>
+  @(#)Main control program for SPI on Timesheet <br>
+  }</p>
+  <p>DATABASE CONSULT</p>
+  <p>GLOBALS &quot;tsg.4gl&quot;</p>
+  <p>{ Module variables -- not accessible outside this file } <br>
+  DEFINE sccs CHAR(1) { Identifier string }</p>
+  <p>{ Dummy main program -- does the minimum reasonable work } </p>
+  <p>MAIN</p>
+  <blockquote>
+    <p>LET sccs = &quot;@(#)tsm 1.3 90/02/19&quot;</p>
+    <p>CALL std_options(&quot;BASEDIRECTORY&quot;, &quot;TS&quot;,
+    &quot;NONE&quot;)<br>
+    DEFER INTERRUPT<br>
+    DEFER QUIT</p>
+    <p>{ Initialise the SPI for timesheet -- terminate on failure }<br>
+    IF wop_timesheet() != 0 THEN<br>
+    EXIT PROGRAM 1<br>
+    END IF</p>
+    <p>{ Can call mnu_timesheet many times }<br>
+    CALL mnu_timesheet()</p>
+    <p>{ Normally call wcl_timesheet just once }<br>
+    CALL wcl_timesheet()</p>
+  </blockquote>
+  <p>END MAIN </p>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p>The variable <i> sccs </i> is there to allow version control information to be
+embedded in the software. It is assumed that the generated code will be
+installed under xxx. Apart from setting options and the help file, it defers
+interrupt and quit signals, opens the window and initializes the SPI with
+wop_timesheet, calls the main menu function mnu_timesheet, and then closes the
+window and terminates the SPI with wcl_timesheet. </p>
+<p>There is probably merit in the argument which says that the window handling
+should be done separately from the SPI initialization and termination. There
+should probably be a function whd_timesheet which would do all the window
+handling controlled by an argument -- it would be a case statement -- and there
+should be another function spi_timesheet which controls the initialization and
+termination
+of the SPI. This would not matter in the basic SPI, but would simplify the
+division of labor if several SPIs were to be handled by one program.&nbsp; </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="The main menu">The main menu</a> </h3>
+<p> The
+mnu_timesheet function provides the main menu. This should not need much
+attention unless you wish to change an option name or if you modify the behavior
+of the Add option. Note the systematic structure of the options. </p>
+<p>"The main menu (extracts)." </p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
+  <p>FUNCTION mnu_timesheet()</p>
+  <blockquote>
+    <p>DEFINE<br>
+    offset INTEGER, { Amount to jump by (next/previous) }<br>
+    junk INTEGER</p>
+    <p>CALL wmn_timesheet(2)</p>
+    <p>LET offset = 0</p>
+    <p>{ If re-entering this query screen }<br>
+    IF ct_timesheet.active_set &gt; 0 THEN<br>
+    &nbsp;&nbsp;&nbsp; LET junk = csr_timesheet('C', offset)<br>
+    END IF</p>
+    <p>MENU &quot;TIMESHEET&quot;</p>
+    <blockquote>
+      <p>COMMAND &quot;Query&quot; &quot;Select set of data&quot; HELP 1</p>
+      <blockquote>
+        <p>CASE qry_timesheet('Q')<br>
+        WHEN 0 NEXT OPTION &quot;Query&quot;<br>
+        WHEN 1 NEXT OPTION &quot;Next&quot;<br>
+        WHEN 2 NEXT OPTION &quot;Previous&quot;<br>
+        END CASE<br>
+        CALL check_interrupt()<br>
+        LET offset = 0</p>
+      </blockquote>
+      <p>COMMAND &quot;Next&quot; &quot;Show next row of data&quot; HELP 2</p>
+      <blockquote>
+        <p>LET ct_timesheet.direction = 1 { Forwards }<br>
+        CASE csr_timesheet('N', offset)<br>
+        WHEN 0 NEXT OPTION &quot;Query&quot;<br>
+        WHEN 1 NEXT OPTION &quot;Next&quot;<br>
+        WHEN 2 NEXT OPTION &quot;Previous&quot;<br>
+        END CASE<br>
+        CALL check_interrupt()<br>
+        LET offset = 0</p>
+      </blockquote>
+      <p>...</p>
+      <p>COMMAND &quot;Add&quot; &quot;Add new row of data&quot; HELP 4</p>
+      <blockquote>
+        <p>CASE ins_timesheet()<br>
+        WHEN 0 NEXT OPTION &quot;Query&quot;<br>
+        WHEN 1 NEXT OPTION &quot;Next&quot;<br>
+        WHEN 2 NEXT OPTION &quot;Previous&quot;<br>
+        END CASE<br>
+        CALL check_interrupt()<br>
+        LET offset = 0</p>
+      </blockquote>
+      <p>...</p>
+      <p>COMMAND &quot;Exit&quot; &quot;Exit TIMESHEET Menu&quot; HELP 8</p>
+      <blockquote>
+        <p>LET INT_FLAG = FALSE<br>
+        MESSAGE &quot;&quot;<br>
+        EXIT MENU</p>
+      </blockquote>
+      <p>COMMAND KEY('0') LET offset = 10 * offset + 0<br>
+      COMMAND KEY('1') LET offset = 10 * offset + 1<br>
+      ...</p>
+      <p>COMMAND KEY(F) { &quot;First&quot; &quot;Jump to first selected
+      row&quot; }</p>
+      <blockquote>
+        <p>CASE csr_timesheet('F', offset)<br>
+        WHEN 0 NEXT OPTION &quot;Query&quot;<br>
+        WHEN 1 NEXT OPTION &quot;Next&quot;<br>
+        WHEN 2 NEXT OPTION &quot;Previous&quot;<br>
+        END CASE<br>
+        CALL check_interrupt()<br>
+        LET offset = 0</p>
+      </blockquote>
+      <p>...</p>
+      <p>COMMAND KEY('!')</p>
+      <blockquote>
+        <p>CALL shell_escape()<br>
+        { An interrupt may have terminated the shell }<br>
+        LET INT_FLAG = FALSE<br>
+        LET offset = 0</p>
+      </blockquote>
+      <p>COMMAND KEY(CONTROL-Y)</p>
+      <blockquote>
+        <p>CALL do_screen_dump()</p>
+      </blockquote>
+      <p>COMMAND KEY(F9)</p>
+      <blockquote>
+        <p>CALL do_screen_dump()</p>
+      </blockquote>
+    </blockquote>
+    <p>END MENU</p>
+    <p>CALL wio_timesheet(3)</p>
+  </blockquote>
+  <p>END FUNCTION {do_timesheet} </p>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p>One pleasant feature of the FGLBLD SPI is that if you use `N' for Next once
+and subsequently use RETURN to continue stepping through the list, the list
+flashes up the message `No more rows going forwards' and changes the default
+option to Previous. If you continue to hit the RETURN key, you will step back to
+the start of the list, and the message `No more rows going backwards' will be
+displayed and the direction of travel will be reversed again. </p>
+<p>There is also the facility to type `32N' to go forward 32 items in the list,
+or `32P' to go back. Overshooting the end of the list simply retrieves the last
+row. The `23G' facility jumps to the 23rd record in the list, if there are that
+many records. The `F' and `L' options go to the first and last rows
+respectively.&nbsp; </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="The delete control function">The delete control function</a> </h3>
+<p> The del_timesheet function controls what happens when a row is
+deleted. It starts a transaction, fetches the current record for update and gets
+the user to confirm that the record should be deleted. The actual delete
+operation is done by the function iud_timesheet, which also handles insert and
+update operations. The D-List is updated by removing the current record and then
+csr_timesheet is called to sort out what should be displayed next. </p>
+<p>Note that unlike the most recent versions of xxx, the user does not have to use
+either Next or Previous to see the next field after a delete; the next record in
+the direction in which the list was being traversed is automatically displayed
+after a record is deleted. The only time this doesn't happen is if the last
+record in the list id deleted and then the user is told that all the records
+have been deleted
+and is left with Query as the next option. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="The update control function">The update control function</a> </h3>
+<p>The upd_timesheet function controls what happens when a row is updated. It
+starts a transaction, fetches the current record for update, allows the user to
+modify the record (via the input code in inp_timesheet) and then calls
+iud_timesheet to handle the actual update. If necessary, the D-List record is
+updated, and then csr_timesheet is called to sort out what should be displayed
+next. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="The insert control function">The insert control function</a> </h3>
+<p>The ins_timesheet function controls what happens when the Add option is
+chosen. As generated, it starts a transaction and allows the user to add a
+sequence of records via inp_timesheet. As each record is inserted, it is left on
+the screen for a couple of seconds before clearing the screen to allow the next
+record to be added. There are three keys which terminate the input loop; the
+interrupt key, F8 and control-E.&nbsp; </p>
+<p> When the loop is terminated, so is the
+transaction. The first added record is displayed via csr_timesheet. One standard
+modification is to remove the loop, which is simple enough. This also requires a
+modification to mnu_timesheet; the code there should make Add the next option. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<h3><a name="The cursor position control function">The cursor position control
+function</a> </h3>
+<p>The csr_timesheet function is rather complex because it is used to reposition
+the cursor in a large number of different ways. It also has to handle the
+problems caused by two users working on the table at the same time and both
+doing update and delete operations. It seldom needs modification except for the
+code which displays the number of the current record and the current size of the
+list.&nbsp; </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<h3><a name="The CURSOR file ctsc.4gl">The CURSOR file ctsc.4gl</a> </h3>
+<p> This file is by far the messiest because it contains all the references to
+all the cursors used throughout the system. This means it contains initialization
+code, code to handle constructing the query and fetching the
+data, and also some of the code to handle reports. It contains the following
+functions: </p>
+<p> wop_timesheet </p>
+<ul>
+  <li>Open the window. </li>
+  <li>Create the D-List. </li>
+  <li>Declare various cursors used elsewhere. </li>
+  <li>Initialize the null record and the control variables. </li>
+</ul>
+<p>wcl_timesheet</p>
+<ul>
+  <li>Close the window and destroy the D-List. </li>
+</ul>
+<p>wcl_timesheet</p>
+<ul>
+  <li>Execute the CONSTRUCT statement to allow the user to specify a query. </li>
+  <li>Prepare and declare an appropriate cursor. This routine is used in by both qry_timesheet and
+    rnq_timesheet. </li>
+</ul>
+<p> qry_timesheet</p>
+<ul>
+  <li>This is the
+control routine for the Query option and the hidden Same option. If necessary,
+it calls cns_timesheet to construct a query, and then calls new_timesheet to
+generate a new list of timesheet records.</li>
+</ul>
+<p>new_timesheet </p>
+<ul>
+  <li>This routine executes the cursor which fetches the data from the database for
+the main query, first destroying the D-List and then rebuilding it. It could be
+improved to provide some feedback about what it is doing.&nbsp;</li>
+</ul>
+<p>iud_timesheet </p>
+<ul>
+  <li> This is the only
+function which alters the database. It contains code to handle insert, delete
+and update operations. If deletes and updates must be propagated, this is where
+the code can be put, or where the necessary code should be called from. The
+working record is assumed to contain the complete new image.</li>
+</ul>
+<p> rnq_timesheet </p>
+<ul>
+  <li>This function allows the user to specify a separate query from the main list
+for the report facility. It is one of the parts which is more likely to be
+removed. It is a slight modification of qry_timesheet which does not handle a
+D-List.&nbsp;</li>
+</ul>
+<p> rdf_timesheet </p>
+<ul>
+  <li> This is the report driver function. It uses report_destination to
+determine where the report should go and starts the report appropriately. It
+will operate on any of a number of different sets of data, setting the working
+record and then calling rln_timesheet to get any other data needed by the report
+and rln_timesheet actually outputs the data to the report function.</li>
+</ul>
+<p> gtu_timesheet </p>
+<ul>
+  <li>This function gets a record for update, thus locking the row to users. It
+opens the update cursor and fetches the data; it cannot close the update cursor
+as that would release the lock.</li>
+</ul>
+<p>edu_timesheet </p>
+<ul>
+  <li>This function closes the update cursor, thereby releasing the record which
+was locked by gtu_timesheet. Note that if there is a transaction log on the
+database, the lock is notionally released by this routine, but if the record was
+changed, the record is not actually released until the end of the transaction.
+The end of the transaction happens immediately after this routine is called.</li>
+</ul>
+<p>get_timesheet</p>
+<ul>
+  <li>This function retrieves a record without locking it. It is used for normal
+display purposes; before an update or delete occurs, the record is fetched again
+with gtu_timesheet to lock it.&nbsp;</li>
+</ul>
+<p> This code seldom needs much modification; the
+main changes would be in the ordering of the data returned by the main query.
+Since the main query only returns the primary key data by default, the SELECT
+statement would need to be augmented by the columns on which the data was to be
+sorted, and the retrieving code in new_timesheet and rdf_timesheet would need to
+be modified to handle the extra returned data. The SELECT statement which
+generates the data for an `All' report would also need to be modified.</p>
+<p>Indeed, it can be argued that it should also go via cns_timesheet passing an
+argument to means that the CONSTRUCT statement should be bypassed and a null
+where clause inserted; this would mean that only one piece of code would need to
+be modified to ensure that the same ordering is used throughout the program.&nbsp; </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="The INPUT file">The INPUT file</a> </h3>
+<p>
+This is normally the largest file, and it is the one which most frequently needs
+editing.&nbsp; </p>
+<p> The file defines a number of module variables, including a record
+pr_timesheet which is used to preserve the value which was in the current field
+of the working record before the field was entered so that the new value can be
+compared afterwards if necessary, or the original value can be restored if the
+new value is rejected after validation. </p>
+<p>There is also the record fc_timesheet which contains field control
+information. It is used particularly when the user uses F5 (for a popup) or F6
+(for copying the previously displayed value into the current record) to ensure
+that if the user was going forwards through the form, the cursor continues
+forwards, and if the user was going backwards, the cursor continues moving
+backwards. This is a feature not supported by xxx any more.&nbsp; </p>
+<p> There are a variable
+number of routines in this file. Assuming that there is any input code, the
+following routines are always present: </p>
+<ul>
+  <li>dis_timesheet</li>
+  <li>hlp_timesheet </li>
+  <li>inp_timesheet </li>
+  <li>spf_timesheet </li>
+  <li>sdf_timesheet </li>
+</ul>
+<p>Additionally, there is a validation function for each column in the table
+with names v01_timesheet, v02_timesheet, v03_timesheet, etc. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<h4>Record display function </h4>
+<p>As supplied, the function dis_timesheet is trivial and simply displays the
+working record to the form. It is normally modified to do whatever lookups are
+necessary (using fetch functions, of course) and then display the associated
+lookup data. This function is also called by csr_timesheet to display whatever row of data
+it finds, which ensures uniform display behaviour.&nbsp; </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<h4>Input support functions </h4>
+<p> The hlp_timesheet function is
+called when the user hits control-F or F7 key and it displays a field-specific
+help message.&nbsp; </p>
+<p> The function sdf_timesheet is called whenever a record is being
+added to set the default values for a record. This could make use of any control
+information available to the program, including the previous record which was
+added (which is available in the copy record cp_timesheet). </p>
+<p>By default, it uses the INITIALIZE statement. (In versions of FGLBLD up to
+and including 6.05, this routine is far from optimal -- there should be a record
+which is initialized via INITIALIZE once, and this record should be copied into
+the working record; after that, specific initializations can be performed if
+necessary.) </p>
+<p>The function spf_timesheet should never need modifying; it simply sets the
+previous field number in the field control record. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<h4>The input function </h4>
+<p>The input function
+inp_timesheet is extremely long and repetitious because xxx forces it to be like
+that if it is to handle all the input requirements sensibly. </p>
+<p>"The input function (extracts)." </p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
+  <p>{<br>
+  @(#)tsi.4gl 1.3 90/02/19<br>
+  @(#)Built by: FGLBLD Version 6.10 (09/02/1990)<br>
+  @(#)Input function for SPI on Timesheet <br>
+  }</p>
+  <p>DATABASE CONSULT</p>
+  <p>GLOBALS &quot;tsg.4gl&quot;</p>
+  <p>{ Module variables -- not accessible outside this file } <br>
+  DEFINE<br>
+  pr_timesheet RECORD LIKE Timesheet.*, { Previous contents of fields }<br>
+  dr_timesheet RECORD LIKE Timesheet.*, { Default values for table }<br>
+  fc_timesheet RECORD { Field control information }</p>
+  <blockquote>
+    <p>curr_field INTEGER, { Current field number }<br>
+    prev_field INTEGER, { Previous field number }<br>
+    n_iofields INTEGER { Number of I/O fields }</p>
+  </blockquote>
+  <p>END RECORD,<br>
+  defset INTEGER, { 0 =&gt; default record not set }<br>
+  iomode CHAR(1), { I for input, U for update }<br>
+  sccs CHAR(1) { Identifier string }</p>
+  <p>...</p>
+  <p>{ Input function } <br>
+  FUNCTION inp_timesheet(iucode)</p>
+  <blockquote>
+    <p>DEFINE<br>
+    &nbsp;&nbsp;&nbsp; instatus INTEGER,<br>
+    &nbsp;&nbsp;&nbsp; field_no INTEGER,<br>
+    &nbsp;&nbsp;&nbsp; iucode CHAR(1) { 'I' Insert, 'U' Update }</p>
+    <p>LET instatus = TRUE { OK }<br>
+    LET iomode = iucode<br>
+    LET fc_timesheet.n_iofields = 5<br>
+    IF iomode = 'I' THEN<br>
+    &nbsp;&nbsp;&nbsp; CALL sdf_timesheet()<br>
+    END IF<br>
+    LET fc_timesheet.prev_field = 0</p>
+    <p>CALL wi1_timesheet(2)</p>
+    <p>INPUT wr_timesheet.* WITHOUT DEFAULTS FROM s_timesheet.* HELP 20</p>
+    <blockquote>
+      <p>ON KEY(F9, CONTROL-Y)</p>
+      <blockquote>
+        <p>CALL do_screen_dump()</p>
+      </blockquote>
+      <p>ON KEY (F8, CONTROL-E)</p>
+      <blockquote>
+        <p># Alternative exit input for FGLDB<br>
+        LET instatus = FALSE<br>
+        EXIT INPUT</p>
+      </blockquote>
+      <p>ON KEY (F7, CONTROL-F)</p>
+      <blockquote>
+        <p>CALL hlp_timesheet()</p>
+      </blockquote>
+      <p>ON KEY (F6, CONTROL-P)</p>
+      <blockquote>
+        <p>CASE<br>
+        &nbsp;&nbsp;&nbsp; WHEN INFIELD(ts_date)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LET field_no =
+        v01_timesheet(&quot;^P&quot;)<br>
+        &nbsp;&nbsp;&nbsp; ...<br>
+        END CASE<br>
+        GOTO nxf_timesheet</p>
+      </blockquote>
+      <p>ON KEY (F5, CONTROL-B)</p>
+      <blockquote>
+        <p>CASE<br>
+        &nbsp;&nbsp;&nbsp; WHEN INFIELD(ts_date)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LET field_no =
+        v01_timesheet(&quot;F5&quot;)<br>
+        &nbsp;&nbsp;&nbsp; ...<br>
+        &nbsp;&nbsp;&nbsp; OTHERWISE<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ERROR &quot;No pop-up
+        facility is defined for this field&quot;<br>
+        END CASE<br>
+        GOTO nxf_timesheet</p>
+      </blockquote>
+      <p>BEFORE FIELD ts_date</p>
+      <blockquote>
+        <p>LET field_no = v01_timesheet(&quot;BF&quot;)<br>
+        GOTO nxf_timesheet</p>
+      </blockquote>
+      <p>AFTER FIELD ts_date</p>
+      <blockquote>
+        <p>LET field_no = v01_timesheet(&quot;AF&quot;)<br>
+        GOTO nxf_timesheet</p>
+      </blockquote>
+      <p>...</p>
+      <p>LABEL nxf_timesheet:</p>
+      <p>IF field_no IS NOT NULL THEN</p>
+      <blockquote>
+        <p>CASE<br>
+        &nbsp;&nbsp;&nbsp; WHEN field_no = 1<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NEXT FIELD ts_date<br>
+        &nbsp;&nbsp;&nbsp; WHEN field_no = 2<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NEXT FIELD ts_from<br>
+        &nbsp;&nbsp;&nbsp; WHEN field_no = 3<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NEXT FIELD ts_upto<br>
+        &nbsp;&nbsp;&nbsp; WHEN field_no = 4<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NEXT FIELD jobid<br>
+        &nbsp;&nbsp;&nbsp; WHEN field_no = 5<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NEXT FIELD notes<br>
+        END CASE</p>
+      </blockquote>
+      <p>END IF</p>
+    </blockquote>
+    <p>END INPUT</p>
+    <p>IF INT_FLAG = FALSE AND instatus = TRUE THEN</p>
+    <blockquote>
+      <p># You should modify this.<br>
+      # AFTER INPUT type validation is often easier here than in an<br>
+      # AFTER INPUT clause within the INPUT statement.</p>
+    </blockquote>
+    <p>ELSE</p>
+    <blockquote>
+      <p>LET INT_FLAG = FALSE<br>
+      LET instatus = FALSE</p>
+    </blockquote>
+    <p>END IF<br>
+    MESSAGE &quot;&quot;</p>
+    <p>RETURN instatus</p>
+  </blockquote>
+  <p>END FUNCTION {inp_timesheet}</p>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p>The main feature of the code is that a single validation function is called
+for each field for each of the BEFORE FIELD and AFTER FIELD actions, and also
+for the popup (control-B/F5) and copy (control-P/F6) functionality.&nbsp; </p>
+<p> This is
+crucial for the clean operation of the SPI. In too many hand-crafted programs,
+the validation code for the one field is split into three blocks, one for the
+AFTER FIELD clause, one for the ON KEY (F5, CONTROL-B) clause and one for the ON
+KEY (F6, CONTROL-P) clause -- if that is provided. </p>
+<p>This is disastrous because when some aspect of the validation changes, one of
+the blocks is forgotten and the validation applied now depends on how the data
+was entered by the user.&nbsp; </p>
+<p>By channeling all these bits through a single function
+(for each field), there is some chance that consistent validation will be
+applied however user enters the data. It is, of course, possible to subvert this
+intention, but on your own head be it! </p>
+<p>Note that there is an abandon input key in the form of the ON KEY (F8,
+CONTROL-E) clause. This was originally provided to solve the problem that in <i>
+fgldb</i>, an interrupt transfers control back to the debugger and does not
+terminate the input statement; similarly a quit would only transfer control, not
+terminate the input. These keys provide a route to terminate the loop cleanly,
+and are sufficiently useful to be retained permanently.&nbsp; </p>
+<p> The modifications made
+to this function are normally either to eliminate calls in the ON KEY (F5,
+CONTROL-B) block for those fields which will never be given a popup for the user
+to choose from, or to add code for the AFTER INPUT clause (which is not provided
+by default) or the extra checking spot after the INPUT statement (which is
+provided). </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<h4>The validation functions</h4>
+<p>A standard, complete validation function fresh out of FGLBLD is shown below.</p>
+<p>"The standard validation function."</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
+  <p># Validation Functions <br>
+  # ******************** <br>
+  # Unless a non-null value is assigned to retval, <br>
+  # the INPUT statement will continue in the default manner. <br>
+  # Do not assign a non-null value to retval without cause. <br>
+  # In general, do not set retval for BF. <br>
+  #</p>
+  <p>{ Validation code for Timesheet.ts_date } <br>
+  FUNCTION v01_timesheet(vcode)</p>
+  <blockquote>
+    <p>DEFINE<br>
+    &nbsp;&nbsp;&nbsp; # R_xref RECORD LIKE Xreftable.*,<br>
+    &nbsp;&nbsp;&nbsp; vcode CHAR(2), { AF, BF, ^P or F5 }<br>
+    &nbsp;&nbsp;&nbsp; retval INTEGER { Next field number }</p>
+    <p>LET retval = NULL</p>
+    <p>CASE</p>
+    <blockquote>
+      <p>WHEN vcode = &quot;^P&quot;<br>
+      &nbsp;&nbsp;&nbsp; LET wr_timesheet.ts_date = cp_timesheet.ts_date<br>
+      &nbsp;&nbsp;&nbsp; LET retval = next_field(fc_timesheet.*)<br>
+      WHEN vcode = &quot;F5&quot;<br>
+      &nbsp;&nbsp;&nbsp; ERROR &quot;Sorry -- pop-up facility is not
+      available&quot;<br>
+      &nbsp;&nbsp;&nbsp; LET retval = fc_timesheet.curr_field<br>
+      &nbsp;&nbsp;&nbsp; # LET wr_timesheet.ts_date = pop_xreftable()<br>
+      &nbsp;&nbsp;&nbsp; # LET retval = next_field(fc_timesheet.*)<br>
+      WHEN vcode = &quot;BF&quot;<br>
+      &nbsp;&nbsp;&nbsp; LET fc_timesheet.curr_field = 1<br>
+      &nbsp;&nbsp;&nbsp; LET pr_timesheet.ts_date = wr_timesheet.ts_date<br>
+      &nbsp;&nbsp;&nbsp; # Insert code to skip ts_date here<br>
+      # WHEN vcode = &quot;AF&quot;<br>
+      &nbsp;&nbsp;&nbsp; # Normally there is no code needed here</p>
+    </blockquote>
+    <p>END CASE</p>
+    <p># Do not validate in BEFORE FIELD (normally)<br>
+    IF vcode != &quot;BF&quot; THEN</p>
+    <blockquote>
+      <p># CALL sel_xreftable(wr_timesheet.ts_date)<br>
+      # RETURNING r_xref.*<br>
+      # IF r_xref.ts_date IS NULL THEN<br>
+      # DISPLAY &quot;Unknown xref value &quot;, wr_timesheet.ts_date<br>
+      # LET wr_timesheet.ts_date = pr_timesheet.ts_date<br>
+      # LET retval = fc_timesheet.curr_field<br>
+      # END IF<br>
+      CALL dis_timesheet()</p>
+    </blockquote>
+    <p>END IF</p>
+    <p>CALL spf_timesheet(vcode, retval)</p>
+    <p>RETURN retval</p>
+  </blockquote>
+  <p>END FUNCTION {v01_timesheet} </p>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p>The first thing to note is that there are a large number of hash comments,
+most of which can be deleted immediately. If the field is to acquire a popup,
+the skeletal popup code should be removed and the code which is hash-commented
+out should be enabled.&nbsp;</p>
+<p> There should almost never be any code in the `AF' case.
+This implies that there is some validation which should be done here which
+should not be done in other circumstances -- something which is unlikely to be
+sensible.</p>
+<p>If a field should have a popup, the code below can be regarded as a sort of
+template for the validation process. </p>
+<p>"A validation function with pop-ups." </p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
+  <p>{ Validation code for Timesheet.jobid } <br>
+  FUNCTION v04_timesheet(vcode)</p>
+  <blockquote>
+    <p>DEFINE<br>
+    &nbsp;&nbsp;&nbsp; r_jobs RECORD LIKE Jobs.*,<br>
+    &nbsp;&nbsp;&nbsp; vcode CHAR(2), { AF, BF, ^P or F5 }<br>
+    &nbsp;&nbsp;&nbsp; retval INTEGER { Next field number }</p>
+    <p>LET retval = NULL</p>
+    <p>CASE</p>
+    <blockquote>
+      <p>WHEN vcode = &quot;^P&quot;<br>
+      &nbsp;&nbsp;&nbsp; LET wr_timesheet.jobid = cp_timesheet.jobid<br>
+      &nbsp;&nbsp;&nbsp; LET retval = next_field(fc_timesheet.*)<br>
+      WHEN vcode = &quot;F5&quot;<br>
+      &nbsp;&nbsp;&nbsp; LET wr_timesheet.jobid = pop_jobs()<br>
+      &nbsp;&nbsp;&nbsp; LET retval = next_field(fc_timesheet.*)<br>
+      WHEN vcode = &quot;BF&quot;<br>
+      &nbsp;&nbsp;&nbsp; LET fc_timesheet.curr_field = 4<br>
+      &nbsp;&nbsp;&nbsp; LET pr_timesheet.jobid = wr_timesheet.jobid</p>
+    </blockquote>
+    <p>END CASE</p>
+    <p>IF vcode != &quot;BF&quot; THEN<br>
+    &nbsp;&nbsp;&nbsp; CALL sel_jobs(wr_timesheet.jobid) RETURNING r_jobs.*<br>
+    &nbsp;&nbsp;&nbsp; IF r_jobs.jobid IS NULL THEN<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DISPLAY &quot;Unknown job value
+    &quot;, wr_timesheet.jobid<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LET wr_timesheet.jobid =
+    pr_timesheet.jobid<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LET retval =
+    fc_timesheet.curr_field<br>
+    &nbsp;&nbsp;&nbsp; END IF<br>
+    &nbsp;&nbsp;&nbsp; CALL dis_timesheet()<br>
+    END IF</p>
+    <p>CALL spf_timesheet(vcode, retval)</p>
+    <p>RETURN retval</p>
+  </blockquote>
+  <p>END FUNCTION {v04_timesheet} </p>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="The REPORT file">The REPORT file</a></h3>
+<p>The report file tsr.4gl contains two functions and a report; it should
+contain just a report.&nbsp;</p>
+<p> The two functions are rch_timesheet which offers the
+report menu and rln_timesheet which processes one line of data. These two
+functions should go in the cursors file. You may want to modify the menu which
+is offered by rch_timesheet; the one that is offered includes all the options
+which might be relevant as visible options, and it might be sensible to hide
+some of the options.</p>
+<p>Note that the menu is too long to fit on one line so it is split and the All
+and Exit options are not immediately visible. If the report needs some
+information looked up as well as the main record, this can be done in either
+rln_timesheet or the report itself. You should (or, at any rate, could) use
+fetch functions for these lookups. </p>
+<p>The report itself is only a marginal improvement on a default report.
+Consequently, it will need to be extended and written properly. Originally, as
+the code suggests, there was a hook in the report which could dynamically
+configure the dimensions of a report. This facility still works in compiled xxx but
+is not available in Informix-RDS (because the interpreters<i> fglgo</i> and <i> fgldb</i> do
+not compile), so it is omitted from the standard distribution. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="The FORM file">The FORM file</a> </h3>
+<p>The form file needs the normal tidying up that any other generated form does.
+This means translating the column names into sensible labels, modifying the
+layout so that things align better and so on. It also means adding sensible
+attributes, especially COMMENTS for those fields with a popup so the user is
+reminded that there are pop-ups.&nbsp; </p>
+<p> Note that the form provided by FGLBLD has a blank
+line before the end of the screen; this is necessary to avoid having comments
+and messages overwriting the data on the bottom line of the form.&nbsp; </p>
+<p> Do not reorder
+the fields on the form or in the attribute section without consulting the
+section on modifying the order of the fields - this is a very tricky subject to
+deal with.&nbsp; </p>
+<p> By all means add lookup fields to help the user understand the coding
+on the form. One convention for these fields is to define the screen record
+s_display which is where the relevant values are displayed by dis_timesheet. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="The MAKEFILE">The MAKEFILE</a> </h3>
+<p>The makefile ts.mk can be used for either compiled xxx or for Informix-RDS. When
+you add popups and fetch functions, you should normally append the xxx file names to
+the list FILES.o with the extension `.o' in place of `.4gl', and the form files
+to the list FILES.frm with the extension `.frm in place of `.4pr'.&nbsp; </p>
+<p> If you want
+to put the object files into a library, you will need to handle the library
+rules instead. If you ever create code which uses the globals file, do not
+forget to add the dependency lines of the form shown by: </p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">tsc.4go tsc.o: tsg.4gl</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p>However, before you add such a rule, ask yourself `why does this code use the
+globals file at all?' There <u>are</u> reasons for doing so, but it is seldom
+necessary. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="The HELP file">The HELP file</a> </h3>
+<p>The help message file ts.msg has a default message for each field in the
+INPUT statement. You should provide a sensible message in its place. You may
+want to modify some of the other messages; the language is a bit stilted in some
+places because it has to be applicable to any possible table. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="The auxilliary files">The auxiliary files</a> </h3>
+<p>The other files provided by FGLBLD should not need changing. The files
+repdest.4gl and repdest.4pr implement the function <i> report_destination</i>; you may
+wish to modify this. If you are using compiled xxx and have got hold of the code to
+dynamically configure report dimensions, you will want to use this to change the
+layout of a report to screen to 23 lines, with no (zero) top margin, bottom
+margin and left margin. </p>
+<p>The file <i> informix.mk</i> contains the rules that xxx needs to understand how to
+compile xxx files of most sorts. If your version of xxx does not understand the rules,
+the chances are you have a very old version and you would do better to get hold
+of rmk. If your version of xx understands lines of the form:&nbsp;</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">&nbsp;include ${BASEDIRECTORY}/etc/informix.mk&nbsp;</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p>
+then it is recommended that you put a copy of <i> informix.mk</i> in one central
+directory (e.g. the project's etc directory) and use lines like the one above in
+the <i> makefiles</i>.</p>
+<p>If you think of modifying the rules to handle functions such as ensuring that
+when a program is compiled, a link in a remote directory is kept up to date,
+then if your version of xxx does not support the construct above, get hold of a
+version that does.&nbsp; </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h2><a name="MODIFYING FGLBLD SOURCE">MODIFYING FGLBLD SOURCE</a> </h2>
+<p> There are an infinite number of changes that can be made to
+the source code, and some of the changes have been outlined in the previous
+section. This section goes into more detail about what should be done to the
+source and covers various situations in more detail.&nbsp; </p>
+<p> Although this section is
+based on the experience of people who have used FGLBLD for some fairly extensive
+project work, there is a distinct possibility that you will discover a better
+solution to some of the problems. If you do find such a solution, please let
+Sphinx know. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<p>The INPUT code </p>
+<p>Changing the order of the fields </p>
+<p>Splitting a large table </p>
+<p>Modifying the report </p>
+<p>Modifying a popup function </p>
+<p>Modifying a fetch function </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h2><a name="FGLBLD SUPPORT CODE">FGLBLD SUPPORT CODE</a> </h2>
+<p>There are two parts of FGLBLD that use the support code. First of all, some
+code is needed with each generated program; this means the D-List code, the xxx rules
+<i> informix.mk</i>, and the files <i> perfaux.4gl, repdest.4gl, repdest.4pr</i> and
+<i>
+popstr.c</i>. </p>
+<p>Second, there is the code needed by the custom version of <i> fglgo</i> and <i> fgldb</i>. At
+first sight, this should be the same as the code needed by the generated code;
+however, if FGLBLD is compiled using Informix-RDS, it has to be run with a
+custom runner which has a number of extra functions in it, and these are also
+supplied to the user. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="D-lists code">D-lists code</a> </h3>
+<p>The D-List code consists of 6 source files and 5 manual pages. The source
+files are: </p>
+<ul>
+  <li>dlist.h - Definitions used throughout the D-List code. </li>
+  <li>dlist.c - The basic D-List manipulation routines which would be used by C programs. </li>
+  <li>dlistint.c - The interface from xxx onto an integer D-List. </li>
+  <li>dliststr.c - The interface from xxx onto a string D-List. </li>
+  <li>dlistdec.c - The interface from xxx onto a decimal D-List.</li>
+  <li>dlistdbl.c - The interface from xxx onto a float D-List. </li>
+</ul>
+<p>The interesting code is in dlist.c; this actually handles the D-List proper.
+The interface code in the other `.c' files is maintained by parallel editing --
+a little hard work would probably allow one file to be used for all 4
+interfaces.&nbsp; </p>
+<p> For each of the `.c' files, there is a corresponding `.man' file
+which can be printed using xxx or xxx with the `-man' option. For more information, look
+at the manual pages or the source code. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="MAKE rules">MAKE rules</a> </h3>
+<p>The file <i> informix.mk</i> is used to tell Augmented Make (which is the version
+normally available on System V Unix) how to compile xxx programs. The rules are
+included by the include directive in the makefile generated by FGLBLD. Only one
+copy is needed per directory; it is not altered when FGLBLD creates it. </p>
+<p>There is one oddity already mentioned, namely that the forms which are
+generated by FGLBLD have the extension `.4pr' instead of `.per' as would
+normally be used. This allows you to distinguish between form files for use with
+xxx and ones for use with (xxx). The rules in <i> informix.mk</i> handle both extensions and
+give `.4pr' files precedence over `.per' files. </p>
+<p>The rules do not cover converting `.4gl' files into `.ec' or `.c' files --
+there is not normally any need to do this, and if there is, you can probably
+manage the necessary changes yourself. Similarly, there is no rule for
+converting `.ec' files into `.c' files. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h2><a name="Other functions">Other functions</a></h2>
+<h3><a name="Transaction Logs">Transaction Logs</a></h3>
+<p>If the database has a transaction log, all operations using update cursors
+must occur inside a transaction. Further, when the transaction is committed (or
+rolled back), all active (open) cursors are closed. The seemingly anti-social behavior
+makes life difficult for programmers, but simplifies the transaction
+handling code inside the database agent and also corresponds to the ANSI
+standard definition of how COMMIT WORK should behave.&nbsp;</p>
+<p> It also means that the
+program must be careful about how it handles transactions; it is not acceptable
+to put BEGIN WORK immediately in front of the main menu and COMMIT WORK after it
+for several reasons.</p>
+<p>First, each row that is selected by an UPDATE CURSOR is locked until either
+the next row is fetched (if the row was not changed) or until the next COMMIT
+WORK (if the row was changed). A user could edit a lot of rows of data, and each
+one would be locked against other users until the COMMIT WORK. This reduces the
+usability of the system. More seriously, there is normally a limit to the number
+of locks the system can maintain, so a protracted transaction might fail simply
+because the user updated too many rows. If the transaction did fail, the user
+have to redo all the changes they had made, and would be mightily displeased.&nbsp; </p>
+<p> At
+the other extreme, each update and delete operation could be a separate
+transaction, and each sequence of inserts another. This uses the minimum number
+of locks, and because the FGLBLD code uses D-Lists, it gives an entirely
+acceptable performance for the user. </p>
+<p>If SCROLL CURSORS were being used in place of D-Lists, it would imply that
+the SCROLL CURSOR will be re-opened every time a change was made: this would be
+acceptable if the user was primarily browsing through the data but not if they
+were performing a major series of updates.&nbsp; </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="Handling transaction logs">Handling transaction logs</a> </h3>
+<p> Transaction logs can be made to come
+and go -- it isn't always easy, but it can be done. Ideally, the generated
+programs should continue to work regardless of whether there is a transaction
+log or not. To achieve this independence, a set of functions should be used to
+BEGIN, COMMIT and ROLLBACK WORK, not the raw commands. These functions are used
+where the analogous construct should be invoked, but wrap the code in a
+conditional test which checks whether there is a log or not. The functions are: </p>
+<ul>
+  <li>CALL begin_work() </li>
+  <li>CALL commit_work() </li>
+  <li>CALL rollback_work(). </li>
+</ul>
+<p>There is an additional function <i> end_work</i> which takes an argument: if the
+argument is zero, it does COMMIT WORK, otherwise it does ROLLBACK WORK: </p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">CALL end_work(opstatus)&nbsp;</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p> To find out whether there is a transaction log
+present, there is a function called translog which returns 1 (true) if there is
+a transaction log present and 0 (false) if not. This routine only tests the
+database once, so it is not an expensive operation, but the other routines are
+the only ones that need to use it normally.</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
+<p>IF translog () THEN<br>
+&nbsp;&nbsp;&nbsp; MESSAGE &quot;Transaction Logging is enabled&quot; <br>
+END IF </p>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p>By using these routines, a program can be created which will work correctly
+whether or not the database has a transaction log. These transaction handling
+routines are part of the code in the file perfaux.4gl which is produced every
+time an SPI is generated.</p>
+<p>The code generated by FGLBLD uses these routines and can be run on a database
+which has a transaction log as well as a database without any transaction log,
+and the transaction log can be added or removed after the program is compiled
+and the program continues to work correctly.&nbsp; </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="Miscellaneous functions">Miscellaneous functions</a> </h3>
+<p> There are two other routines in
+perfaux.4gl; these are <i> shell_escape</i> which is a primitive but effective way of
+letting the user get access to the operating system, and <i> check_interrupt</i> which
+is called inside the main menu generated by FGLBLD to clear the interrupt flag
+and produce a suitable warning message. </p>
+<p>The shell escape routine can usefully have several extra features added;
+first it can loop to allow someone to enter several commands in a row, and
+secondly, security control could be added so that only privileged users could do
+shell escapes at all. This second change would need to be part of an integrated
+security control package.&nbsp; </p>
+<p> In code developed by Sphinx, the startup code in the
+MAIN program would call a function (normally called <i> std_options</i>) with a set of
+arguments to identify the program, the help message file, the error log file and
+any necessary security clearance. This function would also set the options in a
+project-standard way. This enforces a uniform approach to options. </p>
+<p>Note that DEFER INTERRUPT and DEFER QUIT must be placed in the MAIN program.&nbsp; </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="Custom versions of fglgo and fgldb">Custom versions of fglgo and
+fgldb</a> </h3>
+<p>
+The shell script <i> mkfglgo</i> provided with an Informix-RDS version of FGLBLD copies
+the necessary source files from the FGLBLD private directory top the current
+directory and then compiles <i> fgldb</i> and <i> fglgo</i>, in that order, using the makefile
+<i>i4glrds.mk</i>, which is also provided. If you wish to add extra functions to your
+custom versions of fglgo and fgldb, you will need to edit the makefile and also <i>
+fgiusr.c</i>. When you add the functions to the list inside <i> fgiusr.c</i>, prepare the
+external declaration in the same format as the one for round (for example). Then
+jump to the bottom of the file and (using vi) do what it says in the comment. </p>
+<p>There is a complete set of documentation for the various facilities which are
+included in these versions of <i> fglgo</i> and <i> fgldb</i>: take a good look
+- there may be
+some pleasant surprises in store for you.&nbsp; </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="FGLBLD Installation">FGLBLD Installation</a> </h3>
+<p> The FGLBLD installation process is
+closely modeled on the system described in the document `Distributing
+Software', or maybe the process described there is closely modeled on the
+installation process developed for FGLBLD -- the relationship is close in either
+case. </p>
+<p>FGLBLD source code, as well as pre-compiled binaries are available from <a href="http://aubit4gl.sourceforge.net" target="_blank">Aubit
+project</a>. Source code is also available from Aubit project CVS. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="Compiling FGLBLD">Compiling FGLBLD</a> </h3>
+<p>You will have received a set of source files which should be copied off the
+distribution media into one directory. You will need about 3 megabytes of free
+disc space on the file system where the software is to be compiled, and an extra
+megabyte on the file system where the software is to be installed unless you do
+some backup and cleanup work prior to installing the software.&nbsp; </p>
+<p> There is some
+minimal configuration work to be done. There are two variants of the
+case-insensitive match option to <i> grep</i>; some versions use `-i' and others use
+`-y'. The `.alt' scripts are distributed to use the `-y' option and may need to
+be modified to suit your system. </p>
+<p>To compile the software, type the relevant one of the commands: </p>
+<ul>
+  <li>$ make rds </li>
+  <li>$ make c4gl </li>
+</ul>
+<p>Stand well back and wait. When it is complete, there will be a sub-directory
+called <i>Distribution</i> which will contain all the material to be copied onto
+the distribution media. The distribution media should be made by changing into
+the Distribution directory and then archiving everything in that directory and
+below using <i> cpio</i> or <i> tar</i> as required. </p>
+<p>If the software is only to be installed on the local machine, it can be
+installed by running the installation process in the <i>Distribution</i>
+directory -- see the section on `Installing FGLBLD'.&nbsp; </p>
+<p> If there are any problems,
+the most likely problems are: </p>
+<ul>
+  <li>Your machine does not support <i> ranlib</i>. Modify Makefile so that the RANLIB line
+reads: RANLIB=: ranlib</li>
+  <li>Insufficient space on the disc. You will have to make sufficient space.</li>
+</ul>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h3><a name="Installing FGLBLD">Installing FGLBLD</a> </h3>
+<p>A binary distribution of FGLBLD can be copied off the distribution media onto
+any convenient portion of the disc as the installation process will relocate the
+software if necessary.&nbsp; </p>
+<p> To install the software, you will need about 1 megabyte
+of spare disc space.&nbsp; </p>
+<p> The actual installation process is done by root, though as
+no files need special privileges, it could be installed by some other user
+provided the install script was suitably hacked -- all it requires is one line
+added after the line which starts&nbsp; </p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">`uid=';&nbsp;<br>
+          uid=0</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p>The installation is performed by running ./install in the directory into
+which the software was copied. All the configuration parameters can be modified
+by setting environment variables. The required parameters are: </p>
+<ul>
+  <li>Public directory<br>
+    Specified by FGLBLDBIN. Default: $INFORMIXDIR/bin.<br>
+    Two or three small shell scripts are copied into this directory. </li>
+  <li>Private directory<br>
+    Specified by FGLBLDDIR. Default: /usr/fglbld. </li>
+  <li>Owner<br>
+    Specified by FGLUSR. Default: informix. </li>
+  <li>Group<br>
+    Specified by FGLGRP. Default: informix. </li>
+  <li>Distribution Type<br>
+    Specified by FGLTYPE. Default: RDS. Alternative: C4GL.</li>
+</ul>
+<p>The distribution type is normally fixed by the supplier of the software but
+you may have a choice. The public directory should normally be something like
+$INFORMIXDIR/bin or /usr/local/bin which will already be on user's search paths,
+but it can be specified as $FGLBLDDIR/bin, in which case the designation `public
+directory' becomes a misnomer.&nbsp; </p>
+<p> NB: it is assumed that you have the necessary
+version of xxx installed on the system. If you are using Informix-RDS, you should
+have a full development system and you will need a suitable C compiler
+available.&nbsp; </p>
+<p> NB: if the public directory is already on people's search paths,
+there is no need for people to modify their environment to be able to use the
+FGLBLD. Otherwise, people will need to ensure that the public directory is added
+to their search path. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h3><a name="Customizing FGLBLD">Customizing FGLBLD</a></h3>
+<p>If required, the template files and code generator scripts can be modified to
+conform to local (or project) standards. The code generators are kept in $FGLBLDDIR/bin
+and have the extension `.alt'.&nbsp;</p>
+<p> The template files are all kept in $FGLBLDDIR/src.
+Note that <i> fglbld.alt</i> generates all the code in the input and report files `<i>programi.4gl</i>'
+and `<i>programr.4gl</i>' without using a template, and that all the
+modifications made to generated forms are made within the `.alt' scripts.</p>
+<p><b>Tip</b>: if you are not creating a second installation of FGLBLD for a
+project on a machine where a standard distribution of FGLBLD will also be
+available, then create a directory called $FGLBLDDIR/Originals and copy all the
+`.alt' files and all the files in FGLBLDDIR/src into that directory before
+modifying anything. The Originals directory and all the files in it should not
+have write permission for anyone. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h2><a name="REJECTED STRATEGIES">REJECTED STRATEGIES</a> </h2>
+<p>Many moons ago, FGLBLD ran with SCROLL CURSORS. Only a few routines in the
+`programc.4gl' file would have to be changed to use SCROLL CURSORS again, but
+there would be unpleasant consequences for the performance. Either the currency
+(up-to-date-ness) of the lists must be sacrificed to provide good performance,
+or performance must be sacrificed to improve the currency of the lists. </p>
+<p>FGLBLD uses the `.4pr' extension for xxx form source files. An alternative
+extension `.4gf' was rejected as a Sphinx internal standard because it might
+subsequently be used by xxx.&nbsp; </p>
+<p> The current version of FGLBLD uses xxx report code to
+generate a shell script that runs the code generator shell script rather than
+have all the skeletal code embedded within the xxx program. This has many
+advantages, not least of which are that the xxx is simpler and it is infinitely
+easier to modify the shell scripts than it is to modify xxx code, even with
+Informix-RDS. The code basically uses <i> cp</i> and <i> sed</i> and <i> echo</i> to generate the code,
+and fortunately, all modern shells have echo as a built-in command so the
+overhead of process forking and <i> execing </i> is reduced. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<hr>
+<h2><a name="WHAT IS MISSING">WHAT IS MISSING</a>? </h2>
+<p>There are features missing from both FGLBLD and xxx which would make life easier
+for the user of FGLBLD.&nbsp;</p>
+<h3>Extensions for Master/Detail Relationships</h3>
+<p> A master/detail relationship exists between two tables
+when an entry in the master table may have associated with it zero or more
+entries in the detail table. The classic example of this is a sales order; the
+master table will have the information about which customer is doing the buying,
+the address to ship the goods to, order date, purchase order number, etc, and
+the detail table will list the quantity, part number, discount, etc for each
+line of the order&nbsp;</p>
+<p>xxx provides the Master and Detail options. Once the master values
+have been specified, the user chooses the Detail option and xxx automatically
+selects all the rows that match the master values.</p>
+<p>The user can then edit these in the same way as the master values -- notably
+they can add, update and delete detail rows. However, the add process is
+uncomfortable since it is necessary to use the add option, enter the data and
+hit the ESCAPE key for each row of data. When all the detail data has been
+entered, the user has to choose the Master option again, move on to (or add) the
+next set of Master data, and then use the Detail option again.&nbsp; </p>
+<p> Using xxx, this
+process can be simplified because the user can be allowed to enter the master
+data, and when that is done, the program can give the user an INPUT ARRAY to
+enter the Detail data (no questions asked, no <i> fiddle-faddle</i>, just enter the
+data). </p>
+<p>It does COMMIT WORK, for the second time, the program can insert all the data
+into the database, and the user can add the next master information. The update
+process should be a little different: it should generally show as much of detail
+data as there is room for and then offer a menu which allows the user to update
+either the master or the detail data. The Exit option of this sub-menu should
+have yet another sub-menu with options Save-and-Exit, Discard-and-Exit and
+Resume-Editing, with the obvious meanings.&nbsp; </p>
+<p> The same input routines should be
+used in both the Update and Add options. </p>
+<p>The Delete option will delete the master record and all the corresponding
+detail records. In general, the Query, Next and Previous option will only deal
+with the master record; there should usually be a Show option with fills in all
+the details on request.&nbsp; </p>
+<p> This scheme may seem too elaborate but it has two
+advantages; first, the user can feel that they are in control, and second, it
+can be extended easily to cope with complex situations where one table is the
+master of several detail tables. It does not handle a three tier
+master/detail/sub-detail relationship, but this would need to be handled very
+carefully in any case to avoid confusing the user. </p>
+<p>Throughout this description, terms such as should and could have been used to
+indicate that the method outlined here can be modified. For example, with some
+master/detail relationships, a repeating Add would not be desirable. The
+relationships discussed have been very closely bound together, and each master
+record has been master of but a few detail records (say 1-40). If the
+relationship is not as close, or if many detail records may apply to one master,
+it may be better to implement a full simplified xxx interface for the details, so
+that the user can edit the details in the same general way as in xxx. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<h3>Better default report facilities </h3>
+<p>The report facility provided by FGLBLD is crude; a better report generator
+facility would allow for a screen-based report using a form to display one page
+of information at a time, and would probably also provide more powerful
+facilities for controlling the layout of the reports for printers. </p>
+<p>InFourGen-Report is supplied as a separate product from InFourGen-Screen;
+improved report facilities in FGLBLD would probably be provided as a separate,
+compatible product, too. </p>
+<p><a href="#Table of Contents">Back to Table of Contents</a> </p>
+<h3>Features missing from xxx </h3>
+<p>For a fuller list of features which xxx is lacking, see the document `Possible
+Improvements to Informix-4GL'. The ones which would make most difference to
+FGLBLD-generated code are: </p>
+<ul>
+  <li>Dynamically configurable report dimensions. </li>
+  <li>User-defined types as in Pascal.</li>
+  <li>A proper mechanism for passing arrays and records as arguments to
+    functions. </li>
+  <li>Better control within INPUT ARRAY. </li>
+  <li>The ability to specify that <i><b>n</b></i> rows of data have been initialized
+    in the INPUT ARRAY and that the user cannot add rows to this list, nor delete rows from
+    the list.</li>
+</ul>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h2><a name="WHAT MAY CHANGE">WHAT MAY CHANGE</a>?</h2>
+<p>The way in which the version number of FGLBLD is incorporated into the
+product will be modified.&nbsp;</p>
+<p> If it seems necessary for the master/detail system,
+FGLBLD will acquire the ability to parse an existing form and generate code to
+handle that form. This would imply that reordering the fields would be done by
+the user before any code was generated, and that FGLBLD would handle the
+reordered input automatically.&nbsp;</p>
+<p> More detailed information may be provided so that
+the generated code can automatically generate the code for the columns which
+need popup functions, and possibly even do some of the validation handling. This would need code to handle an INPUT ARRAY pre-initialized with the
+complete list of the table's columns.&nbsp;</p>
+<p> It would be possible to generate fetch
+functions with a larger cache than the one record cache currently in use.&nbsp;</p>
+<p> A
+cleverer report facility may be provided.&nbsp;</p>
+<p> There may be the ability to specify
+the order in which the retrieved data is fetched by the SPI. At the moment, the
+data is in ascending order of the primary key column. This is often a sensible
+choice, but not when the primary key has to ROWID. The extra flexibility should
+be available.&nbsp;</p>
+<p> At some stage, the process which specifies the SPI may have an
+INPUT ARRAY facility which would allow the detailed validation required for each
+column to be specified, including whether there should be a popup on the column
+(and if so, should it be generated, and what table does it cross-refer), and
+whether there is a lookup needed (if there is a popup, there should be a lookup,
+and the converse is often true), and so on.</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h2><a name="CREDITS">CREDITS</a></h2>
+<p>Jonathan Leffler<br>
+6th October 1989</p>
+<p>HTML version created by Andrej Falout<br>
+16/07/2002</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<h2><a name="LICENSE">LICENSE</a></h2>
+<p>FGLGEN source code is available under GNU GPL license. Code created by FGLGEN
+is not subject to this license, and user is free to apply any license to it he
+chooses.</p>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+<hr>
+<p><a href="#Table of Contents">Back to Table of Contents</a></p>
+
+</HTML>
+

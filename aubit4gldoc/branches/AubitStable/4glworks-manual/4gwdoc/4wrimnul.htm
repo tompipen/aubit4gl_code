@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glworks reference: Menu utilities</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glworks reference: Menu utilities</CENTER></B><HR></H1>
+
+<UL>
+<LI><A HREF="#getfirstkey">getfirstkey</A></LI>
+<LI><A HREF="#prog_done">prog_done</A></LI>
+<LI><A HREF="#set_browse_keys">set_browse_keys</A></LI>
+<LI><A HREF="#set_stb_menu">set_stb_menu</A></LI>
+</UL>
+
+<P><A NAME="getfirstkey"><H3>getfirstkey</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnul.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function getfirstkey(dm)
+    define dm	char(25)
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>k</VAR>, char(1), first uppercase character in string
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Extracts the first uppercase character in the argument.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI>Useful to quickly determine menu accelerator keys</LI>
+<LI>returns null if no uppercase character is found</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="prog_done"><H3>prog_done</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnul.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function prog_done()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>t</VAR>, boolean, user's response
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Opens a "Terminate application" query window, and returns user's choice
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="set_browse_keys"><H3>set_browse_keys</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnul.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function set_browse_keys()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets up accelarator keys for a typical browser
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>performs the following bindings
+<UL>
+<LI>up arrow key to <CODE>MB_prevrow</CODE></LI>
+<LI>down arrow key to <CODE>MB_nextrow</CODE></LI>
+<LI>f2 key to <CODE>MB_prevrec</CODE></LI>
+<LI>f3 key to <CODE>MB_nextrec</CODE></LI>
+<LI>page up key to <CODE>MB_prevpage</CODE></LI>
+<LI>page down key to <CODE>MB_nextpage</CODE></LI>
+<LI>f1 key to <CODE>MB_home</CODE></LI>
+<LI>f4 key to <CODE>MB_end</CODE></LI>
+<LI>tab key to <CODE>MB_nextpane</CODE></LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="set_stb_menu"><H3>set_stb_menu</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>imnul.4gl</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function set_stb_menu()
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+Sets up messages for a typical data entry viewer.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>Enables the following messages on the first pane:
+<UL>
+<LI><CODE>MB_chooseset</CODE></LI>
+<LI><CODE>MB_newrec</CODE></LI>
+<LI><CODE>MB_copyrec</CODE></LI>
+<LI><CODE>MB_changerec</CODE></LI>
+<LI><CODE>MB_deleterec</CODE></LI>
+</UL></TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>

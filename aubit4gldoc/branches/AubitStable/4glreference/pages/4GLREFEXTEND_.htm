@@ -1,0 +1,30 @@
+<HTML>
+<HEAD>
+<TITLE>EXTEND( )</TITLE>
+</HEAD><BODY>
+<B>EXTEND( )
+<P></P>
+</B>The EXTEND( ) operator converts an expression that returns a DATETIME or DATE
+value to a DATETIME value of a specified precision and scale. 
+<P></P>
+<IMG SRC="4GLREF00000084.gif" ALT="4GLREF00000084.gif" BORDER="0" USEMAP="#map52" WIDTH="463" HEIGHT="89"><MAP NAME="map52"><AREA COORDS="310,42,380,79" HREF="4GLREFTime_Expressions.htm#cc12ad54"><AREA COORDS="124,44,212,68" HREF="4GLREFTime_Expressions.htm#7ecb4334"><AREA COORDS="107,9,226,37" HREF="4GLREFTime_Expressions.htm#7ecb4334"></MAP>
+<P></P>
+The EXTEND( ) operator returns the value of its DATE or DATETIME operand, but
+with an adjusted precision that you can specify by a DATETIME qualifier. The
+operand can be a time expression of any valid precision. If it is a character
+string, it must consists of valid and unambiguous time unit values and separators,
+but with these restrictions:
+<P></P>
+It cannot be a string constant in DATE format, such as &quot;12/12/93&quot;.
+<P></P>
+It cannot be an ambiguous numeric DATETIME value, such as &quot;05:06&quot; or &quot;05-06&quot;
+whose time units are ambiguous.
+<P></P>
+It cannot be a time expression that returns an INTERVAL value.
+<P></P>
+<B>Reference
+<P></P>
+<A HREF="4GLREFUNITS.htm"></A></B><A HREF="4GLREFUNITS.htm">UNITS</A> 
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glWorks Online Manual - Common pitfalls</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand crafted in Catania by expert Webmakers">
+</HEAD>
+<BODY BGCOLOR="White">
+<H1><HR><CENTER><B>4glWorks Online Manual - Common Pitfalls</CENTER></B><HR></H1>
+<P>Calling this section "Common pitfalls" is quite a bit pretentious, since what follows is a list of my own common SQL, 4GL and 4glWorks related mistakes.</P>
+<P>Of course, to the best of my knowledge,  I am the only one around who has some 4glWorks programming experience!</P>
+<UL>
+<P><LI>Messages and filters give you the ability to do nicely quite a number of things, including simulating coroutines. However, don't overdo it. Logic is hard to follow after a message has been shoved up and down the stack more than a couple of times. And remember that infinite loops are right down the corner.</LI></P>
+<P><LI>Put check code on both ends of the message chain (the menu structure on one side, and the viewer on the other), to trap infinite loops or messages that shouldn't have been issued in the first place. Issue an error when one such condition is found.</LI></P>
+<P><LI>The most probable causes of a message not being received by your viewer are that
+   <UL>
+   <LI>The message has not been properly enabled, and so the menu structure is not presenting the user with the appropriate menu option</LI>
+   <LI>The message is being trapped by some filter in the way</LI>
+   </UL>
+Either way, you'll have to track down the cause by hand.</LI></P>
+<P><LI>Keep filters short. The more message servicing you put in them, the more likely they'll be buggy. Filters may or may not have state variables. Should they have a state, keep it small and pertinent to the filter, and make a point of modifying it only within the filter itself as much as possible. Avoid modifying anything that has nothing to do with the filter.</LI></P>
+<P><LI>Don't blindly trust messages. Always check that the message/parameter couple your module receives makes sense, and possibly don't service it if it doesn't (e.g the <CODE>MB_scroll / MP_noscroll</CODE> message must not be serviced, or your viewer/scroller will enter a nice infinite loop!)</LI></P>
+<P><LI>On the other hand, try to be as general as possible when servicing messages.  As an example, when servicing messages
+    <CODE><UL>
+    <LI>MB_display</LI>
+    <LI>MB_open</LI>
+    <LI>MB_declare</LI>
+    </UL></CODE>
+within a single pane viewer, the following parameter values all mean "redisplay the data":
+    <CODE><UL>
+     <LI>MP_partdisplay</LI>
+     <LI>K_allpanes</LI>
+     <LI>K_currentpane</LI>
+     <LI>1.</LI>
+      </UL></CODE>
+Here the fastest and most comprehensive test is "<CODE>parameter != MP_nodisplay</CODE>".
+This kind of approach allows for correct data display without code modification, should you decide to add panes to your viewer,  or should the message received contain an invalid parameter. Saves lots of debugging time.</LI></P>
+<P><LI>A technique I use to switch viewer is to have an "entry" function that tests data availability and / or presents the user with a QBE form, and issues an <CODE>MB_exit / next_viewer_id</CODE> if everything is fine or an <CODE>MB_display / appropriate_display_mode</CODE> otherwise, or if the user hits then DEL key.<BR>
+Remember however that the only correct moment in which to load data a viewer is to act upon is when the viewer itself is current. Loading data before the viewer has become current might mean interfering with resources used by another viewer and possibly ending up with inconsistent data for both. Besides that, since menus, scrollers and panes are reset upon viewer initialization, no data will be displayed even though it has been fetched!</LI></P>
+<P><LI>Remember to make a pane current before messing with the data it displays.</LI></P>
+<P><LI>Use as few globals variables as possible. Make use of the multiple globals variables feature
+of 4gl and make globals files visible only to modules that actually use them. Keep the number of modules where a global variable can be modified as small as possible. Before you ask, using anything but local variables to hold messages doesn't look like a bright idea to me.</LI></P>
+<P><LI>Keep an eye on resources. Always close (and free) what you open, and do it as soon as possible. On the other hand, don't close something you haven't opened, since in the best case  the user will get a run time error. In the worst (e.g. cursors/prepared statements), you'll probably close / free an active cursor / prepared statement opened and used in another, totally unrelated module! (usually the current viewer scroll cursor)</LI></P>
+<P><LI>I don't want to state the obvious, but have you declared scroll cursor to be with hold? You certainly don't want your scroller/viewer scroll cursor to disappear as soon as you rollback a transaction! (Note that commit is not a problem - explaining why this is so is left as an exercise for the reader :-)</LI></P>
+</UL>
+<P>Have a look at 4glWorks code. You'll find many an example of what you're supposed not to do!</P>
+
+</BODY>
+</HTML>

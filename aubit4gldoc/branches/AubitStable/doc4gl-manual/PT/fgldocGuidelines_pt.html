@@ -1,0 +1,348 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+	<META NAME="AUTHOR" CONTENT="S&eacute;rgio Ferreira">
+	<META NAME="CREATED" CONTENT="20010326;17552300">
+	<META NAME="CHANGED" CONTENT="20010404;12125000">
+    <STYLE>
+	<!--
+		H1 { font-family:  }
+		H2 { font-family:  }
+		H3 { font-family:  }
+	-->
+	</STYLE>
+</HEAD>
+<BODY>
+<H1 ALIGN=CENTER>Como escrever coment&aacute;rios de documenta&ccedil;&atilde;o
+para fgldoc</H1>
+<H2>Conte&uacute;do</H2>
+<UL>
+	<LI>Principios<LI>
+	Terminologia<LI>
+	Ficheiros Fonte<LI>
+	Forma geral de um coment&aacute;rio de documenta&ccedil;&atilde;o<LI>
+	Descri&ccedil;&atilde;o<LI>
+	Guia de estilo<LI>
+	Conven&ccedil;&otilde;es para tag(s)<LI>
+	Coment&aacute;rios de funcionalidade<LI>
+	Exemplos</UL>
+<H2>Principios</H2>
+<P>As aplica&ccedil;&otilde;es normalmente t&ecirc;m tr&ecirc;s tipos
+de documentos: especifica&ccedil;&otilde;es, documentos estruturais e
+manuais para os utilizadores.</P>
+<P>O &acirc;mbito deste documento prende-se apenas com os documentos
+que descrevem estruturalmente as aplica&ccedil;&otilde;es.</P>
+<P>Documenta&ccedil;&atilde;o criada em documentos aut&oacute;nomos
+normalmente est&atilde;o desactualizados e s&atilde;o modificados
+apenas quando a gest&atilde;o o define como tarefa priorit&aacute;ria
+(o que apenas acontece quando o seu estado f&ocirc;r tal que j&aacute;
+n&atilde;o tem qualquer utilidade).</P>
+<P>Desta forma pensamos que a melhor forma ser&aacute; a documenta&ccedil;&atilde;o
+estar a cargo dos programadores e de prefer&ecirc;ncia junto do
+c&oacute;digo que se est&aacute; a documentar (ou seja no source de
+4gl).</P>
+<P>Por isso, a exemplo do javadoc decidimos criar uma ferramenta que
+com base em standards muito bem definidos extraia a informa&ccedil;&atilde;o
+embebida no c&oacute;digo e gere documentos com formato especifico e
+perfeitamente definido.</P>
+<P>Devemos portanto tentar seguir os seguintes principios:</P>
+<UL>
+	<LI><P><B>A documenta&ccedil;&atilde;o estrutural &eacute; definida
+	sob a forma de coment&aacute;rios de documenta&ccedil;&atilde;o
+	escritos no c&oacute;digo fonte e alguns documentos marcados como
+	especifica&ccedil;&otilde;es acessiveis destes documentos.</B></P>
+	<LI><P><B>Refer&ecirc;ncias a altera&ccedil;&otilde;es efectuadas em
+	determinada vers&atilde;o devem ser mantidas no sistema de controlo
+	de vers&otilde;es.</B></P>
+</UL>
+<H3>Quem &eacute; o “'dono' dos coment&aacute;rios de documenta&ccedil;&atilde;o
+- Especificadores, documentadores ou programadores</H3>
+<P>Os coment&aacute;rios n&atilde;o devem ser da exclusiva
+responsabilidade de nenhuma destas entidades. Esta &eacute;
+partilhada entre eles consoante a fase em que o projecto se encontra,</P>
+<P>&Eacute; importante notar que em grande parte dos projectos, os
+programas fonte s&atilde;o herdados j&aacute; construidos e muitas
+vezes n&atilde;o documentados. De qualquer forma, de certeza n&atilde;o
+est&atilde;o documentados com a nomenclatura que usamos.</P>
+<P>Idealmente a documenta&ccedil;&atilde;o deve ser escrita pelos
+programadores &agrave; medida que implementam (ou alteram) as
+fun&ccedil;&otilde;es. Se existir uma metodologia de escrita inicial
+de um esqueleto sendo depois cada fun&ccedil;&atilde;o implementada
+pelos programadores, deve ser o respons&aacute;vel pela constru&ccedil;&atilde;o
+do esqueleto a escrev&ecirc;-lo.</P>
+<P>Quando esta documenta&ccedil;&atilde;o &eacute; iniciada j&aacute;
+depois da aplica&ccedil;&atilde;o estar em funcionamento (num
+processo de refactoring ou simplesmente de documenta&ccedil;&atilde;o),
+deve ser efectuada sob a forma de empreitada tentanto ao m&aacute;ximo
+que seja o mais exaustiva possivel.</P>
+<P>Ap&oacute;s a documenta&ccedil;&atilde;o inserida, durante a fase
+de manuten&ccedil;&atilde;o do projecto, os programadores t&ecirc;m
+de alterar toda a documenta&ccedil;&atilde;o no que refere &agrave;s
+modifica&ccedil;&otilde;es efectuadas. No caso de resolu&ccedil;&atilde;o
+de bug(s) estas devem ser registadas no controlo de vers&otilde;es.</P>
+<P>Com isto em mente, estes principios tentam descrever os
+coment&aacute;rios para documenta&ccedil;&atilde;o. Devem ser
+entendidos como sugest&otilde;es em vez de requisitos rigidos a
+seguir at&eacute; &agrave; exaust&atilde;o. Sempre que existam
+alternativas criativas que se prove ser mais eficaz deve-se aplic&aacute;as
+e mesmo sugeri-las ao respons&aacute;vel deste documento.</P>
+<H2>Terminologia</H2>
+<P STYLE="margin-left: 2.01cm"><B>Coment&aacute;rios para
+documenta&ccedil;&atilde;o </B><SPAN STYLE="font-weight: medium">(doc
+comments)</SPAN></P>
+<P STYLE="margin-left: 4.01cm; font-weight: medium">Coment&aacute;rios
+especiais escritos no c&oacute;digo fonte de 4gl delimitado por {**
+... }. Estes coment&aacute;rios s&atilde;o processados pela
+ferramenta p4gl paracarregar a documenta&ccedil;&atilde;o numa base
+de dados relacional. Desenvolvida em flex (lex), bison (yacc), C e
+perl.</P>
+<P STYLE="margin-left: 2.01cm"><B>fgldoc</B></P>
+<P STYLE="margin-left: 4.01cm; font-weight: medium">A ferramenta que
+gera din&acirc;micamente a documenta&ccedil;&atilde;o a partir dos
+dados carregados no reposit&oacute;rio em formato relacional. Foi
+desenvolvida em jsp e java.</P>
+<H2>Ficheiros Fonte</H2>
+<P>A ferramenta gera documenta&ccedil;&atilde;o com origem em v&aacute;rias
+fontes:</P>
+<UL>
+	<LI><P>Programas fonte em linguagem 4gl.</P>
+	<LI><P>Documentos de descri&ccedil;&atilde;o de processos.</P>
+	<LI><P>Documentos de descri&ccedil;&atilde;o de packages.</P>
+</UL>
+<H2>Forma geral de um coment&aacute;rio de documenta&ccedil;&atilde;o</H2>
+<P>Um coment&aacute;rio de documenta&ccedil;&atilde;o &eacute; feito
+em duas partes: uma descri&ccedil;&atilde;o seguido de zero ou mais
+tags, com uma linha em branco entre estas sec&ccedil;&otilde;es:</P>
+<TABLE WIDTH=100% BORDER=1 CELLPADDING=4 CELLSPACING=3>
+	<COL WIDTH=256*>
+	<THEAD>
+		<TR>
+			<TD WIDTH=100% VALIGN=TOP>
+				<PRE>{**
+  Isto é a parte da descrição do comentário de documentação
+
+  @process ASSINANTES
+}</PRE>
+			</TD>
+		</TR>
+	</THEAD>
+</TABLE>
+<UL>
+	<LI><P>A primeira linha &eacute; indentada por forma a estar
+	alinhada com o c&oacute;digo que segue o coment&aacute;rio e come&ccedil;a
+	com o simbolo de inicio-de-coment&aacute;rio ({**) seguido de um
+	return.</P>
+	<LI><P>As linhas seguintes come&ccedil;am com um asteristico * ou
+	apenas com um espa&ccedil;o. Quando existir, o asteristico &eacute;
+	removido e substituido por um espa&ccedil;o.</P>
+	<LI><P>Deve ser inserido uma linha de coment&aacute;rio em branco
+	entre a descri&ccedil;&atilde;o e a lista de tags tal como acima se
+	apresenta.</P>
+	<LI><P>Inserir linhas em branco entre blocos de tags relacionadas</P>
+	<LI><P>A ultima linha come&ccedil;a com o simbolo de
+	fim-de-coment&aacute;rio (}) seguido de um return.</P>
+</UL>
+<P>Linhas com mais de 80 caracteres de comprimento devem, se possivel
+ser devidamente partidas. Se tiver mais de um par&aacute;grafo no
+coment&aacute;rio de documenta&ccedil;&atilde;o, separe o par&aacute;grafo
+com a tag &lt;P&gt;.</P>
+<H2>Descri&ccedil;&otilde;es</H2>
+<P STYLE="margin-left: 2.01cm"><B>Primeira frase</B></P>
+<P STYLE="margin-left: 2.01cm">A primeira frase de cada coment&aacute;rio
+de documenta&ccedil;&atilde;o deve ser um sum&aacute;rio, contendo
+uma descri&ccedil;&atilde;o concisa mas completa do item que est&aacute;
+a ser documentado. A ferramenta javadoc copia esta primeira frase
+para o sum&aacute;rio relativo do item. Isto torna importante a
+escrita de frases iniciais informaticas que se consiga descrever
+imediatamente.</P>
+<P STYLE="margin-left: 2.01cm">Esta frase termina no primeiro ponto
+(.) seguido de um espa&ccedil;o, tab ou fim de linha ou na primeira
+tag encontrada. No exemplo que se segue a primeira frase termina em
+Prof.:</P>
+<PRE STYLE="margin-left: 4.01cm">/**
+ * Isto é uma simulação de experiência do Prof. Pardal.
+ */</PRE><P STYLE="margin-left: 2.01cm">
+<BR><BR>
+</P>
+<P STYLE="margin-left: 2.01cm">Se o preender, no entanto pode inserir
+um ponto usando os metacaracteres do HTML para conseguir este
+objectivo, como de seguida se define:</P>
+<PRE STYLE="margin-left: 4.01cm">/**
+ * Isto é uma simulação de experiência do Prof.&amp;nbsp; Pardal.
+ */</PRE><P STYLE="margin-left: 2.01cm">
+<BR><BR>
+</P>
+<H2>Guia de estilo</H2>
+<P STYLE="margin-left: 2cm">De seguida apresentam-se algumas
+sugest&otilde;es e conven&ccedil;&otilde;es para escritade das
+descri&ccedil;&otilde;es nos coment&aacute;rios de documenta&ccedil;&atilde;o.</P>
+<UL STYLE="margin-left: 0.5cm">
+	<LI><P STYLE="margin-left: 2cm"><B>Usar &lt;CODE&gt; para palavras
+	chave e nomes</B></P>
+</UL>
+<P STYLE="margin-left: 2cm; font-weight: medium">As palavras
+reservadas devem estar entre as tags &lt;CODE&gt;...&lt;/CODE&gt;
+quando mensionadas numa descri&ccedil;&atilde;o. Incluir:</P>
+<UL STYLE="margin-left: 0.5cm">
+	<LI><P STYLE="margin-left: 4cm; font-weight: medium">Palavras
+	reservadas de 4gl</P>
+	<LI><P STYLE="margin-left: 4cm; font-weight: medium">Nomes de
+	fun&ccedil;&otilde;es</P>
+	<LI><P STYLE="margin-left: 4cm; font-weight: medium">Nomes de
+	vari&aacute;veis (globais, locais e parametros)</P>
+	<LI><P STYLE="margin-left: 4cm; font-weight: medium">Exemplos de
+	c&oacute;digo</P>
+	<LI><P STYLE="margin-left: 2cm"><B>Omitir parenteses para a forma
+	geral das fun&ccedil;&otilde;es</B></P>
+</UL>
+<P STYLE="margin-left: 2cm; font-weight: medium">Quando se referir no
+meio de um coment&aacute;rio a uma fun&ccedil;&atilde;o deve sempre
+omitir os parenteses e os respectivos par&acirc;metros. &Eacute;
+preferivel incluir a palavra m&eacute;todo quando se pretender usar.</P>
+<P STYLE="margin-left: 2cm; font-weight: medium">Ex:</P>
+<P STYLE="margin-left: 4cm; font-weight: medium">A fun&ccedil;&atilde;o
+add permite inserir items. - <B>Preferivel</B></P>
+<P STYLE="margin-left: 4cm; font-weight: medium">add(item) permite
+inserir items  <B>Evitar</B></P>
+<UL STYLE="margin-left: 0.5cm">
+	<LI><P STYLE="margin-left: 2cm"><B>Usar express&otilde;es em vez de
+	ora&ccedil;&otilde;es completas, no interesse da brevidade</B></P>
+</UL>
+<P STYLE="margin-left: 2cm; font-weight: medium">Esta regra deve ser
+sobretudo aplicado quando se definem tags como por exemplo @param</P>
+<UL STYLE="margin-left: 0.5cm">
+	<LI><P STYLE="margin-left: 2cm"><B>Usar a 3&ordf; pessoa
+	(descritiva). N&atilde;o a 2&ordf; pessoa (prescritivo)</B></P>
+</UL>
+<P STYLE="margin-left: 2cm; font-weight: medium">A descri&ccedil;&atilde;o
+deve estar na 3&ordf; pessoa declarativa em vez da 2&ordf; pessoa
+impreativa.</P>
+<P STYLE="margin-left: 2cm; font-weight: medium">Ex:</P>
+<P STYLE="margin-left: 4cm; font-weight: medium">Devolve o n&uacute;mero
+: Preferivel</P>
+<P STYLE="margin-left: 4cm; font-weight: medium">Devolves o n&uacute;mero:
+Evitar</P>
+<UL STYLE="margin-left: 0.5cm">
+	<LI><P STYLE="margin-left: 2cm"><B>Descri&ccedil;&otilde;es de
+	fun&ccedil;&otilde;es devem come&ccedil;ar com express&atilde;o
+	verbal</B></P>
+</UL>
+<P STYLE="margin-left: 2cm; font-weight: medium">Um m&eacute;todo
+implementa uma opera&ccedil;&atilde;o, assim normalmente come&ccedil;a
+com uma frase.</P>
+<P STYLE="margin-left: 4cm; font-weight: medium">Obtem o nome do
+cliente : Preferivel</P>
+<P STYLE="margin-left: 4cm; font-weight: medium">Esta fun&ccedil;&atilde;o
+obtem o nome do cliente : Evitar</P>
+<UL STYLE="margin-left: 0.5cm">
+	<LI><P STYLE="margin-left: 2cm"><B>Adicionar descri&ccedil;&otilde;es
+	para al&eacute;m do nome da fun&ccedil;&atilde;o</B></P>
+</UL>
+<P STYLE="margin-left: 2cm; font-weight: medium">Os melhores nomes de
+fun&ccedil;&otilde;es auto documentam-se. No entanto, se o coment&aacute;rio
+apenas repetir o nome da fun&ccedil;&atilde;o numa frase, n&atilde;o
+est&aacute; a acrescentar qualquer informa&ccedil;&atilde;o. O
+coment&aacute;rio ideal vai para al&eacute;m das destas palavras e
+deve sempre recompens&aacute;-lo com mais um peda&ccedil;o e
+informa&ccedil;&atilde;o que n&atilde;o &eacute; imediatamente (ou
+pelo menos para todas as pessoas) &oacute;bvia a partir do nome da
+fun&ccedil;&atilde;o.</P>
+<P STYLE="margin-left: 2cm; font-weight: medium">Ex:</P>
+<P STYLE="margin-left: 4cm"><B>Evitar - </B>
+</P>
+<PRE STYLE="margin-left: 4cm">{**
+ * Afecta o nome do cliente
+ *}
+function setClientName(name)
+</PRE><P STYLE="margin-left: 4cm">
+<B>Preverivel - </B>
+</P>
+<PRE STYLE="margin-left: 4cm">{**
+ * Regista o nome do cliente na variável modular para posteriormente o salvar na tabela clientes
+ *}
+function setCliemntName(name)
+</PRE>
+<UL STYLE="margin-left: 0.5cm">
+	<LI><P STYLE="margin-left: 2cm"><B>Evite o latim</B></P>
+</UL>
+<P STYLE="margin-left: 2cm; font-weight: medium">Use &quot;tambem
+conhecido como&quot; em vez de &quot;aka&quot;, &quot;ou seja&quot;
+ou &quot; sendo mais especifico&quot; em vez de i.e.</P>
+<H2>Conven&ccedil;&otilde;es para tag(s)</H2>
+<H3>Ordem das tags</H3>
+<P>As <I>tags </I><SPAN STYLE="font-style: normal">devem
+prefer&ecirc;ncialmente ser incluidas na ordem que se segue:</SPAN></P>
+<PRE STYLE="margin-left: 2cm">* @author 
+* @version
+*
+* @param
+* @return
+* @see
+* @since
+* @deprecated
+* @todo
+</PRE><P>
+De prefer&ecirc;ncia dividir as tags por blocos relacionados.</P>
+<P>Quando se inserir a mesma tag multiplas vezes deve-se separar das
+outras para aumentar a legibilidade.</P>
+<P>Tags @param devem ter a mesma ordem que a ordena&ccedil;&atilde;o
+correspondente do(s) parametro(s).</P>
+<H3>Coment&aacute;rios adicionais</H3>
+<P STYLE="margin-left: 2cm"><B>@author</B></P>
+<P STYLE="margin-left: 2cm; font-weight: medium">Omitir se author
+desconhecido. Pode-se usar expans&otilde;es efectuadas pelo controlo
+de versoes. Se existirem v&aacute;rias devem estar ordenadas por
+ordem cronol&oacute;gica.</P>
+<P STYLE="margin-left: 2cm"><B>@version</B></P>
+<P STYLE="margin-left: 2cm; font-weight: medium">Pode-se, se possivel
+usar a expans&atilde;o do controlo de vers&otilde;es. Corresponde &agrave;
+revis&atilde;o do source e n&atilde;o &agrave; vers&atilde;o do
+execut&aacute;vel resultado ca compilla&ccedil;&atilde;o de v&aacute;rios
+sources.</P>
+<P STYLE="margin-left: 2cm"><B>@param</B></P>
+<P STYLE="margin-left: 2cm"><SPAN STYLE="font-weight: medium">Esta
+tag deve ser seguida pelo nome do par&acirc;metro (n&atilde;o o seu
+tipo). Embora seja redundante com a declara&ccedil;&atilde;o do(s)
+par&atilde;metros, &eacute; a &uacute;nica forma de efectuar a
+associa&ccedil;&atilde;o de um coment&aacute;rio especifico com o
+par&acirc;metro. Por conven&ccedil;&atilde;o o primeiro substantivo
+da descri&ccedil;&atilde;o deve reflectir o tipo de informa&ccedil;&atilde;o
+que este armazena (pode ser precedido por artigos como &quot;O&quot;).</SPAN></P>
+<P STYLE="margin-left: 2cm">Ex:</P>
+<PRE STYLE="margin-left: 4cm">* @param num         o número a formatar
+* @param strUsing    string de formatação do número</PRE><P STYLE="margin-left: 2cm; font-weight: medium">
+N&atilde;o inserir entre tags &lt;CODE&gt; &lt;/CODE&gt; pois a
+ferramenta de explora&ccedil;&atilde;o j&aacute; o faz.</P>
+<P STYLE="margin-left: 2cm; font-weight: medium">Usar
+prefer&ecirc;ncialmente uma express&atilde;o a uma ora&ccedil;&atilde;o.</P>
+<P STYLE="margin-left: 2cm"><B>@return</B></P>
+<P STYLE="margin-left: 2cm; font-weight: medium">Em m&eacute;todos
+que n&atilde;o retornem qualquer valor deve ser omitido.</P>
+<P STYLE="margin-left: 2cm; font-weight: medium">Quando o m&eacute;todo
+retornar diferentes valores devem exitir v&aacute;rias tags para cada
+tipo de retorno.</P>
+<P STYLE="margin-left: 2cm"><B>@deprecated</B></P>
+<P STYLE="margin-left: 2cm; font-weight: medium">Permite marcar um
+m&eacute;todo como de utiliza&ccedil;ao a evitar pois ira
+provavelmente desaparecer na proxima versao.</P>
+<P STYLE="margin-left: 2cm"><B>@since</B></P>
+<P STYLE="margin-left: 2cm; font-weight: medium">Marca a vers&atilde;o
+(quando esta f&ocirc;r conhecida) a partir da qual o m&eacute;todo
+foi inserido.</P>
+<P STYLE="margin-left: 2cm; font-weight: medium">Inserir apenas se
+conhecido e relevante</P>
+<P STYLE="margin-left: 2cm"><B>@todo</B></P>
+<P STYLE="margin-left: 2cm; font-weight: medium">Define uma
+funcionalidade a implementar neste m&eacute;todo. Permite ao
+programador marcar determinada tarefa que deve ser implementada na
+fun&ccedil;&atilde;o, mas que n&atilde;o &eacute; oportuno
+implementar (ou porque est&aacute; apenas a resolver um problema ou
+porque n&atilde;o pretende quebrar determinada linha de raciocinio).</P>
+<P STYLE="margin-left: 2cm; font-weight: medium">Desta forma pode-se,
+em qualquer altura relembrar o que faltou implementar.</P>
+<H2>Exemplos</H2>
+</BODY>
+</HTML>

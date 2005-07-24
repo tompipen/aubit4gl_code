@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+<TITLE>INCLUDE Attribute</TITLE>
+</HEAD><BODY>
+<B>INCLUDE
+<P></P>
+</B>The INCLUDE attribute specifies acceptable values for a field, and causes 4GL
+to check at runtime before accepting an input value. 
+<P></P>
+<IMG SRC="4GLREF00000044.gif" ALT="4GLREF00000044.gif" BORDER="0" USEMAP="#map18" WIDTH="458" HEIGHT="94"><MAP NAME="map18"><AREA COORDS="67,32,129,57" HREF="4GLREFATTRIBUTES_Section.htm#1ccfe80d"></MAP>
+<P></P>
+<B>field-tag</B> is the <A HREF="4GLREFfield_tag.htm">field tag</A> that you declared in the <A HREF="4GLREFSCREEN_Section.htm">SCREEN section</A>. 
+<P></P>
+<B><UL><LI>alue</B> is an element in a comma-separated list (within parentheses) of values
+(value1, value2, . . . ), or a range of values (value1 TO value2), or any combination
+of individual values and ranges. 
+<P></P>
+</UL>Each value is a restricted expression that cannot include the name of any 4GL
+variable nor <A HREF="4GLREFprogrammerdefined_function.htm">programmer-defined function</A>. It can include <A HREF="4GLREFliteral.htm">literal value</A>s, <A HREF="4GLREFbuiltin_function.htm">built-in function</A>s and <A HREF="4GLREFbuiltin_operator.htm">operator</A>s, and the <A HREF="4GLREFconstant.htm">constant</A>s TRUE and FALSE. The same rules for DEFAULT attribute values also apply to
+INCLUDE values. TEXT fields and BYTE fields cannot have this attribute.
+<P></P>
+If a field has the INCLUDE attribute, the user must enter an acceptable value
+(from the value list) before INFORMIX-4GL accepts a new row. If the value list
+does not include the default value, then the INCLUDE attribute behaves like the
+REQUIRED attribute, and an acceptable entry is required. Include the NULL
+keyword in the value list to specify that it is acceptable for the user to press
+the ENTER key without entering any value.
+<P></P>
+<B>Related Attributes
+<P></P>
+</B><TABLE><TR VALIGN=TOP><TD><B><A HREF="4GLREFAUTONEXTAttribute.htm#dff45350"></A></B><A HREF="4GLREFAUTONEXTAttribute.htm#dff45350">AUTONEXT</A> 
+<BR></TD><TD><A HREF="4GLREFFORMAT_Attribute.htm">FORMAT</A> 
+<BR></TD><TD><A HREF="4GLREFREVERSE_Attribute.htm">REVERSE</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFCOLOR_Attribute.htm">COLOR</A> 
+<BR></TD><TD><A HREF="4GLREFINVISIBLE_Attribute.htm">INVISIBLE</A> 
+<BR></TD><TD><A HREF="4GLREFUPSHIFT_Attribute.htm">UPSHIFT</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFCOMMENTS_Attribute.htm">COMMENTS</A> 
+<BR></TD><TD><A HREF="4GLREFNOENTRY_Attribute.htm">NOENTRY</A> 
+<BR></TD><TD><A HREF="4GLREFVALIDATE_LIKE_Attribute.htm">VALIDATE LIKE</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDEFAULT_Attribute.htm">DEFAULT</A> 
+<BR></TD><TD><A HREF="4GLREFPICTURE_Attribute.htm">PICTURE</A> 
+<BR></TD><TD><A HREF="4GLREFVERIFY_Attribute.htm">VERIFY</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDISPLAY_LIKE_Attribute.htm">DISPLAY LIKE</A> 
+<BR></TD><TD><A HREF="4GLREFPROGRAM_Attribute.htm">PROGRAM</A> 
+<BR></TD><TD><A HREF="4GLREFWORDWRAP_Attribute.htm">WORDWRAP</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDOWNSHIFT_Attribute.htm">DOWNSHIFT</A> 
+<BR></TD><TD><A HREF="4GLREFREQUIRED_Attribute.htm">REQUIRED</A> 
+<BR></TD><TD>
+<BR>&nbsp;</TD></TR></TABLE><B></B></BODY>
+</HTML>

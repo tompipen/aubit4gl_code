@@ -1,0 +1,49 @@
+<HTML>
+<HEAD>
+<TITLE>REPORT Control Blocks</TITLE>
+</HEAD><BODY>
+<B>REPORT Control Blocks
+<P></P>
+</B>The control blocks determine when INFORMIX-4GL takes an action in a report;
+within each control block, the statements determine what action INFORMIX-4GL
+takes. The list of statements within a control block terminates when another
+control block begins, or when the END REPORT keywords that terminate the REPORT
+program block are encountered. You can include most INFORMIX-4GL statements in a
+control block, as well as several statements that can be used only in the <A HREF="4GLREFFORMAT_Section.htm">FORMAT section</A> of a REPORT routine. 
+<P></P>
+<B>Standard 4GL Statements 
+<P></P>
+</B>The most common INFORMIX-4GL statements used in the control blocks of reports
+are CASE, FOR, IF, LET, and WHILE. These statements have the same syntax that
+they have elsewhere in 4GL applications. (Remember that any local variables
+referenced in such statements must be declared in the <A HREF="4GLREFDEFINE_Section.htm">DEFINE section</A> of the REPORT routine.) 
+<P></P>
+<A NAME="ed92d23f"></A><B>Statements Valid Only in the FORMAT Section 
+<P></P>
+</B>The following five statements (sometimes called FORMAT statements) can appear
+only in control blocks in the FORMAT section of a REPORT routine: 
+<P></P>
+<TABLE><TR VALIGN=TOP><TD><B>Statement
+<BR></B></TD><TD><B>Effect
+<BR></B></TD></TR><TR VALIGN=TOP><TD><B>NEED</B>
+<BR></TD><TD>forces a page break, unless some specified number of lines are available on
+the current page of the report.
+<BR></TD></TR><TR VALIGN=TOP><TD><B>PAUSE</B>
+<BR></TD><TD>allows the user to control scrolling of screen output.
+<BR></TD></TR><TR VALIGN=TOP><TD><B>PRINT
+<BR></B></TD><TD><B></B>sends output to a destination (specified either in the OUTPUT section of the
+report, or in the OUTPUT TO REPORT statement).
+<BR></TD></TR><TR VALIGN=TOP><TD><B>SKIP
+<BR></B></TD><TD><B></B>inserts blank lines into a report, or forces a page break.
+<BR></TD></TR></TABLE><B>References
+<P></P>
+<A HREF="4GLREFNEED00000346.htm"></A></B><A HREF="4GLREFNEED00000346.htm">NEED</A> 
+<P></P>
+<A HREF="4GLREFPAUSE00000347.htm">PAUSE</A> 
+<P></P>
+<A HREF="4GLREFPRINT00000348.htm">PRINT</A> 
+<P></P>
+<A HREF="4GLREFSKIP00000349.htm">SKIP</A> 
+<P></P>
+</BODY>
+</HTML>

@@ -1,0 +1,556 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>4glWorks reference: text blobs manipulation routines</TITLE>
+   <META NAME="author" CONTENT="Marco Greco">
+   <META NAME="generator" CONTENT="Hand assembled in Catania by expert WebMakers from automatically generated parts">
+</HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<H1><HR><CENTER><B>4glWorks reference: text blobs manipulation routines</CENTER></B><HR></H1>
+
+<P>The routines described here return errors via the <VAR>status</VAR>
+global variable. A status of -717 means that at least one of the parameters was
+invalid (ie blob located in a file, or not initialized, or a wrong string
+index). -1319 indicates the lack of memory.</P>
+
+<UL>
+<LI><A HREF="#asc_addline">asc_addline</A></LI>
+<LI><A HREF="#asc_addstring">asc_addstring</A></LI>
+<LI><A HREF="#asc_changeline">asc_changeline</A></LI>
+<LI><A HREF="#asc_changestring">asc_changestring</A></LI>
+<LI><A HREF="#asc_copy">asc_copy</A></LI>
+<LI><A HREF="#asc_dropline">asc_dropline</A></LI>
+<LI><A HREF="#asc_dropstring">asc_dropstring</A></LI>
+<LI><A HREF="#asc_free">asc_free</A></LI>
+<LI><A HREF="#asc_initialize">asc_initialize</A></LI>
+<LI><A HREF="#asc_length">asc_length</A></LI>
+<LI><A HREF="#asc_linelength">asc_linelength</A></LI>
+<LI><A HREF="#asc_linepos">asc_linepos</A></LI>
+<LI><A HREF="#asc_lines">asc_lines</A></LI>
+<LI><A HREF="#asc_locate">asc_locate</A></LI>
+<LI><A HREF="#asc_retrieveline">asc_retrieveline</A></LI>
+<LI><A HREF="#asc_retrievestring">asc_retrievestring</A></LI>
+</UL>
+
+<P><A NAME="asc_addline"><H3>asc_addline</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_addline(b, s, l)
+    define b	text,
+	   s	char(32000),
+	   l	smallint
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+adds the text contained in <VAR>s</VAR> to <VAR>b</VAR>, before
+line <VAR>l</VAR>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><A NAME="exasc04"><PRE>
+function text_load(t, f)
+    define t	text,
+	   f	char(80),
+	   fd	integer
+
+    call asc_locate(t)
+    let fd=file_open(f, "r")
+    if (f is not null)
+    then
+#
+#  split lines at word boundaries
+#
+	call fd_postwordsep(fd, " ")
+	while not fd_eof(fd)
+	    call asc_line(t, fd_read(fd), "")
+	end while
+    end if
+end function
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>
+<UL>
+<LI>a <EM>NL</EM>will be added after the contents of <VAR>s</VAR></LI>
+<LI>if <VAR>l</VAR> is null, less than 0 or greater than the number of
+lines in <VAR>b</VAR>, the text will be appended at the end of the variable</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="asc_addstring"><H3>asc_addstring</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_addstring(b, t, i)
+    define b	text,
+	   t	char(32000),
+	   i	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+adds the text contained in <VAR>t</VAR> to <VAR>b</VAR>, before
+character <VAR>i</VAR>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>
+<A NAME="exasc01">
+<PRE>function right_margin(pk, w)
+define	pk	integer,
+	w	smallint,
+	l, p	smallint,
+	t	text
+
+    locate t in memory
+    select someblob into t from sometable
+      where sometable.pk=pk
+    asc_initialize(t)
+    let l=1
+    while (l<=asc_lines(t))
+	if (asc_linelength(t, l)>w)
+	then
+	    let p=asc_linepos(t, l)+w
+	    call asc_addstring(t, ascii 10, p)
+	end if
+	let l=l+1
+    end while
+    update sometable set someblob=t
+      where sometable.pk=pk
+    asc_free(t)
+end function</PRE>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>
+<UL>
+<LI>a <EM>NL</EM>will <EM>not</EM> be added after the contents of <VAR>t</VAR></LI>
+<LI>if <VAR>i</VAR> is null, less than 0 or greater than the size of
+<VAR>b</VAR>, the text will be appended at the end of the variable</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="asc_changeline"><H3>asc_changeline</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_changeline(b, t, i)
+    define b	text,
+	   t	char(32000),
+	   i	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+changes the contents of line <VAR>l</VAR> with the text
+contained in <VAR>t</VAR>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><A NAME="exasc02">
+<PRE>function downshift_text(t)
+define	t	text,
+	l, m	integer
+
+    let m=asc_lines(t)
+    if (status)
+    then
+	return
+    end if
+    for l=1 to m
+	call asc_changeline(t, downshift(asc_retrieveline(t, l)), l)
+    end for
+end function</PRE>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>
+If <VAR>t</VAR> contains no <EM>NL</EM>, the line count of <VAR>b</VAR>
+will be unchanged.
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="asc_changestring"><H3>asc_changestring</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_changestring(b, t, s, e)
+    define b	text,
+	   t	char(32000),
+	   s, e	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%><A NAME="exasc03">
+changes the text contained in <VAR>b[s, e]</VAR> with the contents of
+<VAR>t</VAR>.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>
+<PRE>function upshift_text(t)
+define	t	text,
+	l, s, e	integer
+
+    let l=asc_length(t)
+    if (status)
+    then
+	return
+    end if
+    for s=1 to l step 100
+	let e=p+99
+	if (e>l)
+	then
+	    let e=l
+	end if
+	call asc_changestring(t, upshift(asc_retrievestring(t, s, e)), s, e)
+    end for
+end function</PRE>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>
+none
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="asc_copy"><H3>asc_copy</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_copy(b1, b2)
+    define b1, b2	text
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+copies the contents of the text variable <CODE>b1</CODE> into <CODE>b2</CODE>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%><UL>
+<LI><CODE>asc_copy</CODE> only copies the contents of text variables from/to
+blobs located i memory</LI>
+<LI>the previous contents of the target variable are lost</LI>
+<LI>never free a text variable located with asc_copy
+with the 4gl FREE statement (which is entirely possible), as this will
+result in memory leaks</LI>
+</UL></TD></TR>
+</TABLE></P>
+
+<P><A NAME="asc_dropline"><H3>asc_dropline</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_dropline(b, l)
+    define b	text,
+	   l	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+removes line <VAR>l</VAR> from <VAR>b</VAR> up to and including
+the trailing <EM>NL</EM>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="asc_dropstring"><H3>asc_dropstring</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_dropstring(b, s, e)
+    define b	text,
+	   s, e	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+removes characters from <VAR>b</VAR> staring from position <VAR>s</VAR> up to
+and including <VAR>e</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>
+none
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="asc_free"><H3>asc_free</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_free(b)
+    define b	text
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+frees the text variable from memory.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>see <A HREF="#exasc01">asc_addstring</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>never free a text variable located with <A HREF="#asc_locate">asc_locate</A>,
+<A HREF="#asc_copy">asc_copy</A>, or <A HREF="#asc_initialize">asc_initialize</A>
+with the 4gl FREE statement (which is entirely possible), as this will result in memory leaks</TD></TR>
+</TABLE></P>
+
+<P><A NAME="asc_initialize"><H3>asc_initialize</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_initialize(b)
+    define b	text
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+adds line indexing to text variable <CODE>b</CODE>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>see <A HREF="#exasc01">asc_addstring</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>never free a text variable located with asc_initialize
+with the 4gl FREE statement (which is entirely possible), as this will
+result in memory leaks</TD></TR>
+</TABLE></P>
+
+<P><A NAME="asc_length"><H3>asc_length</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_length(b)
+    define b	text
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>l</VAR> (integer), the blob size
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+returns the size in characters of <VAR>b</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>see <A HREF="#exasc03">asc_changestring</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="asc_lines"><H3>asc_lines</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_lines(b)
+    define b	text
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>l</VAR> (integer), the number of lines in the blob
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+returns the number of lines in <VAR>b</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>see <A HREF="#exasc01">asc_addstring</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>none</TD></TR>
+</TABLE></P>
+
+<P><A NAME="asc_linelength"><H3>asc_linelength</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_linelength(b, l)
+    define b	text,
+	   l	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>c</VAR>, integer, length of line <VAR>l</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+returns the length of line <VAR>l</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>see <A HREF="#exasc01">asc_addstring</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>
+none
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="asc_linepos"><H3>asc_linepos</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_linepos(b, l)
+    define b	text,
+	   l	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>c</VAR>, integer position of first character of line <VAR>l</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+returns the start position of line <VAR>l</VAR> within <VAR>b</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>see <A HREF="#exasc01">asc_addstring</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>
+none
+</TD></TR>
+</TABLE></P>
+
+<P><A NAME="asc_locate"><H3>asc_locate</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_locate(b)
+    define b	text
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+nothing
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+locates text var in memory and prepares it for blob manipulation.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>see <A HREF="#exasc04">asc_addline</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>
+<UL>
+<LI>the previous contents of the text variable are lost</LI>
+<LI>never free a text variable located with asc_locate
+with the 4gl FREE statement (which is entirely possible), as this will
+result in memory leaks</LI>
+</UL</TD></TR>
+</TABLE></P>
+
+<P><A NAME="asc_retrieveline"><H3>asc_retrieveline</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_retrieveline(b, l)
+    define b	text,
+	   l	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>t</VAR> (char(512)), the line contents.
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+returns the contents of line <VAR>l</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%><PRE>
+function text_unload(t, f)
+    define t	text,
+	   f	char(80),
+	   fd	integer
+
+    let fd=file_open(f, "w")
+    if (fd is not null)
+    then
+	for i=1 to asc_lines(t)
+	    call fd_writeln(fd, asc_retrieveline(t, i))
+	end for
+	let i=fd_close(fd)
+    end if
+end function
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>the string returned does not include the final NL</TD></TR>
+</TABLE></P>
+
+<P><A NAME="asc_retrievestring"><H3>asc_retrievestring</A><HR></H3>
+<TABLE CELLSPACING=5>
+<TR><TD VALIGN="TOP"><B>file</B></TD>
+<TD WIDTH=100%>cascc.c</TD></TR>
+<TR><TD VALIGN="TOP"><B>declaration</B></TD>
+<TD WIDTH=100%><PRE>
+function asc_retrievestring(b, s, e)
+    define b	text,
+	   s, e	integer
+</PRE></TD></TR>
+<TR><TD VALIGN="TOP"><B>returns</B></TD>
+<TD WIDTH=100%>
+<VAR>t</VAR> (char(512)), text variable substring
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>purpose</B></TD>
+<TD WIDTH=100%>
+returns a substring of <VAR>b</VAR> starting at position <VAR>s</VAR> up to
+and including <VAR>e</VAR>
+</TD></TR>
+<TR><TD VALIGN="TOP"><B>example</B></TD>
+<TD WIDTH=100%>see <A HREF="#exasc03">asc_changestring</A></TD></TR>
+<TR><TD VALIGN="TOP"><B>notes</B></TD>
+<TD WIDTH=100%>
+none
+</TD></TR>
+</TABLE></P>
+
+</BODY>
+</HTML>

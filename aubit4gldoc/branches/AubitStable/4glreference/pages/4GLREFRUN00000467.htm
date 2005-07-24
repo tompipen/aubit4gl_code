@@ -1,0 +1,30 @@
+<HTML>
+<HEAD>
+<TITLE>RUN</TITLE>
+</HEAD><BODY>
+<B>RUN
+<P></P>
+</B>The RUN statement executes an operating system command line.
+<P></P>
+<IMG SRC="4GLREF00000184.gif" ALT="4GLREF00000184.gif" BORDER="0" WIDTH="455" HEIGHT="74">
+<P></P>
+<B>command</B> is a quoted string literal that specifies a command line for the operating
+system to execute.
+<P></P>
+<B>character</B> is the name of a CHAR or VARCHAR variable that contains a command line to be
+executed by the operating system.
+<P></P>
+<B>integer  </B>is the name of an INT or SMALLINT variable to receive a value derived from the
+termination status code returned by the specified command. This value is
+ignored in Windows, but its syntax is supported for compatibility with 4GL programs
+developed for use on other operating system environments.
+<P></P>
+The RUN statement executes an operating system command line. You can even run
+a second 4GL application as a secondary process, provided that only one of the
+4GL applications accesses a database. When the command terminates, 4GL resumes
+execution. 
+<P></P>
+
+<P></P>
+</BODY>
+</HTML>

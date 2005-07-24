@@ -1,0 +1,82 @@
+<HTML>
+<HEAD>
+<TITLE>FORMAT Attribute</TITLE>
+</HEAD><BODY>
+<B>FORMAT
+<P></P>
+</B>You can use the FORMAT attribute with a DECIMAL, SMALLFLOAT, FLOAT, or DATE
+field to control the format of output displays.
+<P></P>
+<IMG SRC="4GLREF00000043.gif" ALT="4GLREF00000043.gif" BORDER="0" USEMAP="#map17" WIDTH="447" HEIGHT="41"><MAP NAME="map17"><AREA COORDS="64,8,126,34" HREF="4GLREFATTRIBUTES_Section.htm#1ccfe80d"></MAP>
+<P></P>
+<B>field-tag</B> is the <A HREF="4GLREFfield_tag.htm">field tag</A> that you declared in the <A HREF="4GLREFSCREEN_Section.htm">SCREEN section</A>. 
+<P></P>
+<B>format-string</B> is a string of characters to specify a data display format. You must enclose
+format-string within quotation ( &quot; ) marks. 
+<P></P>
+This attribute can format data that the application displays in the field.
+(Use the PICTURE attribute to format data that are entered in the field by the
+user.) INFORMIX-4GL displays the data right-justified in the field.
+<P></P>
+If the format-string is smaller than the field width, the Form Compiler issues
+a compile-time warning, but the form is usable. 
+<P></P>
+<B>Formatting DATE Values
+<P></P>
+</B>For DATE data types, INFORMIX-4GL recognizes the following symbols as special
+in the format-string: 
+<P></P>
+<B>mm</B> produces the two-digit representation of the month; for example, Jan = 01, Feb
+= 02, and so on. 
+<P></P>
+<B>mmm</B> produces a three-letter English language abbreviation of the month; for
+example, Jan, Feb, and so on. 
+<P></P>
+<B>dd</B> produces the two-digit representation of the day of the month. 
+<P></P>
+<B>ddd</B> produces a three-letter English language abbreviation of the day of the week;
+for example, Mon, Tue, and so on. 
+<P></P>
+<B>yy</B> produces the two-digit representation of the year, discarding the leading
+digits. The year 2003, for example, would appear as 03.
+<P></P>
+<B>yyyy</B> produces a four-digit representation of the year. 
+<P></P>
+For DATE fields, the Form Compiler interprets any other characters as
+literals, and displays them wherever you place them within format-string. 
+<P></P>
+<B>Formatting Number Values
+<P></P>
+</B>For DECIMAL, SMALLFLOAT, or FLOAT data types, the format-string consists of
+pound signs (#) that represent digits, and a decimal point. For example, &quot;###.##&quot;
+produces at least three places to the left of the decimal point and exactly
+two to the right. 
+<P></P>
+If the actual number displayed requires fewer characters than the
+format-string, 4GL right-justifies it, and pads the left with blanks. 
+<P></P>
+If necessary to satisfy the format string, 4GL rounds number values before it
+displays them.
+<P></P>
+<B>Related Attributes
+<P></P>
+</B><TABLE><TR VALIGN=TOP><TD><B><A HREF="4GLREFAUTONEXTAttribute.htm#dff45350"></A></B><A HREF="4GLREFAUTONEXTAttribute.htm#dff45350">AUTONEXT</A> 
+<BR></TD><TD><A HREF="4GLREFINCLUDE_Attribute.htm">INCLUDE</A> 
+<BR></TD><TD><A HREF="4GLREFREVERSE_Attribute.htm">REVERSE</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFCOLOR_Attribute.htm">COLOR</A> 
+<BR></TD><TD><A HREF="4GLREFINVISIBLE_Attribute.htm">INVISIBLE</A> 
+<BR></TD><TD><A HREF="4GLREFUPSHIFT_Attribute.htm">UPSHIFT</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFCOMMENTS_Attribute.htm">COMMENTS</A> 
+<BR></TD><TD><A HREF="4GLREFNOENTRY_Attribute.htm">NOENTRY</A> 
+<BR></TD><TD><A HREF="4GLREFVALIDATE_LIKE_Attribute.htm">VALIDATE LIKE</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDEFAULT_Attribute.htm">DEFAULT</A> 
+<BR></TD><TD><A HREF="4GLREFPICTURE_Attribute.htm">PICTURE</A> 
+<BR></TD><TD><A HREF="4GLREFVERIFY_Attribute.htm">VERIFY</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDISPLAY_LIKE_Attribute.htm">DISPLAY LIKE</A> 
+<BR></TD><TD><A HREF="4GLREFPROGRAM_Attribute.htm">PROGRAM</A> 
+<BR></TD><TD><A HREF="4GLREFWORDWRAP_Attribute.htm">WORDWRAP</A> 
+<BR></TD></TR><TR VALIGN=TOP><TD><A HREF="4GLREFDOWNSHIFT_Attribute.htm">DOWNSHIFT</A> 
+<BR></TD><TD><A HREF="4GLREFREQUIRED_Attribute.htm">REQUIRED</A> 
+<BR></TD><TD>
+<BR>&nbsp;</TD></TR></TABLE><B></B></BODY>
+</HTML>
