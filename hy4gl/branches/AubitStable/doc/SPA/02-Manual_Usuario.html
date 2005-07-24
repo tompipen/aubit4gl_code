@@ -1,0 +1,2713 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice/5.2 (Linux)">
+	<META NAME="CREATED" CONTENT="19980907;16292900">
+	<META NAME="CHANGEDBY" CONTENT="David Prieto">
+	<META NAME="CHANGED" CONTENT="19980909;6574600">
+	<STYLE>
+	<!--
+		@page { size: 21.01cm 29.69cm; margin: 2cm }
+		P { margin-bottom: 0.21cm }
+		H1 { margin-bottom: 0.21cm; font-family: "helvetica", sans-serif; font-size: 16pt; background: transparent }
+		H2 { margin-bottom: 0.21cm; font-family: "helvetica", sans-serif; font-size: 15pt; font-style: italic }
+		P.cuerpo-de-texto-con-sangría { text-indent: 0.74cm; text-align: justify }
+		H3 { margin-bottom: 0.21cm; font-family: "helvetica", sans-serif; page-break-inside: avoid; page-break-before: auto; page-break-after: auto }
+		H4 { margin-bottom: 0.21cm; font-family: "helvetica", sans-serif; font-size: 12pt; font-style: italic }
+		P.fuente { text-indent: 0.74cm; font-family: "courier", monospace; text-align: left }
+		TD P { margin-bottom: 0.21cm; font-size: 8pt }
+		P.punto2 { margin-left: 1.42cm; text-align: justify }
+		H5 { margin-bottom: 0.21cm; font-family: "helvetica", sans-serif; font-size: 11pt }
+		P.sdfootnote { margin-left: 0.5cm; text-indent: -0.5cm; margin-bottom: 0cm; font-size: 10pt }
+		TH P { margin-bottom: 0.21cm; font-size: 8pt; font-style: italic }
+		A.sdfootnoteanc { font-size: 57% }
+	-->
+	</STYLE>
+</HEAD>
+<BODY STYLE="border: none; padding: 0cm">
+<DIV TYPE=HEADER>
+	<P STYLE="margin-bottom: 0.76cm"><FONT FACE="helvetica, sans-serif"><FONT SIZE=2>		Manual
+	de Usuario</FONT></FONT></P>
+</DIV>
+<H1 ALIGN=CENTER><FONT SIZE=5 STYLE="font-size: 20pt">Manual de
+Usuario</FONT></H1>
+<H1>Sintaxis del lenguaje 4GL.</H1>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Al igual que un
+programa en C, un programa en 4GL consta de uno o varios m&oacute;dulos
+en los que se definen variables, funciones, formularios de entrada y
+listados. La estructura de cada m&oacute;dulo ser&aacute; la
+siguiente:</P>
+<P CLASS="fuente">   [DATABASE &lt;id&gt;]</P>
+<P CLASS="fuente">   [declaraciones variables globales]</P>
+<P CLASS="fuente">   funciones</P>
+<P CLASS="fuente">   [forms]</P>
+<P CLASS="fuente">   [reports]</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">En uno de los m&oacute;dulos
+debe haber una funci&oacute;n llamada <I>'main'.</I><SPAN STYLE="font-style: normal">
+La funci&oacute;n </SPAN><I>main</I><SPAN STYLE="font-style: normal">
+es la que se ejecuta al iniciarse el programa.</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Si el programa accede a una base de datos, ser&aacute; necesario
+especificar el nombre de la misma en la primera l&iacute;nea del
+programa, mediante la l&iacute;nea '<FONT FACE="courier, monospace">DATABASE
+&lt;nombre&gt;</FONT>'</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<H2>Comentarios</H2>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Se pueden incluir
+comentarios dentro de los programas para que su c&oacute;digo sea m&aacute;s
+f&aacute;cil de comprender. <B><I>hy4GL</I></B> permite introducir
+los comentarios entre llaves, en el estilo de Informix-4GL o bien
+entre caracteres /* y */, al estilo de C. El compilador detecta los
+comentarios anidados e ignora todo el c&oacute;digo que encuentra
+entre las marcas de inicio y final de comentario.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">{Funcion: suma_totales; 
+</P>
+<P CLASS="fuente"> calcula el importe total de una fra.}</P>
+<P CLASS="fuente">function suma_totales()</P>
+<P CLASS="fuente">define j integer /* j lo uso para bucles */</P>
+<P CLASS="fuente">/* ya no necesito esta variable.</P>
+<P CLASS="fuente">define suma integer /* para ir calculando... */</P>
+<P CLASS="fuente">*/</P>
+<P CLASS="fuente">...</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<H2 STYLE="page-break-before: always">Declaraciones de variables:</H2>
+<H3>Tipos de datos:</H3>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">   El lenguaje soporta
+los siguientes tipos de datos b&aacute;sicos:</P>
+<UL>
+	<UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="text-indent: 0cm">
+		Integer</P>
+	</UL>
+</UL>
+<P CLASS="punto2">El rango permitido para n&uacute;meros enteros es
+el de un '<I>long int</I><SPAN STYLE="font-style: normal">' de C.
+Depender&aacute; de la plataforma en la que se est&eacute;
+trabajando. En Linux, usando gcc 2.7, el rango es entre
+-2.147.483.647 y 2.147.483.648</SPAN></P>
+<UL>
+	<UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="text-indent: 0cm">
+		Float</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Este tipo permite usar n&uacute;meros reales. Se
+implementa mediante el tipo de datos '<I>double</I><SPAN STYLE="font-style: normal">'
+de C, por lo que la precisi&oacute;n depender&aacute; del compilador
+de C usado.</SPAN></P>
+<UL>
+	<UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="text-indent: 0cm">
+		Char(x)</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Permite usar cadenas de caracteres. No hay l&iacute;mite
+para el tama&ntilde;o de la cadena. A diferencia del lenguaje C, no
+es necesario reservar un car&aacute;cter para la marca de fin de
+cadena puesto que lo reserva el compilador autom&aacute;ticamente.</P>
+<P CLASS="punto2">Se puede omitir la longitud de la cadena. En este
+caso, la variable tendr&aacute; una longitud de 1 car&aacute;cter.</P>
+<P CLASS="punto2">En este tipo de datos s&oacute;lo se podr&aacute;n
+almacenar caracteres <I>imprimibles</I><SPAN STYLE="font-style: normal">.
+No est&aacute; pensado para almacenar datos binarios.</SPAN></P>
+<UL>
+	<UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Date</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Para almacenar fechas. Se permiten fechas desde el
+1de Enero del a&ntilde;o 1 (d.C.) hasta bien pasado el a&ntilde;o
+40.000 (creo que con esto no habr&aacute; problemas en el 2000).</P>
+<UL>
+	<UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="text-indent: 0cm">
+		Time</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Permite almacenar horas con precisi&oacute;n hasta
+las mil&eacute;simas de segundo.</P>
+<P CLASS="punto2">Aunque el tipo de datos permite almacenar la hora
+con esa precisi&oacute;n, las mil&eacute;simas de segundo se pierden
+al realizar operaciones aritm&eacute;ticas. 
+</P>
+<UL>
+	<UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="text-indent: 0cm">
+		Datetime</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Almacena un instante, representado por fecha y
+hora. Las caracter&iacute;sticas comentadas en los dos tipos
+anteriores son aplicables a &eacute;ste.</P>
+<UL>
+	<UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="text-indent: 0cm">
+		Interval</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Almacena un intervalo de tiempo, representado por
+un n&uacute;mero de horas, minutos y segundos. La diferencia entre
+dos '<I>datetimes</I><SPAN STYLE="font-style: normal">' es un
+intervalo.</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Adem&aacute;s de los
+tipos de datos b&aacute;sicos, se permite definir registros, formados
+por campos de tipos b&aacute;sicos. No se permite que un campo de un
+registro sea, a su vez, otro registro.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H3 STYLE="page-break-before: always">Declaraci&oacute;n de
+variables:</H3>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Como en cualquier
+lenguaje de programaci&oacute;n, <B><I>hy4GL</I></B> permite definir
+variables en las que se almacenar&aacute;n los datos con los que se
+est&aacute; trabajando. <B><I>hy4GL</I></B> es un lenguaje tipado:
+cada variable es de un tipo determinado, aunque se ver&aacute; m&aacute;s
+adelante que el propio lenguaje realiza la conversi&oacute;n de tipos
+autom&aacute;ticamente.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El nombre de las
+variables debe empezar por una letra o un signo de subrayado '_', y
+puede contener cualquier combinaci&oacute;n de letras, n&uacute;meros
+y signos '_'.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El &aacute;mbito de una
+variable depende de la parte del m&oacute;dulo en la que se declare.
+As&iacute;, si una variable se declara dentro de una funci&oacute;n,
+ser&aacute; visible (se podr&aacute; acceder a su contenido)
+solamente desde dentro de esa misma funci&oacute;n. Si la variable se
+declara fuera de una funci&oacute;n, ser&aacute; visible desde
+cualquier funci&oacute;n de este m&oacute;dulo. No es posible usar en
+un m&oacute;dulo una variable que est&eacute; declarada en otro
+m&oacute;dulo distinto.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La sintaxis de la
+declaraci&oacute;n de variables es la siguiente:</P>
+<P CLASS="fuente"> DEFINE &lt;id&gt;[,&lt;id&gt;,...] &lt;tipo&gt; 
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">define i integer</P>
+<P CLASS="fuente">define hora time</P>
+<P CLASS="fuente">define hoy,ayer date</P>
+<P CLASS="fuente">define ahora datetime</P>
+<P CLASS="fuente">define nombre,apellidos char(50)</P>
+<P CLASS="fuente">define tecla char</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Si la aplicaci&oacute;n
+accede a bases de datos, es posible definir variables del mismo tipo
+que determinado campo de una tabla en la base de datos. La sintaxis
+para ello es:</P>
+<P CLASS="fuente">DEFINE &lt;id&gt; LIKE &lt;tabla&gt;.&lt;campo&gt;</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para ello es necesario
+que se haya indicado el nombre de la base de datos en la instrucci&oacute;n
+<FONT FACE="courier, monospace">DATABASE &lt;nombre&gt;</FONT></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">database contabilidad</P>
+<P CLASS="fuente">define cuenta like cuentas.numero</P>
+<P CLASS="fuente">define importe like mayor.importe</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="page-break-before: always">
+Es posible definir registros que agrupen varias variables en una sola
+estructura. Para definir un registro se usar&aacute; la siguiente
+sintaxis:</P>
+<P CLASS="fuente">DEFINE &lt;id&gt; RECORD 
+</P>
+<P CLASS="fuente">	&lt;nombre&gt; &lt;tipo&gt;</P>
+<P CLASS="fuente">	...</P>
+<P CLASS="fuente">END RECORD</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para acceder a un campo
+de un registro se especificar&aacute; el nombre del registro y el del
+campo separados por un punto. Para referirse a la lista completa de
+campos de un registro, se usar&aacute; el nombre del registro seguido
+de '.*'</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">define cliente record</P>
+<P CLASS="fuente">	codigo integer</P>
+<P CLASS="fuente">	nombre char(50)</P>
+<P CLASS="fuente">	apellidos char(50)</P>
+<P CLASS="fuente">end record</P>
+<P CLASS="fuente">let cliente.nombre=&quot;JUAN&quot;</P>
+<P CLASS="fuente">let cliente.*=busca_cliente(cliente.nombre)</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Se puede definir un
+registro con la misma estructura que una tabla de la base de datos:</P>
+<P CLASS="fuente">DEFINE &lt;id&gt; RECORD LIKE &lt;tabla&gt;.*</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Por supuesto, ser&aacute;
+necesario haber indicado el nombre de la base de datos mediante la
+instrucci&oacute;n <FONT FACE="courier, monospace">DATABASE</FONT></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">database contabilidad</P>
+<P CLASS="fuente">define reg record like mayor.*</P>
+<P CLASS="fuente">define rcta record like cuentas.*</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H2 STYLE="page-break-before: always">Funciones:</H2>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Las funciones se
+declarar&aacute;n con la siguiente sintaxis:</P>
+<P CLASS="fuente">FUNCTION &lt;nombre&gt; ( [par1 [,par2,...]] ) 
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">   <I>declaraciones
+variables locales y par&aacute;metros</I></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><I>   sentencias</I></P>
+<P CLASS="fuente">END FUNCTION</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Si la funci&oacute;n
+rebice par&aacute;metros, se relacionar&aacute;n los nombres de los
+par&aacute;metros formales entre los par&eacute;ntesis. Hay que tener
+en cuenta que los par&aacute;metros habr&aacute; que declararlos
+dentro de la funci&oacute;n, junto con las variables locales, si las
+hubiera.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">function graba_registro(r,donde)</P>
+<P CLASS="fuente">define r record like clientes.*</P>
+<P CLASS="fuente">define donde char(20)</P>
+<P CLASS="fuente">	if donde=&quot;clientes&quot; then</P>
+<P CLASS="fuente">		insert into clientes values (r.*)</P>
+<P CLASS="fuente">	else 
+</P>
+<P CLASS="fuente">		insert into proveedores values(r.*)</P>
+<P CLASS="fuente">	end if</P>
+<P CLASS="fuente">end function</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La funci&oacute;n <I>main</I><SPAN STYLE="font-style: normal">,
+es una excepci&oacute;n. Su sintaxis es:</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<P CLASS="fuente">MAIN</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><I>   declaraciones
+variables locales</I></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><I>   sentencias</I></P>
+<P CLASS="fuente">END MAIN</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La funci&oacute;n <I>main</I><SPAN STYLE="font-style: normal">
+es, como se coment&oacute; anteriormente, la primera funci&oacute;n
+que se ejecuta al lanzar la aplicaci&oacute;n. La variable global
+<I>arg_count </I> indica el n&uacute;mero de par&aacute;metros que se
+han enviado al programa, y la funci&oacute;n </SPAN><I>arg_val(</I><SPAN STYLE="font-style: normal">i</SPAN><I>)
+</I>devuelve el par&aacute;metro n&uacute;mero <I>i</I><SPAN STYLE="font-style: normal">.
+Al igual que en C, el par&aacute;metro n&uacute;mero cero es el
+nombre del programa.</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal; page-break-before: always">
+Ej:</P>
+<P CLASS="fuente">main</P>
+<P CLASS="fuente">define param char(50)</P>
+<P CLASS="fuente">	if arg_count=0 then</P>
+<P CLASS="fuente"> 		display &quot;Error. Numero de parametros
+erroneo.&quot;</P>
+<P CLASS="fuente">		exit program</P>
+<P CLASS="fuente"> 	end if</P>
+<P CLASS="fuente">	let param=arg_val(1)</P>
+<P CLASS="fuente">	...</P>
+<P CLASS="fuente">end main</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Una funci&oacute;n
+puede devolver varios par&aacute;metros usando la sentencia <I>return</I><SPAN STYLE="font-style: normal">,
+cuya sintaxis es:</SPAN></P>
+<P CLASS="fuente">RETURN
+[&lt;expresion1&gt;[,&lt;expresion2&gt;[,....&lt;expresion_n&gt;]]]</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+El lenguaje soporta recursividad sin que exista m&aacute;s l&iacute;mites
+que los impuestos por el compilador de C usado</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Ej:</P>
+<P CLASS="fuente">function factorial(n)</P>
+<P CLASS="fuente">define n integer</P>
+<P CLASS="fuente">	if n=0 then</P>
+<P CLASS="fuente">		return 1</P>
+<P CLASS="fuente">	else</P>
+<P CLASS="fuente">		return n*(factorial(n-1))</P>
+<P CLASS="fuente">	end if</P>
+<P CLASS="fuente">end function</P>
+<H2 STYLE="page-break-before: always"> Expresiones:</H2>
+<H3>Expresiones simples:</H3>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><B><I>hy4GL</I></B>
+soporta las siguientes expresiones simples:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<UL>
+	<UL>
+		<LI><P CLASS="fuente">Variable</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Basta con indicar el nombre de la variable. El tipo
+de la expresi&oacute;n ser&aacute; el mismo que el tipo de la
+variable. La variable debe ser de un tipo b&aacute;sico, no
+permiti&eacute;ndose para este tipo de expresiones nombres de
+registros.</P>
+<P CLASS="punto2">Ej:</P>
+<P CLASS="fuente">		define a integer</P>
+<P CLASS="fuente">		define r record like clientes.*</P>
+<P CLASS="fuente">		display a</P>
+<P CLASS="fuente">		display r.nombre</P>
+<UL>
+	<UL>
+		<LI><P CLASS="fuente">N&uacute;mero</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Se pueden usar n&uacute;meros enteros o reales.
+Para indicar decimales se usa el punto '.' y no se deben usar
+separadores para los miles. Si el n&uacute;mero no lleva el punto
+decimal, la expresi&oacute;n ser&aacute; de tipo <FONT FACE="courier, monospace">entero</FONT>,
+mientras que ser&aacute; de tipo <FONT FACE="courier, monospace">float</FONT>
+en caso de llevarlo.</P>
+<P CLASS="punto2">Ej:</P>
+<P CLASS="fuente">		display 4</P>
+<P CLASS="fuente">		display 4.5</P>
+<P CLASS="punto2"><BR><BR>
+</P>
+<UL>
+	<UL>
+		<LI><P CLASS="fuente">Cadena</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Se expresar&aacute;n las cadenas entre comillas
+dobles &quot;&quot;. <FONT FACE="times, serif">La expresi&oacute;n
+ser&aacute; de tipo cadena.</FONT></P>
+<P CLASS="punto2"><FONT FACE="times, serif">Ej:</FONT></P>
+<P CLASS="punto2"><FONT FACE="times, serif">display &quot;Error.&quot;</FONT></P>
+<P CLASS="punto2"><FONT FACE="times, serif">display &quot;No se
+encuentra el cliente&quot;</FONT></P>
+<P CLASS="punto2"><BR><BR>
+</P>
+<H3 STYLE="page-break-before: always">Operadores USING, CLIPPED y [
+]:</H3>
+<H4>Operador USING</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El operador <FONT FACE="courier, monospace">USING</FONT>
+convierte una expresi&oacute;n num&eacute;rica al formato
+especificado en la m&aacute;scara. 
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La sintaxis es la
+siguiente:</P>
+<P CLASS="fuente">expresion USING mascara</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La m&aacute;scara
+consistir&aacute; en una serie de caracteres '-','#','&amp;',',' y
+'.'. La m&aacute;scara es aplicada a la expresi&oacute;n num&eacute;rica,
+devolviendo una cadena en la que los caracteres '-','#' y '&amp;' son
+sustituidos por los d&iacute;gitos correspondientes. El s&iacute;mbolo
+'#' es usado para rellenar con espacios a la izquierda; el s&iacute;mbolo
+'-' rellena tambi&eacute;n con espacios, excepto en la primera
+posici&oacute;n en la que no haya d&iacute;gtos, que ser&aacute;
+sustituida por el signo '-' en caso de que el n&uacute;mero sea
+negativo. El s&iacute;mbolo '&amp;' se usa para rellenar con ceros
+las posiciones correspondientes. Los signos ',' se usan para separar
+los miles y el '.' para indicar la posici&oacute;n del punto decimal</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">0 using &quot;##,###.##&quot;	-&gt; &quot;      . 
+&quot;</P>
+<P CLASS="fuente">10.23 using &quot;##,###.##&quot; 	-&gt; &quot;   
+10.23&quot;</P>
+<P CLASS="fuente">1123.23 using &quot;##,###.##&quot; 	-&gt; &quot;
+1,123.23&quot;</P>
+<P CLASS="fuente">-1123.23 using &quot;&amp;&amp;,&amp;&amp;&amp;.&amp;&amp;&quot;	-&gt;
+&quot;01,123.23&quot;</P>
+<P CLASS="fuente">-1123.23 using &quot;--,--&amp;.&amp;&amp;&quot;	-&gt;
+&quot;-1,123.23&quot;</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<H4>Operador CLIPPED</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El operador <FONT FACE="courier, monospace">CLIPPED</FONT>
+corta los espacios finales de una cadena. La expresi&oacute;n
+resultante es una nueva cadena. Su sintaxis es la siguiente:</P>
+<P CLASS="fuente">expresion CLIPPED</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">let nombre=   &quot;JUAN         &quot;</P>
+<P CLASS="fuente">let apellidos=&quot;PEREZ&quot;</P>
+<P CLASS="fuente">let nomape=nombre+apellidos  /* nomape=&quot;JUAN  
+    PEREZ&quot; */</P>
+<P CLASS="fuente">let nomape=nombre clipped+apellidos /*
+nomape=&quot;JUANPEREZ&quot; */</P>
+<P CLASS="fuente">let nomape=nombre clipped+&quot; &quot;+apellidos
+/* nomape=&quot;JUAN PEREZ*/</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H4 STYLE="page-break-before: always">Operador [ ]</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El operador [ ] permite
+obtener una subcadena a partir de una expresi&oacute;n. La nueva
+expresi&oacute;n resultante es de tipo cadena. Su sintaxis es la
+siguiente:</P>
+<P CLASS="fuente">expresion[i,j]</P>
+<P CLASS="fuente">expresion[i]</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Entre los corchetes se
+indicar&aacute;n la posici&oacute;n de inicio y final de la subcadena
+que se desea obtener. Se puede omitir la posici&oacute;n de final,
+con lo que se tomar&aacute; la subcadena que comienza y termina en la
+posici&oacute;n 'i'.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">define ccc char(20)</P>
+<P CLASS="fuente">define entidad,sucursal char(4)</P>
+<P CLASS="fuente">define dc1,dc2 char</P>
+<P CLASS="fuente">define cuenta char(10)</P>
+<P CLASS="fuente">prompt &quot;Introduzca su numero de cuenta (20
+digitos) &quot; for ccc</P>
+<P CLASS="fuente">let entidad=ccc[1,4]</P>
+<P CLASS="fuente">let sucursal=ccc[5,8]</P>
+<P CLASS="fuente">let dc1=ccc[9]</P>
+<P CLASS="fuente">let dc2=ccc[10]</P>
+<P CLASS="fuente">let cuenta=ccc[11,20]</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H3 STYLE="page-break-before: always">Llamadas a funciones</H3>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Los valores devueltos
+por una funci&oacute;n son usados como expresiones. El tipo de estas
+expresiones depender&aacute; del tipo de los valores devueltos por la
+funci&oacute;n.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">define hora time</P>
+<P CLASS="fuente">let hora=time() /* la funcion time() devuelve la
+hora actual */</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<H3>Operadores binarios</H3>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Los siguientes
+operadores transforman dos expresiones en una nueva expresi&oacute;n.
+El tipo de la expresi&oacute;n resultante depender&aacute; de los
+tipos de las expresiones originales.</P>
+<H4>Operador +</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Este operador toma dos
+expresiones y devuelve una nueva expresi&oacute;n, resultado de sumar
+las dos expresiones originales. El significado de <I>sumar</I><SPAN STYLE="font-style: normal">
+depende del tipo de las expresiones originales. En el siguiente
+cuadro se detalla el comportamiento de este operador:</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<TABLE WIDTH=643 BORDER=1 BORDERCOLOR="#000000" CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=61>
+	<COL WIDTH=77>
+	<COL WIDTH=56>
+	<COL WIDTH=59>
+	<COL WIDTH=77>
+	<COL WIDTH=73>
+	<COL WIDTH=78>
+	<COL WIDTH=96>
+	<THEAD>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>+</P>
+			</TH>
+			<TH WIDTH=77>
+				<P>Char 
+				</P>
+				<P>&quot;10&quot;</P>
+			</TH>
+			<TH WIDTH=56>
+				<P>Integer 
+				</P>
+				<P>(5)</P>
+			</TH>
+			<TH WIDTH=59>
+				<P>Float</P>
+				<P>(5.5)</P>
+			</TH>
+			<TH WIDTH=77>
+				<P>Date</P>
+				<P>(10/12/1998)</P>
+			</TH>
+			<TH WIDTH=73>
+				<P>Time</P>
+				<P>(10:10:05)</P>
+			</TH>
+			<TH WIDTH=78>
+				<P>Datetime</P>
+				<P>(10/12/1998 10:10:05)</P>
+			</TH>
+			<TH WIDTH=96>
+				<P>Interval</P>
+				<P> (123:10:20)</P>
+			</TH>
+		</TR>
+	</THEAD>
+	<TBODY>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>Char 
+				</P>
+				<P>(&quot;10&quot;)</P>
+			</TH>
+			<TD WIDTH=77>
+				<P>Char</P>
+				<P>&quot;1010&quot;</P>
+			</TD>
+			<TD WIDTH=56>
+				<P>Char</P>
+				<P>&quot;105&quot;</P>
+			</TD>
+			<TD WIDTH=59>
+				<P>Char</P>
+				<P>(105.5&quot;</P>
+			</TD>
+			<TD WIDTH=77>
+				<P>Char</P>
+				<P>&quot;1010-12-1998&quot;</P>
+			</TD>
+			<TD WIDTH=73>
+				<P>Char</P>
+				<P>&quot;1010:10:05&quot;</P>
+			</TD>
+			<TD WIDTH=78>
+				<P>Char</P>
+				<P>&quot;1010-12-1998</P>
+				<P>10:10:05&quot;</P>
+			</TD>
+			<TD WIDTH=96>
+				<P>Char</P>
+				<P>&quot;10123:10:20&quot;</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>Integer 
+				</P>
+				<P>(5)</P>
+			</TH>
+			<TD WIDTH=77>
+				<P>Char</P>
+				<P>&quot;510&quot;</P>
+			</TD>
+			<TD WIDTH=56>
+				<P>Integer</P>
+				<P>10</P>
+			</TD>
+			<TD WIDTH=59>
+				<P>Float</P>
+				<P>10.5</P>
+			</TD>
+			<TD WIDTH=77>
+				<P>Date</P>
+				<P>15/12/1998</P>
+			</TD>
+			<TD WIDTH=73>
+				<P>Time</P>
+				<P>10:10:10</P>
+			</TD>
+			<TD WIDTH=78>
+				<P>Datetime</P>
+				<P>10-12-1998</P>
+				<P>10:10:10&quot;</P>
+			</TD>
+			<TD WIDTH=96>
+				<P>Interval</P>
+				<P>123:10:25</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>Float 
+				</P>
+				<P>(5.5)</P>
+			</TH>
+			<TD WIDTH=77>
+				<P>Char</P>
+				<P>&quot;5.500010&quot;</P>
+			</TD>
+			<TD WIDTH=56>
+				<P>Float</P>
+				<P>10.5</P>
+			</TD>
+			<TD WIDTH=59>
+				<P>Float</P>
+				<P>11</P>
+			</TD>
+			<TD WIDTH=77>
+				<P>Date</P>
+				<P>15/12/1998</P>
+			</TD>
+			<TD WIDTH=73>
+				<P>Time</P>
+				<P>10:10:10</P>
+			</TD>
+			<TD WIDTH=78>
+				<P>Datetime</P>
+				<P>10-12-1998</P>
+				<P>10:10:10&quot;</P>
+			</TD>
+			<TD WIDTH=96>
+				<P>Interval</P>
+				<P>123:10:25</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>Date</P>
+				<P> (10-12-1998)</P>
+			</TH>
+			<TD WIDTH=77>
+				<P>Char</P>
+				<P>&quot;10-12-199810&quot;</P>
+			</TD>
+			<TD WIDTH=56>
+				<P>Date</P>
+				<P>15-12-1998</P>
+			</TD>
+			<TD WIDTH=59>
+				<P>Date</P>
+				<P>15-12-1998</P>
+			</TD>
+			<TD WIDTH=77>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=73>
+				<P>Datetime</P>
+				<P>10-12-1998</P>
+				<P>10:10:05</P>
+			</TD>
+			<TD WIDTH=78>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=96>
+				<P>No permitido</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>Time 
+				</P>
+				<P>(10:10:05)</P>
+			</TH>
+			<TD WIDTH=77>
+				<P>Char</P>
+				<P>&quot;10:10:05.00010&quot;</P>
+			</TD>
+			<TD WIDTH=56>
+				<P>Time</P>
+				<P>10:10:10</P>
+			</TD>
+			<TD WIDTH=59>
+				<P>Time</P>
+				<P>10:10:10</P>
+			</TD>
+			<TD WIDTH=77>
+				<P>Datetime</P>
+				<P>10-12-1998</P>
+				<P>10:10:05</P>
+			</TD>
+			<TD WIDTH=73>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=78>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=96>
+				<P>Time</P>
+				<P>13:20:25</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>Datetime 
+				</P>
+				<P>(10-12-1998 
+				</P>
+				<P>10:10:05)</P>
+			</TH>
+			<TD WIDTH=77>
+				<P>Char</P>
+				<P>10-12-1998 10:10:05.00010</P>
+			</TD>
+			<TD WIDTH=56>
+				<P>Datetime</P>
+				<P>10-12-1998</P>
+				<P>10:10:10</P>
+			</TD>
+			<TD WIDTH=59>
+				<P>Datetime</P>
+				<P>10-12-1998</P>
+				<P>10:10:10</P>
+			</TD>
+			<TD WIDTH=77>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=73>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=78>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=96>
+				<P>Datetime</P>
+				<P>15-12-1998 13:20:25</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>Interval 
+				</P>
+				<P>(123:10:20)</P>
+			</TH>
+			<TD WIDTH=77>
+				<P>Char</P>
+				<P>123:10:20.010</P>
+			</TD>
+			<TD WIDTH=56>
+				<P>Interval</P>
+				<P>123:10:25</P>
+			</TD>
+			<TD WIDTH=59>
+				<P>Interval</P>
+				<P>123:10:25</P>
+			</TD>
+			<TD WIDTH=77>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=73>
+				<P>Time</P>
+				<P>13:20:25</P>
+			</TD>
+			<TD WIDTH=78>
+				<P>Datetime</P>
+				<P>15-12-1998</P>
+				<P>13:20:25</P>
+			</TD>
+			<TD WIDTH=96>
+				<P>Interval</P>
+				<P>246:20:40</P>
+			</TD>
+		</TR>
+	</TBODY>
+</TABLE>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<H4>Operador -</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Devuelve la expresi&oacute;n
+resultante de calcular la diferencia entre las dos expresiones
+originales. El comportamiento de este operador, as&iacute; como el
+tipo de la expresi&oacute;n resultante depende de las expresiones
+originales:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<TABLE WIDTH=643 BORDER=1 BORDERCOLOR="#000000" CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=61>
+	<COL WIDTH=77>
+	<COL WIDTH=56>
+	<COL WIDTH=59>
+	<COL WIDTH=77>
+	<COL WIDTH=73>
+	<COL WIDTH=78>
+	<COL WIDTH=96>
+	<THEAD>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>-</P>
+			</TH>
+			<TH WIDTH=77>
+				<P>Char 
+				</P>
+				<P>&quot;10&quot;</P>
+			</TH>
+			<TH WIDTH=56>
+				<P>Integer 
+				</P>
+				<P>(5)</P>
+			</TH>
+			<TH WIDTH=59>
+				<P>Float</P>
+				<P>(5.5)</P>
+			</TH>
+			<TH WIDTH=77>
+				<P>Date</P>
+				<P>(10/12/1998)</P>
+			</TH>
+			<TH WIDTH=73>
+				<P>Time</P>
+				<P>(10:10:05)</P>
+			</TH>
+			<TH WIDTH=78>
+				<P>Datetime</P>
+				<P>(10/12/1998 10:10:05)</P>
+			</TH>
+			<TH WIDTH=96>
+				<P>Interval</P>
+				<P> (123:10:20)</P>
+			</TH>
+		</TR>
+	</THEAD>
+	<TBODY>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>Char 
+				</P>
+				<P>(&quot;10&quot;)</P>
+			</TH>
+			<TD WIDTH=77>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=56>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=59>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=77>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=73>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=78>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=96>
+				<P>No permitido</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>Integer 
+				</P>
+				<P>(5)</P>
+			</TH>
+			<TD WIDTH=77>
+				<P>Integer</P>
+				<P>-5</P>
+			</TD>
+			<TD WIDTH=56>
+				<P>Integer</P>
+				<P>0</P>
+			</TD>
+			<TD WIDTH=59>
+				<P>Float</P>
+				<P>-0.5</P>
+			</TD>
+			<TD WIDTH=77>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=73>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=78>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=96>
+				<P>No permitido</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>Float 
+				</P>
+				<P>(5.5)</P>
+			</TH>
+			<TD WIDTH=77>
+				<P>Float</P>
+				<P>-4.5</P>
+			</TD>
+			<TD WIDTH=56>
+				<P>Float</P>
+				<P>0.5</P>
+			</TD>
+			<TD WIDTH=59>
+				<P>Float</P>
+				<P>0</P>
+			</TD>
+			<TD WIDTH=77>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=73>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=78>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=96>
+				<P>No permitido</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>Date</P>
+				<P> (10-12-1998)</P>
+			</TH>
+			<TD WIDTH=77>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=56>
+				<P>Date</P>
+				<P>5-12-1998</P>
+			</TD>
+			<TD WIDTH=59>
+				<P>Date</P>
+				<P>15-12-1998</P>
+			</TD>
+			<TD WIDTH=77>
+				<P>Integer</P>
+				<P>0</P>
+				<P>diferencia en dias</P>
+			</TD>
+			<TD WIDTH=73>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=78>
+				<P>Integer</P>
+				<P>0</P>
+				<P>diferencia en dias</P>
+			</TD>
+			<TD WIDTH=96>
+				<P>No permitido</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>Time 
+				</P>
+				<P>(10:10:05)</P>
+			</TH>
+			<TD WIDTH=77>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=56>
+				<P>Time</P>
+				<P>10:10:00</P>
+			</TD>
+			<TD WIDTH=59>
+				<P>Time</P>
+				<P>10:10:10</P>
+			</TD>
+			<TD WIDTH=77>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=73>
+				<P>Time</P>
+				<P>00:00:00</P>
+			</TD>
+			<TD WIDTH=78>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=96>
+				<P>Time</P>
+				<P>06:59:45</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>Datetime 
+				</P>
+				<P>(10-12-1998 
+				</P>
+				<P>10:10:05)</P>
+			</TH>
+			<TD WIDTH=77>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=56>
+				<P>Datetime</P>
+				<P>10-12-1998</P>
+				<P>10:10:00</P>
+			</TD>
+			<TD WIDTH=59>
+				<P>Datetime</P>
+				<P>10-12-1998</P>
+				<P>10:10:00</P>
+			</TD>
+			<TD WIDTH=77>
+				<P>Interval</P>
+				<P>10:10:05</P>
+			</TD>
+			<TD WIDTH=73>
+				<P>Datetime</P>
+				<P>10-12-1998 00:00:00</P>
+			</TD>
+			<TD WIDTH=78>
+				<P>Interval</P>
+				<P>00:00:00</P>
+			</TD>
+			<TD WIDTH=96>
+				<P>Datetime</P>
+				<P>5-12-1998 06:59:45</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TH WIDTH=61>
+				<P>Interval 
+				</P>
+				<P>(123:10:20)</P>
+			</TH>
+			<TD WIDTH=77>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=56>
+				<P>Interval</P>
+				<P>123:10:15</P>
+			</TD>
+			<TD WIDTH=59>
+				<P>Interval</P>
+				<P>123:10:15</P>
+			</TD>
+			<TD WIDTH=77>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=73>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=78>
+				<P>No permitido</P>
+			</TD>
+			<TD WIDTH=96>
+				<P>Interval</P>
+				<P>00:00:00</P>
+			</TD>
+		</TR>
+	</TBODY>
+</TABLE>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<H4>Operadores * y /</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Estos operadores
+realizan las operaciones aritm&eacute;ticas de producto y divisi&oacute;n
+respectivamente. S&oacute;lo pueden operar entre n&uacute;meros, ya
+sean reales o enteros. La expresi&oacute;n que se obtiene es de tipo
+real.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Si se intenta operar
+con expresiones que no son de tipo num&eacute;rico, &eacute;stas se
+convierten autom&aacute;ticamente a tipo real.</P>
+<H5><BR><BR>
+</H5>
+<H4 STYLE="page-break-before: always">Operadores de comparaci&oacute;n</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para realizar
+comparaciones de expresiones se usan los operadores &lt;, &lt;=, =,
+!=, &gt;= y &gt;</P>
+<P CLASS="fuente">expresion1 &lt;  expresion2</P>
+<P CLASS="fuente">expresion1 &lt;= expresion2</P>
+<P CLASS="fuente">expresion1 =  expresion2</P>
+<P CLASS="fuente">expresion1 != expresion2</P>
+<P CLASS="fuente">expresion1 &gt;= expresion2</P>
+<P CLASS="fuente">expresion1 &gt;  expresion2</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Las expresiones
+num&eacute;ricas se comparan, como es de esperar, por su valor. Las
+expresiones de tipo cadena se comparan seg&uacute;n su orden
+alfab&eacute;tico, teniendo en cuenta que todas las may&uacute;sculas
+van delante de las min&uacute;sculas.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Las expresiones de tipo
+fecha/hora se comparan seg&uacute;n su antig&uuml;edad. 
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">De esta manera, se
+cumple que:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">	01-01-1998 &lt;
+02-01-1998</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">	01-01-1998 10:10:25 &gt;
+01-01-1998 10:10:24</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Estas expresiones
+devuelve 1 si se cumple la condici&oacute;n, y 0 en caso contrario.</P>
+<H4>Operadores l&oacute;gicos</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Las siguientes
+expresiones realizan las operaciones l&oacute;gicas comunes:</P>
+<P CLASS="fuente">! expresion</P>
+<P CLASS="fuente">expresion AND expresion</P>
+<P CLASS="fuente">expresion OR expresion</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Estas expresiones
+devuelven <I>verdadero</I><SPAN STYLE="font-style: normal"> (1) o
+</SPAN><I>falso</I><SPAN STYLE="font-style: normal"> (0) seg&uacute;n
+se cumpla o no la condici&oacute;n.</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<H4 STYLE="page-break-before: always">Precedencia de operadores</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La precedencia de los
+operadores en <B><I>hy4GL</I></B><SPAN STYLE="font-weight: medium"><SPAN STYLE="font-style: normal">
+es, de mayor a menor, la siguiente:</SPAN></SPAN></P>
+<P CLASS="fuente">!</P>
+<P CLASS="fuente">USING CLIPPED</P>
+<P CLASS="fuente">[]</P>
+<P CLASS="fuente">* /</P>
+<P CLASS="fuente">+ -</P>
+<P CLASS="fuente">&lt;  &lt;=  =  != &gt;  &gt;= 
+</P>
+<P CLASS="fuente">AND 
+</P>
+<P CLASS="fuente">OR</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal; font-weight: medium">
+<BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><SPAN STYLE="font-weight: medium"><SPAN STYLE="font-style: normal">Se
+han colocado en la misma l&iacute;nea aquellos operadores que tienen
+la misma precedencia. Se pueden agrupar expresiones entre par&eacute;ntesis
+para conseguir que las operaciones se realicen en un orden
+determinado</SPAN></SPAN></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<H2 STYLE="page-break-before: always">Sentencias:</H2>
+<H3>C Embebido (ampliaci&oacute;n a Informix-4GL)</H3>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El lenguaje aporta una
+gran funcionalidad y permite al programador relizar la mayor&iacute;a
+de las acciones necesarias para el desarrollo de una aplicaci&oacute;n
+de bases de datos. Sin embargo, siempre hay acciones que no es
+posible realizar directamente usando las sentencias del lenguaje 4GL
+o que por motivos de eficiencia es preferible realizarlas en lenguaje
+C.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para estos casos, <B><I>hy4GL</I></B><SPAN STYLE="font-weight: medium"><SPAN STYLE="font-style: normal">
+permite insertar sentencias en C dentro del fuente en 4GL. La
+sintaxis para ello es la siguiente:</SPAN></SPAN></P>
+<P CLASS="fuente">...</P>
+<P CLASS="fuente">sentencias 4GL</P>
+<P CLASS="fuente">.c</P>
+<P CLASS="fuente">	[declaraciones C]</P>
+<P CLASS="fuente">	sentencias C</P>
+<P CLASS="fuente">c.</P>
+<P CLASS="fuente">sentencias 4GL</P>
+<P CLASS="fuente">...</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">      
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Dentro del bloque de C
+se puede acceder a los datos almacenados en las variables del
+programa.  V&eacute;ase la <I>gu&iacute;a de implementaci&oacute;n</I>
+para conocer los tipos de datos con los que se implementan las
+variables. Tambi&eacute;n se pueden definir variables cuyo &aacute;mbito
+ser&aacute; el del bloque de C exclusivamente.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">define usuario char(50)</P>
+<P CLASS="fuente">define directorio char(255)</P>
+<P CLASS="fuente">/* leo el nombre de usuario y el directorio actual
+*</P>
+<P CLASS="fuente">.c</P>
+<P CLASS="fuente">	strncpy(usuario,getenv(&quot;LOGNAME&quot;),sizeof(usuario)-1);</P>
+<P CLASS="fuente">	getcwd(directorio,sizeof(directorio-1));</P>
+<P CLASS="fuente">c.</P>
+<P CLASS="fuente">if usuario=&quot;root&quot; then</P>
+<P CLASS="fuente">	display &quot;No puede ejecutar el programa como
+root.&quot;</P>
+<P CLASS="fuente">	exit program</P>
+<P CLASS="fuente">end if</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<H3 STYLE="page-break-before: always">Asignaci&oacute;n:</H3>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para asignar valores a
+variables se usar&aacute; la sentencia LET. Su sintaxis es la
+siguiente:</P>
+<P CLASS="fuente">LET &lt;id&gt; = expresion</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El lenguaje realiza la
+<I>conversi&oacute;n autom&aacute;tica de tipos</I>, por lo que no es
+necesario que la expresi&oacute;n sea del mismo tipo que la variable
+de destino.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">define dt datetime</P>
+<P CLASS="fuente">define d date</P>
+<P CLASS="fuente">define i integer</P>
+<P CLASS="fuente">define c char(40)</P>
+<P CLASS="fuente">let dt=datetime() /* Asigna a dt la fecha y hora
+actual */</P>
+<P CLASS="fuente">let d=dt	/* Asigna a 'd' la fecha actual */</P>
+<P CLASS="fuente">/* Asigna a 'c' una cadena con la fecha y hora
+contenida 
+</P>
+<P CLASS="fuente">	en 'dt' en el formato &quot;dd-mm-aaaa
+HH:MM:SS.mmm&quot; */</P>
+<P CLASS="fuente">let c=dt 
+</P>
+<P CLASS="fuente">let i=&quot;50&quot;+&quot;20&quot;	/* Asigna a 'i'
+el numero 5020 */</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<H3>Asignaciones m&uacute;ltiples (ampliaci&oacute;n a Informix-4GL)</H3>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Se permite realizar
+varias asignaciones en una misma sentencia LET. La sintaxis para ello
+es la siguiente<A CLASS="sdfootnoteanc" NAME="sdfootnote1anc" HREF="#sdfootnote1sym"><SUP>1</SUP></A>:</P>
+<P CLASS="fuente">LET &lt;id1&gt;,&lt;id2&gt;,... =
+expresion1,expresion2,...</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">A la variable i<FONT FACE="courier, monospace">d1</FONT>
+se le asignar&aacute; el valor de la expresi&oacute;n <FONT FACE="courier, monospace">expresion1</FONT>;
+a la variable <FONT FACE="courier, monospace">id2</FONT> el valor de
+la expresi&oacute;n <FONT FACE="courier, monospace">expresion2</FONT>,
+etc. Habr&aacute; que prestar especial atenci&oacute;n en que el
+n&uacute;mero de variables de destino sea igual al n&uacute;mero de
+valores devueltos por las expresiones. Especial cuidado hay que tener
+al llamar a funciones, ya que una funci&oacute;n puede devolver
+varios valores:</P>
+<P CLASS="fuente">define sw_encontrado integer</P>
+<P CLASS="fuente">define nombre,apellidos,direccion char(50)</P>
+<P CLASS="fuente">LET sw_encontrado, nombre, apellidos =
+datos_cliente(&quot;0001&quot;)</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Esta construcci&oacute;n
+puede ser &uacute;til para operaciones como intercambio de valores
+entre variables (<I>swap</I><SPAN STYLE="font-style: normal">), para
+lo cual no es necesario una variable temporal:</SPAN></P>
+<P CLASS="fuente">LET a,b=b,a</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Al igual que en
+cualquier situaci&oacute;n en la que se puede expresar una lista de
+variables, es posible asignar valores a todos los campos de un
+registro de la siguiente manera:</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente">LET &lt;id&gt;.* = expresion1,expresion2,...</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">LET cliente.*=&quot;JUAN&quot;,&quot;PEREZ&quot;,&quot;C/
+RABIDA, 10&quot;,21003,&quot;HUELVA&quot;</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">   
+</P>
+<H4><BR><BR>
+</H4>
+<H3 STYLE="page-break-before: always">Estructuras condicionales y
+repetitivas:</H3>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><B><I>hy4GL</I></B>
+ofrece las siguientes construcciones para variar el flujo del
+programa:</P>
+<H4>EXIT PROGRAM 
+</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Esta sentencia provoca
+el final inmediato del programa. Se desconecta de la base de datos
+(si estuviera conectado) y el terminal vuelve a su estado normal. No
+se borra la pantalla.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">define usuario like usuarios.nombre</P>
+<P CLASS="fuente">prompt &quot;Usuario: &quot; for usuario</P>
+<P CLASS="fuente">select * into usuario from usuarios where
+nombre=usuario</P>
+<P CLASS="fuente">if status=notfound then</P>
+<P CLASS="fuente">	display &quot;Acceso denegado\n&quot;</P>
+<P CLASS="fuente">	exit program</P>
+<P CLASS="fuente">end if</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H4>Llamadas a funciones</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Se puede realizar una
+llamada a una funci&oacute;n mediante la sentencia CALL. La sintaxis
+de esta sentencia es la siguiente:</P>
+<P CLASS="fuente" ALIGN=LEFT>CALL funcion(expr1,expr2,...) [
+RETURNING var1,var2,...]</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">En caso de que la
+funci&oacute;n devuelva uno o m&aacute;s valores,  se usar&aacute; la
+cl&aacute;usula <FONT FACE="courier, monospace">RETURNING</FONT> para
+asignar estos valores a variables.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente">define cliente record like clientes.*</P>
+<P CLASS="fuente">prompt &quot;Codigo del cliente: &quot; for
+cliente.numero</P>
+<P CLASS="fuente" ALIGN=LEFT>call busca_cliente(cliente.numero)
+returning cliente.*</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente" ALIGN=LEFT><BR><BR>
+</P>
+<H4 STYLE="page-break-before: always">Condiciones IF... THEN...
+ELSE... END IF</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Esta estructura permite
+la ejecuci&oacute;n de una serie de sentencias s&oacute;lo en caso de
+que se cumpla una condici&oacute;n. De manera opcional se puede
+indicar tambi&eacute;n un conjunto de sentencias que se ejecutar&aacute;n
+si la condici&oacute;n no se cumple. 
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La sintaxis es la
+siguiente:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente">IF &lt;condicion&gt; THEN</P>
+<P CLASS="fuente">	sentencias1</P>
+<P CLASS="fuente">[ELSE 
+</P>
+<P CLASS="fuente">	sentencias2]</P>
+<P CLASS="fuente">END IF</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">En primer lugar se
+evaluar&aacute; la condici&oacute;n. En caso de que &eacute;sta se
+cumpla, se ejecutar&aacute; el grupo de sentencias <I>sentencias1</I><SPAN STYLE="font-style: normal">.
+Si la condici&oacute;n no se cumple, se ejecutar&aacute; el grupo de
+sentencias </SPAN><I>sentencias2</I><SPAN STYLE="font-style: normal">.</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Ej:</P>
+<P CLASS="fuente">if dow(today())=&quot;Domingo&quot; then</P>
+<P CLASS="fuente">	display &quot;Cerrado.&quot;</P>
+<P CLASS="fuente">	exit program</P>
+<P CLASS="fuente">else</P>
+<P CLASS="fuente">	call menu_ppal()</P>
+<P CLASS="fuente">end if</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<H4>Bucles WHILE</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Esta construcci&oacute;n
+permite ejecutar un conjunto de sentencias mientras se cumpla una
+condici&oacute;n. La condici&oacute;n se evaluar&aacute; <I>antes</I><SPAN STYLE="font-style: normal">
+de entrar en el bucle, por lo que si &eacute;sta no se cumple, es
+posible que no se entre nunca en el bucle. </SPAN>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+La sintaxis es la siguiente:</P>
+<P CLASS="fuente">WHILE &lt;condicion&gt;</P>
+<P CLASS="fuente">	sentencias</P>
+<P CLASS="fuente">	CONTINUE WHILE 
+</P>
+<P CLASS="fuente">	EXIT WHILE</P>
+<P CLASS="fuente">	...</P>
+<P CLASS="fuente">END WHILE</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Dentro del bucle se
+pueden usar las sentencias <FONT FACE="courier, monospace">CONTINUE
+WHILE <FONT FACE="times, serif">y</FONT> EXIT WHILE</FONT>. La
+primera salta hasta el principio del bucle, ignorando las sentencias
+que se encuentran despu&eacute;s de &eacute;sta. <FONT FACE="courier, monospace">EXIT
+WHILE</FONT> sale del bucle directamente.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">define i,total,parcial integer</P>
+<P CLASS="fuente">let i=0</P>
+<P CLASS="fuente">let total=0</P>
+<P CLASS="fuente">/* Facturas que suman nuestro primer millon */</P>
+<P CLASS="fuente">while total&lt;1000000</P>
+<P CLASS="fuente"> 	let i=i+1</P>
+<P CLASS="fuente">	/* la factura numero 3 no la sumo... */</P>
+<P CLASS="fuente">	if i=3 then</P>
+<P CLASS="fuente">		continue while</P>
+<P CLASS="fuente">	end if</P>
+<P CLASS="fuente">	select importe into parcial from facturas where
+numero=i</P>
+<P CLASS="fuente">	if status=notfound then</P>
+<P CLASS="fuente"> 		display &quot;Error... no se encuentra la
+factura n&ordm;&quot;,i</P>
+<P CLASS="fuente">		let total=0</P>
+<P CLASS="fuente">		exit while</P>
+<P CLASS="fuente"> 	end if</P>
+<P CLASS="fuente">	display &quot;Fra: &quot;,i,&quot; Importe:
+&quot;,parcial using &quot;###,###,##&amp;&quot;</P>
+<P CLASS="fuente"> 	let total=total+parcial</P>
+<P CLASS="fuente">end while</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<H4 STYLE="page-break-before: always">Bucles FOR</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Los bucles FOR son
+usados para ejecutar un conjunto de sentencias variando el valor de
+una variable desde un valor inicial hasta un valor final.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La variable que se use
+para ir variando su valor debe ser de tipo num&eacute;rico o de tipo
+fecha. En la primera iteraci&oacute;n su valor ser&aacute; el de la
+expresi&oacute;n1, y se ir&aacute; incrementando en una unidad hasta
+alcanzar el valor de la expresi&oacute;n2.</P>
+<P CLASS="fuente">FOR &lt;variable&gt; = &lt;expresion1&gt; TO
+&lt;expresion2&gt;</P>
+<P CLASS="fuente">	sentencias</P>
+<P CLASS="fuente">	CONTINUE FOR</P>
+<P CLASS="fuente">	EXIT FOR 
+</P>
+<P CLASS="fuente">	...</P>
+<P CLASS="fuente">END FOR</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">          Al igual que
+en los bucles WHILE, se pueden usar las sentencias <FONT FACE="courier, monospace">CONTINUE
+FOR</FONT> y <FONT FACE="courier, monospace">EXIT FOR</FONT> para
+forzar una nueva iteraci&oacute;n o para salir inmediatamente del
+bucle.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente">{Mostramos todos los dias laborables de este mes 
+</P>
+<P CLASS="fuente"> a partir de hoy}</P>
+<P CLASS="fuente">define m integer</P>
+<P CLASS="fuente">define d date</P>
+<P CLASS="fuente">let mes=month(today())</P>
+<P CLASS="fuente">for d=today() to today()+31</P>
+<P CLASS="fuente">	if month(d)!=mes then</P>
+<P CLASS="fuente">		exit for</P>
+<P CLASS="fuente">	end if</P>
+<P CLASS="fuente">	if dow(d)=&quot;Domingo&quot; or dow(d)=&quot;Sabado&quot;
+then</P>
+<P CLASS="fuente">		continue for</P>
+<P CLASS="fuente">	end if</P>
+<P CLASS="fuente">	display d</P>
+<P CLASS="fuente">end for</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H3 STYLE="page-break-before: always">Interfaz de usuario</H3>
+<H4>Operaciones con ventanas.</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La informaci&oacute;n
+que aparece en pantalla se muestra dentro de <I>ventanas</I><SPAN STYLE="font-style: normal">.
+Todo programa en <B><I>hy4GL</I></B><SPAN STYLE="font-weight: medium"><SPAN STYLE="font-style: normal">
+usa</SPAN></SPAN>, al menos, una ventana que se crea autom&aacute;ticamente
+al iniciar el programa y que ocupa toda la pantalla.</SPAN></P>
+<H5>OPEN WINDOW</H5>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Se pueden definir ventanas de cualquier tama&ntilde;o y en cualquier
+posici&oacute;n, siempre que quepan dentro de los l&iacute;mites de
+la pantalla. Si se intenta crear una ventana de mayor tama&ntilde;o
+que la pantalla, &eacute;sta ser&aacute; reducida hasta caber en
+pantalla. La sentencia para crear una nueva ventana es <FONT FACE="courier, monospace">OPEN
+WINDOW</FONT>, cuya sintaxis es la siguiente<A CLASS="sdfootnoteanc" NAME="sdfootnote2anc" HREF="#sdfootnote2sym"><SUP>2</SUP></A>:</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente">OPEN WINDOW &lt;nombre&gt; AT &lt;y&gt;,&lt;x&gt;
+WITH &lt;h&gt; ROWS,&lt;w&gt; COLUMNS</P>
+<P CLASS="fuente">[ATTRIBUTE ( &lt;color&gt; [OVER
+&lt;color&gt;][,BRIGHT][,BORDER] )]</P>
+<P CLASS="fuente">[TITLE expresion]</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">open window w1 at 1,1 with 10 rows,78 columns</P>
+<P CLASS="fuente">	attribute(white over red,bright,border)</P>
+<P CLASS="fuente">	title &quot;Tareas para el dia &quot;+today()</P>
+<P CLASS="fuente">display &quot;Esta ventana se cerrar&aacute; en 1
+segundo&quot;</P>
+<P CLASS="fuente">delay 1</P>
+<P CLASS="fuente">close window w1</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Si se indica un
+atributo de color, la ventana se muestra con ese atributo, y todo lo
+que se escriba dentro de ella tendr&aacute; ese mismo atributo si no
+se indica lo contrario. Si entre los atributos se incluye la opci&oacute;n
+'<FONT FACE="courier, monospace">BORDER</FONT>', la ventana se
+muestra con un borde que la rodea. El borde se dibuja en las
+coordenadas indicadas, y la parte &uacute;til de la ventana queda
+reducida en dos l&iacute;neas y dos columnas, que son las que ocupa
+el borde<A CLASS="sdfootnoteanc" NAME="sdfootnote3anc" HREF="#sdfootnote3sym"><SUP>3</SUP></A>.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Una vez que se abre una
+nueva ventana, &eacute;sta pasa a ser la ventana activa.Todo lo que
+se muestre en pantalla a partir de ese instante aparecer&aacute; en
+esta ventana.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Las ventanas s&oacute;lo
+pueden ser referenciadas desde la funci&oacute;n en la que se han
+creado. No se puede cerrar ni realizar ninguna operaci&oacute;n sobre
+una ventana desde una funci&oacute;n distinta, excepto escribir en
+ella.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Las ventanas son
+apilables: se puede definir una ventana <I>encima</I><SPAN STYLE="font-style: normal">
+de otra sin que se pierda el contenido de la ventana que queda
+oculta.</SPAN></P>
+<H5 STYLE="page-break-before: always">CURRENT WINDOW</H5>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para cambiar la ventana
+activa se usa la sentencia <FONT FACE="courier, monospace">CURRENT
+WINDOW</FONT>, cuya sentencia es:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente">CURRENT WINDOW &lt;nombre&gt;</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">S&oacute;lo es posible
+activar una ventana desde la funci&oacute;n en la que &eacute;sta se
+ha definido. Una vez activada una ventana, todo lo que se muestre en
+pantalla aparecer&aacute; en ella.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">if status=notfound then</P>
+<P CLASS="fuente">	current window wmensajes</P>
+<P CLASS="fuente">	prompt &quot;No se encuentra el registro.&quot;
+for char tecla</P>
+<P CLASS="fuente">	current window wproceso</P>
+<P CLASS="fuente">end if</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La ventana pasa a estar
+en lo m&aacute;s alto de la pila de ventanas. Si la ventana estaba
+ocultada total o parcialmente por otra ventana, ahora ser&aacute;
+visible totalmente.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H5>MOVE WINDOW</H5>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">En ocasiones es
+necesario mover una ventana para poder abrir otra sin ocultar la
+anterior. La sintaxis de la sentencia para mover una ventana es:</P>
+<P CLASS="fuente">MOVE WINDOW &lt;nombre&gt; TO &lt;y&gt;,&lt;x&gt;</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La ventana debe haberse
+creado en la misma funci&oacute;n desde la que se mueve. Esta
+sentencia no cambia el estado de la ventana en cuanto a si est&aacute;
+o no activa, o su posici&oacute;n en la pila de ventanas.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H5>CLEAR WINDOW</H5>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Esta sentencia borra el
+contenido de la ventana activa.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H5>CLOSE WINDOW</H5>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para cerrar una ventana
+se usa la sentencia CLOSE WINDOW. La ventana debe haber sido creada
+desde la misma funci&oacute;n en la que se cierra. Si &eacute;sta era
+la ventana activa, la nueva ventana activa pasa a ser la que
+estuviera inmediatamente debajo de &eacute;sta en la pila de ventanas
+(la &uacute;ltima que estaba activa antes que &eacute;sta).</P>
+<P CLASS="fuente">      CLOSE WINDOW &lt;nombre&gt;</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">      
+</P>
+<H4>Presentaci&oacute;n en pantalla</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para mostrar datos en
+pantalla se usa la sentencia <FONT FACE="courier, monospace">DISPLAY</FONT>,
+cuya sintaxis es la siguiente:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=3>DISPLAY expresion [,expresion...] [AT
+y,x] </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=3>		[ATTRIBUTE ( color [over color]
+[,bright] )]</FONT></P>
+<P CLASS="fuente"><FONT SIZE=3>	[,expresion ... AT ... ATTRIBUTE...]</FONT></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Las expresiones son
+presentadas siempre en la ventana activa. Si no se incluye la
+cl&aacute;usula <FONT FACE="courier, monospace">AT</FONT>,las
+expresiones son mostradas en la posici&oacute;n actual del cursor.
+Los atributos de color con los que aparecer&aacute;n las expresiones
+son los de la ventana activa por defecto, o los indicados en la
+cl&aacute;usula <FONT FACE="courier, monospace">ATTRIBUTE</FONT>.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El cursor se mueve a la
+posici&oacute;n del &uacute;ltimo car&aacute;cter despu&eacute;s de
+ejecutar la sentencia DISPLAY. Si no se ha indicado la cl&aacute;usula
+AT, se imprimir&aacute; un retorno de carro despu&eacute;s de mostrar
+todas las expresiones. Si se ha llegado a la &uacute;ltima l&iacute;nea
+de la ventana activa, todo el contenido de la misma subir&aacute; una
+l&iacute;nea.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">display &quot;Nombre: &quot;,cliente.nombre at 1,1 
+</P>
+<P CLASS="fuente">		attribute (cyan over blue, bright),</P>
+<P CLASS="fuente"> &quot;Direcci&oacute;n: &quot;,cliente.direccion
+at 2,1 
+</P>
+<P CLASS="fuente">		attribute(cyan over blue)</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H4>Introducci&oacute;n de datos simples<A CLASS="sdfootnoteanc" NAME="sdfootnote4anc" HREF="#sdfootnote4sym"><SUP>4</SUP></A></H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La instrucci&oacute;n
+<FONT FACE="courier, monospace">PROMPT</FONT> permite obterner el
+valor de una variable a trav&eacute;s del teclado. El programa
+presentar&aacute; en pantalla una expresi&oacute;n opcional, su
+ejecuci&oacute;n se dentendr&aacute; hasta que se introduzca una
+cadena y se pulse la tecla Intro. La cadena es convertida al tipo de
+dato de la variable de destino.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Si se especifica la
+opci&oacute;n CHAR, el valor de la primera tecla pulsada es asignado
+a la variable de destino, sin que se espere a la pulsaci&oacute;n de
+la tecla Intro.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="page-break-before: always">
+La sintaxis de la sentencia PROMPT es la siguiente:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente"> PROMPT [expresion] FOR [CHAR] &lt;variable&gt;</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">define tecla char</P>
+<P CLASS="fuente">define i,j integer</P>
+<P CLASS="fuente">prompt &quot;Introduce un numero: &quot; for i</P>
+<P CLASS="fuente">display &quot;Introduce otro numero: &quot;</P>
+<P CLASS="fuente">prompt for j</P>
+<P CLASS="fuente">prompt &quot;Pulse una tecla para continuar...&quot;
+for char tecla</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H4>Men&uacute;s:</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><B><I>hy4GL</I></B>
+ofrece la sentencia <FONT FACE="courier, monospace">MENU</FONT> para
+la definici&oacute;n de men&uacute;s de opciones. Un men&uacute;
+consiste en una serie de opciones, cada una de las cuales tiene
+asociada un conjunto de sentencias que se ejecutar&aacute;n en caso
+de ser seleccionadas. Adem&aacute;s, es posible indicar un grupo de
+acciones que se ejecutar&aacute;n al pulsar una tecla determinada.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La sintaxis para la
+definici&oacute;n de men&uacute;s es la siguiente:</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente">MENU [HORIZONTAL|VERTICAL]   
+</P>
+<P CLASS="fuente">[ATTRIBUTE (color [OVER color]) [ ; (color [OVER
+color])]]</P>
+<P CLASS="fuente">	COMMAND &lt;expresion&gt; [,&lt;expresion&gt;]</P>
+<P CLASS="fuente">		sentencias</P>
+<P CLASS="fuente"> 	ON KEY (&lt;id&gt;)</P>
+<P CLASS="fuente">		sentencias</P>
+<P CLASS="fuente">		... 
+</P>
+<P CLASS="fuente">		EXIT MENU</P>
+<P CLASS="fuente">		...</P>
+<P CLASS="fuente">END MENU</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Las distintas opciones
+se relacionar&aacute;n en las cl&aacute;usulas <FONT FACE="courier, monospace">COMMAND</FONT>.
+La primera expresi&oacute;n que sigue a la cl&aacute;usula es la
+cadena que se mostrar&aacute; en pantalla. La segunda expresi&oacute;n
+es opcional e indica un texto de ayuda asociado a la opci&oacute;n.
+Este texto aparecer&aacute; en pantalla cuando el cursor se sit&uacute;e
+sobre la opci&oacute;n. Una vez que el usuario pulse la tecla Intro,
+se ejecutar&aacute;n las sentencias relacionadas tras la cl&aacute;usula
+<FONT FACE="courier, monospace">COMMAND</FONT> correspondiente a la
+opci&oacute;n seleccionada. 
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="page-break-before: always">
+Las opciones aparecer&aacute;n en pantalla en la primera l&iacute;nea
+de la ventana activa (las que quepan), a no ser que se indique la
+opci&oacute;n <FONT FACE="courier, monospace">VERTICAL</FONT>, en
+cuyo caso aparecer&aacute;n una sobre otra. La opci&oacute;n activa
+aparece marcada por un signo '-', y se muestra con los colores
+invertidos. Es posible cambiar los colores por defecto tanto de todas
+las opciones como de la opci&oacute;n seleccionada mediante la
+cl&aacute;usula ATTRIBUTE. El color de las opciones se indica en
+primer lugar y, opcionalmente y separado del anterior por un punto y
+coma ';', se indicar&aacute; el atributo de color de la opci&oacute;n
+activa.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Las teclas de
+movimiento del cursor permiten seleccionar la opci&oacute;n. En caso
+de que haya m&aacute;s opciones de las que caben en pantalla, el
+movimiento del cursor provocar&aacute; que &eacute;stas vayan
+apareciendo. La tecla 'Intro' selecciona una opci&oacute;n y provoca
+que se ejecuten las sentencias asociadas a la misma. Una vez
+ejecutadas todas las sentencias, el men&uacute; sigue activo y es
+posible seleccionar una nueva opci&oacute;n.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La cl&aacute;usula <FONT FACE="courier, monospace">ON
+KEY</FONT> permite indicar un conjunto de acciones que se ejecutar&aacute;n
+al presionar una tecla determinada. 
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La sentencia <FONT FACE="courier, monospace">EXIT
+MENU</FONT> provoca la salida del men&uacute;.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">open window w_menu at 1,1 with 5 rows,78 columns</P>
+<P CLASS="fuente">	attribute(yellow over blue, bright,border)</P>
+<P CLASS="fuente">menu</P>
+<P CLASS="fuente">	command &quot;Articulos&quot;,&quot;Gestion de
+almacen&quot;</P>
+<P CLASS="fuente">		call gest_almacen()</P>
+<P CLASS="fuente">	command &quot;Clientes&quot;,&quot;Gestion de
+clientes&quot;</P>
+<P CLASS="fuente">		call gest_clientes()</P>
+<P CLASS="fuente">	command &quot;Proveedores&quot;,&quot;Gestion de
+proveedores&quot;</P>
+<P CLASS="fuente">		call gest_prov</P>
+<P CLASS="fuente">	command &quot;Salir&quot;,&quot;Fin de la
+aplicacion&quot;</P>
+<P CLASS="fuente">		exit menu</P>
+<P CLASS="fuente"> 	on key(F1)</P>
+<P CLASS="fuente">		open window w_ayuda at 5,5 with 10 rows,50
+columns</P>
+<P CLASS="fuente">			attribute(white over red)</P>
+<P CLASS="fuente">		call ayuda()</P>
+<P CLASS="fuente">		close window w_ayuda</P>
+<P CLASS="fuente">	on key(F8)</P>
+<P CLASS="fuente">		exit menu</P>
+<P CLASS="fuente">end menu</P>
+<P CLASS="fuente">close window w_menu</P>
+<P CLASS="fuente">exit program</P>
+<H4><BR><BR>
+</H4>
+<H4 STYLE="page-break-before: always">Formularios de entrada:</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Se vio anteriormente la
+sentencia PROMPT, que permite introducir informaci&oacute;n por
+teclado. En esta secci&oacute;n se ver&aacute; el uso de <I>formularios</I><SPAN STYLE="font-style: normal">
+de entrada de datos. Estos formularios permiten la introducci&oacute;n
+y visualizaci&oacute;n de informaci&oacute;n de una manera m&aacute;s
+compleja que la ofrecida por la sentencia PROMPT.</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Los formularios de entrada permiten al usuario editar el valor de
+varias variables al mismo tiempo, desplaz&aacute;ndose con el cursor
+entre distintos campos.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><SPAN STYLE="font-style: normal">Un
+formulario est&aacute; compuesto por uno o m&aacute;s campos de
+edici&oacute;n, botones y casillas de verificaci&oacute;n. Los campos
+de edici&oacute;n aparecen en pantalla como regiones rectangulares en
+las que se puede introducir un texto. Las casillas de verificaci&oacute;n
+son cuadros de edici&oacute;n que s&oacute;lo admiten los valores 'X'
+o ' ' (activado/desactivado). Los botones permiten ejecutar acciones
+al ser pulsados.</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<H5>Formato</H5>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El formato del
+formulario se define fuera de las funciones y siguiendo la siguiente
+sintaxis:</P>
+<P CLASS="fuente">FORM &lt;nombre&gt;</P>
+<P CLASS="fuente">	INPUT &lt;nombre&gt; FROM y,x TO y2,x2  
+</P>
+<P CLASS="fuente">		[ATTRIBUTE ( color [over color] [,bright] )]</P>
+<P CLASS="fuente">	BUTTON &lt;nombre&gt; AT y,x 
+</P>
+<P CLASS="fuente">		[ATTRIBUTE ( color [over color] [,bright] )]</P>
+<P CLASS="fuente">	CHECK &lt;nombre&gt;  AT y,x  
+</P>
+<P CLASS="fuente">		[ATTRIBUTE ( color [over color] [,bright] )]</P>
+<P CLASS="fuente">END FORM</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El formulario debe
+tener un nombre, con el que es accedido desde el programa. Los
+objetos que lo componen se identifican tambi&eacute;n mediante un
+nombre.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Al definir el
+formulario se pueden indicar los atributos de color que deben tener
+los objetos. Si no se indica nada, tendr&aacute;n los mismos que la
+ventana sobre la que se muestre el formulario.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H5>Manejo</H5>
+<P CLASS="fuente"><B>CREATE FORM &lt;nombre&gt;</B></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La primera acci&oacute;n
+que hay que realizar para poder usar un formulario de entrada es
+crearlo. La sentencia <FONT FACE="courier, monospace">CREATE FORM</FONT>
+crea en memoria todas las estructuras necesarias para el manejo del
+formulario. El formulario es creado y asociado a la ventana actual.
+No se puede tener dos formularios activos al mismo tiempo en la misma
+ventana.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">      
+</P>
+<P CLASS="fuente"><B>DISPLAY FORM &lt;nombre&gt;</B></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La sentencia <FONT FACE="courier, monospace">CREATE
+FORM</FONT> prepara el formulario para su uso, pero no lo muestra en
+pantalla. Para ello, se necesita usar la sentencia <FONT FACE="courier, monospace">DISPLAY
+FORM</FONT>.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente">DISPLAY BY NAME &lt;variables&gt;</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Esta sentencia muestra
+el valor de las variables especificadas. Cada variable es mostrada
+dentro del campo del formulario cuyo nombre sea igual al de la
+variable.      
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente"><B>INPUT BY NAME &lt;variables&gt;</B></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Esta sentencia es usada
+para obtener el valor de las variables indicadas a trav&eacute;s del
+formulario. Al usuario se le presenta en pantalla el formulario y
+podr&aacute; ir introduciendo valores en los distintos campos y
+moverse entre ellos mediante el uso de las teclas de movimiento de
+cursor. El programador puede definir una serie de sentencias que se
+ejecutar&aacute;n al salir de un campo determinado, al pulsar una
+tecla determinada o al pulsar sobre un bot&oacute;n. 
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La sintaxis de esta
+sentencia es la siguiente:</P>
+<P CLASS="fuente">INPUT BY NAME &lt;variables&gt;</P>
+<P CLASS="fuente">ON KEY('x')</P>
+<P CLASS="fuente">	sentencias</P>
+<P CLASS="fuente">ON BUTTON &lt;nombre&gt;</P>
+<P CLASS="fuente">	sentencias</P>
+<P CLASS="fuente">AFTER FIELD &lt;nombre&gt;</P>
+<P CLASS="fuente">	sentencias</P>
+<P CLASS="fuente">	...</P>
+<P CLASS="fuente">	VALIDATE FIELD</P>
+<P CLASS="fuente">	...</P>
+<P CLASS="fuente">	EXIT INPUT</P>
+<P CLASS="fuente">	...</P>
+<P CLASS="fuente">	NEXT FIELD &lt;nombre&gt;   
+</P>
+<P CLASS="fuente">	...</P>
+<P CLASS="fuente">AFTER FIELD &lt;nombre&gt;</P>
+<P CLASS="fuente">	...</P>
+<P CLASS="fuente">END INPUT</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Cuando el usuario sale
+de un campo (moviendo el cursor para entrar en un nuevo campo), el
+contenido del buffer de edici&oacute;n es asignado a la variable de
+destino. El programador puede entonces usar las cl&aacute;usulas
+<FONT FACE="courier, monospace">AFTER FIELD</FONT> para controlar la
+validez del dato o para realizar cualquier tipo de acci&oacute;n.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La sentencia <FONT FACE="courier, monospace">VALIDATE
+FIELD</FONT> puede ser usada dentro de un bloque de c&oacute;digo que
+se ejecuta al pulsar sobre una tecla. Esta sentencia fuerza a que se
+actualice el valor de la variable de destino con el contenido del
+campo activo actualmente. Esto es necesario hacerlo dentro de las
+sentencias que se ejecutan en una cl&aacute;usula <FONT FACE="courier, monospace">ON
+KEY</FONT>, ya que el valor de las variables de destino no se
+actualiza normalmente hasta que no se ha salido del campo.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Si alguna de las
+sentencias modifica el valor de una variable que se est&aacute;
+editando, ser&aacute; necesario enviar al formulario el nuevo valor
+de la variable mediante el uso de la sentencia '<FONT FACE="courier, monospace">DISPLAY
+BY NAME</FONT>'.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Desde dentro del propio
+formulario es posible mover el cursor a un campo determinado usando
+la sentencia '<FONT FACE="courier, monospace">NEXT FIELD</FONT>' o
+terminar la edici&oacute;n mediante la sentencia <FONT FACE="courier, monospace">EXIT
+INPUT</FONT></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form f_clientes</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	input codigo from 1,10 to 1,6</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	input nombre from 2,10 to 2,30</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	input direccion from 3,10 to 3,30</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	check facturar at 4,10</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	button aceptar at 2,40</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	button cancelar at 3,40</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>end form      </FONT>
+</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>function editar_cliente</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>define sw_aceptado integer</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>define r record</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	codigo integer</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	nombre char(20)</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	direccion char(20)</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	facturar integer</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>end record</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	let sw_aceptado=0</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	create form f_clientes</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	display form f_clientes</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	input by name r.*</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	on key(F1)</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		call ayuda()</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	on button aceptar</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		validate field</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		let sw_aceptado=1</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		exit input</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	on button cancelar</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		let sw_aceptado=0</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		exit input</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	after field codigo</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		if r.codigo&lt;100 then</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>			let r.codigo=0</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>			display by name r.codigo</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>			next field r.codigo</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		end if</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	end input</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>end function</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<H3 STYLE="page-break-before: always">Acceso a Bases de Datos.
+Sentencias SQL</H3>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El objetivo de este
+manual no es explicar la sintaxis del lenguaje <I>SQL</I>, sino ver
+de qu&eacute; forma se integra este lenguaje en el 4GL implementado.</P>
+<H4>Transacciones</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">PostgreSQL es un gestor
+de bases de datos transaccional. Permite agrupar operaciones dentro
+de transacciones y anular todas las actualizaciones realizadas por
+una transacci&oacute;n si es necesario. Las sentencias para indicar
+el comienzo y final de una transacci&oacute;n son:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente">BEGIN TRANSACTION</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Indica el comienzo de
+una transacci&oacute;n. Todas las actualizaciones que se realicen
+sobre la base de datos no ser&aacute;n definitivas hasta que se
+ejecute la sentencia <FONT FACE="courier, monospace">COMMIT
+TRANSACTION</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente">COMMIT TRANSACTION</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Esta sentencia indica
+que se ha llegado al final de una transacci&oacute;n y que se deben
+fijar todas las actualizaciones realizadas sobre la base de datos.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente">ABORT TRANSACTION</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Con esta sentencia se
+cancela una transacci&oacute;n. Todas las actualizaciones realizadas
+desde la sentencia <FONT FACE="courier, monospace">BEGIN TRANSACTION</FONT>
+son desechadas.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Hay que tener cuidado
+de no anidar transacciones. Es com&uacute;n cometer el error de
+comenzar una transacci&oacute;n y llamar a una funci&oacute;n que no
+sabemos que tambi&eacute;n comienza otra transacci&oacute;n. Hasta
+ah&iacute; no hay problema. El problema llega cuando la segunda
+transacci&oacute;n ejecuta un '<FONT FACE="courier, monospace">COMMIT
+TRANSACTION</FONT>'. En ese momento se est&aacute;n aceptando TODAS
+las actualizaciones realizadas a la base de datos, no s&oacute;lo las
+de la &uacute;ltima transacci&oacute;n; sin embargo, la transacci&oacute;n
+inicial a&uacute;n no ha terminado.</P>
+<H4>Consultas</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La sentencia SELECT de
+SQL busca en una o varias tablas aquellos registros que cumplan
+determinadas condiciones. 
+</P>
+<P CLASS="fuente">SELECT &lt;lista_campos&gt; [INTO
+&lt;lista_variables&gt;] 
+</P>
+<P CLASS="fuente">	FROM &lt;lista_tablas&gt; 
+</P>
+<P CLASS="fuente">	[WHERE &lt;condicion&gt;]</P>
+<P CLASS="fuente">	[ORDER BY &lt;lista_campos&gt;]</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Si se indica la
+cl&aacute;usula <FONT FACE="courier, monospace">INTO</FONT>, los
+valores de los campos devueltos son asignados a las variables que se
+indiquen. Si la consulta devuelve m&aacute;s de una tupla, se
+asignar&aacute;n los valores de los campos de la primera de ellas, y
+se presenta un aviso en pantalla.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Es posible conocer si
+una consulta no ha devuelto ninguna tupla. La variable global
+'<FONT FACE="courier, monospace">status</FONT>' tendr&aacute; el
+valor <FONT FACE="courier, monospace">notfound</FONT> en caso de no
+encontrar registros que cumplan la condici&oacute;n.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">define r record like clientes.*</P>
+<P CLASS="fuente">prompt &quot;Codigo: &quot; for r.codigo</P>
+<P CLASS="fuente">select * into r.* from clientes 
+</P>
+<P CLASS="fuente">	where codigo=r.codigo</P>
+<P CLASS="fuente">if status=notfound then</P>
+<P CLASS="fuente">	display &quot;No se encuentra el cliente
+&quot;,r.codigo</P>
+<P CLASS="fuente">else</P>
+<P CLASS="fuente">	display &quot;El cliente &quot;,r.codigo,&quot; se
+llama &quot;,r.nombre</P>
+<P CLASS="fuente">end if</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<H4>Inserci&oacute;n de valores</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La sentencia de <I>SQL</I>
+para insertar valores dentro de una tabla es <FONT FACE="courier, monospace">INSERT</FONT>.
+En <B><I>hy4GL</I></B><SPAN STYLE="font-weight: medium"><SPAN STYLE="font-style: normal">
+se usa con la misma sintaxis que en <I>SQL</I>:</SPAN></SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal; font-weight: medium">
+      INSERT INTO &lt;tabla&gt; VALUES ( &lt;expresiones&gt; )</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">input by name r_cliente.*</P>
+<P CLASS="fuente">on button aceptar</P>
+<P CLASS="fuente">	if confirmar()=&quot;SI&quot; then</P>
+<P CLASS="fuente">		insert into clientes values (r_cliente.*)</P>
+<P CLASS="fuente">		if status=ok then</P>
+<P CLASS="fuente"> 			exit input</P>
+<P CLASS="fuente">		else</P>
+<P CLASS="fuente">			call mensaje_error(&quot;No se puede insertar el
+registro&quot;)</P>
+<P CLASS="fuente">			exit program</P>
+<P CLASS="fuente"> 		end if</P>
+<P CLASS="fuente">	end if</P>
+<P CLASS="fuente">end input</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La inserci&oacute;n de
+valores puede fallar por diversas causas (que el usuario no tenga
+permiso para escribir en al tabla, que ya exista un registro con la
+misma clave primaria, etc). Para conocer si una instrucci&oacute;n
+<FONT FACE="courier, monospace">INSERT</FONT> ha conseguido o no su
+cometido, se puede consultar el valor de la variable global status.
+&Eacute;sta valdr&aacute; ok si la inserci&oacute;n ha sido correcta.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H4 STYLE="page-break-before: always">Borrado de valores 
+</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para borrar valores de
+una tabla se usa la sentencia <FONT FACE="courier, monospace">DELETE</FONT>
+de <I>SQL</I>. Su sintaxis es la siguiente:</P>
+<P CLASS="fuente">DELETE FROM &lt;tabla&gt; [WHERE &lt;condicion&gt;]
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Si no se indica ninguna
+condici&oacute;n se borrar&aacute;n TODOS los registros de la tabla.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">prompt &quot;&iquest;Desea borrar el albar&aacute;n
+&quot;+num_albaran+</P>
+<P CLASS="fuente">	&quot; ahora que est&aacute; facturado? (S/N)&quot;
+for char sino</P>
+<P CLASS="fuente">if sino=&quot;s&quot; or sino=&quot;S&quot; then</P>
+<P CLASS="fuente">	delete from albaranes where numero=num_albaran</P>
+<P CLASS="fuente">end if</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H4>Cursores</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Una consulta a la base
+de datos puede devolver varias tuplas. <SPAN STYLE="font-style: normal">PostgreSQL
+ofrece dos m&eacute;todos para acceder a los datos devueltos por
+estas consultas. Por un lado, se pueden obtener del servidor de bases
+de datos todas las tuplas devueltas por la consulta y, una vez en
+memoria, tratarlas de manera local. Por otra parte, se puede declarar
+un <I>cursor</I> e ir obteniendo las tuplas una a una para tratarlas.
+La desventaja de este &uacute;ltimo m&eacute;todo es que PostgreSQL
+solamente permite hacerlo dentro de una transacci&oacute;n, mientras
+que el primero no se puede usar si la consulta devuelve gran cantidad
+de tuplas.</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<B><I>hy4GL</I></B> ofrece una interfaz homog&eacute;nea para usar
+ambos m&eacute;todos. En ambos ser&aacute; necesario declarar un
+cursor. Si se opta por el primer m&eacute;todo, se incluir&aacute; el
+atributo de <I>local</I> en la declaraci&oacute;n del cursor.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+La sintaxis de la declaraci&oacute;n de un cursor es la siguiente:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<P CLASS="fuente">DECLARE &lt;nombre&gt; [LOCAL] CURSOR FOR select...</P>
+<P CLASS="fuente">DECLARE &lt;nombre&gt; [LOCAL] CURSOR FOR expresion</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">declare c local cursor for 
+</P>
+<P CLASS="fuente">	select * from clientes where ult_compra&lt;&quot;1-1-1998&quot;</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente">Ej:</P>
+<P CLASS="fuente">let consulta=</P>
+<P CLASS="fuente">	&quot;select provincia,count(*) from clientes
+group by provincia&quot;</P>
+<P CLASS="fuente">declare c cursor for consulta</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Un cursor s&oacute;lo
+se puede declarar una vez en el m&oacute;dulo fuente.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Antes de poder usar los
+datos devueltos por la consulta hay que abrir el cursor. Al abrir un
+cursor se eval&uacute;an las expresiones que se hayan incluido en las
+cl&aacute;usulas <FONT FACE="courier, monospace">where</FONT> de la
+consulta y se ejecuta la misma.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La sentencia para abrir
+un cursor es la siguiente:</P>
+<P CLASS="fuente">OPEN &lt;cursor&gt;</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El propio compilador
+comprueba si se trata de un cursor declarado como local o no. En caso
+de que se haya declarado como local, ejecuta la consulta y obtiene
+del servidor TODAS las tuplas resultantes. Si no se ha declarado como
+local, simplemente se abre el cursor en el servidor.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Una vez abierto un
+cursor se pueden obtener las tuplas resultantes de la consulta con la
+sentencia <FONT FACE="courier, monospace">FETCH</FONT>, cuya sintaxis
+es la siguiente</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente">FETCH [NEXT|PREVIOUS] &lt;cursor&gt; INTO
+&lt;lista_variables&gt;</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Si el cursor se ha
+declarado como local, se asignan directamente a las variables de
+destino los valores de los campos de la siguiente tupla, que ya est&aacute;
+en memoria. Si el cursor no se ha declarado como local, se obtiene en
+ese momento del servidor la siguiente tupla y sus campos son
+asignados a las variables.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Es posible obtener la
+tupla anterior en lugar de la siguiente usando la opci&oacute;n
+<FONT FACE="courier, monospace">PREVIOUS</FONT></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Si se ha llegado al
+final de la consulta (o al principio, si se ha usado <FONT FACE="courier, monospace">PREVIOUS</FONT>),
+la variable global <FONT FACE="courier, monospace">status</FONT>
+tomar&aacute; el valor de <FONT FACE="courier, monospace">notfound</FONT></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Al finalizar el trabajo
+con el cursor es necesario cerrar el mismo. La sentencia <FONT FACE="courier, monospace">CLOSE</FONT>
+cierra el cursor y libera la memoria usada por el mismo (y por las
+tuplas resultantes de la consulta, en caso de que el cursor estuviera
+declarado como local). Su sintaxis es:</P>
+<P CLASS="fuente">CLOSE &lt;cursor&gt;</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente">Ej:</P>
+<P CLASS="fuente">define r record like clientes.*</P>
+<P CLASS="fuente">declare c local cursor for select * from clientes</P>
+<P CLASS="fuente">	where codigo&lt;10</P>
+<P CLASS="fuente">open c</P>
+<P CLASS="fuente">fetch c into r.*</P>
+<P CLASS="fuente">while status!=notfound</P>
+<P CLASS="fuente">	display &quot;Cliente &quot;,r.codigo,&quot; -
+&quot;,r.nombre</P>
+<P CLASS="fuente">	fetch c into r.*</P>
+<P CLASS="fuente">end while</P>
+<P CLASS="fuente">close c</P>
+<H4 STYLE="page-break-before: always">EXEC_SQL</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><B><I>hy4GL</I></B> no
+soporta la sintaxis completa del lenguaje <I>SQL</I>, sin embargo
+ofrece esta sentencia para permitir al programador ejecutar
+sentencias <I>SQL</I> no soportadas por el lenguaje.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Su sintaxis es la
+siguiente:</P>
+<P CLASS="fuente">EXEC_SQL &lt;expresion&gt; [INTO &lt;lista_variables&gt;]</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Si la sentencia
+ejecutada devuelve valores, &eacute;stos pueden ser asignados a
+variables mediante la cl&aacute;usula <FONT FACE="courier, monospace">INTO</FONT>,
+y se podr&aacute; usar la variable global <FONT FACE="courier, monospace">status</FONT>
+para conocer si se han obtenido o no valores (<FONT FACE="courier, monospace">status!=notfound</FONT>).
+Por contra, si se trata de una sentencia que no devuelve valores, la
+variable global <FONT FACE="courier, monospace">status</FONT> tomar&aacute;
+el valor <FONT FACE="courier, monospace">ok</FONT> si se ha ejecutado
+con &eacute;xito</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">EXEC_SQL &quot;create table tmp_numeros (i
+integer);&quot;</P>
+<P CLASS="fuente">if status!=ok then</P>
+<P CLASS="fuente">	display &quot;no se ha podido crear la tabla
+temporal&quot;</P>
+<P CLASS="fuente">end if</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">EXEC_SQL &quot;select max(numero) from facturas&quot;
+INTO num_fac</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H4>FOREACH</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La estructura FOREACH
+se usa para recorrer un cursor desde el pricipio hasta el final. La
+sintaxis de esta estructura repetitiva es la siguiente:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente">FOREACH &lt;cursor&gt; INTO &lt;lista_variables&gt;</P>
+<P CLASS="fuente">	sentencias</P>
+<P CLASS="fuente">	...</P>
+<P CLASS="fuente">	CONTINUE FOREACH</P>
+<P CLASS="fuente">	...</P>
+<P CLASS="fuente">	EXIT FOREACH</P>
+<P CLASS="fuente">	...</P>
+<P CLASS="fuente">END FOREACH</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El cursor debe estar
+declarado, pero no abierto. El cursor se abrir&aacute;
+autom&aacute;ticamente al entrar en  el FOREACH. Por cada tupla del
+mismo, sus campos son asignados a la lista de variables y se ejecutan
+las sentencias.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="page-break-before: always">
+La sentencia <FONT FACE="courier, monospace">CONTINUE FOREACH </FONT>fuerza
+a que se avance hasta la siguiente tupla. , mientras que la sentencia
+<FONT FACE="courier, monospace">EXIT FOREACH</FONT> cierra el cursor
+y sale del bucle.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Cuando el cursor llega
+hasta el final &eacute;ste se cierra autom&aacute;ticamente y termina
+la ejecuci&oacute;n del bucle.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">define r record like diario.*</P>
+<P CLASS="fuente">define num_cta like diario.cta</P>
+<P CLASS="fuente">declare c cursor for select * from diario where
+cta=num_cta</P>
+<P CLASS="fuente">let total=0</P>
+<P CLASS="fuente">foreach c into r.*</P>
+<P CLASS="fuente">	if r.debe_haber=&quot;D&quot; then</P>
+<P CLASS="fuente">		let total=total-r.importe</P>
+<P CLASS="fuente">	else 
+</P>
+<P CLASS="fuente">		let total=total+r.importe</P>
+<P CLASS="fuente">	end if</P>
+<P CLASS="fuente">end foreach</P>
+<P CLASS="fuente">display &quot;saldo: &quot;,total</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H4>BROWSE (ampliaci&oacute;n a Informix-4GL)</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Esta sentencia es usada
+para presentar en pantalla el resultado de una consulta a la base de
+datos. Es necesario definir un cursor con la consulta que se pretende
+visualizar. El cursor hay que declararlo como <FONT FACE="courier, monospace">LOCAL</FONT>.</P>
+<P CLASS="fuente">BROWSE &lt;cursor&gt; INTO &lt;lista_variables&gt;</P>
+<P CLASS="fuente">	[FROM y,x TO yy,xx]</P>
+<P CLASS="fuente">	[TITLE &lt;expresion]</P>
+<P CLASS="fuente">	DISPLAY &lt;expresiones&gt;</P>
+<P CLASS="fuente">	ON KEY (id)</P>
+<P CLASS="fuente">		sentencias</P>
+<P CLASS="fuente">	ON KEY (num)</P>
+<P CLASS="fuente">		sentencias</P>
+<P CLASS="fuente">	ON KEY (cadena)</P>
+<P CLASS="fuente">		sentencias</P>
+<P CLASS="fuente">		...</P>
+<P CLASS="fuente">		EXIT BROWSE</P>
+<P CLASS="fuente">END BROWSE</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Al llegar el programa a
+esta sentencia, se abre autom&aacute;ticamente el cursor, se ejecuta
+la consulta y se obtienen todas las tuplas resultantes. Para imprimir
+cada una de ellas, se asignan los distintos campos de la tupla actual
+a las variables indicadas en la cl&aacute;usula <FONT FACE="courier, monospace">INTO</FONT>,
+y se imprimen las expresiones de la cl&aacute;usula <FONT FACE="courier, monospace">DISPLAY.</FONT></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">A partir de este
+momento, el usuario podr&aacute; desplazarse por las tuplas
+resultantes usando las teclas de movimiento de cursor.  Pulsando la
+tecla ESCape, se abandona la sentencia <FONT FACE="courier, monospace">BROWSE</FONT>
+y se cierra el cursor.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El programador puede
+definir una serie de sentencias a ejecutar cuando el usuaro pulse una
+tecla determinada. Entre estas sentencias puede incluir <FONT FACE="courier, monospace">EXIT
+BROWSE</FONT>, que abandonar&aacute; el <FONT FACE="courier, monospace">BROWSE</FONT>
+y cerrar&aacute; el cursor.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="fuente">define rp record like provincias.*</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente">declare c local cursor for select * from provincias</P>
+<P CLASS="fuente">browse c into rp.*</P>
+<P CLASS="fuente">	title &quot;Matricula Provincia&quot;</P>
+<P CLASS="fuente">	display rp.mat+&quot; &quot;+rp.nombre</P>
+<P CLASS="fuente">	on key (F1)</P>
+<P CLASS="fuente">		call ayuda()</P>
+<P CLASS="fuente">	on key(KEY_ENTER)</P>
+<P CLASS="fuente">		call ver_provincia(rp.*)</P>
+<P CLASS="fuente">	on key(F8)</P>
+<P CLASS="fuente">		exit browse</P>
+<P CLASS="fuente">end browse</P>
+<H3 STYLE="page-break-before: always">Generador de Listados</H3>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El lenguaje 4GL ofrece
+una sintaxis sencilla a la vez que potente para generar listados. El
+generador de listados controla los saltos de p&aacute;gina,
+encabezamientos y los cambios de grupo, lo que facilita enormemente
+la tarea al programador.</P>
+<H4>Formato del listado</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Los listados se definen
+fuera de las funciones con la siguiente sintaxis:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente">REPORT &lt;nombre&gt;(parametros)</P>
+<P CLASS="fuente">	declaraciones locales</P>
+<P CLASS="fuente">	OUTPUT 
+</P>
+<P CLASS="fuente">		REPORT TO &lt;fichero&gt;</P>
+<P CLASS="fuente">		REPORT TO PIPE &lt;comando&gt;</P>
+<P CLASS="fuente">		PAGE WIDTH &lt;num&gt;</P>
+<P CLASS="fuente">		PAGE HEIGTH &lt;num&gt;</P>
+<P CLASS="fuente">	FORMAT</P>
+<P CLASS="fuente">		FIRST PAGE HEADER</P>
+<P CLASS="fuente">			sentencias</P>
+<P CLASS="fuente">		PAGE HEADER 
+</P>
+<P CLASS="fuente">			sentencias</P>
+<P CLASS="fuente">		BEFORE GROUP OF &lt;lista_variables&gt;</P>
+<P CLASS="fuente">			sentencias</P>
+<P CLASS="fuente">		ON EVERY ROW</P>
+<P CLASS="fuente">			sentencias</P>
+<P CLASS="fuente">		AFTER GROUP OF &lt;lista_variables&gt;</P>
+<P CLASS="fuente">			sentencias</P>
+<P CLASS="fuente">		PAGE FOOTER</P>
+<P CLASS="fuente">			sentencias</P>
+<P CLASS="fuente">		ON LAST ROW</P>
+<P CLASS="fuente">			sentencias</P>
+<P CLASS="fuente">END REPORT</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="page-break-before: always">
+Un listado debe tener un nombre y recibir unos par&aacute;metros, que
+ser&aacute;n la base de la informaci&oacute;n que se imprima. Al
+igual que una funci&oacute;n, un listado puede usar variables locales
+para realizar sus c&aacute;lculos internos. Estas variables habr&aacute;
+que definirlas junto con los par&aacute;metros formales.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La definici&oacute;n de
+un listado tiene dos secciones: la primera, <FONT FACE="courier, monospace">OUTPUT</FONT>,
+en la que se indica el nombre del fichero de salida o un comando que
+se ejecutar&aacute; y al que se va a enviar la salida del listado. En
+esta secci&oacute;n se especifica tambi&eacute;n el tama&ntilde;o
+(lineas y columnas) de una p&aacute;gina, para permitir la detecci&oacute;n
+autom&aacute;tica de los saltos de p&aacute;gina.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">En la segunda secci&oacute;n,
+<FONT FACE="courier, monospace">FORMAT</FONT>, se indica la
+apariencia que va a tomar el listado. Consta de varias condiciones
+(todas ellas opcionales) y de las sentencias que se deben ejecutar al
+cumplirse cada una de las condiciones. 
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<UL>
+	<UL>
+		<LI><P CLASS="fuente">FIRST PAGE HEADER</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Sentencias que se deben ejecutar al comenzar el
+listado. 
+</P>
+<UL>
+	<UL>
+		<LI><P CLASS="fuente">PAGE HEADER</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Sentencias que se deben ejecutar al comenzar cada
+p&aacute;gina</P>
+<UL>
+	<UL>
+		<LI><P CLASS="fuente">BEFORE GROUP OF &lt;var1&gt;,&lt;var2&gt;,...</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Sentencias que se ejecutar&aacute;n cuando se vaya
+a producir un cambio en los valores de las variables indicadas</P>
+<UL>
+	<UL>
+		<LI><P CLASS="fuente">ON EVERY ROW</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Sentencias que se ejecutan en cada l&iacute;nea</P>
+<UL>
+	<UL>
+		<LI><P CLASS="fuente">AFTER GROUP OF</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Sentencias que se ejecutan despu&eacute;s de
+producirse el cambio en los valores de las variables.</P>
+<UL>
+	<UL>
+		<LI><P CLASS="fuente">PAGE TRAILER</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Sentencias que se ejecutan al final de cada p&aacute;gina</P>
+<UL>
+	<UL>
+		<LI><P CLASS="fuente">ON LAST ROW</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Sentencias que se ejecutan al final del listado</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para enviar realmente
+una l&iacute;nea al listado se usa la sentencia <FONT FACE="courier, monospace">PRINT</FONT>.
+Esta sentencia deber&aacute; estar incluida en alguna/s de las
+condiciones de la secci&oacute;n <FONT FACE="courier, monospace">FORMAT</FONT>
+de la definici&oacute;n del listado si se quiere que el listado
+produzca alguna salida.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Dentro de un listado se
+pueden usar las variables pageno y lineno, que indican el n&uacute;mero
+de p&aacute;gina y el n&uacute;mero de l&iacute;nea dentro de la
+p&aacute;gina respectivamente.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H4 STYLE="page-break-before: always">Sentencias de control de
+listados</H4>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para generar un listado
+se usan las siguientes sentencias:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<UL>
+	<UL>
+		<LI><P CLASS="fuente">START REPORT &lt;nombre&gt;</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Esta sentencia indica el comienzo del listado. Al
+ejecutarla se preparan todas las estructuras internas y se crean
+tablas temporales para almacenar la informaci&oacute;n que va a
+generar el listado.</P>
+<UL>
+	<UL>
+		<LI><P CLASS="fuente">OUTPUT TO REPORT &lt;nombre&gt; (param1,
+		param2, ...)</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Env&iacute;a al generador de listados los
+par&aacute;metros indicados.</P>
+<UL>
+	<UL>
+		<LI><P CLASS="fuente">FINISH REPORT &lt;nombre&gt;</P>
+	</UL>
+</UL>
+<P CLASS="punto2">Da por finalizado el listado. Al ejecutar esta
+sentencia es cuando se genera realmente el listado a partir de todos
+los par&aacute;metros recibidos mediante sentencias <FONT FACE="courier, monospace">OUTPUT
+TO REPORT</FONT></P>
+<UL>
+	<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+</UL>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente">function listar_alumnos()</P>
+<P CLASS="fuente">define r record like alumnos.*</P>
+<P CLASS="fuente">declare c cursor for selec * from alumnos order by
+grupo</P>
+<P CLASS="fuente">	start report r1</P>
+<P CLASS="fuente">	foreach c into r.*</P>
+<P CLASS="fuente">		output to report r1(r.grupo,r.nombre)</P>
+<P CLASS="fuente">	end foreach</P>
+<P CLASS="fuente">	finish report r1</P>
+<P CLASS="fuente">end function</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente">report r1(grupo,nombre)</P>
+<P CLASS="fuente">define grupo char(5)</P>
+<P CLASS="fuente">define nombre char(40)</P>
+<P CLASS="fuente">output report to pipe &quot;lp -dlaser&quot;</P>
+<P CLASS="fuente">	page width 78</P>
+<P CLASS="fuente">	page length 64</P>
+<P CLASS="fuente">format</P>
+<P CLASS="fuente">	first page header</P>
+<P CLASS="fuente">		print &quot;LISTADO DE ALUMNOS POR GRUPO  
+Fecha:&quot;+today()</P>
+<P CLASS="fuente">		print &quot;&quot;</P>
+<P CLASS="fuente">		print &quot;Nombre y apellidos&quot;</P>
+<P CLASS="fuente">		print &quot;-------------------------------------&quot;</P>
+<P CLASS="fuente">	page header</P>
+<P CLASS="fuente">		print &quot;LISTADO DE ALUMNOS POR GRUPO   
+Pag:&quot;+pageno</P>
+<P CLASS="fuente">		print &quot;&quot;</P>
+<P CLASS="fuente">		print &quot;Nombre y apellidos&quot;</P>
+<P CLASS="fuente">		print &quot;-------------------------------------&quot;</P>
+<P CLASS="fuente">	before group of grupo</P>
+<P CLASS="fuente">		print</P>
+<P CLASS="fuente">		print &quot;Grupo: &quot;,grupo</P>
+<P CLASS="fuente">		print &quot;--------------------------------&quot;</P>
+<P CLASS="fuente">	on every row</P>
+<P CLASS="fuente">		print nombre</P>
+<P CLASS="fuente">end report</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<H1 STYLE="page-break-before: always">Uso del compilador de 4GL.</H1>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El programa con el que
+se invoca al compilador es <FONT FACE="courier, monospace">hy4gl.</FONT>
+Se trata de un script que comprueba el tipo de cada uno de los
+archivos que recibe como par&aacute;metro y ejecuta el programa
+necesario para compilarlo.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">hy4gl solamente procesa
+aquellos archivos con extension .4gl. El resto de archivos, as&iacute;
+como todos los dem&aacute;s par&aacute;metros que reciba son enviados
+al compilador de C. 
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Si no se especifica el
+par&aacute;metro <FONT FACE="courier, monospace">-o</FONT> (para
+indicarle al compilador de C el nombre del ejecutable que debe
+generar, en lugar de a.out), se generar&aacute; un ejecutable con el
+mismo nombre que el primer archivo que se mande como par&aacute;metro
+a hy4gl, y con extensi&oacute;n <FONT FACE="courier, monospace">.e</FONT></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Ej:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<UL>
+	<UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para generar
+		<FONT FACE="courier, monospace">alumnos.e</FONT> a partir de
+		<FONT FACE="courier, monospace">alumnos.4gl</FONT>:</P>
+	</UL>
+</UL>
+<P CLASS="fuente">	hy4gl alumnos.4gl</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<UL>
+	<UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para generar
+		<FONT FACE="courier, monospace">gestion.e <FONT FACE="times, serif">a
+		partir de</FONT> menu.4gl, profesores.4gl y alumnos.4gl</FONT>:</P>
+	</UL>
+</UL>
+<P CLASS="fuente">	hy4gl -o gestion.e menu.4gl profesores.4gl
+alumnos.4gl</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<UL>
+	<UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para compilar
+		profesores.4gl y obtener el modulo objeto, pero no generar
+		ejecutable:</P>
+	</UL>
+</UL>
+<P CLASS="fuente"> hy4gl -c profesores.4gl -o progesores.o</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H3>Variables de entorno</H3>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Las siguientes
+variables de entorno pueden influir en el comportamiento del
+compilador:</P>
+<UL>
+	<UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">HYVERB: Si existe
+		esta variable de entorno, el compilador muestra en pantalla el
+		c&oacute;digo generado.</P>
+	</UL>
+</UL>
+<UL>
+	<UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">C_LIBRARY_PATH:
+		Indica la lista de directorios en los que el enlazador va a buscas
+		las librer&iacute;as</P>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">C_INCLUDE_PATH:
+		Indica la lista de directorios en los que el compilador de C va a
+		buscar los archivos de cabecera.</P>
+	</UL>
+</UL>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Las siguientes
+variables de entorno pueden influir en el comportamiento de las
+aplicaciones generadas:</P>
+<UL>
+	<UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">HY4GLHOST y
+		HY4GLPORT: si existen, indican el nombre del host y el puerto
+		TCP/IP del servidor de PostgreSQL.</P>
+		<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"></P>
+	</UL>
+</UL>
+<DIV ID="Table of Contents1">
+	<P STYLE="margin-top: 0.42cm; page-break-before: always; page-break-after: avoid">
+	<FONT FACE="helvetica, sans-serif"><FONT SIZE=4 STYLE="font-size: 16pt"><B>Indice</B></FONT></FONT></P>
+	<P STYLE="margin-bottom: 0cm"><BR>
+	</P>
+	<P STYLE="margin-bottom: 0cm">Sintaxis del lenguaje 4GL.	1</P>
+	<P STYLE="margin-left: 0.5cm; margin-bottom: 0cm">Comentarios	1</P>
+	<P STYLE="margin-left: 0.5cm; margin-bottom: 0cm">Declaraciones de
+	variables:	2</P>
+	<P STYLE="margin-left: 1cm; margin-bottom: 0cm">Tipos de datos:	2</P>
+	<P STYLE="margin-left: 1cm; margin-bottom: 0cm">Declaraci&oacute;n
+	de variables:	3</P>
+	<P STYLE="margin-left: 0.5cm; margin-bottom: 0cm">Funciones:	5</P>
+	<P STYLE="margin-left: 0.5cm; margin-bottom: 0cm"> Expresiones:	7</P>
+	<P STYLE="margin-left: 1cm; margin-bottom: 0cm">Expresiones
+	simples:	7</P>
+	<P STYLE="margin-left: 1cm; margin-bottom: 0cm">Operadores USING,
+	CLIPPED y [ ]:	8</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Operador USING	8</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Operador CLIPPED	8</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Operador [ ]	9</P>
+	<P STYLE="margin-left: 1cm; margin-bottom: 0cm">Llamadas a
+	funciones	10</P>
+	<P STYLE="margin-left: 1cm; margin-bottom: 0cm">Operadores
+	binarios	10</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Operador +	10</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Operador -	11</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Operadores * y
+	/	11</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Operadores de
+	comparaci&oacute;n	12</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Operadores
+	l&oacute;gicos	12</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Precedencia de
+	operadores	13</P>
+	<P STYLE="margin-left: 0.5cm; margin-bottom: 0cm">Sentencias:	14</P>
+	<P STYLE="margin-left: 1cm; margin-bottom: 0cm">C Embebido
+	(ampliaci&oacute;n a Informix-4GL)	14</P>
+	<P STYLE="margin-left: 1cm; margin-bottom: 0cm">Asignaci&oacute;n:	15</P>
+	<P STYLE="margin-left: 1cm; margin-bottom: 0cm">Asignaciones
+	m&uacute;ltiples (ampliaci&oacute;n a Informix-4GL)	15</P>
+	<P STYLE="margin-left: 1cm; margin-bottom: 0cm">Estructuras
+	condicionales y repetitivas:	17</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">EXIT PROGRAM 	17</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Llamadas a
+	funciones	17</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Condiciones IF...
+	THEN... ELSE... END IF	18</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Bucles WHILE	18</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Bucles FOR	20</P>
+	<P STYLE="margin-left: 1cm; margin-bottom: 0cm">Interfaz de
+	usuario	21</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Operaciones con
+	ventanas.	21</P>
+	<P STYLE="margin-left: 2cm; margin-bottom: 0cm">OPEN WINDOW	21</P>
+	<P STYLE="margin-left: 2cm; margin-bottom: 0cm">CURRENT WINDOW	22</P>
+	<P STYLE="margin-left: 2cm; margin-bottom: 0cm">MOVE WINDOW	22</P>
+	<P STYLE="margin-left: 2cm; margin-bottom: 0cm">CLEAR WINDOW	22</P>
+	<P STYLE="margin-left: 2cm; margin-bottom: 0cm">CLOSE WINDOW	22</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Presentaci&oacute;n
+	en pantalla	23</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Introducci&oacute;n
+	de datos simples	23</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Men&uacute;s:	24</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Formularios de
+	entrada:	26</P>
+	<P STYLE="margin-left: 2cm; margin-bottom: 0cm">Formato	26</P>
+	<P STYLE="margin-left: 2cm; margin-bottom: 0cm">Manejo	26</P>
+	<P STYLE="margin-left: 1cm; margin-bottom: 0cm">Acceso a Bases de
+	Datos. Sentencias SQL	30</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Transacciones	30</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Consultas	30</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Inserci&oacute;n
+	de valores	31</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Borrado de valores
+		32</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Cursores	32</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">EXEC_SQL	34</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">FOREACH	34</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">BROWSE (ampliaci&oacute;n
+	a Informix-4GL)	35</P>
+	<P STYLE="margin-left: 1cm; margin-bottom: 0cm">Generador de
+	Listados	37</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Formato del
+	listado	37</P>
+	<P STYLE="margin-left: 1.5cm; margin-bottom: 0cm">Sentencias de
+	control de listados	39</P>
+	<P STYLE="margin-bottom: 0cm">Uso del compilador de 4GL.	41</P>
+	<P STYLE="margin-left: 1cm; margin-bottom: 0cm">Variables de
+	entorno	41</P>
+</DIV>
+<DIV ID="sdfootnote1">
+	<P CLASS="sdfootnote"><A CLASS="sdfootnotesym" NAME="sdfootnote1sym" HREF="#sdfootnote1anc">1</A><B>Nota
+	para los usuarios de Informix-4GL</B>: En Informix-4GL se usa la
+	coma ',' para concatenar cadenas. Una consecuencia directa de esto
+	es que no se puedan concatenar cadenas al enviar par&aacute;metros a
+	funciones, debiendo asignar primero las cadenas a una variable y
+	despu&eacute;s enviar dicha variable a la funci&oacute;n. Para
+	evitar estos problemas, <B><I>hy4GL</I></B> usa el operador '+' para
+	concaternar cadenas. 
+	</P>
+</DIV>
+<DIV ID="sdfootnote2">
+	<P CLASS="sdfootnote"><A CLASS="sdfootnotesym" NAME="sdfootnote2sym" HREF="#sdfootnote2anc">2</A>La
+	opci&oacute;n TITLE es una ampliaci&oacute;n a la sintaxis de
+	Informix-4GL.</P>
+</DIV>
+<DIV ID="sdfootnote3">
+	<P CLASS="sdfootnote"><A CLASS="sdfootnotesym" NAME="sdfootnote3sym" HREF="#sdfootnote3anc">3</A>Informix-4GL
+	muestra un borde 'exterior' a la ventana.</P>
+</DIV>
+<DIV ID="sdfootnote4">
+	<P CLASS="sdfootnote"><A CLASS="sdfootnotesym" NAME="sdfootnote4sym" HREF="#sdfootnote4anc">4</A>V&eacute;ase
+	tambi&eacute;n la secci&oacute;n 'Formularios de Entrada'.</P>
+</DIV>
+<DIV TYPE=FOOTER>
+	<P STYLE="margin-top: 0.51cm; margin-bottom: 0cm"><BR>
+	</P>
+	<P STYLE="margin-bottom: 0cm; border: none; padding: 0cm; font-style: oblique">
+	<FONT FACE="helvetica, sans-serif"><FONT SIZE=2>hy4GL: compilador de
+	lenguaje 4GL para PostgreSQL		2-<SDFIELD TYPE=PAGE SUBTYPE=RANDOM FORMAT=PAGE>43</SDFIELD></FONT></FONT></P>
+</DIV>
+</BODY>
+</HTML>

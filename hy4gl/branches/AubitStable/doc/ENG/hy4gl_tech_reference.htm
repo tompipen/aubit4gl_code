@@ -1,0 +1,1075 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Hy4gl - Technical reference manual</title>
+</head>
+
+<body>
+
+<h2 align="center">Hy4gl Technical Documentation</h2>
+<hr>
+<p><i>Indice:</i></p>
+<ul>
+  <li>Introducción</li>
+  <li>Analizador léxico (scanner)</li>
+  <li>Palabras reservadas</li>
+  <li>Analizador sintáctico (parser)</li>
+  <li>Gramática concreta</li>
+  <li>Árbol de sintaxis abstracta y tabla de símbolos</li>
+  <li>Generación de Código</li>
+  <li>Variables globales</li>
+  <li>Funciones</li>
+  <li>Evaluación de expresiones: La pila</li>
+</ul>
+<p><i>Introduction &nbsp;</i></p>
+<p>The function of a compiler is the one to translate a source code to an object
+code. In the case &nbsp;of hy4GL, the source code is language 4GL. The compiler
+takes like entrance a program &nbsp;writing in language 4GL and translates it to
+its equivalent one in language C. In a second step is used one &nbsp;external
+tool (the compiler of C) to generate code in ensablador. &nbsp;</p>
+<p>Language C for several reasons has been chosen. In the first place, the
+objective of the project is &nbsp;to obtain a tool to program applications of
+data bases that are related to &nbsp;servers based on PostgreSQL, and PostgreSQL
+offers bookstores of functions to accede to his &nbsp;data bases dese language
+C. On the other hand, this language allows a greater portability and one &nbsp;independence
+of the platform that could not be obtained of another way. &nbsp;</p>
+<p>Not to lose portability, the generated code uses bookstores of functions
+found in all &nbsp;the UNIX platforms. For generation of the user interface it
+has been chosen by ncurses, one &nbsp;bookstore of functions that offer a method
+to accede to terminals in way independent text &nbsp;of the type of used
+terminal. In addition, ncurses includes functions to generate and to handle
+menus and &nbsp;entrance forms, which has facilitated this section of the code
+generator. &nbsp;</p>
+<p>hy4GL has been structured in two parts: a tool to obtain feasible programs a
+&nbsp;to divide of source code in 4GL and a bookstore of functions that will use
+these programs in time of &nbsp;execution. The run-Time bookstore includes the
+functions of handling of the internal battery, those of &nbsp;conversion of
+types and functions that can use the programmer to obtain information like
+&nbsp;present time/date, or the length of a chain. &nbsp;The 4GL compiler
+consists of the following parts: &nbsp;</p>
+<p>. lexical analyzer (to scanner), &nbsp;<br>
+. parser (to parser), &nbsp;<br>
+. semantic analyzer and &nbsp;<br>
+. code generator. &nbsp;</p>
+<p>All these parts are interconnected. &nbsp;exit of one is the entrance of the
+following one. In &nbsp;case of hy4GL, the four parts are not totally
+sequential: the semantic analysis is made to &nbsp;same time that the syntactic
+analysis and the generation of code. &nbsp;</p>
+<p>Figure 1: Modules of the compiler &nbsp;</p>
+<p>Módu those of comp ilador &nbsp;<br>
+Analyzed &nbsp;<br>
+lexicon &nbsp;<br>
+(to scanner) &nbsp;<br>
+Tico analysis semán &nbsp;<br>
+Analyzed r &nbsp;<br>
+sintác tico &nbsp;<br>
+(to parser) &nbsp;<br>
+Generated r of &nbsp;<br>
+Cód igo &nbsp;<br>
+<br>
+Lexical analyzer (to scanner) &nbsp;</p>
+<p>The lexical analyzer taking as entered the program written in language 4GL
+and divides it in &nbsp;tokens. To each they token is associated an attribute to
+him. Thus a whole number produces token TK_CONS and &nbsp;its attribute
+associate is its numerical value. &nbsp;The used lexical analyzer in hy4GL has
+been generated using tool LEX 1. One is &nbsp;a tool that generates programs in
+language C which lexical text patrons recognize. &nbsp;program is generated from
+a file in that specifies a series of tuplas (called &nbsp;rules) formed by
+regular expressions and code in C that will be executed whenever &nbsp;find the
+regular expression in the source. &nbsp;</p>
+<p>The behavior of the lexical analyzer depends on the context in which we are:
+to &nbsp;to arrive at a whole number is obtained token TK_CONS normally, but if
+at this moment &nbsp;we were within a commentary, is not obtained token some.
+Four contexts are defined &nbsp;different for the operation from this lexical
+analyzer: an initial context, in which &nbsp;it finds the analyzer normally; a
+context for the commentaries between keys (format of &nbsp;Informix-4GL) and
+another one for the commentaries between symbols / * and * / (format of C).
+Exist &nbsp;additional context in which is the analyzer between the symbols ' c'
+and ' c. ' (introduction of &nbsp;sentences in contracted C). &nbsp;</p>
+<p>The language has a series of reserved words that cannot be used like names of
+&nbsp;variables. When the lexical analyzer finds a sequence of characters that
+could be &nbsp;<br>
+varname, this one is looked for in a table of reserved words. If one is, &nbsp;lexical
+analyzer gives back token corresponding to the reserved word. In opposite case,
+&nbsp;<br>
+he gives back token TK_ID (identifier) and a chain with the name like attribute.
+&nbsp;</p>
+<p>The search in the list of reserved words is made by means of an algorithm
+search &nbsp;dichotomizing to accelerate the process. The list of reserved words
+of language 4GL and his tokens &nbsp;associated one is in the table of the
+following page. The reserved words are not sensible to very small capital
+letters and. Nevertheless, &nbsp;<br>
+identifiers yes are it. &nbsp;</p>
+<p>1 Concretely, version 2,5,4 of GNU lexical Fast to analyzer generator (flex)
+&nbsp;</p>
+<p>Reserved words &nbsp;</p>
+<p>&quot; abort &quot; TK_ABORT &nbsp;<br>
+&quot; to after &quot; TK_AFTER, &nbsp;<br>
+&quot; and &quot; TK_AND &nbsp;<br>
+&quot; ace &quot; TK_AS &nbsp;<br>
+&quot; AT &quot; TK_AT &nbsp;<br>
+&quot; attribute &quot; TK_ATTR &nbsp;<br>
+&quot; attributes &quot; TK_ATTR &nbsp;<br>
+&quot; before &quot; TK_BEFORE &nbsp;<br>
+&quot; begin &quot; TK_BEGIN &nbsp;<br>
+&quot; to border &quot; TK_BORDER &nbsp;<br>
+&quot; bright &quot; TK_BRIGHT &nbsp;<br>
+&quot; browse &quot; TK_BROWE &nbsp;<br>
+&quot; button &quot; TK_BUTTON &nbsp;<br>
+&quot; by &quot; TK_BY &nbsp;<br>
+&quot; call &quot; TK_CALL &nbsp;<br>
+&quot; to char &quot; TK_CHAR &nbsp;<br>
+&quot; check &quot; TK_CHECK &nbsp;<br>
+&quot; to clear &quot; TK_CLEAR &nbsp;<br>
+&quot; clipped &quot; TK_CLIPPED &nbsp;<br>
+&quot; close &quot; TK_CLOSE &nbsp;<br>
+&quot; columns &quot; TK_COLS &nbsp;<br>
+&quot; command &quot; TK_COMMAND &nbsp;<br>
+&quot; commit &quot; TK_COMMIT &nbsp;<br>
+&quot; continue &quot; TK_CONTINUE &nbsp;<br>
+&quot; create &quot; TK_CREATE &nbsp;<br>
+&quot; current &quot; TK_CURRENT &nbsp;<br>
+&quot; cursor &quot; TK_CURSOR &nbsp;<br>
+&quot; database &quot; TK_DB &nbsp;<br>
+&quot; it declares &quot; TK_DECLARE &nbsp;<br>
+&quot; it defines &quot; TK_DEFINE &nbsp;<br>
+&quot; delay &quot; TK_DELAY &nbsp;<br>
+&quot; delete &quot; TK_DELETE &nbsp;<br>
+&quot; display &quot; TK_DISPLAY &nbsp;<br>
+&quot; double &quot; TK_DOBLE &nbsp;<br>
+&quot; drop &quot; TK_DROP &nbsp;<br>
+&quot; else &quot; TK_ELSE &nbsp;<br>
+&quot; end &quot; TK_END &nbsp;<br>
+&quot; every &quot; TK_EVERY &nbsp;<br>
+&quot; exec_sql &quot; TK_EXEC &nbsp;<br>
+&quot; exit &quot; TK_EXIT &nbsp;<br>
+&quot; extern &quot; TK_EXTERN &nbsp;<br>
+&quot; fetch &quot; TK_FETCH &nbsp;<br>
+&quot; field &quot; TK_FIELD &nbsp;<br>
+&quot; finish &quot; TK_FINISH &nbsp;<br>
+&quot; first &quot; TK_FIRST &nbsp;<br>
+&quot; to footer &quot; TK_FOOTER &nbsp;<br>
+&quot; for &quot; TK_FOR &nbsp;<br>
+&quot; foreach &quot; TK_FOREACH &nbsp;<br>
+&quot; form &quot; TK_FORM &nbsp;<br>
+&quot; format &quot; TK_FORMAT &nbsp;<br>
+&quot; from &quot; TK_FROM &nbsp;<br>
+&quot; function &quot; TK_FUNCTION &nbsp;<br>
+&quot; group &quot; TK_GROUP &nbsp;<br>
+&quot; to header &quot; TK_HEADER &nbsp;<br>
+&quot; horizontal &quot; TK_HORIZ &nbsp;<br>
+&quot; if &quot; TK_IF &nbsp;<br>
+&quot; input &quot; TK_INPUT &nbsp;<br>
+&quot; insert &quot; TK_INSERT &nbsp;<br>
+&quot; into &quot; TK_INTO &nbsp;<br>
+&quot; key &quot; TK_KEY &nbsp;<br>
+&quot; label &quot; TK_LABEL &nbsp;<br>
+&quot; last &quot; TK_LAST &nbsp;<br>
+&quot; let &quot; TK_LET &nbsp;<br>
+&quot; like &quot; TK_LIKE &nbsp;<br>
+&quot; local &quot; TK_LOCAL &nbsp;<br>
+&quot; main &quot; TK_MAIN &nbsp;<br>
+&quot; menu &quot; TK_MENU &nbsp;<br>
+&quot; move &quot; TK_MOVE &nbsp;<br>
+&quot; next &quot; TK_NEXT &nbsp;<br>
+&quot; of &quot; TK_OF &nbsp;<br>
+&quot; on &quot; TK_ON &nbsp;<br>
+&quot; TK_OPEN open &quot; &nbsp;<br>
+&quot; or &quot; TK_OR &nbsp;<br>
+&quot; to order &quot; TK_ORDER &nbsp;<br>
+&quot; output &quot; TK_OUTPUT &nbsp;<br>
+&quot; to over &quot; TK_OVER &nbsp;<br>
+&quot; page &quot; TK_PAGE &nbsp;<br>
+&quot; pipe &quot; TK_PIPE &nbsp;<br>
+&quot; previous &quot; TK_PREVIOUS &nbsp;<br>
+&quot; print &quot; TK_PRINT &nbsp;<br>
+&quot; prompt &quot; TK_PROMPT &nbsp;<br>
+&quot; radio &quot; TK_RADIO &nbsp;<br>
+&quot; record &quot; TK_RECORD &nbsp;<br>
+&quot; report &quot; TK_REPORT &nbsp;<br>
+&quot; return &quot; TK_RETURN &nbsp;<br>
+&quot; returning &quot; TK_RETURNING &nbsp;<br>
+&quot; row &quot; TK_ROW &nbsp;<br>
+&quot; rows &quot; TK_ROWS &nbsp;<br>
+&quot; select &quot; TK_SELECT &nbsp;<br>
+&quot; start &quot; TK_START &nbsp;<br>
+&quot; TK_THEN then &quot; &nbsp;<br>
+&quot; title &quot; TK_TITLE &nbsp;<br>
+&quot; to &quot; TK_TO &nbsp;<br>
+&quot; to trailer &quot; TK_FOOTER &nbsp;<br>
+&quot; transaction &quot; TK_TRANSACTION &nbsp;<br>
+&quot; using &quot; TK_USING &nbsp;<br>
+&quot; validate &quot; TK_VALIDATE &nbsp;<br>
+&quot; values &quot; TK_VALUES &nbsp;<br>
+&quot; vertical &quot; TK_VERT &nbsp;<br>
+&quot; where &quot; TK_WHERE &nbsp;<br>
+&quot; while &quot; TK_WHILE &nbsp;<br>
+&quot; window &quot; TK_WINDOW &nbsp;<br>
+&quot; with &quot; TK_WITH &nbsp;<br>
+<br>
+Parser (to parser) &nbsp;</p>
+<p>The parser is a program (or function) that receives tokens recognized by
+&nbsp;lexical analyzer and determines if they adjust or not to language 4GL. In
+case that thus he is, tokens &nbsp;and their corresponding attributes are
+organized forming a tree of abstract syntax. &nbsp;During the generation of the
+tree of abstract syntax some verifications are made &nbsp;semantic: like
+verifying the existence of variables, or the type of a cursor. &nbsp;</p>
+<p>Like the lexical analyzer, the parser also has been generated using one
+&nbsp;tool designed for such aim. This tool is YACC 2, that generates parser
+starting off of &nbsp;<br>
+a grammar described in a file. &nbsp;</p>
+<p>Concrete grammar &nbsp;</p>
+<p>In the first place the concrete grammar of the language has been designed:
+&nbsp;</p>
+<p>fich: file &nbsp;<br>
+| database file &nbsp;<br>
+file: declarations functions &nbsp;<br>
+| functions &nbsp;<br>
+functions: functions function &nbsp;<br>
+| function &nbsp;<br>
+function: TK_FUNCTION TK_ID ' (' ') ' actions TK_END TK_FUNCTION &nbsp;<br>
+| TK_MAIN actions TK_END TK_MAIN &nbsp;<br>
+function: TK_FUNCTION TK_ID ' (' lst_identif ') ' actions TK_END TK_FUNCTION
+&nbsp;<br>
+| TK_EXTERN TK_ID ' (' ') ' type &nbsp;<br>
+| report &nbsp;<br>
+| form_def &nbsp;<br>
+actions: declarations sentences &nbsp;<br>
+| sentences &nbsp;<br>
+declarations: declaration &nbsp;<br>
+| declarations declaration &nbsp;</p>
+<p>2 In fact BISON has been used. One is the generator of parsers of GNU. BISON
+is compatible with the standard &nbsp;YACC, although contributes enough
+characteristics not including in YACC.Sin embargo, and to avoid problems of
+&nbsp;portability, has not been used any of these characteristics. &nbsp;</p>
+<p>declaration: TK_DEFINE lst_identif type &nbsp;<br>
+type: TK_ID &nbsp;<br>
+| TK_CHAR &nbsp;<br>
+| TK_CHAR ' (' TK_CONS ') ' &nbsp;<br>
+| TK_RECORD fields TK_END TK_RECORD &nbsp;<br>
+| TK_LIKE TK_ID '. ' TK_ID &nbsp;<br>
+| TK_RECORD TK_LIKE TK_ID '. ' ' * ' &nbsp;<br>
+fields: fields field &nbsp;<br>
+| field &nbsp;<br>
+field: TK_ID type &nbsp;<br>
+sentences: error &nbsp;<br>
+| sentences &nbsp;<br>
+| sentences sentences &nbsp;<br>
+it sentences: fuente_c &nbsp;<br>
+| exit_program &nbsp;<br>
+| allocation &nbsp;<br>
+| call &nbsp;<br>
+| return &nbsp;<br>
+| reading &nbsp;<br>
+| to write &nbsp;<br>
+| opventana &nbsp;<br>
+| bloquecontrol &nbsp;<br>
+| TK_DELAY expression &nbsp;<br>
+| SQL &nbsp;<br>
+| menu &nbsp;<br>
+| exitmenu &nbsp;<br>
+| sent_browse &nbsp;<br>
+| sent_report &nbsp;<br>
+| sent_form &nbsp;<br>
+exit_program: TK_EXIT TK_ID &nbsp;<br>
+fuente_c: TK_FUENTE_C &nbsp;<br>
+| fuente_c TK_FUENTE_C &nbsp;<br>
+</p>
+<p>opventana: TK_OPEN TK_WINDOW TK_ID TK_AT expression ', ' expression &nbsp;<br>
+TK_WITH expression TK_ROWS ', ' tit_ventana expression TK_COLS &nbsp;<br>
+| TK_OPEN TK_WINDOW TK_ID TK_AT expression ', ' expression &nbsp;<br>
+TK_WITH expression TK_ROWS ', ' expression TK_COLS &nbsp;<br>
+Tit_ventana TK_ATTR atributos_vent &nbsp;<br>
+| TK_CLOSE TK_WINDOW TK_ID &nbsp;<br>
+| TK_MOVE TK_WINDOW TK_ID TK_TO expression ', ' expression &nbsp;<br>
+| TK_CURRENT TK_WINDOW TK_ID &nbsp;<br>
+| TK_CLEAR TK_WINDOW &nbsp;<br>
+tit_ventana: &nbsp;<br>
+| TK_TITLE expression &nbsp;<br>
+atributos_vent: atributos_vent ', ' atributo_vent &nbsp;<br>
+| atributo_vent &nbsp;<br>
+| ' (' atributos_vent ') ' &nbsp;<br>
+atributo_vent: color &nbsp;<br>
+| color TK_OVER color &nbsp;<br>
+| TK_BORDER &nbsp;<br>
+| TK_DOBLE TK_BORDER &nbsp;<br>
+| TK_BRIGHT &nbsp;<br>
+color: TK_ID &nbsp;<br>
+call: TK_ID ' (' listaexpresiones ') ' &nbsp;<br>
+| TK_ID ' (' ') ' &nbsp;<br>
+called | TK_CALL &nbsp;<br>
+to write: TK_DISPLAY lista_expr_disp &nbsp;<br>
+lista_expr_disp: expr_disp &nbsp;<br>
+| lista_expr_disp ', ' expr_disp &nbsp;<br>
+expr_disp: listaexpresiones &nbsp;<br>
+| listaexpresiones TK_AT expression ', ' expression &nbsp;<br>
+| listaexpresiones TK_ATTR atributos_vent &nbsp;<br>
+| listaexpresiones TK_AT expression ', ' expression &nbsp;<br>
+TK_ATTR atributos_vent &nbsp;<br>
+</p>
+<p>reading: TK_PROMPT TK_FOR identif &nbsp;<br>
+| TK_PROMPT TK_FOR TK_CHAR identif &nbsp;<br>
+| TK_PROMPT expression TK_FOR identif &nbsp;<br>
+| TK_PROMPT expression TK_FOR TK_CHAR identif &nbsp;<br>
+return: TK_RETURN listaexpresiones &nbsp;<br>
+| TK_RETURN &nbsp;<br>
+allocation: TK_LET lst_identif TK_IGUAL listaexpresiones &nbsp;<br>
+| call TK_RETURNING lst_identif &nbsp;<br>
+listaexpresiones: expression &nbsp;<br>
+| listaexpresiones ', ' expression &nbsp;<br>
+| ' (' listaexpresiones ') ' &nbsp;<br>
+| TK_ID '. ' ' * ' &nbsp;<br>
+| listaexpresiones ', ' TK_ID '. ' ' * ' &nbsp;<br>
+expression: identif &nbsp;<br>
+| expression ' [ ' expression ' ] ' &nbsp;<br>
+| expression ' [ ' expression ', ' expression ' ] ' &nbsp;<br>
+| TK_REAL &nbsp;<br>
+| TK_CONS &nbsp;<br>
+| TK_CADENA &nbsp;<br>
+| bin <blink>*** TRANSLATION ENDS HERE ***</blink>aria&nbsp;<br>
+| unaria &nbsp;<br>
+| '(' expresion ')' &nbsp;<br>
+| llamada &nbsp;<br>
+| expresion TK_USING TK_CADENA &nbsp;<br>
+| expresion TK_CLIPPED &nbsp;<br>
+lst_identif : lst_identif ',' identif &nbsp;<br>
+| identif &nbsp;<br>
+| lst_identif ',' TK_ID '.' '*' &nbsp;<br>
+| TK_ID '.' '*' &nbsp;<br>
+identif : TK_ID &nbsp;<br>
+| TK_ID '.' TK_ID &nbsp;</p>
+<p>binaria : expresion '+' expresion &nbsp;<br>
+| expresion '-' expresion &nbsp;<br>
+| expresion '*' expresion &nbsp;<br>
+| expresion '/' expresion &nbsp;<br>
+| expresion TK_AND expresion &nbsp;<br>
+| expresion TK_OR expresion &nbsp;<br>
+| expresion '&gt;' expresion &nbsp;<br>
+| expresion TK_MAYORIGUAL expresion &nbsp;<br>
+| expresion TK_MENORIGUAL expresion &nbsp;<br>
+| expresion ' &lt;' expresion &nbsp;<br>
+| expresion TK_DISTINTO expresion &nbsp;<br>
+| expresion TK_IGUAL expresion &nbsp;<br>
+unaria : '-' expresion &nbsp;<br>
+| '!' expresion &nbsp;<br>
+bloquecontrol : blqif &nbsp;<br>
+| blqwhile &nbsp;<br>
+| cont_while &nbsp;<br>
+| exit_while &nbsp;<br>
+| blqfor &nbsp;<br>
+| cont_for &nbsp;<br>
+| exit_for &nbsp;<br>
+| foreach &nbsp;<br>
+| cont_foreach &nbsp;<br>
+| exit_foreach &nbsp;<br>
+foreach : TK_FOREACH TK_ID TK_INTO lst_identif sentencias TK_END TK_FOREACH
+&nbsp;<br>
+cont_foreach : TK_CONTINUE TK_FOREACH &nbsp;<br>
+exit_foreach : TK_EXIT TK_FOREACH &nbsp;<br>
+blqif : TK_IF expresion then sentencias TK_END TK_IF &nbsp;<br>
+| TK_IF expresion then sentencias TK_ELSE sentencias TK_END TK_IF &nbsp;<br>
+then : &nbsp;<br>
+| TK_THEN &nbsp;<br>
+blqwhile : TK_WHILE expresion sentencias TK_END TK_WHILE &nbsp;</p>
+<p>cont_while : TK_CONTINUE TK_WHILE &nbsp;<br>
+exit_while : TK_EXIT TK_WHILE &nbsp;<br>
+blqfor : TK_FOR identif TK_IGUAL expresion TK_TO expresion &nbsp;<br>
+sentencias TK_END TK_FOR &nbsp;<br>
+cont_for : TK_CONTINUE TK_FOR &nbsp;<br>
+exit_for : TK_EXIT TK_FOR &nbsp;<br>
+sql : database &nbsp;<br>
+| declare &nbsp;<br>
+| select &nbsp;<br>
+| insert &nbsp;<br>
+| delete &nbsp;<br>
+| transacc_begin &nbsp;<br>
+| transacc_commit &nbsp;<br>
+| transacc_abort &nbsp;<br>
+| open_cursor &nbsp;<br>
+| close_cursor &nbsp;<br>
+| fetch_cursor &nbsp;<br>
+| exec_sql &nbsp;<br>
+database : TK_DB TK_ID &nbsp;<br>
+declare : TK_DECLARE TK_ID decl_local TK_CURSOR TK_FOR select &nbsp;<br>
+| TK_DECLARE TK_ID decl_local TK_CURSOR TK_FOR expresion &nbsp;<br>
+decl_local : &nbsp;<br>
+| TK_LOCAL &nbsp;<br>
+open_cursor : TK_OPEN TK_CURSOR TK_ID &nbsp;<br>
+close_cursor : TK_CLOSE TK_CURSOR TK_ID &nbsp;<br>
+fetch_cursor : TK_FETCH fetch_dir TK_ID TK_INTO lst_identif &nbsp;<br>
+fetch_dir : &nbsp;<br>
+| TK_NEXT &nbsp;<br>
+| TK_PREVIOUS &nbsp;</p>
+<p>exec_sql : TK_EXEC expresion into &nbsp;<br>
+select : TK_SELECT lst_campos into TK_FROM lst_tablas where orden &nbsp;<br>
+delete : TK_DELETE TK_FROM TK_ID where &nbsp;<br>
+lst_campos : campo_tabla &nbsp;<br>
+| lst_campos ',' campo_tabla &nbsp;<br>
+campo_tabla : '*' &nbsp;<br>
+| TK_ID &nbsp;<br>
+| TK_ID '(' lst_campos ')' &nbsp;<br>
+into : &nbsp;<br>
+| TK_INTO lst_identif &nbsp;<br>
+where : &nbsp;<br>
+| TK_WHERE expresion &nbsp;<br>
+orden : &nbsp;<br>
+| TK_ORDER TK_BY lst_campos &nbsp;<br>
+lst_tablas : TK_ID &nbsp;<br>
+| lst_tablas ',' TK_ID &nbsp;<br>
+insert : TK_INSERT TK_INTO TK_ID TK_VALUES '(' listaexpresiones ')' &nbsp;<br>
+transacc_begin : TK_BEGIN TK_TRANSACTION &nbsp;<br>
+transacc_abort : TK_ABORT TK_TRANSACTION &nbsp;<br>
+transacc_commit : TK_COMMIT TK_TRANSACTION &nbsp;<br>
+menu : TK_MENU expresion menuformat menuattr menuops TK_END TK_MENU &nbsp;<br>
+menu : TK_MENU menuformat menuattr menuops TK_END TK_MENU &nbsp;<br>
+menuops : menuops menuop &nbsp;<br>
+| menuop &nbsp;</p>
+<p>menuop : TK_COMMAND expresion ',' expresion sentencias &nbsp;<br>
+| TK_COMMAND expresion sentencias &nbsp;<br>
+| TK_ON TK_KEY '(' TK_ID ')' sentencias &nbsp;<br>
+exitmenu : TK_EXIT TK_MENU &nbsp;<br>
+menuattr : TK_ATTR atributos_vent ';' atributos_vent &nbsp;<br>
+| TK_ATTR atributos_vent &nbsp;<br>
+| &nbsp;<br>
+menuformat : &nbsp;<br>
+| TK_HORIZ &nbsp;<br>
+| TK_VERT &nbsp;<br>
+| TK_VERT TK_HORIZ &nbsp;<br>
+| TK_HORIZ TK_VERT &nbsp;<br>
+sent_browse : browse &nbsp;<br>
+| browse_exit &nbsp;<br>
+browse_exit : TK_EXIT TK_BROWSE &nbsp;<br>
+browse : TK_BROWSE TK_ID TK_INTO lst_identif &nbsp;<br>
+browse_donde &nbsp;<br>
+browse_titulo &nbsp;<br>
+TK_DISPLAY expresion &nbsp;<br>
+browseops TK_END TK_BROWSE &nbsp;<br>
+browse_donde : &nbsp;<br>
+| TK_FROM expresion ',' expresion TK_TO expresion ',' expresion &nbsp;<br>
+browse_titulo : &nbsp;<br>
+| TK_TITLE expresion &nbsp;<br>
+browseops : browseop &nbsp;<br>
+| browseops browseop &nbsp;<br>
+browseop : TK_ON TK_KEY '(' TK_ID ')' sentencias &nbsp;<br>
+| TK_ON TK_KEY '(' TK_CADENA ')' sentencias &nbsp;<br>
+| TK_ON TK_KEY '(' TK_CONS ')' sentencias &nbsp;</p>
+<p>sent_report : start_r &nbsp;<br>
+| output_r &nbsp;<br>
+| finish_r &nbsp;<br>
+| rpt_print &nbsp;<br>
+start_r : TK_START TK_REPORT TK_ID &nbsp;<br>
+output_r : TK_OUTPUT TK_TO TK_REPORT TK_ID '(' listaexpresiones ')' &nbsp;<br>
+finish_r : TK_FINISH TK_REPORT TK_ID &nbsp;<br>
+rpt_print : TK_PRINT expresion &nbsp;<br>
+report : TK_REPORT TK_ID '(' lst_identif ')' declaraciones &nbsp;<br>
+rpt_salida rpt_formato TK_END TK_REPORT &nbsp;<br>
+rpt_salida : TK_OUTPUT rpt_formato_pg &nbsp;<br>
+rpt_formato_pg : &nbsp;<br>
+| rpt_item_fmt &nbsp;<br>
+| rpt_formato_pg rpt_item_fmt &nbsp;<br>
+rpt_item_fmt : TK_REPORT TK_TO TK_CADENA &nbsp;<br>
+| TK_REPORT TK_TO TK_PIPE TK_CADENA &nbsp;<br>
+| TK_PAGE TK_ID TK_CONS &nbsp;<br>
+rpt_formato : TK_FORMAT rpt_first_pg_hd rpt_pg_hd &nbsp;<br>
+rpt_before_gr rpt_every rpt_after_gr rpt_pg_ft rpt_last_rw &nbsp;<br>
+rpt_first_pg_hd : &nbsp;<br>
+| TK_FIRST TK_PAGE TK_HEADER sentencias &nbsp;<br>
+rpt_pg_hd : &nbsp;<br>
+| TK_PAGE TK_HEADER sentencias &nbsp;<br>
+rpt_before_gr : &nbsp;<br>
+| rpt_item_before_gr &nbsp;<br>
+| rpt_before_gr rpt_item_before_gr &nbsp;<br>
+rpt_item_before_gr : TK_BEFORE TK_GROUP TK_OF lst_identif sentencias &nbsp;</p>
+<p>rpt_every : &nbsp;<br>
+| TK_ON TK_EVERY TK_ROW sentencias &nbsp;<br>
+rpt_after_gr : &nbsp;<br>
+| rpt_item_after_gr &nbsp;<br>
+| rpt_after_gr rpt_item_after_gr &nbsp;<br>
+rpt_item_after_gr : TK_AFTER TK_GROUP TK_OF lst_identif sentencias &nbsp;<br>
+rpt_pg_ft : &nbsp;<br>
+| TK_PAGE TK_FOOTER sentencias &nbsp;<br>
+rpt_last_rw : &nbsp;<br>
+| TK_ON TK_LAST TK_ROW sentencias &nbsp;<br>
+sent_form : form_create &nbsp;<br>
+| form_display &nbsp;<br>
+| form_dispByName &nbsp;<br>
+| form_inputByName &nbsp;<br>
+| form_exit &nbsp;<br>
+| form_validate &nbsp;<br>
+| form_current &nbsp;<br>
+form_create : TK_CREATE TK_FORM TK_ID &nbsp;<br>
+form_display : TK_DISPLAY TK_FORM TK_ID &nbsp;<br>
+form_dispByName : TK_DISPLAY TK_BY TK_ID lst_identif &nbsp;<br>
+form_inputByName : TK_INPUT TK_BY TK_ID lst_identif &nbsp;<br>
+| TK_INPUT TK_BY TK_ID lst_identif form_onkeys &nbsp;<br>
+form_afterfields TK_END TK_INPUT &nbsp;<br>
+| TK_INPUT TK_BY TK_ID lst_identif form_afterfields TK_END TK_INPUT &nbsp;<br>
+| TK_INPUT TK_BY TK_ID lst_identif form_onkeys TK_END TK_INPUT &nbsp;<br>
+form_onkeys : form_onkey &nbsp;<br>
+| form_onkeys form_onkey &nbsp;<br>
+form_afterfields : form_afterfield &nbsp;<br>
+| form_afterfields form_afterfield &nbsp;</p>
+<p>form_onkey : TK_ON TK_KEY '(' TK_ID ')' sentencias &nbsp;<br>
+| TK_ON TK_KEY '(' TK_CADENA ')' sentencias &nbsp;<br>
+| TK_ON TK_KEY '(' TK_CONS ')' sentencias &nbsp;<br>
+| TK_ON TK_BUTTON TK_ID sentencias &nbsp;<br>
+form_afterfield : TK_AFTER TK_FIELD TK_ID sentencias &nbsp;<br>
+form_exit : TK_EXIT TK_INPUT &nbsp;<br>
+form_validate : TK_VALIDATE TK_FIELD &nbsp;<br>
+form_current : TK_CURRENT TK_FIELD TK_ID &nbsp;<br>
+| TK_NEXT TK_FIELD TK_ID &nbsp;<br>
+form_def : TK_FORM TK_ID form_elementos TK_END TK_FORM &nbsp;<br>
+form_elementos : form_elemento &nbsp;<br>
+| form_elementos form_elemento &nbsp;<br>
+form_elemento : &nbsp;<br>
+| TK_INPUT TK_ID TK_FROM expresion ',' expresion &nbsp;<br>
+TK_TO expresion ',' expresion form_attribs &nbsp;<br>
+| TK_BUTTON TK_ID TK_AT expresion ',' expresion form_attribs &nbsp;<br>
+| TK_RADIO TK_ID TK_AT expresion ',' expresion form_attribs &nbsp;<br>
+| TK_CHECK TK_ID TK_AT expresion ',' expresion form_attribs &nbsp;<br>
+form_attribs : &nbsp;<br>
+| TK_ATTR atributos_vent &nbsp;</p>
+<p>Árbol de sintaxis abstracta y tabla de símbolos &nbsp;<br>
+Para la generación del árbol de sintaxis abstracta se ha usado la HESA 3 . Se
+trata de un &nbsp;programa que genera una serie de estructuras y funciones en C
+que facilitan la organización de los &nbsp;tokens y atributos formando el árbol
+de sintaxis abstracta. La HESA toma como entrada un fichero &nbsp;en el que se
+especifica la sintaxis abstracta del lenguaje. En nuestro caso, la sintaxis es
+la siguiente: &nbsp;</p>
+<p>%{ &nbsp;<br>
+#include &quot;global.h&quot; &nbsp;<br>
+%} &nbsp;<br>
+%union {cadena nombre; &nbsp;<br>
+double valor; &nbsp;<br>
+} &nbsp;<br>
+%type &lt;nombre&gt; Identificador &nbsp;<br>
+%type &lt;valor&gt; Constante &nbsp;<br>
+%% &nbsp;<br>
+Fichero :: var: Variables; fun: Funciones &nbsp;<br>
+Funciones :: Funcion * &nbsp;<br>
+Funcion :: nom: Identificador; par: ListaId; cod: Acciones; tip: Tipo &nbsp;<br>
+ListaId :: Identificador * &nbsp;<br>
+Rect :: y,x,yy,xx: Expresion &nbsp;<br>
+Tipo :: tip: Identificador; tam: Constante; cam: Variables &nbsp;<br>
+Acciones :: var: Variables; cod: Sentencias &nbsp;<br>
+Variables :: Variable * &nbsp;<br>
+Variable :: nom: Identificador; tip: Tipo &nbsp;<br>
+Sentencias :: Sentencia * &nbsp;<br>
+Sentencia :: FuenteC | ExitProgram | Asignacion | Llamada | Retorno | Bloque
+&nbsp;<br>
+| Leer | Escribir | Sql | OpVentana | Delay | OpMenu | OpReport &nbsp;<br>
+| OpForm | OpBrowse &nbsp;<br>
+FuenteC:: Identificador * &nbsp;<br>
+OpMenu:: Menu | ExitMenu | MenuAttr &nbsp;<br>
+Menu :: nom: Identificador; exp: Expresion; fmt: Constante; &nbsp;<br>
+att: MenuAttr; opc: MenuOps &nbsp;<br>
+MenuOps :: MenuOp * &nbsp;<br>
+MenuOp :: nom: Expresion; desc: Expresion; cod: Sentencias; key: Constante
+&nbsp;<br>
+MenuAttr :: fore,back: AttsVentana &nbsp;<br>
+3 HESA: Herramienta de Especificación de Sintaxis Abstracta, del Dpto de
+Lenguajes y Sistemas Informáticos de la &nbsp;Universidad de Sevilla. &nbsp;</p>
+<p>OpForm:: Form | FormDisplay | FormCreate | &nbsp;<br>
+OpFormDispByName | OpFormInputByName | FormExit | &nbsp;<br>
+FormCurrentField | FormValidateField &nbsp;<br>
+FormDisplay:: nom: Identificador &nbsp;<br>
+FormCreate:: nom: Identificador &nbsp;<br>
+Form:: nom: Identificador; campos: FormCampos &nbsp;<br>
+FormCampos:: FormCampo * &nbsp;<br>
+FormCampo:: tipo: FormTipoCampo; nom: Identificador; &nbsp;<br>
+y,x,yy,xx: Expresion; attr: AttsVentana &nbsp;<br>
+FormTipoCampo:: FormButton | FormInput | FormLabel | FormCheck &nbsp;<br>
+FormDispByName:: campos: ListaId &nbsp;<br>
+FormInputByName:: campos: ListaId; opc: FormOnKeys; after: FormAfterFields
+&nbsp;<br>
+FormOnKeys :: FormOnKey * &nbsp;<br>
+FormOnKey :: nom: Identificador; cod: Sentencias &nbsp;<br>
+FormAfterFields :: FormAfterField * &nbsp;<br>
+FormAfterField :: nom: Identificador; cod: Sentencias &nbsp;<br>
+FormCurrentField :: nom: Identificador &nbsp;<br>
+OpBrowse:: Browse | BrowseExit &nbsp;<br>
+Browse :: nom: Identificador; cur: Identificador; vars: ListaId; &nbsp;<br>
+donde: Rect; titulo: Expresion; exp: Expresion; opc: BrowseOps &nbsp;<br>
+BrowseOps :: BrowseOp * &nbsp;<br>
+BrowseOp :: nom: Identificador; cod: Sentencias &nbsp;<br>
+OpReport :: StartReport | FinishReport | PrintReport &nbsp;<br>
+Report :: nom: Identificador; par: ListaId; var: Variables; &nbsp;<br>
+out: RptOutput; fmt: FormatoRpt &nbsp;<br>
+StartReport :: nom: Identificador &nbsp;<br>
+FinishReport :: nom: Identificador &nbsp;<br>
+PrintReport :: exp: Expresion &nbsp;<br>
+RptOutput:: Identificador * &nbsp;<br>
+FormatoRpt:: fph,ph:Sentencias; bg: RptGrupos; ev: Sentencias; &nbsp;<br>
+ag: RptGrupos; pf,lr: Sentencias &nbsp;<br>
+RptGrupos:: RptGrupo * &nbsp;<br>
+RptGrupo:: ids: ListaId; cod: Sentencias &nbsp;</p>
+<p>Sql :: Database | Select | Insert | Update | Delete | Declare | ExecSQL
+&nbsp;<br>
+Database :: nom: Identificador &nbsp;<br>
+Declare :: nom: Identificador; local: Constante; query: Select; &nbsp;<br>
+es_select: Constante &nbsp;<br>
+Select :: cam: ListaId; into: ListaId; from: ListaId; &nbsp;<br>
+where: Condicion; order: ListaId; asc: Constante &nbsp;<br>
+ExecSQL :: comando: Expresion; into: ListaId &nbsp;<br>
+Insert :: tabla: Identificador; valores: ListaId &nbsp;<br>
+Delete :: tabla: Identificador; where: Condicion &nbsp;<br>
+Transacc :: op: Identificador &nbsp;<br>
+OpenCursor :: nom: Identificador &nbsp;<br>
+CloseCursor :: nom: Identificador &nbsp;<br>
+FetchCursor :: nom: Identificador; next: Constante; vars: ListaId &nbsp;<br>
+Delay :: tiempo: Expresion &nbsp;<br>
+OpVentana :: AbVentana | CieVentana | MovVentana | ClearWindow &nbsp;<br>
+AbVentana :: nom: Identificador; y, x, h, w: Constante; &nbsp;<br>
+attr: AttsVentana; tit: Expresion &nbsp;<br>
+CieVentana :: nom: Identificador &nbsp;<br>
+MovVentana :: nom: Identificador; y, x: Expresion &nbsp;<br>
+CurVentana :: nom: Identificador &nbsp;<br>
+AttsVentana :: AtVentana * &nbsp;<br>
+AtVentana :: nom: Identificador; val: Constante &nbsp;<br>
+Leer :: esc: Expresion; var: Variable; cha: Constante &nbsp;<br>
+Escribir :: lst: Displays &nbsp;<br>
+Displays :: Display * &nbsp;<br>
+Display :: y,x: Expresion; exp: Expresiones; attr: AttsVentana &nbsp;<br>
+Llamada :: nom: Identificador; arg: Expresiones &nbsp;<br>
+Llamaproc :: nom: Identificador; arg: Expresiones &nbsp;<br>
+Retorno :: exp: Expresiones &nbsp;<br>
+Asignacion :: des: ListaId; fue: Expresiones &nbsp;<br>
+Bloque :: While | ContinueWhile | ExitWhile | For | ContinueFor | ExitFor |
+&nbsp;<br>
+If | Foreach | ContinueForeach | ExitForeach &nbsp;<br>
+While :: con: Condicion ; cod: Sentencias &nbsp;<br>
+For :: cont: Id; desde, hasta: Expresion; cod: Sentencias &nbsp;<br>
+If :: con: Condicion ; codsi, codelse: Sentencias &nbsp;<br>
+Foreach :: nom: Identificador; vars: ListaId; cod: Sentencias &nbsp;<br>
+Condicion :: termi, termd: Expresion; op: Logica &nbsp;</p>
+<p>Expresiones :: Expresion * &nbsp;<br>
+Expresion :: Id | Const | Binaria | Unaria | Llamada | &nbsp;<br>
+Cadena | Subcadena | Using | Clipped &nbsp;<br>
+Id :: nom: Identificador &nbsp;<br>
+Subcadena :: exp: Expresion; desde, hasta: Expresion &nbsp;<br>
+Using :: exp: Expresion; mascara: Identificador &nbsp;<br>
+Clipped :: exp: Expresion &nbsp;<br>
+Const :: val: Constante; tip: Identificador &nbsp;<br>
+Cadena :: val: Identificador &nbsp;<br>
+Unaria :: term: Expresion; op: Opunar &nbsp;<br>
+Opunar :: Menos | Negacion &nbsp;<br>
+Binaria :: termi,termd: Expresion; op: Opbina &nbsp;<br>
+Opbina :: Aritmetica | Logica &nbsp;<br>
+Aritmetica :: Suma | Resta | Multiplica | Divide | Pot &nbsp;<br>
+Logica :: Or | And | Menor | Mayor | Igual | Distinto &nbsp;<br>
+| Not | Menorigual | Mayorigual &nbsp;</p>
+<p>A partir de este fichero, la HESA genera un conjunto de funciones y
+estructuras que permiten &nbsp;tanto la generación del árbol de sintaxis
+abstracta como su recorrido posterior durante la fase de &nbsp;generación de código.
+&nbsp;Estas funciones se han usado para atribuir la gramática concreta que se
+detalló anteriormente. &nbsp;De esta manera, el árbol de sintaxis abstracta se
+va generando a medida que se van reconociendo las &nbsp;estructuras del lenguaje
+en el fichero fuente. &nbsp;<br>
+Debido a su extensión no se incluye en este manual el fuente de la gramática
+atribuida. Se &nbsp;puede consultar en el archivo 'sintax.y'. &nbsp;<br>
+Para el desarrollo de este proyecto no se ha implementado una tabla de símbolos
+como tal. &nbsp;Toda la información sobre las variables, su ámbito y su tipo
+se obtiene directamente del árbol de &nbsp;sintáxis abstracta. Cuando una
+sentencia hace referencia a una veriable, ésta se busca en primer &nbsp;lugar
+en la rama del árbol de sintaxis abstracta que corresponde con las
+declaraciones de variables &nbsp;locales a la función en la que nos encontramos.
+Si no se encuentra en esta rama, se busca en la rama que corresponde a las
+declaraciones de variables globales. Y por último se intenta encontrar en la
+&nbsp;lista de variables externas. &nbsp;<br>
+En el siguiente fragmento de la sintaxis atribuida se puede observar cómo
+durante el análisis &nbsp;sintáctico se hacen comprobaciones semánticas, como
+no permitir que una variable se declare más &nbsp;de una vez: &nbsp;</p>
+<p>declaracion: TK_DEFINE lst_identif tipo &nbsp;<br>
+{ &nbsp;<br>
+Arbol una,todas; &nbsp;<br>
+int i; &nbsp;<br>
+char *nomvar; &nbsp;<br>
+todas=NULL; &nbsp;<br>
+for (i=1;i &lt;=ListaId_longitud($2);i++) &nbsp;<br>
+{ &nbsp;<br>
+nomvar=Identificador_nombre(Id_nom(ListaId_elemento($2,i))); &nbsp;<br>
+if (Busca_Var(nomvar,lst_locales)) &nbsp;<br>
+{ &nbsp;<br>
+yyerror(&quot;Variable %s ya declarada&quot;,nomvar); &nbsp;<br>
+} &nbsp;<br>
+una=Variable(Asigna_nombre(nomvar),$3); &nbsp;<br>
+todas=Variables(todas,una); &nbsp;<br>
+} &nbsp;<br>
+$$=todas; &nbsp;<br>
+} &nbsp;<br>
+; &nbsp;<br>
+Cada identificador incluido en la lista de identificadores es buscado en la
+lista de variables &nbsp;locales. La variable lst_locales es una variable global
+que apunta en cada momento a la raíz &nbsp;del árbol con las declaraciones de
+variables locales de la función que se está procesando. En caso de &nbsp;encontrarse
+una variable ya declarada con el mismo nombre, se produce un error. La función
+&nbsp;Busca_Var recorre el árbol que se le indique como segundo parámetro, y
+devuelve un puntero al <br>
+nodo en el que se encuentre el identificador que se esté buscando (primer parámetro).
+En caso de no &nbsp;encontrarlo, devuelve NULL. &nbsp;</p>
+<p>Figura 2. Busqueda de variables en el árbol de sintáxis abstracta. &nbsp;</p>
+<p>/* Funcion que busca un simbolo en un arbol */ &nbsp;<br>
+/* Si lo encuentra, devuelve un nodo con su desc. Si no, devuelve NULL */ &nbsp;<br>
+Arbol Busca_Var(char *id,Arbol ptr) &nbsp;<br>
+{ &nbsp;<br>
+Arbol aux=NULL, encontrado=NULL; &nbsp;<br>
+int i,cuantas; &nbsp;<br>
+cuantas=Variables_longitud(ptr); &nbsp;<br>
+for (i=1;i &lt;=cuantas;i++) &nbsp;<br>
+{ &nbsp;<br>
+aux=Variables_elemento(ptr,i); &nbsp;<br>
+if (!Constructor(aux)) &nbsp;<br>
+break; &nbsp;<br>
+if (!strcmp(Identificador_nombre(Variable_nom(aux)),id)) &nbsp;<br>
+{ &nbsp;<br>
+encontrado=aux; &nbsp;<br>
+break; &nbsp;<br>
+} &nbsp;<br>
+} &nbsp;<br>
+return encontrado; &nbsp;<br>
+} &nbsp;</p>
+<p>Generación de Código &nbsp;</p>
+<p>La última tarea que realiza el compilador es la generación del código en
+lenguaje C a partir del &nbsp;árbol de sintaxis abstracta. Este código en
+lenguaje C será posteriormente compilado usando un &nbsp;compilador de C para
+obtener el ejecutable final. &nbsp;Se ha prestado especial atención en hacer
+que el fuente generado se legible. Se incluyen varios &nbsp;comentarios que
+indican la sentencia original a la que corresponden los bloques de código C.
+&nbsp;Además, el código se genera indentado para mejorar su legibilidad.
+&nbsp;En primer lugar se genera siempre una parte fija, que incluye un
+comentario con el nombre del &nbsp;fuente original y la versión del compilador.
+Se incluyen los archivos de cabecera necesarios para &nbsp;compilar el programa
+en C y se generan las declaraciones de variables internas usadas por las &nbsp;<br>
+librerías de run-time. A partir de ese momento, se comienza a recorrer el árbol
+de sintaxis abstracta &nbsp;que se ha generado durante la fase de análisis sintáctico.
+&nbsp;</p>
+<p>Variables globales. &nbsp;</p>
+<p>El primer nodo del árbol de sintaxis abstracta corresponde a la lista de
+variables globales del &nbsp;programa. La misma función con la que se generan
+las variables globales es la siguiente: &nbsp;void genVariables(Arbol vars, char
+*prefijo) &nbsp;</p>
+<p>{ &nbsp;<br>
+Arbol aux; &nbsp;<br>
+int i,cuantas; &nbsp;<br>
+cuantas=Variables_longitud(vars); &nbsp;<br>
+for (i=0;i &lt;cuantas;i++) &nbsp;<br>
+{ &nbsp;<br>
+aux=Variables_elemento(vars,i+1); &nbsp;<br>
+if (!Constructor(aux)) &nbsp;<br>
+break; &nbsp;<br>
+genVariable(aux,prefijo); &nbsp;<br>
+} &nbsp;<br>
+} &nbsp;</p>
+<p>La función recorre todos los elementos de la lista de variables, llamando a
+la función &nbsp;genVariable para cada nodo. La función genVariable será la
+que realmente genere el código para &nbsp;cada variable: &nbsp;</p>
+<p>void genVariable(Arbol var, char *prefijo) &nbsp;<br>
+{ &nbsp;<br>
+cadena tipo,nombre; &nbsp;<br>
+int tamanno; &nbsp;<br>
+strcpy(nombre, Identificador_nombre(Variable_nom(var))); &nbsp;<br>
+strcpy(tipo, Identificador_nombre(Tipo_tip(Variable_tip(var)))); &nbsp;<br>
+tamanno=Constante_valor(Tipo_tam(Variable_tip(var))); &nbsp;<br>
+if (!strcmp(tipo,&quot;WINDOW&quot;)) &nbsp;<br>
+genera(indentacion,&quot;%s _WINDOW *%s=NULL;\n&quot;,prefijo,nombre); &nbsp;<br>
+else if (!strcmp(tipo,&quot;FORM&quot;)) &nbsp;<br>
+{ &nbsp;<br>
+genera(indentacion,&quot;%s _4GLFORM %s=NULL;\n&quot;,prefijo,nombre); &nbsp;<br>
+genera(indentacion,&quot;%s _4GLFORM _GenForm%s();\n&quot;,prefijo,nombre);
+&nbsp;<br>
+} &nbsp;<br>
+else if (!strcmp(tipo,&quot;CURSOR&quot;)) &nbsp;<br>
+genera(indentacion,&quot;%s _CURSOR _C%s;\n&quot;,prefijo,nombre); &nbsp;<br>
+else if (!strcmp(tipo,&quot;LCURSOR&quot;)) &nbsp;<br>
+genera(indentacion,&quot;%s _CURSOR _C%s;\n&quot;,prefijo,nombre); &nbsp;<br>
+else if (!strcmp(tipo,&quot;MENU&quot;)) &nbsp;<br>
+{ &nbsp;<br>
+genera(indentacion,&quot;%s _MENU %s;\n&quot;,prefijo,nombre); &nbsp;<br>
+genera(indentacion,&quot;%s ITEM *%s_items[%d];\n&quot;,prefijo,nombre,tamanno);
+&nbsp;<br>
+} &nbsp;<br>
+else if (!strcmp(tipo,&quot;BROWSE&quot;)) &nbsp;<br>
+genera(indentacion,&quot;%s _BROWSE %s;\n&quot;,prefijo,nombre); &nbsp;<br>
+else if (!strcmp(tipo,&quot;REPORT&quot;)) &nbsp;<br>
+{ &nbsp;<br>
+genera(indentacion,&quot;/* Funciones del report %s */\n&quot;,nombre); &nbsp;<br>
+genera(indentacion,&quot;%s int _RPT_%s_inic;\n&quot;,prefijo,nombre); &nbsp;<br>
+genera(indentacion,&quot;void _Fn_STARTRPT_%s();\n&quot;,nombre); &nbsp;<br>
+genera(indentacion,&quot;void _Fn_OutputRpt_%s();\n&quot;,nombre); &nbsp;<br>
+genera(indentacion,&quot;void _Fn_RPT_%s();\n&quot;,nombre); &nbsp;<br>
+genera(indentacion,&quot;/*---*/\n&quot;); &nbsp;<br>
+} &nbsp;<br>
+else if (!strcmp(tipo,&quot;int&quot;)) &nbsp;<br>
+genera(indentacion,&quot;%s int %s;\n&quot;,prefijo,nombre); &nbsp;<br>
+else if (!strcmp(tipo,&quot;float&quot;)) &nbsp;<br>
+genera(indentacion,&quot;%s double %s;\n&quot;,prefijo,nombre); &nbsp;<br>
+else if (!strcmp(tipo,&quot;date&quot;)) &nbsp;</p>
+<p>genera(indentacion,&quot;%s _4GLDATE %s;\n&quot;,prefijo,nombre); &nbsp;<br>
+else if (!strcmp(tipo,&quot;time&quot;)) &nbsp;<br>
+genera(indentacion,&quot;%s _4GLTIME %s;\n&quot;,prefijo,nombre); &nbsp;<br>
+else if (!strcmp(tipo,&quot;datetime&quot;)) &nbsp;<br>
+genera(indentacion,&quot;%s _4GLDATETIME %s;\n&quot;,prefijo,nombre); &nbsp;<br>
+else if (!strcmp(tipo,&quot;interval&quot;)) &nbsp;<br>
+genera(indentacion,&quot;%s _4GLINTERVAL %s;\n&quot;,prefijo,nombre); &nbsp;<br>
+else if (!strcmp(tipo,&quot;char&quot;)) &nbsp;<br>
+genera(indentacion,&quot;%s char %s[%d];\n&quot;,prefijo,nombre,tamanno+1);
+&nbsp;<br>
+else if (!strcmp(tipo,&quot;record&quot;)) &nbsp;<br>
+genRecord(var); &nbsp;<br>
+else &nbsp;<br>
+genera(indentacion,&quot;%s %s %s;\n&quot;,prefijo,tipo,nombre); &nbsp;<br>
+} &nbsp;</p>
+<p>La función comprueba el tipo de datos de la variable, y genera una declaración
+en C para ese &nbsp;tipo de datos. Aquellos tipos que existen en C (char, int,
+float) se declaran directamente, mientras &nbsp;que los tipos añadidos por el
+lenguaje 4GL (date, time, datetime, interval) y las variables de control &nbsp;necesarias
+para el manejo de menús, consultas SQL, formularios, ventanas, etc. se declaran
+como &nbsp;tipos definidos en el archivo de cabecera hy4gl.h &nbsp;Si la
+variable que se está generando es de tipo reistro, recorrerá la lista de
+campos, generando &nbsp;un registro de C con la estructura necesaria: &nbsp;</p>
+<p>void genRecord(Arbol var) &nbsp;<br>
+{ &nbsp;<br>
+Arbol aux; &nbsp;<br>
+int i,cuantas; &nbsp;<br>
+cuantas=Variables_longitud(Tipo_cam(Variable_tip(var))); &nbsp;<br>
+genera(indentacion,&quot;struct\n&quot;); &nbsp;<br>
+genera(indentacion,&quot;{\n&quot;); &nbsp;<br>
+indentacion++; &nbsp;<br>
+for (i=0;i &lt;cuantas;i++) &nbsp;<br>
+{ &nbsp;<br>
+aux=Variables_elemento(Tipo_cam(Variable_tip(var)),i+1); &nbsp;<br>
+if (!Constructor(aux)) &nbsp;<br>
+break; &nbsp;<br>
+genVariable(aux,&quot;&quot;); &nbsp;<br>
+} &nbsp;<br>
+indentacion--; &nbsp;<br>
+genera(indentacion,&quot;} %s;\n&quot;,Identificador_nombre(Variable_nom(var)));
+&nbsp;<br>
+} &nbsp;</p>
+<p>Funciones &nbsp;</p>
+<p>El siguiente nodo del árbol de sintaxis abstracta es la lista de funciones
+que se encuentran en el &nbsp;fuente en 4GL. Esta lista también incluye la
+definición de los listados y de los formularios de &nbsp;entrada, que se
+definen fuera de las funciones. &nbsp;El generador de código recorre esta lista,
+comprobando si se trata de una función, un listado o &nbsp;un formulario de
+entrada, y generando el código correspondiente a cada uno de ellos.: &nbsp;</p>
+<p>void genFunciones() &nbsp;<br>
+{ &nbsp;<br>
+Arbol aux; &nbsp;<br>
+int i,cuantas; &nbsp;<br>
+cuantas=Funciones_longitud(Fichero_fun(raiz)); &nbsp;<br>
+for (i=1;i &lt;=cuantas;i++) &nbsp;<br>
+{ &nbsp;<br>
+aux=Funciones_elemento(Fichero_fun(raiz),i); &nbsp;<br>
+if (!Constructor(aux)) &nbsp;<br>
+break; &nbsp;<br>
+if (Constructor(aux)==REPORT) &nbsp;<br>
+genReport(aux); &nbsp;<br>
+else if (Constructor(aux)==FORM) &nbsp;<br>
+genForm(aux); &nbsp;<br>
+else if (Constructor(Funcion_cod(aux))) &nbsp;<br>
+genFuncion(aux); &nbsp;<br>
+} &nbsp;<br>
+} &nbsp;<br>
+En el caso de que se tratara de una función, se generan las declaraciones de
+las variables locales &nbsp;y de los parámetros. Seguidamente se genera el código
+necesario para desapilar los parámetros de &nbsp;entrada y por último se
+genera el código de las sentencias que componen la función: &nbsp;</p>
+<p>void genFuncion(Arbol fn) &nbsp;<br>
+{ &nbsp;<br>
+indentacion=0; &nbsp;<br>
+lst_locales=Acciones_var(Funcion_cod(fn)); &nbsp;<br>
+printf(&quot;Generando función: %s\n&quot;,Identificador_nombre(Funcion_nom(fn)));
+&nbsp;<br>
+genera(indentacion,&quot;\n/*********************************************\n&quot;);
+&nbsp;<br>
+genera(indentacion,&quot; * Función: %-30.30s*\n&quot;, &nbsp;<br>
+Identificador_nombre(Funcion_nom(fn))); &nbsp;<br>
+genera(indentacion,&quot;/***********************************************/\n&quot;);
+&nbsp;<br>
+if (strcmp(Identificador_nombre(Funcion_nom(fn)),&quot;main&quot;)) &nbsp;<br>
+genera(indentacion,&quot;void _Fn_%s()\n&quot;, &nbsp;<br>
+Identificador_nombre(Funcion_nom(fn))); &nbsp;<br>
+else &nbsp;<br>
+genera(indentacion,&quot;main(int argc, char *argv[])\n&quot;); &nbsp;<br>
+genera(indentacion,&quot;{\n&quot;); &nbsp;<br>
+indentacion=1; &nbsp;<br>
+/* Primero genero las vars locales */ &nbsp;<br>
+if (Constructor(Acciones_var(Funcion_cod(fn)))) &nbsp;<br>
+genVariables(Acciones_var(Funcion_cod(fn)),&quot;&quot;); &nbsp;<br>
+/* La funcion 'main' es un caso especial... */ &nbsp;<br>
+if (!strcmp(Identificador_nombre(Funcion_nom(fn)),&quot;main&quot;)) &nbsp;<br>
+{ &nbsp;<br>
+genera(indentacion,&quot;int _i,_j; /* Usadas para inicializar los colores
+*/\n&quot;); &nbsp;<br>
+genera(indentacion,&quot;arg_count=argc-1; _arg_val=argv; /* Variables globales
+que guardan los &nbsp;<br>
+parametros */\n&quot;); &nbsp;<br>
+genera(indentacion,&quot;/* Preparo las curses */\n&quot;); &nbsp;<br>
+genera(indentacion,&quot;_4GLinit();\n&quot;); &nbsp;<br>
+if (db!=NULL) &nbsp;<br>
+{ &nbsp;<br>
+genera(indentacion,&quot;/* Preparo los valores de los flags de estado
+*/\n&quot;); &nbsp;<br>
+genera(indentacion,&quot;notfound=PGRES_EMPTY_QUERY;\n&quot;); &nbsp;<br>
+genera(indentacion,&quot;found=PGRES_TUPLES_OK;\n&quot;); &nbsp;<br>
+genera(indentacion,&quot;ok=PGRES_COMMAND_OK;\n&quot;); &nbsp;<br>
+genera(indentacion,&quot;/* Conecto con la base de datos */\n&quot;); &nbsp;<br>
+genera(indentacion,&quot;_conn=_4GLsetdb(\&quot;%s\&quot;);\n\n&quot;, &nbsp;<br>
+Identificador_nombre(Database_nom(db))); &nbsp;<br>
+genera(indentacion,&quot;if (_4GLfechaEuro==1)\n&quot;); &nbsp;<br>
+genera(indentacion,&quot;{\n&quot;); &nbsp;<br>
+genera(indentacion+1,&quot;_4GLexec(_conn,\&quot;set DateStyle to
+'European';\&quot;);\n&quot;); &nbsp;<br>
+genera(indentacion+1,&quot;_4GLexec(_conn,\&quot;set DateStyle to
+'SQL';\&quot;);\n&quot;); &nbsp;<br>
+genera(indentacion,&quot;}\n&quot;); &nbsp;<br>
+} &nbsp;<br>
+genera(indentacion,&quot;pila_param=nueva_pila();\n&quot;); &nbsp;<br>
+genera(indentacion,&quot;pila_exp=nueva_pila();\n\n&quot;); &nbsp;<br>
+} &nbsp;<br>
+/* Leo los parámetros recibidos */ &nbsp;<br>
+if (Constructor(Funcion_par(fn))) &nbsp;<br>
+genParams(Funcion_par(fn)); &nbsp;<br>
+/* Genero las acciones */ &nbsp;<br>
+genSentencias(Acciones_cod(Funcion_cod(fn))); &nbsp;<br>
+if (!strcmp(Identificador_nombre(Funcion_nom(fn)),&quot;main&quot;)) &nbsp;<br>
+{ &nbsp;<br>
+genera(indentacion,&quot;_4GLexit(0); /* Terminamos */\n&quot;); &nbsp;<br>
+} &nbsp;<br>
+indentacion=0; &nbsp;<br>
+genera(indentacion,&quot;} /* Fin de la función %s */\n\n&quot;,Identificador_nombre(Funcion_nom(fn)));
+&nbsp;<br>
+} &nbsp;</p>
+<p>La función main es un caso especial, ya que es la primera que se ejecuta al
+iniciar el programa. &nbsp;En la generación del código para esta función se
+incluyen sentencias para inicializar la interfaz de &nbsp;usuario (ncurses),
+preparar el valor de algunas variables globales y conectar con la base de datos
+si &nbsp;es necesario. Al final de la función se genera el código para cerrar
+la conexión con la base de datos. &nbsp;No se va a estudiar aquí la generación
+de código de las distintas sentencias que componen el &nbsp;<br>
+lenguaje. Se expone como ejemplo la generación del código de las sentencias de
+asignación, que es &nbsp;representativo del uso de la pila y de las características
+de la conversión automática de tipos. &nbsp;Evaluación de expresiones: La
+pila &nbsp;Para la evaluación de expresiones se ha implementado una pila
+interna. Esta pila es gestionada en tiempo de ejecución por el programa usando
+las funciones que se incluyen en la librería de run- &nbsp;time. La pila se ha
+implementado como una lista enlazada. Cada elemento de la lista es un registro
+&nbsp;con la siguiente estructura: &nbsp;</p>
+<p>enum tipos {TIPO_VOID, TIPO_INT, TIPO_FLOAT, TIPO_STR, &nbsp;<br>
+TIPO_DATE, TIPO_TIME, TIPO_DATETIME, TIPO_INTERVAL, &nbsp;<br>
+TIPO_RECORD}; &nbsp;<br>
+struct pila &nbsp;<br>
+{ &nbsp;<br>
+enum tipos tipo; &nbsp;<br>
+union &nbsp;<br>
+{ &nbsp;<br>
+char *cadena; &nbsp;<br>
+long entero; &nbsp;<br>
+double real; &nbsp;<br>
+_4GLDATE fecha; &nbsp;<br>
+_4GLTIME time; &nbsp;<br>
+_4GLDATETIME datetime; &nbsp;<br>
+_4GLINTERVAL interval; &nbsp;<br>
+} valor; &nbsp;<br>
+struct pila *siguiente; &nbsp;<br>
+}; &nbsp;</p>
+<p>El campo tipo indica el tipo del dato que se almacena en este elemento de la
+pila. Esto es &nbsp;necesario puesto que la pila puede albergar datos de
+cualquier tipo, y es necesario conocer el tipo &nbsp;del dato para operar con él.
+El campo valor se define como una unión de todos los tipos básicos &nbsp;soportados
+por el lenguaje. &nbsp;</p>
+<p>Las operaciones que se pueden realizar sobre la pila son las siguientes:
+&nbsp;</p>
+<p>. Apilar valores &nbsp;</p>
+<p>Se han implementado funciones para apilar cada uno de los tipos de datos básicos
+&nbsp;soportados por el lenguaje. Al apilar un dato se guarda también información
+sobre su tipo &nbsp;</p>
+<p>. Desapilar valores &nbsp;</p>
+<p>Hay una función para desapilar cada tipo de datos. La función comprueba el
+tipo del dato &nbsp;que hay en la cima de la pila y realiza las conversiones
+necesarias para convertirlo al tipo &nbsp;de datos deseado. &nbsp;</p>
+<p>. Operar con los valores de la cima de la pila &nbsp;</p>
+<p>Se han implementado las siguientes operaciones: &nbsp;</p>
+<p>. Suma: Esta operación toma dos datos de la cima de la pila, los suma y
+apila el resultado. &nbsp;</p>
+<p>El tipo de datos del resultado así como su contenido dependerá de los tipos
+de datos &nbsp;de los operandos. Así, si se suman dos cadenas el resultado es
+una nueva cadena, &nbsp;resultado de concatenar las dos iniciales, mientras que
+si se suman dos números el &nbsp;resultado es otro número, resultado de sumar
+los dos originales. &nbsp;</p>
+<p>. Resta/Producto/Division: Se toman dos datos de la cima de la pila, se
+restan y se apila el &nbsp;resultado. &nbsp;</p>
+<p>. Comparar los valores de la cima de la pila &nbsp;</p>
+<p>Se han implementado también las operaciones de comparación. Todas estas
+operaciones &nbsp;toman dos valores de la pila y apilan un 1 o un 0, según se
+haya o no cumplido la &nbsp;comparación. &nbsp;</p>
+<p>. Operaciones lógicas. &nbsp;</p>
+<p>. AND: esta operación toma dos valores de la pila y apila un 0 si alguno de
+los dos valores &nbsp;originales era 0, o un 1 en caso contrario. &nbsp;<br>
+. OR: esta operación toma dos valores de la pila y apila un 0 si los dos
+valores originales &nbsp;eran 0, o un 1 en caso contrario. &nbsp;<br>
+. NOT: esta operación toma un valor de la pila y apila un 1 si el valor
+original era un 0, o un &nbsp;0 en caso contrario. &nbsp;</p>
+<p>Veamos un ejemplo: &nbsp;</p>
+<p>define cadena char(50) &nbsp;<br>
+let cadena=&quot;dentro de 10 minutos seran las &quot;+(time()+600) &nbsp;<br>
+El árbol de sintaxis abstracta de la expresión será: &nbsp;<br>
+Y el código que se genera es el siguiente: &nbsp;<br>
+push_int(pila_exp, 600); &nbsp;<br>
+_Fn_time(); &nbsp;<br>
+op_suma(pila_exp); &nbsp;<br>
+push_str(pila_exp, &quot;Dentro de 10 minutos seran las &quot;); &nbsp;<br>
+op_suma(pila_exp); &nbsp;<br>
+_4GLstrncpy(cadena,pop_str(pila_exp),50); &nbsp;<br>
+push_str(pila_exp, cadena); &nbsp;<br>
+wprintw(curwin,&quot;%s&quot;,pop_str(pila_exp)); &nbsp;<br>
+En primer lugar se apila el valor 600, de tipo entero &nbsp;<br>
+Seguidamente se llama a la función time(). Esta función apila un dato de tipo
+TIME &nbsp;<br>
+conteniendo la hora actual. &nbsp;</p>
+<p>Figura 3. Evaluación de expresiones &nbsp;<br>
+expresión &nbsp;<br>
+Término &nbsp;<br>
+Izquierdo &nbsp;<br>
+Operador &nbsp;<br>
+Término &nbsp;<br>
+Derecho &nbsp;<br>
+Término &nbsp;<br>
+Izquierdo &nbsp;<br>
+Término &nbsp;<br>
+Derecho &nbsp;<br>
+Operador &nbsp;<br>
+&quot;dentro de 10 minutos serán las &quot; &nbsp;<br>
+time() 600 &nbsp;<br>
++ &nbsp;<br>
++ &nbsp;<br>
+<br>
+La función op_suma() desapila los dos elementos que están en la cima de la
+pila. Comprueba el &nbsp;tipo de dato del primero de ellos (TIME) y del segundo
+(INTEGER) y realiza la operación &nbsp;correspondiente: sumarle al valor de
+tipo TIME la cantidad de segundos indicada por el otro valor. &nbsp;El resultado
+es otro valor de tipo TIME que es apilado. &nbsp;Ahora se apila la cadena &quot;dentro
+de 10 minutos seran las &quot; y se vuelve a llamar &nbsp;a la función op_suma.
+&nbsp;La funcion op_suma() desapila los dos elementos de la cima de la pila. El
+primero de ellos es &nbsp;de tipo STRING y el segundo es de tipo TIME. La función
+convierte el dato de tipo TIME a tipo &nbsp;STRING y concatena las dos cadenas.
+El resultado es apilado. &nbsp;</p>
+<p>Ahora queda en la pila un solo dato, de tipo STRING que contiene el resultado
+de la operación. &nbsp;Para realizar la asignación, se desapila la cadena y es
+copiada en la variable de destino. &nbsp;Como se ha visto en este ejemplo, la
+pila se usa tanto para evaluar expresiones como para pasar &nbsp;parámetros a
+funciones y recibir los valores devueltos. De esta manera se facilita el uso de
+los &nbsp;valores devueltos por funciones en expresiones (como en el caso del
+ejemplo), ya que al salir de las &nbsp;<br>
+funciones ya nos encontramos con los valores devueltos en la pila.</p>
+<hr>
+<p align="center"><i>hy4GL: compilador de lenguaje 4GL para PostgreSQL</i></p>
+
+</body>
+
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice/5.2 (Linux)">
+	<META NAME="CREATED" CONTENT="19980905;20301800">
+	<META NAME="CHANGEDBY" CONTENT="David Prieto">
+	<META NAME="CHANGED" CONTENT="19980909;7015200">
+	<STYLE>
+	<!--
+		@page { size: 21.01cm 29.69cm; margin: 2cm }
+		P { margin-bottom: 0.21cm }
+		H1 { margin-bottom: 0.21cm; font-family: "times", serif; font-size: 16pt; page-break-before: auto; page-break-after: auto }
+		H2 { margin-bottom: 0.21cm; font-family: "helvetica", sans-serif; font-size: 14pt; font-style: italic }
+		P.cuerpo-de-texto-con-sangría { text-indent: 0.74cm; font-family: "Times New Roman", "times"; font-size: 12pt; font-weight: medium; text-align: justify }
+	-->
+	</STYLE>
+</HEAD>
+<BODY STYLE="border: none; padding: 0cm">
+<DIV TYPE=HEADER>
+	<P STYLE="margin-bottom: 0.76cm"><FONT FACE="helvetica, sans-serif"><FONT SIZE=2>		Introducci&oacute;n</FONT></FONT></P>
+</DIV>
+<DIV ID="Introducción">
+	<H1 ALIGN=CENTER><FONT SIZE=5>Introducci&oacute;n</FONT></H1>
+</DIV>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El mundo de las Bases
+de Datos ha estado hist&oacute;ricamente dominado por tres grandes
+compa&ntilde;&iacute;as (Oracle, Informix e IBM) que ofrecen
+productos destinados a la gesti&oacute;n de grandes cantidades de
+informaci&oacute;n. Estos productos tienen unos precios nomalmente
+inalcanzables para una empresa media y no hablemos de un usuario
+dom&eacute;stico.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Dirigidos a un mercado
+medio encontramos multitud de productos que pueden cubrir
+perfectamente las necesidades de cualquier empresa mediana sin hacer
+que el presupuesto se dispare.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Menos conocidos por la
+mayor&iacute;a de usuarios, existen tambi&eacute;n varios Gestores de
+Bases de Datos gratuitos desarrollados generalmente por Universidades
+o por grupos de voluntarios. Algunos de estos productos tienen una
+gran calidad y en muchos casos superan las cualidades de sus
+compedirores comerciales. Entre estos productos gratuitos y de gran
+calidad encontramos a PostgreSQL.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La historia de
+PostgreSQL comienza como un proyecto de investigaci&oacute;n del
+grupo del Profesor Michael Stonebraker en Berkeley. Su proyecto
+original, <I>Ingres</I>, se comercializa actualmente con el mismo
+nombre. El original <I>University Ingres </I><SPAN STYLE="font-style: normal">est&aacute;
+a&uacute;n disponible de forma gratuita y usa su propio lenguaje de
+consulta </SPAN><I>'QUEL'</I><SPAN STYLE="font-style: normal">.</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"> Su siguiente proyecto
+fue 'Postgres' (<I>post-ingres</I>), que usaba un lenguaje de
+consulta m&aacute;s avanzado: <I>POSTQUEL</I><SPAN STYLE="font-style: normal">.
+En 1987, Postgres introdujo reglas, procedimientos, tipos definibles
+y conceptos de orientaci&oacute;n a objetos. Postgres fue
+comercializado con el nombre de </SPAN><I>Illustra</I><SPAN STYLE="font-style: normal">
+y forma parte actualmente del </SPAN><I>Universal Server</I><SPAN STYLE="font-style: normal">
+de Informix. La versi&oacute;n original de Postgres 4.2 (basada a&uacute;n
+en <I>POSTQUEL</I>) todav&iacute;a se puede encontrar por Internet.</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Dos alumnos del laboratorio de Stonebraker, Andrew Yu y Jolly Chen,
+decidieron reescribir gran parte del c&oacute;digo de Postgres y
+sustituir <I>POSTQUEL</I> por un subconjunto ampliado de SQL. Esta
+nueva versi&oacute;n fue lanzada en 1995 como Postgres95 y en ese
+momento el desarrollo pas&oacute; a manos de la comunidad de
+Internet. Postgres95 evolucion&oacute; hasta lo que es ahora
+PostgreSQL.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">PostgreSQL es un gestor
+de Bases de Datos basado en el modelo relacional, aunque incorpora
+algunos conceptos del modelo Orientado a Objetos, tales como la
+herencia. Usa un subconjunto ampliado de SQL como lenguaje de
+consulta y est&aacute; implementado siguiendo la arquitectura
+cliente-servidor. PostgreSQL ofrece gran variedad de herramientas y
+librer&iacute;as para acceder a las Bases de Datos. En su versi&oacute;n
+6.3.2 (la &uacute;ltima a la hora de escribir este documento),
+existen interfaces para los siguientes lenguajes:</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm">C</P>
+	<LI><P STYLE="margin-bottom: 0cm">C++</P>
+	<LI><P STYLE="margin-bottom: 0cm">C Embebido 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Java (a trav&eacute;s de JDBC)</P>
+	<LI><P STYLE="margin-bottom: 0cm">Perl</P>
+	<LI><P STYLE="margin-bottom: 0cm">ODBC (existen drivers ODBC para
+	PostgreSQL para Windows, Max, UNIX y VMS)</P>
+	<LI><P STYLE="margin-bottom: 0cm">Python</P>
+	<LI><P STYLE="margin-bottom: 0cm">TCL</P>
+</UL>
+<H2 STYLE="page-break-before: always">Objetivos</H2>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">A pesar de ofrecer
+diversos interfaces de programaci&oacute;n, PostgreSQL carece de un
+lenguaje de cuarta generaci&oacute;n (4GL) que facilite la
+programaci&oacute;n de aplicaciones de bases de datos. Con este
+proyecto se pretende cubrir este hueco, desarrollando un compilador
+para un lenguaje 4GL.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" ALIGN=JUSTIFY>Tomamos
+como referencia el lenguaje 4GL de Informix, siendo el objetivo
+conseguir que programas dise&ntilde;ados para Informix puedan ser
+recompilados y usados con PostgreSQL con el m&iacute;nimo de
+modificaciones.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" ALIGN=JUSTIFY>Informix-4GL
+ofrece herramientas para crear men&uacute;s, formularios de entrada
+de datos y generadores de listados. Ser&aacute; necesario definir
+estas mismas herramientas manteniendo, a ser posible, la sintaxis
+original.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" ALIGN=JUSTIFY>En
+principio se generar&aacute;n aplicaciones que funcionen en modo
+texto, dejando para una futura ampliaci&oacute;n la generaci&oacute;n
+de aplicaciones en entornos gr&aacute;ficos. 
+</P>
+<H2>Objetivos que se han cubierto</H2>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La sintaxis del
+lenguaje es casi id&eacute;ntica a la de Informix-4GL. Se han
+implementado los tipos de datos b&aacute;sicos, los de fecha y hora,
+intervalos y <I>'datetime'</I>. 
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Las sentencias de
+asignaci&oacute;n, presentaci&oacute;n en pantalla, estructuras
+repetitivas (bucles <I>while</I><SPAN STYLE="font-style: normal"> y
+<I>for</I>) y</SPAN> condicionales (<I>if..else..</I><SPAN STYLE="font-style: normal">),
+generaci&oacute;n de men&uacute;s y listados se han implementado
+completamente.</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El manejo de los
+formularios de entrada de datos se ha implementado siguiendo la
+sintaxis original de Informix-4GL, sin embargo se ha modificado la
+sintaxis de la definici&oacute;n de los formularios para dar cabida a
+nuevos tipos de objetos, como botones o casillas de verificaci&oacute;n.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Se ha introducido una
+nueva sentencia (<I>browse</I><SPAN STYLE="font-style: normal">)</SPAN>,
+que permite visualizar todas las tuplas devueltas por una consulta y
+<I>'navegar'</I><SPAN STYLE="font-style: normal"> por ellas </SPAN>mediante
+movimientos del cursor.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La sintaxis de algunas
+sentencias se ha ampliado, permitiendo nuevas funcionalidades no
+encontradas en Informix-4GL, como asignaciones m&uacute;ltiples.
+Estas modificaciones est&aacute;n explicadas con detalle en el manual
+de usuario.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H2>Posibilidades de ampliaci&oacute;n</H2>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Se ha generado
+&uacute;nicamente una interfaz en modo texto. Sin embargo, la
+implementaci&oacute;n de las funciones de manejo de formularios de
+entrada se ha realizado de manera independiente de la implentaci&oacute;n
+a bajo nivel (<I>curses</I>). Gracias a esto es posible desarrollar
+librer&iacute;as de funciones que gestionen los formularios de
+entrada de manera gr&aacute;fica, generando interfaces en X-Window. 
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La generaci&oacute;n de
+c&oacute;digo est&aacute; actualmente muy enfocada a la interfaz de
+PostgreSQL. Una posible ampliaci&oacute;n ser&iacute;a la
+generalizaci&oacute;n de este c&oacute;digo, para permitir el
+desarrollo de aplicaciones que accedan a datos almacenados en otro
+tipo de servidores, o incluso usando ODBC (el API de acceso a bases
+de datos definido por Microsoft y que se ha convertido en est&aacute;ndar).</P>
+<DIV TYPE=FOOTER>
+	<P STYLE="margin-top: 0.51cm; margin-bottom: 0cm"><BR>
+	</P>
+	<P STYLE="margin-bottom: 0cm; border: none; padding: 0cm"><FONT SIZE=2><I>hy4GL:
+	compilador de lenguaje 4GL para PostgreSQL		1-<SDFIELD TYPE=PAGE SUBTYPE=RANDOM FORMAT=PAGE>2</SDFIELD></I></FONT></P>
+</DIV>
+</BODY>
+</HTML>

@@ -1,0 +1,5 @@
+#!/bin/sh
+for i in *.4gl
+do
+  hy4gl $@ $i
+done
