@@ -1,0 +1,26 @@
+'\" @(#)$Id: dayname.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: I4GL Day Name and Month Name
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH DAYNAME 3S "Sphinx Informix Tools"
+.SH NAME
+dayname \(em return full name of day of week
+.br
+monthname \(em return full name of month
+.SH SYNOPSIS
+LET dname = dayname(effective_date)
+.br
+LET mname = monthname(effective_date)
+.SH DESCRIPTION
+\fBDayname\fP returns the full name (Monday, Tuesday, etc) of the day of the
+week corresponding to the effective date.
+.P
+\fBMonthname\fP returns the full name (January, February, etc) of the month
+corresponding to the effective date.
+.SH FILES
+dayname.4gl, mthname.4gl
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+21st May 1990

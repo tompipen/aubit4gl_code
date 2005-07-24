@@ -1,0 +1,27 @@
+'\" @(#)$Id: username.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual Page: General Library -- Username/Usertype
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH USERNAME 3S "Sphinx Informix Tools"
+.SH NAME
+username \(em login name of user
+.sp
+usertype \(em type of user
+.SH SYNOPSIS
+\fBfunction username()\fP
+.sp
+\fBfunction usertype()\fP
+.SH DESCRIPTION
+The C version is used because it does not access the database to
+find the user name, whereas the I4GL version has to do a
+\s-2SELECT\s0 statement to find out.
+The function returns an 8-character string.
+.P
+\fBUsertype\fP function returns a single character which is `D'
+if the user is a DBA, `R' if the user has resource permission on
+the database and `C' if they have connect permission.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+26th February 1988

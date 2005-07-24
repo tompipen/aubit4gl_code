@@ -1,0 +1,73 @@
+'\" @(#)$Id: locks.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: LOCK_TABLE/UNLOCK_TABLE
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH LOCK_TABLE 3S "Sphinx Informix Tools"
+.SH NAME
+lock_table \(em lock a table
+.br
+unlock_table \(em unlock a table
+.SH SYNOPSIS
+let status = lock_table("table_name", "exclusive")
+.br
+let status = unlock_table("table_name")
+.SH DESCRIPTION
+If the database has a transaction log, the following rules apply:
+.nf
+.sp 0.5v
+.in +3n
+i.	You can only apply a table lock within a transaction
+ii.	You cannot explicitly unlock a table
+iii.	Table locks are released when the transaction is completed
+.in
+.sp 0.5v
+If the database has not got a transaction log, the following rules apply:
+.sp 0.5v
+.in +3n
+i.	You can apply a table lock anywhere
+ii.	You must explicitly unlock a table
+.in
+.fi
+.sp 0.5v
+Code which is designed to work with and without transaction logs
+must therefore be designed with both sets of constraints in mind.
+The tools to handle this are, again, functions in place of raw I4GL statements.
+A section of code which includes table locking should
+be coded as follows:
+.sp 0.5v
+.nf
+.in +3n
+CALL begin_work()                               # Start transaction
+LET STATUS = lock_table("thingy", "exclusive")  # Lock table thingy
+...
+# Do the work
+...
+LET STATUS = unlock_table("thingy")             # Unlock table thingy
+CALL commit_work()                              # Finish the transaction
+.in
+.fi
+.sp 0.5v
+The routine \fBlock_table\fP locks the named table in the named mode and
+returns the success status.
+It is not absolutely crucial that it is used;
+it just makes the coding symmetric.
+.P
+The routine \fBunlock_table\fP unlocks a table
+but explicitly ignores 2 errors:
+.nf
+.in +3n
+-327:	cannot unlock table within a transaction
+-288:	table not locked by user
+.in
+.fi
+The first will occur using the skeleton code above with a transaction
+log on the database.
+The second would occur if the unlock and commit
+were in the reverse order and there was a log on the database.
+.SH "SEE ALSO"
+transactions(3S)
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+10th October 1989

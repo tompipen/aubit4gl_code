@@ -1,0 +1,50 @@
+<HTML>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title></title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<h3 align="center">Jonathan Leffler's function library</h3>
+<hr>
+<p>Here is a whole bunch of library code, some in C, some in I4GL, to do various
+nasty tricky things -- and not so tricky but just downright fiddly things -- in
+I4GL. Most of the code is pretty ancient.</p>
+<p>Any .4gf files can be renamed to end .per -- I used to use .4gf to
+distinguish I4GL form files from ISQL form files. The dlist4 directory is of
+debatable value -- I still use the plain dlist (dlist version 3) material. It is
+used for doubly-linked lists, which I use in preference to scroll cursors.</p>
+<p>The C code tends to make extensive use of popstring() which strips trailing
+blanks; it is built into I4GL in more recent versions. The adjinarr code is
+probably too sneaky for practical use, especially since I4GL 7.30 provides the
+functionality.</p>
+<p>The nextfield code is also very sneaky but provides very necessary
+functionality in my view -- but I last changed it in 1988 because it was not
+easy to justify cheating so much.</p>
+<p>The pushhelp code is also rather sneaky, and the benefit it provides is
+limited (but not invaluable). I eventually decided that a pure I4GL
+implementation was better than a sneaky version -- where I used it, the pure
+I4GL version was adequate.</p>
+<p>The locale code is interesting, and maybe even better than what GLS provides
+in some respects - such as a single run of the program can format data using
+multiple different locales. It is based on material from Plauger's &quot;The
+Standard C Library&quot; and so you need to think carefully before using it.</p>
+<p>I make no great claims for any of this material -- it was used in the
+1987-1990 time frame, but that's about all. And there are manual pages of some
+sort, written using troff formatting...</p>
+<p>Everything in this archive is released under GNU LGPL v2.1 (the GNU Lesser
+General Public Licence, <a href="http://www.gnu.org/licenses/lgpl.html">http://www.gnu.org/licenses/lgpl.html</a>)
+but I'll consider altering that licence if that is too prohibitive.</p>
+<p>Jonathan Leffler #include &lt;disclaimer.h&gt;<br>
+STSM, IBM Data Management Solutions. Phone: +1 650-926-6921<br>
+Email: Jonathan.Leffler@Informix.com, <a href="mailto:jleffler@us.ibm.com">jleffler@us.ibm.com</a><br>
+Guardian of DBD::Informix v1.00.PC1 -- <a href="http://dbi.perl.org">http://dbi.perl.org</a><br>
+&quot;I don't suffer from insanity; I enjoy every minute of it!&quot;</p>
+<hr>
+
+</HTML>
+

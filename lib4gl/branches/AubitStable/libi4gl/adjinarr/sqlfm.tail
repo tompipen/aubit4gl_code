@@ -1,0 +1,10 @@
+/*
+	@(#)$Id: sqlfm.tail,v 1.2 2002-06-14 09:23:03 afalout Exp $
+	@(#)Copyright Sphinx Ltd. 1988
+	@(#)Adjustable array dimensions for INPUT ARRAY statements
+	This set of definitions should be included in $INFORMIXDIR/incl/sqlfm.h
+*/
+#ifndef FAR_V_INPUT
+#define _farinput(a, b, c, d, e, f, g, h)	_far_v_input(a, b, c, d, e, f, g, h)
+#define _efipclean	_ef_v_ipclean
+#endif

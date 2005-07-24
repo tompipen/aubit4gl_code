@@ -1,0 +1,82 @@
+'\" @(#)$Id: repdest.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- Select Report Destination
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH REPDEST 3S "Sphinx Informix Tools"
+.SH NAME
+report_destination \(em select destination for report
+.SH SYNOPSIS
+.ft B
+function report_destination()
+.br
+define
+    rdest    integer,
+    rname    char(80)
+.br
+return rdest, rname
+.ft R
+.SH DESCRIPTION
+\fBReport_destination\fP offers the user a standard menu for
+selecting the destination for a report.
+The options are ``Screen'', ``Default printer'', ``New file'',
+``Append to file'', ``Pipe'' and ``Exit''.
+The function returns two values, an integer indicating the
+destination, and a string for the name of the file or program.
+The value of the integer will be one of:
+.sp
+\s-2NULL\s0	Abandon report
+.br
+0	Send report to screen
+.br
+1	Send report to printer
+.br
+2	Send report to file
+.br
+3	Send report to pipe
+.sp
+The string defines the file or pipe to which the report should be sent.
+The standard sequence for calling this function is:
+.sp
+.ft CW
+.ps 10
+.vs 14
+.nf
+DEFINE
+    rdest    INTEGER,
+    rname    CHAR(80)
+
+CALL report_destination() returning rdest, rname
+CASE rdest
+WHEN 0
+    START REPORT rf_report
+WHEN 1
+    START REPORT rf_report TO PRINTER
+WHEN 2
+    START REPORT rf_report TO rname
+WHEN 3
+    START REPORT rf_report TO PIPE rname
+OTHERWISE
+    RETURN    # Abandon
+END CASE
+.sp
+.fi
+.ft
+.ps
+.vs
+The report output section should be configured for a printer
+(that is, the sizes should be printer sizes; the report
+destination must \fInot\fP be specified in the report).
+The default specification is normally acceptable.
+The report should call the function \fBset_output()\fP in the
+\s-2FIRST PAGE HEADER\s0 block (or the \s-2PAGE HEADER\s0, or
+some other block executed early in the report).
+This will reset the output parameters correctly for the screen if
+the report is sent to the screen.
+The \s-2PAGE TRAILER\s0 should normally have a \s-2PAUSE\s0 in it;
+this will improve the screen handling and does not affect the
+report when it is sent to the printer, a file or a pipe.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+21st April 1988

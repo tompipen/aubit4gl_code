@@ -1,0 +1,30 @@
+'\" @(#)$Id: rjust.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- right-justify string
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH RJUST 3S "Sphinx Informix Tools"
+.SH NAME
+rjust \(em right-justify string
+.SH SYNOPSIS
+function \fBrjust\fP(s, i)
+ define
+  s char(80),
+  i integer
+ ...
+ return s
+.br
+end function
+.SH DESCRIPTION
+\fBRjust\fP takes the string passed as an argument and
+right-justifies it in a field whose width is specified by the
+second argument.
+This is useful in a report for getting headings and other
+strings right-justified but starting at the same column number as
+the items which are left-justified.
+.SH FILES
+rjust.4gl
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+19th September 1988

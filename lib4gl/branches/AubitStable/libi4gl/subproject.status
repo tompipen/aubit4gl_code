@@ -1,0 +1,7 @@
+Name: libi4gl
+Parent: lib4gl
+Description: collection of libraries in x4GL and C (most originally written by Jonathan Leffler) (manual in aubit4gldoc/lib4gl-manual)
+Maintainer: AF
+Status: 4
+Todo: 
+Notes: 

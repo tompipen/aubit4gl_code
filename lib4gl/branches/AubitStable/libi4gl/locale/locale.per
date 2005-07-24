@@ -1,0 +1,93 @@
+-- @(#)File:            $RCSfile: locale.per,v $
+-- @(#)Version:         $Revision: 1.2 $
+-- @(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+-- @(#)Purpose:         ISQL form for LOCALE table (Informix)
+-- @(#)Author:          J Leffler
+-- Designed after the ANSI C header <locale.h>
+
+DATABASE test
+
+SCREEN SIZE 24 BY 80
+{
+           LOCALES
+Locale name          [f000              ]
+
+Monetary Formatting:
+Currency symbol (CS) [f001]   Digits after decimal point [c]
+International CS     [f002]   Digits after decimal point [d]
+Decimal point        [a]
+Grouping             [f003      ]
+Thousands separator  [b]
+
+Negative monetary format details:       Positive monetary format details:
+Negative sign         [f004]            Positive sign         [f005]
+CS precedes value     [e]               CS precedes value     [h]
+CS separated by space [f]               CS separated by space [i]
+Position of sign      [g]               Position of sign      [j]
+
+Numeric Formatting:
+Decimal point       [k]
+Grouping            [f006      ]
+Thousands separator [l]
+
+}
+END
+
+TABLES
+locale
+
+ATTRIBUTES
+f000 = locale.locale_name, UPSHIFT,
+		COMMENTS = "Name of locale";
+
+f001 = locale.currency_symbol,
+		COMMENTS = "Local currency symbol";
+c = locale.frac_digits,
+		INCLUDE = ('.', '0' TO '9', NULL),
+		COMMENTS = "Local monetary format: digits after decimal point";
+
+f002 = locale.int_curr_symbol, UPSHIFT,
+		COMMENTS = "International (ISO 4217:1987) currency symbol";
+d = locale.int_frac_digits,
+		INCLUDE = ('.', '0' TO '9', NULL),
+		COMMENTS = "International monetary format: digits after decimal point";
+
+a = locale.mon_decimal_point,
+		COMMENTS = "Monetary decimal point";
+f003 = locale.mon_grouping,
+		COMMENTS = "Monetary grouping -- in case of doubt, use 3";
+b = locale.mon_thousands_sep,
+		COMMENTS = "Monetary thousands separator";
+
+f004 = locale.negative_sign,
+		COMMENTS = "Sign used to indicate negative monetary amount";
+e = locale.n_cs_precedes,
+		INCLUDE = ('.', '0', '1', NULL),
+		COMMENTS = "1 => CS precedes value, 0 => CS succeeds value";
+f = locale.n_sep_by_space,
+		INCLUDE = ('.', '0', '1', NULL),
+		COMMENTS = "1 => CS separated from value by space, 0 => no space";
+g = locale.n_sign_posn,
+		INCLUDE = ('.', '0', '1', '2', '3', '4', NULL),
+		COMMENTS = "0 (), 1 +/-CS&V, 2 CS&V+/-, 3 +/-CS, 4 CS+/-";
+
+f005 = locale.positive_sign,
+		COMMENTS = "Sign used to indicate positive monetary amount";
+h = locale.p_cs_precedes,
+		INCLUDE = ('.', '0', '1', NULL),
+		COMMENTS = "1 => CS precedes value, 0 => CS succeeds value";
+i = locale.p_sep_by_space,
+		INCLUDE = ('.', '0', '1', NULL),
+		COMMENTS = "1 => CS separated from value by space, 0 => no space";
+j = locale.p_sign_posn,
+		INCLUDE = ('.', '0', '1', '2', '3', '4', NULL),
+		COMMENTS = "0 (), 1 +/-CS&V, 2 CS&V+/-, 3 +/-CS, 4 CS+/-";
+
+k = locale.decimal_point,
+		COMMENTS = "Numeric decimal point";
+f006 = locale.grouping,
+		comments = "NUMERIC grouping -- in case of doubt, use 3";
+l = locale.thousands_sep,
+		COMMENTS = "Numeric thousands separator";
+
+END

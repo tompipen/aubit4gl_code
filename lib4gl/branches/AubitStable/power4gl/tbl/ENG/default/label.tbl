@@ -1,0 +1,13 @@
+f|acctgrps        |Account groups
+f|accounts        |Accounts
+f|acctrans        |Account transactions
+f|banks           |Banks
+f|irates          |Interest rates
+f|printers        |Printers
+f|prntypes        |Printer types
+f|qirsum          |Interest rate summary
+f|qatran          |Account transaction report
+f|states          |States
+m|munderl         |Underlying data
+m|msetup          |System setup
+m|mreport         |Reports

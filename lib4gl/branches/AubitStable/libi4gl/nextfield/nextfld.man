@@ -1,0 +1,115 @@
+'\" @(#)$Id: nextfld.man,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: I4GL Customisation Library
+.ds fC "Last changed: $Date: 2002-06-14 09:23:16 $
+.TH NEXT_FIELD 3S "Sphinx Informix Tools"
+.SH NAME
+next_field \(em make variable string into next field
+.SH SYNOPSIS
+function \fBnext_field\fP(field_name)
+ define
+   field_name CHAR(18)
+  ...
+  return
+.br
+end function
+.SH DESCRIPTION
+Normally, there is no way of specifying the next field via a variable.
+\fBNext_field\fP can be used to specify the next field with a variable.
+If an empty or null string is passed to the routine, it does not alter
+the default behaviour of the \s-2INPUT\s0 statement.
+.SH "EXAMPLE"
+.sp
+.ps 10
+.ft CW
+.nf
+FUNCTION lib_job()
+
+	INPUT x, y, z BY NAME
+	AFTER FIELD x
+		CALL next_field("z")
+	END INPUT
+
+END FUNCTION
+.fi
+.ps
+.ft
+.sp
+.SH INSTALLATION
+Using this requires some non-trivial fiddling with the installed
+version of Informix 4GL.
+.P
+There are two components to this system:
+.sp
+.in +2
+nextfld.ec \(em the source code which implements the variable next field mechanism.
+.sp
+popstr.c \(em used to pop a string off the I4GL stack (strips trailing blanks).
+.sp
+sqlfm.tail \(em the patch to sqlfm.h
+.sp
+.in
+There are two changes to make:
+.sp
+1.	$INFORMIXDIR/incl/sqlfm.h must be modified to call
+the routines in nextfld.ec instead of the ISI routines.
+The routines in nextfld.ec call the orthodox routines after some
+minimal (but important) jiggery-pokery.
+.sp
+2.	$INFORMIXDIR/lib/libforms.a must be modified to contain
+the nextfld.o and popstr.o supplied.
+.sp
+The makefile supplied has several targets.
+The more important one is \fIinstall\fP, which compiles the code,
+preserves a copy of the library as libforms.old and a copy of the
+header as sqlfm.old, and then compiles the code supplied in
+nextfld.ec. and adds it to libforms.a and edits sqlfm.h and adds
+its code.
+.P
+The other important target is \fIuninstall\fP which undoes the
+install process (but only if the original (.old) files still exist).
+.P
+To test the code, run:
+.sp
+make install
+.br
+make test
+.br
+nxfchk.4ge
+.sp
+The program does not use any database.
+The program should show a screen form with 5 fields imaginatively labelled `Field1' ..
+`Field5'.
+The program executes \fBnext_field\fP after each field, and the order in which the fields
+should be traversed is: 1,3,5,4,2.
+If this test does not work, run:
+.sp
+make uninstall
+.sp
+This will undo the changes made when the system was installed.
+.SH FILES
+nextfld.ec
+.br
+makefile
+.br
+nxfchk.4gl
+.br
+nxfchk.msg
+.SH BUGS
+The routine does not return any indication of whether it worked or not.
+.P
+These routines were developed on Xenix/386 System V version 2.2.2
+with I4GL 1.10.00C.
+It may work in other environments; there is no guarantee that it
+will work, even in the test environment.
+.P
+The installation assumes that the two files
+$INFORMIXDIR/lib/libforms.old and $INFORMIXDIR/incl/sqlfm.old are
+the original files installed with I4GL.
+If this system is uninstalled, it also uninstalls any other
+library enhancements provided by Sphinx.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+23rd September 1988

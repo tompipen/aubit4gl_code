@@ -1,0 +1,39 @@
+f|acctgrp         |1 |ACCOUNT GROUP
+f|acctgrps        |1 |ACCOUNT GROUPS
+f|account         |1 |ACCOUNT
+f|accounts        |1 |ACCOUNTS
+f|accounts        |3 |Code      Name                                Opened      Closed
+f|acctran         |1 |ACCOUNT TRANSACTION
+f|acctranc        |1 |ACCOUNT TRANSACTIONS - CRITERIA
+f|acctrans        |1 |ACCOUNT TRANSACTIONS
+f|acctrans        |3 |    Date           Amount  Comments
+f|bank            |1 |BANK
+f|banks           |1 |BANKS
+f|banks           |2 | Name                             State
+f|irate           |1 |INTEREST RATE
+f|iratec          |1 |INTEREST RATES - CRITERIA
+f|irates          |1 |INTEREST RATES
+f|irates          |3 |   Date           Rate
+f|printer         |1 |PRINTER
+f|printers        |1 |PRINTERS
+f|printers        |3 |Code       Name                             Type
+f|prntype         |1 |PRINTER TYPE
+f|prntypes        |1 |PRINTER TYPES
+f|qatranc         |1 |ACCOUNT TRANSACTION REPORT - CRITERIA
+f|qatran          |1 |ACCOUNT TRANSACTION REPORT
+f|qatran          |2 |      Date       Comments                                             Amount
+f|qirsumc         |1 |INTEREST RATE SUMMARY - CRITERIA
+f|qirsum          |1 |INTEREST RATE SUMMARY
+f|qirsum          |4 |Year         Jan       Feb       Mar       Apr       May       Jun       Jul       Aug       Sep       Oct       Nov       Des      Year     Average
+f|state           |1 |STATE
+f|states          |1 |STATES
+f|states          |2 | Code  Name
+m|mmain           |1 |M A I N   M E N U
+m|munderl         |1 |UNDERLYING DATA
+m|msetup          |1 |SYSTEM SETUP
+m|mreport         |1 |R E P O R T S
+s|criteria        |1 |CRITERIA
+s|pfile           |1 |OUTPUT LIST TO FILE
+s|print           |1 |PRINT LIST
+s|pscreen         |1 |PRINT SCREEN
+s|spitem          |1 |SPECIAL KEYS

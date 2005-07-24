@@ -1,0 +1,137 @@
+'\" @(#)$Id: report.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- Report Configuration
+.ds fC "@(#)$Id: report.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+.TH REPORT 3S "JLSS Informix Tools"
+.SH NAME
+set_output \(em Dynamically reconfigure dimensions of I4GL report
+.SH SYNOPSIS
+.ft B
+function set_plength(i)
+.br
+define i integer
+.sp
+function set_tmargin(i)
+.br
+define i integer
+.sp
+function set_bmargin(i)
+.br
+define i integer
+.sp
+function set_lmargin(i)
+.br
+define i integer
+.sp
+function set_rmargin(i)
+.br
+define i integer
+.sp
+function set_output()
+.ft R
+.ft B
+function get_plength()
+.sp
+function get_tmargin()
+.sp
+function get_bmargin()
+.sp
+function get_lmargin()
+.sp
+function get_rmargin()
+.ft R
+.SH DESCRIPTION
+These functions can be used to dynamically reconfigure the layout
+of the page of an Informix 4GL report.
+The example program shown below illustrates how they should be used.
+.br
+.ft CW
+.ps 10
+.vs 12
+.nf
+.so rejig.4gl
+.br
+.fi
+.ft
+.ps
+.vs
+The functions \fIset_plength\fP, \fIset_tmargin\fP,
+\fIset_bmargin\fP, \fIset_lmargin\fP and \fIset_rmargin\fP may be called
+anywhere inside an I4GL program.
+The function \fIset_output\fP will have no effect except within a report.
+It is recommended that \fIset_output\fP be used in the \s-2FIRST
+PAGE HEADER\s0 control block, but it may be used in any control block.
+.P
+After the function \fIset_output\fP is called, it invalidates all the settings;
+to change the settings in a second report, you must call the
+set-routines again.
+There is no requirement that all the routines are called (or even any of them).
+.P
+The functions \fIget_plength\fP, \fIget_tmargin\fP,
+\fIget_bmargin\fP, \fIget_lmargin\fP and \fIget_rmargin\fP may be called
+anywhere inside an I4GL program.
+If page dimensions have been set using the set-routines, then the corresponding
+value is returned; otherwise, the corresponding default value is returned.
+After \fIset_output\fP has been called, the values returned will be
+the default values again; if your report needs to know what its dimensions will
+be, it should use the get-routines before calling \fIset_output\fP.
+.SH COMPILATION
+If compiling for use with compiled Informix-4GL, no special flags are needed.
+If compiling for use with I4GL-RDS, include -DI4GL_RDS on the command line.
+The details of building the functions into the \*Cfglgo\*D
+and \*Cfgldb\*D are given in the corresponding Informix manuals.
+The necessary definitions for \*cfgiusr.c\*d are:
+.br
+.ft CW
+.ps 10
+.vs 12
+.nf
+#ifdef SET_REPORT
+extern  int set_output();   /* 0 */
+extern  int get_rmargin();  /* 0 */
+extern  int get_tmargin();  /* 0 */
+extern  int get_bmargin();  /* 0 */
+extern  int get_lmargin();  /* 0 */
+extern  int get_plength();  /* 0 */
+extern  int set_rmargin();  /* 1 */
+extern  int set_tmargin();  /* 1 */
+extern  int set_bmargin();  /* 1 */
+extern  int set_lmargin();  /* 1 */
+extern  int set_plength();  /* 1 */
+#endif /* SET_REPORT */
+
+#ifdef SET_REPORT
+    { "set_output",     set_output,     0   },
+    { "get_rmargin",    get_rmargin,    0   },
+    { "get_tmargin",    get_tmargin,    0   },
+    { "get_bmargin",    get_bmargin,    0   },
+    { "get_lmargin",    get_lmargin,    0   },
+    { "get_plength",    get_plength,    0   },
+    { "set_rmargin",    set_rmargin,    1   },
+    { "set_tmargin",    set_tmargin,    1   },
+    { "set_bmargin",    set_bmargin,    1   },
+    { "set_lmargin",    set_lmargin,    1   },
+    { "set_plength",    set_plength,    1   },
+#endif /* SET_REPORT */
+.br
+.fi
+.ft
+.ps
+.vs
+.SH WARNINGS
+This code was designed and tested on an ATT&T 3B2/400 running 
+UNIX System V Release 3.0 using Informix-4GL version 1.10.00C.
+It has since been tested on a number of other environments (including Versions
+1.10.03, 4.00 and 4.10) on a number of platforms, and has been found to work.
+However, the code cannot be guaranteed on any platform or version of I4GL.
+It is completely unsupported code.
+.SH BUGS
+The top margin set by \fBset_tmargin\fP does not take effect
+until the second page of output.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Marlin Prowell
+.br
+JLSS
+.br
+24th July 1992

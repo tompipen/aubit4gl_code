@@ -1,0 +1,77 @@
+'\" @(#)$Id: mon4gl.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: I4GL Money Formatting
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH MONEY_FORMAT 3J "JLSS Informix Tools"
+.SH NAME
+i4gl_fmt_money \(em format money using current locale
+.br
+i4gl_set_locale \(em set current locale
+.br
+i4gl_get_locale \(em get current locale
+.SH SYNOPSIS
+LET str = \fBi4gl_fmt_money\fP(value, fmtcode)
+.br
+LET opstatus = \fBi4gl_set_locale\fP(locale)
+.br
+LET locale = \fBi4gl_get_locale\fP()
+.SH DESCRIPTION
+These three routines are simple I4GL interfaces to the
+underlying routines \fBfmt_money\fP(3J), \fBget_monlocale\fP(3J)
+and \fBset_monlocale\fP(3J).
+.P
+The routine \fBi4gl_fmt_money\fP expects two parameters,
+a value to be printed and a format code.
+The range of values for the format code is:
+  -3 format as an integer
+  -2 format as international currency
+  -1 format as local currency
+  >=0 format as numeric quantity
+.br
+Note that \fIi4gl_fmt_money\fP can be used to format non-monetary values.
+.P
+The routine \fBi4gl_set_locale\fP can be called with an empty
+string or the string `C' (case-sensitive), which is the default
+locale and will not fail, or with the name of a locale defined in
+the table \fBLocale\fP in the current database.
+If the named locale is not present, no change occurs and
+\fIi4gl_set_locale\fP will return the appropriate error code (100
+implying locale not found).
+If the locale is present, the current locale is changed to the
+named locale.
+.P
+The routine \fBi4gl_get_locale\fP returns the name of the
+current locale.
+It can be used to save the current locale at any time, with a
+view to restoring it later.
+.SH FILES
+mon4gl.c, mondmp.c, monfmt.c, monfmt.h, monset.ec, montst.4gl.
+.br
+locale.sql, locale.per, locale.unl
+.br
+makefile
+.br
+popstr.c, memmove.c
+.br
+mon4gl.3j, monfmt.3j
+.SH "SEE ALSO"
+`The Standard C Library' by P J Plauger.
+The detailed formatting code is closely based on the routine
+\*c_Fmtval\*d in this book, the main change being a move away from
+using \fIlocaleconv(3)\fP to using \fIset_monlocale(3J)\fP.
+The surrounding Informix-4GL interface and related code is
+independent of Plauger's work.
+.SH DIAGNOSTICS
+\fII4gl_fmt_money\fP will return a null string if called incorrectly.
+\fII4gl_set_locale\fP returns a status code which can be interpreted
+using the normal error handling code.
+\fII4gl_get_locale\fP produces no diagnostics at all.
+.SH BUGS
+The value is popped into a C double; if the pushed value was a
+\s-2DECIMAL\s0 or \s-2MONEY\s0 value which exceeds the precision that can be
+stored in a double, the results will be correspondingly inexact.
+.SH AUTHOR
+Jonathan Leffler
+.br
+JLSS
+.br
+17th November 1991

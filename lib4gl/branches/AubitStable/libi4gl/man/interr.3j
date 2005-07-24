@@ -1,0 +1,33 @@
+'\" @(#)$Id: interr.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: Internal Error and Fatal Error
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH INTERNAL_ERROR 3S "Sphinx Informix Tools"
+.SH NAME
+internal_error \(em report recoverable internal error
+.br
+fatal_error \(em report unrecoverable internal error
+.SH SYNOPSIS
+call internal_error("message")
+.br
+call fatal_error("message")
+.SH DESCRIPTION
+These routines write the message supplied as an argument to the
+error log file (using \fBlogerror\fP supplied with \*cstdopt.4gl\*d)
+and puts out a standard error message on the screen.
+\fBFatal_error\fP displays the error message for 5 seconds and
+then exits the program with status 1.
+\fBInternal_error\fP displays the error message for 3 seconds and
+then returns to the calling function.
+.P
+These functions should be used whenever the program detects an internal error.
+They should not be used for 99+% of user errors.
+.SH FILES
+interr.4gl
+.SH "SEE ALSO"
+std_options(3S)
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+21st May 1990

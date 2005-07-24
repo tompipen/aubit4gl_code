@@ -1,0 +1,87 @@
+'\" @(#)$Id: ltmonth.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: Sphinx I4GL Date Manipulation Routines
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH DATES 3S "Sphinx Informix Tools"
+.SH NAME
+last_of_this_month \(em determine last day of this month
+.br
+first_of_this_month \(em determine first day of this month
+.br
+first_of_next_month \(em determine first day of next month
+.br
+first_day_of_quarter \(em determine first day of quarter
+.br
+last_day_of_quarter \(em determine last day of quarter
+.br
+this_date_last_year \(em determine corresponding date last year
+.br
+this_date_next_year \(em determine corresponding date next year
+.SH SYNOPSIS
+let ltm = last_of_this_month(effective_date)
+.br
+let ftm = first_of_this_month(effective_date)
+.br
+let fnm = first_of_next_month(effective_date)
+.br
+let fnm = first_day_of_quarter(effective_date)
+.br
+let fnm = last_day_of_quarter(effective_date)
+.br
+let fnm = this_date_last_year(effective_date)
+.br
+let fnm = this_date_next_year(effective_date)
+.SH DESCRIPTION
+These routines each perform a commonly required but not entirely simple
+calculation based on a given date.
+Frequently, the effective_date argument will be \s-2TODAY\s0, but it
+can be any date that is appropriate.
+.P
+\fBLast_of_this_month\fP returns the date of the last day of the month
+which contains the effective date.
+.P
+\fBFirst_of_this_month\fP returns the date of the first day of the month
+which contains the effective date.
+.P
+\fBFirst_of_next_month\fP returns the date of the first day of the month
+after the month which contains the effective date.
+.P
+\fBFirst_day_of_quarter\fP returns the first day of the quarter which
+contains the effective date.
+The quarter days are 1st January, 1st April, 1st July and 1st October.
+.P
+\fBLast_day_of_quarter\fP returns the last day of the quarter which contains
+the effective date.
+It returns one of the values 31st March, 30th June, 30th September, 31st
+December.
+.P
+\fBThis_date_last_year\fP returns the corresponding date last year.
+For 29th February, it returns 28th February of the previous year.
+If the effective date is 28th February and the previous year was a leap
+year, it still returns 28th February of previous year.
+.P
+\fBThis_date_next_year\fP returns the corresponding date next year.
+For 29th February, it returns 28th February of the next year.
+If the effective date is 28th February and the next year is a leap
+year, it still returns 28th February of the next year.
+.P
+There is nothing special about these routines except that the calculations
+are more complicated than fits comfortably on one or two lines.
+The easiest way of calculating the last day of this month is to subtract one
+from the date representing the first day of the next month; this is exactly
+what the code does.
+.SH FILES
+ftmonth.4gl, fnmonth.4gl, ltmonth.4gl,
+ldquart.4gl, fdquart.4gl,
+tdlyear.4gl, tdnyear.4gl
+.SH DIAGNOSTICS
+These routines return NULL if given a NULL date.
+.SH BUGS
+If given dates sufficiently far from 1900, 
+these routines will do the calculations wrongly.
+Sufficiently far means of the order of a million years!
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+10th October 1989

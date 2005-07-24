@@ -1,0 +1,83 @@
+'\" @(#)$Id: stdopt.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- Standard options etc.
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH STDOPTIONS 3S "Sphinx Informix Tools"
+.SH NAME
+std_options \(em set standard options
+.br
+logmessage \(em record general message on log file
+.br
+logerror \(em record error message on log file
+.br
+idk_enable \(em enable insert and delete keys
+.br
+idk_disable \(em disable insert and delete keys
+.SH SYNOPSIS
+\fBfunction std_options(applname, helpfile, logfile, security)\fP
+.br
+define
+    applname char(8),
+    helpfile char(8),
+    logfile  char(8),
+	security char(12)
+.sp
+\fBfunction logmessage(str)\fP
+.br
+define
+    str char(80)
+.sp
+\fBfunction logerror(str)\fP
+.br
+define
+    str char(80)
+.sp
+\fBfunction idk_enable()\fP
+.sp
+\fBfunction idk_disable()\fP
+.SH DESCRIPTION
+\fBStd_options\fP is used at the start of every program to set the
+standard options used by the database system.
+For the purposes of this manual page, the routine looks at an environment
+variable $BASE to find the base directory where the application is installed.
+In practice, each project uses a customised version of this code and one of the
+main items that is customised is the name of the environment variable.
+It also opens a log file (based on the logfile variable) and a
+help file  (based on the helpfile variable).
+All records written on the log file using \fBlogmessage\fP and
+\fBlogerror\fP are branded with the \fBprogname\fP variable.
+(This system allows several programs to share message and log
+files, but also allows the DBA to distinguish which program
+caused any problems.)
+Only users who have been given permission to perform the action specified by
+the security variable may use the program.
+If permission has not been granted, \fBstd_options\fP logs the error,
+tells the user `Sorry!' and sleeps for about 3 seconds,
+and then terminates the program with a non-zero exit status.
+.P
+\fBLogmessage\fP records a message on the log file.
+I4GL puts the date and time out anyway; this routine inserts the
+user name and program name as well as the message.
+\fBLogerror\fP is similar except that the string \fI<error>\fP is
+included on the log file;
+the DBA can then look for problems with \fBgrep\fP.
+.P
+\fBIdk_enable\fP sets the \s-2INSERT KEY\s0 to \s-2F1\s0 and the
+\s-2DELETE KEY\s0 to \s-2F2\s0 (the defaults, and the same as
+\fBstd_options\fP).
+\fBIdk_disable\fP sets the \s-2INSERT KEY\s0 to \s-2F35\s0 and the
+\s-2DELETE KEY\s0 to \s-2F36\s0 (effectively disabling them
+except on a terminal with 36 or more function keys).
+These routines are used when the user is to be unable to add or
+delete data from an \s-2INPUT ARRAY\s0 statement.
+.SH FILES
+Message file: $BASE/msg/applname.iem
+.br
+Log file: $BASE/log/applname.log
+.SH "SEE ALSO"
+getenviron(3S), security(3S)
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+26th February 1988

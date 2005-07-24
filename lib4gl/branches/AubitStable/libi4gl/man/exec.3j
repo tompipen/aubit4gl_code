@@ -1,0 +1,27 @@
+'\" @(#)$Id: exec.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- exec(2) for I4GL
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH EXEC 3S "Sphinx Informix Tools"
+.SH NAME
+exec \(em implement exec(2) for I4GL
+.SH SYNOPSIS
+function \fBexec\fP(cmd)
+
+ define cmd char(512)
+ ...
+
+end function
+.SH DESCRIPTION
+This function carefully resets the terminal mode (as any I4GL
+program does before it terminates), closes all spare file
+descriptors except stdin, stdout, stderr (assuming there are only
+20 descriptors available), and uses \fBexecv\fP(2) to exec
+the shell (/bin/sh) to run the command passed as an argument.
+If called incorrectly, or if it fails to exec the program, it
+exits with status 1; under no circumstances does it return.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+13th September 1988

@@ -1,0 +1,26 @@
+'\" @(#)$Id: round.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: ROUND function (I4GL)
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH ROUND 3S "Sphinx Informix Tools"
+.SH NAME
+round \(em round decimal numbers
+.SH SYNOPSIS
+function round(d, p)
+    define
+        d decimal(32),
+        p integer
+.SH DESCRIPTION
+\fBRound\fP is a simple piece of code written in C which uses
+the undocumented decimal handling routine \fBdecround\fP to round
+the value.
+It takes two arguments; the decimal value to be rounded and the number of
+decimal places to be rounded to.
+It works correctly for non-negtaive numbers of decimal places;
+it has not been tested on negative numbers of decimal places.
+.SH DIAGNOSTICS
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+10th August 1989

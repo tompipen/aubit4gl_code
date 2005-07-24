@@ -1,0 +1,171 @@
+'\" @(#)$Id: monfmt.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: Money Formatting using database locales
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH FMT_MONEY 3J "JLSS Informix Tools"
+.SH NAME
+fmt_money \(em format money using current locale
+.br
+set_monlocale \(em set current locale
+.br
+get_monlocale \(em get current locale
+.br
+get_monfmt \(em get details of current locale
+.SH SYNOPSIS
+.eS
+.nf
+#include <stdio.h>
+#include "monfmt.h"
+.sp
+char *fmt_money(buffer, len, value, fmtcode)
+char    *buffer;
+int      len;
+double   value;
+int      fmtcode;
+.sp
+char *get_monlocale()
+.sp
+int   set_monlocale(s)
+char *s;
+.sp
+Money_fmt *get_monfmt()
+.sp
+void dmp_monfmt(fp, mf)
+FILE *fp;
+Money_fmt *mf;
+.fi
+.eE
+.SH DESCRIPTION
+These three routines are allow monetary and numeric values to be
+formatted according to the values determined by a locale.
+These locales are closely based on the locales defined in ANSI
+C, but have been adapted to allow the details of the locales to
+be stored in a database table called \fBLocale\fP.
+The structure of this table is defined in the file
+\fBlocale.sql\fP; the design is intended to cover all the values
+which can be set using \*cLC_MONETARY\*d and \*cLC_NUMERIC\*d in
+the C standard.
+The detailed formatting code is very closely modelled on the
+code in `The Standard C Library'; it should be regarded as being
+unavailable for commercial exploitation.
+.P
+The routine \fBfmt_money\fP expects four parameters,
+a pointer to an array of characters, the length of the array,
+a value to be printed and a format code.
+The range of values for the format code is:
+  -3 format as an integer (\*cFMT_INTEGER\*d)
+  -2 format as international currency (\*cFMT_INTER_CURR\*d)
+  -1 format as local currency (\*cFMT_LOCAL_CURR\*d)
+  >=0 format as numeric quantity
+.br
+Note that \fIfmt_money\fP can be used to format non-monetary values.
+.P
+The routine \fBset_monlocale\fP can be called with an empty
+string or the string `C' (case-sensitive), which is the default
+locale and will not fail, or with the name of a locale defined in
+the table \fBLocale\fP in the current database.
+If the named locale is not present, no change occurs and
+\fIset_monlocale\fP will return the appropriate error code (100
+implying locale not found).
+If the locale is present, the current locale is changed to the
+named locale.
+Note that the `C' locale cannot be altered, even if it is an
+entry in the database.
+.P
+The routine \fIget_monlocale\fP returns the name of the current locale.
+It can be used to save the current locale at any time, with a
+view to restoring it later.
+The returned data may not be modified.
+.P
+The routine \fBget_monfmt\fP is primarily for internal use, but
+returns a pointer to the data structure which describes the
+current locale.
+This structure does not include the locale name.
+It is very closely based on the ANSI C struct locale, though it
+must be assumed that the struct locale in any implementation will
+have the members in a different order.
+However, it should not be difficult to use \fIlocaleconv\fP in
+place of \fIget_monfmt\fP if it were required or desirable.
+.P
+The routine \fIdmp_monfmt\fP was used during debugging to print
+the contents of a locale.
+It might still be useful when trying to familiarise yourself
+with locale handling via the database.
+.SH SEMANTICS
+The routine \fIset_monlocale\fP converts the information stored
+in the \fBLocale\fP table into the form that would be expected by
+any C routine working with locales.
+This involves a variety of minor modifications, most of which
+will not seriously affect the user.
+.P
+The \*cgrouping\*d and \*cmon_grouping\*d fields are interpreted
+differently from normal ANSI C.
+The characters `\*c0\*d'\*c\|..\|\*d`\*c9\*d' are converted to the
+corresponding numbers \*c0\|..\|9\*d, and the character `\*c.\*d'
+is converted to \*cCHAR_MAX\*d.
+Setting `\*c0\*d' in \fBLocale\fP is equivalent to ending the
+string.
+.P
+Similarly, the \*cfrac_digits\*d and \*cint_frac_digits\*d
+characters will be translated into single digit integers.
+Note that `\*c0\*d' means no decimal places but include a
+decimal point; leaving the field null implies no decimal places
+and no decimal point.
+And in exactly the same way, the codes for
+\*cn_cs_precedes\*d, \*cn_sep_by_space\*d, \*cn_sign_pos\*d,
+\*cp_cs_precedes\*d, \*cp_sep_by_space\*d, \*cp_sign_pos\*d
+are also translated.
+.P
+Leaving any of the fields blank in the form means, of course,
+that the value is treated as \s-2NULL\s0.
+Also note that trailing spaces are deleted off the currency
+symbols and the positive and negative signs; it has to be assumed
+that they were added by the database.
+This may mean you need to specify \*cp_sep_by_space\*d and
+\*cn_sep_by_space\*d when you otherwise would not \(em but probably
+makes no difference at all.
+.SH FILES
+mon4gl.c, mondmp.c, monfmt.c, monfmt.h, monset.ec, montst.4gl.
+.br
+locale.sql, locale.per, locale.unl
+.br
+makefile
+.br
+popstr.c, memmove.c
+.br
+mon4gl.3j, monfmt.3j
+.SH "SEE ALSO"
+`The Standard C Library' by P J Plauger.
+The detailed formatting code is closely based on the routine
+\*c_Fmtval\*d in this book, the main change being a move away from
+using \fIlocaleconv(3)\fP to using \fIset_monlocale(3J)\fP.
+The surrounding Informix-4GL interface and related code is
+independent of Plauger's work.
+.SH DIAGNOSTICS
+\fIFmt_money\fP will return a null string if called incorrectly or if
+the output blatantly overflows the buffer supplied for the conversion.
+However, it cannot be relied upon to detect overflows when the
+double value it pops is wildly out of control as there is no
+provision in \fIsprintf(3)\fP for limiting the amount of space taken up
+by the number.
+\fISet_monlocale\fP returns a status code which can be interpreted
+using the normal ESQL/C error handling code.
+\fIGet_monlocale\fP produces no diagnostics at all.
+\fIget_monfmt\fP produces no diagnostics at all.
+\fIdmp_monfmt\fP produces no diagnostics at all.
+.SH BUGS
+The value is popped into a C double; if the pushed value was a
+\s-2DECIMAL\s0 or \s-2MONEY\s0 value which exceeds the precision that can be
+stored in a double, the results will be correspondingly inexact.
+.P
+Any changes to the structure of the database table will not be
+noticed by \fIset_monlocale\fP.
+If fields are reduced in length, the code will continue to work.
+If extra fields are added, or the fields are reordered, the code
+will continue to work.
+Any other changes are liable to break something.
+.SH AUTHOR
+Jonathan Leffler
+.br
+JLSS
+.br
+17th November 1991

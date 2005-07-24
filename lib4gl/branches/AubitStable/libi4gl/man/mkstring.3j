@@ -1,0 +1,22 @@
+'\" @(#)$Id: mkstring.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: Create string
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH MKSTRING 3S "Sphinx Informix Tools"
+.SH NAME
+mkstring \(em make string of replicated character
+.SH SYNOPSIS
+LET uline = mkstring('-', nchars)
+.SH DESCRIPTION
+This function returns a string of \fInchars\fP replications of the character
+provided as the first argument.
+Typically, this is used to create underlines for use in reports.
+.SH FILES
+mkstring.4gl
+.SH "SEE ALSO"
+centre(3S), rjust(3S)
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+21st May 1990

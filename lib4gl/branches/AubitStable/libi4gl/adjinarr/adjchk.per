@@ -1,0 +1,31 @@
+{
+	@(#)$Id: adjchk.per,v 1.2 2002-06-14 09:23:03 afalout Exp $
+	@(#)Form used to check ADJINARR
+}
+
+DATABASE FORMONLY
+
+SCREEN
+{
+	Input array
+	[i ][c                   ]
+	[i ][c                   ]
+	[i ][c                   ]
+	[i ][c                   ]
+	[i ][c                   ]
+	[i ][c                   ]
+	[i ][c                   ]
+	[i ][c                   ]
+	[i ][c                   ]
+	[i ][c                   ]
+}
+END
+
+ATTRIBUTES
+i = FORMONLY.i TYPE INTEGER;
+c = FORMONLY.c TYPE CHAR;
+END
+
+INSTRUCTIONS
+SCREEN RECORD s_a[10] (FORMONLY.*)
+END

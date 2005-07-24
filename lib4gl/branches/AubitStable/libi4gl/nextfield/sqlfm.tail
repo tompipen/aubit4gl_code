@@ -1,0 +1,10 @@
+/*
+	@(#)$Id: sqlfm.tail,v 1.2 2002-06-14 09:23:16 afalout Exp $
+	@(#)Copyright Sphinx Ltd. 1988
+	@(#)Allow for variable NEXT FIELD
+	This set of definitions should be included in $INFORMIXDIR/incl/sqlfm.h
+*/
+#ifndef EF_V_NEXT_FIELD
+#define EF_V_NEXT_FIELD
+#define next_field(n)	next_v_field(n, &_sqicb)
+#endif /* EF_V_NEXT_FIELD */

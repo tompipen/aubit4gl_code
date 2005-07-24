@@ -1,0 +1,10 @@
+/*
+	@(#)$Id: sqlfm.tail,v 1.2 2002-06-14 09:23:16 afalout Exp $
+	@(#)Copyright Sphinx Ltd. 1988
+	@(#)Stack of help message files
+	This set of definitions should be included in $INFORMIXDIR/incl/sqlfm.h
+*/
+#ifndef EF_V_HELP
+#define EF_V_HELP
+#define _efhlpfile(a)	_ef_v_hlpfile(a)
+#endif

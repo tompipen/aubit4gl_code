@@ -1,0 +1,20 @@
+database formonly
+screen
+{
+
+
+ List order....[o]
+
+ Account.......[acctcode|acctname                        ]
+
+ Dates.........[datfr     ]-[datto     ]
+
+}
+attributes
+  o=formonly.ord, downshift, autonext;
+  acctcode=formonly.acctcode, autonext;
+  acctname=formonly.acctname, autonext;
+  datfr=formonly.datfr, autonext;
+  datto=formonly.datto;
+instructions
+  delimiters "  "

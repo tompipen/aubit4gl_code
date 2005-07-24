@@ -1,0 +1,29 @@
+'\" @(#)$Id: sqltype.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- Convert type info into type name
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH SQLTYPE 3S "Sphinx Informix Tools"
+.SH NAME
+sqltype \(em convert column type and length into type declaration
+.SH SYNOPSIS
+function \fBsqltype\fP(coltype, collength)
+ define
+  coltype like syscolumns.coltype,
+  collength like syscolumns.collength,
+  str  char(18)
+ ...
+ return str
+.br
+end function
+.SH DESCRIPTION
+This function takes the column type and length as defined in 
+\fBSyscolumns\fP and converts them into a string which is suitable 
+for use inside an I4GL program for declaring a variable of the same 
+type as the column.
+This string is then returned to the user.
+Any information about whether the column accepts nulls or not is lost.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+25th September 1988

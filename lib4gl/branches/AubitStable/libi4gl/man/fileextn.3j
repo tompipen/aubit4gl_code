@@ -1,0 +1,27 @@
+'\" @(#)$Id: fileextn.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- Find extension of file name
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH FILEEXTN 3S "Sphinx Internal System"
+.SH NAME
+fileextn \(em find extension of file name
+.SH SYNOPSIS
+function \fBfileextn\fP(s)
+ define
+  s char(14)
+ ...
+ return s
+.br
+end function
+.SH DESCRIPTION
+\fBFileextn\fP returns the extension of the filename supplied as its argument.
+The extension must be less than half the length of the string.
+This means that `a.out' does not have an extension.
+.SH BUGS
+It is not clear that the heuristic is the best, but it works except 
+with oddball cases.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+25th September 1988

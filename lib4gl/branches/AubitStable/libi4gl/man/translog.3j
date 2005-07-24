@@ -1,0 +1,53 @@
+'\" @(#)$Id: translog.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual Page: General Library -- Transaction handling
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH TRANSACTIONS 3S "Sphinx Informix Tools"
+.SH NAME
+begin_work \(em start a transaction
+.br
+commit_work \(em commit a transaction
+.br
+rollback_work \(em rollback a transaction
+.br
+end_work \(em end a transaction
+.br
+translog \(em is there a transaction log on the database
+.SH SYNOPSIS
+\fBfunction begin_work()\fP
+.sp
+\fBfunction commit_work()\fP
+.sp
+\fBfunction rollback_work()\fP
+.sp
+\fBfunction end_work(opstatus)
+.br
+define
+    opstatus integer
+.sp
+\fBfunction translog()\fP
+.SH DESCRIPTION
+\fBBegin_work\fP tests whether there is a transaction log on the
+database and executes a \s-2BEGIN WORK\s0 statement if there is
+a transaction log.
+\fBCommit_work\fP tests whether there is a transaction log on the
+database and executes a \s-2COMMIT WORK\s0 statement if there is
+a transaction log.
+\fBRollback_work\fP tests whether there is a transaction log on the
+database and executes a \s-2ROLLBACK WORK\s0 statement if there is
+a transaction log.
+\fBEnd_work\fP tests whether the opstatus variable is \s-2TRUE\s0
+(non-zero) or \s-2FALSE\s0 (zero) and executes
+\fBrollback_work\fP if it is non-zero and \fBcommit_work\fP
+otherwise.
+.P
+These routines call on the low-level (but usable) routine
+\fBtranslog\fP which tests whether there is a transaction log on
+the database.
+The test is only done once and the result is stored so that after
+the first test, the routine does not access the database again.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+26th February 1988

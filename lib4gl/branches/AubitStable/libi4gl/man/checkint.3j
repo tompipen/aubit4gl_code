@@ -1,0 +1,20 @@
+'\" @(#)$Id: checkint.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- Check interrupts
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH CHECKINT 3S "Sphinx Informix Tools"
+.SH NAME
+check_interrupt \(em check whether interrupt has occured
+.SH SYNOPSIS
+\fBfunction check_interrupt()\fP
+.SH DESCRIPTION
+\fBCheck_interrupt\fP generates an error message ``Interrupt
+detected \-\- ignored'' and resets the global variable \s-2INT_FLAG\s0
+to zero if it is not zero.
+It is used wherever the programmer wishes to check for but ignore
+an interrupt key.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+26th February 1988

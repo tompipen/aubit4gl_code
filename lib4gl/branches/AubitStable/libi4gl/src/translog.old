@@ -1,0 +1,78 @@
+{
+	@(#)$Id: translog.old,v 1.2 2002-06-14 09:23:17 afalout Exp $
+	@(#)Sphinx Informix Tools: General Library
+	@(#)Handle transactions whether database has log or not
+	@(#)Author: JL
+}
+
+{ Global to this file -- not accessible outside }
+DEFINE
+	logstatus	INTEGER
+	{ 0 => State of log unknown, 1 => Log absent, 2 => Log present }
+
+{ Determine whether there is a transaction log }
+FUNCTION	translog()
+
+	DEFINE
+		sccs	CHAR(1),
+		junk	INTEGER
+
+	IF logstatus = 0 THEN
+		WHENEVER ERROR CONTINUE
+		SELECT Tabid
+			INTO junk
+			FROM Systables
+			WHERE Systables.Tabtype = 'L'
+		IF STATUS != 0 THEN
+			LET logstatus = 1 { Log absent }
+		ELSE
+			LET logstatus = 2 { Log present }
+			LET sccs = "@(#)$Id: translog.old,v 1.2 2002-06-14 09:23:17 afalout Exp $"
+		END IF
+		WHENEVER ERROR STOP
+	END IF
+
+	RETURN (logstatus = 2)
+
+END FUNCTION {translog}
+
+{ Begin a transaction if there is a log }
+FUNCTION begin_work()
+
+	IF translog() THEN
+		BEGIN WORK
+	END IF
+
+END FUNCTION {begin_work}
+
+{ Commit a transaction if there is a log }
+FUNCTION commit_work()
+
+	IF translog() THEN
+		COMMIT WORK
+	END IF
+
+END FUNCTION {commit_work}
+
+{ Rollback transaction if there is a log }
+FUNCTION rollback_work()
+
+	IF translog() THEN
+		ROLLBACK WORK
+	END IF
+
+END FUNCTION {rollback_work}
+
+{ Terminate a transaction }
+FUNCTION end_work(state)
+
+	DEFINE
+		state	INTEGER
+
+	IF state != 0 THEN
+		CALL rollback_work()
+	ELSE
+		CALL commit_work()
+	END IF
+
+END FUNCTION {end_work}

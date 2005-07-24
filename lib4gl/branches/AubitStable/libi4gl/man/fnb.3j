@@ -1,0 +1,30 @@
+'\" @(#)$Id: fnb.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- Find first non-blank in string
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH FNB 3S "Sphinx Informix Tools"
+.SH NAME
+fnb	\(em find first non-blank character in string
+.SH SYNOPSIS
+function \fBfnb\fP(s)
+ define
+  s char(255),
+  t char(1)
+ ...
+ return t
+.br
+end function
+.SH DESCRIPTION
+This function returns the first non-blank character in a string.
+If the string is all blank, it returns blank.
+It is written in C and is a lot quicker than the equivalent I4GL code.
+On the other hand, it is so small that it is unlikely to be a 
+significant cost to the overall program.
+.SH BUGS
+Users could pass strings of up to 511 characters, with more than 255 
+leading blanks.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+25th September 1988

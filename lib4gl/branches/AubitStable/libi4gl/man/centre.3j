@@ -1,0 +1,29 @@
+'\" @(#)$Id: centre.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- right-justify string
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH CENTRE 3S "Sphinx Informix Tools"
+.SH NAME
+centre \(em centre a string
+.SH SYNOPSIS
+function \fBcentre\fP(s, i)
+ define
+  s char(80),
+  i integer
+ ...
+ return s
+.br
+end function
+.SH DESCRIPTION
+\fBCentre\fP takes the string passed as an argument and
+centres it in a field whose width is specified by the
+second argument.
+This is useful in reports for getting headings and other
+strings centred.
+.SH FILES
+centre.4gl
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+24th November 1988

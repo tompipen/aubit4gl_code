@@ -1,0 +1,40 @@
+'\" @(#)$Id: access.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- Check file access
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH ACCESS 3S "Sphinx Informix Tools"
+.SH NAME
+file_access \(em I4GL interface to access(2)
+.SH SYNOPSIS
+function \fBfile_access\fP(file, mode)
+ define
+  file	char(512),
+  mode	integer
+ ...
+ return mode
+.br
+end function
+.SH DESCRIPTION
+\fBFile_access\fP calls \fBaccess\fP(2) with the two arguments
+supplied and returns the status returned by \fBaccess\fP.
+The return value will be \-1 if \fBfile_access\fP is called
+incorrectly or if the file is not accessible with the mode
+specified.
+.P
+The values for mode are:
+.sp
+  0 existence
+  1 executable
+  2 writable
+  3 executable and writable
+  4 readable
+  5 readable and executable
+  6 readable and writable
+  7 readable, writable, and executable
+.SH "SEE ALSO"
+access(2)
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+27th September 1988

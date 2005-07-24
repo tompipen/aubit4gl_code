@@ -1,0 +1,41 @@
+{
+    @(#)$Id: dumptst.per,v 1.2 2002-06-14 09:23:17 afalout Exp $
+    @(#)Test screen form for screen dump
+}
+
+DATABASE FORMONLY
+
+SCREEN
+{
+*                                                                              *
+
+                SPHINX INFORMIX TOOLS
+
+        Test screen for screen dump subroutine
+
+        String  [f001                             ]
+        String  [f002                             ]
+        Decimal [f003       ]
+        Date    [f004            ]
+
+
+
+
+        When the form is displayed, there is an asterisk in each corner.
+
+
+
+*                                                                              *
+}
+END
+
+ATTRIBUTES
+f001 = FORMONLY.field1 TYPE CHAR;
+f002 = FORMONLY.field2 TYPE CHAR, REVERSE;
+f003 = FORMONLY.field3 TYPE DECIMAL, FORMAT = "######.####";
+f004 = FORMONLY.field4 TYPE DATE, FORMAT = "ddd, dd mmm yyyy";
+END
+
+INSTRUCTIONS
+SCREEN RECORD s_scrdmp (FORMONLY.*)
+END

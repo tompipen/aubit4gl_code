@@ -1,0 +1,34 @@
+database formonly
+screen
+{
+
+
+[maddrtxt    |maddr                                           ]
+
+[msubjtxt    |msubj                                           ]
+
+[wheadtxt    |h]
+
+[mdescrtxt   ]
+[mdescr1                                                         ]
+[mdescr2                                                         ]
+[mdescr3                                                         ]
+[mdescr4                                                         ]
+[mdescr5                                                         ]
+
+}
+attributes
+  maddrtxt=formonly.maddrtxt;
+  maddr=formonly.maddr, autonext;
+  msubjtxt=formonly.msubjtxt;
+  msubj=formonly.msubj, autonext;
+  wheadtxt=formonly.wheadtxt;
+  h=formonly.whead, downshift, autonext;
+  mdescrtxt=formonly.mdescrtxt;
+  mdescr1=formonly.mdescr1, autonext;
+  mdescr2=formonly.mdescr2, autonext;
+  mdescr3=formonly.mdescr3, autonext;
+  mdescr4=formonly.mdescr4, autonext;
+  mdescr5=formonly.mdescr5;
+instructions
+  delimiters "  "

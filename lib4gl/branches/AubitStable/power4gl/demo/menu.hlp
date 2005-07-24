@@ -1,0 +1,9 @@
+\BMENU HELP\b
+
+Select a menu item by pressing the corresponding number
+or by moving the cursor line with the cursor keys (\Bup\b,
+\Bdown\b, \Bhome\b and \Bend\b) and pressing the enter key. The exit
+key (\BF8\b) and accept key (\BF2\b) are used to exit the menu.
+
+Other keys include \Balt-p\b to print the screen, \Bctrl-z\b or "!"
+to enter operating system commands, and \BF1\b for help.

@@ -1,0 +1,69 @@
+'\" @(#)$Id: isfile.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual Page: General Library -- File access routines
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
+.TH ISFILE 3S "Sphinx Informix Tools"
+.SH NAME
+isfile \(em is name a file?
+.br
+isdirectory \(em is name a directory?
+.br
+fileextn \(em extension from file name
+.SH SYNOPSIS
+function \fBisfile\fP(pathname, filename, extn, sccsflag)
+ define
+  path char(64),
+  filename char(14),
+  extn char(4),
+  sccsflag integer,
+  retval integer
+ ...
+ return retval
+.br
+end function
+.sp
+function \fBisdirectory\fP(pathname)
+ define
+  pathname char(64),
+  retval integer
+ ...
+ return retval
+.br
+end function
+.sp
+function \fBfileextn\fP(filename)
+ define
+  filename char(14),
+  retval integer
+ ...
+ return retval
+.br
+end function
+.SH DESCRIPTION
+\fBIsfile\fP is an I4GL-callable C function which tests whether
+the string built up of the pathname variable followed by a slash
+\&`/', the filename and extension strings is actually a file.
+If it is not, but the sccsflag variable is not 0, then it will
+try looking for an SCCS file of the corresponding name.
+It looks first in the same directory, then in the sub-directory
+SCCS, then in the sub-directory sccs for the file.
+It prefixes the filename with `s.' if that is not already present.
+The function returns a true/false value.
+.P
+\fBIsdirectory\fP is an I4GL-callable C function which tests
+whether the string passed in the pathname variable is a directory
+or not.
+The function returns a true/false value.
+.P
+\fBFileextn\fP is an I4GL function which returns the extension
+of the filename passed as an argument.
+The extension has to be shorter than the basename;
+this means that the file \fIa.out\fP does not have an extension.
+.SH BUGS
+Using three components in \fBisfile\fP is over the top,
+but the extension can be left null without causing damage.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+26th February 1988
