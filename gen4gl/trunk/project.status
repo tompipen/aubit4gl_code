@@ -1,0 +1,6 @@
+Name: FGLBLD
+Description: Jonathan Leffler's data driven application generator
+Maintainer: AF
+Status: 3
+Todo:  Use amake to compile, enabling compilation with all x4GL compilers
+Notes: i-4GL only makefiles. Manual in aubit4gldoc/fglbld-doc
