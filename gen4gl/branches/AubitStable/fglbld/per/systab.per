@@ -1,0 +1,29 @@
+{
+	@(#)systab.4pr	4.1 88/09/25
+	@(#)FGLBLD: Table-name lookup screen
+	@(#)Author: JL
+}
+
+DATABASE FORMONLY
+
+SCREEN
+{
+----------------------------------------------
+               Table Names
+         Table Name          Number
+        [f000              ][f004]
+        [f000              ][f004]
+        [f000              ][f004]
+        [f000              ][f004]
+        [f000              ][f004]
+}
+END
+
+ATTRIBUTES
+f000 = FORMONLY.tabname;
+f004 = FORMONLY.tabid;
+END
+
+INSTRUCTIONS
+SCREEN RECORD s_systables[5] (FORMONLY.*)
+END

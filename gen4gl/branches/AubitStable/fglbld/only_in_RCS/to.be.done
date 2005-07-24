@@ -1,0 +1,12 @@
+From john Thu Aug 10 10:20:31 1989
+To: john
+Subject: FGLBLD
+Date: Thu Aug 10 10:20:29 1989
+
+
+Still needed:
+2.	Better popups
+3.	New input code all round
+4.	Input array for specifying whether column needs pop-ups etc.
+5.	Master/Detail relationship
+

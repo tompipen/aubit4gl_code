@@ -1,0 +1,18 @@
+{
+	@(#)$Id: scrndump.per,v 1.1.1.1 2002-06-15 05:07:11 afalout Exp $
+	@(#)Form for Screen Dump Utility
+}
+
+DATABASE FORMONLY
+
+SCREEN
+{
+Filename [f000                                                            ]
+}
+
+END
+
+ATTRIBUTES
+f000 = FORMONLY.filename TYPE CHAR,
+		COMMENTS = "Enter name of file.  Leave blank to have name generated";
+END

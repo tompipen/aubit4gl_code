@@ -1,0 +1,736 @@
+:	"@(#)$Id: fglbld.alt,v 1.1.1.1 2002-06-15 05:06:54 afalout Exp $"
+#
+#	@(#)Sphinx Informix Tools
+#	@(#)FGLBLD Version 6.12 (04/04/1990)
+#	@(#)Generate Simplified Perform Interface
+#	@(#)Author: Jonathan Leffler, Sphinx Ltd.
+#	@(#)(C) Copyright Sphinx Ltd. 1988, 1989
+
+arg0=`basename $0`
+
+# Configuration Section
+FGLBLDDIR=${FGLBLDDIR:=/usr/fglbld}
+#FGLVERSION=I4GL1.00
+FGLVERSION=I4GL1.10
+# CASEFLAG=-i	# System V
+CASEFLAG=-y		# Xenix/V7/BSD
+# End of configuration section
+
+# Prevent SCCS expanding string
+WHATSTR="%""W""%"" ""%""E""%"
+FGLBLDSTR="FGLBLD Version 6.12 (04/04/1990)"
+
+# Database, table, column, etc
+: ${Xdbase:?"Xdbase is undefined"}
+: ${xdbase:?"xdbase is undefined"}
+: ${Xtable:?"Xtable is undefined"}
+: ${xtable:?"xtable is undefined"}
+: ${xtabname:?"xtabname is undefined"}
+: ${Xpkey:?"Xpkey is undefined"}
+: ${xpkey:?"xpkey is undefined"}
+: ${Xpktype:?"Xpktype is undefined"}
+: ${Xmenu:?"Xmenu is undefined"}
+: ${Xform:?"Xform is undefined"}
+: ${Xcollist:?"Xcollist is undefined"}
+: ${program:?"program is undefined"}
+
+# Options for what is included
+: ${Xopt_ins:=Y}
+: ${Xafterfield:=Y}
+: ${Xbeforefield:=Y}
+: ${Xcontrolp:=Y}
+: ${Xcontrolb:=Y}
+: ${Xopt_upd:=Y}
+: ${Xopt_del:=Y}
+: ${Xopt_rep:=Y}
+: ${Xopt_sh:=Y}
+
+# Rowid keys
+: ${Xpkey_dec:=N}
+: ${xpkvalue:=wr_${xtable}.${xpkey}}
+
+# Other values
+: ${TMPDIR:=/tmp}
+: ${FORMBUILD:=form4gl}
+: ${FGLBLD_I4GL:=rds}
+: ${MAKE:=make}
+FGLBLD_I4GL="`echo $FGLBLD_I4GL | tr '[A-Z]' '[a-z]'`"
+
+# Upper case name of program
+# Occasionally useful in customised versions of FGLBLD
+XFORM=`echo $Xform | tr '[a-z]' '[A-Z]'`
+
+# Check whether to include input code
+if [ $Xopt_ins = N -a $Xopt_upd = N ]
+then
+	Xafterfield=N
+	Xbeforefield=N
+	Xcontrolp=N
+	Xcontrolb=N
+	Xinput=N
+else
+	Xinput=Y
+fi
+
+# Check whether to include CASE in validation routine
+# CASE is needed if: ((Xaf=Y | Xbf=Y | Xcp=Y | Xcb=Y) & Xin=Y)
+# Inverse condition: ((Xaf=N & Xbf=N & Xcp=N & Xcb=N) | Xin=N)
+# Xnovalcase=N => delete lines tagged with #Xnovalcase
+# Xnovalcase=Y => leave  lines tagged with #Xnovalcase
+if [ $Xafterfield$Xbeforefield$Xcontrolp$Xcontrolb = NNNN -o $Xinput = N ]
+then
+	Xnovalcase=N
+else
+	Xnovalcase=Y
+fi
+
+# Validate data type
+Xserial=no
+SERIALDELETE='/^#SERIALONLY/d'
+case $Xpktype in
+CHAR*)
+	Xabbr=str;;
+SERIAL*)
+	Xabbr=int
+	SERIALDELETE='s/^#SERIALONLY//'
+	Xserial=yes
+	Xpktype=INTEGER
+	;;
+INTEGER|SMALLINT|DATE)
+	Xabbr=int;;
+FLOAT|SMALLFLOAT)
+	Xabbr=dbl;;
+DECIMAL*|MONEY*)
+	Xabbr=dec;;
+*)	echo "$0: unknown I4GL data type $Xpktype" >&2 ; exit 1;;
+esac
+
+case $Xpkey in
+[rR][oO][wW][iI][dD])
+	Xpktype="INTEGER";;
+*)	Xpktype="LIKE Xtable.Xpkey";;
+esac
+
+# Set up various output file names
+PER=${program}.4pr
+FRM=${program}.frm
+MSG=${program}.msg
+IEM=${program}.iem
+AUX="checkint.4gl interr.4gl nxtfield.4gl repdest.4gl repdest.4pr"
+AUX="$AUX reptype.4gl scrndump.4gl scrndump.4pr security.4gl"
+AUX="$AUX shell.4gl stdopt.4gl translog.4gl"
+SUP="dlist$Xabbr.c dlist.c dlist.h getenv.c mkfile.c popstr.c"
+SUP="$SUP rdscurses.h redraw.c report.c scrdump.c uname.c"
+MK4GL=informix.mk
+
+first_help=100
+FGLBLDSRC=$FGLBLDDIR/src
+MESSAGE=$FGLBLDSRC/perform.msg
+MKFILE=$FGLBLDSRC/perform.mk
+EDFILE=$TMPDIR/fglblda.$$
+TMPFILE=$TMPDIR/fglbldb.$$
+SEDFILE=$TMPDIR/fglbldc.$$
+
+# Function to check for pre-existing files
+trace(){
+	echo "+ $*"
+	"$@"
+}
+checkfile(){
+	for cfile in $*
+	do
+		if [ -f $cfile ]
+		then
+			if [ -f o.$cfile ]
+			then
+				trace rm -f o.$cfile
+			fi
+			trace mv $cfile o.$cfile
+		fi
+	done
+}
+
+phase=`expr ${phase:-0} + 1`
+echo "Phase $phase: Creating default form"
+checkfile $PER $program.per
+$FORMBUILD -q -d $program $Xdbase $xtabname
+mv $program.per $PER
+
+ed - $PER >/dev/null 2>&1 <<!
+/^database/s//DATABASE/
+g/^screen/s//SCREEN/
+1a
+
+.
+1i
+{
+	WHATSTR
+	@(#)Built by: FGLBLDSTR
+	@(#)Screen form for SPI on $Xtable
+}
+
+.
+/^{/a
+
+.
+/^}/i
+
+.
+/^tables/s//TABLES/
+i
+
+.
+/^attributes/s//ATTRIBUTES/
+i
+
+.
+\$a
+
+INSTRUCTIONS
+SCREEN RECORD s_$xtable ($xtabname.*)
+END
+.
+g/^end$/s//END/
+g~WHATSTR~s~~$WHATSTR~g
+g~FGLBLDSTR~s~~$FGLBLDSTR~g
+w
+q
+!
+if grep $CASEFLAG '^[_a-z].* = .*[a-z_0-9]\[[0-9]*,[0-9]*\];' $PER >/dev/null ||
+	[ `grep $CASEFLAG '^screen$' $PER | wc -l` -gt 1 ]
+then
+	echo "$arg0: warning -- the screen form $PER needs editing" >&2
+fi
+
+trap "rm -f $CTL $TMPFILE $EDFILE $SEDFILE ; exit 1" 1 2 3 13 15
+
+phase=`expr ${phase:-0} + 1`
+echo "Phase $phase: Creating help file"
+checkfile $MSG
+{
+# Generate message file
+help=$first_help
+sed -e "s~WHATSTR~$WHATSTR~g" \
+	-e "s~FGLBLDSTR~$FGLBLDSTR~g" $MESSAGE
+for column in $Xcollist
+do
+	echo ".$help"
+	echo
+	echo "This is the default help for \"$Xtable.$column\""
+	echo
+	help=`expr $help + 1`
+done
+} > $MSG
+
+# Generate the main, globals and cursors files
+# Use cat to ensure that the files are writeable
+phase=`expr ${phase:-0} + 1`
+echo "Phase $phase: Creating main, globals and cursors files"
+for ext in c.4gl g.4gl m.4gl
+do
+	checkfile ${program}${ext}
+	cat $FGLBLDSRC/perform${ext} >${program}${ext}
+done
+
+# Count the number of columns
+ncols=0
+for i in $Xcollist
+do
+	ncols=`expr $ncols + 1`
+done
+
+phase=`expr ${phase:-0} + 1`
+echo "Phase $phase: Creating input code"
+checkfile ${program}i.4gl
+{
+# Preamble
+echo "{"
+echo "	WHATSTR"
+echo "	@(#)Built by: FGLBLDSTR"
+echo "	@(#)Input function for SPI on Xtable"
+echo "}"
+echo ""
+echo "DATABASE Xdbase"
+echo ""
+echo "GLOBALS \"Xformg.4gl\""
+echo ""
+echo "{ Module variables -- not accessible outside this file }"
+echo "DEFINE"
+echo "#Xinput	pr_xtable	RECORD LIKE Xtable.*, { Previous contents of fields }"
+echo "#Xinput	dr_xtable	RECORD LIKE Xtable.*, { Default values for table }"
+echo "#Xinput	fc_xtable	RECORD	{ Field control information }"
+echo "#Xinput				curr_field	INTEGER,	{ Current field number  }"
+echo "#Xinput				prev_field	INTEGER,	{ Previous field number }"
+echo "#Xinput				n_iofields	INTEGER		{ Number of I/O fields  }"
+echo "#Xinput				END RECORD,"
+echo "#Xinput	defset		INTEGER,	{ 0 => default record not set }"
+echo "#Xinput	iomode		CHAR(1),	{ I for input, U for update }"
+echo "	sccs		CHAR(1)	{ Identifier string }"
+echo ""
+
+echo "{ Display working record }"
+echo "FUNCTION dis_xtable()"
+echo ""
+echo "	{"
+echo "	Although this is trivial by default, it gives you one"
+echo "	function to modify when you need to add code to display"
+echo "	attributes from other tables as well as data from Xtable."
+echo "	}"
+echo "	DISPLAY BY NAME wr_xtable.*"
+echo ""
+echo "END FUNCTION {dis_xtable}"
+
+# Generate field-by-field help function
+echo "#Xinput"
+echo "#Xinput{ Help function }"
+echo "#XinputFUNCTION hlp_xtable()"
+echo "#Xinput"
+echo "#Xinput	CASE"
+
+help=$first_help
+for column in $Xcollist
+do
+	echo "#Xinput	WHEN INFIELD($column)		CALL SHOWHELP($help)"
+	help=`expr $help + 1`
+done 
+
+echo "#Xinput	OTHERWISE"
+echo "#Xinput		LET sccs = \"WHATSTR\""
+echo "#Xinput		ERROR \"Sorry -- no help is defined for this field\""
+echo "#Xinput		SLEEP 3"
+echo "#Xinput	END CASE"
+echo "#Xinput"
+echo "#XinputEND FUNCTION {hlp_xtable}"
+
+# Generate input function code
+echo "#Xinput	# Both you and I would dearly love to avoid the perishing"
+echo "#Xinput	# GOTO statements that litter this code.  However, until"
+echo "#Xinput	# Informix supply a portable method of going to a variable"
+echo "#Xinput	# field name (eg, a function nextfield('fieldname') where"
+echo "#Xinput	# the field name could be a string variable), this code is"
+echo "#Xinput	# doomed to remain as it is, GOTOs and all."
+
+echo "#Xinput"
+echo "#Xinput{ Input function }"
+echo "#XinputFUNCTION inp_xtable(iucode)"
+echo "#Xinput"
+echo "#Xinput	DEFINE"
+echo "#Xinput		instatus	INTEGER,"
+echo "#Xinput		field_no	INTEGER,"
+echo "#Xinput		iucode		CHAR(1) { 'I' Insert, 'U' Update }"
+echo "#Xinput"
+echo "#Xinput	LET instatus = TRUE { OK }"
+echo "#Xinput	LET iomode   = iucode"
+echo "#Xinput	LET fc_xtable.n_iofields = $ncols"
+echo "#Xinput	IF iomode = 'I' THEN"
+echo "#Xinput		CALL sdf_xtable()"
+echo "#Xinput	END IF"
+echo "#Xinput	LET fc_xtable.prev_field = 0"
+echo "#Xinput"
+echo "#Xinput	CALL wi1_xtable(2)"
+echo "#Xinput"
+echo "#Xinput	INPUT wr_xtable.* WITHOUT DEFAULTS FROM s_xtable.* HELP 20"
+echo "#Xinput"
+echo "#Xinput	ON KEY(F9, CONTROL-Y)"
+echo "#Xinput		CALL do_screen_dump()"
+echo "#Xinput"
+echo "#Xinput	ON KEY (F8, CONTROL-E)"
+echo "#Xinput		# Alternative exit input for FGLDB"
+echo "#Xinput		LET instatus = FALSE"
+echo "#Xinput		EXIT INPUT"
+echo "#Xinput"
+echo "#Xinput	ON KEY (F7, CONTROL-F)"
+echo "#Xinput		CALL hlp_xtable()"
+echo "#Xinput"
+echo "#Xcontrolp	ON KEY (F6, CONTROL-P)"
+echo "#Xcontrolp		CASE"
+
+num=0
+for column in $Xcollist
+do
+	num=`expr $num + 1`
+	if [ $column = $xpkey ]
+	then
+		pnum=$num
+	fi
+	if [ $num -lt 10 ] ; then fnum=0$num ; else fnum=$num ; fi
+	echo "#Xcontrolp		WHEN INFIELD($column)"
+	echo "#Xcontrolp			LET field_no = v${fnum}_xtable(\"^P\")"
+done
+
+echo "#Xcontrolp		END CASE"
+echo "#Xcontrolp		GOTO nxf_xtable"
+echo "#Xcontrolp"
+echo "#Xcontrolb	ON KEY (F5, CONTROL-B)"
+echo "#Xcontrolb		CASE"
+
+# Pop-up code
+num=0
+for column in $Xcollist
+do
+	num=`expr $num + 1`
+	if [ $num -lt 10 ] ; then fnum=0$num ; else fnum=$num ; fi
+	echo "#Xcontrolb		WHEN INFIELD($column)"
+	echo "#Xcontrolb			LET field_no = v${fnum}_xtable(\"F5\")"
+done
+
+echo "#Xcontrolb		OTHERWISE"
+echo "#Xcontrolb			ERROR \"No pop-up facility is defined for this field\""
+echo "#Xcontrolb		END CASE"
+echo "#Xcontrolb		GOTO nxf_xtable"
+echo "#Xcontrolb"
+
+# Before and after field code
+num=0
+for column in $Xcollist
+do
+	num=`expr $num + 1`
+	if [ $num -lt 10 ] ; then fnum=0$num ; else fnum=$num ; fi
+	echo "#Xbeforefield	BEFORE FIELD $column"
+	echo "#Xbeforefield		LET field_no = v${fnum}_xtable(\"BF\")"
+	echo "#Xbeforefield		GOTO nxf_xtable"
+	echo "#Xbeforefield"
+	echo "#Xafterfield	AFTER FIELD $column"
+	echo "#Xafterfield		LET field_no = v${fnum}_xtable(\"AF\")"
+	echo "#Xafterfield		GOTO nxf_xtable"
+	echo "#Xafterfield"
+done
+
+echo "#Xinput	LABEL nxf_xtable:"
+echo "#Xinput		IF field_no IS NOT NULL THEN"
+echo "#Xinput			CASE"
+
+num=0
+for column in $Xcollist
+do
+	num=`expr $num + 1`
+	if [ $num -lt 10 ] ; then fnum=0$num ; else fnum=$num ; fi
+	echo "#Xinput			WHEN field_no = $num"
+	if [ $num -eq $pnum -a $Xserial = yes ]
+	then
+		echo "#Xinput				# If next field is SERIAL, the program jams"
+		echo "#Xinput				# NEXT FIELD  $column"
+		echo "#Xinput				LET fc_xtable.curr_field = $pnum"
+		echo "#Xinput				LET field_no = next_field(fc_xtable.*)"
+		echo "#Xinput				GOTO nxf_xtable"
+	else
+		echo "#Xinput				NEXT FIELD  $column"
+	fi
+done
+echo "#Xinput			END CASE"
+echo "#Xinput		END IF"
+
+echo "#Xinput	END INPUT"
+echo "#Xinput"
+echo "#Xinput	IF INT_FLAG = FALSE AND instatus = TRUE THEN"
+echo "#Xinput		# You should modify this."
+echo "#Xinput		# AFTER INPUT type validation is often easier here than in an"
+echo "#Xinput		# AFTER INPUT clause within the INPUT statement."
+echo "#Xinput	ELSE"
+echo "#Xinput		LET INT_FLAG = FALSE"
+echo "#Xinput		LET instatus = FALSE"
+echo "#Xinput	END IF"
+echo "#Xinput	MESSAGE \"\""
+echo "#Xinput"
+echo "#Xinput	RETURN instatus"
+echo "#Xinput"
+echo "#XinputEND FUNCTION {inp_xtable}"
+
+echo "#Xinput"
+echo "#Xinput{ Set fc_xtable.prev_field correctly }"
+echo "#XinputFUNCTION spf_xtable(vcode, retval)"
+echo "#Xinput"
+echo "#Xinput	DEFINE"
+echo "#Xinput		vcode	CHAR(2),"
+echo "#Xinput		retval	INTEGER"
+echo "#Xinput"
+echo "#Xinput	IF vcode = \"BF\" THEN"
+echo "#Xinput		IF retval IS NOT NULL AND retval != fc_xtable.curr_field THEN"
+echo "#Xinput			LET fc_xtable.prev_field = fc_xtable.curr_field"
+echo "#Xinput		END IF"
+echo "#Xinput	ELSE"
+echo "#Xinput		IF retval IS NULL OR retval != fc_xtable.curr_field THEN"
+echo "#Xinput			LET fc_xtable.prev_field = fc_xtable.curr_field"
+echo "#Xinput		END IF"
+echo "#Xinput	END IF"
+
+echo "#Xinput"
+echo "#XinputEND FUNCTION {spf_xtable}"
+echo "#Xinput"
+echo "#Xinput{ Set defaults }"
+echo "#XinputFUNCTION sdf_xtable()"
+echo "#Xinput"
+echo "#Xinput	# All input is done WITHOUT DEFAULTS."
+echo "#Xinput	# This function is used to set defaults."
+echo "#Xinput	# Initialisation is expensive -- do it just once."
+echo "#Xinput	IF defset = 0 THEN"
+echo "#Xinput		LET defset = 1"
+for column in $Xcollist
+do
+	echo "#Xinput		INITIALIZE dr_xtable.$column LIKE Xtable.$column"
+done
+echo "#Xinput#SERIALONLY		LET dr_xtable.xpkey = 0"
+echo "#Xinput	END IF"
+echo "#Xinput"
+echo "#Xinput	LET wr_xtable.* = dr_xtable.*"
+echo "#Xinput"
+echo "#XinputEND FUNCTION {sdf_xtable}"
+
+echo ""
+echo "FUNCTION wi1_xtable(cmd)"
+echo ""
+echo "    DEFINE"
+echo "		cmd		INTEGER"
+echo ""
+echo "    CASE cmd"
+echo "	WHEN 0"
+echo "		OPEN FORM f_i1_xtable FROM \"Xform\""
+echo "	WHEN 1"
+echo "		CLOSE FORM f_i1_xtable"
+echo "	WHEN 2"
+echo "		CALL wio_xtable(2)"
+echo "		DISPLAY FORM f_i1_xtable"
+echo "	WHEN 3"
+echo "		CLEAR FORM"
+echo "	OTHERWISE"
+echo "		CALL fatal_error(\"Invalid command passed to wi1_xtable\")"
+echo "    END CASE"
+echo ""
+echo "END FUNCTION {wi1_xtable}"
+
+echo "#Xinput"
+echo "#Xinput#	Validation Functions"
+echo "#Xinput#	********************"
+echo "#Xinput#	Unless a non-null value is assigned to retval,"
+echo "#Xinput#	the INPUT statement will continue in the default manner."
+echo "#Xinput#	Do not assign a non-null value to retval without cause."
+echo "#Xinput#	In general, do not set retval for BF."
+echo "#Xinput#"
+
+num=0
+for column in $Xcollist
+do
+	num=`expr $num + 1`
+	if [ $num -lt 10 ] ; then fnum=0$num ; else fnum=$num ; fi
+
+	echo "#Xinput"
+	echo "#Xinput{ Validation code for Xtable.$column }"
+	echo "#XinputFUNCTION v${fnum}_xtable(vcode)"
+	echo "#Xinput"
+	echo "#Xinput	DEFINE"
+	echo "#Xinput		# R_xref	RECORD LIKE Xreftable.*,"
+	echo "#Xinput		vcode	CHAR(2),	{ AF, BF, ^P or F5 }"
+	echo "#Xinput		retval	INTEGER		{ Next field number }"
+	echo "#Xinput"
+	echo "#Xinput	LET retval = NULL"
+	echo "#Xnovalcase"
+	echo "#Xnovalcase	CASE"
+	echo "#Xcontrolp	WHEN vcode = \"^P\""
+	echo "#Xcontrolp		LET wr_xtable.$column = cp_xtable.$column"
+	echo "#Xcontrolp		LET retval = next_field(fc_xtable.*)"
+	echo "#Xcontrolb	WHEN vcode = \"F5\""
+	echo "#Xcontrolb		ERROR \"Sorry -- pop-up facility is not available\""
+	echo "#Xcontrolb		LET retval = fc_xtable.curr_field"
+	echo "#Xcontrolb		# LET wr_xtable.$column = pop_xreftable()"
+	echo "#Xcontrolb		# LET retval = next_field(fc_xtable.*)"
+	echo "#Xbeforefield	WHEN vcode = \"BF\""
+	echo "#Xbeforefield		LET fc_xtable.curr_field = $num"
+	echo "#Xbeforefield		LET pr_xtable.$column = wr_xtable.$column"
+	echo "#Xbeforefield		# Insert code to skip $column here"
+	echo "#Xafterfield	# WHEN vcode = \"AF\""
+	echo "#Xafterfield		# Normally there is no code needed here"
+	echo "#Xnovalcase	END CASE"
+	echo "#Xinput"
+	echo "#Xinput	# Do not validate in BEFORE FIELD (normally)"
+	echo "#Xinput	IF vcode != \"BF\" THEN"
+	echo "#Xinput		# CALL sel_xreftable(wr_xtable.$column)"
+	echo "#Xinput			# RETURNING r_xref.*"
+	echo "#Xinput		# IF r_xref.$column IS NULL THEN"
+	echo "#Xinput			# DISPLAY \"Unknown xref value \", wr_xtable.$column"
+	echo "#Xinput			# LET wr_xtable.$column = pr_xtable.$column"
+	echo "#Xinput			# LET retval = fc_xtable.curr_field"
+	echo "#Xinput		# END IF"
+	echo "#Xinput		CALL dis_xtable()"
+	echo "#Xinput	END IF"
+	echo "#Xinput"
+	echo "#Xinput	CALL spf_xtable(vcode, retval)"
+	echo "#Xinput"
+	echo "#Xinput	RETURN retval"
+	echo "#Xinput"
+	echo "#XinputEND FUNCTION {v${fnum}_xtable}"
+
+done
+
+} >${program}i.4gl
+
+phase=`expr ${phase:-0} + 1`
+echo "Phase $phase: Creating report file"
+if [ $Xopt_rep != Y ]
+then	echo "Skipping Phase $phase"
+else
+	rfile=r.4gl
+	checkfile ${program}$rfile
+	{
+	echo "{"
+	echo "	WHATSTR"
+	echo "	@(#)Built by: FGLBLDSTR"
+	echo "	@(#)Report code for SPI on Xtable"
+	echo "}"
+	echo ""
+	echo "DATABASE Xdbase"
+	echo ""
+	echo "GLOBALS \"Xformg.4gl\""
+	echo ""
+	echo "{ Module variables -- not accessible outside this file }"
+	echo "DEFINE"
+	echo "	sccs		CHAR(1)	{ Identifier string }"
+	echo "#Xopt_rep"
+	echo "#Xopt_rep{ Nearly-sensible report }"
+	echo "#Xopt_repREPORT rpf_xtable(r_xtable)"
+	echo "#Xopt_rep"
+	echo "#Xopt_rep	DEFINE"
+	echo "#Xopt_rep		r_xtable	RECORD LIKE Xtable.*"
+	echo "#Xopt_rep	"
+	echo "#Xopt_rep	FORMAT"
+	echo "#Xopt_rep"
+	echo "#Xopt_rep	PAGE HEADER"
+	echo "#Xopt_rep		LET sccs = \"WHATSTR\""
+	echo "#Xopt_rep		# In compiled I4GL, set_output() configures the report dynamically."
+	echo "#Xopt_rep		# If the report is going to the screen, the page length"
+	echo "#Xopt_rep		# is set appropriately for the screen."
+	echo "#Xopt_rep		# It is assumed that the report has no OUTPUT section."
+	echo "#Xopt_rep		CALL set_output()"
+	echo "#Xopt_rep		PRINT"
+	echo "#Xopt_rep			COLUMN  1, \"Report for table Xtable\","
+	echo "#Xopt_rep			COLUMN 38, TIME,"
+	echo "#Xopt_rep			COLUMN 48, TODAY USING \" ddd dd mmm yyyy\","
+	echo "#Xopt_rep			COLUMN 66, \"Page: \", PAGENO USING \"<<<<\""
+	echo "#Xopt_rep		SKIP 1 LINE"
+	echo "#Xopt_rep"
+	echo "#Xopt_rep	PAGE TRAILER"
+	echo "#Xopt_rep		PAUSE \"Hit return to continue\""
+	echo "#Xopt_rep"
+	echo "#Xopt_rep	ON EVERY ROW"
+	echo "#Xopt_rep		SKIP 1 LINE"
+	for column in $Xcollist
+	do
+		echo "#Xopt_rep		PRINT \"$column:\", COLUMN 20, r_xtable.$column"
+	done
+	echo "#Xopt_rep"
+	echo "#Xopt_rep	ON LAST ROW"
+	echo "#Xopt_rep		SKIP 1 LINE"
+	echo "#Xopt_rep		PRINT COUNT(*) USING \"###&\", \" rows found\""
+	echo "#Xopt_rep"
+	echo "#Xopt_repEND REPORT {rpf_xtable}"
+	} >${program}$rfile
+fi
+
+phase=`expr ${phase:-0} + 1`
+echo "Phase $phase: Creating makefile"
+checkfile ${program}.mk
+if [ ! -f $MKFILE ]
+then
+	echo "$arg0: cannot locate $MKFILE" >&2
+elif [ ! -f $program.mk -o -w $program.mk ]
+then
+	cat $MKFILE >$program.mk
+fi
+
+phase=`expr ${phase:-0} + 1`
+echo "Phase $phase: Creating auxilliary files"
+# These files should not be edited
+if [ ${FGLBLD_I4GL} = rds ] ; then SUP= ; fi
+for file in $AUX $SUP $MK4GL
+do
+	if [ ! -f $FGLBLDSRC/$file ]
+	then
+		echo "$arg0: cannot locate $FGLBLDSRC/$file" >&2
+	elif [ ! -f $file ]
+	then
+		cat $FGLBLDSRC/$file >$file
+	elif cmp -s $FGLBLDSRC/$file $file >/dev/null 2>&1
+	then
+		: OK
+	elif [ -w $file ]
+	then
+		cat $FGLBLDSRC/$file >$file
+	fi
+done
+
+phase=`expr ${phase:-0} + 1`
+echo "Phase $phase: Editing source"
+# Create the customising sed script
+{
+for v in	Xinput\
+			Xopt_ins\
+			Xafterfield\
+			Xbeforefield\
+			Xcontrolp\
+			Xcontrolb\
+			Xnovalcase\
+			Xopt_upd\
+			Xopt_del\
+			Xopt_rep\
+			Xopt_sh\
+			Xpkey_dec
+do
+	val=`eval echo '$'$v`
+	if [ "$val" = Y ]
+	then echo "s/^#$v//"
+	else echo "/^#$v/d"
+	fi
+done
+# Be careful; menu titles may not contain ~
+# WHATSTR is stuffed full of %s
+# FGLBLDSTR is usually stuffed full of /s, but may contain %s instead
+# The substitute commands should only be changed carefully
+cat <<!
+$SERIALDELETE
+s/^#$FGLVERSION//
+s/Xpktype/$Xpktype/g
+s/Xdbase/$Xdbase/g
+s/xdbase/$xdbase/g
+s/Xtable/$Xtable/g
+s/xtable/$xtable/g
+s/Xpkey/$Xpkey/g
+s/xpkey/$xpkey/g
+s/xpkvalue/$xpkvalue/g
+s/X\\([a-z]*\\)_key/sc_\\1$Xabbr/g
+s/Xform/$program/g
+s/XFORM/$XFORM/g
+s%Xprog%$program%g
+s%Xdlist%dlist$Xabbr%g
+s~Xmenu~$Xmenu~g
+s~WHATSTR~$WHATSTR~g
+s~FGLBLDSTR~$FGLBLDSTR~g
+!
+} >$SEDFILE
+
+# Edit the files changing standard names to systematic names
+for ext in c.4gl g.4gl i.4gl m.4gl $rfile .mk
+do
+	file=${program}${ext}
+	case $ext in
+	.mk)	sub="s/^#/&/";;	# Don't delete comments from makefile!
+	*)		sub="/^#[^ 	]/d";;
+	esac
+	sed -f ${SEDFILE} -e "$sub" $file >${TMPFILE}
+	mv ${TMPFILE} $file
+done
+
+rm -f $TMPFILE $SEDFILE $EDFILE $TMP
+
+# Unset stray environment variables
+# (Has caused trouble on Xenix in some circumstances)
+# Be careful not to lose $program
+unset Xdbase xdbase Xtable xtable xtabname
+unset Xpkey xpkey Xpktype
+unset Xmenu Xform Xcollist
+unset Xopt_ins Xafterfield Xbeforefield Xcontrolp Xcontrolb
+unset Xopt_upd Xopt_del Xopt_rep Xopt_sh
+
+phase=`expr ${phase:-0} + 1`
+echo "Phase $phase: Compiling I4GL source"
+echo "${MAKE} -f $program.mk $FGLBLD_I4GL"
+${MAKE} -f $program.mk $FGLBLD_I4GL 2>&1 |
+	grep -v 'warning: statement not reached'

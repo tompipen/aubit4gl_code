@@ -1,0 +1,13 @@
+:	"@(#)$Id: defluff.dst,v 1.1.1.1 2002-06-15 05:07:00 afalout Exp $"
+#
+#	Remove "fluff" from I4GL files
+#	Unlike lint, this fluff is comments that are not needed
+#
+#	Fluff is defined to:
+#	1.	Follows a blank or tab
+#	2.	Start with a #, but not in column 1
+#	3.	Is followed by a space and a capital letter
+
+
+sed -e '/^[ 	]*# [A-Z].*$/d' \
+    -e 's/[ 	][ 	]*# [A-Z].*$//' $*

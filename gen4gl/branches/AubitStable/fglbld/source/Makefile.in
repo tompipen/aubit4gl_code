@@ -1,0 +1,366 @@
+#	@(#)$Id: Makefile.in,v 1.1 2002-06-20 09:10:42 afalout Exp $
+#
+#This makefile should make only 2 targets:
+#
+#	fglgo (custom P-code runner) and fgldb (debuger P-code runner - optional)
+#   fglbld.4gi (FGLBLD program itself)
+#
+#
+#	libdlist.a  and fgiusr.o that are used to make fglgo
+#
+########################################################################
+
+
+#TODO: delete all thinks not nececery in this file
+
+
+ROOT=../
+
+include ${ROOT}etc/fglbldrc
+
+# Rules for compiling Informix
+include ${ROOT}include/informix.mk
+
+# Directive for RMK -- does not affect MAKE
+.AUGMENTED_MAKE:
+
+# Target which is always out of date -- forces things to happen
+.FORCE:
+#############################################################################
+#	General Definitions
+#############################################################################
+INCL_DIR=${ROOT}include
+#PER_EXT=4pr
+PER_EXT=per
+PER_DIR=${ROOT}per/
+FRM_DIR=${PER_DIR}
+MANDIR=${ROOT}man/
+DOCDIR=${ROOT}doc/
+ETCDIR=${ROOT}etc/
+#SRCDIR=./source/
+SRCDIR=./
+
+FGLBLDDIR=.
+IFLAGS=-I${INFORMIXDIR}/incl -I${INFORMIXDIR}/incl/tools -I${INFORMIXDIR}/incl/esql -I${INCL_DIR}
+CFLAGS=-O ${IFLAGS} -DI4GL_${FGLTYPE}
+
+ifneq "@IFMX_ESQLC@" "no"
+	CFLAGS	+=-DHAS_ESQLC
+endif
+
+
+LIBRARY=./libdlist.a
+LDFLAGS=${LIBRARY} -s
+COPY=cp
+RANLIB=ranlib
+RDS.LINKER=cat
+
+#############################################################################
+#	Lists of run-time files
+#	These are needed in a binary-only distribution
+#############################################################################
+
+PROGRAM=fglbld.4ge
+
+ALTFILES=\
+	cpopup.alt\
+	fglbld.alt\
+	mkselect.alt\
+	upopup.alt
+
+SRC.DLIST=\
+	${SRCDIR}dlist.c\
+	${INCL_DIR}/dlist.h\
+	${SRCDIR}dlistdbl.c\
+	${SRCDIR}dlistdec.c\
+	${SRCDIR}dlistint.c\
+	${SRCDIR}dliststr.c
+
+ETCFILES=\
+	${SRCDIR}checkint.4gl\
+	${SRCDIR}interr.4gl\
+	${SRCDIR}nxtfield.4gl\
+	${ROOT}perform.mk\
+	${ROOT}perform.msg\
+	${SRCDIR}performc.4gl\
+	${SRCDIR}performg.4gl\
+	${SRCDIR}performm.4gl\
+	${SRCDIR}popstr.c\
+	${SRCDIR}repdest.4gl\
+	${PER_DIR}repdest.${PER_EXT}\
+	${SRCDIR}scrndump.4gl\
+	${PER_DIR}scrndump.${PER_EXT}\
+	${SRCDIR}security.4gl\
+	${SRCDIR}shell.4gl\
+	${SRCDIR}stdopt.4gl\
+	${SRCDIR}translog.4gl
+
+FRMFILES=\
+	${FRM_DIR}fglbld.frm\
+	${FRM_DIR}fglcpop.frm\
+	${FRM_DIR}fglsel.frm\
+	${FRM_DIR}fglupop.frm\
+	${FRM_DIR}getdbase.frm\
+	${FRM_DIR}syscol.frm\
+	${FRM_DIR}systab.frm
+
+IEMFILES=\
+	fglbld.iem
+
+FILES.install=\
+	defluff.dst\
+	fglbld.dst\
+	fglgo.files\
+	mkfglgo.dst\
+	${ETCDIR}fglbld-RDS.lst\
+	${ETCDIR}fglbld-4GL.lst\
+	install\
+	instfile\
+	mkdist\
+	mkpath\
+	mkscript
+
+DOCFILES=\
+	${MANDIR}dlist.man\
+	${MANDIR}dlistdbl.man\
+	${MANDIR}dlistdec.man\
+	${MANDIR}dlistint.man\
+	${MANDIR}dliststr.man\
+	${MANDIR}fglbld.man\
+	${DOCDIR}fglbld.notes\
+	${MANDIR}popstr.man\
+	${MANDIR}repdest.man
+
+RUNTIME.FILES=\
+	${ALTFILES}\
+	${DOCFILES}\
+	${ETCFILES}\
+	${FILES.install}\
+	${FRMFILES}\
+	${IEMFILES}\
+	${PROGRAM}\
+	${SRC.DLIST}\
+	${INCL_DIR}/informix.mk\
+	Manifest
+
+#############################################################################
+#	Lists of build-time files
+#	These are not needed in a binary-only distribution
+#############################################################################
+
+LIBOBJECTS=\
+	${LIBRARY}(${SRCDIR}decformat.o)\
+	${LIBRARY}(${SRCDIR}dlist.o)\
+	${LIBRARY}(${SRCDIR}dlistdbl.o)\
+	${LIBRARY}(${SRCDIR}dlistdec.o)\
+	${LIBRARY}(${SRCDIR}dlistint.o)\
+	${LIBRARY}(${SRCDIR}dliststr.o)\
+	${LIBRARY}(${SRCDIR}editstr.o)\
+	${LIBRARY}(${SRCDIR}exec.o)\
+	${LIBRARY}(${SRCDIR}getenv.o)\
+	${LIBRARY}(${SRCDIR}isdir.o)\
+	${LIBRARY}(${SRCDIR}mkfile.o)\
+	${LIBRARY}(${SRCDIR}popstr.o)\
+	${LIBRARY}(${SRCDIR}redraw.o)\
+	${LIBRARY}(${SRCDIR}report.o)\
+	${LIBRARY}(${SRCDIR}round.o)\
+	${LIBRARY}(${SRCDIR}scrdump.o)\
+	${LIBRARY}(${SRCDIR}sqltype.o)\
+	${LIBRARY}(${SRCDIR}uname.o)\
+	${LIBRARY}(${SRCDIR}access.o)\
+	${LIBRARY}(${SRCDIR}decsci.o)\
+	${LIBRARY}(${SRCDIR}fgldec.o)\
+	${LIBRARY}(${SRCDIR}ljust.o)\
+	${LIBRARY}(${SRCDIR}msgtext.o)\
+	${LIBRARY}(${SRCDIR}sqlname.o)
+
+#sqltype.ec
+
+#New files sent by JL:
+#access.c decsci.c fgldec.c ljust.c msgtext.c sqlname.c sqltype.ec
+
+
+
+GLOBOBJ=\
+	${SRCDIR}fglbldg.o\
+	${SRCDIR}fglbldi.o\
+	${SRCDIR}fglbldm.o\
+	${SRCDIR}fglbldr.o\
+	${SRCDIR}fglpopup.o\
+	${SRCDIR}fglsel.o
+
+OTHEROBJ=\
+	${SRCDIR}chcolumn.o\
+	${SRCDIR}chfile.o\
+	${SRCDIR}chtable.o\
+	${SRCDIR}fglcomp.o\
+	${SRCDIR}fgledit.o\
+	${SRCDIR}getdbase.o\
+	${SRCDIR}nxtfield.o\
+	${SRCDIR}opendb.o\
+	${SRCDIR}shell.o
+
+SRC.OTHER=\
+	${SRCDIR}getenv.c\
+	${SRCDIR}mkfile.c\
+	${SRCDIR}opendb.4gl\
+	${SRCDIR}shell.4gl\
+	${SRCDIR}sqltype.c
+
+OBJFILES=${GLOBOBJ} ${OTHEROBJ}
+
+FGLSOURCE=${GLOBOBJ:.o=.4gl} ${OTHEROBJ:.o=.4gl}
+PERFILES=${FRMFILES:.frm=.${PER_EXT}}
+MSGFILES=${IEMFILES:.iem=.msg}
+
+GLOBFILES.4go=${GLOBOBJ:.o=.4go}
+OTHERFILES.4go=${OTHEROBJ:.o=.4go}
+FILES.4go=${GLOBFILES.4go} ${OTHERFILES.4go}
+
+RDS.PROGRAM=\
+	fglbld.4gi
+
+oldRDS.RUNTIME=\
+	${ALTFILES}\
+	${DOCFILES}\
+	${ETCFILES}\
+	${FILES.install}\
+	${FRMFILES}\
+	${IEMFILES}\
+	${RDS.PROGRAM}\
+	${SRC.DLIST}\
+	${INCL_DIR}/informix.mk\
+	Manifest
+
+RDS.RUNTIME=\
+	${ETCFILES}\
+    ${RDS.PROGRAM}
+
+#	\
+#	${FILES.install}\
+#	${FRMFILES}\
+#	${IEMFILES}\
+#
+#	${SRC.DLIST}\
+#	${INCL_DIR}/informix.mk\
+#	Manifest
+
+
+
+INTERPRETER.o=\
+	${SRCDIR}fgiusr.o
+
+I4GL.rds=fglgo
+
+ifneq "@I4GL_DEBUG@" "no"
+	I4GL.rds    +=fgldb
+endif
+
+
+#############################################################################
+#	Rules for building FGLBLD
+#############################################################################
+
+.PRECIOUS:	${LIBRARY}
+
+distribution:	all ./mkdist
+	cp ./per/*.frm .
+	./mkdist
+	@echo "Default target built successfuly."
+
+all:	${FGLTYPE}
+	@[ -z "${FGLTYPE}" ] && { echo "You haven't set FGLTYPE" ; exit 1 ; } ; true
+	@[ ${FGLTYPE} != C4GL -a ${FGLTYPE} != RDS ] && \
+		{ echo "FGLTYPE must be set to RDS or C4GL" ; exit 1 ; } ; true
+
+
+test:
+	@echo ${LIBOBJECTS}
+
+log:
+	@echo "Logging make process to make.log, please wait..."
+#	@${MAKE} -d > make.log 2>&1
+	@${MAKE} > make.log 2>&1
+	@echo "make finished successfuly, see make.log for details."
+	@echo "Toatal compiler warnings: `grep -c 'warning:' make.log`"
+
+
+C4GL:	\
+		${LIBRARY}\
+		${RUNTIME.FILES}
+
+RDS:	\
+		interpreter\
+		${RDS.RUNTIME}
+	@echo "RDS target built successfuly."
+
+c4gl:	source\
+		${LIBRARY}\
+		${RUNTIME.FILES}
+
+rds:	source\
+		interpreter\
+		${RDS.RUNTIME}
+
+interpreter:	${I4GL.rds}
+
+fglbld.4gi:	${FILES.4go}
+		${RDS.LINKER} ${FILES.4go} >$@
+
+source:	.FORCE	./mksource	./mkversion ./${ETCDIR}fglbld-SRC.lst
+	./mksource
+
+Manifest:	source	./mkfest
+	./mkfest
+
+shar:	source ./mkshar
+	./mkshar >fglbld.sa
+
+# This is a really ruthless cleanup procedure
+cleanup:
+	-rm -f -- *
+
+${PROGRAM}:	${OBJFILES} ${LIBRARY}
+	${C4GL} -o $@ ${OBJFILES} ${LDFLAGS}
+
+${GLOBOBJ}: 		${SRCDIR}fglbldg.4gl
+${GLOBFILES.4go}:	${SRCDIR}fglbldg.4gl
+
+library:	${LIBRARY}
+
+${LIBRARY}: ${LIBOBJECTS}
+	${RANLIB} ${LIBRARY}
+
+${LIBOBJECTS}: ${INCL_DIR}/dlist.h
+
+cpio:	${RUNTIME.FILES} makefile
+	ls ${RUNTIME.FILES} makefile | cpio -o >fglbld.cpio
+
+#############################################################################
+# Rules for building fglgo, fgldb
+#############################################################################
+
+${I4GL.rds}:	${INTERPRETER.o} ${LIBRARY}
+	rm -f o.${@F}
+	if [ -f ${@F} ] ; then mv ${@F} o.${@F} ; rm -f o.${@F} ; fi
+#cfglgo -o fglgo fgiusr.o ./libdlist.a -s
+	c${@F} -o ${@F} ${INTERPRETER.o} ${LDFLAGS}
+	@echo "Successfuly compiled target ${I4GL.rds} (Interpreter)"
+
+${SRCDIR}redraw.o  ${LIBRARY}(${SRCDIR}redraw.o):		${INCL_DIR}/rdscurses.h
+${SRCDIR}scrdump.o ${LIBRARY}(${SRCDIR}scrdump.o):	${INCL_DIR}/rdscurses.h
+
+clean:
+	rm -f *.4go *.bak *.4gi *.a *.o *.4gx *.pic *.doc *.iem *.4pr *.man \
+    ./Manifest mkdist mkfest mkpath mkscript mksource mkversion ./READ.ME \
+    security.sql sqltype.ec times.sql jobs.sql instfile fglgo \
+    fglbld.notes clients.sql ./install a.out \
+	fglbld.RDS fglbld.4GL make.log *.frm *.err
+	@echo "FGLBLD source code now clean"
+
+clean.all: clean
+	rm -f Makefile
+	@echo "FGLBLD source code now in CVS state"
+
+# ============================= EOF ================================
+

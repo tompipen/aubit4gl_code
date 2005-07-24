@@ -1,0 +1,26 @@
+'\" @(#)$Id: redraw.man,v 1.1.1.1 2002-06-15 05:07:09 afalout Exp $
+'\" @(#)Manual page: REDRAW_SCREEN -- I4GL library function
+.ds fC "Version: $Revision: 1.1.1.1 $ ($Date: 2002-06-15 05:07:09 $)
+.TH REDRAW_SCREEN 3S "Sphinx Informix Tools"
+.SH NAME
+redraw_screen \(em redraw the screen
+.SH SYNOPSIS
+call \fBredraw_screen()\fP
+.SH DESCRIPTION
+This function can be called from I4GL code and causes the screen to be redrawn.
+It can be used at any time when the screen is in screen mode.
+.P
+It can be built into a custom version of \fBfglgo\fP or \fBfgldb\fP.
+.SH FILES
+redraw.c
+.br
+rdscurses.h
+.SH BUGS
+It uses undocumented function calls in the I4GL library.
+These could be changed, but are unlikely to be changed.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+12th September 1989

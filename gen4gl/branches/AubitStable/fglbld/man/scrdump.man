@@ -1,0 +1,39 @@
+'\" @(#)$Id: scrdump.man,v 1.1.1.1 2002-06-15 05:07:10 afalout Exp $
+'\" @(#)Manual page: General Library -- Report Configuration
+.ds fC "Version: $Revision: 1.1.1.1 $ ($Date: 2002-06-15 05:07:10 $)"
+.TH SCREEN_DUMP 3I "Sphinx Informix Tools"
+.SH NAME
+screen_dump \(em dump the screen to a file
+.SH SYNOPSIS
+.ft B
+function screen_dump(filename)
+.br
+define filename char(256)
+.ft R
+.SH DESCRIPTION
+This function dumps the contents of the screen (as I4GL thinks
+the screen looks like) to the file named by the argument.
+.SH WARNINGS
+This function uses the support function \fIpopstring\fP;
+this must be available in the library where \fIscreen_dump\fP lives.
+.P
+This code was designed and tested on an AT&T 3B2/400 running 
+UNIX System V Release 3.0 using Informix 4GL version 1.10.00C.
+It is not guaranteed to work even in this environment, though
+testing indicates that it does work both here and on a Compaq 386
+running Xenix/386 version 2.2.2.
+.SH BUGS
+If some other program has scribbled on the screen, the other
+scibbling is not shown in the screen dump.
+.P
+This program actually dumps the \fIcurses\fP screen \fIstdscr\fP.
+It is assumed that this is fully refreshed when the routine is
+called, and the screen seems to be fully refreshed in normal use.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Software Solutions
+.br
+Sphinx Ltd.
+.br
+27th July 1988

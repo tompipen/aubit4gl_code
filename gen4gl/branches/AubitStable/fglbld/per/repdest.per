@@ -1,0 +1,22 @@
+{
+	@(#)$Id: repdest.per,v 1.1.1.1 2002-06-15 05:07:11 afalout Exp $
+	@(#)Sphinx Informix Tools: General Library
+	@(#)Form for specifying destination of report
+	@(#)Author: DMR 
+}
+
+DATABASE FORMONLY
+
+SCREEN
+{
+                        : [f001                                      ]
+}
+
+ATTRIBUTES
+f001 = FORMONLY.fn	TYPE CHAR, REQUIRED,
+		COMMENTS = "Use CONTROL-P to use the same name as last time";
+END
+
+INSTRUCTIONS
+DELIMITERS "  "
+END

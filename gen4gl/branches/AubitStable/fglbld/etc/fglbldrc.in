@@ -1,0 +1,37 @@
+##################################################################
+#
+# FGLBLD configuration file
+#
+# Read my several make files nad scripts
+#
+##################################################################
+
+
+#	FGLBLDDIR -- a directory to contain the files specific to FGLBLD
+#              -- default: /usr/fglbld
+
+#	FGLBLDBIN -- a bin directory already on people's paths
+#              -- default: ${INFORMIXDIR:-/usr/informix}/bin
+
+#	FGLUSR    -- a user to own the software
+#              -- default: informix
+
+#	FGLGRP    -- a group to own the software
+#              -- default: informix
+
+
+#    FGLTYPE   -- type of I4GL to use
+#                 C4GL -- compiled Informix-4GL
+#                 RDS  -- interpreted Informix-4GL
+FGLTYPE=@FGLTYPE@
+
+
+
+#path to Informix debugger executable (if it exists, otherwise "no")
+I4GL_DEBUG=@I4GL_DEBUG@
+
+
+INFORMIXDIR=@INFORMIXDIR@
+
+
+#    ======================== EOF =========================

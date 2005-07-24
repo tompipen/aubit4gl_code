@@ -1,0 +1,25 @@
+'\" @(#)$Id: modmenu.pic,v 1.1 2002-06-16 07:36:14 afalout Exp $
+'\" @(#)Picture: MODIFY sub-menu
+.if \n(H1=0 .sp 1.0i
+.ps 8
+.ft LP
+.vs 10
+.PS
+Screen:
+[
+Ledge: line up    1.00i ; move to Ledge.n + ( 0.10i,  0.10i)
+Tedge: line right 4.90i ; move to Tedge.e + ( 0.10i, -0.10i)
+Redge: line down  1.00i ; move to Redge.s + (-0.10i, -0.10i)
+Trc: arc radius 0.10i at Redge.n - (0.10i, 0) from Redge.n to Tedge.e
+Tlc: arc cw radius 0.10i at Ledge.n + (0.10i, 0) from Ledge.n to Tedge.w
+]
+move to Screen.nw + (0.15i, -1*0.12i-0.10i)
+Line1: "EDITING: [Source] Form  Help  Makefile  Build  Run  Name  Exit" ljust
+move to Screen.nw + (0.15i, -2*0.12i-0.10i)
+Line2: "Edit program source" ljust
+move to Screen.nw + (0.15i, -4*0.12i-0.10i)
+Line4: "-- Program: program ------ Database: dbase ----------- Press CTRL-W for Help --" ljust
+.PE
+.ft
+.ps
+.vs

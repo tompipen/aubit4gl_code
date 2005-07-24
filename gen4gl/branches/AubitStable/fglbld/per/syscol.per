@@ -1,0 +1,32 @@
+{
+	@(#)syscol.4pr	4.1 88/09/25
+    @(#)FGLBLD: Column-name lookup screen
+    @(#)Author: JL
+}
+
+DATABASE FORMONLY
+
+SCREEN
+{
+----------------------------------------------
+     Column Names for [f001              ]
+
+    Column name         Type
+   [f000              ][f003              ]
+   [f000              ][f003              ]
+   [f000              ][f003              ]
+   [f000              ][f003              ]
+   [f000              ][f003              ]
+
+}
+END
+
+ATTRIBUTES
+f001 = FORMONLY.Tabname TYPE CHAR;
+f000 = FORMONLY.Colname TYPE CHAR;
+f003 = FORMONLY.Coltype TYPE CHAR;
+END
+
+INSTRUCTIONS
+SCREEN RECORD s_syscolumns[5] (FORMONLY.colname, FORMONLY.coltype)
+END

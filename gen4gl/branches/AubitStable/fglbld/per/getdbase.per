@@ -1,0 +1,28 @@
+{
+    @(#)getdbase.4pr	6.1 89/08/16
+    @(#)FGLBLD: Choose working database
+    @(#)Author: JL
+}
+
+DATABASE FORMONLY
+
+SCREEN
+{
+        Select Database
+
+Current Database   [odbs      ]
+
+New Database       [ndbs      ]
+
+}
+END
+
+ATTRIBUTES
+odbs = FORMONLY.olddbase TYPE CHAR, REVERSE;
+ndbs = FORMONLY.newdbase TYPE CHAR, REVERSE,
+		COMMENTS = "Enter name of new database.";
+END
+
+INSTRUCTIONS
+DELIMITERS "  "
+END

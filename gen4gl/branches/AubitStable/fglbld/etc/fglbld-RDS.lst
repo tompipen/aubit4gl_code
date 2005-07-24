@@ -1,0 +1,183 @@
+#	@(#)fglbld.RDS	6.17 90/02/19
+#	@(#)FGLBLD Version 6.12 (04/04/1990)
+#	Definitive list of distributed files
+#
+#	These files are needed to use FGLBLD -- RDS Version.
+#
+#	-- The installed file column contains the name of the file to be
+#	   installed.  The name is quoted relative to $FGLBLDDIR.
+#
+#	-- The type of file indicates what sort of file is to be installed.
+#	-- The type "file" indicates an ordinary file
+#	-- The type "directory" indicates that the file is the name of a
+#	   directory under $FGLBLDDIR which must exist when the software
+#	   is installed.  The installation program will create the directory
+#	   if it does not already exist.  The directory entry must come before
+#	   the first file entry which lives in the directory.
+#	-- The type "deleted" means that this file used to exist in a previous
+#	   release of the software and is no longer relevant.  The file will
+#	   be removed from the installed system.
+#	-- The type "link" means that the installed file is a link to a file
+#	   already installed.  The name in the Link column is the name of the
+#	   file (relative to $FGLBLDDIR) which the file is to be linked to.
+#	   This file must already exist.  If the line is not a link entry, a
+#	   dummy value (conventionally '-') must be present in the column.
+#       -- The type "configure" means that the installed file has to be
+#          configured using the mkscript shell script.  This fills in the
+#          installed values of $FGLBLDDIR and the other configuration
+#          parameters.  It also means that the script is put in the relevant
+#          public bin directory which is, in general, not the same as
+#          $FGLBLDDIR/bin.  The installed file name is where the source is
+#	   found under $FGLBLDDIR; the link file is the name the file should
+#	   have in the $FGLBLDBIN directory.
+#
+#	-- Permissions are the file permissions to be set on the file.
+#	   The three subfields are owner, group, mode.
+#	   The owner - is used to indicate the owner of the FGLBLD system.
+#	   The group - is used to indicate the group of the FGLBLD system.
+#	   Other owner/group values are treated as literal values.
+#
+#	-- Comment lines start with a hash (#)
+#	-- Blank lines are ignored
+#
+# Installed file	Type		Link		Permissions
+
+# Home directory and files in it
+.			directory	-		-	-	755
+./install		file		-		-	-	544
+
+# Commands directory and general purpose commands
+bin			directory	-		-	-	755
+bin/cpopup.alt		file		-		-	-	555
+bin/fglbld.4gi		file		-		-	-	555
+bin/fglbld.alt		file		-		-	-	555
+bin/mkselect.alt	file		-		-	-	555
+bin/upopup.alt		file		-		-	-	555
+bin/fglgo		file		-		-	-	555
+bin/fgldb		file		-		-	-	555
+
+# Form files
+forms			directory	-		-	-	755
+forms/fglbld.frm	file		-		-	-	444
+forms/fglcpop.frm	file		-		-	-	444
+forms/fglsel.frm	file		-		-	-	444
+forms/fglupop.frm	file		-		-	-	444
+forms/getdbase.frm	file		-		-	-	444
+forms/syscol.frm	file		-		-	-	444
+forms/systab.frm	file		-		-	-	444
+forms/fglbld.iem	file		-		-	-	444
+
+# Manual pages
+doc			directory	-		-	-	755
+doc/dlist.man		file		-		-	-	444
+doc/dlistdbl.man	file		-		-	-	444
+doc/dlistdec.man	file		-		-	-	444
+doc/dlistint.man	file		-		-	-	444
+doc/dliststr.man	file		-		-	-	444
+doc/fglbld.man		file		-		-	-	444
+doc/getenv.man		file		-		-	-	444
+doc/mkfile.man		file		-		-	-	444
+doc/opendb.man		file		-		-	-	444
+doc/popstr.man		file		-		-	-	444
+doc/report.man		file		-		-	-	444
+doc/repdest.man		file		-		-	-	444
+doc/shell.man		file		-		-	-	444
+doc/sqltype.man		file		-		-	-	444
+doc/username.man	file		-		-	-	444
+
+# User Manual
+doc/clients.sql		file		-		-	-	444
+doc/fglbld.doc		file		-		-	-	444
+doc/fglbld2.doc		file		-		-	-	444
+doc/fglbld3.doc		file		-		-	-	444
+doc/fglbld4.doc		file		-		-	-	444
+doc/fglbld5.doc		file		-		-	-	444
+doc/fglmenu.pic		file		-		-	-	444
+doc/jobs.sql		file		-		-	-	444
+doc/mainmenu.pic	file		-		-	-	444
+doc/modmenu.pic		file		-		-	-	444
+doc/perform.pic		file		-		-	-	444
+doc/popmenu.pic		file		-		-	-	444
+doc/security.sql	file		-		-	-	444
+doc/srcmenu.pic		file		-		-	-	444
+doc/times.sql		file		-		-	-	444
+doc/tsg.4gx		file		-		-	-	444
+doc/tsi1.4gx		file		-		-	-	444
+doc/tsi2.4gx		file		-		-	-	444
+doc/tsi3.4gx		file		-		-	-	444
+doc/tsm1.4gx		file		-		-	-	444
+doc/tsm2.4gx		file		-		-	-	444
+doc/tsm3.4gx		file		-		-	-	444
+doc/tsm4.4gx		file		-		-	-	444
+doc/tsm5.4gx		file		-		-	-	444
+
+# Template files
+src			directory	-		-	-	755
+src/checkint.4gl	file		-		-	-	444
+src/decformat.c		file		-		-	-	444
+src/decimal.h		file		-		-	-	444
+src/dlist.c		file		-		-	-	444
+src/dlist.h		file		-		-	-	444
+src/dlistdbl.c		file		-		-	-	444
+src/dlistdec.c		file		-		-	-	444
+src/dlistint.c		file		-		-	-	444
+src/dliststr.c		file		-		-	-	444
+src/editstr.c		file		-		-	-	444
+src/exec.c		file		-		-	-	444
+src/fgiusr.c		file		-		-	-	444
+src/getenv.c		file		-		-	-	444
+src/i4glrds.mk		file		-		-	-	444
+src/informix.mk		file		-		-	-	444
+src/interr.4gl		file		-		-	-	444
+src/isdir.c		file		-		-	-	444
+src/mkfile.c		file		-		-	-	444
+src/nxtfield.4gl	file		-		-	-	444
+src/perform.mk		file		-		-	-	444
+src/perform.msg		file		-		-	-	444
+src/performc.4gl	file		-		-	-	444
+src/performg.4gl	file		-		-	-	444
+src/performm.4gl	file		-		-	-	444
+src/popstr.c		file		-		-	-	444
+src/rdscurses.h		file		-		-	-	444
+src/redraw.c		file		-		-	-	444
+src/repdest.4gl		file		-		-	-	444
+src/repdest.4pr		file		-		-	-	444
+src/report.c		file		-		-	-	444
+src/reptype.4gl		file		-		-	-	444
+src/round.c		file		-		-	-	444
+src/scrdump.c		file		-		-	-	444
+src/scrndump.4gl	file		-		-	-	444
+src/scrndump.4pr	file		-		-	-	444
+src/security.4gl	file		-		-	-	444
+src/shell.4gl		file		-		-	-	444
+src/sqltype.c		file		-		-	-	444
+src/sqltypes.h		file		-		-	-	444
+src/stdopt.4gl		file		-		-	-	444
+src/translog.4gl	file		-		-	-	444
+src/uname.c		file		-		-	-	444
+
+# The etc directory
+etc			directory	-		-	-	755
+
+# Configured files
+etc/defluff.dst		configure	defluff		-	-	555
+etc/mkfglgo.dst		configure	mkfglgo		-	-	555
+etc/fglbld.dst		configure	fglbld		-	-	555
+
+# Configuration files
+etc/install		link		./install	-	-	544
+etc/mkscript		file		-		-	-	544
+etc/mkpath		file		-		-	-	544
+etc/Manifest		file		-		-	-	444
+
+etc/fglbld.RDS		file		-		-	-	444
+etc/fglgo.files		file		-		-	-	444
+
+# The installation process may fail if instfile is the not the last file
+# listed in this file.  ** YOU HAVE BEEN WARNED! **
+etc/instfile		file		-		-	-	544
+
+# Deleted files -- no longer needed in this release of the software
+etc/mk.4gl		deleted		-		-	-	444
+src/performr.4gl	deleted		-		-	-	444
+src/perfaux.4gl		deleted		-		-	-	444

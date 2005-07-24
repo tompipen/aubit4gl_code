@@ -1,0 +1,198 @@
+'\" @(#)$Id: dlist.man,v 1.1.1.1 2002-06-15 05:07:07 afalout Exp $
+'\" @(#)Manual page: DLIST -- Double-linked list support routines
+.ds fC "Version: $Revision: 1.1.1.1 $ ($Date: 2002-06-15 05:07:07 $)
+.TH DLIST 3S "Sphinx Informix Tools"
+.SH NAME
+dlist \(em Doubly-linked list maintenance in C
+.SH SYNOPSIS
+mk_key()
+.sp
+rm_key(index)
+.br
+int index;
+.sp
+ins_key(index, keyval, keylen)
+.br
+int index;
+.br
+char *keyval;
+.br
+int keylen;
+.sp
+del_key(index)
+.br
+int index;
+.br
+.sp
+upd_key(index, keyval, keylen)
+.br
+int index;
+.br
+char *keyval;
+.br
+int keylen;
+.sp
+char *get_key(index, flag, offset)
+.br
+int index;
+.br
+int flag;
+.br
+int offset;
+.sp
+cnt_key(index)
+.br
+int index;
+.sp
+num_key(index)
+.br
+int index;
+.SH DESCRIPTION
+There are 9 routines in this package which provide a fairly
+complete service for handling doubly-linked lists (Dlists)
+of an arbitrary data type (which could be of variable length items).
+Lists are created (\fBmk_key\fP) and destroyed (\fBrm_key\fP).
+Items can be inserted (\fBins_key\fP), deleted (\fBdel_key\fP)
+and changed (\fBupd_key\fP).
+Items can be retrieved by position in the list (\fBget_key\fP),
+and the size of the list can be determined by \fBcnt_key\fP, and
+the current position discovered by \fBnum_key\fP.
+Each list has a current position recorded (provided there are any
+items in the list).
+The routines are described in the sections below.
+.SH MK_KEY
+This routine either returns the index number of a new Dlist (Dlist#)
+or a negative number indicating an error.
+This routine must be called before any of the other routines are used.
+.SH RM_KEY
+This routine is given a Dlist# and deletes all the records in the
+list and then removes the list.
+Further calls using this Dlist# will fail with EINVARG.
+The Dlist# may be re-used by the Dlist package after another call
+to \fBmk_key\fP.
+.SH INS_KEY
+This routine is given three arguments; a Dlist#, a character
+pointer to a data item to be inserted in the list and the length
+of the data item.
+If the data item is a string, do not forget to count the
+terminating null in the length of the item.
+The item will be inserted into the list after the current position,
+and becomes the current item.
+.SH DEL_KEY
+This routine is given a Dlist# and deletes the current item.
+.SH UPD_KEY
+This routine expects a Dlist#, a character pointer and a length.
+The current item is deleted and the item passed is inserted in
+its place.
+.SH ZAP_KEY
+This routine is given a Dlist# and deletes all the items in the
+list; the list remains active but is empty.
+.SH GET_KEY
+This routine is given three arguments; the Dlist#, a flag
+indicating the action and an offset qualifying the action.
+The flag may take any of the following values:
+.sp
+`F' \(em relative position
+.br
+`L' \(em last position
+.br
+`N' \(em next position
+.br
+`P' \(em previous position
+.br
+`C' \(em current position
+.br
+`A' \(em absolute position
+.br
+`R' \(em relative position
+.sp
+The first, last and current options ignore the offset.
+The relative option takes a signed offset and moves forward (if
+positive) or backward (if negative) through the list.
+A zero offset fetches the current item.
+The other options expect a positive offset.
+The next option moves forward by the relevant number of steps,
+the previous option moves back;
+if the offset is zero, the move is by one item.
+The absolute option moves from the start of the list to the
+specified offset.
+If this offset is zero, no row is returned (it returns a null
+pointer), but no error is indicated either.
+This behaviour is useful when repositioning the current item
+after inserting some data into what was an empty list.
+If the offset would go beyond the end of the list (either
+forwards or backwards), the first or last item is fetched as
+appropriate; no error is signalled unless the list is empty.
+.P
+The routine returns a character pointer to the item data;
+there is no record of the length available, so the calling
+routine must know what was stored.
+.SH CNT_KEY
+This routine expects a Dlist# and returns the number of items on
+the Dlist.
+.SH NUM_KEY
+This routine expects a Dlist# and returns the number of the
+current item in the list.
+.SH "ERROR RETURN VALUES"
+The interfaces for these routines and some useful constants are
+defined in ``dlist.h''.
+The error values returned are:
+.sp
+\00 \(em ENOERROR no error
+.br
+\-1 \(em ENOLIST no items in the list
+.br
+\-2 \(em EINVARG invalid argument
+.br
+\-3 \(em ENOMEM no more memory
+.sp
+Exception: \fBget_key\fP returns a null character pointer if
+there is an error.
+.P
+Additionally, there is a global variable \fBsc_error\fP declared
+in ``dlist.h'' which also contains the value of the error
+condition.
+This variable is set to ENOERROR when each routine is called, so
+it only indicates the error state of the last Dlist routine which
+was called.
+.SH CONFIGURATION
+There are five configuration parameters which can be used when
+compiling the Dlist code.
+.sp
+FIXEDALLOCATION \(em use a fixed number of Dlists, default 30.
+.br
+VARIABLEALLOCATION \(em use a variable number of Dlists, no limit.
+.br
+MAXDLIST \(em maximum number of Dlists if FIXEDALLOCATION
+.br
+PARANOID \(em run through some stringent (but not necessarily
+fool-proof) validation before using any Dlist.
+.br
+INSERT_AT_END \(em insert all values at end of list instead of
+current position (not recommended).
+.sp
+PARANOID may possibly useful if you have a problem with memory allocation
+elsewhere \(em the code was used to debug an allocation problem
+with Dlists \(em but it is also a considerable overhead.
+.P
+If you do not specify any of these, or if you specify a
+conflicting set of values, the program supplies reasonable defaults.
+.SH FILES
+dlist.h \(em interfaces and constants
+.br
+dlist.c \(em code
+.br
+dltest.c \(em a verification test program
+.SH BUGS
+None known.
+.sp
+The code uses `#if defined(PARANOID)' rather than `#ifdef'.
+.SH DEFICIENCIES
+There is no mechanism for searching by value rather than by
+position in list.
+.SH AUTHOR
+Jonathan Leffler
+.br
+Sphinx Ltd.
+.br
+30th June 1988

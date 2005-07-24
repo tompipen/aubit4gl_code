@@ -1,0 +1,65 @@
+{ Delete row }
+FUNCTION del_timesheet()
+
+    DEFINE
+        junk            INTEGER,
+        delete_failed   INTEGER
+
+    CALL wio_timesheet(2)
+
+    IF ct_timesheet.active_set <= 0 THEN
+        ERROR "No current row to delete"
+        LET ct_timesheet.direction = 0 { Query }
+    ELSE
+        { Assume delete fails until it succeeds }
+        LET delete_failed = TRUE
+        CALL begin_work()
+        IF gtu_timesheet(ct_timesheet.rowid) != 0 THEN
+            ERROR "Current row has already been deleted"
+            IF sc_delint(ct_timesheet.list_number) THEN
+                ERROR "Error from sc_delint in del_timesheet"
+            END IF
+        ELSE
+            CALL dis_timesheet()
+
+            CALL wmn_timesheet(2)
+
+            MENU "DELETE"
+            COMMAND "No"
+                    "No, I do not wish to delete this row"
+                    HELP 10
+                EXIT MENU
+            COMMAND "Yes"
+                    "Yes, I really do want to delete this row"
+                    HELP 11
+                IF INT_FLAG = TRUE THEN
+                    EXIT MENU
+                END IF
+                CALL iud_timesheet('D')
+                IF STATUS != 0 THEN
+                    ERROR "Delete failed"
+                ELSE
+                    MESSAGE "Row deleted"
+                    LET delete_failed = FALSE
+                    IF sc_delint(ct_timesheet.list_number) THEN
+                        ERROR "Error from sc_delint in del_timesheet"
+                    END IF
+                END IF
+                EXIT MENU
+            COMMAND KEY(CONTROL-Y)
+                CALL do_screen_dump()
+            COMMAND KEY(F9)
+                CALL do_screen_dump()
+            END MENU
+            CALL edu_timesheet()
+            CALL end_work(delete_failed)
+        END IF
+
+        LET INT_FLAG = FALSE
+        LET junk = csr_timesheet('D', 0)
+
+    END IF
+
+    RETURN ct_timesheet.direction
+
+END FUNCTION {del_timesheet}

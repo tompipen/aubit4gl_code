@@ -1,0 +1,86 @@
+FUNCTION mnu_timesheet()
+
+    DEFINE
+        offset  INTEGER,    { Amount to jump by (next/previous) }
+        junk    INTEGER
+
+    CALL wmn_timesheet(2)
+
+    LET offset = 0
+
+    { If re-entering this query screen }
+    IF ct_timesheet.active_set > 0 THEN
+        LET junk = csr_timesheet('C', offset)
+    END IF
+
+    MENU "TIMESHEET"
+
+    COMMAND "Query" "Select set of data" HELP 1
+        CASE qry_timesheet('Q')
+        WHEN 0  NEXT OPTION "Query"
+        WHEN 1  NEXT OPTION "Next"
+        WHEN 2  NEXT OPTION "Previous"
+        END CASE
+        CALL check_interrupt()
+        LET offset = 0
+
+    COMMAND "Next" "Show next row of data" HELP 2
+        LET ct_timesheet.direction = 1 { Forwards }
+        CASE csr_timesheet('N', offset)
+        WHEN 0  NEXT OPTION "Query"
+        WHEN 1  NEXT OPTION "Next"
+        WHEN 2  NEXT OPTION "Previous"
+        END CASE
+        CALL check_interrupt()
+        LET offset = 0
+
+    \&...
+
+    COMMAND "Add" "Add new row of data" HELP 4
+        CASE ins_timesheet()
+        WHEN 0  NEXT OPTION "Query"
+        WHEN 1  NEXT OPTION "Next"
+        WHEN 2  NEXT OPTION "Previous"
+        END CASE
+        CALL check_interrupt()
+        LET offset = 0
+
+    \&...
+
+    COMMAND "Exit" "Exit TIMESHEET Menu" HELP 8
+        LET INT_FLAG = FALSE
+        MESSAGE ""
+        EXIT MENU
+
+    COMMAND KEY('0') LET offset = 10 * offset + 0
+    COMMAND KEY('1') LET offset = 10 * offset + 1
+    \&...
+
+    COMMAND KEY(F) { "First" "Jump to first selected row" }
+        CASE csr_timesheet('F', offset)
+        WHEN 0  NEXT OPTION "Query"
+        WHEN 1  NEXT OPTION "Next"
+        WHEN 2  NEXT OPTION "Previous"
+        END CASE
+        CALL check_interrupt()
+        LET offset = 0
+
+    \&...
+
+    COMMAND KEY('!')
+        CALL shell_escape()
+        { An interrupt may have terminated the shell }
+        LET INT_FLAG = FALSE
+        LET offset = 0
+
+    COMMAND KEY(CONTROL-Y)
+        CALL do_screen_dump()
+
+    COMMAND KEY(F9)
+        CALL do_screen_dump()
+
+    END MENU
+
+    CALL wio_timesheet(3)
+
+END FUNCTION {do_timesheet}

@@ -1,0 +1,59 @@
+{ Change row }
+FUNCTION upd_timesheet()
+
+    DEFINE
+        old_rowid   INTEGER,
+        junk            INTEGER,
+        update_failed   INTEGER
+
+    CALL wio_timesheet(2)
+
+    IF ct_timesheet.active_set <= 0 THEN
+        ERROR "No current row to update"
+    ELSE
+        { Assume update fails until it succeeds }
+        LET update_failed = TRUE
+        CALL begin_work()
+        IF gtu_timesheet(ct_timesheet.rowid) != 0 THEN
+            ERROR "Someone else has deleted/altered this row"
+            IF sc_delint(ct_timesheet.list_number) THEN
+                ERROR "Error from sc_delint in del_timesheet"
+            END IF
+        ELSE
+            LET old_rowid = ct_timesheet.rowid
+            {
+            This call to dis_timesheet() is not needed if it only
+            displays the current record.  If, however, it
+            displays data from other tables, this call is
+            necessary to show the other details.  Leave it in
+            the code unless there are good reasons to remove it.
+            }
+            CALL dis_timesheet()
+            MESSAGE "Edit data: press ESC when done"
+
+            IF inp_timesheet('U') THEN
+                CALL iud_timesheet('U')
+                IF STATUS = 0 THEN
+                    MESSAGE "Record updated"
+                    LET update_failed = FALSE
+                    IF ct_timesheet.rowid != old_rowid THEN
+                        IF sc_updint(ct_timesheet.list_number, ct_timesheet.rowid) THEN
+                            ERROR "Error from sc_updint in upd_timesheet"
+                        END IF
+                    END IF
+                    LET cp_timesheet.* = wr_timesheet.*
+                ELSE
+                    CALL ERR_PRINT(STATUS)
+                END IF
+            END IF
+        END IF
+
+        CALL edu_timesheet()
+        CALL end_work(update_failed)
+        LET junk = csr_timesheet('U', 0)
+
+    END IF
+
+    RETURN ct_timesheet.direction
+
+END FUNCTION {upd_timesheet}

@@ -1,0 +1,818 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: configure.in,v 1.2 2002-06-20 09:10:41 afalout Exp $
+#
+
+# Process this file with autoconf to produce a configure script.
+#This script is used to configure BOTH source code and binary distributions
+
+## ==================================================================
+##                             Initialise
+## ==================================================================
+
+#This will catch some dummys, but not our real command line options:
+CMDLINE="$@"
+
+#We need autoconf at least version 2.50
+AC_PREREQ(2.50)
+
+#Need to be here too, to be used in AC_INIT call:
+#if test -f "tools/project/version" ; then
+#	AUBIT_VERSION=`cat tools/project/version`
+#	AUBIT_BUILD=`cat tools/project/build`
+#fi
+
+#AC_INIT([Aubit4gl],[0.2],[aubit4gl-discuss@lists.sourceforge.net])
+AC_INIT([Aubit4gl],[$AUBIT_VERSION.$AUBIT_BUILD],[aubit4gl-discuss@lists.sourceforge.net])
+
+#location of additional Autoconf files
+AC_CONFIG_AUX_DIR(etc/config)
+
+
+#Purpose of 'aubitconf' script is to hold all the command line switches
+#to 'configure' on your system, and is local to your system. If found in
+#path, it will be invoked instead of just plain 'configure'
+#aubitconf script will typically have only one line, for example:
+#./configure --with-aubitconf --with-informix --with-jabber -with-iodbc=/blah/huh/iodbc ...etc
+
+AC_PATH_PROG(AUBITCONF, fglbldconf, no)
+if test "$AUBITCONF" != "no"; then
+    if test "$AUBITCONF_FLAG" != "running"; then
+		if test "$with_aubitconf" != "yes" ; then
+			#--with-aubitconf=no
+			echo "Note: 'fglbldconf' script found; running 'configure' via 'fglbldconf'..."
+            echo ""
+			echo "WARNING: if you prvided command line options to 'configure', they will"
+            echo "be ingored, and ones provided in 'aubitconf' used instead. Use "
+            echo "--with-aubitconf=no to disable this behaviour."
+            echo ""
+            #CMDLINE="$@"
+			#echo xxx $CMDLINE xxx
+            #echo $ac_cs_invocation
+			#if [ "$CMDLINE" != "" ]
+			#if test "$CMDLINE" != "" ;
+			#then
+	        #    echo "WARNNG: command line options you provided:"
+	        #    echo "$CMDLINE"
+	        #    echo "will be ignored, and aubitconf specified options used instead!"
+			#fi
+
+
+			#so we don't enter the loop:
+			export AUBITCONF_FLAG=running
+			aubitconf
+			err_code=$?
+			#prevent errors when exiting first instance, that did not egt chance
+	        #to create this files, but expects them:
+			touch conftest.log
+			touch confdefs.h
+			#echo "About to exit first invocation of configure ($err_code)..."
+			exit $err_code
+	        echo "Oooops! You should not see this!"
+        else
+            echo "'aubitconf' found, but disabled"
+        fi
+	else
+        echo "Note: invoked form first stage 'configure', via 'aubitconf'"
+	fi
+fi
+
+
+#This script will be used for configuring binary distributions
+#when --with-bin switch is on command line
+if test "$with_bin" = "yes" ; then
+	AUBIT_SOURCE=0
+else
+	#when --with-src was on command line
+	if test "$with_src" = "yes" ; then
+		AUBIT_SOURCE=1
+	else
+		#no switch, detect if we are in source code tree
+		if test -f "source/dlist.c"; then
+			AUBIT_SOURCE=1
+	    else
+			AUBIT_SOURCE=0
+	    fi
+    fi
+fi
+
+if test "$AUBIT_SOURCE" = "1" ; then
+    echo "Configuring FGLBLD source code"
+else
+    echo "Configuring FGLBLD binary distribution"
+fi
+
+#FIXME: what is this?
+#This directive is expanded in initialisation part, and putting it in
+#"if" have no effect:
+#AC_CONFIG_SRCDIR([compilers/4glc/4glc.c])
+#so we need to specify file which is in both source code and
+#binary distributions:
+AC_CONFIG_SRCDIR([etc/fglbld-4GL.lst])
+
+if test "$AUBIT_SOURCE" = "1" ; then
+	#Location of global header to receive "#define xxxxx y" replacements:
+	AC_CONFIG_HEADER([include/fglbld_config.h])
+fi
+
+AC_CANONICAL_SYSTEM
+
+## ==================================================================
+##                Define what will get substituted
+## ==================================================================
+
+#Identification
+AC_SUBST(aubitdir)
+AC_SUBST(COMPILE_DATE)
+AC_SUBST(AUBIT_VERSION)
+AC_SUBST(AUBIT_BUILD)
+AC_SUBST(FULLNAME)
+AC_SUBST(SHORTNAME)
+
+
+#Informix ESQL/C
+AC_SUBST(IFMX_ESQLC)
+AC_SUBST(IFX_ESQL_FLAGS)
+AC_SUBST(IFX_LIBS)
+AC_SUBST(IFX_LFLAGS)
+AC_SUBST(IFX_INCLUDE)
+AC_SUBST(IFX_C_MAKE)
+AC_SUBST(INFORMIXDIR)
+
+
+#DoxyGen
+AC_SUBST(DOXYGEN)
+AC_SUBST(HAVE_DOT)
+AC_SUBST(DOT_PATH)
+AC_SUBST(DOXY_BIN_ABSPATH)
+
+#RPM
+AC_SUBST(RPM)
+AC_SUBST(AUTOSPEC)
+
+#other
+AC_SUBST(LDCONFIG)
+AC_SUBST(target)
+AC_SUBST(target_cpu)
+AC_SUBST(ADD_LD_LIBRARY_PATH)
+AC_SUBST(PIC)
+AC_SUBST(LDFLAGS_SHARED)
+AC_SUBST(LCLINTEXE)
+AC_SUBST(I4GL_DEBUG)
+AC_SUBST(FGLTYPE)
+
+#files to be packaged into RPM:
+AC_SUBST(RPMFILE_1)
+AC_SUBST(RPMFILE_2)
+AC_SUBST(RPMFILE_3)
+AC_SUBST(RPMFILE_4)
+AC_SUBST(RPMFILE_5)
+AC_SUBST(RPMFILE_6)
+AC_SUBST(RPMFILE_7)
+AC_SUBST(RPMFILE_8)
+AC_SUBST(RPMFILE_9)
+AC_SUBST(RPMFILE_10)
+AC_SUBST(RPMFILE_11)
+AC_SUBST(RPMFILE_12)
+AC_SUBST(RPMFILE_13)
+AC_SUBST(RPMFILE_14)
+AC_SUBST(RPMFILE_15)
+AC_SUBST(RPMFILE_16)
+AC_SUBST(RPMFILE_17)
+AC_SUBST(RPMFILE_18)
+AC_SUBST(RPMFILE_19)
+AC_SUBST(RPMFILE_20)
+
+
+## ==================================================================
+##                             Defaults
+## ==================================================================
+
+#if test "$AUBIT_SOURCE" = "1" ; then
+	#need to do this again, since the earlyer one was before initialisation,
+	#and will not get in substitution otherwise:
+#	AUBIT_VERSION=`cat tools/project/version`
+#	AUBIT_BUILD=`cat tools/project/build`
+#fi
+
+FULLNAME="Aubit 4gl compiler"
+SHORTNAME="aubit4gl"
+COMPILE_DATE=`date +%d-%m-%Y`
+aubitdir=`pwd`
+test_rpclib="1"
+GTKBUILD=no
+HAVE_IODBC=no
+HAVE_UNIXODBC=no
+HAVE_IFXODBC=no
+HAVE_PGODBC=no
+PIC="-fPIC"
+LDFLAGS_SHARED="-fPIC -shared"
+ODBC_LIB_NAME=noodbc
+USE_PDF=no
+PDFBUILD=no
+PERLBUILD=no
+JABBERBUILD=no
+AUBIT_DEBUG=1
+IFMX_ESQLC=no
+LCLINTEXE=no
+cygwin=0
+
+#defaults for aubitrc:
+A4GL_SQLTYPE=nosql
+A4GL_PDFTYPE=NOPDF
+A4GL_RPCTYPE=NORPC
+AUBITGUI=CONSOLE
+A4GL_LEXTYPE=C
+A4GL_FORMTYPE=NOFORM
+A4GL_MENUTYPE=NOMENU
+A4GL_MSGTYPE=NATIVE
+
+#case "$target_os" in
+case $host in
+	*linux*)
+        #rpclib is part of clib on Linux
+		test_rpclib="0"
+		;;
+
+    #  *-*-cygwin*/gcc*-mno-cygwin*|*-*-mingw*)
+	*-*-cygwin | *-*-cygwin* | *-*-pw32*)
+		ODBC=odbc32;
+    	ODBCMANAGER=$ODBC;
+		cygwin=1
+		;;
+
+	#*-sun-solaris2.7)
+
+	*-ibm-aix*)
+		PIC=
+		LDFLAGS_SHARED="-s"
+        ;;
+
+	*)
+        AC_MSG_WARN(You are using untested platform)
+		echo "    Please report success or failure to compile Aubit on this"
+		echo "    platform to the mailing list. Thank you."
+        ;;
+esac
+
+#Note: all command line switches like "--xxxx-wwwww" are automativaly
+#converted to shell variables in "xxxxx_wwwww" format.
+#--disable-xxx are not assigned "yes" by default
+#--with-xxx are assigned "yes" if no value was assigned on command line
+
+## ==================================================================
+##                              Debugging
+## ==================================================================
+
+if test "$enable_debug" = "no" ; then
+    # FIXME: strip executables
+    CFLAGS="$CFLAGS -DNODEBUG"
+	AC_MSG_WARN(Debugging disabled)
+	AUBIT_DEBUG=0
+else
+    #FIXME: DEBUG=ALL in environment? aubitrc?
+    CLFAGS="$CFLAGS -g -DDEBUG"
+	echo "Debugging enabled"
+fi
+
+
+## ==================================================================
+##                              Platform
+## ==================================================================
+
+#this things are automatically set by configure:
+#build
+#build_cpu
+#build_vendor
+#build_os
+#host
+#host_cpu
+#host_vendor
+#host_os
+#target
+#target_cpu
+#target_vendor
+#target_os
+
+#This will return just 2.4
+#KERNEL=`kernelversion`
+#this will return 2.4.7-10
+KERNEL_VER=`uname -r`
+
+#FIXME: how do I get glibc version?
+GLIBC_VER=2.2.4
+
+#grep /usr/bin/glibcbug for:
+
+#VERSION="2.2.4"
+#RELEASE="stable"
+#ADDONS="c_stubs glibc-compat linuxthreads"
+#HOST="i386-redhat-linux-gnu"
+#CC='gcc'
+#CCVERSION='2.96 20000731 (Red Hat Linux 7.1 2.96-98)'
+#CFLAGS="-march=i386 -D__USE_STRING_INLINES -fstrict-aliasing -freorder-blocks -DNDEBUG=1 -g -O3"
+#SYSINCLUDES=""
+#VERSIONING="yes"
+#BUILD_STATIC="yes"
+#BUILD_SHARED="yes"
+#BUILD_PIC_DEFAULT="no"
+#BUILD_PROFILE="yes"
+#BUILD_OMITFP="no"
+#BUILD_BOUNDED="no"
+#BUILD_STATIC_NSS="no"
+#STDIO="libio"
+
+
+## ==================================================================
+##                  Checks for standard programs
+## ==================================================================
+
+AC_PATH_PROG(MAKE, make, no)
+if test "$MAKE" = "no" ; then
+	if test "$AUBIT_SOURCE" = "1" ; then
+		AC_MSG_ERROR(Cannot compile Aubit from source code without 'make' - please install it. Stop.)
+    else
+		AC_MSG_WARN(It will be much easier if you would install 'make')
+    fi
+fi
+
+
+if test "$AUBIT_SOURCE" = "1" ; then
+	AC_PATH_PROG(DOXYGEN, doxygen, no)
+	AC_PATH_PROG(CVS_CLIENT, cvs, no)
+	AC_PATH_PROG(DOXYSEARCH, doxysearch, no)
+	if test "$DOXYSEARCH" != "no" ; then
+		DOXY_BIN_ABSPATH=`dirname $DOXYSEARCH`
+    fi
+
+	# dot tool is part of Graphviz, a graph visualization toolkit from AT&T
+	# and Lucent Bell Labs. One of DoxyGen options
+
+	if test "$with_dot" != "no"; then
+		if test "$with_dot" != "yes"; then
+			old_PATH="$PATH"
+	        PATH="$with_dot:$PATH"
+	    fi
+
+		AC_PATH_PROG(DOTTOOL, dot, no)
+
+		if test "$DOTTOOL" != "no"; then
+			HAVE_DOT=YES
+			DOT_PATH=`dirname "$DOTTOOL"`
+		else
+			HAVE_DOT=NO
+		fi
+
+		if test "$with_dot" != "yes"; then
+			PATH="$old_PATH"
+	    fi
+	else
+		HAVE_DOT=NO
+	fi
+
+fi
+
+#This is probably a bug in autoconf, but if we don't test for Lex BEFORE
+#we test for C, all sort of wireds things will happen, so we have to test
+#it even in binary distro, where we don't need it:
+AC_PROG_LEX
+
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AC_PROG_AWK
+AC_PATH_PROG(SH, sh, /bin/sh)
+AC_PATH_PROG(LDD, ldd, no)
+
+AC_PATH_PROG(LCLINTEXE,lclint,no)
+
+	if test "$LCLINTEXE" = "no"; then
+		AC_PATH_PROG(LCLINTEXE,splint,no)
+    fi
+
+
+#cygcheck can be used instead of ldd that is missing on CygWin:
+AC_PATH_PROG(CYGCHECK, cygcheck, no)
+
+AC_PATH_PROG(LDCONFIG, ldconfig, no)
+AC_PATH_PROG(AUTOCONF, autoconf, no)
+AC_PATH_PROG(ACLOCAL, aclocal, no)
+
+AC_PATH_PROG(RPM, rpm, no)
+AC_PATH_PROG(AUTOSPEC, autospec, no)
+
+## ==================================================================
+##                 Checks for 4gl compilers
+## ==================================================================
+
+#classic Informix 4gl C-code
+#FIXME: names? see i4gl.mk
+
+AC_MSG_CHECKING(4Js BDL / Informix D4GL)
+AC_PATH_PROG(FJS_PCOMPILER, fglcomp, no)
+AC_PATH_PROG(FJS_PRUNTIME, fglrun, no)
+
+AC_MSG_CHECKING(Querix compiler)
+#4gl code compiler have same name as Plexus  = fglc so we look for Form Compiler
+AC_PATH_PROG(QUERIX_COMP, fmpc, no)
+
+AC_MSG_CHECKING(Aubit compiler)
+AC_PATH_PROG(AUBIT_FRONT, au	bit, no)
+
+
+if test "$cygwin" = "1" ; then
+	AC_MSG_CHECKING(Plexus XDP AD32 - FGLC Compiler)
+	#same name as Querix:
+	#AC_PATH_PROG(PLEXUS_COMP, fglc, no)
+	AC_PATH_PROG(PLEXUS_COMP, mkesq, no)
+else
+	AC_MSG_CHECKING(Classic Informix 4gl P-coode)
+	AC_PATH_PROG(I4GL_PCOMPILER, fglpc, no)
+	AC_PATH_PROG(I4GL_PRUNTIME, fglgo, no)
+
+	AC_PATH_PROG(I4GL_CCOMPILER, c4gl, no)
+
+	AC_PATH_PROG(ACEPREP, saceprep , no)
+	AC_PATH_PROG(FORMBUILD_4GL,form4gl,no)
+	AC_PATH_PROG(FORMBUILD_SQL,sformbld,no)
+
+	AC_PATH_PROG(I4GL_DEBUG, fgldb, no)
+
+fi
+
+
+#<This block was compied from PHP 3.x configure.in -------------------->
+
+## ==================================================================
+##                 Checks for Informix ESQL/C support
+## ==================================================================
+
+#force this check even if not specified on command line:
+if test "$with_informix" = ""; then
+	with_informix=yes
+fi
+
+AC_MSG_CHECKING(for Informix ESQL/C support)
+
+AC_ARG_WITH(informix,
+[  --with-informix[=DIR]   Include Informix ESQL/C support.  DIR is the Informix base
+                          install directory, defaults to ${INFORMIXDIR:-nothing}.],
+[
+	if test "$withval" != "no"; then
+		if test "$INFORMIXDIR" = ""; then
+			INFORMIX_WARNING="
+WARNING: You asked for Informix ESQL/C support, but don't have \\\$INFORMIXDIR
+	 environment value set up. Configuring and compiling Informix
+	 support is impossible and has been turned off. Please
+	 try again after setting up your environment."
+			#IFX_C_MAKE='touch functions/ifx.c'
+			AC_MSG_RESULT(no)
+		else
+			if test "$withval" = "yes"; then
+				IFX_INCDIR=$INFORMIXDIR/incl/esql
+				IFX_LIBDIR="-L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql"
+			else
+				IFX_INCDIR=$withval/incl/esql
+				IFX_LIBDIR="-L$withval/lib -L$withval/lib/esql"
+				if test "$withval" != "$INFORMIXDIR"; then
+					INFORMIX_WARNING="
+WARNING: You specified Informix base install directory that is different
+	 than your \\\$INFORMIXDIR environment variable. You'd better know
+	 exactly what you are doing."
+				fi
+    		fi
+
+			if test "$withval" != "yes"; then
+				WARN_LD_LIBRARY_PATH=1
+	            ADD_LD_LIBRARY_PATH="$withval/lib:$withval/lib/esql:$ADD_LD_LIBRARY_PATH"
+            else
+				WARN_LD_LIBRARY_PATH=1
+	            ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib:$INFORMIXDIR/lib/esql:$ADD_LD_LIBRARY_PATH"
+			fi
+
+			#First check if we have esql installed at all:
+			AC_PATH_PROG(IFMX_ESQLC, esql, no)
+
+			if test "$cygwin" = "1"; then
+				#on Windows, we need Micro$loth or Bordland C compiler to use ESQL/C:
+				AC_PATH_PROG(MSVC_COMP, cl, no)
+				AC_PATH_PROG(MSVC_LINK, link, no)
+				if test "$MSVC_COMP" != "no" && test "$MSVC_LINK" != "no" ;
+				then
+	                ESQLCC_OK="OK"
+                fi
+			else
+                #on non-Windows platforms, native C compiler will do:
+				ESQLCC_OK="OK"
+			fi
+
+			if test "$IFMX_ESQLC" != "no" && test "$ESQLCC_OK" = "OK";
+			then
+				IFX_INCLUDE=-I$IFX_INCDIR
+				IFX_LFLAGS=$IFX_LIBDIR
+				if test -z "$IFX_LIBS"; then
+					IFX_LIBS=`esql -libs | sed -e 's/-lm$//'`
+					dnl  -lm twice otherwise?
+					IFX_LIBS=`echo $IFX_LIBS | sed -e 's/Libraries to be used://g' -e 's/esql: error -55923: No source or object file\.//g'`
+					dnl Seems to get rid of newlines.
+					dnl According to Perl's DBD-Informix, might contain these strings.
+				else
+					dnl Allow override to use static and/or threaded libs
+					IFX_LIBS="$IFX_LIBS"
+				fi
+
+                old_CFLAGS="$CFLAGS"
+                old_LDFLAGS="$LDFLAGS"
+
+				if test "`uname -s 2>/dev/null`" = "AIX"; then
+					IFX_CFLAGS="-D__H_LOCALEDEF"
+				fi
+
+				CFLAGS="$CFLAGS $IFX_INCLUDE $IFX_CFLAGS"
+				LDFLAGS="$LDFLAGS $IFX_LDFLAGS"
+
+				AC_DEFINE(HAVE_IFX)
+				AC_MSG_CHECKING([Informix version])
+				IFX_VERSION=[`esql -V | sed -ne '1 s/^[^0-9]*\([0-9]\)\.\([0-9]*\).*/\1\2/p'`]
+				if test $IFX_VERSION -ge "900"; then
+					AC_DEFINE(HAVE_IFX_IUS)
+					IFX_ESQL_FLAGS="-EDHAVE_IFX_IUS"
+				else
+					IFX_ESQL_FLAGS="-EUHAVE_IFX_IUS"
+				fi
+
+				AC_DEFINE_UNQUOTED(IFX_VERSION, $IFX_VERSION)
+				AC_MSG_RESULT($IFX_VERSION)
+				#IFX_C_MAKE="(esql -e $IFX_ESQL_FLAGS functions/ifx.ec; mv ifx.c functions)"
+
+				CFLAGS="$old_CFLAGS"
+                LDFLAGS="$old_LDFLAGS"
+
+            else
+				AC_MSG_RESULT(esql not in path, or no compatible C compiler)
+            fi
+		fi
+	else
+		INFORMIXDIR=
+		IFX_C_MAKE='touch functions/ifx.c'
+		AC_MSG_RESULT(no)
+	fi
+],[
+  AC_MSG_RESULT(--with-informix not specified)
+])
+
+
+if test "$cygwin" = "1"; then
+
+	AC_MSG_WARN(ESQL/C support on Windows temporaraly disabled.)
+
+	IFMX_ESQLC=no
+	IFX_ESQL_FLAGS=
+	IFX_LIBS=
+	IFX_LFLAGS=
+	IFX_INCLUDE=
+	IFX_C_MAKE=
+	INFORMIXDIR=
+fi
+
+
+## ==================================================================
+##         Checks for libraries expected in standard locations
+## ==================================================================
+
+# FIXME: Replace `main' with a function in `-lc':
+AC_CHECK_LIB([c], [main])
+
+# FIXME: Replace `main' with a function in `-ldl':
+AC_CHECK_LIB([dl], [main])
+
+#unit test sw for C code, used in tools/test/db
+AC_CHECK_LIB([check], [suite_create])
+
+
+## ==================================================================
+##                       Checks for header files
+## ==================================================================
+
+#xxxx
+if test "$AUBIT_SOURCE" = "1" ; then
+	AC_HEADER_STDC
+	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h ])
+fi
+
+## ==================================================================
+##      Checks for typedefs, structures, and compiler characteristics
+## ==================================================================
+
+AC_C_CONST
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+
+AC_CHECK_SIZEOF(long, 8)
+AC_CHECK_SIZEOF(int, 4)
+
+
+## ==================================================================
+##                   Checks for library functions
+## ==================================================================
+
+if test "$AUBIT_SOURCE" = "1" ; then
+	AC_FUNC_FORK
+	AC_FUNC_MALLOC
+	AC_FUNC_MEMCMP
+	AC_TYPE_SIGNAL
+	AC_FUNC_VPRINTF
+	AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp select setenv setlocale socket strcasecmp strchr strdup strncasecmp strrchr strstr strtol])
+fi
+
+## ==================================================================
+##                   Checks for Cygwin specifics
+## ==================================================================
+
+#this tests need aclocal - see Aubit source code if you need them
+
+
+## ==================================================================
+##            Decide on default SQL driver
+## ==================================================================
+
+#if more then one ODBC support was detected, this one will
+#override A4GL_SQLTYPE set earlier in this script:
+#Options: static nosql iodbc unixodbc esql ifxodbc pgodbc odbc32
+
+if test "$default_odbc" != ""; then
+	#User can force SQL driver default with --default-odbc=xxxx switch
+	A4GL_SQLTYPE="$default_odbc"
+else
+	if test "$IFMX_ESQLC" != "no" ; then
+		A4GL_SQLTYPE=esql
+	fi
+
+	if test "$cygwin" = "1"; then
+		#if we are on windows, we will ALLWAYS use native odbc32 manager
+		A4GL_SQLTYPE=odbc32
+
+        #echo "WARNING: SQL on Windows temporaraly disabled"
+		#A4GL_SQLTYPE=nosql
+	fi
+fi
+
+## ==================================================================
+##            Decide on default 4GL compiler
+## ==================================================================
+
+if test "$default_4gl" != ""; then
+	FGLTYPE=$default_4gl
+else
+	#Classic Informix 4gl P-code
+	if test "$I4GL_PCOMPILER" != "no" ; then
+		FGLTYPE=RDS
+    fi
+
+	if test "$I4GL_CCOMPILER" != "no" ; then
+		FGLTYPE=C4GL
+    fi
+
+
+fi
+
+
+
+## ==================================================================
+##            Decide on install location
+## ==================================================================
+
+if test "$prefix" = "NONE"; then
+	if test "$cygwin" = "1" ; then
+		#/opt is not created by default on CygWin installations
+		prefix=/usr/local
+	else
+		prefix=/opt
+    fi
+fi
+
+
+## ==================================================================
+##            Decide on files to be included in RPM
+## ==================================================================
+
+LIB_PREFIX=$prefix/aubit4gl/lib
+
+
+	if test "$IFMX_ESQLC" != "no" ; then
+		RPMFILE_4=$LIB_PREFIX/libSQL_esql.so
+	fi
+	
+	if test "$cygwin" = "1"; then
+		RPMFILE_9=$LIB_PREFIX/libSQL_odbc32.dll
+	fi
+
+
+## ==================================================================
+##           Define which files we will substitute @xxx@ in
+## ==================================================================
+
+#files to create for both binary and source code:
+#AC_CONFIG_FILES([
+#                incl/Makefile-common
+#                ])
+
+
+if test "$AUBIT_SOURCE" = "1" ; then
+
+	AC_CONFIG_FILES([
+				Makefile
+				./source/Makefile
+                etc/fglbldrc
+                include/informix.mk
+				])
+
+else
+
+	AC_CONFIG_FILES([
+                etc/fglbldrc-bin
+                ])
+fi
+
+AC_OUTPUT
+
+#AC_OUTPUT(config/Makefile config/sqlcmd.ins, ln config/Makefile . ; ln config/sqlcmd.ins .)
+
+
+## ==================================================================
+##                Warnings and exit messages
+## ==================================================================
+
+
+dnl Warn if Informix support was requested but environment is not set up correctly.
+if test "$INFORMIX_WARNING" != ""; then
+		echo "$INFORMIX_WARNING"
+fi
+
+if test "$WARN_LD_LIBRARY_PATH" != ""; then
+    echo ""
+	echo "-------------------------------WARNING-----------------------------------"
+    echo "You have specified one or more --with-xxxx=<path> switches to 'configure'"
+    echo "script, specifiying package installed in non-standard <path> In most"
+	echo "cases, you will have to add this path to your PATH and/or LD_LIBRARY_PATH"
+    echo "and/or ld.so.conf in your run-time environment, for Aubit compilers and"
+    echo "compiler programs to be able to find nedded programs and/or libraries"
+    echo "that belong to this way specified package in non-standard place."
+    echo "We will try to do this automatically for you:"
+    echo ""
+
+	if test "$ADD_LD_LIBRARY_PATH" != ""; then
+		#FIXME: make this call only if make is detected (this can happen with binary distro)
+		if test "$MAKE" != "no" ; then
+			echo "FIXME: disabled"
+			#make ldconfig
+        else
+            echo "Ooops! No 'make' installed, you will have to do it manually!"
+        fi
+    else
+		echo "ERROR: ADD_LD_LIBRATY_PATH is empty."
+    fi
+
+fi
+
+echo ""
+
+if test "$AUBIT_SOURCE" = "1" ; then
+	echo "Aubit 4gl compiler source code is now configured."
+	echo "Execute 'make' to compile it."
+else
+	echo "Aubit 4gl compiler binary disrtibution now configured."
+	echo "Execute 'make install' to install it."
+fi
+
+echo "Thank you for using FGLBLD."
+echo ""
+
+#------------------------------ EOF --------------------------------
+

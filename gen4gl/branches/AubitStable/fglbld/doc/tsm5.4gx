@@ -1,0 +1,58 @@
+{ Add new row(s) }
+FUNCTION ins_timesheet()
+
+    DEFINE
+        cpos        INTEGER,
+        junk        INTEGER,
+        iostatus    INTEGER,
+        rowid       INTEGER
+
+    CALL wio_timesheet(2)
+
+    { Transaction will always be committed }
+    CALL begin_work()
+
+    { Save current position to be restored }
+    LET cpos = sc_numint(ct_timesheet.list_number)
+    IF cpos = 0 THEN
+        LET cpos = 1
+    END IF
+
+    { Loop terminates when interrupt detected }
+    LET INT_FLAG = FALSE
+    WHILE TRUE
+
+        MESSAGE "Enter data: ESC to insert, INTR to abandon"
+        LET wr_timesheet.* = nr_timesheet.*
+        IF inp_timesheet('I') = FALSE THEN
+            EXIT WHILE
+        END IF
+
+        CALL iud_timesheet('I')
+        IF STATUS = 0 THEN
+            LET ct_timesheet.rowid = SQLCA.SQLERRD[6]
+            IF sc_insint(ct_timesheet.list_number, ct_timesheet.rowid) THEN
+                ERROR "Error from sc_insint in ins_timesheet"
+            END IF
+            LET cp_timesheet.* = wr_timesheet.*
+            MESSAGE "Row inserted"
+            SLEEP 2
+        ELSE
+            CALL ERR_PRINT(STATUS)
+        END IF
+
+    END WHILE
+
+    LET INT_FLAG = FALSE
+    CALL commit_work()
+    CALL sc_getint(ct_timesheet.list_number, 'A', cpos) { Restore current position }
+        RETURNING iostatus, rowid
+    IF iostatus < -1 THEN
+        { -1: ENOLIST is acceptable if interrupted before first entry }
+        ERROR "Error from sc_getint in ins_timesheet"
+    END IF
+    LET junk = csr_timesheet('I', 0)
+
+    RETURN ct_timesheet.direction
+
+END FUNCTION {ins_timesheet}
