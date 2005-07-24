@@ -1,0 +1,13 @@
+Name: Gentoo Ebuild
+Parent: aubit4glsrc
+Description: Packages Aubit compiler source code in Gentoo format
+Functionality: Packaging
+Build:
+Example:
+Depends: Gentoo Ebuild tools
+Documentation:
+Regressed:
+Maintainer: 
+Status: 0
+Todo: implementation
+Notes: Need to modify configure to not alter FS outside of Aubit src tree

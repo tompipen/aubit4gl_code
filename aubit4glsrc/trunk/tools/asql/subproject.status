@@ -1,0 +1,42 @@
+Name: asql_p
+Parent: tools
+Description: dbaccess replacement with native connectivity (uses ecpg ESQL/C compiler)
+Functionality: dbaccess/isql clone
+Build:  	make in home dir
+Example:
+Depends: PostgreSQL ecpg
+Documentation: none (see Informix manuals)
+Regressed:
+Maintainer: MA
+Status:  4
+Todo:  	Create help file
+Notes:
+
+Name: asql_i
+Parent: tools
+Description: dbaccess replacement with native connectivity (uses Informix ESQL/C)
+Functionality: dbaccess/isql clone
+Build:  make in home dir
+Example:
+Depends: Informix esql
+Documentation: none (see Informix manuals)
+Regressed:
+Maintainer: MA
+Status:  4
+Todo:  	Create help file
+Notes:
+
+
+Name: asql_g
+Parent: tools
+Description: dbaccess replacement with generic (SQLTYPE) connectivity
+Functionality: dbaccess/isql clone
+Build:  make in home dir
+Example:
+Depends: Informix esql
+Documentation: none (see Informix manuals)
+Regressed:
+Maintainer: MA
+Status:  4
+Todo:  	Create help file
+Notes:

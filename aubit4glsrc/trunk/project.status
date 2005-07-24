@@ -1,0 +1,6 @@
+Name: Aubit4GL Compiler
+Description: Contains x4GL programming language compiler(s) , run-time libraries, and tools
+Maintainer: Various
+Status: 4
+Todo: @todo
+Notes: Overall status is an estimate of maturity of most commonly used components. 
