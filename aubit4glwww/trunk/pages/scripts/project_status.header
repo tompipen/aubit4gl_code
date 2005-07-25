@@ -1,0 +1,65 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>New Page 1</title>
+</head>
+
+<body>
+
+<h2 align="center">Aubit project status</h2>
+<hr>
+<p>Last updated on 25/06/2005, by Andrej Falout</p>
+<p>This page attempts to keep track on progress of various Aubit compiler 
+functionality and components, and quantify there maturity. It's main goal is to 
+help set appropriate level of expectations for the end user, and at the same 
+time provide a common place of reference for developers. As it catalogues all 
+components of the project, it may also serve as a good starting point for 
+exploration, both end users and developers. For folks that prefer bullets to sentences (and therefore probably 
+are not reading this anyway):</p>
+<p>Purpose of this page:</p>
+<ul>
+  <li>keep track of progress</li>
+  <li>quantify maturity</li>
+  <li>set expectations</li>
+  <li>common place of reference</li>
+  <li>catalogue components</li>
+</ul>
+<p>Aubit compiler is a work in progress, and by the very nature of OpenSource 
+development process, it will remain in such state for foreseeable future. This 
+means that some components may be fully production ready and extensively tested, 
+but some other may be not much more then a prototype. For readers unfamiliar 
+with OpenSource software, this is common, if not universal occurrence. Same is 
+true for most commercial software products, it is just that end user rarely has 
+the chance to see any parts of internal, proprietary development process.</p>
+<p>Thanks to the fully modular architecture of Aubit compiler, where practically 
+all functionality is implemented in a form of plug-ins, this varying status 
+levels do not have to be a cause for concern, but has to be understood. Additionally, Aubit provides a 
+full automated regression tests suite of over 800 tests, so it is easy for user to 
+verify functionality of all components (or only components developer wants to 
+use) on every Aubit release, in less then 30 
+minutes.</p>
+<p>TO-DO:</p>
+<ul>
+	<li>Add link to current regression test results for general 4GL features 
+    (Mike?)</li>
+	<li>Add links to regression test result for database features/SQL for each 
+	database supported (Andrej)</li>
+    <li>Make this page a Wiki home page; create link for each feature/module 
+    into its own Wiki page, to enable developers to easily share information 
+    specific to functionality/module with users and other developers, especially 
+    between the manual releases. This repositories of information will then 
+    represent a base to migrate information on new functionality into the 
+    manual. (Andrej)</li>
+    <li>Add status for tools in tools/ directory</li>
+    <li>Add list of directories to be removed or renamed/moved in CVS</li>
+    <li>Create links for directories to Aubit CVS web browser interface</li>
+    <li>Create links to manual or other documentation entry for it</li>
+    <li>Crate links from classes of components to architecture diagram section, 
+    and vice versa</li>
+    <li>Group entries in this table by class (database access, user interface, 
+    RPC, etc...)</li>
+</ul>
+<hr>
+<h2 align="center">All components of Aubit project</h2>

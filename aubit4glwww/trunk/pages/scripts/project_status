@@ -1,0 +1,495 @@
+#!/bin/bash
+
+################################################################################
+#
+# FUNCTIONS
+#
+################################################################################
+
+
+function get_status() {
+if [ "$1" = "" ]
+then
+	echo "ERROR - NO STATUS"
+	return
+fi
+if [ "$1" -ge 5 ]; then  
+	echo "<img border=\"0\" src=\"../images/star.gif\" width=\"11\" height=\"11\">";
+fi
+if [ "$1" -ge 4 ]; then  
+	echo "<img border=\"0\" src=\"../images/star.gif\" width=\"11\" height=\"11\">";
+fi
+if [ "$1" -ge 3 ]; then  
+	echo "<img border=\"0\" src=\"../images/star.gif\" width=\"11\" height=\"11\">";
+fi
+if [ "$1" -ge 2 ]; then  
+	echo "<img border=\"0\" src=\"../images/star.gif\" width=\"11\" height=\"11\">";
+fi
+if [ "$1" -ge 1 ]; then  
+	echo "<img border=\"0\" src=\"../images/star.gif\" width=\"11\" height=\"11\">";
+fi
+
+}
+
+################################################################################
+
+function get_regressed() {
+if [ "$1" = "" ]
+then
+	echo "ERROR - No regression status"
+	return
+fi
+if [ "$1" -ge 5 ]; then  
+	echo "<img border=\"0\" src=\"../images/star.gif\" width=\"11\" height=\"11\">";
+fi
+if [ "$1" -ge 4 ]; then  
+	echo "<img border=\"0\" src=\"../images/star.gif\" width=\"11\" height=\"11\">";
+fi
+if [ "$1" -ge 3 ]; then  
+	echo "<img border=\"0\" src=\"../images/star.gif\" width=\"11\" height=\"11\">";
+fi
+if [ "$1" -ge 2 ]; then  
+	echo "<img border=\"0\" src=\"../images/star.gif\" width=\"11\" height=\"11\">";
+fi
+if [ "$1" -ge 1 ]; then  
+	echo "<img border=\"0\" src=\"../images/star.gif\" width=\"11\" height=\"11\">";
+fi
+
+}
+
+################################################################################
+
+function print_subline()  {
+loctn=$4
+echo "<tr>"
+
+for a in "$@"
+do
+	if [ "$a" != "" ]
+	then
+		fc=`expr "$a" : "\(.\)"`
+		rc=`expr "$a" : ".\(.*\)"`
+	else
+		fc=""
+		rc=""
+	fi
+	# If our field begins with an '@' - read that as a filename
+	# in the same directory...
+	if [ "$fc" = "@" ]
+	then
+		echo "<td>"
+		cat $AUBITBASE/$loctn/$rc | sed 's/$/<br>/g'
+		echo "</td>"
+	else
+		if [ "$a" = "" ]
+		then
+		echo "<td>&nbsp</td>"
+		else
+		echo "<td>$a</td>"
+		fi
+	fi
+done
+echo "</tr>"
+}
+
+
+function print_line() {
+loctn=$4
+cvs="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/$4"
+echo "<tr>"
+c=0
+for a in "$@"
+do
+	c=`expr $c + 1`
+	if [ "$a" != "" ]
+	then
+		fc=`expr "$a" : "\(.\)"`
+		rc=`expr "$a" : ".\(.*\)"`
+	else
+		fc=""
+		rc=""
+	fi
+	# If our field begins with an '@' - read that as a filename
+	# in the same directory...
+	if [ "$fc" = "@" ]
+	then
+		echo "<td>"
+		cat $AUBITBASE/$loctn/$rc | sed 's/$/<br>/g'
+		echo "</td>"
+	else
+		if [ "$a" = "" ]
+		then
+			echo "<td>&nbsp</td>"
+		else
+			if [ $c = 4 ] 
+			then
+				echo "<td><a href=$cvs>$a</a></td>"
+			else
+				echo "<td>$a</td>"
+			fi
+		fi
+	fi
+done
+}
+
+#
+################################################################################
+#
+
+
+
+
+# Lets set up some default base if none is specified...
+if [ "$AUBITBASE" = "" ]
+then
+	AUBITBASE=/home/aubit4gl
+	export AUBITBASE
+fi
+
+mkdir /tmp/project_status 2> /dev/null
+if [ ! -d /tmp/project_status ]
+then
+	echo "/tmp/project_status isn't a directory"
+fi
+
+# Lets create a version of that base - with all the directory '/'
+# replaced with a '.' - it should then be safe to use that in 'sed'
+x=`echo $AUBITBASE. | tr "/" "."`
+
+# Make sure 'aubit4glsrc' is at the top of our projects
+
+
+# Try and get these into some sort of order - but we we'll still find new ones...
+cat > /tmp/project_status/projects.list.1 << EOF
+aubit4glsrc/project.status
+aubit4glwww/project.status
+aubit4glsrc/tools/adbschema/project.status
+aubit4glsrc/tools/project.status
+aubit4gldoc/4glreference/project.status
+aubit4gldoc/manual/project.status
+aubit4glsrc/compilers/pcode/project.status
+aubit4glsrc/compilers/ace/project.status
+appframework/project.status
+lib4gl/project.status
+doc4gl/project.status
+gen4gl/project.status
+hy4gl/project.status
+aubit4gltest/project.status
+EOF
+
+# Find all project files
+find $AUBITBASE -name "project.status"  | sed 's/^'$x'//g' | fgrep -vf /tmp/project_status/projects.list.1 > /tmp/project_status/projects.list.2
+cat /tmp/project_status/projects.list.1 /tmp/project_status/projects.list.2 > /tmp/project_status/projects.list
+cat /tmp/project_status/projects.list
+
+# Find all subproject files
+find $AUBITBASE -name "subproject.status" | sed 's/^'$x'//g' > /tmp/project_status/subprojects.list
+
+
+rm /tmp/project_status/*.subprojects.*
+
+cat /dev/null >  /tmp/project_status/parent.projects
+
+# Now - go through all subrojects...
+while read subproject
+do
+# We've got out subproject file - lets take a look...
+
+
+# First - clear all our variables...
+	subprojectdir=`echo $subproject | sed 's/.subproject.status//g'`
+	name=""
+	parent=""
+	description=""
+	functionality=""
+	f2=""
+	build=""
+	example=""
+	depends=""
+	documentation=""
+	regressed=""
+	maintainer=""
+	kstatus=""
+	todo=""
+	notes=""
+	location=$subprojectdir
+	priority="1"
+
+# Now - read through our file and set the variables as required...
+	while read key val
+	do
+		if [ "$key" = "" -a "$val" = "" ]
+		then
+			# Blank line
+			continue
+		fi
+		key=`echo $key | sed "s/://g" | tr "[a-z]" "[A-Z]"`
+
+		if [ "$key" = "NAME" ]; then
+			if [ "$name" != "" ]; then
+				echo "Printing"
+				# Must be the next subproject...
+				print_subline "$functionality" "$name" "$description" "$location" "$kstatus" "$maintainer" "$build" "$example" "$depends" "$documentation" "$regressed" "$todo" "$notes" >> /tmp/project_status/$parent.subprojects."$priority".$f2
+			fi
+			name="$val"
+		continue
+		fi
+		if [ "$key" = "LOCATION" ]; then
+			location="$val"
+		continue
+		fi
+		if [ "$key" = "PARENT" ]; then
+			echo $val >> /tmp/project_status/parent.projects
+			parent="$val"
+			continue
+		fi
+		if [ "$key" = "DESCRIPTION" ]; then
+			description="$val"
+			continue
+		fi
+		if [ "$key" = "FUNCTIONALITY" ]; then
+			functionality="$val"
+			f2=`echo $val | tr "/" "_"`
+			continue
+		fi
+		if [ "$key" = "BUILD" ]; then
+			build="$val"
+			continue
+		fi
+		if [ "$key" = "EXAMPLE" ]; then
+			example="$val"
+			continue
+		fi
+
+		if [ "$key" = "DEPENDS" ]; then
+			depends="$val"
+			continue
+		fi
+
+		if [ "$key" = "DOCUMENTATION" ]; then
+			documentation="$val"
+			continue
+		fi
+
+		if [ "$key" = "REGRESSED" ]; then
+			if [ "$val" = 1 -o "$val" = 2 -o "$val" = 3 -o "$val" = 4 -o "$val" = 5 ]
+			then
+				# Use these like status stars...
+				regressed=`get_regressed $val`
+			else
+				regressed="$val"
+			fi
+			continue
+		fi
+
+		if [ "$key" = "PRIORITY" ]; then
+			priority="$val"
+			continue
+		fi
+
+		if [ "$key" = "MAINTAINER" ]; then
+			# Shorthands...
+			if [ "$val" = "AF" ]; then   val="Andrej Falout"; fi
+			if [ "$val" = "SF" ]; then   val="Sergio Ferreira"; fi
+			if [ "$val" = "MA" ]; then   val="Mike Aubury"; fi
+			maintainer="$val"
+			continue
+		fi
+
+		if [ "$key" = "STATUS" ]; then
+			kstatus=`get_status "$val"`
+			continue
+		fi
+		if [ "$key" = "TODO" ]; then
+			todo="$val"
+			continue
+		fi
+		if [ "$key" = "NOTES" ]; then
+			notes="$val"
+			continue
+		fi
+		echo "Error - Unknown key : $key ($subproject)"
+		exit 1
+	done < $AUBITBASE/$subproject 
+	echo "printing"
+	print_subline "$functionality" "$name" "$description" "$location" "$kstatus" "$maintainer" "$build" "$example" "$depends" "$documentation" "$regressed" "$todo" "$notes" >> /tmp/project_status/$parent.subprojects."$priority".$f2
+done < /tmp/project_status/subprojects.list
+
+
+#We should now be able to generate a list of unique parents
+cat /tmp/project_status/parent.projects | uniq > /tmp/project_status/parent.projects.uniq
+
+# Now go through each of these parents - and generate the table..
+while read parent
+do
+ofile=/tmp/project_status/$parent.subpage
+echo $parent > /dev/tty
+cat > $ofile << EOF
+<hr>
+<a name="subprojects_$parent"></a>
+<table border="1" width="100%" id="table1">
+        <tr>
+                <td align="center" class=subproj_hdr>Functionality</td>
+                <td align="center" class=subproj_hdr>Module (plug-in library / executable / command) name</td>
+                <td align="center" class=subproj_hdr>Description</td>
+                <td align="center" class=subproj_hdr>Source code location<br>(relative to aubit4glsrc)</td>
+                <td align="center" class=subproj_hdr>Status</td>
+                <td align="center" class=subproj_hdr>Maintainer</td>
+                <td align="center" class=subproj_hdr>Build command</td>
+                <td align="center" class=subproj_hdr>Usage examples /<br>settings needed</td>
+                <td align="center" class=subproj_hdr>Depends<br>on</td>
+                <td align="center" class=subproj_hdr>Documentation</td>
+                <td align="center" class=subproj_hdr>Regression tests coverage</td>
+                <td align="center" class=subproj_hdr>Work needed</td>
+                <td align="center" class=subproj_hdr>Notes</td>
+        </tr>
+EOF
+cat /tmp/project_status/$parent.subprojects.*  >> $ofile
+# lets stick the column descriptions at the bottom too...
+cat >> $ofile << EOF
+        <tr>
+                <td align="center" class=subproj_hdr>Functionality</td>
+                <td align="center" class=subproj_hdr>Module (plug-in library / executable / command) name</td>
+                <td align="center" class=subproj_hdr>Description</td>
+                <td align="center" class=subproj_hdr>Source code location<br>(relative to aubit4glsrc)</td>
+                <td align="center" class=subproj_hdr>Status</td>
+                <td align="center" class=subproj_hdr>Maintainer</td>
+                <td align="center" class=subproj_hdr>Build command</td>
+                <td align="center" class=subproj_hdr>Usage examples /<br>settings needed</td>
+                <td align="center" class=subproj_hdr>Depends<br>on</td>
+                <td align="center" class=subproj_hdr>Documentation</td>
+                <td align="center" class=subproj_hdr>Regression tests coverage</td>
+                <td align="center" class=subproj_hdr>Work needed</td>
+                <td align="center" class=subproj_hdr>Notes</td>
+        </tr>
+</table>
+EOF
+done < /tmp/project_status/parent.projects.uniq 
+
+# Hey - nearly done now..
+# We just need to generate the main page (with a list of the projects)
+# then a subpage - containing the project header and all its subpages
+# as well as catch any subprojects which don't correspond to a parent project
+#
+
+llist=""
+cat > /tmp/project_status/project_stat_header.htm << EOF
+<table border="1" width="100%" id="table2">
+        <tr>
+                <th align="center" class=proj_hdr>Name</td>
+                <th align="center" class=proj_hdr>Description</td>
+                <th align="center" class=proj_hdr>Current maintainer</td>
+                <th align="center" class=proj_hdr>Source code location (from CVS root)</td>
+                <th align="center" class=proj_hdr>Status</td>
+                <th align="center" class=proj_hdr>Work needed</td>
+                <th align="center" class=proj_hdr>Notes</td>
+        </tr>
+EOF
+
+cat > /tmp/project_status/project_stat_footer.htm << EOF
+</table>
+EOF
+
+
+
+cnt=0
+while read project
+do
+	name=""
+	description=""
+	maintainer=""
+	kstatus=""
+	todo=""
+	notes=""
+	dir=$project
+	location=`echo $project | sed 's/.project.status//g'`
+	projname=`echo $project | sed 's/.project.status//g' | tr "/" "_" `
+
+	cnt=`expr $cnt + 1`
+
+	while read key val
+	do
+		if [ "$key" = "" -a "$val" = "" ]
+		then
+			# Blank line
+			continue
+		fi
+
+		key=`echo $key | sed "s/://g" | tr "[a-z]" "[A-Z]"`
+
+		if [ "$key" = "DESCRIPTION" ]; then
+			description="$val"
+			continue
+		fi
+
+		if [ "$key" = "NAME" ]; then
+			name="$val"
+			continue
+		fi
+
+		if [ "$key" = "MAINTAINER" ]; then
+			# Shorthands...
+			if [ "$val" = "AF" ]; then   val="Andrej Falout"; fi
+			if [ "$val" = "SF" ]; then   val="Sergio Ferreira"; fi
+			if [ "$val" = "MA" ]; then   val="Mike Aubury"; fi
+			maintainer="$val"
+			continue
+		fi
+
+		if [ "$key" = "STATUS" ]; then
+			kstatus=`get_status "$val"`
+			continue
+		fi
+
+		if [ "$key" = "TODO" ]; then
+			todo="$val"
+			continue
+		fi
+
+		if [ "$key" = "NOTES" ]; then
+			notes="$val"
+			continue
+		fi
+		if [ "$key" = "LOCATION" ]; then
+			location="$val"
+			continue
+		fi
+
+	done < $AUBITBASE/$project
+
+	# We'll print the line twice - one with the name as text, the other with the name as a link...
+	print_line "$name" "$description" "$maintainer" "$location" "$kstatus" "$todo" "$notes" > /tmp/project_status/project_stat.s.$cnt
+	name="<a href='project_status_$projname.html'>$name</a>";
+	print_line "$name" "$description" "$maintainer" "$location" "$kstatus" "$todo" "$notes" > /tmp/project_status/project_stat.h.$cnt
+
+	# lets find our subproject summary
+	subproj=""
+	if [ -f /tmp/project_status/$projname.subpage ]
+	then
+		subproj=/tmp/project_status/$projname.subpage
+	else
+		xx=`basename $location`
+		if [ -f /tmp/project_status/$xx.subpage ]
+		then
+			subproj="/tmp/project_status/$xx.subpage"
+		fi
+	fi
+
+
+	if [ "$subproj" != "" ]
+	then
+		echo "Cat : $subproj"
+		cat /tmp/project_status/project_stat_header.htm /tmp/project_status/project_stat.s.$cnt /tmp/project_status/project_stat_footer.htm $subproj > /tmp/project_status/project_status_$projname.html 
+		rm $subproj
+	else
+		echo "Can't find any subpage for $projname"
+		# Theres nothing to link to - so don't bother trying...
+		cp  /tmp/project_status/project_stat.s.$cnt  /tmp/project_status/project_stat.h.$cnt
+	fi
+	llist="$llist /tmp/project_status/project_stat.h.$cnt"
+
+done < /tmp/project_status/projects.list
+cat ./project_status.header /tmp/project_status/project_stat_header.htm $llist /tmp/project_status/project_stat_footer.htm ./project_status.footer | sed 's/@subprojects/<a href="project_status_'$projname.html'">Sub-projects<\/a>/g'  > /tmp/project_status/project_status_hdr.html 
+
+echo "Orphan subprojects : "
+ls /tmp/project_status/*.subpage 2> /dev/null
