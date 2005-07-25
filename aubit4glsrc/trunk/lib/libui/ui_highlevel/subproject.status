@@ -1,0 +1,43 @@
+Name: libUI_HL_GTK
+Parent: aubit4glsrc
+Description: GUI plug-in (block mode).  New generation UI plug-in using shared High Level library
+Functionality: UI
+Build:
+Example:
+Depends: GTK+, version 2 recomended
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 3
+Todo:
+Notes:
+
+
+Name: libUI_HL_TUI
+Parent: aubit4glsrc
+Description: TUI plug-in.  New generation UI plug-in using shared High Level library
+Functionality: UI
+Build:
+Example:
+Depends: nCurses or PDcurses WITH libform support
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo: Finish testing so old one can be removed
+Notes:
+
+Name: libUI_HL_TUIN
+Parent: aubit4glsrc
+Description: TUIN plug-in.  New generation UI plug-in using shared High Level library
+Functionality: UI
+Build:
+Example:
+Depends: nCurses or PDcurses WITHOUT libform support
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 2
+Todo: 
+Notes:
+

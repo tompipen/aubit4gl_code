@@ -1,0 +1,42 @@
+Name: libLEX_C
+Parent: aubit4glsrc
+Description: Used by compiler to create C code representation of x4GL program
+Functionality: C language generation plug-in
+Build:
+Example:  A4GL_LEXTYPE
+Depends: None to compile, GCC compiler to use
+Documentation:
+Regressed: 4
+Maintainer:  MA
+Status: 5
+Todo: 
+Notes:
+
+Name: libLEX_EC
+Parent: aubit4glsrc
+Description: Used by compiler to create embedded C (ESQL/C) code representation of x4GL program. Supports several ESQL/C dialects (Informix, PostgreSQL ecpg, Ingres,...)
+Functionality: Ebmeded SQL/C language generation plug-in
+Build:
+Example: A4GL_LEXTYPE
+Depends: None to compile, supported ESQL/C compiler to use
+Documentation:
+Regressed: mostly
+Maintainer: MA
+Status: 5
+Todo:
+Notes:
+
+Name: libLEX_CS
+Parent: aubit4glsrc
+Description: Used by compiler to create C# code representation of x4GL program
+Functionality: C# language generation plug-in
+Build:
+Example: A4GL_LEXTYPE
+Depends: None to compile, supported C# compiler to use
+Documentation:
+Regressed: none
+Maintainer: MA
+Status: 1
+Todo:
+Notes: Experiemental - doesn't work yet...
+

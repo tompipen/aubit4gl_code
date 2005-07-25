@@ -1,0 +1,13 @@
+Name: aupscol
+Parent: aubit4glsrc
+Description: Simple utility for maintaining central database repository of form fields validation and display information
+Functionality: Informix-like aupscol utility
+Build: Always built by root makefile
+Example: see --help
+Depends: 
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 2
+Todo:
+Notes: Written in 4gl

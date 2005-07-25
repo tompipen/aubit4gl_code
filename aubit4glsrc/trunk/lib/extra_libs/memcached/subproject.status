@@ -1,0 +1,13 @@
+Name: memcache.so
+Parent: aubit4glsrc
+Description: Access to <a href=http://www.danga.com/memcached/>memcached data</a>
+Functionality: ???
+Build:
+Example:
+Depends:
+Documentation:
+Regressed: ?
+Maintainer: MA
+Status: 3
+Todo: Makefile is non-standard
+Notes: memcached is a high-performance, distributed memory object caching system, generic in nature, but intended for use in speeding up dynamic web applications by alleviating database load.

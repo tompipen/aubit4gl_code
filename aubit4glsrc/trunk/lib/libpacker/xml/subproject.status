@@ -1,0 +1,13 @@
+Name: libPACKER_XML
+Parent: aubit4glsrc
+Description: XML Packer input/output. 
+Functionality: PACKER
+Build:
+Example: A4GL_PACKER
+Depends: None
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 3
+Todo:
+Notes: Outputs simplified XML, with fixed format.  Will only read XML files that it generates - no other XML files.

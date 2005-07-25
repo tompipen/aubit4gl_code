@@ -1,0 +1,14 @@
+Name: libA4GL_sxml
+Parent: aubit4glsrc
+Description: XML manipulation wrappers. No language bindings
+Functionality: XML manipulation library
+Build: tools/test/xml
+Example:
+Depends: sXML library
+Documentation: See README in home dir
+Regressed: none
+Maintainer: MA
+Status: 3
+Todo:
+Notes:
+

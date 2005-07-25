@@ -1,0 +1,14 @@
+Name: libRPC_XDR
+Parent: aubit4glsrc
+Description: Plug-in enables communication between Sun RPC compatible applications
+Functionality: RPC
+Build:
+Example: Sun RPC; make sure RPC deamon (service) is running
+Depends: Manual
+Documentation: One test only?
+Regressed:
+Maintainer: MA
+Status: 4
+Todo: 
+Notes: Contains both client and server components; uses Aubit extensions to 4GL syntax
+

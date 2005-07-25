@@ -1,0 +1,14 @@
+Name: libFORM_NOFORM
+Parent: aubit4glsrc
+Description: Enables usage of Aubit compiled programs without form files support
+Functionality: Dummy forms plug-in
+Build:
+Example: A4GL_FORMTYPE
+Depends: None
+Documentation:
+Regressed: none
+Maintainer: MA
+Status: 3
+Todo:
+Notes: Primarily usefull for debugging and CGI type applications, although may be obsolete.
+

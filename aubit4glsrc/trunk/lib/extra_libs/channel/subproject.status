@@ -1,0 +1,15 @@
+Name: libchannel
+Parent: aubit4glsrc
+Description: Four J's compatible file and pipe read/write functions, with x4GL language bindings. Built on top of libA4GL_file library.
+Functionality: Files and pipes manipulation library
+Build:
+Example:
+Depends: Uses FILE * IO from C library 
+Documentation:
+Regressed: mostly
+Maintainer: MA
+Status: 4
+Todo:
+Notes: Library name does not use standard Aubit naming to maintain compatibility with 4Js sintax
+
+

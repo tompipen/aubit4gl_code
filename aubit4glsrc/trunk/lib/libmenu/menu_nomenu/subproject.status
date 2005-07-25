@@ -1,0 +1,14 @@
+Name: libMENU_NOMENU
+Parent: aubit4glsrc
+Description: Dummy handler
+Functionality: MENUHANDLER menus
+Build:
+Example: A4GL_MENUTYPE
+Depends: Aubit packer plug-in, GTK+ to use
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 3
+Todo:
+Notes: run-time support plug-in - provides Plexus AD32 compatibility
+

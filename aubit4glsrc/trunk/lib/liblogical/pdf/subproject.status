@@ -1,0 +1,27 @@
+Name: libLOGREPPROC_PDF
+Parent: aubit4glsrc
+Description: Generates PDF output from logical report meta data
+Functionality: Logical report processor
+Build:
+Example:
+Depends: pdflib
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes:
+
+Name: libLOGREP_PDF
+Parent: aubit4glsrc
+Description: PDF layout editor module for logical report meta data
+Functionality: Logical report processor
+Build:
+Example:
+Depends: pdflib
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes:

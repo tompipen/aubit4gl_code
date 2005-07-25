@@ -1,0 +1,89 @@
+Name: runner
+Parent: pcode
+Description: Executes programs compiled using P-code compiler
+Functionality: P-code runner
+Build: Make in home dir
+Example:
+Depends: 
+Documentation: See README file in home dir
+Regressed: some tests in regression tests are p-code enabled
+Maintainer:  MA
+Status: 2
+Todo:
+Notes: P-code programs without _fgl suffix do not use any Aubit headers or libraries
+
+
+Name: runner_fgl
+Parent: pcode
+Description: P-code runner optimised for 4GL
+Functionality: P-code runner
+Build: Always built by root makefile
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 2
+Todo:
+Notes:
+
+
+Name: checker
+Parent: pcode
+Description: checker  	Checker of generated p-code
+Functionality: P-code checker
+Build: Make in home dir
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status:  2
+Todo:
+Notes: Primarily useful for debugging. P-code programs without _fgl suffix do not use Aubit headers or libraries
+
+
+Name: checker_fgl
+Parent: pcode
+Description: Checker of generated p-code
+Functionality: P-code checker for 4GL
+Build: Always built by root makefile
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 2 
+Todo:
+Notes: Primarily useful for debugging 
+
+
+Name: c2pcode
+Parent: pcode
+Description: Compiles C source code to byte-code (Pseudo-code)
+Functionality: P-code compiler
+Build: Make in home dir
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 2
+Todo:
+Notes: P-code programs without _fgl suffix do not use Aubit headers or libraries
+
+
+Name: c2pcode_fgl
+Parent: pcode
+Description: Compiles C source code to byte-code (Pseudo-code)
+Functionality: P-code compiler for 4GL
+Build: Always built by root makefile
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status:  2
+Todo:
+Notes:
+

@@ -1,0 +1,14 @@
+Name: libSQL_pg
+Parent: aubit4glsrc
+Description: Compile-time ONLY native plug-in for PostgreSQL.  Used for database access by compilers, when compiling in EC output mode for PG ecpg compiler. Based on 'simple' template.
+Functionality: SQL
+Build:
+Example:
+Depends: PostgreSQL libraries (libpq)
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo: Expand it for use at run-time?
+Notes:
+

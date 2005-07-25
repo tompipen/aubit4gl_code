@@ -1,0 +1,14 @@
+Name: libRPC_NORPC
+Parent: aubit4glsrc
+Description: Dummy RPC module - only contains dummy API functions
+Functionality: RPC
+Build:
+Example:
+Depends: None
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 3
+Todo:
+Notes: Primarily used for debugging
+

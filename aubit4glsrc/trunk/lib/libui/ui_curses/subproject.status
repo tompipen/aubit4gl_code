@@ -1,0 +1,14 @@
+Name: libUI_TUI
+Parent: aubit4glsrc
+Description: Legacy TUI plug-in.  Handles user interface in terminal mode
+Functionality: UI
+Build:
+Example:
+Depends: Ncurses or PDcurses library
+Documentation:
+Regressed: Mostly
+Maintainer: MA
+Status: 5
+Todo: 
+Notes: The most tested and mature of the UI modules
+

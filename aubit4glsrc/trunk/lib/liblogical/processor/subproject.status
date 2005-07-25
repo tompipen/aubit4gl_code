@@ -1,0 +1,14 @@
+Name: process_report
+Parent: aubit4glsrc
+Description: processes the meta data from a logical report into a PDF,TXT or CSV output
+Functionality: Logical report processor
+Build: make liblogical in root
+Example:
+Depends: None
+Documentation:
+Regressed: none
+Maintainer: MA
+Status: 4
+Todo:
+Notes:
+

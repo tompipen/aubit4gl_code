@@ -1,0 +1,13 @@
+Name: libSQL_FILESCHEMA
+Parent: aubit4glsrc
+Description: Compile-time ONLY "schema-in-file" plug-in Enables compilation of 4GL programs that reference database using DEFINE ... LIKE statements, without database being accessible from compile machine
+Functionality: SQL
+Build:
+Example: A4GL_SQLTYPE
+Depends: None
+Documentation:
+Regressed:
+Maintainer: MA 
+Status: 5
+Todo:
+Notes: Schema files can be created by hand, or using adbschema utility

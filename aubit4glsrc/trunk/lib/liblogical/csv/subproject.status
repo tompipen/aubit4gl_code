@@ -1,0 +1,27 @@
+Name: libLOGREPPROC_CSV
+Parent: aubit4glsrc
+Description: Generates CSV output from logical report meta data
+Functionality: Logical report processor
+Build:
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes:
+
+Name: libLOGREP_CSV
+Parent: aubit4glsrc
+Description: CSV layout editor module for logical report meta data
+Functionality: Logical report processor
+Build:
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes:
