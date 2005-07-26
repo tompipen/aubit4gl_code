@@ -15,7 +15,7 @@ Logical Layout Engine header file
 -----------------------------------------------------------------------------
 */
 
-
+#define NOSTRCPYMAP
 #include "a4gl_libaubit4gl.h"
 
 #define ENTRY_START 1

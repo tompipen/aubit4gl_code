@@ -4,7 +4,7 @@
 //#include <string.h>
 //#include "../common/a4gl_lle.h"
 
-
+#define NOSTRCPYMAP
 #include "a4gl_libaubit4gl.h"
 
 void edit_lle ( struct r_report *report);

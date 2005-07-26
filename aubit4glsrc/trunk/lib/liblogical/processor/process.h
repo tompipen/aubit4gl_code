@@ -4,6 +4,7 @@
 	
 	#include <stdio.h>
 	#include <stdlib.h>
+	#define NOSTRCPYMAP
 	#include "a4gl_libaubit4gl.h"
 	#include "API_process.h"
 

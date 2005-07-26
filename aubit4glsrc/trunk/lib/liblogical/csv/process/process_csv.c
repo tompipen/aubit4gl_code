@@ -1,5 +1,6 @@
 #include <stdio.h>
 #define  _NO_WINDOWS_H_
+#define NOSTRCPYMAP
 #include "a4gl_libaubit4gl.h"
 #include "../common/csv_io.h"
 #include "../../common/a4gl_lle.h"
