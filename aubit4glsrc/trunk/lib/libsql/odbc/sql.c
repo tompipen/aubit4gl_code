@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.132 2005-07-19 11:06:30 mikeaubury Exp $
+# $Id: sql.c,v 1.133 2005-07-26 13:56:00 mikeaubury Exp $
 #
 */
 
@@ -68,6 +68,7 @@ static int find_extras(void *id) ;
 static void free_extra(void *id) ;
 static void set_extra_data(void *id,int in_out,int position, int data,void *val) ;
 static int setup_extras(void *id) ;
+void * A4GL_bind_decimal (void *ptr_to_decimal);
 
 #ifdef DATE_AS_CHAR
 	int date_as_char=1;
@@ -3132,7 +3133,7 @@ int
 ODBC_exec_prepared_sql (SQLHSTMT hstmt)
 {
   int rc;
-  int nresultcols;
+  //int nresultcols;
 
 #ifdef DEBUG
   A4GL_debug ("In exec_prepared_sql");
@@ -4286,7 +4287,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 {
   int bind_counter;
   int zz;
-  int ncols;
+  // int ncols;
   ACLDATE *date1;
   ACLDTIME *dt1;
   ACLIVAL *iv1;
