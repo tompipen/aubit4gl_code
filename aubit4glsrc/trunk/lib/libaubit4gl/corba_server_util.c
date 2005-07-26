@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.16 2005-07-21 16:52:35 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.17 2005-07-26 15:47:08 mikeaubury Exp $
 #
 */
 
@@ -334,26 +334,6 @@ char *A4GL_strcat(char *dest,char *src,char *f,int l,int sd) {
 	strcat(dest,src);
 
 
-#ifdef DEBUG
-{
-// This just adds some debugging stuff - but this 
-// isn't applicable when called from the routines in dmy.c 
-// as they put some funny characters in the string as placeholders
-//
-	if (strcmp(f,"dmy.c")==0) return dest;
-
-
-// Quick - is it big ?
-	if (lsrc>255) {
-		char buff[3000];
-		strncpy(buff,src,2999);
-		buff[2999]=0;
-		A4GL_debug("Long string : %s\n",buff);
-	}
-
-}
-#endif
-	
 	return dest;
 }
 
