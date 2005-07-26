@@ -481,3 +481,12 @@ acl_realloc_full (void *a, long b, char *r, char *f, int l)
 
 
 
+
+
+#ifdef strcat
+#undef strcat
+#endif
+
+char *A4GL_strcat(char *a,char *b,char *f,int l,int sd) {
+	return strcat(a,b);
+}
