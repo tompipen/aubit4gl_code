@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.145 2005-07-19 19:16:39 mikeaubury Exp $
+# $Id: esql.ec,v 1.146 2005-07-26 06:22:42 mikeaubury Exp $
 #
 */
 
@@ -82,7 +82,7 @@ int A4GL_dttoc (void *a, void *b, int size);
 #define _SQLCA_DEFINED_
 #include  <sqltypes.h>
 #include <string.h>
-#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,sizeof(d))
+//#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,sizeof(d))
 static void copy_sqlca_Stuff(int warnings) ;
 
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.145 2005-07-19 19:16:39 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.146 2005-07-26 06:22:42 mikeaubury Exp $";
 #endif
 
 
@@ -4410,7 +4410,7 @@ int i;
   if (sqlca.sqlcode==0) {
 
   if (type==5) { return udesc->sqld; }
-  if (type==6) { 0; } // How many rows ?
+  if (type==6) { return 0; } // How many rows ?
 
   if (type==0) { return udesc->sqlvar[colno-1].sqltype;}
   if (type==1) { return (long)udesc->sqlvar[colno-1].sqlname;}

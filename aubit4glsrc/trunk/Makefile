@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.21 2005-03-31 13:33:35 afalout Exp $
+# $Id: Makefile,v 1.22 2005-07-26 06:21:37 mikeaubury Exp $
 #
 
 ## ==================================================================
@@ -608,9 +608,9 @@ clean.etc:
 #Note anymore - renamed to incl/a4gl_exdata.h apparently
 clean.incl:
 	${RM} incl/*.bak incl/\#* incl/*~
-	${RM} incl/a4gl_API_esql.h incl/a4gl_API_msg_lib.h \
+	${RM} incl/a4gl_API_esql.h  \
 	incl/a4gl_API_esql_lib.h incl/a4gl_API_packer.h \
-	incl/a4gl_API_packer_lib.h incl/a4gl_API_msg.h \
+	incl/a4gl_API_packer_lib.h  \
 	incl/a4gl_API_exreport.h incl/a4gl_API_rpc.h \
 	incl/a4gl_API_exreport_lib.h  incl/a4gl_API_rpc_lib.h \
 	incl/a4gl_API_form.h incl/a4gl_API_sql.h \

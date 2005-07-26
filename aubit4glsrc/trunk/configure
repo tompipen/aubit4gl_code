@@ -10346,7 +10346,7 @@ AMAKE_INCL_FILES="header.mki footer.mki footer2.mki footer-c.mki a4gl.mk \
 #TODO: check that all of this is reallu needed in bynary installations:
 ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
         a4gl_exdata.h a4gl_API_exreport.h a4gl_API_form.h a4gl_API_help.h \
-		a4gl_API_menu.h a4gl_API_msg.h a4gl_API_rpc.h a4gl_API_sql.h a4gl_API_ui.h \
+		a4gl_API_menu.h a4gl_API_rpc.h a4gl_API_sql.h a4gl_API_ui.h \
 		a4gl_API_sqlparse.h a4gl_API_esql.h a4gl_incl_infx.h \
 		a4gl_API_esql.h a4gl_incl_infx.h \
 		a4gl_esql.h a4gl_esql_infx.h a4gl_esql_postgres.h \
@@ -33790,7 +33790,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 33792 "configure"' > conftest.$ac_ext
+  echo '#line 33793 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -34346,7 +34346,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 34348 "configure"
+#line 34349 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -34444,7 +34444,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 34446 "configure"
+#line 34447 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -39651,7 +39651,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.324 2005-07-15 20:12:21 whaslbeck Exp $
+| $Id: configure,v 1.325 2005-07-26 06:21:37 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

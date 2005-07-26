@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.183 2005-07-23 09:00:01 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.184 2005-07-26 06:22:42 mikeaubury Exp $
 #
 */
 
@@ -1575,7 +1575,7 @@ int A4GL_conversion_ok(int a);
 #ifndef SIMPLIFIED
  #include "../common/dataio/form_x.x.h"        /* struct_form */
 #else
- #include "generated/form_x.x.h"       /* struct_form */
+ #include "form_x.x.h"       /* struct_form */
 #endif
 
 

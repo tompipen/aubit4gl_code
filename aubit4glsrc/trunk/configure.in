@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.297 2005-07-15 20:13:26 whaslbeck Exp $
+dnl # $Id: configure.in,v 1.298 2005-07-26 06:22:06 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2175,12 +2175,12 @@ AMAKE_INCL_FILES="header.mki footer.mki footer2.mki footer-c.mki a4gl.mk \
 #TODO: check that all of this is reallu needed in bynary installations:
 ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
         a4gl_exdata.h a4gl_API_exreport.h a4gl_API_form.h a4gl_API_help.h \
-		a4gl_API_menu.h a4gl_API_msg.h a4gl_API_rpc.h a4gl_API_sql.h a4gl_API_ui.h \
+		a4gl_API_menu.h a4gl_API_rpc.h a4gl_API_sql.h a4gl_API_ui.h \
 		a4gl_API_sqlparse.h a4gl_API_esql.h a4gl_incl_infx.h \
 		a4gl_API_esql.h a4gl_incl_infx.h \
 		a4gl_esql.h a4gl_esql_infx.h a4gl_esql_postgres.h \
 		a4gl_esql_ingres.h \
-		a4gl_memhandling"
+		a4gl_memhandling.h"
 		
 		
     COUNTER=0
@@ -9122,7 +9122,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.297 2005-07-15 20:13:26 whaslbeck Exp $
+| $Id: configure.in,v 1.298 2005-07-26 06:22:06 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
