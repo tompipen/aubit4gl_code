@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.9 2004-12-07 01:43:56 afalout Exp $
+# $Id: Makefile,v 1.10 2005-07-26 16:20:18 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -148,5 +148,5 @@ show:
 ## ==================================================================
 
 clean:
-	${RM} *.o ${ROOT}/bin/layout_engine API_layout.h API_layout.c *.dll.a *~
+	${RM} *.o ${ROOT}/bin/layout_engine API_layout.h API_layout.c *.dll.a *~  ../common/a4gl_lle.o
 	

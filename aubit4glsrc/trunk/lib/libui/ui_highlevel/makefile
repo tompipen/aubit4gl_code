@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.43 2005-05-22 12:42:36 mikeaubury Exp $
+# $Id: makefile,v 1.44 2005-07-26 16:20:18 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -356,7 +356,7 @@ show:
 
 clean: clean.capi
 	${RM} *${SO_EXT} *.o *.bak testit API_lowlevel.c API_lowlevel.h \
-	lowlevel/*.bak a4gl_API_lowlevel.h
+	lowlevel/*.bak a4gl_API_lowlevel.h remote_client/*.o
 
 ## ==================================================================
 ##                     CORBA/ORBit settings

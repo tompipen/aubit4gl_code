@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2005-03-07 14:53:03 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2005-07-26 16:17:04 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -61,7 +61,7 @@ channel.o: channel.4gl
 ## ==================================================================
 
 clean:
-	${RM} *.out *.c *.${FGLC_OUTPUT_EXT} *.h *${SO_EXT} *.err *.bak *.glb \
+	${RM} *.out *.c *.${FGLC_OUTPUT_EXT} *.h *${SO_EXT} *.err *.bak *.glb *.o *.ao \
 	*.h ${ALL} *.stackdump
 
 # ============================== EOF ================================

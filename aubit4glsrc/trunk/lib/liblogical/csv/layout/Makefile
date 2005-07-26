@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.9 2004-12-13 01:55:33 afalout Exp $
+# $Id: Makefile,v 1.10 2005-07-26 16:20:18 mikeaubury Exp $
 #
 
 LIBROOT		=../../..
@@ -136,6 +136,6 @@ show:
 ## ==================================================================
 
 clean:
-	${RM} *.o ${LIBROOT}/libLOGREP_CSV${SO_EXT} *.dll.a *~
+	${RM} *.o ${LIBROOT}/libLOGREP_CSV${SO_EXT} *.dll.a *~ ../common/csv_io.o
 	
 	

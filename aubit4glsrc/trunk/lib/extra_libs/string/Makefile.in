@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2005-03-07 14:53:04 mikeaubury Exp $
+# $Id: Makefile.in,v 1.10 2005-07-26 16:20:17 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -56,6 +56,6 @@ libstring.o: libstring.4gl
 	export A4GL_OBJ_EXT=.o; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} -c ${VERBOSE_FLAG} $^
 
 clean:
-	${RM} *.out *.c *.${FGLC_OUTPUT_EXT} *.h *${SO_EXT} *.err *.bak *.glb *.h ${ALL} *.stackdump
+	${RM} *.out *.c *.${FGLC_OUTPUT_EXT} *.h *${SO_EXT} *.err *.bak *.glb *.h ${ALL} *.stackdump *.o *.ao
 
 #============================== EOF =================================
