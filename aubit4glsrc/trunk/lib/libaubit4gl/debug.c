@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.45 2005-07-22 13:23:24 mikeaubury Exp $
+# $Id: debug.c,v 1.46 2005-07-27 08:55:52 mikeaubury Exp $
 #
 */
 
@@ -41,12 +41,11 @@
 */
 
 
+#define NOSTRCPYMAP
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
 extern sqlca_struct a4gl_sqlca;
-#ifdef strcpy
-#undef strcpy
-#endif
+
 /*
 =====================================================================
                     Constants definitions
