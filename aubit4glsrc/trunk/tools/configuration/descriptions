@@ -673,6 +673,21 @@ A4GL_INCOMPAT_AT_RUNTIME COMPILE Allow incompatible statements at compile-time, 
 	Default is to abort with error on compile-time (when target 
 	database is known at compile time, which is tipically only when
 	using A4GL_LEXTYPE=EC)
+INFORMIXOPTIONS UI Use informix case matching for NEXT OPTION/SHOW OPTION/HIDE OPTION
+=YES|NO
+	This is the default setting for case options. Informix seems to be case sensitive
+	for NEXT OPTION, but case insensitive for SHOW OPTION and HIDE OPTION
+	Using this setting will emulate this behaviour
+CASEOPTIONS UI Always use case when matching for NEXT OPTION/SHOW OPTION/HIDE OPTION
+=YES|NO
+	This setting will ensure a case sensitive match for all the menu operations
+	This is the default behaviour for NEXT OPTION under informix, SHOW and HIDE option
+	seem to be case insenitive on informix
+CASEIGNOPTIONS Never use case when matching for NEXT OPTION/SHOW OPTION/HIDE OPTION
+=YES|NO
+	This setting will ensure a case insensitive match for all the menu operations
+	This is the default behaviour for SHOW/HIDE OPTION under informix, NEXT OPTION
+	seem to be case senitive on informix
 EMAIL_RECIPIENT UNKNOWN UNKNOWN
 FGLFRMCOMPILE UNKNOWN UNKNOWN
 FIRSTCOL_ONERR_INCL UNKNOWN UNKNOWN

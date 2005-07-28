@@ -786,7 +786,7 @@ IF lv_from="4GL"  THEN
 			END IF
 		OTHERWISE
 			display "Unhandled compilation : FROM=",lv_from," TO=",lv_to," for ",lv_fname
-			if mv_noerrcode then
+			if mv_noerrcode=0 then
 				exit program 2
 			else
 				exit program 
@@ -834,7 +834,7 @@ END IF
 
 display "Unhandled Compile ",lv_fname clipped," From ",lv_from," to ",lv_to
 
-if mv_noerrcode then
+if mv_noerrcode=0 then
 	exit program 2
 else
 	exit program 
@@ -882,7 +882,7 @@ end if
 if lv_n !=1 then
 	exit program 0
 else
-	if mv_noerrcode then
+	if mv_noerrcode=0 then
 		exit program 2
 	else
 		exit program 
@@ -1018,6 +1018,7 @@ if mv_verbose>=2 then
 end if
 
 run lv_runstr clipped returning lv_status
+
 call check_exit_status(lv_status,lv_fname,lv_runstr)
 
 end function
@@ -1064,7 +1065,7 @@ if mv_show_errtail then
 	call tail_file(mv_errfile,12);
 end if
 
-if mv_noerrcode then
+if mv_noerrcode=0 then
 	exit program p_status
 else
 	exit program

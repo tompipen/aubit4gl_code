@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.67 2005-07-21 08:17:36 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.68 2005-07-28 08:26:41 mikeaubury Exp $
 #
 */
 
@@ -791,6 +791,38 @@ A4GL_make_downshift (char *s)
     {
       s[a] = tolower (s[a]);
     }
+}
+/**
+ * Check a menu option for a match against a 'NEXT OPTION', 'SHOW OPTION', or 'HIDE OPTION'
+ * This is important because Informix does a non-case sensitive match for SHOW/HIDE, but a case
+ * sensitive match for 'next option'. Here we try to accomodate this behaviour - as well as the 
+ * two other possible ways of matching...
+ *
+ * @param a menu option to match
+ * @param b string to match against
+ * @param why  either MENU_COMPARE_SHOWHIDE or MENU_COMPARE_NEXT_OPTION
+ * @return whether the options match...
+ */
+int A4GL_menu_opts_compare(char *a,char *b,int why) {
+	static int option_type=0;
+
+	if (option_type==0) {
+		if (A4GL_env_option_set("INFORMIXOPTIONS")&&option_type==0) 	{ option_type=1; }
+		if (A4GL_env_option_set("CASEOPTIONS")&&option_type==0) 	{ option_type=2; }
+		if (A4GL_env_option_set("CASEIGNOPTIONS")&&option_type==0) 	{ option_type=3; }
+		if (option_type==0) option_type=1;
+	}
+
+
+	if (option_type==1) { // Sensitive only for next option
+			if (why==MENU_COMPARE_SHOWHIDE) { return A4GL_aubit_strcasecmp(a,b); }
+			return strcmp(a,b);
+	}
+
+	if (option_type==2) { return strcmp(a,b); } // Always sensitive
+
+	if (option_type==3) { return A4GL_aubit_strcasecmp(a,b); } // never sensitive
+
 }
 
 /* ============================== EOF ========================== */

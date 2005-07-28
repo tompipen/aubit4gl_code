@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.184 2005-07-26 06:22:42 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.185 2005-07-28 08:25:10 mikeaubury Exp $
 #
 */
 
@@ -355,6 +355,10 @@
 #define F11 			KEY_F(11)
 #define F12 			KEY_F(12)
 #define MENU_ALL 		"_AlL_"
+
+#define MENU_COMPARE_SHOWHIDE 1
+#define MENU_COMPARE_NEXT_OPTION 2
+
   /* Datasave */
 #define DATAVER 		1
 
@@ -2033,7 +2037,7 @@ struct s_field_name_list {
 };
 void A4GL_gen_field_slist( struct s_field_name_list *list, va_list *ap);
 
-
+int A4GL_menu_opts_compare(char *a,char *b,int why);
 int A4GL_menu_hide (ACL_Menu * menu, ...);
 int A4GL_menu_show (ACL_Menu * menu, ...);
 void A4GL_set_scrmode (char a);

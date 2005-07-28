@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.61 2005-07-15 13:26:49 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.62 2005-07-28 08:26:42 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -374,6 +374,7 @@ UILIB_A4GL_next_option (void *vmenu, char *nextopt)
 {
   int a;
   int f = 0;
+  int matches=0;
   ACL_Menu_Opts *option;
   ACL_Menu_Opts *old_option;
   char s[256];
@@ -391,9 +392,10 @@ UILIB_A4GL_next_option (void *vmenu, char *nextopt)
 
       A4GL_debug ("Testing '%s' = '%s'", s, nextopt);
 
-      if (strcmp (s, nextopt) == 0)
+      if (A4GL_menu_opts_compare (s, nextopt,MENU_COMPARE_NEXT_OPTION) == 0)
 	{
 	  f = 1;
+	  matches++;
 	  menu->curr_option = option;
 	  break;
 	}
@@ -411,13 +413,9 @@ UILIB_A4GL_next_option (void *vmenu, char *nextopt)
       *ptr = 0;
     }
   //A4GL_gui_setfocus ((int) menu->curr_option);
-
+if (matches==0) { A4GL_exitwith("The NEXT OPTION name is not in the menu"); }
   A4GL_display_menu (menu);
-  if (menu->gw_x < 0)
-    {
-      char *ptr = 0;
-      *ptr = 0;
-    }
+  A4GL_assertion(menu->gw_x < 0, "Corruption in menu->gw_x");
 }
 
 
@@ -458,6 +456,7 @@ A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap)
   A4GL_debug ("Menu attrib %d\n", attr);
   while ((argp = va_arg (*ap, char *)))
     {
+      int matches=0;
       A4GL_trim (argp);
       A4GL_debug ("change attrib to %d of %s", attr, argp);
       option = (ACL_Menu_Opts *) menu->first;
@@ -470,10 +469,10 @@ A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap)
 	  A4GL_debug ("trim %s", s);
 	  flg = 0;
 
-	  if (strcmp (argp, MENU_ALL) != 0)
+	  if (strcmp(argp, MENU_ALL) != 0)
 	    {
 	      A4GL_debug ("Cmp '%s' to '%s'", s, argp);
-	      if (strcmp (s, argp) == 0)
+	      if (A4GL_menu_opts_compare (s, argp,MENU_COMPARE_SHOWHIDE) == 0)
 		{
 		  A4GL_debug ("Cmpok\n");
 		  flg = 1;
@@ -488,6 +487,7 @@ A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap)
 
 	  if (flg == 1)
 	    {
+		    matches++;
 	      A4GL_debug ("   FOund it : %s , %s (%x) %d", s, argp,
 			  option->attributes & ACL_MN_HIDE, attr);
 	      if (attr)
@@ -516,6 +516,14 @@ A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap)
 	    (ACL_Menu_Opts *) ((ACL_Menu_Opts *) (option))->next_option;
 	  A4GL_debug ("set next");
 	}
+
+        if (matches==0) {
+                // Informix doesn't seem to mind - so we'll need a switch
+                // to force an error...
+                if (A4GL_env_option_set("ERRBADOPTION")) {
+                                  A4GL_exitwith("Menu option not found");
+                }
+        }
     }
   A4GL_debug ("f1");
   A4GL_find_shown (menu, 0, 1);
@@ -544,7 +552,6 @@ A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap)
       //*ptr = 0;
     }
   A4GL_debug ("f4");
-
   va_end (*ap);
 
 }
