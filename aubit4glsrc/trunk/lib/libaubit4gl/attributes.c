@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.35 2005-07-15 18:28:07 mikeaubury Exp $
+# $Id: attributes.c,v 1.36 2005-07-28 10:11:39 mikeaubury Exp $
 #*/
 
 /**
@@ -364,7 +364,11 @@ A4GL_get_attr_from_string (char *s)
     return AUBIT_ATTR_INVISIBLE;
   if (A4GL_aubit_strcasecmp (s, "LEFT") == 0)
     return AUBIT_ATTR_LEFT;
-  printf ("Unknown attribute : %s\n", s);
+
+
+  A4GL_debug ("Unknown attribute : %s\n", s);
+  A4GL_exitwith("Unknown attribute");
+
   return -1;
 }
 

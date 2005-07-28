@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.76 2005-07-21 12:37:40 mikeaubury Exp $
+# $Id: report.c,v 1.77 2005-07-28 10:11:39 mikeaubury Exp $
 #
 */
 
@@ -416,8 +416,6 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int want_nl, int right_
   int b;
   int cnt;
   char *str;
-  //if (a==0&&s==1) return;
-//printf("rep_print called : %d %d %d\n",a,s,entry);
   A4GL_debug
     ("In A4GL_rep_print rep=%p rep->report=%p Page=%d Line=%d Col=%d entry=%d",
      rep, rep->report, rep->page_no, rep->line_no, rep->col_no, entry);
@@ -558,7 +556,6 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int want_nl, int right_
 	  A4GL_assertion (1,"Internal error - no report function");
 	  A4GL_fgl_die (10);
 	}
-      //fprintf(rep->output,"FORCE HEADER1 %d\n",entry);
       rep->report (0, REPORT_PAGEHEADER);	/* report.c:180: too many arguments to function */
       rep->print_section = 0;
       A4GL_debug ("Done page header");
@@ -714,7 +711,6 @@ A4GL_need_lines (struct rep_structure *rep)
       (rep->page_length - rep->bottom_margin - a - rep->lines_in_trailer))
     {
 
-//printf("NEED\n");
       A4GL_skip_top_of_page (rep, 2);
     }
 }
@@ -1314,46 +1310,11 @@ print_report_block_end (struct rep_structure *rep, int rb)
 
 }
 
-/*
-int A4GL_push_report_print_entry(struct rep_structure *rep, int lineno, int rb, int entry) {
-  if (rep->output_mode=='C') {
-  	if (A4GL_isyes(acl_getenv("TRACE_AS_TEXT"))) {
-		//print_lvl(rep,lvl);
-		//fprintf(rep->output,"<ACL_REPORT_PRINT_ENTRY lineno=%d block=%d entry=%d>\n",lineno,rb,entry);
-   	} else {
-		//report_write_entry(rep,ENTRY_ENTRY_START);
-		//report_write_int(rep,lineno);
-		//report_write_int(rep,rb);
-		//report_write_int(rep,entry);
-   	}
-   }
-  //lvl++;
-return rb;
-}
-
-int A4GL_pop_report_print_entry(struct rep_structure *rep, int rb, int entry) {
-  //lvl--;
-  if (rep->output_mode=='C') {
-  	if (A4GL_isyes(acl_getenv("TRACE_AS_TEXT"))) {
-		//print_lvl(rep,lvl);
-		//fprintf(rep->output,"</ACL_REPORT_PRINT_ENTRY block=%d entry=%d>\n",rb,entry);
-   	} else {
-		//report_write_entry(rep,ENTRY_ENTRY_END);
-		//report_write_int(rep,rb);
-		//report_write_int(rep,entry);
-   	}
-   }
-
-return 1;
-}
-*/
-
 
 int
 A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname,
 			  int lineno, char where, char *why, int rb)
 {
-/*printf("mod=%s where=%c why=%s\n",mod,where,why); */
   if (rep->output_mode == 'C')
     {
       print_report_block_start (rep, mod, repname, lineno, where, why, rb);
@@ -1568,7 +1529,6 @@ A4GL_convert_report (struct rep_structure *rep, char *ofile,
 
   if (to_pipe == 2)
     {
-      //printf("Sending %s\n",ofile);
       email_report (ofile, otype);
     }
 

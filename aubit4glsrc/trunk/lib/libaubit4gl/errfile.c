@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.20 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: errfile.c,v 1.21 2005-07-28 10:11:39 mikeaubury Exp $
 #
 */
 
@@ -102,7 +102,7 @@ A4GL_write_errfile (FILE * f, char *fname, long as, int lineno)
   fout = A4GL_mja_fopen (fname, "w");
   if (fout == 0)
     {
-      printf ("Unable to open %s\n", fname);
+      PRINTF ("Unable to open %s\n", fname);
       A4GL_fgl_die (2);
     }
   //errorno = ferror (f);
@@ -244,7 +244,7 @@ int maxed=0;
   fout = A4GL_mja_fopen (errfile, "w");
   if (fout == 0)
     {
-      printf ("Unable to open %s\n", errfile);
+      PRINTF ("Unable to open %s\n", errfile);
       A4GL_fgl_die (2);
     }
     rewind(fin);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.28 2005-07-15 08:09:20 mikeaubury Exp $
+# $Id: error.c,v 1.29 2005-07-28 10:11:39 mikeaubury Exp $
 #
 */
 
@@ -123,8 +123,13 @@ int a;
 		cache_status = (errors[a].a4gl_errno + 30000);
 		A4GL_debug ("Setting statusno");
 		cache_statusno = a;
+
+
 		return;
-		printf ("Error:\n %s \nSTOP\n ", s);
+
+
+#ifdef DEAD_CODE
+		PRINTF ("Error:\n %s \nSTOP\n ", s);
 		A4GL_debug ("Exiting program.");
 		if (errors[a].a4gl_errno == 0) {
 			//shoud never exit here with 0 - we got an error!
@@ -132,6 +137,9 @@ int a;
 		} else {
 			A4GL_fgl_die (errors[a].a4gl_errno);
 		}
+#endif
+
+
 	  }
   }
 
@@ -174,7 +182,7 @@ A4GL_exitwith_sql (char *s)
    */
 
   return;
-  printf ("Error: %s\n", s);
+
   #ifdef DEBUG
   	A4GL_debug ("About to exit with code %d %d", errors[a].a4gl_errno,errors[cache_statusno].a4gl_errno);
   #endif

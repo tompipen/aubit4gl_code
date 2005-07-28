@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.61 2005-07-22 13:23:24 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.62 2005-07-28 10:11:40 mikeaubury Exp $
 #
 */
 
@@ -614,7 +614,7 @@ SPRINTF2(s,"%s.%s",t,c);
 sv[511]=0;
 A4GL_debug("Alias : '%s'\n",s);
 
-printf("Alias ? %s %s %s %x\n",t,c,v,dtype);
+A4GL_debug("Alias ? %s %s %s %x\n",t,c,v,dtype);
 
 if (A4GLSQLCV_check_requirement("OMIT_SERIAL_COL_FROM_INSERT") && dtype==DTYPE_SERIAL) {
 	return "";
@@ -703,7 +703,7 @@ snprintf(sv,512,"%s.%s.%s",t,c,v);
 sv[511]=0;
 A4GL_debug("Alias : '%s'\n",s);
 
-printf("Alias ? %s %s %s %x\n",t,c,v,dtype);
+A4GL_debug("Alias ? %s %s %s %x\n",t,c,v,dtype);
 
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_VALUE) {
@@ -1137,7 +1137,7 @@ int A4GL_cv_str_to_func (char *p, int len)
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
 
 
-printf("Unknown : %s\n",p);
+PRINTF("Unknown : %s\n",p);
   return 0;
 }
 
@@ -1729,7 +1729,6 @@ int b;
 //static char buff[200];
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE_SQLCONST) {
-		printf("%s %s\n",s,conversion_rules[b].data.from);
 		if (A4GL_aubit_strcasecmp(s,conversion_rules[b].data.from)==0) {
 			char *to;
 			if (conversion_rules[b].data.to[0]=='$') {
@@ -1770,7 +1769,6 @@ SPRINTF2(buff,"%s(%s)",f,param);
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE_SQLFUNC) {
 		if (A4GL_aubit_strcasecmp(f,conversion_rules[b].data.from)==0) {
-			//printf("Here...\n");
 			SPRINTF1(buff,conversion_rules[b].data.to,param);
 			break;
 		}

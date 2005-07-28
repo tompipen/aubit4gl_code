@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.133 2005-07-19 11:06:28 mikeaubury Exp $
+# $Id: stack.c,v 1.134 2005-07-28 10:11:40 mikeaubury Exp $
 #
 */
 
@@ -594,9 +594,7 @@ A4GL_debug("pop_param");
   	if (A4GL_isnull(d1,ptr1)) {
 		A4GL_conversion_ok(1);
 		A4GL_debug("Isnull\n");
-		//char *ptr=0;if (d1!=0) *ptr=0;
 		A4GL_setnull(d&DTYPE_MASK,p,size);
-		//printf("Setnull %d %p %d %p %d",d1,s1,d,p,size);
 		b=1;
   	} else {
 		//A4GL_debug("Doing conv");
@@ -650,13 +648,10 @@ void
 A4GL_pop_params (struct BINDING *b, int n)
 {
   int a;
-//printf("POP PARAMS ---------------------------------\n");
   for (a = n - 1; a >= 0; a--)
     {
-	//printf("pop : %d %p %x %d\n",a,b[a].ptr,b[a].dtype,b[a].size);
       A4GL_pop_param (b[a].ptr, b[a].dtype, b[a].size);
     }
-//printf("END POP PARAMS ---------------------------------\n");
 }
 
 /**
@@ -1456,7 +1451,6 @@ A4GL_debug("51 Have data");
     case OP_DIV:
       if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
-      //printf("push_double (%lf)\n",doubleb/doublea);
       A4GL_push_double (doubleb / doublea);
       break;
 
@@ -1487,9 +1481,8 @@ A4GL_push_user (void)
   a = getuid ();
   p = getpwuid (a);
 #else
-  printf ("FIXME: no getuid() / getpwuid() on MinGW\n");
+  PRINTF ("FIXME: no getuid() / getpwuid() on MinGW\n");
 #endif
-  //printf ("User=%s\n", p->pw_name);
   A4GL_push_char (p->pw_name);
 }
 
@@ -1630,21 +1623,9 @@ A4GL_push_current (int a, int b)
   int ptrs2[] = { -1, 3, 6, 9, 12, 15, 18, 21, 22, 23, 24, 25, 26 };
   int pstart;
   struct timeval tv1;
-//struct timeval tv2;
-//long fracs;
 
 
-  //debug("push_current %d %d\n",a,b);
-/*  setlocale(LC_ALL,""); */
-  //debug ("In push_current");
-
-//#ifndef __MINGW32__
   gettimeofday (&tv1, 0);
-//#else
-//    printf ("FIXME: no gettimeofday on Windows\n");
-//#endif
-  //(void) time (&now);
-  //debug ("Called time...");
   local_time = localtime (&tv1.tv_sec);
   year = local_time->tm_year + 1900;
   month = local_time->tm_mon + 1;
@@ -1661,18 +1642,12 @@ A4GL_push_current (int a, int b)
 	   /* , 0 */
 	   /* no support for fractions of a second yet */
     );
-  //printf("--2>%s\n",buff);
   buff[27] = 0;
-  //printf("--3>%s\n",buff);
   A4GL_debug ("Time is %s", A4GL_null_as_null(buff));
-  //debug ("a=%d b=%d ",a,b);
   pstart = ptrs2[b] + 1;
-  //debug("pstart=%d buff=%s\n",pstart,buff);
   buff[pstart] = 0;
 
-//debug("Set buff to %s\n",buff);
   strcpy (buff2, &buff[ptrs[a]]);
-  //printf("-->%s\n",buff2);
 
   n = (a << 4) + b;
 
@@ -1979,7 +1954,7 @@ return;
 void A4GL_debug_print_stack_simple(char *msg) {
 char buff[20];
 int a;
-printf("* Stack has : %d entries --- %s\n",params_cnt,msg);
+PRINTF("* Stack has : %d entries --- %s\n",params_cnt,msg);
   for (a = 0; a < params_cnt; a++)
     {
 
@@ -1991,7 +1966,7 @@ printf("* Stack has : %d entries --- %s\n",params_cnt,msg);
 
 
 	A4GL_debug("*    %d %p %s",params[a].dtype&DTYPE_MASK,params[a].ptr,A4GL_null_as_null(buff));
-	printf("*    %d %p %s\n",params[a].dtype&DTYPE_MASK,params[a].ptr,A4GL_null_as_null(buff));
+	PRINTF("*    %d %p %s\n",params[a].dtype&DTYPE_MASK,params[a].ptr,A4GL_null_as_null(buff));
 
     }
 
@@ -2009,13 +1984,12 @@ print_stack (void)
   int a;
   char *buff;
   buff = A4GL_new_string (20);
-  printf ("\n\n\n\n\n\n\n\n\n");
-  printf ("Call stack has %d entries:\n", params_cnt);
+  PRINTF ("\n\n\n\n\n\n\n\n\n");
+  PRINTF ("Call stack has %d entries:\n", params_cnt);
   for (a = 0; a < params_cnt; a++)
     {
       A4GL_conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, 8);
-      /* int A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size); */
-      printf (" %d Dtype (%d) %s\n", a, params[a].dtype & DTYPE_MASK, buff);
+      PRINTF (" %d Dtype (%d) %s\n", a, params[a].dtype & DTYPE_MASK, buff);
     }
 }
 
@@ -2345,7 +2319,7 @@ A4GL_setnull (int type, void *vbuff, int size)
 
 
 if (type>255) {
-	printf("Bad..: %d %x\n",type,type);
+	PRINTF("Bad..: %d %x\n",type,type);
 	A4GL_assertion(1,"expecting type <= 255 + a size"); 
 }
 
@@ -2695,15 +2669,12 @@ A4GL_set_init (struct BINDING *b, int n)
 static int ln;
   int a;
   ln=n;
-  //printf("set init : n=%d\n",n);
   for (a = 0; a < n; a++)
     {
-  //printf("set init : a=%d\n",a);
 	if (n!=ln||n>10000||a>=n||a>=ln) {
-		printf("n=%d ln=%d\n",n,ln);
+		PRINTF("n=%d ln=%d\n",n,ln);
 		A4GL_assertion(1,"internal corruption");
 	}
-      //printf("calling A4GL_setnull (%d,%p,%d);\n",b[a].dtype, (char *) b[a].ptr, b[a].size);
 
       A4GL_setnull (b[a].dtype, (char *) b[a].ptr, b[a].size);
     }
@@ -2906,8 +2877,6 @@ dif_add_bind_smint (struct bound_list *list, int a)
 void
 dif_add_bind_smint_ptr (struct bound_list *list, short *a)
 {
-  //printf ("a=%p", a);
-  //printf ("*a=%x\n", *a);
   dif_add_bind (list, a, DTYPE_SMINT, 0);
 }
 
@@ -2919,8 +2888,6 @@ dif_add_bind_smint_ptr (struct bound_list *list, short *a)
 void
 dif_add_bind_dbl_ptr (struct bound_list *list, double *a)
 {
-  //printf ("a=%p", a);
-  //printf ("*a=%f\n", *a);
   dif_add_bind (list, a, DTYPE_FLOAT, 0);
   *a = 3.142;
 }
@@ -3228,7 +3195,7 @@ to be debugged...
 
 */
 void A4GL_pause_execution(void) {
-	printf("--->\n");
+	PRINTF("--PAUSE EXECUTION->\n");
 }
 
 void a4gl_upshift(char *s) {

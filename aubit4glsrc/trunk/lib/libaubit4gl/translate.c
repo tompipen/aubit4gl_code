@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.21 2005-07-21 08:17:36 mikeaubury Exp $
+# $Id: translate.c,v 1.22 2005-07-28 10:11:40 mikeaubury Exp $
 #
 */
 
@@ -148,7 +148,7 @@ A4GL_make_trans_list (void)
 
   if (file == 0)
     {
-      printf ("Warning: Unable to locate translation file\n");
+      PRINTF ("Warning: Unable to locate translation file\n");
       return;
     }
 

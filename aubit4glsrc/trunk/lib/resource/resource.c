@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.107 2005-07-15 18:28:09 mikeaubury Exp $
+# $Id: resource.c,v 1.108 2005-07-28 10:11:40 mikeaubury Exp $
 #
 */
 
@@ -57,7 +57,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-//#define DEBUG_VARIABLE_USAGE
+#define DEBUG_VARIABLE_USAGE
 
 #if (defined (__MINGW32__))
 #ifndef _AUBITETC_
@@ -693,7 +693,7 @@ if (ptr)  {
 			ptr=(char *)cumulated_string;
         	}
 		if (strlen(cumulated_string)>=sizeof(cumulated_string)) {
-			printf("Ran out of space - sorry - not enough space to generate a full '%s'\n",s);
+			PRINTF("Ran out of space - sorry - not enough space to generate a full '%s'\n",s);
 			exit(1);
 		}
     } else {
@@ -1265,15 +1265,15 @@ A4GL_dump_all_resource_vars (int export)
 
   res = builtin_resource;
   if (!export)
-    printf ("Built-in resources:\n");
+    PRINTF ("Built-in resources:\n");
   for (a = 0; strlen (res[a].name) != 0; a++)
     {
       if (!export)
-	printf ("  %s=%s\n", res[a].name, res[a].value);
+	PRINTF ("  %s=%s\n", res[a].name, res[a].value);
       else
 	{
 	  if (getenv (res[a].name))
-	    printf ("export %s='%s'\n", res[a].name,
+	    PRINTF ("export %s='%s'\n", res[a].name,
 		    acl_getenv (res[a].name));
 	}
     }
@@ -1283,16 +1283,16 @@ A4GL_dump_all_resource_vars (int export)
   if (res)
     {
       if (!export)
-	printf ("User resources :\n");
+	PRINTF ("User resources :\n");
       for (a = 0; strlen (res[a].name) != 0; a++)
 	{
 	  if (!export)
-	    printf ("  %s=%s\n", res[a].name, res[a].value);
+	    PRINTF ("  %s=%s\n", res[a].name, res[a].value);
 	  else
 	    {
 	      if (getenv (res[a].name))
 		{
-		  printf ("export %s='%s'\n", res[a].name,
+		  PRINTF ("export %s='%s'\n", res[a].name,
 			  acl_getenv (res[a].name));
 		}
 	    }

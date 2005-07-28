@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.33 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: load.c,v 1.34 2005-07-28 10:11:39 mikeaubury Exp $
 #
 */
 
@@ -331,7 +331,6 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 
       A4GLSQL_execute_sql ("load", cnt, ibind);
 
-	//printf("EXECUTE : %d %d\n",lineno,a4gl_status);
 
       if (a4gl_status != 0 || A4GL_get_a4gl_sqlca_sqlcode()!=0)
 	{

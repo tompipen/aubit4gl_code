@@ -95,12 +95,10 @@ void A4GL_start_monitor (void)
       A4GL_exitwith ("Unable to start TCP session");
     }
 
-  printf("Waiting on port : %d for monitor\n",port);
+  PRINTF("Waiting on port : %d for monitor\n",port);
   sock = A4GL_get_connection (SOCK_STREAM, port, &listensock);
-  printf("Got connection\n");
   if (A4GL_sock_puts (sock, "INIT\n")) connected = 1;
   else connected=0;
-  printf("Connected=%d\n",connected); sleep (1);
 }
 
 void
@@ -211,7 +209,7 @@ A4GL_get_connection (int socket_type, u_short port, int *listener)
 
   memset ((char *) &address, 0, sizeof (address));
   address.sin_family = AF_INET;
-	printf("Port now : %d\n",port);
+	PRINTF("Port now : %d\n",port);
   address.sin_port = port;
   address.sin_addr.s_addr = htonl (INADDR_ANY);
 
@@ -317,7 +315,7 @@ make_connection (service, type, netaddress)
 
   sock = socket (AF_INET, type, 0);
 
-  printf ("Connecting to %s on port %d.\n", inet_ntoa (*addr), htons(port));
+  PRINTF ("Connecting to %s on port %d.\n", inet_ntoa (*addr), htons(port));
 
   if (type == SOCK_STREAM)
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.19 2005-07-15 18:28:09 mikeaubury Exp $
+# $Id: aubit-config.c,v 1.20 2005-07-28 10:11:40 mikeaubury Exp $
 #
 */
 
@@ -51,6 +51,9 @@
 #include <stdlib.h>		/* exit() */
 #include <ctype.h>		/* isprint() */
 
+#ifndef PRINTF
+#define PRINTF printf
+#endif
 
 /*
 =====================================================================
@@ -88,12 +91,12 @@ main (int argc, char *argv[])
 
   if (argc != 2)
     {
-      printf ("\n");
-      printf ("Usage:\n");
-      printf ("     aubit-config [VARIABLE_NAME | -a]\n");
-      printf ("        -a: show all set variables\n");
-      printf ("        -ae: show all set variables as 'export VARIABLE=\n");
-      printf ("\n");
+      PRINTF ("\n");
+      PRINTF ("Usage:\n");
+      PRINTF ("     aubit-config [VARIABLE_NAME | -a]\n");
+      PRINTF ("        -a: show all set variables\n");
+      PRINTF ("        -ae: show all set variables as 'export VARIABLE=\n");
+      PRINTF ("\n");
       exit (1);
     }
 
@@ -113,7 +116,7 @@ main (int argc, char *argv[])
       exit (0);
     }
 
-  printf ("%s\n", acl_getenv (argv[1]));
+  PRINTF ("%s\n", acl_getenv (argv[1]));
 
   exit (0);
 }
@@ -159,7 +162,7 @@ A4GL_debug_full (char *fmt, ...)
     {
       va_start (args, fmt);
       vsprintf (buff, fmt, args);
-      printf ("%s\n", buff);
+      PRINTF ("%s\n", buff);
     }
 }
 
@@ -228,7 +231,6 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l) {
 	strcpy(dest,src);
 
 	if (strcmp(f,"dmy.c")==0) return dest;
-	//printf("Copy '%s' @ %s %d\n",src,f,l);
 	if (strlen(src)>255) {
 		//A4GL_debug("Long string : %s\n",src);
 	}
@@ -256,12 +258,12 @@ char xbuff[10000];
               va_start (args, fmt);
               c=malloc(sdest);
 	      if (c==0) {
-		      		printf("Unable to allocate memory..\n");
+		      		PRINTF("Unable to allocate memory..\n");
 				exit(1);
 		}
               x=vsnprintf(c,sdest,fmt,args);
               if (x>=sdest) {
-			printf("sprintf trying to exceed allocated space @ %s (line %d)",f,l);
+			PRINTF("sprintf trying to exceed allocated space @ %s (line %d)",f,l);
 			exit(1);
 		
               }
@@ -271,7 +273,7 @@ char xbuff[10000];
               va_start (args, fmt);
               x=vsprintf(xbuff,fmt,args);
                 if (x>sizeof(xbuff)) {
-                        printf("sprintf > 10,000 characters when using a pointer...");
+                        PRINTF("sprintf > 10,000 characters when using a pointer...");
                 }
               strcpy(dest,xbuff);
         }

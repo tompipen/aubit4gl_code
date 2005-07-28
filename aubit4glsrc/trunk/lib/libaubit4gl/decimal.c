@@ -113,7 +113,6 @@ A4GL_trim(str);
 	  }
 
 	  // Dodgey character ?
-	  //printf("??? %c - %c\n",str[a],sec);
 	  // Informix seems to set the value to 0 not null...
 	  // which seems inconsistant with the handling of bad dates..
 	  //
@@ -144,7 +143,6 @@ A4GL_trim(str);
 
   if (strlen(head)>digits-decimals) {
 	  // Its too big..
-	  //printf("Num too big");
 	A4GL_debug("Bad %s %d - %d %d ",head,strlen(head),digits,decimals);
 	  A4GL_setnull(DTYPE_DECIMAL,dec,dec->dec_data[0]*256+dec->dec_data[1]);
 	  return dec;
@@ -156,9 +154,7 @@ A4GL_trim(str);
   // now round the tail..
   carry=0;
   round_cnt=decimals;
-  //printf("Think about rounding.. %s %d\n",tail,round_cnt);
   if (tail[round_cnt]>='5') {
-	//printf("Have >=5 - so carry\n");
 	carry=1;
   }
 
@@ -204,10 +200,6 @@ A4GL_trim(str);
 
   if (isneg) dec->dec_data[0]+=128;
 
-  //if (strlen(&dec->dec_data[2])-1>digits) { // The tail must be too long...
-	  //printf("str=%s digits=%d decimal=%d\n",&dec->dec_data[2],digits,decimals);
-	//printf("NEEDS ROUNDING\n");
-//}
   A4GL_debug("----> %s\n",&dec->dec_data[2]);
   return dec;
 }
@@ -230,7 +222,6 @@ char *A4GL_dec_to_str (fgldecimal *dec, int size) {
   
   A4GL_debug("XYXY dec to str : %s",&dec->dec_data[2]);
   ptr=&dec->dec_data[2];
-  //printf("dectostr--->%s\n",&dec->dec_data[2]);
   strcat(buff,ptr);
 	for (a=has_neg;a<strlen(buff);a++) {
 		if (buff[a]=='.') break;
@@ -244,7 +235,6 @@ char *A4GL_dec_to_str (fgldecimal *dec, int size) {
   if (buff[strlen(buff)-1]=='.') buff[strlen(buff)-1]=0;
 
 
-  //printf("--->%s\n",&dec->dec_data[2]);
   A4GL_debug("--->XYXY '%s'",buff);
   if (has_neg) {
     for (a=0;a<strlen(buff);a++) {

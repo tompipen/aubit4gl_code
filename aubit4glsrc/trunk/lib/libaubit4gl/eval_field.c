@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: eval_field.c,v 1.8 2005-05-15 09:03:28 mikeaubury Exp $
+# $Id: eval_field.c,v 1.9 2005-07-28 10:11:39 mikeaubury Exp $
 #
 */
 
@@ -122,16 +122,6 @@ A4GL_debug("Evaludate field_expr - s=%s exprtype = %d",s,expr->itemtype);
     }
 
 
-/*
-   { LIST
-      printf ("[");
-      for (a = 0; a < expr->u_expression_u.list.list_len; a++)
-        {
-          dump_expr (expr->u_expression_u.list.list_val[a], lvl + 1);
-        }
-      printf ("]");
-    }
-*/
 
 
 
@@ -322,14 +312,4 @@ return 0;
 }
 
 
-/*
-   { LIST
-      printf ("[");
-      for (a = 0; a < expr->u_expression_u.list.list_len; a++)
-        {
-          dump_expr (expr->u_expression_u.list.list_val[a], lvl + 1);
-        }
-      printf ("]");
-    }
-*/
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.57 2005-07-15 18:28:07 mikeaubury Exp $
+# $Id: calldll.c,v 1.58 2005-07-28 10:11:39 mikeaubury Exp $
 #
 */
 
@@ -379,8 +379,8 @@ SPRINTF4 (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type, plugin_name
       SPRINTF1 (buff2, "%s", dlerror ());
 #endif
 
-      printf ("Error: can't open DLL %s - STOP\n", A4GL_null_as_null(buff));
-      printf ("Error msg: %s\n", A4GL_null_as_null(buff2));
+      PRINTF ("Error: can't open DLL %s - STOP\n", A4GL_null_as_null(buff));
+      PRINTF ("Error msg: %s\n", A4GL_null_as_null(buff2));
 
       A4GL_debug ("Error: can't open DLL %s - STOP\n", A4GL_null_as_null(buff));
       A4GL_debug ("Error msg: %s\n", A4GL_null_as_null(buff2));
@@ -431,12 +431,9 @@ inc_usage(func);
       /* return badfunc; */
     }
 #ifdef USE_SHL
-  //printf("USE_SHL\n");
   if (!shl_findsym (&dllhandle, tempbuff,TYPE_PROCEDURE,&func_ptr)==-1) { 
-	//printf("Splat via return value...\n");
   func_ptr=0; 
   }
-  //printf("Done\n");
 #else
   func_ptr = dlsym (dllhandle, tempbuff);
 #endif
@@ -486,9 +483,7 @@ inc_usage(func);
       return (void *)badfunc;
     }
 #ifdef USE_SHL
-//printf("U1\n");
   if (shl_findsym (&dllhandle, tempbuff,TYPE_PROCEDURE,&func_ptr)==-1) { func_ptr=0; }
-//printf("/U1\n");
 #else
   func_ptr = dlsym (dllhandle, tempbuff);
 #endif
@@ -529,9 +524,7 @@ A4GL_find_func_allow_missing (void *dllhandle, char *func)
       return (void *)&badfunc;
     }
 #ifdef USE_SHL
-//printf("U2\n");
   if (shl_findsym (&dllhandle, tempbuff,TYPE_PROCEDURE,&func_ptr)==-1) { func_ptr=0; }
-//printf("/U2\n");
 #else
   func_ptr = dlsym (dllhandle, tempbuff);
 #endif

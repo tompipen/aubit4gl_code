@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.185 2005-07-28 08:25:10 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.186 2005-07-28 10:10:25 mikeaubury Exp $
 #
 */
 
@@ -2060,6 +2060,10 @@ int a4gl_tolower(int n);
 char *A4GL_strcat  (char *d,char *s,char *fname,int l,int sdest);
 char *A4GL_strcpy  (char *d,char *s,char *fname,int l,int sdest);
 int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) ;
+// When we 'grep' for a printf (often used for debugging) - we'll ignore anything
+// using PRINTF (as these are known to not be used for debugging)
+
+#define PRINTF printf
 #define SPRINTF0(s,f)                        	A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f)
 #define SPRINTF1(s,f,p1)                        A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1)
 #define SPRINTF2(s,f,p1,p2)                     A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1,p2)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.111 2005-07-19 11:06:27 mikeaubury Exp $
+# $Id: conv.c,v 1.112 2005-07-28 10:11:39 mikeaubury Exp $
 #
 */
 
@@ -707,7 +707,6 @@ data[6]=0;
   else
     {
 	//A4GL_assertion(1,"Bibble");
-	//printf("INVALID \n");
 	A4GL_setnull(DTYPE_DTIME,d,size);
       return 1;
     }
@@ -3293,7 +3292,6 @@ A4GL_valid_int (char *s, int *data, int size)
       A4GL_debug ("Dodgey character %c\n", buff[a]);
       return 0;
     }
-  //printf("buff=%s\n",buff);
 
   type[cnt] = 0;
   dt_type = -1;
@@ -3506,7 +3504,6 @@ A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data)
       //debug ("cnt=%d", cnt);
       //debug ("   pos=%d sizes=%d", pos[cnt], sizes[cnt]);
       strncpy (&buff[x], &d->data[pos[cnt]], sizes[cnt]);
-	//printf("-->%s\n",&buff[x]);
 
       data_internal[cnt] = atoi_n (&buff[x], sizes[cnt]);
       x += sizes[cnt];

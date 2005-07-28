@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readkeys.c,v 1.12 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: readkeys.c,v 1.13 2005-07-28 10:11:39 mikeaubury Exp $
 #*/
 
 /**
@@ -216,7 +216,6 @@ void A4GL_logkey(long a) {
 		}
 	}
 
-	//fprintf(keylog,"a=%d ",a);
 	for (k=0;keys[k];k++) {
 		A4GL_debug("Checking against built in key for %s - %d %d",keys[k],a,A4GL_key_val(keys[k]));
 

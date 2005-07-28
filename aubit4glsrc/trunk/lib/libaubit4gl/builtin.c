@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.87 2005-07-15 18:28:07 mikeaubury Exp $
+# $Id: builtin.c,v 1.88 2005-07-28 10:11:39 mikeaubury Exp $
 #
 */
 
@@ -313,7 +313,6 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
   static char *np = 0;
   static char *np2 = 0;
   va_list ap;
-  //printf ("a=%d b=%d\n", a, b);
   va_start (ap, b);
   va_end (ap);
   A4GL_debug("Entering a4gl_substr");
@@ -367,7 +366,6 @@ if (b) {
  A4GL_debug ("NULL - dtype=%x", dtype);
       }
 #endif
-      //printf("PAD\n");
       free (np);
       np = acl_malloc2 ((size_t) DECODE_SIZE (dtype) + 1);
       free (np2);
@@ -407,7 +405,6 @@ if (b) {
     A4GL_debug (">>>>Set to %s", A4GL_null_as_null(np2));
   }
 #endif
-  //printf ("np2= '%s'\n", np2);
 A4GL_debug("Exiting a4gl_substr");
   return np2;
 }
@@ -980,14 +977,11 @@ acli_datetime (char *s, int n)
   A4GL_debug ("acli_datetime s=%s n=%d\n", A4GL_null_as_null(s), n);
   c.ltime = n & 16;
   c.stime = n / 16;
-  //printf("--1>%s\n",s);
   A4GL_ctodt (s, &c, n);
-  //printf("acli_dtime - pop'd c - n=%x\ndata=%s\n",n,c.data);
   A4GL_push_dtime (&c);
   A4GL_debug ("ADDED DATETIME TO STACK - %d %d", c.stime, c.ltime);
 
   A4GL_pop_char (buff, 40);
-  //printf("DOUBLE CHECK GIVES : %s\n",buff);
   A4GL_push_dtime (&c);
 
 }

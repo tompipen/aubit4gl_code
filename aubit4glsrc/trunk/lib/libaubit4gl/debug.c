@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.46 2005-07-27 08:55:52 mikeaubury Exp $
+# $Id: debug.c,v 1.47 2005-07-28 10:11:39 mikeaubury Exp $
 #
 */
 
@@ -108,7 +108,7 @@ if (strlen(debugfilename)==0) {
   debugfile = A4GL_mja_fopen (debugfilename, "w");
   if (debugfile == 0)
     {
-      printf ("Unable to open debug.out - check directory permissions...\n");
+      PRINTF ("Unable to open debug.out - check directory permissions...\n");
 	A4GL_fgl_die(2);
     }
 }

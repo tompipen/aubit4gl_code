@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.24 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.25 2005-07-28 10:11:39 mikeaubury Exp $
 #*/
 
 /**
@@ -170,8 +170,6 @@ void
 A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
 {
   int a;
-  //printf("Call from Module : %s line %d to %s",currentModuleName,currentFglLineNumber,functionName);
-  //fflush(stdout);
   A4GL_debug ("Call from Module : %s line %d", currentModuleName,
 	 currentFglLineNumber);
   A4GL_debug ("=====&&&&&&============PUSH %s %d,\n", functionName, n);

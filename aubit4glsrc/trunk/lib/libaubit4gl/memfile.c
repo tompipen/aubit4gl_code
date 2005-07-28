@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.29 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: memfile.c,v 1.30 2005-07-28 10:11:39 mikeaubury Exp $
 #
 */
 
@@ -67,13 +67,13 @@ A4GL_memfile_fopen (char *f, char *mode)
 
   if (opened > 1)
     {
-      printf ("Too many opened!!");
+      PRINTF ("Too many opened!!");
       A4GL_fgl_die (1);
     }
 
   if (a_strchr (mode, 'w'))
     {
-      printf ("Can't use memfile for Writing...");
+      PRINTF ("Can't use memfile for Writing...");
       A4GL_fgl_die (1);
 
     }
@@ -95,7 +95,7 @@ A4GL_memfile_fopen (char *f, char *mode)
       if (buff_len!=0) {
       	if (fread (buff, buff_len, 1, in) != 1)
 	{
-	  printf ("Unable to read file into buffer\n");
+	  PRINTF ("Unable to read file into buffer\n");
 	  //FIXME - use exit_with()
 	  A4GL_fgl_die (1);
  
@@ -192,7 +192,6 @@ A4GL_memfile_getc (FILE * f)
   else
     {
       if (pos>buff_len) {
-		//printf("XXX");
 		return 0;
 	}
       a = buff[pos];
@@ -268,14 +267,13 @@ A4GL_memfile_feof (FILE * f)
       buff[255] = 0;
       A4GL_debug
 	("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
-      printf
+      PRINTF
 	("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
       A4GL_fgl_die (2);
       return feof (f);
     }
   else
     {
-      //printf("pos = %d buff_len = %d f=%x in=%x\n",pos,buff_len,f,in);
       return pos > buff_len;
     }
 }
@@ -398,7 +396,6 @@ if (save) {
                  else type+=4;
         }
 
-	//printf("%x%c",type,buff[a]);
 
         if (buff[a]=='-'&&buff[a+1]=='-'&&type==0) {
 		if (buff[a+2]!='!') {
@@ -419,10 +416,8 @@ if (save) {
         }
 
         if (buff[a]=='#'&&type==0) {
-		//printf("Found #\n");
 		if (save_comment) fprintf(save_comment,"%d|",lineno);
                 for (b=a;buff[b]!='\n'&&b<buff_len;b++) {
-			//printf("Skipping... '%c'\n",buff[b]);
 			if (save_comment) fprintf(save_comment,"%c",buff[b]);
 			buff[b]=' ';
 		}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.18 2005-05-05 08:50:33 mikeaubury Exp $
+# $Id: match.c,v 1.19 2005-07-28 10:11:39 mikeaubury Exp $
 #*/
 
 /**
@@ -634,14 +634,14 @@ main (int argc, char *argv[])
   int is_valid_error;
 
   if (argc != 3)
-    printf ("Usage:  MATCH Pattern Text\n");
+    PRINTF ("Usage:  MATCH Pattern Text\n");
   else
     {
-      printf ("Pattern: %s\n", argv[1]);
-      printf ("Text   : %s\n", argv[2]);
+      PRINTF ("Pattern: %s\n", argv[1]);
+      PRINTF ("Text   : %s\n", argv[2]);
 
       if (!is_pattern (argv[1]))
-	printf ("    First Argument Is Not A Pattern\n");
+	PRINTF ("    First Argument Is Not A Pattern\n");
       else
 	{
 	  error = A4GL_matche (argv[1], argv[2]);
@@ -650,60 +650,60 @@ main (int argc, char *argv[])
 	  switch (error)
 	    {
 	    case MATCH_VALID:
-	      printf ("    Match Successful");
+	      PRINTF ("    Match Successful");
 	      if (is_valid_error != PATTERN_VALID)
-		printf (" -- is_valid_pattern() " "is complaining\n");
+		PRINTF (" -- is_valid_pattern() " "is complaining\n");
 	      else
-		printf ("\n");
+		PRINTF ("\n");
 	      break;
 
 	    case MATCH_LITERAL:
-	      printf ("    Match Failed on Literal\n");
+	      PRINTF ("    Match Failed on Literal\n");
 	      break;
 
 	    case MATCH_RANGE:
-	      printf ("    Match Failed on [..]\n");
+	      PRINTF ("    Match Failed on [..]\n");
 	      break;
 
 	    case MATCH_ABORT:
-	      printf ("    Match Failed on Early " "Text Termination\n");
+	      PRINTF ("    Match Failed on Early " "Text Termination\n");
 	      break;
 
 	    case MATCH_END:
-	      printf ("    Match Failed on Early " "Pattern Termination\n");
+	      PRINTF ("    Match Failed on Early " "Pattern Termination\n");
 	      break;
 
 	    case MATCH_PATTERN:
 	      switch (is_valid_error)
 		{
 		case PATTERN_VALID:
-		  printf ("    Internal Disagreement " "On Pattern\n");
+		  PRINTF ("    Internal Disagreement " "On Pattern\n");
 		  break;
 
 		case PATTERN_ESC:
-		  printf ("    Literal Escape at " "End of Pattern\n");
+		  PRINTF ("    Literal Escape at " "End of Pattern\n");
 		  break;
 
 
 		case PATTERN_RANGE:
-		  printf ("    No End of Range in " "[..] Construct\n");
+		  PRINTF ("    No End of Range in " "[..] Construct\n");
 		  break;
 
 		case PATTERN_CLOSE:
-		  printf ("    [..] Construct is Open\n");
+		  PRINTF ("    [..] Construct is Open\n");
 		  break;
 
 		case PATTERN_EMPTY:
-		  printf ("    [..] Construct is Empty\n");
+		  PRINTF ("    [..] Construct is Empty\n");
 		  break;
 
 		default:
-		  printf ("    Internal Error in " "is_valid_pattern()\n");
+		  PRINTF ("    Internal Error in " "is_valid_pattern()\n");
 		}
 	      break;
 
 	    default:
-	      printf ("    Internal Error in matche()\n");
+	      PRINTF ("    Internal Error in matche()\n");
 	      break;
 	    }
 	}

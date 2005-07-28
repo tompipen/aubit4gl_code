@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.32 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: io.c,v 1.33 2005-07-28 10:11:39 mikeaubury Exp $
 #
 */
 
@@ -347,7 +347,6 @@ A4GL_fullpath_xpath (char *fname, char *path)
 				//A4GL_debug ("strlen (ptr) > 0, ptr=%s",ptr);
 
 				if (A4GL_try_to_open (ptr, fname, 0))	{
-					//printf("ptr=%s\n",ptr);
 					SPRINTF2(str_path,"%s/%s",ptr,fname);
 					return str_path;
 				} else {

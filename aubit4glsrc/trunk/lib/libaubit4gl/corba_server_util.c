@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.17 2005-07-26 15:47:08 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.18 2005-07-28 10:11:39 mikeaubury Exp $
 #
 */
 
@@ -369,7 +369,7 @@ We can end up with problems with overlapping - eg
 	      x=vsnprintf(c,sdest,fmt,args);
 	      if (x>=sdest) {
                 sprintf(buff,"sprintf trying to exceed allocated space @ %s (line %d)",f,l);
-			printf("-->%s (%d>=%d)",fmt,x,sdest);
+			PRINTF("-->%s (%d>=%d)",fmt,x,sdest);
 			A4GL_assertion(1,buff);
 	      }
 	      strncpy(dest,c,sdest);
@@ -444,7 +444,7 @@ A4GL_fgl_die_with_msg (int n, char *s)
   A4GL_close_database ();
   A4GL_close_errorlog_file ();
   A4GL_debug ("End of program - exit(%d).", n);
-  printf ("%s\n", s);
+  PRINTF ("%s\n", s);
   exit (n);
 }
 

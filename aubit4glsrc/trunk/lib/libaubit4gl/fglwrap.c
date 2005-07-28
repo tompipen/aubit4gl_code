@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.97 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.98 2005-07-28 10:11:39 mikeaubury Exp $
 #
 */
 
@@ -206,7 +206,6 @@ char *p;
 	#endif
 
   /* FIXME: we already printed something to stdout at this point... */
-  /* printf("Check.."); */
 
   	b = 0;
 	for (a = 0; a < MAX_ARGS; a++) {
@@ -246,7 +245,7 @@ char *p;
   A4GL_debug("PRELOADING UI - %s\n",acl_getenv("A4GL_UI"));
   if (!A4GLUI_initlib ())
     {
-      printf ("4gllib: Error opening UI library (A4GL_UI=%s)\n",
+      PRINTF ("4gllib: Error opening UI library (A4GL_UI=%s)\n",
 	      acl_getenv ("A4GL_UI"));
       A4GL_fgl_die (1);
     }
@@ -455,7 +454,7 @@ A4GL_chk_err (int lineno, char *fname)
 	  A4GL_errorlog (fname, lineno, 1);
 	}
       A4GL_debug ("%s",s);
-      printf ("Err:%s", s);
+      PRINTF ("Err:%s", s);
 
       if (atoi(acl_getenv("RUNNING_TEST"))) {
 	char buff[256];
@@ -838,15 +837,16 @@ A4GL_def_int (void)
 	#endif
 		  A4GL_gotolinemode ();
 		}
-	   printf("Internal Error - segmentation fault\n");
-	   printf("Please note all circumstances and log with the Aubit4GL team\n");
-	   printf("If possible - reproduce the error with the environment variable DEBUG\n");
-	   printf("set to ALL :\n\n");
-	   printf("$ export DEBUG=ALL\n\n");
-	   printf("And enclose the last 100 lines from the resultant debug.out file\n");
-	   printf("with your bug log.\n");
-	   printf("\n");
-	   printf("%s\n",A4GLSTK_getStackTrace ());
+
+	   PRINTF("Internal Error - segmentation fault\n");
+	   PRINTF("Please note all circumstances and log with the Aubit4GL team\n");
+	   PRINTF("If possible - reproduce the error with the environment variable DEBUG\n");
+	   PRINTF("set to ALL :\n\n");
+	   PRINTF("$ export DEBUG=ALL\n\n");
+	   PRINTF("And enclose the last 100 lines from the resultant debug.out file\n");
+	   PRINTF("with your bug log.\n");
+	   PRINTF("\n");
+	   PRINTF("%s\n",A4GLSTK_getStackTrace ());
 	
 	
 	   if (A4GL_isscrmode ())
@@ -863,7 +863,7 @@ A4GL_def_int (void)
 		system(buff);
 	   }
 	
-	   if (A4GL_isyes(acl_getenv("WAIT_FOR_GDB_ATTACH"))) { printf("Waiting for a debugger to come online\n"); while (1) { sleep(300); } }
+	   if (A4GL_isyes(acl_getenv("WAIT_FOR_GDB_ATTACH"))) { PRINTF("Waiting for a debugger to come online\n"); while (1) { sleep(300); } }
 	
 	  A4GL_close_database ();
 	  A4GL_close_errorlog_file ();
@@ -1070,8 +1070,8 @@ A4GL_fgl_error (int a, char *s, int err, int stat)
   A4GL_debug ("\n\n\nError at line %d in file %s\n", a, s);
   A4GL_debug ("Error number %d - Error level %d\n\n", err, stat);
 #endif
-  printf ("\n\n\nError at line %d in file %s\n", a, s);
-  printf ("Error number %d - Error level %d\n\n", err, stat);
+  PRINTF ("\n\n\nError at line %d in file %s\n", a, s);
+  PRINTF ("Error number %d - Error level %d\n\n", err, stat);
   A4GL_fgl_die (0);
   return 0;
 }
@@ -1221,30 +1221,30 @@ char id[132];
 int a;
 
   	if (strcmp (arg1, "-v") == 0) {
-		printf ("(c) 1997-2005 Aubit project\n%s\n\n", program);
-		printf ("Version       %s\nBuild Level   %d\n",
+		PRINTF ("(c) 1997-2005 Aubit project\n%s\n\n", program);
+		PRINTF ("Version       %s\nBuild Level   %d\n",
 	      	A4GL_internal_version (), A4GL_internal_build ());
 
 		A4GL_fgl_die (0);
 	}
 
 	if (strcmp (arg1, "-vfull") == 0) {
-		printf ("(c) 1997-2005 Aubit project\n%s\n\n", program);
-		printf ("Version       %s\nBuild Level   %d\n",
+		PRINTF ("(c) 1997-2005 Aubit project\n%s\n\n", program);
+		PRINTF ("Version       %s\nBuild Level   %d\n",
 	      	A4GL_internal_version (), A4GL_internal_build ());
 		for (a = 0;; a++) {
 			A4GL_set_version (a, mod, id);
 			if (strlen (mod) == 0) {
 				break;
 			}
-			printf ("%s:\n  %s\n", mod, id);
+			PRINTF ("%s:\n  %s\n", mod, id);
 		}
 		A4GL_fgl_die (0);
     }
 
   	if (strcmp (arg1, "") == 0) {
-		printf ("%s (c) 1997-2005 Aubit project - ", program);
-		printf ("Version %s-%d\n",
+		PRINTF ("%s (c) 1997-2005 Aubit project - ", program);
+		PRINTF ("Version %s-%d\n",
 	      	A4GL_internal_version (), A4GL_internal_build ());
 
 	}
