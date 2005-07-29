@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.3 2005-07-19 19:16:27 mikeaubury Exp $
+# $Id: main.c,v 1.4 2005-07-29 06:56:58 mikeaubury Exp $
 #
 */
 
@@ -74,6 +74,7 @@ char *snew;
 	return 0;
 }
 
+/*
 
 char *A4GL_strcpy  (char *d,char *s,char *fname,int l,int sdest) {
 		strcpy(s,d);
@@ -81,6 +82,7 @@ char *A4GL_strcpy  (char *d,char *s,char *fname,int l,int sdest) {
 char *A4GL_strcat  (char *d,char *s,char *fname,int l,int sdest) {
 		strcat(s,d);
 }
+
 
 
 int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) {
@@ -96,4 +98,4 @@ char xbuff[10000];
               strcpy(dest,xbuff);
         return x;
 }
-
+*/

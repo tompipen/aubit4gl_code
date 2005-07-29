@@ -69,7 +69,11 @@ while (getline < "generated/single_words") {
 }
 
 a=1000
+	print "#ifdef SIMPLIFIED " > "generated/kw.c"
+	print "#include \"kw.h\"" > "generated/kw.c"
+	print "#else" > "generated/kw.c"
 	print "#include \"generated/kw.h\"" > "generated/kw.c"
+	print "#endif" > "generated/kw.c"
 	print "struct s_kw {" > "generated/kw.h"
 	print "    int id;" > "generated/kw.h"
 	print "	   int mode;" > "generated/kw.h"

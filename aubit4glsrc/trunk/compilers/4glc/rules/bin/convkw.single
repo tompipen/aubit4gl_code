@@ -1,4 +1,4 @@
-#!/bin/sh
+!/bin/sh
 #####################################################################
 #Create generated/single_words from data/kwords
 #Resulting file (generated/single_words) is used by convkw script to

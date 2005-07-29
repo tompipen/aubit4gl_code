@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.68 2005-07-14 14:11:28 mikeaubury Exp $
+# $Id: 1.reqd,v 1.69 2005-07-29 06:56:57 mikeaubury Exp $
 #
 */
 
@@ -225,8 +225,13 @@ char *kw_cb=")";
 #endif
 
 
+#ifndef SIMPLIFIED
 #include "../generic.h"
 #include "../field_handling.h"
+#else
+#include "generic.h"
+#include "field_handling.h"
+#endif
 
 struct sql_statement {
 	int stmt_type;

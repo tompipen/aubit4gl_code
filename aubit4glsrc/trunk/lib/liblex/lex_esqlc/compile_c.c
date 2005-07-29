@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.243 2005-07-21 12:51:49 mikeaubury Exp $
+# $Id: compile_c.c,v 1.244 2005-07-29 06:56:58 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.243 2005-07-21 12:51:49 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.244 2005-07-29 06:56:58 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -257,8 +257,8 @@ void clr_suppress_lines(void) {
 static void
 open_outfile (void)
 {
-  char h[132];
-  char c[132];
+  char filename_for_h[132];
+  char filename_for_c[132];
   char err[132];
   char *ptr;
 
@@ -267,9 +267,20 @@ open_outfile (void)
       A4GL_debug ("NO output file name");
     }
 
-  strcpy (c, outputfilename);
-  strcpy (h, outputfilename);
-  strcpy (err, outputfilename);
+  if (!A4GL_env_option_set("LOCALOUTPUT")) {
+  	strcpy (filename_for_c, outputfilename);
+  	strcpy (filename_for_h, outputfilename);
+  	strcpy (err, outputfilename);
+  } else {
+	  char *ptr;
+	  // Local output will strip any directory from the output
+	  // files and create them in the local directory instead...
+	  ptr=outputfilename;
+	  if (rindex(ptr,'/')) { ptr=rindex(ptr,'/')+1; }
+	  strcpy (filename_for_c, ptr);
+          strcpy (filename_for_h, ptr);
+          strcpy (err, ptr);
+  }
 
   if (strcmp (acl_getenv ("NOCLOBBER"), "N") == 0)
     {
@@ -318,32 +329,32 @@ open_outfile (void)
   		break;
 
 	}
-	strcat(c,A4GL_get_esql_ext());
+	strcat(filename_for_c,A4GL_get_esql_ext());
     }
   else
     {
       if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "CS") == 0)
 	{
 	  /* C#*/
-	  strcat (c, ".csp");
+	  strcat (filename_for_c, ".csp");
 	}
       else
 	{
-	  strcat (c, ".c");
+	  strcat (filename_for_c, ".c");
 	}
     }
 
-  strcat (h, ".h");
+  strcat (filename_for_h, ".h");
   strcat (err, ".err");
 
-  outfile = A4GL_mja_fopen (c, "w");
+  outfile = A4GL_mja_fopen (filename_for_c, "w");
   if (outfile == 0)
     {
-      printf ("Unable to open file %s (Check permissions)\n", c);
+      printf ("Unable to open file %s (Check permissions)\n", filename_for_c);
       exit (3);
     }
 
-  A4GL_debug ("Output file is %s", c);
+  A4GL_debug ("Output file is %s", filename_for_c);
 
   fprintf (outfile, "#define fgldate long\n");
   if (doing_esql ())
@@ -392,10 +403,10 @@ open_outfile (void)
       fprintf (outfile, "#include \"a4gl_esql.h\"\n");
     }
 
-  if (strchr (h, '/') != 0)
-    fprintf (outfile, "#include \"%s\"\n", strrchr (h, '/') + 1);
+  if (strchr (filename_for_h, '/') != 0)
+    fprintf (outfile, "#include \"%s\"\n", strrchr (filename_for_h, '/') + 1);
   else
-    fprintf (outfile, "#include \"%s\"\n", h);
+    fprintf (outfile, "#include \"%s\"\n", filename_for_h);
 
 
   if (doing_cs ())
@@ -410,10 +421,10 @@ open_outfile (void)
     }
 
 
-  hfile = A4GL_mja_fopen (h, "w");
+  hfile = A4GL_mja_fopen (filename_for_h, "w");
   if (hfile == 0)
     {
-      printf ("Unable to open file %s (Check permissions)\n", h);
+      printf ("Unable to open file %s (Check permissions)\n", filename_for_h);
       exit (3);
     }
 
@@ -2922,22 +2933,6 @@ LEXLIB_print_foreach_start (void)
 }
 
 
-#ifdef MOVED_TO_SQL
-/**
- * The parser found END FOREACH.
- *
- * Prints to the generated output file the C implementation of the end of 
- * this statement (that is a C block close with }).
- */
-void
-print_foreach_end (void)
-{
-  printc ("}");
-  printcomment ("/* end of foreach while loop */\n");
-
-  printc ("}\n");
-}
-#endif
 
 
 /**

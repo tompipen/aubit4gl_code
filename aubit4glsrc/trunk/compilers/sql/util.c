@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.22 2005-07-14 15:20:14 mikeaubury Exp $
+# $Id: util.c,v 1.23 2005-07-29 06:56:58 mikeaubury Exp $
 #
 */
 
@@ -39,6 +39,7 @@
 =====================================================================
 */
 
+#include "a4gl_API_sqlparse_lib.h"
 #include "a4gl_libaubit4gl.h"
 
 
@@ -871,7 +872,7 @@ return ptr;
  * @todo Describe function
  */
 char * 
-A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,char *module,int ln) {
+A4GLPARSE_A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,char *module,int ln) {
 char *ptr;
 	sql=acl_strdup(sql);
 	strcpy(m_module,module);
@@ -890,7 +891,7 @@ char *ptr;
  * @todo Describe function
  */
 char * 
-A4GLSQLCV_convert_file (char *target_dialect, char *sql) {
+A4GLPARSE_A4GLSQLCV_convert_file (char *target_dialect, char *sql) {
 	return A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql,1) ;
 }
 
@@ -927,7 +928,7 @@ A4GL_add_feature(char *feature) {
  * @todo Describe function
  */
 int 
-A4GLSQLPARSE_initlib(void) {
+A4GLPARSE_A4GLSQLPARSE_initlib(void) {
 	return 0;
 }
 

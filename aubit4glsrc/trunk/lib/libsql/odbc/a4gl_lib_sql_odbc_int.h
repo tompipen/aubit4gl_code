@@ -118,10 +118,10 @@
 		#ifndef FAR
 			#define FAR
 		#endif
-		#ifdef MJA
+		#ifdef SIMPLIFIED
 			//Looks like Mike's private thing?
-			#include "sql.h"
-			#include "sqlext.h"
+			#include "odbc_headers/sql.h"
+			#include "odbc_headers/sqlext.h"
 		#else
 			//use headers we have in Aubit CVS:
 			#include "../../../tools/odbctest/incl/sql.h"

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.34 2005-07-14 11:32:47 mikeaubury Exp $
+# $Id: globals.c,v 1.35 2005-07-29 06:55:28 mikeaubury Exp $
 #
 */
 
@@ -173,7 +173,17 @@ dump_gvars (void)
   char ii[64];
   struct variable *v;
 
-  strcpy (ii, outputfilename);
+  if (!A4GL_env_option_set("LOCALOUTPUT")) {
+        strcpy (ii, outputfilename);
+  } else {
+          char *ptr;
+          // Local output will strip any directory from the output
+          // files and create them in the local directory instead...
+          ptr=outputfilename;
+          if (rindex(ptr,'/')) { ptr=rindex(ptr,'/')+1; }
+          strcpy (ii, ptr);
+  }
+
   strcat (ii, ".glb");
   f = A4GL_mja_fopen (ii, "w");
 

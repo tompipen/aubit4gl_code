@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.130 2005-07-19 11:06:31 mikeaubury Exp $
+# $Id: ioform.c,v 1.131 2005-07-29 06:56:59 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.130 2005-07-19 11:06:31 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.131 2005-07-29 06:56:59 mikeaubury Exp $";
 #endif
 
 /**
@@ -84,9 +84,9 @@ static int get_inc_quotes(int a) ;
 */
 
 extern WINDOW *currwin;
-int tab_cnt = 0;
-int srec_cnt = 0;
-char delimiters[4];
+//int tab_cnt = 0;
+//int srec_cnt = 0;
+//char delimiters[4];
 char *a_strchr(char *s,char c);
 char *A4GL_fld_data_ignore_format (struct struct_scr_field *fprop,
 				   char *fld_data);
@@ -100,11 +100,11 @@ int A4GL_get_field_width_w (void *f);
 void A4GL_set_infield_from_parameter (int a);
 void A4GL_set_curr_infield (long a);
 
-int lastc = 0;
-int nline;
-int fline;
-int ncol;
-char dbname[64];
+//int lastc = 0;
+//int nline;
+//int ioform_fline;
+//int ncol;
+//char dbname[64];
 long inp_current_field = 0;
 
 /*
