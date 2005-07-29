@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.109 2005-07-29 20:41:06 mikeaubury Exp $
+# $Id: resource.c,v 1.110 2005-07-29 20:42:57 mikeaubury Exp $
 #
 */
 
@@ -57,7 +57,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#define DEBUG_VARIABLE_USAGE
+//#define DEBUG_VARIABLE_USAGE
 
 #if (defined (__MINGW32__))
 #ifndef _AUBITETC_
