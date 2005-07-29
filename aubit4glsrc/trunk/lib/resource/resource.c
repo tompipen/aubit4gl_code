@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.108 2005-07-28 10:11:40 mikeaubury Exp $
+# $Id: resource.c,v 1.109 2005-07-29 20:41:06 mikeaubury Exp $
 #
 */
 
@@ -700,7 +700,9 @@ if (ptr)  {
 
 
 #ifdef DEBUG_VARIABLE_USAGE
+	    	if (fd1) {
 		fprintf(fd1,"%s - %p %p %p %p %p\n",s,ptr_env_A4GL,ptr_env,ptr_registry,ptr_resources_A4GL,ptr_resources);
+		}
 #endif
 
 
