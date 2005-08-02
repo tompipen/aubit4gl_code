@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.88 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: builtin.c,v 1.89 2005-08-02 21:26:57 whaslbeck Exp $
 #
 */
 
@@ -88,6 +88,8 @@ int 	aclfgl_winexec 					(char *exec_string);
 int 	aclfgli_show_help 				(int a);
 int 	aclfgl_fgl_scr_size 			(int n);
 int	aclfgl_fgl_setkeylabel(int n);
+int	aclfgl_fgl_dialog_setkeylabel(int n);
+
 void	A4GL_log_error(int lineno, char *fname, int mstatus);
 
 /*
@@ -1164,11 +1166,13 @@ aclfgl_ddepeek (char *progname, char *ddemessage, char *ddecommand)
  * CALL FGL_KEYSETLABEL ("return", "Next")
  * 4Js compatibility - 
  * inside dialog use dialog.keysetlabel("key", "label") instead
+ * 
+ * (deprecated, use fgl_setkeylabel() or fgl_dialog_setkeylabel() instead)
 **/
 void
 aclfgl_fgl_keysetlabel (char *keyName, char *labelText)
 {
-  A4GL_exitwith ("4Js winmessage function not implemented");
+  A4GL_exitwith ("4Js keysetlabel function not implemented");
 }
 
 /**
@@ -1297,39 +1301,66 @@ int aclfgl_fgl_scr_size(int n)  {
 
 int aclfgl_fgl_dialog_setcurrline(int n) {
 // fgl_dialog_setcurrline ( screen_line, array_row )
+	int screen_line, array_row;
+	array_row = A4GL_pop_int();
+	screen_line = A4GL_pop_int();
+	A4GL_push_int(array_row);
+	aclfgl_fgl_set_arrline(1);
+	A4GL_push_int(screen_line);
+	aclfgl_fgl_set_scrline(1);
 	return 0;
 }
 
 int aclfgl_fgl_dialog_getfieldname(int n)  {
 //function returns the name of the current field.
-	return 0;
+	A4GL_debug ("WARNING: fgl_dialog_getfieldname() not yet implemented!");
+	A4GL_push_char("");
+	return 1;
 }
 
 
 int aclfgl_fgl_dialog_getbuffer(int n)  {
 // returns the value of the current field:
-	return 0;
+	A4GL_debug ("WARNING: fgl_dialog_getbuffer() not yet implemented!");
+	A4GL_push_char("");
+	return 1;
 }
 
 int aclfgl_fgl_dialog_setbuffer(int n) {
 // function sets the value of the current field:
+	A4GL_debug ("WARNING: fgl_dialog_setbuffer() not yet implemented!");
+	char *p1 = A4GL_char_pop();
+	free(p1);
 	return 0;
 }
 
 int aclfgl_fgl_buffertouched(int n)  {
 // Returns  INTEGER  TRUE if the last field has been modified.
-	return 0;
+	A4GL_debug ("WARNING: fgl_buffertouched() not yet implemented!");
+	A4GL_push_int(1);
+	return 1;
 }
 
 
 int aclfgl_fgl_setkeylabel(int n)  {
 	char *p1;
 	char *p2;
+	A4GL_debug ("WARNING: fgl_setkeylabel() not yet implemented!");
 	p1=A4GL_char_pop();
 	p2=A4GL_char_pop();
 	free(p1);
 	free(p2);
-// Returns  INTEGER  TRUE if the last field has been modified.
+	return 0;
+}
+
+int aclfgl_fgl_dialog_setkeylabel(int n)  {
+	char *p1;
+	char *p2;
+	A4GL_debug ("WARNING: fgl_dialog_setkeylabel() not yet implemented!");
+	p1=A4GL_char_pop();
+	p2=A4GL_char_pop();
+	free(p1);
+	free(p2);
 	return 0;
 }
 
