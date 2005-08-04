@@ -10,7 +10,7 @@
 #define GEN_STACKS                10
 #define GEN_STACK_SIZE 10000
 
-#define GEN_STACK_ELEM_SIZE 2048
+#define GEN_STACK_ELEM_SIZE 20480
 
 #ifdef GEN_STACK_HERE
 char gen_stack[GEN_STACKS][GEN_STACK_SIZE][GEN_STACK_ELEM_SIZE];
