@@ -12,12 +12,12 @@ rollback_statement:
 
 insert_statement_ss:
 	INSERT_INTO { insql=1;start_bind('i',0);} 
-	table_name  { strcpy(current_ins_table,$<str>3);pop_all_gen(INSCOL,"!"); pop_all_gen(INSVAL,"!");}
+	table_name  { strcpy(current_ins_table,$<str>3);A4GL_4glc_pop_all_gen(INSCOL,"!"); A4GL_4glc_pop_all_gen(INSVAL,"!");}
 	op_insert_column_list 
 	ins_2_ss {
 		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), kw_space,acl_strdup($<str>3),kw_space,acl_strdup($<str>5),kw_space,$<sql_string>6,0); 
 		$<sql_string>$=A4GLSQLCV_generate_ins_string(current_ins_table,$<sql_string>$);
-			pop_all_gen(INSCOL,"!"); pop_all_gen(INSVAL,"!"); 
+			A4GL_4glc_pop_all_gen(INSCOL,"!"); A4GL_4glc_pop_all_gen(INSVAL,"!"); 
 		add_feature("ANSI_INSERT");
 	}
 ;
@@ -26,7 +26,7 @@ ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET { i
 	| query_specification_ss {$<sql_string>$=$<sql_string>1; add_feature("INSERT_INTO_SELECT_FROM");}
 ;
 
-op_insert_column_list: {strcpy($<str>$,""); push_gen(INSCOL,"*"); }
+op_insert_column_list: {strcpy($<str>$,""); A4GL_4glc_push_gen(INSCOL,"*"); }
 	| OPEN_BRACKET insert_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
 			 add_feature("INSERT_COLUMNLIST_EQ_VALUELIST");
 		}
@@ -35,22 +35,22 @@ op_insert_column_list: {strcpy($<str>$,""); push_gen(INSCOL,"*"); }
 
 insert_column_list:
 	column_name {
-		push_gen(INSCOL,$<str>1);
+		A4GL_4glc_push_gen(INSCOL,$<str>1);
 	}
 	| insert_column_list KW_COMMA column_name {
 			sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
-			push_gen(INSCOL,$<str>3);
+			A4GL_4glc_push_gen(INSCOL,$<str>3);
 	}
 ;
 
 insert_value_list_ss:
 	insert_value_ss {
 		$<sql_string>$=$<sql_string>1;
-		push_gen(INSVAL,$<sql_string>1);
+		A4GL_4glc_push_gen(INSVAL,$<sql_string>1);
 	}
 	| insert_value_list_ss KW_COMMA insert_value_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma, $<sql_string>3,0);
-		push_gen(INSVAL,$<sql_string>3);
+		A4GL_4glc_push_gen(INSVAL,$<sql_string>3);
 	}
 ;
 

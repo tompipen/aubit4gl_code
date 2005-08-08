@@ -67,8 +67,8 @@ int A4GLSQLCV_check_requirement(char *s) ;
 */
 
 //static void push_gen (int a, char *s);
-static void copy_gen (int a, int b);
-static void pop_all_gen (int a, char *s);
+//static void copy_gen (int a, int b);
+//static void pop_all_gen (int a, char *s);
 static char * convstr_dbl_to_single (char *s);
 static int get_bind_cnt (char i);
 static void rm_quotes (char *s);
@@ -105,7 +105,7 @@ static char* A4GL_get_into_part(int d,int n);
 static char *  fix_update_expr (int mode);
 static char *A4GL_get_undo_use(void);
 //static char *A4GL_strip_quotes (char *s);
-static int gen_cnt (int a);
+//static int gen_cnt (int a);
 static void ansi_violation(char *s,int n);
 static int A4GL_escape_quote_owner(void);
 static void A4GL_lex_printcomment (char *fmt,...);
@@ -123,17 +123,7 @@ static int scan_variable (char *s);
 #endif
 
 #define GEN_STACK_HERE
-#include "../4glc/gen_stack.h"
-//#define GEN_STACKS              10
-//#define GEN_STACK_SIZE 10000
-//#define UPDCOL 0
-//#define UPDVAL 1
-//#define UPDVAL2 4
-
-//char gen_stack[GEN_STACKS][GEN_STACK_SIZE][80];
-//int gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-
+#include "a4gl_gen_stack.h"
 
 int sql_string_cnt=0;
 int this_sql_start=0;

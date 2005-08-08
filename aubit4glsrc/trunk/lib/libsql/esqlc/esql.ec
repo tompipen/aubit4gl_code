@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.146 2005-07-26 06:22:42 mikeaubury Exp $
+# $Id: esql.ec,v 1.147 2005-08-08 21:01:21 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.146 2005-07-26 06:22:42 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.147 2005-08-08 21:01:21 mikeaubury Exp $";
 #endif
 
 
@@ -4077,18 +4077,21 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *
   EXEC SQL PREPARE stXReadColumns FROM:strSelect;
   if (isSqlError ())
     {
+    	A4GL_debug("Error with prepare");
       return 0;
     }
 
   EXEC SQL ALLOCATE DESCRIPTOR 'descReadColumns';
   if (isSqlError ())
     {
+    	A4GL_debug("Error with allocate");
       return 0;
     }
 
   EXEC SQL DESCRIBE stXReadColumns USING SQL DESCRIPTOR 'descReadColumns';
   if (isSqlError ())
     {
+    	A4GL_debug("Error with describe");
       EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
       return 0;
     }
@@ -4097,6 +4100,7 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *
     LENGTH;
   if (isSqlError ())
     {
+    	A4GL_debug("Error with get");
       EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
       return 0;
     }

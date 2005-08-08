@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.4 2005-07-29 06:56:58 mikeaubury Exp $
+# $Id: main.c,v 1.5 2005-08-08 21:01:04 mikeaubury Exp $
 #
 */
 
@@ -69,6 +69,7 @@ char *snew;
 		printf("Usage : %s filename\n",argv[0]);
 		exit(2);
 	}
+	A4GL_init_gen_stack();
 	snew=A4GLSQLCV_convert_file("POSTGRES",argv[1]);
 	printf("%s\n",snew);
 	return 0;

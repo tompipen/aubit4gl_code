@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.225 2005-07-21 09:43:16 mikeaubury Exp $
+# $Id: mod.c,v 1.226 2005-08-08 20:57:51 mikeaubury Exp $
 #
 */
 
@@ -53,7 +53,7 @@
 #include <ctype.h>
 #include <errno.h>
 #define GEN_STACK_HERE
-#include "gen_stack.h"
+#include "a4gl_gen_stack.h"
 #define FEATURE_USED            'X'
 
 /*
@@ -142,11 +142,12 @@ long fpos;
 #endif
 */
 
-void dump_updvals (void);
+//
+//void dump_updvals (void);
 //void dump_insvals (void);
-char *pop_gen (int a);
+//char *pop_gen (int a);
 /*int gen_cnt (int a);*/
-void copy_gen (int a, int b);
+//void copy_gen (int a, int b);
 extern int menu_cnt;			/** The count of menus found */
 extern int yylineno;			/** The source file line number */
 extern char *infilename;    /** The input (4gl file name */
@@ -212,8 +213,6 @@ int nblock_no = 1;
 /*#define GEN_STACK_SIZE 5000*/
 #define GEN_STACK_SIZE 10000
 
-//char gen_stack[GEN_STACKS][GEN_STACK_SIZE][800];
-//int gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 
 
@@ -2061,79 +2060,6 @@ trim(char *s)
 }
 
 */
-
-/**
- *
- * @param a 
- * @param s
- */
-void
-push_gen (int a, char *s)
-{
-  A4GL_debug ("Push %d %s - %d\n", a, A4GL_null_as_null(s), gen_stack_cnt[a]);
-  if (gen_stack_cnt[a] >= GEN_STACK_SIZE)
-    {
-      PRINTF ("Out of stack!\n");
-      exit (77);
-    }
-  strcpy (gen_stack[a][gen_stack_cnt[a]++], s);
-}
-
-
-int
-gen_cnt (int a)
-{
-  return gen_stack_cnt[a];
-}
-
-
-
-void
-copy_gen (int a, int b)
-{
-  int c;
-
-
-  if (gen_stack_cnt[a] && gen_stack[a][gen_stack_cnt[a] - 1][0] == '(')
-    {
-      pop_gen (a);
-    }
-
-
-  for (c = 0; c < gen_stack_cnt[b]; c++)
-    {
-      push_gen (a, gen_stack[b][c]);
-    }
-  gen_stack_cnt[b] = 0;
-}
-
-char *
-pop_gen (int a)
-{
-  gen_stack_cnt[a]--;
-  return gen_stack[a][gen_stack_cnt[a]];
-
-}
-
-
-/**
- *
- * @param a
- * @param s
- */
-void
-pop_all_gen (int a, char *s)
-{
-  int z;
-  for (z = 0; z < gen_stack_cnt[a]; z++)
-    {
-      if (z > 0)
- A4GL_debug ("%s ", A4GL_null_as_null(s));
-
-      A4GL_debug ("%s", A4GL_null_as_null(gen_stack[a][z]));
-    }
-  gen_stack_cnt[a] = 0;
-}
 
 
 /**
@@ -4325,8 +4251,6 @@ fix_update_expr (int mode)
   int isize = 0;
   int idtype = 0;
   char colname[256] = "";
-  /*char csize[20];*/
-  /*char cdtype[20];*/
   char buff[1000];
   char *ccol;
   strcpy (big_buff, "SET ");
@@ -4342,7 +4266,7 @@ fix_update_expr (int mode)
 	  return 0;
 	}
 
-      gen_stack_cnt[UPDCOL] = 0;
+      A4GL_4glc_clr_gen(UPDCOL);
 
       strcpy (colname, "");
       rval =
@@ -4362,24 +4286,23 @@ fix_update_expr (int mode)
 	  if (rval == 0)
 	    break;
 	  trim_spaces (colname);
-	  push_gen (UPDCOL, colname);
+	  A4GL_4glc_push_gen (UPDCOL, colname);
 	}
       A4GLSQL_end_get_columns ();
     }
 
-  if (gen_stack_cnt[UPDCOL] != gen_stack_cnt[UPDVAL])
+  if (A4GL_4glc_gen_cnt(UPDCOL) != A4GL_4glc_gen_cnt(UPDVAL))
     {
-dump_updvals();
+	A4GL_4glc_dump_updvals();
       a4gl_yyerror
 	("Number of columns in update not the same as number of values");
     }
 
-  for (a = 0; a < gen_stack_cnt[UPDCOL]; a++)
+  for (a = 0; a < A4GL_4glc_gen_cnt(UPDCOL); a++)
     {
       if (a)
 	strcat (big_buff, ",");
-	//printf("col=%s\n",gen_stack[UPDCOL][a]);
-      sprintf (buff, "%s=%s", gen_stack[UPDCOL][a], gen_stack[UPDVAL][a]);
+      sprintf (buff, "%s=%s", A4GL_4glc_get_gen(UPDCOL,a), A4GL_4glc_get_gen(UPDVAL,a));
       strcat (big_buff, buff);
     }
 
@@ -4387,179 +4310,6 @@ dump_updvals();
 }
 
 
-
-
-#ifdef MOVED
-char *
-fix_insert_expr (int mode)
-{
-  static char big_buff[20000];
-  int a;
-  int b;
-  int rval;
-  int isize = 0;
-  int idtype = 0;
-  int found;
-  char colname[256] = "";
-  static int *idtypes=0;
-  static int *idtypes_t=0;
-  /*char csize[20]; */
-  /*char cdtype[20]; */
-  char buff[1000];
-  char *ccol;
-  int copy_ids=0;
-  strcpy (big_buff, "");
-
-  if (idtypes) { free(idtypes); idtypes=0; }
-  if (idtypes_t) { free(idtypes_t); idtypes_t=0; }
-
-
-
-  if (mode == 1)
-    {
-      if (db_used == 0)
-	{
-	  sprintf (buff,
-		   "You cannot use insert into this table without specifying a database");
-	  a4gl_yyerror (buff);
-	  return 0;
-	}
-
-	printf("gen_stack_cnt[INSCOL]=%d\n",gen_stack_cnt[INSCOL]);
-
-	if (gen_stack_cnt[INSCOL]==1 && strcmp(gen_stack[INSCOL][0],"*")==0) {
-      		/* It will only be a '*' anyway.... */
-      		gen_stack_cnt[INSCOL] = 0;
-      		strcpy (colname, "");
-      		rval = A4GLSQL_get_columns (current_ins_table, colname, &idtype, &isize);
-      		if (rval == 0) {
-	  		a4gl_yyerror ("Table is not in the database");
-	  		return 0;
-		}
-
-
-      		while (1) {
-	  		colname[0] = 0;
-	  		rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
-	  		strcpy (colname, ccol);
-	  		if (rval == 0)
-	    		break;
-	  		trim_spaces (colname);
-	  		push_gen (INSCOL, colname);
-			idtypes=acl_realloc(idtypes,sizeof(int)*gen_stack_cnt[INSCOL]);
-			idtypes[gen_stack_cnt[INSCOL]-1]=idtype;
-		}
-      		A4GLSQL_end_get_columns ();
-
-    	} else {
-      		gen_stack_cnt[TCOL] = 0;
-      		strcpy (colname, "");
-      		rval = A4GLSQL_get_columns (current_ins_table, colname, &idtype, &isize);
-      		if (rval == 0) {
-	  		a4gl_yyerror ("Table is not in the database");
-	  		return 0;
-		}
-
-
-      		while (1) {
-	  		colname[0] = 0;
-	  		rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
-	  		strcpy (colname, ccol);
-	  		if (rval == 0)
-	    		break;
-	  		trim_spaces (colname);
-	  		push_gen (TCOL, colname);
-			idtypes_t=acl_realloc(idtypes,sizeof(int)*gen_stack_cnt[INSCOL]);
-			idtypes_t[gen_stack_cnt[TCOL]-1]=idtype;
-		}
-      		A4GLSQL_end_get_columns ();
-	}
-
-  }
-
-
-
-  if (gen_stack_cnt[INSCOL] != gen_stack_cnt[INSVAL])
-    {
-      dump_insvals ();
-      a4gl_yyerror
-	("Number of columns in insert not the same as number of values");
-    }
-  strcpy (big_buff, "(");
-
-
-  // Lets do a quick check that our table names exist
-
-  if (gen_stack_cnt[TCOL]) {
-	printf("INSCOL=%d TCOL=%d\n",gen_stack_cnt[INSCOL],gen_stack_cnt[TCOL]);
-	for (b=0;b<gen_stack_cnt[INSCOL];b++) {
-		found=0;
-  		for (a=0;a<gen_stack_cnt[TCOL];a++) {
-			if (strcasecmp(gen_stack[INSCOL][b],gen_stack[TCOL][a])==0) {
-				found++;
-				break;
-			}
-		}
-	
-			if (!found) {
-			printf("Warning : Table %s Column %s not found for insert\n",current_ins_table,gen_stack[INSCOL][b]);
-		}
-  	}
-
-
-	copy_ids=0;
-	if (idtypes_t && idtypes==0) {
-		copy_ids=1;
-		idtypes=acl_realloc(idtypes,sizeof(int)*gen_stack_cnt[INSCOL]);
-		idtypes[gen_stack_cnt[INSCOL]-1]=idtype;
-	}
-
-  	// As we're doing a full insert - lets add any missing columns along with 
-  	// their value (which is a null)
-  	for (a=0;a<gen_stack_cnt[TCOL];a++) {
-		found=0;
-		for (b=0;b<gen_stack_cnt[INSCOL];b++) {
-			if (strcmp(gen_stack[INSCOL][b],gen_stack[TCOL][a])==0) {
-				found++;
-				break;
-			}
-		}
-	
-		if (!found) {
-	  			push_gen (INSCOL, gen_stack[TCOL][a]);
-	  			push_gen (INSVAL, "NULL");
-		}
-  	}
-  }
-
-
-  for (a = 0; a < gen_stack_cnt[INSCOL]; a++)
-    {
-      if (a)
-	strcat (big_buff, ",");
-      sprintf (buff, "%s", gen_stack[INSCOL][a]);
-      strcat (big_buff, buff);
-    }
-
-
-
-
-  strcat (big_buff, ") VALUES (");
-
-  for (a = 0; a < gen_stack_cnt[INSVAL]; a++)
-    {
-      if (a)
-	strcat (big_buff, ",");
-
-      sprintf (buff, "%s", A4GLSQLCV_insert_alias (current_ins_table, gen_stack[INSCOL][a], gen_stack[INSVAL][a],0));
-      strcat (big_buff, buff);
-    }
-  strcat (big_buff, ")");
-
-  return big_buff;
-}
-
-#endif
 
 
 
@@ -4656,42 +4406,7 @@ char * pg_make_sql_string_and_free (char *first, ...)
 }
 
 
-void
-dump_updvals ()
-{
-  int a;
-  for (a = 0; a < gen_stack_cnt[UPDCOL]; a++)
-    {
-      PRINTF ("UPDCOL[%d] : %s\n", a, gen_stack[UPDCOL][a]);
-    }
 
-  for (a = 0; a < gen_stack_cnt[UPDVAL]; a++)
-    {
-      PRINTF ("UPDVAL[%d] : %s\n", a,gen_stack[UPDVAL][a]);
-    }
-  for (a = 0; a < gen_stack_cnt[UPDVAL2]; a++)
-    {
-      PRINTF ("UPDVAL2[%d]: %s\n", a,gen_stack[UPDVAL2][a]);
-    }
-}
-
-
-#ifdef MOVED
-void
-dump_insvals ()
-{
-  int a;
-  for (a = 0; a < gen_stack_cnt[INSCOL]; a++)
-    {
-      PRINTF ("INSCOL[%d] : %s\n", a, gen_stack[INSCOL][a]);
-    }
-
-  for (a = 0; a < gen_stack_cnt[INSVAL]; a++)
-    {
-      PRINTF ("INSVAL[%d] : %s\n", a,gen_stack[INSVAL][a]);
-    }
-}
-#endif
 
 
 
@@ -5221,4 +4936,135 @@ char *A4GL_print_start_to_is_expr(struct expr_str *ptr) {
 	print_expr(ptr); 
 	return "A4GL_get_rep_start()";
 }
+
+
+
+
+#ifdef MOVED
+
+
+
+void A4GL_4glc_clr_gen(int a) {
+	int c;
+		for (c=0;c<gen_stack_cnt[a];a++) {
+					if (gen_stack_ptr[a][c]) free(gen_stack_ptr[a][c]);
+		}
+		free(gen_stack_ptr[a]);
+		gen_stack_cnt[a]=0;
+}
+
+int A4GL_4glc_gen_cnt(int a) {
+		return gen_stack_cnt[a];
+}
+
+char *A4GL_4glc_get_gen(int a,int n) {
+		return gen_stack_ptr[a][n];
+}
+
+void A4GL_init_gen_stack() {
+	int c;
+	for (c=0;c<GEN_STACKS;c++) {
+			gen_stack_ptr[c]=0;
+			gen_stack_cnt[c]=0;
+			gen_stack_alloc[c]=0;
+	}
+}
+
+/**
+ *
+ * @param a 
+ * @param s
+ */
+void
+A4GL_4glc_push_gen (int a, char *s)
+{
+  int c;
+  A4GL_debug ("Push %d %s - %d\n", a, A4GL_null_as_null(s), gen_stack_cnt[a]);
+
+  if (gen_stack_cnt[a] >= GEN_STACK_SIZE)
+    {
+      PRINTF ("Out of stack!\n");
+      exit (77);
+    }
+
+  c=gen_stack_cnt[a];
+
+  if (c>=gen_stack_alloc[a] || gen_stack_ptr[a]==0) {
+	  gen_stack_alloc[a]+=1024;
+	  gen_stack_ptr[a]=realloc(gen_stack_ptr[a],gen_stack_alloc[a]*sizeof(char *));
+  }
+  
+  gen_stack_ptr[a][gen_stack_cnt[a]++]=strdup(s);
+}
+
+
+
+
+void
+A4GL_4glc_copy_gen (int a, int b)
+{
+  int c;
+
+
+  if (gen_stack_cnt[a] && gen_stack_ptr[a][gen_stack_cnt[a] - 1][0] == '(')
+    {
+      A4GL_4glc_pop_gen (a);
+    }
+
+
+  for (c = 0; c < gen_stack_cnt[b]; c++)
+    {
+      A4GL_4glc_push_gen (a, gen_stack_ptr[b][c]);
+    }
+  gen_stack_cnt[b] = 0;
+}
+
+char *
+A4GL_4glc_pop_gen (int a)
+{
+  gen_stack_cnt[a]--;
+  return gen_stack_ptr[a][gen_stack_cnt[a]];
+
+}
+
+
+/**
+ *
+ * @param a
+ * @param s
+ */
+void
+A4GL_4glc_pop_all_gen (int a, char *s)
+{
+  int z;
+  for (z = 0; z < gen_stack_cnt[a]; z++)
+    {
+      if (z > 0) A4GL_debug ("%s ", A4GL_null_as_null(s));
+      A4GL_debug ("%s", A4GL_null_as_null(gen_stack_ptr[a][z]));
+    }
+  A4GL_4glc_clr_gen(a);
+  //gen_stack_cnt[a] = 0;
+}
+
+void
+A4GL_4glc_dump_updvals ()
+{
+  int a;
+  for (a = 0; a < gen_stack_cnt[UPDCOL]; a++)
+    {
+      PRINTF ("UPDCOL[%d] : %s\n", a, gen_stack_ptr[UPDCOL][a]);
+    }
+
+  for (a = 0; a < gen_stack_cnt[UPDVAL]; a++)
+    {
+      PRINTF ("UPDVAL[%d] : %s\n", a,gen_stack_ptr[UPDVAL][a]);
+    }
+  for (a = 0; a < gen_stack_cnt[UPDVAL2]; a++)
+    {
+      PRINTF ("UPDVAL2[%d]: %s\n", a,gen_stack_ptr[UPDVAL2][a]);
+    }
+}
+#endif
+
+
 /* ================================= EOF ============================= */

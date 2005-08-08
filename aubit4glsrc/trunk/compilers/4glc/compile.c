@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.91 2005-07-19 19:12:29 mikeaubury Exp $
+# $Id: compile.c,v 1.92 2005-08-08 20:57:51 mikeaubury Exp $
 #*/
 
 /**
@@ -607,6 +607,7 @@ initArguments (int argc, char *argv[])
     }
 
 	A4GL_init_datatypes ();
+	A4GL_init_gen_stack();
 
 	/* prepare CC flags */
 	SPRINTF1 (incl_path, "-I\"%s/incl\" ",acl_getenv ("AUBITDIR"));

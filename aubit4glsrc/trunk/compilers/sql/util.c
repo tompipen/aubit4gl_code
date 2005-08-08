@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.23 2005-07-29 06:56:58 mikeaubury Exp $
+# $Id: util.c,v 1.24 2005-08-08 21:01:04 mikeaubury Exp $
 #
 */
 
@@ -88,6 +88,7 @@ void * dummy;
 }
 
 
+#ifdef MOVED
 /**
  *
  * @todo Describe function
@@ -102,6 +103,7 @@ pop_gen (int a) {
 
 }
 
+#endif
 
 /**
  *
@@ -164,6 +166,7 @@ make_sql_string_and_free (char *first, ...)
 }
 
 
+#ifdef MOVED
 
 /**
  *
@@ -201,7 +204,7 @@ copy_gen (int a, int b)
 
   for (c = 0; c < gen_stack_cnt[b]; c++)
     {
-      push_gen (a, gen_stack[b][c]);
+      A4GL_4glc_push_gen (a, gen_stack[b][c]);
     }
   gen_stack_cnt[b] = 0;
 }
@@ -236,6 +239,7 @@ pop_all_gen (int a, char *s)
   gen_stack_cnt[a] = 0;
 }
 
+#endif
 
 static void ansi_violation(char *s,int n) { }
 
@@ -269,7 +273,7 @@ fix_update_expr (int mode)
           return 0;
         }
 
-      gen_stack_cnt[UPDCOL] = 0;
+      A4GL_4glc_clr_gen(UPDCOL);
       strcpy (colname, "");
       rval =
         A4GLSQL_get_columns (current_upd_table, colname, &idtype, &isize);
@@ -288,24 +292,24 @@ fix_update_expr (int mode)
           if (rval == 0)
             break;
           trim_spaces (colname);
-          push_gen (UPDCOL, colname);
+          A4GL_4glc_push_gen (UPDCOL, colname);
         }
       A4GLSQL_end_get_columns ();
     }
 
-  if (gen_stack_cnt[UPDCOL] != gen_stack_cnt[UPDVAL])
+  if (A4GL_4glc_gen_cnt(UPDCOL) != A4GL_4glc_gen_cnt(UPDVAL))
     {
 	//dump_updvals();
-	printf("%d %d\n",gen_stack_cnt[UPDCOL],gen_stack_cnt[UPDVAL]);
+	printf("%d!=%d\n",A4GL_4glc_gen_cnt(UPDCOL),A4GL_4glc_gen_cnt(UPDVAL));
       sqlparse_yyerror
         ("Number of columns in update not the same as number of values");
     }
 
-  for (a = 0; a < gen_stack_cnt[UPDCOL]; a++)
+  for (a = 0; a < A4GL_4glc_gen_cnt(UPDCOL); a++)
     {
       if (a)
         strcat (big_buff, ",");
-      sprintf (buff, "%s=%s", gen_stack[UPDCOL][a], gen_stack[UPDVAL][a]);
+      sprintf (buff, "%s=%s", A4GL_4glc_get_gen(UPDCOL,a), A4GL_4glc_get_gen(UPDVAL,a));
       strcat (big_buff, buff);
     }
 

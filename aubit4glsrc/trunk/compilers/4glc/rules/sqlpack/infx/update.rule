@@ -9,7 +9,7 @@
 update_statement_ss:
 	KW_UPDATE table_name {
 		strcpy(current_upd_table,$<str>2);
-		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); pop_all_gen(UPDVAL2,"!");
+		A4GL_4glc_pop_all_gen(UPDCOL,"!"); A4GL_4glc_pop_all_gen(UPDVAL,"!"); A4GL_4glc_pop_all_gen(UPDVAL2,"!");
 		$<sql_string>$=acl_strdup("");
 	} set_clause_list_ss  {
 		strcpy(current_upd_table,"");
@@ -21,18 +21,18 @@ update_statement_ss:
 
 
 where_upd_ss : {
-		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); pop_all_gen(UPDVAL2,"!");
+		A4GL_4glc_pop_all_gen(UPDCOL,"!"); A4GL_4glc_pop_all_gen(UPDVAL,"!"); A4GL_4glc_pop_all_gen(UPDVAL2,"!");
 		$<sql_string>$=acl_strdup("");
 	}
 	| WHERE_CURRENT_OF fetch_cursor_name { 
-		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); pop_all_gen(UPDVAL2,"!");
+		A4GL_4glc_pop_all_gen(UPDCOL,"!"); A4GL_4glc_pop_all_gen(UPDVAL,"!"); A4GL_4glc_pop_all_gen(UPDVAL2,"!");
 		rm_quotes($<str>2);
 		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
 		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>$),0);
 		add_feature("UPDATE_WHERE_CURRENT_OF");
 	}
 	| WHERE search_condition_ss {
-		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); pop_all_gen(UPDVAL2,"!");
+		A4GL_4glc_pop_all_gen(UPDCOL,"!"); A4GL_4glc_pop_all_gen(UPDVAL,"!"); A4GL_4glc_pop_all_gen(UPDVAL2,"!");
 		$<sql_string>$=make_sql_string_and_free(acl_strdup("WHERE "),$<sql_string>2,0);
 	}
 	;
@@ -53,7 +53,7 @@ set_clause_list_ss:
     | XSET_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {	
 			 add_feature("UPDATE_SET_STAR");
 		$<sql_string>$=make_sql_string_and_free(acl_strdup("SET *=("),$<sql_string>2,kw_cb,0);
-		push_gen(UPDCOL,"*");
+		A4GL_4glc_push_gen(UPDCOL,"*");
 		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||1) { 
 			$<sql_string>$=acl_strdup(fix_update_expr(1));
 			ansi_violation("Update (..)=(..)",0);
@@ -64,7 +64,7 @@ set_clause_list_ss:
     | XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {	
 			 add_feature("UPDATE_SET_STAR");
 		$<sql_string>$=make_sql_string_and_free(acl_strdup("SET *=("),$<sql_string>2,kw_cb,0);
-		push_gen(UPDCOL,"*");
+		A4GL_4glc_push_gen(UPDCOL,"*");
 		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||1) { 
 			$<sql_string>$=acl_strdup(fix_update_expr(1));
 			ansi_violation("Update (..)=(..)",0);
@@ -83,7 +83,7 @@ set_clause_list_ss:
 			 add_feature("UPDATE_SET_STAR");
 
 		ptr=$<sql_string>2;
-		push_gen(UPDCOL,"*");
+		A4GL_4glc_push_gen(UPDCOL,"*");
 
 		if (ptr[0]=='(') {
 			$<sql_string>$=make_sql_string_and_free(acl_strdup("SET *= "),$<sql_string>2,0);
@@ -103,7 +103,7 @@ set_clause_list_ss:
 			 add_feature("UPDATE_SET_STAR");
 
 		ptr=$<sql_string>2;
-		push_gen(UPDCOL,"*");
+		A4GL_4glc_push_gen(UPDCOL,"*");
 
 		if (ptr[0]=='(') {
 			$<sql_string>$=make_sql_string_and_free(acl_strdup("SET *= "),$<sql_string>2,0);
@@ -186,10 +186,10 @@ col_1_ss :
 ;
 
 upd_col_list  : upd_column_name	{
-			push_gen(UPDCOL,$<str>1); strcpy($<str>$,$<str>1);
+			A4GL_4glc_push_gen(UPDCOL,$<str>1); strcpy($<str>$,$<str>1);
 		} 
 		| upd_col_list KW_COMMA upd_column_name {
-			push_gen(UPDCOL,$<str>3); sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+			A4GL_4glc_push_gen(UPDCOL,$<str>3); sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
 		}
 
 ;
@@ -198,17 +198,17 @@ upd_col_list  : upd_column_name	{
 upd_val_list_ss  : 
 	upd_val_ss { 
 		$<sql_string>$=$<sql_string>1; 
-		if (gen_cnt(UPDVAL2)) {
-			copy_gen(UPDVAL,UPDVAL2);
+		if (A4GL_4glc_gen_cnt(UPDVAL2)) {
+			A4GL_4glc_copy_gen(UPDVAL,UPDVAL2);
 		} else {
-                	push_gen(UPDVAL,$<sql_string>1);
+                	A4GL_4glc_push_gen(UPDVAL,$<sql_string>1);
 		}
 	}
 	| upd_val_list_ss KW_COMMA upd_val_ss { 
-		if (gen_cnt(UPDVAL2)) {
-			copy_gen(UPDVAL,UPDVAL2);
+		if (A4GL_4glc_gen_cnt(UPDVAL2)) {
+			A4GL_4glc_copy_gen(UPDVAL,UPDVAL2);
 		} else {
-                	push_gen(UPDVAL,$<sql_string>3);
+                	A4GL_4glc_push_gen(UPDVAL,$<sql_string>3);
 		}
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0); 
 	} 
@@ -265,7 +265,7 @@ $<sql_string>$=make_sql_string_and_free(
 		sprintf(buff,"%s.%s",$<str>2,$<str>4);
 		$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_substr(A4GLSQLCV_check_colname($<str>2,$<str>4),i->i0,i->i1,i->i2)),0); 
 		}
-        | upd_value_expression_complex_ss { $<sql_string>$=$<sql_string>1; pop_all_gen(UPDVAL2,"!"); }
+        | upd_value_expression_complex_ss { $<sql_string>$=$<sql_string>1; A4GL_4glc_pop_all_gen(UPDVAL2,"!"); }
         | literal {$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),0);
 	}
         | KW_TRUE {$<sql_string>$=make_sql_string_and_free(acl_strdup("TRUE"),0);}

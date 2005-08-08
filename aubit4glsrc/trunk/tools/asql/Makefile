@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.38 2005-06-09 14:09:11 mikeaubury Exp $
+# $Id: Makefile,v 1.39 2005-08-08 21:01:22 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -94,7 +94,7 @@ A4GL_LEXTYPE	=EC
 #Export to environment
 export A4GL_LEXTYPE A4GL_USE_DATABASE_STMT POSTGRESDIR PGSQL_INCDIR CFLAGS
 
-ALL_FORMS		=qryfrm${A4GL_FRM_EXT}
+ALL_FORMS		=
 
 ################
 #Decide what to compile by default
@@ -145,7 +145,7 @@ LINKLIBS		=
 #-lUI_TUI
 
 
-ALL				=${ALL_FORMS} ${ALL_PROGS}
+ALL				= ${ALL_PROGS}
 
 .phony: install all clean
 
@@ -237,7 +237,7 @@ pg_%.ao: %.4gl
 
 install:
 	${CP} ${ALL_PROGS} ${ROOT}/bin
-	${CP} ${ALL_FORMS} ${ROOT}/${FORMS_DESTINATION}
+#	${CP} ${ALL_FORMS} ${ROOT}/${FORMS_DESTINATION}
 #	ln -s ${ROOT}/bin/asql_p.4ae ${ROOT}/bin/asql
 	${RM} ${AUBITDIR}/bin/asql	
 	ln -s ${AUBITDIR}/bin/asql_g${A4GL_EXE_EXT} ${AUBITDIR}/bin/asql

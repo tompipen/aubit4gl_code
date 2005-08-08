@@ -193,7 +193,7 @@ value_expression_initial_ss :
 	value_expression_complex_ss {
 			/*
 			if (strlen(current_upd_table)) {
-				push_gen(UPDVAL,$<sql_string>1);
+				A4GL_4glc_push_gen(UPDVAL,$<sql_string>1);
 			}
 			*/
 		$<sql_string>$=$<sql_string>1;

@@ -37,14 +37,16 @@ static void
 dump_insvals (void)
 {
   int a;
-  for (a = 0; a < gen_stack_cnt[INSCOL]; a++)
+  int c;
+  c=A4GL_4glc_gen_cnt(INSCOL);
+  for (a = 0; a < c; a++)
     {
-      PRINTF ("INSCOL[%d] : %s\n", a, gen_stack[INSCOL][a]);
+      PRINTF ("INSCOL[%d] : %s\n", a, A4GL_4glc_get_gen(INSCOL,a));
     }
 
-  for (a = 0; a < gen_stack_cnt[INSVAL]; a++)
+  for (a = 0; a < c; a++)
     {
-      PRINTF ("INSVAL[%d] : %s\n", a,gen_stack[INSVAL][a]);
+      PRINTF ("INSVAL[%d] : %s\n", a,A4GL_4glc_get_gen(INSVAL,a));
     }
 }
 
@@ -82,7 +84,7 @@ fix_insert_expr (int mode)
   char *ccol;
   int copy_ids=0;
   strcpy (big_buff, "");
-  gen_stack_cnt[TCOL] = 0;
+  A4GL_4glc_clr_gen(TCOL);
 
   if (idtypes) { free(idtypes); idtypes=0; }
   if (idtypes_t) { free(idtypes_t); idtypes_t=0; }
@@ -98,9 +100,9 @@ fix_insert_expr (int mode)
 	}
 
 
-	if (gen_stack_cnt[INSCOL]==1 && strcmp(gen_stack[INSCOL][0],"*")==0) {
+	if (A4GL_4glc_gen_cnt(INSCOL)==1 && strcmp(A4GL_4glc_get_gen(INSCOL,0),"*")==0) {
       		/* It will only be a '*' anyway.... */
-      		gen_stack_cnt[INSCOL] = 0;
+		A4GL_4glc_clr_gen(INSCOL);
       		rval = A4GLSQL_get_columns (current_ins_table, colname, &idtype, &isize);
       		strcpy (colname, "");
       		if (rval == 0) {
@@ -117,9 +119,9 @@ fix_insert_expr (int mode)
 	    		break;
 	  		trim_spaces (colname);
 			if (is_serial_column(current_ins_table, colname)) idtype=DTYPE_SERIAL;
-	  		push_gen (INSCOL, colname);
-			idtypes=acl_realloc(idtypes,sizeof(int)*gen_stack_cnt[INSCOL]);
-			idtypes[gen_stack_cnt[INSCOL]-1]=idtype;
+	  		A4GL_4glc_push_gen (INSCOL, colname);
+			idtypes=acl_realloc(idtypes,sizeof(int)*  A4GL_4glc_gen_cnt(INSCOL));
+			idtypes[A4GL_4glc_gen_cnt(INSCOL)-1]=idtype;
 		}
       		A4GLSQL_end_get_columns ();
 
@@ -142,11 +144,11 @@ fix_insert_expr (int mode)
 	    		break;
 	  		trim_spaces (colname);
 			if (is_serial_column(current_ins_table, colname)) idtype=DTYPE_SERIAL;
-	  		push_gen (TCOL, colname);
+	  		A4GL_4glc_push_gen (TCOL, colname);
 
 
-			idtypes_t=acl_realloc(idtypes_t,sizeof(int)*gen_stack_cnt[TCOL]);
-			idtypes_t[gen_stack_cnt[TCOL]-1]=idtype;
+			idtypes_t=acl_realloc(idtypes_t,sizeof(int)*A4GL_4glc_gen_cnt(TCOL));
+			idtypes_t[A4GL_4glc_gen_cnt(TCOL)-1]=idtype;
 		}
       		A4GLSQL_end_get_columns ();
 	}
@@ -155,7 +157,7 @@ fix_insert_expr (int mode)
 
 
 
-  if (gen_stack_cnt[INSCOL] != gen_stack_cnt[INSVAL])
+  if (A4GL_4glc_gen_cnt(INSCOL) != A4GL_4glc_gen_cnt(INSVAL))
     {
       dump_insvals ();
       do_yyerror ("Number of columns in insert not the same as number of values");
@@ -165,11 +167,11 @@ fix_insert_expr (int mode)
 
   // Lets do a quick check that our column names exist
 
-  if (gen_stack_cnt[TCOL]) {
-	for (b=0;b<gen_stack_cnt[INSCOL];b++) {
+  if (A4GL_4glc_gen_cnt(TCOL)) {
+	for (b=0;b<A4GL_4glc_gen_cnt(INSCOL);b++) {
 		found=0;
-  		for (a=0;a<gen_stack_cnt[TCOL];a++) {
-			if (strcasecmp(gen_stack[INSCOL][b],gen_stack[TCOL][a])==0) {
+  		for (a=0;a<A4GL_4glc_gen_cnt(TCOL);a++) {
+			if (strcasecmp(A4GL_4glc_get_gen(INSCOL,b),A4GL_4glc_get_gen(TCOL,a))==0) {
 
 				found++;
 				break;
@@ -177,7 +179,7 @@ fix_insert_expr (int mode)
 		}
 	
 			if (!found) {
-			PRINTF("Warning : Table %s Column %s not found for insert\n",current_ins_table,gen_stack[INSCOL][b]);
+				PRINTF("Warning : Table %s Column %s not found for insert\n",current_ins_table,A4GL_4glc_get_gen(INSCOL,b));
 		}
   	}
 
@@ -186,8 +188,8 @@ fix_insert_expr (int mode)
 
 	if (idtypes_t && idtypes==0) {
 		copy_ids=1;
-		idtypes=acl_realloc(idtypes,sizeof(int)*gen_stack_cnt[TCOL]);
-		for (a=0;a<gen_stack_cnt[TCOL];a++) { 
+		idtypes=acl_realloc(idtypes,sizeof(int)*A4GL_4glc_gen_cnt(TCOL));
+		for (a=0;a<A4GL_4glc_gen_cnt(TCOL);a++) { 
 			idtypes[a]=-1; 
 		}
 	}
@@ -195,29 +197,29 @@ fix_insert_expr (int mode)
 
   	// As we're doing a full insert - lets add any missing columns along with 
   	// their value (which is a null)
-  	for (a=0;a<gen_stack_cnt[TCOL];a++) {
+  	for (a=0;a<A4GL_4glc_gen_cnt(TCOL);a++) {
 		found=0;
-		for (b=0;b<gen_stack_cnt[INSCOL];b++) {
-			if (strcmp(gen_stack[INSCOL][b],gen_stack[TCOL][a])==0) {
+		for (b=0;b<A4GL_4glc_gen_cnt(INSCOL);b++) {
+			if (strcmp(A4GL_4glc_get_gen(INSCOL,b),A4GL_4glc_get_gen(TCOL,a))==0) {
 				found++;
 				break;
 			}
 		}
 	
 		if (!found) {
-	  			push_gen (INSCOL, gen_stack[TCOL][a]);
-	  			push_gen (INSVAL, "NULL");
+	  			A4GL_4glc_push_gen (INSCOL, A4GL_4glc_get_gen(TCOL,a));
+	  			A4GL_4glc_push_gen (INSVAL, "NULL");
 		}
   	}
 
 
 
-  	for (a=0;a<gen_stack_cnt[TCOL];a++) {
+  	for (a=0;a<A4GL_4glc_gen_cnt(TCOL);a++) {
 		found=0;
 		A4GL_assertion(idtypes==0,"idtypes=0");
 		A4GL_assertion(idtypes_t==0,"idtypes_t=0");
-		for (b=0;b<gen_stack_cnt[INSCOL];b++) {
-			if (strcmp(gen_stack[INSCOL][b],gen_stack[TCOL][a])==0) {
+		for (b=0;b<A4GL_4glc_gen_cnt(INSCOL);b++) {
+			if (strcmp(A4GL_4glc_get_gen(INSCOL,b),A4GL_4glc_get_gen(TCOL,a))==0) {
 				idtypes[b]=idtypes_t[a];
 				found++;
 				break;
@@ -238,22 +240,25 @@ fix_insert_expr (int mode)
 
 
 
-  for (a = 0; a < gen_stack_cnt[INSVAL]; a++)
+  for (a = 0; a < A4GL_4glc_gen_cnt(INSVAL); a++)
     {
-      sprintf (buff, "%s", A4GLSQLCV_insert_alias_value (current_ins_table, gen_stack[INSCOL][a], gen_stack[INSVAL][a],idtypes[a]));
-	strcpy(gen_stack[INSVAL][a],buff);
+      sprintf (buff, "%s", A4GLSQLCV_insert_alias_value (current_ins_table, A4GL_4glc_get_gen(INSCOL,a), 
+			      		A4GL_4glc_get_gen(INSVAL,a),idtypes[a]));
+	strcpy(A4GL_4glc_get_gen(INSVAL,a),buff);
     }
 
   added=0;
-  for (a = 0; a < gen_stack_cnt[INSCOL]; a++)
+  for (a = 0; a < A4GL_4glc_gen_cnt(INSCOL); a++)
     {
-      sprintf (buff, "%s", A4GLSQLCV_insert_alias_column (current_ins_table, gen_stack[INSCOL][a], gen_stack[INSVAL][a],idtypes[a]));
+      sprintf (buff, "%s", A4GLSQLCV_insert_alias_column (current_ins_table, 
+			      		A4GL_4glc_get_gen(INSCOL,a), 
+					A4GL_4glc_get_gen(INSVAL,a),idtypes[a]));
 	if (strlen(buff)) {
       		if (added) strcat (big_buff, ",");
       		strcat (big_buff, buff);
 		added++;
 	} else {
-		strcpy(gen_stack[INSVAL][a],""); // We're removing thing column from the INSERT, so remove the value too
+		strcpy(A4GL_4glc_get_gen(INSVAL,a),""); // We're removing thing column from the INSERT, so remove the value too
 	}
 
     }
@@ -262,11 +267,11 @@ fix_insert_expr (int mode)
   strcat (big_buff, ") VALUES (");
 
   added=0;
-  for (a = 0; a < gen_stack_cnt[INSVAL]; a++)
+  for (a = 0; a < A4GL_4glc_gen_cnt(INSVAL); a++)
     {
-	if (strlen(gen_stack[INSVAL][a])) {
+	if (strlen(A4GL_4glc_get_gen(INSVAL,a))) {
       		if (added) strcat (big_buff, ",");
-      		strcat (big_buff, gen_stack[INSVAL][a]);
+      		strcat (big_buff, A4GL_4glc_get_gen(INSVAL,a));
 		added++;
 	}
 	

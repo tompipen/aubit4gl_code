@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.244 2005-07-29 06:56:58 mikeaubury Exp $
+# $Id: compile_c.c,v 1.245 2005-08-08 21:01:05 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.244 2005-07-29 06:56:58 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.245 2005-08-08 21:01:05 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -41,7 +41,7 @@
  * The goal is to generate a C program that implement the functionality of
  * the 4gl being compiled.
  */
-void push_gen (int a, char *s);
+void A4GL_4glc_push_gen (int a, char *s);
 /*
 =====================================================================
 
@@ -5490,7 +5490,7 @@ LEXLIB_A4GL_set_var_sql (int doing_declare, int n)
 
 	  if (current_upd_table)
 	    {
-	      push_gen (UPDVAL2, buff_small);
+	      A4GL_4glc_push_gen (UPDVAL2, buff_small);
 	    }
 	}
       return buff;
@@ -5507,7 +5507,7 @@ LEXLIB_A4GL_set_var_sql (int doing_declare, int n)
 
 	  if (current_upd_table)
 	    {
-	      push_gen (UPDVAL2, "?");
+	      A4GL_4glc_push_gen (UPDVAL2, "?");
 	    }
 	  strcat (buff, "?");
 	}

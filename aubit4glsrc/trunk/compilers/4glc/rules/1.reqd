@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.69 2005-07-29 06:56:57 mikeaubury Exp $
+# $Id: 1.reqd,v 1.70 2005-08-08 21:00:59 mikeaubury Exp $
 #
 */
 
@@ -118,6 +118,7 @@
 #include "a4gl_4glc_int.h"
 #include "variables.h"
 #include "var_handling.h"
+#include "a4gl_gen_stack.h"
 
 /*
 =====================================================================
@@ -197,7 +198,7 @@ struct 		pdf_rep_structure pdf_rep_struct;
 struct 		form_attr form_attrib;
 char *		make_sql_string_and_free(char *first,...);
 char *into_temp_clause=0;
-void copy_gen (int a, int b);
+//void copy_gen (int a, int b);
 char *get_namespace (char *s);
 //void set_yytext (char *s);
 int isin_command (char *cmd_type);
