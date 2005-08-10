@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gen_stack.c,v 1.1 2005-08-08 21:01:05 mikeaubury Exp $
+# $Id: gen_stack.c,v 1.2 2005-08-10 10:02:44 mikeaubury Exp $
 #
 */
 
@@ -57,17 +57,20 @@
 #include "a4gl_gen_stack.h"
 #define FEATURE_USED            'X'
 
-void A4GL_4glc_clr_gen(int a) {
+void A4GL_4glc_clr_gen(int stk_no) {
 	int c;
-		for (c=0;c<gen_stack_cnt[a];a++) {
-				if (gen_stack_ptr[a][c]) {
-						free(gen_stack_ptr[a][c]);
-						gen_stack_ptr[a][c]=0;
+		for (c=0;c<gen_stack_cnt[stk_no];c++) {
+				if (gen_stack_ptr[stk_no][c]) {
+						free(gen_stack_ptr[stk_no][c]);
+						gen_stack_ptr[stk_no][c]=0;
 				}
 					
 		}
-		free(gen_stack_ptr[a]);
-		gen_stack_cnt[a]=0;
+	free(gen_stack_ptr[stk_no]);
+	gen_stack_ptr[stk_no]=0;
+	gen_stack_alloc[stk_no]=0;
+	gen_stack_cnt[stk_no]=0;
+
 }
 
 int A4GL_4glc_gen_cnt(int a) {
@@ -103,7 +106,6 @@ A4GL_4glc_push_gen (int a, char *s)
   if (c>=gen_stack_alloc[a] || gen_stack_ptr[a]==0) { // Allocate some more space...
 	  int d;
 	  gen_stack_alloc[a]+=1024;
-	  //printf("Allocating more space for generic stack %d (%d rows)\n",a,gen_stack_alloc[a]);
 	  A4GL_debug("Allocating more space for generic stack %d (%d rows)",a,gen_stack_alloc[a]);
 	  gen_stack_ptr[a]=realloc(gen_stack_ptr[a],gen_stack_alloc[a]*sizeof(char *));
 	  for (d=gen_stack_cnt[a];d<gen_stack_alloc[a];d++) gen_stack_ptr[a][d]=0;
@@ -119,7 +121,6 @@ void
 A4GL_4glc_copy_gen (int a, int b)
 {
   int c;
-
 
   if (gen_stack_cnt[a] && gen_stack_ptr[a][gen_stack_cnt[a] - 1][0] == '(')
     {
@@ -168,6 +169,7 @@ void
 A4GL_4glc_dump_updvals (void)
 {
   int a;
+  printf("UPDCOL=%d UPDVAL=%d UPDVAL2=%d\n",UPDCOL,UPDVAL,UPDVAL2);
   for (a = 0; a < gen_stack_cnt[UPDCOL]; a++)
     {
       PRINTF ("UPDCOL[%d] : %s\n", a, gen_stack_ptr[UPDCOL][a]);

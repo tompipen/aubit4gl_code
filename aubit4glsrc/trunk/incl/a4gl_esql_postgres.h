@@ -301,8 +301,8 @@ extern "C"
 
 /* There may be some circumstances where we don't want to do automatic SQL conversions */
 #ifndef NO_SQL_TRANSLATION
-	#define CONVERTSQL(s) A4GLSQLCV_convert_sql("POSTGRES",s,_module_name,__LINE__)
-	#define CONVERTSQL_LN(s,l) A4GLSQLCV_convert_sql("POSTGRES",s,_module_name,l)
+	#define CONVERTSQL(s) A4GLSQLCV_convert_sql_ml("POSTGRES",s,_module_name,__LINE__)
+	#define CONVERTSQL_LN(s,l) A4GLSQLCV_convert_sql_ml("POSTGRES",s,_module_name,l)
 #else
 	#define CONVERTSQL(s) s
 	#define CONVERTSQL_LN(s,l) s
