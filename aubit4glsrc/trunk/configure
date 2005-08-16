@@ -10440,7 +10440,7 @@ IS_ALL_MAKEFILE=`echo "$ALL_MAKEFILE" | sed -e 's/\//\\\\/g'`
 ## ==================================================================
 
 ALL_HELP="helpfile.hlp help_aubit.hlp help_ecpg.hlp help_sqlite.hlp 4glpc.hlp"
-FORM_FILES="change$COMP_FORM_EXT options$COMP_FORM_EXT values$COMP_FORM_EXT qryfrm$COMP_FORM_EXT "
+FORM_FILES="change$COMP_FORM_EXT options$COMP_FORM_EXT values$COMP_FORM_EXT "
 
 #Destination for files we use in build process, installation and when
 #we make installers (relative to Aubit root)
@@ -39651,7 +39651,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.325 2005-07-26 06:21:37 mikeaubury Exp $
+| $Id: configure,v 1.326 2005-08-16 10:36:12 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

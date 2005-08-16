@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.298 2005-07-26 06:22:06 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.299 2005-08-16 10:36:14 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2269,7 +2269,7 @@ IS_ALL_MAKEFILE=`echo "$ALL_MAKEFILE" | sed -e 's/\//\\\\/g'`
 ## ==================================================================
 
 ALL_HELP="helpfile.hlp help_aubit.hlp help_ecpg.hlp help_sqlite.hlp 4glpc.hlp"
-FORM_FILES="change$COMP_FORM_EXT options$COMP_FORM_EXT values$COMP_FORM_EXT qryfrm$COMP_FORM_EXT "
+FORM_FILES="change$COMP_FORM_EXT options$COMP_FORM_EXT values$COMP_FORM_EXT "
 
 #Destination for files we use in build process, installation and when
 #we make installers (relative to Aubit root)
@@ -9122,7 +9122,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.298 2005-07-26 06:22:06 mikeaubury Exp $
+| $Id: configure.in,v 1.299 2005-08-16 10:36:14 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
