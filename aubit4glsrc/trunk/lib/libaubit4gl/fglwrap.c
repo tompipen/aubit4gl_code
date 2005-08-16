@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.98 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.99 2005-08-16 06:33:05 mikeaubury Exp $
 #
 */
 
@@ -75,7 +75,7 @@ static int initsig_child(void );
 #define MAX_ARGS 1024
 
 
-char *p_args[MAX_ARGS];
+static char *p_args[MAX_ARGS];
 
 
 /*
