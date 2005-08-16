@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.77 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: report.c,v 1.78 2005-08-16 07:31:49 mikeaubury Exp $
 #
 */
 
@@ -151,11 +151,15 @@ int lvl = 0;
 */
 
 
-static char *top_of_page(char *s) {
+static char *top_of_page(char *s,char *why) {
+int n;
 static char *b=0; // Keep it hanging around....
-if (b!=0) free(b);
-b=strdup(s);
-A4GL_trim(b);
+	n=strlen(s)+1;
+	if (n<20) n=20;
+	if (b!=0) free(b);
+	b=malloc(n);
+	strcpy(b,s);
+	A4GL_trim(b);
 	if (A4GL_aubit_strcasecmp(b,"^L")==0) { // OK - we had 3 characters alloc'd
 			b[0]=12;		// we're going to use just 2...
 			b[1]=0;
@@ -171,11 +175,29 @@ add_header_entry (struct rep_structure *rep, struct s_save_header *hdr,
 		  char *buff, int entry)
 {
   char *n;
+  char *top;
+  int istop;
+  top=0;
+  istop=0;
+
+  if (rep->top_of_page) {
+	if (strlen(rep->top_of_page)) {
+  		top=top_of_page(rep->top_of_page,"C");
+	}
+  }
+
+
+
   if (strlen (buff))
     {
       n = acl_strdup (buff);
       A4GL_trim (n);
-      if (strlen (n) && strcmp (n, "\n") != 0)
+      if (top) {
+	      if (strcmp(n,top)==0) {
+		      istop=1;
+	      }
+      }
+      if (strlen (n) && strcmp (n, "\n") != 0 && istop==0)
 	{
 	  hdr->save_cnt++;
 	  hdr->save =
@@ -186,8 +208,8 @@ add_header_entry (struct rep_structure *rep, struct s_save_header *hdr,
 	  hdr->save[hdr->save_cnt - 1].col_no = rep->col_no;
 	  hdr->save[hdr->save_cnt - 1].entry = entry;
 	  hdr->save[hdr->save_cnt - 1].s = acl_strdup (buff);
-	  A4GL_debug ("Add header entry : %d %d %d %d %s\n", rep->page_no,
-		      rep->line_no, rep->col_no, entry, buff);
+	  A4GL_debug ("Add header entry : %d %d %d %d %s\n", rep->page_no, rep->line_no, rep->col_no, entry, buff);
+	  if (rep->col_no==0&&entry==0) A4GL_pause_execution();
 	}
       free (n);
     }
@@ -487,7 +509,7 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int want_nl, int right_
 
 
   if (rep->finishing && entry==-5 && no_param==0 && strlen(rep->top_of_page)) {
-			  report_print (rep, -1, top_of_page(rep->top_of_page));
+			  report_print (rep, -1, top_of_page(rep->top_of_page,"A"));
 			  return;
   }
 
@@ -511,14 +533,13 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int want_nl, int right_
 
 	  if (rep->line_no > rep->page_length - rep->bottom_margin)
 	    {
-
 		    if (strlen(rep->top_of_page)==0) {
 	      		for (cnt = 0; cnt < rep->bottom_margin; cnt++) {
 			  report_print (rep, -1, "\n");
 			  rep->line_no++;
 			}
 		    } else {
-			  report_print (rep, -1, top_of_page(rep->top_of_page));
+			  report_print (rep, -1, top_of_page(rep->top_of_page,"B"));
 		    }
 
 	      rep->line_no = 0;
@@ -1354,27 +1375,42 @@ static void
 print_data (struct rep_structure *rep, char *buff, int entry)
 {
   char *s;
-  if (entry == -1)
-    {
-      return;
-    }
+  char *top;
+  int istop;
+  top=0;
+  istop=0;
+  if (entry == -1) { return; }
+
+  if (rep->top_of_page) {
+	if (strlen(rep->top_of_page)) {
+  		top=top_of_page(rep->top_of_page,"C");
+	}
+  }
+
+
 
   s = acl_strdup (buff);
   A4GL_trim (s);
+
+      if (top) {
+	      if (strcmp(s,top)==0) {
+		      istop=1;
+	      }
+      }
+
   if (A4GL_isyes (acl_getenv ("TRACE_AS_TEXT")))
     {
 
-      if (strlen (s) && strcmp (s, "\n") != 0)
+      if (strlen (s) && strcmp (s, "\n") != 0 && istop==0)
 	{
 	  print_lvl (rep, lvl);
-	  fprintf (rep->output,
-		   "<CDATA page=%d line=%d col=%d entry=%d>%s</CDATA>\n",
+	  fprintf (rep->output, "<CDATA page=%d line=%d col=%d entry=%d>%s</CDATA>\n",
 		   rep->page_no, rep->line_no, rep->col_no, entry, s);
 	}
     }
   else
     {
-      if (strlen (s) && strcmp (s, "\n") != 0)
+      if (strlen (s) && strcmp (s, "\n") != 0 && istop==0)
 	{
 	  report_write_entry (rep, ENTRY_DATA);
 	  report_write_int (rep, rep->page_no);

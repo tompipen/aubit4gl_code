@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.34 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: load.c,v 1.35 2005-08-16 07:31:48 mikeaubury Exp $
 #
 */
 
@@ -52,7 +52,7 @@
 */
 
 /* tuneable */
-#define MAXLOADCOLS 256
+#define MAXLOADCOLS 1024
 #define MAXCOLLENGTH 32
 #define LOADBUFFSIZE 32000
 
