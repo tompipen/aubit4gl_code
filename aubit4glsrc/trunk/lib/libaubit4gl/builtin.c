@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.89 2005-08-02 21:26:57 whaslbeck Exp $
+# $Id: builtin.c,v 1.90 2005-08-16 10:03:03 mikeaubury Exp $
 #
 */
 
@@ -1328,8 +1328,8 @@ int aclfgl_fgl_dialog_getbuffer(int n)  {
 
 int aclfgl_fgl_dialog_setbuffer(int n) {
 // function sets the value of the current field:
-	A4GL_debug ("WARNING: fgl_dialog_setbuffer() not yet implemented!");
 	char *p1 = A4GL_char_pop();
+	A4GL_debug ("WARNING: fgl_dialog_setbuffer() not yet implemented!");
 	free(p1);
 	return 0;
 }
