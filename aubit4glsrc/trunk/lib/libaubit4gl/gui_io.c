@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui_io.c,v 1.17 2005-03-31 13:35:47 afalout Exp $
+# $Id: gui_io.c,v 1.18 2005-08-17 13:57:25 mikeaubury Exp $
 #
 */
 
@@ -51,21 +51,9 @@
 
 
 
-#ifdef OLD_INCL
-
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>		/* strcpy() */
-
-
-#include "a4gl_aubit_lib.h"
-#include "a4gl_debug.h"
-
-#else
 
 #include "a4gl_libaubit4gl_int.h"
 
-#endif
 
 /*
 =====================================================================

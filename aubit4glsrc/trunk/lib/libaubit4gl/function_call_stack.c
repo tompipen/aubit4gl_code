@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.25 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.26 2005-08-17 13:57:25 mikeaubury Exp $
 #*/
 
 /**
@@ -46,18 +46,9 @@
 */
 
 
-#ifdef OLD_INCL
-
-#include <stdio.h>
-#include <stdlib.h>		/* calloc() free() */
-#include <string.h>		/* strcpy() strcat() strcmp() */
-#include "a4gl_debug.h"
-
-#else
 
 #include "a4gl_libaubit4gl_int.h"
 
-#endif
 
 /*
 =====================================================================
@@ -73,16 +64,6 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-extern char *A4GL_params_on_stack (char *_paramnames[], int n);
-void A4GLSTK_pushFunction (const char *functionName, char *params[], int n);
-void A4GLSTK_popFunction (void);
-char *A4GLSTK_getStackTrace (void);
-int A4GLSTK_isStackInfo (void);
-#endif
-
-//void A4GLSTK_initFunctionCallStack (void);
-//void A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber);
 
 
 /*
@@ -236,7 +217,7 @@ A4GLSTK_getStackTrace (void)
     {
       strcat (stackTrace, "    ");
       if (functionCallStack[i].moduleName == '\0')
-	strcat (stackTrace, functionCallStack[i].functionName);
+	strcat (stackTrace, (char *)functionCallStack[i].functionName);
       else
 	{
 	  SPRINTF3 (tmpStackTrace,

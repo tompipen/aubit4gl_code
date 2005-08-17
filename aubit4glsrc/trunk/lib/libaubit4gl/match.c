@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.19 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: match.c,v 1.20 2005-08-17 13:57:25 mikeaubury Exp $
 #*/
 
 /**
@@ -45,16 +45,8 @@
   */
 
 
-#ifdef OLD_INCL
-
-#include <string.h>		/* strlen() */
-#include <ctype.h>		/* toupper() */
-
-#else
-
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
-#endif
 
  /*
     =====================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.29 2005-07-14 11:32:51 mikeaubury Exp $
+# $Id: data_if.c,v 1.30 2005-08-17 13:57:25 mikeaubury Exp $
 #
 */
 
@@ -54,12 +54,6 @@
                     Functions prototypes
 =====================================================================
 */
-
-#ifdef OLD_INCL
-
-void *A4GL_get_set (char *str, void *ptr, int mode, char *name, long var);
-
-#endif
 
 
 static void *get_set_s_screenio (void *ptr, int mode, char *name, long var);

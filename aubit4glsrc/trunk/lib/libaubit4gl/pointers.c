@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.38 2005-07-19 19:16:37 mikeaubury Exp $
+# $Id: pointers.c,v 1.39 2005-08-17 13:57:25 mikeaubury Exp $
 #
 */
 
@@ -527,11 +527,6 @@ static void
 trecurse (
 node *root, void (*action)(void *,int ,int ), int level)
 {
-#ifdef N
-     register node *root;	/* Root of the tree to be walked */
-     register void (*action) (void *,int,int);	/* Function to be called at each node */
-     register int level;
-#endif
   if (root->left == (struct node_t *) 0 && root->right == (struct node_t *) 0) { 
 		(*action) ((void *)root, 
 				(int)(leaf), 

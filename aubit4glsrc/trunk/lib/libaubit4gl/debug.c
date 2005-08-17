@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.47 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: debug.c,v 1.48 2005-08-17 13:57:25 mikeaubury Exp $
 #
 */
 
@@ -202,30 +202,6 @@ A4GL_debug_full (char *fmt, ...)
 	else
       		fprintf (debugfile, " %s\n", buff);
 
-#ifdef OLD_DEBUGGING_RUBBISH
-      /* fixme: A4GL_UI can also be gui, not only gtk
-         Why are we printing this to stderr in any case, it is allready
-         written to debug.out ?
-       */
-
-
-      /* This code is so we can A4GL_debug the GTK messages we get */
-      if (strcmp (acl_getenv ("A4GL_UI"), "GTK") == 0)
-	{
-	  /* but not if we are running one of the compilers - this should
-	     happen only when running Aubit compiled programs: */
-	  if ((!strcmp (A4GL_getarg0 (), "4glc") == 0)
-	      && (!strcmp (A4GL_getarg0 (), "fcompile") == 0)
-	      && (!strcmp (A4GL_getarg0 (), "mcompile") == 0)
-	      && (!strcmp (A4GL_getarg0 (), "mkmess") == 0))
-	    {
-	      fprintf (stderr, "%s\n", buff);
-	      fflush (stderr);
-	    }
-	}
-#endif
-
-      //if (buff[strlen (buff) - 1] != ':') fprintf (debugfile, "LF\n");
       fflush (debugfile);
     }
   indebug=0;

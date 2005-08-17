@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.30 2005-07-29 06:56:58 mikeaubury Exp $
+# $Id: error.c,v 1.31 2005-08-17 13:57:25 mikeaubury Exp $
 #
 */
 
@@ -131,17 +131,6 @@ int a;
 
 		return;
 
-
-#ifdef DEAD_CODE
-		PRINTF ("Error:\n %s \nSTOP\n ", s);
-		A4GL_debug ("Exiting program.");
-		if (errors[a].a4gl_errno == 0) {
-			//shoud never exit here with 0 - we got an error!
-			A4GL_fgl_die (1);
-		} else {
-			A4GL_fgl_die (errors[a].a4gl_errno);
-		}
-#endif
 
 
 	  }

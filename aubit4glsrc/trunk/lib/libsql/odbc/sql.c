@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.134 2005-08-17 13:43:14 mikeaubury Exp $
+# $Id: sql.c,v 1.135 2005-08-17 13:57:27 mikeaubury Exp $
 #
 */
 
@@ -1989,30 +1989,6 @@ A4GL_find_prepare2 (char *pname)
 }
 
 
-#ifdef MOVED_TO_LIBAUBIT4GL
-/**
- * Add a prepare statement to the pointer tree.
- *
- * @param pname The prepared statement name.
- * @param sid A pointer to the statement information.
- */
-int
-A4GLSQL_add_prepare (char *pname, void *vsid)
-{
-  struct s_sid *sid;
-  sid = vsid;
-  if (sid)
-    {
-      A4GL_add_pointer (pname, PRECODE, sid);
-      return 1;
-    }
-  else
-    {
-      return 0;
-    }
-
-}
-#endif
 
 /**
  * If A4GL_debug was set print Error.

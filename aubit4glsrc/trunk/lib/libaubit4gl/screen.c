@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: screen.c,v 1.18 2005-06-16 19:21:11 mikeaubury Exp $
+# $Id: screen.c,v 1.19 2005-08-17 13:57:25 mikeaubury Exp $
 #*/
 
 /**
@@ -44,17 +44,9 @@
 */
 
 
-#ifdef OLD_INCL
-
-#include "a4gl_dbform.h"	/* needed for struct s_form_dets in function A4GL_find_attribute */
-#include "a4gl_aubit_lib.h"	/* zrefresh() */
-#include "a4gl_debug.h"		/* debug() */
-
-#else
 
 #include "a4gl_libaubit4gl_int.h"
 
-#endif
 
 /*
 =====================================================================
@@ -71,39 +63,7 @@ extern int ui_mode;
 */
 
 
-//char *A4GL_find_attribute (struct s_form_dets *f, int field_no);
-//int A4GL_chk_iskey (char *keys);
 
-#ifdef MOVED
-/*
-=====================================================================
-                    Functions definitions
-=====================================================================
-*/
-
-/**
- *
- * @param a
- */
-int
-A4GL_screen_mode (int a)
-{
-  static int smode = 1;
-  if (a == -1)
-    return smode;
-
-  if (a == smode)
-    return smode;
-  if (a == 0)
-    {
-      smode = 0;
-      return smode;
-    }
-  smode = 1;
-  A4GL_zrefresh ();
-  return smode;
-}
-#endif
 
 /**
  * moved here from lib/libform/form_xdr/readforms.c

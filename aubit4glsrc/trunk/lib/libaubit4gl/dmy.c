@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.19 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: dmy.c,v 1.20 2005-08-17 13:57:25 mikeaubury Exp $
 #
 */
 
@@ -43,17 +43,9 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-#include <string.h>
-#include "a4gl_aubit_lib.h"
-#include "a4gl_debug.h"
-
-#else
 
 #include "a4gl_libaubit4gl_int.h"
 
-#endif
 
 
 /*
@@ -452,35 +444,5 @@ A4GL_get_dbdate (void)
 
 
 
-#ifdef REMOVEME
-
-/**
- * Does nothing.
- *
- * @todo : See if this is used or planed to be.
- *
- * @return Allways 1
- */
-int
-get_day (void)
-{
-  return 1;
-}
-
-/**
- * Does nothing.
- *
- * @todo : See if this is used or planed to be.
- *
- * @return Allways 0
- */
-int
-get_dayno (void)
-{
-
-  return 0;
-}
-
-#endif
 
 /* ================================ EOF ============================ */

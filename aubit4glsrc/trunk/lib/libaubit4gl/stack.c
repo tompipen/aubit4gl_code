@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.134 2005-07-28 10:11:40 mikeaubury Exp $
+# $Id: stack.c,v 1.135 2005-08-17 13:57:25 mikeaubury Exp $
 #
 */
 
@@ -3105,38 +3105,6 @@ dif_pop_bind_money (struct bound_list *list)
 
 
 
-#ifdef NDEF
-/**
- *
- *
- * @return
- */
-char *
-A4GL_lrtrim (char *z)
-{
-  static char rstr[100000];
-  int a;
-  int sz;
-  strcpy (rstr, "");
-  A4GL_debug ("15 COpied");
-  sz=strlen(z);
-  for (a = 0; a < sz; a++)
-    {
-      if (z[a] != ' ')
-	{
-	  sz-=a;
-	  if (sz-a>100000) {sz=100000;}
-	  strncpy (rstr, &z[a],sz);
-	  rstr[99999]=0;
-	  break;
-	}
-    }
-  A4GL_debug ("11 Searched..");
-  A4GL_trim (rstr);
-  A4GL_debug ("10 lrtrim : All done - returning '%s'", A4GL_null_as_null(rstr));
-  return rstr;
-}
-#endif
 
 char *A4GL_lrtrim (char *str)
 {

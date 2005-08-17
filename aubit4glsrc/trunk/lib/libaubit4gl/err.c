@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: err.c,v 1.17 2005-07-26 14:47:50 mikeaubury Exp $
+# $Id: err.c,v 1.18 2005-08-17 13:57:25 mikeaubury Exp $
 #
 */
 
@@ -42,17 +42,9 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-#include "string.h"		/* strcpy() */
-#include "stdio.h"		/* sprintf() */
-#include "a4gl_debug.h"
-
-#else
 
 #include "a4gl_libaubit4gl_int.h"
 
-#endif
 
 
 
@@ -64,9 +56,6 @@
 
 extern char *A4GL_get_errm (int a);
 
-#ifdef OLD_INCL
-char *A4GL_err_print (int a, char *s);
-#endif
 
 
 

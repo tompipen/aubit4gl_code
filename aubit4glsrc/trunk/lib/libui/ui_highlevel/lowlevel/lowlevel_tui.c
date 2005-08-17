@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.69 2005-07-14 15:20:17 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.70 2005-08-17 13:57:27 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,7 +85,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.69 2005-07-14 15:20:17 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.70 2005-08-17 13:57:27 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 
@@ -2806,80 +2806,6 @@ A4GL_LL_construct_large (char *orig,
   return f;
 
 }
-
-
-#ifdef MOVED
-int
-A4GL_LL_construct_large_loop ()
-{
-  A4GL_LL_set_carat (f);
-  A4GL_debug ("su");
-  A4GL_LL_screen_update ();
-  a = A4GL_LL_getch_swin_i (panel_window (cwin));
-  A4GL_debug ("construct_large a=%d abort_pressed=%d", a, abort_pressed);
-  if (abort_pressed || a == A4GLKEY_INTERRUPT || a == A4GLKEY_CANCEL)
-    {
-      break;
-    }
-  if (A4GL_has_event_for_keypress (a, evt))
-    return a;
-
-
-  switch (a)
-    {
-
-    case 1:
-      if (ins_ovl == 'o')
-	{
-	  ins_ovl = 'i';
-	  A4GL_LL_int_form_driver (f, AUBIT_REQ_INS_MODE);
-	}
-      else
-	{
-	  ins_ovl = 'o';
-	  A4GL_LL_int_form_driver (f, AUBIT_REQ_OVL_MODE);
-	}
-
-    case 27:
-    case A4GLKEY_DOWN:
-    case A4GLKEY_UP:
-    case A4GLKEY_ENTER:
-    case '\t':
-      looping = 0;
-      break;
-
-    case A4GLKEY_LEFT:
-      if (A4GL_LL_get_carat (f) == 0)
-	{
-	  looping = 0;
-	  break;
-	}
-      A4GL_LL_int_form_driver (f, AUBIT_REQ_PREV_CHAR);
-      break;
-
-
-    case 127:
-    case 8:
-    case A4GLKEY_DC:
-    case A4GLKEY_DL:
-    case A4GLKEY_BACKSPACE:
-      A4GL_LL_int_form_driver (f, AUBIT_REQ_DEL_PREV);
-      break;
-
-    case 24:
-      A4GL_LL_int_form_driver (f, AUBIT_REQ_DEL_CHAR);
-      break;
-    case A4GLKEY_RIGHT:
-      A4GL_LL_int_form_driver (f, AUBIT_REQ_NEXT_CHAR);
-      break;
-    default:
-      A4GL_LL_int_form_driver (f, a);
-      break;
-    }
-  return looping;
-}
-#endif
-
 
 
 

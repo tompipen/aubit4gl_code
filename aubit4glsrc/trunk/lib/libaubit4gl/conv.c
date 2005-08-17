@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.112 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: conv.c,v 1.113 2005-08-17 13:57:25 mikeaubury Exp $
 #
 */
 
@@ -3524,121 +3524,6 @@ A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data)
 }
 
 
-#ifdef MOVED_TO_INTERVAL_C
-/**
- * @param ival
- * @param data
- */
-void
-A4GL_decode_interval (struct ival *ival, int *data)
-{
-  char buff[256];
-  int i;
-  int cnt = 0;
-  char buff2[65];
-  int s1;
-  int s2;
-  int c;
-  int cpc;
-  int c2;
-  int ltime;
-
-  char *codes[] = { "YEAR", "MONTH", "DAY", "HOUR", "MINUTE",
-    "SECOND", "FRACTION",
-    0
-  };
-  int spc[] = {
-    0,
-    4,
-    2,
-    2,
-    2,
-    2,
-    2,
-    5
-  };
-
-  A4GL_debug ("Decoding interval into component parts");
-
-  for (i = 0; i < 10; i++)
-    {
-      data[i] = 0;
-    }
-
-  s1 = ival->stime % 16;
-  s2 = ival->stime / 16;
-  A4GL_debug ("s1=%d s2=%d", s1, s2);
-
-  SPRINTF24 (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
-	   ival->data[0], ival->data[1], ival->data[2], ival->data[3],
-	   ival->data[4], ival->data[5],
-	   ival->data[6], ival->data[7],
-	   ival->data[8], ival->data[9],
-	   ival->data[10], ival->data[11],
-	   ival->data[12], ival->data[13],
-	   ival->data[14], ival->data[15],
-	   ival->data[16], ival->data[17], ival->data[18],
-	   ival->data[19], ival->data[20], ival->data[21],
-	   ival->data[22], ival->data[23]);
-
-  A4GL_debug ("buff=%s\n",A4GL_null_as_null( buff));
-
-  cnt = 0;
-  for (c = 1; c < s1; c++)
-    {
-      A4GL_debug ("c=%d cnt=%d\n", c, cnt);
-      cnt += spc[c];
-    }
-
-  A4GL_debug ("Cnt=%d\n", cnt);
-  A4GL_debug ("Taking first part (size=%d) from %d", s2, cnt);
-
-  c = s2;
-  strncpy (buff2, &buff[cnt], s2);
-  buff2[s2] = 0;
-  A4GL_debug ("buff2 = '%s'\n", A4GL_null_as_null(buff2));
-
-  c2 = c;
-  ltime = ival->ltime;
-  if (ltime >= 7)
-    ltime = 7;
-
-  for (cpc = s1; cpc < ltime; cpc++)
-    {
-      A4GL_debug ("cpc=%d buff2=%s c2=%d cnt=%d cnt+c2=%d ", cpc, A4GL_null_as_null(buff2), c2, cnt,
-	     cnt + c2);
-      data[cpc - 1] = atoi (buff2);
-
-      buff2[0] = buff[cnt + c2];
-      c2++;
-      if (ival->ltime < 7)
-	{
-	  buff2[1] = buff[cnt + c2];
-	  c2++;
-	  buff2[2] = 0;
-	}
-      else
-	{
-	  buff2[1] = buff[cnt + c2];
-	  c2++;
-	  buff2[2] = buff[cnt + c2];
-	  c2++;
-	  buff2[3] = buff[cnt + c2];
-	  c2++;
-	  buff2[4] = buff[cnt + c2];
-	  c2++;
-	  buff2[4] = 0;
-	}
-    }
-
-  A4GL_debug ("cpc=%d buff2=%s", cpc, A4GL_null_as_null(buff2));
-  data[cpc - 1] = atoi (buff2);
-  for (c = 0; c < 7; c++)
-    {
-      A4GL_debug ("Data : %s %d\n", A4GL_null_as_null(codes[c]), data[c]);
-    }
-}
-#endif
 
 /**
 * This function sets up the conversion matrix

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: read_dty.c,v 1.16 2005-03-31 13:35:47 afalout Exp $
+# $Id: read_dty.c,v 1.17 2005-08-17 13:57:25 mikeaubury Exp $
 #
 */
 
@@ -44,19 +44,9 @@
 */
 
 
-#ifdef OLD_INCL
-
-#include <stdio.h>
-#include "a4gl_dbform.h"
-#include "a4gl_stack.h"
-#include "a4gl_debug.h"		/* debug() */
-#include "a4gl_dlsql.h"		/* A4GLSQL_get_datatype() */
-
-#else
 
 #include "a4gl_libaubit4gl_int.h"
 
-#endif
 
 int A4GL_get_dtype_size(void) ;
 /*
@@ -66,9 +56,6 @@ int A4GL_get_dtype_size(void) ;
 */
 
 
-#ifdef OLD_INCL
-int A4GL_get_dtype (char *tabname, char *colname, char *dbname, char *tablist[]);
-#endif
 
 static int last_size;
 

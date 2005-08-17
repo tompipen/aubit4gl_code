@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.86 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: ops.c,v 1.87 2005-08-17 13:57:25 mikeaubury Exp $
 #
 */
 
@@ -3070,35 +3070,6 @@ free(buff);
 }
 
 
-
-#ifdef OLD
-static char *
-make_using (char *ptr)
-{
-  static char buff[256];
-  char buff2[256];
-  int dig;
-  int dec;
-
-  A4GL_assertion (ptr == 0, "make_using has been passed a null pointer..");
-  strcpy (buff,
-	  "-------------------------------------------------------------------------------------------------------------------");
-  dig = NUM_DIG (ptr) * 2;
-  dec = NUM_DEC (ptr);
-  A4GL_debug ("In make_using : dig=%d dec=%d", dig, dec);
-  buff[dig - dec] = 0;
-
-  if (dec)
-    strcat (buff, "&.");
-  else
-    strcat (buff, "-&");
-
-  memset (buff2, '&', 255);
-  buff2[dec] = 0;
-  strcat (buff, buff2);
-  return buff;
-}
-#endif
 
 
 

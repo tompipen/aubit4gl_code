@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.18 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.19 2005-08-17 13:57:25 mikeaubury Exp $
 #
 */
 
@@ -736,73 +736,6 @@ CORBA_long balance=0;
 #endif //_THIS_IS_JUST_AN_EXAMLE_
 
 
-#ifdef __MOVED_TO_idlmagic_SCRIPT__
-/*
- * main - this is the CORBA client init function 
- */
-int
-//main(int argc, char* argv[])
-A4GL_CORBA_client_main (int argc, char* argv[]) {
-CORBA_char        filename[] = "account.ref"; //ref file to discover server
-//CORBA_long        amount=0;
-CORBA_Environment ev[1];
-/*
-	The intergace name (in this case 'Account' is typedef-ed in
-	<interface-name>.h created by orbit-idl compiler from .idl file, like:
-	  typedef CORBA_Object Account;
-	or in ccase of SQLPARSE API:
-		typedef CORBA_Object SQLPARSE;
-	
-	So this:
-	Account service = CORBA_OBJECT_NIL;
-	is supposed to be:
-*/
-SQLPARSE service = CORBA_OBJECT_NIL;
-/*
-	___BUT___ -this function is supposed to work for _ALL_ of our APIs
-	--HOW CAN I PASS THAT >>>NAME<< so I can use it such a way?
-	This also means we need to #include "CAPI_sqlparse.h" somewhere 
-	before we can use this typedef
-	
-	FIXME: the SQLPARSE above is hard-coded and it should not be!
-	same for _ALL_ other occurances of SQLPARSE word in this file!
-	Untill this is fixed, this will work only for SQLPARSE API
-*/
-
-	CORBA_exception_init(ev);
-	client_init (&argc, argv, &global_orb, ev); 
-	etk_abort_if_exception(ev, "init failed");
-	//if (argc<2) g_error ("usage: %s <amount>", argv[0]);
-	//amount  = atoi(argv[1]);
-	g_print ("Reading service reference from file \"%s\"\n", filename);
-	service = (SQLPARSE) etk_import_object_from_file (global_orb,filename,ev); 
-	etk_abort_if_exception(ev, "import service failed");
-
-	/* We would here invoke whatever function we want to call on the 
-		server side, but we instead will just return after finised
-		CORBA client initialisation, and let API functions do the calling
-	*/
-	//client_run (service, amount, ev); 
-    //    etk_abort_if_exception(ev, "service not reachable");
-
-	
-	/* This cleanup probably is equivalent to 
-		void A4GL_CCLIENT_" lib "_clrlibptr (void) {
-				if (libptr) {dlclose(libptr);}
-				libptr=0;"	
-		}
-		for dlopen() API, and therefore should be in 
-		CAPI_%-client.c ?
-		
-		Otherwise, should we call it before we exit 4GL program?
-	*/
-	//client_cleanup (global_orb, service, ev); 
-	//etk_abort_if_exception(ev, "cleanup failed");
- 
-    //exit (0);
-	return 0;
-}
-#endif //ifdef __MOVED_TO_idlmagic_SCRIPT__
 
 // -----------------------end client funcs --------------------------
 #endif //ifdef __CCLIENT__
@@ -965,28 +898,6 @@ server_cleanup (CORBA_ORB           orb,
 }
 
 
-#ifdef __MOVED_TO_idlmagic_SCRIPT__
-/* Creates servant and registers in context of ORB @orb. The ORB will
- * delegate incoming requests to specific servant object.  @return
- * object reference. If error occures @ev points to exception object
- * on return.
- */
-//static -- not static - called from A4GL_CORBA_server_main() 
-CORBA_Object
-server_activate_service (CORBA_ORB           orb,
-			 PortableServer_POA  poa,
-			 CORBA_Environment  *ev)
-{
-SQLPARSE ref = CORBA_OBJECT_NIL;
-//FIXME - see comment on SQLPARSE in this file 
-	ref = impl_SQLPARSE__create (poa, ev); 
-	if (etk_raised_exception(ev)) { 
-		return CORBA_OBJECT_NIL;
-	} else {
-		return ref;
-	}
-}
-#endif //ifdef __MOVED_TO_idlmagic_SCRIPT__
 
 /* 
  * main for server

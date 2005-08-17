@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.147 2005-08-08 21:01:21 mikeaubury Exp $
+# $Id: esql.ec,v 1.148 2005-08-17 13:57:27 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.147 2005-08-08 21:01:21 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.148 2005-08-17 13:57:27 mikeaubury Exp $";
 #endif
 
 
@@ -1849,30 +1849,6 @@ A4GLSQL_prepare_sql_internal (char *s)
   return sid;
 }
 
-/**
- * Store the information of a prepared statement in a global data structure.
- *
- * @param pname The prepare statement name.
- * @param sid A pointer to the statement information.
- * @return Allways 0
- */
-#ifdef MOVED_TO_LIBAUBIT4GL
-int
-A4GLSQL_add_prepare (char *pname, void *vsid)
-{
-struct s_sid *sid;
-sid=vsid;
-  if (sid)
-    {
-      A4GL_add_pointer (pname, PRECODE, sid);
-      return 1;
-    }
-  else
-    {
-      return 0;
-    }
-}
-#endif
 
 
 
