@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.133 2005-07-26 13:56:00 mikeaubury Exp $
+# $Id: sql.c,v 1.134 2005-08-17 13:43:14 mikeaubury Exp $
 #
 */
 
@@ -253,7 +253,7 @@ int do_init_prepare = 1;
 char buffer[256];
 HENV henv = 0;
 HDBC hdbc = 0;					/** The database connection handle */
-SDWORD outlen[512];
+static SDWORD outlen[512];
 
 SQLINTEGER nullval=SQL_NULL_DATA;
 

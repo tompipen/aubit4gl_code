@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.58 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: calldll.c,v 1.59 2005-08-17 13:43:14 mikeaubury Exp $
 #
 */
 
@@ -305,14 +305,14 @@ A4GL_dl_openlibrary (char *type, char *p)
   static char tmpbuff[1024];
   char *soext;
   char soext_2[256];
-
   char *plugin_name;
+  char *aplugins;
 
   //need to hide this pointer, something in the way we read registry is messing it up! >>>>>>>>>STATIC!!!!!!<<<<<<<<<FIX IT!!!!!
   SPRINTF1 (tmpbuff, "%s", p);
   plugin_name = tmpbuff;
 
-
+ 
   if ((!acl_getenv ("AUBITDIR"))
       || (strcmp (acl_getenv ("AUBITDIR"), "") == 0))
     {
@@ -321,49 +321,49 @@ A4GL_dl_openlibrary (char *type, char *p)
 	A4GL_fgl_die_with_msg(43,"Cannot determine AUBITDIR");
     }
 
+  aplugins=acl_getenv("AUBITPLUGINDIR");
+
+  if (aplugins) {
+	  if (strlen(aplugins)==0) {
+		  aplugins=0;
+	  }
+  }
+
+#ifdef SIMPLIFIED
+  if (aplugins==0) {
+	  aplugins=AUBITPLUGINDIR;
+	  if (strlen(aplugins)==0) {
+		  aplugins=0;
+	  }
+  }
+#endif
 
 soext=acl_getenv("SO_EXT");
 strcpy(soext_2,SO_EXT);
+
 if (soext) {
 	if (strlen(soext)) {
 		strcpy(soext_2,soext);
 	}
 }
-SPRINTF4 (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type, plugin_name,soext_2);
 
-#ifdef WHY_MESS_AROUND
-#ifdef __CYGWIN__
-  SPRINTF3 (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, plugin_name);
+#ifndef SIMPLIFIED
+if (aplugins) {
+	SPRINTF4 (buff, "%s/lib%s_%s.%s", aplugins, type, plugin_name,soext_2);
+} else {
+	SPRINTF4 (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type, plugin_name,soext_2);
+}
 #else
-	#if defined(__DARWIN__)
-	  SPRINTF3 (buff, "%s/lib/lib%s_%s.bundle", acl_getenv ("AUBITDIR"), type,
-		   plugin_name);
-
-
-	#else
-		#if defined(__MINGW32__)
-		  char *aubitdirptr;
-		  aubitdirptr = acl_getenv ("AUBITDIR");
-		  SPRINTF2 (buff2, "%s/lib/lib%s", aubitdirptr, type);
-		  SPRINTF2 (buff, "%s_%s.dll", buff2, plugin_name);
-		#else
-			#if defined(__hpux__) //HP-UX UNIX OS
-			  SPRINTF3 (buff, "%s/lib/lib%s_%s.sl", acl_getenv ("AUBITDIR"), type, plugin_name);
-            #else
-			  /* all other platforms: */
-			  SPRINTF4 (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type, plugin_name,SO_EXT);
-            #endif
-		#endif
-	#endif
-#endif
+if (aplugins) {
+	SPRINTF4 (buff, "%s/lib%s_%s.%s", aplugins, type, plugin_name,soext_2);
+} else {
+	SPRINTF4 (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type, plugin_name,soext_2);
+}
 #endif
 
-#ifdef DEBUG
-  A4GL_debug ("Attempting to open shared library : '%s'", A4GL_null_as_null(buff));
-#endif
 
 #ifdef USE_SHL
-  dllhandle=shl_load(buff,BIND_IMMEDIATE+BIND_NONFATAL,0);
+  dllhandle = shl_load(buff,BIND_IMMEDIATE+BIND_NONFATAL,0);
 #else
   dllhandle = dlopen (buff, RTLD_LAZY);
 #endif

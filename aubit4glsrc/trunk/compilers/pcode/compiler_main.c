@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compiler_main.c,v 1.16 2005-07-14 11:32:49 mikeaubury Exp $
+# $Id: compiler_main.c,v 1.17 2005-08-17 13:43:12 mikeaubury Exp $
 #*/
 
 /**
@@ -46,7 +46,7 @@
 #define bool_t int
 #define u_int unsigned int
 #endif
-int do_optimise=1;
+int do_optimise=0;
 #ifdef RPCGEN_HEADERS
 	#include "npcode.h"
 #else

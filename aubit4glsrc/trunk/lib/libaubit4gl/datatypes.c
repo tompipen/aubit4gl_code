@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.24 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: datatypes.c,v 1.25 2005-08-17 13:43:14 mikeaubury Exp $
 #
 */
 
@@ -106,7 +106,7 @@ static void *libptr = 0;
 //int A4GL_add_datatype_function_i (int a, char *funcname, void *func);
 extern void A4GL_add_default_operations (void);	/* in ops.c */
 void A4GL_add_default_datatypes (void);
-static int (*A4GL_func) (void);
+static int (*A4GL_func_dt) (void);
 int A4GL_call_datatype_function_i (void *obj, int dtype, char *funcname,
 			      int nparam);
 
@@ -133,9 +133,9 @@ A4GLEXDATA_initlib (char *f)
       return 0;
     }
 
-  A4GL_func = A4GL_find_func_allow_missing (libptr, "EXDTYPE_initlib");
-  if (A4GL_func)
-    return A4GL_func ();
+  A4GL_func_dt = A4GL_find_func_allow_missing (libptr, "EXDTYPE_initlib");
+  if (A4GL_func_dt)
+    return A4GL_func_dt ();
   else
     return 1;
 }

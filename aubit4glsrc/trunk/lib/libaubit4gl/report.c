@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.78 2005-08-16 07:31:49 mikeaubury Exp $
+# $Id: report.c,v 1.79 2005-08-17 13:43:14 mikeaubury Exp $
 #
 */
 
@@ -421,31 +421,7 @@ gen_rep_tab_name (void *p)
 
 
 
-/**
- *
- * @todo Describe function
- * print something onto a report
- *  rep - report structure to use
- *  a   - number of parameters to print
- *  s   - do we require a newline at the end of this print
- *  right_margin - current right margin (not implemented yet)
- *  entry - unique identifier for this print within this block
- */
-void
-A4GL_rep_print (struct rep_structure *rep, int no_param, int want_nl, int right_margin,
-		int entry)
-{
-  int b;
-  int cnt;
-  char *str;
-  A4GL_debug
-    ("In A4GL_rep_print rep=%p rep->report=%p Page=%d Line=%d Col=%d entry=%d",
-     rep, rep->report, rep->page_no, rep->line_no, rep->col_no, entry);
-
-  if (right_margin != 0)
-    {
-      A4GL_debug ("***** WARNING ***** wordwrap margin not implemented..");
-    }
+void A4GL_internal_open_report_file(struct rep_structure *rep,int no_param) {
 
   if (rep->line_no == 0 && rep->page_no == 0 && no_param < 0)
     {
@@ -506,9 +482,41 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int want_nl, int right_
 	}
 
     }
+}
 
+
+/**
+ *
+ * @todo Describe function
+ * print something onto a report
+ *  rep - report structure to use
+ *  a   - number of parameters to print
+ *  s   - do we require a newline at the end of this print
+ *  right_margin - current right margin (not implemented yet)
+ *  entry - unique identifier for this print within this block
+ */
+void
+A4GL_rep_print (struct rep_structure *rep, int no_param, int want_nl, int right_margin,
+		int entry)
+{
+  int b;
+  int cnt;
+  char *str;
+  A4GL_debug
+    ("In A4GL_rep_print rep=%p rep->report=%p Page=%d Line=%d Col=%d entry=%d", rep, rep->report, rep->page_no, rep->line_no, rep->col_no, entry);
+
+  if (right_margin != 0)
+    {
+      A4GL_debug ("***** WARNING ***** wordwrap margin not implemented..");
+    }
+
+
+  if (rep->line_no == 0 && rep->page_no == 0 && no_param < 0) {
+  	A4GL_internal_open_report_file(rep,no_param) ;
+  }
 
   if (rep->finishing && entry==-5 && no_param==0 && strlen(rep->top_of_page)) {
+	  		// Reports finishing - lets get to the end of our page ...
 			  report_print (rep, -1, top_of_page(rep->top_of_page,"A"));
 			  return;
   }
@@ -632,6 +640,7 @@ A4GL_fputmanyc (struct rep_structure *rep, int c, int cnt)
   memset (x, c, cnt);
   x[cnt] = 0;
   report_print (rep, -1, x);
+  free(x);
   //for (a = 0; a < cnt; a++) fputc (c, f);
 }
 

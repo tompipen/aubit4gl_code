@@ -131,14 +131,33 @@ define lv_a integer
 define lv_cnt integer
 define col_list array [1024] of char (18);
 define col_desc array [1024] of char (18);
+define lv_t integer 
+define lv_l char(20)
+define lv_buff char(80)
 code
       lv_cnt = A4GLSQL_fill_array (1024, (char *) col_list, 18, col_desc, 18, "COLUMNS", 2, lv_tabname);
 endcode
 for lv_a=1 to lv_cnt
-	display col_list[lv_a]," ",col_desc[lv_a]
-end for
-sleep 10
+	if col_desc[lv_a][2]="(" then
+		let lv_t=col_desc[lv_a][1]
+		let lv_l=col_desc[lv_a][3,18]
+		let lv_l=lv_l[1,length(lv_l)-1]
+		let col_desc[lv_a]=get_type(lv_t,lv_l)
+	end if
+	if col_desc[lv_a][3]="(" then
+		let lv_t=col_desc[lv_a][1,2]
+		let lv_l=col_desc[lv_a][4,18]
+		let lv_l=lv_l[1,length(lv_l)-1]
+		let col_desc[lv_a]=get_type(lv_t,lv_l)
+	end if
 
+	let col_list[lv_a]=col_list[lv_a]," "
+	let lv_buff=col_list[lv_a]," ",col_desc[lv_a]
+
+	
+	call add_to_display_file(lv_buff)
+end for
+return 1
 end function
 
 function load_info_indexes()
@@ -849,4 +868,173 @@ function set_current_db(lv_name)
 define lv_name char(200)
 return lv_name
 end function
+
+
+
+
+FUNCTION get_type(l_coltype, l_collength)
+DEFINE l_coltype     INTEGER,
+       l_collength   INTEGER,
+       type_text CHAR(41)
+
+CASE
+WHEN l_coltype=0 OR l_coltype=256 LET type_text="CHAR(", l_collength USING "<<<", ")"
+WHEN l_coltype=1 OR l_coltype=257 LET type_text="SMALLINT"
+WHEN l_coltype=2 OR l_coltype=258 LET type_text="INTEGER"
+WHEN l_coltype=3 OR l_coltype=259 LET type_text="FLOAT"
+WHEN l_coltype=4 OR l_coltype=260 LET type_text="SMALLFLOAT"
+WHEN l_coltype=5 OR l_coltype=261 LET type_text="DECIMAL"
+    LET type_text = dec_length(l_collength, type_text)
+WHEN l_coltype=6 OR l_coltype=262
+    IF l_collength > 1 THEN
+        LET type_text="SERIAL(",
+            l_collength USING "<<<<<<<<<&", ")"
+    ELSE
+        LET type_text="SERIAL"
+    END IF
+WHEN l_coltype=7 OR l_coltype=263 LET type_text="DATE"
+WHEN l_coltype=8 OR l_coltype=264 LET type_text="MONEY"
+    LET type_text = dec_length(l_collength, type_text)
+WHEN l_coltype=10 OR l_coltype=266
+    LET type_text="DATETIME"
+    LET type_text = dt_length(l_collength, type_text)
+WHEN l_coltype=11 OR l_coltype=267 LET type_text="BYTE"
+WHEN l_coltype=12 OR l_coltype=268 LET type_text="TEXT"
+WHEN l_coltype=13 OR l_coltype=269 LET type_text="VARCHAR"
+    LET type_text = varc_length(l_collength, type_text)
+WHEN l_coltype=14 OR l_coltype=270
+    LET type_text="INTERVAL"
+    LET type_text = dt_length(l_collength, type_text)
+OTHERWISE
+    LET type_text="????"
+END CASE
+
+## Now the not nulls
+IF l_coltype > 255 THEN
+    LET type_text=type_text CLIPPED, " NOT NULL"
+END IF
+
+RETURN type_text
+
+END FUNCTION
+
+
+FUNCTION dec_length(l_collength, type_text)
+# calculate length & precision for DECIMAL & MONEY data types
+DEFINE type_text CHAR(41)
+DEFINE len, prec INTEGER   # Length & Precision
+DEFINE l_collength   INTEGER
+
+LET len = l_collength / 256
+LET prec = l_collength mod 256
+IF prec > len THEN
+    IF type_text = "DECIMAL" THEN
+        # floating precision
+        INITIALIZE prec TO NULL
+    ELSE
+        # 0 precision
+        LET prec = 0
+    END IF
+END IF
+
+IF prec IS NULL THEN
+    LET type_text = type_text CLIPPED, "(", len USING "<<<<&", ")"
+ELSE
+    LET type_text = type_text CLIPPED, "(", len USING "<<<<&", ",",
+        prec USING "<<<<&", ")"
+END IF
+
+RETURN type_text
+
+END FUNCTION
+
+FUNCTION varc_length(l_collength, type_text)
+# calculate max & min length for VARCHAR data types
+DEFINE l_collength   INTEGER
+DEFINE type_text CHAR(41)
+DEFINE minl, maxl INTEGER  # Length & Precision
+
+LET maxl = l_collength mod 256
+LET minl = l_collength / 256
+
+IF minl < 2 THEN
+    LET type_text = type_text CLIPPED, "(", maxl USING "<<<<&", ")"
+ELSE
+    LET type_text = type_text CLIPPED, "(", maxl USING "<<<<&", ",",
+        minl USING "<<<<&", ")"
+END IF
+
+RETURN type_text
+
+END FUNCTION
+
+
+FUNCTION dt_length(l_collength, type_text)
+# calculate range for DATETIME & INTERVAL
+DEFINE l_collength   INTEGER
+DEFINE type_text CHAR(41)
+
+CASE
+WHEN l_collength = 459 LET type_text = type_text CLIPPED, " FRACTION TO FRACTION(1)"
+WHEN l_collength = 546 LET type_text = type_text CLIPPED, " MONTH TO MONTH"
+WHEN l_collength = 580 LET type_text = type_text CLIPPED, " DAY TO DAY"
+WHEN l_collength = 614 LET type_text = type_text CLIPPED, " HOUR TO HOUR"
+WHEN l_collength = 648 LET type_text = type_text CLIPPED, " MINUTE TO MINUTE"
+WHEN l_collength = 682 LET type_text = type_text CLIPPED, " SECOND TO SECOND"
+WHEN l_collength = 716 LET type_text = type_text CLIPPED, " FRACTION TO FRACTION(2)"
+WHEN l_collength = 939 LET type_text = type_text CLIPPED, " SECOND TO FRACTION(1)"
+WHEN l_collength = 973 LET type_text = type_text CLIPPED, " FRACTION TO FRACTION"
+WHEN l_collength = 1024 LET type_text = type_text CLIPPED, " YEAR TO YEAR"
+WHEN l_collength = 1060 LET type_text = type_text CLIPPED, " MONTH TO DAY"
+WHEN l_collength = 1094 LET type_text = type_text CLIPPED, " DAY TO HOUR"
+WHEN l_collength = 1128 LET type_text = type_text CLIPPED, " HOUR TO MINUTE"
+WHEN l_collength = 1162 LET type_text = type_text CLIPPED, " MINUTE TO SECOND"
+WHEN l_collength = 1196 LET type_text = type_text CLIPPED, " SECOND TO FRACTION(2)"
+WHEN l_collength = 1230 LET type_text = type_text CLIPPED, " FRACTION TO FRACTION(4)"
+WHEN l_collength = 1419 LET type_text = type_text CLIPPED, " MINUTE TO FRACTION(1)"
+WHEN l_collength = 1453 LET type_text = type_text CLIPPED, " SECOND TO FRACTION"
+WHEN l_collength = 1487 LET type_text = type_text CLIPPED, " FRACTION TO FRACTION(5)"
+WHEN l_collength = 1538 LET type_text = type_text CLIPPED, " YEAR TO MONTH"
+WHEN l_collength = 1574 LET type_text = type_text CLIPPED, " MONTH TO HOUR"
+WHEN l_collength = 1608 LET type_text = type_text CLIPPED, " DAY TO MINUTE"
+WHEN l_collength = 1642 LET type_text = type_text CLIPPED, " HOUR TO SECOND"
+WHEN l_collength = 1676 LET type_text = type_text CLIPPED, " MINUTE TO FRACTION(2)"
+WHEN l_collength = 1710 LET type_text = type_text CLIPPED, " SECOND TO FRACTION(4)"
+WHEN l_collength = 1899 LET type_text = type_text CLIPPED, " HOUR TO FRACTION(1)"
+WHEN l_collength = 1933 LET type_text = type_text CLIPPED, " MINUTE TO FRACTION"
+WHEN l_collength = 1967 LET type_text = type_text CLIPPED, " SECOND TO FRACTION(5)"
+WHEN l_collength = 2052 LET type_text = type_text CLIPPED, " YEAR TO DAY"
+WHEN l_collength = 2088 LET type_text = type_text CLIPPED, " MONTH TO MINUTE"
+WHEN l_collength = 2122 LET type_text = type_text CLIPPED, " DAY TO SECOND"
+WHEN l_collength = 2156 LET type_text = type_text CLIPPED, " HOUR TO FRACTION(2)"
+WHEN l_collength = 2190 LET type_text = type_text CLIPPED, " MINUTE TO FRACTION(4)"
+WHEN l_collength = 2379 LET type_text = type_text CLIPPED, " DAY TO FRACTION(1)"
+WHEN l_collength = 2413 LET type_text = type_text CLIPPED, " HOUR TO FRACTION"
+WHEN l_collength = 2447 LET type_text = type_text CLIPPED, " MINUTE TO FRACTION(5)"
+WHEN l_collength = 2566 LET type_text = type_text CLIPPED, " YEAR TO HOUR"
+WHEN l_collength = 2602 LET type_text = type_text CLIPPED, " MONTH TO SECOND"
+WHEN l_collength = 2636 LET type_text = type_text CLIPPED, " DAY TO FRACTION(2)"
+WHEN l_collength = 2670 LET type_text = type_text CLIPPED, " HOUR TO FRACTION(4)"
+WHEN l_collength = 2859 LET type_text = type_text CLIPPED, " MONTH TO FRACTION(1)"
+WHEN l_collength = 2893 LET type_text = type_text CLIPPED, " DAY TO FRACTION"
+WHEN l_collength = 2927 LET type_text = type_text CLIPPED, " HOUR TO FRACTION(5)"
+WHEN l_collength = 3080 LET type_text = type_text CLIPPED, " YEAR TO MINUTE"
+WHEN l_collength = 3116 LET type_text = type_text CLIPPED, " MONTH TO FRACTION(2)"
+WHEN l_collength = 3150 LET type_text = type_text CLIPPED, " DAY TO FRACTION(4)"
+WHEN l_collength = 3373 LET type_text = type_text CLIPPED, " MONTH TO FRACTION"
+WHEN l_collength = 3407 LET type_text = type_text CLIPPED, " DAY TO FRACTION(5)"
+WHEN l_collength = 3594 LET type_text = type_text CLIPPED, " YEAR TO SECOND"
+WHEN l_collength = 3630 LET type_text = type_text CLIPPED, " MONTH TO FRACTION(4)"
+WHEN l_collength = 3851 LET type_text = type_text CLIPPED, " YEAR TO FRACTION(1)"
+WHEN l_collength = 3887 LET type_text = type_text CLIPPED, " MONTH TO FRACTION(5)"
+WHEN l_collength = 4108 LET type_text = type_text CLIPPED, " YEAR TO FRACTION(2)"
+WHEN l_collength = 4365 LET type_text = type_text CLIPPED, " YEAR TO FRACTION"
+WHEN l_collength = 4622 LET type_text = type_text CLIPPED, " YEAR TO FRACTION(4)"
+WHEN l_collength = 4879 LET type_text = type_text CLIPPED, " YEAR TO FRACTION(5)"
+OTHERWISE LET type_text = type_text CLIPPED, " ????"
+END CASE
+
+RETURN type_text
+
+END FUNCTION
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.17 2005-07-26 13:55:45 mikeaubury Exp $
+# $Id: array.c,v 1.18 2005-08-17 13:43:14 mikeaubury Exp $
 #
 */
 
@@ -94,7 +94,7 @@ int A4GL_fill_array_columns_mk2 (int mx, char *arr1, int szarr1, char *arr2, int
 
 extern HENV henv;
 extern HDBC hdbc;
-SDWORD outlen[512];
+static SDWORD outlen[512];
 
 #define chk_rc(rc,stmt,call) A4GL_chk_rc_full(rc,(void *)stmt,call,__LINE__,__FILE__)
 

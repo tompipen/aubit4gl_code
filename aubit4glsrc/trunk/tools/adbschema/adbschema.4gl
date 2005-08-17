@@ -11,7 +11,7 @@ define mv_perms integer
 
 GLOBALS
 	DEFINE
-	gv_filer_out_table_prefix char (16)
+	gv_filter_out_table_prefix char (16)
 END GLOBALS
 
 
@@ -66,7 +66,7 @@ define
 	let lv_systables = false
 	let lv_prefix_idx = false
 	let lv_no_owner = false
-	initialize gv_filer_out_table_prefix to null
+	initialize gv_filter_out_table_prefix to null
 	
 	if num_args()=0 then
 		call usage()
@@ -125,7 +125,7 @@ define
 
 			when "-filter-out-table-prefix"
 				let a=a+1
-				let gv_filer_out_table_prefix=arg_val(a)
+				let gv_filter_out_table_prefix=arg_val(a)
 				
 			when "-q" 
 				let mv_silent=1
@@ -258,3 +258,7 @@ define lv_s char(20000)
 display lv_s clipped
 end function
 
+
+function get_filter_out_table_prefix()
+	return gv_filter_out_table_prefix
+end function

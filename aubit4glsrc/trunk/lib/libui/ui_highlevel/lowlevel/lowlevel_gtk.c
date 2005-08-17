@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.76 2005-07-14 15:20:16 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.77 2005-08-17 13:43:15 mikeaubury Exp $";
 #endif
 
 
@@ -3310,6 +3310,7 @@ A4GL_LL_disp_h_menu (int num_opts)
   int nbuttons;
   int a;
   char buff[255];
+  printf("disp_h_menu\n");
   if (A4GL_isyes (acl_getenv ("TRADMENU")))
     return 0;
 
@@ -3347,8 +3348,11 @@ A4GL_LL_disp_h_menu (int num_opts)
     {
       sprintf (buff, "BUTTON_%d", a);
       b = gtk_object_get_data (GTK_OBJECT (bb), buff);
-      if (a > num_opts)
-	gtk_widget_hide (b);
+      if (a >= num_opts) {
+	      	gtk_widget_hide (b);
+      } else {
+	      	gtk_widget_show (b);
+      }
     }
 
   return 1;
@@ -3368,11 +3372,18 @@ A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,
   GtkWidget *bb;
   GtkWidget *l = 0;
   char buff[255];
+  printf("disp_h_menu_opt\n");
   bb = gtk_object_get_data (GTK_OBJECT (win_screen), "BB");
   if (bb == 0)
     return 0;
   sprintf (buff, "BUTTON_%d", opt_num);
   b = gtk_object_get_data (GTK_OBJECT (bb), buff);
+
+
+
+
+  printf("option %d =%s\n",opt_num,opt_title);
+
 
 #if GTK_CHECK_VERSION(2,0,0)
   gtk_button_set_use_stock (GTK_BUTTON (b), 0);
@@ -3382,12 +3393,14 @@ A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,
     {
       gtk_button_set_label (GTK_BUTTON (b), stock_item (opt_title));
       gtk_button_set_use_stock (GTK_BUTTON (b), 1);
+      	printf("Stock\n");
     }
   else
     {
       char *label_utf = g_locale_to_utf8 (opt_title, -1, NULL, NULL, NULL);
       l = gtk_object_get_data (GTK_OBJECT (b), "LABEL");
       gtk_label_set_text (GTK_LABEL (l), label_utf);
+      printf("Set text (%s)\n",opt_title);
       //gtk_button_set_label(GTK_BUTTON(b), label_utf);
       g_free (label_utf);
     }

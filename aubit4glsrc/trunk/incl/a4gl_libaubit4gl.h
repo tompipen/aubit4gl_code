@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.187 2005-08-17 07:24:30 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.188 2005-08-17 13:43:14 mikeaubury Exp $
 #
 */
 
@@ -313,7 +313,7 @@
 #define RECALL_LOG_ENTRIES	'W'
 #define GOTO_USED		'Z'
 #define FEATURE_USED		'X'
-#define IS_SERIAL		'V'
+#define HP_IS_SERIAL		'V'
 
 /* 
  * these seem to be used only in lib/extra_libs/channel - 

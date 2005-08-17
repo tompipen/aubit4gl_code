@@ -72,7 +72,6 @@ void make_named_struct (char *name, struct define_variables *v);
 	char str[10000];
 	struct cmd *cmd;
 	void *ptr;
-	//struct param *e;
 	long e_id;
 	int i;
 	struct variable_element *define_var;
@@ -382,20 +381,6 @@ param : dtype   id_list 			{$<define_var>$=$<define_var>1; $<define_var>$->name_
 id_list : IDENTIFIER 
 ;
 
-/*
-	IDENTIFIER  {
-		$<clist>$.char_len=1;
-		$<clist>$.ptr=acl_malloc2(sizeof(char *)*($<clist>$.char_len));
-		$<clist>$.ptr[$<clist>$.char_len-1]=acl_strdup($<str>1);
-	}
-	| id_list ',' IDENTIFIER {
-	        $<clist>$.char_len++;
-                $<clist>$.ptr=realloc($<clist>$.ptr,sizeof(char *)*($<clist>$.char_len));
-                $<clist>$.ptr[$<clist>$.char_len-1]=acl_strdup($<str>3);
-
-	}
-;
-*/
 
 define: {end_define();}
 	| has_define {end_define();}
@@ -502,15 +487,6 @@ opd_define_entry:
 	}
 ;
 
-
-/*
-func_def_entry:
-	 IDENTIFIER '(' fparm  ')' ';' {strcpy($<str>$,"");} 
-	| IDENTIFIER '(' VOID  ')' ';' {strcpy($<str>$,"");}
-	| dtype IDENTIFIER '('  fparm  ')' ';' {strcpy($<str>$,"");}
-	| dtype IDENTIFIER '(' VOID  ')' ';' {strcpy($<str>$,"");}
-;
-*/
 
 
 dtype_int_val :
@@ -828,10 +804,6 @@ assign_common: variable '=' expr {
 
 }
 | variable INC_OP {
-        /* struct param *e; */
-        /* struct use_variable *v; */
-	/* struct param *e2; */
-	/* struct param *e_1; */
 	int e_id2;
 	int n;
 	n=new_param_returns_long('I',(void *)1);
@@ -840,10 +812,6 @@ assign_common: variable '=' expr {
 	$<assignment>$.v=get_use_variable($<e_id>1);
 }
 | variable DEC_OP {
-        /* struct param *e; */
-        /* struct use_variable *v; */
-	/* struct param *e2; */
-	/* struct param *e_1; */
 	int e_id2;
 	int n;
 	n=new_param_returns_long('I',(void *)1);
@@ -887,7 +855,6 @@ variable: IDENTIFIER 					{
 		$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0    ,0, 0,0,   $<str>1,0));
 	}
 	| IDENTIFIER '[' expr ']'  			{
-	//printf("XX2\n");
 		$<e_id>$=new_param_returns_long('V',(void *)mk_use_variable(0,$<e_id>3,0,0,$<str>1,0));
 	}    
 	| IDENTIFIER '[' expr ']' '[' expr ']' 		{

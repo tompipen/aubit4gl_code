@@ -1,8 +1,3 @@
-GLOBALS
-	DEFINE
-	gv_filer_out_table_prefix char (16)
-END GLOBALS
-
 define mv_exprtext byte
 
 
@@ -675,8 +670,8 @@ define lv_tmp_string char(128)
 	end if
 
 	#Filter-out (skip) table names that begin with user specified prefix
-	if gv_filer_out_table_prefix is not null then
-		let lv_tmp_string = gv_filer_out_table_prefix clipped, "*"
+	if get_filter_out_table_prefix() is not null then
+		let lv_tmp_string = get_filter_out_table_prefix() clipped, "*"
 		if lv_t matches lv_tmp_string then
 			#DISPLAY "LOAD/UNLOAD: Filtering out ", lv_t clipped
 			return

@@ -2,7 +2,7 @@
  * @file sqliteodbc.c
  * SQLite ODBC Driver main module.
  *
- * $Id: sqliteodbc.c,v 1.4 2003-08-26 05:27:04 afalout Exp $
+ * $Id: sqliteodbc.c,v 1.5 2005-08-17 13:43:14 mikeaubury Exp $
  *
  * Copyright (c) 2001-2003 Christian Werner <chw@ch-werner.de>
  *
@@ -7818,7 +7818,7 @@ drvtables(SQLHSTMT stmt,
 #ifdef MEMORY_DEBUG
 	s->rowfree = xfree__;
 #else
-	s->rowfree = free;
+	s->rowfree = (void *)free;
 #endif
 	s->nrows = 2;
 	s->rowp = -1;
@@ -7841,7 +7841,7 @@ drvtables(SQLHSTMT stmt,
 #ifdef MEMORY_DEBUG
 	s->rowfree = xfree__;
 #else
-	s->rowfree = free;
+	s->rowfree = (void *)free;
 #endif
 	s->nrows = 1;
 	s->rowp = -1;
@@ -7864,7 +7864,7 @@ drvtables(SQLHSTMT stmt,
 #ifdef MEMORY_DEBUG
 	    s->rowfree = xfree__;
 #else
-	    s->rowfree = free;
+	    s->rowfree = (void *)free;
 #endif
 	    s->nrows = 1;
 	    s->rowp = -1;
@@ -8507,7 +8507,7 @@ drvgettypeinfo(SQLHSTMT stmt, SQLSMALLINT sqltype)
 #ifdef MEMORY_DEBUG
     s->rowfree = xfree__;
 #else
-    s->rowfree = free;
+    s->rowfree = (void *)free;
 #endif
     memset(s->rows, 0,
 	   sizeof (char *) * (s->nrows + 1) * array_size(typeSpec));

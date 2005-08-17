@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.27 2005-07-15 13:26:49 mikeaubury Exp $";
+  "$Id: menu.c,v 1.28 2005-08-17 13:43:15 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -37,7 +37,7 @@ UILIB_A4GL_disp_h_menu (void *menuv)
   ACL_Menu *menu;
   menu = menuv;
 
-
+  printf("Displaying menu\n");
   /* Is the UI client going to do most of the work for us ? */
   if (A4GL_LL_menu_type () == 1)
     {
@@ -48,14 +48,13 @@ UILIB_A4GL_disp_h_menu (void *menuv)
       // Seems so...
       for (a = 0; a < menu->num_opts; a++)
 	{
-	  A4GL_LL_disp_h_menu_opt (a, menu->num_opts, mo->opt_title,
-				   mo->attributes);
+	  A4GL_LL_disp_h_menu_opt (a, menu->num_opts, mo->opt_title, mo->attributes);
 	  mo = mo->next_option;
 	}
       A4GL_LL_screen_update ();
       return;
     }
-
+  printf("-----------------\n");
 #ifdef DEBUG
   A4GL_debug ("Adding window for menu");
   A4GL_debug ("Current metrics : %d %d %d", A4GL_get_curr_left (),
@@ -568,7 +567,23 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
 {
   int key;
   int menu_response = -1;
-  A4GL_LL_disp_h_menu (num_opts);
+
+  A4GL_LL_disp_h_menu (menu->num_opts);
+  if (A4GL_LL_menu_type () == 1)
+    {
+      ACL_Menu_Opts *mo;
+      int a;
+
+      mo = menu->first;
+      for (a = 0; a < menu->num_opts; a++)
+	{
+	  A4GL_LL_disp_h_menu_opt (a, menu->num_opts, mo->opt_title,
+				   mo->attributes);
+	  mo = mo->next_option;
+	}
+    }
+
+
   while (menu_response == -1)
     {
       A4GL_LL_screen_update ();
@@ -636,7 +651,6 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
   A4GL_LL_hide_h_menu ();
   return menu_response;
 }
-
 
 
 
