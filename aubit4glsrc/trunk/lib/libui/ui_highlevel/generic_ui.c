@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.62 2005-07-28 08:26:42 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.63 2005-08-17 07:24:33 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -1068,7 +1068,8 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 {
   struct s_form_dets *formdets;
   struct struct_scr_field *fprop;
-  int a, n;
+  int n;
+  int metric_no;
   int last_field = -1;
   int cnt = 0;
   int lscr = 1;
@@ -1087,135 +1088,144 @@ UILIB_A4GL_read_metrics (void *formdetsv)
   delims[2][1] = 0;
   n = formdets->fileform->metrics.metrics_len;
   A4GL_debug ("metrics len=%d", n);
-  for (a = 0; a < n; a++)
+
+
+  for (metric_no = 0; metric_no < n; metric_no++)
     {
 
+	
+      formdets->fileform->metrics.metrics_val[metric_no].pos_code = 0;
 
-      formdets->fileform->metrics.metrics_val[a].pos_code = 0;
-      A4GL_debug ("checking label %s\n",
-		  formdets->fileform->metrics.metrics_val[a].label);
+      A4GL_debug ("checking label '%s' (%d)\n", formdets->fileform->metrics.metrics_val[metric_no].label,metric_no);
 
 
-      if (strlen (formdets->fileform->metrics.metrics_val[a].label) != 0)
+      if (strlen (formdets->fileform->metrics.metrics_val[metric_no].label) != 0)
 	{
+		A4GL_debug("Its just a label");
 
-
-	  formdets->fileform->metrics.metrics_val[a].field =
+	  formdets->fileform->metrics.metrics_val[metric_no].field =
 	    (int) A4GL_LL_make_label (formdets->fileform->metrics.
-				      metrics_val[a].y,
+				      metrics_val[metric_no].y,
 				      formdets->fileform->metrics.
-				      metrics_val[a].x,
+				      metrics_val[metric_no].x,
 				      formdets->fileform->metrics.
-				      metrics_val[a].label);
+				      metrics_val[metric_no].label);
 	  formdets->form_fields[cnt++] = (void *)
-	    formdets->fileform->metrics.metrics_val[a].field;
+	    formdets->fileform->metrics.metrics_val[metric_no].field;
 	  formdets->form_fields[cnt] = 0;
 	}
       else
 	{
-	  A4GL_debug ("Making field");
+	  A4GL_debug ("Making field : %d",metric_no);
 
-	  attr_no = A4GL_find_attrib_from_metric (formdets->fileform, a);
-	  fprop = &formdets->fileform->attributes.attributes_val[attr_no];
-	  A4GL_debug ("attr_no=%d fprop=%p", attr_no, fprop);
+	  attr_no = A4GL_find_attrib_from_metric (formdets->fileform, metric_no);
+	  if (attr_no==-1) continue;
+	  if (attr_no >= 0)
+	    {
+	      fprop = &formdets->fileform->attributes.attributes_val[attr_no];
+	      A4GL_debug ("attr_no=%d fprop=%p", attr_no, fprop);
 
+	      widget = A4GL_decode_str_fprop (fprop, FA_S_WIDGET);
+	      config = A4GL_decode_str_fprop (fprop, FA_S_CONFIG);
+	    }
+	  else
+	    {
+	      widget = 0;
+	      config = 0;
+	    }
 
-
-
-	  widget = A4GL_decode_str_fprop (fprop, FA_S_WIDGET);
-	  config = A4GL_decode_str_fprop (fprop, FA_S_CONFIG);
 	  if (widget == 0)
 	    widget = "";
 	  if (config == 0)
 	    config = "";
 
 
-	  formdets->fileform->metrics.metrics_val[a].field =
+	  formdets->fileform->metrics.metrics_val[metric_no].field =
 	    (int) A4GL_LL_make_field (formdets->fileform->metrics.
-				      metrics_val[a].y,
+				      metrics_val[metric_no].y,
 				      formdets->fileform->metrics.
-				      metrics_val[a].x,
+				      metrics_val[metric_no].x,
 				      formdets->fileform->metrics.
-				      metrics_val[a].h,
+				      metrics_val[metric_no].h,
 				      formdets->fileform->metrics.
-				      metrics_val[a].w, widget, config,
+				      metrics_val[metric_no].w, widget, config,
 				      fprop);
 
 	  A4GL_debug ("Making field 2");
 
 
 	  formdets->form_fields[cnt++] =
-	    (void *) formdets->fileform->metrics.metrics_val[a].field;
+	    (void *) formdets->fileform->metrics.metrics_val[metric_no].field;
 	  formdets->form_fields[cnt] = 0;
 
 
-	  formdets->fileform->metrics.metrics_val[a].dlm1 =
+	  formdets->fileform->metrics.metrics_val[metric_no].dlm1 =
 	    (int) A4GL_LL_make_label (formdets->fileform->metrics.
-				      metrics_val[a].y,
+				      metrics_val[metric_no].y,
 				      formdets->fileform->metrics.
-				      metrics_val[a].x - 1, delims[0]);
+				      metrics_val[metric_no].x - 1, delims[0]);
 	  A4GL_debug ("Making field 3");
-	  if (formdets->fileform->metrics.metrics_val[a].dlm1)
+	  if (formdets->fileform->metrics.metrics_val[metric_no].dlm1)
 	    formdets->form_fields[cnt++] =
-	      (void *) formdets->fileform->metrics.metrics_val[a].dlm1;
+	      (void *) formdets->fileform->metrics.metrics_val[metric_no].dlm1;
 
 
-	  formdets->fileform->metrics.metrics_val[a].dlm2 =
+	  formdets->fileform->metrics.metrics_val[metric_no].dlm2 =
 	    (int) A4GL_LL_make_label (formdets->fileform->metrics.
-				      metrics_val[a].y,
+				      metrics_val[metric_no].y,
 				      formdets->fileform->metrics.
-				      metrics_val[a].x +
+				      metrics_val[metric_no].x +
 				      formdets->fileform->metrics.
-				      metrics_val[a].w, delims[1]);
+				      metrics_val[metric_no].w, delims[1]);
 	  A4GL_debug ("Making field 4");
 
-	  if (formdets->fileform->metrics.metrics_val[a].dlm1)
+	  if (formdets->fileform->metrics.metrics_val[metric_no].dlm1)
 	    formdets->form_fields[cnt++] =
-	      (void *) formdets->fileform->metrics.metrics_val[a].dlm2;
+	      (void *) formdets->fileform->metrics.metrics_val[metric_no].dlm2;
 
 	  A4GL_debug ("Making field 5");
 
 	  formdets->form_fields[cnt] = 0;
 	  A4GL_debug ("Made field : %p",
-		      formdets->fileform->metrics.metrics_val[a].field);
+		      formdets->fileform->metrics.metrics_val[metric_no].field);
 	}
 
 
-      if (lscr != formdets->fileform->metrics.metrics_val[a].scr)
+      if (lscr != formdets->fileform->metrics.metrics_val[metric_no].scr)
 	{
-	  lscr = formdets->fileform->metrics.metrics_val[a].scr;
+	  lscr = formdets->fileform->metrics.metrics_val[metric_no].scr;
 	  A4GL_LL_set_new_page ((void *) formdets->fileform->metrics.
-				metrics_val[a].field, 1);
+				metrics_val[metric_no].field, 1);
 	}
 
 
 
-      if (strlen (formdets->fileform->metrics.metrics_val[a].label) == 0)
+      if (strlen (formdets->fileform->metrics.metrics_val[metric_no].label) == 0)
 	{
 	  if (last_field == -1)
 	    {
-	      formdets->fileform->metrics.metrics_val[a].pos_code +=
+	      formdets->fileform->metrics.metrics_val[metric_no].pos_code +=
 		POS_VERY_FIRST;
 	    }
 	}
 
-      if (lfieldscr != formdets->fileform->metrics.metrics_val[a].scr
-	  && strlen (formdets->fileform->metrics.metrics_val[a].label) == 0)
+      if (lfieldscr != formdets->fileform->metrics.metrics_val[metric_no].scr
+	  && strlen (formdets->fileform->metrics.metrics_val[metric_no].label) == 0)
 	{
 
-	  formdets->fileform->metrics.metrics_val[a].pos_code += POS_FIRST;
+	  formdets->fileform->metrics.metrics_val[metric_no].pos_code += POS_FIRST;
 
 	  if (last_field != -1)
 	    {
 	      formdets->fileform->metrics.metrics_val[last_field].pos_code +=
 		POS_LAST;
 	    }
-	  lfieldscr = formdets->fileform->metrics.metrics_val[a].scr;
+	  lfieldscr = formdets->fileform->metrics.metrics_val[metric_no].scr;
 	}
-      A4GL_debug ("LAST_FIELD3 -CHK111 a=%d label='%s'", a,
-		  formdets->fileform->metrics.metrics_val[a].label);
-      if (strlen (formdets->fileform->metrics.metrics_val[a].label) == 0)
-	last_field = a;
+      A4GL_debug ("LAST_FIELD3 -CHK111 a=%d label='%s'", metric_no,
+		  formdets->fileform->metrics.metrics_val[metric_no].label);
+      if (strlen (formdets->fileform->metrics.metrics_val[metric_no].label) == 0)
+	last_field = metric_no;
     }
 
   A4GL_debug ("Last_field=%d\n", last_field);
@@ -1230,7 +1240,6 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 
   return 1;
 }
-
 
 
 int
@@ -1743,6 +1752,7 @@ A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
 
   A4GL_pop_char (ff, field_width);
   A4GL_debug ("set_field_contents : '%s'", ff);
+  A4GL_add_recall_value(f->colname,ff);
   A4GL_mja_set_field_buffer (field, 0, ff);
   free (ff);
 
@@ -2663,7 +2673,7 @@ static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
     {				// We appear to be all done here...
       A4GL_push_null (DTYPE_CHAR, 1);
       promptx->mode = 2;
-      //A4GL_LL_clear_prompt (promptx->f, promptx->win);
+      A4GL_LL_clear_prompt (promptx->f, promptx->win);
       A4GL_LL_screen_update ();
       promptx->f = 0;
       return rblock;
@@ -2942,19 +2952,21 @@ int
 A4GL_find_fields_no_metric (struct_form * f, int metric_no)
 {
   int a, b;
-  A4GL_debug ("BB\n");
+  A4GL_debug ("BB - Looking for metric : %d\n",metric_no);
   for (a = 0; a < f->fields.fields_len; a++)
     {
       for (b = 0; b < f->fields.fields_val[a].metric.metric_len; b++)
 	{
 	  if (f->fields.fields_val[a].metric.metric_val[b] == metric_no)
 	    {
+	      A4GL_debug("Found metric : %d\n",f);
 	      return a;
 	    }
 	}
     }
-
-  return 0;
+  //A4GL_assertion(1,"Field for metric not found");
+  A4GL_debug("Metric not found %d",metric_no);
+  return -1;
 }
 
 
@@ -2964,6 +2976,7 @@ A4GL_find_attrib_from_field (struct_form * f, int field_no)
   int a;
   A4GL_debug ("AA\n");
   A4GL_debug ("field_no=%d\n", field_no);
+  if (field_no==-1) return -1;
 
   for (a = 0; a < f->attributes.attributes_len; a++)
     {

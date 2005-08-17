@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.186 2005-07-28 10:10:25 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.187 2005-08-17 07:24:30 mikeaubury Exp $
 #
 */
 
@@ -296,32 +296,41 @@
 #define PRECODE 		'4'
 #define PRECODE_R 		'5'
 #define FORMCODE 		'7'
-#define S_WINDOWSCODE 	'8'
-#define S_FORMDETSCODE 	'9'
+#define S_WINDOWSCODE 		'8'
+#define S_FORMDETSCODE 		'9'
 #define SESSCODE 		'A'
 #define RPC_FUNC 		'B'
 #define ATTRIBUTE 		'C'
 #define DROPSHADOW 		'D'
-#define COMPILED_FORM 	'E'
+#define COMPILED_FORM 		'E'
 #define MESSAGEWIN 		'F'
 #define PTR_ATTRIBUTE 		'G'
 #define COMPILED_FORM_PACKER 	'H'
 #define COMPILED_FORM_FORMTYPE 	'I'
 #define DYNMEMALLOC 		'J'
-#define STR_RESOURCE_VAL 		'K'
+#define STR_RESOURCE_VAL 	'K'
 #define LOG_TEMP_TABLE		'O'
-/* this seems to be used only in lib/extra_libs/channel
-#define CHANNEL_IN		'L'
-#define CHANNEL_OUT		'M'
-#define CHANNEL_DELIM		'N'
-#define CHANNEL_PIPE		'P'
+#define RECALL_LOG_ENTRIES	'W'
 #define GOTO_USED		'Z'
 #define FEATURE_USED		'X'
 #define IS_SERIAL		'V'
 
+/* 
+ * these seem to be used only in lib/extra_libs/channel - 
+ * but we need to ensure they are not used elsewhere
+*/
+
+#define CHANNEL_IN		'L'
+#define CHANNEL_OUT		'M'
+#define CHANNEL_DELIM		'N'
+#define CHANNEL_PIPE		'P'
+/* */
+
+
+
 #define ACLFGLI_STR_TO_ID		'S'
 
-*/
+
   /* ========================= from a4gl_ui.h ====================== */
 #define DESCLENGTH 		10
 #define nalloc(x) 		acl_malloc2(sizeof(x))
@@ -873,6 +882,19 @@ char *A4GLSQLCV_make_substr(char *colname,int nints,int i1,int i2) ;
     int pipe_ui_mode;
     char *inpattr_s;
     char *dispattr_s;
+  };
+
+
+#define MAX_RECALL_VALUES 100
+  struct s_recall_entry {
+	  	char *recall_value;
+		struct s_recall_entry *next;
+		struct s_recall_entry *prev;
+  };
+
+  struct s_recall_list {
+	  struct s_recall_entry *first;
+	  struct s_recall_entry *last;
   };
 
   /* OBJECTMODULE is defined ONLY in keys.c */

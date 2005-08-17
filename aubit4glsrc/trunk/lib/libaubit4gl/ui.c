@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.43 2005-07-19 11:06:28 mikeaubury Exp $
+# $Id: ui.c,v 1.44 2005-08-17 07:24:33 mikeaubury Exp $
 #
 */
 
@@ -976,6 +976,85 @@ void A4GL_evt_not_idle(struct aclfgl_event_list *evt) {
 				*(long *)evt[a].field=now;
 			}
 	}
+}
+
+
+void A4GL_add_recall_value(char *field_name,char *value) {
+	struct s_recall_list *s;
+	struct s_recall_entry *e;
+	
+	if (A4GL_has_pointer(field_name,RECALL_LOG_ENTRIES)) {
+		s=A4GL_find_pointer(field_name,RECALL_LOG_ENTRIES);
+	} else {
+		s=malloc(sizeof(struct s_recall_list));
+		s->first=0;
+		s->last=0;
+		A4GL_add_pointer(field_name,RECALL_LOG_ENTRIES,s);
+	}
+
+	if (s->first) {
+		e=s->first;
+		if (strcmp(e->recall_value,value)==0) { // Its already at the front of the list..
+			return;
+		}
+	}
+
+	e=malloc(sizeof(struct s_recall_entry));
+	e->prev=0;
+	e->next=0;
+
+	e->recall_value=strdup(value);
+
+	if (s->first==0) { // First one...
+			s->first=e; s->last=e;
+	} else {
+		struct s_recall_entry *old_first;
+		old_first=s->first;
+		s->first=e;
+		e->next=old_first;
+		old_first->prev=e;
+	}
+
+	e=s->first; // We'll skip the first entry - because we've only just put it there!
+	e=e->next;
+
+	while (e) {
+		struct s_recall_entry *n;
+		n=e->next;
+		if (strcmp(value,e->recall_value)==0) { // It was already in our list
+				struct s_recall_entry *e2;
+				free(e->recall_value);
+				e2=e->prev;
+				if (e2) { e2->next=e->next; }
+				e2=e->next;
+				if (e2) { e2->prev=e->prev; }
+				if (e==s->last) { s->last=e->prev; }
+				free(e);
+		}
+		e=n;
+	}
+}
+
+
+void A4GL_debug_dump_recall(char *field_name) {
+	struct s_recall_list *s;
+	struct s_recall_entry *e;
+
+	PRINTF("DUMP RECALL FOR FIELD : %s\n",field_name);
+	if (A4GL_has_pointer(field_name,RECALL_LOG_ENTRIES)) {
+		s=A4GL_find_pointer(field_name,RECALL_LOG_ENTRIES);
+	} else {
+		PRINTF("No recall values\n");
+		return;
+	}
+	e=s->first;
+	while (e) {
+		if (e->recall_value) {
+			PRINTF("%s\n",e->recall_value);
+		}
+		e=e->next;
+	}
+	printf("---------------\n");
 }
 
 /* ============================= EOF ================================ */

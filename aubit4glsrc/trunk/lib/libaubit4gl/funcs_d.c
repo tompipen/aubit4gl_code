@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.68 2005-07-28 08:26:41 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.69 2005-08-17 07:24:33 mikeaubury Exp $
 #
 */
 
@@ -330,7 +330,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
 {
   int dig[MAXDIG];
   int pnt[MAXPNT];
-  char number[65];
+  char number[1000];
   char fm1[128], fm2[128];
   char *ptr1, *ptr;
   char *ptr2;
@@ -401,7 +401,11 @@ a4gl_using (char *str, int s, char *fmt, double num)
   num += ad;
 
   	SPRINTF1 (number, "%64.32f", num);
-
+  if (strlen(number)>64) {
+	  	// Its too big...
+	    memset (str, '*', a);
+		return;
+  }
   num_dec=num-floor(num);
   A4GL_debug("Decimal portion = lf",num_dec);
 
@@ -823,6 +827,8 @@ int A4GL_menu_opts_compare(char *a,char *b,int why) {
 
 	if (option_type==3) { return A4GL_aubit_strcasecmp(a,b); } // never sensitive
 
+// Shouldn't happen...
+	return 0;
 }
 
 /* ============================== EOF ========================== */
