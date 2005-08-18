@@ -25,6 +25,14 @@ long find_function (char *s);
 extern module this_module;
 void print_set_var (struct cmd_set_var *v);
 
+	// An individual command
+struct label
+{
+  char *str;
+  int pc;
+};
+
+
 #define LABELSCNT 100000
 struct label labels[LABELSCNT];
 int labels_cnt = 0;
@@ -32,13 +40,6 @@ static void resolve_gotos_func (int function_cnt);
 
 long pc = 0;
 
-
-	// An individual command
-struct label
-{
-  char *str;
-  int pc;
-};
 
 
 void *label_tree = 0;
