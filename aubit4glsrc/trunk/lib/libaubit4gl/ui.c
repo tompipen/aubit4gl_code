@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.44 2005-08-17 07:24:33 mikeaubury Exp $
+# $Id: ui.c,v 1.45 2005-08-19 12:40:12 mikeaubury Exp $
 #
 */
 
@@ -1057,4 +1057,132 @@ void A4GL_debug_dump_recall(char *field_name) {
 	printf("---------------\n");
 }
 
+
+char *A4GL_recall_field(char *t,char *c,int x,int y) {
+        struct s_recall_list *s;
+        struct s_recall_entry *e;
+	int maxlen=0;
+	int nvals=0;
+	char **values=0;
+	int cnt;
+	int rows;
+	int sline;
+	int cols;
+	char *buff;
+	int crow;
+	int ok=1;
+	static char *last_val=0;
+	char field_name[256];
+	sprintf(field_name,"%s",c);
+	if (last_val) {free(last_val); last_val=0;}
+
+        if (A4GL_has_pointer(field_name,RECALL_LOG_ENTRIES)) {
+                s=A4GL_find_pointer(field_name,RECALL_LOG_ENTRIES);
+        } else {
+                return 0;
+        }
+
+	nvals=0;
+        e=s->first;
+        while (e) {
+                if (e->recall_value) {
+			if (strlen(e->recall_value)) {
+				nvals++;
+				if (strlen(e->recall_value)>maxlen) {
+					maxlen=strlen(e->recall_value);
+				}
+			}
+                }
+                e=e->next;
+        }
+
+	if (nvals>100) nvals=100; // Gotta call it sometime...
+
+	values=malloc(sizeof(char *)*nvals);
+
+	cnt=0;
+        e=s->first;
+
+	buff=malloc(maxlen+1);
+	buff[maxlen]=0;
+        while (e) {
+                if (e->recall_value) {
+			if (strlen(e->recall_value)) {
+			memset(buff,' ',maxlen);
+			strncpy(buff,e->recall_value,strlen(e->recall_value));
+			values[cnt]=strdup(buff);
+			cnt++;
+			}
+                }
+                e=e->next;
+        }
+
+
+	if (maxlen>50)  {cols=50;} else {cols=maxlen;}
+	if (nvals>10)   {rows=10;} else {rows=nvals;}
+	
+	// Need to double check these are valid....
+        A4GL_push_long(x+1);
+        A4GL_push_long(y+1);
+
+        A4GL_push_long(rows);
+        A4GL_push_long(cols);
+	A4GL_cr_window("a4gl_recall", 1,255,255,255,255,1,255,255,(0x0));
+
+
+	sline=0;
+	crow=0;
+
+	// mantain a scrolling list of values...
+	while (1) {
+		long key;
+		int top;
+		int a;
+
+		// Display our current list..
+		for (a=0;a<rows;a++) {
+			top=crow-sline;
+   			A4GL_push_char(values[top+a]);
+   			A4GL_push_long(a+1);
+   			A4GL_push_long(1);
+			if (crow==top+a) {
+   				A4GL_display_at(1,0x1000);
+			} else {
+   				A4GL_display_at(1,0xffffffff);
+			}
+		}
+
+		// wait for a key press..
+      		aclfgl_fgl_getkey(0);
+		A4GL_pop_var2(&key,2,0x0);
+
+		// act on that keypress..
+		if (key==A4GLKEY_F(12)) 	{ok=0;break;}
+		if (key==A4GLKEY_ENTER) 	{ok=1;break;}
+		if (key==A4GLKEY_UP&& crow>0)   {crow=crow-1; sline--; }
+		if (key==A4GLKEY_DOWN && crow<(nvals-1)) {crow=crow+1; sline++; }
+		if (sline>=rows) sline=rows-1;
+		if (sline<0) sline=0;
+	}
+
+	A4GL_remove_window("a4gl_recall");
+
+	// Lets make a copy - so we can free all the values...
+	if (ok) { last_val=strdup(values[crow]); }
+
+	// Free them
+	for (cnt=0;cnt<nvals;cnt++) {
+		free(values[cnt]);
+	}
+	free(values);
+
+	// Was it ok ?
+	if (ok==0) { return 0; }
+
+	sprintf(field_name,"%s.%s",t,c);
+	// Return our value..
+	A4GL_push_char(last_val);
+	A4GL_disp_fields(1,0xffffffff,field_name,1,0);
+	return last_val;
+}
 /* ============================= EOF ================================ */

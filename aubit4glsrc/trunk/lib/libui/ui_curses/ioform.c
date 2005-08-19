@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.131 2005-07-29 06:56:59 mikeaubury Exp $
+# $Id: ioform.c,v 1.132 2005-08-19 12:40:12 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.131 2005-07-29 06:56:59 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.132 2005-08-19 12:40:12 mikeaubury Exp $";
 #endif
 
 /**
@@ -1035,31 +1035,6 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		      pprval =
 			A4GL_check_and_copy_field_to_data_area (form, fprop,
 								buff2, buff);
-
-/*
-		    A4GL_push_param (buff2, DTYPE_CHAR);
-		    pprval=A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield));
-		    if (pprval) {
-				A4GL_debug("Looks like pprval is ok ... ");
-
-
-				if (A4GL_isnull(fprop->datatype,buff)) {
-					A4GL_debug("But I got a null back - strlen = %d fprop->datatype=%x %d",strlen(buff2),fprop->datatype,DTYPE_DTIME);
-					if (strlen(buff2)) {
-						pprval=0;
-					}
-				}
-				if (!A4GL_conversion_ok(-1)) { pprval=0; }
-
-
-		    		if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && a_strchr(buff2,'.') ) {
-						A4GL_debug("Looks like a decimal in a numeric field");
-						pprval=0;
-		    		}
-			}
-
-*/
-
 
 
 		      A4GL_debug ("pprval = %d\n", pprval);
@@ -4198,29 +4173,6 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 		    pprval =
 		      A4GL_check_and_copy_field_to_data_area (form, fprop,
 							      buff2, buff);
-
-
-
-/*
-		    A4GL_push_param (buff2, DTYPE_CHAR);
-		    pprval=A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield));
-
-		    if (pprval) {
-				if (A4GL_isnull(fprop->datatype,buff)) {
-					A4GL_debug("But I got a null back - strlen = %d fprop->datatype=%x %d",strlen(buff2),fprop->datatype,DTYPE_DTIME);
-					if (strlen(buff2)) {
-						pprval=0;
-					}
-				}
-
-				if (!A4GL_conversion_ok(-1)) { pprval=0; }
-		    		if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && a_strchr(buff2,'.') ) {
-					A4GL_debug("Looks like a decimal in a numeric field");
-					pprval=0;
-		    		}
-			}
-*/
-
 
 
 
