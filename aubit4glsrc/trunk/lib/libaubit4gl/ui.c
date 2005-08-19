@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.45 2005-08-19 12:40:12 mikeaubury Exp $
+# $Id: ui.c,v 1.46 2005-08-19 13:07:16 mikeaubury Exp $
 #
 */
 
@@ -1058,7 +1058,7 @@ void A4GL_debug_dump_recall(char *field_name) {
 }
 
 
-char *A4GL_recall_field(char *t,char *c,int x,int y) {
+char *A4GL_recall_field(char *t,char *c,int x,int y,int show) {
         struct s_recall_list *s;
         struct s_recall_entry *e;
 	int maxlen=0;
@@ -1089,13 +1089,27 @@ char *A4GL_recall_field(char *t,char *c,int x,int y) {
 			if (strlen(e->recall_value)) {
 				nvals++;
 				if (strlen(e->recall_value)>maxlen) {
+					if (show==0) { 
+						sprintf(field_name,"%s.%s",t,c);
+						// Return our value..
+						A4GL_push_char(e->recall_value);
+						A4GL_disp_fields(1,0xffffffff,field_name,1,0);
+						return e->recall_value; 
+					}
 					maxlen=strlen(e->recall_value);
 				}
 			}
                 }
                 e=e->next;
         }
-
+	if (show==0) {
+		
+		sprintf(field_name,"%s.%s",t,c);
+		// Return our value..
+		A4GL_push_char(" " );
+		A4GL_disp_fields(1,0xffffffff,field_name,1,0);
+		return " ";
+	}
 	if (nvals>100) nvals=100; // Gotta call it sometime...
 
 	values=malloc(sizeof(char *)*nvals);
@@ -1183,6 +1197,7 @@ char *A4GL_recall_field(char *t,char *c,int x,int y) {
 	// Return our value..
 	A4GL_push_char(last_val);
 	A4GL_disp_fields(1,0xffffffff,field_name,1,0);
+
 	return last_val;
 }
 /* ============================= EOF ================================ */

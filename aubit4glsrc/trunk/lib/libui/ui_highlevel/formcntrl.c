@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.38 2005-08-19 12:40:13 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.39 2005-08-19 13:07:16 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.38 2005-08-19 12:40:13 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.39 2005-08-19 13:07:16 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -475,22 +475,32 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 	  else
 	    {
 		static int kr=-1;
-		if (kr==-1) {
-			kr=atoi(acl_getenv("KEY_RECALL"));
-		}
-		if (kr) {
-			if (fcntrl.extent==kr) { 
+		static int kr_q=-1;
+		int ignore;
+		ignore=0;
+		if (kr==-1) { kr=atoi(acl_getenv("KEY_RECALL")); }
+		if (kr_q==-1) { kr_q=atoi(acl_getenv("KEY_RECALL_LAST")); }
+
+		if (kr && fcntrl.extent==kr && ignore==0) {
 	  			struct struct_scr_field *fprop;
 	  			fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (sio->currentfield));
-				A4GL_recall_field(fprop->tabname,fprop->colname,1,1);
+				A4GL_recall_field(fprop->tabname,fprop->colname,1,1,1);
 	      			new_state = 0;
 	      			rval = -1;
-			} else {
-	      			A4GL_proc_key_input (fcntrl.extent, sio->currform->form, sio);
-	      			new_state = 50;
+				ignore=1;
+		}
+
+		if (kr_q && fcntrl.extent==kr_q && ignore==0) {
+	  			struct struct_scr_field *fprop;
+	  			fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (sio->currentfield));
+				A4GL_recall_field(fprop->tabname,fprop->colname,1,1,0);
+	      			new_state = 0;
 	      			rval = -1;
-			}
-		} else {
+				ignore=1;
+		}
+
+
+		if (!ignore) {
 	      		A4GL_proc_key_input (fcntrl.extent, sio->currform->form, sio);
 	      		new_state = 50;
 	      		rval = -1;
