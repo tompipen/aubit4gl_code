@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.67 2005-07-22 13:23:24 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.68 2005-08-24 14:03:29 mikeaubury Exp $
 #
 */
 
@@ -360,7 +360,7 @@ A4GL_push_char (char *p)
   char *ptr;
   last_was_empty=0;
   A4GL_assertion(p==0,"pointer was 0 in A4GL_push_char");
-  A4GL_debug("Push char...");
+  A4GL_debug("Push char...'%s'",p);
   if (p[0] == 0 && p[1] != 0)
     {
       A4GL_debug("blank first not second ('%s')",p);
@@ -656,7 +656,7 @@ A4GL_func_clip (void)
   z = A4GL_char_pop ();
 
   if (strlen(z)) {
-  	A4GL_trim (z);
+  	A4GL_trim_not_nl (z);
 	if (strlen(z)) {
   		A4GL_push_char (z);
 	} else {

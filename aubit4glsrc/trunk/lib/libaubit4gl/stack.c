@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.135 2005-08-17 13:57:25 mikeaubury Exp $
+# $Id: stack.c,v 1.136 2005-08-24 14:03:29 mikeaubury Exp $
 #
 */
 
@@ -555,7 +555,7 @@ A4GL_char_pop (void)
   A4GL_debug("a=%d\n",a);
   if (a==0) s[1]=1;
   a = A4GL_pop_param (s, DTYPE_CHAR, a);
-  A4GL_debug("A4GL_char_pop - returning '%s' (%s)",s,A4GL_isnull(DTYPE_CHAR,s)?"null":"not null");
+  A4GL_debug("A4GL_char_pop - returning '%s' (%s)\n",s,A4GL_isnull(DTYPE_CHAR,s)?"null":"not null");
   return s;
 }
 
@@ -1512,7 +1512,7 @@ A4GL_push_char(A4GL_using_date(l,"ddd mmm dd yyyy"));
 
 void A4GL_push_time_expr(void) {
 //struct_dtime a ;
-A4GL_push_current( 4 ,6);
+A4GL_push_current( 4 ,5);
 }
 
 

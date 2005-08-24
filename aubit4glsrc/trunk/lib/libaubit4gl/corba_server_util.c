@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.19 2005-08-17 13:57:25 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.20 2005-08-24 14:03:29 mikeaubury Exp $
 #
 */
 
@@ -515,8 +515,22 @@ A4GL_trim (char *p)
     }
 }
 
-
-
+/**
+ *  * Trim the spaces at the rigth side of a string
+ *   *
+ *    * @param p The string to be trimmed.
+ *     */
+void
+A4GL_trim_not_nl (char *p)
+{
+  int a;
+  for (a = strlen (p) - 1; a >= 0; a--)
+    {
+      if (p[a] != ' ')
+	break;
+      p[a] = 0;
+    }
+}
 // --- from fglwrap.c
 /**
  * Checks if the string have some sort of yes (y,Y,1,true).
