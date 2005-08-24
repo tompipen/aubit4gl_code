@@ -466,7 +466,7 @@ const: CONST NAMED EQUAL value SEMICOLON {
  
 ;
 
-value: INT_VAL | NAMED | string | NUMBER_VAL
+value: INT_VAL | NAMED | string | NUMBER_VAL | HEX_INT_VAL
 ;
 
 struct: STRUCT NAMED {
