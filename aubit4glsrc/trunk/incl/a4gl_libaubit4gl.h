@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.188 2005-08-17 13:43:14 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.189 2005-08-24 09:36:02 mikeaubury Exp $
 #
 */
 
@@ -1462,8 +1462,6 @@ void A4GL_debug(char *s);
 #define fglbyte struct fgl_int_loc
 #define fgltext struct fgl_int_loc
 
-//#define acl_free(s) acl_free_full(s,__FILE__,__LINE__)
-//#define acl_malloc(a,b) acl_malloc_full(a,b,__FILE__,__LINE__)
 
 
 

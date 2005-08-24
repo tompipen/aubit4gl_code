@@ -6,8 +6,10 @@ class_definition:
 			}
 
 		set_4gl_vars();
-                set_current_variable_scope('g'); print_variables (); set_current_variable_scope('G'); print_variables (); set_current_variable_scope('m'); print_variables ();
-print_module_variable_init();
+                set_current_variable_scope('g'); print_variables (); 
+		set_current_variable_scope('G'); print_variables (); 
+		set_current_variable_scope('m'); print_variables ();
+ 		print_module_variable_init();
                 set_current_variable_scope('m');
 
 
