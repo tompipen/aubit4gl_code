@@ -54,12 +54,15 @@
 "opaque"      {strcpy(yylval.str,yytext); return OPAQUE;}
 "bool"         {strcpy(yylval.str,yytext); return BOOL;}
 "typedef"      {strcpy(yylval.str,yytext); return TYPEDEF;}
+"program"      {strcpy(yylval.str,yytext); return PROGRAM;}
+"version"      {strcpy(yylval.str,yytext); return VERSION;}
 [0-9]+  { strcpy(yylval.str, yytext); return(INT_VAL);}
 [0-9]+|[0-9]*\.[0-9]+   { strcpy(yylval.str, yytext); return(NUMBER_VAL);}
 \"[^\"]+\" 	{  strcpy(yylval.str,yytext); return STRING_VAL;}
 \"\" 		{  strcpy(yylval.str,yytext); return STRING_VAL;}
 \'[^\']+\' 	{  strcpy(yylval.str,yytext); return STRING_VAL;}
 \'\' 		{  strcpy(yylval.str,yytext); return STRING_VAL;}
+0x[0123456789ABCDEFabcdef]+ { strcpy(yylval.str, yytext); return(HEX_INT_VAL);}
 [a-zA-Z]+[a-zA-Z\_0-9]*	{
 strcpy(yylval.str, yytext);colno+=strlen(yytext);
  return(NAMED);

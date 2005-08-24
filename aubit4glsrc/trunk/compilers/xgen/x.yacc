@@ -324,6 +324,9 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 %token NUMBER_VAL
 %token EQUAL
 %token CH
+%token HEX_INT_VAL
+%token PROGRAM
+%token VERSION
 %%
 
 x: xset | x xset
@@ -334,6 +337,7 @@ xset: 	  struct
 	| const
 	| enum
 	| typedef
+	| program
 ;
 
 
@@ -389,6 +393,9 @@ typedef_elem:
 		fprintf(cfi,"}\n");
 		fprintf(hsf,"typedef %s %s %s;\n",$<str>2,$<str>3,$<str>4);
 	}
+	| INT NAMED { fprintf(hsf,"typedef %s %s;\n",$<str>1,$<str>2); }
+	| LONG NAMED { fprintf(hsf,"typedef %s %s;\n",$<str>1,$<str>2); }
+	| STRING NAMED LESS_THAN GREATER_THAN {fprintf(hsf,"typedef char *%s;\n",$<str>2);}
 ;
 
 enum: ENUM NAMED {
@@ -666,6 +673,32 @@ string: STRING_VAL {
 };
 
 
+program_name: NAMED;
+version_name: NAMED;
+
+hex_int_value: INT_VAL 	| HEX_INT_VAL
+;
+
+function_def_list : 
+	function_def | function_def_list function_def
+;
+
+func_rval	: NAMED | VOID;
+pval 		: NAMED | VOID;
+func_name	: NAMED;
+
+function_def: 
+	func_rval func_name OPEN_BRACKET pval CLOSE_BRACKET EQUAL INT_VAL SEMICOLON
+;
+
+
+program: 	
+	PROGRAM program_name OPEN_BRACE
+		VERSION version_name OPEN_BRACE
+			function_def_list
+		CLOSE_BRACE EQUAL hex_int_value SEMICOLON
+	CLOSE_BRACE EQUAL hex_int_value SEMICOLON
+;
 %%
 
 
