@@ -1,0 +1,55 @@
+<p>Status legend:</p>
+<ul>
+	<li><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"> 
+	- Mature; feature complete, fully tested, mission critical production ready</li>
+	<li><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"> 
+	- Feature complete; not sufficiently tested for mission critical production</li>
+	<li><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"> 
+	- Mostly Feature complete; somewhat tested</li>
+	<li><img border="0" src="../images/star.gif" width="11" height="11"><img border="0" src="../images/star.gif" width="11" height="11"> 
+	- Beta; Somewhat usable in particular environments and with limited scope</li>
+	<li><img border="0" src="../images/star.gif"> - Alpha; of interest only to 
+	developers, experimental, not more then a&nbsp; proof of concept</li>
+</ul>
+<p>Maintainer legend:</p>
+<ul>
+	<li>MA - Mike Aubury</li>
+	<li>AF - Andrej Falout</li>
+	<li>SF - Sergio Ferreira</li>
+</ul>
+<p>&nbsp;&nbsp;&nbsp; Note: Please always use Aubit project mailing lists to 
+contact developers.</p>
+<p>Other symbols used:</p>
+<ul>
+	<li>N/A - Not Applicable</li>
+	<li>? - Unknown</li>
+</ul>
+<p>Notes:</p>
+<ul>
+	<li>Testing column uses &quot;mostly&quot; for cases where automated testing coverage 
+	is extensive, and not &quot;complete&quot;, simply because coverage was never 
+	explicitly quantified. Keyword &quot;complete&quot; is reserved for functionality 
+	where we have defined list of all features, and all tests performed, like we 
+	do, for example, for SQL and database features. Therefore, meaning of 
+	&quot;mostly&quot; should be interpreted as: As far as we know, most if not all 
+	features are tested, but we never explicitly checked that, and there might 
+	be some less used features that are not covered by tests. </li>
+    <li>When &quot;Depends on&quot; column refers to a 3rd party package, in most cases 
+    both the standard package and development package are needed to compile the 
+    functionality. Aubit Autoconf script, &quot;configure&quot; checks for all 
+    prerequisites.</li>
+    <li>&quot;Build command&quot; column is usually just &quot;make&quot; in home directory, 
+    assuming that all dependencies are satisfied. Unless &quot;configure&quot; declares 
+    them found, make will probably not work.</li>
+    <li>Aubit Autoconf script (&quot;configure&quot; and its source file, configure.in) by 
+    default attempt to detect ALL dependencies for ALL Aubit components. All 
+    components that are found to have necessary dependencies satisfied, will 
+    automatically be included in default build. Therefore, user is not expected 
+    to build components individually.</li>
+</ul>
+<hr>
+<p align="center"><a href="../index.html">Aubit 4GL compiler home page</a></p>
+
+</body>
+
+</html>
