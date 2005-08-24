@@ -4,7 +4,7 @@
 # - Creates backup database dump file using choosen method
 # - Creates backup of all files in Tiki dir that changed since installation
 # - Then downloads both to local machine
-# $Id: tiki_backup.sh,v 1.6 2005-07-22 11:51:02 afalout Exp $
+# $Id: tiki_backup.sh,v 1.7 2005-08-24 14:32:46 mikeaubury Exp $
 # See --help and --man for instructions
 # Please report bugs to andrej@dontspam.falout.org
 #############################################################################
@@ -143,7 +143,7 @@ echo " Script to perform automatic backup of TikiWiki web site."
 echo " - Creates backup database dump file using choosen method"
 echo " - Creates backup of all files in Tiki dir that changed since installation"
 echo " - Then downloads both to local machine"
-echo " $Id: tiki_backup.sh,v 1.6 2005-07-22 11:51:02 afalout Exp $"
+echo " $Id: tiki_backup.sh,v 1.7 2005-08-24 14:32:46 mikeaubury Exp $"
 echo " Please report bugs to andrej@dontspam.falout.org"
 echo "-----------------------------------------------------------------------------"
 echo " Prerequisites:"
@@ -750,8 +750,10 @@ function tar_changed_files () {
 	SSH_CMD="cd $CD_TO && rm -f $NEW_TAR && tar -cjf $DOWNLOAD_FROM/$NEW_TAR \`$FIND_CMD\`"
 	debug "Creating archive..."
 	if test "$SH_DEBUG" = "1"; then
+		echo $SSH_CMD > /tmp/s2
 		$SSH_SCRIPT $SSH_CMD
 	else
+		echo $SSH_CMD > /tmp/s3
 		$SSH_SCRIPT $SSH_CMD > /dev/null 2>&1
 	fi
 	TMPSTAT="$?"
@@ -1017,7 +1019,7 @@ for flag in $ALL_FLAGS ; do
 			;;
 			
 		--version)
-			echo "$Id: tiki_backup.sh,v 1.6 2005-07-22 11:51:02 afalout Exp $"
+			echo "$Id: tiki_backup.sh,v 1.7 2005-08-24 14:32:46 mikeaubury Exp $"
 			exit 0
 			;;
 			
