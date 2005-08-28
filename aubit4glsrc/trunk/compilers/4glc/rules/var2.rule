@@ -62,32 +62,8 @@ var4_item_vu:
 ;
 
 
-/*
 
-	| var3_vu DOT MULTIPLY {
-		$<var_usg>$=new_variable_usage($<var_usg>1,$<str>3,0);
-	}
-	| var3_vu DOT array_r_varid_vu {
-		$<var_usg>$=new_variable_usage($<var_usg>1,$<str>3,0);
-	}
-	| var3_vu DOT identifier {
-		$<var_usg>$=new_variable_usage($<var_usg>1,$<str>3,0);
-	}
-
-	| CHAR_VALUE DOT var3_vu {
-		char buff[2048];
-		if (A4GL_escape_quote_owner()) {
-			sprintf(buff,"\\\"%s\\\"", A4GL_strip_quotes ($<str>1));
-		} else {
-			sprintf(buff,"\"%s\"", A4GL_strip_quotes ($<str>1));
-		}
-		$<var_usg>$=new_variable_usage($<var_usg>3,buff,1);
-	}
-;
-*/
-
-
-var_ident_ibind_ss :  var2_vu /* a1 */
+var_ident_ibind_ss :  var2_vu 
 {
 	int sv_val;
         char *str1;

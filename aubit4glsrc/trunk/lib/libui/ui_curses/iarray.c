@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.104 2005-07-21 16:52:39 mikeaubury Exp $
+# $Id: iarray.c,v 1.105 2005-08-28 09:43:38 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.104 2005-07-21 16:52:39 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.105 2005-08-28 09:43:38 mikeaubury Exp $";
 #endif
 
 /**
@@ -839,6 +839,10 @@ process_key_press (struct s_inp_arr *arr, int a)
       clearok (curscr, 1);
       A4GL_mja_refresh ();
       break;
+
+    case 24:
+        A4GL_int_form_driver (mform, REQ_DEL_CHAR);
+      	break;
 
     case 4:			// Control - D
       A4GL_debug ("MMMM - Clear EOF ^d");

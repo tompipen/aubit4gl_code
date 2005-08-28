@@ -668,9 +668,7 @@ in_value_list:
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
-in_value_specification : var_ident_ibind_ss {
-		strcpy($<str>$,$<sql_string>1);
-	}
+in_value_specification : var_ident_ibind_ss { strcpy($<str>$,$<sql_string>1); }
 	 | literal
 ;
 
@@ -1077,9 +1075,11 @@ select_statement_ss_str:
         sel_p2_ss sel_finish {
 		if (!strstr($<sql_string>9,"INTO TEMP")) {
 			add_feature("SELECT");
-                	$<sql_string>$=make_sql_string_and_free(acl_strdup("SELECT "),acl_strdup($<str>2), $<sql_string>4,kw_space, $<sql_string>6, kw_space,$<sql_string>7,kw_space,$<sql_string>8,$<sql_string>9,0);
+                	$<sql_string>$=make_sql_string_and_free(acl_strdup("SELECT "),acl_strdup($<str>2), 
+				$<sql_string>4,kw_space, $<sql_string>6, kw_space,$<sql_string>7,kw_space,$<sql_string>8,$<sql_string>9,0);
 		} else {
 			char *ptr;
+			add_feature("SELECT_INTO_TEMP");
                 	ptr=make_sql_string_and_free(acl_strdup("SELECT "),acl_strdup($<str>2), $<sql_string>4,kw_space, $<sql_string>6, kw_space,$<sql_string>7,kw_space,$<sql_string>8,0);
 			
                 	$<sql_string>$=A4GLSQLCV_select_into_temp(ptr, $<sql_string>9, last_tmp_name);
@@ -1180,13 +1180,11 @@ op_ad: {strcpy($<str>$,"");}
 }
 ;
 
+
+
 select_list_ss: 
-	value_expression_pls_ss  {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| select_list_ss KW_COMMA value_expression_pls_ss { 
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup(","),$<sql_string>3,0);
-	}
+	value_expression_pls_ss  { $<sql_string>$=$<sql_string>1; }
+	| select_list_ss KW_COMMA value_expression_pls_ss { $<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup(","),$<sql_string>3,0); }
 ;
 
 value_expression_pls_ss : 
@@ -1194,8 +1192,6 @@ value_expression_pls_ss :
 		$<sql_string>$=$<sql_string>1;
 	}
 	| value_expression_ss  identifier {
-
-
 		if (A4GLSQLCV_check_requirement("COLUMN_ALIAS_AS")) {
 			$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup(" AS "),acl_strdup($<str>2),0);
 		} else {
@@ -1209,8 +1205,6 @@ value_expression_pls_ss :
 			$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,acl_strdup($<str>3),0);
 		}
 	}
-
-
 ;
 
 

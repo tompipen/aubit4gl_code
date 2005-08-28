@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.33 2005-07-14 11:32:57 mikeaubury Exp $
+# $Id: input_array.c,v 1.34 2005-08-28 09:43:38 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.33 2005-07-14 11:32:57 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.34 2005-08-28 09:43:38 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -775,6 +775,7 @@ process_key_press (struct s_inp_arr *arr, int a)
       A4GL_LL_int_form_driver (mform, AUBIT_REQ_DEL_PREV);
       break;
 
+
     case 18:
       A4GL_LL_screen_redraw ();
       break;
@@ -782,6 +783,11 @@ process_key_press (struct s_inp_arr *arr, int a)
     case 4:			// Control - D
       A4GL_debug ("MMMM - Clear EOF ^d");
       A4GL_LL_int_form_driver (mform, AUBIT_REQ_CLR_EOF);
+      break;
+
+    case 24:			// Control - D
+      A4GL_debug ("MMMM - del");
+      A4GL_LL_int_form_driver (mform, AUBIT_REQ_DEL_CHAR);
       break;
 
     case 1:			// Control - A

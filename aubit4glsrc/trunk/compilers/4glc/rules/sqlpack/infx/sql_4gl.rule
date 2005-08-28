@@ -190,22 +190,13 @@ cursor_specification_sel_ss:
 
 
 value_expression_initial_ss :
-	value_expression_complex_ss {
-			/*
-			if (strlen(current_upd_table)) {
-				A4GL_4glc_push_gen(UPDVAL,$<sql_string>1);
-			}
-			*/
-		$<sql_string>$=$<sql_string>1;
-	}
+	value_expression_complex_ss { $<sql_string>$=$<sql_string>1; }
 	| var_ident_ibind_ss 	{ $<sql_string>$=$<sql_string>1; }
-	| subquery_ss { $<sql_string>$=$<sql_string>1; }
-	| ALL subquery_ss { $<sql_string>$=make_sql_string_and_free(acl_strdup("ALL "),$<sql_string>2,0); }
-	| ANY subquery_ss { $<sql_string>$=make_sql_string_and_free(acl_strdup("ANY "),$<sql_string>2,0); }
-	| SOME subquery_ss { $<sql_string>$=make_sql_string_and_free(acl_strdup("SOME "),$<sql_string>2,0); }
-	| ATSIGN identifier {
-		$<sql_string>$=acl_strdup($<str>2);
-	}
+	| subquery_ss       { $<sql_string>$=$<sql_string>1; }
+	| ALL subquery_ss   { $<sql_string>$=make_sql_string_and_free(acl_strdup("ALL "),$<sql_string>2,0); }
+	| ANY subquery_ss   { $<sql_string>$=make_sql_string_and_free(acl_strdup("ANY "),$<sql_string>2,0); }
+	| SOME subquery_ss  { $<sql_string>$=make_sql_string_and_free(acl_strdup("SOME "),$<sql_string>2,0); }
+	| ATSIGN identifier { $<sql_string>$=acl_strdup($<str>2); }
 	| ATSIGN identifier DOT identifier {
 		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>2),acl_strdup("."),acl_strdup($<str>4),0);
 	}
@@ -244,6 +235,38 @@ in_select_statement_ss:
                 $<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), kw_space,acl_strdup($<str>2),kw_space, $<sql_string>3, kw_space,$<sql_string>4, kw_space,$<sql_string>5,0);
 }
 
+;
+
+
+var_ident_ibind_no_thru_ss :  var2_vu /* a1 */
+{
+        int sv_val;
+        char *str1;
+        str1=acl_strdup(variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
+
+        sv_val=scan_variable(str1);
+
+        if (strncmp(str1," a4gl_sub",9)==0) {
+                // Its a substring of a variable
+                sv_val=1;
+        }
+
+        if (sv_val!=-1&&(!system_var(str1)))
+        {
+                // Its a variable
+                int z = 0,a = 0;
+                //printf("add as bind\n");
+                a=get_bind_cnt('i');
+                z=add_bind('i',str1);
+                z-=a;
+                $<sql_string>$=acl_strdup(A4GL_set_var_sql(doing_declare,z));
+
+        } else {
+                // Its a column
+                $<sql_string>$=acl_strdup(get_column_transform(str1));
+        }
+free(str1);
+}
 ;
 
 

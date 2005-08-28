@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.70 2005-08-08 21:00:59 mikeaubury Exp $
+# $Id: 1.reqd,v 1.71 2005-08-28 09:43:22 mikeaubury Exp $
 #
 */
 
@@ -244,6 +244,42 @@ struct sql_statement {
 };
 
 
+struct s_select_list  {
+        int type;
+        union {
+                char *expression;
+                struct {
+                        char *tabname;
+                        char *colname;
+                        char *subscript;
+                } column;
+        }
+        char *alias;
+};
+
+
+struct s_table {
+                char *tabname;
+                char *alias;
+                struct s_table *next;
+                struct s_table *outer_next;
+};
+
+
+struct s_select {
+                char *modifier; // ALL/DISTINCT/UNIQUE
+                struct {
+                        long start;
+                        long end;
+                        long offset;
+                } limit; // FIRST nnn
+                int ncolumns;
+                struct s_select_list *columns;
+                struct s_table *first;
+};
+
+
+
 /*
 =====================================================================
                     Functions prototypes
@@ -283,6 +319,9 @@ void init_blk(void);
 	float 	float_val;
 	struct sql_statement *sql_stmt;
 	struct ilist int_list;
+	struct s_table *u_table;
+	struct s_select_list *u_select_list;
+	struct s_select *u_select;
 	}
 
 /* ============================== 1.reqd ============================ */
