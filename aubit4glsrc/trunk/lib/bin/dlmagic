@@ -61,7 +61,7 @@ specfile=$1
 VERBOSE=0
 selfonly=0
 
-if [ "$2" = "-h" -o "$2" = "-H" -o "$2" = "-S" ] ; then
+if [ "x$2" = "x-h" -o "x$2" = "x-H" -o "x$2" = "x-S" ] ; then
 	if [ "$2" = "-h" ]
 	then
 		#make header only; use api_prefix for function names

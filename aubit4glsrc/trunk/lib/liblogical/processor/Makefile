@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.8 2004-07-11 02:58:03 afalout Exp $
+# $Id: Makefile,v 1.9 2005-08-28 16:12:58 mikeaubury Exp $
 #
 ROOT		=../../..
 LIBROOT		=${ROOT}/lib
@@ -41,7 +41,11 @@ CFLAGS+=-Wall -g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -fPIC
 
 OBJS=process_report.o ../common/a4gl_lle.o API_process.o
 
-LD_EXE_FLAGS=-rdynamic
+ifeq "${TARGET_OS}" "mingw"
+	LD_EXE_FLAGS=--export-dynamic
+else
+	LD_EXE_FLAGS=-rdynamic
+endif
 
 ifeq "${TARGET_OS}" "hpux"
 	LD_EXE_FLAGS=-a1 -z -Wl,+s -Wl,-E -lnsl
