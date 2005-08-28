@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.20 2005-08-17 13:57:25 mikeaubury Exp $
+# $Id: match.c,v 1.21 2005-08-28 11:57:08 mikeaubury Exp $
 #*/
 
 /**
@@ -80,7 +80,7 @@ char C_ESCAPE = '\\';
 #define PATTERN_CLOSE -3	/* no end bracket in [..] A4GL_construct */
 #define PATTERN_EMPTY -4	/* [..] A4GL_construct is empty */
 
-#define        min(a,b)        (a < b ? a : b)
+#define        match_min(a,b)        (a < b ? a : b)
 
 /*
 =====================================================================
