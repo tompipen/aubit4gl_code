@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.71 2005-08-28 09:43:22 mikeaubury Exp $
+# $Id: 1.reqd,v 1.72 2005-08-28 11:10:56 mikeaubury Exp $
 #
 */
 
@@ -253,7 +253,7 @@ struct s_select_list  {
                         char *colname;
                         char *subscript;
                 } column;
-        }
+        } u_data;
         char *alias;
 };
 

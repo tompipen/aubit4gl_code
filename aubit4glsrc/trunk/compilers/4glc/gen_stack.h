@@ -23,4 +23,8 @@ void A4GL_4glc_push_gen (int a, char *s);
 int A4GL_4glc_gen_cnt(int a);
 void A4GL_4glc_clr_gen(int a);
 char *A4GL_4glc_get_gen(int a,int n);
+void A4GL_4glc_pop_all_gen (int a, char *s);
+void A4GL_4glc_copy_gen (int a, int b);
+void A4GL_init_gen_stack(void);
+void A4GL_4glc_dump_updvals (void);
 #endif

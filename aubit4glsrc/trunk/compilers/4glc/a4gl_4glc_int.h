@@ -464,8 +464,7 @@ char *A4GL_get_yyline(void);
 void do_yyerror(char *s);
 long
 get_variable_dets_obj (char *s, int *type, int *arrsize, int *size, int *level, char *arr);
-
-
+#include "gen_stack.h"
 #define add_feature A4GL_add_feature
 
 
