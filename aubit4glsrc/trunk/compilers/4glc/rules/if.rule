@@ -1,12 +1,12 @@
 if_cmd	: 
 	IF 
-	fgl_expr 
+	fgl_expr_c
 	THEN  {
 		if_print_stack_cnt++;
 		if_print_stack[if_print_stack_cnt][0]=0;
 		if_print_stack[if_print_stack_cnt][1]=0;
 		if_print_section[if_print_stack_cnt]=0;
-		print_if_start();
+		print_if_start($<ptr>2);
 	}
 		commands {
 		if_print_section[if_print_stack_cnt]=1;
@@ -32,11 +32,8 @@ if_cmd	:
 op_else : | ELSE {
 		print_if_else();
 	} commands 
-	| ELIF {
-		print_if_else();
-		} fgl_expr THEN {
-
-		print_if_start();
+	| ELIF { print_if_else(); } fgl_expr_c THEN {
+		print_if_start($<ptr>3);
 	} commands op_else {
 		print_if_end();
 	};

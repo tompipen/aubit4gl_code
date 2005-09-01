@@ -44,25 +44,18 @@ fgl_next:
 
 
 
-op_fgl_expr_ret_list: reset_cnt {strcpy($<str>$,"0");} | reset_cnt fgl_expr_ret_list {
-strcpy($<str>$,$<str>2);}
+op_fgl_expr_ret_list_v2: {strcpy($<str>$,"0");} | fgl_expr_ret_list { 
+sprintf($<str>$,"%d",A4GL_new_list_get_count($<ptr_list>1)); 
+A4GL_print_expr_ret_list($<ptr_list>1);
+}
 ;
 
 
-fgl_expr_ret : fgl_expr | KW_NULL {$<ptr>$=A4GL_new_expr("A4GL_push_null(2,0);"); inc_counter();}
+fgl_expr_ret : fgl_expr_c | KW_NULL {$<ptr>$=A4GL_new_expr("A4GL_push_null(2,0);"); inc_counter();}
 ;
 
-fgl_expr_ret_list 	: fgl_expr_ret
-{
-	/*set_counter(0);*/
-	sprintf($<str>$,"%d",get_counter_val());
-	A4GL_lex_printcomment("/*L1 %s*/\n",$<str>$);
-}
-		| 	fgl_expr_ret_list KW_COMMA fgl_expr_ret
-{
-	sprintf($<str>$,"%d",get_counter_val());
-	A4GL_lex_printcomment("/*L2 %s*/\n",$<str>$);
-}
+fgl_expr_ret_list 	: fgl_expr_ret { $<ptr_list>$=A4GL_new_ptr_list($<ptr>1); }
+		| 	fgl_expr_ret_list KW_COMMA fgl_expr_ret { $<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3); }
 ;
 
 

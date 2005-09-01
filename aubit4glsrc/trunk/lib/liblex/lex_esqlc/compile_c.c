@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.245 2005-08-08 21:01:05 mikeaubury Exp $
+# $Id: compile_c.c,v 1.246 2005-09-01 07:07:02 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.245 2005-08-08 21:01:05 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.246 2005-09-01 07:07:02 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2889,8 +2889,19 @@ LEXLIB_print_exit_program (int has_expr)
  * @param var The 4gl variable name used as iterator variable.
  */
 void
-LEXLIB_print_for_start (char *var)
+LEXLIB_print_for_start (char *var,void *vfrom,void *vto, void*vstep)
 {
+	struct expr_str *from;
+	struct expr_str *to;
+	struct expr_str *step;
+
+	from=vfrom;
+	to=vto;
+	step=vstep;
+	print_expr(from);
+	print_expr(to);
+	print_expr(step);
+
   printc
     ("\n{int _s;int _e;int _step;\n_step=A4GL_pop_long();_e=A4GL_pop_long();_s=A4GL_pop_long();\n");
   printc
@@ -3034,8 +3045,9 @@ LEXLIB_print_gui_do_form (char *name, char *list, int mode)
  *
  */
 void
-LEXLIB_print_if_start (void)
+LEXLIB_print_if_start (void*ptr)
 {
+	print_expr(ptr);
   printc ("if (A4GL_pop_bool()) {\n");
 }
 

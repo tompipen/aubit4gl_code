@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.189 2005-08-24 09:36:02 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.190 2005-09-01 07:07:02 mikeaubury Exp $
 #
 */
 
@@ -2252,11 +2252,16 @@ char *A4GL_fullpath_classpath (char *fname) ;
 /* Prototypes from fglwrap.c */
 void A4GL_fgl_die_with_msg(int n,char *s);
 void * A4GL_new_expr (char *value);
-	struct expr_str
-	{
+
+struct expr_str_list {
+	  struct expr_str **list;
+	  int nlist;
+};
+
+struct expr_str {
 	  char *expr;
 	  struct expr_str *next;
-	};
+};
 
 void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
 void *A4GL_esql_dbopen_connection(void) ;

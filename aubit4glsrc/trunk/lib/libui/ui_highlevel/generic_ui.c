@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.63 2005-08-17 07:24:33 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.64 2005-09-01 07:07:03 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -1067,7 +1067,7 @@ int
 UILIB_A4GL_read_metrics (void *formdetsv)
 {
   struct s_form_dets *formdets;
-  struct struct_scr_field *fprop;
+  struct struct_scr_field *fprop=0;
   int n;
   int metric_no;
   int last_field = -1;

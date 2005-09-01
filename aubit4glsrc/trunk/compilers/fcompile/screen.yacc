@@ -104,7 +104,7 @@ FORMONLY COMMENT
 %token KW_CALL
 %token KW_BELL KW_ABORT KW_LET KW_EXITNOW KW_NEXTFIELD
 %token KW_IF KW_THEN KW_ELSE  KW_BEGIN KW_END KW_TOTAL KW_RIGHT KW_ZEROFILL
-%token KW_USES_EXTENDED
+%token KW_USES_EXTENDED SPECIAL_DBNAME
 
 
 %%
@@ -134,7 +134,7 @@ named_or_kw :
 ;
 
 dbname : 
-named_or_kw | named_or_kw ATSIGN named_or_kw {SPRINTF2($<str>$,"%s@%s",$<str>1,$<str>3);}
+SPECIAL_DBNAME {sprintf($<str>$,acl_getenv("DBNAME"));} | named_or_kw | named_or_kw ATSIGN named_or_kw {SPRINTF2($<str>$,"%s@%s",$<str>1,$<str>3);}
 ;
 
 screen_section : screens_section | screen_section screens_section ;
@@ -900,11 +900,11 @@ incl_entry :
 CHAR_VALUE   { strcpy($<str>$,A4GL_char_val($<str>1)); }
 | NAMED   {strcpy($<str>$,$<str>1); }
 | NAMED TO NAMED  {sprintf($<str>$,"%s\t%s",$<str>1,$<str>3); }
+| NAMED COLON NAMED  {sprintf($<str>$,"%s\t%s",$<str>1,$<str>3); }
 | CH   {strcpy($<str>$,$<str>1);}
 | number_value 
-| number_value TO number_value {
-	sprintf($<str>$,"%s\t%s",$<str>1,$<str>3);
-}
+| number_value TO number_value { sprintf($<str>$,"%s\t%s",$<str>1,$<str>3); }
+| number_value COLON number_value { sprintf($<str>$,"%s\t%s",$<str>1,$<str>3); }
 | CHAR_VALUE TO CHAR_VALUE {
 	sprintf($<str>$,"%s\t",A4GL_char_val($<str>1));
 	sprintf($<str>$,"%s%s",$<str>$,A4GL_char_val($<str>3));

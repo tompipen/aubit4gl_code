@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.226 2005-08-08 20:57:51 mikeaubury Exp $
+# $Id: mod.c,v 1.227 2005-09-01 07:03:16 mikeaubury Exp $
 #
 */
 
@@ -133,14 +133,6 @@ char *sql_features=0;
 =====================================================================
 */
 
-/*
-#ifdef LEXER
-char xwords[256][256];
-int word_cnt = 0;
-int xccode = 0;
-long fpos;
-#endif
-*/
 
 //
 //void dump_updvals (void);
@@ -263,14 +255,7 @@ struct cmds
 }
 command_stack[200];
 
-/** Command stack counter / index (number of elements in command_stack) */
-/*
-#ifdef LEXER
-int ccnt = 0;
-#else
-*/
 extern int ccnt;		/* in lexer.c */
-/* #endif */
 
 
 /** Array index to the last variable filled in the variables array  */
@@ -332,6 +317,37 @@ static char *print (char *z)
   return z;
 }
 */
+
+
+struct expr_str_list *A4GL_new_ptr_list(struct expr_str *ptr) {
+struct expr_str_list *l;
+	printf("new_ptr_list\n");
+l=malloc(sizeof(struct expr_str_list));
+l->list=0;
+l->nlist=0;
+return A4GL_new_append_ptr_list(l,ptr);
+
+}
+
+struct expr_str_list *A4GL_new_append_ptr_list(struct expr_str_list *l,struct expr_str *ptr) {
+	printf("new_append_ptr_list\n");
+	l->nlist++;
+	l->list=realloc(l->list,sizeof(struct expr_str)*l->nlist);
+	l->list[l->nlist-1]=ptr;
+	return l;
+}
+
+int A4GL_new_list_get_count(struct expr_str_list *l) {
+	printf("Get list count\n");
+	return l->nlist;
+}
+
+void A4GL_print_expr_ret_list(struct expr_str_list *l) {
+	int a;
+	for (a=0;a<l->nlist;a++) {
+			print_expr(l->list[a]);
+	}
+}
 
 int A4GL_db_used(void ) { return db_used; }
 
@@ -5064,6 +5080,9 @@ A4GL_4glc_dump_updvals ()
       PRINTF ("UPDVAL2[%d]: %s\n", a,gen_stack_ptr[UPDVAL2][a]);
     }
 }
+
+
+
 #endif
 
 

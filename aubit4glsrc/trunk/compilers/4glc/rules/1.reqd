@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.72 2005-08-28 11:10:56 mikeaubury Exp $
+# $Id: 1.reqd,v 1.73 2005-09-01 07:03:16 mikeaubury Exp $
 #
 */
 
@@ -304,6 +304,7 @@ void init_blk(void);
 						/* Was: char	str[20000]; */
 
 	struct expr_str *ptr;
+	struct expr_str_list *ptr_list;
 	char *sql_string;
 	struct fh_field_entry *field_entry;
 	struct fh_field_list *field_list;

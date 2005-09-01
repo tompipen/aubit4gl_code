@@ -240,13 +240,13 @@ print_error char* s,int wait -> void
 print_exit_program int has_expr -> void
 
 /* void print_for_start (char *var) */
-print_for_start char* var -> void
+print_for_start char* var void* from void* to void* step -> void
 
 /* void print_for_end () */
 print_for_end -> void
 
 /* void print_for_default_step () */
-print_for_default_step -> void
+get_for_default_step -> void*
 
 /* void print_foreach_start () */
 print_foreach_start -> void
@@ -276,7 +276,7 @@ print_gui_do_fields char* list,int mode -> void
 print_gui_do_form char* name,char* list,int mode -> void
 
 /* void print_if_start () */
-print_if_start -> void
+print_if_start void* ptr -> void
 
 /* void print_if_else () */
 print_if_else -> void

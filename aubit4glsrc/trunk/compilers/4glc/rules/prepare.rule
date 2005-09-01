@@ -34,6 +34,11 @@ execute_cmd : EXECUTE stmt_id {
 		ADDMAP("Execute",$<str>2);
 		print_execute($<str>2,3);
 	}
+        | EXECUTE stmt_id KW_USING ibind_var_list INTO obind_var_list {
+		add_feature("EXECUTE_INTO_USING");
+		ADDMAP("Execute",$<str>2);
+		print_execute($<str>2,3);
+	}
 	| EXECUTE_IMMEDIATE var_or_char {
 		add_feature("EXECUTE_IMMEDIATE");
 		print_execute_immediate($<str>2);
