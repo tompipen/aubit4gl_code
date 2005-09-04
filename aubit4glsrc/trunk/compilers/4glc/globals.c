@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.35 2005-07-29 06:55:28 mikeaubury Exp $
+# $Id: globals.c,v 1.36 2005-09-04 22:02:59 mikeaubury Exp $
 #
 */
 
@@ -170,7 +170,7 @@ dump_gvars (void)
 {
   FILE *f;
   int a;
-  char ii[64];
+  char ii[FNAMESIZE];
   struct variable *v;
 
   if (!A4GL_env_option_set("LOCALOUTPUT")) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.59 2005-08-17 13:43:14 mikeaubury Exp $
+# $Id: calldll.c,v 1.60 2005-09-04 22:03:01 mikeaubury Exp $
 #
 */
 
@@ -552,7 +552,7 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
   char nfile[256];
   int (*func_ptr) (int);
   int a;
-
+  A4GL_debug("Call 4gl dll : %s %s %d",filename,function,args);
   if ((!acl_getenv ("AUBITDIR"))
       || (strcmp (acl_getenv ("AUBITDIR"), "") == 0))
     {
@@ -662,6 +662,7 @@ A4GL_call_4gl_dll_bound (char *filename, char *function, int ni,struct BINDING *
   char nfile[256];
   int (*func_ptr_b) (int,void*,int,void*);
   int a;
+  A4GL_debug("Call 4gl dll bound : %s %s %d %d",filename,function,ni,no);
 
   if ((!acl_getenv ("AUBITDIR"))
       || (strcmp (acl_getenv ("AUBITDIR"), "") == 0))

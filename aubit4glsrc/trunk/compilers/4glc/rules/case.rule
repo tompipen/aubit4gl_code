@@ -5,38 +5,28 @@
 */
 
 
-case_cmd	:
-CASE 
-fgl_expr  
-{
-push_blockcommand("CASE");
-setinc(1);
-A4GL_incprint();
-print_case(1);
-setinc(1);
-} 
-when_unit_expr
-op_otherwise_command_expr
-end_case_command 
-{
-print_after_when(0);
-pop_blockcommand("CASE");
-}
-
-| 
-CASE {  push_blockcommand("CASE"); 
-setinc(1);
-A4GL_incprint(); 
-print_case(0);
-setinc(1);
-} 
-when_unit 
-op_otherwise_command
-end_case_command 
-{
-print_after_when(0);
-pop_blockcommand("CASE");
-}
+case_cmd	: CASE fgl_expr_c  {
+			push_blockcommand("CASE");
+			add_feature("CASE_EXPR");
+			setinc(1);
+			A4GL_incprint();
+			print_case($<ptr>2);
+			setinc(1);
+		} when_unit_expr op_otherwise_command_expr end_case_command {
+			print_after_when(0);
+			pop_blockcommand("CASE");
+		}
+		| CASE {  
+			push_blockcommand("CASE"); 
+			add_feature("CASE_NO_EXPR");
+			setinc(1);
+			A4GL_incprint(); 
+			print_case(0);
+			setinc(1);
+		} when_unit op_otherwise_command end_case_command {
+			print_after_when(0);
+			pop_blockcommand("CASE");
+		}
 ;
 
 when_unit : when_command | when_unit when_command 
@@ -45,43 +35,19 @@ when_unit : when_command | when_unit when_command
 when_unit_expr : when_command_expr | when_unit_expr when_command_expr 
 ;
 
-end_case_command : 
-END_CASE {setinc(-1);A4GL_incprint();}
+end_case_command : END_CASE {setinc(-1);A4GL_incprint();}
 ;
 
-op_otherwise_command : | OTHERWISE {
-A4GL_incprint();
-} commands {A4GL_incprint();
-print_after_when(0);
-}
+op_otherwise_command : | OTHERWISE { A4GL_incprint(); } commands {A4GL_incprint(); print_after_when(0); }
 ;
 
-op_otherwise_command_expr : | OTHERWISE 
-{A4GL_incprint();} 
-commands 
-{A4GL_incprint();
-print_after_when(0);
-}
+op_otherwise_command_expr : | OTHERWISE {A4GL_incprint();} commands {A4GL_incprint(); print_after_when(0); }
 ;
 
-when_command	: WHEN  fgl_expr {
-print_when(0);
-
-A4GL_incprint();
-}
-commands {A4GL_incprint();
-print_after_when(1);
-setinc(-1);}
+when_command		: WHEN fgl_expr_c { print_when(0,$<ptr>2); A4GL_incprint(); } commands {A4GL_incprint(); print_after_when(1); setinc(-1);}
 ;
 
-
-when_command_expr	: WHEN fgl_expr {
-A4GL_incprint();
-print_when(1);
-}
-commands {A4GL_incprint();
-print_after_when(1);
-setinc(-1);}
+when_command_expr	: WHEN fgl_expr_c { A4GL_incprint(); print_when(1,$<ptr>2); } commands {A4GL_incprint(); print_after_when(1); setinc(-1);}
 ;
 
 

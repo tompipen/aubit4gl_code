@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.190 2005-09-01 07:07:02 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.191 2005-09-04 22:03:00 mikeaubury Exp $
 #
 */
 
@@ -285,7 +285,7 @@
 #define DBSIZE 			32
 #define SMALLSTRING 	32
 #define BIGSTRING 		256
-#define FNAMESIZE 		64
+#define FNAMESIZE 		1024
 #define MAXSCREENRECS 	32
 #define MAXCONSTANTS 	1024
 
@@ -2252,18 +2252,200 @@ char *A4GL_fullpath_classpath (char *fname) ;
 /* Prototypes from fglwrap.c */
 void A4GL_fgl_die_with_msg(int n,char *s);
 void * A4GL_new_expr (char *value);
+void A4GL_add_recall_value(char *field_name,char *value);
+void A4GL_debug_dump_recall(char *field_name);
+char *A4GL_recall_field(char *t,char *c,int x,int y,int show);
+
 
 struct expr_str_list {
 	  struct expr_str **list;
 	  int nlist;
 };
 
+struct expr_push_variable {
+	char *variable;
+	long var_dtype;
+};
+
+struct expr_function_call {
+	char *fname;
+	struct expr_str_list *parameters;
+	char *module;
+	int line;
+};
+
+struct expr_shared_function_call {
+	char *lib;
+	char *fname;
+	struct expr_str_list *parameters;
+	char *module;
+	int line;
+};
+
+struct expr_member_function_call {
+	char *lib;
+	char *fname;
+	struct expr_str_list *parameters;
+	char *module;
+	int line;
+};
+
+
+
+enum e_expr_type {
+		ET_EXPR_CHAR,
+		ET_EXPR_EXPR,
+		ET_EXPR_EXPR_LIST,
+		ET_EXPR_OP,
+		ET_EXPR_INT,
+		ET_EXPR_NUM,
+		ET_EXPR_STRING,
+		ET_EXPR_PUSH_VARIABLE,
+		ET_EXPR_TODAY,
+		ET_EXPR_TIME,
+		ET_EXPR_LINENO,
+		ET_EXPR_PAGENO,
+		ET_EXPR_TIME_EXPR,
+		ET_EXPR_DATE_EXPR,
+		ET_EXPR_NULL,
+		ET_EXPR_TRUE,
+		ET_EXPR_FALSE,
+		ET_EXPR_NOT,
+		ET_EXPR_UPSHIFT,
+		ET_EXPR_DOWNSHIFT,
+		ET_EXPR_EXTEND,
+		ET_EXPR_ASCII,
+		ET_EXPR_MM,
+		ET_EXPR_POINTS,
+		ET_EXPR_INCHES,
+		ET_EXPR_CURRENT,
+		ET_EXPR_OP_MULT,
+		ET_EXPR_OP_DIV,
+		ET_EXPR_OP_POWER,
+		ET_EXPR_OP_ADD,
+		ET_EXPR_OP_SUB,
+		ET_EXPR_OP_EQUAL,
+		ET_EXPR_OP_MOD,
+		ET_EXPR_OP_USING,
+		ET_EXPR_OP_LIKE,
+		ET_EXPR_OP_LENGTH,
+		ET_EXPR_OP_IN,
+		ET_EXPR_OP_NOTIN,
+		ET_EXPR_OP_CONCAT,
+		ET_EXPR_OP_MATCHES,
+		ET_EXPR_OP_CLIP,
+		ET_EXPR_OP_LESS_THAN,
+		ET_EXPR_OP_LESS_THAN_EQ,
+		ET_EXPR_OP_GREATER_THAN,
+		ET_EXPR_OP_GREATER_THAN_EQ,
+		ET_EXPR_OP_YEAR,
+		ET_EXPR_OP_MONTH,
+		ET_EXPR_OP_DAY,
+		ET_EXPR_OP_HOUR,
+		ET_EXPR_OP_MINUTE,
+		ET_EXPR_OP_SECOND,
+		ET_EXPR_OP_ISNULL,
+		ET_EXPR_OP_ISNOTNULL,
+		ET_EXPR_NEG,
+		ET_EXPR_FCALL,
+		ET_EXPR_SHARED_FCALL,
+		ET_EXPR_MEMBER_FCALL,
+		ET_EXPR_COLUMN,
+		ET_EXPR_REPORT_EMAIL,
+		ET_EXPR_REPORT_PRINTER
+
+
+
+};
+
+
 struct expr_str {
-	  char *expr;
+	  enum e_expr_type expr_type;
+	  union {
+	  	char 					*expr_char; // We'd like to obsolete the use of this one....
+
+	  	char 					*expr_string; 
+		struct expr_str 			*expr_expr;
+		struct expr_str_list 			*expr_list;
+		struct expr_push_variable 		*expr_push_variable;
+		struct expr_function_call		*expr_function_call;
+		struct expr_shared_function_call	*expr_shared_function_call;
+		struct expr_member_function_call	*expr_member_function_call;
+	  } u_data;
 	  struct expr_str *next;
 };
 
+typedef struct expr_str t_expr_str;
+typedef struct expr_str_list t_expr_str_list;
+
+void *A4GL_new_expr_simple_expr(struct expr_str *ptr,enum e_expr_type type);
+struct expr_str *A4GL_new_expr_shared_fcall(char *lib,char *function,struct expr_str_list *params,char *mod,int line);
+struct expr_str *A4GL_new_expr_member_fcall(char *lib,char *function,struct expr_str_list *params,char *mod,int line);
+struct expr_str_list *A4GL_rationalize_list(struct expr_str_list *l);
+struct expr_str *A4GL_new_expr_fcall(char *function,struct expr_str_list *params,char *mod,int line);
 void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
+void *A4GL_new_expr_simple (enum e_expr_type type);
+struct expr_str *A4GL_new_expr_push_variable(char *v,long dtype);
+void * A4GL_append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr);
+int A4GL_length_expr (struct expr_str *ptr);
+struct expr_str_list *A4GL_new_ptr_list(struct expr_str *ptr);
+struct expr_str_list *A4GL_new_append_ptr_list(struct expr_str_list *l,struct expr_str *ptr);
+int A4GL_new_list_get_count(struct expr_str_list *l);
+void A4GL_print_expr_ret_list(struct expr_str_list *l);
+struct expr_str *A4GL_new_expr_list (void);
+struct expr_str_list *A4GL_new_prepend_ptr_list(struct expr_str_list *l,struct expr_str *p);
+
+
+enum dt_display_type {
+        DT_DISPLAY_TYPE_LINE,
+        DT_DISPLAY_TYPE_AT,
+        DT_DISPLAY_TYPE_MENUITEM,
+        DT_DISPLAY_TYPE_MAIN_CAPTION,
+        DT_DISPLAY_TYPE_FIELD_LIST,
+        DT_DISPLAY_TYPE_FORM_FIELD,
+        DT_DISPLAY_TYPE_FORM_CAPTION,
+        DT_DISPLAY_TYPE_STATUSBOX
+};
+
+struct dt_display {
+        enum dt_display_type type;
+        union {
+                char *field_list_str;
+                char *caption;
+                struct fh_field_list *field_list;
+                struct {
+                        char *form;
+                        struct fh_field_list *field_list;
+                } form_field;
+                struct {
+                        struct expr_str *y;
+                        struct expr_str *x;
+                } x_y;
+        } u_data;
+};
+
+typedef struct dt_display t_dt_display;
+
+enum ow_open_window_type {
+	OW_AT,
+	OW_FORM
+};
+
+
+struct ow_open_window {
+	enum ow_open_window_type type;
+	union {
+		struct expr_str *formname;
+		struct {
+			struct expr_str *x;
+			struct expr_str *y;
+		} x_y;
+	} u_data;
+};
+
+
+typedef struct ow_open_window t_ow_open_window;
+
 void *A4GL_esql_dbopen_connection(void) ;
 //char *A4GL_var_for_inp_array(char *s);
 

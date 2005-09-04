@@ -2,6 +2,7 @@ alloc_arr_cmd :
 	ALLOCATE_ARRAY variable {
 		char buff[256];
 		char *s;
+		add_feature("ALLOCATE_ARRAY");
 		strcpy(buff,$<str>2);
 		s=strchr(buff,'[');
 		if (!s) {
@@ -18,6 +19,7 @@ alloc_arr_cmd :
 
 dealloc_arr_cmd : 
 	DEALLOCATE_ARRAY variable {
+		add_feature("DEALLOCATE_ARRAY");
 		print_dealloc_arr($<str>2);
 	}
 ;
@@ -26,6 +28,7 @@ resize_arr_cmd :
 	RESIZE_ARRAY variable  {
 		char buff[256];
 		char *s;
+		add_feature("RESIZE_ARRAY");
 		strcpy(buff,$<str>2);
 		s=strchr(buff,'[');
 		if (!s) {

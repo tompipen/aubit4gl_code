@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.299 2005-08-16 10:36:14 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.300 2005-09-04 22:01:47 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1715,6 +1715,7 @@ A4GL_MSGTYPE_DETECTED=NATIVE
 case $host in
 	*linux*)
         #rpclib is part of clib on Linux
+		PIC="-fPIC"
 		test_rpclib="0"
 
 		if test -f /etc/redhat-release ; then
@@ -9122,7 +9123,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.299 2005-08-16 10:36:14 mikeaubury Exp $
+| $Id: configure.in,v 1.300 2005-09-04 22:01:47 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

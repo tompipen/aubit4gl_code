@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.16 2003-03-06 22:39:53 mikeaubury Exp $
+# $Id: Makefile.in,v 1.17 2005-09-04 22:03:00 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -52,10 +52,7 @@ CFLAGS  +=-I..
 ##                              Targets
 ## ==================================================================
 
-all: generated/kw.c generated/single_words.rule generated/y.tab.c generated/states.c
-
-generated/states.c: data/defstates data/kwords
-	${SH} bin/procstates
+all: generated/kw.c generated/single_words.rule generated/y.tab.c 
 
 generated/kw.h generated/kw.c generated/kw.yh: generated/single_words
 	${SH} bin/convkw_hash
@@ -66,7 +63,6 @@ generated/kw.h generated/kw.c generated/kw.yh: generated/single_words
 generated/single_words: data/kwords
 	${SH} bin/convkw.single
 
-#generated/states.c: data/kwords
 
 generated/single_words.rule: generated/single_words
 	${SH} bin/make_enable

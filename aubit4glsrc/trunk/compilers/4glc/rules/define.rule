@@ -53,27 +53,32 @@ def_part2 :
 		KW_CONSTANT define_ident op_equal CHAR_VALUE {
 		    add_constant('c',$<str>4,$<str>2);
 		    ADDMAP("Constant",$<str>2);
+			add_feature("DEFINE_CONSTANT");
 		    
 		} 
 	|	KW_CONSTANT define_ident op_equal identifier {
 		    add_constant('C',$<str>4,$<str>2);
 		    ADDMAP("Constant",$<str>2);
+			add_feature("DEFINE_CONSTANT");
 		    
 		} 
 	|	KW_CONSTANT define_ident op_equal real_number {
 		    add_constant('f',$<str>4,$<str>2);
 		   ADDMAP("Constant",$<str>2);
+			add_feature("DEFINE_CONSTANT");
 		    
 		} 
 	|	KW_CONSTANT define_ident op_equal INT_VALUE {
 		    add_constant('i',$<str>4,$<str>2);
 		   ADDMAP("Constant",$<str>2);
+			add_feature("DEFINE_CONSTANT");
 		    
 		} 
 	|	var_def_list dtype_ident
 	|	define_ident KW_CONSTANT constant_value {
 		   char buff[20];
 		   strncpy(buff,$<str>3,3);
+			add_feature("DEFINE_CONSTANT");
 		   if (buff[0]=='"') {
 		    add_constant('c',$<str>3,$<str>1);
 		      }
@@ -148,11 +153,13 @@ array_variable :
 	|	DYNAMIC_ARRAY ranking {
 		    A4GL_debug("defines array %s",$<str>2);
 		    push_type(0,0,$<str>2);
+			add_feature("DEFINE_DYNAMIC_ARRAY");
 		   
 		}  OF dtype_ident
 	|	ASSOCIATE op_char assoc_open_bracket INT_VALUE assoc_close_bracket WITH_ARRAY OPEN_SQUARE number_arr_assoc CLOSE_SQUARE {
 		    push_associate($<str>4,$<str>8);
 		    push_type(0,0,$<str>8);
+			add_feature("DEFINE_ASSOCIATE_ARRAY");
 		}  OF dtype_ident   {
 		    pop_associate(0);
 		}
@@ -241,6 +248,7 @@ record_variable :
 		   
 		}  define_table_name PRIMARY_KEY OPEN_BRACKET link_to_pk_list CLOSE_BRACKET {
 		       A4GL_debug("Table:%s\n",$<str>3);
+			add_feature("DEFINE_LINKED");
 		       add_link_to($<str>3,$<str>6);
 		              A4GL_debug("Push record...\n");
 		                     push_rectab($<str>3);
@@ -284,41 +292,51 @@ dtype :
 	|	record_variable
 	|	KW_CHAR {
 		   push_type("char","1",0);
+			add_feature("DEFINE_CHAR");
 		   
 		} 
 	|	NCHAR {
 		   push_type("char","1",0);
+			add_feature("DEFINE_NCHAR");
 		   
 		} 
 	|	KW_CHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
 		    push_type("char",$<str>3,0);
+			add_feature("DEFINE_CHAR");
 		    
 		} 
 	|	NCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
 		    push_type("char",$<str>3,0);
+			add_feature("DEFINE_NCHAR");
 		    
 		} 
 	|	VARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
 		   push_type("varchar",$<str>3,0);
+			add_feature("DEFINE_VARCHAR");
 		   
 		} 
 	|	VARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
 		   push_type("varchar",$<str>3,0);
+			add_feature("DEFINE_VARCHAR");
 		   
 		} 
 	|	NVARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
 		   push_type("char",$<str>3,0);
+			add_feature("DEFINE_NVARCHAR");
 		   
 		} 
 	|	NVARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
 		   push_type("char",$<str>3,0);
+			add_feature("DEFINE_NVARCHAR");
 		   
 		} 
 	|	INTEGER {
 		   push_type("long",0,0);
+			add_feature("DEFINE_INTEGER");
 		} 
 	|	SERIAL {
 		   push_type("long",0,0);
+			add_feature("DEFINE_SERIAL");
 		} 
 	|	AS define_ident {
 		    A4GL_debug("Using specified type...");
@@ -340,6 +358,7 @@ dtype :
 
 	|	SMALLINT {
 		   push_type("int",0,0);
+			add_feature("DEFINE_SMALLINT");
 		   
 		} 
 	|	KWFORM {
@@ -354,53 +373,68 @@ dtype :
 		    char buff[256];
 		       sprintf(buff,"%d",16*256+2);
 		       push_type("fgldecimal",buff,0);
+			add_feature("DEFINE_DECIMAL");
 		       
 		} 
 	|	KW_DECIMAL OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
 		       char buff[256];
 		       sprintf(buff,"%d",atoi($<str>3)*256+2);
 		       push_type("fgldecimal",buff,0);
+			add_feature("DEFINE_DECIMAL");
 		   
 		} 
 	|	KW_DECIMAL OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
 		   char buff[256];
 		   sprintf(buff,"%d",atoi($<str>3)*256+atoi($<str>5));
 		   push_type("fgldecimal",buff,0);
+			add_feature("DEFINE_DECIMAL");
 		   
 		} 
 	|	MONEY {
 		      char buff[256];
 		      sprintf(buff,"%d",16*256+2);
 		      push_type("fglmoney",buff,0);
+			add_feature("DEFINE_MONEY");
 		   
 		} 
 	|	MONEY OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
 		     char buff[256];
 		   sprintf(buff,"%d",atoi($<str>3)*256+2);
 		      push_type("fglmoney",buff,0);
+			add_feature("DEFINE_MONEY");
 		   
 		} 
 	|	MONEY OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
 		   char buff[256];
 		   sprintf(buff,"%d",atoi($<str>3)*256+atoi($<str>5));
 		   push_type("fglmoney",buff,0);
+			add_feature("DEFINE_MONEY");
 		   
 		} 
 	|	KW_FLOAT {
 		   push_type("double",0,0);
+			add_feature("DEFINE_FLOAT");
 		   
 		}  op_prec
-	|	DOUBLE_PRECISION { push_type("double",0,0); }  op_prec
-	|	REAL { push_type("double",0,0); }  
+	|	DOUBLE_PRECISION { push_type("double",0,0); 
+			add_feature("DEFINE_DOUBLE");
+			
+			}  op_prec
+	|	REAL { push_type("double",0,0); 
+			add_feature("DEFINE_REAL");
+}  
 	|	SMALLFLOAT {
 		   push_type("float",0,0);
+			add_feature("DEFINE_SMALLFLOAT");
 		   
 		}  op_prec
 	|	KW_DATE {
+			add_feature("DEFINE_DATE");
 		   push_type("fgldate",0,0);
 		   
 		} 
 	|	KW_BYTE {
+			add_feature("DEFINE_BYTE");
 		   push_type("fglbyte",0,0);
 		   
 		} 
@@ -413,14 +447,17 @@ dtype :
 		   
 		} 
 	|	KW_TEXT {
+			add_feature("DEFINE_TEXT");
 		   push_type("fgltext",0,0);
 		   
 		} 
 	|	DATETIME datetime_qual {
+			add_feature("DEFINE_DATETIME");
 		   push_type("struct_dtime",$<str>2,0);
 		   
 		} 
 	|	INTERVAL interval_qual {
+			add_feature("DEFINE_INTERVAL");
 		   push_type("struct_ival",$<str>2,0);
 		   
 		} 

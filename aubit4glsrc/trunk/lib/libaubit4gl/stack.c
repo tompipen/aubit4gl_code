@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.136 2005-08-24 14:03:29 mikeaubury Exp $
+# $Id: stack.c,v 1.137 2005-09-04 22:03:01 mikeaubury Exp $
 #
 */
 
@@ -2689,6 +2689,8 @@ static int ln;
 void
 A4GL_get_top_of_stack (int a, int *d, int *s, void **ptr)
 {
+	A4GL_assertion(params_cnt-a<0,"internal stack corruption");
+
   *d = params[params_cnt - a].dtype;
   *s = params[params_cnt - a].size;
   *ptr = params[params_cnt - a].ptr;

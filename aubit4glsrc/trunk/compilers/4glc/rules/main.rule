@@ -182,18 +182,12 @@ pop_blockcommand("MAIN");
 print_main_end();
 A4GL_lex_printcomment("/*end main */\n");} ;
 
-return_cmd : 
-  KW_RETURN op_fgl_expr_ret_list_v2
-  {
+return_cmd : KW_RETURN op_fgl_expr_ret_list_v2 {
     printPopFunction();
-    print_return(atoi($<str>2));
+    print_return($<ptr_list>2);
   }
 ;
 
-op_fgl_expr_list : reset_cnt {strcpy($<str>$,"0");} | reset_cnt fgl_expr_list {
-A4GL_lex_printcomment("/* Got expr list */");
-sprintf($<str>$,"%s",$<str>2);}
-;
 
 db_section	:	  DATABASE dbase_name {
 					add_feature("DATABASE_USED");

@@ -6,6 +6,7 @@
 
 menu_cmd	:	MENU {
 	//start_state("menu",1);
+	add_feature("MENU");
    	menu_cnt=npush_menu();
 	A4GL_assertion(menu_cnt>=MAXMENU, "Ran out of menus in compiler (Increase : MAXMENU)");
    	menu_cmd_cnt[menu_cnt]=1;

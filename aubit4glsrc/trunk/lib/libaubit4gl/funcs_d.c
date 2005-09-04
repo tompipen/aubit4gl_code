@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.69 2005-08-17 07:24:33 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.70 2005-09-04 22:03:01 mikeaubury Exp $
 #
 */
 
@@ -695,18 +695,190 @@ A4GL_esql_dbopen_connection(void) {
 	return last_esql_db_connection;
 }
 
+struct expr_str_list *A4GL_new_ptr_list(struct expr_str *ptr) {
+	struct expr_str_list *l;
+	l=malloc(sizeof(struct expr_str_list));
+	l->list=0;
+	l->nlist=0;
+	if (ptr) A4GL_new_append_ptr_list(l,ptr);
+	return l;
+
+}
+
+struct expr_str_list *A4GL_new_append_ptr_list(struct expr_str_list *l,struct expr_str *ptr) {
+	        l->nlist++;
+		        l->list=realloc(l->list,sizeof(struct expr_str)*l->nlist);
+			        l->list[l->nlist-1]=ptr;
+				        return l;
+}
+
+int A4GL_new_list_get_count(struct expr_str_list *l) {
+	        if (l==0) return 0;
+		        return l->nlist;
+}
+
+
+// A list of expressions can contain another list -
+//  a typical example might be
+//  display "Hello",a.*
+//  where a.* is some record which is expanded
+//  Lets assume a is comprised of 'b' and 'c'
+//  We'll end up with a list containing two entries :
+//       "Hello"
+//      LIST(a.b,a.c)
+// 
+//  At this point our list count would be 2
+//  In most cases - we'd want to rationalize the list so that we have a list of expressions
+//  which does *not* contain any further lists....
+//  This function then converts to a list which does not contain any further lists
+//  the above example would become a list containing 3 entried
+//   "Hello"
+//   a.b
+//   a.c
+//   
+struct expr_str_list *A4GL_rationalize_list(struct expr_str_list *l) {
+	int a;
+	int b;
+		struct expr_str_list *nl;
+		struct expr_str_list *nl2;
+		struct expr_str *p;
+		if (l==0) return 0;
+
+
+		nl=A4GL_new_ptr_list(0);
+		for (a=0;a<l->nlist;a++) {
+			p=l->list[a];
+			if (p->expr_type==ET_EXPR_EXPR_LIST) { // We've got a list...
+				nl2=A4GL_rationalize_list(p->u_data.expr_list);
+				for (b=0;b<nl2->nlist;b++) {
+					A4GL_new_append_ptr_list(nl,nl2->list[b]);
+				}
+			} else {
+				A4GL_new_append_ptr_list(nl,l->list[a]);
+			}
+		}
+
+		free(l->list); // We've made our copy - so we can get rid of this now...
+
+		l->nlist=nl->nlist;
+		l->list=nl->list;
+		return l;
+}
+
+
+struct expr_str_list *A4GL_new_prepend_ptr_list(struct expr_str_list *l,struct expr_str *p) {
+	struct expr_str **old_list;
+	int a;
+	l->nlist++;
+	old_list=l->list;
+	l->list=malloc(sizeof(struct expr_str)*l->nlist);
+	l->list[0]=p;
+	for (a=1;a<l->nlist;a++) {
+		l->list[a]=old_list[a-1];
+	}
+	free(old_list);
+	return l;
+}
 
 void * 
 A4GL_new_expr (char *value)
 {
   struct expr_str *ptr;
   A4GL_debug ("new_expr - %s", value);
+  ptr=A4GL_new_expr_simple (ET_EXPR_STRING);
+  ptr->next = 0;
+  ptr->u_data.expr_char = acl_strdup (value);
+  A4GL_debug ("newexpr : %s -> %p\n", value, ptr);
+  return ptr;
+}
+
+
+void *A4GL_new_expr_simple_expr(struct expr_str *ptr,enum e_expr_type type) {
+      struct expr_str *ptr_new;
+      ptr_new=A4GL_new_expr_simple (type);
+      ptr_new->u_data.expr_expr=ptr;
+      return ptr_new;
+}
+
+
+void *A4GL_new_expr_simple_string(char *str,enum e_expr_type type) {
+      struct expr_str *ptr_new;
+      ptr_new=A4GL_new_expr_simple (type);
+      ptr_new->u_data.expr_string=str;
+      return ptr_new;
+}
+
+
+
+void *A4GL_new_expr_simple (enum e_expr_type type)
+{
+  struct expr_str *ptr;
   ptr = acl_malloc2 (sizeof (struct expr_str));
   ptr->next = 0;
-  ptr->expr = acl_strdup (value);
-  A4GL_debug ("newexpr : %s -> %p\n", value, ptr);
-  //dump_expr(ptr);
+  ptr->expr_type=type;
   return ptr;
+}
+
+
+struct expr_str *A4GL_new_expr_push_variable(char *v,long dtype) {
+struct expr_push_variable *p;
+struct expr_str *p2;
+	p=malloc(sizeof(struct expr_push_variable));
+        p2=A4GL_new_expr_simple (ET_EXPR_PUSH_VARIABLE);
+	p->variable=strdup(v);
+	p->var_dtype=dtype;
+	p2->u_data.expr_push_variable=p;
+return p2;
+}
+
+struct expr_str *A4GL_new_expr_fcall(char *function,struct expr_str_list *params,char *mod,int line) {
+struct expr_function_call *p;
+struct expr_str *p2;
+	p=malloc(sizeof(struct expr_function_call));
+        p2=A4GL_new_expr_simple (ET_EXPR_FCALL);
+	p->fname=strdup(function);
+	p->parameters=params;
+	p->module=mod;
+	p->line=line;
+	p2->u_data.expr_function_call=p;
+	return p2;
+}
+
+struct expr_str *A4GL_new_expr_member_fcall(char *lib,char *function,struct expr_str_list *params,char *mod,int line) {
+struct expr_member_function_call *p;
+struct expr_str *p2;
+	p=malloc(sizeof(struct expr_member_function_call));
+        p2=A4GL_new_expr_simple (ET_EXPR_MEMBER_FCALL);
+	p->lib=strdup(lib);
+	p->fname=strdup(function);
+	p->parameters=params;
+	p->module=mod;
+	p->line=line;
+	p2->u_data.expr_member_function_call=p;
+	return p2;
+}
+
+
+struct expr_str *A4GL_new_expr_shared_fcall(char *lib, char *function,struct expr_str_list *params,char *mod,int line) {
+struct expr_shared_function_call *p;
+struct expr_str *p2;
+	p=malloc(sizeof(struct expr_shared_function_call));
+        p2=A4GL_new_expr_simple (ET_EXPR_SHARED_FCALL);
+	p->fname=strdup(function);
+	p->lib=strdup(lib);
+	p->parameters=params;
+	p->module=mod;
+	p->line=line;
+	p2->u_data.expr_shared_function_call=p;
+	return p2;
+}
+
+
+struct expr_str *A4GL_new_expr_list () {
+	struct expr_str *p;
+        p=A4GL_new_expr_simple (ET_EXPR_EXPR_LIST);
+	p->u_data.expr_list= A4GL_new_ptr_list(0);
+	return p;
 }
 
 /**
@@ -736,6 +908,73 @@ A4GL_append_expr (struct expr_str *orig_ptr, char *value)
   //dump_expr(start);
   return start;
 }
+
+
+
+/**
+ *  * Insert a new expression at the end of anoher one.
+ *   *
+ *    * @param orig_ptr The expression to be appended.
+ *     * @param second_ptr The expression to append.
+ *      */
+
+void *
+A4GL_append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
+{
+  struct expr_str *start;
+
+
+  if (orig_ptr==second_ptr) {
+          struct expr_str *new_ptr;
+          /* duplication of ourselves... */
+          new_ptr=malloc(sizeof(struct expr_str));
+          new_ptr->next=0;
+          new_ptr->expr_type=orig_ptr->expr_type;
+
+          switch(orig_ptr->expr_type) {
+                  case ET_EXPR_STRING: new_ptr->u_data.expr_char=strdup(orig_ptr->u_data.expr_char); break;
+                  default : A4GL_assertion(1,"Unhandled expr copy");
+          }
+          return A4GL_append_expr_expr (new_ptr,orig_ptr);
+
+  }
+  A4GL_debug ("MJA A4GL_append_expr_expr %p %p", orig_ptr, second_ptr);
+  start = orig_ptr;
+  if (orig_ptr->next != 0)
+    {
+      while (orig_ptr->next != 0)
+        orig_ptr = orig_ptr->next;
+    }
+  orig_ptr->next = second_ptr;
+  /*dump_expr(start);*/
+  return start;
+}
+
+
+
+/**
+ *  * Checks and return the length of an expression
+ *   *
+ *    * @param ptr
+ *     * @return The number of operands in an expression
+ *      */
+int
+A4GL_length_expr (struct expr_str *ptr)
+{
+  int c = 0;
+  A4GL_debug ("Print expr... %p", ptr);
+  while (ptr)
+    {
+      c++;
+      ptr = ptr->next;
+    }
+  return c;
+}
+
+
+
+
+
 
 
 int 

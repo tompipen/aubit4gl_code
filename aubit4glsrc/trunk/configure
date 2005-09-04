@@ -9874,6 +9874,7 @@ A4GL_MSGTYPE_DETECTED=NATIVE
 case $host in
 	*linux*)
         #rpclib is part of clib on Linux
+		PIC="-fPIC"
 		test_rpclib="0"
 
 		if test -f /etc/redhat-release ; then
@@ -33790,7 +33791,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 33793 "configure"' > conftest.$ac_ext
+  echo '#line 33794 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -34346,7 +34347,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 34349 "configure"
+#line 34350 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -34444,7 +34445,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 34447 "configure"
+#line 34448 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -39651,7 +39652,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.326 2005-08-16 10:36:12 mikeaubury Exp $
+| $Id: configure,v 1.327 2005-09-04 22:01:10 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

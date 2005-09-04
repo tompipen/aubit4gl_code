@@ -9,10 +9,10 @@ prompt_cmd	:
         variable opt_help_no
         opt_attributes {
                 push_blockcommand("PROMPT");
-	A4GL_new_events();
-	print_prompt_1($<str>3,$<str>5,$<str>7,$<str>8,0) ;
-}
-        prompt_key_sec {
+		A4GL_new_events();
+		print_prompt_1($<ptr_list>2, $<str>3,$<str>5,$<str>7,$<str>8,0) ;
+	} prompt_key_sec {
+		add_feature("PROMPT");
 		if (strcmp($<str>5,"1")==0) {
 			print_prompt_forchar();
                 }
@@ -59,7 +59,8 @@ on_key_command_prompt : on_key_command {
 ;
 
 
-prompt_title : fgl_expr_concat;
+prompt_title : fgl_expr_concat
+;
 
 
 

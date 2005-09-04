@@ -201,7 +201,7 @@ void set_pklist (char *s);
 char *get_upd_using_notpk (void);
 char *get_upd_using_queries (void);
 char *ispdf (void);
-int print_push_rec (char *s, void **b);
+struct expr_str *print_push_rec (char *s, void **b,int always);
 void expand_obind (void);
 char *subtract_one (char *s);
 
@@ -216,7 +216,7 @@ void ansi_violation (char *s, int severity);
 
 #define MAXMENU 		50
 #define MAXMENUOPTS 	50
-#define NUMBINDINGS 	20480
+#define NUMBINDINGS 	50480
 #define REPORTSTACKSIZE 256
 
 struct s_menu_stack
@@ -278,9 +278,8 @@ void chk_init_var (char *s);
 void dump_expr (struct expr_str *orig_ptr);
 // moved to aubit4gl.h void *A4GL_new_expr (char *value);
 // moved to aubit4gl.h void *A4GL_append_expr (struct expr_str *orig_ptr, char *value);
-void *A4GL_append_expr_expr (struct expr_str *orig_ptr,
-			struct expr_str *second_ptr);
-int length_expr (struct expr_str *ptr);
+//void *A4GL_append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr);
+//int length_expr (struct expr_str *ptr);
 void tr_glob_fname (char *s);
 void add_ex_dtype (char *sx);
 
@@ -382,6 +381,41 @@ char *
 rm_class_copy (char *s);
 
 
+#ifdef MOVED
+enum dt_display_type {
+	DT_DISPLAY_TYPE_LINE,
+	DT_DISPLAY_TYPE_AT,
+	DT_DISPLAY_TYPE_MENUITEM,
+	DT_DISPLAY_TYPE_MAIN_CAPTION,
+	DT_DISPLAY_TYPE_FIELD_LIST,
+	DT_DISPLAY_TYPE_FORM_FIELD,
+	DT_DISPLAY_TYPE_FORM_CAPTION,
+	DT_DISPLAY_TYPE_STATUSBOX
+};
+
+struct dt_display {
+	enum dt_display_type type;
+	union {
+		char *field_list_str;
+		char *caption;
+		struct fh_field_list *field_list;
+		struct {
+			char *form;
+			struct fh_field_list *field_list;
+		} form_field;
+		struct {
+			struct expr_str *y;
+			struct expr_str *x;
+		} x_y;
+	} u_data;
+};
+
+
+
+typedef struct dt_display t_dt_display;
+#endif
+
+
 /* Import stuff : */
 
 enum flist_type {
@@ -462,6 +496,9 @@ void push_menu_timeout(int mn,int mnopt,char *s);
 int fglc_verbosity(void);
 char *A4GL_get_yyline(void);
 void do_yyerror(char *s);
+
+struct expr_str *A4GL_generate_variable_expr(char *s) ;
+
 long
 get_variable_dets_obj (char *s, int *type, int *arrsize, int *size, int *level, char *arr);
 #include "gen_stack.h"

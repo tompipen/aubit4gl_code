@@ -77,9 +77,9 @@ fetch_place :
 		{sprintf($<str>$,"%d,-1",FETCH_RELATIVE); add_feature("FETCH_PREVIOUS");}
 	| KW_CURRENT
 		{sprintf($<str>$,"%d,0",FETCH_RELATIVE); add_feature("FETCH_CURRENT");}
-	| KW_RELATIVE fgl_expr
+	| KW_RELATIVE fgl_expr_x
 		{sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_RELATIVE); add_feature("FETCH_RELATIVE");}
-	| KW_ABSOLUTE fgl_expr
+	| KW_ABSOLUTE fgl_expr_x
 		{sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_ABSOLUTE); add_feature("FETCH_ABSOLUTE");}
 ;
 
@@ -109,10 +109,11 @@ insql=0;strcpy($<str>$,$<str>3);}
 
 
 flush_cmd : opt_use FLUSH fetch_cursor_name  {
-	A4GL_cursor_flush($<str>3);
-	print_flush_cursor($<str>3);
+		A4GL_cursor_flush($<str>3);
+		print_flush_cursor($<str>3);
 		ADDMAP("Flush Cursor",$<str>3);
-print_undo_use($<str>1);
+		print_undo_use($<str>1);
+		add_feature("FLUSH");
 		}
 
 ;

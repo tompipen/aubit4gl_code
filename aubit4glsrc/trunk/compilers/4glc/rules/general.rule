@@ -17,12 +17,17 @@ line_no		:
 file_name	:	CHAR_VALUE | cvariable 
 ;
 
-a_number	:	fgl_expr;
+a_number	:	fgl_expr_c;
 
-coords		:	a_number KW_COMMA a_number {sprintf($<str>$,"%s,%s",$<str>1,$<str>3); }
+coords_pl	:	a_number KW_COMMA a_number {
+				struct expr_str_list *l;
+				l=A4GL_new_ptr_list($<ptr>1);
+				l=A4GL_new_append_ptr_list(l,A4GL_new_ptr_list($<ptr>2);
+				$<ptr_list>$=l;
+			}
 ;
 
-display_coords	:	coords;
+display_coords_pl	:	coords_pl;
 
 field_name_as_struct	:	
 		identifier { 
@@ -105,8 +110,8 @@ ADDMAP("Form",last_var);
 ;
 
 open_form_name	: ident_or_var {sprintf($<str>$,"%s",$<str>1);
-ADDMAP("Open Form",last_var);
-}
+			ADDMAP("Open Form",last_var);
+			}
 ;
 
 opt_help_no		:	{strcpy($<str>$,"0");} | KW_HELP INT_VALUE {strcpy($<str>$,$<str>2);};

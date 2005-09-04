@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.62 2005-06-23 17:57:37 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.63 2005-09-04 22:03:03 mikeaubury Exp $
 #
 */
 
@@ -87,6 +87,7 @@
 =====================================================================
 */
 
+#ifdef FIXME
 FILE *outfile = 0;
 FILE *hfile = 0;
 int print_sqlca;
@@ -183,8 +184,7 @@ void internal_A4GL_lex_printcomment (char *fmt, va_list * ap);
 void internal_A4GL_lex_printh (char *fmt, va_list * ap);
 
 static void real_print_expr (struct expr_str *ptr);
-static void real_print_func_call (char *identifier, struct expr_str *args,
-				  int args_cnt);
+static void real_print_func_call (char *identifier, t_expr_str_list *args, int args_cnt);
 static void real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
 
 void printc (char *fmt, ...);
@@ -940,9 +940,12 @@ real_print_expr (struct expr_str *ptr)
   A4GL_debug ("Print expr... %p", ptr);
   while (ptr)
     {
-      A4GL_debug ("Printing %p", ptr->expr);
-      printc ("%s\n", ptr->expr);
-      free (ptr->expr);
+	    
+      switch (ptr->expr_type) {
+        case ET_EXPR_STRING: printc ("%s\n", ptr->u_data.expr_char); free (ptr->u_data.expr_char); break;
+        default: A4GL_assertion(1,"Unhandled expression type");
+								         }
+
       optr = ptr;
       A4GL_debug ("going to %p", ptr->next);
       ptr = ptr->next;
@@ -1595,15 +1598,31 @@ LEXLIB_print_field_func (char type, char *name, char *var)
  * @param args_cnt The number of arguments
  */
 void
-LEXLIB_print_func_call (char *identifier, void *args, int args_cnt)
+LEXLIB_print_func_call (char *identifier, t_expr_str_list *args, int args_cnt)
 {
   A4GL_debug ("via print_func_call in lib");
   real_print_func_call (identifier, args, args_cnt);
 }
+
+
+static void real_print_expr_list(t_expr_str_list *l) {
+	  int a;
+
+	        if (l)
+			        {
+					          for (a = 0; a < l->nlist; a++)
+							              {
+									                    real_print_expr (l->list[a]);
+											                }
+						          }
+
+}
+
+
 static void
-real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
+real_print_func_call (char *identifier, t_expr_str_list *args, int args_cnt)
 {
-  real_print_expr (args);
+  real_print_expr_list (args);
   printc ("{my $a4gl_retvars; aubit4gl_pl::A4GL_xset_status(0);\n");
   printc ("$a4gl_retvars=aclfgl_%s(%d);\n", identifier, args_cnt);
 }
@@ -1635,11 +1654,13 @@ real_print_pdf_call (char *a1, struct expr_str *a2, char *a3)
  * @return
  */
 void
-LEXLIB_print_call_shared (char *libfile, char *funcname, int nargs)
+LEXLIB_print_call_shared (t_expr_str_list *expr, char *libfile, char *funcname)
 {
-  printc ("{int _retvars;\n");
-  printc ("xset_status(0);_retvars=call_4gl_dll(%s,%s,%d);\n",
-	  libfile, funcname, nargs);
+	  int nargs;
+	      real_print_expr_list (expr);
+	       nargs=A4GL_new_list_get_count(expr);
+  		printc ("{int _retvars;\n");
+  		printc ("xset_status(0);_retvars=call_4gl_dll(%s,%s,%d);\n", libfile, funcname, nargs);
 }
 
 /**
@@ -1660,8 +1681,12 @@ LEXLIB_print_end_call_shared (void)
  * @return
  */
 void
-LEXLIB_print_call_external (char *host, char *func, char *port, int nargs)
+LEXLIB_print_call_external (t_expr_str_list *expr, char *host, char *func, char *port)
 {
+	        int nargs;
+		        real_print_expr_list(expr);
+			        nargs=A4GL_new_list_get_count(expr);
+
   printc ("{int _retvars;\n");
   printc ("_retvars=remote_func_call(%s,%s,%s,%s);\n", host, func,
 	  port, nargs);
@@ -1984,9 +2009,13 @@ LEXLIB_A4GL_get_display_str (int type, char *s, char *f)
  * @return
  */
 void
-LEXLIB_print_display (char *fmt, char *expr, char *attr)
+LEXLIB_print_display (t_expr_str_list *expr, char *fmt,  char *attr)
 {
-  printc (fmt, expr, attr);
+	        int nexpr;
+		        real_print_expr_list(expr);
+			        nexpr=A4GL_new_list_get_count(expr);
+
+  printc (fmt, nexpr, attr);
 }
 
 
@@ -2052,7 +2081,7 @@ LEXLIB_print_display_array_p2 (void)
  * @return
  */
 void
-LEXLIB_print_error (char *s, int wait)
+LEXLIB_print_error (t_expr_str_list *expr, char *s, int wait)
 {
   printc ("display_error(%s,%d);\n", s, wait);
 }
@@ -2080,8 +2109,18 @@ LEXLIB_print_exit_program (int has_expr)
  * @return
  */
 void
-LEXLIB_print_for_start (char *var)
+LEXLIB_print_for_start (char *var,void *vfrom,void *vto, void*vstep)
 {
+	        struct expr_str *from;
+		        struct expr_str *to;
+			        struct expr_str *step;
+
+				        from=vfrom;
+					        to=vto;
+						        step=vstep;
+							        print_expr(from);
+								        print_expr(to);
+									        print_expr(step);
   printc("\n{my $_s;my $_e;my $_step;\n");
   printc("$_step=aubit4gl_pl::A4GL_pop_int();");
   printc("$_e=aubit4gl_pl::A4GL_pop_int();\n");
@@ -2107,10 +2146,10 @@ LEXLIB_print_for_end (void)
  * @param
  * @return
  */
-void
-LEXLIB_print_for_default_step (void)
+void *
+LEXLIB_get_for_default_step (void)
 {
-  printc ("aubit4gl_pl::A4GL_push_int(1);\n");
+return A4GL_new_expr("aubit4gl_pl::A4GL_push_int(1);");
 }
 
 
@@ -2252,8 +2291,9 @@ LEXLIB_print_gui_do_form (char *name, char *list, int mode)
  * @return
  */
 void
-LEXLIB_print_if_start (void)
+LEXLIB_print_if_start (t_expr_str *ptr)
 {
+	print_expr(ptr);
   printc ("if (aubit4gl_pl::pop_bool()) {\n");
 }
 
@@ -2549,13 +2589,13 @@ LEXLIB_print_label (char *s)
  * @return
  */
 int
-LEXLIB_print_let_manyvars (char *nexprs)
+LEXLIB_print_let_manyvars (t_expr_str_list *exprs)
 {
   int from_exprs;
   int to_vars;
   printc ("{");
   to_vars = print_bind ('o');
-  from_exprs = atoi (nexprs);
+  from_exprs = A4GL_new_list_get_count(exprs);
   if (to_vars != from_exprs)
     {
       return 0;
@@ -2683,10 +2723,15 @@ LEXLIB_print_locate (char where, char *var, char *fname)
  * @return
  */
 void
-LEXLIB_print_start_report (char *repname, char *where, char *out, char *dim)
+LEXLIB_print_start_report (char *where, void *out, char *repname,char *dim)
 {
+  if (out) {
+        print_expr(out);
+  	printc("_rout_to=A4GL_char_pop();");
+  } else {
+        printc("_rout_to=0;");
+  }
   printc ("push_char(\"%s\");\n", where);
-  printc ("push_char(%s);\n", out);
   printc ("A4GL_set_report_dim(%s);", dim);
   printc ("acl_fglr_%s(2,REPORT_START);", repname);
 }
@@ -2698,9 +2743,14 @@ LEXLIB_print_start_report (char *repname, char *where, char *out, char *dim)
  * @return
  */
 void
-LEXLIB_print_output_to_report (char *repname, char *nvalues)
+LEXLIB_print_output_to_report (t_expr_str_list *expr, char *repname)
 {
-  printc ("acl_fglr_%s(%s,REPORT_SENDDATA);\n", repname, nvalues);
+long nvalues;
+
+nvalues=A4GL_new_list_get_count(expr);
+real_print_expr_list(expr);
+
+  printc ("acl_fglr_%s(%d,REPORT_SENDDATA);\n", repname, nvalues);
 }
 
 
@@ -3010,13 +3060,16 @@ LEXLIB_print_push_variable (char *s)
  * @return
  */
 void
-LEXLIB_print_message (int type, char *attr, int wait, int n)
+LEXLIB_print_message (t_expr_str_list *expr, int type, char *attr, int wait)
 {
+ int exprs;
+ exprs=A4GL_new_list_get_count(expr);
+ real_print_expr_list(expr);
+
   if (type == 0)
-    printc ("aubit4gl_pl::A4GL_aclfgli_pr_message(%s,%d,%d);\n", attr, wait, n);
+    printc ("aubit4gl_pl::A4GL_aclfgli_pr_message(%s,%d,%d);\n", attr, wait, exprs);
   else
-    printc ("aubit4gl_pl::A4GL_aclfgli_pr_message_cap(%d,%d,%d);\n", attr, wait,
-	    n);
+    printc ("aubit4gl_pl::A4GL_aclfgli_pr_message_cap(%d,%d,%d);\n", attr, wait, exprs);
 }
 
 /**
@@ -3025,8 +3078,9 @@ LEXLIB_print_message (int type, char *attr, int wait, int n)
  * @return
  */
 void
-LEXLIB_print_system_run (int type, char *rvar)
+LEXLIB_print_system_run (void *ptr,int type, char *rvar)
 {
+	print_expr(ptr);
   printc ("aubit4gl_pl::system_run(%d);", type);
 
   if (rvar)
@@ -3213,6 +3267,7 @@ LEXLIB_print_open_window (char *name, char *type)
   printc (");\n");
 }
 
+
 /**
  *
  * @param
@@ -3335,8 +3390,9 @@ LEXLIB_print_hide_window (char *s)
  * @return
  */
 void
-LEXLIB_print_show_menu (char *mname, char *mhand)
+LEXLIB_print_show_menu (char *mname, char *mhand,void *ptr)
 {
+	print_expr(ptr);
   printh ("void aclfglmn_%s(char *);\n", mhand);
   printc ("aubit4gl_pl::show_menu(\"%s\",aclfglmn_%s);\n", mname, mhand);
 }
@@ -3346,10 +3402,10 @@ LEXLIB_print_show_menu (char *mname, char *mhand)
  * @param
  * @return
  */
-void
-LEXLIB_print_def_mn_file (void)
+void*
+LEXLIB_get_def_mn_file (void)
 {
-  printc ("aubit4gl_pl::push_char(\"menu\"); /* default menu file */\n");
+return A4GL_new_expr( "aubit4gl_pl::push_char(\"menu\");");
 }
 
 /**
@@ -3358,8 +3414,10 @@ LEXLIB_print_def_mn_file (void)
  * @return
  */
 void
-LEXLIB_print_move_window (char *n, int rel)
+LEXLIB_print_move_window (char *n, void *ptr1,void *ptr2,int rel)
 {
+	print_expr(ptr1);
+	print_expr(ptr2);
   if (rel == 0)
     printc ("aubit4gl_pl::movewin(%s,1);", n);
   else
@@ -3557,8 +3615,12 @@ LEXLIB_print_main_end (void)
  * @return
  */
 void
-LEXLIB_print_return (int n)
+LEXLIB_print_return (t_expr_str_list *expr)
 {
+	int n;
+	n=A4GL_new_list_get_count(expr);
+	real_print_expr_list(expr);
+
   printc ("return %d;", n);
 }
 
@@ -4362,5 +4424,6 @@ void LEXLIB_A4GL_internal_lex_printcomment (char *fmt, va_list * ap) {
 
 
 
+#endif
 
 /* ================================ EOF ============================== */

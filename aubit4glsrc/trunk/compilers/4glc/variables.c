@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.62 2005-07-19 11:05:33 mikeaubury Exp $
+# $Id: variables.c,v 1.63 2005-09-04 22:03:00 mikeaubury Exp $
 #
 */
 
@@ -2741,14 +2741,15 @@ get_next_variable (struct variable *record, struct variable *v1,
 }
 
 
-int
-print_push_rec (char *s, void **b)
+struct expr_str *
+print_push_rec (char *s, void **b, int always_list)
 {
   int a;
   int dtype;
   int size;
-  char buff[256];
+  //char buff[256];
   struct record_list *list;
+  struct expr_str *vlist;
 
 
   list = split_record_list (s, "", 0);
@@ -2760,131 +2761,38 @@ print_push_rec (char *s, void **b)
       return 0;
     }
 
-/*printf("list->records_cnt=%d\n",list->records_cnt);*/
-
-  for (a = 0; a < list->records_cnt; a++)
+  if (list->records_cnt > 1 || always_list)
     {
-      /*printf("a=%d\n",a);*/
-      dtype = list->list[a]->variable->data.v_simple.datatype;
-      size = list->list[a]->variable->data.v_simple.dimensions[0];
-      dtype += size << 16;
+      vlist = A4GL_new_expr_list ();
+      for (a = 0; a < list->records_cnt; a++)
+	{
+	  struct expr_str *p;
+	  dtype = list->list[a]->variable->data.v_simple.datatype;
+	  size = list->list[a]->variable->data.v_simple.dimensions[0];
+	  dtype += size << 16;
 
-      sprintf (buff, "A4GL_push_variable(&%s,0x%x);", list->list[a]->name,
-	       dtype);
-      /*printf("**** %s\n",buff);*/
-      A4GL_append_expr (*b, buff);
-      /*printf("a=%d list->records_cnt=%d\n",a,list->records_cnt);*/
-    }
-  return list->records_cnt;
+	  p = A4GL_new_expr_push_variable (list->list[a]->name, dtype);
 
-}
-
-
-#ifdef USE_CRAP
-/******************************************************************************/
-int
-recursive_print_push_rec (char *s, void **b, char *stem_orig)
-{
-  struct variable *v_record;
-  struct variable *v_start;
-  struct variable *v_end;
-  struct variable *v_loop;
-  char buff[20000];
-  char stem[256];
-  int dtype;
-  int size;
-  int is_array;
-  int vtype;
-  int c = 0;
-
-
-  if (strchr (s, '\n') == 0)
-    {				/* Ie - its not a range....*/
-      vtype = find_variable (s, &dtype, &size, &is_array, 0);
+	  //sprintf (buff, "A4GL_push_variable(&%s,0x%x);", list->list[a]->name, dtype);
+	  //
+		A4GL_new_append_ptr_list(vlist->u_data.expr_list,p);
+	}
+      return vlist;
     }
   else
     {
-      vtype = -2;
-    }
-
-
-  /* Variable not found...*/
-  if (vtype == 0)
-    {
-      printf ("Variable not found - should have been picked up already - %s",
-	      s);
-      exit (0);
-    }
-
-  /* Normal variable*/
-  if (vtype == 1)
-    {
+	  struct expr_str *p;
+      dtype = list->list[0]->variable->data.v_simple.datatype;
+      size = list->list[0]->variable->data.v_simple.dimensions[0];
       dtype += size << 16;
-      sprintf (buff, "A4GL_push_variable(&%s,0x%x);\n", s, dtype);
-      append_expr (*b, buff);
-      return 1;
+      p = A4GL_new_expr_push_variable (list->list[0]->name, dtype);
+      return p;
+
     }
 
-  if (vtype == -2)
-    {
-      /*printf ("Splitting...'%s'\n", s);*/
+  //return list->records_cnt;
 
-      if (split_record (s, &v_record, &v_start, &v_end))
-	{
-	  char *ptr;
-
-	  if (v_record == 0)
-	    {
-	      printf ("Couldn't find record! (%s)\n", s);
-	      exit (0);
-	    }
-
-	  /*printf ("START LOOPING\n");*/
-	  v_loop = v_start;
-
-	  ptr = strchr (s, '\n');
-	  if (ptr)
-	    {
-	      *ptr = 0;
-	      ptr = strchr (ptr, '.');
-	      if (ptr)
-		{
-		  *ptr = 0;
-		}
-	    }
-
-	  /*printf ("s=%s\n", s);*/
-
-	  while (v_loop)
-	    {
-	      char bbz[256];
-	      /*if (strchr(s,'*')) { // Get rid of the .**/
-	      /*strcpy(bbz,s); bbz[strlen(bbz)-2]=0; */
-	      /*}  else {*/
-	      strcpy (bbz, s);
-	      /*strcat(bbz,".");*/
-	      /*}*/
-
-	      /*strcat(bbz,v_loop->names.name); // Get the propper name*/
-
-	      /*printf ("Looking again for '%s'\n", bbz);*/
-	      c += recursive_print_push_rec (bbz, b, stem);
-	      v_loop = get_next_variable (v_record, v_loop, v_end);
-	    }
-	  /*printf ("END LOOPING\n");*/
-	  return c;
-
-	}
-      else
-	{
-	  /* Couldn't split the record - shouldn't happen...*/
-	  printf ("Couldn't split record : %s\n", s);
-	}
-    }
-
-  exit (0);
 }
-#endif
 
 
 /******************************************************************************/

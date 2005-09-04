@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.73 2005-09-01 07:03:16 mikeaubury Exp $
+# $Id: 1.reqd,v 1.74 2005-09-04 22:03:00 mikeaubury Exp $
 #
 */
 
@@ -175,7 +175,7 @@ int 		vcnt;
 int 		rcnt;
 int 		lastlineno=0;
 int 		cnt;
-int 		mcnt=0;
+//int 		mcnt=0;
 int 		inrec=0;
 int 		iskey=0;
 int 		insql=0;
@@ -206,6 +206,8 @@ int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
 char *do_clobbering(char *f,char *s);
 //void A4GL_copy_fbind_to_Obind(void);
 struct input_array_attribs curr_input_array_attribs;
+void
+print_expr_list_concat (struct expr_str_list *l);
 
 int if_print_stack[100][2];
 int if_print_stack_cnt=0;
@@ -323,6 +325,8 @@ void init_blk(void);
 	struct s_table *u_table;
 	struct s_select_list *u_select_list;
 	struct s_select *u_select;
+	struct dt_display *display;
+	struct ow_open_window *open_window_type;
 	}
 
 /* ============================== 1.reqd ============================ */

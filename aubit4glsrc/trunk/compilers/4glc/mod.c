@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.227 2005-09-01 07:03:16 mikeaubury Exp $
+# $Id: mod.c,v 1.228 2005-09-04 22:02:59 mikeaubury Exp $
 #
 */
 
@@ -144,6 +144,7 @@ extern int menu_cnt;			/** The count of menus found */
 extern int yylineno;			/** The source file line number */
 extern char *infilename;    /** The input (4gl file name */
 extern int in_define;
+extern int doing_a_print;
 
 static int db_used = 0;		 /** Flag that indicate that a database is being used */
 static int inc = 0;
@@ -275,7 +276,6 @@ char *get_default_database (void);
 =====================================================================
 */
 char *rettype (char *s);
-/*static int                    is_pk                           (char *s);*/
 int yywrap (void);
 struct sreports *get_sreports (int z);
 void a4gl_add_variable (char *name, char *type, char *n);
@@ -283,9 +283,6 @@ static void push_validate_column(char *tabname,char *colname) ;
 
 char *get_namespace (char *s);
 char *make_sql_string_and_free (char *first, ...);
-/*void do_print_menu_1(void) ;*/
-/*void do_print_menu_block_end(void) ;*/
-/*int get_blk_no(void) ;*/
 char *do_clobbering(char *f,char *s) ;
 char * pg_make_sql_string_and_free (char *first, ...);
 
@@ -296,88 +293,57 @@ int A4GL_db_used(void );
 =====================================================================
 */
 
-/**
- * Not Used
- *
- * @todo If not used remove it
- *
- * @param z
- * @return
- */
+
+
 /*
-static char *print (char *z)
+void
+A4GL_print_expr_ret_list (struct expr_str_list *l)
 {
-  static char c[10] = "(null)";
+  int a;
+  printf("PLEASE OBSOLETE USAGE OF A4GL_print_expr_ret_list\n");
+  if (l == 0)
+    return;
+  l=A4GL_rationalize_list(l);
+  for (a = 0; a < l->nlist; a++)
+    {
+      struct expr_str *p;
+      p=l->list[a];
+      if (p->expr_type==ET_EXPR_EXPR_LIST) {
+		A4GL_print_expr_ret_list (p->u_data.expr_list);
+      } else {
+      		print_expr (l->list[a]);
+      }
+    }
+}
+*/
 
-  if (z == 0)
-  {
-    return c;
-  }
+/*
+void
+print_expr_list_concat (struct expr_str_list *l)
+{
+  int a;
 
-  return z;
+  printf("PLEASE OBSOLETE USAGE OF print_expr_list_concat\n");
+  if (l == 0) return;
+  l=A4GL_rationalize_list(l);
+
+  for (a = 0; a < l->nlist; a++)
+    {
+      struct expr_str *p;
+      p=l->list[a];
+      if (a) {
+		print_op("OP_CONCAT");
+      }
+      print_expr (l->list[a]);
+    }
+
 }
 */
 
 
-struct expr_str_list *A4GL_new_ptr_list(struct expr_str *ptr) {
-struct expr_str_list *l;
-	printf("new_ptr_list\n");
-l=malloc(sizeof(struct expr_str_list));
-l->list=0;
-l->nlist=0;
-return A4GL_new_append_ptr_list(l,ptr);
-
-}
-
-struct expr_str_list *A4GL_new_append_ptr_list(struct expr_str_list *l,struct expr_str *ptr) {
-	printf("new_append_ptr_list\n");
-	l->nlist++;
-	l->list=realloc(l->list,sizeof(struct expr_str)*l->nlist);
-	l->list[l->nlist-1]=ptr;
-	return l;
-}
-
-int A4GL_new_list_get_count(struct expr_str_list *l) {
-	printf("Get list count\n");
-	return l->nlist;
-}
-
-void A4GL_print_expr_ret_list(struct expr_str_list *l) {
-	int a;
-	for (a=0;a<l->nlist;a++) {
-			print_expr(l->list[a]);
-	}
-}
 
 int A4GL_db_used(void ) { return db_used; }
 
-#ifdef OLD_STUFF
-/**
- * Strip square brackets "[]" from a string.
- * 
- * @param s The string to be stripped
- */
-static void
-strip_bracket (char *s)
-{
-  char buff[256];
-  int a;
-  int c = 0;
-  int f = 0;
-
-  A4GL_debug ("strip_bracket\n");
-  for (a = 0; a <= strlen (s); a++)
-    {
-      if (s[a] == '[')
-	f++;
-      if (f == 0)
-	buff[c++] = s[a];
-      if (s[a] == ']')
-	f--;
-    }
-  strcpy (s, buff);
-}
-#endif
 
 /**
  * Strips square brackets "[]" from a string at leaves it just as it was.
@@ -527,69 +493,6 @@ return a;
  *   - G
  * @param vname The record variable name
  */
-#ifdef OLD_STUFF
-static int
-print_record (int z, char ff, char *vname)
-{
-  int a;
-  /*  It should be declared here because the two function are tighly coupled */
-  static void print_variable (int z, char ff);
-
-  /* MJA - NEWVARIABLE*/
-
-  A4GL_debug ("Print record %s\n", A4GL_null_as_null(vname));
-
-  if (isin_command ("REPORT") ||
-      isin_command ("FORMHANDLER") || isin_command ("MENUHANDLER"))
-    {
-      if (ff != '-')
-	{
-	  print_start_record (1, vname);
-	}
-      else
-	{
-	  print_start_record (0, vname);
-	}
-    }
-  else
-    {
-      if (ff != 'G')
-	print_start_record (0, vname);
-      else
-	print_start_record (2, vname);
-    }
-
-  for (a = z + 1; a < varcnt; a++)
-    {
-
-      if (strcmp (vars[a].var_type, "_RECORD") == 0)
-	{
-	  if (vars[a].level > vars[z].level)
-	    a = print_record (a, '-', vars[a].var_name);
-
-	  continue;
-	}
-
-      if (strcmp (vars[a].var_type, "_ENDREC") == 0)
-	{
-	  break;
-	}
-      print_variable (a, '-');
-    }
-
-  if (strcmp (vars[z].var_arrsize, EMPTY) == 0)
-    {
-      print_end_record (vars[z].var_name, "-1");
-    }
-  else
-    {
-      A4GL_debug ("print_end_record %s %s", A4GL_null_as_null(vars[z].var_name), A4GL_null_as_null(vars[z].var_arrsize));
-
-      print_end_record (vars[z].var_name, vars[z].var_arrsize);
-    }
-  return a;
-}
-#endif
 
 /**
  * Increment the variable inc by a value.
@@ -604,25 +507,6 @@ setinc (int a)
 
 
 
-#ifdef NOLONGERRREQD
-/**
- * Tests if a char pointer is null (char *)0
- *
- * @param ptr The variable to be checked
- * @return
- *   - The parameter pointer if not null
- *   - An empty string otherwise (with just one NULL caracter)
- */
-static char *
-ignull (char *ptr)
-{
-  static char *empty = "";
-  if (ptr)
-    return ptr;
-  else
-    return empty;
-}
-#endif
 
 /**
  * The parser found a new variable name and inserts it in the variable array.
@@ -980,109 +864,6 @@ A4GL_debug("s=%s",A4GL_null_as_null(s));
 
 
 
-#ifdef OLD_STUFF
-
-  strcat (buff, ".");
-  ptr = strtok (buff, ".");
-  /* A4GL_debug ("Looking for %s", buff); */
-  a = varcnt;
-  dir = -1;
-
-  while (1)
-    {
-      a += dir;
-      if (lvl > 0 && dir == -1)
-	{
-	  dir = 1;
-	  a += 2;
-	}
-
-      if (a >= varcnt && dir == 1)
-	break;
-
-      if (a < 0 && dir == -1)
-	break;
-
-      /* A4GL_debug ("Check %d > %d...", lvl, vars[a].level); */
-
-      if (lvl > vars[a].level)
-	break;
-      /*
-         A4GL_debug ("Checking %s %s  %d %d", ptr, vars[a].var_name, vars[a].level, lvl);
-       */
-
-      if ((strcmp (ptr, "*") == 0 || strcmp (vars[a].var_name, ptr) == 0)
-	  && vars[a].level == lvl)
-	{
-	  ptr = strtok (0, ".");
-	  if (ptr == 0)
-	    {
-	      /* A4GL_debug ("Got no more to check"); */
-	    }
-	  else
-	    {
-	      /*
-	         A4GL_debug ("Got more to check '%s'", ptr);
-	         A4GL_debug ("vn=%s %s %s %s", vars[a].var_name, vars[a].var_type,
-	         vars[a].var_arrsize, vars[a].var_size);
-	       */
-	      if (strcmp (vars[a].var_type, "_RECORD") == 0)
-		{
-		  /* A4GL_debug ("_RECORD...."); */
-		  while (a < varcnt)
-		    {
-		      /* A4GL_debug ("Looking for more record declarations...."); */
-		      if (strcmp (vars[a + 1].var_type, "_RECORD") == 0 &&
-			  vars[a].level == vars[a + 1].level)
-			{
-			  a++;
-			  continue;
-			}
-		      A4GL_debug (" ---> vn=%s %s %s %s", A4GL_null_as_null(vars[a].var_name),
-			     A4GL_null_as_null(vars[a].var_type), A4GL_null_as_null(vars[a].var_arrsize),
-			     A4GL_null_as_null(vars[a].var_size));
-		      break;
-		    }
-
-		}
-	    }
-	  flg = 0;
-	  if (ptr == 0)
-	    flg = 1;
-	  else if (strcmp (ptr, "*") == 0)
-	    {
-	      flg = 1;
-	    }
-
-	  /* A4GL_debug ("flg=%d", flg); */
-
-	  if (flg)
-	    {
-	      /* A4GL_debug ("Types : %s %s", vars[a].var_type, vars[a].var_size); */
-	      z =
-		find_type (vars[a].var_type) +
-		(atoi (vars[a].var_size) << 16);
-	      /* A4GL_debug ("Setting last_var_found to %d\n", a); */
-	      last_var_found = a;
-	      /* A4GL_debug ("Find type returned %x", z); */
-	      if (z_new != z)
-		{
-		  PRINTF ("Discrepency between z's for %s\n", s);
-		  exit (0);
-		}
-	      return z;
-	    }
-	  /* A4GL_debug ("More levels..."); */
-
-	  lvl++;
-
-	}
-
-    }
-  A4GL_debug ("Variable not there : %s", A4GL_null_as_null(s));
-
-  return -1;
-#endif
 
 }
 
@@ -1304,47 +1085,6 @@ add_constant (char t, char *ptr, char *name)
   buff[0] = t;
   variable_action (-1, name, ptr, buff, "add_constant");
 
-#ifdef OLD_STUFF
-  if (x != 0)
-    {
-      adderr ("'%s' is a reserved word and cannot be used as a constant\n",
-	      name, "");
-      a4gl_yyerror ("Constant Declaration Error");
-    }
-  A4GL_debug ("Add constant\n");
-  x = check_for_constant (name, buff);
-  if (x)
-    {
-/* Note : this shouldnt actually happen! 
-   all constants should be replaced by this point anyway
-   eg
-   define constant a="Bibble"
-   define constant a="Wibble"
-   will parse as
-   define constant a="Bibble"
-   define constant "Bibble"="Wibble"
- */
-      adderr ("Constant %s has already been defined (as '%s')", name, buff);
-      a4gl_yyerror ("Duplicate Constant");
-    }
-
-  if (isin_command ("FUNC") || isin_command ("REPORT")
-      || isin_command ("MAIN") || isin_command ("FORMHANDLER")
-      || isin_command ("MENUHANDLER"))
-    {
-      scope = 'f';
-    }
-  if (isin_command ("GLOBALS"))
-    {
-      scope = 'g';
-    }
-  const_arr[const_cnt].type = t;
-  strcpy (const_arr[const_cnt].name, name);
-  const_arr[const_cnt].type = t;
-  const_arr[const_cnt].scope = scope;
-  const_arr[const_cnt].ptr = acl_strdup (ptr);
-  const_cnt++;
-#endif
 }
 
 /**
@@ -2092,41 +1832,6 @@ static a4gl_yyerrorf (char *fmt, ...)
 }
 */
 
-#ifdef NOLONGERREQD
-
-/**
- * Checks if a column is part of primary key
- *
- * @param s The string containing the primary key column name
- * @return
- *   - 1 : The column is part of PK 
- *   - 0 : The column is not part of PK 
- */
-static int
-is_pk (char *s)
-{
-  int a;
-  int cnt;
-  char buff[256];
-  A4GL_debug ("Checking if %s is a pk in %s", A4GL_null_as_null(s),A4GL_null_as_null( pklist));
-  a = linked_split (pklist, 0, 0);
-  for (cnt = 1; cnt <= a; cnt++)
-    {
-      linked_split (pklist, cnt, buff);
-      if (A4GL_aubit_strcasecmp (s, buff) == 0)
-	{
-	  A4GL_debug ("Yes");
-	  return 1;
-	}
-    }
-  if (strlen (upd_using_notpk) > 0)
-    strcat (upd_using_notpk, ",");
-  strcat (upd_using_notpk, s);
-  upd_using_notpk_cnt++;
-  A4GL_debug ("No");
-  return 0;
-}
-#endif
 
 
 /**
@@ -2181,7 +1886,7 @@ strcpy(var,var_i);
       else
 	{
 	if (ibindcnt>=NUMBINDINGS) {
-		a4gl_yyerror("Internal error - ran out of bindings...");
+		a4gl_yyerror("Internal error - ran out of bindings (1)...");
 		return 0;
 	}
 	  ibind[ibindcnt].start_char_subscript = 0;
@@ -2235,7 +1940,7 @@ strcpy(var,var_i);
 	  nullbindcnt++;
 
 	  if (nullbindcnt>=NUMBINDINGS) {
-		a4gl_yyerror("Internal error - ran out of bindings...");
+		a4gl_yyerror("Internal error - ran out of bindings (2)...");
 		return 0;
 	  }
 	}
@@ -2253,7 +1958,7 @@ strcpy(var,var_i);
       else
 	{
 	if (obindcnt>=NUMBINDINGS) {
-		a4gl_yyerror("Internal error - ran out of bindings...");
+		a4gl_yyerror("Internal error - ran out of bindings (3)...");
 		return 0;
 	}
 	  strcpy (obind[obindcnt].varname, var);
@@ -2272,7 +1977,7 @@ strcpy(var,var_i);
       else
 	{
 	if (ebindcnt>=NUMBINDINGS) {
-		a4gl_yyerror("Internal error - ran out of bindings...");
+		a4gl_yyerror("Internal error - ran out of bindings (4)...");
 		return 0;
 	}
 	  strcpy (ebind[ebindcnt].varname, var);
@@ -2289,7 +1994,7 @@ strcpy(var,var_i);
       else
 	{
 	if (ordbindcnt>=NUMBINDINGS) {
-		a4gl_yyerror("Internal error - ran out of bindings...");
+		a4gl_yyerror("Internal error - ran out of bindings (5)...");
 		return 0;
 	}
 	  strcpy (ordbind[ordbindcnt].varname, var);
@@ -2312,7 +2017,7 @@ strcpy(var,var_i);
       else
 	{
 	if (fbindcnt>=NUMBINDINGS) {
-		a4gl_yyerror("Internal error - ran out of bindings...");
+		a4gl_yyerror("Internal error - ran out of bindings (6)...");
 		return 0;
 	}
 	  strcpy (fbind[fbindcnt].varname, var);
@@ -2838,22 +2543,6 @@ set_mod_level (int a)
   modlevel = a;
 }
 
-#ifdef NOLONGERREQD
-/**
- *
- *
- * @param
- */
-static int
-matoi (char *s)
-{
-  int a;
-  if (s == 0)
-    return 0;
-  a = atoi (s);
-  return a;
-}
-#endif
 
 /**
  *
@@ -4009,111 +3698,18 @@ dump_expr (struct expr_str *orig_ptr)
   A4GL_debug ("DUMP EXPR : ");
   while (orig_ptr)
     {
-      A4GL_debug ("     %s", orig_ptr->expr);
+	    int printed=0;
+      if (orig_ptr->expr_type==ET_EXPR_STRING) { A4GL_debug ("     %d - %s", orig_ptr->expr_type,orig_ptr->u_data.expr_char); printed=1;}
+      if (!printed) {
+	      A4GL_debug("exprtype : %d",orig_ptr->expr_type);
+      }
       orig_ptr = orig_ptr->next;
     }
   A4GL_debug ("---------------------------------------------------");
 }
 
 
-#ifdef MOVED_TO_LIBAUBIT4GL
-/**
- * Allocate space and create a new expression structure.
- *
- * @param value The value to be added to the expression.
- * @return A pointer to the allocated expression.
- */
-void *
-A4GL_new_expr (char *value)
-{
-  struct expr_str *ptr;
-  A4GL_debug ("new_expr - %s", value);
-  ptr = acl_malloc2 (sizeof (struct expr_str));
-  ptr->next = 0;
-  ptr->expr = acl_strdup (value);
-  A4GL_debug ("newexpr : %s -> %p\n", value, ptr);
-  /*dump_expr(ptr);*/
-  return ptr;
-}
 
-/**
- * Insert a new value to the expression.
- *
- * @param orig_expr
- * @param value 
- * @return 
- */
-void *
-A4GL_append_expr (struct expr_str *orig_ptr, char *value)
-{
-  struct expr_str *ptr;
-  struct expr_str *start;
-  start = orig_ptr;
-
-  A4GL_debug ("MJA A4GL_append_expr %p (%s)", orig_ptr, value);
-
-  ptr = A4GL_new_expr (value);
-  if (orig_ptr->next != 0)
-    {
-      while (orig_ptr->next != 0)
-	orig_ptr = orig_ptr->next;
-    }
-  orig_ptr->next = ptr;
-  A4GL_debug ("Appended expr");
-  /*dump_expr(start);*/
-  return start;
-}
-#endif
-
-/**
- * Insert a new expression at the end of anoher one.
- *
- * @param orig_ptr The expression to be appended.
- * @param second_ptr The expression to append.
- */
-void *
-A4GL_append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
-{
-  struct expr_str *start;
-  if (orig_ptr==second_ptr) {
-	  struct expr_str *new_ptr;
-	  // duplication of ourselves...
-	  new_ptr=malloc(sizeof(struct expr_str));
-	  new_ptr->next=0;
-	  new_ptr->expr=strdup(orig_ptr->expr);
-	  return A4GL_append_expr_expr (new_ptr,orig_ptr);
-	  
-  }
-  A4GL_debug ("MJA A4GL_append_expr_expr %p %p", orig_ptr, second_ptr);
-  start = orig_ptr;
-  if (orig_ptr->next != 0)
-    {
-      while (orig_ptr->next != 0)
-	orig_ptr = orig_ptr->next;
-    }
-  orig_ptr->next = second_ptr;
-  /*dump_expr(start);*/
-  return start;
-}
-
-/**
- * Checks and return the length of an expression
- *
- * @param ptr
- * @return The number of operands in an expression
- */
-int
-length_expr (struct expr_str *ptr)
-{
-  int c = 0;
-  A4GL_debug ("Print expr... %p", ptr);
-  while (ptr)
-    {
-      c++;
-      ptr = ptr->next;
-    }
-  return c;
-}
 
 
 /**
@@ -4129,10 +3725,9 @@ tr_glob_fname (char *s)
     {
       if (s[a] == '\\')
 	s[a] = '/';
-
-#ifdef MIKES_WORKAROUND_FOR_FILES_COPY_FROM_WINDOWS
-      s[a] = tolower (s[a]);
-#endif
+	if (A4GL_isyes(acl_getenv("LOWER_CASE_GLOB_NAME"))) {
+      		s[a] = tolower (s[a]);
+	}
     }
 }
 
@@ -4878,47 +4473,6 @@ char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
 
 
 
-#ifdef MOVED
-char *A4GL_datetime_value(char *s) {
-static char buff[256];
-if (strncasecmp(s,"DATETIME(",9)==0) {
-	if (s[9]!='"') {
-		if (A4GLSQLCV_check_requirement("QUOTE_DATETIME")) {
-			char *ptr;
-			ptr=acl_strdup(&s[9]);
-			ptr[strlen(ptr)-1]=0;
-			sprintf(buff,"DATETIME(\"%s\")",ptr);
-			free(ptr);
-			return buff;
-		}
-	}
-
-}
-return s;
-}
-
-
-
-
-
-char *A4GL_interval_value(char *s) {
-static char buff[256];
-if (strncasecmp(s,"INTERVAL(",9)==0) {
-	if (s[9]!='"') {
-		if (A4GLSQLCV_check_requirement("QUOTE_INTERVAL")) {
-			char *ptr;
-			ptr=acl_strdup(&s[9]);
-			ptr[strlen(ptr)-1]=0;
-			sprintf(buff,"INTERVAL(\"%s\")",ptr);
-			free(ptr);
-			return buff;
-		}
-	}
-
-}
-return s;
-}
-#endif
 
 
 static void A4GL_set_sql_features(void) {
@@ -4956,134 +4510,82 @@ char *A4GL_print_start_to_is_expr(struct expr_str *ptr) {
 
 
 
-#ifdef MOVED
 
-
-
-void A4GL_4glc_clr_gen(int a) {
-	int c;
-		for (c=0;c<gen_stack_cnt[a];a++) {
-					if (gen_stack_ptr[a][c]) free(gen_stack_ptr[a][c]);
-		}
-		free(gen_stack_ptr[a]);
-		gen_stack_cnt[a]=0;
-}
-
-int A4GL_4glc_gen_cnt(int a) {
-		return gen_stack_cnt[a];
-}
-
-char *A4GL_4glc_get_gen(int a,int n) {
-		return gen_stack_ptr[a][n];
-}
-
-void A4GL_init_gen_stack() {
-	int c;
-	for (c=0;c<GEN_STACKS;c++) {
-			gen_stack_ptr[c]=0;
-			gen_stack_cnt[c]=0;
-			gen_stack_alloc[c]=0;
-	}
-}
-
-/**
- *
- * @param a 
- * @param s
- */
-void
-A4GL_4glc_push_gen (int a, char *s)
-{
-  int c;
-  A4GL_debug ("Push %d %s - %d\n", a, A4GL_null_as_null(s), gen_stack_cnt[a]);
-
-  if (gen_stack_cnt[a] >= GEN_STACK_SIZE)
-    {
-      PRINTF ("Out of stack!\n");
-      exit (77);
-    }
-
-  c=gen_stack_cnt[a];
-
-  if (c>=gen_stack_alloc[a] || gen_stack_ptr[a]==0) {
-	  gen_stack_alloc[a]+=1024;
-	  gen_stack_ptr[a]=realloc(gen_stack_ptr[a],gen_stack_alloc[a]*sizeof(char *));
-  }
-  
-  gen_stack_ptr[a][gen_stack_cnt[a]++]=strdup(s);
-}
-
-
-
-
-void
-A4GL_4glc_copy_gen (int a, int b)
-{
-  int c;
-
-
-  if (gen_stack_cnt[a] && gen_stack_ptr[a][gen_stack_cnt[a] - 1][0] == '(')
-    {
-      A4GL_4glc_pop_gen (a);
-    }
-
-
-  for (c = 0; c < gen_stack_cnt[b]; c++)
-    {
-      A4GL_4glc_push_gen (a, gen_stack_ptr[b][c]);
-    }
-  gen_stack_cnt[b] = 0;
-}
-
-char *
-A4GL_4glc_pop_gen (int a)
-{
-  gen_stack_cnt[a]--;
-  return gen_stack_ptr[a][gen_stack_cnt[a]];
-
-}
-
-
-/**
- *
- * @param a
- * @param s
- */
-void
-A4GL_4glc_pop_all_gen (int a, char *s)
-{
-  int z;
-  for (z = 0; z < gen_stack_cnt[a]; z++)
-    {
-      if (z > 0) A4GL_debug ("%s ", A4GL_null_as_null(s));
-      A4GL_debug ("%s", A4GL_null_as_null(gen_stack_ptr[a][z]));
-    }
-  A4GL_4glc_clr_gen(a);
-  //gen_stack_cnt[a] = 0;
-}
-
-void
-A4GL_4glc_dump_updvals ()
+struct expr_str *
+A4GL_generate_variable_expr (char *s)
 {
   int a;
-  for (a = 0; a < gen_stack_cnt[UPDCOL]; a++)
+  int flg = 0;
+  void *p1 = 0;
+
+  if (strchr (s, '\n') == 0)
     {
-      PRINTF ("UPDCOL[%d] : %s\n", a, gen_stack_ptr[UPDCOL][a]);
+      a = scan_variable (s);
+    }
+  else
+    {
+      a = -2;
     }
 
-  for (a = 0; a < gen_stack_cnt[UPDVAL]; a++)
+  if (a >= 0)
     {
-      PRINTF ("UPDVAL[%d] : %s\n", a,gen_stack_ptr[UPDVAL][a]);
+      if (A4GL_aubit_strcasecmp (s, "today") == 0)
+	{
+	  flg = 1;
+	  p1 = A4GL_new_expr_simple (ET_EXPR_TODAY);
+	}
+
+      if (A4GL_aubit_strcasecmp (s, "time") == 0)
+	{
+	  flg = 1;
+	  p1 = A4GL_new_expr_simple (ET_EXPR_TIME);
+	}
+
+      if (A4GL_aubit_strcasecmp (s, "pageno") == 0)
+	{
+	  flg = 1;
+	  p1 = A4GL_new_expr_simple (ET_EXPR_PAGENO);
+	}
+
+      if (A4GL_aubit_strcasecmp (s, "lineno") == 0)
+	{
+	  flg = 1;
+	  p1 = A4GL_new_expr_simple (ET_EXPR_LINENO);
+	}
+
+      if (flg == 0)
+	{
+	  p1 = A4GL_new_expr_push_variable (s, (int) scan_variable (s));
+	}
+
+
+      if (p1 == 0)
+	{
+	  printf ("Thought I'd got all of these :%s\n", s);
+	  p1 = A4GL_new_expr (s);
+	}
     }
-  for (a = 0; a < gen_stack_cnt[UPDVAL2]; a++)
+
+
+
+  if (a == -1)
     {
-      PRINTF ("UPDVAL2[%d]: %s\n", a,gen_stack_ptr[UPDVAL2][a]);
+	    char buff[25600];
+      	sprintf (buff, "A4GL_push_char(%s);", s);;
+      p1 = A4GL_new_expr (buff);
     }
+
+  if (a == -2)
+    {
+     p1 = print_push_rec (s, 0, 0);
+    }
+  return p1;
+
 }
 
 
-
-#endif
-
+int A4GL_am_doing_a_print(void) {
+	return doing_a_print;
+}
 
 /* ================================= EOF ============================= */

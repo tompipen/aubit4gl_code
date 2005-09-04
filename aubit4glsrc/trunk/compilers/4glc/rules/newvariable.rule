@@ -74,7 +74,7 @@ n=scan_variable(buff2);
   }
 
  
-  mcnt = 0;
+  //mcnt = 0;
 }
 ;
 
@@ -125,13 +125,11 @@ var:
          {
              A4GL_debug ("Is string...");
              sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", fgl_add_scope(buff,0), (int)scan_variable (buff), $<str>4);
-      		dec_counter();
-
              ADDMAP("Use Variable",buff);
              A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
          }
 
-         mcnt++;
+         //mcnt++;
 }
 
 | varsetidentdot identifier OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE {
@@ -164,7 +162,6 @@ var:
              sprintf (buff2, "%s[%s]", buff, change_arr_elem($<str>4));
              sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", fgl_add_scope(buff2,0), (int)scan_variable (buff2), $<str>4);
              A4GL_lex_printcomment ("/* array variable %s num_arr_elem=%d arrbuff=%d*/\n", $<str>$,num_arr_elem($<str>4),num_arr_elem(arrbuff));
-      	dec_counter();
          }
          else
          {
@@ -173,7 +170,7 @@ var:
 
          }
 
-         mcnt++;
+         //mcnt++;
 }
 
 | array_r_variable
@@ -251,7 +248,6 @@ char arrbuff[256];
 	*ptr=0;
         sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
         sprintf ($<str>$, " a4gl_substr(%s , 0x%x , %s , 0 ) /*1.1*/", fgl_add_scope(tmpbuff,0), (int)scan_variable (tmpbuff), rbuff);
-      	dec_counter();
   } else {
  
   if ( ( (type & 0xffff) != DTYPE_CHAR &&  (type & 0xffff) != DTYPE_VCHAR) || (arrsize>0))
@@ -266,12 +262,11 @@ char arrbuff[256];
              sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.2*/", fgl_add_scope($<str>1,0), (int)scan_variable ($<str>1), $<str>2);
              ADDMAP("Use Variable",$<str>1);
       A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
-      	dec_counter();
-      	mcnt--;
+      	//mcnt--;
     }
 }
 
-  mcnt++;
+  //mcnt++;
 }
 ;
 
@@ -345,7 +340,7 @@ A4GL_lex_printcomment("/* %s */\n",$<str>1);
 
 
   sprintf($<str>$,"%s",fgl_add_scope($<str>1,0));
-  mcnt = 0;
+  //mcnt = 0;
 };
 
 let_var: let_array_r_variable {
@@ -390,7 +385,7 @@ let_var: let_array_r_variable {
       A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
     }
 
-  mcnt++;
+  //mcnt++;
 
 }
 | let_var DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE
@@ -431,7 +426,7 @@ let_var: let_array_r_variable {
 
     }
 
-  mcnt++;
+  //mcnt++;
 
 }
 
@@ -492,7 +487,7 @@ identifier arr_subscripts
       A4GL_debug ("/*character variable %s*/\n", $<str>$);
     }
  }
-  mcnt++;
+  //mcnt++;
 
 }
 ;

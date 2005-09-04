@@ -8,6 +8,7 @@
 goto_cmd : GOTO label_goto {
 	char buff[256];
 	strcpy(buff,$<str>2);
+add_feature("GOTO");
 	A4GL_convlower(buff);
 	print_goto(buff);
 	A4GL_label_used(buff);

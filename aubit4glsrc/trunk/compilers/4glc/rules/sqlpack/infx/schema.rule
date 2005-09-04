@@ -34,8 +34,12 @@ create_c_2_ss  :
 		add_feature("CREATE_TABLE");
 	} 
 
-	| CREATE_TEMP_TABLE table_name OPEN_BRACKET table_element_list_ss CLOSE_BRACKET opt_cr_table_extra op_no_log {
-		$<sql_string>$=A4GLSQLCV_create_temp_table($<str>2,$<sql_string>4,$<str>6,$<str>7);
+	| CREATE_TEMP_TABLE table_name OPEN_BRACKET table_element_list_ss CLOSE_BRACKET op_no_log opt_cr_table_extra op_no_log {
+		char *tstr;
+		tstr="";
+		if (strlen($<str>6)) tstr=$<str>6;
+		if (strlen($<str>8)) tstr=$<str>8;
+		$<sql_string>$=A4GLSQLCV_create_temp_table($<str>2,$<sql_string>4,$<str>7,tstr);
 		add_feature("CREATE_TEMP_TABLE");
 	}
 

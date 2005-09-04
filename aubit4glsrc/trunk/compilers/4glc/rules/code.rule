@@ -5,6 +5,9 @@
 */
 
 code_cmd : KW_CSTART emb_code KW_CEND
+{
+add_feature("EMBEDDED_C_CODE");
+}
 ;
 
 emb_code : sql_code | c_code;

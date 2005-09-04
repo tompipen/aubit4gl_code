@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.8 2005-03-07 14:53:11 mikeaubury Exp $
+# $Id: makefile,v 1.9 2005-09-04 22:03:04 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -58,11 +58,12 @@ ${ROOT}/bin/4glpc: 4glpc.o times.o readsettings.o
 ##                              Rules
 ## ==================================================================
 	
+CFLAGS=-g
 #%.ao: %.c
 	#${CC} ${CFLAGS} -c $*.c -o $@
 	
 %.o: %.4gl
-	export A4GL_OBJ_EXT=.o; A4GL_LEXTYPE=C; ${ROOT}/bin/4glc -c $<
+	export A4GL_OBJ_EXT=.o; A4GL_LEXTYPE=C; ${ROOT}/bin/4glc -g -c $<
 
 ## ==================================================================
 ##                              Dependencies

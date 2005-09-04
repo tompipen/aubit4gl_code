@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.6 2005-07-14 14:07:54 mikeaubury Exp $
+# $Id: Makefile,v 1.7 2005-09-04 22:02:59 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -76,7 +76,7 @@ CMODS_LIB       =\
 				rules/generated/kw.c \
 				list.c lexer.c lex.c \
 				memfile.c mod.c map.c \
-				../../lib/generated/std_funcs.c rules/generated/states.c \
+				../../lib/generated/std_funcs.c  \
 				var_handling.c variables.c \
                 ${Y_TAB_C} \
                 ${WANTKW_C}
@@ -214,10 +214,8 @@ mk_states_c:
 ##                            Dependencies
 ## ==================================================================
 
-${GENRULES}/kw.c ${GENRULES}/single_words.rule \
-${GENRULES}/states.c: ${Y_TAB_C}
-
-rules/generated/states.c rules/generated/kw.h rules/generated/y.tab.h:
+${GENRULES}/kw.c ${GENRULES}/single_words.rule  \
+rules/generated/kw.h rules/generated/y.tab.h:
 	${MAKE} -C rules $(MKNAME)
 
 4glc.o: 				rules/generated/kw.h rules/generated/y.tab.h

@@ -1,6 +1,7 @@
 locate_cmd : LOCATE obind_var_list IN_MEMORY {
 int vtype;
 int a;
+		add_feature("LOCATE_MEM");
 for (a=0;a<get_bind_cnt('o');a++) {
 	vtype=scan_variable(get_bind_varname('o',a));
 	if (vtype!=11&&vtype!=12) {
@@ -13,6 +14,7 @@ for (a=0;a<get_bind_cnt('o');a++) {
 | LOCATE obind_var_list IN_FILE file_name {
 int vtype;
 int a;
+		add_feature("LOCATE_FILE");
 for (a=0;a<get_bind_cnt('o');a++) {
 	vtype=scan_variable(get_bind_varname('o',a));
 	if (vtype!=11&&vtype!=12) {

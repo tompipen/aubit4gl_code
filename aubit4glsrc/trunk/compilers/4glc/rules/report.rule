@@ -7,46 +7,49 @@
 
 start_cmd : 
 	START_REPORT rep_name TO_PRINTER  op_with_dim {
+			struct expr_str *p;
+			p=A4GL_new_expr_simple(ET_EXPR_REPORT_PRINTER);
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
-			print_start_report("P","acl_getenv(\"DBPRINT\")",$<str>2,$<str>4);
+			print_start_report("P",p,$<str>2,$<str>4);
 			}
 	| START_REPORT rep_name TO_EMAIL  op_with_dim {
 			char buff[256];
+			struct expr_str *p;
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
-			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
-			print_start_report("M",buff,$<str>2,$<str>4);
+			p=A4GL_new_expr_simple_string($<str>2,ET_EXPR_REPORT_EMAIL);
+			print_start_report("M",p,$<str>2,$<str>4);
 			}
 	    | START_REPORT rep_name TO rout op_with_dim {
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
-			print_start_report("F",$<str>4,$<str>2,$<str>5);
+			print_start_report("F",$<ptr>4,$<str>2,$<str>5);
 			}
 	    | START_REPORT rep_name TO_FILE rout op_with_dim {
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
-			print_start_report("F",$<str>4,$<str>2,$<str>5);
+			print_start_report("F",$<ptr>4,$<str>2,$<str>5);
 			}
 	    | START_REPORT rep_name TO_PIPE rout op_with_dim {
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
-			print_start_report("P",$<str>4,$<str>2,$<str>5);
+			print_start_report("P",$<ptr>4,$<str>2,$<str>5);
 			}
 	    | START_REPORT rep_name TO_SCREEN op_with_dim {
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
-			print_start_report("S","\"\"",$<str>2,$<str>4);
+			print_start_report("S",0,$<str>2,$<str>4);
 			}
 	    | START_REPORT rep_name AS_CONVERTABLE  op_with_dim {
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
-			print_start_report("C","\"\"",$<str>2,$<str>4);
+			print_start_report("C",0,$<str>2,$<str>4);
 			}
 	    | START_REPORT rep_name  op_with_dim {
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
-			print_start_report("","\"\"",$<str>2,$<str>3);
+			print_start_report("",0,$<str>2,$<str>3);
 			}
 ;
 
@@ -117,10 +120,9 @@ sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
 
 ;
 
-rout : fgl_expr {strcpy($<str>$,"");}
-/*
-CHAR_VALUE | cvariable | function_call_expr  {strcpy($<str>$,A4GL_print_start_to_is_expr($<ptr>1)); }
-*/
+rout : fgl_expr_c {
+		$<ptr>$=$<ptr>1;
+	}
 ;
 
 
@@ -134,10 +136,17 @@ rep_name : identifier;
 
 op_values : | VALUES ; /* This isn't standard - but it looks pretty OUTPUT TO REPORT VALUES (...)... */
 
-output_cmd : OUTPUT_TO_REPORT rep_name op_values  OPEN_BRACKET reset_cnt op_fgl_expr_list CLOSE_BRACKET {
-			add_feature("USE_REPORT");
+
+op_fgl_expr_list_ptr:  {$<ptr_list>$=0;}
+	| fgl_expr_list_ptr  {$<ptr_list>$=$<ptr_list>1;}
+;
+
+
+output_cmd : OUTPUT_TO_REPORT rep_name op_values  OPEN_BRACKET op_fgl_expr_list_ptr CLOSE_BRACKET {
+		int c;
+		add_feature("USE_REPORT");
 		ADDMAP("Output to report",$<str>2);
-		print_output_to_report($<str>2,$<str>6); 
+		print_output_to_report($<ptr_list>5,$<str>2); 
 		}
 ;
 
@@ -306,11 +315,8 @@ report_cmd :
 	| skip_command
 ;
 
-need_command : NEED fgl_expr {
-//start_state("skip",1);
-} KWLINE {
-	print_need_lines();
-	//start_state("skip",0);
+need_command : NEED fgl_expr_c  KWLINE {
+	print_need_lines($<ptr>2);
 }
 ;
 
@@ -458,7 +464,7 @@ rep_expr_list :
 }
 ;
 
-rep_expr : fgl_expr op_wordwrap {
+rep_expr : fgl_expr_y op_wordwrap {
 	strcpy($<str>$,$<str>2); 
 	}
 ;
@@ -756,7 +762,7 @@ pdf_functions :
 		}
    		CLOSE_BRACKET
    		{
-		print_pdf_call($<str>3,$<ptr>6,$<str>7);
+		print_pdf_call($<str>3,$<ptr_list>6,$<str>7);
    		}
    		opt_return
    		{
