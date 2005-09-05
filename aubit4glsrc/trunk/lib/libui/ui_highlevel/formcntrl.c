@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.39 2005-08-19 13:07:16 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.40 2005-09-05 09:24:49 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.39 2005-08-19 13:07:16 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.40 2005-09-05 09:24:49 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1317,7 +1317,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
       A4GL_set_last_key (A4GLKEY_ACCEPT);
     }
 
-
+  if (a!=0) {
   s->processed_onkey = a;
   m_lastkey = a;
   A4GL_set_last_key (a);
@@ -1355,6 +1355,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
 
 
   A4GL_add_to_control_stack (s, FORMCONTROL_KEY_PRESS, 0, 0, a);
+  }
   return -1;
 }
 
