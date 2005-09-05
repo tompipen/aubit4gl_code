@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.120 2005-07-21 16:52:40 mikeaubury Exp $
+# $Id: newpanels.c,v 1.121 2005-09-05 09:17:18 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.120 2005-07-21 16:52:40 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.121 2005-09-05 09:17:18 mikeaubury Exp $";
 #endif
 
 /**
@@ -1327,7 +1327,13 @@ A4GL_getch_swin (WINDOW * window_ptr)
       A4GL_debug("Waiting for key press");
       a = getch (); // GETCH - getch_swin
       A4GL_debug("key press : %d",a);
+
+
+
       if (a==-1) {
+#ifdef USE_HALF_DELAY
+	      	nocbreak();
+#endif
 	      	cbreak();
 	      	return 0;
       }
@@ -1380,16 +1386,20 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
                 return a;
         }
 
-  while (1)
-    {
 #ifdef USE_HALF_DELAY
 	A4GL_debug("HALF DELAY\n");
-      halfdelay (5);
+      	halfdelay (5);
+	A4GL_debug("SET HALF DELAY\n");
 #endif
+
+  while (1)
+    {
       if (window_ptr) {
+		A4GL_debug("KEYPAD\n");
   		keypad (window_ptr, TRUE);
+		A4GL_debug("WGETCH\n");
 		a = wgetch (window_ptr);
-		A4GL_debug("WGETCH");
+		A4GL_debug("WGETCH : %d",a);
 	}
 
       else {
@@ -1417,8 +1427,19 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
           A4GL_debug ("MJAC Key Pressed %d", a);
           break;
         }
-      if (a==-1) {a=0; cbreak();return a;}
+
+      if (a==-1) {a=0; 
+#ifdef USE_HALF_DELAY
+	      nocbreak();
+#endif
+	      	cbreak();
+		return a;
+
+      	}
     }
+#ifdef USE_HALF_DELAY
+	      nocbreak();
+#endif
   cbreak ();
   A4GL_debug ("Got char from keyboard : %d LEFT=%d", a,KEY_LEFT);
   a=A4GL_curses_to_aubit (a);
