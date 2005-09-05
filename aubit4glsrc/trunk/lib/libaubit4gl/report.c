@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.79 2005-08-17 13:43:14 mikeaubury Exp $
+# $Id: report.c,v 1.80 2005-09-05 09:31:50 mikeaubury Exp $
 #
 */
 
@@ -1492,7 +1492,8 @@ report_write_entry (struct rep_structure *rep, char type)
 
       if (type == ENTRY_START)
 	{
-	  int version_no = 2;
+	  int version_no = 3;
+	  report_write_string(rep,"LOGICAL REPORT OUTPUT");
 	  report_write_int (rep, version_no);
 	  report_write_int (rep, time (0));
 	  report_write_int (rep, rep->top_margin);

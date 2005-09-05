@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#define FILE_VERSION 2
+#define FILE_VERSION 3
 #include "a4gl_lle.h"
 
 int debug=0;
@@ -117,6 +117,7 @@ struct r_report *read_report_output(char *fname) {
   //char buff[256];
   //int buff_i;
   char buff_c;
+  char *l;
   fin = fopen (fname, "r");
   max_page_no = -1;
   max_line_no = -1;
@@ -140,6 +141,12 @@ struct r_report *read_report_output(char *fname) {
 
   report->repName=0;
   report->modName=0;
+  l=read_string(); // This should be tg
+
+  if (strcmp("LOGICAL REPORT OUTPUT",l)!=0) {
+        printf ("Looks like a bad file...\n");
+	return 0;
+  }
   report->version_no = read_int ();
   report->ctime = read_int ();
   report->top_margin=read_int();
