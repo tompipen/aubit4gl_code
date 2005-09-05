@@ -56,7 +56,7 @@ define mv_located integer
 function dump_table(lv_t,lv_systables,lv_prefix_idx,lv_no_owner)
 define lv_t, lv_owner_i_str, lv_owner_t_str char(64) #In IDS all varchar(128,0)
 define lv_str char(256)
-define lv_bigstr char(1000000)
+define lv_bigstr char(32000)
 define lv_l char(1)
 define lv_es,lv_ns  integer
 define lv_stid integer,
@@ -67,6 +67,8 @@ define lv_nn char(10)
 DEFINE lv_systables integer	#true or false, process Informix sys* tables (default=0)
 DEFINE lv_prefix_idx smallint  #true or false, add prefic to index names (default=false)
 DEFINE lv_no_owner smallint
+define lv_qry char(80)
+define lv_c integer
 
 
 	call locate_blob()
@@ -76,14 +78,14 @@ DEFINE lv_no_owner smallint
 	if lv_t="all" then
 		let mv_idx_cnt = 0
 		if lv_systables = 1 then
-			declare c_get_tables cursor for
-				select tabname from systables 
+
+				let lv_qry="select tabname from systables "
 		else
-			declare c_get_tables cursor for
-				select tabname from systables 
-					where tabid>99
+				let lv_qry="select tabname from systables where tabid>99"
 		end if
 		
+		prepare p_get_tables from lv_qry
+			declare c_get_tables cursor for p_get_tables
 		foreach c_get_tables into lv_t
 			call dump_table(lv_t,lv_systables,lv_prefix_idx,lv_no_owner)
 		end foreach
@@ -176,8 +178,8 @@ DEFINE lv_no_owner smallint
 		# Now process each bit of column information
 		let lv_str=" "
 		foreach c2 into lv_sc.*
-		
-			let lv_colnames[lv_sc.colno]=lv_sc.colname
+			let lv_c=lv_sc.colno
+			let lv_colnames[lv_c]=lv_sc.colname
 	
 	
 			if get_mode()=0 then
@@ -650,20 +652,20 @@ define lv_type char(1)	#type of statement to dump: (L)OAD or (U)NLOAD
 DEFINE lv_systables integer	#true or false, process Informix sys* tables (default=0)
 define lv_serial_colname char(128) #name of the colums that is defines as SERIAL type
 define lv_tmp_string char(128)
+define lv_qry char(256)
 
 	let lv_t=downshift(lv_t)
 	
 	if lv_t="all" then
 		if lv_systables = 1 then
-			declare c_get_tables cursor for
-				select tabname from systables 
+				let lv_qry="select tabname from systables "
 		else
-			declare c_get_tables cursor for
-				select tabname from systables 
-					where tabid>99
+				let lv_qry="select tabname from systables where tabid>99"
 		end if
 		
-		foreach c_get_tables into lv_t
+		prepare p_get_tables2 from lv_qry
+			declare c_get_tables2 cursor for p_get_tables2
+		foreach c_get_tables2 into lv_t
 			call dump(lv_type,lv_t,lv_systables)
 		end foreach
 		return

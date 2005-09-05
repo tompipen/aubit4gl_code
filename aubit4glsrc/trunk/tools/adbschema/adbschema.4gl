@@ -9,48 +9,13 @@ define mv_silent integer
 define mv_mode integer
 define mv_perms integer
 
-GLOBALS
-	DEFINE
-	gv_filter_out_table_prefix char (16)
-END GLOBALS
-
-
-function usage()
-	display " " 
-	display "ADBSCHEMA (c) 2005 Aubit Computing Ltd"
-	display " " 
-	display "adbschema [-sys] [-noperms] [-fileschema] [-t tabname] [-s user] [-p user] "
-	display "          [-r rolename] [-f procname] -d dbname [-ss] [filename]"
-	display ""
-	display "   -noperms     Do not include any GRANT/REVOKE"
-	display "   -fileschema  Generate a schema suitable for the FILESCHEMA SQL Module"
-	display "   -sys         Process Informix system tables with tabid < 99"
-	display "   -prefix-idx  Add prefix to index names (IDX_)"
-	display "   -ss          todo"
-	display "   -noowner     Do not output object's (table/index/etc) owner information"
-	display " "
-	exit program 1
-end function
-
-
-function is_ss()
-	return lv_ss="Y"
-end function
-
-
-function get_mode()
-	return mv_mode
-end function
-
-function get_perms()
-	return mv_perms
-end function
-
+DEFINE gv_filter_out_table_prefix char (16)
 
 main
 define 
 	a integer,
 	lv_4gl integer,
+	lv_tmp char(256),
 	lv_str char(40),
 	lv_systables smallint,	#true or false, process Informix sys* tables (default=false)
 	lv_prefix_idx smallint,  #true or false, add prefix to index names (default=false)
@@ -142,7 +107,8 @@ define
 					if lv_output is null then
 						let lv_output=arg_val(a)
 					else
-						display "Confused - is ",lv_output clipped," or ",arg_val(a) clipped," the filename for the output ?"
+						let lv_tmp=arg_val(a)
+						display "Confused - is ",lv_output clipped," or ",lv_tmp clipped," the filename for the output ?"
 						call usage()
 					end if
 				end if
@@ -262,3 +228,36 @@ end function
 function get_filter_out_table_prefix()
 	return gv_filter_out_table_prefix
 end function
+
+
+function usage()
+	display " " 
+	display "ADBSCHEMA (c) 2005 Aubit Computing Ltd"
+	display " " 
+	display "adbschema [-sys] [-noperms] [-fileschema] [-t tabname] [-s user] [-p user] "
+	display "          [-r rolename] [-f procname] -d dbname [-ss] [filename]"
+	display ""
+	display "   -noperms     Do not include any GRANT/REVOKE"
+	display "   -fileschema  Generate a schema suitable for the FILESCHEMA SQL Module"
+	display "   -sys         Process Informix system tables with tabid < 99"
+	display "   -prefix-idx  Add prefix to index names (IDX_)"
+	display "   -ss          todo"
+	display "   -noowner     Do not output object's (table/index/etc) owner information"
+	display " "
+	exit program 1
+end function
+
+
+function is_ss()
+	return lv_ss="Y"
+end function
+
+
+function get_mode()
+	return mv_mode
+end function
+
+function get_perms()
+	return mv_perms
+end function
+
