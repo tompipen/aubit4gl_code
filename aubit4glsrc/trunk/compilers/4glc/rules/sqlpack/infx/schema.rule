@@ -39,7 +39,7 @@ create_c_2_ss  :
 		tstr="";
 		if (strlen($<str>6)) tstr=$<str>6;
 		if (strlen($<str>8)) tstr=$<str>8;
-		$<sql_string>$=A4GLSQLCV_create_temp_table($<str>2,$<sql_string>4,$<str>7,tstr);
+		$<sql_string>$=A4GLSQLCV_create_temp_table($<str>2,$<sql_string>4,tstr,$<str>7);
 		add_feature("CREATE_TEMP_TABLE");
 	}
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.46 2005-07-14 11:32:49 mikeaubury Exp $
+# $Id: fcompile.c,v 1.47 2005-09-09 20:44:36 mikeaubury Exp $
 #*/
 
 /**
@@ -226,8 +226,11 @@ main (int argc, char *argv[])
 
   yyin = A4GL_mja_fopen (c, "r");
 
-
-  a4gl_form_yydebug = 0;
+  if (A4GL_isyes(acl_getenv("A4GL_YYDEBUG")) ){
+  	a4gl_form_yydebug = 1;
+  } else {
+  	a4gl_form_yydebug = 0;
+  }
 
   if (yyin == 0)
     {

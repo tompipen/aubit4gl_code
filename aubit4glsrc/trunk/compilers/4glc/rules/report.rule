@@ -254,11 +254,13 @@ format_actions : format_action | format_actions format_action;
 
 format_action :
 	 FIRST_PAGE_HEADER { push_report_block("FIRST",'P');} commands {
+	 	add_feature("FIRST_PAGE_HEADER");
 		rep_struct.lines_in_first_header=if_print_stack[0][0];
 		pdf_rep_struct.lines_in_first_header=if_print_stack[0][0];
 		print_rep_ret(0,1);
 		}
 	| PAGE_TRAILER { 
+	 	add_feature("PAGE_TRAILER");
 		push_report_block("TRAILER",'T');
 		if_print_stack[0][0]=0;
 		if_print_stack[0][1]=0;
@@ -268,11 +270,12 @@ format_action :
 		print_rep_ret(0,1);
 	}
 	| PAGE_HEADER { push_report_block("HEADER",'p');} commands {
+	 	add_feature("PAGE_HEADER");
 		rep_struct.lines_in_header=if_print_stack[0][0];
 		pdf_rep_struct.lines_in_header=if_print_stack[0][0];
 		print_rep_ret(0,1);}
-	| ON_EVERY_ROW { push_report_block("EVERY",'E');} commands {print_rep_ret(0,1);}
-	| ON_LAST_ROW { push_report_block("LAST",'L');} commands {print_rep_ret(0,1);}
+	| ON_EVERY_ROW { push_report_block("EVERY",'E'); add_feature("ON_EVERY_ROW"); } commands {print_rep_ret(0,1);}
+	| ON_LAST_ROW { push_report_block("LAST",'L'); add_feature("ON_LAST_ROW");} commands {print_rep_ret(0,1);}
 	| BEFGROUP variable  {
 		int a;
 		char buff[80];
@@ -283,6 +286,7 @@ format_action :
    		a4gl_yyerror(buff);
 			YYERROR;
 		}
+		add_feature("BEFORE_GROUP");
 		sprintf(buff,"%d",a+1);
 		push_report_block(buff,'B');
 		set_curr_block(a+1);
@@ -291,6 +295,7 @@ format_action :
 		int a;
 		char buff[80];
 		
+		add_feature("AFTER_GROUP");
 		A4GL_debug("rordcnt=%d",rordcnt);
 		a=scan_orderby($<str>2,rordcnt);
 		if (a<0) {
@@ -323,24 +328,20 @@ need_command : NEED fgl_expr_c  KWLINE {
 op_lines : {strcpy($<str>$,"0");} | KWLINE {strcpy($<str>$,"1");}
 ;
 
-skip_command : SKIP INT_VALUE {
-//start_state("KWLINE",1);
-} op_lines {
-double n;
-char buff[256];
-strcpy(buff,$<str>4);
-n=atof($<str>2);
-if (buff[0]=='1') {
-	print_skip_lines(n);
-	if (if_print_stack_cnt==0) if_print_section[0]=0;
-	if (get_curr_report_stack_whytype_1()=='T') {
-		if_print_stack[if_print_stack_cnt][if_print_section[if_print_stack_cnt]]+=(int)n;
-	}
-} else {
-	if (rep_type!=REP_TYPE_PDF) { a4gl_yyerror("SKIP BY is only in PDF reports"); YYERROR; } print_skip_by(n);
-}
-//start_state("KWLINE",0); 
-}
+skip_command : SKIP INT_VALUE op_lines {
+			double n;
+			char buff[256];
+			strcpy(buff,$<str>3);
+			n=atof($<str>2);
+			if (buff[0]=='1') {
+				print_skip_lines(n);
+				if (if_print_stack_cnt==0) if_print_section[0]=0;
+				if (get_curr_report_stack_whytype_1()=='T') {
+					if_print_stack[if_print_stack_cnt][if_print_section[if_print_stack_cnt]]+=(int)n;
+				}
+			} else {
+				if (rep_type!=REP_TYPE_PDF) { a4gl_yyerror("SKIP BY is only in PDF reports"); YYERROR; } print_skip_by(n); }
+			}
 	| SKIP_TO_TOP { print_skip_top(); }
 	| FONT_SIZE nval { print_niy("FONT SIZE"); }
 	| SKIP_BY nval {
@@ -411,6 +412,7 @@ pf_char_or_var:
 
 
 print_file_command : PRINT_FILE pf_char_or_var opt_semi { 
+	add_feature("PRINT_FILE");
 	print_report_print_file($<str>2,$<str>3);
 } ;
 
@@ -680,7 +682,6 @@ rep_where :  { strcpy($<str>$,"");
 }
 | WHERE fgl_expr_c {
 	$<ptr>$=$<ptr>2;
-//sprintf($<str>$,"%s", $<str>2);
 }
 ;
 
@@ -733,7 +734,6 @@ define_section  {
 }
 pdf_report_section 
 {
-//print_variables();
 resize_paper(&pdf_rep_struct);
 	print_report_2(1,$<str>11);
 A4GL_debug("SET rordcnt=%d (%s)",rordcnt,$<str>11);

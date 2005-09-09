@@ -126,7 +126,7 @@ declare_cmd : opt_use DECLARE declare_cursor_name CURSOR FOR cursor_specificatio
 		doing_declare=0;
 		
 	}
-	| opt_use DECLARE declare_cursor_name CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
+	| opt_use DECLARE declare_cursor_name CURSOR WITH_HOLD FOR cursor_specification_all_ss {insql=0;chk4var=0;}  {
 		add_feature("CURSOR_SELECT");
 		add_feature("HOLD_CURSOR");
 		print_declare("",$<sql_string>7,$<str>3,2,0); 
@@ -193,6 +193,7 @@ cursor_specification_sel_ss:
 value_expression_initial_ss :
 	value_expression_complex_ss { $<sql_string>$=$<sql_string>1; }
 	| var_ident_ibind_ss 	{ $<sql_string>$=$<sql_string>1; }
+	| identifier OPEN_BRACKET CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),"()",0);}
 	| subquery_ss       { $<sql_string>$=$<sql_string>1; }
 	| ALL subquery_ss   { $<sql_string>$=make_sql_string_and_free(acl_strdup("ALL "),$<sql_string>2,0); }
 	| ANY subquery_ss   { $<sql_string>$=make_sql_string_and_free(acl_strdup("ANY "),$<sql_string>2,0); }

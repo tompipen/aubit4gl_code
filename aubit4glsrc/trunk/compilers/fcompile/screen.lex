@@ -84,9 +84,12 @@
 "["		{ strcpy(yylval.str, yytext); return(OPEN_SQUARE);}
 "]"		{ strcpy(yylval.str, yytext); return(CLOSE_SQUARE);}
 
+--$ {if (in_screen_section) REJECT; }
+--\n {if (in_screen_section) REJECT; }
+
 --! 	{if (in_screen_section) REJECT; }
 	
---[^!].* 	{if (in_screen_section) REJECT; }
+--[^!^\n].* 	{if (in_screen_section) REJECT; }
 
 "uses extended" 	{
 			if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_USES_EXTENDED;

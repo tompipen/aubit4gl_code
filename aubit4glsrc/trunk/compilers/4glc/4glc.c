@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.61 2005-03-09 15:14:12 mikeaubury Exp $
+# $Id: 4glc.c,v 1.62 2005-09-09 20:44:36 mikeaubury Exp $
 #
 */
 
@@ -98,10 +98,7 @@ main (int argc, char *argv[])
   /* load settings from config file(s): */
   user_resource = A4GL_build_user_resources ();
   import_package("default");
-  ptr=acl_getenv("NAMESPACE");
-  if (ptr) {
-		if (strlen(ptr)==0) ptr=0;
-  }
+  ptr=acl_getenv_not_set_as_0("NAMESPACE");
   if (ptr!=0) {
 		set_namespace(ptr);
   }

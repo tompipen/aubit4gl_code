@@ -281,6 +281,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
   LET lv_cnt=0
   FOR a=1 to lv_num_args
 	LET lv_arg=arg_val(a)
+	
 	IF lv_arg="-o" THEN
 		LET lv_cnt=lv_cnt+1
 	END IF
@@ -1285,6 +1286,23 @@ end function
 
 function add_obj(lv_obj)
 define lv_obj char(256)
+define lv_chk char(255)
+
+# Check to see if we've already added this object
+let lv_chk="* ",lv_obj clipped," *"
+
+if mv_objects matches lv_chk then
+	# Its already in our list...
+	return
+end if
+let lv_chk="* ",lv_obj
+if mv_objects matches lv_chk then
+	# Its already in our list...
+	return
+end if
+
+
+
 	if mv_verbose>=5 then
 		DISPLAY "ADD OBJ : ",lv_obj clipped
 	end if

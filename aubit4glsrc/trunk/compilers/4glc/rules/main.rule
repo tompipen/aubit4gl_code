@@ -100,44 +100,37 @@ strcpy($<str>$,"static ");
 /*
  * Function definition 
  */
-func_def	: ldeffunction
-{
-  if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
-  clr_variable(); lastlineno=yylineno;
-  clr_function_constants (); 
-}
-identifier  OPEN_BRACKET  
-{ 
-if (is_builtin_func($<str>3)&&!compiling_system_4gl) {
-	a4gl_yyerror("You can't use this name - this is the name of a builtin Aubit4GL function");
-}
+func_def	: ldeffunction {
+  				if (class_cnt>1) { 
+					a4gl_yyerror("You've already defined a class - you can't do any more now"); 
+				}
+  				clr_variable(); 
+				lastlineno=yylineno;
+  				clr_function_constants (); 
+		} identifier  OPEN_BRACKET  op_param_var_list CLOSE_BRACKET  { 
+			if (is_builtin_func($<str>3)&&!compiling_system_4gl) {
+				a4gl_yyerror("You can't use this name - this is the name of a builtin Aubit4GL function");
+			}
 
-if (strcmp($<str>1,"static ")!=0) {
-	// We don't export static functions
-	variable_action(-1,$<str>3,"","","add_function");
-}
-  sprintf(curr_func,"%s",$<str>3);
-  ADDMAP_MODULE("Declare Function",curr_func);
-  print_func_start($<str>1,$<str>3,0);
-  printDeclareFunctionStack($<str>3);
-  cnt=0;
-}
-op_param_var_list CLOSE_BRACKET 
-{
-  A4GL_lex_printcomment("/* new function %s parameters*/\n",$<str>6);
-  push_blockcommand("FUNC");
-  A4GL_lex_printcomment("/* define section */\n");
-}
-define_section 
-{
-  int c;
-  A4GL_lex_printcomment("/*end of define section */\n");
-	print_variables();
-  c=print_param('f');
-  printPushFunction();
-  print_func_args(c);
-}
-op_code commands end_func_command;
+			if (strcmp($<str>1,"static ")!=0) {
+				// We don't export static functions
+				variable_action(-1,$<str>3,"","","add_function");
+			}
+  			sprintf(curr_func,"%s",$<str>3);
+  			ADDMAP_MODULE("Declare Function",curr_func);
+  			cnt=0;
+  			push_blockcommand("FUNC");
+		} define_section {
+  			int c;
+  			print_func_start($<str>1,$<str>3,0);
+  			printDeclareFunctionStack($<str>3);
+  			A4GL_lex_printcomment("/*end of define section */\n");
+  			print_variables();
+  			c=print_param('f',$<str>3);
+  			printPushFunction();
+  			print_func_args(c);
+			} op_code commands end_func_command
+;
 
 /*
  * The end of the function rule 

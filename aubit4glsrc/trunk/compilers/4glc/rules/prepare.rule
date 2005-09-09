@@ -7,9 +7,9 @@
 
 prepare_cmd : opt_use PREPARE stmt_id FROM var_or_char 
 {
-	print_prepare($<str>3,$<str>5);
-	ADDMAP("Prepare",$<str>3);
-	print_undo_use($<str>1);
+		print_prepare($<str>3,$<str>5);
+		ADDMAP("Prepare",$<str>3);
+		print_undo_use($<str>1);
 		add_feature("PREPARE");
 }
 ;

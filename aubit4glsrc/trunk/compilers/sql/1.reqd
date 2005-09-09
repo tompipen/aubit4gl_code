@@ -159,7 +159,7 @@ int db_used=0;
 	struct  ilist int_list;
 
 }
-%expect 173
+%expect 175
 %token INT_VALUE
 %token NAMED
 %token NAMED_GEN

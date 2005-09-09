@@ -8,78 +8,14 @@
 call_cmd	: FCALL call_ext {strcpy($<str>$,"CALL");}
 ;
 
-call_ext :
-    function_callb RETURNING variable { 
-		print_expr($<ptr>1);
-		print_pop_variable($<str>3);
-	}
-   | GET_FLDBUF OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET  {
-		add_feature("CALL_GET_FLDBUF");
-        	if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) {
-                	a4gl_yyerror("get_fldbuf can only be used in an input or construct");
-                	YYERROR;
-        	}
 
-		print_getfldbuf(field_name_list_as_char($<field_list>3));
-	} RETURNING  ibind_var_list {
+
+call_ext: function_call_expr opt_return {
+   		print_func_call($<ptr>1);
 		print_returning();
 	}
    | FORM_IS_COMPILED OPEN_BRACKET identifier KW_COMMA CHAR_VALUE KW_COMMA CHAR_VALUE CLOSE_BRACKET {
 		print_form_is_compiled($<str>3,$<str>5,$<str>7);
-	}
-   | INFIELD OPEN_BRACKET field_name_or_char_as_struct CLOSE_BRACKET RETURNING variable {
-		add_feature("CALL_INFIELD");
-		print_field_func('I',field_name_as_char($<field_entry>3),$<str>6);
-   }
-   | pdf_functions
-   | FIELD_TOUCHED OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET RETURNING variable { 
-	add_feature("CALL_FIELD_TOUCHED");
-        if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) {
-                a4gl_yyerror("get_fldbuf can only be used in an input or construct");
-                YYERROR;
-        }
-	print_field_func('T',field_name_list_as_char($<field_list>3),$<str>6);
-   } 
-   | variable COLON identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET opt_return {
-	int a;
-   	ADDMAP("Call",$<str>1);
-	a=A4GL_new_list_get_count($<ptr_list>5);
-  	print_class_func_call($<str>1,$<str>3,$<ptr_list>5,a);
-	print_returning();
-   }
-   | variable MEMBER_FUNCTION identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET opt_return  {
-	int a;
-   	ADDMAP("Call",$<str>1);
-	a=A4GL_new_list_get_count($<ptr_list>5);
-  	print_class_func_call($<str>1,$<str>3,$<ptr_list>6,a);
-	print_returning();
-   }
-   | identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  {
-				int a;
-				ADDMAP("Call",$<str>1);
-				a=A4GL_new_list_get_count($<ptr_list>3);
-  				print_func_call($<str>1,$<ptr_list>3,a);
-				if (strcasecmp($<str>1,"aclfgl_dump_screen")==0) { add_feature("DUMP_SCREEN"); }
-	} opt_return { print_returning(); }
-   | SHARED char_or_var KW_IN char_or_var OPEN_BRACKET  opt_func_call_args CLOSE_BRACKET {
-		print_call_shared($<ptr_list>6, $<str>4,$<str>2); 
-	} opt_return {
-		print_returning();
-		print_end_call_shared();
-	}
-   | KW_CHANNEL_READ OPEN_BRACKET char_or_var KW_COMMA OPEN_SQUARE ebind_var_list CLOSE_SQUARE CLOSE_BRACKET  
-	 RETURNING variable {
-		print_expr(get_call_shared_bound_expr("\"channel\"","\"read\""));
-		start_bind('o',$<str>10);
-                start_bind('i',$<str>3);
-		print_bind_pop1('o');
-		
-	}
-   | KW_CHANNEL_READ OPEN_BRACKET char_or_var KW_COMMA ebind_var_list CLOSE_BRACKET RETURNING variable {
-                start_bind('i',$<str>3);
-		print_expr(get_call_shared_bound_expr("\"channel\"","\"read\""));
-		start_bind('o',$<str>8);
-		print_bind_pop1('o');
 	}
    | KW_CHANNEL_WRITE OPEN_BRACKET  fgl_expr_c KW_COMMA opt_cw_func_call_args CLOSE_BRACKET {
 		struct expr_str_list *p1;
@@ -89,67 +25,22 @@ call_ext :
 		print_returning();
 		print_end_call_shared();
 	}
-
-   | identifier DOUBLE_COLON identifier  OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
-		char buff[256];
-		char *ptr;
-		sprintf(buff,"\"%s\",\"%s\"",$<str>1,$<str>3);
-		ptr=strchr(buff,',');
-		*ptr=0;
-		ptr++;
-		print_call_shared($<ptr_list>5,buff,ptr);
-	} opt_return {
-		print_returning();
-		print_end_call_shared();
-	}
-   | identifier DOT identifier  OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
-		if (!isclassvariable($<str>1)) { a4gl_yyerror("Not an object"); }
-		if (!isclassmember($<str>1,$<str>3)) { a4gl_yyerror("Not a method for the object"); }
-		A4GLSQL_set_status(0,0);
-		char buff[256];
-		char *ptr;
-		sprintf(buff,"\"%s\",\"%s\"",$<str>1,$<str>3);
-		ptr=strchr(buff,',');
-		*ptr=0;
-		ptr++;
-		print_call_shared($<ptr_list>5,buff,ptr);
-	} opt_return {
-		print_returning();
-		print_end_call_shared();
-	}
-   | EXTERNAL remote_host_name COLON remote_func_name OPEN_SQUARE valid_port CLOSE_SQUARE OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  {
-   		char buff[256];
-   			sprintf(buff,"%s:%s(%p)",$<str>2,$<str>4,$<str>6);
-   			ADDMAP("External",buff);
-	       } opt_return_remote {
-			char fname[64];
-   			if (strcmp($<str>12,"WITHOUT WAITING")==0) {	
-				strcpy(fname,"1,");
-				strcat(fname,$<str>4);
-   			} else {
-				strcpy(fname,"0,");
-				strcat(fname,$<str>4);
-   			}
-   			print_call_external($<ptr_list>9, $<str>2,fname,$<str>6);
-			
-   			if (strcmp($<str>12,"WITHOUT WAITING")!=0) {	
-				print_returning();
-   			}
-   			print_end_call_external();
-  		}
-   
+   | pdf_functions
 ;
+
+
+
+
+
 
 opt_return 	: {start_bind('i',0);strcpy($<str>$,"0");} 
 	| RETURNING ibind_var_list {strcpy($<str>$,$<str>2); }
 ;
 
-opt_return_remote 	: {start_bind('i',0);strcpy($<str>$,"0");} 
-                  | RETURNING ibind_var_list {strcpy($<str>$,$<str>2);}
-                  | WITHOUT_WAITING {strcpy($<str>$,"WITHOUT WAITING"); }
+
+
+opt_without_waiting: {$<integer_val>$=0;} | WITHOUT_WAITING {$<integer_val>$=1;}
 ;
-
-
 
 
 opt_func_call_args : { $<ptr_list>$=0; }

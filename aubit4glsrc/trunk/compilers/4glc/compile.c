@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.92 2005-08-08 20:57:51 mikeaubury Exp $
+# $Id: compile.c,v 1.93 2005-09-09 20:44:36 mikeaubury Exp $
 #*/
 
 /**
@@ -235,6 +235,9 @@ initArguments (int argc, char *argv[])
   char pg_esql[128] = "";
   char pg_esql_libs[128] = "";  
   strcpy (all_objects,"");
+
+  default_database=acl_getenv_not_set_as_0("DEFAULT_DATABASE");
+
   
 //Cant use shell scripts on Windows: esql_wrap ecpg_wrap
 //Cant use INFORMIXDIR to locate esqlc because of the CSDK subdir nonsense
@@ -483,7 +486,6 @@ initArguments (int argc, char *argv[])
     /************************/
 	case 'd':		/* Name of the database to compile against - for things*/
 					/* like DEFINE ... LIKE ...*/
-	  printf ("\n\nDB=%s\n\n", optarg);
 	  default_database = acl_strdup (optarg);
 	  break;
 

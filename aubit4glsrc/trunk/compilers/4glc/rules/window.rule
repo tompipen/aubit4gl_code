@@ -53,7 +53,6 @@ window_type	:	fgl_expr_c ROWS KW_COMMA fgl_expr_c COLUMNS {
 
 				$<open_window_type>$=p;
 
-				//sprintf($<str>$,"A4GL_cr_window");
 		}
 		|	KWFORM fgl_expr_c { 
 				struct ow_open_window *p;
@@ -64,7 +63,6 @@ window_type	:	fgl_expr_c ROWS KW_COMMA fgl_expr_c COLUMNS {
 				reset_attrib(&form_attrib); 
 				$<open_window_type>$=p;
 
-				//sprintf($<str>$,"A4GL_cr_window_form"); 
 		}
 ;
 

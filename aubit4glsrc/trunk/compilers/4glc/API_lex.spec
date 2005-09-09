@@ -73,7 +73,7 @@ print_bind_pop1 char i -> void
 
 print_bind_pop2 t_expr_str_list* exprlist char i -> void
 
-print_param char i -> int
+print_param char i char* funcname -> int
 
 print_bind char i -> int
 
@@ -106,7 +106,7 @@ print_form_is_compiled char* s char* packer char* formtype -> void
 
 print_field_func char type,char* name,char* var -> void
 
-print_func_call char* identifier t_expr_str_list* args,int args_cnt -> void
+print_func_call t_expr_str* call -> void
 
 print_class_func_call char* var,char* identifier,void* args,int args_cnt -> void
 
@@ -157,7 +157,7 @@ print_onkey_2_prompt -> void
 
 print_defer int quit -> void
 
-print_display_line -> void
+/* print_display_line -> void */
 
 print_display_by_name char* attr -> void
 
@@ -420,7 +420,7 @@ print_start_record int isstatic_extern char* varname char* arrsize int level -> 
 
 print_end_record char* vname char* arrsize int level -> void
 
-A4GL_get_push_literal char type,char* value -> char*
+* A4GL_get_push_literal char type,char* value -> char*
 
 A4GL_decode_array_string char* s -> char*
 

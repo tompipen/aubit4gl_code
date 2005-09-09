@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.191 2005-09-04 22:03:00 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.192 2005-09-09 20:45:00 mikeaubury Exp $
 #
 */
 
@@ -314,6 +314,7 @@
 #define GOTO_USED		'Z'
 #define FEATURE_USED		'X'
 #define HP_IS_SERIAL		'V'
+#define LAST_STRING		'T'
 
 /* 
  * these seem to be used only in lib/extra_libs/channel - 
@@ -2267,6 +2268,12 @@ struct expr_push_variable {
 	long var_dtype;
 };
 
+struct expr_op {
+	struct expr_str *left;
+	struct expr_str *right;
+	struct expr_str *escape;
+};
+
 struct expr_function_call {
 	char *fname;
 	struct expr_str_list *parameters;
@@ -2290,6 +2297,16 @@ struct expr_member_function_call {
 	int line;
 };
 
+
+struct expr_external_call {
+	char *host;
+	char *func;
+	char *port;
+	struct expr_str_list *parameters;
+	int without_waiting;
+	char *module;
+	int line;
+};
 
 
 enum e_expr_type {
@@ -2325,14 +2342,17 @@ enum e_expr_type {
 		ET_EXPR_OP_ADD,
 		ET_EXPR_OP_SUB,
 		ET_EXPR_OP_EQUAL,
+		ET_EXPR_OP_NOT_EQUAL,
 		ET_EXPR_OP_MOD,
 		ET_EXPR_OP_USING,
 		ET_EXPR_OP_LIKE,
+		ET_EXPR_OP_NOT_LIKE,
 		ET_EXPR_OP_LENGTH,
 		ET_EXPR_OP_IN,
 		ET_EXPR_OP_NOTIN,
 		ET_EXPR_OP_CONCAT,
 		ET_EXPR_OP_MATCHES,
+		ET_EXPR_OP_NOT_MATCHES,
 		ET_EXPR_OP_CLIP,
 		ET_EXPR_OP_LESS_THAN,
 		ET_EXPR_OP_LESS_THAN_EQ,
@@ -2346,16 +2366,27 @@ enum e_expr_type {
 		ET_EXPR_OP_SECOND,
 		ET_EXPR_OP_ISNULL,
 		ET_EXPR_OP_ISNOTNULL,
+		ET_EXPR_OP_SPACES,
+		ET_EXPR_OP_AND,
+		ET_EXPR_OP_OR,
 		ET_EXPR_NEG,
 		ET_EXPR_FCALL,
 		ET_EXPR_SHARED_FCALL,
 		ET_EXPR_MEMBER_FCALL,
 		ET_EXPR_COLUMN,
 		ET_EXPR_REPORT_EMAIL,
-		ET_EXPR_REPORT_PRINTER
+		ET_EXPR_REPORT_PRINTER,
+		ET_EXPR_QUOTED_STRING,
+		ET_EXPR_LITERAL_DOUBLE_STR,
+		ET_EXPR_LITERAL_LONG,
+		ET_EXPR_LITERAL_STRING, // original is already quoted....
+		ET_EXPR_LITERAL_EMPTY_STRING, // original is already quoted....
+
+		ET_EXPR_REDUCED,
+		ET_EXPR_EXTERNAL,
 
 
-
+		ET_EXPR_LAST // NOT USED...
 };
 
 
@@ -2371,20 +2402,32 @@ struct expr_str {
 		struct expr_function_call		*expr_function_call;
 		struct expr_shared_function_call	*expr_shared_function_call;
 		struct expr_member_function_call	*expr_member_function_call;
+		struct expr_external_call		*expr_external_call;
+		struct expr_op				*expr_op;
+		long   expr_long;
 	  } u_data;
 	  struct expr_str *next;
 };
 
 typedef struct expr_str t_expr_str;
 typedef struct expr_str_list t_expr_str_list;
+struct expr_str *A4GL_new_op_expr(struct expr_str *left, struct expr_str *right, enum e_expr_type type, struct expr_str *escape) ;
+struct expr_str *A4GL_new_expr_call_external(char *host,char *func,char *port,struct expr_str_list *params,int nowait,char *mod,int line);
+struct expr_str *A4GL_new_literal_double_str (char *value);
+struct expr_str *A4GL_new_literal_long (char *value);
+struct expr_str *A4GL_new_literal_string (char *value);
+struct expr_str *A4GL_new_literal_empty_str(void);
 
-void *A4GL_new_expr_simple_expr(struct expr_str *ptr,enum e_expr_type type);
+struct expr_str *A4GL_new_expr_simple_string(char *str,enum e_expr_type type) ;
+
+struct expr_str *A4GL_new_expr_simple_expr(struct expr_str *ptr,enum e_expr_type type);
 struct expr_str *A4GL_new_expr_shared_fcall(char *lib,char *function,struct expr_str_list *params,char *mod,int line);
 struct expr_str *A4GL_new_expr_member_fcall(char *lib,char *function,struct expr_str_list *params,char *mod,int line);
 struct expr_str_list *A4GL_rationalize_list(struct expr_str_list *l);
 struct expr_str *A4GL_new_expr_fcall(char *function,struct expr_str_list *params,char *mod,int line);
 void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
-void *A4GL_new_expr_simple (enum e_expr_type type);
+struct expr_str *A4GL_new_expr_simple (enum e_expr_type type);
+struct expr_str *A4GL_new_expr_neg(struct expr_str *ptr);
 struct expr_str *A4GL_new_expr_push_variable(char *v,long dtype);
 void * A4GL_append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr);
 int A4GL_length_expr (struct expr_str *ptr);

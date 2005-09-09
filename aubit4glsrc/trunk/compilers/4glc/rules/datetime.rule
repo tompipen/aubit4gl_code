@@ -4,27 +4,6 @@
 =====================================================================
 */
 
-interval_expr:
-	UNITS_YEAR {
-        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_YEAR);");
-	}
-	| UNITS_MONTH {
-        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_MONTH);");
-	}
-	| UNITS_DAY {
-        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_DAY);");
-	}
-	| UNITS_HOUR {
-        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_HOUR);");
-	}
-	| UNITS_MINUTE {
-        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_MINUTE);");
-	}
-	| UNITS_SECOND {
-        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_SECOND);");
-	}
-;
-
 
 extend_parameters: OPEN_BRACKET
 			fgl_expr_c

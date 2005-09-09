@@ -909,6 +909,10 @@ CHAR_VALUE   { strcpy($<str>$,A4GL_char_val($<str>1)); }
 	sprintf($<str>$,"%s\t",A4GL_char_val($<str>1));
 	sprintf($<str>$,"%s%s",$<str>$,A4GL_char_val($<str>3));
 }
+| CHAR_VALUE COLON CHAR_VALUE {
+	sprintf($<str>$,"%s\t",A4GL_char_val($<str>1));
+	sprintf($<str>$,"%s%s",$<str>$,A4GL_char_val($<str>3));
+}
 | KW_NULL {
 	sprintf($<str>$,"NULL");
 }

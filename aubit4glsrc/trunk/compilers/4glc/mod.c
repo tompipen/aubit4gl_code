@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.228 2005-09-04 22:02:59 mikeaubury Exp $
+# $Id: mod.c,v 1.229 2005-09-09 20:44:36 mikeaubury Exp $
 #
 */
 
@@ -218,16 +218,22 @@ int constr_cnt = 0;
  * Used for instructions like execute using or open using wher we have a list 
  * of variables that act as input for the statement.
  */
-struct binding_comp ibind[NUMBINDINGS];
-struct binding_comp nullbind[NUMBINDINGS];
+struct binding_comp *ibind=0; //[NUMBINDINGS];
+long a_ibind=0;
+struct binding_comp *nullbind=0; //[NUMBINDINGS];
+long a_nullbind=0;
 
 /**
  * Output bind array.
  */
-struct binding_comp obind[NUMBINDINGS];
-struct binding_comp fbind[NUMBINDINGS];
-struct binding_comp ebind[NUMBINDINGS];
-struct binding_comp ordbind[NUMBINDINGS];
+struct binding_comp *obind=0; //[NUMBINDINGS];
+long a_obind=0;
+struct binding_comp *fbind=0; //[NUMBINDINGS];
+long a_fbind=0;
+struct binding_comp *ebind=0; //[NUMBINDINGS];
+long a_ebind=0;
+struct binding_comp *ordbind=0; //[NUMBINDINGS];
+long a_ordbind=0;
 
 int ordbindcnt = 0;
 int ibindcnt = 0;			/** Number of elements in ibind array */
@@ -236,6 +242,7 @@ int obindcnt = 0;
 int fbindcnt = 0;
 int ebindcnt = 0;
 
+struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) ;
 
 /**
  * Module current scope level for variable declaration.
@@ -1302,9 +1309,13 @@ pushLikeTableColumn (char *tableName, char *columnName)
   char csize[20];
   char cdtype[20];
   char buff[300];
+  char *cname;
 
   A4GL_debug ("pushLikeTableColumn()");
+
   rval = A4GLSQL_read_columns (tableName, columnName, &idtype, &isize);
+  cname=confirm_colname(tableName,columnName);
+
   if (rval == 0)
     {
       sprintf (buff, "%s.%s does not exist in the database", tableName,
@@ -1314,7 +1325,8 @@ pushLikeTableColumn (char *tableName, char *columnName)
     }
   sprintf (cdtype, "%d", idtype & 15);
   sprintf (csize, "%d", isize);
-  trim_spaces (columnName);
+
+  trim_spaces (cname);
   push_type (rettype (cdtype), csize, (char *) 0);
   return 1;
 }
@@ -1357,6 +1369,7 @@ pushValidateAllTableColumns (char *tableName)
   /*char cdtype[20];*/
   char buff[300];
   char *ccol;
+  char *cname;
 
   A4GL_debug ("pushValidateAllTableColumns()");
 
@@ -1421,6 +1434,7 @@ pushLikeAllTableColumns (char *tableName)
   char buff[300];
   char *ccol=0;
   int ncol=0;
+  char *cname;
   
 
   A4GL_debug ("pushLikeAllTableColumns()");
@@ -1470,8 +1484,9 @@ pushLikeAllTableColumns (char *tableName)
       A4GL_debug ("---> %s %s", A4GL_null_as_null(cdtype), A4GL_null_as_null(csize));
       A4GL_debug ("A4GLSQL_read_columns: Pushing %s %s %s", A4GL_null_as_null(colname), A4GL_null_as_null(cdtype),
 	     A4GL_null_as_null(csize));
-      trim_spaces (colname);
-      push_name (colname, 0);
+     cname=confirm_colname(tableName,colname);
+      trim_spaces (cname);
+      push_name (cname, 0);
       push_type (rettype (cdtype), csize, 0);
     }
   A4GL_debug("ncol=%d\n",ncol);
@@ -1885,10 +1900,7 @@ strcpy(var,var_i);
 	}
       else
 	{
-	if (ibindcnt>=NUMBINDINGS) {
-		a4gl_yyerror("Internal error - ran out of bindings (1)...");
-		return 0;
-	}
+	  ibind=ensure_bind(&a_ibind,ibindcnt,ibind);
 	  ibind[ibindcnt].start_char_subscript = 0;
 	  ibind[ibindcnt].end_char_subscript = 0;
 
@@ -1935,14 +1947,11 @@ strcpy(var,var_i);
 	}
       else
 	{
+	  nullbind=ensure_bind(&a_nullbind,nullbindcnt,nullbind);
 	  strcpy (nullbind[nullbindcnt].varname, var);
 	  nullbind[nullbindcnt].dtype = dtype;
 	  nullbindcnt++;
 
-	  if (nullbindcnt>=NUMBINDINGS) {
-		a4gl_yyerror("Internal error - ran out of bindings (2)...");
-		return 0;
-	  }
 	}
       return nullbindcnt;
     }
@@ -1957,10 +1966,7 @@ strcpy(var,var_i);
 	}
       else
 	{
-	if (obindcnt>=NUMBINDINGS) {
-		a4gl_yyerror("Internal error - ran out of bindings (3)...");
-		return 0;
-	}
+	  obind=ensure_bind(&a_obind,obindcnt,obind);
 	  strcpy (obind[obindcnt].varname, var);
 	  obind[obindcnt].dtype = dtype;
 	  obindcnt++;
@@ -1976,10 +1982,7 @@ strcpy(var,var_i);
 	}
       else
 	{
-	if (ebindcnt>=NUMBINDINGS) {
-		a4gl_yyerror("Internal error - ran out of bindings (4)...");
-		return 0;
-	}
+	  ebind=ensure_bind(&a_ebind,ebindcnt,ebind);
 	  strcpy (ebind[ebindcnt].varname, var);
 	  ebind[ebindcnt].dtype = dtype;
 	  ebindcnt++;
@@ -1993,10 +1996,7 @@ strcpy(var,var_i);
 	push_bind_rec (var, i);
       else
 	{
-	if (ordbindcnt>=NUMBINDINGS) {
-		a4gl_yyerror("Internal error - ran out of bindings (5)...");
-		return 0;
-	}
+	  ordbind=ensure_bind(&a_ordbind,ordbindcnt,ordbind);
 	  strcpy (ordbind[ordbindcnt].varname, var);
 	  ordbind[ordbindcnt].dtype = dtype;
 	  ordbindcnt++;
@@ -2016,10 +2016,7 @@ strcpy(var,var_i);
 	push_bind_rec (var, i);
       else
 	{
-	if (fbindcnt>=NUMBINDINGS) {
-		a4gl_yyerror("Internal error - ran out of bindings (6)...");
-		return 0;
-	}
+	  fbind=ensure_bind(&a_fbind,fbindcnt,fbind);
 	  strcpy (fbind[fbindcnt].varname, var);
 	  fbind[fbindcnt].dtype = 0;
 	  fbindcnt++;
@@ -4345,8 +4342,9 @@ void A4GL_get_event(int n,int *i,char **s) {
 
 
 void A4GL_copy_fbind_to_Obind(void) {
-memcpy(ordbind,fbind,sizeof(struct binding_comp)*fbindcnt);
-ordbindcnt=fbindcnt;
+	ordbind=ensure_bind(&a_ordbind,ordbindcnt,ordbind);
+	memcpy(ordbind,fbind,sizeof(struct binding_comp)*fbindcnt);
+	ordbindcnt=fbindcnt;
 }
 
 
@@ -4435,7 +4433,8 @@ void A4GL_CV_print_exec_sql_bound(char *s) {
 }
 
 void A4GL_CV_print_do_select(char *s) {
-	print_do_select(A4GLSQLCV_check_sql(s));
+	//print_do_select(A4GLSQLCV_check_sql(s));
+	print_do_select(s);
 
 }
 
@@ -4562,7 +4561,8 @@ A4GL_generate_variable_expr (char *s)
       if (p1 == 0)
 	{
 	  printf ("Thought I'd got all of these :%s\n", s);
-	  p1 = A4GL_new_expr (s);
+	  A4GL_assertion(1,"Thought I'd got all of these");
+	  //p1 = A4GL_new_expr (s);
 	}
     }
 
@@ -4570,8 +4570,12 @@ A4GL_generate_variable_expr (char *s)
 
   if (a == -1)
     {
-	    char buff[25600];
+	char buff[25600]; // Typically a substr...
       	sprintf (buff, "A4GL_push_char(%s);", s);;
+	if (strstr(buff,"a4gl_substr")) ; 
+	else {
+		A4GL_assertion(1,"Is this used for anything else ?");
+	}
       p1 = A4GL_new_expr (buff);
     }
 
@@ -4586,6 +4590,30 @@ A4GL_generate_variable_expr (char *s)
 
 int A4GL_am_doing_a_print(void) {
 	return doing_a_print;
+}
+
+
+char *confirm_colname(char *t,char *c) {
+static char buff[256];
+strcpy(buff,c);
+return c;
+}
+
+struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) {
+	long  a_bind;
+	a_bind=*a_bindp;
+	A4GL_debug("ensure bind %d %d\n",a_bind,need);
+	if (a_bind>need) return b;
+
+	if (a_bind==0) a_bind=1000; // Start off small :-)
+	else {
+		a_bind=a_bind*2; // just double it ?
+	}
+	b=realloc(b,sizeof(struct binding_comp)*a_bind);
+	A4GL_debug("ensure bind Allocted %d\n",a_bind);
+	A4GL_assertion(b==0,"Unable to allocation memory for binding");
+	*a_bindp=a_bind;
+	return b;
 }
 
 /* ================================= EOF ============================= */

@@ -538,14 +538,8 @@ interval_qual :
 ;
 
 
-dtime_start :
-		 {
-		   //start_state("dtime_val",1);
-		   
-		} dtime_val {
-		   //start_state("dtime_val",0);
-		    strcpy($<str>$,$<str>2);
-		   
+dtime_start : dtime_val {
+		    strcpy($<str>$,$<str>1);
 		} 
 ;
 
@@ -584,13 +578,10 @@ dtime_val :
 
 
 dtime_end :
-		 {
-		   //start_state("dtime_val",1);
 		   
-		} dtime_val {
+		 dtime_val {
 		    A4GL_debug ("Got end");
-		   //start_state("dtime_val",0);
-		     strcpy($<str>$,$<str>2);
+		     strcpy($<str>$,$<str>1);
 		   
 		} 
 ;

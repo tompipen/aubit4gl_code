@@ -4,24 +4,6 @@
 =====================================================================
 */
 
-/*
-variable_no_scope: variable {
-char buff[256];
-char buff2[256];
-strcpy(buff,$<str>1);
-
-if (buff[0]>='A'&&buff[0]<='Z'&&buff[1]=='_') {
-	strcpy(buff2,&buff[2]);
-} else {
-	strcpy(buff2,buff);
-}
-
-strcpy($<str>$,buff2);
-}
-
-;
-*/
-
 
 variable: var_int
 {
@@ -74,7 +56,6 @@ n=scan_variable(buff2);
   }
 
  
-  //mcnt = 0;
 }
 ;
 
@@ -129,7 +110,6 @@ var:
              A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
          }
 
-         //mcnt++;
 }
 
 | varsetidentdot identifier OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE {
@@ -170,7 +150,6 @@ var:
 
          }
 
-         //mcnt++;
 }
 
 | array_r_variable
@@ -223,7 +202,6 @@ char buff2[256];
 char arrbuff[256];
 
   A4GL_debug("ARRAY (array_r_variable) : %s %s",$<str>1,$<str>2);
-  //printf("ARRAY (array_r_variable) : %s %s",$<str>1,$<str>2);
   A4GL_lex_printcomment("/*array variable nnn */");
   get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff);
   A4GL_lex_printcomment("/*here %s %x */",$<str>1,type);
@@ -262,11 +240,9 @@ char arrbuff[256];
              sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.2*/", fgl_add_scope($<str>1,0), (int)scan_variable ($<str>1), $<str>2);
              ADDMAP("Use Variable",$<str>1);
       A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
-      	//mcnt--;
     }
 }
 
-  //mcnt++;
 }
 ;
 
@@ -340,7 +316,6 @@ A4GL_lex_printcomment("/* %s */\n",$<str>1);
 
 
   sprintf($<str>$,"%s",fgl_add_scope($<str>1,0));
-  //mcnt = 0;
 };
 
 let_var: let_array_r_variable {
@@ -385,7 +360,6 @@ let_var: let_array_r_variable {
       A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
     }
 
-  //mcnt++;
 
 }
 | let_var DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE
@@ -426,7 +400,6 @@ let_var: let_array_r_variable {
 
     }
 
-  //mcnt++;
 
 }
 
@@ -443,7 +416,6 @@ MULTIPLY
 let_array_r_variable:
 identifier arr_subscripts
 {
-/*OPEN_SQUARE num_list CLOSE_SQUARE*/
   int a;
   int b;
   char buff2[256];
@@ -487,7 +459,6 @@ identifier arr_subscripts
       A4GL_debug ("/*character variable %s*/\n", $<str>$);
     }
  }
-  //mcnt++;
 
 }
 ;
@@ -598,23 +569,6 @@ obind_var_ord : variable optional_asc_desc;
 
 optional_asc_desc: | ASC | DESC;
 
-/*
-array_r_varid:
-identifier OPEN_SQUARE num_list CLOSE_SQUARE
-{
-  int type,arrsize,size,level;
-  char arrbuff[256];
-  A4GL_lex_printcomment("//..array_r_varid..");
-
-printf("Got array %s %s\n",$<str>1,$<str>3);
-if (get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff)>=0) {
-  sprintf($<str>$,"%s[%s]",$<str>1,subtract_one($<str>3));
-} else {
-  sprintf($<str>$,"%s[%s]",$<str>1,$<str>3);
-}
-}
-;
-*/
 
 init_bind_var_list:	init_bind_var {
 A4GL_lex_printcomment("/*STarted bind %s*/\n",$<str>1);
