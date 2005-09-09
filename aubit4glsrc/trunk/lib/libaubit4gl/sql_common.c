@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.11 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: sql_common.c,v 1.12 2005-09-09 20:37:29 mikeaubury Exp $
 #
 */
 
@@ -690,7 +690,7 @@ void A4GL_log_sql_prepared_map(char *s) {
 	static char logfname[256]="<not_set>";
 	static int logfnameset=0;
 	char *fname=0;
-	FILE *fout;
+	FILE *fout=0;
 	char buff[256];
 
 
@@ -735,5 +735,35 @@ void A4GL_log_sql_prepared_map(char *s) {
 char *A4GLSQLCV_convert_sql (  char* target_dialect ,char* sql ) {
 		return A4GLSQLCV_convert_sql_ml(target_dialect,sql,"unknown",0);
 }
+
+
+#ifdef NEW_CODE
+struct s_table *A4GLSQLPARSE_new_tablename(char *tname,char *alias) {
+	struct s_table *ptr;
+	ptr=malloc(sizeof(struct s_table));
+	ptr->tabname=strdup(tname);
+	if (alias) {
+		ptr->alias=strdup(alias);
+	} else {
+		ptr->alias=0;
+	}
+	ptr->next=0;
+	ptr->outer_next=0;
+	return ptr;
+}
+
+struct s_select_list *A4GLSQLPARSE_new_select_list_str(char *expr,char *alias) {
+	struct s_select_list *ptr;
+	ptr=malloc(sizeof(struct s_select_list));
+	ptr->type=0;
+	ptr->u_data.expression=strdup(expr);
+	if (alias) {
+		ptr->alias=strdup(alias);
+	} else {
+		ptr->alias=0;
+	}
+	return ptr;
+}
+#endif
 
 /* =============================== EOF ============================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.70 2005-09-04 22:03:01 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.71 2005-09-09 20:37:29 mikeaubury Exp $
 #
 */
 
@@ -695,6 +695,95 @@ A4GL_esql_dbopen_connection(void) {
 	return last_esql_db_connection;
 }
 
+
+
+#ifdef MOVED_OUT_OF_HERE
+char *expr_name(enum e_expr_type e) {
+switch (e) {
+case ET_EXPR_CHAR: return "ET_EXPR_CHAR";
+case ET_EXPR_EXPR: return "ET_EXPR_EXPR";
+case ET_EXPR_EXPR_LIST: return "ET_EXPR_EXPR_LIST";
+case ET_EXPR_OP: return "ET_EXPR_OP";
+case ET_EXPR_INT: return "ET_EXPR_INT";
+case ET_EXPR_NUM: return "ET_EXPR_NUM";
+case ET_EXPR_STRING: return "ET_EXPR_STRING";
+case ET_EXPR_PUSH_VARIABLE: return "ET_EXPR_PUSH_VARIABLE";
+case ET_EXPR_TODAY: return "ET_EXPR_TODAY";
+case ET_EXPR_TIME: return "ET_EXPR_TIME";
+case ET_EXPR_LINENO: return "ET_EXPR_LINENO";
+case ET_EXPR_PAGENO: return "ET_EXPR_PAGENO";
+case ET_EXPR_TIME_EXPR: return "ET_EXPR_TIME_EXPR";
+case ET_EXPR_DATE_EXPR: return "ET_EXPR_DATE_EXPR";
+case ET_EXPR_NULL: return "ET_EXPR_NULL";
+case ET_EXPR_TRUE: return "ET_EXPR_TRUE";
+case ET_EXPR_FALSE: return "ET_EXPR_FALSE";
+case ET_EXPR_NOT: return "ET_EXPR_NOT";
+case ET_EXPR_UPSHIFT: return "ET_EXPR_UPSHIFT";
+case ET_EXPR_DOWNSHIFT: return "ET_EXPR_DOWNSHIFT";
+case ET_EXPR_EXTEND: return "ET_EXPR_EXTEND";
+case ET_EXPR_ASCII: return "ET_EXPR_ASCII";
+case ET_EXPR_MM: return "ET_EXPR_MM";
+case ET_EXPR_POINTS: return "ET_EXPR_POINTS";
+case ET_EXPR_INCHES: return "ET_EXPR_INCHES";
+case ET_EXPR_CURRENT: return "ET_EXPR_CURRENT";
+case ET_EXPR_OP_MULT: return "ET_EXPR_OP_MULT";
+case ET_EXPR_OP_DIV: return "ET_EXPR_OP_DIV";
+case ET_EXPR_OP_POWER: return "ET_EXPR_OP_POWER";
+case ET_EXPR_OP_ADD: return "ET_EXPR_OP_ADD";
+case ET_EXPR_OP_SUB: return "ET_EXPR_OP_SUB";
+case ET_EXPR_OP_EQUAL: return "ET_EXPR_OP_EQUAL";
+case ET_EXPR_OP_NOT_EQUAL: return "ET_EXPR_OP_NOT_EQUAL";
+case ET_EXPR_OP_MOD: return "ET_EXPR_OP_MOD";
+case ET_EXPR_OP_USING: return "ET_EXPR_OP_USING";
+case ET_EXPR_OP_LIKE: return "ET_EXPR_OP_LIKE";
+case ET_EXPR_OP_NOT_LIKE: return "ET_EXPR_OP_NOT_LIKE";
+case ET_EXPR_OP_LENGTH: return "ET_EXPR_OP_LENGTH";
+case ET_EXPR_OP_IN: return "ET_EXPR_OP_IN";
+case ET_EXPR_OP_NOTIN: return "ET_EXPR_OP_NOTIN";
+case ET_EXPR_OP_CONCAT: return "ET_EXPR_OP_CONCAT";
+case ET_EXPR_OP_MATCHES: return "ET_EXPR_OP_MATCHES";
+case ET_EXPR_OP_NOT_MATCHES: return "ET_EXPR_OP_NOT_MATCHES";
+case ET_EXPR_OP_CLIP: return "ET_EXPR_OP_CLIP";
+case ET_EXPR_OP_LESS_THAN: return "ET_EXPR_OP_LESS_THAN";
+case ET_EXPR_OP_LESS_THAN_EQ: return "ET_EXPR_OP_LESS_THAN_EQ";
+case ET_EXPR_OP_GREATER_THAN: return "ET_EXPR_OP_GREATER_THAN";
+case ET_EXPR_OP_GREATER_THAN_EQ: return "ET_EXPR_OP_GREATER_THAN_EQ";
+case ET_EXPR_OP_YEAR: return "ET_EXPR_OP_YEAR";
+case ET_EXPR_OP_MONTH: return "ET_EXPR_OP_MONTH";
+case ET_EXPR_OP_DAY: return "ET_EXPR_OP_DAY";
+case ET_EXPR_OP_HOUR: return "ET_EXPR_OP_HOUR";
+case ET_EXPR_OP_MINUTE: return "ET_EXPR_OP_MINUTE";
+case ET_EXPR_OP_SECOND: return "ET_EXPR_OP_SECOND";
+case ET_EXPR_OP_ISNULL: return "ET_EXPR_OP_ISNULL";
+case ET_EXPR_OP_ISNOTNULL: return "ET_EXPR_OP_ISNOTNULL";
+case ET_EXPR_OP_SPACES: return "ET_EXPR_OP_SPACES";
+case ET_EXPR_OP_AND: return "ET_EXPR_OP_AND";
+case ET_EXPR_OP_OR: return "ET_EXPR_OP_OR";
+case ET_EXPR_NEG: return "ET_EXPR_NEG";
+case ET_EXPR_FCALL: return "ET_EXPR_FCALL";
+case ET_EXPR_SHARED_FCALL: return "ET_EXPR_SHARED_FCALL";
+case ET_EXPR_MEMBER_FCALL: return "ET_EXPR_MEMBER_FCALL";
+case ET_EXPR_COLUMN: return "ET_EXPR_COLUMN";
+case ET_EXPR_REPORT_EMAIL: return "ET_EXPR_REPORT_EMAIL";
+case ET_EXPR_REPORT_PRINTER: return "ET_EXPR_REPORT_PRINTER";
+case ET_EXPR_QUOTED_STRING: return "ET_EXPR_QUOTED_STRING";
+case ET_EXPR_LITERAL_DOUBLE_STR: return "ET_EXPR_LITERAL_DOUBLE_STR";
+case ET_EXPR_LITERAL_LONG: return "ET_EXPR_LITERAL_LONG";
+case ET_EXPR_LITERAL_STRING: return "ET_EXPR_LITERAL_STRING";
+case ET_EXPR_LITERAL_EMPTY_STRING: return "ET_EXPR_LITERAL_EMPTY_STRING";
+case ET_EXPR_REDUCED: return "ET_EXPR_REDUCED";
+case ET_EXPR_LAST: return "ET_EXPR_LAST";
+}
+printf("%d\n",e);
+return "Oopps - dont know";
+}
+/* =========================== EOF ================================ */
+
+
+
+
+
+
 struct expr_str_list *A4GL_new_ptr_list(struct expr_str *ptr) {
 	struct expr_str_list *l;
 	l=malloc(sizeof(struct expr_str_list));
@@ -780,6 +869,20 @@ struct expr_str_list *A4GL_new_prepend_ptr_list(struct expr_str_list *l,struct e
 	return l;
 }
 
+
+struct expr_str *A4GL_new_op_expr(struct expr_str *left, struct expr_str *right, enum e_expr_type type, struct expr_str *escape) {
+  struct expr_str *ptr;
+  ptr=A4GL_new_expr_simple(type);
+  ptr->u_data.expr_op=malloc(sizeof(struct expr_op));
+  ptr->u_data.expr_op->left=left;
+  ptr->u_data.expr_op->right=right;
+  ptr->u_data.expr_op->escape=escape;
+  return ptr;
+}
+
+
+
+
 void * 
 A4GL_new_expr (char *value)
 {
@@ -792,6 +895,53 @@ A4GL_new_expr (char *value)
   return ptr;
 }
 
+
+
+struct expr_str *A4GL_new_literal_double_str (char *value)
+{
+  struct expr_str *ptr;
+  ptr=A4GL_new_expr_simple (ET_EXPR_LITERAL_DOUBLE_STR);
+  ptr->u_data.expr_string=acl_strdup(value);
+  return ptr;
+}
+
+
+struct expr_str *A4GL_new_literal_long (char *value)
+{
+  struct expr_str *ptr;
+  ptr=A4GL_new_expr_simple (ET_EXPR_LITERAL_LONG);
+  ptr->u_data.expr_long=atol(value);
+  return ptr;
+}
+
+
+struct expr_str *A4GL_new_literal_string (char *value)
+{
+  struct expr_str *ptr;
+  ptr=A4GL_new_expr_simple (ET_EXPR_LITERAL_STRING);
+  ptr->u_data.expr_string=strdup(value);
+  return ptr;
+}
+
+
+struct expr_str *A4GL_new_literal_empty_str (void)
+{
+  struct expr_str *ptr;
+  ptr=A4GL_new_expr_simple (ET_EXPR_LITERAL_EMPTY_STRING);
+  return ptr;
+}
+
+struct expr_str *A4GL_new_expr_neg(struct expr_str *ptr) {
+struct expr_ptr *ptr_new;
+if (ptr->expr_type==ET_EXPR_LITERAL_LONG) {
+	ptr->u_data.expr_long=0-ptr->u_data.expr_long;
+	return ptr;
+} else {
+printf("NEG : %d (%s)\n",ptr->expr_type,expr_name(ptr->expr_type));
+	ptr_new=A4GL_new_expr_simple_expr(ptr,ET_EXPR_NEG);
+	return ptr_new;
+}
+}
 
 void *A4GL_new_expr_simple_expr(struct expr_str *ptr,enum e_expr_type type) {
       struct expr_str *ptr_new;
@@ -970,7 +1120,7 @@ A4GL_length_expr (struct expr_str *ptr)
     }
   return c;
 }
-
+#endif
 
 
 
@@ -1071,3 +1221,6 @@ int A4GL_menu_opts_compare(char *a,char *b,int why) {
 }
 
 /* ============================== EOF ========================== */
+
+
+

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.80 2005-09-05 09:31:50 mikeaubury Exp $
+# $Id: report.c,v 1.81 2005-09-09 20:37:29 mikeaubury Exp $
 #
 */
 
@@ -831,7 +831,7 @@ nm (int n)
     case 8:
       return "MONEY";
     case 10:
-      return "DATETIME";
+      return "DATETIME ";
     case 11:
       return "BYTE";
     case 12:
@@ -839,7 +839,7 @@ nm (int n)
     case 13:
       return "VARCHAR";
     case 14:
-      return "INTERVAL";
+      return "INTERVAL ";
     }
   return "CHAR";
 }
@@ -865,7 +865,7 @@ sz (int d, int s)
       return "";
 
     case 10:
-      return "YEAR TO FRACTION(5)";
+      return " YEAR TO FRACTION(5)";
 
     case 8:
     case 5:			/* decimal */
@@ -877,7 +877,7 @@ sz (int d, int s)
       return buff_1;
 
     case 14:
-      SPRINTF0 (buff_1, "year to second(5)");
+      SPRINTF0 (buff_1, " year to second(5)");
       return buff_1;
     }
   return "";

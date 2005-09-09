@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.247 2005-09-04 22:03:03 mikeaubury Exp $
+# $Id: compile_c.c,v 1.248 2005-09-09 20:34:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.247 2005-09-04 22:03:03 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.248 2005-09-09 20:34:13 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -94,8 +94,8 @@ char *A4GL_get_important_from_clobber(char *s);
 void add_class_function_to_header (char *identifier, int params,char* is_static);
 char* get_reset_state_after_call(void);
 void print_reset_state_after_call(void);
-static void
-pr_nongroup_report_agg_clr (void);
+static void pr_nongroup_report_agg_clr (void);
+char *pdtype(int n) ;
 
 
 /*
@@ -133,7 +133,7 @@ static FILE *hfile = 0;
 
 /** The output file name */
 extern char *outputfilename;
-extern char *curr_func;
+extern char curr_func[];
 extern char *infilename;
 
 /** The source code linenumber */
@@ -142,6 +142,8 @@ extern int lastlineno;
 extern int inp_flags;
 
 
+
+#define CM
 dll_import struct rep_structure rep_struct;
 
 
@@ -167,12 +169,12 @@ extern int constr_cnt;
 dll_import int when_code[8];
 dll_import struct s_report sreports[1024];
 dll_import struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
-dll_import struct binding_comp ibind[NUMBINDINGS];
-dll_import struct binding_comp nullbind[NUMBINDINGS];
-dll_import struct binding_comp obind[NUMBINDINGS];
-dll_import struct binding_comp ebind[NUMBINDINGS];
-dll_import struct binding_comp fbind[NUMBINDINGS];
-dll_import struct binding_comp ordbind[NUMBINDINGS];
+dll_import struct binding_comp *ibind;
+dll_import struct binding_comp *nullbind;
+dll_import struct binding_comp *obind;
+dll_import struct binding_comp *ebind;
+dll_import struct binding_comp *fbind;
+dll_import struct binding_comp *ordbind;
 dll_import struct s_constr_buff constr_buff[256];
 dll_import char when_to[8][128];
 int doing_esql (void);
@@ -207,7 +209,7 @@ static void print_menu (int mn, int n);
 
 
 static void real_print_expr (struct expr_str *ptr);
-static void real_print_func_call (char *identifier, t_expr_str_list *args, int args_cnt);
+static void real_print_func_call ( t_expr_str *fcall);
 static void real_print_class_func_call (char *var, char *identifier,
 					struct expr_str *args, int args_cnt);
 static void real_print_pdf_call (char *a1, struct expr_str_list *args, char *a3);
@@ -253,6 +255,42 @@ void clr_suppress_lines(void) {
 }
 
 
+static int is_just_expr_clipped(char *v,struct expr_str_list *ptr) {
+	struct expr_str *p;
+	if (ptr->nlist!=1) {
+		return 0;
+	}
+	p=ptr->list[0];
+
+	if (p->expr_type==ET_EXPR_OP_CLIP) {
+		p=p->u_data.expr_op->left;
+		if (p->expr_type==ET_EXPR_PUSH_VARIABLE) {
+			if (strcmp(p->u_data.expr_push_variable->variable,v)==0) {
+				return 1;
+			}
+		}
+
+	}
+	return 0;
+
+}
+
+static char *is_single_string(struct expr_str_list *ptr) {
+	struct expr_str *p;
+	if (ptr->nlist!=1) { return 0; }
+	
+	p=ptr->list[0];
+
+	if (p->expr_type==ET_EXPR_PUSH_VARIABLE) { return "Yes"; }
+	if (p->expr_type==ET_EXPR_LITERAL_STRING) { return p->u_data.expr_string; }
+	if (p->expr_type==ET_EXPR_LITERAL_EMPTY_STRING) { return ""; }
+
+#ifdef CM
+	printf("Check : %s (%s %d)\n",expr_name(p->expr_type),__FILE__,__LINE__);
+#endif
+
+	return 0;
+}
 /**
  * Open the ouput target C file
  */
@@ -346,7 +384,7 @@ open_outfile (void)
 	}
     }
 
-  strcat (filename_for_h, ".h");
+  strcat (filename_for_h, "_xxx.h");
   strcat (err, ".err");
 
   outfile = A4GL_mja_fopen (filename_for_c, "w");
@@ -1373,6 +1411,9 @@ real_print_expr (struct expr_str *ptr)
 {
   void *optr;
   A4GL_debug ("Print expr... %p", ptr);
+
+  A4GL_assertion(ptr==0,"can't print a null pointer...");
+
   while (ptr)
     {
       switch (ptr->expr_type) {
@@ -1489,14 +1530,115 @@ real_print_expr (struct expr_str *ptr)
 					       	break;
 
 
-	      default: A4GL_assertion(1,"Unhandled expression type");
+	      case ET_EXPR_LITERAL_LONG : printc("A4GL_push_long(%d);",ptr->u_data.expr_long); break;
+	      case ET_EXPR_LITERAL_STRING : printc("A4GL_push_char(\"%s\");",ptr->u_data.expr_string); break;
+	      case ET_EXPR_LITERAL_DOUBLE_STR : printc("A4GL_push_double_str(\"%s\");",ptr->u_data.expr_string); break;
+	      case ET_EXPR_OP_CLIP: real_print_expr(ptr->u_data.expr_op->left); printc("A4GL_pushop(OP_CLIP);"); break;
+	      case ET_EXPR_OP_ISNULL: real_print_expr(ptr->u_data.expr_op->left); printc("A4GL_pushop(OP_ISNULL);"); break;
+	      case ET_EXPR_OP_ISNOTNULL: real_print_expr(ptr->u_data.expr_op->left); printc("A4GL_pushop(OP_ISNOTNULL);"); break;
+	      case ET_EXPR_OP_MATCHES: 
+					 	real_print_expr(ptr->u_data.expr_op->left); 
+					 	real_print_expr(ptr->u_data.expr_op->right); 
+						if (ptr->u_data.expr_op->escape) {
+					 		real_print_expr(ptr->u_data.expr_op->right); 
+						} else {
+							printc("A4GL_push_char(\"\\\\\");");
+						}
+				       		printc("A4GL_pushop(OP_MATCHES);"); break;
+	      case ET_EXPR_OP_NOT_MATCHES: 
+					 	real_print_expr(ptr->u_data.expr_op->left); 
+					 	real_print_expr(ptr->u_data.expr_op->right); 
+						if (ptr->u_data.expr_op->escape) {
+					 		real_print_expr(ptr->u_data.expr_op->right); 
+						} else {
+							printc("A4GL_push_char(\"\\\\\");");
+						}
+				       		printc("A4GL_pushop(OP_MATCHES);A4GL_pushop(OP_NOT);"); break;
+
+
+	      case ET_EXPR_OP_ADD: real_print_expr(ptr->u_data.expr_op->left); real_print_expr(ptr->u_data.expr_op->right); printc("A4GL_pushop(OP_ADD);"); break;
+	      case ET_EXPR_OP_SUB: real_print_expr(ptr->u_data.expr_op->left); real_print_expr(ptr->u_data.expr_op->right); printc("A4GL_pushop(OP_SUB);"); break;
+	      case ET_EXPR_OP_DIV: real_print_expr(ptr->u_data.expr_op->left); real_print_expr(ptr->u_data.expr_op->right); printc("A4GL_pushop(OP_DIV);"); break;
+
+	      case ET_EXPR_OP_MULT: real_print_expr(ptr->u_data.expr_op->left); real_print_expr(ptr->u_data.expr_op->right); printc("A4GL_pushop(OP_MULT);"); break;
+
+
+	      case ET_EXPR_OP_LESS_THAN: real_print_expr(ptr->u_data.expr_op->left); 
+					 real_print_expr(ptr->u_data.expr_op->right); 
+					 printc("A4GL_pushop(OP_LESS_THAN);"); 
+					 break;
+
+	      case ET_EXPR_OP_GREATER_THAN: real_print_expr(ptr->u_data.expr_op->left); 
+					 real_print_expr(ptr->u_data.expr_op->right); 
+					 printc("A4GL_pushop(OP_GREATER_THAN);"); 
+					 break;
+	      case ET_EXPR_OP_EQUAL: real_print_expr(ptr->u_data.expr_op->left); 
+					 real_print_expr(ptr->u_data.expr_op->right); 
+					 printc("A4GL_pushop(OP_EQUAL);"); 
+					 break;
+	      case ET_EXPR_OP_NOT_EQUAL: real_print_expr(ptr->u_data.expr_op->left); 
+					 real_print_expr(ptr->u_data.expr_op->right); 
+					 printc("A4GL_pushop(OP_NOT_EQUAL);"); 
+					 break;
+	      case ET_EXPR_OP_LESS_THAN_EQ: real_print_expr(ptr->u_data.expr_op->left); 
+					 real_print_expr(ptr->u_data.expr_op->right); 
+					 printc("A4GL_pushop(OP_LESS_THAN_EQ);"); 
+					 break;
+
+	      case ET_EXPR_OP_GREATER_THAN_EQ: 
+					 real_print_expr(ptr->u_data.expr_op->left); 
+					 real_print_expr(ptr->u_data.expr_op->right); 
+					 printc("A4GL_pushop(OP_GREATER_THAN_EQ);"); 
+					 break;
+
+	      case ET_EXPR_OP_OR: real_print_expr(ptr->u_data.expr_op->left); 
+					 real_print_expr(ptr->u_data.expr_op->right); 
+					 printc("A4GL_pushop(OP_OR);"); 
+					 break;
+	      case ET_EXPR_OP_AND: real_print_expr(ptr->u_data.expr_op->left); 
+					 real_print_expr(ptr->u_data.expr_op->right); 
+					 printc("A4GL_pushop(OP_AND);"); 
+					 break;
+
+	      case ET_EXPR_LITERAL_EMPTY_STRING: printc("A4GL_push_empty_char();"); break;
+					       	
+	      case ET_EXPR_OP_USING: real_print_expr(ptr->u_data.expr_op->left);
+						real_print_expr(ptr->u_data.expr_op->right);
+				  		printc("A4GL_pushop(OP_USING);"); break;
+	      case ET_EXPR_OP_MOD: real_print_expr(ptr->u_data.expr_op->left);
+						real_print_expr(ptr->u_data.expr_op->right);
+				  		printc("A4GL_pushop(OP_MOD);"); break;
+	      case ET_EXPR_OP_POWER: real_print_expr(ptr->u_data.expr_op->left);
+						real_print_expr(ptr->u_data.expr_op->right);
+				  		printc("A4GL_pushop(OP_POWER);"); break;
+	      case ET_EXPR_OP_CONCAT: 
+						real_print_expr(ptr->u_data.expr_op->left);
+						real_print_expr(ptr->u_data.expr_op->right);
+				  		printc("A4GL_pushop(OP_CONCAT);"); break;
+	      case ET_EXPR_OP_YEAR: real_print_expr(ptr->u_data.expr_op->left);printc("A4GL_pushop(OP_YEAR);"); break;
+	      case ET_EXPR_OP_MONTH: real_print_expr(ptr->u_data.expr_op->left);printc("A4GL_pushop(OP_MONTH);"); break;
+	      case ET_EXPR_OP_DAY: real_print_expr(ptr->u_data.expr_op->left);printc("A4GL_pushop(OP_DAY);"); break;
+	      case ET_EXPR_OP_HOUR: real_print_expr(ptr->u_data.expr_op->left);printc("A4GL_pushop(OP_HOUR);"); break;
+	      case ET_EXPR_OP_MINUTE: real_print_expr(ptr->u_data.expr_op->left);printc("A4GL_pushop(OP_MINUTE);"); break;
+	      case ET_EXPR_OP_SECOND: real_print_expr(ptr->u_data.expr_op->left);printc("A4GL_pushop(OP_SECOND);"); break;
+					       	
+	      default: 
+					       	
+			printf("Expression type : %d",ptr->expr_type);
+		      A4GL_assertion(1,"Unhandled expression type");
       }
 
       optr = ptr;
       A4GL_debug ("going to %p", ptr->next);
       ptr = ptr->next;
       A4GL_debug ("Freeing old value %p", optr);
-      free (optr);
+
+
+      free (optr); // <----      THIS FREE SHOULD BE OK
+                   //
+      		   //  if valgrind indicates its a problem - check
+		   //  you've got a 'break' after the case's above....
+		   //
     }
 }
 
@@ -1563,22 +1705,103 @@ print_field_bind (int ccc)
 }
 
 
-static void A4GL_print_expr_list_concat (struct expr_str_list *l)
-{
+
+struct expr_str_list *A4GL_rationalize_list_concat(struct expr_str_list *l) {
   int a;
+  struct expr_str *p;
+  struct expr_str *p2;
+  struct expr_str_list *l2;
+  int b;
+  int printed = 0;
+
   if (l == 0)
     return;
   l = A4GL_rationalize_list (l);
+
+  if ((l->nlist) > 1)
+    {
+      for (a = 0; a < l->nlist - 1; a++)
+	{
+	  p = l->list[a];
+	  p2 = l->list[a + 1];
+
+	  if (p->expr_type == ET_EXPR_LITERAL_STRING
+	      && p2->expr_type == ET_EXPR_LITERAL_STRING)
+	    {
+	      // They're concating two literal strings - lets make the second one empty..
+	      // and concat the strings *now* rather than runtime...
+	      char *x1;
+	      char *x2;
+	      char *x3;
+	      x1 = p->u_data.expr_string;
+	      x2 = p2->u_data.expr_string;
+	      x3 = malloc (strlen (x1) + strlen (x2) + 1);
+	      strcpy (x3, x1);
+	      strcat (x3, x2);
+	      p->expr_type = ET_EXPR_REDUCED;
+	      p2->u_data.expr_string = x3;
+	    }
+	}
+    }
+
+
+
+  l2 = A4GL_new_ptr_list (0);
+
   for (a = 0; a < l->nlist; a++)
     {
-      struct expr_str *p;
       p = l->list[a];
+      if (p->expr_type != ET_EXPR_REDUCED)
+	{
+	  A4GL_new_append_ptr_list (l2, p);
+	}
+    }
+
+  l = l2;
+
+  return l;
+}
+
+
+
+
+static void
+A4GL_print_expr_list_concat (struct expr_str_list *l)
+{
+  int a;
+  struct expr_str *p;
+  struct expr_str *p2;
+  struct expr_str_list *l2;
+  int b;
+  int printed = 0;
+
+  if (l == 0)
+    return;
+  l = A4GL_rationalize_list_concat (l);
+
+  for (a = 0; a < l->nlist; a++)
+    {
+      p = l->list[a];
+      if (p->expr_type == ET_EXPR_REDUCED)
+	continue;
+
       print_expr (l->list[a]);
-      if (a) { printc ("A4GL_pushop(OP_CONCAT);\n"); }
+      if (printed)
+	{
+	  printc ("A4GL_pushop(OP_CONCAT); /* 1 */\n");
+	}
+      printed++;
+
     }
 
 }
+
+
+
 /**
+ *
+ * This function is used for LET var=expression...
+ *
  * @param i The bind type:
  *   - i : Input bind (4gl variables to be read).
  *   - o : Output bind (4gl variables to be assigned.
@@ -1589,29 +1812,63 @@ LEXLIB_print_bind_pop2 (t_expr_str_list *ptr, char i)
   int a;
   a = 0;
 
-  A4GL_print_expr_list_concat(ptr);
 
   if (i == 'i')
     {
+	    A4GL_assertion(1,"Not Used");
+
+
+
+#ifdef OBSOLETE
 #ifdef DEBUG
       /*A4GL_debug ("print_bind_pop1 i='i'\n");*/
 #endif
+
+      A4GL_print_expr_list_concat(ptr);
+
       if (scan_variable (obind[a].varname) != -1)
 	printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", ibind[a].varname, (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
       else
 	printc ("%s;\n", ibind[a].varname);
+#endif
     }
+
+
+
+
 
   if (i == 'o')
     {
-#ifdef DEBUG
-      /*A4GL_debug ("print_bind_pop1 i='o'\n");*/
+
+      if (!is_just_expr_clipped(obind[a].varname,ptr)) {
+		char *ptr_str=0;
+		ptr=A4GL_rationalize_list_concat(ptr);
+#ifdef CM
+		if ((obind[a].dtype&DTYPE_MASK)==DTYPE_CHAR) { 	// If its a character string - 
+			ptr_str=is_single_string(ptr);
+		}
 #endif
-      if (scan_variable (obind[a].varname) != -1)
-	printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", obind[a].varname,
-		(int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
-      else
-	printc ("%s;\n", obind[a].varname);
+
+      	A4GL_print_expr_list_concat(ptr);
+
+      	if (scan_variable (obind[a].varname) != -1) {
+
+	      	printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", obind[a].varname, (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
+#ifdef CM
+
+		if ((obind[a].dtype&DTYPE_MASK)==DTYPE_CHAR) { 	// If its a character string - 
+						// remember it's last assignment..
+						// this may come in useful ;-)
+			A4GL_add_pointer(obind[a].varname,LAST_STRING,ptr_str);
+
+		}
+#endif
+
+      	} else {
+			printc ("%s;\n", obind[a].varname);
+      	}
+      }
+
     }
 
 }
@@ -1771,7 +2028,7 @@ print_field_bind_constr (void)
  * @return The number of parameters of the function.
  */
 int
-LEXLIB_print_param (char i)
+LEXLIB_print_param (char i,char*fname)
 {
   int a;
   int b;
@@ -2385,10 +2642,10 @@ LEXLIB_print_field_func (char type, char *name, char *var)
  * @param args_cnt The number of arguments
  */
 void
-LEXLIB_print_func_call (char *identifier, t_expr_str_list *args, int args_cnt)
+LEXLIB_print_func_call (t_expr_str *fcall)
 {
   A4GL_debug ("via print_func_call in lib");
-  real_print_func_call (identifier, args, args_cnt);
+  real_print_func_call (fcall);
 }
 
 /**
@@ -2421,23 +2678,29 @@ static void real_print_expr_list (struct expr_str_list *l)
  * @todo Describe function
  */
 static void
-real_print_func_call (char *identifier, t_expr_str_list *args, int args_cnt)
+real_print_func_call ( t_expr_str *fcall)
 {
 char lib[255];
-  real_print_expr_list (args);
+struct expr_function_call *p;
+int args_cnt;
+  A4GL_assertion(fcall->expr_type!=ET_EXPR_FCALL,"Internal error - expecting a function call");
+  p=fcall->u_data.expr_function_call;
+  args_cnt=A4GL_new_list_get_count(p->parameters);
+
+
+  real_print_expr_list (p->parameters);
   printc ("/* done print expr */");
-  add_function_to_header (identifier, 1,"");
+  add_function_to_header (p->fname, 1,"");
 
 
-if (has_function(identifier,lib,0)) {
-
+if (has_function(p->fname,lib,0)) {
   printc ("{int _retvars;\n");
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-  printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,\"%s\",%d);\n", lib, identifier, args_cnt);
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
+  printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,\"%s\",%d);\n", lib, p->fname, args_cnt);
 } else {
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-  printc ("_retvars=%s%s(%d);\n", get_namespace (identifier), identifier, args_cnt);
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
+  printc ("_retvars=%s%s(%d);\n", get_namespace (p->fname), p->fname, args_cnt);
 }
 print_reset_state_after_call();
 
@@ -2965,6 +3228,7 @@ LEXLIB_print_display_new (t_expr_str_list *expr, t_dt_display *disp,  char *attr
 				real_print_expr(disp->u_data.x_y.y);
 				real_print_expr(disp->u_data.x_y.x);
 				printc("A4GL_display_at(%d,%s);",nexpr,attr);
+				      
 				break;
 
 		case DT_DISPLAY_TYPE_MENUITEM		:
@@ -3321,46 +3585,6 @@ LEXLIB_print_if_end (void)
   printc ("}");
 }
 
-/**
- * Generate in the C output file the implementation of the IMPORT FUNCTION
- * statement.
- *
- * This statement is not a informix 4gl original.
- *
- * @param func The function name to be imported.
- * @param nargs The number of arguments that the function imported receive.
- */
-void
-LEXLIB_print_import (char *func, int nargs)
-{
-  int a;
-  char buff[1024];
-  char buff2[1024];
-  printc ("\n\nA4GL_FUNCTION %s%s (int _nargs) {\n", get_namespace (func),
-	  func);
-  printc ("long _argc[%d];\n", nargs);
-  printc ("long _retval;");
-  printc
-    ("   if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);return -1;}\n",
-     nargs, yylineno);
-  for (a = 1; a <= nargs; a++)
-    {
-      printc ("   _argc[%d]=A4GL_pop_long();\n", nargs - a);
-    }
-  sprintf (buff, "_retval=(long)%s(", func);
-  for (a = 0; a <= nargs - 1; a++)
-    {
-      if (a > 0)
-	strcat (buff, ",");
-      sprintf (buff2, "_argc[%d]", a);
-      strcat (buff, buff2);
-    }
-  strcat (buff, ");\n   A4GL_push_int(_retval);\n   return 1;\n");
-  strcat (buff, "}\n\n\n");
-  printc (buff);
-}
-
-
 int
 split_arrsizes (char *s, int *arrsizes)
 {
@@ -3535,7 +3759,7 @@ print_init_var (char *name, char *prefix, int alvl)
 	}
     }
 
-  if (dont_print==0) printc ("A4GL_setnull(%d,&%s,%d);\n", d & 0xffff, prefix2, size);
+  if (dont_print==0) printc ("A4GL_setnull(%d,&%s,0x%x);\n", d & 0xffff, prefix2, size);
 
   if (printing_arr && !dont_print)
     {
@@ -4282,7 +4506,7 @@ LEXLIB_print_report_2 (int pdf, char *repordby)
   printc ("static int _useddata=0;\n");
   printc ("static int _started=0;\n");
   printc ("static int _assigned_ordbind=0;\n");
-  cnt = print_param ('r');
+  cnt = print_param ('r',"report");
 if (!A4GL_doing_pcode()) {
   printc ("init_module_variables();");
 }
@@ -5127,8 +5351,25 @@ extern int class_cnt;
 
   if (type == 0) {
 	if (class_cnt==0) {
+		int a;
+
     		printc ("\n A4GL_FUNCTION %sint %s%s (int _nargs){ \n", isstatic, get_namespace (fname), fname);
 		add_function_to_header(fname,1,isstatic);
+
+#ifdef CM
+		printf("CPROTO %s (",fname);
+		for (a=0;a<fbindcnt;a++) {
+			int dtype;
+			if (a) printf(",");
+			dtype = scan_variable (fbind[a].varname);
+			if (strchr(fbind[a].varname,'.')) {
+				printf("%s p_%d",pdtype(dtype),a);
+			} else {	
+				printf("%s %s",pdtype(dtype),fbind[a].varname);
+			}
+		}
+		printf(");\n");
+#endif
 
 	} else {
     		printc ("\n A4GL_FUNCTION %sint CLASSFUNC_%s%s (struct this_class_var *CLASS_COPY,int _nargs){ \n", isstatic, get_namespace (fname), fname);
@@ -5286,9 +5527,29 @@ LEXLIB_print_return (t_expr_str_list *expr) {
 int z;
 int n;
 char *s;
+int c;
 expr=A4GL_rationalize_list(expr);
 n=A4GL_new_list_get_count(expr);
+
+
+#ifdef CM
+printf("RVAL %s",curr_func);
+for (c=0;c<n;c++) {
+	struct expr_str *p;
+	p= expr->list[c];
+	printf(" %s",expr_name(p->expr_type));
+	if (p->expr_type==ET_EXPR_PUSH_VARIABLE) {
+		printf("(%x)",p->u_data.expr_push_variable->var_dtype);
+	}
+}
+printf("\n");
+#endif
+
+
+
 real_print_expr_list(expr);
+
+
   for (z=ccnt;z>=0;z--) {
 	s=command_type_for_stack_pos(z);
     	if (strcmp(s,"INPUT")==0)  { printc("A4GL_finish_screenio(_sio_%d,_sio_kw_%d);",get_sio_id(s),get_sio_id(s)); }
@@ -5627,6 +5888,7 @@ LEXLIB_print_end_record (char *vname, char *arrsize, int level)
     }
 }
 
+#ifdef OBSOLETE
 /**
  * Print the push of a literal to the stack in generated C code.
  *
@@ -5667,6 +5929,8 @@ LEXLIB_A4GL_get_push_literal (char type, char *value)
 
   return buff;
 }
+#endif
+
 
 /**
  * FIXME: what is this?
@@ -5909,12 +6173,15 @@ add_function_to_header (char *identifier, int params,char* is_static)
   if (!A4GL_has_pointer (identifier, 'X'))
     {
       A4GL_add_pointer (identifier, 'X', (void *) 1);
-      if (params == 1)		/* Normal Function*/
-	printh ("A4GL_FUNCTION %s int %s%s (int n);\n",is_static,
-		get_namespace (identifier), identifier);
+
+      if (params == 1)		/* Normal Function*/ {
+	        int a;
+		printh ("A4GL_FUNCTION %s int %s%s (int n);\n",is_static, get_namespace (identifier), identifier);
+
+      }
+
       if (params == 2)		/* Report...*/
-	printh ("A4GL_REPORT void %s%s (int n,int a);\n",
-		get_namespace (identifier), identifier);
+	printh ("A4GL_REPORT void %s%s (int n,int a);\n", get_namespace (identifier), identifier);
     }
 
 
@@ -6683,4 +6950,50 @@ void LEXLIB_print_free_convertable(char *repname) {
 }
 
 
-/* =========================== EOF ================================ */
+/**
+ * Generate in the C output file the implementation of the IMPORT FUNCTION
+ * statement.
+ *
+ * This statement is not a informix 4gl original.
+ *
+ * @param func The function name to be imported.
+ * @param nargs The number of arguments that the function imported receive.
+ */
+void
+LEXLIB_print_import (char *func, int nargs)
+{
+  int a;
+  char buff[1024];
+  char buff2[1024];
+  printc ("\n\nA4GL_FUNCTION %s%s (int _nargs) {\n", get_namespace (func),
+	  func);
+  printc ("long _argc[%d];\n", nargs);
+  printc ("long _retval;");
+  printc
+    ("   if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);return -1;}\n",
+     nargs, yylineno);
+  for (a = 1; a <= nargs; a++)
+    {
+      printc ("   _argc[%d]=A4GL_pop_long();\n", nargs - a);
+    }
+  sprintf (buff, "_retval=(long)%s(", func);
+  for (a = 0; a <= nargs - 1; a++)
+    {
+      if (a > 0)
+	strcat (buff, ",");
+      sprintf (buff2, "_argc[%d]", a);
+      strcat (buff, buff2);
+    }
+  strcat (buff, ");\n   A4GL_push_int(_retval);\n   return 1;\n");
+  strcat (buff, "}\n\n\n");
+  printc (buff);
+}
+
+char *pdtype(int n) {
+	static char buff[40];
+	sprintf(buff,"DTYPE_%x",n);
+	return buff;
+}
+
+
+

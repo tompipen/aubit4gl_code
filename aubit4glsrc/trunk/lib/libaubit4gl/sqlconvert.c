@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.62 2005-07-28 10:11:40 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.63 2005-09-09 20:37:29 mikeaubury Exp $
 #
 */
 
@@ -593,6 +593,14 @@ if (A4GLSQLCV_check_requirement("LIMIT_LINE")) {
 	buff=acl_strdup(ptr);
 }
 free(ptr);
+
+if (A4GL_isyes(acl_getenv("A4GL_DUMP_SQL"))) {
+	FILE *fout;
+	fout=fopen("/tmp/sql.log","a");
+	fprintf(fout,"%s\n",buff);
+	printf("IMMEDIATE %s\n",buff);
+	fclose(fout);
+}
 return buff;
 }
 
@@ -1765,6 +1773,7 @@ return s;
 char *A4GLSQLCV_sql_func(char *f,char *param) {
 static char buff[256];
 int b;
+if (param==0) param="";
 SPRINTF2(buff,"%s(%s)",f,param);
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE_SQLFUNC) {

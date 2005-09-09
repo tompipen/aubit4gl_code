@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.122 2005-07-19 11:06:29 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.123 2005-09-09 20:34:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.122 2005-07-19 11:06:29 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.123 2005-09-09 20:34:13 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -2008,7 +2008,7 @@ nm (int n)
 	if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) return "DECIMAL";
 	else return "MONEY";
     case 10:
-      return "DATETIME";
+      return "DATETIME ";
     case 11:
       return "BYTE";
     case 12:
@@ -2016,7 +2016,7 @@ nm (int n)
     case 13:
       return "VARCHAR";
     case 14:
-      return "INTERVAL";
+      return "INTERVAL ";
     }
   return "CHAR";
 }
@@ -2313,3 +2313,7 @@ extern char buff_in[];
 
 
 
+
+
+// 0 for escape = "\\\\"
+//

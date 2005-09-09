@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.44 2005-07-19 11:06:29 mikeaubury Exp $
+# $Id: binding.c,v 1.45 2005-09-09 20:34:13 mikeaubury Exp $
 */
 
 /**
@@ -37,13 +37,13 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.44 2005-07-19 11:06:29 mikeaubury Exp $";
+		"$Id: binding.c,v 1.45 2005-09-09 20:34:13 mikeaubury Exp $";
 #endif
 
 extern int ibindcnt;
 extern int obindcnt;
-dll_import struct binding_comp ibind[NUMBINDINGS];
-dll_import struct binding_comp obind[NUMBINDINGS];
+dll_import struct binding_comp *ibind; //[NUMBINDINGS];
+dll_import struct binding_comp *obind; //[NUMBINDINGS];
 
 /* these two store the string for converting the data
  * back and forth from our temporary DECLARE SECTION variables
@@ -74,24 +74,54 @@ static char *get_sql_type_sap (int a, char ioro);
 static char *get_sql_type_ingres (int a, char ioro);
 char * A4GL_dtype_sz (int d, int s);
 
-static char *dt_qual(int a) {
+
+#ifdef NOT_USED
+static char *dt_qual(int w,int a) {
+	char buff[20];
+	sprintf(buff,"%d - %d",w,a);
+	return buff;
+if (w==1) {
 	switch(a) {
-	case 1: return "YEAR";
-	case 2: return "MONTH";
-	case 3: return "DAY";
-	case 4: return "HOUR";
-	case 5: return "MINUTE";
-	case 6: return "SECOND";
+		case 0xc: return "YEAR";
+		case 2: return "MONTH";
+		case 3: return "DAY";
+		case 4: return "HOUR";
+		case 5: return "MINUTE";
+		case 6: return "SECOND";
 	}
+}
+
+if (w==2) {
+	switch(a) {
+		case 0xc: return "YEAR";
+		case 2: return "MONTH";
+		case 3: return "DAY";
+		case 4: return "HOUR";
+		case 5: return "MINUTE";
+		case 6: return "SECOND";
+	}
+}
+	printf("DEFAULT : %d (%x)\n",a,a);
 	return "FRACTION(5)";
 }
+#endif
 
 
 
 static char *decode_decimal_size_as_string(int n) {
 static char buff[256];
 int n2;
+int n3;
+
+
 n2=n>>16;
+if ((n2&0xff)==0xff) { printf("n=%d (%x)\n",n2,n2); n2=n2>>8; SPRINTF1(buff,"%d",n2); return buff; }
+n3=n2>>8;
+if (n3>32) {
+	printf("n=%x n2=%x\n",n,n2);
+	printf("n3=%d  (%x) n2=%d(%x)\n",n3,n3,n2,n2);
+	A4GL_assertion(1,"n3 > 32...");
+}
 SPRINTF2(buff,"%d,%d",n2>>8,n2&255);
 return buff;
 }
@@ -1205,10 +1235,7 @@ A4GL_dtype_sz (int d, int s)
       return "";
 
     case 10:
-	strcpy(buff, " ");
-	strcat(buff,dt_qual(s>>4));
-	strcat(buff," TO ");
-	strcat(buff,dt_qual(s&0xf));
+	strcpy(buff, decode_datetime(s));
 	return buff;
 
     case 8:
@@ -1228,3 +1255,41 @@ A4GL_dtype_sz (int d, int s)
 }
 
 
+char *dtparts[]={
+		"YEAR",
+		"MONTH",
+		"DAY",
+		"HOUR",
+		"MINUTE",
+		"SECOND",
+		"FRACTION"
+};
+
+
+char *decode_datetime(int a) {
+	int pt1;
+	int pt2;
+	int fr;
+	char ps1[200];
+	char ps2[200];
+	static char buff[200];
+
+	if (((a/16)%16)<=10)  {
+		pt1=(((a/16)%16)/2);
+	} else {
+		pt1=6;
+	}
+	strcpy(ps1,dtparts[pt1]);
+	
+	if ((a%16)<=10) {
+		pt2=(a%16)/2;
+		strcpy(ps2,dtparts[pt2]);
+	} else {
+		pt2=6;
+		fr=(a % 16)-10;
+		sprintf(ps2,"%s(%d)",dtparts[pt2],fr);
+	}
+	sprintf(buff," %s TO %s",ps1,ps2);
+	return buff;
+}
+	

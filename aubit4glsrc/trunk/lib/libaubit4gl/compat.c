@@ -327,3 +327,19 @@ retvchar(x)
 retmoney(x)
 retmon(x) 
 */
+
+
+void fgl_fatal(char *mod,long ln,long stat) {
+	A4GL_fgl_error (ln, mod, stat, stat);
+}
+
+int fgl_call( int (*func_ptr) (int),int n) {
+	return func_ptr(n);
+}
+
+int pushlocator(void *x) {
+		A4GL_assertion(1,"push_locator not implemented");
+}
+int _locate(void*b,int x,int y,char *z) {
+		A4GL_assertion(1,"_locate not implemented");
+}

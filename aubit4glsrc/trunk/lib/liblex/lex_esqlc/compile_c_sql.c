@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.51 2005-07-14 11:32:54 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.52 2005-09-09 20:34:13 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.51 2005-07-14 11:32:54 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.52 2005-09-09 20:34:13 mikeaubury Exp $";
 #endif
 
 
@@ -41,6 +41,9 @@ void print_report_table(char *repname,char type, int c);
 void printh (char *fmt, ...);
 void liblex_add_ibind(int dtype,char *var) ;
 static char *trans_quote (char *s);
+extern char curr_func[];
+
+#define CM
 
 /**
  * Print the C implementation of the execution of the SQL statement allready
@@ -282,8 +285,22 @@ LEXLIB_print_put (char *cname,char *putvals)
 void
 LEXLIB_print_prepare (char *stmt, char *sqlvar)
 {
-  printc ("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,%s));\n",
-	  stmt, sqlvar);
+#ifdef CM
+	char *p=0;
+	if (A4GL_has_pointer(sqlvar,LAST_STRING)) {
+		p=A4GL_find_pointer(sqlvar,LAST_STRING);
+	}
+
+	if (p || sqlvar[0]=='"') {
+		printf("PREPARE %s %s %s - %s\n",curr_func,stmt,sqlvar,p);
+	} else {
+
+		printf("UNKNOWN_PREPARE %s %s %s\n",curr_func,stmt,sqlvar);
+	}
+#endif
+
+
+  	printc ("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,%s));\n", stmt, sqlvar);
 }
 
 
@@ -526,7 +543,6 @@ LEXLIB_print_curr_spec (int type, char *s)
 
 	extern int obindcnt,ibindcnt;
   printc ("{\n");
-	/*printf("obindcnt=%d ibindcnt=%d s=%s\n",obindcnt,ibindcnt,s);*/
   if (type == 1) {
 		bt=0;
 		ni=ibindcnt;
