@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.229 2005-09-09 20:44:36 mikeaubury Exp $
+# $Id: mod.c,v 1.230 2005-09-11 16:29:56 mikeaubury Exp $
 #
 */
 
@@ -1314,7 +1314,7 @@ pushLikeTableColumn (char *tableName, char *columnName)
   A4GL_debug ("pushLikeTableColumn()");
 
   rval = A4GLSQL_read_columns (tableName, columnName, &idtype, &isize);
-  cname=confirm_colname(tableName,columnName);
+  cname=A4GL_confirm_colname(tableName,columnName);
 
   if (rval == 0)
     {
@@ -1484,7 +1484,7 @@ pushLikeAllTableColumns (char *tableName)
       A4GL_debug ("---> %s %s", A4GL_null_as_null(cdtype), A4GL_null_as_null(csize));
       A4GL_debug ("A4GLSQL_read_columns: Pushing %s %s %s", A4GL_null_as_null(colname), A4GL_null_as_null(cdtype),
 	     A4GL_null_as_null(csize));
-     cname=confirm_colname(tableName,colname);
+     cname=A4GL_confirm_colname(tableName,colname);
       trim_spaces (cname);
       push_name (cname, 0);
       push_type (rettype (cdtype), csize, 0);
@@ -1967,6 +1967,8 @@ strcpy(var,var_i);
       else
 	{
 	  obind=ensure_bind(&a_obind,obindcnt,obind);
+	  obind[obindcnt].start_char_subscript=0;
+	  obind[obindcnt].end_char_subscript=0;
 	  strcpy (obind[obindcnt].varname, var);
 	  obind[obindcnt].dtype = dtype;
 	  obindcnt++;
@@ -1997,6 +1999,7 @@ strcpy(var,var_i);
       else
 	{
 	  ordbind=ensure_bind(&a_ordbind,ordbindcnt,ordbind);
+	  memset(&ordbind[ordbindcnt],0,sizeof(ordbind[ordbindcnt]));
 	  strcpy (ordbind[ordbindcnt].varname, var);
 	  ordbind[ordbindcnt].dtype = dtype;
 	  ordbindcnt++;
@@ -2017,6 +2020,8 @@ strcpy(var,var_i);
       else
 	{
 	  fbind=ensure_bind(&a_fbind,fbindcnt,fbind);
+	  fbind[fbindcnt].start_char_subscript = 0;
+	  fbind[fbindcnt].end_char_subscript = 0;
 	  strcpy (fbind[fbindcnt].varname, var);
 	  fbind[fbindcnt].dtype = 0;
 	  fbindcnt++;
@@ -2680,6 +2685,7 @@ add_arr_bind (char i, char *nvar)
 	push_bind_rec (var, i);
       else
 	{
+		ibind=ensure_bind(&a_ibind,ibindcnt,ibind);
 	  strcpy (ibind[ibindcnt].varname, var);
 	  ibind[ibindcnt].dtype = dtype;
 	  ibindcnt++;
@@ -2693,6 +2699,7 @@ add_arr_bind (char i, char *nvar)
 	push_bind_rec (var, i);
       else
 	{
+		nullbind=ensure_bind(&a_nullbind,nullbindcnt,nullbind);
 	  strcpy (nullbind[nullbindcnt].varname, var);
 	  nullbind[nullbindcnt].dtype = dtype;
 	  nullbindcnt++;
@@ -2705,6 +2712,7 @@ add_arr_bind (char i, char *nvar)
       if (dtype == -2) push_bind_rec (var, i);
       else
 	{
+		obind=ensure_bind(&a_obind,obindcnt,obind);
 	  strcpy (obind[obindcnt].varname, var);
 	  obind[obindcnt].dtype = dtype;
 	  obindcnt++;
@@ -2716,6 +2724,7 @@ add_arr_bind (char i, char *nvar)
       if (dtype == -2) push_bind_rec (var, i);
       else
 	{
+		ebind=ensure_bind(&a_ebind,ebindcnt,ebind);
 	  strcpy (ebind[ebindcnt].varname, var);
 	  ebind[ebindcnt].dtype = dtype;
 	  ebindcnt++;
@@ -2726,6 +2735,9 @@ add_arr_bind (char i, char *nvar)
 
   if (i == 'f' || i == 'F')
     {
+		fbind=ensure_bind(&a_fbind,fbindcnt,fbind);
+	  fbind[fbindcnt].start_char_subscript = 0;
+	  fbind[fbindcnt].end_char_subscript = 0;
       strcpy (fbind[fbindcnt].varname, var);
       fbind[fbindcnt].dtype = dtype;
       fbindcnt++;
@@ -4587,17 +4599,13 @@ A4GL_generate_variable_expr (char *s)
 
 }
 
-
+/*
 int A4GL_am_doing_a_print(void) {
 	return doing_a_print;
 }
+*/
 
 
-char *confirm_colname(char *t,char *c) {
-static char buff[256];
-strcpy(buff,c);
-return c;
-}
 
 struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) {
 	long  a_bind;
@@ -4614,6 +4622,26 @@ struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b
 	A4GL_assertion(b==0,"Unable to allocation memory for binding");
 	*a_bindp=a_bind;
 	return b;
+}
+
+
+
+struct binding_list *new_bind_list(char *s) {
+	struct binding_list *l;
+	l=malloc(sizeof(struct binding_list));
+	l->bindings=0;
+	l->nbindings=0;
+	if (s) {
+		append_bind_list(l,s);
+	}
+	return l;
+}
+
+struct binding_list *append_bind_list(struct binding_list *l,char *s) {
+	l->nbindings++;
+	l->bindings=realloc(l->bindings, l->nbindings * sizeof(char *));
+	l->bindings[l->nbindings-1]=strdup(s);
+	return l;
 }
 
 /* ================================= EOF ============================= */

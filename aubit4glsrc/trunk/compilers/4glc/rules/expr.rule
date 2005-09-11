@@ -11,23 +11,18 @@ fgl_expr_c :
 	| fgl_expr_c KW_OR fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_OR,0); }
 	| fgl_expr_c SPACES 			{ 
 			$<ptr>$=A4GL_new_op_expr($<ptr>1,0,ET_EXPR_OP_SPACES,0);
-			/* $<ptr>$=A4GL_new_expr("A4GL_add_spaces();"); */
 			add_feature("ET_EXPR_SPACES"); 
 	}
 	| fgl_expr_c CONCAT_PIPES fgl_expr_c 	{ 
 			$<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_CONCAT,0);
-
-			/* add_feature("ET_EXPR_CONCAT_PIPES");                          */
-			/* $<ptr>$=A4GL_append_expr_expr($<ptr>1,$<ptr>3);               */
-			/* $<ptr>$=A4GL_append_expr($<ptr>$,"A4GL_pushop(OP_CONCAT);");  */
-		}
+	}
 	| report_only_expr
 	| builtin_expr
 	| pdf_expr
 	| literal_expr 
-	| MINUS fgl_expr_c 			{ 
+	| MINUS fgl_expr_c 	{ 
 		$<ptr>$=A4GL_new_expr_neg($<ptr>2); 
-		}
+	}
 	| PLUS fgl_expr_c 			{ $<ptr>$=$<ptr>2; }
   	| fgl_expr_c MATCHES fgl_expr_c expr_escape {
 		$<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_MATCHES,$<ptr>4);
@@ -75,8 +70,8 @@ fgl_expr_c :
 	| fgl_expr_c UNITS_SECOND { $<ptr>$=A4GL_new_op_expr($<ptr>1,0,ET_EXPR_OP_SECOND,0); }
  	| fgl_expr_c KW_IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
 		// @@@ FIXME
-	$<ptr>$=get_in_exists_sql($<sql_string>4,'I');
-	add_feature("ET_EXPR_IN_SELECT");
+		$<ptr>$=get_in_exists_sql($<sql_string>4,'I');
+		add_feature("ET_EXPR_IN_SELECT");
 	}
  	| fgl_expr_c NOT_IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
 		// @@@ FIXME
@@ -103,17 +98,21 @@ fgl_expr_c :
 
 
 
-expr_escape : KW_ESCAPE CHAR_VALUE { $<ptr>$=A4GL_new_literal_string(A4GL_strip_quotes($<str>2));}
+expr_escape : KW_ESCAPE CHAR_VALUE { 
+	$<ptr>$=A4GL_new_literal_string(A4GL_strip_quotes($<str>2));
+}
 
 ;
 
 
 
-op_fgl_expr_ret_list_v2: {$<ptr_list>$=0;} | fgl_expr_ret_list { $<ptr_list>$=$<ptr_list>1;}
+op_fgl_expr_ret_list_v2: {$<ptr_list>$=0;} 
+	| fgl_expr_ret_list { $<ptr_list>$=$<ptr_list>1; }
 ;
 
 
-fgl_expr_ret : fgl_expr_c | KW_NULL {$<ptr>$=A4GL_new_expr_simple(ET_EXPR_NULL);}
+fgl_expr_ret : fgl_expr_c 
+	| KW_NULL {$<ptr>$=A4GL_new_expr_simple(ET_EXPR_NULL);}
 ;
 
 fgl_expr_ret_list 	: fgl_expr_ret { $<ptr_list>$=A4GL_new_ptr_list($<ptr>1); }
@@ -166,56 +165,45 @@ fgl_expr_y:  fgl_expr_c {
 /****************************************************************/
 
 boolean_expr:
-NOT fgl_expr_c {
-	$<ptr>$=A4GL_new_expr_simple_expr($<ptr>2,ET_EXPR_NOT);
-}
-| KW_TRUE  
-{
-	$<ptr>$=A4GL_new_expr_simple(ET_EXPR_TRUE);
-}
-| KW_FALSE 
-{
-	$<ptr>$=A4GL_new_expr_simple(ET_EXPR_FALSE);
-}
-| OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>2; }
-| EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
-	add_feature("ET_EXPR_EXISTS");
-	$<ptr>$=get_in_exists_sql($<sql_string>3,'E');
-}
-| NOT_EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
-	add_feature("ET_EXPR_NOT_EXISTS");
-	$<ptr>$=get_in_exists_sql($<sql_string>3,'e');
-}
+	NOT fgl_expr_c {
+		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>2,ET_EXPR_NOT);
+	}
+	| KW_TRUE  
+	{
+		$<ptr>$=A4GL_new_expr_simple(ET_EXPR_TRUE);
+	}
+	| KW_FALSE 
+	{
+		$<ptr>$=A4GL_new_expr_simple(ET_EXPR_FALSE);
+	}
+	| OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>2; }
+	| EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
+		add_feature("ET_EXPR_EXISTS");
+		$<ptr>$=get_in_exists_sql($<sql_string>3,'E');
+	}
+	| NOT_EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
+		add_feature("ET_EXPR_NOT_EXISTS");
+		$<ptr>$=get_in_exists_sql($<sql_string>3,'e');
+	}
 ;	
 
 
 
 literal_expr: 
-CHAR_VALUE  {
-	if (strcmp($<str>1,"\"\"")==0) {
-		$<ptr>$=A4GL_new_literal_empty_str ();
-	} else {
-		$<ptr>$=A4GL_new_literal_string(A4GL_strip_quotes($<str>1));
-
-
-		/* sprintf($<str>$,"%s",A4GL_get_push_literal('S',$<str>1)); */
-		/* $<ptr>$=A4GL_new_expr($<str>$);                           */
+	CHAR_VALUE  {
+		if (strcmp($<str>1,"\"\"")==0) {
+			$<ptr>$=A4GL_new_literal_empty_str ();
+		} else {
+			$<ptr>$=A4GL_new_literal_string(A4GL_strip_quotes($<str>1));
+		}
 	}
-	
-}
-| real_number {
-	$<ptr>$=A4GL_new_literal_double_str($<str>1);
-	/* sprintf($<str>$,"%s",A4GL_get_push_literal('D',$<str>1)); */
-	/* $<ptr>$=A4GL_new_expr($<str>$); */
-	
-}
-| INT_VALUE
-{
-	$<ptr>$=A4GL_new_literal_long($<str>1);
-	/* sprintf($<str>$,"%s",A4GL_get_push_literal('L',$<str>1)); */
-	/* $<ptr>$=A4GL_new_expr($<str>$);                           */
-	
-} | variable_entry {$<ptr>$=$<ptr>1;}
+	| real_number {
+		$<ptr>$=A4GL_new_literal_double_str($<str>1);
+	}
+	| INT_VALUE {
+		$<ptr>$=A4GL_new_literal_long_str($<str>1);
+	} 
+	| variable_entry {$<ptr>$=$<ptr>1;}
 ;
 
 
@@ -246,16 +234,17 @@ report_only_expr:
 		insql=0;
 		$<ptr>$=A4GL_new_expr($<str>1);
 	}  
-| KW_GROUP {insql=1;set_ingroup();} rep_agg  {
-	char buff[256];
-      if (!isin_command("REPORT")) {
-        a4gl_yyerror("This can only be done in a report!");YYERROR;
-      } insql=0; 
-	A4GL_lex_printcomment("/* rep_Agg = %s\n*/",$<str>3);
-        strcpy(buff,$<str>3);
-	A4GL_debug("report aggregate :  %s",buff);
-	$<ptr>$=A4GL_new_expr(buff);
-      }
+	| KW_GROUP {insql=1;set_ingroup();} rep_agg  {
+		char buff[256];
+      		if (!isin_command("REPORT")) {
+        		a4gl_yyerror("This can only be done in a report!");YYERROR;
+      		} 
+		insql=0; 
+		A4GL_lex_printcomment("/* rep_Agg = %s\n*/",$<str>3);
+        	strcpy(buff,$<str>3);
+		A4GL_debug("report aggregate :  %s",buff);
+		$<ptr>$=A4GL_new_expr(buff);
+      	}
 
 
 ;
@@ -283,8 +272,6 @@ inexpr_list : fgl_expr_c  {
 
 
 
-
-;
 
 
 op_extend_d: {strcpy($<str>$,"-1");} | dtime_val TO dtime_val
@@ -527,9 +514,12 @@ function_call_expr:
    			a4gl_yyerror("get_fldbuf can only be used in an input or construct");
    			YYERROR;
 		}
+		$<ptr>$=A4GL_new_expr_get_fldbuf(get_sio_id("ALL"),$<field_list>3,infilename,lastlineno);
+		/*
 		sprintf($<str>$,"{int _retvars;\n_retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,0,0);\nif (_retvars != 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n",get_sio_id("ALL"),
 		field_name_list_as_char($<field_list>3), lastlineno,infilename); 
 		$<ptr>$=A4GL_new_expr($<str>$);	
+		*/
 
 	} 
         | EXTERNAL remote_host_name COLON remote_func_name OPEN_SQUARE valid_port CLOSE_SQUARE OPEN_BRACKET opt_func_call_args CLOSE_BRACKET opt_without_waiting {
@@ -570,8 +560,8 @@ pdf_expr : fgl_expr_c KW_POINTS  {
 
 
 builtin_expr : curr_v_clause {
-                sprintf($<str>$,"A4GL_push_current(%s);",$<str>1);
-		$<ptr>$=A4GL_new_expr($<str>$);
+		$<ptr>$=$<ptr>1;
+                /* sprintf($<str>$,"A4GL_push_current(%s);",$<str>1); $<ptr>$=A4GL_new_expr($<str>$); */
           	}
        | KW_DATE  { 
 		$<ptr>$=A4GL_new_expr_simple(ET_EXPR_DATE_EXPR);
@@ -604,11 +594,9 @@ numeric_time_unit_small :
 		| INT_VALUE INT_VALUE COLON INT_VALUE 	{sprintf($<str>$,"%s %s:%s",$<str>1,$<str>2,$<str>4);}		/* DD HH:MM */
 		| INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE 	 {sprintf($<str>$,"%s %s:%s:%s",$<str>1,$<str>2,$<str>4,$<str>6);} /* DD HH:MM:SS*/
 		| INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE	{sprintf($<str>$,"%s %s:%s:%s",$<str>1,$<str>2,$<str>4,$<str>6);} /* DD HH MM SS.FFFF*/
-
 		| INT_VALUE COLON INT_VALUE 			{sprintf($<str>$,"%s:%s",$<str>1,$<str>3);} /* HH MM */
 		| INT_VALUE COLON INT_VALUE COLON INT_VALUE 	{sprintf($<str>$,"%s:%s:%s",$<str>1,$<str>3,$<str>5);} /* HH MM SS*/
 		| INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE	{sprintf($<str>$,"%s:%s:%s",$<str>1,$<str>3,$<str>5);} /* HH MM SS.FFFF*/
-
 		| INT_VALUE COLON NUMBER_VALUE			{sprintf($<str>$,"%s:%s",$<str>1,$<str>3);}	/* MM SS.FFFF*/
 		| NUMBER_VALUE					{sprintf($<str>$,"%s",$<str>1);}		/* SS.FFFF*/
 		| DOT INT_VALUE {sprintf($<str>$,"0.%s",$<str>2);}
@@ -624,8 +612,8 @@ numeric_time_unit_big:
 field_name_list_as_struct : field_name_as_struct {
 				$<field_list>$=new_field_list();
 				$<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
-			} |
-		field_name_list_as_struct KW_COMMA field_name_as_struct {
+			} 
+		| field_name_list_as_struct KW_COMMA field_name_as_struct {
 				$<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
 		}
 	;
@@ -633,31 +621,26 @@ field_name_list_as_struct : field_name_as_struct {
 field_name_list_or_char_as_struct : field_name_or_char_as_struct {
 				$<field_list>$=new_field_list();
 				$<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
-			} |
-		field_name_list_or_char_as_struct KW_COMMA field_name_or_char_as_struct {
+			} 
+		| field_name_list_or_char_as_struct KW_COMMA field_name_or_char_as_struct {
 				$<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
 		}
 	;
 
 
 
-curr_v_clause : KW_CURRENT  cur_v_part 
-{strcpy($<str>$,$<str>2);}
+curr_v_clause : KW_CURRENT { $<ptr>$=A4GL_new_expr_current(1, 10);}
+	| KW_CURRENT s_curr_v TO s_curr_v {$<ptr>$=A4GL_new_expr_current($<integer_val>1, $<integer_val>3);}
 ;
 
-
-cur_v_part: {strcpy($<str>$,"1,10");}
-| s_curr_v TO s_curr_v
-{sprintf($<str>$," %s ,%s",$<str>1,$<str>3);}
-;
-
-s_curr_v: YEAR {strcpy($<str>$,"1");} | MONTH  {strcpy($<str>$,"2");}| DAY  {strcpy($<str>$,"3");}| HOUR  {strcpy($<str>$,"4");}| MINUTE  {strcpy($<str>$,"5");}| SECOND  {strcpy($<str>$,"6");}| 
-FRACTION {
-sprintf($<str>$,"%d",6+2);
-}
-| FRACTION OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
-sprintf($<str>$,"%d",atoi($<str>3)+6);
-}
+s_curr_v: YEAR 		{$<integer_val>$=1;} 
+	| MONTH  	{$<integer_val>$=2;}
+	| DAY  		{$<integer_val>$=3;}
+	| HOUR  	{$<integer_val>$=4;}
+	| MINUTE  	{$<integer_val>$=5;}
+	| SECOND  	{$<integer_val>$=6;}
+	| FRACTION 	{$<integer_val>$=6+2; }
+	| FRACTION OPEN_BRACKET INT_VALUE CLOSE_BRACKET {$<integer_val>$=atoi($<str>3)+6;}
 ;
 
 

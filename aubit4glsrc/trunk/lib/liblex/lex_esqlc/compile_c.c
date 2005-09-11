@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.248 2005-09-09 20:34:13 mikeaubury Exp $
+# $Id: compile_c.c,v 1.249 2005-09-11 16:30:00 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.248 2005-09-09 20:34:13 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.249 2005-09-11 16:30:00 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -96,7 +96,8 @@ char* get_reset_state_after_call(void);
 void print_reset_state_after_call(void);
 static void pr_nongroup_report_agg_clr (void);
 char *pdtype(int n) ;
-
+int doing_report_print=0;
+static struct expr_str_list *A4GL_rationalize_list_concat(struct expr_str_list *l) ;
 
 /*
 =====================================================================
@@ -141,6 +142,7 @@ extern int yylineno;
 extern int lastlineno;
 extern int inp_flags;
 
+char *expr_name(enum e_expr_type e);
 
 
 #define CM
@@ -1412,221 +1414,512 @@ real_print_expr (struct expr_str *ptr)
   void *optr;
   A4GL_debug ("Print expr... %p", ptr);
 
-  A4GL_assertion(ptr==0,"can't print a null pointer...");
+  A4GL_assertion (ptr == 0, "can't print a null pointer...");
 
   while (ptr)
     {
-      switch (ptr->expr_type) {
-	      case ET_EXPR_STRING: printc ("%s\n", ptr->u_data.expr_char); free (ptr->u_data.expr_char); break;
-	      case ET_EXPR_PUSH_VARIABLE: printc ("A4GL_push_variable(&%s,0x%x);", 
-						       ptr->u_data.expr_push_variable->variable,
-						       ptr->u_data.expr_push_variable->var_dtype);break;
-	      case ET_EXPR_TIME  : printc("A4GL_push_time();"); break;
-	      case ET_EXPR_NULL  : printc("A4GL_push_null(2,0);"); break;
-	      case ET_EXPR_TRUE  : printc("A4GL_push_int(1);"); break;
-	      case ET_EXPR_FALSE  : printc("A4GL_push_int(0);"); break;
-	      case ET_EXPR_NOT  : real_print_expr(ptr->u_data.expr_expr); printc("A4GL_pushop(OP_NOT);"); break;
-	      case ET_EXPR_NEG  :      
-				  printc("A4GL_push_int(0);");
-				  real_print_expr(ptr->u_data.expr_expr); 
-				  printc("A4GL_pushop(OP_SUB);"); break;
-	      case ET_EXPR_UPSHIFT    : real_print_expr(ptr->u_data.expr_expr); printc("A4GL_upshift_stk();"); break;
-	      case ET_EXPR_DOWNSHIFT  : real_print_expr(ptr->u_data.expr_expr); printc("A4GL_downshift_stk();"); break;
-
-	      case ET_EXPR_DATE_EXPR  : printc("A4GL_push_date_expr();"); break;
-	      case ET_EXPR_COLUMN  : 
-		  		real_print_expr(ptr->u_data.expr_expr); 
-			        if (A4GL_am_doing_a_print()) {
-				                printc("A4GL_%sset_column(&_rep);",ispdf());
-			        } else {
-				                printc("A4GL_ensure_column();");
-			        }
-				break;
-	      case ET_EXPR_TIME_EXPR  : printc("A4GL_push_time_expr();"); break;
-	      case ET_EXPR_TODAY : printc("A4GL_push_today();"); break;
-
-	      case ET_EXPR_ASCII : real_print_expr(ptr->u_data.expr_expr); printc("A4GL_push_ascii();"); break;
-	      case ET_EXPR_EXTEND : real_print_expr(ptr->u_data.expr_expr); printc("aclfgli_extend();"); break;
-
-	      case ET_EXPR_MM : real_print_expr(ptr->u_data.expr_expr); printc("A4GL_push_double(-28.3465);A4GL_pushop(OP_MULT);"); break;
-	      case ET_EXPR_INCHES : real_print_expr(ptr->u_data.expr_expr); printc("A4GL_push_double(-72.0);A4GL_pushop(OP_MULT);"); break;
-	      case ET_EXPR_POINTS : real_print_expr(ptr->u_data.expr_expr); printc("A4GL_push_double(-1);A4GL_pushop(OP_MULT);"); break;
-
-	      case ET_EXPR_PAGENO : printc("A4GL_push_variable(&_rep.page_no,2);"); break;
-	      case ET_EXPR_LINENO : printc("{static int _ln; _ln=_rep.line_no-1;A4GL_push_variable(&_ln,2);}");break;
-
-	      case ET_EXPR_FCALL  :     
-
-				    {
-					int a;
-					int b;
-					struct expr_str_list *l;
-					b=0;
-					if (ptr) {
-				        	l=ptr->u_data.expr_function_call->parameters;
-						l=A4GL_rationalize_list(l);
-						if (l) {
-				    			for (a=0;a<l->nlist;a++) {
-				    	 			real_print_expr(l->list[a]);
-							}
-						}
-					}
-				    	printc("%s", LEXLIB_A4GL_expr_for_call (ptr->u_data.expr_function_call->fname,
-								A4GL_new_list_get_count(ptr->u_data.expr_function_call->parameters) , ptr->u_data.expr_function_call->line, ptr->u_data.expr_function_call->module)); 
-					}
-					break;
+      switch (ptr->expr_type)
+	{
+	  // These will never be implemented - because they dont make sense..
+	case ET_EXPR_REDUCED:
+	  A4GL_assertion (1, "ET_EXPR_REDUCED should never be printed");
+	  break;
+	case ET_EXPR_LAST:
+	  A4GL_assertion (1, "ET_EXPR_LAST should never be printed");
+	  break;
+	case ET_EXPR_EXPR_LIST:
+	  A4GL_assertion (1,
+			  "ET_EXPR_EXPR_LIST can't be printed - print using A4GL_print_expr_list or A4GL_print_expr_list_concat");
+	  break;
+	case ET_EXPR_WORDWRAP:
+	  // Wordwraps shouldn't be printed - in the report_print - the wrapped expression should be printed...
+	  A4GL_assertion (1, "ET_EXPR_WORDWRAP should never be printed");
+	  break;
 
 
-	      case ET_EXPR_SHARED_FCALL  :     {
-					int a;
-					struct expr_str_list *l;
-					struct expr_shared_function_call *p;
-					if (ptr) {
-						p=ptr->u_data.expr_shared_function_call;
-				        	l=p->parameters;
-						if (l) {
-				    			for (a=0;a<l->nlist;a++) {
-				    	 			real_print_expr(l->list[a]);
-							}
-						}
-					}
-					printc("  {");
-					printc("  int _retvars;");
-					printc("  _retvars=A4GL_call_4gl_dll(\"%s\",\"%s\",%d);",p->lib,p->fname,A4GL_new_list_get_count(p->parameters));
-					printc("  if (_retvars!=1) {",p->lib,p->fname,A4GL_new_list_get_count(p->parameters));
-					printc("      A4GLSQL_set_status(-3001,0);");
-					printc("      A4GL_chk_err(%d,\"%s\");",p->line,p->module);
-					printc("      A4GL_pop_args(_retvars);");
-					printc("      A4GL_push_null(2,0);");
-					printc("  }"); 
-					printc("}"); 
-					}
-					break;
-
-	      case ET_EXPR_MEMBER_FCALL  :     {
-					int a;
-					struct expr_str_list *l;
-					struct expr_member_function_call *p;
-					if (ptr) {
-						p=ptr->u_data.expr_member_function_call;
-				        	l=p->parameters;
-						if (l) {
-				    			for (a=0;a<l->nlist;a++) {
-				    	 			real_print_expr(l->list[a]);
-							}
-						}
-					}
-					printc("  if (A4GL_call_4gl_dll(\"%s\",\"%s\",%d)!=1) {",p->lib,p->fname,A4GL_new_list_get_count(p->parameters));
-					printc("      A4GLSQL_set_status(-3001,0);");
-					printc("      A4GL_chk_err(%d,\"%s\");",p->line,p->module);
-					printc("      A4GL_pop_args(_retvars);");
-					printc("      A4GL_push_null(2,0);");
-					printc("}"); 
-					}
-					break;
-
-	      case ET_EXPR_REPORT_PRINTER  :     printc("A4GL_push_char(acl_getenv(\"DBPRINT\"));"); break;
-	      case ET_EXPR_REPORT_EMAIL  :     printc("A4GL_push_char(A4GL_get_tmp_rep(_module_name,\"%s\"));",ptr->u_data.expr_string);
-					       	break;
+	  // These should be implemented - but aren't yet... 
+	case ET_EXPR_EXTERNAL:
+	  A4GL_assertion (1,
+			  "ET_EXPR_EXTERNAL has not been implented as an expression yet");
+	  break;
+	case ET_EXPR_OP_IN:
+	  A4GL_assertion (1,
+			  "ET_EXPR_OP_IN has not been implented as an expression yet");
+	  break;
+	case ET_EXPR_OP_NOTIN:
+	  A4GL_assertion (1,
+			  "ET_EXPR_OP_NOTIN has not been implented as an expression yet");
+	  break;
 
 
-	      case ET_EXPR_LITERAL_LONG : printc("A4GL_push_long(%d);",ptr->u_data.expr_long); break;
-	      case ET_EXPR_LITERAL_STRING : printc("A4GL_push_char(\"%s\");",ptr->u_data.expr_string); break;
-	      case ET_EXPR_LITERAL_DOUBLE_STR : printc("A4GL_push_double_str(\"%s\");",ptr->u_data.expr_string); break;
-	      case ET_EXPR_OP_CLIP: real_print_expr(ptr->u_data.expr_op->left); printc("A4GL_pushop(OP_CLIP);"); break;
-	      case ET_EXPR_OP_ISNULL: real_print_expr(ptr->u_data.expr_op->left); printc("A4GL_pushop(OP_ISNULL);"); break;
-	      case ET_EXPR_OP_ISNOTNULL: real_print_expr(ptr->u_data.expr_op->left); printc("A4GL_pushop(OP_ISNOTNULL);"); break;
-	      case ET_EXPR_OP_MATCHES: 
-					 	real_print_expr(ptr->u_data.expr_op->left); 
-					 	real_print_expr(ptr->u_data.expr_op->right); 
-						if (ptr->u_data.expr_op->escape) {
-					 		real_print_expr(ptr->u_data.expr_op->right); 
-						} else {
-							printc("A4GL_push_char(\"\\\\\");");
-						}
-				       		printc("A4GL_pushop(OP_MATCHES);"); break;
-	      case ET_EXPR_OP_NOT_MATCHES: 
-					 	real_print_expr(ptr->u_data.expr_op->left); 
-					 	real_print_expr(ptr->u_data.expr_op->right); 
-						if (ptr->u_data.expr_op->escape) {
-					 		real_print_expr(ptr->u_data.expr_op->right); 
-						} else {
-							printc("A4GL_push_char(\"\\\\\");");
-						}
-				       		printc("A4GL_pushop(OP_MATCHES);A4GL_pushop(OP_NOT);"); break;
+	case ET_EXPR_STRING:
+	  printc ("%s\n", ptr->u_data.expr_char);
+	  free (ptr->u_data.expr_char);
+	  break;
+	case ET_EXPR_PUSH_VARIABLE:
+	  printc ("A4GL_push_variable(&%s,0x%x);",
+		  ptr->u_data.expr_push_variable->variable,
+		  ptr->u_data.expr_push_variable->var_dtype);
+	  break;
+	case ET_EXPR_TIME:
+	  printc ("A4GL_push_time();");
+	  break;
+	case ET_EXPR_NULL:
+	  printc ("A4GL_push_null(2,0);");
+	  break;
+	case ET_EXPR_TRUE:
+	  printc ("A4GL_push_int(1);");
+	  break;
+	case ET_EXPR_FALSE:
+	  printc ("A4GL_push_int(0);");
+	  break;
+	case ET_EXPR_NOT:
+	  real_print_expr (ptr->u_data.expr_expr);
+	  printc ("A4GL_pushop(OP_NOT);");
+	  break;
+	case ET_EXPR_NEG:
+	  printc ("A4GL_push_int(0);");
+	  real_print_expr (ptr->u_data.expr_expr);
+	  printc ("A4GL_pushop(OP_SUB);");
+	  break;
+	case ET_EXPR_UPSHIFT:
+	  real_print_expr (ptr->u_data.expr_expr);
+	  printc ("A4GL_upshift_stk();");
+	  break;
+	case ET_EXPR_DOWNSHIFT:
+	  real_print_expr (ptr->u_data.expr_expr);
+	  printc ("A4GL_downshift_stk();");
+	  break;
+
+	case ET_EXPR_DATE_EXPR:
+	  printc ("A4GL_push_date_expr();");
+	  break;
+	case ET_EXPR_COLUMN:
+	  real_print_expr (ptr->u_data.expr_expr);
+	  if (doing_report_print)
+	    {
+	      printc ("A4GL_%sset_column(&_rep);", ispdf ());
+	    }
+	  else
+	    {
+	      printc ("A4GL_ensure_column();");
+	    }
+	  break;
+	case ET_EXPR_TIME_EXPR:
+	  printc ("A4GL_push_time_expr();");
+	  break;
+	case ET_EXPR_TODAY:
+	  printc ("A4GL_push_today();");
+	  break;
+
+	case ET_EXPR_ASCII:
+	  real_print_expr (ptr->u_data.expr_expr);
+	  printc ("A4GL_push_ascii();");
+	  break;
+	case ET_EXPR_EXTEND:
+	  real_print_expr (ptr->u_data.expr_expr);
+	  printc ("aclfgli_extend();");
+	  break;
+
+	case ET_EXPR_MM:
+	  real_print_expr (ptr->u_data.expr_expr);
+	  printc ("A4GL_push_double(-28.3465);A4GL_pushop(OP_MULT);");
+	  break;
+	case ET_EXPR_INCHES:
+	  real_print_expr (ptr->u_data.expr_expr);
+	  printc ("A4GL_push_double(-72.0);A4GL_pushop(OP_MULT);");
+	  break;
+	case ET_EXPR_POINTS:
+	  real_print_expr (ptr->u_data.expr_expr);
+	  printc ("A4GL_push_double(-1);A4GL_pushop(OP_MULT);");
+	  break;
+
+	case ET_EXPR_PAGENO:
+	  printc ("A4GL_push_variable(&_rep.page_no,2);");
+	  break;
+	case ET_EXPR_LINENO:
+	  printc
+	    ("{static int _ln; _ln=_rep.line_no-1;A4GL_push_variable(&_ln,2);}");
+	  break;
+
+	case ET_EXPR_FCALL:
+
+	  {
+	    int a;
+	    int b;
+	    char lib[255];
+	    int params;
+	    struct expr_str_list *l;
+	    b = 0;
+	    if (ptr)
+	      {
+		l = ptr->u_data.expr_function_call->parameters;
+		l = A4GL_rationalize_list (l);
+		if (l)
+		  {
+		    for (a = 0; a < l->nlist; a++)
+		      {
+			real_print_expr (l->list[a]);
+		      }
+		  }
+	      }
+
+	    params =
+	      A4GL_new_list_get_count (ptr->u_data.expr_function_call->
+				       parameters);
+
+	    if (A4GL_doing_pcode ())
+	      {
+		printc ("ECALL(\"%s%s\",%d,%ld);",
+			get_namespace (ptr->u_data.expr_function_call->fname),
+			ptr->u_data.expr_function_call->fname,
+			ptr->u_data.expr_function_call->line, params);
+	      }
+	    else
+	      {
+		if (has_function
+		    (ptr->u_data.expr_function_call->fname, lib, 0))
+		  {
+		    // Call shared...
+		    printc ("{");
+		    printc ("int _retvars;");
+		    printc ("A4GLSQL_set_status(0,0);");
+		    printc ("_retvars=A4GL_call_4gl_dll(%s,\"%s\",%ld); ",
+			    lib, ptr->u_data.expr_function_call->fname,
+			    params);
+		    printc ("if (_retvars!= 1 && a4gl_status==0 ) {");
+		    printc ("A4GLSQL_set_status(-3001,0);");
+		    printc ("A4GL_chk_err(%d,_module_name);",
+			    ptr->u_data.expr_function_call->line);
+		    printc ("}");
+		    printc ("%s", get_reset_state_after_call ());
+		    printc ("}");
+
+		  }
+		else
+		  {
+		    printc ("{");
+		    printc ("int _retvars;");
+		    printc ("_retvars=%s%s(%ld); ",
+			    get_namespace (ptr->u_data.expr_function_call->
+					   fname),
+			    ptr->u_data.expr_function_call->fname, params);
+		    printc ("{");
+		    printc ("if (_retvars!= 1 && a4gl_status==0 ) {");
+		    printc ("A4GLSQL_set_status(-3001,0);");
+		    printc ("A4GL_chk_err(%d,_module_name);",
+			    ptr->u_data.expr_function_call->line);
+		    printc ("}");
+		    printc ("}");
+		    printc ("%s", get_reset_state_after_call ());
+		    printc ("}");
+		  }
+		add_function_to_header (ptr->u_data.expr_function_call->fname,
+					1, "");
+	      }
+
+	    break;
 
 
-	      case ET_EXPR_OP_ADD: real_print_expr(ptr->u_data.expr_op->left); real_print_expr(ptr->u_data.expr_op->right); printc("A4GL_pushop(OP_ADD);"); break;
-	      case ET_EXPR_OP_SUB: real_print_expr(ptr->u_data.expr_op->left); real_print_expr(ptr->u_data.expr_op->right); printc("A4GL_pushop(OP_SUB);"); break;
-	      case ET_EXPR_OP_DIV: real_print_expr(ptr->u_data.expr_op->left); real_print_expr(ptr->u_data.expr_op->right); printc("A4GL_pushop(OP_DIV);"); break;
+	case ET_EXPR_SHARED_FCALL:
+	    {
+	      int a;
+	      struct expr_str_list *l;
+	      struct expr_shared_function_call *p;
+	      if (ptr)
+		{
+		  p = ptr->u_data.expr_shared_function_call;
+		  l = p->parameters;
+		  if (l)
+		    {
+		      for (a = 0; a < l->nlist; a++)
+			{
+			  real_print_expr (l->list[a]);
+			}
+		    }
+		}
+	      printc ("  {");
+	      printc ("  int _retvars;");
+	      printc ("  _retvars=A4GL_call_4gl_dll(\"%s\",\"%s\",%d);",
+		      p->lib, p->fname,
+		      A4GL_new_list_get_count (p->parameters));
+	      printc ("  if (_retvars!=1) {", p->lib, p->fname,
+		      A4GL_new_list_get_count (p->parameters));
+	      printc ("      A4GLSQL_set_status(-3001,0);");
+	      printc ("      A4GL_chk_err(%d,\"%s\");", p->line, p->module);
+	      printc ("      A4GL_pop_args(_retvars);");
+	      printc ("      A4GL_push_null(2,0);");
+	      printc ("  }");
+	      printc ("}");
+	    }
+	    break;
 
-	      case ET_EXPR_OP_MULT: real_print_expr(ptr->u_data.expr_op->left); real_print_expr(ptr->u_data.expr_op->right); printc("A4GL_pushop(OP_MULT);"); break;
+	case ET_EXPR_MEMBER_FCALL:
+	    {
+	      int a;
+	      struct expr_str_list *l;
+	      struct expr_member_function_call *p;
+	      if (ptr)
+		{
+		  p = ptr->u_data.expr_member_function_call;
+		  l = p->parameters;
+		  if (l)
+		    {
+		      for (a = 0; a < l->nlist; a++)
+			{
+			  real_print_expr (l->list[a]);
+			}
+		    }
+		}
+	      printc ("  if (A4GL_call_4gl_dll(\"%s\",\"%s\",%d)!=1) {",
+		      p->lib, p->fname,
+		      A4GL_new_list_get_count (p->parameters));
+	      printc ("      A4GLSQL_set_status(-3001,0);");
+	      printc ("      A4GL_chk_err(%d,\"%s\");", p->line, p->module);
+	      printc ("      A4GL_pop_args(_retvars);");
+	      printc ("      A4GL_push_null(2,0);");
+	      printc ("}");
+	    }
+	  }
+	  break;
+
+	case ET_EXPR_REPORT_PRINTER:
+	  printc ("A4GL_push_char(acl_getenv(\"DBPRINT\"));");
+	  break;
+	case ET_EXPR_REPORT_EMAIL:
+	  printc ("A4GL_push_char(A4GL_get_tmp_rep(_module_name,\"%s\"));",
+		  ptr->u_data.expr_string);
+	  break;
 
 
-	      case ET_EXPR_OP_LESS_THAN: real_print_expr(ptr->u_data.expr_op->left); 
-					 real_print_expr(ptr->u_data.expr_op->right); 
-					 printc("A4GL_pushop(OP_LESS_THAN);"); 
-					 break;
+	case ET_EXPR_LITERAL_LONG:
+	  printc ("A4GL_push_long(%d);", ptr->u_data.expr_long);
+	  break;
+	case ET_EXPR_LITERAL_STRING:
+	  printc ("A4GL_push_char(\"%s\");", ptr->u_data.expr_string);
+	  break;
+	case ET_EXPR_QUOTED_STRING:
+	  printc ("A4GL_push_char(%s);", ptr->u_data.expr_string);
+	  break;
+	case ET_EXPR_LITERAL_DOUBLE_STR:
+	  printc ("A4GL_push_double_str(\"%s\");", ptr->u_data.expr_string);
+	  break;
+	case ET_EXPR_OP_CLIP:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  printc ("A4GL_pushop(OP_CLIP);");
+	  break;
+	case ET_EXPR_OP_ISNULL:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  printc ("A4GL_pushop(OP_ISNULL);");
+	  break;
+	case ET_EXPR_OP_ISNOTNULL:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  printc ("A4GL_pushop(OP_ISNOTNULL);");
+	  break;
+	case ET_EXPR_OP_MATCHES:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  if (ptr->u_data.expr_op->escape)
+	    {
+	      real_print_expr (ptr->u_data.expr_op->right);
+	    }
+	  else
+	    {
+	      printc ("A4GL_push_char(\"\\\\\");");
+	    }
+	  printc ("A4GL_pushop(OP_MATCHES);");
+	  break;
+	case ET_EXPR_OP_NOT_MATCHES:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  if (ptr->u_data.expr_op->escape)
+	    {
+	      real_print_expr (ptr->u_data.expr_op->right);
+	    }
+	  else
+	    {
+	      printc ("A4GL_push_char(\"\\\\\");");
+	    }
+	  printc ("A4GL_pushop(OP_MATCHES);A4GL_pushop(OP_NOT);");
+	  break;
 
-	      case ET_EXPR_OP_GREATER_THAN: real_print_expr(ptr->u_data.expr_op->left); 
-					 real_print_expr(ptr->u_data.expr_op->right); 
-					 printc("A4GL_pushop(OP_GREATER_THAN);"); 
-					 break;
-	      case ET_EXPR_OP_EQUAL: real_print_expr(ptr->u_data.expr_op->left); 
-					 real_print_expr(ptr->u_data.expr_op->right); 
-					 printc("A4GL_pushop(OP_EQUAL);"); 
-					 break;
-	      case ET_EXPR_OP_NOT_EQUAL: real_print_expr(ptr->u_data.expr_op->left); 
-					 real_print_expr(ptr->u_data.expr_op->right); 
-					 printc("A4GL_pushop(OP_NOT_EQUAL);"); 
-					 break;
-	      case ET_EXPR_OP_LESS_THAN_EQ: real_print_expr(ptr->u_data.expr_op->left); 
-					 real_print_expr(ptr->u_data.expr_op->right); 
-					 printc("A4GL_pushop(OP_LESS_THAN_EQ);"); 
-					 break;
+	case ET_EXPR_OP_LIKE:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  if (ptr->u_data.expr_op->escape)
+	    {
+	      real_print_expr (ptr->u_data.expr_op->right);
+	    }
+	  else
+	    {
+	      printc ("A4GL_push_char(\"\\\\\");");
+	    }
+	  printc ("A4GL_pushop(OP_LIKE);");
+	  break;
+	case ET_EXPR_OP_NOT_LIKE:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  if (ptr->u_data.expr_op->escape)
+	    {
+	      real_print_expr (ptr->u_data.expr_op->right);
+	    }
+	  else
+	    {
+	      printc ("A4GL_push_char(\"\\\\\");");
+	    }
+	  printc ("A4GL_pushop(OP_LIKE);A4GL_pushop(OP_NOT);");
+	  break;
 
-	      case ET_EXPR_OP_GREATER_THAN_EQ: 
-					 real_print_expr(ptr->u_data.expr_op->left); 
-					 real_print_expr(ptr->u_data.expr_op->right); 
-					 printc("A4GL_pushop(OP_GREATER_THAN_EQ);"); 
-					 break;
 
-	      case ET_EXPR_OP_OR: real_print_expr(ptr->u_data.expr_op->left); 
-					 real_print_expr(ptr->u_data.expr_op->right); 
-					 printc("A4GL_pushop(OP_OR);"); 
-					 break;
-	      case ET_EXPR_OP_AND: real_print_expr(ptr->u_data.expr_op->left); 
-					 real_print_expr(ptr->u_data.expr_op->right); 
-					 printc("A4GL_pushop(OP_AND);"); 
-					 break;
 
-	      case ET_EXPR_LITERAL_EMPTY_STRING: printc("A4GL_push_empty_char();"); break;
-					       	
-	      case ET_EXPR_OP_USING: real_print_expr(ptr->u_data.expr_op->left);
-						real_print_expr(ptr->u_data.expr_op->right);
-				  		printc("A4GL_pushop(OP_USING);"); break;
-	      case ET_EXPR_OP_MOD: real_print_expr(ptr->u_data.expr_op->left);
-						real_print_expr(ptr->u_data.expr_op->right);
-				  		printc("A4GL_pushop(OP_MOD);"); break;
-	      case ET_EXPR_OP_POWER: real_print_expr(ptr->u_data.expr_op->left);
-						real_print_expr(ptr->u_data.expr_op->right);
-				  		printc("A4GL_pushop(OP_POWER);"); break;
-	      case ET_EXPR_OP_CONCAT: 
-						real_print_expr(ptr->u_data.expr_op->left);
-						real_print_expr(ptr->u_data.expr_op->right);
-				  		printc("A4GL_pushop(OP_CONCAT);"); break;
-	      case ET_EXPR_OP_YEAR: real_print_expr(ptr->u_data.expr_op->left);printc("A4GL_pushop(OP_YEAR);"); break;
-	      case ET_EXPR_OP_MONTH: real_print_expr(ptr->u_data.expr_op->left);printc("A4GL_pushop(OP_MONTH);"); break;
-	      case ET_EXPR_OP_DAY: real_print_expr(ptr->u_data.expr_op->left);printc("A4GL_pushop(OP_DAY);"); break;
-	      case ET_EXPR_OP_HOUR: real_print_expr(ptr->u_data.expr_op->left);printc("A4GL_pushop(OP_HOUR);"); break;
-	      case ET_EXPR_OP_MINUTE: real_print_expr(ptr->u_data.expr_op->left);printc("A4GL_pushop(OP_MINUTE);"); break;
-	      case ET_EXPR_OP_SECOND: real_print_expr(ptr->u_data.expr_op->left);printc("A4GL_pushop(OP_SECOND);"); break;
-					       	
+	case ET_EXPR_OP_ADD:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_ADD);");
+	  break;
+	case ET_EXPR_OP_SUB:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_SUB);");
+	  break;
+	case ET_EXPR_OP_DIV:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_DIV);");
+	  break;
+
+	case ET_EXPR_OP_MULT:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_MULT);");
+	  break;
+
+
+	case ET_EXPR_OP_LESS_THAN:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_LESS_THAN);");
+	  break;
+
+	case ET_EXPR_OP_GREATER_THAN:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_GREATER_THAN);");
+	  break;
+	case ET_EXPR_OP_EQUAL:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_EQUAL);");
+	  break;
+	case ET_EXPR_OP_NOT_EQUAL:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_NOT_EQUAL);");
+	  break;
+	case ET_EXPR_OP_LESS_THAN_EQ:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_LESS_THAN_EQ);");
+	  break;
+
+	case ET_EXPR_OP_GREATER_THAN_EQ:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_GREATER_THAN_EQ);");
+	  break;
+
+	case ET_EXPR_OP_OR:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_OR);");
+	  break;
+	case ET_EXPR_OP_AND:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_AND);");
+	  break;
+
+	case ET_EXPR_LITERAL_EMPTY_STRING:
+	  printc ("A4GL_push_empty_char();");
+	  break;
+
+	case ET_EXPR_OP_USING:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_USING);");
+	  break;
+	case ET_EXPR_OP_MOD:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_MOD);");
+	  break;
+	case ET_EXPR_OP_POWER:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_POWER);");
+	  break;
+	case ET_EXPR_OP_CONCAT:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_op->right);
+	  printc ("A4GL_pushop(OP_CONCAT);");
+	  break;
+	case ET_EXPR_OP_YEAR:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  printc ("A4GL_pushop(OP_YEAR);");
+	  break;
+	case ET_EXPR_OP_MONTH:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  printc ("A4GL_pushop(OP_MONTH);");
+	  break;
+	case ET_EXPR_OP_DAY:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  printc ("A4GL_pushop(OP_DAY);");
+	  break;
+	case ET_EXPR_OP_HOUR:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  printc ("A4GL_pushop(OP_HOUR);");
+	  break;
+	case ET_EXPR_OP_MINUTE:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  printc ("A4GL_pushop(OP_MINUTE);");
+	  break;
+	case ET_EXPR_OP_SECOND:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  printc ("A4GL_pushop(OP_SECOND);");
+	  break;
+	case ET_EXPR_CURRENT:
+	  printc ("A4GL_push_current(%d,%d);", ptr->u_data.expr_current->from,
+		  ptr->u_data.expr_current->to);
+	  break;
+	case ET_EXPR_OP_SPACES:
+	  real_print_expr (ptr->u_data.expr_op->left);
+	  printc ("A4GL_add_spaces();");
+	  break;
+
+	case ET_EXPR_GET_FLDBUF: 
+	  printc ("{");
+	  printc ("int _retvars;");
+
+	  printc ("_retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,0,0);",
+		  ptr->u_data.expr_get_fldbuf->sio_id,
+	  	field_name_list_as_char (ptr->u_data.expr_get_fldbuf->field_list)
+		  );
+
+	  printc
+	    ("if (_retvars != 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}",
+	     ptr->u_data.expr_get_fldbuf->line,
+	     ptr->u_data.expr_get_fldbuf->module);
+
+	  printc ("}");
+	  break;
+
+/*
 	      default: 
 					       	
 			printf("Expression type : %d",ptr->expr_type);
 		      A4GL_assertion(1,"Unhandled expression type");
-      }
+*/
+	}
 
       optr = ptr;
       A4GL_debug ("going to %p", ptr->next);
@@ -1634,13 +1927,14 @@ real_print_expr (struct expr_str *ptr)
       A4GL_debug ("Freeing old value %p", optr);
 
 
-      free (optr); // <----      THIS FREE SHOULD BE OK
-                   //
-      		   //  if valgrind indicates its a problem - check
-		   //  you've got a 'break' after the case's above....
-		   //
+      free (optr);		// <----      THIS FREE SHOULD BE OK
+      //
+      //  if valgrind indicates its a problem - check
+      //  you've got a 'break' after the case's above....
+      //
     }
 }
+
 
 /**
  * Print the form attributes to the generated C code in the output file.
@@ -1711,11 +2005,11 @@ struct expr_str_list *A4GL_rationalize_list_concat(struct expr_str_list *l) {
   struct expr_str *p;
   struct expr_str *p2;
   struct expr_str_list *l2;
-  int b;
-  int printed = 0;
+  //int b;
+  //int printed = 0;
 
   if (l == 0)
-    return;
+    return 0;
   l = A4GL_rationalize_list (l);
 
   if ((l->nlist) > 1)
@@ -1770,9 +2064,9 @@ A4GL_print_expr_list_concat (struct expr_str_list *l)
 {
   int a;
   struct expr_str *p;
-  struct expr_str *p2;
-  struct expr_str_list *l2;
-  int b;
+  //struct expr_str *p2;
+  //struct expr_str_list *l2;
+  //int b;
   int printed = 0;
 
   if (l == 0)
@@ -2673,39 +2967,103 @@ static void real_print_expr_list (struct expr_str_list *l)
 	}
 
 }
+
+
+
 /**
  *
  * @todo Describe function
  */
 static void
-real_print_func_call ( t_expr_str *fcall)
+real_print_func_call (t_expr_str * fcall)
 {
-char lib[255];
-struct expr_function_call *p;
-int args_cnt;
-  A4GL_assertion(fcall->expr_type!=ET_EXPR_FCALL,"Internal error - expecting a function call");
-  p=fcall->u_data.expr_function_call;
-  args_cnt=A4GL_new_list_get_count(p->parameters);
+  char lib[255]="<not set>";
+  int args_cnt;
+  
+//  NOTE - ANYTHING IN HERE SHOULD PROBABLY BE DUPLICATED IN THE 'real_print_expr' ROUTINE...
+//
 
 
-  real_print_expr_list (p->parameters);
-  printc ("/* done print expr */");
-  add_function_to_header (p->fname, 1,"");
+  if (fcall->expr_type == ET_EXPR_FCALL)
+    {
+      struct expr_function_call *p;
+      p = fcall->u_data.expr_function_call;
+      args_cnt = A4GL_new_list_get_count (p->parameters);
 
 
-if (has_function(p->fname,lib,0)) {
-  printc ("{int _retvars;\n");
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
-  printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,\"%s\",%d);\n", lib, p->fname, args_cnt);
-} else {
-  printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
-  printc ("_retvars=%s%s(%d);\n", get_namespace (p->fname), p->fname, args_cnt);
+      real_print_expr_list (p->parameters);
+      printc ("/* done print expr */");
+      add_function_to_header (p->fname, 1, "");
+
+
+      if (has_function (p->fname, lib, 0))
+	{
+	  printc ("{int _retvars;\n");
+	  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
+	  printc
+	    ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,\"%s\",%d); /* 1 */\n",
+	     lib, p->fname, args_cnt);
+	}
+      else
+	{
+	  printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
+	  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
+	  printc ("_retvars=%s%s(%d);\n", get_namespace (p->fname), p->fname,
+		  args_cnt);
+	}
+      print_reset_state_after_call ();
+      return;
+    }
+
+  if (fcall->expr_type==ET_EXPR_SHARED_FCALL)  {
+      struct expr_shared_function_call *p;
+      int nargs;
+      struct expr_str_list *expr;
+      p = fcall->u_data.expr_shared_function_call;
+      expr=A4GL_rationalize_list(p->parameters);
+      nargs = A4GL_new_list_get_count (expr);
+      printc ("{int _retvars;\n");
+      real_print_expr_list (expr);
+      printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
+      printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(\"%s\",\"%s\",%d); /* 2 */\n", p->lib, p->fname, nargs);
+      print_reset_state_after_call();
+      return;
+  }
+
+  if (fcall->expr_type==ET_EXPR_GET_FLDBUF) {
+	struct expr_get_fldbuf *p;
+	p=fcall->u_data.expr_get_fldbuf;
+	printc("{");
+	printc("   int _retvars;");
+	printc("   _retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,0,0);",p->sio_id,
+					field_name_list_as_char(p->field_list));
+	printc("   if (_retvars != 1 ) {");
+	printc("      A4GLSQL_set_status(-3001,0);");
+	printc("      A4GL_chk_err(%d,\"%s\");",p->line,p->module);
+  	printc("   }");
+        print_reset_state_after_call();
+	return;
+  }
+
+
+  if (fcall->expr_type==ET_EXPR_EXTERNAL) {
+	struct expr_external_call *p;
+	struct expr_str_list *expr;
+	int nargs;
+	p=fcall->u_data.expr_external_call;
+        expr=A4GL_rationalize_list(p->parameters);
+	real_print_expr_list(expr); 
+	nargs=A4GL_new_list_get_count(expr);
+  	printc ("{int _retvars;\n");
+  	printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
+  	printc ("_retvars=A4GL_remote_func_call(%s,%d,%s,%s,%d);\n", p->host, p->without_waiting,p->func, p->port, nargs);
+	print_reset_state_after_call();
+	return;
+  }
+
+  A4GL_assertion (1,
+		  "Internal error - expecting a function call");
 }
-print_reset_state_after_call();
-
-}
-
 /**
  *
  * @todo Describe function
@@ -2770,7 +3128,7 @@ LEXLIB_print_call_shared (t_expr_str_list *expr, char *libfile, char *funcname)
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
   printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,%s,%d);\n",
 	  libfile, funcname, nargs);
-print_reset_state_after_call();
+  print_reset_state_after_call();
 }
 
 void
@@ -2804,15 +3162,6 @@ LEXLIB_get_call_shared_bound_expr(char *lname,char *fname) {
 
 
 
-/**
- * Print the C implementation of the last part of Shared library function
- * call.
- */
-void
-LEXLIB_print_end_call_shared (void)
-{
-  /* printc ("}\n"); */
-}
 
 /**
  * Print the C implementation of a call to a remote function (RPC call).
@@ -3127,6 +3476,7 @@ LEXLIB_print_defer (int quit)
 }
 
 
+#ifdef OBSOLETE
 /**
  * The parser found the DISPLAY <message> without AT specification.
  *
@@ -3137,6 +3487,7 @@ LEXLIB_print_display_line (void)
 {
   printc ("A4GL_push_int(-1);A4GL_push_int(-1);\n");
 }
+#endif
 
 
 /**
@@ -4374,16 +4725,46 @@ LEXLIB_print_skip_to (char *nval)
  * @param wordwrap
  */
 void
-LEXLIB_print_report_print (int type, char *semi, char *wordwrap)
+LEXLIB_print_report_print (int type, char *semi, t_expr_str *expr)
 {
 int semi_i;
- 
+char *wrap="0";
+
+  doing_report_print=1;
+
+
   if (semi==0) semi_i=0; else semi_i=1;
+
+  if (expr) {
+  	if (expr->expr_type==ET_EXPR_WORDWRAP) {
+  		real_print_expr(expr->u_data.expr_wordwrap->expr);
+		wrap=expr->u_data.expr_wordwrap->wrap_at;
+  	} else {
+		if (expr->expr_type==ET_EXPR_EXPR_LIST) {
+			int a;
+			struct expr_str_list *expr_l;
+			expr_l=expr->u_data.expr_list;
+			expr_l=A4GL_rationalize_list(expr_l);
+			printc("/* ---------------------------- */");
+			printf("%d elements in list\n",expr_l->nlist);
+			for (a=0;a<expr_l->nlist;a++) {
+				LEXLIB_print_report_print(type,semi,expr_l->list[a]);
+			}
+			printc("/* ---------------------------- */");
+			return;
+		} else {
+  			real_print_expr(expr);
+		}
+  	}
+  }
+
   if (type == 0)
     printc ("A4GL_%srep_print(&_rep,0,%s,0,-1);\n", ispdf (), semi);
 
   if (type == 1)
-    printc ("A4GL_%srep_print(&_rep,1,1,%s,%d);\n", ispdf (), wordwrap,rep_print_entry++);
+    printc ("A4GL_%srep_print(&_rep,1,1,%s,%d);\n", ispdf (), wrap,rep_print_entry++);
+
+  doing_report_print=0;
 }
 
 /**
@@ -5539,7 +5920,7 @@ for (c=0;c<n;c++) {
 	p= expr->list[c];
 	printf(" %s",expr_name(p->expr_type));
 	if (p->expr_type==ET_EXPR_PUSH_VARIABLE) {
-		printf("(%x)",p->u_data.expr_push_variable->var_dtype);
+		printf("(%lx)",p->u_data.expr_push_variable->var_dtype);
 	}
 }
 printf("\n");
@@ -6175,7 +6556,6 @@ add_function_to_header (char *identifier, int params,char* is_static)
       A4GL_add_pointer (identifier, 'X', (void *) 1);
 
       if (params == 1)		/* Normal Function*/ {
-	        int a;
 		printh ("A4GL_FUNCTION %s int %s%s (int n);\n",is_static, get_namespace (identifier), identifier);
 
       }
@@ -6213,6 +6593,7 @@ identifier=buff;
 
 }
 
+#ifdef OBSOLETE
 char *
 LEXLIB_A4GL_expr_for_call (char *ident, long params, int line, char *file)
 {
@@ -6238,6 +6619,7 @@ LEXLIB_A4GL_expr_for_call (char *ident, long params, int line, char *file)
   add_function_to_header (ident, 1,"");
   return buff;
 }
+#endif
 
 
 void

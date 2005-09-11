@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.17 2005-09-09 20:08:42 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.18 2005-09-11 16:30:00 mikeaubury Exp $
 #*/
 
 /**
@@ -110,7 +110,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   char fname[256];
   char *f;
   sprintf (fname, "%s",dbName);
-  f=acl_getenv("A4GL_SCHEMA_EXT");
+  f=acl_getenv_not_set_as_0("A4GL_SCHEMA_EXT");
   if (f==0) {
 	  f=".schema";
   }

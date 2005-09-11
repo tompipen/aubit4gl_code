@@ -1032,6 +1032,10 @@ define p_runstr char(10240)
 define lv_runstr char(10240)
 define lv_errsize integer
 
+if p_status<0 then
+	let p_status=1
+end if
+
 if p_status > 255 then
 	let p_status=p_status/256
 end if
@@ -1067,8 +1071,10 @@ if mv_show_errtail then
 end if
 
 if mv_noerrcode=0 then
+	display "Exit program..",p_status
 	exit program p_status
 else
+	display "Exit program.."
 	exit program
 end if
 

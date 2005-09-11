@@ -261,7 +261,7 @@ print_skip_by double nval -> void
 
 print_skip_to char* nval -> void
 
-print_report_print int type,char* semi,char* wordwrap -> void
+print_report_print int type,char* semi,t_expr_str* expr -> void
 
 print_report_print_file char* fname,char* semi -> void
 
@@ -481,7 +481,7 @@ A4GL_set_var_sql int d int n -> char*
 A4GL_lex_parsed_fgl -> void
 A4GL_bad_identifiers char* ident -> int
 print_sql_block_cmd char* sql -> void
-A4GL_expr_for_call char* ident long params int line char* file -> char*
+* A4GL_expr_for_call char* ident long params int line char* file -> char*
 print_empty_bind char* name -> void
 
 print_dealloc_arr char* s -> void

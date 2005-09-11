@@ -110,6 +110,13 @@ struct variable
   char *src_module;
 };
 
+
+struct binding_list {
+	        int nbindings;
+	        char **bindings;
+};
+
+
 /* Interface functions */
 
 void set_variable_user_system (char n);
@@ -133,4 +140,5 @@ void set_current_variable_scope (char n);
 struct record_list *split_record_list (char *s, char *prefix,
 				       struct record_list *list);
 void print_nullify (char type);
+
 #endif

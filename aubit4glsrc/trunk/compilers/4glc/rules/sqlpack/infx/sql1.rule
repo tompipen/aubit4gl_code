@@ -1105,6 +1105,19 @@ select_statement2_ss:
 	}
 ;
 
+union_select_statement2_ss: 
+	KW_SELECT op_ad select_list_ss
+	table_expression_2_ss
+        sel_p2_ss  {
+		printf("%s\n",$<str>2);
+		printf("%s\n",$<sql_string>3);
+		printf("%s\n",$<sql_string>4);
+		printf("%s\n",$<sql_string>5);
+
+		$<sql_string>$=make_sql_string_and_free("SELECT ", acl_strdup($<str>2),kw_space,$<sql_string>3,kw_space, $<sql_string>4,kw_space, $<sql_string>5,0 );
+}
+;
+
 uselect_statement2_ss:
 	select_statement21_ss  {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,0);
@@ -1119,13 +1132,13 @@ select_statement21_ss:
         opt_into_sel_ss
 	table_expression_2_ss
         sel_p2_ss  {
-		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), kw_space,acl_strdup($<str>2),kw_space,$<sql_string>3,kw_space, $<sql_string>4,kw_space, $<sql_string>5, kw_space,$<sql_string>6,0);
+		$<sql_string>$=make_sql_string_and_free("SELECT ", acl_strdup($<str>2),kw_space,$<sql_string>3,kw_space, $<sql_string>4,kw_space, $<sql_string>5, kw_space,$<sql_string>6,0);
 }
 ;
 
 
 sel_p2_ss : { $<sql_string>$=acl_strdup(""); }
-	| UNION op_u_all select_statement2_ss { $<sql_string>$=make_sql_string_and_free(acl_strdup("UNION "),acl_strdup($<str>2),kw_space,$<sql_string>3,0); add_feature("SELECT_UNION"); }
+	| UNION op_u_all union_select_statement2_ss { $<sql_string>$=make_sql_string_and_free(acl_strdup("UNION "),acl_strdup($<str>2),kw_space,$<sql_string>3,0); add_feature("SELECT_UNION"); }
 ;
 
 

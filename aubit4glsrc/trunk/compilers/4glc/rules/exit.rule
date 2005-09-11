@@ -55,5 +55,10 @@ if (in_command("MENU")) {  continue_loop("MENU");  } else { YYERROR;} }
 ;
 
 
+cancel_cmd : CANCEL_INSERT
+	| CANCEL_DELETE
+;
+	
+
 /* =============================== exit.rule ========================= */
 

@@ -130,9 +130,10 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 {
   int a;
   char tmpbuff[2048];
-  int type;
+  int type=0;
   int arrsize, size, level;
   char arrbuff[256];
+  arrsize=0;
 
   strcat (buff, var->variable_name);
 
@@ -151,6 +152,14 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 	{
 	  // It might be a substring..
 	  //printf("Type = %x\n",type);
+	  //
+	  //
+	  printf("%d\n",arrsize);
+
+	  printf("%d\n",type);
+
+	  printf("%d\n",ident_flg);
+
 	  if (arrsize == 0 || type == -1 || ident_flg == VAR_USG_IDENT)
 	    {
 	      //printf("Fix it...\n");

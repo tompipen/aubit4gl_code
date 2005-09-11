@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.45 2005-09-09 20:34:13 mikeaubury Exp $
+# $Id: binding.c,v 1.46 2005-09-11 16:30:00 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.45 2005-09-09 20:34:13 mikeaubury Exp $";
+		"$Id: binding.c,v 1.46 2005-09-11 16:30:00 mikeaubury Exp $";
 #endif
 
 extern int ibindcnt;
@@ -937,6 +937,8 @@ static char buff_ind[255];
 
 
 void liblex_add_ibind(int dtype,char *var) {
+	extern int a_ibind;
+	ibind=ensure_bind(&a_ibind,ibindcnt+1,ibind);
 	strcpy(ibind[ibindcnt].varname,var);
 	ibind[ibindcnt].start_char_subscript=0;
 	ibind[ibindcnt].end_char_subscript=0;
@@ -1218,6 +1220,45 @@ static char buff_ind[255];
 
 }
 
+
+
+char *dtparts[]={
+		"YEAR",
+		"MONTH",
+		"DAY",
+		"HOUR",
+		"MINUTE",
+		"SECOND",
+		"FRACTION"
+};
+
+
+static char *decode_datetime(int a) {
+	int pt1;
+	int pt2;
+	int fr;
+	char ps1[200];
+	char ps2[200];
+	static char buff[200];
+
+	if (((a/16)%16)<=10)  {
+		pt1=(((a/16)%16)/2);
+	} else {
+		pt1=6;
+	}
+	strcpy(ps1,dtparts[pt1]);
+	
+	if ((a%16)<=10) {
+		pt2=(a%16)/2;
+		strcpy(ps2,dtparts[pt2]);
+	} else {
+		pt2=6;
+		fr=(a % 16)-10;
+		sprintf(ps2,"%s(%d)",dtparts[pt2],fr);
+	}
+	sprintf(buff," %s TO %s",ps1,ps2);
+	return buff;
+}
 char *
 A4GL_dtype_sz (int d, int s)
 {
@@ -1253,43 +1294,3 @@ A4GL_dtype_sz (int d, int s)
     }
   return "";
 }
-
-
-char *dtparts[]={
-		"YEAR",
-		"MONTH",
-		"DAY",
-		"HOUR",
-		"MINUTE",
-		"SECOND",
-		"FRACTION"
-};
-
-
-char *decode_datetime(int a) {
-	int pt1;
-	int pt2;
-	int fr;
-	char ps1[200];
-	char ps2[200];
-	static char buff[200];
-
-	if (((a/16)%16)<=10)  {
-		pt1=(((a/16)%16)/2);
-	} else {
-		pt1=6;
-	}
-	strcpy(ps1,dtparts[pt1]);
-	
-	if ((a%16)<=10) {
-		pt2=(a%16)/2;
-		strcpy(ps2,dtparts[pt2]);
-	} else {
-		pt2=6;
-		fr=(a % 16)-10;
-		sprintf(ps2,"%s(%d)",dtparts[pt2],fr);
-	}
-	sprintf(buff," %s TO %s",ps1,ps2);
-	return buff;
-}
-	

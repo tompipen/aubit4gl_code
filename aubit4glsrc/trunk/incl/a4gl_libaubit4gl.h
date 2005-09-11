@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.192 2005-09-09 20:45:00 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.193 2005-09-11 16:30:00 mikeaubury Exp $
 #
 */
 
@@ -2258,6 +2258,10 @@ void A4GL_debug_dump_recall(char *field_name);
 char *A4GL_recall_field(char *t,char *c,int x,int y,int show);
 
 
+char *A4GL_confirm_colname(char *t,char *c);
+
+
+
 struct expr_str_list {
 	  struct expr_str **list;
 	  int nlist;
@@ -2289,6 +2293,20 @@ struct expr_shared_function_call {
 	int line;
 };
 
+
+struct expr_get_fldbuf {
+	long sio_id;
+	struct fh_field_list *field_list;
+	char *module;
+	int line;
+};
+
+struct expr_wordwrap {
+	struct expr_str *expr;
+	char *wrap_at;
+};
+
+
 struct expr_member_function_call {
 	char *lib;
 	char *fname;
@@ -2308,14 +2326,18 @@ struct expr_external_call {
 	int line;
 };
 
+struct expr_current {
+	short from;
+	short to;
+};
 
 enum e_expr_type {
-		ET_EXPR_CHAR,
-		ET_EXPR_EXPR,
+		//ET_EXPR_CHAR,
+		//ET_EXPR_EXPR,
 		ET_EXPR_EXPR_LIST,
-		ET_EXPR_OP,
-		ET_EXPR_INT,
-		ET_EXPR_NUM,
+		//ET_EXPR_OP,
+		//ET_EXPR_INT,
+		//ET_EXPR_NUM,
 		ET_EXPR_STRING,
 		ET_EXPR_PUSH_VARIABLE,
 		ET_EXPR_TODAY,
@@ -2347,7 +2369,7 @@ enum e_expr_type {
 		ET_EXPR_OP_USING,
 		ET_EXPR_OP_LIKE,
 		ET_EXPR_OP_NOT_LIKE,
-		ET_EXPR_OP_LENGTH,
+		//ET_EXPR_OP_LENGTH,
 		ET_EXPR_OP_IN,
 		ET_EXPR_OP_NOTIN,
 		ET_EXPR_OP_CONCAT,
@@ -2384,9 +2406,10 @@ enum e_expr_type {
 
 		ET_EXPR_REDUCED,
 		ET_EXPR_EXTERNAL,
+		ET_EXPR_GET_FLDBUF,
+		ET_EXPR_WORDWRAP,
 
-
-		ET_EXPR_LAST // NOT USED...
+		ET_EXPR_LAST // NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...)
 };
 
 
@@ -2404,6 +2427,9 @@ struct expr_str {
 		struct expr_member_function_call	*expr_member_function_call;
 		struct expr_external_call		*expr_external_call;
 		struct expr_op				*expr_op;
+		struct expr_current 			*expr_current;
+		struct expr_get_fldbuf 			*expr_get_fldbuf;
+		struct expr_wordwrap 			*expr_wordwrap;
 		long   expr_long;
 	  } u_data;
 	  struct expr_str *next;
@@ -2414,7 +2440,8 @@ typedef struct expr_str_list t_expr_str_list;
 struct expr_str *A4GL_new_op_expr(struct expr_str *left, struct expr_str *right, enum e_expr_type type, struct expr_str *escape) ;
 struct expr_str *A4GL_new_expr_call_external(char *host,char *func,char *port,struct expr_str_list *params,int nowait,char *mod,int line);
 struct expr_str *A4GL_new_literal_double_str (char *value);
-struct expr_str *A4GL_new_literal_long (char *value);
+struct expr_str *A4GL_new_literal_long_str (char *value);
+struct expr_str *A4GL_new_literal_long_long (long value);
 struct expr_str *A4GL_new_literal_string (char *value);
 struct expr_str *A4GL_new_literal_empty_str(void);
 

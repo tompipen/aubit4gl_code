@@ -505,14 +505,26 @@ strcpy($<str>$,"");
 ;
 
 
+binding_list : binding_item {$<bind_list>$=new_bind_list($<str>1);}
+	| binding_list KW_COMMA binding_item {$<bind_list>=append_bind_list($<bind_list>1,$<str>3);}
+;
+
+
+binding_item : variable 
+		| variable THRU variable { sprintf($<str>$,"%s\n%s",$<str>1,$<str>3); }
+		| CHAR_VALUE 
+		| real_number {sprintf($<str>$,"\"%s\"",$<str>1);}
+		| INT_VALUE {sprintf($<str>$,"\"%s\"",$<str>1);}
+;
+
 func_def_var : identifier | identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>2);}
 ;
 
 ibind_var : variable  {A4GL_lex_printcomment("/* Variable */\n");}
-	| variable THRU variable { A4GL_debug("Got an ibind thru..."); sprintf($<str>$,"%s\n%s",$<str>1,$<str>3); }
-	| CHAR_VALUE 
-	| real_number {sprintf($<str>$,"\"%s\"",$<str>1);}
-	| INT_VALUE {sprintf($<str>$,"\"%s\"",$<str>1);}
+		| variable THRU variable { A4GL_debug("Got an ibind thru..."); sprintf($<str>$,"%s\n%s",$<str>1,$<str>3); }
+		| CHAR_VALUE 
+		| real_number {sprintf($<str>$,"\"%s\"",$<str>1);}
+		| INT_VALUE {sprintf($<str>$,"\"%s\"",$<str>1);}
 ;
 
 obind_var_list:	obind_var  { start_bind('o',$<str>1); } 

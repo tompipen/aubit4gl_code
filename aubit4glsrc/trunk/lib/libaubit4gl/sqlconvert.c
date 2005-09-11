@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.63 2005-09-09 20:37:29 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.64 2005-09-11 16:30:00 mikeaubury Exp $
 #
 */
 
@@ -597,9 +597,11 @@ free(ptr);
 if (A4GL_isyes(acl_getenv("A4GL_DUMP_SQL"))) {
 	FILE *fout;
 	fout=fopen("/tmp/sql.log","a");
-	fprintf(fout,"%s\n",buff);
-	printf("IMMEDIATE %s\n",buff);
-	fclose(fout);
+	if (fout) {
+		fprintf(fout,"%s\n",buff);
+		printf("IMMEDIATE %s\n",buff);
+		fclose(fout);
+	}
 }
 return buff;
 }
@@ -1969,5 +1971,13 @@ for (a=0;a<strlen(s);a++) {
 
 ptr[b]=0;
 return ptr;
+}
+
+
+
+char *A4GL_confirm_colname(char *t,char *c) {
+	static char buff[256];
+	strcpy(buff,c);
+	return c;
 }
 

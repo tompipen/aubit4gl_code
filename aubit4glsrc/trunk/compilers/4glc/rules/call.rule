@@ -23,7 +23,6 @@ call_ext: function_call_expr opt_return {
 		print_call_shared(p1, "\"channel\"","\"write\"");
  	} opt_return {
 		print_returning();
-		print_end_call_shared();
 	}
    | pdf_functions
 ;

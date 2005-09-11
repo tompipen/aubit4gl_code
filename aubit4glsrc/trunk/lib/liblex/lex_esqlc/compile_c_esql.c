@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.123 2005-09-09 20:34:13 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.124 2005-09-11 16:30:00 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.123 2005-09-09 20:34:13 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.124 2005-09-11 16:30:00 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -479,7 +479,7 @@ LEXLIB_print_put (char *xcname,char *putvals)
 		  	printc("/* FAKE PUT - WILL STOP AT RUN-TIME */");
 			printc("printf (\"You cannot use a PUT with the target database\\n\"); ");
 			printc("A4GL_push_long(3);");
-			print_exit_program(1);
+			print_exit_program(A4GL_new_literal_long_long(1));
 	  } else {
 		  a4gl_yyerror ("You cannot use a PUT with the target database");
 	  }
@@ -507,7 +507,7 @@ LEXLIB_print_put (char *xcname,char *putvals)
 		  	printc("/* FAKE PUT without FROM - WILL STOP AT RUN-TIME */");
 			printc("printf (\"You cannot use a PUT without FROM with the target database\\n\"); ");
 			printc("A4GL_push_long(3);");
-			print_exit_program(1);
+			print_exit_program(A4GL_new_literal_long_long(1));
 			//print_execute(ptr,0);
 			//return;
 	  } else {
@@ -2024,12 +2024,9 @@ nm (int n)
 
 void print_report_table(char *repname,char type, int c) {
 
-dll_import struct binding_comp fbind[];
-/*extern struct binding_comp fbind[];*/
-dll_import struct binding_comp ibind[];
-/*extern struct binding_comp ibind[];*/
-dll_import struct binding_comp obind[];
-/*extern struct binding_comp obind[];*/
+dll_import struct binding_comp *fbind;
+dll_import struct binding_comp *ibind;
+dll_import struct binding_comp *obind;
 
 
 static char iname[256];
@@ -2057,9 +2054,12 @@ if (type=='R') {
 	/* print_execute needs an ibind - we have an fbind - so we need*/
 	/* to copy it across...*/
 	extern int ibindcnt;
+	extern int a_ibind;
 	//extern int fbindcnt;
-	memcpy(ibind,fbind,sizeof(struct binding_comp)*c+1);
 	ibindcnt=fbindcnt;
+	ibind=ensure_bind(&a_ibind,ibindcnt,ibind);
+	memcpy(ibind,fbind,sizeof(struct binding_comp)*c+1);
+
 if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 		sprintf(iname,"acl_p%s",&reptab[8]);
 		iname[18]=0;
@@ -2077,12 +2077,13 @@ if (type=='E') {
 
 if (type=='F') {
 	extern int obindcnt;
+	extern int a_obind;
 	//extern int fbindcnt;
 	char buff[256];
         char buff2[256];
-
-	memcpy(obind,fbind,sizeof(struct binding_comp)*c+1);
 	obindcnt=fbindcnt;
+	obind=ensure_bind(&a_obind,obindcnt,obind);
+	memcpy(obind,fbind,sizeof(struct binding_comp)*c+1);
 	printc("{ /* Type F */");
 	printc("struct BINDING *obind;");
 	printc("obind=A4GL_duplicate_binding(_rbind,%d);",fbindcnt);
@@ -2107,8 +2108,9 @@ if (type=='F') {
 
 if (type=='I') {
 	extern int current_ordbindcnt;
+	extern int ordbindcnt;
 	//extern int fbindcnt;
-	extern struct binding_comp ordbind[];
+	extern struct binding_comp *ordbind;
 	char sql[1024];
 	int a;
 	int b;
@@ -2129,6 +2131,7 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 		for (a=0;a<current_ordbindcnt;a++) {
 			int found=0;
 			if (a) strcat(sql,",");
+			printf("a=%d\n",a);
 
 			for (b=0;b<fbindcnt;b++) {
 				if (strcmp(ordbind[a].varname,fbind[b].varname)==0) {
@@ -2139,6 +2142,7 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 					break;
 				}
 			}
+
 			if (found==0) {
 				a4gl_yyerror("Could not find variable for order by in report");
 				return;

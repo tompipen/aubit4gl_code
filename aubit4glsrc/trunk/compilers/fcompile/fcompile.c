@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.47 2005-09-09 20:44:36 mikeaubury Exp $
+# $Id: fcompile.c,v 1.48 2005-09-11 16:30:00 mikeaubury Exp $
 #*/
 
 /**
@@ -123,6 +123,7 @@ main (int argc, char *argv[])
   A4GL_debug ("Initializing fcompile\n");
   A4GL_setenv("A4GL_UI","CONSOLE",1);
   A4GL_fgl_start(argc,argv);
+  default_database=acl_getenv_not_set_as_0("DEFAULT_DATABASE");
   fcompile=0;
   if (strstr(argv[0],"fcompile"))  fcompile=1;
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.1 2005-09-09 20:37:29 mikeaubury Exp $
+# $Id: expr.c,v 1.2 2005-09-11 16:30:00 mikeaubury Exp $
 #
 */
 
@@ -58,12 +58,12 @@
 
 char *expr_name(enum e_expr_type e) {
 switch (e) {
-case ET_EXPR_CHAR: return "ET_EXPR_CHAR";
-case ET_EXPR_EXPR: return "ET_EXPR_EXPR";
+//case ET_EXPR_CHAR: return "ET_EXPR_CHAR";
+//case ET_EXPR_EXPR: return "ET_EXPR_EXPR";
 case ET_EXPR_EXPR_LIST: return "ET_EXPR_EXPR_LIST";
-case ET_EXPR_OP: return "ET_EXPR_OP";
-case ET_EXPR_INT: return "ET_EXPR_INT";
-case ET_EXPR_NUM: return "ET_EXPR_NUM";
+//case ET_EXPR_OP: return "ET_EXPR_OP";
+//case ET_EXPR_INT: return "ET_EXPR_INT";
+//case ET_EXPR_NUM: return "ET_EXPR_NUM";
 case ET_EXPR_STRING: return "ET_EXPR_STRING";
 case ET_EXPR_PUSH_VARIABLE: return "ET_EXPR_PUSH_VARIABLE";
 case ET_EXPR_TODAY: return "ET_EXPR_TODAY";
@@ -95,7 +95,7 @@ case ET_EXPR_OP_MOD: return "ET_EXPR_OP_MOD";
 case ET_EXPR_OP_USING: return "ET_EXPR_OP_USING";
 case ET_EXPR_OP_LIKE: return "ET_EXPR_OP_LIKE";
 case ET_EXPR_OP_NOT_LIKE: return "ET_EXPR_OP_NOT_LIKE";
-case ET_EXPR_OP_LENGTH: return "ET_EXPR_OP_LENGTH";
+//case ET_EXPR_OP_LENGTH: return "ET_EXPR_OP_LENGTH";
 case ET_EXPR_OP_IN: return "ET_EXPR_OP_IN";
 case ET_EXPR_OP_NOTIN: return "ET_EXPR_OP_NOTIN";
 case ET_EXPR_OP_CONCAT: return "ET_EXPR_OP_CONCAT";
@@ -132,6 +132,8 @@ case ET_EXPR_LITERAL_EMPTY_STRING: return "ET_EXPR_LITERAL_EMPTY_STRING";
 case ET_EXPR_REDUCED: return "ET_EXPR_REDUCED";
 case ET_EXPR_LAST: return "ET_EXPR_LAST";
 case ET_EXPR_EXTERNAL: return "ET_EXPR_EXTERNAL";
+case ET_EXPR_GET_FLDBUF: return "ET_EXPR_GET_FLDBUF";
+case ET_EXPR_WORDWRAP: return "ET_EXPR_WORDWRAP";
 }
 printf("%d\n",e);
 return "Oopps - dont know";
@@ -250,11 +252,19 @@ struct expr_str *A4GL_new_literal_double_str (char *value)
 }
 
 
-struct expr_str *A4GL_new_literal_long (char *value)
+struct expr_str *A4GL_new_literal_long_str (char *value)
 {
   struct expr_str *ptr;
   ptr=A4GL_new_expr_simple (ET_EXPR_LITERAL_LONG);
   ptr->u_data.expr_long=atol(value);
+  return ptr;
+}
+
+struct expr_str *A4GL_new_literal_long_long (long value)
+{
+  struct expr_str *ptr;
+  ptr=A4GL_new_expr_simple (ET_EXPR_LITERAL_LONG);
+  ptr->u_data.expr_long=value;
   return ptr;
 }
 
@@ -325,6 +335,19 @@ struct expr_str *p2;
 return p2;
 }
 
+struct expr_str *A4GL_new_expr_current(int from, int to) {
+	struct expr_current *p;
+	struct expr_str *p2;
+	p=malloc(sizeof(struct expr_current));
+	p2=A4GL_new_expr_simple (ET_EXPR_CURRENT);
+	p->from=from;
+	p->to=to;
+	p2->u_data.expr_current=p;
+	return p2;
+}
+
+
+
 struct expr_str *A4GL_new_expr_fcall(char *function,struct expr_str_list *params,char *mod,int line) {
 struct expr_function_call *p;
 struct expr_str *p2;
@@ -337,6 +360,32 @@ struct expr_str *p2;
 	p2->u_data.expr_function_call=p;
 	return p2;
 }
+
+struct expr_str *A4GL_new_expr_get_fldbuf(int sid, struct fh_field_list *fl,char *mod,int line) {
+struct expr_get_fldbuf *p;
+struct expr_str *p2;
+	p=malloc(sizeof(struct expr_get_fldbuf));
+        p2=A4GL_new_expr_simple (ET_EXPR_GET_FLDBUF);
+	p->sio_id=sid;
+	p->field_list=fl;
+	p->module=mod;
+	p->line=line;
+	p2->u_data.expr_get_fldbuf=p;
+	return p2;
+}
+
+
+struct expr_str *A4GL_new_expr_wordwrap(struct expr_str *ptr,char *wrap_at) {
+	struct expr_wordwrap *p;
+	struct expr_str *p2;
+	p=malloc(sizeof(struct expr_get_fldbuf));
+        p2=A4GL_new_expr_simple (ET_EXPR_WORDWRAP);
+	p->expr=ptr;
+	p->wrap_at=strdup(wrap_at);
+	p2->u_data.expr_wordwrap=p;
+	return p2;
+}
+
 
 struct expr_str *A4GL_new_expr_member_fcall(char *lib,char *function,struct expr_str_list *params,char *mod,int line) {
 struct expr_member_function_call *p;
@@ -454,7 +503,10 @@ A4GL_append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
 
           switch(orig_ptr->expr_type) {
                   case ET_EXPR_STRING: new_ptr->u_data.expr_char=strdup(orig_ptr->u_data.expr_char); break;
-                  default : A4GL_assertion(1,"Unhandled expr copy");
+                  case ET_EXPR_LITERAL_DOUBLE_STR: new_ptr->u_data.expr_char=strdup(orig_ptr->u_data.expr_char); break;
+                  default : 
+				       	printf("%d - %s\n",orig_ptr->expr_type, expr_name(orig_ptr->expr_type));
+				       	A4GL_assertion(1,"Unhandled expr copy");
           }
           return A4GL_append_expr_expr (new_ptr,orig_ptr);
 
