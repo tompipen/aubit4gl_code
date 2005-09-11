@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.230 2005-09-11 16:29:56 mikeaubury Exp $
+# $Id: mod.c,v 1.231 2005-09-11 19:37:14 whaslbeck Exp $
 #
 */
 
@@ -243,6 +243,8 @@ int fbindcnt = 0;
 int ebindcnt = 0;
 
 struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) ;
+struct binding_list *new_bind_list(char *s);
+struct binding_list *append_bind_list(struct binding_list *l,char *s);
 
 /**
  * Module current scope level for variable declaration.
@@ -1369,7 +1371,6 @@ pushValidateAllTableColumns (char *tableName)
   /*char cdtype[20];*/
   char buff[300];
   char *ccol;
-  char *cname;
 
   A4GL_debug ("pushValidateAllTableColumns()");
 
