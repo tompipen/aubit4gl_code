@@ -16,7 +16,7 @@ MAIN
 	FOR rec.a = 1 TO 3
 		FOR rec.b = 1 TO 4
 			FOR rec.c = 1 TO 5
-				OUTPUT TO REPORT rg (rec.*)
+				OUTPUT TO REPORT rg (rec.a,rec.b,rec.c)
 				OUTPUT TO REPORT rg_2 (rec.*)
 				OUTPUT TO REPORT rg_3 (rec.*)
 			END FOR

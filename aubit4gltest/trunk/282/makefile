@@ -82,9 +82,9 @@ run: compile
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
-	${DEFAULT_RUN}
+#$	{DEFAULT_RUN}
+	${DEFAULT_DIFF}
 #To run program and diff the stdout output against a file, testing for difference:
-#	${DEFAULT_DIFF}
 #Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
 #program to a file for diff-ing, but expect output file to be created by dumping
 #the screen to file using a function call in the program itself:
