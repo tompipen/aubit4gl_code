@@ -12,13 +12,14 @@
 #using -eci will not work with any other Aubit configuration
 #NOTE: <*> = OK with -esqli
 #      <P> = OK with -ecp
-EXPECT_TO_FAIL_TESTS="240 766 767 962 976 987"
+EXPECT_TO_FAIL_TESTS="240 766 767 962 976 987 1254"
 #240 (numeric formating) http://aubit.com/mantis/bug_view_page.php?bug_id=0000495
 #766 (Key CONTROL-H was 49 and not 8) http://aubit.com/mantis/bug_view_page.php?bug_id=0000596
 #767 (wrong codes returned) http://aubit.com/mantis/bug_view_page.php?bug_id=0000597
 #962 <P> (Error on near zero decimal comparison) http://aubit.com/mantis/bug_view_page.php?bug_id=0000601
 #976 <P> (Error in conversion.) http://aubit.com/mantis/bug_view_page.php?bug_id=0000603
 #987 <P> same ?
+#1254 Dynamic fields
 
 
 #not reported (please enter bug report at: http://aubit.com/mantis)
