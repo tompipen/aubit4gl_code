@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.231 2005-09-11 19:37:14 whaslbeck Exp $
+# $Id: mod.c,v 1.232 2005-09-20 07:47:34 mikeaubury Exp $
 #
 */
 
@@ -3533,13 +3533,14 @@ ispdf (void)
  *   - f or F :
  * @param cnt The number of elements in the bind array.
  */
-void expand_bind (struct binding_comp *bind, int btype, int cnt)
+void expand_bind (struct binding_comp *bind, int btype, int cnt,int must_be_local)
 {
   char buff[256];
   /*int b1; */
   int dim;
   int xxxa;
   static struct binding_comp *save_bind=0;
+  char c;
 
   xxxa=0;
 
@@ -3556,7 +3557,16 @@ void expand_bind (struct binding_comp *bind, int btype, int cnt)
 
   for (xxxa = 0; xxxa < cnt; xxxa++)
     {
-      strcpy (buff, save_bind[xxxa].varname);
+      	strcpy (buff, save_bind[xxxa].varname);
+	if (must_be_local) {
+  		c = find_variable_scope (buff);
+		if (c!='L') {
+			set_yytext(buff);
+			a4gl_yyerror("Variable has not been defined locally");
+			return;
+		}
+	}
+
 
 
 
@@ -3633,7 +3643,7 @@ void expand_bind (struct binding_comp *bind, int btype, int cnt)
 void
 expand_obind (void)
 {
-  expand_bind (obind, 'o', obindcnt);
+  expand_bind (obind, 'o', obindcnt,0);
 }
 
 
@@ -3932,7 +3942,7 @@ fix_update_expr (int mode)
 
 
 
-
+#ifdef MOVED_TO_LIBAUBIT4GL
 
 
 char *
@@ -3983,6 +3993,7 @@ make_sql_string_and_free (char *first, ...)
   A4GL_debug("Generated : %s\n",ptr);
   return ptr;
 }
+#endif
 
 char * pg_make_sql_string_and_free (char *first, ...)
 {

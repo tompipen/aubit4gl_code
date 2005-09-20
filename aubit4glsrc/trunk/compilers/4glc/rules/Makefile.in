@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.17 2005-09-04 22:03:00 mikeaubury Exp $
+# $Id: Makefile.in,v 1.18 2005-09-20 07:47:39 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -67,7 +67,7 @@ generated/single_words: data/kwords
 generated/single_words.rule: generated/single_words
 	${SH} bin/make_enable
 
-generated/fgl.yacc: *.rule *.reqd generated/kw.yh generated/single_words.rule
+generated/fgl.yacc: *.rule *.reqd generated/kw.yh generated/single_words.rule sqlpack/infx/*.rule
 	${SH} bin/mkyacc
 
 

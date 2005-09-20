@@ -161,6 +161,9 @@ op_no_log : {strcpy($<str>$,"");}
 	}
 ;
 
+op_no_log_i : {$<integer_val>$=0;}
+	| WITH_NO_LOG { $<integer_val>$=1;}
+;
 
 idx_column_list : 
 		idx_column 

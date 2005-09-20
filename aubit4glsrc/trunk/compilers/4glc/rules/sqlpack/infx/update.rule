@@ -30,8 +30,9 @@ where_upd_ss : {
 		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
 		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>$),0);
 		add_feature("UPDATE_WHERE_CURRENT_OF");
+		A4GL_cursor_current($<str>2);
 	}
-	| WHERE search_condition_ss {
+	| WHERE search_condition_sli_as_string {
 		A4GL_4glc_pop_all_gen(UPDCOL,"!"); A4GL_4glc_pop_all_gen(UPDVAL,"!"); A4GL_4glc_pop_all_gen(UPDVAL2,"!");
 		$<sql_string>$=make_sql_string_and_free(acl_strdup("WHERE "),$<sql_string>2,0);
 	}
@@ -247,7 +248,7 @@ upd_value_expression_ss:
 
 upd_value_expression_initial_ss :
         upd_var_ident_ibind_ss    { $<sql_string>$=$<sql_string>1; }
-        | subquery_ss { $<sql_string>$=$<sql_string>1; }
+        | upd_subquery_ss { $<sql_string>$=$<sql_string>1; }
         | ATSIGN identifier col_arr { 
 			struct ilist *i;
 			i=&$<int_list>3;
@@ -266,8 +267,7 @@ $<sql_string>$=make_sql_string_and_free(
 		$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_substr(A4GLSQLCV_check_colname($<str>2,$<str>4),i->i0,i->i1,i->i2)),0); 
 		}
         | upd_value_expression_complex_ss { $<sql_string>$=$<sql_string>1; A4GL_4glc_pop_all_gen(UPDVAL2,"!"); }
-        | literal {$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),0);
-	}
+        | literal {$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),0); }
         | KW_TRUE {$<sql_string>$=make_sql_string_and_free(acl_strdup("TRUE"),0);}
         | KW_FALSE {$<sql_string>$=make_sql_string_and_free(acl_strdup("FALSE"),0);}
         | USER {$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_get_sqlconst("USER")),0);}
@@ -278,7 +278,7 @@ $<sql_string>$=make_sql_string_and_free(
 
 upd_value_expression_complex_ss :
         upd_value_expression_initial_ss DIVIDE upd_value_expression_ss 		{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("/"),$<sql_string>3,0);}
-        | upd_value_expression_initial_ss units_qual 				{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),0);}
+        | upd_value_expression_initial_ss upd_units_qual 			{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),0);}
         | upd_value_expression_initial_ss MULTIPLY upd_value_expression_ss 	{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("*"),$<sql_string>3,0);}
         | upd_value_expression_initial_ss PLUS upd_value_expression_ss 		{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("+"),$<sql_string>3,0);}
         | upd_value_expression_initial_ss MINUS upd_value_expression_ss 	{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("-"),$<sql_string>3,0);}
@@ -291,7 +291,7 @@ upd_value_expression_complex_ss :
         | KW_DATE OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET 		{$<sql_string>$=make_sql_string_and_free(acl_strdup("DATE("),$<sql_string>3,kw_cb,0);}
         | OPEN_BRACKET upd_value_expression_ss CLOSE_BRACKET 			{$<sql_string>$=make_sql_string_and_free(kw_ob,$<sql_string>2,kw_cb,0);}
 
-        | EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {
+        | EXTEND OPEN_BRACKET upd_extend_qual_ss CLOSE_BRACKET {
 			add_feature("EXTEND");
                         $<sql_string>$=$<sql_string>3;
         }
@@ -319,3 +319,48 @@ upd_value_expr_list_ss :
 }
 
 ;
+
+
+
+
+upd_units_qual:
+        UNITS_YEAR {strcpy($<str>$," UNITS YEAR");}
+        | UNITS_MONTH {strcpy($<str>$," UNITS MONTH"); }
+        | UNITS_DAY {strcpy($<str>$," UNITS DAY"); }
+        | UNITS_HOUR {strcpy($<str>$," UNITS HOUR"); }
+        | UNITS_MINUTE {strcpy($<str>$," UNITS MINUTE"); }
+        | UNITS_SECOND {strcpy($<str>$," UNITS SECOND"); }
+;
+
+
+upd_subquery_ss:
+        OPEN_BRACKET KW_SELECT op_ad select_list_slil table_expression_2_select CLOSE_BRACKET {
+	                $<s_select>$=$<s_select>5;
+                	$<s_select>$->modifier=strdup($<str>3);
+                	$<s_select>$->select_list=$<s_select_list_item_list>4;
+			$<sql_string>$=make_sql_string_and_free(acl_strdup("("),make_select_stmt($<s_select>$),acl_strdup(")"),0);
+        }
+;
+
+
+
+upd_extend_qual_ss:
+        KW_CURRENT KW_COMMA s_curr TO e_curr {
+                        $<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_dtime_extend("CURRENT",$<str>3,$<str>5,1)),0);
+        }
+        | var_ident_ibind_ss KW_COMMA s_curr TO e_curr {
+                        $<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_dtime_extend($<sql_string>1,$<str>3,$<str>5,1)),0);
+                        free($<sql_string>1);
+                //$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),acl_strdup($<str>3),kw_space,acl_strdup($<str>4),kw_space,acl_strdup($<str>5),0);
+        }
+        | KW_CURRENT s_curr TO e_curr {
+                        $<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_dtime_extend("CURRENT",$<str>2,$<str>4,1)),0);
+
+                //$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),acl_strdup($<str>2),kw_space,acl_strdup($<str>3),kw_space,acl_strdup($<str>4),0);
+        }
+        | upd_value_expression_ss KW_COMMA s_curr TO e_curr {
+                        $<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_dtime_extend($<sql_string>1,$<str>3,$<str>5,1)),0);
+                        free($<sql_string>1);
+        }
+;
+

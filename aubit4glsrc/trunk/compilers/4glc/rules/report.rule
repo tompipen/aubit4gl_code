@@ -254,13 +254,13 @@ format_actions : format_action | format_actions format_action;
 
 format_action :
 	 FIRST_PAGE_HEADER { push_report_block("FIRST",'P');} commands {
-	 	add_feature("FIRST_PAGE_HEADER");
+	 	add_feature("REPORT_FIRST_PAGE_HEADER");
 		rep_struct.lines_in_first_header=if_print_stack[0][0];
 		pdf_rep_struct.lines_in_first_header=if_print_stack[0][0];
 		print_rep_ret(0,1);
 		}
 	| PAGE_TRAILER { 
-	 	add_feature("PAGE_TRAILER");
+	 	add_feature("REPORT_PAGE_TRAILER");
 		push_report_block("TRAILER",'T');
 		if_print_stack[0][0]=0;
 		if_print_stack[0][1]=0;
@@ -270,7 +270,7 @@ format_action :
 		print_rep_ret(0,1);
 	}
 	| PAGE_HEADER { push_report_block("HEADER",'p');} commands {
-	 	add_feature("PAGE_HEADER");
+	 	add_feature("REPORT_PAGE_HEADER");
 		rep_struct.lines_in_header=if_print_stack[0][0];
 		pdf_rep_struct.lines_in_header=if_print_stack[0][0];
 		print_rep_ret(0,1);}
@@ -286,7 +286,7 @@ format_action :
    		a4gl_yyerror(buff);
 			YYERROR;
 		}
-		add_feature("BEFORE_GROUP");
+		add_feature("REPORT_BEFORE_GROUP");
 		sprintf(buff,"%d",a+1);
 		push_report_block(buff,'B');
 		set_curr_block(a+1);
@@ -295,7 +295,7 @@ format_action :
 		int a;
 		char buff[80];
 		
-		add_feature("AFTER_GROUP");
+		add_feature("REPORT_AFTER_GROUP");
 		A4GL_debug("rordcnt=%d",rordcnt);
 		a=scan_orderby($<str>2,rordcnt);
 		if (a<0) {

@@ -6,7 +6,7 @@
 
 construct_cmd	:	CONSTRUCT
 {
-add_feature("CONSTRUCT");
+add_feature("UI_CONSTRUCT");
 push_blockcommand("CONSTRUCT");
 A4GL_new_events();
 } 

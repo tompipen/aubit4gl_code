@@ -12,7 +12,7 @@ prompt_cmd	:
 		A4GL_new_events();
 		print_prompt_1($<ptr_list>2, $<str>3,$<str>5,$<str>7,$<str>8,0) ;
 	} prompt_key_sec {
-		add_feature("PROMPT");
+		add_feature("UI_PROMPT");
 		if (strcmp($<str>5,"1")==0) {
 			print_prompt_forchar();
                 }

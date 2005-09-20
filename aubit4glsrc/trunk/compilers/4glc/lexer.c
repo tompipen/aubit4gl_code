@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.112 2005-07-29 06:55:28 mikeaubury Exp $
+# $Id: lexer.c,v 1.113 2005-09-20 07:47:34 mikeaubury Exp $
 #*/
 
 /**
@@ -107,7 +107,7 @@ int lastlex = -2;
 int xccode = 0;
 int word_cnt = 0;
 
-char yyline[2000] = "";		/* Current line read so far, incl. CR/LF */
+char yyline[10000] = "";		/* Current line read so far, incl. CR/LF */
 int yyline_len = 0;		/* Length of current line */
 long yyline_fpos = 0;		/* FIle position of start of current line */
 
@@ -1169,7 +1169,7 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
 
 #ifndef OLDWAY
 	  int tl;
-	  static char tmpbuff[2000];
+	  static char tmpbuff[20000];
 	  A4GL_memfile_fseek (f, yyline_fpos, SEEK_SET);
 	  tl = A4GL_memfile_ftell (f);
 	  /*printf("a-tl = %d\n",a-tl);*/
@@ -1302,7 +1302,7 @@ int
 a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 {
   int a;
-  char buff[1024];
+  char buff[10240];
   char buffval[20480];
   int allow;
   static int last_pc = 0;

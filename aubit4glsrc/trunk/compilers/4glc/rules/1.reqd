@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.75 2005-09-11 16:29:59 mikeaubury Exp $
+# $Id: 1.reqd,v 1.76 2005-09-20 07:47:39 mikeaubury Exp $
 #
 */
 
@@ -213,10 +213,10 @@ int if_print_stack[100][2];
 int if_print_stack_cnt=0;
 int if_print_section[100]={0,0,0,0};
 char last_tmp_name[256]="";
-char *kw_comma=",";
-char *kw_space=" ";
-char *kw_ob="(";
-char *kw_cb=")";
+extern char *kw_comma;
+extern char *kw_space;
+extern char *kw_ob;
+extern char *kw_cb;
 
 #define ADDMAP(x,y) addmap(x,y,curr_func,yylineno,infilename)
 #define ADDMAP_MODULE(x,y) addmap(x,y,"MODULE",yylineno,infilename) 
@@ -236,49 +236,6 @@ char *kw_cb=")";
 #include "field_handling.h"
 #endif
 
-struct sql_statement {
-	int stmt_type;
-	char *sql_string;
-	struct binding_comp *ibind;
-	struct binding_comp *obind;	
-	int nibind;
-	int nobind;
-};
-
-
-struct s_select_list  {
-        int type;
-        union {
-                char *expression;
-                struct {
-                        char *tabname;
-                        char *colname;
-                        char *subscript;
-                } column;
-        } u_data;
-        char *alias;
-};
-
-
-struct s_table {
-                char *tabname;
-                char *alias;
-                struct s_table *next;
-                struct s_table *outer_next;
-};
-
-
-struct s_select {
-                char *modifier; // ALL/DISTINCT/UNIQUE
-                struct {
-                        long start;
-                        long end;
-                        long offset;
-                } limit; // FIRST nnn
-                int ncolumns;
-                struct s_select_list *columns;
-                struct s_table *first;
-};
 
 
 
@@ -300,10 +257,8 @@ void init_blk(void);
 
 
 
-	//char	str[3100];  /* This would core dump in CygWin on call to */
 	char	str[1024];  /* This would core dump in CygWin on call to */
 						/* yyparse in y.tab.c - 3100 in maximum. */
-						/* Was: char	str[20000]; */
 
 	struct expr_str *ptr;
 	struct expr_str_list *ptr_list;
@@ -321,14 +276,16 @@ void init_blk(void);
 	int 	integer_val;
 	float 	float_val;
 	struct sql_statement *sql_stmt;
+	struct s_select_list_item_list *s_select_list_item_list;
+	struct s_select_list_item *s_select_list_item;
 	struct ilist int_list;
 	struct s_table *u_table;
-	struct s_select_list *u_select_list;
-	struct s_select *u_select;
+	struct s_select *s_select;
 	struct dt_display *display;
 	struct ow_open_window *open_window_type;
 	struct binding_comp *binding_comp;
 	struct binding_list *binding_list;
+	struct s_select_finish *s_select_finish;
 	}
 
 /* ============================== 1.reqd ============================ */

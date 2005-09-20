@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.62 2005-09-09 20:44:36 mikeaubury Exp $
+# $Id: 4glc.c,v 1.63 2005-09-20 07:47:34 mikeaubury Exp $
 #
 */
 
@@ -71,6 +71,15 @@ extern int initArguments (int argc, char *argv[]);
 =====================================================================
 */
 
+#ifndef WIN32
+#define SET_LIMIT
+#endif
+
+#ifdef SET_LIMIT
+       #include <sys/time.h>
+       #include <sys/resource.h>
+#endif
+
 
 void init_blk(void);
 /**
@@ -86,6 +95,9 @@ main (int argc, char *argv[])
   char *ptr;
   char *dialect=0;
   struct str_resource *user_resource = 0;
+#ifdef SET_LIMIT
+    struct rlimit rl;
+#endif
 
 
   A4GL_setarg0 (argv[0]);
@@ -118,6 +130,13 @@ main (int argc, char *argv[])
   	A4GLSQLCV_load_convert(A4GL_compiled_sqlpack(),"default");
   }
 
+
+#ifdef SET_LIMIT
+      rl.rlim_max = rl.rlim_cur = 512000000;
+        if (setrlimit(RLIMIT_AS, &rl)) {
+		perror("setrlimit");
+	}
+#endif
 
   x = initArguments (argc, argv);
   if (a4gl_yydebug)

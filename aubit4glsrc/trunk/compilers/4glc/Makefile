@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.7 2005-09-04 22:02:59 mikeaubury Exp $
+# $Id: Makefile,v 1.8 2005-09-20 07:47:34 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -95,7 +95,7 @@ endif
 OBJS_LIB		=${CMODS_LIB:.c=.o}
 
 #Use this to create dependency for the parser:
-RULES_SRC		=$(wildcard rules/*.reqd) $(wildcard rules/*.rule)
+RULES_SRC		=$(wildcard rules/*.reqd) $(wildcard rules/*.rule) $(wildcard rules/sqlpack/infx/*.rule)
 #RULES_SRC			=$(addprefix rules/,$(RULES_SRC_tmp))
 
 ## ==================================================================

@@ -154,11 +154,10 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 	  //printf("Type = %x\n",type);
 	  //
 	  //
-	  printf("%d\n",arrsize);
 
-	  printf("%d\n",type);
-
-	  printf("%d\n",ident_flg);
+	  //printf("%d\n",arrsize);
+	  //printf("%d\n",type);
+	  //printf("%d\n",ident_flg);
 
 	  if (arrsize == 0 || type == -1 || ident_flg == VAR_USG_IDENT)
 	    {

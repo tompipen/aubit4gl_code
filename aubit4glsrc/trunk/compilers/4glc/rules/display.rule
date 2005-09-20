@@ -69,13 +69,13 @@ display_cmd : KW_DISPLAY fgl_expr_list_ptr opt_at display_attr {
 ;
 
 display_form_cmd : DISPLAY_FORM form_name display_attr {
-		add_feature("DISPLAY_FORM");
+		add_feature("UI_DISPLAY_FORM");
 		print_display_form($<str>2,$<str>3);
 	}
 ;
 
 display_array_cmd : DISPLAY_ARRAY {
-		add_feature("DISPLAY_ARRAY");
+		add_feature("UI_DISPLAY_ARRAY");
 		push_blockcommand("DISPLAY");
 		curr_input_array_attribs.curr_row_display=0;
 		} 

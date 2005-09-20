@@ -357,7 +357,7 @@ void do_print_menu_block_end(void) ;
 int A4GL_escape_quote_owner(void) ;
 void push_validate (char *t2);
 int gen_cnt (int a);
-void expand_bind (struct binding_comp *bind, int btype, int cnt);
+void expand_bind (struct binding_comp *bind, int btype, int cnt,int must_be_local);
 void A4GL_lex_printc(char* fmt,... );
 //void A4GL_lex_printh(char* fmt,... );
 void A4GL_lex_printcomment(char* fmt,... );
@@ -447,6 +447,7 @@ void dump_class (void);
 char *matches_string(char *m,char *e);
 void set_whenever_from_store(void) ;
 
+/*
 struct ilist {
 	int i0;
 	int i1;
@@ -455,6 +456,7 @@ struct ilist {
 	int i4;
 	int i5;
 } ;
+*/
 
 void file_out_indent(int cnt);
 int is_sql_kw(int a);

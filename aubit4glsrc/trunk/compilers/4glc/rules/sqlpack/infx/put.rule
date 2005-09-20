@@ -6,23 +6,26 @@ put_cmd :
 		}
 		put_from
 		{
-		print_put($<str>2,$<str>4);
+		print_put($<str>2,$<sql_string>4);
 	}
 ;
 
-put_from:
-	{strcpy($<str>$,"");} 
-| FROM put_val_list { strcpy($<str>$,$<str>2);
-A4GL_debug("putlist = %s\n",$<str>$);
+put_from: {$<sql_string>$=make_sql_string_and_free(strdup(""),0);} 
+| FROM put_val_list { 
+	$<sql_string>$=$<sql_string>2;
 }
 ;
 
-put_val_list  : put_val {A4GL_4glc_push_gen(PUTVAL,$<str>1);} | 
-                put_val_list KW_COMMA put_val {A4GL_4glc_push_gen(PUTVAL,$<str>3); sprintf($<str>$,"%s,%s",$<str>1,$<str>3);} 
+put_val_list  : put_val_ss {A4GL_4glc_push_gen(PUTVAL,$<sql_string>1);} | 
+                put_val_list KW_COMMA put_val_ss {A4GL_4glc_push_gen(PUTVAL,$<sql_string>3); 
+			$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
+		} 
 ;
 
-put_val : value_expression_ss {
-	char buff[256];	
+
+
+put_val_ss : put_val_int {
+	char buff[2560];	
 	strcpy(buff,$<sql_string>1);
 	A4GL_debug("put buff=%s\n",buff);
 	if (buff[0]!='\''&&strncmp(buff,"?",1)!=0&&strncmp(buff," :",2)!=0) {
@@ -30,11 +33,11 @@ put_val : value_expression_ss {
  		a4gl_yyerror("Put values must be variables, strings or 'NULL'");
 		YYERROR;
 	}
-
 	A4GL_add_put_string(buff);
-	strcpy($<str>$,buff);
-
-} | KW_NULL 
+	$<sql_string>$=make_sql_string_and_free(strdup(buff),0);
+} | KW_NULL  {
+	$<sql_string>$=make_sql_string_and_free(strdup("NULL"),0);
+}
 
 
 ;
